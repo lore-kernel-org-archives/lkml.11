@@ -2,167 +2,239 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A228BC32772
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 11:33:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 31A38C32772
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 11:33:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348362AbiHWLdY (ORCPT
+        id S1350222AbiHWLdq (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 07:33:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37546 "EHLO
+        Tue, 23 Aug 2022 07:33:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59726 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1358242AbiHWL1g (ORCPT
+        with ESMTP id S1358264AbiHWL1m (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 07:27:36 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C53C9C5799;
-        Tue, 23 Aug 2022 02:25:20 -0700 (PDT)
+        Tue, 23 Aug 2022 07:27:42 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9399BC4833;
+        Tue, 23 Aug 2022 02:25:18 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id D7F6F61220;
-        Tue, 23 Aug 2022 09:25:19 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E815DC433C1;
-        Tue, 23 Aug 2022 09:25:18 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661246719;
-        bh=ZNZaOr0SVDgl3V8pirBghodlvPKv/+4PSMralCoFxrA=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=KxFFVocUT+GKzaJrLSZ0fmdiKGhtmRhlXIq3FMu/emNca6YSEF58xwzExs3fafBIg
-         6/3+27DXKO6UBYQASF7L1kLNa+Z2yr0kVBAcZDZjkkU2GoMEZE8r1y1gr1nLOQJBUo
-         F/4e0g5PgFuSSnZPT3FI4OPX242j9Tl34AKGA0Wk=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Zhang Wensheng <zhangwensheng5@huawei.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 167/389] driver core: fix potential deadlock in __driver_attach
-Date:   Tue, 23 Aug 2022 10:24:05 +0200
-Message-Id: <20220823080122.604356055@linuxfoundation.org>
-X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220823080115.331990024@linuxfoundation.org>
-References: <20220823080115.331990024@linuxfoundation.org>
-User-Agent: quilt/0.67
+        by ams.source.kernel.org (Postfix) with ESMTPS id 662F4B81C65;
+        Tue, 23 Aug 2022 09:25:16 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D8875C433D7;
+        Tue, 23 Aug 2022 09:25:14 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1661246715;
+        bh=P5WYwbCMtY3VccArkx5/28ZRjGDM+TbQEY7NyV9Q9uk=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=cTenMwVaHgkkg1MWmT4MfJDOgSxC08zu8/2+JbZ+0ZywUTKjFR+J/1UcJmL39xHE2
+         eqJJsOwrxTRRwIVdDSwmZ5eOlyOcdZkZrhPuMBCmDU+s5xCPk+omP/T92ckR5Zv/46
+         DvK8TAQjQ0mQm9dT4iIYsfSRJEzHuzXGnDuJ28VfadBeLnPPMXITTFyATgpShR+I8/
+         cuxR9vTdtQnYM+CXQ4AqSaT/Vu6uaUZ+J+ZvVnXSn8+Ow3L6dvLBdqbD+9e9jeELDp
+         +ldTvLuLLBMg9jkq7oVVfSnTEQ0zrGQBKhS3u4oKY8w2jFYN23xDWWpWYNialCeaSH
+         HxHclhat489hA==
+Received: by pali.im (Postfix)
+        id 0C0E9621; Tue, 23 Aug 2022 11:25:11 +0200 (CEST)
+Date:   Tue, 23 Aug 2022 11:25:11 +0200
+From:   Pali =?utf-8?B?Um9ow6Fy?= <pali@kernel.org>
+To:     Lorenzo Pieralisi <lpieralisi@kernel.org>
+Cc:     Bjorn Helgaas <bhelgaas@google.com>,
+        Krzysztof =?utf-8?Q?Wilczy=C5=84ski?= <kw@linux.com>,
+        Rob Herring <robh@kernel.org>,
+        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
+        Marek =?utf-8?B?QmVow7pu?= <kabel@kernel.org>,
+        linux-pci@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] PCI: pci-bridge-emul: Set position of PCI capabilities
+ to real HW value
+Message-ID: <20220823092511.lgyg3q5m55etumcz@pali>
+References: <20220703104627.27058-1-pali@kernel.org>
+ <YwSYjmJrTDW0T7nf@lpieralisi>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
+In-Reply-To: <YwSYjmJrTDW0T7nf@lpieralisi>
+User-Agent: NeoMutt/20180716
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Zhang Wensheng <zhangwensheng5@huawei.com>
+On Tuesday 23 August 2022 11:06:22 Lorenzo Pieralisi wrote:
+> On Sun, Jul 03, 2022 at 12:46:27PM +0200, Pali Rohár wrote:
+> > mvebu and aardvark HW have PCIe capabilities on different offset in PCI
+> > config space. Extend pci-bridge-emul.c code to allow setting custom driver
+> > custom value where PCIe capabilities starts.
+> > 
+> > With this change PCIe capabilities of both drivers are reported at the same
+> > location as where they are reported by U-Boot - in their real HW offset.
+> > 
+> > Signed-off-by: Pali Rohár <pali@kernel.org>
+> > ---
+> >  drivers/pci/controller/pci-aardvark.c |  1 +
+> >  drivers/pci/controller/pci-mvebu.c    |  1 +
+> >  drivers/pci/pci-bridge-emul.c         | 46 +++++++++++++++++----------
+> >  drivers/pci/pci-bridge-emul.h         |  2 ++
+> >  4 files changed, 33 insertions(+), 17 deletions(-)
+> > 
+> > diff --git a/drivers/pci/controller/pci-aardvark.c b/drivers/pci/controller/pci-aardvark.c
+> > index ffec82c8a523..32f97e71e0ca 100644
+> > --- a/drivers/pci/controller/pci-aardvark.c
+> > +++ b/drivers/pci/controller/pci-aardvark.c
+> > @@ -984,6 +984,7 @@ static int advk_sw_pci_bridge_init(struct advk_pcie *pcie)
+> >  	bridge->pcie_conf.rootcap = cpu_to_le16(PCI_EXP_RTCAP_CRSVIS);
+> >  
+> >  	bridge->has_pcie = true;
+> > +	bridge->pcie_start = PCIE_CORE_PCIEXP_CAP;
+> >  	bridge->data = pcie;
+> >  	bridge->ops = &advk_pci_bridge_emul_ops;
+> >  
+> > diff --git a/drivers/pci/controller/pci-mvebu.c b/drivers/pci/controller/pci-mvebu.c
+> > index c1ffdb06c971..cb7cf3f4802f 100644
+> > --- a/drivers/pci/controller/pci-mvebu.c
+> > +++ b/drivers/pci/controller/pci-mvebu.c
+> > @@ -946,6 +946,7 @@ static int mvebu_pci_bridge_emul_init(struct mvebu_pcie_port *port)
+> >  	bridge->subsystem_vendor_id = ssdev_id & 0xffff;
+> >  	bridge->subsystem_id = ssdev_id >> 16;
+> >  	bridge->has_pcie = true;
+> > +	bridge->pcie_start = PCIE_CAP_PCIEXP_OFF;
+> 
+> Is this patch to be applied against v6.0-rc1 ? Just asking, can't
+> find this define.
 
-[ Upstream commit 70fe758352cafdee72a7b13bf9db065f9613ced8 ]
+Macro is without _OFF suffix. I will fix it in v2.
 
-In __driver_attach function, There are also AA deadlock problem,
-like the commit b232b02bf3c2 ("driver core: fix deadlock in
-__device_attach").
+> >  	bridge->data = port;
+> >  	bridge->ops = &mvebu_pci_bridge_emul_ops;
+> >  
+> > diff --git a/drivers/pci/pci-bridge-emul.c b/drivers/pci/pci-bridge-emul.c
+> > index 9c2ca28e3ecf..dfbbe43ef518 100644
+> > --- a/drivers/pci/pci-bridge-emul.c
+> > +++ b/drivers/pci/pci-bridge-emul.c
+> > @@ -22,11 +22,7 @@
+> >  
+> >  #define PCI_BRIDGE_CONF_END	PCI_STD_HEADER_SIZEOF
+> >  #define PCI_CAP_SSID_SIZEOF	(PCI_SSVID_DEVICE_ID + 2)
+> > -#define PCI_CAP_SSID_START	PCI_BRIDGE_CONF_END
+> > -#define PCI_CAP_SSID_END	(PCI_CAP_SSID_START + PCI_CAP_SSID_SIZEOF)
+> >  #define PCI_CAP_PCIE_SIZEOF	(PCI_EXP_SLTSTA2 + 2)
+> > -#define PCI_CAP_PCIE_START	PCI_CAP_SSID_END
+> > -#define PCI_CAP_PCIE_END	(PCI_CAP_PCIE_START + PCI_CAP_PCIE_SIZEOF)
+> >  
+> >  /**
+> >   * struct pci_bridge_reg_behavior - register bits behaviors
+> > @@ -324,7 +320,7 @@ pci_bridge_emul_read_ssid(struct pci_bridge_emul *bridge, int reg, u32 *value)
+> >  	switch (reg) {
+> >  	case PCI_CAP_LIST_ID:
+> >  		*value = PCI_CAP_ID_SSVID |
+> > -			(bridge->has_pcie ? (PCI_CAP_PCIE_START << 8) : 0);
+> > +			((bridge->pcie_start > bridge->ssid_start) ? (bridge->pcie_start << 8) : 0);
+> >  		return PCI_BRIDGE_EMUL_HANDLED;
+> >  
+> >  	case PCI_SSVID_VENDOR_ID:
+> > @@ -365,12 +361,25 @@ int pci_bridge_emul_init(struct pci_bridge_emul *bridge,
+> >  	if (!bridge->pci_regs_behavior)
+> >  		return -ENOMEM;
+> >  
+> > -	if (bridge->subsystem_vendor_id)
+> > -		bridge->conf.capabilities_pointer = PCI_CAP_SSID_START;
+> > -	else if (bridge->has_pcie)
+> > -		bridge->conf.capabilities_pointer = PCI_CAP_PCIE_START;
+> > -	else
+> > -		bridge->conf.capabilities_pointer = 0;
+> > +	/* If ssid_start and pcie_start were not specified then choose the lowest possible value. */
+> 
+> Is this an assumption ? I don't see why this logic belongs in the
+> generic bridge emulation, I'd say that ssid_start, pcie_start and
+> the capabilities pointer should be set in the respective host
+> controller drivers, I don't think this belong in generic bridge
+> emulation code.
+> 
+> Thoughts ?
 
-stack like commit b232b02bf3c2 ("driver core: fix deadlock in
-__device_attach").
-list below:
-    In __driver_attach function, The lock holding logic is as follows:
-    ...
-    __driver_attach
-    if (driver_allows_async_probing(drv))
-      device_lock(dev)      // get lock dev
-        async_schedule_dev(__driver_attach_async_helper, dev); // func
-          async_schedule_node
-            async_schedule_node_domain(func)
-              entry = kzalloc(sizeof(struct async_entry), GFP_ATOMIC);
-              /* when fail or work limit, sync to execute func, but
-                 __driver_attach_async_helper will get lock dev as
-                 will, which will lead to A-A deadlock.  */
-              if (!entry || atomic_read(&entry_count) > MAX_WORK) {
-                func;
-              else
-                queue_work_node(node, system_unbound_wq, &entry->work)
-      device_unlock(dev)
+The point is that it is this bridge emulation code which construct
+linked list of PCI capabilities, it has full control over placement of
+registers and host controller drivers just implement callbacks for
+particular capability. Callbacks use register offset relative to the
+start of capability, so bridge can put pcie_start and ssid_start to any
+position in config space which does not conflict with other things.
 
-    As above show, when it is allowed to do async probes, because of
-    out of memory or work limit, async work is not be allowed, to do
-    sync execute instead. it will lead to A-A deadlock because of
-    __driver_attach_async_helper getting lock dev.
+And usage of lowest possible value is just some canonical choice where
+to put it. It was also before this change. Now host controller drivers
+can say that they want to put those capabilities at specific location
+and not at location chosen by bridge emulation code.
 
-Reproduce:
-and it can be reproduce by make the condition
-(if (!entry || atomic_read(&entry_count) > MAX_WORK)) untenable, like
-below:
-
-[  370.785650] "echo 0 > /proc/sys/kernel/hung_task_timeout_secs" disables
-this message.
-[  370.787154] task:swapper/0       state:D stack:    0 pid:    1 ppid:
-0 flags:0x00004000
-[  370.788865] Call Trace:
-[  370.789374]  <TASK>
-[  370.789841]  __schedule+0x482/0x1050
-[  370.790613]  schedule+0x92/0x1a0
-[  370.791290]  schedule_preempt_disabled+0x2c/0x50
-[  370.792256]  __mutex_lock.isra.0+0x757/0xec0
-[  370.793158]  __mutex_lock_slowpath+0x1f/0x30
-[  370.794079]  mutex_lock+0x50/0x60
-[  370.794795]  __device_driver_lock+0x2f/0x70
-[  370.795677]  ? driver_probe_device+0xd0/0xd0
-[  370.796576]  __driver_attach_async_helper+0x1d/0xd0
-[  370.797318]  ? driver_probe_device+0xd0/0xd0
-[  370.797957]  async_schedule_node_domain+0xa5/0xc0
-[  370.798652]  async_schedule_node+0x19/0x30
-[  370.799243]  __driver_attach+0x246/0x290
-[  370.799828]  ? driver_allows_async_probing+0xa0/0xa0
-[  370.800548]  bus_for_each_dev+0x9d/0x130
-[  370.801132]  driver_attach+0x22/0x30
-[  370.801666]  bus_add_driver+0x290/0x340
-[  370.802246]  driver_register+0x88/0x140
-[  370.802817]  ? virtio_scsi_init+0x116/0x116
-[  370.803425]  scsi_register_driver+0x1a/0x30
-[  370.804057]  init_sd+0x184/0x226
-[  370.804533]  do_one_initcall+0x71/0x3a0
-[  370.805107]  kernel_init_freeable+0x39a/0x43a
-[  370.805759]  ? rest_init+0x150/0x150
-[  370.806283]  kernel_init+0x26/0x230
-[  370.806799]  ret_from_fork+0x1f/0x30
-
-To fix the deadlock, move the async_schedule_dev outside device_lock,
-as we can see, in async_schedule_node_domain, the parameter of
-queue_work_node is system_unbound_wq, so it can accept concurrent
-operations. which will also not change the code logic, and will
-not lead to deadlock.
-
-Fixes: ef0ff68351be ("driver core: Probe devices asynchronously instead of the driver")
-Signed-off-by: Zhang Wensheng <zhangwensheng5@huawei.com>
-Link: https://lore.kernel.org/r/20220622074327.497102-1-zhangwensheng5@huawei.com
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- drivers/base/dd.c | 5 ++++-
- 1 file changed, 4 insertions(+), 1 deletion(-)
-
-diff --git a/drivers/base/dd.c b/drivers/base/dd.c
-index 6f85280fef8d..4e45c87ed177 100644
---- a/drivers/base/dd.c
-+++ b/drivers/base/dd.c
-@@ -1037,6 +1037,7 @@ static void __driver_attach_async_helper(void *_dev, async_cookie_t cookie)
- static int __driver_attach(struct device *dev, void *data)
- {
- 	struct device_driver *drv = data;
-+	bool async = false;
- 	int ret;
- 
- 	/*
-@@ -1074,9 +1075,11 @@ static int __driver_attach(struct device *dev, void *data)
- 		if (!dev->driver) {
- 			get_device(dev);
- 			dev->p->async_driver = drv;
--			async_schedule_dev(__driver_attach_async_helper, dev);
-+			async = true;
- 		}
- 		device_unlock(dev);
-+		if (async)
-+			async_schedule_dev(__driver_attach_async_helper, dev);
- 		return 0;
- 	}
- 
--- 
-2.35.1
-
-
-
+> Lorenzo
+> 
+> > +	if (!bridge->ssid_start && !bridge->pcie_start) {
+> > +		if (bridge->subsystem_vendor_id)
+> > +			bridge->ssid_start = PCI_BRIDGE_CONF_END;
+> > +		if (bridge->has_pcie)
+> > +			bridge->pcie_start = bridge->ssid_start + PCI_CAP_SSID_SIZEOF;
+> > +	} else if (!bridge->ssid_start && bridge->subsystem_vendor_id) {
+> > +		if (bridge->pcie_start - PCI_BRIDGE_CONF_END >= PCI_CAP_SSID_SIZEOF)
+> > +			bridge->ssid_start = PCI_BRIDGE_CONF_END;
+> > +		else
+> > +			bridge->ssid_start = bridge->pcie_start + PCI_CAP_PCIE_SIZEOF;
+> > +	} else if (!bridge->pcie_start && bridge->has_pcie) {
+> > +		if (bridge->ssid_start - PCI_BRIDGE_CONF_END >= PCI_CAP_PCIE_SIZEOF)
+> > +			bridge->pcie_start = PCI_BRIDGE_CONF_END;
+> > +		else
+> > +			bridge->pcie_start = bridge->ssid_start + PCI_CAP_SSID_SIZEOF;
+> > +	}
+> > +
+> > +	bridge->conf.capabilities_pointer = min(bridge->ssid_start, bridge->pcie_start);
+> 
+> >  
+> >  	if (bridge->conf.capabilities_pointer)
+> >  		bridge->conf.status |= cpu_to_le16(PCI_STATUS_CAP_LIST);
+> > @@ -459,15 +468,17 @@ int pci_bridge_emul_conf_read(struct pci_bridge_emul *bridge, int where,
+> >  		read_op = bridge->ops->read_base;
+> >  		cfgspace = (__le32 *) &bridge->conf;
+> >  		behavior = bridge->pci_regs_behavior;
+> > -	} else if (reg >= PCI_CAP_SSID_START && reg < PCI_CAP_SSID_END && bridge->subsystem_vendor_id) {
+> > +	} else if (reg >= bridge->ssid_start && reg < bridge->ssid_start + PCI_CAP_SSID_SIZEOF &&
+> > +		   bridge->subsystem_vendor_id) {
+> >  		/* Emulated PCI Bridge Subsystem Vendor ID capability */
+> > -		reg -= PCI_CAP_SSID_START;
+> > +		reg -= bridge->ssid_start;
+> >  		read_op = pci_bridge_emul_read_ssid;
+> >  		cfgspace = NULL;
+> >  		behavior = NULL;
+> > -	} else if (reg >= PCI_CAP_PCIE_START && reg < PCI_CAP_PCIE_END && bridge->has_pcie) {
+> > +	} else if (reg >= bridge->pcie_start && reg < bridge->pcie_start + PCI_CAP_PCIE_SIZEOF &&
+> > +		   bridge->has_pcie) {
+> >  		/* Our emulated PCIe capability */
+> > -		reg -= PCI_CAP_PCIE_START;
+> > +		reg -= bridge->pcie_start;
+> >  		read_op = bridge->ops->read_pcie;
+> >  		cfgspace = (__le32 *) &bridge->pcie_conf;
+> >  		behavior = bridge->pcie_cap_regs_behavior;
+> > @@ -538,9 +549,10 @@ int pci_bridge_emul_conf_write(struct pci_bridge_emul *bridge, int where,
+> >  		write_op = bridge->ops->write_base;
+> >  		cfgspace = (__le32 *) &bridge->conf;
+> >  		behavior = bridge->pci_regs_behavior;
+> > -	} else if (reg >= PCI_CAP_PCIE_START && reg < PCI_CAP_PCIE_END && bridge->has_pcie) {
+> > +	} else if (reg >= bridge->pcie_start && reg < bridge->pcie_start + PCI_CAP_PCIE_SIZEOF &&
+> > +		   bridge->has_pcie) {
+> >  		/* Our emulated PCIe capability */
+> > -		reg -= PCI_CAP_PCIE_START;
+> > +		reg -= bridge->pcie_start;
+> >  		write_op = bridge->ops->write_pcie;
+> >  		cfgspace = (__le32 *) &bridge->pcie_conf;
+> >  		behavior = bridge->pcie_cap_regs_behavior;
+> > diff --git a/drivers/pci/pci-bridge-emul.h b/drivers/pci/pci-bridge-emul.h
+> > index 71392b67471d..2a0e59c7f0d9 100644
+> > --- a/drivers/pci/pci-bridge-emul.h
+> > +++ b/drivers/pci/pci-bridge-emul.h
+> > @@ -131,6 +131,8 @@ struct pci_bridge_emul {
+> >  	struct pci_bridge_reg_behavior *pci_regs_behavior;
+> >  	struct pci_bridge_reg_behavior *pcie_cap_regs_behavior;
+> >  	void *data;
+> > +	u8 pcie_start;
+> > +	u8 ssid_start;
+> >  	bool has_pcie;
+> >  	u16 subsystem_vendor_id;
+> >  	u16 subsystem_id;
+> > -- 
+> > 2.20.1
+> > 
