@@ -2,91 +2,78 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BCEA1C32772
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 18:54:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C3BEEC32772
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 18:55:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230000AbiHWSyh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 14:54:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40522 "EHLO
+        id S231717AbiHWSzr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 23 Aug 2022 14:55:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40514 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230225AbiHWSyO (ORCPT
+        with ESMTP id S229829AbiHWSzO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 14:54:14 -0400
-Received: from mail-yw1-f181.google.com (mail-yw1-f181.google.com [209.85.128.181])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8B3FB11CF0E;
-        Tue, 23 Aug 2022 10:19:48 -0700 (PDT)
-Received: by mail-yw1-f181.google.com with SMTP id 00721157ae682-3376851fe13so364340747b3.6;
-        Tue, 23 Aug 2022 10:19:47 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc;
-        bh=FC6hnZbwBtmw6oIIpxsgV+B+7mA53uX/U4iba0ioviU=;
-        b=Sgp1vZry3w9ICcogpNTZspMfoxePVLCrdUka3sGuQ6bDG1ink0vr+w4Nh3PK+2r1Tp
-         Ei03BVFmD6+0PyA9DSbbsq0Zyjj/EalGbu+0qzqQDGQP3tLE165VQC1LDrTOWKVdw16N
-         TTcWGMglgrXNaRbmbSINtAwmMzdbCqKIULUfmGTjvhzskVwOgrx6v/hXekMejq7nnnS9
-         7kmJkkhhjS+7P01yH42iwM6/JGFbyh5m2iBkWJZ5YjKBNl3uR9Gj43yga0l/T17lCf8D
-         UcozXm82LepA7nSwn9gkQREx+tReUMz8tkgRqmQY58wPHW4WypYE6spYluHko0TlToQS
-         i6/g==
-X-Gm-Message-State: ACgBeo0TSa5nxDLFNQFIbdFvAjxprJv5kbwJhnJI+wIReNqQRh2FzrQ2
-        wG/6LkrfQZW0RsDK0spAFggPFgtTBbrd1rvODZg=
-X-Google-Smtp-Source: AA6agR4cTX5F8PyOjA1279e807GkwUK4KIWkE3KWOkDhaVt50kdCpplTQD6zGvPNuPABbFQ+fJ2lrIz5unWXRJ3z6zg=
-X-Received: by 2002:a81:9906:0:b0:2db:640f:49d8 with SMTP id
- q6-20020a819906000000b002db640f49d8mr7298558ywg.326.1661275179229; Tue, 23
- Aug 2022 10:19:39 -0700 (PDT)
+        Tue, 23 Aug 2022 14:55:14 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 55A0913F85
+        for <linux-kernel@vger.kernel.org>; Tue, 23 Aug 2022 10:21:26 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 3684A615A4
+        for <linux-kernel@vger.kernel.org>; Tue, 23 Aug 2022 17:21:26 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7BE5CC433D6;
+        Tue, 23 Aug 2022 17:21:25 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1661275285;
+        bh=VFjOTpxcrlmUZh1BhEihfLloefvGcxdpOSpJmXk5h8w=;
+        h=From:To:Cc:Subject:Date:From;
+        b=t7e8xYLgOmpiiL+/dcP30jhAvGFS9d3MQgitnDKU+zt6hy/sVXhizXHNG7H7RbWlO
+         mo+xwaLU3LfGVBWTDd6usavm9GCd0+igMvUYkEQIf31qITwwQLiELcfYBhAS/ZXd6n
+         6I0XiGcnhnS5mm0pnCslR8kchFu1RlOQQuA0URaf8uyN/qKrdAvluc2lVE39+0weLL
+         GUEN/O4SnRmZW+2GVE1txTiFDz+vKvMzK4z6ljkwXv71/GVajvofGPGjhkhFx3WbVh
+         8F03DYCLp8ZMlpyMkUpJc1BYTr5i9NjWey+YqSz1TgeMbtjA26ooWbbyOzaD/IkWIO
+         AM7yeVTNTLUDQ==
+From:   Jaegeuk Kim <jaegeuk@kernel.org>
+To:     linux-kernel@vger.kernel.org,
+        linux-f2fs-devel@lists.sourceforge.net
+Cc:     Jaegeuk Kim <jaegeuk@kernel.org>
+Subject: [PATCH] f2fs: increase the limit for reserve_root
+Date:   Tue, 23 Aug 2022 10:21:24 -0700
+Message-Id: <20220823172124.2285995-1-jaegeuk@kernel.org>
+X-Mailer: git-send-email 2.37.1.595.g718a3a8f04-goog
 MIME-Version: 1.0
-References: <20220822154048.188253-1-justin.he@arm.com> <DBBPR08MB45381EB46B4714E0DCE63ABBF7709@DBBPR08MB4538.eurprd08.prod.outlook.com>
-In-Reply-To: <DBBPR08MB45381EB46B4714E0DCE63ABBF7709@DBBPR08MB4538.eurprd08.prod.outlook.com>
-From:   "Rafael J. Wysocki" <rafael@kernel.org>
-Date:   Tue, 23 Aug 2022 19:19:28 +0200
-Message-ID: <CAJZ5v0hY5bA8iB4KdnZ3te8KOML8JQbPVs2Laaq7Lz=bh1amMA@mail.gmail.com>
-Subject: Re: [RESEND PATCH v3 0/9] Make ghes_edac a proper module
-To:     Justin He <Justin.He@arm.com>
-Cc:     Len Brown <lenb@kernel.org>, James Morse <James.Morse@arm.com>,
-        Tony Luck <tony.luck@intel.com>,
-        Borislav Petkov <bp@alien8.de>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
-        Robert Richter <rric@kernel.org>,
-        Robert Moore <robert.moore@intel.com>,
-        Qiuxu Zhuo <qiuxu.zhuo@intel.com>,
-        Yazen Ghannam <yazen.ghannam@amd.com>,
-        Jonathan Corbet <corbet@lwn.net>,
-        Jan Luebbe <jlu@pengutronix.de>,
-        Khuong Dinh <khuong@os.amperecomputing.com>,
-        Kani Toshi <toshi.kani@hpe.com>,
-        Ard Biesheuvel <ardb@kernel.org>,
-        "linux-acpi@vger.kernel.org" <linux-acpi@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "linux-edac@vger.kernel.org" <linux-edac@vger.kernel.org>,
-        "devel@acpica.org" <devel@acpica.org>,
-        "Rafael J . Wysocki" <rafael@kernel.org>,
-        Shuai Xue <xueshuai@linux.alibaba.com>,
-        Jarkko Sakkinen <jarkko@kernel.org>,
-        "linux-efi@vger.kernel.org" <linux-efi@vger.kernel.org>,
-        nd <nd@arm.com>, "Paul E. McKenney" <paulmck@kernel.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Neeraj Upadhyay <quic_neeraju@quicinc.com>,
-        Randy Dunlap <rdunlap@infradead.org>,
-        Damien Le Moal <damien.lemoal@opensource.wdc.com>,
-        Muchun Song <songmuchun@bytedance.com>,
-        "linux-doc@vger.kernel.org" <linux-doc@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Aug 23, 2022 at 3:50 AM Justin He <Justin.He@arm.com> wrote:
->
-> Hi,
-> Sorry for resending the v3.
-> There is an exceptional interrupt when I tried to post v3 at the first time.
-> Maybe it is caused by a comma "," inside the mail name.
-> E.g.
-> Signed-off-by: Some, one <someone@site.com>
-> Looks like a git sendemail issue?
->
-> Anyway, sorry for the inconvenience.
+This patch increases the threshold that limits the reserved root space from 0.2%
+to 12.5% by using simple shift operation.
 
-I've received it twice, but no problem.
+Typically Android sets 128MB, but if the storage capacity is 32GB, 0.2% which is
+around 64MB becomes too small. Let's relax it.
 
-I need Boris to tell me what to do with this series.
+Signed-off-by: Jaegeuk Kim <jaegeuk@kernel.org>
+---
+ fs/f2fs/super.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/fs/f2fs/super.c b/fs/f2fs/super.c
+index 09972b709cdd..d1b4de5b4083 100644
+--- a/fs/f2fs/super.c
++++ b/fs/f2fs/super.c
+@@ -301,10 +301,10 @@ static void f2fs_destroy_casefold_cache(void) { }
+ 
+ static inline void limit_reserve_root(struct f2fs_sb_info *sbi)
+ {
+-	block_t limit = min((sbi->user_block_count << 1) / 1000,
++	block_t limit = min((sbi->user_block_count >> 3),
+ 			sbi->user_block_count - sbi->reserved_blocks);
+ 
+-	/* limit is 0.2% */
++	/* limit is 12.5% */
+ 	if (test_opt(sbi, RESERVE_ROOT) &&
+ 			F2FS_OPTION(sbi).root_reserved_blocks > limit) {
+ 		F2FS_OPTION(sbi).root_reserved_blocks = limit;
+-- 
+2.37.1.595.g718a3a8f04-goog
+
