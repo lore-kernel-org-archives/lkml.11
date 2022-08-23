@@ -2,136 +2,142 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1436DC32789
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 17:57:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 563ABC32772
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 17:58:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232545AbiHWR5X (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 13:57:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46530 "EHLO
+        id S230200AbiHWR6Z (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 23 Aug 2022 13:58:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48928 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233226AbiHWRzb (ORCPT
+        with ESMTP id S233018AbiHWR6G (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 13:55:31 -0400
-Received: from mail-yw1-x1149.google.com (mail-yw1-x1149.google.com [IPv6:2607:f8b0:4864:20::1149])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 492FCC2EAE
-        for <linux-kernel@vger.kernel.org>; Tue, 23 Aug 2022 08:59:20 -0700 (PDT)
-Received: by mail-yw1-x1149.google.com with SMTP id 00721157ae682-31f5960500bso245866007b3.14
-        for <linux-kernel@vger.kernel.org>; Tue, 23 Aug 2022 08:59:20 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=cc:to:from:subject:mime-version:message-id:date:from:to:cc;
-        bh=s208mFKW5mux3x3fFQzuS0oklKHocAknnwXo8nQY6YI=;
-        b=onfDdlrNeXjaHJVDclJvl6kkSSZkwz5ngSB+xHxpci91JPwn/QO5fmV/397a+aKKxp
-         zTPVzXdt1umOXjW8wgznpZ1IlQ4kZgOHnBZiB55z16cURRuftdST3FqI3I+UVo3b11h3
-         XxkIIXmNoF0oLdrwDceCt/wTQn9UJbLIdHuQgggVxuaVm5+KNac5PQPzdHbFe2CFjx9I
-         hbcEIsznWyLSkDngLXclu2/eSvs7K2b1fH4EzzNEg86OETq+ltNOkV9PIpYilyHRkqL4
-         1nBZFFUXLC3aJEPGR7WT+kszNxPVrmIjbjrjcAfyeFB3LvUdjBuoo1vlYq60nMCIA7S1
-         lpQw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:from:subject:mime-version:message-id:date:x-gm-message-state
-         :from:to:cc;
-        bh=s208mFKW5mux3x3fFQzuS0oklKHocAknnwXo8nQY6YI=;
-        b=1HMeLnUEJ5RI8PNtuAgikkbzWTujWh7v1sxavaxnC4jTlkEYa9vhIj7WYDcFrR+QE9
-         2CJKJK1MfQHER6MR76uTgQa111TGzN+5PH5nB31IygQKkkzy+EMSKWuRVrAk56wp0v2+
-         lxDmFYsmAR09KU+N+xOWsbOFxyvyS9RvjvLBDDV+IfcMLc7/3ONXAn5DHQWNnaE4A4Uw
-         ZpiVIkG0yJg0spaWIk5BI9QpH8SdQaLC78J+TIO+D38QyywN7bHB77C4C27dkNF2tHo8
-         QNx6VcXMTD1IZCrqwhjDGpEo6lwWBLxp1RyKb5pH68GAREszpSSuKR1JifYRW7DM6/UE
-         nYMQ==
-X-Gm-Message-State: ACgBeo0b1ZZUP4L2K+onySZvvBFF+2ZS9vuCu0glvmXyOpmN0MfDEYPX
-        M6hCE9aK3pwfu4ZTD6UlruFFARcKxA==
-X-Google-Smtp-Source: AA6agR6lvaz85tu0pzAuiS+DWBgUc/EfOcw88DjqRBJtufUAKYnAyUkyBx9LWajcnsGGF57Q4v0iO+5xwQ==
-X-Received: from timvp-p620-9115096.bld.corp.google.com ([2620:15c:183:200:2f3b:1daa:d20:c362])
- (user=timvp job=sendgmr) by 2002:a5b:d09:0:b0:695:f25c:fa14 with SMTP id
- y9-20020a5b0d09000000b00695f25cfa14mr3450377ybp.163.1661270359512; Tue, 23
- Aug 2022 08:59:19 -0700 (PDT)
-Date:   Tue, 23 Aug 2022 09:59:17 -0600
-Message-Id: <20220823095915.v7.1.I55189adfdb8d025fc991a0fa820ec09078619b15@changeid>
-Mime-Version: 1.0
-X-Mailer: git-send-email 2.37.2.609.g9ff673ca1a-goog
-Subject: [PATCH v7] platform/chrome: cros_ec_lpc: Move host command to prepare/complete
-From:   Tim Van Patten <timvp@google.com>
-To:     rrangel@chromium.org, robbarnes@google.com
-Cc:     Tim Van Patten <timvp@google.com>,
-        Benson Leung <bleung@chromium.org>,
-        Guenter Roeck <groeck@chromium.org>,
-        chrome-platform@lists.linux.dev, linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+        Tue, 23 Aug 2022 13:58:06 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9B127C88B7;
+        Tue, 23 Aug 2022 09:03:48 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id A69FEB81E4A;
+        Tue, 23 Aug 2022 16:03:47 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 68E3AC433C1;
+        Tue, 23 Aug 2022 16:03:46 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1661270626;
+        bh=DcQguS3xcqvdUwJBYUKZFjMYJ1eAQt2jFuBShofNZFM=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=lym0j6r1LtkcJ42JLxWeB7eOzui/CeL8GpRtf2Bf6zpWMwq3sl1gNI+bpnNtQ3RF5
+         heF/j9XzObSiiTYJprQpOWl/D30OIekk+ZiCvxb6Nc5SXUqhspkfkCrgQ6oU/07DNb
+         u/3nK2TFUZnn+esL4oNgY4lIYkmVtLPDsyqOcquw416NlqcyK/VtNkKkP+Hi531nGO
+         DAxj4R9Ve3kAsx0swBwdRIOZPAu10Vr/CLPfRrf6/QzbZoUwAb59mRv2WkA57SVe+i
+         vpRnMnwciUk6UHFRVrByeXatrwp1EWU4dyoPGw93se1xEQ3yM9VweGiaVas87S1uO/
+         Tfp530/wFr3Sw==
+Date:   Tue, 23 Aug 2022 09:03:45 -0700
+From:   "Darrick J. Wong" <djwong@kernel.org>
+To:     Lalith Rajendran <lalithkraj@google.com>
+Cc:     tytso@mit.edu, dilger.kernel@dilger.ca, linux-ext4@vger.kernel.org,
+        linux-kernel@vger.kernel.org, xfs <linux-xfs@vger.kernel.org>
+Subject: Re: [PATCH] ext4: Make ext4_lazyinit_thread freezable.
+Message-ID: <YwT6YelUyY+fjkT4@magnolia>
+References: <20220818214049.1519544-1-lalithkraj@google.com>
+ <Yv7UYfFBmRTKXNc7@magnolia>
+ <CANscXK018_PSLPSeTyne7D+KWHa74kyHmdJ8Bxfxyf=5YMPSfw@mail.gmail.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CANscXK018_PSLPSeTyne7D+KWHa74kyHmdJ8Bxfxyf=5YMPSfw@mail.gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Update cros_ec_lpc_pm_ops to call cros_ec_lpc_prepare() during PM
-.prepare() and cros_ec_lpc_complete() during .complete(). This moves the
-host command that the AP sends and allows the EC to log entry/exit of
-AP's suspend/resume more accurately.
+On Tue, Aug 23, 2022 at 08:37:43AM -0700, Lalith Rajendran wrote:
+> Thank you for the comment.
+> Can you provide more details on how
+> https://lore.kernel.org/linux-fsdevel/20210417001026.23858-1-mcgrof@kernel.org/
+> is
+> related to your comment to freeze all filesystems in order?
 
-Signed-off-by: Tim Van Patten <timvp@google.com>
----
+This all got started a long time ago[0] when I noticed that suspend often
+fails on my laptop because the kthread freezer will shut down some of
+XFS' low level background kernel threads before higher level background
+threads have been put to sleep.  In this case, suspend kills the buffer
+IO completion thread before the XFS log worker, which means the log
+worker stalls trying to write the log contents back to disk:
 
-Changes in v7:
-- Rename "host event" to "host command" in title/description.
+[0] https://lore.kernel.org/linux-xfs/20170203010401.GR9134@birch.djwong.org/
 
-Changes in v6:
-- Fully restore fixes from v3.
+So I then proposed a patch[1] to mark the buffer completion workqueue as
+non-freezeable, which was rejected because while that will bandaid the
+suspend problem, it'll create bigger problems with hibernation because
+the log and buffer workers can keep running while hibernate tries to
+write the state of those threads out to disk:
 
-Changes in v5:
-- Restore fixes from v3.
+[1] https://lore.kernel.org/linux-xfs/20170327204611.GA4864@birch.djwong.org/
 
-Changes in v4:
-- Update title and description.
+That came with a suggestion that the power management code should freeze
+the filesystems before trying to put kthreads to sleep.  User programs
+will go to sleep trying to get write access, and all fs background
+threads will already be idle.
 
-Changes in v3:
-- Update cros_ec_lpc_suspend() to cros_ec_lpc_prepare()
-- Update cros_ec_lpc_resume() to cros_ec_lpc_complete()
+Luis Chamberlain offered to pick up that work[2] back in 2017 to figure
+out how to freeze filesystems prior to suspend.  His first attempt
+simply walked the supers list in reverse order, and drew quite a few
+comments.  The second version[3] improved on that.
 
-Changes in v2:
-- Include cros_ec_resume() return value in dev_info() output.
-- Guard setting .prepare/.complete with #ifdef CONFIG_PM_SLEEP.
+[2] https://lore.kernel.org/all/20171003185313.1017-1-mcgrof@kernel.org/T/#u
+[3] https://lore.kernel.org/all/20171129232356.28296-1-mcgrof@kernel.org/T/#u
 
- drivers/platform/chrome/cros_ec_lpc.c | 16 ++++++++++++----
- 1 file changed, 12 insertions(+), 4 deletions(-)
+Four years went by (I don't blame Luis; I've not had time to get back to
+this either) and his most recent posting[4] I think tried to restart the
+discussion.
 
-diff --git a/drivers/platform/chrome/cros_ec_lpc.c b/drivers/platform/chrome/cros_ec_lpc.c
-index 7677ab3c0ead..4158bdeee197 100644
---- a/drivers/platform/chrome/cros_ec_lpc.c
-+++ b/drivers/platform/chrome/cros_ec_lpc.c
-@@ -530,23 +530,31 @@ static const struct dmi_system_id cros_ec_lpc_dmi_table[] __initconst = {
- MODULE_DEVICE_TABLE(dmi, cros_ec_lpc_dmi_table);
- 
- #ifdef CONFIG_PM_SLEEP
--static int cros_ec_lpc_suspend(struct device *dev)
-+static int cros_ec_lpc_prepare(struct device *dev)
- {
- 	struct cros_ec_device *ec_dev = dev_get_drvdata(dev);
- 
-+	dev_info(dev, "Prepare EC suspend\n");
-+
- 	return cros_ec_suspend(ec_dev);
- }
- 
--static int cros_ec_lpc_resume(struct device *dev)
-+static void cros_ec_lpc_complete(struct device *dev)
- {
- 	struct cros_ec_device *ec_dev = dev_get_drvdata(dev);
-+	int ret;
-+
-+	ret = cros_ec_resume(ec_dev);
- 
--	return cros_ec_resume(ec_dev);
-+	dev_info(dev, "EC resume completed: ret = %d\n", ret);
- }
- #endif
- 
- static const struct dev_pm_ops cros_ec_lpc_pm_ops = {
--	SET_LATE_SYSTEM_SLEEP_PM_OPS(cros_ec_lpc_suspend, cros_ec_lpc_resume)
-+#ifdef CONFIG_PM_SLEEP
-+	.prepare = cros_ec_lpc_prepare,
-+	.complete = cros_ec_lpc_complete
-+#endif
- };
- 
- static struct platform_driver cros_ec_lpc_driver = {
--- 
-2.37.2.609.g9ff673ca1a-goog
+[4] https://lore.kernel.org/linux-fsdevel/20210417001026.23858-1-mcgrof@kernel.org/
 
+So that's where things stand now.  I've idly wondered if a better
+approach would be to hook filesystems into the device model so that
+filesystems could watch for suspend notifications propagating down the
+device tree and turn that into a fsfreeze, but as I mentioned, I've had
+no time to figure out how that would really work since I'm not that
+familiar with how power management works in the kernel.  I don't have a
+clue where you'd attach a network filesystem.
+
+--D
+
+> Thanks,
+> Lalith
+> 
+> On Thu, Aug 18, 2022 at 5:08 PM Darrick J. Wong <djwong@kernel.org> wrote:
+> 
+> > On Thu, Aug 18, 2022 at 09:40:49PM +0000, Lalith Rajendran wrote:
+> > > ext4_lazyinit_thread is not set freezable. Hence when the thread calls
+> > > try_to_freeze it doesn't freeze during suspend and continues to send
+> > > requests to the storage during suspend, resulting in suspend failures.
+> >
+> > Maybe we should just make suspend freeze all the filesystems in order?
+> >
+> >
+> > https://lore.kernel.org/linux-fsdevel/20210417001026.23858-1-mcgrof@kernel.org/
+> >
+> > --D
+> >
+> > > Signed-off-by: Lalith Rajendran <lalithkraj@google.com>
+> > > ---
+> > >  fs/ext4/super.c | 1 +
+> > >  1 file changed, 1 insertion(+)
+> > >
+> > > diff --git a/fs/ext4/super.c b/fs/ext4/super.c
+> > > index 9a66abcca1a85..d77e0904a1327 100644
+> > > --- a/fs/ext4/super.c
+> > > +++ b/fs/ext4/super.c
+> > > @@ -3767,6 +3767,7 @@ static int ext4_lazyinit_thread(void *arg)
+> > >       unsigned long next_wakeup, cur;
+> > >
+> > >       BUG_ON(NULL == eli);
+> > > +     set_freezable();
+> > >
+> > >  cont_thread:
+> > >       while (true) {
+> > > --
+> > > 2.31.0
+> > >
+> >
