@@ -2,42 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 69C3CC38147
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 10:26:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id ED433C32793
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 10:26:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354613AbiHWKZ7 (ORCPT
+        id S1354446AbiHWKZi (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 06:25:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33250 "EHLO
+        Tue, 23 Aug 2022 06:25:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60598 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353642AbiHWKLr (ORCPT
+        with ESMTP id S1353595AbiHWKLl (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 06:11:47 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 16FF37F13A;
-        Tue, 23 Aug 2022 01:58:00 -0700 (PDT)
+        Tue, 23 Aug 2022 06:11:41 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DCA4215A0B;
+        Tue, 23 Aug 2022 01:57:37 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 2FB8EB81C35;
-        Tue, 23 Aug 2022 08:57:59 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 78C14C433C1;
-        Tue, 23 Aug 2022 08:57:57 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 798E76155D;
+        Tue, 23 Aug 2022 08:57:37 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8009EC433D6;
+        Tue, 23 Aug 2022 08:57:36 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661245077;
-        bh=wL+I1X6OYqaa+s1yOlsuInujXPWsQqoekriR1F0yces=;
+        s=korg; t=1661245056;
+        bh=dA6ZEuwj7DPqjItnEoT4QchiUOKqV/ohRsxC0LHDOW0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=0kkAjwIFef/4m4QCnn0k/VHQVm3jNLAo1I49ALpQhyFiGy5l82r6/NLIOAqq9VKdF
-         hxrw7pyBueKk1UGjzb3mVqvezg9wRu91cs3SfAvfqDUUHTuhyxOH4VplKSIHmGICxL
-         3VwU1KDKqrCKqAYi4r46gnXbv4RKxB/Uq8EcsaaA=
+        b=N1b+F7fNB8tWrLbVNpxaLlzkxg5iPt3gLA4KkK+FcoCGGarPgVe7Acp6bxM7SALHG
+         liy0b9Z8G57ab4G4lVuZWtxUcyRe5BK+Fi3hDYNseViYGRXBk2b93G5qla0AdZCamT
+         8UAydrWp7prprXg9E4z4V2cQwl7rjn33ujD7Gw+E=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Timur Tabi <timur@kernel.org>,
-        Liang He <windhl@126.com>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 207/244] tty: serial: Fix refcount leak bug in ucc_uart.c
-Date:   Tue, 23 Aug 2022 10:26:06 +0200
-Message-Id: <20220823080106.412901268@linuxfoundation.org>
+        stable@vger.kernel.org, Bjorn Helgaas <helgaas@kernel.org>,
+        Marek Szyprowski <m.szyprowski@samsung.com>,
+        Bjorn Helgaas <bhelgaas@google.com>,
+        Chanho Park <chanho61.park@samsung.com>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+        Vinod Koul <vkoul@kernel.org>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 200/244] phy: samsung: phy-exynos-pcie: sanitize init/power_on callbacks
+Date:   Tue, 23 Aug 2022 10:25:59 +0200
+Message-Id: <20220823080106.152465127@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220823080059.091088642@linuxfoundation.org>
 References: <20220823080059.091088642@linuxfoundation.org>
@@ -49,36 +53,85 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Liang He <windhl@126.com>
+From: Marek Szyprowski <m.szyprowski@samsung.com>
 
-[ Upstream commit d24d7bb2cd947676f9b71fb944d045e09b8b282f ]
+[ Upstream commit f2812227bb07e2eaee74253f11cea1576945df31 ]
 
-In soc_info(), of_find_node_by_type() will return a node pointer
-with refcount incremented. We should use of_node_put() when it is
-not used anymore.
+The exynos-pcie driver called phy_power_on() before phy_init() for some
+historical reasons. However the generic PHY framework assumes that the
+proper sequence is to call phy_init() first, then phy_power_on(). The
+operations done by both functions should be considered as one action and as
+such they are called by the exynos-pcie driver (without doing anything
+between them). The initialization is just a sequence of register writes,
+which cannot be altered without breaking the hardware operation.
 
-Acked-by: Timur Tabi <timur@kernel.org>
-Signed-off-by: Liang He <windhl@126.com>
-Link: https://lore.kernel.org/r/20220618060850.4058525-1-windhl@126.com
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To match the generic PHY framework requirement, simply move all register
+writes to the phy_init()/phy_exit() and drop power_on()/power_off()
+callbacks. This way the driver will also work with the old (incorrect)
+PHY initialization call sequence.
+
+Link: https://lore.kernel.org/r/20220628220409.26545-1-m.szyprowski@samsung.com
+Reported-by: Bjorn Helgaas <helgaas@kernel.org>
+Signed-off-by: Marek Szyprowski <m.szyprowski@samsung.com>
+Signed-off-by: Bjorn Helgaas <bhelgaas@google.com>
+Reviewed-by: Chanho Park <chanho61.park@samsung.com>
+Acked-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Acked-By: Vinod Koul <vkoul@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/tty/serial/ucc_uart.c | 2 ++
- 1 file changed, 2 insertions(+)
+ drivers/phy/samsung/phy-exynos-pcie.c | 25 +++++++++----------------
+ 1 file changed, 9 insertions(+), 16 deletions(-)
 
-diff --git a/drivers/tty/serial/ucc_uart.c b/drivers/tty/serial/ucc_uart.c
-index 6000853973c1..3cc9ef08455c 100644
---- a/drivers/tty/serial/ucc_uart.c
-+++ b/drivers/tty/serial/ucc_uart.c
-@@ -1137,6 +1137,8 @@ static unsigned int soc_info(unsigned int *rev_h, unsigned int *rev_l)
- 		/* No compatible property, so try the name. */
- 		soc_string = np->name;
+diff --git a/drivers/phy/samsung/phy-exynos-pcie.c b/drivers/phy/samsung/phy-exynos-pcie.c
+index 578cfe07d07a..53c9230c2907 100644
+--- a/drivers/phy/samsung/phy-exynos-pcie.c
++++ b/drivers/phy/samsung/phy-exynos-pcie.c
+@@ -51,6 +51,13 @@ static int exynos5433_pcie_phy_init(struct phy *phy)
+ {
+ 	struct exynos_pcie_phy *ep = phy_get_drvdata(phy);
  
-+	of_node_put(np);
++	regmap_update_bits(ep->pmureg, EXYNOS5433_PMU_PCIE_PHY_OFFSET,
++			   BIT(0), 1);
++	regmap_update_bits(ep->fsysreg, PCIE_EXYNOS5433_PHY_GLOBAL_RESET,
++			   PCIE_APP_REQ_EXIT_L1_MODE, 0);
++	regmap_update_bits(ep->fsysreg, PCIE_EXYNOS5433_PHY_L1SUB_CM_CON,
++			   PCIE_REFCLK_GATING_EN, 0);
 +
- 	/* Extract the SOC number from the "PowerPC," string */
- 	if ((sscanf(soc_string, "PowerPC,%u", &soc) != 1) || !soc)
- 		return 0;
+ 	regmap_update_bits(ep->fsysreg,	PCIE_EXYNOS5433_PHY_COMMON_RESET,
+ 			   PCIE_PHY_RESET, 1);
+ 	regmap_update_bits(ep->fsysreg, PCIE_EXYNOS5433_PHY_MAC_RESET,
+@@ -109,20 +116,7 @@ static int exynos5433_pcie_phy_init(struct phy *phy)
+ 	return 0;
+ }
+ 
+-static int exynos5433_pcie_phy_power_on(struct phy *phy)
+-{
+-	struct exynos_pcie_phy *ep = phy_get_drvdata(phy);
+-
+-	regmap_update_bits(ep->pmureg, EXYNOS5433_PMU_PCIE_PHY_OFFSET,
+-			   BIT(0), 1);
+-	regmap_update_bits(ep->fsysreg, PCIE_EXYNOS5433_PHY_GLOBAL_RESET,
+-			   PCIE_APP_REQ_EXIT_L1_MODE, 0);
+-	regmap_update_bits(ep->fsysreg, PCIE_EXYNOS5433_PHY_L1SUB_CM_CON,
+-			   PCIE_REFCLK_GATING_EN, 0);
+-	return 0;
+-}
+-
+-static int exynos5433_pcie_phy_power_off(struct phy *phy)
++static int exynos5433_pcie_phy_exit(struct phy *phy)
+ {
+ 	struct exynos_pcie_phy *ep = phy_get_drvdata(phy);
+ 
+@@ -135,8 +129,7 @@ static int exynos5433_pcie_phy_power_off(struct phy *phy)
+ 
+ static const struct phy_ops exynos5433_phy_ops = {
+ 	.init		= exynos5433_pcie_phy_init,
+-	.power_on	= exynos5433_pcie_phy_power_on,
+-	.power_off	= exynos5433_pcie_phy_power_off,
++	.exit		= exynos5433_pcie_phy_exit,
+ 	.owner		= THIS_MODULE,
+ };
+ 
 -- 
 2.35.1
 
