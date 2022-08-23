@@ -2,143 +2,142 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1F789C32772
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 19:11:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2CC4FC32772
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 19:11:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229853AbiHWTK7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 15:10:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42694 "EHLO
+        id S231194AbiHWTLD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 23 Aug 2022 15:11:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44204 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229865AbiHWTJh (ORCPT
+        with ESMTP id S230309AbiHWTKV (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 15:09:37 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 25E8379636
-        for <linux-kernel@vger.kernel.org>; Tue, 23 Aug 2022 10:48:09 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1661276772;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=jbhMYli+PbpL5j/G83ITSKK3U1H2INgAMQzOK2lNHlQ=;
-        b=N+Zryk9jVJtswiF9rQ03lmMnQ9P/c3IBxIvf0LN8i1V8MrE1xQk+oHsxKCbMG26oG/PC4+
-        rhgK1S1kpNj9fRhvYOFPP7MEhMjhMM4hkKfNvcYwTtju8fqQh6UaCH/On3D2g8Pv4A7yBk
-        BiewZm9pkGQl5MnGRGPFDae29iMp3nY=
-Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
- [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-182--kuNe3SOMi6HTrJp48Ta4g-1; Tue, 23 Aug 2022 13:42:57 -0400
-X-MC-Unique: -kuNe3SOMi6HTrJp48Ta4g-1
-Received: from smtp.corp.redhat.com (int-mx07.intmail.prod.int.rdu2.redhat.com [10.11.54.7])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 637463C0D1B4;
-        Tue, 23 Aug 2022 17:42:57 +0000 (UTC)
-Received: from cmirabil.redhat.com (unknown [10.22.33.37])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id EA62714152E0;
-        Tue, 23 Aug 2022 17:42:56 +0000 (UTC)
-From:   Charles Mirabile <cmirabil@redhat.com>
-To:     linux-kernel@vger.kernel.org
-Cc:     Charles Mirabile <cmirabil@redhat.com>,
-        Peter Robinson <pbrobinson@gmail.com>,
-        Serge Schneider <serge@raspberrypi.org>,
-        Stefan Wahren <stefan.wahren@i2se.com>,
-        Nicolas Saenz Julienne <nicolassaenzj@gmail.com>,
-        Mattias Brugger <mbrugger@suse.com>,
-        linux-rpi-kernel@lists.infradead.org,
-        linux-arm-kernel@lists.infradead.org, rh-kdlp@googlegroups.com,
-        Joel Savitz <jsavitz@redhat.com>
-Subject: [PATCH 5/5] DO NOT MERGE: full sensehat device tree overlay for raspberry pi 4
-Date:   Tue, 23 Aug 2022 13:41:58 -0400
-Message-Id: <20220823174158.45579-6-cmirabil@redhat.com>
-In-Reply-To: <20220823174158.45579-1-cmirabil@redhat.com>
-References: <20220823174158.45579-1-cmirabil@redhat.com>
+        Tue, 23 Aug 2022 15:10:21 -0400
+Received: from mx0b-0031df01.pphosted.com (mx0b-0031df01.pphosted.com [205.220.180.131])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EB14D804BB;
+        Tue, 23 Aug 2022 10:48:20 -0700 (PDT)
+Received: from pps.filterd (m0279870.ppops.net [127.0.0.1])
+        by mx0a-0031df01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 27NGjpT6002746;
+        Tue, 23 Aug 2022 17:47:11 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=quicinc.com; h=message-id : date :
+ mime-version : subject : to : cc : references : from : in-reply-to :
+ content-type : content-transfer-encoding; s=qcppdkim1;
+ bh=xZo+vzm1TOVsna0zI8E67IlnE8HAd1OyXQrditCnKTc=;
+ b=Agpv8gbvv6ChQ2bg0ZfIgUU26g9tqZraE774F2+pZmp8/Nw3JxRtBBesvVKp3fPtxzbZ
+ Z94W0YR1EWsk9mxtnZAjVwH6lXK6vG2zfg2btGM/Vq48yfZisVmdmyDZ9AtfTpQLrd3A
+ i9fxghqbNCpMQ4wVq1aixLyzG8OiE3wMZSKPtss3jEsa5E2rtvPoeDS0kb19U71iihTU
+ D9YvWoh4qwm89zWW5NOU6/98msx77k1NWj+zJTnnLNzweLpxJ1b0MzsCTCtag327/ukz
+ ULT0v7+eMN6YBc1cVsx4HxugSJ94DKOxPmaVv2WfyVRDwDh0TbztJ3cf6O+B5xFDXrID RQ== 
+Received: from nalasppmta03.qualcomm.com (Global_NAT1.qualcomm.com [129.46.96.20])
+        by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 3j52pjg913-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Tue, 23 Aug 2022 17:47:11 +0000
+Received: from nalasex01a.na.qualcomm.com (nalasex01a.na.qualcomm.com [10.47.209.196])
+        by NALASPPMTA03.qualcomm.com (8.17.1.5/8.17.1.5) with ESMTPS id 27NHlAwd008891
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Tue, 23 Aug 2022 17:47:10 GMT
+Received: from [10.111.161.24] (10.80.80.8) by nalasex01a.na.qualcomm.com
+ (10.47.209.196) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.29; Tue, 23 Aug
+ 2022 10:47:07 -0700
+Message-ID: <c8a2f675-4d69-58f7-a603-5e810f0077fe@quicinc.com>
+Date:   Tue, 23 Aug 2022 10:47:02 -0700
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Scanned-By: MIMEDefang 2.85 on 10.11.54.7
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.6.2
+Subject: Re: [PATCH] drm/msm/dp: Silence inconsistent indent warning
+Content-Language: en-US
+To:     Stephen Boyd <swboyd@chromium.org>,
+        Rob Clark <robdclark@gmail.com>,
+        Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
+        Sean Paul <sean@poorly.run>
+CC:     <linux-kernel@vger.kernel.org>, <patches@lists.linux.dev>,
+        <linux-arm-msm@vger.kernel.org>, <dri-devel@lists.freedesktop.org>,
+        <freedreno@lists.freedesktop.org>,
+        Kuogee Hsieh <quic_khsieh@quicinc.com>,
+        kernel test robot <lkp@intel.com>
+References: <20220823024356.783318-1-swboyd@chromium.org>
+From:   Abhinav Kumar <quic_abhinavk@quicinc.com>
+In-Reply-To: <20220823024356.783318-1-swboyd@chromium.org>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.80.80.8]
+X-ClientProxiedBy: nasanex01a.na.qualcomm.com (10.52.223.231) To
+ nalasex01a.na.qualcomm.com (10.47.209.196)
+X-QCInternal: smtphost
+X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=5800 signatures=585085
+X-Proofpoint-ORIG-GUID: HuEEDLdcL0mdPNiLnLBtwirenx7MxWA9
+X-Proofpoint-GUID: HuEEDLdcL0mdPNiLnLBtwirenx7MxWA9
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.895,Hydra:6.0.517,FMLib:17.11.122.1
+ definitions=2022-08-23_07,2022-08-22_02,2022-06-22_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 clxscore=1015
+ priorityscore=1501 mlxscore=0 lowpriorityscore=0 bulkscore=0 phishscore=0
+ suspectscore=0 adultscore=0 spamscore=0 malwarescore=0 mlxlogscore=999
+ impostorscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2207270000 definitions=main-2208230069
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This patch shold not be merged - dtbs files are not stored in the
-kernel tree. We just provide this file so the code can be tested.
+Hi Stephen
 
-This overlay is suitable for testing the driver, it can be compiled with
-dtc and put in the /boot/overlays/ folder then specified in config.txt
-by putting the lines:
+On 8/22/2022 7:43 PM, Stephen Boyd wrote:
+> Build robots complain
+> 
+>   smatch warnings:
+>   drivers/gpu/drm/msm/dp/dp_link.c:969 dp_link_process_link_status_update() warn: inconsistent indenting
+> 
+> Fix it.
+> 
+> Cc: Kuogee Hsieh <quic_khsieh@quicinc.com>
+> Fixes: ea530388e64b ("drm/msm/dp: skip checking LINK_STATUS_UPDATED bit")
 
-dtoverlay=		#suppress loading of default overlay for HAT
-dtoverlay=sensehat	#load custom overlay
+This patch itself LGTM. But when I was looking at the fixes commit, I 
+noticed one more formatting issue.
 
-at the beginning before any other lines in config.txt
+There seems to be an extra space character in this part.
 
-Co-developed-by: Joel Savitz <jsavitz@redhat.com>
-Signed-off-by: Joel Savitz <jsavitz@redhat.com>
-Signed-off-by: Charles Mirabile <cmirabil@redhat.com>
----
- sensehat.dtbs | 52 +++++++++++++++++++++++++++++++++++++++++++++++++++
- 1 file changed, 52 insertions(+)
- create mode 100644 sensehat.dtbs
+diff --git a/drivers/gpu/drm/msm/dp/dp_link.c 
+b/drivers/gpu/drm/msm/dp/dp_link.c
+index 49d7fad36fc4..be986da78c4a 100644
+--- a/drivers/gpu/drm/msm/dp/dp_link.c
++++ b/drivers/gpu/drm/msm/dp/dp_link.c
+@@ -773,7 +773,8 @@ static int 
+dp_link_process_link_training_request(struct dp_link_private *link)
+                         link->request.test_lane_count);
 
-diff --git a/sensehat.dtbs b/sensehat.dtbs
-new file mode 100644
-index 000000000000..9e5a6d9229b1
---- /dev/null
-+++ b/sensehat.dtbs
-@@ -0,0 +1,52 @@
-+/dts-v1/;
-+/plugin/;
-+
-+/ {
-+	compatible = "brcm,bcm2835";
-+};
-+
-+&i2c1 {
-+	#address-cells = <0x01>;
-+	#size-cells = <0x00>;
-+	status = "okay";
-+
-+	sensehat@46 {
-+		compatible = "raspberrypi,sensehat";
-+		reg = <0x46>;
-+		interrupt-parent = <&gpio>;
-+		status = "okay";
-+		display {
-+			compatible = "raspberrypi,sensehat-display";
-+			status = "okay";
-+		};
-+		joystick {
-+			compatible = "raspberrypi,sensehat-joystick";
-+			interrupts = <23 1>;
-+			status = "okay";
-+		};
-+	};
-+
-+	lsm9ds1-magn@1c {
-+		compatible = "st,lsm9ds1-magn";
-+		reg = <0x1c>;
-+		status = "okay";
-+	};
-+
-+	lsm9ds1-accel@6a {
-+		compatible = "st,lsm9ds1-accel";
-+		reg = <0x6a>;
-+		status = "okay";
-+	};
-+
-+	lps25h-press@5c {
-+		compatible = "st,lps25h-press";
-+		reg = <0x5c>;
-+		status = "okay";
-+	};
-+
-+	hts221-humid@5f {
-+		compatible = "st,hts221-humid\0st,hts221";
-+		reg = <0x5f>;
-+		status = "okay";
-+	};
-+};
--- 
-2.31.1
+         link->dp_link.link_params.num_lanes = 
+link->request.test_lane_count;
+-       link->dp_link.link_params.rate = link->request.test_link_rate;
++       link->dp_link.link_params.rate =
++               drm_dp_bw_code_to_link_rate(link->request.test_link_rate);
 
+         return 0;
+
+Since we are fixing up this commit, can you please fix this too?
+
+Thanks
+
+Abhinav
+> Reported-by: kernel test robot <lkp@intel.com>
+> Signed-off-by: Stephen Boyd <swboyd@chromium.org>
+> ---
+>   drivers/gpu/drm/msm/dp/dp_link.c | 3 +--
+>   1 file changed, 1 insertion(+), 2 deletions(-)
+> 
+> diff --git a/drivers/gpu/drm/msm/dp/dp_link.c b/drivers/gpu/drm/msm/dp/dp_link.c
+> index 36f0af02749f..1620110806cf 100644
+> --- a/drivers/gpu/drm/msm/dp/dp_link.c
+> +++ b/drivers/gpu/drm/msm/dp/dp_link.c
+> @@ -965,8 +965,7 @@ static int dp_link_process_link_status_update(struct dp_link_private *link)
+>   	if (channel_eq_done && clock_recovery_done)
+>   		return -EINVAL;
+>   
+> -
+> -       return 0;
+> +	return 0;
+>   }
+>   
+>   /**
+> 
+> base-commit: 568035b01cfb107af8d2e4bd2fb9aea22cf5b868
