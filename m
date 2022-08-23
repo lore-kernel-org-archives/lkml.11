@@ -2,172 +2,112 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 003DDC32772
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 19:30:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EE560C32772
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 19:31:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231592AbiHWTaM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 15:30:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51642 "EHLO
+        id S231857AbiHWTaZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 23 Aug 2022 15:30:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46316 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231877AbiHWT3y (ORCPT
+        with ESMTP id S230014AbiHWTaE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 15:29:54 -0400
-Received: from mout.gmx.net (mout.gmx.net [212.227.15.19])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 417FF396;
-        Tue, 23 Aug 2022 11:18:32 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gmx.net;
-        s=badeba3b8450; t=1661278671;
-        bh=MqkG7FvKa/Y0ge/2gjNlCceo9f+qY9FbpVc/If9+cqU=;
-        h=X-UI-Sender-Class:From:To:Cc:Subject:Date;
-        b=IXS6s4MD5CojzSwSz1ijJfmLhypeTsudNj/8ESO3fIsCf3BSQf41prxMoq6nyH5cG
-         MWJymrSSzFx7M4QpgNzfrTkTZZNfYfIWW3BkMhR6GpW7ONJPegcCRcggGz6/BxI7wY
-         hEbjwAWx/0EzB34H0ljsFPfbpsX8mxoH6EsnxOGQ=
-X-UI-Sender-Class: 01bb95c1-4bf8-414a-932a-4f6e2808ef9c
-Received: from esprimo-mx.users.agdsn.de ([141.30.226.129]) by mail.gmx.net
- (mrgmx005 [212.227.17.190]) with ESMTPSA (Nemesis) id
- 1MEV3I-1ogVz30y1C-00FzL9; Tue, 23 Aug 2022 20:17:51 +0200
-From:   Armin Wolf <W_Armin@gmx.de>
-To:     jdelvare@suse.com, linux@roeck-us.net
-Cc:     linux-hwmon@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH] hwmon: (gpio-fan) Fix array out of bounds access
-Date:   Tue, 23 Aug 2022 20:17:42 +0200
-Message-Id: <20220823181742.5793-1-W_Armin@gmx.de>
-X-Mailer: git-send-email 2.30.2
+        Tue, 23 Aug 2022 15:30:04 -0400
+Received: from bee.birch.relay.mailchannels.net (bee.birch.relay.mailchannels.net [23.83.209.14])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2F0ACD25C3
+        for <linux-kernel@vger.kernel.org>; Tue, 23 Aug 2022 11:18:39 -0700 (PDT)
+X-Sender-Id: dreamhost|x-authsender|dave@stgolabs.net
+Received: from relay.mailchannels.net (localhost [127.0.0.1])
+        by relay.mailchannels.net (Postfix) with ESMTP id 071B4820E73;
+        Tue, 23 Aug 2022 18:18:18 +0000 (UTC)
+Received: from pdx1-sub0-mail-a212.dreamhost.com (unknown [127.0.0.6])
+        (Authenticated sender: dreamhost)
+        by relay.mailchannels.net (Postfix) with ESMTPA id 6D448821C18;
+        Tue, 23 Aug 2022 18:18:17 +0000 (UTC)
+ARC-Seal: i=1; s=arc-2022; d=mailchannels.net; t=1661278697; a=rsa-sha256;
+        cv=none;
+        b=3OQOquQh0Q8RB88NCf+qNQO3S/B9pWZFQCCRYLNKOJoZ/yHCnjcCvYQBVPjH1QVAaPU8OE
+        T8ZkQDignUb9tI1HGgWBwQgVDiBGkcXeEIhHRS62BGdVd3Uv3B5uKsdvDJpOL84urlF+4R
+        rLZ6sm6GR8Kr18/5urs7xXqVy565pOktvkvEtXMBsXOfao4X3C1hRnLLkchf+ZrEt4q4Gm
+        qiaOqCMjqBqZmOWmvrLUqrC9fm9GXICX81dGthSbF/PE0+PX+EiFljW4OyfHJAyHsB0FHf
+        T4nqfNap5i2OLs9lKbP3LQjIX+rWyDOYBiIhpCCVzwBbriAkYZD9jXMN6juB0Q==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=mailchannels.net;
+        s=arc-2022; t=1661278697;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references:dkim-signature;
+        bh=BoFTfa6Pmpocvq1dOP3/e5ti6Vn5XMkAjsi+9n9j/UQ=;
+        b=ByHFOErcDJgQqsw19rbViJvVwQOlgV820SJ0aoyeTu0h9ke1vXgMGurX5byF4g8fc/dcs0
+        OIH6pxrw2SHl8bvuH6p7YVzkYem6PpBP6EVuTrXimeDtG13owzyPS1z84/q+DpDG8VV1jm
+        g9apbsP7Sv6Q8y4siccvuSCRTkMAGt/aJPg/GaSsPgOfmIB8gjlNOzHMAsxkFKULRkFE0U
+        dR5GXuSffWodFI3qMNm3vqy3+B3qU/kFiuZXQ0gETvfLDgE63DjJskIOdJne6cksjHzsrw
+        6Y0lpcqNjtH5ru2QbNzkegXK3LV8XnnDOUi7v3Wjc0/+VXTJ+pS06To+ichmJA==
+ARC-Authentication-Results: i=1;
+        rspamd-76867cc9c5-87nb9;
+        auth=pass smtp.auth=dreamhost smtp.mailfrom=dave@stgolabs.net
+X-Sender-Id: dreamhost|x-authsender|dave@stgolabs.net
+X-MC-Relay: Neutral
+X-MailChannels-SenderId: dreamhost|x-authsender|dave@stgolabs.net
+X-MailChannels-Auth-Id: dreamhost
+X-Cold-Dime: 288e4e58333a2f8c_1661278697719_300024312
+X-MC-Loop-Signature: 1661278697719:1880717708
+X-MC-Ingress-Time: 1661278697719
+Received: from pdx1-sub0-mail-a212.dreamhost.com (pop.dreamhost.com
+ [64.90.62.162])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384)
+        by 100.119.194.202 (trex/6.7.1);
+        Tue, 23 Aug 2022 18:18:17 +0000
+Received: from offworld (unknown [104.36.31.106])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-256) server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        (No client certificate requested)
+        (Authenticated sender: dave@stgolabs.net)
+        by pdx1-sub0-mail-a212.dreamhost.com (Postfix) with ESMTPSA id 4MByCD4pCVz1PX;
+        Tue, 23 Aug 2022 11:18:16 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=stgolabs.net;
+        s=dreamhost; t=1661278697;
+        bh=BoFTfa6Pmpocvq1dOP3/e5ti6Vn5XMkAjsi+9n9j/UQ=;
+        h=Date:From:To:Cc:Subject:Content-Type;
+        b=qa3XvDz82ZnJnUPfrl0i3TXqyyyK2VCs8mXsJlNo0jWPe9xSPvMYyrhV1g5uuPOuE
+         76zEVM4h04kNFUy+AR+pMXo3SKTVRLZosTz9x7so9AWL8oY+gGoTI9BMjpuBRAFaSY
+         oi89pGx8YXTQ0ZryKdUZFsrq3EwdUORiYzk6I1OsALwRsvLfz+LKhSd8Hw4jVaaSyB
+         LpjWsb2IfY+e3SBefm/yrXwJkpv4myEhGJatMYwXF2WujmrSsLtxlXTyS1sa5qz7Hx
+         W3yuP9OQrfb94aUh7i3qp9Wz6KgD7P0gCbpPqT2Ko/L1Tuj9CCSJV9as3ZXHBVtf67
+         7Q+cLcLGYq1dg==
+Date:   Tue, 23 Aug 2022 11:00:09 -0700
+From:   Davidlohr Bueso <dave@stgolabs.net>
+To:     Liam Howlett <liam.howlett@oracle.com>
+Cc:     "maple-tree@lists.infradead.org" <maple-tree@lists.infradead.org>,
+        "linux-mm@kvack.org" <linux-mm@kvack.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        "Matthew Wilcox (Oracle)" <willy@infradead.org>
+Subject: Re: [PATCH v13 39/70] um: remove vma linked list walk
+Message-ID: <20220823180009.3l2vbcenndiyhuf5@offworld>
+Mail-Followup-To: Liam Howlett <liam.howlett@oracle.com>,
+        "maple-tree@lists.infradead.org" <maple-tree@lists.infradead.org>,
+        "linux-mm@kvack.org" <linux-mm@kvack.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        "Matthew Wilcox (Oracle)" <willy@infradead.org>
+References: <20220822150128.1562046-1-Liam.Howlett@oracle.com>
+ <20220822150128.1562046-40-Liam.Howlett@oracle.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: quoted-printable
-X-Provags-ID: V03:K1:8PfkXy7Cie+0s0eZmsqd0RHmUKSw58VqNqm7ATz5/dKg8btZZo+
- nxxNOgRXH6X6GAgVvG2l//PmlE0lYnbhc/Lsi2l8sV9K0zxO4x6OKHJ6wg88eQCkIyArzLI
- JS/EA2aUfZqxpqVIjcmLO3Xa9cI5g9TfXdDEGYn3LmTox0Qcu1II/zxPUg+5qPSGmXYqTwh
- AWRhf4CC/+QIg+pJfeZ3Q==
-X-UI-Out-Filterresults: notjunk:1;V03:K0:/KCB1qO42BY=:VL4iQAlD8Ta8nbZcWU5SAX
- RG2rqqG+nGmqZpEpysrmhMw7ifi3Xy2pzmZ+xkXzFEAhoTcfwZ+3nmc+DPhnxXLWGCbnVk3ar
- zW8beX/8D36FWmd9Z5tu+rA+ld1uUU99SUBO8vV5NTLbXTXir5nT4rip7RF6IF1jzvpFdgfAd
- itCscWPdLwjoL5n/M/0UWSUzNkBvFWs7XUt/PHtNgYgBCgFE74H8uazYQ1VIQlE7QVIdLecyQ
- wS45aYFfHduQQPmR0FytSwfOxUTfXfDkU/aAD4S7/V7GLH/68yEw0Uc+ZwWQZfr/Ebf4jGj56
- hJIZfJU67w3zAUUx2FZnUVmnY47CJ+ED58sOYSTA/zLyXPbtmpmaZm1v9NzrXzsxgHAO+x+ZJ
- MA2d35Lp3kiRldLcHavJOVGq/Zaiv8xhX1laVentc6mDcSYLpeXLhGSYEKtZkHbAJhroRf0PQ
- 1Mps2rk1jpSkcwVWsAdH4/C+WaWc4dMp8aOBkihr+wCRXyrKxowKaeKkjZYBdb9+sbrgU4Pvu
- xw+kGSYamj5Gszq/R5lHeDlZKKXJ7T5eAAmPr8C++PvPo2nR/hrPMoTWdEPfSpjwehVaYIuA/
- HbSsRfSGeVuc+0VlzHcOt5KvMIfo+SXwseD/hdR4cr5tYXaT4qlsuEsHVqtqY3vWzqL/wcpdI
- qQn8k2+ajKNB4wrhtM42/cUIvjLTbqhtxVoEa1E40tZbLwmbZr0stDNGtvdDVC+4X1eaFNFat
- QrXaFQh510aewR+SKvFhCDFwL84ghgShh/UaJ/G2wv+MUCQ1pHpGP8UWXxfG+zgTf/UmSURpe
- TH6CSt9cSUB3RzmPaAPmMWgwVeYOH8m16eqxB4BSzZ61s4eE0QHVkRG5sxF4YZmpx5M4WRjcp
- dHhASgXvBDHrO+9e1feODOF1YgIGwhsUiONVdkjgGSkL6SlF37kL7J6dT0zXFcSs42d/8bdIb
- jo5j86akwMKbCT8iGmMsLdAA4+Exf8xFG+SrrwLpSrQRymFcLOKYPWMNDf0PfaTGL49DLFplS
- RtJdPhSEl9xbakI6R+rPj0Wc+vdcNlDLiH+i8TIXHOZ+R9PP/PVjj50ExfYcnTdbT/122EKwG
- BgqODEKyd8/VUilvwcrVSzaudCMTdYf4itNmOpC4mwou1MP1itN1H2ThA==
+Content-Type: text/plain; charset=us-ascii; format=flowed
+Content-Disposition: inline
+In-Reply-To: <20220822150128.1562046-40-Liam.Howlett@oracle.com>
+User-Agent: NeoMutt/20220429
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-When set_fan_speed() is called with speed_index being
-greater than num_speed or less than 0, an array out of bounds
-access occurs. This can be exploited by setting the state of
-the thermal cooling device to arbitrary values, causing for example
-a kernel oops when unavailable memory is accessed this way.
+On Mon, 22 Aug 2022, Liam Howlett wrote:
 
-Example kernel oops:
-[  807.987276] Unable to handle kernel paging request at virtual address f=
-fffff80d0588064
-[  807.987369] Mem abort info:
-[  807.987398]   ESR =3D 0x96000005
-[  807.987428]   EC =3D 0x25: DABT (current EL), IL =3D 32 bits
-[  807.987477]   SET =3D 0, FnV =3D 0
-[  807.987507]   EA =3D 0, S1PTW =3D 0
-[  807.987536]   FSC =3D 0x05: level 1 translation fault
-[  807.987570] Data abort info:
-[  807.987763]   ISV =3D 0, ISS =3D 0x00000005
-[  807.987801]   CM =3D 0, WnR =3D 0
-[  807.987832] swapper pgtable: 4k pages, 39-bit VAs, pgdp=3D0000000001165=
-000
-[  807.987872] [ffffff80d0588064] pgd=3D0000000000000000, p4d=3D0000000000=
-000000, pud=3D0000000000000000
-[  807.987961] Internal error: Oops: 96000005 [#1] PREEMPT SMP
-[  807.987992] Modules linked in: cmac algif_hash aes_arm64 algif_skcipher=
- af_alg bnep hci_uart btbcm bluetooth ecdh_generic ecc 8021q garp stp llc =
-snd_soc_hdmi_codec brcmfmac vc4 brcmutil cec drm_kms_helper snd_soc_core c=
-fg80211 snd_compress bcm2835_codec(C) snd_pcm_dmaengine syscopyarea bcm283=
-5_isp(C) bcm2835_v4l2(C) sysfillrect v4l2_mem2mem bcm2835_mmal_vchiq(C) ra=
-spberrypi_hwmon sysimgblt videobuf2_dma_contig videobuf2_vmalloc fb_sys_fo=
-ps videobuf2_memops rfkill videobuf2_v4l2 videobuf2_common i2c_bcm2835 snd=
-_bcm2835(C) videodev snd_pcm snd_timer snd mc vc_sm_cma(C) gpio_fan uio_pd=
-rv_genirq uio drm fuse drm_panel_orientation_quirks backlight ip_tables x_=
-tables ipv6
-[  807.988508] CPU: 0 PID: 1321 Comm: bash Tainted: G         C        5.1=
-5.56-v8+ #1575
-[  807.988548] Hardware name: Raspberry Pi 3 Model B Rev 1.2 (DT)
-[  807.988574] pstate: 20000005 (nzCv daif -PAN -UAO -TCO -DIT -SSBS BTYPE=
-=3D--)
-[  807.988608] pc : set_fan_speed.part.5+0x34/0x80 [gpio_fan]
-[  807.988654] lr : gpio_fan_set_cur_state+0x34/0x50 [gpio_fan]
-[  807.988691] sp : ffffffc008cf3bd0
-[  807.988710] x29: ffffffc008cf3bd0 x28: ffffff80019edac0 x27: 0000000000=
-000000
-[  807.988762] x26: 0000000000000000 x25: 0000000000000000 x24: ffffff8007=
-47c920
-[  807.988787] x23: 000000000000000a x22: ffffff800369f000 x21: 0000000019=
-99997c
-[  807.988854] x20: ffffff800369f2e8 x19: ffffff8002ae8080 x18: 0000000000=
-000000
-[  807.988877] x17: 0000000000000000 x16: 0000000000000000 x15: 000000559e=
-271b70
-[  807.988938] x14: 0000000000000000 x13: 0000000000000000 x12: 0000000000=
-000000
-[  807.988960] x11: 0000000000000000 x10: ffffffc008cf3c20 x9 : ffffffcfb6=
-0c741c
-[  807.989018] x8 : 000000000000000a x7 : 00000000ffffffc9 x6 : 0000000000=
-000009
-[  807.989040] x5 : 000000000000002a x4 : 0000000000000000 x3 : ffffff8003=
-69f2e8
-[  807.989062] x2 : 000000000000e780 x1 : 0000000000000001 x0 : ffffff80d0=
-588060
-[  807.989084] Call trace:
-[  807.989091]  set_fan_speed.part.5+0x34/0x80 [gpio_fan]
-[  807.989113]  gpio_fan_set_cur_state+0x34/0x50 [gpio_fan]
-[  807.989199]  cur_state_store+0x84/0xd0
-[  807.989221]  dev_attr_store+0x20/0x38
-[  807.989262]  sysfs_kf_write+0x4c/0x60
-[  807.989282]  kernfs_fop_write_iter+0x130/0x1c0
-[  807.989298]  new_sync_write+0x10c/0x190
-[  807.989315]  vfs_write+0x254/0x378
-[  807.989362]  ksys_write+0x70/0xf8
-[  807.989379]  __arm64_sys_write+0x24/0x30
-[  807.989424]  invoke_syscall+0x4c/0x110
-[  807.989442]  el0_svc_common.constprop.3+0xfc/0x120
-[  807.989458]  do_el0_svc+0x2c/0x90
-[  807.989473]  el0_svc+0x24/0x60
-[  807.989544]  el0t_64_sync_handler+0x90/0xb8
-[  807.989558]  el0t_64_sync+0x1a0/0x1a4
-[  807.989579] Code: b9403801 f9402800 7100003f 8b35cc00 (b9400416)
-[  807.989627] ---[ end trace 8ded4c918658445b ]---
+>From: "Matthew Wilcox (Oracle)" <willy@infradead.org>
+>
+>Use the VMA iterator instead.
+>
+>Signed-off-by: Matthew Wilcox (Oracle) <willy@infradead.org>
+>Signed-off-by: Liam R. Howlett <Liam.Howlett@Oracle.com>
 
-Fix this by checking speed_index and return if it is out of bounds.
-
-Tested on a Raspberry Pi 3.
-
-Fixes: d6fe1360f42e ("hwmon: add generic GPIO fan driver")
-Signed-off-by: Armin Wolf <W_Armin@gmx.de>
-=2D--
- drivers/hwmon/gpio-fan.c | 3 +++
- 1 file changed, 3 insertions(+)
-
-diff --git a/drivers/hwmon/gpio-fan.c b/drivers/hwmon/gpio-fan.c
-index befe989ca7b9..1d6facee44e0 100644
-=2D-- a/drivers/hwmon/gpio-fan.c
-+++ b/drivers/hwmon/gpio-fan.c
-@@ -128,6 +128,9 @@ static int __get_fan_ctrl(struct gpio_fan_data *fan_da=
-ta)
- /* Must be called with fan_data->lock held, except during initialization.=
- */
- static void set_fan_speed(struct gpio_fan_data *fan_data, int speed_index=
-)
- {
-+	if (speed_index >=3D fan_data->num_speed || speed_index < 0)
-+		return;
-+
- 	if (fan_data->speed_index =3D=3D speed_index)
- 		return;
-
-=2D-
-2.30.2
-
+Reviewed-by: Davidlohr Bueso <dave@stgolabs.net>
