@@ -2,147 +2,134 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 18A3AC32789
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 19:34:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 50C92C32772
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 19:34:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230025AbiHWTeG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 15:34:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55380 "EHLO
+        id S230451AbiHWTeh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 23 Aug 2022 15:34:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56624 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232371AbiHWTdp (ORCPT
+        with ESMTP id S232410AbiHWTeQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 15:33:45 -0400
-Received: from mail-io1-xd34.google.com (mail-io1-xd34.google.com [IPv6:2607:f8b0:4864:20::d34])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A7D89183B4
-        for <linux-kernel@vger.kernel.org>; Tue, 23 Aug 2022 11:27:11 -0700 (PDT)
-Received: by mail-io1-xd34.google.com with SMTP id q81so3976974iod.9
-        for <linux-kernel@vger.kernel.org>; Tue, 23 Aug 2022 11:27:11 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=kernel-dk.20210112.gappssmtp.com; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc;
-        bh=vvZ+6YfB5+idgplC7NLCltNGeNPQRdHTy8X0/J0b+yc=;
-        b=pHjgdw6272fXR3NG+RiZ95v7+6n04PYMc+MwIn8sgcAYtUAh9zX0lbUZ7iCnhP6L1e
-         qrXvnFMS1OtkD1OYVHm1LD/BS950cgO+xZLMf36t5wIBi1e327llTZxEDAgVwLSACG2N
-         oyzuiUv8jTmjTKFFZjgqZEYMFD7FMlOdrnMs4mBHr5/mACp9eDI3Q8lbn66F1iQSVJgU
-         9YpYyvRpDekh7c9/ZhPbr1GZCcNatdryuo+qYnzHzi2qgtUvgxMXD5qGHWQXXkDxq4Vp
-         iArbFzBsb0nN1kRkBewpkau02EDpR0JwMYjINpoclePIzuAvlTdJlCkrnyDUaLojIK0u
-         6YVA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc;
-        bh=vvZ+6YfB5+idgplC7NLCltNGeNPQRdHTy8X0/J0b+yc=;
-        b=k3K565fwymODdEe9xabYfUV+meOTV9Z1Uughz58+FJ9tb40ZWfkf3XqYnrqvkjsMtV
-         +ywjpX33qZOkh2MSE/hYftKJILkncp6vL7ycGtAsfkfpjAuurPCMuLzXIPqT56bnRK4T
-         nCQcvkCxtflutfNUFmWtZuoY/X3XSgK54h1BrLeq4tiWCMNLC9pIpkBmmRRUlIz80CTf
-         viOfxAsWC4Yres7VJfHNUQgrwJWi+kqhd4Pe1C1LUdRMLkct0KVcRBtgU9G0QnmQEeJL
-         a4AUrN/JGmKtZSiLKce9Nhm/yl7UqW3Puy4xGWbWs7wZ5plkPUZ4c0Hbm6QAVUZR8XC+
-         q9dA==
-X-Gm-Message-State: ACgBeo1U2qP9lSfb34btekD1ZNbqAlCnYWxgp0wsmJrJPEa0DGSx5Tyl
-        6zpRklq3XhbCg/n4ZhbGa2xkTWIqDt91zg==
-X-Google-Smtp-Source: AA6agR7DhNYSUdgGr9FzRwaAGYMr4Mklx8mLgtzrQtfHwuCPCqcTZF5/fCEZN9V7KRH3whMk6Q3jvA==
-X-Received: by 2002:a05:6638:430d:b0:343:69f4:2016 with SMTP id bt13-20020a056638430d00b0034369f42016mr12779119jab.90.1661279230964;
-        Tue, 23 Aug 2022 11:27:10 -0700 (PDT)
-Received: from [192.168.1.94] ([207.135.234.126])
-        by smtp.gmail.com with ESMTPSA id cn11-20020a0566383a0b00b003482878ec91sm5971640jab.16.2022.08.23.11.27.07
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 23 Aug 2022 11:27:08 -0700 (PDT)
-Message-ID: <654cb5de-a563-b812-a435-d9b435cee334@kernel.dk>
-Date:   Tue, 23 Aug 2022 12:27:06 -0600
+        Tue, 23 Aug 2022 15:34:16 -0400
+Received: from jabberwock.ucw.cz (jabberwock.ucw.cz [46.255.230.98])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AA648138795;
+        Tue, 23 Aug 2022 11:28:00 -0700 (PDT)
+Received: by jabberwock.ucw.cz (Postfix, from userid 1017)
+        id 7FBBC1C0005; Tue, 23 Aug 2022 20:27:57 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ucw.cz; s=gen1;
+        t=1661279277;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=yklnFjZgD43o0mSrBqTG5ikYsePHVB8TnZYM1NtY/cU=;
+        b=hb2AzFqYFN9CE4hRDZadbcwtd03KTFOkWhK1CwPavMIu123Qk2cgbwtz3QtillQFoSDNVl
+        UXav3t14w6KFqvL31aIkKwRdzaRadPwL6GWlsqMwZctRYFuGgjEE9Qi2zWorAFGtCL1WNI
+        nbnYOVCtDrEtEje3YW5vgzbDDX+jqKY=
+Date:   Tue, 23 Aug 2022 20:27:57 +0200
+From:   Pavel Machek <pavel@ucw.cz>
+To:     Rob Herring <robh@kernel.org>
+Cc:     Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Bartosz Golaszewski <brgl@bgdev.pl>,
+        Vincent Knecht <vincent.knecht@mailoo.org>,
+        Nikita Travkin <nikitos.tr@gmail.com>,
+        Jacek Anaszewski <jacek.anaszewski@gmail.com>,
+        Yi Xin <Yixin.zhu@intel.com>,
+        Mallikarjuna reddy <mallikarjunax.reddy@intel.com>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Matti Vaittinen <matti.vaittinen@fi.rohmeurope.com>,
+        - NeilBrown <neilb@suse.de>,
+        Bartosz Golaszewski <bgolaszewski@baylibre.com>,
+        linux-leds@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] dt-bindings: leds: Add missing
+ (unevaluated|additional)Properties on child nodes
+Message-ID: <20220823182756.GA13402@duo.ucw.cz>
+References: <20220823145649.3118479-13-robh@kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux aarch64; rv:102.0) Gecko/20100101
- Thunderbird/102.1.2
-Subject: Re: [PATCH 2/2] coredump: Allow coredumps to pipes to work with
- io_uring
-Content-Language: en-US
-To:     "Eric W. Biederman" <ebiederm@xmission.com>,
-        Olivier Langlois <olivier@trillion01.com>
-Cc:     Pavel Begunkov <asml.silence@gmail.com>,
-        linux-kernel@vger.kernel.org, linux-fsdevel@vger.kernel.org,
-        io-uring@vger.kernel.org, Alexander Viro <viro@zeniv.linux.org.uk>,
-        Oleg Nesterov <oleg@redhat.com>,
-        Linus Torvalds <torvalds@linux-foundation.org>
-References: <192c9697e379bf084636a8213108be6c3b948d0b.camel@trillion01.com>
- <9692dbb420eef43a9775f425cb8f6f33c9ba2db9.camel@trillion01.com>
- <87h7i694ij.fsf_-_@disp2133> <1b519092-2ebf-3800-306d-c354c24a9ad1@gmail.com>
- <b3e43e07c68696b83a5bf25664a3fa912ba747e2.camel@trillion01.com>
- <13250a8d-1a59-4b7b-92e4-1231d73cbdda@gmail.com>
- <878rw9u6fb.fsf@email.froward.int.ebiederm.org>
- <303f7772-eb31-5beb-2bd0-4278566591b0@gmail.com>
- <87ilsg13yz.fsf@email.froward.int.ebiederm.org>
- <8218f1a245d054c940e25142fd00a5f17238d078.camel@trillion01.com>
- <a29a1649-5e50-4221-9f44-66a35fbdff80@kernel.dk>
- <87y1wnrap0.fsf_-_@email.froward.int.ebiederm.org>
- <87mtd3rals.fsf_-_@email.froward.int.ebiederm.org>
- <61abfb5a517e0ee253b0dc7ba9cd32ebd558bcb0.camel@trillion01.com>
- <bb423622f97826f483100a1a7f20ce10a9090158.camel@trillion01.com>
- <875yiisttu.fsf@email.froward.int.ebiederm.org>
-From:   Jens Axboe <axboe@kernel.dk>
-In-Reply-To: <875yiisttu.fsf@email.froward.int.ebiederm.org>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Type: multipart/signed; micalg=pgp-sha1;
+        protocol="application/pgp-signature"; boundary="4Ckj6UjgE2iN1+kY"
+Content-Disposition: inline
+In-Reply-To: <20220823145649.3118479-13-robh@kernel.org>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 8/23/22 12:22 PM, Eric W. Biederman wrote:
-> Olivier Langlois <olivier@trillion01.com> writes:
-> 
->> On Mon, 2022-08-22 at 17:16 -0400, Olivier Langlois wrote:
->>>
->>> What is stopping the task calling do_coredump() to be interrupted and
->>> call task_work_add() from the interrupt context?
->>>
->>> This is precisely what I was experiencing last summer when I did work
->>> on this issue.
->>>
->>> My understanding of how async I/O works with io_uring is that the
->>> task
->>> is added to a wait queue without being put to sleep and when the
->>> io_uring callback is called from the interrupt context,
->>> task_work_add()
->>> is called so that the next time io_uring syscall is invoked, pending
->>> work is processed to complete the I/O.
->>>
->>> So if:
->>>
->>> 1. io_uring request is initiated AND the task is in a wait queue
->>> 2. do_coredump() is called before the I/O is completed
->>>
->>> IMHO, this is how you end up having task_work_add() called while the
->>> coredump is generated.
->>>
->> I forgot to add that I have experienced the issue with TCP/IP I/O.
->>
->> I suspect that with a TCP socket, the race condition window is much
->> larger than if it was disk I/O and this might make it easier to
->> reproduce the issue this way...
-> 
-> I was under the apparently mistaken impression that the io_uring
-> task_work_add only comes from the io_uring userspace helper threads.
-> Those are definitely suppressed by my change.
-> 
-> Do you have any idea in the code where io_uring code is being called in
-> an interrupt context?  I would really like to trace that code path so I
-> have a better grasp on what is happening.
-> 
-> If task_work_add is being called from interrupt context then something
-> additional from what I have proposed certainly needs to be done.
 
-task_work may come from the helper threads, but generally it does not.
-One example would be doing a read from a socket. There's no data there,
-poll is armed to trigger a retry. When we get the poll notification that
-there's now data to be read, then we kick that off with task_work. Since
-it's from the poll handler, it can trigger from interrupt context. See
-the path from io_uring/poll.c:io_poll_wake() -> __io_poll_execute() ->
-io_req_task_work_add() -> task_work_add().
+--4Ckj6UjgE2iN1+kY
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-It can also happen for regular IRQ based reads from regular files, where
-the completion is actually done via task_work added from the potentially
-IRQ based completion path.
+Hi!
 
--- 
-Jens Axboe
+> In order to ensure only documented properties are present, node schemas
+> must have unevaluatedProperties or additionalProperties set to false
+> (typically).
+>
+> Signed-off-by: Rob Herring <robh@kernel.org>
+
+Patch does way more than that:
+
+Can we get some explanation why that's correct?
+
+Best regards,
+								Pavel
+
+> index f8d7963c3a13..8b3b3bf1eaf2 100644
+> --- a/Documentation/devicetree/bindings/leds/leds-lgm.yaml
+> +++ b/Documentation/devicetree/bindings/leds/leds-lgm.yaml
+> @@ -56,7 +56,8 @@ properties:
+> =20
+>      patternProperties:
+>        "^led@[0-2]$":
+> -        type: object
+> +        $ref: common.yaml#
+> +        unevaluatedProperties: false
+> =20
+>          properties:
+>            reg:
+> @@ -64,6 +65,9 @@ properties:
+>              minimum: 0
+>              maximum: 2
+> =20
+> +          led-gpios:
+> +            maxItems: 1
+> +
+>            intel,sso-hw-trigger:
+>              type: boolean
+>              description: This property indicates Hardware driven/control=
+ LED.
+> @@ -118,14 +122,14 @@ examples:
+>            reg =3D <0>;
+>            function =3D "gphy";
+>            color =3D <LED_COLOR_ID_GREEN>;
+> -          led-gpio =3D <&ssogpio 0 0>;
+> +          led-gpios =3D <&ssogpio 0 0>;
+>          };
+> =20
+>          led@2 {
+>            reg =3D <2>;
+>            function =3D LED_FUNCTION_POWER;
+>            color =3D <LED_COLOR_ID_GREEN>;
+> -          led-gpio =3D <&ssogpio 23 0>;
+> +          led-gpios =3D <&ssogpio 23 0>;
+>          };
+>        };
+>      };
+
+--=20
+People of Russia, stop Putin before his war on Ukraine escalates.
+
+--4Ckj6UjgE2iN1+kY
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iF0EABECAB0WIQRPfPO7r0eAhk010v0w5/Bqldv68gUCYwUcLAAKCRAw5/Bqldv6
+8ky9AJ9P4Ex4545/zifOiwMeA2XQFpMf8ACfZljZ6R8cY/VTkyid1n336KObjaQ=
+=zYWp
+-----END PGP SIGNATURE-----
+
+--4Ckj6UjgE2iN1+kY--
