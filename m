@@ -2,170 +2,64 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DB491C28D13
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 00:47:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 44001C28D13
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 00:49:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239187AbiHWArK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 22 Aug 2022 20:47:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45784 "EHLO
+        id S232057AbiHWAtI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 22 Aug 2022 20:49:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46828 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239162AbiHWAqx (ORCPT
+        with ESMTP id S238920AbiHWAsi (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 22 Aug 2022 20:46:53 -0400
-Received: from mail-pg1-x54a.google.com (mail-pg1-x54a.google.com [IPv6:2607:f8b0:4864:20::54a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3C30F4CA3C
-        for <linux-kernel@vger.kernel.org>; Mon, 22 Aug 2022 17:46:51 -0700 (PDT)
-Received: by mail-pg1-x54a.google.com with SMTP id a33-20020a630b61000000b00429d91cc649so5376253pgl.8
-        for <linux-kernel@vger.kernel.org>; Mon, 22 Aug 2022 17:46:51 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=cc:to:from:subject:references:mime-version:message-id:in-reply-to
-         :date:from:to:cc;
-        bh=5niTR1/vKfTFRgtx85YXkvJ6CCfCYM2aDePdp0OgEpE=;
-        b=G8TGuUcHSEHIGStRwECqzrlZj0Y0NjCpx35ggoYoz2hySK3lBHVk/kHKixSi+zm9uf
-         MMELcNyl/ILyCYybMJq3NgCRXdRooTSjLTqNE95ShBUqpEYWDlVGs9X6/eOvD2uHKBnc
-         1eOI6YdZW4CxnGDRVcfeukqj4Xq9UqrleMaIH6cnwLzBFm7Qf6vybqxxIvdJhNGOz+8C
-         ihIqjvUkmeFHqLEqwJwD6UUnIrpd44ZFrMCykfwoRHmerknP9Og/MaOQQe6IQxIqTCT6
-         M1HQPImVz1VcOhPzbblEqC4V49TpD0sAlHRGMGN/Ld5paJbwvTceb1Scd7ZEwI7OxFFk
-         7weg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:from:subject:references:mime-version:message-id:in-reply-to
-         :date:x-gm-message-state:from:to:cc;
-        bh=5niTR1/vKfTFRgtx85YXkvJ6CCfCYM2aDePdp0OgEpE=;
-        b=cA+nZTC4eSy7Ud6TeI5/2C6OgY0OLx2qMNIsB4AuIpXIjq5pYaarov9i2/bBjWqzIX
-         KqkKiPBpH1oKIIrW4GmNd5l5aBZfIS/oWHDQtYUxJM/t3I5DrJtScdDQP1krLs2lZqqy
-         CZVJ1Wfmsguf4J38SO0cFmV9kSgOAe+G5o3uD/Y0FNwIWuxlWaaewhX83C2MN6k0a8rC
-         q+CS078LNMOPyHicZQH4z+eEMhL6BDLjpkbuHvnB0lGyPDyN/1d6M0aYbLwKOvP3telY
-         jSG9dHkkyjSzrKlNtS154Zd6wkfsgjHCF7gBeyl6w1japWoOu/17uNQAS0zDLTfxA1y4
-         DKoQ==
-X-Gm-Message-State: ACgBeo1rj9R7GHDe5/9pUFkMWtRJgoGGYXca63exilFPaVDBVEUC3D6M
-        4cUdooASkdvCI7YFhCq/D08d/sAmjMxpaBhl
-X-Google-Smtp-Source: AA6agR6PQbVcJtZOJoJgA+LAQcdkbmjco2mwIDMXQcfDdzMC5Biz4IRKLTO6FeVPDLne3VNXdMZ+DrmLbqf2VuOI
-X-Received: from yosry.c.googlers.com ([fda3:e722:ac3:cc00:7f:e700:c0a8:2327])
- (user=yosryahmed job=sendgmr) by 2002:a17:90a:249:b0:1e0:a8a3:3c6c with SMTP
- id t9-20020a17090a024900b001e0a8a33c6cmr78092pje.0.1661215610056; Mon, 22 Aug
- 2022 17:46:50 -0700 (PDT)
-Date:   Tue, 23 Aug 2022 00:46:39 +0000
-In-Reply-To: <20220823004639.2387269-1-yosryahmed@google.com>
-Message-Id: <20220823004639.2387269-5-yosryahmed@google.com>
-Mime-Version: 1.0
-References: <20220823004639.2387269-1-yosryahmed@google.com>
-X-Mailer: git-send-email 2.37.1.595.g718a3a8f04-goog
-Subject: [PATCH v7 4/4] KVM: arm64/mmu: count KVM s2 mmu usage in secondary
- pagetable stats
-From:   Yosry Ahmed <yosryahmed@google.com>
-To:     Tejun Heo <tj@kernel.org>, Johannes Weiner <hannes@cmpxchg.org>,
-        Zefan Li <lizefan.x@bytedance.com>,
-        Marc Zyngier <maz@kernel.org>,
-        James Morse <james.morse@arm.com>,
-        Alexandru Elisei <alexandru.elisei@arm.com>,
-        Suzuki K Poulose <suzuki.poulose@arm.com>,
-        Paolo Bonzini <pbonzini@redhat.com>,
-        Sean Christopherson <seanjc@google.com>,
-        Vitaly Kuznetsov <vkuznets@redhat.com>,
-        Wanpeng Li <wanpengli@tencent.com>,
-        Jim Mattson <jmattson@google.com>,
-        Joerg Roedel <joro@8bytes.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Michal Hocko <mhocko@kernel.org>,
-        Roman Gushchin <roman.gushchin@linux.dev>,
-        Shakeel Butt <shakeelb@google.com>,
-        Oliver Upton <oupton@google.com>
-Cc:     Huang@google.com, Shaoqin <shaoqin.huang@intel.com>,
-        cgroups@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, kvmarm@lists.cs.columbia.edu,
-        kvm@vger.kernel.org, linux-mm@kvack.org,
-        Yosry Ahmed <yosryahmed@google.com>,
-        Oliver Upton <oliver.upton@linux.dev>
-Content-Type: text/plain; charset="UTF-8"
+        Mon, 22 Aug 2022 20:48:38 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 74B9013D20
+        for <linux-kernel@vger.kernel.org>; Mon, 22 Aug 2022 17:48:28 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 139856010D
+        for <linux-kernel@vger.kernel.org>; Tue, 23 Aug 2022 00:48:28 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B6845C433D6;
+        Tue, 23 Aug 2022 00:48:26 +0000 (UTC)
+Date:   Mon, 22 Aug 2022 20:48:25 -0400
+From:   Steven Rostedt <rostedt@goodmis.org>
+To:     LKML <linux-kernel@vger.kernel.org>
+Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
+        Frederic Weisbecker <fweisbec@gmail.com>,
+        "Paul E. McKenney" <paulmck@kernel.org>,
+        Peter Zijlstra <peterz@infradead.org>
+Subject: Re: [BUG v6.0-rc2] lockdep splat on ct_kernel_enter()
+Message-ID: <20220822204825.3e88b1a4@rorschach.local.home>
+In-Reply-To: <20220822183836.6b80976f@gandalf.local.home>
+References: <20220822164404.57952727@gandalf.local.home>
+        <20220822182850.32f91017@gandalf.local.home>
+        <20220822183836.6b80976f@gandalf.local.home>
+X-Mailer: Claws Mail 3.17.8 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
+MIME-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Count the pages used by KVM in arm64 for stage2 mmu in memory stats
-under secondary pagetable stats (e.g. "SecPageTables" in /proc/meminfo)
-to give better visibility into the memory consumption of KVM mmu in a
-similar way to how normal user page tables are accounted.
+On Mon, 22 Aug 2022 18:38:36 -0400
+Steven Rostedt <rostedt@goodmis.org> wrote:
 
-Signed-off-by: Yosry Ahmed <yosryahmed@google.com>
-Reviewed-by: Oliver Upton <oliver.upton@linux.dev>
-Reviewed-by: Marc Zyngier <maz@kernel.org>
----
- arch/arm64/kvm/mmu.c | 36 ++++++++++++++++++++++++++++++++----
- 1 file changed, 32 insertions(+), 4 deletions(-)
+> > The warning happens with the commit, and does not for the commit just
+> > before it is applied.
+> >   
+> 
+> Nevermind, I tested the wrong kernel (the grub reboot failed to boot to the
+> new kernel). But it did give me a different lockdep splat when I tested the
+> right kernel :-/
+> 
+> I'll investigate some more.
 
-diff --git a/arch/arm64/kvm/mmu.c b/arch/arm64/kvm/mmu.c
-index c9a13e487187..34c5feed9dc1 100644
---- a/arch/arm64/kvm/mmu.c
-+++ b/arch/arm64/kvm/mmu.c
-@@ -92,9 +92,13 @@ static bool kvm_is_device_pfn(unsigned long pfn)
- static void *stage2_memcache_zalloc_page(void *arg)
- {
- 	struct kvm_mmu_memory_cache *mc = arg;
-+	void *virt;
- 
- 	/* Allocated with __GFP_ZERO, so no need to zero */
--	return kvm_mmu_memory_cache_alloc(mc);
-+	virt = kvm_mmu_memory_cache_alloc(mc);
-+	if (virt)
-+		kvm_account_pgtable_pages(virt, 1);
-+	return virt;
- }
- 
- static void *kvm_host_zalloc_pages_exact(size_t size)
-@@ -102,6 +106,21 @@ static void *kvm_host_zalloc_pages_exact(size_t size)
- 	return alloc_pages_exact(size, GFP_KERNEL_ACCOUNT | __GFP_ZERO);
- }
- 
-+static void *kvm_s2_zalloc_pages_exact(size_t size)
-+{
-+	void *virt = kvm_host_zalloc_pages_exact(size);
-+
-+	if (virt)
-+		kvm_account_pgtable_pages(virt, (size >> PAGE_SHIFT));
-+	return virt;
-+}
-+
-+static void kvm_s2_free_pages_exact(void *virt, size_t size)
-+{
-+	kvm_account_pgtable_pages(virt, -(size >> PAGE_SHIFT));
-+	free_pages_exact(virt, size);
-+}
-+
- static void kvm_host_get_page(void *addr)
- {
- 	get_page(virt_to_page(addr));
-@@ -112,6 +131,15 @@ static void kvm_host_put_page(void *addr)
- 	put_page(virt_to_page(addr));
- }
- 
-+static void kvm_s2_put_page(void *addr)
-+{
-+	struct page *p = virt_to_page(addr);
-+	/* Dropping last refcount, the page will be freed */
-+	if (page_count(p) == 1)
-+		kvm_account_pgtable_pages(addr, -1);
-+	put_page(p);
-+}
-+
- static int kvm_host_page_count(void *addr)
- {
- 	return page_count(virt_to_page(addr));
-@@ -625,10 +653,10 @@ static int get_user_mapping_size(struct kvm *kvm, u64 addr)
- 
- static struct kvm_pgtable_mm_ops kvm_s2_mm_ops = {
- 	.zalloc_page		= stage2_memcache_zalloc_page,
--	.zalloc_pages_exact	= kvm_host_zalloc_pages_exact,
--	.free_pages_exact	= free_pages_exact,
-+	.zalloc_pages_exact	= kvm_s2_zalloc_pages_exact,
-+	.free_pages_exact	= kvm_s2_free_pages_exact,
- 	.get_page		= kvm_host_get_page,
--	.put_page		= kvm_host_put_page,
-+	.put_page		= kvm_s2_put_page,
- 	.page_count		= kvm_host_page_count,
- 	.phys_to_virt		= kvm_host_va,
- 	.virt_to_phys		= kvm_host_pa,
--- 
-2.37.1.595.g718a3a8f04-goog
+I was close. It was this commit:
 
+ed4ae5eff4b3 ("rcu: Apply noinstr to rcu_idle_enter() and rcu_idle_exit()")
+
+that causes the new error message.
+
+-- Steve
