@@ -2,183 +2,114 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 05C8CC32789
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 19:38:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BD430C32772
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 19:40:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232918AbiHWTif (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 15:38:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35130 "EHLO
+        id S233188AbiHWTkQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 23 Aug 2022 15:40:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34610 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232333AbiHWTiO (ORCPT
+        with ESMTP id S233294AbiHWTkA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 15:38:14 -0400
-Received: from mail-wr1-x432.google.com (mail-wr1-x432.google.com [IPv6:2a00:1450:4864:20::432])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 794A6A1D14
-        for <linux-kernel@vger.kernel.org>; Tue, 23 Aug 2022 11:34:55 -0700 (PDT)
-Received: by mail-wr1-x432.google.com with SMTP id a4so18049800wrq.1
-        for <linux-kernel@vger.kernel.org>; Tue, 23 Aug 2022 11:34:55 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc;
-        bh=ytTjReeUrxoqSJ5BeQcZY9hlOg/OMaAOjybK5mQFt+A=;
-        b=Qy0Q9yihjuVjrN8moQnwdH5FwctVgPQjWaTW/jYlmysDVAO2t2WrbWoTwEtoaJmO7I
-         AAM5wdq4aFShbRm62kuc1uNIEpKVeAh8SmEEQ3PfYvDK6AzvNnbwQRFbA1niDLjUyRze
-         ADnk1oooR/czh6+WUVhvHGqF+EgkFgwl4/94d7l7cNsTJVGDee5XPIEoP+gbdxTuTEpm
-         +ygSBBsYP68UagMawe/iKr+zmHc42vuPYH+ZHxXrIQcDzCeyYDSvwVvmYYC9SoBuVJHY
-         MyHlPxkg1fmYUo//Epo2iJbf2qX8wqeeva53IyjehMh2NsTVCLC5JUn3hpVlqas2Ed+U
-         iUDQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc;
-        bh=ytTjReeUrxoqSJ5BeQcZY9hlOg/OMaAOjybK5mQFt+A=;
-        b=Oy99ssoDp8dkc/RDPS+xJuDK5Vwvp8U99rvSE7rPU+pFbr6aHLlAjcaZmBEnYWPRBk
-         WO+CQtMNNJWhMrL5qFoRrKZTrVptb2xdFFEms4lwgvg/0Ua0HnYJKEdfMDJBKUGh9/qA
-         w2vs9izl/Kr1kp+K6VVTn8Y13Hp4m8guEUsSV3ylrnzhgAW9JxUodkhMm4t6poowbgKp
-         pHkz+Xn8HdzHR2I04j+8y4nOiKCRG6GdO2TkSAA2UTcSca02IC5aquIAnX784tYo4eNW
-         yprEF7b5rtF5vNlwGeSnxQAifI5hBt3rWm+pxziWyz6Tg6epnPVvXZtB84fGSChiY9vI
-         OfbQ==
-X-Gm-Message-State: ACgBeo3BdBLA94+Ck27BUGs60ed9DA4nH1VfUMn/N7qHOHM9kJJAXLOJ
-        L6rMJt7BKc4uw/RXZFkpeBcWkg==
-X-Google-Smtp-Source: AA6agR4/pmlxMMCthZI/YxG8smLnTaQ2KoVUL3TkzQsGdeXmEbVwBRWaPWlRjyZd2AB6jbN6KltESA==
-X-Received: by 2002:a5d:50c8:0:b0:225:5a57:bd84 with SMTP id f8-20020a5d50c8000000b002255a57bd84mr6104142wrt.131.1661279694038;
-        Tue, 23 Aug 2022 11:34:54 -0700 (PDT)
-Received: from myrica (cpc92880-cmbg19-2-0-cust679.5-4.cable.virginm.net. [82.27.106.168])
-        by smtp.gmail.com with ESMTPSA id g10-20020a05600c4eca00b003a31ca9dfb6sm27073664wmq.32.2022.08.23.11.34.53
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 23 Aug 2022 11:34:53 -0700 (PDT)
-Date:   Tue, 23 Aug 2022 19:34:50 +0100
-From:   Jean-Philippe Brucker <jean-philippe@linaro.org>
-To:     RAJESH DASARI <raajeshdasari@gmail.com>
-Cc:     Greg KH <gregkh@linuxfoundation.org>, stable@vger.kernel.org,
-        linux-kernel@vger.kernel.org, ovidiu.panait@windriver.com,
-        alexei.starovoitov@gmail.com, john.fastabend@gmail.com
-Subject: Re: bpf selftest failed in 5.4.210 kernel
-Message-ID: <YwUdyiK16jz1W5Aa@myrica>
-References: <CAPXMrf-C5XEUfOJd3GCtgtHOkc8DxDGbLxE5=GFmr+Py0zKxJA@mail.gmail.com>
- <Yv3M8wqMkLwlaHxa@kroah.com>
- <Yv3wZLuPEL9B/h83@myrica>
- <Yv9shQ3i49efHG6f@kroah.com>
- <CAPXMrf8VsNMKNLxFjdytk57mk_9ZC0avg1qCGLSMOZNirpdboQ@mail.gmail.com>
- <YwCGoRt6ifOC6mCD@kroah.com>
- <CAPXMrf-Gc-Mv1goZrk59GG96OLPxEUC-FKT6Dwo6TU6D7po=gw@mail.gmail.com>
- <YwR76AVTOsdXNpxh@kroah.com>
- <CAPXMrf-XUHnfQtnCMs6pbpM+2LUBLqE2c1Z-UwsM-mU1KdoOUA@mail.gmail.com>
+        Tue, 23 Aug 2022 15:40:00 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CFA6010E4FB;
+        Tue, 23 Aug 2022 11:37:16 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 75305B82052;
+        Tue, 23 Aug 2022 18:37:15 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id AD021C433B5;
+        Tue, 23 Aug 2022 18:37:13 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1661279834;
+        bh=DSpae36fXxOyMZuan/4/6KolNH5h3bBOf50hVyPoyAs=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=eMQXMPjH/uFtyjrmlaTeRitp32JIDRmrDKtD+gWYPOmd8u9GXVvdf6SSJfUSQZTsC
+         2azgkVjO/641BjhkUs3TUcLk6XuB08Irc4e/IqnGa7cddIwD5Gm7wnGP6oYWd2rH7s
+         xXHQeL2mgdaoxXZV0c7tEwusRk8uv3k5DhSFNEFRfAzLxoHV98JdJXZTLC85FV6h0f
+         znVsMaZDUFXZFUxO/USlT3w2H41XuYA3iNXonkL56LjfsU2QB6VWaAOqSiCvJCPvOs
+         mSmQBPj70rFNXIEkZqQh3eHM3/6vOlcB6UgeSxn2g9BBP/+KlWSOkdqX3ov53PVzT6
+         2YGCWxUB4LV0w==
+Date:   Tue, 23 Aug 2022 11:37:12 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Andrew Lunn <andrew@lunn.ch>
+Cc:     Frank <Frank.Sae@motor-comm.com>, Peter Geis <pgwipeout@gmail.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
+        "David S . Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Paolo Abeni <pabeni@redhat.com>, yinghong.zhang@motor-comm.com,
+        fei.zhang@motor-comm.com, hua.sun@motor-comm.com,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v4.4] net: phy: Add driver for Motorcomm yt8521 gigabit
+ ethernet phy
+Message-ID: <20220823113712.4c530516@kernel.org>
+In-Reply-To: <YwTguA0azox3j5vi@lunn.ch>
+References: <20220817112554.383-1-Frank.Sae@motor-comm.com>
+        <20220822202147.4be904de@kernel.org>
+        <YwTguA0azox3j5vi@lunn.ch>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAPXMrf-XUHnfQtnCMs6pbpM+2LUBLqE2c1Z-UwsM-mU1KdoOUA@mail.gmail.com>
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Aug 23, 2022 at 10:31:40AM +0300, RAJESH DASARI wrote:
-> Sorry for the confusion, results are indeed confusing to me .
-> If I try with git bisect I get
+On Tue, 23 Aug 2022 16:14:16 +0200 Andrew Lunn wrote:
+> On Mon, Aug 22, 2022 at 08:21:47PM -0700, Jakub Kicinski wrote:
+> > On Wed, 17 Aug 2022 19:25:54 +0800 Frank wrote:  
+> > > +static int yt8521_fiber_config_aneg(struct phy_device *phydev)
+> > > +{
+> > > +	int err, changed;
+> > > +	u16 adv;
+> > > +
+> > > +	if (phydev->autoneg != AUTONEG_ENABLE)
+> > > +		return yt8521_fiber_setup_forced(phydev);
+> > > +
+> > > +	err =  ytphy_modify_ext_with_lock(phydev, YTPHY_MISC_CONFIG_REG,
+> > > +					  YTPHY_MCR_FIBER_SPEED_MASK,
+> > > +					  YTPHY_MCR_FIBER_1000BX);
+> > > +	if (err < 0)
+> > > +		return err;
+> > > +
+> > > +	/* enable Fiber auto sensing */
+> > > +	err =  ytphy_modify_ext_with_lock(phydev, YT8521_LINK_TIMER_CFG2_REG,
+> > > +					  0, YT8521_LTCR_EN_AUTOSEN);
+> > > +	if (err < 0)
+> > > +		return err;
+> > > +
+> > > +	/* Setup fiber advertisement */
+> > > +	adv = ADVERTISE_1000XFULL | ADVERTISE_1000XPAUSE |
+> > > +	      ADVERTISE_1000XPSE_ASYM;  
+> > 
+> > Is it okay to ignore phydev->advertising and always set the same mask?  
 > 
-> git bisect bad
-> 9d6f67365d9cdb389fbdac2bb5b00e59e345930e is the first bad commit
-
-For me bisecting points to:
-
-(A)	7c1134c7da99 ("bpf: Verifer, adjust_scalar_min_max_vals to always call update_reg_bounds()")
-
-This changes the BPF verifier output and (as expected) breaks the
-test_align selftest. That's why in the same series [1] another patch fixed
-test_align. In v5.4.y, that patch is:
-
-(B)	6a9b3f0f3bad ("selftests/bpf: Fix test_align verifier log patterns")
-
-Unfortunately commit (B) addresses multiple verifier changes, not solely
-(A). My guess is those changes were in series [1] and haven't been
-backported to v5.4. So multiple solutions:
-
-* Partially revert (B), only keeping the changes needed by (A)
-* Revert (A) and (B)
-* Add the missing commits that (B) also addresses
-
-I don't know which, I suppose it depends on the intent behind backporting
-(A). Ovidiu?
-
-In any case 6098562ed9df ("selftests/bpf: Fix "dubious pointer arithmetic"
-test") can be reverted, I can send that once we figure out the rest.
-
-Thanks,
-Jean
-
-[1] https://lore.kernel.org/bpf/158507130343.15666.8018068546764556975.stgit@john-Precision-5820-Tower/
-
+> The user could of changed the pause settings, which are going to be
+> ignored here. Also, you should not assume the MAC can actually do
+> asymmetric pause, not all can. phydev->advertising will be set to only
+> include what the MAC can actually do.
 > 
-> If I  try to test myself with multiple test scenarios(I have mentioned
-> in  the previous mails) for the bad commits , I see that bad commits
-> are
-> bpf: Verifer, adjust_scalar_min_max_vals to always call update_reg_bounds()
-> selftests/bpf: Fix test_align verifier log patterns
-> selftests/bpf: Fix "dubious pointer arithmetic" test
+> The whole concept of having two line sides connected to one MAC and
+> seeing which gets link first is unsupported in Linux. In theory, you
+> want to be able to configure each line side differently. Maybe you
+> want autoneg on copper, but fixed on fibre, asymmetric pause with
+> fibre, but symmetric pause on copper, etc. Since there is only one
+> instance of phydev here, you don't have anywhere to store two sets of
+> configuration, nor any sort of kAPI to deal with two phydev structures
+> etc. So the user experience is not so great.
 > 
-> Thanks,
-> Rajesh Dasari.
+> With the Marvell Switches which also have this capability, i actually
+> ignore it, use the phy-mode it decide which should be used, either
+> copper or fibre, and leave the other powered off so it can never get
+> link. There is at least one Marvell PHY which does however support
+> first up wins, so this behaviour is not new. I just don't recommend
+> it.
 > 
-> On Tue, Aug 23, 2022 at 10:04 AM Greg KH <gregkh@linuxfoundation.org> wrote:
-> >
-> > On Mon, Aug 22, 2022 at 10:23:02PM +0300, RAJESH DASARI wrote:
-> > > Hi,
-> > >
-> > > Please find the test scenarios which I have tried.
-> > >
-> > > Test 1:
-> > >
-> > > Running system Kernel version (tag/commit) :  v5.4.210
-> > > Kernel source code checkout : v5.4.210
-> > > test_align test case execution status : Failure
-> > >
-> > > Test 2:
-> > >
-> > > Running system Kernel version (tag/commit) : v5.4.210
-> > > Kernel source code checkout : v5.4.209
-> > > test_align test case execution status : Failure
-> > >
-> > > Test 3:
-> > >
-> > > Running system Kernel version (tag/commit) : v5.4.209
-> > > Kernel source code checkout : v5.4.209
-> > > test_align test case execution status : Success
-> > >
-> > > Test 4:
-> > >
-> > > Running system Kernel version (tag/commit) : ACPI: APEI: Better fix to
-> > > avoid spamming the console with old error logs ( Kernel compiled at
-> > > this commit  and system is booted with this change)
-> > > Kernel source code checkout : v5.4.210 but reverted selftests/bpf: Fix
-> > > test_align verifier log patterns and selftests/bpf: Fix "dubious
-> > > pointer arithmetic" test. If I revert only the Fix "dubious pointer
-> > > arithmetic" test, the testcase still fails.
-> > > test_align test case execution status : Success
-> > >
-> > > Test 5:
-> > >
-> > > Running system Kernel version (tag/commit) :  v5.4.210 but reverted
-> > > commit (bpf: Verifer, adjust_scalar_min_max_vals to always call
-> > > update_reg_bounds() )
-> > > Kernel source code checkout : v5.4.210 but reverted selftests/bpf: Fix
-> > > test_align verifier log patterns and selftests/bpf: Fix "dubious
-> > > pointer arithmetic" test.
-> > > test_align test case execution status : Success
-> > >
-> > > Test 6 :
-> > >
-> > > Running system Kernel version (tag/commit) : bpf: Test_verifier, #70
-> > > error message updates for 32-bit right shift( Kernel compiled at this
-> > > commit  and system is booted with this change)
-> > > Kernel source code checkout : v5.4.209 or v5.4.210
-> > > test_align test case execution status : Failure
-> >
-> > I'm sorry, but I don't know what to do with this report at all.
-> >
-> > Is there some failure somewhere?  If you use 'git bisect' do you find
-> > the offending commit?
-> >
-> > confused,
-> >
-> > greg k-h
+> And it gets even more interesting when the SFP is actually copper. But
+> since the integration with phylink is missing in this driver, that is
+> not supported here.
+
+Interesting. Just to confirm - regardless of the two-sided design..
+-edness.. IIUC my question has merit and we need v5?
