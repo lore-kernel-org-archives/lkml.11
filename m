@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8040FC32792
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 11:58:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CDFE2C32772
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 11:58:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1359038AbiHWL6i (ORCPT
+        id S1352075AbiHWL6q (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 07:58:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34888 "EHLO
+        Tue, 23 Aug 2022 07:58:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41240 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1359162AbiHWL4S (ORCPT
+        with ESMTP id S1359165AbiHWL4T (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 07:56:18 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 79690C59EC;
-        Tue, 23 Aug 2022 02:33:56 -0700 (PDT)
+        Tue, 23 Aug 2022 07:56:19 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 75A517F137;
+        Tue, 23 Aug 2022 02:33:50 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 7E1CE612D6;
-        Tue, 23 Aug 2022 09:33:54 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 86E86C433D6;
-        Tue, 23 Aug 2022 09:33:53 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 6ED10B81C96;
+        Tue, 23 Aug 2022 09:33:45 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 88DD6C433D6;
+        Tue, 23 Aug 2022 09:33:43 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661247233;
-        bh=EkgEL8VNg3xEP7YC4/zdUsjn0OhSMPb/3b8UAiUZx84=;
+        s=korg; t=1661247224;
+        bh=+6ZVj8rS9bt8/c9w7zSAEorRgxhZ3R9z0vyvwcKjL+4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=jLqG6JqQh0Lvm9PlM2ztGRTvuAvI2HSxBxbUUKmCQGyPvlCbokOxE2lHFqjlpTdLH
-         GXVrx3Scx4ou0S/2RJKYFonqiDv3vOmG1imsv58bpjEIh+9H8clxslzcqnjrIxR0r8
-         57Q9KkAPvpsTrsZycvtpsANFKWoeT3umcCiybLs8=
+        b=T+ufdu/qT693P3Z3CMK+8hEGQBg3RZ4tXS/LfDlQzEJqnkvi2FnYuo8wYZo97eLrc
+         HM/VE0B/7ZLTG7RG84jJTB0W1Zvc8zicjMj32U2L7pJSLUvgBELDQjJkFvbz5vX2PU
+         0m3b/hHIyqbwtUofcTeD+/Nrvd5KwGxY2wfAXKTk=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Al Viro <viro@zeniv.linux.org.uk>,
-        Dinh Nguyen <dinguyen@kernel.org>
-Subject: [PATCH 5.4 330/389] nios2: dont leave NULLs in sys_call_table[]
-Date:   Tue, 23 Aug 2022 10:26:48 +0200
-Message-Id: <20220823080129.306100652@linuxfoundation.org>
+        stable@vger.kernel.org, Hans de Goede <hdegoede@redhat.com>,
+        Pascal Terjan <pterjan@google.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.4 356/389] vboxguest: Do not use devm for irq
+Date:   Tue, 23 Aug 2022 10:27:14 +0200
+Message-Id: <20220823080130.426292881@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220823080115.331990024@linuxfoundation.org>
 References: <20220823080115.331990024@linuxfoundation.org>
@@ -49,39 +50,81 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Al Viro <viro@zeniv.linux.org.uk>
+From: Pascal Terjan <pterjan@google.com>
 
-commit 45ec746c65097c25e77d24eae8fee0def5b6cc5d upstream.
+[ Upstream commit 6169525b76764acb81918aa387ac168fb9a55575 ]
 
-fill the gaps in there with sys_ni_syscall, as everyone does...
+When relying on devm it doesn't get freed early enough which causes the
+following warning when unloading the module:
 
-Fixes: 82ed08dd1b0e ("nios2: Exception handling")
-Signed-off-by: Al Viro <viro@zeniv.linux.org.uk>
-Signed-off-by: Dinh Nguyen <dinguyen@kernel.org>
+[249348.837181] remove_proc_entry: removing non-empty directory 'irq/20', leaking at least 'vboxguest'
+[249348.837219] WARNING: CPU: 0 PID: 6708 at fs/proc/generic.c:715 remove_proc_entry+0x119/0x140
+
+[249348.837379] Call Trace:
+[249348.837385]  unregister_irq_proc+0xbd/0xe0
+[249348.837392]  free_desc+0x23/0x60
+[249348.837396]  irq_free_descs+0x4a/0x70
+[249348.837401]  irq_domain_free_irqs+0x160/0x1a0
+[249348.837452]  mp_unmap_irq+0x5c/0x60
+[249348.837458]  acpi_unregister_gsi_ioapic+0x29/0x40
+[249348.837463]  acpi_unregister_gsi+0x17/0x30
+[249348.837467]  acpi_pci_irq_disable+0xbf/0xe0
+[249348.837473]  pcibios_disable_device+0x20/0x30
+[249348.837478]  pci_disable_device+0xef/0x120
+[249348.837482]  vbg_pci_remove+0x6c/0x70 [vboxguest]
+
+Reviewed-by: Hans de Goede <hdegoede@redhat.com>
+Signed-off-by: Pascal Terjan <pterjan@google.com>
+Link: https://lore.kernel.org/r/20220612133744.4030602-1-pterjan@google.com
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/nios2/kernel/entry.S         |    1 -
- arch/nios2/kernel/syscall_table.c |    1 +
- 2 files changed, 1 insertion(+), 1 deletion(-)
+ drivers/virt/vboxguest/vboxguest_linux.c | 9 ++++++---
+ 1 file changed, 6 insertions(+), 3 deletions(-)
 
---- a/arch/nios2/kernel/entry.S
-+++ b/arch/nios2/kernel/entry.S
-@@ -193,7 +193,6 @@ local_restart:
- 	movhi	r11, %hiadj(sys_call_table)
- 	add	r1, r1, r11
- 	ldw	r1, %lo(sys_call_table)(r1)
--	beq	r1, r0, ret_invsyscall
+diff --git a/drivers/virt/vboxguest/vboxguest_linux.c b/drivers/virt/vboxguest/vboxguest_linux.c
+index 32c2c52f7e84..484c2f09f2ea 100644
+--- a/drivers/virt/vboxguest/vboxguest_linux.c
++++ b/drivers/virt/vboxguest/vboxguest_linux.c
+@@ -361,8 +361,8 @@ static int vbg_pci_probe(struct pci_dev *pci, const struct pci_device_id *id)
+ 		goto err_vbg_core_exit;
+ 	}
  
- 	/* Check if we are being traced */
- 	GET_THREAD_INFO r11
---- a/arch/nios2/kernel/syscall_table.c
-+++ b/arch/nios2/kernel/syscall_table.c
-@@ -13,5 +13,6 @@
- #define __SYSCALL(nr, call) [nr] = (call),
+-	ret = devm_request_irq(dev, pci->irq, vbg_core_isr, IRQF_SHARED,
+-			       DEVICE_NAME, gdev);
++	ret = request_irq(pci->irq, vbg_core_isr, IRQF_SHARED, DEVICE_NAME,
++			  gdev);
+ 	if (ret) {
+ 		vbg_err("vboxguest: Error requesting irq: %d\n", ret);
+ 		goto err_vbg_core_exit;
+@@ -372,7 +372,7 @@ static int vbg_pci_probe(struct pci_dev *pci, const struct pci_device_id *id)
+ 	if (ret) {
+ 		vbg_err("vboxguest: Error misc_register %s failed: %d\n",
+ 			DEVICE_NAME, ret);
+-		goto err_vbg_core_exit;
++		goto err_free_irq;
+ 	}
  
- void *sys_call_table[__NR_syscalls] = {
-+	[0 ... __NR_syscalls-1] = sys_ni_syscall,
- #include <asm/unistd.h>
- };
+ 	ret = misc_register(&gdev->misc_device_user);
+@@ -408,6 +408,8 @@ static int vbg_pci_probe(struct pci_dev *pci, const struct pci_device_id *id)
+ 	misc_deregister(&gdev->misc_device_user);
+ err_unregister_misc_device:
+ 	misc_deregister(&gdev->misc_device);
++err_free_irq:
++	free_irq(pci->irq, gdev);
+ err_vbg_core_exit:
+ 	vbg_core_exit(gdev);
+ err_disable_pcidev:
+@@ -424,6 +426,7 @@ static void vbg_pci_remove(struct pci_dev *pci)
+ 	vbg_gdev = NULL;
+ 	mutex_unlock(&vbg_gdev_mutex);
+ 
++	free_irq(pci->irq, gdev);
+ 	device_remove_file(gdev->dev, &dev_attr_host_features);
+ 	device_remove_file(gdev->dev, &dev_attr_host_version);
+ 	misc_deregister(&gdev->misc_device_user);
+-- 
+2.35.1
+
 
 
