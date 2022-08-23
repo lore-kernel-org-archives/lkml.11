@@ -2,43 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 673D6C32772
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 09:07:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A6409C32772
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 09:07:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240553AbiHWJHb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 05:07:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52286 "EHLO
+        id S242352AbiHWJHf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 23 Aug 2022 05:07:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51796 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240382AbiHWJGN (ORCPT
+        with ESMTP id S241613AbiHWJGa (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 05:06:13 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C466185FE1;
-        Tue, 23 Aug 2022 01:29:54 -0700 (PDT)
+        Tue, 23 Aug 2022 05:06:30 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BACED85FB8;
+        Tue, 23 Aug 2022 01:29:50 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id B977FB81C58;
-        Tue, 23 Aug 2022 08:29:02 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0C82CC433D6;
-        Tue, 23 Aug 2022 08:29:00 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 088D161475;
+        Tue, 23 Aug 2022 08:28:31 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1059FC433C1;
+        Tue, 23 Aug 2022 08:28:29 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661243341;
-        bh=BkWQsObRD0qHdiFNBqOcDLLUMiSRZ6gAZkju3pfvCZU=;
+        s=korg; t=1661243310;
+        bh=RVt6G3W9mdbfkIy7nW8MAcnxPBPOKSh1h3YBa/FUnjU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=JIuSCHcy9xkaEOYAgYkhuHnDug6Wx8v/TTtki0OciE2vDkkRcVgwjUgoaXl7b+ED+
-         l8DStnsE1d1YbsretWzuD2AAi7XRDaYPY9itLP5qaNdSOpE/5nEVtLqXbqBOrCDSXn
-         FXcJTMj37Xq3oK8dMRn0dNYMG8I21KmY5lmZwDqo=
+        b=TuSHLBBDoAxUXEUGETPMTwTCEJrE9bn6lZlkPHRkqSbdAecO3sgGg2TMgXQ9u5N/g
+         RTOp50UXmeIMt2gCOD7pGdc2BeuOaoue6KqhzGNrvYYKGlY0+MFLc4peF7stMGn+Hw
+         +SNP4im8UJt/X37wrSqEeEcTK5OoFn2IxACiPYBQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Samuel Holland <samuel@sholland.org>,
-        Jernej Skrabec <jernej.skrabec@gmail.com>,
-        Maxime Ripard <maxime@cerno.tech>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.19 247/365] drm/sun4i: dsi: Prevent underflow when computing packet sizes
-Date:   Tue, 23 Aug 2022 10:02:28 +0200
-Message-Id: <20220823080128.539277076@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Vivien Didelot <vivien.didelot@savoirfairelinux.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Sergei Antonov <saproj@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        Jakub Kicinski <kuba@kernel.org>
+Subject: [PATCH 5.19 206/365] net: dsa: mv88e6060: prevent crash on an unused port
+Date:   Tue, 23 Aug 2022 10:01:47 +0200
+Message-Id: <20220823080126.818158646@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220823080118.128342613@linuxfoundation.org>
 References: <20220823080118.128342613@linuxfoundation.org>
@@ -50,79 +52,53 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Samuel Holland <samuel@sholland.org>
+From: Sergei Antonov <saproj@gmail.com>
 
-[ Upstream commit 82a1356a933d8443139f8886f11b63c974a09a67 ]
+commit 246bbf2f977ea36aaf41f5d24370fef433250728 upstream.
 
-Currently, the packet overhead is subtracted using unsigned arithmetic.
-With a short sync pulse, this could underflow and wrap around to near
-the maximal u16 value. Fix this by using signed subtraction. The call to
-max() will correctly handle any negative numbers that are produced.
+If the port isn't a CPU port nor a user port, 'cpu_dp'
+is a null pointer and a crash happened on dereferencing
+it in mv88e6060_setup_port():
 
-Apply the same fix to the other timings, even though those subtractions
-are less likely to underflow.
+[    9.575872] Unable to handle kernel NULL pointer dereference at virtual address 00000014
+...
+[    9.942216]  mv88e6060_setup from dsa_register_switch+0x814/0xe84
+[    9.948616]  dsa_register_switch from mdio_probe+0x2c/0x54
+[    9.954433]  mdio_probe from really_probe.part.0+0x98/0x2a0
+[    9.960375]  really_probe.part.0 from driver_probe_device+0x30/0x10c
+[    9.967029]  driver_probe_device from __device_attach_driver+0xb8/0x13c
+[    9.973946]  __device_attach_driver from bus_for_each_drv+0x90/0xe0
+[    9.980509]  bus_for_each_drv from __device_attach+0x110/0x184
+[    9.986632]  __device_attach from bus_probe_device+0x8c/0x94
+[    9.992577]  bus_probe_device from deferred_probe_work_func+0x78/0xa8
+[    9.999311]  deferred_probe_work_func from process_one_work+0x290/0x73c
+[   10.006292]  process_one_work from worker_thread+0x30/0x4b8
+[   10.012155]  worker_thread from kthread+0xd4/0x10c
+[   10.017238]  kthread from ret_from_fork+0x14/0x3c
 
-Fixes: 133add5b5ad4 ("drm/sun4i: Add Allwinner A31 MIPI-DSI controller support")
-Signed-off-by: Samuel Holland <samuel@sholland.org>
-Reviewed-by: Jernej Skrabec <jernej.skrabec@gmail.com>
-Signed-off-by: Maxime Ripard <maxime@cerno.tech>
-Link: https://lore.kernel.org/r/20220812031623.34057-1-samuel@sholland.org
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Fixes: 0abfd494deef ("net: dsa: use dedicated CPU port")
+CC: Vivien Didelot <vivien.didelot@savoirfairelinux.com>
+CC: Florian Fainelli <f.fainelli@gmail.com>
+Signed-off-by: Sergei Antonov <saproj@gmail.com>
+Signed-off-by: Vladimir Oltean <olteanv@gmail.com>
+Link: https://lore.kernel.org/r/20220811070939.1717146-1-saproj@gmail.com
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/gpu/drm/sun4i/sun6i_mipi_dsi.c | 10 +++++-----
- 1 file changed, 5 insertions(+), 5 deletions(-)
+ drivers/net/dsa/mv88e6060.c |    3 +++
+ 1 file changed, 3 insertions(+)
 
-diff --git a/drivers/gpu/drm/sun4i/sun6i_mipi_dsi.c b/drivers/gpu/drm/sun4i/sun6i_mipi_dsi.c
-index b4dfa166eccd..34234a144e87 100644
---- a/drivers/gpu/drm/sun4i/sun6i_mipi_dsi.c
-+++ b/drivers/gpu/drm/sun4i/sun6i_mipi_dsi.c
-@@ -531,7 +531,7 @@ static void sun6i_dsi_setup_timings(struct sun6i_dsi *dsi,
- 				    struct drm_display_mode *mode)
- {
- 	struct mipi_dsi_device *device = dsi->device;
--	unsigned int Bpp = mipi_dsi_pixel_format_to_bpp(device->format) / 8;
-+	int Bpp = mipi_dsi_pixel_format_to_bpp(device->format) / 8;
- 	u16 hbp = 0, hfp = 0, hsa = 0, hblk = 0, vblk = 0;
- 	u32 basic_ctl = 0;
- 	size_t bytes;
-@@ -555,7 +555,7 @@ static void sun6i_dsi_setup_timings(struct sun6i_dsi *dsi,
- 		 * (4 bytes). Its minimal size is therefore 10 bytes
- 		 */
- #define HSA_PACKET_OVERHEAD	10
--		hsa = max((unsigned int)HSA_PACKET_OVERHEAD,
-+		hsa = max(HSA_PACKET_OVERHEAD,
- 			  (mode->hsync_end - mode->hsync_start) * Bpp - HSA_PACKET_OVERHEAD);
+--- a/drivers/net/dsa/mv88e6060.c
++++ b/drivers/net/dsa/mv88e6060.c
+@@ -118,6 +118,9 @@ static int mv88e6060_setup_port(struct m
+ 	int addr = REG_PORT(p);
+ 	int ret;
  
- 		/*
-@@ -564,7 +564,7 @@ static void sun6i_dsi_setup_timings(struct sun6i_dsi *dsi,
- 		 * therefore 6 bytes
- 		 */
- #define HBP_PACKET_OVERHEAD	6
--		hbp = max((unsigned int)HBP_PACKET_OVERHEAD,
-+		hbp = max(HBP_PACKET_OVERHEAD,
- 			  (mode->htotal - mode->hsync_end) * Bpp - HBP_PACKET_OVERHEAD);
- 
- 		/*
-@@ -574,7 +574,7 @@ static void sun6i_dsi_setup_timings(struct sun6i_dsi *dsi,
- 		 * 16 bytes
- 		 */
- #define HFP_PACKET_OVERHEAD	16
--		hfp = max((unsigned int)HFP_PACKET_OVERHEAD,
-+		hfp = max(HFP_PACKET_OVERHEAD,
- 			  (mode->hsync_start - mode->hdisplay) * Bpp - HFP_PACKET_OVERHEAD);
- 
- 		/*
-@@ -583,7 +583,7 @@ static void sun6i_dsi_setup_timings(struct sun6i_dsi *dsi,
- 		 * bytes). Its minimal size is therefore 10 bytes.
- 		 */
- #define HBLK_PACKET_OVERHEAD	10
--		hblk = max((unsigned int)HBLK_PACKET_OVERHEAD,
-+		hblk = max(HBLK_PACKET_OVERHEAD,
- 			   (mode->htotal - (mode->hsync_end - mode->hsync_start)) * Bpp -
- 			   HBLK_PACKET_OVERHEAD);
- 
--- 
-2.35.1
-
++	if (dsa_is_unused_port(priv->ds, p))
++		return 0;
++
+ 	/* Do not force flow control, disable Ingress and Egress
+ 	 * Header tagging, disable VLAN tunneling, and set the port
+ 	 * state to Forwarding.  Additionally, if this is the CPU
 
 
