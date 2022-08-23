@@ -2,44 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 881AFC32774
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 10:48:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7440EC32774
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 10:48:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355964AbiHWKsf (ORCPT
+        id S1355986AbiHWKsr (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 06:48:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57486 "EHLO
+        Tue, 23 Aug 2022 06:48:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54430 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356340AbiHWKmA (ORCPT
+        with ESMTP id S1356406AbiHWKmK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 06:42:00 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 46CB8A927D;
-        Tue, 23 Aug 2022 02:09:28 -0700 (PDT)
+        Tue, 23 Aug 2022 06:42:10 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0B31C86043;
+        Tue, 23 Aug 2022 02:09:35 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 117B96153D;
-        Tue, 23 Aug 2022 09:09:14 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0E48FC433D6;
-        Tue, 23 Aug 2022 09:09:12 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 341B6B81C86;
+        Tue, 23 Aug 2022 09:09:33 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8D989C433C1;
+        Tue, 23 Aug 2022 09:09:31 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661245753;
-        bh=grUTRLlYxf0QguzYoFcDN2EGtAKUrN0epPX1iavpqto=;
+        s=korg; t=1661245772;
+        bh=ttLvW3MfLOd5HkB/xUpnfI6bCZM/YFhvYh+VBRclgbE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=embiuZEV0rNEI+t5Ua6o0BfTedwb3f61j6Gv71i6U3eU3ABO1L7w+hiR6t/xAg4+q
-         supAhXuY/EBHuNJ6f9V9/Ae9pEpF5JpgBq6Vl9XjdcqaoYkModdBdIR6Q7uaCfbBw+
-         IsYLY9KekN4EKur7QUqDcmA4JP2ktiJx/4BXXWmc=
+        b=ycas1gfIgfnrj2m6r3kOaVTths3vqe4YTewEhbduTZgYxRLwR5aIVI4wGszLUArww
+         mOC61upZpqqYlb1hmeIRohndTZ+74yRs2wcy+EKlY2DjNJSCGp92wypUvFTEbXRC6W
+         GeU8PtwgOyIj7VA0fQ2Tk8SJviKUAkeHC6P9Msjk=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Michael Ellerman <mpe@ellerman.id.au>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.19 171/287] powerpc/spufs: Fix refcount leak in spufs_init_isolated_loader
-Date:   Tue, 23 Aug 2022 10:25:40 +0200
-Message-Id: <20220823080106.526245435@linuxfoundation.org>
+        stable@vger.kernel.org, Guenter Roeck <linux@roeck-us.net>,
+        kernel test robot <lkp@intel.com>,
+        Alexander Lobakin <alexandr.lobakin@intel.com>,
+        Yury Norov <yury.norov@gmail.com>
+Subject: [PATCH 4.19 185/287] x86/olpc: fix logical not is only applied to the left hand side
+Date:   Tue, 23 Aug 2022 10:25:54 +0200
+Message-Id: <20220823080107.028915457@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220823080100.268827165@linuxfoundation.org>
 References: <20220823080100.268827165@linuxfoundation.org>
@@ -51,38 +51,49 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Miaoqian Lin <linmq006@gmail.com>
+From: Alexander Lobakin <alexandr.lobakin@intel.com>
 
-[ Upstream commit 6ac059dacffa8ab2f7798f20e4bd3333890c541c ]
+commit 3a2ba42cbd0b669ce3837ba400905f93dd06c79f upstream.
 
-of_find_node_by_path() returns remote device nodepointer with
-refcount incremented, we should use of_node_put() on it when done.
-Add missing of_node_put() to avoid refcount leak.
+The bitops compile-time optimization series revealed one more
+problem in olpc-xo1-sci.c:send_ebook_state(), resulted in GCC
+warnings:
 
-Fixes: 0afacde3df4c ("[POWERPC] spufs: allow isolated mode apps by starting the SPE loader")
-Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
-Acked-by: Arnd Bergmann <arnd@arndb.de>
-Signed-off-by: Michael Ellerman <mpe@ellerman.id.au>
-Link: https://lore.kernel.org/r/20220603121543.22884-1-linmq006@gmail.com
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+arch/x86/platform/olpc/olpc-xo1-sci.c: In function 'send_ebook_state':
+arch/x86/platform/olpc/olpc-xo1-sci.c:83:63: warning: logical not is only applied to the left hand side of comparison [-Wlogical-not-parentheses]
+   83 |         if (!!test_bit(SW_TABLET_MODE, ebook_switch_idev->sw) == state)
+      |                                                               ^~
+arch/x86/platform/olpc/olpc-xo1-sci.c:83:13: note: add parentheses around left hand side expression to silence this warning
+
+Despite this code working as intended, this redundant double
+negation of boolean value, together with comparing to `char`
+with no explicit conversion to bool, makes compilers think
+the author made some unintentional logical mistakes here.
+Make it the other way around and negate the char instead
+to silence the warnings.
+
+Fixes: d2aa37411b8e ("x86/olpc/xo1/sci: Produce wakeup events for buttons and switches")
+Cc: stable@vger.kernel.org # 3.5+
+Reported-by: Guenter Roeck <linux@roeck-us.net>
+Reported-by: kernel test robot <lkp@intel.com>
+Reviewed-and-tested-by: Guenter Roeck <linux@roeck-us.net>
+Signed-off-by: Alexander Lobakin <alexandr.lobakin@intel.com>
+Signed-off-by: Yury Norov <yury.norov@gmail.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/powerpc/platforms/cell/spufs/inode.c | 1 +
- 1 file changed, 1 insertion(+)
+ arch/x86/platform/olpc/olpc-xo1-sci.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/arch/powerpc/platforms/cell/spufs/inode.c b/arch/powerpc/platforms/cell/spufs/inode.c
-index db329d4bf1c3..8b664d9cfcd4 100644
---- a/arch/powerpc/platforms/cell/spufs/inode.c
-+++ b/arch/powerpc/platforms/cell/spufs/inode.c
-@@ -684,6 +684,7 @@ spufs_init_isolated_loader(void)
+--- a/arch/x86/platform/olpc/olpc-xo1-sci.c
++++ b/arch/x86/platform/olpc/olpc-xo1-sci.c
+@@ -85,7 +85,7 @@ static void send_ebook_state(void)
  		return;
+ 	}
  
- 	loader = of_get_property(dn, "loader", &size);
-+	of_node_put(dn);
- 	if (!loader)
- 		return;
+-	if (!!test_bit(SW_TABLET_MODE, ebook_switch_idev->sw) == state)
++	if (test_bit(SW_TABLET_MODE, ebook_switch_idev->sw) == !!state)
+ 		return; /* Nothing new to report. */
  
--- 
-2.35.1
-
+ 	input_report_switch(ebook_switch_idev, SW_TABLET_MODE, state);
 
 
