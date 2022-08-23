@@ -2,41 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B14FEC52D6C
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D0A42C52D79
 	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 10:57:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357090AbiHWK42 (ORCPT
+        id S1357138AbiHWK4g (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 06:56:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51830 "EHLO
+        Tue, 23 Aug 2022 06:56:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50116 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356967AbiHWKws (ORCPT
+        with ESMTP id S1357013AbiHWKww (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 06:52:48 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EC0F9ABD7F;
-        Tue, 23 Aug 2022 02:13:00 -0700 (PDT)
+        Tue, 23 Aug 2022 06:52:52 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7DB86ABF1E;
+        Tue, 23 Aug 2022 02:13:04 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 47F13B81C4E;
-        Tue, 23 Aug 2022 09:12:57 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7FBDBC43147;
-        Tue, 23 Aug 2022 09:12:55 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id B1BC66113E;
+        Tue, 23 Aug 2022 09:13:02 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A0EF7C433C1;
+        Tue, 23 Aug 2022 09:13:01 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661245976;
-        bh=awAHgUEQnZ1gGsL11AJTOnkNx1LipDESO0/Lx/zo/xc=;
+        s=korg; t=1661245982;
+        bh=8hgEPptPotcAEFQiDmgZ8x/yHxxyNyJ3aCUqRbrzYe0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=yLl/Vg9J1sh5E4AvL0zohC6VuQ/SAqtk/QHBucyIsqZqvvLyCsptlDbBzgZHogl1T
-         7HGN2pScJMvEynC8xS2zipTWI5+qC3Tdmy2JEwyFq/URBdGxLv5AHmZK/a7rkYVj3Z
-         ZdT9y8zkCREUbZ3n6L27mKNG+q4KDbVfl4J2PYaE=
+        b=ytihZ/N9wF0bVs3WJBc+aY5YMp3HJbuPjLbu8/kHd4Ay9JtQO7wt7BROG5sPkGzNA
+         BdH4KdU0QkMdMNXdK0IQbxdOANHwP8LYYpYF2p7Y249M7Qkz3d7R7GtBWKRv4eeKmY
+         RJyZsvagqdJfOVvAVs5EbYGG3cELFFRtuYmyHMzc=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Pablo Neira Ayuso <pablo@netfilter.org>
-Subject: [PATCH 4.19 250/287] netfilter: nf_tables: really skip inactive sets when allocating name
-Date:   Tue, 23 Aug 2022 10:26:59 +0200
-Message-Id: <20220823080109.605467738@linuxfoundation.org>
+        stable@vger.kernel.org, Alan Brady <alan.brady@intel.com>,
+        Mateusz Palczewski <mateusz.palczewski@intel.com>,
+        Tony Nguyen <anthony.l.nguyen@intel.com>,
+        Gurucharan <gurucharanx.g@intel.com>
+Subject: [PATCH 4.19 252/287] i40e: Fix to stop tx_timeout recovery if GLOBR fails
+Date:   Tue, 23 Aug 2022 10:27:01 +0200
+Message-Id: <20220823080109.695712144@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220823080100.268827165@linuxfoundation.org>
 References: <20220823080100.268827165@linuxfoundation.org>
@@ -48,30 +51,42 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Pablo Neira Ayuso <pablo@netfilter.org>
+From: Alan Brady <alan.brady@intel.com>
 
-commit 271c5ca826e0c3c53e0eb4032f8eaedea1ee391c upstream.
+commit 57c942bc3bef0970f0b21f8e0998e76a900ea80d upstream.
 
-While looping to build the bitmap of used anonymous set names, check the
-current set in the iteration, instead of the one that is being created.
+When a tx_timeout fires, the PF attempts to recover by incrementally
+resetting.  First we try a PFR, then CORER and finally a GLOBR.  If the
+GLOBR fails, then we keep hitting the tx_timeout and incrementing the
+recovery level and issuing dmesgs, which is both annoying to the user
+and accomplishes nothing.
 
-Fixes: 37a9cc525525 ("netfilter: nf_tables: add generation mask to sets")
-Signed-off-by: Pablo Neira Ayuso <pablo@netfilter.org>
+If the GLOBR fails, then we're pretty much totally hosed, and there's
+not much else we can do to recover, so this makes it such that we just
+kill the VSI and stop hitting the tx_timeout in such a case.
+
+Fixes: 41c445ff0f48 ("i40e: main driver core")
+Signed-off-by: Alan Brady <alan.brady@intel.com>
+Signed-off-by: Mateusz Palczewski <mateusz.palczewski@intel.com>
+Tested-by: Gurucharan <gurucharanx.g@intel.com> (A Contingent worker at Intel)
+Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- net/netfilter/nf_tables_api.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/net/ethernet/intel/i40e/i40e_main.c |    4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
 
---- a/net/netfilter/nf_tables_api.c
-+++ b/net/netfilter/nf_tables_api.c
-@@ -3098,7 +3098,7 @@ cont:
- 		list_for_each_entry(i, &ctx->table->sets, list) {
- 			int tmp;
+--- a/drivers/net/ethernet/intel/i40e/i40e_main.c
++++ b/drivers/net/ethernet/intel/i40e/i40e_main.c
+@@ -397,7 +397,9 @@ static void i40e_tx_timeout(struct net_d
+ 		set_bit(__I40E_GLOBAL_RESET_REQUESTED, pf->state);
+ 		break;
+ 	default:
+-		netdev_err(netdev, "tx_timeout recovery unsuccessful\n");
++		netdev_err(netdev, "tx_timeout recovery unsuccessful, device is in non-recoverable state.\n");
++		set_bit(__I40E_DOWN_REQUESTED, pf->state);
++		set_bit(__I40E_VSI_DOWN_REQUESTED, vsi->state);
+ 		break;
+ 	}
  
--			if (!nft_is_active_next(ctx->net, set))
-+			if (!nft_is_active_next(ctx->net, i))
- 				continue;
- 			if (!sscanf(i->name, name, &tmp))
- 				continue;
 
 
