@@ -2,43 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 74139C32796
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 11:17:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 65A0DC32772
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 11:17:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357342AbiHWLRS (ORCPT
+        id S1357337AbiHWLP3 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 07:17:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42116 "EHLO
+        Tue, 23 Aug 2022 07:15:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60054 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357323AbiHWLPG (ORCPT
+        with ESMTP id S242344AbiHWLOt (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 07:15:06 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2963EB95B0;
-        Tue, 23 Aug 2022 02:18:59 -0700 (PDT)
+        Tue, 23 Aug 2022 07:14:49 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3390A895D3;
+        Tue, 23 Aug 2022 02:18:49 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 134856121F;
-        Tue, 23 Aug 2022 09:18:52 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 19D82C433C1;
-        Tue, 23 Aug 2022 09:18:50 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id B60DF61224;
+        Tue, 23 Aug 2022 09:17:56 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BDCB1C433D6;
+        Tue, 23 Aug 2022 09:17:55 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661246331;
-        bh=KTHkY+Sh3wrd/pSN6IT6Z3SVXzYTUQtNiLHtrjVgw5Y=;
+        s=korg; t=1661246276;
+        bh=woNk0l7ptzPOFYbS0hhw1ok9LRQolQhlhYXUOEC+PK0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=oSQs4UPgude+a/dHmTWG+fBjFDqJMn1BBrSnxL/SC2G/6H48wBOFnLOqhk1v/nFsb
-         6dotiz/Iq1PQM6Gv/AWIiIUKBWoGB/5VPIecOY3LCMlAlx4j0EKYhPLMRpWEzYH+RL
-         v9zJyrJbQ/fewRULCxhbrLq5R2pg6GKYuKPBlIXE=
+        b=nfswBzAeyHFN0kuke8D+74oLXw3cjw5bimLts0Lsz+MQVv96rSoCZ0MeI8q2kd/D1
+         Kd7O33Gik73SPhBAmPN/gFv5tCFw3ZFuz6ULrZj/MJBlCJwF5utV7PYFGGvY6M268T
+         Q3IHue2IWC8+Xsds/zBAdKQg5D/nXiCQ6sIa9KBw=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
+        stable@vger.kernel.org, Bruno Goncalves <bgoncalv@redhat.com>,
+        Juri Lelli <juri.lelli@redhat.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Daniel Bristot de Oliveira <bristot@kernel.org>,
+        Valentin Schneider <vschneid@redhat.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 076/389] ARM: bcm: Fix refcount leak in bcm_kona_smc_init
-Date:   Tue, 23 Aug 2022 10:22:34 +0200
-Message-Id: <20220823080118.830754665@linuxfoundation.org>
+Subject: [PATCH 5.4 057/389] wait: Fix __wait_event_hrtimeout for RT/DL tasks
+Date:   Tue, 23 Aug 2022 10:22:15 +0200
+Message-Id: <20220823080117.986098453@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220823080115.331990024@linuxfoundation.org>
 References: <20220823080115.331990024@linuxfoundation.org>
@@ -50,34 +53,60 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Miaoqian Lin <linmq006@gmail.com>
+From: Juri Lelli <juri.lelli@redhat.com>
 
-[ Upstream commit cb23389a2458c2e4bfd6c86a513cbbe1c4d35e76 ]
+[ Upstream commit cceeeb6a6d02e7b9a74ddd27a3225013b34174aa ]
 
-of_find_matching_node() returns a node pointer with refcount
-incremented, we should use of_node_put() on it when not need anymore.
-Add missing of_node_put() to avoid refcount leak.
+Changes to hrtimer mode (potentially made by __hrtimer_init_sleeper on
+PREEMPT_RT) are not visible to hrtimer_start_range_ns, thus not
+accounted for by hrtimer_start_expires call paths. In particular,
+__wait_event_hrtimeout suffers from this problem as we have, for
+example:
 
-Fixes: b8eb35fd594a ("ARM: bcm281xx: Add L2 cache enable code")
-Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
-Signed-off-by: Florian Fainelli <f.fainelli@gmail.com>
+fs/aio.c::read_events
+  wait_event_interruptible_hrtimeout
+    __wait_event_hrtimeout
+      hrtimer_init_sleeper_on_stack <- this might "mode |= HRTIMER_MODE_HARD"
+                                       on RT if task runs at RT/DL priority
+        hrtimer_start_range_ns
+          WARN_ON_ONCE(!(mode & HRTIMER_MODE_HARD) ^ !timer->is_hard)
+          fires since the latter doesn't see the change of mode done by
+          init_sleeper
+
+Fix it by making __wait_event_hrtimeout call hrtimer_sleeper_start_expires,
+which is aware of the special RT/DL case, instead of hrtimer_start_range_ns.
+
+Reported-by: Bruno Goncalves <bgoncalv@redhat.com>
+Signed-off-by: Juri Lelli <juri.lelli@redhat.com>
+Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
+Reviewed-by: Daniel Bristot de Oliveira <bristot@kernel.org>
+Reviewed-by: Valentin Schneider <vschneid@redhat.com>
+Link: https://lore.kernel.org/r/20220627095051.42470-1-juri.lelli@redhat.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/arm/mach-bcm/bcm_kona_smc.c | 1 +
- 1 file changed, 1 insertion(+)
+ include/linux/wait.h | 9 +++++----
+ 1 file changed, 5 insertions(+), 4 deletions(-)
 
-diff --git a/arch/arm/mach-bcm/bcm_kona_smc.c b/arch/arm/mach-bcm/bcm_kona_smc.c
-index 541e850a736c..9175c130967e 100644
---- a/arch/arm/mach-bcm/bcm_kona_smc.c
-+++ b/arch/arm/mach-bcm/bcm_kona_smc.c
-@@ -54,6 +54,7 @@ int __init bcm_kona_smc_init(void)
- 		return -ENODEV;
- 
- 	prop_val = of_get_address(node, 0, &prop_size, NULL);
-+	of_node_put(node);
- 	if (!prop_val)
- 		return -EINVAL;
- 
+diff --git a/include/linux/wait.h b/include/linux/wait.h
+index 5903b1d17c92..7d04c1b588c7 100644
+--- a/include/linux/wait.h
++++ b/include/linux/wait.h
+@@ -529,10 +529,11 @@ do {										\
+ 										\
+ 	hrtimer_init_sleeper_on_stack(&__t, CLOCK_MONOTONIC,			\
+ 				      HRTIMER_MODE_REL);			\
+-	if ((timeout) != KTIME_MAX)						\
+-		hrtimer_start_range_ns(&__t.timer, timeout,			\
+-				       current->timer_slack_ns,			\
+-				       HRTIMER_MODE_REL);			\
++	if ((timeout) != KTIME_MAX) {						\
++		hrtimer_set_expires_range_ns(&__t.timer, timeout,		\
++					current->timer_slack_ns);		\
++		hrtimer_sleeper_start_expires(&__t, HRTIMER_MODE_REL);		\
++	}									\
+ 										\
+ 	__ret = ___wait_event(wq_head, condition, state, 0, 0,			\
+ 		if (!__t.task) {						\
 -- 
 2.35.1
 
