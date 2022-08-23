@@ -2,45 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F158FC49EC6
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9216AC48BEA
 	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 10:12:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353762AbiHWKME (ORCPT
+        id S1353567AbiHWKLj (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 06:12:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44576 "EHLO
+        Tue, 23 Aug 2022 06:11:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44412 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241953AbiHWKEj (ORCPT
+        with ESMTP id S1352164AbiHWKEh (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 06:04:39 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 00D976FA0B;
-        Tue, 23 Aug 2022 01:51:41 -0700 (PDT)
+        Tue, 23 Aug 2022 06:04:37 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2D2007CAAD;
+        Tue, 23 Aug 2022 01:51:29 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 0F9336123D;
-        Tue, 23 Aug 2022 08:51:41 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 02754C433D6;
-        Tue, 23 Aug 2022 08:51:39 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 8EE1C611DD;
+        Tue, 23 Aug 2022 08:51:28 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7F03DC433C1;
+        Tue, 23 Aug 2022 08:51:27 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661244700;
-        bh=eQhmZHt5ptWLP7a417Uv9ecOnBX2k8sOFo408lcOWcc=;
+        s=korg; t=1661244688;
+        bh=BUABD0JN2H9C+CJyiBeVXutjaNxEATd60hiao3q3jFw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=yHqV+wTBNT+HGKhqVm+lJF/8nOyxwA8ScEf0ldJjB8Wv3V3LD7LSIaHv8jnUlARi5
-         j9PPl9edrJDuPKU5h3VX07Fc7elS8YnG/CBjpuPZmRhL3PnEEbrdxZZbsxIybTDEWx
-         aDFJFAH2XwvIYqZamq8ESRN5KopgIglnBdFZbsoM=
+        b=B3mcezs3w3cqhOc/r/ECqabk8/qAuQUWkV8m3Duiqu3tSiLj8oARd2FHYY4M1H5LY
+         GsdMfWOZSiwCGZJur+8pKbTFWTeigT4L3XuZMmuTFQX3/NNZKaNwmyaLwUh277axWZ
+         sL7tIKGQQ8ZnecXpQ9tkKUHu8N09UThSXWtGK7As=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Mikulas Patocka <mpatocka@redhat.com>,
+        stable@vger.kernel.org, Xin Xiong <xiongx18@fudan.edu.cn>,
+        Xin Tan <tanxin.ctf@gmail.com>,
         "David S. Miller" <davem@davemloft.net>
-Subject: [PATCH 4.14 177/229] rds: add missing barrier to release_refill
-Date:   Tue, 23 Aug 2022 10:25:38 +0200
-Message-Id: <20220823080059.937304247@linuxfoundation.org>
+Subject: [PATCH 5.15 134/244] net/sunrpc: fix potential memory leaks in rpc_sysfs_xprt_state_change()
+Date:   Tue, 23 Aug 2022 10:24:53 +0200
+Message-Id: <20220823080103.611981010@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220823080053.202747790@linuxfoundation.org>
-References: <20220823080053.202747790@linuxfoundation.org>
+In-Reply-To: <20220823080059.091088642@linuxfoundation.org>
+References: <20220823080059.091088642@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -49,33 +50,43 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Mikulas Patocka <mpatocka@redhat.com>
+From: Xin Xiong <xiongx18@fudan.edu.cn>
 
-commit 9f414eb409daf4f778f011cf8266d36896bb930b upstream.
+commit bfc48f1b0505ffcb03a6d749139b7577d6b81ae0 upstream.
 
-The functions clear_bit and set_bit do not imply a memory barrier, thus it
-may be possible that the waitqueue_active function (which does not take
-any locks) is moved before clear_bit and it could miss a wakeup event.
+The issue happens on some error handling paths. When the function
+fails to grab the object `xprt`, it simply returns 0, forgetting to
+decrease the reference count of another object `xps`, which is
+increased by rpc_sysfs_xprt_kobj_get_xprt_switch(), causing refcount
+leaks. Also, the function forgets to check whether `xps` is valid
+before using it, which may result in NULL-dereferencing issues.
 
-Fix this bug by adding a memory barrier after clear_bit.
+Fix it by adding proper error handling code when either `xprt` or
+`xps` is NULL.
 
-Signed-off-by: Mikulas Patocka <mpatocka@redhat.com>
-Cc: stable@vger.kernel.org
+Fixes: 5b7eb78486cd ("SUNRPC: take a xprt offline using sysfs")
+Signed-off-by: Xin Xiong <xiongx18@fudan.edu.cn>
+Signed-off-by: Xin Tan <tanxin.ctf@gmail.com>
 Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- net/rds/ib_recv.c |    1 +
- 1 file changed, 1 insertion(+)
+ net/sunrpc/sysfs.c |    6 ++++--
+ 1 file changed, 4 insertions(+), 2 deletions(-)
 
---- a/net/rds/ib_recv.c
-+++ b/net/rds/ib_recv.c
-@@ -362,6 +362,7 @@ static int acquire_refill(struct rds_con
- static void release_refill(struct rds_connection *conn)
- {
- 	clear_bit(RDS_RECV_REFILL, &conn->c_flags);
-+	smp_mb__after_atomic();
+--- a/net/sunrpc/sysfs.c
++++ b/net/sunrpc/sysfs.c
+@@ -282,8 +282,10 @@ static ssize_t rpc_sysfs_xprt_state_chan
+ 	int offline = 0, online = 0, remove = 0;
+ 	struct rpc_xprt_switch *xps = rpc_sysfs_xprt_kobj_get_xprt_switch(kobj);
  
- 	/* We don't use wait_on_bit()/wake_up_bit() because our waking is in a
- 	 * hot path and finding waiters is very rare.  We don't want to walk
+-	if (!xprt)
+-		return 0;
++	if (!xprt || !xps) {
++		count = 0;
++		goto out_put;
++	}
+ 
+ 	if (!strncmp(buf, "offline", 7))
+ 		offline = 1;
 
 
