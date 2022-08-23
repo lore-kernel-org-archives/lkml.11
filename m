@@ -2,44 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 531B1C32772
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 12:06:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id ACF6AC32774
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 12:06:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1359274AbiHWMFZ (ORCPT
+        id S1359314AbiHWMF2 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 08:05:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48218 "EHLO
+        Tue, 23 Aug 2022 08:05:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47520 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1359302AbiHWMBI (ORCPT
+        with ESMTP id S230168AbiHWMAS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 08:01:08 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 75D3C78596;
-        Tue, 23 Aug 2022 02:35:33 -0700 (PDT)
+        Tue, 23 Aug 2022 08:00:18 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 88BB4D7D2A;
+        Tue, 23 Aug 2022 02:35:03 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id BAEF760F85;
-        Tue, 23 Aug 2022 09:35:16 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C39A2C433C1;
-        Tue, 23 Aug 2022 09:35:15 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id B6A74B81C53;
+        Tue, 23 Aug 2022 09:34:17 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2203DC433C1;
+        Tue, 23 Aug 2022 09:34:15 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661247316;
-        bh=ou72801z8mN71VTlq2a6SZCJ4zfndl7r4LyeKMh+suU=;
+        s=korg; t=1661247256;
+        bh=g97XD/pgPbqJ4VwO4uV+VBUuGwCDEvgLc1WAUiTfTeI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=a+mDNN/8YEyTHXTVwR+qbWZ09mZHTHRq5vga6LCmos1vj95vRxiPc/vMTsRdAC9e7
-         ODLe4tABqr+AVHci7cmaD0gC+IlwIhQhNeR7qVy5i7gko6JsLuGFWdC5kJoEAlAgVB
-         pvSw3wJiftU1blYvJvVH6f7vyGz9Rf5yeyR+WSnM=
+        b=IPQBqip7GhQ4C+pj5FS7+zdqUNdcZgUoDCn7m7BZgO/K/2u6MfSfejMnDUW1KMwe6
+         pcQIov4RiRkDwJ01KbPIK4HMCrOX2fw9g+cOQYA/Y1QrMEIYpmOevDZQc1jiBTmFpG
+         bzWkFrODkFZ/hZtrFQOgx+Cf5u3ZyScd5sVm0XuQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Fedor Pchelkin <pchelkin@ispras.ru>,
-        Alexey Khoroshilov <khoroshilov@ispras.ru>,
-        Oleksij Rempel <o.rempel@pengutronix.de>,
-        Marc Kleine-Budde <mkl@pengutronix.de>
-Subject: [PATCH 5.4 386/389] can: j1939: j1939_sk_queue_activate_next_locked(): replace WARN_ON_ONCE with netdev_warn_once()
-Date:   Tue, 23 Aug 2022 10:27:44 +0200
-Message-Id: <20220823080131.695842881@linuxfoundation.org>
+        stable@vger.kernel.org, Andrew Donnellan <ajd@linux.ibm.com>,
+        Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.4 360/389] cxl: Fix a memory leak in an error handling path
+Date:   Tue, 23 Aug 2022 10:27:18 +0200
+Message-Id: <20220823080130.587686861@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220823080115.331990024@linuxfoundation.org>
 References: <20220823080115.331990024@linuxfoundation.org>
@@ -51,43 +50,36 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Fedor Pchelkin <pchelkin@ispras.ru>
+From: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
 
-commit 8ef49f7f8244424adcf4a546dba4cbbeb0b09c09 upstream.
+[ Upstream commit 3a15b45b5454da862376b5d69a4967f5c6fa1368 ]
 
-We should warn user-space that it is doing something wrong when trying
-to activate sessions with identical parameters but WARN_ON_ONCE macro
-can not be used here as it serves a different purpose.
+A bitmap_zalloc() must be balanced by a corresponding bitmap_free() in the
+error handling path of afu_allocate_irqs().
 
-So it would be good to replace it with netdev_warn_once() message.
-
-Found by Linux Verification Center (linuxtesting.org) with Syzkaller.
-
-Fixes: 9d71dd0c7009 ("can: add support of SAE J1939 protocol")
-Signed-off-by: Fedor Pchelkin <pchelkin@ispras.ru>
-Signed-off-by: Alexey Khoroshilov <khoroshilov@ispras.ru>
-Acked-by: Oleksij Rempel <o.rempel@pengutronix.de>
-Link: https://lore.kernel.org/all/20220729143655.1108297-1-pchelkin@ispras.ru
-[mkl: fix indention]
-Signed-off-by: Marc Kleine-Budde <mkl@pengutronix.de>
+Acked-by: Andrew Donnellan <ajd@linux.ibm.com>
+Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+Link: https://lore.kernel.org/r/ce5869418f5838187946eb6b11a52715a93ece3d.1657566849.git.christophe.jaillet@wanadoo.fr
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/can/j1939/socket.c |    5 ++++-
- 1 file changed, 4 insertions(+), 1 deletion(-)
+ drivers/misc/cxl/irq.c | 1 +
+ 1 file changed, 1 insertion(+)
 
---- a/net/can/j1939/socket.c
-+++ b/net/can/j1939/socket.c
-@@ -178,7 +178,10 @@ activate_next:
- 	if (!first)
- 		return;
+diff --git a/drivers/misc/cxl/irq.c b/drivers/misc/cxl/irq.c
+index 4cb829d5d873..2e4dcfebf19a 100644
+--- a/drivers/misc/cxl/irq.c
++++ b/drivers/misc/cxl/irq.c
+@@ -349,6 +349,7 @@ int afu_allocate_irqs(struct cxl_context *ctx, u32 count)
  
--	if (WARN_ON_ONCE(j1939_session_activate(first))) {
-+	if (j1939_session_activate(first)) {
-+		netdev_warn_once(first->priv->ndev,
-+				 "%s: 0x%p: Identical session is already activated.\n",
-+				 __func__, first);
- 		first->err = -EBUSY;
- 		goto activate_next;
- 	} else {
+ out:
+ 	cxl_ops->release_irq_ranges(&ctx->irqs, ctx->afu->adapter);
++	bitmap_free(ctx->irq_bitmap);
+ 	afu_irq_name_free(ctx);
+ 	return -ENOMEM;
+ }
+-- 
+2.35.1
+
 
 
