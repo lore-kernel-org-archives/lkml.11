@@ -2,46 +2,48 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 85FF1C32772
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 09:49:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 877C8C32772
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 09:49:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242971AbiHWJtQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 05:49:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55812 "EHLO
+        id S242239AbiHWJtY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 23 Aug 2022 05:49:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53786 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352283AbiHWJqM (ORCPT
+        with ESMTP id S1352361AbiHWJqS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 05:46:12 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7673D75496;
-        Tue, 23 Aug 2022 01:43:51 -0700 (PDT)
+        Tue, 23 Aug 2022 05:46:18 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 575F68D3FB;
+        Tue, 23 Aug 2022 01:43:55 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 7F9D2614E9;
-        Tue, 23 Aug 2022 08:43:29 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 860AAC433C1;
-        Tue, 23 Aug 2022 08:43:28 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 6DF6EB81C20;
+        Tue, 23 Aug 2022 08:42:49 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 998FCC433C1;
+        Tue, 23 Aug 2022 08:42:47 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661244208;
-        bh=6JrT9EI5+j/PauKm10M95FzvHCL4nLV18Z8dTnkMfVA=;
+        s=korg; t=1661244168;
+        bh=v4KGrEVskcMrBDA4KqT7FNFEnwx3XEfxBHbjvZzK7pY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=luSQ5yix12WrB4ll19g3qQg5KaA5G0zRmn/axTx6DshsvAK3dYID+YGllXq0DswHs
-         NDgh/3CcyA8Lj/qP89bXQbV3tQjDdw61TlOZTaUdpyoq/5DRCsjDTsIoMP4yOJ8AH/
-         fydEV01/v/fbDkD0T7OHsnZ60iGuLUInlNx/h/qw=
+        b=1dm//0fp6o1VYWHtV8BuLUEB1XZaXGkjwwWbxG/ncmFyKdtU0Ur5aRaRiXef3H/gh
+         orK4Qi+g0gqx2hE5Ep+nN4FOJLbo7PNSUAEjE7Rf1fciZ7IE5cZDcYhYlMgxvKYwm2
+         Xyg9wdGKhyn6P+rPPclTvgC8yLakwh4nR/oYtvDI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
-        Ulf Hansson <ulf.hansson@linaro.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.14 103/229] memstick/ms_block: Fix some incorrect memory allocation
-Date:   Tue, 23 Aug 2022 10:24:24 +0200
-Message-Id: <20220823080057.377765792@linuxfoundation.org>
+        stable@vger.kernel.org, Ingo Molnar <mingo@kernel.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Tzvetomir Stoyanov <tz.stoyanov@gmail.com>,
+        Tom Zanussi <zanussi@kernel.org>,
+        "Masami Hiramatsu (Google)" <mhiramat@kernel.org>,
+        "Steven Rostedt (Google)" <rostedt@goodmis.org>
+Subject: [PATCH 5.15 020/244] tracing/eprobes: Do not allow eprobes to use $stack, or % for regs
+Date:   Tue, 23 Aug 2022 10:22:59 +0200
+Message-Id: <20220823080059.741045306@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220823080053.202747790@linuxfoundation.org>
-References: <20220823080053.202747790@linuxfoundation.org>
+In-Reply-To: <20220823080059.091088642@linuxfoundation.org>
+References: <20220823080059.091088642@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -50,64 +52,123 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+From: Steven Rostedt (Google) <rostedt@goodmis.org>
 
-[ Upstream commit 2e531bc3e0d86362fcd8a577b3278d9ef3cc2ba0 ]
+commit 2673c60ee67e71f2ebe34386e62d348f71edee47 upstream.
 
-Some functions of the bitmap API take advantage of the fact that a bitmap
-is an array of long.
+While playing with event probes (eprobes), I tried to see what would
+happen if I attempted to retrieve the instruction pointer (%rip) knowing
+that event probes do not use pt_regs. The result was:
 
-So, to make sure this assertion is correct, allocate bitmaps with
-bitmap_zalloc() instead of kzalloc()+hand-computed number of bytes.
+ BUG: kernel NULL pointer dereference, address: 0000000000000024
+ #PF: supervisor read access in kernel mode
+ #PF: error_code(0x0000) - not-present page
+ PGD 0 P4D 0
+ Oops: 0000 [#1] PREEMPT SMP PTI
+ CPU: 1 PID: 1847 Comm: trace-cmd Not tainted 5.19.0-rc5-test+ #309
+ Hardware name: Hewlett-Packard HP Compaq Pro 6300 SFF/339A, BIOS K01
+v03.03 07/14/2016
+ RIP: 0010:get_event_field.isra.0+0x0/0x50
+ Code: ff 48 c7 c7 c0 8f 74 a1 e8 3d 8b f5 ff e8 88 09 f6 ff 4c 89 e7 e8
+50 6a 13 00 48 89 ef 5b 5d 41 5c 41 5d e9 42 6a 13 00 66 90 <48> 63 47 24
+8b 57 2c 48 01 c6 8b 47 28 83 f8 02 74 0e 83 f8 04 74
+ RSP: 0018:ffff916c394bbaf0 EFLAGS: 00010086
+ RAX: ffff916c854041d8 RBX: ffff916c8d9fbf50 RCX: ffff916c255d2000
+ RDX: 0000000000000000 RSI: ffff916c255d2008 RDI: 0000000000000000
+ RBP: 0000000000000000 R08: ffff916c3a2a0c08 R09: ffff916c394bbda8
+ R10: 0000000000000000 R11: 0000000000000000 R12: ffff916c854041d8
+ R13: ffff916c854041b0 R14: 0000000000000000 R15: 0000000000000000
+ FS:  0000000000000000(0000) GS:ffff916c9ea40000(0000)
+knlGS:0000000000000000
+ CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+ CR2: 0000000000000024 CR3: 000000011b60a002 CR4: 00000000001706e0
+ Call Trace:
+  <TASK>
+  get_eprobe_size+0xb4/0x640
+  ? __mod_node_page_state+0x72/0xc0
+  __eprobe_trace_func+0x59/0x1a0
+  ? __mod_lruvec_page_state+0xaa/0x1b0
+  ? page_remove_file_rmap+0x14/0x230
+  ? page_remove_rmap+0xda/0x170
+  event_triggers_call+0x52/0xe0
+  trace_event_buffer_commit+0x18f/0x240
+  trace_event_raw_event_sched_wakeup_template+0x7a/0xb0
+  try_to_wake_up+0x260/0x4c0
+  __wake_up_common+0x80/0x180
+  __wake_up_common_lock+0x7c/0xc0
+  do_notify_parent+0x1c9/0x2a0
+  exit_notify+0x1a9/0x220
+  do_exit+0x2ba/0x450
+  do_group_exit+0x2d/0x90
+  __x64_sys_exit_group+0x14/0x20
+  do_syscall_64+0x3b/0x90
+  entry_SYSCALL_64_after_hwframe+0x46/0xb0
 
-While at it, also use bitmap_free() instead of kfree() to keep the
-semantic.
+Obviously this is not the desired result.
 
-Fixes: 0ab30494bc4f ("memstick: add support for legacy memorysticks")
-Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
-Link: https://lore.kernel.org/r/dbf633c48c24ae6d95f852557e8d8b3bbdef65fe.1656155715.git.christophe.jaillet@wanadoo.fr
-Signed-off-by: Ulf Hansson <ulf.hansson@linaro.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Move the testing for TPARG_FL_TPOINT which is only used for event probes
+to the top of the "$" variable check, as all the other variables are not
+used for event probes. Also add a check in the register parsing "%" to
+fail if an event probe is used.
+
+Link: https://lkml.kernel.org/r/20220820134400.564426983@goodmis.org
+
+Cc: stable@vger.kernel.org
+Cc: Ingo Molnar <mingo@kernel.org>
+Cc: Andrew Morton <akpm@linux-foundation.org>
+Cc: Tzvetomir Stoyanov <tz.stoyanov@gmail.com>
+Cc: Tom Zanussi <zanussi@kernel.org>
+Fixes: 7491e2c44278 ("tracing: Add a probe that attaches to trace events")
+Acked-by: Masami Hiramatsu (Google) <mhiramat@kernel.org>
+Signed-off-by: Steven Rostedt (Google) <rostedt@goodmis.org>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/memstick/core/ms_block.c | 10 +++++-----
- 1 file changed, 5 insertions(+), 5 deletions(-)
+ kernel/trace/trace_probe.c |   21 +++++++++++++--------
+ 1 file changed, 13 insertions(+), 8 deletions(-)
 
-diff --git a/drivers/memstick/core/ms_block.c b/drivers/memstick/core/ms_block.c
-index ffe875740671..7138062733ba 100644
---- a/drivers/memstick/core/ms_block.c
-+++ b/drivers/memstick/core/ms_block.c
-@@ -1338,16 +1338,16 @@ static int msb_ftl_initialize(struct msb_data *msb)
- 	msb->zone_count = msb->block_count / MS_BLOCKS_IN_ZONE;
- 	msb->logical_block_count = msb->zone_count * 496 - 2;
+--- a/kernel/trace/trace_probe.c
++++ b/kernel/trace/trace_probe.c
+@@ -279,7 +279,14 @@ static int parse_probe_vars(char *arg, c
+ 	int ret = 0;
+ 	int len;
  
--	msb->used_blocks_bitmap = kzalloc(msb->block_count / 8, GFP_KERNEL);
--	msb->erased_blocks_bitmap = kzalloc(msb->block_count / 8, GFP_KERNEL);
-+	msb->used_blocks_bitmap = bitmap_zalloc(msb->block_count, GFP_KERNEL);
-+	msb->erased_blocks_bitmap = bitmap_zalloc(msb->block_count, GFP_KERNEL);
- 	msb->lba_to_pba_table =
- 		kmalloc(msb->logical_block_count * sizeof(u16), GFP_KERNEL);
+-	if (strcmp(arg, "retval") == 0) {
++	if (flags & TPARG_FL_TPOINT) {
++		if (code->data)
++			return -EFAULT;
++		code->data = kstrdup(arg, GFP_KERNEL);
++		if (!code->data)
++			return -ENOMEM;
++		code->op = FETCH_OP_TP_ARG;
++	} else if (strcmp(arg, "retval") == 0) {
+ 		if (flags & TPARG_FL_RETURN) {
+ 			code->op = FETCH_OP_RETVAL;
+ 		} else {
+@@ -319,13 +326,6 @@ static int parse_probe_vars(char *arg, c
+ 		code->op = FETCH_OP_ARG;
+ 		code->param = (unsigned int)param - 1;
+ #endif
+-	} else if (flags & TPARG_FL_TPOINT) {
+-		if (code->data)
+-			return -EFAULT;
+-		code->data = kstrdup(arg, GFP_KERNEL);
+-		if (!code->data)
+-			return -ENOMEM;
+-		code->op = FETCH_OP_TP_ARG;
+ 	} else
+ 		goto inval_var;
  
- 	if (!msb->used_blocks_bitmap || !msb->lba_to_pba_table ||
- 						!msb->erased_blocks_bitmap) {
--		kfree(msb->used_blocks_bitmap);
-+		bitmap_free(msb->used_blocks_bitmap);
-+		bitmap_free(msb->erased_blocks_bitmap);
- 		kfree(msb->lba_to_pba_table);
--		kfree(msb->erased_blocks_bitmap);
- 		return -ENOMEM;
- 	}
+@@ -380,6 +380,11 @@ parse_probe_arg(char *arg, const struct
+ 		break;
  
-@@ -1960,7 +1960,7 @@ static int msb_bd_open(struct block_device *bdev, fmode_t mode)
- static void msb_data_clear(struct msb_data *msb)
- {
- 	kfree(msb->boot_page);
--	kfree(msb->used_blocks_bitmap);
-+	bitmap_free(msb->used_blocks_bitmap);
- 	kfree(msb->lba_to_pba_table);
- 	kfree(msb->cache);
- 	msb->card = NULL;
--- 
-2.35.1
-
+ 	case '%':	/* named register */
++		if (flags & TPARG_FL_TPOINT) {
++			/* eprobes do not handle registers */
++			trace_probe_log_err(offs, BAD_VAR);
++			break;
++		}
+ 		ret = regs_query_register_offset(arg + 1);
+ 		if (ret >= 0) {
+ 			code->op = FETCH_OP_REG;
 
 
