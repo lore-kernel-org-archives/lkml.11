@@ -2,44 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 185F9C32792
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 09:31:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5456CC3F6B0
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 09:31:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350000AbiHWJbr (ORCPT
+        id S1350226AbiHWJbx (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 05:31:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51304 "EHLO
+        Tue, 23 Aug 2022 05:31:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36464 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349953AbiHWJ3e (ORCPT
+        with ESMTP id S1350105AbiHWJ3u (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 05:29:34 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B4339923DF;
-        Tue, 23 Aug 2022 01:37:35 -0700 (PDT)
+        Tue, 23 Aug 2022 05:29:50 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7B12C91D06;
+        Tue, 23 Aug 2022 01:37:43 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 0A603CE1B49;
-        Tue, 23 Aug 2022 08:37:35 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0E2C4C433D6;
-        Tue, 23 Aug 2022 08:37:32 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id D8472B81C5A;
+        Tue, 23 Aug 2022 08:36:29 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 20ADCC433C1;
+        Tue, 23 Aug 2022 08:36:27 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661243853;
-        bh=Xz5hcmM4qCkmNj4cQMqcWYCdPA3cuKankeknCXY9KUs=;
+        s=korg; t=1661243788;
+        bh=/w7F+iipsaqlzfkd/2XvhEnRnAT6KKvkuj4hCLT0PrQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=IjkXt9Y/jJkMExQQtTihIXY7LahNtZ5Re71jtt0GCFhQZ+f8m1JZ9dhDRsWt8be3D
-         AQcAeAkzqJazu/PyFcycSfgQMvCGYIjSBkc1WQI9xJBz3DMsZKG8BCLDsOQlG9KzFX
-         qcH/62wI9E7jYSXRnfLngBJ8j9nALfWQCc2SSiSM=
+        b=0KpY04kBcobziMb2kHfSay8XgIUFnyGqMK0kd2utZMUE3J8fCkqRy2MbVfa6DkEvy
+         U/9nMG9OcnASZI6mM+8nh23DOv46x7fMTyRsC2xmgC2wgW7NnbfjfRGDdicWVure7q
+         eB6F7cXfHk70y4290UnQ3hvUvcKTyI5NE2VmM8Ug=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Alexander Stein <alexander.stein@ew.tq-group.com>,
-        Shawn Guo <shawnguo@kernel.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.14 043/229] ARM: dts: imx6ul: fix qspi node compatible
-Date:   Tue, 23 Aug 2022 10:23:24 +0200
-Message-Id: <20220823080055.145148391@linuxfoundation.org>
+        stable@vger.kernel.org, Bart Van Assche <bvanassche@acm.org>,
+        Liang He <windhl@126.com>,
+        "Martin K. Petersen" <martin.petersen@oracle.com>
+Subject: [PATCH 4.14 004/229] scsi: ufs: host: Hold reference returned by of_parse_phandle()
+Date:   Tue, 23 Aug 2022 10:22:45 +0200
+Message-Id: <20220823080053.430708004@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220823080053.202747790@linuxfoundation.org>
 References: <20220823080053.202747790@linuxfoundation.org>
@@ -51,42 +50,56 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Alexander Stein <alexander.stein@ew.tq-group.com>
+From: Liang He <windhl@126.com>
 
-[ Upstream commit 0c6cf86e1ab433b2d421880fdd9c6e954f404948 ]
+commit a3435afba87dc6cd83f5595e7607f3c40f93ef01 upstream.
 
-imx6ul is not compatible to imx6sx, both have different erratas.
-Fixes the dt_binding_check warning:
-spi@21e0000: compatible: 'oneOf' conditional failed, one must be fixed:
-['fsl,imx6ul-qspi', 'fsl,imx6sx-qspi'] is too long
-Additional items are not allowed ('fsl,imx6sx-qspi' was unexpected)
-'fsl,imx6ul-qspi' is not one of ['fsl,ls1043a-qspi']
-'fsl,imx6ul-qspi' is not one of ['fsl,imx8mq-qspi']
-'fsl,ls1021a-qspi' was expected
-'fsl,imx7d-qspi' was expected
+In ufshcd_populate_vreg(), we should hold the reference returned by
+of_parse_phandle() and then use it to call of_node_put() for refcount
+balance.
 
-Signed-off-by: Alexander Stein <alexander.stein@ew.tq-group.com>
-Signed-off-by: Shawn Guo <shawnguo@kernel.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Link: https://lore.kernel.org/r/20220719071529.1081166-1-windhl@126.com
+Fixes: aa4976130934 ("ufs: Add regulator enable support")
+Reviewed-by: Bart Van Assche <bvanassche@acm.org>
+Signed-off-by: Liang He <windhl@126.com>
+Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/arm/boot/dts/imx6ul.dtsi | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/scsi/ufs/ufshcd-pltfrm.c |   15 +++++++++++++--
+ 1 file changed, 13 insertions(+), 2 deletions(-)
 
-diff --git a/arch/arm/boot/dts/imx6ul.dtsi b/arch/arm/boot/dts/imx6ul.dtsi
-index d544015d10e5..e4006bd47440 100644
---- a/arch/arm/boot/dts/imx6ul.dtsi
-+++ b/arch/arm/boot/dts/imx6ul.dtsi
-@@ -883,7 +883,7 @@ lcdif: lcdif@021c8000 {
- 			qspi: qspi@021e0000 {
- 				#address-cells = <1>;
- 				#size-cells = <0>;
--				compatible = "fsl,imx6ul-qspi", "fsl,imx6sx-qspi";
-+				compatible = "fsl,imx6ul-qspi";
- 				reg = <0x021e0000 0x4000>, <0x60000000 0x10000000>;
- 				reg-names = "QuadSPI", "QuadSPI-memory";
- 				interrupts = <GIC_SPI 107 IRQ_TYPE_LEVEL_HIGH>;
--- 
-2.35.1
-
+--- a/drivers/scsi/ufs/ufshcd-pltfrm.c
++++ b/drivers/scsi/ufs/ufshcd-pltfrm.c
+@@ -124,9 +124,20 @@ out:
+ 	return ret;
+ }
+ 
++static bool phandle_exists(const struct device_node *np,
++			   const char *phandle_name, int index)
++{
++	struct device_node *parse_np = of_parse_phandle(np, phandle_name, index);
++
++	if (parse_np)
++		of_node_put(parse_np);
++
++	return parse_np != NULL;
++}
++
+ #define MAX_PROP_SIZE 32
+ static int ufshcd_populate_vreg(struct device *dev, const char *name,
+-		struct ufs_vreg **out_vreg)
++				struct ufs_vreg **out_vreg)
+ {
+ 	int ret = 0;
+ 	char prop_name[MAX_PROP_SIZE];
+@@ -139,7 +150,7 @@ static int ufshcd_populate_vreg(struct d
+ 	}
+ 
+ 	snprintf(prop_name, MAX_PROP_SIZE, "%s-supply", name);
+-	if (!of_parse_phandle(np, prop_name, 0)) {
++	if (!phandle_exists(np, prop_name, 0)) {
+ 		dev_info(dev, "%s: Unable to find %s regulator, assuming enabled\n",
+ 				__func__, prop_name);
+ 		goto out;
 
 
