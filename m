@@ -2,45 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F2A73C32792
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 10:32:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 95309C3F6B0
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 10:33:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352848AbiHWKcv (ORCPT
+        id S1354585AbiHWKc7 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 06:32:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53436 "EHLO
+        Tue, 23 Aug 2022 06:32:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53826 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353565AbiHWKNw (ORCPT
+        with ESMTP id S1353441AbiHWKOA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 06:13:52 -0400
+        Tue, 23 Aug 2022 06:14:00 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 50B2A6C121;
-        Tue, 23 Aug 2022 01:59:48 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 38A4972FCF;
+        Tue, 23 Aug 2022 01:59:51 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id E5B66B81C3A;
-        Tue, 23 Aug 2022 08:59:46 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 36504C433C1;
-        Tue, 23 Aug 2022 08:59:45 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id D0957B81C28;
+        Tue, 23 Aug 2022 08:59:49 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 32050C433C1;
+        Tue, 23 Aug 2022 08:59:48 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661245185;
-        bh=lhcGVfedXLvlZmgQ5jX75/1UekAf+1RD+VFUn9Vc6Ro=;
+        s=korg; t=1661245188;
+        bh=EBimmJxbHe39CL+TyotCC12WSqh4D6A6NfBwAC6AG18=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=BngnfUD+WcRJaZMi7UBztfHxpazAvrkZl2Z3ptJ5BhE64/HM4tjDKSPyUsgsjE6BJ
-         XORWfisui738hhVPNtdJg8cjW34qG8R96YkCLS+/slByxNyyITMjSk0eQ2Cibqd3oa
-         V+x8levffI+NcGYbY7QizEt8JHpDLN67UENEtvNk=
+        b=TWGd0CGOVFh5BrSfwhbP0KPJumiCc95bw0jb4tTnkNp0uICro80Atpb0cN+rmzhbe
+         Bdi7QM67EdmC0F44ZT4tcALPpgUwK2iQPpK15Iwsp5IfoYoEr4t456K5ZM98o6oZOK
+         VQQT+JJ1jr8HO6S1HsPM83ErcerKNSTKOgbjgYVM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
+To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Brice Goglin <Brice.Goglin@inria.fr>,
-        Conor Dooley <conor.dooley@microchip.com>,
-        Damien Le Moal <damien.lemoal@opensource.wdc.com>,
-        Palmer Dabbelt <palmer@rivosinc.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 216/244] riscv: dts: canaan: Add k210 topology information
-Date:   Tue, 23 Aug 2022 10:26:15 +0200
-Message-Id: <20220823080106.726302489@linuxfoundation.org>
+        Eric Sandeen <sandeen@redhat.com>,
+        "Darrick J. Wong" <djwong@kernel.org>,
+        Dave Chinner <dchinner@redhat.com>,
+        Dave Chinner <david@fromorbit.com>,
+        Leah Rumancik <leah.rumancik@gmail.com>
+Subject: [PATCH 5.15 243/244] xfs: revert "xfs: actually bump warning counts when we send warnings"
+Date:   Tue, 23 Aug 2022 10:26:42 +0200
+Message-Id: <20220823080107.747498057@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220823080059.091088642@linuxfoundation.org>
 References: <20220823080059.091088642@linuxfoundation.org>
@@ -52,49 +52,51 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Conor Dooley <conor.dooley@microchip.com>
+From: Eric Sandeen <sandeen@redhat.com>
 
-[ Upstream commit d9d193dea8666bbf69fc21c5bdcdabaa34a466e3 ]
+[ Upstream commit bc37e4fb5cac2925b2e286b1f1d4fc2b519f7d92 ]
 
-The k210 has no cpu-map node, so tools like hwloc cannot correctly
-parse the topology. Add the node using the existing node labels.
+This reverts commit 4b8628d57b725b32616965e66975fcdebe008fe7.
 
-Reported-by: Brice Goglin <Brice.Goglin@inria.fr>
-Link: https://github.com/open-mpi/hwloc/issues/536
-Signed-off-by: Conor Dooley <conor.dooley@microchip.com>
-Reviewed-by: Damien Le Moal <damien.lemoal@opensource.wdc.com>
-Link: https://lore.kernel.org/r/20220705190435.1790466-6-mail@conchuod.ie
-Signed-off-by: Palmer Dabbelt <palmer@rivosinc.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+XFS quota has had the concept of a "quota warning limit" since
+the earliest Irix implementation, but a mechanism for incrementing
+the warning counter was never implemented, as documented in the
+xfs_quota(8) man page. We do know from the historical archive that
+it was never incremented at runtime during quota reservation
+operations.
+
+With this commit, the warning counter quickly increments for every
+allocation attempt after the user has crossed a quote soft
+limit threshold, and this in turn transitions the user to hard
+quota failures, rendering soft quota thresholds and timers useless.
+This was reported as a regression by users.
+
+Because the intended behavior of this warning counter has never been
+understood or documented, and the result of this change is a regression
+in soft quota functionality, revert this commit to make soft quota
+limits and timers operable again.
+
+Fixes: 4b8628d57b72 ("xfs: actually bump warning counts when we send warnings)
+Signed-off-by: Eric Sandeen <sandeen@redhat.com>
+Reviewed-by: Darrick J. Wong <djwong@kernel.org>
+Reviewed-by: Dave Chinner <dchinner@redhat.com>
+Signed-off-by: Dave Chinner <david@fromorbit.com>
+Signed-off-by: Leah Rumancik <leah.rumancik@gmail.com>
+Acked-by: Darrick J. Wong <djwong@kernel.org>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/riscv/boot/dts/canaan/k210.dtsi | 12 ++++++++++++
- 1 file changed, 12 insertions(+)
+ fs/xfs/xfs_trans_dquot.c |    1 -
+ 1 file changed, 1 deletion(-)
 
-diff --git a/arch/riscv/boot/dts/canaan/k210.dtsi b/arch/riscv/boot/dts/canaan/k210.dtsi
-index 780416d489aa..fa9162e3afa3 100644
---- a/arch/riscv/boot/dts/canaan/k210.dtsi
-+++ b/arch/riscv/boot/dts/canaan/k210.dtsi
-@@ -65,6 +65,18 @@
- 				compatible = "riscv,cpu-intc";
- 			};
- 		};
-+
-+		cpu-map {
-+			cluster0 {
-+				core0 {
-+					cpu = <&cpu0>;
-+				};
-+
-+				core1 {
-+					cpu = <&cpu1>;
-+				};
-+			};
-+		};
- 	};
+--- a/fs/xfs/xfs_trans_dquot.c
++++ b/fs/xfs/xfs_trans_dquot.c
+@@ -603,7 +603,6 @@ xfs_dqresv_check(
+ 			return QUOTA_NL_ISOFTLONGWARN;
+ 		}
  
- 	sram: memory@80000000 {
--- 
-2.35.1
-
+-		res->warnings++;
+ 		return QUOTA_NL_ISOFTWARN;
+ 	}
+ 
 
 
