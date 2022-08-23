@@ -2,216 +2,180 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 01BB0C32772
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 21:04:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 98C2AC32772
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 21:05:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230046AbiHWVEE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 17:04:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59050 "EHLO
+        id S230487AbiHWVAT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 23 Aug 2022 17:00:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47270 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231174AbiHWVEA (ORCPT
+        with ESMTP id S229943AbiHWVAM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 17:04:00 -0400
-Received: from mail-pl1-x631.google.com (mail-pl1-x631.google.com [IPv6:2607:f8b0:4864:20::631])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AC9102C121;
-        Tue, 23 Aug 2022 14:03:58 -0700 (PDT)
-Received: by mail-pl1-x631.google.com with SMTP id 20so13891345plo.10;
-        Tue, 23 Aug 2022 14:03:58 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:sender:from:to:cc;
-        bh=cHRKNBYKG3xOANZ6kQFhVpqVJ5L+ueZJ9Jdjp1L40rk=;
-        b=E3+WEPxKj4HxRkV70dmExf/Tz2+s9dV7G4PaLZIsgQkCjPruXMnKR2eIYwO2iHBVI6
-         qntA+JylLJLA9n/AdZclpvxps3wRZNn6xQjDzrMtIQDYzFlsnIDD2MDgxx9Fznv5y1Ri
-         hizD601ZaUzj24mAxL3iYNmAtaK3y6MuIZxJdX8nq6Kftzq47lKKE3gyyXYvK6aqHIXS
-         9pfT98oxI+yEeaXW4hE2e0tUYZFom3KkIlzOCVQz82eF8KSnjVxw9LDaWD7uRTdyABNI
-         gZAadCTkPXL+uZRpViiIF6pqXSQ9HpB2D2A8vbSiOtXyoOqCj24o5izy4JVDjf0FVYAr
-         kukQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:sender:x-gm-message-state:from:to:cc;
-        bh=cHRKNBYKG3xOANZ6kQFhVpqVJ5L+ueZJ9Jdjp1L40rk=;
-        b=ZKgyGJTEC9O7JGxFKnLTckUdPlPF13/jnKrvW/sJFfZAcByxdW4wBGlcpjWgbYzDU5
-         1KG53Eg/Ef480W9bo2sURj9HeciEi5KZS+G9yEmVW+9no6xIAVFO0d4I1Hr8Lr/6JJvR
-         iqv9FGngZq97Mii6lAsoe1vDW2+3hCJggMB31I36HNRFOMY0JHQGifRRFCuTXDE8ZHCi
-         pYcY7dYddV6jk733FlPjKx4pDnDzdGRwc24iQ0Sg5tIP0Iv09R9P/0ajcA13O7+Bzqqt
-         IcRV1vO9e0M394eOlchz0Ik6ml7RJnp8Ahk/sf9scIHEpyUlIR3XvH5KjX3PtMnmF7Jz
-         dNAQ==
-X-Gm-Message-State: ACgBeo0x5rXVHcjmq/ydLfcJLLEIqVSWF3LRDt2LDBWuqepgbJ1AoNh0
-        sWKikre4OsQ1urB0o51sBbw=
-X-Google-Smtp-Source: AA6agR67hhYfAwhqhOZCJYEOZFHAw67F6AN1sn1ho3gkR0V3iW1cuIAlaltrsb9wzAhaLGwaLYSR7w==
-X-Received: by 2002:a17:90a:4805:b0:1f5:39ab:29a9 with SMTP id a5-20020a17090a480500b001f539ab29a9mr4929745pjh.202.1661288637690;
-        Tue, 23 Aug 2022 14:03:57 -0700 (PDT)
-Received: from youngsil.svl.corp.google.com ([2620:15c:2d4:203:c356:cd91:38b5:bb7])
-        by smtp.gmail.com with ESMTPSA id e62-20020a621e41000000b0052da33fe7d2sm11485603pfe.95.2022.08.23.14.03.55
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 23 Aug 2022 14:03:57 -0700 (PDT)
-Sender: Namhyung Kim <namhyung@gmail.com>
-From:   Namhyung Kim <namhyung@kernel.org>
-To:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>
-Cc:     Martin KaFai Lau <kafai@fb.com>, Song Liu <songliubraving@fb.com>,
-        Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>,
-        Stanislav Fomichev <sdf@google.com>,
-        Hao Luo <haoluo@google.com>, Jiri Olsa <jolsa@kernel.org>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Ingo Molnar <mingo@kernel.org>, bpf@vger.kernel.org,
-        LKML <linux-kernel@vger.kernel.org>
-Subject: [PATCH bpf-next] bpf: Add bpf_read_raw_record() helper
-Date:   Tue, 23 Aug 2022 14:03:54 -0700
-Message-Id: <20220823210354.1407473-1-namhyung@kernel.org>
-X-Mailer: git-send-email 2.37.2.609.g9ff673ca1a-goog
+        Tue, 23 Aug 2022 17:00:12 -0400
+Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 143F4786C8
+        for <linux-kernel@vger.kernel.org>; Tue, 23 Aug 2022 14:00:10 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1661288411; x=1692824411;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=1kDaPDpjqfaqAC/Cxd3FbM87PretknuOEghd5qsQD50=;
+  b=oEiNXa0Y9hRRn/C0Z8VvB3trAkAAULQ2lk8ShxEq6Lleppth/WztfiTc
+   7awhimUMEAHV2kqWCw0zEYXJk1H/8WL0jc4NqgHM8jEPdXbRNZTBy+kdw
+   itL+LhaR0Pkx+p01EtfX2IXoPzz8HzI0AqqK6tZ511vLOk8+N+Xziipu2
+   ae6cBptVKGIi6cllNBdYAMqsdkqj0jqt0R+ZSc9oB+pNhMMS5XDIa1b7T
+   Zjum7V+ankCN7sKwJGWZyBHHxXDYMv6qqfzzzEnS/OliyCgqoL60NcCt7
+   ES/Sd3Az4imn4k1FzMWovaYGh/1OyyVdGoOiBxhN+lHP0OiuRffgnqrgU
+   A==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10448"; a="291357416"
+X-IronPort-AV: E=Sophos;i="5.93,258,1654585200"; 
+   d="scan'208";a="291357416"
+Received: from fmsmga004.fm.intel.com ([10.253.24.48])
+  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Aug 2022 14:00:09 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.93,258,1654585200"; 
+   d="scan'208";a="677769634"
+Received: from lkp-server02.sh.intel.com (HELO 9bbcefcddf9f) ([10.239.97.151])
+  by fmsmga004.fm.intel.com with ESMTP; 23 Aug 2022 14:00:04 -0700
+Received: from kbuild by 9bbcefcddf9f with local (Exim 4.96)
+        (envelope-from <lkp@intel.com>)
+        id 1oQb0F-0000Xl-1l;
+        Tue, 23 Aug 2022 21:00:03 +0000
+Date:   Wed, 24 Aug 2022 04:59:56 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Mikko Perttunen <mperttunen@nvidia.com>
+Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org,
+        Thierry Reding <treding@nvidia.com>
+Subject: drivers/gpu/host1x/context.c:65:23: error: too many arguments to
+ function 'of_dma_configure_id'
+Message-ID: <202208240444.uTBVAbiI-lkp@intel.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The helper is for BPF programs attached to perf_event in order to read
-event-specific raw data.  I followed the convention of the
-bpf_read_branch_records() helper so that it can tell the size of
-record using BPF_F_GET_RAW_RECORD flag.
+Hi Mikko,
 
-The use case is to filter perf event samples based on the HW provided
-data which have more detailed information about the sample.
+FYI, the error/warning still remains.
 
-Note that it only reads the first fragment of the raw record.  But it
-seems mostly ok since all the existing PMU raw data have only single
-fragment and the multi-fragment records are only for BPF output attached
-to sockets.  So unless it's used with such an extreme case, it'd work
-for most of tracing use cases.
+tree:   https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git master
+head:   072e51356cd5a4a1c12c1020bc054c99b98333df
+commit: 8aa5bcb61612060429223d1fbb7a1c30a579fc1f gpu: host1x: Add context device management code
+date:   7 weeks ago
+config: arm-randconfig-r012-20220823 (https://download.01.org/0day-ci/archive/20220824/202208240444.uTBVAbiI-lkp@intel.com/config)
+compiler: arm-linux-gnueabi-gcc (GCC) 12.1.0
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=8aa5bcb61612060429223d1fbb7a1c30a579fc1f
+        git remote add linus https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git
+        git fetch --no-tags linus master
+        git checkout 8aa5bcb61612060429223d1fbb7a1c30a579fc1f
+        # save the config file
+        mkdir build_dir && cp config build_dir/.config
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-12.1.0 make.cross W=1 O=build_dir ARCH=arm SHELL=/bin/bash drivers/gpu/host1x/
 
-Signed-off-by: Namhyung Kim <namhyung@kernel.org>
----
-I don't know how to test this.  As the raw data is available on some
-hardware PMU only (e.g. AMD IBS).  I tried a tracepoint event but it was
-rejected by the verifier.  Actually it needs a bpf_perf_event_data
-context so that's not an option IIUC.
+If you fix the issue, kindly add following tag where applicable
+Reported-by: kernel test robot <lkp@intel.com>
 
- include/uapi/linux/bpf.h | 23 ++++++++++++++++++++++
- kernel/trace/bpf_trace.c | 41 ++++++++++++++++++++++++++++++++++++++++
- 2 files changed, 64 insertions(+)
+All errors (new ones prefixed by >>):
 
-diff --git a/include/uapi/linux/bpf.h b/include/uapi/linux/bpf.h
-index 934a2a8beb87..af7f70564819 100644
---- a/include/uapi/linux/bpf.h
-+++ b/include/uapi/linux/bpf.h
-@@ -5355,6 +5355,23 @@ union bpf_attr {
-  *	Return
-  *		Current *ktime*.
-  *
-+ * long bpf_read_raw_record(struct bpf_perf_event_data *ctx, void *buf, u32 size, u64 flags)
-+ *	Description
-+ *		For an eBPF program attached to a perf event, retrieve the
-+ *		raw record associated to *ctx* and store it in the buffer
-+ *		pointed by *buf* up to size *size* bytes.
-+ *	Return
-+ *		On success, number of bytes written to *buf*. On error, a
-+ *		negative value.
-+ *
-+ *		The *flags* can be set to **BPF_F_GET_RAW_RECORD_SIZE** to
-+ *		instead return the number of bytes required to store the raw
-+ *		record. If this flag is set, *buf* may be NULL.
-+ *
-+ *		**-EINVAL** if arguments invalid or **size** not a multiple
-+ *		of **sizeof**\ (u64\ ).
-+ *
-+ *		**-ENOENT** if the event does not have raw records.
-  */
- #define __BPF_FUNC_MAPPER(FN)		\
- 	FN(unspec),			\
-@@ -5566,6 +5583,7 @@ union bpf_attr {
- 	FN(tcp_raw_check_syncookie_ipv4),	\
- 	FN(tcp_raw_check_syncookie_ipv6),	\
- 	FN(ktime_get_tai_ns),		\
-+	FN(read_raw_record),		\
- 	/* */
- 
- /* integer value in 'imm' field of BPF_CALL instruction selects which helper
-@@ -5749,6 +5767,11 @@ enum {
- 	BPF_F_EXCLUDE_INGRESS	= (1ULL << 4),
- };
- 
-+/* BPF_FUNC_read_raw_record flags. */
-+enum {
-+	BPF_F_GET_RAW_RECORD_SIZE	= (1ULL << 0),
-+};
-+
- #define __bpf_md_ptr(type, name)	\
- union {					\
- 	type name;			\
-diff --git a/kernel/trace/bpf_trace.c b/kernel/trace/bpf_trace.c
-index 68e5cdd24cef..db172b12e5f8 100644
---- a/kernel/trace/bpf_trace.c
-+++ b/kernel/trace/bpf_trace.c
-@@ -20,6 +20,7 @@
- #include <linux/fprobe.h>
- #include <linux/bsearch.h>
- #include <linux/sort.h>
-+#include <linux/perf_event.h>
- 
- #include <net/bpf_sk_storage.h>
- 
-@@ -1532,6 +1533,44 @@ static const struct bpf_func_proto bpf_read_branch_records_proto = {
- 	.arg4_type      = ARG_ANYTHING,
- };
- 
-+BPF_CALL_4(bpf_read_raw_record, struct bpf_perf_event_data_kern *, ctx,
-+	   void *, buf, u32, size, u64, flags)
-+{
-+	struct perf_raw_record *raw = ctx->data->raw;
-+	struct perf_raw_frag *frag;
-+	u32 to_copy;
-+
-+	if (unlikely(flags & ~BPF_F_GET_RAW_RECORD_SIZE))
-+		return -EINVAL;
-+
-+	if (unlikely(!raw))
-+		return -ENOENT;
-+
-+	if (flags & BPF_F_GET_RAW_RECORD_SIZE)
-+		return raw->size;
-+
-+	if (!buf || (size % sizeof(u32) != 0))
-+		return -EINVAL;
-+
-+	frag = &raw->frag;
-+	WARN_ON_ONCE(!perf_raw_frag_last(frag));
-+
-+	to_copy = min_t(u32, frag->size, size);
-+	memcpy(buf, frag->data, to_copy);
-+
-+	return to_copy;
-+}
-+
-+static const struct bpf_func_proto bpf_read_raw_record_proto = {
-+	.func           = bpf_read_raw_record,
-+	.gpl_only       = true,
-+	.ret_type       = RET_INTEGER,
-+	.arg1_type      = ARG_PTR_TO_CTX,
-+	.arg2_type      = ARG_PTR_TO_MEM_OR_NULL,
-+	.arg3_type      = ARG_CONST_SIZE_OR_ZERO,
-+	.arg4_type      = ARG_ANYTHING,
-+};
-+
- static const struct bpf_func_proto *
- pe_prog_func_proto(enum bpf_func_id func_id, const struct bpf_prog *prog)
- {
-@@ -1548,6 +1587,8 @@ pe_prog_func_proto(enum bpf_func_id func_id, const struct bpf_prog *prog)
- 		return &bpf_read_branch_records_proto;
- 	case BPF_FUNC_get_attach_cookie:
- 		return &bpf_get_attach_cookie_proto_pe;
-+	case BPF_FUNC_read_raw_record:
-+		return &bpf_read_raw_record_proto;
- 	default:
- 		return bpf_tracing_func_proto(func_id, prog);
- 	}
+   drivers/gpu/host1x/context.c: In function 'host1x_memory_context_list_init':
+>> drivers/gpu/host1x/context.c:65:23: error: too many arguments to function 'of_dma_configure_id'
+      65 |                 err = of_dma_configure_id(&ctx->dev, node, true, &i);
+         |                       ^~~~~~~~~~~~~~~~~~~
+   In file included from include/linux/of_platform.h:12,
+                    from drivers/gpu/host1x/context.c:9:
+   include/linux/of_device.h:103:19: note: declared here
+     103 | static inline int of_dma_configure_id(struct device *dev,
+         |                   ^~~~~~~~~~~~~~~~~~~
+
+
+vim +/of_dma_configure_id +65 drivers/gpu/host1x/context.c
+
+    15	
+    16	int host1x_memory_context_list_init(struct host1x *host1x)
+    17	{
+    18		struct host1x_memory_context_list *cdl = &host1x->context_list;
+    19		struct device_node *node = host1x->dev->of_node;
+    20		struct host1x_memory_context *ctx;
+    21		unsigned int i;
+    22		int err;
+    23	
+    24		cdl->devs = NULL;
+    25		cdl->len = 0;
+    26		mutex_init(&cdl->lock);
+    27	
+    28		err = of_property_count_u32_elems(node, "iommu-map");
+    29		if (err < 0)
+    30			return 0;
+    31	
+    32		cdl->devs = kcalloc(err, sizeof(*cdl->devs), GFP_KERNEL);
+    33		if (!cdl->devs)
+    34			return -ENOMEM;
+    35		cdl->len = err / 4;
+    36	
+    37		for (i = 0; i < cdl->len; i++) {
+    38			struct iommu_fwspec *fwspec;
+    39	
+    40			ctx = &cdl->devs[i];
+    41	
+    42			ctx->host = host1x;
+    43	
+    44			device_initialize(&ctx->dev);
+    45	
+    46			/*
+    47			 * Due to an issue with T194 NVENC, only 38 bits can be used.
+    48			 * Anyway, 256GiB of IOVA ought to be enough for anyone.
+    49			 */
+    50			ctx->dma_mask = DMA_BIT_MASK(38);
+    51			ctx->dev.dma_mask = &ctx->dma_mask;
+    52			ctx->dev.coherent_dma_mask = ctx->dma_mask;
+    53			dev_set_name(&ctx->dev, "host1x-ctx.%d", i);
+    54			ctx->dev.bus = &host1x_context_device_bus_type;
+    55			ctx->dev.parent = host1x->dev;
+    56	
+    57			dma_set_max_seg_size(&ctx->dev, UINT_MAX);
+    58	
+    59			err = device_add(&ctx->dev);
+    60			if (err) {
+    61				dev_err(host1x->dev, "could not add context device %d: %d\n", i, err);
+    62				goto del_devices;
+    63			}
+    64	
+  > 65			err = of_dma_configure_id(&ctx->dev, node, true, &i);
+    66			if (err) {
+    67				dev_err(host1x->dev, "IOMMU configuration failed for context device %d: %d\n",
+    68					i, err);
+    69				device_del(&ctx->dev);
+    70				goto del_devices;
+    71			}
+    72	
+    73			fwspec = dev_iommu_fwspec_get(&ctx->dev);
+    74			if (!fwspec || !device_iommu_mapped(&ctx->dev)) {
+    75				dev_err(host1x->dev, "Context device %d has no IOMMU!\n", i);
+    76				device_del(&ctx->dev);
+    77				goto del_devices;
+    78			}
+    79	
+    80			ctx->stream_id = fwspec->ids[0] & 0xffff;
+    81		}
+    82	
+    83		return 0;
+    84	
+    85	del_devices:
+    86		while (i--)
+    87			device_del(&cdl->devs[i].dev);
+    88	
+    89		kfree(cdl->devs);
+    90		cdl->len = 0;
+    91	
+    92		return err;
+    93	}
+    94	
+
 -- 
-2.37.2.609.g9ff673ca1a-goog
-
+0-DAY CI Kernel Test Service
+https://01.org/lkp
