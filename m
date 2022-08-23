@@ -2,116 +2,135 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9E17CC32772
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 09:04:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C0C3DC32772
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 09:04:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241308AbiHWJEY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 05:04:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51794 "EHLO
+        id S240826AbiHWJE1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 23 Aug 2022 05:04:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51850 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242903AbiHWJDG (ORCPT
+        with ESMTP id S241067AbiHWJDO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 05:03:06 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 44ED032DBE;
-        Tue, 23 Aug 2022 01:28:45 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 1139FB81C4E;
-        Tue, 23 Aug 2022 08:27:34 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5AB30C433D6;
-        Tue, 23 Aug 2022 08:27:32 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661243252;
-        bh=lrFmMLhDMSrDB8SJBrwArASfOdoFYOFqUPb7iQbSHgQ=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=GwThltINac+hXcMnplD2BNqSjTRY2QS5bKym8w9uUdxOoxf097ybPaNG08Ov1sfTp
-         +alED1/l+h5O1O6+mitVGUT2hEXdrKFVBu34HaXVLp22woQgIMfWwFbWyMDAAZQQVv
-         A5pT4Yf4JO/0eZ8pyV6QslUBrNw3+Rn1gpmHj9k0=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Pablo Neira Ayuso <pablo@netfilter.org>
-Subject: [PATCH 5.19 200/365] netfilter: nf_tables: NFTA_SET_ELEM_KEY_END requires concat and interval flags
-Date:   Tue, 23 Aug 2022 10:01:41 +0200
-Message-Id: <20220823080126.588213521@linuxfoundation.org>
-X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220823080118.128342613@linuxfoundation.org>
-References: <20220823080118.128342613@linuxfoundation.org>
-User-Agent: quilt/0.67
+        Tue, 23 Aug 2022 05:03:14 -0400
+Received: from mail-lf1-x133.google.com (mail-lf1-x133.google.com [IPv6:2a00:1450:4864:20::133])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A65AD543E7;
+        Tue, 23 Aug 2022 01:28:47 -0700 (PDT)
+Received: by mail-lf1-x133.google.com with SMTP id z25so18694693lfr.2;
+        Tue, 23 Aug 2022 01:28:46 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc;
+        bh=a+ZiSUJIOvdtJPK+j/qpvFXRwgI/m4zmsjhCjwSrMY4=;
+        b=HfhF4Yw93JyMUnP2WKwYbtvgoDB0wLycPBhfsc9EzKdUYSYK+blL2pZnRHeF5yp8m3
+         B7z2Md2tkAZcUC+ZqeyyS3S02khD6xMZRyUrjntb+wYdY3tayPV80q2cAmUynSZfygAH
+         VzrG9GAwoJr1/+7uyo93XwVYunYg2hcFkcSPdRUDRln3g/Oe2tHjQ2kJpPxzPcXs+HcO
+         Zp5Nm8U55oBPz9MOa999P43phZ2aM4iz9fZFaVics/5Wy4rJKR4cnbfzaeoufRyQF6v2
+         vqNFnYnX8NODgDvgvM/cE04nah8VYlbGluIxEPaAwENAcGFAUVCw4T2zF2Amzgb2uyrH
+         DNiw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc;
+        bh=a+ZiSUJIOvdtJPK+j/qpvFXRwgI/m4zmsjhCjwSrMY4=;
+        b=nSUlqqS3EeJ7BlXIYBKNERMU+a79wS4Rs94WUpzqEu9w6SF8H4y/tHp/QAM4Tnir2a
+         CUU+ZzRwlWqC41eVoCoCQ3x+5ClpI9xq366IMHXXwhfd5YKOLNvU0qAuG3VTpLpqIqtc
+         RY36t3zHSuENYR/ob5zV0RtgiqJKftzUsWXwwJEiyIpr0Cy4eTSlF6P3Bx9s0wiTKGre
+         D0hSzsKDXUU9KLxGPtLrUAzREghgHm8kuAeL4xFJ2YjdjMkbXfcYxIsONJrOxr8KaNZ3
+         tLDAhLjPJvSCvXoFPGrzI1/3WmYCY/vAdEne/uXEr5/KEmaH/uz3BJxR7WZuNXhZ0d80
+         tRHw==
+X-Gm-Message-State: ACgBeo1UCEEzxAmTkCJUeV1pmyKbe8gXFpq6pRX/73QXcEx37zPfgEb1
+        cpPjG9ZhOz+bF2ELf/7tCZ8=
+X-Google-Smtp-Source: AA6agR55UulqBm6Z7CFG3oQTuAKk1CpakKcC1y/U1jNhrnuMrpHCyELrD+8qqpIz1hYgHcLh2JpzAA==
+X-Received: by 2002:a19:ad49:0:b0:492:f465:73fa with SMTP id s9-20020a19ad49000000b00492f46573famr743825lfd.308.1661243271560;
+        Tue, 23 Aug 2022 01:27:51 -0700 (PDT)
+Received: from mobilestation ([95.79.140.178])
+        by smtp.gmail.com with ESMTPSA id e18-20020a05651236d200b00492b0d23d24sm315282lfs.247.2022.08.23.01.27.49
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 23 Aug 2022 01:27:50 -0700 (PDT)
+Date:   Tue, 23 Aug 2022 11:27:48 +0300
+From:   Serge Semin <fancer.lancer@gmail.com>
+To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Cc:     Serge Semin <Sergey.Semin@baikalelectronics.ru>,
+        Rob Herring <robh@kernel.org>,
+        Michal Simek <michal.simek@xilinx.com>,
+        Borislav Petkov <bp@alien8.de>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Tony Luck <tony.luck@intel.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Manish Narani <manish.narani@xilinx.com>,
+        Alexey Malahov <Alexey.Malahov@baikalelectronics.ru>,
+        Michail Ivanov <Michail.Ivanov@baikalelectronics.ru>,
+        Pavel Parkhomenko <Pavel.Parkhomenko@baikalelectronics.ru>,
+        Punnaiah Choudary Kalluri 
+        <punnaiah.choudary.kalluri@xilinx.com>,
+        Dinh Nguyen <dinguyen@kernel.org>,
+        James Morse <james.morse@arm.com>,
+        Robert Richter <rric@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-edac@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 16/20] dt-bindings: memory: snps: Detach Zynq DDRC
+ controller support
+Message-ID: <20220823082748.td6pwkzj5grfno77@mobilestation>
+References: <20220822190730.27277-1-Sergey.Semin@baikalelectronics.ru>
+ <20220822190730.27277-17-Sergey.Semin@baikalelectronics.ru>
+ <a5a15749-1047-74ea-831e-54d27a6d6cdf@linaro.org>
+ <835938e3-e4f5-5029-9373-5dd59bc3b625@linaro.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <835938e3-e4f5-5029-9373-5dd59bc3b625@linaro.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Pablo Neira Ayuso <pablo@netfilter.org>
+On Tue, Aug 23, 2022 at 11:22:08AM +0300, Krzysztof Kozlowski wrote:
+> On 23/08/2022 11:17, Krzysztof Kozlowski wrote:
+> > On 22/08/2022 22:07, Serge Semin wrote:
+> >> The Zynq A05 DDRC controller has nothing in common with DW uMCTL2 DDRC:
+> >> the CSRs layout is absolutely different and it doesn't has IRQ unlike DW
+> >> uMCTL2 DDR controller of all versions (v1.x, v2.x and v3.x). Thus there is
+> >> no any reason to have these controllers described by the same bindings.
+> >> Thus let's split them up.
+> >>
+> >> While at it rename the original Synopsys uMCTL2 DT-schema file to a more
+> >> descriptive - snps,dw-umctl2-ddrc.yaml and add a more detailed title and
+> >> description of the device bindings.
+> > 
+> > Filename should be based on compatible, so if renaming then
+> > snps,ddrc-3.80a.yaml or snps,ddrc.yaml... which leads to original
+> > filename anyway. Therefore nack for rename.
+> > 
+> > BTW, if you perform renames, generate patches with proper -M/-C/-B
+> > arguments so this is detected.
+> > 
+> > 
+> >>
+> >> Signed-off-by: Serge Semin <Sergey.Semin@baikalelectronics.ru>
+> >> --->  .../snps,dw-umctl2-ddrc.yaml                  | 51 +++++++++++++
+> > 
+> > This is a mess. I did not get any cover letters, any other patches any
+> > description of relation between this and your other one.
+> > 
+> > It seems you make independent and conflicting changes to the same file,
+> > so this has to be properly organized.
+> > 
+> > Send entire patchset with cover letter with description of all
+> > dependencies to all maintainers.
+> > 
+> > This is unreviewable now, so a no.
+> 
 
-commit 88cccd908d51397f9754f89a937cd13fa59dee37 upstream.
+> And also untestable by Rob's bot, so will have to wait.
 
-If the NFT_SET_CONCAT|NFT_SET_INTERVAL flags are set on, then the
-netlink attribute NFTA_SET_ELEM_KEY_END must be specified. Otherwise,
-NFTA_SET_ELEM_KEY_END should not be present.
+For what reason it's untestable? The patch has no dependencies from
+any other patchset.
 
-For catch-all element, NFTA_SET_ELEM_KEY_END should not be present.
-The NFT_SET_ELEM_INTERVAL_END is never used with this set flags
-combination.
+-Sergey
 
-Fixes: 7b225d0b5c6d ("netfilter: nf_tables: add NFTA_SET_ELEM_KEY_END attribute")
-Signed-off-by: Pablo Neira Ayuso <pablo@netfilter.org>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
----
- net/netfilter/nf_tables_api.c |   24 ++++++++++++++++++++++++
- 1 file changed, 24 insertions(+)
-
---- a/net/netfilter/nf_tables_api.c
-+++ b/net/netfilter/nf_tables_api.c
-@@ -5798,6 +5798,24 @@ static void nft_setelem_remove(const str
- 		set->ops->remove(net, set, elem);
- }
- 
-+static bool nft_setelem_valid_key_end(const struct nft_set *set,
-+				      struct nlattr **nla, u32 flags)
-+{
-+	if ((set->flags & (NFT_SET_CONCAT | NFT_SET_INTERVAL)) ==
-+			  (NFT_SET_CONCAT | NFT_SET_INTERVAL)) {
-+		if (flags & NFT_SET_ELEM_INTERVAL_END)
-+			return false;
-+		if (!nla[NFTA_SET_ELEM_KEY_END] &&
-+		    !(flags & NFT_SET_ELEM_CATCHALL))
-+			return false;
-+	} else {
-+		if (nla[NFTA_SET_ELEM_KEY_END])
-+			return false;
-+	}
-+
-+	return true;
-+}
-+
- static int nft_add_set_elem(struct nft_ctx *ctx, struct nft_set *set,
- 			    const struct nlattr *attr, u32 nlmsg_flags)
- {
-@@ -5857,6 +5875,9 @@ static int nft_add_set_elem(struct nft_c
- 			return -EINVAL;
- 	}
- 
-+	if (!nft_setelem_valid_key_end(set, nla, flags))
-+		return -EINVAL;
-+
- 	if ((flags & NFT_SET_ELEM_INTERVAL_END) &&
- 	     (nla[NFTA_SET_ELEM_DATA] ||
- 	      nla[NFTA_SET_ELEM_OBJREF] ||
-@@ -6281,6 +6302,9 @@ static int nft_del_setelem(struct nft_ct
- 	if (!nla[NFTA_SET_ELEM_KEY] && !(flags & NFT_SET_ELEM_CATCHALL))
- 		return -EINVAL;
- 
-+	if (!nft_setelem_valid_key_end(set, nla, flags))
-+		return -EINVAL;
-+
- 	nft_set_ext_prepare(&tmpl);
- 
- 	if (flags != 0) {
-
-
+> 
+> I found the cover letters, somehow they got buried in inbox.
+> 
+> Best regards,
+> Krzysztof
