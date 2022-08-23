@@ -2,43 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 36622C32772
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 09:43:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 48890C32772
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 09:43:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236433AbiHWJnA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 05:43:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34884 "EHLO
+        id S234683AbiHWJnG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 23 Aug 2022 05:43:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53230 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351825AbiHWJkd (ORCPT
+        with ESMTP id S1351818AbiHWJkd (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 23 Aug 2022 05:40:33 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8EB7979605;
-        Tue, 23 Aug 2022 01:41:30 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B600779686;
+        Tue, 23 Aug 2022 01:41:29 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 16C3A61446;
-        Tue, 23 Aug 2022 08:40:45 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1D2CEC433C1;
-        Tue, 23 Aug 2022 08:40:43 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 103E06152E;
+        Tue, 23 Aug 2022 08:40:42 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 14DD5C433C1;
+        Tue, 23 Aug 2022 08:40:40 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661244044;
-        bh=+BJTvkYDRr0aE4L6o5TNcyJvj52o/Lx/16ryarOswAU=;
+        s=korg; t=1661244041;
+        bh=UnsYK3CCZV3d4U2OT6f8xJcmMIqfdF3LWGKXGLp2kE4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=U6Y1VTSUWlWltHkwK01XEe4aav+4MoN7rejQPgVPN2s/z4Piu7e3M0KrDnpSyPi7I
-         6yEoTFoOJJCZuszPXryVyrIG0+YPMoEL61BPAfb1rYKjIQ7OvkDv1WIHV455FFMO5s
-         XFdY28BS98j9H0DL58gCaWXTxa/iy2X55a2tfr9c=
+        b=QeNYWMiPcAU7XSz8sblioW0AFHTwHleTTWA01yyccx8GKInLCtXC9H5uN3wkRx5Xw
+         4n9F1R3wd6f5V2P7dxqsVQYoB5kdQ0Xck0LCHXBmU+8OZnKt0BU7y8BbGfK/GKvlpt
+         8HPh5INeZwNKsXdzzI7+bN1gaMt8uus7Br+A9lgE=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, John Johansen <john.johansen@canonical.com>
-Subject: [PATCH 5.15 028/244] apparmor: fix quiet_denied for file rules
-Date:   Tue, 23 Aug 2022 10:23:07 +0200
-Message-Id: <20220823080059.994254834@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
+        Christian Lamparter <chunkeey@gmail.com>,
+        Kalle Valo <kvalo@kernel.org>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 4.14 077/229] wifi: p54: Fix an error handling path in p54spi_probe()
+Date:   Tue, 23 Aug 2022 10:23:58 +0200
+Message-Id: <20220823080056.464724503@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220823080059.091088642@linuxfoundation.org>
-References: <20220823080059.091088642@linuxfoundation.org>
+In-Reply-To: <20220823080053.202747790@linuxfoundation.org>
+References: <20220823080053.202747790@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -47,31 +50,52 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: John Johansen <john.johansen@canonical.com>
+From: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
 
-commit 68ff8540cc9e4ab557065b3f635c1ff4c96e1f1c upstream.
+[ Upstream commit 83781f0162d080fec7dcb911afd1bc2f5ad04471 ]
 
-Global quieting of denied AppArmor generated file events is not
-handled correctly. Unfortunately the is checking if quieting of all
-audit events is set instead of just denied events.
+If an error occurs after a successful call to p54spi_request_firmware(), it
+must be undone by a corresponding release_firmware() as already done in
+the error handling path of p54spi_request_firmware() and in the .remove()
+function.
 
-Fixes: 67012e8209df ("AppArmor: basic auditing infrastructure.")
-Signed-off-by: John Johansen <john.johansen@canonical.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Add the missing call in the error handling path and remove it from
+p54spi_request_firmware() now that it is the responsibility of the caller
+to release the firmware
+
+Fixes: cd8d3d321285 ("p54spi: p54spi driver")
+Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+Acked-by: Christian Lamparter <chunkeey@gmail.com>
+Signed-off-by: Kalle Valo <kvalo@kernel.org>
+Link: https://lore.kernel.org/r/297d2547ff2ee627731662abceeab9dbdaf23231.1655068321.git.christophe.jaillet@wanadoo.fr
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- security/apparmor/audit.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/net/wireless/intersil/p54/p54spi.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
---- a/security/apparmor/audit.c
-+++ b/security/apparmor/audit.c
-@@ -137,7 +137,7 @@ int aa_audit(int type, struct aa_profile
- 	}
- 	if (AUDIT_MODE(profile) == AUDIT_QUIET ||
- 	    (type == AUDIT_APPARMOR_DENIED &&
--	     AUDIT_MODE(profile) == AUDIT_QUIET))
-+	     AUDIT_MODE(profile) == AUDIT_QUIET_DENIED))
- 		return aad(sa)->error;
+diff --git a/drivers/net/wireless/intersil/p54/p54spi.c b/drivers/net/wireless/intersil/p54/p54spi.c
+index e41bf042352e..3dcfad5b61ff 100644
+--- a/drivers/net/wireless/intersil/p54/p54spi.c
++++ b/drivers/net/wireless/intersil/p54/p54spi.c
+@@ -177,7 +177,7 @@ static int p54spi_request_firmware(struct ieee80211_hw *dev)
  
- 	if (KILL_MODE(profile) && type == AUDIT_APPARMOR_DENIED)
+ 	ret = p54_parse_firmware(dev, priv->firmware);
+ 	if (ret) {
+-		release_firmware(priv->firmware);
++		/* the firmware is released by the caller */
+ 		return ret;
+ 	}
+ 
+@@ -672,6 +672,7 @@ static int p54spi_probe(struct spi_device *spi)
+ 	return 0;
+ 
+ err_free_common:
++	release_firmware(priv->firmware);
+ 	free_irq(gpio_to_irq(p54spi_gpio_irq), spi);
+ err_free_gpio_irq:
+ 	gpio_free(p54spi_gpio_irq);
+-- 
+2.35.1
+
 
 
