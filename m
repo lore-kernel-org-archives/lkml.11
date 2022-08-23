@@ -2,45 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 868B5C32772
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 09:33:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 105B9C32772
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 09:33:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350996AbiHWJdU (ORCPT
+        id S1351005AbiHWJd0 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 05:33:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36118 "EHLO
+        Tue, 23 Aug 2022 05:33:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39326 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351304AbiHWJbb (ORCPT
+        with ESMTP id S1350344AbiHWJb7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 05:31:31 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3259B2CC88;
-        Tue, 23 Aug 2022 01:38:38 -0700 (PDT)
+        Tue, 23 Aug 2022 05:31:59 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 07B4943E52;
+        Tue, 23 Aug 2022 01:38:40 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id D51B161530;
-        Tue, 23 Aug 2022 08:37:27 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C46BDC433D6;
-        Tue, 23 Aug 2022 08:37:26 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 416A1B81C6B;
+        Tue, 23 Aug 2022 08:37:13 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 552E5C433C1;
+        Tue, 23 Aug 2022 08:37:11 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661243847;
-        bh=7oHLfdxUfI49xPBE6W9NwDX0o2JYr7uHVpkexMqKnlc=;
+        s=korg; t=1661243831;
+        bh=ljrqwzOrbT0JrmQUw2UjpfLFC5dyyN3a2eOKGBHBJcM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=hn2eEI2pTRjWZpUrLnKHwGaRnX4973R1Mwa/ORNn6RzS2r3h58d8i1j9xJ9le8g/b
-         7B7vYEVrHWmrZ+4/lRAFdvh4ohYV2uEezXc3p0U9HZpq0C+o4IKF7kXgCBi4WVjppe
-         c+HMbAnUzkfuEghNZcMDp+cNWZ3FBYL7yqeVJpbA=
+        b=xkcNuQtU1zq65TlSGZjzB+Y4xYOPQUMz6jM5u7r8HFlyDM/Mhih+q2pGciBE6C5Ct
+         Hb0/A644C3is/CmTxdSncEdblduoSXpHD5wvXhJEZ6bGQenaHYOJZm/7MreTx0OgPw
+         mcX+nOuBug1J9f+EFs8ksnbPdaaEpR4QdbuWWcak=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
+To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        =?UTF-8?q?Pali=20Roh=C3=A1r?= <pali@kernel.org>,
-        Bjorn Helgaas <bhelgaas@google.com>,
-        Naresh Kamboju <naresh.kamboju@linaro.org>,
-        Guenter Roeck <linux@roeck-us.net>
-Subject: [PATCH 4.14 033/229] PCI: Add defines for normal and subtractive PCI bridges
-Date:   Tue, 23 Aug 2022 10:23:14 +0200
-Message-Id: <20220823080054.708220842@linuxfoundation.org>
+        "Jason A. Donenfeld" <Jason@zx2c4.com>,
+        "Justin M. Forbes" <jforbes@fedoraproject.org>,
+        Ard Biesheuvel <ardb@kernel.org>,
+        Arnd Bergmann <arnd@arndb.de>, Nicolas Pitre <nico@linaro.org>,
+        Nathan Chancellor <nathan@kernel.org>,
+        Nick Desaulniers <ndesaulniers@google.com>
+Subject: [PATCH 4.14 008/229] ARM: crypto: comment out gcc warning that breaks clang builds
+Date:   Tue, 23 Aug 2022 10:22:49 +0200
+Message-Id: <20220823080053.626188301@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220823080053.202747790@linuxfoundation.org>
 References: <20220823080053.202747790@linuxfoundation.org>
@@ -52,40 +53,38 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Pali Rohár <pali@kernel.org>
+From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 
-commit 904b10fb189cc15376e9bfce1ef0282e68b0b004 upstream.
+The gcc build warning prevents all clang-built kernels from working
+properly, so comment it out to fix the build.
 
-Add these PCI class codes to pci_ids.h:
+This is a -stable kernel only patch for now, it will be resolved
+differently in mainline releases in the future.
 
-  PCI_CLASS_BRIDGE_PCI_NORMAL
-  PCI_CLASS_BRIDGE_PCI_SUBTRACTIVE
-
-Use these defines in all kernel code for describing PCI class codes for
-normal and subtractive PCI bridges.
-
-[bhelgaas: similar change in pci-mvebu.c]
-Link: https://lore.kernel.org/r/20220214114109.26809-1-pali@kernel.org
-Signed-off-by: Pali Rohár <pali@kernel.org>
-Signed-off-by: Bjorn Helgaas <bhelgaas@google.com>
-Cc: Guenter Roeck <linux@roeck-us.net>a
-Cc: Naresh Kamboju <naresh.kamboju@linaro.org>
-[ gregkh - take only the pci_ids.h portion for stable backports ]
+Cc: "Jason A. Donenfeld" <Jason@zx2c4.com>
+Cc: "Justin M. Forbes" <jforbes@fedoraproject.org>
+Cc: Ard Biesheuvel <ardb@kernel.org>
+Acked-by: Arnd Bergmann <arnd@arndb.de>
+Cc: Nicolas Pitre <nico@linaro.org>
+Cc: Nathan Chancellor <nathan@kernel.org>
+Cc: Nick Desaulniers <ndesaulniers@google.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- include/linux/pci_ids.h |    2 ++
- 1 file changed, 2 insertions(+)
+ arch/arm/lib/xor-neon.c |    3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
---- a/include/linux/pci_ids.h
-+++ b/include/linux/pci_ids.h
-@@ -59,6 +59,8 @@
- #define PCI_CLASS_BRIDGE_EISA		0x0602
- #define PCI_CLASS_BRIDGE_MC		0x0603
- #define PCI_CLASS_BRIDGE_PCI		0x0604
-+#define PCI_CLASS_BRIDGE_PCI_NORMAL		0x060400
-+#define PCI_CLASS_BRIDGE_PCI_SUBTRACTIVE	0x060401
- #define PCI_CLASS_BRIDGE_PCMCIA		0x0605
- #define PCI_CLASS_BRIDGE_NUBUS		0x0606
- #define PCI_CLASS_BRIDGE_CARDBUS	0x0607
+--- a/arch/arm/lib/xor-neon.c
++++ b/arch/arm/lib/xor-neon.c
+@@ -29,8 +29,9 @@ MODULE_LICENSE("GPL");
+  * While older versions of GCC do not generate incorrect code, they fail to
+  * recognize the parallel nature of these functions, and emit plain ARM code,
+  * which is known to be slower than the optimized ARM code in asm-arm/xor.h.
++ *
++ * #warning This code requires at least version 4.6 of GCC
+  */
+-#warning This code requires at least version 4.6 of GCC
+ #endif
+ 
+ #pragma GCC diagnostic ignored "-Wunused-variable"
 
 
