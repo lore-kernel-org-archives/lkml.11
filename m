@@ -2,34 +2,34 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2CBC2C32772
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 10:37:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1E206C32774
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 10:37:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354541AbiHWKhT (ORCPT
+        id S1354681AbiHWKhY (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 06:37:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41038 "EHLO
+        Tue, 23 Aug 2022 06:37:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38700 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354965AbiHWKWf (ORCPT
+        with ESMTP id S1354995AbiHWKWl (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 06:22:35 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8313D1CFD9;
-        Tue, 23 Aug 2022 02:03:42 -0700 (PDT)
+        Tue, 23 Aug 2022 06:22:41 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 941A225E9C;
+        Tue, 23 Aug 2022 02:03:47 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 5D81761580;
-        Tue, 23 Aug 2022 09:03:42 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4E8E6C433D6;
-        Tue, 23 Aug 2022 09:03:41 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 43824B81C87;
+        Tue, 23 Aug 2022 09:03:46 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 86658C433D6;
+        Tue, 23 Aug 2022 09:03:44 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661245421;
-        bh=ofx1+SfbZoigJIb+TofH18nVcCA0VxaUkZCIg6dRLao=;
+        s=korg; t=1661245425;
+        bh=BXQ5aCUQqtecM1N9HQfZDNeTuSJ9kCL43SMoe39647E=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Bu1KEkU5Fyyndb3tT74fOE7vP/O9CpGARKt02gGBn+Ij8xFRLMFK5eRfiodZM6tNU
-         ucYv+PVM4NFbLbSXO0ekf1v1CUbKEB6lz4t2Y96yD7XFxnrnJFH2Jiaox9rmlPZlOY
-         w1WGXqflvMRAqtMio1MmY1cuAK0c/rDgdZnMDJl4=
+        b=nANktytsvDREIDCdmjMGa0YgQY1IAZBZ/UVOySubd4keM7xBpLIyU7acZSEJt7mfp
+         OIUX09rEVg19k4gc+RQ8Dd8qiWRO/3Nkh+vmInlGtKV0oVUvfZqxWJU2kxfGfhXdWv
+         L1q4TuyZWQVaETjAI3eqMxrjWhhwPCx/MrmNFuec=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
@@ -37,9 +37,9 @@ Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Alexander Stein <alexander.stein@ew.tq-group.com>,
         Shawn Guo <shawnguo@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.19 043/287] ARM: dts: imx6ul: change operating-points to uint32-matrix
-Date:   Tue, 23 Aug 2022 10:23:32 +0200
-Message-Id: <20220823080101.712639495@linuxfoundation.org>
+Subject: [PATCH 4.19 044/287] ARM: dts: imx6ul: fix lcdif node compatible
+Date:   Tue, 23 Aug 2022 10:23:33 +0200
+Message-Id: <20220823080101.741727860@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220823080100.268827165@linuxfoundation.org>
 References: <20220823080100.268827165@linuxfoundation.org>
@@ -53,59 +53,38 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Alexander Stein <alexander.stein@ew.tq-group.com>
 
-[ Upstream commit edb67843983bbdf61b4c8c3c50618003d38bb4ae ]
+[ Upstream commit 1a884d17ca324531634cce82e9f64c0302bdf7de ]
 
-operating-points is a uint32-matrix as per opp-v1.yaml. Change it
-accordingly. While at it, change fsl,soc-operating-points as well,
-although there is no bindings file (yet). But they should have the same
-format. Fixes the dt_binding_check warning:
-cpu@0: operating-points:0: [696000, 1275000, 528000, 1175000, 396000,
-1025000, 198000, 950000] is too long
-cpu@0: operating-points:0: Additional items are not allowed (528000,
-1175000, 396000, 1025000, 198000, 950000 were unexpected)
+In yaml binding "fsl,imx6ul-lcdif" is listed as compatible to imx6sx-lcdif,
+but not imx28-lcdif. Change the list accordingly. Fixes the
+dt_binding_check warning:
+lcdif@21c8000: compatible: 'oneOf' conditional failed, one must be fixed:
+['fsl,imx6ul-lcdif', 'fsl,imx28-lcdif'] is too long
+Additional items are not allowed ('fsl,imx28-lcdif' was unexpected)
+'fsl,imx6ul-lcdif' is not one of ['fsl,imx23-lcdif', 'fsl,imx28-lcdif',
+'fsl,imx6sx-lcdif']
+'fsl,imx6sx-lcdif' was expected
 
 Signed-off-by: Alexander Stein <alexander.stein@ew.tq-group.com>
 Signed-off-by: Shawn Guo <shawnguo@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/arm/boot/dts/imx6ul.dtsi | 22 ++++++++++------------
- 1 file changed, 10 insertions(+), 12 deletions(-)
+ arch/arm/boot/dts/imx6ul.dtsi | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
 diff --git a/arch/arm/boot/dts/imx6ul.dtsi b/arch/arm/boot/dts/imx6ul.dtsi
-index 07850587ee0a..605792fa67b2 100644
+index 605792fa67b2..d91baa74e608 100644
 --- a/arch/arm/boot/dts/imx6ul.dtsi
 +++ b/arch/arm/boot/dts/imx6ul.dtsi
-@@ -61,20 +61,18 @@ cpu0: cpu@0 {
- 			reg = <0>;
- 			clock-latency = <61036>; /* two CLK32 periods */
- 			#cooling-cells = <2>;
--			operating-points = <
-+			operating-points =
- 				/* kHz	uV */
--				696000	1275000
--				528000	1175000
--				396000	1025000
--				198000	950000
--			>;
--			fsl,soc-operating-points = <
-+				<696000	1275000>,
-+				<528000	1175000>,
-+				<396000	1025000>,
-+				<198000	950000>;
-+			fsl,soc-operating-points =
- 				/* KHz	uV */
--				696000	1275000
--				528000	1175000
--				396000	1175000
--				198000	1175000
--			>;
-+				<696000	1275000>,
-+				<528000	1175000>,
-+				<396000	1175000>,
-+				<198000	1175000>;
- 			clocks = <&clks IMX6UL_CLK_ARM>,
- 				 <&clks IMX6UL_CLK_PLL2_BUS>,
- 				 <&clks IMX6UL_CLK_PLL2_PFD2>,
+@@ -940,7 +940,7 @@ cpu_speed_grade: speed-grade@10 {
+ 			};
+ 
+ 			lcdif: lcdif@21c8000 {
+-				compatible = "fsl,imx6ul-lcdif", "fsl,imx28-lcdif";
++				compatible = "fsl,imx6ul-lcdif", "fsl,imx6sx-lcdif";
+ 				reg = <0x021c8000 0x4000>;
+ 				interrupts = <GIC_SPI 5 IRQ_TYPE_LEVEL_HIGH>;
+ 				clocks = <&clks IMX6UL_CLK_LCDIF_PIX>,
 -- 
 2.35.1
 
