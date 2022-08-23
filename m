@@ -2,44 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8BEA4C32792
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 11:53:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A735EC32772
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 11:53:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358612AbiHWLx1 (ORCPT
+        id S1358618AbiHWLxe (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 07:53:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52880 "EHLO
+        Tue, 23 Aug 2022 07:53:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52672 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1358647AbiHWLuc (ORCPT
+        with ESMTP id S1358641AbiHWLuc (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 23 Aug 2022 07:50:32 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2D96762CE;
-        Tue, 23 Aug 2022 02:31:35 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C943862C5;
+        Tue, 23 Aug 2022 02:31:32 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 6CC33B8105C;
-        Tue, 23 Aug 2022 09:31:34 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B1D9EC433D6;
-        Tue, 23 Aug 2022 09:31:32 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 70227B81C85;
+        Tue, 23 Aug 2022 09:31:31 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9CDBEC433C1;
+        Tue, 23 Aug 2022 09:31:29 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661247093;
-        bh=P/OgRbBal2oMJ65e+9HknwAw+1Ro5mp3YCbEB9NHDko=;
+        s=korg; t=1661247090;
+        bh=UhQPgBaeXgUoLlYqc0u6KRD3hvwuwBYnfoQghB36ZbQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=qq52aYV7aD8knLmOMYNoHAFBzD1AeEf2DZqWqBCMe+WcZlabME5cvCbdkTFXqQqSU
-         6giLOxMCKa7lOHg36Q7xXUINrdfOV06ZJtA7tK2GEMiuOSa9+Yv2vF+kw7MwX/6kYy
-         RQKOui6bswsdGMYA85+idA1rlH8Z7K5d+unBD1iU=
+        b=JEdi4wF+X1zjc5x0a98RB+w+QJNcyQ7izSJB3VJOeOWcyhGYXZddWLp5XiC1rq1yu
+         iBM6PSpSTerRMHlLF19Qije0wQxWjm4XVR00YOo+1+2t2pH39GSrsxSxkVWcEG9a3x
+         vIicfgrqZQTdLaDkXN6ZeEXQogaP9yosSg1w+yho=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Sakari Ailus <sakari.ailus@linux.intel.com>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>
-Subject: [PATCH 5.4 315/389] ACPI: property: Return type of acpi_add_nondev_subnodes() should be bool
-Date:   Tue, 23 Aug 2022 10:26:33 +0200
-Message-Id: <20220823080128.710422856@linuxfoundation.org>
+        stable@vger.kernel.org, Jernej Skrabec <jernej.skrabec@gmail.com>,
+        Heiko Stuebner <heiko@sntech.de>,
+        Samuel Holland <samuel@sholland.org>,
+        Linus Walleij <linus.walleij@linaro.org>
+Subject: [PATCH 5.4 314/389] pinctrl: sunxi: Add I/O bias setting for H6 R-PIO
+Date:   Tue, 23 Aug 2022 10:26:32 +0200
+Message-Id: <20220823080128.679233996@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220823080115.331990024@linuxfoundation.org>
 References: <20220823080115.331990024@linuxfoundation.org>
@@ -51,38 +51,67 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Sakari Ailus <sakari.ailus@linux.intel.com>
+From: Samuel Holland <samuel@sholland.org>
 
-commit 85140ef275f577f64e8a2c5789447222dfc14fc4 upstream.
+commit fc153c8f283bf5925615195fc9d4056414d7b168 upstream.
 
-The value acpi_add_nondev_subnodes() returns is bool so change the return
-type of the function to match that.
+H6 requires I/O bias configuration on both of its PIO devices.
+Previously it was only done for the main PIO.
 
-Fixes: 445b0eb058f5 ("ACPI / property: Add support for data-only subnodes")
-Signed-off-by: Sakari Ailus <sakari.ailus@linux.intel.com>
-Reviewed-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Signed-off-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
+The setting for Port L is at bit 0, so the bank calculation needs to
+account for the pin base. Otherwise the wrong bit is used.
+
+Fixes: cc62383fcebe ("pinctrl: sunxi: Support I/O bias voltage setting on H6")
+Reviewed-by: Jernej Skrabec <jernej.skrabec@gmail.com>
+Tested-by: Heiko Stuebner <heiko@sntech.de>
+Signed-off-by: Samuel Holland <samuel@sholland.org>
+Link: https://lore.kernel.org/r/20220713025233.27248-3-samuel@sholland.org
+Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/acpi/property.c |    8 ++++----
- 1 file changed, 4 insertions(+), 4 deletions(-)
+ drivers/pinctrl/sunxi/pinctrl-sun50i-h6-r.c |    1 +
+ drivers/pinctrl/sunxi/pinctrl-sunxi.c       |    7 ++++---
+ 2 files changed, 5 insertions(+), 3 deletions(-)
 
---- a/drivers/acpi/property.c
-+++ b/drivers/acpi/property.c
-@@ -152,10 +152,10 @@ static bool acpi_nondev_subnode_ok(acpi_
- 	return acpi_nondev_subnode_data_ok(handle, link, list, parent);
- }
+--- a/drivers/pinctrl/sunxi/pinctrl-sun50i-h6-r.c
++++ b/drivers/pinctrl/sunxi/pinctrl-sun50i-h6-r.c
+@@ -105,6 +105,7 @@ static const struct sunxi_pinctrl_desc s
+ 	.npins = ARRAY_SIZE(sun50i_h6_r_pins),
+ 	.pin_base = PL_BASE,
+ 	.irq_banks = 2,
++	.io_bias_cfg_variant = BIAS_VOLTAGE_PIO_POW_MODE_SEL,
+ };
  
--static int acpi_add_nondev_subnodes(acpi_handle scope,
--				    const union acpi_object *links,
--				    struct list_head *list,
--				    struct fwnode_handle *parent)
-+static bool acpi_add_nondev_subnodes(acpi_handle scope,
-+				     const union acpi_object *links,
-+				     struct list_head *list,
-+				     struct fwnode_handle *parent)
+ static int sun50i_h6_r_pinctrl_probe(struct platform_device *pdev)
+--- a/drivers/pinctrl/sunxi/pinctrl-sunxi.c
++++ b/drivers/pinctrl/sunxi/pinctrl-sunxi.c
+@@ -616,7 +616,7 @@ static int sunxi_pinctrl_set_io_bias_cfg
+ 					 unsigned pin,
+ 					 struct regulator *supply)
  {
- 	bool ret = false;
- 	int i;
+-	unsigned short bank = pin / PINS_PER_BANK;
++	unsigned short bank;
+ 	unsigned long flags;
+ 	u32 val, reg;
+ 	int uV;
+@@ -632,6 +632,9 @@ static int sunxi_pinctrl_set_io_bias_cfg
+ 	if (uV == 0)
+ 		return 0;
+ 
++	pin -= pctl->desc->pin_base;
++	bank = pin / PINS_PER_BANK;
++
+ 	switch (pctl->desc->io_bias_cfg_variant) {
+ 	case BIAS_VOLTAGE_GRP_CONFIG:
+ 		/*
+@@ -649,8 +652,6 @@ static int sunxi_pinctrl_set_io_bias_cfg
+ 		else
+ 			val = 0xD; /* 3.3V */
+ 
+-		pin -= pctl->desc->pin_base;
+-
+ 		reg = readl(pctl->membase + sunxi_grp_config_reg(pin));
+ 		reg &= ~IO_BIAS_MASK;
+ 		writel(reg | val, pctl->membase + sunxi_grp_config_reg(pin));
 
 
