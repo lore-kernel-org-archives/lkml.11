@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 87107C32772
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 11:18:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DC8A8C32772
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 11:18:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357308AbiHWLR7 (ORCPT
+        id S1349786AbiHWLSD (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 07:17:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37564 "EHLO
+        Tue, 23 Aug 2022 07:18:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43484 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357455AbiHWLPp (ORCPT
+        with ESMTP id S1357535AbiHWLQC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 07:15:45 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E2571BCC2D;
-        Tue, 23 Aug 2022 02:19:31 -0700 (PDT)
+        Tue, 23 Aug 2022 07:16:02 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 31B76BCCFB;
+        Tue, 23 Aug 2022 02:19:43 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 8594B61227;
-        Tue, 23 Aug 2022 09:19:20 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7E1C9C433C1;
-        Tue, 23 Aug 2022 09:19:19 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 5B004B8105C;
+        Tue, 23 Aug 2022 09:18:31 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 87864C433C1;
+        Tue, 23 Aug 2022 09:18:29 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661246359;
-        bh=xbxje7Xy91BKf6ztvGQ+0cfijGGWz58C+kaJ3TBrwCE=;
+        s=korg; t=1661246310;
+        bh=xU6UoLaBrAZoUVuMP2Ai1TCNiw+qtZWEPe65ArGFS6s=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=i/YA5oN1YxyZ+c1lunS00ZVbbxTVwb2Q0v5tncnKZq5WUAESQP24iWZ67W35nPAeV
-         XL4ibU5CeSYcGWhfNAMVIcXU3My5fCF1soDLhB3fLJ2Lbi4ZJWm2Duo9TtG1WBMBFa
-         VqOiRSomoPSNHHOrnLFBPMWk/5BhTRbACpb9pFDs=
+        b=LGuJa5BT7BFhSxgyk2xobHvPQQCzRDBtnxqKaDJm9VHffaLwUe5JD90dIjnOvbsXA
+         QeGNQI7YkWDmCSaDo7g4ew0YrRjfMSXxH4uiai5MRzMsiCbROBxXJfmrbPI1Jq6oty
+         3zkyt9fHp/hRfylQce3M30Q+R6Mrx6CwEhb7AIHQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
-        Michal Simek <michal.simek@amd.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 084/389] cpufreq: zynq: Fix refcount leak in zynq_get_revision
-Date:   Tue, 23 Aug 2022 10:22:42 +0200
-Message-Id: <20220823080119.139222678@linuxfoundation.org>
+        stable@vger.kernel.org, Hongbo Yin <yinhongbo@bytedance.com>,
+        Jiachen Zhang <zhangjiachen.jaycee@bytedance.com>,
+        Tianci Zhang <zhangtianci.1997@bytedance.com>,
+        Miklos Szeredi <mszeredi@redhat.com>
+Subject: [PATCH 5.4 028/389] ovl: drop WARN_ON() dentry is NULL in ovl_encode_fh()
+Date:   Tue, 23 Aug 2022 10:21:46 +0200
+Message-Id: <20220823080116.867382766@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220823080115.331990024@linuxfoundation.org>
 References: <20220823080115.331990024@linuxfoundation.org>
@@ -50,37 +51,57 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Miaoqian Lin <linmq006@gmail.com>
+From: Jiachen Zhang <zhangjiachen.jaycee@bytedance.com>
 
-[ Upstream commit d1ff2559cef0f6f8d97fba6337b28adb10689e16 ]
+commit dd524b7f317de8d31d638cbfdc7be4cf9b770e42 upstream.
 
-of_find_compatible_node() returns a node pointer with refcount
-incremented, we should use of_node_put() on it when done.
-Add missing of_node_put() to avoid refcount leak.
+Some code paths cannot guarantee the inode have any dentry alias. So
+WARN_ON() all !dentry may flood the kernel logs.
 
-Fixes: 00f7dc636366 ("ARM: zynq: Add support for SOC_BUS")
-Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
-Link: https://lore.kernel.org/r/20220605082807.21526-1-linmq006@gmail.com
-Signed-off-by: Michal Simek <michal.simek@amd.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+For example, when an overlayfs inode is watched by inotifywait (1), and
+someone is trying to read the /proc/$(pidof inotifywait)/fdinfo/INOTIFY_FD,
+at that time if the dentry has been reclaimed by kernel (such as
+echo 2 > /proc/sys/vm/drop_caches), there will be a WARN_ON(). The
+printed call stack would be like:
+
+    ? show_mark_fhandle+0xf0/0xf0
+    show_mark_fhandle+0x4a/0xf0
+    ? show_mark_fhandle+0xf0/0xf0
+    ? seq_vprintf+0x30/0x50
+    ? seq_printf+0x53/0x70
+    ? show_mark_fhandle+0xf0/0xf0
+    inotify_fdinfo+0x70/0x90
+    show_fdinfo.isra.4+0x53/0x70
+    seq_show+0x130/0x170
+    seq_read+0x153/0x440
+    vfs_read+0x94/0x150
+    ksys_read+0x5f/0xe0
+    do_syscall_64+0x59/0x1e0
+    entry_SYSCALL_64_after_hwframe+0x44/0xa9
+
+So let's drop WARN_ON() to avoid kernel log flooding.
+
+Reported-by: Hongbo Yin <yinhongbo@bytedance.com>
+Signed-off-by: Jiachen Zhang <zhangjiachen.jaycee@bytedance.com>
+Signed-off-by: Tianci Zhang <zhangtianci.1997@bytedance.com>
+Fixes: 8ed5eec9d6c4 ("ovl: encode pure upper file handles")
+Cc: <stable@vger.kernel.org> # v4.16
+Signed-off-by: Miklos Szeredi <mszeredi@redhat.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/arm/mach-zynq/common.c | 1 +
- 1 file changed, 1 insertion(+)
+ fs/overlayfs/export.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/arch/arm/mach-zynq/common.c b/arch/arm/mach-zynq/common.c
-index 3a4248fd7962..25530ddae1fa 100644
---- a/arch/arm/mach-zynq/common.c
-+++ b/arch/arm/mach-zynq/common.c
-@@ -77,6 +77,7 @@ static int __init zynq_get_revision(void)
- 	}
+--- a/fs/overlayfs/export.c
++++ b/fs/overlayfs/export.c
+@@ -274,7 +274,7 @@ static int ovl_encode_fh(struct inode *i
+ 		return FILEID_INVALID;
  
- 	zynq_devcfg_base = of_iomap(np, 0);
-+	of_node_put(np);
- 	if (!zynq_devcfg_base) {
- 		pr_err("%s: Unable to map I/O memory\n", __func__);
- 		return -1;
--- 
-2.35.1
-
+ 	dentry = d_find_any_alias(inode);
+-	if (WARN_ON(!dentry))
++	if (!dentry)
+ 		return FILEID_INVALID;
+ 
+ 	type = ovl_dentry_to_fh(dentry, fid, max_len);
 
 
