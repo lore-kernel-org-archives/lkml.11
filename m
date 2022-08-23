@@ -2,295 +2,149 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 83735C32789
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 02:59:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BC048C28D13
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 03:01:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239543AbiHWC7j (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 22 Aug 2022 22:59:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52398 "EHLO
+        id S238930AbiHWDBB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 22 Aug 2022 23:01:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53564 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239152AbiHWC7c (ORCPT
+        with ESMTP id S239801AbiHWDAx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 22 Aug 2022 22:59:32 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D5ED64D177
-        for <linux-kernel@vger.kernel.org>; Mon, 22 Aug 2022 19:59:30 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 748FB6125D
-        for <linux-kernel@vger.kernel.org>; Tue, 23 Aug 2022 02:59:30 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B0670C433C1;
-        Tue, 23 Aug 2022 02:59:28 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1661223569;
-        bh=v/o3RMdeh/rms3+V7rhneJHZCHFD4q9Q0g7WV2Lo9Qs=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=oJKbg4hp8ovVNHo7gx8+nVQkcs10mLT+liWzLyKK1sDAK214ff1rBoWj9sS+bzhwF
-         6Eiko/wOvdjWnWGowua63dbya7MuLgFHD5WVvEIcWUyYmN4BJeZ8LM0MYVODH2SO3+
-         y0BXQUJtxag5SDkHPqnz9QlZVXksSq2VLY2HiOeBUmlFyh8YuPRVio0JkebdoYxUPt
-         be04HtpALly9SVjsV/NBCFCspqevI+RnlRmTpfNprHK/aAUz1JwfEjNnbctD/RQar0
-         2wfkf6ec5O2Gi1z+lYVJ9bQp7R2bNBofuM6VcBgj+EFetugxSEGooiaAPVWzgkYMcM
-         +PmzxhqnqlLZQ==
-From:   "Masami Hiramatsu (Google)" <mhiramat@kernel.org>
-To:     Steven Rostedt <rostedt@goodmis.org>
-Cc:     Tom Zanussi <zanussi@kernel.org>, Ingo Molnar <mingo@redhat.com>,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH v3 3/3] tracing: Add .graph suffix option to histogram value
-Date:   Tue, 23 Aug 2022 11:59:26 +0900
-Message-Id: <166122356631.94548.12762281844637796375.stgit@devnote2>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <166122353724.94548.7395770385598120122.stgit@devnote2>
-References: <166122353724.94548.7395770385598120122.stgit@devnote2>
-User-Agent: StGit/0.19
-MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
+        Mon, 22 Aug 2022 23:00:53 -0400
+Received: from EUR05-VI1-obe.outbound.protection.outlook.com (mail-vi1eur05on2066.outbound.protection.outlook.com [40.107.21.66])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0CD105A2C2;
+        Mon, 22 Aug 2022 20:00:53 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=VgeH21hCeK3ODyVatMbhAt6mxCoCs2gwceE415qq3bWy9joufkqgzVrLrS4ZPrN24tk9XFbTCzrg5q11y+rGdCgui7PnIQZH1BRPsJCtl0N6beKjP6Awc/+7SaucXw8CSc6EdILP/eGmJwDN1ONtb3Y50eRb+VNQPji89XPdmcTcdc8Dx09aziwY1XgjfOD1wGaDS4ESFg+22ypacl82JlU+9pvZiOFhEQw5l4dhetm1FzJwVRtgl9J8kbPQxQ9XIfERpX26RJdMuWo5rwvsQgvLvwwe4otsF4ZqRynThVcG1mDqRNXVKhWmtDl69mgeUoj7H9PlCuvZ+kAeIKCKmw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=UjqA/GdmEKIQxj7dGuQzsGf67nAbuH1s4Jy7bRMENmw=;
+ b=dRjh3gSGF+6/2r18nclxF6sb1Z6TCelEPvcs1WYLA+w1engtwVzW5EjH9bLcq9CGFBkiUro0T4nlh7o3pxEJfFU6TNq03rNOcl0MX6EMqLKta8xqauXda8jbbDuWuUfLzIZ65JWsvI1uX78s6P6Ubk7q0xGNG8B7mI7xCzL0sew+VAI7+8SeCq6DeS+7wBmIycsJfdqg3DYjv9gk7cD+45gI3vF+6MeIW9i1IaD135tIUk0mOvV9Hl/Pwoiv3TQ+BsWxAA3p5h9OHoyAa36tmE9lLVxuvd6lqD2vOk7QkPkHDUtS3gUzS67e+QS2D/IWjj+reHVKVI5wHBRP66Y/8A==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=oss.nxp.com; dmarc=pass action=none header.from=oss.nxp.com;
+ dkim=pass header.d=oss.nxp.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=NXP1.onmicrosoft.com;
+ s=selector2-NXP1-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=UjqA/GdmEKIQxj7dGuQzsGf67nAbuH1s4Jy7bRMENmw=;
+ b=fbITCbLT4oIfnqSU19MulNH+D8oyNrjvnEaGscmI4yfndXqqY1PH8lo4MmlNcaj2aHHuyXVtDavWbUVQnVzXPTBrMw46zSzkjcN7QzZaRR6lfUPxCyy3qXm9ww47ljsRvEZjoK0GStJnbeECARUiSkxm3BxeMORj3/KOipryVLM=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=oss.nxp.com;
+Received: from DU0PR04MB9417.eurprd04.prod.outlook.com (2603:10a6:10:358::11)
+ by DU2PR04MB8824.eurprd04.prod.outlook.com (2603:10a6:10:2e3::22) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5525.10; Tue, 23 Aug
+ 2022 03:00:50 +0000
+Received: from DU0PR04MB9417.eurprd04.prod.outlook.com
+ ([fe80::3c6c:b7e6:a93d:d442]) by DU0PR04MB9417.eurprd04.prod.outlook.com
+ ([fe80::3c6c:b7e6:a93d:d442%4]) with mapi id 15.20.5546.023; Tue, 23 Aug 2022
+ 03:00:50 +0000
+From:   "Peng Fan (OSS)" <peng.fan@oss.nxp.com>
+To:     wsa@kernel.org, aisheng.dong@nxp.com, robh+dt@kernel.org,
+        krzysztof.kozlowski+dt@linaro.org, shawnguo@kernel.org,
+        s.hauer@pengutronix.de
+Cc:     kernel@pengutronix.de, festevam@gmail.com, linux-imx@nxp.com,
+        linux-i2c@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        xiaoning.wang@nxp.com, Peng Fan <peng.fan@nxp.com>
+Subject: [PATCH V3 1/7] ARM: dts: imx7ulp: update the LPI2C clock-names
+Date:   Tue, 23 Aug 2022 11:02:09 +0800
+Message-Id: <20220823030215.870414-2-peng.fan@oss.nxp.com>
+X-Mailer: git-send-email 2.37.1
+In-Reply-To: <20220823030215.870414-1-peng.fan@oss.nxp.com>
+References: <20220823030215.870414-1-peng.fan@oss.nxp.com>
 Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-ClientProxiedBy: SGXP274CA0024.SGPP274.PROD.OUTLOOK.COM (2603:1096:4:b8::36)
+ To DU0PR04MB9417.eurprd04.prod.outlook.com (2603:10a6:10:358::11)
+MIME-Version: 1.0
+X-MS-Exchange-MessageSentRepresentingType: 1
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 8f7f1cc1-b5a3-4026-ef48-08da84b3af50
+X-MS-TrafficTypeDiagnostic: DU2PR04MB8824:EE_
+X-MS-Exchange-SharedMailbox-RoutingAgent-Processed: True
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: dNNYOenEDt94CeYLaGE5HSeo7dawCJovnyUuwjXEWzlPVSFb6QbigMImWdBISkbe35Y4JMEE0ozd46+0QqP8EWv06NI6VQ9LF7vuHsMm/l9G1qy04CBnQR0inRn6Avg0WqyXllTsITfr221YDMHMZqi4bpnEqmxCNnLcnJ7XPROCYoUOBGLm8yu7Ne3hvcpohs7faJNJaxBEnpC6/eCDwvNTAJljbarZXiAyJHNlS+UabVv87xbP81od0XwOLZWjT3qoLhT/PBaV3K25ntLaJkjRTBTyWQkj0PnSWzwdF1BtqkFU+7HXOREvgmObdwp5SoeaT2F/b4yrCaLnMwvrzY//8B46P/REFYAJE5mGPpyRAidbJsCBr+G3NWokk4MoNARJIuJ9P9d2tKZ4OrMZ6URLxS0YFKtQRKVeeC1IYwtyPDtCIjr8+G3JNa42RFbwS4/Ahm2wsZb1fE8HYWJXUjWBHs9zIfeyQMN4N8CJUx0mDzbUQevjtCsLRxQWF85jn0lOveuYnaCiWFx7maHGn4L7Qoso0Dqu6CcTgem0LXzww3uSwWAaTta/wBZfw34JfQ+WcWyOO5bX5KnG1jd9XdgrYUpNfGxgoyw6rAURryMNxhIxWA823HQf8mJz68RapjgEfdxI80Mk4OxL9P743tNxFr8gWiaJ2e3yJySOFLJjBkqGEJ0UszgkRe8IM51uNhx7hIeO23Oupn5EHp2KoC4PflH3z4UG9KfUq9+WbHNU856HsL8cxDxO4qugJzdz7d33FHu8LtrPzDCRq+MCzg==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DU0PR04MB9417.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(4636009)(136003)(376002)(39860400002)(346002)(366004)(396003)(83380400001)(38350700002)(8676002)(38100700002)(5660300002)(4326008)(66556008)(66476007)(66946007)(186003)(52116002)(8936002)(6486002)(478600001)(7416002)(316002)(26005)(6512007)(6666004)(41300700001)(1076003)(2616005)(6506007)(86362001)(2906002);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?XXdLyVqwOJA/wZl/GKxDiZ13u5xtCeTgRmiDVMPgKA7WmCn4UtYOVK+1mFvL?=
+ =?us-ascii?Q?2oPpyJTXH5iV8KQHGPvS6E2GxE5YAWu+TZM9i9Joi+2TuXGrePgq4Er6zxBp?=
+ =?us-ascii?Q?ElwojxjzH2oGrMaCfYhRCz/0f2vG/aeN9XzTs+qmzXW/hU6JIyMu5bwngA2+?=
+ =?us-ascii?Q?n3fAn8X0Pfl2SRyimfv9bkGdzx/sFI2tbyIh4VSp32X1ffSmhfSnsWvxCj2q?=
+ =?us-ascii?Q?cnnypBzFbYN+DlPtwS2T8dAVBxwyQdYfuMxGgjrf9FoaLf+hH8XJXdVbjyFO?=
+ =?us-ascii?Q?x0KDhnLGYkjyfZJ9/OInlx7SJky+kaa8tnO924vESZ0jqRCITYYIxJEbfa4m?=
+ =?us-ascii?Q?FkjmGddEGAVw+Tq1ZTe7383Tuu6UcYkPfcgsXqEF4MG2zh67dhG6ETiD8QcX?=
+ =?us-ascii?Q?ephROs05z/v/CaHlDhhKfjgzKiyHX5pKUdW5smrWEWklpdDWn47piPbGYLXF?=
+ =?us-ascii?Q?ysqu313BueqpsPMkgFBBZDXXaspi/rH4IgejyFVACmMzE5Br0vP04W8oSLVQ?=
+ =?us-ascii?Q?vYbaTWAsRJZ0QjNPlE74JqdWrEC4j5t6pHMrKacE83enKsznNNO3Sn/Mc4h+?=
+ =?us-ascii?Q?BqJHddyQM9WiWNvPpfxNlEo5U2y1WhBfRCE2UoePj+u12J5/v3G/MWIpCdHP?=
+ =?us-ascii?Q?T00nNR5/BsqFJvL7fgdk9mXVrWYGZe0+KCh2plmSn0Dye+7zGrK0fQy8gWcz?=
+ =?us-ascii?Q?bwMKTjOueh2kBxFgiiqMtHIbmEJfuh+x/3TeXJgjNmE/dsWjAVptPFtrCESh?=
+ =?us-ascii?Q?xrx5ld4+FwyHnou8N42KhRc6dX52+SoE1gaVMebrmFy/Ndzqs33ObqeoHCbw?=
+ =?us-ascii?Q?b93VocQKoekpbyL8lzOqEUD8y1zFqlXl7/melejocO6+2/HmBAsAoZw1OzgW?=
+ =?us-ascii?Q?AJED3boPX7tPI6TrxZJ23LrhPhMoTrI5/WH1jEIojumuVTunW9rebzR3+onG?=
+ =?us-ascii?Q?3mAAJal9/bZ0k9EHzmGQifiNMAp3TotpvLv6QLnc0ZKdoBzR2BhKXPdLSL1L?=
+ =?us-ascii?Q?47Lr6sFdB01yT1U7ydaQz/yr5FPeLbJFZde/sgnTaDrz24OGzX8v654iYRZZ?=
+ =?us-ascii?Q?zBkwJbcMzd3/WvQGWMTnwjHYXElWYXMHNJ2aZAEsbsRVo0BdB/H5jx20FiFn?=
+ =?us-ascii?Q?fi+8T+re6byOdMNtQbsdbZ4tkXiDqGp3vdpyoKG93HIe4e+WM484ovM7vJwZ?=
+ =?us-ascii?Q?We0YC8wx156kflFDQIY5I3/a0LPLqN2sAOqXyNu4b1ggn9G5T3EbFcZyUwHN?=
+ =?us-ascii?Q?P9o6mBzGGlvOJpo71p3WuB8ZdDO+DdOKORnJwVPt4BVtZ7qHVjs7MJEPWp7D?=
+ =?us-ascii?Q?ilPoaFerflkxv+TPqlQrJjTRYdr0sjxXtCQpf1I4CWhnoovH68W3HmB/JJKK?=
+ =?us-ascii?Q?QqHP5Yyg9dEX7aEfsDEhUCxCVqQ9upMbix+pd0AUdUXxR/ROXn8OCTXZ0ulm?=
+ =?us-ascii?Q?oJB5GEihZ5ZRws4p4GDPJA1d0zaVHL0FO2FOIq9c08Ehs1rHOKxxZaMzMNHV?=
+ =?us-ascii?Q?JYSuoB0J34RoeR8817WbcoWlOHfiP23KvbpbDq4R7mf0L0Dzzk+PYQpqV5uz?=
+ =?us-ascii?Q?HYUNVC4RPKpoYy28VZWHOl5Ih0v0a13jITRpzwFz?=
+X-OriginatorOrg: oss.nxp.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 8f7f1cc1-b5a3-4026-ef48-08da84b3af50
+X-MS-Exchange-CrossTenant-AuthSource: DU0PR04MB9417.eurprd04.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 23 Aug 2022 03:00:50.4800
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: VOhS8cFe64DeUY5O/DJP11FrjqHISU8+ii38ENUknw47IQFkBvoxFDP5xhAW5IE6S4N8DJuR+hkIHdQMdKDJxw==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DU2PR04MB8824
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Masami Hiramatsu (Google) <mhiramat@kernel.org>
+From: Peng Fan <peng.fan@nxp.com>
 
-Add the .graph suffix which shows the bar graph of the histogram value.
+The clock name should be per clock, not ipg clock.
 
-For example, the below example shows that the bar graph
-of the histogram of the runtime for each tasks.
-
-------
-  # cd /sys/kernel/debug/tracing/
-  # echo hist:keys=pid:vals=runtime.graph:sort=pid > \
-   events/sched/sched_stat_runtime/trigger
-  # sleep 10
-  # cat events/sched/sched_stat_runtime/hist
- # event histogram
- #
- # trigger info: hist:keys=pid:vals=hitcount,runtime.graph:sort=pid:size=2048 [active]
- #
-
- { pid:         14 } hitcount:          2  runtime:
- { pid:         16 } hitcount:          8  runtime:
- { pid:         26 } hitcount:          1  runtime:
- { pid:         57 } hitcount:          3  runtime:
- { pid:         61 } hitcount:         20  runtime: ###
- { pid:         66 } hitcount:          2  runtime:
- { pid:         70 } hitcount:          3  runtime:
- { pid:         72 } hitcount:          2  runtime:
- { pid:        145 } hitcount:         14  runtime: ####################
- { pid:        152 } hitcount:          5  runtime: #######
- { pid:        153 } hitcount:          2  runtime: ####
-
- Totals:
-     Hits: 62
-     Entries: 11
-     Dropped: 0
--------
-
-Signed-off-by: Masami Hiramatsu (Google) <mhiramat@kernel.org>
+Reviewed-by: Dong Aisheng <aisheng.dong@nxp.com>
+Signed-off-by: Peng Fan <peng.fan@nxp.com>
 ---
- Changes in v3:
-  - Show hitcount.graph in trigger info correctly.
-  - Show both hitcount.percent and hitcount.graph on the same histogram.
- Changes in v2:
-  - Show an error when failing to calculate the percentage.
----
- kernel/trace/trace_events_hist.c |   87 +++++++++++++++++++++++++++++++-------
- 1 file changed, 70 insertions(+), 17 deletions(-)
+ arch/arm/boot/dts/imx7ulp.dtsi | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/kernel/trace/trace_events_hist.c b/kernel/trace/trace_events_hist.c
-index d285a2d55f88..e3d2a623e6bd 100644
---- a/kernel/trace/trace_events_hist.c
-+++ b/kernel/trace/trace_events_hist.c
-@@ -478,6 +478,7 @@ enum hist_field_flags {
- 	HIST_FIELD_FL_BUCKET		= 1 << 17,
- 	HIST_FIELD_FL_CONST		= 1 << 18,
- 	HIST_FIELD_FL_PERCENT		= 1 << 19,
-+	HIST_FIELD_FL_GRAPH		= 1 << 20,
- };
- 
- struct var_defs {
-@@ -1685,6 +1686,8 @@ static const char *get_hist_field_flags(struct hist_field *hist_field)
- 		flags_str = "usecs";
- 	else if (hist_field->flags & HIST_FIELD_FL_PERCENT)
- 		flags_str = "percent";
-+	else if (hist_field->flags & HIST_FIELD_FL_GRAPH)
-+		flags_str = "graph";
- 
- 	return flags_str;
- }
-@@ -2297,6 +2300,10 @@ parse_field(struct hist_trigger_data *hist_data, struct trace_event_file *file,
- 			if (*flags & (HIST_FIELD_FL_VAR | HIST_FIELD_FL_KEY))
- 				goto error;
- 			*flags |= HIST_FIELD_FL_PERCENT;
-+		} else if (strncmp(modifier, "graph", 5) == 0) {
-+			if (*flags & (HIST_FIELD_FL_VAR | HIST_FIELD_FL_KEY))
-+				goto error;
-+			*flags |= HIST_FIELD_FL_GRAPH;
- 		} else {
-  error:
- 			hist_err(tr, HIST_ERR_BAD_FIELD_MODIFIER, errpos(modifier));
-@@ -4266,6 +4273,9 @@ static int create_val_fields(struct hist_trigger_data *hist_data,
- 			if (strncmp(field_str + 8, ".percent", 8) == 0)
- 				hist_data->fields[HITCOUNT_IDX]->flags |=
- 					HIST_FIELD_FL_PERCENT;
-+			if (strncmp(field_str + 8, ".graph", 8) == 0)
-+				hist_data->fields[HITCOUNT_IDX]->flags |=
-+					HIST_FIELD_FL_GRAPH;
- 			continue;
- 		}
- 
-@@ -5220,20 +5230,52 @@ static inline unsigned int __get_percentage(u64 val, u64 total)
- 	return val ? UINT_MAX : 0;
- }
- 
-+#define BAR_CHAR '#'
-+
-+static inline const char *__fill_bar_str(char *buf, int size, u64 val, u64 max)
-+{
-+	unsigned int len = __get_percentage(val, max);
-+	int i;
-+
-+	if (len == UINT_MAX) {
-+		snprintf(buf, size, "[ERROR]");
-+		return buf;
-+	}
-+
-+	len = len * size / 10000;
-+	for (i = 0; i < len && i < size; i++)
-+		buf[i] = BAR_CHAR;
-+	while (i < size)
-+		buf[i++] = ' ';
-+	buf[size] = '\0';
-+
-+	return buf;
-+}
-+
-+struct hist_val_stat {
-+	u64 max;
-+	u64 total;
-+};
-+
- static void hist_trigger_print_val(struct seq_file *m, unsigned int idx,
- 				   const char *field_name, unsigned long flags,
--				   u64 *totals, struct tracing_map_elt *elt)
-+				   struct hist_val_stat *stats,
-+				   struct tracing_map_elt *elt)
- {
- 	u64 val = tracing_map_read_sum(elt, idx);
- 	unsigned int pc;
-+	char bar[21];
- 
- 	if (flags & HIST_FIELD_FL_PERCENT) {
--		pc = __get_percentage(val, totals[idx]);
-+		pc = __get_percentage(val, stats[idx].total);
- 		if (pc == UINT_MAX)
- 			seq_printf(m, " %s (%%):[ERROR]", field_name);
- 		else
- 			seq_printf(m, " %s (%%): %3u.%02u", field_name,
- 					pc / 100, pc % 100);
-+	} else if (flags & HIST_FIELD_FL_GRAPH) {
-+		seq_printf(m, " %s: %20s", field_name,
-+			   __fill_bar_str(bar, 20, val, stats[idx].max));
- 	} else if (flags & HIST_FIELD_FL_HEX) {
- 		seq_printf(m, " %s: %10llx", field_name, val);
- 	} else {
-@@ -5243,7 +5285,7 @@ static void hist_trigger_print_val(struct seq_file *m, unsigned int idx,
- 
- static void hist_trigger_entry_print(struct seq_file *m,
- 				     struct hist_trigger_data *hist_data,
--				     u64 *totals,
-+				     struct hist_val_stat *stats,
- 				     void *key,
- 				     struct tracing_map_elt *elt)
- {
-@@ -5253,12 +5295,15 @@ static void hist_trigger_entry_print(struct seq_file *m,
- 
- 	hist_trigger_print_key(m, hist_data, key, elt);
- 
--	hist_trigger_print_val(m, i, "hitcount", 0, totals, elt);
-+	hist_trigger_print_val(m, i, "hitcount", 0, stats, elt);
- 
- 	flags = hist_data->fields[i]->flags;
- 	if (flags & HIST_FIELD_FL_PERCENT)
- 		hist_trigger_print_val(m, i, " hitcount",
--				HIST_FIELD_FL_PERCENT, totals, elt);
-+				HIST_FIELD_FL_PERCENT, stats, elt);
-+	if (flags & HIST_FIELD_FL_GRAPH)
-+		hist_trigger_print_val(m, i, " hitcount",
-+				HIST_FIELD_FL_GRAPH, stats, elt);
- 
- 	for (i = 1; i < hist_data->n_vals; i++) {
- 		field_name = hist_field_name(hist_data->fields[i], 0);
-@@ -5268,7 +5313,7 @@ static void hist_trigger_entry_print(struct seq_file *m,
- 			continue;
- 
- 		seq_puts(m, " ");
--		hist_trigger_print_val(m, i, field_name, flags, totals, elt);
-+		hist_trigger_print_val(m, i, field_name, flags, stats, elt);
- 	}
- 
- 	print_actions(m, hist_data, elt);
-@@ -5282,7 +5327,8 @@ static int print_entries(struct seq_file *m,
- 	struct tracing_map_sort_entry **sort_entries = NULL;
- 	struct tracing_map *map = hist_data->map;
- 	int i, j, n_entries;
--	u64 *totals = NULL;
-+	struct hist_val_stat *stats = NULL;
-+	u64 val;
- 
- 	n_entries = tracing_map_sort_entries(map, hist_data->sort_keys,
- 					     hist_data->n_sort_keys,
-@@ -5290,28 +5336,33 @@ static int print_entries(struct seq_file *m,
- 	if (n_entries < 0)
- 		return n_entries;
- 
-+	/* Calculate the max and the total for each field if needed. */
- 	for (j = 0; j < hist_data->n_vals; j++) {
--		if (!(hist_data->fields[j]->flags & HIST_FIELD_FL_PERCENT))
-+		if (!(hist_data->fields[j]->flags &
-+			(HIST_FIELD_FL_PERCENT | HIST_FIELD_FL_GRAPH)))
- 			continue;
--		if (!totals) {
--			totals = kcalloc(hist_data->n_vals, sizeof(u64),
--					 GFP_KERNEL);
--			if (!totals) {
-+		if (!stats) {
-+			stats = kcalloc(hist_data->n_vals, sizeof(*stats),
-+				       GFP_KERNEL);
-+			if (!stats) {
- 				n_entries = -ENOMEM;
- 				goto out;
- 			}
- 		}
--		for (i = 0; i < n_entries; i++)
--			totals[j] += tracing_map_read_sum(
--					sort_entries[i]->elt, j);
-+		for (i = 0; i < n_entries; i++) {
-+			val = tracing_map_read_sum(sort_entries[i]->elt, j);
-+			stats[j].total += val;
-+			if (stats[j].max < val)
-+				stats[j].max = val;
-+		}
- 	}
- 
- 	for (i = 0; i < n_entries; i++)
--		hist_trigger_entry_print(m, hist_data, totals,
-+		hist_trigger_entry_print(m, hist_data, stats,
- 					 sort_entries[i]->key,
- 					 sort_entries[i]->elt);
- 
--	kfree(totals);
-+	kfree(stats);
- out:
- 	tracing_map_destroy_sort_entries(sort_entries, n_entries);
- 
-@@ -5736,6 +5787,8 @@ static int event_hist_trigger_print(struct seq_file *m,
- 			seq_puts(m, "hitcount");
- 			if (field->flags & HIST_FIELD_FL_PERCENT)
- 				seq_puts(m, ",hitcount.percent");
-+			if (field->flags & HIST_FIELD_FL_GRAPH)
-+				seq_puts(m, ",hitcount.graph");
- 		} else {
- 			seq_puts(m, ",");
- 			hist_field_print(m, field);
+diff --git a/arch/arm/boot/dts/imx7ulp.dtsi b/arch/arm/boot/dts/imx7ulp.dtsi
+index bcec98b96411..9c7abec90a89 100644
+--- a/arch/arm/boot/dts/imx7ulp.dtsi
++++ b/arch/arm/boot/dts/imx7ulp.dtsi
+@@ -329,7 +329,7 @@ lpi2c6: i2c@40a40000 {
+ 			reg = <0x40a40000 0x10000>;
+ 			interrupts = <GIC_SPI 36 IRQ_TYPE_LEVEL_HIGH>;
+ 			clocks = <&pcc3 IMX7ULP_CLK_LPI2C6>;
+-			clock-names = "ipg";
++			clock-names = "per";
+ 			assigned-clocks = <&pcc3 IMX7ULP_CLK_LPI2C6>;
+ 			assigned-clock-parents = <&scg1 IMX7ULP_CLK_FIRC>;
+ 			assigned-clock-rates = <48000000>;
+@@ -341,7 +341,7 @@ lpi2c7: i2c@40a50000 {
+ 			reg = <0x40a50000 0x10000>;
+ 			interrupts = <GIC_SPI 37 IRQ_TYPE_LEVEL_HIGH>;
+ 			clocks = <&pcc3 IMX7ULP_CLK_LPI2C7>;
+-			clock-names = "ipg";
++			clock-names = "per";
+ 			assigned-clocks = <&pcc3 IMX7ULP_CLK_LPI2C7>;
+ 			assigned-clock-parents = <&scg1 IMX7ULP_CLK_FIRC>;
+ 			assigned-clock-rates = <48000000>;
+-- 
+2.37.1
 
