@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0EE64C32774
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 10:18:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4B784C32772
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 10:19:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353680AbiHWKSt (ORCPT
+        id S1353862AbiHWKS5 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 06:18:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34076 "EHLO
+        Tue, 23 Aug 2022 06:18:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34320 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352571AbiHWKIG (ORCPT
+        with ESMTP id S1352593AbiHWKIM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 06:08:06 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DAA625AC6D;
-        Tue, 23 Aug 2022 01:54:28 -0700 (PDT)
+        Tue, 23 Aug 2022 06:08:12 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6726C61DBB;
+        Tue, 23 Aug 2022 01:54:33 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 975B7B81C28;
-        Tue, 23 Aug 2022 08:54:27 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DC9EDC433C1;
-        Tue, 23 Aug 2022 08:54:25 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 02E786150F;
+        Tue, 23 Aug 2022 08:54:33 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0AF6FC433C1;
+        Tue, 23 Aug 2022 08:54:31 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661244866;
-        bh=dS3oUX565XXqWz6LAky5wfcvCoNURNos/Hxa/WUf87o=;
+        s=korg; t=1661244872;
+        bh=oJMCSW5rql9Q40OXoNYbb0n1b0xG0R5Y4bP304TLgHU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=NDEONu/NZp5fFAYTP4rRYIRqcMS39hAvwopWdg78v2yc64s7X13vNCjq1bwajL+pa
-         Nn3nriLvFhOpOjb0m0bHxNVou1FvpcLybxk5HnYtGNDvTme+XqEIaCnu+ShiFBFWdX
-         THlMHPolGpSwlc5wTMaRyNBYgxhOW0P0Gq4yPawU=
+        b=vcij6HdqAzdi5B3Ya1peIywjObds9WvHcOL5k8XPxq7xYqQ6+KpxvEE0yShw5uEvi
+         UxH2GB6eNAAQOaCITRe92pp48U2yCMOfWh9HMDo6DRVL/sL8S3/xTaNOXF8i5tt0mj
+         j6yywhpg4jpGia+GPUIObHNDhBIbTLMj7FyKoxvE=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Guenter Roeck <groeck@chromium.org>,
-        Tzung-Bi Shih <tzungbi@kernel.org>,
+        stable@vger.kernel.org, Frank Li <Frank.Li@nxp.com>,
+        Faqiang Zhu <faqiang.zhu@nxp.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 164/244] platform/chrome: cros_ec_proto: dont show MKBP version if unsupported
-Date:   Tue, 23 Aug 2022 10:25:23 +0200
-Message-Id: <20220823080104.692056989@linuxfoundation.org>
+Subject: [PATCH 5.15 165/244] usb: cdns3 fix use-after-free at workaround 2
+Date:   Tue, 23 Aug 2022 10:25:24 +0200
+Message-Id: <20220823080104.723469870@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220823080059.091088642@linuxfoundation.org>
 References: <20220823080059.091088642@linuxfoundation.org>
@@ -50,45 +50,51 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Tzung-Bi Shih <tzungbi@kernel.org>
+From: Frank Li <Frank.Li@nxp.com>
 
-[ Upstream commit b36f0643ff14a2fb281b105418e4e73c9d7c11d0 ]
+[ Upstream commit 7d602f30149a117eea260208b1661bc404c21dfd ]
 
-It wrongly showed the following message when it doesn't support MKBP:
-"MKBP support version 4294967295".
+BUG: KFENCE: use-after-free read in __list_del_entry_valid+0x10/0xac
 
-Fix it.
+cdns3_wa2_remove_old_request()
+{
+	...
+	kfree(priv_req->request.buf);
+	cdns3_gadget_ep_free_request(&priv_ep->endpoint, &priv_req->request);
+	list_del_init(&priv_req->list);
+	^^^ use after free
+	...
+}
 
-Reviewed-by: Guenter Roeck <groeck@chromium.org>
-Signed-off-by: Tzung-Bi Shih <tzungbi@kernel.org>
-Link: https://lore.kernel.org/r/20220609084957.3684698-14-tzungbi@kernel.org
+cdns3_gadget_ep_free_request() free the space pointed by priv_req,
+but priv_req is used in the following list_del_init().
+
+This patch move list_del_init() before cdns3_gadget_ep_free_request().
+
+Signed-off-by: Frank Li <Frank.Li@nxp.com>
+Signed-off-by: Faqiang Zhu <faqiang.zhu@nxp.com>
+Link: https://lore.kernel.org/r/20220608190430.2814358-1-Frank.Li@nxp.com
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/platform/chrome/cros_ec_proto.c | 8 ++++----
- 1 file changed, 4 insertions(+), 4 deletions(-)
+ drivers/usb/cdns3/cdns3-gadget.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/platform/chrome/cros_ec_proto.c b/drivers/platform/chrome/cros_ec_proto.c
-index ed2b4807328d..1575d603d3ff 100644
---- a/drivers/platform/chrome/cros_ec_proto.c
-+++ b/drivers/platform/chrome/cros_ec_proto.c
-@@ -507,13 +507,13 @@ int cros_ec_query_all(struct cros_ec_device *ec_dev)
- 	ret = cros_ec_get_host_command_version_mask(ec_dev,
- 						    EC_CMD_GET_NEXT_EVENT,
- 						    &ver_mask);
--	if (ret < 0 || ver_mask == 0)
-+	if (ret < 0 || ver_mask == 0) {
- 		ec_dev->mkbp_event_supported = 0;
--	else
-+	} else {
- 		ec_dev->mkbp_event_supported = fls(ver_mask);
+diff --git a/drivers/usb/cdns3/cdns3-gadget.c b/drivers/usb/cdns3/cdns3-gadget.c
+index ae049eb28b93..4bcaed787c0f 100644
+--- a/drivers/usb/cdns3/cdns3-gadget.c
++++ b/drivers/usb/cdns3/cdns3-gadget.c
+@@ -625,9 +625,9 @@ static void cdns3_wa2_remove_old_request(struct cdns3_endpoint *priv_ep)
+ 		trace_cdns3_wa2(priv_ep, "removes eldest request");
  
--	dev_dbg(ec_dev->dev, "MKBP support version %u\n",
--		ec_dev->mkbp_event_supported - 1);
-+		dev_dbg(ec_dev->dev, "MKBP support version %u\n", ec_dev->mkbp_event_supported - 1);
-+	}
+ 		kfree(priv_req->request.buf);
++		list_del_init(&priv_req->list);
+ 		cdns3_gadget_ep_free_request(&priv_ep->endpoint,
+ 					     &priv_req->request);
+-		list_del_init(&priv_req->list);
+ 		--priv_ep->wa2_counter;
  
- 	/* Probe if host sleep v1 is supported for S0ix failure detection. */
- 	ret = cros_ec_get_host_command_version_mask(ec_dev,
+ 		if (!chain)
 -- 
 2.35.1
 
