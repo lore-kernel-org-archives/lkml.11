@@ -2,41 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 657C3C32774
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 08:18:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3996DC32774
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 08:18:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242571AbiHWISB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 04:18:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58758 "EHLO
+        id S242581AbiHWISD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 23 Aug 2022 04:18:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58570 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242525AbiHWILa (ORCPT
+        with ESMTP id S241945AbiHWILz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 04:11:30 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 73D33BC06;
-        Tue, 23 Aug 2022 01:08:45 -0700 (PDT)
+        Tue, 23 Aug 2022 04:11:55 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F37386B8DD;
+        Tue, 23 Aug 2022 01:08:58 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 6C6D9B81C23;
-        Tue, 23 Aug 2022 08:08:43 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BE0F9C433C1;
-        Tue, 23 Aug 2022 08:08:41 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 0E4876122D;
+        Tue, 23 Aug 2022 08:08:58 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 07E53C433C1;
+        Tue, 23 Aug 2022 08:08:56 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661242122;
-        bh=EeylkUgLCn4p9ZrpESSHP7DYVKpbp0rW7nVla7+NLN0=;
+        s=korg; t=1661242137;
+        bh=2bDFe3NcKWE6JLIhfhZBlJDKBAWCaKmBFXcKVPADIKY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=keDDQyp9S/udh6HHjzzVJnmiDyB3ztUCkVIkQUSPmBAG++ZZF8KhcVWAEHab5dnQ0
-         xiEkolW/01AdYS2VScy3cVe7mjYlIDiU2PHHtpiLf4f/eDmyxdrnf1KuVsuUvazpKb
-         AK2jVylPzS03JvYqEwGpMiWYeb9Ua7Ay4HU7E34M=
+        b=yWLxF9itBtPCBYhRb46g7lNGOpeieH1iGg6n3jnaVqH42xnlqaWBal96XLkjMmlWI
+         iTXQ4w0BqkGJ3vf//1EIt6SkMZqadK7WM/Dg3BI/qezWTqM1TAn7A7HcKzlZIivtQz
+         H4QrZ4Q/l0nzubKVf4TDrTTsGEW/YcJ1KbqaJ834=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jinghao Jia <jinghao@linux.ibm.com>,
-        Yonghong Song <yhs@fb.com>, Alexei Starovoitov <ast@kernel.org>
-Subject: [PATCH 5.19 061/365] BPF: Fix potential bad pointer dereference in bpf_sys_bpf()
-Date:   Tue, 23 Aug 2022 09:59:22 +0200
-Message-Id: <20220823080120.752009880@linuxfoundation.org>
+        stable@vger.kernel.org, Mohan Kumar <mkumard@nvidia.com>,
+        Takashi Iwai <tiwai@suse.de>
+Subject: [PATCH 5.19 038/365] ALSA: hda: Fix crash due to jack poll in suspend
+Date:   Tue, 23 Aug 2022 09:58:59 +0200
+Message-Id: <20220823080119.785095632@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220823080118.128342613@linuxfoundation.org>
 References: <20220823080118.128342613@linuxfoundation.org>
@@ -48,126 +48,74 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jinghao Jia <jinghao@linux.ibm.com>
+From: Mohan Kumar <mkumard@nvidia.com>
 
-commit e2dcac2f58f5a95ab092d1da237ffdc0da1832cf upstream.
+commit 636aa8807b5780b76609b40cd3d3e1b5a225471c upstream.
 
-The bpf_sys_bpf() helper function allows an eBPF program to load another
-eBPF program from within the kernel. In this case the argument union
-bpf_attr pointer (as well as the insns and license pointers inside) is a
-kernel address instead of a userspace address (which is the case of a
-usual bpf() syscall). To make the memory copying process in the syscall
-work in both cases, bpfptr_t was introduced to wrap around the pointer
-and distinguish its origin. Specifically, when copying memory contents
-from a bpfptr_t, a copy_from_user() is performed in case of a userspace
-address and a memcpy() is performed for a kernel address.
+With jackpoll_in_suspend flag set, there is a possibility that
+jack poll worker thread will run even after system suspend was
+completed. Any register access after system pm callback flow
+will result in kernel crash as still jack poll worker thread
+tries to access registers.
 
-This can lead to problems because the in-kernel pointer is never checked
-for validity. The problem happens when an eBPF syscall program tries to
-call bpf_sys_bpf() to load a program but provides a bad insns pointer --
-say 0xdeadbeef -- in the bpf_attr union. The helper calls __sys_bpf()
-which would then call bpf_prog_load() to load the program.
-bpf_prog_load() is responsible for copying the eBPF instructions to the
-newly allocated memory for the program; it creates a kernel bpfptr_t for
-insns and invokes copy_from_bpfptr(). Internally, all bpfptr_t
-operations are backed by the corresponding sockptr_t operations, which
-performs direct memcpy() on kernel pointers for copy_from/strncpy_from
-operations. Therefore, the code is always happy to dereference the bad
-pointer to trigger a un-handle-able page fault and in turn an oops.
-However, this is not supposed to happen because at that point the eBPF
-program is already verified and should not cause a memory error.
+To fix the crash issue during system flow, cancel the jack poll
+worker thread during system pm prepare callback and cancel the
+worker thread at start of runtime suspend callback and re-schedule
+at last to avoid any unwarranted access of register by worker thread
+during suspend flow.
 
-Sample KASAN trace:
-
-[   25.685056][  T228] ==================================================================
-[   25.685680][  T228] BUG: KASAN: user-memory-access in copy_from_bpfptr+0x21/0x30
-[   25.686210][  T228] Read of size 80 at addr 00000000deadbeef by task poc/228
-[   25.686732][  T228]
-[   25.686893][  T228] CPU: 3 PID: 228 Comm: poc Not tainted 5.19.0-rc7 #7
-[   25.687375][  T228] Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS d55cb5a 04/01/2014
-[   25.687991][  T228] Call Trace:
-[   25.688223][  T228]  <TASK>
-[   25.688429][  T228]  dump_stack_lvl+0x73/0x9e
-[   25.688747][  T228]  print_report+0xea/0x200
-[   25.689061][  T228]  ? copy_from_bpfptr+0x21/0x30
-[   25.689401][  T228]  ? _printk+0x54/0x6e
-[   25.689693][  T228]  ? _raw_spin_lock_irqsave+0x70/0xd0
-[   25.690071][  T228]  ? copy_from_bpfptr+0x21/0x30
-[   25.690412][  T228]  kasan_report+0xb5/0xe0
-[   25.690716][  T228]  ? copy_from_bpfptr+0x21/0x30
-[   25.691059][  T228]  kasan_check_range+0x2bd/0x2e0
-[   25.691405][  T228]  ? copy_from_bpfptr+0x21/0x30
-[   25.691734][  T228]  memcpy+0x25/0x60
-[   25.692000][  T228]  copy_from_bpfptr+0x21/0x30
-[   25.692328][  T228]  bpf_prog_load+0x604/0x9e0
-[   25.692653][  T228]  ? cap_capable+0xb4/0xe0
-[   25.692956][  T228]  ? security_capable+0x4f/0x70
-[   25.693324][  T228]  __sys_bpf+0x3af/0x580
-[   25.693635][  T228]  bpf_sys_bpf+0x45/0x240
-[   25.693937][  T228]  bpf_prog_f0ec79a5a3caca46_bpf_func1+0xa2/0xbd
-[   25.694394][  T228]  bpf_prog_run_pin_on_cpu+0x2f/0xb0
-[   25.694756][  T228]  bpf_prog_test_run_syscall+0x146/0x1c0
-[   25.695144][  T228]  bpf_prog_test_run+0x172/0x190
-[   25.695487][  T228]  __sys_bpf+0x2c5/0x580
-[   25.695776][  T228]  __x64_sys_bpf+0x3a/0x50
-[   25.696084][  T228]  do_syscall_64+0x60/0x90
-[   25.696393][  T228]  ? fpregs_assert_state_consistent+0x50/0x60
-[   25.696815][  T228]  ? exit_to_user_mode_prepare+0x36/0xa0
-[   25.697202][  T228]  ? syscall_exit_to_user_mode+0x20/0x40
-[   25.697586][  T228]  ? do_syscall_64+0x6e/0x90
-[   25.697899][  T228]  entry_SYSCALL_64_after_hwframe+0x63/0xcd
-[   25.698312][  T228] RIP: 0033:0x7f6d543fb759
-[   25.698624][  T228] Code: 08 5b 89 e8 5d c3 66 2e 0f 1f 84 00 00 00 00 00 90 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 8b 0d 97 a6 0e 00 f7 d8 64 89 01 48
-[   25.699946][  T228] RSP: 002b:00007ffc3df78468 EFLAGS: 00000287 ORIG_RAX: 0000000000000141
-[   25.700526][  T228] RAX: ffffffffffffffda RBX: 00007ffc3df78628 RCX: 00007f6d543fb759
-[   25.701071][  T228] RDX: 0000000000000090 RSI: 00007ffc3df78478 RDI: 000000000000000a
-[   25.701636][  T228] RBP: 00007ffc3df78510 R08: 0000000000000000 R09: 0000000000300000
-[   25.702191][  T228] R10: 0000000000000005 R11: 0000000000000287 R12: 0000000000000000
-[   25.702736][  T228] R13: 00007ffc3df78638 R14: 000055a1584aca68 R15: 00007f6d5456a000
-[   25.703282][  T228]  </TASK>
-[   25.703490][  T228] ==================================================================
-[   25.704050][  T228] Disabling lock debugging due to kernel taint
-
-Update copy_from_bpfptr() and strncpy_from_bpfptr() so that:
- - for a kernel pointer, it uses the safe copy_from_kernel_nofault() and
-   strncpy_from_kernel_nofault() functions.
- - for a userspace pointer, it performs copy_from_user() and
-   strncpy_from_user().
-
-Fixes: af2ac3e13e45 ("bpf: Prepare bpf syscall to be used from kernel and user space.")
-Link: https://lore.kernel.org/bpf/20220727132905.45166-1-jinghao@linux.ibm.com/
-Signed-off-by: Jinghao Jia <jinghao@linux.ibm.com>
-Acked-by: Yonghong Song <yhs@fb.com>
-Link: https://lore.kernel.org/r/20220729201713.88688-1-jinghao@linux.ibm.com
-Signed-off-by: Alexei Starovoitov <ast@kernel.org>
+Signed-off-by: Mohan Kumar <mkumard@nvidia.com>
+Fixes: b33115bd05af ("ALSA: hda: Jack detection poll in suspend state")
+Link: https://lore.kernel.org/r/20220811052704.2944-1-mkumard@nvidia.com
+Signed-off-by: Takashi Iwai <tiwai@suse.de>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- include/linux/bpfptr.h |    8 ++++++--
- 1 file changed, 6 insertions(+), 2 deletions(-)
+ sound/pci/hda/hda_codec.c |   14 +++++++++-----
+ 1 file changed, 9 insertions(+), 5 deletions(-)
 
---- a/include/linux/bpfptr.h
-+++ b/include/linux/bpfptr.h
-@@ -49,7 +49,9 @@ static inline void bpfptr_add(bpfptr_t *
- static inline int copy_from_bpfptr_offset(void *dst, bpfptr_t src,
- 					  size_t offset, size_t size)
- {
--	return copy_from_sockptr_offset(dst, (sockptr_t) src, offset, size);
-+	if (!bpfptr_is_kernel(src))
-+		return copy_from_user(dst, src.user + offset, size);
-+	return copy_from_kernel_nofault(dst, src.kernel + offset, size);
+--- a/sound/pci/hda/hda_codec.c
++++ b/sound/pci/hda/hda_codec.c
+@@ -2935,8 +2935,7 @@ static int hda_codec_runtime_suspend(str
+ 	if (!codec->card)
+ 		return 0;
+ 
+-	if (!codec->bus->jackpoll_in_suspend)
+-		cancel_delayed_work_sync(&codec->jackpoll_work);
++	cancel_delayed_work_sync(&codec->jackpoll_work);
+ 
+ 	state = hda_call_codec_suspend(codec);
+ 	if (codec->link_down_at_suspend ||
+@@ -2944,6 +2943,11 @@ static int hda_codec_runtime_suspend(str
+ 	     (state & AC_PWRST_CLK_STOP_OK)))
+ 		snd_hdac_codec_link_down(&codec->core);
+ 	snd_hda_codec_display_power(codec, false);
++
++	if (codec->bus->jackpoll_in_suspend &&
++		(dev->power.power_state.event != PM_EVENT_SUSPEND))
++		schedule_delayed_work(&codec->jackpoll_work,
++					codec->jackpoll_interval);
+ 	return 0;
  }
  
- static inline int copy_from_bpfptr(void *dst, bpfptr_t src, size_t size)
-@@ -78,7 +80,9 @@ static inline void *kvmemdup_bpfptr(bpfp
- 
- static inline long strncpy_from_bpfptr(char *dst, bpfptr_t src, size_t count)
+@@ -2967,6 +2971,9 @@ static int hda_codec_runtime_resume(stru
+ #ifdef CONFIG_PM_SLEEP
+ static int hda_codec_pm_prepare(struct device *dev)
  {
--	return strncpy_from_sockptr(dst, (sockptr_t) src, count);
-+	if (bpfptr_is_kernel(src))
-+		return strncpy_from_kernel_nofault(dst, src.kernel, count);
-+	return strncpy_from_user(dst, src.user, count);
++	struct hda_codec *codec = dev_to_hda_codec(dev);
++
++	cancel_delayed_work_sync(&codec->jackpoll_work);
+ 	dev->power.power_state = PMSG_SUSPEND;
+ 	return pm_runtime_suspended(dev);
  }
+@@ -2986,9 +2993,6 @@ static void hda_codec_pm_complete(struct
  
- #endif /* _LINUX_BPFPTR_H */
+ static int hda_codec_pm_suspend(struct device *dev)
+ {
+-	struct hda_codec *codec = dev_to_hda_codec(dev);
+-
+-	cancel_delayed_work_sync(&codec->jackpoll_work);
+ 	dev->power.power_state = PMSG_SUSPEND;
+ 	return pm_runtime_force_suspend(dev);
+ }
 
 
