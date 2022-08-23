@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 406B3C32772
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 569E6C3F6B0
 	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 09:13:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239207AbiHWJLj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 05:11:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37730 "EHLO
+        id S1347940AbiHWJLo (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 23 Aug 2022 05:11:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33872 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347573AbiHWJJW (ORCPT
+        with ESMTP id S1348324AbiHWJJZ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 05:09:22 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3F0D074DE7;
+        Tue, 23 Aug 2022 05:09:25 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 011C7868B9;
         Tue, 23 Aug 2022 01:30:42 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id D22EC6148E;
-        Tue, 23 Aug 2022 08:30:41 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C0D11C433D6;
-        Tue, 23 Aug 2022 08:30:40 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 461A7B81C4B;
+        Tue, 23 Aug 2022 08:29:18 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A092DC433C1;
+        Tue, 23 Aug 2022 08:29:16 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661243441;
-        bh=zuynUB4qvXHwuhHt93KM7PDIxN+C9d44hf1QyZClopY=;
+        s=korg; t=1661243357;
+        bh=8xUMIArOW/4IiPvkqpo2CnRg7A2HIRsEk0ozSnmCl/0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=b0MQ4AEURpDx6h5I3+0r/tPnlPrhJ6Kp7RLYSOV7jn2URfysZ5/vNc6RnFurksURb
-         b6IgMNRlvefYJZELsGLncetxYdc8wfgCxr9S9ycj10ZLOXHmN9XinhTSN1xQzfGZgL
-         6HEfcQ+bj9taXEcRF2jsdp4eyum2P+QH8pC2TQcg=
+        b=qLXQ0mEeMU74Hu3hc91UYYkXuy5Ybia++e4Pp+ZldXB8W7ndcdODSjb1QZSVjJ4y8
+         wxM9H1HO8Lu1fS/BQWZ03emAzoDypdFagxnCbEnsCJwKbbLEfa6+Apn2l3PbKPJ/GE
+         hS13+YL+nMqv6P2J/I7NTyBHj48f7p54+Wpzk1aE=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Hans de Goede <hdegoede@redhat.com>,
-        Pascal Terjan <pterjan@google.com>,
+        stable@vger.kernel.org, Vladimir Oltean <vladimir.oltean@nxp.com>,
+        Jakub Kicinski <kuba@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.19 279/365] vboxguest: Do not use devm for irq
-Date:   Tue, 23 Aug 2022 10:03:00 +0200
-Message-Id: <20220823080129.845516787@linuxfoundation.org>
+Subject: [PATCH 5.19 251/365] net: mscc: ocelot: turn stats_lock into a spinlock
+Date:   Tue, 23 Aug 2022 10:02:32 +0200
+Message-Id: <20220823080128.688845638@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220823080118.128342613@linuxfoundation.org>
 References: <20220823080118.128342613@linuxfoundation.org>
@@ -49,79 +50,115 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Pascal Terjan <pterjan@google.com>
+From: Vladimir Oltean <vladimir.oltean@nxp.com>
 
-[ Upstream commit 6169525b76764acb81918aa387ac168fb9a55575 ]
+[ Upstream commit 22d842e3efe56402c33b5e6e303bb71ce9bf9334 ]
 
-When relying on devm it doesn't get freed early enough which causes the
-following warning when unloading the module:
+ocelot_get_stats64() currently runs unlocked and therefore may collide
+with ocelot_port_update_stats() which indirectly accesses the same
+counters. However, ocelot_get_stats64() runs in atomic context, and we
+cannot simply take the sleepable ocelot->stats_lock mutex. We need to
+convert it to an atomic spinlock first. Do that as a preparatory change.
 
-[249348.837181] remove_proc_entry: removing non-empty directory 'irq/20', leaking at least 'vboxguest'
-[249348.837219] WARNING: CPU: 0 PID: 6708 at fs/proc/generic.c:715 remove_proc_entry+0x119/0x140
-
-[249348.837379] Call Trace:
-[249348.837385]  unregister_irq_proc+0xbd/0xe0
-[249348.837392]  free_desc+0x23/0x60
-[249348.837396]  irq_free_descs+0x4a/0x70
-[249348.837401]  irq_domain_free_irqs+0x160/0x1a0
-[249348.837452]  mp_unmap_irq+0x5c/0x60
-[249348.837458]  acpi_unregister_gsi_ioapic+0x29/0x40
-[249348.837463]  acpi_unregister_gsi+0x17/0x30
-[249348.837467]  acpi_pci_irq_disable+0xbf/0xe0
-[249348.837473]  pcibios_disable_device+0x20/0x30
-[249348.837478]  pci_disable_device+0xef/0x120
-[249348.837482]  vbg_pci_remove+0x6c/0x70 [vboxguest]
-
-Reviewed-by: Hans de Goede <hdegoede@redhat.com>
-Signed-off-by: Pascal Terjan <pterjan@google.com>
-Link: https://lore.kernel.org/r/20220612133744.4030602-1-pterjan@google.com
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/virt/vboxguest/vboxguest_linux.c | 9 ++++++---
- 1 file changed, 6 insertions(+), 3 deletions(-)
+ drivers/net/dsa/ocelot/felix_vsc9959.c |  4 ++--
+ drivers/net/ethernet/mscc/ocelot.c     | 11 +++++------
+ include/soc/mscc/ocelot.h              |  2 +-
+ 3 files changed, 8 insertions(+), 9 deletions(-)
 
-diff --git a/drivers/virt/vboxguest/vboxguest_linux.c b/drivers/virt/vboxguest/vboxguest_linux.c
-index 73eb34849eab..4ccfd30c2a30 100644
---- a/drivers/virt/vboxguest/vboxguest_linux.c
-+++ b/drivers/virt/vboxguest/vboxguest_linux.c
-@@ -356,8 +356,8 @@ static int vbg_pci_probe(struct pci_dev *pci, const struct pci_device_id *id)
- 		goto err_vbg_core_exit;
+diff --git a/drivers/net/dsa/ocelot/felix_vsc9959.c b/drivers/net/dsa/ocelot/felix_vsc9959.c
+index 61b1bf4399c4..601fae886b26 100644
+--- a/drivers/net/dsa/ocelot/felix_vsc9959.c
++++ b/drivers/net/dsa/ocelot/felix_vsc9959.c
+@@ -2177,7 +2177,7 @@ static void vsc9959_psfp_sgi_table_del(struct ocelot *ocelot,
+ static void vsc9959_psfp_counters_get(struct ocelot *ocelot, u32 index,
+ 				      struct felix_stream_filter_counters *counters)
+ {
+-	mutex_lock(&ocelot->stats_lock);
++	spin_lock(&ocelot->stats_lock);
+ 
+ 	ocelot_rmw(ocelot, SYS_STAT_CFG_STAT_VIEW(index),
+ 		   SYS_STAT_CFG_STAT_VIEW_M,
+@@ -2194,7 +2194,7 @@ static void vsc9959_psfp_counters_get(struct ocelot *ocelot, u32 index,
+ 		     SYS_STAT_CFG_STAT_CLEAR_SHOT(0x10),
+ 		     SYS_STAT_CFG);
+ 
+-	mutex_unlock(&ocelot->stats_lock);
++	spin_unlock(&ocelot->stats_lock);
+ }
+ 
+ static int vsc9959_psfp_filter_add(struct ocelot *ocelot, int port,
+diff --git a/drivers/net/ethernet/mscc/ocelot.c b/drivers/net/ethernet/mscc/ocelot.c
+index d4649e4ee0e7..c67f162f8ab5 100644
+--- a/drivers/net/ethernet/mscc/ocelot.c
++++ b/drivers/net/ethernet/mscc/ocelot.c
+@@ -1906,13 +1906,13 @@ static void ocelot_check_stats_work(struct work_struct *work)
+ 					     stats_work);
+ 	int i, err;
+ 
+-	mutex_lock(&ocelot->stats_lock);
++	spin_lock(&ocelot->stats_lock);
+ 	for (i = 0; i < ocelot->num_phys_ports; i++) {
+ 		err = ocelot_port_update_stats(ocelot, i);
+ 		if (err)
+ 			break;
  	}
+-	mutex_unlock(&ocelot->stats_lock);
++	spin_unlock(&ocelot->stats_lock);
  
--	ret = devm_request_irq(dev, pci->irq, vbg_core_isr, IRQF_SHARED,
--			       DEVICE_NAME, gdev);
-+	ret = request_irq(pci->irq, vbg_core_isr, IRQF_SHARED, DEVICE_NAME,
-+			  gdev);
- 	if (ret) {
- 		vbg_err("vboxguest: Error requesting irq: %d\n", ret);
- 		goto err_vbg_core_exit;
-@@ -367,7 +367,7 @@ static int vbg_pci_probe(struct pci_dev *pci, const struct pci_device_id *id)
- 	if (ret) {
- 		vbg_err("vboxguest: Error misc_register %s failed: %d\n",
- 			DEVICE_NAME, ret);
--		goto err_vbg_core_exit;
-+		goto err_free_irq;
- 	}
+ 	if (err)
+ 		dev_err(ocelot->dev, "Error %d updating ethtool stats\n",  err);
+@@ -1925,7 +1925,7 @@ void ocelot_get_ethtool_stats(struct ocelot *ocelot, int port, u64 *data)
+ {
+ 	int i, err;
  
- 	ret = misc_register(&gdev->misc_device_user);
-@@ -403,6 +403,8 @@ static int vbg_pci_probe(struct pci_dev *pci, const struct pci_device_id *id)
- 	misc_deregister(&gdev->misc_device_user);
- err_unregister_misc_device:
- 	misc_deregister(&gdev->misc_device);
-+err_free_irq:
-+	free_irq(pci->irq, gdev);
- err_vbg_core_exit:
- 	vbg_core_exit(gdev);
- err_disable_pcidev:
-@@ -419,6 +421,7 @@ static void vbg_pci_remove(struct pci_dev *pci)
- 	vbg_gdev = NULL;
- 	mutex_unlock(&vbg_gdev_mutex);
+-	mutex_lock(&ocelot->stats_lock);
++	spin_lock(&ocelot->stats_lock);
  
-+	free_irq(pci->irq, gdev);
- 	device_remove_file(gdev->dev, &dev_attr_host_features);
- 	device_remove_file(gdev->dev, &dev_attr_host_version);
- 	misc_deregister(&gdev->misc_device_user);
+ 	/* check and update now */
+ 	err = ocelot_port_update_stats(ocelot, port);
+@@ -1934,7 +1934,7 @@ void ocelot_get_ethtool_stats(struct ocelot *ocelot, int port, u64 *data)
+ 	for (i = 0; i < ocelot->num_stats; i++)
+ 		*data++ = ocelot->stats[port * ocelot->num_stats + i];
+ 
+-	mutex_unlock(&ocelot->stats_lock);
++	spin_unlock(&ocelot->stats_lock);
+ 
+ 	if (err)
+ 		dev_err(ocelot->dev, "Error %d updating ethtool stats\n", err);
+@@ -3363,7 +3363,7 @@ int ocelot_init(struct ocelot *ocelot)
+ 	if (!ocelot->stats)
+ 		return -ENOMEM;
+ 
+-	mutex_init(&ocelot->stats_lock);
++	spin_lock_init(&ocelot->stats_lock);
+ 	mutex_init(&ocelot->ptp_lock);
+ 	mutex_init(&ocelot->mact_lock);
+ 	mutex_init(&ocelot->fwd_domain_lock);
+@@ -3511,7 +3511,6 @@ void ocelot_deinit(struct ocelot *ocelot)
+ 	cancel_delayed_work(&ocelot->stats_work);
+ 	destroy_workqueue(ocelot->stats_queue);
+ 	destroy_workqueue(ocelot->owq);
+-	mutex_destroy(&ocelot->stats_lock);
+ }
+ EXPORT_SYMBOL(ocelot_deinit);
+ 
+diff --git a/include/soc/mscc/ocelot.h b/include/soc/mscc/ocelot.h
+index e7e5b06deb2d..72b9474391da 100644
+--- a/include/soc/mscc/ocelot.h
++++ b/include/soc/mscc/ocelot.h
+@@ -752,7 +752,7 @@ struct ocelot {
+ 	struct ocelot_psfp_list		psfp;
+ 
+ 	/* Workqueue to check statistics for overflow with its lock */
+-	struct mutex			stats_lock;
++	spinlock_t			stats_lock;
+ 	u64				*stats;
+ 	struct delayed_work		stats_work;
+ 	struct workqueue_struct		*stats_queue;
 -- 
 2.35.1
 
