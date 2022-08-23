@@ -2,92 +2,144 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 16732C32774
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 08:23:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4E167C32774
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 08:23:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243180AbiHWIXc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 04:23:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42936 "EHLO
+        id S243186AbiHWIXg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 23 Aug 2022 04:23:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41974 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243090AbiHWIQe (ORCPT
+        with ESMTP id S243050AbiHWIQb (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 04:16:34 -0400
-Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 21098FE9
-        for <linux-kernel@vger.kernel.org>; Tue, 23 Aug 2022 01:11:25 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1661242285; x=1692778285;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=jGZiRk5UFvIPLRGeEMdOMoJukJQ485whBLPB7y6qoMM=;
-  b=gq6fGWT21otUrGez7+ShFgXHcDOBINr4VivS8OPyFT+lwZme9ZEVuk+G
-   1y0xTcvXWhPvLwiRR+DLSU0h4pyYtf3xMQ83okSOHpYYIrz1utY/+x6/n
-   4gqbWe9zn/DtuEmN2mXyc+sjt3HHcG+PaiCkIq+XNuWFzttE1+CtiUCZs
-   aZnT7LRnMto5jD2yx7q/5zec9jBB1MwjPoINi7ApdTip7T9F7aGELw2Q5
-   fkS95svGf9p+LAiEh/PB67uEY0kuA51Uvvwxakz7wgJurpLz5EphFjrTq
-   K53PdOoKD84WgUeu/P6RlZtAmqxzz+xkFFJiHlZSUWqU2BIxOM5YCiRje
-   Q==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10447"; a="294413383"
-X-IronPort-AV: E=Sophos;i="5.93,257,1654585200"; 
-   d="scan'208";a="294413383"
-Received: from fmsmga001.fm.intel.com ([10.253.24.23])
-  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Aug 2022 01:11:24 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.93,257,1654585200"; 
-   d="scan'208";a="751604341"
-Received: from kuha.fi.intel.com ([10.237.72.185])
-  by fmsmga001.fm.intel.com with SMTP; 23 Aug 2022 01:11:22 -0700
-Received: by kuha.fi.intel.com (sSMTP sendmail emulation); Tue, 23 Aug 2022 11:11:21 +0300
-Date:   Tue, 23 Aug 2022 11:11:21 +0300
-From:   Heikki Krogerus <heikki.krogerus@linux.intel.com>
-To:     Prashant Malani <pmalani@chromium.org>
-Cc:     linux-kernel@vger.kernel.org, chrome-platform@lists.linux.dev,
-        bleung@chromium.org,
-        Enric Balletbo i Serra <enric.balletbo@collabora.com>,
-        Guenter Roeck <groeck@chromium.org>
-Subject: Re: [PATCH 1/4] platform/chrome: cros_ec_typec: Add bit offset for
- DP VDO
-Message-ID: <YwSLqfuP5u0Up8oS@kuha.fi.intel.com>
-References: <20220819190807.1275937-1-pmalani@chromium.org>
- <20220819190807.1275937-2-pmalani@chromium.org>
+        Tue, 23 Aug 2022 04:16:31 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DCA2E67CBE;
+        Tue, 23 Aug 2022 01:11:01 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 92D1FB81C25;
+        Tue, 23 Aug 2022 08:11:00 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D58C1C433D6;
+        Tue, 23 Aug 2022 08:10:58 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1661242259;
+        bh=QJpX0XKokoMZBk/Tl7oumqJUQg482sDWrAlMoLsvadk=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=pzXqpkOYmk4pxehX7V/Nv4ITuuHGGdVJRvWZ55COPlVaYc7uy6D+WDmMIdVcWzrKJ
+         +BQZL/ue9VSawd+JQ8c+SYR1bTHfFfcnz8MR4nL13bksdOx14Dx0q8W+/px9LKReFy
+         Ar9vB0ZLpZuOVv/NdDD1Cn3XrAVt/zG54JYjwpxA=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Oleksij Rempel <o.rempel@pengutronix.de>,
+        Andrew Lunn <andrew@lunn.ch>, Jakub Kicinski <kuba@kernel.org>
+Subject: [PATCH 5.19 084/365] net: phy: c45 baset1: do not skip aneg configuration if clock role is not specified
+Date:   Tue, 23 Aug 2022 09:59:45 +0200
+Message-Id: <20220823080121.697047439@linuxfoundation.org>
+X-Mailer: git-send-email 2.37.2
+In-Reply-To: <20220823080118.128342613@linuxfoundation.org>
+References: <20220823080118.128342613@linuxfoundation.org>
+User-Agent: quilt/0.67
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220819190807.1275937-2-pmalani@chromium.org>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Aug 19, 2022 at 07:08:02PM +0000, Prashant Malani wrote:
-> Use the right macro while constructing the DP_PORT_VDO to ensure the Pin
-> Assignment offsets are correct.
-> 
-> Fixes: 1ff5d97f070c ("platform/chrome: cros_ec_typec: Register port altmodes")
-> Signed-off-by: Prashant Malani <pmalani@chromium.org>
+From: Oleksij Rempel <o.rempel@pengutronix.de>
 
-Acked-by: Heikki Krogerus <heikki.krogerus@linux.intel.com>
+commit 3702e4041cfda50bc697363d29511ce8f6b24795 upstream.
 
-> ---
->  drivers/platform/chrome/cros_ec_typec.c | 3 ++-
->  1 file changed, 2 insertions(+), 1 deletion(-)
-> 
-> diff --git a/drivers/platform/chrome/cros_ec_typec.c b/drivers/platform/chrome/cros_ec_typec.c
-> index de6ee0f926a6..4d81d8d45b73 100644
-> --- a/drivers/platform/chrome/cros_ec_typec.c
-> +++ b/drivers/platform/chrome/cros_ec_typec.c
-> @@ -25,7 +25,8 @@
->  
->  #define DRV_NAME "cros-ec-typec"
->  
-> -#define DP_PORT_VDO	(BIT(DP_PIN_ASSIGN_C) | BIT(DP_PIN_ASSIGN_D) | DP_CAP_DFP_D)
-> +#define DP_PORT_VDO	(DP_CONF_SET_PIN_ASSIGN(BIT(DP_PIN_ASSIGN_C) | BIT(DP_PIN_ASSIGN_D)) | \
-> +				DP_CAP_DFP_D)
->  
->  /* Supported alt modes. */
->  enum {
-> -- 
-> 2.37.1.595.g718a3a8f04-goog
+In case master/slave clock role is not specified (which is default), the
+aneg registers will not be written.
 
--- 
-heikki
+The visible impact of this is missing pause advertisement.
+
+So, rework genphy_c45_baset1_an_config_aneg() to be able to write
+advertisement registers even if clock role is unknown.
+
+Fixes: 3da8ffd8545f ("net: phy: Add 10BASE-T1L support in phy-c45")
+Signed-off-by: Oleksij Rempel <o.rempel@pengutronix.de>
+Reviewed-by: Andrew Lunn <andrew@lunn.ch>
+Link: https://lore.kernel.org/r/20220805073159.908643-1-o.rempel@pengutronix.de
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+---
+ drivers/net/phy/phy-c45.c |   34 ++++++++++++++++------------------
+ 1 file changed, 16 insertions(+), 18 deletions(-)
+
+--- a/drivers/net/phy/phy-c45.c
++++ b/drivers/net/phy/phy-c45.c
+@@ -190,44 +190,42 @@ EXPORT_SYMBOL_GPL(genphy_c45_pma_setup_f
+  */
+ static int genphy_c45_baset1_an_config_aneg(struct phy_device *phydev)
+ {
++	u16 adv_l_mask, adv_l = 0;
++	u16 adv_m_mask, adv_m = 0;
+ 	int changed = 0;
+-	u16 adv_l = 0;
+-	u16 adv_m = 0;
+ 	int ret;
+ 
++	adv_l_mask = MDIO_AN_T1_ADV_L_FORCE_MS | MDIO_AN_T1_ADV_L_PAUSE_CAP |
++		MDIO_AN_T1_ADV_L_PAUSE_ASYM;
++	adv_m_mask = MDIO_AN_T1_ADV_M_MST | MDIO_AN_T1_ADV_M_B10L;
++
+ 	switch (phydev->master_slave_set) {
+ 	case MASTER_SLAVE_CFG_MASTER_FORCE:
++		adv_m |= MDIO_AN_T1_ADV_M_MST;
++		fallthrough;
+ 	case MASTER_SLAVE_CFG_SLAVE_FORCE:
+ 		adv_l |= MDIO_AN_T1_ADV_L_FORCE_MS;
+ 		break;
+ 	case MASTER_SLAVE_CFG_MASTER_PREFERRED:
++		adv_m |= MDIO_AN_T1_ADV_M_MST;
++		fallthrough;
+ 	case MASTER_SLAVE_CFG_SLAVE_PREFERRED:
+ 		break;
+ 	case MASTER_SLAVE_CFG_UNKNOWN:
+ 	case MASTER_SLAVE_CFG_UNSUPPORTED:
+-		return 0;
++		/* if master/slave role is not specified, do not overwrite it */
++		adv_l_mask &= ~MDIO_AN_T1_ADV_L_FORCE_MS;
++		adv_m_mask &= ~MDIO_AN_T1_ADV_M_MST;
++		break;
+ 	default:
+ 		phydev_warn(phydev, "Unsupported Master/Slave mode\n");
+ 		return -EOPNOTSUPP;
+ 	}
+ 
+-	switch (phydev->master_slave_set) {
+-	case MASTER_SLAVE_CFG_MASTER_FORCE:
+-	case MASTER_SLAVE_CFG_MASTER_PREFERRED:
+-		adv_m |= MDIO_AN_T1_ADV_M_MST;
+-		break;
+-	case MASTER_SLAVE_CFG_SLAVE_FORCE:
+-	case MASTER_SLAVE_CFG_SLAVE_PREFERRED:
+-		break;
+-	default:
+-		break;
+-	}
+-
+ 	adv_l |= linkmode_adv_to_mii_t1_adv_l_t(phydev->advertising);
+ 
+ 	ret = phy_modify_mmd_changed(phydev, MDIO_MMD_AN, MDIO_AN_T1_ADV_L,
+-				     (MDIO_AN_T1_ADV_L_FORCE_MS | MDIO_AN_T1_ADV_L_PAUSE_CAP
+-				     | MDIO_AN_T1_ADV_L_PAUSE_ASYM), adv_l);
++				     adv_l_mask, adv_l);
+ 	if (ret < 0)
+ 		return ret;
+ 	if (ret > 0)
+@@ -236,7 +234,7 @@ static int genphy_c45_baset1_an_config_a
+ 	adv_m |= linkmode_adv_to_mii_t1_adv_m_t(phydev->advertising);
+ 
+ 	ret = phy_modify_mmd_changed(phydev, MDIO_MMD_AN, MDIO_AN_T1_ADV_M,
+-				     MDIO_AN_T1_ADV_M_MST | MDIO_AN_T1_ADV_M_B10L, adv_m);
++				     adv_m_mask, adv_m);
+ 	if (ret < 0)
+ 		return ret;
+ 	if (ret > 0)
+
+
