@@ -2,48 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6D866C32772
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 09:39:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C30C7C32774
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 09:39:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351385AbiHWJjZ (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 05:39:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52214 "EHLO
+        id S240796AbiHWJjb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 23 Aug 2022 05:39:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52258 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351346AbiHWJie (ORCPT
+        with ESMTP id S1351386AbiHWJig (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 05:38:34 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 50CF05E314;
-        Tue, 23 Aug 2022 01:40:54 -0700 (PDT)
+        Tue, 23 Aug 2022 05:38:36 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C86DB42ADC;
+        Tue, 23 Aug 2022 01:40:55 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id A95F5B81C6F;
-        Tue, 23 Aug 2022 08:40:06 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0410BC433C1;
-        Tue, 23 Aug 2022 08:40:04 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 63153B81C4F;
+        Tue, 23 Aug 2022 08:38:54 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id ACC38C433C1;
+        Tue, 23 Aug 2022 08:38:52 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661244005;
-        bh=iEBNwJXJZXuq4CJ5XN0UuXtBxokmOgf2OI7wZs/yPh0=;
+        s=korg; t=1661243933;
+        bh=xrT7sCDqJzbwaabInFSOooM42pz6YylOw5GrLACf6Gk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=WgD3iZcBL56SbHwBFWqaXL8O6y3MdQEKO9kebGEqVbT0P3dUeyK6Q8ClTKfAlG+q4
-         jO3yfErGSKCp89ywNzQVyDtlkCY+9e3Ivdx3/Otem8mBQK7sKTFC+9NFGYTrm07kHT
-         PC4wpBwuE1V3Oc5n9yjxOF3NEHbvaB8EEofzx89I=
+        b=OU1qev2kDNnTFj3Pj1fXjLrlVNrTmORpkIxoW56SSAyduxNzElvGxuvx9PL2sw5lq
+         FW9UYM6GV5X1LNEO2V+9CINW1/MLV2trBj/1tDFQDQZI/sITG9XltBT6CLmyUPcyur
+         CVyUuaX0mBooTMj6HSKpZeKJyg/6Q2qZGjqSyj/4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@collabora.com>,
-        Houlong Wei <houlong.wei@mediatek.com>,
-        Irui Wang <irui.wang@mediatek.com>,
-        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        stable@vger.kernel.org, Markus Mayer <mmayer@broadcom.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Sumeet Pawnikar <sumeet.r.pawnikar@intel.com>,
+        =?UTF-8?q?Alejandro=20Gonz=C3=A1lez?= 
+        <alejandro.gonzalez.correo@gmail.com>,
+        Daniel Lezcano <daniel.lezcano@linaro.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.14 071/229] media: platform: mtk-mdp: Fix mdp_ipi_comm structure alignment
-Date:   Tue, 23 Aug 2022 10:23:52 +0200
-Message-Id: <20220823080056.265603348@linuxfoundation.org>
+Subject: [PATCH 4.14 058/229] thermal/tools/tmon: Include pthread and time headers in tmon.h
+Date:   Tue, 23 Aug 2022 10:23:39 +0200
+Message-Id: <20220823080055.799080088@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220823080053.202747790@linuxfoundation.org>
 References: <20220823080053.202747790@linuxfoundation.org>
@@ -55,55 +53,57 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
+From: Markus Mayer <mmayer@broadcom.com>
 
-[ Upstream commit ab14c99c035da7156a3b66fa171171295bc4b89a ]
+[ Upstream commit 0cf51bfe999524377fbb71becb583b4ca6d07cfc ]
 
-The mdp_ipi_comm structure defines a command that is either
-PROCESS (start processing) or DEINIT (destroy instance); we
-are using this one to send PROCESS or DEINIT commands from Linux
-to an MDP instance through a VPU write but, while the first wants
-us to stay 4-bytes aligned, the VPU instead requires an 8-bytes
-data alignment.
+Include sys/time.h and pthread.h in tmon.h, so that types
+"pthread_mutex_t" and "struct timeval tv" are known when tmon.h
+references them.
 
-Keeping in mind that these commands are executed immediately
-after sending them (hence not chained with others before the
-VPU/MDP "actually" start executing), it is fine to simply add
-a padding of 4 bytes to this structure: this keeps the same
-performance as before, as we're still stack-allocating it,
-while avoiding hackery inside of mtk-vpu to ensure alignment
-bringing a definitely bigger performance impact.
+Without these headers, compiling tmon against musl-libc will fail with
+these errors:
 
-Fixes: c8eb2d7e8202 ("[media] media: Add Mediatek MDP Driver")
-Signed-off-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
-Reviewed-by: Houlong Wei <houlong.wei@mediatek.com>
-Reviewed-by: Irui Wang <irui.wang@mediatek.com>
-Signed-off-by: Hans Verkuil <hverkuil-cisco@xs4all.nl>
-Signed-off-by: Mauro Carvalho Chehab <mchehab@kernel.org>
+In file included from sysfs.c:31:0:
+tmon.h:47:8: error: unknown type name 'pthread_mutex_t'
+ extern pthread_mutex_t input_lock;
+        ^~~~~~~~~~~~~~~
+make[3]: *** [<builtin>: sysfs.o] Error 1
+make[3]: *** Waiting for unfinished jobs....
+In file included from tui.c:31:0:
+tmon.h:54:17: error: field 'tv' has incomplete type
+  struct timeval tv;
+                 ^~
+make[3]: *** [<builtin>: tui.o] Error 1
+make[2]: *** [Makefile:83: tmon] Error 2
+
+Signed-off-by: Markus Mayer <mmayer@broadcom.com>
+Acked-by: Florian Fainelli <f.fainelli@gmail.com>
+Reviewed-by: Sumeet Pawnikar <sumeet.r.pawnikar@intel.com>
+Acked-by: Alejandro González <alejandro.gonzalez.correo@gmail.com>
+Tested-by: Alejandro González <alejandro.gonzalez.correo@gmail.com>
+Fixes: 94f69966faf8 ("tools/thermal: Introduce tmon, a tool for thermal  subsystem")
+Link: https://lore.kernel.org/r/20220718031040.44714-1-f.fainelli@gmail.com
+Signed-off-by: Daniel Lezcano <daniel.lezcano@linaro.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/media/platform/mtk-mdp/mtk_mdp_ipi.h | 2 ++
- 1 file changed, 2 insertions(+)
+ tools/thermal/tmon/tmon.h | 3 +++
+ 1 file changed, 3 insertions(+)
 
-diff --git a/drivers/media/platform/mtk-mdp/mtk_mdp_ipi.h b/drivers/media/platform/mtk-mdp/mtk_mdp_ipi.h
-index 78e2cc0dead1..4f4a51dd48e1 100644
---- a/drivers/media/platform/mtk-mdp/mtk_mdp_ipi.h
-+++ b/drivers/media/platform/mtk-mdp/mtk_mdp_ipi.h
-@@ -48,12 +48,14 @@ struct mdp_ipi_init {
-  * @ipi_id        : IPI_MDP
-  * @ap_inst       : AP mtk_mdp_vpu address
-  * @vpu_inst_addr : VPU MDP instance address
-+ * @padding       : Alignment padding
-  */
- struct mdp_ipi_comm {
- 	uint32_t msg_id;
- 	uint32_t ipi_id;
- 	uint64_t ap_inst;
- 	uint32_t vpu_inst_addr;
-+	uint32_t padding;
- };
+diff --git a/tools/thermal/tmon/tmon.h b/tools/thermal/tmon/tmon.h
+index 9e3c49c547ac..7b090a6c95b6 100644
+--- a/tools/thermal/tmon/tmon.h
++++ b/tools/thermal/tmon/tmon.h
+@@ -36,6 +36,9 @@
+ #define NR_LINES_TZDATA 1
+ #define TMON_LOG_FILE "/var/tmp/tmon.log"
  
- /**
++#include <sys/time.h>
++#include <pthread.h>
++
+ extern unsigned long ticktime;
+ extern double time_elapsed;
+ extern unsigned long target_temp_user;
 -- 
 2.35.1
 
