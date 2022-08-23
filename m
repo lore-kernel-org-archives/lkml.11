@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5E430C32772
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 11:57:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CFAB8C32772
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 11:57:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358769AbiHWL5D (ORCPT
+        id S1358797AbiHWL5J (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 07:57:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35950 "EHLO
+        Tue, 23 Aug 2022 07:57:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35038 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1358750AbiHWLxq (ORCPT
+        with ESMTP id S1358627AbiHWLxv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 07:53:46 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CCBA8D59BA;
-        Tue, 23 Aug 2022 02:33:06 -0700 (PDT)
+        Tue, 23 Aug 2022 07:53:51 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B0C2BB47;
+        Tue, 23 Aug 2022 02:33:14 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 3DCF8B81C99;
-        Tue, 23 Aug 2022 09:33:01 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8583CC433D7;
-        Tue, 23 Aug 2022 09:32:59 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id CEAB461389;
+        Tue, 23 Aug 2022 09:33:13 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D317BC433C1;
+        Tue, 23 Aug 2022 09:33:12 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661247180;
-        bh=NSWtoY/b14STqguOXNn0kkCnYB/ON/ex+GeP1Dr7dog=;
+        s=korg; t=1661247193;
+        bh=+cQueMhG49MjrWyekbaH7KLGxxmn10UFrF2aTy84y2Y=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=toTHpqLfA7jWea2wWRsp/2VBijWPmqgUiZHPa5EjDH7WKQ/DH1DIu51unNiDujVfD
-         fOPZV3RcK4U3glu8z2g0udlZ1+Vrn9iLN0uG60i5z5kZbjcPQvpZ9St49o3hLcKoZQ
-         wN54DqBQ0sdVmO0fgBvdBXuSomjRV4iSFeDuAJ3s=
+        b=iSSpxYnxAiJ0DJdeIPr4ZvVo1vcpHILKgxLj10vFC3d7S0OEUTyMdea5gVT7pOhyf
+         EraEjU+WtoRt4ws5hBIN9ulx07dAdIMANFKrvyK6uDC6QKCvallr8kXQs2AyXV83P5
+         7YMHIuzzTQsCUiE818JGbhud0plAmwQPM2lCyOj4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
-        =?UTF-8?q?Cs=C3=B3k=C3=A1s=20Bence?= <csokas.bence@prolan.hu>,
-        Jakub Kicinski <kuba@kernel.org>
-Subject: [PATCH 5.4 344/389] fec: Fix timer capture timing in `fec_ptp_enable_pps()`
-Date:   Tue, 23 Aug 2022 10:27:02 +0200
-Message-Id: <20220823080129.912443511@linuxfoundation.org>
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        Hector Martin <marcan@marcan.st>,
+        Will Deacon <will@kernel.org>, Arnd Bergmann <arnd@arndb.de>
+Subject: [PATCH 5.4 347/389] locking/atomic: Make test_and_*_bit() ordered on failure
+Date:   Tue, 23 Aug 2022 10:27:05 +0200
+Message-Id: <20220823080130.030533464@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220823080115.331990024@linuxfoundation.org>
 References: <20220823080115.331990024@linuxfoundation.org>
@@ -50,36 +51,75 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Csókás Bence <csokas.bence@prolan.hu>
+From: Hector Martin <marcan@marcan.st>
 
-commit 61d5e2a251fb20c2c5e998c3f1d52ed6d5360319 upstream.
+commit 415d832497098030241605c52ea83d4e2cfa7879 upstream.
 
-Code reimplements functionality already in `fec_ptp_read()`,
-but misses check for FEC_QUIRK_BUG_CAPTURE. Replace with function call.
+These operations are documented as always ordered in
+include/asm-generic/bitops/instrumented-atomic.h, and producer-consumer
+type use cases where one side needs to ensure a flag is left pending
+after some shared data was updated rely on this ordering, even in the
+failure case.
 
-Fixes: 28b5f058cf1d ("net: fec: ptp: fix convergence issue to support LinuxPTP stack")
-Signed-off-by: Csókás Bence <csokas.bence@prolan.hu>
-Link: https://lore.kernel.org/r/20220811101348.13755-1-csokas.bence@prolan.hu
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+This is the case with the workqueue code, which currently suffers from a
+reproducible ordering violation on Apple M1 platforms (which are
+notoriously out-of-order) that ends up causing the TTY layer to fail to
+deliver data to userspace properly under the right conditions.  This
+change fixes that bug.
+
+Change the documentation to restrict the "no order on failure" story to
+the _lock() variant (for which it makes sense), and remove the
+early-exit from the generic implementation, which is what causes the
+missing barrier semantics in that case.  Without this, the remaining
+atomic op is fully ordered (including on ARM64 LSE, as of recent
+versions of the architecture spec).
+
+Suggested-by: Linus Torvalds <torvalds@linux-foundation.org>
+Cc: stable@vger.kernel.org
+Fixes: e986a0d6cb36 ("locking/atomics, asm-generic/bitops/atomic.h: Rewrite using atomic_*() APIs")
+Fixes: 61e02392d3c7 ("locking/atomic/bitops: Document and clarify ordering semantics for failed test_and_{}_bit()")
+Signed-off-by: Hector Martin <marcan@marcan.st>
+Acked-by: Will Deacon <will@kernel.org>
+Reviewed-by: Arnd Bergmann <arnd@arndb.de>
+Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/net/ethernet/freescale/fec_ptp.c |    6 +-----
- 1 file changed, 1 insertion(+), 5 deletions(-)
+ Documentation/atomic_bitops.txt     |    2 +-
+ include/asm-generic/bitops/atomic.h |    6 ------
+ 2 files changed, 1 insertion(+), 7 deletions(-)
 
---- a/drivers/net/ethernet/freescale/fec_ptp.c
-+++ b/drivers/net/ethernet/freescale/fec_ptp.c
-@@ -141,11 +141,7 @@ static int fec_ptp_enable_pps(struct fec
- 		 * NSEC_PER_SEC - ts.tv_nsec. Add the remaining nanoseconds
- 		 * to current timer would be next second.
- 		 */
--		tempval = readl(fep->hwp + FEC_ATIME_CTRL);
--		tempval |= FEC_T_CTRL_CAPTURE;
--		writel(tempval, fep->hwp + FEC_ATIME_CTRL);
+--- a/Documentation/atomic_bitops.txt
++++ b/Documentation/atomic_bitops.txt
+@@ -59,7 +59,7 @@ Like with atomic_t, the rule of thumb is
+  - RMW operations that have a return value are fully ordered.
+ 
+  - RMW operations that are conditional are unordered on FAILURE,
+-   otherwise the above rules apply. In the case of test_and_{}_bit() operations,
++   otherwise the above rules apply. In the case of test_and_set_bit_lock(),
+    if the bit in memory is unchanged by the operation then it is deemed to have
+    failed.
+ 
+--- a/include/asm-generic/bitops/atomic.h
++++ b/include/asm-generic/bitops/atomic.h
+@@ -35,9 +35,6 @@ static inline int test_and_set_bit(unsig
+ 	unsigned long mask = BIT_MASK(nr);
+ 
+ 	p += BIT_WORD(nr);
+-	if (READ_ONCE(*p) & mask)
+-		return 1;
 -
--		tempval = readl(fep->hwp + FEC_ATIME);
-+		tempval = fep->cc.read(&fep->cc);
- 		/* Convert the ptp local counter to 1588 timestamp */
- 		ns = timecounter_cyc2time(&fep->tc, tempval);
- 		ts = ns_to_timespec64(ns);
+ 	old = atomic_long_fetch_or(mask, (atomic_long_t *)p);
+ 	return !!(old & mask);
+ }
+@@ -48,9 +45,6 @@ static inline int test_and_clear_bit(uns
+ 	unsigned long mask = BIT_MASK(nr);
+ 
+ 	p += BIT_WORD(nr);
+-	if (!(READ_ONCE(*p) & mask))
+-		return 0;
+-
+ 	old = atomic_long_fetch_andnot(mask, (atomic_long_t *)p);
+ 	return !!(old & mask);
+ }
 
 
