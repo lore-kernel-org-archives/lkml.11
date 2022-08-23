@@ -2,101 +2,99 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3E894C32793
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 12:57:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4050CC32772
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 12:57:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243733AbiHWM5N (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 08:57:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40820 "EHLO
+        id S241244AbiHWM53 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 23 Aug 2022 08:57:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41794 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237258AbiHWM4w (ORCPT
+        with ESMTP id S241876AbiHWM47 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 08:56:52 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AF5E42A708;
-        Tue, 23 Aug 2022 03:01:35 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id E0F0361596;
-        Tue, 23 Aug 2022 10:01:19 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5BF82C433C1;
-        Tue, 23 Aug 2022 10:01:15 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1661248879;
-        bh=aQOpLAOxNcwgrRcdYxm2/SGrN3a9OAXcro2hrJawsO8=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=D8mPaf7HWxeqOnl2cGCnM0eRRNf15TLSII5sa1iK1/uJB+479czwvAHpAm+7qWR48
-         w3Hu66UavF8uNQJ2rydvz1GZOwyGits8XNiUlI+WToBS34/9t3jHypxPuOVVdjBVCK
-         rr+ju4SpiqOJydXusPIFDpgHdti85WmX5IQGxTkmcmXDaEBNxbAPlCVCtSoblUFQke
-         /066VgfbFp67nh9EuSttAsv/Ri4xF4WRB4x5b0GVgqAfMTFR2zQvsoQ0mgm/BlcRp8
-         3DzGjGRcsgFcFSXBp5HqdwjHuXnuLUwLLmwgf4k5mT2cX8B8K9CkVMJgkiS/h3RVD+
-         P0VXr0F6CmBcA==
-Date:   Tue, 23 Aug 2022 12:01:11 +0200
-From:   Lorenzo Pieralisi <lpieralisi@kernel.org>
-To:     Will McVicker <willmcvicker@google.com>,
-        Christoph Hellwig <hch@infradead.org>, robin.murphy@arm.com
-Cc:     Jingoo Han <jingoohan1@gmail.com>,
-        Gustavo Pimentel <gustavo.pimentel@synopsys.com>,
-        Rob Herring <robh@kernel.org>,
-        Krzysztof =?utf-8?Q?Wilczy=C5=84ski?= <kw@linux.com>,
-        Bjorn Helgaas <bhelgaas@google.com>, kernel-team@android.com,
-        Vidya Sagar <vidyas@nvidia.com>, linux-pci@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v4 0/2] PCI: dwc: Add support for 64-bit MSI target
- addresses
-Message-ID: <YwSlZ8EQdX4Z6N+p@lpieralisi>
-References: <20220812000327.3154251-1-willmcvicker@google.com>
+        Tue, 23 Aug 2022 08:56:59 -0400
+Received: from mx0a-001b2d01.pphosted.com (mx0b-001b2d01.pphosted.com [148.163.158.5])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9BEA1A1D67;
+        Tue, 23 Aug 2022 03:01:39 -0700 (PDT)
+Received: from pps.filterd (m0098420.ppops.net [127.0.0.1])
+        by mx0b-001b2d01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 27N9VFKn025088;
+        Tue, 23 Aug 2022 09:53:07 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=date : from : to :
+ subject : message-id : references : mime-version : content-type :
+ in-reply-to; s=pp1; bh=oEb0ieXm7fGIofO+eA4A2nQzfMfdeD785gWKknA8rZE=;
+ b=JowQnbgz6XpHKTvQ1Z6HtUSW1EWBdnk1JS2TdE3DZJUYNaXVUrWlPOvWI+OsC3M1fNwd
+ B7hn/IOJQGgNklt3ysccQLS2xPCV/2nbTpIyM+O8pZV9Jf8wx4htWLpN6jVV7rMfatlQ
+ il+cVt4YVGTsdhb16q/z0WqPBxd5dqaZQtO65rwe8TltRMRLBtyQ6c4X9NM1k63h4Zdo
+ M5rEsT1q6HUZaj18LwGibxO53Js4KfQYdf+IY7mnSiKFYSjuVWmVwx7hI91lkpmAKrHl
+ hshm2t9DzgVhzIvRen5y1hu09dFiJIgvbm23BhxSAE/KY1ibzLa3/pFxlTg6p/EAeMwT dA== 
+Received: from ppma06ams.nl.ibm.com (66.31.33a9.ip4.static.sl-reverse.com [169.51.49.102])
+        by mx0b-001b2d01.pphosted.com (PPS) with ESMTPS id 3j4vaygk62-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Tue, 23 Aug 2022 09:53:07 +0000
+Received: from pps.filterd (ppma06ams.nl.ibm.com [127.0.0.1])
+        by ppma06ams.nl.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 27N9p4NC027851;
+        Tue, 23 Aug 2022 09:53:05 GMT
+Received: from b06avi18626390.portsmouth.uk.ibm.com (b06avi18626390.portsmouth.uk.ibm.com [9.149.26.192])
+        by ppma06ams.nl.ibm.com with ESMTP id 3j2pvj3k4d-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Tue, 23 Aug 2022 09:53:05 +0000
+Received: from d06av22.portsmouth.uk.ibm.com (d06av22.portsmouth.uk.ibm.com [9.149.105.58])
+        by b06avi18626390.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 27N9o33D33489338
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Tue, 23 Aug 2022 09:50:04 GMT
+Received: from d06av22.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 168754C040;
+        Tue, 23 Aug 2022 09:53:02 +0000 (GMT)
+Received: from d06av22.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 32C714C044;
+        Tue, 23 Aug 2022 09:53:01 +0000 (GMT)
+Received: from li-4a3a4a4c-28e5-11b2-a85c-a8d192c6f089.ibm.com (unknown [9.145.17.18])
+        by d06av22.portsmouth.uk.ibm.com (Postfix) with ESMTPS;
+        Tue, 23 Aug 2022 09:53:01 +0000 (GMT)
+Date:   Tue, 23 Aug 2022 11:52:59 +0200
+From:   Alexander Gordeev <agordeev@linux.ibm.com>
+To:     Wolfram Sang <wsa+renesas@sang-engineering.com>,
+        linux-kernel@vger.kernel.org, Stefan Haberland <sth@linux.ibm.com>,
+        Jan Hoeppner <hoeppner@linux.ibm.com>,
+        Heiko Carstens <hca@linux.ibm.com>,
+        Vasily Gorbik <gor@linux.ibm.com>,
+        Christian Borntraeger <borntraeger@linux.ibm.com>,
+        Sven Schnelle <svens@linux.ibm.com>,
+        Vineeth Vijayan <vneethv@linux.ibm.com>,
+        Peter Oberparleiter <oberpar@linux.ibm.com>,
+        Alexandra Winter <wintera@linux.ibm.com>,
+        Wenjia Zhang <wenjia@linux.ibm.com>,
+        Steffen Maier <maier@linux.ibm.com>,
+        Benjamin Block <bblock@linux.ibm.com>,
+        linux-s390@vger.kernel.org, netdev@vger.kernel.org
+Subject: Re: [PATCH] s390: move from strlcpy with unused retval to strscpy
+Message-ID: <YwSjew42Iryps1ag@li-4a3a4a4c-28e5-11b2-a85c-a8d192c6f089.ibm.com>
+References: <20220818210102.7301-1-wsa+renesas@sang-engineering.com>
+ <YwM4y78boN4s1VNo@li-4a3a4a4c-28e5-11b2-a85c-a8d192c6f089.ibm.com>
+ <YwNAW2Zp6o7Z//Y2@shikoro>
+ <YwNtJAQlJVycijou@li-4a3a4a4c-28e5-11b2-a85c-a8d192c6f089.ibm.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220812000327.3154251-1-willmcvicker@google.com>
+In-Reply-To: <YwNtJAQlJVycijou@li-4a3a4a4c-28e5-11b2-a85c-a8d192c6f089.ibm.com>
+X-TM-AS-GCONF: 00
+X-Proofpoint-GUID: smCgthl38UYQ0TQDujEZdzz3DlyQeg-d
+X-Proofpoint-ORIG-GUID: smCgthl38UYQ0TQDujEZdzz3DlyQeg-d
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.895,Hydra:6.0.517,FMLib:17.11.122.1
+ definitions=2022-08-23_04,2022-08-22_02,2022-06-22_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 bulkscore=0 spamscore=0
+ malwarescore=0 mlxlogscore=725 suspectscore=0 adultscore=0 mlxscore=0
+ impostorscore=0 lowpriorityscore=0 priorityscore=1501 clxscore=1015
+ phishscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2207270000 definitions=main-2208230036
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Aug 12, 2022 at 12:03:24AM +0000, Will McVicker wrote:
-> Hi All,
-> 
-> I've updated the series to address the review comments. Refer to the v4
-> history below for the changes. Please take a look and thanks again for the
-> reviews!
+On Mon, Aug 22, 2022 at 01:48:54PM +0200, Alexander Gordeev wrote:
+> I guess, you also wanted a fix for arch/s390/kvm/tests/instr_icpt/main.c
+> in this series.
 
-This series looks OK to me - it'd be good if Christoph/Robin can have
-a look though before merging it.
+Please, ignore this one.
 
-Lorenzo
-
-> Regards,
-> Will
-> 
-> Will McVicker (2):
->   PCI: dwc: Drop dependency on ZONE_DMA32
->   PCI: dwc: Add support for 64-bit MSI target address
-> 
-> v4:
->  * Updated commit descriptions.
->  * Renamed msi_64b -> msi_64bit.
->  * Dropped msi_64bit ternary use.
->  * Dropped export of dw_pcie_msi_capabilities.
-> 
-> v3:
->   * Switched to a managed DMA allocation.
->   * Simplified the DMA allocation cleanup.
->   * Dropped msi_page from struct dw_pcie_rp.
->   * Allocating a u64 instead of a full page.
-> 
-> v2:
->   * Fixed build error caught by kernel test robot
->   * Fixed error handling reported by Isaac Manjarres
-> 
->  .../pci/controller/dwc/pcie-designware-host.c | 42 +++++++++----------
->  drivers/pci/controller/dwc/pcie-designware.c  |  8 ++++
->  drivers/pci/controller/dwc/pcie-designware.h  |  2 +-
->  3 files changed, 28 insertions(+), 24 deletions(-)
-> 
-> 
-> base-commit: 2ae08b36c06ea8df73a79f6b80ff7964e006e9e3
-> -- 
-> 2.37.1.559.g78731f0fdb-goog
-> 
+Thanks!
