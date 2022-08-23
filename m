@@ -2,47 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6FA66C32772
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 08:39:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9FD86C32792
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 08:39:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345448AbiHWIho (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 04:37:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45784 "EHLO
+        id S241267AbiHWIhu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 23 Aug 2022 04:37:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33060 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345531AbiHWIfp (ORCPT
+        with ESMTP id S1345960AbiHWIf5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 04:35:45 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B207B5FD5;
-        Tue, 23 Aug 2022 01:16:57 -0700 (PDT)
+        Tue, 23 Aug 2022 04:35:57 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2421275FCE;
+        Tue, 23 Aug 2022 01:16:48 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 152BD61238;
-        Tue, 23 Aug 2022 08:16:50 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 47994C433D6;
-        Tue, 23 Aug 2022 08:16:49 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id A8D83B81C20;
+        Tue, 23 Aug 2022 08:16:47 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 04BEAC4347C;
+        Tue, 23 Aug 2022 08:16:45 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661242609;
-        bh=6cr4M4z5xfYkh3alHhyViMwcrjvTki6YRE8U0y4xRyc=;
+        s=korg; t=1661242606;
+        bh=wzYSU7PSI22ZxSnt8HJeG089qUc1YXYvyYmqR9gjY2Y=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=wk6TE89zhZQyl5pSrwl/oK8/VBzG/4rcBuMZA+O6L0L/Us7CGHFF88q1+2E9Bm7tF
-         8/bc5yIWuK/X6HVwJpgnfzDNhpA6Pmm+5jqNdbkaLVwRtgwb64dO7l4eFJpyWthIIt
-         ygvGI9C0xgQcruD60EPzSk0mZrKkIJQwQqUiyr9s=
+        b=Tqxosq2w+aQ4XNfHYe8RaK9NUhGEfBRD640JjFu+Jds+X8ddEcPIzCaG21s7i6Qgd
+         3T3YSqgsUO16cIoD/i+bn+nC97Dxg8Vo7vpGejk9FaZVTm1UtQ6p+ElA8FIUT1Hs+v
+         7RCbJrLPFWo6Lv7j/QU3/ckIFNLgwjj4qL63m0U4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
-        Jonathan Cameron <Jonathan.Cameron@huawei.com>,
-        Adam Manzanares <a.manzanares@samsung.com>,
-        Dan Williams <dan.j.williams@intel.com>
-Subject: [PATCH 5.19 144/365] tools/testing/cxl: Fix cxl_hdm_decode_init() calling convention
-Date:   Tue, 23 Aug 2022 10:00:45 +0200
-Message-Id: <20220823080124.254773216@linuxfoundation.org>
+        =?UTF-8?q?Cs=C3=B3k=C3=A1s=20Bence?= <csokas.bence@prolan.hu>,
+        Jakub Kicinski <kuba@kernel.org>
+Subject: [PATCH 4.9 085/101] fec: Fix timer capture timing in `fec_ptp_enable_pps()`
+Date:   Tue, 23 Aug 2022 10:03:58 +0200
+Message-Id: <20220823080037.800216144@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220823080118.128342613@linuxfoundation.org>
-References: <20220823080118.128342613@linuxfoundation.org>
+In-Reply-To: <20220823080034.579196046@linuxfoundation.org>
+References: <20220823080034.579196046@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -51,72 +49,36 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Dan Williams <dan.j.williams@intel.com>
+From: Csókás Bence <csokas.bence@prolan.hu>
 
-commit 863fdccdc5ed1e187a30a4a103340be4569904c8 upstream.
+commit 61d5e2a251fb20c2c5e998c3f1d52ed6d5360319 upstream.
 
-This failing signature:
+Code reimplements functionality already in `fec_ptp_read()`,
+but misses check for FEC_QUIRK_BUG_CAPTURE. Replace with function call.
 
-[    8.392669] cxl_bus_probe: cxl_port endpoint2: probe: 970997760
-[    8.392670] cxl_port: probe of endpoint2 failed with error 970997760
-[    8.392719] create_endpoint: cxl_mem mem0: add: endpoint2
-[    8.392721] cxl_mem mem0: endpoint2 failed probe
-[    8.392725] cxl_bus_probe: cxl_mem mem0: probe: -6
-
-...shows cxl_hdm_decode_init() resulting in a return code ("970997760")
-that looks like stack corruption. The problem goes away if
-cxl_hdm_decode_init() is not mocked via __wrap_cxl_hdm_decode_init().
-
-The corruption results from the mismatch that the calling convention for
-cxl_hdm_decode_init() is:
-
-int cxl_hdm_decode_init(struct cxl_dev_state *cxlds, struct cxl_hdm *cxlhdm)
-
-...and __wrap_cxl_hdm_decode_init() is:
-
-bool __wrap_cxl_hdm_decode_init(struct cxl_dev_state *cxlds, struct cxl_hdm *cxlhdm)
-
-...i.e. an int is expected but __wrap_hdm_decode_init() returns bool.
-
-Fix the convention and cleanup the organization to match
-__wrap_cxl_await_media_ready() as the difference was a red herring that
-distracted from finding the bug.
-
-Fixes: 92804edb11f0 ("cxl/pci: Drop @info argument to cxl_hdm_decode_init()")
-Reviewed-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
-Reviewed-by: Adam Manzanares <a.manzanares@samsung.com>
-Link: https://lore.kernel.org/r/165603870776.551046.8709990108936497723.stgit@dwillia2-xfh
-Signed-off-by: Dan Williams <dan.j.williams@intel.com>
+Fixes: 28b5f058cf1d ("net: fec: ptp: fix convergence issue to support LinuxPTP stack")
+Signed-off-by: Csókás Bence <csokas.bence@prolan.hu>
+Link: https://lore.kernel.org/r/20220811101348.13755-1-csokas.bence@prolan.hu
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- tools/testing/cxl/test/mock.c | 8 +++++---
- 1 file changed, 5 insertions(+), 3 deletions(-)
+ drivers/net/ethernet/freescale/fec_ptp.c |    6 +-----
+ 1 file changed, 1 insertion(+), 5 deletions(-)
 
-diff --git a/tools/testing/cxl/test/mock.c b/tools/testing/cxl/test/mock.c
-index f1f8c40948c5..bce6a21df0d5 100644
---- a/tools/testing/cxl/test/mock.c
-+++ b/tools/testing/cxl/test/mock.c
-@@ -208,13 +208,15 @@ int __wrap_cxl_await_media_ready(struct cxl_dev_state *cxlds)
- }
- EXPORT_SYMBOL_NS_GPL(__wrap_cxl_await_media_ready, CXL);
- 
--bool __wrap_cxl_hdm_decode_init(struct cxl_dev_state *cxlds,
--				struct cxl_hdm *cxlhdm)
-+int __wrap_cxl_hdm_decode_init(struct cxl_dev_state *cxlds,
-+			       struct cxl_hdm *cxlhdm)
- {
- 	int rc = 0, index;
- 	struct cxl_mock_ops *ops = get_cxl_mock_ops(&index);
- 
--	if (!ops || !ops->is_mock_dev(cxlds->dev))
-+	if (ops && ops->is_mock_dev(cxlds->dev))
-+		rc = 0;
-+	else
- 		rc = cxl_hdm_decode_init(cxlds, cxlhdm);
- 	put_cxl_mock_ops(index);
- 
--- 
-2.37.2
-
+--- a/drivers/net/ethernet/freescale/fec_ptp.c
++++ b/drivers/net/ethernet/freescale/fec_ptp.c
+@@ -155,11 +155,7 @@ static int fec_ptp_enable_pps(struct fec
+ 		 * NSEC_PER_SEC - ts.tv_nsec. Add the remaining nanoseconds
+ 		 * to current timer would be next second.
+ 		 */
+-		tempval = readl(fep->hwp + FEC_ATIME_CTRL);
+-		tempval |= FEC_T_CTRL_CAPTURE;
+-		writel(tempval, fep->hwp + FEC_ATIME_CTRL);
+-
+-		tempval = readl(fep->hwp + FEC_ATIME);
++		tempval = fep->cc.read(&fep->cc);
+ 		/* Convert the ptp local counter to 1588 timestamp */
+ 		ns = timecounter_cyc2time(&fep->tc, tempval);
+ 		ts = ns_to_timespec64(ns);
 
 
