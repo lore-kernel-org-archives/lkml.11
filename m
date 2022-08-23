@@ -2,45 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9FB4BC52D6C
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 17688C49EC2
 	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 12:22:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1359556AbiHWMVw (ORCPT
+        id S1356730AbiHWMVe (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 08:21:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46798 "EHLO
+        Tue, 23 Aug 2022 08:21:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56380 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1359713AbiHWMQQ (ORCPT
+        with ESMTP id S1359668AbiHWMQK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 08:16:16 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1AF2CEA897;
-        Tue, 23 Aug 2022 02:41:46 -0700 (PDT)
+        Tue, 23 Aug 2022 08:16:10 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A6D76EA301;
+        Tue, 23 Aug 2022 02:41:30 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id F1409B81CA0;
-        Tue, 23 Aug 2022 09:41:30 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4428AC433C1;
-        Tue, 23 Aug 2022 09:41:29 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 3AAA1B81C89;
+        Tue, 23 Aug 2022 09:41:15 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 867FAC433D6;
+        Tue, 23 Aug 2022 09:41:13 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661247689;
-        bh=z24/BARLJ//SDqxiofAV43yx4a8PcW9v68+Ar14AMV8=;
+        s=korg; t=1661247674;
+        bh=s13R4a8PeApI8DNa3FJYBlL7I+6m6pE3xwfI2dqz9Oo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=t0riD1J+309lJ+zgiYBtB9/MlYcsBd/+drCAu/q8jdX8tIuWKBTVo3+L3Ayim0i2W
-         xB6ceBVPRC09w3jpeNhh/R1Ys7Tgyi2ezJZI5y2b+T2eOzyFnMU9b7+5TKFJxBnlAS
-         Ox+Nj8wxYl4OsJ+fkZ/xNehVm645G0kc2HOtkLXE=
+        b=lcBDLlYj7Lxww1kT8kApftP/jbzzkUtts/K2PwFE4Lf/D6N14DgeiXGg1ka7oPmCr
+         slqv4glhEf+y621qIL6TArNNegqSBi8eMAAOsa655jGdwPOpjWJemrbYo6uTwluKkv
+         UQAhjUsf+eKwIwU1LwbjpKPyp9AL8ZZDvL/XBv2Y=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Stephen Boyd <sboyd@kernel.org>,
-        Vinod Koul <vkoul@kernel.org>,
-        Vladimir Zapolskiy <vladimir.zapolskiy@linaro.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        stable@vger.kernel.org, Minas Harutyunyan <hminas@synopsys.com>,
+        Amelie Delaunay <amelie.delaunay@foss.st.com>,
+        Fabrice Gasnier <fabrice.gasnier@foss.st.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 116/158] clk: qcom: clk-alpha-pll: fix clk_trion_pll_configure description
-Date:   Tue, 23 Aug 2022 10:27:28 +0200
-Message-Id: <20220823080050.621165380@linuxfoundation.org>
+Subject: [PATCH 5.10 111/158] usb: dwc2: gadget: remove D+ pull-up while no vbus with usb-role-switch
+Date:   Tue, 23 Aug 2022 10:27:23 +0200
+Message-Id: <20220823080050.435999238@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220823080046.056825146@linuxfoundation.org>
 References: <20220823080046.056825146@linuxfoundation.org>
@@ -52,38 +51,42 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Vladimir Zapolskiy <vladimir.zapolskiy@linaro.org>
+From: Amelie Delaunay <amelie.delaunay@foss.st.com>
 
-[ Upstream commit 94bed9bb05c7850ff5d80b87cc29004901f37956 ]
+[ Upstream commit db638c6500abaffb8f7770b2a69c40d003d54ae1 ]
 
-After merging lucid and trion pll functions in commit 0b01489475c6
-("clk: qcom: clk-alpha-pll: same regs and ops for trion and lucid")
-the function clk_trion_pll_configure() is left with an old description
-header, which results in a W=2 compile time warning, fix it.
+When using usb-role-switch, D+ pull-up is set as soon as DTCL_SFTDISCON is
+cleared, whatever the vbus valid signal state is. The pull-up should not
+be set when vbus isn't present (this is determined by the drd controller).
 
-Acked-by: Stephen Boyd <sboyd@kernel.org>
-Reviewed-by: Vinod Koul <vkoul@kernel.org>
-Signed-off-by: Vladimir Zapolskiy <vladimir.zapolskiy@linaro.org>
-Signed-off-by: Bjorn Andersson <bjorn.andersson@linaro.org>
-Link: https://lore.kernel.org/r/20220701062711.2757855-1-vladimir.zapolskiy@linaro.org
+This patch ensures that B-Session (so Peripheral role + vbus valid signal)
+is valid before clearing the DCTL_SFTDISCON bit when role switch is used.
+Keep original behavior when usb-role-switch isn't used.
+
+Acked-by: Minas Harutyunyan <hminas@synopsys.com>
+Signed-off-by: Amelie Delaunay <amelie.delaunay@foss.st.com>
+Signed-off-by: Fabrice Gasnier <fabrice.gasnier@foss.st.com>
+Link: https://lore.kernel.org/r/20220622160717.314580-1-fabrice.gasnier@foss.st.com
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/clk/qcom/clk-alpha-pll.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/usb/dwc2/gadget.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/clk/qcom/clk-alpha-pll.c b/drivers/clk/qcom/clk-alpha-pll.c
-index 1a571c04a76c..cf265ab035ea 100644
---- a/drivers/clk/qcom/clk-alpha-pll.c
-+++ b/drivers/clk/qcom/clk-alpha-pll.c
-@@ -1379,7 +1379,7 @@ const struct clk_ops clk_alpha_pll_postdiv_fabia_ops = {
- EXPORT_SYMBOL_GPL(clk_alpha_pll_postdiv_fabia_ops);
+diff --git a/drivers/usb/dwc2/gadget.c b/drivers/usb/dwc2/gadget.c
+index 64485f82dc5b..da0df69cc234 100644
+--- a/drivers/usb/dwc2/gadget.c
++++ b/drivers/usb/dwc2/gadget.c
+@@ -3593,7 +3593,8 @@ void dwc2_hsotg_core_disconnect(struct dwc2_hsotg *hsotg)
+ void dwc2_hsotg_core_connect(struct dwc2_hsotg *hsotg)
+ {
+ 	/* remove the soft-disconnect and let's go */
+-	dwc2_clear_bit(hsotg, DCTL, DCTL_SFTDISCON);
++	if (!hsotg->role_sw || (dwc2_readl(hsotg, GOTGCTL) & GOTGCTL_BSESVLD))
++		dwc2_clear_bit(hsotg, DCTL, DCTL_SFTDISCON);
+ }
  
  /**
-- * clk_lucid_pll_configure - configure the lucid pll
-+ * clk_trion_pll_configure - configure the trion pll
-  *
-  * @pll: clk alpha pll
-  * @regmap: register map
 -- 
 2.35.1
 
