@@ -2,45 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 497C3C38147
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 12:04:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6BC2BC32772
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 12:04:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352170AbiHWMD5 (ORCPT
+        id S1358951AbiHWMER (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 08:03:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47472 "EHLO
+        Tue, 23 Aug 2022 08:04:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47374 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1359380AbiHWMBX (ORCPT
+        with ESMTP id S1359171AbiHWMAM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 08:01:23 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 09A7F78599;
-        Tue, 23 Aug 2022 02:35:45 -0700 (PDT)
+        Tue, 23 Aug 2022 08:00:12 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9BC35D8E13;
+        Tue, 23 Aug 2022 02:35:05 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 17C6E61494;
-        Tue, 23 Aug 2022 09:35:35 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1C104C433D6;
-        Tue, 23 Aug 2022 09:35:33 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id D5C94B81C65;
+        Tue, 23 Aug 2022 09:34:54 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3141FC433C1;
+        Tue, 23 Aug 2022 09:34:53 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661247334;
-        bh=VkRn4+8ydRrl8kgh6G1pqsFQTBK7tf6FFq8d3e6si44=;
+        s=korg; t=1661247293;
+        bh=Nned1RlZpWiZahe4FRxH3L5S5eEsVREKwZPn00BfNAE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=12Pcr+qL9iUELLx2xYcIXEaFj9eupoElua7gShLAnT0tpsqdAckclsSwdXpaUYGWX
-         OIrZVfTo7O9PoTAtprjm5D9mv62PYxx/z+n39fDIHAfhQOdUCWgl+5NpGSGgdLFsWt
-         9BrHrVvndmlCEp1SmbtkMuDBPMxeID6HyvcnZ0Mk=
+        b=lqe4YR5iLzQLXJKgbQSbsXr6yoQ3amH2cqPH+YUlscPGyA+HX3Xqh9maW5u/SHl76
+         xkqsJZL1G4DDdj1LNsejhQAibWAtc2kJawfoKQ9VQH7cKb0gsLbF4268Xf6ChOIQ5F
+         tYjirOiXSE6ibOcVBmri5kUZOJCTegeJMVj3LoyU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
-        =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
-        <u.kleine-koenig@pengutronix.de>,
-        Baolin Wang <baolin.wang7@gmail.com>,
-        Vinod Koul <vkoul@kernel.org>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 364/389] dmaengine: sprd: Cleanup in .remove() after pm_runtime_get_sync() failed
-Date:   Tue, 23 Aug 2022 10:27:22 +0200
-Message-Id: <20220823080130.752756708@linuxfoundation.org>
+        syzbot+1ee0910eca9c94f71f25@syzkaller.appspotmail.com,
+        syzbot+49b10793b867871ee26f@syzkaller.appspotmail.com,
+        syzbot+8285e973a41b5aa68902@syzkaller.appspotmail.com,
+        Takashi Iwai <tiwai@suse.de>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.4 379/389] ALSA: timer: Use deferred fasync helper
+Date:   Tue, 23 Aug 2022 10:27:37 +0200
+Message-Id: <20220823080131.396076522@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220823080115.331990024@linuxfoundation.org>
 References: <20220823080115.331990024@linuxfoundation.org>
@@ -52,45 +52,81 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
+From: Takashi Iwai <tiwai@suse.de>
 
-[ Upstream commit 1e42f82cbec7b2cc4873751e7791e6611901c5fc ]
+[ Upstream commit 95cc637c1afd83fb7dd3d7c8a53710488f4caf9c ]
 
-It's not allowed to quit remove early without cleaning up completely.
-Otherwise this results in resource leaks that probably yield graver
-problems later. Here for example some tasklets might survive the lifetime
-of the sprd-dma device and access sdev which is freed after .remove()
-returns.
+For avoiding the potential deadlock via kill_fasync() call, use the
+new fasync helpers to defer the invocation from PCI API.  Note that
+it's merely a workaround.
 
-As none of the device freeing requires an active device, just ignore the
-return value of pm_runtime_get_sync().
-
-Signed-off-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
-Reviewed-by: Baolin Wang <baolin.wang7@gmail.com>
-Link: https://lore.kernel.org/r/20220721204054.323602-1-u.kleine-koenig@pengutronix.de
-Signed-off-by: Vinod Koul <vkoul@kernel.org>
+Reported-by: syzbot+1ee0910eca9c94f71f25@syzkaller.appspotmail.com
+Reported-by: syzbot+49b10793b867871ee26f@syzkaller.appspotmail.com
+Reported-by: syzbot+8285e973a41b5aa68902@syzkaller.appspotmail.com
+Link: https://lore.kernel.org/r/20220728125945.29533-3-tiwai@suse.de
+Signed-off-by: Takashi Iwai <tiwai@suse.de>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/dma/sprd-dma.c | 5 +----
- 1 file changed, 1 insertion(+), 4 deletions(-)
+ sound/core/timer.c | 11 ++++++-----
+ 1 file changed, 6 insertions(+), 5 deletions(-)
 
-diff --git a/drivers/dma/sprd-dma.c b/drivers/dma/sprd-dma.c
-index b966115bfad1..4f0c50106321 100644
---- a/drivers/dma/sprd-dma.c
-+++ b/drivers/dma/sprd-dma.c
-@@ -1201,11 +1201,8 @@ static int sprd_dma_remove(struct platform_device *pdev)
- {
- 	struct sprd_dma_dev *sdev = platform_get_drvdata(pdev);
- 	struct sprd_dma_chn *c, *cn;
--	int ret;
+diff --git a/sound/core/timer.c b/sound/core/timer.c
+index d684aa4150aa..420cc07a7f88 100644
+--- a/sound/core/timer.c
++++ b/sound/core/timer.c
+@@ -61,7 +61,7 @@ struct snd_timer_user {
+ 	unsigned int filter;
+ 	struct timespec tstamp;		/* trigger tstamp */
+ 	wait_queue_head_t qchange_sleep;
+-	struct fasync_struct *fasync;
++	struct snd_fasync *fasync;
+ 	struct mutex ioctl_lock;
+ };
  
--	ret = pm_runtime_get_sync(&pdev->dev);
--	if (ret < 0)
--		return ret;
-+	pm_runtime_get_sync(&pdev->dev);
+@@ -1317,7 +1317,7 @@ static void snd_timer_user_interrupt(struct snd_timer_instance *timeri,
+ 	}
+       __wake:
+ 	spin_unlock(&tu->qlock);
+-	kill_fasync(&tu->fasync, SIGIO, POLL_IN);
++	snd_kill_fasync(tu->fasync, SIGIO, POLL_IN);
+ 	wake_up(&tu->qchange_sleep);
+ }
  
- 	/* explicitly free the irq */
- 	if (sdev->irq > 0)
+@@ -1354,7 +1354,7 @@ static void snd_timer_user_ccallback(struct snd_timer_instance *timeri,
+ 	spin_lock_irqsave(&tu->qlock, flags);
+ 	snd_timer_user_append_to_tqueue(tu, &r1);
+ 	spin_unlock_irqrestore(&tu->qlock, flags);
+-	kill_fasync(&tu->fasync, SIGIO, POLL_IN);
++	snd_kill_fasync(tu->fasync, SIGIO, POLL_IN);
+ 	wake_up(&tu->qchange_sleep);
+ }
+ 
+@@ -1421,7 +1421,7 @@ static void snd_timer_user_tinterrupt(struct snd_timer_instance *timeri,
+ 	spin_unlock(&tu->qlock);
+ 	if (append == 0)
+ 		return;
+-	kill_fasync(&tu->fasync, SIGIO, POLL_IN);
++	snd_kill_fasync(tu->fasync, SIGIO, POLL_IN);
+ 	wake_up(&tu->qchange_sleep);
+ }
+ 
+@@ -1487,6 +1487,7 @@ static int snd_timer_user_release(struct inode *inode, struct file *file)
+ 		if (tu->timeri)
+ 			snd_timer_close(tu->timeri);
+ 		mutex_unlock(&tu->ioctl_lock);
++		snd_fasync_free(tu->fasync);
+ 		kfree(tu->queue);
+ 		kfree(tu->tqueue);
+ 		kfree(tu);
+@@ -2050,7 +2051,7 @@ static int snd_timer_user_fasync(int fd, struct file * file, int on)
+ 	struct snd_timer_user *tu;
+ 
+ 	tu = file->private_data;
+-	return fasync_helper(fd, file, on, &tu->fasync);
++	return snd_fasync_helper(fd, file, on, &tu->fasync);
+ }
+ 
+ static ssize_t snd_timer_user_read(struct file *file, char __user *buffer,
 -- 
 2.35.1
 
