@@ -2,46 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 976AEC32774
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 09:58:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EEF56C32774
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 09:58:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243727AbiHWJ6E (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 05:58:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42070 "EHLO
+        id S244038AbiHWJ6J (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 23 Aug 2022 05:58:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41306 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243274AbiHWJwk (ORCPT
+        with ESMTP id S243431AbiHWJwo (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 05:52:40 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 646299F1BC;
-        Tue, 23 Aug 2022 01:46:14 -0700 (PDT)
+        Tue, 23 Aug 2022 05:52:44 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BCACF9E108;
+        Tue, 23 Aug 2022 01:46:20 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id C34DCB81C28;
-        Tue, 23 Aug 2022 08:46:13 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 33462C433D6;
-        Tue, 23 Aug 2022 08:46:12 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 2FAC7CE1B51;
+        Tue, 23 Aug 2022 08:45:49 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 47555C433C1;
+        Tue, 23 Aug 2022 08:45:47 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661244372;
-        bh=RV1GZG+3t5zAS4U4itlLMWmm5qsJJCjklLgh5YNRoOM=;
+        s=korg; t=1661244347;
+        bh=0knbD/ImRv9PdrlmhmwIx+OgZjRdA+sNf0/I295lEzQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=IMnQwzXRamoeqai4giExtIg2mm9s8hBK33NP8gGZrN+I50Kf6U9cDN9dBUlN8TP8s
-         6o7OZ1DpVcd7x+drWKa1LgO2l518wRih3jAZeZ5l5Kc3FZiQb2b8JLbxaP0k1rYwTD
-         3PgukYOMbpwI4sQuYdvDInXLGR6WNZQNe2njkC9w=
+        b=eOBW/kErdfoQGS9ZVZe79gQ6SxL6Az9dAVEb4pGVdCh8UBWhniE0RiqowtGA3LK14
+         wGaM2EObjdsC8ekUM9/jORo57BqxhlTd95mIOWlNbi+4MXc3ZoBJINYi1dlsVqi2r0
+         +bfZM0xilTcUwQCTlGkNjJnGVJooI0YecCgcsFHk=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Stefano Garzarella <sgarzare@redhat.com>,
-        Peilin Ye <peilin.ye@bytedance.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        syzbot+b03f55bf128f9a38f064@syzkaller.appspotmail.com
-Subject: [PATCH 5.15 080/244] vsock: Fix memory leak in vsock_connect()
-Date:   Tue, 23 Aug 2022 10:23:59 +0200
-Message-Id: <20220823080101.719740852@linuxfoundation.org>
+        stable@vger.kernel.org, Daniel Starke <daniel.starke@siemens.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 4.14 123/229] tty: n_gsm: fix packet re-transmission without open control channel
+Date:   Tue, 23 Aug 2022 10:24:44 +0200
+Message-Id: <20220823080058.112909767@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220823080059.091088642@linuxfoundation.org>
-References: <20220823080059.091088642@linuxfoundation.org>
+In-Reply-To: <20220823080053.202747790@linuxfoundation.org>
+References: <20220823080053.202747790@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -50,83 +48,40 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Peilin Ye <peilin.ye@bytedance.com>
+From: Daniel Starke <daniel.starke@siemens.com>
 
-commit 7e97cfed9929eaabc41829c395eb0d1350fccb9d upstream.
+[ Upstream commit 4fae831b3a71fc5a44cc5c7d0b8c1267ee7659f5 ]
 
-An O_NONBLOCK vsock_connect() request may try to reschedule
-@connect_work.  Imagine the following sequence of vsock_connect()
-requests:
+In the current implementation control packets are re-transmitted even if
+the control channel closed down during T2. This is wrong.
+Check whether the control channel is open before re-transmitting any
+packets. Note that control channel open/close is handled by T1 and not T2
+and remains unaffected by this.
 
-  1. The 1st, non-blocking request schedules @connect_work, which will
-     expire after 200 jiffies.  Socket state is now SS_CONNECTING;
-
-  2. Later, the 2nd, blocking request gets interrupted by a signal after
-     a few jiffies while waiting for the connection to be established.
-     Socket state is back to SS_UNCONNECTED, but @connect_work is still
-     pending, and will expire after 100 jiffies.
-
-  3. Now, the 3rd, non-blocking request tries to schedule @connect_work
-     again.  Since @connect_work is already scheduled,
-     schedule_delayed_work() silently returns.  sock_hold() is called
-     twice, but sock_put() will only be called once in
-     vsock_connect_timeout(), causing a memory leak reported by syzbot:
-
-  BUG: memory leak
-  unreferenced object 0xffff88810ea56a40 (size 1232):
-    comm "syz-executor756", pid 3604, jiffies 4294947681 (age 12.350s)
-    hex dump (first 32 bytes):
-      00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
-      28 00 07 40 00 00 00 00 00 00 00 00 00 00 00 00  (..@............
-    backtrace:
-      [<ffffffff837c830e>] sk_prot_alloc+0x3e/0x1b0 net/core/sock.c:1930
-      [<ffffffff837cbe22>] sk_alloc+0x32/0x2e0 net/core/sock.c:1989
-      [<ffffffff842ccf68>] __vsock_create.constprop.0+0x38/0x320 net/vmw_vsock/af_vsock.c:734
-      [<ffffffff842ce8f1>] vsock_create+0xc1/0x2d0 net/vmw_vsock/af_vsock.c:2203
-      [<ffffffff837c0cbb>] __sock_create+0x1ab/0x2b0 net/socket.c:1468
-      [<ffffffff837c3acf>] sock_create net/socket.c:1519 [inline]
-      [<ffffffff837c3acf>] __sys_socket+0x6f/0x140 net/socket.c:1561
-      [<ffffffff837c3bba>] __do_sys_socket net/socket.c:1570 [inline]
-      [<ffffffff837c3bba>] __se_sys_socket net/socket.c:1568 [inline]
-      [<ffffffff837c3bba>] __x64_sys_socket+0x1a/0x20 net/socket.c:1568
-      [<ffffffff84512815>] do_syscall_x64 arch/x86/entry/common.c:50 [inline]
-      [<ffffffff84512815>] do_syscall_64+0x35/0x80 arch/x86/entry/common.c:80
-      [<ffffffff84600068>] entry_SYSCALL_64_after_hwframe+0x44/0xae
-  <...>
-
-Use mod_delayed_work() instead: if @connect_work is already scheduled,
-reschedule it, and undo sock_hold() to keep the reference count
-balanced.
-
-Reported-and-tested-by: syzbot+b03f55bf128f9a38f064@syzkaller.appspotmail.com
-Fixes: d021c344051a ("VSOCK: Introduce VM Sockets")
-Co-developed-by: Stefano Garzarella <sgarzare@redhat.com>
-Signed-off-by: Stefano Garzarella <sgarzare@redhat.com>
-Reviewed-by: Stefano Garzarella <sgarzare@redhat.com>
-Signed-off-by: Peilin Ye <peilin.ye@bytedance.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+Fixes: e1eaea46bb40 ("tty: n_gsm line discipline")
+Signed-off-by: Daniel Starke <daniel.starke@siemens.com>
+Link: https://lore.kernel.org/r/20220701061652.39604-7-daniel.starke@siemens.com
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/vmw_vsock/af_vsock.c |    9 ++++++++-
- 1 file changed, 8 insertions(+), 1 deletion(-)
+ drivers/tty/n_gsm.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/net/vmw_vsock/af_vsock.c
-+++ b/net/vmw_vsock/af_vsock.c
-@@ -1390,7 +1390,14 @@ static int vsock_connect(struct socket *
- 			 * timeout fires.
- 			 */
- 			sock_hold(sk);
--			schedule_delayed_work(&vsk->connect_work, timeout);
-+
-+			/* If the timeout function is already scheduled,
-+			 * reschedule it, then ungrab the socket refcount to
-+			 * keep it balanced.
-+			 */
-+			if (mod_delayed_work(system_wq, &vsk->connect_work,
-+					     timeout))
-+				sock_put(sk);
- 
- 			/* Skip ahead to preserve error code set above. */
- 			goto out_wait;
+diff --git a/drivers/tty/n_gsm.c b/drivers/tty/n_gsm.c
+index a838ec4f2715..62af08e5caa5 100644
+--- a/drivers/tty/n_gsm.c
++++ b/drivers/tty/n_gsm.c
+@@ -1394,7 +1394,7 @@ static void gsm_control_retransmit(unsigned long data)
+ 	spin_lock_irqsave(&gsm->control_lock, flags);
+ 	ctrl = gsm->pending_cmd;
+ 	if (ctrl) {
+-		if (gsm->cretries == 0) {
++		if (gsm->cretries == 0 || !gsm->dlci[0] || gsm->dlci[0]->dead) {
+ 			gsm->pending_cmd = NULL;
+ 			ctrl->error = -ETIMEDOUT;
+ 			ctrl->done = 1;
+-- 
+2.35.1
+
 
 
