@@ -2,201 +2,309 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6C0B6C32772
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 15:55:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B8D9FC32789
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 15:58:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243529AbiHWPzJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 11:55:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52132 "EHLO
+        id S244025AbiHWP65 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 23 Aug 2022 11:58:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35548 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243423AbiHWPym (ORCPT
+        with ESMTP id S243284AbiHWP6j (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 11:54:42 -0400
-Received: from mail-pl1-x634.google.com (mail-pl1-x634.google.com [IPv6:2607:f8b0:4864:20::634])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 224D0B14F2;
-        Tue, 23 Aug 2022 05:02:23 -0700 (PDT)
-Received: by mail-pl1-x634.google.com with SMTP id 2so12637851pll.0;
-        Tue, 23 Aug 2022 05:02:23 -0700 (PDT)
+        Tue, 23 Aug 2022 11:58:39 -0400
+Received: from mail-wm1-x334.google.com (mail-wm1-x334.google.com [IPv6:2a00:1450:4864:20::334])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 55391AA345;
+        Tue, 23 Aug 2022 05:10:18 -0700 (PDT)
+Received: by mail-wm1-x334.google.com with SMTP id c187-20020a1c35c4000000b003a30d88fe8eso9450390wma.2;
+        Tue, 23 Aug 2022 05:10:17 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:sender:from:to:cc;
-        bh=MW5XHnocsOAaHtG3kygIZyIxCnx5KeX6wL9mjNNXSWw=;
-        b=eZXrnK9xqPJeFdFVnwd4Dje9M1VtwDGevH3/C76E5FZrjekitnJDYxsTALFSLxXNUQ
-         +hSN7IIZom46H8XOL0s/gvJ5CWl3GPmcwMFYy844ihT8T4UPUmolsMLwEFj8pxwhs/Q7
-         H72Kk0vhrcz/74qsNYB1qcnQDlyJcuAANhKPG8s8uv5PywigVU69kW3Y8nmzVT/2TUQH
-         GeJtib/WA8YU+yjQCnaK7R2NmAw6TaJitJT7rIZMt2mYewBNbKeZZUV/YvFhs+xxDTJt
-         Z07Lh+gR7pnDCMfT19XhJiE11ZPuQ34c1K2tLqr0ZW+t/IfxNZQn9enzejASxwF5FxdB
-         OJ5g==
+        h=content-transfer-encoding:in-reply-to:subject:from:references:cc:to
+         :content-language:user-agent:mime-version:date:message-id:from:to:cc;
+        bh=1J62iZNtPfaBORS+/26eVDEhi1PfrmLZlXascFUFeqA=;
+        b=mBKO4eNLmPX/g1WOCxT+gDySTzaQtbD0Wr6R1oZ4AqlMfeNAREgdZONRUKsldWIxr7
+         HoHQs851WLC5x7T9ub/uK2QXpZgwdkV+ocsH5253xWyCUvjbJ/DetNS3pkZ3FCJpisNw
+         AT0Q6xL+cz+QOvaF+jxh8bEVytBkYKfhi2XxSuu7D911KfwN/GHnFkeN3uNvkHaC40vm
+         PhGqgvHtBcgbOr+bx2aI26ex5Ulvqj3TipiNdtJGnK2PjvYSCaVVaP0yqFbcovWfNdoj
+         Q9fPsY69AWLpjMEgz7ltpa4wnFpLfwRbZ1CYKcRMuF5CkL3jusKphG82j97Rtw9ctufV
+         tdPw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:sender:x-gm-message-state:from:to:cc;
-        bh=MW5XHnocsOAaHtG3kygIZyIxCnx5KeX6wL9mjNNXSWw=;
-        b=TONB3UJ+tMbPqdFJmiZkamB9hEQ1Bt8/27janl4NqsXZncN4R1rrZ4ZvXlz2Rzchl/
-         a1lEVWZk/0VEUpAcIBM5GovTYvuUoJRsAWeqUh7KaKhB7+dWANZ1BDGvTWtcFZMyDb9c
-         Jm8g2cSSsrt2RmQlye3UyO6FhF1ZGG437OAW9ySrn+SvpXBClWgdMbLkURuvBkcCGE4L
-         4YW2X9gFVsHKMeyVjIQsBBmb2FnyIcT4ZO8xEhk7meqo6nZU+nqWLUH/QICvtMp8xmVI
-         xZL8ZDRbfZzsEHpcldsRwuUSCLbs4col89jECwNBXX5RjMTnue2WHxHm6EYL6tJwGo1n
-         ciEA==
-X-Gm-Message-State: ACgBeo1xl1VU+o0gK8JX8u/L0IMnALl0Gc+eRsPbhCBftJCudZDtrtbQ
-        VPkjguWVWONTXecn1m3tsk0=
-X-Google-Smtp-Source: AA6agR78SqzHncKtHN1CIlqDbFm1R7V4cFot4jLfRNHLIMGY1Ft28MBNZOJ5ydYRsctb+ZOzo/3cqA==
-X-Received: by 2002:a17:902:b483:b0:170:a89f:32b3 with SMTP id y3-20020a170902b48300b00170a89f32b3mr24219704plr.149.1661256142738;
-        Tue, 23 Aug 2022 05:02:22 -0700 (PDT)
-Received: from server.roeck-us.net ([2600:1700:e321:62f0:329c:23ff:fee3:9d7c])
-        by smtp.gmail.com with ESMTPSA id t15-20020a17090340cf00b0016dbce87aecsm6684594pld.182.2022.08.23.05.02.20
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 23 Aug 2022 05:02:21 -0700 (PDT)
-Sender: Guenter Roeck <groeck7@gmail.com>
-Date:   Tue, 23 Aug 2022 05:02:19 -0700
-From:   Guenter Roeck <linux@roeck-us.net>
-To:     Marco Felsch <m.felsch@pengutronix.de>
-Cc:     "Alice Guo (OSS)" <alice.guo@oss.nxp.com>,
-        "wim@linux-watchdog.org" <wim@linux-watchdog.org>,
-        "shawnguo@kernel.org" <shawnguo@kernel.org>,
-        "s.hauer@pengutronix.de" <s.hauer@pengutronix.de>,
-        "festevam@gmail.com" <festevam@gmail.com>,
-        "linux-arm-kernel@lists.infradead.org" 
-        <linux-arm-kernel@lists.infradead.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        dl-linux-imx <linux-imx@nxp.com>,
-        "kernel@pengutronix.de" <kernel@pengutronix.de>,
-        "linux-watchdog@vger.kernel.org" <linux-watchdog@vger.kernel.org>
-Subject: Re: [PATCH 2/7] watchdog: imx7ulp: Add explict memory barrier for
- unlock sequence
-Message-ID: <20220823120219.GA203169@roeck-us.net>
-References: <20220816043643.26569-1-alice.guo@oss.nxp.com>
- <20220816043643.26569-3-alice.guo@oss.nxp.com>
- <20220816062330.z2fvurteg337krw2@pengutronix.de>
- <AM6PR04MB60537292F559EC012F0EB510E2719@AM6PR04MB6053.eurprd04.prod.outlook.com>
- <20220822080010.ecdphpm3i26cco5f@pengutronix.de>
- <20220822140347.GA4087281@roeck-us.net>
- <AM6PR04MB6053E26CB59410EBCC2C93AEE2709@AM6PR04MB6053.eurprd04.prod.outlook.com>
- <20220823091027.ezyxkn64asajvjom@pengutronix.de>
+        h=content-transfer-encoding:in-reply-to:subject:from:references:cc:to
+         :content-language:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc;
+        bh=1J62iZNtPfaBORS+/26eVDEhi1PfrmLZlXascFUFeqA=;
+        b=LtBliJWiKUdwflih4IFDo+AhpRpgGtcu0A760/4HJRcrvnNyCIl1Uulo52Yl9UiPZ+
+         MI8x/zqVM97dBwzn3AmCJnWuNVysduTzpovtXhpsNHEH7lNKaL96jtrLnnVxRfo25eEY
+         1m/6b3qB0ZfUl4UlfY31QKCYfxN9sgIs8yzbgYuxxzVQXSoBTHz0e861r9L3RYtGt/lx
+         Fp8yOdUTpEMNIrYLhckfhr3U0YHPn2zjLccMKJe9XBIcQrWmpN9xuLTx9I/AdcvMYuyy
+         frC3gfYIXCkJmXvg0q/4S13iHqhSvHckEbHFj088u6GJACoBh6m8Zb68xiZ7X5qJR8wi
+         F/Uw==
+X-Gm-Message-State: ACgBeo1niTxHEGByDuVkJVurSEg+H2lOqoPIdjQqG7WRkBb2Io3KAPcg
+        Nr/HW/Ut/nv90j3tuKffrq8=
+X-Google-Smtp-Source: AA6agR4AdNmgVIfq3D/nOn6yClzgwqGxBTtfsqfsmS/Qf/zrtdZ18ONrdB0gffzG+/ZDLVlstQCSKw==
+X-Received: by 2002:a1c:7414:0:b0:3a5:fd9e:e629 with SMTP id p20-20020a1c7414000000b003a5fd9ee629mr2063109wmc.194.1661256537220;
+        Tue, 23 Aug 2022 05:08:57 -0700 (PDT)
+Received: from [192.168.2.177] ([207.188.167.132])
+        by smtp.gmail.com with ESMTPSA id i14-20020a5d438e000000b002253604bbefsm12392462wrq.75.2022.08.23.05.08.55
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 23 Aug 2022 05:08:56 -0700 (PDT)
+Message-ID: <c7c4e73f-dd03-4c88-f434-2aa3bd681e39@gmail.com>
+Date:   Tue, 23 Aug 2022 14:08:54 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220823091027.ezyxkn64asajvjom@pengutronix.de>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.1.2
+Content-Language: en-US
+To:     "Nancy.Lin" <nancy.lin@mediatek.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Chun-Kuang Hu <chunkuang.hu@kernel.org>,
+        Philipp Zabel <p.zabel@pengutronix.de>, wim@linux-watchdog.org,
+        AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>, linux@roeck-us.net,
+        nfraprado@collabora.com
+Cc:     David Airlie <airlied@linux.ie>, Daniel Vetter <daniel@ffwll.ch>,
+        Nathan Chancellor <nathan@kernel.org>,
+        Nick Desaulniers <ndesaulniers@google.com>,
+        "jason-jh . lin" <jason-jh.lin@mediatek.com>,
+        Yongqiang Niu <yongqiang.niu@mediatek.com>,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org,
+        dri-devel@lists.freedesktop.org, llvm@lists.linux.dev,
+        singo.chang@mediatek.com,
+        Project_Global_Chrome_Upstream_Group@mediatek.com
+References: <20220819061011.7672-1-nancy.lin@mediatek.com>
+ <20220819061011.7672-8-nancy.lin@mediatek.com>
+ <44c86ad9-8158-0a8a-ce31-a995c8d10e0b@gmail.com>
+ <140b3cd10317a5db781df180ce4efb697cdd641b.camel@mediatek.com>
+From:   Matthias Brugger <matthias.bgg@gmail.com>
+Subject: Re: [PATCH v26 07/10] soc: mediatek: mmsys: add mmsys for support 64
+ reset bits
+In-Reply-To: <140b3cd10317a5db781df180ce4efb697cdd641b.camel@mediatek.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Aug 23, 2022 at 11:10:27AM +0200, Marco Felsch wrote:
-> On 22-08-23, Alice Guo (OSS) wrote:
-> > 
-> > 
-> > > -----Original Message-----
-> > > From: Guenter Roeck <groeck7@gmail.com> On Behalf Of Guenter Roeck
-> > > Sent: Monday, August 22, 2022 10:04 PM
-> > > To: Marco Felsch <m.felsch@pengutronix.de>
-> > > Cc: Alice Guo (OSS) <alice.guo@oss.nxp.com>; wim@linux-watchdog.org;
-> > > shawnguo@kernel.org; s.hauer@pengutronix.de; festevam@gmail.com;
-> > > linux-arm-kernel@lists.infradead.org; linux-kernel@vger.kernel.org;
-> > > dl-linux-imx <linux-imx@nxp.com>; kernel@pengutronix.de;
-> > > linux-watchdog@vger.kernel.org
-> > > Subject: Re: [PATCH 2/7] watchdog: imx7ulp: Add explict memory barrier for
-> > > unlock sequence
-> > > 
-> > > On Mon, Aug 22, 2022 at 10:00:10AM +0200, Marco Felsch wrote:
-> > > > On 22-08-22, Alice Guo (OSS) wrote:
-> > > > > > -----Original Message-----
-> > > > > > From: Marco Felsch <m.felsch@pengutronix.de>
-> > > > > > Sent: Tuesday, August 16, 2022 2:24 PM
-> > > > > > To: Alice Guo (OSS) <alice.guo@oss.nxp.com>
-> > > > > > Cc: wim@linux-watchdog.org; linux@roeck-us.net;
-> > > > > > shawnguo@kernel.org; s.hauer@pengutronix.de; festevam@gmail.com;
-> > > > > > linux-arm-kernel@lists.infradead.org;
-> > > > > > linux-kernel@vger.kernel.org; dl-linux-imx <linux-imx@nxp.com>;
-> > > > > > kernel@pengutronix.de; linux-watchdog@vger.kernel.org
-> > > > > > Subject: Re: [PATCH 2/7] watchdog: imx7ulp: Add explict memory
-> > > > > > barrier for unlock sequence
-> > > > > >
-> > > > > > On 22-08-16, Alice Guo (OSS) wrote:
-> > > > > > > From: Jacky Bai <ping.bai@nxp.com>
-> > > > > > >
-> > > > > > > Add explict memory barrier for the wdog unlock sequence.
-> > > > > >
-> > > > > > Did you inspected any failures? It's not enough to say what you
-> > > > > > did, you need to specify the why as well.
-> > > > > >
-> > > > > > Regards,
-> > > > > >   Marco
-> > > > >
-> > > > > Hi,
-> > > > >
-> > > > > Two 16-bit writes of unlocking the Watchdog should be completed within a
-> > > certain time. The first mb() is used to ensure that previous instructions are
-> > > completed.
-> > > > > The second mb() is used to ensure that the unlock sequence cannot be
-> > > affected by subsequent instructions. The reason will be added in the commit
-> > > log of v2.
-> > > >
-> > > > Hi,
-> > > >
-> > > > I know what memory barriers are. My question was, did you see any
-> > > > issues? Since the driver is used mainline and no one reported issues.
-> > > >
-> > > > Also just don't use the *_relaxed() versions is more common, than
-> > > > adding
-> > > > mb() calls around *_relaxed() versions.
-> > > >
-> > > 
-> > > Agreed with both. The series is a bit short in explaining _why_ the changes are
-> > > made.
-> > > 
-> > > Guenter
-> > > 
-> > > > Regards,
-> > > >   Marco
-> > > >
-> > > > >
-> > 
-> > Hi Guenter and Marco,
-> > 
-> > 1. did you see any issues?
-> > This WDOG Timer first appeared in i.MX7ULP, no one report issues
-> > probably because few people use i.MX7ULP. This issue was found when we
-> > did a stress test on it. When we reconfigure the WDOG Timer, there is
-> > a certain probability that it reset. The reason for the error is that
-> > when WDOG_CS[CMD32EN] is 0, the unlock sequence is two 16-bit writes
-> > (0xC520, 0xD928) to the CNT register within 16 bus clocks, and
-> > improper unlock sequence causes the WDOG to reset. Adding mb() is to
-> > guarantee that two 16-bit writes are finished within 16 bus clocks.
-> 
-> After this explanation the whole imx7ulp_wdt_init() seems a bit buggy
-> because writel_relaxed() as well as writel() are 32bit access functions.
-> So the very first thing to do is to enable the 32-bit mode.
-> 
-Agreed. This is much better than having extra code to deal with
-both 16-bit and 32-bit access.
 
-> Also this is a explanation worth to be added to the commit message ;)
+
+On 23/08/2022 13:30, Nancy.Lin wrote:
+> Hi Matthias,
+> 
+> Thanks for the review.
+> 
+> On Tue, 2022-08-23 at 12:20 +0200, Matthias Brugger wrote:
+>>
+>> On 19/08/2022 08:10, Nancy.Lin wrote:
+>>> Add mmsys for support 64 reset bits. It is a preparation for MT8195
+>>> vdosys1 HW reset. MT8195 vdosys1 has more than 32 reset bits.
+>>>
+>>> 1. Add the number of reset bits in mmsys private data
+>>> 2. move the whole "reset register code section" behind the
+>>> "get mmsys->data" code section for getting the num_resets in mmsys-
+>>>> data.
+>>>
+>>> Signed-off-by: Nancy.Lin <nancy.lin@mediatek.com>
+>>> Reviewed-by: AngeloGioacchino Del Regno <
+>>> angelogioacchino.delregno@collabora.com>
+>>> Reviewed-by: CK Hu <ck.hu@mediatek.com>
+>>> Tested-by: Bo-Chen Chen <rex-bc.chen@mediatek.com>
+>>> ---
+>>>    drivers/soc/mediatek/mtk-mmsys.c | 40 +++++++++++++++++++++----
+>>> -------
+>>>    drivers/soc/mediatek/mtk-mmsys.h |  1 +
+>>>    2 files changed, 27 insertions(+), 14 deletions(-)
+>>>
+>>> diff --git a/drivers/soc/mediatek/mtk-mmsys.c
+>>> b/drivers/soc/mediatek/mtk-mmsys.c
+>>> index 999be064103b..20ae751ad8a7 100644
+>>> --- a/drivers/soc/mediatek/mtk-mmsys.c
+>>> +++ b/drivers/soc/mediatek/mtk-mmsys.c
+>>> @@ -20,6 +20,8 @@
+>>>    #include "mt8195-mmsys.h"
+>>>    #include "mt8365-mmsys.h"
+>>>    
+>>> +#define MMSYS_SW_RESET_PER_REG 32
+>>> +
+>>>    static const struct mtk_mmsys_driver_data
+>>> mt2701_mmsys_driver_data = {
+>>>    	.clk_driver = "clk-mt2701-mm",
+>>>    	.routes = mmsys_default_routing_table,
+>>> @@ -86,6 +88,7 @@ static const struct mtk_mmsys_driver_data
+>>> mt8173_mmsys_driver_data = {
+>>>    	.routes = mmsys_default_routing_table,
+>>>    	.num_routes = ARRAY_SIZE(mmsys_default_routing_table),
+>>>    	.sw0_rst_offset = MT8183_MMSYS_SW0_RST_B,
+>>> +	.num_resets = 32,
+>>>    };
+>>>    
+>>>    static const struct mtk_mmsys_match_data mt8173_mmsys_match_data
+>>> = {
+>>> @@ -100,6 +103,7 @@ static const struct mtk_mmsys_driver_data
+>>> mt8183_mmsys_driver_data = {
+>>>    	.routes = mmsys_mt8183_routing_table,
+>>>    	.num_routes = ARRAY_SIZE(mmsys_mt8183_routing_table),
+>>>    	.sw0_rst_offset = MT8183_MMSYS_SW0_RST_B,
+>>> +	.num_resets = 32,
+>>>    };
+>>>    
+>>>    static const struct mtk_mmsys_match_data mt8183_mmsys_match_data
+>>> = {
+>>> @@ -114,6 +118,7 @@ static const struct mtk_mmsys_driver_data
+>>> mt8186_mmsys_driver_data = {
+>>>    	.routes = mmsys_mt8186_routing_table,
+>>>    	.num_routes = ARRAY_SIZE(mmsys_mt8186_routing_table),
+>>>    	.sw0_rst_offset = MT8186_MMSYS_SW0_RST_B,
+>>> +	.num_resets = 32,
+>>>    };
+>>>    
+>>>    static const struct mtk_mmsys_match_data mt8186_mmsys_match_data
+>>> = {
+>>> @@ -128,6 +133,7 @@ static const struct mtk_mmsys_driver_data
+>>> mt8192_mmsys_driver_data = {
+>>>    	.routes = mmsys_mt8192_routing_table,
+>>>    	.num_routes = ARRAY_SIZE(mmsys_mt8192_routing_table),
+>>>    	.sw0_rst_offset = MT8186_MMSYS_SW0_RST_B,
+>>> +	.num_resets = 32,
+>>
+>> You didn't reply to Nicolas regarding the reset numbers. I actually
+>> agree with
+>> him that we will need the num_resets declared for all devices. Why do
+>> you think
+>> this is not the case?
+>>
+>> Regards,
+>> Matthias
+>>
+> 
+> Sorry, I lost Nicolas's email.
+> 
+> I checked with the mmsys git log with reset controller function.
+> 
+> 1. Enric add mmsys reset controller function in [1]/[2].
+>     => in mtk_mmsys_reset_update(), all mmsys reset offset is
+> MMSYS_SW0_RST_B (0x140).
+> 
+> 2. After Enric's patch, Rex add sw0_rst_offset in mmsys driver data in
+> [3].
+> 
+> So, I think sw0_rst_offset is not zero. Instead of only add num_resets
+> but also need to add sw0_rst_offset for all mmsys. What do you think ?
 > 
 
-Definitely. Also, the use of mb(), if it should indeed be needed,
-would have to be explained in a code comment.
+Good point. It seems we have a bug in the driver. Either all SoCs have the 
+reset, but it's broken since
+62dc30150c06 ("soc: mediatek: mmsys: add sw0_rst_offset in mmsys driver data")
+or we are adding a reset controller independently if the silicon has one, which 
+would be an error in:
+f27ef2856343 ("soc: mediatek: mmsys: Add reset controller support")
 
-Thanks,
-Guenter
+We have to find that out.
 
-> > 2. Also just don't use the *_relaxed() versions is more common, than
-> > adding mb() calls around *_relaxed() versions.  Memory barriers cannot
-> > be added between two 16-bit writes. I do not know the reason.
+Regards,
+Matthias
+
+> [1]
+> https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/drivers/soc/mediatek/mtk-mmsys.c?id=f27ef2856343e2ddc392975d7b15120442e4d7b7
+> [2]
 > 
-> As written above, writel() as well as writel_relaxed() are not 16-bit
-> access functions.
+> https://patchwork.kernel.org/project/linux-mediatek/cover/20210825102632.601614-1-enric.balletbo@collabora.com/
+> [3]
 > 
-> So to me it looks as you need first to ensure that 32-bit access mode is
-> enabled. After that you can write drop the to writel_relaxed() functions
-> and instead just write:
-> 
->    writel(UNLOCK, wdt->base + WDOG_CNT);
-> 
-> Also why do we need to unlock the watchdog during imx7ulp_wdt_init()?
-> This is handled just fine during imx7ulp_wdt_enable() and during
-> imx7ulp_wdt_set_timeout(). So just drop those relaxed writes and
-> everything should be fine.
+> https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/drivers/soc/mediatek/mtk-mmsys.c?id=62dc30150c06774a8122c52aedd0eddaceaf5940
 > 
 > Regards,
->   Marco
+> Nancy
+>>
+>>>    };
+>>>    
+>>>    static const struct mtk_mmsys_match_data mt8192_mmsys_match_data
+>>> = {
+>>> @@ -288,13 +294,19 @@ static int mtk_mmsys_reset_update(struct
+>>> reset_controller_dev *rcdev, unsigned l
+>>>    {
+>>>    	struct mtk_mmsys *mmsys = container_of(rcdev, struct mtk_mmsys,
+>>> rcdev);
+>>>    	unsigned long flags;
+>>> +	u32 offset;
+>>> +	u32 reg;
+>>> +
+>>> +	offset = (id / MMSYS_SW_RESET_PER_REG) * sizeof(u32);
+>>> +	id = id % MMSYS_SW_RESET_PER_REG;
+>>> +	reg = mmsys->data->sw0_rst_offset + offset;
+>>>    
+>>>    	spin_lock_irqsave(&mmsys->lock, flags);
+>>>    
+>>>    	if (assert)
+>>> -		mtk_mmsys_update_bits(mmsys, mmsys->data-
+>>>> sw0_rst_offset, BIT(id), 0, NULL);
+>>> +		mtk_mmsys_update_bits(mmsys, reg, BIT(id), 0, NULL);
+>>>    	else
+>>> -		mtk_mmsys_update_bits(mmsys, mmsys->data-
+>>>> sw0_rst_offset, BIT(id), BIT(id), NULL);
+>>> +		mtk_mmsys_update_bits(mmsys, reg, BIT(id), BIT(id),
+>>> NULL);
+>>>    
+>>>    	spin_unlock_irqrestore(&mmsys->lock, flags);
+>>>    
+>>> @@ -351,18 +363,6 @@ static int mtk_mmsys_probe(struct
+>>> platform_device *pdev)
+>>>    		return ret;
+>>>    	}
+>>>    
+>>> -	spin_lock_init(&mmsys->lock);
+>>> -
+>>> -	mmsys->rcdev.owner = THIS_MODULE;
+>>> -	mmsys->rcdev.nr_resets = 32;
+>>> -	mmsys->rcdev.ops = &mtk_mmsys_reset_ops;
+>>> -	mmsys->rcdev.of_node = pdev->dev.of_node;
+>>> -	ret = devm_reset_controller_register(&pdev->dev, &mmsys-
+>>>> rcdev);
+>>> -	if (ret) {
+>>> -		dev_err(&pdev->dev, "Couldn't register mmsys reset
+>>> controller: %d\n", ret);
+>>> -		return ret;
+>>> -	}
+>>> -
+>>>    	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
+>>>    	if (!res) {
+>>>    		dev_err(dev, "Couldn't get mmsys resource\n");
+>>> @@ -384,6 +384,18 @@ static int mtk_mmsys_probe(struct
+>>> platform_device *pdev)
+>>>    		mmsys->data = match_data->drv_data[0];
+>>>    	}
+>>>    
+>>> +	spin_lock_init(&mmsys->lock);
+>>> +
+>>> +	mmsys->rcdev.owner = THIS_MODULE;
+>>> +	mmsys->rcdev.nr_resets = mmsys->data->num_resets;
+>>> +	mmsys->rcdev.ops = &mtk_mmsys_reset_ops;
+>>> +	mmsys->rcdev.of_node = pdev->dev.of_node;
+>>> +	ret = devm_reset_controller_register(&pdev->dev, &mmsys-
+>>>> rcdev);
+>>> +	if (ret) {
+>>> +		dev_err(&pdev->dev, "Couldn't register mmsys reset
+>>> controller: %d\n", ret);
+>>> +		return ret;
+>>> +	}
+>>> +
+>>>    #if IS_REACHABLE(CONFIG_MTK_CMDQ)
+>>>    	ret = cmdq_dev_get_client_reg(dev, &mmsys->cmdq_base, 0);
+>>>    	if (ret)
+>>> diff --git a/drivers/soc/mediatek/mtk-mmsys.h
+>>> b/drivers/soc/mediatek/mtk-mmsys.h
+>>> index f01ba206481d..20a271b80b3b 100644
+>>> --- a/drivers/soc/mediatek/mtk-mmsys.h
+>>> +++ b/drivers/soc/mediatek/mtk-mmsys.h
+>>> @@ -92,6 +92,7 @@ struct mtk_mmsys_driver_data {
+>>>    	const struct mtk_mmsys_routes *routes;
+>>>    	const unsigned int num_routes;
+>>>    	const u16 sw0_rst_offset;
+>>> +	const u32 num_resets;
+>>>    };
+>>>    
+>>>    struct mtk_mmsys_match_data {
+>>
+>>
+> 
