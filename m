@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 82283C32772
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 12:23:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E9CD5C32772
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 12:23:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241860AbiHWMXa (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 08:23:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55402 "EHLO
+        id S230025AbiHWMXn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 23 Aug 2022 08:23:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55952 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348870AbiHWMRh (ORCPT
+        with ESMTP id S1376363AbiHWMQ5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 08:17:37 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A19387A743;
-        Tue, 23 Aug 2022 02:42:30 -0700 (PDT)
+        Tue, 23 Aug 2022 08:16:57 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A29D27AC1B;
+        Tue, 23 Aug 2022 02:42:06 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 3A95ACE1B57;
-        Tue, 23 Aug 2022 09:42:11 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3A375C433D6;
-        Tue, 23 Aug 2022 09:42:09 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id E90A66148E;
+        Tue, 23 Aug 2022 09:42:00 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E0594C433D6;
+        Tue, 23 Aug 2022 09:41:59 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661247729;
-        bh=nEkF1TpJSP1X5PisiKU424aJbozh7Siip5OuzuWXmoE=;
+        s=korg; t=1661247720;
+        bh=QueCjxHMA4r1uCGTLX+Zuc00mP9QzA7Dxm10f7BgXZw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=lACRQbzl65eAVmlXoMgoKOcBv3sbngm+vGFuXVq0bUcUj9Ibc3k4a7y1IRQxuRdpj
-         c18wGliJKRvHS2GZ5Kn38flb6h/Ogy4xZ91mkc60isM0vHfhGKz/hiIhMIEnK/4IrV
-         jPo3E5LnFoMr3eqdX+ZoEpA8soCV4lYaWQ33IJ8E=
+        b=XVviHDueh1BCbJrz3XG7tFu1QCPSs66u1Yc5b/KMYobxe4+IHRT/S8n0w0RaCmNO1
+         O6qtm3o2gnl3ZuRVnJ5YfZY3591bz5qxYtZlZ3Ox9E6jTrLZsgQoIWWkIghGxXTIFz
+         HDfSL01vUo3e4iOCbR1vE1OvCzZSSXUo8lRyNhug=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Yi Zhang <yi.zhang@redhat.com>,
-        Sagi Grimberg <sagi@grimberg.me>,
-        Christoph Hellwig <hch@lst.de>, Jens Axboe <axboe@kernel.dk>,
+        stable@vger.kernel.org,
+        "Steven Rostedt (Google)" <rostedt@goodmis.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 128/158] nvmet-tcp: fix lockdep complaint on nvmet_tcp_wq flush during queue teardown
-Date:   Tue, 23 Aug 2022 10:27:40 +0200
-Message-Id: <20220823080051.052608375@linuxfoundation.org>
+Subject: [PATCH 5.10 125/158] selftests/kprobe: Do not test for GRP/ without event failures
+Date:   Tue, 23 Aug 2022 10:27:37 +0200
+Message-Id: <20220823080050.948675058@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220823080046.056825146@linuxfoundation.org>
 References: <20220823080046.056825146@linuxfoundation.org>
@@ -50,42 +49,47 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Sagi Grimberg <sagi@grimberg.me>
+From: Steven Rostedt (Google) <rostedt@goodmis.org>
 
-[ Upstream commit 533d2e8b4d5e4c89772a0adce913525fb86cbbee ]
+[ Upstream commit f5eab65ff2b76449286d18efc7fee3e0b72f7d9b ]
 
-We probably need nvmet_tcp_wq to have MEM_RECLAIM as we are
-sending/receiving for the socket from works on this workqueue.
-Also this eliminates lockdep complaints:
---
-[ 6174.010200] workqueue: WQ_MEM_RECLAIM
-nvmet-wq:nvmet_tcp_release_queue_work [nvmet_tcp] is flushing
-!WQ_MEM_RECLAIM nvmet_tcp_wq:nvmet_tcp_io_work [nvmet_tcp]
-[ 6174.010216] WARNING: CPU: 20 PID: 14456 at kernel/workqueue.c:2628
-check_flush_dependency+0x110/0x14c
+A new feature is added where kprobes (and other probes) do not need to
+explicitly state the event name when creating a probe. The event name will
+come from what is being attached.
 
-Reported-by: Yi Zhang <yi.zhang@redhat.com>
-Signed-off-by: Sagi Grimberg <sagi@grimberg.me>
-Signed-off-by: Christoph Hellwig <hch@lst.de>
-Signed-off-by: Jens Axboe <axboe@kernel.dk>
+That is:
+
+  # echo 'p:foo/ vfs_read' > kprobe_events
+
+Will no longer error, but instead create an event:
+
+  # cat kprobe_events
+ p:foo/p_vfs_read_0 vfs_read
+
+This should not be tested as an error case anymore. Remove it from the
+selftest as now this feature "breaks" the selftest as it no longer fails
+as expected.
+
+Link: https://lore.kernel.org/all/1656296348-16111-1-git-send-email-quic_linyyuan@quicinc.com/
+Link: https://lkml.kernel.org/r/20220712161707.6dc08a14@gandalf.local.home
+
+Signed-off-by: Steven Rostedt (Google) <rostedt@goodmis.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/nvme/target/tcp.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ .../selftests/ftrace/test.d/kprobe/kprobe_syntax_errors.tc       | 1 -
+ 1 file changed, 1 deletion(-)
 
-diff --git a/drivers/nvme/target/tcp.c b/drivers/nvme/target/tcp.c
-index 96b67a70cbbb..d030d5e69dc5 100644
---- a/drivers/nvme/target/tcp.c
-+++ b/drivers/nvme/target/tcp.c
-@@ -1802,7 +1802,8 @@ static int __init nvmet_tcp_init(void)
- {
- 	int ret;
+diff --git a/tools/testing/selftests/ftrace/test.d/kprobe/kprobe_syntax_errors.tc b/tools/testing/selftests/ftrace/test.d/kprobe/kprobe_syntax_errors.tc
+index fa928b431555..7c02509c71d0 100644
+--- a/tools/testing/selftests/ftrace/test.d/kprobe/kprobe_syntax_errors.tc
++++ b/tools/testing/selftests/ftrace/test.d/kprobe/kprobe_syntax_errors.tc
+@@ -21,7 +21,6 @@ check_error 'p:^/bar vfs_read'		# NO_GROUP_NAME
+ check_error 'p:^12345678901234567890123456789012345678901234567890123456789012345/bar vfs_read'	# GROUP_TOO_LONG
  
--	nvmet_tcp_wq = alloc_workqueue("nvmet_tcp_wq", WQ_HIGHPRI, 0);
-+	nvmet_tcp_wq = alloc_workqueue("nvmet_tcp_wq",
-+				WQ_MEM_RECLAIM | WQ_HIGHPRI, 0);
- 	if (!nvmet_tcp_wq)
- 		return -ENOMEM;
+ check_error 'p:^foo.1/bar vfs_read'	# BAD_GROUP_NAME
+-check_error 'p:foo/^ vfs_read'		# NO_EVENT_NAME
+ check_error 'p:foo/^12345678901234567890123456789012345678901234567890123456789012345 vfs_read'	# EVENT_TOO_LONG
+ check_error 'p:foo/^bar.1 vfs_read'	# BAD_EVENT_NAME
  
 -- 
 2.35.1
