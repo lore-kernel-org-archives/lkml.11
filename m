@@ -2,46 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7EFA6C32793
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 09:36:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 64E44C32774
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 09:36:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350871AbiHWJgl (ORCPT
+        id S1351101AbiHWJgp (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 05:36:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39332 "EHLO
+        Tue, 23 Aug 2022 05:36:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39454 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351207AbiHWJe4 (ORCPT
+        with ESMTP id S1351242AbiHWJfG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 05:34:56 -0400
+        Tue, 23 Aug 2022 05:35:06 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3EDAB96743;
-        Tue, 23 Aug 2022 01:39:38 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CDF7E95E5F;
+        Tue, 23 Aug 2022 01:39:36 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 92E6FB81C54;
-        Tue, 23 Aug 2022 08:39:25 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E8310C433D6;
-        Tue, 23 Aug 2022 08:39:23 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id CF7C4B81C6D;
+        Tue, 23 Aug 2022 08:38:26 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3FD88C433D6;
+        Tue, 23 Aug 2022 08:38:25 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661243964;
-        bh=YWBuCLLxymV+QhIOUC/mNWOy2xc9AppdGJvuTmckJK8=;
+        s=korg; t=1661243905;
+        bh=JLgT1YjRQoCyfhyImHJaeFjmVBeCtSn+RgWnOxdaFZI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=1usutJx/KK5pMiLr+C3EIfX4EN4sk5f4lVeCO1cRKh6SdVV9hgcr10W+7nSy0r5mu
-         wu/enQwK+i9hnRK0/+ywB9M8BzG0ruXMFeInWGHS+4oRVMieZwtfiT7Jpj49BhDGP2
-         PtomYh0Ls78KgZmffNTj2PYLg0zpnJ6RkGd2WZnA=
+        b=GI3O3i8sb4GMGEWsb9o52i6/itAK5gQDRF9U5Szbx13lqZkeoBaoBST0RC86xeYSf
+         /pHts2jMJ202u5hsFttmvghL5WaFLfGFQkL262J1eBw92IdPXtsAIb/6Mf3ajhHRzK
+         JKEeoqJcz76yFlyrNGtf3OTk/cFgOpFcoZ8mwO5Y=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Boris Burkov <boris@bur.io>,
-        Josef Bacik <josef@toxicpanda.com>,
-        David Sterba <dsterba@suse.com>
-Subject: [PATCH 5.15 015/244] btrfs: reset RO counter on block group if we fail to relocate
-Date:   Tue, 23 Aug 2022 10:22:54 +0200
-Message-Id: <20220823080059.584832295@linuxfoundation.org>
+        stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
+        Michal Simek <michal.simek@amd.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 4.14 054/229] cpufreq: zynq: Fix refcount leak in zynq_get_revision
+Date:   Tue, 23 Aug 2022 10:23:35 +0200
+Message-Id: <20220823080055.643224062@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220823080059.091088642@linuxfoundation.org>
-References: <20220823080059.091088642@linuxfoundation.org>
+In-Reply-To: <20220823080053.202747790@linuxfoundation.org>
+References: <20220823080053.202747790@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -50,45 +50,37 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Josef Bacik <josef@toxicpanda.com>
+From: Miaoqian Lin <linmq006@gmail.com>
 
-commit 74944c873602a3ed8d16ff7af3f64af80c0f9dac upstream.
+[ Upstream commit d1ff2559cef0f6f8d97fba6337b28adb10689e16 ]
 
-With the automatic block group reclaim code we will preemptively try to
-mark the block group RO before we start the relocation.  We do this to
-make sure we should actually try to relocate the block group.
+of_find_compatible_node() returns a node pointer with refcount
+incremented, we should use of_node_put() on it when done.
+Add missing of_node_put() to avoid refcount leak.
 
-However if we hit an error during the actual relocation we won't clean
-up our RO counter and the block group will remain RO.  This was observed
-internally with file systems reporting less space available from df when
-we had failed background relocations.
-
-Fix this by doing the dec_ro in the error case.
-
-Fixes: 18bb8bbf13c1 ("btrfs: zoned: automatically reclaim zones")
-CC: stable@vger.kernel.org # 5.15+
-Reviewed-by: Boris Burkov <boris@bur.io>
-Signed-off-by: Josef Bacik <josef@toxicpanda.com>
-Signed-off-by: David Sterba <dsterba@suse.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Fixes: 00f7dc636366 ("ARM: zynq: Add support for SOC_BUS")
+Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
+Link: https://lore.kernel.org/r/20220605082807.21526-1-linmq006@gmail.com
+Signed-off-by: Michal Simek <michal.simek@amd.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- fs/btrfs/block-group.c |    4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
+ arch/arm/mach-zynq/common.c | 1 +
+ 1 file changed, 1 insertion(+)
 
---- a/fs/btrfs/block-group.c
-+++ b/fs/btrfs/block-group.c
-@@ -1575,9 +1575,11 @@ void btrfs_reclaim_bgs_work(struct work_
- 				div64_u64(zone_unusable * 100, bg->length));
- 		trace_btrfs_reclaim_block_group(bg);
- 		ret = btrfs_relocate_chunk(fs_info, bg->start);
--		if (ret)
-+		if (ret) {
-+			btrfs_dec_block_group_ro(bg);
- 			btrfs_err(fs_info, "error relocating chunk %llu",
- 				  bg->start);
-+		}
+diff --git a/arch/arm/mach-zynq/common.c b/arch/arm/mach-zynq/common.c
+index 6aba9ebf8041..a8b1b9c6626e 100644
+--- a/arch/arm/mach-zynq/common.c
++++ b/arch/arm/mach-zynq/common.c
+@@ -84,6 +84,7 @@ static int __init zynq_get_revision(void)
+ 	}
  
- next:
- 		btrfs_put_block_group(bg);
+ 	zynq_devcfg_base = of_iomap(np, 0);
++	of_node_put(np);
+ 	if (!zynq_devcfg_base) {
+ 		pr_err("%s: Unable to map I/O memory\n", __func__);
+ 		return -1;
+-- 
+2.35.1
+
 
 
