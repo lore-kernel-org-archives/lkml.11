@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2F84FC3F6B0
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 11:53:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C6B96C32772
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 11:53:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358506AbiHWLwX (ORCPT
+        id S1358727AbiHWLxU (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 07:52:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56344 "EHLO
+        Tue, 23 Aug 2022 07:53:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52606 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1358553AbiHWLtl (ORCPT
+        with ESMTP id S1358633AbiHWLu3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 07:49:41 -0400
+        Tue, 23 Aug 2022 07:50:29 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8A7EB92F46;
-        Tue, 23 Aug 2022 02:31:00 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F2ED2923FB;
+        Tue, 23 Aug 2022 02:31:24 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 8D1C561381;
-        Tue, 23 Aug 2022 09:30:59 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7F131C433D7;
-        Tue, 23 Aug 2022 09:30:58 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 86449612D6;
+        Tue, 23 Aug 2022 09:31:24 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8AAC4C433C1;
+        Tue, 23 Aug 2022 09:31:23 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661247059;
-        bh=Ne3K/j/VipnKWLDZjV6LfWdx25jnEHJrWPEorkBP+LE=;
+        s=korg; t=1661247084;
+        bh=RvjSZfdVXccz8CkWmcCeyG9PczJS9MftdpEwo4a8NfM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Xv28e3cr6+STdr61F12VT6ky+Smacik9H5NktWzx5wQEJCVOpmP9FTRqe7bh34DPM
-         yIJrmRlBgJWwLP3w8TjUy2BnhWj3aywk0jNbwhTz/3bQSV68Hz4iBNcE9rpW53XrOM
-         VKdIQ/jsAu2QXz9vJYxl4ElSQDKfFvyCTSsEnexc=
+        b=FxLeNf5kYss4G5C7IHkY1C2yOqBcr9mPNbkWg1CzaE6NsmInstgU8e7TCmrZ5bMXL
+         wc+IlHsAy5m2IclPKwnkdh9Whz0AlTHbfm5/ne0IQE/Gnx5gGLmlJvmf/ZmjEO/uZ3
+         hRhjsL8lfHfb60wdBqtNMp6kXP8K3dgnN9JG/5ME=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Trond Myklebust <trond.myklebust@hammerspace.com>
-Subject: [PATCH 5.4 306/389] NFSv4/pnfs: Fix a use-after-free bug in open
-Date:   Tue, 23 Aug 2022 10:26:24 +0200
-Message-Id: <20220823080128.365239472@linuxfoundation.org>
+        stable@vger.kernel.org, Casey Schaufler <casey@schaufler-ca.com>,
+        John Johansen <john.johansen@canonical.com>
+Subject: [PATCH 5.4 295/389] apparmor: fix absroot causing audited secids to begin with =
+Date:   Tue, 23 Aug 2022 10:26:13 +0200
+Message-Id: <20220823080127.883579954@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220823080115.331990024@linuxfoundation.org>
 References: <20220823080115.331990024@linuxfoundation.org>
@@ -49,41 +49,76 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Trond Myklebust <trond.myklebust@hammerspace.com>
+From: John Johansen <john.johansen@canonical.com>
 
-commit 2135e5d56278ffdb1c2e6d325dc6b87f669b9dac upstream.
+commit 511f7b5b835726e844a5fc7444c18e4b8672edfd upstream.
 
-If someone cancels the open RPC call, then we must not try to free
-either the open slot or the layoutget operation arguments, since they
-are likely still in use by the hung RPC call.
+AppArmor is prefixing secids that are converted to secctx with the =
+to indicate the secctx should only be parsed from an absolute root
+POV. This allows catching errors where secctx are reparsed back into
+internal labels.
 
-Fixes: 6949493884fe ("NFSv4: Don't hold the layoutget locks across multiple RPC calls")
-Signed-off-by: Trond Myklebust <trond.myklebust@hammerspace.com>
+Unfortunately because audit is using secid to secctx conversion this
+means that subject and object labels can result in a very unfortunate
+== that can break audit parsing.
+
+eg. the subj==unconfined term in the below audit message
+
+type=USER_LOGIN msg=audit(1639443365.233:160): pid=1633 uid=0 auid=1000
+ses=3 subj==unconfined msg='op=login id=1000 exe="/usr/sbin/sshd"
+hostname=192.168.122.1 addr=192.168.122.1 terminal=/dev/pts/1 res=success'
+
+Fix this by switch the prepending of = to a _. This still works as a
+special character to flag this case without breaking audit. Also move
+this check behind debug as it should not be needed during normal
+operqation.
+
+Fixes: 26b7899510ae ("apparmor: add support for absolute root view based labels")
+Reported-by: Casey Schaufler <casey@schaufler-ca.com>
+Signed-off-by: John Johansen <john.johansen@canonical.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- fs/nfs/nfs4proc.c |   11 ++++++-----
- 1 file changed, 6 insertions(+), 5 deletions(-)
+ security/apparmor/include/lib.h |    5 +++++
+ security/apparmor/label.c       |    7 ++++---
+ 2 files changed, 9 insertions(+), 3 deletions(-)
 
---- a/fs/nfs/nfs4proc.c
-+++ b/fs/nfs/nfs4proc.c
-@@ -3039,12 +3039,13 @@ static int _nfs4_open_and_get_state(stru
- 	}
+--- a/security/apparmor/include/lib.h
++++ b/security/apparmor/include/lib.h
+@@ -22,6 +22,11 @@
+  */
  
- out:
--	if (opendata->lgp) {
--		nfs4_lgopen_release(opendata->lgp);
--		opendata->lgp = NULL;
--	}
--	if (!opendata->cancelled)
-+	if (!opendata->cancelled) {
-+		if (opendata->lgp) {
-+			nfs4_lgopen_release(opendata->lgp);
-+			opendata->lgp = NULL;
-+		}
- 		nfs4_sequence_free_slot(&opendata->o_res.seq_res);
-+	}
- 	return ret;
- }
+ #define DEBUG_ON (aa_g_debug)
++/*
++ * split individual debug cases out in preparation for finer grained
++ * debug controls in the future.
++ */
++#define AA_DEBUG_LABEL DEBUG_ON
+ #define dbg_printk(__fmt, __args...) pr_debug(__fmt, ##__args)
+ #define AA_DEBUG(fmt, args...)						\
+ 	do {								\
+--- a/security/apparmor/label.c
++++ b/security/apparmor/label.c
+@@ -1637,9 +1637,9 @@ int aa_label_snxprint(char *str, size_t
+ 	AA_BUG(!str && size != 0);
+ 	AA_BUG(!label);
  
+-	if (flags & FLAG_ABS_ROOT) {
++	if (AA_DEBUG_LABEL && (flags & FLAG_ABS_ROOT)) {
+ 		ns = root_ns;
+-		len = snprintf(str, size, "=");
++		len = snprintf(str, size, "_");
+ 		update_for_len(total, len, size, str);
+ 	} else if (!ns) {
+ 		ns = labels_ns(label);
+@@ -1901,7 +1901,8 @@ struct aa_label *aa_label_strn_parse(str
+ 	AA_BUG(!str);
+ 
+ 	str = skipn_spaces(str, n);
+-	if (str == NULL || (*str == '=' && base != &root_ns->unconfined->label))
++	if (str == NULL || (AA_DEBUG_LABEL && *str == '_' &&
++			    base != &root_ns->unconfined->label))
+ 		return ERR_PTR(-EINVAL);
+ 
+ 	len = label_count_strn_entries(str, end - str);
 
 
