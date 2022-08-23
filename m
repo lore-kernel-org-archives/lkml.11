@@ -2,49 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BDA2AC32772
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 09:38:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 51949C32772
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 09:38:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351683AbiHWJil (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 05:38:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43072 "EHLO
+        id S241360AbiHWJit (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 23 Aug 2022 05:38:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52354 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351460AbiHWJhl (ORCPT
+        with ESMTP id S1351479AbiHWJho (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 05:37:41 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DEEE129C8C;
-        Tue, 23 Aug 2022 01:40:47 -0700 (PDT)
+        Tue, 23 Aug 2022 05:37:44 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F277298A6D;
+        Tue, 23 Aug 2022 01:40:48 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 160F761377;
-        Tue, 23 Aug 2022 08:40:03 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CA985C433C1;
-        Tue, 23 Aug 2022 08:40:01 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id BF3E061326;
+        Tue, 23 Aug 2022 08:39:56 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C2CA7C433D6;
+        Tue, 23 Aug 2022 08:39:55 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661244002;
-        bh=X8v8KkcwcX5ObVqicD2o6pK97cQKiy5IBBKsBJQ6ZT4=;
+        s=korg; t=1661243996;
+        bh=YLHITOvYu0lt7iEImGEtaN+nTdRoAlJHZbNZO7E2YxY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Rn+MPGCvBu9fqAQxuZw0gk302p+8WEAdy+T+kRoxiU1kVx7qGVlm8lxOMy1j3xIu1
-         xy0HTCJ+FoOZA+/yk2y8/iI6GmwBibOWt3wBXPAOPXEvpudEjIMg2SUMm/gEM0Vyh1
-         6erusAvD2Uuth0DRlbgfq3FzRayYlKiwUZ0vyAbk=
+        b=MbOxqPD1D+vkF1Pcbvh0w7RJP1SYtbGXExf9+2pFKo/85crafWQOZRaYCs+0ZLEtf
+         oKLjkYCryIYe3vpm5Adi9VT92WfF/tBOZwrvcXyTmTIOkroSbD32UQPsvfEeKW1V7+
+         MNKtzPnqVcYRywP6W/AteWF14CHnoQW7blQu8hho=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Ingo Molnar <mingo@kernel.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Masami Hiramatsu <mhiramat@kernel.org>,
-        Tzvetomir Stoyanov <tz.stoyanov@gmail.com>,
-        Tom Zanussi <zanussi@kernel.org>,
-        "Steven Rostedt (Google)" <rostedt@goodmis.org>
-Subject: [PATCH 5.15 022/244] tracing/eprobes: Have event probes be consistent with kprobes and uprobes
-Date:   Tue, 23 Aug 2022 10:23:01 +0200
-Message-Id: <20220823080059.805774797@linuxfoundation.org>
+        stable@vger.kernel.org, kernel test robot <lkp@intel.com>,
+        Alexander Lobakin <alexandr.lobakin@intel.com>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Yury Norov <yury.norov@gmail.com>
+Subject: [PATCH 4.14 032/229] ia64, processor: fix -Wincompatible-pointer-types in ia64_get_irr()
+Date:   Tue, 23 Aug 2022 10:23:13 +0200
+Message-Id: <20220823080054.666162644@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220823080059.091088642@linuxfoundation.org>
-References: <20220823080059.091088642@linuxfoundation.org>
+In-Reply-To: <20220823080053.202747790@linuxfoundation.org>
+References: <20220823080053.202747790@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -53,151 +50,44 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Steven Rostedt (Google) <rostedt@goodmis.org>
+From: Alexander Lobakin <alexandr.lobakin@intel.com>
 
-commit 6a832ec3d680b3a4f4fad5752672827d71bae501 upstream.
+commit e5a16a5c4602c119262f350274021f90465f479d upstream.
 
-Currently, if a symbol "@" is attempted to be used with an event probe
-(eprobes), it will cause a NULL pointer dereference crash.
+test_bit(), as any other bitmap op, takes `unsigned long *` as a
+second argument (pointer to the actual bitmap), as any bitmap
+itself is an array of unsigned longs. However, the ia64_get_irr()
+code passes a ref to `u64` as a second argument.
+This works with the ia64 bitops implementation due to that they
+have `void *` as the second argument and then cast it later on.
+This works with the bitmap API itself due to that `unsigned long`
+has the same size on ia64 as `u64` (`unsigned long long`), but
+from the compiler PoV those two are different.
+Define @irr as `unsigned long` to fix that. That implies no
+functional changes. Has been hidden for 16 years!
 
-Both kprobes and uprobes can reference data other than the main registers.
-Such as immediate address, symbols and the current task name. Have eprobes
-do the same thing.
-
-For "comm", if "comm" is used and the event being attached to does not
-have the "comm" field, then make it the "$comm" that kprobes has. This is
-consistent to the way histograms and filters work.
-
-Link: https://lkml.kernel.org/r/20220820134401.136924220@goodmis.org
-
-Cc: stable@vger.kernel.org
-Cc: Ingo Molnar <mingo@kernel.org>
-Cc: Andrew Morton <akpm@linux-foundation.org>
-Cc: Masami Hiramatsu <mhiramat@kernel.org>
-Cc: Tzvetomir Stoyanov <tz.stoyanov@gmail.com>
-Cc: Tom Zanussi <zanussi@kernel.org>
-Fixes: 7491e2c44278 ("tracing: Add a probe that attaches to trace events")
-Signed-off-by: Steven Rostedt (Google) <rostedt@goodmis.org>
+Fixes: a58786917ce2 ("[IA64] avoid broken SAL_CACHE_FLUSH implementations")
+Cc: stable@vger.kernel.org # 2.6.16+
+Reported-by: kernel test robot <lkp@intel.com>
+Signed-off-by: Alexander Lobakin <alexandr.lobakin@intel.com>
+Reviewed-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Reviewed-by: Yury Norov <yury.norov@gmail.com>
+Signed-off-by: Yury Norov <yury.norov@gmail.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- kernel/trace/trace_eprobe.c |   70 ++++++++++++++++++++++++++++++++++++++++----
- 1 file changed, 64 insertions(+), 6 deletions(-)
+ arch/ia64/include/asm/processor.h |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/kernel/trace/trace_eprobe.c
-+++ b/kernel/trace/trace_eprobe.c
-@@ -226,6 +226,7 @@ static int trace_eprobe_tp_arg_update(st
- 	struct probe_arg *parg = &ep->tp.args[i];
- 	struct ftrace_event_field *field;
- 	struct list_head *head;
-+	int ret = -ENOENT;
- 
- 	head = trace_get_fields(ep->event);
- 	list_for_each_entry(field, head, link) {
-@@ -235,9 +236,20 @@ static int trace_eprobe_tp_arg_update(st
- 			return 0;
- 		}
- 	}
-+
-+	/*
-+	 * Argument not found on event. But allow for comm and COMM
-+	 * to be used to get the current->comm.
-+	 */
-+	if (strcmp(parg->code->data, "COMM") == 0 ||
-+	    strcmp(parg->code->data, "comm") == 0) {
-+		parg->code->op = FETCH_OP_COMM;
-+		ret = 0;
-+	}
-+
- 	kfree(parg->code->data);
- 	parg->code->data = NULL;
--	return -ENOENT;
-+	return ret;
- }
- 
- static int eprobe_event_define_fields(struct trace_event_call *event_call)
-@@ -339,16 +351,38 @@ static unsigned long get_event_field(str
- 
- static int get_eprobe_size(struct trace_probe *tp, void *rec)
+--- a/arch/ia64/include/asm/processor.h
++++ b/arch/ia64/include/asm/processor.h
+@@ -552,7 +552,7 @@ ia64_get_irr(unsigned int vector)
  {
-+	struct fetch_insn *code;
- 	struct probe_arg *arg;
- 	int i, len, ret = 0;
+ 	unsigned int reg = vector / 64;
+ 	unsigned int bit = vector % 64;
+-	u64 irr;
++	unsigned long irr;
  
- 	for (i = 0; i < tp->nr_args; i++) {
- 		arg = tp->args + i;
--		if (unlikely(arg->dynamic)) {
-+		if (arg->dynamic) {
- 			unsigned long val;
- 
--			val = get_event_field(arg->code, rec);
--			len = process_fetch_insn_bottom(arg->code + 1, val, NULL, NULL);
-+			code = arg->code;
-+ retry:
-+			switch (code->op) {
-+			case FETCH_OP_TP_ARG:
-+				val = get_event_field(code, rec);
-+				break;
-+			case FETCH_OP_IMM:
-+				val = code->immediate;
-+				break;
-+			case FETCH_OP_COMM:
-+				val = (unsigned long)current->comm;
-+				break;
-+			case FETCH_OP_DATA:
-+				val = (unsigned long)code->data;
-+				break;
-+			case FETCH_NOP_SYMBOL:	/* Ignore a place holder */
-+				code++;
-+				goto retry;
-+			default:
-+				continue;
-+			}
-+			code++;
-+			len = process_fetch_insn_bottom(code, val, NULL, NULL);
- 			if (len > 0)
- 				ret += len;
- 		}
-@@ -366,8 +400,28 @@ process_fetch_insn(struct fetch_insn *co
- {
- 	unsigned long val;
- 
--	val = get_event_field(code, rec);
--	return process_fetch_insn_bottom(code + 1, val, dest, base);
-+ retry:
-+	switch (code->op) {
-+	case FETCH_OP_TP_ARG:
-+		val = get_event_field(code, rec);
-+		break;
-+	case FETCH_OP_IMM:
-+		val = code->immediate;
-+		break;
-+	case FETCH_OP_COMM:
-+		val = (unsigned long)current->comm;
-+		break;
-+	case FETCH_OP_DATA:
-+		val = (unsigned long)code->data;
-+		break;
-+	case FETCH_NOP_SYMBOL:	/* Ignore a place holder */
-+		code++;
-+		goto retry;
-+	default:
-+		return -EILSEQ;
-+	}
-+	code++;
-+	return process_fetch_insn_bottom(code, val, dest, base);
- }
- NOKPROBE_SYMBOL(process_fetch_insn)
- 
-@@ -849,6 +903,10 @@ static int trace_eprobe_tp_update_arg(st
- 	if (ep->tp.args[i].code->op == FETCH_OP_TP_ARG)
- 		ret = trace_eprobe_tp_arg_update(ep, i);
- 
-+	/* Handle symbols "@" */
-+	if (!ret)
-+		ret = traceprobe_update_arg(&ep->tp.args[i]);
-+
- 	return ret;
- }
- 
+ 	switch (reg) {
+ 	case 0: irr = ia64_getreg(_IA64_REG_CR_IRR0); break;
 
 
