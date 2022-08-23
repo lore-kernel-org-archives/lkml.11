@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C9AF6C32792
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 10:34:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9B5D1C32772
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 10:34:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355031AbiHWKeO (ORCPT
+        id S1355065AbiHWKeV (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 06:34:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57524 "EHLO
+        Tue, 23 Aug 2022 06:34:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38670 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353653AbiHWKSG (ORCPT
+        with ESMTP id S1353870AbiHWKTR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 06:18:06 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E3A0180EAD;
-        Tue, 23 Aug 2022 02:01:45 -0700 (PDT)
+        Tue, 23 Aug 2022 06:19:17 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3659C80F52;
+        Tue, 23 Aug 2022 02:01:52 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 5401461530;
-        Tue, 23 Aug 2022 09:01:45 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5B20FC433D6;
-        Tue, 23 Aug 2022 09:01:44 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 4CC256123D;
+        Tue, 23 Aug 2022 09:01:51 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 42C71C433C1;
+        Tue, 23 Aug 2022 09:01:50 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661245304;
-        bh=1DV94zophLjpcEDGwBTmbdo/8rx+MYKlO0RwTEpo6bI=;
+        s=korg; t=1661245310;
+        bh=ipq2pS/8t4yHP6Fqk/y+1ZASECAh1Sf6kp7qJO6XM+o=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=D3pcOf6zoQkwOCCp0to2zO3s6H3T89sC2oPO1z++5Jl8TKYxkIWaDEk33M0mDcZrF
-         0X/2NXDFBLHfnhyqygP0Bx8I7vc+xIjj1EqfDOnCAPQIQgRWiRH1rKwgzU601eB/Sh
-         RsadMJu0vFD81kwIhZNg1Zp3Jh7rfSRpNfNQCNqQ=
+        b=CChWWDZ6pXpZW3c4/oWJ09apHQJTMdDMa75yOSwf7f9je+uLa/2N1OBDdKghKslCX
+         glqiHzmSg9UCTbcb4QJyBrFZDGAVSz+rzfUfCnNozA0uqcPD2ws5GaBTOr+/xPQYE2
+         w7pB/6i0ONglrpj/Ltp2yhYe1mHjHktgSctndTzo=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Johannes Berg <johannes.berg@intel.com>,
-        Jeongik Cha <jeongik@google.com>
-Subject: [PATCH 4.19 006/287] wifi: mac80211_hwsim: use 32-bit skb cookie
-Date:   Tue, 23 Aug 2022 10:22:55 +0200
-Message-Id: <20220823080100.475833180@linuxfoundation.org>
+        stable@vger.kernel.org, Ping Cheng <ping.cheng@wacom.com>,
+        Jason Gerecke <jason.gerecke@wacom.com>,
+        Jiri Kosina <jkosina@suse.cz>
+Subject: [PATCH 4.19 008/287] HID: wacom: Dont register pad_input for touch switch
+Date:   Tue, 23 Aug 2022 10:22:57 +0200
+Message-Id: <20220823080100.545612301@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220823080100.268827165@linuxfoundation.org>
 References: <20220823080100.268827165@linuxfoundation.org>
@@ -49,65 +50,107 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Johannes Berg <johannes.berg@intel.com>
+From: Ping Cheng <pinglinux@gmail.com>
 
-commit cc5250cdb43d444061412df7fae72d2b4acbdf97 upstream.
+commit d6b675687a4ab4dba684716d97c8c6f81bf10905 upstream.
 
-We won't really have enough skbs to need a 64-bit cookie,
-and on 32-bit platforms storing the 64-bit cookie into the
-void *rate_driver_data doesn't work anyway. Switch back to
-using just a 32-bit cookie and uintptr_t for the type to
-avoid compiler warnings about all this.
+Touch switch state is received through WACOM_PAD_FIELD. However, it
+is reported by touch_input. Don't register pad_input if no other pad
+events require the interface.
 
-Fixes: 4ee186fa7e40 ("wifi: mac80211_hwsim: fix race condition in pending packet")
-Signed-off-by: Johannes Berg <johannes.berg@intel.com>
-Cc: Jeongik Cha <jeongik@google.com>
+Cc: stable@vger.kernel.org
+Signed-off-by: Ping Cheng <ping.cheng@wacom.com>
+Reviewed-by: Jason Gerecke <jason.gerecke@wacom.com>
+Signed-off-by: Jiri Kosina <jkosina@suse.cz>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/net/wireless/mac80211_hwsim.c |   10 +++++-----
- 1 file changed, 5 insertions(+), 5 deletions(-)
+ drivers/hid/wacom_sys.c |    2 +-
+ drivers/hid/wacom_wac.c |   43 +++++++++++++++++++++++++------------------
+ 2 files changed, 26 insertions(+), 19 deletions(-)
 
---- a/drivers/net/wireless/mac80211_hwsim.c
-+++ b/drivers/net/wireless/mac80211_hwsim.c
-@@ -552,7 +552,7 @@ struct mac80211_hwsim_data {
- 	bool ps_poll_pending;
- 	struct dentry *debugfs;
+--- a/drivers/hid/wacom_sys.c
++++ b/drivers/hid/wacom_sys.c
+@@ -2095,7 +2095,7 @@ static int wacom_register_inputs(struct
  
--	atomic64_t pending_cookie;
-+	atomic_t pending_cookie;
- 	struct sk_buff_head pending;	/* packets pending */
- 	/*
- 	 * Only radios in the same group can communicate together (the
-@@ -1067,7 +1067,7 @@ static void mac80211_hwsim_tx_frame_nl(s
- 	int i;
- 	struct hwsim_tx_rate tx_attempts[IEEE80211_TX_MAX_RATES];
- 	struct hwsim_tx_rate_flag tx_attempts_flags[IEEE80211_TX_MAX_RATES];
--	u64 cookie;
-+	uintptr_t cookie;
+ 	error = wacom_setup_pad_input_capabilities(pad_input_dev, wacom_wac);
+ 	if (error) {
+-		/* no pad in use on this interface */
++		/* no pad events using this interface */
+ 		input_free_device(pad_input_dev);
+ 		wacom_wac->pad_input = NULL;
+ 		pad_input_dev = NULL;
+--- a/drivers/hid/wacom_wac.c
++++ b/drivers/hid/wacom_wac.c
+@@ -1954,7 +1954,6 @@ static void wacom_wac_pad_usage_mapping(
+ 		wacom_wac->has_mute_touch_switch = true;
+ 		usage->type = EV_SW;
+ 		usage->code = SW_MUTE_DEVICE;
+-		features->device_type |= WACOM_DEVICETYPE_PAD;
+ 		break;
+ 	case WACOM_HID_WD_TOUCHSTRIP:
+ 		wacom_map_usage(input, usage, field, EV_ABS, ABS_RX, 0);
+@@ -2034,6 +2033,30 @@ static void wacom_wac_pad_event(struct h
+ 			wacom_wac->hid_data.inrange_state |= value;
+ 	}
  
- 	if (data->ps != PS_DISABLED)
- 		hdr->frame_control |= cpu_to_le16(IEEE80211_FCTL_PM);
-@@ -1136,7 +1136,7 @@ static void mac80211_hwsim_tx_frame_nl(s
- 		goto nla_put_failure;
++	/* Process touch switch state first since it is reported through touch interface,
++	 * which is indepentent of pad interface. In the case when there are no other pad
++	 * events, the pad interface will not even be created.
++	 */
++	if ((equivalent_usage == WACOM_HID_WD_MUTE_DEVICE) ||
++	   (equivalent_usage == WACOM_HID_WD_TOUCHONOFF)) {
++		if (wacom_wac->shared->touch_input) {
++			bool *is_touch_on = &wacom_wac->shared->is_touch_on;
++
++			if (equivalent_usage == WACOM_HID_WD_MUTE_DEVICE && value)
++				*is_touch_on = !(*is_touch_on);
++			else if (equivalent_usage == WACOM_HID_WD_TOUCHONOFF)
++				*is_touch_on = value;
++
++			input_report_switch(wacom_wac->shared->touch_input,
++					    SW_MUTE_DEVICE, !(*is_touch_on));
++			input_sync(wacom_wac->shared->touch_input);
++		}
++		return;
++	}
++
++	if (!input)
++		return;
++
+ 	switch (equivalent_usage) {
+ 	case WACOM_HID_WD_TOUCHRING:
+ 		/*
+@@ -2063,22 +2086,6 @@ static void wacom_wac_pad_event(struct h
+ 			input_event(input, usage->type, usage->code, 0);
+ 		break;
  
- 	/* We create a cookie to identify this skb */
--	cookie = (u64)atomic64_inc_return(&data->pending_cookie);
-+	cookie = atomic_inc_return(&data->pending_cookie);
- 	info->rate_driver_data[0] = (void *)cookie;
- 	if (nla_put_u64_64bit(skb, HWSIM_ATTR_COOKIE, cookie, HWSIM_ATTR_PAD))
- 		goto nla_put_failure;
-@@ -3146,10 +3146,10 @@ static int hwsim_tx_info_frame_received_
- 	/* look for the skb matching the cookie passed back from user */
- 	spin_lock_irqsave(&data2->pending.lock, flags);
- 	skb_queue_walk_safe(&data2->pending, skb, tmp) {
--		u64 skb_cookie;
-+		uintptr_t skb_cookie;
- 
- 		txi = IEEE80211_SKB_CB(skb);
--		skb_cookie = (u64)(uintptr_t)txi->rate_driver_data[0];
-+		skb_cookie = (uintptr_t)txi->rate_driver_data[0];
- 
- 		if (skb_cookie == ret_skb_cookie) {
- 			__skb_unlink(skb, &data2->pending);
+-	case WACOM_HID_WD_MUTE_DEVICE:
+-	case WACOM_HID_WD_TOUCHONOFF:
+-		if (wacom_wac->shared->touch_input) {
+-			bool *is_touch_on = &wacom_wac->shared->is_touch_on;
+-
+-			if (equivalent_usage == WACOM_HID_WD_MUTE_DEVICE && value)
+-				*is_touch_on = !(*is_touch_on);
+-			else if (equivalent_usage == WACOM_HID_WD_TOUCHONOFF)
+-				*is_touch_on = value;
+-
+-			input_report_switch(wacom_wac->shared->touch_input,
+-					    SW_MUTE_DEVICE, !(*is_touch_on));
+-			input_sync(wacom_wac->shared->touch_input);
+-		}
+-		break;
+-
+ 	case WACOM_HID_WD_MODE_CHANGE:
+ 		if (wacom_wac->is_direct_mode != value) {
+ 			wacom_wac->is_direct_mode = value;
+@@ -2719,7 +2726,7 @@ void wacom_wac_event(struct hid_device *
+ 	/* usage tests must precede field tests */
+ 	if (WACOM_BATTERY_USAGE(usage))
+ 		wacom_wac_battery_event(hdev, field, usage, value);
+-	else if (WACOM_PAD_FIELD(field) && wacom->wacom_wac.pad_input)
++	else if (WACOM_PAD_FIELD(field))
+ 		wacom_wac_pad_event(hdev, field, usage, value);
+ 	else if (WACOM_PEN_FIELD(field) && wacom->wacom_wac.pen_input)
+ 		wacom_wac_pen_event(hdev, field, usage, value);
 
 
