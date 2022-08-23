@@ -2,347 +2,163 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 55D17C32793
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 07:54:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5CDC9C32774
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 07:55:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241397AbiHWHyp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 03:54:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39392 "EHLO
+        id S241373AbiHWHzP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 23 Aug 2022 03:55:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39740 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241373AbiHWHyn (ORCPT
+        with ESMTP id S241404AbiHWHzM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 03:54:43 -0400
-Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 83F2248E9C;
-        Tue, 23 Aug 2022 00:54:41 -0700 (PDT)
-Received: from dggpeml500026.china.huawei.com (unknown [172.30.72.57])
-        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4MBhGk4XLBzXdf0;
-        Tue, 23 Aug 2022 15:50:22 +0800 (CST)
-Received: from huawei.com (10.175.101.6) by dggpeml500026.china.huawei.com
- (7.185.36.106) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Tue, 23 Aug
- 2022 15:54:30 +0800
-From:   Zhengchao Shao <shaozhengchao@huawei.com>
-To:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <davem@davemloft.net>, <edumazet@google.com>, <kuba@kernel.org>,
-        <pabeni@redhat.com>, <jhs@mojatatu.com>,
-        <xiyou.wangcong@gmail.com>, <jiri@resnulli.us>,
-        <vinicius.gomes@intel.com>
-CC:     <weiyongjun1@huawei.com>, <yuehaibing@huawei.com>,
-        <shaozhengchao@huawei.com>
-Subject: [PATCH net-next] net: sched: delete duplicate cleanup of backlog and qlen
-Date:   Tue, 23 Aug 2022 15:57:17 +0800
-Message-ID: <20220823075717.28072-1-shaozhengchao@huawei.com>
-X-Mailer: git-send-email 2.17.1
+        Tue, 23 Aug 2022 03:55:12 -0400
+Received: from mail-yw1-x112e.google.com (mail-yw1-x112e.google.com [IPv6:2607:f8b0:4864:20::112e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 973DD399F2
+        for <linux-kernel@vger.kernel.org>; Tue, 23 Aug 2022 00:55:11 -0700 (PDT)
+Received: by mail-yw1-x112e.google.com with SMTP id 00721157ae682-3375488624aso328910747b3.3
+        for <linux-kernel@vger.kernel.org>; Tue, 23 Aug 2022 00:55:11 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc;
+        bh=6/q2WYCT6ZfXsEkC9Bz17XJaiUb6hw25Iag20Qx0nsM=;
+        b=fE6rur9XiU74c/LSzQNVVhxXHY2TiKtS5JU2ibRkNiYGAnn15hylS30CGx83K1v8Ff
+         9Te1WT8tyaYbQbrrLdJmywA0xqVSGzXquxMxVx2dzkgRWFR/sn7sIThwn+tQXyJqLBgZ
+         dgT+yBe3n0/KJ9k8hBRDIjTYBYEl3ZJkvKtsJs6A9jXJACS7lVWX2UZJfl0VQtIjvgII
+         YWkWPD4UUSuE7OrMJIdtSzfvyrF67SiX+aX7HKPIW/SDIZOSDjTKt/Rfs/fdChhDawqe
+         fjwxmfnvWYasVE0ANnsNlYfo0eiTduyizakEJNYT9XZmwt0+GkdVprJP4bg5UmgIJBmi
+         tctA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc;
+        bh=6/q2WYCT6ZfXsEkC9Bz17XJaiUb6hw25Iag20Qx0nsM=;
+        b=spUoM/UTrL56kIjcg3B0r5v9Q9SeR3NlJjjn65XwEBO4V7c6HPjEf59jKyfRw4uiPf
+         vAGC29+ZTdIr2fO8i89jJlVZVn/g7+7mkMDn7mpQUPB4ijWolL6fLjZv5HDMJ5evu40w
+         MEfv7Z3TXMwOi2quAlM1qFjpvhSovEq3R52/rAPcpQDwcAam6ew/pPrXPXvKPzW9wjRR
+         GL0WcHx7pKdeQ23gwOq+uiD0Z7WfQCx9R/e+d3PKnEiu1APhsAdpFI693LSG2m8Y/yuw
+         UvbRujw0GsvKHevdQQ48howSWkdwpRhWx0DWlvjhBUVBE7i5dfEh47L/oGYMw/XIVUrb
+         aZoA==
+X-Gm-Message-State: ACgBeo2rFjOInwTsH9o5Lqk0EiGXK6K1QKHG4/FAR422QgMRIR2+1hhm
+        LSK10czXphE4E9+YYm6mMbaZdvX5r7cMMhQq3sUqtg==
+X-Google-Smtp-Source: AA6agR5X9J1cHStUXD+eWgp+f5ZhGKrx2w+4FpRFxngJ7RRjcrVhOmd1jOonZDjfF8w8UQfXF7JnqhjZRW7BoYvKFP4=
+X-Received: by 2002:a25:d3d1:0:b0:690:807c:9e5 with SMTP id
+ e200-20020a25d3d1000000b00690807c09e5mr22810541ybf.424.1661241310788; Tue, 23
+ Aug 2022 00:55:10 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.175.101.6]
-X-ClientProxiedBy: dggems706-chm.china.huawei.com (10.3.19.183) To
- dggpeml500026.china.huawei.com (7.185.36.106)
-X-CFilter-Loop: Reflected
+References: <20220818124805.601-1-zhouchengming@bytedance.com> <20220818124805.601-8-zhouchengming@bytedance.com>
+In-Reply-To: <20220818124805.601-8-zhouchengming@bytedance.com>
+From:   Vincent Guittot <vincent.guittot@linaro.org>
+Date:   Tue, 23 Aug 2022 09:54:59 +0200
+Message-ID: <CAKfTPtAsEpO_11cCfPu=-RRF2mP4V=5CJL2Ek3t2VUY8nz0Euw@mail.gmail.com>
+Subject: Re: [PATCH v6 7/9] sched/fair: allow changing cgroup of new forked task
+To:     Chengming Zhou <zhouchengming@bytedance.com>
+Cc:     dietmar.eggemann@arm.com, mingo@redhat.com, peterz@infradead.org,
+        rostedt@goodmis.org, bsegall@google.com, vschneid@redhat.com,
+        linux-kernel@vger.kernel.org, tj@kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The qdisc_reset function has cleared the backlog and qlen of the qdisc.
-There is no need to clear them again in the specific reset function.
+On Thu, 18 Aug 2022 at 14:48, Chengming Zhou
+<zhouchengming@bytedance.com> wrote:
+>
+> commit 7dc603c9028e ("sched/fair: Fix PELT integrity for new tasks")
+> introduce a TASK_NEW state and an unnessary limitation that would fail
+> when changing cgroup of new forked task.
+>
+> Because at that time, we can't handle task_change_group_fair() for new
+> forked fair task which hasn't been woken up by wake_up_new_task(),
+> which will cause detach on an unattached task sched_avg problem.
+>
+> This patch delete this unnessary limitation by adding check before do
+> detach or attach in task_change_group_fair().
+>
+> So cpu_cgrp_subsys.can_attach() has nothing to do for fair tasks,
+> only define it in #ifdef CONFIG_RT_GROUP_SCHED.
+>
+> Signed-off-by: Chengming Zhou <zhouchengming@bytedance.com>
 
-Signed-off-by: Zhengchao Shao <shaozhengchao@huawei.com>
----
- include/net/sch_generic.h | 1 -
- net/sched/sch_atm.c       | 1 -
- net/sched/sch_cbq.c       | 1 -
- net/sched/sch_choke.c     | 2 --
- net/sched/sch_drr.c       | 2 --
- net/sched/sch_dsmark.c    | 2 --
- net/sched/sch_etf.c       | 3 ---
- net/sched/sch_ets.c       | 2 --
- net/sched/sch_fq_codel.c  | 2 --
- net/sched/sch_fq_pie.c    | 3 ---
- net/sched/sch_hfsc.c      | 2 --
- net/sched/sch_htb.c       | 2 --
- net/sched/sch_multiq.c    | 1 -
- net/sched/sch_prio.c      | 2 --
- net/sched/sch_qfq.c       | 2 --
- net/sched/sch_red.c       | 2 --
- net/sched/sch_sfb.c       | 2 --
- net/sched/sch_skbprio.c   | 3 ---
- net/sched/sch_taprio.c    | 2 --
- net/sched/sch_tbf.c       | 2 --
- net/sched/sch_teql.c      | 1 -
- 21 files changed, 40 deletions(-)
+Reviewed-by: Vincent Guittot <vincent.guittot@linaro.org>
 
-diff --git a/include/net/sch_generic.h b/include/net/sch_generic.h
-index ec693fe7c553..f2958fb5ae08 100644
---- a/include/net/sch_generic.h
-+++ b/include/net/sch_generic.h
-@@ -1137,7 +1137,6 @@ static inline void __qdisc_reset_queue(struct qdisc_skb_head *qh)
- static inline void qdisc_reset_queue(struct Qdisc *sch)
- {
- 	__qdisc_reset_queue(&sch->q);
--	sch->qstats.backlog = 0;
- }
- 
- static inline struct Qdisc *qdisc_replace(struct Qdisc *sch, struct Qdisc *new,
-diff --git a/net/sched/sch_atm.c b/net/sched/sch_atm.c
-index 4c8e994cf0a5..816fd0d7ba38 100644
---- a/net/sched/sch_atm.c
-+++ b/net/sched/sch_atm.c
-@@ -577,7 +577,6 @@ static void atm_tc_reset(struct Qdisc *sch)
- 	pr_debug("atm_tc_reset(sch %p,[qdisc %p])\n", sch, p);
- 	list_for_each_entry(flow, &p->flows, list)
- 		qdisc_reset(flow->q);
--	sch->q.qlen = 0;
- }
- 
- static void atm_tc_destroy(struct Qdisc *sch)
-diff --git a/net/sched/sch_cbq.c b/net/sched/sch_cbq.c
-index af126eb3e431..b026daca160e 100644
---- a/net/sched/sch_cbq.c
-+++ b/net/sched/sch_cbq.c
-@@ -975,7 +975,6 @@ cbq_reset(struct Qdisc *sch)
- 			cl->cpriority = cl->priority;
- 		}
- 	}
--	sch->q.qlen = 0;
- }
- 
- 
-diff --git a/net/sched/sch_choke.c b/net/sched/sch_choke.c
-index 2adbd945bf15..25d2daaa8122 100644
---- a/net/sched/sch_choke.c
-+++ b/net/sched/sch_choke.c
-@@ -315,8 +315,6 @@ static void choke_reset(struct Qdisc *sch)
- 		rtnl_qdisc_drop(skb, sch);
- 	}
- 
--	sch->q.qlen = 0;
--	sch->qstats.backlog = 0;
- 	if (q->tab)
- 		memset(q->tab, 0, (q->tab_mask + 1) * sizeof(struct sk_buff *));
- 	q->head = q->tail = 0;
-diff --git a/net/sched/sch_drr.c b/net/sched/sch_drr.c
-index 18e4f7a0b291..4e5b1cf11b85 100644
---- a/net/sched/sch_drr.c
-+++ b/net/sched/sch_drr.c
-@@ -441,8 +441,6 @@ static void drr_reset_qdisc(struct Qdisc *sch)
- 			qdisc_reset(cl->qdisc);
- 		}
- 	}
--	sch->qstats.backlog = 0;
--	sch->q.qlen = 0;
- }
- 
- static void drr_destroy_qdisc(struct Qdisc *sch)
-diff --git a/net/sched/sch_dsmark.c b/net/sched/sch_dsmark.c
-index 4c100d105269..7da6dc38a382 100644
---- a/net/sched/sch_dsmark.c
-+++ b/net/sched/sch_dsmark.c
-@@ -409,8 +409,6 @@ static void dsmark_reset(struct Qdisc *sch)
- 	pr_debug("%s(sch %p,[qdisc %p])\n", __func__, sch, p);
- 	if (p->q)
- 		qdisc_reset(p->q);
--	sch->qstats.backlog = 0;
--	sch->q.qlen = 0;
- }
- 
- static void dsmark_destroy(struct Qdisc *sch)
-diff --git a/net/sched/sch_etf.c b/net/sched/sch_etf.c
-index c48f91075b5c..d96103b0e2bf 100644
---- a/net/sched/sch_etf.c
-+++ b/net/sched/sch_etf.c
-@@ -445,9 +445,6 @@ static void etf_reset(struct Qdisc *sch)
- 	timesortedlist_clear(sch);
- 	__qdisc_reset_queue(&sch->q);
- 
--	sch->qstats.backlog = 0;
--	sch->q.qlen = 0;
--
- 	q->last = 0;
- }
- 
-diff --git a/net/sched/sch_ets.c b/net/sched/sch_ets.c
-index d73393493553..8de4365886e8 100644
---- a/net/sched/sch_ets.c
-+++ b/net/sched/sch_ets.c
-@@ -727,8 +727,6 @@ static void ets_qdisc_reset(struct Qdisc *sch)
- 	}
- 	for (band = 0; band < q->nbands; band++)
- 		qdisc_reset(q->classes[band].qdisc);
--	sch->qstats.backlog = 0;
--	sch->q.qlen = 0;
- }
- 
- static void ets_qdisc_destroy(struct Qdisc *sch)
-diff --git a/net/sched/sch_fq_codel.c b/net/sched/sch_fq_codel.c
-index 839e1235db05..23a042adb74d 100644
---- a/net/sched/sch_fq_codel.c
-+++ b/net/sched/sch_fq_codel.c
-@@ -347,8 +347,6 @@ static void fq_codel_reset(struct Qdisc *sch)
- 		codel_vars_init(&flow->cvars);
- 	}
- 	memset(q->backlogs, 0, q->flows_cnt * sizeof(u32));
--	sch->q.qlen = 0;
--	sch->qstats.backlog = 0;
- 	q->memory_usage = 0;
- }
- 
-diff --git a/net/sched/sch_fq_pie.c b/net/sched/sch_fq_pie.c
-index d6aba6edd16e..35c35465226b 100644
---- a/net/sched/sch_fq_pie.c
-+++ b/net/sched/sch_fq_pie.c
-@@ -521,9 +521,6 @@ static void fq_pie_reset(struct Qdisc *sch)
- 		INIT_LIST_HEAD(&flow->flowchain);
- 		pie_vars_init(&flow->vars);
- 	}
--
--	sch->q.qlen = 0;
--	sch->qstats.backlog = 0;
- }
- 
- static void fq_pie_destroy(struct Qdisc *sch)
-diff --git a/net/sched/sch_hfsc.c b/net/sched/sch_hfsc.c
-index d3979a6000e7..03efc40e42fc 100644
---- a/net/sched/sch_hfsc.c
-+++ b/net/sched/sch_hfsc.c
-@@ -1484,8 +1484,6 @@ hfsc_reset_qdisc(struct Qdisc *sch)
- 	}
- 	q->eligible = RB_ROOT;
- 	qdisc_watchdog_cancel(&q->watchdog);
--	sch->qstats.backlog = 0;
--	sch->q.qlen = 0;
- }
- 
- static void
-diff --git a/net/sched/sch_htb.c b/net/sched/sch_htb.c
-index 23a9d6242429..cb5872d22ecf 100644
---- a/net/sched/sch_htb.c
-+++ b/net/sched/sch_htb.c
-@@ -1008,8 +1008,6 @@ static void htb_reset(struct Qdisc *sch)
- 	}
- 	qdisc_watchdog_cancel(&q->watchdog);
- 	__qdisc_reset_queue(&q->direct_queue);
--	sch->q.qlen = 0;
--	sch->qstats.backlog = 0;
- 	memset(q->hlevel, 0, sizeof(q->hlevel));
- 	memset(q->row_mask, 0, sizeof(q->row_mask));
- }
-diff --git a/net/sched/sch_multiq.c b/net/sched/sch_multiq.c
-index cd8ab90c4765..f28050c7f12d 100644
---- a/net/sched/sch_multiq.c
-+++ b/net/sched/sch_multiq.c
-@@ -152,7 +152,6 @@ multiq_reset(struct Qdisc *sch)
- 
- 	for (band = 0; band < q->bands; band++)
- 		qdisc_reset(q->queues[band]);
--	sch->q.qlen = 0;
- 	q->curband = 0;
- }
- 
-diff --git a/net/sched/sch_prio.c b/net/sched/sch_prio.c
-index 3b8d7197c06b..c03a11dd990f 100644
---- a/net/sched/sch_prio.c
-+++ b/net/sched/sch_prio.c
-@@ -135,8 +135,6 @@ prio_reset(struct Qdisc *sch)
- 
- 	for (prio = 0; prio < q->bands; prio++)
- 		qdisc_reset(q->queues[prio]);
--	sch->qstats.backlog = 0;
--	sch->q.qlen = 0;
- }
- 
- static int prio_offload(struct Qdisc *sch, struct tc_prio_qopt *qopt)
-diff --git a/net/sched/sch_qfq.c b/net/sched/sch_qfq.c
-index d4ce58c90f9f..13246a9dc5c1 100644
---- a/net/sched/sch_qfq.c
-+++ b/net/sched/sch_qfq.c
-@@ -1458,8 +1458,6 @@ static void qfq_reset_qdisc(struct Qdisc *sch)
- 			qdisc_reset(cl->qdisc);
- 		}
- 	}
--	sch->qstats.backlog = 0;
--	sch->q.qlen = 0;
- }
- 
- static void qfq_destroy_qdisc(struct Qdisc *sch)
-diff --git a/net/sched/sch_red.c b/net/sched/sch_red.c
-index 40adf1f07a82..f1e013e3f04a 100644
---- a/net/sched/sch_red.c
-+++ b/net/sched/sch_red.c
-@@ -176,8 +176,6 @@ static void red_reset(struct Qdisc *sch)
- 	struct red_sched_data *q = qdisc_priv(sch);
- 
- 	qdisc_reset(q->qdisc);
--	sch->qstats.backlog = 0;
--	sch->q.qlen = 0;
- 	red_restart(&q->vars);
- }
- 
-diff --git a/net/sched/sch_sfb.c b/net/sched/sch_sfb.c
-index 3d061a13d7ed..31717fa45a4f 100644
---- a/net/sched/sch_sfb.c
-+++ b/net/sched/sch_sfb.c
-@@ -453,8 +453,6 @@ static void sfb_reset(struct Qdisc *sch)
- 	struct sfb_sched_data *q = qdisc_priv(sch);
- 
- 	qdisc_reset(q->qdisc);
--	sch->qstats.backlog = 0;
--	sch->q.qlen = 0;
- 	q->slot = 0;
- 	q->double_buffering = false;
- 	sfb_zero_all_buckets(q);
-diff --git a/net/sched/sch_skbprio.c b/net/sched/sch_skbprio.c
-index 7a5e4c454715..df72fb83d9c7 100644
---- a/net/sched/sch_skbprio.c
-+++ b/net/sched/sch_skbprio.c
-@@ -213,9 +213,6 @@ static void skbprio_reset(struct Qdisc *sch)
- 	struct skbprio_sched_data *q = qdisc_priv(sch);
- 	int prio;
- 
--	sch->qstats.backlog = 0;
--	sch->q.qlen = 0;
--
- 	for (prio = 0; prio < SKBPRIO_MAX_PRIORITY; prio++)
- 		__skb_queue_purge(&q->qdiscs[prio]);
- 
-diff --git a/net/sched/sch_taprio.c b/net/sched/sch_taprio.c
-index 0b941dd63d26..db88a692ef81 100644
---- a/net/sched/sch_taprio.c
-+++ b/net/sched/sch_taprio.c
-@@ -1636,8 +1636,6 @@ static void taprio_reset(struct Qdisc *sch)
- 			if (q->qdiscs[i])
- 				qdisc_reset(q->qdiscs[i]);
- 	}
--	sch->qstats.backlog = 0;
--	sch->q.qlen = 0;
- }
- 
- static void taprio_destroy(struct Qdisc *sch)
-diff --git a/net/sched/sch_tbf.c b/net/sched/sch_tbf.c
-index 72102277449e..d0288e223542 100644
---- a/net/sched/sch_tbf.c
-+++ b/net/sched/sch_tbf.c
-@@ -330,8 +330,6 @@ static void tbf_reset(struct Qdisc *sch)
- 	struct tbf_sched_data *q = qdisc_priv(sch);
- 
- 	qdisc_reset(q->qdisc);
--	sch->qstats.backlog = 0;
--	sch->q.qlen = 0;
- 	q->t_c = ktime_get_ns();
- 	q->tokens = q->buffer;
- 	q->ptokens = q->mtu;
-diff --git a/net/sched/sch_teql.c b/net/sched/sch_teql.c
-index 6af6b95bdb67..79aaab51cbf5 100644
---- a/net/sched/sch_teql.c
-+++ b/net/sched/sch_teql.c
-@@ -124,7 +124,6 @@ teql_reset(struct Qdisc *sch)
- 	struct teql_sched_data *dat = qdisc_priv(sch);
- 
- 	skb_queue_purge(&dat->q);
--	sch->q.qlen = 0;
- }
- 
- static void
--- 
-2.17.1
-
+> ---
+>  kernel/sched/core.c | 25 +++++--------------------
+>  kernel/sched/fair.c |  7 +++++++
+>  2 files changed, 12 insertions(+), 20 deletions(-)
+>
+> diff --git a/kernel/sched/core.c b/kernel/sched/core.c
+> index 8e3f1c3f0b2c..14819bd66021 100644
+> --- a/kernel/sched/core.c
+> +++ b/kernel/sched/core.c
+> @@ -10290,36 +10290,19 @@ static void cpu_cgroup_css_free(struct cgroup_subsys_state *css)
+>         sched_unregister_group(tg);
+>  }
+>
+> +#ifdef CONFIG_RT_GROUP_SCHED
+>  static int cpu_cgroup_can_attach(struct cgroup_taskset *tset)
+>  {
+>         struct task_struct *task;
+>         struct cgroup_subsys_state *css;
+> -       int ret = 0;
+>
+>         cgroup_taskset_for_each(task, css, tset) {
+> -#ifdef CONFIG_RT_GROUP_SCHED
+>                 if (!sched_rt_can_attach(css_tg(css), task))
+>                         return -EINVAL;
+> -#endif
+> -               /*
+> -                * Serialize against wake_up_new_task() such that if it's
+> -                * running, we're sure to observe its full state.
+> -                */
+> -               raw_spin_lock_irq(&task->pi_lock);
+> -               /*
+> -                * Avoid calling sched_move_task() before wake_up_new_task()
+> -                * has happened. This would lead to problems with PELT, due to
+> -                * move wanting to detach+attach while we're not attached yet.
+> -                */
+> -               if (READ_ONCE(task->__state) == TASK_NEW)
+> -                       ret = -EINVAL;
+> -               raw_spin_unlock_irq(&task->pi_lock);
+> -
+> -               if (ret)
+> -                       break;
+>         }
+> -       return ret;
+> +       return 0;
+>  }
+> +#endif
+>
+>  static void cpu_cgroup_attach(struct cgroup_taskset *tset)
+>  {
+> @@ -11155,7 +11138,9 @@ struct cgroup_subsys cpu_cgrp_subsys = {
+>         .css_released   = cpu_cgroup_css_released,
+>         .css_free       = cpu_cgroup_css_free,
+>         .css_extra_stat_show = cpu_extra_stat_show,
+> +#ifdef CONFIG_RT_GROUP_SCHED
+>         .can_attach     = cpu_cgroup_can_attach,
+> +#endif
+>         .attach         = cpu_cgroup_attach,
+>         .legacy_cftypes = cpu_legacy_files,
+>         .dfl_cftypes    = cpu_files,
+> diff --git a/kernel/sched/fair.c b/kernel/sched/fair.c
+> index eba8a64f905a..c319b0bd2bc1 100644
+> --- a/kernel/sched/fair.c
+> +++ b/kernel/sched/fair.c
+> @@ -11840,6 +11840,13 @@ void init_cfs_rq(struct cfs_rq *cfs_rq)
+>  #ifdef CONFIG_FAIR_GROUP_SCHED
+>  static void task_change_group_fair(struct task_struct *p)
+>  {
+> +       /*
+> +        * We couldn't detach or attach a forked task which
+> +        * hasn't been woken up by wake_up_new_task().
+> +        */
+> +       if (READ_ONCE(p->__state) == TASK_NEW)
+> +               return;
+> +
+>         detach_task_cfs_rq(p);
+>
+>  #ifdef CONFIG_SMP
+> --
+> 2.37.2
+>
