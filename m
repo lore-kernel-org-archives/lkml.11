@@ -2,138 +2,106 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B7D40C32772
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 15:06:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 290A4C32772
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 15:06:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241918AbiHWPGe (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 11:06:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33152 "EHLO
+        id S242922AbiHWPGr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 23 Aug 2022 11:06:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32898 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241191AbiHWPGI (ORCPT
+        with ESMTP id S242894AbiHWPGU (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 11:06:08 -0400
-Received: from sender4-op-o14.zoho.com (sender4-op-o14.zoho.com [136.143.188.14])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 807688A1D3;
-        Tue, 23 Aug 2022 05:30:58 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; t=1661257822; cv=none; 
-        d=zohomail.com; s=zohoarc; 
-        b=kUK9R4fOwaIdguJnen90t1H1YQbeohUSP2LhXaNJx8e+EGaESiDQVSl46eS7CflyE3GlMPihP2qZm1bzEvbXb6WJ7/NTtG0+RB2LZVGcKaXeBOxtl0OvkR0I3/dbOOljLGKYYhjAy76G9yAugBB2VB4/5VY0GnyLxqSxZvBBPl0=
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=zohomail.com; s=zohoarc; 
-        t=1661257822; h=Content-Type:Content-Transfer-Encoding:Cc:Date:From:In-Reply-To:MIME-Version:Message-ID:References:Subject:To; 
-        bh=8bzMWkh3gW8Eu0SXEfwUMm4SsOe7CTvCWXHdr0YLwl0=; 
-        b=NYszyn3Jo8l5YNCYoW3Wy9G+tFfarqC08HAObhTvO9HtrStza6CPsmX5qgq17HHe4HfdlBPyW68Nd6rs/e1cxyhxHOa4UFg1ywEAIgkbXwwkM/wsrq4OH5M+6fppcOWUg/9vx9E4Q5JOU2bEv9++dlA7h6lFYzjL1dqkKeVbf2w=
-ARC-Authentication-Results: i=1; mx.zohomail.com;
-        dkim=pass  header.i=arinc9.com;
-        spf=pass  smtp.mailfrom=arinc.unal@arinc9.com;
-        dmarc=pass header.from=<arinc.unal@arinc9.com>
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; t=1661257822;
-        s=zmail; d=arinc9.com; i=arinc.unal@arinc9.com;
-        h=Message-ID:Date:Date:MIME-Version:Subject:Subject:To:To:Cc:Cc:References:From:From:In-Reply-To:Content-Type:Content-Transfer-Encoding:Message-Id:Reply-To;
-        bh=8bzMWkh3gW8Eu0SXEfwUMm4SsOe7CTvCWXHdr0YLwl0=;
-        b=GQGn9eXUWpek5t87stuU5SpJkW49SlhBluS2FgLOH1LPETIZWjitQ0DApqfjxnTn
-        ncsT96dEzeclV0BIMljDx0sNLkOZTXsH9Nr64rxKCP8VPOHh197wTXypi59Kvi5w03V
-        Uv+Zbc4l2nh4sNPBYvo1TH+48iudDowVpGgujxoM=
-Received: from [10.10.10.3] (37.120.152.236 [37.120.152.236]) by mx.zohomail.com
-        with SMTPS id 1661257819881912.5959120446157; Tue, 23 Aug 2022 05:30:19 -0700 (PDT)
-Message-ID: <fed417ad-946e-64bd-0d7f-5183cc1e5cac@arinc9.com>
-Date:   Tue, 23 Aug 2022 15:30:12 +0300
+        Tue, 23 Aug 2022 11:06:20 -0400
+Received: from bg5.exmail.qq.com (bg4.exmail.qq.com [43.154.221.58])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 15FA99A691
+        for <linux-kernel@vger.kernel.org>; Tue, 23 Aug 2022 05:31:03 -0700 (PDT)
+X-QQ-mid: bizesmtp76t1661257851toe4j5vo
+Received: from localhost.localdomain ( [182.148.14.124])
+        by bizesmtp.qq.com (ESMTP) with 
+        id ; Tue, 23 Aug 2022 20:30:50 +0800 (CST)
+X-QQ-SSF: 01000000002000C0D000B00A0000000
+X-QQ-FEAT: CR3LFp2JE4nuRAt3y5hdzUXJ8PhfvhAvvgiJTnr3AKnjupX57tUKbnJ0nioxQ
+        INW5jBmZbXBroGHF0+FEYjm+Rk6YHbz4FrAU5YpFmbpuSpYKZS6ApwnmGlzMOARuF0j/UOw
+        nRLvkO3uiRovj6Ws064ydTtHc8tAqJ9tsBRASqSkdbO6fAlFlHcbFKOp3tBkmSwwJLJ5a0H
+        D2sstLjSXAlo1ELaaTBRDnUQzEseU+sL7y6zDpjARhdyvUOZFg5l08+IbGsaFOBTeh9TXN+
+        MEeH8ltMBfZ5lRHkjNjzfgWdQgf3+HvrUqLJ1eAEr3zrdlOe8P3vtARqZ9NDivOhdHUaG8z
+        zHJi9D14E+JuUFc2R4HErlF7e0mSLpaLYMXBWUpzZoaqiVvGm+4zb586u+LgjdG7HzOkLd8
+X-QQ-GoodBg: 0
+From:   Jilin Yuan <yuanjilin@cdjrlc.com>
+To:     airlied@linux.ie, daniel@ffwll.ch
+Cc:     intel-gfx@lists.freedesktop.org, dri-devel@lists.freedesktop.org,
+        linux-kernel@vger.kernel.org, Jilin Yuan <yuanjilin@cdjrlc.com>
+Subject: [PATCH] drm/i915: fix repeated words in comments
+Date:   Tue, 23 Aug 2022 20:30:44 +0800
+Message-Id: <20220823123044.24593-1-yuanjilin@cdjrlc.com>
+X-Mailer: git-send-email 2.36.1
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.11.0
-Subject: Re: [PATCH v4 1/6] dt-bindings: net: dsa: mediatek,mt7530: make
- trivial changes
-Content-Language: en-US
-To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        Sean Wang <sean.wang@mediatek.com>,
-        Landen Chao <Landen.Chao@mediatek.com>,
-        DENG Qingfang <dqfext@gmail.com>,
-        Frank Wunderlich <frank-w@public-files.de>,
-        Luiz Angelo Daros de Luca <luizluca@gmail.com>,
-        Sander Vanheule <sander@svanheule.net>,
-        =?UTF-8?Q?Ren=c3=a9_van_Dorst?= <opensource@vdorst.com>,
-        Daniel Golle <daniel@makrotopia.org>, erkin.bozoglu@xeront.com,
-        Sergio Paracuellos <sergio.paracuellos@gmail.com>
-Cc:     netdev@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org,
-        Rob Herring <robh@kernel.org>
-References: <20220820080758.9829-1-arinc.unal@arinc9.com>
- <20220820080758.9829-2-arinc.unal@arinc9.com>
- <70ae25b9-0500-7539-d71f-52c685783554@linaro.org>
-From:   =?UTF-8?B?QXLEsW7DpyDDnE5BTA==?= <arinc.unal@arinc9.com>
-In-Reply-To: <70ae25b9-0500-7539-d71f-52c685783554@linaro.org>
-Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
-X-ZohoMailClient: External
+X-QQ-SENDSIZE: 520
+Feedback-ID: bizesmtp:cdjrlc.com:qybglogicsvr:qybglogicsvr4
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 23.08.2022 13:40, Krzysztof Kozlowski wrote:
-> On 20/08/2022 11:07, Arınç ÜNAL wrote:
->> Make trivial changes on the binding.
->>
->> - Update title to include MT7531 switch.
->> - Add me as a maintainer. List maintainers in alphabetical order by first
->> name.
->> - Add description to compatible strings.
->> - Stretch descriptions up to the 80 character limit.
->> - Remove quotes from $ref: "dsa.yaml#".
->>
->> Signed-off-by: Arınç ÜNAL <arinc.unal@arinc9.com>
->> Reviewed-by: Rob Herring <robh@kernel.org>
->> ---
->>   .../bindings/net/dsa/mediatek,mt7530.yaml     | 36 ++++++++++++-------
->>   1 file changed, 24 insertions(+), 12 deletions(-)
->>
->> diff --git a/Documentation/devicetree/bindings/net/dsa/mediatek,mt7530.yaml b/Documentation/devicetree/bindings/net/dsa/mediatek,mt7530.yaml
->> index 17ab6c69ecc7..edf48e917173 100644
->> --- a/Documentation/devicetree/bindings/net/dsa/mediatek,mt7530.yaml
->> +++ b/Documentation/devicetree/bindings/net/dsa/mediatek,mt7530.yaml
->> @@ -4,12 +4,13 @@
->>   $id: http://devicetree.org/schemas/net/dsa/mediatek,mt7530.yaml#
->>   $schema: http://devicetree.org/meta-schemas/core.yaml#
->>   
->> -title: Mediatek MT7530 Ethernet switch
->> +title: Mediatek MT7530 and MT7531 Ethernet Switches
->>   
->>   maintainers:
->> -  - Sean Wang <sean.wang@mediatek.com>
->> +  - Arınç ÜNAL <arinc.unal@arinc9.com>
->>     - Landen Chao <Landen.Chao@mediatek.com>
->>     - DENG Qingfang <dqfext@gmail.com>
->> +  - Sean Wang <sean.wang@mediatek.com>
->>   
->>   description: |
->>     Port 5 of mt7530 and mt7621 switch is muxed between:
->> @@ -61,10 +62,21 @@ description: |
->>   
->>   properties:
->>     compatible:
->> -    enum:
->> -      - mediatek,mt7530
->> -      - mediatek,mt7531
->> -      - mediatek,mt7621
->> +    oneOf:
->> +      - description:
->> +          Standalone MT7530 and multi-chip module MT7530 in MT7623AI SoC
->> +        items:
-> 
-> You have one item, so don't make it a list. Just const:xxxxx
-> 
-> Same in other places.
+ Delete the redundant word 'other'.
+ Delete the redundant word 'the'.
+ Delete the redundant word 'will'.
 
-Will do.
+Signed-off-by: Jilin Yuan <yuanjilin@cdjrlc.com>
+---
+ drivers/gpu/drm/i915/i915_gem_evict.c | 2 +-
+ drivers/gpu/drm/i915/i915_irq.c       | 4 ++--
+ drivers/gpu/drm/i915/i915_memcpy.h    | 2 +-
+ 3 files changed, 4 insertions(+), 4 deletions(-)
 
-Arınç
+diff --git a/drivers/gpu/drm/i915/i915_gem_evict.c b/drivers/gpu/drm/i915/i915_gem_evict.c
+index f025ee4fa526..028e509e1628 100644
+--- a/drivers/gpu/drm/i915/i915_gem_evict.c
++++ b/drivers/gpu/drm/i915/i915_gem_evict.c
+@@ -256,7 +256,7 @@ i915_gem_evict_something(struct i915_address_space *vm,
+ 	goto search_again;
+ 
+ found:
+-	/* drm_mm doesn't allow any other other operations while
++	/* drm_mm doesn't allow any other operations while
+ 	 * scanning, therefore store to-be-evicted objects on a
+ 	 * temporary list and take a reference for all before
+ 	 * calling unbind (which may remove the active reference
+diff --git a/drivers/gpu/drm/i915/i915_irq.c b/drivers/gpu/drm/i915/i915_irq.c
+index 73cebc6aa650..1e4a705bc5cc 100644
+--- a/drivers/gpu/drm/i915/i915_irq.c
++++ b/drivers/gpu/drm/i915/i915_irq.c
+@@ -65,7 +65,7 @@
+ 
+ /*
+  * Interrupt statistic for PMU. Increments the counter only if the
+- * interrupt originated from the the GPU so interrupts from a device which
++ * interrupt originated from the GPU so interrupts from a device which
+  * shares the interrupt line are not accounted.
+  */
+ static inline void pmu_irq_stats(struct drm_i915_private *i915,
+@@ -2175,7 +2175,7 @@ static irqreturn_t ilk_irq_handler(int irq, void *arg)
+ 	raw_reg_write(regs, DEIER, de_ier & ~DE_MASTER_IRQ_CONTROL);
+ 
+ 	/* Disable south interrupts. We'll only write to SDEIIR once, so further
+-	 * interrupts will will be stored on its back queue, and then we'll be
++	 * interrupts will be stored on its back queue, and then we'll be
+ 	 * able to process them after we restore SDEIER (as soon as we restore
+ 	 * it, we'll get an interrupt if SDEIIR still has something to process
+ 	 * due to its back queue). */
+diff --git a/drivers/gpu/drm/i915/i915_memcpy.h b/drivers/gpu/drm/i915/i915_memcpy.h
+index 3df063a3293b..126dfb4352f0 100644
+--- a/drivers/gpu/drm/i915/i915_memcpy.h
++++ b/drivers/gpu/drm/i915/i915_memcpy.h
+@@ -18,7 +18,7 @@ void i915_unaligned_memcpy_from_wc(void *dst, const void *src, unsigned long len
+ /* The movntdqa instructions used for memcpy-from-wc require 16-byte alignment,
+  * as well as SSE4.1 support. i915_memcpy_from_wc() will report if it cannot
+  * perform the operation. To check beforehand, pass in the parameters to
+- * to i915_can_memcpy_from_wc() - since we only care about the low 4 bits,
++ * i915_can_memcpy_from_wc() - since we only care about the low 4 bits,
+  * you only need to pass in the minor offsets, page-aligned pointers are
+  * always valid.
+  *
+-- 
+2.36.1
+
