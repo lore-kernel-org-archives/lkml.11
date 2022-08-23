@@ -2,44 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1E394C32772
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 11:55:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 04CC6C32772
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 11:55:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358726AbiHWLy6 (ORCPT
+        id S1358860AbiHWLzC (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 07:54:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52606 "EHLO
+        Tue, 23 Aug 2022 07:55:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57052 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1359087AbiHWLvn (ORCPT
+        with ESMTP id S1359138AbiHWLvu (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 07:51:43 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 694F1D3EF3;
-        Tue, 23 Aug 2022 02:32:24 -0700 (PDT)
+        Tue, 23 Aug 2022 07:51:50 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CCD6214038;
+        Tue, 23 Aug 2022 02:32:29 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 332D7B81C97;
-        Tue, 23 Aug 2022 09:32:18 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 73F34C433C1;
-        Tue, 23 Aug 2022 09:32:16 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 840CC612D8;
+        Tue, 23 Aug 2022 09:32:26 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6C14DC433C1;
+        Tue, 23 Aug 2022 09:32:25 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661247136;
-        bh=wXQAGnKaZny0Q4/nzh2lNS8jJQNaap4Jnt5Roq+fjuo=;
+        s=korg; t=1661247145;
+        bh=bf3ZD9frY4GoYPiarVVKdEvqceAeI8cdWcW5itv8Yk8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=vNxRFHf0FPGgX/NOJEwIjhnDOQrn3lnCO97uAo4Be4xlSzW+WfKMpBBxlK4RLyq9J
-         1ufpY93OE+rRBZvbiV8zEmsiFYOy9VwFgSNLoaNZYIiAgGNcpAvpnf62xvpazp67HG
-         0ghY4Qvocpc7jooGz71oJu9A100t37FS73pIauY8=
+        b=0w1XZyU2spaK/IznFBJLvCBwL6H6iPMZTWkSvvwNVqtaXspird7/4qo2McnX0fMmi
+         KldT0PDAwxUKO56fCihl6bPrduXe0vUfKnvJ2BRwlZw2w3FlBNuEydJn4sdYG668sq
+         QIUQWmSrkBA9EoIAeK7mDcqYa49vjiLfP5pJ0xnk=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Xiyu Yang <xiyuyang19@fudan.edu.cn>,
-        Xin Tan <tanxin.ctf@gmail.com>,
-        Xin Xiong <xiongx18@fudan.edu.cn>,
-        John Johansen <john.johansen@canonical.com>
-Subject: [PATCH 5.4 299/389] apparmor: fix reference count leak in aa_pivotroot()
-Date:   Tue, 23 Aug 2022 10:26:17 +0200
-Message-Id: <20220823080128.051841893@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Trond Myklebust <trond.myklebust@hammerspace.com>
+Subject: [PATCH 5.4 302/389] NFSv4.1: Dont decrease the value of seq_nr_highest_sent
+Date:   Tue, 23 Aug 2022 10:26:20 +0200
+Message-Id: <20220823080128.188093466@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220823080115.331990024@linuxfoundation.org>
 References: <20220823080115.331990024@linuxfoundation.org>
@@ -51,38 +49,36 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Xin Xiong <xiongx18@fudan.edu.cn>
+From: Trond Myklebust <trond.myklebust@hammerspace.com>
 
-commit 11c3627ec6b56c1525013f336f41b79a983b4d46 upstream.
+commit f07a5d2427fc113dc50c5c818eba8929bc27b8ca upstream.
 
-The aa_pivotroot() function has a reference counting bug in a specific
-path. When aa_replace_current_label() returns on success, the function
-forgets to decrement the reference count of “target”, which is
-increased earlier by build_pivotroot(), causing a reference leak.
+When we're trying to figure out what the server may or may not have seen
+in terms of request numbers, do not assume that requests with a larger
+number were missed, just because we saw a reply to a request with a
+smaller number.
 
-Fix it by decreasing the refcount of “target” in that path.
-
-Fixes: 2ea3ffb7782a ("apparmor: add mount mediation")
-Co-developed-by: Xiyu Yang <xiyuyang19@fudan.edu.cn>
-Signed-off-by: Xiyu Yang <xiyuyang19@fudan.edu.cn>
-Co-developed-by: Xin Tan <tanxin.ctf@gmail.com>
-Signed-off-by: Xin Tan <tanxin.ctf@gmail.com>
-Signed-off-by: Xin Xiong <xiongx18@fudan.edu.cn>
-Signed-off-by: John Johansen <john.johansen@canonical.com>
+Fixes: 3453d5708b33 ("NFSv4.1: Avoid false retries when RPC calls are interrupted")
+Signed-off-by: Trond Myklebust <trond.myklebust@hammerspace.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- security/apparmor/mount.c |    1 +
- 1 file changed, 1 insertion(+)
+ fs/nfs/nfs4proc.c |    5 ++---
+ 1 file changed, 2 insertions(+), 3 deletions(-)
 
---- a/security/apparmor/mount.c
-+++ b/security/apparmor/mount.c
-@@ -683,6 +683,7 @@ int aa_pivotroot(struct aa_label *label,
- 			aa_put_label(target);
- 			goto out;
- 		}
-+		aa_put_label(target);
- 	} else
- 		/* already audited error */
- 		error = PTR_ERR(target);
+--- a/fs/nfs/nfs4proc.c
++++ b/fs/nfs/nfs4proc.c
+@@ -779,10 +779,9 @@ static void nfs4_slot_sequence_record_se
+ 	if ((s32)(seqnr - slot->seq_nr_highest_sent) > 0)
+ 		slot->seq_nr_highest_sent = seqnr;
+ }
+-static void nfs4_slot_sequence_acked(struct nfs4_slot *slot,
+-		u32 seqnr)
++static void nfs4_slot_sequence_acked(struct nfs4_slot *slot, u32 seqnr)
+ {
+-	slot->seq_nr_highest_sent = seqnr;
++	nfs4_slot_sequence_record_sent(slot, seqnr);
+ 	slot->seq_nr_last_acked = seqnr;
+ }
+ 
 
 
