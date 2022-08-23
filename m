@@ -2,46 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 74A6DC32772
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 11:49:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A12ACC32772
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 11:49:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358306AbiHWLtT (ORCPT
+        id S1358356AbiHWLt0 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 07:49:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52882 "EHLO
+        Tue, 23 Aug 2022 07:49:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46338 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1358179AbiHWLrH (ORCPT
+        with ESMTP id S1358336AbiHWLrm (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 07:47:07 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 96B9FD276B;
-        Tue, 23 Aug 2022 02:30:36 -0700 (PDT)
+        Tue, 23 Aug 2022 07:47:42 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 011A5D2905;
+        Tue, 23 Aug 2022 02:30:46 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 9A4C0612B5;
-        Tue, 23 Aug 2022 09:30:21 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A2416C433C1;
-        Tue, 23 Aug 2022 09:30:20 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 8A277B81C85;
+        Tue, 23 Aug 2022 09:30:44 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D33CCC433D7;
+        Tue, 23 Aug 2022 09:30:42 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661247021;
-        bh=BHFna084pn5MOacG9nBUkhKjVk4MnmkKBvgPQsiETg0=;
+        s=korg; t=1661247043;
+        bh=ueeu1O7WxTB5W7eT1aqQvjP1jaD0aS1iXFRsRpMLeAA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=TY4o4D5v9f1MmHSSAAacLaSNJ8s9ZXcB2y0hbrl7mT/Mxd5SbZIjr0Ker+JCxXzU4
-         oJHK/uKeiq3y2DnqyCWCpX0a5rB1yHm3hKx3ntYopqLr8zTS5usUzbuxDkxduTJaF4
-         5Mvns+lKrfkOkNLNN6+0uWFhrVOy/JELNkuRki5s=
+        b=D2YkJmksqqHgZ6tQOqji0LOqUIua6uCWWh0chcQjspomZDIvJfSiwL2HM1PfYUe9S
+         /4g/WIJGLco68P71D3q12x9xGlMvcpqn/Fvk0JX6UKrp68dVY0zYDucr6gM7cdoTnX
+         DB0OeJ5InmudmJ7Dt0MA7OT+oG3Lc8KV4GL1QJuA=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Ingo Molnar <mingo@kernel.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Tzvetomir Stoyanov <tz.stoyanov@gmail.com>,
-        Tom Zanussi <zanussi@kernel.org>,
-        "Masami Hiramatsu (Google)" <mhiramat@kernel.org>,
-        "Steven Rostedt (Google)" <rostedt@goodmis.org>
-Subject: [PATCH 5.4 292/389] tracing: Have filter accept "common_cpu" to be consistent
-Date:   Tue, 23 Aug 2022 10:26:10 +0200
-Message-Id: <20220823080127.750902149@linuxfoundation.org>
+        stable@vger.kernel.org, Theodore Tso <tytso@mit.edu>,
+        stable@kernel.org, Andreas Dilger <adilger@dilger.ca>
+Subject: [PATCH 5.4 260/389] ext4: update s_overhead_clusters in the superblock during an on-line resize
+Date:   Tue, 23 Aug 2022 10:25:38 +0200
+Message-Id: <20220823080126.446266632@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220823080115.331990024@linuxfoundation.org>
 References: <20220823080115.331990024@linuxfoundation.org>
@@ -53,40 +49,45 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Steven Rostedt (Google) <rostedt@goodmis.org>
+From: Theodore Ts'o <tytso@mit.edu>
 
-commit b2380577d4fe1c0ef3fa50417f1e441c016e4cbe upstream.
+commit de394a86658ffe4e89e5328fd4993abfe41b7435 upstream.
 
-Make filtering consistent with histograms. As "cpu" can be a field of an
-event, allow for "common_cpu" to keep it from being confused with the
-"cpu" field of the event.
+When doing an online resize, the on-disk superblock on-disk wasn't
+updated.  This means that when the file system is unmounted and
+remounted, and the on-disk overhead value is non-zero, this would
+result in the results of statfs(2) to be incorrect.
 
-Link: https://lkml.kernel.org/r/20220820134401.513062765@goodmis.org
-Link: https://lore.kernel.org/all/20220820220920.e42fa32b70505b1904f0a0ad@kernel.org/
+This was partially fixed by Commits 10b01ee92df5 ("ext4: fix overhead
+calculation to account for the reserved gdt blocks"), 85d825dbf489
+("ext4: force overhead calculation if the s_overhead_cluster makes no
+sense"), and eb7054212eac ("ext4: update the cached overhead value in
+the superblock").
 
-Cc: stable@vger.kernel.org
-Cc: Ingo Molnar <mingo@kernel.org>
-Cc: Andrew Morton <akpm@linux-foundation.org>
-Cc: Tzvetomir Stoyanov <tz.stoyanov@gmail.com>
-Cc: Tom Zanussi <zanussi@kernel.org>
-Fixes: 1e3bac71c5053 ("tracing/histogram: Rename "cpu" to "common_cpu"")
-Suggested-by: Masami Hiramatsu (Google) <mhiramat@kernel.org>
-Acked-by: Masami Hiramatsu (Google) <mhiramat@kernel.org>
-Signed-off-by: Steven Rostedt (Google) <rostedt@goodmis.org>
+However, since it was too expensive to forcibly recalculate the
+overhead for bigalloc file systems at every mount, this didn't fix the
+problem for bigalloc file systems.  This commit should address the
+problem when resizing file systems with the bigalloc feature enabled.
+
+Signed-off-by: Theodore Ts'o <tytso@mit.edu>
+Cc: stable@kernel.org
+Reviewed-by: Andreas Dilger <adilger@dilger.ca>
+Link: https://lore.kernel.org/r/20220629040026.112371-1-tytso@mit.edu
+Signed-off-by: Theodore Ts'o <tytso@mit.edu>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- kernel/trace/trace_events.c |    1 +
+ fs/ext4/resize.c |    1 +
  1 file changed, 1 insertion(+)
 
---- a/kernel/trace/trace_events.c
-+++ b/kernel/trace/trace_events.c
-@@ -166,6 +166,7 @@ static int trace_define_generic_fields(v
+--- a/fs/ext4/resize.c
++++ b/fs/ext4/resize.c
+@@ -1483,6 +1483,7 @@ static void ext4_update_super(struct sup
+ 	 * Update the fs overhead information
+ 	 */
+ 	ext4_calculate_overhead(sb);
++	es->s_overhead_clusters = cpu_to_le32(sbi->s_overhead);
  
- 	__generic_field(int, CPU, FILTER_CPU);
- 	__generic_field(int, cpu, FILTER_CPU);
-+	__generic_field(int, common_cpu, FILTER_CPU);
- 	__generic_field(char *, COMM, FILTER_COMM);
- 	__generic_field(char *, comm, FILTER_COMM);
- 
+ 	if (test_opt(sb, DEBUG))
+ 		printk(KERN_DEBUG "EXT4-fs: added group %u:"
 
 
