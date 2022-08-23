@@ -2,42 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B2969C32772
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 11:39:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 055B0C32772
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 11:39:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357872AbiHWLjY (ORCPT
+        id S1357957AbiHWLjg (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 07:39:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49044 "EHLO
+        Tue, 23 Aug 2022 07:39:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49152 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1358059AbiHWLcU (ORCPT
+        with ESMTP id S242860AbiHWLcZ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 07:32:20 -0400
+        Tue, 23 Aug 2022 07:32:25 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9ADDB75FFB;
-        Tue, 23 Aug 2022 02:26:45 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BE33B76943;
+        Tue, 23 Aug 2022 02:26:49 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 1B1D96126A;
-        Tue, 23 Aug 2022 09:26:45 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2405FC433C1;
-        Tue, 23 Aug 2022 09:26:43 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id AFBB761315;
+        Tue, 23 Aug 2022 09:26:48 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 90F03C433D6;
+        Tue, 23 Aug 2022 09:26:46 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661246804;
-        bh=nlZ0MR4wZADSln3mC3C9MdSprJkx7c6lJDIz81a123o=;
+        s=korg; t=1661246808;
+        bh=3xxcuQJQA/NI4ag+LK3Y2WgZoK6Y9m0qoIvOAHxyx9I=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=YsT99HW+e0cakV37tcRZUpD/78zUXj1Q+njR/mBgH6xXci/uBc1TFf+QcnL80KznH
-         Zqywyv1UWlz/GDKIjsp6Do/WBcfJh4K8oRpEnFHpoDMpJkYYyfaD55KKkPf/eWbhO+
-         AxDFvJE6q3PRqGLM7ZVLG9fdSz0ooxGbbZ0bY07E=
+        b=jn4wvhUxUvsjo9uc8VCI5NWynH6r7pMEEO1VuLBy0giDb8fCK/vZZ39aC8kfZDcVU
+         VrFg5ci7rNdwW+cb5J1Z/N2Cnn2Wa/vDXbAbU2jHppF7I3V9+IGVLEvJVmMWXmSwOh
+         vxDLFhocmzG2iFi5mzxrv7WQoJ0v2oMYptv+xby0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Liang He <windhl@126.com>,
-        Will Deacon <will@kernel.org>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 224/389] iommu/arm-smmu: qcom_iommu: Add of_node_put() when breaking out of loop
-Date:   Tue, 23 Aug 2022 10:25:02 +0200
-Message-Id: <20220823080124.953975239@linuxfoundation.org>
+        stable@vger.kernel.org, Matthew Wilcox <willy@infradead.org>,
+        Heiko Carstens <hca@linux.ibm.com>,
+        Alexander Egorenkov <egorenar@linux.ibm.com>,
+        Alexander Gordeev <agordeev@linux.ibm.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.4 225/389] s390/zcore: fix race when reading from hardware system area
+Date:   Tue, 23 Aug 2022 10:25:03 +0200
+Message-Id: <20220823080125.007761834@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220823080115.331990024@linuxfoundation.org>
 References: <20220823080115.331990024@linuxfoundation.org>
@@ -49,42 +52,82 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Liang He <windhl@126.com>
+From: Alexander Gordeev <agordeev@linux.ibm.com>
 
-[ Upstream commit a91eb6803c1c715738682fece095145cbd68fe0b ]
+[ Upstream commit 9ffed254d938c9e99eb7761c7f739294c84e0367 ]
 
-In qcom_iommu_has_secure_context(), we should call of_node_put()
-for the reference 'child' when breaking out of for_each_child_of_node()
-which will automatically increase and decrease the refcount.
+Memory buffer used for reading out data from hardware system
+area is not protected against concurrent access.
 
-Fixes: d051f28c8807 ("iommu/qcom: Initialize secure page table")
-Signed-off-by: Liang He <windhl@126.com>
-Link: https://lore.kernel.org/r/20220719124955.1242171-1-windhl@126.com
-Signed-off-by: Will Deacon <will@kernel.org>
+Reported-by: Matthew Wilcox <willy@infradead.org>
+Fixes: 411ed3225733 ("[S390] zfcpdump support.")
+Acked-by: Heiko Carstens <hca@linux.ibm.com>
+Tested-by: Alexander Egorenkov <egorenar@linux.ibm.com>
+Link: https://lore.kernel.org/r/e68137f0f9a0d2558f37becc20af18e2939934f6.1658206891.git.agordeev@linux.ibm.com
+Signed-off-by: Alexander Gordeev <agordeev@linux.ibm.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/iommu/qcom_iommu.c | 7 +++++--
- 1 file changed, 5 insertions(+), 2 deletions(-)
+ drivers/s390/char/zcore.c | 11 ++++++++++-
+ 1 file changed, 10 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/iommu/qcom_iommu.c b/drivers/iommu/qcom_iommu.c
-index 280de92b332e..b6e546b62a7c 100644
---- a/drivers/iommu/qcom_iommu.c
-+++ b/drivers/iommu/qcom_iommu.c
-@@ -785,9 +785,12 @@ static bool qcom_iommu_has_secure_context(struct qcom_iommu_dev *qcom_iommu)
- {
- 	struct device_node *child;
+diff --git a/drivers/s390/char/zcore.c b/drivers/s390/char/zcore.c
+index 08f812475f5e..c9d172510509 100644
+--- a/drivers/s390/char/zcore.c
++++ b/drivers/s390/char/zcore.c
+@@ -53,6 +53,7 @@ static struct dentry *zcore_reipl_file;
+ static struct dentry *zcore_hsa_file;
+ static struct ipl_parameter_block *zcore_ipl_block;
  
--	for_each_child_of_node(qcom_iommu->dev->of_node, child)
--		if (of_device_is_compatible(child, "qcom,msm-iommu-v1-sec"))
-+	for_each_child_of_node(qcom_iommu->dev->of_node, child) {
-+		if (of_device_is_compatible(child, "qcom,msm-iommu-v1-sec")) {
-+			of_node_put(child);
- 			return true;
++static DEFINE_MUTEX(hsa_buf_mutex);
+ static char hsa_buf[PAGE_SIZE] __aligned(PAGE_SIZE);
+ 
+ /*
+@@ -69,19 +70,24 @@ int memcpy_hsa_user(void __user *dest, unsigned long src, size_t count)
+ 	if (!hsa_available)
+ 		return -ENODATA;
+ 
++	mutex_lock(&hsa_buf_mutex);
+ 	while (count) {
+ 		if (sclp_sdias_copy(hsa_buf, src / PAGE_SIZE + 2, 1)) {
+ 			TRACE("sclp_sdias_copy() failed\n");
++			mutex_unlock(&hsa_buf_mutex);
+ 			return -EIO;
+ 		}
+ 		offset = src % PAGE_SIZE;
+ 		bytes = min(PAGE_SIZE - offset, count);
+-		if (copy_to_user(dest, hsa_buf + offset, bytes))
++		if (copy_to_user(dest, hsa_buf + offset, bytes)) {
++			mutex_unlock(&hsa_buf_mutex);
+ 			return -EFAULT;
 +		}
-+	}
- 
- 	return false;
+ 		src += bytes;
+ 		dest += bytes;
+ 		count -= bytes;
+ 	}
++	mutex_unlock(&hsa_buf_mutex);
+ 	return 0;
  }
+ 
+@@ -99,9 +105,11 @@ int memcpy_hsa_kernel(void *dest, unsigned long src, size_t count)
+ 	if (!hsa_available)
+ 		return -ENODATA;
+ 
++	mutex_lock(&hsa_buf_mutex);
+ 	while (count) {
+ 		if (sclp_sdias_copy(hsa_buf, src / PAGE_SIZE + 2, 1)) {
+ 			TRACE("sclp_sdias_copy() failed\n");
++			mutex_unlock(&hsa_buf_mutex);
+ 			return -EIO;
+ 		}
+ 		offset = src % PAGE_SIZE;
+@@ -111,6 +119,7 @@ int memcpy_hsa_kernel(void *dest, unsigned long src, size_t count)
+ 		dest += bytes;
+ 		count -= bytes;
+ 	}
++	mutex_unlock(&hsa_buf_mutex);
+ 	return 0;
+ }
+ 
 -- 
 2.35.1
 
