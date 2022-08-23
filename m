@@ -2,47 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2CD80C32796
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 09:41:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E2FB7C32772
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 09:42:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243363AbiHWJlx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 05:41:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49794 "EHLO
+        id S242237AbiHWJl6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 23 Aug 2022 05:41:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49708 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242879AbiHWJj1 (ORCPT
+        with ESMTP id S243247AbiHWJj1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 23 Aug 2022 05:39:27 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AC23322BC2;
-        Tue, 23 Aug 2022 01:41:10 -0700 (PDT)
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2A46D696F6;
+        Tue, 23 Aug 2022 01:41:03 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 3B57E614E7;
-        Tue, 23 Aug 2022 08:40:18 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4B3EEC433C1;
-        Tue, 23 Aug 2022 08:40:17 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 8747BB81C55;
+        Tue, 23 Aug 2022 08:41:03 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D2E71C433C1;
+        Tue, 23 Aug 2022 08:41:01 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661244017;
-        bh=791j+2hWy8TOd/D1gDSC01GR07M5nk56qoSUdhg5FAU=;
+        s=korg; t=1661244062;
+        bh=LP5BzgqKsxL6/kCUIrjEs8eLaEKoR1gKWjg9bD0cpqg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=VIh6GOuSr/7lKgPKH3szZshSvRy3n0eQBEBGdRimYKCEvF4bYP8NrlrzKgWNShkXK
-         T0dFkQ2OTaKe8FVejq0FzxP9uqJhpPEQrcuXZip7ijxrUChUhRGOse3hRfYTppco4E
-         aEmnBAGZ2TH+NmRdEF389Tdv4unUilRMQDoCm3uk=
+        b=acqsz9Sv2/fHKYqRZEqMRygfgxuvmHz+v75Q47PsSU/vQRbtDvG2LthdbCGH9L3+W
+         qoCuTDLAZJqS3nYIKM7d5qDrc3m2cALgy5gTC1Ve4VcYZi83Bet0YzUVahwURyMZYB
+         fQJJ/0U6U/v/8dnBDeUF2AM3hlGaIU/aTC6vPkRg=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Wolfram Sang <wsa+renesas@sang-engineering.com>,
-        John Stultz <jstultz@google.com>,
-        Shuah Khan <skhan@linuxfoundation.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.14 073/229] selftests: timers: valid-adjtimex: build fix for newer toolchains
-Date:   Tue, 23 Aug 2022 10:23:54 +0200
-Message-Id: <20220823080056.336287734@linuxfoundation.org>
+        stable@vger.kernel.org, Tom Rix <trix@redhat.com>,
+        John Johansen <john.johansen@canonical.com>
+Subject: [PATCH 5.15 031/244] apparmor: fix aa_label_asxprint return check
+Date:   Tue, 23 Aug 2022 10:23:10 +0200
+Message-Id: <20220823080100.097762623@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220823080053.202747790@linuxfoundation.org>
-References: <20220823080053.202747790@linuxfoundation.org>
+In-Reply-To: <20220823080059.091088642@linuxfoundation.org>
+References: <20220823080059.091088642@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -51,39 +48,56 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Wolfram Sang <wsa+renesas@sang-engineering.com>
+From: Tom Rix <trix@redhat.com>
 
-[ Upstream commit 9a162977d20436be5678a8e21a8e58eb4616d86a ]
+commit 3e2a3a0830a2090e766d0d887d52c67de2a6f323 upstream.
 
-Toolchains with an include file 'sys/timex.h' based on 3.18 will have a
-'clock_adjtime' definition added, so it can't be static in the code:
+Clang static analysis reports this issue
+label.c:1802:3: warning: 2nd function call argument
+  is an uninitialized value
+  pr_info("%s", str);
+  ^~~~~~~~~~~~~~~~~~
 
-valid-adjtimex.c:43:12: error: static declaration of ‘clock_adjtime’ follows non-static declaration
+str is set from a successful call to aa_label_asxprint(&str, ...)
+On failure a negative value is returned, not a -1.  So change
+the check.
 
-Fixes: e03a58c320e1 ("kselftests: timers: Add adjtimex SETOFFSET validity tests")
-Signed-off-by: Wolfram Sang <wsa+renesas@sang-engineering.com>
-Acked-by: John Stultz <jstultz@google.com>
-Signed-off-by: Shuah Khan <skhan@linuxfoundation.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Fixes: f1bd904175e8 ("apparmor: add the base fns() for domain labels")
+Signed-off-by: Tom Rix <trix@redhat.com>
+Signed-off-by: John Johansen <john.johansen@canonical.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- tools/testing/selftests/timers/valid-adjtimex.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ security/apparmor/label.c |    6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
-diff --git a/tools/testing/selftests/timers/valid-adjtimex.c b/tools/testing/selftests/timers/valid-adjtimex.c
-index 5397de708d3c..48b9a803235a 100644
---- a/tools/testing/selftests/timers/valid-adjtimex.c
-+++ b/tools/testing/selftests/timers/valid-adjtimex.c
-@@ -40,7 +40,7 @@
- #define ADJ_SETOFFSET 0x0100
+--- a/security/apparmor/label.c
++++ b/security/apparmor/label.c
+@@ -1745,7 +1745,7 @@ void aa_label_xaudit(struct audit_buffer
+ 	if (!use_label_hname(ns, label, flags) ||
+ 	    display_mode(ns, label, flags)) {
+ 		len  = aa_label_asxprint(&name, ns, label, flags, gfp);
+-		if (len == -1) {
++		if (len < 0) {
+ 			AA_DEBUG("label print error");
+ 			return;
+ 		}
+@@ -1773,7 +1773,7 @@ void aa_label_seq_xprint(struct seq_file
+ 		int len;
  
- #include <sys/syscall.h>
--static int clock_adjtime(clockid_t id, struct timex *tx)
-+int clock_adjtime(clockid_t id, struct timex *tx)
- {
- 	return syscall(__NR_clock_adjtime, id, tx);
- }
--- 
-2.35.1
-
+ 		len = aa_label_asxprint(&str, ns, label, flags, gfp);
+-		if (len == -1) {
++		if (len < 0) {
+ 			AA_DEBUG("label print error");
+ 			return;
+ 		}
+@@ -1796,7 +1796,7 @@ void aa_label_xprintk(struct aa_ns *ns,
+ 		int len;
+ 
+ 		len = aa_label_asxprint(&str, ns, label, flags, gfp);
+-		if (len == -1) {
++		if (len < 0) {
+ 			AA_DEBUG("label print error");
+ 			return;
+ 		}
 
 
