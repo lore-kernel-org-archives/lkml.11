@@ -2,42 +2,56 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 336F3C32772
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 11:04:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8D4B0C32772
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 11:04:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356956AbiHWLEh (ORCPT
+        id S1356187AbiHWLEl (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 07:04:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37056 "EHLO
+        Tue, 23 Aug 2022 07:04:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37854 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357346AbiHWLCI (ORCPT
+        with ESMTP id S1356599AbiHWK74 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 07:02:08 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 03441AF49B;
-        Tue, 23 Aug 2022 02:14:50 -0700 (PDT)
+        Tue, 23 Aug 2022 06:59:56 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5BE85AE9D6;
+        Tue, 23 Aug 2022 02:14:07 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id CA71C60F85;
-        Tue, 23 Aug 2022 09:14:48 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CE943C433C1;
-        Tue, 23 Aug 2022 09:14:47 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 510F6B81C86;
+        Tue, 23 Aug 2022 09:13:53 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 807E4C433B5;
+        Tue, 23 Aug 2022 09:13:51 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661246088;
-        bh=IAjqu88HBmrdhnXFGvH85PF6S4vUjcTeTg1KNkSXmXU=;
+        s=korg; t=1661246032;
+        bh=buNJpeB5tJIUb/TRYCJmQLyE/2aGLkLTIGN2CS75dns=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=vlkTSMDZc1pBzvC+HviUGr1TeoDiGQS2NbYfJU9/ucIEGRr0hWPi149lpw9VpjmoJ
-         itD/XRGmyAnluN8eRI2tMyXFdCu4Jdu5xk5ma2DlfalvyUlKIpQNBcOn/7N1enZMWO
-         HK0Y/+/AAqmUMkEmL93KjAfr1H03sY3i9yyXJebI=
+        b=GJ4W21YfDnyIipjKC9xafQZdCG8uvA2x4a7H1QsK1F2uGaFFjnjqZVWZQjt3wLvEm
+         XP0ycd6vL2gms0fAwGx+3U5pX98H72/iU9XCPnD9PyUHKp34vYqLWKUXQtyWTOpWQ9
+         uMiFNlF063uvv/eJVrXRaY5dcaa9JcHqlsCUpqH4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, David Sterba <dsterba@suse.com>,
-        Qu Wenruo <wqu@suse.com>
-Subject: [PATCH 4.19 286/287] btrfs: only write the sectors in the vertical stripe which has data stripes
-Date:   Tue, 23 Aug 2022 10:27:35 +0200
-Message-Id: <20220823080111.167623816@linuxfoundation.org>
+        stable@vger.kernel.org, Roberto Sassu <roberto.sassu@huawei.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Andrii Nakryiko <andrii@kernel.org>, bpf@vger.kernel.org,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Ingo Molnar <mingo@redhat.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>, llvm@lists.linux.dev,
+        Martin KaFai Lau <martin.lau@linux.dev>,
+        Nathan Chancellor <nathan@kernel.org>,
+        Nick Desaulniers <ndesaulniers@google.com>,
+        Nick Terrell <terrelln@fb.com>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Quentin Monnet <quentin@isovalent.com>,
+        Song Liu <song@kernel.org>,
+        Stanislav Fomichev <sdf@google.com>,
+        Arnaldo Carvalho de Melo <acme@redhat.com>
+Subject: [PATCH 4.19 240/287] tools build: Switch to new openssl API for test-libcrypto
+Date:   Tue, 23 Aug 2022 10:26:49 +0200
+Message-Id: <20220823080109.163592043@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220823080100.268827165@linuxfoundation.org>
 References: <20220823080100.268827165@linuxfoundation.org>
@@ -49,163 +63,75 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Qu Wenruo <wqu@suse.com>
+From: Roberto Sassu <roberto.sassu@huawei.com>
 
-commit bd8f7e627703ca5707833d623efcd43f104c7b3f upstream.
+commit 5b245985a6de5ac18b5088c37068816d413fb8ed upstream.
 
-If we have only 8K partial write at the beginning of a full RAID56
-stripe, we will write the following contents:
+Switch to new EVP API for detecting libcrypto, as Fedora 36 returns an
+error when it encounters the deprecated function MD5_Init() and the others.
 
-                    0  8K           32K             64K
-Disk 1	(data):     |XX|            |               |
-Disk 2  (data):     |               |               |
-Disk 3  (parity):   |XXXXXXXXXXXXXXX|XXXXXXXXXXXXXXX|
+The error would be interpreted as missing libcrypto, while in reality it is
+not.
 
-|X| means the sector will be written back to disk.
-
-Note that, although we won't write any sectors from disk 2, but we will
-write the full 64KiB of parity to disk.
-
-This behavior is fine for now, but not for the future (especially for
-RAID56J, as we waste quite some space to journal the unused parity
-stripes).
-
-So here we will also utilize the btrfs_raid_bio::dbitmap, anytime we
-queue a higher level bio into an rbio, we will update rbio::dbitmap to
-indicate which vertical stripes we need to writeback.
-
-And at finish_rmw(), we also check dbitmap to see if we need to write
-any sector in the vertical stripe.
-
-So after the patch, above example will only lead to the following
-writeback pattern:
-
-                    0  8K           32K             64K
-Disk 1	(data):     |XX|            |               |
-Disk 2  (data):     |               |               |
-Disk 3  (parity):   |XX|            |               |
-
-Acked-by: David Sterba <dsterba@suse.com>
-Signed-off-by: Qu Wenruo <wqu@suse.com>
-Signed-off-by: David Sterba <dsterba@suse.com>
+Fixes: 6e8ccb4f624a73c5 ("tools/bpf: properly account for libbfd variations")
+Signed-off-by: Roberto Sassu <roberto.sassu@huawei.com>
+Cc: Alexei Starovoitov <ast@kernel.org>
+Cc: Andrii Nakryiko <andrii@kernel.org>
+Cc: bpf@vger.kernel.org
+Cc: Daniel Borkmann <daniel@iogearbox.net>
+Cc: Ingo Molnar <mingo@redhat.com>
+Cc: John Fastabend <john.fastabend@gmail.com>
+Cc: KP Singh <kpsingh@kernel.org>
+Cc: llvm@lists.linux.dev
+Cc: Martin KaFai Lau <martin.lau@linux.dev>
+Cc: Nathan Chancellor <nathan@kernel.org>
+Cc: Nick Desaulniers <ndesaulniers@google.com>
+Cc: Nick Terrell <terrelln@fb.com>
+Cc: Peter Zijlstra <peterz@infradead.org>
+Cc: Quentin Monnet <quentin@isovalent.com>
+Cc: Song Liu <song@kernel.org>
+Cc: Stanislav Fomichev <sdf@google.com>
+Link: https://lore.kernel.org/r/20220719170555.2576993-4-roberto.sassu@huawei.com
+Signed-off-by: Arnaldo Carvalho de Melo <acme@redhat.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- fs/btrfs/raid56.c |   55 ++++++++++++++++++++++++++++++++++++++++++++++++++----
- 1 file changed, 51 insertions(+), 4 deletions(-)
+ tools/build/feature/test-libcrypto.c | 15 +++++++++++----
+ 1 file changed, 11 insertions(+), 4 deletions(-)
 
---- a/fs/btrfs/raid56.c
-+++ b/fs/btrfs/raid56.c
-@@ -318,6 +318,9 @@ static void merge_rbio(struct btrfs_raid
+diff --git a/tools/build/feature/test-libcrypto.c b/tools/build/feature/test-libcrypto.c
+index a98174e0569c..bc34a5bbb504 100644
+--- a/tools/build/feature/test-libcrypto.c
++++ b/tools/build/feature/test-libcrypto.c
+@@ -1,16 +1,23 @@
+ // SPDX-License-Identifier: GPL-2.0
++#include <openssl/evp.h>
+ #include <openssl/sha.h>
+ #include <openssl/md5.h>
+ 
+ int main(void)
  {
- 	bio_list_merge(&dest->bio_list, &victim->bio_list);
- 	dest->bio_list_bytes += victim->bio_list_bytes;
-+	/* Also inherit the bitmaps from @victim. */
-+	bitmap_or(dest->dbitmap, victim->dbitmap, dest->dbitmap,
-+		  dest->stripe_npages);
- 	dest->generic_bio_cnt += victim->generic_bio_cnt;
- 	bio_list_init(&victim->bio_list);
- }
-@@ -862,6 +865,12 @@ static void rbio_orig_end_io(struct btrf
+-	MD5_CTX context;
++	EVP_MD_CTX *mdctx;
+ 	unsigned char md[MD5_DIGEST_LENGTH + SHA_DIGEST_LENGTH];
+ 	unsigned char dat[] = "12345";
++	unsigned int digest_len;
  
- 	if (rbio->generic_bio_cnt)
- 		btrfs_bio_counter_sub(rbio->fs_info, rbio->generic_bio_cnt);
-+	/*
-+	 * Clear the data bitmap, as the rbio may be cached for later usage.
-+	 * do this before before unlock_stripe() so there will be no new bio
-+	 * for this bio.
-+	 */
-+	bitmap_clear(rbio->dbitmap, 0, rbio->stripe_npages);
+-	MD5_Init(&context);
+-	MD5_Update(&context, &dat[0], sizeof(dat));
+-	MD5_Final(&md[0], &context);
++	mdctx = EVP_MD_CTX_new();
++	if (!mdctx)
++		return 0;
++
++	EVP_DigestInit_ex(mdctx, EVP_md5(), NULL);
++	EVP_DigestUpdate(mdctx, &dat[0], sizeof(dat));
++	EVP_DigestFinal_ex(mdctx, &md[0], &digest_len);
++	EVP_MD_CTX_free(mdctx);
  
- 	/*
- 	 * At this moment, rbio->bio_list is empty, however since rbio does not
-@@ -1196,6 +1205,9 @@ static noinline void finish_rmw(struct b
- 	else
- 		BUG();
+ 	SHA1(&dat[0], sizeof(dat), &md[0]);
  
-+	/* We should have at least one data sector. */
-+	ASSERT(bitmap_weight(rbio->dbitmap, rbio->stripe_npages));
-+
- 	/* at this point we either have a full stripe,
- 	 * or we've read the full stripe from the drive.
- 	 * recalculate the parity and write the new results.
-@@ -1269,6 +1281,11 @@ static noinline void finish_rmw(struct b
- 	for (stripe = 0; stripe < rbio->real_stripes; stripe++) {
- 		for (pagenr = 0; pagenr < rbio->stripe_npages; pagenr++) {
- 			struct page *page;
-+
-+			/* This vertical stripe has no data, skip it. */
-+			if (!test_bit(pagenr, rbio->dbitmap))
-+				continue;
-+
- 			if (stripe < rbio->nr_data) {
- 				page = page_in_rbio(rbio, stripe, pagenr, 1);
- 				if (!page)
-@@ -1293,6 +1310,11 @@ static noinline void finish_rmw(struct b
- 
- 		for (pagenr = 0; pagenr < rbio->stripe_npages; pagenr++) {
- 			struct page *page;
-+
-+			/* This vertical stripe has no data, skip it. */
-+			if (!test_bit(pagenr, rbio->dbitmap))
-+				continue;
-+
- 			if (stripe < rbio->nr_data) {
- 				page = page_in_rbio(rbio, stripe, pagenr, 1);
- 				if (!page)
-@@ -1733,6 +1755,33 @@ static void btrfs_raid_unplug(struct blk
- 	run_plug(plug);
- }
- 
-+/* Add the original bio into rbio->bio_list, and update rbio::dbitmap. */
-+static void rbio_add_bio(struct btrfs_raid_bio *rbio, struct bio *orig_bio)
-+{
-+	const struct btrfs_fs_info *fs_info = rbio->fs_info;
-+	const u64 orig_logical = orig_bio->bi_iter.bi_sector << SECTOR_SHIFT;
-+	const u64 full_stripe_start = rbio->bbio->raid_map[0];
-+	const u32 orig_len = orig_bio->bi_iter.bi_size;
-+	const u32 sectorsize = fs_info->sectorsize;
-+	u64 cur_logical;
-+
-+	ASSERT(orig_logical >= full_stripe_start &&
-+	       orig_logical + orig_len <= full_stripe_start +
-+	       rbio->nr_data * rbio->stripe_len);
-+
-+	bio_list_add(&rbio->bio_list, orig_bio);
-+	rbio->bio_list_bytes += orig_bio->bi_iter.bi_size;
-+
-+	/* Update the dbitmap. */
-+	for (cur_logical = orig_logical; cur_logical < orig_logical + orig_len;
-+	     cur_logical += sectorsize) {
-+		int bit = ((u32)(cur_logical - full_stripe_start) >>
-+			   PAGE_SHIFT) % rbio->stripe_npages;
-+
-+		set_bit(bit, rbio->dbitmap);
-+	}
-+}
-+
- /*
-  * our main entry point for writes from the rest of the FS.
-  */
-@@ -1749,9 +1798,8 @@ int raid56_parity_write(struct btrfs_fs_
- 		btrfs_put_bbio(bbio);
- 		return PTR_ERR(rbio);
- 	}
--	bio_list_add(&rbio->bio_list, bio);
--	rbio->bio_list_bytes = bio->bi_iter.bi_size;
- 	rbio->operation = BTRFS_RBIO_WRITE;
-+	rbio_add_bio(rbio, bio);
- 
- 	btrfs_bio_counter_inc_noblocked(fs_info);
- 	rbio->generic_bio_cnt = 1;
-@@ -2155,8 +2203,7 @@ int raid56_parity_recover(struct btrfs_f
- 	}
- 
- 	rbio->operation = BTRFS_RBIO_READ_REBUILD;
--	bio_list_add(&rbio->bio_list, bio);
--	rbio->bio_list_bytes = bio->bi_iter.bi_size;
-+	rbio_add_bio(rbio, bio);
- 
- 	rbio->faila = find_logical_bio_stripe(rbio, bio);
- 	if (rbio->faila == -1) {
+-- 
+2.37.2
+
 
 
