@@ -2,106 +2,88 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C98C7C32789
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 16:33:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3E0CCC32772
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 16:33:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244893AbiHWQdg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 12:33:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50224 "EHLO
+        id S242123AbiHWQdx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 23 Aug 2022 12:33:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50534 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244824AbiHWQdC (ORCPT
+        with ESMTP id S242776AbiHWQdL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 12:33:02 -0400
-Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 68F701BEA8;
-        Tue, 23 Aug 2022 07:53:00 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1661266380; x=1692802380;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=bqhxUdOn3t8XtyVRG+9J23npUH+3xW53S2LXug5cDv8=;
-  b=lK2AhEtiNDu/zE7DPE3eEI5o+ur5tEWzAcddI/uOmuX8dblR96H7Ox/I
-   zogRLeKvkISH+QHMyTlPeWtdwi5s2zGCmGc1nu5u2T+wMv8iM78vF+R2c
-   fKAVCPjRZDcn0dkOFkio3Q9hwoiW3RadtjqZCyKPUo0Dslss7XgVeI5Oh
-   XdZTh+kWCUk9/KnI/qD6DrbeVVgB5+R41BvHR7C0OfRgLl1X6ipMf2WlB
-   DAu6twDRzri4PiwKg8qlBGJykW/59wCDC/J89dxzfUCb37ikX4BzCk7Xr
-   dnjJly1x589afeeWkFIl6eNYlk3+JocbMlST7n7BWb+yXC67Fw3Wqo+yC
-   w==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10448"; a="294495642"
-X-IronPort-AV: E=Sophos;i="5.93,258,1654585200"; 
-   d="scan'208";a="294495642"
-Received: from fmsmga004.fm.intel.com ([10.253.24.48])
-  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Aug 2022 07:52:34 -0700
-X-IronPort-AV: E=Sophos;i="5.93,257,1654585200"; 
-   d="scan'208";a="677648434"
-Received: from smile.fi.intel.com ([10.237.72.54])
-  by fmsmga004-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Aug 2022 07:52:33 -0700
-Received: from andy by smile.fi.intel.com with local (Exim 4.96)
-        (envelope-from <andriy.shevchenko@linux.intel.com>)
-        id 1oQVGY-002U44-3A;
-        Tue, 23 Aug 2022 17:52:30 +0300
-Date:   Tue, 23 Aug 2022 17:52:30 +0300
-From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To:     Henning Schild <henning.schild@siemens.com>
-Cc:     Pavel Machek <pavel@ucw.cz>, linux-leds@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] leds: simatic-ipc-leds-gpio: make sure we have the GPIO
- providing driver
-Message-ID: <YwTprqn6FhjEHYhG@smile.fi.intel.com>
-References: <20220805120343.5027-1-henning.schild@siemens.com>
- <YwTg86pKFtT0gax0@smile.fi.intel.com>
- <20220823164207.6de6c387@md1za8fc.ad001.siemens.net>
+        Tue, 23 Aug 2022 12:33:11 -0400
+Received: from mx1.molgen.mpg.de (mx3.molgen.mpg.de [141.14.17.11])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C09617B78F;
+        Tue, 23 Aug 2022 07:51:35 -0700 (PDT)
+Received: from [141.14.220.45] (g45.guest.molgen.mpg.de [141.14.220.45])
+        (using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
+         key-exchange X25519 server-signature RSA-PSS (2048 bits))
+        (No client certificate requested)
+        (Authenticated sender: pmenzel)
+        by mx.molgen.mpg.de (Postfix) with ESMTPSA id C95A061EA192D;
+        Tue, 23 Aug 2022 16:51:33 +0200 (CEST)
+Message-ID: <6d6b6bcf-cab8-695b-568a-c1372ac531ee@molgen.mpg.de>
+Date:   Tue, 23 Aug 2022 16:51:33 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220823164207.6de6c387@md1za8fc.ad001.siemens.net>
-Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.1.2
+Content-Language: en-US
+Cc:     Herbert Xu <herbert@gondor.apana.org.au>,
+        "David S. Miller" <davem@davemloft.net>,
+        linux-crypto@vger.kernel.org, LKML <linux-kernel@vger.kernel.org>
+To:     =?UTF-8?Q?Stephan_M=c3=bcller?= <smueller@chronox.de>
+From:   Paul Menzel <pmenzel@molgen.mpg.de>
+Subject: kdf108_init() takes over 250 ms
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Aug 23, 2022 at 04:42:07PM +0200, Henning Schild wrote:
-> Am Tue, 23 Aug 2022 17:15:15 +0300
-> schrieb Andy Shevchenko <andriy.shevchenko@linux.intel.com>:
-> > On Fri, Aug 05, 2022 at 02:03:43PM +0200, Henning Schild wrote:
-> > > If we register a "leds-gpio" platform device for GPIO pins that do
-> > > not exist we get a -EPROBE_DEFER and the probe will be tried again
-> > > later. If there is not driver to provide that pin we will poll
-> > > forever and also create a lot of log messages.
-> > > 
-> > > So check if that GPIO driver is configured, if so it will come up
-> > > eventually. If not we exit our probe function early and do not even
-> > > bother registering the "leds-gpio". This method was chosen over
-> > > "Kconfig depends" since this way we can add support for more
-> > > devices and GPIO backends more easily without "depends"ing on all
-> > > GPIO backends.  
-> > 
-> > Not sure what we should do with this patch due to your self-reply on
-> > it. So, if it's still needed, I would expect a new version / resend.
-> 
-> Ok i did not realize that the P2SB stuff made it in the meantime. This
-> patch is still relevant and should be picked on top, to deal with the
-> unlikely case that this driver is enabled where the gpio driver is not
-> ... which would lead to an endless probing loop and a lot of logging.
-> 
-> Why would you expect a new version? I did not try but see no reason it
-> should not still apply. There has been no review comments, which means
-> no change needed.
-> 
-> Unless we want to give it a Fixes or something and consider that
-> probing loop a bug to make sure the patch makes it into all kernels
-> that carry my LED GPIO stuff based on the P2SB patches.
-
-Because it's usually how maintainers work (at least Lee and Greg KH come
-to my mind), when new cycle starts, the (potentially rebased) new versions
-are expected.
-
-But with powerfulness of `b4` tool it might be that they changed their ways
-of maintaining. You need to ask the LED maintainer(s) on how to proceed.
-
--- 
-With Best Regards,
-Andy Shevchenko
+Dear Stephan,
 
 
+On the Dell XPS 13 9370 with Debian sid/unstable, I noticed with Linux 
+5.18.16, that  `crypto_kdf108_init()` takes 263 ms to run even with 
+disabled self-tests:
+
+```
+[    0.000000] Linux version 5.18.0-4-amd64 
+(debian-kernel@lists.debian.org) (gcc-11 (Debian 11.3.0-5) 11.3.0, GNU 
+ld (GNU Binutils for Debian) 2.38.90.20220713) #1 SMP PREEMPT_DYNAMIC 
+Debian 5.18.16-1 (2022-08-10)
+[    0.000000] Command line: BOOT_IMAGE=/vmlinuz-5.18.0-4-amd64 
+root=UUID=56f398e0-1e25-4fda-aa9f-611dece4b333 ro quiet 
+module_blacklist=psmouse initcall_debug log_buf_len=4M cryptomgr.notests
+[…]
+[    0.000000] DMI: Dell Inc. XPS 13 9370/0RMYH9, BIOS 1.21.0 07/06/2022
+[…]
+[    0.272123] calling  x509_key_init+0x0/0x11 @ 1
+[    0.272125] Asymmetric key parser 'x509' registered
+[    0.272126] initcall x509_key_init+0x0/0x11 returned 0 after 1 usecs
+[    0.272127] calling  crypto_kdf108_init+0x0/0x149 @ 1
+[    0.530787] Freeing initrd memory: 39332K
+[    0.534667] alg: self-tests disabled
+[    0.534701] alg: self-tests for CTR-KDF (hmac(sha256)) passed
+[    0.534703] initcall crypto_kdf108_init+0x0/0x149 returned 0 after 
+262573 usecs
+[    0.534708] calling  blkdev_init+0x0/0x20 @ 1
+[    0.534716] initcall blkdev_init+0x0/0x20 returned 0 after 5 usecs
+[    0.534718] calling  proc_genhd_init+0x0/0x46 @ 1
+[    0.534723] initcall proc_genhd_init+0x0/0x46 returned 0 after 3 usecs
+```
+
+With self-tests enabled it’s only less than a millisecond longer.
+
+```
+[    0.282389] calling  crypto_kdf108_init+0x0/0x149 @ 1
+[    0.541096] Freeing initrd memory: 39332K
+[    0.545674] alg: self-tests for CTR-KDF (hmac(sha256)) passed
+[    0.545676] initcall crypto_kdf108_init+0x0/0x149 returned 0 after 
+263284 usecs
+```
+
+
+Kind regards,
+
+Paul
