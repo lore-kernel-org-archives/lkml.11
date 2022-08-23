@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5EEAAC32772
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 09:29:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C3501C32772
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 09:29:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350330AbiHWJ3U (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 05:29:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50184 "EHLO
+        id S238392AbiHWJ3a (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 23 Aug 2022 05:29:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52442 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351110AbiHWJ0l (ORCPT
+        with ESMTP id S1351139AbiHWJ0n (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 05:26:41 -0400
+        Tue, 23 Aug 2022 05:26:43 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9A266910B0;
-        Tue, 23 Aug 2022 01:37:04 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1B932915D3;
+        Tue, 23 Aug 2022 01:37:08 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 7507B6152E;
-        Tue, 23 Aug 2022 08:36:07 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 822DEC433D6;
-        Tue, 23 Aug 2022 08:36:06 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id B0ABD6152F;
+        Tue, 23 Aug 2022 08:36:13 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A3E37C433D6;
+        Tue, 23 Aug 2022 08:36:12 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661243766;
-        bh=XnKHTAqr4cw2+DZhxkmwjc8pnDzf654pxG/zleJA8kA=;
+        s=korg; t=1661243773;
+        bh=9SKAJjXFlHzhEZCiqbtuAW5C1JszHwdRG7QcZnOFqYY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=PeVzG1S4mV3C5B+k0tyJGMXAu8ohzQ20k8+lMWUs5PyLyyun9NDO7r3pC6Q+GMrvz
-         f7G0jLI0gGVMZqBpzn4vnvXn0pdHXgYackmjoZunJvq1CYGZX2bZA16lYcTOQum2dr
-         rnF8V4TYrt6NmTY3acs9+rOw4vNo2RRcKokOGjPQ=
+        b=BPmCiEK+6tsM5D69esATLAQpAW6rvyHp1ov9PXBWwB8xfBWGBB7HaKeo74AsL+sF5
+         nI9w90jiXdmF2m7hFGqF7rkgWpRuUJJ7AX8acwKDYNz9d36viQhMpzidxClzLdJdcC
+         /e8nCtiMlanxK+qhAy2YztPBCd5njDjacgpSNODg=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Zheyu Ma <zheyuma97@gmail.com>,
-        Takashi Iwai <tiwai@suse.de>
-Subject: [PATCH 4.14 015/229] ALSA: bcd2000: Fix a UAF bug on the error path of probing
-Date:   Tue, 23 Aug 2022 10:22:56 +0200
-Message-Id: <20220823080053.954612763@linuxfoundation.org>
+        stable@vger.kernel.org, Ping Cheng <ping.cheng@wacom.com>,
+        Jason Gerecke <jason.gerecke@wacom.com>,
+        Jiri Kosina <jkosina@suse.cz>
+Subject: [PATCH 4.14 017/229] HID: wacom: Dont register pad_input for touch switch
+Date:   Tue, 23 Aug 2022 10:22:58 +0200
+Message-Id: <20220823080054.044105435@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220823080053.202747790@linuxfoundation.org>
 References: <20220823080053.202747790@linuxfoundation.org>
@@ -49,43 +49,107 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Zheyu Ma <zheyuma97@gmail.com>
+From: Ping Cheng <pinglinux@gmail.com>
 
-commit ffb2759df7efbc00187bfd9d1072434a13a54139 upstream.
+commit d6b675687a4ab4dba684716d97c8c6f81bf10905 upstream.
 
-When the driver fails in snd_card_register() at probe time, it will free
-the 'bcd2k->midi_out_urb' before killing it, which may cause a UAF bug.
+Touch switch state is received through WACOM_PAD_FIELD. However, it
+is reported by touch_input. Don't register pad_input if no other pad
+events require the interface.
 
-The following log can reveal it:
-
-[   50.727020] BUG: KASAN: use-after-free in bcd2000_input_complete+0x1f1/0x2e0 [snd_bcd2000]
-[   50.727623] Read of size 8 at addr ffff88810fab0e88 by task swapper/4/0
-[   50.729530] Call Trace:
-[   50.732899]  bcd2000_input_complete+0x1f1/0x2e0 [snd_bcd2000]
-
-Fix this by adding usb_kill_urb() before usb_free_urb().
-
-Fixes: b47a22290d58 ("ALSA: MIDI driver for Behringer BCD2000 USB device")
-Signed-off-by: Zheyu Ma <zheyuma97@gmail.com>
-Cc: <stable@vger.kernel.org>
-Link: https://lore.kernel.org/r/20220715010515.2087925-1-zheyuma97@gmail.com
-Signed-off-by: Takashi Iwai <tiwai@suse.de>
+Cc: stable@vger.kernel.org
+Signed-off-by: Ping Cheng <ping.cheng@wacom.com>
+Reviewed-by: Jason Gerecke <jason.gerecke@wacom.com>
+Signed-off-by: Jiri Kosina <jkosina@suse.cz>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- sound/usb/bcd2000/bcd2000.c |    3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ drivers/hid/wacom_sys.c |    2 +-
+ drivers/hid/wacom_wac.c |   43 +++++++++++++++++++++++++------------------
+ 2 files changed, 26 insertions(+), 19 deletions(-)
 
---- a/sound/usb/bcd2000/bcd2000.c
-+++ b/sound/usb/bcd2000/bcd2000.c
-@@ -357,7 +357,8 @@ static int bcd2000_init_midi(struct bcd2
- static void bcd2000_free_usb_related_resources(struct bcd2000 *bcd2k,
- 						struct usb_interface *interface)
- {
--	/* usb_kill_urb not necessary, urb is aborted automatically */
-+	usb_kill_urb(bcd2k->midi_out_urb);
-+	usb_kill_urb(bcd2k->midi_in_urb);
+--- a/drivers/hid/wacom_sys.c
++++ b/drivers/hid/wacom_sys.c
+@@ -1956,7 +1956,7 @@ static int wacom_register_inputs(struct
  
- 	usb_free_urb(bcd2k->midi_out_urb);
- 	usb_free_urb(bcd2k->midi_in_urb);
+ 	error = wacom_setup_pad_input_capabilities(pad_input_dev, wacom_wac);
+ 	if (error) {
+-		/* no pad in use on this interface */
++		/* no pad events using this interface */
+ 		input_free_device(pad_input_dev);
+ 		wacom_wac->pad_input = NULL;
+ 		pad_input_dev = NULL;
+--- a/drivers/hid/wacom_wac.c
++++ b/drivers/hid/wacom_wac.c
+@@ -1897,7 +1897,6 @@ static void wacom_wac_pad_usage_mapping(
+ 		wacom_wac->has_mute_touch_switch = true;
+ 		usage->type = EV_SW;
+ 		usage->code = SW_MUTE_DEVICE;
+-		features->device_type |= WACOM_DEVICETYPE_PAD;
+ 		break;
+ 	case WACOM_HID_WD_TOUCHSTRIP:
+ 		wacom_map_usage(input, usage, field, EV_ABS, ABS_RX, 0);
+@@ -1977,6 +1976,30 @@ static void wacom_wac_pad_event(struct h
+ 			wacom_wac->hid_data.inrange_state |= value;
+ 	}
+ 
++	/* Process touch switch state first since it is reported through touch interface,
++	 * which is indepentent of pad interface. In the case when there are no other pad
++	 * events, the pad interface will not even be created.
++	 */
++	if ((equivalent_usage == WACOM_HID_WD_MUTE_DEVICE) ||
++	   (equivalent_usage == WACOM_HID_WD_TOUCHONOFF)) {
++		if (wacom_wac->shared->touch_input) {
++			bool *is_touch_on = &wacom_wac->shared->is_touch_on;
++
++			if (equivalent_usage == WACOM_HID_WD_MUTE_DEVICE && value)
++				*is_touch_on = !(*is_touch_on);
++			else if (equivalent_usage == WACOM_HID_WD_TOUCHONOFF)
++				*is_touch_on = value;
++
++			input_report_switch(wacom_wac->shared->touch_input,
++					    SW_MUTE_DEVICE, !(*is_touch_on));
++			input_sync(wacom_wac->shared->touch_input);
++		}
++		return;
++	}
++
++	if (!input)
++		return;
++
+ 	switch (equivalent_usage) {
+ 	case WACOM_HID_WD_TOUCHRING:
+ 		/*
+@@ -2006,22 +2029,6 @@ static void wacom_wac_pad_event(struct h
+ 			input_event(input, usage->type, usage->code, 0);
+ 		break;
+ 
+-	case WACOM_HID_WD_MUTE_DEVICE:
+-	case WACOM_HID_WD_TOUCHONOFF:
+-		if (wacom_wac->shared->touch_input) {
+-			bool *is_touch_on = &wacom_wac->shared->is_touch_on;
+-
+-			if (equivalent_usage == WACOM_HID_WD_MUTE_DEVICE && value)
+-				*is_touch_on = !(*is_touch_on);
+-			else if (equivalent_usage == WACOM_HID_WD_TOUCHONOFF)
+-				*is_touch_on = value;
+-
+-			input_report_switch(wacom_wac->shared->touch_input,
+-					    SW_MUTE_DEVICE, !(*is_touch_on));
+-			input_sync(wacom_wac->shared->touch_input);
+-		}
+-		break;
+-
+ 	case WACOM_HID_WD_MODE_CHANGE:
+ 		if (wacom_wac->is_direct_mode != value) {
+ 			wacom_wac->is_direct_mode = value;
+@@ -2610,7 +2617,7 @@ void wacom_wac_event(struct hid_device *
+ 	/* usage tests must precede field tests */
+ 	if (WACOM_BATTERY_USAGE(usage))
+ 		wacom_wac_battery_event(hdev, field, usage, value);
+-	else if (WACOM_PAD_FIELD(field) && wacom->wacom_wac.pad_input)
++	else if (WACOM_PAD_FIELD(field))
+ 		wacom_wac_pad_event(hdev, field, usage, value);
+ 	else if (WACOM_PEN_FIELD(field) && wacom->wacom_wac.pen_input)
+ 		wacom_wac_pen_event(hdev, field, usage, value);
 
 
