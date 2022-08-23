@@ -2,84 +2,72 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 07259C32772
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 16:58:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 40ECEC32789
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 16:58:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245750AbiHWQ6N (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 12:58:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53052 "EHLO
+        id S1343514AbiHWQ64 (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 23 Aug 2022 12:58:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57020 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244673AbiHWQ5T (ORCPT
+        with ESMTP id S245232AbiHWQ6b (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 12:57:19 -0400
-Received: from cloudserver094114.home.pl (cloudserver094114.home.pl [79.96.170.134])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 01B05140CAC;
-        Tue, 23 Aug 2022 06:28:05 -0700 (PDT)
-Received: from localhost (127.0.0.1) (HELO v370.home.net.pl)
- by /usr/run/smtp (/usr/run/postfix/private/idea_relay_lmtp) via UNIX with SMTP (IdeaSmtpServer 5.0.0)
- id f8c4d1ad43365a18; Tue, 23 Aug 2022 15:28:03 +0200
-Received: from kreacher.localnet (unknown [213.134.169.58])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        Tue, 23 Aug 2022 12:58:31 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A13CB7675C
+        for <linux-kernel@vger.kernel.org>; Tue, 23 Aug 2022 07:15:00 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1661264099;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=34PbuF0eVwU1fZKmyxntLGj0oriQwCLeUvgJJbU6faI=;
+        b=gPDHTqxComfuxYHBM3hqAdRbNvAeCGf6NLqKiGQluW0tuGiDVM07HlC1b030JbiWFSbZHy
+        PpD2rNsmWMJQh1kf/grYGWCFwsOsB4YIpO0Kw1Rcge4K8F5YkC2PR9lykmRGlGnSWoof0d
+        iDD1Qc67o9TlNRNRS6y6UyUeposKgSI=
+Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
+ [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-327-Q7bLziqjNHmD9kYI60vzyg-1; Tue, 23 Aug 2022 10:14:56 -0400
+X-MC-Unique: Q7bLziqjNHmD9kYI60vzyg-1
+Received: from smtp.corp.redhat.com (int-mx07.intmail.prod.int.rdu2.redhat.com [10.11.54.7])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by v370.home.net.pl (Postfix) with ESMTPSA id 001D466D0AC;
-        Tue, 23 Aug 2022 15:28:02 +0200 (CEST)
-From:   "Rafael J. Wysocki" <rjw@rjwysocki.net>
-To:     Linux ACPI <linux-acpi@vger.kernel.org>
-Cc:     LKML <linux-kernel@vger.kernel.org>,
-        Linux PM <linux-pm@vger.kernel.org>,
-        Mika Westerberg <mika.westerberg@linux.intel.com>,
-        Sakari Ailus <sakari.ailus@linux.intel.com>,
-        Tomasz Figa <tfiga@chromium.org>
-Subject: [PATCH] ACPI: PM: Fix up documentation reference
-Date:   Tue, 23 Aug 2022 15:28:02 +0200
-Message-ID: <5852809.lOV4Wx5bFT@kreacher>
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 229909682A2;
+        Tue, 23 Aug 2022 14:14:56 +0000 (UTC)
+Received: from warthog.procyon.org.uk (unknown [10.33.36.72])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 013C81415138;
+        Tue, 23 Aug 2022 14:14:54 +0000 (UTC)
+Organization: Red Hat UK Ltd. Registered Address: Red Hat UK Ltd, Amberley
+        Place, 107-111 Peascod Street, Windsor, Berkshire, SI4 1TE, United
+        Kingdom.
+        Registered in England and Wales under Company Registration No. 3798903
+From:   David Howells <dhowells@redhat.com>
+In-Reply-To: <YwTfPRDq04/DGTVT@casper.infradead.org>
+References: <YwTfPRDq04/DGTVT@casper.infradead.org> <166126004083.548536.11195647088995116235.stgit@warthog.procyon.org.uk> <166126006184.548536.12909933168251738646.stgit@warthog.procyon.org.uk>
+To:     Matthew Wilcox <willy@infradead.org>
+Cc:     dhowells@redhat.com, sfrench@samba.org, linux-cifs@vger.kernel.org,
+        lsahlber@redhat.com, jlayton@kernel.org, dchinner@redhat.com,
+        linux-fsdevel@vger.kernel.org, linux-kernel@vger.kernel.org,
+        samba-technical@lists.samba.org
+Subject: Re: [PATCH 3/5] smb3: fix temporary data corruption in collapse range
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7Bit
-Content-Type: text/plain; charset="UTF-8"
-X-CLIENT-IP: 213.134.169.58
-X-CLIENT-HOSTNAME: 213.134.169.58
-X-VADE-SPAMSTATE: clean
-X-VADE-SPAMCAUSE: gggruggvucftvghtrhhoucdtuddrgedvfedrvdeiledgieegucetufdoteggodetrfdotffvucfrrhhofhhilhgvmecujffqoffgrffnpdggtffipffknecuuegrihhlohhuthemucduhedtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmdenucfjughrpefhvfevufffkfgggfgtsehtufertddttdejnecuhfhrohhmpedftfgrfhgrvghlucflrdcuhgihshhotghkihdfuceorhhjfiesrhhjfiihshhotghkihdrnhgvtheqnecuggftrfgrthhtvghrnhepffffffekgfehheffleetieevfeefvefhleetjedvvdeijeejledvieehueevueffnecukfhppedvudefrddufeegrdduieelrdehkeenucevlhhushhtvghrufhiiigvpedtnecurfgrrhgrmhepihhnvghtpedvudefrddufeegrdduieelrdehkedphhgvlhhopehkrhgvrggthhgvrhdrlhhotggrlhhnvghtpdhmrghilhhfrhhomhepfdftrghfrggvlhculfdrucghhihsohgtkhhifdcuoehrjhifsehrjhifhihsohgtkhhirdhnvghtqedpnhgspghrtghpthhtohepiedprhgtphhtthhopehlihhnuhigqdgrtghpihesvhhgvghrrdhkvghrnhgvlhdrohhrghdprhgtphhtthhopehlihhnuhigqdhkvghrnhgvlhesvhhgvghrrdhkvghrnhgvlhdrohhrghdprhgtphhtthhopehlihhnuhigqdhpmhesvhhgvghrrdhkvghrnhgvlhdrohhrghdprhgtphhtthhopehmihhkrgdrfigvshhtvghrsggvrhhgsehlihhnuhigrdhinhhtvghlrdgt
- ohhmpdhrtghpthhtohepshgrkhgrrhhirdgrihhluhhssehlihhnuhigrdhinhhtvghlrdgtohhmpdhrtghpthhtohepthhfihhgrgestghhrhhomhhiuhhmrdhorhhg
-X-DCC--Metrics: v370.home.net.pl 1024; Body=6 Fuz1=6 Fuz2=6
+Content-Type: text/plain; charset="us-ascii"
+Content-ID: <714207.1661264094.1@warthog.procyon.org.uk>
+Date:   Tue, 23 Aug 2022 15:14:54 +0100
+Message-ID: <714208.1661264094@warthog.procyon.org.uk>
+X-Scanned-By: MIMEDefang 2.85 on 10.11.54.7
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
+Matthew Wilcox <willy@infradead.org> wrote:
 
-The acpi_dev_state_d0() kerneldoc comment should refer to
-non-d0-probe.rst which is there in the tree instead of
-low-power-probe.rst which is not.  Fix it up.
+>         truncate_pagecache_range(inode, start, end);
+> 
+> ... and presumably, you'd also want the error check?
 
-While at it, adjust the formatting of that comment to save space.
+truncate_pagecache_range() is void.
 
-No functional impact.
-
-Fixes: b82a7df4a7f3 ("ACPI: Add a convenience function to tell a device is in D0 state")
-Reported-by: kernel test robot <lkp@intel.com>
-Signed-off-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
----
- drivers/acpi/device_pm.c |    5 ++---
- 1 file changed, 2 insertions(+), 3 deletions(-)
-
-Index: linux-pm/drivers/acpi/device_pm.c
-===================================================================
---- linux-pm.orig/drivers/acpi/device_pm.c
-+++ linux-pm/drivers/acpi/device_pm.c
-@@ -1460,9 +1460,8 @@ EXPORT_SYMBOL_GPL(acpi_storage_d3);
-  * passed to acpi_device_set_power() and before that function returns, so it is
-  * not valid to ask for the ACPI power state of the device in that time frame.
-  *
-- * This function is intended to be used in a driver's probe or remove
-- * function. See Documentation/firmware-guide/acpi/low-power-probe.rst for
-- * more information.
-+ * This function is intended to be used in a driver's probe or remove function.
-+ * See Documentation/firmware-guide/acpi/non-d0-probe.rst for more information.
-  */
- bool acpi_dev_state_d0(struct device *dev)
- {
-
-
+David
 
