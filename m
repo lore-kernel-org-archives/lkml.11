@@ -2,44 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B2A58C49EC1
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 10:47:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4B9D8C49EC5
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 10:47:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356372AbiHWKrH (ORCPT
+        id S1356437AbiHWKrX (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 06:47:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52752 "EHLO
+        Tue, 23 Aug 2022 06:47:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54378 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355963AbiHWKlL (ORCPT
+        with ESMTP id S1356067AbiHWKlZ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 06:41:11 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F27646580B;
-        Tue, 23 Aug 2022 02:08:36 -0700 (PDT)
+        Tue, 23 Aug 2022 06:41:25 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F121065272;
+        Tue, 23 Aug 2022 02:08:35 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 4EDD66156F;
-        Tue, 23 Aug 2022 09:08:36 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5BAF4C433D6;
-        Tue, 23 Aug 2022 09:08:35 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 3F7A9B81C53;
+        Tue, 23 Aug 2022 09:08:34 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 87E71C43145;
+        Tue, 23 Aug 2022 09:08:32 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661245715;
-        bh=M8ZpMxABeDnxEiGfzWmkt39Q5w0XsLcGayuTXLXz9zc=;
+        s=korg; t=1661245712;
+        bh=kT4S0FkdxQREl8KpWC8Zu8gJ7tAnQVe/AqEwUxUa6v0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Dx2B62944E8OBdJ88oguqhh0WwZ0ax8wVDUFBbJznnJv72x4dp6bfu+QPiEDCRpAP
-         1hk4/z4HihTv404vnTZmBAzhlQWqOeHyClfFvOvMLPWMBOm4BK0XElX6eSen/a8M5m
-         MtE0BQJvfIC7vjNwKl1OjbDJkXceTCwyFXWW4X1g=
+        b=Z7yyIIiAJoJ+HOGOaIBsJ2Zfbei5mb/jikT7mzmpoRlNSRxPn3ajdRRmJ2Do7amxU
+         +4KzqVIBqFX1AGcsNDgimbN9do7kHT7rjG8aGAwgBUrbfUHjajeiZm6fTUIHmlxU5v
+         uFGft0y5GW+RTkrGKG1ShKNXOJybi+5ipLPWPhVY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
-        Mark Brown <broonie@kernel.org>,
+        stable@vger.kernel.org, Matthew Wilcox <willy@infradead.org>,
+        Heiko Carstens <hca@linux.ibm.com>,
+        Alexander Egorenkov <egorenar@linux.ibm.com>,
+        Alexander Gordeev <agordeev@linux.ibm.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.19 166/287] ASoC: qcom: q6dsp: Fix an off-by-one in q6adm_alloc_copp()
-Date:   Tue, 23 Aug 2022 10:25:35 +0200
-Message-Id: <20220823080106.332907599@linuxfoundation.org>
+Subject: [PATCH 4.19 165/287] s390/zcore: fix race when reading from hardware system area
+Date:   Tue, 23 Aug 2022 10:25:34 +0200
+Message-Id: <20220823080106.292878681@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220823080100.268827165@linuxfoundation.org>
 References: <20220823080100.268827165@linuxfoundation.org>
@@ -51,35 +52,82 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+From: Alexander Gordeev <agordeev@linux.ibm.com>
 
-[ Upstream commit 673f58f62ca6fc98979d1cf3fe89c3ff33f29b2e ]
+[ Upstream commit 9ffed254d938c9e99eb7761c7f739294c84e0367 ]
 
-find_first_zero_bit() returns MAX_COPPS_PER_PORT at max here.
-So 'idx' should be tested with ">=" or the test can't match.
+Memory buffer used for reading out data from hardware system
+area is not protected against concurrent access.
 
-Fixes: 7b20b2be51e1 ("ASoC: qdsp6: q6adm: Add q6adm driver")
-Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
-Link: https://lore.kernel.org/r/0fca3271649736053eb9649d87e1ca01b056be40.1658394124.git.christophe.jaillet@wanadoo.fr
-Signed-off-by: Mark Brown <broonie@kernel.org>
+Reported-by: Matthew Wilcox <willy@infradead.org>
+Fixes: 411ed3225733 ("[S390] zfcpdump support.")
+Acked-by: Heiko Carstens <hca@linux.ibm.com>
+Tested-by: Alexander Egorenkov <egorenar@linux.ibm.com>
+Link: https://lore.kernel.org/r/e68137f0f9a0d2558f37becc20af18e2939934f6.1658206891.git.agordeev@linux.ibm.com
+Signed-off-by: Alexander Gordeev <agordeev@linux.ibm.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- sound/soc/qcom/qdsp6/q6adm.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/s390/char/zcore.c | 11 ++++++++++-
+ 1 file changed, 10 insertions(+), 1 deletion(-)
 
-diff --git a/sound/soc/qcom/qdsp6/q6adm.c b/sound/soc/qcom/qdsp6/q6adm.c
-index 932c3ebfd252..01f9127daf5c 100644
---- a/sound/soc/qcom/qdsp6/q6adm.c
-+++ b/sound/soc/qcom/qdsp6/q6adm.c
-@@ -218,7 +218,7 @@ static struct q6copp *q6adm_alloc_copp(struct q6adm *adm, int port_idx)
- 	idx = find_first_zero_bit(&adm->copp_bitmap[port_idx],
- 				  MAX_COPPS_PER_PORT);
+diff --git a/drivers/s390/char/zcore.c b/drivers/s390/char/zcore.c
+index 76d3c50bf078..ba8fc756264b 100644
+--- a/drivers/s390/char/zcore.c
++++ b/drivers/s390/char/zcore.c
+@@ -53,6 +53,7 @@ static struct dentry *zcore_reipl_file;
+ static struct dentry *zcore_hsa_file;
+ static struct ipl_parameter_block *ipl_block;
  
--	if (idx > MAX_COPPS_PER_PORT)
-+	if (idx >= MAX_COPPS_PER_PORT)
- 		return ERR_PTR(-EBUSY);
++static DEFINE_MUTEX(hsa_buf_mutex);
+ static char hsa_buf[PAGE_SIZE] __aligned(PAGE_SIZE);
  
- 	c = kzalloc(sizeof(*c), GFP_ATOMIC);
+ /*
+@@ -69,19 +70,24 @@ int memcpy_hsa_user(void __user *dest, unsigned long src, size_t count)
+ 	if (!hsa_available)
+ 		return -ENODATA;
+ 
++	mutex_lock(&hsa_buf_mutex);
+ 	while (count) {
+ 		if (sclp_sdias_copy(hsa_buf, src / PAGE_SIZE + 2, 1)) {
+ 			TRACE("sclp_sdias_copy() failed\n");
++			mutex_unlock(&hsa_buf_mutex);
+ 			return -EIO;
+ 		}
+ 		offset = src % PAGE_SIZE;
+ 		bytes = min(PAGE_SIZE - offset, count);
+-		if (copy_to_user(dest, hsa_buf + offset, bytes))
++		if (copy_to_user(dest, hsa_buf + offset, bytes)) {
++			mutex_unlock(&hsa_buf_mutex);
+ 			return -EFAULT;
++		}
+ 		src += bytes;
+ 		dest += bytes;
+ 		count -= bytes;
+ 	}
++	mutex_unlock(&hsa_buf_mutex);
+ 	return 0;
+ }
+ 
+@@ -99,9 +105,11 @@ int memcpy_hsa_kernel(void *dest, unsigned long src, size_t count)
+ 	if (!hsa_available)
+ 		return -ENODATA;
+ 
++	mutex_lock(&hsa_buf_mutex);
+ 	while (count) {
+ 		if (sclp_sdias_copy(hsa_buf, src / PAGE_SIZE + 2, 1)) {
+ 			TRACE("sclp_sdias_copy() failed\n");
++			mutex_unlock(&hsa_buf_mutex);
+ 			return -EIO;
+ 		}
+ 		offset = src % PAGE_SIZE;
+@@ -111,6 +119,7 @@ int memcpy_hsa_kernel(void *dest, unsigned long src, size_t count)
+ 		dest += bytes;
+ 		count -= bytes;
+ 	}
++	mutex_unlock(&hsa_buf_mutex);
+ 	return 0;
+ }
+ 
 -- 
 2.35.1
 
