@@ -2,45 +2,48 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A3686C32772
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 10:14:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9E3E6C32774
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 10:14:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353336AbiHWKN6 (ORCPT
+        id S1353155AbiHWKOM (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 06:13:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46214 "EHLO
+        Tue, 23 Aug 2022 06:14:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57844 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352759AbiHWKGP (ORCPT
+        with ESMTP id S1352761AbiHWKGP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 23 Aug 2022 06:06:15 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 33DCCB1C4;
-        Tue, 23 Aug 2022 01:52:51 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4B6367CB7B;
+        Tue, 23 Aug 2022 01:52:48 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id B2E95B81C28;
-        Tue, 23 Aug 2022 08:52:49 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 06CBAC433C1;
-        Tue, 23 Aug 2022 08:52:47 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id B746CB81C1C;
+        Tue, 23 Aug 2022 08:52:46 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 21BC9C433C1;
+        Tue, 23 Aug 2022 08:52:44 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661244768;
-        bh=OQlvZM+K22KXk20z/y80Vu43gP5UH4g2hFg4EP4s7Wc=;
+        s=korg; t=1661244765;
+        bh=A6bFZv0bjISMgnH2QlTdPywLgKoNC1AA0iEbtLhYWN8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=XVGVL3PilQvNhE0Tef1DKIM5ZEtOvW7dZm/fnQRYC58h+A4WDvNDIxA8gvXP7ZpA+
-         FG1MN/d9g3n+lwi719CH4gNz3d1ZRpiElhAY/2rh5Pyq2bavA2rziokC291BfbJ6pU
-         yrG6NFs2gMmH8/NqOH2DJM8zQZO09sljfON8+o5Y=
+        b=INEAlfR+uYTnwv2padIrWR4nc3p3p3xNUGLCx1F3FG5s77zmWKnRFV/tGOd4xhGVB
+         dJr6j5l11iAivs7sOxVDa1gE+qdwuRzRFtByKGRglgUBo97x11QHZzpZ3BPIPIcyp8
+         qrizKpNyoufdMDkdoGfT3L1QqAzJRgTylnxaBM5A=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
-        Trond Myklebust <trond.myklebust@hammerspace.com>
-Subject: [PATCH 4.14 187/229] SUNRPC: Reinitialise the backchannel request buffers before reuse
-Date:   Tue, 23 Aug 2022 10:25:48 +0200
-Message-Id: <20220823080100.290060127@linuxfoundation.org>
+        =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
+        <u.kleine-koenig@pengutronix.de>,
+        Oleksij Rempel <o.rempel@pengutronix.de>,
+        Wolfram Sang <wsa@kernel.org>
+Subject: [PATCH 5.15 145/244] i2c: imx: Make sure to unregister adapter on remove()
+Date:   Tue, 23 Aug 2022 10:25:04 +0200
+Message-Id: <20220823080104.010296633@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220823080053.202747790@linuxfoundation.org>
-References: <20220823080053.202747790@linuxfoundation.org>
+In-Reply-To: <20220823080059.091088642@linuxfoundation.org>
+References: <20220823080059.091088642@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -49,50 +52,68 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Trond Myklebust <trond.myklebust@hammerspace.com>
+From: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
 
-commit 6622e3a73112fc336c1c2c582428fb5ef18e456a upstream.
+commit d98bdd3a5b50446d8e010be5b04ce81c4eabf728 upstream.
 
-When we're reusing the backchannel requests instead of freeing them,
-then we should reinitialise any values of the send/receive xdr_bufs so
-that they reflect the available space.
+If for whatever reasons pm_runtime_resume_and_get() fails and .remove() is
+exited early, the i2c adapter stays around and the irq still calls its
+handler, while the driver data and the register mapping go away. So if
+later the i2c adapter is accessed or the irq triggers this results in
+havoc accessing freed memory and unmapped registers.
 
-Fixes: 0d2a970d0ae5 ("SUNRPC: Fix a backchannel race")
-Signed-off-by: Trond Myklebust <trond.myklebust@hammerspace.com>
+So unregister the software resources even if resume failed, and only skip
+the hardware access in that case.
+
+Fixes: 588eb93ea49f ("i2c: imx: add runtime pm support to improve the performance")
+Signed-off-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
+Acked-by: Oleksij Rempel <o.rempel@pengutronix.de>
+Signed-off-by: Wolfram Sang <wsa@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- net/sunrpc/backchannel_rqst.c |   14 ++++++++++++++
- 1 file changed, 14 insertions(+)
+ drivers/i2c/busses/i2c-imx.c |   20 +++++++++++---------
+ 1 file changed, 11 insertions(+), 9 deletions(-)
 
---- a/net/sunrpc/backchannel_rqst.c
-+++ b/net/sunrpc/backchannel_rqst.c
-@@ -69,6 +69,17 @@ static void xprt_free_allocation(struct
- 	kfree(req);
- }
+--- a/drivers/i2c/busses/i2c-imx.c
++++ b/drivers/i2c/busses/i2c-imx.c
+@@ -1487,9 +1487,7 @@ static int i2c_imx_remove(struct platfor
+ 	struct imx_i2c_struct *i2c_imx = platform_get_drvdata(pdev);
+ 	int irq, ret;
  
-+static void xprt_bc_reinit_xdr_buf(struct xdr_buf *buf)
-+{
-+	buf->head[0].iov_len = PAGE_SIZE;
-+	buf->tail[0].iov_len = 0;
-+	buf->pages = NULL;
-+	buf->page_len = 0;
-+	buf->flags = 0;
-+	buf->len = 0;
-+	buf->buflen = PAGE_SIZE;
-+}
+-	ret = pm_runtime_resume_and_get(&pdev->dev);
+-	if (ret < 0)
+-		return ret;
++	ret = pm_runtime_get_sync(&pdev->dev);
+ 
+ 	/* remove adapter */
+ 	dev_dbg(&i2c_imx->adapter.dev, "adapter removed\n");
+@@ -1498,17 +1496,21 @@ static int i2c_imx_remove(struct platfor
+ 	if (i2c_imx->dma)
+ 		i2c_imx_dma_free(i2c_imx);
+ 
+-	/* setup chip registers to defaults */
+-	imx_i2c_write_reg(0, i2c_imx, IMX_I2C_IADR);
+-	imx_i2c_write_reg(0, i2c_imx, IMX_I2C_IFDR);
+-	imx_i2c_write_reg(0, i2c_imx, IMX_I2C_I2CR);
+-	imx_i2c_write_reg(0, i2c_imx, IMX_I2C_I2SR);
++	if (ret == 0) {
++		/* setup chip registers to defaults */
++		imx_i2c_write_reg(0, i2c_imx, IMX_I2C_IADR);
++		imx_i2c_write_reg(0, i2c_imx, IMX_I2C_IFDR);
++		imx_i2c_write_reg(0, i2c_imx, IMX_I2C_I2CR);
++		imx_i2c_write_reg(0, i2c_imx, IMX_I2C_I2SR);
++		clk_disable(i2c_imx->clk);
++	}
+ 
+ 	clk_notifier_unregister(i2c_imx->clk, &i2c_imx->clk_change_nb);
+ 	irq = platform_get_irq(pdev, 0);
+ 	if (irq >= 0)
+ 		free_irq(irq, i2c_imx);
+-	clk_disable_unprepare(i2c_imx->clk);
 +
- static int xprt_alloc_xdr_buf(struct xdr_buf *buf, gfp_t gfp_flags)
- {
- 	struct page *page;
-@@ -291,6 +302,9 @@ void xprt_free_bc_rqst(struct rpc_rqst *
- 	 */
- 	spin_lock_bh(&xprt->bc_pa_lock);
- 	if (xprt_need_to_requeue(xprt)) {
-+		xprt_bc_reinit_xdr_buf(&req->rq_snd_buf);
-+		xprt_bc_reinit_xdr_buf(&req->rq_rcv_buf);
-+		req->rq_rcv_buf.len = PAGE_SIZE;
- 		list_add_tail(&req->rq_bc_pa_list, &xprt->bc_pa_list);
- 		xprt->bc_alloc_count++;
- 		req = NULL;
++	clk_unprepare(i2c_imx->clk);
+ 
+ 	pm_runtime_put_noidle(&pdev->dev);
+ 	pm_runtime_disable(&pdev->dev);
 
 
