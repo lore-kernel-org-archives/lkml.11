@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CD837C32792
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 12:17:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5F077C32772
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 12:17:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355963AbiHWMNo (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 08:13:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47364 "EHLO
+        id S237151AbiHWMPQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 23 Aug 2022 08:15:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46998 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355277AbiHWMMf (ORCPT
+        with ESMTP id S1351991AbiHWMO2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 08:12:35 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 254DEE3432;
-        Tue, 23 Aug 2022 02:39:39 -0700 (PDT)
+        Tue, 23 Aug 2022 08:14:28 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EC75B78BD7;
+        Tue, 23 Aug 2022 02:40:34 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 73667B81B1F;
-        Tue, 23 Aug 2022 09:38:12 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9C3B6C433C1;
-        Tue, 23 Aug 2022 09:38:10 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 152FCB81C9E;
+        Tue, 23 Aug 2022 09:38:06 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1A7E6C433C1;
+        Tue, 23 Aug 2022 09:38:03 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661247491;
-        bh=3c/OSqaY8uRcFPRq3DKY7IaUNCD747jPXqH4BrwgPEI=;
+        s=korg; t=1661247484;
+        bh=QzuS+zibgBHIua63orsBTnoVD11S59/bNENzzt3DNMA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=wEHnE4B+4a50sQhk027e/ZW259NpNjtJR1HkS0roD67SThdSlnU7rbSFUK8Q6GbRo
-         zeSDoj5BpKKnB0uapvhmfzzmfG3ovSjFeBEO7kXvCmHXBypNlDqkPGTiiJzsGVB/v+
-         jv4SwjHyz1DznU/HVlylEJXweTUVNWtWL2XC2L/o=
+        b=I776AsuoL7F9vSKQd9NmnpTxRgQ9AImjoiL7KXaqxYQxUYJdk2Mr8u/zGGjj/XhpI
+         8qWOj2FBVXTCkTF3e7yV/N+5b1gaz39nuQHGQ5ZEuDjVK+s6JFf35FCqbSmw/fG0pQ
+         diEwE2uwD5FNJJXcFaevgkK4Jfu7iaUAVRiirZOw=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jeff Layton <jlayton@kernel.org>,
+        stable@vger.kernel.org,
         =?UTF-8?q?Lu=C3=ADs=20Henriques?= <lhenriques@suse.de>,
+        Jeff Layton <jlayton@kernel.org>, Xiubo Li <xiubli@redhat.com>,
         Ilya Dryomov <idryomov@gmail.com>
-Subject: [PATCH 5.10 054/158] ceph: dont leak snap_rwsem in handle_cap_grant
-Date:   Tue, 23 Aug 2022 10:26:26 +0200
-Message-Id: <20220823080048.266840116@linuxfoundation.org>
+Subject: [PATCH 5.10 052/158] ceph: use correct index when encoding client supported features
+Date:   Tue, 23 Aug 2022 10:26:24 +0200
+Message-Id: <20220823080048.199431718@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220823080046.056825146@linuxfoundation.org>
 References: <20220823080046.056825146@linuxfoundation.org>
@@ -50,63 +50,71 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jeff Layton <jlayton@kernel.org>
+From: Luís Henriques <lhenriques@suse.de>
 
-commit 58dd4385577ed7969b80cdc9e2a31575aba6c712 upstream.
+commit fea013e020e6ecc7be75bea0d61697b7e916b44d upstream.
 
-When handle_cap_grant is called on an IMPORT op, then the snap_rwsem is
-held and the function is expected to release it before returning. It
-currently fails to do that in all cases which could lead to a deadlock.
+Feature bits have to be encoded into the correct locations.  This hasn't
+been an issue so far because the only hole in the feature bits was in bit
+10 (CEPHFS_FEATURE_RECLAIM_CLIENT), which is located in the 2nd byte.  When
+adding more bits that go beyond the this 2nd byte, the bug will show up.
 
-Fixes: 6f05b30ea063 ("ceph: reset i_requested_max_size if file write is not wanted")
-Link: https://tracker.ceph.com/issues/55857
-Signed-off-by: Jeff Layton <jlayton@kernel.org>
-Reviewed-by: Luís Henriques <lhenriques@suse.de>
+[xiubli: remove incorrect comment for CEPHFS_FEATURES_CLIENT_SUPPORTED]
+
+Fixes: 9ba1e224538a ("ceph: allocate the correct amount of extra bytes for the session features")
+Signed-off-by: Luís Henriques <lhenriques@suse.de>
+Reviewed-by: Jeff Layton <jlayton@kernel.org>
+Signed-off-by: Xiubo Li <xiubli@redhat.com>
 Signed-off-by: Ilya Dryomov <idryomov@gmail.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- fs/ceph/caps.c |   27 +++++++++++++--------------
- 1 file changed, 13 insertions(+), 14 deletions(-)
+ fs/ceph/mds_client.c |    7 +++++--
+ fs/ceph/mds_client.h |    6 ------
+ 2 files changed, 5 insertions(+), 8 deletions(-)
 
---- a/fs/ceph/caps.c
-+++ b/fs/ceph/caps.c
-@@ -3501,24 +3501,23 @@ static void handle_cap_grant(struct inod
- 			fill_inline = true;
- 	}
+--- a/fs/ceph/mds_client.c
++++ b/fs/ceph/mds_client.c
+@@ -1184,14 +1184,17 @@ static int encode_supported_features(voi
+ 	if (count > 0) {
+ 		size_t i;
+ 		size_t size = FEATURE_BYTES(count);
++		unsigned long bit;
  
--	if (ci->i_auth_cap == cap &&
--	    le32_to_cpu(grant->op) == CEPH_CAP_OP_IMPORT) {
--		if (newcaps & ~extra_info->issued)
--			wake = true;
-+	if (le32_to_cpu(grant->op) == CEPH_CAP_OP_IMPORT) {
-+		if (ci->i_auth_cap == cap) {
-+			if (newcaps & ~extra_info->issued)
-+				wake = true;
+ 		if (WARN_ON_ONCE(*p + 4 + size > end))
+ 			return -ERANGE;
  
--		if (ci->i_requested_max_size > max_size ||
--		    !(le32_to_cpu(grant->wanted) & CEPH_CAP_ANY_FILE_WR)) {
--			/* re-request max_size if necessary */
--			ci->i_requested_max_size = 0;
--			wake = true;
--		}
-+			if (ci->i_requested_max_size > max_size ||
-+			    !(le32_to_cpu(grant->wanted) & CEPH_CAP_ANY_FILE_WR)) {
-+				/* re-request max_size if necessary */
-+				ci->i_requested_max_size = 0;
-+				wake = true;
-+			}
- 
--		ceph_kick_flushing_inode_caps(session, ci);
--		spin_unlock(&ci->i_ceph_lock);
-+			ceph_kick_flushing_inode_caps(session, ci);
+ 		ceph_encode_32(p, size);
+ 		memset(*p, 0, size);
+-		for (i = 0; i < count; i++)
+-			((unsigned char*)(*p))[i / 8] |= BIT(feature_bits[i] % 8);
++		for (i = 0; i < count; i++) {
++			bit = feature_bits[i];
++			((unsigned char *)(*p))[bit / 8] |= BIT(bit % 8);
 +		}
- 		up_read(&session->s_mdsc->snap_rwsem);
--	} else {
--		spin_unlock(&ci->i_ceph_lock);
- 	}
-+	spin_unlock(&ci->i_ceph_lock);
+ 		*p += size;
+ 	} else {
+ 		if (WARN_ON_ONCE(*p + 4 > end))
+--- a/fs/ceph/mds_client.h
++++ b/fs/ceph/mds_client.h
+@@ -33,10 +33,6 @@ enum ceph_feature_type {
+ 	CEPHFS_FEATURE_MAX = CEPHFS_FEATURE_METRIC_COLLECT,
+ };
  
- 	if (fill_inline)
- 		ceph_fill_inline_data(inode, NULL, extra_info->inline_data,
+-/*
+- * This will always have the highest feature bit value
+- * as the last element of the array.
+- */
+ #define CEPHFS_FEATURES_CLIENT_SUPPORTED {	\
+ 	0, 1, 2, 3, 4, 5, 6, 7,			\
+ 	CEPHFS_FEATURE_MIMIC,			\
+@@ -45,8 +41,6 @@ enum ceph_feature_type {
+ 	CEPHFS_FEATURE_MULTI_RECONNECT,		\
+ 	CEPHFS_FEATURE_DELEG_INO,		\
+ 	CEPHFS_FEATURE_METRIC_COLLECT,		\
+-						\
+-	CEPHFS_FEATURE_MAX,			\
+ }
+ #define CEPHFS_FEATURES_CLIENT_REQUIRED {}
+ 
 
 
