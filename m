@@ -2,44 +2,53 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 30169C32774
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 08:14:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 549A5C32774
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 08:15:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242401AbiHWIOv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 04:14:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58898 "EHLO
+        id S242318AbiHWIO5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 23 Aug 2022 04:14:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60262 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242125AbiHWIKl (ORCPT
+        with ESMTP id S242168AbiHWIKt (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 04:10:41 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 450CA69F4F;
-        Tue, 23 Aug 2022 01:07:52 -0700 (PDT)
+        Tue, 23 Aug 2022 04:10:49 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2465B6A49A;
+        Tue, 23 Aug 2022 01:08:02 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id D75B761257;
-        Tue, 23 Aug 2022 08:07:51 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D427BC433D6;
-        Tue, 23 Aug 2022 08:07:50 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id A0594B81C17;
+        Tue, 23 Aug 2022 08:08:01 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C04F8C433D7;
+        Tue, 23 Aug 2022 08:07:59 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661242071;
-        bh=+fiLNvK/jrxtzfqvF1MMl97JGRcM/wzb8f52HN2rxYg=;
+        s=korg; t=1661242080;
+        bh=teKc3lF5mfoEsKS9IbpH7Y4FTQyLnvHdoT5FLMkSxxk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=0j6A+RlsvzwOB1mxSbzo6wS7n40/OKbTI3JSe2CkW1kHLNC2XqxLDLBBV7d0Umi46
-         PtZ1+0WNFboEGaHuY3e26291NgZv1BHuWdlWWLDEeC5Co3LLy0oy4wDEaFGepQ+E2d
-         B7ONxQTVOpRHHvXH1YxIKLTT2xPENQ+FQIc6M2lQ=
+        b=c0+QzzjjVNetgG9FuSWeDhNMoxdLtDXwfa5km2KVvO39IxGi6o6hFCow0nCHbfJZq
+         oYPXTUzCbMUfvC+nV7n+GzEVphH88XJoa3kRqnq1lN7EpImTtJbISfjX2d8wweRvPa
+         9a2pL2VNILayqt83ZM4CWC5/t84KOQr/VjS27Orw=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
-        Trond Myklebust <trond.myklebust@hammerspace.com>
-Subject: [PATCH 5.19 054/365] NFSv4: Fix races in the legacy idmapper upcall
-Date:   Tue, 23 Aug 2022 09:59:15 +0200
-Message-Id: <20220823080120.451541368@linuxfoundation.org>
+        Christian Borntraeger <borntraeger@de.ibm.com>,
+        Yury Norov <yury.norov@gmail.com>,
+        Allison Randal <allison@lohutok.net>,
+        Joe Perches <joe@perches.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        William Breathitt Gray <vilhelm.gray@gmail.com>,
+        Torsten Hilbrich <torsten.hilbrich@secunet.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        Hans-Christian Noren Egtvedt <hegtvedt@cisco.com>
+Subject: [PATCH 4.9 016/101] include/uapi/linux/swab.h: fix userspace breakage, use __BITS_PER_LONG for swap
+Date:   Tue, 23 Aug 2022 10:02:49 +0200
+Message-Id: <20220823080035.188734677@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220823080118.128342613@linuxfoundation.org>
-References: <20220823080118.128342613@linuxfoundation.org>
+In-Reply-To: <20220823080034.579196046@linuxfoundation.org>
+References: <20220823080034.579196046@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -48,138 +57,71 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Trond Myklebust <trond.myklebust@hammerspace.com>
+From: Christian Borntraeger <borntraeger@de.ibm.com>
 
-commit 51fd2eb52c0ca8275a906eed81878ef50ae94eb0 upstream.
+commit 467d12f5c7842896d2de3ced74e4147ee29e97c8 upstream.
 
-nfs_idmap_instantiate() will cause the process that is waiting in
-request_key_with_auxdata() to wake up and exit. If there is a second
-process waiting for the idmap->idmap_mutex, then it may wake up and
-start a new call to request_key_with_auxdata(). If the call to
-idmap_pipe_downcall() from the first process has not yet finished
-calling nfs_idmap_complete_pipe_upcall_locked(), then we may end up
-triggering the WARN_ON_ONCE() in nfs_idmap_prepare_pipe_upcall().
+QEMU has a funny new build error message when I use the upstream kernel
+headers:
 
-The fix is to ensure that we clear idmap->idmap_upcall_data before
-calling nfs_idmap_instantiate().
+      CC      block/file-posix.o
+    In file included from /home/cborntra/REPOS/qemu/include/qemu/timer.h:4,
+                     from /home/cborntra/REPOS/qemu/include/qemu/timed-average.h:29,
+                     from /home/cborntra/REPOS/qemu/include/block/accounting.h:28,
+                     from /home/cborntra/REPOS/qemu/include/block/block_int.h:27,
+                     from /home/cborntra/REPOS/qemu/block/file-posix.c:30:
+    /usr/include/linux/swab.h: In function `__swab':
+    /home/cborntra/REPOS/qemu/include/qemu/bitops.h:20:34: error: "sizeof" is not defined, evaluates to 0 [-Werror=undef]
+       20 | #define BITS_PER_LONG           (sizeof (unsigned long) * BITS_PER_BYTE)
+          |                                  ^~~~~~
+    /home/cborntra/REPOS/qemu/include/qemu/bitops.h:20:41: error: missing binary operator before token "("
+       20 | #define BITS_PER_LONG           (sizeof (unsigned long) * BITS_PER_BYTE)
+          |                                         ^
+    cc1: all warnings being treated as errors
+    make: *** [/home/cborntra/REPOS/qemu/rules.mak:69: block/file-posix.o] Error 1
+    rm tests/qemu-iotests/socket_scm_helper.o
 
-Fixes: e9ab41b620e4 ("NFSv4: Clean up the legacy idmapper upcall")
-Signed-off-by: Trond Myklebust <trond.myklebust@hammerspace.com>
+This was triggered by commit d5767057c9a ("uapi: rename ext2_swab() to
+swab() and share globally in swab.h").  That patch is doing
+
+  #include <asm/bitsperlong.h>
+
+but it uses BITS_PER_LONG.
+
+The kernel file asm/bitsperlong.h provide only __BITS_PER_LONG.
+
+Let us use the __ variant in swap.h
+
+Link: http://lkml.kernel.org/r/20200213142147.17604-1-borntraeger@de.ibm.com
+Fixes: d5767057c9a ("uapi: rename ext2_swab() to swab() and share globally in swab.h")
+Signed-off-by: Christian Borntraeger <borntraeger@de.ibm.com>
+Cc: Yury Norov <yury.norov@gmail.com>
+Cc: Allison Randal <allison@lohutok.net>
+Cc: Joe Perches <joe@perches.com>
+Cc: Thomas Gleixner <tglx@linutronix.de>
+Cc: William Breathitt Gray <vilhelm.gray@gmail.com>
+Cc: Torsten Hilbrich <torsten.hilbrich@secunet.com>
+Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
+Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
+Signed-off-by: Hans-Christian Noren Egtvedt <hegtvedt@cisco.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- fs/nfs/nfs4idmap.c |   46 ++++++++++++++++++++++++----------------------
- 1 file changed, 24 insertions(+), 22 deletions(-)
+ include/uapi/linux/swab.h |    4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
---- a/fs/nfs/nfs4idmap.c
-+++ b/fs/nfs/nfs4idmap.c
-@@ -561,22 +561,20 @@ nfs_idmap_prepare_pipe_upcall(struct idm
- 	return true;
- }
+--- a/include/uapi/linux/swab.h
++++ b/include/uapi/linux/swab.h
+@@ -134,9 +134,9 @@ static inline __attribute_const__ __u32
  
--static void
--nfs_idmap_complete_pipe_upcall_locked(struct idmap *idmap, int ret)
-+static void nfs_idmap_complete_pipe_upcall(struct idmap_legacy_upcalldata *data,
-+					   int ret)
+ static __always_inline unsigned long __swab(const unsigned long y)
  {
--	struct key *authkey = idmap->idmap_upcall_data->authkey;
--
--	kfree(idmap->idmap_upcall_data);
--	idmap->idmap_upcall_data = NULL;
--	complete_request_key(authkey, ret);
--	key_put(authkey);
-+	complete_request_key(data->authkey, ret);
-+	key_put(data->authkey);
-+	kfree(data);
+-#if BITS_PER_LONG == 64
++#if __BITS_PER_LONG == 64
+ 	return __swab64(y);
+-#else /* BITS_PER_LONG == 32 */
++#else /* __BITS_PER_LONG == 32 */
+ 	return __swab32(y);
+ #endif
  }
- 
--static void
--nfs_idmap_abort_pipe_upcall(struct idmap *idmap, int ret)
-+static void nfs_idmap_abort_pipe_upcall(struct idmap *idmap,
-+					struct idmap_legacy_upcalldata *data,
-+					int ret)
- {
--	if (idmap->idmap_upcall_data != NULL)
--		nfs_idmap_complete_pipe_upcall_locked(idmap, ret);
-+	if (cmpxchg(&idmap->idmap_upcall_data, data, NULL) == data)
-+		nfs_idmap_complete_pipe_upcall(data, ret);
- }
- 
- static int nfs_idmap_legacy_upcall(struct key *authkey, void *aux)
-@@ -613,7 +611,7 @@ static int nfs_idmap_legacy_upcall(struc
- 
- 	ret = rpc_queue_upcall(idmap->idmap_pipe, msg);
- 	if (ret < 0)
--		nfs_idmap_abort_pipe_upcall(idmap, ret);
-+		nfs_idmap_abort_pipe_upcall(idmap, data, ret);
- 
- 	return ret;
- out2:
-@@ -669,6 +667,7 @@ idmap_pipe_downcall(struct file *filp, c
- 	struct request_key_auth *rka;
- 	struct rpc_inode *rpci = RPC_I(file_inode(filp));
- 	struct idmap *idmap = (struct idmap *)rpci->private;
-+	struct idmap_legacy_upcalldata *data;
- 	struct key *authkey;
- 	struct idmap_msg im;
- 	size_t namelen_in;
-@@ -678,10 +677,11 @@ idmap_pipe_downcall(struct file *filp, c
- 	 * will have been woken up and someone else may now have used
- 	 * idmap_key_cons - so after this point we may no longer touch it.
- 	 */
--	if (idmap->idmap_upcall_data == NULL)
-+	data = xchg(&idmap->idmap_upcall_data, NULL);
-+	if (data == NULL)
- 		goto out_noupcall;
- 
--	authkey = idmap->idmap_upcall_data->authkey;
-+	authkey = data->authkey;
- 	rka = get_request_key_auth(authkey);
- 
- 	if (mlen != sizeof(im)) {
-@@ -703,18 +703,17 @@ idmap_pipe_downcall(struct file *filp, c
- 	if (namelen_in == 0 || namelen_in == IDMAP_NAMESZ) {
- 		ret = -EINVAL;
- 		goto out;
--}
-+	}
- 
--	ret = nfs_idmap_read_and_verify_message(&im,
--			&idmap->idmap_upcall_data->idmap_msg,
--			rka->target_key, authkey);
-+	ret = nfs_idmap_read_and_verify_message(&im, &data->idmap_msg,
-+						rka->target_key, authkey);
- 	if (ret >= 0) {
- 		key_set_timeout(rka->target_key, nfs_idmap_cache_timeout);
- 		ret = mlen;
- 	}
- 
- out:
--	nfs_idmap_complete_pipe_upcall_locked(idmap, ret);
-+	nfs_idmap_complete_pipe_upcall(data, ret);
- out_noupcall:
- 	return ret;
- }
-@@ -728,7 +727,7 @@ idmap_pipe_destroy_msg(struct rpc_pipe_m
- 	struct idmap *idmap = data->idmap;
- 
- 	if (msg->errno)
--		nfs_idmap_abort_pipe_upcall(idmap, msg->errno);
-+		nfs_idmap_abort_pipe_upcall(idmap, data, msg->errno);
- }
- 
- static void
-@@ -736,8 +735,11 @@ idmap_release_pipe(struct inode *inode)
- {
- 	struct rpc_inode *rpci = RPC_I(inode);
- 	struct idmap *idmap = (struct idmap *)rpci->private;
-+	struct idmap_legacy_upcalldata *data;
- 
--	nfs_idmap_abort_pipe_upcall(idmap, -EPIPE);
-+	data = xchg(&idmap->idmap_upcall_data, NULL);
-+	if (data)
-+		nfs_idmap_complete_pipe_upcall(data, -EPIPE);
- }
- 
- int nfs_map_name_to_uid(const struct nfs_server *server, const char *name, size_t namelen, kuid_t *uid)
 
 
