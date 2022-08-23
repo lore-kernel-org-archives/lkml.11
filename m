@@ -2,73 +2,108 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 97ADAC32772
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 17:12:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E437CC32789
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 17:12:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244296AbiHWRMK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 13:12:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39026 "EHLO
+        id S1344218AbiHWRMY (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 23 Aug 2022 13:12:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46386 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245758AbiHWRJ6 (ORCPT
+        with ESMTP id S1344850AbiHWRLT (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 13:09:58 -0400
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 5605E1585BE;
-        Tue, 23 Aug 2022 06:37:03 -0700 (PDT)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 98B62113E;
-        Tue, 23 Aug 2022 06:37:06 -0700 (PDT)
-Received: from [10.57.15.51] (unknown [10.57.15.51])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id A63F03F70D;
-        Tue, 23 Aug 2022 06:37:01 -0700 (PDT)
-Message-ID: <48f4a56f-0586-9e9d-c121-6309be65b803@arm.com>
-Date:   Tue, 23 Aug 2022 14:36:56 +0100
+        Tue, 23 Aug 2022 13:11:19 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F2D5F15CE0F;
+        Tue, 23 Aug 2022 06:38:32 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 9D4BCB81B79;
+        Tue, 23 Aug 2022 13:38:31 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id EEFBCC433D6;
+        Tue, 23 Aug 2022 13:38:29 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1661261910;
+        bh=gNcuBVbZTH11tEmptRdziv6KZ2nBwZGGtxerR4UZk/g=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=lBQychxuVnBlnwSnKFGZWdNCjgjLWOAryCTjnRu4zWVeSrahmp7Wc8utuIPFoIcEP
+         wvFhJ6MhioFh/5SUZNfTBLF9mdcClxrVs5kt07KMbMMyON8DOaw2Omgml9SR34NBbJ
+         /DK80a6BsDsuHV/fIO6F2SgQsC2NLJIj1EY0PzC1gnM0GkSBWLrqsf7Lz6q5SwsRr0
+         qN8hJM8r5RG5Wzr0HkUPAoNOXpDr+hVGkbNI0pEOHHtzGQW85b89sJ/9tftvDd3+Ig
+         K5CUuedm5DLqUN7w2Vxt+4Qlll8YZGWhLIfN5x7NJcSpxZ4CHKZ4rH0Hol12uJGXfx
+         Mfb/pxzHV3DSA==
+Received: by quaco.ghostprotocols.net (Postfix, from userid 1000)
+        id 11832404A1; Tue, 23 Aug 2022 10:38:27 -0300 (-03)
+Date:   Tue, 23 Aug 2022 10:38:27 -0300
+From:   Arnaldo Carvalho de Melo <acme@kernel.org>
+To:     Heiko Carstens <hca@linux.ibm.com>
+Cc:     Thomas Richter <tmricht@linux.ibm.com>,
+        linux-kernel@vger.kernel.org, linux-perf-users@vger.kernel.org,
+        svens@linux.ibm.com, gor@linux.ibm.com, sumanthk@linux.ibm.com
+Subject: Re: [PATCH v2] perf list: Add PMU pai_crypto event description for
+ IBM z16
+Message-ID: <YwTYU+xXZJr0kH5u@kernel.org>
+References: <20220804075221.1132849-1-tmricht@linux.ibm.com>
+ <YvOq3B02x8GqkVPA@kernel.org>
+ <YwSdWUt02SFzrMUm@osiris>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:102.0) Gecko/20100101
- Thunderbird/102.1.2
-Subject: Re: [PATCH] drm/exynos: fix repeated words in comments
-Content-Language: en-GB
-To:     Jilin Yuan <yuanjilin@cdjrlc.com>, airlied@linux.ie,
-        daniel@ffwll.ch, krzysztof.kozlowski@linaro.org
-Cc:     dri-devel@lists.freedesktop.org,
-        linux-arm-kernel@lists.infradead.org,
-        linux-samsung-soc@vger.kernel.org, linux-kernel@vger.kernel.org
-References: <20220823122117.15757-1-yuanjilin@cdjrlc.com>
-From:   Robin Murphy <robin.murphy@arm.com>
-In-Reply-To: <20220823122117.15757-1-yuanjilin@cdjrlc.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <YwSdWUt02SFzrMUm@osiris>
+X-Url:  http://acmel.wordpress.com
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 2022-08-23 13:21, Jilin Yuan wrote:
->   Delete the redundant word 'next'.
-
- From the context, I'm not sure it is redundant - as far as I can tell 
-this comment seems to be describing a sequence of 3 commands, where 
-"current" is the first, "next" is the second, and "next next" implies 
-the third. The whole comment could certainly be reworded more clearly, 
-but as it stands I suspect a replacement like s/next next/next+1/ is 
-more likely to be correct.
-
-Robin.
-
-> Signed-off-by: Jilin Yuan <yuanjilin@cdjrlc.com>
-> ---
->   drivers/gpu/drm/exynos/exynos_drm_g2d.c | 2 +-
->   1 file changed, 1 insertion(+), 1 deletion(-)
+Em Tue, Aug 23, 2022 at 11:26:49AM +0200, Heiko Carstens escreveu:
+> On Wed, Aug 10, 2022 at 09:55:56AM -0300, Arnaldo Carvalho de Melo wrote:
+> > Em Thu, Aug 04, 2022 at 09:52:21AM +0200, Thomas Richter escreveu:
+> > > Add the event description for the IBM z16 pai_crypto PMU released with
+> > > commit 1bf54f32f525 ("s390/pai: Add support for cryptography counters")
+> > 
+> > What tree is this? I tried on torvalds/master:
+> > 
+> > ⬢[acme@toolbox perf]$ git remote update torvalds
+> > Fetching torvalds
+> > ⬢[acme@toolbox perf]$ git log --oneline -1 torvalds/master
+> > d4252071b97d2027 (torvalds/master) add barriers to buffer_uptodate and set_buffer_uptodate
+> > ⬢[acme@toolbox perf]$ git show torvalds/master d4252071b97d2027 | head -5
+> > commit d4252071b97d2027d246f6a82cbee4d52f618b47
+> > Author: Mikulas Patocka <mpatocka@redhat.com>
+> > Date:   Tue Aug 9 14:32:13 2022 -0400
+> > 
+> >     add barriers to buffer_uptodate and set_buffer_uptodate
+> > ⬢[acme@toolbox perf]$ git show torvalds/master 1bf54f32f525 | head -5
+> > fatal: ambiguous argument '1bf54f32f525': unknown revision or path not in the working tree.
+> > Use '--' to separate paths from revisions, like this:
+> > 'git <command> [<revision>...] -- [<file>...]'
+> > ⬢[acme@toolbox perf]$ git log --oneline torvalds/master | grep "pai: Add support for cryptography counters"
+> > ⬢[acme@toolbox perf]$
+> > ⬢[acme@toolbox perf]$ git show torvalds/master d4252071b97d2027 | head -4
+> > commit d4252071b97d2027d246f6a82cbee4d52f618b47
+> > Author: Mikulas Patocka <mpatocka@redhat.com>
+> > Date:   Tue Aug 9 14:32:13 2022 -0400
+> > 
+> > I'm applying it locally so that it gets included in testing, but please
+> > clarify where is that 1bf54f32f525 cset.
 > 
-> diff --git a/drivers/gpu/drm/exynos/exynos_drm_g2d.c b/drivers/gpu/drm/exynos/exynos_drm_g2d.c
-> index 471fd6c8135f..4f9edca66632 100644
-> --- a/drivers/gpu/drm/exynos/exynos_drm_g2d.c
-> +++ b/drivers/gpu/drm/exynos/exynos_drm_g2d.c
-> @@ -1195,7 +1195,7 @@ int exynos_g2d_set_cmdlist_ioctl(struct drm_device *drm_dev, void *data,
->   	 * If don't clear SFR registers, the cmdlist is affected by register
->   	 * values of previous cmdlist. G2D hw executes SFR clear command and
->   	 * a next command at the same time then the next command is ignored and
-> -	 * is executed rightly from next next command, so needs a dummy command
-> +	 * is executed rightly from next command, so needs a dummy command
->   	 * to next command of SFR clear command.
->   	 */
->   	cmdlist->data[cmdlist->last++] = G2D_SOFT_RESET;
+> Thomas mixed up our non public development tree and Linus' tree.
+> Correct commit id + subject are:
+> 
+> 39d62336f5c1 ("s390/pai: add support for cryptography counters")
+
+Ok, this is already upstream, with this note:
+
+----
+    Committer notes:
+
+    Couldn't find 1bf54f32f525 ("s390/pai: Add support for cryptography
+    counters") in torvalds/master, in what tree is that cset?
+----
+
+Not a biggie, the description was added, which is what really matters,
+right? :)
+
+- Arnaldo
