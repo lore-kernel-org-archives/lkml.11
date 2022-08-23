@@ -2,45 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9AEE5C32789
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 08:22:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 125A7C32774
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 08:22:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242905AbiHWITh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 04:19:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39990 "EHLO
+        id S242494AbiHWIWE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 23 Aug 2022 04:22:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39998 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242470AbiHWIPX (ORCPT
+        with ESMTP id S242964AbiHWIQP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 04:15:23 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E48AA6CF7A;
-        Tue, 23 Aug 2022 01:10:08 -0700 (PDT)
+        Tue, 23 Aug 2022 04:16:15 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A33E54E614;
+        Tue, 23 Aug 2022 01:10:50 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 8075361298;
-        Tue, 23 Aug 2022 08:10:08 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 83FBEC433D6;
-        Tue, 23 Aug 2022 08:10:07 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 32D776128D;
+        Tue, 23 Aug 2022 08:10:50 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3FA3AC433D6;
+        Tue, 23 Aug 2022 08:10:49 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661242207;
-        bh=38z5+1E7HVbT6HeQjqkDPqJFtUVE6OakjVGr/qrHk+k=;
+        s=korg; t=1661242249;
+        bh=6mxxRCHil7BriKiwGC+xNzPurzC8Acc2JNZN7S7i1AQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=h3iPVD5B+6fizRvEQACLzP6L+nRPB472DH0BCC6LhpMEreHS/6V1K76vbAXNUlb9e
-         WowP4jxkB03c9xrv8hNWgoXI3SDQu1OaTiihYRNkM+gOWgZgieX4+6e3r5XBgzeuR6
-         0GC7AQVsAcwhTD74yxU9eg36XbMFJvqbC5y2i+4o=
+        b=rCshTyijpqwKWMynlTsGF4J797lGsK3Uq+lS1CTIHKZF3VNHozpP0ln7ev+nkn/vQ
+         UN4AQVp3aR2lwEmJgucFi1kbzCXHkOsmi7ciktnkqgtfR6+iBKqa4qx7ZQpGVxTJ+j
+         WFeAt7DI0kTEJbIEBsnfPqMrS9hn5DqsP/6QzmsI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Timur Tabi <ttabi@nvidia.com>,
-        Karol Herbst <kherbst@redhat.com>,
-        Lyude Paul <lyude@redhat.com>
-Subject: [PATCH 4.9 036/101] drm/nouveau: fix another off-by-one in nvbios_addr
-Date:   Tue, 23 Aug 2022 10:03:09 +0200
-Message-Id: <20220823080035.956589692@linuxfoundation.org>
+        stable@vger.kernel.org, Florian Fainelli <f.fainelli@gmail.com>,
+        Jakub Kicinski <kuba@kernel.org>
+Subject: [PATCH 5.19 083/365] net: bcmgenet: Indicate MAC is in charge of PHY PM
+Date:   Tue, 23 Aug 2022 09:59:44 +0200
+Message-Id: <20220823080121.665495529@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220823080034.579196046@linuxfoundation.org>
-References: <20220823080034.579196046@linuxfoundation.org>
+In-Reply-To: <20220823080118.128342613@linuxfoundation.org>
+References: <20220823080118.128342613@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -49,35 +48,35 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Timur Tabi <ttabi@nvidia.com>
+From: Florian Fainelli <f.fainelli@gmail.com>
 
-commit c441d28945fb113220d48d6c86ebc0b090a2b677 upstream.
+commit bc3410f250219660a7be032c01c954a53b2c26ab upstream.
 
-This check determines whether a given address is part of
-image 0 or image 1.  Image 1 starts at offset image0_size,
-so that address should be included.
+Avoid the PHY library call unnecessarily into the suspend/resume functions by
+setting phydev->mac_managed_pm to true. The GENET driver essentially does
+exactly what mdio_bus_phy_resume() does by calling phy_init_hw() plus
+phy_resume().
 
-Fixes: 4d4e9907ff572 ("drm/nouveau/bios: guard against out-of-bounds accesses to image")
-Cc: <stable@vger.kernel.org> # v4.8+
-Signed-off-by: Timur Tabi <ttabi@nvidia.com>
-Reviewed-by: Karol Herbst <kherbst@redhat.com>
-Signed-off-by: Lyude Paul <lyude@redhat.com>
-Link: https://patchwork.freedesktop.org/patch/msgid/20220511163716.3520591-1-ttabi@nvidia.com
+Fixes: fba863b81604 ("net: phy: make PHY PM ops a no-op if MAC driver manages PHY PM")
+Signed-off-by: Florian Fainelli <f.fainelli@gmail.com>
+Link: https://lore.kernel.org/r/20220804173605.1266574-1-f.fainelli@gmail.com
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/gpu/drm/nouveau/nvkm/subdev/bios/base.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/net/ethernet/broadcom/genet/bcmmii.c |    3 +++
+ 1 file changed, 3 insertions(+)
 
---- a/drivers/gpu/drm/nouveau/nvkm/subdev/bios/base.c
-+++ b/drivers/gpu/drm/nouveau/nvkm/subdev/bios/base.c
-@@ -33,7 +33,7 @@ nvbios_addr(struct nvkm_bios *bios, u32
- {
- 	u32 p = *addr;
+--- a/drivers/net/ethernet/broadcom/genet/bcmmii.c
++++ b/drivers/net/ethernet/broadcom/genet/bcmmii.c
+@@ -393,6 +393,9 @@ int bcmgenet_mii_probe(struct net_device
+ 	if (priv->internal_phy && !GENET_IS_V5(priv))
+ 		dev->phydev->irq = PHY_MAC_INTERRUPT;
  
--	if (*addr > bios->image0_size && bios->imaged_addr) {
-+	if (*addr >= bios->image0_size && bios->imaged_addr) {
- 		*addr -= bios->image0_size;
- 		*addr += bios->imaged_addr;
- 	}
++	/* Indicate that the MAC is responsible for PHY PM */
++	dev->phydev->mac_managed_pm = true;
++
+ 	return 0;
+ }
+ 
 
 
