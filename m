@@ -2,112 +2,121 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A6DA9C32792
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 11:57:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3B60BC32772
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 11:57:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358855AbiHWL5P (ORCPT
+        id S1359025AbiHWL4E (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 07:57:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57062 "EHLO
+        Tue, 23 Aug 2022 07:56:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34888 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1358776AbiHWLyK (ORCPT
+        with ESMTP id S1358587AbiHWLw1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 07:54:10 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9017BD5DEC;
-        Tue, 23 Aug 2022 02:33:12 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id DEA41B81C4B;
-        Tue, 23 Aug 2022 09:33:07 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 31023C433D6;
-        Tue, 23 Aug 2022 09:33:05 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661247186;
-        bh=vxz0XatBq9pQ2L23H7ry7CKtCaMUuGXXCzKN3n+RX8E=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=FQKOoAkn3EWiweN2JYCTohLMKAI9SYgraJVtrUnNG/SDKZv9IBZMc8/WwiIQehckv
-         Z+v3HFJcH7dAiWcMzpPRNw83vWEkOfG37S4UR0tdOXS5uP/aEHAXLlqMI1RLKWB4P9
-         EiuW/Q5SvLuQ3qNrLUrbntLfNaZsdOkjcUOvgqOA=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Nimish Mishra <neelam.nimish@gmail.com>,
-        Anirban Chakraborty <ch.anirban00727@gmail.com>,
-        Debdeep Mukhopadhyay <debdeep.mukhopadhyay@gmail.com>,
-        Jerome Forissier <jerome.forissier@linaro.org>,
-        Jens Wiklander <jens.wiklander@linaro.org>,
-        Linus Torvalds <torvalds@linux-foundation.org>
-Subject: [PATCH 5.4 328/389] tee: add overflow check in register_shm_helper()
-Date:   Tue, 23 Aug 2022 10:26:46 +0200
-Message-Id: <20220823080129.221336436@linuxfoundation.org>
+        Tue, 23 Aug 2022 07:52:27 -0400
+Received: from mail-pl1-x634.google.com (mail-pl1-x634.google.com [IPv6:2607:f8b0:4864:20::634])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 38D64D51E4;
+        Tue, 23 Aug 2022 02:32:50 -0700 (PDT)
+Received: by mail-pl1-x634.google.com with SMTP id y4so12313406plb.2;
+        Tue, 23 Aug 2022 02:32:50 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:from:to:cc;
+        bh=zk5VkhKY6qv5m7v9uP9nYXO8clyUIi7rFMMrFFDGn7U=;
+        b=kmwFktDd3ld3yM7m7f68NClI/f/GAAGO/5hY1Cwxkqlmc8A3BK6+Uey+KWM4tBBx7/
+         qvznlJC54wouFVrRhbTlPhrXvsw2ycTYMVt9ExQFnZ7fXTfiJ8j88iI3+e5zUUfUm+sP
+         3L48IEHxsKDcfQQcihzzi1wlc/eCmcrjV3koajdbWwEOsnOumwtnfNXwnDr92TrGchqA
+         1fLRW8leTnKinX05mF4ZTplpJXTkxS4taJXKPIak0DhpMM0nIOZluT+Ptv1xf46GDW/c
+         d5vGrzVg1RK5ZXy3n5FgOAO0IvzckjrUv2/2qZu9RKcfkOetWgELNXbI8jeDrXMQ5PPe
+         LaZw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc;
+        bh=zk5VkhKY6qv5m7v9uP9nYXO8clyUIi7rFMMrFFDGn7U=;
+        b=BuA6JrOoXk7fHYRUW8rvLho4AOOHdJp3HgeeAf5ayrVwieU1mt31MSxCz4giou36w6
+         9eOpU+KWZog/c4l96ZQp4LZw2POFt3BolLd667eQ+OazMCUqFtbiQ7d3h+MEFxBza4vJ
+         tBUmCs2LpwVPTIBpNWLFp1F4zuLMXmyKnJzrUoEvHP3qf6IEN8FdEgmFRRv06qYTyb1d
+         JDA6zGxj75DtSChMmkWWWAloioP/pLwbZIlIIV4DsjOyXcZRWGfCQP8C3d418qdsJgwg
+         6npBoUmR9cuTOyloX9cddpPKF4OEv0Zz+WuO4W8raRdRguCzS7gW+mIBWNZMkakD1K9s
+         OdBg==
+X-Gm-Message-State: ACgBeo1KNji4XbswCFnd1JYtzXmavEO+hXuPOP4knzv8enYs9Yabn4HT
+        3bosqNtgnFCQNvnGrsKg8YE=
+X-Google-Smtp-Source: AA6agR6LfsI8b0QU91H2HRcCWO5xh0n1GDvgAOO89yB7YmfaMO/CMqaH+0esbGYN8H0gThikx4h1Ng==
+X-Received: by 2002:a17:90b:238b:b0:1fa:d833:30dd with SMTP id mr11-20020a17090b238b00b001fad83330ddmr2444336pjb.147.1661247169038;
+        Tue, 23 Aug 2022 02:32:49 -0700 (PDT)
+Received: from localhost.localdomain ([103.7.29.32])
+        by smtp.gmail.com with ESMTPSA id 13-20020a170902c24d00b0017297a6b39dsm10057212plg.265.2022.08.23.02.32.47
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 23 Aug 2022 02:32:48 -0700 (PDT)
+From:   Like Xu <like.xu.linux@gmail.com>
+X-Google-Original-From: Like Xu <likexu@tencent.com>
+To:     Sean Christopherson <seanjc@google.com>,
+        Paolo Bonzini <pbonzini@redhat.com>
+Cc:     Jim Mattson <jmattson@google.com>, linux-kernel@vger.kernel.org,
+        kvm@vger.kernel.org
+Subject: [PATCH RESEND v2 3/8] KVM: x86/pmu: Don't generate PEBS records for emulated instructions
+Date:   Tue, 23 Aug 2022 17:32:16 +0800
+Message-Id: <20220823093221.38075-4-likexu@tencent.com>
 X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220823080115.331990024@linuxfoundation.org>
-References: <20220823080115.331990024@linuxfoundation.org>
-User-Agent: quilt/0.67
+In-Reply-To: <20220823093221.38075-1-likexu@tencent.com>
+References: <20220823093221.38075-1-likexu@tencent.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jens Wiklander <jens.wiklander@linaro.org>
+From: Like Xu <likexu@tencent.com>
 
-commit 573ae4f13f630d6660008f1974c0a8a29c30e18a upstream.
+KVM will accumulate an enabled counter for at least INSTRUCTIONS or
+BRANCH_INSTRUCTION hw event from any KVM emulated instructions,
+generating emulated overflow interrupt on counter overflow, which
+in theory should also happen when the PEBS counter overflows but
+it currently lacks this part of the underlying support (e.g. through
+software injection of records in the irq context or a lazy approach).
 
-With special lengths supplied by user space, register_shm_helper() has
-an integer overflow when calculating the number of pages covered by a
-supplied user space memory region.
+In this case, KVM skips the injection of this BUFFER_OVF PMI (effectively
+dropping one PEBS record) and let the overflow counter move on. The loss
+of a single sample does not introduce a loss of accuracy, but is easily
+noticeable for certain specific instructions.
 
-This causes internal_get_user_pages_fast() a helper function of
-pin_user_pages_fast() to do a NULL pointer dereference:
+This issue is expected to be addressed along with the issue
+of PEBS cross-mapped counters with a slow-path proposal.
 
-  Unable to handle kernel NULL pointer dereference at virtual address 0000000000000010
-  Modules linked in:
-  CPU: 1 PID: 173 Comm: optee_example_a Not tainted 5.19.0 #11
-  Hardware name: QEMU QEMU Virtual Machine, BIOS 0.0.0 02/06/2015
-  pc : internal_get_user_pages_fast+0x474/0xa80
-  Call trace:
-   internal_get_user_pages_fast+0x474/0xa80
-   pin_user_pages_fast+0x24/0x4c
-   register_shm_helper+0x194/0x330
-   tee_shm_register_user_buf+0x78/0x120
-   tee_ioctl+0xd0/0x11a0
-   __arm64_sys_ioctl+0xa8/0xec
-   invoke_syscall+0x48/0x114
-
-Fix this by adding an an explicit call to access_ok() in
-tee_shm_register_user_buf() to catch an invalid user space address
-early.
-
-Fixes: 033ddf12bcf5 ("tee: add register user memory")
-Cc: stable@vger.kernel.org
-Reported-by: Nimish Mishra <neelam.nimish@gmail.com>
-Reported-by: Anirban Chakraborty <ch.anirban00727@gmail.com>
-Reported-by: Debdeep Mukhopadhyay <debdeep.mukhopadhyay@gmail.com>
-Suggested-by: Jerome Forissier <jerome.forissier@linaro.org>
-Signed-off-by: Jens Wiklander <jens.wiklander@linaro.org>
-Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
-[JW: backport to stable-5.4 + update commit message]
-Signed-off-by: Jens Wiklander <jens.wiklander@linaro.org>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Fixes: 79f3e3b58386 ("KVM: x86/pmu: Reprogram PEBS event to emulate guest PEBS counter")
+Signed-off-by: Like Xu <likexu@tencent.com>
 ---
- drivers/tee/tee_core.c |    3 +++
- 1 file changed, 3 insertions(+)
+ arch/x86/kvm/pmu.c | 16 +++++++++++++---
+ 1 file changed, 13 insertions(+), 3 deletions(-)
 
---- a/drivers/tee/tee_core.c
-+++ b/drivers/tee/tee_core.c
-@@ -182,6 +182,9 @@ tee_ioctl_shm_register(struct tee_contex
- 	if (data.flags)
- 		return -EINVAL;
+diff --git a/arch/x86/kvm/pmu.c b/arch/x86/kvm/pmu.c
+index 02f9e4f245bd..390d697efde1 100644
+--- a/arch/x86/kvm/pmu.c
++++ b/arch/x86/kvm/pmu.c
+@@ -106,9 +106,19 @@ static inline void __kvm_perf_overflow(struct kvm_pmc *pmc, bool in_pmi)
+ 		return;
  
-+	if (!access_ok((void __user *)(unsigned long)data.addr, data.length))
-+		return -EFAULT;
-+
- 	shm = tee_shm_register(ctx, data.addr, data.length,
- 			       TEE_SHM_DMA_BUF | TEE_SHM_USER_MAPPED);
- 	if (IS_ERR(shm))
-
+ 	if (pmc->perf_event && pmc->perf_event->attr.precise_ip) {
+-		/* Indicate PEBS overflow PMI to guest. */
+-		skip_pmi = __test_and_set_bit(GLOBAL_STATUS_BUFFER_OVF_BIT,
+-					      (unsigned long *)&pmu->global_status);
++		if (!in_pmi) {
++			/*
++			 * TODO: KVM is currently _choosing_ to not generate records
++			 * for emulated instructions, avoiding BUFFER_OVF PMI when
++			 * there are no records. Strictly speaking, it should be done
++			 * as well in the right context to improve sampling accuracy.
++			 */
++			skip_pmi = true;
++		} else {
++			/* Indicate PEBS overflow PMI to guest. */
++			skip_pmi = __test_and_set_bit(GLOBAL_STATUS_BUFFER_OVF_BIT,
++						      (unsigned long *)&pmu->global_status);
++		}
+ 	} else {
+ 		__set_bit(pmc->idx, (unsigned long *)&pmu->global_status);
+ 	}
+-- 
+2.37.2
 
