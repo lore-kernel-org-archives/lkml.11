@@ -2,162 +2,173 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id ADAB2C32772
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 11:44:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D2946C32774
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 11:44:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358193AbiHWLoI (ORCPT
+        id S1358217AbiHWLoM (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 07:44:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59618 "EHLO
+        Tue, 23 Aug 2022 07:44:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59904 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357928AbiHWLjd (ORCPT
+        with ESMTP id S1357979AbiHWLkI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 07:39:33 -0400
-Received: from EUR02-AM5-obe.outbound.protection.outlook.com (mail-eopbgr00137.outbound.protection.outlook.com [40.107.0.137])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B08DB786CF;
-        Tue, 23 Aug 2022 02:28:37 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=IoU013dnspOebzHHO6aZ4LXoKHyBNSyfBXpviUG+3BnTOlQJK4qNX4rLXaL/b47aHXO3HwXNoDhyPER3c2nwWl+fxhbP+5Cfrl46uOsGv6bglmj8KiXFAGxf7r9sDpHe1/WcvVfUaEH+oHHAyDZxZongagFVmD29khQ+MoH/O2k896UBlS1cKX+bISs42nRKd9/Hg6I27Toi8Q619+7hIPMSe7pnB07A6H2AxFgMkEi0y0dVdAV5xSpxtdFq+s/JzmOw2GeAZTUKKSyNecLIZZ/XFEEWoXUCqTG3VAobueUv5Hp+51oQqVwFZ17nloCc6IRu+gGp+qgBcbQinjoeFg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=K+w+NUFAqEf1WD/mrZZur+ZGqgvosTVBhLYL3r1c52s=;
- b=SodSwcozuU/Sv71X+636AZFlxwVpCNcethyeXOFBnxlax8KR3P5YfR5o0Lj21Iw8czcFX4aq61DqBlAjyuoQDMfWzpOHylGQ1DNo7jjDToo1c8A2gdg8KybvTZ5UVpnnPeinow2HHrTF3l2vPTvHsgq6J/OMQXRZsUeoLiGpUascIgVcTfp6G/xPZoKaZlgGBZkTlVdPcX+SCVurUjPS0NOHb/K+CIx4GYsnuzqXUUPpMcfNy+5AEwigiHAfB44maFdnOEtl9logHcK+V7NGO+TWAOL/J0M3x+2CLal6ryN3G8pbS6IUb2INDD57Qm63FVIoB1jYdbNpAFtUjHwwnQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=axentia.se; dmarc=pass action=none header.from=axentia.se;
- dkim=pass header.d=axentia.se; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=axentia.se;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=K+w+NUFAqEf1WD/mrZZur+ZGqgvosTVBhLYL3r1c52s=;
- b=AHXH4kfaRcoSCMYIa484sI1FNxu/t8yjUdGdPOsUvV82OKgDqyJj5X22PQivrxYpnU+k4lte4ALKthnVTkeqXIIcn5J3lFB0RJiTO2ZAvBcYQ4IBicreU/mt3AtURrofQ7BVpLI3rdbp69mTFabc8nOwPZjnX9zD2lJvnT9whYc=
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=axentia.se;
-Received: from AM0PR02MB4436.eurprd02.prod.outlook.com (2603:10a6:208:ed::15)
- by AS8PR02MB7078.eurprd02.prod.outlook.com (2603:10a6:20b:2e5::12) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5566.14; Tue, 23 Aug
- 2022 09:28:35 +0000
-Received: from AM0PR02MB4436.eurprd02.prod.outlook.com
- ([fe80::1d88:3306:c280:3179]) by AM0PR02MB4436.eurprd02.prod.outlook.com
- ([fe80::1d88:3306:c280:3179%6]) with mapi id 15.20.5546.022; Tue, 23 Aug 2022
- 09:28:35 +0000
-Message-ID: <72f284ef-233c-37af-a73c-b58e26361d6e@axentia.se>
-Date:   Tue, 23 Aug 2022 11:28:33 +0200
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.12.0
-Subject: Re: [PATCH v2 3/3] docs: i2c: i2c-topology: fix typo
-Content-Language: en-US
-To:     luca.ceresoli@bootlin.com, linux-doc@vger.kernel.org,
-        linux-i2c@vger.kernel.org
-Cc:     Wolfram Sang <wsa@kernel.org>, linux-kernel@vger.kernel.org,
-        Bagas Sanjaya <bagasdotme@gmail.com>
-References: <20220822091050.47099-1-luca.ceresoli@bootlin.com>
- <20220822091050.47099-4-luca.ceresoli@bootlin.com>
-From:   Peter Rosin <peda@axentia.se>
-In-Reply-To: <20220822091050.47099-4-luca.ceresoli@bootlin.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: MM0P280CA0023.SWEP280.PROD.OUTLOOK.COM (2603:10a6:190:a::9)
- To AM0PR02MB4436.eurprd02.prod.outlook.com (2603:10a6:208:ed::15)
+        Tue, 23 Aug 2022 07:40:08 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1BE01792D2;
+        Tue, 23 Aug 2022 02:28:39 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 63CC561321;
+        Tue, 23 Aug 2022 09:28:38 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6B291C433C1;
+        Tue, 23 Aug 2022 09:28:37 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1661246917;
+        bh=P5zsGTLjzAISYbxpTaeLg4BjhrF3FWX6sCFB2Kc6raA=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=EBF7Di38uiNTZJiQISTGUA85qJZguQOIkBcK4g4KmZ8wfFVhF7oOWcQWk7SFZhx+R
+         ahUnTXhQiHxnoeVTsuvw2VjKxsRVscGDrKDoNO0jSuhdETlSP9OhtifNYSfkzVMlUj
+         +gbQeadLh22NwYyMzqsd8HvovvZzAgvv7038Azgs=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, stable@kernel.org,
+        Hulk Robot <hulkci@huawei.com>,
+        Baokun Li <libaokun1@huawei.com>,
+        "Ritesh Harjani (IBM)" <ritesh.list@gmail.com>,
+        Jan Kara <jack@suse.cz>, Theodore Tso <tytso@mit.edu>
+Subject: [PATCH 5.4 259/389] ext4: fix use-after-free in ext4_xattr_set_entry
+Date:   Tue, 23 Aug 2022 10:25:37 +0200
+Message-Id: <20220823080126.406961120@linuxfoundation.org>
+X-Mailer: git-send-email 2.37.2
+In-Reply-To: <20220823080115.331990024@linuxfoundation.org>
+References: <20220823080115.331990024@linuxfoundation.org>
+User-Agent: quilt/0.67
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: d825e8b3-ddda-4152-f5e8-08da84e9da4d
-X-MS-TrafficTypeDiagnostic: AS8PR02MB7078:EE_
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: DARbdSSaVBw4/zAFglq55EBd0O+RxhqJYlXM/oveXnNR3+eM9ZPm5UhcpMBawhXSotZVkR+VEoyLaNbHElLaZJEl284jO34G4GeSFUzmy1f9PJFw3Uf0V/htn/QhI5fx9Wr0FPd2wj6Wr2Jmrpj3DEsR4zYWzpPfEm/XHpnckua6pXqJ/q0DHSOQKBCIjxoyL8iRwTO7KUSJ35fA0mKBzEdqWvxlvpN7YtSBMqY6GjCHqi335CGcHaV/1G2BwnN8X7puiwXZz3hGKZ5WfyqBvYuS75d1OZ9E4RVCcg29Z1iZr66/sLvcOtBqyP698bMVGzlEvQBSRbZ7Bb+n5CdV3Igmjpgz5KcOgnR/1x1nA0w9L9HZyfVDrWDrqUptPODhVbxroFnu1GnaugiiYXcJJU3oHLerDX85ec/99l9f6X9qGw8fGhnpdNUF34teBoQCsI80OzQFLsmMb6Nd7XZ3yIzJ+GUU7zDaJlsXXvakWSYFPP1nlmSK6+oodIh2yI90Ks61kElZeUofTxUElK21KIPsN1NSaqdUaUwnSM3NS1wkPzjp7HcXppF6YltA1PEa5zAftmKXpM61vDk+/CJv4pC/bgARVlhY6zftV4UmO8/EjngVCCAp5O747j1/5v2nBdPeZQ/dl+hy+IBx7iAamgmAZ3nm3gtF0ztPwFwJIhdlnsyhvxTLGntR8WLDwp3hRORPj50BF0WwmH0rOnv8ml3PEf05fcqekFVS9+VKfSIXbMiOOyp8Mzkog1KHhvOfA2hhqGg8+6xxRoUTWL/LnX8ha9faXBhxaO3yJOWpxt8=
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AM0PR02MB4436.eurprd02.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(366004)(136003)(376002)(346002)(39840400004)(396003)(478600001)(6486002)(316002)(54906003)(186003)(2616005)(83380400001)(6506007)(41300700001)(38100700002)(26005)(6512007)(2906002)(5660300002)(86362001)(8936002)(31696002)(66946007)(31686004)(36756003)(66556008)(4326008)(66476007)(8676002)(43740500002)(45980500001);DIR:OUT;SFP:1102;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?QTFLekJFM1poVFQ5Yi9SdE1lWFJGalR6UjJVWkhvS0ZyTXRucEN2RnZnNzJY?=
- =?utf-8?B?eXNKbUZ3MlNrYlU2K2VySGFJUGgxZjlPNnFoYTlkMGkzVXB2OEQxWmlEVFAz?=
- =?utf-8?B?cUx5N3htb1dGMFlmeFA3RVNnbXZzdzhwRmJ2eVRBeFIxbTg1S1kyNGJwazN5?=
- =?utf-8?B?TDY1SUpUSWxmUnh0WkNZbXNXUkZCbFRxVnFDYWFlNlV3dld3NlZmVjZaeDgy?=
- =?utf-8?B?aE56bEhSbXdWMm9IcFc3ME5GZ0pqNWlxNzZab1VRSUVIZ29uYm5tWWVBM1RG?=
- =?utf-8?B?akJhM0ljVk9ySlJ5ck56SVh5WFRVdUQ2VDBUNk1JbjdvYWhwOHh3cWlMUDEr?=
- =?utf-8?B?cjRjS2VNSmttYTNBSjZaeHpnYTJ2TEpjS25MVWJ6SjM5aHkrSE1rZHB0T1Ux?=
- =?utf-8?B?V3BUNXRtM3lJeDVxaGExUWZLRlpIMTJTZmExVTdTU0d4V21UR2kzTmJuTVZG?=
- =?utf-8?B?eHdWRE00dm1vLzN5ZlV2aDFCSE1PamJDUElCMWpTVlRSUHdhYlB5SmcwUTJP?=
- =?utf-8?B?QmU1MkJwdEhBc055STc5d3hzbFZPaTIyQ1BQYi9ka3dXQ204bUFkV25wb0Nn?=
- =?utf-8?B?SEN2U2xFcWJGQU5PalRNKyt0UzRPaVlCYVBkUkJQYU5uYncydU5pZmhkR1Nt?=
- =?utf-8?B?VUY0Y0VxcXBFS2hMUUk2UFBoQ1NQWEYxamNSQ2VmTVhDOHE2UkNGMWg1L2hB?=
- =?utf-8?B?TVlZRFUxYlEzRmlaZ0k5OEY1YjRIRXo3cm56aU9lRGJWWTJqVHlMVk1oV2dk?=
- =?utf-8?B?dVB6SllJSS9USnhTcXh3K2duN0tqZkRqaEhJUmEvbmFPN3ExV1hyZkFCN24y?=
- =?utf-8?B?Nm0yZ0dJcDMyYWJkOHhYdCt0SmN0TVNvck9FRGhhdlB6dXhFTDZPdGNuL3Bk?=
- =?utf-8?B?Q09jVDFtVkdCOUFVa2FadHFnTWpGT2E3Y0NXRGI5cjI1aG5tQWFObnVxUkhm?=
- =?utf-8?B?SFp2TEJieWdqejQvVWkyUUhnSE5iWS82cjdYOGl6akxvSlVUd1RCTVRUQ2Zs?=
- =?utf-8?B?eXdwcE1reEpqVVU3VDJ6bDltdnpWRzN6Ukgwbm44S0lhcjdLNnFWM2NuRGtH?=
- =?utf-8?B?VGFzRWNDUjJrQjliV3NOQUZSek9BQXpDcExDMXBrb1RXaXdDSHNBQUI1c2Jk?=
- =?utf-8?B?ckpVY0lVWW5hOG1MZmNrWHNVRmo0L0V5VFZ5WW56K0ErL3lteUdwSTV5dVBj?=
- =?utf-8?B?cVRFRUlpaWk2NXkrYW1KVTBUT1NJK3RpL1ZCbHJsOWxPL25SemlmUmlUNmx4?=
- =?utf-8?B?eXhySjgyS3U5Mjh2WjdSL3ZiTlgvbnJ6Z01sekdKaFppWkRxRnFlL0lkenNB?=
- =?utf-8?B?UDd6N2V2T0NXb09vYmZZdVcydFVROGJ2Qi94U1lkL1VCaEpkR1k4TDFXOFh0?=
- =?utf-8?B?WEs2NUczSHVhWDBVcTdqNUZNT0RvNmxkRmMra3ltSnFPVHBQMmNsM09tc0xV?=
- =?utf-8?B?S0NSZno4UzFTNDMwYVlxWXNCWi9YdjBGMzY4ZFFjTnVrbENURU82RjJnQzNT?=
- =?utf-8?B?SVFvTFN2TUVvaFhuRHFiNC9tbGZIT3ErVHhvVHViZko2ZEhRMy91bkZxdHh4?=
- =?utf-8?B?dFJYZWRpZEJzblhTNTRoallvMy9xOThpZHgzTmdCall1Qlp5T3k0YlVuMkFa?=
- =?utf-8?B?SjVaNmNjeDh5UnB0d2dEMHI1SU5lU0JCSFluZzlqUHE3dlR2N0tFQ2lHVjdC?=
- =?utf-8?B?SDYrZUN6Uk5mdXZyTUJ1TTI0Q1FzNUFXZVI4WHIvUzlHT3poZXN5czlySThB?=
- =?utf-8?B?WnVrU1ZlVTJjTHRpeTBqdm1qOG12V1d4clNQZUdPWWFUbnNMVHcrdGNuNnVU?=
- =?utf-8?B?SXlLVklrT1g1bndjbCtkNzFyamRWcW9uTVBlVTIwRDErQi9mRGY0ZXMrTjRp?=
- =?utf-8?B?ditoMHJGU05MZ2Rpc3B5eDU4Q3RRYjduU0V3RXpZNmVlZHV6ZHJDTkRNVzl4?=
- =?utf-8?B?QS9NQTJjVmNwY1JMVlYzb2dRbW8vTTdDSGg3MU9XQnVVOHlreWltdWZ2bkRx?=
- =?utf-8?B?SDVjTzZpb2NZK2tRMG5Xb2RGU0J4NDh3YmdPbVdXMUtkNkpvS05PZktQc3U4?=
- =?utf-8?B?amU1c0oreS9QNnBacTNFaGZSYmtjb1pGcWVUemN2cHpvUHFHdFZLUGxqa1pR?=
- =?utf-8?Q?e5plPhoLSMVem2qbkMv+thc6O?=
-X-OriginatorOrg: axentia.se
-X-MS-Exchange-CrossTenant-Network-Message-Id: d825e8b3-ddda-4152-f5e8-08da84e9da4d
-X-MS-Exchange-CrossTenant-AuthSource: AM0PR02MB4436.eurprd02.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 23 Aug 2022 09:28:35.2228
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 4ee68585-03e1-4785-942a-df9c1871a234
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: OagmVoBT2QqRR/rWX15anRVJ1YC0nNuw2qVKQQ55c5X8X5pIBm8eTwCIPXvrV4Gd
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: AS8PR02MB7078
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi!
+From: Baokun Li <libaokun1@huawei.com>
 
-2022-08-22 at 11:10, luca.ceresoli@bootlin.com wrote:
-> From: Luca Ceresoli <luca.ceresoli@bootlin.com>
-> 
-> "intension" should have probably been "intention", however "intent" seems
-> even better.
-> 
-> Reported-by: Bagas Sanjaya <bagasdotme@gmail.com>
-> Signed-off-by: Luca Ceresoli <luca.ceresoli@bootlin.com>
+commit 67d7d8ad99beccd9fe92d585b87f1760dc9018e3 upstream.
 
-Acked-by: Peter Rosin <peda@axentia.se>
+Hulk Robot reported a issue:
+==================================================================
+BUG: KASAN: use-after-free in ext4_xattr_set_entry+0x18ab/0x3500
+Write of size 4105 at addr ffff8881675ef5f4 by task syz-executor.0/7092
 
-Thanks for polishing my brain-dump!
+CPU: 1 PID: 7092 Comm: syz-executor.0 Not tainted 4.19.90-dirty #17
+Call Trace:
+[...]
+ memcpy+0x34/0x50 mm/kasan/kasan.c:303
+ ext4_xattr_set_entry+0x18ab/0x3500 fs/ext4/xattr.c:1747
+ ext4_xattr_ibody_inline_set+0x86/0x2a0 fs/ext4/xattr.c:2205
+ ext4_xattr_set_handle+0x940/0x1300 fs/ext4/xattr.c:2386
+ ext4_xattr_set+0x1da/0x300 fs/ext4/xattr.c:2498
+ __vfs_setxattr+0x112/0x170 fs/xattr.c:149
+ __vfs_setxattr_noperm+0x11b/0x2a0 fs/xattr.c:180
+ __vfs_setxattr_locked+0x17b/0x250 fs/xattr.c:238
+ vfs_setxattr+0xed/0x270 fs/xattr.c:255
+ setxattr+0x235/0x330 fs/xattr.c:520
+ path_setxattr+0x176/0x190 fs/xattr.c:539
+ __do_sys_lsetxattr fs/xattr.c:561 [inline]
+ __se_sys_lsetxattr fs/xattr.c:557 [inline]
+ __x64_sys_lsetxattr+0xc2/0x160 fs/xattr.c:557
+ do_syscall_64+0xdf/0x530 arch/x86/entry/common.c:298
+ entry_SYSCALL_64_after_hwframe+0x44/0xa9
+RIP: 0033:0x459fe9
+RSP: 002b:00007fa5e54b4c08 EFLAGS: 00000246 ORIG_RAX: 00000000000000bd
+RAX: ffffffffffffffda RBX: 000000000051bf60 RCX: 0000000000459fe9
+RDX: 00000000200003c0 RSI: 0000000020000180 RDI: 0000000020000140
+RBP: 000000000051bf60 R08: 0000000000000001 R09: 0000000000000000
+R10: 0000000000001009 R11: 0000000000000246 R12: 0000000000000000
+R13: 00007ffc73c93fc0 R14: 000000000051bf60 R15: 00007fa5e54b4d80
+[...]
+==================================================================
 
-Cheers,
-Peter
+Above issue may happen as follows:
+-------------------------------------
+ext4_xattr_set
+  ext4_xattr_set_handle
+    ext4_xattr_ibody_find
+      >> s->end < s->base
+      >> no EXT4_STATE_XATTR
+      >> xattr_check_inode is not executed
+    ext4_xattr_ibody_set
+      ext4_xattr_set_entry
+       >> size_t min_offs = s->end - s->base
+       >> UAF in memcpy
 
-> 
-> ---
-> 
-> Changed in v2:
-> - this patch is new in v2
-> ---
->  Documentation/i2c/i2c-topology.rst | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
-> 
-> diff --git a/Documentation/i2c/i2c-topology.rst b/Documentation/i2c/i2c-topology.rst
-> index 6f2da7f386fd..65ed76bc979f 100644
-> --- a/Documentation/i2c/i2c-topology.rst
-> +++ b/Documentation/i2c/i2c-topology.rst
-> @@ -102,7 +102,7 @@ When using a mux-locked mux, be aware of the following restrictions:
->    I.e. the select-transfer-deselect transaction targeting e.g. device
->    address 0x42 behind mux-one may be interleaved with a similar
->    operation targeting device address 0x42 behind mux-two. The
-> -  intension with such a topology would in this hypothetical example
-> +  intent with such a topology would in this hypothetical example
->    be that mux-one and mux-two should not be selected simultaneously,
->    but mux-locked muxes do not guarantee that in all topologies.
->  
+we can easily reproduce this problem with the following commands:
+    mkfs.ext4 -F /dev/sda
+    mount -o debug_want_extra_isize=128 /dev/sda /mnt
+    touch /mnt/file
+    setfattr -n user.cat -v `seq -s z 4096|tr -d '[:digit:]'` /mnt/file
+
+In ext4_xattr_ibody_find, we have the following assignment logic:
+  header = IHDR(inode, raw_inode)
+         = raw_inode + EXT4_GOOD_OLD_INODE_SIZE + i_extra_isize
+  is->s.base = IFIRST(header)
+             = header + sizeof(struct ext4_xattr_ibody_header)
+  is->s.end = raw_inode + s_inode_size
+
+In ext4_xattr_set_entry
+  min_offs = s->end - s->base
+           = s_inode_size - EXT4_GOOD_OLD_INODE_SIZE - i_extra_isize -
+	     sizeof(struct ext4_xattr_ibody_header)
+  last = s->first
+  free = min_offs - ((void *)last - s->base) - sizeof(__u32)
+       = s_inode_size - EXT4_GOOD_OLD_INODE_SIZE - i_extra_isize -
+         sizeof(struct ext4_xattr_ibody_header) - sizeof(__u32)
+
+In the calculation formula, all values except s_inode_size and
+i_extra_size are fixed values. When i_extra_size is the maximum value
+s_inode_size - EXT4_GOOD_OLD_INODE_SIZE, min_offs is -4 and free is -8.
+The value overflows. As a result, the preceding issue is triggered when
+memcpy is executed.
+
+Therefore, when finding xattr or setting xattr, check whether
+there is space for storing xattr in the inode to resolve this issue.
+
+Cc: stable@kernel.org
+Reported-by: Hulk Robot <hulkci@huawei.com>
+Signed-off-by: Baokun Li <libaokun1@huawei.com>
+Reviewed-by: Ritesh Harjani (IBM) <ritesh.list@gmail.com>
+Reviewed-by: Jan Kara <jack@suse.cz>
+Link: https://lore.kernel.org/r/20220616021358.2504451-3-libaokun1@huawei.com
+Signed-off-by: Theodore Ts'o <tytso@mit.edu>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+---
+ fs/ext4/xattr.c |    6 ++++--
+ 1 file changed, 4 insertions(+), 2 deletions(-)
+
+--- a/fs/ext4/xattr.c
++++ b/fs/ext4/xattr.c
+@@ -2184,8 +2184,9 @@ int ext4_xattr_ibody_find(struct inode *
+ 	struct ext4_inode *raw_inode;
+ 	int error;
+ 
+-	if (EXT4_I(inode)->i_extra_isize == 0)
++	if (!EXT4_INODE_HAS_XATTR_SPACE(inode))
+ 		return 0;
++
+ 	raw_inode = ext4_raw_inode(&is->iloc);
+ 	header = IHDR(inode, raw_inode);
+ 	is->s.base = is->s.first = IFIRST(header);
+@@ -2213,8 +2214,9 @@ int ext4_xattr_ibody_inline_set(handle_t
+ 	struct ext4_xattr_search *s = &is->s;
+ 	int error;
+ 
+-	if (EXT4_I(inode)->i_extra_isize == 0)
++	if (!EXT4_INODE_HAS_XATTR_SPACE(inode))
+ 		return -ENOSPC;
++
+ 	error = ext4_xattr_set_entry(i, s, handle, inode, false /* is_block */);
+ 	if (error)
+ 		return error;
+
+
