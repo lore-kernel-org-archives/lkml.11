@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5456CC3F6B0
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 09:31:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8A946C32774
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 09:31:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350226AbiHWJbx (ORCPT
+        id S1350325AbiHWJb5 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 05:31:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36464 "EHLO
+        Tue, 23 Aug 2022 05:31:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51038 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350105AbiHWJ3u (ORCPT
+        with ESMTP id S1350539AbiHWJaZ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 05:29:50 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7B12C91D06;
-        Tue, 23 Aug 2022 01:37:43 -0700 (PDT)
+        Tue, 23 Aug 2022 05:30:25 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CDB10923E8;
+        Tue, 23 Aug 2022 01:37:40 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id D8472B81C5A;
-        Tue, 23 Aug 2022 08:36:29 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 20ADCC433C1;
-        Tue, 23 Aug 2022 08:36:27 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 6E11C614C5;
+        Tue, 23 Aug 2022 08:37:40 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7392DC433C1;
+        Tue, 23 Aug 2022 08:37:39 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661243788;
-        bh=/w7F+iipsaqlzfkd/2XvhEnRnAT6KKvkuj4hCLT0PrQ=;
+        s=korg; t=1661243859;
+        bh=Xa6s7LYbZMRUMtcixMwGFLO019BA0YLdj1CCuUTJ8O8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=0KpY04kBcobziMb2kHfSay8XgIUFnyGqMK0kd2utZMUE3J8fCkqRy2MbVfa6DkEvy
-         U/9nMG9OcnASZI6mM+8nh23DOv46x7fMTyRsC2xmgC2wgW7NnbfjfRGDdicWVure7q
-         eB6F7cXfHk70y4290UnQ3hvUvcKTyI5NE2VmM8Ug=
+        b=VFkqVPFOgied8zG51bN4OOo7UTNthMpiwJD/s6whVkN2/t410tXM98hbx4T2jrL+y
+         d9ZLaUGDkawZ8J8kHXbIaZcOCs34Z31gKXESFngahJwPEoq3q6c3J9tNo05V2zhFIR
+         4WpykC1hpLfQKw1Dojn2UNC2Rb74NmXLFYYxilhM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Bart Van Assche <bvanassche@acm.org>,
-        Liang He <windhl@126.com>,
-        "Martin K. Petersen" <martin.petersen@oracle.com>
-Subject: [PATCH 4.14 004/229] scsi: ufs: host: Hold reference returned by of_parse_phandle()
-Date:   Tue, 23 Aug 2022 10:22:45 +0200
-Message-Id: <20220823080053.430708004@linuxfoundation.org>
+        stable@vger.kernel.org, Manyi Li <limanyi@uniontech.com>,
+        "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 4.14 045/229] ACPI: PM: save NVS memory for Lenovo G40-45
+Date:   Tue, 23 Aug 2022 10:23:26 +0200
+Message-Id: <20220823080055.255044572@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220823080053.202747790@linuxfoundation.org>
 References: <20220823080053.202747790@linuxfoundation.org>
@@ -50,56 +50,44 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Liang He <windhl@126.com>
+From: Manyi Li <limanyi@uniontech.com>
 
-commit a3435afba87dc6cd83f5595e7607f3c40f93ef01 upstream.
+[ Upstream commit 4b7ef7b05afcde44142225c184bf43a0cd9e2178 ]
 
-In ufshcd_populate_vreg(), we should hold the reference returned by
-of_parse_phandle() and then use it to call of_node_put() for refcount
-balance.
+[821d6f0359b0614792ab8e2fb93b503e25a65079] is to make machines
+produced from 2012 to now not saving NVS region to accelerate S3.
 
-Link: https://lore.kernel.org/r/20220719071529.1081166-1-windhl@126.com
-Fixes: aa4976130934 ("ufs: Add regulator enable support")
-Reviewed-by: Bart Van Assche <bvanassche@acm.org>
-Signed-off-by: Liang He <windhl@126.com>
-Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+But, Lenovo G40-45, a platform released in 2015, still needs NVS memory
+saving during S3. A quirk is introduced for this platform.
+
+Signed-off-by: Manyi Li <limanyi@uniontech.com>
+Signed-off-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/scsi/ufs/ufshcd-pltfrm.c |   15 +++++++++++++--
- 1 file changed, 13 insertions(+), 2 deletions(-)
+ drivers/acpi/sleep.c | 8 ++++++++
+ 1 file changed, 8 insertions(+)
 
---- a/drivers/scsi/ufs/ufshcd-pltfrm.c
-+++ b/drivers/scsi/ufs/ufshcd-pltfrm.c
-@@ -124,9 +124,20 @@ out:
- 	return ret;
- }
- 
-+static bool phandle_exists(const struct device_node *np,
-+			   const char *phandle_name, int index)
-+{
-+	struct device_node *parse_np = of_parse_phandle(np, phandle_name, index);
-+
-+	if (parse_np)
-+		of_node_put(parse_np);
-+
-+	return parse_np != NULL;
-+}
-+
- #define MAX_PROP_SIZE 32
- static int ufshcd_populate_vreg(struct device *dev, const char *name,
--		struct ufs_vreg **out_vreg)
-+				struct ufs_vreg **out_vreg)
- {
- 	int ret = 0;
- 	char prop_name[MAX_PROP_SIZE];
-@@ -139,7 +150,7 @@ static int ufshcd_populate_vreg(struct d
- 	}
- 
- 	snprintf(prop_name, MAX_PROP_SIZE, "%s-supply", name);
--	if (!of_parse_phandle(np, prop_name, 0)) {
-+	if (!phandle_exists(np, prop_name, 0)) {
- 		dev_info(dev, "%s: Unable to find %s regulator, assuming enabled\n",
- 				__func__, prop_name);
- 		goto out;
+diff --git a/drivers/acpi/sleep.c b/drivers/acpi/sleep.c
+index 7a0af16f86f2..d341908cbd16 100644
+--- a/drivers/acpi/sleep.c
++++ b/drivers/acpi/sleep.c
+@@ -359,6 +359,14 @@ static const struct dmi_system_id acpisleep_dmi_table[] __initconst = {
+ 		DMI_MATCH(DMI_PRODUCT_NAME, "80E3"),
+ 		},
+ 	},
++	{
++	.callback = init_nvs_save_s3,
++	.ident = "Lenovo G40-45",
++	.matches = {
++		DMI_MATCH(DMI_SYS_VENDOR, "LENOVO"),
++		DMI_MATCH(DMI_PRODUCT_NAME, "80E1"),
++		},
++	},
+ 	/*
+ 	 * https://bugzilla.kernel.org/show_bug.cgi?id=196907
+ 	 * Some Dell XPS13 9360 cannot do suspend-to-idle using the Low Power
+-- 
+2.35.1
+
 
 
