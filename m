@@ -2,45 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 21225C32774
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 08:22:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0D07AC32774
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 08:22:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242390AbiHWIWs (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 04:22:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42834 "EHLO
+        id S243069AbiHWIWx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 23 Aug 2022 04:22:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45276 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243081AbiHWIQd (ORCPT
+        with ESMTP id S243086AbiHWIQe (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 04:16:33 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 21540C6D;
-        Tue, 23 Aug 2022 01:11:16 -0700 (PDT)
+        Tue, 23 Aug 2022 04:16:34 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 37D25CD0;
+        Tue, 23 Aug 2022 01:11:21 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id B1F38612DA;
-        Tue, 23 Aug 2022 08:11:15 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9D893C433D6;
-        Tue, 23 Aug 2022 08:11:14 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id DFCF3B81C26;
+        Tue, 23 Aug 2022 08:11:19 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 13732C433C1;
+        Tue, 23 Aug 2022 08:11:17 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661242275;
-        bh=VBY8pSavty0a8/be3ESWT8pu5JPwtob0ZB5UChZI1Fg=;
+        s=korg; t=1661242278;
+        bh=kEu+tVAAMz7l6eaSkXFjJcQXu+RSWjRkIomwdhEVcyY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=TvrNcQFl8RqnBoekP9GA5ksXnvjzJXIUQhkPIgHRaCXuL88w2r6+e4RIkMfZnHqoo
-         eMbISDkG7BZjwqlPfJ4veHP9x8Z/cEnRaQJkjm2R0KXvLCYw4DgMGLquo/RAY/D0JD
-         0es6HQ+EU7mMYRwWsuoNWmC9COzMbMJDWubAFRY8=
+        b=yMNTQXJpZgYmVXylz9tPVTEMtDQ69gLia4yVWHXSUdmI0VpFgs3BezdnNRBWiq+uk
+         wX5u8ojJG778OCPF8N0FvS3bA61vCbjeGRanEeyqeMZNaBy/CJ9SjV72ZKunFQu7fS
+         cETMKP86KacJHk6Q8u1uhJRw9wlz3bmyioHzzIxI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, mingi cho <mgcho.minic@gmail.com>,
-        Florian Westphal <fw@strlen.de>,
-        Pablo Neira Ayuso <pablo@netfilter.org>
-Subject: [PATCH 4.9 046/101] netfilter: nf_tables: fix null deref due to zeroed list head
-Date:   Tue, 23 Aug 2022 10:03:19 +0200
-Message-Id: <20220823080036.308057139@linuxfoundation.org>
+        stable@vger.kernel.org, Jiri Slaby <jirislaby@kernel.org>,
+        Jakub Kicinski <kuba@kernel.org>
+Subject: [PATCH 5.19 087/365] net: atm: bring back zatm uAPI
+Date:   Tue, 23 Aug 2022 09:59:48 +0200
+Message-Id: <20220823080121.829262938@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220823080034.579196046@linuxfoundation.org>
-References: <20220823080034.579196046@linuxfoundation.org>
+In-Reply-To: <20220823080118.128342613@linuxfoundation.org>
+References: <20220823080118.128342613@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -49,45 +48,80 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Florian Westphal <fw@strlen.de>
+From: Jakub Kicinski <kuba@kernel.org>
 
-commit 580077855a40741cf511766129702d97ff02f4d9 upstream.
+commit c2e75634cbe368065f140dd30bf8b1a0355158fd upstream.
 
-In nf_tables_updtable, if nf_tables_table_enable returns an error,
-nft_trans_destroy is called to free the transaction object.
+Jiri reports that linux-atm does not build without this header.
+Bring it back. It's completely dead code but we can't break
+the build for user space :(
 
-nft_trans_destroy() calls list_del(), but the transaction was never
-placed on a list -- the list head is all zeroes, this results in
-a null dereference:
-
-BUG: KASAN: null-ptr-deref in nft_trans_destroy+0x26/0x59
-Call Trace:
- nft_trans_destroy+0x26/0x59
- nf_tables_newtable+0x4bc/0x9bc
- [..]
-
-Its sane to assume that nft_trans_destroy() can be called
-on the transaction object returned by nft_trans_alloc(), so
-make sure the list head is initialised.
-
-Fixes: 55dd6f93076b ("netfilter: nf_tables: use new transaction infrastructure to handle table")
-Reported-by: mingi cho <mgcho.minic@gmail.com>
-Signed-off-by: Florian Westphal <fw@strlen.de>
-Signed-off-by: Pablo Neira Ayuso <pablo@netfilter.org>
+Reported-by: Jiri Slaby <jirislaby@kernel.org>
+Fixes: 052e1f01bfae ("net: atm: remove support for ZeitNet ZN122x ATM devices")
+Link: https://lore.kernel.org/all/8576aef3-37e4-8bae-bab5-08f82a78efd3@kernel.org/
+Link: https://lore.kernel.org/r/20220810164547.484378-1-kuba@kernel.org
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- net/netfilter/nf_tables_api.c |    1 +
- 1 file changed, 1 insertion(+)
+ include/uapi/linux/atm_zatm.h | 47 +++++++++++++++++++++++++++++++++++
+ 1 file changed, 47 insertions(+)
+ create mode 100644 include/uapi/linux/atm_zatm.h
 
---- a/net/netfilter/nf_tables_api.c
-+++ b/net/netfilter/nf_tables_api.c
-@@ -119,6 +119,7 @@ static struct nft_trans *nft_trans_alloc
- 	if (trans == NULL)
- 		return NULL;
- 
-+	INIT_LIST_HEAD(&trans->list);
- 	trans->msg_type = msg_type;
- 	trans->ctx	= *ctx;
- 
+diff --git a/include/uapi/linux/atm_zatm.h b/include/uapi/linux/atm_zatm.h
+new file mode 100644
+index 000000000000..5135027b93c1
+--- /dev/null
++++ b/include/uapi/linux/atm_zatm.h
+@@ -0,0 +1,47 @@
++/* SPDX-License-Identifier: GPL-2.0 WITH Linux-syscall-note */
++/* atm_zatm.h - Driver-specific declarations of the ZATM driver (for use by
++		driver-specific utilities) */
++
++/* Written 1995-1999 by Werner Almesberger, EPFL LRC/ICA */
++
++
++#ifndef LINUX_ATM_ZATM_H
++#define LINUX_ATM_ZATM_H
++
++/*
++ * Note: non-kernel programs including this file must also include
++ * sys/types.h for struct timeval
++ */
++
++#include <linux/atmapi.h>
++#include <linux/atmioc.h>
++
++#define ZATM_GETPOOL	_IOW('a',ATMIOC_SARPRV+1,struct atmif_sioc)
++						/* get pool statistics */
++#define ZATM_GETPOOLZ	_IOW('a',ATMIOC_SARPRV+2,struct atmif_sioc)
++						/* get statistics and zero */
++#define ZATM_SETPOOL	_IOW('a',ATMIOC_SARPRV+3,struct atmif_sioc)
++						/* set pool parameters */
++
++struct zatm_pool_info {
++	int ref_count;			/* free buffer pool usage counters */
++	int low_water,high_water;	/* refill parameters */
++	int rqa_count,rqu_count;	/* queue condition counters */
++	int offset,next_off;		/* alignment optimizations: offset */
++	int next_cnt,next_thres;	/* repetition counter and threshold */
++};
++
++struct zatm_pool_req {
++	int pool_num;			/* pool number */
++	struct zatm_pool_info info;	/* actual information */
++};
++
++#define ZATM_OAM_POOL		0	/* free buffer pool for OAM cells */
++#define ZATM_AAL0_POOL		1	/* free buffer pool for AAL0 cells */
++#define ZATM_AAL5_POOL_BASE	2	/* first AAL5 free buffer pool */
++#define ZATM_LAST_POOL	ZATM_AAL5_POOL_BASE+10 /* max. 64 kB */
++
++#define ZATM_TIMER_HISTORY_SIZE	16	/* number of timer adjustments to
++					   record; must be 2^n */
++
++#endif
+-- 
+2.37.2
+
 
 
