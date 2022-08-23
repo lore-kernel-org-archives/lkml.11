@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 46F82C32772
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 09:28:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5053DC32772
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 09:28:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350119AbiHWJ2R (ORCPT
+        id S1350133AbiHWJ2Y (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 05:28:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50924 "EHLO
+        Tue, 23 Aug 2022 05:28:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40098 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350164AbiHWJZc (ORCPT
+        with ESMTP id S1350194AbiHWJZe (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 05:25:32 -0400
+        Tue, 23 Aug 2022 05:25:34 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0BF79760FD;
-        Tue, 23 Aug 2022 01:36:08 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0F33975FCF;
+        Tue, 23 Aug 2022 01:36:10 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 8CE92614E9;
-        Tue, 23 Aug 2022 08:34:54 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9982AC433D6;
-        Tue, 23 Aug 2022 08:34:53 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id CDE5F614E1;
+        Tue, 23 Aug 2022 08:34:57 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DB2D5C433D6;
+        Tue, 23 Aug 2022 08:34:56 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661243694;
-        bh=Ufu0YQ4jl5NNJVHMzR49EucjoyZ1trfx8HRK1GTs8OQ=;
+        s=korg; t=1661243697;
+        bh=xwWCPA28vI940tma+9qll3w9FqbWcIpnOhD8qGgH3tE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=qtXew0TxwvOwjFkcgn3HVlF2LuMEolrO4vOtMr1s6ssC0GJeQI352YWB48eyBdJfL
-         CaOPIZXheP2t2AmndHtHmieZ2EMpaiU/VkzGtAUxIY2+b6NFuG0jI3yp5EmDH6xP60
-         O7KjUDnlL9W+A75AAhn1UG7gdQPbd/PdztyzzuQ4=
+        b=rBSMA8lbk7t4/n3nP1dwPkMzk6vjivj7Z6hMq2+aR2y5X+3WS+Q5IeU7p6XES+qUh
+         IowbN9IVqoWZeDFKGljbz92ZfWdyd8HQzl7i1RBK9g1qHvHyWYyBcexApKjYGd5ivY
+         SV1fnccEYRXKqHLecrJWovgI9I/41sXV6VVBaSYs=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Michael Ellerman <mpe@ellerman.id.au>,
-        Zhouyi Zhou <zhouzhouyi@gmail.com>,
+        stable@vger.kernel.org, Brice Goglin <Brice.Goglin@inria.fr>,
+        Conor Dooley <conor.dooley@microchip.com>,
+        Palmer Dabbelt <palmer@rivosinc.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.19 358/365] powerpc/64: Init jump labels before parse_early_param()
-Date:   Tue, 23 Aug 2022 10:04:19 +0200
-Message-Id: <20220823080133.266935825@linuxfoundation.org>
+Subject: [PATCH 5.19 332/365] riscv: dts: sifive: Add fu540 topology information
+Date:   Tue, 23 Aug 2022 10:03:53 +0200
+Message-Id: <20220823080132.111184627@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220823080118.128342613@linuxfoundation.org>
 References: <20220823080118.128342613@linuxfoundation.org>
@@ -50,63 +51,58 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Zhouyi Zhou <zhouzhouyi@gmail.com>
+From: Conor Dooley <conor.dooley@microchip.com>
 
-[ Upstream commit ca829e05d3d4f728810cc5e4b468d9ebc7745eb3 ]
+[ Upstream commit af8f260abc608c06e4466a282b53f1e2dc09f042 ]
 
-On 64-bit, calling jump_label_init() in setup_feature_keys() is too
-late because static keys may be used in subroutines of
-parse_early_param() which is again subroutine of early_init_devtree().
+The fu540 has no cpu-map node, so tools like hwloc cannot correctly
+parse the topology. Add the node using the existing node labels.
 
-For example booting with "threadirqs":
-
-  static_key_enable_cpuslocked(): static key '0xc000000002953260' used before call to jump_label_init()
-  WARNING: CPU: 0 PID: 0 at kernel/jump_label.c:166 static_key_enable_cpuslocked+0xfc/0x120
-  ...
-  NIP static_key_enable_cpuslocked+0xfc/0x120
-  LR  static_key_enable_cpuslocked+0xf8/0x120
-  Call Trace:
-    static_key_enable_cpuslocked+0xf8/0x120 (unreliable)
-    static_key_enable+0x30/0x50
-    setup_forced_irqthreads+0x28/0x40
-    do_early_param+0xa0/0x108
-    parse_args+0x290/0x4e0
-    parse_early_options+0x48/0x5c
-    parse_early_param+0x58/0x84
-    early_init_devtree+0xd4/0x518
-    early_setup+0xb4/0x214
-
-So call jump_label_init() just before parse_early_param() in
-early_init_devtree().
-
-Suggested-by: Michael Ellerman <mpe@ellerman.id.au>
-Signed-off-by: Zhouyi Zhou <zhouzhouyi@gmail.com>
-[mpe: Add call trace to change log and minor wording edits.]
-Signed-off-by: Michael Ellerman <mpe@ellerman.id.au>
-Link: https://lore.kernel.org/r/20220726015747.11754-1-zhouzhouyi@gmail.com
+Reported-by: Brice Goglin <Brice.Goglin@inria.fr>
+Link: https://github.com/open-mpi/hwloc/issues/536
+Signed-off-by: Conor Dooley <conor.dooley@microchip.com>
+Link: https://lore.kernel.org/r/20220705190435.1790466-3-mail@conchuod.ie
+Signed-off-by: Palmer Dabbelt <palmer@rivosinc.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/powerpc/kernel/prom.c | 7 +++++++
- 1 file changed, 7 insertions(+)
+ arch/riscv/boot/dts/sifive/fu540-c000.dtsi | 24 ++++++++++++++++++++++
+ 1 file changed, 24 insertions(+)
 
-diff --git a/arch/powerpc/kernel/prom.c b/arch/powerpc/kernel/prom.c
-index feae8509b59c..b64c3f06c069 100644
---- a/arch/powerpc/kernel/prom.c
-+++ b/arch/powerpc/kernel/prom.c
-@@ -751,6 +751,13 @@ void __init early_init_devtree(void *params)
- 	early_init_dt_scan_root();
- 	early_init_dt_scan_memory_ppc();
- 
-+	/*
-+	 * As generic code authors expect to be able to use static keys
-+	 * in early_param() handlers, we initialize the static keys just
-+	 * before parsing early params (it's fine to call jump_label_init()
-+	 * more than once).
-+	 */
-+	jump_label_init();
- 	parse_early_param();
- 
- 	/* make sure we've parsed cmdline for mem= before this */
+diff --git a/arch/riscv/boot/dts/sifive/fu540-c000.dtsi b/arch/riscv/boot/dts/sifive/fu540-c000.dtsi
+index e3172d0ffac4..24bba83bec77 100644
+--- a/arch/riscv/boot/dts/sifive/fu540-c000.dtsi
++++ b/arch/riscv/boot/dts/sifive/fu540-c000.dtsi
+@@ -133,6 +133,30 @@
+ 				interrupt-controller;
+ 			};
+ 		};
++
++		cpu-map {
++			cluster0 {
++				core0 {
++					cpu = <&cpu0>;
++				};
++
++				core1 {
++					cpu = <&cpu1>;
++				};
++
++				core2 {
++					cpu = <&cpu2>;
++				};
++
++				core3 {
++					cpu = <&cpu3>;
++				};
++
++				core4 {
++					cpu = <&cpu4>;
++				};
++			};
++		};
+ 	};
+ 	soc {
+ 		#address-cells = <2>;
 -- 
 2.35.1
 
