@@ -2,122 +2,131 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B0AA4C32772
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 08:33:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E91C2C32774
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 08:33:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244052AbiHWId1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 04:33:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59990 "EHLO
+        id S244240AbiHWIdd (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 23 Aug 2022 04:33:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33120 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245064AbiHWIa4 (ORCPT
+        with ESMTP id S245500AbiHWIbG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 04:30:56 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C19856D546
-        for <linux-kernel@vger.kernel.org>; Tue, 23 Aug 2022 01:15:43 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1661242496;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=Q4OFDEuwYbQDCKzuYI2RJrZUWdrjR+wzBeiq9XfU9DY=;
-        b=I3oBjDEBdvty1UO7qRBPvHutITNYGoBlixT3XNfhGyvPfYugZ4jZ790Dk121MqnvmOBXX6
-        OL7p+QB5DY202SUBkm46xy6Abm9jMAR9GDriKZnJXRTF4vpONIMLD+ygx/O6BVF/0CcFww
-        I5Xa5/5UAaGdTEQ3Xjx5Lxo6ltmujMw=
-Received: from mail-wm1-f71.google.com (mail-wm1-f71.google.com
- [209.85.128.71]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
- us-mta-588-qAL3STF4MBaGtTxt8g1Edw-1; Tue, 23 Aug 2022 04:14:53 -0400
-X-MC-Unique: qAL3STF4MBaGtTxt8g1Edw-1
-Received: by mail-wm1-f71.google.com with SMTP id az42-20020a05600c602a00b003a552086ba9so9897554wmb.6
-        for <linux-kernel@vger.kernel.org>; Tue, 23 Aug 2022 01:14:53 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:organization:from:references
-         :cc:to:content-language:subject:user-agent:mime-version:date
-         :message-id:x-gm-message-state:from:to:cc;
-        bh=Q4OFDEuwYbQDCKzuYI2RJrZUWdrjR+wzBeiq9XfU9DY=;
-        b=tZuQ2v38iObg4pmF0UYe1aXsaWGELXx8MlzR1dyFdTuNR7O/vBAi9bnwX5XOt75OiH
-         Kv3SiltpvT2yCI0Trd/QmfJU5eC0cN3i7aGEjjNJvEpm120CbdbMTzt1blGV868breqA
-         STbEafqA+u7+AYVmEVDZCa0a+enOPFHMhNCviHuxTvuxPUGQu0xyhE6K8Vw4pQhwZmQK
-         We5q3QkqsfexV8H8IPj7UfLNO2Wewp2Hh71BVgmiyr/RuybVt9Ty7A5HmwN/0L3sARKG
-         Hl049s6alfEzcKLYdmP+Jp7vcfKYV84P8qed8DCv+mXZ1S0/M1bPlMkdl2+LcKVxqgzr
-         g3iw==
-X-Gm-Message-State: ACgBeo0eIqIxSntCSjpPAASFqC9B8v5XH3qqAyEgJMNzGNWdea+KWcFN
-        oB8aZ+rkH3x4euGlbTeRVouXWSFGDd6A1s0z5LQ1qz1Jg5iDFqU2wa0UKlBH3WrBgcJ5zwZezbT
-        fYwCVVjvYmIKcDGo0yb1+daC7
-X-Received: by 2002:a05:600c:19c8:b0:3a5:ec6a:8d16 with SMTP id u8-20020a05600c19c800b003a5ec6a8d16mr1326388wmq.182.1661242492178;
-        Tue, 23 Aug 2022 01:14:52 -0700 (PDT)
-X-Google-Smtp-Source: AA6agR56NJF8GDn308rkUs+Zfpk4q4pHfO+tAGT0u5/7P6jaJlCgKT5AD40J8/IGy1sBaecI3jlPaA==
-X-Received: by 2002:a05:600c:19c8:b0:3a5:ec6a:8d16 with SMTP id u8-20020a05600c19c800b003a5ec6a8d16mr1326371wmq.182.1661242491858;
-        Tue, 23 Aug 2022 01:14:51 -0700 (PDT)
-Received: from ?IPV6:2003:cb:c70b:1600:c48b:1fab:a330:5182? (p200300cbc70b1600c48b1faba3305182.dip0.t-ipconnect.de. [2003:cb:c70b:1600:c48b:1fab:a330:5182])
-        by smtp.gmail.com with ESMTPSA id bg2-20020a05600c3c8200b003a5e9337967sm17314448wmb.13.2022.08.23.01.14.51
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 23 Aug 2022 01:14:51 -0700 (PDT)
-Message-ID: <3661415c-6069-24ed-b647-6fe6993bddae@redhat.com>
-Date:   Tue, 23 Aug 2022 10:14:50 +0200
+        Tue, 23 Aug 2022 04:31:06 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B3E9575383;
+        Tue, 23 Aug 2022 01:15:55 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 7074ECE1B37;
+        Tue, 23 Aug 2022 08:15:07 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7A7D9C433D6;
+        Tue, 23 Aug 2022 08:15:05 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1661242505;
+        bh=V2tD/FU6SUhbbyIUilduP1Sj7dQKZMB2lIwzlx3vz6g=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=jBr3aPFVnItpWwWeW75u8IJSJCwgUPi62/ty6dIcOM8xWxoZ7D6AWbLdz3DWJAkPd
+         k9fRVvUYqvp3VOm9iyBJ/Ele/vgxmAlddeqizh8Ag65ObYxUTBTf60RheFjcFGhOsF
+         S2zV4vO9i4TBDXiSfgB0CIrFdi7LmoDKgrAPPSBM=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Stefano Garzarella <sgarzare@redhat.com>,
+        Peilin Ye <peilin.ye@bytedance.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        syzbot+b03f55bf128f9a38f064@syzkaller.appspotmail.com
+Subject: [PATCH 5.19 125/365] vsock: Fix memory leak in vsock_connect()
+Date:   Tue, 23 Aug 2022 10:00:26 +0200
+Message-Id: <20220823080123.412152002@linuxfoundation.org>
+X-Mailer: git-send-email 2.37.2
+In-Reply-To: <20220823080118.128342613@linuxfoundation.org>
+References: <20220823080118.128342613@linuxfoundation.org>
+User-Agent: quilt/0.67
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.11.0
-Subject: Re: [PATCH v2 4/5] mm/hugetlb: use PMD page lock to protect CONT-PTE
- entries
-Content-Language: en-US
-To:     Baolin Wang <baolin.wang@linux.alibaba.com>,
-        akpm@linux-foundation.org, songmuchun@bytedance.com,
-        mike.kravetz@oracle.com
-Cc:     linux-mm@kvack.org, linux-kernel@vger.kernel.org
-References: <cover.1661240170.git.baolin.wang@linux.alibaba.com>
- <88c8a8c68d87429f0fc48e81100f19b71f6e664f.1661240170.git.baolin.wang@linux.alibaba.com>
-From:   David Hildenbrand <david@redhat.com>
-Organization: Red Hat
-In-Reply-To: <88c8a8c68d87429f0fc48e81100f19b71f6e664f.1661240170.git.baolin.wang@linux.alibaba.com>
 Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 23.08.22 09:50, Baolin Wang wrote:
-> Considering the pmd entries of a CONT-PMD hugetlb can not span on
-> multiple PMDs, we can change to use the PMD page lock, which can
-> be much finer grain that lock in the mm.
-> 
-> Signed-off-by: Baolin Wang <baolin.wang@linux.alibaba.com>
-> ---
->  include/linux/hugetlb.h | 12 ++++++++++--
->  1 file changed, 10 insertions(+), 2 deletions(-)
-> 
-> diff --git a/include/linux/hugetlb.h b/include/linux/hugetlb.h
-> index 3a96f67..d4803a89 100644
-> --- a/include/linux/hugetlb.h
-> +++ b/include/linux/hugetlb.h
-> @@ -892,9 +892,17 @@ static inline gfp_t htlb_modify_alloc_mask(struct hstate *h, gfp_t gfp_mask)
->  static inline spinlock_t *huge_pte_lockptr(struct hstate *h,
->  					   struct mm_struct *mm, pte_t *pte)
->  {
-> -	VM_BUG_ON(huge_page_size(h) == PAGE_SIZE);
-> +	unsigned long hp_size = huge_page_size(h);
->  
-> -	if (huge_page_size(h) == PMD_SIZE) {
-> +	VM_BUG_ON(hp_size == PAGE_SIZE);
-> +
-> +	/*
-> +	 * Considering CONT-PMD size hugetlb, since the CONT-PMD entry
-> +	 * can not span multiple PMDs, then we can use the fine grained
-> +	 * PMD page lock.
-> +	 */
-> +	if (hp_size == PMD_SIZE ||
-> +	    (hp_size > PMD_SIZE && hp_size < PUD_SIZE)) {
->  		return pmd_lockptr(mm, (pmd_t *) pte);
->  	} else if (huge_page_size(h) < PMD_SIZE) {
->  		unsigned long mask = ~(PTRS_PER_PTE * sizeof(pte_t) - 1);
+From: Peilin Ye <peilin.ye@bytedance.com>
 
-Is there a measurable performance gain? IOW, do we really care?
+commit 7e97cfed9929eaabc41829c395eb0d1350fccb9d upstream.
 
--- 
-Thanks,
+An O_NONBLOCK vsock_connect() request may try to reschedule
+@connect_work.  Imagine the following sequence of vsock_connect()
+requests:
 
-David / dhildenb
+  1. The 1st, non-blocking request schedules @connect_work, which will
+     expire after 200 jiffies.  Socket state is now SS_CONNECTING;
+
+  2. Later, the 2nd, blocking request gets interrupted by a signal after
+     a few jiffies while waiting for the connection to be established.
+     Socket state is back to SS_UNCONNECTED, but @connect_work is still
+     pending, and will expire after 100 jiffies.
+
+  3. Now, the 3rd, non-blocking request tries to schedule @connect_work
+     again.  Since @connect_work is already scheduled,
+     schedule_delayed_work() silently returns.  sock_hold() is called
+     twice, but sock_put() will only be called once in
+     vsock_connect_timeout(), causing a memory leak reported by syzbot:
+
+  BUG: memory leak
+  unreferenced object 0xffff88810ea56a40 (size 1232):
+    comm "syz-executor756", pid 3604, jiffies 4294947681 (age 12.350s)
+    hex dump (first 32 bytes):
+      00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
+      28 00 07 40 00 00 00 00 00 00 00 00 00 00 00 00  (..@............
+    backtrace:
+      [<ffffffff837c830e>] sk_prot_alloc+0x3e/0x1b0 net/core/sock.c:1930
+      [<ffffffff837cbe22>] sk_alloc+0x32/0x2e0 net/core/sock.c:1989
+      [<ffffffff842ccf68>] __vsock_create.constprop.0+0x38/0x320 net/vmw_vsock/af_vsock.c:734
+      [<ffffffff842ce8f1>] vsock_create+0xc1/0x2d0 net/vmw_vsock/af_vsock.c:2203
+      [<ffffffff837c0cbb>] __sock_create+0x1ab/0x2b0 net/socket.c:1468
+      [<ffffffff837c3acf>] sock_create net/socket.c:1519 [inline]
+      [<ffffffff837c3acf>] __sys_socket+0x6f/0x140 net/socket.c:1561
+      [<ffffffff837c3bba>] __do_sys_socket net/socket.c:1570 [inline]
+      [<ffffffff837c3bba>] __se_sys_socket net/socket.c:1568 [inline]
+      [<ffffffff837c3bba>] __x64_sys_socket+0x1a/0x20 net/socket.c:1568
+      [<ffffffff84512815>] do_syscall_x64 arch/x86/entry/common.c:50 [inline]
+      [<ffffffff84512815>] do_syscall_64+0x35/0x80 arch/x86/entry/common.c:80
+      [<ffffffff84600068>] entry_SYSCALL_64_after_hwframe+0x44/0xae
+  <...>
+
+Use mod_delayed_work() instead: if @connect_work is already scheduled,
+reschedule it, and undo sock_hold() to keep the reference count
+balanced.
+
+Reported-and-tested-by: syzbot+b03f55bf128f9a38f064@syzkaller.appspotmail.com
+Fixes: d021c344051a ("VSOCK: Introduce VM Sockets")
+Co-developed-by: Stefano Garzarella <sgarzare@redhat.com>
+Signed-off-by: Stefano Garzarella <sgarzare@redhat.com>
+Reviewed-by: Stefano Garzarella <sgarzare@redhat.com>
+Signed-off-by: Peilin Ye <peilin.ye@bytedance.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+---
+ net/vmw_vsock/af_vsock.c |    9 ++++++++-
+ 1 file changed, 8 insertions(+), 1 deletion(-)
+
+--- a/net/vmw_vsock/af_vsock.c
++++ b/net/vmw_vsock/af_vsock.c
+@@ -1391,7 +1391,14 @@ static int vsock_connect(struct socket *
+ 			 * timeout fires.
+ 			 */
+ 			sock_hold(sk);
+-			schedule_delayed_work(&vsk->connect_work, timeout);
++
++			/* If the timeout function is already scheduled,
++			 * reschedule it, then ungrab the socket refcount to
++			 * keep it balanced.
++			 */
++			if (mod_delayed_work(system_wq, &vsk->connect_work,
++					     timeout))
++				sock_put(sk);
+ 
+ 			/* Skip ahead to preserve error code set above. */
+ 			goto out_wait;
+
 
