@@ -2,199 +2,215 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CBACBC32772
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 12:34:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 87423C32772
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 12:36:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243747AbiHWMen (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 08:34:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50500 "EHLO
+        id S234581AbiHWMgN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 23 Aug 2022 08:36:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60110 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346005AbiHWMbN (ORCPT
+        with ESMTP id S243554AbiHWMe1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 08:31:13 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 568144DB75;
-        Tue, 23 Aug 2022 02:45:34 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id BF80F61518;
-        Tue, 23 Aug 2022 09:44:01 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C12B2C433C1;
-        Tue, 23 Aug 2022 09:44:00 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661247841;
-        bh=IrQE/OdA4dTwgK/LAcOymfmZkt/0y4akRUBb8y17lVQ=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=lBd+w+tI1z+ajAvh7XHpkmV6qYoiseTLDSV2M6qoBXudvA0dNQqOFiJ1GKk/YFsaH
-         jDo/7SiIWjqUSQnqlEZ31R9uvUqqYHpjM2sJ0VmPMOpnnDQHWB0lWXScH37yvsxu3M
-         MJayFJDPjXsslPjAsHB+m6uM+pJJxuAaVpcI5hIg=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        =?UTF-8?q?Pali=20Roh=C3=A1r?= <pali@kernel.org>,
-        Christophe Leroy <christophe.leroy@csgroup.eu>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Segher Boessenkool <segher@kernel.crashing.org>,
-        Michael Ellerman <mpe@ellerman.id.au>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 141/158] powerpc/32: Dont always pass -mcpu=powerpc to the compiler
-Date:   Tue, 23 Aug 2022 10:27:53 +0200
-Message-Id: <20220823080051.515499932@linuxfoundation.org>
-X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220823080046.056825146@linuxfoundation.org>
-References: <20220823080046.056825146@linuxfoundation.org>
-User-Agent: quilt/0.67
+        Tue, 23 Aug 2022 08:34:27 -0400
+Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1EB3010265A;
+        Tue, 23 Aug 2022 02:46:49 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1661248010; x=1692784010;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=S7RC1ww3NWssyXEpINs/20SD/Nvi+2dHUNA4YOGB/+c=;
+  b=j+PXadLNYBNe2bpIv07NeH4oWfC+qqG4qOQ/MNow3ZsgqkISOP1bBhmG
+   241wBspo7ozp9GyNDhimPoLQ+3Dnps5V5TeQZFxPIg3+lFKdV78cnWhFm
+   8Wivnw2SvFYVfTnHOVndSIa+50xKTVPzv1cYRDNOCMQ55dX1hfKzlPbR9
+   DkYhfbKHg47WEvFFeHb+8gWIjASf3rHHz4a/Y8bHu4bT/WtZmsleNAIfu
+   2xjijoO0pLg/Mrxd1BYijq7AkNfsXAVLZUq/VGKewfD2FljH9V4e2DNWY
+   u2dsNEoHGc2Oa62RjSooCN04SgTyDfeMHmjiYOK8RabHN+3B9K9iTCjRS
+   A==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10447"; a="276670958"
+X-IronPort-AV: E=Sophos;i="5.93,257,1654585200"; 
+   d="scan'208";a="276670958"
+Received: from fmsmga004.fm.intel.com ([10.253.24.48])
+  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Aug 2022 02:46:48 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.93,257,1654585200"; 
+   d="scan'208";a="677556630"
+Received: from black.fi.intel.com ([10.237.72.28])
+  by fmsmga004.fm.intel.com with ESMTP; 23 Aug 2022 02:46:46 -0700
+Received: by black.fi.intel.com (Postfix, from userid 1001)
+        id F2282AD; Tue, 23 Aug 2022 12:46:59 +0300 (EEST)
+Date:   Tue, 23 Aug 2022 12:46:59 +0300
+From:   Mika Westerberg <mika.westerberg@linux.intel.com>
+To:     Szuying Chen <chensiying21@gmail.com>
+Cc:     gregkh@linuxfoundation.org, mario.limonciello@amd.com,
+        andreas.noever@gmail.com, michael.jamet@intel.com,
+        YehezkelShB@gmail.com, linux-usb@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Yd_Tseng@asmedia.com.tw,
+        Chloe_Chen@asmedia.com.tw, Richard_Hsu@asmedia.com.tw
+Subject: Re: [PATCH 2/2] thunderbolt: thunderbolt: add nvm specific
+ operations for
+Message-ID: <YwSiEx87AuVL/QK4@black.fi.intel.com>
+References: <20220823090423.5249-1-chensiying21@gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220823090423.5249-1-chensiying21@gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Christophe Leroy <christophe.leroy@csgroup.eu>
+Hi,
 
-[ Upstream commit 446cda1b21d9a6b3697fe399c6a3a00ff4a285f5 ]
+On Tue, Aug 23, 2022 at 05:04:23PM +0800, Szuying Chen wrote:
+> From: Szuying Chen <Chloe_Chen@asmedia.com.tw>
+> 
+> The patch depends on patch 1/2. Add nvm specific operations for ASMedia.
+> And add tb_switch_nvm_upgradable() of enable firmware upgrade.
 
-Since commit 4bf4f42a2feb ("powerpc/kbuild: Set default generic
-machine type for 32-bit compile"), when building a 32 bits kernel
-with a bi-arch version of GCC, or when building a book3s/32 kernel,
-the option -mcpu=powerpc is passed to GCC at all time, relying on it
-being eventually overriden by a subsequent -mcpu=xxxx.
+Again the $subject and please call it NVM (capital letters) everywhere.
 
-But when building the same kernel with a 32 bits only version of GCC,
-that is not done, relying on gcc being built with the expected default
-CPU.
+> 
+> Signed-off-by: Szuying Chen <Chloe_Chen@asmedia.com.tw>
+> ---
+>  drivers/thunderbolt/nvm.c    | 46 ++++++++++++++++++++++++++++++++++++
+>  drivers/thunderbolt/switch.c |  3 +++
+>  drivers/thunderbolt/tb.h     |  2 ++
+>  3 files changed, 51 insertions(+)
+> 
+> diff --git a/drivers/thunderbolt/nvm.c b/drivers/thunderbolt/nvm.c
+> index 5c7c2a284497..d2ef22f8b19b 100644
+> --- a/drivers/thunderbolt/nvm.c
+> +++ b/drivers/thunderbolt/nvm.c
+> @@ -15,6 +15,9 @@
+>  /* Switch NVM support */
+>  #define NVM_CSS		0x10
+> 
+> +/* ASMedia specific NVM offsets */
+> +#define ASMEDIA_NVM_VERSION	0x1c
+> +
+>  static DEFINE_IDA(nvm_ida);
+> 
+>  static inline int nvm_read(struct tb_switch *sw, unsigned int address,
+> @@ -116,11 +119,39 @@ static int intel_nvm_validate(struct tb_switch *sw)
+>  	return image_size;
+>  }
+> 
+> +static int asmedia_nvm_version(struct tb_switch *sw)
+> +{
+> +	struct tb_nvm *nvm = sw->nvm;
+> +	u64 val;
+> +	int ret;
+> +
+> +	ret = nvm_read(sw, ASMEDIA_NVM_VERSION, &val, sizeof(val));
+> +	if (ret)
+> +		return ret;
+> +
+> +	/* ASMedia NVM version show format include Firmware version and date xxxxxx.xxxxxx */
+> +	nvm->major = (((u8)val >> 0x18) << 0x10 | ((u8)(val >> 0x20)) << 0x8 | (u8)(val >> 0x28));
+> +	nvm->minor = (((u8)val) << 0x10 | ((u8)(val >> 0x8)) << 0x8 | (u8)(val >> 0x10));
 
-This logic has two problems. First, it is a bit fragile to rely on
-whether the GCC version is bi-arch or not, because today we can have
-bi-arch versions of GCC configured with a 32 bits default. Second,
-there are some versions of GCC which don't support -mcpu=powerpc,
-for instance for e500 SPE-only versions.
+Can you use some helperes to make this look nicer?
 
-So, stop relying on this approximative logic and allow the user to
-decide whether he/she wants to use the toolchain's default CPU or if
-he/she wants to set one, and allow only possible CPUs based on the
-selected target.
+> +	nvm->nvm_size = SZ_512K;
 
-Reported-by: Pali Rohár <pali@kernel.org>
-Signed-off-by: Christophe Leroy <christophe.leroy@csgroup.eu>
-Tested-by: Pali Rohár <pali@kernel.org>
-Reviewed-by: Arnd Bergmann <arnd@arndb.de>
-Reviewed-by: Segher Boessenkool <segher@kernel.crashing.org>
-Signed-off-by: Michael Ellerman <mpe@ellerman.id.au>
-Link: https://lore.kernel.org/r/d4df724691351531bf46d685d654689e5dfa0d74.1657549153.git.christophe.leroy@csgroup.eu
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- arch/powerpc/Makefile                  | 26 +-------------------------
- arch/powerpc/platforms/Kconfig.cputype | 21 ++++++++++++++++++---
- 2 files changed, 19 insertions(+), 28 deletions(-)
+Some explanation perhaps why 512K? Is it always the case even for the
+future NVMs? Can it be read somewhere?
 
-diff --git a/arch/powerpc/Makefile b/arch/powerpc/Makefile
-index 7a96cdefbd4e..59175651f0b9 100644
---- a/arch/powerpc/Makefile
-+++ b/arch/powerpc/Makefile
-@@ -17,23 +17,6 @@ HAS_BIARCH	:= $(call cc-option-yn, -m32)
- # Set default 32 bits cross compilers for vdso and boot wrapper
- CROSS32_COMPILE ?=
- 
--ifeq ($(HAS_BIARCH),y)
--ifeq ($(CROSS32_COMPILE),)
--ifdef CONFIG_PPC32
--# These options will be overridden by any -mcpu option that the CPU
--# or platform code sets later on the command line, but they are needed
--# to set a sane 32-bit cpu target for the 64-bit cross compiler which
--# may default to the wrong ISA.
--KBUILD_CFLAGS		+= -mcpu=powerpc
--KBUILD_AFLAGS		+= -mcpu=powerpc
--endif
--endif
--endif
--
--ifdef CONFIG_PPC_BOOK3S_32
--KBUILD_CFLAGS		+= -mcpu=powerpc
--endif
--
- # If we're on a ppc/ppc64/ppc64le machine use that defconfig, otherwise just use
- # ppc64_defconfig because we have nothing better to go on.
- uname := $(shell uname -m)
-@@ -190,6 +173,7 @@ endif
- endif
- 
- CFLAGS-$(CONFIG_TARGET_CPU_BOOL) += $(call cc-option,-mcpu=$(CONFIG_TARGET_CPU))
-+AFLAGS-$(CONFIG_TARGET_CPU_BOOL) += $(call cc-option,-mcpu=$(CONFIG_TARGET_CPU))
- 
- # Altivec option not allowed with e500mc64 in GCC.
- ifdef CONFIG_ALTIVEC
-@@ -200,14 +184,6 @@ endif
- CFLAGS-$(CONFIG_E5500_CPU) += $(E5500_CPU)
- CFLAGS-$(CONFIG_E6500_CPU) += $(call cc-option,-mcpu=e6500,$(E5500_CPU))
- 
--ifdef CONFIG_PPC32
--ifdef CONFIG_PPC_E500MC
--CFLAGS-y += $(call cc-option,-mcpu=e500mc,-mcpu=powerpc)
--else
--CFLAGS-$(CONFIG_E500) += $(call cc-option,-mcpu=8540 -msoft-float,-mcpu=powerpc)
--endif
--endif
--
- asinstr := $(call as-instr,lis 9$(comma)foo@high,-DHAVE_AS_ATHIGH=1)
- 
- KBUILD_CPPFLAGS	+= -I $(srctree)/arch/$(ARCH) $(asinstr)
-diff --git a/arch/powerpc/platforms/Kconfig.cputype b/arch/powerpc/platforms/Kconfig.cputype
-index 75ebfbff4deb..84f9dd476bbb 100644
---- a/arch/powerpc/platforms/Kconfig.cputype
-+++ b/arch/powerpc/platforms/Kconfig.cputype
-@@ -119,9 +119,9 @@ config GENERIC_CPU
- 	depends on PPC64 && CPU_LITTLE_ENDIAN
- 	select ARCH_HAS_FAST_MULTIPLIER
- 
--config GENERIC_CPU
-+config POWERPC_CPU
- 	bool "Generic 32 bits powerpc"
--	depends on PPC32 && !PPC_8xx
-+	depends on PPC32 && !PPC_8xx && !PPC_85xx
- 
- config CELL_CPU
- 	bool "Cell Broadband Engine"
-@@ -175,11 +175,23 @@ config G4_CPU
- 	depends on PPC_BOOK3S_32
- 	select ALTIVEC
- 
-+config E500_CPU
-+	bool "e500 (8540)"
-+	depends on PPC_85xx && !PPC_E500MC
-+
-+config E500MC_CPU
-+	bool "e500mc"
-+	depends on PPC_85xx && PPC_E500MC
-+
-+config TOOLCHAIN_DEFAULT_CPU
-+	bool "Rely on the toolchain's implicit default CPU"
-+	depends on PPC32
-+
- endchoice
- 
- config TARGET_CPU_BOOL
- 	bool
--	default !GENERIC_CPU
-+	default !GENERIC_CPU && !TOOLCHAIN_DEFAULT_CPU
- 
- config TARGET_CPU
- 	string
-@@ -194,6 +206,9 @@ config TARGET_CPU
- 	default "e300c2" if E300C2_CPU
- 	default "e300c3" if E300C3_CPU
- 	default "G4" if G4_CPU
-+	default "8540" if E500_CPU
-+	default "e500mc" if E500MC_CPU
-+	default "powerpc" if POWERPC_CPU
- 
- config PPC_BOOK3S
- 	def_bool y
--- 
-2.35.1
+> +
+> +	return 0;
+> +}
+> +
+> +static void tb_switch_set_nvm_upgrade(struct tb_switch *sw)
+> +{
+> +	sw->no_nvm_upgrade = false;
+> +}
+> +
+>  struct tb_nvm_vendor_ops intel_switch_nvm_ops = {
+>  	.version = intel_nvm_version,
+>  	.validate = intel_nvm_validate,
+>  };
+> 
+> +struct tb_nvm_vendor_ops asmedia_switch_nvm_ops = {
 
+const
 
+> +	.nvm_upgrade = tb_switch_set_nvm_upgrade,
+> +	.version = asmedia_nvm_version,
+> +};
+> +
+>  struct switch_nvm_vendor {
+>  	u16 vendor;
+>  	const struct tb_nvm_vendor_ops *vops;
+> @@ -129,8 +160,23 @@ struct switch_nvm_vendor {
+>  static const struct switch_nvm_vendor switch_nvm_vendors[] = {
+>  	{ 0x8086, &intel_switch_nvm_ops },
+>  	{ 0x8087, &intel_switch_nvm_ops },
+> +	{ 0x174c, &asmedia_switch_nvm_ops },
 
+Ordering, I commented this already last time :(
+
+>  };
+> 
+
+If you export it outside of this file, please write kernel-doc.
+
+> +void tb_switch_nvm_upgradable(struct tb_switch *sw)
+> +{
+> +	int i;
+> +
+> +	for (i = 0; i < ARRAY_SIZE(switch_nvm_vendors); i++) {
+> +		const struct switch_nvm_vendor *v = &switch_nvm_vendors[i];
+> +
+> +		if (v->vendor == sw->config.vendor_id) {
+> +			if (v->vops->nvm_upgrade)
+> +				v->vops->nvm_upgrade(sw);
+> +		}
+> +	}
+> +}
+> +
+>  /**
+>   * tb_switch_nvm_alloc() - alloc nvm and set nvm->vops to point
+>   * the vendor specific operations.
+> diff --git a/drivers/thunderbolt/switch.c b/drivers/thunderbolt/switch.c
+> index d257219cb66e..23df70290ca2 100644
+> --- a/drivers/thunderbolt/switch.c
+> +++ b/drivers/thunderbolt/switch.c
+> @@ -2829,6 +2829,9 @@ int tb_switch_add(struct tb_switch *sw)
+>  			return ret;
+>  	}
+> 
+> +	/* Enable the NVM firmware upgrade for specific vendors */
+> +	tb_switch_nvm_upgradable(sw);
+> +
+>  	ret = device_add(&sw->dev);
+>  	if (ret) {
+>  		dev_err(&sw->dev, "failed to add device: %d\n", ret);
+> diff --git a/drivers/thunderbolt/tb.h b/drivers/thunderbolt/tb.h
+> index 73ae2e093a92..8e2887e9c669 100644
+> --- a/drivers/thunderbolt/tb.h
+> +++ b/drivers/thunderbolt/tb.h
+> @@ -75,6 +75,7 @@ enum tb_nvm_write_ops {
+>  struct tb_nvm_vendor_ops {
+>  	int (*version)(struct tb_switch *sw);
+>  	int (*validate)(struct tb_switch *sw);
+> +	void (*nvm_upgrade)(struct tb_switch *sw);
+
+Kernel-doc for this too, well and the rest.
+
+>  };
+> 
+>  #define TB_SWITCH_KEY_SIZE		32
+> @@ -748,6 +749,7 @@ static inline void tb_domain_put(struct tb *tb)
+>  	put_device(&tb->dev);
+>  }
+> 
+> +void tb_switch_nvm_upgradable(struct tb_switch *sw);
+
+Same comment about the location. Also is it "upgradeable"? 
+
+>  struct tb_nvm *tb_switch_nvm_alloc(struct tb_switch *sw);
+>  struct tb_nvm *tb_nvm_alloc(struct device *dev);
+>  int tb_nvm_add_active(struct tb_nvm *nvm, size_t size, nvmem_reg_read_t reg_read);
+> --
+> 2.34.1
