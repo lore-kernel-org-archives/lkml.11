@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C5D04C54F2F
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0054CC54F33
 	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 10:53:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356906AbiHWKwi (ORCPT
+        id S1356973AbiHWKws (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 06:52:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36070 "EHLO
+        Tue, 23 Aug 2022 06:52:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53490 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355852AbiHWKo4 (ORCPT
+        with ESMTP id S1355859AbiHWKo7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 06:44:56 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E203574E0E;
-        Tue, 23 Aug 2022 02:10:45 -0700 (PDT)
+        Tue, 23 Aug 2022 06:44:59 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A8F5047B81;
+        Tue, 23 Aug 2022 02:10:53 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 91B2CB81C66;
-        Tue, 23 Aug 2022 09:10:44 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 09B8BC433C1;
-        Tue, 23 Aug 2022 09:10:42 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 45CF5608D5;
+        Tue, 23 Aug 2022 09:10:53 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4D9A7C433D6;
+        Tue, 23 Aug 2022 09:10:52 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661245843;
-        bh=blwVWMpUy9hCuLKBJidBkAIAlZ68adKolCiqqm6WzoU=;
+        s=korg; t=1661245852;
+        bh=qvYNxEp4BkVpp0o3cY2gldmCMqgQYuRgKAATdhdUjZU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=hp+Fdv3lgGJN5YQx3vPGqIhE201itmh1yzzn+K0ghJL1OvEAwjC5E0WKpOfjWjNTA
-         LUZyaZ+dq4XHWusd+K6tRsxN6/oD+i6yNC2eQHboDdR0nOr4qbnI4kTcSlDvwIfjIc
-         xE8OtPTkPsvSFeAN0cNcY9VwNFX3CqTdZRL+yNAI=
+        b=RMqj3/w6douiztT7LCD7bc+yrbQcJ7fXJkMC4uX+1U8evJiSNbHTju0ppgh5QT5hN
+         q0hvGyK8k/7Tlmu3Va7kMOhg/YkxAaryqJOKb+mKxB38svc5C8js7jUg6Kze831fpU
+         aXPfgQ/AphvduuzUPjnew63eVLXMoOgxLkfkT1ts=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, John Garry <john.garry@huawei.com>,
-        Josh Poimboeuf <jpoimboe@kernel.org>,
-        Ingo Molnar <mingo@kernel.org>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.19 177/287] scripts/faddr2line: Fix vmlinux detection on arm64
-Date:   Tue, 23 Aug 2022 10:25:46 +0200
-Message-Id: <20220823080106.731482839@linuxfoundation.org>
+        stable@vger.kernel.org,
+        =?UTF-8?q?Pali=20Roh=C3=A1r?= <pali@kernel.org>,
+        Michael Ellerman <mpe@ellerman.id.au>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 4.19 170/287] powerpc/pci: Prefer PCI domain assignment via DT linux,pci-domain and alias
+Date:   Tue, 23 Aug 2022 10:25:39 +0200
+Message-Id: <20220823080106.487551248@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220823080100.268827165@linuxfoundation.org>
 References: <20220823080100.268827165@linuxfoundation.org>
@@ -50,45 +51,82 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Josh Poimboeuf <jpoimboe@kernel.org>
+From: Pali Rohár <pali@kernel.org>
 
-[ Upstream commit b6a5068854cfe372da7dee3224dcf023ed5b00cb ]
+[ Upstream commit 0fe1e96fef0a5c53b4c0d1500d356f3906000f81 ]
 
-Since commit dcea997beed6 ("faddr2line: Fix overlapping text section
-failures, the sequel"), faddr2line is completely broken on arm64.
+Other Linux architectures use DT property 'linux,pci-domain' for
+specifying fixed PCI domain of PCI controller specified in Device-Tree.
 
-For some reason, on arm64, the vmlinux ELF object file type is ET_DYN
-rather than ET_EXEC.  Check for both when determining whether the object
-is vmlinux.
+And lot of Freescale powerpc boards have defined numbered pci alias in
+Device-Tree for every PCIe controller which number specify preferred PCI
+domain.
 
-Modules and vmlinux.o have type ET_REL on all arches.
+So prefer usage of DT property 'linux,pci-domain' (via function
+of_get_pci_domain_nr()) and DT pci alias (via function
+of_alias_get_id()) on powerpc architecture for assigning PCI domain to
+PCI controller.
 
-Fixes: dcea997beed6 ("faddr2line: Fix overlapping text section failures, the sequel")
-Reported-by: John Garry <john.garry@huawei.com>
-Signed-off-by: Josh Poimboeuf <jpoimboe@kernel.org>
-Signed-off-by: Ingo Molnar <mingo@kernel.org>
-Tested-by: John Garry <john.garry@huawei.com>
-Link: https://lore.kernel.org/r/dad1999737471b06d6188ce4cdb11329aa41682c.1658426357.git.jpoimboe@kernel.org
+Fixes: 63a72284b159 ("powerpc/pci: Assign fixed PHB number based on device-tree properties")
+Signed-off-by: Pali Rohár <pali@kernel.org>
+Signed-off-by: Michael Ellerman <mpe@ellerman.id.au>
+Link: https://lore.kernel.org/r/20220706102148.5060-2-pali@kernel.org
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- scripts/faddr2line | 4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
+ arch/powerpc/kernel/pci-common.c | 27 +++++++++++++++++++--------
+ 1 file changed, 19 insertions(+), 8 deletions(-)
 
-diff --git a/scripts/faddr2line b/scripts/faddr2line
-index 2571caac3156..70f8c3ecd555 100755
---- a/scripts/faddr2line
-+++ b/scripts/faddr2line
-@@ -112,7 +112,9 @@ __faddr2line() {
- 	# section offsets.
- 	local file_type=$(${READELF} --file-header $objfile |
- 		${AWK} '$1 == "Type:" { print $2; exit }')
--	[[ $file_type = "EXEC" ]] && is_vmlinux=1
-+	if [[ $file_type = "EXEC" ]] || [[ $file_type == "DYN" ]]; then
-+		is_vmlinux=1
-+	fi
+diff --git a/arch/powerpc/kernel/pci-common.c b/arch/powerpc/kernel/pci-common.c
+index 74628aca2bf1..b0bd55f2ce3a 100644
+--- a/arch/powerpc/kernel/pci-common.c
++++ b/arch/powerpc/kernel/pci-common.c
+@@ -82,16 +82,30 @@ EXPORT_SYMBOL(get_pci_dma_ops);
+ static int get_phb_number(struct device_node *dn)
+ {
+ 	int ret, phb_id = -1;
+-	u32 prop_32;
+ 	u64 prop;
  
- 	# Go through each of the object's symbols which match the func name.
- 	# In rare cases there might be duplicates, in which case we print all
+ 	/*
+ 	 * Try fixed PHB numbering first, by checking archs and reading
+-	 * the respective device-tree properties. Firstly, try powernv by
+-	 * reading "ibm,opal-phbid", only present in OPAL environment.
++	 * the respective device-tree properties. Firstly, try reading
++	 * standard "linux,pci-domain", then try reading "ibm,opal-phbid"
++	 * (only present in powernv OPAL environment), then try device-tree
++	 * alias and as the last try to use lower bits of "reg" property.
+ 	 */
+-	ret = of_property_read_u64(dn, "ibm,opal-phbid", &prop);
++	ret = of_get_pci_domain_nr(dn);
++	if (ret >= 0) {
++		prop = ret;
++		ret = 0;
++	}
++	if (ret)
++		ret = of_property_read_u64(dn, "ibm,opal-phbid", &prop);
++	if (ret)
++		ret = of_alias_get_id(dn, "pci");
++	if (ret >= 0) {
++		prop = ret;
++		ret = 0;
++	}
+ 	if (ret) {
++		u32 prop_32;
+ 		ret = of_property_read_u32_index(dn, "reg", 1, &prop_32);
+ 		prop = prop_32;
+ 	}
+@@ -103,10 +117,7 @@ static int get_phb_number(struct device_node *dn)
+ 	if ((phb_id >= 0) && !test_and_set_bit(phb_id, phb_bitmap))
+ 		return phb_id;
+ 
+-	/*
+-	 * If not pseries nor powernv, or if fixed PHB numbering tried to add
+-	 * the same PHB number twice, then fallback to dynamic PHB numbering.
+-	 */
++	/* If everything fails then fallback to dynamic PHB numbering. */
+ 	phb_id = find_first_zero_bit(phb_bitmap, MAX_PHBS);
+ 	BUG_ON(phb_id >= MAX_PHBS);
+ 	set_bit(phb_id, phb_bitmap);
 -- 
 2.35.1
 
