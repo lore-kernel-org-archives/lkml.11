@@ -2,103 +2,222 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A2716C32772
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 19:07:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6D92CC32789
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 19:07:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231565AbiHWTHd (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 15:07:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34056 "EHLO
+        id S231946AbiHWTHg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 23 Aug 2022 15:07:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40108 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231519AbiHWTHN (ORCPT
+        with ESMTP id S229854AbiHWTHR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 15:07:13 -0400
-Received: from mail-ot1-x32a.google.com (mail-ot1-x32a.google.com [IPv6:2607:f8b0:4864:20::32a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5E5291322F8;
-        Tue, 23 Aug 2022 10:45:14 -0700 (PDT)
-Received: by mail-ot1-x32a.google.com with SMTP id a14-20020a0568300b8e00b0061c4e3eb52aso10274026otv.3;
-        Tue, 23 Aug 2022 10:45:14 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc;
-        bh=NuaAcP1qTlqPeXefw8MkbiuCy78EOKqoCb/M7Mlw4gY=;
-        b=2erlFligm5zHeKWnNtaGUjKMKCeFj5mP56eNXsr/MYIXmXNxmSTRPPX+NQ+UrE4MLU
-         luiEvm6NwbTWHaPm8aWU/4TJmiSBbYO/6apMi1yXphl3S/mGM/0tfeUDAjGR7vlIL++V
-         qIFXnuKfv3IdDTp0wUaFWvqAXPq4Ej9g9wcNR8LI6ZaA0x5+rKaQpcQF8KugEgGVbql5
-         VP2tlNm4jdAdEk/oHOh2QBHcytvnZ5Yu5kmJHKGQc3CvlXwavhKXBSbgZn4Eu0DQDkBJ
-         tiSLC5Nq2heV7eJO26TUkc2yS7ds0GY9r9I27G0RmYF1O18CPxJ1H1NAzEuSRvAcG92B
-         YgNg==
-X-Gm-Message-State: ACgBeo2e62tuGGoxdvJwGJnPR8Yao+2XorP0i4eOsdz8mhCiukwAMAwa
-        AizLVtP2waaHtHRY68zxXcJarh5NsHIswBI9QsXpxEI6
-X-Google-Smtp-Source: AA6agR65oPPvx3WCxH8CnmgpKal4capxYkGC0hZz3k+ad8P1bvEvKdnC4E9e+wcyalVfqTy67rF/6iR4mQTCy8G5SDc=
-X-Received: by 2002:a25:8d84:0:b0:695:836a:fcaf with SMTP id
- o4-20020a258d84000000b00695836afcafmr14424963ybl.633.1661275964352; Tue, 23
- Aug 2022 10:32:44 -0700 (PDT)
+        Tue, 23 Aug 2022 15:07:17 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3C7421322FB
+        for <linux-kernel@vger.kernel.org>; Tue, 23 Aug 2022 10:45:36 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1661276574;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=+fFhfrqCii4T/WFPMsHfn5web5vqcTYDBOszx5C8k0E=;
+        b=UUWQdJSrIQ0skKoVgb9EeZ728YArSsqviAIl5roH2iS/yOJdn0nPLk3w9ityWCIrlLJsHp
+        wwu3lbKr078jPf3rtaVyhTwPWRBCu8SG5Mvbm0FcV1+2eJEYkvMzFiyuNSlxAm6tuFd1fe
+        CHEDN9u9oxz1WQKZkq0RCgXsq6R2sEE=
+Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
+ [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-628-TRnmRCyRObuiGSH8jXgB_A-1; Tue, 23 Aug 2022 13:42:53 -0400
+X-MC-Unique: TRnmRCyRObuiGSH8jXgB_A-1
+Received: from smtp.corp.redhat.com (int-mx07.intmail.prod.int.rdu2.redhat.com [10.11.54.7])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 74B1629DD9A2;
+        Tue, 23 Aug 2022 17:42:52 +0000 (UTC)
+Received: from cmirabil.redhat.com (unknown [10.22.33.37])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id A406514152E0;
+        Tue, 23 Aug 2022 17:42:51 +0000 (UTC)
+From:   Charles Mirabile <cmirabil@redhat.com>
+To:     linux-kernel@vger.kernel.org
+Cc:     Charles Mirabile <cmirabil@redhat.com>,
+        Peter Robinson <pbrobinson@gmail.com>,
+        Serge Schneider <serge@raspberrypi.org>,
+        Stefan Wahren <stefan.wahren@i2se.com>,
+        Nicolas Saenz Julienne <nicolassaenzj@gmail.com>,
+        Mattias Brugger <mbrugger@suse.com>,
+        linux-rpi-kernel@lists.infradead.org,
+        linux-arm-kernel@lists.infradead.org, rh-kdlp@googlegroups.com,
+        Miguel Ojeda <ojeda@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzk+dt@kernel.org>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Broadcom internal kernel review list 
+        <bcm-kernel-feedback-list@broadcom.com>,
+        Dmitry Torokhov <dmitry.torokhov@gmail.com>,
+        Lee Jones <lee.jones@linaro.org>, devicetree@vger.kernel.org,
+        linux-input@vger.kernel.org, Joel Savitz <jsavitz@redhat.com>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Subject: [PATCH 3/5] dt-bindings: mfd: sensehat: Add Raspberry Pi Sense HAT schema
+Date:   Tue, 23 Aug 2022 13:41:56 -0400
+Message-Id: <20220823174158.45579-4-cmirabil@redhat.com>
+In-Reply-To: <20220823174158.45579-1-cmirabil@redhat.com>
+References: <20220823174158.45579-1-cmirabil@redhat.com>
 MIME-Version: 1.0
-References: <20220822111816.760285417@infradead.org> <20220822114648.922711674@infradead.org>
-In-Reply-To: <20220822114648.922711674@infradead.org>
-From:   "Rafael J. Wysocki" <rafael@kernel.org>
-Date:   Tue, 23 Aug 2022 19:32:33 +0200
-Message-ID: <CAJZ5v0i=+jXz71DBx=Hr9_6bxOx7yFF_xZJc4tXB0j4kSW0Q_g@mail.gmail.com>
-Subject: Re: [PATCH v3 4/6] sched/completion: Add wait_for_completion_state()
-To:     Peter Zijlstra <peterz@infradead.org>
-Cc:     "Rafael J. Wysocki" <rjw@rjwysocki.net>,
-        Oleg Nesterov <oleg@redhat.com>,
-        Ingo Molnar <mingo@kernel.org>,
-        Vincent Guittot <vincent.guittot@linaro.org>,
-        Dietmar Eggemann <dietmar.eggemann@arm.com>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Mel Gorman <mgorman@suse.de>,
-        Eric Biederman <ebiederm@xmission.com>,
-        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
-        Will Deacon <will@kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Tejun Heo <tj@kernel.org>, Linux PM <linux-pm@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
+X-Scanned-By: MIMEDefang 2.85 on 10.11.54.7
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Aug 22, 2022 at 1:48 PM Peter Zijlstra <peterz@infradead.org> wrote:
->
-> Allows waiting with a custom @state.
->
-> Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
-> ---
->  include/linux/completion.h |    1 +
->  kernel/sched/completion.c  |    9 +++++++++
->  2 files changed, 10 insertions(+)
->
-> --- a/include/linux/completion.h
-> +++ b/include/linux/completion.h
-> @@ -103,6 +103,7 @@ extern void wait_for_completion(struct c
->  extern void wait_for_completion_io(struct completion *);
->  extern int wait_for_completion_interruptible(struct completion *x);
->  extern int wait_for_completion_killable(struct completion *x);
-> +extern int wait_for_completion_state(struct completion *x, unsigned int state);
->  extern unsigned long wait_for_completion_timeout(struct completion *x,
->                                                    unsigned long timeout);
->  extern unsigned long wait_for_completion_io_timeout(struct completion *x,
-> --- a/kernel/sched/completion.c
-> +++ b/kernel/sched/completion.c
-> @@ -247,6 +247,15 @@ int __sched wait_for_completion_killable
->  }
->  EXPORT_SYMBOL(wait_for_completion_killable);
->
-> +int __sched wait_for_completion_state(struct completion *x, unsigned int state)
-> +{
-> +       long t = wait_for_common(x, MAX_SCHEDULE_TIMEOUT, state);
-> +       if (t == -ERESTARTSYS)
-> +               return t;
-> +       return 0;
-> +}
-> +EXPORT_SYMBOL(wait_for_completion_state);
+This patch adds the device tree bindings for the Sense HAT
+and each of its children devices in yaml form.
 
-Why not EXPORT_SYMBOL_GPL?  I guess to match the above?
+Co-developed-by: Joel Savitz <jsavitz@redhat.com>
+Signed-off-by: Joel Savitz <jsavitz@redhat.com>
+Signed-off-by: Charles Mirabile <cmirabil@redhat.com>
+Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+---
+ .../raspberrypi,sensehat-display.yaml         | 26 +++++++++
+ .../input/raspberrypi,sensehat-joystick.yaml  | 31 ++++++++++
+ .../bindings/mfd/raspberrypi,sensehat.yaml    | 57 +++++++++++++++++++
+ 3 files changed, 114 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/auxdisplay/raspberrypi,sensehat-display.yaml
+ create mode 100644 Documentation/devicetree/bindings/input/raspberrypi,sensehat-joystick.yaml
+ create mode 100644 Documentation/devicetree/bindings/mfd/raspberrypi,sensehat.yaml
 
-> +
->  /**
->   * wait_for_completion_killable_timeout: - waits for completion of a task (w/(to,killable))
->   * @x:  holds the state of this particular completion
->
->
+diff --git a/Documentation/devicetree/bindings/auxdisplay/raspberrypi,sensehat-display.yaml b/Documentation/devicetree/bindings/auxdisplay/raspberrypi,sensehat-display.yaml
+new file mode 100644
+index 000000000000..0cf59b0a519c
+--- /dev/null
++++ b/Documentation/devicetree/bindings/auxdisplay/raspberrypi,sensehat-display.yaml
+@@ -0,0 +1,26 @@
++# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
++%YAML 1.2
++---
++$id: http://devicetree.org/schemas/auxdisplay/raspberrypi,sensehat-display.yaml#
++$schema: http://devicetree.org/meta-schemas/core.yaml#
++
++title: Raspberry Pi Sensehat Display
++
++maintainers:
++  - Charles Mirabile <cmirabil@redhat.com>
++  - Joel Savitz <jsavitz@redhat.com>
++
++description:
++  This device is part of the sensehat multi function device.
++  For more information see ../mfd/raspberrypi,sensehat.yaml.
++
++  This device features a programmable 8x8 RGB LED matrix.
++
++properties:
++  compatible:
++    const: raspberrypi,sensehat-display
++
++required:
++  - compatible
++
++additionalProperties: false
+diff --git a/Documentation/devicetree/bindings/input/raspberrypi,sensehat-joystick.yaml b/Documentation/devicetree/bindings/input/raspberrypi,sensehat-joystick.yaml
+new file mode 100644
+index 000000000000..98b03878a570
+--- /dev/null
++++ b/Documentation/devicetree/bindings/input/raspberrypi,sensehat-joystick.yaml
+@@ -0,0 +1,31 @@
++# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
++%YAML 1.2
++---
++$id: http://devicetree.org/schemas/input/raspberrypi,sensehat-joystick.yaml#
++$schema: http://devicetree.org/meta-schemas/core.yaml#
++
++title: Raspberry Pi Sensehat Joystick
++
++maintainers:
++  - Charles Mirabile <cmirabil@redhat.com>
++  - Joel Savitz <jsavitz@redhat.com>
++
++description:
++  This device is part of the sensehat multi function device.
++  For more information see ../mfd/raspberrypi,sensehat.yaml.
++
++  This device features a five button joystick (up, down,left,
++  right, click)
++
++properties:
++  compatible:
++    const: raspberrypi,sensehat-joystick
++
++  interrupts:
++    maxItems: 1
++
++required:
++  - compatible
++  - interrupts
++
++additionalProperties: false
+diff --git a/Documentation/devicetree/bindings/mfd/raspberrypi,sensehat.yaml b/Documentation/devicetree/bindings/mfd/raspberrypi,sensehat.yaml
+new file mode 100644
+index 000000000000..bc53834fbaa7
+--- /dev/null
++++ b/Documentation/devicetree/bindings/mfd/raspberrypi,sensehat.yaml
+@@ -0,0 +1,57 @@
++# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
++%YAML 1.2
++---
++$id: http://devicetree.org/schemas/mfd/raspberrypi,sensehat.yaml#
++$schema: http://devicetree.org/meta-schemas/core.yaml#
++
++title: Raspberry Pi Sensehat
++
++maintainers:
++  - Charles Mirabile <cmirabil@redhat.com>
++  - Joel Savitz <jsavitz@redhat.com>
++
++description:
++  The Raspberry Pi Sensehat is an addon board originally developed
++  for the Raspberry Pi that has a joystick and an 8x8 RGB LED display
++  as well as several environmental sensors. It connects via i2c and
++  a gpio for irq.
++
++properties:
++  compatible:
++    const: raspberrypi,sensehat
++
++  reg:
++    maxItems: 1
++
++  joystick:
++    $ref: /schemas/input/raspberrypi,sensehat-joystick.yaml#
++
++  display:
++    $ref: /schemas/auxdisplay/raspberrypi,sensehat-display.yaml#
++
++required:
++  - compatible
++  - reg
++  - joystick
++  - display
++
++additionalProperties: false
++
++examples:
++  - |
++    #include <dt-bindings/interrupt-controller/irq.h>
++    i2c {
++      #address-cells = <1>;
++      #size-cells = <0>;
++      hat@46 {
++        compatible = "raspberrypi,sensehat";
++        reg = <0x46>;
++        display {
++          compatible = "raspberrypi,sensehat-display";
++        };
++        joystick {
++          compatible = "raspberrypi,sensehat-joystick";
++          interrupts = <23 IRQ_TYPE_EDGE_RISING>;
++        };
++      };
++    };
+-- 
+2.31.1
+
