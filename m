@@ -2,41 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9E46FC3814E
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 10:02:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D88A2C32793
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 10:02:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232903AbiHWKAN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 06:00:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52674 "EHLO
+        id S1351875AbiHWKAq (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 23 Aug 2022 06:00:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56304 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351939AbiHWJ4J (ORCPT
+        with ESMTP id S1352257AbiHWJ4i (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 05:56:09 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 99C266E2F1;
-        Tue, 23 Aug 2022 01:47:05 -0700 (PDT)
+        Tue, 23 Aug 2022 05:56:38 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 927B0A0623;
+        Tue, 23 Aug 2022 01:47:25 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 766D661377;
-        Tue, 23 Aug 2022 08:47:04 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7FED3C433D6;
-        Tue, 23 Aug 2022 08:47:03 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id BBED9B8105C;
+        Tue, 23 Aug 2022 08:47:21 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id EF3C1C433D6;
+        Tue, 23 Aug 2022 08:47:19 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661244423;
-        bh=V8FuMfxWiHZBxPbrlGmg+HCvzmlMc32jHvv7Xlh8gbo=;
+        s=korg; t=1661244440;
+        bh=UfA2D+Yn9Vkzxi9TLQAdixu5obpAF7LAI9CvtDbERPU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=icm6VwMY5n0xWWazuniyrNM/18hKvfUlCpDK6SDOP4bigRVXagnd0KDHlmBaEQp0U
-         dQffGQOCsAvlvb95iLDFs/jSWwbbHNQTB79B5eC+OK5Msu7qc93gSqdNlDEO6hjCoi
-         MECOGjiA++f/l2DSC3WmUUAn2wf24chlLd41dofQ=
+        b=nDjcuwdCmyEEQjkB/ceny7EllUW79t+JIsYv0JEFHgjSgU/NuHYHt3oskFLEI4yPK
+         CIogs6uviDmP2NQCpJEnXDGBj/v0TouudXcjfJHb5cJ8YZ+FAWaseWR1rudZcnFMZu
+         MDeQKiKEFGjwzCoZqd1/oA6UQ9gKdoMbD5QGswDU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Ondrej Mosnacek <omosnace@redhat.com>,
-        Masahiro Yamada <masahiroy@kernel.org>
-Subject: [PATCH 5.15 092/244] kbuild: dummy-tools: avoid tmpdir leak in dummy gcc
-Date:   Tue, 23 Aug 2022 10:24:11 +0200
-Message-Id: <20220823080102.089385419@linuxfoundation.org>
+        stable@vger.kernel.org, Dan Carpenter <dan.carpenter@oracle.com>,
+        Jon Mason <jdmason@kudzu.us>
+Subject: [PATCH 5.15 094/244] NTB: ntb_tool: uninitialized heap data in tool_fn_write()
+Date:   Tue, 23 Aug 2022 10:24:13 +0200
+Message-Id: <20220823080102.157740388@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220823080059.091088642@linuxfoundation.org>
 References: <20220823080059.091088642@linuxfoundation.org>
@@ -48,48 +49,52 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Ondrej Mosnacek <omosnace@redhat.com>
+From: Dan Carpenter <dan.carpenter@oracle.com>
 
-commit aac289653fa5adf9e9985e4912c1d24a3e8cbab2 upstream.
+commit 45e1058b77feade4e36402828bfe3e0d3363177b upstream.
 
-When passed -print-file-name=plugin, the dummy gcc script creates a
-temporary directory that is never cleaned up. To avoid cluttering
-$TMPDIR, instead use a static directory included in the source tree.
+The call to:
 
-Fixes: 76426e238834 ("kbuild: add dummy toolchains to enable all cc-option etc. in Kconfig")
-Signed-off-by: Ondrej Mosnacek <omosnace@redhat.com>
-Signed-off-by: Masahiro Yamada <masahiroy@kernel.org>
+	ret = simple_write_to_buffer(buf, size, offp, ubuf, size);
+
+will return success if it is able to write even one byte to "buf".
+The value of "*offp" controls which byte.  This could result in
+reading uninitialized data when we do the sscanf() on the next line.
+
+This code is not really desigined to handle partial writes where
+*offp is non-zero and the "buf" is preserved and re-used between writes.
+Just ban partial writes and replace the simple_write_to_buffer() with
+copy_from_user().
+
+Fixes: 578b881ba9c4 ("NTB: Add tool test client")
+Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
+Signed-off-by: Jon Mason <jdmason@kudzu.us>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- .../dummy-tools/dummy-plugin-dir/include/plugin-version.h | 0
- scripts/dummy-tools/gcc                                   | 8 ++------
- 2 files changed, 2 insertions(+), 6 deletions(-)
- create mode 100644 scripts/dummy-tools/dummy-plugin-dir/include/plugin-version.h
+ drivers/ntb/test/ntb_tool.c |    8 +++++---
+ 1 file changed, 5 insertions(+), 3 deletions(-)
 
-diff --git a/scripts/dummy-tools/dummy-plugin-dir/include/plugin-version.h b/scripts/dummy-tools/dummy-plugin-dir/include/plugin-version.h
-new file mode 100644
-index 000000000000..e69de29bb2d1
-diff --git a/scripts/dummy-tools/gcc b/scripts/dummy-tools/gcc
-index b2483149bbe5..7db825843435 100755
---- a/scripts/dummy-tools/gcc
-+++ b/scripts/dummy-tools/gcc
-@@ -96,12 +96,8 @@ fi
+--- a/drivers/ntb/test/ntb_tool.c
++++ b/drivers/ntb/test/ntb_tool.c
+@@ -367,14 +367,16 @@ static ssize_t tool_fn_write(struct tool
+ 	u64 bits;
+ 	int n;
  
- # To set GCC_PLUGINS
- if arg_contain -print-file-name=plugin "$@"; then
--	plugin_dir=$(mktemp -d)
--
--	mkdir -p $plugin_dir/include
--	touch $plugin_dir/include/plugin-version.h
--
--	echo $plugin_dir
-+	# Use $0 to find the in-tree dummy directory
-+	echo "$(dirname "$(readlink -f "$0")")/dummy-plugin-dir"
- 	exit 0
- fi
++	if (*offp)
++		return 0;
++
+ 	buf = kmalloc(size + 1, GFP_KERNEL);
+ 	if (!buf)
+ 		return -ENOMEM;
  
--- 
-2.37.2
-
+-	ret = simple_write_to_buffer(buf, size, offp, ubuf, size);
+-	if (ret < 0) {
++	if (copy_from_user(buf, ubuf, size)) {
+ 		kfree(buf);
+-		return ret;
++		return -EFAULT;
+ 	}
+ 
+ 	buf[size] = 0;
 
 
