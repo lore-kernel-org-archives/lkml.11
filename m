@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B326AC32772
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 11:50:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BF9E0C38145
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 11:52:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358607AbiHWLuT (ORCPT
+        id S1358610AbiHWLw2 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 07:50:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57366 "EHLO
+        Tue, 23 Aug 2022 07:52:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53476 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1358328AbiHWLtU (ORCPT
+        with ESMTP id S1358190AbiHWLtr (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 07:49:20 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CAA9FD2935;
-        Tue, 23 Aug 2022 02:30:56 -0700 (PDT)
+        Tue, 23 Aug 2022 07:49:47 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E5E7C92F64;
+        Tue, 23 Aug 2022 02:31:07 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 4BEBDB81B1F;
-        Tue, 23 Aug 2022 09:30:56 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A9593C433C1;
-        Tue, 23 Aug 2022 09:30:54 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 00A03B81C85;
+        Tue, 23 Aug 2022 09:31:06 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 666F6C433D7;
+        Tue, 23 Aug 2022 09:31:04 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661247055;
-        bh=Uqk6OkERhxfXTAJ2ywiVzSimXrrUMGJfZXOrpG2in3g=;
+        s=korg; t=1661247064;
+        bh=tw20pXa+9aPH9hPJaqwcFL8AznpKL7tAVxhOZnoPxz0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=K/Wx/eVPAQq2R2SJ8xwxUW5XPl337pU5tPTgGkcLayyPXtQKvnPOoNCFM8zrQJkKp
-         zQIYCg644CthY6y25GwCKKRgwxXeCL8RMmn86PInbMQ3p9Hq55YRCwkSfXVa+k3TTh
-         wtfsCItoiEcnfYaqn4Bh0rnv+KKcJGMRedLRmc48=
+        b=FCwfHYr0LPqXSnIH5GzSxnTDh+qXBvpnNpPkN8JekU/9isGVdPvqp4ECdQDloVsLM
+         Gg0cE4G4ag/xblbpZlajl2DUMpJiULXQr2owDzvoCsfksIYiPe8Lxn7V/Xdu0VI2c9
+         RNsvDwekCf4sQMM0wwE35PPc/U+44B4JDVVWSlxE=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Zhang Xianwei <zhang.xianwei8@zte.com.cn>,
-        Yi Wang <wang.yi59@zte.com.cn>,
+        stable@vger.kernel.org, Dan Aloni <dan.aloni@vastdata.com>,
         Trond Myklebust <trond.myklebust@hammerspace.com>
-Subject: [PATCH 5.4 305/389] NFSv4.1: RECLAIM_COMPLETE must handle EACCES
-Date:   Tue, 23 Aug 2022 10:26:23 +0200
-Message-Id: <20220823080128.316918004@linuxfoundation.org>
+Subject: [PATCH 5.4 308/389] sunrpc: fix expiry of auth creds
+Date:   Tue, 23 Aug 2022 10:26:26 +0200
+Message-Id: <20220823080128.444859208@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220823080115.331990024@linuxfoundation.org>
 References: <20220823080115.331990024@linuxfoundation.org>
@@ -50,38 +49,32 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Zhang Xianwei <zhang.xianwei8@zte.com.cn>
+From: Dan Aloni <dan.aloni@vastdata.com>
 
-commit e35a5e782f67ed76a65ad0f23a484444a95f000f upstream.
+commit f1bafa7375c01ff71fb7cb97c06caadfcfe815f3 upstream.
 
-A client should be able to handle getting an EACCES error while doing
-a mount operation to reclaim state due to NFS4CLNT_RECLAIM_REBOOT
-being set. If the server returns RPC_AUTH_BADCRED because authentication
-failed when we execute "exportfs -au", then RECLAIM_COMPLETE will go a
-wrong way. After mount succeeds, all OPEN call will fail due to an
-NFS4ERR_GRACE error being returned. This patch is to fix it by resending
-a RPC request.
+Before this commit, with a large enough LRU of expired items (100), the
+loop skipped all the expired items and was entirely ineffectual in
+trimming the LRU list.
 
-Signed-off-by: Zhang Xianwei <zhang.xianwei8@zte.com.cn>
-Signed-off-by: Yi Wang <wang.yi59@zte.com.cn>
-Fixes: aa5190d0ed7d ("NFSv4: Kill nfs4_async_handle_error() abuses by NFSv4.1")
+Fixes: 95cd623250ad ('SUNRPC: Clean up the AUTH cache code')
+Signed-off-by: Dan Aloni <dan.aloni@vastdata.com>
 Signed-off-by: Trond Myklebust <trond.myklebust@hammerspace.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- fs/nfs/nfs4proc.c |    3 +++
- 1 file changed, 3 insertions(+)
+ net/sunrpc/auth.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/fs/nfs/nfs4proc.c
-+++ b/fs/nfs/nfs4proc.c
-@@ -8986,6 +8986,9 @@ static int nfs41_reclaim_complete_handle
- 		rpc_delay(task, NFS4_POLL_RETRY_MAX);
- 		/* fall through */
- 	case -NFS4ERR_RETRY_UNCACHED_REP:
-+	case -EACCES:
-+		dprintk("%s: failed to reclaim complete error %d for server %s, retrying\n",
-+			__func__, task->tk_status, clp->cl_hostname);
- 		return -EAGAIN;
- 	case -NFS4ERR_BADSESSION:
- 	case -NFS4ERR_DEADSESSION:
+--- a/net/sunrpc/auth.c
++++ b/net/sunrpc/auth.c
+@@ -494,7 +494,7 @@ rpcauth_prune_expired(struct list_head *
+ 		 * Enforce a 60 second garbage collection moratorium
+ 		 * Note that the cred_unused list must be time-ordered.
+ 		 */
+-		if (!time_in_range(cred->cr_expire, expired, jiffies))
++		if (time_in_range(cred->cr_expire, expired, jiffies))
+ 			continue;
+ 		if (!rpcauth_unhash_cred(cred))
+ 			continue;
 
 
