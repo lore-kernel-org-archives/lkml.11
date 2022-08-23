@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 67C60C32774
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 12:19:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3F411C38147
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 12:19:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242314AbiHWMTJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 08:19:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50892 "EHLO
+        id S1345012AbiHWMTR (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 23 Aug 2022 08:19:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47016 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356104AbiHWMPk (ORCPT
+        with ESMTP id S1356148AbiHWMPl (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 08:15:40 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0A1A998D21;
-        Tue, 23 Aug 2022 02:41:08 -0700 (PDT)
+        Tue, 23 Aug 2022 08:15:41 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CCBED4F653;
+        Tue, 23 Aug 2022 02:41:10 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 75CA3B81C65;
-        Tue, 23 Aug 2022 09:40:26 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D8415C433C1;
-        Tue, 23 Aug 2022 09:40:24 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 8B12EB81C97;
+        Tue, 23 Aug 2022 09:39:37 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 00186C433D7;
+        Tue, 23 Aug 2022 09:39:35 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661247625;
-        bh=kGnKy4ot8MT8zCT9ellggAB0zIaX/bDGSKngr+K3OEw=;
+        s=korg; t=1661247576;
+        bh=AIm+iPxsLuS8cHO7rgsgO4mYB1yWFzEMV0ofdqrskFI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=kYknOwYK7/RIg9f9jPq69X9JNIIRYUEw69KsUOLI8Yv2vjvN9EgCi3WRCoqSVS6FO
-         VjzL264hJy0Is2uzKLCjKJCMh8+PpH4Qy9UTgznY12IiFFLs7b4fUonHGigul1ampx
-         kVMNp/DbzI7Scqz29BCuV5ShDRx6ABIWg90qCMcI=
+        b=hPqmkMEKrcT2Lk3XEGQAUQRTuIXHK8HmQob0VGh/WUtwwG+ZITGGnPzzV8pG5tP2J
+         V4ZSsezcTtXXPv24L41dMTeM0m+vuDbSoyf7/3SlVpHqh/aYr5uwEIIdRSZ50Vh7UG
+         +eESfSw9a9qeHfqbMDtMHQrbI4ypiN78jzx2Whqs=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Yury Norov <yury.norov@gmail.com>,
-        Erhard Furtner <erhard_f@mailbox.org>,
-        Andrew Donnellan <ajd@linux.ibm.com>,
-        Kees Cook <keescook@chromium.org>
-Subject: [PATCH 5.10 094/158] gcc-plugins: Undefine LATENT_ENTROPY_PLUGIN when plugin disabled for a file
-Date:   Tue, 23 Aug 2022 10:27:06 +0200
-Message-Id: <20220823080049.836873967@linuxfoundation.org>
+        stable@vger.kernel.org, Da Xue <da@libre.computer>,
+        Neil Armstrong <narmstrong@baylibre.com>,
+        Mark Brown <broonie@kernel.org>
+Subject: [PATCH 5.10 079/158] spi: meson-spicc: add local pow2 clock ops to preserve rate between messages
+Date:   Tue, 23 Aug 2022 10:26:51 +0200
+Message-Id: <20220823080049.238382310@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220823080046.056825146@linuxfoundation.org>
 References: <20220823080046.056825146@linuxfoundation.org>
@@ -50,73 +50,255 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Andrew Donnellan <ajd@linux.ibm.com>
+From: Neil Armstrong <narmstrong@baylibre.com>
 
-commit 012e8d2034f1bda8863435cd589636e618d6a659 upstream.
+commit 09992025dacd258c823f50e82db09d7ef06cdac4 upstream.
 
-Commit 36d4b36b6959 ("lib/nodemask: inline next_node_in() and
-node_random()") refactored some code by moving node_random() from
-lib/nodemask.c to include/linux/nodemask.h, thus requiring nodemask.h to
-include random.h, which conditionally defines add_latent_entropy()
-depending on whether the macro LATENT_ENTROPY_PLUGIN is defined.
+At the end of a message, the HW gets a reset in meson_spicc_unprepare_transfer(),
+this resets the SPICC_CONREG register and notably the value set by the
+Common Clock Framework.
 
-This broke the build on powerpc, where nodemask.h is indirectly included
-in arch/powerpc/kernel/prom_init.c, part of the early boot machinery that
-is excluded from the latent entropy plugin using
-DISABLE_LATENT_ENTROPY_PLUGIN. It turns out that while we add a gcc flag
-to disable the actual plugin, we don't undefine LATENT_ENTROPY_PLUGIN.
+This is problematic because:
+- the register value CCF can be different from the corresponding CCF cached rate
+- CCF is allowed to change the clock rate whenever the HW state
 
-This leads to the following:
+This introduces:
+- local pow2 clock ops checking the HW state before allowing a clock operation
+- separation of legacy pow2 clock patch and new enhanced clock path
+- SPICC_CONREG datarate value is now value kepts across messages
 
-    CC      arch/powerpc/kernel/prom_init.o
-  In file included from ./include/linux/nodemask.h:97,
-                   from ./include/linux/mmzone.h:17,
-                   from ./include/linux/gfp.h:7,
-                   from ./include/linux/xarray.h:15,
-                   from ./include/linux/radix-tree.h:21,
-                   from ./include/linux/idr.h:15,
-                   from ./include/linux/kernfs.h:12,
-                   from ./include/linux/sysfs.h:16,
-                   from ./include/linux/kobject.h:20,
-                   from ./include/linux/pci.h:35,
-                   from arch/powerpc/kernel/prom_init.c:24:
-  ./include/linux/random.h: In function 'add_latent_entropy':
-  ./include/linux/random.h:25:46: error: 'latent_entropy' undeclared (first use in this function); did you mean 'add_latent_entropy'?
-     25 |         add_device_randomness((const void *)&latent_entropy, sizeof(latent_entropy));
-        |                                              ^~~~~~~~~~~~~~
-        |                                              add_latent_entropy
-  ./include/linux/random.h:25:46: note: each undeclared identifier is reported only once for each function it appears in
-  make[2]: *** [scripts/Makefile.build:249: arch/powerpc/kernel/prom_init.o] Fehler 1
-  make[1]: *** [scripts/Makefile.build:465: arch/powerpc/kernel] Fehler 2
-  make: *** [Makefile:1855: arch/powerpc] Error 2
+It has been checked that:
+- SPICC_CONREG datarate value is kept across messages
+- CCF is only allowed to change the SPICC_CONREG datarate value when busy
+- SPICC_CONREG datarate value is correct for each transfer
 
-Change the DISABLE_LATENT_ENTROPY_PLUGIN flags to undefine
-LATENT_ENTROPY_PLUGIN for files where the plugin is disabled.
+This didn't appear before commit 3e0cf4d3fc29 ("spi: meson-spicc: add a linear clock divider support")
+because we recalculated and wrote the rate for each xfer.
 
-Cc: Yury Norov <yury.norov@gmail.com>
-Fixes: 38addce8b600 ("gcc-plugins: Add latent_entropy plugin")
-Link: https://bugzilla.kernel.org/show_bug.cgi?id=216367
-Link: https://lore.kernel.org/linuxppc-dev/alpine.DEB.2.22.394.2208152006320.289321@ramsan.of.borg/
-Reported-by: Erhard Furtner <erhard_f@mailbox.org>
-Signed-off-by: Andrew Donnellan <ajd@linux.ibm.com>
-Reviewed-by: Yury Norov <yury.norov@gmail.com>
-Signed-off-by: Kees Cook <keescook@chromium.org>
-Link: https://lore.kernel.org/r/20220816051720.44108-1-ajd@linux.ibm.com
+Fixes: 3e0cf4d3fc29 ("spi: meson-spicc: add a linear clock divider support")
+Reported-by: Da Xue <da@libre.computer>
+Signed-off-by: Neil Armstrong <narmstrong@baylibre.com>
+Link: https://lore.kernel.org/r/20220811134445.678446-1-narmstrong@baylibre.com
+Signed-off-by: Mark Brown <broonie@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- scripts/Makefile.gcc-plugins |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/spi/spi-meson-spicc.c |  129 ++++++++++++++++++++++++++++++++----------
+ 1 file changed, 101 insertions(+), 28 deletions(-)
 
---- a/scripts/Makefile.gcc-plugins
-+++ b/scripts/Makefile.gcc-plugins
-@@ -6,7 +6,7 @@ gcc-plugin-$(CONFIG_GCC_PLUGIN_LATENT_EN
- gcc-plugin-cflags-$(CONFIG_GCC_PLUGIN_LATENT_ENTROPY)		\
- 		+= -DLATENT_ENTROPY_PLUGIN
- ifdef CONFIG_GCC_PLUGIN_LATENT_ENTROPY
--    DISABLE_LATENT_ENTROPY_PLUGIN += -fplugin-arg-latent_entropy_plugin-disable
-+    DISABLE_LATENT_ENTROPY_PLUGIN += -fplugin-arg-latent_entropy_plugin-disable -ULATENT_ENTROPY_PLUGIN
- endif
- export DISABLE_LATENT_ENTROPY_PLUGIN
+--- a/drivers/spi/spi-meson-spicc.c
++++ b/drivers/spi/spi-meson-spicc.c
+@@ -156,6 +156,7 @@ struct meson_spicc_device {
+ 	void __iomem			*base;
+ 	struct clk			*core;
+ 	struct clk			*pclk;
++	struct clk_divider		pow2_div;
+ 	struct clk			*clk;
+ 	struct spi_message		*message;
+ 	struct spi_transfer		*xfer;
+@@ -168,6 +169,8 @@ struct meson_spicc_device {
+ 	unsigned long			xfer_remain;
+ };
  
++#define pow2_clk_to_spicc(_div) container_of(_div, struct meson_spicc_device, pow2_div)
++
+ static void meson_spicc_oen_enable(struct meson_spicc_device *spicc)
+ {
+ 	u32 conf;
+@@ -421,7 +424,7 @@ static int meson_spicc_prepare_message(s
+ {
+ 	struct meson_spicc_device *spicc = spi_master_get_devdata(master);
+ 	struct spi_device *spi = message->spi;
+-	u32 conf = 0;
++	u32 conf = readl_relaxed(spicc->base + SPICC_CONREG) & SPICC_DATARATE_MASK;
+ 
+ 	/* Store current message */
+ 	spicc->message = message;
+@@ -458,8 +461,6 @@ static int meson_spicc_prepare_message(s
+ 	/* Select CS */
+ 	conf |= FIELD_PREP(SPICC_CS_MASK, spi->chip_select);
+ 
+-	/* Default Clock rate core/4 */
+-
+ 	/* Default 8bit word */
+ 	conf |= FIELD_PREP(SPICC_BITLENGTH_MASK, 8 - 1);
+ 
+@@ -476,12 +477,16 @@ static int meson_spicc_prepare_message(s
+ static int meson_spicc_unprepare_transfer(struct spi_master *master)
+ {
+ 	struct meson_spicc_device *spicc = spi_master_get_devdata(master);
++	u32 conf = readl_relaxed(spicc->base + SPICC_CONREG) & SPICC_DATARATE_MASK;
+ 
+ 	/* Disable all IRQs */
+ 	writel(0, spicc->base + SPICC_INTREG);
+ 
+ 	device_reset_optional(&spicc->pdev->dev);
+ 
++	/* Set default configuration, keeping datarate field */
++	writel_relaxed(conf, spicc->base + SPICC_CONREG);
++
+ 	return 0;
+ }
+ 
+@@ -518,14 +523,60 @@ static void meson_spicc_cleanup(struct s
+  * Clk path for G12A series:
+  *    pclk -> pow2 fixed div -> pow2 div -> mux -> out
+  *    pclk -> enh fixed div -> enh div -> mux -> out
++ *
++ * The pow2 divider is tied to the controller HW state, and the
++ * divider is only valid when the controller is initialized.
++ *
++ * A set of clock ops is added to make sure we don't read/set this
++ * clock rate while the controller is in an unknown state.
+  */
+ 
+-static int meson_spicc_clk_init(struct meson_spicc_device *spicc)
++static unsigned long meson_spicc_pow2_recalc_rate(struct clk_hw *hw,
++						  unsigned long parent_rate)
++{
++	struct clk_divider *divider = to_clk_divider(hw);
++	struct meson_spicc_device *spicc = pow2_clk_to_spicc(divider);
++
++	if (!spicc->master->cur_msg || !spicc->master->busy)
++		return 0;
++
++	return clk_divider_ops.recalc_rate(hw, parent_rate);
++}
++
++static int meson_spicc_pow2_determine_rate(struct clk_hw *hw,
++					   struct clk_rate_request *req)
++{
++	struct clk_divider *divider = to_clk_divider(hw);
++	struct meson_spicc_device *spicc = pow2_clk_to_spicc(divider);
++
++	if (!spicc->master->cur_msg || !spicc->master->busy)
++		return -EINVAL;
++
++	return clk_divider_ops.determine_rate(hw, req);
++}
++
++static int meson_spicc_pow2_set_rate(struct clk_hw *hw, unsigned long rate,
++				     unsigned long parent_rate)
++{
++	struct clk_divider *divider = to_clk_divider(hw);
++	struct meson_spicc_device *spicc = pow2_clk_to_spicc(divider);
++
++	if (!spicc->master->cur_msg || !spicc->master->busy)
++		return -EINVAL;
++
++	return clk_divider_ops.set_rate(hw, rate, parent_rate);
++}
++
++const struct clk_ops meson_spicc_pow2_clk_ops = {
++	.recalc_rate = meson_spicc_pow2_recalc_rate,
++	.determine_rate = meson_spicc_pow2_determine_rate,
++	.set_rate = meson_spicc_pow2_set_rate,
++};
++
++static int meson_spicc_pow2_clk_init(struct meson_spicc_device *spicc)
+ {
+ 	struct device *dev = &spicc->pdev->dev;
+-	struct clk_fixed_factor *pow2_fixed_div, *enh_fixed_div;
+-	struct clk_divider *pow2_div, *enh_div;
+-	struct clk_mux *mux;
++	struct clk_fixed_factor *pow2_fixed_div;
+ 	struct clk_init_data init;
+ 	struct clk *clk;
+ 	struct clk_parent_data parent_data[2];
+@@ -560,31 +611,45 @@ static int meson_spicc_clk_init(struct m
+ 	if (WARN_ON(IS_ERR(clk)))
+ 		return PTR_ERR(clk);
+ 
+-	pow2_div = devm_kzalloc(dev, sizeof(*pow2_div), GFP_KERNEL);
+-	if (!pow2_div)
+-		return -ENOMEM;
+-
+ 	snprintf(name, sizeof(name), "%s#pow2_div", dev_name(dev));
+ 	init.name = name;
+-	init.ops = &clk_divider_ops;
+-	init.flags = CLK_SET_RATE_PARENT;
++	init.ops = &meson_spicc_pow2_clk_ops;
++	/*
++	 * Set NOCACHE here to make sure we read the actual HW value
++	 * since we reset the HW after each transfer.
++	 */
++	init.flags = CLK_SET_RATE_PARENT | CLK_GET_RATE_NOCACHE;
+ 	parent_data[0].hw = &pow2_fixed_div->hw;
+ 	init.num_parents = 1;
+ 
+-	pow2_div->shift = 16,
+-	pow2_div->width = 3,
+-	pow2_div->flags = CLK_DIVIDER_POWER_OF_TWO,
+-	pow2_div->reg = spicc->base + SPICC_CONREG;
+-	pow2_div->hw.init = &init;
++	spicc->pow2_div.shift = 16,
++	spicc->pow2_div.width = 3,
++	spicc->pow2_div.flags = CLK_DIVIDER_POWER_OF_TWO,
++	spicc->pow2_div.reg = spicc->base + SPICC_CONREG;
++	spicc->pow2_div.hw.init = &init;
+ 
+-	clk = devm_clk_register(dev, &pow2_div->hw);
+-	if (WARN_ON(IS_ERR(clk)))
+-		return PTR_ERR(clk);
++	spicc->clk = devm_clk_register(dev, &spicc->pow2_div.hw);
++	if (WARN_ON(IS_ERR(spicc->clk)))
++		return PTR_ERR(spicc->clk);
+ 
+-	if (!spicc->data->has_enhance_clk_div) {
+-		spicc->clk = clk;
+-		return 0;
+-	}
++	return 0;
++}
++
++static int meson_spicc_enh_clk_init(struct meson_spicc_device *spicc)
++{
++	struct device *dev = &spicc->pdev->dev;
++	struct clk_fixed_factor *enh_fixed_div;
++	struct clk_divider *enh_div;
++	struct clk_mux *mux;
++	struct clk_init_data init;
++	struct clk *clk;
++	struct clk_parent_data parent_data[2];
++	char name[64];
++
++	memset(&init, 0, sizeof(init));
++	memset(&parent_data, 0, sizeof(parent_data));
++
++	init.parent_data = parent_data;
+ 
+ 	/* algorithm for enh div: rate = freq / 2 / (N + 1) */
+ 
+@@ -637,7 +702,7 @@ static int meson_spicc_clk_init(struct m
+ 	snprintf(name, sizeof(name), "%s#sel", dev_name(dev));
+ 	init.name = name;
+ 	init.ops = &clk_mux_ops;
+-	parent_data[0].hw = &pow2_div->hw;
++	parent_data[0].hw = &spicc->pow2_div.hw;
+ 	parent_data[1].hw = &enh_div->hw;
+ 	init.num_parents = 2;
+ 	init.flags = CLK_SET_RATE_PARENT;
+@@ -754,12 +819,20 @@ static int meson_spicc_probe(struct plat
+ 
+ 	meson_spicc_oen_enable(spicc);
+ 
+-	ret = meson_spicc_clk_init(spicc);
++	ret = meson_spicc_pow2_clk_init(spicc);
+ 	if (ret) {
+-		dev_err(&pdev->dev, "clock registration failed\n");
++		dev_err(&pdev->dev, "pow2 clock registration failed\n");
+ 		goto out_clk;
+ 	}
+ 
++	if (spicc->data->has_enhance_clk_div) {
++		ret = meson_spicc_enh_clk_init(spicc);
++		if (ret) {
++			dev_err(&pdev->dev, "clock registration failed\n");
++			goto out_clk;
++		}
++	}
++
+ 	ret = devm_spi_register_master(&pdev->dev, master);
+ 	if (ret) {
+ 		dev_err(&pdev->dev, "spi master registration failed\n");
 
 
