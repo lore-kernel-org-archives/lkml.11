@@ -2,71 +2,79 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F0F96C32772
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 16:55:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7B963C32796
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 16:56:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245647AbiHWQzP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 12:55:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53360 "EHLO
+        id S244760AbiHWQ4W (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 23 Aug 2022 12:56:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53342 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245632AbiHWQyo (ORCPT
+        with ESMTP id S1343503AbiHWQz2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 12:54:44 -0400
-Received: from bg5.exmail.qq.com (bg4.exmail.qq.com [43.154.221.58])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0968590811
-        for <linux-kernel@vger.kernel.org>; Tue, 23 Aug 2022 07:18:59 -0700 (PDT)
-X-QQ-mid: bizesmtp88t1661264325tb54gilq
-Received: from localhost.localdomain ( [182.148.14.124])
-        by bizesmtp.qq.com (ESMTP) with 
-        id ; Tue, 23 Aug 2022 22:18:43 +0800 (CST)
-X-QQ-SSF: 0100000000200040B000B00A0000000
-X-QQ-FEAT: ILHsT53NKPgLTuHpE6ccSHE70S/G0EX2mN4fT6dumbwx7YjyhfDhsWAnefi8+
-        sf6o3pVtUwhUSCFlIAZARgDB8TvsFn2X3rBV3TbDNQMr1l3g2jhdnCTm1rAfpyn1qI0MAhC
-        njWcuSxPK4v7kwhUZzuMYr8s9+BxfZYYoF6GJKsD8ebVcZwSL0A8ffznYyVjUZm9b1c0uuR
-        IP3PHz6O7iqmUCKsBEi3s63DSxC18sVY1qXfi/PqQwpgd/P0UQMJwePOFAV05D70EA31FBz
-        3EGHhjbyuV4twtM3sdGvyIE+ZH6AQYtNObJHvE29D80nu9few/S+8STQ2WMKV7FaNF32MVG
-        BZ6qHQ3UgJirabWgIEOp+9Ga1prxOP7idbkoo06zR/cgh65DeO7N79Or6iUBw==
-X-QQ-GoodBg: 0
-From:   wangjianli <wangjianli@cdjrlc.com>
-To:     zhenyuw@linux.intel.com, zhi.a.wang@intel.com,
-        jani.nikula@linux.intel.com, joonas.lahtinen@linux.intel.com,
-        odrigo.vivi@intel.com, tvrtko.ursulin@linux.intel.com,
-        airlied@linux.ie, daniel@ffwll.ch
-Cc:     intel-gvt-dev@lists.freedesktop.org,
-        intel-gfx@lists.freedesktop.org, dri-devel@lists.freedesktop.org,
-        linux-kernel@vger.kernel.org, wangjianli <wangjianli@cdjrlc.com>
-Subject: [PATCH] i915/gvt: fix repeated words in comments
-Date:   Tue, 23 Aug 2022 22:18:36 +0800
-Message-Id: <20220823141836.14176-1-wangjianli@cdjrlc.com>
-X-Mailer: git-send-email 2.36.1
+        Tue, 23 Aug 2022 12:55:28 -0400
+X-Greylist: delayed 602 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Tue, 23 Aug 2022 06:25:47 PDT
+Received: from luna.linkmauve.fr (82-65-109-163.subs.proxad.net [82.65.109.163])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3E7CD883CA;
+        Tue, 23 Aug 2022 06:25:46 -0700 (PDT)
+Received: by luna.linkmauve.fr (Postfix, from userid 1000)
+        id DBE46F41DDA; Tue, 23 Aug 2022 15:07:05 +0200 (CEST)
+From:   Emmanuel Gil Peyrot <linkmauve@linkmauve.fr>
+To:     Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        Alessandro Zummo <a.zummo@towertech.it>,
+        linux-rtc@vger.kernel.org, linux-kernel@vger.kernel.org
+Cc:     Emmanuel Gil Peyrot <linkmauve@linkmauve.fr>,
+        Ash Logan <ash@heyquark.com>,
+        rw-r-r-0644 <r.r.qwertyuiop.r.r@gmail.com>,
+        =?UTF-8?q?Jonathan=20Neusch=C3=A4fer?= <j.ne@posteo.net>
+Subject: [PATCH] rtc: gamecube: Always reset HW_SRNPROT after read
+Date:   Tue, 23 Aug 2022 15:07:02 +0200
+Message-Id: <20220823130702.1046-1-linkmauve@linkmauve.fr>
+X-Mailer: git-send-email 2.37.2
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-QQ-SENDSIZE: 520
-Feedback-ID: bizesmtp:cdjrlc.com:qybglogicsvr:qybglogicsvr7
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
- Delete the redundant word 'the'.
+This register would fail to be reset if reading the RTC bias failed for
+whichever reason.  This commit reorganises the code around to
+unconditionally write it back to its previous value, unmap it, and
+return the result of regmap_read(), which makes it both simpler and more
+correct in the error case.
 
-Signed-off-by: wangjianli <wangjianli@cdjrlc.com>
+Signed-off-by: Emmanuel Gil Peyrot <linkmauve@linkmauve.fr>
 ---
- drivers/gpu/drm/i915/gvt/gtt.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/rtc/rtc-gamecube.c | 11 +++++------
+ 1 file changed, 5 insertions(+), 6 deletions(-)
 
-diff --git a/drivers/gpu/drm/i915/gvt/gtt.c b/drivers/gpu/drm/i915/gvt/gtt.c
-index b4f69364f9a1..62e5f27adca9 100644
---- a/drivers/gpu/drm/i915/gvt/gtt.c
-+++ b/drivers/gpu/drm/i915/gvt/gtt.c
-@@ -2786,7 +2786,7 @@ int intel_gvt_init_gtt(struct intel_gvt *gvt)
-  * @gvt: GVT device
-  *
-  * This function is called at the driver unloading stage, to clean up the
-- * the mm components of a GVT device.
-+ * mm components of a GVT device.
-  *
-  */
- void intel_gvt_clean_gtt(struct intel_gvt *gvt)
+diff --git a/drivers/rtc/rtc-gamecube.c b/drivers/rtc/rtc-gamecube.c
+index c2717bb52b2b..c828bc8e05b9 100644
+--- a/drivers/rtc/rtc-gamecube.c
++++ b/drivers/rtc/rtc-gamecube.c
+@@ -265,18 +265,17 @@ static int gamecube_rtc_read_offset_from_sram(struct priv *d)
+ 	 * SRAM address as on previous consoles.
+ 	 */
+ 	ret = regmap_read(d->regmap, RTC_SRAM_BIAS, &d->rtc_bias);
+-	if (ret) {
+-		pr_err("failed to get the RTC bias\n");
+-		iounmap(hw_srnprot);
+-		return -1;
+-	}
+ 
+ 	/* Reset SRAM access to how it was before, our job here is done. */
+ 	if (old != 0x7bf)
+ 		iowrite32be(old, hw_srnprot);
++
+ 	iounmap(hw_srnprot);
+ 
+-	return 0;
++	if (ret)
++		pr_err("failed to get the RTC bias\n");
++
++	return ret;
+ }
+ 
+ static const struct regmap_range rtc_rd_ranges[] = {
 -- 
-2.36.1
+2.37.2
 
