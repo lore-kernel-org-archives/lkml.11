@@ -2,48 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7F816C32772
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 10:10:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 461A4C32774
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 10:12:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353040AbiHWKKR (ORCPT
+        id S1353074AbiHWKKh (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 06:10:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46510 "EHLO
+        Tue, 23 Aug 2022 06:10:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45874 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352749AbiHWKC1 (ORCPT
+        with ESMTP id S1352760AbiHWKC2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 06:02:27 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 804907C748;
-        Tue, 23 Aug 2022 01:50:47 -0700 (PDT)
+        Tue, 23 Aug 2022 06:02:28 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2F8BA7CAA2;
+        Tue, 23 Aug 2022 01:50:51 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id F05E8B8105C;
-        Tue, 23 Aug 2022 08:50:45 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5AB8AC433D6;
-        Tue, 23 Aug 2022 08:50:44 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 5DE45CE1B2A;
+        Tue, 23 Aug 2022 08:50:49 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6F07BC433C1;
+        Tue, 23 Aug 2022 08:50:47 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661244644;
-        bh=MJ9PmoMD6d/lpjd/2z9GkI5gkqaZpktyZICEJxlwDDY=;
+        s=korg; t=1661244647;
+        bh=bNe4rO2J68SBkBMaIXYCYTj2UDiAQNXOSRC37aerPW0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ImyXeCIhxzUKEjemGlRiPqOwF/W59dv9lJXIc+6wa5+9IX1/qy+gaa+L2jbLIXi5x
-         ydxRRxVRbonMN73+WRth9kSkmGvsNZIFq+B3UZELfR7G6x6NYHmBi9YOIf0CTHFIkf
-         PjFg08r5tTVt3M4oVDgeKgJv0jfmKs9/OFlZz01M=
+        b=bsVU11uxNeinsdm2ZAB2LTk75OA5XITYmpxSwup3VB6l0809Hvd7x0D3zNMXryDJj
+         xOKk5dkRDAQ7osKnqzx/Rx/Obqhp6ZJmyRySHrVdRYz9BuE7IKH5ZkgOUI/urTn8AV
+         l1FQFyjwmDnaNZfPRgo5CC+WWeoTaOdys5NwYlM8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Eric Dumazet <edumazet@google.com>,
-        Soheil Hassas Yeganeh <soheil@google.com>,
-        Shakeel Butt <shakeelb@google.com>,
-        Wei Wang <weiwan@google.com>,
-        "David S. Miller" <davem@davemloft.net>
-Subject: [PATCH 4.14 169/229] tcp: fix over estimation in sk_forced_mem_schedule()
-Date:   Tue, 23 Aug 2022 10:25:30 +0200
-Message-Id: <20220823080059.684450676@linuxfoundation.org>
+        stable@vger.kernel.org, Pablo Neira Ayuso <pablo@netfilter.org>
+Subject: [PATCH 5.15 128/244] netfilter: nf_tables: validate NFTA_SET_ELEM_OBJREF based on NFT_SET_OBJECT flag
+Date:   Tue, 23 Aug 2022 10:24:47 +0200
+Message-Id: <20220823080103.360962250@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220823080053.202747790@linuxfoundation.org>
-References: <20220823080053.202747790@linuxfoundation.org>
+In-Reply-To: <20220823080059.091088642@linuxfoundation.org>
+References: <20220823080059.091088642@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -52,45 +48,51 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Eric Dumazet <edumazet@google.com>
+From: Pablo Neira Ayuso <pablo@netfilter.org>
 
-commit c4ee118561a0f74442439b7b5b486db1ac1ddfeb upstream.
+commit 5a2f3dc31811e93be15522d9eb13ed61460b76c8 upstream.
 
-sk_forced_mem_schedule() has a bug similar to ones fixed
-in commit 7c80b038d23e ("net: fix sk_wmem_schedule() and
-sk_rmem_schedule() errors")
+If the NFTA_SET_ELEM_OBJREF netlink attribute is present and
+NFT_SET_OBJECT flag is set on, report EINVAL.
 
-While this bug has little chance to trigger in old kernels,
-we need to fix it before the following patch.
+Move existing sanity check earlier to validate that NFT_SET_OBJECT
+requires NFTA_SET_ELEM_OBJREF.
 
-Fixes: d83769a580f1 ("tcp: fix possible deadlock in tcp_send_fin()")
-Signed-off-by: Eric Dumazet <edumazet@google.com>
-Acked-by: Soheil Hassas Yeganeh <soheil@google.com>
-Reviewed-by: Shakeel Butt <shakeelb@google.com>
-Reviewed-by: Wei Wang <weiwan@google.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+Fixes: 8aeff920dcc9 ("netfilter: nf_tables: add stateful object reference to set elements")
+Signed-off-by: Pablo Neira Ayuso <pablo@netfilter.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- net/ipv4/tcp_output.c |    7 ++++---
- 1 file changed, 4 insertions(+), 3 deletions(-)
+ net/netfilter/nf_tables_api.c |   13 +++++++++----
+ 1 file changed, 9 insertions(+), 4 deletions(-)
 
---- a/net/ipv4/tcp_output.c
-+++ b/net/ipv4/tcp_output.c
-@@ -3086,11 +3086,12 @@ void tcp_xmit_retransmit_queue(struct so
-  */
- void sk_forced_mem_schedule(struct sock *sk, int size)
- {
--	int amt;
-+	int delta, amt;
+--- a/net/netfilter/nf_tables_api.c
++++ b/net/netfilter/nf_tables_api.c
+@@ -5761,6 +5761,15 @@ static int nft_add_set_elem(struct nft_c
+ 			return -EINVAL;
+ 	}
  
--	if (size <= sk->sk_forward_alloc)
-+	delta = size - sk->sk_forward_alloc;
-+	if (delta <= 0)
- 		return;
--	amt = sk_mem_pages(size);
-+	amt = sk_mem_pages(delta);
- 	sk->sk_forward_alloc += amt * SK_MEM_QUANTUM;
- 	sk_memory_allocated_add(sk, amt);
++	if (set->flags & NFT_SET_OBJECT) {
++		if (!nla[NFTA_SET_ELEM_OBJREF] &&
++		    !(flags & NFT_SET_ELEM_INTERVAL_END))
++			return -EINVAL;
++	} else {
++		if (nla[NFTA_SET_ELEM_OBJREF])
++			return -EINVAL;
++	}
++
+ 	if ((flags & NFT_SET_ELEM_INTERVAL_END) &&
+ 	     (nla[NFTA_SET_ELEM_DATA] ||
+ 	      nla[NFTA_SET_ELEM_OBJREF] ||
+@@ -5899,10 +5908,6 @@ static int nft_add_set_elem(struct nft_c
+ 	}
  
+ 	if (nla[NFTA_SET_ELEM_OBJREF] != NULL) {
+-		if (!(set->flags & NFT_SET_OBJECT)) {
+-			err = -EINVAL;
+-			goto err_parse_key_end;
+-		}
+ 		obj = nft_obj_lookup(ctx->net, ctx->table,
+ 				     nla[NFTA_SET_ELEM_OBJREF],
+ 				     set->objtype, genmask);
 
 
