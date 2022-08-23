@@ -2,43 +2,50 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E446CC32772
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 12:09:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EB382C32793
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 12:11:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1359522AbiHWMJT (ORCPT
+        id S1359341AbiHWML0 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 08:09:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34366 "EHLO
+        Tue, 23 Aug 2022 08:11:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40278 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1359304AbiHWMHl (ORCPT
+        with ESMTP id S1359550AbiHWMKb (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 08:07:41 -0400
+        Tue, 23 Aug 2022 08:10:31 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 42FC06366;
-        Tue, 23 Aug 2022 02:38:20 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 702EF4D4ED;
+        Tue, 23 Aug 2022 02:38:41 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 7FC9F612D6;
-        Tue, 23 Aug 2022 09:37:22 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 78020C433D6;
-        Tue, 23 Aug 2022 09:37:21 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id ABB366146C;
+        Tue, 23 Aug 2022 09:38:41 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 86649C433D6;
+        Tue, 23 Aug 2022 09:38:40 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661247441;
-        bh=gAdVwi5b46D9uvxjWOaMgLJiK7BOtIW4GyeExVWcIaw=;
+        s=korg; t=1661247521;
+        bh=XGHTd82AAZ1RrJx/a/IRBgTOgLN+rnCHxw5CMHRf92s=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=dohGvCt+iOYNg6Y918AjPWcALrFR9erKIr3E6aOQ33613SVXP4cxwa9TqxO6mGC6L
-         pjfCDUfLOgLmBdo4aaURcdYnyDTKuRzIEh1y3NWZ+bUcci941zygy9ToWTN8slw3lW
-         57up8mrNSiEMEYdLTSQF9eMNb5hYP+gcjr1YAD74=
+        b=G4HB4MN8RBE3YDKEeT/O9NBMq7uNt6dHeq+Sp5uBnDRE+H/4X+E4eYyVrsuq9reec
+         9W3mg6X+XBhCrBm0k7e+PDtHmvzHpURJl3hMwGQKfTB4sYknVD/4sb3MZsqClXtrU8
+         2zq/z8TWUt9N1Tsl/S0xrELCk+6ag5baU/DeKyc8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
         Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
-        Ulf Hansson <ulf.hansson@linaro.org>
-Subject: [PATCH 5.10 006/158] mmc: pxamci: Fix another error handling path in pxamci_probe()
-Date:   Tue, 23 Aug 2022 10:25:38 +0200
-Message-Id: <20220823080046.319140948@linuxfoundation.org>
+        Masami Hiramatsu <mhiramat@kernel.org>,
+        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
+        Ingo Molnar <mingo@redhat.com>, Jiri Olsa <jolsa@kernel.org>,
+        kernel-janitors@vger.kernel.org,
+        Mark Rutland <mark.rutland@arm.com>,
+        Namhyung Kim <namhyung@kernel.org>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Arnaldo Carvalho de Melo <acme@redhat.com>
+Subject: [PATCH 5.10 062/158] perf probe: Fix an error handling path in parse_perf_probe_command()
+Date:   Tue, 23 Aug 2022 10:26:34 +0200
+Message-Id: <20220823080048.576950280@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220823080046.056825146@linuxfoundation.org>
 References: <20220823080046.056825146@linuxfoundation.org>
@@ -52,33 +59,42 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
 
-commit b886f54c300d31c109d2e4336b22922b64e7ba7d upstream.
+commit 4bf6dcaa93bcd083a13c278a91418fe10e6d23a0 upstream.
 
-The commit in Fixes: has introduced an new error handling without branching
-to the existing error handling path.
+If a memory allocation fail, we should branch to the error handling path
+in order to free some resources allocated a few lines above.
 
-Update it now and release some resources if pxamci_init_ocr() fails.
-
-Fixes: 61951fd6cb49 ("mmc: pxamci: let mmc core handle regulators")
+Fixes: 15354d54698648e2 ("perf probe: Generate event name with line number")
 Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
-Cc: stable@vger.kernel.org
-Link: https://lore.kernel.org/r/07a2dcebf8ede69b484103de8f9df043f158cffd.1658862932.git.christophe.jaillet@wanadoo.fr
-Signed-off-by: Ulf Hansson <ulf.hansson@linaro.org>
+Acked-by: Masami Hiramatsu <mhiramat@kernel.org>
+Cc: Alexander Shishkin <alexander.shishkin@linux.intel.com>
+Cc: Ingo Molnar <mingo@redhat.com>
+Cc: Jiri Olsa <jolsa@kernel.org>
+Cc: kernel-janitors@vger.kernel.org
+Cc: Mark Rutland <mark.rutland@arm.com>
+Cc: Namhyung Kim <namhyung@kernel.org>
+Cc: Peter Zijlstra <peterz@infradead.org>
+Link: https://lore.kernel.org/r/b71bcb01fa0c7b9778647235c3ab490f699ba278.1659797452.git.christophe.jaillet@wanadoo.fr
+Signed-off-by: Arnaldo Carvalho de Melo <acme@redhat.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/mmc/host/pxamci.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ tools/perf/util/probe-event.c |    6 ++++--
+ 1 file changed, 4 insertions(+), 2 deletions(-)
 
---- a/drivers/mmc/host/pxamci.c
-+++ b/drivers/mmc/host/pxamci.c
-@@ -672,7 +672,7 @@ static int pxamci_probe(struct platform_
+--- a/tools/perf/util/probe-event.c
++++ b/tools/perf/util/probe-event.c
+@@ -1760,8 +1760,10 @@ int parse_perf_probe_command(const char
+ 	if (!pev->event && pev->point.function && pev->point.line
+ 			&& !pev->point.lazy_line && !pev->point.offset) {
+ 		if (asprintf(&pev->event, "%s_L%d", pev->point.function,
+-			pev->point.line) < 0)
+-			return -ENOMEM;
++			pev->point.line) < 0) {
++			ret = -ENOMEM;
++			goto out;
++		}
+ 	}
  
- 	ret = pxamci_init_ocr(host);
- 	if (ret < 0)
--		return ret;
-+		goto out;
- 
- 	mmc->caps = 0;
- 	host->cmdat = 0;
+ 	/* Copy arguments and ensure return probe has no C argument */
 
 
