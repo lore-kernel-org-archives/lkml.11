@@ -2,45 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2B942C32772
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 11:43:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 37107C32772
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 11:43:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358028AbiHWLnN (ORCPT
+        id S1358011AbiHWLnV (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 07:43:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59846 "EHLO
+        Tue, 23 Aug 2022 07:43:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60066 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357745AbiHWLiG (ORCPT
+        with ESMTP id S1357806AbiHWLi5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 07:38:06 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3F06F101CF;
+        Tue, 23 Aug 2022 07:38:57 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4073911818;
         Tue, 23 Aug 2022 02:28:23 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id D4ACDB81C89;
-        Tue, 23 Aug 2022 09:28:07 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3C309C433C1;
-        Tue, 23 Aug 2022 09:28:06 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id D57196135D;
+        Tue, 23 Aug 2022 09:28:16 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DE792C433C1;
+        Tue, 23 Aug 2022 09:28:15 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661246886;
-        bh=V4LgSedpr3Mn3JFQSAmnZTgGzA5U6Wo8O3HklmKyLu4=;
+        s=korg; t=1661246896;
+        bh=QdEMINy4DpflPJbO9OpDwJFttTM7M9zPcsVxmvhY6PU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=J528pb1rmNSGQoSULv4WjCvR3z6mFamfFW9CISF1HfAQ8D7YbP5gadmCnbuLDmnzs
-         32WV0bhgkZnBwdga68GWET9jNMingunocPwlClH4YkHZwTHTPIGjgtprIMRHtA0R06
-         /0guiJzaynqreIxGprK01PiczaBN+pEpowjleiWk=
+        b=NsIBZnRv52wiDsJ0+Elba6BTP6RyWoGLIraj348FHlb57TvvEL7ahMuR3Nu22wkhA
+         YqpV1c7nCO02SirpHbNV4RgquTEuXkZZdglp6iWvY0fpzTP4P9orSG9A9VbIh/25Z5
+         gf6jvoMa72Dn6caMfj7DFhpfBbQE1TqPUhhaGqFU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Naresh Bannoth <nbannoth@in.ibm.com>,
-        Kyle Mahlkuch <Kyle.Mahlkuch@ibm.com>,
-        Quinn Tran <qutran@marvell.com>,
-        Nilesh Javali <njavali@marvell.com>,
-        "Martin K. Petersen" <martin.petersen@oracle.com>
-Subject: [PATCH 5.4 251/389] scsi: qla2xxx: Fix erroneous mailbox timeout after PCI error injection
-Date:   Tue, 23 Aug 2022 10:25:29 +0200
-Message-Id: <20220823080126.074957854@linuxfoundation.org>
+        stable@vger.kernel.org, Philipp Rudo <prudo@linux.ibm.com>,
+        kexec@lists.infradead.org, keyrings@vger.kernel.org,
+        linux-security-module@vger.kernel.org,
+        Michal Suchanek <msuchanek@suse.de>,
+        "Lee, Chun-Yi" <jlee@suse.com>, Baoquan He <bhe@redhat.com>,
+        Coiby Xu <coxu@redhat.com>, Heiko Carstens <hca@linux.ibm.com>,
+        Mimi Zohar <zohar@linux.ibm.com>
+Subject: [PATCH 5.4 254/389] kexec, KEYS, s390: Make use of built-in and secondary keyring for signature verification
+Date:   Tue, 23 Aug 2022 10:25:32 +0200
+Message-Id: <20220823080126.207983967@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220823080115.331990024@linuxfoundation.org>
 References: <20220823080115.331990024@linuxfoundation.org>
@@ -52,61 +54,66 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Quinn Tran <qutran@marvell.com>
+From: Michal Suchanek <msuchanek@suse.de>
 
-commit f260694e6463b63ae550aad25ddefe94cb1904da upstream.
+commit 0828c4a39be57768b8788e8cbd0d84683ea757e5 upstream.
 
-Clear wait for mailbox interrupt flag to prevent stale mailbox:
+commit e23a8020ce4e ("s390/kexec_file: Signature verification prototype")
+adds support for KEXEC_SIG verification with keys from platform keyring
+but the built-in keys and secondary keyring are not used.
 
-Feb 22 05:22:56 ltcden4-lp7 kernel: qla2xxx [0135:90:00.1]-500a:4: LOOP UP detected (16 Gbps).
-Feb 22 05:22:59 ltcden4-lp7 kernel: qla2xxx [0135:90:00.1]-d04c:4: MBX Command timeout for cmd 69, ...
+Add support for the built-in keys and secondary keyring as x86 does.
 
-To fix the issue, driver needs to clear the MBX_INTR_WAIT flag on purging
-the mailbox. When the stale mailbox completion does arrive, it will be
-dropped.
-
-Link: https://lore.kernel.org/r/20220616053508.27186-11-njavali@marvell.com
-Fixes: b6faaaf796d7 ("scsi: qla2xxx: Serialize mailbox request")
-Cc: Naresh Bannoth <nbannoth@in.ibm.com>
-Cc: Kyle Mahlkuch <Kyle.Mahlkuch@ibm.com>
+Fixes: e23a8020ce4e ("s390/kexec_file: Signature verification prototype")
 Cc: stable@vger.kernel.org
-Reported-by: Naresh Bannoth <nbannoth@in.ibm.com>
-Tested-by: Naresh Bannoth <nbannoth@in.ibm.com>
-Signed-off-by: Quinn Tran <qutran@marvell.com>
-Signed-off-by: Nilesh Javali <njavali@marvell.com>
-Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
+Cc: Philipp Rudo <prudo@linux.ibm.com>
+Cc: kexec@lists.infradead.org
+Cc: keyrings@vger.kernel.org
+Cc: linux-security-module@vger.kernel.org
+Signed-off-by: Michal Suchanek <msuchanek@suse.de>
+Reviewed-by: "Lee, Chun-Yi" <jlee@suse.com>
+Acked-by: Baoquan He <bhe@redhat.com>
+Signed-off-by: Coiby Xu <coxu@redhat.com>
+Acked-by: Heiko Carstens <hca@linux.ibm.com>
+Signed-off-by: Mimi Zohar <zohar@linux.ibm.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/scsi/qla2xxx/qla_mbx.c |   12 ++++++------
- 1 file changed, 6 insertions(+), 6 deletions(-)
+ arch/s390/kernel/machine_kexec_file.c |   18 +++++++++++++-----
+ 1 file changed, 13 insertions(+), 5 deletions(-)
 
---- a/drivers/scsi/qla2xxx/qla_mbx.c
-+++ b/drivers/scsi/qla2xxx/qla_mbx.c
-@@ -271,6 +271,12 @@ qla2x00_mailbox_command(scsi_qla_host_t
- 		atomic_inc(&ha->num_pend_mbx_stage3);
- 		if (!wait_for_completion_timeout(&ha->mbx_intr_comp,
- 		    mcp->tov * HZ)) {
-+			ql_dbg(ql_dbg_mbx, vha, 0x117a,
-+			    "cmd=%x Timeout.\n", command);
-+			spin_lock_irqsave(&ha->hardware_lock, flags);
-+			clear_bit(MBX_INTR_WAIT, &ha->mbx_cmd_flags);
-+			spin_unlock_irqrestore(&ha->hardware_lock, flags);
-+
- 			if (chip_reset != ha->chip_reset) {
- 				spin_lock_irqsave(&ha->hardware_lock, flags);
- 				ha->flags.mbox_busy = 0;
-@@ -281,12 +287,6 @@ qla2x00_mailbox_command(scsi_qla_host_t
- 				rval = QLA_ABORTED;
- 				goto premature_exit;
- 			}
--			ql_dbg(ql_dbg_mbx, vha, 0x117a,
--			    "cmd=%x Timeout.\n", command);
--			spin_lock_irqsave(&ha->hardware_lock, flags);
--			clear_bit(MBX_INTR_WAIT, &ha->mbx_cmd_flags);
--			spin_unlock_irqrestore(&ha->hardware_lock, flags);
--
- 		} else if (ha->flags.purge_mbox ||
- 		    chip_reset != ha->chip_reset) {
- 			spin_lock_irqsave(&ha->hardware_lock, flags);
+--- a/arch/s390/kernel/machine_kexec_file.c
++++ b/arch/s390/kernel/machine_kexec_file.c
+@@ -29,6 +29,7 @@ int s390_verify_sig(const char *kernel,
+ 	const unsigned long marker_len = sizeof(MODULE_SIG_STRING) - 1;
+ 	struct module_signature *ms;
+ 	unsigned long sig_len;
++	int ret;
+ 
+ 	/* Skip signature verification when not secure IPLed. */
+ 	if (!ipl_secure_flag)
+@@ -63,11 +64,18 @@ int s390_verify_sig(const char *kernel,
+ 		return -EBADMSG;
+ 	}
+ 
+-	return verify_pkcs7_signature(kernel, kernel_len,
+-				      kernel + kernel_len, sig_len,
+-				      VERIFY_USE_PLATFORM_KEYRING,
+-				      VERIFYING_MODULE_SIGNATURE,
+-				      NULL, NULL);
++	ret = verify_pkcs7_signature(kernel, kernel_len,
++				     kernel + kernel_len, sig_len,
++				     VERIFY_USE_SECONDARY_KEYRING,
++				     VERIFYING_MODULE_SIGNATURE,
++				     NULL, NULL);
++	if (ret == -ENOKEY && IS_ENABLED(CONFIG_INTEGRITY_PLATFORM_KEYRING))
++		ret = verify_pkcs7_signature(kernel, kernel_len,
++					     kernel + kernel_len, sig_len,
++					     VERIFY_USE_PLATFORM_KEYRING,
++					     VERIFYING_MODULE_SIGNATURE,
++					     NULL, NULL);
++	return ret;
+ }
+ #endif /* CONFIG_KEXEC_SIG */
+ 
 
 
