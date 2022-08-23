@@ -2,93 +2,92 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C02F0C32793
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 08:48:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 517DCC32792
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 08:50:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347470AbiHWIsB (ORCPT
+        id S1347241AbiHWIuE (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 04:48:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42464 "EHLO
+        Tue, 23 Aug 2022 04:50:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42434 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348715AbiHWIqy (ORCPT
+        with ESMTP id S1347018AbiHWIt3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 04:46:54 -0400
-Received: from mail-pj1-x1034.google.com (mail-pj1-x1034.google.com [IPv6:2607:f8b0:4864:20::1034])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 390196FA00;
-        Tue, 23 Aug 2022 01:21:39 -0700 (PDT)
-Received: by mail-pj1-x1034.google.com with SMTP id m10-20020a17090a730a00b001fa986fd8eeso16510086pjk.0;
-        Tue, 23 Aug 2022 01:21:38 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc;
-        bh=1cj7sCX/819JZ2jI3ANzIO5MN27uSpxPakNGo1RmZJQ=;
-        b=BO3ghMfPYRhCWjj9zSKbRzZ4wth+zDtB0V2HX4HuhRDScfcs5M14w4kaGUOsu0mB8P
-         AydjXlOEW0GbAVNyht9/Gr7aE9oMXN9wHrlDyFgf87K8KsFWszJzXzGqLQtUj84v15GH
-         KN+9xqcxtAM0YcTgeSFccJVwdv+aub1N/zEnYy9DGkjxVKKIAZlUf1RWhyCA3rqNt2hY
-         X8vF5cQX918EELOiu9ORHLG97fccfj4zj5k0BBwJF45heboo2Wn1APjlzXMqSSZfVUIG
-         88WK/hhZb4lXYddodzn888hDZwbc6oJIJgTc98Au+xW56ooBpJQtyrjNpZyEP/wCaFXD
-         UaGQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc;
-        bh=1cj7sCX/819JZ2jI3ANzIO5MN27uSpxPakNGo1RmZJQ=;
-        b=gQ5fDiTRlqR0Zx8xRkYX+lRNHXCEfvv9BNSuDl3GGoYMX2SeSzgm/VhDI0cgWIwrTC
-         vcbJNqRxCd6XCVvfGMZVNUKOTbc0ZC0ToER5lhy6ImXhK8hlF98XPvj1JTLqCxPjw4GS
-         PCWNjzof+EfRcS3mpYbC4m3azkIoDWA/lMbQnCO0b6eCnQ/jP47QJ28BQXMvbtLNB6Xk
-         B4KE13KuxKiOK2GQTCx/oCP6eO/mrWxYKnZcWfz912S/0N9I0OmJsZD+HBQrZIGOy2TS
-         cQdb9R4P7WKFBtt9vNM5I1UdGd2WGbEVBaLc7TVE+Xfy6ZboYYKbGpU1bGRgFqd6TgTx
-         wmrg==
-X-Gm-Message-State: ACgBeo0Y1H8pgwnojBaf7+qRL6jDH4TpTkq9sm1fQ3TcsaJwKqnmWHXI
-        Iez7QzNcJvopsju1MjMQbnM=
-X-Google-Smtp-Source: AA6agR7cSqq9FjNLrxj/uIIBjb+sMbLbWrl6PYCXuZ5wSdpx/KtwNwRsGD8LAzqZN5GqzxV3ybZecg==
-X-Received: by 2002:a17:903:22c6:b0:172:cad9:403 with SMTP id y6-20020a17090322c600b00172cad90403mr16811432plg.123.1661242893190;
-        Tue, 23 Aug 2022 01:21:33 -0700 (PDT)
-Received: from [192.168.43.80] (subs32-116-206-28-56.three.co.id. [116.206.28.56])
-        by smtp.gmail.com with ESMTPSA id i9-20020a170902c94900b001641b2d61d4sm9880362pla.30.2022.08.23.01.21.30
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 23 Aug 2022 01:21:32 -0700 (PDT)
-Message-ID: <e238c1b9-8c9f-c5f1-fd5e-2be94f150477@gmail.com>
-Date:   Tue, 23 Aug 2022 15:21:28 +0700
+        Tue, 23 Aug 2022 04:49:29 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C6BA77C337;
+        Tue, 23 Aug 2022 01:22:19 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by sin.source.kernel.org (Postfix) with ESMTPS id EFD16CE1B39;
+        Tue, 23 Aug 2022 08:17:11 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id EDAE4C433D6;
+        Tue, 23 Aug 2022 08:17:09 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1661242630;
+        bh=yp8FAvLDJNDsj4jRUbxa7J/2sW+6J1jRQ0jGvMPpTno=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=zKdKLBI90eZrOqESnpUPSfiIBJeyJ1vy1Wy2iLrkoMky+dcjPrem5EW5PUynR1h+L
+         W4+gDSBB3jJS+WRAUang61rf21L70F3bfy5z6ZwebbGvB035v6AjdJ863IxHyGNYnr
+         G1wX2oTJoOo4Y6tc/Cxt3A3N57NQup/x1zh8sSxw=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Louis Peens <louis.peens@corigine.com>,
+        Yu Xiao <yu.xiao@corigine.com>,
+        Simon Horman <simon.horman@corigine.com>,
+        Jakub Kicinski <kuba@kernel.org>
+Subject: [PATCH 5.19 148/365] nfp: ethtool: fix the display error of `ethtool -m DEVNAME`
+Date:   Tue, 23 Aug 2022 10:00:49 +0200
+Message-Id: <20220823080124.407732769@linuxfoundation.org>
+X-Mailer: git-send-email 2.37.2
+In-Reply-To: <20220823080118.128342613@linuxfoundation.org>
+References: <20220823080118.128342613@linuxfoundation.org>
+User-Agent: quilt/0.67
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.12.0
-Subject: Re: [PATCH] MIPS: ath25: clean up non-kernel-doc comment warning
-Content-Language: en-US
-To:     Sergey Ryazanov <ryazanov.s.a@gmail.com>,
-        Randy Dunlap <rdunlap@infradead.org>
-Cc:     open list <linux-kernel@vger.kernel.org>,
-        kernel test robot <lkp@intel.com>,
-        Aditya Srivastava <yashsri421@gmail.com>,
-        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
-        linux-mips@vger.kernel.org
-References: <20220823025441.30708-1-rdunlap@infradead.org>
- <CAHNKnsTdmPMwYa1f7DBJsEXxL_pzforPLar=eO6Jp=COmCXrtQ@mail.gmail.com>
-From:   Bagas Sanjaya <bagasdotme@gmail.com>
-In-Reply-To: <CAHNKnsTdmPMwYa1f7DBJsEXxL_pzforPLar=eO6Jp=COmCXrtQ@mail.gmail.com>
 Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 8/23/22 15:13, Sergey Ryazanov wrote:
-> Acked-by: Sergey Ryazanov <ryazanov.s.a@gmail.com>
-> 
-> Randy, Bagas, which one of these patches should be applied:
-> * https://patchwork.kernel.org/project/linux-mips/patch/20220823030056.123709-1-bagasdotme@gmail.com/
-> * https://patchwork.kernel.org/project/linux-mips/patch/20220823025441.30708-1-rdunlap@infradead.org/
+From: Yu Xiao <yu.xiao@corigine.com>
 
-Hi Sergey, thanks for replying.
+commit 4ae97cae07e15d41e5c0ebabba64c6eefdeb0bbe upstream.
 
-Oh, I don't see Randy's patch, since it wasn't CCed to linux-doc list.
-I prefer to choose Randy's one, because the description wording is
-clearer.
+The port flag isn't set to `NFP_PORT_CHANGED` when using
+`ethtool -m DEVNAME` before, so the port state (e.g. interface)
+cannot be updated. Therefore, it caused that `ethtool -m DEVNAME`
+sometimes cannot read the correct information.
 
-Thanks.
+E.g. `ethtool -m DEVNAME` cannot work when load driver before plug
+in optical module, as the port interface is still NONE without port
+update.
 
--- 
-An old man doll... just what I always wanted! - Clara
+Now update the port state before sending info to NIC to ensure that
+port interface is correct (latest state).
+
+Fixes: 61f7c6f44870 ("nfp: implement ethtool get module EEPROM")
+Reviewed-by: Louis Peens <louis.peens@corigine.com>
+Signed-off-by: Yu Xiao <yu.xiao@corigine.com>
+Signed-off-by: Simon Horman <simon.horman@corigine.com>
+Link: https://lore.kernel.org/r/20220802093355.69065-1-simon.horman@corigine.com
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+---
+ drivers/net/ethernet/netronome/nfp/nfp_net_ethtool.c |    2 ++
+ 1 file changed, 2 insertions(+)
+
+--- a/drivers/net/ethernet/netronome/nfp/nfp_net_ethtool.c
++++ b/drivers/net/ethernet/netronome/nfp/nfp_net_ethtool.c
+@@ -1230,6 +1230,8 @@ nfp_port_get_module_info(struct net_devi
+ 	u8 data;
+ 
+ 	port = nfp_port_from_netdev(netdev);
++	/* update port state to get latest interface */
++	set_bit(NFP_PORT_CHANGED, &port->flags);
+ 	eth_port = nfp_port_get_eth_port(port);
+ 	if (!eth_port)
+ 		return -EOPNOTSUPP;
+
+
