@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4D214C32774
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 09:24:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EB763C32772
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 09:24:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349504AbiHWJYR (ORCPT
+        id S1349737AbiHWJYU (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 05:24:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38026 "EHLO
+        Tue, 23 Aug 2022 05:24:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37516 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350570AbiHWJV7 (ORCPT
+        with ESMTP id S1350647AbiHWJWD (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 05:21:59 -0400
+        Tue, 23 Aug 2022 05:22:03 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3C50D8E0C7;
-        Tue, 23 Aug 2022 01:35:02 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 507188E0DA;
+        Tue, 23 Aug 2022 01:34:53 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id E6B96614DA;
-        Tue, 23 Aug 2022 08:34:04 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id EF406C433D6;
-        Tue, 23 Aug 2022 08:34:03 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id C3BF96151B;
+        Tue, 23 Aug 2022 08:34:51 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CC9DCC43470;
+        Tue, 23 Aug 2022 08:34:50 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661243644;
-        bh=mVBmaehpQ/O+zrjmiuuFeI+9dN+eLesTdAlf4Fd5+Rw=;
+        s=korg; t=1661243691;
+        bh=vtUXON8ZPY2JWNUwIGTSBD4cwQhMoCHe7RqNx/KHnSw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=S+p3CsUBmcPjfd8Nfv9gMvx9Et44Ay19hIZnX3EB1QERQ7WM5h5EQrQgxgmBH1m71
-         WH7ugcQpl3w1etLBw3pic8rrlWn1CMiUqmZ7VrKPZPNPeb26F9LdCooT+KJhm4+g0+
-         TFMF1aBC6LpmmNZXRfdnCZsb69aBGAWjpJ08VGG8=
+        b=0fWsxUXgqxFOtyW2KKTtIh6tkl05/3P0uetAe8FKZydVLR7ck8Lz06OY6h4126m3D
+         unyhrBkLCCqAnFhQCRbz33tjBoH/BFbOLwK6VeF6Y8wg2H4cJjURabXZkksgfv/nvW
+         hpcmvUzPg38vwzXnfEJ3Rv4hgddd1xQ27oxS5sg4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Laurent Dufour <ldufour@linux.ibm.com>,
-        Michael Ellerman <mpe@ellerman.id.au>,
+        stable@vger.kernel.org, Ronnie Sahlberg <lsahlber@redhat.com>,
+        Steve French <stfrench@microsoft.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.19 343/365] watchdog: export lockup_detector_reconfigure
-Date:   Tue, 23 Aug 2022 10:04:04 +0200
-Message-Id: <20220823080132.584041384@linuxfoundation.org>
+Subject: [PATCH 5.19 357/365] smb3: check xattr value length earlier
+Date:   Tue, 23 Aug 2022 10:04:18 +0200
+Message-Id: <20220823080133.225187338@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220823080118.128342613@linuxfoundation.org>
 References: <20220823080118.128342613@linuxfoundation.org>
@@ -50,113 +50,49 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Laurent Dufour <ldufour@linux.ibm.com>
+From: Steve French <stfrench@microsoft.com>
 
-[ Upstream commit 7c56a8733d0a2a4be2438a7512566e5ce552fccf ]
+[ Upstream commit 5fa2cffba0b82336a2244d941322eb1627ff787b ]
 
-In some circumstances it may be interesting to reconfigure the watchdog
-from inside the kernel.
+Coverity complains about assigning a pointer based on
+value length before checking that value length goes
+beyond the end of the SMB.  Although this is even more
+unlikely as value length is a single byte, and the
+pointer is not dereferenced until laterm, it is clearer
+to check the lengths first.
 
-On PowerPC, this may helpful before and after a LPAR migration (LPM) is
-initiated, because it implies some latencies, watchdog, and especially NMI
-watchdog is expected to be triggered during this operation. Reconfiguring
-the watchdog with a factor, would prevent it to happen too frequently
-during LPM.
-
-Rename lockup_detector_reconfigure() as __lockup_detector_reconfigure() and
-create a new function lockup_detector_reconfigure() calling
-__lockup_detector_reconfigure() under the protection of watchdog_mutex.
-
-Signed-off-by: Laurent Dufour <ldufour@linux.ibm.com>
-[mpe: Squash in build fix from Laurent, reported by Sachin]
-Signed-off-by: Michael Ellerman <mpe@ellerman.id.au>
-Link: https://lore.kernel.org/r/20220713154729.80789-3-ldufour@linux.ibm.com
+Addresses-Coverity: 1467704 ("Speculative execution data leak")
+Reviewed-by: Ronnie Sahlberg <lsahlber@redhat.com>
+Signed-off-by: Steve French <stfrench@microsoft.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- include/linux/nmi.h |  2 ++
- kernel/watchdog.c   | 21 ++++++++++++++++-----
- 2 files changed, 18 insertions(+), 5 deletions(-)
+ fs/cifs/smb2ops.c | 5 +++--
+ 1 file changed, 3 insertions(+), 2 deletions(-)
 
-diff --git a/include/linux/nmi.h b/include/linux/nmi.h
-index 750c7f395ca9..f700ff2df074 100644
---- a/include/linux/nmi.h
-+++ b/include/linux/nmi.h
-@@ -122,6 +122,8 @@ int watchdog_nmi_probe(void);
- int watchdog_nmi_enable(unsigned int cpu);
- void watchdog_nmi_disable(unsigned int cpu);
+diff --git a/fs/cifs/smb2ops.c b/fs/cifs/smb2ops.c
+index 8802995b2d3d..aa4c1d403708 100644
+--- a/fs/cifs/smb2ops.c
++++ b/fs/cifs/smb2ops.c
+@@ -1145,9 +1145,7 @@ move_smb2_ea_to_cifs(char *dst, size_t dst_size,
+ 	size_t name_len, value_len, user_name_len;
  
-+void lockup_detector_reconfigure(void);
+ 	while (src_size > 0) {
+-		name = &src->ea_data[0];
+ 		name_len = (size_t)src->ea_name_length;
+-		value = &src->ea_data[src->ea_name_length + 1];
+ 		value_len = (size_t)le16_to_cpu(src->ea_value_length);
+ 
+ 		if (name_len == 0)
+@@ -1159,6 +1157,9 @@ move_smb2_ea_to_cifs(char *dst, size_t dst_size,
+ 			goto out;
+ 		}
+ 
++		name = &src->ea_data[0];
++		value = &src->ea_data[src->ea_name_length + 1];
 +
- /**
-  * touch_nmi_watchdog - restart NMI watchdog timeout.
-  *
-diff --git a/kernel/watchdog.c b/kernel/watchdog.c
-index ecb0e8346e65..8e61f21e7e33 100644
---- a/kernel/watchdog.c
-+++ b/kernel/watchdog.c
-@@ -537,7 +537,7 @@ int lockup_detector_offline_cpu(unsigned int cpu)
- 	return 0;
- }
- 
--static void lockup_detector_reconfigure(void)
-+static void __lockup_detector_reconfigure(void)
- {
- 	cpus_read_lock();
- 	watchdog_nmi_stop();
-@@ -557,6 +557,13 @@ static void lockup_detector_reconfigure(void)
- 	__lockup_detector_cleanup();
- }
- 
-+void lockup_detector_reconfigure(void)
-+{
-+	mutex_lock(&watchdog_mutex);
-+	__lockup_detector_reconfigure();
-+	mutex_unlock(&watchdog_mutex);
-+}
-+
- /*
-  * Create the watchdog infrastructure and configure the detector(s).
-  */
-@@ -573,13 +580,13 @@ static __init void lockup_detector_setup(void)
- 		return;
- 
- 	mutex_lock(&watchdog_mutex);
--	lockup_detector_reconfigure();
-+	__lockup_detector_reconfigure();
- 	softlockup_initialized = true;
- 	mutex_unlock(&watchdog_mutex);
- }
- 
- #else /* CONFIG_SOFTLOCKUP_DETECTOR */
--static void lockup_detector_reconfigure(void)
-+static void __lockup_detector_reconfigure(void)
- {
- 	cpus_read_lock();
- 	watchdog_nmi_stop();
-@@ -587,9 +594,13 @@ static void lockup_detector_reconfigure(void)
- 	watchdog_nmi_start();
- 	cpus_read_unlock();
- }
-+void lockup_detector_reconfigure(void)
-+{
-+	__lockup_detector_reconfigure();
-+}
- static inline void lockup_detector_setup(void)
- {
--	lockup_detector_reconfigure();
-+	__lockup_detector_reconfigure();
- }
- #endif /* !CONFIG_SOFTLOCKUP_DETECTOR */
- 
-@@ -629,7 +640,7 @@ static void proc_watchdog_update(void)
- {
- 	/* Remove impossible cpus to keep sysctl output clean. */
- 	cpumask_and(&watchdog_cpumask, &watchdog_cpumask, cpu_possible_mask);
--	lockup_detector_reconfigure();
-+	__lockup_detector_reconfigure();
- }
- 
- /*
+ 		if (ea_name) {
+ 			if (ea_name_len == name_len &&
+ 			    memcmp(ea_name, name, name_len) == 0) {
 -- 
 2.35.1
 
