@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 360D7C32772
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 11:34:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C6428C32772
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 11:34:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243242AbiHWLea (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 07:34:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36856 "EHLO
+        id S1348856AbiHWLep (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 23 Aug 2022 07:34:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37544 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242784AbiHWLaT (ORCPT
+        with ESMTP id S1349834AbiHWLa4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 07:30:19 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5E329C5793;
-        Tue, 23 Aug 2022 02:25:38 -0700 (PDT)
+        Tue, 23 Aug 2022 07:30:56 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CCE0DC59D0;
+        Tue, 23 Aug 2022 02:25:44 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id D54A9B81C89;
-        Tue, 23 Aug 2022 09:25:29 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 12ED8C433D6;
-        Tue, 23 Aug 2022 09:25:27 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id CFD35B81C65;
+        Tue, 23 Aug 2022 09:25:41 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3D121C433D6;
+        Tue, 23 Aug 2022 09:25:40 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661246728;
-        bh=q0XB61dIAZ63S290Aujw0bcdWp3BtlnZTO9Z/90Q5ro=;
+        s=korg; t=1661246740;
+        bh=gAP38tcAj7LlaKrsijqfJ1GSUGU8jMf8tiBpQP4uIZ0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=wj86Ke1Fsisxi/bun+vtDPl9ao8X+97DQk8aAdn1aTYRfp9gnR0v36y5izssMkhjH
-         M3tOToVZ6Htb64ExS6aWXZB0kAQ8PfJaw1GgK2H1I46WfwsdqHVtpurlPXfdfgFY5s
-         9AfebCLXWjjpkAxSX9l2+soEiceogZZk8TWTdUHM=
+        b=wJwr6/qdnVVO5OFbiLD64mmayKjIEfJS7hgZyV8NhaqpgBDriST9jUAWpj0K7yvee
+         fkhFxCWOlYr22nwkbc94Kn4TJiPlkM3SF2+GNpgX/Rx0PFXl8cctZNqUrEstYfKJZW
+         GA+IS7TC0V3ak44hqQEvaaMkPP455WU2bllxk7Jw=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Robert Marko <robimarko@gmail.com>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        stable@vger.kernel.org, Jiasheng Jiang <jiasheng@iscas.ac.cn>,
+        Mark Brown <broonie@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 170/389] clk: qcom: ipq8074: fix NSS port frequency tables
-Date:   Tue, 23 Aug 2022 10:24:08 +0200
-Message-Id: <20220823080122.730980688@linuxfoundation.org>
+Subject: [PATCH 5.4 205/389] ASoC: codecs: da7210: add check for i2c_add_driver
+Date:   Tue, 23 Aug 2022 10:24:43 +0200
+Message-Id: <20220823080124.203829375@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220823080115.331990024@linuxfoundation.org>
 References: <20220823080115.331990024@linuxfoundation.org>
@@ -49,74 +50,39 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Robert Marko <robimarko@gmail.com>
+From: Jiasheng Jiang <jiasheng@iscas.ac.cn>
 
-[ Upstream commit 0e9e61a2815b5cd34f1b495b2d72e8127ce9b794 ]
+[ Upstream commit 82fa8f581a954ddeec1602bed9f8b4a09d100e6e ]
 
-NSS port 5 and 6 frequency tables are currently broken and are causing a
-wide ranges of issue like 1G not working at all on port 6 or port 5 being
-clocked with 312 instead of 125 MHz as UNIPHY1 gets selected.
+As i2c_add_driver could return error if fails, it should be
+better to check the return value.
+However, if the CONFIG_I2C and CONFIG_SPI_MASTER are both true,
+the return value of i2c_add_driver will be covered by
+spi_register_driver.
+Therefore, it is necessary to add check and return error if fails.
 
-So, update the frequency tables with the ones from the downstream QCA 5.4
-based kernel which has already fixed this.
-
-Fixes: 7117a51ed303 ("clk: qcom: ipq8074: add NSS ethernet port clocks")
-Signed-off-by: Robert Marko <robimarko@gmail.com>
-Signed-off-by: Bjorn Andersson <bjorn.andersson@linaro.org>
-Link: https://lore.kernel.org/r/20220515210048.483898-3-robimarko@gmail.com
+Fixes: aa0e25caafb7 ("ASoC: da7210: Add support for spi regmap")
+Signed-off-by: Jiasheng Jiang <jiasheng@iscas.ac.cn>
+Link: https://lore.kernel.org/r/20220531094712.2376759-1-jiasheng@iscas.ac.cn
+Signed-off-by: Mark Brown <broonie@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/clk/qcom/gcc-ipq8074.c | 8 ++++++++
- 1 file changed, 8 insertions(+)
+ sound/soc/codecs/da7210.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
-diff --git a/drivers/clk/qcom/gcc-ipq8074.c b/drivers/clk/qcom/gcc-ipq8074.c
-index de48ba7eba3a..735a1cb59ffa 100644
---- a/drivers/clk/qcom/gcc-ipq8074.c
-+++ b/drivers/clk/qcom/gcc-ipq8074.c
-@@ -1788,8 +1788,10 @@ static struct clk_regmap_div nss_port4_tx_div_clk_src = {
- static const struct freq_tbl ftbl_nss_port5_rx_clk_src[] = {
- 	F(19200000, P_XO, 1, 0, 0),
- 	F(25000000, P_UNIPHY1_RX, 12.5, 0, 0),
-+	F(25000000, P_UNIPHY0_RX, 5, 0, 0),
- 	F(78125000, P_UNIPHY1_RX, 4, 0, 0),
- 	F(125000000, P_UNIPHY1_RX, 2.5, 0, 0),
-+	F(125000000, P_UNIPHY0_RX, 1, 0, 0),
- 	F(156250000, P_UNIPHY1_RX, 2, 0, 0),
- 	F(312500000, P_UNIPHY1_RX, 1, 0, 0),
- 	{ }
-@@ -1828,8 +1830,10 @@ static struct clk_regmap_div nss_port5_rx_div_clk_src = {
- static const struct freq_tbl ftbl_nss_port5_tx_clk_src[] = {
- 	F(19200000, P_XO, 1, 0, 0),
- 	F(25000000, P_UNIPHY1_TX, 12.5, 0, 0),
-+	F(25000000, P_UNIPHY0_TX, 5, 0, 0),
- 	F(78125000, P_UNIPHY1_TX, 4, 0, 0),
- 	F(125000000, P_UNIPHY1_TX, 2.5, 0, 0),
-+	F(125000000, P_UNIPHY0_TX, 1, 0, 0),
- 	F(156250000, P_UNIPHY1_TX, 2, 0, 0),
- 	F(312500000, P_UNIPHY1_TX, 1, 0, 0),
- 	{ }
-@@ -1867,8 +1871,10 @@ static struct clk_regmap_div nss_port5_tx_div_clk_src = {
- 
- static const struct freq_tbl ftbl_nss_port6_rx_clk_src[] = {
- 	F(19200000, P_XO, 1, 0, 0),
-+	F(25000000, P_UNIPHY2_RX, 5, 0, 0),
- 	F(25000000, P_UNIPHY2_RX, 12.5, 0, 0),
- 	F(78125000, P_UNIPHY2_RX, 4, 0, 0),
-+	F(125000000, P_UNIPHY2_RX, 1, 0, 0),
- 	F(125000000, P_UNIPHY2_RX, 2.5, 0, 0),
- 	F(156250000, P_UNIPHY2_RX, 2, 0, 0),
- 	F(312500000, P_UNIPHY2_RX, 1, 0, 0),
-@@ -1907,8 +1913,10 @@ static struct clk_regmap_div nss_port6_rx_div_clk_src = {
- 
- static const struct freq_tbl ftbl_nss_port6_tx_clk_src[] = {
- 	F(19200000, P_XO, 1, 0, 0),
-+	F(25000000, P_UNIPHY2_TX, 5, 0, 0),
- 	F(25000000, P_UNIPHY2_TX, 12.5, 0, 0),
- 	F(78125000, P_UNIPHY2_TX, 4, 0, 0),
-+	F(125000000, P_UNIPHY2_TX, 1, 0, 0),
- 	F(125000000, P_UNIPHY2_TX, 2.5, 0, 0),
- 	F(156250000, P_UNIPHY2_TX, 2, 0, 0),
- 	F(312500000, P_UNIPHY2_TX, 1, 0, 0),
+diff --git a/sound/soc/codecs/da7210.c b/sound/soc/codecs/da7210.c
+index e172913d04a4..efc5049c0796 100644
+--- a/sound/soc/codecs/da7210.c
++++ b/sound/soc/codecs/da7210.c
+@@ -1333,6 +1333,8 @@ static int __init da7210_modinit(void)
+ 	int ret = 0;
+ #if IS_ENABLED(CONFIG_I2C)
+ 	ret = i2c_add_driver(&da7210_i2c_driver);
++	if (ret)
++		return ret;
+ #endif
+ #if defined(CONFIG_SPI_MASTER)
+ 	ret = spi_register_driver(&da7210_spi_driver);
 -- 
 2.35.1
 
