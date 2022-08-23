@@ -2,109 +2,201 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EF7C9C32789
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 07:58:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 03D4BC32789
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 07:59:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241447AbiHWH6E (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 03:58:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42082 "EHLO
+        id S241457AbiHWH70 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 23 Aug 2022 03:59:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45856 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240214AbiHWH6B (ORCPT
+        with ESMTP id S241448AbiHWH7X (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 03:58:01 -0400
-Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B760D6580D;
-        Tue, 23 Aug 2022 00:58:00 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1661241480; x=1692777480;
-  h=message-id:date:mime-version:subject:to:cc:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=g/qFrIw80eV8aAKPCdwXA+FMeOS0C1mvsE+pHsY02Hs=;
-  b=ARPx/FFiZVaxml+DkH+DLd9FdvGs2+GJ1N5Z3cipN+iMlWSBMV959UBq
-   COpUhwf0Aed7Q4KX64eYZMnigTC4eg6/clLIZO3QAokQ/QoRnf2vr1xLc
-   p4fo9TteWb86Hf6Vf4zttZCbufobP2CnWBOgeh0erawjESdRTITAHDJKi
-   Ndg0fbMgj+cEZ7CodeJSlilJTRsKSIvEedfjkNl00qjAU/lePUHZ1RO1N
-   rwJAZflKc+P8PhQPlXAzMWpcbM1sl7wzYDQeoVwIiDTl4wQkOZDrp9j9H
-   mz7Xm1E0fxb+N6dla8hKAp+R2mopvp9SdWC4ReeoJbIHTsH1+2ZYUvih/
-   A==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10447"; a="357599977"
-X-IronPort-AV: E=Sophos;i="5.93,257,1654585200"; 
-   d="scan'208";a="357599977"
-Received: from fmsmga008.fm.intel.com ([10.253.24.58])
-  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Aug 2022 00:58:00 -0700
-X-IronPort-AV: E=Sophos;i="5.93,257,1654585200"; 
-   d="scan'208";a="669914778"
-Received: from xingzhen-mobl.ccr.corp.intel.com (HELO [10.238.4.113]) ([10.238.4.113])
-  by fmsmga008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Aug 2022 00:57:56 -0700
-Message-ID: <532d89be-63b1-acc2-ae20-8577f064e977@linux.intel.com>
-Date:   Tue, 23 Aug 2022 15:57:54 +0800
+        Tue, 23 Aug 2022 03:59:23 -0400
+Received: from mx07-00178001.pphosted.com (mx07-00178001.pphosted.com [185.132.182.106])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 642D152836;
+        Tue, 23 Aug 2022 00:59:22 -0700 (PDT)
+Received: from pps.filterd (m0241204.ppops.net [127.0.0.1])
+        by mx07-00178001.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 27N4Q7IF014145;
+        Tue, 23 Aug 2022 09:58:56 +0200
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=foss.st.com; h=from : to : cc :
+ subject : date : message-id : in-reply-to : references : mime-version :
+ content-transfer-encoding : content-type; s=selector1;
+ bh=qovgCI/rHlWBP9Q7xRWBKX4sBON8udJGHElHZMj6Q8E=;
+ b=i8QnovpXCciuD6hNT/4w4djx1QA158YPtN+ZEVdU3nQdN7G0UxkgzFD2UFf7V/aRcvpG
+ YqZeGpr7RREt0UV//j/XqlyBt5iQt/vedIbJprXIBLryF0FW/fdkAnfv7+6L1fAFwA3r
+ 2Rxmyk+8nt9XwxuLlt4ARqk8b9gckxZVpXPv6LcRMFIxZJsHq5IR3TQO7PyOG8jD4uyL
+ 1MooqRGF9N2lGSC1dGGgh1omY5/uO7obvu8qgMhaT1afSpElUhvSXeJWKrWwEdfjV4k1
+ WAZYKy5DLl11aE0io341PcZ9TMRkhsVf2pUvPNbxZFrvOv1jJNrOYrkAGeFi/o/LaA5q Kw== 
+Received: from beta.dmz-eu.st.com (beta.dmz-eu.st.com [164.129.1.35])
+        by mx07-00178001.pphosted.com (PPS) with ESMTPS id 3j2w2pvp76-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Tue, 23 Aug 2022 09:58:56 +0200
+Received: from euls16034.sgp.st.com (euls16034.sgp.st.com [10.75.44.20])
+        by beta.dmz-eu.st.com (STMicroelectronics) with ESMTP id 5530D10002A;
+        Tue, 23 Aug 2022 09:58:56 +0200 (CEST)
+Received: from Webmail-eu.st.com (shfdag1node1.st.com [10.75.129.69])
+        by euls16034.sgp.st.com (STMicroelectronics) with ESMTP id 4C8CB216EE8;
+        Tue, 23 Aug 2022 09:58:56 +0200 (CEST)
+Received: from localhost (10.75.127.46) by SHFDAG1NODE1.st.com (10.75.129.69)
+ with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256) id 15.1.2308.20; Tue, 23 Aug
+ 2022 09:58:55 +0200
+From:   <patrice.chotard@foss.st.com>
+To:     Mark Brown <broonie@kernel.org>,
+        Alexandre Torgue <alexandre.torgue@foss.st.com>
+CC:     <linux-spi@vger.kernel.org>,
+        <linux-stm32@st-md-mailman.stormreply.com>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-kernel@vger.kernel.org>, <christophe.kerello@foss.st.com>,
+        <patrice.chotard@foss.st.com>
+Subject: [PATCH v4 1/2] ARM: dts: stm32: Create separate pinmux for qspi cs pin in stm32mp15-pinctrl.dtsi
+Date:   Tue, 23 Aug 2022 09:58:49 +0200
+Message-ID: <20220823075850.575043-2-patrice.chotard@foss.st.com>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20220823075850.575043-1-patrice.chotard@foss.st.com>
+References: <20220823075850.575043-1-patrice.chotard@foss.st.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.12.0
-Subject: Re: [PATCH v1 1/2] perf stat: Clear reset_group for each stat run
-Content-Language: en-US
-To:     Ian Rogers <irogers@google.com>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Ingo Molnar <mingo@redhat.com>,
-        Arnaldo Carvalho de Melo <acme@kernel.org>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
-        Jiri Olsa <jolsa@kernel.org>,
-        Namhyung Kim <namhyung@kernel.org>,
-        Kan Liang <kan.liang@linux.intel.com>,
-        Andi Kleen <ak@linux.intel.com>,
-        linux-perf-users@vger.kernel.org, linux-kernel@vger.kernel.org
-Cc:     Stephane Eranian <eranian@google.com>
-References: <20220822213352.75721-1-irogers@google.com>
-From:   Xing Zhengjun <zhengjun.xing@linux.intel.com>
-In-Reply-To: <20220822213352.75721-1-irogers@google.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-Originating-IP: [10.75.127.46]
+X-ClientProxiedBy: SFHDAG2NODE3.st.com (10.75.127.6) To SHFDAG1NODE1.st.com
+ (10.75.129.69)
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.895,Hydra:6.0.517,FMLib:17.11.122.1
+ definitions=2022-08-23_04,2022-08-22_02,2022-06-22_01
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+From: Patrice Chotard <patrice.chotard@foss.st.com>
 
+Create a separate pinmux for qspi chip select in stm32mp15-pinctrl.dtsi.
+In the case we want to use transfer_one() API to communicate with a SPI
+device, chip select signal must be driven individually.
 
-On 8/23/2022 5:33 AM, Ian Rogers wrote:
-> If a weak group is broken then the reset_group flag remains set for
-> the next run. Having reset_group set means the counter isn't created
-> and ultimately a segfault.
-> 
-> A simple reproduction of this is:
-> perf stat -r2 -e '{cycles,cycles,cycles,cycles,cycles,cycles,cycles,cycles,cycles,cycles}:W
+Signed-off-by: Patrice Chotard <patrice.chotard@foss.st.com>
+---
+ arch/arm/boot/dts/stm32mp15-pinctrl.dtsi | 50 ++++++++++++++++--------
+ arch/arm/boot/dts/stm32mp157c-ev1.dts    | 12 +++++-
+ 2 files changed, 43 insertions(+), 19 deletions(-)
 
-It is better to change to a full command:
-perf stat -r2 -e 
-'{cycles,cycles,cycles,cycles,cycles,cycles,cycles,cycles,cycles,cycles}:W' 
-true
-> which will be added as a test in the next patch.
-> 
-> Fixes: 4804e0111662 ("perf stat: Use affinity for opening events")
-> Signed-off-by: Ian Rogers <irogers@google.com>
-
-I test the two patches on both non-hybrid and hybrid machines, and the 
-"Segmentation fault" disappeared.
-
-Tested-by: Zhengjun Xing <zhengjun.xing@linux.intel.com>
-
-> ---
->   tools/perf/builtin-stat.c | 1 +
->   1 file changed, 1 insertion(+)
-> 
-> diff --git a/tools/perf/builtin-stat.c b/tools/perf/builtin-stat.c
-> index 7fb81a44672d..54cd29d07ca8 100644
-> --- a/tools/perf/builtin-stat.c
-> +++ b/tools/perf/builtin-stat.c
-> @@ -826,6 +826,7 @@ static int __run_perf_stat(int argc, const char **argv, int run_idx)
->   	}
->   
->   	evlist__for_each_entry(evsel_list, counter) {
-> +		counter->reset_group = false;
->   		if (bpf_counter__load(counter, &target))
->   			return -1;
->   		if (!evsel__is_bpf(counter))
-
+diff --git a/arch/arm/boot/dts/stm32mp15-pinctrl.dtsi b/arch/arm/boot/dts/stm32mp15-pinctrl.dtsi
+index 6052243ad81c..ade4fab45f14 100644
+--- a/arch/arm/boot/dts/stm32mp15-pinctrl.dtsi
++++ b/arch/arm/boot/dts/stm32mp15-pinctrl.dtsi
+@@ -1189,7 +1189,7 @@ pins {
+ 	};
+ 
+ 	qspi_bk1_pins_a: qspi-bk1-0 {
+-		pins1 {
++		pins {
+ 			pinmux = <STM32_PINMUX('F', 8, AF10)>, /* QSPI_BK1_IO0 */
+ 				 <STM32_PINMUX('F', 9, AF10)>, /* QSPI_BK1_IO1 */
+ 				 <STM32_PINMUX('F', 7, AF9)>, /* QSPI_BK1_IO2 */
+@@ -1198,12 +1198,6 @@ pins1 {
+ 			drive-push-pull;
+ 			slew-rate = <1>;
+ 		};
+-		pins2 {
+-			pinmux = <STM32_PINMUX('B', 6, AF10)>; /* QSPI_BK1_NCS */
+-			bias-pull-up;
+-			drive-push-pull;
+-			slew-rate = <1>;
+-		};
+ 	};
+ 
+ 	qspi_bk1_sleep_pins_a: qspi-bk1-sleep-0 {
+@@ -1211,13 +1205,12 @@ pins {
+ 			pinmux = <STM32_PINMUX('F', 8, ANALOG)>, /* QSPI_BK1_IO0 */
+ 				 <STM32_PINMUX('F', 9, ANALOG)>, /* QSPI_BK1_IO1 */
+ 				 <STM32_PINMUX('F', 7, ANALOG)>, /* QSPI_BK1_IO2 */
+-				 <STM32_PINMUX('F', 6, ANALOG)>, /* QSPI_BK1_IO3 */
+-				 <STM32_PINMUX('B', 6, ANALOG)>; /* QSPI_BK1_NCS */
++				 <STM32_PINMUX('F', 6, ANALOG)>; /* QSPI_BK1_IO3 */
+ 		};
+ 	};
+ 
+ 	qspi_bk2_pins_a: qspi-bk2-0 {
+-		pins1 {
++		pins {
+ 			pinmux = <STM32_PINMUX('H', 2, AF9)>, /* QSPI_BK2_IO0 */
+ 				 <STM32_PINMUX('H', 3, AF9)>, /* QSPI_BK2_IO1 */
+ 				 <STM32_PINMUX('G', 10, AF11)>, /* QSPI_BK2_IO2 */
+@@ -1226,7 +1219,34 @@ pins1 {
+ 			drive-push-pull;
+ 			slew-rate = <1>;
+ 		};
+-		pins2 {
++	};
++
++	qspi_bk2_sleep_pins_a: qspi-bk2-sleep-0 {
++		pins {
++			pinmux = <STM32_PINMUX('H', 2, ANALOG)>, /* QSPI_BK2_IO0 */
++				 <STM32_PINMUX('H', 3, ANALOG)>, /* QSPI_BK2_IO1 */
++				 <STM32_PINMUX('G', 10, ANALOG)>, /* QSPI_BK2_IO2 */
++				 <STM32_PINMUX('G', 7, ANALOG)>; /* QSPI_BK2_IO3 */
++		};
++	};
++
++	qspi_cs1_pins_a: qspi-cs1-0 {
++		pins {
++			pinmux = <STM32_PINMUX('B', 6, AF10)>; /* QSPI_BK1_NCS */
++			bias-pull-up;
++			drive-push-pull;
++			slew-rate = <1>;
++		};
++	};
++
++	qspi_cs1_sleep_pins_a: qspi-cs1-sleep-0 {
++		pins {
++			pinmux = <STM32_PINMUX('B', 6, ANALOG)>; /* QSPI_BK1_NCS */
++		};
++	};
++
++	qspi_cs2_pins_a: qspi-cs2-0 {
++		pins {
+ 			pinmux = <STM32_PINMUX('C', 0, AF10)>; /* QSPI_BK2_NCS */
+ 			bias-pull-up;
+ 			drive-push-pull;
+@@ -1234,13 +1254,9 @@ pins2 {
+ 		};
+ 	};
+ 
+-	qspi_bk2_sleep_pins_a: qspi-bk2-sleep-0 {
++	qspi_cs2_sleep_pins_a: qspi-cs2-sleep-0 {
+ 		pins {
+-			pinmux = <STM32_PINMUX('H', 2, ANALOG)>, /* QSPI_BK2_IO0 */
+-				 <STM32_PINMUX('H', 3, ANALOG)>, /* QSPI_BK2_IO1 */
+-				 <STM32_PINMUX('G', 10, ANALOG)>, /* QSPI_BK2_IO2 */
+-				 <STM32_PINMUX('G', 7, ANALOG)>, /* QSPI_BK2_IO3 */
+-				 <STM32_PINMUX('C', 0, ANALOG)>; /* QSPI_BK2_NCS */
++			pinmux = <STM32_PINMUX('C', 0, ANALOG)>; /* QSPI_BK2_NCS */
+ 		};
+ 	};
+ 
+diff --git a/arch/arm/boot/dts/stm32mp157c-ev1.dts b/arch/arm/boot/dts/stm32mp157c-ev1.dts
+index d142dd30e16b..050c3c27a420 100644
+--- a/arch/arm/boot/dts/stm32mp157c-ev1.dts
++++ b/arch/arm/boot/dts/stm32mp157c-ev1.dts
+@@ -255,8 +255,16 @@ &m_can1 {
+ 
+ &qspi {
+ 	pinctrl-names = "default", "sleep";
+-	pinctrl-0 = <&qspi_clk_pins_a &qspi_bk1_pins_a &qspi_bk2_pins_a>;
+-	pinctrl-1 = <&qspi_clk_sleep_pins_a &qspi_bk1_sleep_pins_a &qspi_bk2_sleep_pins_a>;
++	pinctrl-0 = <&qspi_clk_pins_a
++		     &qspi_bk1_pins_a
++		     &qspi_cs1_pins_a
++		     &qspi_bk2_pins_a
++		     &qspi_cs2_pins_a>;
++	pinctrl-1 = <&qspi_clk_sleep_pins_a
++		     &qspi_bk1_sleep_pins_a
++		     &qspi_cs1_sleep_pins_a
++		     &qspi_bk2_sleep_pins_a
++		     &qspi_cs2_sleep_pins_a>;
+ 	reg = <0x58003000 0x1000>, <0x70000000 0x4000000>;
+ 	#address-cells = <1>;
+ 	#size-cells = <0>;
 -- 
-Zhengjun Xing
+2.25.1
+
