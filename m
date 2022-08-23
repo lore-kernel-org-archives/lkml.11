@@ -2,45 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E2BD1C32772
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 08:29:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 78637C32772
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 08:29:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243740AbiHWI3a (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 04:29:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47216 "EHLO
+        id S243750AbiHWI3g (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 23 Aug 2022 04:29:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43530 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243715AbiHWIZu (ORCPT
+        with ESMTP id S243706AbiHWIZt (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 04:25:50 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 268D871BFD;
-        Tue, 23 Aug 2022 01:13:51 -0700 (PDT)
+        Tue, 23 Aug 2022 04:25:49 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3418971BE6;
+        Tue, 23 Aug 2022 01:13:50 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id D940461324;
-        Tue, 23 Aug 2022 08:13:45 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E62D1C433B5;
-        Tue, 23 Aug 2022 08:13:44 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id CD22DB81C28;
+        Tue, 23 Aug 2022 08:13:49 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 22E82C433D6;
+        Tue, 23 Aug 2022 08:13:47 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661242425;
-        bh=mWzM5TMrwuksgZqLJpC/Uv/KW7zVtYjKYra4nX9Cxis=;
+        s=korg; t=1661242428;
+        bh=xbUiAn6roGKlOVmttkOBenGDG4+k4twIaoCVAlzAAPA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=F8dH16AzI4tda/DmR4j2wj2BHkQYqBktDqpb3VXKG2kRza1BZ8HqPI2aVckhSWJ1W
-         ldW+P6A1RPwzAbDebf2pHuzXd/sciP+lJscIWpIRACNSPneKqywo7TVFjWNDkvF00T
-         oQn58uSynPLxyOcc/XhyRtCEEXSyweT6uoJYtGD4=
+        b=soSjLfYjxcylbJEiAmN670oIO5ys6iZKNt55kpu8D9ABZ4jFhvKweaGEgDPe0zT3/
+         n7+TsDwAnWRVbHkWaoe26r+Tp/u7KcQCX6NtIKGLMtBiJvvuOsdNFsOj2Mjy72bv0H
+         FRETexu5BMQc+2GIvnwJ/jp0FjykDTqiAKF/0gM4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
-        "Peter Zijlstra (Intel)" <peterz@infradead.org>,
-        Richard Weinberger <richard@nod.at>
-Subject: [PATCH 5.19 113/365] um: Add missing apply_returns()
-Date:   Tue, 23 Aug 2022 10:00:14 +0200
-Message-Id: <20220823080122.931986610@linuxfoundation.org>
+        Gerhard Uttenthaler <uttenthaler@ems-wuensche.com>,
+        Sebastian Haas <haas@ems-wuensche.com>,
+        Marc Kleine-Budde <mkl@pengutronix.de>
+Subject: [PATCH 4.9 070/101] can: ems_usb: fix clangs -Wunaligned-access warning
+Date:   Tue, 23 Aug 2022 10:03:43 +0200
+Message-Id: <20220823080037.228850981@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220823080118.128342613@linuxfoundation.org>
-References: <20220823080118.128342613@linuxfoundation.org>
+In-Reply-To: <20220823080034.579196046@linuxfoundation.org>
+References: <20220823080034.579196046@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -49,34 +50,65 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Peter Zijlstra <peterz@infradead.org>
+From: Marc Kleine-Budde <mkl@pengutronix.de>
 
-commit 637285e7f8d6da70a70c64e7895cb0672357a1f7 upstream.
+commit a4cb6e62ea4d36e53fb3c0f18ea4503d7b76674f upstream.
 
-Implement apply_returns() stub for UM, just like all the other patching
-routines.
+clang emits a -Wunaligned-access warning on struct __packed
+ems_cpc_msg.
 
-Fixes: 15e67227c49a ("x86: Undo return-thunk damage")
-Reported-by: Randy Dunlap <rdunlap@infradead.org)
-Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
-Signed-off-by: Richard Weinberger <richard@nod.at>
+The reason is that the anonymous union msg (not declared as packed) is
+being packed right after some non naturally aligned variables (3*8
+bits + 2*32) inside a packed struct:
+
+| struct __packed ems_cpc_msg {
+| 	u8 type;	/* type of message */
+| 	u8 length;	/* length of data within union 'msg' */
+| 	u8 msgid;	/* confirmation handle */
+| 	__le32 ts_sec;	/* timestamp in seconds */
+| 	__le32 ts_nsec;	/* timestamp in nano seconds */
+|	/* ^ not naturally aligned */
+|
+| 	union {
+| 	/* ^ not declared as packed */
+| 		u8 generic[64];
+| 		struct cpc_can_msg can_msg;
+| 		struct cpc_can_params can_params;
+| 		struct cpc_confirm confirmation;
+| 		struct cpc_overrun overrun;
+| 		struct cpc_can_error error;
+| 		struct cpc_can_err_counter err_counter;
+| 		u8 can_state;
+| 	} msg;
+| };
+
+Starting from LLVM 14, having an unpacked struct nested in a packed
+struct triggers a warning. c.f. [1].
+
+Fix the warning by marking the anonymous union as packed.
+
+[1] https://github.com/llvm/llvm-project/issues/55520
+
+Fixes: 702171adeed3 ("ems_usb: Added support for EMS CPC-USB/ARM7 CAN/USB interface")
+Link: https://lore.kernel.org/all/20220802094021.959858-1-mkl@pengutronix.de
+Cc: Gerhard Uttenthaler <uttenthaler@ems-wuensche.com>
+Cc: Sebastian Haas <haas@ems-wuensche.com>
+Signed-off-by: Marc Kleine-Budde <mkl@pengutronix.de>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/um/kernel/um_arch.c |    4 ++++
- 1 file changed, 4 insertions(+)
+ drivers/net/can/usb/ems_usb.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/arch/um/kernel/um_arch.c
-+++ b/arch/um/kernel/um_arch.c
-@@ -444,6 +444,10 @@ void apply_returns(s32 *start, s32 *end)
- {
- }
+--- a/drivers/net/can/usb/ems_usb.c
++++ b/drivers/net/can/usb/ems_usb.c
+@@ -206,7 +206,7 @@ struct __packed ems_cpc_msg {
+ 	__le32 ts_sec;	/* timestamp in seconds */
+ 	__le32 ts_nsec;	/* timestamp in nano seconds */
  
-+void apply_returns(s32 *start, s32 *end)
-+{
-+}
-+
- void apply_alternatives(struct alt_instr *start, struct alt_instr *end)
- {
- }
+-	union {
++	union __packed {
+ 		u8 generic[64];
+ 		struct cpc_can_msg can_msg;
+ 		struct cpc_can_params can_params;
 
 
