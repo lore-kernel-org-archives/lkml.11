@@ -2,44 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 77C4DC32772
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 12:04:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 95DCEC32772
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 12:05:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1359182AbiHWMEy (ORCPT
+        id S1359195AbiHWME7 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 08:04:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46152 "EHLO
+        Tue, 23 Aug 2022 08:04:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48806 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1359568AbiHWMB4 (ORCPT
+        with ESMTP id S1359439AbiHWMBd (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 08:01:56 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C0D4497D7A;
-        Tue, 23 Aug 2022 02:36:17 -0700 (PDT)
+        Tue, 23 Aug 2022 08:01:33 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 658AA95E64;
+        Tue, 23 Aug 2022 02:35:54 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 357AC60F50;
-        Tue, 23 Aug 2022 09:36:17 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2A995C433D6;
-        Tue, 23 Aug 2022 09:36:15 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id ED329B81C96;
+        Tue, 23 Aug 2022 09:34:51 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4E66DC433C1;
+        Tue, 23 Aug 2022 09:34:50 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661247376;
-        bh=BynSNA2pLc0++aOd/nVe1u0EbpDodCq+xxgBLeUp6rg=;
+        s=korg; t=1661247290;
+        bh=tcc/9GT4Cx6LCF2rISrkHBzxNjQ+akbGEAC2Vt2oo7U=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=XWBwAPKzQUB+s+5vbxqkdoOPP4A6GBkHUmT2sZy067fYGjrE2xvuCHRzGNPjQdr9k
-         ZkvY8RZocakcmOe+Aq4xmJ0URSq+v1DvwlFK55kTabHOZptosMIA4pOBdVMGV/ohMU
-         WknSPjnIyoyAa+0svmmW1LFjv+shR7d/qtb9OfzE=
+        b=bRgN3cISsCtBhSGt4dkudt87b9tl/EUnB6SvMpCkjqtt6BN2B2ZVRG38a8Jp+1bjK
+         0fqqZiKRFNu6lTDvMX32NIJFzMcEMDlosSfQJykzLAtE8+68pGew8KNxVNEWzb37VM
+         +sMKA0+4cRf64ICiNoz8A9zYdRbyBH1WZs5aT1xg=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, John Johansen <john.johansen@canonical.com>
-Subject: [PATCH 5.10 017/158] apparmor: fix setting unconfined mode on a loaded profile
-Date:   Tue, 23 Aug 2022 10:25:49 +0200
-Message-Id: <20220823080046.769431105@linuxfoundation.org>
+        stable@vger.kernel.org, Huacai Chen <chenhuacai@loongson.cn>,
+        Bjorn Helgaas <bhelgaas@google.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.4 361/389] PCI/ACPI: Guard ARM64-specific mcfg_quirks
+Date:   Tue, 23 Aug 2022 10:27:19 +0200
+Message-Id: <20220823080130.632685008@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220823080046.056825146@linuxfoundation.org>
-References: <20220823080046.056825146@linuxfoundation.org>
+In-Reply-To: <20220823080115.331990024@linuxfoundation.org>
+References: <20220823080115.331990024@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -48,46 +50,44 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: John Johansen <john.johansen@canonical.com>
+From: Huacai Chen <chenhuacai@loongson.cn>
 
-commit 3bbb7b2e9bbcd22e539e23034da753898fe3b4dc upstream.
+[ Upstream commit 40a6cc141b4b9580de140bcb3e893445708acc5d ]
 
-When loading a profile that is set to unconfined mode, that label
-flag is not set when it should be. Ensure it is set so that when
-used in a label the unconfined check will be applied correctly.
+Guard ARM64-specific quirks with CONFIG_ARM64 to avoid build errors,
+since mcfg_quirks will be shared by more than one architectures.
 
-Fixes: 038165070aa5 ("apparmor: allow setting any profile into the unconfined state")
-Signed-off-by: John Johansen <john.johansen@canonical.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Link: https://lore.kernel.org/r/20220714124216.1489304-2-chenhuacai@loongson.cn
+Signed-off-by: Huacai Chen <chenhuacai@loongson.cn>
+Signed-off-by: Bjorn Helgaas <bhelgaas@google.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- security/apparmor/policy_unpack.c |   12 +++++++-----
- 1 file changed, 7 insertions(+), 5 deletions(-)
+ drivers/acpi/pci_mcfg.c | 3 +++
+ 1 file changed, 3 insertions(+)
 
---- a/security/apparmor/policy_unpack.c
-+++ b/security/apparmor/policy_unpack.c
-@@ -746,16 +746,18 @@ static struct aa_profile *unpack_profile
- 		profile->label.flags |= FLAG_HAT;
- 	if (!unpack_u32(e, &tmp, NULL))
- 		goto fail;
--	if (tmp == PACKED_MODE_COMPLAIN || (e->version & FORCE_COMPLAIN_FLAG))
-+	if (tmp == PACKED_MODE_COMPLAIN || (e->version & FORCE_COMPLAIN_FLAG)) {
- 		profile->mode = APPARMOR_COMPLAIN;
--	else if (tmp == PACKED_MODE_ENFORCE)
-+	} else if (tmp == PACKED_MODE_ENFORCE) {
- 		profile->mode = APPARMOR_ENFORCE;
--	else if (tmp == PACKED_MODE_KILL)
-+	} else if (tmp == PACKED_MODE_KILL) {
- 		profile->mode = APPARMOR_KILL;
--	else if (tmp == PACKED_MODE_UNCONFINED)
-+	} else if (tmp == PACKED_MODE_UNCONFINED) {
- 		profile->mode = APPARMOR_UNCONFINED;
--	else
-+		profile->label.flags |= FLAG_UNCONFINED;
-+	} else {
- 		goto fail;
-+	}
- 	if (!unpack_u32(e, &tmp, NULL))
- 		goto fail;
- 	if (tmp)
+diff --git a/drivers/acpi/pci_mcfg.c b/drivers/acpi/pci_mcfg.c
+index 47e43c949825..ed2f880b63b5 100644
+--- a/drivers/acpi/pci_mcfg.c
++++ b/drivers/acpi/pci_mcfg.c
+@@ -41,6 +41,8 @@ struct mcfg_fixup {
+ static struct mcfg_fixup mcfg_quirks[] = {
+ /*	{ OEM_ID, OEM_TABLE_ID, REV, SEGMENT, BUS_RANGE, ops, cfgres }, */
+ 
++#ifdef CONFIG_ARM64
++
+ #define AL_ECAM(table_id, rev, seg, ops) \
+ 	{ "AMAZON", table_id, rev, seg, MCFG_BUS_ANY, ops }
+ 
+@@ -162,6 +164,7 @@ static struct mcfg_fixup mcfg_quirks[] = {
+ 	ALTRA_ECAM_QUIRK(1, 13),
+ 	ALTRA_ECAM_QUIRK(1, 14),
+ 	ALTRA_ECAM_QUIRK(1, 15),
++#endif /* ARM64 */
+ };
+ 
+ static char mcfg_oem_id[ACPI_OEM_ID_SIZE];
+-- 
+2.35.1
+
 
 
