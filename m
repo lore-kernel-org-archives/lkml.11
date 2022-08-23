@@ -2,91 +2,119 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 078DFC32796
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 08:28:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CED9CC32772
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 08:28:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243389AbiHWI2d (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 04:28:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43868 "EHLO
+        id S243581AbiHWI2i (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 23 Aug 2022 04:28:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59440 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243314AbiHWIY1 (ORCPT
+        with ESMTP id S243336AbiHWIYa (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 04:24:27 -0400
-Received: from mail-oi1-x231.google.com (mail-oi1-x231.google.com [IPv6:2607:f8b0:4864:20::231])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8ED2013E0D;
-        Tue, 23 Aug 2022 01:13:26 -0700 (PDT)
-Received: by mail-oi1-x231.google.com with SMTP id p187so7903664oia.9;
-        Tue, 23 Aug 2022 01:13:26 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc;
-        bh=ElG2z9ds4FvCowZwp6quOzCFLXh5nG/0Vuy4pRDUUBQ=;
-        b=W5TDAm/jykNYHzQHtJ8EtJ2w0s+1rZ4tfT02UbCcdQFe4wlHpfHrLGFglREemP61lq
-         ENdhjpsglSIpkZd4GL/UrMmJj/MtK+omqDcs5IKk6I8MOMeLdfqz0mHSsT39BXo8cpo+
-         PtO5aNfEWRuwBtqPdm/JI0D3Z2Oj9/8//1pcT2rf4a5p2Eptn9A6CKVDZZiqCAFwhGpY
-         1qpWJ6kDhtS/tW33xPbB/vyG81pxwO3rdHOs5GNCmypNZ5YKPfI8L55zGXBY0oL3ndAC
-         cNBiG86hU1f3gCSQpU0klvl0Pt7whmSKsFqZKYXa0pxVIUEmp+M5UfAPbG90LHTHgQX5
-         pB5Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc;
-        bh=ElG2z9ds4FvCowZwp6quOzCFLXh5nG/0Vuy4pRDUUBQ=;
-        b=HO7re06VsqbsLvdlgaWHiMPQ1aK2dCMcqu3vgh7W+JVM0vEZTIt1lnG+VIX99r5dR8
-         pi5qa5jWbjX4GHN8wOnvgfXZCuK+DPuc012ujSA8+bUh6m31CRQIXawMkAzEgtv6LV4s
-         3Mxrz0GICJub78Jl7qtV/EZj3gXYnLz6M6Xm2/w95pKmN0BRFQv+o8EbW5voAmwD3cp+
-         TJ9kYcj9RMZfB67BZckjGq0V6Q1qVSw6QGJ6/gGUzmja33/AsQVuQWOLAuKHEFkVQQSs
-         laZPulKBzC+a6Lm3qmTwONJ4Fsxs6XEN3UDcCxsqA3K5YUOUrqMu8HR7nGLEpT7Xi4jO
-         gQ3Q==
-X-Gm-Message-State: ACgBeo3uPO/yaRYvp9Gw3e2v7WhYuBvHo2E7Wi0tt1eiWtoX5qy134V9
-        T6//mb1kGv79kbe23CelHXjaYRmntcEOzjl1KLc=
-X-Google-Smtp-Source: AA6agR5N7gQn0g2Usy+qY39qoJWjhWNRT6YITfXN1LCui3xyQhZKhEsBFqF2BKRc35FUoipeENupSxTM9pOAq5qvyyM=
-X-Received: by 2002:a05:6808:1189:b0:33a:34b3:6788 with SMTP id
- j9-20020a056808118900b0033a34b36788mr844226oil.194.1661242404994; Tue, 23 Aug
- 2022 01:13:24 -0700 (PDT)
+        Tue, 23 Aug 2022 04:24:30 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 247BF23D;
+        Tue, 23 Aug 2022 01:13:28 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 72757B81C36;
+        Tue, 23 Aug 2022 08:13:00 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C059DC433C1;
+        Tue, 23 Aug 2022 08:12:58 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1661242379;
+        bh=YKpS4Mu6LeeKYPwDXTeHt6aFS9MfVXJBGaFLo3EJw9U=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=j7HR4zXHxuONWsTf3O8HgiXRCWVnb8UqzLwfy24qhzirwswbW6gbSa2EgKKZ/M7zc
+         mLrRF2Gb4LYtLkrOY36cAthoq3NVNzrq2DUGR40gXRbaivB7TaI7dHOvdMoH3Qjt9Q
+         HyVc6IQYha4sF92fcreqyIekmqC9XNzg5YyYLvjU=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org,
+        AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>,
+        "=?UTF-8?q?N=C3=ADcolas=20F . =20R . =20A . =20Prado?=" 
+        <nfraprado@collabora.com>, Rob Herring <robh@kernel.org>,
+        Linus Walleij <linus.walleij@linaro.org>
+Subject: [PATCH 5.19 097/365] dt-bindings: pinctrl: mt8195: Add and use drive-strength-microamp
+Date:   Tue, 23 Aug 2022 09:59:58 +0200
+Message-Id: <20220823080122.262553045@linuxfoundation.org>
+X-Mailer: git-send-email 2.37.2
+In-Reply-To: <20220823080118.128342613@linuxfoundation.org>
+References: <20220823080118.128342613@linuxfoundation.org>
+User-Agent: quilt/0.67
 MIME-Version: 1.0
-References: <20220823025441.30708-1-rdunlap@infradead.org>
-In-Reply-To: <20220823025441.30708-1-rdunlap@infradead.org>
-From:   Sergey Ryazanov <ryazanov.s.a@gmail.com>
-Date:   Tue, 23 Aug 2022 11:13:14 +0300
-Message-ID: <CAHNKnsTdmPMwYa1f7DBJsEXxL_pzforPLar=eO6Jp=COmCXrtQ@mail.gmail.com>
-Subject: Re: [PATCH] MIPS: ath25: clean up non-kernel-doc comment warning
-To:     Randy Dunlap <rdunlap@infradead.org>,
-        Bagas Sanjaya <bagasdotme@gmail.com>
-Cc:     open list <linux-kernel@vger.kernel.org>,
-        kernel test robot <lkp@intel.com>,
-        Aditya Srivastava <yashsri421@gmail.com>,
-        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
-        linux-mips@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Aug 23, 2022 at 5:54 AM Randy Dunlap <rdunlap@infradead.org> wrote:
-> Don't use "/**" kernel-doc notation for comments that are not in
-> kernel-doc format.
->
-> Eliminates one warning:
->
-> arch/mips/pci/pci-ar2315.c:6: warning: This comment starts with
->   '/**', but isn't a kernel-doc comment. Refer
->   Documentation/doc-guide/kernel-doc.rst
->     * Both AR2315 and AR2316 chips have PCI interface unit, which supports DMA
->
-> Signed-off-by: Randy Dunlap <rdunlap@infradead.org>
-> Reported-by: kernel test robot <lkp@intel.com>
-> Cc: Aditya Srivastava <yashsri421@gmail.com>
-> Cc: Thomas Bogendoerfer <tsbogend@alpha.franken.de>
-> Cc: linux-mips@vger.kernel.org
-> Cc: Sergey Ryazanov <ryazanov.s.a@gmail.com>
-> ---
-> Fixes: 3ed7a2a702dc ("MIPS: ath25: add AR2315 PCI host controller driver")
->   but backport is not needed.
+From: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
 
-Acked-by: Sergey Ryazanov <ryazanov.s.a@gmail.com>
+commit 1b3ab63e56f0c30193b6787b083be4f4071b7fc6 upstream.
 
-Randy, Bagas, which one of these patches should be applied:
-* https://patchwork.kernel.org/project/linux-mips/patch/20220823030056.123709-1-bagasdotme@gmail.com/
-* https://patchwork.kernel.org/project/linux-mips/patch/20220823025441.30708-1-rdunlap@infradead.org/
+As was already done for MT8192 in commit b52e695324bb ("dt-bindings:
+pinctrl: mt8192: Add drive-strength-microamp"), replace the custom
+mediatek,drive-strength-adv property with the standardized pinconf
+'drive-strength-microamp' one.
+
+Similarly to the mt8192 counterpart, there's no user of property
+'mediatek,drive-strength-adv', hence removing it is safe.
+
+Fixes: 69c3d58dc187 ("dt-bindings: pinctrl: mt8195: Add mediatek,drive-strength-adv property")
+Signed-off-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
+Reviewed-by: Nícolas F. R. A. Prado <nfraprado@collabora.com>
+Reviewed-by: Rob Herring <robh@kernel.org>
+Link: https://lore.kernel.org/r/20220630131543.225554-1-angelogioacchino.delregno@collabora.com
+Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+---
+ .../bindings/pinctrl/pinctrl-mt8195.yaml      | 27 ++-----------------
+ 1 file changed, 2 insertions(+), 25 deletions(-)
+
+diff --git a/Documentation/devicetree/bindings/pinctrl/pinctrl-mt8195.yaml b/Documentation/devicetree/bindings/pinctrl/pinctrl-mt8195.yaml
+index bb40398bb047..3d8afb3d5695 100644
+--- a/Documentation/devicetree/bindings/pinctrl/pinctrl-mt8195.yaml
++++ b/Documentation/devicetree/bindings/pinctrl/pinctrl-mt8195.yaml
+@@ -98,31 +98,8 @@ patternProperties:
+           drive-strength:
+             enum: [2, 4, 6, 8, 10, 12, 14, 16]
+ 
+-          mediatek,drive-strength-adv:
+-            description: |
+-              Describe the specific driving setup property.
+-              For I2C pins, the existing generic driving setup can only support
+-              2/4/6/8/10/12/14/16mA driving. But in specific driving setup, they
+-              can support 0.125/0.25/0.5/1mA adjustment. If we enable specific
+-              driving setup, the existing generic setup will be disabled.
+-              The specific driving setup is controlled by E1E0EN.
+-              When E1=0/E0=0, the strength is 0.125mA.
+-              When E1=0/E0=1, the strength is 0.25mA.
+-              When E1=1/E0=0, the strength is 0.5mA.
+-              When E1=1/E0=1, the strength is 1mA.
+-              EN is used to enable or disable the specific driving setup.
+-              Valid arguments are described as below:
+-              0: (E1, E0, EN) = (0, 0, 0)
+-              1: (E1, E0, EN) = (0, 0, 1)
+-              2: (E1, E0, EN) = (0, 1, 0)
+-              3: (E1, E0, EN) = (0, 1, 1)
+-              4: (E1, E0, EN) = (1, 0, 0)
+-              5: (E1, E0, EN) = (1, 0, 1)
+-              6: (E1, E0, EN) = (1, 1, 0)
+-              7: (E1, E0, EN) = (1, 1, 1)
+-              So the valid arguments are from 0 to 7.
+-            $ref: /schemas/types.yaml#/definitions/uint32
+-            enum: [0, 1, 2, 3, 4, 5, 6, 7]
++          drive-strength-microamp:
++            enum: [125, 250, 500, 1000]
+ 
+           bias-pull-down:
+             oneOf:
+-- 
+2.37.2
+
+
+
