@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7AB11C32792
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 11:45:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id ABD3DC32772
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 11:45:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358286AbiHWLpC (ORCPT
+        id S1358118AbiHWLpJ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 07:45:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59904 "EHLO
+        Tue, 23 Aug 2022 07:45:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59880 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1358378AbiHWLln (ORCPT
+        with ESMTP id S1358392AbiHWLlo (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 07:41:43 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 23489C9EBC;
-        Tue, 23 Aug 2022 02:29:09 -0700 (PDT)
+        Tue, 23 Aug 2022 07:41:44 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EBCD0CC309;
+        Tue, 23 Aug 2022 02:29:13 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 3A27C61367;
-        Tue, 23 Aug 2022 09:29:08 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 312EFC43470;
-        Tue, 23 Aug 2022 09:29:07 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 1521DB81C88;
+        Tue, 23 Aug 2022 09:29:12 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4E9C5C433D7;
+        Tue, 23 Aug 2022 09:29:10 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661246947;
-        bh=em22IH7EYocoaprgJVVC05+5sXO5hU+3UnK+SmO3Uak=;
+        s=korg; t=1661246950;
+        bh=zVySbhQmCrYQm9KPBepVFw8ABGXfVmDjaPbNpaUnL0M=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=bqTwxAVl82HcjcJWbpSHqGHNCZtuI0H6+rB5xx9MV+SD8poZr0fFgT3f0HJqRluzz
-         +PxFym1Su/QceMDLF3DG69l9Mgvu+QdWns2X16cSPjDbhzgFCrxnu/5zDUyJdyV7I4
-         JuO5e4iFbXYP97PuyazHWxWA8LA+hBfEXZDd9Li8=
+        b=0ZaxsSH7vNaKuw3DV2WDznZvWcPdJqRPn8fQIA2KsIKnXWnHObJA1JTg7J4WHxr6E
+         ODhfsRQEbMJ+4Zt6WBffDdbnX9jcpno6Ux+87Z7ILq1C4t/hoUnvAF1QSpYF/JTScO
+         FJU1kwnRTkGAqL5LfxCqWezt26Xe3ErPd/LSu0c0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Mikulas Patocka <mpatocka@redhat.com>,
-        Mike Snitzer <snitzer@kernel.org>
-Subject: [PATCH 5.4 270/389] dm writecache: set a default MAX_WRITEBACK_JOBS
-Date:   Tue, 23 Aug 2022 10:25:48 +0200
-Message-Id: <20220823080126.843954410@linuxfoundation.org>
+        stable@vger.kernel.org,
+        "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>
+Subject: [PATCH 5.4 271/389] ACPI: CPPC: Do not prevent CPPC from working in the future
+Date:   Tue, 23 Aug 2022 10:25:49 +0200
+Message-Id: <20220823080126.879035447@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220823080115.331990024@linuxfoundation.org>
 References: <20220823080115.331990024@linuxfoundation.org>
@@ -49,36 +49,124 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Mikulas Patocka <mpatocka@redhat.com>
+From: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
 
-commit ca7dc242e358e46d963b32f9d9dd829785a9e957 upstream.
+commit 4f4179fcf420873002035cf1941d844c9e0e7cb3 upstream.
 
-dm-writecache has the capability to limit the number of writeback jobs
-in progress. However, this feature was off by default. As such there
-were some out-of-memory crashes observed when lowering the low
-watermark while the cache is full.
+There is a problem with the current revision checks in
+is_cppc_supported() that they essentially prevent the CPPC support
+from working if a new _CPC package format revision being a proper
+superset of the v3 and only causing _CPC to return a package with more
+entries (while retaining the types and meaning of the entries defined by
+the v3) is introduced in the future and used by the platform firmware.
 
-This commit enables writeback limit by default. It is set to 256MiB or
-1/16 of total system memory, whichever is smaller.
+In that case, as long as the number of entries in the _CPC return
+package is at least CPPC_V3_NUM_ENT, it should be perfectly fine to
+use the v3 support code and disregard the additional package entries
+added by the new package format revision.
 
-Cc: stable@vger.kernel.org
-Signed-off-by: Mikulas Patocka <mpatocka@redhat.com>
-Signed-off-by: Mike Snitzer <snitzer@kernel.org>
+For this reason, drop is_cppc_supported() altogether, put the revision
+checks directly into acpi_cppc_processor_probe() so they are easier to
+follow and rework them to take the case mentioned above into account.
+
+Fixes: 4773e77cdc9b ("ACPI / CPPC: Add support for CPPC v3")
+Cc: 4.18+ <stable@vger.kernel.org> # 4.18+
+Signed-off-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/md/dm-writecache.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/acpi/cppc_acpi.c |   54 ++++++++++++++++++++---------------------------
+ include/acpi/cppc_acpi.h |    2 -
+ 2 files changed, 25 insertions(+), 31 deletions(-)
 
---- a/drivers/md/dm-writecache.c
-+++ b/drivers/md/dm-writecache.c
-@@ -20,7 +20,7 @@
+--- a/drivers/acpi/cppc_acpi.c
++++ b/drivers/acpi/cppc_acpi.c
+@@ -626,33 +626,6 @@ int pcc_data_alloc(int pcc_ss_id)
+ 	return 0;
+ }
  
- #define HIGH_WATERMARK			50
- #define LOW_WATERMARK			45
--#define MAX_WRITEBACK_JOBS		0
-+#define MAX_WRITEBACK_JOBS		min(0x10000000 / PAGE_SIZE, totalram_pages() / 16)
- #define ENDIO_LATENCY			16
- #define WRITEBACK_LATENCY		64
- #define AUTOCOMMIT_BLOCKS_SSD		65536
+-/* Check if CPPC revision + num_ent combination is supported */
+-static bool is_cppc_supported(int revision, int num_ent)
+-{
+-	int expected_num_ent;
+-
+-	switch (revision) {
+-	case CPPC_V2_REV:
+-		expected_num_ent = CPPC_V2_NUM_ENT;
+-		break;
+-	case CPPC_V3_REV:
+-		expected_num_ent = CPPC_V3_NUM_ENT;
+-		break;
+-	default:
+-		pr_debug("Firmware exports unsupported CPPC revision: %d\n",
+-			revision);
+-		return false;
+-	}
+-
+-	if (expected_num_ent != num_ent) {
+-		pr_debug("Firmware exports %d entries. Expected: %d for CPPC rev:%d\n",
+-			num_ent, expected_num_ent, revision);
+-		return false;
+-	}
+-
+-	return true;
+-}
+-
+ /*
+  * An example CPC table looks like the following.
+  *
+@@ -748,7 +721,6 @@ int acpi_cppc_processor_probe(struct acp
+ 				cpc_obj->type);
+ 		goto out_free;
+ 	}
+-	cpc_ptr->num_entries = num_ent;
+ 
+ 	/* Second entry should be revision. */
+ 	cpc_obj = &out_obj->package.elements[1];
+@@ -759,10 +731,32 @@ int acpi_cppc_processor_probe(struct acp
+ 				cpc_obj->type);
+ 		goto out_free;
+ 	}
+-	cpc_ptr->version = cpc_rev;
+ 
+-	if (!is_cppc_supported(cpc_rev, num_ent))
++	if (cpc_rev < CPPC_V2_REV) {
++		pr_debug("Unsupported _CPC Revision (%d) for CPU:%d\n", cpc_rev,
++			 pr->id);
+ 		goto out_free;
++	}
++
++	/*
++	 * Disregard _CPC if the number of entries in the return pachage is not
++	 * as expected, but support future revisions being proper supersets of
++	 * the v3 and only causing more entries to be returned by _CPC.
++	 */
++	if ((cpc_rev == CPPC_V2_REV && num_ent != CPPC_V2_NUM_ENT) ||
++	    (cpc_rev == CPPC_V3_REV && num_ent != CPPC_V3_NUM_ENT) ||
++	    (cpc_rev > CPPC_V3_REV && num_ent <= CPPC_V3_NUM_ENT)) {
++		pr_debug("Unexpected number of _CPC return package entries (%d) for CPU:%d\n",
++			 num_ent, pr->id);
++		goto out_free;
++	}
++	if (cpc_rev > CPPC_V3_REV) {
++		num_ent = CPPC_V3_NUM_ENT;
++		cpc_rev = CPPC_V3_REV;
++	}
++
++	cpc_ptr->num_entries = num_ent;
++	cpc_ptr->version = cpc_rev;
+ 
+ 	/* Iterate through remaining entries in _CPC */
+ 	for (i = 2; i < num_ent; i++) {
+--- a/include/acpi/cppc_acpi.h
++++ b/include/acpi/cppc_acpi.h
+@@ -16,7 +16,7 @@
+ #include <acpi/pcc.h>
+ #include <acpi/processor.h>
+ 
+-/* Support CPPCv2 and CPPCv3  */
++/* CPPCv2 and CPPCv3 support */
+ #define CPPC_V2_REV	2
+ #define CPPC_V3_REV	3
+ #define CPPC_V2_NUM_ENT	21
 
 
