@@ -2,107 +2,109 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1880EC32796
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 047EFC38145
 	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 11:23:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244357AbiHWLWT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 07:22:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42098 "EHLO
+        id S244338AbiHWLV5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 23 Aug 2022 07:21:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43514 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244332AbiHWLRM (ORCPT
+        with ESMTP id S1357492AbiHWLRh (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 07:17:12 -0400
+        Tue, 23 Aug 2022 07:17:37 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B9965BD760;
-        Tue, 23 Aug 2022 02:20:35 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 56BF74BA79;
+        Tue, 23 Aug 2022 02:21:08 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 29CFA6122D;
-        Tue, 23 Aug 2022 09:20:18 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 88A0BC433D7;
-        Tue, 23 Aug 2022 09:20:17 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1661246417;
-        bh=E5E6YqheunirZWVRILdnP1fmydkijA605aVw9h45w54=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=lNIMtUlYb2oThTM3KA8GuBXUuMf8SCxgSlhXoMHAHnuc/TXp679M6qx2q1wb8FDHJ
-         pjEmJK14tnqDdFKTRXzMI+h420ap1y/uLepZ9bbFYtBSBCRsKtn3+cl2jXtu8HiHvt
-         kLfdd4nYE4QxAoZca01QrifXWxL+W+hAmOvWsXC7qqdRa3mXvMEKVmG2Y57+xRYSXN
-         E40ySzqpbHlSohsmANHbJic/uEbt31aftBq96h/2McHYZCt72nuKw/qvbT9cCcmZbe
-         cjTtd/u4yrhCmshGLpJUO4uOakEw7ncW7Z4flpGvb9JyeLakMk+esGFcx6krlfcN89
-         fnu0wcI7jDrgQ==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 67C11E2A041;
-        Tue, 23 Aug 2022 09:20:17 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        by dfw.source.kernel.org (Postfix) with ESMTPS id E0E566098A;
+        Tue, 23 Aug 2022 09:21:07 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E5334C433D7;
+        Tue, 23 Aug 2022 09:21:06 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1661246467;
+        bh=aQEoMfCovPkTWLiJW3uCpiZOLirceCKWhcTPW0uKekk=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=V7QXXBojTiiAMIp8uSSlbn6FU4St+PYn8qRALWMOJHpnLwEO6LLjP1NmyvjWD2+gg
+         0efChXRMm4BHloEzHi09QmoDBhZvIEWIlQGu2P2+Zuses30xEh0KNWVH539cTyWEjT
+         iJDNNOzCVmhny65JO0QqJvip6rMmFkwzisPgQ0eo=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org,
+        AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>,
+        Houlong Wei <houlong.wei@mediatek.com>,
+        Irui Wang <irui.wang@mediatek.com>,
+        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.4 119/389] media: platform: mtk-mdp: Fix mdp_ipi_comm structure alignment
+Date:   Tue, 23 Aug 2022 10:23:17 +0200
+Message-Id: <20220823080120.580728086@linuxfoundation.org>
+X-Mailer: git-send-email 2.37.2
+In-Reply-To: <20220823080115.331990024@linuxfoundation.org>
+References: <20220823080115.331990024@linuxfoundation.org>
+User-Agent: quilt/0.67
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net-next v4 0/9] vsock: updates for SO_RCVLOWAT handling
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <166124641741.3613.14462529402245081458.git-patchwork-notify@kernel.org>
-Date:   Tue, 23 Aug 2022 09:20:17 +0000
-References: <de41de4c-0345-34d7-7c36-4345258b7ba8@sberdevices.ru>
-In-Reply-To: <de41de4c-0345-34d7-7c36-4345258b7ba8@sberdevices.ru>
-To:     Arseniy Krasnov <AVKrasnov@sberdevices.ru>
-Cc:     sgarzare@redhat.com, davem@davemloft.net, edumazet@google.com,
-        kuba@kernel.org, pabeni@redhat.com, kys@microsoft.com,
-        haiyangz@microsoft.com, sthemmin@microsoft.com, wei.liu@kernel.org,
-        decui@microsoft.com, stefanha@redhat.com, bryantan@vmware.com,
-        vdasa@vmware.com, oxffffaa@gmail.com, mst@redhat.com,
-        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-hyperv@vger.kernel.org,
-        kvm@vger.kernel.org, kernel@sberdevices.ru, pv-drivers@vmware.com
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hello:
+From: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
 
-This series was applied to netdev/net-next.git (master)
-by Paolo Abeni <pabeni@redhat.com>:
+[ Upstream commit ab14c99c035da7156a3b66fa171171295bc4b89a ]
 
-On Fri, 19 Aug 2022 05:21:58 +0000 you wrote:
-> Hello,
-> 
-> This patchset includes some updates for SO_RCVLOWAT:
-> 
-> 1) af_vsock:
->    During my experiments with zerocopy receive, i found, that in some
->    cases, poll() implementation violates POSIX: when socket has non-
->    default SO_RCVLOWAT(e.g. not 1), poll() will always set POLLIN and
->    POLLRDNORM bits in 'revents' even number of bytes available to read
->    on socket is smaller than SO_RCVLOWAT value. In this case,user sees
->    POLLIN flag and then tries to read data(for example using  'read()'
->    call), but read call will be blocked, because  SO_RCVLOWAT logic is
->    supported in dequeue loop in af_vsock.c. But the same time,  POSIX
->    requires that:
-> 
-> [...]
+The mdp_ipi_comm structure defines a command that is either
+PROCESS (start processing) or DEINIT (destroy instance); we
+are using this one to send PROCESS or DEINIT commands from Linux
+to an MDP instance through a VPU write but, while the first wants
+us to stay 4-bytes aligned, the VPU instead requires an 8-bytes
+data alignment.
 
-Here is the summary with links:
-  - [net-next,v4,1/9] vsock: SO_RCVLOWAT transport set callback
-    https://git.kernel.org/netdev/net-next/c/e38f22c860ed
-  - [net-next,v4,2/9] hv_sock: disable SO_RCVLOWAT support
-    https://git.kernel.org/netdev/net-next/c/24764f8d3c31
-  - [net-next,v4,3/9] virtio/vsock: use 'target' in notify_poll_in callback
-    https://git.kernel.org/netdev/net-next/c/e7a3266c9167
-  - [net-next,v4,4/9] vmci/vsock: use 'target' in notify_poll_in callback
-    https://git.kernel.org/netdev/net-next/c/a274f6ff3c5c
-  - [net-next,v4,5/9] vsock: pass sock_rcvlowat to notify_poll_in as target
-    https://git.kernel.org/netdev/net-next/c/ee0b3843a269
-  - [net-next,v4,6/9] vsock: add API call for data ready
-    https://git.kernel.org/netdev/net-next/c/f2fdcf67aceb
-  - [net-next,v4,7/9] virtio/vsock: check SO_RCVLOWAT before wake up reader
-    https://git.kernel.org/netdev/net-next/c/39f1ed33a448
-  - [net-next,v4,8/9] vmci/vsock: check SO_RCVLOWAT before wake up reader
-    https://git.kernel.org/netdev/net-next/c/e061aed99855
-  - [net-next,v4,9/9] vsock_test: POLLIN + SO_RCVLOWAT test
-    https://git.kernel.org/netdev/net-next/c/b1346338fbae
+Keeping in mind that these commands are executed immediately
+after sending them (hence not chained with others before the
+VPU/MDP "actually" start executing), it is fine to simply add
+a padding of 4 bytes to this structure: this keeps the same
+performance as before, as we're still stack-allocating it,
+while avoiding hackery inside of mtk-vpu to ensure alignment
+bringing a definitely bigger performance impact.
 
-You are awesome, thank you!
+Fixes: c8eb2d7e8202 ("[media] media: Add Mediatek MDP Driver")
+Signed-off-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
+Reviewed-by: Houlong Wei <houlong.wei@mediatek.com>
+Reviewed-by: Irui Wang <irui.wang@mediatek.com>
+Signed-off-by: Hans Verkuil <hverkuil-cisco@xs4all.nl>
+Signed-off-by: Mauro Carvalho Chehab <mchehab@kernel.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ drivers/media/platform/mtk-mdp/mtk_mdp_ipi.h | 2 ++
+ 1 file changed, 2 insertions(+)
+
+diff --git a/drivers/media/platform/mtk-mdp/mtk_mdp_ipi.h b/drivers/media/platform/mtk-mdp/mtk_mdp_ipi.h
+index 2cb8cecb3077..b810c96695c8 100644
+--- a/drivers/media/platform/mtk-mdp/mtk_mdp_ipi.h
++++ b/drivers/media/platform/mtk-mdp/mtk_mdp_ipi.h
+@@ -40,12 +40,14 @@ struct mdp_ipi_init {
+  * @ipi_id        : IPI_MDP
+  * @ap_inst       : AP mtk_mdp_vpu address
+  * @vpu_inst_addr : VPU MDP instance address
++ * @padding       : Alignment padding
+  */
+ struct mdp_ipi_comm {
+ 	uint32_t msg_id;
+ 	uint32_t ipi_id;
+ 	uint64_t ap_inst;
+ 	uint32_t vpu_inst_addr;
++	uint32_t padding;
+ };
+ 
+ /**
 -- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
+2.35.1
+
 
 
