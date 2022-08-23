@@ -2,42 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CA5E7C32792
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 11:02:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4A74AC32792
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 11:03:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356368AbiHWLC4 (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 07:02:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41408 "EHLO
+        id S241859AbiHWLDC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 23 Aug 2022 07:03:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41942 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357201AbiHWLBj (ORCPT
+        with ESMTP id S1357261AbiHWLBw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 07:01:39 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6150BAF483;
-        Tue, 23 Aug 2022 02:14:25 -0700 (PDT)
+        Tue, 23 Aug 2022 07:01:52 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4DDDA86FC3;
+        Tue, 23 Aug 2022 02:14:31 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 47600B81C94;
-        Tue, 23 Aug 2022 09:14:18 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7E892C433D6;
-        Tue, 23 Aug 2022 09:14:16 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id D871A60F54;
+        Tue, 23 Aug 2022 09:14:23 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DFF3BC433D7;
+        Tue, 23 Aug 2022 09:14:22 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661246057;
-        bh=FiKJFq3p3hNMNAz/G+j1Jr63XmO/Uxj1ECLA2jSv+YM=;
+        s=korg; t=1661246063;
+        bh=fxlNh0LwhOpWUkF19exROe077tMNe7vdcr/NJnAVD5A=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=X1TEIBBjukxFzehGnV+ep5dE6UbzxhhB8cyvktweSzGXTGfHfrHjZJjOXWMAlSU/8
-         XljGV2r38bFUWnlrJCaTm4dE55AHyCSJuyaEXf1HFrngqfrNenBmteIYkiV19EWbWd
-         ob60WF9TH7GoG9MMQgmiBut8ETyEC9dZN5tneMHA=
+        b=2wdoEnJgZAOHjE3ZgcYDKyj40L/KOxRUyAMOBcNx3zOlBXstinjTps8m1OAs0PTJX
+         TD09RAkffRaqYQZI1hXBooo1QWafWk6jhOZ72syBrd+6xDqPcTsswu4L8RukKV1AFB
+         3zVKPXcSotgR9hOXm+j6EsQsMhJJ8ehT/OPSHVRo=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org, Al Viro <viro@zeniv.linux.org.uk>,
         Dinh Nguyen <dinguyen@kernel.org>
-Subject: [PATCH 4.19 244/287] nios2: page fault et.al. are *not* restartable syscalls...
-Date:   Tue, 23 Aug 2022 10:26:53 +0200
-Message-Id: <20220823080109.339451222@linuxfoundation.org>
+Subject: [PATCH 4.19 246/287] nios2: traced syscall does need to check the syscall number
+Date:   Tue, 23 Aug 2022 10:26:55 +0200
+Message-Id: <20220823080109.423177007@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220823080100.268827165@linuxfoundation.org>
 References: <20220823080100.268827165@linuxfoundation.org>
@@ -51,51 +50,45 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Al Viro <viro@zeniv.linux.org.uk>
 
-commit 8535c239ac674f7ead0f2652932d35c52c4123b2 upstream.
+commit 25ba820ef36bdbaf9884adeac69b6e1821a7df76 upstream.
 
-make sure that ->orig_r2 is negative for everything except
-the syscalls.
+all checks done before letting the tracer modify the register
+state are worthless...
 
 Fixes: 82ed08dd1b0e ("nios2: Exception handling")
 Signed-off-by: Al Viro <viro@zeniv.linux.org.uk>
 Signed-off-by: Dinh Nguyen <dinguyen@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/nios2/include/asm/entry.h |    3 ++-
- arch/nios2/kernel/entry.S      |    4 +---
- 2 files changed, 3 insertions(+), 4 deletions(-)
+ arch/nios2/kernel/entry.S |   11 ++++++++---
+ 1 file changed, 8 insertions(+), 3 deletions(-)
 
---- a/arch/nios2/include/asm/entry.h
-+++ b/arch/nios2/include/asm/entry.h
-@@ -50,7 +50,8 @@
- 	stw	r13, PT_R13(sp)
- 	stw	r14, PT_R14(sp)
- 	stw	r15, PT_R15(sp)
--	stw	r2, PT_ORIG_R2(sp)
-+	movi	r24, -1
-+	stw	r24, PT_ORIG_R2(sp)
- 	stw	r7, PT_ORIG_R7(sp)
- 
- 	stw	ra, PT_RA(sp)
 --- a/arch/nios2/kernel/entry.S
 +++ b/arch/nios2/kernel/entry.S
-@@ -185,6 +185,7 @@ ENTRY(handle_system_call)
- 	ldw	r5, PT_R5(sp)
+@@ -255,9 +255,9 @@ traced_system_call:
+ 	ldw	r6, PT_R6(sp)
+ 	ldw	r7, PT_R7(sp)
  
- local_restart:
-+	stw	r2, PT_ORIG_R2(sp)
- 	/* Check that the requested system call is within limits */
- 	movui	r1, __NR_syscalls
- 	bgeu	r2, r1, ret_invsyscall
-@@ -336,9 +337,6 @@ external_interrupt:
- 	/* skip if no interrupt is pending */
- 	beq	r12, r0, ret_from_interrupt
+-	/* Fetch the syscall function, we don't need to check the boundaries
+-	 * since this is already done.
+-	 */
++	/* Fetch the syscall function. */
++	movui	r1, __NR_syscalls
++	bgeu	r2, r1, traced_invsyscall
+ 	slli	r1, r2, 2
+ 	movhi	r11,%hiadj(sys_call_table)
+ 	add	r1, r1, r11
+@@ -287,6 +287,11 @@ end_translate_rc_and_ret2:
+ 	RESTORE_SWITCH_STACK
+ 	br	ret_from_exception
  
--	movi	r24, -1
--	stw	r24, PT_ORIG_R2(sp)
--
- 	/*
- 	 * Process an external hardware interrupt.
- 	 */
++	/* If the syscall number was invalid return ENOSYS */
++traced_invsyscall:
++	movi	r2, -ENOSYS
++	br	translate_rc_and_ret2
++
+ Luser_return:
+ 	GET_THREAD_INFO	r11			/* get thread_info pointer */
+ 	ldw	r10, TI_FLAGS(r11)		/* get thread_info->flags */
 
 
