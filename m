@@ -2,45 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9A5FFC48BE4
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 10:23:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C71C2C48BEA
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 10:23:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354524AbiHWKVk (ORCPT
+        id S1354660AbiHWKV5 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 06:21:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33088 "EHLO
+        Tue, 23 Aug 2022 06:21:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58336 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352921AbiHWKJe (ORCPT
+        with ESMTP id S1352929AbiHWKJe (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 23 Aug 2022 06:09:34 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2729C53D24;
-        Tue, 23 Aug 2022 01:55:39 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AD84C7DF69;
+        Tue, 23 Aug 2022 01:55:47 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id DB542B81C35;
-        Tue, 23 Aug 2022 08:55:37 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2580BC433D6;
-        Tue, 23 Aug 2022 08:55:35 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 6D6ABB81C3B;
+        Tue, 23 Aug 2022 08:55:46 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C02C5C433D7;
+        Tue, 23 Aug 2022 08:55:44 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661244936;
-        bh=X32xtPBWcVE6Z6gxu3/jbMLK/pP7I1mcOKV4OxfaTWk=;
+        s=korg; t=1661244945;
+        bh=FieQMfNxzXPSEp5kaQfeG0576MsAbAodd6WqEw1eqxE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=maxTmvhmmOBUaFgfuEr1C6DkOvDjS+a0HB4sVe5i9Xq+pvKk3Eb4h3Y/U1jWziOdL
-         DhSVDBCR9/Ha6lIybBh2XEE978U5CEzAeuRWf00lnueSoTirKrfUnnuNQqwsqFG98b
-         YjZEp2bNb7Ks+UWac4Q0TOed3YjUOz8SdPlxLpAk=
+        b=VvLWGc129qyQDlCgbrMVufxbAfpNjBdOCqbVwvwvtaDk5QOWW11b9+z0/MOa+t0U+
+         CvP+Du8UnPpIxVZX/rmXa4TUgdU3cLvm/SAt2aQUt4wVEqfPm8jkb89XPTt5IldQb5
+         12xRJyxjAMhhPMjwm2p7n9Zy3jIBb1hlkQP4gQJA=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Alan Stern <stern@rowland.harvard.edu>,
-        Liang He <windhl@126.com>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.14 214/229] usb: host: ohci-ppc-of: Fix refcount leak bug
-Date:   Tue, 23 Aug 2022 10:26:15 +0200
-Message-Id: <20220823080101.279637578@linuxfoundation.org>
+        stable@vger.kernel.org, Minas Harutyunyan <hminas@synopsys.com>,
+        Amelie Delaunay <amelie.delaunay@foss.st.com>,
+        Fabrice Gasnier <fabrice.gasnier@foss.st.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 176/244] usb: dwc2: gadget: remove D+ pull-up while no vbus with usb-role-switch
+Date:   Tue, 23 Aug 2022 10:25:35 +0200
+Message-Id: <20220823080105.159639234@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220823080053.202747790@linuxfoundation.org>
-References: <20220823080053.202747790@linuxfoundation.org>
+In-Reply-To: <20220823080059.091088642@linuxfoundation.org>
+References: <20220823080059.091088642@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -49,35 +51,42 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Liang He <windhl@126.com>
+From: Amelie Delaunay <amelie.delaunay@foss.st.com>
 
-[ Upstream commit 40a959d7042bb7711e404ad2318b30e9f92c6b9b ]
+[ Upstream commit db638c6500abaffb8f7770b2a69c40d003d54ae1 ]
 
-In ohci_hcd_ppc_of_probe(), of_find_compatible_node() will return
-a node pointer with refcount incremented. We should use of_node_put()
-when it is not used anymore.
+When using usb-role-switch, D+ pull-up is set as soon as DTCL_SFTDISCON is
+cleared, whatever the vbus valid signal state is. The pull-up should not
+be set when vbus isn't present (this is determined by the drd controller).
 
-Acked-by: Alan Stern <stern@rowland.harvard.edu>
-Signed-off-by: Liang He <windhl@126.com>
-Link: https://lore.kernel.org/r/20220617034637.4003115-1-windhl@126.com
+This patch ensures that B-Session (so Peripheral role + vbus valid signal)
+is valid before clearing the DCTL_SFTDISCON bit when role switch is used.
+Keep original behavior when usb-role-switch isn't used.
+
+Acked-by: Minas Harutyunyan <hminas@synopsys.com>
+Signed-off-by: Amelie Delaunay <amelie.delaunay@foss.st.com>
+Signed-off-by: Fabrice Gasnier <fabrice.gasnier@foss.st.com>
+Link: https://lore.kernel.org/r/20220622160717.314580-1-fabrice.gasnier@foss.st.com
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/usb/host/ohci-ppc-of.c | 1 +
- 1 file changed, 1 insertion(+)
+ drivers/usb/dwc2/gadget.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/usb/host/ohci-ppc-of.c b/drivers/usb/host/ohci-ppc-of.c
-index 4f87a5c61b08..d22a70363fbf 100644
---- a/drivers/usb/host/ohci-ppc-of.c
-+++ b/drivers/usb/host/ohci-ppc-of.c
-@@ -168,6 +168,7 @@ static int ohci_hcd_ppc_of_probe(struct platform_device *op)
- 				release_mem_region(res.start, 0x4);
- 		} else
- 			pr_debug("%s: cannot get ehci offset from fdt\n", __FILE__);
-+		of_node_put(np);
- 	}
+diff --git a/drivers/usb/dwc2/gadget.c b/drivers/usb/dwc2/gadget.c
+index e1cebf581a4a..519bb82b00e8 100644
+--- a/drivers/usb/dwc2/gadget.c
++++ b/drivers/usb/dwc2/gadget.c
+@@ -3594,7 +3594,8 @@ void dwc2_hsotg_core_disconnect(struct dwc2_hsotg *hsotg)
+ void dwc2_hsotg_core_connect(struct dwc2_hsotg *hsotg)
+ {
+ 	/* remove the soft-disconnect and let's go */
+-	dwc2_clear_bit(hsotg, DCTL, DCTL_SFTDISCON);
++	if (!hsotg->role_sw || (dwc2_readl(hsotg, GOTGCTL) & GOTGCTL_BSESVLD))
++		dwc2_clear_bit(hsotg, DCTL, DCTL_SFTDISCON);
+ }
  
- 	irq_dispose_mapping(irq);
+ /**
 -- 
 2.35.1
 
