@@ -2,175 +2,83 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D50F3C32793
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 07:31:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3EE01C32796
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 07:31:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241006AbiHWHbV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 03:31:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37904 "EHLO
+        id S241011AbiHWHbi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 23 Aug 2022 03:31:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38464 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241033AbiHWHac (ORCPT
+        with ESMTP id S241010AbiHWHbe (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 03:30:32 -0400
-Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9178962A93;
-        Tue, 23 Aug 2022 00:30:31 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1661239831; x=1692775831;
-  h=message-id:date:mime-version:cc:subject:to:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=j51hMQhIOMj+pWMUO1f6irDGuNzX4i/XllUj8uvQjxw=;
-  b=AlrjlsrSq4Rmpqym5Tto2NfkR+loB7z+eG3BFmHmYHGRu4IObOc2V21d
-   2G6+RCzF4JbumzkxHNuouj+M4WP9kUz9Z3J5pmbEXoX0QW6UZhaNCw5i4
-   cVHxR5FhUTpCvzvpeIZWR1L0cmAM+j4zjabKs+q19c3H2gRB3Cq5EFMxp
-   XwI4+Y8bubM1qqvaOseiwg3StNy4lMgldH5mEFlWccTXdt0QtKuxHBXEm
-   CEamteDspBC7QQnn/xg/3s0S4SdPgKekSJlr/uFK0Jlq8sXm5q1AmdwPK
-   cTr+kwhHpQ2WYWus+xB5PxcW5gjhcfri1SlsRSy5unkG8VrEhosh8an6I
-   A==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10447"; a="357594797"
-X-IronPort-AV: E=Sophos;i="5.93,256,1654585200"; 
-   d="scan'208";a="357594797"
-Received: from orsmga001.jf.intel.com ([10.7.209.18])
-  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Aug 2022 00:30:31 -0700
-X-IronPort-AV: E=Sophos;i="5.93,256,1654585200"; 
-   d="scan'208";a="642344795"
-Received: from xujinlon-mobl.ccr.corp.intel.com (HELO [10.254.211.102]) ([10.254.211.102])
-  by orsmga001-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Aug 2022 00:30:23 -0700
-Message-ID: <d538aa77-ac9a-e436-5558-e97e9c68d222@linux.intel.com>
-Date:   Tue, 23 Aug 2022 15:30:21 +0800
+        Tue, 23 Aug 2022 03:31:34 -0400
+Received: from mailgw02.mediatek.com (unknown [210.61.82.184])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 620C162AA8;
+        Tue, 23 Aug 2022 00:31:25 -0700 (PDT)
+X-UUID: c791e7c7010e4ab199112539f59a0b9c-20220823
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=mediatek.com; s=dk;
+        h=Content-Type:MIME-Version:Message-ID:Date:Subject:CC:To:From; bh=0XpZgLgvQIhzD9OrA/D2oRDjY+6u93V0EFGksJPqrXM=;
+        b=KI2iq0XbXSNL0G5QRHRPveIHTalEMzyTV4rbUwnhR684meDxcvWsYhkUMbugWhf/JxiVmIT1A2c9LPJlRVy0QDN5wHISl9MhABe8lriKvguYgzw+SfCOZpO6W7YF4jVnIkCbRuERDWvVETvOA5OuruMmolGoGQk/kaR7RXRTlH4=;
+X-CID-P-RULE: Release_Ham
+X-CID-O-INFO: VERSION:1.1.10,REQID:1575b6a8-cd33-41c5-8670-9716c2af8626,OB:0,L
+        OB:0,IP:0,URL:0,TC:0,Content:0,EDM:0,RT:0,SF:100,FILE:0,BULK:0,RULE:Releas
+        e_Ham,ACTION:release,TS:100
+X-CID-INFO: VERSION:1.1.10,REQID:1575b6a8-cd33-41c5-8670-9716c2af8626,OB:0,LOB
+        :0,IP:0,URL:0,TC:0,Content:0,EDM:0,RT:0,SF:100,FILE:0,BULK:0,RULE:Spam_GS9
+        81B3D,ACTION:quarantine,TS:100
+X-CID-META: VersionHash:84eae18,CLOUDID:5b780668-a9d9-4672-a3c8-12721739a220,C
+        OID:e516b1b4fe73,Recheck:0,SF:28|17|19|48,TC:nil,Content:0,EDM:-3,IP:nil,U
+        RL:0,File:nil,Bulk:nil,QS:nil,BEC:nil,COL:0
+X-UUID: c791e7c7010e4ab199112539f59a0b9c-20220823
+Received: from mtkcas11.mediatek.inc [(172.21.101.40)] by mailgw02.mediatek.com
+        (envelope-from <xinlei.lee@mediatek.com>)
+        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
+        with ESMTP id 1186259843; Tue, 23 Aug 2022 15:31:21 +0800
+Received: from mtkcas10.mediatek.inc (172.21.101.39) by
+ mtkmbs10n1.mediatek.inc (172.21.101.34) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
+ 15.2.792.15; Tue, 23 Aug 2022 15:31:19 +0800
+Received: from mszsdaap41.gcn.mediatek.inc (10.16.6.141) by
+ mtkcas10.mediatek.inc (172.21.101.73) with Microsoft SMTP Server id
+ 15.0.1497.2 via Frontend Transport; Tue, 23 Aug 2022 15:31:17 +0800
+From:   <xinlei.lee@mediatek.com>
+To:     <thierry.reding@gmail.com>, <u.kleine-koenig@pengutronix.de>,
+        <robh+dt@kernel.org>, <krzysztof.kozlowski+dt@linaro.org>,
+        <matthias.bgg@gmail.com>
+CC:     <linux-pwm@vger.kernel.org>, <devicetree@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-mediatek@lists.infradead.org>,
+        <Project_Global_Chrome_Upstream_Group@mediatek.com>,
+        Xinlei Lee <xinlei.lee@mediatek.com>
+Subject: [PATCH 0/2] Fix mtk_disp_pwm_get_state function disp_pwm enabled flag
+Date:   Tue, 23 Aug 2022 15:31:13 +0800
+Message-ID: <1661239875-19841-1-git-send-email-xinlei.lee@mediatek.com>
+X-Mailer: git-send-email 2.6.4
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.11.0
-Cc:     baolu.lu@linux.intel.com, Joerg Roedel <joro@8bytes.org>,
-        Christoph Hellwig <hch@infradead.org>,
-        Bjorn Helgaas <bhelgaas@google.com>,
-        Kevin Tian <kevin.tian@intel.com>,
-        Ashok Raj <ashok.raj@intel.com>, Will Deacon <will@kernel.org>,
-        Robin Murphy <robin.murphy@arm.com>,
-        Jean-Philippe Brucker <jean-philippe@linaro.com>,
-        Dave Jiang <dave.jiang@intel.com>,
-        Vinod Koul <vkoul@kernel.org>,
-        Eric Auger <eric.auger@redhat.com>,
-        Liu Yi L <yi.l.liu@intel.com>,
-        Jacob jun Pan <jacob.jun.pan@intel.com>,
-        Zhangfei Gao <zhangfei.gao@linaro.org>,
-        Zhu Tony <tony.zhu@intel.com>, iommu@lists.linux.dev,
-        linux-pci@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Jean-Philippe Brucker <jean-philippe@linaro.org>
-Subject: Re: [PATCH v11 05/13] iommu: Add attach/detach_dev_pasid iommu
- interface
-Content-Language: en-US
-To:     Jason Gunthorpe <jgg@nvidia.com>
-References: <20220817012024.3251276-1-baolu.lu@linux.intel.com>
- <20220817012024.3251276-6-baolu.lu@linux.intel.com>
- <Yv4/s6lX6Nq+40tu@nvidia.com>
-From:   Baolu Lu <baolu.lu@linux.intel.com>
-In-Reply-To: <Yv4/s6lX6Nq+40tu@nvidia.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain
+X-MTK:  N
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 2022/8/18 21:33, Jason Gunthorpe wrote:
-> On Wed, Aug 17, 2022 at 09:20:16AM +0800, Lu Baolu wrote:
-> 
->> +static int __iommu_set_group_pasid(struct iommu_domain *domain,
->> +				   struct iommu_group *group, ioasid_t pasid)
->> +{
->> +	struct iommu_domain *ops_domain;
->> +	struct group_device *device;
->> +	int ret = 0;
->> +
->> +	if (domain == group->blocking_domain)
->> +		ops_domain = xa_load(&group->pasid_array, pasid);
->> +	else
->> +		ops_domain = domain;
-> 
-> This seems weird, why isn't this just always
-> 
-> domain->ops->set_dev_pasid()?
+From: Xinlei Lee <xinlei.lee@mediatek.com>
 
-Sure. I will fix this in the next version.
+Base on the branch of Linux-next/master.
 
-> 
->> +	if (curr) {
->> +		ret = xa_err(curr) ? : -EBUSY;
->> +		goto out_unlock;
->> +	}
->> +
->> +	ret = __iommu_set_group_pasid(domain, group, pasid);
->> +	if (ret) {
->> +		__iommu_set_group_pasid(group->blocking_domain, group, pasid);
->> +		xa_erase(&group->pasid_array, pasid);
-> 
-> I was looking at this trying to figure out why we are having
-> attach/detach semantics vs set and this error handling seems to be the
-> reason
-> 
-> Lets add a comment because it is subtle thing:
-> 
->    Setting a PASID to a blocking domain cannot fail, so we can always
->    safely error unwind a failure to attach a domain back to the original
->    group configuration of the PASID being unused.
+The series mainly completes:
+1. Add compatible for MediaTek MT8188 in the dt-bindings file.
+2. Fix the parameters calculated by the enabled flag of disp_pwm in the
+mtk_disp_pwm_get_state function;
 
-Updated.
+xinlei lee (2):
+  dt-bindings: pwm: Add compatible for Mediatek MT8188
+  drivers: pwm: Add disp_pwm compatiable for MT8188
 
-> 
->> +/*
->> + * iommu_detach_device_pasid() - Detach the domain from pasid of device
->> + * @domain: the iommu domain.
->> + * @dev: the attached device.
->> + * @pasid: the pasid of the device.
->> + *
->> + * The @domain must have been attached to @pasid of the @dev with
->> + * iommu_attach_device_pasid().
->> + */
->> +void iommu_detach_device_pasid(struct iommu_domain *domain, struct device *dev,
->> +			       ioasid_t pasid)
-> 
-> Don't pass domain here?
+ Documentation/devicetree/bindings/pwm/mediatek,pwm-disp.yaml | 1 +
+ drivers/pwm/pwm-mtk-disp.c                                   | 2 +-
+ 2 files changed, 2 insertions(+), 1 deletion(-)
 
-It is checked in the function to make sure that the detached domain is
-the same one as the previous attached one.
+-- 
+2.18.0
 
-> 
->> +/*
->> + * iommu_get_domain_for_dev_pasid() - Retrieve domain for @pasid of @dev
->> + * @dev: the queried device
->> + * @pasid: the pasid of the device
->> + *
->> + * This is a variant of iommu_get_domain_for_dev(). It returns the existing
->> + * domain attached to pasid of a device. It's only for internal use of the
->> + * IOMMU subsystem. The caller must take care to avoid any possible
->> + * use-after-free case.
-> 
-> How exactly does the caller manage that?
-
-"... the returned domain pointer could only be used before detaching
-from the device PASID."
-
-> 
->> + *
->> + * Return: attached domain on success, NULL otherwise.
->> + */
->> +struct iommu_domain *
->> +iommu_get_domain_for_dev_pasid(struct device *dev, ioasid_t pasid)
->> +{
->> +	struct iommu_domain *domain;
->> +	struct iommu_group *group;
->> +
->> +	if (!pasid_valid(pasid))
->> +		return NULL;
-> 
-> Why bother? If the pasid is not valid then it definitely won't be in the xarray.
-
-Removed.
-
-> But otherwise this overall thing seems fine to me
-
-Thank you!
-
-Best regards,
-baolu
