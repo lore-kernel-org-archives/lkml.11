@@ -2,160 +2,203 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E8924C32793
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 23:43:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7B3FBC38142
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 23:44:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232260AbiHWXnp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 19:43:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43576 "EHLO
+        id S232300AbiHWXoD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 23 Aug 2022 19:44:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43744 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229446AbiHWXnn (ORCPT
+        with ESMTP id S229446AbiHWXoA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 19:43:43 -0400
-Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3CB60895E3;
-        Tue, 23 Aug 2022 16:43:42 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1661298222; x=1692834222;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=MCO4VTWPjr/7LqzHSAIUYtAKtbbOGlRNQ96nMCvQHG4=;
-  b=bt5fKKYtUbUJ2Wr3CiozvcZgbEi+r/VwnlKIulrFOG4RfJ6FKbFpDAUH
-   DVGPJYij6DPRdFfE3qz02UNrMp57MT927WyOvEYlKoBDpvK1sBPgwCmuA
-   yyUaP1mRFHp7ww2dfTsx3VkHzy4toyy+MycZ5BQgaQ4uTdj18zcY2i/uS
-   xQCafWZE4awRwimL16zB8k0JFIcIeG1zkkmbM09GjC//O4at2qsSEYEyt
-   C4/Rv2C9+fJ9SMxC8KTyc8n977YaWP4mqWLFl5/0dXTgqrvwN24czzGk3
-   M3eJEnHvIOf/6gb47Yy2ptld9Y973bFd0ndGuwevCsuOcF7RYbfnXkcKI
-   g==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10448"; a="294609159"
-X-IronPort-AV: E=Sophos;i="5.93,259,1654585200"; 
-   d="scan'208";a="294609159"
-Received: from fmsmga004.fm.intel.com ([10.253.24.48])
-  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Aug 2022 16:43:15 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.93,259,1654585200"; 
-   d="scan'208";a="677813040"
-Received: from lkp-server02.sh.intel.com (HELO 9bbcefcddf9f) ([10.239.97.151])
-  by fmsmga004.fm.intel.com with ESMTP; 23 Aug 2022 16:43:11 -0700
-Received: from kbuild by 9bbcefcddf9f with local (Exim 4.96)
-        (envelope-from <lkp@intel.com>)
-        id 1oQdY6-0000ia-1Z;
-        Tue, 23 Aug 2022 23:43:10 +0000
-Date:   Wed, 24 Aug 2022 07:42:34 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Serge Semin <Sergey.Semin@baikalelectronics.ru>,
-        Rob Herring <robh@kernel.org>, Michal Simek <monstr@monstr.eu>,
-        Borislav Petkov <bp@alien8.de>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
-        Tony Luck <tony.luck@intel.com>,
-        James Morse <james.morse@arm.com>,
-        Robert Richter <rric@kernel.org>
-Cc:     kbuild-all@lists.01.org, linux-media@vger.kernel.org,
-        Serge Semin <Sergey.Semin@baikalelectronics.ru>,
-        Alexey Malahov <Alexey.Malahov@baikalelectronics.ru>,
-        Michail Ivanov <Michail.Ivanov@baikalelectronics.ru>,
-        Pavel Parkhomenko <Pavel.Parkhomenko@baikalelectronics.ru>,
-        Punnaiah Choudary Kalluri 
-        <punnaiah.choudary.kalluri@xilinx.com>,
-        Manish Narani <manish.narani@xilinx.com>,
-        Dinh Nguyen <dinguyen@kernel.org>,
-        Krzysztof Kozlowski <krzk@kernel.org>,
-        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-edac@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 18/20] EDAC/synopsys: Drop unused platform-specific setup
- API
-Message-ID: <202208240709.CwTZS8Qo-lkp@intel.com>
-References: <20220822190730.27277-19-Sergey.Semin@baikalelectronics.ru>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220822190730.27277-19-Sergey.Semin@baikalelectronics.ru>
+        Tue, 23 Aug 2022 19:44:00 -0400
+Received: from mail-pj1-x1049.google.com (mail-pj1-x1049.google.com [IPv6:2607:f8b0:4864:20::1049])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0B3F08A6DA
+        for <linux-kernel@vger.kernel.org>; Tue, 23 Aug 2022 16:43:59 -0700 (PDT)
+Received: by mail-pj1-x1049.google.com with SMTP id s3-20020a17090a5d0300b001fb3ac54a03so2463738pji.2
+        for <linux-kernel@vger.kernel.org>; Tue, 23 Aug 2022 16:43:59 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=cc:to:from:subject:mime-version:message-id:date:from:to:cc;
+        bh=buqUxxwCuurQCGvIWcBzNGEGiMpXO6f0MopvbFAVuy4=;
+        b=s/Oyq3bRVMysOt8x1cdAlmAVaIQaKOVzdheav1QwmS/why5h7fuGl6FotWAtmCy+Ic
+         311rK/Dfs3CoeZbhiTK/EV9qg4CTFVe9PRqhF55GA1M6x0Qazif190N4PDrL4Iw8e22I
+         Or2ddCuIb+nCXb0Oq09xFIU6w+tZZa2CYkFCtfHbqQmsHEbVpR/HaykE718hfD/2+cmK
+         FHCsHVR/BzQT5aIaRQXrR2krqsAu4c1izZCkVr+W5nRiDk2q6/9pDHE4N4r9mRi5UiDX
+         +uZA43S6aKRTYPnA/t+VEktQhywGjsdlU8JDZpVqw6aVn0GvJCle5n89MdNDfLt/fwxJ
+         Imsg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=cc:to:from:subject:mime-version:message-id:date:x-gm-message-state
+         :from:to:cc;
+        bh=buqUxxwCuurQCGvIWcBzNGEGiMpXO6f0MopvbFAVuy4=;
+        b=zGzFNwg2FoSmki9lBotl+hPKTLDacGHkdidR7DE8d7gbvk18tPeUTD4F+L1xwcAbM1
+         lv2LFKr6AklpMcPUm59u9EMfZb/B1Ypvs9p/hipSz+irKqOsElowVuljaoO9it0J/3pt
+         AxIl9IkkO+xzfJ6ISSQf69/teHL4SUrJthYn7XwRzX6M1i/wWV2FRdjwerDWODGSdFRo
+         421x4ZIDhF/HXjHAtkKKszwmB8V5pGIcXrwH8fr4PYDjjL1bYicEMtkbMdLZ1fWYk8+d
+         VoYDnY9keslubGo6q45YbT/AkV0mKWqIKKuH2YwfDw2IQkM3TDeZC+vsKt1mSck0bZJ8
+         7lGQ==
+X-Gm-Message-State: ACgBeo0h86dAuQxoejlBLx9xj8V0Jjfw5aj4dASWEOPklvCeZnhs17kh
+        nrgBmlVXnNJwLIrtZi6EzKl3/BTjPf0=
+X-Google-Smtp-Source: AA6agR5+C8UQv+q7r1T7kLEd8fXqzZIi6N5tjhP3Ko5nQNLbJjezxePfaQk5d1pCxegFzhVlFxLYJf2DCnQ=
+X-Received: from pshier-dev.c.googlers.com ([fda3:e722:ac3:cc00:7f:e700:c0a8:1b0b])
+ (user=pshier job=sendgmr) by 2002:a17:902:c945:b0:16d:d425:324a with SMTP id
+ i5-20020a170902c94500b0016dd425324amr25716205pla.7.1661298238537; Tue, 23 Aug
+ 2022 16:43:58 -0700 (PDT)
+Date:   Tue, 23 Aug 2022 16:43:53 -0700
+Message-Id: <20220823234353.937002-1-pshier@google.com>
+Mime-Version: 1.0
+X-Mailer: git-send-email 2.37.1.595.g718a3a8f04-goog
+Subject: [PATCH] x86/msr: add idle version of wrmsr trace
+From:   FirstName LastName <pshier@google.com>
+To:     Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+        Dave Hansen <dave.hansen@linux.intel.com>, x86@kernel.org,
+        "H. Peter Anvin" <hpa@zytor.com>,
+        Jacob Pan <jacob.jun.pan@linux.intel.com>,
+        Len Brown <lenb@kernel.org>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Michael Roth <michael.roth@amd.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Josh Poimboeuf <jpoimboe@kernel.org>
+Cc:     linux-kernel@vger.kernel.org, linux-pm@vger.kernel.org,
+        Peter Shier <pshier@google.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Serge,
+From: Peter Shier <pshier@google.com>
 
-I love your patch! Perhaps something to improve:
+With commit bf5835bcdb963 ("intel_idle: Disable IBRS during long idle"),
+enabling wrmsr trace with CONFIG_LOCKDEP causes "suspicious
+rcu_dereference_check() usage" warning because do_trace_write_msr does not
+use trace_write_msr_rcuidle.
 
-[auto build test WARNING on ras/edac-for-next]
-[also build test WARNING on robh/for-next linus/master v6.0-rc2 next-20220823]
-[If your patch is applied to the wrong git tree, kindly drop us a note.
-And when submitting patch, we suggest to use '--base' as documented in
-https://git-scm.com/docs/git-format-patch#_base_tree_information]
+Add idle versions of needed routines and change intel_idle_ibrs to use it.
 
-url:    https://github.com/intel-lab-lkp/linux/commits/Serge-Semin/EDAC-mc-synopsys-Various-fixes-and-cleanups/20220823-031020
-base:   https://git.kernel.org/pub/scm/linux/kernel/git/ras/ras.git edac-for-next
-config: arm-buildonly-randconfig-r006-20220823 (https://download.01.org/0day-ci/archive/20220824/202208240709.CwTZS8Qo-lkp@intel.com/config)
-compiler: arm-linux-gnueabi-gcc (GCC) 12.1.0
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://github.com/intel-lab-lkp/linux/commit/ec4a1d5280959bf5c6ff8d63006c62d54e01f9cc
-        git remote add linux-review https://github.com/intel-lab-lkp/linux
-        git fetch --no-tags linux-review Serge-Semin/EDAC-mc-synopsys-Various-fixes-and-cleanups/20220823-031020
-        git checkout ec4a1d5280959bf5c6ff8d63006c62d54e01f9cc
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-12.1.0 make.cross W=1 O=build_dir ARCH=arm SHELL=/bin/bash drivers/edac/
+Sample warning:
+============================
+WARNING: suspicious RCU usage
+6.0.0-dbg-DEV #7 Tainted: G S         O      
+-----------------------------
+arch/x86/include/asm/msr-trace.h:48 suspicious rcu_dereference_check() usage!
 
-If you fix the issue, kindly add following tag where applicable
-Reported-by: kernel test robot <lkp@intel.com>
+other info that might help us debug this:
 
-All warnings (new ones prefixed by >>):
+rcu_scheduler_active = 2, debug_locks = 1
+RCU used illegally from extended quiescent state!
+no locks held by swapper/59/0.
 
-   drivers/edac/synopsys_edac.c: In function 'synps_get_dtype':
-   drivers/edac/synopsys_edac.c:485:18: error: implicit declaration of function 'FIELD_GET'; did you mean 'FOLL_GET'? [-Werror=implicit-function-declaration]
-     485 |         regval = FIELD_GET(DDR_MSTR_DEV_CFG_MASK, regval);
-         |                  ^~~~~~~~~
-         |                  FOLL_GET
-   drivers/edac/synopsys_edac.c: In function 'mc_init':
->> drivers/edac/synopsys_edac.c:600:33: warning: variable 'priv' set but not used [-Wunused-but-set-variable]
-     600 |         struct synps_edac_priv *priv;
-         |                                 ^~~~
-   cc1: some warnings being treated as errors
+stack backtrace:
+CPU: 59 PID: 0 Comm: swapper/59 Tainted: G S         O       6.0.0-dbg-DEV #7
+Call Trace:
+ dump_stack_lvl
+ dump_stack
+ lockdep_rcu_suspicious
+ trace_write_msr
+ do_trace_write_msr
+ intel_idle_ibrs
+ cpuidle_enter_state
+ cpuidle_enter
+ do_idle
+ cpu_startup_entry
+ start_secondary
+ secondary_startup_64_no_verify
 
 
-vim +/priv +600 drivers/edac/synopsys_edac.c
+Tested on skylake using:
+echo "msr:write_msr" >/sys/kernel/debug/tracing/set_event
+with and without patch.
 
-ae9b56e3996dadb Punnaiah Choudary Kalluri 2015-01-06  588  
-ae9b56e3996dadb Punnaiah Choudary Kalluri 2015-01-06  589  /**
-225af74d6312b2a Manish Narani             2018-10-04  590   * mc_init - Initialize one driver instance.
-225af74d6312b2a Manish Narani             2018-10-04  591   * @mci:	EDAC memory controller instance.
-225af74d6312b2a Manish Narani             2018-10-04  592   * @pdev:	platform device.
-ae9b56e3996dadb Punnaiah Choudary Kalluri 2015-01-06  593   *
-225af74d6312b2a Manish Narani             2018-10-04  594   * Perform initialization of the EDAC memory controller instance and
-ae9b56e3996dadb Punnaiah Choudary Kalluri 2015-01-06  595   * related driver-private data associated with the memory controller the
-ae9b56e3996dadb Punnaiah Choudary Kalluri 2015-01-06  596   * instance is bound to.
-ae9b56e3996dadb Punnaiah Choudary Kalluri 2015-01-06  597   */
-fa9f6b9e1cf9620 Manish Narani             2018-10-04  598  static void mc_init(struct mem_ctl_info *mci, struct platform_device *pdev)
-ae9b56e3996dadb Punnaiah Choudary Kalluri 2015-01-06  599  {
-ae9b56e3996dadb Punnaiah Choudary Kalluri 2015-01-06 @600  	struct synps_edac_priv *priv;
-ae9b56e3996dadb Punnaiah Choudary Kalluri 2015-01-06  601  
-ae9b56e3996dadb Punnaiah Choudary Kalluri 2015-01-06  602  	mci->pdev = &pdev->dev;
-ae9b56e3996dadb Punnaiah Choudary Kalluri 2015-01-06  603  	priv = mci->pvt_info;
-ae9b56e3996dadb Punnaiah Choudary Kalluri 2015-01-06  604  	platform_set_drvdata(pdev, mci);
-ae9b56e3996dadb Punnaiah Choudary Kalluri 2015-01-06  605  
-ae9b56e3996dadb Punnaiah Choudary Kalluri 2015-01-06  606  	/* Initialize controller capabilities and configuration */
-ae9b56e3996dadb Punnaiah Choudary Kalluri 2015-01-06  607  	mci->mtype_cap = MEM_FLAG_DDR3 | MEM_FLAG_DDR2;
-ae9b56e3996dadb Punnaiah Choudary Kalluri 2015-01-06  608  	mci->edac_ctl_cap = EDAC_FLAG_NONE | EDAC_FLAG_SECDED;
-5cfa57cc8481722 Serge Semin               2022-08-22  609  	mci->scrub_cap = SCRUB_FLAG_HW_SRC;
-ae9b56e3996dadb Punnaiah Choudary Kalluri 2015-01-06  610  	mci->scrub_mode = SCRUB_NONE;
-ae9b56e3996dadb Punnaiah Choudary Kalluri 2015-01-06  611  
-ae9b56e3996dadb Punnaiah Choudary Kalluri 2015-01-06  612  	mci->edac_cap = EDAC_FLAG_SECDED;
-ae9b56e3996dadb Punnaiah Choudary Kalluri 2015-01-06  613  	mci->ctl_name = "synps_ddr_controller";
-ae9b56e3996dadb Punnaiah Choudary Kalluri 2015-01-06  614  	mci->dev_name = SYNPS_EDAC_MOD_STRING;
-ae9b56e3996dadb Punnaiah Choudary Kalluri 2015-01-06  615  	mci->mod_name = SYNPS_EDAC_MOD_VER;
-ae9b56e3996dadb Punnaiah Choudary Kalluri 2015-01-06  616  
-b500b4a029d577c Manish Narani             2018-10-25  617  	edac_op_state = EDAC_OPSTATE_INT;
-b500b4a029d577c Manish Narani             2018-10-25  618  
-ae9b56e3996dadb Punnaiah Choudary Kalluri 2015-01-06  619  	mci->ctl_page_to_phys = NULL;
-ae9b56e3996dadb Punnaiah Choudary Kalluri 2015-01-06  620  
-fa9f6b9e1cf9620 Manish Narani             2018-10-04  621  	init_csrows(mci);
-ae9b56e3996dadb Punnaiah Choudary Kalluri 2015-01-06  622  }
-ae9b56e3996dadb Punnaiah Choudary Kalluri 2015-01-06  623  
+Signed-off-by: Peter Shier <pshier@google.com>
+---
+ arch/x86/include/asm/msr.h | 16 ++++++++++++++++
+ arch/x86/lib/msr.c         |  6 ++++++
+ drivers/idle/intel_idle.c  |  4 ++--
+ 3 files changed, 24 insertions(+), 2 deletions(-)
 
+diff --git a/arch/x86/include/asm/msr.h b/arch/x86/include/asm/msr.h
+index 65ec1965cd28..248cc58b7758 100644
+--- a/arch/x86/include/asm/msr.h
++++ b/arch/x86/include/asm/msr.h
+@@ -62,10 +62,12 @@ DECLARE_TRACEPOINT(read_msr);
+ DECLARE_TRACEPOINT(write_msr);
+ DECLARE_TRACEPOINT(rdpmc);
+ extern void do_trace_write_msr(unsigned int msr, u64 val, int failed);
++extern void do_trace_write_msr_idle(unsigned int msr, u64 val, int failed);
+ extern void do_trace_read_msr(unsigned int msr, u64 val, int failed);
+ extern void do_trace_rdpmc(unsigned int msr, u64 val, int failed);
+ #else
+ static inline void do_trace_write_msr(unsigned int msr, u64 val, int failed) {}
++extern void do_trace_write_msr_idle(unsigned int msr, u64 val, int failed) {}
+ static inline void do_trace_read_msr(unsigned int msr, u64 val, int failed) {}
+ static inline void do_trace_rdpmc(unsigned int msr, u64 val, int failed) {}
+ #endif
+@@ -148,6 +150,15 @@ native_write_msr(unsigned int msr, u32 low, u32 high)
+ 		do_trace_write_msr(msr, ((u64)high << 32 | low), 0);
+ }
+ 
++static inline void notrace
++native_write_msr_idle(unsigned int msr, u32 low, u32 high)
++{
++	__wrmsr(msr, low, high);
++
++	if (tracepoint_enabled(write_msr))
++		do_trace_write_msr_idle(msr, ((u64)high << 32 | low), 0);
++}
++
+ /* Can be uninlined because referenced by paravirt */
+ static inline int notrace
+ native_write_msr_safe(unsigned int msr, u32 low, u32 high)
+@@ -262,6 +273,11 @@ static inline void wrmsrl(unsigned int msr, u64 val)
+ 	native_write_msr(msr, (u32)(val & 0xffffffffULL), (u32)(val >> 32));
+ }
+ 
++static inline void wrmsrl_idle(unsigned int msr, u64 val)
++{
++	native_write_msr_idle(msr, (u32)(val & 0xffffffffULL), (u32)(val >> 32));
++}
++
+ /* wrmsr with exception handling */
+ static inline int wrmsr_safe(unsigned int msr, u32 low, u32 high)
+ {
+diff --git a/arch/x86/lib/msr.c b/arch/x86/lib/msr.c
+index b09cd2ad426c..58fdf0f13850 100644
+--- a/arch/x86/lib/msr.c
++++ b/arch/x86/lib/msr.c
+@@ -121,6 +121,12 @@ void do_trace_write_msr(unsigned int msr, u64 val, int failed)
+ EXPORT_SYMBOL(do_trace_write_msr);
+ EXPORT_TRACEPOINT_SYMBOL(write_msr);
+ 
++void do_trace_write_msr_idle(unsigned int msr, u64 val, int failed)
++{
++	trace_write_msr_rcuidle(msr, val, failed);
++}
++EXPORT_SYMBOL(do_trace_write_msr_idle);
++
+ void do_trace_read_msr(unsigned int msr, u64 val, int failed)
+ {
+ 	trace_read_msr(msr, val, failed);
+diff --git a/drivers/idle/intel_idle.c b/drivers/idle/intel_idle.c
+index 3e101719689a..bdecd2638c59 100644
+--- a/drivers/idle/intel_idle.c
++++ b/drivers/idle/intel_idle.c
+@@ -187,12 +187,12 @@ static __cpuidle int intel_idle_ibrs(struct cpuidle_device *dev,
+ 	int ret;
+ 
+ 	if (smt_active)
+-		wrmsrl(MSR_IA32_SPEC_CTRL, 0);
++		wrmsrl_idle(MSR_IA32_SPEC_CTRL, 0);
+ 
+ 	ret = __intel_idle(dev, drv, index);
+ 
+ 	if (smt_active)
+-		wrmsrl(MSR_IA32_SPEC_CTRL, spec_ctrl);
++		wrmsrl_idle(MSR_IA32_SPEC_CTRL, spec_ctrl);
+ 
+ 	return ret;
+ }
 -- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+
+
