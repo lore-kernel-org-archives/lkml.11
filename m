@@ -2,44 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 169FCC32774
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 08:19:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E20D1C32774
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 08:19:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242847AbiHWITQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 04:19:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44736 "EHLO
+        id S242657AbiHWITW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 23 Aug 2022 04:19:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42834 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242395AbiHWIOn (ORCPT
+        with ESMTP id S242167AbiHWIOz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 04:14:43 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D84AD6CF64;
-        Tue, 23 Aug 2022 01:09:55 -0700 (PDT)
+        Tue, 23 Aug 2022 04:14:55 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1EFF46CF44;
+        Tue, 23 Aug 2022 01:09:57 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id AE7D8B81C23;
-        Tue, 23 Aug 2022 08:09:53 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 11A63C433D6;
-        Tue, 23 Aug 2022 08:09:51 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 2B2816126A;
+        Tue, 23 Aug 2022 08:09:56 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2D292C433C1;
+        Tue, 23 Aug 2022 08:09:54 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661242192;
-        bh=POaUdY32srVyb9CUvSK2Zuip7368nevwRVmjMokMMmo=;
+        s=korg; t=1661242195;
+        bh=+SzV2j3mKb6C/dGCOU8fZHy34MjFU/Y5qxgDjnVjrw8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Xtbl1vRz8vT/BxHJQv3MppLbKnH79JgHBaw1rD+ijQ/JBnbTzrEkxeQcN+984/LlZ
-         EWXHZhM/F4iaVvP9uT9C2xFKGVcbb+MD9FMqG978utDn//hafxT9YPumHaunMeUEAS
-         zKkm+chBGpMVYk4joCf/VRr2hoOoLfzlaoeQRGw0=
+        b=s/3BKX1TxAX37gf0+TDHPB2UcuHqze4vB930oixL1Gjrs6IXx4kCJvPBiLgEFOEiU
+         DntYL75/7AwT4MWMFyXiU5FdvC0X2uQ9mBgXrC7r2PwFIJm2hA7MLXqzqtnX9g5IPX
+         WPqsKtQB1xxUSs6UG2iaQdjGbUoyKaFJ+viMjm4c=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Chuck Lever <chuck.lever@oracle.com>,
-        Jeff Layton <jlayton@kernel.org>
-Subject: [PATCH 5.19 074/365] SUNRPC: Fix xdr_encode_bool()
-Date:   Tue, 23 Aug 2022 09:59:35 +0200
-Message-Id: <20220823080121.269533997@linuxfoundation.org>
+        stable@vger.kernel.org, Jann Horn <jannh@google.com>,
+        Oleksij Rempel <o.rempel@pengutronix.de>,
+        Lukas Wunner <lukas@wunner.de>,
+        Oliver Neukum <oneukum@suse.com>,
+        Jakub Kicinski <kuba@kernel.org>
+Subject: [PATCH 4.9 034/101] usbnet: Fix linkwatch use-after-free on disconnect
+Date:   Tue, 23 Aug 2022 10:03:07 +0200
+Message-Id: <20220823080035.888712866@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220823080118.128342613@linuxfoundation.org>
-References: <20220823080118.128342613@linuxfoundation.org>
+In-Reply-To: <20220823080034.579196046@linuxfoundation.org>
+References: <20220823080034.579196046@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -48,38 +51,85 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Chuck Lever <chuck.lever@oracle.com>
+From: Lukas Wunner <lukas@wunner.de>
 
-commit c770f31d8f580ed4b965c64f924ec1cc50e41734 upstream.
+commit a69e617e533edddf3fa3123149900f36e0a6dc74 upstream.
 
-I discovered that xdr_encode_bool() was returning the same address
-that was passed in the @p parameter. The documenting comment states
-that the intent is to return the address of the next buffer
-location, just like the other "xdr_encode_*" helpers.
+usbnet uses the work usbnet_deferred_kevent() to perform tasks which may
+sleep.  On disconnect, completion of the work was originally awaited in
+->ndo_stop().  But in 2003, that was moved to ->disconnect() by historic
+commit "[PATCH] USB: usbnet, prevent exotic rtnl deadlock":
 
-The result was the encoded results of NFSv3 PATHCONF operations were
-not formed correctly.
+  https://git.kernel.org/tglx/history/c/0f138bbfd83c
 
-Fixes: ded04a587f6c ("NFSD: Update the NFSv3 PATHCONF3res encoder to use struct xdr_stream")
-Signed-off-by: Chuck Lever <chuck.lever@oracle.com>
-Reviewed-by: Jeff Layton <jlayton@kernel.org>
+The change was made because back then, the kernel's workqueue
+implementation did not allow waiting for a single work.  One had to wait
+for completion of *all* work by calling flush_scheduled_work(), and that
+could deadlock when waiting for usbnet_deferred_kevent() with rtnl_mutex
+held in ->ndo_stop().
+
+The commit solved one problem but created another:  It causes a
+use-after-free in USB Ethernet drivers aqc111.c, asix_devices.c,
+ax88179_178a.c, ch9200.c and smsc75xx.c:
+
+* If the drivers receive a link change interrupt immediately before
+  disconnect, they raise EVENT_LINK_RESET in their (non-sleepable)
+  ->status() callback and schedule usbnet_deferred_kevent().
+* usbnet_deferred_kevent() invokes the driver's ->link_reset() callback,
+  which calls netif_carrier_{on,off}().
+* That in turn schedules the work linkwatch_event().
+
+Because usbnet_deferred_kevent() is awaited after unregister_netdev(),
+netif_carrier_{on,off}() may operate on an unregistered netdev and
+linkwatch_event() may run after free_netdev(), causing a use-after-free.
+
+In 2010, usbnet was changed to only wait for a single instance of
+usbnet_deferred_kevent() instead of *all* work by commit 23f333a2bfaf
+("drivers/net: don't use flush_scheduled_work()").
+
+Unfortunately the commit neglected to move the wait back to
+->ndo_stop().  Rectify that omission at long last.
+
+Reported-by: Jann Horn <jannh@google.com>
+Link: https://lore.kernel.org/netdev/CAG48ez0MHBbENX5gCdHAUXZ7h7s20LnepBF-pa5M=7Bi-jZrEA@mail.gmail.com/
+Reported-by: Oleksij Rempel <o.rempel@pengutronix.de>
+Link: https://lore.kernel.org/netdev/20220315113841.GA22337@pengutronix.de/
+Signed-off-by: Lukas Wunner <lukas@wunner.de>
+Cc: stable@vger.kernel.org
+Acked-by: Oliver Neukum <oneukum@suse.com>
+Link: https://lore.kernel.org/r/d1c87ebe9fc502bffcd1576e238d685ad08321e4.1655987888.git.lukas@wunner.de
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- include/linux/sunrpc/xdr.h |    4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ drivers/net/usb/usbnet.c |    8 ++------
+ 1 file changed, 2 insertions(+), 6 deletions(-)
 
---- a/include/linux/sunrpc/xdr.h
-+++ b/include/linux/sunrpc/xdr.h
-@@ -419,8 +419,8 @@ static inline int xdr_stream_encode_item
-  */
- static inline __be32 *xdr_encode_bool(__be32 *p, u32 n)
- {
--	*p = n ? xdr_one : xdr_zero;
--	return p++;
-+	*p++ = n ? xdr_one : xdr_zero;
-+	return p;
- }
+--- a/drivers/net/usb/usbnet.c
++++ b/drivers/net/usb/usbnet.c
+@@ -847,13 +847,11 @@ int usbnet_stop (struct net_device *net)
  
- /**
+ 	mpn = !test_and_clear_bit(EVENT_NO_RUNTIME_PM, &dev->flags);
+ 
+-	/* deferred work (task, timer, softirq) must also stop.
+-	 * can't flush_scheduled_work() until we drop rtnl (later),
+-	 * else workers could deadlock; so make workers a NOP.
+-	 */
++	/* deferred work (timer, softirq, task) must also stop */
+ 	dev->flags = 0;
+ 	del_timer_sync (&dev->delay);
+ 	tasklet_kill (&dev->bh);
++	cancel_work_sync(&dev->kevent);
+ 	if (!pm)
+ 		usb_autopm_put_interface(dev->intf);
+ 
+@@ -1577,8 +1575,6 @@ void usbnet_disconnect (struct usb_inter
+ 	net = dev->net;
+ 	unregister_netdev (net);
+ 
+-	cancel_work_sync(&dev->kevent);
+-
+ 	usb_scuttle_anchored_urbs(&dev->deferred);
+ 
+ 	if (dev->driver_info->unbind)
 
 
