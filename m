@@ -2,47 +2,49 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F103FC32772
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 09:37:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4FDE2C32772
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 09:37:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351419AbiHWJh0 (ORCPT
+        id S1351425AbiHWJhb (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 05:37:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52844 "EHLO
+        Tue, 23 Aug 2022 05:37:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49412 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351747AbiHWJf5 (ORCPT
+        with ESMTP id S1351767AbiHWJf6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 05:35:57 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F247BE0A9;
+        Tue, 23 Aug 2022 05:35:58 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F257E97529;
         Tue, 23 Aug 2022 01:40:06 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id A9C1A614E9;
-        Tue, 23 Aug 2022 08:39:06 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7F9F6C433D6;
-        Tue, 23 Aug 2022 08:39:05 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 98B5BB81C3E;
+        Tue, 23 Aug 2022 08:33:56 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E11C0C433C1;
+        Tue, 23 Aug 2022 08:33:54 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661243946;
-        bh=aBbOxrSRthQiToFIYP2D6uOzkEITHeXp8+xs0ikkYag=;
+        s=korg; t=1661243635;
+        bh=+bJaLNnj4pmy29dsPfdJ3cwRoJe/UpZzGD3F4vtamfM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=1WcuhgvOH05LSYY4zPnCLWc6elbdCwwjBRzFbVTyocl5j6j/EvhZezkME8uxfWImi
-         dzorIhZUw2QarCuYEUd/rccHiIJpxYYC8xzuMkFrhelF/buM0AureyItViwvXYPhcr
-         pTgCtI7B5jVkneIw0iuasUsH/dHN+wyxf4fz8Wn4=
+        b=NJJ659DbvWJb7G2MOeVZ/elNdeDWjsaLc3i3tZkAtFyXtz9qAq6tSnaJslkzBLzjF
+         OGVskaCUrD03MGhyOwj71KLpP66j12wdI8UsmTp2GhaMVOAsS6a3ff4rFx9oOJyX+/
+         CCl8/DtIy0xIu+k+HmADCNX1wVWI9Xwfsv2njHRA=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
-        Alexey Kodanev <aleksei.kodanev@bell-sw.com>,
-        Alex Deucher <alexander.deucher@amd.com>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Andrey Turkin <andrey.turkin@gmail.com>,
+        Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>,
+        Mark Brown <broonie@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.14 060/229] drm/radeon: fix potential buffer overflow in ni_set_mc_special_registers()
-Date:   Tue, 23 Aug 2022 10:23:41 +0200
-Message-Id: <20220823080055.880457049@linuxfoundation.org>
+Subject: [PATCH 5.19 340/365] ASoC: Intel: sof_es8336: Fix GPIO quirks set via module option
+Date:   Tue, 23 Aug 2022 10:04:01 +0200
+Message-Id: <20220823080132.439592982@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220823080053.202747790@linuxfoundation.org>
-References: <20220823080053.202747790@linuxfoundation.org>
+In-Reply-To: <20220823080118.128342613@linuxfoundation.org>
+References: <20220823080118.128342613@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -51,58 +53,79 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Alexey Kodanev <aleksei.kodanev@bell-sw.com>
+From: Andrey Turkin <andrey.turkin@gmail.com>
 
-[ Upstream commit 136f614931a2bb73616b292cf542da3a18daefd5 ]
+[ Upstream commit 5e60f1cfb830342304200437121f440b72b54f54 ]
 
-The last case label can write two buffers 'mc_reg_address[j]' and
-'mc_data[j]' with 'j' offset equal to SMC_NISLANDS_MC_REGISTER_ARRAY_SIZE
-since there are no checks for this value in both case labels after the
-last 'j++'.
+The two GPIO quirk bits only affected actual GPIO selection
+when set by the quirks table. They were reported as being
+in effect when set via module options but actually did nothing.
 
-Instead of changing '>' to '>=' there, add the bounds check at the start
-of the second 'case' (the first one already has it).
-
-Also, remove redundant last checks for 'j' index bigger than array size.
-The expression is always false. Moreover, before or after the patch
-'table->last' can be equal to SMC_NISLANDS_MC_REGISTER_ARRAY_SIZE and it
-seems it can be a valid value.
-
-Detected using the static analysis tool - Svace.
-Fixes: 69e0b57a91ad ("drm/radeon/kms: add dpm support for cayman (v5)")
-Signed-off-by: Alexey Kodanev <aleksei.kodanev@bell-sw.com>
-Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
+Reviewed-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Signed-off-by: Andrey Turkin <andrey.turkin@gmail.com>
+Signed-off-by: Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>
+Link: https://lore.kernel.org/r/20220725194909.145418-4-pierre-louis.bossart@linux.intel.com
+Signed-off-by: Mark Brown <broonie@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/gpu/drm/radeon/ni_dpm.c | 6 ++----
- 1 file changed, 2 insertions(+), 4 deletions(-)
+ sound/soc/intel/boards/sof_es8336.c | 23 ++++++++++++-----------
+ 1 file changed, 12 insertions(+), 11 deletions(-)
 
-diff --git a/drivers/gpu/drm/radeon/ni_dpm.c b/drivers/gpu/drm/radeon/ni_dpm.c
-index d491b3aa124f..fa88c1809946 100644
---- a/drivers/gpu/drm/radeon/ni_dpm.c
-+++ b/drivers/gpu/drm/radeon/ni_dpm.c
-@@ -2738,10 +2738,10 @@ static int ni_set_mc_special_registers(struct radeon_device *rdev,
- 					table->mc_reg_table_entry[k].mc_data[j] |= 0x100;
- 			}
- 			j++;
--			if (j > SMC_NISLANDS_MC_REGISTER_ARRAY_SIZE)
--				return -EINVAL;
- 			break;
- 		case MC_SEQ_RESERVE_M >> 2:
-+			if (j >= SMC_NISLANDS_MC_REGISTER_ARRAY_SIZE)
-+				return -EINVAL;
- 			temp_reg = RREG32(MC_PMG_CMD_MRS1);
- 			table->mc_reg_address[j].s1 = MC_PMG_CMD_MRS1 >> 2;
- 			table->mc_reg_address[j].s0 = MC_SEQ_PMG_CMD_MRS1_LP >> 2;
-@@ -2750,8 +2750,6 @@ static int ni_set_mc_special_registers(struct radeon_device *rdev,
- 					(temp_reg & 0xffff0000) |
- 					(table->mc_reg_table_entry[k].mc_data[i] & 0x0000ffff);
- 			j++;
--			if (j > SMC_NISLANDS_MC_REGISTER_ARRAY_SIZE)
--				return -EINVAL;
- 			break;
- 		default:
- 			break;
+diff --git a/sound/soc/intel/boards/sof_es8336.c b/sound/soc/intel/boards/sof_es8336.c
+index 23d03e0f7759..4d0c361fc277 100644
+--- a/sound/soc/intel/boards/sof_es8336.c
++++ b/sound/soc/intel/boards/sof_es8336.c
+@@ -77,8 +77,6 @@ static const struct acpi_gpio_mapping acpi_enable_both_gpios_rev_order[] = {
+ 	{ }
+ };
+ 
+-static const struct acpi_gpio_mapping *gpio_mapping = acpi_speakers_enable_gpio0;
+-
+ static void log_quirks(struct device *dev)
+ {
+ 	dev_info(dev, "quirk mask %#lx\n", quirk);
+@@ -272,15 +270,6 @@ static int sof_es8336_quirk_cb(const struct dmi_system_id *id)
+ {
+ 	quirk = (unsigned long)id->driver_data;
+ 
+-	if (quirk & SOF_ES8336_HEADPHONE_GPIO) {
+-		if (quirk & SOF_ES8336_SPEAKERS_EN_GPIO1_QUIRK)
+-			gpio_mapping = acpi_enable_both_gpios;
+-		else
+-			gpio_mapping = acpi_enable_both_gpios_rev_order;
+-	} else if (quirk & SOF_ES8336_SPEAKERS_EN_GPIO1_QUIRK) {
+-		gpio_mapping = acpi_speakers_enable_gpio1;
+-	}
+-
+ 	return 1;
+ }
+ 
+@@ -529,6 +518,7 @@ static int sof_es8336_probe(struct platform_device *pdev)
+ 	struct acpi_device *adev;
+ 	struct snd_soc_dai_link *dai_links;
+ 	struct device *codec_dev;
++	const struct acpi_gpio_mapping *gpio_mapping;
+ 	unsigned int cnt = 0;
+ 	int dmic_be_num = 0;
+ 	int hdmi_num = 3;
+@@ -635,6 +625,17 @@ static int sof_es8336_probe(struct platform_device *pdev)
+ 	}
+ 
+ 	/* get speaker enable GPIO */
++	if (quirk & SOF_ES8336_HEADPHONE_GPIO) {
++		if (quirk & SOF_ES8336_SPEAKERS_EN_GPIO1_QUIRK)
++			gpio_mapping = acpi_enable_both_gpios;
++		else
++			gpio_mapping = acpi_enable_both_gpios_rev_order;
++	} else if (quirk & SOF_ES8336_SPEAKERS_EN_GPIO1_QUIRK) {
++		gpio_mapping = acpi_speakers_enable_gpio1;
++	} else {
++		gpio_mapping = acpi_speakers_enable_gpio0;
++	}
++
+ 	ret = devm_acpi_dev_add_driver_gpios(codec_dev, gpio_mapping);
+ 	if (ret)
+ 		dev_warn(codec_dev, "unable to add GPIO mapping table\n");
 -- 
 2.35.1
 
