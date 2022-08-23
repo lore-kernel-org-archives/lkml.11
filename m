@@ -2,46 +2,49 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C10F9C32772
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 09:38:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BDA2AC32772
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 09:38:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348467AbiHWJiV (ORCPT
+        id S1351683AbiHWJil (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 05:38:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44882 "EHLO
+        Tue, 23 Aug 2022 05:38:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43072 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350610AbiHWJgi (ORCPT
+        with ESMTP id S1351460AbiHWJhl (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 05:36:38 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A414E9858E;
-        Tue, 23 Aug 2022 01:40:40 -0700 (PDT)
+        Tue, 23 Aug 2022 05:37:41 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DEEE129C8C;
+        Tue, 23 Aug 2022 01:40:47 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id D736CB81C20;
-        Tue, 23 Aug 2022 08:38:20 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 204A8C433D6;
-        Tue, 23 Aug 2022 08:38:18 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 160F761377;
+        Tue, 23 Aug 2022 08:40:03 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CA985C433C1;
+        Tue, 23 Aug 2022 08:40:01 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661243899;
-        bh=q0lwBwOpc6ybYAZdxR23GL4Xf+A9Fy0uKv6IPGQ9w8g=;
+        s=korg; t=1661244002;
+        bh=X8v8KkcwcX5ObVqicD2o6pK97cQKiy5IBBKsBJQ6ZT4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=vi3jaAwotS6a8CFmkSGZHEXs4ohEKBDTUWyhgq8NO11eqrhYXJhcdmxoq0azqB81/
-         +FR8XJ5vsLddtL95mVkds2iR0PSMGGQgwweUJ4zVRTlWQK3XZHLFJBQNCE3ZEDDBcH
-         fiOFqzKidFhIyUxzYH/0B02DAzid4asCWx17/N7g=
+        b=Rn+MPGCvBu9fqAQxuZw0gk302p+8WEAdy+T+kRoxiU1kVx7qGVlm8lxOMy1j3xIu1
+         xy0HTCJ+FoOZA+/yk2y8/iI6GmwBibOWt3wBXPAOPXEvpudEjIMg2SUMm/gEM0Vyh1
+         6erusAvD2Uuth0DRlbgfq3FzRayYlKiwUZ0vyAbk=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Michael Walle <michael@walle.cc>,
-        Arnd Bergmann <arnd@arndb.de>, Shawn Guo <shawnguo@kernel.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.14 053/229] soc: fsl: guts: machine variable might be unset
-Date:   Tue, 23 Aug 2022 10:23:34 +0200
-Message-Id: <20220823080055.600279021@linuxfoundation.org>
+        stable@vger.kernel.org, Ingo Molnar <mingo@kernel.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Masami Hiramatsu <mhiramat@kernel.org>,
+        Tzvetomir Stoyanov <tz.stoyanov@gmail.com>,
+        Tom Zanussi <zanussi@kernel.org>,
+        "Steven Rostedt (Google)" <rostedt@goodmis.org>
+Subject: [PATCH 5.15 022/244] tracing/eprobes: Have event probes be consistent with kprobes and uprobes
+Date:   Tue, 23 Aug 2022 10:23:01 +0200
+Message-Id: <20220823080059.805774797@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220823080053.202747790@linuxfoundation.org>
-References: <20220823080053.202747790@linuxfoundation.org>
+In-Reply-To: <20220823080059.091088642@linuxfoundation.org>
+References: <20220823080059.091088642@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -50,37 +53,151 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Michael Walle <michael@walle.cc>
+From: Steven Rostedt (Google) <rostedt@goodmis.org>
 
-[ Upstream commit ab3f045774f704c4e7b6a878102f4e9d4ae7bc74 ]
+commit 6a832ec3d680b3a4f4fad5752672827d71bae501 upstream.
 
-If both the model and the compatible properties are missing, then
-machine will not be set. Initialize it with NULL.
+Currently, if a symbol "@" is attempted to be used with an event probe
+(eprobes), it will cause a NULL pointer dereference crash.
 
-Fixes: 34c1c21e94ac ("soc: fsl: fix section mismatch build warnings")
-Signed-off-by: Michael Walle <michael@walle.cc>
-Acked-by: Arnd Bergmann <arnd@arndb.de>
-Signed-off-by: Shawn Guo <shawnguo@kernel.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Both kprobes and uprobes can reference data other than the main registers.
+Such as immediate address, symbols and the current task name. Have eprobes
+do the same thing.
+
+For "comm", if "comm" is used and the event being attached to does not
+have the "comm" field, then make it the "$comm" that kprobes has. This is
+consistent to the way histograms and filters work.
+
+Link: https://lkml.kernel.org/r/20220820134401.136924220@goodmis.org
+
+Cc: stable@vger.kernel.org
+Cc: Ingo Molnar <mingo@kernel.org>
+Cc: Andrew Morton <akpm@linux-foundation.org>
+Cc: Masami Hiramatsu <mhiramat@kernel.org>
+Cc: Tzvetomir Stoyanov <tz.stoyanov@gmail.com>
+Cc: Tom Zanussi <zanussi@kernel.org>
+Fixes: 7491e2c44278 ("tracing: Add a probe that attaches to trace events")
+Signed-off-by: Steven Rostedt (Google) <rostedt@goodmis.org>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/soc/fsl/guts.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ kernel/trace/trace_eprobe.c |   70 ++++++++++++++++++++++++++++++++++++++++----
+ 1 file changed, 64 insertions(+), 6 deletions(-)
 
-diff --git a/drivers/soc/fsl/guts.c b/drivers/soc/fsl/guts.c
-index 6af7a11f09a5..affc38a92166 100644
---- a/drivers/soc/fsl/guts.c
-+++ b/drivers/soc/fsl/guts.c
-@@ -136,7 +136,7 @@ static int fsl_guts_probe(struct platform_device *pdev)
- 	struct device *dev = &pdev->dev;
- 	struct resource *res;
- 	const struct fsl_soc_die_attr *soc_die;
--	const char *machine;
-+	const char *machine = NULL;
- 	u32 svr;
+--- a/kernel/trace/trace_eprobe.c
++++ b/kernel/trace/trace_eprobe.c
+@@ -226,6 +226,7 @@ static int trace_eprobe_tp_arg_update(st
+ 	struct probe_arg *parg = &ep->tp.args[i];
+ 	struct ftrace_event_field *field;
+ 	struct list_head *head;
++	int ret = -ENOENT;
  
- 	/* Initialize guts */
--- 
-2.35.1
-
+ 	head = trace_get_fields(ep->event);
+ 	list_for_each_entry(field, head, link) {
+@@ -235,9 +236,20 @@ static int trace_eprobe_tp_arg_update(st
+ 			return 0;
+ 		}
+ 	}
++
++	/*
++	 * Argument not found on event. But allow for comm and COMM
++	 * to be used to get the current->comm.
++	 */
++	if (strcmp(parg->code->data, "COMM") == 0 ||
++	    strcmp(parg->code->data, "comm") == 0) {
++		parg->code->op = FETCH_OP_COMM;
++		ret = 0;
++	}
++
+ 	kfree(parg->code->data);
+ 	parg->code->data = NULL;
+-	return -ENOENT;
++	return ret;
+ }
+ 
+ static int eprobe_event_define_fields(struct trace_event_call *event_call)
+@@ -339,16 +351,38 @@ static unsigned long get_event_field(str
+ 
+ static int get_eprobe_size(struct trace_probe *tp, void *rec)
+ {
++	struct fetch_insn *code;
+ 	struct probe_arg *arg;
+ 	int i, len, ret = 0;
+ 
+ 	for (i = 0; i < tp->nr_args; i++) {
+ 		arg = tp->args + i;
+-		if (unlikely(arg->dynamic)) {
++		if (arg->dynamic) {
+ 			unsigned long val;
+ 
+-			val = get_event_field(arg->code, rec);
+-			len = process_fetch_insn_bottom(arg->code + 1, val, NULL, NULL);
++			code = arg->code;
++ retry:
++			switch (code->op) {
++			case FETCH_OP_TP_ARG:
++				val = get_event_field(code, rec);
++				break;
++			case FETCH_OP_IMM:
++				val = code->immediate;
++				break;
++			case FETCH_OP_COMM:
++				val = (unsigned long)current->comm;
++				break;
++			case FETCH_OP_DATA:
++				val = (unsigned long)code->data;
++				break;
++			case FETCH_NOP_SYMBOL:	/* Ignore a place holder */
++				code++;
++				goto retry;
++			default:
++				continue;
++			}
++			code++;
++			len = process_fetch_insn_bottom(code, val, NULL, NULL);
+ 			if (len > 0)
+ 				ret += len;
+ 		}
+@@ -366,8 +400,28 @@ process_fetch_insn(struct fetch_insn *co
+ {
+ 	unsigned long val;
+ 
+-	val = get_event_field(code, rec);
+-	return process_fetch_insn_bottom(code + 1, val, dest, base);
++ retry:
++	switch (code->op) {
++	case FETCH_OP_TP_ARG:
++		val = get_event_field(code, rec);
++		break;
++	case FETCH_OP_IMM:
++		val = code->immediate;
++		break;
++	case FETCH_OP_COMM:
++		val = (unsigned long)current->comm;
++		break;
++	case FETCH_OP_DATA:
++		val = (unsigned long)code->data;
++		break;
++	case FETCH_NOP_SYMBOL:	/* Ignore a place holder */
++		code++;
++		goto retry;
++	default:
++		return -EILSEQ;
++	}
++	code++;
++	return process_fetch_insn_bottom(code, val, dest, base);
+ }
+ NOKPROBE_SYMBOL(process_fetch_insn)
+ 
+@@ -849,6 +903,10 @@ static int trace_eprobe_tp_update_arg(st
+ 	if (ep->tp.args[i].code->op == FETCH_OP_TP_ARG)
+ 		ret = trace_eprobe_tp_arg_update(ep, i);
+ 
++	/* Handle symbols "@" */
++	if (!ret)
++		ret = traceprobe_update_arg(&ep->tp.args[i]);
++
+ 	return ret;
+ }
+ 
 
 
