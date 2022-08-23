@@ -2,45 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9DFDFC32772
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 11:05:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9C94AC32792
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 11:05:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244185AbiHWLE6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 07:04:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35730 "EHLO
+        id S1356721AbiHWLFF (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 23 Aug 2022 07:05:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39438 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357440AbiHWLCX (ORCPT
+        with ESMTP id S1357480AbiHWLC3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 07:02:23 -0400
+        Tue, 23 Aug 2022 07:02:29 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 03B6DB14F2;
-        Tue, 23 Aug 2022 02:14:50 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A80C9B2758;
+        Tue, 23 Aug 2022 02:15:04 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 58380B81C85;
-        Tue, 23 Aug 2022 09:14:46 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8C9F5C433C1;
-        Tue, 23 Aug 2022 09:14:44 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 3D4D8B81C66;
+        Tue, 23 Aug 2022 09:15:02 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 74FD3C433D6;
+        Tue, 23 Aug 2022 09:15:00 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661246085;
-        bh=4wSFBcJWjvWoO4ac098ZRzL0AmRBvAtFIXEj5Kx1D2g=;
+        s=korg; t=1661246101;
+        bh=tJ4/GjcFTOYm1eHzzFoim4ZayD31016TtBq0nigveEE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=X8ZCCDZEp5vBsr37rEyLoD75QsrVW0Cg/u2nA4Q1UIUpZ5dZnXhP4nl/oBNxoi+Xd
-         W+4LeE3AAG1OZxCZTPbrdFmQ4Q7dtufcekN/hNVmxOFwbeKQjT1GxVZ16vNU28+egi
-         chylYkzMKILmuRC/UcsF9K4qdeOWRWsiKy4/hxOI=
+        b=sEJc8e3UNwILZbpGkJwonc/Z6Bp2t09SMtQBZEb3y+p2V/QeHvc9oEwdlnZed2fUQ
+         zU8V4LKgAL+gFn3aA7Y1To0S7eG4Y2GQdnSN6kjX4A+Xr0Rgl4zDvIa7aJSChqmtSF
+         pqF1Xx2jQN+q8dLdga9qmP6b96BwlHmAhgUwjQyM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Ingo Molnar <mingo@kernel.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Tzvetomir Stoyanov <tz.stoyanov@gmail.com>,
-        Tom Zanussi <zanussi@kernel.org>,
-        "Masami Hiramatsu (Google)" <mhiramat@kernel.org>,
-        "Steven Rostedt (Google)" <rostedt@goodmis.org>
-Subject: [PATCH 4.19 285/287] tracing/probes: Have kprobes and uprobes use $COMM too
-Date:   Tue, 23 Aug 2022 10:27:34 +0200
-Message-Id: <20220823080111.120770239@linuxfoundation.org>
+        stable@vger.kernel.org, Guo Ren <guoren@kernel.org>,
+        Xianting Tian <xianting.tian@linux.alibaba.com>,
+        Palmer Dabbelt <palmer@rivosinc.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 4.19 275/287] RISC-V: Add fast call path of crash_kexec()
+Date:   Tue, 23 Aug 2022 10:27:24 +0200
+Message-Id: <20220823080110.667293814@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220823080100.268827165@linuxfoundation.org>
 References: <20220823080100.268827165@linuxfoundation.org>
@@ -52,52 +51,73 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Steven Rostedt (Google) <rostedt@goodmis.org>
+From: Xianting Tian <xianting.tian@linux.alibaba.com>
 
-commit ab8384442ee512fc0fc72deeb036110843d0e7ff upstream.
+[ Upstream commit 3f1901110a89b0e2e13adb2ac8d1a7102879ea98 ]
 
-Both $comm and $COMM can be used to get current->comm in eprobes and the
-filtering and histogram logic. Make kprobes and uprobes consistent in this
-regard and allow both $comm and $COMM as well. Currently kprobes and
-uprobes only handle $comm, which is inconsistent with the other utilities,
-and can be confusing to users.
+Currently, almost all archs (x86, arm64, mips...) support fast call
+of crash_kexec() when "regs && kexec_should_crash()" is true. But
+RISC-V not, it can only enter crash system via panic(). However panic()
+doesn't pass the regs of the real accident scene to crash_kexec(),
+it caused we can't get accurate backtrace via gdb,
+	$ riscv64-linux-gnu-gdb vmlinux vmcore
+	Reading symbols from vmlinux...
+	[New LWP 95]
+	#0  console_unlock () at kernel/printk/printk.c:2557
+	2557                    if (do_cond_resched)
+	(gdb) bt
+	#0  console_unlock () at kernel/printk/printk.c:2557
+	#1  0x0000000000000000 in ?? ()
 
-Link: https://lkml.kernel.org/r/20220820134401.317014913@goodmis.org
-Link: https://lore.kernel.org/all/20220820220442.776e1ddaf8836e82edb34d01@kernel.org/
+With the patch we can get the accurate backtrace,
+	$ riscv64-linux-gnu-gdb vmlinux vmcore
+	Reading symbols from vmlinux...
+	[New LWP 95]
+	#0  0xffffffe00063a4e0 in test_thread (data=<optimized out>) at drivers/test_crash.c:81
+	81             *(int *)p = 0xdead;
+	(gdb)
+	(gdb) bt
+	#0  0xffffffe00064d5c0 in test_thread (data=<optimized out>) at drivers/test_crash.c:81
+	#1  0x0000000000000000 in ?? ()
 
-Cc: stable@vger.kernel.org
-Cc: Ingo Molnar <mingo@kernel.org>
-Cc: Andrew Morton <akpm@linux-foundation.org>
-Cc: Tzvetomir Stoyanov <tz.stoyanov@gmail.com>
-Cc: Tom Zanussi <zanussi@kernel.org>
-Fixes: 533059281ee5 ("tracing: probeevent: Introduce new argument fetching code")
-Suggested-by: Masami Hiramatsu (Google) <mhiramat@kernel.org>
-Acked-by: Masami Hiramatsu (Google) <mhiramat@kernel.org>
-Signed-off-by: Steven Rostedt (Google) <rostedt@goodmis.org>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Test code to produce NULL address dereference in test_crash.c,
+	void *p = NULL;
+	*(int *)p = 0xdead;
+
+Reviewed-by: Guo Ren <guoren@kernel.org>
+Tested-by: Xianting Tian <xianting.tian@linux.alibaba.com>
+Signed-off-by: Xianting Tian <xianting.tian@linux.alibaba.com>
+Link: https://lore.kernel.org/r/20220606082308.2883458-1-xianting.tian@linux.alibaba.com
+Signed-off-by: Palmer Dabbelt <palmer@rivosinc.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- kernel/trace/trace_probe.c |    4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ arch/riscv/kernel/traps.c | 4 ++++
+ 1 file changed, 4 insertions(+)
 
---- a/kernel/trace/trace_probe.c
-+++ b/kernel/trace/trace_probe.c
-@@ -361,7 +361,7 @@ static int parse_probe_vars(char *arg, c
- 			}
- 		} else
- 			ret = -EINVAL;
--	} else if (strcmp(arg, "comm") == 0) {
-+	} else if (strcmp(arg, "comm") == 0 || strcmp(arg, "COMM") == 0) {
- 		if (strcmp(t->name, "string") != 0 &&
- 		    strcmp(t->name, "string_size") != 0)
- 			return -EINVAL;
-@@ -544,7 +544,7 @@ int traceprobe_parse_probe_arg(char *arg
- 	 * The default type of $comm should be "string", and it can't be
- 	 * dereferenced.
- 	 */
--	if (!t && strcmp(arg, "$comm") == 0)
-+	if (!t && (strcmp(arg, "$comm") == 0 || strcmp(arg, "$COMM") == 0))
- 		t = "string";
- 	parg->type = find_fetch_type(t, ftbl);
- 	if (!parg->type) {
+diff --git a/arch/riscv/kernel/traps.c b/arch/riscv/kernel/traps.c
+index 24a9333dda2c..7c65750508f2 100644
+--- a/arch/riscv/kernel/traps.c
++++ b/arch/riscv/kernel/traps.c
+@@ -22,6 +22,7 @@
+ #include <linux/mm.h>
+ #include <linux/module.h>
+ #include <linux/irq.h>
++#include <linux/kexec.h>
+ 
+ #include <asm/processor.h>
+ #include <asm/ptrace.h>
+@@ -50,6 +51,9 @@ void die(struct pt_regs *regs, const char *str)
+ 
+ 	ret = notify_die(DIE_OOPS, str, regs, 0, regs->scause, SIGSEGV);
+ 
++	if (regs && kexec_should_crash(current))
++		crash_kexec(regs);
++
+ 	bust_spinlocks(0);
+ 	add_taint(TAINT_DIE, LOCKDEP_NOW_UNRELIABLE);
+ 	spin_unlock_irq(&die_lock);
+-- 
+2.35.1
+
 
 
