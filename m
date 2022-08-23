@@ -2,119 +2,90 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7476EC32772
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 21:17:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1BE6BC32793
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 21:19:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231401AbiHWVQI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 17:16:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60486 "EHLO
+        id S229698AbiHWVT2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 23 Aug 2022 17:19:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35268 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231321AbiHWVPg (ORCPT
+        with ESMTP id S229533AbiHWVT0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 17:15:36 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 85035110B;
-        Tue, 23 Aug 2022 14:15:35 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 3DD63B81F3B;
-        Tue, 23 Aug 2022 21:15:34 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 82BD3C433C1;
-        Tue, 23 Aug 2022 21:15:30 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1661289333;
-        bh=ENj0h/OaTgIdV5SUrWyPWA3nYKs7CRWRwhzMPXuiZf8=;
-        h=From:To:Cc:In-Reply-To:References:Subject:Date:From;
-        b=mCY6k/QjFtBM0L+FAW7xOwTfxm8RXkpK+gPkTtoHv1QATQ883+u8pm/7j4YJAQn2J
-         bkgTwJPevp4u7tY4SWXCq/IjiuUuy4h2lRTb8cQLTETz2bXSr0da3mtfznohal+cx8
-         3ewKAVJSgRBf7dwpKth+YCcZs/4utBag2/fKTF4jlimS5UUO3ioB88/dcoHkIINLr/
-         UOFmNp2JBh/n621JhBoAW1Ki6GWzdWKzYiCKqudTNFkLjvoUy9NLRwcXjyZohwak3B
-         6ETRnr6tV4rwTP0WBA/bMbDHEjxdcTBbqsqUn0+dZWZVOLKBvyX+8Ywn+QoW0hzdJ+
-         Z8Kc/j5Vu/gXA==
-From:   Mark Brown <broonie@kernel.org>
-To:     Iskren Chernev <iskren.chernev@gmail.com>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>
-Cc:     devicetree@vger.kernel.org, phone-devel@vger.kernel.org,
-        linux-arm-msm@vger.kernel.org, Rob Herring <robh+dt@kernel.org>,
-        ~postmarketos/upstreaming@lists.sr.ht,
-        Robert Marko <robimarko@gmail.com>,
-        Andy Gross <agross@kernel.org>,
-        Liam Girdwood <lgirdwood@gmail.com>,
-        linux-kernel@vger.kernel.org,
-        Konrad Dybcio <konrad.dybcio@somainline.org>
-In-Reply-To: <20220802221112.2280686-1-iskren.chernev@gmail.com>
-References: <20220802221112.2280686-1-iskren.chernev@gmail.com>
-Subject: Re: [PATCH v4 00/13] PM6125 regulator support
-Message-Id: <166128933023.1993124.17537668863029691140.b4-ty@kernel.org>
-Date:   Tue, 23 Aug 2022 22:15:30 +0100
+        Tue, 23 Aug 2022 17:19:26 -0400
+Received: from mail-pj1-x1033.google.com (mail-pj1-x1033.google.com [IPv6:2607:f8b0:4864:20::1033])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5DC0A53026;
+        Tue, 23 Aug 2022 14:19:25 -0700 (PDT)
+Received: by mail-pj1-x1033.google.com with SMTP id pm13so6226673pjb.5;
+        Tue, 23 Aug 2022 14:19:25 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:sender:from:to:cc;
+        bh=6FcH65dwxjDDW9xxK+2OOSLy68w1K9vVVP0/tjz9RF8=;
+        b=IAVOQuapNQPJQ59AIbaoGUkcSZFYF/y5+kot9p+eIripq+MY7xg2Lu8k0RuEodO7aU
+         z99I+tsZWI9+3KdjE8rCDvLy9iyJiuzeX5ilrN68VfMkWht89neduS1pCtOw+nRILhYb
+         0z/sU7rzDT3F2G2lrocF3CguXbJlITiI56IR2mhWrVqFJz2M/J6SHPofIPKY1lonm5pR
+         K4JTInp4pSfNi47VeTuJfMhFo3PtYd8mDKiGc5jmzUqPXqNfHlVOvmCgyPp6noCYmL3V
+         Id6VnPsYkngimTQvxgElhJOV5RR0f/YAmplFHXOl7AkakT2roDgWIgShd983PPyL4L2P
+         Eekg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:sender:x-gm-message-state:from:to:cc;
+        bh=6FcH65dwxjDDW9xxK+2OOSLy68w1K9vVVP0/tjz9RF8=;
+        b=2dMBMU+nO55uuGESJbB9s0re/VDWz23U8Gth8DV55xggq8xfvTgjmNf7ZG+jmhEFyR
+         7+iyPXZRdq1zupWkhC4Xczrdgu7o20nyy61ySj/DDuQJ7JneiOTN9lYhlhqqAOyp6gsF
+         RGUculFaucO0jDQ0XcDO4h9/IeI0FAF0WjXU4I1RWjS4g4qVIqNxEd56IVe3jxVXEXuw
+         7YwTJvs3NN1FVTc4mFu+IAblfH6wnpQI66SSPKGMFROq/5QnzfsMKpz6J8FBsPTScAff
+         M9qTDfiIBak1hpntiKHywJIO21eOqgPpFXO4vp+uVZ87ZZ5KOfmjeKd35zewGtdltQN2
+         TmZg==
+X-Gm-Message-State: ACgBeo1O0udvcCBfKrcrcsYaHlR4Bh6qgB5tQ+N8GdKe8eXoccbfG/3t
+        94ABRuLiKNJloLJQe1AfLDw=
+X-Google-Smtp-Source: AA6agR527M4GYWYSvAkg6sy0AkBvZXPetuAXHNyFwaK0gDZoxrwrsHsYzy9A9dit6owqfPuT5G6L2g==
+X-Received: by 2002:a17:90b:4f49:b0:1f5:c7c:b565 with SMTP id pj9-20020a17090b4f4900b001f50c7cb565mr5176084pjb.32.1661289564909;
+        Tue, 23 Aug 2022 14:19:24 -0700 (PDT)
+Received: from server.roeck-us.net ([2600:1700:e321:62f0:329c:23ff:fee3:9d7c])
+        by smtp.gmail.com with ESMTPSA id b125-20020a62cf83000000b0053653c6b9f9sm7298146pfg.204.2022.08.23.14.19.24
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 23 Aug 2022 14:19:24 -0700 (PDT)
+Sender: Guenter Roeck <groeck7@gmail.com>
+Date:   Tue, 23 Aug 2022 14:19:23 -0700
+From:   Guenter Roeck <linux@roeck-us.net>
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc:     linux-kernel@vger.kernel.org, stable@vger.kernel.org,
+        torvalds@linux-foundation.org, akpm@linux-foundation.org,
+        shuah@kernel.org, patches@kernelci.org,
+        lkft-triage@lists.linaro.org, pavel@denx.de, jonathanh@nvidia.com,
+        f.fainelli@gmail.com, sudipm.mukherjee@gmail.com,
+        slade@sladewatkins.com
+Subject: Re: [PATCH 5.15 000/244] 5.15.63-rc1 review
+Message-ID: <20220823211923.GB2439282@roeck-us.net>
+References: <20220823080059.091088642@linuxfoundation.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-X-Mailer: b4 0.10.0-dev-0c1df
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220823080059.091088642@linuxfoundation.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, 3 Aug 2022 01:10:59 +0300, Iskren Chernev wrote:
-> This patch series adds SPMI and SMD regulator support for the PM6125 found on
-> SM4250/SM6115 SoCs from QCom.
+On Tue, Aug 23, 2022 at 10:22:39AM +0200, Greg Kroah-Hartman wrote:
+> This is the start of the stable review cycle for the 5.15.63 release.
+> There are 244 patches in this series, all will be posted as a response
+> to this one.  If anyone has any issues with these being applied, please
+> let me know.
 > 
-> This code has been tested on:
-> * OnePlus Nord N100 (oneplus,billie2, SoC sm4250)
-> * Redmi 9T (redmi,lemon, SoC sm6115)
+> Responses should be made by Thu, 25 Aug 2022 08:00:15 +0000.
+> Anything received after that time might be too late.
 > 
-> [...]
 
-Applied to
+Build results:
+	total: 159 pass: 158 fail: 1
+Failed builds:
+	um:defconfig
+Qemu test results:
+	total: 485 pass: 485 fail: 0
 
-   https://git.kernel.org/pub/scm/linux/kernel/git/broonie/regulator.git for-next
+arch/um/kernel/um_arch.c:440:6: error: redefinition of 'apply_returns'
 
-Thanks!
-
-[01/13] dt-bindings: regulator: qcom_spmi: Improve formatting of if-then blocks
-        commit: ac71792707226d1210127611bb622c0362cbff25
-[02/13] dt-bindings: regulator: qcom_spmi: Document PM6125 PMIC
-        commit: 5b2a085baaa15d04396889228f1e11d2cb86b916
-[03/13] dt-bindings: regulator: qcom_smd: Sort compatibles alphabetically
-        commit: 901421765ee1e5501c15a3b76ce926e0cc4967d4
-[04/13] dt-bindings: regulator: qcom_smd: Document PM6125 PMIC
-        commit: d95fe1788438cceab40af5f3f9e9fe15d8c07101
-[05/13] regulator: qcom_spmi: Add support for HFSMPS regulator type
-        commit: 2785025495b6bd630648f8304f8d932b0d0a9f2a
-[06/13] regulator: qcom_spmi: Add support for LDO_510 and FTSMPS
-        commit: 0d1cf568b4e0c65cb533fef2c116fb2883803c53
-[07/13] regulator: qcom_spmi: Sort pmics alphabetically (part 1)
-        commit: 046d7e3246ac028bfe583b4c3bed9530a80004c4
-[08/13] regulator: qcom_spmi: Sort pmics alphabetically (part 2)
-        commit: 9a2da0749ce37d4a74f7becf3b09bf2e0169145a
-[09/13] regulator: qcom_spmi: Add PM6125 PMIC support
-        commit: e62ef4a9f936326e702ef08ea3f65b62bd7d108b
-[10/13] regulator: qcom_smd: Sort pmics alphabetically (part 1)
-        commit: 8e584e84ae65ecc9ee90b187d4b7782dc881e4ad
-[11/13] regulator: qcom_smd: Sort pmics alphabetically (part 2)
-        commit: 13b3d00590243888563cb63b88538a4c60bce57b
-[12/13] regulator: qcom_smd: Sort pmics alphabetically (part 3)
-        commit: a39d0100572e188f00ff4d224af9694c7eb3eeb5
-[13/13] regulator: qcom_smd: Add PM6125 RPM regulators
-        commit: 95b5f3ef4c0cf553a97dd7ce7d6ef85415388011
-
-All being well this means that it will be integrated into the linux-next
-tree (usually sometime in the next 24 hours) and sent to Linus during
-the next merge window (or sooner if it is a bug fix), however if
-problems are discovered then the patch may be dropped or reverted.
-
-You may get further e-mails resulting from automated or manual testing
-and review of the tree, please engage with people reporting problems and
-send followup patches addressing any issues that are reported if needed.
-
-If any updates are required or you are submitting further changes they
-should be sent as incremental updates against current git, existing
-patches will not be replaced.
-
-Please add any relevant lists and maintainers to the CCs when replying
-to this mail.
-
-Thanks,
-Mark
+Guenter
