@@ -2,88 +2,83 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 25D13C32772
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 13:11:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 136FAC32772
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 13:12:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241705AbiHWNLp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 09:11:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51322 "EHLO
+        id S236644AbiHWNMd (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 23 Aug 2022 09:12:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51816 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241320AbiHWNLO (ORCPT
+        with ESMTP id S235964AbiHWNLz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 09:11:14 -0400
-Received: from mail-lj1-f176.google.com (mail-lj1-f176.google.com [209.85.208.176])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2D432134223
-        for <linux-kernel@vger.kernel.org>; Tue, 23 Aug 2022 03:12:00 -0700 (PDT)
-Received: by mail-lj1-f176.google.com with SMTP id u24so7460169lji.0
-        for <linux-kernel@vger.kernel.org>; Tue, 23 Aug 2022 03:11:59 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc;
-        bh=NT1MdaiiRgNNPmqthPsgEEr8eAf1OtODyvfC9Tez9jE=;
-        b=d24AUdC2zPUgd6lTx38GCpKnI0tTonPkL/qz4kouYg3AoGNTke4nCB4BkFXP8UdoXm
-         NnANB9WAmrgV39AqWqOVeBT9U7jCVE1RI8ph602wo2TBenMiheVSZSomxVv67hqniiE/
-         sasY/1pB8N9k1YwqWDcSbr1MVJoS9CHohekJGJlWjIZGAbK7cmQHJoKoE7DbIdFHSX49
-         h8fNlZ9+ORtRz9MdMRYeglTknssPo6/83lMswQUO5VX8mlUAu+jWBMrPGBgoedg2GHDQ
-         8DS5Ell0Jx3Es8VISpQ/r0autuLlz6yaZMPXEYCvFncwnVTQiOcjMx9UqylQrqKtURjP
-         FRRQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-message-state:from:to:cc;
-        bh=NT1MdaiiRgNNPmqthPsgEEr8eAf1OtODyvfC9Tez9jE=;
-        b=FYiRuBCiMmDb+Ji1jI0wC2onIGKaYEwGf23XpYm0LwQX+qL5Epce25B1hj+IgpEGGm
-         kw4C3OEltZwxzZDpUtWOYoL6hLoLOwhyZnQC2fu9LyNj8xH9cm2y5j/U7HVHFDGdFNhU
-         KQXpCadXHksJdZxxMGBqBw10DaMBM2C96rRzcekJYNlMz3CzXtV80M+FZjJ6VdecPrgr
-         AqtV8n59pVS0e/yaalNdeKJnQiCIJ8htCeEP+XkhC8mFVimKwtMdZXYwZ4x3IbgBT8AE
-         npLdcEx1LwavIm7wOpgFXnxLt6Tm+OFrm4tRdBAnquqS/jNbhFLCQQA1g56EgpQaogrE
-         Gc6w==
-X-Gm-Message-State: ACgBeo26aXtAu9X2F2bbtl2u0WO8PKCAs4sqCsiZsmnFGBBPoEB5C6wL
-        1N/D0w92+pIur0sZAkkHyh8QOg==
-X-Google-Smtp-Source: AA6agR4x9HadMmuOlofp0PRb7+HJm0Tgt7RCUUlor0M2WSkzU/nuFxZEGkfwoOuVnq8W/4obs0Getw==
-X-Received: by 2002:a05:651c:238b:b0:261:d3dd:3aa6 with SMTP id bk11-20020a05651c238b00b00261d3dd3aa6mr1403084ljb.348.1661249404252;
-        Tue, 23 Aug 2022 03:10:04 -0700 (PDT)
-Received: from krzk-bin.. (89-27-92-210.bb.dnainternet.fi. [89.27.92.210])
-        by smtp.gmail.com with ESMTPSA id p1-20020ac24ec1000000b00492db3caa0dsm1415846lfr.295.2022.08.23.03.10.03
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 23 Aug 2022 03:10:03 -0700 (PDT)
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        linux-serial@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Cc:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Subject: [PATCH] dt-bindings: serial: samsung_uart: drop ref from reg-io-width
-Date:   Tue, 23 Aug 2022 13:10:00 +0300
-Message-Id: <20220823101000.386927-1-krzysztof.kozlowski@linaro.org>
-X-Mailer: git-send-email 2.34.1
+        Tue, 23 Aug 2022 09:11:55 -0400
+Received: from out30-132.freemail.mail.aliyun.com (out30-132.freemail.mail.aliyun.com [115.124.30.132])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3992113491C
+        for <linux-kernel@vger.kernel.org>; Tue, 23 Aug 2022 03:12:22 -0700 (PDT)
+X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R121e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=ay29a033018045168;MF=baolin.wang@linux.alibaba.com;NM=1;PH=DS;RN=6;SR=0;TI=SMTPD_---0VN1TqVf_1661249538;
+Received: from 30.97.48.53(mailfrom:baolin.wang@linux.alibaba.com fp:SMTPD_---0VN1TqVf_1661249538)
+          by smtp.aliyun-inc.com;
+          Tue, 23 Aug 2022 18:12:19 +0800
+Message-ID: <888605a6-9e33-7485-3c90-94375390ea0b@linux.alibaba.com>
+Date:   Tue, 23 Aug 2022 18:12:30 +0800
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.12.0
+Subject: Re: [PATCH v2 4/5] mm/hugetlb: use PMD page lock to protect CONT-PTE
+ entries
+To:     David Hildenbrand <david@redhat.com>, akpm@linux-foundation.org,
+        songmuchun@bytedance.com, mike.kravetz@oracle.com
+Cc:     linux-mm@kvack.org, linux-kernel@vger.kernel.org
+References: <cover.1661240170.git.baolin.wang@linux.alibaba.com>
+ <88c8a8c68d87429f0fc48e81100f19b71f6e664f.1661240170.git.baolin.wang@linux.alibaba.com>
+ <3661415c-6069-24ed-b647-6fe6993bddae@redhat.com>
+From:   Baolin Wang <baolin.wang@linux.alibaba.com>
+In-Reply-To: <3661415c-6069-24ed-b647-6fe6993bddae@redhat.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-reg-io-width is a standard property, so no need for defining its type
 
-Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
----
- Documentation/devicetree/bindings/serial/samsung_uart.yaml | 1 -
- 1 file changed, 1 deletion(-)
 
-diff --git a/Documentation/devicetree/bindings/serial/samsung_uart.yaml b/Documentation/devicetree/bindings/serial/samsung_uart.yaml
-index 901c1e2cea28..8dbf5885488a 100644
---- a/Documentation/devicetree/bindings/serial/samsung_uart.yaml
-+++ b/Documentation/devicetree/bindings/serial/samsung_uart.yaml
-@@ -37,7 +37,6 @@ properties:
-     description: |
-       The size (in bytes) of the IO accesses that should be performed
-       on the device.
--    $ref: /schemas/types.yaml#/definitions/uint32
-     enum: [ 1, 4 ]
- 
-   clocks:
--- 
-2.34.1
+On 8/23/2022 4:14 PM, David Hildenbrand wrote:
+> On 23.08.22 09:50, Baolin Wang wrote:
+>> Considering the pmd entries of a CONT-PMD hugetlb can not span on
+>> multiple PMDs, we can change to use the PMD page lock, which can
+>> be much finer grain that lock in the mm.
+>>
+>> Signed-off-by: Baolin Wang <baolin.wang@linux.alibaba.com>
+>> ---
+>>   include/linux/hugetlb.h | 12 ++++++++++--
+>>   1 file changed, 10 insertions(+), 2 deletions(-)
+>>
+>> diff --git a/include/linux/hugetlb.h b/include/linux/hugetlb.h
+>> index 3a96f67..d4803a89 100644
+>> --- a/include/linux/hugetlb.h
+>> +++ b/include/linux/hugetlb.h
+>> @@ -892,9 +892,17 @@ static inline gfp_t htlb_modify_alloc_mask(struct hstate *h, gfp_t gfp_mask)
+>>   static inline spinlock_t *huge_pte_lockptr(struct hstate *h,
+>>   					   struct mm_struct *mm, pte_t *pte)
+>>   {
+>> -	VM_BUG_ON(huge_page_size(h) == PAGE_SIZE);
+>> +	unsigned long hp_size = huge_page_size(h);
+>>   
+>> -	if (huge_page_size(h) == PMD_SIZE) {
+>> +	VM_BUG_ON(hp_size == PAGE_SIZE);
+>> +
+>> +	/*
+>> +	 * Considering CONT-PMD size hugetlb, since the CONT-PMD entry
+>> +	 * can not span multiple PMDs, then we can use the fine grained
+>> +	 * PMD page lock.
+>> +	 */
+>> +	if (hp_size == PMD_SIZE ||
+>> +	    (hp_size > PMD_SIZE && hp_size < PUD_SIZE)) {
+>>   		return pmd_lockptr(mm, (pmd_t *) pte);
+>>   	} else if (huge_page_size(h) < PMD_SIZE) {
+>>   		unsigned long mask = ~(PTRS_PER_PTE * sizeof(pte_t) - 1);
+> 
+> Is there a measurable performance gain? IOW, do we really care?
 
+IMO, It's just a theoretical analysis now:) Let me think about how to 
+measure the performance gain.
