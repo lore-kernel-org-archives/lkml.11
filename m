@@ -2,44 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B2280C32772
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 09:25:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 33245C32774
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 09:25:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350052AbiHWJZF (ORCPT
+        id S1349494AbiHWJZK (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 05:25:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40114 "EHLO
+        Tue, 23 Aug 2022 05:25:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34204 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349494AbiHWJWu (ORCPT
+        with ESMTP id S1349503AbiHWJW5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 05:22:50 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3E8318F944;
-        Tue, 23 Aug 2022 01:35:33 -0700 (PDT)
+        Tue, 23 Aug 2022 05:22:57 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 71CDD75CD1;
+        Tue, 23 Aug 2022 01:35:36 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id BFF6761475;
-        Tue, 23 Aug 2022 08:35:33 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CBACBC433D7;
-        Tue, 23 Aug 2022 08:35:32 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 22205B81C54;
+        Tue, 23 Aug 2022 08:34:27 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 61D17C433C1;
+        Tue, 23 Aug 2022 08:34:25 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661243733;
-        bh=Z6tw5p3I/8qPJhg9+be/JmAilsolo8TLCG5ED0j4UIM=;
+        s=korg; t=1661243665;
+        bh=nn64llpKQwSVbNBIKVAhqVnQyKZuwOGj7VhDj+fGt14=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=t/JrvDdHy/jPK5GoEXk+UnVn1Qvzb799BM8J7kIwZ6nbLooNpK2a+zEWdaaFuLTMx
-         yo1g5FEfFa7D+hre/8SwBv95PqfZZTaPv9IpukZ2qniXhbE3R3jMAh4zWyWfNdWZLA
-         yWKOEQdoB1kTF6ivDFp/26gSrnOIp318YsZyxoWU=
+        b=Ch91C9fygbVTb6h9tn6hXt9xiT/HoHVLYuFzDaORqzhJEEABF/95VfSSrkwpyzo0V
+         QQfe18blI3aKOAsggLIMepo/YljJUxJJ3hryZZGRJlE89F/Hk7DLRBFOjzi9OQrCLQ
+         HRsxEWE7TzZZ8eQVCtmjyGgqfThitX8lubTTz2N8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Hulk Robot <hulkci@huawei.com>,
-        Stanley Chu <stanley.chu@mediatek.com>,
-        Ren Zhijie <renzhijie2@huawei.com>,
-        "Martin K. Petersen" <martin.petersen@oracle.com>
-Subject: [PATCH 5.19 364/365] scsi: ufs: ufs-mediatek: Fix build error and type mismatch
-Date:   Tue, 23 Aug 2022 10:04:25 +0200
-Message-Id: <20220823080133.542900028@linuxfoundation.org>
+        stable@vger.kernel.org, Alois Wohlschlager <alois1@gmx-topmail.de>,
+        Miklos Szeredi <mszeredi@redhat.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.19 349/365] ovl: warn if trusted xattr creation fails
+Date:   Tue, 23 Aug 2022 10:04:10 +0200
+Message-Id: <20220823080132.857906640@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220823080118.128342613@linuxfoundation.org>
 References: <20220823080118.128342613@linuxfoundation.org>
@@ -51,64 +50,68 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Ren Zhijie <renzhijie2@huawei.com>
+From: Miklos Szeredi <mszeredi@redhat.com>
 
-commit f54912b228a8df6c0133e31bc75628677bb8c6e5 upstream.
+[ Upstream commit b10b85fe5149ee8b39fbbf86095b303632dde2cd ]
 
-If CONFIG_PM_SLEEP is not set.
+When mounting overlayfs in an unprivileged user namespace, trusted xattr
+creation will fail.  This will lead to failures in some file operations,
+e.g. in the following situation:
 
-make ARCH=arm64 CROSS_COMPILE=aarch64-linux-gnu-, will fail:
+  mkdir lower upper work merged
+  mkdir lower/directory
+  mount -toverlay -olowerdir=lower,upperdir=upper,workdir=work none merged
+  rmdir merged/directory
+  mkdir merged/directory
 
-drivers/ufs/host/ufs-mediatek.c: In function ‘ufs_mtk_vreg_fix_vcc’:
-drivers/ufs/host/ufs-mediatek.c:688:46: warning: format ‘%u’ expects argument of type ‘unsigned int’, but argument 4 has type ‘long unsigned int’ [-Wformat=]
-    snprintf(vcc_name, MAX_VCC_NAME, "vcc-opt%u", res.a1);
-                                             ~^   ~~~~~~
-                                             %lu
-drivers/ufs/host/ufs-mediatek.c: In function ‘ufs_mtk_system_suspend’:
-drivers/ufs/host/ufs-mediatek.c:1371:8: error: implicit declaration of function ‘ufshcd_system_suspend’; did you mean ‘ufs_mtk_system_suspend’? [-Werror=implicit-function-declaration]
-  ret = ufshcd_system_suspend(dev);
-        ^~~~~~~~~~~~~~~~~~~~~
-        ufs_mtk_system_suspend
-drivers/ufs/host/ufs-mediatek.c: In function ‘ufs_mtk_system_resume’:
-drivers/ufs/host/ufs-mediatek.c:1386:9: error: implicit declaration of function ‘ufshcd_system_resume’; did you mean ‘ufs_mtk_system_resume’? [-Werror=implicit-function-declaration]
-  return ufshcd_system_resume(dev);
-         ^~~~~~~~~~~~~~~~~~~~
-         ufs_mtk_system_resume
-cc1: some warnings being treated as errors
+The last mkdir will fail:
 
-The declaration of func "ufshcd_system_suspend()" depends on
-CONFIG_PM_SLEEP, so the function wrapper ufs_mtk_system_suspend() should
-wrapped by CONFIG_PM_SLEEP too.
+  mkdir: cannot create directory 'merged/directory': Input/output error
 
-Link: https://lore.kernel.org/r/20220619115432.205504-1-renzhijie2@huawei.com
-Fixes: 3fd23b8dfb54 ("scsi: ufs: ufs-mediatek: Fix the timing of configuring device regulators")
-Reported-by: Hulk Robot <hulkci@huawei.com>
-Reviewed-by: Stanley Chu <stanley.chu@mediatek.com>
-Signed-off-by: Ren Zhijie <renzhijie2@huawei.com>
-Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
-[only take the suspend/resume portion of the commit - gregkh]
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+The cause for these failures is currently extremely non-obvious and hard to
+debug.  Hence, warn the user and suggest using the userxattr mount option,
+if it is not already supplied and xattr creation fails during the
+self-check.
+
+Reported-by: Alois Wohlschlager <alois1@gmx-topmail.de>
+Signed-off-by: Miklos Szeredi <mszeredi@redhat.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/ufs/host/ufs-mediatek.c |    2 ++
- 1 file changed, 2 insertions(+)
+ fs/overlayfs/super.c | 7 +++++--
+ 1 file changed, 5 insertions(+), 2 deletions(-)
 
---- a/drivers/ufs/host/ufs-mediatek.c
-+++ b/drivers/ufs/host/ufs-mediatek.c
-@@ -1220,6 +1220,7 @@ static int ufs_mtk_remove(struct platfor
- 	return 0;
- }
- 
-+#ifdef CONFIG_PM_SLEEP
- int ufs_mtk_system_suspend(struct device *dev)
- {
- 	struct ufs_hba *hba = dev_get_drvdata(dev);
-@@ -1242,6 +1243,7 @@ int ufs_mtk_system_resume(struct device
- 
- 	return ufshcd_system_resume(dev);
- }
-+#endif
- 
- int ufs_mtk_runtime_suspend(struct device *dev)
- {
+diff --git a/fs/overlayfs/super.c b/fs/overlayfs/super.c
+index 1ce5c9698393..4c2096130209 100644
+--- a/fs/overlayfs/super.c
++++ b/fs/overlayfs/super.c
+@@ -1418,11 +1418,12 @@ static int ovl_make_workdir(struct super_block *sb, struct ovl_fs *ofs,
+ 	 */
+ 	err = ovl_setxattr(ofs, ofs->workdir, OVL_XATTR_OPAQUE, "0", 1);
+ 	if (err) {
++		pr_warn("failed to set xattr on upper\n");
+ 		ofs->noxattr = true;
+ 		if (ofs->config.index || ofs->config.metacopy) {
+ 			ofs->config.index = false;
+ 			ofs->config.metacopy = false;
+-			pr_warn("upper fs does not support xattr, falling back to index=off,metacopy=off.\n");
++			pr_warn("...falling back to index=off,metacopy=off.\n");
+ 		}
+ 		/*
+ 		 * xattr support is required for persistent st_ino.
+@@ -1430,8 +1431,10 @@ static int ovl_make_workdir(struct super_block *sb, struct ovl_fs *ofs,
+ 		 */
+ 		if (ofs->config.xino == OVL_XINO_AUTO) {
+ 			ofs->config.xino = OVL_XINO_OFF;
+-			pr_warn("upper fs does not support xattr, falling back to xino=off.\n");
++			pr_warn("...falling back to xino=off.\n");
+ 		}
++		if (err == -EPERM && !ofs->config.userxattr)
++			pr_info("try mounting with 'userxattr' option\n");
+ 		err = 0;
+ 	} else {
+ 		ovl_removexattr(ofs, ofs->workdir, OVL_XATTR_OPAQUE);
+-- 
+2.35.1
+
 
 
