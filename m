@@ -2,48 +2,48 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2AB88C32774
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 524FEC32793
 	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 05:35:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238337AbiHWFfU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 01:35:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35418 "EHLO
+        id S240188AbiHWFfX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 23 Aug 2022 01:35:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35672 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238558AbiHWFe6 (ORCPT
+        with ESMTP id S240083AbiHWFfF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 01:34:58 -0400
+        Tue, 23 Aug 2022 01:35:05 -0400
 Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 032745E316
-        for <linux-kernel@vger.kernel.org>; Mon, 22 Aug 2022 22:34:55 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1FA905E302
+        for <linux-kernel@vger.kernel.org>; Mon, 22 Aug 2022 22:35:03 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1661232895; x=1692768895;
+  t=1661232904; x=1692768904;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=P8jAYEVSz/my0EGpyxKbx0zqQQ5m40c9ePrDOY+8xfA=;
-  b=KffjLmOxPnKwhJ3AnJVcpR9B7r18Dos5Ghpv1lRcFE7Vf4aSoz4ovQRU
-   haVjLZ16pZnwqpMrhT3hIaF+rYLVoXqsfeMyAeCzMTLf2zA2jtzZiKQqB
-   Yhnl4mIY4VvCytNFJIgMMXt0b+gE/Z9ytFAPvkCUHcJiUz9M1j6w7XOmC
-   7CMixOlh+4F3+5Uiw6vkivFyLfiIFSY5uNETRv7Hl8L3mu17v4J00beHt
-   z44i918A50ih8nKe7WbvkcWJbJVJuKJgNKq2dxLv3t2x5D/34urPd0Igw
-   Ex68/+xI7wudBHv5RrhCqcv4aibpGPp8gIRWPchpk6ujW5Bvd5yDPkjG4
-   Q==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10447"; a="280568560"
+  bh=IcbO0++/F7Z/PmyZHrtTY1NFZWAxV0s5biqxV9P3eGo=;
+  b=IJ55QxqntB2Ach8TqBbYgOPTbs6bSzBrjKKNSdi2UBV/BZzlJjsdCb7/
+   NgdqLolzBc7nd3XVEyzoRE7dKKLzc41crIy1/cfWhzWn5NzGruFohcn3x
+   wOROyEfN5T2aJBxx1o5C4AQ0W+QVIdc0BpGN0U/SAk2Q8HOkepif0pO0T
+   PRGxDmzrqS4Zv9KIEywUtzQ1yGFjuo+lnOkBHZEfD6JuZC4RXirrbriIc
+   4ftv5w3Zae7oro6lwbqSf8+Nw0Y4rex4ZdqnrNR4JwKVGvKJRn25U/rtB
+   rXVR3Ap0RgA5V8v88SPhilH4m0j1xWNoc2r+UA887knDe0o2w97oDHwLA
+   w==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10447"; a="280568606"
 X-IronPort-AV: E=Sophos;i="5.93,256,1654585200"; 
-   d="scan'208";a="280568560"
+   d="scan'208";a="280568606"
 Received: from fmsmga003.fm.intel.com ([10.253.24.29])
-  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Aug 2022 22:34:55 -0700
+  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Aug 2022 22:35:03 -0700
 X-IronPort-AV: E=Sophos;i="5.93,256,1654585200"; 
-   d="scan'208";a="698558255"
+   d="scan'208";a="698558311"
 Received: from bard-ubuntu.sh.intel.com ([10.239.185.57])
-  by fmsmga003-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Aug 2022 22:34:53 -0700
+  by fmsmga003-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Aug 2022 22:35:00 -0700
 From:   Bard Liao <yung-chuan.liao@linux.intel.com>
 To:     alsa-devel@alsa-project.org, vkoul@kernel.org
 Cc:     vinod.koul@linaro.org, linux-kernel@vger.kernel.org,
         pierre-louis.bossart@linux.intel.com, bard.liao@intel.com
-Subject: [PATCH 02/11] soundwire: intel: regroup definitions for LCTL
-Date:   Tue, 23 Aug 2022 13:38:37 +0800
-Message-Id: <20220823053846.2684635-3-yung-chuan.liao@linux.intel.com>
+Subject: [PATCH 06/11] soundwire: intel: add comment for control stream cap/chmap
+Date:   Tue, 23 Aug 2022 13:38:41 +0800
+Message-Id: <20220823053846.2684635-7-yung-chuan.liao@linux.intel.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20220823053846.2684635-1-yung-chuan.liao@linux.intel.com>
 References: <20220823053846.2684635-1-yung-chuan.liao@linux.intel.com>
@@ -55,46 +55,35 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>
 
-No functionality change, just regroup offset and bitfield definitions.
+add comment and newline to mark out control stream capabilities and
+chmap. These registers are unused by the driver, only dumped in
+debugfs.
 
 Signed-off-by: Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>
 Reviewed-by: Rander Wang <rander.wang@intel.com>
 Signed-off-by: Bard Liao <yung-chuan.liao@linux.intel.com>
 ---
- include/linux/soundwire/sdw_intel.h | 12 +++++++-----
- 1 file changed, 7 insertions(+), 5 deletions(-)
+ include/linux/soundwire/sdw_intel.h | 2 ++
+ 1 file changed, 2 insertions(+)
 
 diff --git a/include/linux/soundwire/sdw_intel.h b/include/linux/soundwire/sdw_intel.h
-index 49a3c265529b..d9f51f43e42c 100644
+index 34af5bc010b3..7c1d111c5f3f 100644
 --- a/include/linux/soundwire/sdw_intel.h
 +++ b/include/linux/soundwire/sdw_intel.h
-@@ -19,7 +19,14 @@
- #define SDW_SHIM_LCAP			0x0
- #define SDW_SHIM_LCAP_LCOUNT_MASK	GENMASK(2, 0)
+@@ -38,11 +38,13 @@
+ #define SDW_SHIM_SYNC_CMDSYNC		BIT(16)
+ #define SDW_SHIM_SYNC_SYNCGO		BIT(24)
  
-+/* LCTL */
- #define SDW_SHIM_LCTL			0x4
++/* Control stream capabililities and channel mask */
+ #define SDW_SHIM_CTLSCAP(x)		(0x010 + 0x60 * (x))
+ #define SDW_SHIM_CTLS0CM(x)		(0x012 + 0x60 * (x))
+ #define SDW_SHIM_CTLS1CM(x)		(0x014 + 0x60 * (x))
+ #define SDW_SHIM_CTLS2CM(x)		(0x016 + 0x60 * (x))
+ #define SDW_SHIM_CTLS3CM(x)		(0x018 + 0x60 * (x))
 +
-+#define SDW_SHIM_LCTL_SPA		BIT(0)
-+#define SDW_SHIM_LCTL_SPA_MASK		GENMASK(3, 0)
-+#define SDW_SHIM_LCTL_CPA		BIT(8)
-+#define SDW_SHIM_LCTL_CPA_MASK		GENMASK(11, 8)
-+
- #define SDW_SHIM_IPPTR			0x8
- #define SDW_SHIM_SYNC			0xC
+ #define SDW_SHIM_PCMSCAP(x)		(0x020 + 0x60 * (x))
  
-@@ -39,11 +46,6 @@
- #define SDW_SHIM_WAKEEN			0x190
- #define SDW_SHIM_WAKESTS		0x192
- 
--#define SDW_SHIM_LCTL_SPA		BIT(0)
--#define SDW_SHIM_LCTL_SPA_MASK		GENMASK(3, 0)
--#define SDW_SHIM_LCTL_CPA		BIT(8)
--#define SDW_SHIM_LCTL_CPA_MASK		GENMASK(11, 8)
--
- #define SDW_SHIM_SYNC_SYNCPRD_VAL_24	(24000 / SDW_CADENCE_GSYNC_KHZ - 1)
- #define SDW_SHIM_SYNC_SYNCPRD_VAL_38_4	(38400 / SDW_CADENCE_GSYNC_KHZ - 1)
- #define SDW_SHIM_SYNC_SYNCPRD		GENMASK(14, 0)
+ #define SDW_SHIM_PCMSYCHM(x, y)		(0x022 + (0x60 * (x)) + (0x2 * (y)))
 -- 
 2.25.1
 
