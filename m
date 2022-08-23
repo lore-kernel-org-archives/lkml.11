@@ -2,43 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DEB8AC32789
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 08:17:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 485E5C32774
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 08:17:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242463AbiHWIRV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 04:17:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60998 "EHLO
+        id S242464AbiHWIPX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 23 Aug 2022 04:15:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32812 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242474AbiHWILV (ORCPT
+        with ESMTP id S242200AbiHWIKw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 04:11:21 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6D4E04DB23;
-        Tue, 23 Aug 2022 01:08:35 -0700 (PDT)
+        Tue, 23 Aug 2022 04:10:52 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BE7226AA06;
+        Tue, 23 Aug 2022 01:08:09 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 83940B81BF8;
-        Tue, 23 Aug 2022 08:08:33 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BB61EC433C1;
-        Tue, 23 Aug 2022 08:08:31 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id F224EB81BF8;
+        Tue, 23 Aug 2022 08:08:07 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3806FC433D6;
+        Tue, 23 Aug 2022 08:08:06 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661242112;
-        bh=/4kHocZ4fRwT5Rs9tihjUYOuPoQZ/ZAaNCXwJv/VS10=;
+        s=korg; t=1661242086;
+        bh=lKwkWDN9Xs9hF1mi2rMPA8cEhCxWgue3cYx+0EB+8Qo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=OCpeF4PUhlCq3a7yE3vlpxDH18MmlELAIcEyTwFRleXMHobSCzzcKDcGyM72GKn8H
-         UFAE0ztud2a8uPR8y5HpvVWwWOERrO13o138nl44p2R4KF9Bvvpd7pcNJSPwvXAuma
-         kDg014JzN0z+XAW+tSZru3uzeXPmz7WiL7hhk3KU=
+        b=QuqelLoyM56qX8AybiCpXz9NF+wVsySz1/QZMFNMnL8BrRbgTsMzWzttZCMya1A0l
+         XrJ70wzJNwa0wNV9qRcFpJJnd4eSAskt/VtwV/yUiWzdacgrqxj16Le3ysQARHQRCS
+         M6z+gq0usS/Ux3+ymxxy/zw7TFT1vLrAxy53N/qA=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Xiumei Mu <xmu@redhat.com>,
-        Mat Martineau <mathew.j.martineau@linux.intel.com>,
-        Florian Westphal <fw@strlen.de>,
-        "David S. Miller" <davem@davemloft.net>
-Subject: [PATCH 5.19 060/365] selftests: mptcp: make sendfile selftest work
-Date:   Tue, 23 Aug 2022 09:59:21 +0200
-Message-Id: <20220823080120.704317819@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Trond Myklebust <trond.myklebust@hammerspace.com>
+Subject: [PATCH 5.19 056/365] NFSv4/pnfs: Fix a use-after-free bug in open
+Date:   Tue, 23 Aug 2022 09:59:17 +0200
+Message-Id: <20220823080120.521722033@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220823080118.128342613@linuxfoundation.org>
 References: <20220823080118.128342613@linuxfoundation.org>
@@ -50,87 +48,41 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Florian Westphal <fw@strlen.de>
+From: Trond Myklebust <trond.myklebust@hammerspace.com>
 
-commit df9e03aec3b14970df05b72d54f8ac9da3ab29e1 upstream.
+commit 2135e5d56278ffdb1c2e6d325dc6b87f669b9dac upstream.
 
-When the selftest got added, sendfile() on mptcp sockets returned
--EOPNOTSUPP, so running 'mptcp_connect.sh -m sendfile' failed
-immediately.
+If someone cancels the open RPC call, then we must not try to free
+either the open slot or the layoutget operation arguments, since they
+are likely still in use by the hung RPC call.
 
-This is no longer the case, but the script fails anyway due to timeout.
-Let the receiver know once the sender has sent all data, just like
-with '-m mmap' mode.
-
-v2: need to respect cfg_wait too, as pm_userspace.sh relied
-on -m sendfile to keep the connection open (Mat Martineau)
-
-Fixes: 048d19d444be ("mptcp: add basic kselftest for mptcp")
-Reported-by: Xiumei Mu <xmu@redhat.com>
-Reviewed-by: Mat Martineau <mathew.j.martineau@linux.intel.com>
-Signed-off-by: Florian Westphal <fw@strlen.de>
-Signed-off-by: Mat Martineau <mathew.j.martineau@linux.intel.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+Fixes: 6949493884fe ("NFSv4: Don't hold the layoutget locks across multiple RPC calls")
+Signed-off-by: Trond Myklebust <trond.myklebust@hammerspace.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- tools/testing/selftests/net/mptcp/mptcp_connect.c |   26 ++++++++++++++--------
- 1 file changed, 17 insertions(+), 9 deletions(-)
+ fs/nfs/nfs4proc.c |   11 ++++++-----
+ 1 file changed, 6 insertions(+), 5 deletions(-)
 
---- a/tools/testing/selftests/net/mptcp/mptcp_connect.c
-+++ b/tools/testing/selftests/net/mptcp/mptcp_connect.c
-@@ -553,6 +553,18 @@ static void set_nonblock(int fd, bool no
- 		fcntl(fd, F_SETFL, flags & ~O_NONBLOCK);
+--- a/fs/nfs/nfs4proc.c
++++ b/fs/nfs/nfs4proc.c
+@@ -3096,12 +3096,13 @@ static int _nfs4_open_and_get_state(stru
+ 	}
+ 
+ out:
+-	if (opendata->lgp) {
+-		nfs4_lgopen_release(opendata->lgp);
+-		opendata->lgp = NULL;
+-	}
+-	if (!opendata->cancelled)
++	if (!opendata->cancelled) {
++		if (opendata->lgp) {
++			nfs4_lgopen_release(opendata->lgp);
++			opendata->lgp = NULL;
++		}
+ 		nfs4_sequence_free_slot(&opendata->o_res.seq_res);
++	}
+ 	return ret;
  }
  
-+static void shut_wr(int fd)
-+{
-+	/* Close our write side, ev. give some time
-+	 * for address notification and/or checking
-+	 * the current status
-+	 */
-+	if (cfg_wait)
-+		usleep(cfg_wait);
-+
-+	shutdown(fd, SHUT_WR);
-+}
-+
- static int copyfd_io_poll(int infd, int peerfd, int outfd, bool *in_closed_after_out)
- {
- 	struct pollfd fds = {
-@@ -630,14 +642,7 @@ static int copyfd_io_poll(int infd, int
- 					/* ... and peer also closed already */
- 					break;
- 
--				/* ... but we still receive.
--				 * Close our write side, ev. give some time
--				 * for address notification and/or checking
--				 * the current status
--				 */
--				if (cfg_wait)
--					usleep(cfg_wait);
--				shutdown(peerfd, SHUT_WR);
-+				shut_wr(peerfd);
- 			} else {
- 				if (errno == EINTR)
- 					continue;
-@@ -767,7 +772,7 @@ static int copyfd_io_mmap(int infd, int
- 		if (err)
- 			return err;
- 
--		shutdown(peerfd, SHUT_WR);
-+		shut_wr(peerfd);
- 
- 		err = do_recvfile(peerfd, outfd);
- 		*in_closed_after_out = true;
-@@ -791,6 +796,9 @@ static int copyfd_io_sendfile(int infd,
- 		err = do_sendfile(infd, peerfd, size);
- 		if (err)
- 			return err;
-+
-+		shut_wr(peerfd);
-+
- 		err = do_recvfile(peerfd, outfd);
- 		*in_closed_after_out = true;
- 	}
 
 
