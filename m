@@ -2,46 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 690F3C32793
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4A100C3F6B0
 	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 09:57:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348378AbiHWJzq (ORCPT
+        id S1346130AbiHWJzg (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 05:55:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42070 "EHLO
+        Tue, 23 Aug 2022 05:55:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42056 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245474AbiHWJyC (ORCPT
+        with ESMTP id S245098AbiHWJyB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 05:54:02 -0400
+        Tue, 23 Aug 2022 05:54:01 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E119C9F75C;
-        Tue, 23 Aug 2022 01:46:18 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4CCF09F76C;
+        Tue, 23 Aug 2022 01:46:24 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 560606153D;
-        Tue, 23 Aug 2022 08:45:45 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 433BAC433D6;
-        Tue, 23 Aug 2022 08:45:44 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 0BDF56123D;
+        Tue, 23 Aug 2022 08:46:16 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 16BFEC433D6;
+        Tue, 23 Aug 2022 08:46:14 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661244344;
-        bh=8Ft3YJB8yFl83F7dr3vrx+/dK8rUaSG7Bm+tACWwROM=;
+        s=korg; t=1661244375;
+        bh=3mDep3EEArUyGh+iEsrWRUzpbM71FoBb0/Y1L3xRGi0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ex8P9ayz0PndKMI4W4aEdMsdQKPtTZHoKGoOFZPYVIby0uJKeoUMloxEH7ppagl9p
-         V2pUrRDBqNONrMp5Gq1RnhvYV0vXdIgi16180FZfdEfSoUigSPiQWoPBH9Qpd5iJgg
-         KNbZQz+BmQHzYbhny7XzUEMRAJu4tyLRDREa0Mz8=
+        b=kXtligK/Scd3GaqhcqiRY3tm+VF/UoTnL+iqds+Pw1Iy1h8B2HyCbuXJC2mB89+s1
+         qS3fmVjJpLNOVwLFaVzwdxC6Bk4EjnnfBV1+RWfSH4K8YTDRSkmLeY4osGm093PCQB
+         s5fmPeOk5so8fs5x96Z2LW/Wqci/q85XErlrLe7k=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Guillaume Nault <gnault@redhat.com>,
-        Matthias May <matthias.may@westermo.com>,
-        Jakub Kicinski <kuba@kernel.org>
-Subject: [PATCH 5.15 076/244] geneve: do not use RT_TOS for IPv6 flowlabel
-Date:   Tue, 23 Aug 2022 10:23:55 +0200
-Message-Id: <20220823080101.594502305@linuxfoundation.org>
+        stable@vger.kernel.org, Daniel Starke <daniel.starke@siemens.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 4.14 127/229] tty: n_gsm: fix wrong T1 retry count handling
+Date:   Tue, 23 Aug 2022 10:24:48 +0200
+Message-Id: <20220823080058.268266364@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220823080059.091088642@linuxfoundation.org>
-References: <20220823080059.091088642@linuxfoundation.org>
+In-Reply-To: <20220823080053.202747790@linuxfoundation.org>
+References: <20220823080053.202747790@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -50,42 +49,55 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Matthias May <matthias.may@westermo.com>
+From: Daniel Starke <daniel.starke@siemens.com>
 
-commit ca2bb69514a8bc7f83914122f0d596371352416c upstream.
+[ Upstream commit f30e10caa80aa1f35508bc17fc302dbbde9a833c ]
 
-According to Guillaume Nault RT_TOS should never be used for IPv6.
+n_gsm is based on the 3GPP 07.010 and its newer version is the 3GPP 27.010.
+See https://portal.3gpp.org/desktopmodules/Specifications/SpecificationDetails.aspx?specificationId=1516
+The changes from 07.010 to 27.010 are non-functional. Therefore, I refer to
+the newer 27.010 here. Chapter 5.7.3 states that the valid range for the
+maximum number of retransmissions (N2) is from 0 to 255 (both including).
+gsm_dlci_t1() handles this number incorrectly by performing N2 - 1
+retransmission attempts. Setting N2 to zero results in more than 255
+retransmission attempts.
+Fix gsm_dlci_t1() to comply with 3GPP 27.010.
 
-Quote:
-RT_TOS() is an old macro used to interprete IPv4 TOS as described in
-the obsolete RFC 1349. It's conceptually wrong to use it even in IPv4
-code, although, given the current state of the code, most of the
-existing calls have no consequence.
-
-But using RT_TOS() in IPv6 code is always a bug: IPv6 never had a "TOS"
-field to be interpreted the RFC 1349 way. There's no historical
-compatibility to worry about.
-
-Fixes: 3a56f86f1be6 ("geneve: handle ipv6 priority like ipv4 tos")
-Acked-by: Guillaume Nault <gnault@redhat.com>
-Signed-off-by: Matthias May <matthias.may@westermo.com>
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Fixes: e1eaea46bb40 ("tty: n_gsm line discipline")
+Signed-off-by: Daniel Starke <daniel.starke@siemens.com>
+Link: https://lore.kernel.org/r/20220707113223.3685-1-daniel.starke@siemens.com
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/geneve.c |    3 +--
- 1 file changed, 1 insertion(+), 2 deletions(-)
+ drivers/tty/n_gsm.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
---- a/drivers/net/geneve.c
-+++ b/drivers/net/geneve.c
-@@ -852,8 +852,7 @@ static struct dst_entry *geneve_get_v6_d
- 		use_cache = false;
- 	}
+diff --git a/drivers/tty/n_gsm.c b/drivers/tty/n_gsm.c
+index 18878ab707af..5f5a7ad4c46a 100644
+--- a/drivers/tty/n_gsm.c
++++ b/drivers/tty/n_gsm.c
+@@ -1546,8 +1546,8 @@ static void gsm_dlci_t1(unsigned long data)
  
--	fl6->flowlabel = ip6_make_flowinfo(RT_TOS(prio),
--					   info->key.label);
-+	fl6->flowlabel = ip6_make_flowinfo(prio, info->key.label);
- 	dst_cache = (struct dst_cache *)&info->dst_cache;
- 	if (use_cache) {
- 		dst = dst_cache_get_ip6(dst_cache, &fl6->saddr);
+ 	switch (dlci->state) {
+ 	case DLCI_OPENING:
+-		dlci->retries--;
+ 		if (dlci->retries) {
++			dlci->retries--;
+ 			gsm_command(dlci->gsm, dlci->addr, SABM|PF);
+ 			mod_timer(&dlci->t1, jiffies + gsm->t1 * HZ / 100);
+ 		} else if (!dlci->addr && gsm->control == (DM | PF)) {
+@@ -1562,8 +1562,8 @@ static void gsm_dlci_t1(unsigned long data)
+ 
+ 		break;
+ 	case DLCI_CLOSING:
+-		dlci->retries--;
+ 		if (dlci->retries) {
++			dlci->retries--;
+ 			gsm_command(dlci->gsm, dlci->addr, DISC|PF);
+ 			mod_timer(&dlci->t1, jiffies + gsm->t1 * HZ / 100);
+ 		} else
+-- 
+2.35.1
+
 
 
