@@ -2,41 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 45EAAC32772
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 09:01:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9F9C2C32772
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 09:01:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242361AbiHWJBd (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 05:01:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42240 "EHLO
+        id S240937AbiHWJBn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 23 Aug 2022 05:01:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42286 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242299AbiHWJAz (ORCPT
+        with ESMTP id S1346279AbiHWJBE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 05:00:55 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8816E82847;
-        Tue, 23 Aug 2022 01:27:33 -0700 (PDT)
+        Tue, 23 Aug 2022 05:01:04 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E0F6882D39;
+        Tue, 23 Aug 2022 01:27:49 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 61FD46148B;
-        Tue, 23 Aug 2022 08:27:30 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 54FDEC433C1;
-        Tue, 23 Aug 2022 08:27:29 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id F1AC6B81C4C;
+        Tue, 23 Aug 2022 08:27:01 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 48251C433C1;
+        Tue, 23 Aug 2022 08:27:00 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661243249;
-        bh=345bHoukE6/6gcTgtuzxsrdukBDfqb0aeEMIu5LhdZA=;
+        s=korg; t=1661243220;
+        bh=EmE0b3BipqP22CZ2IeSNrPTaSB0nxrFpOHiVxEnYbMs=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=SHCByOblcUEBxeX9f8eW569cL4C+4MYLJorvyv/xwQ1rHrd2R/gwiZddYXLDMUE+D
-         66GxSE40G5Sww0aBFTdUgSOWYTYBgLJXxE4uMOzZwJVbFHF01yOqFnJXNuHI24NJG5
-         LPvmKOqjbLyhvk/01A/kPoRQmrNwrxUWFCxY/i9o=
+        b=ehLQZlrHLbd37bFeD7Rncd0IrGN4/WkLNBOkGbHdMRN3hTwTVDlAUr4UV9vZqG0B/
+         uzpJqK4zqBBUtcSr50SEcHIhKYHG232vDL+ow42f3gaEjCtTLQp7zUlCW4YqviiNJj
+         FOoFX+q+RdPDF6Hyitqc/nuHomnZD25F+sxEgT+I=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Vladimir Oltean <vladimir.oltean@nxp.com>,
-        Jakub Kicinski <kuba@kernel.org>
-Subject: [PATCH 5.19 217/365] net: mscc: ocelot: fix address of SYS_COUNT_TX_AGING counter
-Date:   Tue, 23 Aug 2022 10:01:58 +0200
-Message-Id: <20220823080127.275379834@linuxfoundation.org>
+        stable@vger.kernel.org, "Andrew Melnychenko" <andrew@daynix.com>,
+        "Michael S. Tsirkin" <mst@redhat.com>,
+        "David S. Miller" <davem@davemloft.net>
+Subject: [PATCH 5.19 208/365] virtio_net: fix endian-ness for RSS
+Date:   Tue, 23 Aug 2022 10:01:49 +0200
+Message-Id: <20220823080126.892343887@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220823080118.128342613@linuxfoundation.org>
 References: <20220823080118.128342613@linuxfoundation.org>
@@ -48,32 +49,46 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Vladimir Oltean <vladimir.oltean@nxp.com>
+From: Michael S. Tsirkin <mst@redhat.com>
 
-commit 173ca86618d751bd183456c9cdbb69952ba283c8 upstream.
+commit 95bb633048fab742230eb2cdf20b8e2676240a54 upstream.
 
-This register, used as part of stats->tx_dropped in
-ocelot_get_stats64(), has a wrong address. At the address currently
-given, there is actually the c_tx_green_prio_6 counter.
+Using native endian-ness for device supplied fields is wrong
+on BE platforms. Sparse warns about this.
 
-Fixes: a556c76adc05 ("net: mscc: Add initial Ocelot switch support")
-Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Fixes: 91f41f01d219 ("drivers/net/virtio_net: Added RSS hash report.")
+Cc: "Andrew Melnychenko" <andrew@daynix.com>
+Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/net/ethernet/mscc/vsc7514_regs.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/net/virtio_net.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
---- a/drivers/net/ethernet/mscc/vsc7514_regs.c
-+++ b/drivers/net/ethernet/mscc/vsc7514_regs.c
-@@ -202,7 +202,7 @@ const u32 vsc7514_sys_regmap[] = {
- 	REG(SYS_COUNT_TX_512_1023,			0x00012c),
- 	REG(SYS_COUNT_TX_1024_1526,			0x000130),
- 	REG(SYS_COUNT_TX_1527_MAX,			0x000134),
--	REG(SYS_COUNT_TX_AGING,				0x000170),
-+	REG(SYS_COUNT_TX_AGING,				0x000178),
- 	REG(SYS_RESET_CFG,				0x000508),
- 	REG(SYS_CMID,					0x00050c),
- 	REG(SYS_VLAN_ETYPE_CFG,				0x000510),
+diff --git a/drivers/net/virtio_net.c b/drivers/net/virtio_net.c
+index 3b3eebad3977..d4e0a775b1ba 100644
+--- a/drivers/net/virtio_net.c
++++ b/drivers/net/virtio_net.c
+@@ -1199,7 +1199,7 @@ static void virtio_skb_set_hash(const struct virtio_net_hdr_v1_hash *hdr_hash,
+ 	if (!hdr_hash || !skb)
+ 		return;
+ 
+-	switch ((int)hdr_hash->hash_report) {
++	switch (__le16_to_cpu(hdr_hash->hash_report)) {
+ 	case VIRTIO_NET_HASH_REPORT_TCPv4:
+ 	case VIRTIO_NET_HASH_REPORT_UDPv4:
+ 	case VIRTIO_NET_HASH_REPORT_TCPv6:
+@@ -1217,7 +1217,7 @@ static void virtio_skb_set_hash(const struct virtio_net_hdr_v1_hash *hdr_hash,
+ 	default:
+ 		rss_hash_type = PKT_HASH_TYPE_NONE;
+ 	}
+-	skb_set_hash(skb, (unsigned int)hdr_hash->hash_value, rss_hash_type);
++	skb_set_hash(skb, __le32_to_cpu(hdr_hash->hash_value), rss_hash_type);
+ }
+ 
+ static void receive_buf(struct virtnet_info *vi, struct receive_queue *rq,
+-- 
+2.37.2
+
 
 
