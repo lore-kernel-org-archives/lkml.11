@@ -2,43 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 03D45C3F6B0
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 11:07:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E06E0C32772
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 11:07:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242951AbiHWLHc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 07:07:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48436 "EHLO
+        id S1356983AbiHWLHk (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 23 Aug 2022 07:07:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48378 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357178AbiHWLGQ (ORCPT
+        with ESMTP id S1357179AbiHWLGQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 23 Aug 2022 07:06:16 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6BFE16D574;
-        Tue, 23 Aug 2022 02:15:41 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BC8BDB56C7;
+        Tue, 23 Aug 2022 02:15:46 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 9941360F91;
-        Tue, 23 Aug 2022 09:15:27 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A7906C433D7;
-        Tue, 23 Aug 2022 09:15:26 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 5C9A761226;
+        Tue, 23 Aug 2022 09:15:46 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4EF2CC433D7;
+        Tue, 23 Aug 2022 09:15:45 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661246127;
-        bh=hdpMQvdAF2wL4zJ/GVlh8T8RjdT1twmnVpSSCst+jbc=;
+        s=korg; t=1661246145;
+        bh=2uJjk9l3Ah8Xx8u4fQm78ub0OlPkA9LIGQXELrh32Ik=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=dSYEQON5ggecdd9UHcYv8Wi49+u6650qkNViXZN/DjwYOMskEUOhvMQISE3TX5BIM
-         VOhX+w8pUwTuInmPY0bSUCizOW2/vZznygVts7sd8woGGfU8uKzSHB128sJbCj07d+
-         66rl3+v1w4ygdlN/GDNVtiSy/QbrgxLpmULPxxJc=
+        b=cigjePw1295XWoApAXEZi2ZSairpT9PwMOLBYlxCicf120vJpDTEEY/usZ8szqCpv
+         dE6NS9hcY+3KRcKMRCvqpY+3KvQCLZoj2xMia1/sld3546H79G+ZLQA1kkcJc8Cux/
+         53hm+FYXK7pRL1+WUKkgEZvrln2U/Yy5VuPAQR4I=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Fangrui Song <maskray@google.com>,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        Jens Axboe <axboe@kernel.dk>
-Subject: [PATCH 5.4 002/389] x86: link vdso and boot with -z noexecstack --no-warn-rwx-segments
-Date:   Tue, 23 Aug 2022 10:21:20 +0200
-Message-Id: <20220823080115.716625600@linuxfoundation.org>
+        stable@vger.kernel.org,
+        syzbot+760a73552f47a8cd0fd9@syzkaller.appspotmail.com,
+        Tetsuo Handa <penguin-kernel@i-love.sakura.ne.jp>,
+        Hou Wenlong <houwenlong.hwl@antgroup.com>,
+        Sean Christopherson <seanjc@google.com>,
+        Maxim Levitsky <mlevitsk@redhat.com>
+Subject: [PATCH 5.4 016/389] KVM: x86: Mark TSS busy during LTR emulation _after_ all fault checks
+Date:   Tue, 23 Aug 2022 10:21:34 +0200
+Message-Id: <20220823080116.375877327@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220823080115.331990024@linuxfoundation.org>
 References: <20220823080115.331990024@linuxfoundation.org>
@@ -50,82 +53,66 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Nick Desaulniers <ndesaulniers@google.com>
+From: Sean Christopherson <seanjc@google.com>
 
-commit ffcf9c5700e49c0aee42dcba9a12ba21338e8136 upstream.
+commit ec6e4d863258d4bfb36d48d5e3ef68140234d688 upstream.
 
-Users of GNU ld (BFD) from binutils 2.39+ will observe multiple
-instances of a new warning when linking kernels in the form:
+Wait to mark the TSS as busy during LTR emulation until after all fault
+checks for the LTR have passed.  Specifically, don't mark the TSS busy if
+the new TSS base is non-canonical.
 
-  ld: warning: arch/x86/boot/pmjump.o: missing .note.GNU-stack section implies executable stack
-  ld: NOTE: This behaviour is deprecated and will be removed in a future version of the linker
-  ld: warning: arch/x86/boot/compressed/vmlinux has a LOAD segment with RWX permissions
+Opportunistically drop the one-off !seg_desc.PRESENT check for TR as the
+only reason for the early check was to avoid marking a !PRESENT TSS as
+busy, i.e. the common !PRESENT is now done before setting the busy bit.
 
-Generally, we would like to avoid the stack being executable.  Because
-there could be a need for the stack to be executable, assembler sources
-have to opt-in to this security feature via explicit creation of the
-.note.GNU-stack feature (which compilers create by default) or command
-line flag --noexecstack.  Or we can simply tell the linker the
-production of such sections is irrelevant and to link the stack as
---noexecstack.
-
-LLVM's LLD linker defaults to -z noexecstack, so this flag isn't
-strictly necessary when linking with LLD, only BFD, but it doesn't hurt
-to be explicit here for all linkers IMO.  --no-warn-rwx-segments is
-currently BFD specific and only available in the current latest release,
-so it's wrapped in an ld-option check.
-
-While the kernel makes extensive usage of ELF sections, it doesn't use
-permissions from ELF segments.
-
-Link: https://lore.kernel.org/linux-block/3af4127a-f453-4cf7-f133-a181cce06f73@kernel.dk/
-Link: https://sourceware.org/git/?p=binutils-gdb.git;a=commit;h=ba951afb99912da01a6e8434126b8fac7aa75107
-Link: https://github.com/llvm/llvm-project/issues/57009
-Reported-and-tested-by: Jens Axboe <axboe@kernel.dk>
-Suggested-by: Fangrui Song <maskray@google.com>
-Signed-off-by: Nick Desaulniers <ndesaulniers@google.com>
-Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
+Fixes: e37a75a13cda ("KVM: x86: Emulator ignores LDTR/TR extended base on LLDT/LTR")
+Reported-by: syzbot+760a73552f47a8cd0fd9@syzkaller.appspotmail.com
+Cc: stable@vger.kernel.org
+Cc: Tetsuo Handa <penguin-kernel@i-love.sakura.ne.jp>
+Cc: Hou Wenlong <houwenlong.hwl@antgroup.com>
+Signed-off-by: Sean Christopherson <seanjc@google.com>
+Reviewed-by: Maxim Levitsky <mlevitsk@redhat.com>
+Link: https://lore.kernel.org/r/20220711232750.1092012-2-seanjc@google.com
+Signed-off-by: Sean Christopherson <seanjc@google.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/x86/boot/Makefile            |    2 +-
- arch/x86/boot/compressed/Makefile |    4 ++++
- arch/x86/entry/vdso/Makefile      |    2 +-
- 3 files changed, 6 insertions(+), 2 deletions(-)
+ arch/x86/kvm/emulate.c |   19 +++++++++----------
+ 1 file changed, 9 insertions(+), 10 deletions(-)
 
---- a/arch/x86/boot/Makefile
-+++ b/arch/x86/boot/Makefile
-@@ -100,7 +100,7 @@ $(obj)/zoffset.h: $(obj)/compressed/vmli
- AFLAGS_header.o += -I$(objtree)/$(obj)
- $(obj)/header.o: $(obj)/zoffset.h
- 
--LDFLAGS_setup.elf	:= -m elf_i386 -T
-+LDFLAGS_setup.elf	:= -m elf_i386 -z noexecstack -T
- $(obj)/setup.elf: $(src)/setup.ld $(SETUP_OBJS) FORCE
- 	$(call if_changed,ld)
- 
---- a/arch/x86/boot/compressed/Makefile
-+++ b/arch/x86/boot/compressed/Makefile
-@@ -57,6 +57,10 @@ else
- KBUILD_LDFLAGS += $(shell $(LD) --help 2>&1 | grep -q "\-z noreloc-overflow" \
- 	&& echo "-z noreloc-overflow -pie --no-dynamic-linker")
- endif
+--- a/arch/x86/kvm/emulate.c
++++ b/arch/x86/kvm/emulate.c
+@@ -1753,16 +1753,6 @@ static int __load_segment_descriptor(str
+ 	case VCPU_SREG_TR:
+ 		if (seg_desc.s || (seg_desc.type != 1 && seg_desc.type != 9))
+ 			goto exception;
+-		if (!seg_desc.p) {
+-			err_vec = NP_VECTOR;
+-			goto exception;
+-		}
+-		old_desc = seg_desc;
+-		seg_desc.type |= 2; /* busy */
+-		ret = ctxt->ops->cmpxchg_emulated(ctxt, desc_addr, &old_desc, &seg_desc,
+-						  sizeof(seg_desc), &ctxt->exception);
+-		if (ret != X86EMUL_CONTINUE)
+-			return ret;
+ 		break;
+ 	case VCPU_SREG_LDTR:
+ 		if (seg_desc.s || seg_desc.type != 2)
+@@ -1803,6 +1793,15 @@ static int __load_segment_descriptor(str
+ 				((u64)base3 << 32), ctxt))
+ 			return emulate_gp(ctxt, 0);
+ 	}
 +
-+KBUILD_LDFLAGS += -z noexecstack
-+KBUILD_LDFLAGS += $(call ld-option,--no-warn-rwx-segments)
-+
- LDFLAGS_vmlinux := -T
- 
- hostprogs-y	:= mkpiggy
---- a/arch/x86/entry/vdso/Makefile
-+++ b/arch/x86/entry/vdso/Makefile
-@@ -178,7 +178,7 @@ quiet_cmd_vdso = VDSO    $@
- 		 sh $(srctree)/$(src)/checkundef.sh '$(NM)' '$@'
- 
- VDSO_LDFLAGS = -shared --hash-style=both --build-id \
--	$(call ld-option, --eh-frame-hdr) -Bsymbolic
-+	$(call ld-option, --eh-frame-hdr) -Bsymbolic -z noexecstack
- GCOV_PROFILE := n
- 
- quiet_cmd_vdso_and_check = VDSO    $@
++	if (seg == VCPU_SREG_TR) {
++		old_desc = seg_desc;
++		seg_desc.type |= 2; /* busy */
++		ret = ctxt->ops->cmpxchg_emulated(ctxt, desc_addr, &old_desc, &seg_desc,
++						  sizeof(seg_desc), &ctxt->exception);
++		if (ret != X86EMUL_CONTINUE)
++			return ret;
++	}
+ load:
+ 	ctxt->ops->set_segment(ctxt, selector, &seg_desc, base3, seg);
+ 	if (desc)
 
 
