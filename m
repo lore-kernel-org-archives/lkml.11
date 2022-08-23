@@ -2,44 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4E167C32774
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 08:23:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AB860C32774
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 08:23:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243186AbiHWIXg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 04:23:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41974 "EHLO
+        id S243199AbiHWIXo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 23 Aug 2022 04:23:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41914 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243050AbiHWIQb (ORCPT
+        with ESMTP id S243048AbiHWIQb (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 23 Aug 2022 04:16:31 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DCA2E67CBE;
-        Tue, 23 Aug 2022 01:11:01 -0700 (PDT)
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F0CDE69F47;
+        Tue, 23 Aug 2022 01:11:04 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 92D1FB81C25;
-        Tue, 23 Aug 2022 08:11:00 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D58C1C433D6;
-        Tue, 23 Aug 2022 08:10:58 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 994E6B81C21;
+        Tue, 23 Aug 2022 08:11:03 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0C927C433C1;
+        Tue, 23 Aug 2022 08:11:01 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661242259;
-        bh=QJpX0XKokoMZBk/Tl7oumqJUQg482sDWrAlMoLsvadk=;
+        s=korg; t=1661242262;
+        bh=jfx9wh8uosd78AL1NIjHUT0Kyi87J6lpHbyFZ/VZkjs=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=pzXqpkOYmk4pxehX7V/Nv4ITuuHGGdVJRvWZ55COPlVaYc7uy6D+WDmMIdVcWzrKJ
-         +BQZL/ue9VSawd+JQ8c+SYR1bTHfFfcnz8MR4nL13bksdOx14Dx0q8W+/px9LKReFy
-         Ar9vB0ZLpZuOVv/NdDD1Cn3XrAVt/zG54JYjwpxA=
+        b=n0h9hRl93UbhJsqaL01UNgTF9ET0rdXqItg0D2saVUDm1xJohibVEf14KBSdN3/EF
+         z3z5tzXZ3DS8xSLZ5PXkzxrvx1keEyz49phC5hB/kp9Gb64Vs2JV/TKaYd3yfn6RG/
+         dbSq+bo9xoacKErvu9JPLPlVcd28s1rsEkmEa5aM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Oleksij Rempel <o.rempel@pengutronix.de>,
-        Andrew Lunn <andrew@lunn.ch>, Jakub Kicinski <kuba@kernel.org>
-Subject: [PATCH 5.19 084/365] net: phy: c45 baset1: do not skip aneg configuration if clock role is not specified
-Date:   Tue, 23 Aug 2022 09:59:45 +0200
-Message-Id: <20220823080121.697047439@linuxfoundation.org>
+        stable@vger.kernel.org, Huacai Chen <chenhuacai@loongson.cn>,
+        Thomas Bogendoerfer <tsbogend@alpha.franken.de>
+Subject: [PATCH 4.9 044/101] MIPS: cpuinfo: Fix a warning for CONFIG_CPUMASK_OFFSTACK
+Date:   Tue, 23 Aug 2022 10:03:17 +0200
+Message-Id: <20220823080036.210365370@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220823080118.128342613@linuxfoundation.org>
-References: <20220823080118.128342613@linuxfoundation.org>
+In-Reply-To: <20220823080034.579196046@linuxfoundation.org>
+References: <20220823080034.579196046@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -48,98 +48,63 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Oleksij Rempel <o.rempel@pengutronix.de>
+From: Huacai Chen <chenhuacai@loongson.cn>
 
-commit 3702e4041cfda50bc697363d29511ce8f6b24795 upstream.
+commit e1a534f5d074db45ae5cbac41d8912b98e96a006 upstream.
 
-In case master/slave clock role is not specified (which is default), the
-aneg registers will not be written.
+When CONFIG_CPUMASK_OFFSTACK and CONFIG_DEBUG_PER_CPU_MAPS is selected,
+cpu_max_bits_warn() generates a runtime warning similar as below while
+we show /proc/cpuinfo. Fix this by using nr_cpu_ids (the runtime limit)
+instead of NR_CPUS to iterate CPUs.
 
-The visible impact of this is missing pause advertisement.
+[    3.052463] ------------[ cut here ]------------
+[    3.059679] WARNING: CPU: 3 PID: 1 at include/linux/cpumask.h:108 show_cpuinfo+0x5e8/0x5f0
+[    3.070072] Modules linked in: efivarfs autofs4
+[    3.076257] CPU: 0 PID: 1 Comm: systemd Not tainted 5.19-rc5+ #1052
+[    3.084034] Hardware name: Loongson Loongson-3A4000-7A1000-1w-V0.1-CRB/Loongson-LS3A4000-7A1000-1w-EVB-V1.21, BIOS Loongson-UDK2018-V2.0.04082-beta7 04/27
+[    3.099465] Stack : 9000000100157b08 9000000000f18530 9000000000cf846c 9000000100154000
+[    3.109127]         9000000100157a50 0000000000000000 9000000100157a58 9000000000ef7430
+[    3.118774]         90000001001578e8 0000000000000040 0000000000000020 ffffffffffffffff
+[    3.128412]         0000000000aaaaaa 1ab25f00eec96a37 900000010021de80 900000000101c890
+[    3.138056]         0000000000000000 0000000000000000 0000000000000000 0000000000aaaaaa
+[    3.147711]         ffff8000339dc220 0000000000000001 0000000006ab4000 0000000000000000
+[    3.157364]         900000000101c998 0000000000000004 9000000000ef7430 0000000000000000
+[    3.167012]         0000000000000009 000000000000006c 0000000000000000 0000000000000000
+[    3.176641]         9000000000d3de08 9000000001639390 90000000002086d8 00007ffff0080286
+[    3.186260]         00000000000000b0 0000000000000004 0000000000000000 0000000000071c1c
+[    3.195868]         ...
+[    3.199917] Call Trace:
+[    3.203941] [<98000000002086d8>] show_stack+0x38/0x14c
+[    3.210666] [<9800000000cf846c>] dump_stack_lvl+0x60/0x88
+[    3.217625] [<980000000023d268>] __warn+0xd0/0x100
+[    3.223958] [<9800000000cf3c90>] warn_slowpath_fmt+0x7c/0xcc
+[    3.231150] [<9800000000210220>] show_cpuinfo+0x5e8/0x5f0
+[    3.238080] [<98000000004f578c>] seq_read_iter+0x354/0x4b4
+[    3.245098] [<98000000004c2e90>] new_sync_read+0x17c/0x1c4
+[    3.252114] [<98000000004c5174>] vfs_read+0x138/0x1d0
+[    3.258694] [<98000000004c55f8>] ksys_read+0x70/0x100
+[    3.265265] [<9800000000cfde9c>] do_syscall+0x7c/0x94
+[    3.271820] [<9800000000202fe4>] handle_syscall+0xc4/0x160
+[    3.281824] ---[ end trace 8b484262b4b8c24c ]---
 
-So, rework genphy_c45_baset1_an_config_aneg() to be able to write
-advertisement registers even if clock role is unknown.
-
-Fixes: 3da8ffd8545f ("net: phy: Add 10BASE-T1L support in phy-c45")
-Signed-off-by: Oleksij Rempel <o.rempel@pengutronix.de>
-Reviewed-by: Andrew Lunn <andrew@lunn.ch>
-Link: https://lore.kernel.org/r/20220805073159.908643-1-o.rempel@pengutronix.de
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Cc: stable@vger.kernel.org
+Signed-off-by: Huacai Chen <chenhuacai@loongson.cn>
+Signed-off-by: Thomas Bogendoerfer <tsbogend@alpha.franken.de>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/net/phy/phy-c45.c |   34 ++++++++++++++++------------------
- 1 file changed, 16 insertions(+), 18 deletions(-)
+ arch/mips/kernel/proc.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/drivers/net/phy/phy-c45.c
-+++ b/drivers/net/phy/phy-c45.c
-@@ -190,44 +190,42 @@ EXPORT_SYMBOL_GPL(genphy_c45_pma_setup_f
-  */
- static int genphy_c45_baset1_an_config_aneg(struct phy_device *phydev)
+--- a/arch/mips/kernel/proc.c
++++ b/arch/mips/kernel/proc.c
+@@ -162,7 +162,7 @@ static void *c_start(struct seq_file *m,
  {
-+	u16 adv_l_mask, adv_l = 0;
-+	u16 adv_m_mask, adv_m = 0;
- 	int changed = 0;
--	u16 adv_l = 0;
--	u16 adv_m = 0;
- 	int ret;
+ 	unsigned long i = *pos;
  
-+	adv_l_mask = MDIO_AN_T1_ADV_L_FORCE_MS | MDIO_AN_T1_ADV_L_PAUSE_CAP |
-+		MDIO_AN_T1_ADV_L_PAUSE_ASYM;
-+	adv_m_mask = MDIO_AN_T1_ADV_M_MST | MDIO_AN_T1_ADV_M_B10L;
-+
- 	switch (phydev->master_slave_set) {
- 	case MASTER_SLAVE_CFG_MASTER_FORCE:
-+		adv_m |= MDIO_AN_T1_ADV_M_MST;
-+		fallthrough;
- 	case MASTER_SLAVE_CFG_SLAVE_FORCE:
- 		adv_l |= MDIO_AN_T1_ADV_L_FORCE_MS;
- 		break;
- 	case MASTER_SLAVE_CFG_MASTER_PREFERRED:
-+		adv_m |= MDIO_AN_T1_ADV_M_MST;
-+		fallthrough;
- 	case MASTER_SLAVE_CFG_SLAVE_PREFERRED:
- 		break;
- 	case MASTER_SLAVE_CFG_UNKNOWN:
- 	case MASTER_SLAVE_CFG_UNSUPPORTED:
--		return 0;
-+		/* if master/slave role is not specified, do not overwrite it */
-+		adv_l_mask &= ~MDIO_AN_T1_ADV_L_FORCE_MS;
-+		adv_m_mask &= ~MDIO_AN_T1_ADV_M_MST;
-+		break;
- 	default:
- 		phydev_warn(phydev, "Unsupported Master/Slave mode\n");
- 		return -EOPNOTSUPP;
- 	}
+-	return i < NR_CPUS ? (void *) (i + 1) : NULL;
++	return i < nr_cpu_ids ? (void *) (i + 1) : NULL;
+ }
  
--	switch (phydev->master_slave_set) {
--	case MASTER_SLAVE_CFG_MASTER_FORCE:
--	case MASTER_SLAVE_CFG_MASTER_PREFERRED:
--		adv_m |= MDIO_AN_T1_ADV_M_MST;
--		break;
--	case MASTER_SLAVE_CFG_SLAVE_FORCE:
--	case MASTER_SLAVE_CFG_SLAVE_PREFERRED:
--		break;
--	default:
--		break;
--	}
--
- 	adv_l |= linkmode_adv_to_mii_t1_adv_l_t(phydev->advertising);
- 
- 	ret = phy_modify_mmd_changed(phydev, MDIO_MMD_AN, MDIO_AN_T1_ADV_L,
--				     (MDIO_AN_T1_ADV_L_FORCE_MS | MDIO_AN_T1_ADV_L_PAUSE_CAP
--				     | MDIO_AN_T1_ADV_L_PAUSE_ASYM), adv_l);
-+				     adv_l_mask, adv_l);
- 	if (ret < 0)
- 		return ret;
- 	if (ret > 0)
-@@ -236,7 +234,7 @@ static int genphy_c45_baset1_an_config_a
- 	adv_m |= linkmode_adv_to_mii_t1_adv_m_t(phydev->advertising);
- 
- 	ret = phy_modify_mmd_changed(phydev, MDIO_MMD_AN, MDIO_AN_T1_ADV_M,
--				     MDIO_AN_T1_ADV_M_MST | MDIO_AN_T1_ADV_M_B10L, adv_m);
-+				     adv_m_mask, adv_m);
- 	if (ret < 0)
- 		return ret;
- 	if (ret > 0)
+ static void *c_next(struct seq_file *m, void *v, loff_t *pos)
 
 
