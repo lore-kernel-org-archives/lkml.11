@@ -2,46 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 16299C32774
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 09:50:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CBAE5C32792
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 09:50:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241635AbiHWJuL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 05:50:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56378 "EHLO
+        id S241707AbiHWJuP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 23 Aug 2022 05:50:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55862 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241743AbiHWJr7 (ORCPT
+        with ESMTP id S243895AbiHWJsK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 05:47:59 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AE509719AE;
-        Tue, 23 Aug 2022 01:44:45 -0700 (PDT)
+        Tue, 23 Aug 2022 05:48:10 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2CB547A758;
+        Tue, 23 Aug 2022 01:44:42 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 95065B81C55;
-        Tue, 23 Aug 2022 08:43:51 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id ECFC0C433C1;
-        Tue, 23 Aug 2022 08:43:49 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id A29CEB81BF8;
+        Tue, 23 Aug 2022 08:44:41 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id F374FC4314A;
+        Tue, 23 Aug 2022 08:44:39 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661244230;
-        bh=6RUbOO660W57gg9vcDPO2ChUAqzUiVW0WI9kwpLZkTU=;
+        s=korg; t=1661244280;
+        bh=CmcPK2lc47Okxh9b7fsrFvpDKb/n652OLhI6HxQ2s24=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=1K5vHnHxCrg9U5yyxVxdJnRNNaiCSpDSJJpVU6Fxqaa8vluvUGjGDUGVm6+eLmGti
-         rygEk7BH2upVm6Mk67Y8nBjWm6sf3RkdxvjM5GURo1KB93Tb6d8wIDdjkvZkEaSY+m
-         BI61DGLkUyG94Njjbm01WyrqrztBx+WYv50TVZlM=
+        b=mdoSxSMAEvQfdbvlKlhPCuzuB5GiZQIwiydH6mkglSSllZrC4JI4sRNgLL4aP56Yr
+         bN6BDCJv/dhq/IGVWXe1LZL/ZESRKxfpUo5UkM77+yaRocCPS50K35t3/nkodIQWHs
+         MF1wqkcwNPEp6EyIRRl52u/ahWCTO8YjRUbcAhxQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Oleksij Rempel <o.rempel@pengutronix.de>,
-        Fedor Pchelkin <pchelkin@ispras.ru>,
-        Alexey Khoroshilov <khoroshilov@ispras.ru>,
-        Marc Kleine-Budde <mkl@pengutronix.de>
-Subject: [PATCH 5.15 050/244] can: j1939: j1939_session_destroy(): fix memory leak of skbs
-Date:   Tue, 23 Aug 2022 10:23:29 +0200
-Message-Id: <20220823080100.737215509@linuxfoundation.org>
+        stable@vger.kernel.org, Dan Carpenter <dan.carpenter@oracle.com>,
+        Hans de Goede <hdegoede@redhat.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 4.14 113/229] platform/olpc: Fix uninitialized data in debugfs write
+Date:   Tue, 23 Aug 2022 10:24:34 +0200
+Message-Id: <20220823080057.723034349@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220823080059.091088642@linuxfoundation.org>
-References: <20220823080059.091088642@linuxfoundation.org>
+In-Reply-To: <20220823080053.202747790@linuxfoundation.org>
+References: <20220823080053.202747790@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -50,55 +49,50 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Fedor Pchelkin <pchelkin@ispras.ru>
+From: Dan Carpenter <dan.carpenter@oracle.com>
 
-commit 8c21c54a53ab21842f5050fa090f26b03c0313d6 upstream.
+[ Upstream commit 40ec787e1adf302c11668d4cc69838f4d584187d ]
 
-We need to drop skb references taken in j1939_session_skb_queue() when
-destroying a session in j1939_session_destroy(). Otherwise those skbs
-would be lost.
+The call to:
 
-Link to Syzkaller info and repro: https://forge.ispras.ru/issues/11743.
+	size = simple_write_to_buffer(cmdbuf, sizeof(cmdbuf), ppos, buf, size);
 
-Found by Linux Verification Center (linuxtesting.org) with Syzkaller.
+will succeed if at least one byte is written to the "cmdbuf" buffer.
+The "*ppos" value controls which byte is written.  Another problem is
+that this code does not check for errors so it's possible for the entire
+buffer to be uninitialized.
 
-V1: https://lore.kernel.org/all/20220708175949.539064-1-pchelkin@ispras.ru
+Inintialize the struct to zero to prevent reading uninitialized stack
+data.
 
-Fixes: 9d71dd0c7009 ("can: add support of SAE J1939 protocol")
-Suggested-by: Oleksij Rempel <o.rempel@pengutronix.de>
-Signed-off-by: Fedor Pchelkin <pchelkin@ispras.ru>
-Signed-off-by: Alexey Khoroshilov <khoroshilov@ispras.ru>
-Acked-by: Oleksij Rempel <o.rempel@pengutronix.de>
-Link: https://lore.kernel.org/all/20220805150216.66313-1-pchelkin@ispras.ru
-Signed-off-by: Marc Kleine-Budde <mkl@pengutronix.de>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Debugfs is normally only writable by root so the impact of this bug is
+very minimal.
+
+Fixes: 6cca83d498bd ("Platform: OLPC: move debugfs support from x86 EC driver")
+Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
+Link: https://lore.kernel.org/r/YthIKn+TfZSZMEcM@kili
+Reviewed-by: Hans de Goede <hdegoede@redhat.com>
+Signed-off-by: Hans de Goede <hdegoede@redhat.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/can/j1939/transport.c |    8 +++++++-
- 1 file changed, 7 insertions(+), 1 deletion(-)
+ drivers/platform/olpc/olpc-ec.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/net/can/j1939/transport.c
-+++ b/net/can/j1939/transport.c
-@@ -260,6 +260,8 @@ static void __j1939_session_drop(struct
+diff --git a/drivers/platform/olpc/olpc-ec.c b/drivers/platform/olpc/olpc-ec.c
+index 374a8028fec7..b36a000ed969 100644
+--- a/drivers/platform/olpc/olpc-ec.c
++++ b/drivers/platform/olpc/olpc-ec.c
+@@ -170,7 +170,7 @@ static ssize_t ec_dbgfs_cmd_write(struct file *file, const char __user *buf,
+ 	int i, m;
+ 	unsigned char ec_cmd[EC_MAX_CMD_ARGS];
+ 	unsigned int ec_cmd_int[EC_MAX_CMD_ARGS];
+-	char cmdbuf[64];
++	char cmdbuf[64] = "";
+ 	int ec_cmd_bytes;
  
- static void j1939_session_destroy(struct j1939_session *session)
- {
-+	struct sk_buff *skb;
-+
- 	if (session->transmission) {
- 		if (session->err)
- 			j1939_sk_errqueue(session, J1939_ERRQUEUE_TX_ABORT);
-@@ -274,7 +276,11 @@ static void j1939_session_destroy(struct
- 	WARN_ON_ONCE(!list_empty(&session->sk_session_queue_entry));
- 	WARN_ON_ONCE(!list_empty(&session->active_session_list_entry));
- 
--	skb_queue_purge(&session->skb_queue);
-+	while ((skb = skb_dequeue(&session->skb_queue)) != NULL) {
-+		/* drop ref taken in j1939_session_skb_queue() */
-+		skb_unref(skb);
-+		kfree_skb(skb);
-+	}
- 	__j1939_session_drop(session);
- 	j1939_priv_put(session->priv);
- 	kfree(session);
+ 	mutex_lock(&ec_dbgfs_lock);
+-- 
+2.35.1
+
 
 
