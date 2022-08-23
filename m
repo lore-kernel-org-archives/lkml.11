@@ -2,44 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B3FE0C32772
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 11:30:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 937BAC32772
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 11:32:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241279AbiHWLaF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 07:30:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52648 "EHLO
+        id S242518AbiHWLaQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 23 Aug 2022 07:30:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34822 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241767AbiHWLYs (ORCPT
+        with ESMTP id S236564AbiHWLZE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 07:24:48 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6381482D08;
-        Tue, 23 Aug 2022 02:23:56 -0700 (PDT)
+        Tue, 23 Aug 2022 07:25:04 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C20BF8C459;
+        Tue, 23 Aug 2022 02:24:01 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 0AF26B8105C;
-        Tue, 23 Aug 2022 09:23:55 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 50D7BC433D7;
-        Tue, 23 Aug 2022 09:23:53 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id EBCF5612F4;
+        Tue, 23 Aug 2022 09:24:00 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DA17BC433D6;
+        Tue, 23 Aug 2022 09:23:59 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661246633;
-        bh=eR0tZIvRvaH/L5ucyop9lSP+vc7zcIFE4nTjR/Nsrr4=;
+        s=korg; t=1661246640;
+        bh=g138Vep1kosQ0akqfkLiqvL+yNeVRxLA3+W5eq/fcb0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=pq3OqZ+7PtTm80XkqC3QNwJonca5ZeLCr8UgKm0SbovALzrz7iGsL7c7xwySPVyO4
-         ZNZ5ByqfQNyUt5uH81+XrDFi/gnI9cSWG+f3kc9IStlA0Bcnbh1xxXMXJdrCFueAjY
-         iPVxcM6XU5a4JLxuPiVaO+NxcH8hXvSFDaKOZ1Kk=
+        b=zkiMt5mZmH3Q0v73uHUYIbwbir+Qq7szMptawMWhStMlQZBFJXZu1VJpmKnvZW5Tk
+         FoFYVSGP+MMsA+HwTDXJAPwiLVmnglW0MkgVt1VI55DREN2PDfXPvgKMvwrgjHVkb+
+         oWb7n/FKAbtxgK0gD3oT/2dILat5PfBbLbnq1t+E=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
-        Vladimir Zapolskiy <vladimir.zapolskiy@linaro.org>,
-        Robert Foss <robert.foss@linaro.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
+        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 172/389] clk: qcom: camcc-sdm845: Fix topology around titan_top power domain
-Date:   Tue, 23 Aug 2022 10:24:10 +0200
-Message-Id: <20220823080122.809903029@linuxfoundation.org>
+Subject: [PATCH 5.4 174/389] intel_th: Fix a resource leak in an error handling path
+Date:   Tue, 23 Aug 2022 10:24:12 +0200
+Message-Id: <20220823080122.909881694@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220823080115.331990024@linuxfoundation.org>
 References: <20220823080115.331990024@linuxfoundation.org>
@@ -51,53 +51,53 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Vladimir Zapolskiy <vladimir.zapolskiy@linaro.org>
+From: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
 
-[ Upstream commit 103dd2338bbff567bce7acd00fc5a09c806b38ec ]
+[ Upstream commit 086c28ab7c5699256aced0049aae9c42f1410313 ]
 
-On SDM845 two found VFE GDSC power domains shall not be operated, if
-titan top is turned off, thus the former power domains will be set as
-subdomains by a GDSC registration routine.
+If an error occurs after calling 'pci_alloc_irq_vectors()',
+'pci_free_irq_vectors()' must be called as already done in the remove
+function.
 
-Fixes: 78412c262004 ("clk: qcom: Add camera clock controller driver for SDM845")
-Signed-off-by: Vladimir Zapolskiy <vladimir.zapolskiy@linaro.org>
-Reviewed-by: Robert Foss <robert.foss@linaro.org>
-Signed-off-by: Bjorn Andersson <bjorn.andersson@linaro.org>
-Link: https://lore.kernel.org/r/20220519214133.1728979-2-vladimir.zapolskiy@linaro.org
+Fixes: 7b7036d47c35 ("intel_th: pci: Use MSI interrupt signalling")
+Reviewed-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+Signed-off-by: Alexander Shishkin <alexander.shishkin@linux.intel.com>
+Link: https://lore.kernel.org/r/20220705082637.59979-2-alexander.shishkin@linux.intel.com
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/clk/qcom/camcc-sdm845.c | 4 ++++
- 1 file changed, 4 insertions(+)
+ drivers/hwtracing/intel_th/pci.c | 10 ++++++++--
+ 1 file changed, 8 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/clk/qcom/camcc-sdm845.c b/drivers/clk/qcom/camcc-sdm845.c
-index 1b2cefef7431..a8a2cfa83290 100644
---- a/drivers/clk/qcom/camcc-sdm845.c
-+++ b/drivers/clk/qcom/camcc-sdm845.c
-@@ -1521,6 +1521,8 @@ static struct clk_branch cam_cc_sys_tmr_clk = {
- 	},
- };
+diff --git a/drivers/hwtracing/intel_th/pci.c b/drivers/hwtracing/intel_th/pci.c
+index a723c8c33087..3910fafc4fc2 100644
+--- a/drivers/hwtracing/intel_th/pci.c
++++ b/drivers/hwtracing/intel_th/pci.c
+@@ -100,8 +100,10 @@ static int intel_th_pci_probe(struct pci_dev *pdev,
+ 		}
  
-+static struct gdsc titan_top_gdsc;
+ 	th = intel_th_alloc(&pdev->dev, drvdata, resource, r);
+-	if (IS_ERR(th))
+-		return PTR_ERR(th);
++	if (IS_ERR(th)) {
++		err = PTR_ERR(th);
++		goto err_free_irq;
++	}
+ 
+ 	th->activate   = intel_th_pci_activate;
+ 	th->deactivate = intel_th_pci_deactivate;
+@@ -109,6 +111,10 @@ static int intel_th_pci_probe(struct pci_dev *pdev,
+ 	pci_set_master(pdev);
+ 
+ 	return 0;
 +
- static struct gdsc bps_gdsc = {
- 	.gdscr = 0x6004,
- 	.pd = {
-@@ -1554,6 +1556,7 @@ static struct gdsc ife_0_gdsc = {
- 		.name = "ife_0_gdsc",
- 	},
- 	.flags = POLL_CFG_GDSCR,
-+	.parent = &titan_top_gdsc.pd,
- 	.pwrsts = PWRSTS_OFF_ON,
- };
++err_free_irq:
++	pci_free_irq_vectors(pdev);
++	return err;
+ }
  
-@@ -1563,6 +1566,7 @@ static struct gdsc ife_1_gdsc = {
- 		.name = "ife_1_gdsc",
- 	},
- 	.flags = POLL_CFG_GDSCR,
-+	.parent = &titan_top_gdsc.pd,
- 	.pwrsts = PWRSTS_OFF_ON,
- };
- 
+ static void intel_th_pci_remove(struct pci_dev *pdev)
 -- 
 2.35.1
 
