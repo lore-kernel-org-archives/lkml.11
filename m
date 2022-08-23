@@ -2,41 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9D049C32792
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 12:13:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1EAC4C32772
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 12:13:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242574AbiHWMNT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 08:13:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46828 "EHLO
+        id S1354153AbiHWMN2 (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 23 Aug 2022 08:13:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47002 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356023AbiHWMMb (ORCPT
+        with ESMTP id S1354491AbiHWMMe (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 08:12:31 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C26535A3E8;
-        Tue, 23 Aug 2022 02:39:19 -0700 (PDT)
+        Tue, 23 Aug 2022 08:12:34 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 55365E42FA;
+        Tue, 23 Aug 2022 02:39:37 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 6900D61389;
-        Tue, 23 Aug 2022 09:39:19 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6A5C2C433D6;
-        Tue, 23 Aug 2022 09:39:18 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id C87A961494;
+        Tue, 23 Aug 2022 09:38:28 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CE13EC433D6;
+        Tue, 23 Aug 2022 09:38:27 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661247558;
-        bh=Ar0Ri1pXQ2u5TEvE1oM8+Sx9bnNlWLzCZzLjllN8NEw=;
+        s=korg; t=1661247508;
+        bh=bscVAE5S6VHBuepQqS3D/xc941T/WKO+yPSMHz6aUrU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=LIMVFsLxIb8TkbE0coDgLq+EgSoo3aNQbqr0GQS213P4wpz4i5wR6IPAN5v6h+h5p
-         zeHK24Ko/HpY/Z4qZVUb3oddzd1tQrFbZQ7awtTWJk/xF+bHvjnbB6yxTwohWO4Iun
-         lXX4zhJ7ml1qlh66/bgrHbN+g5RYBgLawGPtYvBQ=
+        b=aPSUNpqTPh6leGjNY88eaeNO6mWwFf529g/bfqvq+dLX0AwhuFz04i6CDU3205Qdz
+         PAmc3tP9sH5TmGWh9y2b8qHspeQOfIqR3+H0QD4pGS8SWNNymJwKjZ11tzu+CzJVm4
+         kaBtIJaai5BKEOs5a6p/N+5Vf6YNHeG4CurKU+tc=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Trond Myklebust <trond.myklebust@hammerspace.com>
-Subject: [PATCH 5.10 035/158] SUNRPC: Reinitialise the backchannel request buffers before reuse
-Date:   Tue, 23 Aug 2022 10:26:07 +0200
-Message-Id: <20220823080047.493046546@linuxfoundation.org>
+        stable@vger.kernel.org, Louis Peens <louis.peens@corigine.com>,
+        Yu Xiao <yu.xiao@corigine.com>,
+        Simon Horman <simon.horman@corigine.com>,
+        Jakub Kicinski <kuba@kernel.org>
+Subject: [PATCH 5.10 058/158] nfp: ethtool: fix the display error of `ethtool -m DEVNAME`
+Date:   Tue, 23 Aug 2022 10:26:30 +0200
+Message-Id: <20220823080048.419386503@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220823080046.056825146@linuxfoundation.org>
 References: <20220823080046.056825146@linuxfoundation.org>
@@ -48,50 +51,43 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Trond Myklebust <trond.myklebust@hammerspace.com>
+From: Yu Xiao <yu.xiao@corigine.com>
 
-commit 6622e3a73112fc336c1c2c582428fb5ef18e456a upstream.
+commit 4ae97cae07e15d41e5c0ebabba64c6eefdeb0bbe upstream.
 
-When we're reusing the backchannel requests instead of freeing them,
-then we should reinitialise any values of the send/receive xdr_bufs so
-that they reflect the available space.
+The port flag isn't set to `NFP_PORT_CHANGED` when using
+`ethtool -m DEVNAME` before, so the port state (e.g. interface)
+cannot be updated. Therefore, it caused that `ethtool -m DEVNAME`
+sometimes cannot read the correct information.
 
-Fixes: 0d2a970d0ae5 ("SUNRPC: Fix a backchannel race")
-Signed-off-by: Trond Myklebust <trond.myklebust@hammerspace.com>
+E.g. `ethtool -m DEVNAME` cannot work when load driver before plug
+in optical module, as the port interface is still NONE without port
+update.
+
+Now update the port state before sending info to NIC to ensure that
+port interface is correct (latest state).
+
+Fixes: 61f7c6f44870 ("nfp: implement ethtool get module EEPROM")
+Reviewed-by: Louis Peens <louis.peens@corigine.com>
+Signed-off-by: Yu Xiao <yu.xiao@corigine.com>
+Signed-off-by: Simon Horman <simon.horman@corigine.com>
+Link: https://lore.kernel.org/r/20220802093355.69065-1-simon.horman@corigine.com
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- net/sunrpc/backchannel_rqst.c |   14 ++++++++++++++
- 1 file changed, 14 insertions(+)
+ drivers/net/ethernet/netronome/nfp/nfp_net_ethtool.c |    2 ++
+ 1 file changed, 2 insertions(+)
 
---- a/net/sunrpc/backchannel_rqst.c
-+++ b/net/sunrpc/backchannel_rqst.c
-@@ -64,6 +64,17 @@ static void xprt_free_allocation(struct
- 	kfree(req);
- }
+--- a/drivers/net/ethernet/netronome/nfp/nfp_net_ethtool.c
++++ b/drivers/net/ethernet/netronome/nfp/nfp_net_ethtool.c
+@@ -1225,6 +1225,8 @@ nfp_port_get_module_info(struct net_devi
+ 	u8 data;
  
-+static void xprt_bc_reinit_xdr_buf(struct xdr_buf *buf)
-+{
-+	buf->head[0].iov_len = PAGE_SIZE;
-+	buf->tail[0].iov_len = 0;
-+	buf->pages = NULL;
-+	buf->page_len = 0;
-+	buf->flags = 0;
-+	buf->len = 0;
-+	buf->buflen = PAGE_SIZE;
-+}
-+
- static int xprt_alloc_xdr_buf(struct xdr_buf *buf, gfp_t gfp_flags)
- {
- 	struct page *page;
-@@ -292,6 +303,9 @@ void xprt_free_bc_rqst(struct rpc_rqst *
- 	 */
- 	spin_lock_bh(&xprt->bc_pa_lock);
- 	if (xprt_need_to_requeue(xprt)) {
-+		xprt_bc_reinit_xdr_buf(&req->rq_snd_buf);
-+		xprt_bc_reinit_xdr_buf(&req->rq_rcv_buf);
-+		req->rq_rcv_buf.len = PAGE_SIZE;
- 		list_add_tail(&req->rq_bc_pa_list, &xprt->bc_pa_list);
- 		xprt->bc_alloc_count++;
- 		atomic_inc(&xprt->bc_slot_count);
+ 	port = nfp_port_from_netdev(netdev);
++	/* update port state to get latest interface */
++	set_bit(NFP_PORT_CHANGED, &port->flags);
+ 	eth_port = nfp_port_get_eth_port(port);
+ 	if (!eth_port)
+ 		return -EOPNOTSUPP;
 
 
