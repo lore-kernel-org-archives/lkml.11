@@ -2,45 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4810BC49EC2
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 67427C49EC5
 	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 12:06:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1359733AbiHWMGf (ORCPT
+        id S1359761AbiHWMGi (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 08:06:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52976 "EHLO
+        Tue, 23 Aug 2022 08:06:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48754 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1359474AbiHWMBn (ORCPT
+        with ESMTP id S1359781AbiHWMCc (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 08:01:43 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5D341979C0;
-        Tue, 23 Aug 2022 02:36:00 -0700 (PDT)
+        Tue, 23 Aug 2022 08:02:32 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6F609DABAB;
+        Tue, 23 Aug 2022 02:36:31 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 07FEFCE1B58;
-        Tue, 23 Aug 2022 09:35:51 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1CD4EC433D7;
-        Tue, 23 Aug 2022 09:35:48 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 23EBF61227;
+        Tue, 23 Aug 2022 09:36:05 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 153B9C433C1;
+        Tue, 23 Aug 2022 09:36:03 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661247349;
-        bh=8Wq8TnX6A7t44+dksAy9+VlmKZqLfFoW9QkcGmVh7ps=;
+        s=korg; t=1661247364;
+        bh=+BJTvkYDRr0aE4L6o5TNcyJvj52o/Lx/16ryarOswAU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=QREnKP0Wg0VgSMCJggpIqforOOHSGgH0uwL9PQfmvcny5ot1ND1QlohkRDvjKHSPL
-         gfre4ktMUuMib9CabGo1lh/UkX4LfQY36o+7v3DFcw1unzbw0D+1riWqzLDPc5YpU9
-         Xy2FdLTELv8CykAzoBz7FQ91OMl4rx6lzolH2Gzo=
+        b=BYSbxLTIzJcmF12Yj4n1ztrk+QNHmcwwpu+hYlEtak1jgvSQXFOiD9gnDevoUq4GH
+         ifiowpalIaprs+vQ4qB36p0boea+YP5ZtJ1ZEt0fwrxvY4fvdGLldcMu/6VqL1uLWx
+         8ewtmXUGzBErdwsZrHfS+a0LUxB2xk7JwlRIegJ4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jozef Martiniak <jomajm@gmail.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 359/389] gadgetfs: ep_io - wait until IRQ finishes
-Date:   Tue, 23 Aug 2022 10:27:17 +0200
-Message-Id: <20220823080130.546286463@linuxfoundation.org>
+        stable@vger.kernel.org, John Johansen <john.johansen@canonical.com>
+Subject: [PATCH 5.10 013/158] apparmor: fix quiet_denied for file rules
+Date:   Tue, 23 Aug 2022 10:25:45 +0200
+Message-Id: <20220823080046.609588201@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220823080115.331990024@linuxfoundation.org>
-References: <20220823080115.331990024@linuxfoundation.org>
+In-Reply-To: <20220823080046.056825146@linuxfoundation.org>
+References: <20220823080046.056825146@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -49,37 +48,31 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jozef Martiniak <jomajm@gmail.com>
+From: John Johansen <john.johansen@canonical.com>
 
-[ Upstream commit 04cb742d4d8f30dc2e83b46ac317eec09191c68e ]
+commit 68ff8540cc9e4ab557065b3f635c1ff4c96e1f1c upstream.
 
-after usb_ep_queue() if wait_for_completion_interruptible() is
-interrupted we need to wait until IRQ gets finished.
+Global quieting of denied AppArmor generated file events is not
+handled correctly. Unfortunately the is checking if quieting of all
+audit events is set instead of just denied events.
 
-Otherwise complete() from epio_complete() can corrupt stack.
-
-Signed-off-by: Jozef Martiniak <jomajm@gmail.com>
-Link: https://lore.kernel.org/r/20220708070645.6130-1-jomajm@gmail.com
+Fixes: 67012e8209df ("AppArmor: basic auditing infrastructure.")
+Signed-off-by: John Johansen <john.johansen@canonical.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/usb/gadget/legacy/inode.c | 1 +
- 1 file changed, 1 insertion(+)
+ security/apparmor/audit.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/usb/gadget/legacy/inode.c b/drivers/usb/gadget/legacy/inode.c
-index 9cd80ad075bd..97c73d610eeb 100644
---- a/drivers/usb/gadget/legacy/inode.c
-+++ b/drivers/usb/gadget/legacy/inode.c
-@@ -362,6 +362,7 @@ ep_io (struct ep_data *epdata, void *buf, unsigned len)
- 				spin_unlock_irq (&epdata->dev->lock);
+--- a/security/apparmor/audit.c
++++ b/security/apparmor/audit.c
+@@ -137,7 +137,7 @@ int aa_audit(int type, struct aa_profile
+ 	}
+ 	if (AUDIT_MODE(profile) == AUDIT_QUIET ||
+ 	    (type == AUDIT_APPARMOR_DENIED &&
+-	     AUDIT_MODE(profile) == AUDIT_QUIET))
++	     AUDIT_MODE(profile) == AUDIT_QUIET_DENIED))
+ 		return aad(sa)->error;
  
- 				DBG (epdata->dev, "endpoint gone\n");
-+				wait_for_completion(&done);
- 				epdata->status = -ENODEV;
- 			}
- 		}
--- 
-2.35.1
-
+ 	if (KILL_MODE(profile) && type == AUDIT_APPARMOR_DENIED)
 
 
