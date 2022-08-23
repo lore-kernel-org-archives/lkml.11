@@ -2,195 +2,116 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 97B04C32772
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 09:32:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AF3FCC32792
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 09:32:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350386AbiHWJcG (ORCPT
+        id S1350473AbiHWJcK (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 05:32:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38532 "EHLO
+        Tue, 23 Aug 2022 05:32:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38702 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350594AbiHWJah (ORCPT
+        with ESMTP id S1350672AbiHWJal (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 05:30:37 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 615DB76752;
-        Tue, 23 Aug 2022 01:37:41 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        Tue, 23 Aug 2022 05:30:41 -0400
+Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CF15992F62;
+        Tue, 23 Aug 2022 01:37:54 -0700 (PDT)
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id F1F0D6153F;
-        Tue, 23 Aug 2022 08:36:59 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 01871C433D6;
-        Tue, 23 Aug 2022 08:36:58 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661243819;
-        bh=83vKly5RIZKW8TzjwWoq6rTFWBXa0AYVIp5ttn/oWzQ=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=BKR6VN9KPk4NnNBBj7kN6EVW0SFE7zPSjz77WUBT8o7zdZQZtA3GGgjgIaYA4Jo+U
-         VFwnGSFEAwXGCP8NAKC/aGqwfVt7KmPHGU+W6uw/Z0aGOoqE6HYehbyd9Tb5emiakS
-         PjdgmvPGV0sFlHYZqrI6VuE7wf+ZfOmOEkKXuK6I=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Mikulas Patocka <mpatocka@redhat.com>,
-        Song Liu <song@kernel.org>, Jens Axboe <axboe@kernel.dk>
-Subject: [PATCH 4.14 031/229] md-raid10: fix KASAN warning
-Date:   Tue, 23 Aug 2022 10:23:12 +0200
-Message-Id: <20220823080054.612888954@linuxfoundation.org>
-X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220823080053.202747790@linuxfoundation.org>
-References: <20220823080053.202747790@linuxfoundation.org>
-User-Agent: quilt/0.67
+        by smtp-out2.suse.de (Postfix) with ESMTPS id D650D20F15;
+        Tue, 23 Aug 2022 08:36:15 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
+        t=1661243775; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=GQ02uGY4LaDgfuC0EhK53ZvKSS1XQwJHJ3fflLYmAjg=;
+        b=cFE5YYpE9evSSKSJipAkRPfcz4A+d9gBKDJiEO/9R3S8iyIw0VuSlrAuELwxRULshwDWtf
+        y4B7TJLPyl0RvCl65sLFFLblBcZw4v6lI0KigGg0mFZXDeVi99q3aSc7CHZw+G1jpvbDcg
+        j9widh2Ih6uLGUegCaae2cVUgj40qRA=
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id C3E6713A89;
+        Tue, 23 Aug 2022 08:36:15 +0000 (UTC)
+Received: from dovecot-director2.suse.de ([192.168.254.65])
+        by imap2.suse-dmz.suse.de with ESMTPSA
+        id qJIaL3+RBGPnWQAAMHmgww
+        (envelope-from <mhocko@suse.com>); Tue, 23 Aug 2022 08:36:15 +0000
+Date:   Tue, 23 Aug 2022 10:36:15 +0200
+From:   Michal Hocko <mhocko@suse.com>
+To:     Yu Zhao <yuzhao@google.com>
+Cc:     Andrew Morton <akpm@linux-foundation.org>,
+        Suren Baghdasaryan <surenb@google.com>,
+        David Rientjes <rientjes@google.com>,
+        Matthew Wilcox <willy@infradead.org>,
+        Johannes Weiner <hannes@cmpxchg.org>,
+        Roman Gushchin <guro@fb.com>, Minchan Kim <minchan@kernel.org>,
+        "Kirill A . Shutemov" <kirill@shutemov.name>,
+        Andrea Arcangeli <aarcange@redhat.com>, brauner@kernel.org,
+        Christoph Hellwig <hch@infradead.org>, oleg@redhat.com,
+        David Hildenbrand <david@redhat.com>,
+        Jann Horn <jannh@google.com>,
+        Shakeel Butt <shakeelb@google.com>,
+        Peter Xu <peterx@redhat.com>,
+        John Hubbard <jhubbard@nvidia.com>, shuah@kernel.org,
+        linux-kernel <linux-kernel@vger.kernel.org>,
+        Linux-MM <linux-mm@kvack.org>, linux-kselftest@vger.kernel.org,
+        kernel-team@android.com
+Subject: Re: [PATCH RESEND v2 2/2] mm: delete unused MMF_OOM_VICTIM flag
+Message-ID: <YwSRf3LZ7gXwWaNN@dhcp22.suse.cz>
+References: <20220531223100.510392-1-surenb@google.com>
+ <20220531223100.510392-2-surenb@google.com>
+ <20220822152119.96d40c884078229ee3e6b25e@linux-foundation.org>
+ <CAOUHufbysRjhX_AiFirjvWCR129t4_bELd1wFQG+fBsZpzhgYw@mail.gmail.com>
+ <20220822154822.366a9e4527b748cf99d98637@linux-foundation.org>
+ <CAOUHufa1zc3fMWsyyz1uB6_gsgVPk1Hw_T31WzWK58QVgsQSAQ@mail.gmail.com>
+ <20220822161603.9e19edfe2daaea3bf591910a@linux-foundation.org>
+ <CAOUHufbyWwkOAJTD4G82sLcwE_33Yy=s4Q+gGBujwXvEBZ8iqA@mail.gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAOUHufbyWwkOAJTD4G82sLcwE_33Yy=s4Q+gGBujwXvEBZ8iqA@mail.gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Mikulas Patocka <mpatocka@redhat.com>
+On Mon 22-08-22 17:20:17, Yu Zhao wrote:
+> On Mon, Aug 22, 2022 at 5:16 PM Andrew Morton <akpm@linux-foundation.org> wrote:
+> >
+> > On Mon, 22 Aug 2022 16:59:29 -0600 Yu Zhao <yuzhao@google.com> wrote:
+> >
+> > > > > @@ -4109,7 +4109,7 @@ static int walk_pud_range(p4d_t *p4d, unsigned
+> > > > > long start, unsigned long end,
+> > > > >
+> > > > >                 walk_pmd_range(&val, addr, next, args);
+> > > > >
+> > > > > -               if (mm_is_oom_victim(args->mm))
+> > > > > +               if (test_bit(MMF_OOM_REAP_QUEUED, &args->mm->flags))
+> > > > >                         return 1;
+> > > > >
+> > > > >                 /* a racy check to curtail the waiting time */
+> > > >
+> > > > Oh.  Why?  What does this change do?
+> > >
+> > > The MMF_OOM_REAP_QUEUED flag is similar to the deleted MMF_OOM_VICTIM
+> > > flag, but it's set at a later stage during an OOM kill.
+> > >
+> > > When either is set, the OOM reaper is probably already freeing the
+> > > memory of this mm_struct, or at least it's going to. So there is no
+> > > need to dwell on it in the reclaim path, hence not about correctness.
+> >
+> > Thanks.  That sounds worthy of some code comments?
+> 
+> Will do. Thanks.
 
-commit d17f744e883b2f8d13cca252d71cfe8ace346f7d upstream.
+I would rather not see this abuse. You cannot really make any
+assumptions about oom_reaper and how quickly it is going to free the
+memory. If this is really worth it (and I have to say I doubt it) then
+it should be a separate patch with numbers justifying it.
 
-There's a KASAN warning in raid10_remove_disk when running the lvm
-test lvconvert-raid-reshape.sh. We fix this warning by verifying that the
-value "number" is valid.
-
-BUG: KASAN: slab-out-of-bounds in raid10_remove_disk+0x61/0x2a0 [raid10]
-Read of size 8 at addr ffff889108f3d300 by task mdX_raid10/124682
-
-CPU: 3 PID: 124682 Comm: mdX_raid10 Not tainted 5.19.0-rc6 #1
-Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS 1.14.0-2 04/01/2014
-Call Trace:
- <TASK>
- dump_stack_lvl+0x34/0x44
- print_report.cold+0x45/0x57a
- ? __lock_text_start+0x18/0x18
- ? raid10_remove_disk+0x61/0x2a0 [raid10]
- kasan_report+0xa8/0xe0
- ? raid10_remove_disk+0x61/0x2a0 [raid10]
- raid10_remove_disk+0x61/0x2a0 [raid10]
-Buffer I/O error on dev dm-76, logical block 15344, async page read
- ? __mutex_unlock_slowpath.constprop.0+0x1e0/0x1e0
- remove_and_add_spares+0x367/0x8a0 [md_mod]
- ? super_written+0x1c0/0x1c0 [md_mod]
- ? mutex_trylock+0xac/0x120
- ? _raw_spin_lock+0x72/0xc0
- ? _raw_spin_lock_bh+0xc0/0xc0
- md_check_recovery+0x848/0x960 [md_mod]
- raid10d+0xcf/0x3360 [raid10]
- ? sched_clock_cpu+0x185/0x1a0
- ? rb_erase+0x4d4/0x620
- ? var_wake_function+0xe0/0xe0
- ? psi_group_change+0x411/0x500
- ? preempt_count_sub+0xf/0xc0
- ? _raw_spin_lock_irqsave+0x78/0xc0
- ? __lock_text_start+0x18/0x18
- ? raid10_sync_request+0x36c0/0x36c0 [raid10]
- ? preempt_count_sub+0xf/0xc0
- ? _raw_spin_unlock_irqrestore+0x19/0x40
- ? del_timer_sync+0xa9/0x100
- ? try_to_del_timer_sync+0xc0/0xc0
- ? _raw_spin_lock_irqsave+0x78/0xc0
- ? __lock_text_start+0x18/0x18
- ? _raw_spin_unlock_irq+0x11/0x24
- ? __list_del_entry_valid+0x68/0xa0
- ? finish_wait+0xa3/0x100
- md_thread+0x161/0x260 [md_mod]
- ? unregister_md_personality+0xa0/0xa0 [md_mod]
- ? _raw_spin_lock_irqsave+0x78/0xc0
- ? prepare_to_wait_event+0x2c0/0x2c0
- ? unregister_md_personality+0xa0/0xa0 [md_mod]
- kthread+0x148/0x180
- ? kthread_complete_and_exit+0x20/0x20
- ret_from_fork+0x1f/0x30
- </TASK>
-
-Allocated by task 124495:
- kasan_save_stack+0x1e/0x40
- __kasan_kmalloc+0x80/0xa0
- setup_conf+0x140/0x5c0 [raid10]
- raid10_run+0x4cd/0x740 [raid10]
- md_run+0x6f9/0x1300 [md_mod]
- raid_ctr+0x2531/0x4ac0 [dm_raid]
- dm_table_add_target+0x2b0/0x620 [dm_mod]
- table_load+0x1c8/0x400 [dm_mod]
- ctl_ioctl+0x29e/0x560 [dm_mod]
- dm_compat_ctl_ioctl+0x7/0x20 [dm_mod]
- __do_compat_sys_ioctl+0xfa/0x160
- do_syscall_64+0x90/0xc0
- entry_SYSCALL_64_after_hwframe+0x46/0xb0
-
-Last potentially related work creation:
- kasan_save_stack+0x1e/0x40
- __kasan_record_aux_stack+0x9e/0xc0
- kvfree_call_rcu+0x84/0x480
- timerfd_release+0x82/0x140
-L __fput+0xfa/0x400
- task_work_run+0x80/0xc0
- exit_to_user_mode_prepare+0x155/0x160
- syscall_exit_to_user_mode+0x12/0x40
- do_syscall_64+0x42/0xc0
- entry_SYSCALL_64_after_hwframe+0x46/0xb0
-
-Second to last potentially related work creation:
- kasan_save_stack+0x1e/0x40
- __kasan_record_aux_stack+0x9e/0xc0
- kvfree_call_rcu+0x84/0x480
- timerfd_release+0x82/0x140
- __fput+0xfa/0x400
- task_work_run+0x80/0xc0
- exit_to_user_mode_prepare+0x155/0x160
- syscall_exit_to_user_mode+0x12/0x40
- do_syscall_64+0x42/0xc0
- entry_SYSCALL_64_after_hwframe+0x46/0xb0
-
-The buggy address belongs to the object at ffff889108f3d200
- which belongs to the cache kmalloc-256 of size 256
-The buggy address is located 0 bytes to the right of
- 256-byte region [ffff889108f3d200, ffff889108f3d300)
-
-The buggy address belongs to the physical page:
-page:000000007ef2a34c refcount:1 mapcount:0 mapping:0000000000000000 index:0x0 pfn:0x1108f3c
-head:000000007ef2a34c order:2 compound_mapcount:0 compound_pincount:0
-flags: 0x4000000000010200(slab|head|zone=2)
-raw: 4000000000010200 0000000000000000 dead000000000001 ffff889100042b40
-raw: 0000000000000000 0000000080200020 00000001ffffffff 0000000000000000
-page dumped because: kasan: bad access detected
-
-Memory state around the buggy address:
- ffff889108f3d200: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
- ffff889108f3d280: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
->ffff889108f3d300: fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc
-                   ^
- ffff889108f3d380: fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc
- ffff889108f3d400: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
-
-Signed-off-by: Mikulas Patocka <mpatocka@redhat.com>
-Cc: stable@vger.kernel.org
-Signed-off-by: Song Liu <song@kernel.org>
-Signed-off-by: Jens Axboe <axboe@kernel.dk>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
----
- drivers/md/raid10.c |    5 ++++-
- 1 file changed, 4 insertions(+), 1 deletion(-)
-
---- a/drivers/md/raid10.c
-+++ b/drivers/md/raid10.c
-@@ -1831,9 +1831,12 @@ static int raid10_remove_disk(struct mdd
- 	int err = 0;
- 	int number = rdev->raid_disk;
- 	struct md_rdev **rdevp;
--	struct raid10_info *p = conf->mirrors + number;
-+	struct raid10_info *p;
- 
- 	print_conf(conf);
-+	if (unlikely(number >= mddev->raid_disks))
-+		return 0;
-+	p = conf->mirrors + number;
- 	if (rdev == p->rdev)
- 		rdevp = &p->rdev;
- 	else if (rdev == p->replacement)
-
-
+-- 
+Michal Hocko
+SUSE Labs
