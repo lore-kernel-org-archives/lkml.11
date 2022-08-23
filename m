@@ -2,175 +2,106 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7EED5C38142
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 23:07:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2CC2FC32793
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 23:19:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230254AbiHWXHl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 19:07:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58276 "EHLO
+        id S231147AbiHWXS6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 23 Aug 2022 19:18:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54616 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229590AbiHWXHk (ORCPT
+        with ESMTP id S230316AbiHWXSz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 19:07:40 -0400
-Received: from NAM04-MW2-obe.outbound.protection.outlook.com (mail-mw2nam04on2084.outbound.protection.outlook.com [40.107.101.84])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DD7A2183B4;
-        Tue, 23 Aug 2022 16:07:38 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=j+NJwr06a3KPqcr39r/hD13cWlUW7Erm/X8cp0kdQEJTqNKJ4QOWHQiHsGmmItEdFN7iEN6Y+FUfyH77VozWbYf/1aQ4uqXI8xSbn44W0Wmly8gjqXUCWDsGIOsn+UcHN2qPn09Bhfpe1biWau9tF+a0+WEu44U6jUAcXcY/24B1ooQwAKfSG8GXZV5YszZzzaihh96WRER5wQH/Rjep8wkyJSjk4i9dmwUtZAyISiRtRtxL0PdUwmdFRK5Ggzey6C7I6qnHL/oUx5ordTLWggkX4SmZhD4rJ/dB8KMK+Cw4a8NAYYB8vjy3ocNnOvYUPrsangNPeyOAhuvWesyUTQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=mP+qRhpiutXsV8/sePUjKE6QU9WjtOw99cHhNQDYJ+c=;
- b=lq8f96cPMFRCbic03zRqISB5DxRWyefU4oHtySE6qi49Hko5gCzmp2apDMPVa7mQAcDIAySa/2zy0Xbxpa+1SAdkzdM4+RxxPFz4l9s8qnX4eYIcDUP7haD29Cqt6cP13HIMWwBGu3W4kwYwLjmc+SDNv+UY33+E6L3cURWHegB+O+MYUhBS26NItv8LRX2whVUAoie3gfkiq7iszdfrvstPQ6k7tuLdcwoIeT310kd7FNt+djpb1iuSUw/BF2KldlMp5CjYihuhdPp8tkAVmEBKVMHdv8ZXh/INyPwIajW6VZcw3caWPqKrk/v/wXlAwXxDjco1cEo+PYQ15BsmiQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 165.204.84.17) smtp.rcpttodomain=linaro.org smtp.mailfrom=amd.com; dmarc=pass
- (p=quarantine sp=quarantine pct=100) action=none header.from=amd.com;
- dkim=none (message not signed); arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=mP+qRhpiutXsV8/sePUjKE6QU9WjtOw99cHhNQDYJ+c=;
- b=dU/GgL18rweRSbff1EI5PlRtysrXBShXY9tvIWKcHR1MZ2LRiX26ycOEKk87AmpbdUqJ0sp3fz8pSr7FXq7v592SJBuCJVidI/PaFcoM1laPFdWgkVru1fDmkXf9ZxETg1Wac1GNyIrdrVnBDQjQhFVd2L9liPpdAzNWniuQAk8=
-Received: from DM6PR04CA0010.namprd04.prod.outlook.com (2603:10b6:5:334::15)
- by DM5PR12MB2472.namprd12.prod.outlook.com (2603:10b6:4:b9::39) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5546.24; Tue, 23 Aug
- 2022 23:07:37 +0000
-Received: from DM6NAM11FT108.eop-nam11.prod.protection.outlook.com
- (2603:10b6:5:334:cafe::af) by DM6PR04CA0010.outlook.office365.com
- (2603:10b6:5:334::15) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5546.22 via Frontend
- Transport; Tue, 23 Aug 2022 23:07:37 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 165.204.84.17)
- smtp.mailfrom=amd.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=amd.com;
-Received-SPF: Pass (protection.outlook.com: domain of amd.com designates
- 165.204.84.17 as permitted sender) receiver=protection.outlook.com;
- client-ip=165.204.84.17; helo=SATLEXMB04.amd.com; pr=C
-Received: from SATLEXMB04.amd.com (165.204.84.17) by
- DM6NAM11FT108.mail.protection.outlook.com (10.13.172.95) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.20.5566.15 via Frontend Transport; Tue, 23 Aug 2022 23:07:36 +0000
-Received: from AUS-LX-MLIMONCI.amd.com (10.180.168.240) by SATLEXMB04.amd.com
- (10.181.40.145) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.28; Tue, 23 Aug
- 2022 18:07:35 -0500
-From:   Mario Limonciello <mario.limonciello@amd.com>
-To:     <mario.limonciello@amd.com>,
-        Basavaraj Natikar <Basavaraj.Natikar@amd.com>,
-        Shyam Sundar S K <Shyam-sundar.S-k@amd.com>,
-        Linus Walleij <linus.walleij@linaro.org>
-CC:     Kent Gibson <warthog618@gmail.com>, <linux-gpio@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>
-Subject: [PATCH] pinctrl: amd: Pick some different unicode symbols
-Date:   Tue, 23 Aug 2022 18:07:52 -0500
-Message-ID: <20220823230753.14799-1-mario.limonciello@amd.com>
-X-Mailer: git-send-email 2.25.1
+        Tue, 23 Aug 2022 19:18:55 -0400
+Received: from mail-ej1-x62b.google.com (mail-ej1-x62b.google.com [IPv6:2a00:1450:4864:20::62b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4C1396C10F
+        for <linux-kernel@vger.kernel.org>; Tue, 23 Aug 2022 16:18:54 -0700 (PDT)
+Received: by mail-ej1-x62b.google.com with SMTP id bj12so13293614ejb.13
+        for <linux-kernel@vger.kernel.org>; Tue, 23 Aug 2022 16:18:54 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linux-foundation.org; s=google;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc;
+        bh=hBa9qDJUyTV6Ehu6X/BwAoxzXggaaMleeqnMPZw9DiQ=;
+        b=Qz1frpeISJqOpi7kKQ0gWUZJKJMN9sHyhFBsx72nR0jLL5foIzUtejoXAj40MhoWK7
+         AxVf9aWJkX+29ZeR0fFlsFOhNBsUq2EJgAWUxZ8VOFYVc7avE0GNcDoPFsTa+VLAprna
+         e8NNpkBL9GEhZVv1gyNs1VVlniREq9b9Wu62g=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc;
+        bh=hBa9qDJUyTV6Ehu6X/BwAoxzXggaaMleeqnMPZw9DiQ=;
+        b=SieVB0jGuQD/4PxBEQZ1+xOkYWfWdSZ7EalzGYWtYjj80S6PiVlDvoBNZyA/MyNURI
+         dKhMOJ6iS1cYo2BywgxzUYZzxsjEWCSVWhYpfGFs1tRjvoCCUgJdoukG2xHyow4/7cv8
+         DF+TM2Yx+/yblWSTPkcZ6ba/yOKRGmzIfDWVSE0ahZWQ8uxCMzsFniUiM+KiJ1QxfV87
+         2MM4HwtgTatMcRaeX2rn6GvqazPpOkwVCEm4PZkV4rnEpfJYgpTulEia0lnzNFqyb+vd
+         Q0AQf2jh5WMz2GkIh48vDdTvKxCPxkMk4cSetV/nWqHhHxaZQ9yXmGPS6EzxbXQwCBly
+         DAdg==
+X-Gm-Message-State: ACgBeo3AnU+3is4mJvLuDbLSFgFHYDlw2adtaYO/myfIaGT18s6FwCJz
+        7+OOefHdrb0YShjL8rxKAl8VQmcyC8JrbQhm
+X-Google-Smtp-Source: AA6agR7fof6/NlrmXHzgZ42b5+7OqkH80XlP3v4DKAhcKHj/tVf+gfe250BH1B7cdnW7/8RWCg9zpA==
+X-Received: by 2002:a17:907:7610:b0:73d:afe8:9837 with SMTP id jx16-20020a170907761000b0073dafe89837mr1177940ejc.606.1661296732645;
+        Tue, 23 Aug 2022 16:18:52 -0700 (PDT)
+Received: from mail-wr1-f47.google.com (mail-wr1-f47.google.com. [209.85.221.47])
+        by smtp.gmail.com with ESMTPSA id gn36-20020a1709070d2400b00738467f743dsm467853ejc.5.2022.08.23.16.18.51
+        for <linux-kernel@vger.kernel.org>
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 23 Aug 2022 16:18:51 -0700 (PDT)
+Received: by mail-wr1-f47.google.com with SMTP id h5so17912973wru.7
+        for <linux-kernel@vger.kernel.org>; Tue, 23 Aug 2022 16:18:51 -0700 (PDT)
+X-Received: by 2002:adf:e843:0:b0:225:221f:262 with SMTP id
+ d3-20020adfe843000000b00225221f0262mr14764393wrn.193.1661296730943; Tue, 23
+ Aug 2022 16:18:50 -0700 (PDT)
 MIME-Version: 1.0
+References: <20220821000737.328590235@goodmis.org> <20220821000844.510643400@goodmis.org>
+ <CAHk-=wjsxu782N0P+oMu35N7rJAOeh3buQFWJaZHZTNmVSB=3Q@mail.gmail.com>
+ <5700ac75-f6a9-877e-4011-9b314f12b5ab@acm.org> <CAHk-=wjqkWEr0MRO5hWuBoTDgNUj4qQK8V_Y36et=61mdPztJw@mail.gmail.com>
+ <02daa3d6-2847-d7e0-e23e-411076c6d4db@rasmusvillemoes.dk> <0163b361-14bf-7b4c-751a-14f1a004b1a9@acm.org>
+In-Reply-To: <0163b361-14bf-7b4c-751a-14f1a004b1a9@acm.org>
+From:   Linus Torvalds <torvalds@linux-foundation.org>
+Date:   Tue, 23 Aug 2022 16:18:34 -0700
+X-Gmail-Original-Message-ID: <CAHk-=wjMLb30d0WT_RyKBCX+JBkg3QQU6pCYkrV8f58Ya4Rgzw@mail.gmail.com>
+Message-ID: <CAHk-=wjMLb30d0WT_RyKBCX+JBkg3QQU6pCYkrV8f58Ya4Rgzw@mail.gmail.com>
+Subject: Re: [for-linus][PATCH 01/10] tracing: Suppress sparse warnings
+ triggered by is_signed_type()
+To:     Bart Van Assche <bvanassche@acm.org>
+Cc:     Rasmus Villemoes <linux@rasmusvillemoes.dk>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        linux-kernel@vger.kernel.org, Ingo Molnar <mingo@kernel.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Christoph Hellwig <hch@lst.de>,
+        Luc Van Oostenryck <luc.vanoostenryck@gmail.com>,
+        Jens Axboe <axboe@kernel.dk>
 Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 8bit
-X-Originating-IP: [10.180.168.240]
-X-ClientProxiedBy: SATLEXMB03.amd.com (10.181.40.144) To SATLEXMB04.amd.com
- (10.181.40.145)
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 45943f8f-ad83-4d57-4e16-08da855c4511
-X-MS-TrafficTypeDiagnostic: DM5PR12MB2472:EE_
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: MmhHGn2REikbgT49YCtESVbdThrNtf/pfHSyvLsHSB18C4InsLqB8KTYNwy4tfx4UHJtpC8h4PpL4efHCNtUM3A7wdLHZhictI1ukFJPa5xO1rj4KAdxx3mscN+0kI0pt5NAB3JBF7w1tWrooPzN5xo69iVdDfMu3rTVm/a0h/DmaX/vTOP9wiif+a30rJgOhJeXmzviIssa1SyqD+qzmKF0HqNjxeq2NMLEuiO/qoXo9vZ77Fcasj/859IYLO510QrMhuUdoxqqHbArrzdaLU+TBzNBOZ5oNYJ3fr5YVDatsYSHfqtf8ZAyCqqMshN/7ct4ixviZHXhUmLbXA3AyYjp7ZOW4y0DMeVvlGD1zWBvcnaPgEBIGGGpQBu9NfbFxHiQtkLcgihsuRW0ORpFEBNHp/5FRem+m70YtBHPh4kzkVbWgLCcQkwhykPSnxgw6tJACwNxK7O9kCd0QWSp9PihmLgdSphCKmHMwrIs+J1q2ty3d18IFbhcanMuq44f3m16qrDFzVDNbUqMq6ALncm/LlPkCEoqyvniwNw5ssGLhbdg8URweJQkpcI1JWV0K2k2lqCdhp6E12rpEmiFfim/3YD0hUKWjG28aF36yNxe8Z7gAH18dUv0tZB2K3MXSUDQ4CrHbq89SnKfH7Mq7QwWl7gIDjMhwbV6Ebsgzklp7bqY69mbnghEYf6mBVxHsd8pV47SgPt1O5+bBzp6/NjMOuyK9epQmSr/en0Pqm6+dwfd8epZ0BHQmKU0y+WYIGLvJQ32YW3bt+sGaUi7Ls5hwKPIPcEHKWUUlkvb220g6y3WlXWijZiLwOtkOUSX
-X-Forefront-Antispam-Report: CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:SATLEXMB04.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230016)(4636009)(396003)(136003)(39860400002)(376002)(346002)(46966006)(36840700001)(40470700004)(2906002)(44832011)(40480700001)(36756003)(54906003)(110136005)(82310400005)(316002)(5660300002)(8936002)(41300700001)(478600001)(70586007)(6666004)(70206006)(7696005)(26005)(81166007)(2616005)(356005)(86362001)(83380400001)(82740400003)(40460700003)(8676002)(4326008)(36860700001)(186003)(336012)(16526019)(47076005)(1076003)(426003)(36900700001);DIR:OUT;SFP:1101;
-X-OriginatorOrg: amd.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 23 Aug 2022 23:07:36.7500
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 45943f8f-ad83-4d57-4e16-08da855c4511
-X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=3dd8961f-e488-4e60-8e11-a82d994e183d;Ip=[165.204.84.17];Helo=[SATLEXMB04.amd.com]
-X-MS-Exchange-CrossTenant-AuthSource: DM6NAM11FT108.eop-nam11.prod.protection.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM5PR12MB2472
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Feedback from Kent had showed some better selections for symbols to
-use for pinctrl-amd debugfs output.  Adopt some of those instead.
+On Tue, Aug 23, 2022 at 3:05 PM Bart Van Assche <bvanassche@acm.org> wrote:
+>
+> Thank you Rasmus for having shared this information. Since sparse will
+> have to be modified anyway, how about extending it such that the bitwise
+> attribute can be removed from a type, e.g. via a new no_bitwise
+> attribute?
 
-Fixes: e8129a076a50 ("pinctrl: amd: Use unicode for debugfs output")
-Suggested-by: Kent Gibson <warthog618@gmail.com>
-Signed-off-by: Mario Limonciello <mario.limonciello@amd.com>
----
- drivers/pinctrl/pinctrl-amd.c | 28 ++++++++++++++--------------
- 1 file changed, 14 insertions(+), 14 deletions(-)
+I think it's actually easier to just make sparse happy.
 
-diff --git a/drivers/pinctrl/pinctrl-amd.c b/drivers/pinctrl/pinctrl-amd.c
-index 4691a33bc374..fda41907c4f1 100644
---- a/drivers/pinctrl/pinctrl-amd.c
-+++ b/drivers/pinctrl/pinctrl-amd.c
-@@ -246,7 +246,7 @@ static void amd_gpio_dbg_show(struct seq_file *s, struct gpio_chip *gc)
- 		}
- 		seq_printf(s, "GPIO bank%d\n", bank);
- 		for (; i < pin_num; i++) {
--			seq_printf(s, "📌%d\t", i);
-+			seq_printf(s, "#%d\t", i);
- 			raw_spin_lock_irqsave(&gpio_dev->lock, flags);
- 			pin_reg = readl(gpio_dev->base + i * 4);
- 			raw_spin_unlock_irqrestore(&gpio_dev->lock, flags);
-@@ -278,32 +278,32 @@ static void amd_gpio_dbg_show(struct seq_file *s, struct gpio_chip *gc)
- 			}
- 
- 			if (pin_reg & BIT(INTERRUPT_MASK_OFF))
--				interrupt_mask = "-";
-+				interrupt_mask = "😛";
- 			else
--				interrupt_mask = "+";
--			seq_printf(s, "int %s (🎭 %s)| active-%s| %s-🔫| ",
-+				interrupt_mask = "😷";
-+			seq_printf(s, "int %s (%s)| active-%s| %s-⚡| ",
- 				   interrupt_enable,
- 				   interrupt_mask,
- 				   active_level,
- 				   level_trig);
- 
- 			if (pin_reg & BIT(WAKE_CNTRL_OFF_S0I3))
--				wake_cntrl0 = "+";
-+				wake_cntrl0 = "⏰";
- 			else
--				wake_cntrl0 = "∅";
--			seq_printf(s, "S0i3 🌅 %s| ", wake_cntrl0);
-+				wake_cntrl0 = " ∅";
-+			seq_printf(s, "S0i3 %s| ", wake_cntrl0);
- 
- 			if (pin_reg & BIT(WAKE_CNTRL_OFF_S3))
--				wake_cntrl1 = "+";
-+				wake_cntrl1 = "⏰";
- 			else
--				wake_cntrl1 = "∅";
--			seq_printf(s, "S3 🌅 %s| ", wake_cntrl1);
-+				wake_cntrl1 = " ∅";
-+			seq_printf(s, "S3 %s| ", wake_cntrl1);
- 
- 			if (pin_reg & BIT(WAKE_CNTRL_OFF_S4))
--				wake_cntrl2 = "+";
-+				wake_cntrl2 = "⏰";
- 			else
--				wake_cntrl2 = "∅";
--			seq_printf(s, "S4/S5 🌅 %s| ", wake_cntrl2);
-+				wake_cntrl2 = " ∅";
-+			seq_printf(s, "S4/S5 %s| ", wake_cntrl2);
- 
- 			if (pin_reg & BIT(PULL_UP_ENABLE_OFF)) {
- 				pull_up_enable = "+";
-@@ -367,7 +367,7 @@ static void amd_gpio_dbg_show(struct seq_file *s, struct gpio_chip *gc)
- 				debounce_enable = "  ∅";
- 			}
- 			snprintf(debounce_value, sizeof(debounce_value), "%u", time * unit);
--			seq_printf(s, "debounce %s (⏰ %sus)| ", debounce_enable, debounce_value);
-+			seq_printf(s, "debounce %s (🕑 %sus)| ", debounce_enable, debounce_value);
- 			seq_printf(s, " 0x%x\n", pin_reg);
- 		}
- 	}
--- 
-2.34.1
+Can you try the sparse version at
 
+   git://git.kernel.org/pub/scm/linux/kernel/git/torvalds/sparse.git
+
+which I just set up temporarily with some patches of mine. It also
+makes that '__cond_acquires' thing work that refcount_dec_and_lock()
+uses.
+
+It does require that kernel change to make
+
+  #define is_signed_type(type)   (((type)(-1)) <= (type)0)
+
+in both places, since only "no bits set" and "all bits set" are
+special values for bitwise types.
+
+Those patches of mine are fairly hacky, and I think Luc would probably
+do it differently, but apart from the very last one, they aren't
+actively disgusting.
+
+                Linus
