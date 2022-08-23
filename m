@@ -2,87 +2,149 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0A63FC48BEA
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 10:26:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B5DFFC3814E
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 10:26:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354827AbiHWK03 (ORCPT
+        id S1354727AbiHWK0P (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 06:26:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33934 "EHLO
+        Tue, 23 Aug 2022 06:26:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34074 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353669AbiHWKLt (ORCPT
+        with ESMTP id S1353661AbiHWKLt (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 23 Aug 2022 06:11:49 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AFD4E1CFE5;
-        Tue, 23 Aug 2022 01:58:09 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 6F01DB81C39;
-        Tue, 23 Aug 2022 08:58:08 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BEA54C433C1;
-        Tue, 23 Aug 2022 08:58:06 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661245087;
-        bh=3lexMGJKqNSSshBNGmPY6l9XMI4LRtysWKOU/2UhE5M=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=nlhB7IxljUEwTzDziegjB5VLIb+nQTMQRF8Mr7g+RWmPsdy5jj4C22EaV3GKQrmLl
-         G8EnRc7a+FUaxsMlKyXZncAaK7fUGQkuLS7/t+UO2FR9dBr43xbnXMq7JzgSA1pl65
-         4IURSBR9uAn/MhoJjV3IqduXqsXHyIYucEAugfNw=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Schspa Shi <schspa@gmail.com>,
-        Cornelia Huck <cohuck@redhat.com>,
-        Alex Williamson <alex.williamson@redhat.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 209/244] vfio: Clear the caps->buf to NULL after free
-Date:   Tue, 23 Aug 2022 10:26:08 +0200
-Message-Id: <20220823080106.483014565@linuxfoundation.org>
-X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220823080059.091088642@linuxfoundation.org>
-References: <20220823080059.091088642@linuxfoundation.org>
-User-Agent: quilt/0.67
+Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6892A51416
+        for <linux-kernel@vger.kernel.org>; Tue, 23 Aug 2022 01:58:06 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=casper.20170209; h=In-Reply-To:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description;
+        bh=8IYpVH+wrNIhljjOkDaC835XwJRG4JpBDhf3B4CAyfo=; b=RRGqRzXHyy+OsbPTr0ZFcMoynE
+        dHy27asZDsNDQVq070c9q+N2fBOA99Sd7fQgEWlicegx0yAiYolzmPRHGmNFBHJJYBK/ySx471CzI
+        k13mZGzxV9gx4gvexg4reEWOAEoeRYHQzsn+L9izMDbAHkLsAWDa8Re3MWxR8dkmuWGkoiUQUYohf
+        0wxuFyFzEUMQN4FfgMKdfNkyHsUWENGbHdIUaAkSefyWlrDnfDU1T25JAcSoZ3xhTKkadDpbxFgy7
+        VQE4fH12ikuTYmuubdVDpv4pQpTOQiG9DKrJoLO5/gUJX9Y5g5SR7lGGnxhCkR79ukK8nyjl49Hhf
+        RYVI0osg==;
+Received: from j130084.upc-j.chello.nl ([24.132.130.84] helo=worktop.programming.kicks-ass.net)
+        by casper.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
+        id 1oQPjE-00F7Hi-Cd; Tue, 23 Aug 2022 08:57:46 +0000
+Received: by worktop.programming.kicks-ass.net (Postfix, from userid 1000)
+        id 06827980403; Tue, 23 Aug 2022 10:57:41 +0200 (CEST)
+Date:   Tue, 23 Aug 2022 10:57:41 +0200
+From:   Peter Zijlstra <peterz@infradead.org>
+To:     Ravi Bangoria <ravi.bangoria@amd.com>
+Cc:     acme@kernel.org, alexander.shishkin@linux.intel.com,
+        jolsa@redhat.com, namhyung@kernel.org, songliubraving@fb.com,
+        eranian@google.com, alexey.budankov@linux.intel.com,
+        ak@linux.intel.com, mark.rutland@arm.com, megha.dey@intel.com,
+        frederic@kernel.org, maddy@linux.ibm.com, irogers@google.com,
+        kim.phillips@amd.com, linux-kernel@vger.kernel.org,
+        santosh.shukla@amd.com
+Subject: Re: [RFC v2] perf: Rewrite core context handling
+Message-ID: <YwSWhXW+BUA3WkIE@worktop.programming.kicks-ass.net>
+References: <20220113134743.1292-1-ravi.bangoria@amd.com>
+ <YqdLH+ZU/sf4n0pa@hirez.programming.kicks-ass.net>
+ <YqdNKJllCVMci3ov@hirez.programming.kicks-ass.net>
+ <aab04cfb-2dd5-89dc-213d-7fa253615864@amd.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <aab04cfb-2dd5-89dc-213d-7fa253615864@amd.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Schspa Shi <schspa@gmail.com>
+On Tue, Aug 02, 2022 at 11:46:32AM +0530, Ravi Bangoria wrote:
+> On 13-Jun-22 8:13 PM, Peter Zijlstra wrote:
+> > On Mon, Jun 13, 2022 at 04:35:11PM +0200, Peter Zijlstra wrote:
 
-[ Upstream commit 6641085e8d7b3f061911517f79a2a15a0a21b97b ]
+> >> +static void ctx_pinned_sched_in(struct perf_event_context *ctx, struct pmu *pmu)
+> >>  {
+> >> +	struct perf_event_pmu_context *pmu_ctx;
+> >>  	int can_add_hw = 1;
+> >>  
+> >> -	if (ctx != &cpuctx->ctx)
+> >> -		cpuctx = NULL;
+> >> -
+> >> -	visit_groups_merge(cpuctx, &ctx->pinned_groups,
+> >> -			   smp_processor_id(),
+> >> -			   merge_sched_in, &can_add_hw);
+> >> +	if (pmu) {
+> >> +		visit_groups_merge(ctx, &ctx->pinned_groups,
+> >> +				   smp_processor_id(), pmu,
+> >> +				   merge_sched_in, &can_add_hw);
+> >> +	} else {
+> >> +		/*
+> >> +		 * XXX: This can be optimized for per-task context by calling
+> >> +		 * visit_groups_merge() only once with:
+> >> +		 *   1) pmu=NULL
+> >> +		 *   2) Ignoring pmu in perf_event_groups_cmp() when it's NULL
+> >> +		 *   3) Making can_add_hw a per-pmu variable
+> >> +		 *
+> >> +		 * Though, it can not be opimized for per-cpu context because
+> >> +		 * per-cpu rb-tree consist of pmu-subtrees and pmu-subtrees
+> >> +		 * consist of cgroup-subtrees. i.e. a cgroup events of same
+> >> +		 * cgroup but different pmus are seperated out into respective
+> >> +		 * pmu-subtrees.
+> >> +		 */
+> >> +		list_for_each_entry(pmu_ctx, &ctx->pmu_ctx_list, pmu_ctx_entry) {
+> >> +			can_add_hw = 1;
+> >> +			visit_groups_merge(ctx, &ctx->pinned_groups,
+> >> +					   smp_processor_id(), pmu_ctx->pmu,
+> >> +					   merge_sched_in, &can_add_hw);
+> >> +		}
+> >> +	}
+> >>  }
+> > 
+> > I'm not sure I follow.. task context can have multiple PMUs just the
+> > same as CPU context can, that's more or less the entire point of the
+> > patch.
+> 
+> Current rbtree key is {cpu, cgroup_id, group_idx}. However, effective key for
+> task specific context is {cpu, group_idx} because cgroup_id is always 0. And
+> effective key for cpu specific context is {cgroup_id, group_idx} because cpu
+> is same for entire rbtree.
+> 
+> With New design, rbtree key will be {cpu, pmu, cgroup_id, group_idx}. But as
+> explained above, effective key for task specific context will be {cpu, pmu,
+> group_idx}. Thus, we can handle pmu=NULL in visit_groups_merge(), same as you
+> did in the very first RFC[1]. (This may make things more complicated though
+> because we might also need to increase heap size to accommodate all pmu events
+> in single heap. Current heap size is 2 for task specific context, which is
+> sufficient if we iterate over all pmus).
+> 
+> Same optimization won't work for cpu specific context because, it's effective
+> key would be {pmu, cgroup_id, group_idx} i.e. each pmu subtree is made up of
+> cgroup subtrees.
 
-On buffer resize failure, vfio_info_cap_add() will free the buffer,
-report zero for the size, and return -ENOMEM.  As additional
-hardening, also clear the buffer pointer to prevent any chance of a
-double free.
+Agreed, new order is: {cpu, pmu, cgroup_id, group_idx}
 
-Signed-off-by: Schspa Shi <schspa@gmail.com>
-Reviewed-by: Cornelia Huck <cohuck@redhat.com>
-Link: https://lore.kernel.org/r/20220629022948.55608-1-schspa@gmail.com
-Signed-off-by: Alex Williamson <alex.williamson@redhat.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- drivers/vfio/vfio.c | 1 +
- 1 file changed, 1 insertion(+)
+Event scheduling looks at the {cpu, pmu, cgroup_id} subtree to find the
+leftmost group_idx event to schedule next.
 
-diff --git a/drivers/vfio/vfio.c b/drivers/vfio/vfio.c
-index 3c034fe14ccb..818e47fc0896 100644
---- a/drivers/vfio/vfio.c
-+++ b/drivers/vfio/vfio.c
-@@ -1850,6 +1850,7 @@ struct vfio_info_cap_header *vfio_info_cap_add(struct vfio_info_cap *caps,
- 	buf = krealloc(caps->buf, caps->size + size, GFP_KERNEL);
- 	if (!buf) {
- 		kfree(caps->buf);
-+		caps->buf = NULL;
- 		caps->size = 0;
- 		return ERR_PTR(-ENOMEM);
- 	}
--- 
-2.35.1
+However, since cgroup events are per-cpu events, per-task events will
+always have cgroup=NULL. Resulting in the subtrees:
 
+  {-1, pmu, NULL} and {cpu, pmu, NULL}
 
+Which is what the code does, it iterates ctx->pmu_ctx_list to find all
+@pmu values and then for each does the schedule dance.
+
+Now, I suppose making that:
+
+  {-1, NULL, NULL}, {cpu, NULL, NULL}
+
+could work, but wouldn't iterating the the tree be more expensive than
+just finding the sub-trees as we do now?
+
+You also talk about extending extending the heap, which I read like
+doing the heap-merge over:
+
+ {-1, pmu0, NULL}, {-1, pmu1, NULL}, ...
+ {cpu, pmu0, NULL}, ...
+
+But that doesn't make sense, the schedule dance is per-pmu.
+
+Or am I just still not getting it?
 
