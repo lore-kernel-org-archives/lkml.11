@@ -2,48 +2,49 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 84F19C32796
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 10:07:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A775CC32774
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 10:07:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352334AbiHWKH0 (ORCPT
+        id S1352410AbiHWKHf (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 06:07:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59032 "EHLO
+        Tue, 23 Aug 2022 06:07:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44246 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352419AbiHWKBx (ORCPT
+        with ESMTP id S1352428AbiHWKBx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 23 Aug 2022 06:01:53 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 803518689D;
-        Tue, 23 Aug 2022 01:49:42 -0700 (PDT)
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9254C9753D;
+        Tue, 23 Aug 2022 01:49:43 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 89FC361377;
-        Tue, 23 Aug 2022 08:49:41 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8C835C433C1;
-        Tue, 23 Aug 2022 08:49:40 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 0BE39B81C4E;
+        Tue, 23 Aug 2022 08:34:24 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 68159C4314B;
+        Tue, 23 Aug 2022 08:34:22 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661244581;
-        bh=qg+/edhD8Dj7xYw7+5T+IE/jl2tVylbiDANkfdB+QyI=;
+        s=korg; t=1661243662;
+        bh=HsE6Hc1g0L5kt8Rb3CEnOB/34WTJkVgtm0Yx9+swGaY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=XWActTxssoXAYItvce5FDiHp084N0SO/fLQzjev1KwE4YE3bBvfQ6BD/Uv31Toyss
-         Mj3EvA1JMi0oFP+t4CtLMYreIyyPINwR8McAmpz3swzIhmtbLvhX8hbpdqDy6B0C9j
-         Hjv2ovIn0XNsvsfky/UOLDfuPmA2vIZH2Qp9J42g=
+        b=lccaubqsTk8obb6MKEW1x12wA2929Y7jpQvg7LrxB05169ouXwlgYoNegwXyIXf2R
+         ZMO4olhQMRnUlB17to1/YLXtiY2MsDRDTz20bLD9B5qYkSuYFUmNzzgRI8qKwXSLXJ
+         leUAhIoiv7U4bUFQeRoCc5Tuf8ZuiqGRg3rQ3k+Q=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Dan Carpenter <dan.carpenter@oracle.com>,
-        Stefani Seibold <stefani@seibold.net>,
-        Randy Dunlap <randy.dunlap@oracle.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
+        stable@vger.kernel.org,
+        Nguyen Bao Nguyen <nguyen.nguyen.yj@renesas.com>,
+        Nishiyama Kunihiko <kunihiko.nishiyama.dn@renesas.com>,
+        Kuninori Morimoto <kuninori.morimoto.gx@renesas.com>,
+        Mark Brown <broonie@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.14 130/229] kfifo: fix kfifo_to_user() return type
-Date:   Tue, 23 Aug 2022 10:24:51 +0200
-Message-Id: <20220823080058.362416018@linuxfoundation.org>
+Subject: [PATCH 5.19 331/365] ASoC: rsnd: care default case on rsnd_ssiu_busif_err_irq_ctrl()
+Date:   Tue, 23 Aug 2022 10:03:52 +0200
+Message-Id: <20220823080132.062538913@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220823080053.202747790@linuxfoundation.org>
-References: <20220823080053.202747790@linuxfoundation.org>
+In-Reply-To: <20220823080118.128342613@linuxfoundation.org>
+References: <20220823080118.128342613@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -52,42 +53,40 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Dan Carpenter <dan.carpenter@oracle.com>
+From: Kuninori Morimoto <kuninori.morimoto.gx@renesas.com>
 
-[ Upstream commit 045ed31e23aea840648c290dbde04797064960db ]
+[ Upstream commit ef30911d3c39fd57884c348c29b9cbff88def155 ]
 
-The kfifo_to_user() macro is supposed to return zero for success or
-negative error codes.  Unfortunately, there is a signedness bug so it
-returns unsigned int.  This only affects callers which try to save the
-result in ssize_t and as far as I can see the only place which does that
-is line6_hwdep_read().
+Before, ssiu.c didn't care SSI5-8, thus,
+commit b1384d4c95088d0 ("ASoC: rsnd: care default case on
+rsnd_ssiu_busif_err_status_clear()") cares it for status clear.
 
-TL;DR: s/_uint/_int/.
+But we should care it for error irq handling, too.
+This patch cares it.
 
-Link: https://lkml.kernel.org/r/YrVL3OJVLlNhIMFs@kili
-Fixes: 144ecf310eb5 ("kfifo: fix kfifo_alloc() to return a signed int value")
-Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
-Cc: Stefani Seibold <stefani@seibold.net>
-Cc: Randy Dunlap <randy.dunlap@oracle.com>
-Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
+Reported-by: Nguyen Bao Nguyen <nguyen.nguyen.yj@renesas.com>
+Reported-by: Nishiyama Kunihiko <kunihiko.nishiyama.dn@renesas.com>
+Signed-off-by: Kuninori Morimoto <kuninori.morimoto.gx@renesas.com>
+Link: https://lore.kernel.org/r/871quocio1.wl-kuninori.morimoto.gx@renesas.com
+Signed-off-by: Mark Brown <broonie@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- include/linux/kfifo.h | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ sound/soc/sh/rcar/ssiu.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
-diff --git a/include/linux/kfifo.h b/include/linux/kfifo.h
-index 86b5fb08e96c..d1781f35dea4 100644
---- a/include/linux/kfifo.h
-+++ b/include/linux/kfifo.h
-@@ -629,7 +629,7 @@ __kfifo_uint_must_check_helper( \
-  * writer, you don't need extra locking to use these macro.
-  */
- #define	kfifo_to_user(fifo, to, len, copied) \
--__kfifo_uint_must_check_helper( \
-+__kfifo_int_must_check_helper( \
- ({ \
- 	typeof((fifo) + 1) __tmp = (fifo); \
- 	void __user *__to = (to); \
+diff --git a/sound/soc/sh/rcar/ssiu.c b/sound/soc/sh/rcar/ssiu.c
+index 4b8a63e336c7..d7f4646ee029 100644
+--- a/sound/soc/sh/rcar/ssiu.c
++++ b/sound/soc/sh/rcar/ssiu.c
+@@ -67,6 +67,8 @@ static void rsnd_ssiu_busif_err_irq_ctrl(struct rsnd_mod *mod, int enable)
+ 		shift  = 1;
+ 		offset = 1;
+ 		break;
++	default:
++		return;
+ 	}
+ 
+ 	for (i = 0; i < 4; i++) {
 -- 
 2.35.1
 
