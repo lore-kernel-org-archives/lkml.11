@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6175FC49EC3
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 33FDFC49EC2
 	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 10:47:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356457AbiHWKr1 (ORCPT
+        id S1356409AbiHWKrT (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 06:47:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46370 "EHLO
+        Tue, 23 Aug 2022 06:47:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49400 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356099AbiHWKl1 (ORCPT
+        with ESMTP id S1355987AbiHWKlO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 06:41:27 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E0442A8309;
-        Tue, 23 Aug 2022 02:08:59 -0700 (PDT)
+        Tue, 23 Aug 2022 06:41:14 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0A6FEA74E0;
+        Tue, 23 Aug 2022 02:08:43 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id EF19AB81C63;
-        Tue, 23 Aug 2022 09:08:58 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 38487C433C1;
-        Tue, 23 Aug 2022 09:08:57 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id CC1656158D;
+        Tue, 23 Aug 2022 09:08:42 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D3922C433D6;
+        Tue, 23 Aug 2022 09:08:41 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661245737;
-        bh=gqAEIG8WfbBhqZK393AADTyvKVoO0A2WXRDn+KKYA08=;
+        s=korg; t=1661245722;
+        bh=733MFEZlzfMMgRUqWOCbM0Tjj/McGBoOtzrIySUdkWY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=rAwntlz7F7O7gFLp09RvajNkx/jlcXESbN7Phtkr1v3klCQlgyedJUSFZqrI3yye+
-         VWOCZ+aSDVCgwn8bilq3C/biAs0rVlvEnEhJ95wUOEx7h81UpJbrCb9vHbjmxenHqT
-         BgbIv8grHL9EpUkWimoPVuupU6vA6Ek7hQYc90bs=
+        b=GzAXr+MonVUcf7qPGOIzbFqsWRoBA/o4Xu/yA91mQ91mayiVZA2io8nXZovH0bO7V
+         gdQczBlUtNCE0SZBm5rX9tp2ITAXg1Ldnymg385N3QBXUQQSIVlmdxg5ybfMYXunCx
+         NneK1j/5L0tJmjldM1b9yzicY51TZyv8DkXEQok8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Dan Carpenter <dan.carpenter@oracle.com>,
-        Jens Axboe <axboe@kernel.dk>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.19 143/287] null_blk: fix ida error handling in null_add_dev()
-Date:   Tue, 23 Aug 2022 10:25:12 +0200
-Message-Id: <20220823080105.341063792@linuxfoundation.org>
+        stable@vger.kernel.org, Liang He <windhl@126.com>,
+        Helge Deller <deller@gmx.de>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 4.19 167/287] video: fbdev: amba-clcd: Fix refcount leak bugs
+Date:   Tue, 23 Aug 2022 10:25:36 +0200
+Message-Id: <20220823080106.383986922@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220823080100.268827165@linuxfoundation.org>
 References: <20220823080100.268827165@linuxfoundation.org>
@@ -49,60 +49,80 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Dan Carpenter <dan.carpenter@oracle.com>
+From: Liang He <windhl@126.com>
 
-[ Upstream commit ee452a8d984f94fa8e894f003a52e776e4572881 ]
+[ Upstream commit 26c2b7d9fac42eb8317f3ceefa4c1a9a9170ca69 ]
 
-There needs to be some error checking if ida_simple_get() fails.
-Also call ida_free() if there are errors later.
+In clcdfb_of_init_display(), we should call of_node_put() for the
+references returned by of_graph_get_next_endpoint() and
+of_graph_get_remote_port_parent() which have increased the refcount.
 
-Fixes: 94bc02e30fb8 ("nullb: use ida to manage index")
-Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
-Link: https://lore.kernel.org/r/YtEhXsr6vJeoiYhd@kili
-Signed-off-by: Jens Axboe <axboe@kernel.dk>
+Besides, we should call of_node_put() both in fail path or when
+the references are not used anymore.
+
+Fixes: d10715be03bd ("video: ARM CLCD: Add DT support")
+Signed-off-by: Liang He <windhl@126.com>
+Signed-off-by: Helge Deller <deller@gmx.de>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/block/null_blk_main.c | 14 +++++++++++---
- 1 file changed, 11 insertions(+), 3 deletions(-)
+ drivers/video/fbdev/amba-clcd.c | 24 ++++++++++++++++++------
+ 1 file changed, 18 insertions(+), 6 deletions(-)
 
-diff --git a/drivers/block/null_blk_main.c b/drivers/block/null_blk_main.c
-index 4fef1fb918ec..5553df736c72 100644
---- a/drivers/block/null_blk_main.c
-+++ b/drivers/block/null_blk_main.c
-@@ -1819,8 +1819,13 @@ static int null_add_dev(struct nullb_device *dev)
- 	blk_queue_flag_clear(QUEUE_FLAG_ADD_RANDOM, nullb->q);
+diff --git a/drivers/video/fbdev/amba-clcd.c b/drivers/video/fbdev/amba-clcd.c
+index 549f78e77255..81f64ef6fa4c 100644
+--- a/drivers/video/fbdev/amba-clcd.c
++++ b/drivers/video/fbdev/amba-clcd.c
+@@ -772,8 +772,10 @@ static int clcdfb_of_init_display(struct clcd_fb *fb)
+ 		return -ENODEV;
  
- 	mutex_lock(&lock);
--	nullb->index = ida_simple_get(&nullb_indexes, 0, 0, GFP_KERNEL);
--	dev->index = nullb->index;
-+	rv = ida_simple_get(&nullb_indexes, 0, 0, GFP_KERNEL);
-+	if (rv < 0) {
-+		mutex_unlock(&lock);
-+		goto out_cleanup_zone;
+ 	panel = of_graph_get_remote_port_parent(endpoint);
+-	if (!panel)
+-		return -ENODEV;
++	if (!panel) {
++		err = -ENODEV;
++		goto out_endpoint_put;
 +	}
-+	nullb->index = rv;
-+	dev->index = rv;
- 	mutex_unlock(&lock);
  
- 	blk_queue_logical_block_size(nullb->q, dev->blocksize);
-@@ -1832,13 +1837,16 @@ static int null_add_dev(struct nullb_device *dev)
+ 	if (fb->vendor->init_panel) {
+ 		err = fb->vendor->init_panel(fb, panel);
+@@ -783,11 +785,11 @@ static int clcdfb_of_init_display(struct clcd_fb *fb)
  
- 	rv = null_gendisk_register(nullb);
- 	if (rv)
--		goto out_cleanup_zone;
-+		goto out_ida_free;
+ 	err = clcdfb_of_get_backlight(panel, fb->panel);
+ 	if (err)
+-		return err;
++		goto out_panel_put;
  
- 	mutex_lock(&lock);
- 	list_add_tail(&nullb->list, &nullb_list);
- 	mutex_unlock(&lock);
+ 	err = clcdfb_of_get_mode(&fb->dev->dev, panel, fb->panel);
+ 	if (err)
+-		return err;
++		goto out_panel_put;
  
- 	return 0;
+ 	err = of_property_read_u32(fb->dev->dev.of_node, "max-memory-bandwidth",
+ 			&max_bandwidth);
+@@ -816,11 +818,21 @@ static int clcdfb_of_init_display(struct clcd_fb *fb)
+ 
+ 	if (of_property_read_u32_array(endpoint,
+ 			"arm,pl11x,tft-r0g0b0-pads",
+-			tft_r0b0g0, ARRAY_SIZE(tft_r0b0g0)) != 0)
+-		return -ENOENT;
++			tft_r0b0g0, ARRAY_SIZE(tft_r0b0g0)) != 0) {
++		err = -ENOENT;
++		goto out_panel_put;
++	}
 +
-+out_ida_free:
-+	ida_free(&nullb_indexes, nullb->index);
- out_cleanup_zone:
- 	if (dev->zoned)
- 		null_zone_exit(dev);
++	of_node_put(panel);
++	of_node_put(endpoint);
+ 
+ 	return clcdfb_of_init_tft_panel(fb, tft_r0b0g0[0],
+ 					tft_r0b0g0[1],  tft_r0b0g0[2]);
++out_panel_put:
++	of_node_put(panel);
++out_endpoint_put:
++	of_node_put(endpoint);
++	return err;
+ }
+ 
+ static int clcdfb_of_vram_setup(struct clcd_fb *fb)
 -- 
 2.35.1
 
