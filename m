@@ -2,47 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EF045C32772
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 10:32:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9DA57C32774
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 10:32:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355487AbiHWKcR (ORCPT
+        id S1354560AbiHWKaZ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 06:32:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60660 "EHLO
+        Tue, 23 Aug 2022 06:30:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54764 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354203AbiHWKQy (ORCPT
+        with ESMTP id S1353299AbiHWKON (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 06:16:54 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DBC2580508;
-        Tue, 23 Aug 2022 02:01:17 -0700 (PDT)
+        Tue, 23 Aug 2022 06:14:13 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BE54972FE6;
+        Tue, 23 Aug 2022 01:59:54 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id CF07BB81C4E;
-        Tue, 23 Aug 2022 09:01:14 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 24EADC433C1;
-        Tue, 23 Aug 2022 09:01:12 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 3F24CCE1B2C;
+        Tue, 23 Aug 2022 08:59:53 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4F40CC433D6;
+        Tue, 23 Aug 2022 08:59:51 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661245273;
-        bh=hr/Pn1MtnmU1uTRaC0OALxO0Ji88TLf/S+Ck1P6grus=;
+        s=korg; t=1661245191;
+        bh=nJdKeWgqbwSrC1zoMSnCLvplncVpAtSgrQGy4V7rxN0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=d7yDFRzrIsdN5CUqLGP2QQGjrVMmVo6uPXqyCdq7Ur2IbjLkBAzhLuiBXRwiyx3cc
-         jPzBiKsvYqF/mLOgZZfZmiltXUG2reHu/r67ypFNqF5yFG3MtmYRWzgxOKXEaXQJ2i
-         ggf3M0IKGTd7ZfdPBQSV0viB1cVaKxYaYLfAmlCc=
+        b=T4fN/GcmafdOrofZIY+h4OaBD3K3xRQl0a/hAVw24golU+X5LbXw9ok76wbpPYi+h
+         HxOMJLus1rwqkbrd0hQjeXce6LhHL45hqeD0USRn9sbSAw/u87YKwdfDVf8zpHuYs9
+         Aar56weC+gO9Wkyc6wP2BKffv3nzsTVCl0ApDDZM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jean-Philippe Brucker <jean-philippe@linaro.org>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Ovidiu Panait <ovidiu.panait@windriver.com>
-Subject: [PATCH 4.19 026/287] selftests/bpf: Fix "dubious pointer arithmetic" test
-Date:   Tue, 23 Aug 2022 10:23:15 +0200
-Message-Id: <20220823080101.156298170@linuxfoundation.org>
+        "Darrick J. Wong" <djwong@kernel.org>,
+        Allison Henderson <allison.henderson@oracle.com>,
+        Catherine Hoang <catherine.hoang@oracle.com>,
+        Leah Rumancik <leah.rumancik@gmail.com>
+Subject: [PATCH 5.15 244/244] xfs: reject crazy array sizes being fed to XFS_IOC_GETBMAP*
+Date:   Tue, 23 Aug 2022 10:26:43 +0200
+Message-Id: <20220823080107.796989859@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220823080100.268827165@linuxfoundation.org>
-References: <20220823080100.268827165@linuxfoundation.org>
+In-Reply-To: <20220823080059.091088642@linuxfoundation.org>
+References: <20220823080059.091088642@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -51,50 +51,47 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Ovidiu Panait <ovidiu.panait@windriver.com>
+From: "Darrick J. Wong" <djwong@kernel.org>
 
-From: Jean-Philippe Brucker <jean-philippe@linaro.org>
+[ Upstream commit 29d650f7e3ab55283b89c9f5883d0c256ce478b5 ]
 
-commit 3615bdf6d9b19db12b1589861609b4f1c6a8d303 upstream.
+Syzbot tripped over the following complaint from the kernel:
 
-The verifier trace changed following a bugfix. After checking the 64-bit
-sign, only the upper bit mask is known, not bit 31. Update the test
-accordingly.
+WARNING: CPU: 2 PID: 15402 at mm/util.c:597 kvmalloc_node+0x11e/0x125 mm/util.c:597
 
-Signed-off-by: Jean-Philippe Brucker <jean-philippe@linaro.org>
-Acked-by: John Fastabend <john.fastabend@gmail.com>
-Signed-off-by: Alexei Starovoitov <ast@kernel.org>
-[OP: adjust for 4.19 selftests]
-Signed-off-by: Ovidiu Panait <ovidiu.panait@windriver.com>
+While trying to run XFS_IOC_GETBMAP against the following structure:
+
+struct getbmap fubar = {
+	.bmv_count	= 0x22dae649,
+};
+
+Obviously, this is a crazy huge value since the next thing that the
+ioctl would do is allocate 37GB of memory.  This is enough to make
+kvmalloc mad, but isn't large enough to trip the validation functions.
+In other words, I'm fussing with checks that were **already sufficient**
+because that's easier than dealing with 644 internal bug reports.  Yes,
+that's right, six hundred and forty-four.
+
+Signed-off-by: Darrick J. Wong <djwong@kernel.org>
+Reviewed-by: Allison Henderson <allison.henderson@oracle.com>
+Reviewed-by: Catherine Hoang <catherine.hoang@oracle.com>
+Signed-off-by: Leah Rumancik <leah.rumancik@gmail.com>
+Acked-by: Darrick J. Wong <djwong@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- tools/testing/selftests/bpf/test_align.c |    8 ++++----
- 1 file changed, 4 insertions(+), 4 deletions(-)
+ fs/xfs/xfs_ioctl.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/tools/testing/selftests/bpf/test_align.c
-+++ b/tools/testing/selftests/bpf/test_align.c
-@@ -475,10 +475,10 @@ static struct bpf_align_test tests[] = {
- 			 */
- 			{7, "R5=inv(id=0,smin_value=-9223372036854775806,smax_value=9223372036854775806,umin_value=2,umax_value=18446744073709551614,var_off=(0x2; 0xfffffffffffffffc)"},
- 			/* Checked s>=0 */
--			{9, "R5=inv(id=0,umin_value=2,umax_value=9223372034707292158,var_off=(0x2; 0x7fffffff7ffffffc)"},
-+			{9, "R5=inv(id=0,umin_value=2,umax_value=9223372036854775806,var_off=(0x2; 0x7ffffffffffffffc)"},
- 			/* packet pointer + nonnegative (4n+2) */
--			{11, "R6_w=pkt(id=1,off=0,r=0,umin_value=2,umax_value=9223372034707292158,var_off=(0x2; 0x7fffffff7ffffffc)"},
--			{13, "R4=pkt(id=1,off=4,r=0,umin_value=2,umax_value=9223372034707292158,var_off=(0x2; 0x7fffffff7ffffffc)"},
-+			{11, "R6_w=pkt(id=1,off=0,r=0,umin_value=2,umax_value=9223372036854775806,var_off=(0x2; 0x7ffffffffffffffc)"},
-+			{13, "R4=pkt(id=1,off=4,r=0,umin_value=2,umax_value=9223372036854775806,var_off=(0x2; 0x7ffffffffffffffc)"},
- 			/* NET_IP_ALIGN + (4n+2) == (4n), alignment is fine.
- 			 * We checked the bounds, but it might have been able
- 			 * to overflow if the packet pointer started in the
-@@ -486,7 +486,7 @@ static struct bpf_align_test tests[] = {
- 			 * So we did not get a 'range' on R6, and the access
- 			 * attempt will fail.
- 			 */
--			{15, "R6=pkt(id=1,off=0,r=0,umin_value=2,umax_value=9223372034707292158,var_off=(0x2; 0x7fffffff7ffffffc)"},
-+			{15, "R6=pkt(id=1,off=0,r=0,umin_value=2,umax_value=9223372036854775806,var_off=(0x2; 0x7ffffffffffffffc)"},
- 		}
- 	},
- 	{
+--- a/fs/xfs/xfs_ioctl.c
++++ b/fs/xfs/xfs_ioctl.c
+@@ -1545,7 +1545,7 @@ xfs_ioc_getbmap(
+ 
+ 	if (bmx.bmv_count < 2)
+ 		return -EINVAL;
+-	if (bmx.bmv_count > ULONG_MAX / recsize)
++	if (bmx.bmv_count >= INT_MAX / recsize)
+ 		return -ENOMEM;
+ 
+ 	buf = kvzalloc(bmx.bmv_count * sizeof(*buf), GFP_KERNEL);
 
 
