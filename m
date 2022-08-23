@@ -2,202 +2,81 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 335C6C28D13
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 02:50:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F0395C32774
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 02:54:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239784AbiHWCuc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 22 Aug 2022 22:50:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45642 "EHLO
+        id S239410AbiHWCy4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 22 Aug 2022 22:54:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48886 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239777AbiHWCu3 (ORCPT
+        with ESMTP id S239198AbiHWCyw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 22 Aug 2022 22:50:29 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7CF8B5A3C7
-        for <linux-kernel@vger.kernel.org>; Mon, 22 Aug 2022 19:50:28 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 3BEB7B81A5C
-        for <linux-kernel@vger.kernel.org>; Tue, 23 Aug 2022 02:50:27 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E2C31C433D6;
-        Tue, 23 Aug 2022 02:50:23 +0000 (UTC)
-From:   Huacai Chen <chenhuacai@loongson.cn>
-To:     Huacai Chen <chenhuacai@kernel.org>
-Cc:     loongarch@lists.linux.dev, Xuefeng Li <lixuefeng@loongson.cn>,
-        Guo Ren <guoren@kernel.org>, Xuerui Wang <kernel@xen0n.name>,
-        Jiaxun Yang <jiaxun.yang@flygoat.com>,
-        linux-kernel@vger.kernel.org, Huacai Chen <chenhuacai@loongson.cn>
-Subject: [PATCH] LoongArch: Cleanup headers to avoid circular dependency
-Date:   Tue, 23 Aug 2022 10:50:10 +0800
-Message-Id: <20220823025010.3826452-1-chenhuacai@loongson.cn>
-X-Mailer: git-send-email 2.31.1
+        Mon, 22 Aug 2022 22:54:52 -0400
+Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 741F05A820;
+        Mon, 22 Aug 2022 19:54:51 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=casper.20170209; h=Content-Transfer-Encoding:MIME-Version:
+        Message-Id:Date:Subject:Cc:To:From:Sender:Reply-To:Content-Type:Content-ID:
+        Content-Description:In-Reply-To:References;
+        bh=Ay5mWJCmRao7orkUjcgnlnNdFTL0xSDJ9G/Iykn7rLc=; b=jEdU0n8DZrItE9k0wgMsfS2s/r
+        SylBlFWfHU9u1KX3+0m0F4veo5BMClzbJFErTbOIxKoUunFiQ2ZSUD8dUhjsL/XlTYmrnTlNGDpaJ
+        rvNOSy8iT/uk5CvM5VOvpP7uNje0aRzgz1zns9ODu1QQx9mbeFQZ5Vube+AaEbd/b8+jQ3UL2hqeV
+        d2T/bmWR4hCLBQcrPKOkV6K691grwlSOKtOMKkR2DZ6oPaXSrKaVbqypEAEUQ2weRIiOUKV7Gn/wj
+        1j2GDy7QDfQ6f5mGSpp7phyDoa5JArGGIPX2npfSjSf/gYd+DAvxzqn+OhYkOlX0zrE6r+TMXIz1P
+        lNOqVXGw==;
+Received: from [2601:1c0:6280:3f0::a6b3] (helo=casper.infradead.org)
+        by casper.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
+        id 1oQK3z-00Et5w-K4; Tue, 23 Aug 2022 02:54:48 +0000
+From:   Randy Dunlap <rdunlap@infradead.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Randy Dunlap <rdunlap@infradead.org>,
+        kernel test robot <lkp@intel.com>,
+        Aditya Srivastava <yashsri421@gmail.com>,
+        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
+        linux-mips@vger.kernel.org,
+        Sergey Ryazanov <ryazanov.s.a@gmail.com>
+Subject: [PATCH] MIPS: ath25: clean up non-kernel-doc comment warning
+Date:   Mon, 22 Aug 2022 19:54:41 -0700
+Message-Id: <20220823025441.30708-1-rdunlap@infradead.org>
+X-Mailer: git-send-email 2.37.2
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-When enable GENERIC_IOREMAP, there will be circular dependency to cause
-build errors. The root cause is that pgtable.h shouldn't include io.h
-but pgtable.h need some macros defined in io.h. So cleanup those macros
-and remove the unnecessary inclusions, as other architectures do.
+Don't use "/**" kernel-doc notation for comments that are not in
+kernel-doc format.
 
-Signed-off-by: Huacai Chen <chenhuacai@loongson.cn>
+Eliminates one warning:
+
+arch/mips/pci/pci-ar2315.c:6: warning: This comment starts with
+  '/**', but isn't a kernel-doc comment. Refer
+  Documentation/doc-guide/kernel-doc.rst
+    * Both AR2315 and AR2316 chips have PCI interface unit, which supports DMA
+
+Signed-off-by: Randy Dunlap <rdunlap@infradead.org>
+Reported-by: kernel test robot <lkp@intel.com>
+Cc: Aditya Srivastava <yashsri421@gmail.com>
+Cc: Thomas Bogendoerfer <tsbogend@alpha.franken.de>
+Cc: linux-mips@vger.kernel.org
+Cc: Sergey Ryazanov <ryazanov.s.a@gmail.com>
 ---
- arch/loongarch/include/asm/addrspace.h | 16 ++++++++++++++++
- arch/loongarch/include/asm/io.h        | 19 -------------------
- arch/loongarch/include/asm/page.h      |  2 +-
- arch/loongarch/include/asm/pgtable.h   |  7 +++----
- arch/loongarch/mm/mmap.c               | 11 ++---------
- 5 files changed, 22 insertions(+), 33 deletions(-)
+Fixes: 3ed7a2a702dc ("MIPS: ath25: add AR2315 PCI host controller driver")
+  but backport is not needed.
 
-diff --git a/arch/loongarch/include/asm/addrspace.h b/arch/loongarch/include/asm/addrspace.h
-index b91e0733b2e5..d342935e5a72 100644
---- a/arch/loongarch/include/asm/addrspace.h
-+++ b/arch/loongarch/include/asm/addrspace.h
-@@ -109,4 +109,20 @@ extern unsigned long vm_map_base;
+ arch/mips/pci/pci-ar2315.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+--- a/arch/mips/pci/pci-ar2315.c
++++ b/arch/mips/pci/pci-ar2315.c
+@@ -2,7 +2,7 @@
+ /*
   */
- #define PHYSADDR(a)		((_ACAST64_(a)) & TO_PHYS_MASK)
  
+-/**
 +/*
-+ * On LoongArch, I/O ports mappring is following:
-+ *
-+ *              |         ....          |
-+ *              |-----------------------|
-+ *              | pci io ports(16K~32M) |
-+ *              |-----------------------|
-+ *              | isa io ports(0  ~16K) |
-+ * PCI_IOBASE ->|-----------------------|
-+ *              |         ....          |
-+ */
-+#define PCI_IOBASE	((void __iomem *)(vm_map_base + (2 * PAGE_SIZE)))
-+#define PCI_IOSIZE	SZ_32M
-+#define ISA_IOSIZE	SZ_16K
-+#define IO_SPACE_LIMIT	(PCI_IOSIZE - 1)
-+
- #endif /* _ASM_ADDRSPACE_H */
-diff --git a/arch/loongarch/include/asm/io.h b/arch/loongarch/include/asm/io.h
-index 884599739b36..999944ea1cea 100644
---- a/arch/loongarch/include/asm/io.h
-+++ b/arch/loongarch/include/asm/io.h
-@@ -7,34 +7,15 @@
- 
- #define ARCH_HAS_IOREMAP_WC
- 
--#include <linux/compiler.h>
- #include <linux/kernel.h>
- #include <linux/types.h>
- 
- #include <asm/addrspace.h>
--#include <asm/bug.h>
--#include <asm/byteorder.h>
- #include <asm/cpu.h>
- #include <asm/page.h>
- #include <asm/pgtable-bits.h>
- #include <asm/string.h>
- 
--/*
-- * On LoongArch, I/O ports mappring is following:
-- *
-- *              |         ....          |
-- *              |-----------------------|
-- *              | pci io ports(64K~32M) |
-- *              |-----------------------|
-- *              | isa io ports(0  ~16K) |
-- * PCI_IOBASE ->|-----------------------|
-- *              |         ....          |
-- */
--#define PCI_IOBASE	((void __iomem *)(vm_map_base + (2 * PAGE_SIZE)))
--#define PCI_IOSIZE	SZ_32M
--#define ISA_IOSIZE	SZ_16K
--#define IO_SPACE_LIMIT	(PCI_IOSIZE - 1)
--
- /*
-  * Change "struct page" to physical address.
-  */
-diff --git a/arch/loongarch/include/asm/page.h b/arch/loongarch/include/asm/page.h
-index a37324ac460b..53f284a96182 100644
---- a/arch/loongarch/include/asm/page.h
-+++ b/arch/loongarch/include/asm/page.h
-@@ -95,7 +95,7 @@ static inline int pfn_valid(unsigned long pfn)
- 
- #endif
- 
--#define virt_to_pfn(kaddr)	PFN_DOWN(virt_to_phys((void *)(kaddr)))
-+#define virt_to_pfn(kaddr)	PFN_DOWN(PHYSADDR(kaddr))
- #define virt_to_page(kaddr)	pfn_to_page(virt_to_pfn(kaddr))
- 
- extern int __virt_addr_valid(volatile void *kaddr);
-diff --git a/arch/loongarch/include/asm/pgtable.h b/arch/loongarch/include/asm/pgtable.h
-index e03443abaf7d..8ea57e2f0e04 100644
---- a/arch/loongarch/include/asm/pgtable.h
-+++ b/arch/loongarch/include/asm/pgtable.h
-@@ -59,7 +59,6 @@
- #include <linux/mm_types.h>
- #include <linux/mmzone.h>
- #include <asm/fixmap.h>
--#include <asm/io.h>
- 
- struct mm_struct;
- struct vm_area_struct;
-@@ -145,7 +144,7 @@ static inline void set_p4d(p4d_t *p4d, p4d_t p4dval)
- 	*p4d = p4dval;
- }
- 
--#define p4d_phys(p4d)		virt_to_phys((void *)p4d_val(p4d))
-+#define p4d_phys(p4d)		PHYSADDR(p4d_val(p4d))
- #define p4d_page(p4d)		(pfn_to_page(p4d_phys(p4d) >> PAGE_SHIFT))
- 
- #endif
-@@ -188,7 +187,7 @@ static inline pmd_t *pud_pgtable(pud_t pud)
- 
- #define set_pud(pudptr, pudval) do { *(pudptr) = (pudval); } while (0)
- 
--#define pud_phys(pud)		virt_to_phys((void *)pud_val(pud))
-+#define pud_phys(pud)		PHYSADDR(pud_val(pud))
- #define pud_page(pud)		(pfn_to_page(pud_phys(pud) >> PAGE_SHIFT))
- 
- #endif
-@@ -221,7 +220,7 @@ static inline void pmd_clear(pmd_t *pmdp)
- 
- #define set_pmd(pmdptr, pmdval) do { *(pmdptr) = (pmdval); } while (0)
- 
--#define pmd_phys(pmd)		virt_to_phys((void *)pmd_val(pmd))
-+#define pmd_phys(pmd)		PHYSADDR(pmd_val(pmd))
- 
- #ifndef CONFIG_TRANSPARENT_HUGEPAGE
- #define pmd_page(pmd)		(pfn_to_page(pmd_phys(pmd) >> PAGE_SHIFT))
-diff --git a/arch/loongarch/mm/mmap.c b/arch/loongarch/mm/mmap.c
-index 52e40f0ba732..381a569635a9 100644
---- a/arch/loongarch/mm/mmap.c
-+++ b/arch/loongarch/mm/mmap.c
-@@ -2,16 +2,9 @@
- /*
-  * Copyright (C) 2020-2022 Loongson Technology Corporation Limited
-  */
--#include <linux/compiler.h>
--#include <linux/elf-randomize.h>
--#include <linux/errno.h>
-+#include <linux/export.h>
- #include <linux/mm.h>
- #include <linux/mman.h>
--#include <linux/export.h>
--#include <linux/personality.h>
--#include <linux/random.h>
--#include <linux/sched/signal.h>
--#include <linux/sched/mm.h>
- 
- unsigned long shm_align_mask = PAGE_SIZE - 1;	/* Sane caches */
- EXPORT_SYMBOL(shm_align_mask);
-@@ -120,6 +113,6 @@ int __virt_addr_valid(volatile void *kaddr)
- 	if ((vaddr < PAGE_OFFSET) || (vaddr >= vm_map_base))
- 		return 0;
- 
--	return pfn_valid(PFN_DOWN(virt_to_phys(kaddr)));
-+	return pfn_valid(PFN_DOWN(PHYSADDR(kaddr)));
- }
- EXPORT_SYMBOL_GPL(__virt_addr_valid);
--- 
-2.31.1
-
+  * Both AR2315 and AR2316 chips have PCI interface unit, which supports DMA
+  * and interrupt. PCI interface supports MMIO access method, but does not
+  * seem to support I/O ports.
