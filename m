@@ -2,44 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 98265C32774
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BFDD7C32792
 	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 11:37:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357532AbiHWLfj (ORCPT
+        id S1357647AbiHWLf7 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 07:35:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49198 "EHLO
+        Tue, 23 Aug 2022 07:35:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49620 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357644AbiHWLbq (ORCPT
+        with ESMTP id S1357778AbiHWLb4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 07:31:46 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 032A975FD2;
-        Tue, 23 Aug 2022 02:25:53 -0700 (PDT)
+        Tue, 23 Aug 2022 07:31:56 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B9524C6B41;
+        Tue, 23 Aug 2022 02:26:04 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 30E3C61316;
-        Tue, 23 Aug 2022 09:25:53 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 20C57C433B5;
-        Tue, 23 Aug 2022 09:25:51 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id EBF5AB81C63;
+        Tue, 23 Aug 2022 09:26:02 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5428FC433C1;
+        Tue, 23 Aug 2022 09:26:01 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661246752;
-        bh=sMFG5ij3FDeMSFUJdSZ/My1tY6qlSvxy3Vk74Zdkcjc=;
+        s=korg; t=1661246761;
+        bh=vXDcH9p22lzctV7voDCYx49/6X0hsDZl1XdNwJZkaPY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=y6l7ekF/NNp1delZW/kirUAvVbwsDymAU/s+rNewuGIOUiWOBG/r8G5tMagw0Ke9/
-         NyDS0I+8hmqS/mAfo4SWjHF2K2+I4O58iWS3c2msOp2qGTLl6pjW+ylH7pffCuCmsN
-         rZdSKy+6izr9ISVObMFxDVahtn95N5of/vkggDhI=
+        b=nQXckeF1HGYN6navbil9CjaQHE9V2ZKDUyKtTQvM0a6ctuMj6M5SVzY/xHcOhXYJl
+         CY0NPsMVnrR/tOOHkT2ZbUPUDOrz7FvJAmY37O4YJU5QofB30mzmg2dbCFv01UctCy
+         slDhYcewuVjHypJuQU29IGywHQ1KvWvvxAK3kD44=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Srinivas Kandagatla <srinivas.kandagatla@linaro.org>,
-        Mark Brown <broonie@kernel.org>,
+        stable@vger.kernel.org, Daniel Starke <daniel.starke@siemens.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 209/389] ASoC: codecs: wcd9335: move gains from SX_TLV to S8_TLV
-Date:   Tue, 23 Aug 2022 10:24:47 +0200
-Message-Id: <20220823080124.366667528@linuxfoundation.org>
+Subject: [PATCH 5.4 212/389] tty: n_gsm: fix packet re-transmission without open control channel
+Date:   Tue, 23 Aug 2022 10:24:50 +0200
+Message-Id: <20220823080124.462442388@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220823080115.331990024@linuxfoundation.org>
 References: <20220823080115.331990024@linuxfoundation.org>
@@ -51,116 +49,38 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Srinivas Kandagatla <srinivas.kandagatla@linaro.org>
+From: Daniel Starke <daniel.starke@siemens.com>
 
-[ Upstream commit 2fbe0953732e06b471cdedbf6f615b84235580d8 ]
+[ Upstream commit 4fae831b3a71fc5a44cc5c7d0b8c1267ee7659f5 ]
 
-move all the digital gains form using SX_TLV to S8_TLV, these gains are
-actually 8 bit gains with 7th signed bit and ranges from -84dB to +40dB
+In the current implementation control packets are re-transmitted even if
+the control channel closed down during T2. This is wrong.
+Check whether the control channel is open before re-transmitting any
+packets. Note that control channel open/close is handled by T1 and not T2
+and remains unaffected by this.
 
-rest of the Qualcomm wcd codecs uses these properly.
-
-Fixes: 8c4f021d806a ("ASoC: wcd9335: add basic controls")
-Signed-off-by: Srinivas Kandagatla <srinivas.kandagatla@linaro.org>
-Link: https://lore.kernel.org/r/20220609111901.318047-3-srinivas.kandagatla@linaro.org
-Signed-off-by: Mark Brown <broonie@kernel.org>
+Fixes: e1eaea46bb40 ("tty: n_gsm line discipline")
+Signed-off-by: Daniel Starke <daniel.starke@siemens.com>
+Link: https://lore.kernel.org/r/20220701061652.39604-7-daniel.starke@siemens.com
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- sound/soc/codecs/wcd9335.c | 81 +++++++++++++++++---------------------
- 1 file changed, 36 insertions(+), 45 deletions(-)
+ drivers/tty/n_gsm.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/sound/soc/codecs/wcd9335.c b/sound/soc/codecs/wcd9335.c
-index 016aff97e2fb..c01c69613f63 100644
---- a/sound/soc/codecs/wcd9335.c
-+++ b/sound/soc/codecs/wcd9335.c
-@@ -2252,51 +2252,42 @@ static int wcd9335_rx_hph_mode_put(struct snd_kcontrol *kc,
- 
- static const struct snd_kcontrol_new wcd9335_snd_controls[] = {
- 	/* -84dB min - 40dB max */
--	SOC_SINGLE_SX_TLV("RX0 Digital Volume", WCD9335_CDC_RX0_RX_VOL_CTL,
--		0, -84, 40, digital_gain),
--	SOC_SINGLE_SX_TLV("RX1 Digital Volume", WCD9335_CDC_RX1_RX_VOL_CTL,
--		0, -84, 40, digital_gain),
--	SOC_SINGLE_SX_TLV("RX2 Digital Volume", WCD9335_CDC_RX2_RX_VOL_CTL,
--		0, -84, 40, digital_gain),
--	SOC_SINGLE_SX_TLV("RX3 Digital Volume", WCD9335_CDC_RX3_RX_VOL_CTL,
--		0, -84, 40, digital_gain),
--	SOC_SINGLE_SX_TLV("RX4 Digital Volume", WCD9335_CDC_RX4_RX_VOL_CTL,
--		0, -84, 40, digital_gain),
--	SOC_SINGLE_SX_TLV("RX5 Digital Volume", WCD9335_CDC_RX5_RX_VOL_CTL,
--		0, -84, 40, digital_gain),
--	SOC_SINGLE_SX_TLV("RX6 Digital Volume", WCD9335_CDC_RX6_RX_VOL_CTL,
--		0, -84, 40, digital_gain),
--	SOC_SINGLE_SX_TLV("RX7 Digital Volume", WCD9335_CDC_RX7_RX_VOL_CTL,
--		0, -84, 40, digital_gain),
--	SOC_SINGLE_SX_TLV("RX8 Digital Volume", WCD9335_CDC_RX8_RX_VOL_CTL,
--		0, -84, 40, digital_gain),
--	SOC_SINGLE_SX_TLV("RX0 Mix Digital Volume",
--			  WCD9335_CDC_RX0_RX_VOL_MIX_CTL,
--			  0, -84, 40, digital_gain),
--	SOC_SINGLE_SX_TLV("RX1 Mix Digital Volume",
--			  WCD9335_CDC_RX1_RX_VOL_MIX_CTL,
--			  0, -84, 40, digital_gain),
--	SOC_SINGLE_SX_TLV("RX2 Mix Digital Volume",
--			  WCD9335_CDC_RX2_RX_VOL_MIX_CTL,
--			  0, -84, 40, digital_gain),
--	SOC_SINGLE_SX_TLV("RX3 Mix Digital Volume",
--			  WCD9335_CDC_RX3_RX_VOL_MIX_CTL,
--			  0, -84, 40, digital_gain),
--	SOC_SINGLE_SX_TLV("RX4 Mix Digital Volume",
--			  WCD9335_CDC_RX4_RX_VOL_MIX_CTL,
--			  0, -84, 40, digital_gain),
--	SOC_SINGLE_SX_TLV("RX5 Mix Digital Volume",
--			  WCD9335_CDC_RX5_RX_VOL_MIX_CTL,
--			  0, -84, 40, digital_gain),
--	SOC_SINGLE_SX_TLV("RX6 Mix Digital Volume",
--			  WCD9335_CDC_RX6_RX_VOL_MIX_CTL,
--			  0, -84, 40, digital_gain),
--	SOC_SINGLE_SX_TLV("RX7 Mix Digital Volume",
--			  WCD9335_CDC_RX7_RX_VOL_MIX_CTL,
--			  0, -84, 40, digital_gain),
--	SOC_SINGLE_SX_TLV("RX8 Mix Digital Volume",
--			  WCD9335_CDC_RX8_RX_VOL_MIX_CTL,
--			  0, -84, 40, digital_gain),
-+	SOC_SINGLE_S8_TLV("RX0 Digital Volume", WCD9335_CDC_RX0_RX_VOL_CTL,
-+			-84, 40, digital_gain),
-+	SOC_SINGLE_S8_TLV("RX1 Digital Volume", WCD9335_CDC_RX1_RX_VOL_CTL,
-+			-84, 40, digital_gain),
-+	SOC_SINGLE_S8_TLV("RX2 Digital Volume", WCD9335_CDC_RX2_RX_VOL_CTL,
-+			-84, 40, digital_gain),
-+	SOC_SINGLE_S8_TLV("RX3 Digital Volume", WCD9335_CDC_RX3_RX_VOL_CTL,
-+			-84, 40, digital_gain),
-+	SOC_SINGLE_S8_TLV("RX4 Digital Volume", WCD9335_CDC_RX4_RX_VOL_CTL,
-+			-84, 40, digital_gain),
-+	SOC_SINGLE_S8_TLV("RX5 Digital Volume", WCD9335_CDC_RX5_RX_VOL_CTL,
-+			-84, 40, digital_gain),
-+	SOC_SINGLE_S8_TLV("RX6 Digital Volume", WCD9335_CDC_RX6_RX_VOL_CTL,
-+			-84, 40, digital_gain),
-+	SOC_SINGLE_S8_TLV("RX7 Digital Volume", WCD9335_CDC_RX7_RX_VOL_CTL,
-+			-84, 40, digital_gain),
-+	SOC_SINGLE_S8_TLV("RX8 Digital Volume", WCD9335_CDC_RX8_RX_VOL_CTL,
-+			-84, 40, digital_gain),
-+	SOC_SINGLE_S8_TLV("RX0 Mix Digital Volume", WCD9335_CDC_RX0_RX_VOL_MIX_CTL,
-+			-84, 40, digital_gain),
-+	SOC_SINGLE_S8_TLV("RX1 Mix Digital Volume", WCD9335_CDC_RX1_RX_VOL_MIX_CTL,
-+			-84, 40, digital_gain),
-+	SOC_SINGLE_S8_TLV("RX2 Mix Digital Volume", WCD9335_CDC_RX2_RX_VOL_MIX_CTL,
-+			-84, 40, digital_gain),
-+	SOC_SINGLE_S8_TLV("RX3 Mix Digital Volume", WCD9335_CDC_RX3_RX_VOL_MIX_CTL,
-+			-84, 40, digital_gain),
-+	SOC_SINGLE_S8_TLV("RX4 Mix Digital Volume", WCD9335_CDC_RX4_RX_VOL_MIX_CTL,
-+			-84, 40, digital_gain),
-+	SOC_SINGLE_S8_TLV("RX5 Mix Digital Volume", WCD9335_CDC_RX5_RX_VOL_MIX_CTL,
-+			-84, 40, digital_gain),
-+	SOC_SINGLE_S8_TLV("RX6 Mix Digital Volume", WCD9335_CDC_RX6_RX_VOL_MIX_CTL,
-+			-84, 40, digital_gain),
-+	SOC_SINGLE_S8_TLV("RX7 Mix Digital Volume", WCD9335_CDC_RX7_RX_VOL_MIX_CTL,
-+			-84, 40, digital_gain),
-+	SOC_SINGLE_S8_TLV("RX8 Mix Digital Volume", WCD9335_CDC_RX8_RX_VOL_MIX_CTL,
-+			-84, 40, digital_gain),
- 	SOC_ENUM("RX INT0_1 HPF cut off", cf_int0_1_enum),
- 	SOC_ENUM("RX INT0_2 HPF cut off", cf_int0_2_enum),
- 	SOC_ENUM("RX INT1_1 HPF cut off", cf_int1_1_enum),
+diff --git a/drivers/tty/n_gsm.c b/drivers/tty/n_gsm.c
+index cab30df61196..893d6f502c2e 100644
+--- a/drivers/tty/n_gsm.c
++++ b/drivers/tty/n_gsm.c
+@@ -1382,7 +1382,7 @@ static void gsm_control_retransmit(struct timer_list *t)
+ 	spin_lock_irqsave(&gsm->control_lock, flags);
+ 	ctrl = gsm->pending_cmd;
+ 	if (ctrl) {
+-		if (gsm->cretries == 0) {
++		if (gsm->cretries == 0 || !gsm->dlci[0] || gsm->dlci[0]->dead) {
+ 			gsm->pending_cmd = NULL;
+ 			ctrl->error = -ETIMEDOUT;
+ 			ctrl->done = 1;
 -- 
 2.35.1
 
