@@ -2,42 +2,40 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D009DC32772
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 09:00:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 897F3C32772
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 09:01:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235570AbiHWJAz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 05:00:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42186 "EHLO
+        id S239882AbiHWJBG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 23 Aug 2022 05:01:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45116 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346082AbiHWJAS (ORCPT
+        with ESMTP id S1347443AbiHWJA2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 05:00:18 -0400
+        Tue, 23 Aug 2022 05:00:28 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 887E081B07;
-        Tue, 23 Aug 2022 01:27:15 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8277F7330F;
+        Tue, 23 Aug 2022 01:27:01 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id C4BB96148B;
-        Tue, 23 Aug 2022 08:27:10 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B4C65C433D6;
-        Tue, 23 Aug 2022 08:27:09 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 50E9461488;
+        Tue, 23 Aug 2022 08:26:58 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D35FDC433D6;
+        Tue, 23 Aug 2022 08:26:56 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661243230;
-        bh=Fc/ptDfLjFPxNpv7wJK9pnk9GeqBK66W9EGqSZq/lbo=;
+        s=korg; t=1661243217;
+        bh=TmWiTKgfzoKoGyNX5HZwo3WU9A42IVlNd++im0xVLXE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=x8iHAHYMRx4okq1GrzA/hO3IvWyj+JH2I+mp6eyfzjc0AB0tiVO5d8od0VEcoD23x
-         IPh8QgElPX6tBAv+WnnUz8CSuCSrWn3kFZ8dA4/zr/NLbHel0LjaLhW+YQfpdUeHc8
-         5cPmLZGiE9vawbeuxpShIMXJJ0qOLq8NhjDr/2dQ=
+        b=ZxhdBitsTGTcMbXSL0W/O4I8Q3A5dRxqc+F9tM/48gknpUoUHBtD6YWmbAFe8GD9q
+         SDDE92bMh/VDaizGiDgBz4q/Xeem5s4yCfie05CMlyMjDNE/LHMNsDYWPYGWkgaXLm
+         u8IOI276zp/0N+/48+Ki1OUUI4AkljSyYYfmDb8A=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Xin Xiong <xiongx18@fudan.edu.cn>,
-        Xin Tan <tanxin.ctf@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>
-Subject: [PATCH 5.19 211/365] net: fix potential refcount leak in ndisc_router_discovery()
-Date:   Tue, 23 Aug 2022 10:01:52 +0200
-Message-Id: <20220823080127.025493750@linuxfoundation.org>
+        stable@vger.kernel.org, Pablo Neira Ayuso <pablo@netfilter.org>
+Subject: [PATCH 5.19 199/365] netfilter: nf_tables: validate NFTA_SET_ELEM_OBJREF based on NFT_SET_OBJECT flag
+Date:   Tue, 23 Aug 2022 10:01:40 +0200
+Message-Id: <20220823080126.553163524@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220823080118.128342613@linuxfoundation.org>
 References: <20220823080118.128342613@linuxfoundation.org>
@@ -49,40 +47,51 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Xin Xiong <xiongx18@fudan.edu.cn>
+From: Pablo Neira Ayuso <pablo@netfilter.org>
 
-commit 7396ba87f1edf549284869451665c7c4e74ecd4f upstream.
+commit 5a2f3dc31811e93be15522d9eb13ed61460b76c8 upstream.
 
-The issue happens on specific paths in the function. After both the
-object `rt` and `neigh` are grabbed successfully, when `lifetime` is
-nonzero but the metric needs change, the function just deletes the
-route and set `rt` to NULL. Then, it may try grabbing `rt` and `neigh`
-again if above conditions hold. The function simply overwrite `neigh`
-if succeeds or returns if fails, without decreasing the reference
-count of previous `neigh`. This may result in memory leaks.
+If the NFTA_SET_ELEM_OBJREF netlink attribute is present and
+NFT_SET_OBJECT flag is set on, report EINVAL.
 
-Fix it by decrementing the reference count of `neigh` in place.
+Move existing sanity check earlier to validate that NFT_SET_OBJECT
+requires NFTA_SET_ELEM_OBJREF.
 
-Fixes: 6b2e04bc240f ("net: allow user to set metric on default route learned via Router Advertisement")
-Signed-off-by: Xin Xiong <xiongx18@fudan.edu.cn>
-Signed-off-by: Xin Tan <tanxin.ctf@gmail.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+Fixes: 8aeff920dcc9 ("netfilter: nf_tables: add stateful object reference to set elements")
+Signed-off-by: Pablo Neira Ayuso <pablo@netfilter.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- net/ipv6/ndisc.c |    3 +++
- 1 file changed, 3 insertions(+)
+ net/netfilter/nf_tables_api.c |   13 +++++++++----
+ 1 file changed, 9 insertions(+), 4 deletions(-)
 
---- a/net/ipv6/ndisc.c
-+++ b/net/ipv6/ndisc.c
-@@ -1358,6 +1358,9 @@ static void ndisc_router_discovery(struc
- 	if (!rt && lifetime) {
- 		ND_PRINTK(3, info, "RA: adding default router\n");
+--- a/net/netfilter/nf_tables_api.c
++++ b/net/netfilter/nf_tables_api.c
+@@ -5848,6 +5848,15 @@ static int nft_add_set_elem(struct nft_c
+ 			return -EINVAL;
+ 	}
  
-+		if (neigh)
-+			neigh_release(neigh);
++	if (set->flags & NFT_SET_OBJECT) {
++		if (!nla[NFTA_SET_ELEM_OBJREF] &&
++		    !(flags & NFT_SET_ELEM_INTERVAL_END))
++			return -EINVAL;
++	} else {
++		if (nla[NFTA_SET_ELEM_OBJREF])
++			return -EINVAL;
++	}
 +
- 		rt = rt6_add_dflt_router(net, &ipv6_hdr(skb)->saddr,
- 					 skb->dev, pref, defrtr_usr_metric);
- 		if (!rt) {
+ 	if ((flags & NFT_SET_ELEM_INTERVAL_END) &&
+ 	     (nla[NFTA_SET_ELEM_DATA] ||
+ 	      nla[NFTA_SET_ELEM_OBJREF] ||
+@@ -5986,10 +5995,6 @@ static int nft_add_set_elem(struct nft_c
+ 	}
+ 
+ 	if (nla[NFTA_SET_ELEM_OBJREF] != NULL) {
+-		if (!(set->flags & NFT_SET_OBJECT)) {
+-			err = -EINVAL;
+-			goto err_parse_key_end;
+-		}
+ 		obj = nft_obj_lookup(ctx->net, ctx->table,
+ 				     nla[NFTA_SET_ELEM_OBJREF],
+ 				     set->objtype, genmask);
 
 
