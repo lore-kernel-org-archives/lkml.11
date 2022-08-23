@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 82FFDC32772
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 12:11:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C7147C32772
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 12:11:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353299AbiHWMLe (ORCPT
+        id S1356027AbiHWMLm (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 08:11:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35516 "EHLO
+        Tue, 23 Aug 2022 08:11:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40442 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1359520AbiHWMJP (ORCPT
+        with ESMTP id S1359472AbiHWMIg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 08:09:15 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9CD8959266;
-        Tue, 23 Aug 2022 02:38:32 -0700 (PDT)
+        Tue, 23 Aug 2022 08:08:36 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5AD0CEAB;
+        Tue, 23 Aug 2022 02:38:33 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 4501A612D6;
-        Tue, 23 Aug 2022 09:38:32 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 344E6C433C1;
-        Tue, 23 Aug 2022 09:38:31 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 915A961389;
+        Tue, 23 Aug 2022 09:37:28 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9BC5DC433C1;
+        Tue, 23 Aug 2022 09:37:27 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661247511;
-        bh=w0p436ssZfj/lQdy31bDOBkJyI06WCHkjyGiFQ8EqOQ=;
+        s=korg; t=1661247448;
+        bh=IofdAwIDyvUXY6X9Xr4M4jwUuXAIwWHoIICBfaLTqs0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=PyAwfbnKoetoX3kDDqPNtmM6PJZqgX9wXp+02b8rirOgLjnvSzZlbXT8juj/U8NrK
-         cTmI06TDNKHZOY0WSTdbtpEiGOxJIrmpzMKFuduzloXW8GDTKYsetpMmQgOP59hesC
-         I9sHWyBMNiimoUd5s4bBCZNI8Lnz2LgoUNvO9V9o=
+        b=VPuxVBNFdP0nAUa+Vk6h4CFDXtZn4koTD7bLxcvgNklniLrcW60uNuSG/rhDycRlJ
+         m46EeG1QQdGzAHvJPzpiKhCqm5mW9oAjupFKiLV64c7TXm3jCSbtaJFJWtJGXfhcyX
+         b6sXKG6bUSGRwD53srroh1OC6Xtsn2X52X54Im0Q=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Dan Carpenter <dan.carpenter@oracle.com>,
-        Oleksandr Tyshchenko <oleksandr_tyshchenko@epam.com>,
-        Juergen Gross <jgross@suse.com>
-Subject: [PATCH 5.10 059/158] xen/xenbus: fix return type in xenbus_file_read()
-Date:   Tue, 23 Aug 2022 10:26:31 +0200
-Message-Id: <20220823080048.450524486@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
+        Ulf Hansson <ulf.hansson@linaro.org>
+Subject: [PATCH 5.10 008/158] mmc: meson-gx: Fix an error handling path in meson_mmc_probe()
+Date:   Tue, 23 Aug 2022 10:25:40 +0200
+Message-Id: <20220823080046.400346292@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220823080046.056825146@linuxfoundation.org>
 References: <20220823080046.056825146@linuxfoundation.org>
@@ -50,48 +50,38 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Dan Carpenter <dan.carpenter@oracle.com>
+From: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
 
-commit 32ad11127b95236dfc52375f3707853194a7f4b4 upstream.
+commit b3e1cf31154136da855f3cb6117c17eb0b6bcfb4 upstream.
 
-This code tries to store -EFAULT in an unsigned int.  The
-xenbus_file_read() function returns type ssize_t so the negative value
-is returned as a positive value to the user.
+The commit in Fixes has introduced a new error handling which should goto
+the existing error handling path.
+Otherwise some resources leak.
 
-This change forces another change to the min() macro.  Originally, the
-min() macro used "unsigned" type which checkpatch complains about.  Also
-unsigned type would break if "len" were not capped at MAX_RW_COUNT.  Use
-size_t for the min().  (No effect on runtime for the min_t() change).
-
-Fixes: 2fb3683e7b16 ("xen: Add xenbus device driver")
-Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
-Reviewed-by: Oleksandr Tyshchenko <oleksandr_tyshchenko@epam.com>
-Link: https://lore.kernel.org/r/YutxJUaUYRG/VLVc@kili
-Signed-off-by: Juergen Gross <jgross@suse.com>
+Fixes: 19c6beaa064c ("mmc: meson-gx: add device reset")
+Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+Cc: stable@vger.kernel.org
+Link: https://lore.kernel.org/r/be4b863bacf323521ba3a02efdc4fca9cdedd1a6.1659855351.git.christophe.jaillet@wanadoo.fr
+Signed-off-by: Ulf Hansson <ulf.hansson@linaro.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/xen/xenbus/xenbus_dev_frontend.c |    4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ drivers/mmc/host/meson-gx-mmc.c |    6 ++++--
+ 1 file changed, 4 insertions(+), 2 deletions(-)
 
---- a/drivers/xen/xenbus/xenbus_dev_frontend.c
-+++ b/drivers/xen/xenbus/xenbus_dev_frontend.c
-@@ -128,7 +128,7 @@ static ssize_t xenbus_file_read(struct f
- {
- 	struct xenbus_file_priv *u = filp->private_data;
- 	struct read_buffer *rb;
--	unsigned i;
-+	ssize_t i;
- 	int ret;
+--- a/drivers/mmc/host/meson-gx-mmc.c
++++ b/drivers/mmc/host/meson-gx-mmc.c
+@@ -1161,8 +1161,10 @@ static int meson_mmc_probe(struct platfo
+ 	}
  
- 	mutex_lock(&u->reply_mutex);
-@@ -148,7 +148,7 @@ again:
- 	rb = list_entry(u->read_buffers.next, struct read_buffer, list);
- 	i = 0;
- 	while (i < len) {
--		unsigned sz = min((unsigned)len - i, rb->len - rb->cons);
-+		size_t sz = min_t(size_t, len - i, rb->len - rb->cons);
+ 	ret = device_reset_optional(&pdev->dev);
+-	if (ret)
+-		return dev_err_probe(&pdev->dev, ret, "device reset failed\n");
++	if (ret) {
++		dev_err_probe(&pdev->dev, ret, "device reset failed\n");
++		goto free_host;
++	}
  
- 		ret = copy_to_user(ubuf + i, &rb->msg[rb->cons], sz);
- 
+ 	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
+ 	host->regs = devm_ioremap_resource(&pdev->dev, res);
 
 
