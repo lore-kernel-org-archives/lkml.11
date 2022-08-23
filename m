@@ -2,47 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 629B2C32792
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 09:48:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 828AEC32772
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 09:48:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344716AbiHWJsZ (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 05:48:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55376 "EHLO
+        id S242912AbiHWJsd (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 23 Aug 2022 05:48:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50626 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352177AbiHWJqB (ORCPT
+        with ESMTP id S1352220AbiHWJqD (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 05:46:01 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 136992CE16;
+        Tue, 23 Aug 2022 05:46:03 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1934A13E9E;
         Tue, 23 Aug 2022 01:43:33 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id DADB661485;
-        Tue, 23 Aug 2022 08:43:10 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CDB6BC433D6;
-        Tue, 23 Aug 2022 08:43:09 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 3A68361338;
+        Tue, 23 Aug 2022 08:42:39 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2E660C4347C;
+        Tue, 23 Aug 2022 08:42:38 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661244190;
-        bh=FnF15LZwNDPxhljz7cmUOV0fzoKOxDGUuWynoWR/aTM=;
+        s=korg; t=1661244158;
+        bh=zgSagRqsTDPggD8H4gCJX6eA/Ck+/j0sadsTwgmELKM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=F2mjt2gxKGOYDEGBKCnyboElcNdJIpHxdsICEZNd3KRvp2Wmo5ZMssnW4/i55M/+8
-         DzyKxhDf3JveabyneIFRKqzn15fa1LFf1wy/iOSFDqObDnuv6xa85TBuCAa+NIwf4W
-         6F2yETregWS+uZkkTSPr51T3DPaPY8dXpwLB0dwM=
+        b=sMF+TEqcWgP5onym6w6RIg3O5E15R+9MnioxPDUmFkF27BBlV8vySb/3XIE9U/Vmn
+         K4SaPpVnL+gDIaUt8TwUO9k/AzSNvuhg7qTqO4C3ruM0MNZA3m6XmHy2hLC+jAIiDN
+         B4e0kAveEMjuuuSg+7nyfTXw/yOaSImpzdIG9S1E=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jiasheng Jiang <jiasheng@iscas.ac.cn>,
-        Laurent Pinchart <laurent.pinchart@ideasonboard.com>,
-        Sam Ravnborg <sam@ravnborg.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.14 065/229] drm: bridge: adv7511: Add check for mipi_dsi_driver_register
-Date:   Tue, 23 Aug 2022 10:23:46 +0200
-Message-Id: <20220823080056.049597945@linuxfoundation.org>
+        stable@vger.kernel.org, Hou Tao <houtao1@huawei.com>,
+        Yonghong Song <yhs@fb.com>, Alexei Starovoitov <ast@kernel.org>
+Subject: [PATCH 5.15 045/244] bpf: Acquire map uref in .init_seq_private for hash map iterator
+Date:   Tue, 23 Aug 2022 10:23:24 +0200
+Message-Id: <20220823080100.566461236@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220823080053.202747790@linuxfoundation.org>
-References: <20220823080053.202747790@linuxfoundation.org>
+In-Reply-To: <20220823080059.091088642@linuxfoundation.org>
+References: <20220823080059.091088642@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -51,57 +48,46 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jiasheng Jiang <jiasheng@iscas.ac.cn>
+From: Hou Tao <houtao1@huawei.com>
 
-[ Upstream commit 831463667b5f4f1e5bce9c3b94e9e794d2bc8923 ]
+commit ef1e93d2eeb58a1f08c37b22a2314b94bc045f15 upstream.
 
-As mipi_dsi_driver_register could return error if fails,
-it should be better to check the return value and return error
-if fails.
-Moreover, if i2c_add_driver fails,  mipi_dsi_driver_register
-should be reverted.
+bpf_iter_attach_map() acquires a map uref, and the uref may be released
+before or in the middle of iterating map elements. For example, the uref
+could be released in bpf_iter_detach_map() as part of
+bpf_link_release(), or could be released in bpf_map_put_with_uref() as
+part of bpf_map_release().
 
-Fixes: 1e4d58cd7f88 ("drm/bridge: adv7533: Create a MIPI DSI device")
-Signed-off-by: Jiasheng Jiang <jiasheng@iscas.ac.cn>
-Reviewed-by: Laurent Pinchart <laurent.pinchart@ideasonboard.com>
-Signed-off-by: Sam Ravnborg <sam@ravnborg.org>
-Link: https://patchwork.freedesktop.org/patch/msgid/20220602103401.2980938-1-jiasheng@iscas.ac.cn
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+So acquiring an extra map uref in bpf_iter_init_hash_map() and
+releasing it in bpf_iter_fini_hash_map().
+
+Fixes: d6c4503cc296 ("bpf: Implement bpf iterator for hash maps")
+Signed-off-by: Hou Tao <houtao1@huawei.com>
+Acked-by: Yonghong Song <yhs@fb.com>
+Link: https://lore.kernel.org/r/20220810080538.1845898-3-houtao@huaweicloud.com
+Signed-off-by: Alexei Starovoitov <ast@kernel.org>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/gpu/drm/bridge/adv7511/adv7511_drv.c | 17 ++++++++++++++---
- 1 file changed, 14 insertions(+), 3 deletions(-)
+ kernel/bpf/hashtab.c |    2 ++
+ 1 file changed, 2 insertions(+)
 
-diff --git a/drivers/gpu/drm/bridge/adv7511/adv7511_drv.c b/drivers/gpu/drm/bridge/adv7511/adv7511_drv.c
-index 3c94d838863e..f5195d9841f8 100644
---- a/drivers/gpu/drm/bridge/adv7511/adv7511_drv.c
-+++ b/drivers/gpu/drm/bridge/adv7511/adv7511_drv.c
-@@ -1213,10 +1213,21 @@ static struct i2c_driver adv7511_driver = {
+--- a/kernel/bpf/hashtab.c
++++ b/kernel/bpf/hashtab.c
+@@ -2019,6 +2019,7 @@ static int bpf_iter_init_hash_map(void *
+ 		seq_info->percpu_value_buf = value_buf;
+ 	}
  
- static int __init adv7511_init(void)
++	bpf_map_inc_with_uref(map);
+ 	seq_info->map = map;
+ 	seq_info->htab = container_of(map, struct bpf_htab, map);
+ 	return 0;
+@@ -2028,6 +2029,7 @@ static void bpf_iter_fini_hash_map(void
  {
--	if (IS_ENABLED(CONFIG_DRM_MIPI_DSI))
--		mipi_dsi_driver_register(&adv7533_dsi_driver);
-+	int ret;
-+
-+	if (IS_ENABLED(CONFIG_DRM_MIPI_DSI)) {
-+		ret = mipi_dsi_driver_register(&adv7533_dsi_driver);
-+		if (ret)
-+			return ret;
-+	}
+ 	struct bpf_iter_seq_hash_map_info *seq_info = priv_data;
  
--	return i2c_add_driver(&adv7511_driver);
-+	ret = i2c_add_driver(&adv7511_driver);
-+	if (ret) {
-+		if (IS_ENABLED(CONFIG_DRM_MIPI_DSI))
-+			mipi_dsi_driver_unregister(&adv7533_dsi_driver);
-+	}
-+
-+	return ret;
++	bpf_map_put_with_uref(seq_info->map);
+ 	kfree(seq_info->percpu_value_buf);
  }
- module_init(adv7511_init);
  
--- 
-2.35.1
-
 
 
