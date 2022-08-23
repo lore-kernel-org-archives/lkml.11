@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 92EF6C32793
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 10:57:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 15C23C32772
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 10:57:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356404AbiHWK5c (ORCPT
+        id S1356686AbiHWK5i (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 06:57:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51864 "EHLO
+        Tue, 23 Aug 2022 06:57:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50034 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357097AbiHWKxB (ORCPT
+        with ESMTP id S1348824AbiHWKxG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 06:53:01 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 208E0ACA04;
-        Tue, 23 Aug 2022 02:13:08 -0700 (PDT)
+        Tue, 23 Aug 2022 06:53:06 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C85ECABF28;
+        Tue, 23 Aug 2022 02:13:04 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 660A8B81C66;
-        Tue, 23 Aug 2022 09:13:06 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B6A05C433C1;
-        Tue, 23 Aug 2022 09:13:04 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 977CD61122;
+        Tue, 23 Aug 2022 09:12:59 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9913BC433B5;
+        Tue, 23 Aug 2022 09:12:58 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661245985;
-        bh=NSWtoY/b14STqguOXNn0kkCnYB/ON/ex+GeP1Dr7dog=;
+        s=korg; t=1661245979;
+        bh=njHpn9+sds26FrtlsV8zBy8l/zR/7jGD2V8Z+PXK1VA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=nnFOZPD591/xW/HK5V9pbvaK7Wu+GEC1pKpCSQt4ucAMsJBj5PS840H69mYTeJZjz
-         nCiPqr21yoBdjgZyr/VLDjuiPOOFJw9c37AKvu2oBASG10JHojuqp7ivLf0cRoM97b
-         klxWL6QYR3Xjkxnf7pH+aOKNhbamjdij7bs2C47c=
+        b=1mEFLtTGl1sm3G3xUgng1sZnvQG79pwPYX8MgxUwgd34dSWLsG5hkpHqcUy5pg9Q8
+         zpxKtRW0GhTnsLqVQB/97RNEiTC2FdRMQIcETRCyAU8rAwqCQKdIeawhn+YxwZzlTY
+         bxsVjt9ijDhZc8VFtkmtrb3LNJUNRLM3ykTwbFeA=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        =?UTF-8?q?Cs=C3=B3k=C3=A1s=20Bence?= <csokas.bence@prolan.hu>,
-        Jakub Kicinski <kuba@kernel.org>
-Subject: [PATCH 4.19 253/287] fec: Fix timer capture timing in `fec_ptp_enable_pps()`
-Date:   Tue, 23 Aug 2022 10:27:02 +0200
-Message-Id: <20220823080109.746251659@linuxfoundation.org>
+        stable@vger.kernel.org, Guenter Roeck <linux@roeck-us.net>,
+        Michael Ellerman <mpe@ellerman.id.au>
+Subject: [PATCH 4.19 251/287] powerpc/pci: Fix get_phb_number() locking
+Date:   Tue, 23 Aug 2022 10:27:00 +0200
+Message-Id: <20220823080109.655210908@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220823080100.268827165@linuxfoundation.org>
 References: <20220823080100.268827165@linuxfoundation.org>
@@ -50,36 +49,105 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Csókás Bence <csokas.bence@prolan.hu>
+From: Michael Ellerman <mpe@ellerman.id.au>
 
-commit 61d5e2a251fb20c2c5e998c3f1d52ed6d5360319 upstream.
+commit 8d48562a2729742f767b0fdd994d6b2a56a49c63 upstream.
 
-Code reimplements functionality already in `fec_ptp_read()`,
-but misses check for FEC_QUIRK_BUG_CAPTURE. Replace with function call.
+The recent change to get_phb_number() causes a DEBUG_ATOMIC_SLEEP
+warning on some systems:
 
-Fixes: 28b5f058cf1d ("net: fec: ptp: fix convergence issue to support LinuxPTP stack")
-Signed-off-by: Csókás Bence <csokas.bence@prolan.hu>
-Link: https://lore.kernel.org/r/20220811101348.13755-1-csokas.bence@prolan.hu
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+  BUG: sleeping function called from invalid context at kernel/locking/mutex.c:580
+  in_atomic(): 1, irqs_disabled(): 0, non_block: 0, pid: 1, name: swapper
+  preempt_count: 1, expected: 0
+  RCU nest depth: 0, expected: 0
+  1 lock held by swapper/1:
+   #0: c157efb0 (hose_spinlock){+.+.}-{2:2}, at: pcibios_alloc_controller+0x64/0x220
+  Preemption disabled at:
+  [<00000000>] 0x0
+  CPU: 0 PID: 1 Comm: swapper Not tainted 5.19.0-yocto-standard+ #1
+  Call Trace:
+  [d101dc90] [c073b264] dump_stack_lvl+0x50/0x8c (unreliable)
+  [d101dcb0] [c0093b70] __might_resched+0x258/0x2a8
+  [d101dcd0] [c0d3e634] __mutex_lock+0x6c/0x6ec
+  [d101dd50] [c0a84174] of_alias_get_id+0x50/0xf4
+  [d101dd80] [c002ec78] pcibios_alloc_controller+0x1b8/0x220
+  [d101ddd0] [c140c9dc] pmac_pci_init+0x198/0x784
+  [d101de50] [c140852c] discover_phbs+0x30/0x4c
+  [d101de60] [c0007fd4] do_one_initcall+0x94/0x344
+  [d101ded0] [c1403b40] kernel_init_freeable+0x1a8/0x22c
+  [d101df10] [c00086e0] kernel_init+0x34/0x160
+  [d101df30] [c001b334] ret_from_kernel_thread+0x5c/0x64
+
+This is because pcibios_alloc_controller() holds hose_spinlock but
+of_alias_get_id() takes of_mutex which can sleep.
+
+The hose_spinlock protects the phb_bitmap, and also the hose_list, but
+it doesn't need to be held while get_phb_number() calls the OF routines,
+because those are only looking up information in the device tree.
+
+So fix it by having get_phb_number() take the hose_spinlock itself, only
+where required, and then dropping the lock before returning.
+pcibios_alloc_controller() then needs to take the lock again before the
+list_add() but that's safe, the order of the list is not important.
+
+Fixes: 0fe1e96fef0a ("powerpc/pci: Prefer PCI domain assignment via DT 'linux,pci-domain' and alias")
+Reported-by: Guenter Roeck <linux@roeck-us.net>
+Signed-off-by: Michael Ellerman <mpe@ellerman.id.au>
+Link: https://lore.kernel.org/r/20220815065550.1303620-1-mpe@ellerman.id.au
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/net/ethernet/freescale/fec_ptp.c |    6 +-----
- 1 file changed, 1 insertion(+), 5 deletions(-)
+ arch/powerpc/kernel/pci-common.c |   16 ++++++++++------
+ 1 file changed, 10 insertions(+), 6 deletions(-)
 
---- a/drivers/net/ethernet/freescale/fec_ptp.c
-+++ b/drivers/net/ethernet/freescale/fec_ptp.c
-@@ -141,11 +141,7 @@ static int fec_ptp_enable_pps(struct fec
- 		 * NSEC_PER_SEC - ts.tv_nsec. Add the remaining nanoseconds
- 		 * to current timer would be next second.
- 		 */
--		tempval = readl(fep->hwp + FEC_ATIME_CTRL);
--		tempval |= FEC_T_CTRL_CAPTURE;
--		writel(tempval, fep->hwp + FEC_ATIME_CTRL);
--
--		tempval = readl(fep->hwp + FEC_ATIME);
-+		tempval = fep->cc.read(&fep->cc);
- 		/* Convert the ptp local counter to 1588 timestamp */
- 		ns = timecounter_cyc2time(&fep->tc, tempval);
- 		ts = ns_to_timespec64(ns);
+--- a/arch/powerpc/kernel/pci-common.c
++++ b/arch/powerpc/kernel/pci-common.c
+@@ -75,10 +75,6 @@ const struct dma_map_ops *get_pci_dma_op
+ }
+ EXPORT_SYMBOL(get_pci_dma_ops);
+ 
+-/*
+- * This function should run under locking protection, specifically
+- * hose_spinlock.
+- */
+ static int get_phb_number(struct device_node *dn)
+ {
+ 	int ret, phb_id = -1;
+@@ -115,15 +111,20 @@ static int get_phb_number(struct device_
+ 	if (!ret)
+ 		phb_id = (int)(prop & (MAX_PHBS - 1));
+ 
++	spin_lock(&hose_spinlock);
++
+ 	/* We need to be sure to not use the same PHB number twice. */
+ 	if ((phb_id >= 0) && !test_and_set_bit(phb_id, phb_bitmap))
+-		return phb_id;
++		goto out_unlock;
+ 
+ 	/* If everything fails then fallback to dynamic PHB numbering. */
+ 	phb_id = find_first_zero_bit(phb_bitmap, MAX_PHBS);
+ 	BUG_ON(phb_id >= MAX_PHBS);
+ 	set_bit(phb_id, phb_bitmap);
+ 
++out_unlock:
++	spin_unlock(&hose_spinlock);
++
+ 	return phb_id;
+ }
+ 
+@@ -134,10 +135,13 @@ struct pci_controller *pcibios_alloc_con
+ 	phb = zalloc_maybe_bootmem(sizeof(struct pci_controller), GFP_KERNEL);
+ 	if (phb == NULL)
+ 		return NULL;
+-	spin_lock(&hose_spinlock);
++
+ 	phb->global_number = get_phb_number(dev);
++
++	spin_lock(&hose_spinlock);
+ 	list_add_tail(&phb->list_node, &hose_list);
+ 	spin_unlock(&hose_spinlock);
++
+ 	phb->dn = dev;
+ 	phb->is_dynamic = slab_is_available();
+ #ifdef CONFIG_PPC64
 
 
