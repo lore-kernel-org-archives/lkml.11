@@ -2,42 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3686BC32772
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 09:46:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E3B9AC32796
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 09:46:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351902AbiHWJpk (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 05:45:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42140 "EHLO
+        id S238012AbiHWJqw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 23 Aug 2022 05:46:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42218 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352532AbiHWJlb (ORCPT
+        with ESMTP id S1352563AbiHWJld (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 05:41:31 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 813099925B;
-        Tue, 23 Aug 2022 01:42:21 -0700 (PDT)
+        Tue, 23 Aug 2022 05:41:33 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5F1D979625;
+        Tue, 23 Aug 2022 01:41:54 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 9D3D661377;
-        Tue, 23 Aug 2022 08:41:45 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A8A73C433D7;
-        Tue, 23 Aug 2022 08:41:44 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 19F6061446;
+        Tue, 23 Aug 2022 08:41:53 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 20E77C433C1;
+        Tue, 23 Aug 2022 08:41:51 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661244105;
-        bh=oKIHZTWkHzIGLdnX5WRPTD0I6uOzwhp6GOfWwDzn0hs=;
+        s=korg; t=1661244112;
+        bh=20lKauL1YVUqyPxh4iNRKgHY+P1m62xaHe6u7/78kJY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=fGvPenTDuqJdGPcwvA367QvAK4fqor6yXDLeHsOQj+65FvY2Eoc6HCMv5gJzuVFG3
-         C/zd74Ggio02/wsTwpd0BHdyrj5GNz3yhNBPR6l1jMsjkmXHKk5rmMg1721ziFEqQZ
-         rmnx8nHONLZFKnBnjaGzgcVoyDhqB4BOV49Vpvbc=
+        b=YAHmlnZ48hQ8iS2n7fWa5pZfT5k6k+a5m5Dk1KB+yCycCcy89FsBQf7tLXCi/10nh
+         7+aiW2cIye25f8mI/tRrBdnFB6KkYftYTbqXemwtN24m8fnuX6+ivkLVE5wyKGti7W
+         sCuWWt9+88U7XMsxcDX4hIbmP0d+5NA/lqPfys9k=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
         Trond Myklebust <trond.myklebust@hammerspace.com>
-Subject: [PATCH 5.15 037/244] NFSv4.1: Dont decrease the value of seq_nr_highest_sent
-Date:   Tue, 23 Aug 2022 10:23:16 +0200
-Message-Id: <20220823080100.299781588@linuxfoundation.org>
+Subject: [PATCH 5.15 038/244] NFSv4.1: Handle NFS4ERR_DELAY replies to OP_SEQUENCE correctly
+Date:   Tue, 23 Aug 2022 10:23:17 +0200
+Message-Id: <20220823080100.329675799@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220823080059.091088642@linuxfoundation.org>
 References: <20220823080059.091088642@linuxfoundation.org>
@@ -51,34 +50,27 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Trond Myklebust <trond.myklebust@hammerspace.com>
 
-commit f07a5d2427fc113dc50c5c818eba8929bc27b8ca upstream.
+commit 7ccafd4b2b9f34e6d8185f796f151c47424e273e upstream.
 
-When we're trying to figure out what the server may or may not have seen
-in terms of request numbers, do not assume that requests with a larger
-number were missed, just because we saw a reply to a request with a
-smaller number.
+Don't assume that the NFS4ERR_DELAY means that the server is processing
+this slot id.
 
 Fixes: 3453d5708b33 ("NFSv4.1: Avoid false retries when RPC calls are interrupted")
 Signed-off-by: Trond Myklebust <trond.myklebust@hammerspace.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- fs/nfs/nfs4proc.c |    5 ++---
- 1 file changed, 2 insertions(+), 3 deletions(-)
+ fs/nfs/nfs4proc.c |    1 -
+ 1 file changed, 1 deletion(-)
 
 --- a/fs/nfs/nfs4proc.c
 +++ b/fs/nfs/nfs4proc.c
-@@ -787,10 +787,9 @@ static void nfs4_slot_sequence_record_se
- 	if ((s32)(seqnr - slot->seq_nr_highest_sent) > 0)
- 		slot->seq_nr_highest_sent = seqnr;
- }
--static void nfs4_slot_sequence_acked(struct nfs4_slot *slot,
--		u32 seqnr)
-+static void nfs4_slot_sequence_acked(struct nfs4_slot *slot, u32 seqnr)
- {
--	slot->seq_nr_highest_sent = seqnr;
-+	nfs4_slot_sequence_record_sent(slot, seqnr);
- 	slot->seq_nr_last_acked = seqnr;
- }
- 
+@@ -856,7 +856,6 @@ static int nfs41_sequence_process(struct
+ 			__func__,
+ 			slot->slot_nr,
+ 			slot->seq_nr);
+-		nfs4_slot_sequence_acked(slot, slot->seq_nr);
+ 		goto out_retry;
+ 	case -NFS4ERR_RETRY_UNCACHED_REP:
+ 	case -NFS4ERR_SEQ_FALSE_RETRY:
 
 
