@@ -2,45 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 248D4C32772
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 09:08:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6FE86C32772
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 09:08:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348058AbiHWJH7 (ORCPT
+        id S1348111AbiHWJIF (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 05:07:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58114 "EHLO
+        Tue, 23 Aug 2022 05:08:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52066 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347750AbiHWJGo (ORCPT
+        with ESMTP id S1347824AbiHWJGu (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 05:06:44 -0400
+        Tue, 23 Aug 2022 05:06:50 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0C8C285FFE;
-        Tue, 23 Aug 2022 01:29:57 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 68D0F861C6;
+        Tue, 23 Aug 2022 01:30:08 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 0AD7F61326;
-        Tue, 23 Aug 2022 08:28:34 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 03452C4314C;
-        Tue, 23 Aug 2022 08:28:32 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 1CCF861488;
+        Tue, 23 Aug 2022 08:28:40 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 22D33C433C1;
+        Tue, 23 Aug 2022 08:28:38 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661243313;
-        bh=9vjKezl3dOytaASgrXKh7da9oZaZWQxs9UU973wrK9M=;
+        s=korg; t=1661243319;
+        bh=43xzfGfQI0B76DhRYGDXitfPVbsJYhLVBLfkISk7KpM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=WjyeJAcc8zQA4for3QIc9Gwn6514e6AfrPM6yCe55DBpW5ntZO3bBqpHeTku+E0AQ
-         sM7bIY+e4PcDvM/bSP4jQxmsJW3q7zjT8MAH0Et5R52lxf8kHjohb6384yf9/KV4xE
-         nZ+aphSzNY/paoxzdiOY1nxr7VPFDlNSUt5EauDQ=
+        b=JmseJjB+MrgmX81Ir4y9UC5ioL/svE4yfSaI+94uSkfJAd3G1xJCjWOctakW7wQzu
+         vcla9Yk0I1o7bKsZNmR8VWC74iI8TnMk4FvbBA2hJUg6Q33PXVcmTk1kZAiTiYc5Aa
+         b0KBvtmwxw7bfLojju6VWMVkS3zXjIl8vSil9+IU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Maxim Kochetkov <fido_max@inbox.ru>,
-        Hemant Kumar <quic_hemantk@quicinc.com>,
-        Manivannan Sadhasivam <mani@kernel.org>,
-        Loic Poulain <loic.poulain@linaro.org>,
-        "David S. Miller" <davem@davemloft.net>
-Subject: [PATCH 5.19 207/365] net: qrtr: start MHI channel after endpoit creation
-Date:   Tue, 23 Aug 2022 10:01:48 +0200
-Message-Id: <20220823080126.857789357@linuxfoundation.org>
+        stable@vger.kernel.org, Alan Brady <alan.brady@intel.com>,
+        Mateusz Palczewski <mateusz.palczewski@intel.com>,
+        Tony Nguyen <anthony.l.nguyen@intel.com>,
+        Gurucharan <gurucharanx.g@intel.com>
+Subject: [PATCH 5.19 232/365] i40e: Fix to stop tx_timeout recovery if GLOBR fails
+Date:   Tue, 23 Aug 2022 10:02:13 +0200
+Message-Id: <20220823080127.937168909@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220823080118.128342613@linuxfoundation.org>
 References: <20220823080118.128342613@linuxfoundation.org>
@@ -52,75 +51,42 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Maxim Kochetkov <fido_max@inbox.ru>
+From: Alan Brady <alan.brady@intel.com>
 
-commit 68a838b84effb7b57ba7d50b1863fc6ae35a54ce upstream.
+commit 57c942bc3bef0970f0b21f8e0998e76a900ea80d upstream.
 
-MHI channel may generates event/interrupt right after enabling.
-It may leads to 2 race conditions issues.
+When a tx_timeout fires, the PF attempts to recover by incrementally
+resetting.  First we try a PFR, then CORER and finally a GLOBR.  If the
+GLOBR fails, then we keep hitting the tx_timeout and incrementing the
+recovery level and issuing dmesgs, which is both annoying to the user
+and accomplishes nothing.
 
-1)
-Such event may be dropped by qcom_mhi_qrtr_dl_callback() at check:
+If the GLOBR fails, then we're pretty much totally hosed, and there's
+not much else we can do to recover, so this makes it such that we just
+kill the VSI and stop hitting the tx_timeout in such a case.
 
-	if (!qdev || mhi_res->transaction_status)
-		return;
-
-Because dev_set_drvdata(&mhi_dev->dev, qdev) may be not performed at
-this moment. In this situation qrtr-ns will be unable to enumerate
-services in device.
----------------------------------------------------------------
-
-2)
-Such event may come at the moment after dev_set_drvdata() and
-before qrtr_endpoint_register(). In this case kernel will panic with
-accessing wrong pointer at qcom_mhi_qrtr_dl_callback():
-
-	rc = qrtr_endpoint_post(&qdev->ep, mhi_res->buf_addr,
-				mhi_res->bytes_xferd);
-
-Because endpoint is not created yet.
---------------------------------------------------------------
-So move mhi_prepare_for_transfer_autoqueue after endpoint creation
-to fix it.
-
-Fixes: a2e2cc0dbb11 ("net: qrtr: Start MHI channels during init")
-Signed-off-by: Maxim Kochetkov <fido_max@inbox.ru>
-Reviewed-by: Hemant Kumar <quic_hemantk@quicinc.com>
-Reviewed-by: Manivannan Sadhasivam <mani@kernel.org>
-Reviewed-by: Loic Poulain <loic.poulain@linaro.org>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+Fixes: 41c445ff0f48 ("i40e: main driver core")
+Signed-off-by: Alan Brady <alan.brady@intel.com>
+Signed-off-by: Mateusz Palczewski <mateusz.palczewski@intel.com>
+Tested-by: Gurucharan <gurucharanx.g@intel.com> (A Contingent worker at Intel)
+Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- net/qrtr/mhi.c |   12 +++++++-----
- 1 file changed, 7 insertions(+), 5 deletions(-)
+ drivers/net/ethernet/intel/i40e/i40e_main.c |    4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
 
---- a/net/qrtr/mhi.c
-+++ b/net/qrtr/mhi.c
-@@ -78,11 +78,6 @@ static int qcom_mhi_qrtr_probe(struct mh
- 	struct qrtr_mhi_dev *qdev;
- 	int rc;
+--- a/drivers/net/ethernet/intel/i40e/i40e_main.c
++++ b/drivers/net/ethernet/intel/i40e/i40e_main.c
+@@ -384,7 +384,9 @@ static void i40e_tx_timeout(struct net_d
+ 		set_bit(__I40E_GLOBAL_RESET_REQUESTED, pf->state);
+ 		break;
+ 	default:
+-		netdev_err(netdev, "tx_timeout recovery unsuccessful\n");
++		netdev_err(netdev, "tx_timeout recovery unsuccessful, device is in non-recoverable state.\n");
++		set_bit(__I40E_DOWN_REQUESTED, pf->state);
++		set_bit(__I40E_VSI_DOWN_REQUESTED, vsi->state);
+ 		break;
+ 	}
  
--	/* start channels */
--	rc = mhi_prepare_for_transfer_autoqueue(mhi_dev);
--	if (rc)
--		return rc;
--
- 	qdev = devm_kzalloc(&mhi_dev->dev, sizeof(*qdev), GFP_KERNEL);
- 	if (!qdev)
- 		return -ENOMEM;
-@@ -96,6 +91,13 @@ static int qcom_mhi_qrtr_probe(struct mh
- 	if (rc)
- 		return rc;
- 
-+	/* start channels */
-+	rc = mhi_prepare_for_transfer_autoqueue(mhi_dev);
-+	if (rc) {
-+		qrtr_endpoint_unregister(&qdev->ep);
-+		return rc;
-+	}
-+
- 	dev_dbg(qdev->dev, "Qualcomm MHI QRTR driver probed\n");
- 
- 	return 0;
 
 
