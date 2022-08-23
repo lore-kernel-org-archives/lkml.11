@@ -2,46 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C40FCC3F6B0
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AEF9BC32792
 	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 08:32:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244066AbiHWIar (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 04:30:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44886 "EHLO
+        id S243997AbiHWIao (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 23 Aug 2022 04:30:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46636 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243564AbiHWI1G (ORCPT
+        with ESMTP id S1344833AbiHWI1D (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 04:27:06 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E213F74CC2;
-        Tue, 23 Aug 2022 01:14:53 -0700 (PDT)
+        Tue, 23 Aug 2022 04:27:03 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E609074BAA;
+        Tue, 23 Aug 2022 01:14:50 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id CED79612DA;
-        Tue, 23 Aug 2022 08:14:07 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D019EC433C1;
-        Tue, 23 Aug 2022 08:14:06 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 86FCBB81C21;
+        Tue, 23 Aug 2022 08:14:05 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CB72BC433D7;
+        Tue, 23 Aug 2022 08:14:03 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661242447;
-        bh=fMHn/Vf6sz9I5BG9XFOTBqc05WPfoxjFlUueGrdfOEI=;
+        s=korg; t=1661242444;
+        bh=v72sCb1UKg/hUfqN4kpl6JgOnAKHwuo/rcMINgfYefU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=O+nkrvqY1kSOT/dfnT+A+gS4TVmlcLYGdD94ZSBe/6Wi5zlguFL87gcmI5YMVfDP9
-         1vt3MlhrUXTl5P8Zp8Z1d49HgxKwErkvTjbhCjijC5uVBZklvKVLPpaQi5c1zrFNqV
-         kDnU3+M/dvmr+kyXaKuEUe3X/r1KXiYn7rNBJsxg=
+        b=SYTeQJRKG9ybpQlvs5rwoZBa5zwW5kB+ehrwCCYCfoo7arHBxuwgIjMAXWmqObhl2
+         kSmTu+SedQTQhJ/FMINAa9yHUhm+iaxJ5PNZguPu8kKBrTCikjeS+BZdLIJGbZuOPY
+         cSFjCFNaVmUWMApP1OYl4ouyp2OvFLW6qehuSHLE=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, stable@kernel.org,
-        Baokun Li <libaokun1@huawei.com>,
-        "Ritesh Harjani (IBM)" <ritesh.list@gmail.com>,
-        Jan Kara <jack@suse.cz>, Theodore Tso <tytso@mit.edu>
-Subject: [PATCH 4.9 055/101] ext4: correct max_inline_xattr_value_size computing
-Date:   Tue, 23 Aug 2022 10:03:28 +0200
-Message-Id: <20220823080036.657404616@linuxfoundation.org>
+        stable@vger.kernel.org, Harman Kalra <hkalra@marvell.com>,
+        Subbaraya Sundeep <sbhatta@marvell.com>,
+        Sunil Goutham <sgoutham@marvell.com>,
+        Jakub Kicinski <kuba@kernel.org>
+Subject: [PATCH 5.19 116/365] octeontx2-af: suppress external profile loading warning
+Date:   Tue, 23 Aug 2022 10:00:17 +0200
+Message-Id: <20220823080123.060484442@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220823080034.579196046@linuxfoundation.org>
-References: <20220823080034.579196046@linuxfoundation.org>
+In-Reply-To: <20220823080118.128342613@linuxfoundation.org>
+References: <20220823080118.128342613@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -50,36 +50,35 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Baokun Li <libaokun1@huawei.com>
+From: Harman Kalra <hkalra@marvell.com>
 
-commit c9fd167d57133c5b748d16913c4eabc55e531c73 upstream.
+commit cf2437626502b5271d19686b03dea306efe17ea0 upstream.
 
-If the ext4 inode does not have xattr space, 0 is returned in the
-get_max_inline_xattr_value_size function. Otherwise, the function returns
-a negative value when the inode does not contain EXT4_STATE_XATTR.
+The packet parser profile supplied as firmware may not
+be present all the time and default profile is used mostly.
+Hence suppress firmware loading warning from kernel due to
+absence of firmware in kernel image.
 
-Cc: stable@kernel.org
-Signed-off-by: Baokun Li <libaokun1@huawei.com>
-Reviewed-by: Ritesh Harjani (IBM) <ritesh.list@gmail.com>
-Reviewed-by: Jan Kara <jack@suse.cz>
-Link: https://lore.kernel.org/r/20220616021358.2504451-4-libaokun1@huawei.com
-Signed-off-by: Theodore Ts'o <tytso@mit.edu>
+Fixes: 3a7244152f9c ("octeontx2-af: add support for custom KPU entries")
+Signed-off-by: Harman Kalra <hkalra@marvell.com>
+Signed-off-by: Subbaraya Sundeep <sbhatta@marvell.com>
+Signed-off-by: Sunil Goutham <sgoutham@marvell.com>
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- fs/ext4/inline.c |    3 +++
- 1 file changed, 3 insertions(+)
+ drivers/net/ethernet/marvell/octeontx2/af/rvu_npc.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/fs/ext4/inline.c
-+++ b/fs/ext4/inline.c
-@@ -40,6 +40,9 @@ static int get_max_inline_xattr_value_si
- 	struct ext4_inode *raw_inode;
- 	int free, min_offs;
- 
-+	if (!EXT4_INODE_HAS_XATTR_SPACE(inode))
-+		return 0;
-+
- 	min_offs = EXT4_SB(inode->i_sb)->s_inode_size -
- 			EXT4_GOOD_OLD_INODE_SIZE -
- 			EXT4_I(inode)->i_extra_isize -
+--- a/drivers/net/ethernet/marvell/octeontx2/af/rvu_npc.c
++++ b/drivers/net/ethernet/marvell/octeontx2/af/rvu_npc.c
+@@ -1650,7 +1650,7 @@ static void npc_load_kpu_profile(struct
+ 	 * Firmware database method.
+ 	 * Default KPU profile.
+ 	 */
+-	if (!request_firmware(&fw, kpu_profile, rvu->dev)) {
++	if (!request_firmware_direct(&fw, kpu_profile, rvu->dev)) {
+ 		dev_info(rvu->dev, "Loading KPU profile from firmware: %s\n",
+ 			 kpu_profile);
+ 		rvu->kpu_fwdata = kzalloc(fw->size, GFP_KERNEL);
 
 
