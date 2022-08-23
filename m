@@ -2,110 +2,99 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A86EEC32789
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 19:46:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D048DC32772
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 19:46:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229818AbiHWTp7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 15:45:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55834 "EHLO
+        id S232726AbiHWTqc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 23 Aug 2022 15:46:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47650 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232788AbiHWTpE (ORCPT
+        with ESMTP id S232079AbiHWTqN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 15:45:04 -0400
-Received: from madras.collabora.co.uk (madras.collabora.co.uk [46.235.227.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 620CFBC81C;
-        Tue, 23 Aug 2022 11:47:18 -0700 (PDT)
-Received: from notapiano (unknown [194.36.25.10])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (No client certificate requested)
-        (Authenticated sender: nfraprado)
-        by madras.collabora.co.uk (Postfix) with ESMTPSA id 029976601E65;
-        Tue, 23 Aug 2022 19:47:09 +0100 (BST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
-        s=mail; t=1661280436;
-        bh=yvZ81keYhwI6G9e7JnIqRWODLEgNPMGKYnHuBSLuw5o=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=mOxcpNly5jz4ZfzlyvGKuCt/2JZYpTVvicwdFzsY8NSJP2fR5fEWwLVzSZPYP2dXD
-         qQQYgIIqom+9AgdlxLQKBnefxPDWQDJH2AGSlhF5xrcrxwsQLXoOPNU7eWAh7Oz+p6
-         yE82v1LU6up8+LSZ/DcXDZhy03GJ5+6T+g20A3eNVOKIGSAOVy+Z5SGgFNjt9u9LR0
-         +sLYNGjNX8nqdS6tyORZGrvZpOt8Gis02jjDxXG5tuwUf0NFGtb9ugrEYKqXXKwB8Y
-         +ajHow3J2rjrpOD/LKGnxsPrRe+0E0zevTcXqArW2XUrKOKdV3uylc5dQ2RSpISlVS
-         xbIXEt2LLT7CQ==
-Date:   Tue, 23 Aug 2022 14:47:05 -0400
-From:   =?utf-8?B?TsOtY29sYXMgRi4gUi4gQS4=?= Prado 
-        <nfraprado@collabora.com>
-To:     Zhiyong Tao <zhiyong.tao@mediatek.com>
-Cc:     lee.jones@linaro.org, robh+dt@kernel.org, matthias.bgg@gmail.com,
-        lgirdwood@gmail.com, broonie@kernel.org, eddie.huang@mediatek.com,
-        a.zummo@towertech.it, alexandre.belloni@bootlin.com,
-        fshao@chromium.org, sen.chu@mediatek.com, hui.liu@mediatek.com,
-        allen-kh.cheng@mediatek.com, hsin-hsiung.wang@mediatek.com,
-        sean.wang@mediatek.com, macpaul.lin@mediatek.com,
-        wen.su@mediatek.com, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-rtc@vger.kernel.org,
-        Project_Global_Chrome_Upstream_Group@mediatek.com,
+        Tue, 23 Aug 2022 15:46:13 -0400
+Received: from gloria.sntech.de (gloria.sntech.de [185.11.138.130])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C65FDC12F6
+        for <linux-kernel@vger.kernel.org>; Tue, 23 Aug 2022 11:49:06 -0700 (PDT)
+Received: from ip5b412258.dynamic.kabel-deutschland.de ([91.65.34.88] helo=diego.localnet)
+        by gloria.sntech.de with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.94.2)
+        (envelope-from <heiko@sntech.de>)
+        id 1oQYxM-0006cy-NL; Tue, 23 Aug 2022 20:48:56 +0200
+From:   Heiko =?ISO-8859-1?Q?St=FCbner?= <heiko@sntech.de>
+To:     Kishon Vijay Abraham I <kishon@ti.com>,
+        Vinod Koul <vkoul@kernel.org>,
+        Peter Geis <pgwipeout@gmail.com>,
+        Samuel Holland <samuel@sholland.org>,
+        Peter Geis <pgwipeout@gmail.com>
+Cc:     Markus Reichl <m.reichl@fivetechno.de>,
+        Michael Riesch <michael.riesch@wolfvision.net>,
+        linux-phy@lists.infradead.org,
         linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org
-Subject: Re: [PATCH v4] regulator: dt-bindings: mediatek: add mt6366
-Message-ID: <20220823184705.6fdpczguait2la4v@notapiano>
-References: <20220823123745.14061-1-zhiyong.tao@mediatek.com>
+        linux-rockchip@lists.infradead.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2] phy: rockchip-inno-usb2: Return zero after otg sync
+Date:   Tue, 23 Aug 2022 20:48:55 +0200
+Message-ID: <2872516.OBFZWjSADL@diego>
+In-Reply-To: <20220823144728.47068-1-pgwipeout@gmail.com>
+References: <20220823144728.47068-1-pgwipeout@gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20220823123745.14061-1-zhiyong.tao@mediatek.com>
+Content-Transfer-Encoding: 7Bit
+Content-Type: text/plain; charset="us-ascii"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Aug 23, 2022 at 08:37:45PM +0800, Zhiyong Tao wrote:
-> Add mt6366 regulator document
+Am Dienstag, 23. August 2022, 16:47:28 CEST schrieb Peter Geis:
+> The otg sync state patch reuses the ret variable, but fails to set it to
+> zero after use. This leads to a situation when the otg port is in
+> peripheral mode where the otg phy aborts halfway through setup.  It also
+> fails to account for a failure to register the extcon notifier. Fix this
+> by using our own variable and skipping otg sync in case of failure.
 > 
-> Signed-off-by: Zhiyong Tao <zhiyong.tao@mediatek.com>
+> Fixes: 8dc60f8da22f ("phy: rockchip-inno-usb2: Sync initial otg state")
+> 
+> Reported-by: Markus Reichl <m.reichl@fivetechno.de>
+> Reported-by: Michael Riesch <michael.riesch@wolfvision.net>
+> Signed-off-by: Peter Geis <pgwipeout@gmail.com>
+> Tested-by: Michael Riesch <michael.riesch@wolfvision.net>
+> Tested-by: Markus Reichl <m.reichl@fivetechno.de>
+
+Reviewed-by: Heiko Stuebner <heiko@sntech.de>
+Tested-by: Heiko Stuebner <heiko@sntech.de>
+
 > ---
-[..]
-> --- /dev/null
-> +++ b/Documentation/devicetree/bindings/regulator/mediatek,mt6366-regulator.yaml
-[..]
-> +      "^buck-(vcore)-sshub$":
+>  drivers/phy/rockchip/phy-rockchip-inno-usb2.c | 7 ++++---
+>  1 file changed, 4 insertions(+), 3 deletions(-)
+> 
+> diff --git a/drivers/phy/rockchip/phy-rockchip-inno-usb2.c b/drivers/phy/rockchip/phy-rockchip-inno-usb2.c
+> index 0b1e9337ee8e..d579a22c61df 100644
+> --- a/drivers/phy/rockchip/phy-rockchip-inno-usb2.c
+> +++ b/drivers/phy/rockchip/phy-rockchip-inno-usb2.c
+> @@ -1124,7 +1124,7 @@ static int rockchip_usb2phy_otg_port_init(struct rockchip_usb2phy *rphy,
+>  					  struct rockchip_usb2phy_port *rport,
+>  					  struct device_node *child_np)
+>  {
+> -	int ret;
+> +	int ret, id;
+>  
+>  	rport->port_id = USB2PHY_PORT_OTG;
+>  	rport->port_cfg = &rphy->phy_cfg->port_cfgs[USB2PHY_PORT_OTG];
+> @@ -1164,11 +1164,12 @@ static int rockchip_usb2phy_otg_port_init(struct rockchip_usb2phy *rphy,
+>  					EXTCON_USB_HOST, &rport->event_nb);
+>  		if (ret)
+>  			dev_err(rphy->dev, "register USB HOST notifier failed\n");
+> +			goto out;
+>  
+>  		if (!of_property_read_bool(rphy->dev->of_node, "extcon")) {
+>  			/* do initial sync of usb state */
+> -			ret = property_enabled(rphy->grf, &rport->port_cfg->utmi_id);
+> -			extcon_set_state_sync(rphy->edev, EXTCON_USB_HOST, !ret);
+> +			id = property_enabled(rphy->grf, &rport->port_cfg->utmi_id);
+> +			extcon_set_state_sync(rphy->edev, EXTCON_USB_HOST, !id);
+>  		}
+>  	}
+>  
+> 
 
-The parentheses here don't serve any purpose, so drop them.
 
-> +        type: object
-> +        $ref: regulator.yaml#
-> +        unevaluatedProperties: false
-[..]
-> +      "^ldo-vcn(33)-wifi$":
 
-Ditto.
 
-> +        type: object
-> +        $ref: regulator.yaml#
-> +        unevaluatedProperties: false
-> +
-> +      "^ldo-vsram-(others)-sshub$":
-
-Ditto.
-
-> +        type: object
-> +        $ref: regulator.yaml#
-> +        unevaluatedProperties: false
-[..]
-> +      "^ldo-vsim[2]$":
-
-Based on the example, should be [12].
-
-Thanks,
-Nícolas
-
-> +        type: object
-[..]
-> +            mt6366_vsim1_reg: ldo-vsim1 {
-> +                regulator-enable-ramp-delay = <540>;
-> +            };
-[..]
-> +            mt6366_vsim2_reg: ldo-vsim2 {
-> +                regulator-enable-ramp-delay = <540>;
-> +            };
-[..]
