@@ -2,154 +2,150 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7C16CC32772
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 17:22:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 389FBC32772
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 17:22:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232611AbiHWRWm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 13:22:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47990 "EHLO
+        id S232771AbiHWRWr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 23 Aug 2022 13:22:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56082 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237471AbiHWRUm (ORCPT
+        with ESMTP id S241767AbiHWRVS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 13:20:42 -0400
-Received: from mail-qt1-x829.google.com (mail-qt1-x829.google.com [IPv6:2607:f8b0:4864:20::829])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CBB79AE86E
-        for <linux-kernel@vger.kernel.org>; Tue, 23 Aug 2022 06:44:25 -0700 (PDT)
-Received: by mail-qt1-x829.google.com with SMTP id cr9so10322536qtb.13
-        for <linux-kernel@vger.kernel.org>; Tue, 23 Aug 2022 06:44:25 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ndufresne-ca.20210112.gappssmtp.com; s=20210112;
-        h=mime-version:user-agent:content-transfer-encoding:references
-         :in-reply-to:date:cc:to:from:subject:message-id:from:to:cc;
-        bh=HYUWsAYXjW2i318BjbGbbKb+gkXQpUmwzmEIHMqDu5I=;
-        b=e4JErC0om1kvlDhOah9NQNcK+mXjibntNm23OS49JJRMoTF5yVIe6jgHxK1+mhwkan
-         CO91j95hoO+ZUqzvsHtB+vnZLWg5cZJTdAZd/KyriCrgfWZdH7J4b2bD2+oxHYpW5Ynh
-         bkfus5PrWDnnJai7yYslwwf0RJuvDjfZaW+T0ptWq1/uK1BfD0hq28qJyA5EosXuFBwl
-         LkroYPa5I6Jo56BQ5J86APmQj3fL+ojhLy+K7MEeJcpl/hMMdk9E+NQb6kTG1BmUr1Im
-         sChiFOU8KqdQH94ddHL7Teh5gp6YtpdjEWwaUUOb6/Dvss/yiCnPdZp8HNkmZgcmZZ5n
-         Xyhw==
+        Tue, 23 Aug 2022 13:21:18 -0400
+Received: from mail-oi1-f174.google.com (mail-oi1-f174.google.com [209.85.167.174])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1C266AC251;
+        Tue, 23 Aug 2022 07:57:29 -0700 (PDT)
+Received: by mail-oi1-f174.google.com with SMTP id s199so16320760oie.3;
+        Tue, 23 Aug 2022 07:57:29 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=mime-version:user-agent:content-transfer-encoding:references
-         :in-reply-to:date:cc:to:from:subject:message-id:x-gm-message-state
-         :from:to:cc;
-        bh=HYUWsAYXjW2i318BjbGbbKb+gkXQpUmwzmEIHMqDu5I=;
-        b=Nz6RAAc3P6f7PS25j+ECR96TWcYSMPSKMxW3uVP6iYejU3lLzyQBjLYShpwLzyAvsR
-         CECTUVdD4mAmpeiQcz3ca/kkgIYhnsuF1w+/sGN2h24EbRg0p0BSt73JPISTkgxnFT6z
-         IImFjTKONIiC6IedKcyVVF8yLdc/MiovpUaxfRLHI566m7j5X1wSf1tJZsB6DvIZvwbD
-         zOLuVmZKP4Do0B5Uc4h8vDSjHKSVQLmh6vSV99Qf+VCRgsPYTdBd1/xQoqIGNfml2N6g
-         6UUlztXYijaDCDJrSC+AMOxoD6p9KFvdwxKhDchZN/eveD+PGtx7gkkhJGRqv4BUGFLE
-         6WEQ==
-X-Gm-Message-State: ACgBeo1Xpnm3CthF5OLM7N78av+D4RPoefkkBrYYqhU3MqihlhY99pnn
-        UJ/ZDZ47W/rdKOMd11YSPsW6yA==
-X-Google-Smtp-Source: AA6agR4t4vEazDNxYLh6eNEskT0+EKTIuQlsSu8YV3eXOkr/7tQ7UIDxzDgxf4QyRfzrcYAMvvoZeg==
-X-Received: by 2002:ac8:7e83:0:b0:344:7ee0:1241 with SMTP id w3-20020ac87e83000000b003447ee01241mr19324435qtj.587.1661262264917;
-        Tue, 23 Aug 2022 06:44:24 -0700 (PDT)
-Received: from nicolas-tpx395.localdomain (192-222-136-102.qc.cable.ebox.net. [192.222.136.102])
-        by smtp.gmail.com with ESMTPSA id v16-20020a05620a0f1000b006b97151d2b3sm13198030qkl.67.2022.08.23.06.44.22
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc;
+        bh=FAI+J/BAzIOCuYieqj21rHdsHuRaSuJ4Vj8kHpJSNAE=;
+        b=Bguy5gXkBeLZqFWOQeDUzyvG2Dh1lvWQ5M1H3lAWbE8AeicHVgTcaeWv9P0JvKC750
+         Gzr3ibcGK71O2EP+ihg6zRki7XD5NK6bVl0pxo8rFk7n+6xaH6pwSNLePhBalIf/j6do
+         NZHLYH2uZUap4VEBxI1rnY7ImPaXe3PalgnoM984VJyXLz/9+BIINGt4RKGjkDhKvfxF
+         x8BKI8XayQ3u3gHLmVSsjoI4VNW+XGbcep0j4xY9jl9tPpAfCMVwCJ7FX03Cnu+rNy46
+         aLBSYCns9D1BUaU0sUG17eJgITTMZCl3mHHcGCvj11LcKoPh5Dp7fWsxraQ8W8a8E2Lj
+         4ppA==
+X-Gm-Message-State: ACgBeo3jpUgCtT7s9lWaZShSa36wPutKFi+YYKJxiW9ebI2VhFUFPanE
+        ZYeq2R1KX23penPSt1gsYg==
+X-Google-Smtp-Source: AA6agR4hSJQAGxX3KN7ayKSxhwLdWv6s8/qh4bhvrE5yHsP9wzSBH+Rc0HRRZkXNGG1/4mMLZExhJw==
+X-Received: by 2002:aca:3056:0:b0:345:64e9:7435 with SMTP id w83-20020aca3056000000b0034564e97435mr1417894oiw.19.1661266648690;
+        Tue, 23 Aug 2022 07:57:28 -0700 (PDT)
+Received: from xps15.. (66-90-144-107.dyn.grandenetworks.net. [66.90.144.107])
+        by smtp.googlemail.com with ESMTPSA id t1-20020a056870600100b0011c65559b04sm3840637oaa.34.2022.08.23.07.57.27
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 23 Aug 2022 06:44:24 -0700 (PDT)
-Message-ID: <ede840d10677041d2c8d0a07b81b3cd55a6c92ba.camel@ndufresne.ca>
-Subject: Re: [PATCH 2/2] [WIP]: media: Add Synaptics compressed tiled format
-From:   Nicolas Dufresne <nicolas@ndufresne.ca>
-To:     Hsia-Jun Li <Randy.Li@synaptics.com>
-Cc:     Tomasz Figa <tfiga@chromium.org>, dri-devel@lists.freedesktop.org,
-        maarten.lankhorst@linux.intel.com, mripard@kernel.org,
-        tzimmermann@suse.de, airlied@linux.ie, daniel@ffwll.ch,
-        mchehab@kernel.org, hverkuil-cisco@xs4all.nl,
-        ezequiel@vanguardiasur.com.ar, sakari.ailus@linux.intel.com,
-        ribalda@chromium.org,
-        Laurent Pinchart <laurent.pinchart@ideasonboard.com>,
-        linux-media@vger.kernel.org, linux-kernel@vger.kernel.org,
-        sebastian.hesselbarth@gmail.com, jszhang@kernel.org,
-        linux-arm-kernel@lists.infradead.org
-Date:   Tue, 23 Aug 2022 09:44:22 -0400
-In-Reply-To: <2f3c8f6d-fc01-353e-fb74-b7f9af1ed2c4@synaptics.com>
-References: <20220808162750.828001-1-randy.li@synaptics.com>
-         <20220808162750.828001-3-randy.li@synaptics.com>
-         <CAAFQd5AKjpJ+fPAeCqdNnJbS4R7SdaHkfyW4qG1xXr-sE801pQ@mail.gmail.com>
-         <13d37c15-79f3-4e16-8cf4-fc37846f4a04@synaptics.com>
-         <Yv7HnHE7bLmgq5D0@pendragon.ideasonboard.com>
-         <6da7faf329128312f0862f555d1a855437ae99f3.camel@ndufresne.ca>
-         <50dd9b7a-8f48-0799-57f6-048d20de8dcc@synaptics.com>
-         <2662ac698898f71f60b9b7e0ad4703854de1d012.camel@ndufresne.ca>
-         <1f926989-eb13-14ee-e30d-ac6d01b86c52@synaptics.com>
-         <e15165f60ce801dd502bfe1992ea430fe37c5a91.camel@ndufresne.ca>
-         <2f3c8f6d-fc01-353e-fb74-b7f9af1ed2c4@synaptics.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-User-Agent: Evolution 3.44.4 (3.44.4-1.fc36) 
+        Tue, 23 Aug 2022 07:57:28 -0700 (PDT)
+From:   Rob Herring <robh@kernel.org>
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Joel Stanley <joel@jms.id.au>,
+        Andrew Jeffery <andrew@aj.id.au>,
+        Xin Ji <xji@analogixsemi.com>,
+        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
+        Amelie Delaunay <amelie.delaunay@foss.st.com>,
+        Samuel Holland <samuel@sholland.org>
+Cc:     linux-usb@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-aspeed@lists.ozlabs.org
+Subject: [PATCH] dt-bindings: usb: Add missing (unevaluated|additional)Properties on child nodes
+Date:   Tue, 23 Aug 2022 09:56:40 -0500
+Message-Id: <20220823145649.3118479-9-robh@kernel.org>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Le mardi 23 ao=C3=BBt 2022 =C3=A0 15:40 +0800, Hsia-Jun Li a =C3=A9crit=C2=
-=A0:
-> > In current state, If your driver can support it, userland does not stri=
-ctly
-> > need
-> > to re-allocate if the resolution is changed to smaller. In most SVC
-> > scenarios,
-> > the largest resolution is known in advance, so pre-allocation can happe=
-n to
-> > the
-> When you play a video from Youtube, you may notice that starting=20
-> resolution is low, then after it received more data knowning the=20
-> bandwidth is enough, it would switch to a higher resolution. I don't=20
-> think it would inform the codecs2 or OMX there is a higher target=20
-> resolution.
->=20
-> Besides, for the case of SVC in a conference system, the remote(gatway)=
-=20
-> would not tell you there is a higer resolution or frame rate because you=
-=20
-> can't receive it in negotiate stage, it could be permanently(device=20
-> capability) or just bandwidth problem. Whether we know there is a higher=
-=20
-> requirement video depends on the transport protocols used here.
->=20
-> The basic idea of SVC is that the low layer didn't depends on the upper=
-=20
-> layer, we can't tell how the bitstream usually.
+In order to ensure only documented properties are present, node schemas
+must have unevaluatedProperties or additionalProperties set to false
+(typically).
 
-I'm not saying against the fact the for drivers without IOMMU (hitting dire=
-ctly
-into the CMA allocator), allocation latency is massive challenge, and a
-mechanism to smoothly reallocate (rather then mass-reallocation) is needed =
-in
-the long run. This is what I'm referring to when saying that folks have
-considered extending CREATE_BUFS() with a DELETE_BUFS() ioctl.
+Signed-off-by: Rob Herring <robh@kernel.org>
+---
+ .../devicetree/bindings/usb/analogix,anx7411.yaml    |  2 ++
+ .../devicetree/bindings/usb/aspeed,usb-vhub.yaml     |  2 ++
+ .../devicetree/bindings/usb/st,stusb160x.yaml        | 12 +++++++++---
+ .../devicetree/bindings/usb/willsemi,wusb3801.yaml   |  1 +
+ 4 files changed, 14 insertions(+), 3 deletions(-)
 
-Note that there is tones of software trickery you can use to mitigate this.=
- The
-most simple one is to use CREATE_BUFS() instead of REQBUFS(). Instead of
-reallocating all the buffers you need in one go, you would allocate them on=
-e by
-one. This will distribute allocation latency. For stateful CODEC, most OMX
-focused firmware needs to be modified for that, since they stick with the o=
-ld
-OMX spec which did not allow run-time allocation.
-
-Another trick is to use a second codec session. Both stateful/stateless COD=
-EC
-have support for concurrent decoding. On the MSE requirement, is that the s=
-tream
-transition happens only on keyframe boundary. Meaning, there is no need to =
-reuse
-the same session, you can create a new decoder in parallel, and that before=
- the
-drain is complete (after the event, before the last buffer). This will comp=
-ress
-the "setup" latency, to the cost of some extra memory usage. Specially in t=
-he
-MSE case, this is nearly always possible since browsers do require support =
-for
-more then 1 concurrent decode. This method also works with OMX style CODEC
-without any modification.
-
-regards,
-Nicolas
-
-
+diff --git a/Documentation/devicetree/bindings/usb/analogix,anx7411.yaml b/Documentation/devicetree/bindings/usb/analogix,anx7411.yaml
+index ee436308e5dc..0e72c08e6566 100644
+--- a/Documentation/devicetree/bindings/usb/analogix,anx7411.yaml
++++ b/Documentation/devicetree/bindings/usb/analogix,anx7411.yaml
+@@ -23,6 +23,8 @@ properties:
+   connector:
+     type: object
+     $ref: ../connector/usb-connector.yaml
++    unevaluatedProperties: false
++
+     description:
+       Properties for usb c connector.
+ 
+diff --git a/Documentation/devicetree/bindings/usb/aspeed,usb-vhub.yaml b/Documentation/devicetree/bindings/usb/aspeed,usb-vhub.yaml
+index 8b019ac05bbe..a86bcd95100e 100644
+--- a/Documentation/devicetree/bindings/usb/aspeed,usb-vhub.yaml
++++ b/Documentation/devicetree/bindings/usb/aspeed,usb-vhub.yaml
+@@ -67,6 +67,7 @@ properties:
+ 
+   vhub-strings:
+     type: object
++    additionalProperties: false
+ 
+     properties:
+       '#address-cells':
+@@ -78,6 +79,7 @@ properties:
+     patternProperties:
+       '^string@[0-9a-f]+$':
+         type: object
++        additionalProperties: false
+         description: string descriptors of the specific language
+ 
+         properties:
+diff --git a/Documentation/devicetree/bindings/usb/st,stusb160x.yaml b/Documentation/devicetree/bindings/usb/st,stusb160x.yaml
+index b5a8c9814dd3..b8974807b666 100644
+--- a/Documentation/devicetree/bindings/usb/st,stusb160x.yaml
++++ b/Documentation/devicetree/bindings/usb/st,stusb160x.yaml
+@@ -33,6 +33,7 @@ properties:
+   connector:
+     type: object
+     $ref: /schemas/connector/usb-connector.yaml#
++    unevaluatedProperties: false
+ 
+     properties:
+       compatible:
+@@ -74,9 +75,14 @@ examples:
+                 data-role = "dual";
+                 typec-power-opmode = "default";
+ 
+-                port {
+-                    typec_con_ep: endpoint {
+-                        remote-endpoint = <&usbotg_hs_ep>;
++                ports {
++                    #address-cells = <1>;
++                    #size-cells = <0>;
++                    port@0 {
++                        reg = <0>;
++                        typec_con_ep: endpoint {
++                            remote-endpoint = <&usbotg_hs_ep>;
++                        };
+                     };
+                 };
+             };
+diff --git a/Documentation/devicetree/bindings/usb/willsemi,wusb3801.yaml b/Documentation/devicetree/bindings/usb/willsemi,wusb3801.yaml
+index c2b2243c7892..5aa4ffd67119 100644
+--- a/Documentation/devicetree/bindings/usb/willsemi,wusb3801.yaml
++++ b/Documentation/devicetree/bindings/usb/willsemi,wusb3801.yaml
+@@ -28,6 +28,7 @@ properties:
+   connector:
+     type: object
+     $ref: ../connector/usb-connector.yaml#
++    unevaluatedProperties: false
+     description:
+       The managed USB Type-C connector. Since WUSB3801 does not support
+       Power Delivery, the node should have the "pd-disable" property.
+-- 
+2.34.1
 
