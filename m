@@ -2,75 +2,91 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 52DCAC32774
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 17:43:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 91B80C38145
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 17:44:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232547AbiHWRnY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 13:43:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37918 "EHLO
+        id S232663AbiHWRn2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 23 Aug 2022 13:43:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57746 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229817AbiHWRmv (ORCPT
+        with ESMTP id S230252AbiHWRmw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 13:42:51 -0400
-Received: from mout.gmx.net (mout.gmx.net [212.227.15.19])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 06298BE09;
-        Tue, 23 Aug 2022 08:31:18 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gmx.net;
-        s=badeba3b8450; t=1661268677;
-        bh=6y871TwjlGWu4Hn5isuPKP7hEDPU3mcdk7uvzqUMGlc=;
-        h=X-UI-Sender-Class:Date:From:To:Cc:Subject;
-        b=dElczNUP7M43ZNpUb5kqCWNp15vxyrnsfHh1zMwiDbRDOXuGZcwAs6oQ19mQwQHRY
-         Q9wzGqOhtn8u+TF8mF+uD2zqPSFvKlxPXHXVELq51tpLoCrEch0imuesUmW9yhiyE+
-         dYhk/OKH4mJL/6FXL0XJOMSQm/SBXH30/HiqZU0Q=
-X-UI-Sender-Class: 01bb95c1-4bf8-414a-932a-4f6e2808ef9c
-Received: from [192.168.100.20] ([46.142.34.177]) by mail.gmx.net (mrgmx005
- [212.227.17.190]) with ESMTPSA (Nemesis) id 1MbzuH-1p1VeN3gGV-00dV1S; Tue, 23
- Aug 2022 17:31:16 +0200
-Message-ID: <41808495-4002-9dc9-8143-bdc6fb7f4394@gmx.de>
-Date:   Tue, 23 Aug 2022 17:31:16 +0200
+        Tue, 23 Aug 2022 13:42:52 -0400
+Received: from sender-of-o50.zoho.in (sender-of-o50.zoho.in [103.117.158.50])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 654B29E697;
+        Tue, 23 Aug 2022 08:36:12 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; t=1661268948; cv=none; 
+        d=zohomail.in; s=zohoarc; 
+        b=eagV3hFkZYnwbakrbXhtc9g3aO1gVBHqpu49XGBsd3+riRGCjc1oktdH+w7r4IbYLLIVVQi1HljbXyXp/jCzh7pncfWAjTtGq1QUmLsFPvlH+TPR0Qitado+YS4+REvYsCUrZ3N+ZFDEC6R9QUXA1gYCrecZS/VJIA7cMRgzpRI=
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=zohomail.in; s=zohoarc; 
+        t=1661268948; h=Content-Type:Content-Transfer-Encoding:Cc:Date:From:In-Reply-To:MIME-Version:Message-ID:References:Subject:To; 
+        bh=48lrmCnAI4BOdsVRvDHdoRgNfI9n5wEdayysaFK+3kw=; 
+        b=dcXD5TxeXwwuSU4lCx5knnXQi3YYxBXdqNMZ1FEYGJ0RJFARdapUM9ThPe8Ra+P8ShAm8l94E2SncPcW2iTtlh1N1LWRSGu7bQssYKiOGZhdqTjv5TZqIoQUMttsWm+TVVn4eFTZOKGm8ExuQfgN7qxTwpZPPfoS3RuYSSSA9mg=
+ARC-Authentication-Results: i=1; mx.zohomail.in;
+        dkim=pass  header.i=siddh.me;
+        spf=pass  smtp.mailfrom=code@siddh.me;
+        dmarc=pass header.from=<code@siddh.me>
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; t=1661268948;
+        s=zmail; d=siddh.me; i=code@siddh.me;
+        h=From:From:To:To:Cc:Cc:Message-ID:Subject:Subject:Date:Date:In-Reply-To:References:MIME-Version:Content-Transfer-Encoding:Content-Type:Message-Id:Reply-To;
+        bh=48lrmCnAI4BOdsVRvDHdoRgNfI9n5wEdayysaFK+3kw=;
+        b=Lj9kFMfAziwo1q654cN0YK+O2sMEGsVXCZzKujidPyswNAmPuVfgHRWm3aTBi+7T
+        XzUV4DySRehhXIf3yV1BM5TXdx+S8MyfZUt7813tUg+gn49Rj9dbjDRGI5xI23Z7lFq
+        djguecRrI4L/ogPprIO9/E4slDxNGdtxb79m6yuk=
+Received: from localhost.localdomain (103.249.234.81 [103.249.234.81]) by mx.zoho.in
+        with SMTPS id 1661268946863160.31652801965868; Tue, 23 Aug 2022 21:05:46 +0530 (IST)
+From:   Siddh Raman Pant <code@siddh.me>
+To:     willy@infradead.org
+Cc:     code@siddh.me, david@fromorbit.com, djwong@kernel.org,
+        fgheet255t@gmail.com, hch@infradead.org,
+        linux-ext4@vger.kernel.org, linux-fsdevel@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-xfs@vger.kernel.org,
+        riteshh@linux.ibm.com,
+        syzbot+a8e049cd3abd342936b6@syzkaller.appspotmail.com,
+        syzkaller-bugs@googlegroups.com
+Message-ID: <20220823153542.177799-1-code@siddh.me>
+Subject: Re: [syzbot] WARNING in iomap_iter
+Date:   Tue, 23 Aug 2022 21:05:42 +0530
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <YwTyO0yZmUT1MVZW@casper.infradead.org>
+References: <YwTyO0yZmUT1MVZW@casper.infradead.org>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.12.0
-From:   Ronald Warsow <rwarsow@gmx.de>
-To:     linux-kernel@vger.kernel.org
-Cc:     stable@vger.kernel.org
-Content-Language: de-DE
-Subject: Re: [PATCH 5.19 000/365] 5.19.4-rc1 review
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Provags-ID: V03:K1:OToLyasaT6alezisQuuvDFUZbsCpq4mPTtNw9MmXeW0G+HRIgpO
- vz9zt0i2PABQWZARfnQNqujE/2LYIS8DJUhsUQuQFjbz6njQoq5GPNi3EpX+mN2z50v8Rkb
- jBftcioU/pqGATgAIQtjphGrlOfUcWc1NwywzPr4CmytgFHtKhc6WaFgxA9wNKbuWEgRPMJ
- n8YeJHDAzrhse3LqKXEyA==
-X-UI-Out-Filterresults: notjunk:1;V03:K0:PjpAwpzMs2w=:iCr72FgZzSXb6wZ4MpggmI
- qGe0NyxnoaP9faSdSGke6hhxnBZBP/LYvb4nAOWB1A1gq35TmT4UfaEctYQiRnUeeXPv+jodO
- ySWVwkxwlar1JUA+ijeoSiRrMRVCUlmm6tlbvyhM35cIYop7nGsVBWnuYXUOSt6159uq4KzYf
- EtLwG/TkVNvRHsSR6YhegzsLL3iWFb8/jzQkhlef+DnaQaewZrEeq8+B/gLiWbHAp++FshGAl
- RzC04Oumpem1goy4sCtKfQLlyNS6rpuCaanUYbWfr3fik8FTi0lwZfqcfhK49W5YpbsDL0rC+
- QZaedtNytL/s24v/Fmo7LFcBogU94zQr+M1m5TaKmB3FoAv5GLYGCtc1NbSXtWt5VLFag8ZdK
- dygtKKlwKYdwJ+0U5M+tc9sS3+WiWbUCO+1Lh2nZs5f5YhhY+1XzV0S0CzQKGDyxaVIvrCNvI
- u17JMAMQkVX71j9Notc+8+z29q9VB79fkekq1AjUfLxD4ZMoUmJ8RML+wN7s+9JThPfvoVI7J
- DO1h5/k4kjDWaJwpqGzKCHJABVRYpb6aI/6BEoidDxkchaMxfu18+7zz/ElBfSFQqCYYaSzYi
- RfPs0WYmmSEEQ2Tv0btkqPW8x5G+si0M8B00l2z38beRtRi4rO/dtIk7MupW66/yxfzQdZkU/
- yc1HP8D5ok2qDMRjMcLh1yyu85rEcN6RdCTsbDLi+c4GFkvfisFVxrOXMqoc8Tn4kwgAVi7SK
- U/u+B/7wxDxg9hWwzTpkdlUVjr9TfuE4PHpp6i/hZdwJOEABaBO+8a0YmpYTflFb0U7VxwjMh
- MNm3AxeYxvLyGxBcwrSMdH7qDZ47J7GA/11r6on3U4k3nX0315T6A8yKarGlTNSDqUWadTFYo
- Ma4CwXlggrPFBsOhYUqQoCpkRNYzx3w4Xknf5plME5xl1jmI9rXG5lFtU0AadLLdWLZBgGiJx
- 5lAN7Ku28mPrzzF039VSjj0dDRPQdlZjdBF9OXDttXbGcLfXjiL8QiuN/ZhN0LdC0QrKS6VOi
- ZcGSC+rEZ9hwsXrVzRooT32JM9s9J0jMxRgmSSupaD0NY0S3pNkHzIo+OXUtVn1S3St5Wbd14
- Ar/+iyW4WmXH1UQoHBzyb4/pWxn6JfEwIn7uzzXFUNUkpEmPiNkqgip+w==
+Content-Transfer-Encoding: quoted-printable
+X-ZohoMailClient: External
+Content-Type: text/plain; charset=utf8
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-hallo Greg
+Oof, I didn't mean it to be there. That would actually be wrong anyways.
 
-5.19.4-rc1
+Extremely sorry for the avoidable oversight,
+Siddh
 
-compiles, boots and runs here on x86_64
-(Intel i5-11400, Fedora 36)
+#syz test https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.gi=
+t master
 
-Thanks
+---
+ drivers/block/loop.c | 5 +++++
+ 1 file changed, 5 insertions(+)
 
-Tested-by: Ronald Warsow <rwarsow@gmx.de>
+diff --git a/drivers/block/loop.c b/drivers/block/loop.c
+index e3c0ba93c1a3..e1fe8eda020f 100644
+--- a/drivers/block/loop.c
++++ b/drivers/block/loop.c
+@@ -979,6 +979,11 @@ loop_set_status_from_info(struct loop_device *lo,
+=20
+ =09lo->lo_offset =3D info->lo_offset;
+ =09lo->lo_sizelimit =3D info->lo_sizelimit;
++
++=09/* loff_t vars have been assigned __u64 */
++=09if (lo->lo_offset < 0 || lo->lo_sizelimit < 0)
++=09=09return -EOVERFLOW;
++
+ =09memcpy(lo->lo_file_name, info->lo_file_name, LO_NAME_SIZE);
+ =09lo->lo_file_name[LO_NAME_SIZE-1] =3D 0;
+ =09lo->lo_flags =3D info->lo_flags;
+--=20
+2.35.1
+
 
