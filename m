@@ -2,45 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 077A7C32774
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 08:18:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 468BAC32774
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 08:18:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242615AbiHWISR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 04:18:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60998 "EHLO
+        id S242630AbiHWISU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 23 Aug 2022 04:18:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40002 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242205AbiHWIM4 (ORCPT
+        with ESMTP id S242229AbiHWINJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 04:12:56 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E4A116C11F;
-        Tue, 23 Aug 2022 01:09:07 -0700 (PDT)
+        Tue, 23 Aug 2022 04:13:09 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 29B2E6C13E;
+        Tue, 23 Aug 2022 01:09:12 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 16DC96128E;
-        Tue, 23 Aug 2022 08:09:07 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1AA62C433D6;
-        Tue, 23 Aug 2022 08:09:05 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id AAFEB6123D;
+        Tue, 23 Aug 2022 08:09:11 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 65144C433D6;
+        Tue, 23 Aug 2022 08:09:09 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661242146;
-        bh=v4KGrEVskcMrBDA4KqT7FNFEnwx3XEfxBHbjvZzK7pY=;
+        s=korg; t=1661242151;
+        bh=gyk0DIlacszwxhUgLMZ0yJZSzHV8SnJZoaqZaniVh88=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=DAvsNNjdDmjGfrT/FaxJLxFcIR58aLrZROR9FhMMkuJAd2FFYX3Ikaiz07G/hY7pT
-         Cq0l2/F++hiBboO3FAjZv2r4dajxMhR3l7xhkVajygo7F9967Fzf3siYLR47gK5bP7
-         7K4H8ENZ9l7BVm/3XxTMi9kCsJ7i2m+ZRhAkRc4Y=
+        b=Oc72Y6XsoRwU1v/sVhCT2QSY9BVv83xHt69dDSmuslfqXcAjF1ZDaMNtSnjpNNiqi
+         /lU1v3+RJBiCXN8yeDB4eRx/TJLFTd77BvNeL6J5ac/DJCTl6rbVY8PHvzmj+moFJR
+         Wbrf/vFKBl3O5AVdiHrQFrEGQGUtp+0YAvrY0T7Y=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Ingo Molnar <mingo@kernel.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Tzvetomir Stoyanov <tz.stoyanov@gmail.com>,
-        Tom Zanussi <zanussi@kernel.org>,
-        "Masami Hiramatsu (Google)" <mhiramat@kernel.org>,
-        "Steven Rostedt (Google)" <rostedt@goodmis.org>
-Subject: [PATCH 5.19 031/365] tracing/eprobes: Do not allow eprobes to use $stack, or % for regs
-Date:   Tue, 23 Aug 2022 09:58:52 +0200
-Message-Id: <20220823080119.509826276@linuxfoundation.org>
+        stable@vger.kernel.org, Hou Tao <houtao1@huawei.com>,
+        Yonghong Song <yhs@fb.com>, Alexei Starovoitov <ast@kernel.org>
+Subject: [PATCH 5.19 064/365] bpf: Acquire map uref in .init_seq_private for array map iterator
+Date:   Tue, 23 Aug 2022 09:59:25 +0200
+Message-Id: <20220823080120.882381491@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220823080118.128342613@linuxfoundation.org>
 References: <20220823080118.128342613@linuxfoundation.org>
@@ -52,123 +48,54 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Steven Rostedt (Google) <rostedt@goodmis.org>
+From: Hou Tao <houtao1@huawei.com>
 
-commit 2673c60ee67e71f2ebe34386e62d348f71edee47 upstream.
+commit f76fa6b338055054f80c72b29c97fb95c1becadc upstream.
 
-While playing with event probes (eprobes), I tried to see what would
-happen if I attempted to retrieve the instruction pointer (%rip) knowing
-that event probes do not use pt_regs. The result was:
+bpf_iter_attach_map() acquires a map uref, and the uref may be released
+before or in the middle of iterating map elements. For example, the uref
+could be released in bpf_iter_detach_map() as part of
+bpf_link_release(), or could be released in bpf_map_put_with_uref() as
+part of bpf_map_release().
 
- BUG: kernel NULL pointer dereference, address: 0000000000000024
- #PF: supervisor read access in kernel mode
- #PF: error_code(0x0000) - not-present page
- PGD 0 P4D 0
- Oops: 0000 [#1] PREEMPT SMP PTI
- CPU: 1 PID: 1847 Comm: trace-cmd Not tainted 5.19.0-rc5-test+ #309
- Hardware name: Hewlett-Packard HP Compaq Pro 6300 SFF/339A, BIOS K01
-v03.03 07/14/2016
- RIP: 0010:get_event_field.isra.0+0x0/0x50
- Code: ff 48 c7 c7 c0 8f 74 a1 e8 3d 8b f5 ff e8 88 09 f6 ff 4c 89 e7 e8
-50 6a 13 00 48 89 ef 5b 5d 41 5c 41 5d e9 42 6a 13 00 66 90 <48> 63 47 24
-8b 57 2c 48 01 c6 8b 47 28 83 f8 02 74 0e 83 f8 04 74
- RSP: 0018:ffff916c394bbaf0 EFLAGS: 00010086
- RAX: ffff916c854041d8 RBX: ffff916c8d9fbf50 RCX: ffff916c255d2000
- RDX: 0000000000000000 RSI: ffff916c255d2008 RDI: 0000000000000000
- RBP: 0000000000000000 R08: ffff916c3a2a0c08 R09: ffff916c394bbda8
- R10: 0000000000000000 R11: 0000000000000000 R12: ffff916c854041d8
- R13: ffff916c854041b0 R14: 0000000000000000 R15: 0000000000000000
- FS:  0000000000000000(0000) GS:ffff916c9ea40000(0000)
-knlGS:0000000000000000
- CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
- CR2: 0000000000000024 CR3: 000000011b60a002 CR4: 00000000001706e0
- Call Trace:
-  <TASK>
-  get_eprobe_size+0xb4/0x640
-  ? __mod_node_page_state+0x72/0xc0
-  __eprobe_trace_func+0x59/0x1a0
-  ? __mod_lruvec_page_state+0xaa/0x1b0
-  ? page_remove_file_rmap+0x14/0x230
-  ? page_remove_rmap+0xda/0x170
-  event_triggers_call+0x52/0xe0
-  trace_event_buffer_commit+0x18f/0x240
-  trace_event_raw_event_sched_wakeup_template+0x7a/0xb0
-  try_to_wake_up+0x260/0x4c0
-  __wake_up_common+0x80/0x180
-  __wake_up_common_lock+0x7c/0xc0
-  do_notify_parent+0x1c9/0x2a0
-  exit_notify+0x1a9/0x220
-  do_exit+0x2ba/0x450
-  do_group_exit+0x2d/0x90
-  __x64_sys_exit_group+0x14/0x20
-  do_syscall_64+0x3b/0x90
-  entry_SYSCALL_64_after_hwframe+0x46/0xb0
+Alternative fix is acquiring an extra bpf_link reference just like
+a pinned map iterator does, but it introduces unnecessary dependency
+on bpf_link instead of bpf_map.
 
-Obviously this is not the desired result.
+So choose another fix: acquiring an extra map uref in .init_seq_private
+for array map iterator.
 
-Move the testing for TPARG_FL_TPOINT which is only used for event probes
-to the top of the "$" variable check, as all the other variables are not
-used for event probes. Also add a check in the register parsing "%" to
-fail if an event probe is used.
-
-Link: https://lkml.kernel.org/r/20220820134400.564426983@goodmis.org
-
-Cc: stable@vger.kernel.org
-Cc: Ingo Molnar <mingo@kernel.org>
-Cc: Andrew Morton <akpm@linux-foundation.org>
-Cc: Tzvetomir Stoyanov <tz.stoyanov@gmail.com>
-Cc: Tom Zanussi <zanussi@kernel.org>
-Fixes: 7491e2c44278 ("tracing: Add a probe that attaches to trace events")
-Acked-by: Masami Hiramatsu (Google) <mhiramat@kernel.org>
-Signed-off-by: Steven Rostedt (Google) <rostedt@goodmis.org>
+Fixes: d3cc2ab546ad ("bpf: Implement bpf iterator for array maps")
+Signed-off-by: Hou Tao <houtao1@huawei.com>
+Acked-by: Yonghong Song <yhs@fb.com>
+Link: https://lore.kernel.org/r/20220810080538.1845898-2-houtao@huaweicloud.com
+Signed-off-by: Alexei Starovoitov <ast@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- kernel/trace/trace_probe.c |   21 +++++++++++++--------
- 1 file changed, 13 insertions(+), 8 deletions(-)
+ kernel/bpf/arraymap.c |    6 ++++++
+ 1 file changed, 6 insertions(+)
 
---- a/kernel/trace/trace_probe.c
-+++ b/kernel/trace/trace_probe.c
-@@ -279,7 +279,14 @@ static int parse_probe_vars(char *arg, c
- 	int ret = 0;
- 	int len;
+--- a/kernel/bpf/arraymap.c
++++ b/kernel/bpf/arraymap.c
+@@ -649,6 +649,11 @@ static int bpf_iter_init_array_map(void
+ 		seq_info->percpu_value_buf = value_buf;
+ 	}
  
--	if (strcmp(arg, "retval") == 0) {
-+	if (flags & TPARG_FL_TPOINT) {
-+		if (code->data)
-+			return -EFAULT;
-+		code->data = kstrdup(arg, GFP_KERNEL);
-+		if (!code->data)
-+			return -ENOMEM;
-+		code->op = FETCH_OP_TP_ARG;
-+	} else if (strcmp(arg, "retval") == 0) {
- 		if (flags & TPARG_FL_RETURN) {
- 			code->op = FETCH_OP_RETVAL;
- 		} else {
-@@ -319,13 +326,6 @@ static int parse_probe_vars(char *arg, c
- 		code->op = FETCH_OP_ARG;
- 		code->param = (unsigned int)param - 1;
- #endif
--	} else if (flags & TPARG_FL_TPOINT) {
--		if (code->data)
--			return -EFAULT;
--		code->data = kstrdup(arg, GFP_KERNEL);
--		if (!code->data)
--			return -ENOMEM;
--		code->op = FETCH_OP_TP_ARG;
- 	} else
- 		goto inval_var;
++	/* bpf_iter_attach_map() acquires a map uref, and the uref may be
++	 * released before or in the middle of iterating map elements, so
++	 * acquire an extra map uref for iterator.
++	 */
++	bpf_map_inc_with_uref(map);
+ 	seq_info->map = map;
+ 	return 0;
+ }
+@@ -657,6 +662,7 @@ static void bpf_iter_fini_array_map(void
+ {
+ 	struct bpf_iter_seq_array_map_info *seq_info = priv_data;
  
-@@ -380,6 +380,11 @@ parse_probe_arg(char *arg, const struct
- 		break;
++	bpf_map_put_with_uref(seq_info->map);
+ 	kfree(seq_info->percpu_value_buf);
+ }
  
- 	case '%':	/* named register */
-+		if (flags & TPARG_FL_TPOINT) {
-+			/* eprobes do not handle registers */
-+			trace_probe_log_err(offs, BAD_VAR);
-+			break;
-+		}
- 		ret = regs_query_register_offset(arg + 1);
- 		if (ret >= 0) {
- 			code->op = FETCH_OP_REG;
 
 
