@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 89FCCC32772
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 09:55:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 51F67C32772
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 09:55:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243055AbiHWJzJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 05:55:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42312 "EHLO
+        id S233735AbiHWJzM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 23 Aug 2022 05:55:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42276 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241181AbiHWJvp (ORCPT
+        with ESMTP id S240126AbiHWJvo (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 05:51:45 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D21DE9F1A4;
-        Tue, 23 Aug 2022 01:46:12 -0700 (PDT)
+        Tue, 23 Aug 2022 05:51:44 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A8D746E2E8;
+        Tue, 23 Aug 2022 01:46:04 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id D55F2614E9;
-        Tue, 23 Aug 2022 08:45:29 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CAB3BC433C1;
-        Tue, 23 Aug 2022 08:45:28 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 81326B81C39;
+        Tue, 23 Aug 2022 08:46:04 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C45F7C433D6;
+        Tue, 23 Aug 2022 08:46:02 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661244329;
-        bh=AOk+oevlxIEWe26QrP0aZwFVPDWgUz50rIsB56MoIl8=;
+        s=korg; t=1661244363;
+        bh=bBnAC7qyUS/FWZNSAMQLXtwhOege26wsptCan8PXqi8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=kP0TJXniWO+nAodBRPqbOs070VEu0Y11MsqFDSPlXEsXwV0z4ueSi0lHaLbGgOJD9
-         54ijxR6t6zhXhs5l/qiGUqES2dr13H3nOucxjoUIQHuFrAat2FQQJm30goUole71r1
-         nwGoWwD9B5rvbLBTnYEosU/d4H6ylOKXyAJ3WDy8=
+        b=oZddiK43ueX4dx/aZUTvKOtgtOllbKTZ1Q8Kdt5yt2AyMq5zfSw6xB1psz/5UJZeW
+         HSHyA7zd1rvN1zlgm3QYXcTIsqN/R6cs8GD/0gvqNt+XWJ2n8DskAslJ1Eshdtqkhh
+         /dUX8RhijKbPQjLJ+P2hXHzaTxA0WRUVZAqnckPk=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Subbaraya Sundeep <sbhatta@marvell.com>,
-        Sunil Goutham <sgoutham@marvell.com>,
+        stable@vger.kernel.org, kernel test robot <oliver.sang@intel.com>,
+        Florian Westphal <fw@strlen.de>,
         Jakub Kicinski <kuba@kernel.org>
-Subject: [PATCH 5.15 074/244] octeontx2-af: Fix key checking for source mac
-Date:   Tue, 23 Aug 2022 10:23:53 +0200
-Message-Id: <20220823080101.530596409@linuxfoundation.org>
+Subject: [PATCH 5.15 079/244] plip: avoid rcu debug splat
+Date:   Tue, 23 Aug 2022 10:23:58 +0200
+Message-Id: <20220823080101.686057284@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220823080059.091088642@linuxfoundation.org>
 References: <20220823080059.091088642@linuxfoundation.org>
@@ -49,36 +49,36 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Subbaraya Sundeep <sbhatta@marvell.com>
+From: Florian Westphal <fw@strlen.de>
 
-commit c3c290276927a3ae79342a4e17ec0500c138c63a upstream.
+commit bc3c8fe3c79bcdae4d90e3726054fac5cca8ac32 upstream.
 
-Given a field with its location/offset in input packet,
-the key checking logic verifies whether extracting the
-field can be supported or not based on the mkex profile
-loaded in hardware. This logic is wrong wrt source mac
-and this patch fixes that.
+WARNING: suspicious RCU usage
+5.2.0-rc2-00605-g2638eb8b50cfc #1 Not tainted
+drivers/net/plip/plip.c:1110 suspicious rcu_dereference_check() usage!
 
-Fixes: 9b179a960a96 ("octeontx2-af: Generate key field bit mask from KEX profile")
-Signed-off-by: Subbaraya Sundeep <sbhatta@marvell.com>
-Signed-off-by: Sunil Goutham <sgoutham@marvell.com>
+plip_open is called with RTNL held, switch to the correct helper.
+
+Fixes: 2638eb8b50cf ("net: ipv4: provide __rcu annotation for ifa_list")
+Reported-by: kernel test robot <oliver.sang@intel.com>
+Signed-off-by: Florian Westphal <fw@strlen.de>
+Link: https://lore.kernel.org/r/20220807115304.13257-1-fw@strlen.de
 Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/net/ethernet/marvell/octeontx2/af/rvu_npc_fs.c |    3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ drivers/net/plip/plip.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/drivers/net/ethernet/marvell/octeontx2/af/rvu_npc_fs.c
-+++ b/drivers/net/ethernet/marvell/octeontx2/af/rvu_npc_fs.c
-@@ -445,7 +445,8 @@ do {									       \
- 	NPC_SCAN_HDR(NPC_VLAN_TAG1, NPC_LID_LB, NPC_LT_LB_CTAG, 2, 2);
- 	NPC_SCAN_HDR(NPC_VLAN_TAG2, NPC_LID_LB, NPC_LT_LB_STAG_QINQ, 2, 2);
- 	NPC_SCAN_HDR(NPC_DMAC, NPC_LID_LA, la_ltype, la_start, 6);
--	NPC_SCAN_HDR(NPC_SMAC, NPC_LID_LA, la_ltype, la_start, 6);
-+	/* SMAC follows the DMAC(which is 6 bytes) */
-+	NPC_SCAN_HDR(NPC_SMAC, NPC_LID_LA, la_ltype, la_start + 6, 6);
- 	/* PF_FUNC is 2 bytes at 0th byte of NPC_LT_LA_IH_NIX_ETHER */
- 	NPC_SCAN_HDR(NPC_PF_FUNC, NPC_LID_LA, NPC_LT_LA_IH_NIX_ETHER, 0, 2);
- }
+--- a/drivers/net/plip/plip.c
++++ b/drivers/net/plip/plip.c
+@@ -1107,7 +1107,7 @@ plip_open(struct net_device *dev)
+ 		/* Any address will do - we take the first. We already
+ 		   have the first two bytes filled with 0xfc, from
+ 		   plip_init_dev(). */
+-		const struct in_ifaddr *ifa = rcu_dereference(in_dev->ifa_list);
++		const struct in_ifaddr *ifa = rtnl_dereference(in_dev->ifa_list);
+ 		if (ifa != NULL) {
+ 			memcpy(dev->dev_addr+2, &ifa->ifa_local, 4);
+ 		}
 
 
