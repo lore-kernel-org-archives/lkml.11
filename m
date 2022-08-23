@@ -2,41 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 96EBCC32772
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 08:30:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D5195C32772
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 08:30:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243803AbiHWIaA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 04:30:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42156 "EHLO
+        id S243814AbiHWIaC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 23 Aug 2022 04:30:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47688 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244207AbiHWI0a (ORCPT
+        with ESMTP id S244257AbiHWI0b (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 04:26:30 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 06E6A72FD4;
-        Tue, 23 Aug 2022 01:14:13 -0700 (PDT)
+        Tue, 23 Aug 2022 04:26:31 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4B2C173921;
+        Tue, 23 Aug 2022 01:14:25 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id DF24BB81C26;
-        Tue, 23 Aug 2022 08:13:43 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 39EDBC433C1;
-        Tue, 23 Aug 2022 08:13:42 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 24A016129A;
+        Tue, 23 Aug 2022 08:14:23 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 30644C433C1;
+        Tue, 23 Aug 2022 08:14:22 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661242422;
-        bh=1R4vBcGtvywwK6mm74BckJoc44zv4MEOsFxv7R4miYo=;
+        s=korg; t=1661242462;
+        bh=w/ws2DL+rOAPKGt41HhTtwj8mh2+FQSFUgu3NzsRKgY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=mvkVtz83tox0/kM20mpb2XrSGGUJTaI5eQkqyg6prJLRHHz4Y6bTxHOM2eB1KFhVg
-         NfKs/M9i+GJminagW0VQhCkoX6q17OmuD5PomXk/Fm4q7InsaliyJPz3ggybwXFDLb
-         neUOmntVfn1+fjY8kRcN2Ua1ZTEjzdDxu5zP0/lI=
+        b=kEadTVknMWwBbQ1z6SmS9/MUcrCyn/so+gazDohkZyumaK9D0nPKatmpABE+zgwV/
+         aZPZCMC0LWm3ZajY8pH1HIsa3+hRB1T/g7P1y2R4tCjRLO5BQqX5GnE4D6ddkCH1GQ
+         kCHb44TRguP2n9zYLvBBpvgFUE1fL/JERxu59YFM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Filipe Manana <fdmanana@suse.com>,
-        David Sterba <dsterba@suse.com>
-Subject: [PATCH 4.9 069/101] btrfs: fix lost error handling when looking up extended ref on log replay
-Date:   Tue, 23 Aug 2022 10:03:42 +0200
-Message-Id: <20220823080037.197439038@linuxfoundation.org>
+        stable@vger.kernel.org, Stefano Garzarella <sgarzare@redhat.com>,
+        Peilin Ye <peilin.ye@bytedance.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        syzbot+b03f55bf128f9a38f064@syzkaller.appspotmail.com
+Subject: [PATCH 4.9 075/101] vsock: Fix memory leak in vsock_connect()
+Date:   Tue, 23 Aug 2022 10:03:48 +0200
+Message-Id: <20220823080037.435200290@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220823080034.579196046@linuxfoundation.org>
 References: <20220823080034.579196046@linuxfoundation.org>
@@ -48,43 +50,83 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Filipe Manana <fdmanana@suse.com>
+From: Peilin Ye <peilin.ye@bytedance.com>
 
-commit 7a6b75b79902e47f46328b57733f2604774fa2d9 upstream.
+commit 7e97cfed9929eaabc41829c395eb0d1350fccb9d upstream.
 
-During log replay, when processing inode references, if we get an error
-when looking up for an extended reference at __add_inode_ref(), we ignore
-it and proceed, returning success (0) if no other error happens after the
-lookup. This is obviously wrong because in case an extended reference
-exists and it encodes some name not in the log, we need to unlink it,
-otherwise the filesystem state will not match the state it had after the
-last fsync.
+An O_NONBLOCK vsock_connect() request may try to reschedule
+@connect_work.  Imagine the following sequence of vsock_connect()
+requests:
 
-So just make __add_inode_ref() return an error it gets from the extended
-reference lookup.
+  1. The 1st, non-blocking request schedules @connect_work, which will
+     expire after 200 jiffies.  Socket state is now SS_CONNECTING;
 
-Fixes: f186373fef005c ("btrfs: extended inode refs")
-CC: stable@vger.kernel.org # 4.9+
-Signed-off-by: Filipe Manana <fdmanana@suse.com>
-Reviewed-by: David Sterba <dsterba@suse.com>
-Signed-off-by: David Sterba <dsterba@suse.com>
+  2. Later, the 2nd, blocking request gets interrupted by a signal after
+     a few jiffies while waiting for the connection to be established.
+     Socket state is back to SS_UNCONNECTED, but @connect_work is still
+     pending, and will expire after 100 jiffies.
+
+  3. Now, the 3rd, non-blocking request tries to schedule @connect_work
+     again.  Since @connect_work is already scheduled,
+     schedule_delayed_work() silently returns.  sock_hold() is called
+     twice, but sock_put() will only be called once in
+     vsock_connect_timeout(), causing a memory leak reported by syzbot:
+
+  BUG: memory leak
+  unreferenced object 0xffff88810ea56a40 (size 1232):
+    comm "syz-executor756", pid 3604, jiffies 4294947681 (age 12.350s)
+    hex dump (first 32 bytes):
+      00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
+      28 00 07 40 00 00 00 00 00 00 00 00 00 00 00 00  (..@............
+    backtrace:
+      [<ffffffff837c830e>] sk_prot_alloc+0x3e/0x1b0 net/core/sock.c:1930
+      [<ffffffff837cbe22>] sk_alloc+0x32/0x2e0 net/core/sock.c:1989
+      [<ffffffff842ccf68>] __vsock_create.constprop.0+0x38/0x320 net/vmw_vsock/af_vsock.c:734
+      [<ffffffff842ce8f1>] vsock_create+0xc1/0x2d0 net/vmw_vsock/af_vsock.c:2203
+      [<ffffffff837c0cbb>] __sock_create+0x1ab/0x2b0 net/socket.c:1468
+      [<ffffffff837c3acf>] sock_create net/socket.c:1519 [inline]
+      [<ffffffff837c3acf>] __sys_socket+0x6f/0x140 net/socket.c:1561
+      [<ffffffff837c3bba>] __do_sys_socket net/socket.c:1570 [inline]
+      [<ffffffff837c3bba>] __se_sys_socket net/socket.c:1568 [inline]
+      [<ffffffff837c3bba>] __x64_sys_socket+0x1a/0x20 net/socket.c:1568
+      [<ffffffff84512815>] do_syscall_x64 arch/x86/entry/common.c:50 [inline]
+      [<ffffffff84512815>] do_syscall_64+0x35/0x80 arch/x86/entry/common.c:80
+      [<ffffffff84600068>] entry_SYSCALL_64_after_hwframe+0x44/0xae
+  <...>
+
+Use mod_delayed_work() instead: if @connect_work is already scheduled,
+reschedule it, and undo sock_hold() to keep the reference count
+balanced.
+
+Reported-and-tested-by: syzbot+b03f55bf128f9a38f064@syzkaller.appspotmail.com
+Fixes: d021c344051a ("VSOCK: Introduce VM Sockets")
+Co-developed-by: Stefano Garzarella <sgarzare@redhat.com>
+Signed-off-by: Stefano Garzarella <sgarzare@redhat.com>
+Reviewed-by: Stefano Garzarella <sgarzare@redhat.com>
+Signed-off-by: Peilin Ye <peilin.ye@bytedance.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- fs/btrfs/tree-log.c |    4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
+ net/vmw_vsock/af_vsock.c |    9 ++++++++-
+ 1 file changed, 8 insertions(+), 1 deletion(-)
 
---- a/fs/btrfs/tree-log.c
-+++ b/fs/btrfs/tree-log.c
-@@ -1074,7 +1074,9 @@ again:
- 	extref = btrfs_lookup_inode_extref(NULL, root, path, name, namelen,
- 					   inode_objectid, parent_objectid, 0,
- 					   0);
--	if (!IS_ERR_OR_NULL(extref)) {
-+	if (IS_ERR(extref)) {
-+		return PTR_ERR(extref);
-+	} else if (extref) {
- 		u32 item_size;
- 		u32 cur_offset = 0;
- 		unsigned long base;
+--- a/net/vmw_vsock/af_vsock.c
++++ b/net/vmw_vsock/af_vsock.c
+@@ -1205,7 +1205,14 @@ static int vsock_stream_connect(struct s
+ 			 * timeout fires.
+ 			 */
+ 			sock_hold(sk);
+-			schedule_delayed_work(&vsk->connect_work, timeout);
++
++			/* If the timeout function is already scheduled,
++			 * reschedule it, then ungrab the socket refcount to
++			 * keep it balanced.
++			 */
++			if (mod_delayed_work(system_wq, &vsk->connect_work,
++					     timeout))
++				sock_put(sk);
+ 
+ 			/* Skip ahead to preserve error code set above. */
+ 			goto out_wait;
 
 
