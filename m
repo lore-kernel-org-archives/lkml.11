@@ -2,44 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 14F8BC49EC2
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 10:42:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AE036C49EC5
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 10:42:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356033AbiHWKlU (ORCPT
+        id S1356209AbiHWKll (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 06:41:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53496 "EHLO
+        Tue, 23 Aug 2022 06:41:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52626 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354750AbiHWK0T (ORCPT
+        with ESMTP id S1354273AbiHWK1c (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 06:26:19 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5CF9983BEA;
-        Tue, 23 Aug 2022 02:05:40 -0700 (PDT)
+        Tue, 23 Aug 2022 06:27:32 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 66A7B84ED3;
+        Tue, 23 Aug 2022 02:06:00 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id F179A61580;
-        Tue, 23 Aug 2022 09:05:39 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id F0C52C433D6;
-        Tue, 23 Aug 2022 09:05:38 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 1C6DFB81C86;
+        Tue, 23 Aug 2022 09:05:59 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7673BC43148;
+        Tue, 23 Aug 2022 09:05:57 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661245539;
-        bh=64nKZ5znMBqSE8mOqK0YmZCrB6CaXZ+9XWMHssYQUJs=;
+        s=korg; t=1661245557;
+        bh=ZWz5xNRGqs4DFUsiTNXMxvF7ZS3YmBi3o4+3EdUiwWc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Yp5XFjU4BSvGN21Y+/hVsgbSMTjCN4SxzeILFRVRqtkeDFQSu2hIdP9tqAN7m6VXd
-         3Dks5mYQBhxy5knC2F6Z7T+z7c3YGSZFoxwuhOmzLNPARnSIaTn4v4NtFNeb8/b8M3
-         VH49430fkMF0GxISuPCoe7Fn5kZ13qXpN0eFEckc=
+        b=R/GaJmr3oa9em2R1XO6AiqjF/nnjPK+u/yoTLODznWYpVkq/gM273BnB9Jz9zmwKi
+         JiMWxqtK1XtBSUBN+PPWfAOCoUvK9p5PcPiCttKodudtN675uvpp3UVZNH6IErXMiD
+         GBFJIMbk3l3pR95Ct4jBrovpSfPhFFpeZMscC+jk=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Nathan Chancellor <nathan@kernel.org>,
-        Vincent Mailhol <mailhol.vincent@wanadoo.fr>,
-        Marc Kleine-Budde <mkl@pengutronix.de>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.19 103/287] can: pch_can: pch_can_error(): initialize errc before using it
-Date:   Tue, 23 Aug 2022 10:24:32 +0200
-Message-Id: <20220823080103.839876678@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Harshit Mogalapalli <harshit.m.mogalapalli@oracle.com>,
+        Jiri Kosina <jkosina@suse.cz>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 4.19 116/287] HID: cp2112: prevent a buffer overflow in cp2112_xfer()
+Date:   Tue, 23 Aug 2022 10:24:45 +0200
+Message-Id: <20220823080104.297228396@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220823080100.268827165@linuxfoundation.org>
 References: <20220823080100.268827165@linuxfoundation.org>
@@ -51,56 +50,45 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Vincent Mailhol <mailhol.vincent@wanadoo.fr>
+From: Harshit Mogalapalli <harshit.m.mogalapalli@oracle.com>
 
-[ Upstream commit 9950f11211331180269867aef848c7cf56861742 ]
+[ Upstream commit 381583845d19cb4bd21c8193449385f3fefa9caf ]
 
-After commit 3a5c7e4611dd, the variable errc is accessed before being
-initialized, c.f. below W=2 warning:
+Smatch warnings:
+drivers/hid/hid-cp2112.c:793 cp2112_xfer() error: __memcpy()
+'data->block[1]' too small (33 vs 255)
+drivers/hid/hid-cp2112.c:793 cp2112_xfer() error: __memcpy() 'buf' too
+small (64 vs 255)
 
-| In function 'pch_can_error',
-|     inlined from 'pch_can_poll' at drivers/net/can/pch_can.c:739:4:
-| drivers/net/can/pch_can.c:501:29: warning: 'errc' may be used uninitialized [-Wmaybe-uninitialized]
-|   501 |                 cf->data[6] = errc & PCH_TEC;
-|       |                             ^
-| drivers/net/can/pch_can.c: In function 'pch_can_poll':
-| drivers/net/can/pch_can.c:484:13: note: 'errc' was declared here
-|   484 |         u32 errc, lec;
-|       |             ^~~~
+The 'read_length' variable is provided by 'data->block[0]' which comes
+from user and it(read_length) can take a value between 0-255. Add an
+upper bound to 'read_length' variable to prevent a buffer overflow in
+memcpy().
 
-Moving errc initialization up solves this issue.
-
-Fixes: 3a5c7e4611dd ("can: pch_can: do not report txerr and rxerr during bus-off")
-Reported-by: Nathan Chancellor <nathan@kernel.org>
-Signed-off-by: Vincent Mailhol <mailhol.vincent@wanadoo.fr>
-Reviewed-by: Nathan Chancellor <nathan@kernel.org>
-Link: https://lore.kernel.org/all/20220721160032.9348-1-mailhol.vincent@wanadoo.fr
-Signed-off-by: Marc Kleine-Budde <mkl@pengutronix.de>
+Fixes: 542134c0375b ("HID: cp2112: Fix I2C_BLOCK_DATA transactions")
+Signed-off-by: Harshit Mogalapalli <harshit.m.mogalapalli@oracle.com>
+Signed-off-by: Jiri Kosina <jkosina@suse.cz>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/can/pch_can.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/hid/hid-cp2112.c | 5 +++++
+ 1 file changed, 5 insertions(+)
 
-diff --git a/drivers/net/can/pch_can.c b/drivers/net/can/pch_can.c
-index 3e1d71c70b0d..25def028a1dc 100644
---- a/drivers/net/can/pch_can.c
-+++ b/drivers/net/can/pch_can.c
-@@ -500,6 +500,7 @@ static void pch_can_error(struct net_device *ndev, u32 status)
- 	if (!skb)
- 		return;
- 
-+	errc = ioread32(&priv->regs->errc);
- 	if (status & PCH_BUS_OFF) {
- 		pch_can_set_tx_all(priv, 0);
- 		pch_can_set_rx_all(priv, 0);
-@@ -512,7 +513,6 @@ static void pch_can_error(struct net_device *ndev, u32 status)
- 		cf->data[7] = (errc & PCH_REC) >> 8;
- 	}
- 
--	errc = ioread32(&priv->regs->errc);
- 	/* Warning interrupt. */
- 	if (status & PCH_EWARN) {
- 		state = CAN_STATE_ERROR_WARNING;
+diff --git a/drivers/hid/hid-cp2112.c b/drivers/hid/hid-cp2112.c
+index 6f65f5257236..637a7ce281c6 100644
+--- a/drivers/hid/hid-cp2112.c
++++ b/drivers/hid/hid-cp2112.c
+@@ -794,6 +794,11 @@ static int cp2112_xfer(struct i2c_adapter *adap, u16 addr,
+ 		data->word = le16_to_cpup((__le16 *)buf);
+ 		break;
+ 	case I2C_SMBUS_I2C_BLOCK_DATA:
++		if (read_length > I2C_SMBUS_BLOCK_MAX) {
++			ret = -EINVAL;
++			goto power_normal;
++		}
++
+ 		memcpy(data->block + 1, buf, read_length);
+ 		break;
+ 	case I2C_SMBUS_BLOCK_DATA:
 -- 
 2.35.1
 
