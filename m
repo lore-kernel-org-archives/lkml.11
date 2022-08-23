@@ -2,46 +2,49 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D33DAC32772
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 10:43:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9FCB0C32772
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 10:43:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355422AbiHWKnW (ORCPT
+        id S1351022AbiHWKna (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 06:43:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59308 "EHLO
+        Tue, 23 Aug 2022 06:43:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57390 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355574AbiHWKcm (ORCPT
+        with ESMTP id S1353768AbiHWKcx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 06:32:42 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0B7F3A5985;
-        Tue, 23 Aug 2022 02:06:45 -0700 (PDT)
+        Tue, 23 Aug 2022 06:32:53 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E5C04A59A4;
+        Tue, 23 Aug 2022 02:06:50 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 246CD6155D;
-        Tue, 23 Aug 2022 09:06:45 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3129EC433C1;
-        Tue, 23 Aug 2022 09:06:44 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id EDD91CE1B55;
+        Tue, 23 Aug 2022 09:06:48 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A1AB9C433B5;
+        Tue, 23 Aug 2022 09:06:46 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661245604;
-        bh=1VwcYKQjh+FqBxB9bypplF9vur1PhNErQ57grdAmqtQ=;
+        s=korg; t=1661245607;
+        bh=cJuu4ZZl0EdtOSaY9llk/P3EaNJAf4mMjEgnCGzH9V0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=DoGhhFQ5gD0zKSmbAZzzyyjzGDXbBvG7DI2rPAxXK6LcLrRQDPc+YoXiHh9OCL25R
-         Cj4h6y7gstFhy+HSR6Wdkh52xx8fnv8TPLN2QUTxJuQ+5bTJYhYzbg1OTtJZuWPQ5Q
-         EVqwgdXVdBqppcnwJ0FWxEY7XCw5Zz0+jcSSnFFM=
+        b=DDBGSm1megKgwGYpUdHVSTZriqaur8vVDdCkQuf8YgU6zxVzQxE1LGMoFHLOkgDgw
+         ghaacQa6KpyyKbg0VFMGnvf8NEaq7L2Pf3/PO0FAc2ezWuYTtNDYSyLclsOjU4+Kkf
+         O9ccLGVK+dIhtkEKTOdFpEToW34EzHT/LEMD/j5M=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Eugen Hristev <eugen.hristev@microchip.com>,
-        Karl Olsen <karl@micro-technic.com>,
-        Adrian Hunter <adrian.hunter@intel.com>,
-        Ulf Hansson <ulf.hansson@linaro.org>,
+        stable@vger.kernel.org, Stefan Roese <sr@denx.de>,
+        Bjorn Helgaas <bhelgaas@google.com>,
+        =?UTF-8?q?Pali=20Roh=C3=A1r?= <pali@kernel.org>,
+        "Rafael J. Wysocki" <rjw@rjwysocki.net>,
+        Bharat Kumar Gogada <bharat.kumar.gogada@xilinx.com>,
+        Michal Simek <michal.simek@xilinx.com>,
+        Yao Hongbo <yaohongbo@linux.alibaba.com>,
+        Naveen Naidu <naveennaidu479@gmail.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.19 130/287] mmc: sdhci-of-at91: fix set_uhs_signaling rewriting of MC1R
-Date:   Tue, 23 Aug 2022 10:24:59 +0200
-Message-Id: <20220823080104.784447534@linuxfoundation.org>
+Subject: [PATCH 4.19 131/287] PCI/portdrv: Dont disable AER reporting in get_port_device_capability()
+Date:   Tue, 23 Aug 2022 10:25:00 +0200
+Message-Id: <20220823080104.822064956@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220823080100.268827165@linuxfoundation.org>
 References: <20220823080100.268827165@linuxfoundation.org>
@@ -53,46 +56,100 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Eugen Hristev <eugen.hristev@microchip.com>
+From: Stefan Roese <sr@denx.de>
 
-[ Upstream commit 5987e6ded29d52e42fc7b06aa575c60a25eee38e ]
+[ Upstream commit 8795e182b02dc87e343c79e73af6b8b7f9c5e635 ]
 
-In set_uhs_signaling, the DDR bit is being set by fully writing the MC1R
-register.
-This can lead to accidental erase of certain bits in this register.
-Avoid this by doing a read-modify-write operation.
+AER reporting is currently disabled in the DevCtl registers of all non Root
+Port PCIe devices on systems using pcie_ports_native || host->native_aer,
+disabling AER completely in such systems. This is because 2bd50dd800b5
+("PCI: PCIe: Disable PCIe port services during port initialization"), added
+a call to pci_disable_pcie_error_reporting() *after* the AER setup was
+completed for the PCIe device tree.
 
-Fixes: d0918764c17b ("mmc: sdhci-of-at91: fix MMC_DDR_52 timing selection")
-Signed-off-by: Eugen Hristev <eugen.hristev@microchip.com>
-Tested-by: Karl Olsen <karl@micro-technic.com>
-Acked-by: Adrian Hunter <adrian.hunter@intel.com>
-Link: https://lore.kernel.org/r/20220630090926.15061-1-eugen.hristev@microchip.com
-Signed-off-by: Ulf Hansson <ulf.hansson@linaro.org>
+Here a longer analysis about the current status of AER enabling /
+disabling upon bootup provided by Bjorn:
+
+  pcie_portdrv_probe
+    pcie_port_device_register
+      get_port_device_capability
+        pci_disable_pcie_error_reporting
+          clear CERE NFERE FERE URRE               # <-- disable for RP USP DSP
+      pcie_device_init
+        device_register                            # new AER service device
+          aer_probe
+            aer_enable_rootport                    # RP only
+              set_downstream_devices_error_reporting
+                set_device_error_reporting         # self (RP)
+                  if (RP || USP || DSP)
+                    pci_enable_pcie_error_reporting
+                      set CERE NFERE FERE URRE     # <-- enable for RP
+                pci_walk_bus
+                  set_device_error_reporting
+                    if (RP || USP || DSP)
+                      pci_enable_pcie_error_reporting
+                        set CERE NFERE FERE URRE   # <-- enable for USP DSP
+
+In a typical Root Port -> Endpoint hierarchy, the above:
+  - Disables Error Reporting for the Root Port,
+  - Enables Error Reporting for the Root Port,
+  - Does NOT enable Error Reporting for the Endpoint because it is not a
+    Root Port or Switch Port.
+
+In a deeper Root Port -> Upstream Switch Port -> Downstream Switch
+Port -> Endpoint hierarchy:
+  - Disables Error Reporting for the Root Port,
+  - Enables Error Reporting for the Root Port,
+  - Enables Error Reporting for both Switch Ports,
+  - Does NOT enable Error Reporting for the Endpoint because it is not a
+    Root Port or Switch Port,
+  - Disables Error Reporting for the Switch Ports when pcie_portdrv_probe()
+    claims them.  AER does not re-enable it because these are not Root
+    Ports.
+
+Remove this call to pci_disable_pcie_error_reporting() from
+get_port_device_capability(), leaving the already enabled AER configuration
+intact. With this change, AER is enabled in the Root Port and the PCIe
+switch upstream and downstream ports. Only the PCIe Endpoints don't have
+AER enabled yet. A follow-up patch will take care of this Endpoint
+enabling.
+
+Fixes: 2bd50dd800b5 ("PCI: PCIe: Disable PCIe port services during port initialization")
+Link: https://lore.kernel.org/r/20220125071820.2247260-3-sr@denx.de
+Signed-off-by: Stefan Roese <sr@denx.de>
+Signed-off-by: Bjorn Helgaas <bhelgaas@google.com>
+Reviewed-by: Pali Rohár <pali@kernel.org>
+Cc: Rafael J. Wysocki <rjw@rjwysocki.net>
+Cc: Bharat Kumar Gogada <bharat.kumar.gogada@xilinx.com>
+Cc: Michal Simek <michal.simek@xilinx.com>
+Cc: Yao Hongbo <yaohongbo@linux.alibaba.com>
+Cc: Naveen Naidu <naveennaidu479@gmail.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/mmc/host/sdhci-of-at91.c | 9 +++++++--
- 1 file changed, 7 insertions(+), 2 deletions(-)
+ drivers/pci/pcie/portdrv_core.c | 9 +--------
+ 1 file changed, 1 insertion(+), 8 deletions(-)
 
-diff --git a/drivers/mmc/host/sdhci-of-at91.c b/drivers/mmc/host/sdhci-of-at91.c
-index 8cd1794768ba..70ce977cfeec 100644
---- a/drivers/mmc/host/sdhci-of-at91.c
-+++ b/drivers/mmc/host/sdhci-of-at91.c
-@@ -117,8 +117,13 @@ static void sdhci_at91_set_power(struct sdhci_host *host, unsigned char mode,
- static void sdhci_at91_set_uhs_signaling(struct sdhci_host *host,
- 					 unsigned int timing)
- {
--	if (timing == MMC_TIMING_MMC_DDR52)
--		sdhci_writeb(host, SDMMC_MC1R_DDR, SDMMC_MC1R);
-+	u8 mc1r;
-+
-+	if (timing == MMC_TIMING_MMC_DDR52) {
-+		mc1r = sdhci_readb(host, SDMMC_MC1R);
-+		mc1r |= SDMMC_MC1R_DDR;
-+		sdhci_writeb(host, mc1r, SDMMC_MC1R);
-+	}
- 	sdhci_set_uhs_signaling(host, timing);
- }
+diff --git a/drivers/pci/pcie/portdrv_core.c b/drivers/pci/pcie/portdrv_core.c
+index 7c37d815229e..216dd6e61624 100644
+--- a/drivers/pci/pcie/portdrv_core.c
++++ b/drivers/pci/pcie/portdrv_core.c
+@@ -218,15 +218,8 @@ static int get_port_device_capability(struct pci_dev *dev)
  
+ #ifdef CONFIG_PCIEAER
+ 	if (dev->aer_cap && pci_aer_available() &&
+-	    (pcie_ports_native || host->native_aer)) {
++	    (pcie_ports_native || host->native_aer))
+ 		services |= PCIE_PORT_SERVICE_AER;
+-
+-		/*
+-		 * Disable AER on this port in case it's been enabled by the
+-		 * BIOS (the AER service driver will enable it when necessary).
+-		 */
+-		pci_disable_pcie_error_reporting(dev);
+-	}
+ #endif
+ 
+ 	/*
 -- 
 2.35.1
 
