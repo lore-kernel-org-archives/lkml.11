@@ -2,44 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 02B6BC32774
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 08:24:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C11B1C32774
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 08:24:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243344AbiHWIYj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 04:24:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59432 "EHLO
+        id S243353AbiHWIYm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 23 Aug 2022 04:24:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56696 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243120AbiHWIUb (ORCPT
+        with ESMTP id S243211AbiHWIUp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 04:20:31 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 582A26DFBC;
-        Tue, 23 Aug 2022 01:12:04 -0700 (PDT)
+        Tue, 23 Aug 2022 04:20:45 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5933A2C664;
+        Tue, 23 Aug 2022 01:12:15 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id A12CBB81C26;
-        Tue, 23 Aug 2022 08:12:02 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E9220C433C1;
-        Tue, 23 Aug 2022 08:12:00 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id C7C1FB81C22;
+        Tue, 23 Aug 2022 08:12:05 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 008C7C433D6;
+        Tue, 23 Aug 2022 08:12:03 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661242321;
-        bh=fntl2AQxwEntjTVQ0NGLc7DF/QeTA1ol4XdWPwNNzW0=;
+        s=korg; t=1661242324;
+        bh=3ziDYwt+y+FELl9+y1MQMtELjPf4hifJ5vanJV4Z5fA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=RGkTgze5jBRPKWl4kfqzYEXaB6l4h9JCDR4BuZKOx5xwhGGDZCBj164MwYDYfmLFe
-         MqNvQ5uGgMpMWLNv9EL55zL103L18OVvnFQ24ZUvscW2u/9NlZvXNzu2oCUuRqgdRw
-         ySuGa4Myiav5KM7h3CA24CRLoD84MbGZgNz+4IMo=
+        b=sRrrKKl/I5AYPxFbCr0F6hB0GQZ0PkqOfojxAIYgz2C17NNjXZKUv9K04wQ3/I2kd
+         tflkU7ni9nHRxkGHKp/c+E9yPTJIBzfaU6nQdWkeUc+fkB8Y+8Dl1wtEjMA02UdeIS
+         572P7fgxMyGNW5LaGwsU9qFA6qQBrN5+wA1pdTME=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Hou Tao <houtao1@huawei.com>,
-        Yonghong Song <yhs@fb.com>, Alexei Starovoitov <ast@kernel.org>
-Subject: [PATCH 5.19 067/365] bpf: Acquire map uref in .init_seq_private for sock{map,hash} iterator
-Date:   Tue, 23 Aug 2022 09:59:28 +0200
-Message-Id: <20220823080121.015734563@linuxfoundation.org>
+        stable@vger.kernel.org, Theodore Tso <tytso@mit.edu>,
+        stable@kernel.org, Andreas Dilger <adilger@dilger.ca>
+Subject: [PATCH 4.9 053/101] ext4: update s_overhead_clusters in the superblock during an on-line resize
+Date:   Tue, 23 Aug 2022 10:03:26 +0200
+Message-Id: <20220823080036.585623693@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220823080118.128342613@linuxfoundation.org>
-References: <20220823080118.128342613@linuxfoundation.org>
+In-Reply-To: <20220823080034.579196046@linuxfoundation.org>
+References: <20220823080034.579196046@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -48,82 +48,45 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Hou Tao <houtao1@huawei.com>
+From: Theodore Ts'o <tytso@mit.edu>
 
-commit f0d2b2716d71778d0b0c8eaa433c073287d69d93 upstream.
+commit de394a86658ffe4e89e5328fd4993abfe41b7435 upstream.
 
-sock_map_iter_attach_target() acquires a map uref, and the uref may be
-released before or in the middle of iterating map elements. For example,
-the uref could be released in sock_map_iter_detach_target() as part of
-bpf_link_release(), or could be released in bpf_map_put_with_uref() as
-part of bpf_map_release().
+When doing an online resize, the on-disk superblock on-disk wasn't
+updated.  This means that when the file system is unmounted and
+remounted, and the on-disk overhead value is non-zero, this would
+result in the results of statfs(2) to be incorrect.
 
-Fixing it by acquiring an extra map uref in .init_seq_private and
-releasing it in .fini_seq_private.
+This was partially fixed by Commits 10b01ee92df5 ("ext4: fix overhead
+calculation to account for the reserved gdt blocks"), 85d825dbf489
+("ext4: force overhead calculation if the s_overhead_cluster makes no
+sense"), and eb7054212eac ("ext4: update the cached overhead value in
+the superblock").
 
-Fixes: 0365351524d7 ("net: Allow iterating sockmap and sockhash")
-Signed-off-by: Hou Tao <houtao1@huawei.com>
-Acked-by: Yonghong Song <yhs@fb.com>
-Link: https://lore.kernel.org/r/20220810080538.1845898-5-houtao@huaweicloud.com
-Signed-off-by: Alexei Starovoitov <ast@kernel.org>
+However, since it was too expensive to forcibly recalculate the
+overhead for bigalloc file systems at every mount, this didn't fix the
+problem for bigalloc file systems.  This commit should address the
+problem when resizing file systems with the bigalloc feature enabled.
+
+Signed-off-by: Theodore Ts'o <tytso@mit.edu>
+Cc: stable@kernel.org
+Reviewed-by: Andreas Dilger <adilger@dilger.ca>
+Link: https://lore.kernel.org/r/20220629040026.112371-1-tytso@mit.edu
+Signed-off-by: Theodore Ts'o <tytso@mit.edu>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- net/core/sock_map.c |   20 +++++++++++++++++++-
- 1 file changed, 19 insertions(+), 1 deletion(-)
+ fs/ext4/resize.c |    1 +
+ 1 file changed, 1 insertion(+)
 
---- a/net/core/sock_map.c
-+++ b/net/core/sock_map.c
-@@ -783,13 +783,22 @@ static int sock_map_init_seq_private(voi
- {
- 	struct sock_map_seq_info *info = priv_data;
+--- a/fs/ext4/resize.c
++++ b/fs/ext4/resize.c
+@@ -1446,6 +1446,7 @@ static void ext4_update_super(struct sup
+ 	 * Update the fs overhead information
+ 	 */
+ 	ext4_calculate_overhead(sb);
++	es->s_overhead_clusters = cpu_to_le32(sbi->s_overhead);
  
-+	bpf_map_inc_with_uref(aux->map);
- 	info->map = aux->map;
- 	return 0;
- }
- 
-+static void sock_map_fini_seq_private(void *priv_data)
-+{
-+	struct sock_map_seq_info *info = priv_data;
-+
-+	bpf_map_put_with_uref(info->map);
-+}
-+
- static const struct bpf_iter_seq_info sock_map_iter_seq_info = {
- 	.seq_ops		= &sock_map_seq_ops,
- 	.init_seq_private	= sock_map_init_seq_private,
-+	.fini_seq_private	= sock_map_fini_seq_private,
- 	.seq_priv_size		= sizeof(struct sock_map_seq_info),
- };
- 
-@@ -1369,18 +1378,27 @@ static const struct seq_operations sock_
- };
- 
- static int sock_hash_init_seq_private(void *priv_data,
--				     struct bpf_iter_aux_info *aux)
-+				      struct bpf_iter_aux_info *aux)
- {
- 	struct sock_hash_seq_info *info = priv_data;
- 
-+	bpf_map_inc_with_uref(aux->map);
- 	info->map = aux->map;
- 	info->htab = container_of(aux->map, struct bpf_shtab, map);
- 	return 0;
- }
- 
-+static void sock_hash_fini_seq_private(void *priv_data)
-+{
-+	struct sock_hash_seq_info *info = priv_data;
-+
-+	bpf_map_put_with_uref(info->map);
-+}
-+
- static const struct bpf_iter_seq_info sock_hash_iter_seq_info = {
- 	.seq_ops		= &sock_hash_seq_ops,
- 	.init_seq_private	= sock_hash_init_seq_private,
-+	.fini_seq_private	= sock_hash_fini_seq_private,
- 	.seq_priv_size		= sizeof(struct sock_hash_seq_info),
- };
- 
+ 	if (test_opt(sb, DEBUG))
+ 		printk(KERN_DEBUG "EXT4-fs: added group %u:"
 
 
