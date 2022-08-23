@@ -2,154 +2,172 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 48BBCC32772
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 09:20:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D9935C32774
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 09:22:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346716AbiHWJUL (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 05:20:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34204 "EHLO
+        id S240414AbiHWJWP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 23 Aug 2022 05:22:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39674 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238424AbiHWJTF (ORCPT
+        with ESMTP id S1349836AbiHWJVG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 05:19:05 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 35CD512615;
-        Tue, 23 Aug 2022 01:33:17 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id CB67BB81C35;
-        Tue, 23 Aug 2022 08:33:16 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0CA62C433C1;
-        Tue, 23 Aug 2022 08:33:14 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661243595;
-        bh=kRV+Gn5xEpmPrAnDCd4cDOvjWBXX8T4006MlWRjYqyo=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Mub/mPu6zBk1dzsrkt+N61WSRy6gxbT9xkdlIs5c06rGZihJZZNBpbRM7Ev0m1Zwc
-         ypSgpPzVUhA3A4aG6V2CQBK1qXtPu4S73eMzcMRFdSSMv6Iehp+jA8YXbggVceHIB8
-         B/8JS4JIMEKtR4vcA9da2CRHmD0Zd9n4lC45I/fc=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Cezary Rojewski <cezary.rojewski@intel.com>,
-        Takashi Iwai <tiwai@suse.de>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.19 326/365] ALSA: hda: Fix page fault in snd_hda_codec_shutdown()
-Date:   Tue, 23 Aug 2022 10:03:47 +0200
-Message-Id: <20220823080131.817356112@linuxfoundation.org>
-X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220823080118.128342613@linuxfoundation.org>
-References: <20220823080118.128342613@linuxfoundation.org>
-User-Agent: quilt/0.67
+        Tue, 23 Aug 2022 05:21:06 -0400
+Received: from NAM12-DM6-obe.outbound.protection.outlook.com (mail-dm6nam12on2072f.outbound.protection.outlook.com [IPv6:2a01:111:f400:fe59::72f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5584E8A7FD;
+        Tue, 23 Aug 2022 01:34:19 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=nGOw57Kz04rFiFqeZ0WiWqWXoGDOgdJyR3wxr8J+wlIN5QjnFfUPcrmspfRq9okKNbqLfOJSXLYNVlDh5dXskeaKtPAD790T6KlrMop/o4+YhWl0qO95IA6oZtIdWUNY8raJwunY/+fG2cOdCcmRC+ebmBMGs/puak8OI25i/+V/JhvzmmKop37qflS8LWxqb9QC63KSGivoPFnd1Iv+Voehz61j4nDDy1SAWX+lD0MMffod4SqgMYcPwvVApYdO4WK6edkWdeNNhhK9wK6+ONXEU4i9u00oGjkW+rPGVt03tkVJ932YWnPrRbfG9Ksfy/JtHUQzkqYpoBQeCZFArw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=X0/PBCUD4f7PaS4J5lj864PteHQGGmeAj1+g/EZkSBs=;
+ b=BkmG7UAVdcGLQQBDTXE/mSc/aUXSxCHcgn3kRyV8MVSQxmCbjPLgHFrY8lQfjHTXrcqwvtqCwT1fYlYrPap/f+mEKnFSXJrxalvhj7VeVmaG8qaKm1aeyLPiSb6ZlbKAczrgboQPNZatKdOrUxL26vuTnG/TaMl8ZxCbf/6JbXwZnHn4cxWb1nU1Tl7RZqsZbXs1T3e0WIGRAka20PakqNn3o04vtZqRqxDtqX9sgkvrlxkzePnbaA/Iug6Wht2VeaP4dWt/p8zydYBkw/gR9+TuuHWEq3Ev1Vm47BN16cNSRmP7ddejTxLFHIbsH6pyDoFpd0Rrm0w2XV5l6unCVA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=os.amperecomputing.com; dmarc=pass action=none
+ header.from=os.amperecomputing.com; dkim=pass
+ header.d=os.amperecomputing.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=os.amperecomputing.com; s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=X0/PBCUD4f7PaS4J5lj864PteHQGGmeAj1+g/EZkSBs=;
+ b=Rer1UV0KidrzmnVbnIqEmoVqFLpunyyREg5UaMDXzfrJEwEPxGpdUngGh47clKmHdYLb0CRcxwFBrUvKt8RxKAbjQDPVIPlL0lTWYOhpcSZUrxaOCx4XhSK8RZONiDcWVYJ5CPmb+UCKJ50MQOQIQXm7nciXWEkHCXC2aB/uvSo=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=os.amperecomputing.com;
+Received: from SJ0PR01MB7282.prod.exchangelabs.com (2603:10b6:a03:3f2::24) by
+ BL0PR01MB4788.prod.exchangelabs.com (2603:10b6:208:7c::13) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.5546.22; Tue, 23 Aug 2022 08:27:43 +0000
+Received: from SJ0PR01MB7282.prod.exchangelabs.com
+ ([fe80::48f7:ac49:a2f8:614e]) by SJ0PR01MB7282.prod.exchangelabs.com
+ ([fe80::48f7:ac49:a2f8:614e%5]) with mapi id 15.20.5566.014; Tue, 23 Aug 2022
+ 08:27:42 +0000
+Message-ID: <673e200f-f458-7866-f956-3d5bd7160a49@os.amperecomputing.com>
+Date:   Tue, 23 Aug 2022 15:27:32 +0700
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:102.0)
+ Gecko/20100101 Thunderbird/102.1.0
+Subject: Re: [PATCH v3 2/2] ARM: dts: aspeed: Add device tree for Ampere's Mt.
+ Mitchell BMC
+Content-Language: en-CA
+To:     Arnd Bergmann <arnd@arndb.de>, Joel Stanley <joel@jms.id.au>
+Cc:     openbmc@lists.ozlabs.org, Olof Johansson <olof@lixom.net>,
+        soc@kernel.org, Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Andrew Jeffery <andrew@aj.id.au>,
+        linux-arm-kernel@lists.infradead.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-aspeed@lists.ozlabs.org,
+        Open Source Submission <patches@amperecomputing.com>,
+        Phong Vo <phong@os.amperecomputing.com>,
+        thang@os.amperecomputing.com
+References: <20220817071539.176110-1-quan@os.amperecomputing.com>
+ <20220817071539.176110-3-quan@os.amperecomputing.com>
+ <CACPK8XdDpG3ONM1=-E6qvHL1FgMNWSMPoL_sVGJK6BmmnT3w_w@mail.gmail.com>
+ <CAK8P3a2LZKfZpdTQ-R4o9mJ6dk52VRF+Bxj=PJEx-1MA4yH8+w@mail.gmail.com>
+From:   Quan Nguyen <quan@os.amperecomputing.com>
+In-Reply-To: <CAK8P3a2LZKfZpdTQ-R4o9mJ6dk52VRF+Bxj=PJEx-1MA4yH8+w@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-ClientProxiedBy: SG2PR02CA0064.apcprd02.prod.outlook.com
+ (2603:1096:4:54::28) To SJ0PR01MB7282.prod.exchangelabs.com
+ (2603:10b6:a03:3f2::24)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: ab534e5c-b2c9-4752-9119-08da84e15901
+X-MS-TrafficTypeDiagnostic: BL0PR01MB4788:EE_
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: m0W9LgJOyHuBe9H8ZxAvuCfhi/vrXN2VAIt0d4L7MJAoOSJGC9Qh9Y6nvpI1XEzKEV7Goyc3rjGzrHITqs/eDcvZ+vQaejDHdYx5hmDz2pP/+QmG9Zf1FOhKMnNheU4BboC2m46jbJEY1dHSIzUj2yrVzZhgsgXEr8nwVebnjeY92H1/h01M7mdDStTktkY0LYfGH/TlQF7FWUQWW3ciJyxo7kQpuWmig2V//5FwHD9U0lA3xf2toDzIfvMZgY17p4Y6LvicTKmVIOM8dCPqq2aHvh1sZKCIxQ9X/2Iaj5B1SCFJtb2xWYTHc1m2n+LtQOGbz903jxY7N9bRuZmOU4U8m+3KYUWNeT2Y/AeLnDDRJscg/Ti2PPbCKDfh6YbQDeQrDJXjzL3pGgxI3Cp7rD25zWX5tHbAtdpWjRlqmppVDb/fCMlLzX9wuZ39gzZaKtm/8Ov6+02T0z+maLv/GeaTEpmu9T9Y54XVgCGpxkuqFgXLeyNGu5JdvTl3+NnD00pYN+ZZPsK9Sub9om+t9XUichW/9bqQAwSWfwfov2I2JzO5qv5gN3t62VBK18UK69zxIcp3bXvNEsmu5xMO2YgRTG99jQ06yEXv/5V+5ypuS1irsxDmmF818EcjmoR+OeflVlqbw23bSyxQ+NhUl0OGlQBxCIYUxsPvkE8KmPTA7Dmn2D9xffEJ2+jW5X98ptRQU9ZcLsHFe7BtPinUK+arRVdxJclKYAvn+C23i8GKMheglB11Rs2tqxazwQja4EmmmO0YYmp/Y//6fO9IuzEXRMIuXgWHaPDJPd2CnXg=
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:SJ0PR01MB7282.prod.exchangelabs.com;PTR:;CAT:NONE;SFS:(13230016)(4636009)(396003)(39850400004)(366004)(136003)(376002)(346002)(66476007)(4326008)(66556008)(66946007)(8676002)(54906003)(110136005)(86362001)(31696002)(5660300002)(7416002)(8936002)(316002)(2906002)(31686004)(38100700002)(38350700002)(6506007)(6666004)(52116002)(26005)(53546011)(107886003)(6486002)(6512007)(478600001)(41300700001)(186003)(2616005)(43740500002);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?dnJEeENLZkhoVlRnaU00MkxlQjFNSDcxU0hmTUhMdVlqbjl5NStMTHZLMXVY?=
+ =?utf-8?B?RC84aUdrTnhJR2VoSVZRb3pqYWZxSFBhYlhyOUp3dXVqR3l0QU5qY0o1MG9u?=
+ =?utf-8?B?L05RalpOVjVpcmpDTUdXa3Y1cGR2VFpWSGloQzEydTc3b0Q0ZTE2VFcxYlF3?=
+ =?utf-8?B?SVVON2phYzdYc3VENDJ5czRGVFJoSWlFY3E5QnRwTDVDdm5SbnFXZlFxUEdm?=
+ =?utf-8?B?Q1RzdlQ1VmM2VTZKUGViUDdqeXl4dGdBK3R0RGphakN2YUNMd0hFdFR5ZWpm?=
+ =?utf-8?B?TlNjbGtHSGVIakxmeHpxamxpck9zbkQ4YzZuNHltaEk5K0VJbkQzWUY5cExP?=
+ =?utf-8?B?U3YxMkNJU25ub0d3cFRiWGZjZDdCTVlXT2RIbkw3SmJub01sTnJFRCtTa3ha?=
+ =?utf-8?B?Vjk4WDQ1OFhCTEVSRU5QOGR1UkpOYWlodFk1Yi9kUmlJdS9pWmdUOGpjcjRs?=
+ =?utf-8?B?RUw2eS9tUHdxaWF1bnJUbkVIbkh5WmJiQVIvTFJ0aTY4UzNVSDl2Vlk4bmpX?=
+ =?utf-8?B?OHU2ak9xSHBXUGFkcnphVGpTaWJpKzdOUVVDUFRleUtvbkNUdEFyZ0VDdjIr?=
+ =?utf-8?B?TTBpMmkxY1l1VkxIMW1aczJWVWN1M1FqMkVtazE3SDBXNXE2YkJpMWpKSDM0?=
+ =?utf-8?B?R0ZERXpJVHMzMk1sZW5pbnQ1OW1ZTU1nQnM2bzBaamhFS28wRWlSODZNdXJB?=
+ =?utf-8?B?bEhvME9YTHhTblcyNURRb20wM2NOVEw3SW1RaC9sa1QxQ0RWektTdEluY0dV?=
+ =?utf-8?B?UFdZdHhwMXVSZTRjWllzbFhxVjlKR2lmSG1ieEY3TzJPK0xha0RSeHpMMEl5?=
+ =?utf-8?B?OElMdm82SDBPWVpoVVIyWCtpQlBkMFFCakt0RWdiTWV0REhqUGhkdWFPVCs2?=
+ =?utf-8?B?RVNFQ2ViOFJHRVdHZWlPbXdpOEtxRzNvb2MzcU53WWtTUXNLVXdPMVVnRWpx?=
+ =?utf-8?B?YVFKUEdLeUNyTFpOSTlpUHNtYU9PN1NmSUVaSVd1T29rZVlEbnNvOFMwLzhp?=
+ =?utf-8?B?T29TODdsT1gyY1NMa1VJcUtaYXU2cVJBRjhUSzV3TEdMcmFoWUE5ZGlYSGs5?=
+ =?utf-8?B?dEFDSFJrek5ZM2pLbjRwZGZkalFPdVE5ODdPTlB0aVY1LzhlMGdUQ2pmTGor?=
+ =?utf-8?B?dlRZc1I0V2tiT0xIU2I2T0hlTk5UakwxL1IxdEVlbUl0N3NaRVBYV29DallQ?=
+ =?utf-8?B?V1NXeWJ6SXh5MSs2NzVSK21ZSEZqUk4yNWs3elMxV3FlZGQ5R2F0U2FCbWxH?=
+ =?utf-8?B?YTk2TXFVMXJaMkRwR045eGdMQUdZRWxvN1ZSU3pJT1R0aDRXaXljRWlXVU5W?=
+ =?utf-8?B?YWlkVGZnUHFRbE1aYTRTYnEwRTloY2cxUlNaUXYreXVKS201ZnAzZ1VwV1Rr?=
+ =?utf-8?B?c2JrL2t2ZlFmNkpSL3htSHlBWnlBSUxRLzBLdjJyYU5ha3F0Zyt4eWVvR1Vt?=
+ =?utf-8?B?a1RhQlZmSE8rYWpjMXdxdVRiWmVYUmxSUm1DSjhsRHo2VDZ4cUY2aUlPWC9p?=
+ =?utf-8?B?SHBManQwYlBqT25GOFZyNEN6MUF5ZjYwYnVycXBZTWlFNkZYZkMyK1RFUWlv?=
+ =?utf-8?B?WEh0bGluYmxUUWdFbkdhRmpOS3NMNUs0QzRkbU1hYnVDR25qc3JYaFFveW5S?=
+ =?utf-8?B?c0tRTTNsUURMUENnMjZQcTUxOXhLOVJDbXp5M24rdmRWVU9STHFtS2ZjMm8w?=
+ =?utf-8?B?L2FwWkJwMDhJKzJNRXlaNUNOdGhaNU81RTM5RldtZVQyVWcxcmJlK1dFUEZq?=
+ =?utf-8?B?L2U3UXF5WjExRnFtdjF3YlBwa2J5OVR4Vi9ITHJ1K3cyV1BvSGV3SXg3eG5k?=
+ =?utf-8?B?alhpNk9XVTJqN1JDVUdWUjJtVEpEOHZ5emRROERTRm1hc1o3TExIRmxEb2lk?=
+ =?utf-8?B?cFNRQ3ErNTU2RFJTdnJlcXBPRFJsdnJ1U1hyNGIycVo3OHY1TWhxN3ljeFdW?=
+ =?utf-8?B?WGo5R3RncEhCbXczZDVRaXprVURhaVpPbWxOL0x6WnYvWGZ3aDUvQng2eE1t?=
+ =?utf-8?B?Yy8wZmdCQ0xPc2tHaDY5UnE4bGJNdVJ2VW5SQU9SanM0SlhRTFlJOG1GcUxF?=
+ =?utf-8?B?dkxUdXRqNXRvL0lqekJGY0tFT3gvc0YxOGg3WFI3OS9vaTBDUFgvNFhuOWxG?=
+ =?utf-8?B?c0lKOXpvWVM2cjRYRm1pNGIzUFhZb2VyZk93cFIyU2FyM0t6cVRmaWVjVHNo?=
+ =?utf-8?Q?nXO2EXhn9RkzodNqpOwejkk=3D?=
+X-OriginatorOrg: os.amperecomputing.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: ab534e5c-b2c9-4752-9119-08da84e15901
+X-MS-Exchange-CrossTenant-AuthSource: SJ0PR01MB7282.prod.exchangelabs.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 23 Aug 2022 08:27:42.7284
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 3bc2b170-fd94-476d-b0ce-4229bdc904a7
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: vBMfKqW82urWFPOfbA5dIMzFRFI5zq96iJEO5u9PiX8KydJLRNpBtSeRj6SQT5SWz9kkxO6jczjD0uB5bC75N6jQOWnvUhGQAd9BB0BVrk8=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BL0PR01MB4788
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Cezary Rojewski <cezary.rojewski@intel.com>
-
-[ Upstream commit 980b3a8790b402e959a6d773b38b771019682be1 ]
-
-If early probe of HDAudio bus driver fails e.g.: due to missing
-firmware file, snd_hda_codec_shutdown() ends in manipulating
-uninitialized codec->pcm_list_head causing page fault.
-
-Iinitialization of HDAudio codec in ASoC is split in two:
-- snd_hda_codec_device_init()
-- snd_hda_codec_device_new()
-
-snd_hda_codec_device_init() is called during probe_codecs() by HDAudio
-bus driver while snd_hda_codec_device_new() is called by
-codec-component's ->probe(). The second call will not happen until all
-components required by related sound card are present within the ASoC
-framework. With firmware failing to load during the PCI's deferred
-initialization i.e.: probe_work(), no platform components are ever
-registered. HDAudio codec enumeration is done at that point though, so
-the codec components became registered to ASoC framework, calling
-snd_hda_codec_device_init() in the process.
-
-Now, during platform reboot snd_hda_codec_shutdown() is called for every
-codec found on the HDAudio bus causing oops if any of them has not
-completed both of their initialization steps. Relocating field
-initialization fixes the issue.
-
-Signed-off-by: Cezary Rojewski <cezary.rojewski@intel.com>
-Link: https://lore.kernel.org/r/20220706120230.427296-7-cezary.rojewski@intel.com
-Signed-off-by: Takashi Iwai <tiwai@suse.de>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- sound/pci/hda/hda_codec.c | 41 +++++++++++++++++++--------------------
- 1 file changed, 20 insertions(+), 21 deletions(-)
-
-diff --git a/sound/pci/hda/hda_codec.c b/sound/pci/hda/hda_codec.c
-index ccb195b7cb08..8828fc3a5c3f 100644
---- a/sound/pci/hda/hda_codec.c
-+++ b/sound/pci/hda/hda_codec.c
-@@ -931,8 +931,28 @@ snd_hda_codec_device_init(struct hda_bus *bus, unsigned int codec_addr,
- 	}
- 
- 	codec->bus = bus;
-+	codec->depop_delay = -1;
-+	codec->fixup_id = HDA_FIXUP_ID_NOT_SET;
-+	codec->core.dev.release = snd_hda_codec_dev_release;
-+	codec->core.exec_verb = codec_exec_verb;
- 	codec->core.type = HDA_DEV_LEGACY;
- 
-+	mutex_init(&codec->spdif_mutex);
-+	mutex_init(&codec->control_mutex);
-+	snd_array_init(&codec->mixers, sizeof(struct hda_nid_item), 32);
-+	snd_array_init(&codec->nids, sizeof(struct hda_nid_item), 32);
-+	snd_array_init(&codec->init_pins, sizeof(struct hda_pincfg), 16);
-+	snd_array_init(&codec->driver_pins, sizeof(struct hda_pincfg), 16);
-+	snd_array_init(&codec->cvt_setups, sizeof(struct hda_cvt_setup), 8);
-+	snd_array_init(&codec->spdif_out, sizeof(struct hda_spdif_out), 16);
-+	snd_array_init(&codec->jacktbl, sizeof(struct hda_jack_tbl), 16);
-+	snd_array_init(&codec->verbs, sizeof(struct hda_verb *), 8);
-+	INIT_LIST_HEAD(&codec->conn_list);
-+	INIT_LIST_HEAD(&codec->pcm_list_head);
-+	INIT_DELAYED_WORK(&codec->jackpoll_work, hda_jackpoll_work);
-+	refcount_set(&codec->pcm_ref, 1);
-+	init_waitqueue_head(&codec->remove_sleep);
-+
- 	return codec;
- }
- EXPORT_SYMBOL_GPL(snd_hda_codec_device_init);
-@@ -980,29 +1000,8 @@ int snd_hda_codec_device_new(struct hda_bus *bus, struct snd_card *card,
- 	if (snd_BUG_ON(codec_addr > HDA_MAX_CODEC_ADDRESS))
- 		return -EINVAL;
- 
--	codec->core.dev.release = snd_hda_codec_dev_release;
--	codec->core.exec_verb = codec_exec_verb;
--
- 	codec->card = card;
- 	codec->addr = codec_addr;
--	mutex_init(&codec->spdif_mutex);
--	mutex_init(&codec->control_mutex);
--	snd_array_init(&codec->mixers, sizeof(struct hda_nid_item), 32);
--	snd_array_init(&codec->nids, sizeof(struct hda_nid_item), 32);
--	snd_array_init(&codec->init_pins, sizeof(struct hda_pincfg), 16);
--	snd_array_init(&codec->driver_pins, sizeof(struct hda_pincfg), 16);
--	snd_array_init(&codec->cvt_setups, sizeof(struct hda_cvt_setup), 8);
--	snd_array_init(&codec->spdif_out, sizeof(struct hda_spdif_out), 16);
--	snd_array_init(&codec->jacktbl, sizeof(struct hda_jack_tbl), 16);
--	snd_array_init(&codec->verbs, sizeof(struct hda_verb *), 8);
--	INIT_LIST_HEAD(&codec->conn_list);
--	INIT_LIST_HEAD(&codec->pcm_list_head);
--	refcount_set(&codec->pcm_ref, 1);
--	init_waitqueue_head(&codec->remove_sleep);
--
--	INIT_DELAYED_WORK(&codec->jackpoll_work, hda_jackpoll_work);
--	codec->depop_delay = -1;
--	codec->fixup_id = HDA_FIXUP_ID_NOT_SET;
- 
- #ifdef CONFIG_PM
- 	codec->power_jiffies = jiffies;
--- 
-2.35.1
 
 
+On 18/08/2022 19:06, Arnd Bergmann wrote:
+> On Thu, Aug 18, 2022 at 9:33 AM Joel Stanley <joel@jms.id.au> wrote:
+>>> +
+>>> +/ {
+>>> +       model = "Ampere Mt.Mitchell BMC";
+>>> +       compatible = "ampere,mtmitchell-bmc", "aspeed,ast2600";
+>>> +
+>>> +       chosen {
+>>> +               stdout-path = &uart5;
+>>
+>> I know you've been told by Arnd and others to remove the default
+>> command line here, but without it your device tree fails to produce
+>> any output in my tests:
+>>
+>> qemu-system-arm -M ast2600-evb -nographic -dtb
+>> arch/arm/boot/dts/aspeed-bmc-ampere-mtmitchell.dtb -kernel
+>> arch/arm/boot/zImage
+>>
+>> Without a working test, I can't tell the difference between a broken
+>> device tree and one that omits the serial device on the command line.
+>> Can you work with Arnd to come to a solution here?
+> 
+> If you use qemu as the boot loader, I think the expected way to do
+> this is to use the "-append" command line argument along with "-kernel".
+> 
+> Is there any reason for this machine to be special here?
+> 
 
+Thanks Arnd for the comment.
+
+I think adding -append could solve the issue.
+
+But as the bootargs still exist in all other 
+arch/arm/boot/dts/aspeed-bmc-*.dts should we still keep bootargs for 
+this dts?
+
+Thanks,
+- Quan
