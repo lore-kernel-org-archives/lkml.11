@@ -2,82 +2,121 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E97FCC32789
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 20:17:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 82094C32772
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 20:22:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229648AbiHWUR1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 16:17:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49554 "EHLO
+        id S232719AbiHWUWl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 23 Aug 2022 16:22:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58924 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229491AbiHWUPJ (ORCPT
+        with ESMTP id S232421AbiHWUWU (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 16:15:09 -0400
-Received: from mail-pf1-x435.google.com (mail-pf1-x435.google.com [IPv6:2607:f8b0:4864:20::435])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4E0D249B41;
-        Tue, 23 Aug 2022 12:37:31 -0700 (PDT)
-Received: by mail-pf1-x435.google.com with SMTP id z187so14383950pfb.12;
-        Tue, 23 Aug 2022 12:37:31 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:sender:from:to:cc;
-        bh=kxeD7t6AephRFE0VvTfMAllbUT0ZPa2W2zfu9iRzx6o=;
-        b=NNc0g5zX4Rk3hhtpLy68iQ5KjKuhXHl573Sw56xUyXvN3TvClXdEratdWpbNeNl7FA
-         yB7/XCecUngtsYrXCx+Vu/scUmO/OnBJIWtSWbrKEs7Ip/MBR0SCsfUKCtSKkY6uV0b1
-         TwUPZp5u5+8k3X+vD2eZArCdj9X/9IxsEl6LRcCpvSh/aP9LVpOvfOIdrAVt4/Fn+abG
-         7oOWGE7BEF5Dx6SIfBNVe4VmuxyuVxVFEmaMT1wEqa8CvaXi+32I4E4ghdO76fRfdcvW
-         JTWpH94Kr/xC3sCkGHgxxhBk+v6iGP8nXxADAmgDIijEPlPBoE0YaNf0MaANXGnf0aYd
-         n9/g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:sender:x-gm-message-state:from:to:cc;
-        bh=kxeD7t6AephRFE0VvTfMAllbUT0ZPa2W2zfu9iRzx6o=;
-        b=XamNLtkhVZpVIxdHA4zKvh13ktGDBHHRbvzXV1sWOwZXnDqYWGz+TvNb8SVT7fB/YG
-         Mw0DPfUUogsIh6Zyer896wdhqEAkiOd+vYClEqP47jvkrmYJWFq6BIViHDpDDNPANWbM
-         2oj3PAdfifN9LgdJG2ZCjs+TNnWdCqNZsztKZGbtIDwEJuzCc3Jt5d3DluV+A9AmL+2+
-         KEMO5dBbktqWYwUY9g+p16C+KoF50B3XRrOqocl/WIw9gp58eygDaWhXWZHXGLnNXECh
-         h3q0ttsjzzWA3V511lsYS23WXu/bu54HHlKdw5pCKxKavA7KMSV+m6tEon5Nxqx2IfVP
-         vJkQ==
-X-Gm-Message-State: ACgBeo3GIUg0/VZlVI6JYu05D9xgYW19UlfOI1B8e3JuaglXydEmvlUW
-        xRFE+9fKBe32yA/x5t9O0LY=
-X-Google-Smtp-Source: AA6agR5B2R0kKGDPnXohyBoZRX7quqVG5GU/3TcvmqxcfEH9pEy4AK9DS9MRIS2vFGmHiL9z+RsiAw==
-X-Received: by 2002:a05:6a00:1883:b0:536:e59f:f776 with SMTP id x3-20020a056a00188300b00536e59ff776mr6229940pfh.49.1661283450756;
-        Tue, 23 Aug 2022 12:37:30 -0700 (PDT)
-Received: from localhost ([2620:10d:c090:400::5:90fa])
-        by smtp.gmail.com with ESMTPSA id x10-20020a170902a38a00b001708e1a10a3sm10944120pla.94.2022.08.23.12.37.29
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 23 Aug 2022 12:37:30 -0700 (PDT)
-Sender: Tejun Heo <htejun@gmail.com>
-Date:   Tue, 23 Aug 2022 09:37:28 -1000
-From:   Tejun Heo <tj@kernel.org>
-To:     Chengming Zhou <zhouchengming@bytedance.com>
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        linux-kernel@vger.kernel.org, linux-fsdevel@vger.kernel.org,
-        Johannes Weiner <hannes@cmpxchg.org>,
-        Imran Khan <imran.f.khan@oracle.com>, kernel-team@fb.com
-Subject: Re: [PATCH 4/7] kernfs: Skip kernfs_drain_open_files() more
- aggressively
-Message-ID: <YwUseD1GBHd2iN+q@slm.duckdns.org>
-References: <20220820000550.367085-1-tj@kernel.org>
- <20220820000550.367085-5-tj@kernel.org>
- <e340ccaa-92f2-3870-ed26-70df87ad8c8f@bytedance.com>
+        Tue, 23 Aug 2022 16:22:20 -0400
+Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9FD559A690
+        for <linux-kernel@vger.kernel.org>; Tue, 23 Aug 2022 12:49:04 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1661284144; x=1692820144;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=ia0anFfuwz443iX1tU5Mr1ZtxYNpdXSuAwNOm8ioSoQ=;
+  b=b69nHnjhspS6x0vLYm1G2v1mMCRxjr5jdegov7zX3rwdoRmV5sGgXNJ2
+   cWyWMTwLFPSunbih/pOFZRUrnboNGt6mha7vfadIhJsqPXUpMUtoV/bpc
+   m1lYIxtJSlU4268byaNG0LxIu+RBvgSrOvaR8jZnMqwxrYOLHvevP93d/
+   NxuhLAt2vlEGHxceEK1/GJp1uD/Ua4oWYCMkjmKCHclJuWLPPlAEadfHx
+   llAIi3PV9KWUL1iwnnXt+BsgkLUGv4kVl8cIHI/9ofxmLCDB8XArSryYR
+   RgnETzEb/l5QY8GdE34JSkcq1Xse9ztwIg3lfO6uBaCGoQzMIHJ0lr/XQ
+   A==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10448"; a="293782188"
+X-IronPort-AV: E=Sophos;i="5.93,258,1654585200"; 
+   d="scan'208";a="293782188"
+Received: from orsmga008.jf.intel.com ([10.7.209.65])
+  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Aug 2022 12:49:04 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.93,258,1654585200"; 
+   d="scan'208";a="638797454"
+Received: from lkp-server02.sh.intel.com (HELO 9bbcefcddf9f) ([10.239.97.151])
+  by orsmga008.jf.intel.com with ESMTP; 23 Aug 2022 12:49:02 -0700
+Received: from kbuild by 9bbcefcddf9f with local (Exim 4.96)
+        (envelope-from <lkp@intel.com>)
+        id 1oQZtV-0000Tj-1i;
+        Tue, 23 Aug 2022 19:49:01 +0000
+Date:   Wed, 24 Aug 2022 03:48:55 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Leon Romanovsky <leonro@nvidia.com>
+Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org,
+        Raed Salem <raeds@nvidia.com>, Huy Nguyen <huyn@nvidia.com>
+Subject: [leon-rdma:xfrm-next 4/34] net/xfrm/xfrm_device.c:383:56: warning:
+ suggest parentheses around '&&' within '||'
+Message-ID: <202208240319.plmxMsEF-lkp@intel.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <e340ccaa-92f2-3870-ed26-70df87ad8c8f@bytedance.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Aug 23, 2022 at 01:27:22PM +0800, Chengming Zhou wrote:
-> > +	if (of) {
-> > +		WARN_ON_ONCE((kn->flags & KERNFS_HAS_RELEASE) && !of->released);
-> 
-> kernfs_unlink_open_file() is also used in error case "err_put_node" in kernfs_fop_open(),
-> which should also dec the on->nr_to_release?
+tree:   https://git.kernel.org/pub/scm/linux/kernel/git/leon/linux-rdma.git xfrm-next
+head:   a3d3cb4010b4294c2c6a60d398dd417f335982f3
+commit: d7b5afa45594beb1a60cba94c0e9e2b645c6a881 [4/34] xfrm: add TX datapath support for IPsec full offload mode
+config: powerpc-allmodconfig (https://download.01.org/0day-ci/archive/20220824/202208240319.plmxMsEF-lkp@intel.com/config)
+compiler: powerpc-linux-gcc (GCC) 12.1.0
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # https://git.kernel.org/pub/scm/linux/kernel/git/leon/linux-rdma.git/commit/?id=d7b5afa45594beb1a60cba94c0e9e2b645c6a881
+        git remote add leon-rdma https://git.kernel.org/pub/scm/linux/kernel/git/leon/linux-rdma.git
+        git fetch --no-tags leon-rdma xfrm-next
+        git checkout d7b5afa45594beb1a60cba94c0e9e2b645c6a881
+        # save the config file
+        mkdir build_dir && cp config build_dir/.config
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-12.1.0 make.cross W=1 O=build_dir ARCH=powerpc SHELL=/bin/bash net/xfrm/
 
-Ah, right you're. Will fix. Thanks for pointing it out.
+If you fix the issue, kindly add following tag where applicable
+Reported-by: kernel test robot <lkp@intel.com>
+
+All warnings (new ones prefixed by >>):
+
+   net/xfrm/xfrm_device.c: In function 'xfrm_dev_offload_ok':
+>> net/xfrm/xfrm_device.c:383:56: warning: suggest parentheses around '&&' within '||' [-Wparentheses]
+     383 |             (!dev || (dev == xfrm_dst_path(dst)->dev)) && !xdst->child->xfrm) {
+         |             ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~
+
+
+vim +383 net/xfrm/xfrm_device.c
+
+   371	
+   372	bool xfrm_dev_offload_ok(struct sk_buff *skb, struct xfrm_state *x)
+   373	{
+   374		int mtu;
+   375		struct dst_entry *dst = skb_dst(skb);
+   376		struct xfrm_dst *xdst = (struct xfrm_dst *)dst;
+   377		struct net_device *dev = x->xso.dev;
+   378	
+   379		if (!x->type_offload || x->encap)
+   380			return false;
+   381	
+   382		if (x->xso.type == XFRM_DEV_OFFLOAD_FULL ||
+ > 383		    (!dev || (dev == xfrm_dst_path(dst)->dev)) && !xdst->child->xfrm) {
+   384			mtu = xfrm_state_mtu(x, xdst->child_mtu_cached);
+   385			if (skb->len <= mtu)
+   386				goto ok;
+   387	
+   388			if (skb_is_gso(skb) && skb_gso_validate_network_len(skb, mtu))
+   389				goto ok;
+   390		}
+   391	
+   392		return false;
+   393	
+   394	ok:
+   395		if (dev && dev->xfrmdev_ops && dev->xfrmdev_ops->xdo_dev_offload_ok)
+   396			return x->xso.dev->xfrmdev_ops->xdo_dev_offload_ok(skb, x);
+   397	
+   398		return true;
+   399	}
+   400	EXPORT_SYMBOL_GPL(xfrm_dev_offload_ok);
+   401	
 
 -- 
-tejun
+0-DAY CI Kernel Test Service
+https://01.org/lkp
