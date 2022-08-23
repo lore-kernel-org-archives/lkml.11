@@ -2,49 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1F976C32793
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 08:12:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8D3D3C32793
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 08:12:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241830AbiHWIMV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 04:12:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58144 "EHLO
+        id S242108AbiHWIMZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 23 Aug 2022 04:12:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32862 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241871AbiHWIJr (ORCPT
+        with ESMTP id S241889AbiHWIJz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 04:09:47 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 98FF46613E;
-        Tue, 23 Aug 2022 01:06:26 -0700 (PDT)
+        Tue, 23 Aug 2022 04:09:55 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1FD7166119;
+        Tue, 23 Aug 2022 01:06:36 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 36D90B81C19;
-        Tue, 23 Aug 2022 08:06:26 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8507CC433D6;
-        Tue, 23 Aug 2022 08:06:24 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 72431B81C18;
+        Tue, 23 Aug 2022 08:06:35 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CB3A0C433D6;
+        Tue, 23 Aug 2022 08:06:33 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661241985;
-        bh=yagiaS4psLuXibb3+PS+oAKKqpiYlNe2XinfS2S4DwQ=;
+        s=korg; t=1661241994;
+        bh=2R7Y5R9JfnX2Fl+Ax/fCrXRtAjPJytLM6eEWo9LB3W4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=05NYHVWaqf9wAKqL/elLWcKbhoKYIOkA5pRgGSaUrJAJjhapZjIRB6B+tiAc6ItUm
-         YcJUNyM/TKb/LxFJpxmzBP5awokhTKzxiR/vdVLMYQqSpCfoltqtPYSnKSjP+HTdgH
-         e9jEWZH7EIKRzy0cYNXidWGHG6g9ruI0pr5kPeD8=
+        b=Oh/ueC49IXOisnFeQVk8K1d8GdUtJfXREXp39sOKo29FWXkIUa3ZVMmV9+PRocNVC
+         awIijVVXQkO19EJEFnjrDqFd8kngpC5kRrgtsStl9SZoMjpaaKUUJ951mtJ2AzAWaN
+         AQvubDgqwfmQH/MEfC2MvhL22RcKjtTheZ8B/bbI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, ChenXiaoSong <chenxiaosong2@huawei.com>,
-        Hawkins Jiawei <yin31149@gmail.com>,
-        Anton Altaparmakov <anton@tuxera.com>,
-        Yongqiang Liu <liuyongqiang13@huawei.com>,
-        Zhang Yi <yi.zhang@huawei.com>,
-        Zhang Xiaoxu <zhangxiaoxu5@huawei.com>,
-        Andrew Morton <akpm@linux-foundation.org>
-Subject: [PATCH 4.9 002/101] ntfs: fix use-after-free in ntfs_ucsncmp()
-Date:   Tue, 23 Aug 2022 10:02:35 +0200
-Message-Id: <20220823080034.685941140@linuxfoundation.org>
+        stable@vger.kernel.org, Casey Schaufler <casey@schaufler-ca.com>,
+        John Johansen <john.johansen@canonical.com>
+Subject: [PATCH 5.19 042/365] apparmor: fix absroot causing audited secids to begin with =
+Date:   Tue, 23 Aug 2022 09:59:03 +0200
+Message-Id: <20220823080119.940480611@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220823080034.579196046@linuxfoundation.org>
-References: <20220823080034.579196046@linuxfoundation.org>
+In-Reply-To: <20220823080118.128342613@linuxfoundation.org>
+References: <20220823080118.128342613@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -53,107 +48,76 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: ChenXiaoSong <chenxiaosong2@huawei.com>
+From: John Johansen <john.johansen@canonical.com>
 
-commit 38c9c22a85aeed28d0831f230136e9cf6fa2ed44 upstream.
+commit 511f7b5b835726e844a5fc7444c18e4b8672edfd upstream.
 
-Syzkaller reported use-after-free bug as follows:
+AppArmor is prefixing secids that are converted to secctx with the =
+to indicate the secctx should only be parsed from an absolute root
+POV. This allows catching errors where secctx are reparsed back into
+internal labels.
 
-==================================================================
-BUG: KASAN: use-after-free in ntfs_ucsncmp+0x123/0x130
-Read of size 2 at addr ffff8880751acee8 by task a.out/879
+Unfortunately because audit is using secid to secctx conversion this
+means that subject and object labels can result in a very unfortunate
+== that can break audit parsing.
 
-CPU: 7 PID: 879 Comm: a.out Not tainted 5.19.0-rc4-next-20220630-00001-gcc5218c8bd2c-dirty #7
-Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS rel-1.16.0-0-gd239552ce722-prebuilt.qemu.org 04/01/2014
-Call Trace:
- <TASK>
- dump_stack_lvl+0x1c0/0x2b0
- print_address_description.constprop.0.cold+0xd4/0x484
- print_report.cold+0x55/0x232
- kasan_report+0xbf/0xf0
- ntfs_ucsncmp+0x123/0x130
- ntfs_are_names_equal.cold+0x2b/0x41
- ntfs_attr_find+0x43b/0xb90
- ntfs_attr_lookup+0x16d/0x1e0
- ntfs_read_locked_attr_inode+0x4aa/0x2360
- ntfs_attr_iget+0x1af/0x220
- ntfs_read_locked_inode+0x246c/0x5120
- ntfs_iget+0x132/0x180
- load_system_files+0x1cc6/0x3480
- ntfs_fill_super+0xa66/0x1cf0
- mount_bdev+0x38d/0x460
- legacy_get_tree+0x10d/0x220
- vfs_get_tree+0x93/0x300
- do_new_mount+0x2da/0x6d0
- path_mount+0x496/0x19d0
- __x64_sys_mount+0x284/0x300
- do_syscall_64+0x3b/0xc0
- entry_SYSCALL_64_after_hwframe+0x46/0xb0
-RIP: 0033:0x7f3f2118d9ea
-Code: 48 8b 0d a9 f4 0b 00 f7 d8 64 89 01 48 83 c8 ff c3 66 2e 0f 1f 84 00 00 00 00 00 0f 1f 44 00 00 49 89 ca b8 a5 00 00 00 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 8b 0d 76 f4 0b 00 f7 d8 64 89 01 48
-RSP: 002b:00007ffc269deac8 EFLAGS: 00000202 ORIG_RAX: 00000000000000a5
-RAX: ffffffffffffffda RBX: 0000000000000000 RCX: 00007f3f2118d9ea
-RDX: 0000000020000000 RSI: 0000000020000100 RDI: 00007ffc269dec00
-RBP: 00007ffc269dec80 R08: 00007ffc269deb00 R09: 00007ffc269dec44
-R10: 0000000000000000 R11: 0000000000000202 R12: 000055f81ab1d220
-R13: 0000000000000000 R14: 0000000000000000 R15: 0000000000000000
- </TASK>
+eg. the subj==unconfined term in the below audit message
 
-The buggy address belongs to the physical page:
-page:0000000085430378 refcount:1 mapcount:1 mapping:0000000000000000 index:0x555c6a81d pfn:0x751ac
-memcg:ffff888101f7e180
-anon flags: 0xfffffc00a0014(uptodate|lru|mappedtodisk|swapbacked|node=0|zone=1|lastcpupid=0x1fffff)
-raw: 000fffffc00a0014 ffffea0001bf2988 ffffea0001de2448 ffff88801712e201
-raw: 0000000555c6a81d 0000000000000000 0000000100000000 ffff888101f7e180
-page dumped because: kasan: bad access detected
+type=USER_LOGIN msg=audit(1639443365.233:160): pid=1633 uid=0 auid=1000
+ses=3 subj==unconfined msg='op=login id=1000 exe="/usr/sbin/sshd"
+hostname=192.168.122.1 addr=192.168.122.1 terminal=/dev/pts/1 res=success'
 
-Memory state around the buggy address:
- ffff8880751acd80: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
- ffff8880751ace00: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
->ffff8880751ace80: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
-                                                          ^
- ffff8880751acf00: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
- ffff8880751acf80: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
-==================================================================
+Fix this by switch the prepending of = to a _. This still works as a
+special character to flag this case without breaking audit. Also move
+this check behind debug as it should not be needed during normal
+operqation.
 
-The reason is that struct ATTR_RECORD->name_offset is 6485, end address of
-name string is out of bounds.
-
-Fix this by adding sanity check on end address of attribute name string.
-
-[akpm@linux-foundation.org: coding-style cleanups]
-[chenxiaosong2@huawei.com: cleanup suggested by Hawkins Jiawei]
-  Link: https://lkml.kernel.org/r/20220709064511.3304299-1-chenxiaosong2@huawei.com
-Link: https://lkml.kernel.org/r/20220707105329.4020708-1-chenxiaosong2@huawei.com
-Signed-off-by: ChenXiaoSong <chenxiaosong2@huawei.com>
-Signed-off-by: Hawkins Jiawei <yin31149@gmail.com>
-Cc: Anton Altaparmakov <anton@tuxera.com>
-Cc: ChenXiaoSong <chenxiaosong2@huawei.com>
-Cc: Yongqiang Liu <liuyongqiang13@huawei.com>
-Cc: Zhang Yi <yi.zhang@huawei.com>
-Cc: Zhang Xiaoxu <zhangxiaoxu5@huawei.com>
-Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
+Fixes: 26b7899510ae ("apparmor: add support for absolute root view based labels")
+Reported-by: Casey Schaufler <casey@schaufler-ca.com>
+Signed-off-by: John Johansen <john.johansen@canonical.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- fs/ntfs/attrib.c |    8 ++++++--
- 1 file changed, 6 insertions(+), 2 deletions(-)
+ security/apparmor/include/lib.h |    5 +++++
+ security/apparmor/label.c       |    7 ++++---
+ 2 files changed, 9 insertions(+), 3 deletions(-)
 
---- a/fs/ntfs/attrib.c
-+++ b/fs/ntfs/attrib.c
-@@ -606,8 +606,12 @@ static int ntfs_attr_find(const ATTR_TYP
- 		a = (ATTR_RECORD*)((u8*)ctx->attr +
- 				le32_to_cpu(ctx->attr->length));
- 	for (;;	a = (ATTR_RECORD*)((u8*)a + le32_to_cpu(a->length))) {
--		if ((u8*)a < (u8*)ctx->mrec || (u8*)a > (u8*)ctx->mrec +
--				le32_to_cpu(ctx->mrec->bytes_allocated))
-+		u8 *mrec_end = (u8 *)ctx->mrec +
-+		               le32_to_cpu(ctx->mrec->bytes_allocated);
-+		u8 *name_end = (u8 *)a + le16_to_cpu(a->name_offset) +
-+			       a->name_length * sizeof(ntfschar);
-+		if ((u8*)a < (u8*)ctx->mrec || (u8*)a > mrec_end ||
-+		    name_end > mrec_end)
- 			break;
- 		ctx->attr = a;
- 		if (unlikely(le32_to_cpu(a->type) > le32_to_cpu(type) ||
+--- a/security/apparmor/include/lib.h
++++ b/security/apparmor/include/lib.h
+@@ -22,6 +22,11 @@
+  */
+ 
+ #define DEBUG_ON (aa_g_debug)
++/*
++ * split individual debug cases out in preparation for finer grained
++ * debug controls in the future.
++ */
++#define AA_DEBUG_LABEL DEBUG_ON
+ #define dbg_printk(__fmt, __args...) pr_debug(__fmt, ##__args)
+ #define AA_DEBUG(fmt, args...)						\
+ 	do {								\
+--- a/security/apparmor/label.c
++++ b/security/apparmor/label.c
+@@ -1631,9 +1631,9 @@ int aa_label_snxprint(char *str, size_t
+ 	AA_BUG(!str && size != 0);
+ 	AA_BUG(!label);
+ 
+-	if (flags & FLAG_ABS_ROOT) {
++	if (AA_DEBUG_LABEL && (flags & FLAG_ABS_ROOT)) {
+ 		ns = root_ns;
+-		len = snprintf(str, size, "=");
++		len = snprintf(str, size, "_");
+ 		update_for_len(total, len, size, str);
+ 	} else if (!ns) {
+ 		ns = labels_ns(label);
+@@ -1895,7 +1895,8 @@ struct aa_label *aa_label_strn_parse(str
+ 	AA_BUG(!str);
+ 
+ 	str = skipn_spaces(str, n);
+-	if (str == NULL || (*str == '=' && base != &root_ns->unconfined->label))
++	if (str == NULL || (AA_DEBUG_LABEL && *str == '_' &&
++			    base != &root_ns->unconfined->label))
+ 		return ERR_PTR(-EINVAL);
+ 
+ 	len = label_count_strn_entries(str, end - str);
 
 
