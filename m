@@ -2,110 +2,94 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 10A2AC38147
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 767C1C38159
 	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 10:53:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356525AbiHWKvH (ORCPT
+        id S1356592AbiHWKvS (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 06:51:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57916 "EHLO
+        Tue, 23 Aug 2022 06:51:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58426 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356669AbiHWKmu (ORCPT
+        with ESMTP id S232618AbiHWKm7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 06:42:50 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0D4FDAA4F3;
-        Tue, 23 Aug 2022 02:10:18 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 487E0B81C4E;
-        Tue, 23 Aug 2022 09:10:17 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 92A96C433D6;
-        Tue, 23 Aug 2022 09:10:15 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661245816;
-        bh=yzDhTw2FwZxb0a4TllXhly0EDdMtkOqo9kzz3Fr7LWw=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=FG4kHSYZ6vJ0RIiYSXkBWRjKuzV6mwv9Zg8a+y2PuR/6+Z8kOGzIJgGZ/qZ8/q0d/
-         s5KpeDiDOZ0A0MV6ZU/eqi23srS+XGJnikfxDsQbS3ZiZujtW0Zl3dlMBSl0kREScA
-         9yr+3p5/mpv+ldsrl5BsoGqehAcvRrro1V525bh4=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Mikulas Patocka <mpatocka@redhat.com>,
-        Mike Snitzer <snitzer@kernel.org>
-Subject: [PATCH 4.19 198/287] dm raid: fix address sanitizer warning in raid_status
-Date:   Tue, 23 Aug 2022 10:26:07 +0200
-Message-Id: <20220823080107.507462683@linuxfoundation.org>
-X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220823080100.268827165@linuxfoundation.org>
-References: <20220823080100.268827165@linuxfoundation.org>
-User-Agent: quilt/0.67
-MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+        Tue, 23 Aug 2022 06:42:59 -0400
+Received: from mail-wm1-x336.google.com (mail-wm1-x336.google.com [IPv6:2a00:1450:4864:20::336])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 03AC1AB052
+        for <linux-kernel@vger.kernel.org>; Tue, 23 Aug 2022 02:10:24 -0700 (PDT)
+Received: by mail-wm1-x336.google.com with SMTP id l33-20020a05600c1d2100b003a645240a95so5000120wms.1
+        for <linux-kernel@vger.kernel.org>; Tue, 23 Aug 2022 02:10:24 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=references:in-reply-to:message-id:date:subject:cc:to:from:from:to
+         :cc;
+        bh=aQd1+sXptG+dXZkMCM1QB94Fz8Pu2kkVLyqLPUwsHlw=;
+        b=LG0uBul7JWvbK6rlaTen26I5SXJEv/D7DhhHJp6FhtNH2DaSus7+I3xfk4h9h8cBxY
+         ju4ArQTKNm+S0ZIVLPqoV/KU/WxjS1OSM1Q6rGiQPYbal2gzih3Rfd1Z6B0NPAYtWw0U
+         wVaeolxhGcg+lWcx3tt9AuR8zz70Nz/HCITxS5npAfmC8MrHsmDzlDSp/4I9Xwxn1PJi
+         4aTaFfS1/awdlj9KmBI9MS1RnJj+vdHai6IFfvUjglgL3nXjeeKhwKYWnFIIegfjSLHv
+         3A4J4dKECJWAU52w/v1gykJTeOWmWSOLY4961lhUWVCk0Tq0+V4iyvFxUvsrI/pW1BLO
+         REQw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=references:in-reply-to:message-id:date:subject:cc:to:from
+         :x-gm-message-state:from:to:cc;
+        bh=aQd1+sXptG+dXZkMCM1QB94Fz8Pu2kkVLyqLPUwsHlw=;
+        b=VpiMdjpudXpkD77Rz2511GuWmvgSyLR9f6SqULOvfOxIsYzo08TOBCfa9ym9A9FXHT
+         jhRjwM6KrfdjRHGWsqZLP/g0f0kAkVM1rECqkMSzoV5O3od1WaXohh5npt0gi6jcBMxQ
+         lonE1sdBr07PWLSmfTUcos4Cl+IqzJzvzI5WUfy2m5OnRi2tk+01mQ4xYpHNkeVD6oSY
+         36DxvcuwpjvTIgKeZm27XTLnbVyKgeqQ2GmRtJoFkbQa6iHuepxVlzsIr72vnDjOkeYl
+         jQzDFprbfkjXHqR5ha9358/SNyAProVtRGfXu+fGorg4ttTGHortBL0qhO0EQ5PZDQv/
+         O5Gg==
+X-Gm-Message-State: ACgBeo2xU67IyNEFuUSX3E1wfWJbVaLajD7VfLVNlJQpgOmm1kGMNtY+
+        ByxNqhZy16j+NQmdcJFXA5TvPw==
+X-Google-Smtp-Source: AA6agR5i0OGJJj/Hn6w7u4mF0zrw3CvQptA+b0ncS08T4HuYTJy2luWzxhEJienGgJdv18Byld9Igg==
+X-Received: by 2002:a05:600c:154b:b0:3a6:1863:acc0 with SMTP id f11-20020a05600c154b00b003a61863acc0mr1541219wmg.29.1661245824501;
+        Tue, 23 Aug 2022 02:10:24 -0700 (PDT)
+Received: from linaro.org ([2a00:23c5:6809:2201:4553:cf11:6cff:b293])
+        by smtp.gmail.com with ESMTPSA id w6-20020adfde86000000b002253d162491sm10760721wrl.52.2022.08.23.02.10.23
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 23 Aug 2022 02:10:23 -0700 (PDT)
+From:   Mike Leach <mike.leach@linaro.org>
+To:     coresight@lists.linaro.org, linux-arm-kernel@lists.infradead.org,
+        linux-kernel@vger.kernel.org
+Cc:     mathieu.poirier@linaro.org, suzuki.poulose@arm.com,
+        peterz@infradead.org, mingo@redhat.com, acme@kernel.org,
+        linux-perf-users@vger.kernel.org, leo.yan@linaro.org,
+        quic_jinlmao@quicinc.com, Mike Leach <mike.leach@linaro.org>
+Subject: [PATCH v4 10/13] kernel: events: Export perf_report_aux_output_id()
+Date:   Tue, 23 Aug 2022 10:10:06 +0100
+Message-Id: <20220823091009.14121-11-mike.leach@linaro.org>
+X-Mailer: git-send-email 2.17.1
+In-Reply-To: <20220823091009.14121-1-mike.leach@linaro.org>
+References: <20220823091009.14121-1-mike.leach@linaro.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Mikulas Patocka <mpatocka@redhat.com>
+CoreSight trace being updated to use the perf_report_aux_output_id()
+in a similar way to intel-pt.
 
-commit 1fbeea217d8f297fe0e0956a1516d14ba97d0396 upstream.
+This function in needs export visibility to allow it to be called from
+kernel loadable modules, which CoreSight may configured to be built as.
 
-There is this warning when using a kernel with the address sanitizer
-and running this testsuite:
-https://gitlab.com/cki-project/kernel-tests/-/tree/main/storage/swraid/scsi_raid
-
-==================================================================
-BUG: KASAN: slab-out-of-bounds in raid_status+0x1747/0x2820 [dm_raid]
-Read of size 4 at addr ffff888079d2c7e8 by task lvcreate/13319
-CPU: 0 PID: 13319 Comm: lvcreate Not tainted 5.18.0-0.rc3.<snip> #1
-Hardware name: Red Hat KVM, BIOS 0.5.1 01/01/2011
-Call Trace:
- <TASK>
- dump_stack_lvl+0x6a/0x9c
- print_address_description.constprop.0+0x1f/0x1e0
- print_report.cold+0x55/0x244
- kasan_report+0xc9/0x100
- raid_status+0x1747/0x2820 [dm_raid]
- dm_ima_measure_on_table_load+0x4b8/0xca0 [dm_mod]
- table_load+0x35c/0x630 [dm_mod]
- ctl_ioctl+0x411/0x630 [dm_mod]
- dm_ctl_ioctl+0xa/0x10 [dm_mod]
- __x64_sys_ioctl+0x12a/0x1a0
- do_syscall_64+0x5b/0x80
-
-The warning is caused by reading conf->max_nr_stripes in raid_status. The
-code in raid_status reads mddev->private, casts it to struct r5conf and
-reads the entry max_nr_stripes.
-
-However, if we have different raid type than 4/5/6, mddev->private
-doesn't point to struct r5conf; it may point to struct r0conf, struct
-r1conf, struct r10conf or struct mpconf. If we cast a pointer to one
-of these structs to struct r5conf, we will be reading invalid memory
-and KASAN warns about it.
-
-Fix this bug by reading struct r5conf only if raid type is 4, 5 or 6.
-
-Cc: stable@vger.kernel.org
-Signed-off-by: Mikulas Patocka <mpatocka@redhat.com>
-Signed-off-by: Mike Snitzer <snitzer@kernel.org>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Mike Leach <mike.leach@linaro.org>
+Acked-by: Suzuki K Poulose <suzuki.poulose@arm.com>
 ---
- drivers/md/dm-raid.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ kernel/events/core.c | 1 +
+ 1 file changed, 1 insertion(+)
 
---- a/drivers/md/dm-raid.c
-+++ b/drivers/md/dm-raid.c
-@@ -3533,7 +3533,7 @@ static void raid_status(struct dm_target
- {
- 	struct raid_set *rs = ti->private;
- 	struct mddev *mddev = &rs->md;
--	struct r5conf *conf = mddev->private;
-+	struct r5conf *conf = rs_is_raid456(rs) ? mddev->private : NULL;
- 	int i, max_nr_stripes = conf ? conf->max_nr_stripes : 0;
- 	unsigned long recovery;
- 	unsigned int raid_param_cnt = 1; /* at least 1 for chunksize */
-
+diff --git a/kernel/events/core.c b/kernel/events/core.c
+index 80782cddb1da..f5835e5833cd 100644
+--- a/kernel/events/core.c
++++ b/kernel/events/core.c
+@@ -9117,6 +9117,7 @@ void perf_report_aux_output_id(struct perf_event *event, u64 hw_id)
+ 
+ 	perf_output_end(&handle);
+ }
++EXPORT_SYMBOL_GPL(perf_report_aux_output_id);
+ 
+ static int
+ __perf_event_account_interrupt(struct perf_event *event, int throttle)
+-- 
+2.17.1
 
