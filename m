@@ -2,116 +2,90 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6810FC32789
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 19:11:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 80A59C32772
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 19:11:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231436AbiHWTLF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 15:11:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44126 "EHLO
+        id S231709AbiHWTLV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 23 Aug 2022 15:11:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40106 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232249AbiHWTKT (ORCPT
+        with ESMTP id S233710AbiHWTKn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 15:10:19 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7ADDE72877;
-        Tue, 23 Aug 2022 10:48:17 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 743C66162A;
-        Tue, 23 Aug 2022 17:46:46 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D02D1C433C1;
-        Tue, 23 Aug 2022 17:46:45 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1661276805;
-        bh=+Pmlr84ILXzSyfNtmT4XWQ44Hi8a4+P3uTpYyORdvXw=;
-        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=sCpmYXaDTgSTLECpnsoy1jyQRIUuY46NuMGbp/wFxkqlTrKs3QrMM9PhvWJ60UfKi
-         j325vCefiQ68NcM8VETleqzzklPlR2Xk5WTODIl+bO/sPAWEz+uegKyxu5mBH6keit
-         M+MGyK4Go/PbFq/TvNpSnxjI0GeG+9X3+04TwsCSz7Hxz5g3PZNTtnImTiEfBFNwUF
-         KUz0cZ0NThWxzDbJIrnln4zNPmtPqBROHCebay/4d96oZnB4lvnihbzheVOe3ku0vM
-         nhYWlY725tQm09ENuibV09xXeGEtd7aBHMelkwzlGLK872Xx+GKgcnvPZORHiq2MQF
-         lZHruNLCd2epA==
-Received: by mail-yw1-f179.google.com with SMTP id 00721157ae682-333b049f231so399625827b3.1;
-        Tue, 23 Aug 2022 10:46:45 -0700 (PDT)
-X-Gm-Message-State: ACgBeo2ql3XksCg4NhsTXwhSKRUg5DO7YboChFB+SZEkvY1lMjl66oP9
-        A5JGXsmeUyGdv0FQ7xTKnqx/0hHJ6hPnVI/npLQ=
-X-Google-Smtp-Source: AA6agR4p0U3TeJNvdFofG46Krctsvf0ACF0C/916DEUToOrwC9aXZqAetTciGDKMj6tXNUDVyBER7sgeu4ai4f5r3Q4=
-X-Received: by 2002:a05:6902:725:b0:695:b0c7:a248 with SMTP id
- l5-20020a056902072500b00695b0c7a248mr10341711ybt.389.1661276804849; Tue, 23
- Aug 2022 10:46:44 -0700 (PDT)
+        Tue, 23 Aug 2022 15:10:43 -0400
+Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7B7CE69F67
+        for <linux-kernel@vger.kernel.org>; Tue, 23 Aug 2022 10:48:37 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1661276918; x=1692812918;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=3DXsFiehmOWjIK0HPPx03C/izDXYsGR9JU9dpMMy13M=;
+  b=m+/MX7+K/Ch1/xI9qdlFaYQho6syurCb2PqEB0g69ci/MQ+yNLM1Rd36
+   640ejGmK+Rb6rOhTe7YLrrFfAIm6zZzBd96FOoTMoseJMX2hpy2jpJpJK
+   yr16aSGiLh7H0klZnCuvXe/zcO1TEs05uajVQISSdr9fq1cu7ewF5qX2h
+   cF+8jMeyBczMLOd7mEPLNIdQseNn2kR+sI3r0dq7O/yFeTg93lP39NMO4
+   fIqSyA4sET1CUCVDag+pdqtm2X4xNRyR/3Hu9r37wkRiab8l/lybhMftZ
+   vnFVNTIF6ATXlZLij6KrD7WXEsndE3rzcbVZRn0PH0R+Q9SmRDI9rzLdg
+   w==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10448"; a="291317767"
+X-IronPort-AV: E=Sophos;i="5.93,258,1654585200"; 
+   d="scan'208";a="291317767"
+Received: from fmsmga007.fm.intel.com ([10.253.24.52])
+  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Aug 2022 10:48:36 -0700
+X-IronPort-AV: E=Sophos;i="5.93,258,1654585200"; 
+   d="scan'208";a="612493072"
+Received: from agluck-desk3.sc.intel.com ([172.25.222.78])
+  by fmsmga007-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Aug 2022 10:48:35 -0700
+From:   Tony Luck <tony.luck@intel.com>
+To:     x86@kernel.org
+Cc:     linux-kernel@vger.kernel.org, patches@lists.linux.dev,
+        Tony Luck <tony.luck@intel.com>
+Subject: [PATCH] x86/cpu: Add new Raptor Lake CPU model number
+Date:   Tue, 23 Aug 2022 10:48:19 -0700
+Message-Id: <20220823174819.223941-1-tony.luck@intel.com>
+X-Mailer: git-send-email 2.35.3
 MIME-Version: 1.0
-References: <20220818210027.6964-1-wsa+renesas@sang-engineering.com>
-In-Reply-To: <20220818210027.6964-1-wsa+renesas@sang-engineering.com>
-From:   Song Liu <song@kernel.org>
-Date:   Tue, 23 Aug 2022 10:46:33 -0700
-X-Gmail-Original-Message-ID: <CAPhsuW6ve-1Y2ZCWrmQ7+U2u+X=oQSoDLso=PUDAGc_98y-v6A@mail.gmail.com>
-Message-ID: <CAPhsuW6ve-1Y2ZCWrmQ7+U2u+X=oQSoDLso=PUDAGc_98y-v6A@mail.gmail.com>
-Subject: Re: [PATCH] md: move from strlcpy with unused retval to strscpy
-To:     Wolfram Sang <wsa+renesas@sang-engineering.com>
-Cc:     open list <linux-kernel@vger.kernel.org>,
-        Alasdair Kergon <agk@redhat.com>,
-        Mike Snitzer <snitzer@kernel.org>, dm-devel@redhat.com,
-        linux-raid <linux-raid@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Aug 18, 2022 at 2:00 PM Wolfram Sang
-<wsa+renesas@sang-engineering.com> wrote:
->
-> Follow the advice of the below link and prefer 'strscpy' in this
-> subsystem. Conversion is 1:1 because the return value is not used.
-> Generated by a coccinelle script.
->
-> Link: https://lore.kernel.org/r/CAHk-=wgfRnXz0W3D37d01q3JFkr_i_uTL=V6A6G1oUZcprmknw@mail.gmail.com/
-> Signed-off-by: Wolfram Sang <wsa+renesas@sang-engineering.com>
+Note1: Model 0xB7 already claimed the "no suffix" #define for a regular
+client part, so add (yet another) suffix "S" to distinguish this new
+part from the earlier one.
 
-Looks good to me.
+Note2: the RAPTORLAKE* and ALDERLAKE* processors are very similar from a
+software enabling point of view.  There are no known features that have
+model-specific enabling and also differ between the two.  In other words,
+every single place that list *one* or more RAPTORLAKE* or ALDERLAKE*
+processors should list all of them.
 
-Alasdair and Mike,
+Signed-off-by: Tony Luck <tony.luck@intel.com>
+---
+ arch/x86/include/asm/intel-family.h | 2 ++
+ 1 file changed, 2 insertions(+)
 
-This patch touches both dm and md code. Would you like me to take it
-via the md tree?
+diff --git a/arch/x86/include/asm/intel-family.h b/arch/x86/include/asm/intel-family.h
+index def6ca121111..aeb38023a703 100644
+--- a/arch/x86/include/asm/intel-family.h
++++ b/arch/x86/include/asm/intel-family.h
+@@ -27,6 +27,7 @@
+  *		_X	- regular server parts
+  *		_D	- micro server parts
+  *		_N,_P	- other mobile parts
++ *		_S	- other client parts
+  *
+  *		Historical OPTDIFFs:
+  *
+@@ -112,6 +113,7 @@
+ 
+ #define INTEL_FAM6_RAPTORLAKE		0xB7
+ #define INTEL_FAM6_RAPTORLAKE_P		0xBA
++#define INTEL_FAM6_RAPTORLAKE_S		0xBF
+ 
+ /* "Small Core" Processors (Atom) */
+ 
+-- 
+2.35.3
 
-Thanks,
-Song
-
-> ---
->  drivers/md/dm-ioctl.c | 4 ++--
->  drivers/md/md.c       | 2 +-
->  2 files changed, 3 insertions(+), 3 deletions(-)
->
-> diff --git a/drivers/md/dm-ioctl.c b/drivers/md/dm-ioctl.c
-> index 98976aaa9db9..6148fb73ccb4 100644
-> --- a/drivers/md/dm-ioctl.c
-> +++ b/drivers/md/dm-ioctl.c
-> @@ -921,9 +921,9 @@ static struct hash_cell *__find_device_hash_cell(struct dm_ioctl *param)
->          * Sneakily write in both the name and the uuid
->          * while we have the cell.
->          */
-> -       strlcpy(param->name, hc->name, sizeof(param->name));
-> +       strscpy(param->name, hc->name, sizeof(param->name));
->         if (hc->uuid)
-> -               strlcpy(param->uuid, hc->uuid, sizeof(param->uuid));
-> +               strscpy(param->uuid, hc->uuid, sizeof(param->uuid));
->         else
->                 param->uuid[0] = '\0';
->
-> diff --git a/drivers/md/md.c b/drivers/md/md.c
-> index afaf36b2f6ab..4d019ac0a549 100644
-> --- a/drivers/md/md.c
-> +++ b/drivers/md/md.c
-> @@ -5743,7 +5743,7 @@ static int add_named_array(const char *val, const struct kernel_param *kp)
->                 len--;
->         if (len >= DISK_NAME_LEN)
->                 return -E2BIG;
-> -       strscpy(buf, val, len+1);
-> +       strscpy(buf, val, len + 1);
->         if (strncmp(buf, "md_", 3) == 0)
->                 return md_alloc_and_put(0, buf);
->         if (strncmp(buf, "md", 2) == 0 &&
-> --
-> 2.35.1
->
