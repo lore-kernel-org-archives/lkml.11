@@ -2,126 +2,201 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0DBDCC32772
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 12:42:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 97711C32772
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 12:42:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243705AbiHWMl6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 08:41:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39418 "EHLO
+        id S242430AbiHWMmb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 23 Aug 2022 08:42:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45918 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243526AbiHWMlQ (ORCPT
+        with ESMTP id S242431AbiHWMly (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 08:41:16 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8B0D910AE06
-        for <linux-kernel@vger.kernel.org>; Tue, 23 Aug 2022 02:51:25 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1661248242;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=KHenf9Y4DFpeTcrsigI5eYZv5fPQCg/1pJFHFFXrAkY=;
-        b=VhRZKYrDJq4Marv1ar2AgopAGNrZL3RhWFpNYfUQrNERfisQbhFKthJjTau4qZAx3Xbacb
-        U2o7H6zEcwl97pFgMmFDpaXOX4fgZlFvky+U++shcbXvUpalgx92eOBm92kEGIeoIfDXFJ
-        pnB4xejL/cj0trxVnidwG5cSbB3WzBE=
-Received: from mail-wm1-f70.google.com (mail-wm1-f70.google.com
- [209.85.128.70]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
- us-mta-671-ZP0cXqw0NSyk1aOpYoQ8KQ-1; Tue, 23 Aug 2022 05:50:41 -0400
-X-MC-Unique: ZP0cXqw0NSyk1aOpYoQ8KQ-1
-Received: by mail-wm1-f70.google.com with SMTP id c64-20020a1c3543000000b003a61987ffb3so7724129wma.6
-        for <linux-kernel@vger.kernel.org>; Tue, 23 Aug 2022 02:50:41 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:organization:from:references
-         :to:content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc;
-        bh=KHenf9Y4DFpeTcrsigI5eYZv5fPQCg/1pJFHFFXrAkY=;
-        b=xqkoZzm13p0s5BLstn1Xrt2lRUoX4x2Z2wkQ3hQmQP3XdK+S705OxyPRQQfmCEsR1p
-         /BL8ePtJCgOmBi07KLsqC0L8NoLz6FqFFvVxzaSatmW5V34XNGyAMLIwiAbzJnH34oPZ
-         l/WRQ8eQFSY2Z5y/AKQH3X4r7Y/GqZrIsANm2pEM72nVmOCwpyTD6P+O8Se0hr9fvc0H
-         085lT4n/OJN/uEaoaM2IDpPdjh2qfbXxYMxCETrBMV9+jV9FlX8SxpzWUtaqn9Vt/1zY
-         IrSOliD/2yj9TQY4s+NEkbpgyCqcY4JkrOZ9X0YceK4yt1AGX/mmM/bz/GMgPWPTf4qg
-         iRzQ==
-X-Gm-Message-State: ACgBeo1QJV/Y74+w/YB1GXEdlf5M+qXr7chc06hRGOCECroclhtIb7jH
-        5XoJlKLXY7Xkzjq+2cAWcYtHd909/cqlemkJoyQLegpotO0C5sfjILQzRf80gUn6wk7Kjk9/JlV
-        1Pv6Z6j3jf05C8OQVaD2/fsg5
-X-Received: by 2002:a7b:c016:0:b0:3a5:fff2:62f4 with SMTP id c22-20020a7bc016000000b003a5fff262f4mr1677682wmb.104.1661248240091;
-        Tue, 23 Aug 2022 02:50:40 -0700 (PDT)
-X-Google-Smtp-Source: AA6agR50PAvQXqub9ePpZCra5XYmWO1KHAJO9QPff/hyZeepdtYN+uUftogOYxzz/L7mAEPT4to1aQ==
-X-Received: by 2002:a7b:c016:0:b0:3a5:fff2:62f4 with SMTP id c22-20020a7bc016000000b003a5fff262f4mr1677677wmb.104.1661248239837;
-        Tue, 23 Aug 2022 02:50:39 -0700 (PDT)
-Received: from ?IPV6:2003:cb:c70b:1600:c48b:1fab:a330:5182? (p200300cbc70b1600c48b1faba3305182.dip0.t-ipconnect.de. [2003:cb:c70b:1600:c48b:1fab:a330:5182])
-        by smtp.gmail.com with ESMTPSA id c9-20020a05600c100900b003a2f6367049sm16580098wmc.48.2022.08.23.02.50.39
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 23 Aug 2022 02:50:39 -0700 (PDT)
-Message-ID: <bdb4cb00-f245-d98f-a49d-9371eff0a127@redhat.com>
-Date:   Tue, 23 Aug 2022 11:50:38 +0200
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.11.0
-Subject: Re: [PATCH v2 6/8] memblock tests: update alloc_nid_api to test
- memblock_alloc_try_nid_raw
+        Tue, 23 Aug 2022 08:41:54 -0400
+Received: from EUR04-DB3-obe.outbound.protection.outlook.com (mail-eopbgr60115.outbound.protection.outlook.com [40.107.6.115])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 09B009E125
+        for <linux-kernel@vger.kernel.org>; Tue, 23 Aug 2022 02:51:37 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=bQKtI9a5ePc3ldCfB+65gAJX/uZJaBNvm/x8qiAigZL3adYHa/y7VMu0col0fiiWLTxWQCbVb2M9cTgS0J8JmdLNR43ufbaNzXn7DH3qYDGuaFsyxKWYlY+wOsOij1brPUlo2Zcs6+6FTaTt9LC5FTuaudPDeAAzVTVXHAjeYqpyqegd+fWPIh96U1Xflos3G+NzIVATvV/XctmreaOLAli0NJh610C61l6nKr5/FbSqiDF+AoAip41NKKjCL5b2AUrfBEFqIj6rUqBZEznaspZus6H6Bzzyh1mNyltpmaIiLdXPdTJjl5MtY53HTKCFV9bZjfaGK84tMHjI+47QZw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=N8y6ANDvYwn6vz+8PKybEOwTLHKRHUisoGYkocOj16g=;
+ b=TBJoa1XTOec/sGsy7DUMCTffB8OOuWP2KuDgPINCh5Kk1n/jPMJsGSnmq2yGjHzvys+HJ5j3LtgNUdvpBInESni+1JJ9aOHBXoEy3//jyMl/iCUBwIMZqAnex1LsJ2FxWC0fEVGbD59CcgG9Mphp4yd3JNOF6kD/3zyt1o/C1GNf14DC+o03mtxAQMGjAxsJPuErZI7rvgLfcL5OIfyBUt9TsuWMQUMN/BmWIEktKQWr2uzLFXhCDLt9Wgutuo8+KY+zTSQq8wYGQzTLaBirKsynQBbSTnYYsyL+IIFUJa3/Wmm41rA6SG01Sk0fglMQh2pogkFY7z9LJD5QxjXqmA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=axentia.se; dmarc=pass action=none header.from=axentia.se;
+ dkim=pass header.d=axentia.se; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=axentia.se;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=N8y6ANDvYwn6vz+8PKybEOwTLHKRHUisoGYkocOj16g=;
+ b=RqjMxZkGcU8gQqKF0flioaSo+EetImimFh17NKvkGpz0OOmqsyovQa5sXyGbEM2m6DBZGiwYo2ZSjCoXcBDeUnXE7mVCfhNLFU/MHabQH3Nb4LfhlMSYpsFRAWG0oaZTQlsqgldoNQtIkw1HTnIQm03M9x/AKD5UCUMVfoBJvls=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=axentia.se;
+Received: from AM0PR02MB4436.eurprd02.prod.outlook.com (2603:10a6:208:ed::15)
+ by DB7PR02MB5114.eurprd02.prod.outlook.com (2603:10a6:10:7d::12) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5546.22; Tue, 23 Aug
+ 2022 09:51:03 +0000
+Received: from AM0PR02MB4436.eurprd02.prod.outlook.com
+ ([fe80::1d88:3306:c280:3179]) by AM0PR02MB4436.eurprd02.prod.outlook.com
+ ([fe80::1d88:3306:c280:3179%6]) with mapi id 15.20.5546.022; Tue, 23 Aug 2022
+ 09:51:03 +0000
+Message-ID: <eacfe142-7f60-d938-4421-4d7b464759e8@axentia.se>
+Date:   Tue, 23 Aug 2022 11:51:01 +0200
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.12.0
+Subject: Re: [PATCH] extcon: usbc-tusb320: make sure the state is initialized
+ on probe
 Content-Language: en-US
-To:     Rebecca Mckeever <remckee0@gmail.com>,
-        Mike Rapoport <rppt@kernel.org>, linux-mm@kvack.org,
-        linux-kernel@vger.kernel.org
-References: <cover.1660897732.git.remckee0@gmail.com>
- <c8d86890f5b7168a162c9aee867e338b76e1cf0b.1660897732.git.remckee0@gmail.com>
-From:   David Hildenbrand <david@redhat.com>
-Organization: Red Hat
-In-Reply-To: <c8d86890f5b7168a162c9aee867e338b76e1cf0b.1660897732.git.remckee0@gmail.com>
+From:   Peter Rosin <peda@axentia.se>
+To:     Chanwoo Choi <cwchoi00@gmail.com>, linux-kernel@vger.kernel.org
+Cc:     MyungJoo Ham <myungjoo.ham@samsung.com>,
+        Chanwoo Choi <cw00.choi@samsung.com>,
+        Michael Auchter <michael.auchter@ni.com>
+References: <ab1ad93b-4d39-8863-9704-da779fc4c426@axentia.se>
+ <c6d43dab-57bf-7041-9a5a-345fa35ca0c7@gmail.com>
+ <38ab6884-d0a9-8acd-84cd-dcf6f3f40bc8@axentia.se>
+In-Reply-To: <38ab6884-d0a9-8acd-84cd-dcf6f3f40bc8@axentia.se>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
+X-ClientProxiedBy: MM0P280CA0018.SWEP280.PROD.OUTLOOK.COM
+ (2603:10a6:190:a::32) To AM0PR02MB4436.eurprd02.prod.outlook.com
+ (2603:10a6:208:ed::15)
+MIME-Version: 1.0
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 1800c84e-2b80-4480-1f5c-08da84ecfdc7
+X-MS-TrafficTypeDiagnostic: DB7PR02MB5114:EE_
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: GEWxTYFuePsfIvc09vw7XP9sMOEOT6HUrIkyOS123DxGKnYtZHTEqqZucc+u/kyGqNGqfWghDTgplNDvHm4+/DyBdFyYGFJeTNwunyujJG8T9uBFEGWJdc3R7/u3AaX2aJGB3b1Ugk6Huj4vUfEa+3QRe41dRn/mspS3w1uN1xcJHzPmErwykRNB6W0ujp8AXipQfG9DozKx/IqMMrFfCsk6Vxb1+kCR/BdRF7FMki+vzS40XTGU0kWuITDh6XBw6Nm1JPbZhHIQyU9Uav4QqXV3Sme+xY3zO7q2BJUEkIt/J03FYYlkt/tGuRWHYgJt4TiCKVGxF+C7SKCdJfzTbj/TCiomJyNKBMu2vLKAB3tGo3undww6Wgr907Sk8+AfbPdTSQ0syTzDZxK2Pn6P/+jgXU4vjiDbrrKilKBXpLSYFBWi86h255d0kuOLMEhE/qVad/fRoYoAENw2jSrRw/BqzdidkPNBS7M548yVWUMhKy/tZL7KhID0jAzOxJ+B3UupkfA4c2ZbO+GLTNQ/kezO8+MEUnU6atplVF18OOSK1jkG+oxuTbMI/76+Kekkxr85mb0c0cCXjiCfMViQbg8IdhesfTEdHczDHbscwFliCWHc4FgFI8YnL2EBYz4i9IsT5uxoxezgF6fESylyuF2T/wFgLyNeU6kWHK1UbT+F50HENC/aSPeWdfDxY8ScN/kFdvcaoEJFUGAzOanXaQvn9A6unALLRTKpVI7jPgNIK2tW35M2GfxQlM3VnuWtopILIeuImFiMssWOuRiPcHcMVjOUpahXzcCDWda7RM0=
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AM0PR02MB4436.eurprd02.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(346002)(39840400004)(396003)(376002)(366004)(136003)(6506007)(86362001)(31696002)(83380400001)(6512007)(38100700002)(316002)(54906003)(8936002)(5660300002)(66556008)(66946007)(66476007)(4326008)(2906002)(8676002)(2616005)(186003)(478600001)(41300700001)(6486002)(26005)(31686004)(36756003)(45980500001)(43740500002);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?TWJBbDBmdzNsOGx3YS9ydDBUSG5YWGtRcXZhM04rcUNEUE5PM3dZb0dFSDBo?=
+ =?utf-8?B?bzJnZk9yZWRzTVJJSlJSaWdYQlVhWk9MOVFqbm8zQ1VxVmJnZFVZVW11Z1Jm?=
+ =?utf-8?B?ZEdOaVMzNndnM2ZBQUVIeG1ZckVtRmRKRGhkMkFEbmpienh1UkhiRHNoclJn?=
+ =?utf-8?B?NWZwdVVaR3ZNUlZSeldQOFNObnhkTjlkWC9BbEtVNm1rRThmQXF0bGdmZFo1?=
+ =?utf-8?B?a3ozT2F6M2IvQkwwTG1HZHAwYVkyTXVrUk41MzFlTWxEM1NxSkZ1NTQwU1dM?=
+ =?utf-8?B?UVVQc2g3SExFdXBnYmtXTWFWcURuVFlRdXZERFBkdFovZnE2NFRBSmc1b25l?=
+ =?utf-8?B?VytlazNqWkgzMmVyZFFQTzdEOHErUmhiYXFLdUdZNlRhaFpnelY0TlltS3Jv?=
+ =?utf-8?B?UnVNQ0MyZm5JN3ZGYnZEakJxRGkrMmRtUytwZERIN2dleGN2YTIvZURkS3lx?=
+ =?utf-8?B?aXI4RzVFUTBHMENBbm1GRTY0Y3pRdFZtTXI0ZXVSMzFnNS80VTU5K01Vb3Iv?=
+ =?utf-8?B?UlpOM1Z0YVV0QWljQlJQclJKVnhrbEVLUUwyS0orcFk0QWVZdzVvN0hkUGl1?=
+ =?utf-8?B?cEY2ajBNWFRnVEZFby84d0pGZEpud0hPQlF4TjRSZHE0N3ZQN3htWk95ejgw?=
+ =?utf-8?B?bGtkMTNodHA4NEpGdXVoYm9PenJlTTN2bXpmbmpuL0FGZ0pkcWZaM0JMamUy?=
+ =?utf-8?B?WlBacU1YVFhET1JYdXA1TG1xZ1RDTG01YWl5bGRTU1MrQm5nYndUYTBUK0gy?=
+ =?utf-8?B?VkZhZDdSWURhYjRjRDYyUnRUSHJCc1lpSTJHS3REdUFUejJER0oxWTFJYjRV?=
+ =?utf-8?B?aUdzOEFWWFNpUDJLVVowY1RkOWNIOTRmTkJNak1xaTJiRGdTak5GejVXZFFV?=
+ =?utf-8?B?OURTUnM2aDFPSFNYeWl5andtNXJxOGFHbUw1dExESHNDTUZsbmJoRTZsb3Ft?=
+ =?utf-8?B?YjgvYWQ5ckQxQS9jR0FKdStiK3cxbHk3dlkwYmIxV245SFc3SkNqV0RMdGZt?=
+ =?utf-8?B?YzJvV2RRQ2F6d1Q2M2Rsa0hVRnprN3hCNlFMRXBsemVSVi9oV0Q1Y0JaSmtW?=
+ =?utf-8?B?U0d4T0p3dFR6ckFCRE9vSS9jMko3UFlGQXEyQ1hPbXREenFQSC9NRy9YV2lH?=
+ =?utf-8?B?WnhTWG1ONUtlVnNKSnB0ZTZ5UGM3eDUzMlBqcnB6SGlqSGplNmFLRFFOeitC?=
+ =?utf-8?B?UUl2VTBXWlJ0S2I5ZEJOQWpUOW5ocDVGdE5WbGVVU0NuUUw1QmYzazFDOE5G?=
+ =?utf-8?B?OHB5cnArUGI3MDRSdEJ4c1BwcHY3dmN3V2tTYUpRWUYvajRNNlNqeGYwT3Iv?=
+ =?utf-8?B?b1B5NTNZa3lpUWFybS9MbFZ6a3dhcEdEb3p3dEdud2RnVGlPUWgyN2p0eVJ6?=
+ =?utf-8?B?MzR0eGh2NWdEMGVxaXNveGw5OHhvTTZIRE5NTWxSWnhvSVUzODVqdngrOE9I?=
+ =?utf-8?B?ZGErUTZtTytOME14ZVRHYkZQdzd0d0xoNExtS0tJL1F6amNRM3lnVWlvcGtQ?=
+ =?utf-8?B?cVdDeXZYVHpjcVZXY3puRlFyU0FIOWppZGwzcm9EZnQ1bmp5VEwrUnRCTkJq?=
+ =?utf-8?B?UW9JdzRlRGg2N25YaG9JY3JhV3lCTGFXRkVvMkVEREo4SUppc3VwVS9CNmE4?=
+ =?utf-8?B?K2xJcGMrS3AwdDRUcDlKVnhPU2piNUJMN1p1VGZxdSt4WWtoMWJMTC8xTFJu?=
+ =?utf-8?B?RXZGc0c0bXUxcmlFL0FIbmFZNXY4QytOZytEM2NidWIrellPR1d5RGEzaWtm?=
+ =?utf-8?B?ZklvSlpSMjNjbkkwVVVxYTNDNFIvRmplbGhGR3lUUDNReWhVSGZ1ZkVYeU82?=
+ =?utf-8?B?MzlYU1cxbHk5UVN3Umg2ZVZnVm1FRDJod0w5TDh0ZHZMNUlRdERvRTZHN0RI?=
+ =?utf-8?B?SjJ4d09JNll5c2pURkZ0N3FtbnRreEw4OC9tZk9USkNvbXdJYldianFHOTZi?=
+ =?utf-8?B?RzM0Rk9nNFNwV0xjb3RFOEl3bVNWZzBpcTNlTWN5M1JXUjB3SDE0RHVVQlRD?=
+ =?utf-8?B?OE4yMXY4eVhSanlSTklaVndjUWUwS2F2VGJ3VnNNaGNCdzk0N0tvaFJXRjhx?=
+ =?utf-8?B?Wnk3ZmFwek1BWHhPQWthT0o0T1UzK2FhWHErT0JVdThFdGd5QXU3dHRSbWxY?=
+ =?utf-8?Q?43262AAPV8TYBYeUtUMf8L6QR?=
+X-OriginatorOrg: axentia.se
+X-MS-Exchange-CrossTenant-Network-Message-Id: 1800c84e-2b80-4480-1f5c-08da84ecfdc7
+X-MS-Exchange-CrossTenant-AuthSource: AM0PR02MB4436.eurprd02.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 23 Aug 2022 09:51:03.2742
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 4ee68585-03e1-4785-942a-df9c1871a234
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: oFAmsMbvzuprh+HBYJXubTGuVuPQiOUTWsKC1EoUPD/naF8XerHFooUmcOjb797P
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DB7PR02MB5114
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 19.08.22 10:34, Rebecca Mckeever wrote:
-> Update memblock_alloc_try_nid() tests so that they test either
-> memblock_alloc_try_nid() or memblock_alloc_try_nid_raw() depending on the
-> value of alloc_nid_test_flags. Run through all the existing tests in
-> alloc_nid_api twice: once for memblock_alloc_try_nid() and once for
-> memblock_alloc_try_nid_raw().
+Hi!
+
+2022-06-30 at 08:03, Peter Rosin wrote:
+> Hi!
 > 
-> When the tests run memblock_alloc_try_nid(), they test that the entire
-> memory region is zero. When the tests run memblock_alloc_try_nid_raw(),
-> they test that the entire memory region is nonzero.
+> 2022-06-29 at 21:54, Chanwoo Choi wrote:
+>> On 22. 6. 23. 20:21, Peter Rosin wrote:
+>>> When the port is connected at boot, there is not necessarily
+>>> an interrupt flagged in the interrupt status register, causing
+>>> the IRQ handler to bail out early without reading the state when
+>>> it is invoked directly from probe.
+>>>
+>>> Add a flag that overrides the interrupt status register and reads
+>>> the state regardless during probe.
+>>>
+>>> Fixes: 06bc4ca115cd ("extcon: Add driver for TI TUSB320")
+>>> Signed-off-by: Peter Rosin <peda@axentia.se>
+>>> ---
+>>>  drivers/extcon/extcon-usbc-tusb320.c | 5 ++++-
+>>>  1 file changed, 4 insertions(+), 1 deletion(-)
+>>>
+>>> diff --git a/drivers/extcon/extcon-usbc-tusb320.c b/drivers/extcon/extcon-usbc-tusb320.c
+>>> index 6ba3d89b106d..bd3645ae0d52 100644
+>>> --- a/drivers/extcon/extcon-usbc-tusb320.c
+>>> +++ b/drivers/extcon/extcon-usbc-tusb320.c
+>>> @@ -55,6 +55,7 @@ struct tusb320_priv {
+>>>  	struct extcon_dev *edev;
+>>>  	struct tusb320_ops *ops;
+>>>  	enum tusb320_attached_state state;
+>>> +	bool initialized;
+>>>  };
+>>>  
+>>>  static const char * const tusb_attached_states[] = {
+>>> @@ -195,7 +196,7 @@ static irqreturn_t tusb320_irq_handler(int irq, void *dev_id)
+>>>  		return IRQ_NONE;
+>>>  	}
+>>>  
+>>> -	if (!(reg & TUSB320_REG9_INTERRUPT_STATUS))
+>>> +	if (priv->initialized && !(reg & TUSB320_REG9_INTERRUPT_STATUS))
+>>>  		return IRQ_NONE;
 > 
-> Signed-off-by: Rebecca Mckeever <remckee0@gmail.com>
-> ---
->  tools/testing/memblock/tests/alloc_nid_api.c | 188 ++++++++++++-------
->  1 file changed, 119 insertions(+), 69 deletions(-)
+> Do not return early if priv->initialized is false. Behave as before if
+> priv->initialized is true.
 > 
-> diff --git a/tools/testing/memblock/tests/alloc_nid_api.c b/tools/testing/memblock/tests/alloc_nid_api.c
-> index 82fa8ea36320..2c1d5035e057 100644
-> --- a/tools/testing/memblock/tests/alloc_nid_api.c
-> +++ b/tools/testing/memblock/tests/alloc_nid_api.c
-> @@ -1,6 +1,34 @@
->  // SPDX-License-Identifier: GPL-2.0-or-later
->  #include "alloc_nid_api.h"
->  
-> +static const char * const func_testing[] = {
-> +	"memblock_alloc_try_nid",
-> +	"memblock_alloc_try_nid_raw"
-> +};
-> +
-> +static int alloc_nid_test_flags = TEST_ZEROED;
-> +
-> +static inline const char * const get_func_testing(int flags)
-> +{
-> +	if (flags & TEST_RAW)
-> +		return func_testing[1];
-> +	else
-> +		return func_testing[0];
-> +}
+>>>  
+>>>  	state = (reg >> TUSB320_REG9_ATTACHED_STATE_SHIFT) &
+>>> @@ -297,6 +298,8 @@ static int tusb320_extcon_probe(struct i2c_client *client,
+>>>  		 */
+>>>  		tusb320_irq_handler(client->irq, priv);
+>>>  
+>>> +	priv->initialized = true;
+>>> +
+>>
+>> After initializing as 'priv->initialized = true', 
+>> tusb320_irq_handler() is not anymore detecting the external connector changes.
+> 
+> Have you tested the patch and observed the trouble you are reporting, or
+> have you simply misread the patch?
+> 
+>>
+>> If external connector is detached after finished kernel boot,
+>> how to change the state of external connector by using extcon_set_state()?
+>>
+> 
+> If you did test this and there actually is a problem, maybe there should be
+> READ_ONCE in the irq handler when checking and WRITE_ONCE when assigning
+> priv->initialized. But if that's really what's going on I'd be surprised
+> when it's a variable that changes *once* before the interrupt has even
+> been requested.
+> 
+> Cheers,
+> Peter
 
-Same comments as for patch #5. Otherwise looks good.
+Ping?
 
-
--- 
-Thanks,
-
-David / dhildenb
-
+Cheers,
+Peter
