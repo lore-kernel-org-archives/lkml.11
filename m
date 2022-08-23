@@ -2,43 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7BDC1C32774
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9AEEBC3F6B0
 	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 08:11:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241992AbiHWIK0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 04:10:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51696 "EHLO
+        id S241831AbiHWIJY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 23 Aug 2022 04:09:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49656 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231491AbiHWIJP (ORCPT
+        with ESMTP id S241717AbiHWIIa (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 04:09:15 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D24411EEEB;
-        Tue, 23 Aug 2022 01:06:04 -0700 (PDT)
+        Tue, 23 Aug 2022 04:08:30 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B05E16CD08;
+        Tue, 23 Aug 2022 01:05:38 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 8E0776120C;
-        Tue, 23 Aug 2022 08:06:03 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 93F4DC433C1;
-        Tue, 23 Aug 2022 08:06:02 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 4B6D2B81C19;
+        Tue, 23 Aug 2022 08:05:22 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 97167C433C1;
+        Tue, 23 Aug 2022 08:05:20 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661241963;
-        bh=T6wbFxEZ0JNjVLGaAkLyy3eDIxIVf7DYXxIn42x7T0I=;
+        s=korg; t=1661241921;
+        bh=K5ZBDr6BEUr7UZVmEwDVuU96klWoAHjgVnTdnq/iI18=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=sgLssvKhY+HyEc72wlpZxp/CJ2XScpyKQ7UrkbnIeWQmmC8yEyQgs1w1VzLzypuo8
-         E+5MerUqOz7bVRSIYBv9GQgQBOIgG8tpkLb82wFbkBBUz6D8RyaLVwJPvXiYAm67/y
-         wIW90yHkVPxmdWxSc2v0I6ZSRY7QRz/EhXoenZDQ=
+        b=hJTe8YHMgel2QJaVi39l39b+nAali4mApT9MQOZE/2PG5vbzH0ZL0zi4yzPvGakg7
+         7RJlTmwG8gK2bAd75Buz4IH4ECmUS0i9g82DQ6Bv+RFvisyEV/VQ6YOIzNrts97DBE
+         VhtxG4DuAgfeh0inFjW7dVJs3JgDj8M7EYoT7lBY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Chris Wilson <chris@chris-wilson.co.uk>,
-        Nirmoy Das <nirmoy.das@intel.com>,
-        Matthew Auld <matthew.auld@intel.com>,
-        Rodrigo Vivi <rodrigo.vivi@intel.com>
-Subject: [PATCH 5.19 007/365] drm/i915/gem: Remove shared locking on freeing objects
-Date:   Tue, 23 Aug 2022 09:58:28 +0200
-Message-Id: <20220823080118.462276633@linuxfoundation.org>
+        stable@vger.kernel.org, Filipe Manana <fdmanana@suse.com>,
+        David Sterba <dsterba@suse.com>
+Subject: [PATCH 5.19 020/365] btrfs: fix lost error handling when looking up extended ref on log replay
+Date:   Tue, 23 Aug 2022 09:58:41 +0200
+Message-Id: <20220823080119.053017011@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220823080118.128342613@linuxfoundation.org>
 References: <20220823080118.128342613@linuxfoundation.org>
@@ -50,107 +48,43 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Chris Wilson <chris@chris-wilson.co.uk>
+From: Filipe Manana <fdmanana@suse.com>
 
-commit 2826d447fbd60e6a05e53d5f918bceb8c04e315c upstream.
+commit 7a6b75b79902e47f46328b57733f2604774fa2d9 upstream.
 
-The obj->base.resv may be shared across many objects, some of which may
-still be live and locked, preventing objects from being freed
-indefintely. We could individualise the lock during the free, or rely on
-a freed object having no contention and being able to immediately free
-the pages it owns.
+During log replay, when processing inode references, if we get an error
+when looking up for an extended reference at __add_inode_ref(), we ignore
+it and proceed, returning success (0) if no other error happens after the
+lookup. This is obviously wrong because in case an extended reference
+exists and it encodes some name not in the log, we need to unlink it,
+otherwise the filesystem state will not match the state it had after the
+last fsync.
 
-Fixes: be7612fd6665 ("drm/i915: Require object lock when freeing pages during destruction")
-Fixes: 6cb12fbda1c2 ("drm/i915: Use trylock instead of blocking lock for __i915_gem_free_objects.")
-Cc: <stable@vger.kernel.org> # v5.17+
-Signed-off-by: Chris Wilson <chris@chris-wilson.co.uk>
-Tested-by: Nirmoy Das <nirmoy.das@intel.com>
-Acked-by: Nirmoy Das <nirmoy.das@intel.com>
-Signed-off-by: Nirmoy Das <nirmoy.das@intel.com>
-Reviewed-by: Matthew Auld <matthew.auld@intel.com>
-Signed-off-by: Matthew Auld <matthew.auld@intel.com>
-Link: https://patchwork.freedesktop.org/patch/msgid/20220726144844.18429-1-nirmoy.das@intel.com
-(cherry picked from commit 7dd5c56531eb03696acdb17774721de5ef481c0b)
-Signed-off-by: Rodrigo Vivi <rodrigo.vivi@intel.com>
+So just make __add_inode_ref() return an error it gets from the extended
+reference lookup.
+
+Fixes: f186373fef005c ("btrfs: extended inode refs")
+CC: stable@vger.kernel.org # 4.9+
+Signed-off-by: Filipe Manana <fdmanana@suse.com>
+Reviewed-by: David Sterba <dsterba@suse.com>
+Signed-off-by: David Sterba <dsterba@suse.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/gpu/drm/i915/gem/i915_gem_object.c |   16 ++++------------
- drivers/gpu/drm/i915/i915_drv.h            |    4 ++--
- 2 files changed, 6 insertions(+), 14 deletions(-)
+ fs/btrfs/tree-log.c |    4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
 
---- a/drivers/gpu/drm/i915/gem/i915_gem_object.c
-+++ b/drivers/gpu/drm/i915/gem/i915_gem_object.c
-@@ -268,7 +268,7 @@ static void __i915_gem_object_free_mmaps
-  */
- void __i915_gem_object_pages_fini(struct drm_i915_gem_object *obj)
- {
--	assert_object_held(obj);
-+	assert_object_held_shared(obj);
- 
- 	if (!list_empty(&obj->vma.list)) {
- 		struct i915_vma *vma;
-@@ -331,15 +331,7 @@ static void __i915_gem_free_objects(stru
- 			continue;
- 		}
- 
--		if (!i915_gem_object_trylock(obj, NULL)) {
--			/* busy, toss it back to the pile */
--			if (llist_add(&obj->freed, &i915->mm.free_list))
--				queue_delayed_work(i915->wq, &i915->mm.free_work, msecs_to_jiffies(10));
--			continue;
--		}
--
- 		__i915_gem_object_pages_fini(obj);
--		i915_gem_object_unlock(obj);
- 		__i915_gem_free_object(obj);
- 
- 		/* But keep the pointer alive for RCU-protected lookups */
-@@ -359,7 +351,7 @@ void i915_gem_flush_free_objects(struct
- static void __i915_gem_free_work(struct work_struct *work)
- {
- 	struct drm_i915_private *i915 =
--		container_of(work, struct drm_i915_private, mm.free_work.work);
-+		container_of(work, struct drm_i915_private, mm.free_work);
- 
- 	i915_gem_flush_free_objects(i915);
- }
-@@ -391,7 +383,7 @@ static void i915_gem_free_object(struct
- 	 */
- 
- 	if (llist_add(&obj->freed, &i915->mm.free_list))
--		queue_delayed_work(i915->wq, &i915->mm.free_work, 0);
-+		queue_work(i915->wq, &i915->mm.free_work);
- }
- 
- void __i915_gem_object_flush_frontbuffer(struct drm_i915_gem_object *obj,
-@@ -719,7 +711,7 @@ bool i915_gem_object_placement_possible(
- 
- void i915_gem_init__objects(struct drm_i915_private *i915)
- {
--	INIT_DELAYED_WORK(&i915->mm.free_work, __i915_gem_free_work);
-+	INIT_WORK(&i915->mm.free_work, __i915_gem_free_work);
- }
- 
- void i915_objects_module_exit(void)
---- a/drivers/gpu/drm/i915/i915_drv.h
-+++ b/drivers/gpu/drm/i915/i915_drv.h
-@@ -254,7 +254,7 @@ struct i915_gem_mm {
- 	 * List of objects which are pending destruction.
- 	 */
- 	struct llist_head free_list;
--	struct delayed_work free_work;
-+	struct work_struct free_work;
- 	/**
- 	 * Count of objects pending destructions. Used to skip needlessly
- 	 * waiting on an RCU barrier if no objects are waiting to be freed.
-@@ -1415,7 +1415,7 @@ static inline void i915_gem_drain_freed_
- 	 * armed the work again.
- 	 */
- 	while (atomic_read(&i915->mm.free_count)) {
--		flush_delayed_work(&i915->mm.free_work);
-+		flush_work(&i915->mm.free_work);
- 		flush_delayed_work(&i915->bdev.wq);
- 		rcu_barrier();
- 	}
+--- a/fs/btrfs/tree-log.c
++++ b/fs/btrfs/tree-log.c
+@@ -1146,7 +1146,9 @@ again:
+ 	extref = btrfs_lookup_inode_extref(NULL, root, path, name, namelen,
+ 					   inode_objectid, parent_objectid, 0,
+ 					   0);
+-	if (!IS_ERR_OR_NULL(extref)) {
++	if (IS_ERR(extref)) {
++		return PTR_ERR(extref);
++	} else if (extref) {
+ 		u32 item_size;
+ 		u32 cur_offset = 0;
+ 		unsigned long base;
 
 
