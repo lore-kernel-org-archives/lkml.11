@@ -2,45 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 939A5C38159
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 10:23:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9A5FFC48BE4
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 10:23:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354569AbiHWKVq (ORCPT
+        id S1354524AbiHWKVk (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 06:21:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58332 "EHLO
+        Tue, 23 Aug 2022 06:21:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33088 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352409AbiHWKJe (ORCPT
+        with ESMTP id S1352921AbiHWKJe (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 23 Aug 2022 06:09:34 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5D6267DF60;
-        Tue, 23 Aug 2022 01:55:40 -0700 (PDT)
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2729C53D24;
+        Tue, 23 Aug 2022 01:55:39 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id EE8DB6155E;
-        Tue, 23 Aug 2022 08:55:39 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 03619C433D6;
-        Tue, 23 Aug 2022 08:55:38 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id DB542B81C35;
+        Tue, 23 Aug 2022 08:55:37 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2580BC433D6;
+        Tue, 23 Aug 2022 08:55:35 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661244939;
-        bh=9krYIMZkWByFYm0Z2MCMjTdo/cKY77hHZASSi3Elm3k=;
+        s=korg; t=1661244936;
+        bh=X32xtPBWcVE6Z6gxu3/jbMLK/pP7I1mcOKV4OxfaTWk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=D/NJ5qw/4jaMtaLSXA4dotY5kXfoCsmtOEE/KY+7w6+CsO9WchRO7Tu5azfEbXzoI
-         0Tk6bglQGev9mkheWPCvWcNQu872+O+gM6g9Hpl40/Mdakn4Q8FqhfdquBpO7pDcwr
-         SGg7FEr8jY38BACMcqyQahActd0pPHEyfbtB2EAA=
+        b=maxTmvhmmOBUaFgfuEr1C6DkOvDjS+a0HB4sVe5i9Xq+pvKk3Eb4h3Y/U1jWziOdL
+         DhSVDBCR9/Ha6lIybBh2XEE978U5CEzAeuRWf00lnueSoTirKrfUnnuNQqwsqFG98b
+         YjZEp2bNb7Ks+UWac4Q0TOed3YjUOz8SdPlxLpAk=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Liang He <windhl@126.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 175/244] usb: renesas: Fix refcount leak bug
-Date:   Tue, 23 Aug 2022 10:25:34 +0200
-Message-Id: <20220823080105.129109668@linuxfoundation.org>
+        stable@vger.kernel.org, Alan Stern <stern@rowland.harvard.edu>,
+        Liang He <windhl@126.com>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 4.14 214/229] usb: host: ohci-ppc-of: Fix refcount leak bug
+Date:   Tue, 23 Aug 2022 10:26:15 +0200
+Message-Id: <20220823080101.279637578@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220823080059.091088642@linuxfoundation.org>
-References: <20220823080059.091088642@linuxfoundation.org>
+In-Reply-To: <20220823080053.202747790@linuxfoundation.org>
+References: <20220823080053.202747790@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -51,35 +51,33 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Liang He <windhl@126.com>
 
-[ Upstream commit 9d6d5303c39b8bc182475b22f45504106a07f086 ]
+[ Upstream commit 40a959d7042bb7711e404ad2318b30e9f92c6b9b ]
 
-In usbhs_rza1_hardware_init(), of_find_node_by_name() will return
+In ohci_hcd_ppc_of_probe(), of_find_compatible_node() will return
 a node pointer with refcount incremented. We should use of_node_put()
 when it is not used anymore.
 
+Acked-by: Alan Stern <stern@rowland.harvard.edu>
 Signed-off-by: Liang He <windhl@126.com>
-Link: https://lore.kernel.org/r/20220618023205.4056548-1-windhl@126.com
+Link: https://lore.kernel.org/r/20220617034637.4003115-1-windhl@126.com
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/usb/renesas_usbhs/rza.c | 4 ++++
- 1 file changed, 4 insertions(+)
+ drivers/usb/host/ohci-ppc-of.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/drivers/usb/renesas_usbhs/rza.c b/drivers/usb/renesas_usbhs/rza.c
-index 24de64edb674..2d77edefb4b3 100644
---- a/drivers/usb/renesas_usbhs/rza.c
-+++ b/drivers/usb/renesas_usbhs/rza.c
-@@ -23,6 +23,10 @@ static int usbhs_rza1_hardware_init(struct platform_device *pdev)
- 	extal_clk = of_find_node_by_name(NULL, "extal");
- 	of_property_read_u32(usb_x1_clk, "clock-frequency", &freq_usb);
- 	of_property_read_u32(extal_clk, "clock-frequency", &freq_extal);
-+
-+	of_node_put(usb_x1_clk);
-+	of_node_put(extal_clk);
-+
- 	if (freq_usb == 0) {
- 		if (freq_extal == 12000000) {
- 			/* Select 12MHz XTAL */
+diff --git a/drivers/usb/host/ohci-ppc-of.c b/drivers/usb/host/ohci-ppc-of.c
+index 4f87a5c61b08..d22a70363fbf 100644
+--- a/drivers/usb/host/ohci-ppc-of.c
++++ b/drivers/usb/host/ohci-ppc-of.c
+@@ -168,6 +168,7 @@ static int ohci_hcd_ppc_of_probe(struct platform_device *op)
+ 				release_mem_region(res.start, 0x4);
+ 		} else
+ 			pr_debug("%s: cannot get ehci offset from fdt\n", __FILE__);
++		of_node_put(np);
+ 	}
+ 
+ 	irq_dispose_mapping(irq);
 -- 
 2.35.1
 
