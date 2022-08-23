@@ -2,96 +2,81 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BA561C32772
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 08:38:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9DBECC32772
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 08:38:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345666AbiHWIiH (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 04:38:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33888 "EHLO
+        id S241459AbiHWIiL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 23 Aug 2022 04:38:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33980 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347090AbiHWIgT (ORCPT
+        with ESMTP id S1347102AbiHWIgT (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 23 Aug 2022 04:36:19 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4205176940;
-        Tue, 23 Aug 2022 01:17:22 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 0AEC061284;
-        Tue, 23 Aug 2022 08:17:14 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1525BC433C1;
-        Tue, 23 Aug 2022 08:17:12 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661242633;
-        bh=w0p436ssZfj/lQdy31bDOBkJyI06WCHkjyGiFQ8EqOQ=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=qhQUzDCSI8NHgikEqAPOxpK4HJ/ntaP0z4EvBo+DtcoI8AmNrJFManzBtL+hzjmTj
-         kNEx/eqcYI8olIG+j7IcNBDAXmYWIiRwfzn2Ucx1k0aDZ3c1geaXp2WRBwcg148xwT
-         tNFPITBNfCuSZImdheQ47AcAA230BQDK92XpGAD8=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Dan Carpenter <dan.carpenter@oracle.com>,
-        Oleksandr Tyshchenko <oleksandr_tyshchenko@epam.com>,
-        Juergen Gross <jgross@suse.com>
-Subject: [PATCH 5.19 149/365] xen/xenbus: fix return type in xenbus_file_read()
-Date:   Tue, 23 Aug 2022 10:00:50 +0200
-Message-Id: <20220823080124.456944321@linuxfoundation.org>
-X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220823080118.128342613@linuxfoundation.org>
-References: <20220823080118.128342613@linuxfoundation.org>
-User-Agent: quilt/0.67
+Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1F86C76753
+        for <linux-kernel@vger.kernel.org>; Tue, 23 Aug 2022 01:17:16 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1661242636; x=1692778636;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=FFUrJBNMDk4t826TIAG649CcdossiWD3s3+Wk/wmhH4=;
+  b=PRMh7gJkry/Afvp1QLjCsrbIh/DPNl+OA/nwRPuxD5Qegn0jV0GohQ6v
+   PTvzSPciN5D8WlWg1txrQXIvrEtMAaSxWh39dDtSYBBjtaYV0JTuwUyrQ
+   zFMfYJ8jtia9IkiPtFm7/MsJ4kjNeF3ckdeqTGdwUXp8/rIq4z9qjJFTX
+   odOkMBJHhO1vph2v8HitrbDIXG2YB0GK18jMnNaO3pymYMHC4S65VlM0h
+   9rg/BAGvQaDYWv1JItqFFeuKtqfY5R/UPa2l3WJiG7HEvUxtYj0M1G6MY
+   ES5E+cb7DiVRdaXJhzHALyedCz/23IfekpYtf1zqLRDXBXZqUE/sR6wd/
+   g==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10447"; a="291183216"
+X-IronPort-AV: E=Sophos;i="5.93,257,1654585200"; 
+   d="scan'208";a="291183216"
+Received: from fmsmga001.fm.intel.com ([10.253.24.23])
+  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Aug 2022 01:17:15 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.93,257,1654585200"; 
+   d="scan'208";a="751606026"
+Received: from kuha.fi.intel.com ([10.237.72.185])
+  by fmsmga001.fm.intel.com with SMTP; 23 Aug 2022 01:17:12 -0700
+Received: by kuha.fi.intel.com (sSMTP sendmail emulation); Tue, 23 Aug 2022 11:17:12 +0300
+Date:   Tue, 23 Aug 2022 11:17:12 +0300
+From:   Heikki Krogerus <heikki.krogerus@linux.intel.com>
+To:     Tzung-Bi Shih <tzungbi@kernel.org>
+Cc:     Prashant Malani <pmalani@chromium.org>,
+        linux-kernel@vger.kernel.org, chrome-platform@lists.linux.dev,
+        bleung@chromium.org,
+        Enric Balletbo i Serra <enric.balletbo@collabora.com>,
+        Guenter Roeck <groeck@chromium.org>
+Subject: Re: [PATCH 3/4] platform/chrome: cros_ec_typec: Stash port driver
+ info
+Message-ID: <YwSNCFt48Q9Eo02I@kuha.fi.intel.com>
+References: <20220819190807.1275937-1-pmalani@chromium.org>
+ <20220819190807.1275937-4-pmalani@chromium.org>
+ <YwRa/QxA/RRtxU3P@google.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <YwRa/QxA/RRtxU3P@google.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Dan Carpenter <dan.carpenter@oracle.com>
+On Tue, Aug 23, 2022 at 04:43:41AM +0000, Tzung-Bi Shih wrote:
+> On Fri, Aug 19, 2022 at 07:08:04PM +0000, Prashant Malani wrote:
+> > Stash port number and a pointer to the driver-specific struct in the
+> > local Type-C port struct.
+> > 
+> > These can be useful to the port driver to figure out how to communicate
+> > with the ChromeOS EC when an altmode driver related callback is invoked
+> > from the Type-C class code.
+> 
+> The patch looks good to me.  But I would suggest to send it in later series
+> that uses the driver-specific struct (e.g. in altmode driver related callbacks)
+> to make the usage clear.
 
-commit 32ad11127b95236dfc52375f3707853194a7f4b4 upstream.
+I agree.
 
-This code tries to store -EFAULT in an unsigned int.  The
-xenbus_file_read() function returns type ssize_t so the negative value
-is returned as a positive value to the user.
+thanks,
 
-This change forces another change to the min() macro.  Originally, the
-min() macro used "unsigned" type which checkpatch complains about.  Also
-unsigned type would break if "len" were not capped at MAX_RW_COUNT.  Use
-size_t for the min().  (No effect on runtime for the min_t() change).
-
-Fixes: 2fb3683e7b16 ("xen: Add xenbus device driver")
-Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
-Reviewed-by: Oleksandr Tyshchenko <oleksandr_tyshchenko@epam.com>
-Link: https://lore.kernel.org/r/YutxJUaUYRG/VLVc@kili
-Signed-off-by: Juergen Gross <jgross@suse.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
----
- drivers/xen/xenbus/xenbus_dev_frontend.c |    4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
-
---- a/drivers/xen/xenbus/xenbus_dev_frontend.c
-+++ b/drivers/xen/xenbus/xenbus_dev_frontend.c
-@@ -128,7 +128,7 @@ static ssize_t xenbus_file_read(struct f
- {
- 	struct xenbus_file_priv *u = filp->private_data;
- 	struct read_buffer *rb;
--	unsigned i;
-+	ssize_t i;
- 	int ret;
- 
- 	mutex_lock(&u->reply_mutex);
-@@ -148,7 +148,7 @@ again:
- 	rb = list_entry(u->read_buffers.next, struct read_buffer, list);
- 	i = 0;
- 	while (i < len) {
--		unsigned sz = min((unsigned)len - i, rb->len - rb->cons);
-+		size_t sz = min_t(size_t, len - i, rb->len - rb->cons);
- 
- 		ret = copy_to_user(ubuf + i, &rb->msg[rb->cons], sz);
- 
-
-
+-- 
+heikki
