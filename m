@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 18FE1C32772
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 08:39:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BA569C32792
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 08:40:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346258AbiHWIju (ORCPT
+        id S1345319AbiHWIj5 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 04:39:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45788 "EHLO
+        Tue, 23 Aug 2022 04:39:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46850 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344526AbiHWIjJ (ORCPT
+        with ESMTP id S1344922AbiHWIjR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 04:39:09 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BD5BC263D;
-        Tue, 23 Aug 2022 01:18:15 -0700 (PDT)
+        Tue, 23 Aug 2022 04:39:17 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E1A4A636F;
+        Tue, 23 Aug 2022 01:18:20 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 4176E61344;
-        Tue, 23 Aug 2022 08:18:15 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4558BC433C1;
-        Tue, 23 Aug 2022 08:18:14 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 7648EB81C29;
+        Tue, 23 Aug 2022 08:17:08 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DC99FC433C1;
+        Tue, 23 Aug 2022 08:17:06 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661242694;
-        bh=irptwIDxqF2pKji92Dk04MOvhgeuIDxlQ8Rc8roUWe8=;
+        s=korg; t=1661242627;
+        bh=UfA2D+Yn9Vkzxi9TLQAdixu5obpAF7LAI9CvtDbERPU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=pl6XJIo0KsjbGmuwVD4FNVtUUCgcnzabNOFEfs4LEvenfE4en1oX6T7tMF/oNTLw3
-         rLHr4WdtUmGlhM9bl7js7CZV3H364DgiEtATG9r4GWZrMRxSplPbBp330M85MeyL6x
-         LgiXUqPG/ks9GvNDI884s22lhAOrYvOSFfeMOMgA=
+        b=NA97XWWXyydbDhhW+lCf1ejAfhoKo5ypaes5ng8cccyZs4uxMTmarr2nXTyWf9Ysv
+         4gJJrgTGHp7pjSjT6CK5CuRsJMPMzAOOmoRN7SvBhKypqLfobSa+y9JqQJSpKHsQWx
+         iY1Uhs/giwVcEJKJ/z6Qpn0xsWFwXNK7AyZ/hfdE=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Konstantin Komarov <almaz.alexandrovich@paragon-software.com>
-Subject: [PATCH 5.19 163/365] fs/ntfs3: Fix double free on remount
-Date:   Tue, 23 Aug 2022 10:01:04 +0200
-Message-Id: <20220823080125.031762428@linuxfoundation.org>
+        stable@vger.kernel.org, Dan Carpenter <dan.carpenter@oracle.com>,
+        Jon Mason <jdmason@kudzu.us>
+Subject: [PATCH 5.19 147/365] NTB: ntb_tool: uninitialized heap data in tool_fn_write()
+Date:   Tue, 23 Aug 2022 10:00:48 +0200
+Message-Id: <20220823080124.365784424@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220823080118.128342613@linuxfoundation.org>
 References: <20220823080118.128342613@linuxfoundation.org>
@@ -49,64 +49,52 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Konstantin Komarov <almaz.alexandrovich@paragon-software.com>
+From: Dan Carpenter <dan.carpenter@oracle.com>
 
-commit cd39981fb92adf0cc736112f87e3e61602baa415 upstream.
+commit 45e1058b77feade4e36402828bfe3e0d3363177b upstream.
 
-Pointer to options was freed twice on remount
-Fixes xfstest generic/361
-Fixes: 82cae269cfa9 ("fs/ntfs3: Add initialization of super block")
+The call to:
 
-Signed-off-by: Konstantin Komarov <almaz.alexandrovich@paragon-software.com>
+	ret = simple_write_to_buffer(buf, size, offp, ubuf, size);
+
+will return success if it is able to write even one byte to "buf".
+The value of "*offp" controls which byte.  This could result in
+reading uninitialized data when we do the sscanf() on the next line.
+
+This code is not really desigined to handle partial writes where
+*offp is non-zero and the "buf" is preserved and re-used between writes.
+Just ban partial writes and replace the simple_write_to_buffer() with
+copy_from_user().
+
+Fixes: 578b881ba9c4 ("NTB: Add tool test client")
+Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
+Signed-off-by: Jon Mason <jdmason@kudzu.us>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- fs/ntfs3/super.c |    8 ++++----
- 1 file changed, 4 insertions(+), 4 deletions(-)
+ drivers/ntb/test/ntb_tool.c |    8 +++++---
+ 1 file changed, 5 insertions(+), 3 deletions(-)
 
---- a/fs/ntfs3/super.c
-+++ b/fs/ntfs3/super.c
-@@ -30,6 +30,7 @@
- #include <linux/fs_context.h>
- #include <linux/fs_parser.h>
- #include <linux/log2.h>
-+#include <linux/minmax.h>
- #include <linux/module.h>
- #include <linux/nls.h>
- #include <linux/seq_file.h>
-@@ -390,7 +391,7 @@ static int ntfs_fs_reconfigure(struct fs
- 		return -EINVAL;
+--- a/drivers/ntb/test/ntb_tool.c
++++ b/drivers/ntb/test/ntb_tool.c
+@@ -367,14 +367,16 @@ static ssize_t tool_fn_write(struct tool
+ 	u64 bits;
+ 	int n;
+ 
++	if (*offp)
++		return 0;
++
+ 	buf = kmalloc(size + 1, GFP_KERNEL);
+ 	if (!buf)
+ 		return -ENOMEM;
+ 
+-	ret = simple_write_to_buffer(buf, size, offp, ubuf, size);
+-	if (ret < 0) {
++	if (copy_from_user(buf, ubuf, size)) {
+ 		kfree(buf);
+-		return ret;
++		return -EFAULT;
  	}
  
--	memcpy(sbi->options, new_opts, sizeof(*new_opts));
-+	swap(sbi->options, fc->fs_private);
- 
- 	return 0;
- }
-@@ -900,6 +901,8 @@ static int ntfs_fill_super(struct super_
- 	ref.high = 0;
- 
- 	sbi->sb = sb;
-+	sbi->options = fc->fs_private;
-+	fc->fs_private = NULL;
- 	sb->s_flags |= SB_NODIRATIME;
- 	sb->s_magic = 0x7366746e; // "ntfs"
- 	sb->s_op = &ntfs_sops;
-@@ -1262,8 +1265,6 @@ load_root:
- 		goto put_inode_out;
- 	}
- 
--	fc->fs_private = NULL;
--
- 	return 0;
- 
- put_inode_out:
-@@ -1416,7 +1417,6 @@ static int ntfs_init_fs_context(struct f
- 	mutex_init(&sbi->compress.mtx_lzx);
- #endif
- 
--	sbi->options = opts;
- 	fc->s_fs_info = sbi;
- ok:
- 	fc->fs_private = opts;
+ 	buf[size] = 0;
 
 
