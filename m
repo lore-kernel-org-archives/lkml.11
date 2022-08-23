@@ -2,44 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7416CC3F6B0
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9FF48C32792
 	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 12:17:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350689AbiHWMP0 (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 08:15:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43272 "EHLO
+        id S244582AbiHWMRT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 23 Aug 2022 08:17:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40278 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350342AbiHWMOb (ORCPT
+        with ESMTP id S1356782AbiHWMMw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 08:14:31 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C111B77EA0;
-        Tue, 23 Aug 2022 02:40:35 -0700 (PDT)
+        Tue, 23 Aug 2022 08:12:52 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4DAA2E68EB;
+        Tue, 23 Aug 2022 02:39:51 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 4BB2A60F50;
-        Tue, 23 Aug 2022 09:39:16 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 39ED6C433B5;
-        Tue, 23 Aug 2022 09:39:15 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 86A71B81C85;
+        Tue, 23 Aug 2022 09:39:50 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4049EC433C1;
+        Tue, 23 Aug 2022 09:39:48 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661247555;
-        bh=sZA4j3WfRODB02016YMFjVMHgF4nnVisj24HWC5yEA8=;
+        s=korg; t=1661247589;
+        bh=yRfbSEmiNTKD8CgTYYkOZDifnY/nDW1hQjWqoS4iblc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=szF1d4q4LmOfE+OmVpwct/9yurrJaNG8QKO2oJKtdkQvQC+lcfEKdl/nTfb2hqxT1
-         Ml3zh/l9ooioF4RzFu6bO0PfnJ58WVpdxOLOTr/+baOV5kDCjtxevB/P6HS1GToKGg
-         G+czkKHk+X55ISajftTdsek70tRDFlFPjbOl47d4=
+        b=qmggA/Vu9hsb48qXHIXephwyakpYR+/xjCW+nBs3Zo7KqO6xf7WflShARBJcSusCG
+         IU0ueS0Gd23LbgyISd89EY97Kp+fhumhL8khEhdMe4PnNcYzr8k3YQZgI5DqS7L7UK
+         gOxP02B/yGssQKdfOx7irMAK7icJHdE4bWd67HCs=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Sakari Ailus <sakari.ailus@linux.intel.com>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>
-Subject: [PATCH 5.10 044/158] ACPI: property: Return type of acpi_add_nondev_subnodes() should be bool
-Date:   Tue, 23 Aug 2022 10:26:16 +0200
-Message-Id: <20220823080047.854895541@linuxfoundation.org>
+        stable@vger.kernel.org, Vladimir Oltean <vladimir.oltean@nxp.com>,
+        Jakub Kicinski <kuba@kernel.org>
+Subject: [PATCH 5.10 083/158] net: dsa: felix: fix ethtool 256-511 and 512-1023 TX packet counters
+Date:   Tue, 23 Aug 2022 10:26:55 +0200
+Message-Id: <20220823080049.403592021@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220823080046.056825146@linuxfoundation.org>
 References: <20220823080046.056825146@linuxfoundation.org>
@@ -51,38 +48,32 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Sakari Ailus <sakari.ailus@linux.intel.com>
+From: Vladimir Oltean <vladimir.oltean@nxp.com>
 
-commit 85140ef275f577f64e8a2c5789447222dfc14fc4 upstream.
+commit 40d21c4565bce064c73a03b79a157a3493c518b9 upstream.
 
-The value acpi_add_nondev_subnodes() returns is bool so change the return
-type of the function to match that.
+What the driver actually reports as 256-511 is in fact 512-1023, and the
+TX packets in the 256-511 bucket are not reported. Fix that.
 
-Fixes: 445b0eb058f5 ("ACPI / property: Add support for data-only subnodes")
-Signed-off-by: Sakari Ailus <sakari.ailus@linux.intel.com>
-Reviewed-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Signed-off-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
+Fixes: 56051948773e ("net: dsa: ocelot: add driver for Felix switch family")
+Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/acpi/property.c |    8 ++++----
- 1 file changed, 4 insertions(+), 4 deletions(-)
+ drivers/net/dsa/ocelot/felix_vsc9959.c |    3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
---- a/drivers/acpi/property.c
-+++ b/drivers/acpi/property.c
-@@ -155,10 +155,10 @@ static bool acpi_nondev_subnode_ok(acpi_
- 	return acpi_nondev_subnode_data_ok(handle, link, list, parent);
- }
- 
--static int acpi_add_nondev_subnodes(acpi_handle scope,
--				    const union acpi_object *links,
--				    struct list_head *list,
--				    struct fwnode_handle *parent)
-+static bool acpi_add_nondev_subnodes(acpi_handle scope,
-+				     const union acpi_object *links,
-+				     struct list_head *list,
-+				     struct fwnode_handle *parent)
- {
- 	bool ret = false;
- 	int i;
+--- a/drivers/net/dsa/ocelot/felix_vsc9959.c
++++ b/drivers/net/dsa/ocelot/felix_vsc9959.c
+@@ -578,7 +578,8 @@ static const struct ocelot_stat_layout v
+ 	{ .offset = 0x87,	.name = "tx_frames_below_65_octets", },
+ 	{ .offset = 0x88,	.name = "tx_frames_65_to_127_octets", },
+ 	{ .offset = 0x89,	.name = "tx_frames_128_255_octets", },
+-	{ .offset = 0x8B,	.name = "tx_frames_256_511_octets", },
++	{ .offset = 0x8A,	.name = "tx_frames_256_511_octets", },
++	{ .offset = 0x8B,	.name = "tx_frames_512_1023_octets", },
+ 	{ .offset = 0x8C,	.name = "tx_frames_1024_1526_octets", },
+ 	{ .offset = 0x8D,	.name = "tx_frames_over_1526_octets", },
+ 	{ .offset = 0x8E,	.name = "tx_yellow_prio_0", },
 
 
