@@ -2,45 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C3105C49EC5
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7081AC48BEA
 	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 10:37:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355646AbiHWKgt (ORCPT
+        id S1355592AbiHWKge (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 06:36:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40952 "EHLO
+        Tue, 23 Aug 2022 06:36:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42642 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354606AbiHWKVs (ORCPT
+        with ESMTP id S1354540AbiHWKVm (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 06:21:48 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A5ADEDEB6;
-        Tue, 23 Aug 2022 02:03:10 -0700 (PDT)
+        Tue, 23 Aug 2022 06:21:42 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 64ED582760;
+        Tue, 23 Aug 2022 02:02:59 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id C745661580;
-        Tue, 23 Aug 2022 09:03:09 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B6543C433D6;
-        Tue, 23 Aug 2022 09:03:08 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id EBB92B81C54;
+        Tue, 23 Aug 2022 09:02:57 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 44554C433D6;
+        Tue, 23 Aug 2022 09:02:56 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661245389;
-        bh=iC4Fgl9lteRPj0NnHNbXMBoQ76VOD4YnA3vT/ppa2as=;
+        s=korg; t=1661245376;
+        bh=Bj8CgMYA2fxI+RpD8jD7zNYFs0yEL1HzpHHAhRb91yQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=XMJiiZsnrfcS+nr41Bykcqy/DpClIhIjYj/zrxcz0VbE9MdawGZ4/UaJcI5honQMV
-         ltQEknvKL69P7/sxqXpuZv2kxuMeID3nWyhSYP5SmjxGbltGmm7FawWXt79gELuu+5
-         oBqkER5d8GRn6Ia0Rf0NEUGPpxhP3a2sy4xMBYFI=
+        b=Bpwo9tDNn1vU+qYyxtMu6Qsf31JTNSToqHkU8swsJ2yvg8A0ljzg9m3o+k2ACtDdA
+         hYHv4MkInfjGvIcnEV5m+oTMyt65z4XL2MU2/52Qkj/AHY1Un9la0NaW2wmdPWWwcq
+         25vnC3jKEyyopzucG1HSfKMSscXBlIg8/Q3JeiPo=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Sireesh Kodali <sireeshkodali1@gmail.com>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
-        Stephan Gerhold <stephan@gerhold.net>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
+        Tony Lindgren <tony@atomide.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.19 063/287] arm64: dts: qcom: msm8916: Fix typo in pronto remoteproc node
-Date:   Tue, 23 Aug 2022 10:23:52 +0200
-Message-Id: <20220823080102.353523230@linuxfoundation.org>
+Subject: [PATCH 4.19 059/287] ARM: OMAP2+: Fix refcount leak in omap3xxx_prm_late_init
+Date:   Tue, 23 Aug 2022 10:23:48 +0200
+Message-Id: <20220823080102.224716596@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220823080100.268827165@linuxfoundation.org>
 References: <20220823080100.268827165@linuxfoundation.org>
@@ -52,40 +50,35 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Sireesh Kodali <sireeshkodali1@gmail.com>
+From: Miaoqian Lin <linmq006@gmail.com>
 
-[ Upstream commit 5458d6f2827cd30218570f266b8d238417461f2f ]
+[ Upstream commit 942228fbf5d4901112178b93d41225be7c0dd9de ]
 
-The smem-state properties for the pronto node were incorrectly labelled,
-reading `qcom,state*` rather than `qcom,smem-state*`. Fix that, allowing
-the stop state to be used.
+of_find_matching_node() returns a node pointer with refcount
+incremented, we should use of_node_put() on it when not need anymore.
+Add missing of_node_put() to avoid refcount leak.
 
-Fixes: 88106096cbf8 ("ARM: dts: msm8916: Add and enable wcnss node")
-Signed-off-by: Sireesh Kodali <sireeshkodali1@gmail.com>
-Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Reviewed-by: Stephan Gerhold <stephan@gerhold.net>
-Signed-off-by: Bjorn Andersson <bjorn.andersson@linaro.org>
-Link: https://lore.kernel.org/r/20220526141740.15834-3-sireeshkodali1@gmail.com
+Fixes: 1e037794f7f0 ("ARM: OMAP3+: PRM: register interrupt information from DT")
+Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
+Message-Id: <20220526073724.21169-1-linmq006@gmail.com>
+Signed-off-by: Tony Lindgren <tony@atomide.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/arm64/boot/dts/qcom/msm8916.dtsi | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ arch/arm/mach-omap2/prm3xxx.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/arch/arm64/boot/dts/qcom/msm8916.dtsi b/arch/arm64/boot/dts/qcom/msm8916.dtsi
-index 078ae020a77b..1832687f7ba8 100644
---- a/arch/arm64/boot/dts/qcom/msm8916.dtsi
-+++ b/arch/arm64/boot/dts/qcom/msm8916.dtsi
-@@ -1039,8 +1039,8 @@ pronto: wcnss@a21b000 {
- 			vddmx-supply = <&pm8916_l3>;
- 			vddpx-supply = <&pm8916_l7>;
+diff --git a/arch/arm/mach-omap2/prm3xxx.c b/arch/arm/mach-omap2/prm3xxx.c
+index dfa65fc2c82b..30445849b5e3 100644
+--- a/arch/arm/mach-omap2/prm3xxx.c
++++ b/arch/arm/mach-omap2/prm3xxx.c
+@@ -711,6 +711,7 @@ static int omap3xxx_prm_late_init(void)
+ 	}
  
--			qcom,state = <&wcnss_smp2p_out 0>;
--			qcom,state-names = "stop";
-+			qcom,smem-states = <&wcnss_smp2p_out 0>;
-+			qcom,smem-state-names = "stop";
+ 	irq_num = of_irq_get(np, 0);
++	of_node_put(np);
+ 	if (irq_num == -EPROBE_DEFER)
+ 		return irq_num;
  
- 			pinctrl-names = "default";
- 			pinctrl-0 = <&wcnss_pin_a>;
 -- 
 2.35.1
 
