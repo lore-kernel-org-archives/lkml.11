@@ -2,45 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1DB90C32772
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 08:28:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A577EC32772
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 08:29:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243627AbiHWI2y (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 04:28:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46572 "EHLO
+        id S243638AbiHWI3A (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 23 Aug 2022 04:29:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46648 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243532AbiHWIZf (ORCPT
+        with ESMTP id S243559AbiHWIZg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 04:25:35 -0400
+        Tue, 23 Aug 2022 04:25:36 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C31FF5EDDA;
-        Tue, 23 Aug 2022 01:13:38 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0D5E24D161;
+        Tue, 23 Aug 2022 01:13:32 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 646EEB81C39;
-        Tue, 23 Aug 2022 08:13:09 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CB50AC433D6;
-        Tue, 23 Aug 2022 08:13:07 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id B20E5B81C25;
+        Tue, 23 Aug 2022 08:13:31 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 06128C433C1;
+        Tue, 23 Aug 2022 08:13:29 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661242388;
-        bh=7VVa0jMI40XAqw0ec5vegBfGZZUkDAlrWifIwxJk7WI=;
+        s=korg; t=1661242410;
+        bh=JOA4S2elR+67zlKZpWHgnhh6ZM27y/vCwFmhxSo3GtI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=pugy4Irp9+uZkZaZRoLUD/VKgxUCK75QmHKmr+2Q7uzj3qspLdR1w5bHGKMyyueCY
-         /pGJMY5LpYiFTZr8LfHgQtz1rHZdt/R1QNpgd24ow7xYTZ3bEIva8J5KnxzOWbdN9T
-         TmKjUcHgYOYfS92psYDpzSqpje5XNhy6HaVwwzpQ=
+        b=lLXtNOCcbzwGoSQ9LlaltaQ59ukGNiWrouGFFLc37TNtWhF4uu8ajKwBQAN1+IR7Y
+         4uzi7BTgHaFSbMuRmC1Yb2KfABtzdm2iwU6N9aZJWhCYFL7VsR5AT4VFpAXHssxa+l
+         ONMpOd8Fo6uMqXugiXlkiGopbsL8KRSu4HLXUyXg=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Tyler Hicks <tyhicks@linux.microsoft.com>,
-        Christian Schoenebeck <linux_oss@crudebyte.com>,
-        Dominique Martinet <asmadeus@codewreck.org>
-Subject: [PATCH 4.9 064/101] net/9p: Initialize the iounit field during fid creation
-Date:   Tue, 23 Aug 2022 10:03:37 +0200
-Message-Id: <20220823080037.026540537@linuxfoundation.org>
+        stable@vger.kernel.org, Jeff LaBundy <jeff@labundy.com>,
+        Dmitry Torokhov <dmitry.torokhov@gmail.com>
+Subject: [PATCH 5.19 111/365] dt-bindings: input: iqs7222: Correct bottom speed step size
+Date:   Tue, 23 Aug 2022 10:00:12 +0200
+Message-Id: <20220823080122.847534631@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220823080034.579196046@linuxfoundation.org>
-References: <20220823080034.579196046@linuxfoundation.org>
+In-Reply-To: <20220823080118.128342613@linuxfoundation.org>
+References: <20220823080118.128342613@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -49,74 +48,38 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Tyler Hicks <tyhicks@linux.microsoft.com>
+From: Jeff LaBundy <jeff@labundy.com>
 
-commit aa7aeee169480e98cf41d83c01290a37e569be6d upstream.
+commit 6cfb357851bd3ef0a48e14bccfb5ca6b8104ea61 upstream.
 
-Ensure that the fid's iounit field is set to zero when a new fid is
-created. Certain 9P operations, such as OPEN and CREATE, allow the
-server to reply with an iounit size which the client code assigns to the
-p9_fid struct shortly after the fid is created by p9_fid_create(). On
-the other hand, an XATTRWALK operation doesn't allow for the server to
-specify an iounit value. The iounit field of the newly allocated p9_fid
-struct remained uninitialized in that case. Depending on allocation
-patterns, the iounit value could have been something reasonable that was
-carried over from previously freed fids or, in the worst case, could
-have been arbitrary values from non-fid related usages of the memory
-location.
+The bottom speed property is specified in steps of 1, not 4.
 
-The bug was detected in the Windows Subsystem for Linux 2 (WSL2) kernel
-after the uninitialized iounit field resulted in the typical sequence of
-two getxattr(2) syscalls, one to get the size of an xattr and another
-after allocating a sufficiently sized buffer to fit the xattr value, to
-hit an unexpected ERANGE error in the second call to getxattr(2). An
-uninitialized iounit field would sometimes force rsize to be smaller
-than the xattr value size in p9_client_read_once() and the 9P server in
-WSL refused to chunk up the READ on the attr_fid and, instead, returned
-ERANGE to the client. The virtfs server in QEMU seems happy to chunk up
-the READ and this problem goes undetected there.
-
-Link: https://lkml.kernel.org/r/20220710141402.803295-1-tyhicks@linux.microsoft.com
-Fixes: ebf46264a004 ("fs/9p: Add support user. xattr")
-Cc: stable@vger.kernel.org
-Signed-off-by: Tyler Hicks <tyhicks@linux.microsoft.com>
-Reviewed-by: Christian Schoenebeck <linux_oss@crudebyte.com>
-Signed-off-by: Dominique Martinet <asmadeus@codewreck.org>
-[tyhicks: Adjusted context due to:
- - Lack of fid refcounting introduced in v5.11 commit 6636b6dcc3db ("9p:
-   add refcount to p9_fid struct")
- - Difference in how buffer sizes are specified v5.16 commit
-   6e195b0f7c8e ("9p: fix a bunch of checkpatch warnings")
- - Reimplementation of the fidlist as an IDR in v4.19 commit
-   f28cdf0430fc ("9p: Replace the fidlist with an IDR")]
-Signed-off-by: Tyler Hicks <tyhicks@linux.microsoft.com>
+Fixes: 44dc42d254bf ("dt-bindings: input: Add bindings for Azoteq IQS7222A/B/C")
+Signed-off-by: Jeff LaBundy <jeff@labundy.com>
+Link: https://lore.kernel.org/r/20220626072412.475211-9-jeff@labundy.com
+Signed-off-by: Dmitry Torokhov <dmitry.torokhov@gmail.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- net/9p/client.c |    4 +---
- 1 file changed, 1 insertion(+), 3 deletions(-)
+ Documentation/devicetree/bindings/input/azoteq,iqs7222.yaml | 3 +--
+ 1 file changed, 1 insertion(+), 2 deletions(-)
 
---- a/net/9p/client.c
-+++ b/net/9p/client.c
-@@ -891,7 +891,7 @@ static struct p9_fid *p9_fid_create(stru
- 	unsigned long flags;
+diff --git a/Documentation/devicetree/bindings/input/azoteq,iqs7222.yaml b/Documentation/devicetree/bindings/input/azoteq,iqs7222.yaml
+index 6180f7ee2284..c9c3a1e9bcae 100644
+--- a/Documentation/devicetree/bindings/input/azoteq,iqs7222.yaml
++++ b/Documentation/devicetree/bindings/input/azoteq,iqs7222.yaml
+@@ -533,9 +533,8 @@ patternProperties:
  
- 	p9_debug(P9_DEBUG_FID, "clnt %p\n", clnt);
--	fid = kmalloc(sizeof(struct p9_fid), GFP_KERNEL);
-+	fid = kzalloc(sizeof(struct p9_fid), GFP_KERNEL);
- 	if (!fid)
- 		return ERR_PTR(-ENOMEM);
- 
-@@ -902,11 +902,9 @@ static struct p9_fid *p9_fid_create(stru
- 	}
- 	fid->fid = ret;
- 
--	memset(&fid->qid, 0, sizeof(struct p9_qid));
- 	fid->mode = -1;
- 	fid->uid = current_fsuid();
- 	fid->clnt = clnt;
--	fid->rdir = NULL;
- 	spin_lock_irqsave(&clnt->lock, flags);
- 	list_add(&fid->flist, &clnt->fidlist);
- 	spin_unlock_irqrestore(&clnt->lock, flags);
+       azoteq,bottom-speed:
+         $ref: /schemas/types.yaml#/definitions/uint32
+-        multipleOf: 4
+         minimum: 0
+-        maximum: 1020
++        maximum: 255
+         description:
+           Specifies the speed of movement after which coordinate filtering is
+           linearly reduced.
+-- 
+2.37.2
+
 
 
