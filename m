@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2499AC32772
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 12:22:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7BDD1C32772
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 12:22:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238606AbiHWMWc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 08:22:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57946 "EHLO
+        id S237907AbiHWMWm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 23 Aug 2022 08:22:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55618 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1376294AbiHWMQq (ORCPT
+        with ESMTP id S1376311AbiHWMQt (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 08:16:46 -0400
+        Tue, 23 Aug 2022 08:16:49 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D58C5EC4D5;
-        Tue, 23 Aug 2022 02:41:56 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 823599925B;
+        Tue, 23 Aug 2022 02:41:50 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id C92F8612D6;
-        Tue, 23 Aug 2022 09:41:54 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BEF45C433D6;
-        Tue, 23 Aug 2022 09:41:53 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 93B7861460;
+        Tue, 23 Aug 2022 09:41:48 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9B046C433D7;
+        Tue, 23 Aug 2022 09:41:47 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661247714;
-        bh=c/6VzAsYv+gnK5VyepI2p2EwSqHQf9tsNnTDEQudJ4A=;
+        s=korg; t=1661247708;
+        bh=YN7hsJzAs5oj+GODhyYpaGyRXv7Zw0L+eTzt7H41l3c=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=JkOuWfdF/lSpuDUsX+TsSRdn0549eoH0XRgwD9HDTjooRoSxKx18cAKFwZu2vbZxP
-         euCd1wNVSDk01fDvnRKsMHaoWwkn8a/P+G+ZpcimjCua0h56G6XfepT9KusbYbFL/g
-         1ycgisT7EHfsuNb1yE8a+y2OCGGsHQau+uO3fcI4=
+        b=kyx9I8rfCdexyn9CuMu4sTSKZlmySn/ELG4TJKnD57yYjHf2cdat4AIhqSGvNg0W6
+         lNp5MST0V6sRt8elBHsoILF9g1uq5WQ1uhjYrhRJHNtk4gWerWbVHgDFRNL4/Bkkdu
+         Atm3RwmoJsXEpoqsvbgn8Yfk0znJp2iS1chezWv8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Bob Pearson <rpearsonhpe@gmail.com>,
-        Jason Gunthorpe <jgg@nvidia.com>,
+        stable@vger.kernel.org, Huacai Chen <chenhuacai@loongson.cn>,
+        Bjorn Helgaas <bhelgaas@google.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 123/158] RDMA/rxe: Limit the number of calls to each tasklet
-Date:   Tue, 23 Aug 2022 10:27:35 +0200
-Message-Id: <20220823080050.870680726@linuxfoundation.org>
+Subject: [PATCH 5.10 121/158] PCI/ACPI: Guard ARM64-specific mcfg_quirks
+Date:   Tue, 23 Aug 2022 10:27:33 +0200
+Message-Id: <20220823080050.795112958@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220823080046.056825146@linuxfoundation.org>
 References: <20220823080046.056825146@linuxfoundation.org>
@@ -49,86 +49,42 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Bob Pearson <rpearsonhpe@gmail.com>
+From: Huacai Chen <chenhuacai@loongson.cn>
 
-[ Upstream commit eff6d998ca297cb0b2e53b032a56cf8e04dd8b17 ]
+[ Upstream commit 40a6cc141b4b9580de140bcb3e893445708acc5d ]
 
-Limit the maximum number of calls to each tasklet from rxe_do_task()
-before yielding the cpu. When the limit is reached reschedule the tasklet
-and exit the calling loop. This patch prevents one tasklet from consuming
-100% of a cpu core and causing a deadlock or soft lockup.
+Guard ARM64-specific quirks with CONFIG_ARM64 to avoid build errors,
+since mcfg_quirks will be shared by more than one architectures.
 
-Link: https://lore.kernel.org/r/20220630190425.2251-9-rpearsonhpe@gmail.com
-Signed-off-by: Bob Pearson <rpearsonhpe@gmail.com>
-Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
+Link: https://lore.kernel.org/r/20220714124216.1489304-2-chenhuacai@loongson.cn
+Signed-off-by: Huacai Chen <chenhuacai@loongson.cn>
+Signed-off-by: Bjorn Helgaas <bhelgaas@google.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/infiniband/sw/rxe/rxe_param.h |  6 ++++++
- drivers/infiniband/sw/rxe/rxe_task.c  | 16 ++++++++++++----
- 2 files changed, 18 insertions(+), 4 deletions(-)
+ drivers/acpi/pci_mcfg.c | 3 +++
+ 1 file changed, 3 insertions(+)
 
-diff --git a/drivers/infiniband/sw/rxe/rxe_param.h b/drivers/infiniband/sw/rxe/rxe_param.h
-index f9fb56ec6dfd..dca86422b0a2 100644
---- a/drivers/infiniband/sw/rxe/rxe_param.h
-+++ b/drivers/infiniband/sw/rxe/rxe_param.h
-@@ -98,6 +98,12 @@ enum rxe_device_param {
- 	RXE_INFLIGHT_SKBS_PER_QP_HIGH	= 64,
- 	RXE_INFLIGHT_SKBS_PER_QP_LOW	= 16,
+diff --git a/drivers/acpi/pci_mcfg.c b/drivers/acpi/pci_mcfg.c
+index 95f23acd5b80..2709ef2b0351 100644
+--- a/drivers/acpi/pci_mcfg.c
++++ b/drivers/acpi/pci_mcfg.c
+@@ -41,6 +41,8 @@ struct mcfg_fixup {
+ static struct mcfg_fixup mcfg_quirks[] = {
+ /*	{ OEM_ID, OEM_TABLE_ID, REV, SEGMENT, BUS_RANGE, ops, cfgres }, */
  
-+	/* Max number of interations of each tasklet
-+	 * before yielding the cpu to let other
-+	 * work make progress
-+	 */
-+	RXE_MAX_ITERATIONS		= 1024,
++#ifdef CONFIG_ARM64
 +
- 	/* Delay before calling arbiter timer */
- 	RXE_NSEC_ARB_TIMER_DELAY	= 200,
+ #define AL_ECAM(table_id, rev, seg, ops) \
+ 	{ "AMAZON", table_id, rev, seg, MCFG_BUS_ANY, ops }
  
-diff --git a/drivers/infiniband/sw/rxe/rxe_task.c b/drivers/infiniband/sw/rxe/rxe_task.c
-index 6951fdcb31bf..568cf56c236b 100644
---- a/drivers/infiniband/sw/rxe/rxe_task.c
-+++ b/drivers/infiniband/sw/rxe/rxe_task.c
-@@ -8,7 +8,7 @@
- #include <linux/interrupt.h>
- #include <linux/hardirq.h>
+@@ -162,6 +164,7 @@ static struct mcfg_fixup mcfg_quirks[] = {
+ 	ALTRA_ECAM_QUIRK(1, 13),
+ 	ALTRA_ECAM_QUIRK(1, 14),
+ 	ALTRA_ECAM_QUIRK(1, 15),
++#endif /* ARM64 */
+ };
  
--#include "rxe_task.h"
-+#include "rxe.h"
- 
- int __rxe_do_task(struct rxe_task *task)
- 
-@@ -34,6 +34,7 @@ void rxe_do_task(struct tasklet_struct *t)
- 	int ret;
- 	unsigned long flags;
- 	struct rxe_task *task = from_tasklet(task, t, tasklet);
-+	unsigned int iterations = RXE_MAX_ITERATIONS;
- 
- 	spin_lock_irqsave(&task->state_lock, flags);
- 	switch (task->state) {
-@@ -62,13 +63,20 @@ void rxe_do_task(struct tasklet_struct *t)
- 		spin_lock_irqsave(&task->state_lock, flags);
- 		switch (task->state) {
- 		case TASK_STATE_BUSY:
--			if (ret)
-+			if (ret) {
- 				task->state = TASK_STATE_START;
--			else
-+			} else if (iterations--) {
- 				cont = 1;
-+			} else {
-+				/* reschedule the tasklet and exit
-+				 * the loop to give up the cpu
-+				 */
-+				tasklet_schedule(&task->tasklet);
-+				task->state = TASK_STATE_START;
-+			}
- 			break;
- 
--		/* soneone tried to run the task since the last time we called
-+		/* someone tried to run the task since the last time we called
- 		 * func, so we will call one more time regardless of the
- 		 * return value
- 		 */
+ static char mcfg_oem_id[ACPI_OEM_ID_SIZE];
 -- 
 2.35.1
 
