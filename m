@@ -2,188 +2,82 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 251E4C32774
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 17:36:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A4FC9C32772
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 17:36:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230419AbiHWRgS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 13:36:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59328 "EHLO
+        id S231244AbiHWRgW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 23 Aug 2022 13:36:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40354 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232004AbiHWRez (ORCPT
+        with ESMTP id S229656AbiHWRfK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 13:34:55 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E7D4B10FC3
-        for <linux-kernel@vger.kernel.org>; Tue, 23 Aug 2022 08:14:39 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1661267678;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+        Tue, 23 Aug 2022 13:35:10 -0400
+Received: from smtp-out1.suse.de (smtp-out1.suse.de [IPv6:2001:67c:2178:6::1c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 720A28052A
+        for <linux-kernel@vger.kernel.org>; Tue, 23 Aug 2022 08:16:19 -0700 (PDT)
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by smtp-out1.suse.de (Postfix) with ESMTPS id ED3D822A17;
+        Tue, 23 Aug 2022 15:16:17 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
+        t=1661267777; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=Rat9a6NaBolAbjqzAgthWD8czlnUo9KIJObHQLn33Ng=;
-        b=SQViAM7ZK4uguTvw+MrPL+2ugZ9UJOCxTckuHi2QqMkReetxgqlE1hkuaGxw5KgmDWYSKI
-        qOQML8HVcmWELYMXzmLHvD6o66bFdpmORCd6u3Ch5edGQiS0zRMi8gZq65/S4DDNOV1+e2
-        +1lD5E2JpFHK5BkDTWzkNvyFpm1MrwQ=
-Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
- [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-462-GZqrdkMkP2aOQSYs0DyTYw-1; Tue, 23 Aug 2022 11:14:35 -0400
-X-MC-Unique: GZqrdkMkP2aOQSYs0DyTYw-1
-Received: from smtp.corp.redhat.com (int-mx04.intmail.prod.int.rdu2.redhat.com [10.11.54.4])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        bh=g+3Am5j3BgMDXsFCitJm3BitL5K2jSh2/gP+7WqTZXk=;
+        b=IJxxypmJWq8qS1qCPrec+m+ub8Na4yBrGQEZczI8vM99LIK8vX9wDumIu+z0YS9SUUX8rp
+        J2mWjLR37hj5g9TjZK8JL+1rrx9xRf/+WORUnfQE/Lf1QpetKMjOqwB3GQxZjpNSRamMHo
+        ecgAkGYVsOZ2QZb3gvwWyhBIWeS15bU=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
+        s=susede2_ed25519; t=1661267777;
+        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=g+3Am5j3BgMDXsFCitJm3BitL5K2jSh2/gP+7WqTZXk=;
+        b=YyOCAz9Ebz1ggzGvjbcHEEed+nqr482pVaGNECaL+a3S9T0SvcXRNyFF9maz63/B4dWdYq
+        s9CmLprnl3M0hrBg==
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
         (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id A7D223C0D85C;
-        Tue, 23 Aug 2022 15:14:34 +0000 (UTC)
-Received: from localhost (ovpn-12-31.pek2.redhat.com [10.72.12.31])
-        by smtp.corp.redhat.com (Postfix) with ESMTPS id 009FC2026D4C;
-        Tue, 23 Aug 2022 15:14:33 +0000 (UTC)
-Date:   Tue, 23 Aug 2022 23:14:30 +0800
-From:   Baoquan He <bhe@redhat.com>
-To:     Christophe Leroy <christophe.leroy@csgroup.eu>
-Cc:     "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "linux-mm@kvack.org" <linux-mm@kvack.org>,
-        "akpm@linux-foundation.org" <akpm@linux-foundation.org>,
-        "hch@infradead.org" <hch@infradead.org>,
-        "agordeev@linux.ibm.com" <agordeev@linux.ibm.com>,
-        "wangkefeng.wang@huawei.com" <wangkefeng.wang@huawei.com>,
-        "linux-arm-kernel@lists.infradead.org" 
-        <linux-arm-kernel@lists.infradead.org>
-Subject: Re: [PATCH v2 01/11] mm/ioremap: change the return value of
- io[re|un]map_allowed and rename
-Message-ID: <YwTu1kzcIUxsTL4j@MiWiFi-R3L-srv>
-References: <20220820003125.353570-1-bhe@redhat.com>
- <20220820003125.353570-2-bhe@redhat.com>
- <d5272f42-f3e3-b2a8-428e-bd7815cf7518@csgroup.eu>
- <YwQdRg/IS0+3tbNu@MiWiFi-R3L-srv>
- <a4a9ba6f-9891-cc4c-e512-d221141d998f@csgroup.eu>
+        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id C447413A89;
+        Tue, 23 Aug 2022 15:16:17 +0000 (UTC)
+Received: from dovecot-director2.suse.de ([192.168.254.65])
+        by imap2.suse-dmz.suse.de with ESMTPSA
+        id vhMdL0HvBGPlFwAAMHmgww
+        (envelope-from <vbabka@suse.cz>); Tue, 23 Aug 2022 15:16:17 +0000
+Message-ID: <9e8a7927-a47d-a70d-ab35-9c5247af5d13@suse.cz>
+Date:   Tue, 23 Aug 2022 17:16:17 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <a4a9ba6f-9891-cc4c-e512-d221141d998f@csgroup.eu>
-X-Scanned-By: MIMEDefang 2.78 on 10.11.54.4
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.1.2
+Subject: Re: [PATCH v4 00/17] common kmalloc v4
+Content-Language: en-US
+To:     Hyeonggon Yoo <42.hyeyoo@gmail.com>,
+        Christoph Lameter <cl@linux.com>,
+        Pekka Enberg <penberg@kernel.org>,
+        David Rientjes <rientjes@google.com>,
+        Joonsoo Kim <iamjoonsoo.kim@lge.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Roman Gushchin <roman.gushchin@linux.dev>
+Cc:     linux-mm@kvack.org, linux-kernel@vger.kernel.org
+References: <20220817101826.236819-1-42.hyeyoo@gmail.com>
+From:   Vlastimil Babka <vbabka@suse.cz>
+In-Reply-To: <20220817101826.236819-1-42.hyeyoo@gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 08/23/22 at 05:24am, Christophe Leroy wrote:
+On 8/17/22 12:18, Hyeonggon Yoo wrote:
+> v3: https://lore.kernel.org/lkml/20220712133946.307181-1-42.hyeyoo@gmail.com/
 > 
-> 
-> Le 23/08/2022 à 02:20, Baoquan He a écrit :
-> > On 08/22/22 at 06:25am, Christophe Leroy wrote:
-> >>
-> >>
-> >> Le 20/08/2022 à 02:31, Baoquan He a écrit :
-> >>> In some architectures, there are ARCH specifici io address mapping
-> >>> handling when calling ioremap() or ioremap_prot(), e.g, arc, ia64,
-> >>> openrisc, s390, sh.
-> >>>
-> >>> In oder to convert them to take GENERIC_IOREMAP method, we need change
-> >>> the return value of hook ioremap_allowed() and iounmap_allowed().
-> >>> Meanwhile, rename them to arch_ioremap() and arch_iounmap() to reflect
-> >>> their current behaviour.
-> > 
-> > Thanks for reviewing.
-> > 
-> >>
-> >> Please don't just say you need to change the return value. Explain why.
-> > 
-> > The 1st paragraph and the sentence 'In oder to convert them to take
-> > GENERIC_IOREMAP method' tell the reason, no?
-> 
-> What I would like to read is _why_ you need to change the return value 
-> in order to convert to GENERIC_IOREMAP
+> Hello, this is common kmalloc v4.
+> Please review and consider applying.
 
-I rephrase the log as below, it's OK to you? Or please help check and
-tell what I need to improve to better explain the reason.
-
-====
-The current io[re|un]map_allowed() hooks are used to check if the
-io[re|un]map() actions are qualified to proceed when taking
-GENERIC_IOREMAP way to do ioremap()/iounmap(). Otherwise io[re|un]map()
-will return NULL.
-
-On some architectures like arc, ia64, openris, s390, sh, there are
-ARCH specific io address mapping to translate the passed in physical
-address to io address when calling ioremap(). In order to convert
-these architectures to take GENERIC_IOREMAP way to ioremap(), we need
-change the return value of hook ioremap_allowed() and iounmap_allowed().
-With the change, we can move the architecture specific io address
-mapping into ioremap_allowed() hook, and give the mapped io address
-out to let ioremap_prot() return it. While at it, rename the hooks to
-arch_ioremap() and arch_iounmap() to reflect their new behaviour.
-====
-
-
-> 
-> > 
-> > 
-> >>
-> >> And why does it need a name change ? The new name suggests that what was
-> >> simply a check function becomes now a function doing the job. Is that
-> >> the intention ?
-> > 
-> > Yes, it's not a simple checking any more. It could do io address mapping
-> > inside arch_ioremap(), and could modify the passed in 'phys_addr' and
-> > 'prot' in patch 2. The ioremap_allowed() isn't appropriate to reflect
-> > those.
-> 
-> Fair enough, then all this needs to be explained in the commit message.
-
-Sure. After we decide the hooks, I will update the log accordingly.
-
-> 
-> > 
-> >>
-> >>
-> >>>
-> >>> ===
-> >>>    arch_ioremap() return a bool,
-> >>
-> >> It is not a bool. A bool is either true or false.
-> > 
-> > Thanks, I forgot to update this accordingly.
-> > 
-> >>
-> >>>      - IS_ERR means return an error
-> >>>      - NULL means continue to remap
-> >>>      - a non-NULL, non-IS_ERR pointer is returned directly
-> >>>    arch_iounmap() return a bool,
-> >>
-> >> Same here, not a bool either.
-> > 
-> > And this place.
-> >>
-> >>>      - 0 means continue to vunmap
-> >>>      - error code means skip vunmap and return directly
-> >>>
-> >>> This is taken from Kefeng's below old patch. Christoph suggested the
-> >>> return value because he foresaw the doablity of converting to take
-> >>> GENERIC_IOREMAP on more architectures.
-> >>>    - [PATCH v3 4/6] mm: ioremap: Add arch_ioremap/iounmap()
-> >>>    - https://lore.kernel.org/all/20220519082552.117736-5-wangkefeng.wang@huawei.com/T/#u
-> >>>
-> >>> While at it, the invocation of arch_ioremap() need be moved to the
-> >>> beginning of ioremap_prot() because architectures like sh, openrisc,
-> >>> ia64, need do the ARCH specific io address mapping on the original
-> >>> physical address. And in the later patch, the address fix up code
-> >>> in arch_ioremap() also need be done on the original addre on some
-> >>> architectures.
-> >>>
-> >>> This is preparation for later patch, no functionality change.
-> >>
-> >> No functionnal change, really ?
-> > 
-> > You mean the new arch_ioremap() owning different definition or the
-> > invocation of arch_ioremap() moved up is functional change? Now I am
-> > not sure about the latter one, may need update my knowledge base.
-> 
-> Both indeed. I understand that this first step is not changing much to 
-> the logic, but I think the simple fact to change the arguments and name 
-> are some how a functionnal change.
-
-OK, I thought the function interface change is not related to functional
-change. I will remove the 'no functionality change' sentence to avoid
-misleading. Thanks.
+Thanks, added to slab.git for-6.1/common_kmalloc and merged to for-next!
 
