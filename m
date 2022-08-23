@@ -2,68 +2,153 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 502C4C38145
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 17:01:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E581EC3F6B0
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 17:01:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245715AbiHWRB3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 13:01:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56980 "EHLO
+        id S1344356AbiHWRBO (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 23 Aug 2022 13:01:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59546 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343888AbiHWRAc (ORCPT
+        with ESMTP id S1343800AbiHWRAX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 13:00:32 -0400
-Received: from bg5.exmail.qq.com (bg4.exmail.qq.com [43.155.67.158])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F108A9E0D0
-        for <linux-kernel@vger.kernel.org>; Tue, 23 Aug 2022 07:12:13 -0700 (PDT)
-X-QQ-mid: bizesmtp89t1661263923tx83jlr4
-Received: from localhost.localdomain ( [182.148.14.124])
-        by bizesmtp.qq.com (ESMTP) with 
-        id ; Tue, 23 Aug 2022 22:12:01 +0800 (CST)
-X-QQ-SSF: 0100000000200040B000B00A0000000
-X-QQ-FEAT: znfcQSa1hKYzzlmEkavydIuQBfcQG+Gw6Ff3QaZY4yoHaABX9TSRukEz/XikS
-        xGfiPf5JhYBhXEDIkLKv/YfwsQsGkKpDhi+00nW2+GOCyBlJggUcu5I8EaM4Ckx0NQA4KUn
-        1ym8Mdr5BCRKzVuskuqyycqjegswQu1VpvK7j2ZahEtwv/wCJNQ1Bj394wdkM6+s0IyhYVq
-        f3st/RXI9Prm/Z56KnFiNK0TeY5ZxoVbz2vj2wGzMueWL7EktU1CMPkJ6+GD6rW7J74oQLB
-        Vc2H2ZuWb0x24m+D7N6voZXYPO8mthvsNi1JbtiRxrvez/IKbqWiKwFG+TPqjn+aNNsZnJ/
-        hbWSQEADMKjRyYMTAUrqkcRBChndtomxHXOW2pdiEAQL+MQ2SE=
-X-QQ-GoodBg: 0
-From:   wangjianli <wangjianli@cdjrlc.com>
-To:     maarten.lankhorst@linux.intel.com, mripard@kernel.org,
-        tzimmermann@suse.de, irlied@linux.ie, daniel@ffwll.ch
-Cc:     dri-devel@lists.freedesktop.org, linux-kernel@vger.kernel.org,
-        wangjianli <wangjianli@cdjrlc.com>
-Subject: [PATCH] gpu/drm: fix repeated words in comments
-Date:   Tue, 23 Aug 2022 22:11:54 +0800
-Message-Id: <20220823141154.9956-1-wangjianli@cdjrlc.com>
-X-Mailer: git-send-email 2.36.1
+        Tue, 23 Aug 2022 13:00:23 -0400
+Received: from smtp.smtpout.orange.fr (smtp-12.smtpout.orange.fr [80.12.242.12])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 0736814CEE8
+        for <linux-kernel@vger.kernel.org>; Tue, 23 Aug 2022 06:31:26 -0700 (PDT)
+Received: from [192.168.1.18] ([90.11.190.129])
+        by smtp.orange.fr with ESMTPA
+        id QSOUozmIH9qatQSOUobcah; Tue, 23 Aug 2022 13:48:33 +0200
+X-ME-Helo: [192.168.1.18]
+X-ME-Auth: Y2hyaXN0b3BoZS5qYWlsbGV0QHdhbmFkb28uZnI=
+X-ME-Date: Tue, 23 Aug 2022 13:48:33 +0200
+X-ME-IP: 90.11.190.129
+Message-ID: <667f1658-cf29-6b19-fd57-0c62f625d536@wanadoo.fr>
+Date:   Tue, 23 Aug 2022 13:48:30 +0200
 MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.11.0
+Subject: Re: [PATCH RFC i2c-master] i2c: microchip: pci1xxxx: Add driver for
+ I2C host controller in multifunction endpoint of pci1xxxx switch
+Content-Language: fr
+To:     Tharun Kumar P <tharunkumar.pasumarthi@microchip.com>,
+        linux-i2c@vger.kernel.org, linux-kernel@vger.kernel.org,
+        wsa@kernel.org
+Cc:     andriy.shevchenko@linux.intel.com, krzk@kernel.org,
+        jarkko.nikula@linux.intel.com, robh@kernel.org,
+        semen.protsenko@linaro.org, sven@svenpeter.dev, jsd@semihalf.com,
+        rafal@milecki.pl, olof@lixom.net, arnd@arndb.de,
+        UNGLinuxDriver@microchip.com
+References: <20220823145603.2606475-1-tharunkumar.pasumarthi@microchip.com>
+From:   Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+In-Reply-To: <20220823145603.2606475-1-tharunkumar.pasumarthi@microchip.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
-X-QQ-SENDSIZE: 520
-Feedback-ID: bizesmtp:cdjrlc.com:qybglogicsvr:qybglogicsvr7
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
- Delete the redundant word 'the'.
+Le 23/08/2022 à 16:56, Tharun Kumar P a écrit :
+> Microchip PCI1XXXX is an unmanaged PCIe3.1a Switch for Consumer,
+> Industrial and Automotive applications. This switch has multiple
+> downstream ports. In one of the Switch's Downstream port, there
+> is a multifunction endpoint for peripherals which includes an I2C
+> host controller. The I2C function in the endpoint operates at 100KHz,
+> 400KHz and 1 MHz and has buffer depth of 128 bytes.
+> This patch provides the I2C controller driver for the I2C endpoint
+> of the switch.
+> 
+> Signed-off-by: Tharun Kumar P <tharunkumar.pasumarthi@microchip.com>
+> ---
+>   MAINTAINERS                            |    8 +
+>   drivers/i2c/busses/Kconfig             |   10 +
+>   drivers/i2c/busses/Makefile            |    1 +
+>   drivers/i2c/busses/i2c-mchp-pci1xxxx.c | 1123 ++++++++++++++++++++++++
+>   4 files changed, 1142 insertions(+)
+>   create mode 100644 drivers/i2c/busses/i2c-mchp-pci1xxxx.c
 
-Signed-off-by: wangjianli <wangjianli@cdjrlc.com>
----
- drivers/gpu/drm/drm_mipi_dsi.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/gpu/drm/drm_mipi_dsi.c b/drivers/gpu/drm/drm_mipi_dsi.c
-index c40bde96cfdf..fd2790a5664d 100644
---- a/drivers/gpu/drm/drm_mipi_dsi.c
-+++ b/drivers/gpu/drm/drm_mipi_dsi.c
-@@ -606,7 +606,7 @@ EXPORT_SYMBOL(mipi_dsi_turn_on_peripheral);
- 
- /*
-  * mipi_dsi_set_maximum_return_packet_size() - specify the maximum size of the
-- *    the payload in a long packet transmitted from the peripheral back to the
-+ *    payload in a long packet transmitted from the peripheral back to the
-  *    host processor
-  * @dsi: DSI peripheral device
-  * @value: the maximum size of the payload
--- 
-2.36.1
+> +static int pci1xxxx_i2c_probe_pci(struct pci_dev *pdev,
+> +				  const struct pci_device_id *ent)
+> +{
+> +	struct pci1xxxx_i2c *i2c;
+> +	int ret;
+> +
+> +	i2c = devm_kzalloc(&pdev->dev, sizeof(*i2c), GFP_KERNEL);
+> +	if (!i2c)
+> +		return -ENOMEM;
+> +
+> +	pci_set_drvdata(pdev, i2c);
+> +
+> +	i2c->i2c_xfer_in_progress = false;
+> +
+> +	ret = pcim_enable_device(pdev);
+> +	if (ret)
+> +		return ret;
+> +
+> +	pci_set_master(pdev);
+> +
+> +	/* we are getting the base address of the SMB core. SMB core uses
+> +	 * BAR0 and 32K is the size here pci_resource_len returns 32K by
+> +	 * reading BAR0
+> +	 */
+> +
+> +	ret = pcim_iomap_regions(pdev, BIT(0), pci_name(pdev));
+> +	if (ret < 0)
+> +		return -ENOMEM;
+> +
+> +	i2c->i2c_base =	pcim_iomap_table(pdev)[0];
+> +
+> +	init_completion(&i2c->i2c_xfer_done);
+> +
+> +	pci1xxxx_i2c_init(i2c);
+> +
+> +	dev_info(&pdev->dev, "i2c clock freq: %d\n", i2c->freq);
+> +
+> +	ret = pci_alloc_irq_vectors(pdev, 1, 1, PCI_IRQ_ALL_TYPES);
+> +	if (ret < 0)
+> +		return ret;
+> +
+> +	/*Register the isr. we are not using any isr flags here.*/
+> +	ret = devm_request_irq(&pdev->dev, pci_irq_vector(pdev, 0),
+> +			       pci1xxxx_i2c_isr, PCI1XXXX_IRQ_FLAGS,
+> +			       pci_name(pdev), i2c);
+> +	if (ret)
+> +		goto err_free_region;
+> +
+> +	i2c->adap = pci1xxxx_i2c_ops;
+> +	i2c->adap.class = I2C_CLASS_SPD;
+> +	i2c->adap.dev.parent = &pdev->dev;
+> +
+> +	snprintf(i2c->adap.name, sizeof(i2c->adap.name),
+> +		 "MCHP PCI1xxxx i2c adapter at %s", pci_name(pdev));
+> +
+> +	i2c_set_adapdata(&i2c->adap, i2c);
+> +
+> +	ret = i2c_add_adapter(&i2c->adap);
+> +	if (ret) {
+> +		dev_err(&pdev->dev, "i2c add adapter failed = %d\n", ret);
+> +		pci1xxxx_i2c_shutdown(i2c);
+> +		goto err_free_region;
+> +	}
+> +
+> +	return 0;
+> +
+> +err_free_region:
+> +	pci_free_irq_vectors(pdev);
 
+Should this also be part of the .remove function?
+
+CJ
+
+> +	return ret;
+> +}
+> +
+> +static void pci1xxxx_i2c_remove_pci(struct pci_dev *pdev)
+> +{
+> +	struct pci1xxxx_i2c *i2c = pci_get_drvdata(pdev);
+> +
+> +	i2c_del_adapter(&i2c->adap);
+> +	pci1xxxx_i2c_shutdown(i2c);
+> +}
+> +
