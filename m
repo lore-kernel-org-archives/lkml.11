@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D3DFFC32774
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 08:09:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CCBA1C38142
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 08:09:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241794AbiHWIJL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 04:09:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50578 "EHLO
+        id S241811AbiHWIJP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 23 Aug 2022 04:09:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49630 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241459AbiHWIIZ (ORCPT
+        with ESMTP id S241631AbiHWII1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 04:08:25 -0400
+        Tue, 23 Aug 2022 04:08:27 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 96B8B1208F;
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E28B56CD01;
         Tue, 23 Aug 2022 01:05:36 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 6FF1C6123F;
-        Tue, 23 Aug 2022 08:05:12 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7AD24C433D6;
-        Tue, 23 Aug 2022 08:05:11 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 8987A611DD;
+        Tue, 23 Aug 2022 08:05:18 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8BF20C433C1;
+        Tue, 23 Aug 2022 08:05:17 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661241911;
-        bh=Q0I/PmJguM5EbQjnODE386mN8aRsJ1nboBw3Kf2fsGA=;
+        s=korg; t=1661241918;
+        bh=8u3wijuX4ETCv7WV+Sw2MPFZfSqAw8ruOcubsYmUVNM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=rSTu9u8NZDscSVAhG5vUQ2i77J8zrm+xJCg77QjiE6zpzI0+dJnxeALAfjXRS/WmB
-         Gfjs1NnHKMWdoN76RT++ma5imxD/e6SGNxgyNvK/H3Ah/fjsXjjSb6lp1HtlE1OpxN
-         2EyycM1hoNG8277XFijA2lrGfSjh4k34fct+9p4g=
+        b=ufgXN2kNhqPSvt//z2dR5B/JrqNbMmTuXl5AqWJNlJKEGA6kxFQPWE5MJrMyoTDBv
+         1tzK4BwdB+ZOJgmvOvrO3UI95QqCdGagCEH9OM+UsnyM2E0rnZab7JZINrOAbBHsGV
+         c8faVeIMG/ejike7GqObDaHl3jiFDA8aweO+M/IY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
-        Ulf Hansson <ulf.hansson@linaro.org>
-Subject: [PATCH 5.19 017/365] mmc: meson-gx: Fix an error handling path in meson_mmc_probe()
-Date:   Tue, 23 Aug 2022 09:58:38 +0200
-Message-Id: <20220823080118.902709249@linuxfoundation.org>
+        stable@vger.kernel.org, Boris Burkov <boris@bur.io>,
+        Josef Bacik <josef@toxicpanda.com>,
+        David Sterba <dsterba@suse.com>
+Subject: [PATCH 5.19 019/365] btrfs: reset RO counter on block group if we fail to relocate
+Date:   Tue, 23 Aug 2022 09:58:40 +0200
+Message-Id: <20220823080119.003247301@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220823080118.128342613@linuxfoundation.org>
 References: <20220823080118.128342613@linuxfoundation.org>
@@ -49,38 +49,45 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+From: Josef Bacik <josef@toxicpanda.com>
 
-commit b3e1cf31154136da855f3cb6117c17eb0b6bcfb4 upstream.
+commit 74944c873602a3ed8d16ff7af3f64af80c0f9dac upstream.
 
-The commit in Fixes has introduced a new error handling which should goto
-the existing error handling path.
-Otherwise some resources leak.
+With the automatic block group reclaim code we will preemptively try to
+mark the block group RO before we start the relocation.  We do this to
+make sure we should actually try to relocate the block group.
 
-Fixes: 19c6beaa064c ("mmc: meson-gx: add device reset")
-Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
-Cc: stable@vger.kernel.org
-Link: https://lore.kernel.org/r/be4b863bacf323521ba3a02efdc4fca9cdedd1a6.1659855351.git.christophe.jaillet@wanadoo.fr
-Signed-off-by: Ulf Hansson <ulf.hansson@linaro.org>
+However if we hit an error during the actual relocation we won't clean
+up our RO counter and the block group will remain RO.  This was observed
+internally with file systems reporting less space available from df when
+we had failed background relocations.
+
+Fix this by doing the dec_ro in the error case.
+
+Fixes: 18bb8bbf13c1 ("btrfs: zoned: automatically reclaim zones")
+CC: stable@vger.kernel.org # 5.15+
+Reviewed-by: Boris Burkov <boris@bur.io>
+Signed-off-by: Josef Bacik <josef@toxicpanda.com>
+Signed-off-by: David Sterba <dsterba@suse.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/mmc/host/meson-gx-mmc.c |    6 ++++--
- 1 file changed, 4 insertions(+), 2 deletions(-)
+ fs/btrfs/block-group.c |    4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
 
---- a/drivers/mmc/host/meson-gx-mmc.c
-+++ b/drivers/mmc/host/meson-gx-mmc.c
-@@ -1172,8 +1172,10 @@ static int meson_mmc_probe(struct platfo
- 	}
+--- a/fs/btrfs/block-group.c
++++ b/fs/btrfs/block-group.c
+@@ -1640,9 +1640,11 @@ void btrfs_reclaim_bgs_work(struct work_
+ 				div64_u64(zone_unusable * 100, bg->length));
+ 		trace_btrfs_reclaim_block_group(bg);
+ 		ret = btrfs_relocate_chunk(fs_info, bg->start);
+-		if (ret)
++		if (ret) {
++			btrfs_dec_block_group_ro(bg);
+ 			btrfs_err(fs_info, "error relocating chunk %llu",
+ 				  bg->start);
++		}
  
- 	ret = device_reset_optional(&pdev->dev);
--	if (ret)
--		return dev_err_probe(&pdev->dev, ret, "device reset failed\n");
-+	if (ret) {
-+		dev_err_probe(&pdev->dev, ret, "device reset failed\n");
-+		goto free_host;
-+	}
- 
- 	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
- 	host->regs = devm_ioremap_resource(&pdev->dev, res);
+ next:
+ 		btrfs_put_block_group(bg);
 
 
