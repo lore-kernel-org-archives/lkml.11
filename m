@@ -2,44 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9E444C49EC0
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7E082C38159
 	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 11:32:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357803AbiHWLb6 (ORCPT
+        id S1357753AbiHWLby (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 07:31:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37870 "EHLO
+        Tue, 23 Aug 2022 07:31:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36438 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1358020AbiHWL1I (ORCPT
+        with ESMTP id S1357951AbiHWL07 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 07:27:08 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1871675CD2;
-        Tue, 23 Aug 2022 02:24:48 -0700 (PDT)
+        Tue, 23 Aug 2022 07:26:59 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 107A7C2769;
+        Tue, 23 Aug 2022 02:24:40 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 1DA31B81C86;
-        Tue, 23 Aug 2022 09:24:47 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 58645C433D6;
-        Tue, 23 Aug 2022 09:24:45 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id D27EA61298;
+        Tue, 23 Aug 2022 09:24:39 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C5124C433C1;
+        Tue, 23 Aug 2022 09:24:38 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661246685;
-        bh=fW+dUmJadbsvSg9hFF3ls+FLAddlhUOjDX8Nlp9CDN4=;
+        s=korg; t=1661246679;
+        bh=J4/pvGaC8HEhSLGC2Rn8iOTgnE0RHSuP4UzFN4eR2Ak=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=vDhEV5J0ub2deQqfar7OlusVV6BFSqoRmOw6kSBr1zOWPx0etmk2FqhHveeCk89X6
-         QD3eQhe42rLgxvtieLJcU7/eZhEWgA3ZE//6ao6qo3mlJr4nDzbNt7sPw+rQqc4YNW
-         rPf5mv7ge7fm8cwchlntAKejt3KQOR46SPOcPvQo=
+        b=BujDRbqaRf1leX2P9wTF8hUZH0E5Dc8W5g1GUH+jIC00pZ2QeuXofhcJ25+d4tt3t
+         Dxn+8aq/mAp2njeSnAwfV6bg7tW+RCizwx1+oW8TTwzptcLTA+bu/D7bC6TLqHXV5W
+         rVOCFQv1kciPOAjvhyfCGRZztI/+SzfzFwubVetg=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jianglei Nie <niejianglei2021@163.com>,
-        Dennis Dalessandro <dennis.dalessandro@cornelisnetworks.com>,
+        stable@vger.kernel.org, Haoyue Xu <xuhaoyue1@hisilicon.com>,
+        Wenpeng Liang <liangwenpeng@huawei.com>,
         Leon Romanovsky <leon@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 187/389] RDMA/hfi1: fix potential memory leak in setup_base_ctxt()
-Date:   Tue, 23 Aug 2022 10:24:25 +0200
-Message-Id: <20220823080123.450861297@linuxfoundation.org>
+Subject: [PATCH 5.4 185/389] RDMA/hns: Fix incorrect clearing of interrupt status register
+Date:   Tue, 23 Aug 2022 10:24:23 +0200
+Message-Id: <20220823080123.360556054@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220823080115.331990024@linuxfoundation.org>
 References: <20220823080115.331990024@linuxfoundation.org>
@@ -51,43 +51,39 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jianglei Nie <niejianglei2021@163.com>
+From: Haoyue Xu <xuhaoyue1@hisilicon.com>
 
-[ Upstream commit aa2a1df3a2c85f855af7d54466ac10bd48645d63 ]
+[ Upstream commit ecb4db5c3590aa956b4b2c352081a5b632d1f9f9 ]
 
-setup_base_ctxt() allocates a memory chunk for uctxt->groups with
-hfi1_alloc_ctxt_rcv_groups(). When init_user_ctxt() fails, uctxt->groups
-is not released, which will lead to a memory leak.
+The driver will clear all the interrupts in the same area
+when the driver handles the interrupt of type AEQ overflow.
+It should only set the interrupt status bit of type AEQ overflow.
 
-We should release the uctxt->groups with hfi1_free_ctxt_rcv_groups()
-when init_user_ctxt() fails.
-
-Fixes: e87473bc1b6c ("IB/hfi1: Only set fd pointer when base context is completely initialized")
-Link: https://lore.kernel.org/r/20220711070718.2318320-1-niejianglei2021@163.com
-Signed-off-by: Jianglei Nie <niejianglei2021@163.com>
-Acked-by: Dennis Dalessandro <dennis.dalessandro@cornelisnetworks.com>
+Fixes: a5073d6054f7 ("RDMA/hns: Add eq support of hip08")
+Link: https://lore.kernel.org/r/20220714134353.16700-4-liangwenpeng@huawei.com
+Signed-off-by: Haoyue Xu <xuhaoyue1@hisilicon.com>
+Signed-off-by: Wenpeng Liang <liangwenpeng@huawei.com>
 Signed-off-by: Leon Romanovsky <leon@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/infiniband/hw/hfi1/file_ops.c | 4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
+ drivers/infiniband/hw/hns/hns_roce_hw_v2.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/infiniband/hw/hfi1/file_ops.c b/drivers/infiniband/hw/hfi1/file_ops.c
-index 8c7ba7bad42b..efd977f70f9e 100644
---- a/drivers/infiniband/hw/hfi1/file_ops.c
-+++ b/drivers/infiniband/hw/hfi1/file_ops.c
-@@ -1224,8 +1224,10 @@ static int setup_base_ctxt(struct hfi1_filedata *fd,
- 		goto done;
+diff --git a/drivers/infiniband/hw/hns/hns_roce_hw_v2.c b/drivers/infiniband/hw/hns/hns_roce_hw_v2.c
+index d01e3222c00c..28bbc4708fd4 100644
+--- a/drivers/infiniband/hw/hns/hns_roce_hw_v2.c
++++ b/drivers/infiniband/hw/hns/hns_roce_hw_v2.c
+@@ -5216,8 +5216,8 @@ static irqreturn_t hns_roce_v2_msix_interrupt_abn(int irq, void *dev_id)
  
- 	ret = init_user_ctxt(fd, uctxt);
--	if (ret)
-+	if (ret) {
-+		hfi1_free_ctxt_rcv_groups(uctxt);
- 		goto done;
-+	}
+ 		dev_err(dev, "AEQ overflow!\n");
  
- 	user_init(uctxt);
+-		int_st |= 1 << HNS_ROCE_V2_VF_INT_ST_AEQ_OVERFLOW_S;
+-		roce_write(hr_dev, ROCEE_VF_ABN_INT_ST_REG, int_st);
++		roce_write(hr_dev, ROCEE_VF_ABN_INT_ST_REG,
++			   1 << HNS_ROCE_V2_VF_INT_ST_AEQ_OVERFLOW_S);
  
+ 		/* Set reset level for reset_event() */
+ 		if (ops->set_default_reset_request)
 -- 
 2.35.1
 
