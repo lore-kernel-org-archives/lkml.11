@@ -2,46 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2928FC32772
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 09:57:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 20FCCC32772
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 09:57:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242801AbiHWJxx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 05:53:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40662 "EHLO
+        id S244202AbiHWJz2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 23 Aug 2022 05:55:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41876 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352171AbiHWJvV (ORCPT
+        with ESMTP id S242379AbiHWJx5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 05:51:21 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 868A29E2C6;
-        Tue, 23 Aug 2022 01:45:40 -0700 (PDT)
+        Tue, 23 Aug 2022 05:53:57 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4C8939F740;
+        Tue, 23 Aug 2022 01:46:24 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id EF74AB81C4A;
-        Tue, 23 Aug 2022 08:45:39 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4E72DC433D7;
-        Tue, 23 Aug 2022 08:45:38 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 4A36B6155F;
+        Tue, 23 Aug 2022 08:46:10 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3FA32C433C1;
+        Tue, 23 Aug 2022 08:46:09 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661244338;
-        bh=sZA4j3WfRODB02016YMFjVMHgF4nnVisj24HWC5yEA8=;
+        s=korg; t=1661244369;
+        bh=TaPJ4kc6OvyZg5v07Qk2Re/qWXyqol4GpwkVdT9s3g8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ibzkYG/KtSTy9lrVBF5m5TZjOgURUAW0n+Ed2rGVbkwNY4sfp2WBaJtJv2hAfDmVC
-         nYgsHQwxd7zNeRLWq6QksUStVkamPCyTos21834e8srQWVO+R84XxeR/cE3vnBHi8Z
-         LIM8ZZhgFywz9y6/Eqx+gBxMJn1gcFunG+Es1D+4=
+        b=qi88/mNYd76D474uq1KgZeyk1TdomcRnL2p+rnvl1oTzRWEtft2gdckcU8zunspl5
+         PUWMmDNzejdFtrjqn/l6zeBOvpGBTUqcNJKnvX8Zimu+AUClwtu/1IE790OcYH4gZ1
+         +a9GeknrZ+hz6cIvXIcVu/sdETuA0qK6nQ0/jVJE=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Sakari Ailus <sakari.ailus@linux.intel.com>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>
-Subject: [PATCH 5.15 075/244] ACPI: property: Return type of acpi_add_nondev_subnodes() should be bool
-Date:   Tue, 23 Aug 2022 10:23:54 +0200
-Message-Id: <20220823080101.560162672@linuxfoundation.org>
+        stable@vger.kernel.org, Eric Farman <farman@linux.ibm.com>,
+        Matthew Rosato <mjrosato@linux.ibm.com>,
+        Alex Williamson <alex.williamson@redhat.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 4.14 126/229] vfio/ccw: Do not change FSM state in subchannel event
+Date:   Tue, 23 Aug 2022 10:24:47 +0200
+Message-Id: <20220823080058.227731798@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220823080059.091088642@linuxfoundation.org>
-References: <20220823080059.091088642@linuxfoundation.org>
+In-Reply-To: <20220823080053.202747790@linuxfoundation.org>
+References: <20220823080053.202747790@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -50,38 +50,61 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Sakari Ailus <sakari.ailus@linux.intel.com>
+From: Eric Farman <farman@linux.ibm.com>
 
-commit 85140ef275f577f64e8a2c5789447222dfc14fc4 upstream.
+[ Upstream commit cffcc109fd682075dee79bade3d60a07152a8fd1 ]
 
-The value acpi_add_nondev_subnodes() returns is bool so change the return
-type of the function to match that.
+The routine vfio_ccw_sch_event() is tasked with handling subchannel events,
+specifically machine checks, on behalf of vfio-ccw. It correctly calls
+cio_update_schib(), and if that fails (meaning the subchannel is gone)
+it makes an FSM event call to mark the subchannel Not Operational.
 
-Fixes: 445b0eb058f5 ("ACPI / property: Add support for data-only subnodes")
-Signed-off-by: Sakari Ailus <sakari.ailus@linux.intel.com>
-Reviewed-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Signed-off-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+If that worked, however, then it decides that if the FSM state was already
+Not Operational (implying the subchannel just came back), then it should
+simply change the FSM to partially- or fully-open.
+
+Remove this trickery, since a subchannel returning will require more
+probing than simply "oh all is well again" to ensure it works correctly.
+
+Fixes: bbe37e4cb8970 ("vfio: ccw: introduce a finite state machine")
+Signed-off-by: Eric Farman <farman@linux.ibm.com>
+Reviewed-by: Matthew Rosato <mjrosato@linux.ibm.com>
+Link: https://lore.kernel.org/r/20220707135737.720765-4-farman@linux.ibm.com
+Signed-off-by: Alex Williamson <alex.williamson@redhat.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/acpi/property.c |    8 ++++----
- 1 file changed, 4 insertions(+), 4 deletions(-)
+ drivers/s390/cio/vfio_ccw_drv.c | 14 +++-----------
+ 1 file changed, 3 insertions(+), 11 deletions(-)
 
---- a/drivers/acpi/property.c
-+++ b/drivers/acpi/property.c
-@@ -155,10 +155,10 @@ static bool acpi_nondev_subnode_ok(acpi_
- 	return acpi_nondev_subnode_data_ok(handle, link, list, parent);
- }
+diff --git a/drivers/s390/cio/vfio_ccw_drv.c b/drivers/s390/cio/vfio_ccw_drv.c
+index 6cd41086f23e..4b5cdbdcd843 100644
+--- a/drivers/s390/cio/vfio_ccw_drv.c
++++ b/drivers/s390/cio/vfio_ccw_drv.c
+@@ -193,19 +193,11 @@ static int vfio_ccw_sch_event(struct subchannel *sch, int process)
+ 	if (work_pending(&sch->todo_work))
+ 		goto out_unlock;
  
--static int acpi_add_nondev_subnodes(acpi_handle scope,
--				    const union acpi_object *links,
--				    struct list_head *list,
--				    struct fwnode_handle *parent)
-+static bool acpi_add_nondev_subnodes(acpi_handle scope,
-+				     const union acpi_object *links,
-+				     struct list_head *list,
-+				     struct fwnode_handle *parent)
- {
- 	bool ret = false;
- 	int i;
+-	if (cio_update_schib(sch)) {
+-		vfio_ccw_fsm_event(private, VFIO_CCW_EVENT_NOT_OPER);
+-		rc = 0;
+-		goto out_unlock;
+-	}
+-
+-	private = dev_get_drvdata(&sch->dev);
+-	if (private->state == VFIO_CCW_STATE_NOT_OPER) {
+-		private->state = private->mdev ? VFIO_CCW_STATE_IDLE :
+-				 VFIO_CCW_STATE_STANDBY;
+-	}
+ 	rc = 0;
+ 
++	if (cio_update_schib(sch))
++		vfio_ccw_fsm_event(private, VFIO_CCW_EVENT_NOT_OPER);
++
+ out_unlock:
+ 	spin_unlock_irqrestore(sch->lock, flags);
+ 
+-- 
+2.35.1
+
 
 
