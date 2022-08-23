@@ -2,44 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A75AEC32772
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 08:27:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A84FAC32772
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 08:28:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243503AbiHWI1p (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 04:27:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33710 "EHLO
+        id S243491AbiHWI1w (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 23 Aug 2022 04:27:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34120 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243076AbiHWIWz (ORCPT
+        with ESMTP id S243222AbiHWIXx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 04:22:55 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0C03A719AD;
-        Tue, 23 Aug 2022 01:13:12 -0700 (PDT)
+        Tue, 23 Aug 2022 04:23:53 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B3D602716;
+        Tue, 23 Aug 2022 01:13:20 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id AFC7B61238;
-        Tue, 23 Aug 2022 08:13:11 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BB957C433D6;
-        Tue, 23 Aug 2022 08:13:10 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 1087AB81C3D;
+        Tue, 23 Aug 2022 08:12:54 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7AEEDC433C1;
+        Tue, 23 Aug 2022 08:12:52 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661242391;
-        bh=38S++nijNcpJ8tbAFDQxNdFyX10pEPM5Z89mcFblEh0=;
+        s=korg; t=1661242372;
+        bh=t9EAyhTB6WaOrs6vp1R5UqNAeAWhZro/XkIxBgAHZao=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=MAn59yQ/hnCRQdKBQCvgKPiIwVmjItI9aAHca88nix4/nZ/DHCeR4oJTg6f4TCsBh
-         c3/XMhYQNfwxa3d6AaITM8xpeaX1ARDqodXlhhysH3tLLKqScNUGDERVSsdzOUYyYl
-         to99PEXL3gCDdw11k514dtTBuxKf5jEJzS0g1e3k=
+        b=GM8m7WY0eBOAlOG5rnFv1r/zlR2EWfR4XyXsJkX2L9HaOfNTZXLlYMb0QtPGFsqds
+         WwC2ahRSSPFV651EfBOCju6/mBD0zBu6NIijCTgAMPk6q5nSrIPaFi3jwbPRrQJHSR
+         fdwKUzZjxJFTdo7f4hzUcH90SYpDGIWiz1NaLvnM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jeff LaBundy <jeff@labundy.com>,
-        Dmitry Torokhov <dmitry.torokhov@gmail.com>
-Subject: [PATCH 5.19 108/365] Input: iqs7222 - handle reset during ATI
-Date:   Tue, 23 Aug 2022 10:00:09 +0200
-Message-Id: <20220823080122.709568867@linuxfoundation.org>
+        stable@vger.kernel.org, Dan Carpenter <dan.carpenter@oracle.com>,
+        Luiz Augusto von Dentz <luiz.von.dentz@intel.com>
+Subject: [PATCH 4.9 062/101] Bluetooth: L2CAP: Fix l2cap_global_chan_by_psm regression
+Date:   Tue, 23 Aug 2022 10:03:35 +0200
+Message-Id: <20220823080036.947499547@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220823080118.128342613@linuxfoundation.org>
-References: <20220823080118.128342613@linuxfoundation.org>
+In-Reply-To: <20220823080034.579196046@linuxfoundation.org>
+References: <20220823080034.579196046@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -48,65 +48,56 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jeff LaBundy <jeff@labundy.com>
+From: Luiz Augusto von Dentz <luiz.von.dentz@intel.com>
 
-commit 8635c68891c6d786d644747d599c41bdf512fbbf upstream.
+commit 332f1795ca202489c665a75e62e18ff6284de077 upstream.
 
-If the device suffers a spurious reset during ATI, there is no point
-in enduring any further retries. Instead, simply return successfully
-from the polling loop.
+The patch d0be8347c623: "Bluetooth: L2CAP: Fix use-after-free caused
+by l2cap_chan_put" from Jul 21, 2022, leads to the following Smatch
+static checker warning:
 
-In this case, the interrupt handler will intervene and recognize the
-device has been reset. It then proceeds to initialize the device and
-trigger ATI once more.
+        net/bluetooth/l2cap_core.c:1977 l2cap_global_chan_by_psm()
+        error: we previously assumed 'c' could be null (see line 1996)
 
-As part of this change, swap the order of status field evaluation to
-match that of the interrupt handler, and correct a nearby off-by-one
-error that causes an error message to suggest the final attempt will
-be retried.
-
-Fixes: e505edaedcb9 ("Input: add support for Azoteq IQS7222A/B/C")
-Signed-off-by: Jeff LaBundy <jeff@labundy.com>
-Link: https://lore.kernel.org/r/20220626072412.475211-6-jeff@labundy.com
-Signed-off-by: Dmitry Torokhov <dmitry.torokhov@gmail.com>
+Fixes: d0be8347c623 ("Bluetooth: L2CAP: Fix use-after-free caused by l2cap_chan_put")
+Reported-by: Dan Carpenter <dan.carpenter@oracle.com>
+Signed-off-by: Luiz Augusto von Dentz <luiz.von.dentz@intel.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/input/misc/iqs7222.c | 9 ++++++---
- 1 file changed, 6 insertions(+), 3 deletions(-)
+ net/bluetooth/l2cap_core.c |   13 ++++++-------
+ 1 file changed, 6 insertions(+), 7 deletions(-)
 
-diff --git a/drivers/input/misc/iqs7222.c b/drivers/input/misc/iqs7222.c
-index aa46f2cd4d34..e65260d290cc 100644
---- a/drivers/input/misc/iqs7222.c
-+++ b/drivers/input/misc/iqs7222.c
-@@ -1314,12 +1314,15 @@ static int iqs7222_ati_trigger(struct iqs7222_private *iqs7222)
- 			if (error)
- 				return error;
+--- a/net/bluetooth/l2cap_core.c
++++ b/net/bluetooth/l2cap_core.c
+@@ -1804,11 +1804,11 @@ static struct l2cap_chan *l2cap_global_c
+ 						   bdaddr_t *dst,
+ 						   u8 link_type)
+ {
+-	struct l2cap_chan *c, *c1 = NULL;
++	struct l2cap_chan *c, *tmp, *c1 = NULL;
  
--			if (sys_status & IQS7222_SYS_STATUS_ATI_ACTIVE)
--				continue;
-+			if (sys_status & IQS7222_SYS_STATUS_RESET)
-+				return 0;
+ 	read_lock(&chan_list_lock);
  
- 			if (sys_status & IQS7222_SYS_STATUS_ATI_ERROR)
- 				break;
+-	list_for_each_entry(c, &chan_list, global_l) {
++	list_for_each_entry_safe(c, tmp, &chan_list, global_l) {
+ 		if (state && c->state != state)
+ 			continue;
  
-+			if (sys_status & IQS7222_SYS_STATUS_ATI_ACTIVE)
-+				continue;
-+
- 			/*
- 			 * Use stream-in-touch mode if either slider reports
- 			 * absolute position.
-@@ -1336,7 +1339,7 @@ static int iqs7222_ati_trigger(struct iqs7222_private *iqs7222)
- 		dev_err(&client->dev,
- 			"ATI attempt %d of %d failed with status 0x%02X, %s\n",
- 			i + 1, IQS7222_NUM_RETRIES, (u8)sys_status,
--			i < IQS7222_NUM_RETRIES ? "retrying..." : "stopping");
-+			i + 1 < IQS7222_NUM_RETRIES ? "retrying" : "stopping");
- 	}
+@@ -1827,11 +1827,10 @@ static struct l2cap_chan *l2cap_global_c
+ 			dst_match = !bacmp(&c->dst, dst);
+ 			if (src_match && dst_match) {
+ 				c = l2cap_chan_hold_unless_zero(c);
+-				if (!c)
+-					continue;
+-
+-				read_unlock(&chan_list_lock);
+-				return c;
++				if (c) {
++					read_unlock(&chan_list_lock);
++					return c;
++				}
+ 			}
  
- 	return -ETIMEDOUT;
--- 
-2.37.2
-
+ 			/* Closest match */
 
 
