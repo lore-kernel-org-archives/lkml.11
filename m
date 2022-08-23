@@ -2,80 +2,72 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 441F3C25B08
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 04:45:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B1E41C25B08
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 04:46:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239318AbiHWEpm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 00:45:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54286 "EHLO
+        id S239572AbiHWEqS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 23 Aug 2022 00:46:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56444 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239772AbiHWEoC (ORCPT
+        with ESMTP id S238735AbiHWEqP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 00:44:02 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 993A350734
-        for <linux-kernel@vger.kernel.org>; Mon, 22 Aug 2022 21:44:00 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 50014B81ADD
-        for <linux-kernel@vger.kernel.org>; Tue, 23 Aug 2022 04:43:59 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CA305C433C1;
-        Tue, 23 Aug 2022 04:43:56 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1661229838;
-        bh=Dp7gbWMfCc+Qey6kWzIzvpYLCRNtpnuNWSiTmmgZOe4=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=qX+ktb0oTz/9ehojKauRgUdXEBIgE3/IN9ol2UQKc3l+SmBX4zuemEAiO4b7RxjBp
-         S0OxTer40WTlx6NRpN3ZdfI+CpglS/RnGdfA3W1t0pgFkjlSsvhj1uIMYIQEFFCykR
-         1nciKNd86u0r1x69LeELIhRgGvwoAOAn7WdliOrPm7/uMUHaKP7M9xcOg7zazqDpOI
-         uPuzghDjHsgzwfXSTc5voG+4R9otE6LQvKY2hkYaZi+8gGs6M0XbaGwSGLh/AJELa/
-         cwrBWpJSBJgoWd1x/lZMkHwmXABl5IDG1nZRKrufq7sgFGeb5NE034hHDrEALMuK94
-         hN5kYbbZQWD1Q==
-Date:   Tue, 23 Aug 2022 04:43:54 +0000
-From:   Tzung-Bi Shih <tzungbi@kernel.org>
-To:     Prashant Malani <pmalani@chromium.org>
-Cc:     linux-kernel@vger.kernel.org, chrome-platform@lists.linux.dev,
-        bleung@chromium.org,
-        Enric Balletbo i Serra <enric.balletbo@collabora.com>,
-        Guenter Roeck <groeck@chromium.org>,
-        Heikki Krogerus <heikki.krogerus@linux.intel.com>
-Subject: Re: [PATCH 4/4] platform/chrome: cros_ec_typec: Use Type-C driver
- data
-Message-ID: <YwRbCvOy8WXUEphH@google.com>
-References: <20220819190807.1275937-1-pmalani@chromium.org>
- <20220819190807.1275937-5-pmalani@chromium.org>
+        Tue, 23 Aug 2022 00:46:15 -0400
+Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 207F754C88
+        for <linux-kernel@vger.kernel.org>; Mon, 22 Aug 2022 21:46:15 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1661229975; x=1692765975;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=1hk3vPLt5LF/hGQ/U9Opw9PivdsoVIeWfL5vgv/ftqY=;
+  b=Rxd690a3r1W2gq5BybUORqNdlOCkF6dWeAZo0rkW6MHjcqEINusWr+Gk
+   AUuec3IcxUdNy3JUnH0ye4njUE/1qv7ueH5WuJzMIaDgmxb9bH8E7gWbw
+   aNSwHFbBid/gVoRIIMFUWBgLg5usBPxC+PB4ueA/oXopU0kO5pfA99ncp
+   bHx7YV06L3x4INYYabOnXg0B0fsnpbzrIiufHd9iAxmYKtlzCv+rlzfF2
+   konU1ZV7Oe2Ioz+Ld4995gf4Ts5luONKVXtvHMTqOC5PBX5gFx6f+ZeqR
+   IrrRlzXsNzXRPDOCIpkC6iqVA6SaDWEdwC5cEB+hoo9PYCxXW3e4PjoWS
+   A==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10447"; a="291146770"
+X-IronPort-AV: E=Sophos;i="5.93,256,1654585200"; 
+   d="scan'208";a="291146770"
+Received: from fmsmga008.fm.intel.com ([10.253.24.58])
+  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Aug 2022 21:46:14 -0700
+X-IronPort-AV: E=Sophos;i="5.93,256,1654585200"; 
+   d="scan'208";a="669855088"
+Received: from bard-ubuntu.sh.intel.com ([10.239.185.57])
+  by fmsmga008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Aug 2022 21:46:13 -0700
+From:   Bard Liao <yung-chuan.liao@linux.intel.com>
+To:     alsa-devel@alsa-project.org, vkoul@kernel.org
+Cc:     vinod.koul@linaro.org, linux-kernel@vger.kernel.org,
+        pierre-louis.bossart@linux.intel.com, bard.liao@intel.com
+Subject: [PATCH 0/3] soundwire: allocate device_number with IDA
+Date:   Tue, 23 Aug 2022 12:50:01 +0800
+Message-Id: <20220823045004.2670658-1-yung-chuan.liao@linux.intel.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220819190807.1275937-5-pmalani@chromium.org>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Aug 19, 2022 at 07:08:05PM +0000, Prashant Malani wrote:
-> Altmode driver callbacks need EC-specific port information to
-> communicate with the ChromeOS EC. To accomplish this, save a
-> pointer to the driver-specific port struct in the Type-C port's
-> driver data field.
-> 
-> Signed-off-by: Prashant Malani <pmalani@chromium.org>
-> ---
->  drivers/platform/chrome/cros_ec_typec.c | 1 +
->  1 file changed, 1 insertion(+)
-> 
-> diff --git a/drivers/platform/chrome/cros_ec_typec.c b/drivers/platform/chrome/cros_ec_typec.c
-> index 7daf4207c11e..e3f75440030d 100644
-> --- a/drivers/platform/chrome/cros_ec_typec.c
-> +++ b/drivers/platform/chrome/cros_ec_typec.c
-> @@ -379,6 +379,7 @@ static int cros_typec_init_ports(struct cros_typec_data *typec)
->  		ret = cros_typec_parse_port_props(cap, fwnode, dev);
->  		if (ret < 0)
->  			goto unregister_ports;
-> +		cap->driver_data = cros_port;
+The device_number is currently allocated in the scope of each bus and does
+not need to be unique at the system level.
+This leads e.g. on Dell devices with three or four Device1 on different
+bus segments. To make the device_number unique at the system level, and
+unified with the HDaudio/iDISP SDI values, this series allocates the
+dev_number with an IDA restricted between 4 and 11 (inclusive).
 
-Same as previous patch.  I would suggest to send it in later series.  For
-example, I have no knowledge to judge if `cap` is a correct place to save
-the driver data.
+Pierre-Louis Bossart (3):
+  soundwire: bus: rename sdw_ida as sdw_bus_ida
+  soundwire: bus: allow device number to be unique at system level
+  soundwire: intel: set dev_num_ida_min
 
-For example, I'm wondering: is the `cap` "the Type-C port's driver"?
+ drivers/soundwire/bus.c       | 29 ++++++++++++++++++++---------
+ drivers/soundwire/intel.c     |  4 ++++
+ include/linux/soundwire/sdw.h |  4 ++++
+ 3 files changed, 28 insertions(+), 9 deletions(-)
+
+-- 
+2.25.1
+
