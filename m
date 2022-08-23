@@ -2,144 +2,95 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 31925C32796
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 64377C38159
 	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 11:42:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358140AbiHWLlD (ORCPT
+        id S1358212AbiHWLlQ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 07:41:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48966 "EHLO
+        Tue, 23 Aug 2022 07:41:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49030 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357410AbiHWLfZ (ORCPT
+        with ESMTP id S1348402AbiHWLf1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 07:35:25 -0400
-Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9318DC6FCC;
-        Tue, 23 Aug 2022 02:27:34 -0700 (PDT)
-Date:   Tue, 23 Aug 2022 09:27:29 -0000
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1661246851;
-        h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
-         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
-         content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=JavbG4FavK4RyRgwMlt4DUH5+W8wPYivHE4KrAaXLIk=;
-        b=EZ2K+3C2hj9Aldk4DCEi5xXG6INTX3Fz6HuMzEtZCgcC3XTTFjSXlo/Fqth0IRGyZy/+8M
-        WG5rqfsMh6QKy+u8BRKX9CC2vmhQx2k9CdAXfZnwdZvdWe48ch77uv6MmRn9vXWXFvAN1C
-        IN+mHcdh8giQHmGCv+T81ykLtfd10v1mZFBDlc373LjhtPjXc4R81iGWGPkqTktTjgCErf
-        F9xXDoK9p2Ve9L87Hb8TQyG20B/yZMX66nLcxar9RAY4u86PW8ga5RqcUuYtaQ6msDMcic
-        FiGirXZHEdKiBA4IVaOgZ01c9MIeVrg2JMxmXAABSs3da0NsX4ZM2L43ITNsYw==
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1661246851;
-        h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
-         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
-         content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=JavbG4FavK4RyRgwMlt4DUH5+W8wPYivHE4KrAaXLIk=;
-        b=LRXdFPNeZ4uZQS3f2eyH88eISnq1gzjrZSkcmIRVQDJeX90aXFevHjBibe7dGG8Vr9YQGs
-        1BO2WM77jF91KeAg==
-From:   "tip-bot2 for Chengming Zhou" <tip-bot2@linutronix.de>
-Sender: tip-bot2@linutronix.de
-Reply-to: linux-kernel@vger.kernel.org
-To:     linux-tip-commits@vger.kernel.org
-Subject: [tip: sched/core] sched/fair: Move task sched_avg attach to
- enqueue_task_fair()
-Cc:     Chengming Zhou <zhouchengming@bytedance.com>,
-        "Peter Zijlstra (Intel)" <peterz@infradead.org>,
-        Vincent Guittot <vincent.guittot@linaro.org>, x86@kernel.org,
-        linux-kernel@vger.kernel.org
-In-Reply-To: <20220818124805.601-9-zhouchengming@bytedance.com>
-References: <20220818124805.601-9-zhouchengming@bytedance.com>
+        Tue, 23 Aug 2022 07:35:27 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1BD2076944;
+        Tue, 23 Aug 2022 02:27:35 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 4D95DB81B1F;
+        Tue, 23 Aug 2022 09:27:33 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7170EC433C1;
+        Tue, 23 Aug 2022 09:27:31 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1661246851;
+        bh=Mt7AGGcZfiDtZCpqwjCJ+SIH9BMtPjFp1JhQA7qDVTk=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=maxERFUDmEj+AsERdTvDWBBIbBou9c+Q22jvzQloCup6o7T7Vy+JgZ1SH+UEjxY9j
+         HdrbZo2I9+TALuPjrhEMYxQO07zHk2M/HgAJAxYOFKHQ4/lFUf2vZM9At9n/qJQGH5
+         Vo63I1uWddukwoY6fMZWvnEHeWyvWNE/xVF67yoQ=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, John Garry <john.garry@huawei.com>,
+        Josh Poimboeuf <jpoimboe@kernel.org>,
+        Ingo Molnar <mingo@kernel.org>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.4 241/389] scripts/faddr2line: Fix vmlinux detection on arm64
+Date:   Tue, 23 Aug 2022 10:25:19 +0200
+Message-Id: <20220823080125.636318972@linuxfoundation.org>
+X-Mailer: git-send-email 2.37.2
+In-Reply-To: <20220823080115.331990024@linuxfoundation.org>
+References: <20220823080115.331990024@linuxfoundation.org>
+User-Agent: quilt/0.67
 MIME-Version: 1.0
-Message-ID: <166124684994.401.15319814976088151997.tip-bot2@tip-bot2>
-Robot-ID: <tip-bot2@linutronix.de>
-Robot-Unsubscribe: Contact <mailto:tglx@linutronix.de> to get blacklisted from these emails
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The following commit has been merged into the sched/core branch of tip:
+From: Josh Poimboeuf <jpoimboe@kernel.org>
 
-Commit-ID:     d6531ab6e50149ab2a144b0f4787cb9277d0893f
-Gitweb:        https://git.kernel.org/tip/d6531ab6e50149ab2a144b0f4787cb9277d0893f
-Author:        Chengming Zhou <zhouchengming@bytedance.com>
-AuthorDate:    Thu, 18 Aug 2022 20:48:04 +08:00
-Committer:     Peter Zijlstra <peterz@infradead.org>
-CommitterDate: Tue, 23 Aug 2022 11:01:19 +02:00
+[ Upstream commit b6a5068854cfe372da7dee3224dcf023ed5b00cb ]
 
-sched/fair: Move task sched_avg attach to enqueue_task_fair()
+Since commit dcea997beed6 ("faddr2line: Fix overlapping text section
+failures, the sequel"), faddr2line is completely broken on arm64.
 
-When wake_up_new_task(), we use post_init_entity_util_avg() to init
-util_avg/runnable_avg based on cpu's util_avg at that time, and
-attach task sched_avg to cfs_rq.
+For some reason, on arm64, the vmlinux ELF object file type is ET_DYN
+rather than ET_EXEC.  Check for both when determining whether the object
+is vmlinux.
 
-Since enqueue_task_fair() -> enqueue_entity() -> update_load_avg()
-loop will do attach, we can move this work to update_load_avg().
+Modules and vmlinux.o have type ET_REL on all arches.
 
-wake_up_new_task(p)
-  post_init_entity_util_avg(p)
-    attach_entity_cfs_rq()  --> (1)
-  activate_task(rq, p)
-    enqueue_task() := enqueue_task_fair()
-      enqueue_entity() loop
-        update_load_avg(cfs_rq, se, UPDATE_TG | DO_ATTACH)
-          if (!se->avg.last_update_time && (flags & DO_ATTACH))
-            attach_entity_load_avg()  --> (2)
-
-This patch move attach from (1) to (2), update related comments too.
-
-Signed-off-by: Chengming Zhou <zhouchengming@bytedance.com>
-Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
-Reviewed-by: Vincent Guittot <vincent.guittot@linaro.org>
-Link: https://lore.kernel.org/r/20220818124805.601-9-zhouchengming@bytedance.com
+Fixes: dcea997beed6 ("faddr2line: Fix overlapping text section failures, the sequel")
+Reported-by: John Garry <john.garry@huawei.com>
+Signed-off-by: Josh Poimboeuf <jpoimboe@kernel.org>
+Signed-off-by: Ingo Molnar <mingo@kernel.org>
+Tested-by: John Garry <john.garry@huawei.com>
+Link: https://lore.kernel.org/r/dad1999737471b06d6188ce4cdb11329aa41682c.1658426357.git.jpoimboe@kernel.org
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- kernel/sched/fair.c | 11 +++--------
- 1 file changed, 3 insertions(+), 8 deletions(-)
+ scripts/faddr2line | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
 
-diff --git a/kernel/sched/fair.c b/kernel/sched/fair.c
-index fd1aa4c..ef325b5 100644
---- a/kernel/sched/fair.c
-+++ b/kernel/sched/fair.c
-@@ -799,8 +799,6 @@ void init_entity_runnable_average(struct sched_entity *se)
- 	/* when this task enqueue'ed, it will contribute to its cfs_rq's load_avg */
- }
+diff --git a/scripts/faddr2line b/scripts/faddr2line
+index 94ed98dd899f..57099687e5e1 100755
+--- a/scripts/faddr2line
++++ b/scripts/faddr2line
+@@ -112,7 +112,9 @@ __faddr2line() {
+ 	# section offsets.
+ 	local file_type=$(${READELF} --file-header $objfile |
+ 		${AWK} '$1 == "Type:" { print $2; exit }')
+-	[[ $file_type = "EXEC" ]] && is_vmlinux=1
++	if [[ $file_type = "EXEC" ]] || [[ $file_type == "DYN" ]]; then
++		is_vmlinux=1
++	fi
  
--static void attach_entity_cfs_rq(struct sched_entity *se);
--
- /*
-  * With new tasks being created, their initial util_avgs are extrapolated
-  * based on the cfs_rq's current util_avg:
-@@ -863,8 +861,6 @@ void post_init_entity_util_avg(struct task_struct *p)
- 		se->avg.last_update_time = cfs_rq_clock_pelt(cfs_rq);
- 		return;
- 	}
--
--	attach_entity_cfs_rq(se);
- }
- 
- #else /* !CONFIG_SMP */
-@@ -3838,8 +3834,7 @@ static void migrate_se_pelt_lag(struct sched_entity *se) {}
-  * @cfs_rq: cfs_rq to update
-  *
-  * The cfs_rq avg is the direct sum of all its entities (blocked and runnable)
-- * avg. The immediate corollary is that all (fair) tasks must be attached, see
-- * post_init_entity_util_avg().
-+ * avg. The immediate corollary is that all (fair) tasks must be attached.
-  *
-  * cfs_rq->avg is used for task_h_load() and update_cfs_share() for example.
-  *
-@@ -4072,8 +4067,8 @@ static void remove_entity_load_avg(struct sched_entity *se)
- 
- 	/*
- 	 * tasks cannot exit without having gone through wake_up_new_task() ->
--	 * post_init_entity_util_avg() which will have added things to the
--	 * cfs_rq, so we can remove unconditionally.
-+	 * enqueue_task_fair() which will have added things to the cfs_rq,
-+	 * so we can remove unconditionally.
- 	 */
- 
- 	sync_entity_load_avg(se);
+ 	# Go through each of the object's symbols which match the func name.
+ 	# In rare cases there might be duplicates, in which case we print all
+-- 
+2.35.1
+
+
+
