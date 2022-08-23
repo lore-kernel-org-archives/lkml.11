@@ -2,47 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 650DBC38145
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 741B3C32796
 	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 10:06:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352462AbiHWKFp (ORCPT
+        id S1352504AbiHWKFs (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 06:05:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43736 "EHLO
+        Tue, 23 Aug 2022 06:05:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43774 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352153AbiHWKBR (ORCPT
+        with ESMTP id S1352159AbiHWKBR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 23 Aug 2022 06:01:17 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 27C903C16F;
-        Tue, 23 Aug 2022 01:48:47 -0700 (PDT)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E40413ED63;
+        Tue, 23 Aug 2022 01:48:49 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 48B0DB81BF8;
-        Tue, 23 Aug 2022 08:48:46 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7468AC433D6;
-        Tue, 23 Aug 2022 08:48:44 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 97C016122F;
+        Tue, 23 Aug 2022 08:48:48 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9A1E5C433D6;
+        Tue, 23 Aug 2022 08:48:47 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661244525;
-        bh=ttLvW3MfLOd5HkB/xUpnfI6bCZM/YFhvYh+VBRclgbE=;
+        s=korg; t=1661244528;
+        bh=NHsKM+d4tge0A6zPGx33s14IW+dsrP40/dPudMVh+IE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=vRc2FLltCCjPKAOQdwG2g0yFCFLztXQWuZWrJWu6m+Y/sgnxrs6wqlRmVkO91tB49
-         Znhm8a/53UvYK8QKw2n/vAmM7CdM3bz2CPUM8xsW6WUpdhdKUuVRd7JQDQHZMG2jO6
-         ux3WwtGbbCs12+4oB2GL+JFJLAVa541A8wKwDLn4=
+        b=vAtfWQY+aM2BhhviEkspBU89wvxGjRJpsxkkYiMSUtPb1SOhxjHvh1277qQbrn05B
+         Iah0Hu24HU2plWvFiCF3IgOPUarKO8x4t3NcMvAFpOSl/Xw6gHDeedzOfBCiLLZ8va
+         skl8bXXClhteRYHEDe+oDuxu9E2dJKWvBtuYJ8DQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Guenter Roeck <linux@roeck-us.net>,
-        kernel test robot <lkp@intel.com>,
-        Alexander Lobakin <alexandr.lobakin@intel.com>,
-        Yury Norov <yury.norov@gmail.com>
-Subject: [PATCH 4.14 150/229] x86/olpc: fix logical not is only applied to the left hand side
-Date:   Tue, 23 Aug 2022 10:25:11 +0200
-Message-Id: <20220823080059.035353456@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Konstantin Komarov <almaz.alexandrovich@paragon-software.com>
+Subject: [PATCH 5.15 107/244] fs/ntfs3: Do not change mode if ntfs_set_ea failed
+Date:   Tue, 23 Aug 2022 10:24:26 +0200
+Message-Id: <20220823080102.591453799@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220823080053.202747790@linuxfoundation.org>
-References: <20220823080053.202747790@linuxfoundation.org>
+In-Reply-To: <20220823080059.091088642@linuxfoundation.org>
+References: <20220823080059.091088642@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -51,49 +49,70 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Alexander Lobakin <alexandr.lobakin@intel.com>
+From: Konstantin Komarov <almaz.alexandrovich@paragon-software.com>
 
-commit 3a2ba42cbd0b669ce3837ba400905f93dd06c79f upstream.
+commit 460bbf2990b3fdc597601c2cf669a3371c069242 upstream.
 
-The bitops compile-time optimization series revealed one more
-problem in olpc-xo1-sci.c:send_ebook_state(), resulted in GCC
-warnings:
+ntfs_set_ea can fail with NOSPC, so we don't need to
+change mode in this situation.
+Fixes xfstest generic/449
+Fixes: be71b5cba2e6 ("fs/ntfs3: Add attrib operations")
 
-arch/x86/platform/olpc/olpc-xo1-sci.c: In function 'send_ebook_state':
-arch/x86/platform/olpc/olpc-xo1-sci.c:83:63: warning: logical not is only applied to the left hand side of comparison [-Wlogical-not-parentheses]
-   83 |         if (!!test_bit(SW_TABLET_MODE, ebook_switch_idev->sw) == state)
-      |                                                               ^~
-arch/x86/platform/olpc/olpc-xo1-sci.c:83:13: note: add parentheses around left hand side expression to silence this warning
-
-Despite this code working as intended, this redundant double
-negation of boolean value, together with comparing to `char`
-with no explicit conversion to bool, makes compilers think
-the author made some unintentional logical mistakes here.
-Make it the other way around and negate the char instead
-to silence the warnings.
-
-Fixes: d2aa37411b8e ("x86/olpc/xo1/sci: Produce wakeup events for buttons and switches")
-Cc: stable@vger.kernel.org # 3.5+
-Reported-by: Guenter Roeck <linux@roeck-us.net>
-Reported-by: kernel test robot <lkp@intel.com>
-Reviewed-and-tested-by: Guenter Roeck <linux@roeck-us.net>
-Signed-off-by: Alexander Lobakin <alexandr.lobakin@intel.com>
-Signed-off-by: Yury Norov <yury.norov@gmail.com>
+Signed-off-by: Konstantin Komarov <almaz.alexandrovich@paragon-software.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/x86/platform/olpc/olpc-xo1-sci.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ fs/ntfs3/xattr.c |   20 ++++++++++----------
+ 1 file changed, 10 insertions(+), 10 deletions(-)
 
---- a/arch/x86/platform/olpc/olpc-xo1-sci.c
-+++ b/arch/x86/platform/olpc/olpc-xo1-sci.c
-@@ -85,7 +85,7 @@ static void send_ebook_state(void)
- 		return;
- 	}
+--- a/fs/ntfs3/xattr.c
++++ b/fs/ntfs3/xattr.c
+@@ -545,28 +545,23 @@ static noinline int ntfs_set_acl_ex(stru
+ {
+ 	const char *name;
+ 	size_t size, name_len;
+-	void *value = NULL;
+-	int err = 0;
++	void *value;
++	int err;
+ 	int flags;
++	umode_t mode;
  
--	if (!!test_bit(SW_TABLET_MODE, ebook_switch_idev->sw) == state)
-+	if (test_bit(SW_TABLET_MODE, ebook_switch_idev->sw) == !!state)
- 		return; /* Nothing new to report. */
+ 	if (S_ISLNK(inode->i_mode))
+ 		return -EOPNOTSUPP;
  
- 	input_report_switch(ebook_switch_idev, SW_TABLET_MODE, state);
++	mode = inode->i_mode;
+ 	switch (type) {
+ 	case ACL_TYPE_ACCESS:
+ 		/* Do not change i_mode if we are in init_acl */
+ 		if (acl && !init_acl) {
+-			umode_t mode;
+-
+ 			err = posix_acl_update_mode(mnt_userns, inode, &mode,
+ 						    &acl);
+ 			if (err)
+ 				goto out;
+-
+-			if (inode->i_mode != mode) {
+-				inode->i_mode = mode;
+-				mark_inode_dirty(inode);
+-			}
+ 		}
+ 		name = XATTR_NAME_POSIX_ACL_ACCESS;
+ 		name_len = sizeof(XATTR_NAME_POSIX_ACL_ACCESS) - 1;
+@@ -602,8 +597,13 @@ static noinline int ntfs_set_acl_ex(stru
+ 	err = ntfs_set_ea(inode, name, name_len, value, size, flags);
+ 	if (err == -ENODATA && !size)
+ 		err = 0; /* Removing non existed xattr. */
+-	if (!err)
++	if (!err) {
+ 		set_cached_acl(inode, type, acl);
++		if (inode->i_mode != mode) {
++			inode->i_mode = mode;
++			mark_inode_dirty(inode);
++		}
++	}
+ 
+ out:
+ 	kfree(value);
 
 
