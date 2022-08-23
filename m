@@ -2,46 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5B4B6C32772
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 08:25:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 97746C32772
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 08:25:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243414AbiHWIZH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 04:25:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33484 "EHLO
+        id S243426AbiHWIZM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 23 Aug 2022 04:25:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59686 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243431AbiHWIVJ (ORCPT
+        with ESMTP id S243493AbiHWIVP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 04:21:09 -0400
+        Tue, 23 Aug 2022 04:21:15 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 48E3B6EF30;
-        Tue, 23 Aug 2022 01:12:31 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EE76D6F553;
+        Tue, 23 Aug 2022 01:12:36 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 0F84EB81C3B;
-        Tue, 23 Aug 2022 08:12:24 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 634CEC433D6;
-        Tue, 23 Aug 2022 08:12:22 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 7DF5DB81C36;
+        Tue, 23 Aug 2022 08:12:36 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BBAEDC43144;
+        Tue, 23 Aug 2022 08:12:34 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661242342;
-        bh=z+CGCDyFSMPbd/EN3DNknlU9RDhJkyHosZULARlSM94=;
+        s=korg; t=1661242355;
+        bh=exLWc5wfuhzLstDPxiLLQ/227evYWkphKy8CKnPSkFA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=TPUN3aFZXheTy8L+51Vm+bKgM7oCOoM5UuuYJUOk8/DY5IfkeomfFmdxWaoJYIkxs
-         oiLPPnmKqenYDXibY9XV8yA8SZYldOrQpTi7MhkBDOeB5YlIHdsDEENyezCqXgzLD2
-         i1qS8y2L5rAuQYt5uCAwwsXqh7bFwg3KB/LWsjuE=
+        b=TroV75M1an1zq5WHYxrk76CQgec1eeUUAJXmxvV5q7y2cZa6FjGoPmZccNTu+ZphW
+         Y7N4ZxupZKFsUSRqSHeBlk+59w3CLnET7HX+F/+MwdwQhaLBxxRLQQMYv1KrlUwUjq
+         5kj/AhubztSq9RhbLZ40Al7nPcmR1cKLyWC9jcvo=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Yonghong Song <yhs@fb.com>,
-        Kumar Kartikeya Dwivedi <memxor@gmail.com>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Alexei Starovoitov <ast@kernel.org>
-Subject: [PATCH 5.19 063/365] bpf: Dont reinit map value in prealloc_lru_pop
-Date:   Tue, 23 Aug 2022 09:59:24 +0200
-Message-Id: <20220823080120.831080541@linuxfoundation.org>
+        stable@vger.kernel.org, Eric Dumazet <edumazet@google.com>,
+        Soheil Hassas Yeganeh <soheil@google.com>,
+        Shakeel Butt <shakeelb@google.com>,
+        Wei Wang <weiwan@google.com>,
+        "David S. Miller" <davem@davemloft.net>
+Subject: [PATCH 4.9 059/101] tcp: fix over estimation in sk_forced_mem_schedule()
+Date:   Tue, 23 Aug 2022 10:03:32 +0200
+Message-Id: <20220823080036.832741502@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220823080118.128342613@linuxfoundation.org>
-References: <20220823080118.128342613@linuxfoundation.org>
+In-Reply-To: <20220823080034.579196046@linuxfoundation.org>
+References: <20220823080034.579196046@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -50,65 +51,45 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Kumar Kartikeya Dwivedi <memxor@gmail.com>
+From: Eric Dumazet <edumazet@google.com>
 
-commit 275c30bcee66a27d1aa97a215d607ad6d49804cb upstream.
+commit c4ee118561a0f74442439b7b5b486db1ac1ddfeb upstream.
 
-The LRU map that is preallocated may have its elements reused while
-another program holds a pointer to it from bpf_map_lookup_elem. Hence,
-only check_and_free_fields is appropriate when the element is being
-deleted, as it ensures proper synchronization against concurrent access
-of the map value. After that, we cannot call check_and_init_map_value
-again as it may rewrite bpf_spin_lock, bpf_timer, and kptr fields while
-they can be concurrently accessed from a BPF program.
+sk_forced_mem_schedule() has a bug similar to ones fixed
+in commit 7c80b038d23e ("net: fix sk_wmem_schedule() and
+sk_rmem_schedule() errors")
 
-This is safe to do as when the map entry is deleted, concurrent access
-is protected against by check_and_free_fields, i.e. an existing timer
-would be freed, and any existing kptr will be released by it. The
-program can create further timers and kptrs after check_and_free_fields,
-but they will eventually be released once the preallocated items are
-freed on map destruction, even if the item is never reused again. Hence,
-the deleted item sitting in the free list can still have resources
-attached to it, and they would never leak.
+While this bug has little chance to trigger in old kernels,
+we need to fix it before the following patch.
 
-With spin_lock, we never touch the field at all on delete or update, as
-we may end up modifying the state of the lock. Since the verifier
-ensures that a bpf_spin_lock call is always paired with bpf_spin_unlock
-call, the program will eventually release the lock so that on reuse the
-new user of the value can take the lock.
-
-Essentially, for the preallocated case, we must assume that the map
-value may always be in use by the program, even when it is sitting in
-the freelist, and handle things accordingly, i.e. use proper
-synchronization inside check_and_free_fields, and never reinitialize the
-special fields when it is reused on update.
-
-Fixes: 68134668c17f ("bpf: Add map side support for bpf timers.")
-Acked-by: Yonghong Song <yhs@fb.com>
-Signed-off-by: Kumar Kartikeya Dwivedi <memxor@gmail.com>
-Acked-by: Martin KaFai Lau <kafai@fb.com>
-Link: https://lore.kernel.org/r/20220809213033.24147-3-memxor@gmail.com
-Signed-off-by: Alexei Starovoitov <ast@kernel.org>
+Fixes: d83769a580f1 ("tcp: fix possible deadlock in tcp_send_fin()")
+Signed-off-by: Eric Dumazet <edumazet@google.com>
+Acked-by: Soheil Hassas Yeganeh <soheil@google.com>
+Reviewed-by: Shakeel Butt <shakeelb@google.com>
+Reviewed-by: Wei Wang <weiwan@google.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- kernel/bpf/hashtab.c |    6 +-----
- 1 file changed, 1 insertion(+), 5 deletions(-)
+ net/ipv4/tcp_output.c |    7 ++++---
+ 1 file changed, 4 insertions(+), 3 deletions(-)
 
---- a/kernel/bpf/hashtab.c
-+++ b/kernel/bpf/hashtab.c
-@@ -311,12 +311,8 @@ static struct htab_elem *prealloc_lru_po
- 	struct htab_elem *l;
+--- a/net/ipv4/tcp_output.c
++++ b/net/ipv4/tcp_output.c
+@@ -2986,11 +2986,12 @@ begin_fwd:
+  */
+ void sk_forced_mem_schedule(struct sock *sk, int size)
+ {
+-	int amt;
++	int delta, amt;
  
- 	if (node) {
--		u32 key_size = htab->map.key_size;
--
- 		l = container_of(node, struct htab_elem, lru_node);
--		memcpy(l->key, key, key_size);
--		check_and_init_map_value(&htab->map,
--					 l->key + round_up(key_size, 8));
-+		memcpy(l->key, key, htab->map.key_size);
- 		return l;
- 	}
+-	if (size <= sk->sk_forward_alloc)
++	delta = size - sk->sk_forward_alloc;
++	if (delta <= 0)
+ 		return;
+-	amt = sk_mem_pages(size);
++	amt = sk_mem_pages(delta);
+ 	sk->sk_forward_alloc += amt * SK_MEM_QUANTUM;
+ 	sk_memory_allocated_add(sk, amt);
  
 
 
