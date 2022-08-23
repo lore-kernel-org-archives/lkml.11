@@ -2,101 +2,71 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C0A9AC32772
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 17:12:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6E9E4C32772
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 17:12:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243507AbiHWRM2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 13:12:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44818 "EHLO
+        id S240022AbiHWRMf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 23 Aug 2022 13:12:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39024 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344245AbiHWRKj (ORCPT
+        with ESMTP id S245445AbiHWRJ6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 13:10:39 -0400
-Received: from madras.collabora.co.uk (madras.collabora.co.uk [IPv6:2a00:1098:0:82:1000:25:2eeb:e5ab])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E0A2E753A2;
-        Tue, 23 Aug 2022 07:01:47 -0700 (PDT)
-Received: from pan.home (unknown [IPv6:2a00:23c6:c311:3401:60d6:460b:e0dc:41ba])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (No client certificate requested)
-        (Authenticated sender: martyn)
-        by madras.collabora.co.uk (Postfix) with ESMTPSA id 74C2C6601DD8;
-        Tue, 23 Aug 2022 15:01:46 +0100 (BST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
-        s=mail; t=1661263306;
-        bh=U+314oct9Zu4v5I9Z6fQHhGgVdlqQID9qINoCymOG0M=;
-        h=From:To:Cc:Subject:Date:From;
-        b=KEI3ObSfikbPPBkGQYCr5s/5lOkKmCmaxjj23ydmdZPlPwTLqbG7dVtgbBhkjbQDD
-         UiCBq/F8LGpY0IKeWUsKVhC0pGGv26nhnJnr8cP9sa1bEhJrfIB05/vBLPVFLxiLEL
-         s+Tc6rWA65OFDt6oxEHqpONlDZT567Ka9hyu7Y4w6ZYDwkYjjUN6pGVwAmurlF+0xj
-         qzuBDnrhS180VCqyMjNgCJ8C8fGpWV5svGZ2cnYpQPEcZk4Vhxj3at75j/fiLoEF/U
-         bNKkyY4GM47RHpXEdJZiR1DRQEu0yT72/t1N2Or7JzkY2GRFXlH6Lwmsyv9Q0K+GuP
-         9RQ4qg6YW5+Lw==
-From:   Martyn Welch <martyn.welch@collabora.com>
-To:     Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Shawn Guo <shawnguo@kernel.org>, Li Yang <leoyang.li@nxp.com>
-Cc:     kernel@collabora.com, Martyn Welch <martyn.welch@collabora.com>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH v7 1/2] dt-bindings: arm: fsl: Add MSC SM2S-IMX8PLUS SoM and SM2-MB-EP1 Carrier
-Date:   Tue, 23 Aug 2022 15:01:21 +0100
-Message-Id: <20220823140124.1469989-1-martyn.welch@collabora.com>
-X-Mailer: git-send-email 2.35.1
+        Tue, 23 Aug 2022 13:09:58 -0400
+Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AC4671593DC;
+        Tue, 23 Aug 2022 06:37:13 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1661261833; x=1692797833;
+  h=date:from:to:subject:message-id:references:mime-version:
+   in-reply-to;
+  bh=eAM4IfLs4EeAKfq7vCYp78zY0+nWzIBl6fYHI3SUFrA=;
+  b=mJj44z54ZNjCGygqZBv95BTvAJlV6ke75E1bGb+1OQyRv/l3W/KGpi9H
+   fSbLEhjZRGhfyIfdLnAysxj5FUxncEp03I+YXQVc3GybLklaQVeccXvzI
+   DZizqkzotRTEcq+qvPWPp8FyQ1vltLhWXeQPpKYGEc611o23erfr+B8YV
+   j9gJhSoQAXvVxoq/lW6KqWzhis+PT/bC8vuDBtd0St2W+Y2w56RImxrRy
+   BL8sH3rclqG+c8QR98BQD9VNsGa9+2FC3H8dzbH3HfMw/SYlEv4gtn7Tj
+   lmIfELArjdDCrbDnev72JywnuY3buIM0BdPGyuiJekGmZWifp6yWMZFqV
+   A==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10448"; a="291248724"
+X-IronPort-AV: E=Sophos;i="5.93,257,1654585200"; 
+   d="scan'208";a="291248724"
+Received: from orsmga005.jf.intel.com ([10.7.209.41])
+  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Aug 2022 06:37:12 -0700
+X-IronPort-AV: E=Sophos;i="5.93,257,1654585200"; 
+   d="scan'208";a="785249686"
+Received: from smile.fi.intel.com ([10.237.72.54])
+  by orsmga005-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Aug 2022 06:37:11 -0700
+Received: from andy by smile.fi.intel.com with local (Exim 4.96)
+        (envelope-from <andriy.shevchenko@linux.intel.com>)
+        id 1oQU5c-002SLI-1z;
+        Tue, 23 Aug 2022 16:37:08 +0300
+Date:   Tue, 23 Aug 2022 16:37:08 +0300
+From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To:     Linus Walleij <linus.walleij@linaro.org>,
+        linux-arm-kernel@lists.infradead.org, linux-gpio@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2 1/1] pinctrl: nomadik: Convert drivers to use struct
+ pingroup and PINCTRL_PINGROUP()
+Message-ID: <YwTYBKtBIzgujqM7@smile.fi.intel.com>
+References: <20220621112904.65674-1-andriy.shevchenko@linux.intel.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220621112904.65674-1-andriy.shevchenko@linux.intel.com>
+Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add DT compatible strings for a combination of the 14N0600E variant of
-the Avnet (MSC branded) SM2S-IMX8PLUS SoM on it's own and in combination
-with the SM2-MB-EP1 carrier board.
+On Tue, Jun 21, 2022 at 02:29:04PM +0300, Andy Shevchenko wrote:
+> The pin control header provides struct pingroup and PINCTRL_PINGROUP() macro.
+> Utilize them instead of open coded variants in the driver.
 
-Signed-off-by: Martyn Welch <martyn.welch@collabora.com>
-Acked-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
----
+Any news?
 
-Changes in v2:
-  - New addition
-
-Changes in v3:
-  - Switch to avnet vendor
-  - Shortened descriptive comment
-
-Changes in v4:
-  - No changes
-
-Changes in v5:
-  - No changes
-
-Changes in v6:
-  - No changes
-
-Changes in v7:
-  - No changes
-
- Documentation/devicetree/bindings/arm/fsl.yaml | 7 +++++++
- 1 file changed, 7 insertions(+)
-
-diff --git a/Documentation/devicetree/bindings/arm/fsl.yaml b/Documentation/devicetree/bindings/arm/fsl.yaml
-index 7431579ab0e8..81d90dc83385 100644
---- a/Documentation/devicetree/bindings/arm/fsl.yaml
-+++ b/Documentation/devicetree/bindings/arm/fsl.yaml
-@@ -936,6 +936,13 @@ properties:
-               - toradex,verdin-imx8mp-wifi  # Verdin iMX8M Plus Wi-Fi / BT Modules
-           - const: fsl,imx8mp
- 
-+      - description: Avnet (MSC Branded) Boards with SM2S i.MX8M Plus Modules
-+        items:
-+          - const: avnet,sm2s-imx8mp-14N0600E-ep1 # SM2S-IMX8PLUS-14N0600E on SM2-MB-EP1 Carrier Board
-+          - const: avnet,sm2s-imx8mp-14N0600E     # 14N0600E variant of SM2S-IMX8PLUS SoM
-+          - const: avnet,sm2s-imx8mp              # SM2S-IMX8PLUS SoM
-+          - const: fsl,imx8mp
-+
-       - description: Engicam i.Core MX8M Plus SoM based boards
-         items:
-           - enum:
 -- 
-2.35.1
+With Best Regards,
+Andy Shevchenko
+
 
