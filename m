@@ -2,41 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0E9BBC38159
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1D570C3814E
 	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 11:56:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1359083AbiHWL4J (ORCPT
+        id S1359114AbiHWL4P (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 07:56:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35998 "EHLO
+        Tue, 23 Aug 2022 07:56:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34366 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1358642AbiHWLwc (ORCPT
+        with ESMTP id S1358674AbiHWLwl (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 07:52:32 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 38BAED5980;
-        Tue, 23 Aug 2022 02:32:59 -0700 (PDT)
+        Tue, 23 Aug 2022 07:52:41 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DF9ADD5717;
+        Tue, 23 Aug 2022 02:32:55 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 92FC9B8105C;
-        Tue, 23 Aug 2022 09:32:39 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CC60DC433D6;
-        Tue, 23 Aug 2022 09:32:37 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id EC423B81C50;
+        Tue, 23 Aug 2022 09:32:51 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 37911C433D7;
+        Tue, 23 Aug 2022 09:32:50 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661247158;
-        bh=+dGsXXUzWfY49oCGU7uvrd9pRam1ngxeyH+kljj5MNg=;
+        s=korg; t=1661247170;
+        bh=ndWiiY4NeHQG8/CTphvxdicS3nDa17lUBfCluKN6RgE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=0rIvDi114LHl+W9DriSHMHiZWB/1f/QalfsE4MDbUIz/qWIIxhbKG0PvboCutSE2v
-         5+bzGqEIx/JOvHtvzFqmwuiJILGpo9HIPJ8D6Ibvb6VwzC6UFGtHhSWbmb08ke5n0r
-         SB05+1/1pL9/Db/YtTn8qXOxkzu2jrFwWPgSjtuE=
+        b=ywI+qmKp2uHq2OlYYNc0W+Ww/e83mNIcfJXs/9xQNH+rGREWutL9uE7o8jdQkAx2T
+         ddlTB0hWnVKsjpzlJwPyMEAC2Y/O7DdyOquMhA50YrWcUzMlnCBrCdtduwvcWLQtyP
+         RoQSUa9NKPekgDyfcTNiE5mgA/BOYrlhF8R9+KdQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Pablo Neira Ayuso <pablo@netfilter.org>
-Subject: [PATCH 5.4 337/389] netfilter: nf_tables: really skip inactive sets when allocating name
-Date:   Tue, 23 Aug 2022 10:26:55 +0200
-Message-Id: <20220823080129.597683392@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Arun Ramadoss <arun.ramadoss@microchip.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        Jakub Kicinski <kuba@kernel.org>
+Subject: [PATCH 5.4 341/389] net: dsa: microchip: ksz9477: fix fdb_dump last invalid entry
+Date:   Tue, 23 Aug 2022 10:26:59 +0200
+Message-Id: <20220823080129.781184318@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220823080115.331990024@linuxfoundation.org>
 References: <20220823080115.331990024@linuxfoundation.org>
@@ -48,30 +51,41 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Pablo Neira Ayuso <pablo@netfilter.org>
+From: Arun Ramadoss <arun.ramadoss@microchip.com>
 
-commit 271c5ca826e0c3c53e0eb4032f8eaedea1ee391c upstream.
+commit 36c0d935015766bf20d621c18313f17691bda5e3 upstream.
 
-While looping to build the bitmap of used anonymous set names, check the
-current set in the iteration, instead of the one that is being created.
+In the ksz9477_fdb_dump function it reads the ALU control register and
+exit from the timeout loop if there is valid entry or search is
+complete. After exiting the loop, it reads the alu entry and report to
+the user space irrespective of entry is valid. It works till the valid
+entry. If the loop exited when search is complete, it reads the alu
+table. The table returns all ones and it is reported to user space. So
+bridge fdb show gives ff:ff:ff:ff:ff:ff as last entry for every port.
+To fix it, after exiting the loop the entry is reported only if it is
+valid one.
 
-Fixes: 37a9cc525525 ("netfilter: nf_tables: add generation mask to sets")
-Signed-off-by: Pablo Neira Ayuso <pablo@netfilter.org>
+Fixes: b987e98e50ab ("dsa: add DSA switch driver for Microchip KSZ9477")
+Signed-off-by: Arun Ramadoss <arun.ramadoss@microchip.com>
+Reviewed-by: Vladimir Oltean <olteanv@gmail.com>
+Link: https://lore.kernel.org/r/20220816105516.18350-1-arun.ramadoss@microchip.com
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- net/netfilter/nf_tables_api.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/net/dsa/microchip/ksz9477.c |    3 +++
+ 1 file changed, 3 insertions(+)
 
---- a/net/netfilter/nf_tables_api.c
-+++ b/net/netfilter/nf_tables_api.c
-@@ -3253,7 +3253,7 @@ cont:
- 		list_for_each_entry(i, &ctx->table->sets, list) {
- 			int tmp;
+--- a/drivers/net/dsa/microchip/ksz9477.c
++++ b/drivers/net/dsa/microchip/ksz9477.c
+@@ -766,6 +766,9 @@ static int ksz9477_port_fdb_dump(struct
+ 			goto exit;
+ 		}
  
--			if (!nft_is_active_next(ctx->net, set))
-+			if (!nft_is_active_next(ctx->net, i))
- 				continue;
- 			if (!sscanf(i->name, name, &tmp))
- 				continue;
++		if (!(ksz_data & ALU_VALID))
++			continue;
++
+ 		/* read ALU table */
+ 		ksz9477_read_table(dev, alu_table);
+ 
 
 
