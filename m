@@ -2,41 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1B42FC32772
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 11:03:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2AC60C32772
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 11:03:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240956AbiHWLDR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 07:03:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60452 "EHLO
+        id S238339AbiHWLDV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 23 Aug 2022 07:03:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35910 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357273AbiHWLBy (ORCPT
+        with ESMTP id S1356773AbiHWK7A (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 07:01:54 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EFBD2AF4BB;
-        Tue, 23 Aug 2022 02:14:27 -0700 (PDT)
+        Tue, 23 Aug 2022 06:59:00 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E6823ADCFE;
+        Tue, 23 Aug 2022 02:13:58 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 85930B81C85;
-        Tue, 23 Aug 2022 09:14:02 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CEE4DC433B5;
-        Tue, 23 Aug 2022 09:14:00 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id B2AE660F54;
+        Tue, 23 Aug 2022 09:13:49 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BB036C433D6;
+        Tue, 23 Aug 2022 09:13:48 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661246041;
-        bh=LIzfmA1mLukFGyq63niJTErm1FewG0B2a5QkgHosg7Y=;
+        s=korg; t=1661246029;
+        bh=zCjPwheLub6dsDGmASzjdfqqFdiCv1VVXqIVLu32/tE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=t8XNS5v4zHUPh6RlQdDsrXkOC/+SVsAnduS0AfDeLGgN/sJpLbKxN4+dNfrUQep2w
-         mzz5MZ1f4bKba7k4ENZxkvafXxBEOQFmZKuJTtazz8VavxoJKOHWASfLduytpBOPqp
-         xHcceM5OMYUV2Foa7TBoWSQUrvUNAjFzJZNPj3FU=
+        b=dP9EnbgQMl1cZOQEiIgZCqEmzH3P9etlcG7qAemoNBlnT7lx1aQemYEQy1ZCaJ/p5
+         zpjPW9HV53J3Dh+gymd3L3cdFB4SX3xAo3QqIgWEv054hQo4BTMGHeQTuDYC2vNId8
+         EgU4PxNHXFnKpmH8s2CFtIorTv6STINB+m+Kx0W4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Oleg Kiselev <okiselev@amazon.com>,
-        Theodore Tso <tytso@mit.edu>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.19 269/287] ext4: avoid resizing to a partial cluster size
-Date:   Tue, 23 Aug 2022 10:27:18 +0200
-Message-Id: <20220823080110.432124883@linuxfoundation.org>
+        stable@vger.kernel.org,
+        =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
+        <u.kleine-koenig@pengutronix.de>,
+        Baolin Wang <baolin.wang7@gmail.com>,
+        Vinod Koul <vkoul@kernel.org>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 4.19 266/287] dmaengine: sprd: Cleanup in .remove() after pm_runtime_get_sync() failed
+Date:   Tue, 23 Aug 2022 10:27:15 +0200
+Message-Id: <20220823080110.305326297@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220823080100.268827165@linuxfoundation.org>
 References: <20220823080100.268827165@linuxfoundation.org>
@@ -48,45 +51,45 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Kiselev, Oleg <okiselev@amazon.com>
+From: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
 
-[ Upstream commit 69cb8e9d8cd97cdf5e293b26d70a9dee3e35e6bd ]
+[ Upstream commit 1e42f82cbec7b2cc4873751e7791e6611901c5fc ]
 
-This patch avoids an attempt to resize the filesystem to an
-unaligned cluster boundary.  An online resize to a size that is not
-integral to cluster size results in the last iteration attempting to
-grow the fs by a negative amount, which trips a BUG_ON and leaves the fs
-with a corrupted in-memory superblock.
+It's not allowed to quit remove early without cleaning up completely.
+Otherwise this results in resource leaks that probably yield graver
+problems later. Here for example some tasklets might survive the lifetime
+of the sprd-dma device and access sdev which is freed after .remove()
+returns.
 
-Signed-off-by: Oleg Kiselev <okiselev@amazon.com>
-Link: https://lore.kernel.org/r/0E92A0AB-4F16-4F1A-94B7-702CC6504FDE@amazon.com
-Signed-off-by: Theodore Ts'o <tytso@mit.edu>
+As none of the device freeing requires an active device, just ignore the
+return value of pm_runtime_get_sync().
+
+Signed-off-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
+Reviewed-by: Baolin Wang <baolin.wang7@gmail.com>
+Link: https://lore.kernel.org/r/20220721204054.323602-1-u.kleine-koenig@pengutronix.de
+Signed-off-by: Vinod Koul <vkoul@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- fs/ext4/resize.c | 10 ++++++++++
- 1 file changed, 10 insertions(+)
+ drivers/dma/sprd-dma.c | 5 +----
+ 1 file changed, 1 insertion(+), 4 deletions(-)
 
-diff --git a/fs/ext4/resize.c b/fs/ext4/resize.c
-index 88f9627225fc..dd23c97ae951 100644
---- a/fs/ext4/resize.c
-+++ b/fs/ext4/resize.c
-@@ -1981,6 +1981,16 @@ int ext4_resize_fs(struct super_block *sb, ext4_fsblk_t n_blocks_count)
- 	}
- 	brelse(bh);
+diff --git a/drivers/dma/sprd-dma.c b/drivers/dma/sprd-dma.c
+index 0fadf6a08494..4ec9a924a338 100644
+--- a/drivers/dma/sprd-dma.c
++++ b/drivers/dma/sprd-dma.c
+@@ -987,11 +987,8 @@ static int sprd_dma_remove(struct platform_device *pdev)
+ {
+ 	struct sprd_dma_dev *sdev = platform_get_drvdata(pdev);
+ 	struct sprd_dma_chn *c, *cn;
+-	int ret;
  
-+	/*
-+	 * For bigalloc, trim the requested size to the nearest cluster
-+	 * boundary to avoid creating an unusable filesystem. We do this
-+	 * silently, instead of returning an error, to avoid breaking
-+	 * callers that blindly resize the filesystem to the full size of
-+	 * the underlying block device.
-+	 */
-+	if (ext4_has_feature_bigalloc(sb))
-+		n_blocks_count &= ~((1 << EXT4_CLUSTER_BITS(sb)) - 1);
-+
- retry:
- 	o_blocks_count = ext4_blocks_count(es);
+-	ret = pm_runtime_get_sync(&pdev->dev);
+-	if (ret < 0)
+-		return ret;
++	pm_runtime_get_sync(&pdev->dev);
  
+ 	/* explicitly free the irq */
+ 	if (sdev->irq > 0)
 -- 
 2.35.1
 
