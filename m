@@ -2,42 +2,40 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7CADAC32793
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 11:11:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 96EAAC3F6B0
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 11:11:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357359AbiHWLKp (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 07:10:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54192 "EHLO
+        id S244199AbiHWLL0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 23 Aug 2022 07:11:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55358 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356962AbiHWLJn (ORCPT
+        with ESMTP id S1357190AbiHWLJy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 07:09:43 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 27F0D6DAEA;
-        Tue, 23 Aug 2022 02:16:39 -0700 (PDT)
+        Tue, 23 Aug 2022 07:09:54 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 99256883FE;
+        Tue, 23 Aug 2022 02:16:53 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 0EF5B60F85;
-        Tue, 23 Aug 2022 09:16:38 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1A971C433D6;
-        Tue, 23 Aug 2022 09:16:36 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 4F619B8105C;
+        Tue, 23 Aug 2022 09:16:51 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7B697C433D7;
+        Tue, 23 Aug 2022 09:16:49 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661246197;
-        bh=9A2z22znlbAYApTQ0zMZkzZR+kK9hXo38msPUj15JF4=;
+        s=korg; t=1661246210;
+        bh=7M4uIosGCQ+JVXn5ixS/gPXhPLLzxgVy6nzH25ETjwQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=P5l5fKCZXvcBiPmFMj17q0JQfk+3+QUbzNv6mV+vRDbJG/wnexkcLfB0spQTzyR/p
-         GiVEnWcQCyrvHTabhhFUTDLNAXTO8CCW6K+Ufgwae6Mb/AAFzicfunITEEX4BIinkt
-         VnfsbZSBr0M+qdtmYzEY18WQ6jwamBbMeUS2oBKE=
+        b=gJK9siP8IirNEzmRJsPB06dZq4G1+ALLsVleRTG7wCnqOH+eIeKbo9BXUukhGZNeG
+         +4DViwZO50n4zHMEwU1iaRo+FbOBOF3G1v2Z5SIiTzw6vLBccPWbmfg+Gj9h5Fu69d
+         HkyDylejg/I5odIBkdmDubVktCpbXIcvMOR9myjI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Johannes Berg <johannes.berg@intel.com>,
-        Jeongik Cha <jeongik@google.com>
-Subject: [PATCH 5.4 008/389] wifi: mac80211_hwsim: use 32-bit skb cookie
-Date:   Tue, 23 Aug 2022 10:21:26 +0200
-Message-Id: <20220823080115.999701671@linuxfoundation.org>
+        stable@vger.kernel.org, Helge Deller <deller@gmx.de>
+Subject: [PATCH 5.4 029/389] parisc: Fix device names in /proc/iomem
+Date:   Tue, 23 Aug 2022 10:21:47 +0200
+Message-Id: <20220823080116.907959741@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220823080115.331990024@linuxfoundation.org>
 References: <20220823080115.331990024@linuxfoundation.org>
@@ -49,65 +47,45 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Johannes Berg <johannes.berg@intel.com>
+From: Helge Deller <deller@gmx.de>
 
-commit cc5250cdb43d444061412df7fae72d2b4acbdf97 upstream.
+commit cab56b51ec0e69128909cef4650e1907248d821b upstream.
 
-We won't really have enough skbs to need a 64-bit cookie,
-and on 32-bit platforms storing the 64-bit cookie into the
-void *rate_driver_data doesn't work anyway. Switch back to
-using just a 32-bit cookie and uintptr_t for the type to
-avoid compiler warnings about all this.
+Fix the output of /proc/iomem to show the real hardware device name
+including the pa_pathname, e.g. "Merlin 160 Core Centronics [8:16:0]".
+Up to now only the pa_pathname ("[8:16.0]") was shown.
 
-Fixes: 4ee186fa7e40 ("wifi: mac80211_hwsim: fix race condition in pending packet")
-Signed-off-by: Johannes Berg <johannes.berg@intel.com>
-Cc: Jeongik Cha <jeongik@google.com>
+Signed-off-by: Helge Deller <deller@gmx.de>
+Cc: <stable@vger.kernel.org> # v4.9+
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/net/wireless/mac80211_hwsim.c |   10 +++++-----
- 1 file changed, 5 insertions(+), 5 deletions(-)
+ arch/parisc/kernel/drivers.c |    9 ++++-----
+ 1 file changed, 4 insertions(+), 5 deletions(-)
 
---- a/drivers/net/wireless/mac80211_hwsim.c
-+++ b/drivers/net/wireless/mac80211_hwsim.c
-@@ -527,7 +527,7 @@ struct mac80211_hwsim_data {
- 	bool ps_poll_pending;
- 	struct dentry *debugfs;
+--- a/arch/parisc/kernel/drivers.c
++++ b/arch/parisc/kernel/drivers.c
+@@ -520,7 +520,6 @@ alloc_pa_dev(unsigned long hpa, struct h
+ 	dev->id.hversion_rev = iodc_data[1] & 0x0f;
+ 	dev->id.sversion = ((iodc_data[4] & 0x0f) << 16) |
+ 			(iodc_data[5] << 8) | iodc_data[6];
+-	dev->hpa.name = parisc_pathname(dev);
+ 	dev->hpa.start = hpa;
+ 	/* This is awkward.  The STI spec says that gfx devices may occupy
+ 	 * 32MB or 64MB.  Unfortunately, we don't know how to tell whether
+@@ -534,10 +533,10 @@ alloc_pa_dev(unsigned long hpa, struct h
+ 		dev->hpa.end = hpa + 0xfff;
+ 	}
+ 	dev->hpa.flags = IORESOURCE_MEM;
+-	name = parisc_hardware_description(&dev->id);
+-	if (name) {
+-		strlcpy(dev->name, name, sizeof(dev->name));
+-	}
++	dev->hpa.name = dev->name;
++	name = parisc_hardware_description(&dev->id) ? : "unknown";
++	snprintf(dev->name, sizeof(dev->name), "%s [%s]",
++		name, parisc_pathname(dev));
  
--	atomic64_t pending_cookie;
-+	atomic_t pending_cookie;
- 	struct sk_buff_head pending;	/* packets pending */
- 	/*
- 	 * Only radios in the same group can communicate together (the
-@@ -1044,7 +1044,7 @@ static void mac80211_hwsim_tx_frame_nl(s
- 	int i;
- 	struct hwsim_tx_rate tx_attempts[IEEE80211_TX_MAX_RATES];
- 	struct hwsim_tx_rate_flag tx_attempts_flags[IEEE80211_TX_MAX_RATES];
--	u64 cookie;
-+	uintptr_t cookie;
- 
- 	if (data->ps != PS_DISABLED)
- 		hdr->frame_control |= cpu_to_le16(IEEE80211_FCTL_PM);
-@@ -1113,7 +1113,7 @@ static void mac80211_hwsim_tx_frame_nl(s
- 		goto nla_put_failure;
- 
- 	/* We create a cookie to identify this skb */
--	cookie = (u64)atomic64_inc_return(&data->pending_cookie);
-+	cookie = atomic_inc_return(&data->pending_cookie);
- 	info->rate_driver_data[0] = (void *)cookie;
- 	if (nla_put_u64_64bit(skb, HWSIM_ATTR_COOKIE, cookie, HWSIM_ATTR_PAD))
- 		goto nla_put_failure;
-@@ -3286,10 +3286,10 @@ static int hwsim_tx_info_frame_received_
- 	/* look for the skb matching the cookie passed back from user */
- 	spin_lock_irqsave(&data2->pending.lock, flags);
- 	skb_queue_walk_safe(&data2->pending, skb, tmp) {
--		u64 skb_cookie;
-+		uintptr_t skb_cookie;
- 
- 		txi = IEEE80211_SKB_CB(skb);
--		skb_cookie = (u64)(uintptr_t)txi->rate_driver_data[0];
-+		skb_cookie = (uintptr_t)txi->rate_driver_data[0];
- 
- 		if (skb_cookie == ret_skb_cookie) {
- 			__skb_unlink(skb, &data2->pending);
+ 	/* Silently fail things like mouse ports which are subsumed within
+ 	 * the keyboard controller
 
 
