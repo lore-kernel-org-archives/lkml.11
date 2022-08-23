@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4962BC32772
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 12:24:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F2146C32772
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 12:24:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242198AbiHWMYV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 08:24:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58588 "EHLO
+        id S235782AbiHWMYc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 23 Aug 2022 08:24:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58520 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349443AbiHWMUV (ORCPT
+        with ESMTP id S1348949AbiHWMUM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 08:20:21 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4D22CF0755;
-        Tue, 23 Aug 2022 02:42:56 -0700 (PDT)
+        Tue, 23 Aug 2022 08:20:12 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E45ADEF025;
+        Tue, 23 Aug 2022 02:42:57 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 432FCB81C65;
-        Tue, 23 Aug 2022 09:42:20 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 85FE5C433C1;
-        Tue, 23 Aug 2022 09:42:18 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id AF850B81C89;
+        Tue, 23 Aug 2022 09:42:32 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1FC84C433C1;
+        Tue, 23 Aug 2022 09:42:30 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661247739;
-        bh=Sw8sZaaV+SLQFmYNa5RCXouWlQlH5UNh2cXBCCpME04=;
+        s=korg; t=1661247751;
+        bh=XCAFwGt6ZZvGEEsPqFEisCf1nOo3sIPK3uhYeB8yzeQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=fHufDvrjiQCYk+BZmLjVXZ1sr0Q5Q3XKMOANakFrIO7ioWwFc2ID8uimiMS86x5tI
-         34KIB/92UADCxvW4QkKfgh+IS0ox77+tdlZZ4ZtTVwlTMRtA7BbY77TWdGmpiqnLVH
-         /KSE1jRLp9ZQzRLmG7ZGut7TBrLLEdvZkJLuQRa4=
+        b=BQXZifPs5FNaDfocvSlLTO84FaaVnl+BQHV93kQ0uLOct6lEHUlMR4rWkGYjS4Cpr
+         P88FI77pQRAT59pYzuN0DSGdBwKMOixNSKrGMqmMFO0Fc9zuZ/EoVYDY+OBjaLyhEO
+         IunSBPXkqZ4mz+eBazmioIiuu2g28LzXPDOF1LDY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Ye Bin <yebin10@huawei.com>,
-        Jan Kara <jack@suse.cz>, Theodore Tso <tytso@mit.edu>,
+        stable@vger.kernel.org,
+        Laurent Pinchart <laurent.pinchart@ideasonboard.com>,
+        Michael Grzeschik <m.grzeschik@pengutronix.de>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 130/158] ext4: avoid remove directory when directory is corrupted
-Date:   Tue, 23 Aug 2022 10:27:42 +0200
-Message-Id: <20220823080051.123560650@linuxfoundation.org>
+Subject: [PATCH 5.10 105/158] usb: gadget: uvc: call uvc uvcg_warn on completed status instead of uvcg_info
+Date:   Tue, 23 Aug 2022 10:27:17 +0200
+Message-Id: <20220823080050.244956812@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220823080046.056825146@linuxfoundation.org>
 References: <20220823080046.056825146@linuxfoundation.org>
@@ -49,41 +50,36 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Ye Bin <yebin10@huawei.com>
+From: Michael Grzeschik <m.grzeschik@pengutronix.de>
 
-[ Upstream commit b24e77ef1c6d4dbf42749ad4903c97539cc9755a ]
+[ Upstream commit a725d0f6dfc5d3739d6499f30ec865305ba3544d ]
 
-Now if check directoy entry is corrupted, ext4_empty_dir may return true
-then directory will be removed when file system mounted with "errors=continue".
-In order not to make things worse just return false when directory is corrupted.
+Likewise to the uvcvideo hostside driver, this patch is changing the
+usb_request message of an non zero completion handler call from dev_info
+to dev_warn.
 
-Signed-off-by: Ye Bin <yebin10@huawei.com>
-Reviewed-by: Jan Kara <jack@suse.cz>
-Link: https://lore.kernel.org/r/20220622090223.682234-1-yebin10@huawei.com
-Signed-off-by: Theodore Ts'o <tytso@mit.edu>
+Reviewed-by: Laurent Pinchart <laurent.pinchart@ideasonboard.com>
+Signed-off-by: Michael Grzeschik <m.grzeschik@pengutronix.de>
+Link: https://lore.kernel.org/r/20220529223848.105914-4-m.grzeschik@pengutronix.de
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- fs/ext4/namei.c | 7 ++-----
- 1 file changed, 2 insertions(+), 5 deletions(-)
+ drivers/usb/gadget/function/uvc_video.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/fs/ext4/namei.c b/fs/ext4/namei.c
-index afc20d32c9fd..58b0f1b12095 100644
---- a/fs/ext4/namei.c
-+++ b/fs/ext4/namei.c
-@@ -2961,11 +2961,8 @@ bool ext4_empty_dir(struct inode *inode)
- 		de = (struct ext4_dir_entry_2 *) (bh->b_data +
- 					(offset & (sb->s_blocksize - 1)));
- 		if (ext4_check_dir_entry(inode, NULL, de, bh,
--					 bh->b_data, bh->b_size, offset)) {
--			offset = (offset | (sb->s_blocksize - 1)) + 1;
--			continue;
--		}
--		if (le32_to_cpu(de->inode)) {
-+					 bh->b_data, bh->b_size, offset) ||
-+		    le32_to_cpu(de->inode)) {
- 			brelse(bh);
- 			return false;
- 		}
+diff --git a/drivers/usb/gadget/function/uvc_video.c b/drivers/usb/gadget/function/uvc_video.c
+index 633e23d58d86..5ce548c2359d 100644
+--- a/drivers/usb/gadget/function/uvc_video.c
++++ b/drivers/usb/gadget/function/uvc_video.c
+@@ -159,7 +159,7 @@ uvc_video_complete(struct usb_ep *ep, struct usb_request *req)
+ 		break;
+ 
+ 	default:
+-		uvcg_info(&video->uvc->func,
++		uvcg_warn(&video->uvc->func,
+ 			  "VS request completed with status %d.\n",
+ 			  req->status);
+ 		uvcg_queue_cancel(queue, 0);
 -- 
 2.35.1
 
