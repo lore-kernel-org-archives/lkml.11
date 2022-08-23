@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 92C08C32792
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 80D64C32772
 	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 10:47:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356026AbiHWKqR (ORCPT
+        id S1356001AbiHWKqM (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 06:46:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41606 "EHLO
+        Tue, 23 Aug 2022 06:46:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50020 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355495AbiHWKij (ORCPT
+        with ESMTP id S1355389AbiHWKij (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 23 Aug 2022 06:38:39 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 334401EEF5;
-        Tue, 23 Aug 2022 02:07:50 -0700 (PDT)
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1744E85F90;
+        Tue, 23 Aug 2022 02:07:48 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id BCB9F6159E;
-        Tue, 23 Aug 2022 09:07:49 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B57E0C433C1;
-        Tue, 23 Aug 2022 09:07:48 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 6A4CDB81C53;
+        Tue, 23 Aug 2022 09:07:47 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B1702C433C1;
+        Tue, 23 Aug 2022 09:07:45 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661245669;
-        bh=boTzLUsBAj1F2wZ4ou4VPjMXnGttbkrUw1RUr52Rtk0=;
+        s=korg; t=1661245666;
+        bh=/+eRUPMPZDWrhSIl0FMK0dBhrrqdcIZx5ZENoVmu4KY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=JG0Jtf+re1XvJnpW2gquyZUiSIg0EBTfTLEmL1a8gwzPjB1b3c+RNzhDXLQLvqyi2
-         NsReil7pCmrgm1m9L5cT4ctsBRpnVU9a13r78SnS6GXNV4XUEM+xt6SwRPhQiJNbxJ
-         Ph44O/kChSlvgSRZbrRzC0nXPgxVqcP6yKEYOPLY=
+        b=cfLIWVZEOw1aJriTYtZ+dztSynhTQVzVIlvUmLz4z+ojMVG+5deJUbW5GgQ68BKKg
+         jxkaksB8rXvMtecszrDP41Op3KREeICmeTcGqPdJkbqiMV+pkT42L0jvnpNjCo4P1t
+         vLd8uLP/08m2lH2ZmAOxP9iGCKc7e1YItDfVnim4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Daniel Starke <daniel.starke@siemens.com>,
+        stable@vger.kernel.org, Chen Zhongjin <chenzhongjin@huawei.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.19 152/287] tty: n_gsm: fix non flow control frames during mux flow off
-Date:   Tue, 23 Aug 2022 10:25:21 +0200
-Message-Id: <20220823080105.730518417@linuxfoundation.org>
+Subject: [PATCH 4.19 151/287] profiling: fix shift too large makes kernel panic
+Date:   Tue, 23 Aug 2022 10:25:20 +0200
+Message-Id: <20220823080105.688319242@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220823080100.268827165@linuxfoundation.org>
 References: <20220823080100.268827165@linuxfoundation.org>
@@ -49,114 +50,89 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Daniel Starke <daniel.starke@siemens.com>
+From: Chen Zhongjin <chenzhongjin@huawei.com>
 
-[ Upstream commit bec0224816d19abe4fe503586d16d51890540615 ]
+[ Upstream commit 0fe6ee8f123a4dfb529a5aff07536bb481f34043 ]
 
-n_gsm is based on the 3GPP 07.010 and its newer version is the 3GPP 27.010.
-See https://portal.3gpp.org/desktopmodules/Specifications/SpecificationDetails.aspx?specificationId=1516
-The changes from 07.010 to 27.010 are non-functional. Therefore, I refer to
-the newer 27.010 here. Chapter 5.4.6.3.6 states that FCoff stops the
-transmission on all channels except the control channel. This is already
-implemented in gsm_data_kick(). However, chapter 5.4.8.1 explains that this
-shall result in the same behavior as software flow control on the ldisc in
-advanced option mode. That means only flow control frames shall be sent
-during flow off. The current implementation does not consider this case.
+2d186afd04d6 ("profiling: fix shift-out-of-bounds bugs") limits shift
+value by [0, BITS_PER_LONG -1], which means [0, 63].
 
-Change gsm_data_kick() to send only flow control frames if constipated to
-abide the standard. gsm_read_ea_val() and gsm_is_flow_ctrl_msg() are
-introduced as helper functions for this.
-It is planned to use gsm_read_ea_val() in later code cleanups for other
-functions, too.
+However, syzbot found that the max shift value should be the bit number of
+(_etext - _stext).  If shift is outside of this, the "buffer_bytes" will
+be zero and will cause kzalloc(0).  Then the kernel panics due to
+dereferencing the returned pointer 16.
 
-Fixes: c01af4fec2c8 ("n_gsm : Flow control handling in Mux driver")
-Signed-off-by: Daniel Starke <daniel.starke@siemens.com>
-Link: https://lore.kernel.org/r/20220701061652.39604-5-daniel.starke@siemens.com
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+This can be easily reproduced by passing a large number like 60 to enable
+profiling and then run readprofile.
+
+LOGS:
+ BUG: kernel NULL pointer dereference, address: 0000000000000010
+ #PF: supervisor write access in kernel mode
+ #PF: error_code(0x0002) - not-present page
+ PGD 6148067 P4D 6148067 PUD 6142067 PMD 0
+ PREEMPT SMP
+ CPU: 4 PID: 184 Comm: readprofile Not tainted 5.18.0+ #162
+ Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS rel-1.15.0-0-g2dd4b9b3f840-prebuilt.qemu.org 04/01/2014
+ RIP: 0010:read_profile+0x104/0x220
+ RSP: 0018:ffffc900006fbe80 EFLAGS: 00000202
+ RAX: 0000000000000000 RBX: 0000000000000000 RCX: 0000000000000000
+ RDX: ffff888006150000 RSI: 0000000000000001 RDI: ffffffff82aba4a0
+ RBP: 000000000188bb60 R08: 0000000000000010 R09: ffff888006151000
+ R10: 0000000000000000 R11: 0000000000000000 R12: ffffffff82aba4a0
+ R13: 0000000000000000 R14: ffffc900006fbf08 R15: 0000000000020c30
+ FS:  000000000188a8c0(0000) GS:ffff88803ed00000(0000) knlGS:0000000000000000
+ CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+ CR2: 0000000000000010 CR3: 0000000006144000 CR4: 00000000000006e0
+ Call Trace:
+  <TASK>
+  proc_reg_read+0x56/0x70
+  vfs_read+0x9a/0x1b0
+  ksys_read+0xa1/0xe0
+  ? fpregs_assert_state_consistent+0x1e/0x40
+  do_syscall_64+0x3a/0x80
+  entry_SYSCALL_64_after_hwframe+0x46/0xb0
+ RIP: 0033:0x4d4b4e
+ RSP: 002b:00007ffebb668d58 EFLAGS: 00000246 ORIG_RAX: 0000000000000000
+ RAX: ffffffffffffffda RBX: 000000000188a8a0 RCX: 00000000004d4b4e
+ RDX: 0000000000000400 RSI: 000000000188bb60 RDI: 0000000000000003
+ RBP: 0000000000000003 R08: 000000000000006e R09: 0000000000000000
+ R10: 0000000000000041 R11: 0000000000000246 R12: 000000000188bb60
+ R13: 0000000000000400 R14: 0000000000000000 R15: 000000000188bb60
+  </TASK>
+ Modules linked in:
+ CR2: 0000000000000010
+Killed
+ ---[ end trace 0000000000000000 ]---
+
+Check prof_len in profile_init() to prevent it be zero.
+
+Link: https://lkml.kernel.org/r/20220531012854.229439-1-chenzhongjin@huawei.com
+Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
+Signed-off-by: Chen Zhongjin <chenzhongjin@huawei.com>
+Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/tty/n_gsm.c | 54 ++++++++++++++++++++++++++++++++++++++++++++-
- 1 file changed, 53 insertions(+), 1 deletion(-)
+ kernel/profile.c | 7 +++++++
+ 1 file changed, 7 insertions(+)
 
-diff --git a/drivers/tty/n_gsm.c b/drivers/tty/n_gsm.c
-index 5d2bb4d95186..baadac224c8d 100644
---- a/drivers/tty/n_gsm.c
-+++ b/drivers/tty/n_gsm.c
-@@ -410,6 +410,27 @@ static int gsm_read_ea(unsigned int *val, u8 c)
- 	return c & EA;
- }
+diff --git a/kernel/profile.c b/kernel/profile.c
+index efa58f63dc1b..7fc621404230 100644
+--- a/kernel/profile.c
++++ b/kernel/profile.c
+@@ -108,6 +108,13 @@ int __ref profile_init(void)
  
-+/**
-+ *	gsm_read_ea_val	-	read a value until EA
-+ *	@val: variable holding value
-+ *	@data: buffer of data
-+ *	@dlen: length of data
-+ *
-+ *	Processes an EA value. Updates the passed variable and
-+ *	returns the processed data length.
-+ */
-+static unsigned int gsm_read_ea_val(unsigned int *val, const u8 *data, int dlen)
-+{
-+	unsigned int len = 0;
+ 	/* only text is profiled */
+ 	prof_len = (_etext - _stext) >> prof_shift;
 +
-+	for (; dlen > 0; dlen--) {
-+		len++;
-+		if (gsm_read_ea(val, *data++))
-+			break;
-+	}
-+	return len;
-+}
-+
- /**
-  *	gsm_encode_modem	-	encode modem data bits
-  *	@dlci: DLCI to encode from
-@@ -657,6 +678,37 @@ static struct gsm_msg *gsm_data_alloc(struct gsm_mux *gsm, u8 addr, int len,
- 	return m;
- }
- 
-+/**
-+ *	gsm_is_flow_ctrl_msg	-	checks if flow control message
-+ *	@msg: message to check
-+ *
-+ *	Returns true if the given message is a flow control command of the
-+ *	control channel. False is returned in any other case.
-+ */
-+static bool gsm_is_flow_ctrl_msg(struct gsm_msg *msg)
-+{
-+	unsigned int cmd;
-+
-+	if (msg->addr > 0)
-+		return false;
-+
-+	switch (msg->ctrl & ~PF) {
-+	case UI:
-+	case UIH:
-+		cmd = 0;
-+		if (gsm_read_ea_val(&cmd, msg->data + 2, msg->len - 2) < 1)
-+			break;
-+		switch (cmd & ~PF) {
-+		case CMD_FCOFF:
-+		case CMD_FCON:
-+			return true;
-+		}
-+		break;
++	if (!prof_len) {
++		pr_warn("profiling shift: %u too large\n", prof_shift);
++		prof_on = 0;
++		return -EINVAL;
 +	}
 +
-+	return false;
-+}
-+
- /**
-  *	gsm_data_kick		-	poke the queue
-  *	@gsm: GSM Mux
-@@ -675,7 +727,7 @@ static void gsm_data_kick(struct gsm_mux *gsm, struct gsm_dlci *dlci)
- 	int len;
+ 	buffer_bytes = prof_len*sizeof(atomic_t);
  
- 	list_for_each_entry_safe(msg, nmsg, &gsm->tx_list, list) {
--		if (gsm->constipated && msg->addr)
-+		if (gsm->constipated && !gsm_is_flow_ctrl_msg(msg))
- 			continue;
- 		if (gsm->encoding != 0) {
- 			gsm->txframe[0] = GSM1_SOF;
+ 	if (!alloc_cpumask_var(&prof_cpu_mask, GFP_KERNEL))
 -- 
 2.35.1
 
