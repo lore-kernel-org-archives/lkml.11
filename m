@@ -2,353 +2,172 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 48CD7C32772
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 22:28:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E8508C32772
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 22:32:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234366AbiHWW15 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 18:27:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52900 "EHLO
+        id S231873AbiHWWcM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 23 Aug 2022 18:32:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33958 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234173AbiHWW0n (ORCPT
+        with ESMTP id S229446AbiHWWcK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 18:26:43 -0400
-Received: from mail-pl1-x630.google.com (mail-pl1-x630.google.com [IPv6:2607:f8b0:4864:20::630])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7610788DEE
-        for <linux-kernel@vger.kernel.org>; Tue, 23 Aug 2022 15:26:28 -0700 (PDT)
-Received: by mail-pl1-x630.google.com with SMTP id 20so14051191plo.10
-        for <linux-kernel@vger.kernel.org>; Tue, 23 Aug 2022 15:26:28 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc;
-        bh=2g/3MCLzDCpdmtDnZTs+VUrGCqjx7zL1ew7xISOO4Ro=;
-        b=eyEdYVeuI7bpD5NQz4xJcxSe5EW/PZsOIgy9tMHlctLj4dE1prqVBsBgPvZX5x34B8
-         FHNlW8E9A+rE70K+7S4zYhL0YCZ1fmGrduJSD9y2Jr8lEqelahq5PvBJqp65OV1YSOVY
-         S7/bocvdGiAJyD6Z0zrX+ib8W7upeLwY+kZM0=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc;
-        bh=2g/3MCLzDCpdmtDnZTs+VUrGCqjx7zL1ew7xISOO4Ro=;
-        b=xSQRyc6NN2KLFj7y8ubENkEjDLF98xNwN+PAvxbpjqSlZx5vFb4qartXri4dsoRWg0
-         4z/Ub8iz/VWoEpH2IMa7GKGgkcisqdThpmomHmQ6KV/REuSC5/RTQFovTQZnIyBOUYUd
-         UkuRRW0XHuAuqHn3Lv0Ps9AIpPHf8nTl+0N2bR0Dw4TBQYnIN9y1Ny5zPvFWrrf8KQf0
-         FT2oCoyfmxtIjWBLzm1HLDgzWFnngA6HbpWjFYOfWsenWaT0eHbAhjL5JBerqH7emHI/
-         X0So1yOgaPBcmYl9TaCxukAFBfJAwQv1yJwbedfUJSJZ8gSiHWRqLRvE7UStQMK+yQBg
-         Cb+A==
-X-Gm-Message-State: ACgBeo0fjgSayXhKKwtoeVTnczklcqqFu8NGIjtFuwAvpXZaepv8MOnA
-        fyyPEhtuFBjwBCsvgNwrtTEFfQq4Vw0LSQ==
-X-Google-Smtp-Source: AA6agR5eUc4nwGM+Kq+07wfg/RAh4lS89wPUN9mny1U1R3ul5DA4gQ1Z+1dGTr8VcJ5+PcIFm6mNMw==
-X-Received: by 2002:a17:90b:1a8c:b0:1fb:6f0a:96a8 with SMTP id ng12-20020a17090b1a8c00b001fb6f0a96a8mr3544937pjb.186.1661293587626;
-        Tue, 23 Aug 2022 15:26:27 -0700 (PDT)
-Received: from evgreen-glaptop.lan ([98.45.66.167])
-        by smtp.gmail.com with ESMTPSA id f76-20020a62384f000000b0052f20d70845sm11256292pfa.150.2022.08.23.15.26.26
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 23 Aug 2022 15:26:27 -0700 (PDT)
-From:   Evan Green <evgreen@chromium.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     gwendal@chromium.org, Eric Biggers <ebiggers@kernel.org>,
-        Matthew Garrett <mgarrett@aurora.tech>, jarkko@kernel.org,
-        zohar@linux.ibm.com, linux-integrity@vger.kernel.org,
-        Pavel Machek <pavel@ucw.cz>, apronin@chromium.org,
-        dlunev@google.com, rjw@rjwysocki.net, linux-pm@vger.kernel.org,
-        corbet@lwn.net, jejb@linux.ibm.com,
-        Evan Green <evgreen@chromium.org>, Hao Wu <hao.wu@rubrik.com>,
-        Len Brown <len.brown@intel.com>,
-        Matthew Garrett <matthewgarrett@google.com>,
-        "Rafael J. Wysocki" <rafael@kernel.org>, axelj <axelj@axis.com>
-Subject: [PATCH v2 10/10] PM: hibernate: seal the encryption key with a PCR policy
-Date:   Tue, 23 Aug 2022 15:25:26 -0700
-Message-Id: <20220823152108.v2.10.Ifce072ae1ef1ce39bd681fff55af13a054045d9f@changeid>
-X-Mailer: git-send-email 2.31.0
-In-Reply-To: <20220823222526.1524851-1-evgreen@chromium.org>
-References: <20220823222526.1524851-1-evgreen@chromium.org>
+        Tue, 23 Aug 2022 18:32:10 -0400
+Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5278438BC
+        for <linux-kernel@vger.kernel.org>; Tue, 23 Aug 2022 15:32:09 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1661293929; x=1692829929;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=m0mibqlSiUgWUUglYhjfbkcHu723/5ZxdtYNMx7xLbc=;
+  b=S85EDPn981Sgve0UVpnQgQX6Tj2cuz30w4ELaR7G2HL8BOMpjA1ScMYj
+   XQRgLZIMnBHO0HgjPFnfes1DIF+b64wMW6J9NUt00+eUXsvszFTJs9wsZ
+   JrM7xlO6zXo6sHMf8RECMZASJiZfXhNXoFBUDr29P8LiZmwlgzOSE7nN1
+   Crx1boBJEIILLFAX8mgxGLpWNKq5U0uL+pceYKRUFey6Z/GwK+tH8XQWz
+   JhNE/giLfh2CqZYobE0rdt1urf1Bzd7ol6Ow84HjzCf54mZ4f0oJzNRWv
+   2uq5pD03qm5dZO7Cnsq9ZsFmAuwEgEI7ZMc3lSZ1ANfYgIIu3DO1pwjhr
+   Q==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10448"; a="293809027"
+X-IronPort-AV: E=Sophos;i="5.93,258,1654585200"; 
+   d="scan'208";a="293809027"
+Received: from orsmga003.jf.intel.com ([10.7.209.27])
+  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Aug 2022 15:32:09 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.93,258,1654585200"; 
+   d="scan'208";a="560349245"
+Received: from lkp-server02.sh.intel.com (HELO 9bbcefcddf9f) ([10.239.97.151])
+  by orsmga003.jf.intel.com with ESMTP; 23 Aug 2022 15:32:07 -0700
+Received: from kbuild by 9bbcefcddf9f with local (Exim 4.96)
+        (envelope-from <lkp@intel.com>)
+        id 1oQcRL-0000ef-02;
+        Tue, 23 Aug 2022 22:32:07 +0000
+Date:   Wed, 24 Aug 2022 06:31:31 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Peter Zijlstra <peterz@infradead.org>
+Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
+        linux-kernel@vger.kernel.org
+Subject: [peterz-queue:perf/wip.rewrite 1/6]
+ arch/s390/kernel/perf_pai_crypto.c:438:18: error: incompatible function
+ pointer types initializing 'void (*)(struct perf_event_pmu_context *, bool)'
+ (aka 'void (*)(struct perf_event_pmu_context *, _Bool)') with an expression
+ of type 'void (struct perf_eve...
+Message-ID: <202208240632.w30XSBZs-lkp@intel.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The key blob is not secret, and by default the TPM will happily unseal
-it regardless of system state. We can protect against that by sealing
-the secret with a PCR policy - if the current PCR state doesn't match,
-the TPM will refuse to release the secret. For now let's just seal it to
-PCR 23. In the long term we may want a more flexible policy around this,
-such as including PCR 7 for PCs or 0 for Chrome OS.
+tree:   https://git.kernel.org/pub/scm/linux/kernel/git/peterz/queue.git perf/wip.rewrite
+head:   9fdadc761cf0e02e39e42d39c6d0f4a64c05ce8b
+commit: d3f415f72634827910cebbcc645c828c78725fa0 [1/6] perf: Rewrite core context handling
+config: s390-randconfig-r014-20220823 (https://download.01.org/0day-ci/archive/20220824/202208240632.w30XSBZs-lkp@intel.com/config)
+compiler: clang version 16.0.0 (https://github.com/llvm/llvm-project b04d01c009d7f66bcca9138d2ce40999eedf104d)
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # install s390 cross compiling tool for clang build
+        # apt-get install binutils-s390x-linux-gnu
+        # https://git.kernel.org/pub/scm/linux/kernel/git/peterz/queue.git/commit/?id=d3f415f72634827910cebbcc645c828c78725fa0
+        git remote add peterz-queue https://git.kernel.org/pub/scm/linux/kernel/git/peterz/queue.git
+        git fetch --no-tags peterz-queue perf/wip.rewrite
+        git checkout d3f415f72634827910cebbcc645c828c78725fa0
+        # save the config file
+        mkdir build_dir && cp config build_dir/.config
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=s390 SHELL=/bin/bash arch/s390/
 
-Sourced-from: Matthew Garrett <mjg59@google.com>
-Signed-off-by: Evan Green <evgreen@chromium.org>
----
-The original version of this patch is here:
-https://patchwork.kernel.org/project/linux-pm/patch/20210220013255.1083202-10-matthewgarrett@google.com/
+If you fix the issue, kindly add following tag where applicable
+Reported-by: kernel test robot <lkp@intel.com>
 
-Changes in v2:
- - Fix sparse warnings
- - Fix session type comment (Andrey)
- - Eliminate extra label in get/create_kernel_key() (Andrey)
- - Call tpm_try_get_ops() before calling tpm2_flush_context().
+All errors (new ones prefixed by >>):
 
- include/linux/tpm.h    |   4 +
- kernel/power/snapenc.c | 164 ++++++++++++++++++++++++++++++++++++++++-
- 2 files changed, 164 insertions(+), 4 deletions(-)
+   In file included from arch/s390/kernel/perf_pai_crypto.c:17:
+   In file included from include/linux/io.h:13:
+   In file included from arch/s390/include/asm/io.h:75:
+   include/asm-generic/io.h:547:31: warning: performing pointer arithmetic on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
+           val = __raw_readb(PCI_IOBASE + addr);
+                             ~~~~~~~~~~ ^
+   include/asm-generic/io.h:560:61: warning: performing pointer arithmetic on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
+           val = __le16_to_cpu((__le16 __force)__raw_readw(PCI_IOBASE + addr));
+                                                           ~~~~~~~~~~ ^
+   include/uapi/linux/byteorder/big_endian.h:37:59: note: expanded from macro '__le16_to_cpu'
+   #define __le16_to_cpu(x) __swab16((__force __u16)(__le16)(x))
+                                                             ^
+   include/uapi/linux/swab.h:102:54: note: expanded from macro '__swab16'
+   #define __swab16(x) (__u16)__builtin_bswap16((__u16)(x))
+                                                        ^
+   In file included from arch/s390/kernel/perf_pai_crypto.c:17:
+   In file included from include/linux/io.h:13:
+   In file included from arch/s390/include/asm/io.h:75:
+   include/asm-generic/io.h:573:61: warning: performing pointer arithmetic on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
+           val = __le32_to_cpu((__le32 __force)__raw_readl(PCI_IOBASE + addr));
+                                                           ~~~~~~~~~~ ^
+   include/uapi/linux/byteorder/big_endian.h:35:59: note: expanded from macro '__le32_to_cpu'
+   #define __le32_to_cpu(x) __swab32((__force __u32)(__le32)(x))
+                                                             ^
+   include/uapi/linux/swab.h:115:54: note: expanded from macro '__swab32'
+   #define __swab32(x) (__u32)__builtin_bswap32((__u32)(x))
+                                                        ^
+   In file included from arch/s390/kernel/perf_pai_crypto.c:17:
+   In file included from include/linux/io.h:13:
+   In file included from arch/s390/include/asm/io.h:75:
+   include/asm-generic/io.h:584:33: warning: performing pointer arithmetic on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
+           __raw_writeb(value, PCI_IOBASE + addr);
+                               ~~~~~~~~~~ ^
+   include/asm-generic/io.h:594:59: warning: performing pointer arithmetic on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
+           __raw_writew((u16 __force)cpu_to_le16(value), PCI_IOBASE + addr);
+                                                         ~~~~~~~~~~ ^
+   include/asm-generic/io.h:604:59: warning: performing pointer arithmetic on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
+           __raw_writel((u32 __force)cpu_to_le32(value), PCI_IOBASE + addr);
+                                                         ~~~~~~~~~~ ^
+   include/asm-generic/io.h:692:20: warning: performing pointer arithmetic on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
+           readsb(PCI_IOBASE + addr, buffer, count);
+                  ~~~~~~~~~~ ^
+   include/asm-generic/io.h:700:20: warning: performing pointer arithmetic on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
+           readsw(PCI_IOBASE + addr, buffer, count);
+                  ~~~~~~~~~~ ^
+   include/asm-generic/io.h:708:20: warning: performing pointer arithmetic on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
+           readsl(PCI_IOBASE + addr, buffer, count);
+                  ~~~~~~~~~~ ^
+   include/asm-generic/io.h:717:21: warning: performing pointer arithmetic on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
+           writesb(PCI_IOBASE + addr, buffer, count);
+                   ~~~~~~~~~~ ^
+   include/asm-generic/io.h:726:21: warning: performing pointer arithmetic on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
+           writesw(PCI_IOBASE + addr, buffer, count);
+                   ~~~~~~~~~~ ^
+   include/asm-generic/io.h:735:21: warning: performing pointer arithmetic on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
+           writesl(PCI_IOBASE + addr, buffer, count);
+                   ~~~~~~~~~~ ^
+>> arch/s390/kernel/perf_pai_crypto.c:438:18: error: incompatible function pointer types initializing 'void (*)(struct perf_event_pmu_context *, bool)' (aka 'void (*)(struct perf_event_pmu_context *, _Bool)') with an expression of type 'void (struct perf_event_context *, bool)' (aka 'void (struct perf_event_context *, _Bool)') [-Wincompatible-function-pointer-types]
+           .sched_task   = paicrypt_sched_task,
+                           ^~~~~~~~~~~~~~~~~~~
+   12 warnings and 1 error generated.
 
-diff --git a/include/linux/tpm.h b/include/linux/tpm.h
-index 438f8bc0a50582..cd520efc515bca 100644
---- a/include/linux/tpm.h
-+++ b/include/linux/tpm.h
-@@ -233,18 +233,22 @@ enum tpm2_command_codes {
- 	TPM2_CC_CONTEXT_LOAD	        = 0x0161,
- 	TPM2_CC_CONTEXT_SAVE	        = 0x0162,
- 	TPM2_CC_FLUSH_CONTEXT	        = 0x0165,
-+	TPM2_CC_START_AUTH_SESSION      = 0x0176,
- 	TPM2_CC_VERIFY_SIGNATURE        = 0x0177,
- 	TPM2_CC_GET_CAPABILITY	        = 0x017A,
- 	TPM2_CC_GET_RANDOM	        = 0x017B,
- 	TPM2_CC_PCR_READ	        = 0x017E,
-+	TPM2_CC_POLICY_PCR              = 0x017F,
- 	TPM2_CC_PCR_EXTEND	        = 0x0182,
- 	TPM2_CC_EVENT_SEQUENCE_COMPLETE = 0x0185,
- 	TPM2_CC_HASH_SEQUENCE_START     = 0x0186,
-+	TPM2_CC_POLICY_GET_DIGEST       = 0x0189,
- 	TPM2_CC_CREATE_LOADED           = 0x0191,
- 	TPM2_CC_LAST		        = 0x0193, /* Spec 1.36 */
- };
- 
- enum tpm2_permanent_handles {
-+	TPM2_RH_NULL		= 0x40000007,
- 	TPM2_RS_PW		= 0x40000009,
- };
- 
-diff --git a/kernel/power/snapenc.c b/kernel/power/snapenc.c
-index 1f08942450775a..02d25f9500cb7f 100644
---- a/kernel/power/snapenc.c
-+++ b/kernel/power/snapenc.c
-@@ -433,6 +433,111 @@ void snapshot_teardown_encryption(struct snapshot_data *data)
- 	memset(data->user_key, 0, sizeof(data->user_key));
- }
- 
-+static int tpm_setup_policy(struct tpm_chip *chip, int *session_handle)
-+{
-+	struct tpm_header *head;
-+	struct tpm_buf buf;
-+	char nonce[32] = {0x00};
-+	int rc;
-+
-+	rc = tpm_buf_init(&buf, TPM2_ST_NO_SESSIONS,
-+			  TPM2_CC_START_AUTH_SESSION);
-+	if (rc)
-+		return rc;
-+
-+	/* Decrypt key */
-+	tpm_buf_append_u32(&buf, TPM2_RH_NULL);
-+
-+	/* Auth entity */
-+	tpm_buf_append_u32(&buf, TPM2_RH_NULL);
-+
-+	/* Nonce - blank is fine here */
-+	tpm_buf_append_u16(&buf, sizeof(nonce));
-+	tpm_buf_append(&buf, nonce, sizeof(nonce));
-+
-+	/* Encrypted secret - empty */
-+	tpm_buf_append_u16(&buf, 0);
-+
-+	/* Session type - policy */
-+	tpm_buf_append_u8(&buf, 0x01);
-+
-+	/* Encryption type - NULL */
-+	tpm_buf_append_u16(&buf, TPM_ALG_NULL);
-+
-+	/* Hash type - SHA256 */
-+	tpm_buf_append_u16(&buf, TPM_ALG_SHA256);
-+
-+	rc = tpm_send(chip, buf.data, tpm_buf_length(&buf));
-+	if (rc)
-+		goto out;
-+
-+	head = (struct tpm_header *)buf.data;
-+	if (be32_to_cpu(head->length) != sizeof(struct tpm_header) +
-+	    sizeof(u32) + sizeof(u16) + sizeof(nonce)) {
-+		rc = -EINVAL;
-+		goto out;
-+	}
-+
-+	*session_handle = be32_to_cpu(*(__be32 *)&buf.data[10]);
-+	memcpy(nonce, &buf.data[16], sizeof(nonce));
-+	tpm_buf_destroy(&buf);
-+	rc = tpm_buf_init(&buf, TPM2_ST_NO_SESSIONS, TPM2_CC_POLICY_PCR);
-+	if (rc)
-+		return rc;
-+
-+	tpm_buf_append_u32(&buf, *session_handle);
-+
-+	/* PCR digest - read from the PCR, we'll verify creation data later */
-+	tpm_buf_append_u16(&buf, 0);
-+
-+	/* One PCR */
-+	tpm_buf_append_u32(&buf, 1);
-+
-+	/* SHA256 banks */
-+	tpm_buf_append_u16(&buf, TPM_ALG_SHA256);
-+
-+	/* Select PCR 23 */
-+	tpm_buf_append_u32(&buf, 0x03000080);
-+	rc = tpm_send(chip, buf.data, tpm_buf_length(&buf));
-+	if (rc)
-+		goto out;
-+
-+out:
-+	tpm_buf_destroy(&buf);
-+	return rc;
-+}
-+
-+static int tpm_policy_get_digest(struct tpm_chip *chip, int handle,
-+				 char *digest)
-+{
-+	struct tpm_header *head;
-+	struct tpm_buf buf;
-+	int rc;
-+
-+	rc = tpm_buf_init(&buf, TPM2_ST_NO_SESSIONS, TPM2_CC_POLICY_GET_DIGEST);
-+	if (rc)
-+		return rc;
-+
-+	tpm_buf_append_u32(&buf, handle);
-+	rc = tpm_send(chip, buf.data, tpm_buf_length(&buf));
-+
-+	if (rc)
-+		goto out;
-+
-+	head = (struct tpm_header *)buf.data;
-+	if (be32_to_cpu(head->length) != sizeof(struct tpm_header) +
-+	    sizeof(u16) + SHA256_DIGEST_SIZE) {
-+		rc = -EINVAL;
-+		goto out;
-+	}
-+
-+	memcpy(digest, &buf.data[12], SHA256_DIGEST_SIZE);
-+
-+out:
-+	tpm_buf_destroy(&buf);
-+	return rc;
-+}
-+
- static int snapshot_setup_encryption_common(struct snapshot_data *data)
- {
- 	int i, rc;
-@@ -492,7 +597,12 @@ static int snapshot_create_kernel_key(struct snapshot_data *data)
- 	struct key *key = NULL;
- 	int ret, i;
- 	/* Create a key sealed by the SRK. */
--	char *keyinfo = "new\t32\tkeyhandle=0x81000000\tcreationpcrs=0x00800000";
-+	char *keyinfo = NULL;
-+	const char *keytemplate =
-+		"new\t32\tkeyhandle=0x81000000\tcreationpcrs=0x00800000\tpolicydigest=%s";
-+	char policy[SHA256_DIGEST_SIZE];
-+	char *policydigest = NULL;
-+	int session_handle = -1;
- 
- 	chip = tpm_default_chip();
- 	if (!chip)
-@@ -524,6 +634,28 @@ static int snapshot_create_kernel_key(struct snapshot_data *data)
- 	if (ret != 0)
- 		goto out;
- 
-+	policydigest = kmalloc(SHA256_DIGEST_SIZE * 2 + 1, GFP_KERNEL);
-+	if (!policydigest) {
-+		ret = -ENOMEM;
-+		goto out;
-+	}
-+
-+	ret = tpm_setup_policy(chip, &session_handle);
-+	if (ret != 0)
-+		goto out;
-+
-+	ret = tpm_policy_get_digest(chip, session_handle, policy);
-+	if (ret != 0)
-+		goto out;
-+
-+	bin2hex(policydigest, policy, SHA256_DIGEST_SIZE);
-+	policydigest[SHA256_DIGEST_SIZE * 2] = '\0';
-+	keyinfo = kasprintf(GFP_KERNEL, keytemplate, policydigest);
-+	if (!keyinfo) {
-+		ret = -ENOMEM;
-+		goto out;
-+	}
-+
- 	key = key_alloc(&key_type_trusted, "swsusp", GLOBAL_ROOT_UID,
- 			GLOBAL_ROOT_GID, cred, 0, KEY_ALLOC_NOT_IN_QUOTA,
- 			NULL);
-@@ -548,7 +680,16 @@ static int snapshot_create_kernel_key(struct snapshot_data *data)
- 		key_put(key);
- 	}
- 
-+	if (session_handle != -1) {
-+		if (tpm_try_get_ops(chip) == 0) {
-+			tpm2_flush_context(chip, session_handle);
-+			tpm_put_ops(chip);
-+		}
-+	}
-+
- 	kfree(digests);
-+	kfree(keyinfo);
-+	kfree(policydigest);
- 	tpm_pcr_reset(chip, 23);
- 
- out_dev:
-@@ -613,13 +754,14 @@ static int snapshot_load_kernel_key(struct snapshot_data *data,
- 
- 	char certhash[SHA256_DIGEST_SIZE];
- 	const struct cred *cred = current_cred();
--	char *keytemplate = "load\t%s\tkeyhandle=0x81000000";
-+	char *keytemplate = "load\t%s\tkeyhandle=0x81000000\tpolicyhandle=0x%x";
- 	struct tpm_digest *digests = NULL;
- 	char *blobstring = NULL;
- 	char *keyinfo = NULL;
- 	struct tpm_chip *chip;
- 	struct key *key = NULL;
- 	struct trusted_key_payload *payload;
-+	int session_handle = -1;
- 	int i, ret;
- 
- 	chip = tpm_default_chip();
-@@ -652,14 +794,21 @@ static int snapshot_load_kernel_key(struct snapshot_data *data,
- 	if (ret != 0)
- 		goto out;
- 
--	blobstring = kmalloc(blob->blob_len * 2, GFP_KERNEL);
-+	ret = tpm_setup_policy(chip, &session_handle);
-+	if (ret != 0)
-+		goto out;
-+
-+	blobstring = kmalloc(blob->blob_len * 2 + 1, GFP_KERNEL);
- 	if (!blobstring) {
- 		ret = -ENOMEM;
- 		goto out;
- 	}
- 
- 	bin2hex(blobstring, blob->blob, blob->blob_len);
--	keyinfo = kasprintf(GFP_KERNEL, keytemplate, blobstring);
-+	blobstring[blob->blob_len * 2] = '\0';
-+	keyinfo = kasprintf(GFP_KERNEL, keytemplate, blobstring,
-+			    session_handle);
-+
- 	if (!keyinfo) {
- 		ret = -ENOMEM;
- 		goto out;
-@@ -742,6 +891,13 @@ static int snapshot_load_kernel_key(struct snapshot_data *data,
- 		key_put(key);
- 	}
- 
-+	if (session_handle != -1) {
-+		if (tpm_try_get_ops(chip) == 0) {
-+			tpm2_flush_context(chip, session_handle);
-+			tpm_put_ops(chip);
-+		}
-+	}
-+
- 	kfree(keyinfo);
- 	kfree(blobstring);
- 	kfree(digests);
+
+vim +438 arch/s390/kernel/perf_pai_crypto.c
+
+39d62336f5c126 Thomas Richter 2022-05-04  428  
+39d62336f5c126 Thomas Richter 2022-05-04  429  /* Performance monitoring unit for mapped counters */
+39d62336f5c126 Thomas Richter 2022-05-04  430  static struct pmu paicrypt = {
+39d62336f5c126 Thomas Richter 2022-05-04  431  	.task_ctx_nr  = perf_invalid_context,
+39d62336f5c126 Thomas Richter 2022-05-04  432  	.event_init   = paicrypt_event_init,
+39d62336f5c126 Thomas Richter 2022-05-04  433  	.add	      = paicrypt_add,
+39d62336f5c126 Thomas Richter 2022-05-04  434  	.del	      = paicrypt_del,
+39d62336f5c126 Thomas Richter 2022-05-04  435  	.start	      = paicrypt_start,
+39d62336f5c126 Thomas Richter 2022-05-04  436  	.stop	      = paicrypt_stop,
+39d62336f5c126 Thomas Richter 2022-05-04  437  	.read	      = paicrypt_read,
+39d62336f5c126 Thomas Richter 2022-05-04 @438  	.sched_task   = paicrypt_sched_task,
+39d62336f5c126 Thomas Richter 2022-05-04  439  	.attr_groups  = paicrypt_attr_groups
+39d62336f5c126 Thomas Richter 2022-05-04  440  };
+39d62336f5c126 Thomas Richter 2022-05-04  441  
+
+:::::: The code at line 438 was first introduced by commit
+:::::: 39d62336f5c126ad6dccdf66cd249f2d0e86d3c9 s390/pai: add support for cryptography counters
+
+:::::: TO: Thomas Richter <tmricht@linux.ibm.com>
+:::::: CC: Heiko Carstens <hca@linux.ibm.com>
+
 -- 
-2.31.0
-
+0-DAY CI Kernel Test Service
+https://01.org/lkp
