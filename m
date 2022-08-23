@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E409CC3F6B0
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 011EEC32774
 	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 09:46:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351782AbiHWJpb (ORCPT
+        id S1351848AbiHWJpf (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 05:45:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42296 "EHLO
+        Tue, 23 Aug 2022 05:45:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41008 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352341AbiHWJlP (ORCPT
+        with ESMTP id S1352441AbiHWJlV (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 05:41:15 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 79F5B79A64;
-        Tue, 23 Aug 2022 01:42:02 -0700 (PDT)
+        Tue, 23 Aug 2022 05:41:21 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A612D99252;
+        Tue, 23 Aug 2022 01:42:07 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id A4318B81C20;
-        Tue, 23 Aug 2022 08:41:59 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E85DBC433D7;
-        Tue, 23 Aug 2022 08:41:57 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 2A386B81C53;
+        Tue, 23 Aug 2022 08:41:40 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 92BC9C433D6;
+        Tue, 23 Aug 2022 08:41:38 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661244118;
-        bh=+fiLNvK/jrxtzfqvF1MMl97JGRcM/wzb8f52HN2rxYg=;
+        s=korg; t=1661244099;
+        bh=s5578OVZR8KPzzrSrJ5oP9AEyfEJlKV7QfcOdlwYxjo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=qIMb5VTLGjBD2i/m6QvyseBZLk/IFLPOK1nEz6YaitNdGYxRZ26mW+i/3daXClX+4
-         bCxvOl3YOIXVPJOwMJsg+1M6DCk/+2/C7jEhc9J4VWmBvE6BaFiWLtetWPuVGEGuZB
-         A4Zlbm8jxpDY7bDdniEcmKfOlq5Eqavu1jwpPPq0=
+        b=XvCuOAWEmmoBACiuXQOqvgTS55PXiLHmiEuzmd2Jhixr0b87CFIzx1dbPHMAUcGg+
+         t2Jv3nECNVWCxWto8DeneA2S8SVN/kzzLnkvGWk0RlbTXAUL7LFNRmI/uWSRRXH4nQ
+         eSjK6HXtsrggXxgXrpADpgwO+a59AbHsEuhdocXo=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Trond Myklebust <trond.myklebust@hammerspace.com>
-Subject: [PATCH 5.15 039/244] NFSv4: Fix races in the legacy idmapper upcall
-Date:   Tue, 23 Aug 2022 10:23:18 +0200
-Message-Id: <20220823080100.362988229@linuxfoundation.org>
+        stable@vger.kernel.org, Krister Johansen <kjlx@templeofstupid.com>,
+        Jiri Olsa <jolsa@kernel.org>,
+        "Steven Rostedt (Google)" <rostedt@goodmis.org>
+Subject: [PATCH 5.15 019/244] tracing/perf: Fix double put of trace event when init fails
+Date:   Tue, 23 Aug 2022 10:22:58 +0200
+Message-Id: <20220823080059.711002766@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220823080059.091088642@linuxfoundation.org>
 References: <20220823080059.091088642@linuxfoundation.org>
@@ -49,138 +50,94 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Trond Myklebust <trond.myklebust@hammerspace.com>
+From: Steven Rostedt (Google) <rostedt@goodmis.org>
 
-commit 51fd2eb52c0ca8275a906eed81878ef50ae94eb0 upstream.
+commit 7249921d94ff64f67b733eca0b68853a62032b3d upstream.
 
-nfs_idmap_instantiate() will cause the process that is waiting in
-request_key_with_auxdata() to wake up and exit. If there is a second
-process waiting for the idmap->idmap_mutex, then it may wake up and
-start a new call to request_key_with_auxdata(). If the call to
-idmap_pipe_downcall() from the first process has not yet finished
-calling nfs_idmap_complete_pipe_upcall_locked(), then we may end up
-triggering the WARN_ON_ONCE() in nfs_idmap_prepare_pipe_upcall().
+If in perf_trace_event_init(), the perf_trace_event_open() fails, then it
+will call perf_trace_event_unreg() which will not only unregister the perf
+trace event, but will also call the put() function of the tp_event.
 
-The fix is to ensure that we clear idmap->idmap_upcall_data before
-calling nfs_idmap_instantiate().
+The problem here is that the trace_event_try_get_ref() is called by the
+caller of perf_trace_event_init() and if perf_trace_event_init() returns a
+failure, it will then call trace_event_put(). But since the
+perf_trace_event_unreg() already called the trace_event_put() function, it
+triggers a WARN_ON().
 
-Fixes: e9ab41b620e4 ("NFSv4: Clean up the legacy idmapper upcall")
-Signed-off-by: Trond Myklebust <trond.myklebust@hammerspace.com>
+ WARNING: CPU: 1 PID: 30309 at kernel/trace/trace_dynevent.c:46 trace_event_dyn_put_ref+0x15/0x20
+
+If perf_trace_event_reg() does not call the trace_event_try_get_ref() then
+the perf_trace_event_unreg() should not be calling trace_event_put(). This
+breaks symmetry and causes bugs like these.
+
+Pull out the trace_event_put() from perf_trace_event_unreg() and call it
+in the locations that perf_trace_event_unreg() is called. This not only
+fixes this bug, but also brings back the proper symmetry of the reg/unreg
+vs get/put logic.
+
+Link: https://lore.kernel.org/all/cover.1660347763.git.kjlx@templeofstupid.com/
+Link: https://lkml.kernel.org/r/20220816192817.43d5e17f@gandalf.local.home
+
+Cc: stable@vger.kernel.org
+Fixes: 1d18538e6a092 ("tracing: Have dynamic events have a ref counter")
+Reported-by: Krister Johansen <kjlx@templeofstupid.com>
+Reviewed-by: Krister Johansen <kjlx@templeofstupid.com>
+Tested-by: Krister Johansen <kjlx@templeofstupid.com>
+Acked-by: Jiri Olsa <jolsa@kernel.org>
+Signed-off-by: Steven Rostedt (Google) <rostedt@goodmis.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- fs/nfs/nfs4idmap.c |   46 ++++++++++++++++++++++++----------------------
- 1 file changed, 24 insertions(+), 22 deletions(-)
+ kernel/trace/trace_event_perf.c | 7 ++++---
+ 1 file changed, 4 insertions(+), 3 deletions(-)
 
---- a/fs/nfs/nfs4idmap.c
-+++ b/fs/nfs/nfs4idmap.c
-@@ -561,22 +561,20 @@ nfs_idmap_prepare_pipe_upcall(struct idm
- 	return true;
- }
+diff --git a/kernel/trace/trace_event_perf.c b/kernel/trace/trace_event_perf.c
+index a114549720d6..61e3a2620fa3 100644
+--- a/kernel/trace/trace_event_perf.c
++++ b/kernel/trace/trace_event_perf.c
+@@ -157,7 +157,7 @@ static void perf_trace_event_unreg(struct perf_event *p_event)
+ 	int i;
  
--static void
--nfs_idmap_complete_pipe_upcall_locked(struct idmap *idmap, int ret)
-+static void nfs_idmap_complete_pipe_upcall(struct idmap_legacy_upcalldata *data,
-+					   int ret)
- {
--	struct key *authkey = idmap->idmap_upcall_data->authkey;
--
--	kfree(idmap->idmap_upcall_data);
--	idmap->idmap_upcall_data = NULL;
--	complete_request_key(authkey, ret);
--	key_put(authkey);
-+	complete_request_key(data->authkey, ret);
-+	key_put(data->authkey);
-+	kfree(data);
- }
+ 	if (--tp_event->perf_refcount > 0)
+-		goto out;
++		return;
  
--static void
--nfs_idmap_abort_pipe_upcall(struct idmap *idmap, int ret)
-+static void nfs_idmap_abort_pipe_upcall(struct idmap *idmap,
-+					struct idmap_legacy_upcalldata *data,
-+					int ret)
- {
--	if (idmap->idmap_upcall_data != NULL)
--		nfs_idmap_complete_pipe_upcall_locked(idmap, ret);
-+	if (cmpxchg(&idmap->idmap_upcall_data, data, NULL) == data)
-+		nfs_idmap_complete_pipe_upcall(data, ret);
- }
+ 	tp_event->class->reg(tp_event, TRACE_REG_PERF_UNREGISTER, NULL);
  
- static int nfs_idmap_legacy_upcall(struct key *authkey, void *aux)
-@@ -613,7 +611,7 @@ static int nfs_idmap_legacy_upcall(struc
- 
- 	ret = rpc_queue_upcall(idmap->idmap_pipe, msg);
- 	if (ret < 0)
--		nfs_idmap_abort_pipe_upcall(idmap, ret);
-+		nfs_idmap_abort_pipe_upcall(idmap, data, ret);
- 
- 	return ret;
- out2:
-@@ -669,6 +667,7 @@ idmap_pipe_downcall(struct file *filp, c
- 	struct request_key_auth *rka;
- 	struct rpc_inode *rpci = RPC_I(file_inode(filp));
- 	struct idmap *idmap = (struct idmap *)rpci->private;
-+	struct idmap_legacy_upcalldata *data;
- 	struct key *authkey;
- 	struct idmap_msg im;
- 	size_t namelen_in;
-@@ -678,10 +677,11 @@ idmap_pipe_downcall(struct file *filp, c
- 	 * will have been woken up and someone else may now have used
- 	 * idmap_key_cons - so after this point we may no longer touch it.
- 	 */
--	if (idmap->idmap_upcall_data == NULL)
-+	data = xchg(&idmap->idmap_upcall_data, NULL);
-+	if (data == NULL)
- 		goto out_noupcall;
- 
--	authkey = idmap->idmap_upcall_data->authkey;
-+	authkey = data->authkey;
- 	rka = get_request_key_auth(authkey);
- 
- 	if (mlen != sizeof(im)) {
-@@ -703,18 +703,17 @@ idmap_pipe_downcall(struct file *filp, c
- 	if (namelen_in == 0 || namelen_in == IDMAP_NAMESZ) {
- 		ret = -EINVAL;
- 		goto out;
--}
-+	}
- 
--	ret = nfs_idmap_read_and_verify_message(&im,
--			&idmap->idmap_upcall_data->idmap_msg,
--			rka->target_key, authkey);
-+	ret = nfs_idmap_read_and_verify_message(&im, &data->idmap_msg,
-+						rka->target_key, authkey);
- 	if (ret >= 0) {
- 		key_set_timeout(rka->target_key, nfs_idmap_cache_timeout);
- 		ret = mlen;
+@@ -176,8 +176,6 @@ static void perf_trace_event_unreg(struct perf_event *p_event)
+ 			perf_trace_buf[i] = NULL;
+ 		}
  	}
- 
- out:
--	nfs_idmap_complete_pipe_upcall_locked(idmap, ret);
-+	nfs_idmap_complete_pipe_upcall(data, ret);
- out_noupcall:
- 	return ret;
- }
-@@ -728,7 +727,7 @@ idmap_pipe_destroy_msg(struct rpc_pipe_m
- 	struct idmap *idmap = data->idmap;
- 
- 	if (msg->errno)
--		nfs_idmap_abort_pipe_upcall(idmap, msg->errno);
-+		nfs_idmap_abort_pipe_upcall(idmap, data, msg->errno);
+-out:
+-	trace_event_put_ref(tp_event);
  }
  
- static void
-@@ -736,8 +735,11 @@ idmap_release_pipe(struct inode *inode)
- {
- 	struct rpc_inode *rpci = RPC_I(inode);
- 	struct idmap *idmap = (struct idmap *)rpci->private;
-+	struct idmap_legacy_upcalldata *data;
- 
--	nfs_idmap_abort_pipe_upcall(idmap, -EPIPE);
-+	data = xchg(&idmap->idmap_upcall_data, NULL);
-+	if (data)
-+		nfs_idmap_complete_pipe_upcall(data, -EPIPE);
+ static int perf_trace_event_open(struct perf_event *p_event)
+@@ -241,6 +239,7 @@ void perf_trace_destroy(struct perf_event *p_event)
+ 	mutex_lock(&event_mutex);
+ 	perf_trace_event_close(p_event);
+ 	perf_trace_event_unreg(p_event);
++	trace_event_put_ref(p_event->tp_event);
+ 	mutex_unlock(&event_mutex);
  }
  
- int nfs_map_name_to_uid(const struct nfs_server *server, const char *name, size_t namelen, kuid_t *uid)
+@@ -292,6 +291,7 @@ void perf_kprobe_destroy(struct perf_event *p_event)
+ 	mutex_lock(&event_mutex);
+ 	perf_trace_event_close(p_event);
+ 	perf_trace_event_unreg(p_event);
++	trace_event_put_ref(p_event->tp_event);
+ 	mutex_unlock(&event_mutex);
+ 
+ 	destroy_local_trace_kprobe(p_event->tp_event);
+@@ -347,6 +347,7 @@ void perf_uprobe_destroy(struct perf_event *p_event)
+ 	mutex_lock(&event_mutex);
+ 	perf_trace_event_close(p_event);
+ 	perf_trace_event_unreg(p_event);
++	trace_event_put_ref(p_event->tp_event);
+ 	mutex_unlock(&event_mutex);
+ 	destroy_local_trace_uprobe(p_event->tp_event);
+ }
+-- 
+2.37.2
+
 
 
