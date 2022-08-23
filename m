@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 79F9BC32792
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 10:04:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A5D67C3F6B0
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 10:04:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242826AbiHWKEl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 06:04:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56642 "EHLO
+        id S1352200AbiHWKEp (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 23 Aug 2022 06:04:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58678 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245198AbiHWKAF (ORCPT
+        with ESMTP id S1351769AbiHWKAg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 06:00:05 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D329F286;
-        Tue, 23 Aug 2022 01:48:14 -0700 (PDT)
+        Tue, 23 Aug 2022 06:00:36 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9884FCD2;
+        Tue, 23 Aug 2022 01:48:18 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id C0EAACE1B44;
-        Tue, 23 Aug 2022 08:48:11 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D88D2C433D6;
-        Tue, 23 Aug 2022 08:48:09 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id E48BBB81C28;
+        Tue, 23 Aug 2022 08:48:17 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 144D0C433C1;
+        Tue, 23 Aug 2022 08:48:15 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661244490;
-        bh=Tmyi9bk+1bbxmTO9xBpQGKNVA74gTxDUx72W9Ihj6ig=;
+        s=korg; t=1661244496;
+        bh=urTZsfCXeDz7WoRcA6SCxIYIvurGxHNJ0Xuosy9QH3E=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=xJhurhNjc+q3PvqRdCSAoxtH0YahNK1fO+m/09EvtsZAmuum530tcjeVBB6mJ4vsd
-         l4tVrsXurwf7bhW8CR4lm/B+gKimBH5im+f17qkpvguVxPFmsN7WuvJYAcE0JuBTWI
-         qqYhEYZctsKJL+r8stzSn+EYgMChvAIHeUt6TQ6E=
+        b=JWXSq3BMOH938qrTOe9PffYlIYyFX84Th0EDh7rFUhwT/byMisNKS1h7drqh1hcr0
+         O4tMs/e3MEHgLslTitYZygo8dYLMBZP7LLswqurIwocnEIVaQV+phc1tXGUhmSKzim
+         k/1dspRg/8PhfS0AQdztgHRJDQ16g5WiDVrGLf60=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Florian Fainelli <f.fainelli@gmail.com>,
-        "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>,
+        stable@vger.kernel.org, Daniel Starke <daniel.starke@siemens.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.14 145/229] tools/thermal: Fix possible path truncations
-Date:   Tue, 23 Aug 2022 10:25:06 +0200
-Message-Id: <20220823080058.853476989@linuxfoundation.org>
+Subject: [PATCH 4.14 128/229] tty: n_gsm: fix DM command
+Date:   Tue, 23 Aug 2022 10:24:49 +0200
+Message-Id: <20220823080058.298743401@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220823080053.202747790@linuxfoundation.org>
 References: <20220823080053.202747790@linuxfoundation.org>
@@ -49,107 +49,40 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Florian Fainelli <f.fainelli@gmail.com>
+From: Daniel Starke <daniel.starke@siemens.com>
 
-[ Upstream commit 6c58cf40e3a1d2f47c09d3489857e9476316788a ]
+[ Upstream commit 18a948c7d90995d127785e308fa7b701df4c499f ]
 
-A build with -D_FORTIFY_SOURCE=2 enabled will produce the following warnings:
+n_gsm is based on the 3GPP 07.010 and its newer version is the 3GPP 27.010.
+See https://portal.3gpp.org/desktopmodules/Specifications/SpecificationDetails.aspx?specificationId=1516
+The changes from 07.010 to 27.010 are non-functional. Therefore, I refer to
+the newer 27.010 here. Chapter 5.3.3 defines the DM response. There exists
+no DM command. However, the current implementation incorrectly sends DM as
+command in case of unexpected UIH frames in gsm_queue().
+Correct this behavior by always sending DM as response.
 
-sysfs.c:63:30: warning: '%s' directive output may be truncated writing up to 255 bytes into a region of size between 0 and 255 [-Wformat-truncation=]
-  snprintf(filepath, 256, "%s/%s", path, filename);
-                              ^~
-Bump up the buffer to PATH_MAX which is the limit and account for all of
-the possible NUL and separators that could lead to exceeding the
-allocated buffer sizes.
-
-Fixes: 94f69966faf8 ("tools/thermal: Introduce tmon, a tool for thermal subsystem")
-Signed-off-by: Florian Fainelli <f.fainelli@gmail.com>
-Signed-off-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
+Fixes: e1eaea46bb40 ("tty: n_gsm line discipline")
+Signed-off-by: Daniel Starke <daniel.starke@siemens.com>
+Link: https://lore.kernel.org/r/20220707113223.3685-2-daniel.starke@siemens.com
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- tools/thermal/tmon/sysfs.c | 24 +++++++++++++-----------
- 1 file changed, 13 insertions(+), 11 deletions(-)
+ drivers/tty/n_gsm.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/tools/thermal/tmon/sysfs.c b/tools/thermal/tmon/sysfs.c
-index 18f523557983..1b17cbc54c9d 100644
---- a/tools/thermal/tmon/sysfs.c
-+++ b/tools/thermal/tmon/sysfs.c
-@@ -22,6 +22,7 @@
- #include <stdint.h>
- #include <dirent.h>
- #include <libintl.h>
-+#include <limits.h>
- #include <ctype.h>
- #include <time.h>
- #include <syslog.h>
-@@ -42,9 +43,9 @@ int sysfs_set_ulong(char *path, char *filename, unsigned long val)
- {
- 	FILE *fd;
- 	int ret = -1;
--	char filepath[256];
-+	char filepath[PATH_MAX + 2]; /* NUL and '/' */
- 
--	snprintf(filepath, 256, "%s/%s", path, filename);
-+	snprintf(filepath, sizeof(filepath), "%s/%s", path, filename);
- 
- 	fd = fopen(filepath, "w");
- 	if (!fd) {
-@@ -66,9 +67,9 @@ static int sysfs_get_ulong(char *path, char *filename, unsigned long *p_ulong)
- {
- 	FILE *fd;
- 	int ret = -1;
--	char filepath[256];
-+	char filepath[PATH_MAX + 2]; /* NUL and '/' */
- 
--	snprintf(filepath, 256, "%s/%s", path, filename);
-+	snprintf(filepath, sizeof(filepath), "%s/%s", path, filename);
- 
- 	fd = fopen(filepath, "r");
- 	if (!fd) {
-@@ -85,9 +86,9 @@ static int sysfs_get_string(char *path, char *filename, char *str)
- {
- 	FILE *fd;
- 	int ret = -1;
--	char filepath[256];
-+	char filepath[PATH_MAX + 2]; /* NUL and '/' */
- 
--	snprintf(filepath, 256, "%s/%s", path, filename);
-+	snprintf(filepath, sizeof(filepath), "%s/%s", path, filename);
- 
- 	fd = fopen(filepath, "r");
- 	if (!fd) {
-@@ -208,8 +209,8 @@ static int find_tzone_cdev(struct dirent *nl, char *tz_name,
- {
- 	unsigned long trip_instance = 0;
- 	char cdev_name_linked[256];
--	char cdev_name[256];
--	char cdev_trip_name[256];
-+	char cdev_name[PATH_MAX];
-+	char cdev_trip_name[PATH_MAX];
- 	int cdev_id;
- 
- 	if (nl->d_type == DT_LNK) {
-@@ -222,7 +223,8 @@ static int find_tzone_cdev(struct dirent *nl, char *tz_name,
- 			return -EINVAL;
+diff --git a/drivers/tty/n_gsm.c b/drivers/tty/n_gsm.c
+index 5f5a7ad4c46a..1d50f3ab4e5a 100644
+--- a/drivers/tty/n_gsm.c
++++ b/drivers/tty/n_gsm.c
+@@ -1906,7 +1906,7 @@ static void gsm_queue(struct gsm_mux *gsm)
+ 			goto invalid;
+ #endif
+ 		if (dlci == NULL || dlci->state != DLCI_OPEN) {
+-			gsm_command(gsm, address, DM|PF);
++			gsm_response(gsm, address, DM|PF);
+ 			return;
  		}
- 		/* find the link to real cooling device record binding */
--		snprintf(cdev_name, 256, "%s/%s", tz_name, nl->d_name);
-+		snprintf(cdev_name, sizeof(cdev_name) - 2, "%s/%s",
-+			 tz_name, nl->d_name);
- 		memset(cdev_name_linked, 0, sizeof(cdev_name_linked));
- 		if (readlink(cdev_name, cdev_name_linked,
- 				sizeof(cdev_name_linked) - 1) != -1) {
-@@ -235,8 +237,8 @@ static int find_tzone_cdev(struct dirent *nl, char *tz_name,
- 			/* find the trip point in which the cdev is binded to
- 			 * in this tzone
- 			 */
--			snprintf(cdev_trip_name, 256, "%s%s", nl->d_name,
--				"_trip_point");
-+			snprintf(cdev_trip_name, sizeof(cdev_trip_name) - 1,
-+				"%s%s", nl->d_name, "_trip_point");
- 			sysfs_get_ulong(tz_name, cdev_trip_name,
- 					&trip_instance);
- 			/* validate trip point range, e.g. trip could return -1
+ 		dlci->data(dlci, gsm->buf, gsm->len);
 -- 
 2.35.1
 
