@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 86697C32772
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 11:50:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5E233C32772
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 11:50:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358597AbiHWLuH (ORCPT
+        id S1358600AbiHWLuN (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 07:50:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56840 "EHLO
+        Tue, 23 Aug 2022 07:50:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57112 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1358489AbiHWLtF (ORCPT
+        with ESMTP id S1358510AbiHWLtM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 07:49:05 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CACDAD25DE;
-        Tue, 23 Aug 2022 02:30:43 -0700 (PDT)
+        Tue, 23 Aug 2022 07:49:12 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 646C7D2928;
+        Tue, 23 Aug 2022 02:30:55 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id BD54E61381;
-        Tue, 23 Aug 2022 09:30:40 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 30BEDC433D7;
-        Tue, 23 Aug 2022 09:30:38 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 7F9D8B81C85;
+        Tue, 23 Aug 2022 09:30:53 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C65A7C433C1;
+        Tue, 23 Aug 2022 09:30:51 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661247040;
-        bh=ACoImR6W7EWMDucrtFWpbZUx7o4KsqUX9cagvLNoOK8=;
+        s=korg; t=1661247052;
+        bh=tlXaeYOTBR4BxZS8c9V7BazF3L0omHcyLCdBs2LcKhk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=cdPRurHxUKK+JaX/bQtgU3opEqmMJtrMMwGNQymx5H2bzKMPIDFdBWlnwtE1DW77j
-         mwB+raHg5FAEenh47E/1gS5cmm7uIfwY+/7ZNBEGP6wOrhF1Y+eds5THH5RrhEWDys
-         a5vLp7VeQz5rW8dVRPuBWDgoGG4cnkbNgEd0j0zQ=
+        b=JDrer+KTTqStsebW2ln0V03NTxBRsCgSLVdRzgnN4MrR2vYYBkgySpxGBTb7M99bq
+         UMEP731T3aKWBHo4+Xe6EG+JBBEvLCv94l5jS5GtJd8f2dvaosMDtMBuHbHqCoFTfj
+         N3O6w9TNsRumWI6KbadIOL15cRuKFQpTwGjP7ncs=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Hulk Robot <hulkci@huawei.com>,
-        Luo Meng <luomeng12@huawei.com>,
-        Mike Snitzer <snitzer@kernel.org>
-Subject: [PATCH 5.4 269/389] dm thin: fix use-after-free crash in dm_sm_register_threshold_callback
-Date:   Tue, 23 Aug 2022 10:25:47 +0200
-Message-Id: <20220823080126.798951833@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Trond Myklebust <trond.myklebust@hammerspace.com>
+Subject: [PATCH 5.4 304/389] NFSv4: Fix races in the legacy idmapper upcall
+Date:   Tue, 23 Aug 2022 10:26:22 +0200
+Message-Id: <20220823080128.266299242@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220823080115.331990024@linuxfoundation.org>
 References: <20220823080115.331990024@linuxfoundation.org>
@@ -50,88 +49,138 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Luo Meng <luomeng12@huawei.com>
+From: Trond Myklebust <trond.myklebust@hammerspace.com>
 
-commit 3534e5a5ed2997ca1b00f44a0378a075bd05e8a3 upstream.
+commit 51fd2eb52c0ca8275a906eed81878ef50ae94eb0 upstream.
 
-Fault inject on pool metadata device reports:
-  BUG: KASAN: use-after-free in dm_pool_register_metadata_threshold+0x40/0x80
-  Read of size 8 at addr ffff8881b9d50068 by task dmsetup/950
+nfs_idmap_instantiate() will cause the process that is waiting in
+request_key_with_auxdata() to wake up and exit. If there is a second
+process waiting for the idmap->idmap_mutex, then it may wake up and
+start a new call to request_key_with_auxdata(). If the call to
+idmap_pipe_downcall() from the first process has not yet finished
+calling nfs_idmap_complete_pipe_upcall_locked(), then we may end up
+triggering the WARN_ON_ONCE() in nfs_idmap_prepare_pipe_upcall().
 
-  CPU: 7 PID: 950 Comm: dmsetup Tainted: G        W         5.19.0-rc6 #1
-  Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS 1.14.0-1.fc33 04/01/2014
-  Call Trace:
-   <TASK>
-   dump_stack_lvl+0x34/0x44
-   print_address_description.constprop.0.cold+0xeb/0x3f4
-   kasan_report.cold+0xe6/0x147
-   dm_pool_register_metadata_threshold+0x40/0x80
-   pool_ctr+0xa0a/0x1150
-   dm_table_add_target+0x2c8/0x640
-   table_load+0x1fd/0x430
-   ctl_ioctl+0x2c4/0x5a0
-   dm_ctl_ioctl+0xa/0x10
-   __x64_sys_ioctl+0xb3/0xd0
-   do_syscall_64+0x35/0x80
-   entry_SYSCALL_64_after_hwframe+0x46/0xb0
+The fix is to ensure that we clear idmap->idmap_upcall_data before
+calling nfs_idmap_instantiate().
 
-This can be easily reproduced using:
-  echo offline > /sys/block/sda/device/state
-  dd if=/dev/zero of=/dev/mapper/thin bs=4k count=10
-  dmsetup load pool --table "0 20971520 thin-pool /dev/sda /dev/sdb 128 0 0"
-
-If a metadata commit fails, the transaction will be aborted and the
-metadata space maps will be destroyed. If a DM table reload then
-happens for this failed thin-pool, a use-after-free will occur in
-dm_sm_register_threshold_callback (called from
-dm_pool_register_metadata_threshold).
-
-Fix this by in dm_pool_register_metadata_threshold() by returning the
--EINVAL error if the thin-pool is in fail mode. Also fail pool_ctr()
-with a new error message: "Error registering metadata threshold".
-
-Fixes: ac8c3f3df65e4 ("dm thin: generate event when metadata threshold passed")
-Cc: stable@vger.kernel.org
-Reported-by: Hulk Robot <hulkci@huawei.com>
-Signed-off-by: Luo Meng <luomeng12@huawei.com>
-Signed-off-by: Mike Snitzer <snitzer@kernel.org>
+Fixes: e9ab41b620e4 ("NFSv4: Clean up the legacy idmapper upcall")
+Signed-off-by: Trond Myklebust <trond.myklebust@hammerspace.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/md/dm-thin-metadata.c |    7 +++++--
- drivers/md/dm-thin.c          |    4 +++-
- 2 files changed, 8 insertions(+), 3 deletions(-)
+ fs/nfs/nfs4idmap.c |   46 ++++++++++++++++++++++++----------------------
+ 1 file changed, 24 insertions(+), 22 deletions(-)
 
---- a/drivers/md/dm-thin-metadata.c
-+++ b/drivers/md/dm-thin-metadata.c
-@@ -2060,10 +2060,13 @@ int dm_pool_register_metadata_threshold(
- 					dm_sm_threshold_fn fn,
- 					void *context)
+--- a/fs/nfs/nfs4idmap.c
++++ b/fs/nfs/nfs4idmap.c
+@@ -560,22 +560,20 @@ nfs_idmap_prepare_pipe_upcall(struct idm
+ 	return true;
+ }
+ 
+-static void
+-nfs_idmap_complete_pipe_upcall_locked(struct idmap *idmap, int ret)
++static void nfs_idmap_complete_pipe_upcall(struct idmap_legacy_upcalldata *data,
++					   int ret)
  {
--	int r;
-+	int r = -EINVAL;
+-	struct key *authkey = idmap->idmap_upcall_data->authkey;
+-
+-	kfree(idmap->idmap_upcall_data);
+-	idmap->idmap_upcall_data = NULL;
+-	complete_request_key(authkey, ret);
+-	key_put(authkey);
++	complete_request_key(data->authkey, ret);
++	key_put(data->authkey);
++	kfree(data);
+ }
  
- 	pmd_write_lock_in_core(pmd);
--	r = dm_sm_register_threshold_callback(pmd->metadata_sm, threshold, fn, context);
-+	if (!pmd->fail_io) {
-+		r = dm_sm_register_threshold_callback(pmd->metadata_sm,
-+						      threshold, fn, context);
+-static void
+-nfs_idmap_abort_pipe_upcall(struct idmap *idmap, int ret)
++static void nfs_idmap_abort_pipe_upcall(struct idmap *idmap,
++					struct idmap_legacy_upcalldata *data,
++					int ret)
+ {
+-	if (idmap->idmap_upcall_data != NULL)
+-		nfs_idmap_complete_pipe_upcall_locked(idmap, ret);
++	if (cmpxchg(&idmap->idmap_upcall_data, data, NULL) == data)
++		nfs_idmap_complete_pipe_upcall(data, ret);
+ }
+ 
+ static int nfs_idmap_legacy_upcall(struct key *authkey, void *aux)
+@@ -612,7 +610,7 @@ static int nfs_idmap_legacy_upcall(struc
+ 
+ 	ret = rpc_queue_upcall(idmap->idmap_pipe, msg);
+ 	if (ret < 0)
+-		nfs_idmap_abort_pipe_upcall(idmap, ret);
++		nfs_idmap_abort_pipe_upcall(idmap, data, ret);
+ 
+ 	return ret;
+ out2:
+@@ -668,6 +666,7 @@ idmap_pipe_downcall(struct file *filp, c
+ 	struct request_key_auth *rka;
+ 	struct rpc_inode *rpci = RPC_I(file_inode(filp));
+ 	struct idmap *idmap = (struct idmap *)rpci->private;
++	struct idmap_legacy_upcalldata *data;
+ 	struct key *authkey;
+ 	struct idmap_msg im;
+ 	size_t namelen_in;
+@@ -677,10 +676,11 @@ idmap_pipe_downcall(struct file *filp, c
+ 	 * will have been woken up and someone else may now have used
+ 	 * idmap_key_cons - so after this point we may no longer touch it.
+ 	 */
+-	if (idmap->idmap_upcall_data == NULL)
++	data = xchg(&idmap->idmap_upcall_data, NULL);
++	if (data == NULL)
+ 		goto out_noupcall;
+ 
+-	authkey = idmap->idmap_upcall_data->authkey;
++	authkey = data->authkey;
+ 	rka = get_request_key_auth(authkey);
+ 
+ 	if (mlen != sizeof(im)) {
+@@ -702,18 +702,17 @@ idmap_pipe_downcall(struct file *filp, c
+ 	if (namelen_in == 0 || namelen_in == IDMAP_NAMESZ) {
+ 		ret = -EINVAL;
+ 		goto out;
+-}
 +	}
- 	pmd_write_unlock(pmd);
  
- 	return r;
---- a/drivers/md/dm-thin.c
-+++ b/drivers/md/dm-thin.c
-@@ -3425,8 +3425,10 @@ static int pool_ctr(struct dm_target *ti
- 						calc_metadata_threshold(pt),
- 						metadata_low_callback,
- 						pool);
--	if (r)
-+	if (r) {
-+		ti->error = "Error registering metadata threshold";
- 		goto out_flags_changed;
-+	}
+-	ret = nfs_idmap_read_and_verify_message(&im,
+-			&idmap->idmap_upcall_data->idmap_msg,
+-			rka->target_key, authkey);
++	ret = nfs_idmap_read_and_verify_message(&im, &data->idmap_msg,
++						rka->target_key, authkey);
+ 	if (ret >= 0) {
+ 		key_set_timeout(rka->target_key, nfs_idmap_cache_timeout);
+ 		ret = mlen;
+ 	}
  
- 	pt->callbacks.congested_fn = pool_is_congested;
- 	dm_table_add_target_callbacks(ti->table, &pt->callbacks);
+ out:
+-	nfs_idmap_complete_pipe_upcall_locked(idmap, ret);
++	nfs_idmap_complete_pipe_upcall(data, ret);
+ out_noupcall:
+ 	return ret;
+ }
+@@ -727,7 +726,7 @@ idmap_pipe_destroy_msg(struct rpc_pipe_m
+ 	struct idmap *idmap = data->idmap;
+ 
+ 	if (msg->errno)
+-		nfs_idmap_abort_pipe_upcall(idmap, msg->errno);
++		nfs_idmap_abort_pipe_upcall(idmap, data, msg->errno);
+ }
+ 
+ static void
+@@ -735,8 +734,11 @@ idmap_release_pipe(struct inode *inode)
+ {
+ 	struct rpc_inode *rpci = RPC_I(inode);
+ 	struct idmap *idmap = (struct idmap *)rpci->private;
++	struct idmap_legacy_upcalldata *data;
+ 
+-	nfs_idmap_abort_pipe_upcall(idmap, -EPIPE);
++	data = xchg(&idmap->idmap_upcall_data, NULL);
++	if (data)
++		nfs_idmap_complete_pipe_upcall(data, -EPIPE);
+ }
+ 
+ int nfs_map_name_to_uid(const struct nfs_server *server, const char *name, size_t namelen, kuid_t *uid)
 
 
