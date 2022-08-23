@@ -2,46 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 09480C32772
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 09:59:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 88E27C32772
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 09:59:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239885AbiHWJ7V (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 05:59:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41876 "EHLO
+        id S242395AbiHWJ72 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 23 Aug 2022 05:59:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42174 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347534AbiHWJzm (ORCPT
+        with ESMTP id S1351651AbiHWJzv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 05:55:42 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 506739FAB7;
-        Tue, 23 Aug 2022 01:46:50 -0700 (PDT)
+        Tue, 23 Aug 2022 05:55:51 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EA64C7B79C;
+        Tue, 23 Aug 2022 01:46:57 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 06FC5CE1B44;
-        Tue, 23 Aug 2022 08:46:47 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1C4E9C433D6;
-        Tue, 23 Aug 2022 08:46:44 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 31391611DD;
+        Tue, 23 Aug 2022 08:46:43 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3A025C433C1;
+        Tue, 23 Aug 2022 08:46:42 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661244405;
-        bh=idwXDovuJudcRH2ebDa2NMriVeD5uSVEG3fLcuZQ+s0=;
+        s=korg; t=1661244402;
+        bh=N9LI/p3/ykPwVyJdtF3lXCtojiqsjqPQIXbLITIPqhk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=tz0e6PbaZ4NyO34N0Ocuiwzql/cb9L0GJFqLUPkI+yndZGlRofULCX13eOln5JYn4
-         u7zbrejoZmk7wozAzHlyd6jFP9V2S/KXZTDiWNxFmqyXaVj/p6wN/oSSJevR2FpwEa
-         vcrd+3cG0HyEZi1bRE6WSxIsz5FKq1s7/XlJymX8=
+        b=uGVDTExJuqYajGh9p7Px+R4eIX5lUKMRDQVQqnDHW00gXhQI2373lS3JrIxXRFT7w
+         SmmAux0oy5lAttULTIEJtX840moEMl7IJOJKn4UEACpa3zGyc1PU9eCwVd6EgaKC6r
+         SKyDaA0MidBArOfNNRK8nEGeWziMh/VysuJNOv0c=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        =?UTF-8?q?Lu=C3=ADs=20Henriques?= <lhenriques@suse.de>,
-        Jeff Layton <jlayton@kernel.org>, Xiubo Li <xiubli@redhat.com>,
-        Ilya Dryomov <idryomov@gmail.com>
-Subject: [PATCH 5.15 089/244] ceph: use correct index when encoding client supported features
-Date:   Tue, 23 Aug 2022 10:24:08 +0200
-Message-Id: <20220823080101.995858671@linuxfoundation.org>
+        stable@vger.kernel.org, Liang He <windhl@126.com>,
+        Will Deacon <will@kernel.org>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 4.14 132/229] iommu/arm-smmu: qcom_iommu: Add of_node_put() when breaking out of loop
+Date:   Tue, 23 Aug 2022 10:24:53 +0200
+Message-Id: <20220823080058.423359732@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220823080059.091088642@linuxfoundation.org>
-References: <20220823080059.091088642@linuxfoundation.org>
+In-Reply-To: <20220823080053.202747790@linuxfoundation.org>
+References: <20220823080053.202747790@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -50,71 +48,44 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Luís Henriques <lhenriques@suse.de>
+From: Liang He <windhl@126.com>
 
-commit fea013e020e6ecc7be75bea0d61697b7e916b44d upstream.
+[ Upstream commit a91eb6803c1c715738682fece095145cbd68fe0b ]
 
-Feature bits have to be encoded into the correct locations.  This hasn't
-been an issue so far because the only hole in the feature bits was in bit
-10 (CEPHFS_FEATURE_RECLAIM_CLIENT), which is located in the 2nd byte.  When
-adding more bits that go beyond the this 2nd byte, the bug will show up.
+In qcom_iommu_has_secure_context(), we should call of_node_put()
+for the reference 'child' when breaking out of for_each_child_of_node()
+which will automatically increase and decrease the refcount.
 
-[xiubli: remove incorrect comment for CEPHFS_FEATURES_CLIENT_SUPPORTED]
-
-Fixes: 9ba1e224538a ("ceph: allocate the correct amount of extra bytes for the session features")
-Signed-off-by: Luís Henriques <lhenriques@suse.de>
-Reviewed-by: Jeff Layton <jlayton@kernel.org>
-Signed-off-by: Xiubo Li <xiubli@redhat.com>
-Signed-off-by: Ilya Dryomov <idryomov@gmail.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Fixes: d051f28c8807 ("iommu/qcom: Initialize secure page table")
+Signed-off-by: Liang He <windhl@126.com>
+Link: https://lore.kernel.org/r/20220719124955.1242171-1-windhl@126.com
+Signed-off-by: Will Deacon <will@kernel.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- fs/ceph/mds_client.c |    7 +++++--
- fs/ceph/mds_client.h |    6 ------
- 2 files changed, 5 insertions(+), 8 deletions(-)
+ drivers/iommu/qcom_iommu.c | 7 +++++--
+ 1 file changed, 5 insertions(+), 2 deletions(-)
 
---- a/fs/ceph/mds_client.c
-+++ b/fs/ceph/mds_client.c
-@@ -1196,14 +1196,17 @@ static int encode_supported_features(voi
- 	if (count > 0) {
- 		size_t i;
- 		size_t size = FEATURE_BYTES(count);
-+		unsigned long bit;
+diff --git a/drivers/iommu/qcom_iommu.c b/drivers/iommu/qcom_iommu.c
+index 920a5df319bc..ad74f64d8876 100644
+--- a/drivers/iommu/qcom_iommu.c
++++ b/drivers/iommu/qcom_iommu.c
+@@ -745,9 +745,12 @@ static bool qcom_iommu_has_secure_context(struct qcom_iommu_dev *qcom_iommu)
+ {
+ 	struct device_node *child;
  
- 		if (WARN_ON_ONCE(*p + 4 + size > end))
- 			return -ERANGE;
- 
- 		ceph_encode_32(p, size);
- 		memset(*p, 0, size);
--		for (i = 0; i < count; i++)
--			((unsigned char*)(*p))[i / 8] |= BIT(feature_bits[i] % 8);
-+		for (i = 0; i < count; i++) {
-+			bit = feature_bits[i];
-+			((unsigned char *)(*p))[bit / 8] |= BIT(bit % 8);
+-	for_each_child_of_node(qcom_iommu->dev->of_node, child)
+-		if (of_device_is_compatible(child, "qcom,msm-iommu-v1-sec"))
++	for_each_child_of_node(qcom_iommu->dev->of_node, child) {
++		if (of_device_is_compatible(child, "qcom,msm-iommu-v1-sec")) {
++			of_node_put(child);
+ 			return true;
 +		}
- 		*p += size;
- 	} else {
- 		if (WARN_ON_ONCE(*p + 4 > end))
---- a/fs/ceph/mds_client.h
-+++ b/fs/ceph/mds_client.h
-@@ -33,10 +33,6 @@ enum ceph_feature_type {
- 	CEPHFS_FEATURE_MAX = CEPHFS_FEATURE_METRIC_COLLECT,
- };
++	}
  
--/*
-- * This will always have the highest feature bit value
-- * as the last element of the array.
-- */
- #define CEPHFS_FEATURES_CLIENT_SUPPORTED {	\
- 	0, 1, 2, 3, 4, 5, 6, 7,			\
- 	CEPHFS_FEATURE_MIMIC,			\
-@@ -45,8 +41,6 @@ enum ceph_feature_type {
- 	CEPHFS_FEATURE_MULTI_RECONNECT,		\
- 	CEPHFS_FEATURE_DELEG_INO,		\
- 	CEPHFS_FEATURE_METRIC_COLLECT,		\
--						\
--	CEPHFS_FEATURE_MAX,			\
+ 	return false;
  }
- #define CEPHFS_FEATURES_CLIENT_REQUIRED {}
- 
+-- 
+2.35.1
+
 
 
