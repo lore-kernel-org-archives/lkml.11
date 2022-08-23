@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DDA9DC32772
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 11:59:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DB5C6C32772
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 11:59:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1359126AbiHWL7j (ORCPT
+        id S1359135AbiHWL7m (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 07:59:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41518 "EHLO
+        Tue, 23 Aug 2022 07:59:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35998 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1359315AbiHWL4g (ORCPT
+        with ESMTP id S1359330AbiHWL4i (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 07:56:36 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 51AAB857E4;
-        Tue, 23 Aug 2022 02:34:08 -0700 (PDT)
+        Tue, 23 Aug 2022 07:56:38 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2131CD6B85;
+        Tue, 23 Aug 2022 02:34:15 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 17632612D6;
-        Tue, 23 Aug 2022 09:34:08 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 069DFC433D6;
-        Tue, 23 Aug 2022 09:34:06 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 91657B81B1F;
+        Tue, 23 Aug 2022 09:34:14 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 04207C433C1;
+        Tue, 23 Aug 2022 09:34:12 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661247247;
-        bh=UlzcKidXqLG4HmGSEd5gPKAWOKksFX8ym+DBmzhofjk=;
+        s=korg; t=1661247253;
+        bh=AUDeBJ3ci24Kx2P8cQDC+D1+oJ3UL+YG5IlIBBeZe9M=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Zt+M1/kKLzuGgz2VlKJf1CiEKPDWN5HwKUm/nMAtvU9P0k6CKmGEO5rdM2qunj3ag
-         ZlfpbVKLsOXEouj5+rSiFp9oS2tlfF7U9/GIzzNTVlGokCrO3S3B0kv54Vqx3ibrm7
-         yj+A76RJhFJh8l58WE9sw1c0S7HAqr0SNpK2wvY0=
+        b=SfS+Q4iZw2QJy2h+J+PHcEwzsnnkpCU2dyEZnoGYWacxjJXAUOQpQ0OgX6A29Mo7K
+         KMC6FOj6/WVarjx5fnOnGm5CM132AMTtCVUZPRqVPPH6nG3TO30m35P00p+oaGZ015
+         KP/jv8xxr4pEpXeb45UfDMh1oT0rtouTU/nvy6Og=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Al Viro <viro@zeniv.linux.org.uk>,
-        Dinh Nguyen <dinguyen@kernel.org>
-Subject: [PATCH 5.4 334/389] nios2: add force_successful_syscall_return()
-Date:   Tue, 23 Aug 2022 10:26:52 +0200
-Message-Id: <20220823080129.465760193@linuxfoundation.org>
+        stable@vger.kernel.org, Duoming Zhou <duoming@zju.edu.cn>,
+        Jakub Kicinski <kuba@kernel.org>
+Subject: [PATCH 5.4 326/389] atm: idt77252: fix use-after-free bugs caused by tst_timer
+Date:   Tue, 23 Aug 2022 10:26:44 +0200
+Message-Id: <20220823080129.129755992@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220823080115.331990024@linuxfoundation.org>
 References: <20220823080115.331990024@linuxfoundation.org>
@@ -49,61 +49,51 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Al Viro <viro@zeniv.linux.org.uk>
+From: Duoming Zhou <duoming@zju.edu.cn>
 
-commit fd0c153daad135d0ec1a53c5dbe6936a724d6ae1 upstream.
+commit 3f4093e2bf4673f218c0bf17d8362337c400e77b upstream.
 
-If we use the ancient SysV syscall ABI, we'd better have tell the
-kernel how to claim that a negative return value is a success.
-Use ->orig_r2 for that - it's inaccessible via ptrace, so it's
-a fair game for changes and it's normally[*] non-negative on return
-from syscall.  Set to -1; syscall is not going to be restart-worthy
-by definition, so we won't interfere with that use either.
+There are use-after-free bugs caused by tst_timer. The root cause
+is that there are no functions to stop tst_timer in idt77252_exit().
+One of the possible race conditions is shown below:
 
-[*] the only exception is rt_sigreturn(), where we skip the entire
-messing with r1/r2 anyway.
+    (thread 1)          |        (thread 2)
+                        |  idt77252_init_one
+                        |    init_card
+                        |      fill_tst
+                        |        mod_timer(&card->tst_timer, ...)
+idt77252_exit           |  (wait a time)
+                        |  tst_timer
+                        |
+                        |    ...
+  kfree(card) // FREE   |
+                        |    card->soft_tst[e] // USE
 
-Fixes: 82ed08dd1b0e ("nios2: Exception handling")
-Signed-off-by: Al Viro <viro@zeniv.linux.org.uk>
-Signed-off-by: Dinh Nguyen <dinguyen@kernel.org>
+The idt77252_dev is deallocated in idt77252_exit() and used in
+timer handler.
+
+This patch adds del_timer_sync() in idt77252_exit() in order that
+the timer handler could be stopped before the idt77252_dev is
+deallocated.
+
+Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
+Signed-off-by: Duoming Zhou <duoming@zju.edu.cn>
+Link: https://lore.kernel.org/r/20220805070008.18007-1-duoming@zju.edu.cn
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/nios2/include/asm/ptrace.h |    2 ++
- arch/nios2/kernel/entry.S       |    6 ++++++
- 2 files changed, 8 insertions(+)
+ drivers/atm/idt77252.c |    1 +
+ 1 file changed, 1 insertion(+)
 
---- a/arch/nios2/include/asm/ptrace.h
-+++ b/arch/nios2/include/asm/ptrace.h
-@@ -74,6 +74,8 @@ extern void show_regs(struct pt_regs *);
- 	((struct pt_regs *)((unsigned long)current_thread_info() + THREAD_SIZE)\
- 		- 1)
+--- a/drivers/atm/idt77252.c
++++ b/drivers/atm/idt77252.c
+@@ -3766,6 +3766,7 @@ static void __exit idt77252_exit(void)
+ 		card = idt77252_chain;
+ 		dev = card->atmdev;
+ 		idt77252_chain = card->next;
++		del_timer_sync(&card->tst_timer);
  
-+#define force_successful_syscall_return() (current_pt_regs()->orig_r2 = -1)
-+
- int do_syscall_trace_enter(void);
- void do_syscall_trace_exit(void);
- #endif /* __ASSEMBLY__ */
---- a/arch/nios2/kernel/entry.S
-+++ b/arch/nios2/kernel/entry.S
-@@ -213,6 +213,9 @@ local_restart:
- translate_rc_and_ret:
- 	movi	r1, 0
- 	bge	r2, zero, 3f
-+	ldw	r1, PT_ORIG_R2(sp)
-+	addi	r1, r1, 1
-+	beq	r1, zero, 3f
- 	sub	r2, zero, r2
- 	movi	r1, 1
- 3:
-@@ -276,6 +279,9 @@ traced_system_call:
- translate_rc_and_ret2:
- 	movi	r1, 0
- 	bge	r2, zero, 4f
-+	ldw	r1, PT_ORIG_R2(sp)
-+	addi	r1, r1, 1
-+	beq	r1, zero, 4f
- 	sub	r2, zero, r2
- 	movi	r1, 1
- 4:
+ 		if (dev->phy->stop)
+ 			dev->phy->stop(dev);
 
 
