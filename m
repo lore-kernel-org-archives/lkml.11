@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 318CBC32793
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 418A1C38147
 	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 12:22:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353953AbiHWMUx (ORCPT
+        id S1354501AbiHWMU7 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 08:20:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55382 "EHLO
+        Tue, 23 Aug 2022 08:20:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47744 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1359615AbiHWMQE (ORCPT
+        with ESMTP id S1359619AbiHWMQE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 23 Aug 2022 08:16:04 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ADB8F69F50;
-        Tue, 23 Aug 2022 02:41:31 -0700 (PDT)
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9F71679EFE;
+        Tue, 23 Aug 2022 02:41:32 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id A4CC0B81C97;
-        Tue, 23 Aug 2022 09:41:21 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id F1745C433C1;
-        Tue, 23 Aug 2022 09:41:19 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 8A63BB81C9A;
+        Tue, 23 Aug 2022 09:40:47 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E3A38C433C1;
+        Tue, 23 Aug 2022 09:40:45 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661247680;
-        bh=0SRfYvpbI5vP3rsuSx3MCV1WVj9+zFGLzEe2YE+I6kY=;
+        s=korg; t=1661247646;
+        bh=mTvSXMU+FqVYUEjrCpZyNd5/4xWQ8kzPmC4oXbY4SGQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=IH2dE0EjyPK5RcdiZ6pFV5RhHrStWRulWV7Me1l/Wqg5Auj48Qjgw71p+viBFv16y
-         lYOi9AybumPEhUwG2J+/dPoSOSriOX5F2ddKMzgIOmr1ZP6BhjBVORZqv/6sp8+9ww
-         wDK6MAYdSgbJysqPf0Cg7ZIxawiw0JCGyXuTBYA8=
+        b=1dJtnoM3vdlM5KSmNP0qgIPoD28UPoiZdnQTrW0f6Ht9JwCyIAVLfMtTop2vt3L0t
+         D20TvYrBS/8QHTwx4vWLxPl+J+GBOntXeNSgvT2RAU3lDjaRfO+I+j+R1GwmprYLIR
+         6GPoOkbCi2Oz2MWMYMx1j17cH1f0BWae4OMlpiQs=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Robert Marko <robimarko@gmail.com>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 113/158] clk: qcom: ipq8074: dont disable gcc_sleep_clk_src
-Date:   Tue, 23 Aug 2022 10:27:25 +0200
-Message-Id: <20220823080050.511996693@linuxfoundation.org>
+        stable@vger.kernel.org,
+        =?UTF-8?q?Martin=20Povi=C5=A1er?= <povik+lin@cutebit.org>,
+        Mark Brown <broonie@kernel.org>
+Subject: [PATCH 5.10 071/158] ASoC: tas2770: Set correct FSYNC polarity
+Date:   Tue, 23 Aug 2022 10:26:43 +0200
+Message-Id: <20220823080048.945485744@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220823080046.056825146@linuxfoundation.org>
 References: <20220823080046.056825146@linuxfoundation.org>
@@ -50,85 +50,96 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Robert Marko <robimarko@gmail.com>
+From: Martin Povišer <povik+lin@cutebit.org>
 
-[ Upstream commit 1bf7305e79aab095196131bdc87a97796e0e3fac ]
+commit e9ac31f0a5d0e246b046c20348954519f91a297f upstream.
 
-Once the usb sleep clocks are disabled, clock framework is trying to
-disable the sleep clock source also.
+Fix setting of FSYNC polarity for DAI formats other than I2S. Also
+add support for polarity inversion.
 
-However, it seems that it cannot be disabled and trying to do so produces:
-[  245.436390] ------------[ cut here ]------------
-[  245.441233] gcc_sleep_clk_src status stuck at 'on'
-[  245.441254] WARNING: CPU: 2 PID: 223 at clk_branch_wait+0x130/0x140
-[  245.450435] Modules linked in: xhci_plat_hcd xhci_hcd dwc3 dwc3_qcom leds_gpio
-[  245.456601] CPU: 2 PID: 223 Comm: sh Not tainted 5.18.0-rc4 #215
-[  245.463889] Hardware name: Xiaomi AX9000 (DT)
-[  245.470050] pstate: 204000c5 (nzCv daIF +PAN -UAO -TCO -DIT -SSBS BTYPE=--)
-[  245.474307] pc : clk_branch_wait+0x130/0x140
-[  245.481073] lr : clk_branch_wait+0x130/0x140
-[  245.485588] sp : ffffffc009f2bad0
-[  245.489838] x29: ffffffc009f2bad0 x28: ffffff8003e6c800 x27: 0000000000000000
-[  245.493057] x26: 0000000000000000 x25: 0000000000000000 x24: ffffff800226ef20
-[  245.500175] x23: ffffffc0089ff550 x22: 0000000000000000 x21: ffffffc008476ad0
-[  245.507294] x20: 0000000000000000 x19: ffffffc00965ac70 x18: fffffffffffc51a7
-[  245.514413] x17: 68702e3030303837 x16: 3a6d726f6674616c x15: ffffffc089f2b777
-[  245.521531] x14: ffffffc0095c9d18 x13: 0000000000000129 x12: 0000000000000129
-[  245.528649] x11: 00000000ffffffea x10: ffffffc009621d18 x9 : 0000000000000001
-[  245.535767] x8 : 0000000000000001 x7 : 0000000000017fe8 x6 : 0000000000000001
-[  245.542885] x5 : ffffff803fdca6d8 x4 : 0000000000000000 x3 : 0000000000000027
-[  245.550002] x2 : 0000000000000027 x1 : 0000000000000023 x0 : 0000000000000026
-[  245.557122] Call trace:
-[  245.564229]  clk_branch_wait+0x130/0x140
-[  245.566490]  clk_branch2_disable+0x2c/0x40
-[  245.570656]  clk_core_disable+0x60/0xb0
-[  245.574561]  clk_core_disable+0x68/0xb0
-[  245.578293]  clk_disable+0x30/0x50
-[  245.582113]  dwc3_qcom_remove+0x60/0xc0 [dwc3_qcom]
-[  245.585588]  platform_remove+0x28/0x60
-[  245.590361]  device_remove+0x4c/0x80
-[  245.594179]  device_release_driver_internal+0x1dc/0x230
-[  245.597914]  device_driver_detach+0x18/0x30
-[  245.602861]  unbind_store+0xec/0x110
-[  245.607027]  drv_attr_store+0x24/0x40
-[  245.610847]  sysfs_kf_write+0x44/0x60
-[  245.614405]  kernfs_fop_write_iter+0x128/0x1c0
-[  245.618052]  new_sync_write+0xc0/0x130
-[  245.622391]  vfs_write+0x1d4/0x2a0
-[  245.626123]  ksys_write+0x58/0xe0
-[  245.629508]  __arm64_sys_write+0x1c/0x30
-[  245.632895]  invoke_syscall.constprop.0+0x5c/0x110
-[  245.636890]  do_el0_svc+0xa0/0x150
-[  245.641488]  el0_svc+0x18/0x60
-[  245.644872]  el0t_64_sync_handler+0xa4/0x130
-[  245.647914]  el0t_64_sync+0x174/0x178
-[  245.652340] ---[ end trace 0000000000000000 ]---
-
-So, add CLK_IS_CRITICAL flag to the clock so that the kernel won't try
-to disable the sleep clock.
-
-Signed-off-by: Robert Marko <robimarko@gmail.com>
-Signed-off-by: Bjorn Andersson <bjorn.andersson@linaro.org>
-Link: https://lore.kernel.org/r/20220515210048.483898-10-robimarko@gmail.com
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Fixes: 1a476abc723e ("tas2770: add tas2770 smart PA kernel driver")
+Signed-off-by: Martin Povišer <povik+lin@cutebit.org>
+Link: https://lore.kernel.org/r/20220808141246.5749-2-povik+lin@cutebit.org
+Signed-off-by: Mark Brown <broonie@kernel.org>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/clk/qcom/gcc-ipq8074.c | 1 +
- 1 file changed, 1 insertion(+)
+ sound/soc/codecs/tas2770.c |   20 +++++++++++++++++++-
+ sound/soc/codecs/tas2770.h |    3 +++
+ 2 files changed, 22 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/clk/qcom/gcc-ipq8074.c b/drivers/clk/qcom/gcc-ipq8074.c
-index 2c2ecfc5e61f..d6d5defb82c9 100644
---- a/drivers/clk/qcom/gcc-ipq8074.c
-+++ b/drivers/clk/qcom/gcc-ipq8074.c
-@@ -662,6 +662,7 @@ static struct clk_branch gcc_sleep_clk_src = {
- 			},
- 			.num_parents = 1,
- 			.ops = &clk_branch2_ops,
-+			.flags = CLK_IS_CRITICAL,
- 		},
- 	},
- };
--- 
-2.35.1
-
+--- a/sound/soc/codecs/tas2770.c
++++ b/sound/soc/codecs/tas2770.c
+@@ -337,7 +337,7 @@ static int tas2770_set_fmt(struct snd_so
+ 	struct snd_soc_component *component = dai->component;
+ 	struct tas2770_priv *tas2770 =
+ 			snd_soc_component_get_drvdata(component);
+-	u8 tdm_rx_start_slot = 0, asi_cfg_1 = 0;
++	u8 tdm_rx_start_slot = 0, invert_fpol = 0, fpol_preinv = 0, asi_cfg_1 = 0;
+ 	int ret;
+ 
+ 	switch (fmt & SND_SOC_DAIFMT_MASTER_MASK) {
+@@ -349,9 +349,15 @@ static int tas2770_set_fmt(struct snd_so
+ 	}
+ 
+ 	switch (fmt & SND_SOC_DAIFMT_INV_MASK) {
++	case SND_SOC_DAIFMT_NB_IF:
++		invert_fpol = 1;
++		fallthrough;
+ 	case SND_SOC_DAIFMT_NB_NF:
+ 		asi_cfg_1 |= TAS2770_TDM_CFG_REG1_RX_RSING;
+ 		break;
++	case SND_SOC_DAIFMT_IB_IF:
++		invert_fpol = 1;
++		fallthrough;
+ 	case SND_SOC_DAIFMT_IB_NF:
+ 		asi_cfg_1 |= TAS2770_TDM_CFG_REG1_RX_FALING;
+ 		break;
+@@ -369,15 +375,19 @@ static int tas2770_set_fmt(struct snd_so
+ 	switch (fmt & SND_SOC_DAIFMT_FORMAT_MASK) {
+ 	case SND_SOC_DAIFMT_I2S:
+ 		tdm_rx_start_slot = 1;
++		fpol_preinv = 0;
+ 		break;
+ 	case SND_SOC_DAIFMT_DSP_A:
+ 		tdm_rx_start_slot = 0;
++		fpol_preinv = 1;
+ 		break;
+ 	case SND_SOC_DAIFMT_DSP_B:
+ 		tdm_rx_start_slot = 1;
++		fpol_preinv = 1;
+ 		break;
+ 	case SND_SOC_DAIFMT_LEFT_J:
+ 		tdm_rx_start_slot = 0;
++		fpol_preinv = 1;
+ 		break;
+ 	default:
+ 		dev_err(tas2770->dev,
+@@ -391,6 +401,14 @@ static int tas2770_set_fmt(struct snd_so
+ 	if (ret < 0)
+ 		return ret;
+ 
++	ret = snd_soc_component_update_bits(component, TAS2770_TDM_CFG_REG0,
++					    TAS2770_TDM_CFG_REG0_FPOL_MASK,
++					    (fpol_preinv ^ invert_fpol)
++					     ? TAS2770_TDM_CFG_REG0_FPOL_RSING
++					     : TAS2770_TDM_CFG_REG0_FPOL_FALING);
++	if (ret < 0)
++		return ret;
++
+ 	return 0;
+ }
+ 
+--- a/sound/soc/codecs/tas2770.h
++++ b/sound/soc/codecs/tas2770.h
+@@ -41,6 +41,9 @@
+ #define TAS2770_TDM_CFG_REG0_31_44_1_48KHZ  0x6
+ #define TAS2770_TDM_CFG_REG0_31_88_2_96KHZ  0x8
+ #define TAS2770_TDM_CFG_REG0_31_176_4_192KHZ  0xa
++#define TAS2770_TDM_CFG_REG0_FPOL_MASK  BIT(0)
++#define TAS2770_TDM_CFG_REG0_FPOL_RSING  0
++#define TAS2770_TDM_CFG_REG0_FPOL_FALING  1
+     /* TDM Configuration Reg1 */
+ #define TAS2770_TDM_CFG_REG1  TAS2770_REG(0X0, 0x0B)
+ #define TAS2770_TDM_CFG_REG1_MASK	GENMASK(5, 1)
 
 
