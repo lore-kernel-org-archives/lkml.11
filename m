@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 56CB8C32774
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 08:22:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F26DEC32774
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 08:22:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242943AbiHWIWe (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 04:22:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43872 "EHLO
+        id S242968AbiHWIWj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 23 Aug 2022 04:22:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41968 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242990AbiHWIQZ (ORCPT
+        with ESMTP id S243058AbiHWIQc (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 04:16:25 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0A8F863C8;
-        Tue, 23 Aug 2022 01:10:47 -0700 (PDT)
+        Tue, 23 Aug 2022 04:16:32 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A331E1BF;
+        Tue, 23 Aug 2022 01:11:09 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 22C246126A;
-        Tue, 23 Aug 2022 08:10:47 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 12E62C433D6;
-        Tue, 23 Aug 2022 08:10:45 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 3F81B61257;
+        Tue, 23 Aug 2022 08:11:09 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 30F93C433C1;
+        Tue, 23 Aug 2022 08:11:08 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661242246;
-        bh=2aHTUycXkri3A1Jm6kJsITOtTncPDRgxibmlOA+RV+U=;
+        s=korg; t=1661242268;
+        bh=X3AJkPmUqLdsQc3MyHd3FN2wXTjAslfCmRrWYx2Pk8U=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=hQg7GxbAgwubu3xlPD8bnE2kTKogS1exgIg3ECnwsrMH4hsIZPLvEvyFDQ38sl7H8
-         sQn0VrCTsxVazd3CKplTrgtyvEGg4TjOEf1bOIRnkVq60B8/lcilLnqYXyfZp/d29P
-         /E3cgAOBam+MSKpShwX5saaQO9xyilM+gP23JoAg=
+        b=zI3sT51cMjRKYJYCSzJ+GyzOkTQXz5KNdtN+hq2YzPlfX+bJbNuoIr1MXHjyIC8iu
+         VviQdit0i5cMO7NDg4IaNL3rj3j97ykg8lNaVKhPSuwlSCG9w+XLZf6WyawiOEbkgA
+         Dja0Kr+oQPCK7/PMwEx8A+OpsxKST/PTbZSTWaE4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        =?UTF-8?q?Pali=20Roh=C3=A1r?= <pali@kernel.org>,
-        Michael Ellerman <mpe@ellerman.id.au>
-Subject: [PATCH 4.9 042/101] powerpc/fsl-pci: Fix Class Code of PCIe Root Port
-Date:   Tue, 23 Aug 2022 10:03:15 +0200
-Message-Id: <20220823080036.149960090@linuxfoundation.org>
+        stable@vger.kernel.org, stable <stable@kernel.org>,
+        Alan Stern <stern@rowland.harvard.edu>,
+        Weitao Wang <WeitaoWang-oc@zhaoxin.com>
+Subject: [PATCH 4.9 045/101] USB: HCD: Fix URB giveback issue in tasklet function
+Date:   Tue, 23 Aug 2022 10:03:18 +0200
+Message-Id: <20220823080036.259251159@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220823080034.579196046@linuxfoundation.org>
 References: <20220823080034.579196046@linuxfoundation.org>
@@ -49,83 +49,124 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Pali Rohár <pali@kernel.org>
+From: Weitao Wang <WeitaoWang-oc@zhaoxin.com>
 
-commit 0c551abfa004ce154d487d91777bf221c808a64f upstream.
+commit 26c6c2f8a907c9e3a2f24990552a4d77235791e6 upstream.
 
-By default old pre-3.0 Freescale PCIe controllers reports invalid PCI Class
-Code 0x0b20 for PCIe Root Port. It can be seen by lspci -b output on P2020
-board which has this pre-3.0 controller:
+Usb core introduce the mechanism of giveback of URB in tasklet context to
+reduce hardware interrupt handling time. On some test situation(such as
+FIO with 4KB block size), when tasklet callback function called to
+giveback URB, interrupt handler add URB node to the bh->head list also.
+If check bh->head list again after finish all URB giveback of local_list,
+then it may introduce a "dynamic balance" between giveback URB and add URB
+to bh->head list. This tasklet callback function may not exit for a long
+time, which will cause other tasklet function calls to be delayed. Some
+real-time applications(such as KB and Mouse) will see noticeable lag.
 
-  $ lspci -bvnn
-  00:00.0 Power PC [0b20]: Freescale Semiconductor Inc P2020E [1957:0070] (rev 21)
-          !!! Invalid class 0b20 for header type 01
-          Capabilities: [4c] Express Root Port (Slot-), MSI 00
+In order to prevent the tasklet function from occupying the cpu for a long
+time at a time, new URBS will not be added to the local_list even though
+the bh->head list is not empty. But also need to ensure the left URB
+giveback to be processed in time, so add a member high_prio for structure
+giveback_urb_bh to prioritize tasklet and schelule this tasklet again if
+bh->head list is not empty.
 
-Fix this issue by programming correct PCI Class Code 0x0604 for PCIe Root
-Port to the Freescale specific PCIe register 0x474.
+At the same time, we are able to prioritize tasklet through structure
+member high_prio. So, replace the local high_prio_bh variable with this
+structure member in usb_hcd_giveback_urb.
 
-With this change lspci -b output is:
-
-  $ lspci -bvnn
-  00:00.0 PCI bridge [0604]: Freescale Semiconductor Inc P2020E [1957:0070] (rev 21) (prog-if 00 [Normal decode])
-          Capabilities: [4c] Express Root Port (Slot-), MSI 00
-
-Without any "Invalid class" error. So class code was properly reflected
-into standard (read-only) PCI register 0x08.
-
-Same fix is already implemented in U-Boot pcie_fsl.c driver in commit:
-http://source.denx.de/u-boot/u-boot/-/commit/d18d06ac35229345a0af80977a408cfbe1d1015b
-
-Fix activated by U-Boot stay active also after booting Linux kernel.
-But boards which use older U-Boot version without that fix are affected and
-still require this fix.
-
-So implement this class code fix also in kernel fsl_pci.c driver.
-
-Cc: stable@vger.kernel.org
-Signed-off-by: Pali Rohár <pali@kernel.org>
-Signed-off-by: Michael Ellerman <mpe@ellerman.id.au>
-Link: https://lore.kernel.org/r/20220706101043.4867-1-pali@kernel.org
+Fixes: 94dfd7edfd5c ("USB: HCD: support giveback of URB in tasklet context")
+Cc: stable <stable@kernel.org>
+Reviewed-by: Alan Stern <stern@rowland.harvard.edu>
+Signed-off-by: Weitao Wang <WeitaoWang-oc@zhaoxin.com>
+Link: https://lore.kernel.org/r/20220726074918.5114-1-WeitaoWang-oc@zhaoxin.com
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/powerpc/sysdev/fsl_pci.c |    8 ++++++++
- arch/powerpc/sysdev/fsl_pci.h |    1 +
- 2 files changed, 9 insertions(+)
+ drivers/usb/core/hcd.c  |   26 +++++++++++++++-----------
+ include/linux/usb/hcd.h |    1 +
+ 2 files changed, 16 insertions(+), 11 deletions(-)
 
---- a/arch/powerpc/sysdev/fsl_pci.c
-+++ b/arch/powerpc/sysdev/fsl_pci.c
-@@ -524,6 +524,7 @@ int fsl_add_bridge(struct platform_devic
- 	struct resource rsrc;
- 	const int *bus_range;
- 	u8 hdr_type, progif;
-+	u32 class_code;
- 	struct device_node *dev;
- 	struct ccsr_pci __iomem *pci;
- 	u16 temp;
-@@ -597,6 +598,13 @@ int fsl_add_bridge(struct platform_devic
- 			PPC_INDIRECT_TYPE_SURPRESS_PRIMARY_BUS;
- 		if (fsl_pcie_check_link(hose))
- 			hose->indirect_type |= PPC_INDIRECT_TYPE_NO_PCIE_LINK;
-+		/* Fix Class Code to PCI_CLASS_BRIDGE_PCI_NORMAL for pre-3.0 controller */
-+		if (in_be32(&pci->block_rev1) < PCIE_IP_REV_3_0) {
-+			early_read_config_dword(hose, 0, 0, PCIE_FSL_CSR_CLASSCODE, &class_code);
-+			class_code &= 0xff;
-+			class_code |= PCI_CLASS_BRIDGE_PCI_NORMAL << 8;
-+			early_write_config_dword(hose, 0, 0, PCIE_FSL_CSR_CLASSCODE, class_code);
-+		}
- 	} else {
- 		/*
- 		 * Set PBFR(PCI Bus Function Register)[10] = 1 to
---- a/arch/powerpc/sysdev/fsl_pci.h
-+++ b/arch/powerpc/sysdev/fsl_pci.h
-@@ -23,6 +23,7 @@ struct platform_device;
+--- a/drivers/usb/core/hcd.c
++++ b/drivers/usb/core/hcd.c
+@@ -1803,7 +1803,6 @@ static void usb_giveback_urb_bh(unsigned
  
- #define PCIE_LTSSM	0x0404		/* PCIE Link Training and Status */
- #define PCIE_LTSSM_L0	0x16		/* L0 state */
-+#define PCIE_FSL_CSR_CLASSCODE	0x474	/* FSL GPEX CSR */
- #define PCIE_IP_REV_2_2		0x02080202 /* PCIE IP block version Rev2.2 */
- #define PCIE_IP_REV_3_0		0x02080300 /* PCIE IP block version Rev3.0 */
- #define PIWAR_EN		0x80000000	/* Enable */
+ 	spin_lock_irq(&bh->lock);
+ 	bh->running = true;
+- restart:
+ 	list_replace_init(&bh->head, &local_list);
+ 	spin_unlock_irq(&bh->lock);
+ 
+@@ -1817,10 +1816,17 @@ static void usb_giveback_urb_bh(unsigned
+ 		bh->completing_ep = NULL;
+ 	}
+ 
+-	/* check if there are new URBs to giveback */
++	/*
++	 * giveback new URBs next time to prevent this function
++	 * from not exiting for a long time.
++	 */
+ 	spin_lock_irq(&bh->lock);
+-	if (!list_empty(&bh->head))
+-		goto restart;
++	if (!list_empty(&bh->head)) {
++		if (bh->high_prio)
++			tasklet_hi_schedule(&bh->bh);
++		else
++			tasklet_schedule(&bh->bh);
++	}
+ 	bh->running = false;
+ 	spin_unlock_irq(&bh->lock);
+ }
+@@ -1845,7 +1851,7 @@ static void usb_giveback_urb_bh(unsigned
+ void usb_hcd_giveback_urb(struct usb_hcd *hcd, struct urb *urb, int status)
+ {
+ 	struct giveback_urb_bh *bh;
+-	bool running, high_prio_bh;
++	bool running;
+ 
+ 	/* pass status to tasklet via unlinked */
+ 	if (likely(!urb->unlinked))
+@@ -1856,13 +1862,10 @@ void usb_hcd_giveback_urb(struct usb_hcd
+ 		return;
+ 	}
+ 
+-	if (usb_pipeisoc(urb->pipe) || usb_pipeint(urb->pipe)) {
++	if (usb_pipeisoc(urb->pipe) || usb_pipeint(urb->pipe))
+ 		bh = &hcd->high_prio_bh;
+-		high_prio_bh = true;
+-	} else {
++	else
+ 		bh = &hcd->low_prio_bh;
+-		high_prio_bh = false;
+-	}
+ 
+ 	spin_lock(&bh->lock);
+ 	list_add_tail(&urb->urb_list, &bh->head);
+@@ -1871,7 +1874,7 @@ void usb_hcd_giveback_urb(struct usb_hcd
+ 
+ 	if (running)
+ 		;
+-	else if (high_prio_bh)
++	else if (bh->high_prio)
+ 		tasklet_hi_schedule(&bh->bh);
+ 	else
+ 		tasklet_schedule(&bh->bh);
+@@ -2880,6 +2883,7 @@ int usb_add_hcd(struct usb_hcd *hcd,
+ 
+ 	/* initialize tasklets */
+ 	init_giveback_urb_bh(&hcd->high_prio_bh);
++	hcd->high_prio_bh.high_prio = true;
+ 	init_giveback_urb_bh(&hcd->low_prio_bh);
+ 
+ 	/* enable irqs just before we start the controller,
+--- a/include/linux/usb/hcd.h
++++ b/include/linux/usb/hcd.h
+@@ -65,6 +65,7 @@
+ 
+ struct giveback_urb_bh {
+ 	bool running;
++	bool high_prio;
+ 	spinlock_t lock;
+ 	struct list_head  head;
+ 	struct tasklet_struct bh;
 
 
