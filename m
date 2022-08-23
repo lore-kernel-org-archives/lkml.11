@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9218AC32772
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 10:44:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B476AC32772
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 10:44:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355811AbiHWKoc (ORCPT
+        id S1355814AbiHWKop (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 06:44:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46262 "EHLO
+        Tue, 23 Aug 2022 06:44:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46360 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355625AbiHWKgp (ORCPT
+        with ESMTP id S1355641AbiHWKgr (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 06:36:45 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0D460A6C06;
-        Tue, 23 Aug 2022 02:07:11 -0700 (PDT)
+        Tue, 23 Aug 2022 06:36:47 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C9347A61E1;
+        Tue, 23 Aug 2022 02:07:16 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 13AA5B81C53;
-        Tue, 23 Aug 2022 09:07:10 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 58804C433D7;
-        Tue, 23 Aug 2022 09:07:08 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 73EBA6158F;
+        Tue, 23 Aug 2022 09:07:15 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6635CC433C1;
+        Tue, 23 Aug 2022 09:07:14 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661245628;
-        bh=n+2iOGiB+qch6T//Hq81dKR36CGWfTGsY3B/xUddBgY=;
+        s=korg; t=1661245634;
+        bh=1+IUZhHuzUKYewP4UBn01S5+ePsHSJ5sNU45ZneqJnI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=D/nP/gpTSxmeyyVpJeFGWpFPo1MkxUQnSCXFIzUtPmaFDrtd15+B7P1/8E7fjK7MY
-         FQZzOctNCbCXFr0CQRASEjB+yYpRwatS6Wj/DMAfdofZHXa6RpOuqhzuoCLvB04fTp
-         9u6Sz7W+BGP1KWcW1kpUYeomMFhBY+EaQyvWdnaY=
+        b=UFYi7mpSUqQnq9di6GotWcuQ1R1SMHGgqM3e2IynI8p69bxaj2UG7OaJiwQvXGz8H
+         F0eNVLX6mxcfYPRpz/NTl/4Wu5VozCP3uKCzbJSts+OAnYbLR2ELUAnvfSkEk/VImF
+         qPe0DiaIwghIDpQ40o5Uo1eB2hF9pkIFryAAURQk=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Liang He <windhl@126.com>,
-        Peter Rosin <peda@axentia.se>, Wolfram Sang <wsa@kernel.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.19 106/287] i2c: mux-gpmux: Add of_node_put() when breaking out of loop
-Date:   Tue, 23 Aug 2022 10:24:35 +0200
-Message-Id: <20220823080103.950950070@linuxfoundation.org>
+        stable@vger.kernel.org, Hangyu Hua <hbh25y@gmail.com>,
+        Kalle Valo <kvalo@kernel.org>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 4.19 108/287] wifi: libertas: Fix possible refcount leak in if_usb_probe()
+Date:   Tue, 23 Aug 2022 10:24:37 +0200
+Message-Id: <20220823080104.010816510@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220823080100.268827165@linuxfoundation.org>
 References: <20220823080100.268827165@linuxfoundation.org>
@@ -50,35 +49,35 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Liang He <windhl@126.com>
+From: Hangyu Hua <hbh25y@gmail.com>
 
-[ Upstream commit 6435319c34704994e19b0767f6a4e6f37439867b ]
+[ Upstream commit 6fd57e1d120bf13d4dc6c200a7cf914e6347a316 ]
 
-In i2c_mux_probe(), we should call of_node_put() when breaking out
-of for_each_child_of_node() which will automatically increase and
-decrease the refcount.
+usb_get_dev will be called before lbs_get_firmware_async which means that
+usb_put_dev need to be called when lbs_get_firmware_async fails.
 
-Fixes: ac8498f0ce53 ("i2c: i2c-mux-gpmux: new driver")
-Signed-off-by: Liang He <windhl@126.com>
-Acked-by: Peter Rosin <peda@axentia.se>
-Signed-off-by: Wolfram Sang <wsa@kernel.org>
+Fixes: ce84bb69f50e ("libertas USB: convert to asynchronous firmware loading")
+Signed-off-by: Hangyu Hua <hbh25y@gmail.com>
+Signed-off-by: Kalle Valo <kvalo@kernel.org>
+Link: https://lore.kernel.org/r/20220620092350.39960-1-hbh25y@gmail.com
+Link: https://lore.kernel.org/r/20220622113402.16969-1-colin.i.king@gmail.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/i2c/muxes/i2c-mux-gpmux.c | 1 +
+ drivers/net/wireless/marvell/libertas/if_usb.c | 1 +
  1 file changed, 1 insertion(+)
 
-diff --git a/drivers/i2c/muxes/i2c-mux-gpmux.c b/drivers/i2c/muxes/i2c-mux-gpmux.c
-index 92cf5f48afe6..5053f1675a29 100644
---- a/drivers/i2c/muxes/i2c-mux-gpmux.c
-+++ b/drivers/i2c/muxes/i2c-mux-gpmux.c
-@@ -141,6 +141,7 @@ static int i2c_mux_probe(struct platform_device *pdev)
+diff --git a/drivers/net/wireless/marvell/libertas/if_usb.c b/drivers/net/wireless/marvell/libertas/if_usb.c
+index f29a154d995c..d75763410cdc 100644
+--- a/drivers/net/wireless/marvell/libertas/if_usb.c
++++ b/drivers/net/wireless/marvell/libertas/if_usb.c
+@@ -283,6 +283,7 @@ static int if_usb_probe(struct usb_interface *intf,
  	return 0;
  
- err_children:
-+	of_node_put(child);
- 	i2c_mux_del_adapters(muxc);
- err_parent:
- 	i2c_put_adapter(parent);
+ err_get_fw:
++	usb_put_dev(udev);
+ 	lbs_remove_card(priv);
+ err_add_card:
+ 	if_usb_reset_device(cardp);
 -- 
 2.35.1
 
