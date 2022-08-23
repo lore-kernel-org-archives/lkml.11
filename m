@@ -2,45 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7162EC32772
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 10:55:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A6D05C32772
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 10:55:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356391AbiHWKzK (ORCPT
+        id S1356373AbiHWKzQ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 06:55:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40018 "EHLO
+        Tue, 23 Aug 2022 06:55:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40094 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355912AbiHWKsZ (ORCPT
+        with ESMTP id S1355947AbiHWKse (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 06:48:25 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F25F6275C2;
-        Tue, 23 Aug 2022 02:12:06 -0700 (PDT)
+        Tue, 23 Aug 2022 06:48:34 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A96EC25E8F;
+        Tue, 23 Aug 2022 02:12:11 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 8DDDC60DB4;
-        Tue, 23 Aug 2022 09:12:06 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8758FC433C1;
-        Tue, 23 Aug 2022 09:12:05 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 6C7E8B81C66;
+        Tue, 23 Aug 2022 09:12:10 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B0C3EC433D6;
+        Tue, 23 Aug 2022 09:12:08 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661245926;
-        bh=1GQ/pb1NhWVt5bXl2j6hJBRaPk2HcFNi7s+o3/H3dws=;
+        s=korg; t=1661245929;
+        bh=OQlvZM+K22KXk20z/y80Vu43gP5UH4g2hFg4EP4s7Wc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=F6KIzF24LxSudk+we6Y8FQc4WprgEf+WWKLPra7SZtHgmFXaDMKkU/g5yrKGjyBcu
-         8SWg0v+vWghUR2tL9olXTZC3gX1X9zLQxt4LM9asB0xe0AwtI1XPnureTcU1Ys6OS/
-         s8rHnFjrtZNqThcvSiteIhu9WW5GzZ/blJvTcmas=
+        b=Ro28e8kxR/SfEbZfBlYwCvrG49ZT/o8oMnVYdAGHgcNFN/hF4QcMcVvpDRaMoJXE+
+         zavLMQyxWtI/HmxLKNDf3uqoIKz4IkmImbZdITq1keLWe+4BS1oGxiQtPXan/u9TT1
+         TATvKEQTyaEOWFBXds4sjf2KL6SQAEMGaMKygZMo=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Eric Dumazet <edumazet@google.com>,
-        Soheil Hassas Yeganeh <soheil@google.com>,
-        Shakeel Butt <shakeelb@google.com>,
-        Wei Wang <weiwan@google.com>,
-        "David S. Miller" <davem@davemloft.net>
-Subject: [PATCH 4.19 206/287] tcp: fix over estimation in sk_forced_mem_schedule()
-Date:   Tue, 23 Aug 2022 10:26:15 +0200
-Message-Id: <20220823080107.839297135@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Trond Myklebust <trond.myklebust@hammerspace.com>
+Subject: [PATCH 4.19 233/287] SUNRPC: Reinitialise the backchannel request buffers before reuse
+Date:   Tue, 23 Aug 2022 10:26:42 +0200
+Message-Id: <20220823080108.889190037@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220823080100.268827165@linuxfoundation.org>
 References: <20220823080100.268827165@linuxfoundation.org>
@@ -52,45 +49,50 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Eric Dumazet <edumazet@google.com>
+From: Trond Myklebust <trond.myklebust@hammerspace.com>
 
-commit c4ee118561a0f74442439b7b5b486db1ac1ddfeb upstream.
+commit 6622e3a73112fc336c1c2c582428fb5ef18e456a upstream.
 
-sk_forced_mem_schedule() has a bug similar to ones fixed
-in commit 7c80b038d23e ("net: fix sk_wmem_schedule() and
-sk_rmem_schedule() errors")
+When we're reusing the backchannel requests instead of freeing them,
+then we should reinitialise any values of the send/receive xdr_bufs so
+that they reflect the available space.
 
-While this bug has little chance to trigger in old kernels,
-we need to fix it before the following patch.
-
-Fixes: d83769a580f1 ("tcp: fix possible deadlock in tcp_send_fin()")
-Signed-off-by: Eric Dumazet <edumazet@google.com>
-Acked-by: Soheil Hassas Yeganeh <soheil@google.com>
-Reviewed-by: Shakeel Butt <shakeelb@google.com>
-Reviewed-by: Wei Wang <weiwan@google.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+Fixes: 0d2a970d0ae5 ("SUNRPC: Fix a backchannel race")
+Signed-off-by: Trond Myklebust <trond.myklebust@hammerspace.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- net/ipv4/tcp_output.c |    7 ++++---
- 1 file changed, 4 insertions(+), 3 deletions(-)
+ net/sunrpc/backchannel_rqst.c |   14 ++++++++++++++
+ 1 file changed, 14 insertions(+)
 
---- a/net/ipv4/tcp_output.c
-+++ b/net/ipv4/tcp_output.c
-@@ -3079,11 +3079,12 @@ void tcp_xmit_retransmit_queue(struct so
-  */
- void sk_forced_mem_schedule(struct sock *sk, int size)
+--- a/net/sunrpc/backchannel_rqst.c
++++ b/net/sunrpc/backchannel_rqst.c
+@@ -69,6 +69,17 @@ static void xprt_free_allocation(struct
+ 	kfree(req);
+ }
+ 
++static void xprt_bc_reinit_xdr_buf(struct xdr_buf *buf)
++{
++	buf->head[0].iov_len = PAGE_SIZE;
++	buf->tail[0].iov_len = 0;
++	buf->pages = NULL;
++	buf->page_len = 0;
++	buf->flags = 0;
++	buf->len = 0;
++	buf->buflen = PAGE_SIZE;
++}
++
+ static int xprt_alloc_xdr_buf(struct xdr_buf *buf, gfp_t gfp_flags)
  {
--	int amt;
-+	int delta, amt;
- 
--	if (size <= sk->sk_forward_alloc)
-+	delta = size - sk->sk_forward_alloc;
-+	if (delta <= 0)
- 		return;
--	amt = sk_mem_pages(size);
-+	amt = sk_mem_pages(delta);
- 	sk->sk_forward_alloc += amt * SK_MEM_QUANTUM;
- 	sk_memory_allocated_add(sk, amt);
- 
+ 	struct page *page;
+@@ -291,6 +302,9 @@ void xprt_free_bc_rqst(struct rpc_rqst *
+ 	 */
+ 	spin_lock_bh(&xprt->bc_pa_lock);
+ 	if (xprt_need_to_requeue(xprt)) {
++		xprt_bc_reinit_xdr_buf(&req->rq_snd_buf);
++		xprt_bc_reinit_xdr_buf(&req->rq_rcv_buf);
++		req->rq_rcv_buf.len = PAGE_SIZE;
+ 		list_add_tail(&req->rq_bc_pa_list, &xprt->bc_pa_list);
+ 		xprt->bc_alloc_count++;
+ 		req = NULL;
 
 
