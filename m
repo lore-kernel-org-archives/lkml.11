@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A154EC32774
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 12:25:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5DDFBC32772
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 12:25:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240785AbiHWMZR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 08:25:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39190 "EHLO
+        id S243117AbiHWMZV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 23 Aug 2022 08:25:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36992 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356820AbiHWMVf (ORCPT
+        with ESMTP id S1357763AbiHWMVo (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 08:21:35 -0400
+        Tue, 23 Aug 2022 08:21:44 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5B918101F7;
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5B99612AA3;
         Tue, 23 Aug 2022 02:43:32 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 1EBA661464;
-        Tue, 23 Aug 2022 09:43:32 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2F989C433D7;
-        Tue, 23 Aug 2022 09:43:31 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id D281B61389;
+        Tue, 23 Aug 2022 09:42:38 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9FB91C433C1;
+        Tue, 23 Aug 2022 09:42:36 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661247811;
-        bh=ou72801z8mN71VTlq2a6SZCJ4zfndl7r4LyeKMh+suU=;
+        s=korg; t=1661247758;
+        bh=YA7qGjAoZ0w68jbN59Y8bWwXYBlkSuhDhVnrXYHcvq8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Njb6/a5Y8tnv1oB0hQZ5u+vN9XRmK3gEqcA2A5RE/9vNstMdM/IjgLXp0wru6sack
-         6/IYqK8PTs7uX+ghyDsJL8vg1U1KExWFGSfLyQtvDSRIDM7W+2vsOhk9GoNFjrKl5c
-         Xn3ssSQuo3GxVnYBH2j1JDbja2jLts8CClrGz/Jg=
+        b=dn/rWDI9B/nlL0EAt08aeqmhd2qmVpdnNwAV4Xb9ST4iJkG2z30K70rmi1/v2TYaw
+         qNATpEttpQ2GMVsWHSFzIbVcBanob5gUZsmtoTNs5nPcZ1CvGTDo0NIIUc9YBPQEeU
+         0ko9B4jUL6o8HCeNoEhJDkzpi+uTuD2LVpU74uK8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Fedor Pchelkin <pchelkin@ispras.ru>,
-        Alexey Khoroshilov <khoroshilov@ispras.ru>,
-        Oleksij Rempel <o.rempel@pengutronix.de>,
-        Marc Kleine-Budde <mkl@pengutronix.de>
-Subject: [PATCH 5.10 154/158] can: j1939: j1939_sk_queue_activate_next_locked(): replace WARN_ON_ONCE with netdev_warn_once()
-Date:   Tue, 23 Aug 2022 10:28:06 +0200
-Message-Id: <20220823080051.996137632@linuxfoundation.org>
+        stable@vger.kernel.org, kernel test robot <lkp@intel.com>,
+        Sai Prakash Ranjan <quic_saipraka@quicinc.com>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Neil Armstrong <narmstrong@baylibre.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.10 107/158] drm/meson: Fix overflow implicit truncation warnings
+Date:   Tue, 23 Aug 2022 10:27:19 +0200
+Message-Id: <20220823080050.305284021@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220823080046.056825146@linuxfoundation.org>
 References: <20220823080046.056825146@linuxfoundation.org>
@@ -50,43 +51,69 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Fedor Pchelkin <pchelkin@ispras.ru>
+From: Sai Prakash Ranjan <quic_saipraka@quicinc.com>
 
-commit 8ef49f7f8244424adcf4a546dba4cbbeb0b09c09 upstream.
+[ Upstream commit 98692f52c588225034cbff458622c2c06dfcb544 ]
 
-We should warn user-space that it is doing something wrong when trying
-to activate sessions with identical parameters but WARN_ON_ONCE macro
-can not be used here as it serves a different purpose.
+Fix -Woverflow warnings for drm/meson driver which is a result
+of moving arm64 custom MMIO accessor macros to asm-generic function
+implementations giving a bonus type-checking now and uncovering these
+overflow warnings.
 
-So it would be good to replace it with netdev_warn_once() message.
+drivers/gpu/drm/meson/meson_viu.c: In function ‘meson_viu_init’:
+drivers/gpu/drm/meson/meson_registers.h:1826:48: error: large integer implicitly truncated to unsigned type [-Werror=overflow]
+ #define  VIU_OSD_BLEND_REORDER(dest, src)      ((src) << (dest * 4))
+                                                ^
+drivers/gpu/drm/meson/meson_viu.c:472:18: note: in expansion of macro ‘VIU_OSD_BLEND_REORDER’
+   writel_relaxed(VIU_OSD_BLEND_REORDER(0, 1) |
+                  ^~~~~~~~~~~~~~~~~~~~~
 
-Found by Linux Verification Center (linuxtesting.org) with Syzkaller.
-
-Fixes: 9d71dd0c7009 ("can: add support of SAE J1939 protocol")
-Signed-off-by: Fedor Pchelkin <pchelkin@ispras.ru>
-Signed-off-by: Alexey Khoroshilov <khoroshilov@ispras.ru>
-Acked-by: Oleksij Rempel <o.rempel@pengutronix.de>
-Link: https://lore.kernel.org/all/20220729143655.1108297-1-pchelkin@ispras.ru
-[mkl: fix indention]
-Signed-off-by: Marc Kleine-Budde <mkl@pengutronix.de>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Reported-by: kernel test robot <lkp@intel.com>
+Signed-off-by: Sai Prakash Ranjan <quic_saipraka@quicinc.com>
+Reviewed-by: Arnd Bergmann <arnd@arndb.de>
+Cc: Arnd Bergmann <arnd@arndb.de>
+Cc: Neil Armstrong <narmstrong@baylibre.com>
+Signed-off-by: Arnd Bergmann <arnd@arndb.de>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/can/j1939/socket.c |    5 ++++-
- 1 file changed, 4 insertions(+), 1 deletion(-)
+ drivers/gpu/drm/meson/meson_viu.c | 22 +++++++++++-----------
+ 1 file changed, 11 insertions(+), 11 deletions(-)
 
---- a/net/can/j1939/socket.c
-+++ b/net/can/j1939/socket.c
-@@ -178,7 +178,10 @@ activate_next:
- 	if (!first)
- 		return;
+diff --git a/drivers/gpu/drm/meson/meson_viu.c b/drivers/gpu/drm/meson/meson_viu.c
+index 259f3e6bec90..bb7e109534de 100644
+--- a/drivers/gpu/drm/meson/meson_viu.c
++++ b/drivers/gpu/drm/meson/meson_viu.c
+@@ -469,17 +469,17 @@ void meson_viu_init(struct meson_drm *priv)
+ 			priv->io_base + _REG(VD2_IF0_LUMA_FIFO_SIZE));
  
--	if (WARN_ON_ONCE(j1939_session_activate(first))) {
-+	if (j1939_session_activate(first)) {
-+		netdev_warn_once(first->priv->ndev,
-+				 "%s: 0x%p: Identical session is already activated.\n",
-+				 __func__, first);
- 		first->err = -EBUSY;
- 		goto activate_next;
- 	} else {
+ 	if (meson_vpu_is_compatible(priv, VPU_COMPATIBLE_G12A)) {
+-		writel_relaxed(VIU_OSD_BLEND_REORDER(0, 1) |
+-			       VIU_OSD_BLEND_REORDER(1, 0) |
+-			       VIU_OSD_BLEND_REORDER(2, 0) |
+-			       VIU_OSD_BLEND_REORDER(3, 0) |
+-			       VIU_OSD_BLEND_DIN_EN(1) |
+-			       VIU_OSD_BLEND1_DIN3_BYPASS_TO_DOUT1 |
+-			       VIU_OSD_BLEND1_DOUT_BYPASS_TO_BLEND2 |
+-			       VIU_OSD_BLEND_DIN0_BYPASS_TO_DOUT0 |
+-			       VIU_OSD_BLEND_BLEN2_PREMULT_EN(1) |
+-			       VIU_OSD_BLEND_HOLD_LINES(4),
+-			       priv->io_base + _REG(VIU_OSD_BLEND_CTRL));
++		u32 val = (u32)VIU_OSD_BLEND_REORDER(0, 1) |
++			  (u32)VIU_OSD_BLEND_REORDER(1, 0) |
++			  (u32)VIU_OSD_BLEND_REORDER(2, 0) |
++			  (u32)VIU_OSD_BLEND_REORDER(3, 0) |
++			  (u32)VIU_OSD_BLEND_DIN_EN(1) |
++			  (u32)VIU_OSD_BLEND1_DIN3_BYPASS_TO_DOUT1 |
++			  (u32)VIU_OSD_BLEND1_DOUT_BYPASS_TO_BLEND2 |
++			  (u32)VIU_OSD_BLEND_DIN0_BYPASS_TO_DOUT0 |
++			  (u32)VIU_OSD_BLEND_BLEN2_PREMULT_EN(1) |
++			  (u32)VIU_OSD_BLEND_HOLD_LINES(4);
++		writel_relaxed(val, priv->io_base + _REG(VIU_OSD_BLEND_CTRL));
+ 
+ 		writel_relaxed(OSD_BLEND_PATH_SEL_ENABLE,
+ 			       priv->io_base + _REG(OSD1_BLEND_SRC_CTRL));
+-- 
+2.35.1
+
 
 
