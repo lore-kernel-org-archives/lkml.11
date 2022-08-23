@@ -2,45 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A4F42C54F2F
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5BB23C3F6B0
 	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 10:43:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356560AbiHWKmg (ORCPT
+        id S1356479AbiHWKmY (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 06:42:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34394 "EHLO
+        Tue, 23 Aug 2022 06:42:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57388 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355012AbiHWKas (ORCPT
+        with ESMTP id S1354939AbiHWKaP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 06:30:48 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B78F685AAA;
-        Tue, 23 Aug 2022 02:06:30 -0700 (PDT)
+        Tue, 23 Aug 2022 06:30:15 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B3B54A50DC;
+        Tue, 23 Aug 2022 02:06:25 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id DFCC761596;
-        Tue, 23 Aug 2022 09:06:29 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DA5A6C433B5;
-        Tue, 23 Aug 2022 09:06:28 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 46416B81C53;
+        Tue, 23 Aug 2022 09:06:24 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 93A24C433C1;
+        Tue, 23 Aug 2022 09:06:22 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661245589;
-        bh=GBN9yMYjGurun1AV7Y40ykMKxztoq6vHXN9KuxWaQRQ=;
+        s=korg; t=1661245583;
+        bh=++8srLu9qMltxs9/aQ1G24uHuH8gkzgiijuKZw5hfGU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=pz3r1zVPgOEpZria0vYEOH3LlyJkmmJIR+jZl0NXdt+hr36FGaONV3qeMlhUzTQh7
-         u8DImZoPaa8ccL7C/5dQI1U/pd6JDrGbZ8rUFxQnTLRZB2VxQ70nRsgB6QAThfo9s3
-         iqRAbgFR8BboITl574qbQvUouV3v0FNWEseD3AjY=
+        b=WwVupt6eDDSkh9ItWbqAWXYXuhashxQ/PpffkWgzRJnXhmReB+BHjxF5feTk/GXjb
+         hWhqdPLCCY2ubioxsGAbxvP9OWJLOwu+b+8ogrTSkesd6oohA2+uRy7SOQLURKemBX
+         rt5/0zgY6HTogQ9760eFxuTJKX7zPKTZfGlmbHgc=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>,
-        Rander Wang <rander.wang@intel.com>,
-        Bard Liao <yung-chuan.liao@linux.intel.com>,
-        Vinod Koul <vkoul@kernel.org>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.19 125/287] soundwire: bus_type: fix remove and shutdown support
-Date:   Tue, 23 Aug 2022 10:24:54 +0200
-Message-Id: <20220823080104.601080377@linuxfoundation.org>
+        stable@vger.kernel.org, Robert Marko <robimarko@gmail.com>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 4.19 123/287] clk: qcom: ipq8074: fix NSS port frequency tables
+Date:   Tue, 23 Aug 2022 10:24:52 +0200
+Message-Id: <20220823080104.540878719@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220823080100.268827165@linuxfoundation.org>
 References: <20220823080100.268827165@linuxfoundation.org>
@@ -52,52 +50,74 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>
+From: Robert Marko <robimarko@gmail.com>
 
-[ Upstream commit df6407782964dc7e35ad84230abb38f46314b245 ]
+[ Upstream commit 0e9e61a2815b5cd34f1b495b2d72e8127ce9b794 ]
 
-The bus sdw_drv_remove() and sdw_drv_shutdown() helpers are used
-conditionally, if the driver provides these routines.
+NSS port 5 and 6 frequency tables are currently broken and are causing a
+wide ranges of issue like 1G not working at all on port 6 or port 5 being
+clocked with 312 instead of 125 MHz as UNIPHY1 gets selected.
 
-These helpers already test if the driver provides a .remove or
-.shutdown callback, so there's no harm in invoking the
-sdw_drv_remove() and sdw_drv_shutdown() unconditionally.
+So, update the frequency tables with the ones from the downstream QCA 5.4
+based kernel which has already fixed this.
 
-In addition, the current code is imbalanced with
-dev_pm_domain_attach() called from sdw_drv_probe(), but
-dev_pm_domain_detach() called from sdw_drv_remove() only if the driver
-provides a .remove callback.
-
-Fixes: 9251345dca24b ("soundwire: Add SoundWire bus type")
-Signed-off-by: Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>
-Reviewed-by: Rander Wang <rander.wang@intel.com>
-Signed-off-by: Bard Liao <yung-chuan.liao@linux.intel.com>
-Link: https://lore.kernel.org/r/20220610015105.25987-1-yung-chuan.liao@linux.intel.com
-Signed-off-by: Vinod Koul <vkoul@kernel.org>
+Fixes: 7117a51ed303 ("clk: qcom: ipq8074: add NSS ethernet port clocks")
+Signed-off-by: Robert Marko <robimarko@gmail.com>
+Signed-off-by: Bjorn Andersson <bjorn.andersson@linaro.org>
+Link: https://lore.kernel.org/r/20220515210048.483898-3-robimarko@gmail.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/soundwire/bus_type.c | 8 ++------
- 1 file changed, 2 insertions(+), 6 deletions(-)
+ drivers/clk/qcom/gcc-ipq8074.c | 8 ++++++++
+ 1 file changed, 8 insertions(+)
 
-diff --git a/drivers/soundwire/bus_type.c b/drivers/soundwire/bus_type.c
-index 283b2832728e..414621f3c43c 100644
---- a/drivers/soundwire/bus_type.c
-+++ b/drivers/soundwire/bus_type.c
-@@ -154,12 +154,8 @@ int __sdw_register_driver(struct sdw_driver *drv, struct module *owner)
+diff --git a/drivers/clk/qcom/gcc-ipq8074.c b/drivers/clk/qcom/gcc-ipq8074.c
+index 708c486a6e96..d9ac10b6624f 100644
+--- a/drivers/clk/qcom/gcc-ipq8074.c
++++ b/drivers/clk/qcom/gcc-ipq8074.c
+@@ -1796,8 +1796,10 @@ static struct clk_regmap_div nss_port4_tx_div_clk_src = {
+ static const struct freq_tbl ftbl_nss_port5_rx_clk_src[] = {
+ 	F(19200000, P_XO, 1, 0, 0),
+ 	F(25000000, P_UNIPHY1_RX, 12.5, 0, 0),
++	F(25000000, P_UNIPHY0_RX, 5, 0, 0),
+ 	F(78125000, P_UNIPHY1_RX, 4, 0, 0),
+ 	F(125000000, P_UNIPHY1_RX, 2.5, 0, 0),
++	F(125000000, P_UNIPHY0_RX, 1, 0, 0),
+ 	F(156250000, P_UNIPHY1_RX, 2, 0, 0),
+ 	F(312500000, P_UNIPHY1_RX, 1, 0, 0),
+ 	{ }
+@@ -1836,8 +1838,10 @@ static struct clk_regmap_div nss_port5_rx_div_clk_src = {
+ static const struct freq_tbl ftbl_nss_port5_tx_clk_src[] = {
+ 	F(19200000, P_XO, 1, 0, 0),
+ 	F(25000000, P_UNIPHY1_TX, 12.5, 0, 0),
++	F(25000000, P_UNIPHY0_TX, 5, 0, 0),
+ 	F(78125000, P_UNIPHY1_TX, 4, 0, 0),
+ 	F(125000000, P_UNIPHY1_TX, 2.5, 0, 0),
++	F(125000000, P_UNIPHY0_TX, 1, 0, 0),
+ 	F(156250000, P_UNIPHY1_TX, 2, 0, 0),
+ 	F(312500000, P_UNIPHY1_TX, 1, 0, 0),
+ 	{ }
+@@ -1875,8 +1879,10 @@ static struct clk_regmap_div nss_port5_tx_div_clk_src = {
  
- 	drv->driver.owner = owner;
- 	drv->driver.probe = sdw_drv_probe;
--
--	if (drv->remove)
--		drv->driver.remove = sdw_drv_remove;
--
--	if (drv->shutdown)
--		drv->driver.shutdown = sdw_drv_shutdown;
-+	drv->driver.remove = sdw_drv_remove;
-+	drv->driver.shutdown = sdw_drv_shutdown;
+ static const struct freq_tbl ftbl_nss_port6_rx_clk_src[] = {
+ 	F(19200000, P_XO, 1, 0, 0),
++	F(25000000, P_UNIPHY2_RX, 5, 0, 0),
+ 	F(25000000, P_UNIPHY2_RX, 12.5, 0, 0),
+ 	F(78125000, P_UNIPHY2_RX, 4, 0, 0),
++	F(125000000, P_UNIPHY2_RX, 1, 0, 0),
+ 	F(125000000, P_UNIPHY2_RX, 2.5, 0, 0),
+ 	F(156250000, P_UNIPHY2_RX, 2, 0, 0),
+ 	F(312500000, P_UNIPHY2_RX, 1, 0, 0),
+@@ -1915,8 +1921,10 @@ static struct clk_regmap_div nss_port6_rx_div_clk_src = {
  
- 	return driver_register(&drv->driver);
- }
+ static const struct freq_tbl ftbl_nss_port6_tx_clk_src[] = {
+ 	F(19200000, P_XO, 1, 0, 0),
++	F(25000000, P_UNIPHY2_TX, 5, 0, 0),
+ 	F(25000000, P_UNIPHY2_TX, 12.5, 0, 0),
+ 	F(78125000, P_UNIPHY2_TX, 4, 0, 0),
++	F(125000000, P_UNIPHY2_TX, 1, 0, 0),
+ 	F(125000000, P_UNIPHY2_TX, 2.5, 0, 0),
+ 	F(156250000, P_UNIPHY2_TX, 2, 0, 0),
+ 	F(312500000, P_UNIPHY2_TX, 1, 0, 0),
 -- 
 2.35.1
 
