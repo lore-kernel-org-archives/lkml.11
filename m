@@ -2,44 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C7490C3814E
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 10:47:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 731DAC32774
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 10:47:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356121AbiHWKqd (ORCPT
+        id S1356186AbiHWKqn (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 06:46:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52752 "EHLO
+        Tue, 23 Aug 2022 06:46:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49400 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355200AbiHWKkC (ORCPT
+        with ESMTP id S1355366AbiHWKkW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 06:40:02 -0400
+        Tue, 23 Aug 2022 06:40:22 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EE689A723B;
-        Tue, 23 Aug 2022 02:08:03 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EC666857E0;
+        Tue, 23 Aug 2022 02:08:09 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 7327FB81C4E;
-        Tue, 23 Aug 2022 09:08:02 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C0B7BC433C1;
-        Tue, 23 Aug 2022 09:08:00 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 98F35B81C53;
+        Tue, 23 Aug 2022 09:08:08 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E76DBC433D6;
+        Tue, 23 Aug 2022 09:08:06 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661245681;
-        bh=8oectIyZt6VRJD/c0vemqJWQCt3u+kU50lQPATG608M=;
+        s=korg; t=1661245687;
+        bh=UOsWq6Ut/l98+AZDo35eYQyq3dcyJ3CYasl7JuXImVA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=gttL7T/jly3XWt+Qf0z0zDMzprTDmEPwc1GLMYrMcb07KyeK2Dikhhz6LHKPet2P8
-         Xiua3sjsg9wB5s905arL6N8FP/fnkWH9V5SkfRFSXu5VlWspMNMCOIBVY2dEiZhgPJ
-         Hjk3/9ntOT7egLL/llkI6M+H7Rdv5cBwPbuUh5UY=
+        b=1EqFOCsRQTVPP6dAohl/mdQdU9rVjeqGg1XeF7YAb5y5Xv0eosfrEpo1ItGLOysTk
+         Rbdhul7hR6Nm4xRVqOXmGRYnBnolkqeh/uCqMRib/baVfPhM0Ir7klEXu/1mClaMBf
+         UqK9fYjhKti0nDANtThMJnWvC2UoE54sokKH6AiI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Eric Farman <farman@linux.ibm.com>,
-        Matthew Rosato <mjrosato@linux.ibm.com>,
-        Alex Williamson <alex.williamson@redhat.com>,
+        stable@vger.kernel.org, Daniel Starke <daniel.starke@siemens.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.19 156/287] vfio/ccw: Do not change FSM state in subchannel event
-Date:   Tue, 23 Aug 2022 10:25:25 +0200
-Message-Id: <20220823080105.905442984@linuxfoundation.org>
+Subject: [PATCH 4.19 157/287] tty: n_gsm: fix wrong T1 retry count handling
+Date:   Tue, 23 Aug 2022 10:25:26 +0200
+Message-Id: <20220823080105.954553259@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220823080100.268827165@linuxfoundation.org>
 References: <20220823080100.268827165@linuxfoundation.org>
@@ -51,59 +49,53 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Eric Farman <farman@linux.ibm.com>
+From: Daniel Starke <daniel.starke@siemens.com>
 
-[ Upstream commit cffcc109fd682075dee79bade3d60a07152a8fd1 ]
+[ Upstream commit f30e10caa80aa1f35508bc17fc302dbbde9a833c ]
 
-The routine vfio_ccw_sch_event() is tasked with handling subchannel events,
-specifically machine checks, on behalf of vfio-ccw. It correctly calls
-cio_update_schib(), and if that fails (meaning the subchannel is gone)
-it makes an FSM event call to mark the subchannel Not Operational.
+n_gsm is based on the 3GPP 07.010 and its newer version is the 3GPP 27.010.
+See https://portal.3gpp.org/desktopmodules/Specifications/SpecificationDetails.aspx?specificationId=1516
+The changes from 07.010 to 27.010 are non-functional. Therefore, I refer to
+the newer 27.010 here. Chapter 5.7.3 states that the valid range for the
+maximum number of retransmissions (N2) is from 0 to 255 (both including).
+gsm_dlci_t1() handles this number incorrectly by performing N2 - 1
+retransmission attempts. Setting N2 to zero results in more than 255
+retransmission attempts.
+Fix gsm_dlci_t1() to comply with 3GPP 27.010.
 
-If that worked, however, then it decides that if the FSM state was already
-Not Operational (implying the subchannel just came back), then it should
-simply change the FSM to partially- or fully-open.
-
-Remove this trickery, since a subchannel returning will require more
-probing than simply "oh all is well again" to ensure it works correctly.
-
-Fixes: bbe37e4cb8970 ("vfio: ccw: introduce a finite state machine")
-Signed-off-by: Eric Farman <farman@linux.ibm.com>
-Reviewed-by: Matthew Rosato <mjrosato@linux.ibm.com>
-Link: https://lore.kernel.org/r/20220707135737.720765-4-farman@linux.ibm.com
-Signed-off-by: Alex Williamson <alex.williamson@redhat.com>
+Fixes: e1eaea46bb40 ("tty: n_gsm line discipline")
+Signed-off-by: Daniel Starke <daniel.starke@siemens.com>
+Link: https://lore.kernel.org/r/20220707113223.3685-1-daniel.starke@siemens.com
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/s390/cio/vfio_ccw_drv.c | 14 +++-----------
- 1 file changed, 3 insertions(+), 11 deletions(-)
+ drivers/tty/n_gsm.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/s390/cio/vfio_ccw_drv.c b/drivers/s390/cio/vfio_ccw_drv.c
-index 7a06cdff6572..862b0eb0fe6d 100644
---- a/drivers/s390/cio/vfio_ccw_drv.c
-+++ b/drivers/s390/cio/vfio_ccw_drv.c
-@@ -205,19 +205,11 @@ static int vfio_ccw_sch_event(struct subchannel *sch, int process)
- 	if (work_pending(&sch->todo_work))
- 		goto out_unlock;
+diff --git a/drivers/tty/n_gsm.c b/drivers/tty/n_gsm.c
+index 3d45999fad1b..43491df37a2d 100644
+--- a/drivers/tty/n_gsm.c
++++ b/drivers/tty/n_gsm.c
+@@ -1534,8 +1534,8 @@ static void gsm_dlci_t1(struct timer_list *t)
  
--	if (cio_update_schib(sch)) {
--		vfio_ccw_fsm_event(private, VFIO_CCW_EVENT_NOT_OPER);
--		rc = 0;
--		goto out_unlock;
--	}
--
--	private = dev_get_drvdata(&sch->dev);
--	if (private->state == VFIO_CCW_STATE_NOT_OPER) {
--		private->state = private->mdev ? VFIO_CCW_STATE_IDLE :
--				 VFIO_CCW_STATE_STANDBY;
--	}
- 	rc = 0;
+ 	switch (dlci->state) {
+ 	case DLCI_OPENING:
+-		dlci->retries--;
+ 		if (dlci->retries) {
++			dlci->retries--;
+ 			gsm_command(dlci->gsm, dlci->addr, SABM|PF);
+ 			mod_timer(&dlci->t1, jiffies + gsm->t1 * HZ / 100);
+ 		} else if (!dlci->addr && gsm->control == (DM | PF)) {
+@@ -1550,8 +1550,8 @@ static void gsm_dlci_t1(struct timer_list *t)
  
-+	if (cio_update_schib(sch))
-+		vfio_ccw_fsm_event(private, VFIO_CCW_EVENT_NOT_OPER);
-+
- out_unlock:
- 	spin_unlock_irqrestore(sch->lock, flags);
- 
+ 		break;
+ 	case DLCI_CLOSING:
+-		dlci->retries--;
+ 		if (dlci->retries) {
++			dlci->retries--;
+ 			gsm_command(dlci->gsm, dlci->addr, DISC|PF);
+ 			mod_timer(&dlci->t1, jiffies + gsm->t1 * HZ / 100);
+ 		} else
 -- 
 2.35.1
 
