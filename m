@@ -2,45 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E7516C32774
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 10:25:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C8CBCC32772
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 10:26:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354349AbiHWKZL (ORCPT
+        id S1353850AbiHWKZV (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 06:25:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37890 "EHLO
+        Tue, 23 Aug 2022 06:25:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47136 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353580AbiHWKLk (ORCPT
+        with ESMTP id S1353543AbiHWKLi (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 06:11:40 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A815C634F;
-        Tue, 23 Aug 2022 01:57:28 -0700 (PDT)
+        Tue, 23 Aug 2022 06:11:38 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7C9A1D6E;
+        Tue, 23 Aug 2022 01:57:14 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 45E0461524;
-        Tue, 23 Aug 2022 08:57:28 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3DC24C433D6;
-        Tue, 23 Aug 2022 08:57:27 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 3B62CB81C39;
+        Tue, 23 Aug 2022 08:57:13 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8140DC433D6;
+        Tue, 23 Aug 2022 08:57:11 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661245047;
-        bh=t1roUgaSTodrFE5Q67YXj8K4EuRG/7oWKG6ZxMhzEgA=;
+        s=korg; t=1661245031;
+        bh=mTC0kP17e1XCi3YiZ/Si/p45n4hJH4RH53+7e7trTvM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=yR4tfwHPFbDJf3XrvQuQ+o4Jx4J6Jrtp/94399RFG/pxZCQzct46TMHVpUsHhYPrM
-         uc+6vNVn2HvK0qITVfJE8722v8CqPqaBk9sEWfzNJbJvRSfhQPLERPdX/QNcR9j/Sh
-         yr52bepTshpB9KtBzJWpDXRgA75c0nylN6nRkNIo=
+        b=1iX6PYnd9C81Xu2wkZR3X4dTIPrt/u+MISnUPZhG7vhQrLx6abKyUhKuFA4Vow/9u
+         4ssWLws8lakYdd0KfquMujZozUdbrydODTqWPB6ei/zLV5CSzOg5OO8RqeLVLKVOyn
+         B3st3XhZXJ79sGvPgX569AYADqhUY0ph9tRW2zUo=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
-        <u.kleine-koenig@pengutronix.de>,
-        Baolin Wang <baolin.wang7@gmail.com>,
+        stable@vger.kernel.org, Ben Dooks <ben.dooks@sifive.com>,
         Vinod Koul <vkoul@kernel.org>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 198/244] dmaengine: sprd: Cleanup in .remove() after pm_runtime_get_sync() failed
-Date:   Tue, 23 Aug 2022 10:25:57 +0200
-Message-Id: <20220823080106.062173980@linuxfoundation.org>
+Subject: [PATCH 5.15 193/244] dmaengine: dw-axi-dmac: do not print NULL LLI during error
+Date:   Tue, 23 Aug 2022 10:25:52 +0200
+Message-Id: <20220823080105.842297214@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220823080059.091088642@linuxfoundation.org>
 References: <20220823080059.091088642@linuxfoundation.org>
@@ -52,45 +49,39 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
+From: Ben Dooks <ben.dooks@sifive.com>
 
-[ Upstream commit 1e42f82cbec7b2cc4873751e7791e6611901c5fc ]
+[ Upstream commit 86cb0defe0e275453bc39e856bb523eb425a6537 ]
 
-It's not allowed to quit remove early without cleaning up completely.
-Otherwise this results in resource leaks that probably yield graver
-problems later. Here for example some tasklets might survive the lifetime
-of the sprd-dma device and access sdev which is freed after .remove()
-returns.
+During debugging we have seen an issue where axi_chan_dump_lli()
+is passed a NULL LLI pointer which ends up causing an OOPS due
+to trying to get fields from it. Simply print NULL LLI and exit
+to avoid this.
 
-As none of the device freeing requires an active device, just ignore the
-return value of pm_runtime_get_sync().
-
-Signed-off-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
-Reviewed-by: Baolin Wang <baolin.wang7@gmail.com>
-Link: https://lore.kernel.org/r/20220721204054.323602-1-u.kleine-koenig@pengutronix.de
+Signed-off-by: Ben Dooks <ben.dooks@sifive.com>
+Link: https://lore.kernel.org/r/20220708170153.269991-3-ben.dooks@sifive.com
 Signed-off-by: Vinod Koul <vkoul@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/dma/sprd-dma.c | 5 +----
- 1 file changed, 1 insertion(+), 4 deletions(-)
+ drivers/dma/dw-axi-dmac/dw-axi-dmac-platform.c | 5 +++++
+ 1 file changed, 5 insertions(+)
 
-diff --git a/drivers/dma/sprd-dma.c b/drivers/dma/sprd-dma.c
-index 4357d2395e6b..60115d8d4083 100644
---- a/drivers/dma/sprd-dma.c
-+++ b/drivers/dma/sprd-dma.c
-@@ -1236,11 +1236,8 @@ static int sprd_dma_remove(struct platform_device *pdev)
+diff --git a/drivers/dma/dw-axi-dmac/dw-axi-dmac-platform.c b/drivers/dma/dw-axi-dmac/dw-axi-dmac-platform.c
+index 35993ab92154..8f765e2d7c72 100644
+--- a/drivers/dma/dw-axi-dmac/dw-axi-dmac-platform.c
++++ b/drivers/dma/dw-axi-dmac/dw-axi-dmac-platform.c
+@@ -944,6 +944,11 @@ static int dw_axi_dma_chan_slave_config(struct dma_chan *dchan,
+ static void axi_chan_dump_lli(struct axi_dma_chan *chan,
+ 			      struct axi_dma_hw_desc *desc)
  {
- 	struct sprd_dma_dev *sdev = platform_get_drvdata(pdev);
- 	struct sprd_dma_chn *c, *cn;
--	int ret;
- 
--	ret = pm_runtime_get_sync(&pdev->dev);
--	if (ret < 0)
--		return ret;
-+	pm_runtime_get_sync(&pdev->dev);
- 
- 	/* explicitly free the irq */
- 	if (sdev->irq > 0)
++	if (!desc->lli) {
++		dev_err(dchan2dev(&chan->vc.chan), "NULL LLI\n");
++		return;
++	}
++
+ 	dev_err(dchan2dev(&chan->vc.chan),
+ 		"SAR: 0x%llx DAR: 0x%llx LLP: 0x%llx BTS 0x%x CTL: 0x%x:%08x",
+ 		le64_to_cpu(desc->lli->sar),
 -- 
 2.35.1
 
