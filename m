@@ -2,123 +2,57 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E530EC28D13
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 02:08:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2B277C28D13
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 02:11:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239505AbiHWCIx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 22 Aug 2022 22:08:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37846 "EHLO
+        id S239158AbiHWCLz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 22 Aug 2022 22:11:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39194 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232437AbiHWCIn (ORCPT
+        with ESMTP id S232437AbiHWCLv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 22 Aug 2022 22:08:43 -0400
-X-Greylist: delayed 1871 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Mon, 22 Aug 2022 19:08:40 PDT
-Received: from m15113.mail.126.com (m15113.mail.126.com [220.181.15.113])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 69D3F33A10;
-        Mon, 22 Aug 2022 19:08:40 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=126.com;
-        s=s110527; h=From:Subject:Date:Message-Id:MIME-Version; bh=VcjBr
-        x5NcRDcCtos/TPNCVqfav4qyE7ow6dAU7IPv8M=; b=a4S5z2YVX3o9E+XpAyh6Y
-        68/5o/XbgsAlg7PsdMjogmE2/RqIQTsHiUC2kinOmuesKZDbPToW86DQ4hzVpC5y
-        KVGUtfATz0iJJrhAbhSq6aAS/r5VD3uRoUksaY0SBTe+hIQt7MetuN+t3akDk1no
-        wi7w+fVS7sxC+5tzjNw1Gs=
-Received: from fedora.. (unknown [123.52.27.102])
-        by smtp3 (Coremail) with SMTP id DcmowAC33o49LwRj8lDqAQ--.42709S2;
-        Tue, 23 Aug 2022 09:37:02 +0800 (CST)
-From:   zhaomzhao@126.com
-To:     djwong@kernel.org, corbet@lwn.net
-Cc:     linux-xfs@vger.kernel.org, linux-doc@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        Zhao Mengmeng <zhaomengmeng@kylinos.cn>
-Subject: [PATCH v1] Documentation: filesystems: xfs: update pseudocode and typo fixes
-Date:   Mon, 22 Aug 2022 21:36:53 -0400
-Message-Id: <20220823013653.203469-1-zhaomzhao@126.com>
-X-Mailer: git-send-email 2.37.1
+        Mon, 22 Aug 2022 22:11:51 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E8E444D14C;
+        Mon, 22 Aug 2022 19:11:50 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id A2E43B81A3C;
+        Tue, 23 Aug 2022 02:11:49 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5C5EBC433D6;
+        Tue, 23 Aug 2022 02:11:48 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1661220708;
+        bh=c8yjdxQHEEIT0eSO6SawNYH6Dw/u9o+9BlM0G/6qXE0=;
+        h=In-Reply-To:References:Subject:From:Cc:To:Date:From;
+        b=gWznI177FZE6q7pzoUGsIy1kNvkCoURpygs05rZgfbVtvkQtrfshF2qkzHE+ttosN
+         TMrubEbkXIE7xWcnt2O2dWxLnqAvlraUDn4uFIznWosG0ca+l7LvFKx6jGoKi8oBWd
+         p8vE3T3bVj7A52fZ8AHawZFY3z2OrzRSLy5iRHvzvNY0kjmh+3HnojyRbd61aOZ2X6
+         Mg4Jgtz3kSwFVRwRfMr6o/tNHq0Tg4JaaBUAr+S+7de4G9kL6jnAT/HWL43HTeLxA8
+         IkmDws83faf8J7zC0YDK6uArvpR531V5ATfdCLE+zTL33WSKgbe2PE6bvywWZbAfSu
+         T3EIWS9R5IfXw==
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-CM-TRANSID: DcmowAC33o49LwRj8lDqAQ--.42709S2
-X-Coremail-Antispam: 1Uf129KBjvJXoWxXF18WrW3CryrCFWDWr48Zwb_yoWrAw1Upr
-        Za9r1rJw1kJry8Ars2qw45XryF9anYqrWUGrWqy3s3Zws8K3Zayr13tr1Y9F1kXr4ru3WY
-        vr1j9rn8Za47Ca7anT9S1TB71UUUUUDqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
-        9KBjDUYxBIdaVFxhVjvjDU0xZFpf9x07jplk3UUUUU=
-X-Originating-IP: [123.52.27.102]
-X-CM-SenderInfo: 52kd0zp2kd0qqrswhudrp/1tbijB9md1pEJE5iSwAAsf
+Content-Transfer-Encoding: quoted-printable
+In-Reply-To: <20220811140030.28886-1-wangborong@cdjrlc.com>
+References: <20220811140030.28886-1-wangborong@cdjrlc.com>
+Subject: Re: [PATCH] clk: Fix comment typo
+From:   Stephen Boyd <sboyd@kernel.org>
+Cc:     mturquette@baylibre.com, linux-clk@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Jason Wang <wangborong@cdjrlc.com>
+To:     Jason Wang <wangborong@cdjrlc.com>
+Date:   Mon, 22 Aug 2022 19:11:45 -0700
+User-Agent: alot/0.10
+Message-Id: <20220823021148.5C5EBC433D6@smtp.kernel.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Zhao Mengmeng <zhaomengmeng@kylinos.cn>
+Quoting Jason Wang (2022-08-11 07:00:30)
+> The double `to' is duplicated in the comment, remove one.
+>=20
+> Signed-off-by: Jason Wang <wangborong@cdjrlc.com>
+> ---
 
-According to the implementation of xfs_trans_roll(), it calls
-xfs_trans_reserve(), which reserves not only log space, but also
-free disk blocks. In short, the "transaction stuff". So change
-xfs_log_reserve() to xfs_trans_reserve().
-
-Besides, fix several typo issues.
-
-Signed-off-by: Zhao Mengmeng <zhaomengmeng@kylinos.cn>
----
- .../filesystems/xfs-delayed-logging-design.rst       | 12 ++++++------
- 1 file changed, 6 insertions(+), 6 deletions(-)
-
-diff --git a/Documentation/filesystems/xfs-delayed-logging-design.rst b/Documentation/filesystems/xfs-delayed-logging-design.rst
-index 4ef419f54663..02b32030bab3 100644
---- a/Documentation/filesystems/xfs-delayed-logging-design.rst
-+++ b/Documentation/filesystems/xfs-delayed-logging-design.rst
-@@ -100,7 +100,7 @@ transactions together::
- 
- 	ntp = xfs_trans_dup(tp);
- 	xfs_trans_commit(tp);
--	xfs_log_reserve(ntp);
-+	xfs_trans_reserve(ntp);
- 
- This results in a series of "rolling transactions" where the inode is locked
- across the entire chain of transactions.  Hence while this series of rolling
-@@ -191,7 +191,7 @@ transaction rolling mechanism to re-reserve space on every transaction roll. We
- know from the implementation of the permanent transactions how many transaction
- rolls are likely for the common modifications that need to be made.
- 
--For example, and inode allocation is typically two transactions - one to
-+For example, an inode allocation is typically two transactions - one to
- physically allocate a free inode chunk on disk, and another to allocate an inode
- from an inode chunk that has free inodes in it.  Hence for an inode allocation
- transaction, we might set the reservation log count to a value of 2 to indicate
-@@ -200,7 +200,7 @@ chain. Each time a permanent transaction rolls, it consumes an entire unit
- reservation.
- 
- Hence when the permanent transaction is first allocated, the log space
--reservation is increases from a single unit reservation to multiple unit
-+reservation is increased from a single unit reservation to multiple unit
- reservations. That multiple is defined by the reservation log count, and this
- means we can roll the transaction multiple times before we have to re-reserve
- log space when we roll the transaction. This ensures that the common
-@@ -259,7 +259,7 @@ the next transaction in the sequeunce, but we have none remaining. We cannot
- sleep during the transaction commit process waiting for new log space to become
- available, as we may end up on the end of the FIFO queue and the items we have
- locked while we sleep could end up pinning the tail of the log before there is
--enough free space in the log to fulfil all of the pending reservations and
-+enough free space in the log to fulfill all of the pending reservations and
- then wake up transaction commit in progress.
- 
- To take a new reservation without sleeping requires us to be able to take a
-@@ -615,7 +615,7 @@ those changes into the current checkpoint context. We then initialise a new
- context and attach that to the CIL for aggregation of new transactions.
- 
- This allows us to unlock the CIL immediately after transfer of all the
--committed items and effectively allow new transactions to be issued while we
-+committed items and effectively allows new transactions to be issued while we
- are formatting the checkpoint into the log. It also allows concurrent
- checkpoints to be written into the log buffers in the case of log force heavy
- workloads, just like the existing transaction commit code does. This, however,
-@@ -886,7 +886,7 @@ can be multiple outstanding checkpoint contexts, we can still see elevated pin
- counts, but as each checkpoint completes the pin count will retain the correct
- value according to it's context.
- 
--Just to make matters more slightly more complex, this checkpoint level context
-+Just to make matters slightly more complex, this checkpoint level context
- for the pin count means that the pinning of an item must take place under the
- CIL commit/flush lock. If we pin the object outside this lock, we cannot
- guarantee which context the pin count is associated with. This is because of
--- 
-2.37.1
-
+Applied to clk-next
