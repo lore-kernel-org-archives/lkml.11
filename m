@@ -2,44 +2,49 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id ECC47C49EC0
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C7BD5C48BE4
 	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 12:06:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1359704AbiHWMGc (ORCPT
+        id S1359645AbiHWMGW (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 08:06:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48756 "EHLO
+        Tue, 23 Aug 2022 08:06:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51772 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1359671AbiHWMCI (ORCPT
+        with ESMTP id S1358980AbiHWMAZ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 08:02:08 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C5D24DA3D2;
-        Tue, 23 Aug 2022 02:36:20 -0700 (PDT)
+        Tue, 23 Aug 2022 08:00:25 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 39773D91DF;
+        Tue, 23 Aug 2022 02:35:15 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 7A2C061467;
-        Tue, 23 Aug 2022 09:36:20 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6B64DC433D6;
-        Tue, 23 Aug 2022 09:36:19 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 9E5C0B81C97;
+        Tue, 23 Aug 2022 09:35:14 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id EF9EFC433D6;
+        Tue, 23 Aug 2022 09:35:12 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661247379;
-        bh=W79uSSvskBaeQttHv1qR+U1nseM67Zgw+Zkr/nhruKI=;
+        s=korg; t=1661247313;
+        bh=A2eRBh8AG3rkoETG7aGwcgq5CIWQoyR/4YyJOxLnGZI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=bT1mrr5gbWMKr/WqpscwZ6CyaY3onoFUK8jKK+/P96gXcvFpyy+IhVUVI/F25C9B9
-         fgtQgtevBCOM79yVwlhqSsQ3Uo0VFcb4jjhVzK1FglkSdGY5Jbq1EYCC1iB5Ml21te
-         ci+M/UjPtX5IEvxudxXSqDxeDJXq+B5teaU8L7ow=
+        b=0EsQFXZjKXtI7OuD3h/QsrLYAPNe3eCkiCJI8uyln3XFN+misjx+FqzUYxvEWRS5o
+         0Io2NwYrWcyf2zc/HehVpHPRGIOq38b3ow9z0yiiFC/n9ofxg04tE23z1Iru2UfxSG
+         EqS/rdboGnZlbU3gZ3Z/7ou5wjgfI9ep+dgrM6Hc=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, John Johansen <john.johansen@canonical.com>
-Subject: [PATCH 5.10 018/158] apparmor: fix overlapping attachment computation
-Date:   Tue, 23 Aug 2022 10:25:50 +0200
-Message-Id: <20220823080046.815234981@linuxfoundation.org>
+        stable@vger.kernel.org, Ingo Molnar <mingo@kernel.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Tzvetomir Stoyanov <tz.stoyanov@gmail.com>,
+        Tom Zanussi <zanussi@kernel.org>,
+        "Masami Hiramatsu (Google)" <mhiramat@kernel.org>,
+        "Steven Rostedt (Google)" <rostedt@goodmis.org>
+Subject: [PATCH 5.4 385/389] tracing/probes: Have kprobes and uprobes use $COMM too
+Date:   Tue, 23 Aug 2022 10:27:43 +0200
+Message-Id: <20220823080131.650747404@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220823080046.056825146@linuxfoundation.org>
-References: <20220823080046.056825146@linuxfoundation.org>
+In-Reply-To: <20220823080115.331990024@linuxfoundation.org>
+References: <20220823080115.331990024@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -48,46 +53,53 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: John Johansen <john.johansen@canonical.com>
+From: Steven Rostedt (Google) <rostedt@goodmis.org>
 
-commit 2504db207146543736e877241f3b3de005cbe056 upstream.
+commit ab8384442ee512fc0fc72deeb036110843d0e7ff upstream.
 
-When finding the profile via patterned attachments, the longest left
-match is being set to the static compile time value and not using the
-runtime computed value.
+Both $comm and $COMM can be used to get current->comm in eprobes and the
+filtering and histogram logic. Make kprobes and uprobes consistent in this
+regard and allow both $comm and $COMM as well. Currently kprobes and
+uprobes only handle $comm, which is inconsistent with the other utilities,
+and can be confusing to users.
 
-Fix this by setting the candidate value to the greater of the
-precomputed value or runtime computed value.
+Link: https://lkml.kernel.org/r/20220820134401.317014913@goodmis.org
+Link: https://lore.kernel.org/all/20220820220442.776e1ddaf8836e82edb34d01@kernel.org/
 
-Fixes: 21f606610502 ("apparmor: improve overlapping domain attachment resolution")
-Signed-off-by: John Johansen <john.johansen@canonical.com>
+Cc: stable@vger.kernel.org
+Cc: Ingo Molnar <mingo@kernel.org>
+Cc: Andrew Morton <akpm@linux-foundation.org>
+Cc: Tzvetomir Stoyanov <tz.stoyanov@gmail.com>
+Cc: Tom Zanussi <zanussi@kernel.org>
+Fixes: 533059281ee5 ("tracing: probeevent: Introduce new argument fetching code")
+Suggested-by: Masami Hiramatsu (Google) <mhiramat@kernel.org>
+Acked-by: Masami Hiramatsu (Google) <mhiramat@kernel.org>
+Signed-off-by: Steven Rostedt (Google) <rostedt@goodmis.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- security/apparmor/domain.c         |    2 +-
- security/apparmor/include/policy.h |    2 +-
- 2 files changed, 2 insertions(+), 2 deletions(-)
+ kernel/trace/trace_probe.c |    5 +++--
+ 1 file changed, 3 insertions(+), 2 deletions(-)
 
---- a/security/apparmor/domain.c
-+++ b/security/apparmor/domain.c
-@@ -465,7 +465,7 @@ restart:
- 				 * xattrs, or a longer match
- 				 */
- 				candidate = profile;
--				candidate_len = profile->xmatch_len;
-+				candidate_len = max(count, profile->xmatch_len);
- 				candidate_xattrs = ret;
- 				conflict = false;
+--- a/kernel/trace/trace_probe.c
++++ b/kernel/trace/trace_probe.c
+@@ -300,7 +300,7 @@ static int parse_probe_vars(char *arg, c
  			}
---- a/security/apparmor/include/policy.h
-+++ b/security/apparmor/include/policy.h
-@@ -135,7 +135,7 @@ struct aa_profile {
- 
- 	const char *attach;
- 	struct aa_dfa *xmatch;
--	int xmatch_len;
-+	unsigned int xmatch_len;
- 	enum audit_mode audit;
- 	long mode;
- 	u32 path_flags;
+ 		} else
+ 			goto inval_var;
+-	} else if (strcmp(arg, "comm") == 0) {
++	} else if (strcmp(arg, "comm") == 0 || strcmp(arg, "COMM") == 0) {
+ 		code->op = FETCH_OP_COMM;
+ #ifdef CONFIG_HAVE_FUNCTION_ARG_ACCESS_API
+ 	} else if (((flags & TPARG_FL_MASK) ==
+@@ -595,7 +595,8 @@ static int traceprobe_parse_probe_arg_bo
+ 	 * Since $comm and immediate string can not be dereferred,
+ 	 * we can find those by strcmp.
+ 	 */
+-	if (strcmp(arg, "$comm") == 0 || strncmp(arg, "\\\"", 2) == 0) {
++	if (strcmp(arg, "$comm") == 0 || strcmp(arg, "$COMM") == 0 ||
++	    strncmp(arg, "\\\"", 2) == 0) {
+ 		/* The type of $comm must be "string", and not an array. */
+ 		if (parg->count || (t && strcmp(t, "string")))
+ 			return -EINVAL;
 
 
