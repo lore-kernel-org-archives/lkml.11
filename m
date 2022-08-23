@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7E60AC38159
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D7B06C38145
 	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 11:42:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358598AbiHWLmJ (ORCPT
+        id S1355734AbiHWLmP (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 07:42:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55410 "EHLO
+        Tue, 23 Aug 2022 07:42:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59618 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1358070AbiHWLgq (ORCPT
+        with ESMTP id S1358218AbiHWLhM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 07:36:46 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 50A3776973;
-        Tue, 23 Aug 2022 02:27:52 -0700 (PDT)
+        Tue, 23 Aug 2022 07:37:12 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8BA8BC9275;
+        Tue, 23 Aug 2022 02:28:06 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id E253CB81C98;
-        Tue, 23 Aug 2022 09:27:48 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 34F86C433B5;
-        Tue, 23 Aug 2022 09:27:47 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 439BD61174;
+        Tue, 23 Aug 2022 09:28:04 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0E6B9C433C1;
+        Tue, 23 Aug 2022 09:28:02 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661246867;
-        bh=JKS/wh036ZMy+NNFjEtQnsz40COVFi65ZJtIo5klez8=;
+        s=korg; t=1661246883;
+        bh=pQ/YAxx82IxXZJaC+oKXN/2jjUS2Y+qfcqwQwTxngg0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=R8edEF4gKCbOAS60CcTyTeiZ5m+VRNu0xkB2aW/PM5i0iS7GonYaspsaHcxjFdLp0
-         DEE/VYrHuqxSljYZsv6p4oxAoFXcY44mDfsk7Jkn1OH1BdJsjwV3dED4NbqHqOc4mx
-         cqUqG3yHLqpeYGe+VSrb0kw7PBd1FVmzcXAtwinw=
+        b=DH2qtrp8gsiE1QDIcWr7PzUEi8+RqPlrhKbKt1ASHqTt5Zee1wlN9VGYN4v/MhlFF
+         KSjWLb9xfTu5UnaMKWnay1JZe40NOhkWgTF6R1UjUzAOOtLNwOcCCyrRh0pb0QpdW6
+         h8szh55rSDfwK622LSzJnV2NqCt1eMg+2t0PL9Tg=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Zheyu Ma <zheyuma97@gmail.com>,
-        Helge Deller <deller@gmx.de>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 246/389] video: fbdev: arkfb: Check the size of screen before memset_io()
-Date:   Tue, 23 Aug 2022 10:25:24 +0200
-Message-Id: <20220823080125.846934036@linuxfoundation.org>
+        stable@vger.kernel.org, Quinn Tran <qutran@marvell.com>,
+        Nilesh Javali <njavali@marvell.com>,
+        "Martin K. Petersen" <martin.petersen@oracle.com>
+Subject: [PATCH 5.4 250/389] scsi: qla2xxx: Turn off multi-queue for 8G adapters
+Date:   Tue, 23 Aug 2022 10:25:28 +0200
+Message-Id: <20220823080126.024862097@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220823080115.331990024@linuxfoundation.org>
 References: <20220823080115.331990024@linuxfoundation.org>
@@ -49,50 +50,61 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Zheyu Ma <zheyuma97@gmail.com>
+From: Quinn Tran <qutran@marvell.com>
 
-[ Upstream commit 96b550971c65d54d64728d8ba973487878a06454 ]
+commit 5304673bdb1635e27555bd636fd5d6956f1cd552 upstream.
 
-In the function arkfb_set_par(), the value of 'screen_size' is
-calculated by the user input. If the user provides the improper value,
-the value of 'screen_size' may larger than 'info->screen_size', which
-may cause the following bug:
+For 8G adapters, multi-queue was enabled accidentally. Make sure
+multi-queue is not enabled.
 
-[  659.399066] BUG: unable to handle page fault for address: ffffc90003000000
-[  659.399077] #PF: supervisor write access in kernel mode
-[  659.399079] #PF: error_code(0x0002) - not-present page
-[  659.399094] RIP: 0010:memset_orig+0x33/0xb0
-[  659.399116] Call Trace:
-[  659.399122]  arkfb_set_par+0x143f/0x24c0
-[  659.399130]  fb_set_var+0x604/0xeb0
-[  659.399161]  do_fb_ioctl+0x234/0x670
-[  659.399189]  fb_ioctl+0xdd/0x130
-
-Fix the this by checking the value of 'screen_size' before memset_io().
-
-Fixes: 681e14730c73 ("arkfb: new framebuffer driver for ARK Logic cards")
-Signed-off-by: Zheyu Ma <zheyuma97@gmail.com>
-Signed-off-by: Helge Deller <deller@gmx.de>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Link: https://lore.kernel.org/r/20220616053508.27186-5-njavali@marvell.com
+Cc: stable@vger.kernel.org
+Signed-off-by: Quinn Tran <qutran@marvell.com>
+Signed-off-by: Nilesh Javali <njavali@marvell.com>
+Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/video/fbdev/arkfb.c | 2 ++
- 1 file changed, 2 insertions(+)
+ drivers/scsi/qla2xxx/qla_def.h |    4 ++--
+ drivers/scsi/qla2xxx/qla_isr.c |   16 ++++++----------
+ 2 files changed, 8 insertions(+), 12 deletions(-)
 
-diff --git a/drivers/video/fbdev/arkfb.c b/drivers/video/fbdev/arkfb.c
-index 311f7ea57625..6b1ad19b8db4 100644
---- a/drivers/video/fbdev/arkfb.c
-+++ b/drivers/video/fbdev/arkfb.c
-@@ -794,6 +794,8 @@ static int arkfb_set_par(struct fb_info *info)
- 	value = ((value * hmul / hdiv) / 8) - 5;
- 	vga_wcrt(par->state.vgabase, 0x42, (value + 1) / 2);
+--- a/drivers/scsi/qla2xxx/qla_def.h
++++ b/drivers/scsi/qla2xxx/qla_def.h
+@@ -3899,8 +3899,8 @@ struct qla_hw_data {
+ #define IS_OEM_001(ha)          ((ha)->device_type & DT_OEM_001)
+ #define HAS_EXTENDED_IDS(ha)    ((ha)->device_type & DT_EXTENDED_IDS)
+ #define IS_CT6_SUPPORTED(ha)	((ha)->device_type & DT_CT6_SUPPORTED)
+-#define IS_MQUE_CAPABLE(ha)	((ha)->mqenable || IS_QLA83XX(ha) || \
+-				IS_QLA27XX(ha) || IS_QLA28XX(ha))
++#define IS_MQUE_CAPABLE(ha)	(IS_QLA83XX(ha) || IS_QLA27XX(ha) || \
++				 IS_QLA28XX(ha))
+ #define IS_BIDI_CAPABLE(ha) \
+     (IS_QLA25XX(ha) || IS_QLA2031(ha) || IS_QLA27XX(ha) || IS_QLA28XX(ha))
+ /* Bit 21 of fw_attributes decides the MCTP capabilities */
+--- a/drivers/scsi/qla2xxx/qla_isr.c
++++ b/drivers/scsi/qla2xxx/qla_isr.c
+@@ -3568,16 +3568,12 @@ msix_register_fail:
+ 	}
  
-+	if (screen_size > info->screen_size)
-+		screen_size = info->screen_size;
- 	memset_io(info->screen_base, 0x00, screen_size);
- 	/* Device and screen back on */
- 	svga_wcrt_mask(par->state.vgabase, 0x17, 0x80, 0x80);
--- 
-2.35.1
-
+ 	/* Enable MSI-X vector for response queue update for queue 0 */
+-	if (IS_QLA83XX(ha) || IS_QLA27XX(ha) || IS_QLA28XX(ha)) {
+-		if (ha->msixbase && ha->mqiobase &&
+-		    (ha->max_rsp_queues > 1 || ha->max_req_queues > 1 ||
+-		     ql2xmqsupport))
+-			ha->mqenable = 1;
+-	} else
+-		if (ha->mqiobase &&
+-		    (ha->max_rsp_queues > 1 || ha->max_req_queues > 1 ||
+-		     ql2xmqsupport))
+-			ha->mqenable = 1;
++	if (IS_MQUE_CAPABLE(ha) &&
++	    (ha->msixbase && ha->mqiobase && ha->max_qpairs))
++		ha->mqenable = 1;
++	else
++		ha->mqenable = 0;
++
+ 	ql_dbg(ql_dbg_multiq, vha, 0xc005,
+ 	    "mqiobase=%p, max_rsp_queues=%d, max_req_queues=%d.\n",
+ 	    ha->mqiobase, ha->max_rsp_queues, ha->max_req_queues);
 
 
