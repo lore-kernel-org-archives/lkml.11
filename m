@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 68577C32772
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 08:30:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7F650C32772
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 08:30:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243825AbiHWIaG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 04:30:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47694 "EHLO
+        id S243834AbiHWIaL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 23 Aug 2022 04:30:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47628 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244293AbiHWI0b (ORCPT
+        with ESMTP id S245598AbiHWI0q (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 04:26:31 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 16FCE72FFB;
-        Tue, 23 Aug 2022 01:14:17 -0700 (PDT)
+        Tue, 23 Aug 2022 04:26:46 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2AF5174363;
+        Tue, 23 Aug 2022 01:14:33 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id C5167CE1B35;
-        Tue, 23 Aug 2022 08:14:14 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CCFA3C433C1;
-        Tue, 23 Aug 2022 08:14:12 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 6706DB81C35;
+        Tue, 23 Aug 2022 08:13:59 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BBCE2C433D7;
+        Tue, 23 Aug 2022 08:13:57 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661242453;
-        bh=71pQm5UX7KUdV3OYns4yypzPi12FmpAs/Vlutlh9J9Q=;
+        s=korg; t=1661242438;
+        bh=cx2ysTK87stMeHPikefVBj+1WkzeP9H1M67m6Mj+Bvg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=FC2nS6fjQhptsuZbmhQYUXNumaLWcE7xU9F3yOOYZfOx1bhaVWwEqnjSegdt71cdd
-         X1KjgJJR9MVKxF5hGbOkpE26mZhEQCwJoYWuO5Nu2EeJV6P/RfsPMb2e1AAVmtj6Dn
-         frX3ZY1F2zooNo976NEo2JIvs853X6GLVhQxrZ9A=
+        b=O2DaQmzjMmxulWANS0qE+HfdpURdv201L5U4segHBZVP+9wGZmKB+i+t8urBEAcQv
+         xxIAk5+wrS9AeNcLrEGy5GMWwB0dgneb9c4XOoUrFYDfGviKttNX+DZdnJgsBh6Grk
+         pVB30e3JGJuSdHM13P2O42rtY78+Nr5dwRE21xtY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Subbaraya Sundeep <sbhatta@marvell.com>,
+        stable@vger.kernel.org, Stanislaw Kardach <skardach@marvell.com>,
+        Subbaraya Sundeep <sbhatta@marvell.com>,
         Sunil Goutham <sgoutham@marvell.com>,
         Jakub Kicinski <kuba@kernel.org>
-Subject: [PATCH 5.19 117/365] octeontx2-af: Fix mcam entry resource leak
-Date:   Tue, 23 Aug 2022 10:00:18 +0200
-Message-Id: <20220823080123.101243885@linuxfoundation.org>
+Subject: [PATCH 5.19 115/365] octeontx2-af: Apply tx nibble fixup always
+Date:   Tue, 23 Aug 2022 10:00:16 +0200
+Message-Id: <20220823080123.019511691@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220823080118.128342613@linuxfoundation.org>
 References: <20220823080118.128342613@linuxfoundation.org>
@@ -49,62 +50,52 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Subbaraya Sundeep <sbhatta@marvell.com>
+From: Stanislaw Kardach <skardach@marvell.com>
 
-commit 3f8fe40ab7730cf8eb6f8b8ff412012f7f6f8f48 upstream.
+commit dd1d1a8a6b29b6b472fd0d449b29eb806c411dd2 upstream.
 
-The teardown sequence in FLR handler returns if no NIX LF
-is attached to PF/VF because it indicates that graceful
-shutdown of resources already happened. But there is a
-chance of all allocated MCAM entries not being freed by
-PF/VF. Hence free mcam entries even in case of detached LF.
+NPC_PARSE_NIBBLE for TX interface has to be equal to the RX one for some
+silicon revisions. Mistakenly this fixup was only applied to the default
+MKEX profile while it should also be applied to any loaded profile.
 
-Fixes: c554f9c1574e ("octeontx2-af: Teardown NPA, NIX LF upon receiving FLR")
+Fixes: 1c1935c9945d ("octeontx2-af: Add NIX1 interfaces to NPC")
+Signed-off-by: Stanislaw Kardach <skardach@marvell.com>
 Signed-off-by: Subbaraya Sundeep <sbhatta@marvell.com>
 Signed-off-by: Sunil Goutham <sgoutham@marvell.com>
 Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/net/ethernet/marvell/octeontx2/af/rvu.c     |    6 ++++++
- drivers/net/ethernet/marvell/octeontx2/af/rvu_npc.c |    6 ++++++
- 2 files changed, 12 insertions(+)
+ drivers/net/ethernet/marvell/octeontx2/af/rvu_npc.c |    7 ++++---
+ 1 file changed, 4 insertions(+), 3 deletions(-)
 
---- a/drivers/net/ethernet/marvell/octeontx2/af/rvu.c
-+++ b/drivers/net/ethernet/marvell/octeontx2/af/rvu.c
-@@ -2564,6 +2564,12 @@ static void __rvu_flr_handler(struct rvu
- 	rvu_blklf_teardown(rvu, pcifunc, BLKADDR_NPA);
- 	rvu_reset_lmt_map_tbl(rvu, pcifunc);
- 	rvu_detach_rsrcs(rvu, NULL, pcifunc);
-+	/* In scenarios where PF/VF drivers detach NIXLF without freeing MCAM
-+	 * entries, check and free the MCAM entries explicitly to avoid leak.
-+	 * Since LF is detached use LF number as -1.
-+	 */
-+	rvu_npc_free_mcam_entries(rvu, pcifunc, -1);
-+
- 	mutex_unlock(&rvu->flr_lock);
- }
- 
 --- a/drivers/net/ethernet/marvell/octeontx2/af/rvu_npc.c
 +++ b/drivers/net/ethernet/marvell/octeontx2/af/rvu_npc.c
-@@ -1096,6 +1096,9 @@ static void npc_enadis_default_entries(s
+@@ -1915,6 +1915,7 @@ static void rvu_npc_hw_init(struct rvu *
  
- void rvu_npc_disable_default_entries(struct rvu *rvu, u16 pcifunc, int nixlf)
+ static void rvu_npc_setup_interfaces(struct rvu *rvu, int blkaddr)
  {
-+	if (nixlf < 0)
-+		return;
-+
- 	npc_enadis_default_entries(rvu, pcifunc, nixlf, false);
++	struct npc_mcam_kex *mkex = rvu->kpu.mkex;
+ 	struct npc_mcam *mcam = &rvu->hw->mcam;
+ 	struct rvu_hwinfo *hw = rvu->hw;
+ 	u64 nibble_ena, rx_kex, tx_kex;
+@@ -1927,15 +1928,15 @@ static void rvu_npc_setup_interfaces(str
+ 	mcam->counters.max--;
+ 	mcam->rx_miss_act_cntr = mcam->counters.max;
  
- 	/* Delete multicast and promisc MCAM entries */
-@@ -1107,6 +1110,9 @@ void rvu_npc_disable_default_entries(str
+-	rx_kex = npc_mkex_default.keyx_cfg[NIX_INTF_RX];
+-	tx_kex = npc_mkex_default.keyx_cfg[NIX_INTF_TX];
++	rx_kex = mkex->keyx_cfg[NIX_INTF_RX];
++	tx_kex = mkex->keyx_cfg[NIX_INTF_TX];
+ 	nibble_ena = FIELD_GET(NPC_PARSE_NIBBLE, rx_kex);
  
- void rvu_npc_enable_default_entries(struct rvu *rvu, u16 pcifunc, int nixlf)
- {
-+	if (nixlf < 0)
-+		return;
-+
- 	/* Enables only broadcast match entry. Promisc/Allmulti are enabled
- 	 * in set_rx_mode mbox handler.
- 	 */
+ 	nibble_ena = rvu_npc_get_tx_nibble_cfg(rvu, nibble_ena);
+ 	if (nibble_ena) {
+ 		tx_kex &= ~NPC_PARSE_NIBBLE;
+ 		tx_kex |= FIELD_PREP(NPC_PARSE_NIBBLE, nibble_ena);
+-		npc_mkex_default.keyx_cfg[NIX_INTF_TX] = tx_kex;
++		mkex->keyx_cfg[NIX_INTF_TX] = tx_kex;
+ 	}
+ 
+ 	/* Configure RX interfaces */
 
 
