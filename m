@@ -2,64 +2,72 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D5F89C32772
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 17:23:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C8051C32772
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 17:23:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233540AbiHWRXR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 13:23:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56480 "EHLO
+        id S233253AbiHWRX1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 23 Aug 2022 13:23:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56098 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240773AbiHWRVM (ORCPT
+        with ESMTP id S241773AbiHWRVS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 13:21:12 -0400
-Received: from mail-oi1-f182.google.com (mail-oi1-f182.google.com [209.85.167.182])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EFE96EF007;
-        Tue, 23 Aug 2022 07:57:23 -0700 (PDT)
-Received: by mail-oi1-f182.google.com with SMTP id r10so10512001oie.1;
-        Tue, 23 Aug 2022 07:57:23 -0700 (PDT)
+        Tue, 23 Aug 2022 13:21:18 -0400
+Received: from mail-ot1-f45.google.com (mail-ot1-f45.google.com [209.85.210.45])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D5F4F2F391;
+        Tue, 23 Aug 2022 07:57:33 -0700 (PDT)
+Received: by mail-ot1-f45.google.com with SMTP id a14-20020a0568300b8e00b0061c4e3eb52aso9965169otv.3;
+        Tue, 23 Aug 2022 07:57:33 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=content-transfer-encoding:mime-version:message-id:date:subject:cc
          :to:from:x-gm-message-state:from:to:cc;
-        bh=HGZycrPUJ9tZL1J+2Q0/5E3o17nVGa6AdQi0WZbnIKs=;
-        b=19BqUrZ9LpzM1hlcrZEdm3JQWDvGXkgmMk6y/NabIS7DL4ha9ZIsIvJBMWTwfPjjhO
-         v7U1clGrzjpHZCuPJil9RbBDXrThDi+Yf2hMq5d3wxfvnxrNtvDV6QmBSfzE+qTJDGG5
-         RTX+udIHrLlYYt7e6bgfmBOipNJCfkGmcZjShuDIpWEB2ISkGqtsMbCLlsi9cy1pneeX
-         UEw8E0soHTNs8ys35/1jjJZj7eJKiHRQ1n420utQEmR8yYjikqzoFnm7CJKt30ze0Nd4
-         xZfXkd62mNXvOPlw9e1NTK1B7lZrHVCNBVildGCAQCr9SdGV0nUd7CgiyJXFr/CtcqdM
-         mkTg==
-X-Gm-Message-State: ACgBeo2j76zwvXZpQ6Qh1lmOrHA9q6vahX9bQB/rtAIZC24X0dHGQVN7
-        hkYbYYn77DHsBdSLZhaBdg==
-X-Google-Smtp-Source: AA6agR4QTEbRPz/oyZMlkPXRpRj5KOhcjVDz0Qv5pdtbi6Z5AhJie2GGjEV4aAHhi68H4rUZcb4+BQ==
-X-Received: by 2002:a05:6808:f8f:b0:344:c3d4:775e with SMTP id o15-20020a0568080f8f00b00344c3d4775emr1441641oiw.266.1661266643134;
-        Tue, 23 Aug 2022 07:57:23 -0700 (PDT)
+        bh=X3oSNHfhYN1D8nj/Tus+6OMR/7Xdc3qc/TG8fQDrSaM=;
+        b=E/zFZHZulFqGRZrTzXrS2jRjM89qK09z6oSf6JhWBLPOSVJssSBxyQ1QorEq8NcRxd
+         Q6/PHEnaFlCdB8fIGBn8/dBw2gyXk9x7RaoFIdbxwTZcHS/bdRJkDmbPbPth9kQ9ifnL
+         j/qPUgIIwKkVteJfZ8q4u3sOkNN/hIQ+6n4D4MAPV37CWxM0xY7sdYJwQNah79AquJe2
+         6wr/1kfQ40fUHBoZnEY5NlkMDEZUudr4GlvrMp6m+Rr1CkUHBktSCjMCHeRkdfzwdeid
+         u+wVfeKl89U6ALbHTGZ3Av1etGwGVMwCSz3zHWGmpKXpjPJQDWXnYJbplj5V0UG9TK7p
+         Ra3g==
+X-Gm-Message-State: ACgBeo1V1Wwtn8X3hZ9nkDYdgH0DTrZmJsq3ZrhV/rEcaqZTVzdEEa2m
+        2gtu18OA5f6XXJ6VXDM+rg==
+X-Google-Smtp-Source: AA6agR7DQBou8qC5N4MzG6OFDfSyxvUBlmCTQHSauVZ73UWGC8xCB14yWHMhag68xgrM7MZHRX63/g==
+X-Received: by 2002:a05:6830:6999:b0:61d:26f8:94c1 with SMTP id cy25-20020a056830699900b0061d26f894c1mr9511714otb.278.1661266653059;
+        Tue, 23 Aug 2022 07:57:33 -0700 (PDT)
 Received: from xps15.. (66-90-144-107.dyn.grandenetworks.net. [66.90.144.107])
-        by smtp.googlemail.com with ESMTPSA id t1-20020a056870600100b0011c65559b04sm3840637oaa.34.2022.08.23.07.57.21
+        by smtp.googlemail.com with ESMTPSA id t1-20020a056870600100b0011c65559b04sm3840637oaa.34.2022.08.23.07.57.31
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 23 Aug 2022 07:57:22 -0700 (PDT)
+        Tue, 23 Aug 2022 07:57:32 -0700 (PDT)
 From:   Rob Herring <robh@kernel.org>
-To:     Support Opensource <support.opensource@diasemi.com>,
-        Liam Girdwood <lgirdwood@gmail.com>,
-        Mark Brown <broonie@kernel.org>,
+To:     "James (Qian) Wang" <james.qian.wang@arm.com>,
+        Liviu Dudau <liviu.dudau@arm.com>,
+        Mihail Atanassov <mihail.atanassov@arm.com>,
+        David Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel@ffwll.ch>,
         Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Javier Martinez Canillas <javier@dowhile0.org>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        Andy Gross <agross@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Konrad Dybcio <konrad.dybcio@somainline.org>,
-        Adam Ward <Adam.Ward.opensource@diasemi.com>,
-        Hsin-Hsiung Wang <hsin-hsiung.wang@mediatek.com>,
-        Robert Marko <robimarko@gmail.com>,
-        Sumit Semwal <sumit.semwal@linaro.org>,
-        ChiYuan Huang <cy_huang@richtek.com>,
-        Matti Vaittinen <matti.vaittinen@fi.rohmeurope.com>
-Cc:     Krzysztof Kozlowski <krzk@kernel.org>,
-        linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
+        Andrzej Hajda <andrzej.hajda@intel.com>,
+        Neil Armstrong <narmstrong@baylibre.com>,
+        Robert Foss <robert.foss@linaro.org>,
+        Laurent Pinchart <Laurent.pinchart@ideasonboard.com>,
+        Jonas Karlman <jonas@kwiboo.se>,
+        Jernej Skrabec <jernej.skrabec@gmail.com>,
+        Rob Clark <robdclark@gmail.com>,
+        Abhinav Kumar <quic_abhinavk@quicinc.com>,
+        Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
+        Sean Paul <sean@poorly.run>, Inki Dae <inki.dae@samsung.com>,
+        Seung-Woo Kim <sw0312.kim@samsung.com>,
+        Kyungmin Park <kyungmin.park@samsung.com>,
+        Alim Akhtar <alim.akhtar@samsung.com>,
+        Andre Przywara <andre.przywara@arm.com>
+Cc:     Liviu Dudau <Liviu.Dudau@arm.com>,
+        Krzysztof Kozlowski <krzk@kernel.org>,
+        dri-devel@lists.freedesktop.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-arm-msm@vger.kernel.org,
+        freedreno@lists.freedesktop.org,
         linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org, linux-arm-msm@vger.kernel.org
-Subject: [PATCH] regulator: dt-bindings: Add missing (unevaluated|additional)Properties on child nodes
-Date:   Tue, 23 Aug 2022 09:56:38 -0500
-Message-Id: <20220823145649.3118479-7-robh@kernel.org>
+        linux-samsung-soc@vger.kernel.org
+Subject: [PATCH] dt-bindings: display: Add missing (unevaluated|additional)Properties on child nodes
+Date:   Tue, 23 Aug 2022 09:56:42 -0500
+Message-Id: <20220823145649.3118479-11-robh@kernel.org>
 X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
@@ -73,148 +81,73 @@ must have unevaluatedProperties or additionalProperties set to false
 
 Signed-off-by: Rob Herring <robh@kernel.org>
 ---
- .../bindings/regulator/dlg,da9121.yaml           |  1 +
- .../bindings/regulator/maxim,max77802.yaml       |  1 +
- .../bindings/regulator/maxim,max8997.yaml        |  1 +
- .../bindings/regulator/mt6315-regulator.yaml     |  1 +
- .../bindings/regulator/qcom,spmi-regulator.yaml  |  1 +
- .../regulator/qcom-labibb-regulator.yaml         | 16 ++++++++++++++++
- .../regulator/richtek,rt4801-regulator.yaml      |  1 +
- .../regulator/rohm,bd71815-regulator.yaml        |  1 +
- 8 files changed, 23 insertions(+)
+ Documentation/devicetree/bindings/display/arm,komeda.yaml        | 1 +
+ Documentation/devicetree/bindings/display/bridge/lvds-codec.yaml | 1 +
+ Documentation/devicetree/bindings/display/msm/gpu.yaml           | 1 +
+ .../bindings/display/samsung/samsung,exynos7-decon.yaml          | 1 +
+ .../devicetree/bindings/display/samsung/samsung,fimd.yaml        | 1 +
+ 5 files changed, 5 insertions(+)
 
-diff --git a/Documentation/devicetree/bindings/regulator/dlg,da9121.yaml b/Documentation/devicetree/bindings/regulator/dlg,da9121.yaml
-index 24ace6e1e5ec..63e1161a87de 100644
---- a/Documentation/devicetree/bindings/regulator/dlg,da9121.yaml
-+++ b/Documentation/devicetree/bindings/regulator/dlg,da9121.yaml
-@@ -83,6 +83,7 @@ properties:
+diff --git a/Documentation/devicetree/bindings/display/arm,komeda.yaml b/Documentation/devicetree/bindings/display/arm,komeda.yaml
+index 9f4aade97f10..3ad3eef89ca8 100644
+--- a/Documentation/devicetree/bindings/display/arm,komeda.yaml
++++ b/Documentation/devicetree/bindings/display/arm,komeda.yaml
+@@ -58,6 +58,7 @@ properties:
+ patternProperties:
+   '^pipeline@[01]$':
+     type: object
++    additionalProperties: false
+     description:
+       clocks
  
-   regulators:
+diff --git a/Documentation/devicetree/bindings/display/bridge/lvds-codec.yaml b/Documentation/devicetree/bindings/display/bridge/lvds-codec.yaml
+index 3a8614e0f627..84aafcbf0919 100644
+--- a/Documentation/devicetree/bindings/display/bridge/lvds-codec.yaml
++++ b/Documentation/devicetree/bindings/display/bridge/lvds-codec.yaml
+@@ -51,6 +51,7 @@ properties:
+     properties:
+       port@0:
+         $ref: /schemas/graph.yaml#/$defs/port-base
++        unevaluatedProperties: false
+         description: |
+           For LVDS encoders, port 0 is the parallel input
+           For LVDS decoders, port 0 is the LVDS input
+diff --git a/Documentation/devicetree/bindings/display/msm/gpu.yaml b/Documentation/devicetree/bindings/display/msm/gpu.yaml
+index 3397bc31d087..0179c816fa6d 100644
+--- a/Documentation/devicetree/bindings/display/msm/gpu.yaml
++++ b/Documentation/devicetree/bindings/display/msm/gpu.yaml
+@@ -81,6 +81,7 @@ properties:
+ 
+   zap-shader:
      type: object
 +    additionalProperties: false
      description: |
-       List of regulators provided by the device
+       For a5xx and a6xx devices this node contains a memory-region that
+       points to reserved memory to store the zap shader that can be used to
+diff --git a/Documentation/devicetree/bindings/display/samsung/samsung,exynos7-decon.yaml b/Documentation/devicetree/bindings/display/samsung/samsung,exynos7-decon.yaml
+index 969bd8c563a5..dec1c9058876 100644
+--- a/Documentation/devicetree/bindings/display/samsung/samsung,exynos7-decon.yaml
++++ b/Documentation/devicetree/bindings/display/samsung/samsung,exynos7-decon.yaml
+@@ -37,6 +37,7 @@ properties:
  
-diff --git a/Documentation/devicetree/bindings/regulator/maxim,max77802.yaml b/Documentation/devicetree/bindings/regulator/maxim,max77802.yaml
-index 236348c4710c..71138c611b6c 100644
---- a/Documentation/devicetree/bindings/regulator/maxim,max77802.yaml
-+++ b/Documentation/devicetree/bindings/regulator/maxim,max77802.yaml
-@@ -79,6 +79,7 @@ patternProperties:
-     patternProperties:
-       regulator-state-(standby|mem|disk):
-         type: object
-+        additionalProperties: true
-         properties:
-           regulator-mode: false
- 
-diff --git a/Documentation/devicetree/bindings/regulator/maxim,max8997.yaml b/Documentation/devicetree/bindings/regulator/maxim,max8997.yaml
-index 4321f061a7f6..2b266ea43716 100644
---- a/Documentation/devicetree/bindings/regulator/maxim,max8997.yaml
-+++ b/Documentation/devicetree/bindings/regulator/maxim,max8997.yaml
-@@ -111,6 +111,7 @@ properties:
- 
-   regulators:
+   i80-if-timings:
      type: object
 +    additionalProperties: false
-     description:
-       List of child nodes that specify the regulators.
- 
-diff --git a/Documentation/devicetree/bindings/regulator/mt6315-regulator.yaml b/Documentation/devicetree/bindings/regulator/mt6315-regulator.yaml
-index 37402c370fbb..364b58730be2 100644
---- a/Documentation/devicetree/bindings/regulator/mt6315-regulator.yaml
-+++ b/Documentation/devicetree/bindings/regulator/mt6315-regulator.yaml
-@@ -29,6 +29,7 @@ properties:
-       "^vbuck[1-4]$":
-         type: object
-         $ref: "regulator.yaml#"
-+        unevaluatedProperties: false
- 
-         properties:
-           regulator-compatible:
-diff --git a/Documentation/devicetree/bindings/regulator/qcom,spmi-regulator.yaml b/Documentation/devicetree/bindings/regulator/qcom,spmi-regulator.yaml
-index 8b7c4af4b551..3266cd0c580f 100644
---- a/Documentation/devicetree/bindings/regulator/qcom,spmi-regulator.yaml
-+++ b/Documentation/devicetree/bindings/regulator/qcom,spmi-regulator.yaml
-@@ -35,6 +35,7 @@ patternProperties:
-     description: List of regulators and its properties
-     type: object
-     $ref: regulator.yaml#
-+    unevaluatedProperties: false
- 
+     description: timing configuration for lcd i80 interface support
      properties:
-       qcom,ocp-max-retries:
-diff --git a/Documentation/devicetree/bindings/regulator/qcom-labibb-regulator.yaml b/Documentation/devicetree/bindings/regulator/qcom-labibb-regulator.yaml
-index 1ddc1efd19e2..f97b8083678f 100644
---- a/Documentation/devicetree/bindings/regulator/qcom-labibb-regulator.yaml
-+++ b/Documentation/devicetree/bindings/regulator/qcom-labibb-regulator.yaml
-@@ -20,6 +20,7 @@ properties:
+       cs-setup:
+diff --git a/Documentation/devicetree/bindings/display/samsung/samsung,fimd.yaml b/Documentation/devicetree/bindings/display/samsung/samsung,fimd.yaml
+index 5d5cc220f78a..7593938601bb 100644
+--- a/Documentation/devicetree/bindings/display/samsung/samsung,fimd.yaml
++++ b/Documentation/devicetree/bindings/display/samsung/samsung,fimd.yaml
+@@ -40,6 +40,7 @@ properties:
  
-   lab:
+   i80-if-timings:
      type: object
 +    additionalProperties: false
- 
-     properties:
-       qcom,soft-start-us:
-@@ -33,11 +34,19 @@ properties:
-         description:
-           Short-circuit and over-current interrupts for lab.
- 
-+      interrupt-names:
-+        minItems: 1
-+        items:
-+          - const: sc-err
-+          - const: ocp
-+
-     required:
-       - interrupts
-+      - interrupt-names
- 
-   ibb:
-     type: object
-+    additionalProperties: false
- 
-     properties:
-       qcom,discharge-resistor-kohms:
-@@ -52,8 +61,15 @@ properties:
-         description:
-           Short-circuit and over-current interrupts for ibb.
- 
-+      interrupt-names:
-+        minItems: 1
-+        items:
-+          - const: sc-err
-+          - const: ocp
-+
-     required:
-       - interrupts
-+      - interrupt-names
- 
- required:
-   - compatible
-diff --git a/Documentation/devicetree/bindings/regulator/richtek,rt4801-regulator.yaml b/Documentation/devicetree/bindings/regulator/richtek,rt4801-regulator.yaml
-index 091150c4e579..4a8a221bc902 100644
---- a/Documentation/devicetree/bindings/regulator/richtek,rt4801-regulator.yaml
-+++ b/Documentation/devicetree/bindings/regulator/richtek,rt4801-regulator.yaml
-@@ -42,6 +42,7 @@ patternProperties:
-   "^DSV(P|N)$":
-     type: object
-     $ref: regulator.yaml#
-+    unevaluatedProperties: false
-     description:
-       Properties for single display bias regulator.
- 
-diff --git a/Documentation/devicetree/bindings/regulator/rohm,bd71815-regulator.yaml b/Documentation/devicetree/bindings/regulator/rohm,bd71815-regulator.yaml
-index 7d0adb74a396..d61e8675f067 100644
---- a/Documentation/devicetree/bindings/regulator/rohm,bd71815-regulator.yaml
-+++ b/Documentation/devicetree/bindings/regulator/rohm,bd71815-regulator.yaml
-@@ -27,6 +27,7 @@ properties:
-     description:
-       properties for wled regulator
-     $ref: regulator.yaml#
-+    unevaluatedProperties: false
- 
-     properties:
-       regulator-name:
+     description: |
+       Timing configuration for lcd i80 interface support.
+       The parameters are defined as::
 -- 
 2.34.1
 
