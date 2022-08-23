@@ -2,44 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 08C07C32774
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 10:29:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9EAB9C32772
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 10:29:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354394AbiHWK3k (ORCPT
+        id S1354872AbiHWK3q (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 06:29:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47142 "EHLO
+        Tue, 23 Aug 2022 06:29:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36504 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353312AbiHWKNU (ORCPT
+        with ESMTP id S1353330AbiHWKNX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 06:13:20 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A149A7C31D;
-        Tue, 23 Aug 2022 01:59:24 -0700 (PDT)
+        Tue, 23 Aug 2022 06:13:23 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B025772867;
+        Tue, 23 Aug 2022 01:59:27 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 3D3C461524;
-        Tue, 23 Aug 2022 08:59:24 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 23C9FC433C1;
-        Tue, 23 Aug 2022 08:59:22 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 4BCCE61524;
+        Tue, 23 Aug 2022 08:59:27 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3AC2AC433C1;
+        Tue, 23 Aug 2022 08:59:26 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661245163;
-        bh=cQg3fPWkkIsSmtVG4VO2rLOB3NlOMKkRDjzQ1j4JfCo=;
+        s=korg; t=1661245166;
+        bh=KCJgGOsG7JIve/c6zy0V7gbx6eKV2MhqDYu1kgomsXA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=LwKzxoX7QSBgzuuGcrOrwYDWMlXXiFGhoiYjy7KWeCjnyO/RG7jh3SxTeorxxE7Xm
-         SUt7hZ6FDYgPi+ep4XoQP5N1RHOEesa0opZsj/3P5Lz0nT12InlKa5hUvy0/xk9cNr
-         2vHyPlsXnbYUj8R8x3PicWSfzMaSaBkKk1/d5thQ=
+        b=DJSqwUd+gcqNFSkq85VTfZV5U0sckgtQhRie9rOONVavJTcyojrOHusOFuwPvRAQ0
+         tNIR9Cu+hx+8lyaKeVRg2Wic6b4oHe/Ic7EpqHuRF6BrAXIgiAyP5BhCqFZcpPgzeu
+         qChBZjQsmXF/RkFm7Ef/i2sH2pporUeeZaxnOtb8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Brian Foster <bfoster@redhat.com>,
         "Darrick J. Wong" <djwong@kernel.org>,
         Dave Chinner <dchinner@redhat.com>,
         Leah Rumancik <leah.rumancik@gmail.com>
-Subject: [PATCH 5.15 236/244] xfs: flush inodegc workqueue tasks before cancel
-Date:   Tue, 23 Aug 2022 10:26:35 +0200
-Message-Id: <20220823080107.452202766@linuxfoundation.org>
+Subject: [PATCH 5.15 237/244] xfs: reserve quota for dir expansion when linking/unlinking files
+Date:   Tue, 23 Aug 2022 10:26:36 +0200
+Message-Id: <20220823080107.495015228@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220823080059.091088642@linuxfoundation.org>
 References: <20220823080059.091088642@linuxfoundation.org>
@@ -51,118 +50,239 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Brian Foster <bfoster@redhat.com>
+From: "Darrick J. Wong" <djwong@kernel.org>
 
-[ Upstream commit 6191cf3ad59fda5901160633fef8e41b064a5246 ]
+[ Upstream commit 871b9316e7a778ff97bdc34fdb2f2977f616651d ]
 
-The xfs_inodegc_stop() helper performs a high level flush of pending
-work on the percpu queues and then runs a cancel_work_sync() on each
-of the percpu work tasks to ensure all work has completed before
-returning.  While cancel_work_sync() waits for wq tasks to complete,
-it does not guarantee work tasks have started. This means that the
-_stop() helper can queue and instantly cancel a wq task without
-having completed the associated work. This can be observed by
-tracepoint inspection of a simple "rm -f <file>; fsfreeze -f <mnt>"
-test:
+XFS does not reserve quota for directory expansion when linking or
+unlinking children from a directory.  This means that we don't reject
+the expansion with EDQUOT when we're at or near a hard limit, which
+means that unprivileged userspace can use link()/unlink() to exceed
+quota.
 
-	xfs_destroy_inode: ... ino 0x83 ...
-	xfs_inode_set_need_inactive: ... ino 0x83 ...
-	xfs_inodegc_stop: ...
-	...
-	xfs_inodegc_start: ...
-	xfs_inodegc_worker: ...
-	xfs_inode_inactivating: ... ino 0x83 ...
+The fix for this is nuanced -- link operations don't always expand the
+directory, and we allow a link to proceed with no space reservation if
+we don't need to add a block to the directory to handle the addition.
+Unlink operations generally do not expand the directory (you'd have to
+free a block and then cause a btree split) and we can defer the
+directory block freeing if there is no space reservation.
 
-The first few lines show that the inode is removed and need inactive
-state set, but the inactivation work has not completed before the
-inodegc mechanism stops. The inactivation doesn't actually occur
-until the fs is unfrozen and the gc mechanism starts back up. Note
-that this test requires fsfreeze to reproduce because xfs_freeze
-indirectly invokes xfs_fs_statfs(), which calls xfs_inodegc_flush().
+Moreover, there is a further bug in that we do not trigger the blockgc
+workers to try to clear space when we're out of quota.
 
-When this occurs, the workqueue try_to_grab_pending() logic first
-tries to steal the pending bit, which does not succeed because the
-bit has been set by queue_work_on(). Subsequently, it checks for
-association of a pool workqueue from the work item under the pool
-lock. This association is set at the point a work item is queued and
-cleared when dequeued for processing. If the association exists, the
-work item is removed from the queue and cancel_work_sync() returns
-true. If the pwq association is cleared, the remove attempt assumes
-the task is busy and retries (eventually returning false to the
-caller after waiting for the work task to complete).
+To fix both cases, create a new xfs_trans_alloc_dir function that
+allocates the transaction, locks and joins the inodes, and reserves
+quota for the directory.  If there isn't sufficient space or quota,
+we'll switch the caller to reservationless mode.  This should prevent
+quota usage overruns with the least restriction in functionality.
 
-To avoid this race, we can flush each work item explicitly before
-cancel. However, since the _queue_all() already schedules each
-underlying work item, the workqueue level helpers are sufficient to
-achieve the same ordering effect. E.g., the inodegc enabled flag
-prevents scheduling any further work in the _stop() case. Use the
-drain_workqueue() helper in this particular case to make the intent
-a bit more self explanatory.
-
-Signed-off-by: Brian Foster <bfoster@redhat.com>
-Reviewed-by: Darrick J. Wong <djwong@kernel.org>
 Signed-off-by: Darrick J. Wong <djwong@kernel.org>
 Reviewed-by: Dave Chinner <dchinner@redhat.com>
 Signed-off-by: Leah Rumancik <leah.rumancik@gmail.com>
 Acked-by: Darrick J. Wong <djwong@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- fs/xfs/xfs_icache.c |   22 ++++------------------
- 1 file changed, 4 insertions(+), 18 deletions(-)
+ fs/xfs/xfs_inode.c |   46 ++++++++++------------------
+ fs/xfs/xfs_trans.c |   86 +++++++++++++++++++++++++++++++++++++++++++++++++++++
+ fs/xfs/xfs_trans.h |    3 +
+ 3 files changed, 106 insertions(+), 29 deletions(-)
 
---- a/fs/xfs/xfs_icache.c
-+++ b/fs/xfs/xfs_icache.c
-@@ -1872,28 +1872,20 @@ xfs_inodegc_worker(
- }
- 
- /*
-- * Force all currently queued inode inactivation work to run immediately, and
-- * wait for the work to finish. Two pass - queue all the work first pass, wait
-- * for it in a second pass.
-+ * Force all currently queued inode inactivation work to run immediately and
-+ * wait for the work to finish.
-  */
- void
- xfs_inodegc_flush(
- 	struct xfs_mount	*mp)
+--- a/fs/xfs/xfs_inode.c
++++ b/fs/xfs/xfs_inode.c
+@@ -1223,7 +1223,7 @@ xfs_link(
  {
--	struct xfs_inodegc	*gc;
--	int			cpu;
--
- 	if (!xfs_is_inodegc_enabled(mp))
- 		return;
+ 	xfs_mount_t		*mp = tdp->i_mount;
+ 	xfs_trans_t		*tp;
+-	int			error;
++	int			error, nospace_error = 0;
+ 	int			resblks;
  
- 	trace_xfs_inodegc_flush(mp, __return_address);
+ 	trace_xfs_link(tdp, target_name);
+@@ -1242,19 +1242,11 @@ xfs_link(
+ 		goto std_return;
  
- 	xfs_inodegc_queue_all(mp);
--
--	for_each_online_cpu(cpu) {
--		gc = per_cpu_ptr(mp->m_inodegc, cpu);
--		flush_work(&gc->work);
+ 	resblks = XFS_LINK_SPACE_RES(mp, target_name->len);
+-	error = xfs_trans_alloc(mp, &M_RES(mp)->tr_link, resblks, 0, 0, &tp);
+-	if (error == -ENOSPC) {
+-		resblks = 0;
+-		error = xfs_trans_alloc(mp, &M_RES(mp)->tr_link, 0, 0, 0, &tp);
 -	}
-+	flush_workqueue(mp->m_inodegc_wq);
++	error = xfs_trans_alloc_dir(tdp, &M_RES(mp)->tr_link, sip, &resblks,
++			&tp, &nospace_error);
+ 	if (error)
+ 		goto std_return;
+ 
+-	xfs_lock_two_inodes(sip, XFS_ILOCK_EXCL, tdp, XFS_ILOCK_EXCL);
+-
+-	xfs_trans_ijoin(tp, sip, XFS_ILOCK_EXCL);
+-	xfs_trans_ijoin(tp, tdp, XFS_ILOCK_EXCL);
+-
+ 	error = xfs_iext_count_may_overflow(tdp, XFS_DATA_FORK,
+ 			XFS_IEXT_DIR_MANIP_CNT(mp));
+ 	if (error)
+@@ -1312,6 +1304,8 @@ xfs_link(
+  error_return:
+ 	xfs_trans_cancel(tp);
+  std_return:
++	if (error == -ENOSPC && nospace_error)
++		error = nospace_error;
+ 	return error;
  }
  
- /*
-@@ -1904,18 +1896,12 @@ void
- xfs_inodegc_stop(
- 	struct xfs_mount	*mp)
- {
--	struct xfs_inodegc	*gc;
--	int			cpu;
--
- 	if (!xfs_clear_inodegc_enabled(mp))
- 		return;
+@@ -2761,6 +2755,7 @@ xfs_remove(
+ 	xfs_mount_t		*mp = dp->i_mount;
+ 	xfs_trans_t             *tp = NULL;
+ 	int			is_dir = S_ISDIR(VFS_I(ip)->i_mode);
++	int			dontcare;
+ 	int                     error = 0;
+ 	uint			resblks;
  
- 	xfs_inodegc_queue_all(mp);
-+	drain_workqueue(mp->m_inodegc_wq);
+@@ -2778,31 +2773,24 @@ xfs_remove(
+ 		goto std_return;
  
--	for_each_online_cpu(cpu) {
--		gc = per_cpu_ptr(mp->m_inodegc, cpu);
--		cancel_work_sync(&gc->work);
+ 	/*
+-	 * We try to get the real space reservation first,
+-	 * allowing for directory btree deletion(s) implying
+-	 * possible bmap insert(s).  If we can't get the space
+-	 * reservation then we use 0 instead, and avoid the bmap
+-	 * btree insert(s) in the directory code by, if the bmap
+-	 * insert tries to happen, instead trimming the LAST
+-	 * block from the directory.
++	 * We try to get the real space reservation first, allowing for
++	 * directory btree deletion(s) implying possible bmap insert(s).  If we
++	 * can't get the space reservation then we use 0 instead, and avoid the
++	 * bmap btree insert(s) in the directory code by, if the bmap insert
++	 * tries to happen, instead trimming the LAST block from the directory.
++	 *
++	 * Ignore EDQUOT and ENOSPC being returned via nospace_error because
++	 * the directory code can handle a reservationless update and we don't
++	 * want to prevent a user from trying to free space by deleting things.
+ 	 */
+ 	resblks = XFS_REMOVE_SPACE_RES(mp);
+-	error = xfs_trans_alloc(mp, &M_RES(mp)->tr_remove, resblks, 0, 0, &tp);
+-	if (error == -ENOSPC) {
+-		resblks = 0;
+-		error = xfs_trans_alloc(mp, &M_RES(mp)->tr_remove, 0, 0, 0,
+-				&tp);
 -	}
- 	trace_xfs_inodegc_stop(mp, __return_address);
- }
++	error = xfs_trans_alloc_dir(dp, &M_RES(mp)->tr_remove, ip, &resblks,
++			&tp, &dontcare);
+ 	if (error) {
+ 		ASSERT(error != -ENOSPC);
+ 		goto std_return;
+ 	}
  
+-	xfs_lock_two_inodes(dp, XFS_ILOCK_EXCL, ip, XFS_ILOCK_EXCL);
+-
+-	xfs_trans_ijoin(tp, dp, XFS_ILOCK_EXCL);
+-	xfs_trans_ijoin(tp, ip, XFS_ILOCK_EXCL);
+-
+ 	/*
+ 	 * If we're removing a directory perform some additional validation.
+ 	 */
+--- a/fs/xfs/xfs_trans.c
++++ b/fs/xfs/xfs_trans.c
+@@ -1201,3 +1201,89 @@ out_cancel:
+ 	xfs_trans_cancel(tp);
+ 	return error;
+ }
++
++/*
++ * Allocate an transaction, lock and join the directory and child inodes to it,
++ * and reserve quota for a directory update.  If there isn't sufficient space,
++ * @dblocks will be set to zero for a reservationless directory update and
++ * @nospace_error will be set to a negative errno describing the space
++ * constraint we hit.
++ *
++ * The caller must ensure that the on-disk dquots attached to this inode have
++ * already been allocated and initialized.  The ILOCKs will be dropped when the
++ * transaction is committed or cancelled.
++ */
++int
++xfs_trans_alloc_dir(
++	struct xfs_inode	*dp,
++	struct xfs_trans_res	*resv,
++	struct xfs_inode	*ip,
++	unsigned int		*dblocks,
++	struct xfs_trans	**tpp,
++	int			*nospace_error)
++{
++	struct xfs_trans	*tp;
++	struct xfs_mount	*mp = ip->i_mount;
++	unsigned int		resblks;
++	bool			retried = false;
++	int			error;
++
++retry:
++	*nospace_error = 0;
++	resblks = *dblocks;
++	error = xfs_trans_alloc(mp, resv, resblks, 0, 0, &tp);
++	if (error == -ENOSPC) {
++		*nospace_error = error;
++		resblks = 0;
++		error = xfs_trans_alloc(mp, resv, resblks, 0, 0, &tp);
++	}
++	if (error)
++		return error;
++
++	xfs_lock_two_inodes(dp, XFS_ILOCK_EXCL, ip, XFS_ILOCK_EXCL);
++
++	xfs_trans_ijoin(tp, dp, XFS_ILOCK_EXCL);
++	xfs_trans_ijoin(tp, ip, XFS_ILOCK_EXCL);
++
++	error = xfs_qm_dqattach_locked(dp, false);
++	if (error) {
++		/* Caller should have allocated the dquots! */
++		ASSERT(error != -ENOENT);
++		goto out_cancel;
++	}
++
++	error = xfs_qm_dqattach_locked(ip, false);
++	if (error) {
++		/* Caller should have allocated the dquots! */
++		ASSERT(error != -ENOENT);
++		goto out_cancel;
++	}
++
++	if (resblks == 0)
++		goto done;
++
++	error = xfs_trans_reserve_quota_nblks(tp, dp, resblks, 0, false);
++	if (error == -EDQUOT || error == -ENOSPC) {
++		if (!retried) {
++			xfs_trans_cancel(tp);
++			xfs_blockgc_free_quota(dp, 0);
++			retried = true;
++			goto retry;
++		}
++
++		*nospace_error = error;
++		resblks = 0;
++		error = 0;
++	}
++	if (error)
++		goto out_cancel;
++
++done:
++	*tpp = tp;
++	*dblocks = resblks;
++	return 0;
++
++out_cancel:
++	xfs_trans_cancel(tp);
++	return error;
++}
+--- a/fs/xfs/xfs_trans.h
++++ b/fs/xfs/xfs_trans.h
+@@ -265,6 +265,9 @@ int xfs_trans_alloc_icreate(struct xfs_m
+ int xfs_trans_alloc_ichange(struct xfs_inode *ip, struct xfs_dquot *udqp,
+ 		struct xfs_dquot *gdqp, struct xfs_dquot *pdqp, bool force,
+ 		struct xfs_trans **tpp);
++int xfs_trans_alloc_dir(struct xfs_inode *dp, struct xfs_trans_res *resv,
++		struct xfs_inode *ip, unsigned int *dblocks,
++		struct xfs_trans **tpp, int *nospace_error);
+ 
+ static inline void
+ xfs_trans_set_context(
 
 
