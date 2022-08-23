@@ -2,45 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5AC93C49EC0
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B2E69C49EC1
 	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 10:12:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353521AbiHWKLg (ORCPT
+        id S1353612AbiHWKLn (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 06:11:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44496 "EHLO
+        Tue, 23 Aug 2022 06:11:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44498 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352171AbiHWKEh (ORCPT
+        with ESMTP id S1352161AbiHWKEh (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 23 Aug 2022 06:04:37 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C155C7CA8D;
-        Tue, 23 Aug 2022 01:51:36 -0700 (PDT)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4119671724;
+        Tue, 23 Aug 2022 01:51:32 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 4E09BB8105C;
-        Tue, 23 Aug 2022 08:51:35 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id AD9ADC433B5;
-        Tue, 23 Aug 2022 08:51:33 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id A0A086150F;
+        Tue, 23 Aug 2022 08:51:31 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A8494C433D6;
+        Tue, 23 Aug 2022 08:51:30 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661244694;
-        bh=9nBzl6UABDLghwFHO1nasarlpDPMZDFE+Q6xgbY2Q+U=;
+        s=korg; t=1661244691;
+        bh=IKMkzTsYh/OjMKBcBRBsOD5re4x3laIipvrW/22RXUE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=C4xfycDGUCypPdc8uEFQtUBU9anyXuLbMtaWcje6ovlMzEH3ZVmHjDC5M1kib+w5v
-         n2JRYPiyDUOb5FuMrAAMqyLsllvGQCiukKR38n6QkD2+47TCVc0A4aH+grsJSIhX9H
-         bxwxXfOaqWhS2O5mXBnEfEyOUDMgJECwtV2/10Zk=
+        b=rivc/sPXU4ei2BrY2oMC7jqOgq8fvjvCR23NaPQPnie+yy5nP5Ogx8E/U8TNLV1b8
+         xBUOa4tUe+B2SqBlB8J0B/9PKlPCbqjPls0DRYskrQLusJdHpZS9FTRm8kJ7b4S+GT
+         mKQALecrGHSQ7zn5Lx6AM9Q0LZiVANdtmY1tC9AQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Takashi Iwai <tiwai@suse.de>,
-        Mark Brown <broonie@kernel.org>
-Subject: [PATCH 5.15 117/244] ASoC: SOF: debug: Fix potential buffer overflow by snprintf()
-Date:   Tue, 23 Aug 2022 10:24:36 +0200
-Message-Id: <20220823080102.925360091@linuxfoundation.org>
+        stable@vger.kernel.org,
+        =?UTF-8?q?Amadeusz=20S=C5=82awi=C5=84ski?= 
+        <amadeuszx.slawinski@linux.intel.com>, Takashi Iwai <tiwai@suse.de>
+Subject: [PATCH 4.14 176/229] ALSA: info: Fix llseek return value when using callback
+Date:   Tue, 23 Aug 2022 10:25:37 +0200
+Message-Id: <20220823080059.901302464@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220823080059.091088642@linuxfoundation.org>
-References: <20220823080059.091088642@linuxfoundation.org>
+In-Reply-To: <20220823080053.202747790@linuxfoundation.org>
+References: <20220823080053.202747790@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -49,40 +50,51 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Takashi Iwai <tiwai@suse.de>
+From: Amadeusz Sławiński <amadeuszx.slawinski@linux.intel.com>
 
-commit 1eb123ce985e6cf302ac6e3f19862d132d86fa8f upstream.
+commit 9be080edcca330be4af06b19916c35227891e8bc upstream.
 
-snprintf() returns the would-be-filled size when the string overflows
-the given buffer size, hence using this value may result in the buffer
-overflow (although it's unrealistic).
+When using callback there was a flow of
 
-This patch replaces with a safer version, scnprintf() for papering
-over such a potential issue.
+	ret = -EINVAL
+	if (callback) {
+		offset = callback();
+		goto out;
+	}
+	...
+	offset = some other value in case of no callback;
+	ret = offset;
+out:
+	return ret;
 
-Fixes: 5b10b6298921 ("ASoC: SOF: Add `memory_info` file to debugfs")
+which causes the snd_info_entry_llseek() to return -EINVAL when there is
+callback handler. Fix this by setting "ret" directly to callback return
+value before jumping to "out".
+
+Fixes: 73029e0ff18d ("ALSA: info - Implement common llseek for binary mode")
+Signed-off-by: Amadeusz Sławiński <amadeuszx.slawinski@linux.intel.com>
+Cc: <stable@vger.kernel.org>
+Link: https://lore.kernel.org/r/20220817124924.3974577-1-amadeuszx.slawinski@linux.intel.com
 Signed-off-by: Takashi Iwai <tiwai@suse.de>
-Link: https://lore.kernel.org/r/20220801165420.25978-3-tiwai@suse.de
-Signed-off-by: Mark Brown <broonie@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- sound/soc/sof/debug.c |    6 +++---
+ sound/core/info.c |    6 +++---
  1 file changed, 3 insertions(+), 3 deletions(-)
 
---- a/sound/soc/sof/debug.c
-+++ b/sound/soc/sof/debug.c
-@@ -668,9 +668,9 @@ static int memory_info_update(struct snd
+--- a/sound/core/info.c
++++ b/sound/core/info.c
+@@ -127,9 +127,9 @@ static loff_t snd_info_entry_llseek(stru
+ 	entry = data->entry;
+ 	mutex_lock(&entry->access);
+ 	if (entry->c.ops->llseek) {
+-		offset = entry->c.ops->llseek(entry,
+-					      data->file_private_data,
+-					      file, offset, orig);
++		ret = entry->c.ops->llseek(entry,
++					   data->file_private_data,
++					   file, offset, orig);
+ 		goto out;
  	}
  
- 	for (i = 0, len = 0; i < reply->num_elems; i++) {
--		ret = snprintf(buf + len, buff_size - len, "zone %d.%d used %#8x free %#8x\n",
--			       reply->elems[i].zone, reply->elems[i].id,
--			       reply->elems[i].used, reply->elems[i].free);
-+		ret = scnprintf(buf + len, buff_size - len, "zone %d.%d used %#8x free %#8x\n",
-+				reply->elems[i].zone, reply->elems[i].id,
-+				reply->elems[i].used, reply->elems[i].free);
- 		if (ret < 0)
- 			goto error;
- 		len += ret;
 
 
