@@ -2,44 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7440EC32774
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 10:48:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A7098C32772
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 10:48:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355986AbiHWKsr (ORCPT
+        id S1356008AbiHWKsx (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 06:48:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54430 "EHLO
+        Tue, 23 Aug 2022 06:48:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54444 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356406AbiHWKmK (ORCPT
+        with ESMTP id S1356407AbiHWKmK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 23 Aug 2022 06:42:10 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0B31C86043;
-        Tue, 23 Aug 2022 02:09:35 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 02BBCA98FB;
+        Tue, 23 Aug 2022 02:09:34 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 341B6B81C86;
-        Tue, 23 Aug 2022 09:09:33 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8D989C433C1;
-        Tue, 23 Aug 2022 09:09:31 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 0947BB81C53;
+        Tue, 23 Aug 2022 09:09:27 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 42C91C433D6;
+        Tue, 23 Aug 2022 09:09:25 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661245772;
-        bh=ttLvW3MfLOd5HkB/xUpnfI6bCZM/YFhvYh+VBRclgbE=;
+        s=korg; t=1661245765;
+        bh=HW8oSDo9+AP0Lh/FOT/cK/fI51j5qkfr5A+LITh7TqM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ycas1gfIgfnrj2m6r3kOaVTths3vqe4YTewEhbduTZgYxRLwR5aIVI4wGszLUArww
-         mOC61upZpqqYlb1hmeIRohndTZ+74yRs2wcy+EKlY2DjNJSCGp92wypUvFTEbXRC6W
-         GeU8PtwgOyIj7VA0fQ2Tk8SJviKUAkeHC6P9Msjk=
+        b=CXpeMFbnsBOdyf1oxkCWIHukAUf6iYJ8PzwZwFqexteWWTgolMPO5R1pVvLQPmgOt
+         qvssKMvgvgo28L20QGnd7rwXXkNWzKHO/F273Eq5oIHOQaV8xm9oKWQkhzvKu28EyL
+         7p7H8807tBzdWiroLqfp386AsyNMtYH/nkKLAwM8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Guenter Roeck <linux@roeck-us.net>,
-        kernel test robot <lkp@intel.com>,
-        Alexander Lobakin <alexandr.lobakin@intel.com>,
-        Yury Norov <yury.norov@gmail.com>
-Subject: [PATCH 4.19 185/287] x86/olpc: fix logical not is only applied to the left hand side
-Date:   Tue, 23 Aug 2022 10:25:54 +0200
-Message-Id: <20220823080107.028915457@linuxfoundation.org>
+        stable@vger.kernel.org, Zheyu Ma <zheyuma97@gmail.com>,
+        Helge Deller <deller@gmx.de>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 4.19 183/287] video: fbdev: s3fb: Check the size of screen before memset_io()
+Date:   Tue, 23 Aug 2022 10:25:52 +0200
+Message-Id: <20220823080106.959200057@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220823080100.268827165@linuxfoundation.org>
 References: <20220823080100.268827165@linuxfoundation.org>
@@ -51,49 +49,49 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Alexander Lobakin <alexandr.lobakin@intel.com>
+From: Zheyu Ma <zheyuma97@gmail.com>
 
-commit 3a2ba42cbd0b669ce3837ba400905f93dd06c79f upstream.
+[ Upstream commit 6ba592fa014f21f35a8ee8da4ca7b95a018f13e8 ]
 
-The bitops compile-time optimization series revealed one more
-problem in olpc-xo1-sci.c:send_ebook_state(), resulted in GCC
-warnings:
+In the function s3fb_set_par(), the value of 'screen_size' is
+calculated by the user input. If the user provides the improper value,
+the value of 'screen_size' may larger than 'info->screen_size', which
+may cause the following bug:
 
-arch/x86/platform/olpc/olpc-xo1-sci.c: In function 'send_ebook_state':
-arch/x86/platform/olpc/olpc-xo1-sci.c:83:63: warning: logical not is only applied to the left hand side of comparison [-Wlogical-not-parentheses]
-   83 |         if (!!test_bit(SW_TABLET_MODE, ebook_switch_idev->sw) == state)
-      |                                                               ^~
-arch/x86/platform/olpc/olpc-xo1-sci.c:83:13: note: add parentheses around left hand side expression to silence this warning
+[   54.083733] BUG: unable to handle page fault for address: ffffc90003000000
+[   54.083742] #PF: supervisor write access in kernel mode
+[   54.083744] #PF: error_code(0x0002) - not-present page
+[   54.083760] RIP: 0010:memset_orig+0x33/0xb0
+[   54.083782] Call Trace:
+[   54.083788]  s3fb_set_par+0x1ec6/0x4040
+[   54.083806]  fb_set_var+0x604/0xeb0
+[   54.083836]  do_fb_ioctl+0x234/0x670
 
-Despite this code working as intended, this redundant double
-negation of boolean value, together with comparing to `char`
-with no explicit conversion to bool, makes compilers think
-the author made some unintentional logical mistakes here.
-Make it the other way around and negate the char instead
-to silence the warnings.
+Fix the this by checking the value of 'screen_size' before memset_io().
 
-Fixes: d2aa37411b8e ("x86/olpc/xo1/sci: Produce wakeup events for buttons and switches")
-Cc: stable@vger.kernel.org # 3.5+
-Reported-by: Guenter Roeck <linux@roeck-us.net>
-Reported-by: kernel test robot <lkp@intel.com>
-Reviewed-and-tested-by: Guenter Roeck <linux@roeck-us.net>
-Signed-off-by: Alexander Lobakin <alexandr.lobakin@intel.com>
-Signed-off-by: Yury Norov <yury.norov@gmail.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Fixes: a268422de8bf ("fbdev driver for S3 Trio/Virge")
+Signed-off-by: Zheyu Ma <zheyuma97@gmail.com>
+Signed-off-by: Helge Deller <deller@gmx.de>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/x86/platform/olpc/olpc-xo1-sci.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/video/fbdev/s3fb.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
---- a/arch/x86/platform/olpc/olpc-xo1-sci.c
-+++ b/arch/x86/platform/olpc/olpc-xo1-sci.c
-@@ -85,7 +85,7 @@ static void send_ebook_state(void)
- 		return;
- 	}
+diff --git a/drivers/video/fbdev/s3fb.c b/drivers/video/fbdev/s3fb.c
+index d63f23e26f7d..b17b806b4187 100644
+--- a/drivers/video/fbdev/s3fb.c
++++ b/drivers/video/fbdev/s3fb.c
+@@ -902,6 +902,8 @@ static int s3fb_set_par(struct fb_info *info)
+ 	value = clamp((htotal + hsstart + 1) / 2 + 2, hsstart + 4, htotal + 1);
+ 	svga_wcrt_multi(par->state.vgabase, s3_dtpc_regs, value);
  
--	if (!!test_bit(SW_TABLET_MODE, ebook_switch_idev->sw) == state)
-+	if (test_bit(SW_TABLET_MODE, ebook_switch_idev->sw) == !!state)
- 		return; /* Nothing new to report. */
- 
- 	input_report_switch(ebook_switch_idev, SW_TABLET_MODE, state);
++	if (screen_size > info->screen_size)
++		screen_size = info->screen_size;
+ 	memset_io(info->screen_base, 0x00, screen_size);
+ 	/* Device and screen back on */
+ 	svga_wcrt_mask(par->state.vgabase, 0x17, 0x80, 0x80);
+-- 
+2.35.1
+
 
 
