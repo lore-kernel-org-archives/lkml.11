@@ -2,45 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9C226C49EC0
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B486AC48BEA
 	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 10:17:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353918AbiHWKQS (ORCPT
+        id S1353958AbiHWKQ0 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 06:16:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57576 "EHLO
+        Tue, 23 Aug 2022 06:16:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57872 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352937AbiHWKGa (ORCPT
+        with ESMTP id S241254AbiHWKGf (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 06:06:30 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2A0D11181C;
-        Tue, 23 Aug 2022 01:53:42 -0700 (PDT)
+        Tue, 23 Aug 2022 06:06:35 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AE8823205B;
+        Tue, 23 Aug 2022 01:53:49 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 94721611DD;
-        Tue, 23 Aug 2022 08:53:41 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 904CEC433D6;
-        Tue, 23 Aug 2022 08:53:40 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 3DBA8B8105C;
+        Tue, 23 Aug 2022 08:53:48 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A6A0AC433C1;
+        Tue, 23 Aug 2022 08:53:46 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661244821;
-        bh=FiKJFq3p3hNMNAz/G+j1Jr63XmO/Uxj1ECLA2jSv+YM=;
+        s=korg; t=1661244827;
+        bh=4xd33p/pVu1mA6EQYzbUK+uFzqw0xRsu7Ph4j4WK9e4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=IwbrROQBIx4qKcDS5FKwYjMOaBy6G8q7o0yJWS+9+mZi1A7u1TSS0g4HO/8dzV5L9
-         RTDU6cKwy9dZTyuHDw3PI3QRudDD2y8b1edSmY9WPLI4gPa1r7ulFWW7JjAFFQhIOM
-         +KAUFU6q9rWvTTgKDyW9WWZ7wEvyiY/jDRgdpJXg=
+        b=Up3Xp/Mb+ACTUhDUj2tCllOm89mocLaZAFDOz7E6bQSAtdptyBwtvmtqUlFYLPIvU
+         pp34HF+KQD4OwonfioHg9Cgv53ya3KPlzAa3vZNskb/hLDnyAKaoXnKSHMbdmLGBL+
+         uxdTjTJypLB02iMuHAjNdMcfXUrR042VudyVvodg=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Al Viro <viro@zeniv.linux.org.uk>,
-        Dinh Nguyen <dinguyen@kernel.org>
-Subject: [PATCH 4.14 197/229] nios2: page fault et.al. are *not* restartable syscalls...
-Date:   Tue, 23 Aug 2022 10:25:58 +0200
-Message-Id: <20220823080100.683561191@linuxfoundation.org>
+        stable@vger.kernel.org, Samuel Holland <samuel@sholland.org>,
+        Jernej Skrabec <jernej.skrabec@gmail.com>,
+        Maxime Ripard <maxime@cerno.tech>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 158/244] drm/sun4i: dsi: Prevent underflow when computing packet sizes
+Date:   Tue, 23 Aug 2022 10:25:17 +0200
+Message-Id: <20220823080104.469108091@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220823080053.202747790@linuxfoundation.org>
-References: <20220823080053.202747790@linuxfoundation.org>
+In-Reply-To: <20220823080059.091088642@linuxfoundation.org>
+References: <20220823080059.091088642@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -49,53 +51,79 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Al Viro <viro@zeniv.linux.org.uk>
+From: Samuel Holland <samuel@sholland.org>
 
-commit 8535c239ac674f7ead0f2652932d35c52c4123b2 upstream.
+[ Upstream commit 82a1356a933d8443139f8886f11b63c974a09a67 ]
 
-make sure that ->orig_r2 is negative for everything except
-the syscalls.
+Currently, the packet overhead is subtracted using unsigned arithmetic.
+With a short sync pulse, this could underflow and wrap around to near
+the maximal u16 value. Fix this by using signed subtraction. The call to
+max() will correctly handle any negative numbers that are produced.
 
-Fixes: 82ed08dd1b0e ("nios2: Exception handling")
-Signed-off-by: Al Viro <viro@zeniv.linux.org.uk>
-Signed-off-by: Dinh Nguyen <dinguyen@kernel.org>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Apply the same fix to the other timings, even though those subtractions
+are less likely to underflow.
+
+Fixes: 133add5b5ad4 ("drm/sun4i: Add Allwinner A31 MIPI-DSI controller support")
+Signed-off-by: Samuel Holland <samuel@sholland.org>
+Reviewed-by: Jernej Skrabec <jernej.skrabec@gmail.com>
+Signed-off-by: Maxime Ripard <maxime@cerno.tech>
+Link: https://lore.kernel.org/r/20220812031623.34057-1-samuel@sholland.org
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/nios2/include/asm/entry.h |    3 ++-
- arch/nios2/kernel/entry.S      |    4 +---
- 2 files changed, 3 insertions(+), 4 deletions(-)
+ drivers/gpu/drm/sun4i/sun6i_mipi_dsi.c | 10 +++++-----
+ 1 file changed, 5 insertions(+), 5 deletions(-)
 
---- a/arch/nios2/include/asm/entry.h
-+++ b/arch/nios2/include/asm/entry.h
-@@ -50,7 +50,8 @@
- 	stw	r13, PT_R13(sp)
- 	stw	r14, PT_R14(sp)
- 	stw	r15, PT_R15(sp)
--	stw	r2, PT_ORIG_R2(sp)
-+	movi	r24, -1
-+	stw	r24, PT_ORIG_R2(sp)
- 	stw	r7, PT_ORIG_R7(sp)
+diff --git a/drivers/gpu/drm/sun4i/sun6i_mipi_dsi.c b/drivers/gpu/drm/sun4i/sun6i_mipi_dsi.c
+index 4f5efcace68e..51edb4244af7 100644
+--- a/drivers/gpu/drm/sun4i/sun6i_mipi_dsi.c
++++ b/drivers/gpu/drm/sun4i/sun6i_mipi_dsi.c
+@@ -531,7 +531,7 @@ static void sun6i_dsi_setup_timings(struct sun6i_dsi *dsi,
+ 				    struct drm_display_mode *mode)
+ {
+ 	struct mipi_dsi_device *device = dsi->device;
+-	unsigned int Bpp = mipi_dsi_pixel_format_to_bpp(device->format) / 8;
++	int Bpp = mipi_dsi_pixel_format_to_bpp(device->format) / 8;
+ 	u16 hbp = 0, hfp = 0, hsa = 0, hblk = 0, vblk = 0;
+ 	u32 basic_ctl = 0;
+ 	size_t bytes;
+@@ -555,7 +555,7 @@ static void sun6i_dsi_setup_timings(struct sun6i_dsi *dsi,
+ 		 * (4 bytes). Its minimal size is therefore 10 bytes
+ 		 */
+ #define HSA_PACKET_OVERHEAD	10
+-		hsa = max((unsigned int)HSA_PACKET_OVERHEAD,
++		hsa = max(HSA_PACKET_OVERHEAD,
+ 			  (mode->hsync_end - mode->hsync_start) * Bpp - HSA_PACKET_OVERHEAD);
  
- 	stw	ra, PT_RA(sp)
---- a/arch/nios2/kernel/entry.S
-+++ b/arch/nios2/kernel/entry.S
-@@ -185,6 +185,7 @@ ENTRY(handle_system_call)
- 	ldw	r5, PT_R5(sp)
+ 		/*
+@@ -564,7 +564,7 @@ static void sun6i_dsi_setup_timings(struct sun6i_dsi *dsi,
+ 		 * therefore 6 bytes
+ 		 */
+ #define HBP_PACKET_OVERHEAD	6
+-		hbp = max((unsigned int)HBP_PACKET_OVERHEAD,
++		hbp = max(HBP_PACKET_OVERHEAD,
+ 			  (mode->htotal - mode->hsync_end) * Bpp - HBP_PACKET_OVERHEAD);
  
- local_restart:
-+	stw	r2, PT_ORIG_R2(sp)
- 	/* Check that the requested system call is within limits */
- 	movui	r1, __NR_syscalls
- 	bgeu	r2, r1, ret_invsyscall
-@@ -336,9 +337,6 @@ external_interrupt:
- 	/* skip if no interrupt is pending */
- 	beq	r12, r0, ret_from_interrupt
+ 		/*
+@@ -574,7 +574,7 @@ static void sun6i_dsi_setup_timings(struct sun6i_dsi *dsi,
+ 		 * 16 bytes
+ 		 */
+ #define HFP_PACKET_OVERHEAD	16
+-		hfp = max((unsigned int)HFP_PACKET_OVERHEAD,
++		hfp = max(HFP_PACKET_OVERHEAD,
+ 			  (mode->hsync_start - mode->hdisplay) * Bpp - HFP_PACKET_OVERHEAD);
  
--	movi	r24, -1
--	stw	r24, PT_ORIG_R2(sp)
--
- 	/*
- 	 * Process an external hardware interrupt.
- 	 */
+ 		/*
+@@ -583,7 +583,7 @@ static void sun6i_dsi_setup_timings(struct sun6i_dsi *dsi,
+ 		 * bytes). Its minimal size is therefore 10 bytes.
+ 		 */
+ #define HBLK_PACKET_OVERHEAD	10
+-		hblk = max((unsigned int)HBLK_PACKET_OVERHEAD,
++		hblk = max(HBLK_PACKET_OVERHEAD,
+ 			   (mode->htotal - (mode->hsync_end - mode->hsync_start)) * Bpp -
+ 			   HBLK_PACKET_OVERHEAD);
+ 
+-- 
+2.35.1
+
 
 
