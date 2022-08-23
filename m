@@ -2,103 +2,99 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 154E0C32772
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 12:34:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EC2A9C32772
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 12:34:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243254AbiHWMeO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 08:34:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55778 "EHLO
+        id S243444AbiHWMeV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 23 Aug 2022 08:34:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59980 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243173AbiHWMaf (ORCPT
+        with ESMTP id S1349547AbiHWMbt (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 08:30:35 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8242D1015A5;
-        Tue, 23 Aug 2022 02:45:13 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 13B39CE1B58;
-        Tue, 23 Aug 2022 09:43:48 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 29C7DC433C1;
-        Tue, 23 Aug 2022 09:43:45 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661247826;
-        bh=/Hs8dKxDq/D/MIDMenQIatozjdVIZmIpupoGHLbXye0=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=lK4hfPU2JEphFZ4EVB3hekk7/1yaIDZRxuEtlLkSBoUBXsFNozDu7Pfel/6E1gbFJ
-         wysOyByWontu1VKaV096Qzx8PJvp4MYUDaM9+rVjnTYKj6cAoMuKqE7AyboI6QO9i7
-         DrurR0QkR3bQGws8wOoe8XI/GD3Zj9skMseyHGTY=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Helge Deller <deller@gmx.de>,
-        Luis Chamberlain <mcgrof@kernel.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 136/158] modules: Ensure natural alignment for .altinstructions and __bug_table sections
-Date:   Tue, 23 Aug 2022 10:27:48 +0200
-Message-Id: <20220823080051.338255374@linuxfoundation.org>
-X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220823080046.056825146@linuxfoundation.org>
-References: <20220823080046.056825146@linuxfoundation.org>
-User-Agent: quilt/0.67
+        Tue, 23 Aug 2022 08:31:49 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A6B4B206
+        for <linux-kernel@vger.kernel.org>; Tue, 23 Aug 2022 02:45:55 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1661247903;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=CRVlovo98Y63Ora7pIDLAYaVags/Zx8gD9Y9NQogzCI=;
+        b=TYM//Z1qd0fnLvrEn1Wk/1ICQhv37mvsCc2rZixaDR4emxTk/NFPcCmqMEEyZVRx6VLSoc
+        gmYwlf7KkAjRleDUOrK1icajYa2PuQ4VD0kOnI2RnVnjxrg+sIjkkLFsqGVncUQwpOLb6g
+        SPDbfxkpQmFhbSI5hksNhwHdu9qRGOA=
+Received: from mail-wr1-f69.google.com (mail-wr1-f69.google.com
+ [209.85.221.69]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
+ us-mta-85-Fdmxe_6KNMuedw8vjC4GFg-1; Tue, 23 Aug 2022 05:37:56 -0400
+X-MC-Unique: Fdmxe_6KNMuedw8vjC4GFg-1
+Received: by mail-wr1-f69.google.com with SMTP id h21-20020adfaa95000000b002252a5b0917so2112812wrc.9
+        for <linux-kernel@vger.kernel.org>; Tue, 23 Aug 2022 02:37:56 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:in-reply-to:organization:from:references
+         :to:content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc;
+        bh=CRVlovo98Y63Ora7pIDLAYaVags/Zx8gD9Y9NQogzCI=;
+        b=GcthvLfSji+IQ5TldftCWTFc6881T8FJobgK5mNHnW55FHBVGsJmT3+rjcNp8RFxby
+         x2KGE+KCf3ETXFKLZRDRKBbqFIbk0B6nX7gTsUELpdPrRdChbzZORXesh0FOY0BAGKXY
+         7J7wv4Bnk1u3QJZAAywNEmI3PRr+FpR027emldY0oN4vqc+JGTN7Z7ZcPJlhDGUjuc2p
+         KvXjQAKfybOMWVg5Cg1s/oI80cGqBip8QPL6CAnUVaYXHV5vCi0g3cjeXgVVeprPLqnM
+         kxaMAT/aoR75PJgRt+C69Q2gyUfDIPkrcihAi6Hruibzs/+VHf5Y6HAXA/uYGYKrtblk
+         bUzQ==
+X-Gm-Message-State: ACgBeo3fUH268kiZenlnfOeHkf04mCpzE3n6HxPtOUr4pjJL3LHiFStz
+        qr2ml+621J+XJaHHuR2BqHcE1vHhCAc+4BZ/togJX2XpJ4pLcvO0hs59loUL0iuvXJ56ddALLKK
+        5Z4ss2Hqoyj5h7QHF8CjzyqyW
+X-Received: by 2002:a05:6000:18a2:b0:221:7db8:de02 with SMTP id b2-20020a05600018a200b002217db8de02mr13027301wri.132.1661247475585;
+        Tue, 23 Aug 2022 02:37:55 -0700 (PDT)
+X-Google-Smtp-Source: AA6agR5NNxDZo0JtEBe15rIXcKpNp2OSAcdwyisFO81B1Fq3JNCTxzQZ5cbS5nYZUBA1gkycfelrxA==
+X-Received: by 2002:a05:6000:18a2:b0:221:7db8:de02 with SMTP id b2-20020a05600018a200b002217db8de02mr13027291wri.132.1661247475359;
+        Tue, 23 Aug 2022 02:37:55 -0700 (PDT)
+Received: from ?IPV6:2003:cb:c70b:1600:c48b:1fab:a330:5182? (p200300cbc70b1600c48b1faba3305182.dip0.t-ipconnect.de. [2003:cb:c70b:1600:c48b:1fab:a330:5182])
+        by smtp.gmail.com with ESMTPSA id g17-20020a5d46d1000000b0020fff0ea0a3sm13697885wrs.116.2022.08.23.02.37.54
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 23 Aug 2022 02:37:54 -0700 (PDT)
+Message-ID: <fb230dec-cd9d-6543-fb7f-02016ca59245@redhat.com>
+Date:   Tue, 23 Aug 2022 11:37:54 +0200
 MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.11.0
+Subject: Re: [PATCH v2 3/8] memblock tests: add labels to verbose output for
+ generic alloc tests
+Content-Language: en-US
+To:     Rebecca Mckeever <remckee0@gmail.com>,
+        Mike Rapoport <rppt@kernel.org>, linux-mm@kvack.org,
+        linux-kernel@vger.kernel.org
+References: <cover.1660897732.git.remckee0@gmail.com>
+ <b68f49313bb64305b23168953a2802f27878f953.1660897732.git.remckee0@gmail.com>
+From:   David Hildenbrand <david@redhat.com>
+Organization: Red Hat
+In-Reply-To: <b68f49313bb64305b23168953a2802f27878f953.1660897732.git.remckee0@gmail.com>
 Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Helge Deller <deller@gmx.de>
+On 19.08.22 10:34, Rebecca Mckeever wrote:
+> Generic tests for memblock_alloc*() functions do not use separate
+> functions for testing top-down and bottom-up allocation directions.
+> Therefore, the function name that is displayed in the verbose testing
+> output does not include the allocation direction.
+> 
+> Add an additional prefix when running generic tests for
+> memblock_alloc*() functions that indicates which allocation direction is
+> set. The prefix will be displayed when the tests are run in verbose mode.
+> 
+> Signed-off-by: Rebecca Mckeever <remckee0@gmail.com>
 
-[ Upstream commit 87c482bdfa79f378297d92af49cdf265be199df5 ]
+Reviewed-by: David Hildenbrand <david@redhat.com>
 
-In the kernel image vmlinux.lds.S linker scripts the .altinstructions
-and __bug_table sections are 4- or 8-byte aligned because they hold 32-
-and/or 64-bit values.
 
-Most architectures use altinstructions and BUG() or WARN() in modules as
-well, but in the module linker script (module.lds.S) those sections are
-currently missing. As consequence the linker will store their content
-byte-aligned by default, which then can lead to unnecessary unaligned
-memory accesses by the CPU when those tables are processed at runtime.
-
-Usually unaligned memory accesses are unnoticed, because either the
-hardware (as on x86 CPUs) or in-kernel exception handlers (e.g. on
-parisc or sparc) emulate and fix them up at runtime. Nevertheless, such
-unaligned accesses introduce a performance penalty and can even crash
-the kernel if there is a bug in the unalignment exception handlers
-(which happened once to me on the parisc architecture and which is why I
-noticed that issue at all).
-
-This patch fixes a non-critical issue and might be backported at any time.
-It's trivial and shouldn't introduce any regression because it simply
-tells the linker to use a different (8-byte alignment) for those
-sections by default.
-
-Signed-off-by: Helge Deller <deller@gmx.de>
-Link: https://lore.kernel.org/all/Yr8%2Fgr8e8I7tVX4d@p100/
-Signed-off-by: Luis Chamberlain <mcgrof@kernel.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- scripts/module.lds.S | 2 ++
- 1 file changed, 2 insertions(+)
-
-diff --git a/scripts/module.lds.S b/scripts/module.lds.S
-index c5f12195817b..2c510db6c2ed 100644
---- a/scripts/module.lds.S
-+++ b/scripts/module.lds.S
-@@ -22,6 +22,8 @@ SECTIONS {
- 
- 	.init_array		0 : ALIGN(8) { *(SORT(.init_array.*)) *(.init_array) }
- 
-+	.altinstructions	0 : ALIGN(8) { KEEP(*(.altinstructions)) }
-+	__bug_table		0 : ALIGN(8) { KEEP(*(__bug_table)) }
- 	__jump_table		0 : ALIGN(8) { KEEP(*(__jump_table)) }
- 
- 	__patchable_function_entries : { *(__patchable_function_entries) }
 -- 
-2.35.1
+Thanks,
 
-
+David / dhildenb
 
