@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C70C7C32772
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 11:14:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F1A80C32772
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 11:14:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357316AbiHWLOV (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 07:14:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36830 "EHLO
+        id S243563AbiHWLO1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 23 Aug 2022 07:14:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37498 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357219AbiHWLNu (ORCPT
+        with ESMTP id S1357248AbiHWLNz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 07:13:50 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 89F9BD9B;
-        Tue, 23 Aug 2022 02:18:15 -0700 (PDT)
+        Tue, 23 Aug 2022 07:13:55 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C6F841CD;
+        Tue, 23 Aug 2022 02:18:13 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 9D58AB8105C;
-        Tue, 23 Aug 2022 09:18:12 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DD453C433C1;
-        Tue, 23 Aug 2022 09:18:10 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id DCCDF61181;
+        Tue, 23 Aug 2022 09:18:08 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E50C7C433D6;
+        Tue, 23 Aug 2022 09:18:07 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661246291;
-        bh=38z5+1E7HVbT6HeQjqkDPqJFtUVE6OakjVGr/qrHk+k=;
+        s=korg; t=1661246288;
+        bh=CHAfi8RG6Y3qlyffJKQm/h2oiI7oGKsjeZoVNgbZNX8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=THrpYpeyf2DT/QABUrGVTqDF1f6EbE9GzeN70yAnM7w3nErdAwh+XD9iMP3l00SB5
-         vxCzB1UgH4YqdyY4Uwcn5nD2s62Ft8E7FDqTei6+yhgNmwTnSzDn8LcdX3nfQnxcc7
-         7i+8Fxnyh6C2LaZmAGYsr9//lWvhi+W0/25JvaKk=
+        b=dhhU5hefmxfR/y1eOhDL1k5kz01alBX+FhyIeecPQhGO6FN/W321HQcA1U1hRj7uP
+         /TMe8652F3xhXnl6AVy3SIBW7kDF97L7Sh+ZVDec1+Euq0+7sP+35z7zLjfoC0fLmu
+         nmMxQ8sc9FjCfICfV42a1SVdVI7ye3yfCJr/w4Yo=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Timur Tabi <ttabi@nvidia.com>,
-        Karol Herbst <kherbst@redhat.com>,
-        Lyude Paul <lyude@redhat.com>
-Subject: [PATCH 5.4 032/389] drm/nouveau: fix another off-by-one in nvbios_addr
-Date:   Tue, 23 Aug 2022 10:21:50 +0200
-Message-Id: <20220823080117.027456498@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Alexander Stein <alexander.stein@ew.tq-group.com>,
+        Shawn Guo <shawnguo@kernel.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.4 060/389] ARM: dts: imx6ul: fix csi node compatible
+Date:   Tue, 23 Aug 2022 10:22:18 +0200
+Message-Id: <20220823080118.109809955@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220823080115.331990024@linuxfoundation.org>
 References: <20220823080115.331990024@linuxfoundation.org>
@@ -50,35 +50,40 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Timur Tabi <ttabi@nvidia.com>
+From: Alexander Stein <alexander.stein@ew.tq-group.com>
 
-commit c441d28945fb113220d48d6c86ebc0b090a2b677 upstream.
+[ Upstream commit e0aca931a2c7c29c88ebf37f9c3cd045e083483d ]
 
-This check determines whether a given address is part of
-image 0 or image 1.  Image 1 starts at offset image0_size,
-so that address should be included.
+"fsl,imx6ul-csi" was never listed as compatible to "fsl,imx7-csi", neither
+in yaml bindings, nor previous txt binding. Remove the imx7 part. Fixes
+the dt schema check warning:
+csi@21c4000: compatible: 'oneOf' conditional failed, one must be fixed:
+['fsl,imx6ul-csi', 'fsl,imx7-csi'] is too long
+Additional items are not allowed ('fsl,imx7-csi' was unexpected)
+'fsl,imx8mm-csi' was expected
 
-Fixes: 4d4e9907ff572 ("drm/nouveau/bios: guard against out-of-bounds accesses to image")
-Cc: <stable@vger.kernel.org> # v4.8+
-Signed-off-by: Timur Tabi <ttabi@nvidia.com>
-Reviewed-by: Karol Herbst <kherbst@redhat.com>
-Signed-off-by: Lyude Paul <lyude@redhat.com>
-Link: https://patchwork.freedesktop.org/patch/msgid/20220511163716.3520591-1-ttabi@nvidia.com
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Alexander Stein <alexander.stein@ew.tq-group.com>
+Signed-off-by: Shawn Guo <shawnguo@kernel.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/gpu/drm/nouveau/nvkm/subdev/bios/base.c |    2 +-
+ arch/arm/boot/dts/imx6ul.dtsi | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/drivers/gpu/drm/nouveau/nvkm/subdev/bios/base.c
-+++ b/drivers/gpu/drm/nouveau/nvkm/subdev/bios/base.c
-@@ -33,7 +33,7 @@ nvbios_addr(struct nvkm_bios *bios, u32
- {
- 	u32 p = *addr;
+diff --git a/arch/arm/boot/dts/imx6ul.dtsi b/arch/arm/boot/dts/imx6ul.dtsi
+index baf4a41a9aa9..3fd02e10170a 100644
+--- a/arch/arm/boot/dts/imx6ul.dtsi
++++ b/arch/arm/boot/dts/imx6ul.dtsi
+@@ -967,7 +967,7 @@ cpu_speed_grade: speed-grade@10 {
+ 			};
  
--	if (*addr > bios->image0_size && bios->imaged_addr) {
-+	if (*addr >= bios->image0_size && bios->imaged_addr) {
- 		*addr -= bios->image0_size;
- 		*addr += bios->imaged_addr;
- 	}
+ 			csi: csi@21c4000 {
+-				compatible = "fsl,imx6ul-csi", "fsl,imx7-csi";
++				compatible = "fsl,imx6ul-csi";
+ 				reg = <0x021c4000 0x4000>;
+ 				interrupts = <GIC_SPI 7 IRQ_TYPE_LEVEL_HIGH>;
+ 				clocks = <&clks IMX6UL_CLK_CSI>;
+-- 
+2.35.1
+
 
 
