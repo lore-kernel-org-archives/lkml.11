@@ -2,44 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1B137C32792
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 10:45:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5B749C32772
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 10:45:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354536AbiHWKpD (ORCPT
+        id S1355679AbiHWKpM (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 06:45:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46590 "EHLO
+        Tue, 23 Aug 2022 06:45:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43260 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355686AbiHWKgy (ORCPT
+        with ESMTP id S1355711AbiHWKg4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 06:36:54 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0383085F86;
-        Tue, 23 Aug 2022 02:07:21 -0700 (PDT)
+        Tue, 23 Aug 2022 06:36:56 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8D279A6C22;
+        Tue, 23 Aug 2022 02:07:22 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 77BF3CE1B5C;
-        Tue, 23 Aug 2022 09:07:19 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 76FF8C433C1;
-        Tue, 23 Aug 2022 09:07:17 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 9FE4E6158D;
+        Tue, 23 Aug 2022 09:07:21 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A2B16C433D6;
+        Tue, 23 Aug 2022 09:07:20 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661245637;
-        bh=dY5yYAc4TF4/LkVrqeL+lzkmkOuVcol4Dx4A8WuudUk=;
+        s=korg; t=1661245641;
+        bh=kEJ44uGQhbsnlEsOnJCVVttPofYwKWyYENYgbKrdolw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=0UsEuYJ0lvVkBO4v9qtFQewQldoNAtmMmJomz3NSxCzB9dJvPYY8CiyPfkLcLBHfi
-         mbXSbwNwpKOz2j1WiAsTQ6fUCr8CweUfjTLzLIl2e8Xf9n082kn8hgwhboW5RC/EqP
-         qL0UoA+SbYatvHA1RCGLKigTyZ7yM4siXxdK10fc=
+        b=QJz0a/n4O7lY0E4L4toPKQmTHVz+OnY2avEqTSTvTCO2vCiw9IJgDb0LUGbQJ+k5/
+         106HjGUZI0PdR9AFnvdDpAx4E1V0Iu7d3++pZxXU1Htd+x8QuRjDYPUu7zSwULFtYY
+         KlrueIFIILBodMra+xgVskGpTFB5GBPy0xNvSdm8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Maxim Mikityanskiy <maximmi@nvidia.com>,
-        Tariq Toukan <tariqt@nvidia.com>,
-        Saeed Mahameed <saeedm@nvidia.com>,
+        stable@vger.kernel.org,
+        syzbot+ad24705d3fd6463b18c6@syzkaller.appspotmail.com,
+        Jakub Kicinski <kuba@kernel.org>,
+        Andrii Nakryiko <andrii@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.19 109/287] net/mlx5e: Fix the value of MLX5E_MAX_RQ_NUM_MTTS
-Date:   Tue, 23 Aug 2022 10:24:38 +0200
-Message-Id: <20220823080104.047596959@linuxfoundation.org>
+Subject: [PATCH 4.19 110/287] netdevsim: Avoid allocation warnings triggered from user space
+Date:   Tue, 23 Aug 2022 10:24:39 +0200
+Message-Id: <20220823080104.076774622@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220823080100.268827165@linuxfoundation.org>
 References: <20220823080100.268827165@linuxfoundation.org>
@@ -51,38 +52,52 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Maxim Mikityanskiy <maximmi@nvidia.com>
+From: Jakub Kicinski <kuba@kernel.org>
 
-[ Upstream commit 562696c3c62c7c23dd896e9447252ce9268cb812 ]
+[ Upstream commit d0b80a9edb1a029ff913e81b47540e57ad034329 ]
 
-MLX5E_MAX_RQ_NUM_MTTS should be the maximum value, so that
-MLX5_MTT_OCTW(MLX5E_MAX_RQ_NUM_MTTS) fits into u16. The current value of
-1 << 17 results in MLX5_MTT_OCTW(1 << 17) = 1 << 16, which doesn't fit
-into u16. This commit replaces it with the maximum value that still
-fits u16.
+We need to suppress warnings from sily map sizes. Also switch
+from GFP_USER to GFP_KERNEL_ACCOUNT, I'm pretty sure I misunderstood
+the flags when writing this code.
 
-Fixes: 73281b78a37a ("net/mlx5e: Derive Striding RQ size from MTU")
-Signed-off-by: Maxim Mikityanskiy <maximmi@nvidia.com>
-Reviewed-by: Tariq Toukan <tariqt@nvidia.com>
-Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
+Fixes: 395cacb5f1a0 ("netdevsim: bpf: support fake map offload")
+Reported-by: syzbot+ad24705d3fd6463b18c6@syzkaller.appspotmail.com
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Signed-off-by: Andrii Nakryiko <andrii@kernel.org>
+Link: https://lore.kernel.org/bpf/20220726213605.154204-1-kuba@kernel.org
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/mellanox/mlx5/core/en.h | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/net/netdevsim/bpf.c | 8 +++++---
+ 1 file changed, 5 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en.h b/drivers/net/ethernet/mellanox/mlx5/core/en.h
-index d79e177f8990..ec303d4d2d7a 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en.h
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en.h
-@@ -95,7 +95,7 @@ struct page_pool;
- #define MLX5E_LOG_ALIGNED_MPWQE_PPW	(ilog2(MLX5E_REQUIRED_WQE_MTTS))
- #define MLX5E_REQUIRED_MTTS(wqes)	(wqes * MLX5E_REQUIRED_WQE_MTTS)
- #define MLX5E_MAX_RQ_NUM_MTTS	\
--	((1 << 16) * 2) /* So that MLX5_MTT_OCTW(num_mtts) fits into u16 */
-+	(ALIGN_DOWN(U16_MAX, 4) * 2) /* So that MLX5_MTT_OCTW(num_mtts) fits into u16 */
- #define MLX5E_ORDER2_MAX_PACKET_MTU (order_base_2(10 * 1024))
- #define MLX5E_PARAMS_MAXIMUM_LOG_RQ_SIZE_MPW	\
- 		(ilog2(MLX5E_MAX_RQ_NUM_MTTS / MLX5E_REQUIRED_WQE_MTTS))
+diff --git a/drivers/net/netdevsim/bpf.c b/drivers/net/netdevsim/bpf.c
+index 12f100392ed1..ca9042ddb6d7 100644
+--- a/drivers/net/netdevsim/bpf.c
++++ b/drivers/net/netdevsim/bpf.c
+@@ -330,10 +330,12 @@ nsim_map_alloc_elem(struct bpf_offloaded_map *offmap, unsigned int idx)
+ {
+ 	struct nsim_bpf_bound_map *nmap = offmap->dev_priv;
+ 
+-	nmap->entry[idx].key = kmalloc(offmap->map.key_size, GFP_USER);
++	nmap->entry[idx].key = kmalloc(offmap->map.key_size,
++				       GFP_KERNEL_ACCOUNT | __GFP_NOWARN);
+ 	if (!nmap->entry[idx].key)
+ 		return -ENOMEM;
+-	nmap->entry[idx].value = kmalloc(offmap->map.value_size, GFP_USER);
++	nmap->entry[idx].value = kmalloc(offmap->map.value_size,
++					 GFP_KERNEL_ACCOUNT | __GFP_NOWARN);
+ 	if (!nmap->entry[idx].value) {
+ 		kfree(nmap->entry[idx].key);
+ 		nmap->entry[idx].key = NULL;
+@@ -475,7 +477,7 @@ nsim_bpf_map_alloc(struct netdevsim *ns, struct bpf_offloaded_map *offmap)
+ 	if (offmap->map.map_flags)
+ 		return -EINVAL;
+ 
+-	nmap = kzalloc(sizeof(*nmap), GFP_USER);
++	nmap = kzalloc(sizeof(*nmap), GFP_KERNEL_ACCOUNT);
+ 	if (!nmap)
+ 		return -ENOMEM;
+ 
 -- 
 2.35.1
 
