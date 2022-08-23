@@ -2,46 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A713EC3F6B0
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BC703C32793
 	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 08:36:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345124AbiHWIfe (ORCPT
+        id S1345500AbiHWIfp (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 04:35:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60876 "EHLO
+        Tue, 23 Aug 2022 04:35:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59990 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243485AbiHWIcX (ORCPT
+        with ESMTP id S1344319AbiHWIcY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 04:32:23 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ADD1C67459;
-        Tue, 23 Aug 2022 01:16:32 -0700 (PDT)
+        Tue, 23 Aug 2022 04:32:24 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8C50167175;
+        Tue, 23 Aug 2022 01:16:33 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 94FD4612DA;
-        Tue, 23 Aug 2022 08:16:31 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 86D34C433C1;
-        Tue, 23 Aug 2022 08:16:30 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 7A26361228;
+        Tue, 23 Aug 2022 08:15:48 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 86DBEC433D6;
+        Tue, 23 Aug 2022 08:15:47 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661242591;
-        bh=/tKUeDNsWC4TjtU5BAtVdURhSCpADm0fbCBQrx2Hg4k=;
+        s=korg; t=1661242547;
+        bh=NoLqcpS0ng+Lbg3o1rbtMkbo2kGPL0fu1NrGMr0k/Mk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Qn3Zip0bbzXZZ5wOcZwAzIFmjUmLpBhOX4XwcHM0qRsQzJcMgZb7cbfSslXxGz+3Q
-         51EobrpSBfuNloYlLlPxlSiavfvSsUgKGPapjkiwYXNTJAVProgQq83tE94AFe5lyT
-         ZJrXYURE+i4FahViqRXCRW7v5LIWVhfeU5K6npjk=
+        b=OGSg/mWYz5OgZM1cBgjQF9rXh2JteRQrGUL9euce9MfVQcJ7TnKTMWWyCx5B5sqA3
+         dk5toUCpO/rjIkscaVTsDJEXCwC7F6RiYl20Lci3ofQPrUg1uleP8J1na1QQx1IGKC
+         +M3x7LyLCNHIl2KQa/tatee6HMNP23T+aFGoYHco=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Liang He <windhl@126.com>,
-        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.9 096/101] mips: cavium-octeon: Fix missing of_node_put() in octeon2_usb_clocks_start
-Date:   Tue, 23 Aug 2022 10:04:09 +0200
-Message-Id: <20220823080038.235159132@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Bryan ODonoghue <bryan.odonoghue@linaro.org>,
+        Viresh Kumar <viresh.kumar@linaro.org>
+Subject: [PATCH 5.19 135/365] dt-bindings: opp: opp-v2-kryo-cpu: Fix example binding checks
+Date:   Tue, 23 Aug 2022 10:00:36 +0200
+Message-Id: <20220823080123.850327587@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220823080034.579196046@linuxfoundation.org>
-References: <20220823080034.579196046@linuxfoundation.org>
+In-Reply-To: <20220823080118.128342613@linuxfoundation.org>
+References: <20220823080118.128342613@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -50,41 +50,119 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Liang He <windhl@126.com>
+From: Bryan O'Donoghue <bryan.odonoghue@linaro.org>
 
-[ Upstream commit 7a9f743ceead60ed454c46fbc3085ee9a79cbebb ]
+commit 3b4916a6e422394aa129fe9b204f4d489ae484a6 upstream.
 
-We should call of_node_put() for the reference 'uctl_node' returned by
-of_get_parent() which will increase the refcount. Otherwise, there will
-be a refcount leak bug.
+Adding missing compat entries to the cpufreq node
+Documentation/devicetree/bindings/cpufreq/qcom-cpufreq-nvmem.yaml shows up
+a dt_binding_check in this file.
 
-Signed-off-by: Liang He <windhl@126.com>
-Signed-off-by: Thomas Bogendoerfer <tsbogend@alpha.franken.de>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+opp-v2-kryo-cpu.example.dtb: /: cpus:cpu@0: 'power-domains' is a required property
+opp-v2-kryo-cpu.example.dtb: /: cpus:cpu@0: 'power-domain-names' is a required property
+opp-v2-kryo-cpu.example.dtb: /: opp-table-0:opp-307200000: 'required-opps' is a required property
+
+Fixes: ec24d1d55469 ("dt-bindings: opp: Convert qcom-nvmem-cpufreq to DT schema")
+Signed-off-by: Bryan O'Donoghue <bryan.odonoghue@linaro.org>
+Signed-off-by: Viresh Kumar <viresh.kumar@linaro.org>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/mips/cavium-octeon/octeon-platform.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ .../devicetree/bindings/opp/opp-v2-kryo-cpu.yaml  | 15 +++++++++++++++
+ 1 file changed, 15 insertions(+)
 
-diff --git a/arch/mips/cavium-octeon/octeon-platform.c b/arch/mips/cavium-octeon/octeon-platform.c
-index 2ecc8d1b0539..f295be876390 100644
---- a/arch/mips/cavium-octeon/octeon-platform.c
-+++ b/arch/mips/cavium-octeon/octeon-platform.c
-@@ -130,11 +130,12 @@ static void octeon2_usb_clocks_start(struct device *dev)
- 					 "refclk-frequency", &clock_rate);
- 		if (i) {
- 			dev_err(dev, "No UCTL \"refclk-frequency\"\n");
-+			of_node_put(uctl_node);
- 			goto exit;
- 		}
- 		i = of_property_read_string(uctl_node,
- 					    "refclk-type", &clock_type);
--
-+		of_node_put(uctl_node);
- 		if (!i && strcmp("crystal", clock_type) == 0)
- 			is_crystal_clock = true;
- 	}
+diff --git a/Documentation/devicetree/bindings/opp/opp-v2-kryo-cpu.yaml b/Documentation/devicetree/bindings/opp/opp-v2-kryo-cpu.yaml
+index 30f7b596d609..59663e897dae 100644
+--- a/Documentation/devicetree/bindings/opp/opp-v2-kryo-cpu.yaml
++++ b/Documentation/devicetree/bindings/opp/opp-v2-kryo-cpu.yaml
+@@ -98,6 +98,8 @@ examples:
+                 capacity-dmips-mhz = <1024>;
+                 clocks = <&kryocc 0>;
+                 operating-points-v2 = <&cluster0_opp>;
++                power-domains = <&cpr>;
++                power-domain-names = "cpr";
+                 #cooling-cells = <2>;
+                 next-level-cache = <&L2_0>;
+                 L2_0: l2-cache {
+@@ -115,6 +117,8 @@ examples:
+                 capacity-dmips-mhz = <1024>;
+                 clocks = <&kryocc 0>;
+                 operating-points-v2 = <&cluster0_opp>;
++                power-domains = <&cpr>;
++                power-domain-names = "cpr";
+                 #cooling-cells = <2>;
+                 next-level-cache = <&L2_0>;
+             };
+@@ -128,6 +132,8 @@ examples:
+                 capacity-dmips-mhz = <1024>;
+                 clocks = <&kryocc 1>;
+                 operating-points-v2 = <&cluster1_opp>;
++                power-domains = <&cpr>;
++                power-domain-names = "cpr";
+                 #cooling-cells = <2>;
+                 next-level-cache = <&L2_1>;
+                 L2_1: l2-cache {
+@@ -145,6 +151,8 @@ examples:
+                 capacity-dmips-mhz = <1024>;
+                 clocks = <&kryocc 1>;
+                 operating-points-v2 = <&cluster1_opp>;
++                power-domains = <&cpr>;
++                power-domain-names = "cpr";
+                 #cooling-cells = <2>;
+                 next-level-cache = <&L2_1>;
+             };
+@@ -182,18 +190,21 @@ examples:
+                 opp-microvolt = <905000 905000 1140000>;
+                 opp-supported-hw = <0x7>;
+                 clock-latency-ns = <200000>;
++                required-opps = <&cpr_opp1>;
+             };
+             opp-1401600000 {
+                 opp-hz = /bits/ 64 <1401600000>;
+                 opp-microvolt = <1140000 905000 1140000>;
+                 opp-supported-hw = <0x5>;
+                 clock-latency-ns = <200000>;
++                required-opps = <&cpr_opp2>;
+             };
+             opp-1593600000 {
+                 opp-hz = /bits/ 64 <1593600000>;
+                 opp-microvolt = <1140000 905000 1140000>;
+                 opp-supported-hw = <0x1>;
+                 clock-latency-ns = <200000>;
++                required-opps = <&cpr_opp3>;
+             };
+         };
+ 
+@@ -207,24 +218,28 @@ examples:
+                 opp-microvolt = <905000 905000 1140000>;
+                 opp-supported-hw = <0x7>;
+                 clock-latency-ns = <200000>;
++                required-opps = <&cpr_opp1>;
+             };
+             opp-1804800000 {
+                 opp-hz = /bits/ 64 <1804800000>;
+                 opp-microvolt = <1140000 905000 1140000>;
+                 opp-supported-hw = <0x6>;
+                 clock-latency-ns = <200000>;
++                required-opps = <&cpr_opp4>;
+             };
+             opp-1900800000 {
+                 opp-hz = /bits/ 64 <1900800000>;
+                 opp-microvolt = <1140000 905000 1140000>;
+                 opp-supported-hw = <0x4>;
+                 clock-latency-ns = <200000>;
++                required-opps = <&cpr_opp5>;
+             };
+             opp-2150400000 {
+                 opp-hz = /bits/ 64 <2150400000>;
+                 opp-microvolt = <1140000 905000 1140000>;
+                 opp-supported-hw = <0x1>;
+                 clock-latency-ns = <200000>;
++                required-opps = <&cpr_opp6>;
+             };
+         };
+ 
 -- 
-2.35.1
+2.37.2
 
 
 
