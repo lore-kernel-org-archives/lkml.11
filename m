@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DEFFDC32772
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 09:08:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 51DDFC32772
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 09:08:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240725AbiHWJIU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 05:08:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51610 "EHLO
+        id S1348197AbiHWJI2 (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 23 Aug 2022 05:08:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60558 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347930AbiHWJG5 (ORCPT
+        with ESMTP id S1347950AbiHWJHF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 05:06:57 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 457BB83F1C;
-        Tue, 23 Aug 2022 01:30:10 -0700 (PDT)
+        Tue, 23 Aug 2022 05:07:05 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8F5BC8606E;
+        Tue, 23 Aug 2022 01:30:05 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id C07D8B81C4D;
-        Tue, 23 Aug 2022 08:28:43 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 234CAC433D6;
-        Tue, 23 Aug 2022 08:28:41 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id F0426614BC;
+        Tue, 23 Aug 2022 08:30:04 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 05FFEC433C1;
+        Tue, 23 Aug 2022 08:30:03 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661243322;
-        bh=ou72801z8mN71VTlq2a6SZCJ4zfndl7r4LyeKMh+suU=;
+        s=korg; t=1661243404;
+        bh=tOxOsK6iWiCcwAk/an/4W+NYxsrfjp2xKkg+Fes1HWc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=0vYkN+9ES34B8KQE21bpiZ04ONYTuAharV2cJVAHq4JyXreOkWHNjmPcSaDRZKole
-         Apds4kGt8rz2EimGUg4wi2H5zbfM8J+KUV/dnl77bKxeSthkorN6whkRN+vk/+Hk13
-         vwLQpZj6Ezjd/aDa0W0lrDHpQs8s9reEKKZOkr7g=
+        b=e2YNm4UZCBfTZmyu82jivPXApSFFjXCOzlcv8LP0nDC22XH+EOAi2JxKi7HdebtWx
+         JLyY+x4cHwBNWBl+UrUVCq0vJTnWn2rYI0O1KFnXuDXo9cw4RDVPB/OlXE49W6DMCA
+         NMzyuwORV5iBk/XZsHm4dfocaUK+K8019/6XasME=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Fedor Pchelkin <pchelkin@ispras.ru>,
-        Alexey Khoroshilov <khoroshilov@ispras.ru>,
-        Oleksij Rempel <o.rempel@pengutronix.de>,
-        Marc Kleine-Budde <mkl@pengutronix.de>
-Subject: [PATCH 5.19 241/365] can: j1939: j1939_sk_queue_activate_next_locked(): replace WARN_ON_ONCE with netdev_warn_once()
-Date:   Tue, 23 Aug 2022 10:02:22 +0200
-Message-Id: <20220823080128.319300150@linuxfoundation.org>
+        stable@vger.kernel.org, Samuel Holland <samuel@sholland.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+        Maxime Ripard <maxime@cerno.tech>
+Subject: [PATCH 5.19 236/365] dt-bindings: display: sun4i: Add D1 TCONs to conditionals
+Date:   Tue, 23 Aug 2022 10:02:17 +0200
+Message-Id: <20220823080128.110651267@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220823080118.128342613@linuxfoundation.org>
 References: <20220823080118.128342613@linuxfoundation.org>
@@ -50,43 +50,62 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Fedor Pchelkin <pchelkin@ispras.ru>
+From: Samuel Holland <samuel@sholland.org>
 
-commit 8ef49f7f8244424adcf4a546dba4cbbeb0b09c09 upstream.
+commit 2a29f80e155a9cf40ca8b6648bcdc8422db4c4e4 upstream.
 
-We should warn user-space that it is doing something wrong when trying
-to activate sessions with identical parameters but WARN_ON_ONCE macro
-can not be used here as it serves a different purpose.
+When adding the D1 TCON bindings, I missed the conditional blocks that
+restrict the binding for TCON LCD vs TCON TV hardware. Add the D1 TCON
+variants to the appropriate blocks for DE2 TCON LCDs and TCON TVs.
 
-So it would be good to replace it with netdev_warn_once() message.
-
-Found by Linux Verification Center (linuxtesting.org) with Syzkaller.
-
-Fixes: 9d71dd0c7009 ("can: add support of SAE J1939 protocol")
-Signed-off-by: Fedor Pchelkin <pchelkin@ispras.ru>
-Signed-off-by: Alexey Khoroshilov <khoroshilov@ispras.ru>
-Acked-by: Oleksij Rempel <o.rempel@pengutronix.de>
-Link: https://lore.kernel.org/all/20220729143655.1108297-1-pchelkin@ispras.ru
-[mkl: fix indention]
-Signed-off-by: Marc Kleine-Budde <mkl@pengutronix.de>
+Fixes: ae5a5d26c15c ("dt-bindings: display: Add D1 display engine compatibles")
+Signed-off-by: Samuel Holland <samuel@sholland.org>
+Acked-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Signed-off-by: Maxime Ripard <maxime@cerno.tech>
+Link: https://lore.kernel.org/r/20220812073702.57618-1-samuel@sholland.org
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- net/can/j1939/socket.c |    5 ++++-
- 1 file changed, 4 insertions(+), 1 deletion(-)
+ .../devicetree/bindings/display/allwinner,sun4i-a10-tcon.yaml | 4 ++++
+ 1 file changed, 4 insertions(+)
 
---- a/net/can/j1939/socket.c
-+++ b/net/can/j1939/socket.c
-@@ -178,7 +178,10 @@ activate_next:
- 	if (!first)
- 		return;
+diff --git a/Documentation/devicetree/bindings/display/allwinner,sun4i-a10-tcon.yaml b/Documentation/devicetree/bindings/display/allwinner,sun4i-a10-tcon.yaml
+index 4a92a4c7dcd7..f8168986a0a9 100644
+--- a/Documentation/devicetree/bindings/display/allwinner,sun4i-a10-tcon.yaml
++++ b/Documentation/devicetree/bindings/display/allwinner,sun4i-a10-tcon.yaml
+@@ -233,6 +233,7 @@ allOf:
+               - allwinner,sun8i-a83t-tcon-lcd
+               - allwinner,sun8i-v3s-tcon
+               - allwinner,sun9i-a80-tcon-lcd
++              - allwinner,sun20i-d1-tcon-lcd
  
--	if (WARN_ON_ONCE(j1939_session_activate(first))) {
-+	if (j1939_session_activate(first)) {
-+		netdev_warn_once(first->priv->ndev,
-+				 "%s: 0x%p: Identical session is already activated.\n",
-+				 __func__, first);
- 		first->err = -EBUSY;
- 		goto activate_next;
- 	} else {
+     then:
+       properties:
+@@ -252,6 +253,7 @@ allOf:
+               - allwinner,sun8i-a83t-tcon-tv
+               - allwinner,sun8i-r40-tcon-tv
+               - allwinner,sun9i-a80-tcon-tv
++              - allwinner,sun20i-d1-tcon-tv
+ 
+     then:
+       properties:
+@@ -278,6 +280,7 @@ allOf:
+               - allwinner,sun9i-a80-tcon-lcd
+               - allwinner,sun4i-a10-tcon
+               - allwinner,sun8i-a83t-tcon-lcd
++              - allwinner,sun20i-d1-tcon-lcd
+ 
+     then:
+       required:
+@@ -294,6 +297,7 @@ allOf:
+               - allwinner,sun8i-a23-tcon
+               - allwinner,sun8i-a33-tcon
+               - allwinner,sun8i-a83t-tcon-lcd
++              - allwinner,sun20i-d1-tcon-lcd
+ 
+     then:
+       properties:
+-- 
+2.37.2
+
 
 
