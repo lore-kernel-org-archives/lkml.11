@@ -2,45 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 429FCC32772
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 11:39:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B2969C32772
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 11:39:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357846AbiHWLjS (ORCPT
+        id S1357872AbiHWLjY (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 07:39:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49006 "EHLO
+        Tue, 23 Aug 2022 07:39:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49044 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1358053AbiHWLcT (ORCPT
+        with ESMTP id S1358059AbiHWLcU (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 07:32:19 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ADE3976766;
-        Tue, 23 Aug 2022 02:26:42 -0700 (PDT)
+        Tue, 23 Aug 2022 07:32:20 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9ADDB75FFB;
+        Tue, 23 Aug 2022 02:26:45 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 22F306126A;
-        Tue, 23 Aug 2022 09:26:42 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id F0D86C433D6;
-        Tue, 23 Aug 2022 09:26:40 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 1B1D96126A;
+        Tue, 23 Aug 2022 09:26:45 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2405FC433C1;
+        Tue, 23 Aug 2022 09:26:43 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661246801;
-        bh=5lKGN2oaAVcYLUHRmRQw6FQNrS5NbTnpyleZkf5ojeU=;
+        s=korg; t=1661246804;
+        bh=nlZ0MR4wZADSln3mC3C9MdSprJkx7c6lJDIz81a123o=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=RRGDXLiN40SL524tM3dkH2HTKFKWwU76E9iz7aUOwO7KobeC2wwlpd2KroYf6VQGv
-         athx2auM0YHUJINhChLa3yF9RL3bhnHPxup5nhenRUJy177diTNh/fdDX0md8ooJPI
-         m+46tcesXFZRreuUs7bXJd6j/1XsfT4YecF8xmdA=
+        b=YsT99HW+e0cakV37tcRZUpD/78zUXj1Q+njR/mBgH6xXci/uBc1TFf+QcnL80KznH
+         Zqywyv1UWlz/GDKIjsp6Do/WBcfJh4K8oRpEnFHpoDMpJkYYyfaD55KKkPf/eWbhO+
+         AxDFvJE6q3PRqGLM7ZVLG9fdSz0ooxGbbZ0bY07E=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        syzbot+833061116fa28df97f3b@syzkaller.appspotmail.com,
-        Zhu Yanjun <yanjun.zhu@linux.dev>,
-        Jason Gunthorpe <jgg@nvidia.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 197/389] RDMA/rxe: Fix error unwind in rxe_create_qp()
-Date:   Tue, 23 Aug 2022 10:24:35 +0200
-Message-Id: <20220823080123.869751969@linuxfoundation.org>
+        stable@vger.kernel.org, Liang He <windhl@126.com>,
+        Will Deacon <will@kernel.org>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.4 224/389] iommu/arm-smmu: qcom_iommu: Add of_node_put() when breaking out of loop
+Date:   Tue, 23 Aug 2022 10:25:02 +0200
+Message-Id: <20220823080124.953975239@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220823080115.331990024@linuxfoundation.org>
 References: <20220823080115.331990024@linuxfoundation.org>
@@ -52,67 +49,42 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Zhu Yanjun <yanjun.zhu@linux.dev>
+From: Liang He <windhl@126.com>
 
-[ Upstream commit fd5382c5805c4bcb50fd25b7246247d3f7114733 ]
+[ Upstream commit a91eb6803c1c715738682fece095145cbd68fe0b ]
 
-In the function rxe_create_qp(), rxe_qp_from_init() is called to
-initialize qp, internally things like the spin locks are not setup until
-rxe_qp_init_req().
+In qcom_iommu_has_secure_context(), we should call of_node_put()
+for the reference 'child' when breaking out of for_each_child_of_node()
+which will automatically increase and decrease the refcount.
 
-If an error occures before this point then the unwind will call
-rxe_cleanup() and eventually to rxe_qp_do_cleanup()/rxe_cleanup_task()
-which will oops when trying to access the uninitialized spinlock.
-
-Move the spinlock initializations earlier before any failures.
-
-Fixes: 8700e3e7c485 ("Soft RoCE driver")
-Link: https://lore.kernel.org/r/20220731063621.298405-1-yanjun.zhu@linux.dev
-Reported-by: syzbot+833061116fa28df97f3b@syzkaller.appspotmail.com
-Signed-off-by: Zhu Yanjun <yanjun.zhu@linux.dev>
-Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
+Fixes: d051f28c8807 ("iommu/qcom: Initialize secure page table")
+Signed-off-by: Liang He <windhl@126.com>
+Link: https://lore.kernel.org/r/20220719124955.1242171-1-windhl@126.com
+Signed-off-by: Will Deacon <will@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/infiniband/sw/rxe/rxe_qp.c | 12 ++++++++----
- 1 file changed, 8 insertions(+), 4 deletions(-)
+ drivers/iommu/qcom_iommu.c | 7 +++++--
+ 1 file changed, 5 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/infiniband/sw/rxe/rxe_qp.c b/drivers/infiniband/sw/rxe/rxe_qp.c
-index 53166b9ae67e..57f111fe5443 100644
---- a/drivers/infiniband/sw/rxe/rxe_qp.c
-+++ b/drivers/infiniband/sw/rxe/rxe_qp.c
-@@ -211,6 +211,14 @@ static void rxe_qp_init_misc(struct rxe_dev *rxe, struct rxe_qp *qp,
- 	spin_lock_init(&qp->grp_lock);
- 	spin_lock_init(&qp->state_lock);
+diff --git a/drivers/iommu/qcom_iommu.c b/drivers/iommu/qcom_iommu.c
+index 280de92b332e..b6e546b62a7c 100644
+--- a/drivers/iommu/qcom_iommu.c
++++ b/drivers/iommu/qcom_iommu.c
+@@ -785,9 +785,12 @@ static bool qcom_iommu_has_secure_context(struct qcom_iommu_dev *qcom_iommu)
+ {
+ 	struct device_node *child;
  
-+	spin_lock_init(&qp->req.task.state_lock);
-+	spin_lock_init(&qp->resp.task.state_lock);
-+	spin_lock_init(&qp->comp.task.state_lock);
-+
-+	spin_lock_init(&qp->sq.sq_lock);
-+	spin_lock_init(&qp->rq.producer_lock);
-+	spin_lock_init(&qp->rq.consumer_lock);
-+
- 	atomic_set(&qp->ssn, 0);
- 	atomic_set(&qp->skb_out, 0);
+-	for_each_child_of_node(qcom_iommu->dev->of_node, child)
+-		if (of_device_is_compatible(child, "qcom,msm-iommu-v1-sec"))
++	for_each_child_of_node(qcom_iommu->dev->of_node, child) {
++		if (of_device_is_compatible(child, "qcom,msm-iommu-v1-sec")) {
++			of_node_put(child);
+ 			return true;
++		}
++	}
+ 
+ 	return false;
  }
-@@ -268,7 +276,6 @@ static int rxe_qp_init_req(struct rxe_dev *rxe, struct rxe_qp *qp,
- 	qp->req.opcode		= -1;
- 	qp->comp.opcode		= -1;
- 
--	spin_lock_init(&qp->sq.sq_lock);
- 	skb_queue_head_init(&qp->req_pkts);
- 
- 	rxe_init_task(rxe, &qp->req.task, qp,
-@@ -318,9 +325,6 @@ static int rxe_qp_init_resp(struct rxe_dev *rxe, struct rxe_qp *qp,
- 		}
- 	}
- 
--	spin_lock_init(&qp->rq.producer_lock);
--	spin_lock_init(&qp->rq.consumer_lock);
--
- 	skb_queue_head_init(&qp->resp_pkts);
- 
- 	rxe_init_task(rxe, &qp->resp.task, qp,
 -- 
 2.35.1
 
