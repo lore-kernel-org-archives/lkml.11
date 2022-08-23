@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 09BD4C32772
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 10:59:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 41338C32772
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 10:59:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356814AbiHWK7J (ORCPT
+        id S1356665AbiHWK6P (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 06:59:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32888 "EHLO
+        Tue, 23 Aug 2022 06:58:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51392 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356285AbiHWK5a (ORCPT
+        with ESMTP id S1356256AbiHWKyS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 06:57:30 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 92A9683F1C;
-        Tue, 23 Aug 2022 02:13:44 -0700 (PDT)
+        Tue, 23 Aug 2022 06:54:18 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 064D01055D;
+        Tue, 23 Aug 2022 02:13:20 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 766DD61224;
-        Tue, 23 Aug 2022 09:13:43 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 64C44C433D6;
-        Tue, 23 Aug 2022 09:13:42 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 00CCD60F85;
+        Tue, 23 Aug 2022 09:13:18 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E2FF7C433C1;
+        Tue, 23 Aug 2022 09:13:16 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661246022;
-        bh=VNknJr8nYr0dzeiUWFTgY649fGVvL9DKEOfXsU2hyI4=;
+        s=korg; t=1661245997;
+        bh=YyS6kzcP5LnTRVkg6JjJD2bti6S4kghdoWLmjpu6yHw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Bbdj7+cOzWrZDYvlnYOf2o3TExgZk4ytRjhzf2/qIvQQ2L6kPiTKpkZAC0XGvDS1N
-         g+YMnSJPO8CRpDMikHGcbRVdj1yAp6w5VKk8pRrtYffna8PmvxTCHOIYqCfsKavEW3
-         uGWu2eYEWQIfpI2GJinWoxU9dI4Pe8ZY+WEc/1Wc=
+        b=tIeWJIYznO+8kUst9WtnwSD967agzczbochFyZj8q7vamtDtOq9vEEGR99fMMkZ6D
+         7Cz60dmG3rGL9dUclm35b6hKxuVNm0GBAbP1q3kRTY0ll7+eKpFMymqzKrPZdS6uHm
+         iXlEcsC7+/+brFN1b5px7VMVPT0lPYRcf5SPWc6Q=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jozef Martiniak <jomajm@gmail.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.19 264/287] gadgetfs: ep_io - wait until IRQ finishes
-Date:   Tue, 23 Aug 2022 10:27:13 +0200
-Message-Id: <20220823080110.216375674@linuxfoundation.org>
+        stable@vger.kernel.org, Stefano Garzarella <sgarzare@redhat.com>,
+        Peilin Ye <peilin.ye@bytedance.com>,
+        "David S. Miller" <davem@davemloft.net>
+Subject: [PATCH 4.19 239/287] vsock: Set socket state back to SS_UNCONNECTED in vsock_connect_timeout()
+Date:   Tue, 23 Aug 2022 10:26:48 +0200
+Message-Id: <20220823080109.124885855@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220823080100.268827165@linuxfoundation.org>
 References: <20220823080100.268827165@linuxfoundation.org>
@@ -49,37 +50,41 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jozef Martiniak <jomajm@gmail.com>
+From: Peilin Ye <peilin.ye@bytedance.com>
 
-[ Upstream commit 04cb742d4d8f30dc2e83b46ac317eec09191c68e ]
+commit a3e7b29e30854ed67be0d17687e744ad0c769c4b upstream.
 
-after usb_ep_queue() if wait_for_completion_interruptible() is
-interrupted we need to wait until IRQ gets finished.
+Imagine two non-blocking vsock_connect() requests on the same socket.
+The first request schedules @connect_work, and after it times out,
+vsock_connect_timeout() sets *sock* state back to TCP_CLOSE, but keeps
+*socket* state as SS_CONNECTING.
 
-Otherwise complete() from epio_complete() can corrupt stack.
+Later, the second request returns -EALREADY, meaning the socket "already
+has a pending connection in progress", even though the first request has
+already timed out.
 
-Signed-off-by: Jozef Martiniak <jomajm@gmail.com>
-Link: https://lore.kernel.org/r/20220708070645.6130-1-jomajm@gmail.com
+As suggested by Stefano, fix it by setting *socket* state back to
+SS_UNCONNECTED, so that the second request will return -ETIMEDOUT.
+
+Suggested-by: Stefano Garzarella <sgarzare@redhat.com>
+Fixes: d021c344051a ("VSOCK: Introduce VM Sockets")
+Reviewed-by: Stefano Garzarella <sgarzare@redhat.com>
+Signed-off-by: Peilin Ye <peilin.ye@bytedance.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/usb/gadget/legacy/inode.c | 1 +
+ net/vmw_vsock/af_vsock.c |    1 +
  1 file changed, 1 insertion(+)
 
-diff --git a/drivers/usb/gadget/legacy/inode.c b/drivers/usb/gadget/legacy/inode.c
-index 3ebcbd199a79..b0a2b8805f41 100644
---- a/drivers/usb/gadget/legacy/inode.c
-+++ b/drivers/usb/gadget/legacy/inode.c
-@@ -361,6 +361,7 @@ ep_io (struct ep_data *epdata, void *buf, unsigned len)
- 				spin_unlock_irq (&epdata->dev->lock);
- 
- 				DBG (epdata->dev, "endpoint gone\n");
-+				wait_for_completion(&done);
- 				epdata->status = -ENODEV;
- 			}
- 		}
--- 
-2.35.1
-
+--- a/net/vmw_vsock/af_vsock.c
++++ b/net/vmw_vsock/af_vsock.c
+@@ -1118,6 +1118,7 @@ static void vsock_connect_timeout(struct
+ 	if (sk->sk_state == TCP_SYN_SENT &&
+ 	    (sk->sk_shutdown != SHUTDOWN_MASK)) {
+ 		sk->sk_state = TCP_CLOSE;
++		sk->sk_socket->state = SS_UNCONNECTED;
+ 		sk->sk_err = ETIMEDOUT;
+ 		sk->sk_error_report(sk);
+ 		vsock_transport_cancel_pkt(vsk);
 
 
