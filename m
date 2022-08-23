@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DAE9FC32774
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 09:47:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E5C83C32772
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 09:47:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242731AbiHWJre (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 05:47:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42218 "EHLO
+        id S241436AbiHWJrg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 23 Aug 2022 05:47:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52652 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241550AbiHWJnT (ORCPT
+        with ESMTP id S242056AbiHWJoy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 05:43:19 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3DAE19A952;
-        Tue, 23 Aug 2022 01:42:37 -0700 (PDT)
+        Tue, 23 Aug 2022 05:44:54 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 750539AF9B;
+        Tue, 23 Aug 2022 01:42:56 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 1F6BC614E9;
-        Tue, 23 Aug 2022 08:42:36 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 25345C43470;
-        Tue, 23 Aug 2022 08:42:34 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 7BA0BB81C60;
+        Tue, 23 Aug 2022 08:42:52 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D459CC43150;
+        Tue, 23 Aug 2022 08:42:50 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661244155;
-        bh=gXJeB+CKeDu7TiKFHWZPHO1BsLZegk9X3IBL5reKvkk=;
+        s=korg; t=1661244171;
+        bh=lWWSm2syIeIS1boxNmkx/3K1fy055LEE6+NgpxISBaY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Qwy3h5S2xz65uIXq1HogwKneRIQpuFjg0dLbT7Dbma3uj6DMFQ8aFBBh3Hsi+luqM
-         R9PScrulSBilUbQjc4URtYtC9JBcouhZc4z6ac/pMjOcxTGqmaep3W+6CGDv01Upio
-         vwe0M6XAtIriAzkX/smdI6kiiG7avFtyBe9Y2aJw=
+        b=1C5DI8ZEYaZREb9bKudFBSYBKdBFV180h2AOcfrNlxVWy65FAkG43Q7/susChAaQD
+         zLS8mc0NmQVz8WimA2uBv+zkBD1Iy5zh2jVrn0/PntzanmXmR23KRlnWLD2wYvexeT
+         jeFV802Q4sym9lrRQWYZ/hMTB0DHm4wmSXM6m/hQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
-        Linus Walleij <linus.walleij@linaro.org>,
+        stable@vger.kernel.org, Duoming Zhou <duoming@zju.edu.cn>,
         Miquel Raynal <miquel.raynal@bootlin.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.14 094/229] mtd: maps: Fix refcount leak in of_flash_probe_versatile
-Date:   Tue, 23 Aug 2022 10:24:15 +0200
-Message-Id: <20220823080057.068334279@linuxfoundation.org>
+Subject: [PATCH 4.14 096/229] mtd: sm_ftl: Fix deadlock caused by cancel_work_sync in sm_release
+Date:   Tue, 23 Aug 2022 10:24:17 +0200
+Message-Id: <20220823080057.134605041@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220823080053.202747790@linuxfoundation.org>
 References: <20220823080053.202747790@linuxfoundation.org>
@@ -50,36 +49,51 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Miaoqian Lin <linmq006@gmail.com>
+From: Duoming Zhou <duoming@zju.edu.cn>
 
-[ Upstream commit 33ec82a6d2b119938f26e5c8040ed5d92378eb54 ]
+[ Upstream commit a61528d997619a518ee8c51cf0ef0513021afaff ]
 
-of_find_matching_node_and_match() returns a node pointer with refcount
-incremented, we should use of_node_put() on it when not need anymore.
-Add missing of_node_put() to avoid refcount leak.
+There is a deadlock between sm_release and sm_cache_flush_work
+which is a work item. The cancel_work_sync in sm_release will
+not return until sm_cache_flush_work is finished. If we hold
+mutex_lock and use cancel_work_sync to wait the work item to
+finish, the work item also requires mutex_lock. As a result,
+the sm_release will be blocked forever. The race condition is
+shown below:
 
-Fixes: b0afd44bc192 ("mtd: physmap_of: add a hook for Versatile write protection")
-Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
-Reviewed-by: Linus Walleij <linus.walleij@linaro.org>
+    (Thread 1)             |   (Thread 2)
+sm_release                 |
+  mutex_lock(&ftl->mutex)  | sm_cache_flush_work
+                           |   mutex_lock(&ftl->mutex)
+  cancel_work_sync         |   ...
+
+This patch moves del_timer_sync and cancel_work_sync out of
+mutex_lock in order to mitigate deadlock.
+
+Fixes: 7d17c02a01a1 ("mtd: Add new SmartMedia/xD FTL")
+Signed-off-by: Duoming Zhou <duoming@zju.edu.cn>
 Signed-off-by: Miquel Raynal <miquel.raynal@bootlin.com>
-Link: https://lore.kernel.org/linux-mtd/20220523140205.48625-1-linmq006@gmail.com
+Link: https://lore.kernel.org/linux-mtd/20220524044841.10517-1-duoming@zju.edu.cn
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/mtd/maps/physmap_of_versatile.c | 1 +
- 1 file changed, 1 insertion(+)
+ drivers/mtd/sm_ftl.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/mtd/maps/physmap_of_versatile.c b/drivers/mtd/maps/physmap_of_versatile.c
-index 03f2b6e7bc7e..961704228dd2 100644
---- a/drivers/mtd/maps/physmap_of_versatile.c
-+++ b/drivers/mtd/maps/physmap_of_versatile.c
-@@ -221,6 +221,7 @@ int of_flash_probe_versatile(struct platform_device *pdev,
+diff --git a/drivers/mtd/sm_ftl.c b/drivers/mtd/sm_ftl.c
+index 3692dd547879..e48718393ddf 100644
+--- a/drivers/mtd/sm_ftl.c
++++ b/drivers/mtd/sm_ftl.c
+@@ -1109,9 +1109,9 @@ static void sm_release(struct mtd_blktrans_dev *dev)
+ {
+ 	struct sm_ftl *ftl = dev->priv;
  
- 		versatile_flashprot = (enum versatile_flashprot)devid->data;
- 		rmap = syscon_node_to_regmap(sysnp);
-+		of_node_put(sysnp);
- 		if (IS_ERR(rmap))
- 			return PTR_ERR(rmap);
- 
+-	mutex_lock(&ftl->mutex);
+ 	del_timer_sync(&ftl->timer);
+ 	cancel_work_sync(&ftl->flush_work);
++	mutex_lock(&ftl->mutex);
+ 	sm_cache_flush(ftl);
+ 	mutex_unlock(&ftl->mutex);
+ }
 -- 
 2.35.1
 
