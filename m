@@ -2,171 +2,139 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 36166C49EC5
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 054BEC49EC0
 	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 10:53:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356736AbiHWKvx (ORCPT
+        id S1356685AbiHWKvn (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 06:51:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56542 "EHLO
+        Tue, 23 Aug 2022 06:51:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55514 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355598AbiHWKnt (ORCPT
+        with ESMTP id S1355364AbiHWKnV (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 06:43:49 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C413374BB6;
-        Tue, 23 Aug 2022 02:10:28 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 62D81B81C4E;
-        Tue, 23 Aug 2022 09:10:26 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A6C83C433D7;
-        Tue, 23 Aug 2022 09:10:24 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661245825;
-        bh=gmvdW3wPd9G0O8DYp9xNM6Xhq5HzkLbnYLkfmeqK8aQ=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=LolUBoTPnLwKDPHcUkRj43VcVihyVe0Fcde1DUb2BH5+wNldA7RKXuF00qv7zRD5q
-         R6X0uORSwmsyvfNoPeRuojb8X/wT1IjpblDi+WCr5AdPE4/hMxLVaC3qxUajFKX3Td
-         ESsnRdizbNyGtUVk5qQhsPxsLprFlVtejoYCqEqM=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>
-Subject: [PATCH 4.19 200/287] ACPI: CPPC: Do not prevent CPPC from working in the future
-Date:   Tue, 23 Aug 2022 10:26:09 +0200
-Message-Id: <20220823080107.590260014@linuxfoundation.org>
-X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220823080100.268827165@linuxfoundation.org>
-References: <20220823080100.268827165@linuxfoundation.org>
-User-Agent: quilt/0.67
-MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+        Tue, 23 Aug 2022 06:43:21 -0400
+Received: from mail-wm1-x32d.google.com (mail-wm1-x32d.google.com [IPv6:2a00:1450:4864:20::32d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E6061AA4E0
+        for <linux-kernel@vger.kernel.org>; Tue, 23 Aug 2022 02:10:23 -0700 (PDT)
+Received: by mail-wm1-x32d.google.com with SMTP id h1so6852453wmd.3
+        for <linux-kernel@vger.kernel.org>; Tue, 23 Aug 2022 02:10:22 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=references:in-reply-to:message-id:date:subject:cc:to:from:from:to
+         :cc;
+        bh=8Wmt5utEn01FakaCjSV6ZsTv6W9xbPzrClska04k2gs=;
+        b=A+9Z+A37/34JRrjkjRUhrIb2D6MwnQ/JxjETrHLcr8f84JvEw0+z0yg5IKg1RR9egK
+         l8clrHK1qPsKV2WMARtRYMMu27Fy+ZVdg2FlQUk+eJVv42uTwwj5CVOD90Ix/XPhcpzI
+         j28xsJuhBWZq8dyUUXOMD+dEo95mQ7uejKVfCO2qb1cR8kI+sZpj0UCo8w5PQjyQf9xV
+         dzj0yY5OM6CvJX6jCJC+oHHR1lv0pVzuPtwHZntaC5mJVKGajrANk0jBxjU9mhq4k16i
+         ej50dx1bxjoDwKTBkBTuXI2qvQ7ms34mguhX/nToGF9gW/j6C53cH/wM4gqv9p4NX9jZ
+         p/IQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=references:in-reply-to:message-id:date:subject:cc:to:from
+         :x-gm-message-state:from:to:cc;
+        bh=8Wmt5utEn01FakaCjSV6ZsTv6W9xbPzrClska04k2gs=;
+        b=AKmDhybqxCeWw0w+NYYbbbhlZ182mLhyiFaa9+N60+kEfR7qaVAywfVD8mwSmYlM3r
+         kMXy+0NtyYEpNNx9UEf0ztOFwZiFPI4jbcNO9DDBFMR1fPAEFiZmjodBFMuW4iLGYhAz
+         HSkoD1Qexh4G6UcuhjvY35EWTfEyf1L4F2qXcGAb9WjWFahctTTm6TlsM6TmDr05dvW7
+         WxkSNLL5skVyLi+02InfxtiLEqg7LsGKoddyX5lTdpqrx6FrDHXfjeIA3O6SSNBDeIWy
+         JsQ50SewH9kiwzoI8ExbmSBqwFdZRAyDyk4TTQPEWjPhqvIAtlDLodRKA5sF73QIoT9a
+         GJDQ==
+X-Gm-Message-State: ACgBeo3iU6gwf8XMf/1fDcMH3XhZFfsVrrJTF7g2rNlQ5yqYBU3FYanD
+        x495nKwL7tl0bqmIOIX15yjYOA==
+X-Google-Smtp-Source: AA6agR6E18inp8xVeTb8LqKQ4Coe2UQ8N6qZcvm/XKfOwwvffHRr9JpChlVsJ13AtmY9YS07ieK6Lw==
+X-Received: by 2002:a05:600c:19d0:b0:3a6:2eb1:cfa5 with SMTP id u16-20020a05600c19d000b003a62eb1cfa5mr1496498wmq.37.1661245821164;
+        Tue, 23 Aug 2022 02:10:21 -0700 (PDT)
+Received: from linaro.org ([2a00:23c5:6809:2201:4553:cf11:6cff:b293])
+        by smtp.gmail.com with ESMTPSA id w6-20020adfde86000000b002253d162491sm10760721wrl.52.2022.08.23.02.10.20
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 23 Aug 2022 02:10:20 -0700 (PDT)
+From:   Mike Leach <mike.leach@linaro.org>
+To:     coresight@lists.linaro.org, linux-arm-kernel@lists.infradead.org,
+        linux-kernel@vger.kernel.org
+Cc:     mathieu.poirier@linaro.org, suzuki.poulose@arm.com,
+        peterz@infradead.org, mingo@redhat.com, acme@kernel.org,
+        linux-perf-users@vger.kernel.org, leo.yan@linaro.org,
+        quic_jinlmao@quicinc.com, Mike Leach <mike.leach@linaro.org>
+Subject: [PATCH v4 07/13] coresight: perf: traceid: Add perf notifiers for Trace ID
+Date:   Tue, 23 Aug 2022 10:10:03 +0100
+Message-Id: <20220823091009.14121-8-mike.leach@linaro.org>
+X-Mailer: git-send-email 2.17.1
+In-Reply-To: <20220823091009.14121-1-mike.leach@linaro.org>
+References: <20220823091009.14121-1-mike.leach@linaro.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
+Adds in notifier calls to the trace ID allocator that perf
+events are starting and stopping.
 
-commit 4f4179fcf420873002035cf1941d844c9e0e7cb3 upstream.
+This ensures that Trace IDs associated with CPUs remain the same
+throughout the perf session, and are only released when all perf
+sessions are complete.
 
-There is a problem with the current revision checks in
-is_cppc_supported() that they essentially prevent the CPPC support
-from working if a new _CPC package format revision being a proper
-superset of the v3 and only causing _CPC to return a package with more
-entries (while retaining the types and meaning of the entries defined by
-the v3) is introduced in the future and used by the platform firmware.
-
-In that case, as long as the number of entries in the _CPC return
-package is at least CPPC_V3_NUM_ENT, it should be perfectly fine to
-use the v3 support code and disregard the additional package entries
-added by the new package format revision.
-
-For this reason, drop is_cppc_supported() altogether, put the revision
-checks directly into acpi_cppc_processor_probe() so they are easier to
-follow and rework them to take the case mentioned above into account.
-
-Fixes: 4773e77cdc9b ("ACPI / CPPC: Add support for CPPC v3")
-Cc: 4.18+ <stable@vger.kernel.org> # 4.18+
-Signed-off-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Mike Leach <mike.leach@linaro.org>
 ---
- drivers/acpi/cppc_acpi.c |   54 ++++++++++++++++++++---------------------------
- include/acpi/cppc_acpi.h |    2 -
- 2 files changed, 25 insertions(+), 31 deletions(-)
+ drivers/hwtracing/coresight/coresight-etm-perf.c | 16 ++++++++++++++++
+ 1 file changed, 16 insertions(+)
 
---- a/drivers/acpi/cppc_acpi.c
-+++ b/drivers/acpi/cppc_acpi.c
-@@ -630,33 +630,6 @@ int pcc_data_alloc(int pcc_ss_id)
- 	return 0;
+diff --git a/drivers/hwtracing/coresight/coresight-etm-perf.c b/drivers/hwtracing/coresight/coresight-etm-perf.c
+index 43bbd5dc3d3b..6166f716a6ac 100644
+--- a/drivers/hwtracing/coresight/coresight-etm-perf.c
++++ b/drivers/hwtracing/coresight/coresight-etm-perf.c
+@@ -22,6 +22,7 @@
+ #include "coresight-etm-perf.h"
+ #include "coresight-priv.h"
+ #include "coresight-syscfg.h"
++#include "coresight-trace-id.h"
+ 
+ static struct pmu etm_pmu;
+ static bool etm_perf_up;
+@@ -228,8 +229,12 @@ static void free_event_data(struct work_struct *work)
+ 		if (!(IS_ERR_OR_NULL(*ppath)))
+ 			coresight_release_path(*ppath);
+ 		*ppath = NULL;
++		coresight_trace_id_put_cpu_id(cpu);
+ 	}
+ 
++	/* mark perf event as done for trace id allocator */
++	coresight_trace_id_perf_stop();
++
+ 	free_percpu(event_data->path);
+ 	kfree(event_data);
  }
- 
--/* Check if CPPC revision + num_ent combination is supported */
--static bool is_cppc_supported(int revision, int num_ent)
--{
--	int expected_num_ent;
--
--	switch (revision) {
--	case CPPC_V2_REV:
--		expected_num_ent = CPPC_V2_NUM_ENT;
--		break;
--	case CPPC_V3_REV:
--		expected_num_ent = CPPC_V3_NUM_ENT;
--		break;
--	default:
--		pr_debug("Firmware exports unsupported CPPC revision: %d\n",
--			revision);
--		return false;
--	}
--
--	if (expected_num_ent != num_ent) {
--		pr_debug("Firmware exports %d entries. Expected: %d for CPPC rev:%d\n",
--			num_ent, expected_num_ent, revision);
--		return false;
--	}
--
--	return true;
--}
--
- /*
-  * An example CPC table looks like the following.
-  *
-@@ -752,7 +725,6 @@ int acpi_cppc_processor_probe(struct acp
- 				cpc_obj->type);
- 		goto out_free;
+@@ -300,6 +305,7 @@ static void *etm_setup_aux(struct perf_event *event, void **pages,
+ {
+ 	u32 id, cfg_hash;
+ 	int cpu = event->cpu;
++	int trace_id;
+ 	cpumask_t *mask;
+ 	struct coresight_device *sink = NULL;
+ 	struct coresight_device *user_sink = NULL, *last_sink = NULL;
+@@ -316,6 +322,9 @@ static void *etm_setup_aux(struct perf_event *event, void **pages,
+ 		sink = user_sink = coresight_get_sink_by_id(id);
  	}
--	cpc_ptr->num_entries = num_ent;
  
- 	/* Second entry should be revision. */
- 	cpc_obj = &out_obj->package.elements[1];
-@@ -763,10 +735,32 @@ int acpi_cppc_processor_probe(struct acp
- 				cpc_obj->type);
- 		goto out_free;
++	/* tell the trace ID allocator that a perf event is starting up */
++	coresight_trace_id_perf_start();
++
+ 	/* check if user wants a coresight configuration selected */
+ 	cfg_hash = (u32)((event->attr.config2 & GENMASK_ULL(63, 32)) >> 32);
+ 	if (cfg_hash) {
+@@ -388,6 +397,13 @@ static void *etm_setup_aux(struct perf_event *event, void **pages,
+ 			continue;
+ 		}
+ 
++		/* ensure we can allocate a trace ID for this CPU */
++		trace_id = coresight_trace_id_get_cpu_id(cpu);
++		if (!IS_VALID_ID(trace_id)) {
++			cpumask_clear_cpu(cpu, mask);
++			continue;
++		}
++
+ 		*etm_event_cpu_path_ptr(event_data, cpu) = path;
  	}
--	cpc_ptr->version = cpc_rev;
  
--	if (!is_cppc_supported(cpc_rev, num_ent))
-+	if (cpc_rev < CPPC_V2_REV) {
-+		pr_debug("Unsupported _CPC Revision (%d) for CPU:%d\n", cpc_rev,
-+			 pr->id);
- 		goto out_free;
-+	}
-+
-+	/*
-+	 * Disregard _CPC if the number of entries in the return pachage is not
-+	 * as expected, but support future revisions being proper supersets of
-+	 * the v3 and only causing more entries to be returned by _CPC.
-+	 */
-+	if ((cpc_rev == CPPC_V2_REV && num_ent != CPPC_V2_NUM_ENT) ||
-+	    (cpc_rev == CPPC_V3_REV && num_ent != CPPC_V3_NUM_ENT) ||
-+	    (cpc_rev > CPPC_V3_REV && num_ent <= CPPC_V3_NUM_ENT)) {
-+		pr_debug("Unexpected number of _CPC return package entries (%d) for CPU:%d\n",
-+			 num_ent, pr->id);
-+		goto out_free;
-+	}
-+	if (cpc_rev > CPPC_V3_REV) {
-+		num_ent = CPPC_V3_NUM_ENT;
-+		cpc_rev = CPPC_V3_REV;
-+	}
-+
-+	cpc_ptr->num_entries = num_ent;
-+	cpc_ptr->version = cpc_rev;
- 
- 	/* Iterate through remaining entries in _CPC */
- 	for (i = 2; i < num_ent; i++) {
---- a/include/acpi/cppc_acpi.h
-+++ b/include/acpi/cppc_acpi.h
-@@ -20,7 +20,7 @@
- #include <acpi/pcc.h>
- #include <acpi/processor.h>
- 
--/* Support CPPCv2 and CPPCv3  */
-+/* CPPCv2 and CPPCv3 support */
- #define CPPC_V2_REV	2
- #define CPPC_V3_REV	3
- #define CPPC_V2_NUM_ENT	21
-
+-- 
+2.17.1
 
