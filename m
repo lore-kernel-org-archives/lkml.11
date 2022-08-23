@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 60333C32772
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 10:38:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D6946C32772
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 10:38:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355504AbiHWKil (ORCPT
+        id S1355433AbiHWKiq (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 06:38:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44286 "EHLO
+        Tue, 23 Aug 2022 06:38:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42560 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354662AbiHWKV5 (ORCPT
+        with ESMTP id S1354710AbiHWKWF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 06:21:57 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 746CE2DD9;
-        Tue, 23 Aug 2022 02:03:21 -0700 (PDT)
+        Tue, 23 Aug 2022 06:22:05 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 20BF56440;
+        Tue, 23 Aug 2022 02:03:26 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 48B6C61583;
-        Tue, 23 Aug 2022 09:03:16 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5141AC433D6;
-        Tue, 23 Aug 2022 09:03:15 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 1895561499;
+        Tue, 23 Aug 2022 09:03:26 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 232D8C433C1;
+        Tue, 23 Aug 2022 09:03:24 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661245395;
-        bh=MUH9X5yO4wlFgKXfGRQ1GEK6wDBvOiKQnzrSbVhHJvk=;
+        s=korg; t=1661245405;
+        bh=EeBB5HggqEsJGqx0uHZ8rWSlljvoPfmqgZe5hO3GUs4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=AFhM64tCh4oRWcZx6agDIE+e0zxGlHojlnCZATI3FtkevpjzvoYMzGqdCiRjft6wZ
-         FCl2ssQsL9lYkr+GBh5dnveOg8RH91GjszL4qIeR0N7CmQ1WCsDmqxHG0uNhVNiATj
-         3ByOD0L/93jd+m7bAkSe+a5BLss9JIF/Ezz4KwyQ=
+        b=jp9YTX2U8bPrgbMdnSNQP16OJUyWmQVX3PsakaECt2QJwHiacrtT1pPL3zU+FaaK4
+         +04Y4TDLCr/U37gQOAcEz2Ag2lIOcufcT0R5kb2ljtvxWlQbtxs8jD/ebovhiF966y
+         U5Q/NFibQLP6D7m4vRr77wlLOmXlnZNOLnTKYtV4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, mingi cho <mgcho.minic@gmail.com>,
-        Florian Westphal <fw@strlen.de>,
-        Pablo Neira Ayuso <pablo@netfilter.org>
-Subject: [PATCH 4.19 038/287] netfilter: nf_tables: fix null deref due to zeroed list head
-Date:   Tue, 23 Aug 2022 10:23:27 +0200
-Message-Id: <20220823080101.550008403@linuxfoundation.org>
+        stable@vger.kernel.org, Mike Snitzer <snitzer@kernel.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 4.19 067/287] dm: return early from dm_pr_call() if DM device is suspended
+Date:   Tue, 23 Aug 2022 10:23:56 +0200
+Message-Id: <20220823080102.485958853@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220823080100.268827165@linuxfoundation.org>
 References: <20220823080100.268827165@linuxfoundation.org>
@@ -50,45 +49,38 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Florian Westphal <fw@strlen.de>
+From: Mike Snitzer <snitzer@kernel.org>
 
-commit 580077855a40741cf511766129702d97ff02f4d9 upstream.
+[ Upstream commit e120a5f1e78fab6223544e425015f393d90d6f0d ]
 
-In nf_tables_updtable, if nf_tables_table_enable returns an error,
-nft_trans_destroy is called to free the transaction object.
+Otherwise PR ops may be issued while the broader DM device is being
+reconfigured, etc.
 
-nft_trans_destroy() calls list_del(), but the transaction was never
-placed on a list -- the list head is all zeroes, this results in
-a null dereference:
-
-BUG: KASAN: null-ptr-deref in nft_trans_destroy+0x26/0x59
-Call Trace:
- nft_trans_destroy+0x26/0x59
- nf_tables_newtable+0x4bc/0x9bc
- [..]
-
-Its sane to assume that nft_trans_destroy() can be called
-on the transaction object returned by nft_trans_alloc(), so
-make sure the list head is initialised.
-
-Fixes: 55dd6f93076b ("netfilter: nf_tables: use new transaction infrastructure to handle table")
-Reported-by: mingi cho <mgcho.minic@gmail.com>
-Signed-off-by: Florian Westphal <fw@strlen.de>
-Signed-off-by: Pablo Neira Ayuso <pablo@netfilter.org>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Fixes: 9c72bad1f31a ("dm: call PR reserve/unreserve on each underlying device")
+Signed-off-by: Mike Snitzer <snitzer@kernel.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/netfilter/nf_tables_api.c |    1 +
- 1 file changed, 1 insertion(+)
+ drivers/md/dm.c | 5 +++++
+ 1 file changed, 5 insertions(+)
 
---- a/net/netfilter/nf_tables_api.c
-+++ b/net/netfilter/nf_tables_api.c
-@@ -96,6 +96,7 @@ static struct nft_trans *nft_trans_alloc
- 	if (trans == NULL)
- 		return NULL;
+diff --git a/drivers/md/dm.c b/drivers/md/dm.c
+index d2ee97cd7d14..324d1dd58e2b 100644
+--- a/drivers/md/dm.c
++++ b/drivers/md/dm.c
+@@ -3122,6 +3122,11 @@ static int dm_call_pr(struct block_device *bdev, iterate_devices_callout_fn fn,
+ 		goto out;
+ 	ti = dm_table_get_target(table, 0);
  
-+	INIT_LIST_HEAD(&trans->list);
- 	trans->msg_type = msg_type;
- 	trans->ctx	= *ctx;
- 
++	if (dm_suspended_md(md)) {
++		ret = -EAGAIN;
++		goto out;
++	}
++
+ 	ret = -EINVAL;
+ 	if (!ti->type->iterate_devices)
+ 		goto out;
+-- 
+2.35.1
+
 
 
