@@ -2,144 +2,155 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6CCF4C28D13
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 00:46:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 35195C32796
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 00:46:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238361AbiHWAqf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 22 Aug 2022 20:46:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45484 "EHLO
+        id S238852AbiHWAqt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 22 Aug 2022 20:46:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45646 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238940AbiHWAqb (ORCPT
+        with ESMTP id S239092AbiHWAqq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 22 Aug 2022 20:46:31 -0400
-Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 44F7A4CA34
-        for <linux-kernel@vger.kernel.org>; Mon, 22 Aug 2022 17:46:30 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1661215590; x=1692751590;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=2g8nN0jrK8PfdCkNhbKM2KDBhQ6tYPvqKN20IXskZ5c=;
-  b=Lq+kz3oxMNXQkY7+VeUBmO48b9Ho/Zp6MyVRSXy+hv1GDp81Yn7DJTnK
-   LbgmSzklrMsc+Eoyq/r/ry3AJiPbdqZwkhLoFw2uYECwQ3a/P1exH9Wbr
-   3Q0sMCiYGw46BvsUHIxqJFc7eDv/gh6cFzVJwM2Bu+cjvLkf1dSVs9Yt9
-   CdShZ3uiJPw2RYgDDOdiRtG3OmRwFu4KJOB11OfV/6xzhUy3YQdSuZXw1
-   cWu52cPd1ERxN0+EXuM8iPFks7ziV2kMLWMF74Tcf9uA3583RVR3WD05P
-   j2Rr6/72XUPToLjoGJP28X2qs9hbGJJLFxZr/9wgzDqSZwE8wOnH97ehB
-   g==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10447"; a="280528749"
-X-IronPort-AV: E=Sophos;i="5.93,256,1654585200"; 
-   d="scan'208";a="280528749"
-Received: from orsmga004.jf.intel.com ([10.7.209.38])
-  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Aug 2022 17:46:20 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.93,255,1654585200"; 
-   d="scan'208";a="735292102"
-Received: from lkp-server01.sh.intel.com (HELO dd9b29378baa) ([10.239.97.150])
-  by orsmga004.jf.intel.com with ESMTP; 22 Aug 2022 17:46:18 -0700
-Received: from kbuild by dd9b29378baa with local (Exim 4.96)
-        (envelope-from <lkp@intel.com>)
-        id 1oQI3d-0000vH-1A;
-        Tue, 23 Aug 2022 00:46:17 +0000
-Date:   Tue, 23 Aug 2022 08:45:36 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Andrew Davis <afd@ti.com>, Sumit Semwal <sumit.semwal@linaro.org>,
-        Benjamin Gaignard <benjamin.gaignard@collabora.com>,
-        Liam Mark <lmark@codeaurora.org>,
-        Laura Abbott <labbott@redhat.com>,
-        Brian Starkey <Brian.Starkey@arm.com>,
-        John Stultz <jstultz@google.com>,
-        Christian =?iso-8859-1?Q?K=F6nig?= <christian.koenig@amd.com>,
-        dri-devel@lists.freedesktop.org, linaro-mm-sig@lists.linaro.org,
-        linux-kernel@vger.kernel.org
-Cc:     kbuild-all@lists.01.org, Andrew Davis <afd@ti.com>
-Subject: Re: [PATCH] dma-buf: cma_heap: Check for device max segment size
- when attaching
-Message-ID: <202208230840.npLcmvVn-lkp@intel.com>
-References: <20220822233025.3965-1-afd@ti.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220822233025.3965-1-afd@ti.com>
+        Mon, 22 Aug 2022 20:46:46 -0400
+Received: from mail-pl1-x64a.google.com (mail-pl1-x64a.google.com [IPv6:2607:f8b0:4864:20::64a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E4FC44D157
+        for <linux-kernel@vger.kernel.org>; Mon, 22 Aug 2022 17:46:43 -0700 (PDT)
+Received: by mail-pl1-x64a.google.com with SMTP id i16-20020a170902c95000b00172c39b3fb0so6252359pla.22
+        for <linux-kernel@vger.kernel.org>; Mon, 22 Aug 2022 17:46:43 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=cc:to:from:subject:mime-version:message-id:date:from:to:cc;
+        bh=+5ILiONNT2Raf8lvKVWoFP9Lx9r+QT/j1xkxXvfLAg4=;
+        b=o+XzIuiX0mVrmTljlwxKQE5BPa7fWhxeXonBF2ujsHDIIkmrP/BArjGG8vKGXZzxHZ
+         aGCyHZQGHV5fEhDCrdkCSs+rAYyXOsbuGhwIvEGUIpM+alq9pj57H5dboCmNEc09TK0z
+         c6heO/8eSor/4/h1izel8Myn9DtJfj72/a/q7U1fFyl1Dno74zfJPMJQRSCl7AkmFpA2
+         YVxX7c0VRywxlO0x4/jEhIDRhafho11s7qXBSJr3SCWVNdlEtnYGvZenzxKVAARYwX+f
+         oi9flWWlqVqqz3XGywpOOfYXa3KiMvQtqdVJT3SmOpYgrc6NAr9neqgsbzx2bpt4Hix/
+         1rNA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=cc:to:from:subject:mime-version:message-id:date:x-gm-message-state
+         :from:to:cc;
+        bh=+5ILiONNT2Raf8lvKVWoFP9Lx9r+QT/j1xkxXvfLAg4=;
+        b=ES99HryDFxz5dAzUBhRBvyO2wb7MrryuFMo1WFF6Db9YWUKQfQMwyCk5F4BDN7cYC8
+         U65NKGyVetA+dF0X+/lirbu3emNFRSsSRR4j6h3bRI7iiiG3ET1Q+jWFuh7ZzgmkBoO/
+         jl3sWB/J9vMitdpunp5Q4Bm8StsYrQzZ2RvtwlN9BygEpl1NEgmpQTMXTKwHe6xsYQd4
+         r1whYSeA8RJuByph16oLW5ba7bhmeJ+7T7xq30mcdpyNoiP2gqX/8YJhl24T7QgHozWT
+         GxB4nyxwOlV1pFEb9apkrCZj1zrpiZe2JAvQWtI+xEKEIo5U4m76vf4YeUkQKwquA5WP
+         3Kyw==
+X-Gm-Message-State: ACgBeo2WLfCW71TS2TDHXPe6NCD5uv+FxVBoOOKIxxDNFWkTs/eS48ky
+        LjtkiEsH3+o4S6DccU/7i9shRnWFcV3C9fdS
+X-Google-Smtp-Source: AA6agR7n4HaZkWJXrjZPxJF0LYP1shjmb62PXEmeLlBFj/2/BudXQckF9s5n2JZ4jSwiCza7N/CifAgyNs456d/H
+X-Received: from yosry.c.googlers.com ([fda3:e722:ac3:cc00:7f:e700:c0a8:2327])
+ (user=yosryahmed job=sendgmr) by 2002:a17:90b:4c8c:b0:1fa:c44f:473a with SMTP
+ id my12-20020a17090b4c8c00b001fac44f473amr840678pjb.195.1661215603362; Mon,
+ 22 Aug 2022 17:46:43 -0700 (PDT)
+Date:   Tue, 23 Aug 2022 00:46:35 +0000
+Message-Id: <20220823004639.2387269-1-yosryahmed@google.com>
+Mime-Version: 1.0
+X-Mailer: git-send-email 2.37.1.595.g718a3a8f04-goog
+Subject: [PATCH v7 0/4] KVM: mm: count KVM mmu usage in memory stats
+From:   Yosry Ahmed <yosryahmed@google.com>
+To:     Tejun Heo <tj@kernel.org>, Johannes Weiner <hannes@cmpxchg.org>,
+        Zefan Li <lizefan.x@bytedance.com>,
+        Marc Zyngier <maz@kernel.org>,
+        James Morse <james.morse@arm.com>,
+        Alexandru Elisei <alexandru.elisei@arm.com>,
+        Suzuki K Poulose <suzuki.poulose@arm.com>,
+        Paolo Bonzini <pbonzini@redhat.com>,
+        Sean Christopherson <seanjc@google.com>,
+        Vitaly Kuznetsov <vkuznets@redhat.com>,
+        Wanpeng Li <wanpengli@tencent.com>,
+        Jim Mattson <jmattson@google.com>,
+        Joerg Roedel <joro@8bytes.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Michal Hocko <mhocko@kernel.org>,
+        Roman Gushchin <roman.gushchin@linux.dev>,
+        Shakeel Butt <shakeelb@google.com>,
+        Oliver Upton <oupton@google.com>
+Cc:     Huang@google.com, Shaoqin <shaoqin.huang@intel.com>,
+        cgroups@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, kvmarm@lists.cs.columbia.edu,
+        kvm@vger.kernel.org, linux-mm@kvack.org,
+        Yosry Ahmed <yosryahmed@google.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Andrew,
+Add NR_SECONDARY_PAGETABLE memory stat and use it to account KVM mmu
+usage as the first type of accounted secondary page tables. This stat
+can be later extended to account for other types of secondary pages
+tables (e.g. iommu page tables).
 
-Thank you for the patch! Perhaps something to improve:
+Rationale behind why this is useful and link to extended discussion in
+the first patch.
 
-[auto build test WARNING on drm-misc/drm-misc-next]
-[also build test WARNING on linus/master v6.0-rc2 next-20220822]
-[If your patch is applied to the wrong git tree, kindly drop us a note.
-And when submitting patch, we suggest to use '--base' as documented in
-https://git-scm.com/docs/git-format-patch#_base_tree_information]
+---
 
-url:    https://github.com/intel-lab-lkp/linux/commits/Andrew-Davis/dma-buf-cma_heap-Check-for-device-max-segment-size-when-attaching/20220823-073240
-base:   git://anongit.freedesktop.org/drm/drm-misc drm-misc-next
-config: s390-allyesconfig (https://download.01.org/0day-ci/archive/20220823/202208230840.npLcmvVn-lkp@intel.com/config)
-compiler: s390-linux-gcc (GCC) 12.1.0
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://github.com/intel-lab-lkp/linux/commit/f390cef50ba6681ea767283e413cb8e9f8f2b426
-        git remote add linux-review https://github.com/intel-lab-lkp/linux
-        git fetch --no-tags linux-review Andrew-Davis/dma-buf-cma_heap-Check-for-device-max-segment-size-when-attaching/20220823-073240
-        git checkout f390cef50ba6681ea767283e413cb8e9f8f2b426
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-12.1.0 make.cross W=1 O=build_dir ARCH=s390 SHELL=/bin/bash drivers/dma-buf/
+Changes in V7:
+- Rebased on top of kvm/queue.
+- Fixed doc spaces in proc.rst (Sean).
+- Commit message s/kvm/KVM (Sean).
+- Example of NR_SECONDARY_PAGETABLE s/KVM shadow pagetables/KVM pagetables
+  (Sean).
+- Added comment that kvm_account_pgtable_pages() is thread-safe (Sean).
+- Collected Acks and Reviewed-by's from Sean and Marc (Thanks!).
 
-If you fix the issue, kindly add following tag where applicable
-Reported-by: kernel test robot <lkp@intel.com>
+Changes in V6:
+- Rebased on top of kvm/queue and fixed conflicts.
+- Fixed docs spaces and tabs (Sean).
+- More narrative commit logs (Sean and Oliver).
+- Updated kvm_account_pgtable_pages() documentation to describe the
+  rules of using it more clearly (Sean).
+- Collected Acks and Reviewed-by's by Shakeel and Oliver (Thanks!)
 
-All warnings (new ones prefixed by >>):
+Changes in V5:
+- Updated cover letter to explain more the rationale behind the change
+  (Thanks to contributions by Sean Christopherson).
+- Removed extraneous + in arm64 patch (Oliver Upton, Marc Zyngier).
+- Shortened secondary_pagetables to sec_pagetables (Shakeel Butt).
+- Removed dependency on other patchsets (applies to queue branch).
 
-   drivers/dma-buf/heaps/cma_heap.c: In function 'cma_heap_attach':
->> drivers/dma-buf/heaps/cma_heap.c:61:9: warning: ISO C90 forbids mixed declarations and code [-Wdeclaration-after-statement]
-      61 |         size_t max_segment = dma_get_max_seg_size(attachment->dev);
-         |         ^~~~~~
+Changes in V4:
+- Changed accounting hooks in arm64 to only account s2 page tables and
+  refactored them to a much cleaner form, based on recommendations from
+  Oliver Upton and Marc Zyngier.
+- Dropped patches for mips and riscv. I am not interested in those archs
+  anyway and don't have the resources to test them. I posted them for
+  completeness but it doesn't seem like anyone was interested.
 
+Changes in V3:
+- Added NR_SECONDARY_PAGETABLE instead of piggybacking on NR_PAGETABLE
+  stats.
 
-vim +61 drivers/dma-buf/heaps/cma_heap.c
+Changes in V2:
+- Added accounting stats for other archs than x86.
+- Changed locations in the code where x86 KVM page table stats were
+  accounted based on suggestions from Sean Christopherson.
 
-    49	
-    50	static int cma_heap_attach(struct dma_buf *dmabuf,
-    51				   struct dma_buf_attachment *attachment)
-    52	{
-    53		struct cma_heap_buffer *buffer = dmabuf->priv;
-    54		struct dma_heap_attachment *a;
-    55		int ret;
-    56	
-    57		a = kzalloc(sizeof(*a), GFP_KERNEL);
-    58		if (!a)
-    59			return -ENOMEM;
-    60	
-  > 61		size_t max_segment = dma_get_max_seg_size(attachment->dev);
-    62		ret = sg_alloc_table_from_pages_segment(&a->table, buffer->pages,
-    63							buffer->pagecount, 0,
-    64							buffer->pagecount << PAGE_SHIFT,
-    65							max_segment, GFP_KERNEL);
-    66		if (ret) {
-    67			kfree(a);
-    68			return ret;
-    69		}
-    70	
-    71		a->dev = attachment->dev;
-    72		INIT_LIST_HEAD(&a->list);
-    73		a->mapped = false;
-    74	
-    75		attachment->priv = a;
-    76	
-    77		mutex_lock(&buffer->lock);
-    78		list_add(&a->list, &buffer->attachments);
-    79		mutex_unlock(&buffer->lock);
-    80	
-    81		return 0;
-    82	}
-    83	
+---
+
+Yosry Ahmed (4):
+  mm: add NR_SECONDARY_PAGETABLE to count secondary page table uses.
+  KVM: mmu: add a helper to account memory used by KVM MMU.
+  KVM: x86/mmu: count KVM mmu usage in secondary pagetable stats.
+  KVM: arm64/mmu: count KVM s2 mmu usage in secondary pagetable stats
+
+ Documentation/admin-guide/cgroup-v2.rst |  5 ++++
+ Documentation/filesystems/proc.rst      |  4 +++
+ arch/arm64/kvm/mmu.c                    | 36 ++++++++++++++++++++++---
+ arch/x86/kvm/mmu/mmu.c                  | 16 +++++++++--
+ arch/x86/kvm/mmu/tdp_mmu.c              | 12 +++++++++
+ drivers/base/node.c                     |  2 ++
+ fs/proc/meminfo.c                       |  2 ++
+ include/linux/kvm_host.h                | 13 +++++++++
+ include/linux/mmzone.h                  |  1 +
+ mm/memcontrol.c                         |  1 +
+ mm/page_alloc.c                         |  6 ++++-
+ mm/vmstat.c                             |  1 +
+ 12 files changed, 92 insertions(+), 7 deletions(-)
 
 -- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+2.37.1.595.g718a3a8f04-goog
+
