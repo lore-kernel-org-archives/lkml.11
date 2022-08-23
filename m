@@ -2,113 +2,257 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0A95FC32793
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 07:26:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 93FF8C32774
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 07:26:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240946AbiHWH0Q (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 03:26:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59022 "EHLO
+        id S240957AbiHWH0T (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 23 Aug 2022 03:26:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59020 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233020AbiHWH0I (ORCPT
+        with ESMTP id S240919AbiHWH0I (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 23 Aug 2022 03:26:08 -0400
-Received: from mx0b-001b2d01.pphosted.com (mx0b-001b2d01.pphosted.com [148.163.158.5])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 37DCA62A9D;
-        Tue, 23 Aug 2022 00:26:05 -0700 (PDT)
-Received: from pps.filterd (m0127361.ppops.net [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 27N7I8mi019262;
-        Tue, 23 Aug 2022 07:25:34 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : date :
- mime-version : to : cc : references : from : subject : in-reply-to :
- content-type : content-transfer-encoding; s=pp1;
- bh=SmOYCQlEi9xOYSyDiv1CZsdu0MNpYC68EjaM4akqad0=;
- b=Y9TlNJQL3bt2TjCZI+ODTGspLlnve8roixvsUwMPCPJBVWr1KZ2Oz0MJmgMqv/Oz2flu
- ZsGr7hStED3LA9vlQOD7TQYYLW7FvcrI8M1IH0cIw60+4oEsVrG/YEAdhHYJksDaA2pm
- 9MORs9m1kXXeBu5sht2uc+nVhUXS3UHk4fK+AEAe6K0SzksB43CcMohkGOyzNi1XyKiU
- RtAn+4RVRcweY3piRBqk4VxyElSV1l47kQ/mMSjov64hTqA/tYF9KOv+fsD9brRlSjv4
- dr7fZtbmf+R3Lb0ElHOMpc/piR0Si7+PaDoVKsoqcjoslQSwvUKfsC8nL+yH1Y8xxaDp OA== 
-Received: from pps.reinject (localhost [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3j4tct84q9-1
+Received: from mx0b-0031df01.pphosted.com (mx0b-0031df01.pphosted.com [205.220.180.131])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D551362A93;
+        Tue, 23 Aug 2022 00:26:04 -0700 (PDT)
+Received: from pps.filterd (m0279873.ppops.net [127.0.0.1])
+        by mx0a-0031df01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 27N4QBw3023075;
+        Tue, 23 Aug 2022 07:25:57 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=quicinc.com; h=message-id : date :
+ mime-version : subject : to : cc : references : from : in-reply-to :
+ content-type : content-transfer-encoding; s=qcppdkim1;
+ bh=wSeyxPigMB9+mzHDPYtNu5KFZQgVycg01gcDOmX3hxo=;
+ b=iZeHSSCZ0DC92c6mNDFJRtwtgKc5RZVpQcCY1Id2nnB02yrHnlSmGGRBnZlqsaallc2e
+ KgSM0t7blLlOM+HRNPGyJ1QuxjOYDtECHIQb8VHNAFX7bEGbv6Jef5FWeHEyHE5Jbzzd
+ KirZ/oTr3x3+qAVLprNVJgxpDmxAu1u0Qc85DBEKLil7zMIjOP5BbFlI9SBykVyMIRdH
+ IeknnNcd58r2a2Od3MD4rYTS3s//ljYw2yfLeSzgtAooRYS4ODh+G56c1HFc6gyB/fn2
+ Acdsw8mU/7x4ORLK3k2N2jgX2GygR/wi4Ay7sCphhlExxB2sYkVvsuGvNQGyk34aekVd Pg== 
+Received: from nalasppmta03.qualcomm.com (Global_NAT1.qualcomm.com [129.46.96.20])
+        by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 3j4phb14yy-1
         (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Tue, 23 Aug 2022 07:25:33 +0000
-Received: from m0127361.ppops.net (m0127361.ppops.net [127.0.0.1])
-        by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 27N7IbrP020072;
-        Tue, 23 Aug 2022 07:25:33 GMT
-Received: from ppma03ams.nl.ibm.com (62.31.33a9.ip4.static.sl-reverse.com [169.51.49.98])
-        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3j4tct84pk-1
+        Tue, 23 Aug 2022 07:25:56 +0000
+Received: from nalasex01a.na.qualcomm.com (nalasex01a.na.qualcomm.com [10.47.209.196])
+        by NALASPPMTA03.qualcomm.com (8.17.1.5/8.17.1.5) with ESMTPS id 27N7PtTG017543
         (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Tue, 23 Aug 2022 07:25:33 +0000
-Received: from pps.filterd (ppma03ams.nl.ibm.com [127.0.0.1])
-        by ppma03ams.nl.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 27N7LYrS017635;
-        Tue, 23 Aug 2022 07:25:31 GMT
-Received: from b06cxnps3075.portsmouth.uk.ibm.com (d06relay10.portsmouth.uk.ibm.com [9.149.109.195])
-        by ppma03ams.nl.ibm.com with ESMTP id 3j2q88ucvt-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Tue, 23 Aug 2022 07:25:31 +0000
-Received: from d06av22.portsmouth.uk.ibm.com (d06av22.portsmouth.uk.ibm.com [9.149.105.58])
-        by b06cxnps3075.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 27N7PSEb28901874
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Tue, 23 Aug 2022 07:25:28 GMT
-Received: from d06av22.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 459094C04A;
-        Tue, 23 Aug 2022 07:25:28 +0000 (GMT)
-Received: from d06av22.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id A3A084C040;
-        Tue, 23 Aug 2022 07:25:27 +0000 (GMT)
-Received: from [9.145.84.26] (unknown [9.145.84.26])
-        by d06av22.portsmouth.uk.ibm.com (Postfix) with ESMTP;
-        Tue, 23 Aug 2022 07:25:27 +0000 (GMT)
-Message-ID: <6d11d3b5-a313-8e2b-2f38-44c5a4a63a28@linux.ibm.com>
-Date:   Tue, 23 Aug 2022 09:25:27 +0200
+        Tue, 23 Aug 2022 07:25:55 GMT
+Received: from [10.50.0.65] (10.80.80.8) by nalasex01a.na.qualcomm.com
+ (10.47.209.196) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.29; Tue, 23 Aug
+ 2022 00:25:49 -0700
+Message-ID: <708d8c51-4cf5-50b7-ab07-8396b08563df@quicinc.com>
+Date:   Tue, 23 Aug 2022 12:55:45 +0530
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.9.0
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.6.1
+Subject: Re: [PATCH] drm/msm/iommu: optimize map/unmap
 Content-Language: en-US
-To:     Pierre Morel <pmorel@linux.ibm.com>, mjrosato@linux.ibm.com
-Cc:     rdunlap@infradead.org, linux-kernel@vger.kernel.org, lkp@intel.com,
-        borntraeger@linux.ibm.com, farman@linux.ibm.com,
-        linux-s390@vger.kernel.org, kvm@vger.kernel.org, gor@linux.ibm.com,
-        hca@linux.ibm.com, schnelle@linux.ibm.com,
-        alex.williamson@redhat.com, cohuck@redhat.com
-References: <20220819122945.9309-1-pmorel@linux.ibm.com>
-From:   Janosch Frank <frankja@linux.ibm.com>
-Subject: Re: [PATCH v2] KVM: s390: pci: Hook to access KVM lowlevel from VFIO
-In-Reply-To: <20220819122945.9309-1-pmorel@linux.ibm.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
+To:     Rob Clark <robdclark@gmail.com>, <dri-devel@lists.freedesktop.org>
+CC:     <linux-arm-msm@vger.kernel.org>, <freedreno@lists.freedesktop.org>,
+        "Robin Murphy" <robin.murphy@arm.com>,
+        Rob Clark <robdclark@chromium.org>,
+        "Abhinav Kumar" <quic_abhinavk@quicinc.com>,
+        Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
+        Sean Paul <sean@poorly.run>, David Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        open list <linux-kernel@vger.kernel.org>
+References: <20220822184742.32076-1-robdclark@gmail.com>
+From:   Sai Prakash Ranjan <quic_saipraka@quicinc.com>
+In-Reply-To: <20220822184742.32076-1-robdclark@gmail.com>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
 Content-Transfer-Encoding: 7bit
-X-TM-AS-GCONF: 00
-X-Proofpoint-GUID: WApmKQCF6vWAoWUcQpk8IJczJiuGuinz
-X-Proofpoint-ORIG-GUID: VYjopGuI7cEjOcfPDg0iFkAn8lI1nGfm
+X-Originating-IP: [10.80.80.8]
+X-ClientProxiedBy: nasanex01a.na.qualcomm.com (10.52.223.231) To
+ nalasex01a.na.qualcomm.com (10.47.209.196)
+X-QCInternal: smtphost
+X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=5800 signatures=585085
+X-Proofpoint-GUID: RKdc_c_ZrECOpMOyQlDXX56WtKI6zpuh
+X-Proofpoint-ORIG-GUID: RKdc_c_ZrECOpMOyQlDXX56WtKI6zpuh
 X-Proofpoint-Virus-Version: vendor=baseguard
  engine=ICAP:2.0.205,Aquarius:18.0.895,Hydra:6.0.517,FMLib:17.11.122.1
  definitions=2022-08-23_02,2022-08-22_02,2022-06-22_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 priorityscore=1501
- suspectscore=0 clxscore=1011 mlxscore=0 spamscore=0 mlxlogscore=803
- adultscore=0 lowpriorityscore=0 phishscore=0 bulkscore=0 malwarescore=0
- impostorscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2207270000 definitions=main-2208230027
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 impostorscore=0
+ malwarescore=0 lowpriorityscore=0 priorityscore=1501 adultscore=0
+ clxscore=1011 mlxscore=0 suspectscore=0 mlxlogscore=999 spamscore=0
+ phishscore=0 bulkscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2207270000 definitions=main-2208230028
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 8/19/22 14:29, Pierre Morel wrote:
-> We have a cross dependency between KVM and VFIO when using
-> s390 vfio_pci_zdev extensions for PCI passthrough
-> To be able to keep both subsystem modular we add a registering
-> hook inside the S390 core code.
-> 
-> This fixes a build problem when VFIO is built-in and KVM is built
-> as a module.
-> 
-> Reported-by: Randy Dunlap <rdunlap@infradead.org>
-> Reported-by: kernel test robot <lkp@intel.com>
-> Reviewed-by: Matthew Rosato <mjrosato@linux.ibm.com>
-> Reviewed-by: Niklas Schnelle <schnelle@linux.ibm.com>
-> Signed-off-by: Pierre Morel <pmorel@linux.ibm.com>
-> Fixes: 09340b2fca007 ("KVM: s390: pci: add routines to start/stop interpretive execution")
-> Cc: <stable@vger.kernel.org>
+Hi Rob,
 
-Acked-by: Janosch Frank <frankja@linux.ibm.com>
+On 8/23/2022 12:17 AM, Rob Clark wrote:
+> From: Rob Clark <robdclark@chromium.org>
+>
+> Using map_pages/unmap_pages cuts down on the # of pgtable walks needed
+> in the process of finding where to insert/remove an entry.  The end
+> result is ~5-10x faster than mapping a single page at a time.
+>
+> Signed-off-by: Rob Clark <robdclark@chromium.org>
+> ---
+>   drivers/gpu/drm/msm/msm_iommu.c | 91 ++++++++++++++++++++++++++++-----
+>   1 file changed, 79 insertions(+), 12 deletions(-)
+>
+> diff --git a/drivers/gpu/drm/msm/msm_iommu.c b/drivers/gpu/drm/msm/msm_iommu.c
+> index a54ed354578b..0f3f60da3314 100644
+> --- a/drivers/gpu/drm/msm/msm_iommu.c
+> +++ b/drivers/gpu/drm/msm/msm_iommu.c
+> @@ -21,6 +21,7 @@ struct msm_iommu_pagetable {
+>   	struct msm_mmu base;
+>   	struct msm_mmu *parent;
+>   	struct io_pgtable_ops *pgtbl_ops;
+> +	unsigned long pgsize_bitmap;	/* Bitmap of page sizes in use */
+>   	phys_addr_t ttbr;
+>   	u32 asid;
+>   };
+> @@ -29,23 +30,85 @@ static struct msm_iommu_pagetable *to_pagetable(struct msm_mmu *mmu)
+>   	return container_of(mmu, struct msm_iommu_pagetable, base);
+>   }
+>   
+> +/* based on iommu_pgsize() in iommu.c: */
+> +static size_t iommu_pgsize(struct msm_iommu_pagetable *pagetable,
 
-@Niklas @Matt: Since the patches that introduced the PCI interpretation 
-went via the KVM tree I'll also move this patch via the KVM tree.
+Maybe call this msm_iommu_pgsize? There won't be any namespace conflict since it is static
+in both places but still would be better.
+
+> +			   unsigned long iova, phys_addr_t paddr,
+> +			   size_t size, size_t *count)
+> +{
+> +	unsigned int pgsize_idx, pgsize_idx_next;
+> +	unsigned long pgsizes;
+> +	size_t offset, pgsize, pgsize_next;
+> +	unsigned long addr_merge = paddr | iova;
+> +
+> +	/* Page sizes supported by the hardware and small enough for @size */
+> +	pgsizes = pagetable->pgsize_bitmap & GENMASK(__fls(size), 0);
+> +
+> +	/* Constrain the page sizes further based on the maximum alignment */
+> +	if (likely(addr_merge))
+> +		pgsizes &= GENMASK(__ffs(addr_merge), 0);
+> +
+> +	/* Make sure we have at least one suitable page size */
+> +	BUG_ON(!pgsizes);
+> +
+> +	/* Pick the biggest page size remaining */
+> +	pgsize_idx = __fls(pgsizes);
+> +	pgsize = BIT(pgsize_idx);
+> +	if (!count)
+> +		return pgsize;
+> +
+> +	/* Find the next biggest support page size, if it exists */
+> +	pgsizes = pagetable->pgsize_bitmap & ~GENMASK(pgsize_idx, 0);
+> +	if (!pgsizes)
+> +		goto out_set_count;
+> +
+> +	pgsize_idx_next = __ffs(pgsizes);
+> +	pgsize_next = BIT(pgsize_idx_next);
+> +
+> +	/*
+> +	 * There's no point trying a bigger page size unless the virtual
+> +	 * and physical addresses are similarly offset within the larger page.
+> +	 */
+> +	if ((iova ^ paddr) & (pgsize_next - 1))
+> +		goto out_set_count;
+> +
+> +	/* Calculate the offset to the next page size alignment boundary */
+> +	offset = pgsize_next - (addr_merge & (pgsize_next - 1));
+> +
+> +	/*
+> +	 * If size is big enough to accommodate the larger page, reduce
+> +	 * the number of smaller pages.
+> +	 */
+> +	if (offset + pgsize_next <= size)
+> +		size = offset;
+> +
+> +out_set_count:
+> +	*count = size >> pgsize_idx;
+> +	return pgsize;
+> +}
+> +
+>   static int msm_iommu_pagetable_unmap(struct msm_mmu *mmu, u64 iova,
+>   		size_t size)
+>   {
+>   	struct msm_iommu_pagetable *pagetable = to_pagetable(mmu);
+>   	struct io_pgtable_ops *ops = pagetable->pgtbl_ops;
+> -	size_t unmapped = 0;
+>   
+>   	/* Unmap the block one page at a time */
+
+This comment will need an update.
+
+>   	while (size) {
+> -		unmapped += ops->unmap(ops, iova, 4096, NULL);
+> -		iova += 4096;
+> -		size -= 4096;
+> +		size_t unmapped, pgsize, count;
+> +
+> +		pgsize = iommu_pgsize(pagetable, iova, iova, size, &count);
+> +
+> +		unmapped = ops->unmap_pages(ops, iova, pgsize, count, NULL);
+> +		if (!unmapped)
+> +			break;
+> +
+> +		iova += unmapped;
+> +		size -= unmapped;
+>   	}
+>   
+>   	iommu_flush_iotlb_all(to_msm_iommu(pagetable->parent)->domain);
+>   
+> -	return (unmapped == size) ? 0 : -EINVAL;
+> +	return (size == 0) ? 0 : -EINVAL;
+>   }
+>   
+>   static int msm_iommu_pagetable_map(struct msm_mmu *mmu, u64 iova,
+> @@ -54,7 +117,6 @@ static int msm_iommu_pagetable_map(struct msm_mmu *mmu, u64 iova,
+>   	struct msm_iommu_pagetable *pagetable = to_pagetable(mmu);
+>   	struct io_pgtable_ops *ops = pagetable->pgtbl_ops;
+>   	struct scatterlist *sg;
+> -	size_t mapped = 0;
+>   	u64 addr = iova;
+>   	unsigned int i;
+>   
+> @@ -64,15 +126,19 @@ static int msm_iommu_pagetable_map(struct msm_mmu *mmu, u64 iova,
+>   
+>   		/* Map the block one page at a time */
+
+This comment will need an update.
+
+>   		while (size) {
+> -			if (ops->map(ops, addr, phys, 4096, prot, GFP_KERNEL)) {
+> -				msm_iommu_pagetable_unmap(mmu, iova, mapped);
+> +			size_t pgsize, count, mapped;
+> +
+> +			pgsize = iommu_pgsize(pagetable, addr, phys, size, &count);
+> +
+> +			if (ops->map_pages(ops, addr, phys, pgsize, count,
+> +					   prot, GFP_KERNEL, &mapped)) {
+> +				msm_iommu_pagetable_unmap(mmu, iova, addr - iova);
+
+On ->map_pages failure, some pages can still be mapped and would need to be accounted for unmapping,
+so maybe follow the logic in __iommu_map() to account for mapped size instead of addr - iova where
+addr won't be updated in case of failure to map few pages.
+
+Thanks,
+Sai
+
+>   				return -EINVAL;
+>   			}
+>   
+> -			phys += 4096;
+> -			addr += 4096;
+> -			size -= 4096;
+> -			mapped += 4096;
+> +			phys += mapped;
+> +			addr += mapped;
+> +			size -= mapped;
+>   		}
+>   	}
+>   
+> @@ -207,6 +273,7 @@ struct msm_mmu *msm_iommu_pagetable_create(struct msm_mmu *parent)
+>   
+>   	/* Needed later for TLB flush */
+>   	pagetable->parent = parent;
+> +	pagetable->pgsize_bitmap = ttbr0_cfg.pgsize_bitmap;
+>   	pagetable->ttbr = ttbr0_cfg.arm_lpae_s1_cfg.ttbr;
+>   
+>   	/*
