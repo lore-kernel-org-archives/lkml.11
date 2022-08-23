@@ -2,44 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2E731C32774
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 08:20:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DF1B7C32774
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 08:21:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242974AbiHWIUN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 04:20:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45736 "EHLO
+        id S242988AbiHWIUR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 23 Aug 2022 04:20:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46562 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242793AbiHWIP5 (ORCPT
+        with ESMTP id S242853AbiHWIQD (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 04:15:57 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0A6FE67158;
-        Tue, 23 Aug 2022 01:10:29 -0700 (PDT)
+        Tue, 23 Aug 2022 04:16:03 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E387F4CA26;
+        Tue, 23 Aug 2022 01:10:35 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 1CDEC61242;
-        Tue, 23 Aug 2022 08:10:29 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2531EC433D6;
-        Tue, 23 Aug 2022 08:10:27 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 331D7CE1B34;
+        Tue, 23 Aug 2022 08:10:33 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 48EBDC433D7;
+        Tue, 23 Aug 2022 08:10:31 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661242228;
-        bh=RXCyhZRzrtJghnYc9X17cARJaYAxXVaAfZazdDgnS5E=;
+        s=korg; t=1661242231;
+        bh=e9/obfON0SGjLdk8YP68PwFGB6cUPYEn5IAuShp4TRA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=t5ENj6F5k3ywv+BoCCCg7Moi+pvnAK+iMqufd+9lJowPJW4i+3VOD1b+QXw57A/pl
-         P6HM1IAw7YaIY1G4vXzZHO5aX4YQLJgXuMUTtZNgqhkAtA2qY1EFPo03ppG4lT9RTc
-         1ZME0HL6+INfCqK3Gcstohwv5Pht9w6Oe6o+X9Zk=
+        b=JB8rQH5fnLAkEUbPAxyTS+vOr5tanSH5LSx3i3mWj2/Z87I3OJkuKE4jIMO0Y128I
+         wN2+p9tb5+uTpvokxbNdxpzWsT2ye8awlUYcqFaKydUbq99HLVa8EAUYJInwQT0Hsv
+         Rd44NZO1yCEW2esiJKbKZIrhYOW2KufGWOuuB0V4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Mikulas Patocka <mpatocka@redhat.com>,
-        Song Liu <song@kernel.org>, Jens Axboe <axboe@kernel.dk>
-Subject: [PATCH 4.9 039/101] md-raid10: fix KASAN warning
-Date:   Tue, 23 Aug 2022 10:03:12 +0200
-Message-Id: <20220823080036.055423414@linuxfoundation.org>
+        stable@vger.kernel.org, "Suwan Kim" <suwan.kim027@gmail.com>,
+        Shigeru Yoshida <syoshida@redhat.com>,
+        "Michael S. Tsirkin" <mst@redhat.com>
+Subject: [PATCH 5.19 080/365] virtio-blk: Avoid use-after-free on suspend/resume
+Date:   Tue, 23 Aug 2022 09:59:41 +0200
+Message-Id: <20220823080121.539401933@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220823080034.579196046@linuxfoundation.org>
-References: <20220823080034.579196046@linuxfoundation.org>
+In-Reply-To: <20220823080118.128342613@linuxfoundation.org>
+References: <20220823080118.128342613@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -48,148 +49,117 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Mikulas Patocka <mpatocka@redhat.com>
+From: Shigeru Yoshida <syoshida@redhat.com>
 
-commit d17f744e883b2f8d13cca252d71cfe8ace346f7d upstream.
+commit 8d12ec10292877751ee4463b11a63bd850bc09b5 upstream.
 
-There's a KASAN warning in raid10_remove_disk when running the lvm
-test lvconvert-raid-reshape.sh. We fix this warning by verifying that the
-value "number" is valid.
+hctx->user_data is set to vq in virtblk_init_hctx().  However, vq is
+freed on suspend and reallocated on resume.  So, hctx->user_data is
+invalid after resume, and it will cause use-after-free accessing which
+will result in the kernel crash something like below:
 
-BUG: KASAN: slab-out-of-bounds in raid10_remove_disk+0x61/0x2a0 [raid10]
-Read of size 8 at addr ffff889108f3d300 by task mdX_raid10/124682
+[   22.428391] Call Trace:
+[   22.428899]  <TASK>
+[   22.429339]  virtqueue_add_split+0x3eb/0x620
+[   22.430035]  ? __blk_mq_alloc_requests+0x17f/0x2d0
+[   22.430789]  ? kvm_clock_get_cycles+0x14/0x30
+[   22.431496]  virtqueue_add_sgs+0xad/0xd0
+[   22.432108]  virtblk_add_req+0xe8/0x150
+[   22.432692]  virtio_queue_rqs+0xeb/0x210
+[   22.433330]  blk_mq_flush_plug_list+0x1b8/0x280
+[   22.434059]  __blk_flush_plug+0xe1/0x140
+[   22.434853]  blk_finish_plug+0x20/0x40
+[   22.435512]  read_pages+0x20a/0x2e0
+[   22.436063]  ? folio_add_lru+0x62/0xa0
+[   22.436652]  page_cache_ra_unbounded+0x112/0x160
+[   22.437365]  filemap_get_pages+0xe1/0x5b0
+[   22.437964]  ? context_to_sid+0x70/0x100
+[   22.438580]  ? sidtab_context_to_sid+0x32/0x400
+[   22.439979]  filemap_read+0xcd/0x3d0
+[   22.440917]  xfs_file_buffered_read+0x4a/0xc0
+[   22.441984]  xfs_file_read_iter+0x65/0xd0
+[   22.442970]  __kernel_read+0x160/0x2e0
+[   22.443921]  bprm_execve+0x21b/0x640
+[   22.444809]  do_execveat_common.isra.0+0x1a8/0x220
+[   22.446008]  __x64_sys_execve+0x2d/0x40
+[   22.446920]  do_syscall_64+0x37/0x90
+[   22.447773]  entry_SYSCALL_64_after_hwframe+0x63/0xcd
 
-CPU: 3 PID: 124682 Comm: mdX_raid10 Not tainted 5.19.0-rc6 #1
-Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS 1.14.0-2 04/01/2014
-Call Trace:
- <TASK>
- dump_stack_lvl+0x34/0x44
- print_report.cold+0x45/0x57a
- ? __lock_text_start+0x18/0x18
- ? raid10_remove_disk+0x61/0x2a0 [raid10]
- kasan_report+0xa8/0xe0
- ? raid10_remove_disk+0x61/0x2a0 [raid10]
- raid10_remove_disk+0x61/0x2a0 [raid10]
-Buffer I/O error on dev dm-76, logical block 15344, async page read
- ? __mutex_unlock_slowpath.constprop.0+0x1e0/0x1e0
- remove_and_add_spares+0x367/0x8a0 [md_mod]
- ? super_written+0x1c0/0x1c0 [md_mod]
- ? mutex_trylock+0xac/0x120
- ? _raw_spin_lock+0x72/0xc0
- ? _raw_spin_lock_bh+0xc0/0xc0
- md_check_recovery+0x848/0x960 [md_mod]
- raid10d+0xcf/0x3360 [raid10]
- ? sched_clock_cpu+0x185/0x1a0
- ? rb_erase+0x4d4/0x620
- ? var_wake_function+0xe0/0xe0
- ? psi_group_change+0x411/0x500
- ? preempt_count_sub+0xf/0xc0
- ? _raw_spin_lock_irqsave+0x78/0xc0
- ? __lock_text_start+0x18/0x18
- ? raid10_sync_request+0x36c0/0x36c0 [raid10]
- ? preempt_count_sub+0xf/0xc0
- ? _raw_spin_unlock_irqrestore+0x19/0x40
- ? del_timer_sync+0xa9/0x100
- ? try_to_del_timer_sync+0xc0/0xc0
- ? _raw_spin_lock_irqsave+0x78/0xc0
- ? __lock_text_start+0x18/0x18
- ? _raw_spin_unlock_irq+0x11/0x24
- ? __list_del_entry_valid+0x68/0xa0
- ? finish_wait+0xa3/0x100
- md_thread+0x161/0x260 [md_mod]
- ? unregister_md_personality+0xa0/0xa0 [md_mod]
- ? _raw_spin_lock_irqsave+0x78/0xc0
- ? prepare_to_wait_event+0x2c0/0x2c0
- ? unregister_md_personality+0xa0/0xa0 [md_mod]
- kthread+0x148/0x180
- ? kthread_complete_and_exit+0x20/0x20
- ret_from_fork+0x1f/0x30
- </TASK>
+This patch fixes this issue by getting vq from vblk, and removes
+virtblk_init_hctx().
 
-Allocated by task 124495:
- kasan_save_stack+0x1e/0x40
- __kasan_kmalloc+0x80/0xa0
- setup_conf+0x140/0x5c0 [raid10]
- raid10_run+0x4cd/0x740 [raid10]
- md_run+0x6f9/0x1300 [md_mod]
- raid_ctr+0x2531/0x4ac0 [dm_raid]
- dm_table_add_target+0x2b0/0x620 [dm_mod]
- table_load+0x1c8/0x400 [dm_mod]
- ctl_ioctl+0x29e/0x560 [dm_mod]
- dm_compat_ctl_ioctl+0x7/0x20 [dm_mod]
- __do_compat_sys_ioctl+0xfa/0x160
- do_syscall_64+0x90/0xc0
- entry_SYSCALL_64_after_hwframe+0x46/0xb0
-
-Last potentially related work creation:
- kasan_save_stack+0x1e/0x40
- __kasan_record_aux_stack+0x9e/0xc0
- kvfree_call_rcu+0x84/0x480
- timerfd_release+0x82/0x140
-L __fput+0xfa/0x400
- task_work_run+0x80/0xc0
- exit_to_user_mode_prepare+0x155/0x160
- syscall_exit_to_user_mode+0x12/0x40
- do_syscall_64+0x42/0xc0
- entry_SYSCALL_64_after_hwframe+0x46/0xb0
-
-Second to last potentially related work creation:
- kasan_save_stack+0x1e/0x40
- __kasan_record_aux_stack+0x9e/0xc0
- kvfree_call_rcu+0x84/0x480
- timerfd_release+0x82/0x140
- __fput+0xfa/0x400
- task_work_run+0x80/0xc0
- exit_to_user_mode_prepare+0x155/0x160
- syscall_exit_to_user_mode+0x12/0x40
- do_syscall_64+0x42/0xc0
- entry_SYSCALL_64_after_hwframe+0x46/0xb0
-
-The buggy address belongs to the object at ffff889108f3d200
- which belongs to the cache kmalloc-256 of size 256
-The buggy address is located 0 bytes to the right of
- 256-byte region [ffff889108f3d200, ffff889108f3d300)
-
-The buggy address belongs to the physical page:
-page:000000007ef2a34c refcount:1 mapcount:0 mapping:0000000000000000 index:0x0 pfn:0x1108f3c
-head:000000007ef2a34c order:2 compound_mapcount:0 compound_pincount:0
-flags: 0x4000000000010200(slab|head|zone=2)
-raw: 4000000000010200 0000000000000000 dead000000000001 ffff889100042b40
-raw: 0000000000000000 0000000080200020 00000001ffffffff 0000000000000000
-page dumped because: kasan: bad access detected
-
-Memory state around the buggy address:
- ffff889108f3d200: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
- ffff889108f3d280: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
->ffff889108f3d300: fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc
-                   ^
- ffff889108f3d380: fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc
- ffff889108f3d400: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
-
-Signed-off-by: Mikulas Patocka <mpatocka@redhat.com>
-Cc: stable@vger.kernel.org
-Signed-off-by: Song Liu <song@kernel.org>
-Signed-off-by: Jens Axboe <axboe@kernel.dk>
+Fixes: 4e0400525691 ("virtio-blk: support polling I/O")
+Cc: "Suwan Kim" <suwan.kim027@gmail.com>
+Signed-off-by: Shigeru Yoshida <syoshida@redhat.com>
+Message-Id: <20220810160948.959781-1-syoshida@redhat.com>
+Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/md/raid10.c |    5 ++++-
- 1 file changed, 4 insertions(+), 1 deletion(-)
+ drivers/block/virtio_blk.c | 24 ++++++++++--------------
+ 1 file changed, 10 insertions(+), 14 deletions(-)
 
---- a/drivers/md/raid10.c
-+++ b/drivers/md/raid10.c
-@@ -1785,9 +1785,12 @@ static int raid10_remove_disk(struct mdd
- 	int err = 0;
- 	int number = rdev->raid_disk;
- 	struct md_rdev **rdevp;
--	struct raid10_info *p = conf->mirrors + number;
-+	struct raid10_info *p;
+diff --git a/drivers/block/virtio_blk.c b/drivers/block/virtio_blk.c
+index 6fc7850c2b0a..d756423e0059 100644
+--- a/drivers/block/virtio_blk.c
++++ b/drivers/block/virtio_blk.c
+@@ -101,6 +101,14 @@ static inline blk_status_t virtblk_result(struct virtblk_req *vbr)
+ 	}
+ }
  
- 	print_conf(conf);
-+	if (unlikely(number >= mddev->raid_disks))
-+		return 0;
-+	p = conf->mirrors + number;
- 	if (rdev == p->rdev)
- 		rdevp = &p->rdev;
- 	else if (rdev == p->replacement)
++static inline struct virtio_blk_vq *get_virtio_blk_vq(struct blk_mq_hw_ctx *hctx)
++{
++	struct virtio_blk *vblk = hctx->queue->queuedata;
++	struct virtio_blk_vq *vq = &vblk->vqs[hctx->queue_num];
++
++	return vq;
++}
++
+ static int virtblk_add_req(struct virtqueue *vq, struct virtblk_req *vbr)
+ {
+ 	struct scatterlist hdr, status, *sgs[3];
+@@ -416,7 +424,7 @@ static void virtio_queue_rqs(struct request **rqlist)
+ 	struct request *requeue_list = NULL;
+ 
+ 	rq_list_for_each_safe(rqlist, req, next) {
+-		struct virtio_blk_vq *vq = req->mq_hctx->driver_data;
++		struct virtio_blk_vq *vq = get_virtio_blk_vq(req->mq_hctx);
+ 		bool kick;
+ 
+ 		if (!virtblk_prep_rq_batch(req)) {
+@@ -837,7 +845,7 @@ static void virtblk_complete_batch(struct io_comp_batch *iob)
+ static int virtblk_poll(struct blk_mq_hw_ctx *hctx, struct io_comp_batch *iob)
+ {
+ 	struct virtio_blk *vblk = hctx->queue->queuedata;
+-	struct virtio_blk_vq *vq = hctx->driver_data;
++	struct virtio_blk_vq *vq = get_virtio_blk_vq(hctx);
+ 	struct virtblk_req *vbr;
+ 	unsigned long flags;
+ 	unsigned int len;
+@@ -862,22 +870,10 @@ static int virtblk_poll(struct blk_mq_hw_ctx *hctx, struct io_comp_batch *iob)
+ 	return found;
+ }
+ 
+-static int virtblk_init_hctx(struct blk_mq_hw_ctx *hctx, void *data,
+-			  unsigned int hctx_idx)
+-{
+-	struct virtio_blk *vblk = data;
+-	struct virtio_blk_vq *vq = &vblk->vqs[hctx_idx];
+-
+-	WARN_ON(vblk->tag_set.tags[hctx_idx] != hctx->tags);
+-	hctx->driver_data = vq;
+-	return 0;
+-}
+-
+ static const struct blk_mq_ops virtio_mq_ops = {
+ 	.queue_rq	= virtio_queue_rq,
+ 	.queue_rqs	= virtio_queue_rqs,
+ 	.commit_rqs	= virtio_commit_rqs,
+-	.init_hctx	= virtblk_init_hctx,
+ 	.complete	= virtblk_request_done,
+ 	.map_queues	= virtblk_map_queues,
+ 	.poll		= virtblk_poll,
+-- 
+2.37.2
+
 
 
