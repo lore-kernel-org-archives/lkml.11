@@ -2,42 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 99C86C32772
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 11:32:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BA9C8C38145
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 11:33:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243092AbiHWLcv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 07:32:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60078 "EHLO
+        id S244128AbiHWLdK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 23 Aug 2022 07:33:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38296 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1358184AbiHWL1a (ORCPT
+        with ESMTP id S1358213AbiHWL1d (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 07:27:30 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9A541C3F58;
-        Tue, 23 Aug 2022 02:25:11 -0700 (PDT)
+        Tue, 23 Aug 2022 07:27:33 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E2411C2F9E;
+        Tue, 23 Aug 2022 02:25:15 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 6006C61220;
-        Tue, 23 Aug 2022 09:25:10 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4F5CFC433D6;
-        Tue, 23 Aug 2022 09:25:09 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 55992B81C85;
+        Tue, 23 Aug 2022 09:25:14 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C072EC433C1;
+        Tue, 23 Aug 2022 09:25:12 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661246709;
-        bh=ayePQ4jSZQclIGH4CsY3QCuzA/aCfLhd204WTXX4Rq8=;
+        s=korg; t=1661246713;
+        bh=hzkemkVpECEz8P8+g1ZXBJ+D0VCbFxbSR+3zAHrHpjE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=wjt8ur2vRoajTBcTmVINt+zdgkWdR8eMWlfBmgkYhiMOUdgp9xL8zjvO/a6vbIzRb
-         uRQzT8HhwdpIdxK8S4K9MT5+pkywGu1Rioy/dKEUn1s2lC6jQrwt+wyAyLUs1ONCQP
-         vekVKTfnokIJmOuEj49h7IbMcaPLXag8nn7djZ0c=
+        b=uBdKoM8GbUiY8OsDozjNZwc2pUieKZwVmBaya/bb+rRXgxIelmEho/AKDaBZlAxBL
+         rZeLV/U8a0PjzkWEqMsdNCkpIdIMqAD1fqa6iG28NQ3JZCDHIPhB1aKLLYOweuaVD1
+         BIkAi1JsZfW+U0EVbPy8iliHGtOCWS7ANuNvSUu8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Vidya Sagar <vidyas@nvidia.com>,
-        Bjorn Helgaas <bhelgaas@google.com>,
+        stable@vger.kernel.org, Rex-BC Chen <rex-bc.chen@mediatek.com>,
+        Chen-Yu Tsai <wenst@chromium.org>,
+        AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>,
+        "=?UTF-8?q?N=C3=ADcolas=20F . =20R . =20A . =20Prado?=" 
+        <nfraprado@collabora.com>, Stephen Boyd <sboyd@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 193/389] PCI: tegra194: Fix link up retry sequence
-Date:   Tue, 23 Aug 2022 10:24:31 +0200
-Message-Id: <20220823080123.689370273@linuxfoundation.org>
+Subject: [PATCH 5.4 165/389] clk: mediatek: reset: Fix written reset bit offset
+Date:   Tue, 23 Aug 2022 10:24:03 +0200
+Message-Id: <20220823080122.517733269@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220823080115.331990024@linuxfoundation.org>
 References: <20220823080115.331990024@linuxfoundation.org>
@@ -49,35 +53,51 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Vidya Sagar <vidyas@nvidia.com>
+From: Rex-BC Chen <rex-bc.chen@mediatek.com>
 
-[ Upstream commit e05fd6ae77c3e2cc0dba283005d24b6d56d2b1fa ]
+[ Upstream commit edabcf71d100fd433a0fc2d0c97057c446c33b2a ]
 
-Add the missing DLF capability offset while clearing DL_FEATURE_EXCHANGE_EN
-bit during link up retry.
+Original assert/deassert bit is BIT(0), but it's more resonable to modify
+them to BIT(id % 32) which is based on id.
 
-Link: https://lore.kernel.org/r/20220721142052.25971-15-vidyas@nvidia.com
-Fixes: 56e15a238d92 ("PCI: tegra: Add Tegra194 PCIe support")
-Signed-off-by: Vidya Sagar <vidyas@nvidia.com>
-Signed-off-by: Bjorn Helgaas <bhelgaas@google.com>
+This patch will not influence any previous driver because the reset is
+only used for thermal. The id (MT8183_INFRACFG_AO_THERM_SW_RST) is 0.
+
+Fixes: 64ebb57a3df6 ("clk: reset: Modify reset-controller driver")
+Signed-off-by: Rex-BC Chen <rex-bc.chen@mediatek.com>
+Reviewed-by: Chen-Yu Tsai <wenst@chromium.org>
+Reviewed-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
+Reviewed-by: Nícolas F. R. A. Prado <nfraprado@collabora.com>
+Tested-by: Nícolas F. R. A. Prado <nfraprado@collabora.com>
+Link: https://lore.kernel.org/r/20220523093346.28493-3-rex-bc.chen@mediatek.com
+Signed-off-by: Stephen Boyd <sboyd@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/pci/controller/dwc/pcie-tegra194.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/clk/mediatek/reset.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/pci/controller/dwc/pcie-tegra194.c b/drivers/pci/controller/dwc/pcie-tegra194.c
-index c7ac61a6080b..120d64c1a27f 100644
---- a/drivers/pci/controller/dwc/pcie-tegra194.c
-+++ b/drivers/pci/controller/dwc/pcie-tegra194.c
-@@ -854,7 +854,7 @@ static int tegra_pcie_dw_host_init(struct pcie_port *pp)
- 		offset = dw_pcie_find_ext_capability(pci, PCI_EXT_CAP_ID_DLF);
- 		val = dw_pcie_readl_dbi(pci, offset + PCI_DLF_CAP);
- 		val &= ~PCI_DLF_EXCHANGE_ENABLE;
--		dw_pcie_writel_dbi(pci, offset, val);
-+		dw_pcie_writel_dbi(pci, offset + PCI_DLF_CAP, val);
+diff --git a/drivers/clk/mediatek/reset.c b/drivers/clk/mediatek/reset.c
+index cb939c071b0c..89916acf0bc3 100644
+--- a/drivers/clk/mediatek/reset.c
++++ b/drivers/clk/mediatek/reset.c
+@@ -25,7 +25,7 @@ static int mtk_reset_assert_set_clr(struct reset_controller_dev *rcdev,
+ 	struct mtk_reset *data = container_of(rcdev, struct mtk_reset, rcdev);
+ 	unsigned int reg = data->regofs + ((id / 32) << 4);
  
- 		tegra_pcie_prepare_host(pp);
+-	return regmap_write(data->regmap, reg, 1);
++	return regmap_write(data->regmap, reg, BIT(id % 32));
+ }
  
+ static int mtk_reset_deassert_set_clr(struct reset_controller_dev *rcdev,
+@@ -34,7 +34,7 @@ static int mtk_reset_deassert_set_clr(struct reset_controller_dev *rcdev,
+ 	struct mtk_reset *data = container_of(rcdev, struct mtk_reset, rcdev);
+ 	unsigned int reg = data->regofs + ((id / 32) << 4) + 0x4;
+ 
+-	return regmap_write(data->regmap, reg, 1);
++	return regmap_write(data->regmap, reg, BIT(id % 32));
+ }
+ 
+ static int mtk_reset_assert(struct reset_controller_dev *rcdev,
 -- 
 2.35.1
 
