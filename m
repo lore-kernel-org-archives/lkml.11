@@ -2,44 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 748D2C49EC1
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 666FEC49EC2
 	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 10:57:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357012AbiHWK4P (ORCPT
+        id S1356993AbiHWK4K (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 06:56:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40984 "EHLO
+        Tue, 23 Aug 2022 06:56:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48196 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356545AbiHWKvK (ORCPT
+        with ESMTP id S1356450AbiHWKu7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 06:51:10 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 81410AB4CE;
-        Tue, 23 Aug 2022 02:12:44 -0700 (PDT)
+        Tue, 23 Aug 2022 06:50:59 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D4EFFAB411;
+        Tue, 23 Aug 2022 02:12:40 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id C1FAA60DB4;
-        Tue, 23 Aug 2022 09:12:43 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id AEBD5C433D7;
-        Tue, 23 Aug 2022 09:12:42 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 84C68B81C88;
+        Tue, 23 Aug 2022 09:12:38 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DA1EBC43470;
+        Tue, 23 Aug 2022 09:12:36 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661245963;
-        bh=QXVVy9ogRtOgoitRqY+eqdk8CN1f2+haTzgyHkGY9K0=;
+        s=korg; t=1661245957;
+        bh=KmaxZbWHbtrI6VeJN4xSAOMqmrdlNFMvMpdQi0jXiKc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=P2XM2iWHJzScaDvkMeZmuyQC0E5xoI89lHLHNJ6KVrm7Zoldkib2nhLvcZ978lLUa
-         gMI+/135XX+6vegSGoySd7iEJ0RhKtSkB7epF1rNqGn8vSiTfjxT/173o2PVgJoQ0Q
-         DZ5U0xvsZj8Wsspo0H4QxLrKM252n4SYhujV4JfM=
+        b=ICCKQgnxONfJhkFS9NvIDAKNrOHV/eVodQGvJsFkZdA6LlCpBYYJX2/h0KRs6y/d/
+         bUdbp6qFc2JwDL6E7k+i9EuIIGol4BvUnhjVQFLdu8Gb/Fsn66Y7kmkHWySN+M07B6
+         2F4Y2qfAqXObeDlYT6yii53+HQZVPcV953yGPMlc=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Stefano Garzarella <sgarzare@redhat.com>,
-        Peilin Ye <peilin.ye@bytedance.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        syzbot+b03f55bf128f9a38f064@syzkaller.appspotmail.com
-Subject: [PATCH 4.19 238/287] vsock: Fix memory leak in vsock_connect()
-Date:   Tue, 23 Aug 2022 10:26:47 +0200
-Message-Id: <20220823080109.079929857@linuxfoundation.org>
+        stable@vger.kernel.org, huhai <huhai@kylinos.cn>,
+        Jackie Liu <liuyun01@kylinos.cn>,
+        Sudeep Holla <sudeep.holla@arm.com>
+Subject: [PATCH 4.19 212/287] firmware: arm_scpi: Ensure scpi_info is not assigned if the probe fails
+Date:   Tue, 23 Aug 2022 10:26:21 +0200
+Message-Id: <20220823080108.079029700@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220823080100.268827165@linuxfoundation.org>
 References: <20220823080100.268827165@linuxfoundation.org>
@@ -51,83 +50,154 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Peilin Ye <peilin.ye@bytedance.com>
+From: Sudeep Holla <sudeep.holla@arm.com>
 
-commit 7e97cfed9929eaabc41829c395eb0d1350fccb9d upstream.
+commit 689640efc0a2c4e07e6f88affe6d42cd40cc3f85 upstream.
 
-An O_NONBLOCK vsock_connect() request may try to reschedule
-@connect_work.  Imagine the following sequence of vsock_connect()
-requests:
+When scpi probe fails, at any point, we need to ensure that the scpi_info
+is not set and will remain NULL until the probe succeeds. If it is not
+taken care, then it could result use-after-free as the value is exported
+via get_scpi_ops() and could refer to a memory allocated via devm_kzalloc()
+but freed when the probe fails.
 
-  1. The 1st, non-blocking request schedules @connect_work, which will
-     expire after 200 jiffies.  Socket state is now SS_CONNECTING;
-
-  2. Later, the 2nd, blocking request gets interrupted by a signal after
-     a few jiffies while waiting for the connection to be established.
-     Socket state is back to SS_UNCONNECTED, but @connect_work is still
-     pending, and will expire after 100 jiffies.
-
-  3. Now, the 3rd, non-blocking request tries to schedule @connect_work
-     again.  Since @connect_work is already scheduled,
-     schedule_delayed_work() silently returns.  sock_hold() is called
-     twice, but sock_put() will only be called once in
-     vsock_connect_timeout(), causing a memory leak reported by syzbot:
-
-  BUG: memory leak
-  unreferenced object 0xffff88810ea56a40 (size 1232):
-    comm "syz-executor756", pid 3604, jiffies 4294947681 (age 12.350s)
-    hex dump (first 32 bytes):
-      00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
-      28 00 07 40 00 00 00 00 00 00 00 00 00 00 00 00  (..@............
-    backtrace:
-      [<ffffffff837c830e>] sk_prot_alloc+0x3e/0x1b0 net/core/sock.c:1930
-      [<ffffffff837cbe22>] sk_alloc+0x32/0x2e0 net/core/sock.c:1989
-      [<ffffffff842ccf68>] __vsock_create.constprop.0+0x38/0x320 net/vmw_vsock/af_vsock.c:734
-      [<ffffffff842ce8f1>] vsock_create+0xc1/0x2d0 net/vmw_vsock/af_vsock.c:2203
-      [<ffffffff837c0cbb>] __sock_create+0x1ab/0x2b0 net/socket.c:1468
-      [<ffffffff837c3acf>] sock_create net/socket.c:1519 [inline]
-      [<ffffffff837c3acf>] __sys_socket+0x6f/0x140 net/socket.c:1561
-      [<ffffffff837c3bba>] __do_sys_socket net/socket.c:1570 [inline]
-      [<ffffffff837c3bba>] __se_sys_socket net/socket.c:1568 [inline]
-      [<ffffffff837c3bba>] __x64_sys_socket+0x1a/0x20 net/socket.c:1568
-      [<ffffffff84512815>] do_syscall_x64 arch/x86/entry/common.c:50 [inline]
-      [<ffffffff84512815>] do_syscall_64+0x35/0x80 arch/x86/entry/common.c:80
-      [<ffffffff84600068>] entry_SYSCALL_64_after_hwframe+0x44/0xae
-  <...>
-
-Use mod_delayed_work() instead: if @connect_work is already scheduled,
-reschedule it, and undo sock_hold() to keep the reference count
-balanced.
-
-Reported-and-tested-by: syzbot+b03f55bf128f9a38f064@syzkaller.appspotmail.com
-Fixes: d021c344051a ("VSOCK: Introduce VM Sockets")
-Co-developed-by: Stefano Garzarella <sgarzare@redhat.com>
-Signed-off-by: Stefano Garzarella <sgarzare@redhat.com>
-Reviewed-by: Stefano Garzarella <sgarzare@redhat.com>
-Signed-off-by: Peilin Ye <peilin.ye@bytedance.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+Link: https://lore.kernel.org/r/20220701160310.148344-1-sudeep.holla@arm.com
+Cc: stable@vger.kernel.org # 4.19+
+Reported-by: huhai <huhai@kylinos.cn>
+Reviewed-by: Jackie Liu <liuyun01@kylinos.cn>
+Signed-off-by: Sudeep Holla <sudeep.holla@arm.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- net/vmw_vsock/af_vsock.c |    9 ++++++++-
- 1 file changed, 8 insertions(+), 1 deletion(-)
+ drivers/firmware/arm_scpi.c |   61 +++++++++++++++++++++++++-------------------
+ 1 file changed, 35 insertions(+), 26 deletions(-)
 
---- a/net/vmw_vsock/af_vsock.c
-+++ b/net/vmw_vsock/af_vsock.c
-@@ -1215,7 +1215,14 @@ static int vsock_stream_connect(struct s
- 			 * timeout fires.
- 			 */
- 			sock_hold(sk);
--			schedule_delayed_work(&vsk->connect_work, timeout);
-+
-+			/* If the timeout function is already scheduled,
-+			 * reschedule it, then ungrab the socket refcount to
-+			 * keep it balanced.
-+			 */
-+			if (mod_delayed_work(system_wq, &vsk->connect_work,
-+					     timeout))
-+				sock_put(sk);
+--- a/drivers/firmware/arm_scpi.c
++++ b/drivers/firmware/arm_scpi.c
+@@ -826,7 +826,7 @@ static int scpi_init_versions(struct scp
+ 		info->firmware_version = le32_to_cpu(caps.platform_version);
+ 	}
+ 	/* Ignore error if not implemented */
+-	if (scpi_info->is_legacy && ret == -EOPNOTSUPP)
++	if (info->is_legacy && ret == -EOPNOTSUPP)
+ 		return 0;
  
- 			/* Skip ahead to preserve error code set above. */
- 			goto out_wait;
+ 	return ret;
+@@ -916,13 +916,14 @@ static int scpi_probe(struct platform_de
+ 	struct resource res;
+ 	struct device *dev = &pdev->dev;
+ 	struct device_node *np = dev->of_node;
++	struct scpi_drvinfo *scpi_drvinfo;
+ 
+-	scpi_info = devm_kzalloc(dev, sizeof(*scpi_info), GFP_KERNEL);
+-	if (!scpi_info)
++	scpi_drvinfo = devm_kzalloc(dev, sizeof(*scpi_drvinfo), GFP_KERNEL);
++	if (!scpi_drvinfo)
+ 		return -ENOMEM;
+ 
+ 	if (of_match_device(legacy_scpi_of_match, &pdev->dev))
+-		scpi_info->is_legacy = true;
++		scpi_drvinfo->is_legacy = true;
+ 
+ 	count = of_count_phandle_with_args(np, "mboxes", "#mbox-cells");
+ 	if (count < 0) {
+@@ -930,19 +931,19 @@ static int scpi_probe(struct platform_de
+ 		return -ENODEV;
+ 	}
+ 
+-	scpi_info->channels = devm_kcalloc(dev, count, sizeof(struct scpi_chan),
+-					   GFP_KERNEL);
+-	if (!scpi_info->channels)
++	scpi_drvinfo->channels =
++		devm_kcalloc(dev, count, sizeof(struct scpi_chan), GFP_KERNEL);
++	if (!scpi_drvinfo->channels)
+ 		return -ENOMEM;
+ 
+-	ret = devm_add_action(dev, scpi_free_channels, scpi_info);
++	ret = devm_add_action(dev, scpi_free_channels, scpi_drvinfo);
+ 	if (ret)
+ 		return ret;
+ 
+-	for (; scpi_info->num_chans < count; scpi_info->num_chans++) {
++	for (; scpi_drvinfo->num_chans < count; scpi_drvinfo->num_chans++) {
+ 		resource_size_t size;
+-		int idx = scpi_info->num_chans;
+-		struct scpi_chan *pchan = scpi_info->channels + idx;
++		int idx = scpi_drvinfo->num_chans;
++		struct scpi_chan *pchan = scpi_drvinfo->channels + idx;
+ 		struct mbox_client *cl = &pchan->cl;
+ 		struct device_node *shmem = of_parse_phandle(np, "shmem", idx);
+ 
+@@ -986,49 +987,57 @@ static int scpi_probe(struct platform_de
+ 		return ret;
+ 	}
+ 
+-	scpi_info->commands = scpi_std_commands;
++	scpi_drvinfo->commands = scpi_std_commands;
+ 
+-	platform_set_drvdata(pdev, scpi_info);
++	platform_set_drvdata(pdev, scpi_drvinfo);
+ 
+-	if (scpi_info->is_legacy) {
++	if (scpi_drvinfo->is_legacy) {
+ 		/* Replace with legacy variants */
+ 		scpi_ops.clk_set_val = legacy_scpi_clk_set_val;
+-		scpi_info->commands = scpi_legacy_commands;
++		scpi_drvinfo->commands = scpi_legacy_commands;
+ 
+ 		/* Fill priority bitmap */
+ 		for (idx = 0; idx < ARRAY_SIZE(legacy_hpriority_cmds); idx++)
+ 			set_bit(legacy_hpriority_cmds[idx],
+-				scpi_info->cmd_priority);
++				scpi_drvinfo->cmd_priority);
+ 	}
+ 
+-	ret = scpi_init_versions(scpi_info);
++	scpi_info = scpi_drvinfo;
++
++	ret = scpi_init_versions(scpi_drvinfo);
+ 	if (ret) {
+ 		dev_err(dev, "incorrect or no SCP firmware found\n");
++		scpi_info = NULL;
+ 		return ret;
+ 	}
+ 
+-	if (scpi_info->is_legacy && !scpi_info->protocol_version &&
+-	    !scpi_info->firmware_version)
++	if (scpi_drvinfo->is_legacy && !scpi_drvinfo->protocol_version &&
++	    !scpi_drvinfo->firmware_version)
+ 		dev_info(dev, "SCP Protocol legacy pre-1.0 firmware\n");
+ 	else
+ 		dev_info(dev, "SCP Protocol %lu.%lu Firmware %lu.%lu.%lu version\n",
+ 			 FIELD_GET(PROTO_REV_MAJOR_MASK,
+-				   scpi_info->protocol_version),
++				   scpi_drvinfo->protocol_version),
+ 			 FIELD_GET(PROTO_REV_MINOR_MASK,
+-				   scpi_info->protocol_version),
++				   scpi_drvinfo->protocol_version),
+ 			 FIELD_GET(FW_REV_MAJOR_MASK,
+-				   scpi_info->firmware_version),
++				   scpi_drvinfo->firmware_version),
+ 			 FIELD_GET(FW_REV_MINOR_MASK,
+-				   scpi_info->firmware_version),
++				   scpi_drvinfo->firmware_version),
+ 			 FIELD_GET(FW_REV_PATCH_MASK,
+-				   scpi_info->firmware_version));
+-	scpi_info->scpi_ops = &scpi_ops;
++				   scpi_drvinfo->firmware_version));
+ 
+ 	ret = devm_device_add_groups(dev, versions_groups);
+ 	if (ret)
+ 		dev_err(dev, "unable to create sysfs version group\n");
+ 
+-	return devm_of_platform_populate(dev);
++	scpi_drvinfo->scpi_ops = &scpi_ops;
++
++	ret = devm_of_platform_populate(dev);
++	if (ret)
++		scpi_info = NULL;
++
++	return ret;
+ }
+ 
+ static const struct of_device_id scpi_of_match[] = {
 
 
