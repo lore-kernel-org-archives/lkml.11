@@ -2,43 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 44FD3C32772
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 10:53:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3A739C32772
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 10:53:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356125AbiHWKxg (ORCPT
+        id S1356154AbiHWKxo (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 06:53:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56542 "EHLO
+        Tue, 23 Aug 2022 06:53:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34048 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355885AbiHWKp2 (ORCPT
+        with ESMTP id S1355907AbiHWKpi (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 06:45:28 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BC6696CD3D;
-        Tue, 23 Aug 2022 02:11:20 -0700 (PDT)
+        Tue, 23 Aug 2022 06:45:38 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3A4F56CF45;
+        Tue, 23 Aug 2022 02:11:25 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 3A6E7B81C35;
-        Tue, 23 Aug 2022 09:11:19 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6699BC433C1;
-        Tue, 23 Aug 2022 09:11:17 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id C714260DB4;
+        Tue, 23 Aug 2022 09:11:24 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BB8DBC433D7;
+        Tue, 23 Aug 2022 09:11:23 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661245877;
-        bh=h1jkUpnziud4k0faG/n89NzZ4EPIruthGTUed7lsyA4=;
+        s=korg; t=1661245884;
+        bh=Sre9OUNT1C+sApeMd7ViCEj8XBfVPEfA34NRRnDMWGU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=hOJbQh2bfjCNhnNXg/aBp8M6I63wdLAEJwXzLp1/CByHc/CYsNSuC0CldJwBgMTRw
-         PM1P0KAz8TKFtCxuVCLJYh/f/zjN8tJrebSCrGIW+Biusms/rDP8suJXn3IZ3/uNTD
-         ixtkv5lxH5T8LQ6/YiryAwXtue/WNdxzRg4vtyNs=
+        b=aT+UaxF6VTs9YJqCsvpMlcFlbhepuDwTg9d6GHIiCyYZnwbK/zh6h6QgwxDls0Hdk
+         pgCiy1/z+Wk9WEZ7z6cdmrphxXzECDqn+hJEWpFl34jdBIQt9iIEGf2qOD6N5QYAMW
+         7/P6FZP9QCuK7d1wPVp82QSMvPsr9zSKKXo28uUU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
-        Ulf Hansson <ulf.hansson@linaro.org>
-Subject: [PATCH 4.19 219/287] mmc: pxamci: Fix an error handling path in pxamci_probe()
-Date:   Tue, 23 Aug 2022 10:26:28 +0200
-Message-Id: <20220823080108.337613461@linuxfoundation.org>
+        stable@vger.kernel.org, Ingo Molnar <mingo@kernel.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Tzvetomir Stoyanov <tz.stoyanov@gmail.com>,
+        Tom Zanussi <zanussi@kernel.org>,
+        "Masami Hiramatsu (Google)" <mhiramat@kernel.org>,
+        "Steven Rostedt (Google)" <rostedt@goodmis.org>
+Subject: [PATCH 4.19 221/287] tracing: Have filter accept "common_cpu" to be consistent
+Date:   Tue, 23 Aug 2022 10:26:30 +0200
+Message-Id: <20220823080108.418975031@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220823080100.268827165@linuxfoundation.org>
 References: <20220823080100.268827165@linuxfoundation.org>
@@ -50,35 +53,40 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+From: Steven Rostedt (Google) <rostedt@goodmis.org>
 
-commit 98d7c5e5792b8ce3e1352196dac7f404bb1b46ec upstream.
+commit b2380577d4fe1c0ef3fa50417f1e441c016e4cbe upstream.
 
-The commit in Fixes: has moved some code around without updating gotos to
-the error handling path.
+Make filtering consistent with histograms. As "cpu" can be a field of an
+event, allow for "common_cpu" to keep it from being confused with the
+"cpu" field of the event.
 
-Update it now and release some resources if pxamci_of_init() fails.
+Link: https://lkml.kernel.org/r/20220820134401.513062765@goodmis.org
+Link: https://lore.kernel.org/all/20220820220920.e42fa32b70505b1904f0a0ad@kernel.org/
 
-Fixes: fa3a5115469c ("mmc: pxamci: call mmc_of_parse()")
-Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
 Cc: stable@vger.kernel.org
-Link: https://lore.kernel.org/r/6d75855ad4e2470e9ed99e0df21bc30f0c925a29.1658862932.git.christophe.jaillet@wanadoo.fr
-Signed-off-by: Ulf Hansson <ulf.hansson@linaro.org>
+Cc: Ingo Molnar <mingo@kernel.org>
+Cc: Andrew Morton <akpm@linux-foundation.org>
+Cc: Tzvetomir Stoyanov <tz.stoyanov@gmail.com>
+Cc: Tom Zanussi <zanussi@kernel.org>
+Fixes: 1e3bac71c5053 ("tracing/histogram: Rename "cpu" to "common_cpu"")
+Suggested-by: Masami Hiramatsu (Google) <mhiramat@kernel.org>
+Acked-by: Masami Hiramatsu (Google) <mhiramat@kernel.org>
+Signed-off-by: Steven Rostedt (Google) <rostedt@goodmis.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/mmc/host/pxamci.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ kernel/trace/trace_events.c |    1 +
+ 1 file changed, 1 insertion(+)
 
---- a/drivers/mmc/host/pxamci.c
-+++ b/drivers/mmc/host/pxamci.c
-@@ -653,7 +653,7 @@ static int pxamci_probe(struct platform_
+--- a/kernel/trace/trace_events.c
++++ b/kernel/trace/trace_events.c
+@@ -173,6 +173,7 @@ static int trace_define_generic_fields(v
  
- 	ret = pxamci_of_init(pdev, mmc);
- 	if (ret)
--		return ret;
-+		goto out;
+ 	__generic_field(int, CPU, FILTER_CPU);
+ 	__generic_field(int, cpu, FILTER_CPU);
++	__generic_field(int, common_cpu, FILTER_CPU);
+ 	__generic_field(char *, COMM, FILTER_COMM);
+ 	__generic_field(char *, comm, FILTER_COMM);
  
- 	host = mmc_priv(mmc);
- 	host->mmc = mmc;
 
 
