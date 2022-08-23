@@ -2,88 +2,89 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8DA97C32772
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 19:47:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3C6F9C32772
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 19:47:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231235AbiHWTrA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 15:47:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54114 "EHLO
+        id S230345AbiHWTrF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 23 Aug 2022 15:47:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56778 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232565AbiHWTqb (ORCPT
+        with ESMTP id S233500AbiHWTqd (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 15:46:31 -0400
-Received: from mail-ej1-x62f.google.com (mail-ej1-x62f.google.com [IPv6:2a00:1450:4864:20::62f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 38055D11EB
-        for <linux-kernel@vger.kernel.org>; Tue, 23 Aug 2022 11:50:00 -0700 (PDT)
-Received: by mail-ej1-x62f.google.com with SMTP id ca13so17951670ejb.9
-        for <linux-kernel@vger.kernel.org>; Tue, 23 Aug 2022 11:50:00 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc;
-        bh=HDcgc6OUnOjUxJicIucPyi00x/uE2rgP4ZhCVYRaya4=;
-        b=M0bosexAr3X3AiHofQY+LmL8o8KKKyNRORbRR8NilxIGrpdmbAuxD2Hcn7YayVkhx/
-         QertnlrES63fY0UiaEbLZ7m0m0AeMvSKsZkIL4trc82xFRdGTPhfCJnBxyXVEwmxosEl
-         J8HwQNWi5dkfzQpSt+/jb7iRHkN5P1TR1ObjOZGOIIxG+17Y2iYKj46oOjDyCIcPGGXx
-         ILrJNXYEmcym1uQe6bo2QY0LCAl2A12J4I4Z5Od7Q0lvhZNNSaIj1tK8E7q8ZAzwVqhl
-         UGZVl9MaALuO6jpWAHf5vQjS277ysNU77epuiu/BRvt15CO9FhsD225GmNb6h7OWaeIY
-         InHA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc;
-        bh=HDcgc6OUnOjUxJicIucPyi00x/uE2rgP4ZhCVYRaya4=;
-        b=J4bN+8ZDsPsyODSjZ6jFg0ssTpb6riQZ1ar7LuW6lPkkPck29vKApmmRBkOaYIk+FD
-         X3+c+HRIhGH14sKYY616cSDPaHjfmYF0DqAKU84UiZFBaLndoetv6h/ClejULeYpjz0o
-         ny4Q6vOewc3Kt4FTWxUr6smR0ctjUOMeB8QpIQl+pqoYyIuHT2DTnrsemCTYwIWg+Z3A
-         uHWqBdsmxLbM+nY/sLUpwOKPlIuo3cET5kz6F4/KV9p6DoW5mwvR4iEymMkoNDtTKEwI
-         FMt376W9bgXCTF2EQk9/4wzvcHrXnstdlF2KgZN7f23yCtLqvYYv2D3SkFWyHigRgvsD
-         53MQ==
-X-Gm-Message-State: ACgBeo34ZyDQj++6z68CLX52hgQz264o7jrdFp2/RrvqexWUfMNFmE58
-        bgRFCckXXyXnCWqpRc5SnNg=
-X-Google-Smtp-Source: AA6agR4HaGfkUpd1Cc36ZFyz+klvn03thzdj46FVcP5CY8SKUIFENtJMFrG1bShE3q+ZnskLjkQZVQ==
-X-Received: by 2002:a17:906:3bd2:b0:731:3f03:1697 with SMTP id v18-20020a1709063bd200b007313f031697mr607759ejf.289.1661280598764;
-        Tue, 23 Aug 2022 11:49:58 -0700 (PDT)
-Received: from [192.168.1.100] (p54a07b82.dip0.t-ipconnect.de. [84.160.123.130])
-        by smtp.gmail.com with ESMTPSA id s15-20020aa7c54f000000b0044733adf4e9sm802097edr.12.2022.08.23.11.49.57
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 23 Aug 2022 11:49:58 -0700 (PDT)
-Message-ID: <91772e44-856d-cdee-e685-ff2ba4523c2e@gmail.com>
-Date:   Tue, 23 Aug 2022 20:49:56 +0200
+        Tue, 23 Aug 2022 15:46:33 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 79E7DD2770
+        for <linux-kernel@vger.kernel.org>; Tue, 23 Aug 2022 11:50:03 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 1077F61711
+        for <linux-kernel@vger.kernel.org>; Tue, 23 Aug 2022 18:50:03 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4EA23C433D7;
+        Tue, 23 Aug 2022 18:50:00 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1661280602;
+        bh=fNT/ML6CsNqu6evXVhQ1GENE4bqQBehy5fIvG9sMLLI=;
+        h=From:To:Cc:In-Reply-To:References:Subject:Date:From;
+        b=vAcy88Zbsbm73QG9RIBN7kLheKv9zuhvbQlRaY7AIi5FEIXCshoGeECGld6vuQkAY
+         JmT92EdCP5kYMFzPBE/2Bekz1REZJwBuLdTvusoJJv1wRln5cQkXR3wC2NgwKXBx1D
+         pyFyPB8IDBVWU8XRQKXBcD+pbHW+As9qsWwsyQEEfpWW/LqfnbZQVCMaJ/DeU1c6Pt
+         yfhCKb250jG3LHHYURi4HiQU+Wkg3CWVFs4mtAnPCgjD/TGnKpQJNtmtDEZuDv0Zzh
+         ddKlSjcQV8wjpaWD/td+90Vxa3CZuJ9bdtvwrPl0II4b0CMojmeMfWPTvm5pM0RW+t
+         TJnFTafdyU06w==
+From:   Mark Brown <broonie@kernel.org>
+To:     tiwai@suse.com, shengjiu.wang@gmail.com, lgirdwood@gmail.com,
+        Xiubo.Lee@gmail.com, perex@perex.cz, alsa-devel@alsa-project.org,
+        Shengjiu Wang <shengjiu.wang@nxp.com>, nicoleotsuka@gmail.com,
+        festevam@gmail.com
+Cc:     linuxppc-dev@lists.ozlabs.org, linux-kernel@vger.kernel.org
+In-Reply-To: <1661218573-2154-1-git-send-email-shengjiu.wang@nxp.com>
+References: <1661218573-2154-1-git-send-email-shengjiu.wang@nxp.com>
+Subject: Re: [RESEND PATCH] ASoC: fsl_sai: Add support multi fifo sdma script
+Message-Id: <166128060004.1031684.56373454264278530.b4-ty@kernel.org>
+Date:   Tue, 23 Aug 2022 19:50:00 +0100
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.11.0
-Subject: Re: [PATCH 0/3] staging: r8188eu: start cleaning up led blinking
-Content-Language: en-US
-To:     Martin Kaiser <martin@kaiser.cx>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc:     Larry Finger <Larry.Finger@lwfinger.net>,
-        Phillip Potter <phil@philpotter.co.uk>,
-        Michael Straube <straube.linux@gmail.com>,
-        Pavel Skripkin <paskripkin@gmail.com>,
-        linux-staging@lists.linux.dev, linux-kernel@vger.kernel.org
-References: <20220822201329.95559-1-martin@kaiser.cx>
-From:   Philipp Hortmann <philipp.g.hortmann@gmail.com>
-In-Reply-To: <20220822201329.95559-1-martin@kaiser.cx>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+X-Mailer: b4 0.10.0-dev-0c1df
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 8/22/22 22:13, Martin Kaiser wrote:
-> The code for led blinking contains too many states and state variables.
-> This series is a first tiny step towards cleaning things up.
+On Tue, 23 Aug 2022 09:36:13 +0800, Shengjiu Wang wrote:
+> With disabling combine mode, the multiple successive
+> FIFO registers or non successive FIFO registers of SAI module
+> can work with the sdma multi fifo script.
 > 
-> Martin Kaiser (3):
->    staging: r8188eu: don't restart "no link" blinking unnecessarily
->    staging: r8188eu: always cancel blink_work
->    staging: r8188eu: always update the status variables
+> This patch is to configure the necessary information to
+> the SDMA engine driver for support multi fifo script.
 > 
->   drivers/staging/r8188eu/core/rtw_led.c | 36 ++++++++++++--------------
->   1 file changed, 17 insertions(+), 19 deletions(-)
-> 
+> [...]
 
-Tested-by: Philipp Hortmann <philipp.g.hortmann@gmail.com> # Edimax N150
+Applied to
+
+   https://git.kernel.org/pub/scm/linux/kernel/git/broonie/sound.git for-next
+
+Thanks!
+
+[1/1] ASoC: fsl_sai: Add support multi fifo sdma script
+      commit: 88630575406fdf2a7853545a884484bd55dab8a0
+
+All being well this means that it will be integrated into the linux-next
+tree (usually sometime in the next 24 hours) and sent to Linus during
+the next merge window (or sooner if it is a bug fix), however if
+problems are discovered then the patch may be dropped or reverted.
+
+You may get further e-mails resulting from automated or manual testing
+and review of the tree, please engage with people reporting problems and
+send followup patches addressing any issues that are reported if needed.
+
+If any updates are required or you are submitting further changes they
+should be sent as incremental updates against current git, existing
+patches will not be replaced.
+
+Please add any relevant lists and maintainers to the CCs when replying
+to this mail.
+
+Thanks,
+Mark
