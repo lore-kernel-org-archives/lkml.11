@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 873E3C32772
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 09:24:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EA392C32772
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 09:24:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349679AbiHWJX6 (ORCPT
+        id S1349684AbiHWJYE (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 05:23:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39680 "EHLO
+        Tue, 23 Aug 2022 05:24:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37530 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350382AbiHWJVo (ORCPT
+        with ESMTP id S1348714AbiHWJUM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 05:21:44 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7161C8C447;
-        Tue, 23 Aug 2022 01:34:52 -0700 (PDT)
+        Tue, 23 Aug 2022 05:20:12 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D970E89833;
+        Tue, 23 Aug 2022 01:33:55 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 62292614E7;
-        Tue, 23 Aug 2022 08:34:42 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 693F8C433C1;
-        Tue, 23 Aug 2022 08:34:41 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id F243ACE1B45;
+        Tue, 23 Aug 2022 08:33:00 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 106CCC433D6;
+        Tue, 23 Aug 2022 08:32:58 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661243681;
-        bh=X/ZLYxxDnih0e0paGcYJ4tSJ7KVpOyF0ATP2RLTK/q4=;
+        s=korg; t=1661243579;
+        bh=c0oQWHbTvcNHrAYGEU4I81+4AJyeLsiRKKSH4gPd8po=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=v6Q6TFrjHMPXMshqefjPLyV50Qj/doAKlFhsBcw+/Rz3OVDzw6P4YUfEoG6h499cy
-         rDRozcjLSZGPmP8Iz71KXrCpuMjQGrCi0BsetXhqfnLYX5yHVYMKcSe0SVEUHX91oo
-         8Ovhb35YouvM7hD9vYI0n2hUbvtfOHV55RSpEl94=
+        b=Pwm3beKzPBY91yiuM+A7gpuA1AGAUvvaroLTG3NOgYo4m7DI7ZKTltBBHtdsMg07R
+         BoHe99JnKnnbzy5QZiU/PB96H+ZRbXiOEt0SXDkIr4tQKwNcazzC1vqMIdG6X7Pv/z
+         zQgMUOvWfWvpfPk3W7FX7ooOVYorQLdgJAfd9IzE=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Takashi Iwai <tiwai@suse.de>,
+        stable@vger.kernel.org, Fabiano Rosas <farosas@linux.ibm.com>,
+        Michael Ellerman <mpe@ellerman.id.au>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.19 354/365] ALSA: control: Use deferred fasync helper
-Date:   Tue, 23 Aug 2022 10:04:15 +0200
-Message-Id: <20220823080133.088929037@linuxfoundation.org>
+Subject: [PATCH 5.19 321/365] KVM: PPC: Book3S HV: Fix "rm_exit" entry in debugfs timings
+Date:   Tue, 23 Aug 2022 10:03:42 +0200
+Message-Id: <20220823080131.606216655@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220823080118.128342613@linuxfoundation.org>
 References: <20220823080118.128342613@linuxfoundation.org>
@@ -49,79 +50,67 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Takashi Iwai <tiwai@suse.de>
+From: Fabiano Rosas <farosas@linux.ibm.com>
 
-[ Upstream commit 4a971e84a7ae10a38d875cd2d4e487c8d1682ca3 ]
+[ Upstream commit 9981bace85d816ed8724ac46e49285e8488d29e6 ]
 
-For avoiding the potential deadlock via kill_fasync() call, use the
-new fasync helpers to defer the invocation from the control API.  Note
-that it's merely a workaround.
+At debugfs/kvm/<pid>/vcpu0/timings we show how long each part of the
+code takes to run:
 
-Another note: although we haven't received reports about the deadlock
-with the control API, the deadlock is still potentially possible, and
-it's better to align the behavior with other core APIs (PCM and
-timer); so let's move altogether.
+$ cat /sys/kernel/debug/kvm/*-*/vcpu0/timings
+rm_entry: 123785 49398892 118 4898
+rm_intr: 123780 6075890 22 390
+rm_exit: 0 0 0 0                     <-- NOK
+guest: 123780 46732919988 402 9997638
+cede: 0 0 0 0                        <-- OK, no cede napping in P9
 
-Link: https://lore.kernel.org/r/20220728125945.29533-5-tiwai@suse.de
-Signed-off-by: Takashi Iwai <tiwai@suse.de>
+The "rm_exit" is always showing zero because it is the last one and
+end_timing does not increment the counter of the previous entry.
+
+We can fix it by calling accumulate_time again instead of
+end_timing. That way the counter gets incremented. The rest of the
+arithmetic can be ignored because there are no timing points after
+this and the accumulators are reset before the next round.
+
+Signed-off-by: Fabiano Rosas <farosas@linux.ibm.com>
+Signed-off-by: Michael Ellerman <mpe@ellerman.id.au>
+Link: https://lore.kernel.org/r/20220525130554.2614394-2-farosas@linux.ibm.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- include/sound/control.h | 2 +-
- sound/core/control.c    | 7 ++++---
- 2 files changed, 5 insertions(+), 4 deletions(-)
+ arch/powerpc/kvm/book3s_hv_p9_entry.c | 13 ++-----------
+ 1 file changed, 2 insertions(+), 11 deletions(-)
 
-diff --git a/include/sound/control.h b/include/sound/control.h
-index 985c51a8fb74..a1fc7e0a47d9 100644
---- a/include/sound/control.h
-+++ b/include/sound/control.h
-@@ -109,7 +109,7 @@ struct snd_ctl_file {
- 	int preferred_subdevice[SND_CTL_SUBDEV_ITEMS];
- 	wait_queue_head_t change_sleep;
- 	spinlock_t read_lock;
--	struct fasync_struct *fasync;
-+	struct snd_fasync *fasync;
- 	int subscribed;			/* read interface is activated */
- 	struct list_head events;	/* waiting events for read */
- };
-diff --git a/sound/core/control.c b/sound/core/control.c
-index a25c0d64d104..f66fe4be30d3 100644
---- a/sound/core/control.c
-+++ b/sound/core/control.c
-@@ -127,6 +127,7 @@ static int snd_ctl_release(struct inode *inode, struct file *file)
- 			if (control->vd[idx].owner == ctl)
- 				control->vd[idx].owner = NULL;
- 	up_write(&card->controls_rwsem);
-+	snd_fasync_free(ctl->fasync);
- 	snd_ctl_empty_read_queue(ctl);
- 	put_pid(ctl->pid);
- 	kfree(ctl);
-@@ -181,7 +182,7 @@ void snd_ctl_notify(struct snd_card *card, unsigned int mask,
- 	_found:
- 		wake_up(&ctl->change_sleep);
- 		spin_unlock(&ctl->read_lock);
--		kill_fasync(&ctl->fasync, SIGIO, POLL_IN);
-+		snd_kill_fasync(ctl->fasync, SIGIO, POLL_IN);
- 	}
- 	read_unlock_irqrestore(&card->ctl_files_rwlock, flags);
- }
-@@ -2002,7 +2003,7 @@ static int snd_ctl_fasync(int fd, struct file * file, int on)
- 	struct snd_ctl_file *ctl;
+diff --git a/arch/powerpc/kvm/book3s_hv_p9_entry.c b/arch/powerpc/kvm/book3s_hv_p9_entry.c
+index 112a09b33328..7f88be386b27 100644
+--- a/arch/powerpc/kvm/book3s_hv_p9_entry.c
++++ b/arch/powerpc/kvm/book3s_hv_p9_entry.c
+@@ -438,15 +438,6 @@ void restore_p9_host_os_sprs(struct kvm_vcpu *vcpu,
+ EXPORT_SYMBOL_GPL(restore_p9_host_os_sprs);
  
- 	ctl = file->private_data;
--	return fasync_helper(fd, file, on, &ctl->fasync);
-+	return snd_fasync_helper(fd, file, on, &ctl->fasync);
+ #ifdef CONFIG_KVM_BOOK3S_HV_EXIT_TIMING
+-static void __start_timing(struct kvm_vcpu *vcpu, struct kvmhv_tb_accumulator *next)
+-{
+-	struct kvmppc_vcore *vc = vcpu->arch.vcore;
+-	u64 tb = mftb() - vc->tb_offset_applied;
+-
+-	vcpu->arch.cur_activity = next;
+-	vcpu->arch.cur_tb_start = tb;
+-}
+-
+ static void __accumulate_time(struct kvm_vcpu *vcpu, struct kvmhv_tb_accumulator *next)
+ {
+ 	struct kvmppc_vcore *vc = vcpu->arch.vcore;
+@@ -478,8 +469,8 @@ static void __accumulate_time(struct kvm_vcpu *vcpu, struct kvmhv_tb_accumulator
+ 	curr->seqcount = seq + 2;
  }
  
- /* return the preferred subdevice number if already assigned;
-@@ -2170,7 +2171,7 @@ static int snd_ctl_dev_disconnect(struct snd_device *device)
- 	read_lock_irqsave(&card->ctl_files_rwlock, flags);
- 	list_for_each_entry(ctl, &card->ctl_files, list) {
- 		wake_up(&ctl->change_sleep);
--		kill_fasync(&ctl->fasync, SIGIO, POLL_ERR);
-+		snd_kill_fasync(ctl->fasync, SIGIO, POLL_ERR);
- 	}
- 	read_unlock_irqrestore(&card->ctl_files_rwlock, flags);
- 
+-#define start_timing(vcpu, next) __start_timing(vcpu, next)
+-#define end_timing(vcpu) __start_timing(vcpu, NULL)
++#define start_timing(vcpu, next) __accumulate_time(vcpu, next)
++#define end_timing(vcpu) __accumulate_time(vcpu, NULL)
+ #define accumulate_time(vcpu, next) __accumulate_time(vcpu, next)
+ #else
+ #define start_timing(vcpu, next) do {} while (0)
 -- 
 2.35.1
 
