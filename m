@@ -2,43 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 19A38C32772
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 09:37:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2DF64C32772
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 09:37:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351347AbiHWJhT (ORCPT
+        id S1351381AbiHWJhW (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 05:37:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52592 "EHLO
+        Tue, 23 Aug 2022 05:37:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42048 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351627AbiHWJfu (ORCPT
+        with ESMTP id S1351685AbiHWJfy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 05:35:50 -0400
+        Tue, 23 Aug 2022 05:35:54 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 34F7397D68;
-        Tue, 23 Aug 2022 01:40:06 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C2FC097D6F;
+        Tue, 23 Aug 2022 01:40:10 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id BBF18B81C53;
-        Tue, 23 Aug 2022 08:39:03 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E5F55C433D6;
-        Tue, 23 Aug 2022 08:39:01 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id A3FA4B81C66;
+        Tue, 23 Aug 2022 08:40:09 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 08D0AC433C1;
+        Tue, 23 Aug 2022 08:40:07 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661243942;
-        bh=XXnsT8YnvLr5n07bfMayojz6yEaBHQq9iwO02OlXMVs=;
+        s=korg; t=1661244008;
+        bh=NjBoIts4ftHS3FHOf3IvpJrjsZCLRUUI6NkDYNIikfw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=A33b7MDvfMlaL213tYjRk45mOGSPRu10aqT6gOC5d2ObWUgCRoYI6CETdVgd0LC8h
-         YiXio5Es4m+Fxz/FAIknywRyb5YOq/MWVGg6x188Mp6GfhIvqe8JDdHvI/7y/r1WML
-         aStylsF5wM3c3/k41VhGzDY6aYtphHQB0PTpL0ts=
+        b=A94Eu3t6kWDZO75NgxfrBeZ+90vqXN/vaQKPrHHjae/PM3KLAyfIK9awPL0Rx8AGp
+         fpLf3NxlkVX1D/ftLqzuBHlQfgGL+wedhMLrZm28poe9QhCTmFmW1A+7T4cL9mDxux
+         HuG9AEtqqVCItdAnmwWPw0ircAwOnbbOzhritZ1w=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
-        Ulf Hansson <ulf.hansson@linaro.org>
-Subject: [PATCH 5.15 012/244] mmc: pxamci: Fix an error handling path in pxamci_probe()
-Date:   Tue, 23 Aug 2022 10:22:51 +0200
-Message-Id: <20220823080059.492779138@linuxfoundation.org>
+        stable@vger.kernel.org, Ingo Molnar <mingo@kernel.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Tzvetomir Stoyanov <tz.stoyanov@gmail.com>,
+        Tom Zanussi <zanussi@kernel.org>,
+        "Masami Hiramatsu (Google)" <mhiramat@kernel.org>,
+        "Steven Rostedt (Google)" <rostedt@goodmis.org>
+Subject: [PATCH 5.15 023/244] tracing/probes: Have kprobes and uprobes use $COMM too
+Date:   Tue, 23 Aug 2022 10:23:02 +0200
+Message-Id: <20220823080059.836940240@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220823080059.091088642@linuxfoundation.org>
 References: <20220823080059.091088642@linuxfoundation.org>
@@ -50,35 +53,53 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+From: Steven Rostedt (Google) <rostedt@goodmis.org>
 
-commit 98d7c5e5792b8ce3e1352196dac7f404bb1b46ec upstream.
+commit ab8384442ee512fc0fc72deeb036110843d0e7ff upstream.
 
-The commit in Fixes: has moved some code around without updating gotos to
-the error handling path.
+Both $comm and $COMM can be used to get current->comm in eprobes and the
+filtering and histogram logic. Make kprobes and uprobes consistent in this
+regard and allow both $comm and $COMM as well. Currently kprobes and
+uprobes only handle $comm, which is inconsistent with the other utilities,
+and can be confusing to users.
 
-Update it now and release some resources if pxamci_of_init() fails.
+Link: https://lkml.kernel.org/r/20220820134401.317014913@goodmis.org
+Link: https://lore.kernel.org/all/20220820220442.776e1ddaf8836e82edb34d01@kernel.org/
 
-Fixes: fa3a5115469c ("mmc: pxamci: call mmc_of_parse()")
-Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
 Cc: stable@vger.kernel.org
-Link: https://lore.kernel.org/r/6d75855ad4e2470e9ed99e0df21bc30f0c925a29.1658862932.git.christophe.jaillet@wanadoo.fr
-Signed-off-by: Ulf Hansson <ulf.hansson@linaro.org>
+Cc: Ingo Molnar <mingo@kernel.org>
+Cc: Andrew Morton <akpm@linux-foundation.org>
+Cc: Tzvetomir Stoyanov <tz.stoyanov@gmail.com>
+Cc: Tom Zanussi <zanussi@kernel.org>
+Fixes: 533059281ee5 ("tracing: probeevent: Introduce new argument fetching code")
+Suggested-by: Masami Hiramatsu (Google) <mhiramat@kernel.org>
+Acked-by: Masami Hiramatsu (Google) <mhiramat@kernel.org>
+Signed-off-by: Steven Rostedt (Google) <rostedt@goodmis.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/mmc/host/pxamci.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ kernel/trace/trace_probe.c |    5 +++--
+ 1 file changed, 3 insertions(+), 2 deletions(-)
 
---- a/drivers/mmc/host/pxamci.c
-+++ b/drivers/mmc/host/pxamci.c
-@@ -648,7 +648,7 @@ static int pxamci_probe(struct platform_
- 
- 	ret = pxamci_of_init(pdev, mmc);
- 	if (ret)
--		return ret;
-+		goto out;
- 
- 	host = mmc_priv(mmc);
- 	host->mmc = mmc;
+--- a/kernel/trace/trace_probe.c
++++ b/kernel/trace/trace_probe.c
+@@ -310,7 +310,7 @@ static int parse_probe_vars(char *arg, c
+ 			}
+ 		} else
+ 			goto inval_var;
+-	} else if (strcmp(arg, "comm") == 0) {
++	} else if (strcmp(arg, "comm") == 0 || strcmp(arg, "COMM") == 0) {
+ 		code->op = FETCH_OP_COMM;
+ #ifdef CONFIG_HAVE_FUNCTION_ARG_ACCESS_API
+ 	} else if (((flags & TPARG_FL_MASK) ==
+@@ -621,7 +621,8 @@ static int traceprobe_parse_probe_arg_bo
+ 	 * we can find those by strcmp. But ignore for eprobes.
+ 	 */
+ 	if (!(flags & TPARG_FL_TPOINT) &&
+-	    (strcmp(arg, "$comm") == 0 || strncmp(arg, "\\\"", 2) == 0)) {
++	    (strcmp(arg, "$comm") == 0 || strcmp(arg, "$COMM") == 0 ||
++	     strncmp(arg, "\\\"", 2) == 0)) {
+ 		/* The type of $comm must be "string", and not an array. */
+ 		if (parg->count || (t && strcmp(t, "string")))
+ 			goto out;
 
 
