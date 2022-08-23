@@ -2,41 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7ECD1C38159
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 08:12:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CEA74C32774
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 08:12:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242008AbiHWIL6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 04:11:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59886 "EHLO
+        id S242030AbiHWIME (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 23 Aug 2022 04:12:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60090 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241852AbiHWIJ2 (ORCPT
+        with ESMTP id S241717AbiHWIJ3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 04:09:28 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B3D7265817;
-        Tue, 23 Aug 2022 01:06:17 -0700 (PDT)
+        Tue, 23 Aug 2022 04:09:29 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8F4E04AD6E;
+        Tue, 23 Aug 2022 01:06:21 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id F33506122D;
-        Tue, 23 Aug 2022 08:06:15 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 04A38C433C1;
-        Tue, 23 Aug 2022 08:06:14 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id D4531B81BF8;
+        Tue, 23 Aug 2022 08:06:19 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1632FC433C1;
+        Tue, 23 Aug 2022 08:06:17 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661241975;
-        bh=wCsjM0Y0qINZDdkkfipcM2J/EeyQyOFc0gXcZwLfdbU=;
+        s=korg; t=1661241978;
+        bh=+Rwqb6rD09BG0YoqpOl46wlTvzqQbc75ePuMVpQ7Ju0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ovcN/UgtweX4OROOgYFHG3FDjuve1eUL2Cnajp6orszPBZo2ekTeaq6eH2mi8P63V
-         +8JEWcbpHKZCntVid61NDk/nxBc0LYwWGQB1WLX2+qkOyt5ngzapWiLS1fWjXzBj69
-         kN6omfGo1tuVY6X0FALW2M6XjKuyF9sSscZGXaJI=
+        b=0bs9q94hjQ1Krnc0mXpvIToB2dZw25/Fvs6Oc6enADtthSBzbdXGOGRgLNpFwjbSM
+         xoybM++7LK9w+r1WYkCpjCSM4XEL0wXwmTd608z98Qk59Bv07BKlMhOnRL2UJ+Gose
+         ULM8eYM/mgVG/PeMc+/XSaLTs/IRuplQkaAR2QGM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Alex Deucher <alexander.deucher@amd.com>,
-        Mario Limonciello <mario.limonciello@amd.com>
-Subject: [PATCH 5.19 011/365] drm/amdgpu: Only disable prefer_shadow on hawaii
-Date:   Tue, 23 Aug 2022 09:58:32 +0200
-Message-Id: <20220823080118.645851103@linuxfoundation.org>
+        stable@vger.kernel.org, Christoffer Sandberg <cs@tuxedo.de>,
+        Werner Sembach <wse@tuxedocomputers.com>,
+        Takashi Iwai <tiwai@suse.de>
+Subject: [PATCH 5.19 002/365] ALSA: hda/realtek: Add quirk for Clevo NS50PU, NS70PU
+Date:   Tue, 23 Aug 2022 09:58:23 +0200
+Message-Id: <20220823080118.252729730@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220823080118.128342613@linuxfoundation.org>
 References: <20220823080118.128342613@linuxfoundation.org>
@@ -48,108 +49,31 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Alex Deucher <alexander.deucher@amd.com>
+From: Christoffer Sandberg <cs@tuxedo.de>
 
-commit a6250bdb6c4677ee77d699b338e077b900f94c0c upstream.
+commit 90d74fdbd8059bf041ac797092c9b1d461555280 upstream.
 
-We changed it for all asics due to a hibernation regression
-on hawaii, but the workaround breaks suspend on a polaris12.
-Just disable it for hawaii.
+Fixes headset microphone detection on Clevo NS50PU and NS70PU.
 
-Link: https://bugzilla.kernel.org/show_bug.cgi?id=216119
-Fixes: 3a4b1cc28fbd ("drm/amdgpu/display: disable prefer_shadow for generic fb helpers")
-Reviewed-and-tested-by: Mario Limonciello <mario.limonciello@amd.com>
-Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
-Cc: stable@vger.kernel.org
+Signed-off-by: Christoffer Sandberg <cs@tuxedo.de>
+Signed-off-by: Werner Sembach <wse@tuxedocomputers.com>
+Cc: <stable@vger.kernel.org>
+Link: https://lore.kernel.org/r/20220817135144.34103-1-wse@tuxedocomputers.com
+Signed-off-by: Takashi Iwai <tiwai@suse.de>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/gpu/drm/amd/amdgpu/amdgpu_vkms.c          |    3 +--
- drivers/gpu/drm/amd/amdgpu/dce_v10_0.c            |    3 +--
- drivers/gpu/drm/amd/amdgpu/dce_v11_0.c            |    3 +--
- drivers/gpu/drm/amd/amdgpu/dce_v6_0.c             |    3 +--
- drivers/gpu/drm/amd/amdgpu/dce_v8_0.c             |    7 +++++--
- drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm.c |    7 +++++--
- 6 files changed, 14 insertions(+), 12 deletions(-)
+ sound/pci/hda/patch_realtek.c |    1 +
+ 1 file changed, 1 insertion(+)
 
---- a/drivers/gpu/drm/amd/amdgpu/amdgpu_vkms.c
-+++ b/drivers/gpu/drm/amd/amdgpu/amdgpu_vkms.c
-@@ -496,8 +496,7 @@ static int amdgpu_vkms_sw_init(void *han
- 	adev_to_drm(adev)->mode_config.max_height = YRES_MAX;
- 
- 	adev_to_drm(adev)->mode_config.preferred_depth = 24;
--	/* disable prefer shadow for now due to hibernation issues */
--	adev_to_drm(adev)->mode_config.prefer_shadow = 0;
-+	adev_to_drm(adev)->mode_config.prefer_shadow = 1;
- 
- 	adev_to_drm(adev)->mode_config.fb_base = adev->gmc.aper_base;
- 
---- a/drivers/gpu/drm/amd/amdgpu/dce_v10_0.c
-+++ b/drivers/gpu/drm/amd/amdgpu/dce_v10_0.c
-@@ -2796,8 +2796,7 @@ static int dce_v10_0_sw_init(void *handl
- 	adev_to_drm(adev)->mode_config.max_height = 16384;
- 
- 	adev_to_drm(adev)->mode_config.preferred_depth = 24;
--	/* disable prefer shadow for now due to hibernation issues */
--	adev_to_drm(adev)->mode_config.prefer_shadow = 0;
-+	adev_to_drm(adev)->mode_config.prefer_shadow = 1;
- 
- 	adev_to_drm(adev)->mode_config.fb_modifiers_not_supported = true;
- 
---- a/drivers/gpu/drm/amd/amdgpu/dce_v11_0.c
-+++ b/drivers/gpu/drm/amd/amdgpu/dce_v11_0.c
-@@ -2914,8 +2914,7 @@ static int dce_v11_0_sw_init(void *handl
- 	adev_to_drm(adev)->mode_config.max_height = 16384;
- 
- 	adev_to_drm(adev)->mode_config.preferred_depth = 24;
--	/* disable prefer shadow for now due to hibernation issues */
--	adev_to_drm(adev)->mode_config.prefer_shadow = 0;
-+	adev_to_drm(adev)->mode_config.prefer_shadow = 1;
- 
- 	adev_to_drm(adev)->mode_config.fb_modifiers_not_supported = true;
- 
---- a/drivers/gpu/drm/amd/amdgpu/dce_v6_0.c
-+++ b/drivers/gpu/drm/amd/amdgpu/dce_v6_0.c
-@@ -2673,8 +2673,7 @@ static int dce_v6_0_sw_init(void *handle
- 	adev_to_drm(adev)->mode_config.max_width = 16384;
- 	adev_to_drm(adev)->mode_config.max_height = 16384;
- 	adev_to_drm(adev)->mode_config.preferred_depth = 24;
--	/* disable prefer shadow for now due to hibernation issues */
--	adev_to_drm(adev)->mode_config.prefer_shadow = 0;
-+	adev_to_drm(adev)->mode_config.prefer_shadow = 1;
- 	adev_to_drm(adev)->mode_config.fb_modifiers_not_supported = true;
- 	adev_to_drm(adev)->mode_config.fb_base = adev->gmc.aper_base;
- 
---- a/drivers/gpu/drm/amd/amdgpu/dce_v8_0.c
-+++ b/drivers/gpu/drm/amd/amdgpu/dce_v8_0.c
-@@ -2693,8 +2693,11 @@ static int dce_v8_0_sw_init(void *handle
- 	adev_to_drm(adev)->mode_config.max_height = 16384;
- 
- 	adev_to_drm(adev)->mode_config.preferred_depth = 24;
--	/* disable prefer shadow for now due to hibernation issues */
--	adev_to_drm(adev)->mode_config.prefer_shadow = 0;
-+	if (adev->asic_type == CHIP_HAWAII)
-+		/* disable prefer shadow for now due to hibernation issues */
-+		adev_to_drm(adev)->mode_config.prefer_shadow = 0;
-+	else
-+		adev_to_drm(adev)->mode_config.prefer_shadow = 1;
- 
- 	adev_to_drm(adev)->mode_config.fb_modifiers_not_supported = true;
- 
---- a/drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm.c
-+++ b/drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm.c
-@@ -3894,8 +3894,11 @@ static int amdgpu_dm_mode_config_init(st
- 	adev_to_drm(adev)->mode_config.max_height = 16384;
- 
- 	adev_to_drm(adev)->mode_config.preferred_depth = 24;
--	/* disable prefer shadow for now due to hibernation issues */
--	adev_to_drm(adev)->mode_config.prefer_shadow = 0;
-+	if (adev->asic_type == CHIP_HAWAII)
-+		/* disable prefer shadow for now due to hibernation issues */
-+		adev_to_drm(adev)->mode_config.prefer_shadow = 0;
-+	else
-+		adev_to_drm(adev)->mode_config.prefer_shadow = 1;
- 	/* indicates support for immediate flip */
- 	adev_to_drm(adev)->mode_config.async_page_flip = true;
- 
+--- a/sound/pci/hda/patch_realtek.c
++++ b/sound/pci/hda/patch_realtek.c
+@@ -9352,6 +9352,7 @@ static const struct snd_pci_quirk alc269
+ 	SND_PCI_QUIRK(0x1558, 0x70f4, "Clevo NH77EPY", ALC293_FIXUP_SYSTEM76_MIC_NO_PRESENCE),
+ 	SND_PCI_QUIRK(0x1558, 0x70f6, "Clevo NH77DPQ-Y", ALC293_FIXUP_SYSTEM76_MIC_NO_PRESENCE),
+ 	SND_PCI_QUIRK(0x1558, 0x7716, "Clevo NS50PU", ALC256_FIXUP_SYSTEM76_MIC_NO_PRESENCE),
++	SND_PCI_QUIRK(0x1558, 0x7717, "Clevo NS70PU", ALC256_FIXUP_SYSTEM76_MIC_NO_PRESENCE),
+ 	SND_PCI_QUIRK(0x1558, 0x7718, "Clevo L140PU", ALC256_FIXUP_SYSTEM76_MIC_NO_PRESENCE),
+ 	SND_PCI_QUIRK(0x1558, 0x8228, "Clevo NR40BU", ALC293_FIXUP_SYSTEM76_MIC_NO_PRESENCE),
+ 	SND_PCI_QUIRK(0x1558, 0x8520, "Clevo NH50D[CD]", ALC293_FIXUP_SYSTEM76_MIC_NO_PRESENCE),
 
 
