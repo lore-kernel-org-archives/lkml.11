@@ -2,42 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7E592C32772
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 12:21:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CA3C4C32772
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 12:22:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349043AbiHWMUN (ORCPT
+        id S1349727AbiHWMUZ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 08:20:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46680 "EHLO
+        Tue, 23 Aug 2022 08:20:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46676 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1359547AbiHWMPz (ORCPT
+        with ESMTP id S1359543AbiHWMPx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 08:15:55 -0400
+        Tue, 23 Aug 2022 08:15:53 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3D87D6CD2B;
-        Tue, 23 Aug 2022 02:41:24 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2E35F7A759;
+        Tue, 23 Aug 2022 02:41:25 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 1B032612D6;
-        Tue, 23 Aug 2022 09:40:44 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 104BAC433C1;
-        Tue, 23 Aug 2022 09:40:42 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id CDD836148E;
+        Tue, 23 Aug 2022 09:40:16 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CDE27C433C1;
+        Tue, 23 Aug 2022 09:40:15 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661247643;
-        bh=g3c+k0+yoeMxlfx1q/ulX8puF4nvn4+xvIvmP+adnF0=;
+        s=korg; t=1661247616;
+        bh=RlS+b8Vyy/m/NXrnEpfLUDK64uMIFP9NpLwnxs/c8NM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=gkl/SbQm6xO2DIDYZ0kiUigFuI1wtQYFVr2SIp7YeGyCFmhylyhNgx4UCJZd/MUII
-         cCjm4NllSD/29sKd5tE2WzQbce3JofgqXq6ZMbnPe/YyrF0bhdmSEGNmIGgogCENt5
-         hmfoZyXv282iMXPUDXQBKSpOgX91WhOxLTo9XlsI=
+        b=KMhFxp6K6VJ6XMCCOQER2GEhS9AjVF22Nt4HnIkDDyqNrRcGG3+AubI1sgx/vmxN5
+         Q20afCXFNkgsxrviXcqGM5swguqi7df1LbWdIK3914kHfZX89gPBE/0EDA29HuVlgx
+         J74hwZFwg9+d4NFNjS9ZLX2USM0yOuSe7opRbe0c=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Pablo Neira Ayuso <pablo@netfilter.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 099/158] netfilter: nftables: add helper function to set the base sequence number
-Date:   Tue, 23 Aug 2022 10:27:11 +0200
-Message-Id: <20220823080050.031334162@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Jakub Kicinski <kuba@kernel.org>
+Subject: [PATCH 5.10 091/158] stmmac: intel: Add a missing clk_disable_unprepare() call in intel_eth_pci_remove()
+Date:   Tue, 23 Aug 2022 10:27:03 +0200
+Message-Id: <20220823080049.712401502@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220823080046.056825146@linuxfoundation.org>
 References: <20220823080046.056825146@linuxfoundation.org>
@@ -49,119 +51,47 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Pablo Neira Ayuso <pablo@netfilter.org>
+From: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
 
-[ Upstream commit 802b805162a1b7d8391c40ac8a878e9e63287aff ]
+commit 5c23d6b717e4e956376f3852b90f58e262946b50 upstream.
 
-This patch adds a helper function to calculate the base sequence number
-field that is stored in the nfnetlink header. Use the helper function
-whenever possible.
+Commit 09f012e64e4b ("stmmac: intel: Fix clock handling on error and remove
+paths") removed this clk_disable_unprepare()
 
-Signed-off-by: Pablo Neira Ayuso <pablo@netfilter.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+This was partly revert by commit ac322f86b56c ("net: stmmac: Fix clock
+handling on remove path") which removed this clk_disable_unprepare()
+because:
+"
+   While unloading the dwmac-intel driver, clk_disable_unprepare() is
+   being called twice in stmmac_dvr_remove() and
+   intel_eth_pci_remove(). This causes kernel panic on the second call.
+"
+
+However later on, commit 5ec55823438e8 ("net: stmmac: add clocks management
+for gmac driver") has updated stmmac_dvr_remove() which do not call
+clk_disable_unprepare() anymore.
+
+So this call should now be called from intel_eth_pci_remove().
+
+Fixes: 5ec55823438e8 ("net: stmmac: add clocks management for gmac driver")
+Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+Reviewed-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Link: https://lore.kernel.org/r/d7c8c1dadf40df3a7c9e643f76ffadd0ccc1ad1b.1660659689.git.christophe.jaillet@wanadoo.fr
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- net/netfilter/nf_tables_api.c | 23 ++++++++++++++---------
- 1 file changed, 14 insertions(+), 9 deletions(-)
+ drivers/net/ethernet/stmicro/stmmac/dwmac-intel.c |    1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/net/netfilter/nf_tables_api.c b/net/netfilter/nf_tables_api.c
-index 507d3d24a347..2ed8ccb9c8c1 100644
---- a/net/netfilter/nf_tables_api.c
-+++ b/net/netfilter/nf_tables_api.c
-@@ -683,6 +683,11 @@ nf_tables_chain_type_lookup(struct net *net, const struct nlattr *nla,
- 	return ERR_PTR(-ENOENT);
- }
+--- a/drivers/net/ethernet/stmicro/stmmac/dwmac-intel.c
++++ b/drivers/net/ethernet/stmicro/stmmac/dwmac-intel.c
+@@ -669,6 +669,7 @@ static void intel_eth_pci_remove(struct
  
-+static __be16 nft_base_seq(const struct net *net)
-+{
-+	return htons(net->nft.base_seq & 0xffff);
-+}
-+
- static const struct nla_policy nft_table_policy[NFTA_TABLE_MAX + 1] = {
- 	[NFTA_TABLE_NAME]	= { .type = NLA_STRING,
- 				    .len = NFT_TABLE_MAXNAMELEN - 1 },
-@@ -707,7 +712,7 @@ static int nf_tables_fill_table_info(struct sk_buff *skb, struct net *net,
- 	nfmsg = nlmsg_data(nlh);
- 	nfmsg->nfgen_family	= family;
- 	nfmsg->version		= NFNETLINK_V0;
--	nfmsg->res_id		= htons(net->nft.base_seq & 0xffff);
-+	nfmsg->res_id		= nft_base_seq(net);
+ 	pci_free_irq_vectors(pdev);
  
- 	if (nla_put_string(skb, NFTA_TABLE_NAME, table->name) ||
- 	    nla_put_be32(skb, NFTA_TABLE_FLAGS, htonl(table->flags)) ||
-@@ -1448,7 +1453,7 @@ static int nf_tables_fill_chain_info(struct sk_buff *skb, struct net *net,
- 	nfmsg = nlmsg_data(nlh);
- 	nfmsg->nfgen_family	= family;
- 	nfmsg->version		= NFNETLINK_V0;
--	nfmsg->res_id		= htons(net->nft.base_seq & 0xffff);
-+	nfmsg->res_id		= nft_base_seq(net);
++	clk_disable_unprepare(priv->plat->stmmac_clk);
+ 	clk_unregister_fixed_rate(priv->plat->stmmac_clk);
  
- 	if (nla_put_string(skb, NFTA_CHAIN_TABLE, table->name))
- 		goto nla_put_failure;
-@@ -2810,7 +2815,7 @@ static int nf_tables_fill_rule_info(struct sk_buff *skb, struct net *net,
- 	nfmsg = nlmsg_data(nlh);
- 	nfmsg->nfgen_family	= family;
- 	nfmsg->version		= NFNETLINK_V0;
--	nfmsg->res_id		= htons(net->nft.base_seq & 0xffff);
-+	nfmsg->res_id		= nft_base_seq(net);
- 
- 	if (nla_put_string(skb, NFTA_RULE_TABLE, table->name))
- 		goto nla_put_failure;
-@@ -3801,7 +3806,7 @@ static int nf_tables_fill_set(struct sk_buff *skb, const struct nft_ctx *ctx,
- 	nfmsg = nlmsg_data(nlh);
- 	nfmsg->nfgen_family	= ctx->family;
- 	nfmsg->version		= NFNETLINK_V0;
--	nfmsg->res_id		= htons(ctx->net->nft.base_seq & 0xffff);
-+	nfmsg->res_id		= nft_base_seq(ctx->net);
- 
- 	if (nla_put_string(skb, NFTA_SET_TABLE, ctx->table->name))
- 		goto nla_put_failure;
-@@ -4751,7 +4756,7 @@ static int nf_tables_dump_set(struct sk_buff *skb, struct netlink_callback *cb)
- 	nfmsg = nlmsg_data(nlh);
- 	nfmsg->nfgen_family = table->family;
- 	nfmsg->version      = NFNETLINK_V0;
--	nfmsg->res_id	    = htons(net->nft.base_seq & 0xffff);
-+	nfmsg->res_id	    = nft_base_seq(net);
- 
- 	if (nla_put_string(skb, NFTA_SET_ELEM_LIST_TABLE, table->name))
- 		goto nla_put_failure;
-@@ -4823,7 +4828,7 @@ static int nf_tables_fill_setelem_info(struct sk_buff *skb,
- 	nfmsg = nlmsg_data(nlh);
- 	nfmsg->nfgen_family	= ctx->family;
- 	nfmsg->version		= NFNETLINK_V0;
--	nfmsg->res_id		= htons(ctx->net->nft.base_seq & 0xffff);
-+	nfmsg->res_id		= nft_base_seq(ctx->net);
- 
- 	if (nla_put_string(skb, NFTA_SET_TABLE, ctx->table->name))
- 		goto nla_put_failure;
-@@ -6092,7 +6097,7 @@ static int nf_tables_fill_obj_info(struct sk_buff *skb, struct net *net,
- 	nfmsg = nlmsg_data(nlh);
- 	nfmsg->nfgen_family	= family;
- 	nfmsg->version		= NFNETLINK_V0;
--	nfmsg->res_id		= htons(net->nft.base_seq & 0xffff);
-+	nfmsg->res_id		= nft_base_seq(net);
- 
- 	if (nla_put_string(skb, NFTA_OBJ_TABLE, table->name) ||
- 	    nla_put_string(skb, NFTA_OBJ_NAME, obj->key.name) ||
-@@ -7004,7 +7009,7 @@ static int nf_tables_fill_flowtable_info(struct sk_buff *skb, struct net *net,
- 	nfmsg = nlmsg_data(nlh);
- 	nfmsg->nfgen_family	= family;
- 	nfmsg->version		= NFNETLINK_V0;
--	nfmsg->res_id		= htons(net->nft.base_seq & 0xffff);
-+	nfmsg->res_id		= nft_base_seq(net);
- 
- 	if (nla_put_string(skb, NFTA_FLOWTABLE_TABLE, flowtable->table->name) ||
- 	    nla_put_string(skb, NFTA_FLOWTABLE_NAME, flowtable->name) ||
-@@ -7249,7 +7254,7 @@ static int nf_tables_fill_gen_info(struct sk_buff *skb, struct net *net,
- 	nfmsg = nlmsg_data(nlh);
- 	nfmsg->nfgen_family	= AF_UNSPEC;
- 	nfmsg->version		= NFNETLINK_V0;
--	nfmsg->res_id		= htons(net->nft.base_seq & 0xffff);
-+	nfmsg->res_id		= nft_base_seq(net);
- 
- 	if (nla_put_be32(skb, NFTA_GEN_ID, htonl(net->nft.base_seq)) ||
- 	    nla_put_be32(skb, NFTA_GEN_PROC_PID, htonl(task_pid_nr(current))) ||
--- 
-2.35.1
-
+ 	pcim_iounmap_regions(pdev, BIT(0));
 
 
