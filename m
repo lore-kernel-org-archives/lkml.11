@@ -2,188 +2,158 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5BC07C32774
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 11:57:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 77AC4C32772
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 11:58:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1359138AbiHWL4Q (ORCPT
+        id S1358746AbiHWL53 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 07:56:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57108 "EHLO
+        Tue, 23 Aug 2022 07:57:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37260 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1358685AbiHWLwz (ORCPT
+        with ESMTP id S1358820AbiHWLyg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 07:52:55 -0400
-Received: from mail-pg1-x529.google.com (mail-pg1-x529.google.com [IPv6:2607:f8b0:4864:20::529])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 58A62D571E;
-        Tue, 23 Aug 2022 02:32:55 -0700 (PDT)
-Received: by mail-pg1-x529.google.com with SMTP id r69so11784629pgr.2;
-        Tue, 23 Aug 2022 02:32:55 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc;
-        bh=CAfa2n1KTOfIPyRv+epAHCxbtQ7Xsz015iAg4y1XQaI=;
-        b=Wd7ldfFhVFtiRs1Gcwu96YKIrY8Gq3FVAlGT9F3hBwayZrVYO0GH2Rd5eJ6CrOt42S
-         z1z6y7tvtrOr2tOl+cO3IUBPAWGPLX1x+YuLOoeQnaHSGSCEwDPFxHRdZxlv57c4uDde
-         Xe+I6eSxBb+8M3GRcEWVhmeENqcBAy+O21O2aFp7JoXVSbAovWH+yshuHghUF3zke3Mp
-         E7UyTMQHvoeBmEhVEOWTiMei3WSg1Zb/6KmHGNv8oBi6jolxwIhh7n6tckv2dwIlzFwl
-         o/Tx6BmCA0yzQTOCws5a5EDh7OXlmqGHigkyAdrgG41pAZGdkJXq7FDCToEeAQTjaEeD
-         2cOA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc;
-        bh=CAfa2n1KTOfIPyRv+epAHCxbtQ7Xsz015iAg4y1XQaI=;
-        b=NIJUnlYGojwsEoiWsbPkmG6M1i8g8aNOEVLYZfcsLr942QKbQbdH/Ex02zkiGYuRHF
-         1LQGVd0kTwRbMTSX6ce4ap8EKz8UzTHoPtrfprKSRwmwX0m89p4sLaZUmc9HtenroVTb
-         gc2d3vSol/dcoNA/f4tY5tH4yxnPLVuIPomeVi9hG0hjMUBirlUae+IajuWN8G+11u9r
-         Nd8xpE9lbUQ4nzgkOt6ncYHDFKv4albNQE+EDu1i2+CHT6Qm2e5XzHWRRXM0PF42Hb04
-         gnvfqVDlYe8nqxnHCxjBVeXFG7nPLbZIq+/FVyvLnUW2rUC+VPogbeSUpQ6V9f/nLxtd
-         SchQ==
-X-Gm-Message-State: ACgBeo2RTnOFZ5Rv3bW1/TVD34V4yGMTtdJq6EmxkwkVaCRBRt3PVBGg
-        aX+znj1MtfUaqkFu9nzxQHy0YfAdFog=
-X-Google-Smtp-Source: AA6agR5OKXfHmRfMtQ6PyilKMX43lH3PA2Vu+bqjib+lxTHFZnMVsib9S66F1x7+8+CNnuiC0ENrjQ==
-X-Received: by 2002:a05:6a02:10e:b0:42a:b42b:5692 with SMTP id bg14-20020a056a02010e00b0042ab42b5692mr7416921pgb.67.1661247173287;
-        Tue, 23 Aug 2022 02:32:53 -0700 (PDT)
-Received: from localhost.localdomain ([103.7.29.32])
-        by smtp.gmail.com with ESMTPSA id 13-20020a170902c24d00b0017297a6b39dsm10057212plg.265.2022.08.23.02.32.51
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 23 Aug 2022 02:32:53 -0700 (PDT)
-From:   Like Xu <like.xu.linux@gmail.com>
-X-Google-Original-From: Like Xu <likexu@tencent.com>
-To:     Sean Christopherson <seanjc@google.com>,
-        Paolo Bonzini <pbonzini@redhat.com>
-Cc:     Jim Mattson <jmattson@google.com>, linux-kernel@vger.kernel.org,
-        kvm@vger.kernel.org
-Subject: [PATCH RESEND v2 5/8] KVM: x86/pmu: Defer reprogram_counter() to kvm_pmu_handle_event()
-Date:   Tue, 23 Aug 2022 17:32:18 +0800
-Message-Id: <20220823093221.38075-6-likexu@tencent.com>
+        Tue, 23 Aug 2022 07:54:36 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 37977E0FD;
+        Tue, 23 Aug 2022 02:33:23 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 8B40EB81C89;
+        Tue, 23 Aug 2022 09:32:48 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id EC73FC4347C;
+        Tue, 23 Aug 2022 09:32:46 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1661247167;
+        bh=5YsuL1rXMFxHroUtJboMymafT37h5Z12yG4GQBInd8Q=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=IJ1M4DCTcOB8LldiqnjMN8fraQEIG9rPuyEMRPHWtxELvkGWXLyEaWtkp0ob0BFct
+         IqesnqNA6KmQQ6Gp+aeNfaPHR2Nyj6n0mvrYXKfqRLVy9GojMJqoi1Q3lRwber0dQe
+         KbNpPw389cgPoYn1ejuOm9oUJuWZWj5bgMtrBLp4=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Sergei Antonov <saproj@gmail.com>,
+        Andrew Lunn <andrew@lunn.ch>, Jakub Kicinski <kuba@kernel.org>
+Subject: [PATCH 5.4 340/389] net: moxa: pass pdev instead of ndev to DMA functions
+Date:   Tue, 23 Aug 2022 10:26:58 +0200
+Message-Id: <20220823080129.732696842@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220823093221.38075-1-likexu@tencent.com>
-References: <20220823093221.38075-1-likexu@tencent.com>
+In-Reply-To: <20220823080115.331990024@linuxfoundation.org>
+References: <20220823080115.331990024@linuxfoundation.org>
+User-Agent: quilt/0.67
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Like Xu <likexu@tencent.com>
+From: Sergei Antonov <saproj@gmail.com>
 
-During a KVM-trap from vm-exit to vm-entry, requests from different
-sources will try to create one or more perf_events via reprogram_counter(),
-which will allow some predecessor actions to be undone posteriorly,
-especially repeated calls to some perf subsystem interfaces. These
-repetitive calls can be omitted because only the final state of the
-perf_event and the hardware resources it occupies will take effect
-for the guest right before the vm-entry.
+commit 3a12df22a8f68954a4ba48435c06b3d1791c87c4 upstream.
 
-To realize this optimization, KVM marks the creation requirements via
-an inline version of reprogram_counter(), and then defers the actual
-execution with the help of vcpu KVM_REQ_PMU request.
+dma_map_single() calls fail in moxart_mac_setup_desc_ring() and
+moxart_mac_start_xmit() which leads to an incessant output of this:
 
-Opportunistically update related comments to avoid misunderstandings.
+[   16.043925] moxart-ethernet 92000000.mac eth0: DMA mapping error
+[   16.050957] moxart-ethernet 92000000.mac eth0: DMA mapping error
+[   16.058229] moxart-ethernet 92000000.mac eth0: DMA mapping error
 
-Signed-off-by: Like Xu <likexu@tencent.com>
+Passing pdev to DMA is a common approach among net drivers.
+
+Fixes: 6c821bd9edc9 ("net: Add MOXA ART SoCs ethernet driver")
+Signed-off-by: Sergei Antonov <saproj@gmail.com>
+Suggested-by: Andrew Lunn <andrew@lunn.ch>
+Reviewed-by: Andrew Lunn <andrew@lunn.ch>
+Link: https://lore.kernel.org/r/20220812171339.2271788-1-saproj@gmail.com
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/x86/include/asm/kvm_host.h |  1 +
- arch/x86/kvm/pmu.c              | 16 +++++++++-------
- arch/x86/kvm/pmu.h              |  6 +++++-
- 3 files changed, 15 insertions(+), 8 deletions(-)
+ drivers/net/ethernet/moxa/moxart_ether.c |   20 ++++++++++----------
+ 1 file changed, 10 insertions(+), 10 deletions(-)
 
-diff --git a/arch/x86/include/asm/kvm_host.h b/arch/x86/include/asm/kvm_host.h
-index 2c96c43c313a..4e568a7ef464 100644
---- a/arch/x86/include/asm/kvm_host.h
-+++ b/arch/x86/include/asm/kvm_host.h
-@@ -493,6 +493,7 @@ struct kvm_pmc {
- 	struct perf_event *perf_event;
- 	struct kvm_vcpu *vcpu;
- 	/*
-+	 * only for creating or reusing perf_event,
- 	 * eventsel value for general purpose counters,
- 	 * ctrl value for fixed counters.
- 	 */
-diff --git a/arch/x86/kvm/pmu.c b/arch/x86/kvm/pmu.c
-index d9b9a0f0db17..6940cbeee54d 100644
---- a/arch/x86/kvm/pmu.c
-+++ b/arch/x86/kvm/pmu.c
-@@ -101,7 +101,7 @@ static inline void __kvm_perf_overflow(struct kvm_pmc *pmc, bool in_pmi)
- 	struct kvm_pmu *pmu = pmc_to_pmu(pmc);
- 	bool skip_pmi = false;
+--- a/drivers/net/ethernet/moxa/moxart_ether.c
++++ b/drivers/net/ethernet/moxa/moxart_ether.c
+@@ -77,7 +77,7 @@ static void moxart_mac_free_memory(struc
+ 	int i;
  
--	/* Ignore counters that have been reprogrammed already. */
-+	/* Ignore counters that have not been reprogrammed. */
- 	if (test_and_set_bit(pmc->idx, pmu->reprogram_pmi))
- 		return;
+ 	for (i = 0; i < RX_DESC_NUM; i++)
+-		dma_unmap_single(&ndev->dev, priv->rx_mapping[i],
++		dma_unmap_single(&priv->pdev->dev, priv->rx_mapping[i],
+ 				 priv->rx_buf_size, DMA_FROM_DEVICE);
  
-@@ -293,7 +293,7 @@ static bool check_pmu_event_filter(struct kvm_pmc *pmc)
- 	return allow_event;
- }
+ 	if (priv->tx_desc_base)
+@@ -147,11 +147,11 @@ static void moxart_mac_setup_desc_ring(s
+ 		       desc + RX_REG_OFFSET_DESC1);
  
--void reprogram_counter(struct kvm_pmc *pmc)
-+static void __reprogram_counter(struct kvm_pmc *pmc)
- {
- 	struct kvm_pmu *pmu = pmc_to_pmu(pmc);
- 	u64 eventsel = pmc->eventsel;
-@@ -335,7 +335,6 @@ void reprogram_counter(struct kvm_pmc *pmc)
- 			      !(eventsel & ARCH_PERFMON_EVENTSEL_OS),
- 			      eventsel & ARCH_PERFMON_EVENTSEL_INT);
- }
--EXPORT_SYMBOL_GPL(reprogram_counter);
+ 		priv->rx_buf[i] = priv->rx_buf_base + priv->rx_buf_size * i;
+-		priv->rx_mapping[i] = dma_map_single(&ndev->dev,
++		priv->rx_mapping[i] = dma_map_single(&priv->pdev->dev,
+ 						     priv->rx_buf[i],
+ 						     priv->rx_buf_size,
+ 						     DMA_FROM_DEVICE);
+-		if (dma_mapping_error(&ndev->dev, priv->rx_mapping[i]))
++		if (dma_mapping_error(&priv->pdev->dev, priv->rx_mapping[i]))
+ 			netdev_err(ndev, "DMA mapping error\n");
  
- void kvm_pmu_handle_event(struct kvm_vcpu *vcpu)
- {
-@@ -345,11 +344,12 @@ void kvm_pmu_handle_event(struct kvm_vcpu *vcpu)
- 	for_each_set_bit(bit, pmu->reprogram_pmi, X86_PMC_IDX_MAX) {
- 		struct kvm_pmc *pmc = static_call(kvm_x86_pmu_pmc_idx_to_pmc)(pmu, bit);
+ 		moxart_desc_write(priv->rx_mapping[i],
+@@ -240,7 +240,7 @@ static int moxart_rx_poll(struct napi_st
+ 		if (len > RX_BUF_SIZE)
+ 			len = RX_BUF_SIZE;
  
--		if (unlikely(!pmc || !pmc->perf_event)) {
-+		if (unlikely(!pmc)) {
- 			clear_bit(bit, pmu->reprogram_pmi);
- 			continue;
- 		}
--		reprogram_counter(pmc);
-+
-+		__reprogram_counter(pmc);
+-		dma_sync_single_for_cpu(&ndev->dev,
++		dma_sync_single_for_cpu(&priv->pdev->dev,
+ 					priv->rx_mapping[rx_head],
+ 					priv->rx_buf_size, DMA_FROM_DEVICE);
+ 		skb = netdev_alloc_skb_ip_align(ndev, len);
+@@ -294,7 +294,7 @@ static void moxart_tx_finished(struct ne
+ 	unsigned int tx_tail = priv->tx_tail;
+ 
+ 	while (tx_tail != tx_head) {
+-		dma_unmap_single(&ndev->dev, priv->tx_mapping[tx_tail],
++		dma_unmap_single(&priv->pdev->dev, priv->tx_mapping[tx_tail],
+ 				 priv->tx_len[tx_tail], DMA_TO_DEVICE);
+ 
+ 		ndev->stats.tx_packets++;
+@@ -357,9 +357,9 @@ static int moxart_mac_start_xmit(struct
+ 
+ 	len = skb->len > TX_BUF_SIZE ? TX_BUF_SIZE : skb->len;
+ 
+-	priv->tx_mapping[tx_head] = dma_map_single(&ndev->dev, skb->data,
++	priv->tx_mapping[tx_head] = dma_map_single(&priv->pdev->dev, skb->data,
+ 						   len, DMA_TO_DEVICE);
+-	if (dma_mapping_error(&ndev->dev, priv->tx_mapping[tx_head])) {
++	if (dma_mapping_error(&priv->pdev->dev, priv->tx_mapping[tx_head])) {
+ 		netdev_err(ndev, "DMA mapping error\n");
+ 		goto out_unlock;
+ 	}
+@@ -378,7 +378,7 @@ static int moxart_mac_start_xmit(struct
+ 		len = ETH_ZLEN;
  	}
  
- 	/*
-@@ -527,7 +527,7 @@ static void kvm_pmu_incr_counter(struct kvm_pmc *pmc)
- 	prev_count = pmc->counter;
- 	pmc->counter = (pmc->counter + 1) & pmc_bitmask(pmc);
+-	dma_sync_single_for_device(&ndev->dev, priv->tx_mapping[tx_head],
++	dma_sync_single_for_device(&priv->pdev->dev, priv->tx_mapping[tx_head],
+ 				   priv->tx_buf_size, DMA_TO_DEVICE);
  
--	reprogram_counter(pmc);
-+	__reprogram_counter(pmc);
- 	if (pmc->counter < prev_count)
- 		__kvm_perf_overflow(pmc, false);
- }
-@@ -542,7 +542,9 @@ static inline bool eventsel_match_perf_hw_id(struct kvm_pmc *pmc,
- static inline bool cpl_is_matched(struct kvm_pmc *pmc)
- {
- 	bool select_os, select_user;
--	u64 config = pmc->current_config;
-+	u64 config = pmc_is_gp(pmc) ? pmc->eventsel :
-+		(u64)fixed_ctrl_field(pmc_to_pmu(pmc)->fixed_ctr_ctrl,
-+				      pmc->idx - INTEL_PMC_IDX_FIXED);
+ 	txdes1 = TX_DESC1_LTS | TX_DESC1_FTS | (len & TX_DESC1_BUF_SIZE_MASK);
+@@ -498,7 +498,7 @@ static int moxart_mac_probe(struct platf
+ 	priv->tx_buf_size = TX_BUF_SIZE;
+ 	priv->rx_buf_size = RX_BUF_SIZE;
  
- 	if (pmc_is_gp(pmc)) {
- 		select_os = config & ARCH_PERFMON_EVENTSEL_OS;
-diff --git a/arch/x86/kvm/pmu.h b/arch/x86/kvm/pmu.h
-index 5cc5721f260b..d193d1dc6de0 100644
---- a/arch/x86/kvm/pmu.h
-+++ b/arch/x86/kvm/pmu.h
-@@ -183,7 +183,11 @@ static inline void kvm_init_pmu_capability(void)
- 					     KVM_PMC_MAX_FIXED);
- }
+-	priv->tx_desc_base = dma_alloc_coherent(&pdev->dev, TX_REG_DESC_SIZE *
++	priv->tx_desc_base = dma_alloc_coherent(p_dev, TX_REG_DESC_SIZE *
+ 						TX_DESC_NUM, &priv->tx_base,
+ 						GFP_DMA | GFP_KERNEL);
+ 	if (!priv->tx_desc_base) {
+@@ -506,7 +506,7 @@ static int moxart_mac_probe(struct platf
+ 		goto init_fail;
+ 	}
  
--void reprogram_counter(struct kvm_pmc *pmc);
-+static inline void reprogram_counter(struct kvm_pmc *pmc)
-+{
-+	__set_bit(pmc->idx, pmc_to_pmu(pmc)->reprogram_pmi);
-+	kvm_make_request(KVM_REQ_PMU, pmc->vcpu);
-+}
- 
- void kvm_pmu_deliver_pmi(struct kvm_vcpu *vcpu);
- void kvm_pmu_handle_event(struct kvm_vcpu *vcpu);
--- 
-2.37.2
+-	priv->rx_desc_base = dma_alloc_coherent(&pdev->dev, RX_REG_DESC_SIZE *
++	priv->rx_desc_base = dma_alloc_coherent(p_dev, RX_REG_DESC_SIZE *
+ 						RX_DESC_NUM, &priv->rx_base,
+ 						GFP_DMA | GFP_KERNEL);
+ 	if (!priv->rx_desc_base) {
+
 
