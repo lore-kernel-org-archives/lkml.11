@@ -2,113 +2,116 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1900AC32772
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 20:06:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 380CDC32772
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 20:08:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234068AbiHWUGq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 16:06:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40376 "EHLO
+        id S232009AbiHWUI4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 23 Aug 2022 16:08:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43040 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232009AbiHWUGT (ORCPT
+        with ESMTP id S234127AbiHWUIh (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 16:06:19 -0400
-Received: from mail-wr1-x42b.google.com (mail-wr1-x42b.google.com [IPv6:2a00:1450:4864:20::42b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 78C3C8003D
-        for <linux-kernel@vger.kernel.org>; Tue, 23 Aug 2022 12:23:37 -0700 (PDT)
-Received: by mail-wr1-x42b.google.com with SMTP id h24so18152295wrb.8
-        for <linux-kernel@vger.kernel.org>; Tue, 23 Aug 2022 12:23:37 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=arista.com; s=google;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc;
-        bh=EjIVVDKgfAQnTIDHdcgii05+dfZdL98r/ZOX4AyAXIQ=;
-        b=Bz6hrSMnZUAIEh8kyYJEhdmt9Abs8gtuk6WWV8UVViegyv1yBUIRpF+7JkuuhUfSI/
-         rmS6vJa2Sh+JAmIRmoH2m/UI0OmFPOuHhbHTwbwIV4wZwlddIgisZ4THhp2q01sywyIH
-         Hh0WeSm6TgtlGKLOqRbq4jIfwsyhC1MFztTMd3KUIlQOxf5bwGijguJbniSrr9ZTF0B+
-         66CgYodLOH8qEBXRZirm0Hc97k3H8IrR7Mt0tyDnVDsE5HDMXShvl0HUBYXjNrHYJaDL
-         fhY4/ai44IFYTsD4NDAuGfTbxDMuUShNs+r8QC5pvwGmTb9Znd1vK2oyh8wPiyra3RLQ
-         u18g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc;
-        bh=EjIVVDKgfAQnTIDHdcgii05+dfZdL98r/ZOX4AyAXIQ=;
-        b=ZkeTcVxM/c8vbqU3qADZB2aZhW4v8t1GzgnxH3VrwBKoDZ1e5nhLAmrkmKZ6sMHqYb
-         XLqiRMHDkMEyun2DJKVb7MZI8lEilLU1J2/XPyuXZoG0PIlq0uXy0ZzSU+JxmXz8/EXf
-         khwb2+ZI9CjkuEaaGS43Kxe8OiCcfHSswTBr4w494nwFEgFqc8iQRWEU961NXn/Yi7v/
-         wE3PWajee0IuGJu+NrviyilwqAdsYE4JfBVXnNSu1AjKWfjcqhkXELjZV1lN6caBHLDF
-         ZSVOZxbP+jTZVUpZznPpx/R05oJomkjRom89ViN2WmzD9IsyGIzi9PFzt1VJI4tLz42B
-         UW2w==
-X-Gm-Message-State: ACgBeo2zFW4IBy//HJFijK4t9iUmtVRYGzEbIhWLS6zWDCXPV7yl6+qH
-        sWbW8gRYPc8XsKzd2WJKrSYdTg==
-X-Google-Smtp-Source: AA6agR6/zSRB/lRtSV4HO66inoRV2cHAdiu/d9FBXR4z4ZRCcp2Kgm9u1+FdHSX6aoT8nsyvrq2tzw==
-X-Received: by 2002:a5d:64ee:0:b0:225:6ad3:34df with SMTP id g14-20020a5d64ee000000b002256ad334dfmr1949606wri.313.1661282615706;
-        Tue, 23 Aug 2022 12:23:35 -0700 (PDT)
-Received: from [10.83.37.24] ([217.173.96.166])
-        by smtp.gmail.com with ESMTPSA id h3-20020a05600c2ca300b003a5ea1cc63csm22779453wmc.39.2022.08.23.12.23.34
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 23 Aug 2022 12:23:34 -0700 (PDT)
-Message-ID: <59313d4e-6934-77dd-f3a1-6c4d76f3c7d1@arista.com>
-Date:   Tue, 23 Aug 2022 20:23:28 +0100
+        Tue, 23 Aug 2022 16:08:37 -0400
+Received: from beige.elm.relay.mailchannels.net (beige.elm.relay.mailchannels.net [23.83.212.16])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 73BB7B72A2
+        for <linux-kernel@vger.kernel.org>; Tue, 23 Aug 2022 12:26:07 -0700 (PDT)
+X-Sender-Id: dreamhost|x-authsender|dave@stgolabs.net
+Received: from relay.mailchannels.net (localhost [127.0.0.1])
+        by relay.mailchannels.net (Postfix) with ESMTP id B73C9760992;
+        Tue, 23 Aug 2022 19:26:05 +0000 (UTC)
+Received: from pdx1-sub0-mail-a212.dreamhost.com (unknown [127.0.0.6])
+        (Authenticated sender: dreamhost)
+        by relay.mailchannels.net (Postfix) with ESMTPA id F34E7760990;
+        Tue, 23 Aug 2022 19:26:04 +0000 (UTC)
+ARC-Seal: i=1; s=arc-2022; d=mailchannels.net; t=1661282765; a=rsa-sha256;
+        cv=none;
+        b=v3SjIk+7BTTK2x3QunsdQKweLzerC1rkGrPcX0rqe/MX9R9FJZP00DsurjiEtLLtkKZ5la
+        um5KXmP4OtzQbDHwaraHhO5M8d5LG1+vPkxz6qHqsCbSmzfpUMopIWeoZLNeDXd27r3ngj
+        xOS2WN+7auj/fRGA9FxTbo7VLadndBwyP89RLLBaLVphP34kPH4+DDMw6Y5hlgVAl2yh1K
+        U1936FBB4P06SQ/ytpNut0bgLx/dGms0FXRSU9IaYMT+qsf3A8MnXT5oazQl6ghJHaRN+P
+        rTG7jbUPHZro0DMF1E1U15l8Qpt5dTXbffX5N5n3nV2FJCi8bFj0rNszTZ2hyA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=mailchannels.net;
+        s=arc-2022; t=1661282765;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references:dkim-signature;
+        bh=KA64pA0DH1EGqcQRpI8y0V/oDzrbveA11q1ujgABL90=;
+        b=8JeJc8grHC834yW2AbLXazj12OKKw00onhq0pcvUgJu237Nx3GlNtFyBtjJbbgfo8ixgs9
+        KK8lTZxU/TKggG7xh0Wji31yTqT4kPTu/68ey6vqp7A32Tb8HUZlxCPaJ9ejsxLLd5vumn
+        eENwao6SCOL7hfaG+Bqs8ondVAuav6yEvw00Y8YFPSu1XBE/pqgvHWmwMptm7qfTch7F1X
+        +JNHGpaR14bFghziFuXcStfRESyqdBbNyz9uJu96O+Y+6kYFyf9Udf8QLRJGBqb0+/ANaN
+        ugU+Yl4waypCrEybJX1dy1oJSCwmjO3QKu8LIsIyoHaNbZMSm/uMPlJjDHOmhg==
+ARC-Authentication-Results: i=1;
+        rspamd-5bc49f8989-45qtk;
+        auth=pass smtp.auth=dreamhost smtp.mailfrom=dave@stgolabs.net
+X-Sender-Id: dreamhost|x-authsender|dave@stgolabs.net
+X-MC-Relay: Neutral
+X-MailChannels-SenderId: dreamhost|x-authsender|dave@stgolabs.net
+X-MailChannels-Auth-Id: dreamhost
+X-Arch-Continue: 4a69d02274ba9850_1661282765505_3289755232
+X-MC-Loop-Signature: 1661282765505:4250622656
+X-MC-Ingress-Time: 1661282765505
+Received: from pdx1-sub0-mail-a212.dreamhost.com (pop.dreamhost.com
+ [64.90.62.162])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384)
+        by 100.127.95.100 (trex/6.7.1);
+        Tue, 23 Aug 2022 19:26:05 +0000
+Received: from offworld (unknown [104.36.31.106])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-256) server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        (No client certificate requested)
+        (Authenticated sender: dave@stgolabs.net)
+        by pdx1-sub0-mail-a212.dreamhost.com (Postfix) with ESMTPSA id 4MBzjH4Z8mz1Pg;
+        Tue, 23 Aug 2022 12:25:55 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=stgolabs.net;
+        s=dreamhost; t=1661282756;
+        bh=KA64pA0DH1EGqcQRpI8y0V/oDzrbveA11q1ujgABL90=;
+        h=Date:From:To:Cc:Subject:Content-Type;
+        b=AFjXoczX7kZdNXlNM2j+L8htj9RGOINSq/bAHXkiM8/1aBOh44OF7LdMzpUFg5AHG
+         /l6ckv1u2gM9UGz5CxUL7gf/q8dScr3o8c4EkVAXgPFFSXtqR3njqUj3v5FjDS5UEL
+         tB++k4KcHj25wc1JiHaPHHGKfmXOQ1tQRyHpbU8HdPifjab4/xE/aR7iG3VLk04Pzf
+         gWbYwyJkK9VlVaqQENsRXuPRGZStuSmenw48X3LBmtmbUpo3bomdcch6N4gG6oqLdy
+         KjOPe7i2/GbI325eApKuJ8IERngrajrhZz8zW1NWhJV5in4owSUPbE6iAJDEir4vnE
+         REQVt2z/tRuHQ==
+Date:   Tue, 23 Aug 2022 12:07:51 -0700
+From:   Davidlohr Bueso <dave@stgolabs.net>
+To:     Liam Howlett <liam.howlett@oracle.com>
+Cc:     "maple-tree@lists.infradead.org" <maple-tree@lists.infradead.org>,
+        "linux-mm@kvack.org" <linux-mm@kvack.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        "Matthew Wilcox (Oracle)" <willy@infradead.org>,
+        Vlastimil Babka <vbabka@suse.cz>
+Subject: Re: [PATCH v13 32/70] parisc: remove mmap linked list from cache
+ handling
+Message-ID: <20220823190751.aafh755d7stfvlb6@offworld>
+Mail-Followup-To: Liam Howlett <liam.howlett@oracle.com>,
+        "maple-tree@lists.infradead.org" <maple-tree@lists.infradead.org>,
+        "linux-mm@kvack.org" <linux-mm@kvack.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        "Matthew Wilcox (Oracle)" <willy@infradead.org>,
+        Vlastimil Babka <vbabka@suse.cz>
+References: <20220822150128.1562046-1-Liam.Howlett@oracle.com>
+ <20220822150128.1562046-33-Liam.Howlett@oracle.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.12.0
-Subject: Re: [PATCH 6/6] net/ipv6: sr: Switch to using crypto_pool
-Content-Language: en-US
-To:     liulongfang <liulongfang@huawei.com>, linux-kernel@vger.kernel.org
-Cc:     Dmitry Safonov <0x7f454c46@gmail.com>,
-        Andy Lutomirski <luto@amacapital.net>,
-        Ard Biesheuvel <ardb@kernel.org>,
-        David Ahern <dsahern@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Biggers <ebiggers@kernel.org>,
-        Eric Dumazet <edumazet@google.com>,
-        Francesco Ruggeri <fruggeri@arista.com>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Leonard Crestez <cdleonard@gmail.com>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Salam Noureddine <noureddine@arista.com>,
-        netdev@vger.kernel.org, linux-crypto@vger.kernel.org
-References: <20220726201600.1715505-1-dima@arista.com>
- <20220726201600.1715505-7-dima@arista.com>
- <22bbcbf7-c51b-4933-af3d-feed77ffd352@huawei.com>
-From:   Dmitry Safonov <dima@arista.com>
-In-Reply-To: <22bbcbf7-c51b-4933-af3d-feed77ffd352@huawei.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii; format=flowed
+Content-Disposition: inline
+In-Reply-To: <20220822150128.1562046-33-Liam.Howlett@oracle.com>
+User-Agent: NeoMutt/20220429
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 8/8/22 04:40, liulongfang wrote:
-> On 2022/7/27 4:16, Dmitry Safonov Wrote:
->> The conversion to use crypto_pool has the following upsides:
->> - now SR uses asynchronous API which may potentially free CPU cycles and
->>   improve performance for of CPU crypto algorithm providers;
+On Mon, 22 Aug 2022, Liam Howlett wrote:
+
+>From: "Matthew Wilcox (Oracle)" <willy@infradead.org>
 >
-> Is there any specific test data for this performance improvement?
-> How much has the memory increased?
-> How much has the performance improved?
+>Use the VMA iterator instead.
+>
+>Signed-off-by: Matthew Wilcox (Oracle) <willy@infradead.org>
+>Signed-off-by: Liam R. Howlett <Liam.Howlett@Oracle.com>
+>Acked-by: Vlastimil Babka <vbabka@suse.cz>
 
-I have no test data for this.
-The idea behind this improvement is the same as behind crypto ahash: if
-your CPU can benefit by offloading work to hw hash accelerator and there
-is a driver that provides crypto backend, you may certainly win some
-performance. The number depends on platform/driver in use.
-
->> - hash descriptors now don't have to be allocated on boot, but only at
->>   the moment SR starts using HMAC and until the last HMAC secret is
->>   deleted;
->> - potentially reuse ahash_request(s) for different users
->> - allocate only one per-CPU scratch buffer rather than a new one for
->>   each user
->> - have a common API for net/ users that need ahash on RX/TX fast path
-
-[..]
-
-Thanks,
-          Dmitry
+Reviewed-by: Davidlohr Bueso <dave@stgolabs.net>
