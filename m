@@ -2,44 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A2644C32772
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 11:59:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 41FC6C3F6B0
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 11:59:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358894AbiHWL5e (ORCPT
+        id S1358920AbiHWL5o (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 07:57:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40772 "EHLO
+        Tue, 23 Aug 2022 07:57:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34888 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1358851AbiHWLy5 (ORCPT
+        with ESMTP id S1358996AbiHWLz4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 07:54:57 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AC87427B3C;
-        Tue, 23 Aug 2022 02:33:24 -0700 (PDT)
+        Tue, 23 Aug 2022 07:55:56 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1717567C9D;
+        Tue, 23 Aug 2022 02:33:33 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 34BF5CE1B61;
-        Tue, 23 Aug 2022 09:33:21 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 33277C43145;
-        Tue, 23 Aug 2022 09:33:18 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 650EB612D6;
+        Tue, 23 Aug 2022 09:32:54 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6AEC0C433C1;
+        Tue, 23 Aug 2022 09:32:53 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661247199;
-        bh=s9lab+a5xifcAa284CeV2WZkDk2Ia40oFHO0Pen9x6Y=;
+        s=korg; t=1661247173;
+        bh=vuQge0PulIGZ9pyZu2DcvjEEixulXcuj83UwgGzf73s=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=2BA9dMuaeXkvtXhS5Fzu1v0dH8KGOPzdwqDNSGtkYQpqAquPRn6VHGt1gexe8e75E
-         lP82jHHVjtg4BiIk825Z9MU/A8+5E7WZACvXFAFXX1wdxLOath5ANCeOHYp7xRoKdB
-         GpN92+MezO3MNT/31RiRJ+WgZ4ed0POv49RI90eM=
+        b=vB6XHpFxw6rCv4MFBAzPzubCtqGeUNhvayZwI5nKO3vUmc3g0RiM1kmrq9Fj0NZT+
+         EDImSQdW3rK5c1Oa7bFqGVktuUmffiJ8gvCez7PD5/Ix+55aNsggTEtw/MABdAsoD/
+         eMx2ZFeyBx7BxkuzzHBFoYYiQ2r+uIEW+CqwQqvY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Pavan Chebbi <pavan.chebbi@broadcom.com>,
-        Michael Chan <michael.chan@broadcom.com>,
-        Bjorn Helgaas <bhelgaas@google.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 349/389] PCI: Add ACS quirk for Broadcom BCM5750x NICs
-Date:   Tue, 23 Aug 2022 10:27:07 +0200
-Message-Id: <20220823080130.123967066@linuxfoundation.org>
+        stable@vger.kernel.org, Grzegorz Siwik <grzegorz.siwik@intel.com>,
+        Jaroslav Pulchart <jaroslav.pulchart@gooddata.com>,
+        Igor Raits <igor@gooddata.com>,
+        Tony Nguyen <anthony.l.nguyen@intel.com>,
+        Gurucharan <gurucharanx.g@intel.com>
+Subject: [PATCH 5.4 342/389] ice: Ignore EEXIST when setting promisc mode
+Date:   Tue, 23 Aug 2022 10:27:00 +0200
+Message-Id: <20220823080129.825300310@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220823080115.331990024@linuxfoundation.org>
 References: <20220823080115.331990024@linuxfoundation.org>
@@ -51,44 +52,38 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Pavan Chebbi <pavan.chebbi@broadcom.com>
+From: Grzegorz Siwik <grzegorz.siwik@intel.com>
 
-[ Upstream commit afd306a65cedb9589564bdb23a0c368abc4215fd ]
+commit 11e551a2efa4481bd4f616ab75374a2710b480e9 upstream.
 
-The Broadcom BCM5750x NICs may be multi-function devices.  They do not
-advertise ACS capability. Peer-to-peer transactions are not possible
-between the individual functions, so it is safe to treat them as fully
-isolated.
+Ignore EEXIST error when setting promiscuous mode.
+This fix is needed because the driver could set promiscuous mode
+when it still has not cleared properly.
+Promiscuous mode could be set only once, so setting it second
+time will be rejected.
 
-Add an ACS quirk for these devices so the functions can be in independent
-IOMMU groups and attached individually to userspace applications using
-VFIO.
-
-Link: https://lore.kernel.org/r/1654796507-28610-1-git-send-email-michael.chan@broadcom.com
-Signed-off-by: Pavan Chebbi <pavan.chebbi@broadcom.com>
-Signed-off-by: Michael Chan <michael.chan@broadcom.com>
-Signed-off-by: Bjorn Helgaas <bhelgaas@google.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Fixes: 5eda8afd6bcc ("ice: Add support for PF/VF promiscuous mode")
+Signed-off-by: Grzegorz Siwik <grzegorz.siwik@intel.com>
+Link: https://lore.kernel.org/all/CAK8fFZ7m-KR57M_rYX6xZN39K89O=LGooYkKsu6HKt0Bs+x6xQ@mail.gmail.com/
+Tested-by: Jaroslav Pulchart <jaroslav.pulchart@gooddata.com>
+Tested-by: Igor Raits <igor@gooddata.com>
+Tested-by: Gurucharan <gurucharanx.g@intel.com> (A Contingent worker at Intel)
+Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/pci/quirks.c | 3 +++
- 1 file changed, 3 insertions(+)
+ drivers/net/ethernet/intel/ice/ice_switch.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/pci/quirks.c b/drivers/pci/quirks.c
-index 2a4bc8df8563..8b98b7f3eb24 100644
---- a/drivers/pci/quirks.c
-+++ b/drivers/pci/quirks.c
-@@ -4943,6 +4943,9 @@ static const struct pci_dev_acs_enabled {
- 	{ PCI_VENDOR_ID_AMPERE, 0xE00C, pci_quirk_xgene_acs },
- 	/* Broadcom multi-function device */
- 	{ PCI_VENDOR_ID_BROADCOM, 0x16D7, pci_quirk_mf_endpoint_acs },
-+	{ PCI_VENDOR_ID_BROADCOM, 0x1750, pci_quirk_mf_endpoint_acs },
-+	{ PCI_VENDOR_ID_BROADCOM, 0x1751, pci_quirk_mf_endpoint_acs },
-+	{ PCI_VENDOR_ID_BROADCOM, 0x1752, pci_quirk_mf_endpoint_acs },
- 	{ PCI_VENDOR_ID_BROADCOM, 0xD714, pci_quirk_brcm_acs },
- 	/* Amazon Annapurna Labs */
- 	{ PCI_VENDOR_ID_AMAZON_ANNAPURNA_LABS, 0x0031, pci_quirk_al_acs },
--- 
-2.35.1
-
+--- a/drivers/net/ethernet/intel/ice/ice_switch.c
++++ b/drivers/net/ethernet/intel/ice/ice_switch.c
+@@ -2627,7 +2627,7 @@ ice_set_vlan_vsi_promisc(struct ice_hw *
+ 		else
+ 			status = ice_set_vsi_promisc(hw, vsi_handle,
+ 						     promisc_mask, vlan_id);
+-		if (status)
++		if (status && status != -EEXIST)
+ 			break;
+ 	}
+ 
 
 
