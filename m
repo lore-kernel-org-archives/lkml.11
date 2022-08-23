@@ -2,493 +2,313 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C0F87C32793
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 08:07:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 41915C32793
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 08:07:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239620AbiHWIHL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 04:07:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51234 "EHLO
+        id S241688AbiHWIH1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 23 Aug 2022 04:07:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48414 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240461AbiHWIGt (ORCPT
+        with ESMTP id S241667AbiHWIHF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 04:06:49 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 72FFC6B15D;
-        Tue, 23 Aug 2022 01:04:37 -0700 (PDT)
+        Tue, 23 Aug 2022 04:07:05 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0336D6B16E;
+        Tue, 23 Aug 2022 01:04:52 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 514CE61219;
-        Tue, 23 Aug 2022 08:04:34 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 24A36C433D7;
-        Tue, 23 Aug 2022 08:04:33 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id CDE35B81C23;
+        Tue, 23 Aug 2022 08:04:37 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3BF6BC43470;
+        Tue, 23 Aug 2022 08:04:36 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661241873;
-        bh=iExwPztNjg6VwHc1XhCygvt9vMAuw2FhAtfSzjqAUNY=;
-        h=From:To:Cc:Subject:Date:From;
-        b=bWJuN+qTsO3k1nKvZzJDXkSn8DXQjBh97MGsly98MGFsPMveG0/ZurfdI+mxTy1s2
-         crMLgrrodXqDvL1MioiBq2x9nQ9imgGE08H+HmKej+EiawN0dUEEuj+hi6cw0RFHqp
-         m53SYigjMak+/4yQ3Qb65zDkF2BThN2D2phL6N1o=
+        s=korg; t=1661241876;
+        bh=kdPL3g2CjXmW+leFpkfRi9ykmpgXxMAcByYpZjf6mX4=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=Qw/lRnk7rdVTAM63zXeGdOl7ZS6Aw09EcbM4/jFOW8+i8dbbA6TC2S0F17XteSqeb
+         ewng0vTkxXuQJIbAzYm1erDfD9KIbkfaha9CDoTBDNP0pk9GX0ehdIucQ0qUaUAlZm
+         cEaiuwN3ro0DM5E6/URXm0atrOlx+rqntjFqqO+w=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, torvalds@linux-foundation.org,
-        akpm@linux-foundation.org, linux@roeck-us.net, shuah@kernel.org,
-        patches@kernelci.org, lkft-triage@lists.linaro.org, pavel@denx.de,
-        jonathanh@nvidia.com, f.fainelli@gmail.com,
-        sudipm.mukherjee@gmail.com, slade@sladewatkins.com
-Subject: [PATCH 4.9 000/101] 4.9.326-rc1 review
-Date:   Tue, 23 Aug 2022 10:02:33 +0200
-Message-Id: <20220823080034.579196046@linuxfoundation.org>
+        stable@vger.kernel.org, stable@kernel.org,
+        Lee Jones <lee.jones@linaro.org>,
+        Luiz Augusto von Dentz <luiz.von.dentz@intel.com>
+Subject: [PATCH 4.9 001/101] Bluetooth: L2CAP: Fix use-after-free caused by l2cap_chan_put
+Date:   Tue, 23 Aug 2022 10:02:34 +0200
+Message-Id: <20220823080034.635318372@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
-MIME-Version: 1.0
+In-Reply-To: <20220823080034.579196046@linuxfoundation.org>
+References: <20220823080034.579196046@linuxfoundation.org>
 User-Agent: quilt/0.67
 X-stable: review
 X-Patchwork-Hint: ignore
-X-KernelTest-Patch: http://kernel.org/pub/linux/kernel/v4.x/stable-review/patch-4.9.326-rc1.gz
-X-KernelTest-Tree: git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git
-X-KernelTest-Branch: linux-4.9.y
-X-KernelTest-Patches: git://git.kernel.org/pub/scm/linux/kernel/git/stable/stable-queue.git
-X-KernelTest-Version: 4.9.326-rc1
-X-KernelTest-Deadline: 2022-08-25T08:00+00:00
+MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This is the start of the stable review cycle for the 4.9.326 release.
-There are 101 patches in this series, all will be posted as a response
-to this one.  If anyone has any issues with these being applied, please
-let me know.
-
-Responses should be made by Thu, 25 Aug 2022 08:00:15 +0000.
-Anything received after that time might be too late.
-
-The whole patch series can be found in one patch at:
-	https://www.kernel.org/pub/linux/kernel/v4.x/stable-review/patch-4.9.326-rc1.gz
-or in the git tree and branch at:
-	git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git linux-4.9.y
-and the diffstat can be found below.
-
-thanks,
-
-greg k-h
-
--------------
-Pseudo-Shortlog of commits:
-
-Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-    Linux 4.9.326-rc1
-
-Nathan Chancellor <nathan@kernel.org>
-    MIPS: tlbex: Explicitly compare _PAGE_NO_EXEC against 0
-
-Zheyu Ma <zheyuma97@gmail.com>
-    video: fbdev: i740fb: Check the argument of i740_calc_vclk()
-
-Zhouyi Zhou <zhouzhouyi@gmail.com>
-    powerpc/64: Init jump labels before parse_early_param()
-
-Takashi Iwai <tiwai@suse.de>
-    ALSA: timer: Use deferred fasync helper
-
-Takashi Iwai <tiwai@suse.de>
-    ALSA: core: Add async signal helpers
-
-Liang He <windhl@126.com>
-    mips: cavium-octeon: Fix missing of_node_put() in octeon2_usb_clocks_start
-
-Schspa Shi <schspa@gmail.com>
-    vfio: Clear the caps->buf to NULL after free
-
-Liang He <windhl@126.com>
-    tty: serial: Fix refcount leak bug in ucc_uart.c
-
-Kiselev, Oleg <okiselev@amazon.com>
-    ext4: avoid resizing to a partial cluster size
-
-Ye Bin <yebin10@huawei.com>
-    ext4: avoid remove directory when directory is corrupted
-
-Wentao_Liang <Wentao_Liang_g@163.com>
-    drivers:md:fix a potential use-after-free bug
-
-Christophe JAILLET <christophe.jaillet@wanadoo.fr>
-    cxl: Fix a memory leak in an error handling path
-
-Jozef Martiniak <jomajm@gmail.com>
-    gadgetfs: ep_io - wait until IRQ finishes
-
-Liang He <windhl@126.com>
-    usb: host: ohci-ppc-of: Fix refcount leak bug
-
-Sai Prakash Ranjan <quic_saipraka@quicinc.com>
-    irqchip/tegra: Fix overflow implicit truncation warnings
-
-Masahiro Yamada <yamada.masahiro@socionext.com>
-    kbuild: clear LDFLAGS in the top Makefile
-
-Csókás Bence <csokas.bence@prolan.hu>
-    fec: Fix timer capture timing in `fec_ptp_enable_pps()`
-
-Pablo Neira Ayuso <pablo@netfilter.org>
-    netfilter: nf_tables: really skip inactive sets when allocating name
-
-Al Viro <viro@zeniv.linux.org.uk>
-    nios2: add force_successful_syscall_return()
-
-Al Viro <viro@zeniv.linux.org.uk>
-    nios2: restarts apply only to the first sigframe we build...
-
-Al Viro <viro@zeniv.linux.org.uk>
-    nios2: fix syscall restart checks
-
-Al Viro <viro@zeniv.linux.org.uk>
-    nios2: traced syscall does need to check the syscall number
-
-Al Viro <viro@zeniv.linux.org.uk>
-    nios2: don't leave NULLs in sys_call_table[]
-
-Al Viro <viro@zeniv.linux.org.uk>
-    nios2: page fault et.al. are *not* restartable syscalls...
-
-Duoming Zhou <duoming@zju.edu.cn>
-    atm: idt77252: fix use-after-free bugs caused by tst_timer
-
-Dan Carpenter <dan.carpenter@oracle.com>
-    xen/xenbus: fix return type in xenbus_file_read()
-
-Peilin Ye <peilin.ye@bytedance.com>
-    vsock: Fix memory leak in vsock_connect()
-
-Nikita Travkin <nikita@trvn.ru>
-    pinctrl: qcom: msm8916: Allow CAMSS GP clocks to be muxed
-
-Miaoqian Lin <linmq006@gmail.com>
-    pinctrl: nomadik: Fix refcount leak in nmk_pinctrl_dt_subnode_to_map
-
-Trond Myklebust <trond.myklebust@hammerspace.com>
-    SUNRPC: Reinitialise the backchannel request buffers before reuse
-
-Zhang Xianwei <zhang.xianwei8@zte.com.cn>
-    NFSv4.1: RECLAIM_COMPLETE must handle EACCES
-
-Marc Kleine-Budde <mkl@pengutronix.de>
-    can: ems_usb: fix clang's -Wunaligned-access warning
-
-Filipe Manana <fdmanana@suse.com>
-    btrfs: fix lost error handling when looking up extended ref on log replay
-
-Damien Le Moal <damien.lemoal@opensource.wdc.com>
-    ata: libata-eh: Add missing command name
-
-Mikulas Patocka <mpatocka@redhat.com>
-    rds: add missing barrier to release_refill
-
-Amadeusz Sławiński <amadeuszx.slawinski@linux.intel.com>
-    ALSA: info: Fix llseek return value when using callback
-
-Jamal Hadi Salim <jhs@mojatatu.com>
-    net_sched: cls_route: disallow handle of 0
-
-Tyler Hicks <tyhicks@linux.microsoft.com>
-    net/9p: Initialize the iounit field during fid creation
-
-Guenter Roeck <linux@roeck-us.net>
-    nios2: time: Read timer in get_cycles only if initialized
-
-Luiz Augusto von Dentz <luiz.von.dentz@intel.com>
-    Bluetooth: L2CAP: Fix l2cap_global_chan_by_psm regression
-
-Jose Alonso <joalonsof@gmail.com>
-    Revert "net: usb: ax88179_178a needs FLAG_SEND_ZLP"
-
-Tony Battersby <tonyb@cybernetics.com>
-    scsi: sg: Allow waiting for commands to complete on removed device
-
-Eric Dumazet <edumazet@google.com>
-    tcp: fix over estimation in sk_forced_mem_schedule()
-
-Qu Wenruo <wqu@suse.com>
-    btrfs: reject log replay if there is unsupported RO compat flag
-
-Thadeu Lima de Souza Cascardo <cascardo@canonical.com>
-    net_sched: cls_route: remove from list when handle is 0
-
-Mikulas Patocka <mpatocka@redhat.com>
-    dm raid: fix address sanitizer warning in raid_status
-
-Baokun Li <libaokun1@huawei.com>
-    ext4: correct max_inline_xattr_value_size computing
-
-Eric Whitney <enwlinux@gmail.com>
-    ext4: fix extent status tree race in writeback error recovery path
-
-Theodore Ts'o <tytso@mit.edu>
-    ext4: update s_overhead_clusters in the superblock during an on-line resize
-
-Baokun Li <libaokun1@huawei.com>
-    ext4: fix use-after-free in ext4_xattr_set_entry
-
-Lukas Czerner <lczerner@redhat.com>
-    ext4: make sure ext4_append() always allocates new block
-
-Baokun Li <libaokun1@huawei.com>
-    ext4: add EXT4_INODE_HAS_XATTR_SPACE macro in xattr.h
-
-David Collins <quic_collinsd@quicinc.com>
-    spmi: trace: fix stack-out-of-bound access in SPMI tracing functions
-
-Alexander Lobakin <alexandr.lobakin@intel.com>
-    x86/olpc: fix 'logical not is only applied to the left hand side'
-
-Steffen Maier <maier@linux.ibm.com>
-    scsi: zfcp: Fix missing auto port scan and thus missing target ports
-
-Florian Westphal <fw@strlen.de>
-    netfilter: nf_tables: fix null deref due to zeroed list head
-
-Weitao Wang <WeitaoWang-oc@zhaoxin.com>
-    USB: HCD: Fix URB giveback issue in tasklet function
-
-Huacai Chen <chenhuacai@loongson.cn>
-    MIPS: cpuinfo: Fix a warning for CONFIG_CPUMASK_OFFSTACK
-
-Michael Ellerman <mpe@ellerman.id.au>
-    powerpc/powernv: Avoid crashing if rng is NULL
-
-Pali Rohár <pali@kernel.org>
-    powerpc/fsl-pci: Fix Class Code of PCIe Root Port
-
-Pali Rohár <pali@kernel.org>
-    PCI: Add defines for normal and subtractive PCI bridges
-
-Alexander Lobakin <alexandr.lobakin@intel.com>
-    ia64, processor: fix -Wincompatible-pointer-types in ia64_get_irr()
-
-Mikulas Patocka <mpatocka@redhat.com>
-    md-raid10: fix KASAN warning
-
-Miklos Szeredi <mszeredi@redhat.com>
-    fuse: limit nsec
-
-Daniel Borkmann <daniel@iogearbox.net>
-    bpf: fix overflow in prog accounting
-
-Timur Tabi <ttabi@nvidia.com>
-    drm/nouveau: fix another off-by-one in nvbios_addr
-
-Helge Deller <deller@gmx.de>
-    parisc: Fix device names in /proc/iomem
-
-Lukas Wunner <lukas@wunner.de>
-    usbnet: Fix linkwatch use-after-free on disconnect
-
-David Howells <dhowells@redhat.com>
-    vfs: Check the truncate maximum size in inode_newsize_ok()
-
-Allen Ballway <ballway@chromium.org>
-    ALSA: hda/cirrus - support for iMac 12,1 model
-
-Meng Tang <tangmeng@uniontech.com>
-    ALSA: hda/conexant: Add quirk for LENOVO 20149 Notebook model
-
-Sean Christopherson <seanjc@google.com>
-    KVM: x86: Mark TSS busy during LTR emulation _after_ all fault checks
-
-Maciej S. Szmigiero <maciej.szmigiero@oracle.com>
-    KVM: SVM: Don't BUG if userspace injects an interrupt with GIF=0
-
-Mikulas Patocka <mpatocka@redhat.com>
-    add barriers to buffer_uptodate and set_buffer_uptodate
-
-Zheyu Ma <zheyuma97@gmail.com>
-    ALSA: bcd2000: Fix a UAF bug on the error path of probing
-
-Nick Desaulniers <ndesaulniers@google.com>
-    x86: link vdso and boot with -z noexecstack --no-warn-rwx-segments
-
-Nick Desaulniers <ndesaulniers@google.com>
-    Makefile: link with -z noexecstack --no-warn-rwx-segments
-
-Ning Qiang <sohu0106@126.com>
-    macintosh/adb: fix oob read in do_adb_query() function
-
-Hans-Christian Noren Egtvedt <hegtvedt@cisco.com>
-    random: only call boot_init_stack_canary() once
-
-Werner Sembach <wse@tuxedocomputers.com>
-    ACPI: video: Shortening quirk list by identifying Clevo by board_name only
-
-Werner Sembach <wse@tuxedocomputers.com>
-    ACPI: video: Force backlight native for some TongFang devices
-
-Daniel Micay <danielmicay@gmail.com>
-    init/main.c: extract early boot entropy from the passed cmdline
-
-Laura Abbott <lauraa@codeaurora.org>
-    init: move stack canary initialization after setup_arch
-
-Viresh Kumar <viresh.kumar@linaro.org>
-    init/main: properly align the multi-line comment
-
-Viresh Kumar <viresh.kumar@linaro.org>
-    init/main: Fix double "the" in comment
-
-Christian Borntraeger <borntraeger@de.ibm.com>
-    include/uapi/linux/swab.h: fix userspace breakage, use __BITS_PER_LONG for swap
-
-Paul Moore <paul@paul-moore.com>
-    selinux: fix inode_doinit_with_dentry() LABEL_INVALID error handling
-
-Tianyue Ren <rentianyue@kylinos.cn>
-    selinux: fix error initialization in inode_doinit_with_dentry()
-
-Andreas Gruenbacher <agruenba@redhat.com>
-    selinux: Convert isec->lock into a spinlock
-
-Andreas Gruenbacher <agruenba@redhat.com>
-    selinux: Clean up initialization of isec->sclass
-
-Andreas Gruenbacher <agruenba@redhat.com>
-    proc: Pass file mode to proc_pid_make_inode
-
-Andreas Gruenbacher <agruenba@redhat.com>
-    selinux: Minor cleanups
-
-Nathan Chancellor <nathan@kernel.org>
-    ion: Make user_ion_handle_put_nolock() a void function
-
-Wei Mingzhi <whistler@member.fsf.org>
-    mt7601u: add USB device ID for some versions of XiaoDu WiFi Dongle.
-
-Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-    ARM: crypto: comment out gcc warning that breaks clang builds
-
-Florian Westphal <fw@strlen.de>
-    netfilter: nf_queue: do not allow packet truncation below transport header offset
-
-Liang He <windhl@126.com>
-    net: sungem_phy: Add of_node_put() for reference returned by of_get_parent()
-
-Kuniyuki Iwashima <kuniyu@amazon.com>
-    net: ping6: Fix memleak in ipv6_renew_options().
-
-Liang He <windhl@126.com>
-    scsi: ufs: host: Hold reference returned by of_parse_phandle()
-
-ChenXiaoSong <chenxiaosong2@huawei.com>
-    ntfs: fix use-after-free in ntfs_ucsncmp()
-
-Luiz Augusto von Dentz <luiz.von.dentz@intel.com>
-    Bluetooth: L2CAP: Fix use-after-free caused by l2cap_chan_put
-
-
--------------
-
-Diffstat:
-
- Makefile                                        |   8 +-
- arch/arm/lib/xor-neon.c                         |   3 +-
- arch/ia64/include/asm/processor.h               |   2 +-
- arch/mips/cavium-octeon/octeon-platform.c       |   3 +-
- arch/mips/kernel/proc.c                         |   2 +-
- arch/mips/mm/tlbex.c                            |   4 +-
- arch/nios2/include/asm/entry.h                  |   3 +-
- arch/nios2/include/asm/ptrace.h                 |   2 +
- arch/nios2/kernel/entry.S                       |  22 +++--
- arch/nios2/kernel/signal.c                      |   3 +-
- arch/nios2/kernel/syscall_table.c               |   1 +
- arch/nios2/kernel/time.c                        |   5 +-
- arch/parisc/kernel/drivers.c                    |   9 +-
- arch/powerpc/kernel/prom.c                      |   7 ++
- arch/powerpc/platforms/powernv/rng.c            |   2 +
- arch/powerpc/sysdev/fsl_pci.c                   |   8 ++
- arch/powerpc/sysdev/fsl_pci.h                   |   1 +
- arch/x86/boot/Makefile                          |   2 +-
- arch/x86/boot/compressed/Makefile               |   4 +
- arch/x86/entry/vdso/Makefile                    |   2 +-
- arch/x86/kvm/emulate.c                          |  19 ++--
- arch/x86/kvm/svm.c                              |   2 -
- arch/x86/platform/olpc/olpc-xo1-sci.c           |   2 +-
- drivers/acpi/video_detect.c                     |  55 +++++++----
- drivers/ata/libata-eh.c                         |   1 +
- drivers/atm/idt77252.c                          |   1 +
- drivers/gpu/drm/nouveau/nvkm/subdev/bios/base.c |   2 +-
- drivers/irqchip/irq-tegra.c                     |  10 +-
- drivers/macintosh/adb.c                         |   2 +-
- drivers/md/dm-raid.c                            |   2 +-
- drivers/md/raid10.c                             |   5 +-
- drivers/md/raid5.c                              |   2 +-
- drivers/misc/cxl/irq.c                          |   1 +
- drivers/net/can/usb/ems_usb.c                   |   2 +-
- drivers/net/ethernet/freescale/fec_ptp.c        |   6 +-
- drivers/net/sungem_phy.c                        |   1 +
- drivers/net/usb/ax88179_178a.c                  |  14 +--
- drivers/net/usb/usbnet.c                        |   8 +-
- drivers/net/wireless/mediatek/mt7601u/usb.c     |   1 +
- drivers/pinctrl/nomadik/pinctrl-nomadik.c       |   4 +-
- drivers/pinctrl/qcom/pinctrl-msm8916.c          |   4 +-
- drivers/s390/scsi/zfcp_fc.c                     |  29 ++++--
- drivers/s390/scsi/zfcp_fc.h                     |   6 +-
- drivers/s390/scsi/zfcp_fsf.c                    |   4 +-
- drivers/scsi/sg.c                               |  57 ++++++-----
- drivers/scsi/ufs/ufshcd-pltfrm.c                |  15 ++-
- drivers/staging/android/ion/ion-ioctl.c         |   8 +-
- drivers/tty/serial/ucc_uart.c                   |   2 +
- drivers/usb/core/hcd.c                          |  26 ++---
- drivers/usb/gadget/legacy/inode.c               |   1 +
- drivers/usb/host/ohci-ppc-of.c                  |   1 +
- drivers/vfio/vfio.c                             |   1 +
- drivers/video/fbdev/i740fb.c                    |   9 +-
- drivers/xen/xenbus/xenbus_dev_frontend.c        |   4 +-
- fs/attr.c                                       |   2 +
- fs/btrfs/disk-io.c                              |  14 +++
- fs/btrfs/tree-log.c                             |   4 +-
- fs/ext4/inline.c                                |   3 +
- fs/ext4/inode.c                                 |   7 ++
- fs/ext4/namei.c                                 |  23 ++++-
- fs/ext4/resize.c                                |  11 +++
- fs/ext4/xattr.c                                 |   6 +-
- fs/ext4/xattr.h                                 |  13 +++
- fs/fuse/inode.c                                 |   6 ++
- fs/nfs/nfs4proc.c                               |   3 +
- fs/ntfs/attrib.c                                |   8 +-
- fs/proc/base.c                                  |  23 ++---
- fs/proc/fd.c                                    |   6 +-
- fs/proc/internal.h                              |   2 +-
- fs/proc/namespaces.c                            |   3 +-
- include/linux/bpf.h                             |  11 +++
- include/linux/buffer_head.h                     |  25 ++++-
- include/linux/pci_ids.h                         |   2 +
- include/linux/usb/hcd.h                         |   1 +
- include/net/bluetooth/l2cap.h                   |   1 +
- include/sound/core.h                            |   8 ++
- include/trace/events/spmi.h                     |  12 +--
- include/uapi/linux/swab.h                       |   4 +-
- init/main.c                                     |  14 +--
- kernel/bpf/core.c                               |  16 ++-
- kernel/bpf/syscall.c                            |  36 +++++--
- net/9p/client.c                                 |   4 +-
- net/bluetooth/l2cap_core.c                      |  68 +++++++++----
- net/ipv4/tcp_output.c                           |   7 +-
- net/ipv6/ping.c                                 |   6 ++
- net/netfilter/nf_tables_api.c                   |   3 +-
- net/netfilter/nfnetlink_queue.c                 |   7 +-
- net/rds/ib_recv.c                               |   1 +
- net/sched/cls_route.c                           |   8 +-
- net/sunrpc/backchannel_rqst.c                   |  14 +++
- net/vmw_vsock/af_vsock.c                        |   9 +-
- security/selinux/hooks.c                        | 123 +++++++++++++++---------
- security/selinux/include/objsec.h               |   5 +-
- security/selinux/selinuxfs.c                    |   4 +-
- sound/core/info.c                               |   6 +-
- sound/core/misc.c                               |  94 ++++++++++++++++++
- sound/core/timer.c                              |  11 ++-
- sound/pci/hda/patch_cirrus.c                    |   1 +
- sound/pci/hda/patch_conexant.c                  |  11 ++-
- sound/usb/bcd2000/bcd2000.c                     |   3 +-
- 100 files changed, 753 insertions(+), 296 deletions(-)
+From: Luiz Augusto von Dentz <luiz.von.dentz@intel.com>
+
+commit d0be8347c623e0ac4202a1d4e0373882821f56b0 upstream.
+
+This fixes the following trace which is caused by hci_rx_work starting up
+*after* the final channel reference has been put() during sock_close() but
+*before* the references to the channel have been destroyed, so instead
+the code now rely on kref_get_unless_zero/l2cap_chan_hold_unless_zero to
+prevent referencing a channel that is about to be destroyed.
+
+  refcount_t: increment on 0; use-after-free.
+  BUG: KASAN: use-after-free in refcount_dec_and_test+0x20/0xd0
+  Read of size 4 at addr ffffffc114f5bf18 by task kworker/u17:14/705
+
+  CPU: 4 PID: 705 Comm: kworker/u17:14 Tainted: G S      W
+  4.14.234-00003-g1fb6d0bd49a4-dirty #28
+  Hardware name: Qualcomm Technologies, Inc. SM8150 V2 PM8150
+  Google Inc. MSM sm8150 Flame DVT (DT)
+  Workqueue: hci0 hci_rx_work
+  Call trace:
+   dump_backtrace+0x0/0x378
+   show_stack+0x20/0x2c
+   dump_stack+0x124/0x148
+   print_address_description+0x80/0x2e8
+   __kasan_report+0x168/0x188
+   kasan_report+0x10/0x18
+   __asan_load4+0x84/0x8c
+   refcount_dec_and_test+0x20/0xd0
+   l2cap_chan_put+0x48/0x12c
+   l2cap_recv_frame+0x4770/0x6550
+   l2cap_recv_acldata+0x44c/0x7a4
+   hci_acldata_packet+0x100/0x188
+   hci_rx_work+0x178/0x23c
+   process_one_work+0x35c/0x95c
+   worker_thread+0x4cc/0x960
+   kthread+0x1a8/0x1c4
+   ret_from_fork+0x10/0x18
+
+Cc: stable@kernel.org
+Reported-by: Lee Jones <lee.jones@linaro.org>
+Signed-off-by: Luiz Augusto von Dentz <luiz.von.dentz@intel.com>
+Tested-by: Lee Jones <lee.jones@linaro.org>
+Signed-off-by: Luiz Augusto von Dentz <luiz.von.dentz@intel.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+---
+ include/net/bluetooth/l2cap.h |    1 
+ net/bluetooth/l2cap_core.c    |   61 +++++++++++++++++++++++++++++++++---------
+ 2 files changed, 49 insertions(+), 13 deletions(-)
+
+--- a/include/net/bluetooth/l2cap.h
++++ b/include/net/bluetooth/l2cap.h
+@@ -798,6 +798,7 @@ enum {
+ };
+ 
+ void l2cap_chan_hold(struct l2cap_chan *c);
++struct l2cap_chan *l2cap_chan_hold_unless_zero(struct l2cap_chan *c);
+ void l2cap_chan_put(struct l2cap_chan *c);
+ 
+ static inline void l2cap_chan_lock(struct l2cap_chan *chan)
+--- a/net/bluetooth/l2cap_core.c
++++ b/net/bluetooth/l2cap_core.c
+@@ -113,7 +113,8 @@ static struct l2cap_chan *__l2cap_get_ch
+ }
+ 
+ /* Find channel with given SCID.
+- * Returns locked channel. */
++ * Returns a reference locked channel.
++ */
+ static struct l2cap_chan *l2cap_get_chan_by_scid(struct l2cap_conn *conn,
+ 						 u16 cid)
+ {
+@@ -121,15 +122,19 @@ static struct l2cap_chan *l2cap_get_chan
+ 
+ 	mutex_lock(&conn->chan_lock);
+ 	c = __l2cap_get_chan_by_scid(conn, cid);
+-	if (c)
+-		l2cap_chan_lock(c);
++	if (c) {
++		/* Only lock if chan reference is not 0 */
++		c = l2cap_chan_hold_unless_zero(c);
++		if (c)
++			l2cap_chan_lock(c);
++	}
+ 	mutex_unlock(&conn->chan_lock);
+ 
+ 	return c;
+ }
+ 
+ /* Find channel with given DCID.
+- * Returns locked channel.
++ * Returns a reference locked channel.
+  */
+ static struct l2cap_chan *l2cap_get_chan_by_dcid(struct l2cap_conn *conn,
+ 						 u16 cid)
+@@ -138,8 +143,12 @@ static struct l2cap_chan *l2cap_get_chan
+ 
+ 	mutex_lock(&conn->chan_lock);
+ 	c = __l2cap_get_chan_by_dcid(conn, cid);
+-	if (c)
+-		l2cap_chan_lock(c);
++	if (c) {
++		/* Only lock if chan reference is not 0 */
++		c = l2cap_chan_hold_unless_zero(c);
++		if (c)
++			l2cap_chan_lock(c);
++	}
+ 	mutex_unlock(&conn->chan_lock);
+ 
+ 	return c;
+@@ -164,8 +173,12 @@ static struct l2cap_chan *l2cap_get_chan
+ 
+ 	mutex_lock(&conn->chan_lock);
+ 	c = __l2cap_get_chan_by_ident(conn, ident);
+-	if (c)
+-		l2cap_chan_lock(c);
++	if (c) {
++		/* Only lock if chan reference is not 0 */
++		c = l2cap_chan_hold_unless_zero(c);
++		if (c)
++			l2cap_chan_lock(c);
++	}
+ 	mutex_unlock(&conn->chan_lock);
+ 
+ 	return c;
+@@ -491,6 +504,16 @@ void l2cap_chan_hold(struct l2cap_chan *
+ 	kref_get(&c->kref);
+ }
+ 
++struct l2cap_chan *l2cap_chan_hold_unless_zero(struct l2cap_chan *c)
++{
++	BT_DBG("chan %p orig refcnt %u", c, kref_read(&c->kref));
++
++	if (!kref_get_unless_zero(&c->kref))
++		return NULL;
++
++	return c;
++}
++
+ void l2cap_chan_put(struct l2cap_chan *c)
+ {
+ 	BT_DBG("chan %p orig refcnt %d", c, atomic_read(&c->kref.refcount));
+@@ -1803,7 +1826,10 @@ static struct l2cap_chan *l2cap_global_c
+ 			src_match = !bacmp(&c->src, src);
+ 			dst_match = !bacmp(&c->dst, dst);
+ 			if (src_match && dst_match) {
+-				l2cap_chan_hold(c);
++				c = l2cap_chan_hold_unless_zero(c);
++				if (!c)
++					continue;
++
+ 				read_unlock(&chan_list_lock);
+ 				return c;
+ 			}
+@@ -1818,7 +1844,7 @@ static struct l2cap_chan *l2cap_global_c
+ 	}
+ 
+ 	if (c1)
+-		l2cap_chan_hold(c1);
++		c1 = l2cap_chan_hold_unless_zero(c1);
+ 
+ 	read_unlock(&chan_list_lock);
+ 
+@@ -4194,6 +4220,7 @@ static inline int l2cap_config_req(struc
+ 
+ unlock:
+ 	l2cap_chan_unlock(chan);
++	l2cap_chan_put(chan);
+ 	return err;
+ }
+ 
+@@ -4306,6 +4333,7 @@ static inline int l2cap_config_rsp(struc
+ 
+ done:
+ 	l2cap_chan_unlock(chan);
++	l2cap_chan_put(chan);
+ 	return err;
+ }
+ 
+@@ -5034,6 +5062,7 @@ send_move_response:
+ 	l2cap_send_move_chan_rsp(chan, result);
+ 
+ 	l2cap_chan_unlock(chan);
++	l2cap_chan_put(chan);
+ 
+ 	return 0;
+ }
+@@ -5126,6 +5155,7 @@ static void l2cap_move_continue(struct l
+ 	}
+ 
+ 	l2cap_chan_unlock(chan);
++	l2cap_chan_put(chan);
+ }
+ 
+ static void l2cap_move_fail(struct l2cap_conn *conn, u8 ident, u16 icid,
+@@ -5155,6 +5185,7 @@ static void l2cap_move_fail(struct l2cap
+ 	l2cap_send_move_chan_cfm(chan, L2CAP_MC_UNCONFIRMED);
+ 
+ 	l2cap_chan_unlock(chan);
++	l2cap_chan_put(chan);
+ }
+ 
+ static int l2cap_move_channel_rsp(struct l2cap_conn *conn,
+@@ -5218,6 +5249,7 @@ static int l2cap_move_channel_confirm(st
+ 	l2cap_send_move_chan_cfm_rsp(conn, cmd->ident, icid);
+ 
+ 	l2cap_chan_unlock(chan);
++	l2cap_chan_put(chan);
+ 
+ 	return 0;
+ }
+@@ -5253,6 +5285,7 @@ static inline int l2cap_move_channel_con
+ 	}
+ 
+ 	l2cap_chan_unlock(chan);
++	l2cap_chan_put(chan);
+ 
+ 	return 0;
+ }
+@@ -5625,12 +5658,11 @@ static inline int l2cap_le_credits(struc
+ 	if (credits > max_credits) {
+ 		BT_ERR("LE credits overflow");
+ 		l2cap_send_disconn_req(chan, ECONNRESET);
+-		l2cap_chan_unlock(chan);
+ 
+ 		/* Return 0 so that we don't trigger an unnecessary
+ 		 * command reject packet.
+ 		 */
+-		return 0;
++		goto unlock;
+ 	}
+ 
+ 	chan->tx_credits += credits;
+@@ -5643,7 +5675,9 @@ static inline int l2cap_le_credits(struc
+ 	if (chan->tx_credits)
+ 		chan->ops->resume(chan);
+ 
++unlock:
+ 	l2cap_chan_unlock(chan);
++	l2cap_chan_put(chan);
+ 
+ 	return 0;
+ }
+@@ -6941,6 +6975,7 @@ drop:
+ 
+ done:
+ 	l2cap_chan_unlock(chan);
++	l2cap_chan_put(chan);
+ }
+ 
+ static void l2cap_conless_channel(struct l2cap_conn *conn, __le16 psm,
+@@ -7345,7 +7380,7 @@ static struct l2cap_chan *l2cap_global_f
+ 		if (src_type != c->src_type)
+ 			continue;
+ 
+-		l2cap_chan_hold(c);
++		c = l2cap_chan_hold_unless_zero(c);
+ 		read_unlock(&chan_list_lock);
+ 		return c;
+ 	}
 
 
