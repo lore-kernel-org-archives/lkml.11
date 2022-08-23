@@ -2,46 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C8681C32772
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 08:38:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0B2BEC32772
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 08:38:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345964AbiHWIiP (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 04:38:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35126 "EHLO
+        id S245566AbiHWIiU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 23 Aug 2022 04:38:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40324 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347504AbiHWIga (ORCPT
+        with ESMTP id S1347670AbiHWIgl (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 04:36:30 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E50C977543;
-        Tue, 23 Aug 2022 01:17:32 -0700 (PDT)
+        Tue, 23 Aug 2022 04:36:41 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2B7D37755D;
+        Tue, 23 Aug 2022 01:17:37 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id A8952B81BF8;
-        Tue, 23 Aug 2022 08:17:17 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0441EC433D6;
-        Tue, 23 Aug 2022 08:17:15 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 0472361360;
+        Tue, 23 Aug 2022 08:16:53 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 10CDCC433D7;
+        Tue, 23 Aug 2022 08:16:51 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661242636;
-        bh=5fy4IkzWjl1hfPLwkmTOIHwX1kHx3B1rb3uQ4pKYwEc=;
+        s=korg; t=1661242612;
+        bh=Ozh6pKstKR8EmXCauJAdcp4MKdVlb4V3CinW1snpBUI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=TlmPiX+M3fiMMfcs8P2CwxPtvb1WNYqLiLBj9oxm8r7gEhNGNmMOZxdsg5AFKHVSI
-         foPUfSip99r8sU+EsYbnVgWBG5r2a4EhaiCKZaF4r8V+Ltge6ulvE/RyHpNGREP6YP
-         hcHPnlWDvIveYxy79FEVUUKpH3mWEARMgkQmHBbk=
+        b=lzB3Fm1adfy3ydhIlNKcNJhJytGvlNfTB1UOuVN9RmygEMZmQyA0m9tjjKnRBcp+X
+         LKo4LU3Vj2hh38DEeYntle5rxB/Ghb6PfmvunyWcxiD7Ficn+NC4/oibEE1LXmKWZS
+         XM8Jz4Fqdy86d1G01IVoh78FkvfTT4x2nIE74Tuo=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Gerhard Engleder <gerhard@engleder-embedded.com>,
-        Jakub Kicinski <kuba@kernel.org>
-Subject: [PATCH 5.19 150/365] tsnep: Fix tsnep_tx_unmap() error path usage
-Date:   Tue, 23 Aug 2022 10:00:51 +0200
-Message-Id: <20220823080124.506387071@linuxfoundation.org>
+        stable@vger.kernel.org, Michael Ellerman <mpe@ellerman.id.au>,
+        Zhouyi Zhou <zhouzhouyi@gmail.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 4.9 099/101] powerpc/64: Init jump labels before parse_early_param()
+Date:   Tue, 23 Aug 2022 10:04:12 +0200
+Message-Id: <20220823080038.336486008@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220823080118.128342613@linuxfoundation.org>
-References: <20220823080118.128342613@linuxfoundation.org>
+In-Reply-To: <20220823080034.579196046@linuxfoundation.org>
+References: <20220823080034.579196046@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -50,64 +49,65 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Gerhard Engleder <gerhard@engleder-embedded.com>
+From: Zhouyi Zhou <zhouzhouyi@gmail.com>
 
-commit b3bb8628bf64440065976c71e4ab09186c393597 upstream.
+[ Upstream commit ca829e05d3d4f728810cc5e4b468d9ebc7745eb3 ]
 
-If tsnep_tx_map() fails, then tsnep_tx_unmap() shall start at the write
-index like tsnep_tx_map(). This is different to the normal operation.
-Thus, add an additional parameter to tsnep_tx_unmap() to enable start at
-different positions for successful TX and failed TX.
+On 64-bit, calling jump_label_init() in setup_feature_keys() is too
+late because static keys may be used in subroutines of
+parse_early_param() which is again subroutine of early_init_devtree().
 
-Fixes: 403f69bbdbad ("tsnep: Add TSN endpoint Ethernet MAC driver")
-Signed-off-by: Gerhard Engleder <gerhard@engleder-embedded.com>
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+For example booting with "threadirqs":
+
+  static_key_enable_cpuslocked(): static key '0xc000000002953260' used before call to jump_label_init()
+  WARNING: CPU: 0 PID: 0 at kernel/jump_label.c:166 static_key_enable_cpuslocked+0xfc/0x120
+  ...
+  NIP static_key_enable_cpuslocked+0xfc/0x120
+  LR  static_key_enable_cpuslocked+0xf8/0x120
+  Call Trace:
+    static_key_enable_cpuslocked+0xf8/0x120 (unreliable)
+    static_key_enable+0x30/0x50
+    setup_forced_irqthreads+0x28/0x40
+    do_early_param+0xa0/0x108
+    parse_args+0x290/0x4e0
+    parse_early_options+0x48/0x5c
+    parse_early_param+0x58/0x84
+    early_init_devtree+0xd4/0x518
+    early_setup+0xb4/0x214
+
+So call jump_label_init() just before parse_early_param() in
+early_init_devtree().
+
+Suggested-by: Michael Ellerman <mpe@ellerman.id.au>
+Signed-off-by: Zhouyi Zhou <zhouzhouyi@gmail.com>
+[mpe: Add call trace to change log and minor wording edits.]
+Signed-off-by: Michael Ellerman <mpe@ellerman.id.au>
+Link: https://lore.kernel.org/r/20220726015747.11754-1-zhouzhouyi@gmail.com
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/engleder/tsnep_main.c | 8 ++++----
- 1 file changed, 4 insertions(+), 4 deletions(-)
+ arch/powerpc/kernel/prom.c | 7 +++++++
+ 1 file changed, 7 insertions(+)
 
-diff --git a/drivers/net/ethernet/engleder/tsnep_main.c b/drivers/net/ethernet/engleder/tsnep_main.c
-index d98199f3414b..a5f7152a1716 100644
---- a/drivers/net/ethernet/engleder/tsnep_main.c
-+++ b/drivers/net/ethernet/engleder/tsnep_main.c
-@@ -340,14 +340,14 @@ static int tsnep_tx_map(struct sk_buff *skb, struct tsnep_tx *tx, int count)
- 	return 0;
- }
+diff --git a/arch/powerpc/kernel/prom.c b/arch/powerpc/kernel/prom.c
+index 11b4ecec04ee..1413d72689d2 100644
+--- a/arch/powerpc/kernel/prom.c
++++ b/arch/powerpc/kernel/prom.c
+@@ -682,6 +682,13 @@ void __init early_init_devtree(void *params)
+ 	of_scan_flat_dt(early_init_dt_scan_root, NULL);
+ 	of_scan_flat_dt(early_init_dt_scan_memory_ppc, NULL);
  
--static void tsnep_tx_unmap(struct tsnep_tx *tx, int count)
-+static void tsnep_tx_unmap(struct tsnep_tx *tx, int index, int count)
- {
- 	struct device *dmadev = tx->adapter->dmadev;
- 	struct tsnep_tx_entry *entry;
- 	int i;
++	/*
++	 * As generic code authors expect to be able to use static keys
++	 * in early_param() handlers, we initialize the static keys just
++	 * before parsing early params (it's fine to call jump_label_init()
++	 * more than once).
++	 */
++	jump_label_init();
+ 	parse_early_param();
  
- 	for (i = 0; i < count; i++) {
--		entry = &tx->entry[(tx->read + i) % TSNEP_RING_SIZE];
-+		entry = &tx->entry[(index + i) % TSNEP_RING_SIZE];
- 
- 		if (entry->len) {
- 			if (i == 0)
-@@ -395,7 +395,7 @@ static netdev_tx_t tsnep_xmit_frame_ring(struct sk_buff *skb,
- 
- 	retval = tsnep_tx_map(skb, tx, count);
- 	if (retval != 0) {
--		tsnep_tx_unmap(tx, count);
-+		tsnep_tx_unmap(tx, tx->write, count);
- 		dev_kfree_skb_any(entry->skb);
- 		entry->skb = NULL;
- 
-@@ -464,7 +464,7 @@ static bool tsnep_tx_poll(struct tsnep_tx *tx, int napi_budget)
- 		if (skb_shinfo(entry->skb)->nr_frags > 0)
- 			count += skb_shinfo(entry->skb)->nr_frags;
- 
--		tsnep_tx_unmap(tx, count);
-+		tsnep_tx_unmap(tx, tx->read, count);
- 
- 		if ((skb_shinfo(entry->skb)->tx_flags & SKBTX_IN_PROGRESS) &&
- 		    (__le32_to_cpu(entry->desc_wb->properties) &
+ 	/* make sure we've parsed cmdline for mem= before this */
 -- 
-2.37.2
+2.35.1
 
 
 
