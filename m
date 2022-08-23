@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9AAB4C32772
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 12:07:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4FEE4C32772
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 12:08:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1359359AbiHWMHw (ORCPT
+        id S1359385AbiHWMH6 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 08:07:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59308 "EHLO
+        Tue, 23 Aug 2022 08:07:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57140 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1359309AbiHWMDi (ORCPT
+        with ESMTP id S1359325AbiHWMDl (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 08:03:38 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9F144DD777;
-        Tue, 23 Aug 2022 02:37:12 -0700 (PDT)
+        Tue, 23 Aug 2022 08:03:41 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 10C9DDAA06;
+        Tue, 23 Aug 2022 02:37:13 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id AE8BEB81C99;
-        Tue, 23 Aug 2022 09:36:45 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1D26EC4314E;
-        Tue, 23 Aug 2022 09:36:43 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id EF6EAB81C63;
+        Tue, 23 Aug 2022 09:36:51 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5773DC433D6;
+        Tue, 23 Aug 2022 09:36:50 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661247404;
-        bh=d3Ob9abDiTAfOZ3qvqCRvYikEzulRXNDwrhM6Vtjwqs=;
+        s=korg; t=1661247410;
+        bh=DaQnnVDgFwZPMMhgq8n/IGkxtk0uMZiqPrINJIhDaIk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=pcHWFhbpyGdqgdHpVoBahY5iSFHU6CwfzfRdPg65bs9CZoMW1dFLgL3Fc0/3r0uL5
-         QqNn52hrOGiFQGk3URka1PcZ6EFXNn8c8nBBuM6mO8Xn2bj3dO4ZzOJ7is9v/ITFZr
-         IvrG8CZ8dFIXgjjtXLG9TtETuvwAZ5gV3adyRbEo=
+        b=BQZY+ntb6cqozSNkj/wUKoIIKSgJ0MooxDK6YtysKaA6ETc/tks3v6cXTMYhcBQcG
+         RhVvoBOXJL8wjN2N6CC7rhltxArjQjmPxeJA26WbEVlmOmTzBno4Brbv8IpPSC0NBf
+         VI2bcM70kOp4LqEaXbwIq2Vm1FxZa+l2JexwpKh0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Zhang Xianwei <zhang.xianwei8@zte.com.cn>,
-        Yi Wang <wang.yi59@zte.com.cn>,
-        Trond Myklebust <trond.myklebust@hammerspace.com>
-Subject: [PATCH 5.10 025/158] NFSv4.1: RECLAIM_COMPLETE must handle EACCES
-Date:   Tue, 23 Aug 2022 10:25:57 +0200
-Message-Id: <20220823080047.105148997@linuxfoundation.org>
+        stable@vger.kernel.org, Hou Tao <houtao1@huawei.com>,
+        Yonghong Song <yhs@fb.com>, Alexei Starovoitov <ast@kernel.org>
+Subject: [PATCH 5.10 027/158] bpf: Acquire map uref in .init_seq_private for array map iterator
+Date:   Tue, 23 Aug 2022 10:25:59 +0200
+Message-Id: <20220823080047.190919503@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220823080046.056825146@linuxfoundation.org>
 References: <20220823080046.056825146@linuxfoundation.org>
@@ -50,38 +49,54 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Zhang Xianwei <zhang.xianwei8@zte.com.cn>
+From: Hou Tao <houtao1@huawei.com>
 
-commit e35a5e782f67ed76a65ad0f23a484444a95f000f upstream.
+commit f76fa6b338055054f80c72b29c97fb95c1becadc upstream.
 
-A client should be able to handle getting an EACCES error while doing
-a mount operation to reclaim state due to NFS4CLNT_RECLAIM_REBOOT
-being set. If the server returns RPC_AUTH_BADCRED because authentication
-failed when we execute "exportfs -au", then RECLAIM_COMPLETE will go a
-wrong way. After mount succeeds, all OPEN call will fail due to an
-NFS4ERR_GRACE error being returned. This patch is to fix it by resending
-a RPC request.
+bpf_iter_attach_map() acquires a map uref, and the uref may be released
+before or in the middle of iterating map elements. For example, the uref
+could be released in bpf_iter_detach_map() as part of
+bpf_link_release(), or could be released in bpf_map_put_with_uref() as
+part of bpf_map_release().
 
-Signed-off-by: Zhang Xianwei <zhang.xianwei8@zte.com.cn>
-Signed-off-by: Yi Wang <wang.yi59@zte.com.cn>
-Fixes: aa5190d0ed7d ("NFSv4: Kill nfs4_async_handle_error() abuses by NFSv4.1")
-Signed-off-by: Trond Myklebust <trond.myklebust@hammerspace.com>
+Alternative fix is acquiring an extra bpf_link reference just like
+a pinned map iterator does, but it introduces unnecessary dependency
+on bpf_link instead of bpf_map.
+
+So choose another fix: acquiring an extra map uref in .init_seq_private
+for array map iterator.
+
+Fixes: d3cc2ab546ad ("bpf: Implement bpf iterator for array maps")
+Signed-off-by: Hou Tao <houtao1@huawei.com>
+Acked-by: Yonghong Song <yhs@fb.com>
+Link: https://lore.kernel.org/r/20220810080538.1845898-2-houtao@huaweicloud.com
+Signed-off-by: Alexei Starovoitov <ast@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- fs/nfs/nfs4proc.c |    3 +++
- 1 file changed, 3 insertions(+)
+ kernel/bpf/arraymap.c |    6 ++++++
+ 1 file changed, 6 insertions(+)
 
---- a/fs/nfs/nfs4proc.c
-+++ b/fs/nfs/nfs4proc.c
-@@ -9273,6 +9273,9 @@ static int nfs41_reclaim_complete_handle
- 		rpc_delay(task, NFS4_POLL_RETRY_MAX);
- 		fallthrough;
- 	case -NFS4ERR_RETRY_UNCACHED_REP:
-+	case -EACCES:
-+		dprintk("%s: failed to reclaim complete error %d for server %s, retrying\n",
-+			__func__, task->tk_status, clp->cl_hostname);
- 		return -EAGAIN;
- 	case -NFS4ERR_BADSESSION:
- 	case -NFS4ERR_DEADSESSION:
+--- a/kernel/bpf/arraymap.c
++++ b/kernel/bpf/arraymap.c
+@@ -616,6 +616,11 @@ static int bpf_iter_init_array_map(void
+ 		seq_info->percpu_value_buf = value_buf;
+ 	}
+ 
++	/* bpf_iter_attach_map() acquires a map uref, and the uref may be
++	 * released before or in the middle of iterating map elements, so
++	 * acquire an extra map uref for iterator.
++	 */
++	bpf_map_inc_with_uref(map);
+ 	seq_info->map = map;
+ 	return 0;
+ }
+@@ -624,6 +629,7 @@ static void bpf_iter_fini_array_map(void
+ {
+ 	struct bpf_iter_seq_array_map_info *seq_info = priv_data;
+ 
++	bpf_map_put_with_uref(seq_info->map);
+ 	kfree(seq_info->percpu_value_buf);
+ }
+ 
 
 
