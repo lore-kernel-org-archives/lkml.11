@@ -2,42 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A9CFAC32774
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 09:22:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 25BEFC32772
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 09:23:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237224AbiHWJWy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 05:22:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40126 "EHLO
+        id S239218AbiHWJW7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 23 Aug 2022 05:22:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35192 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350349AbiHWJVm (ORCPT
+        with ESMTP id S1350315AbiHWJVl (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 05:21:42 -0400
+        Tue, 23 Aug 2022 05:21:41 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E75F56DF84;
-        Tue, 23 Aug 2022 01:34:44 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4CFF88D3C5;
+        Tue, 23 Aug 2022 01:34:41 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 2668E614E9;
-        Tue, 23 Aug 2022 08:33:47 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 24B2DC433B5;
-        Tue, 23 Aug 2022 08:33:45 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id F3B0F614C5;
+        Tue, 23 Aug 2022 08:33:12 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E395FC433C1;
+        Tue, 23 Aug 2022 08:33:11 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661243626;
-        bh=DDeFuJF+/jJw8oszRdDIPDDVt6JZ7zvbZcQR2zC/mkY=;
+        s=korg; t=1661243592;
+        bh=KbyObKk7cSByvvXNFKtPxO7zqzi0cCyZ20ssVNoXFdQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=lndspGLdjuTdRA/rDt2Fi8ATC7qo1NFU90qexq0kj9Xd6/UOmySKhNoL2CuFlLmjV
-         Q8dxIH10ohUkEf5a6V2/bvAvrUmyE8jAdEFmckdlv0rPwhpeTJqINYQKSUyRWd0SIz
-         RMrJSNSDVuvpNvKM742BZuuloMWUIFi+/I3uv/2I=
+        b=NVZo5BgAgalAZtFPUOhQMX8cUA1j4p7qbmgukDNareRa7mZ0AiNHL19NxQerqT06S
+         zbs8K3VquBzYmSogO+RT/Gfp+uunHiVvCeliEpkjaoY6yuEGzIvaSm55SK3FFFUgFC
+         yq7VKRb5p1EAibvdSiVBRduYEgK6V6lzBPBfKQi8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, "Jason A. Donenfeld" <Jason@zx2c4.com>,
-        Richard Weinberger <richard@nod.at>,
+        stable@vger.kernel.org,
+        =?UTF-8?q?Amadeusz=20S=C5=82awi=C5=84ski?= 
+        <amadeuszx.slawinski@linux.intel.com>,
+        Cezary Rojewski <cezary.rojewski@intel.com>,
+        Mark Brown <broonie@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.19 297/365] um: add "noreboot" command line option for PANIC_TIMEOUT=-1 setups
-Date:   Tue, 23 Aug 2022 10:03:18 +0200
-Message-Id: <20220823080130.606552627@linuxfoundation.org>
+Subject: [PATCH 5.19 325/365] ASoC: Intel: avs: Set max DMA segment size
+Date:   Tue, 23 Aug 2022 10:03:46 +0200
+Message-Id: <20220823080131.771177793@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220823080118.128342613@linuxfoundation.org>
 References: <20220823080118.128342613@linuxfoundation.org>
@@ -49,61 +52,38 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jason A. Donenfeld <Jason@zx2c4.com>
+From: Amadeusz Sławiński <amadeuszx.slawinski@linux.intel.com>
 
-[ Upstream commit dda520d07b95072a0b63f6c52a8eb566d08ea897 ]
+[ Upstream commit 8544eebc78c96f1834a46b26ade3e7ebe785d10c ]
 
-QEMU has a -no-reboot option, which halts instead of reboots when the
-guest asks to reboot. This is invaluable when used with
-CONFIG_PANIC_TIMEOUT=-1 (and panic_on_warn), because it allows panics
-and warnings to be caught immediately in CI. Implement this in UML too,
-by way of a basic setup param.
+Apparently it is possible for code to allocate large buffers which may
+cause warnings as reported in [1]. This was fixed for HDA, SOF and
+skylake in patchset [2], fix it also for avs driver.
 
-Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
-Signed-off-by: Richard Weinberger <richard@nod.at>
+[1] https://github.com/thesofproject/linux/issues/3430
+[2] https://lore.kernel.org/all/20220215132756.31236-1-tiwai@suse.de/
+
+Signed-off-by: Amadeusz Sławiński <amadeuszx.slawinski@linux.intel.com>
+Signed-off-by: Cezary Rojewski <cezary.rojewski@intel.com>
+Link: https://lore.kernel.org/r/20220707124153.1858249-8-cezary.rojewski@intel.com
+Signed-off-by: Mark Brown <broonie@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/um/os-Linux/skas/process.c | 17 ++++++++++++++++-
- 1 file changed, 16 insertions(+), 1 deletion(-)
+ sound/soc/intel/avs/core.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/arch/um/os-Linux/skas/process.c b/arch/um/os-Linux/skas/process.c
-index c316c993a949..b24db6017ded 100644
---- a/arch/um/os-Linux/skas/process.c
-+++ b/arch/um/os-Linux/skas/process.c
-@@ -5,6 +5,7 @@
-  */
+diff --git a/sound/soc/intel/avs/core.c b/sound/soc/intel/avs/core.c
+index 3a0997c3af2b..cf373969bb69 100644
+--- a/sound/soc/intel/avs/core.c
++++ b/sound/soc/intel/avs/core.c
+@@ -445,6 +445,7 @@ static int avs_pci_probe(struct pci_dev *pci, const struct pci_device_id *id)
+ 		dma_set_mask(dev, DMA_BIT_MASK(32));
+ 		dma_set_coherent_mask(dev, DMA_BIT_MASK(32));
+ 	}
++	dma_set_max_seg_size(dev, UINT_MAX);
  
- #include <stdlib.h>
-+#include <stdbool.h>
- #include <unistd.h>
- #include <sched.h>
- #include <errno.h>
-@@ -707,10 +708,24 @@ void halt_skas(void)
- 	UML_LONGJMP(&initial_jmpbuf, INIT_JMP_HALT);
- }
- 
-+static bool noreboot;
-+
-+static int __init noreboot_cmd_param(char *str, int *add)
-+{
-+	noreboot = true;
-+	return 0;
-+}
-+
-+__uml_setup("noreboot", noreboot_cmd_param,
-+"noreboot\n"
-+"    Rather than rebooting, exit always, akin to QEMU's -no-reboot option.\n"
-+"    This is useful if you're using CONFIG_PANIC_TIMEOUT in order to catch\n"
-+"    crashes in CI\n");
-+
- void reboot_skas(void)
- {
- 	block_signals_trace();
--	UML_LONGJMP(&initial_jmpbuf, INIT_JMP_REBOOT);
-+	UML_LONGJMP(&initial_jmpbuf, noreboot ? INIT_JMP_HALT : INIT_JMP_REBOOT);
- }
- 
- void __switch_mm(struct mm_id *mm_idp)
+ 	ret = avs_hdac_bus_init_streams(bus);
+ 	if (ret < 0) {
 -- 
 2.35.1
 
