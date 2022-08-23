@@ -2,227 +2,130 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B0CF8C32772
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 08:58:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AE164C32772
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 08:59:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242483AbiHWI6H (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 04:58:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34778 "EHLO
+        id S242353AbiHWI7f (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 23 Aug 2022 04:59:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42252 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241913AbiHWI53 (ORCPT
+        with ESMTP id S242396AbiHWI7Q (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 04:57:29 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8A49A273D;
-        Tue, 23 Aug 2022 01:25:43 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 41C30B81C35;
-        Tue, 23 Aug 2022 08:19:27 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 60102C433D6;
-        Tue, 23 Aug 2022 08:19:25 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661242765;
-        bh=3i6GooLD+noA1xpLFKw3PE5BYzonfRGzFl/PfYbHbik=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ok5X8OvzScKMd8PymB31gRcDzWB+P9HLgE+q6lyreXFIACGENn5EDTygOVauMvJVS
-         A6lHWFZ1nthDN2Nt300gkG44kwAcC5ZU1TOFd5T6PNUcu+C+foDwxImvEbFflGKOl/
-         kd3IgsJGzrHxD5XoAfurpnAAsPHXY+6H3vE/dFzQ=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Florian Westphal <fw@strlen.de>,
-        Pablo Neira Ayuso <pablo@netfilter.org>
-Subject: [PATCH 5.19 192/365] netfilter: nf_ct_sane: remove pseudo skb linearization
-Date:   Tue, 23 Aug 2022 10:01:33 +0200
-Message-Id: <20220823080126.246929890@linuxfoundation.org>
-X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220823080118.128342613@linuxfoundation.org>
-References: <20220823080118.128342613@linuxfoundation.org>
-User-Agent: quilt/0.67
+        Tue, 23 Aug 2022 04:59:16 -0400
+Received: from mail-lj1-x22b.google.com (mail-lj1-x22b.google.com [IPv6:2a00:1450:4864:20::22b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A090872848;
+        Tue, 23 Aug 2022 01:26:37 -0700 (PDT)
+Received: by mail-lj1-x22b.google.com with SMTP id q18so11800449ljg.12;
+        Tue, 23 Aug 2022 01:26:37 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc;
+        bh=INFiREuc8tsqsS8aIeq0sv6L+CLqHoDlQnC1BP60eqw=;
+        b=B42M+pKRB4ohHIy8nIxLiSRgc9jG1RBhSbh1D9TVeitjtgZrRyQz9UW35CFAWV3wEp
+         tWTMllOQHMXwnbxt2vUie0VD1Rd2GoHLGdDufOpzmD5WAH0oa3wGchYYWziTZmDVVwuM
+         uGR9cw/OZ4bXu6vnKkoYXNhsxD3hIGS7s3+Ce9U+RFlMHE7yUrJ6iesGXQdhkGQDt7DV
+         /WJ7gLDggNUyvLk2S12bpgCEyC7HacTy2UskAxRWhJQ/C2BoI+u+YHP0l5lGfmu/Na+6
+         h4380FDniPHBHb4NXRA0xEFljxLT6FrdZhjzhxDe0RkG4M0wKdE6eXyoc0+Qnv7O0B23
+         l0UA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc;
+        bh=INFiREuc8tsqsS8aIeq0sv6L+CLqHoDlQnC1BP60eqw=;
+        b=qJpSeSu74uaN6njGgEyTfdvJvISY1fBui3eBQRfnFZhuxBU0iFWYsAxel5lcJvx1L/
+         YBrZKBGmkSInyB5DxT1MlHICgnb2Sn+vKGfFX/jb7+9Ip6qpN0/54nnENQTM0pjWqPAG
+         xHWW0fZy28D5YvYUBAf5Ma82x7gMcEp4zr9k2Li76filfTC+QyOF/St6MhmtTEtkmAk3
+         avEPSJcB1MSVYzVXhNyzstfdcWuPIgNsw6WQXBibKWPzzpHKapt16eNcuXUXipvSW0TP
+         J8pd7O1TdQxtu1JUZPtp3vFA59q7ExD077VD+siKr+WHap0OrTkQRfYNTSeL/p/oz4Q1
+         lsOA==
+X-Gm-Message-State: ACgBeo0e03DZQHTSckE9/P2q3tKngdq5NkMdpYTMPhwCcFAxPFaWHqVO
+        DQN5y3gsmpikbqStI13rlFE=
+X-Google-Smtp-Source: AA6agR5Y6dLqZK4sNhaxcRwxDwyvypLkJXmZRN8Qcs1Fy/yZuE7/O7iNlqrScaudcfqaVAre1/8i0A==
+X-Received: by 2002:a2e:934f:0:b0:250:a7bc:2b8f with SMTP id m15-20020a2e934f000000b00250a7bc2b8fmr6733479ljh.512.1661243135386;
+        Tue, 23 Aug 2022 01:25:35 -0700 (PDT)
+Received: from mobilestation ([95.79.140.178])
+        by smtp.gmail.com with ESMTPSA id d12-20020a056512368c00b00492ce573726sm1908764lfs.47.2022.08.23.01.25.33
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 23 Aug 2022 01:25:34 -0700 (PDT)
+Date:   Tue, 23 Aug 2022 11:25:32 +0300
+From:   Serge Semin <fancer.lancer@gmail.com>
+To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Cc:     Serge Semin <Sergey.Semin@baikalelectronics.ru>,
+        Rob Herring <robh@kernel.org>,
+        Michal Simek <michal.simek@xilinx.com>,
+        Borislav Petkov <bp@alien8.de>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Tony Luck <tony.luck@intel.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Manish Narani <manish.narani@xilinx.com>,
+        Alexey Malahov <Alexey.Malahov@baikalelectronics.ru>,
+        Michail Ivanov <Michail.Ivanov@baikalelectronics.ru>,
+        Pavel Parkhomenko <Pavel.Parkhomenko@baikalelectronics.ru>,
+        Punnaiah Choudary Kalluri 
+        <punnaiah.choudary.kalluri@xilinx.com>,
+        Dinh Nguyen <dinguyen@kernel.org>,
+        James Morse <james.morse@arm.com>,
+        Robert Richter <rric@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-edac@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 16/20] dt-bindings: memory: snps: Detach Zynq DDRC
+ controller support
+Message-ID: <20220823082532.gf3m6466rzfxmtns@mobilestation>
+References: <20220822190730.27277-1-Sergey.Semin@baikalelectronics.ru>
+ <20220822190730.27277-17-Sergey.Semin@baikalelectronics.ru>
+ <a5a15749-1047-74ea-831e-54d27a6d6cdf@linaro.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <a5a15749-1047-74ea-831e-54d27a6d6cdf@linaro.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Florian Westphal <fw@strlen.de>
+On Tue, Aug 23, 2022 at 11:17:23AM +0300, Krzysztof Kozlowski wrote:
+> On 22/08/2022 22:07, Serge Semin wrote:
+> > The Zynq A05 DDRC controller has nothing in common with DW uMCTL2 DDRC:
+> > the CSRs layout is absolutely different and it doesn't has IRQ unlike DW
+> > uMCTL2 DDR controller of all versions (v1.x, v2.x and v3.x). Thus there is
+> > no any reason to have these controllers described by the same bindings.
+> > Thus let's split them up.
+> > 
+> > While at it rename the original Synopsys uMCTL2 DT-schema file to a more
+> > descriptive - snps,dw-umctl2-ddrc.yaml and add a more detailed title and
+> > description of the device bindings.
+> 
+> Filename should be based on compatible, so if renaming then
+> snps,ddrc-3.80a.yaml or snps,ddrc.yaml... which leads to original
+> filename anyway. Therefore nack for rename.
+> 
+> BTW, if you perform renames, generate patches with proper -M/-C/-B
+> arguments so this is detected.
+> 
+> 
+> > 
+> > Signed-off-by: Serge Semin <Sergey.Semin@baikalelectronics.ru>
+> > --->  .../snps,dw-umctl2-ddrc.yaml                  | 51 +++++++++++++
+> 
 
-commit a664375da76c6da8f83dc7997e43c568e1eb9a6a upstream.
+> This is a mess. I did not get any cover letters, any other patches any
+> description of relation between this and your other one.
+> 
+> It seems you make independent and conflicting changes to the same file,
+> so this has to be properly organized.
 
-For historical reason this code performs pseudo linearization of skbs
-via skb_header_pointer and a global 64k buffer.
+Don't hurry with the judgement. Have a better look at your DT-related
+inbox.
+Link: https://lore.kernel.org/linux-devicetree/20220822190730.27277-1-Sergey.Semin@baikalelectronics.ru/
 
-With arrival of BIG TCP, packets generated by TCP stack can exceed 64kb.
+-Sergey
 
-Rewrite this to only extract the needed header data.  This also allows
-to get rid of the locking.
-
-Fixes: 7c4e983c4f3c ("net: allow gso_max_size to exceed 65536")
-Fixes: 0fe79f28bfaf ("net: allow gro_max_size to exceed 65536")
-Signed-off-by: Florian Westphal <fw@strlen.de>
-Signed-off-by: Pablo Neira Ayuso <pablo@netfilter.org>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
----
- net/netfilter/nf_conntrack_sane.c |   68 ++++++++++++++++----------------------
- 1 file changed, 30 insertions(+), 38 deletions(-)
-
---- a/net/netfilter/nf_conntrack_sane.c
-+++ b/net/netfilter/nf_conntrack_sane.c
-@@ -34,10 +34,6 @@ MODULE_AUTHOR("Michal Schmidt <mschmidt@
- MODULE_DESCRIPTION("SANE connection tracking helper");
- MODULE_ALIAS_NFCT_HELPER(HELPER_NAME);
- 
--static char *sane_buffer;
--
--static DEFINE_SPINLOCK(nf_sane_lock);
--
- #define MAX_PORTS 8
- static u_int16_t ports[MAX_PORTS];
- static unsigned int ports_c;
-@@ -67,14 +63,16 @@ static int help(struct sk_buff *skb,
- 	unsigned int dataoff, datalen;
- 	const struct tcphdr *th;
- 	struct tcphdr _tcph;
--	void *sb_ptr;
- 	int ret = NF_ACCEPT;
- 	int dir = CTINFO2DIR(ctinfo);
- 	struct nf_ct_sane_master *ct_sane_info = nfct_help_data(ct);
- 	struct nf_conntrack_expect *exp;
- 	struct nf_conntrack_tuple *tuple;
--	struct sane_request *req;
- 	struct sane_reply_net_start *reply;
-+	union {
-+		struct sane_request req;
-+		struct sane_reply_net_start repl;
-+	} buf;
- 
- 	/* Until there's been traffic both ways, don't look in packets. */
- 	if (ctinfo != IP_CT_ESTABLISHED &&
-@@ -92,59 +90,62 @@ static int help(struct sk_buff *skb,
- 		return NF_ACCEPT;
- 
- 	datalen = skb->len - dataoff;
--
--	spin_lock_bh(&nf_sane_lock);
--	sb_ptr = skb_header_pointer(skb, dataoff, datalen, sane_buffer);
--	if (!sb_ptr) {
--		spin_unlock_bh(&nf_sane_lock);
--		return NF_ACCEPT;
--	}
--
- 	if (dir == IP_CT_DIR_ORIGINAL) {
-+		const struct sane_request *req;
-+
- 		if (datalen != sizeof(struct sane_request))
--			goto out;
-+			return NF_ACCEPT;
-+
-+		req = skb_header_pointer(skb, dataoff, datalen, &buf.req);
-+		if (!req)
-+			return NF_ACCEPT;
- 
--		req = sb_ptr;
- 		if (req->RPC_code != htonl(SANE_NET_START)) {
- 			/* Not an interesting command */
--			ct_sane_info->state = SANE_STATE_NORMAL;
--			goto out;
-+			WRITE_ONCE(ct_sane_info->state, SANE_STATE_NORMAL);
-+			return NF_ACCEPT;
- 		}
- 
- 		/* We're interested in the next reply */
--		ct_sane_info->state = SANE_STATE_START_REQUESTED;
--		goto out;
-+		WRITE_ONCE(ct_sane_info->state, SANE_STATE_START_REQUESTED);
-+		return NF_ACCEPT;
- 	}
- 
-+	/* IP_CT_DIR_REPLY */
-+
- 	/* Is it a reply to an uninteresting command? */
--	if (ct_sane_info->state != SANE_STATE_START_REQUESTED)
--		goto out;
-+	if (READ_ONCE(ct_sane_info->state) != SANE_STATE_START_REQUESTED)
-+		return NF_ACCEPT;
- 
- 	/* It's a reply to SANE_NET_START. */
--	ct_sane_info->state = SANE_STATE_NORMAL;
-+	WRITE_ONCE(ct_sane_info->state, SANE_STATE_NORMAL);
- 
- 	if (datalen < sizeof(struct sane_reply_net_start)) {
- 		pr_debug("NET_START reply too short\n");
--		goto out;
-+		return NF_ACCEPT;
- 	}
- 
--	reply = sb_ptr;
-+	datalen = sizeof(struct sane_reply_net_start);
-+
-+	reply = skb_header_pointer(skb, dataoff, datalen, &buf.repl);
-+	if (!reply)
-+		return NF_ACCEPT;
-+
- 	if (reply->status != htonl(SANE_STATUS_SUCCESS)) {
- 		/* saned refused the command */
- 		pr_debug("unsuccessful SANE_STATUS = %u\n",
- 			 ntohl(reply->status));
--		goto out;
-+		return NF_ACCEPT;
- 	}
- 
- 	/* Invalid saned reply? Ignore it. */
- 	if (reply->zero != 0)
--		goto out;
-+		return NF_ACCEPT;
- 
- 	exp = nf_ct_expect_alloc(ct);
- 	if (exp == NULL) {
- 		nf_ct_helper_log(skb, ct, "cannot alloc expectation");
--		ret = NF_DROP;
--		goto out;
-+		return NF_DROP;
- 	}
- 
- 	tuple = &ct->tuplehash[IP_CT_DIR_ORIGINAL].tuple;
-@@ -162,9 +163,6 @@ static int help(struct sk_buff *skb,
- 	}
- 
- 	nf_ct_expect_put(exp);
--
--out:
--	spin_unlock_bh(&nf_sane_lock);
- 	return ret;
- }
- 
-@@ -178,7 +176,6 @@ static const struct nf_conntrack_expect_
- static void __exit nf_conntrack_sane_fini(void)
- {
- 	nf_conntrack_helpers_unregister(sane, ports_c * 2);
--	kfree(sane_buffer);
- }
- 
- static int __init nf_conntrack_sane_init(void)
-@@ -187,10 +184,6 @@ static int __init nf_conntrack_sane_init
- 
- 	NF_CT_HELPER_BUILD_BUG_ON(sizeof(struct nf_ct_sane_master));
- 
--	sane_buffer = kmalloc(65536, GFP_KERNEL);
--	if (!sane_buffer)
--		return -ENOMEM;
--
- 	if (ports_c == 0)
- 		ports[ports_c++] = SANE_PORT;
- 
-@@ -210,7 +203,6 @@ static int __init nf_conntrack_sane_init
- 	ret = nf_conntrack_helpers_register(sane, ports_c * 2);
- 	if (ret < 0) {
- 		pr_err("failed to register helpers\n");
--		kfree(sane_buffer);
- 		return ret;
- 	}
- 
-
-
+> 
+> Send entire patchset with cover letter with description of all
+> dependencies to all maintainers.
+> 
+> This is unreviewable now, so a no.
+> 
+> Best regards,
+> Krzysztof
