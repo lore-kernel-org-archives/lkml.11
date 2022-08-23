@@ -2,46 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1DF26C32774
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 08:43:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C86E7C32772
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 08:43:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344683AbiHWInU (ORCPT
+        id S1347090AbiHWInY (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 04:43:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60814 "EHLO
+        Tue, 23 Aug 2022 04:43:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46848 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348405AbiHWIlb (ORCPT
+        with ESMTP id S1347835AbiHWIlH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 04:41:31 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 73D0A7960C;
-        Tue, 23 Aug 2022 01:19:42 -0700 (PDT)
+        Tue, 23 Aug 2022 04:41:07 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9B564792FE;
+        Tue, 23 Aug 2022 01:19:21 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 5F02DB81C20;
-        Tue, 23 Aug 2022 08:18:52 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9BAF5C433D7;
-        Tue, 23 Aug 2022 08:18:50 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 5F88D61238;
+        Tue, 23 Aug 2022 08:18:09 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 67BF1C433C1;
+        Tue, 23 Aug 2022 08:18:08 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661242731;
-        bh=HWPvRsRbImhp+mxkyDgXuQ+z0w/UFpkDqwsXmE51S2M=;
+        s=korg; t=1661242688;
+        bh=X32xtPBWcVE6Z6gxu3/jbMLK/pP7I1mcOKV4OxfaTWk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=lQweAUfoYfJ63VYNn+4vju/YisrI0HHq6EFeHO58lu+UmDD+C1ChsffhLbIzZYqHc
-         LarFPRwD+slAfpSyV3Imi2vI8HZdShQoORyOiLeVidFczFbI2Dn2FwxicpVa89do2r
-         8wsNDYo0XQfZ3P6oay1QdYXYGmHesfPLESraSITM=
+        b=hnf+XXwi8AS0mgoaAvjKjgHElB21FC8VL98DwqMZrIRQBIQuVU12huz+JId8cK3WW
+         JWln4XdpjNWI+gtwJwD9cek05OmBb2dpIMTtbMtBOlq9/gAuQDuOqYVezuIcWA3AIY
+         cqT9tPcTmhyhBghcBdtawnAjoyznSQk7+67j+yN4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        =?UTF-8?q?Martin=20Povi=C5=A1er?= <povik+lin@cutebit.org>,
-        Mark Brown <broonie@kernel.org>
-Subject: [PATCH 5.19 182/365] ASoC: tas2770: Drop conflicting set_bias_level power setting
-Date:   Tue, 23 Aug 2022 10:01:23 +0200
-Message-Id: <20220823080125.843427007@linuxfoundation.org>
+        stable@vger.kernel.org, Alan Stern <stern@rowland.harvard.edu>,
+        Liang He <windhl@126.com>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 4.9 088/101] usb: host: ohci-ppc-of: Fix refcount leak bug
+Date:   Tue, 23 Aug 2022 10:04:01 +0200
+Message-Id: <20220823080037.906064363@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220823080118.128342613@linuxfoundation.org>
-References: <20220823080118.128342613@linuxfoundation.org>
+In-Reply-To: <20220823080034.579196046@linuxfoundation.org>
+References: <20220823080034.579196046@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -50,72 +49,37 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Martin Povišer <povik+lin@cutebit.org>
+From: Liang He <windhl@126.com>
 
-commit 482c23fbc7e9bf5a7a74defd0735d5346215db58 upstream.
+[ Upstream commit 40a959d7042bb7711e404ad2318b30e9f92c6b9b ]
 
-The driver is setting the PWR_CTRL field in both the set_bias_level
-callback and on DAPM events of the DAC widget (and also in the
-mute_stream method). Drop the set_bias_level callback altogether as the
-power setting it does is in conflict with the other code paths.
+In ohci_hcd_ppc_of_probe(), of_find_compatible_node() will return
+a node pointer with refcount incremented. We should use of_node_put()
+when it is not used anymore.
 
-Fixes: 1a476abc723e ("tas2770: add tas2770 smart PA kernel driver")
-Signed-off-by: Martin Povišer <povik+lin@cutebit.org>
-Link: https://lore.kernel.org/r/20220808141246.5749-4-povik+lin@cutebit.org
-Signed-off-by: Mark Brown <broonie@kernel.org>
+Acked-by: Alan Stern <stern@rowland.harvard.edu>
+Signed-off-by: Liang He <windhl@126.com>
+Link: https://lore.kernel.org/r/20220617034637.4003115-1-windhl@126.com
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- sound/soc/codecs/tas2770.c |   33 ---------------------------------
- 1 file changed, 33 deletions(-)
+ drivers/usb/host/ohci-ppc-of.c | 1 +
+ 1 file changed, 1 insertion(+)
 
---- a/sound/soc/codecs/tas2770.c
-+++ b/sound/soc/codecs/tas2770.c
-@@ -46,38 +46,6 @@ static void tas2770_reset(struct tas2770
- 	usleep_range(1000, 2000);
- }
+diff --git a/drivers/usb/host/ohci-ppc-of.c b/drivers/usb/host/ohci-ppc-of.c
+index 4f87a5c61b08..d22a70363fbf 100644
+--- a/drivers/usb/host/ohci-ppc-of.c
++++ b/drivers/usb/host/ohci-ppc-of.c
+@@ -168,6 +168,7 @@ static int ohci_hcd_ppc_of_probe(struct platform_device *op)
+ 				release_mem_region(res.start, 0x4);
+ 		} else
+ 			pr_debug("%s: cannot get ehci offset from fdt\n", __FILE__);
++		of_node_put(np);
+ 	}
  
--static int tas2770_set_bias_level(struct snd_soc_component *component,
--				 enum snd_soc_bias_level level)
--{
--	struct tas2770_priv *tas2770 =
--			snd_soc_component_get_drvdata(component);
--
--	switch (level) {
--	case SND_SOC_BIAS_ON:
--		snd_soc_component_update_bits(component, TAS2770_PWR_CTRL,
--					      TAS2770_PWR_CTRL_MASK,
--					      TAS2770_PWR_CTRL_ACTIVE);
--		break;
--	case SND_SOC_BIAS_STANDBY:
--	case SND_SOC_BIAS_PREPARE:
--		snd_soc_component_update_bits(component, TAS2770_PWR_CTRL,
--					      TAS2770_PWR_CTRL_MASK,
--					      TAS2770_PWR_CTRL_MUTE);
--		break;
--	case SND_SOC_BIAS_OFF:
--		snd_soc_component_update_bits(component, TAS2770_PWR_CTRL,
--					      TAS2770_PWR_CTRL_MASK,
--					      TAS2770_PWR_CTRL_SHUTDOWN);
--		break;
--
--	default:
--		dev_err(tas2770->dev, "wrong power level setting %d\n", level);
--		return -EINVAL;
--	}
--
--	return 0;
--}
--
- #ifdef CONFIG_PM
- static int tas2770_codec_suspend(struct snd_soc_component *component)
- {
-@@ -555,7 +523,6 @@ static const struct snd_soc_component_dr
- 	.probe			= tas2770_codec_probe,
- 	.suspend		= tas2770_codec_suspend,
- 	.resume			= tas2770_codec_resume,
--	.set_bias_level = tas2770_set_bias_level,
- 	.controls		= tas2770_snd_controls,
- 	.num_controls		= ARRAY_SIZE(tas2770_snd_controls),
- 	.dapm_widgets		= tas2770_dapm_widgets,
+ 	irq_dispose_mapping(irq);
+-- 
+2.35.1
+
 
 
