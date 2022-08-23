@@ -2,46 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8D18EC32772
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 08:34:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AAE97C32772
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 08:34:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245349AbiHWIe3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 04:34:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60256 "EHLO
+        id S243668AbiHWIee (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 23 Aug 2022 04:34:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34400 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346222AbiHWIbv (ORCPT
+        with ESMTP id S1346299AbiHWIby (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 04:31:51 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4D19F6DAE6;
+        Tue, 23 Aug 2022 04:31:54 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4C7996DAE5;
         Tue, 23 Aug 2022 01:16:13 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 9F5156131B;
-        Tue, 23 Aug 2022 08:15:42 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9CF5CC433D7;
-        Tue, 23 Aug 2022 08:15:41 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 13007B81C39;
+        Tue, 23 Aug 2022 08:15:31 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 59E86C433C1;
+        Tue, 23 Aug 2022 08:15:29 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661242542;
-        bh=gZYsygsulZRaUQQNEd00HqGuo0mFJXCegFja3ncqvFY=;
+        s=korg; t=1661242529;
+        bh=MEyPEQu33UrEyYdLAvPi0L0i3N561Iev1cfZTRp8dhY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=P/gk+O7OZnAaPfQkWaflVw2D19xkpj8RYMw+7VfzjYNF7OzenTFNsWhsnpd3vn1dq
-         W5PwTBxECRfZ00/k6eA53DQMTs5d/+R7hA+5rFcUXzfFAmcWgxsCx2LsVEFuA2DwDV
-         hHYcR140WsY1h0ap26qT8eTKUWkQLFl7UgzmFtQE=
+        b=HM90hG2xMMQ/fqPDtaqxyEI8NSpW+RxMyWfT9duyuAJAChDkcoPFOQLDvb64mnnFT
+         b33e9M6wWm0n+XBBS1THGMoB+zBiGJUyc7AdGVQFvd5Q2WY9uxKzfzTzQMLuh3xeSm
+         bz2gqZ+TTUfWyiKXQPj0i3rSXsB6ULOkYzeenr4M=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
-        Michal Simek <michal.simek@amd.com>,
-        Mark Brown <broonie@kernel.org>
-Subject: [PATCH 5.19 134/365] spi: dt-bindings: zynqmp-qspi: add missing required
-Date:   Tue, 23 Aug 2022 10:00:35 +0200
-Message-Id: <20220823080123.797522157@linuxfoundation.org>
+        stable@vger.kernel.org, Zhenpeng Lin <zplin@u.northwestern.edu>,
+        Thadeu Lima de Souza Cascardo <cascardo@canonical.com>,
+        Kamal Mostafa <kamal@canonical.com>,
+        Jamal Hadi Salim <jhs@mojatatu.com>,
+        Jakub Kicinski <kuba@kernel.org>
+Subject: [PATCH 4.9 057/101] net_sched: cls_route: remove from list when handle is 0
+Date:   Tue, 23 Aug 2022 10:03:30 +0200
+Message-Id: <20220823080036.741699554@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220823080118.128342613@linuxfoundation.org>
-References: <20220823080118.128342613@linuxfoundation.org>
+In-Reply-To: <20220823080034.579196046@linuxfoundation.org>
+References: <20220823080034.579196046@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -50,37 +51,45 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+From: Thadeu Lima de Souza Cascardo <cascardo@canonical.com>
 
-commit acfc34f008c3e66bbcb7b9162c80c8327b6e800f upstream.
+commit 9ad36309e2719a884f946678e0296be10f0bb4c1 upstream.
 
-During the conversion the bindings lost list of required properties.
+When a route filter is replaced and the old filter has a 0 handle, the old
+one won't be removed from the hashtable, while it will still be freed.
 
-Fixes: c58db2abb19f ("spi: convert Xilinx Zynq UltraScale+ MPSoC GQSPI bindings to YAML")
-Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Reviewed-by: Michal Simek <michal.simek@amd.com>
-Link: https://lore.kernel.org/r/20220704130618.199231-2-krzysztof.kozlowski@linaro.org
-Signed-off-by: Mark Brown <broonie@kernel.org>
+The test was there since before commit 1109c00547fc ("net: sched: RCU
+cls_route"), when a new filter was not allocated when there was an old one.
+The old filter was reused and the reinserting would only be necessary if an
+old filter was replaced. That was still wrong for the same case where the
+old handle was 0.
+
+Remove the old filter from the list independently from its handle value.
+
+This fixes CVE-2022-2588, also reported as ZDI-CAN-17440.
+
+Reported-by: Zhenpeng Lin <zplin@u.northwestern.edu>
+Signed-off-by: Thadeu Lima de Souza Cascardo <cascardo@canonical.com>
+Reviewed-by: Kamal Mostafa <kamal@canonical.com>
+Cc: <stable@vger.kernel.org>
+Acked-by: Jamal Hadi Salim <jhs@mojatatu.com>
+Link: https://lore.kernel.org/r/20220809170518.164662-1-cascardo@canonical.com
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- Documentation/devicetree/bindings/spi/spi-zynqmp-qspi.yaml |    7 +++++++
- 1 file changed, 7 insertions(+)
+ net/sched/cls_route.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/Documentation/devicetree/bindings/spi/spi-zynqmp-qspi.yaml
-+++ b/Documentation/devicetree/bindings/spi/spi-zynqmp-qspi.yaml
-@@ -30,6 +30,13 @@ properties:
-   clocks:
-     maxItems: 2
+--- a/net/sched/cls_route.c
++++ b/net/sched/cls_route.c
+@@ -534,7 +534,7 @@ static int route4_change(struct net *net
+ 	rcu_assign_pointer(f->next, f1);
+ 	rcu_assign_pointer(*fp, f);
  
-+required:
-+  - compatible
-+  - reg
-+  - interrupts
-+  - clock-names
-+  - clocks
-+
- unevaluatedProperties: false
- 
- examples:
+-	if (fold && fold->handle && f->handle != fold->handle) {
++	if (fold) {
+ 		th = to_hash(fold->handle);
+ 		h = from_hash(fold->handle >> 16);
+ 		b = rtnl_dereference(head->table[th]);
 
 
