@@ -2,42 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EDAF0C32793
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 11:59:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2BD34C32772
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 11:59:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244508AbiHWL5m (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 07:57:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41954 "EHLO
+        id S1358944AbiHWL5w (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 23 Aug 2022 07:57:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35950 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1358919AbiHWLzc (ORCPT
+        with ESMTP id S1359039AbiHWL4F (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 07:55:32 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 87C574BD2E;
-        Tue, 23 Aug 2022 02:33:27 -0700 (PDT)
+        Tue, 23 Aug 2022 07:56:05 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6A78F67CB9;
+        Tue, 23 Aug 2022 02:33:36 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 30A86B81C99;
-        Tue, 23 Aug 2022 09:33:24 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 75FABC433C1;
-        Tue, 23 Aug 2022 09:33:22 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 5315761335;
+        Tue, 23 Aug 2022 09:32:57 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5208FC433C1;
+        Tue, 23 Aug 2022 09:32:56 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661247202;
-        bh=alwZg7Pm/vtkDLVFTe2uuR2ES6OCPdj8VDhWPiZKH8Y=;
+        s=korg; t=1661247176;
+        bh=BLG1m5ZxveTg+8OAMSqltELUdyCKw/WsOmvoPuaHGb0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=iDir4a42DAK/i3M5YHgUl9RMDPBKUV2wR0M+S3GNSn2KPJLDaR2ztitE8lS43ENJc
-         2I4WuEmmX7j8Fh3xdytsD4U+scbPMcM4Z1uaBBQCFc+9drR0tTRG7hBDckNgvygsfI
-         L5QfI0jSm6pPD7GGCcSvddcyjEUkHfMMhG0oqhjs=
+        b=iYXM44HUBZC2PVAD+7geJRGE7UzX1/GwK9oVRPOAnYUedpJ929qVhjZ7n8UG8cpGz
+         OPo2Xl1TVCkvFg9IDguErVrvUM/bhD7ZtgyokUHg7Ng3N7BW2aDmz5cBnqOjO1bTeY
+         99pgZxV4ZWPofQ4VpvJkD4r4oCm87huEvR2FhAz0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Frank Li <Frank.Li@nxp.com>,
-        Faqiang Zhu <faqiang.zhu@nxp.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 350/389] usb: cdns3 fix use-after-free at workaround 2
-Date:   Tue, 23 Aug 2022 10:27:08 +0200
-Message-Id: <20220823080130.162788721@linuxfoundation.org>
+        stable@vger.kernel.org, Alan Brady <alan.brady@intel.com>,
+        Mateusz Palczewski <mateusz.palczewski@intel.com>,
+        Tony Nguyen <anthony.l.nguyen@intel.com>,
+        Gurucharan <gurucharanx.g@intel.com>
+Subject: [PATCH 5.4 343/389] i40e: Fix to stop tx_timeout recovery if GLOBR fails
+Date:   Tue, 23 Aug 2022 10:27:01 +0200
+Message-Id: <20220823080129.863587808@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220823080115.331990024@linuxfoundation.org>
 References: <20220823080115.331990024@linuxfoundation.org>
@@ -49,53 +51,42 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Frank Li <Frank.Li@nxp.com>
+From: Alan Brady <alan.brady@intel.com>
 
-[ Upstream commit 7d602f30149a117eea260208b1661bc404c21dfd ]
+commit 57c942bc3bef0970f0b21f8e0998e76a900ea80d upstream.
 
-BUG: KFENCE: use-after-free read in __list_del_entry_valid+0x10/0xac
+When a tx_timeout fires, the PF attempts to recover by incrementally
+resetting.  First we try a PFR, then CORER and finally a GLOBR.  If the
+GLOBR fails, then we keep hitting the tx_timeout and incrementing the
+recovery level and issuing dmesgs, which is both annoying to the user
+and accomplishes nothing.
 
-cdns3_wa2_remove_old_request()
-{
-	...
-	kfree(priv_req->request.buf);
-	cdns3_gadget_ep_free_request(&priv_ep->endpoint, &priv_req->request);
-	list_del_init(&priv_req->list);
-	^^^ use after free
-	...
-}
+If the GLOBR fails, then we're pretty much totally hosed, and there's
+not much else we can do to recover, so this makes it such that we just
+kill the VSI and stop hitting the tx_timeout in such a case.
 
-cdns3_gadget_ep_free_request() free the space pointed by priv_req,
-but priv_req is used in the following list_del_init().
-
-This patch move list_del_init() before cdns3_gadget_ep_free_request().
-
-Signed-off-by: Frank Li <Frank.Li@nxp.com>
-Signed-off-by: Faqiang Zhu <faqiang.zhu@nxp.com>
-Link: https://lore.kernel.org/r/20220608190430.2814358-1-Frank.Li@nxp.com
+Fixes: 41c445ff0f48 ("i40e: main driver core")
+Signed-off-by: Alan Brady <alan.brady@intel.com>
+Signed-off-by: Mateusz Palczewski <mateusz.palczewski@intel.com>
+Tested-by: Gurucharan <gurucharanx.g@intel.com> (A Contingent worker at Intel)
+Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/usb/cdns3/gadget.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/net/ethernet/intel/i40e/i40e_main.c |    4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/usb/cdns3/gadget.c b/drivers/usb/cdns3/gadget.c
-index 296f2ee1b680..a9399f2b3930 100644
---- a/drivers/usb/cdns3/gadget.c
-+++ b/drivers/usb/cdns3/gadget.c
-@@ -549,9 +549,9 @@ static void cdns3_wa2_remove_old_request(struct cdns3_endpoint *priv_ep)
- 		trace_cdns3_wa2(priv_ep, "removes eldest request");
+--- a/drivers/net/ethernet/intel/i40e/i40e_main.c
++++ b/drivers/net/ethernet/intel/i40e/i40e_main.c
+@@ -409,7 +409,9 @@ static void i40e_tx_timeout(struct net_d
+ 		set_bit(__I40E_GLOBAL_RESET_REQUESTED, pf->state);
+ 		break;
+ 	default:
+-		netdev_err(netdev, "tx_timeout recovery unsuccessful\n");
++		netdev_err(netdev, "tx_timeout recovery unsuccessful, device is in non-recoverable state.\n");
++		set_bit(__I40E_DOWN_REQUESTED, pf->state);
++		set_bit(__I40E_VSI_DOWN_REQUESTED, vsi->state);
+ 		break;
+ 	}
  
- 		kfree(priv_req->request.buf);
-+		list_del_init(&priv_req->list);
- 		cdns3_gadget_ep_free_request(&priv_ep->endpoint,
- 					     &priv_req->request);
--		list_del_init(&priv_req->list);
- 		--priv_ep->wa2_counter;
- 
- 		if (!chain)
--- 
-2.35.1
-
 
 
