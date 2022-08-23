@@ -2,147 +2,91 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 25E2DC32793
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 09:31:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 185F9C32792
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 09:31:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235543AbiHWJbk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 05:31:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51216 "EHLO
+        id S1350000AbiHWJbr (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 23 Aug 2022 05:31:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51304 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350351AbiHWJ3W (ORCPT
+        with ESMTP id S1349953AbiHWJ3e (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 05:29:22 -0400
-Received: from mail-lf1-x12b.google.com (mail-lf1-x12b.google.com [IPv6:2a00:1450:4864:20::12b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0826C923CA;
-        Tue, 23 Aug 2022 01:37:31 -0700 (PDT)
-Received: by mail-lf1-x12b.google.com with SMTP id bt10so5716539lfb.1;
-        Tue, 23 Aug 2022 01:37:31 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc;
-        bh=vop6fItyvbYtkrV6IP5UVBH+x7wzffEHNhLEh8TzmD8=;
-        b=PdX27RnPGKwVCyCypErvS8EGx+jQCxJQjsN3GR6KThiHAzdSrVqpzi6+4lJ0R2Z2ZN
-         J8c+VhkgdNh7L1QWqN1bD0xhl2Zvr8pmNeW/HmfGFV7Hz51OxwuRfKtNNwThdHVBPk0j
-         bvYUq4kk6NDVLPuk0qo7kCA/XHYCuEmYnKA/cVrgVYn4aCrXWyvjDKGyAij6wY0Zkn4L
-         G8Czw9HygPAE3OyoUSWKNw3+EtS92m61SuRkgwjsYNNtrTn3aYAvowO87ZJBqAvbvqT/
-         i1JEI0YVotddMgzWYR/8Bqbbu8j4sBbyAsh2KpC3196CGZdEeWXD67uDgRwaGzg89yc0
-         cjkg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc;
-        bh=vop6fItyvbYtkrV6IP5UVBH+x7wzffEHNhLEh8TzmD8=;
-        b=FOScH8dl/SzvDNQQfGWRhmEdtsXBDuIRugqaeSt+EN1aPksGKjX46cEjeY860DLJrB
-         q3CwBPZ+50XDeR9ExSKBf+YCuVif8WLNyUY+3Fer/T6fxnWHE2e82InKOzpl0SDylCHc
-         7Ldqpeje7xT6gVJIr86lwgT38bEXC9UrShCDRv8h6CmATLV4oTfX/Slj6ELgOQgkCNo4
-         GgyII5Fw37KeJfDN2XVkeiFTrVCDr3V3fis+WGIGLjtfmMfU35zDYhdvmXIzzcb+S5oX
-         VcOPdri9tUGWc6BCCqI/2VuASnMj/LvwnAuhL3MLYsgUnS7KX5wJuj0ldRnHPpJTGKIj
-         GzLQ==
-X-Gm-Message-State: ACgBeo0f+Hg5nbgidpyvSSTvP4s8+aWVMpiYRW+HGqsdf9zmcOmpmPFE
-        3LkIVBuKXcN9gwnkYQkSigc=
-X-Google-Smtp-Source: AA6agR5sCJFUy6q6BK/+a0nDOxzWJIe8zJFPRjdjmjK/QZnURboZ9UHk7Aq9/NiHjnaBrmGzTmHdqA==
-X-Received: by 2002:a05:6512:13a1:b0:48d:f14:9059 with SMTP id p33-20020a05651213a100b0048d0f149059mr8993313lfa.110.1661243811321;
-        Tue, 23 Aug 2022 01:36:51 -0700 (PDT)
-Received: from mobilestation ([95.79.140.178])
-        by smtp.gmail.com with ESMTPSA id bf40-20020a2eaa28000000b0025e59f125fbsm2259108ljb.53.2022.08.23.01.36.49
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 23 Aug 2022 01:36:50 -0700 (PDT)
-Date:   Tue, 23 Aug 2022 11:36:48 +0300
-From:   Serge Semin <fancer.lancer@gmail.com>
-To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Cc:     Serge Semin <Sergey.Semin@baikalelectronics.ru>,
-        Rob Herring <robh@kernel.org>,
-        Michal Simek <michal.simek@xilinx.com>,
-        Borislav Petkov <bp@alien8.de>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
-        Tony Luck <tony.luck@intel.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Manish Narani <manish.narani@xilinx.com>,
-        Alexey Malahov <Alexey.Malahov@baikalelectronics.ru>,
-        Michail Ivanov <Michail.Ivanov@baikalelectronics.ru>,
-        Pavel Parkhomenko <Pavel.Parkhomenko@baikalelectronics.ru>,
-        Punnaiah Choudary Kalluri 
-        <punnaiah.choudary.kalluri@xilinx.com>,
-        Dinh Nguyen <dinguyen@kernel.org>,
-        James Morse <james.morse@arm.com>,
-        Robert Richter <rric@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-edac@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 16/20] dt-bindings: memory: snps: Detach Zynq DDRC
- controller support
-Message-ID: <20220823083648.j7hmyt4py5xqnzde@mobilestation>
-References: <20220822190730.27277-1-Sergey.Semin@baikalelectronics.ru>
- <20220822190730.27277-17-Sergey.Semin@baikalelectronics.ru>
- <a5a15749-1047-74ea-831e-54d27a6d6cdf@linaro.org>
- <835938e3-e4f5-5029-9373-5dd59bc3b625@linaro.org>
- <20220823082748.td6pwkzj5grfno77@mobilestation>
- <afc181cd-46b7-4c69-d27a-d2005904f48a@linaro.org>
+        Tue, 23 Aug 2022 05:29:34 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B4339923DF;
+        Tue, 23 Aug 2022 01:37:35 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 0A603CE1B49;
+        Tue, 23 Aug 2022 08:37:35 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0E2C4C433D6;
+        Tue, 23 Aug 2022 08:37:32 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1661243853;
+        bh=Xz5hcmM4qCkmNj4cQMqcWYCdPA3cuKankeknCXY9KUs=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=IjkXt9Y/jJkMExQQtTihIXY7LahNtZ5Re71jtt0GCFhQZ+f8m1JZ9dhDRsWt8be3D
+         AQcAeAkzqJazu/PyFcycSfgQMvCGYIjSBkc1WQI9xJBz3DMsZKG8BCLDsOQlG9KzFX
+         qcH/62wI9E7jYSXRnfLngBJ8j9nALfWQCc2SSiSM=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org,
+        Alexander Stein <alexander.stein@ew.tq-group.com>,
+        Shawn Guo <shawnguo@kernel.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 4.14 043/229] ARM: dts: imx6ul: fix qspi node compatible
+Date:   Tue, 23 Aug 2022 10:23:24 +0200
+Message-Id: <20220823080055.145148391@linuxfoundation.org>
+X-Mailer: git-send-email 2.37.2
+In-Reply-To: <20220823080053.202747790@linuxfoundation.org>
+References: <20220823080053.202747790@linuxfoundation.org>
+User-Agent: quilt/0.67
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <afc181cd-46b7-4c69-d27a-d2005904f48a@linaro.org>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Aug 23, 2022 at 11:30:22AM +0300, Krzysztof Kozlowski wrote:
-> On 23/08/2022 11:27, Serge Semin wrote:
-> > On Tue, Aug 23, 2022 at 11:22:08AM +0300, Krzysztof Kozlowski wrote:
-> >> On 23/08/2022 11:17, Krzysztof Kozlowski wrote:
-> >>> On 22/08/2022 22:07, Serge Semin wrote:
-> >>>> The Zynq A05 DDRC controller has nothing in common with DW uMCTL2 DDRC:
-> >>>> the CSRs layout is absolutely different and it doesn't has IRQ unlike DW
-> >>>> uMCTL2 DDR controller of all versions (v1.x, v2.x and v3.x). Thus there is
-> >>>> no any reason to have these controllers described by the same bindings.
-> >>>> Thus let's split them up.
-> >>>>
-> >>>> While at it rename the original Synopsys uMCTL2 DT-schema file to a more
-> >>>> descriptive - snps,dw-umctl2-ddrc.yaml and add a more detailed title and
-> >>>> description of the device bindings.
-> >>>
-> >>> Filename should be based on compatible, so if renaming then
-> >>> snps,ddrc-3.80a.yaml or snps,ddrc.yaml... which leads to original
-> >>> filename anyway. Therefore nack for rename.
-> >>>
-> >>> BTW, if you perform renames, generate patches with proper -M/-C/-B
-> >>> arguments so this is detected.
-> >>>
-> >>>
-> >>>>
-> >>>> Signed-off-by: Serge Semin <Sergey.Semin@baikalelectronics.ru>
-> >>>> --->  .../snps,dw-umctl2-ddrc.yaml                  | 51 +++++++++++++
-> >>>
-> >>> This is a mess. I did not get any cover letters, any other patches any
-> >>> description of relation between this and your other one.
-> >>>
-> >>> It seems you make independent and conflicting changes to the same file,
-> >>> so this has to be properly organized.
-> >>>
-> >>> Send entire patchset with cover letter with description of all
-> >>> dependencies to all maintainers.
-> >>>
-> >>> This is unreviewable now, so a no.
-> >>
-> > 
-> >> And also untestable by Rob's bot, so will have to wait.
-> > 
-> > For what reason it's untestable? The patch has no dependencies from
-> > any other patchset.
-> 
+From: Alexander Stein <alexander.stein@ew.tq-group.com>
 
-> This one is testable, but the next one is not, because it depends on
-> something. I don't see the reason to split the bindings between
-> different patchsets.
+[ Upstream commit 0c6cf86e1ab433b2d421880fdd9c6e954f404948 ]
 
-Really, do you want me to collect all 55 patches in a single patchset?
+imx6ul is not compatible to imx6sx, both have different erratas.
+Fixes the dt_binding_check warning:
+spi@21e0000: compatible: 'oneOf' conditional failed, one must be fixed:
+['fsl,imx6ul-qspi', 'fsl,imx6sx-qspi'] is too long
+Additional items are not allowed ('fsl,imx6sx-qspi' was unexpected)
+'fsl,imx6ul-qspi' is not one of ['fsl,ls1043a-qspi']
+'fsl,imx6ul-qspi' is not one of ['fsl,imx8mq-qspi']
+'fsl,ls1021a-qspi' was expected
+'fsl,imx7d-qspi' was expected
 
-Please read the cover letter more carefully. And please don't hurry
-with your judgement before nacking here and there.
+Signed-off-by: Alexander Stein <alexander.stein@ew.tq-group.com>
+Signed-off-by: Shawn Guo <shawnguo@kernel.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ arch/arm/boot/dts/imx6ul.dtsi | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
--Sergey
+diff --git a/arch/arm/boot/dts/imx6ul.dtsi b/arch/arm/boot/dts/imx6ul.dtsi
+index d544015d10e5..e4006bd47440 100644
+--- a/arch/arm/boot/dts/imx6ul.dtsi
++++ b/arch/arm/boot/dts/imx6ul.dtsi
+@@ -883,7 +883,7 @@ lcdif: lcdif@021c8000 {
+ 			qspi: qspi@021e0000 {
+ 				#address-cells = <1>;
+ 				#size-cells = <0>;
+-				compatible = "fsl,imx6ul-qspi", "fsl,imx6sx-qspi";
++				compatible = "fsl,imx6ul-qspi";
+ 				reg = <0x021e0000 0x4000>, <0x60000000 0x10000000>;
+ 				reg-names = "QuadSPI", "QuadSPI-memory";
+ 				interrupts = <GIC_SPI 107 IRQ_TYPE_LEVEL_HIGH>;
+-- 
+2.35.1
 
-> 
-> Best regards,
-> Krzysztof
+
+
