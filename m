@@ -2,43 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E084EC49EC3
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 10:37:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 41B0FC49EC6
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 10:37:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355662AbiHWKgw (ORCPT
+        id S1355713AbiHWKg4 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 06:36:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37980 "EHLO
+        Tue, 23 Aug 2022 06:36:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38842 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354636AbiHWKVw (ORCPT
+        with ESMTP id S1354691AbiHWKWA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 06:21:52 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 879B9B0;
-        Tue, 23 Aug 2022 02:03:15 -0700 (PDT)
+        Tue, 23 Aug 2022 06:22:00 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DE3546140;
+        Tue, 23 Aug 2022 02:03:24 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 0786CCE1B40;
-        Tue, 23 Aug 2022 09:03:14 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1FB12C433C1;
-        Tue, 23 Aug 2022 09:03:11 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 806E1B81C53;
+        Tue, 23 Aug 2022 09:03:23 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D4B1CC433D6;
+        Tue, 23 Aug 2022 09:03:21 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661245392;
-        bh=Y4E9AUuRmEGnt4oseXYaISQM3DxMntE5xEb8spHMl7o=;
+        s=korg; t=1661245402;
+        bh=xrT7sCDqJzbwaabInFSOooM42pz6YylOw5GrLACf6Gk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ufbu1A2G5jpkuHygqny/EfYd/JRG2ejxDLTgdjJzKlQc88tBrbRkr6dFDAw0g2VOB
-         bAfNc6iyVZNlwPM2atMSSi/opZeo9ykHCJxJ9bTGSRMOL9ZaZ+b1v9ayk0pZ+3A/6P
-         V18dFI7Z6v8qA3h64ThLMFz69tjjzomKqlSRgmhA=
+        b=P2TBSylCESE11zt+nS1HEoul/g7IBImdu7V8ysLYKX4MRuc3Ul67t4f9wiLdtDW1i
+         ch8FriSa9n9bu0J5XEcCAlqJgvOmr/JBb48ltkKLeEBhAnz7eUp8qOfeOGGRX+crPY
+         EY+ZXQDPoIF6v1SDR6qXVRE3jLcefQ2M/8Zdgp6M=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Liang He <windhl@126.com>,
-        Mark Brown <broonie@kernel.org>,
+        stable@vger.kernel.org, Markus Mayer <mmayer@broadcom.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Sumeet Pawnikar <sumeet.r.pawnikar@intel.com>,
+        =?UTF-8?q?Alejandro=20Gonz=C3=A1lez?= 
+        <alejandro.gonzalez.correo@gmail.com>,
+        Daniel Lezcano <daniel.lezcano@linaro.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.19 064/287] regulator: of: Fix refcount leak bug in of_get_regulation_constraints()
-Date:   Tue, 23 Aug 2022 10:23:53 +0200
-Message-Id: <20220823080102.394630573@linuxfoundation.org>
+Subject: [PATCH 4.19 066/287] thermal/tools/tmon: Include pthread and time headers in tmon.h
+Date:   Tue, 23 Aug 2022 10:23:55 +0200
+Message-Id: <20220823080102.455071090@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220823080100.268827165@linuxfoundation.org>
 References: <20220823080100.268827165@linuxfoundation.org>
@@ -50,40 +54,57 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Liang He <windhl@126.com>
+From: Markus Mayer <mmayer@broadcom.com>
 
-[ Upstream commit 66efb665cd5ad69b27dca8571bf89fc6b9c628a4 ]
+[ Upstream commit 0cf51bfe999524377fbb71becb583b4ca6d07cfc ]
 
-We should call the of_node_put() for the reference returned by
-of_get_child_by_name() which has increased the refcount.
+Include sys/time.h and pthread.h in tmon.h, so that types
+"pthread_mutex_t" and "struct timeval tv" are known when tmon.h
+references them.
 
-Fixes: 40e20d68bb3f ("regulator: of: Add support for parsing regulator_state for suspend state")
-Signed-off-by: Liang He <windhl@126.com>
-Link: https://lore.kernel.org/r/20220715111027.391032-1-windhl@126.com
-Signed-off-by: Mark Brown <broonie@kernel.org>
+Without these headers, compiling tmon against musl-libc will fail with
+these errors:
+
+In file included from sysfs.c:31:0:
+tmon.h:47:8: error: unknown type name 'pthread_mutex_t'
+ extern pthread_mutex_t input_lock;
+        ^~~~~~~~~~~~~~~
+make[3]: *** [<builtin>: sysfs.o] Error 1
+make[3]: *** Waiting for unfinished jobs....
+In file included from tui.c:31:0:
+tmon.h:54:17: error: field 'tv' has incomplete type
+  struct timeval tv;
+                 ^~
+make[3]: *** [<builtin>: tui.o] Error 1
+make[2]: *** [Makefile:83: tmon] Error 2
+
+Signed-off-by: Markus Mayer <mmayer@broadcom.com>
+Acked-by: Florian Fainelli <f.fainelli@gmail.com>
+Reviewed-by: Sumeet Pawnikar <sumeet.r.pawnikar@intel.com>
+Acked-by: Alejandro González <alejandro.gonzalez.correo@gmail.com>
+Tested-by: Alejandro González <alejandro.gonzalez.correo@gmail.com>
+Fixes: 94f69966faf8 ("tools/thermal: Introduce tmon, a tool for thermal  subsystem")
+Link: https://lore.kernel.org/r/20220718031040.44714-1-f.fainelli@gmail.com
+Signed-off-by: Daniel Lezcano <daniel.lezcano@linaro.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/regulator/of_regulator.c | 6 +++++-
- 1 file changed, 5 insertions(+), 1 deletion(-)
+ tools/thermal/tmon/tmon.h | 3 +++
+ 1 file changed, 3 insertions(+)
 
-diff --git a/drivers/regulator/of_regulator.c b/drivers/regulator/of_regulator.c
-index b255590aef36..b2bd7ee46c45 100644
---- a/drivers/regulator/of_regulator.c
-+++ b/drivers/regulator/of_regulator.c
-@@ -189,8 +189,12 @@ static void of_get_regulation_constraints(struct device_node *np,
- 		}
+diff --git a/tools/thermal/tmon/tmon.h b/tools/thermal/tmon/tmon.h
+index 9e3c49c547ac..7b090a6c95b6 100644
+--- a/tools/thermal/tmon/tmon.h
++++ b/tools/thermal/tmon/tmon.h
+@@ -36,6 +36,9 @@
+ #define NR_LINES_TZDATA 1
+ #define TMON_LOG_FILE "/var/tmp/tmon.log"
  
- 		suspend_np = of_get_child_by_name(np, regulator_states[i]);
--		if (!suspend_np || !suspend_state)
-+		if (!suspend_np)
- 			continue;
-+		if (!suspend_state) {
-+			of_node_put(suspend_np);
-+			continue;
-+		}
- 
- 		if (!of_property_read_u32(suspend_np, "regulator-mode",
- 					  &pval)) {
++#include <sys/time.h>
++#include <pthread.h>
++
+ extern unsigned long ticktime;
+ extern double time_elapsed;
+ extern unsigned long target_temp_user;
 -- 
 2.35.1
 
