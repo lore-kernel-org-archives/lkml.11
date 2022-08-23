@@ -2,50 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0D0A7C32793
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1C7AEC32792
 	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 11:42:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358090AbiHWLko (ORCPT
+        id S1358126AbiHWLk4 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 07:40:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49556 "EHLO
+        Tue, 23 Aug 2022 07:40:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49616 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242768AbiHWLe5 (ORCPT
+        with ESMTP id S1355917AbiHWLfO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 07:34:57 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5D32B76974;
-        Tue, 23 Aug 2022 02:27:20 -0700 (PDT)
+        Tue, 23 Aug 2022 07:35:14 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 23FD5760F8;
+        Tue, 23 Aug 2022 02:27:27 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id CB24661315;
-        Tue, 23 Aug 2022 09:27:19 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 731FDC433C1;
-        Tue, 23 Aug 2022 09:27:18 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 60846612B5;
+        Tue, 23 Aug 2022 09:27:26 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4C7C4C433D6;
+        Tue, 23 Aug 2022 09:27:25 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661246839;
-        bh=DD/TPmxjClLLHXvhqrQr0eZDvLR1h1JpUl8RC6U2CGY=;
+        s=korg; t=1661246845;
+        bh=yYN7JIlT5Ga9i8Qv78xFR4sQVOL1lB8OmPWG7slatzo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=RHoQlrMS1bvGzKYPrhK76e0X2kyNHI2uzcTht9ya3+v3LwNDY67dvuwm/HHihLhIi
-         b+zJU4XaLGT3qLQCR0zG/3md5OSn7lSssk+Z4C2zDAiQYOQeCQ2rLqBlnXABVn/X8g
-         VbWKPQgubv3wux2v/s41SA6AsJcPBOjYsJ02H0yg=
+        b=iyNRuf5AuxF08eP8Y9+RlZssGt2csDB3MB7ISJvKzbYlHFWZDrCephWSF1u0d0HNq
+         MjrDQfiTMwy7Er/h2NrU1vSej67Jaq16j1xZkB7LZzCGx/nwtKXV/sYfP3aWBKbp+z
+         6e9o2g+D73tT47zEC/ZMu0U9BK5dKga5/e5/bEx4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Leo Yan <leo.yan@linaro.org>,
-        Ian Rogers <irogers@google.com>,
-        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
-        Jiri Olsa <jolsa@kernel.org>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Namhyung Kim <namhyung@kernel.org>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Stephane Eranian <eranian@google.com>,
-        Arnaldo Carvalho de Melo <acme@redhat.com>,
+        stable@vger.kernel.org,
+        =?UTF-8?q?Pali=20Roh=C3=A1r?= <pali@kernel.org>,
+        Michael Ellerman <mpe@ellerman.id.au>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 237/389] perf symbol: Fail to read phdr workaround
-Date:   Tue, 23 Aug 2022 10:25:15 +0200
-Message-Id: <20220823080125.471356503@linuxfoundation.org>
+Subject: [PATCH 5.4 239/389] powerpc/pci: Fix PHB numbering when using opal-phbid
+Date:   Tue, 23 Aug 2022 10:25:17 +0200
+Message-Id: <20220823080125.547440481@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220823080115.331990024@linuxfoundation.org>
 References: <20220823080115.331990024@linuxfoundation.org>
@@ -57,105 +51,56 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Ian Rogers <irogers@google.com>
+From: Michael Ellerman <mpe@ellerman.id.au>
 
-[ Upstream commit 6d518ac7be6223811ab947897273b1bbef846180 ]
+[ Upstream commit f4b39e88b42d13366b831270306326b5c20971ca ]
 
-The perf jvmti agent doesn't create program headers, in this case
-fallback on section headers as happened previously.
+The recent change to the PHB numbering logic has a logic error in the
+handling of "ibm,opal-phbid".
 
-Committer notes:
+When an "ibm,opal-phbid" property is present, &prop is written to and
+ret is set to zero.
 
-To test this, from a public post by Ian:
+The following call to of_alias_get_id() is skipped because ret == 0.
 
-1) download a Java workload dacapo-9.12-MR1-bach.jar from
-https://sourceforge.net/projects/dacapobench/
+But then the if (ret >= 0) is true, and the body of that if statement
+sets prop = ret which throws away the value that was just read from
+"ibm,opal-phbid".
 
-2) build perf such as "make -C tools/perf O=/tmp/perf NO_LIBBFD=1" it
-should detect Java and create /tmp/perf/libperf-jvmti.so
+Fix the logic by only doing the ret >= 0 check in the of_alias_get_id()
+case.
 
-3) run perf with the jvmti agent:
-
-  perf record -k 1 java -agentpath:/tmp/perf/libperf-jvmti.so -jar dacapo-9.12-MR1-bach.jar -n 10 fop
-
-4) run perf inject:
-
-  perf inject -i perf.data -o perf-injected.data -j
-
-5) run perf report
-
-  perf report -i perf-injected.data | grep org.apache.fop
-
-With this patch reverted I see lots of symbols like:
-
-     0.00%  java             jitted-388040-4656.so  [.] org.apache.fop.fo.FObj.bind(org.apache.fop.fo.PropertyList)
-
-With the patch (2d86612aacb7805f ("perf symbol: Correct address for bss
-symbols")) I see lots of:
-
-  dso__load_sym_internal: failed to find program header for symbol:
-  Lorg/apache/fop/fo/FObj;bind(Lorg/apache/fop/fo/PropertyList;)V
-  st_value: 0x40
-
-Fixes: 2d86612aacb7805f ("perf symbol: Correct address for bss symbols")
-Reviewed-by: Leo Yan <leo.yan@linaro.org>
-Signed-off-by: Ian Rogers <irogers@google.com>
-Tested-by: Leo Yan <leo.yan@linaro.org>
-Cc: Alexander Shishkin <alexander.shishkin@linux.intel.com>
-Cc: Jiri Olsa <jolsa@kernel.org>
-Cc: Leo Yan <leo.yan@linaro.org>
-Cc: Mark Rutland <mark.rutland@arm.com>
-Cc: Namhyung Kim <namhyung@kernel.org>
-Cc: Peter Zijlstra <peterz@infradead.org>
-Cc: Stephane Eranian <eranian@google.com>
-Link: http://lore.kernel.org/lkml/20220731164923.691193-1-irogers@google.com
-Signed-off-by: Arnaldo Carvalho de Melo <acme@redhat.com>
+Fixes: 0fe1e96fef0a ("powerpc/pci: Prefer PCI domain assignment via DT 'linux,pci-domain' and alias")
+Reviewed-by: Pali Rohár <pali@kernel.org>
+Signed-off-by: Michael Ellerman <mpe@ellerman.id.au>
+Link: https://lore.kernel.org/r/20220802105723.1055178-1-mpe@ellerman.id.au
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- tools/perf/util/symbol-elf.c | 27 ++++++++++++++++++++-------
- 1 file changed, 20 insertions(+), 7 deletions(-)
+ arch/powerpc/kernel/pci-common.c | 10 ++++++----
+ 1 file changed, 6 insertions(+), 4 deletions(-)
 
-diff --git a/tools/perf/util/symbol-elf.c b/tools/perf/util/symbol-elf.c
-index 0b185b1090ff..a04a7dfb8ec0 100644
---- a/tools/perf/util/symbol-elf.c
-+++ b/tools/perf/util/symbol-elf.c
-@@ -1159,16 +1159,29 @@ int dso__load_sym(struct dso *dso, struct map *map, struct symsrc *syms_ss,
- 
- 			if (elf_read_program_header(syms_ss->elf,
- 						    (u64)sym.st_value, &phdr)) {
--				pr_warning("%s: failed to find program header for "
-+				pr_debug4("%s: failed to find program header for "
- 					   "symbol: %s st_value: %#" PRIx64 "\n",
- 					   __func__, elf_name, (u64)sym.st_value);
--				continue;
-+				pr_debug4("%s: adjusting symbol: st_value: %#" PRIx64 " "
-+					"sh_addr: %#" PRIx64 " sh_offset: %#" PRIx64 "\n",
-+					__func__, (u64)sym.st_value, (u64)shdr.sh_addr,
-+					(u64)shdr.sh_offset);
-+				/*
-+				 * Fail to find program header, let's rollback
-+				 * to use shdr.sh_addr and shdr.sh_offset to
-+				 * calibrate symbol's file address, though this
-+				 * is not necessary for normal C ELF file, we
-+				 * still need to handle java JIT symbols in this
-+				 * case.
-+				 */
-+				sym.st_value -= shdr.sh_addr - shdr.sh_offset;
-+			} else {
-+				pr_debug4("%s: adjusting symbol: st_value: %#" PRIx64 " "
-+					"p_vaddr: %#" PRIx64 " p_offset: %#" PRIx64 "\n",
-+					__func__, (u64)sym.st_value, (u64)phdr.p_vaddr,
-+					(u64)phdr.p_offset);
-+				sym.st_value -= phdr.p_vaddr - phdr.p_offset;
- 			}
--			pr_debug4("%s: adjusting symbol: st_value: %#" PRIx64 " "
--				  "p_vaddr: %#" PRIx64 " p_offset: %#" PRIx64 "\n",
--				  __func__, (u64)sym.st_value, (u64)phdr.p_vaddr,
--				  (u64)phdr.p_offset);
--			sym.st_value -= phdr.p_vaddr - phdr.p_offset;
- 		}
- 
- 		demangled = demangle_sym(dso, kmodule, elf_name);
+diff --git a/arch/powerpc/kernel/pci-common.c b/arch/powerpc/kernel/pci-common.c
+index 1e827e3769a8..622463a88f05 100644
+--- a/arch/powerpc/kernel/pci-common.c
++++ b/arch/powerpc/kernel/pci-common.c
+@@ -89,11 +89,13 @@ static int get_phb_number(struct device_node *dn)
+ 	}
+ 	if (ret)
+ 		ret = of_property_read_u64(dn, "ibm,opal-phbid", &prop);
+-	if (ret)
++
++	if (ret) {
+ 		ret = of_alias_get_id(dn, "pci");
+-	if (ret >= 0) {
+-		prop = ret;
+-		ret = 0;
++		if (ret >= 0) {
++			prop = ret;
++			ret = 0;
++		}
+ 	}
+ 	if (ret) {
+ 		u32 prop_32;
 -- 
 2.35.1
 
