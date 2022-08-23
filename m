@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 708B6C32772
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 09:34:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3782CC32772
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 09:34:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350936AbiHWJeM (ORCPT
+        id S1351095AbiHWJeQ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 05:34:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38692 "EHLO
+        Tue, 23 Aug 2022 05:34:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40356 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350664AbiHWJca (ORCPT
+        with ESMTP id S1350747AbiHWJcp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 05:32:30 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0469012D19;
-        Tue, 23 Aug 2022 01:38:42 -0700 (PDT)
+        Tue, 23 Aug 2022 05:32:45 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 096CC94100;
+        Tue, 23 Aug 2022 01:38:59 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 3D89B6152E;
-        Tue, 23 Aug 2022 08:37:37 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4B78DC433D6;
-        Tue, 23 Aug 2022 08:37:36 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id C7851614E7;
+        Tue, 23 Aug 2022 08:38:59 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D3458C433C1;
+        Tue, 23 Aug 2022 08:38:58 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661243856;
-        bh=x599Q0uNqhEXX/zTlqbs0/t9r9wM0qizRo+Y0uYiNVs=;
+        s=korg; t=1661243939;
+        bh=jc8IbrhXt3pWx3O2jMG/Q2BCERjfFZ+f+AaSbKN/cBo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=AInPgHz3zYSXCFUL7W92MFR8Aj+jBVrFIWWLSBhDJRcr/HJF+s29+CzFg+Pvby8aP
-         cZCnl19o6CE6CN9P0dSzbF9t5fGgTeADtxpu+nRlLTd0Q7SWnciCb8r/MNYCRcNhAG
-         hJFP3C6+SIhvKfSViYXjRitoyeSEdQCsz/WVn580=
+        b=GFKlkNlY7Qe4QmFGU/vt8DIHg9YwyE61MElOAJYhq9W8QdnlkuFH7Srypw7m5j2Ue
+         tFbowQ+qDcx/6YCYRhsu+tXciG7nfbWxgj1NdZ/LypSpt+I2yUk5mVbS5Lic/8GW7Z
+         dMRkeBS52x8WC3ZlckzVZdwlNrsgkJVB/iMBoJcA=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Liang He <windhl@126.com>,
-        Tony Lindgren <tony@atomide.com>,
+        stable@vger.kernel.org, Mike Snitzer <snitzer@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.14 044/229] ARM: OMAP2+: display: Fix refcount leak bug
-Date:   Tue, 23 Aug 2022 10:23:25 +0200
-Message-Id: <20220823080055.198391821@linuxfoundation.org>
+Subject: [PATCH 4.14 059/229] dm: return early from dm_pr_call() if DM device is suspended
+Date:   Tue, 23 Aug 2022 10:23:40 +0200
+Message-Id: <20220823080055.836359364@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220823080053.202747790@linuxfoundation.org>
 References: <20220823080053.202747790@linuxfoundation.org>
@@ -50,34 +49,36 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Liang He <windhl@126.com>
+From: Mike Snitzer <snitzer@kernel.org>
 
-[ Upstream commit 50b87a32a79bca6e275918a711fb8cc55e16d739 ]
+[ Upstream commit e120a5f1e78fab6223544e425015f393d90d6f0d ]
 
-In omapdss_init_fbdev(), of_find_node_by_name() will return a node
-pointer with refcount incremented. We should use of_node_put() when
-it is not used anymore.
+Otherwise PR ops may be issued while the broader DM device is being
+reconfigured, etc.
 
-Signed-off-by: Liang He <windhl@126.com>
-Message-Id: <20220617145803.4050918-1-windhl@126.com>
-Signed-off-by: Tony Lindgren <tony@atomide.com>
+Fixes: 9c72bad1f31a ("dm: call PR reserve/unreserve on each underlying device")
+Signed-off-by: Mike Snitzer <snitzer@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/arm/mach-omap2/display.c | 1 +
- 1 file changed, 1 insertion(+)
+ drivers/md/dm.c | 5 +++++
+ 1 file changed, 5 insertions(+)
 
-diff --git a/arch/arm/mach-omap2/display.c b/arch/arm/mach-omap2/display.c
-index 6e7440ef503a..b01b7515b6cc 100644
---- a/arch/arm/mach-omap2/display.c
-+++ b/arch/arm/mach-omap2/display.c
-@@ -218,6 +218,7 @@ static int __init omapdss_init_fbdev(void)
- 	node = of_find_node_by_name(NULL, "omap4_padconf_global");
- 	if (node)
- 		omap4_dsi_mux_syscon = syscon_node_to_regmap(node);
-+	of_node_put(node);
+diff --git a/drivers/md/dm.c b/drivers/md/dm.c
+index 94018613b43b..9e6689fd2273 100644
+--- a/drivers/md/dm.c
++++ b/drivers/md/dm.c
+@@ -2859,6 +2859,11 @@ static int dm_call_pr(struct block_device *bdev, iterate_devices_callout_fn fn,
+ 		goto out;
+ 	ti = dm_table_get_target(table, 0);
  
- 	return 0;
- }
++	if (dm_suspended_md(md)) {
++		ret = -EAGAIN;
++		goto out;
++	}
++
+ 	ret = -EINVAL;
+ 	if (!ti->type->iterate_devices)
+ 		goto out;
 -- 
 2.35.1
 
