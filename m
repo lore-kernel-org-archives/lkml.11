@@ -2,45 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EFA37C49EC0
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 10:32:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5A5B2C49EC5
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 10:32:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355304AbiHWKbk (ORCPT
+        id S1355385AbiHWKbz (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 06:31:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53682 "EHLO
+        Tue, 23 Aug 2022 06:31:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55980 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353647AbiHWKP0 (ORCPT
+        with ESMTP id S1353768AbiHWKPx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 06:15:26 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ECD477F25D;
-        Tue, 23 Aug 2022 02:00:49 -0700 (PDT)
+        Tue, 23 Aug 2022 06:15:53 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0A5CE7FE4E;
+        Tue, 23 Aug 2022 02:00:55 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 4CE2D61524;
-        Tue, 23 Aug 2022 09:00:49 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 51F52C433D6;
-        Tue, 23 Aug 2022 09:00:48 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 4280561524;
+        Tue, 23 Aug 2022 09:00:55 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3D705C433D6;
+        Tue, 23 Aug 2022 09:00:54 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661245248;
-        bh=ZMWWUWrKYO4I9/D/3v00Nua0PxJnuVwOFR2J1Y+myQM=;
+        s=korg; t=1661245254;
+        bh=pi9vYBZD2zfpl5KFECfULYdO7ZxPwT/FN8MkrKh2USc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=p4vvQQyytxu4RoX2ZyCnbug9iroS/ttZZuWRXVYuxu+cn34RCRv2vqoRKtyifVP6d
-         ROdQ6k1tWIIWCTVzIPWrpkOM4FHnLQZoyD/KBIlrWlnV4Wyg9VRcz4WB4PvekZ3rVk
-         zTyTHneufhKLod1WIeBzhoqqi2LE5Wl9Yg93VytI=
+        b=ei2DdEDzr9h50gu335DFp82O3Co+iCOEyFUQvojMh3EuVodscXfYUOUjv8ZmDYPu8
+         KPQUoFYJmC2MLiHJiehQ1e3j7y0Q3SxdeV2pMbUBLXe/47a2uVNXYLACpJNeuR4CkH
+         tTEbqmbbrIr6LuFkxblaj1wMMy9f/zcP7jGeJhJE=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jann Horn <jannh@google.com>,
-        Oleksij Rempel <o.rempel@pengutronix.de>,
-        Lukas Wunner <lukas@wunner.de>,
-        Oliver Neukum <oneukum@suse.com>,
-        Jakub Kicinski <kuba@kernel.org>
-Subject: [PATCH 4.19 019/287] usbnet: Fix linkwatch use-after-free on disconnect
-Date:   Tue, 23 Aug 2022 10:23:08 +0200
-Message-Id: <20220823080100.929893511@linuxfoundation.org>
+        stable@vger.kernel.org, Helge Deller <deller@gmx.de>
+Subject: [PATCH 4.19 021/287] parisc: Fix device names in /proc/iomem
+Date:   Tue, 23 Aug 2022 10:23:10 +0200
+Message-Id: <20220823080100.992430625@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220823080100.268827165@linuxfoundation.org>
 References: <20220823080100.268827165@linuxfoundation.org>
@@ -52,85 +48,45 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Lukas Wunner <lukas@wunner.de>
+From: Helge Deller <deller@gmx.de>
 
-commit a69e617e533edddf3fa3123149900f36e0a6dc74 upstream.
+commit cab56b51ec0e69128909cef4650e1907248d821b upstream.
 
-usbnet uses the work usbnet_deferred_kevent() to perform tasks which may
-sleep.  On disconnect, completion of the work was originally awaited in
-->ndo_stop().  But in 2003, that was moved to ->disconnect() by historic
-commit "[PATCH] USB: usbnet, prevent exotic rtnl deadlock":
+Fix the output of /proc/iomem to show the real hardware device name
+including the pa_pathname, e.g. "Merlin 160 Core Centronics [8:16:0]".
+Up to now only the pa_pathname ("[8:16.0]") was shown.
 
-  https://git.kernel.org/tglx/history/c/0f138bbfd83c
-
-The change was made because back then, the kernel's workqueue
-implementation did not allow waiting for a single work.  One had to wait
-for completion of *all* work by calling flush_scheduled_work(), and that
-could deadlock when waiting for usbnet_deferred_kevent() with rtnl_mutex
-held in ->ndo_stop().
-
-The commit solved one problem but created another:  It causes a
-use-after-free in USB Ethernet drivers aqc111.c, asix_devices.c,
-ax88179_178a.c, ch9200.c and smsc75xx.c:
-
-* If the drivers receive a link change interrupt immediately before
-  disconnect, they raise EVENT_LINK_RESET in their (non-sleepable)
-  ->status() callback and schedule usbnet_deferred_kevent().
-* usbnet_deferred_kevent() invokes the driver's ->link_reset() callback,
-  which calls netif_carrier_{on,off}().
-* That in turn schedules the work linkwatch_event().
-
-Because usbnet_deferred_kevent() is awaited after unregister_netdev(),
-netif_carrier_{on,off}() may operate on an unregistered netdev and
-linkwatch_event() may run after free_netdev(), causing a use-after-free.
-
-In 2010, usbnet was changed to only wait for a single instance of
-usbnet_deferred_kevent() instead of *all* work by commit 23f333a2bfaf
-("drivers/net: don't use flush_scheduled_work()").
-
-Unfortunately the commit neglected to move the wait back to
-->ndo_stop().  Rectify that omission at long last.
-
-Reported-by: Jann Horn <jannh@google.com>
-Link: https://lore.kernel.org/netdev/CAG48ez0MHBbENX5gCdHAUXZ7h7s20LnepBF-pa5M=7Bi-jZrEA@mail.gmail.com/
-Reported-by: Oleksij Rempel <o.rempel@pengutronix.de>
-Link: https://lore.kernel.org/netdev/20220315113841.GA22337@pengutronix.de/
-Signed-off-by: Lukas Wunner <lukas@wunner.de>
-Cc: stable@vger.kernel.org
-Acked-by: Oliver Neukum <oneukum@suse.com>
-Link: https://lore.kernel.org/r/d1c87ebe9fc502bffcd1576e238d685ad08321e4.1655987888.git.lukas@wunner.de
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Signed-off-by: Helge Deller <deller@gmx.de>
+Cc: <stable@vger.kernel.org> # v4.9+
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/net/usb/usbnet.c |    8 ++------
- 1 file changed, 2 insertions(+), 6 deletions(-)
+ arch/parisc/kernel/drivers.c |    9 ++++-----
+ 1 file changed, 4 insertions(+), 5 deletions(-)
 
---- a/drivers/net/usb/usbnet.c
-+++ b/drivers/net/usb/usbnet.c
-@@ -845,13 +845,11 @@ int usbnet_stop (struct net_device *net)
+--- a/arch/parisc/kernel/drivers.c
++++ b/arch/parisc/kernel/drivers.c
+@@ -499,7 +499,6 @@ alloc_pa_dev(unsigned long hpa, struct h
+ 	dev->id.hversion_rev = iodc_data[1] & 0x0f;
+ 	dev->id.sversion = ((iodc_data[4] & 0x0f) << 16) |
+ 			(iodc_data[5] << 8) | iodc_data[6];
+-	dev->hpa.name = parisc_pathname(dev);
+ 	dev->hpa.start = hpa;
+ 	/* This is awkward.  The STI spec says that gfx devices may occupy
+ 	 * 32MB or 64MB.  Unfortunately, we don't know how to tell whether
+@@ -513,10 +512,10 @@ alloc_pa_dev(unsigned long hpa, struct h
+ 		dev->hpa.end = hpa + 0xfff;
+ 	}
+ 	dev->hpa.flags = IORESOURCE_MEM;
+-	name = parisc_hardware_description(&dev->id);
+-	if (name) {
+-		strlcpy(dev->name, name, sizeof(dev->name));
+-	}
++	dev->hpa.name = dev->name;
++	name = parisc_hardware_description(&dev->id) ? : "unknown";
++	snprintf(dev->name, sizeof(dev->name), "%s [%s]",
++		name, parisc_pathname(dev));
  
- 	mpn = !test_and_clear_bit(EVENT_NO_RUNTIME_PM, &dev->flags);
- 
--	/* deferred work (task, timer, softirq) must also stop.
--	 * can't flush_scheduled_work() until we drop rtnl (later),
--	 * else workers could deadlock; so make workers a NOP.
--	 */
-+	/* deferred work (timer, softirq, task) must also stop */
- 	dev->flags = 0;
- 	del_timer_sync (&dev->delay);
- 	tasklet_kill (&dev->bh);
-+	cancel_work_sync(&dev->kevent);
- 	if (!pm)
- 		usb_autopm_put_interface(dev->intf);
- 
-@@ -1614,8 +1612,6 @@ void usbnet_disconnect (struct usb_inter
- 	net = dev->net;
- 	unregister_netdev (net);
- 
--	cancel_work_sync(&dev->kevent);
--
- 	usb_scuttle_anchored_urbs(&dev->deferred);
- 
- 	if (dev->driver_info->unbind)
+ 	/* Silently fail things like mouse ports which are subsumed within
+ 	 * the keyboard controller
 
 
