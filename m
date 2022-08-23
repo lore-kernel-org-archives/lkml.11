@@ -2,170 +2,68 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D69BBC32774
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 07:48:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 21BEDC32774
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 07:48:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241194AbiHWHsH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 03:48:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57160 "EHLO
+        id S241199AbiHWHsx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 23 Aug 2022 03:48:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58614 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241186AbiHWHsF (ORCPT
+        with ESMTP id S241186AbiHWHsv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 03:48:05 -0400
-Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 99E4E647FC
-        for <linux-kernel@vger.kernel.org>; Tue, 23 Aug 2022 00:48:03 -0700 (PDT)
-Received: from canpemm500009.china.huawei.com (unknown [172.30.72.53])
-        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4MBh9M36H9znThn;
-        Tue, 23 Aug 2022 15:45:43 +0800 (CST)
-Received: from [10.67.102.169] (10.67.102.169) by
- canpemm500009.china.huawei.com (7.192.105.203) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Tue, 23 Aug 2022 15:48:01 +0800
-CC:     <yangyicong@hisilicon.com>, <peterz@infradead.org>,
-        <mingo@redhat.com>, <juri.lelli@redhat.com>,
-        <vincent.guittot@linaro.org>, <tim.c.chen@linux.intel.com>,
-        <gautham.shenoy@amd.com>, <linux-kernel@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>, <dietmar.eggemann@arm.com>,
-        <rostedt@goodmis.org>, <bsegall@google.com>, <bristot@redhat.com>,
-        <prime.zeng@huawei.com>, <jonathan.cameron@huawei.com>,
-        <ego@linux.vnet.ibm.com>, <srikar@linux.vnet.ibm.com>,
-        <linuxarm@huawei.com>, <21cnbao@gmail.com>,
-        <guodong.xu@linaro.org>, <hesham.almatary@huawei.com>,
-        <john.garry@huawei.com>, <shenyang39@huawei.com>,
-        <kprateek.nayak@amd.com>, <wuyun.abel@bytedance.com>
-Subject: Re: [PATCH v7 2/2] sched/fair: Scan cluster before scanning LLC in
- wake-up path
-To:     Chen Yu <yu.c.chen@intel.com>
-References: <20220822073610.27205-1-yangyicong@huawei.com>
- <20220822073610.27205-3-yangyicong@huawei.com>
- <YwRNXrBG9iq1jGZW@chenyu5-mobl1>
-From:   Yicong Yang <yangyicong@huawei.com>
-Message-ID: <53b1fc3c-b6a9-a4cb-433a-c5c6af1d1dac@huawei.com>
-Date:   Tue, 23 Aug 2022 15:48:00 +0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
- Thunderbird/78.5.1
+        Tue, 23 Aug 2022 03:48:51 -0400
+Received: from mail-m972.mail.163.com (mail-m972.mail.163.com [123.126.97.2])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id CE47812AB3
+        for <linux-kernel@vger.kernel.org>; Tue, 23 Aug 2022 00:48:49 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=163.com;
+        s=s110527; h=From:Subject:Date:Message-Id:MIME-Version; bh=RGiGH
+        p7oMEjT6uibunWe+zoBBBB1zHI0xeEhGOD4JUk=; b=lSpraQrDT1UgzBln6DywU
+        RoaCAcReaVSM4EqcaVMcpHSkAbh44L9aIkAYlmCZ/wCbst65YtCAQS75sZLzu8xb
+        2i+MAaB/NC/gdpT1uGXkLPqxSyUibjBa8r6Qiw9saYmYb1znCMaSByExu+o55kYZ
+        J6zMVf4Bkp3p1jPHnGCj8c=
+Received: from VM-0-11-ubuntu.. (unknown [49.235.41.28])
+        by smtp2 (Coremail) with SMTP id GtxpCgC3L_L2hQRjVX0BXg--.9755S4;
+        Tue, 23 Aug 2022 15:47:05 +0800 (CST)
+From:   suhui_kernel@163.com
+To:     mingo@kernel.org
+Cc:     akpm@linux-foundation.org, bp@alien8.de, dietmar.eggemann@arm.com,
+        juri.lelli@redhat.com, linux-kernel@vger.kernel.org,
+        luto@amacapital.net, mgorman@suse.de, peterz@infradead.org,
+        tglx@linutronix.de, torvalds@linux-foundation.org,
+        vincent.guittot@linaro.org, nhuck@google.com,
+        ndesaulniers@google.com, lukas.bulwahn@gmail.com,
+        masahiroy@kernel.org
+Subject: Re: [PATCH 09/15] sched/headers: Introduce kernel/sched/build_policy.c and build multiple .c files there
+Date:   Tue, 23 Aug 2022 15:47:02 +0800
+Message-Id: <20220823074702.2900118-1-suhui_kernel@163.com>
+X-Mailer: git-send-email 2.34.1
+In-Reply-To: <20220315084247.40783-10-mingo@kernel.org>
+References: <20220315084247.40783-10-mingo@kernel.org>
 MIME-Version: 1.0
-In-Reply-To: <YwRNXrBG9iq1jGZW@chenyu5-mobl1>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.67.102.169]
-X-ClientProxiedBy: dggems704-chm.china.huawei.com (10.3.19.181) To
- canpemm500009.china.huawei.com (7.192.105.203)
-X-CFilter-Loop: Reflected
+Content-Transfer-Encoding: 8bit
+X-CM-TRANSID: GtxpCgC3L_L2hQRjVX0BXg--.9755S4
+X-Coremail-Antispam: 1Uf129KBjvdXoW7JrWkKF4fAF4xuF47KrWruFg_yoWDtwcEk3
+        40kw47Ww13CFyvqF13tF4fZrWkta9rta4rJFn7W3y3GFWktFs5WanIqF1fua45ta1Fvrn7
+        Krn3Xa4vyF129jkaLaAFLSUrUUUUUb8apTn2vfkv8UJUUUU8Yxn0WfASr-VFAUDa7-sFnT
+        9fnUUvcSsGvfC2KfnxnUUI43ZEXa7IUjQB_UUUUUU==
+X-Originating-IP: [49.235.41.28]
+X-CM-SenderInfo: 5vxk3xhbnh20lho6il2tof0z/xtbBsgJmbV75gIq+2wAAsz
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 2022/8/23 11:45, Chen Yu wrote:
-> On 2022-08-22 at 15:36:10 +0800, Yicong Yang wrote:
->> From: Barry Song <song.bao.hua@hisilicon.com>
->>
->> For platforms having clusters like Kunpeng920, CPUs within the same cluster
->> have lower latency when synchronizing and accessing shared resources like
->> cache. Thus, this patch tries to find an idle cpu within the cluster of the
->> target CPU before scanning the whole LLC to gain lower latency.
->>
->> Testing has been done on Kunpeng920 by pinning tasks to one numa and two
->> numa. On Kunpeng920, Each numa has 8 clusters and each cluster has 4 CPUs.
->>
->> With this patch, We noticed enhancement on tbench within one numa or cross
->> two numa.
->>
->> On numa 0:
->>                              6.0-rc1                patched
->> Hmean     1        351.20 (   0.00%)      396.45 *  12.88%*
->> Hmean     2        700.43 (   0.00%)      793.76 *  13.32%*
->> Hmean     4       1404.42 (   0.00%)     1583.62 *  12.76%*
->> Hmean     8       2833.31 (   0.00%)     3147.85 *  11.10%*
->> Hmean     16      5501.90 (   0.00%)     6089.89 *  10.69%*
->> Hmean     32     10428.59 (   0.00%)    10619.63 *   1.83%*
->> Hmean     64      8223.39 (   0.00%)     8306.93 *   1.02%*
->> Hmean     128     7042.88 (   0.00%)     7068.03 *   0.36%*
->>
->> On numa 0-1:
->>                              6.0-rc1                patched
->> Hmean     1        363.06 (   0.00%)      397.13 *   9.38%*
->> Hmean     2        721.68 (   0.00%)      789.84 *   9.44%*
->> Hmean     4       1435.15 (   0.00%)     1566.01 *   9.12%*
->> Hmean     8       2776.17 (   0.00%)     3007.05 *   8.32%*
->> Hmean     16      5471.71 (   0.00%)     6103.91 *  11.55%*
->> Hmean     32     10164.98 (   0.00%)    11531.81 *  13.45%*
->> Hmean     64     17143.28 (   0.00%)    20078.68 *  17.12%*
->> Hmean     128    14552.70 (   0.00%)    15156.41 *   4.15%*
->> Hmean     256    12827.37 (   0.00%)    13326.86 *   3.89%*
->>
->> Note neither Kunpeng920 nor x86 Jacobsville supports SMT, so the SMT branch
->> in the code has not been tested but it supposed to work.
->>
->> Suggested-by: Peter Zijlstra <peterz@infradead.org>
->> [https://lore.kernel.org/lkml/Ytfjs+m1kUs0ScSn@worktop.programming.kicks-ass.net]
->> Tested-by: Yicong Yang <yangyicong@hisilicon.com>
->> Signed-off-by: Barry Song <song.bao.hua@hisilicon.com>
->> Signed-off-by: Yicong Yang <yangyicong@hisilicon.com>
->> Reviewed-by: Tim Chen <tim.c.chen@linux.intel.com>
->> ---
->>  kernel/sched/fair.c     | 30 +++++++++++++++++++++++++++---
->>  kernel/sched/sched.h    |  2 ++
->>  kernel/sched/topology.c | 10 ++++++++++
->>  3 files changed, 39 insertions(+), 3 deletions(-)
->>
->> diff --git a/kernel/sched/fair.c b/kernel/sched/fair.c
->> index 914096c5b1ae..6fa77610d0f5 100644
->> --- a/kernel/sched/fair.c
->> +++ b/kernel/sched/fair.c
->> @@ -6437,6 +6437,30 @@ static int select_idle_cpu(struct task_struct *p, struct sched_domain *sd, bool
->>  		}
->>  	}
->>  
->> +	if (static_branch_unlikely(&sched_cluster_active)) {
->> +		struct sched_domain *sdc = rcu_dereference(per_cpu(sd_cluster, target));
->> +
->> +		if (sdc) {
->> +			for_each_cpu_wrap(cpu, sched_domain_span(sdc), target + 1) {
-> Looks good to me. One minor question, why don't we use
-> cpumask_and(cpus, sched_domain_span(sdc), cpus);
->> +				if (!cpumask_test_cpu(cpu, cpus))
->> +					continue;
-> so above check can be removed in each loop?
+Hi Ingo, Since commit f96eca432015ddc1b621632488ebc345bca06791 merged, the
+scripts/clang-tools/gen_compile_commands.py can't work very well.
+  In this patch the build_policy.c and build_utility.c include kernel/sched/xxx.c(
+such as rt.c idle.c...), so it compile the build_utility.o build_policy.o directly,
+and it won't generate kernel/sched/xxx.c(such as rt.o idle.o), so the gen_compile_commands.py
+can't work.
+  It will report "[8/23/2022, 3:24:06 PM] "rt.c" not found in "${workspaceFolder}/compile_commands.json".
+'includePath' from c_cpp_properties.json in folder 'linux' will be used for this file instead.".
+  And i test the kdump & crash tools, it can find the functions by line in kernel/sched/xxx.c(
+such as rt.c idle.c), it works well.
+  I can't solve this report error, so i want to get help.
+  Maybe we change the gen_compile_commands.py code can solve this problem or
+can we revert this change?(3.9% build wall time decrease really matter? it will
+destory all tool's parse result which depends on the compiled file result).
 
-Since we'll need to recalculate the mask of rest CPUs to test in the LLC after scanning the cluster CPUs.
-
-> Besides may I know what version this patch
-> is based on? since I failed to apply the patch on v6.0-rc2. Other than that:
-> 
-
-It's on 6.0-rc1 when sent but can be cleanly rebased on rc2:
-
-yangyicong@ubuntu:~/mainline_linux/linux_sub_workspace$ git log --oneline -3
-0079c27ba265 (HEAD -> topost-cls-v7, topost-cls-v6) sched/fair: Scan cluster before scanning LLC in wake-up path
-1ecb9e322bd7 sched: Add per_cpu cluster domain info and cpus_share_lowest_cache API
-1c23f9e627a7 (tag: v6.0-rc2, origin/master, origin/HEAD, master) Linux 6.0-rc2
-
-So I'm not sure where's the problem...
-
-> Reviewed-by: Chen Yu <yu.c.chen@intel.com>
-> 
-
-Thanks!
-
-> thanks,
-> Chenyu
->> +
->> +				if (has_idle_core) {
->> +					i = select_idle_core(p, cpu, cpus, &idle_cpu);
->> +					if ((unsigned int)i < nr_cpumask_bits)
->> +						return i;
->> +				} else {
->> +					if (--nr <= 0)
->> +						return -1;
->> +					idle_cpu = __select_idle_cpu(cpu, p);
->> +					if ((unsigned int)idle_cpu < nr_cpumask_bits)
->> +						return idle_cpu;
->> +				}
->> +			}
->> +			cpumask_andnot(cpus, cpus, sched_domain_span(sdc));
->> +		}
->> +	}
-> .
-> 
