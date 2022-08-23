@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 339ABC32772
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 09:48:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 421D0C32772
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 09:48:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243614AbiHWJr5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 05:47:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42330 "EHLO
+        id S243347AbiHWJsE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 23 Aug 2022 05:48:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48066 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351930AbiHWJpm (ORCPT
+        with ESMTP id S1351916AbiHWJpl (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 05:45:42 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CB3C32AE03;
-        Tue, 23 Aug 2022 01:43:14 -0700 (PDT)
+        Tue, 23 Aug 2022 05:45:41 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 80DDB2F7;
+        Tue, 23 Aug 2022 01:43:16 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 102CD61538;
-        Tue, 23 Aug 2022 08:42:30 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 09457C433C1;
-        Tue, 23 Aug 2022 08:42:28 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 1EDD4B81C4F;
+        Tue, 23 Aug 2022 08:43:02 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6A1B2C433D6;
+        Tue, 23 Aug 2022 08:43:00 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661244149;
-        bh=6bjpeb1yXqMnkg9+2/fYr7o7Pa+WhVmDu5sIiWvdvEw=;
+        s=korg; t=1661244180;
+        bh=wvDu/ipmfAlirHb5j2FpWgwFya3KrOeJTyYaZnia1G8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=HHxHIztraFrj8Ir6NBhJq4+GkpWrEZ/89Nxa1ZUVsdP0G1lwfDPUzMp1Lt7JeD+zY
-         htX/J0qwEcdywRvwLoiZI6w/zDmiwQiEQ2drQm4kZj3khbVS33AYsKIjc2QZxPL4Bu
-         cfNtWFWd94L5JJ/eCq9pCzluhVWgGl4tZtHwOPQY=
+        b=CdHDgkxv9ioSHTRq9P0KRjNy/4t4kgWU6FkAj7L2NNPtTA1u8laAXlvFu9n+iTPvF
+         tJErhwXKTCMRGJ6tl5SVxZGywEpu0rcD5/2VGSCMyZGmr8yMyNj9Rnb1++1DDV2adk
+         7cfS7/35s77wW9XbS8l3SIZOWQFAagdZ06kv4BO4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Hangyu Hua <hbh25y@gmail.com>,
-        Jakub Kicinski <kuba@kernel.org>,
+        stable@vger.kernel.org, Bo-Chen Chen <rex-bc.chen@mediatek.com>,
+        Chun-Kuang Hu <chunkuang.hu@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.14 093/229] dccp: put dccp_qpolicy_full() and dccp_qpolicy_push() in the same lock
-Date:   Tue, 23 Aug 2022 10:24:14 +0200
-Message-Id: <20220823080057.037313606@linuxfoundation.org>
+Subject: [PATCH 4.14 069/229] drm/mediatek: dpi: Remove output format of YUV
+Date:   Tue, 23 Aug 2022 10:23:50 +0200
+Message-Id: <20220823080056.184219976@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220823080053.202747790@linuxfoundation.org>
 References: <20220823080053.202747790@linuxfoundation.org>
@@ -49,68 +49,71 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Hangyu Hua <hbh25y@gmail.com>
+From: Bo-Chen Chen <rex-bc.chen@mediatek.com>
 
-[ Upstream commit a41b17ff9dacd22f5f118ee53d82da0f3e52d5e3 ]
+[ Upstream commit c9ed0713b3c35fc45677707ba47f432cad95da56 ]
 
-In the case of sk->dccps_qpolicy == DCCPQ_POLICY_PRIO, dccp_qpolicy_full
-will drop a skb when qpolicy is full. And the lock in dccp_sendmsg is
-released before sock_alloc_send_skb and then relocked after
-sock_alloc_send_skb. The following conditions may lead dccp_qpolicy_push
-to add skb to an already full sk_write_queue:
+DPI is not support output format as YUV, but there is the setting of
+configuring output YUV. Therefore, remove them in this patch.
 
-thread1--->lock
-thread1--->dccp_qpolicy_full: queue is full. drop a skb
-thread1--->unlock
-thread2--->lock
-thread2--->dccp_qpolicy_full: queue is not full. no need to drop.
-thread2--->unlock
-thread1--->lock
-thread1--->dccp_qpolicy_push: add a skb. queue is full.
-thread1--->unlock
-thread2--->lock
-thread2--->dccp_qpolicy_push: add a skb!
-thread2--->unlock
-
-Fix this by moving dccp_qpolicy_full.
-
-Fixes: b1308dc015eb ("[DCCP]: Set TX Queue Length Bounds via Sysctl")
-Signed-off-by: Hangyu Hua <hbh25y@gmail.com>
-Link: https://lore.kernel.org/r/20220729110027.40569-1-hbh25y@gmail.com
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Fixes: 9e629c17aa8d ("drm/mediatek: Add DPI sub driver")
+Signed-off-by: Bo-Chen Chen <rex-bc.chen@mediatek.com>
+Link: https://patchwork.kernel.org/project/linux-mediatek/patch/20220701035845.16458-5-rex-bc.chen@mediatek.com/
+Signed-off-by: Chun-Kuang Hu <chunkuang.hu@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/dccp/proto.c | 10 +++++-----
- 1 file changed, 5 insertions(+), 5 deletions(-)
+ drivers/gpu/drm/mediatek/mtk_dpi.c | 31 ++++++------------------------
+ 1 file changed, 6 insertions(+), 25 deletions(-)
 
-diff --git a/net/dccp/proto.c b/net/dccp/proto.c
-index 936dab12f99f..e552009b6cc5 100644
---- a/net/dccp/proto.c
-+++ b/net/dccp/proto.c
-@@ -764,11 +764,6 @@ int dccp_sendmsg(struct sock *sk, struct msghdr *msg, size_t len)
+diff --git a/drivers/gpu/drm/mediatek/mtk_dpi.c b/drivers/gpu/drm/mediatek/mtk_dpi.c
+index e80a603e5fb0..6b12be8ca33e 100644
+--- a/drivers/gpu/drm/mediatek/mtk_dpi.c
++++ b/drivers/gpu/drm/mediatek/mtk_dpi.c
+@@ -51,13 +51,7 @@ enum mtk_dpi_out_channel_swap {
+ };
  
- 	lock_sock(sk);
+ enum mtk_dpi_out_color_format {
+-	MTK_DPI_COLOR_FORMAT_RGB,
+-	MTK_DPI_COLOR_FORMAT_RGB_FULL,
+-	MTK_DPI_COLOR_FORMAT_YCBCR_444,
+-	MTK_DPI_COLOR_FORMAT_YCBCR_422,
+-	MTK_DPI_COLOR_FORMAT_XV_YCC,
+-	MTK_DPI_COLOR_FORMAT_YCBCR_444_FULL,
+-	MTK_DPI_COLOR_FORMAT_YCBCR_422_FULL
++	MTK_DPI_COLOR_FORMAT_RGB
+ };
  
--	if (dccp_qpolicy_full(sk)) {
--		rc = -EAGAIN;
--		goto out_release;
+ struct mtk_dpi {
+@@ -346,24 +340,11 @@ static void mtk_dpi_config_2n_h_fre(struct mtk_dpi *dpi)
+ static void mtk_dpi_config_color_format(struct mtk_dpi *dpi,
+ 					enum mtk_dpi_out_color_format format)
+ {
+-	if ((format == MTK_DPI_COLOR_FORMAT_YCBCR_444) ||
+-	    (format == MTK_DPI_COLOR_FORMAT_YCBCR_444_FULL)) {
+-		mtk_dpi_config_yuv422_enable(dpi, false);
+-		mtk_dpi_config_csc_enable(dpi, true);
+-		mtk_dpi_config_swap_input(dpi, false);
+-		mtk_dpi_config_channel_swap(dpi, MTK_DPI_OUT_CHANNEL_SWAP_BGR);
+-	} else if ((format == MTK_DPI_COLOR_FORMAT_YCBCR_422) ||
+-		   (format == MTK_DPI_COLOR_FORMAT_YCBCR_422_FULL)) {
+-		mtk_dpi_config_yuv422_enable(dpi, true);
+-		mtk_dpi_config_csc_enable(dpi, true);
+-		mtk_dpi_config_swap_input(dpi, true);
+-		mtk_dpi_config_channel_swap(dpi, MTK_DPI_OUT_CHANNEL_SWAP_RGB);
+-	} else {
+-		mtk_dpi_config_yuv422_enable(dpi, false);
+-		mtk_dpi_config_csc_enable(dpi, false);
+-		mtk_dpi_config_swap_input(dpi, false);
+-		mtk_dpi_config_channel_swap(dpi, MTK_DPI_OUT_CHANNEL_SWAP_RGB);
 -	}
--
- 	timeo = sock_sndtimeo(sk, noblock);
++	/* only support RGB888 */
++	mtk_dpi_config_yuv422_enable(dpi, false);
++	mtk_dpi_config_csc_enable(dpi, false);
++	mtk_dpi_config_swap_input(dpi, false);
++	mtk_dpi_config_channel_swap(dpi, MTK_DPI_OUT_CHANNEL_SWAP_RGB);
+ }
  
- 	/*
-@@ -787,6 +782,11 @@ int dccp_sendmsg(struct sock *sk, struct msghdr *msg, size_t len)
- 	if (skb == NULL)
- 		goto out_release;
- 
-+	if (dccp_qpolicy_full(sk)) {
-+		rc = -EAGAIN;
-+		goto out_discard;
-+	}
-+
- 	if (sk->sk_state == DCCP_CLOSED) {
- 		rc = -ENOTCONN;
- 		goto out_discard;
+ static void mtk_dpi_power_off(struct mtk_dpi *dpi, enum mtk_dpi_power_ctl pctl)
 -- 
 2.35.1
 
