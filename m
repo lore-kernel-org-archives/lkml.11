@@ -2,47 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 28780C32772
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 09:52:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9C797C32772
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 09:52:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240848AbiHWJwW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 05:52:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39316 "EHLO
+        id S240602AbiHWJw2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 23 Aug 2022 05:52:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55870 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351676AbiHWJuv (ORCPT
+        with ESMTP id S1351651AbiHWJut (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 05:50:51 -0400
+        Tue, 23 Aug 2022 05:50:49 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EA72E6B146;
-        Tue, 23 Aug 2022 01:45:29 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6E10C9DFBC;
+        Tue, 23 Aug 2022 01:45:19 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 6A440B81C35;
-        Tue, 23 Aug 2022 08:38:42 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9C4FCC433D7;
-        Tue, 23 Aug 2022 08:38:40 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 9C6D1B81C6A;
+        Tue, 23 Aug 2022 08:45:18 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E08B2C433C1;
+        Tue, 23 Aug 2022 08:45:16 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661243921;
-        bh=Q+Ic9UXrKxd9vfawZ2Fb/PWbNGzTG3NhwR7SlhSfj8o=;
+        s=korg; t=1661244317;
+        bh=v72sCb1UKg/hUfqN4kpl6JgOnAKHwuo/rcMINgfYefU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=cBlLFBzhCkws78UZGlN0GkREEo/gZxrv4qeAb0BTnoHjE9sLUA9hlkwxfiQOqATxw
-         MEB4G+R3jvoOaBrRdEDUOVEU62NcOpcNohAJwoCf1Fht4Utdjho2Ek8j3xQQUCk3CX
-         nnY22vtmobvQTeBDIB7vpNOK54uVnITwpewioC2U=
+        b=UbH0oSPTbP7YkJUzn7jxkl/BhgJ8jyGGiyQXctU3OpnKtw+tGuupc07aT7OqYcCtq
+         1xYQd/gk3u+y7pwuXB82lmyeHLoXGd1qZ05qBdFlOGNz5MV7A5m9wt34hRAHVj+ZWT
+         fMlZ2qe8wYcKLqGjnVF3YnCvAt/q7Gj1RgBaSNsE=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Sireesh Kodali <sireeshkodali1@gmail.com>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
-        Stephan Gerhold <stephan@gerhold.net>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.14 056/229] arm64: dts: qcom: msm8916: Fix typo in pronto remoteproc node
-Date:   Tue, 23 Aug 2022 10:23:37 +0200
-Message-Id: <20220823080055.726679251@linuxfoundation.org>
+        stable@vger.kernel.org, Harman Kalra <hkalra@marvell.com>,
+        Subbaraya Sundeep <sbhatta@marvell.com>,
+        Sunil Goutham <sgoutham@marvell.com>,
+        Jakub Kicinski <kuba@kernel.org>
+Subject: [PATCH 5.15 072/244] octeontx2-af: suppress external profile loading warning
+Date:   Tue, 23 Aug 2022 10:23:51 +0200
+Message-Id: <20220823080101.466987922@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220823080053.202747790@linuxfoundation.org>
-References: <20220823080053.202747790@linuxfoundation.org>
+In-Reply-To: <20220823080059.091088642@linuxfoundation.org>
+References: <20220823080059.091088642@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -51,42 +50,35 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Sireesh Kodali <sireeshkodali1@gmail.com>
+From: Harman Kalra <hkalra@marvell.com>
 
-[ Upstream commit 5458d6f2827cd30218570f266b8d238417461f2f ]
+commit cf2437626502b5271d19686b03dea306efe17ea0 upstream.
 
-The smem-state properties for the pronto node were incorrectly labelled,
-reading `qcom,state*` rather than `qcom,smem-state*`. Fix that, allowing
-the stop state to be used.
+The packet parser profile supplied as firmware may not
+be present all the time and default profile is used mostly.
+Hence suppress firmware loading warning from kernel due to
+absence of firmware in kernel image.
 
-Fixes: 88106096cbf8 ("ARM: dts: msm8916: Add and enable wcnss node")
-Signed-off-by: Sireesh Kodali <sireeshkodali1@gmail.com>
-Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Reviewed-by: Stephan Gerhold <stephan@gerhold.net>
-Signed-off-by: Bjorn Andersson <bjorn.andersson@linaro.org>
-Link: https://lore.kernel.org/r/20220526141740.15834-3-sireeshkodali1@gmail.com
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Fixes: 3a7244152f9c ("octeontx2-af: add support for custom KPU entries")
+Signed-off-by: Harman Kalra <hkalra@marvell.com>
+Signed-off-by: Subbaraya Sundeep <sbhatta@marvell.com>
+Signed-off-by: Sunil Goutham <sgoutham@marvell.com>
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/arm64/boot/dts/qcom/msm8916.dtsi | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ drivers/net/ethernet/marvell/octeontx2/af/rvu_npc.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/arch/arm64/boot/dts/qcom/msm8916.dtsi b/arch/arm64/boot/dts/qcom/msm8916.dtsi
-index a961b8106000..0f45dd0d36fd 100644
---- a/arch/arm64/boot/dts/qcom/msm8916.dtsi
-+++ b/arch/arm64/boot/dts/qcom/msm8916.dtsi
-@@ -980,8 +980,8 @@ pronto: wcnss@a21b000 {
- 			vddmx-supply = <&pm8916_l3>;
- 			vddpx-supply = <&pm8916_l7>;
- 
--			qcom,state = <&wcnss_smp2p_out 0>;
--			qcom,state-names = "stop";
-+			qcom,smem-states = <&wcnss_smp2p_out 0>;
-+			qcom,smem-state-names = "stop";
- 
- 			pinctrl-names = "default";
- 			pinctrl-0 = <&wcnss_pin_a>;
--- 
-2.35.1
-
+--- a/drivers/net/ethernet/marvell/octeontx2/af/rvu_npc.c
++++ b/drivers/net/ethernet/marvell/octeontx2/af/rvu_npc.c
+@@ -1650,7 +1650,7 @@ static void npc_load_kpu_profile(struct
+ 	 * Firmware database method.
+ 	 * Default KPU profile.
+ 	 */
+-	if (!request_firmware(&fw, kpu_profile, rvu->dev)) {
++	if (!request_firmware_direct(&fw, kpu_profile, rvu->dev)) {
+ 		dev_info(rvu->dev, "Loading KPU profile from firmware: %s\n",
+ 			 kpu_profile);
+ 		rvu->kpu_fwdata = kzalloc(fw->size, GFP_KERNEL);
 
 
