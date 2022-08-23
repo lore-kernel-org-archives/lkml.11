@@ -2,43 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 81D9AC3F6B0
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 08:12:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 86673C32774
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 08:12:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242173AbiHWIMm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 04:12:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32924 "EHLO
+        id S242186AbiHWIMu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 23 Aug 2022 04:12:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35244 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241902AbiHWIJ7 (ORCPT
+        with ESMTP id S241953AbiHWIKV (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 04:09:59 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 73EA766A60;
-        Tue, 23 Aug 2022 01:06:41 -0700 (PDT)
+        Tue, 23 Aug 2022 04:10:21 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 03E6A62EC;
+        Tue, 23 Aug 2022 01:06:46 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id EF05C611DD;
-        Tue, 23 Aug 2022 08:06:40 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 01527C433D6;
-        Tue, 23 Aug 2022 08:06:39 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id B7C88B81C18;
+        Tue, 23 Aug 2022 08:06:44 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1362EC433D6;
+        Tue, 23 Aug 2022 08:06:42 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661242000;
-        bh=pq5jl0liAQqHiKcuVEOGf6QiN0IET6PLiMh34kv50FY=;
+        s=korg; t=1661242003;
+        bh=J+DXR96l9REwJRWay4rK1UgGsMv0u7hfihps0sdhl/Y=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=XGeelUshXeID6gN2scK4xCghVQ3TiTPbKTAkWxwXGVTxezsseImXFEB4whIu7ajOw
-         bsDX2dcvH/Wj87dnQJVEfdo31o+pxl3yOWVZoyI4o0CQqhvcr5zdaqKiDh//oD5RPH
-         7gxEx3zNeAoWySeyd7FENKoNSaOTPtHeukofBndw=
+        b=ygvrIzZPwCuaZ8NUUtd3HrE7hcrOWHagVIgqKwF+zsLfdeyA5shLV3uViuIVCfLTW
+         4F5P0dSvhHgh4kZ3faYz+Cud5elxL5yONKTZn2Yqz63vtfSJIDfMAmV1qeSZ47uWkd
+         jGqNAgBqjifwmfAL8T/elhb6yuUIECBO6MqRxIas=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, John Johansen <john.johansen@canonical.com>
-Subject: [PATCH 5.19 043/365] apparmor: Fix failed mount permission check error message
-Date:   Tue, 23 Aug 2022 09:59:04 +0200
-Message-Id: <20220823080119.976579673@linuxfoundation.org>
+        stable@vger.kernel.org, Liang He <windhl@126.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 4.9 005/101] net: sungem_phy: Add of_node_put() for reference returned by of_get_parent()
+Date:   Tue, 23 Aug 2022 10:02:38 +0200
+Message-Id: <20220823080034.798652429@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220823080118.128342613@linuxfoundation.org>
-References: <20220823080118.128342613@linuxfoundation.org>
+In-Reply-To: <20220823080034.579196046@linuxfoundation.org>
+References: <20220823080034.579196046@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -47,45 +49,36 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: John Johansen <john.johansen@canonical.com>
+From: Liang He <windhl@126.com>
 
-commit ec240b5905bbb09a03dccffee03062cf39e38dc2 upstream.
+[ Upstream commit ebbbe23fdf6070e31509638df3321688358cc211 ]
 
-When the mount check fails due to a permission check failure instead
-of explicitly at one of the subcomponent checks, AppArmor is reporting
-a failure in the flags match. However this is not true and AppArmor
-can not attribute the error at this point to any particular component,
-and should only indicate the mount failed due to missing permissions.
+In bcm5421_init(), we should call of_node_put() for the reference
+returned by of_get_parent() which has increased the refcount.
 
-Fixes: 2ea3ffb7782a ("apparmor: add mount mediation")
-Signed-off-by: John Johansen <john.johansen@canonical.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Fixes: 3c326fe9cb7a ("[PATCH] ppc64: Add new PHY to sungem")
+Signed-off-by: Liang He <windhl@126.com>
+Link: https://lore.kernel.org/r/20220720131003.1287426-1-windhl@126.com
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- security/apparmor/mount.c |    7 ++++---
- 1 file changed, 4 insertions(+), 3 deletions(-)
+ drivers/net/sungem_phy.c | 1 +
+ 1 file changed, 1 insertion(+)
 
---- a/security/apparmor/mount.c
-+++ b/security/apparmor/mount.c
-@@ -229,7 +229,8 @@ static const char * const mnt_info_table
- 	"failed srcname match",
- 	"failed type match",
- 	"failed flags match",
--	"failed data match"
-+	"failed data match",
-+	"failed perms check"
- };
- 
- /*
-@@ -284,8 +285,8 @@ static int do_match_mnt(struct aa_dfa *d
- 			return 0;
- 	}
- 
--	/* failed at end of flags match */
--	return 4;
-+	/* failed at perms check, don't confuse with flags match */
-+	return 6;
- }
- 
- 
+diff --git a/drivers/net/sungem_phy.c b/drivers/net/sungem_phy.c
+index 92578d72e4ee..c5efdde21c2e 100644
+--- a/drivers/net/sungem_phy.c
++++ b/drivers/net/sungem_phy.c
+@@ -453,6 +453,7 @@ static int bcm5421_init(struct mii_phy* phy)
+ 		int can_low_power = 1;
+ 		if (np == NULL || of_get_property(np, "no-autolowpower", NULL))
+ 			can_low_power = 0;
++		of_node_put(np);
+ 		if (can_low_power) {
+ 			/* Enable automatic low-power */
+ 			sungem_phy_write(phy, 0x1c, 0x9002);
+-- 
+2.35.1
+
 
 
