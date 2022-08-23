@@ -2,46 +2,48 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6D114C32774
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 09:37:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 60313C32772
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 09:37:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351514AbiHWJhu (ORCPT
+        id S1351552AbiHWJhw (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 05:37:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53286 "EHLO
+        Tue, 23 Aug 2022 05:37:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45938 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351904AbiHWJgH (ORCPT
+        with ESMTP id S1351945AbiHWJgJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 05:36:07 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B153A98582;
-        Tue, 23 Aug 2022 01:40:18 -0700 (PDT)
+        Tue, 23 Aug 2022 05:36:09 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2850C95E67;
+        Tue, 23 Aug 2022 01:40:11 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id D3F6961540;
-        Tue, 23 Aug 2022 08:38:56 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C2515C433C1;
-        Tue, 23 Aug 2022 08:38:55 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 9E2D4CE1B4D;
+        Tue, 23 Aug 2022 08:39:16 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B1DDBC433D6;
+        Tue, 23 Aug 2022 08:39:14 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661243936;
-        bh=gAdVwi5b46D9uvxjWOaMgLJiK7BOtIW4GyeExVWcIaw=;
+        s=korg; t=1661243955;
+        bh=LZkjIvVaPJ5PQVliSAj7ZPU9g5VAT/t9LqW3Bx3TFh0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=1jTi6qxBfb/OKD9rWDRX/5/IIJ9xt6CVY0zeW4zh+oRYrlGiw9MdynqsHmdhyUO/Y
-         7FFxL7uFfcboQbDLDDr94fgB2HoAsSHiy9iMpuh1Icir8P27BQKPJE13DwRVrtGkj5
-         98GuEV/1sVkgZZW+BfWyWILpr7W9/hLvlO6JbhVM=
+        b=Du1hVkKaYey64ForIaKbyOOqp9Gml+/VNA5T/qyT9f1EHdesq2lti9BFkY/xLGo5v
+         o0VveL6t43b01YZkm6oQIZa8tJMBFVXRRVUd3e3ZkaycOE3vUGsMsv5DwY6jm3xFHD
+         19cXO4BJHZFqthPRTnwrhTCfD2GAgevavF4JUPUU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
-        Ulf Hansson <ulf.hansson@linaro.org>
-Subject: [PATCH 5.15 011/244] mmc: pxamci: Fix another error handling path in pxamci_probe()
-Date:   Tue, 23 Aug 2022 10:22:50 +0200
-Message-Id: <20220823080059.464051090@linuxfoundation.org>
+        stable@vger.kernel.org, Jitao Shi <jitao.shi@mediatek.com>,
+        Xinlei Lee <xinlei.lee@mediatek.com>,
+        Rex-BC Chen <rex-bc.chen@mediatek.com>,
+        Chun-Kuang Hu <chunkuang.hu@kernel.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 4.14 061/229] drm/mediatek: Add pull-down MIPI operation in mtk_dsi_poweroff function
+Date:   Tue, 23 Aug 2022 10:23:42 +0200
+Message-Id: <20220823080055.918335162@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220823080059.091088642@linuxfoundation.org>
-References: <20220823080059.091088642@linuxfoundation.org>
+In-Reply-To: <20220823080053.202747790@linuxfoundation.org>
+References: <20220823080053.202747790@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -50,35 +52,48 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+From: Xinlei Lee <xinlei.lee@mediatek.com>
 
-commit b886f54c300d31c109d2e4336b22922b64e7ba7d upstream.
+[ Upstream commit fa5d0a0205c34734c5b8daa77e39ac2817f63a10 ]
 
-The commit in Fixes: has introduced an new error handling without branching
-to the existing error handling path.
+In the dsi_enable function, mtk_dsi_rxtx_control is to
+pull up the MIPI signal operation. Before dsi_disable,
+MIPI should also be pulled down by writing a register
+instead of disabling dsi.
 
-Update it now and release some resources if pxamci_init_ocr() fails.
+If disable dsi without pulling the mipi signal low, the value of
+the register will still maintain the setting of the mipi signal being
+pulled high.
+After resume, even if the mipi signal is not pulled high, it will still
+be in the high state.
 
-Fixes: 61951fd6cb49 ("mmc: pxamci: let mmc core handle regulators")
-Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
-Cc: stable@vger.kernel.org
-Link: https://lore.kernel.org/r/07a2dcebf8ede69b484103de8f9df043f158cffd.1658862932.git.christophe.jaillet@wanadoo.fr
-Signed-off-by: Ulf Hansson <ulf.hansson@linaro.org>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Fixes: 2e54c14e310f ("drm/mediatek: Add DSI sub driver")
+
+Link: https://patchwork.kernel.org/project/linux-mediatek/patch/1653012007-11854-5-git-send-email-xinlei.lee@mediatek.com/
+Signed-off-by: Jitao Shi <jitao.shi@mediatek.com>
+Signed-off-by: Xinlei Lee <xinlei.lee@mediatek.com>
+Reviewed-by: Rex-BC Chen <rex-bc.chen@mediatek.com>
+Signed-off-by: Chun-Kuang Hu <chunkuang.hu@kernel.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/mmc/host/pxamci.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/gpu/drm/mediatek/mtk_dsi.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
---- a/drivers/mmc/host/pxamci.c
-+++ b/drivers/mmc/host/pxamci.c
-@@ -672,7 +672,7 @@ static int pxamci_probe(struct platform_
+diff --git a/drivers/gpu/drm/mediatek/mtk_dsi.c b/drivers/gpu/drm/mediatek/mtk_dsi.c
+index c1b8caad65e6..7ae243122f68 100644
+--- a/drivers/gpu/drm/mediatek/mtk_dsi.c
++++ b/drivers/gpu/drm/mediatek/mtk_dsi.c
+@@ -652,6 +652,8 @@ static void mtk_dsi_poweroff(struct mtk_dsi *dsi)
+ 	mtk_dsi_reset_engine(dsi);
+ 	mtk_dsi_lane0_ulp_mode_enter(dsi);
+ 	mtk_dsi_clk_ulp_mode_enter(dsi);
++	/* set the lane number as 0 to pull down mipi */
++	writel(0, dsi->regs + DSI_TXRX_CTRL);
  
- 	ret = pxamci_init_ocr(host);
- 	if (ret < 0)
--		return ret;
-+		goto out;
+ 	mtk_dsi_disable(dsi);
  
- 	mmc->caps = 0;
- 	host->cmdat = 0;
+-- 
+2.35.1
+
 
 
