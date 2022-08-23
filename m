@@ -2,92 +2,94 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E72A8C32789
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 15:32:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E1C30C32772
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 15:32:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242977AbiHWPcT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 11:32:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56110 "EHLO
+        id S243307AbiHWPcg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 23 Aug 2022 11:32:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57286 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238336AbiHWPcB (ORCPT
+        with ESMTP id S242197AbiHWPcI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 11:32:01 -0400
-Received: from mail-ed1-x531.google.com (mail-ed1-x531.google.com [IPv6:2a00:1450:4864:20::531])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D1FFB250D83
-        for <linux-kernel@vger.kernel.org>; Tue, 23 Aug 2022 04:17:45 -0700 (PDT)
-Received: by mail-ed1-x531.google.com with SMTP id b16so17587757edd.4
-        for <linux-kernel@vger.kernel.org>; Tue, 23 Aug 2022 04:17:45 -0700 (PDT)
+        Tue, 23 Aug 2022 11:32:08 -0400
+Received: from mail-lf1-x132.google.com (mail-lf1-x132.google.com [IPv6:2a00:1450:4864:20::132])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 943BC250DAC
+        for <linux-kernel@vger.kernel.org>; Tue, 23 Aug 2022 04:17:52 -0700 (PDT)
+Received: by mail-lf1-x132.google.com with SMTP id m5so8544645lfj.4
+        for <linux-kernel@vger.kernel.org>; Tue, 23 Aug 2022 04:17:52 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=linaro.org; s=google;
         h=content-transfer-encoding:in-reply-to:from:references:cc:to
          :content-language:subject:user-agent:mime-version:date:message-id
          :from:to:cc;
-        bh=MrLxb4E2DjxfMfHqX0aKpuYkCzfN45dEHvfq2u/Glfc=;
-        b=oMu9LroE0RFKYUnrnUWRhbLqwE9SXGBkir2MBGkEE7vrSFbD1xoFjCFMdpG2eTJQq8
-         GpWfKMT1LLuh0BLCNuyWdS35eZ+BbWTHta3HmqkrPOXvdth/lE7EhwIL7TL1dieNQI5u
-         OhlZY3yoAKcJCmjiRKB7vWei+EB5dlzhS6au8bsxgqgLHKO2XnM1/ioP15HhbEQJlz93
-         M5ZW7Fmu47MTlftRuoeWk2DqzbXvaatLwOl/NyauE9Gcv5TbFw0SBa7vOcLs3sS2rVEn
-         Uuo0Zuy8gQUg7RiiWjfryxeinpc5E+uyw4sOGHaZgKTHRyCpEzE6jT5ep29j867EkRVJ
-         bCFQ==
+        bh=p/Y+SW+sDFQrxU5iGkzgHTDP+ZT5UJ6i53/083eyQJg=;
+        b=MrDQbeNHyc+pRDxnzFQ91jU42y8YNo4YNnlkpgLoQaXpcv1pX5XNX4Ql8pN9555LXy
+         Ko2Ml8/H09TKZPX7AuENC8+/Vgftma2mrEv/Jn/vII69uueY29XIsrqc65IcC2uA3pMA
+         6OXK4J602Y6PV57CqlfT0ZjquvSfL/HvjizICTyTDgFOA5zBQkChkyn4CyTPCIKt6ZdZ
+         JeNr1LUxwfKESCglpaPg3wPK3/DnoX5wOgqOuxc94JLgBpy2VGmfMk5gLb1hoddHCgFi
+         JRnhj09DhvvzKsOSTnbjMXApY1lujQJxBRTQM3Vk2XbYEZwiv3w/0C56k+esW1JNjvy1
+         s4tg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=content-transfer-encoding:in-reply-to:from:references:cc:to
          :content-language:subject:user-agent:mime-version:date:message-id
          :x-gm-message-state:from:to:cc;
-        bh=MrLxb4E2DjxfMfHqX0aKpuYkCzfN45dEHvfq2u/Glfc=;
-        b=4SvD6Kb6GYlcOfZ2O2eOsiyexzIrzRLrVkCkbjI2arj5Tez4fkEM8IZWv/+gaNo1+M
-         d6NEK8B2aZZ5y2i+ibhrGV/NKGLA44jXDXyUpVbG1von65sD0wMAqrut38odhgf5pEyJ
-         3OUPquCYBucB2z48xK61Ycw5unXAJdZFbdr0I/yEt4IVjNYWN2sCylhtBegUXYOe2D6E
-         I+vBIA2BFfntNwgsC4k5niyYjr8C2RzPcg0VT62sN650S2DWiHJSlVj9+w6nlkHAn6Am
-         8VV5Kdog5r4iqWb35HkSUFV6jSIatClueP2wGTwfUcfZncfb28CEFWrNMfpeIar/2/5W
-         t2nw==
-X-Gm-Message-State: ACgBeo3D1oIESPTf4PnltzwNJ86p5/U6Rc2sBPrHegpTpU1AN1MSjdZH
-        BG3IdEcqtHsGFK05hhPGfM23ACohF60xreXB
-X-Google-Smtp-Source: AA6agR5tvu9knEhQdwzyYF2Q1oGh+SSN0iH2VVVvmeqNz9MLv8SEOAHKU+FHbuM9D26qpMR1MObYRw==
-X-Received: by 2002:a2e:505d:0:b0:261:ce76:52b7 with SMTP id v29-20020a2e505d000000b00261ce7652b7mr2327656ljd.286.1661252943789;
-        Tue, 23 Aug 2022 04:09:03 -0700 (PDT)
+        bh=p/Y+SW+sDFQrxU5iGkzgHTDP+ZT5UJ6i53/083eyQJg=;
+        b=ywZmfu6wLW1pCUtpzKtVbcOJuUtx2omYL/WQmBPzmWNV2oiUh53B5n1kNvNQTqrSfm
+         mhnDwOQEVTOTe8Wjc9g9HLewtzrYdLzH/oSrD0xo406BP58OYu+NYhKUS6mnhfkgRG3V
+         NHGgPtiXIc3EBooyFQUJMzT01NsdVkz2TM1AKUWvY1HHOgwWm75oMIyrMYTe6HF0auSV
+         DXmwZjdJAfL1kmwaaLG7f22DlO4C0BFnbwHr//bguslM40cHvqN4iTVtg+LLDfaYiT9Z
+         mSGCs6QBidUoMrGbecHTKZExzm/glWlqvUcjOkSQ2WK4JwSqejyDaSZ53cAUAPRmwuij
+         qc0w==
+X-Gm-Message-State: ACgBeo1xBJbjnbRupxVjt1ZrvAkB4zHhT0EgoLHkWrvNZqdM2Zs8XOJB
+        l4Q9wzV3dM7nZwFTN0YPqN7mxA==
+X-Google-Smtp-Source: AA6agR7tqyK85+2o04GF7PJMNhOl687ZeYth/rV5QHCEWVFSRi8/kChXM1q2ei8VMMBa3JjYccngJw==
+X-Received: by 2002:a05:6512:1315:b0:492:cbc8:e10d with SMTP id x21-20020a056512131500b00492cbc8e10dmr6406997lfu.41.1661253470590;
+        Tue, 23 Aug 2022 04:17:50 -0700 (PDT)
 Received: from [192.168.0.11] (89-27-92-210.bb.dnainternet.fi. [89.27.92.210])
-        by smtp.gmail.com with ESMTPSA id q9-20020a056512210900b0048b1d92991asm2375015lfr.303.2022.08.23.04.09.02
+        by smtp.gmail.com with ESMTPSA id z20-20020a056512371400b0048b27af9505sm1508855lfr.213.2022.08.23.04.17.49
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 23 Aug 2022 04:09:03 -0700 (PDT)
-Message-ID: <2c14cc93-ae8d-365d-ac58-2e615d359fd7@linaro.org>
-Date:   Tue, 23 Aug 2022 14:09:02 +0300
+        Tue, 23 Aug 2022 04:17:49 -0700 (PDT)
+Message-ID: <6ffc497c-5717-cdce-d338-65a8f00624d1@linaro.org>
+Date:   Tue, 23 Aug 2022 14:17:48 +0300
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
  Thunderbird/91.12.0
-Subject: Re: [PATCH 3/3] drivers: iio: adc: Rename the LTC249x iio device
+Subject: Re: [PATCH 1/2] dt-bindings: soc: mediatek: add mt8188 svs
+ dt-bindings
 Content-Language: en-US
-To:     Ciprian Regus <ciprian.regus@analog.com>, jic23@kernel.org,
-        krzysztof.kozlowski+dt@linaro.org, robh+dt@kernel.org,
-        linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Cc:     u.kleine-koenig@pengutronix.de
-References: <20220822125106.1106798-1-ciprian.regus@analog.com>
- <20220822125106.1106798-4-ciprian.regus@analog.com>
+To:     "jia-wei.chang" <jia-wei.chang@mediatek.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        Philipp Zabel <p.zabel@pengutronix.de>,
+        Roger Lu <roger.lu@mediatek.com>,
+        Kevin Hilman <khilman@kernel.org>
+Cc:     devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org,
+        Project_Global_Chrome_Upstream_Group@mediatek.com,
+        hsinyi@google.com,
+        AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>
+References: <20220823091346.519-1-jia-wei.chang@mediatek.com>
+ <20220823091346.519-2-jia-wei.chang@mediatek.com>
 From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-In-Reply-To: <20220822125106.1106798-4-ciprian.regus@analog.com>
+In-Reply-To: <20220823091346.519-2-jia-wei.chang@mediatek.com>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 22/08/2022 15:51, Ciprian Regus wrote:
+On 23/08/2022 12:13, jia-wei.chang wrote:
+> From: Jia-Wei Chang <jia-wei.chang@mediatek.com>
+> 
+> Add mt8188 svs compatible in dt-bindings.
+> 
+> Signed-off-by: Jia-Wei Chang <jia-wei.chang@mediatek.com>
 
-(...)
 
->  
-> diff --git a/drivers/iio/adc/ltc2497.h b/drivers/iio/adc/ltc2497.h
-> index f4d939cfd48b..0e86e38248ee 100644
-> --- a/drivers/iio/adc/ltc2497.h
-> +++ b/drivers/iio/adc/ltc2497.h
-> @@ -12,6 +12,7 @@ enum chip_type {
->  
->  struct chip_info {
->  	u32 resolution;
-> +	char *name;
-
-const char *
+Acked-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
 
 
 Best regards,
