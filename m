@@ -2,46 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9216AC48BEA
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 10:12:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2B508C52D78
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 10:12:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353567AbiHWKLj (ORCPT
+        id S1353847AbiHWKMN (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 06:11:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44412 "EHLO
+        Tue, 23 Aug 2022 06:12:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46358 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352164AbiHWKEh (ORCPT
+        with ESMTP id S1352185AbiHWKEm (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 06:04:37 -0400
+        Tue, 23 Aug 2022 06:04:42 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2D2007CAAD;
-        Tue, 23 Aug 2022 01:51:29 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B81657CA94;
+        Tue, 23 Aug 2022 01:51:47 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 8EE1C611DD;
-        Tue, 23 Aug 2022 08:51:28 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7F03DC433C1;
-        Tue, 23 Aug 2022 08:51:27 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 21B5F6123D;
+        Tue, 23 Aug 2022 08:51:47 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 22CCBC433C1;
+        Tue, 23 Aug 2022 08:51:45 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661244688;
-        bh=BUABD0JN2H9C+CJyiBeVXutjaNxEATd60hiao3q3jFw=;
+        s=korg; t=1661244706;
+        bh=AjgnwwxWXyifvjdcv6mNmWstwjabtaeunnP3qT+/RTo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=B3mcezs3w3cqhOc/r/ECqabk8/qAuQUWkV8m3Duiqu3tSiLj8oARd2FHYY4M1H5LY
-         GsdMfWOZSiwCGZJur+8pKbTFWTeigT4L3XuZMmuTFQX3/NNZKaNwmyaLwUh277axWZ
-         sL7tIKGQQ8ZnecXpQ9tkKUHu8N09UThSXWtGK7As=
+        b=jZpudA5ioEUAfQ8UcG5PBCrJAKVOuAU3mP5KUsmcZDzNHN7MftTfqr0hF9iX/L/bh
+         m9ZO1ENgd+b4ew9njg+mxr3KsKe1WE1mtt6Sv4nQG3Ori/c8MKqjiEDH2uZ2HNz61e
+         pjzdhmH2APX0lVnhyW4nviC9asuQLwYjSuojX7Fo=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Xin Xiong <xiongx18@fudan.edu.cn>,
-        Xin Tan <tanxin.ctf@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>
-Subject: [PATCH 5.15 134/244] net/sunrpc: fix potential memory leaks in rpc_sysfs_xprt_state_change()
-Date:   Tue, 23 Aug 2022 10:24:53 +0200
-Message-Id: <20220823080103.611981010@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Damien Le Moal <damien.lemoal@opensource.wdc.com>,
+        Hannes Reinecke <hare@suse.de>
+Subject: [PATCH 4.14 178/229] ata: libata-eh: Add missing command name
+Date:   Tue, 23 Aug 2022 10:25:39 +0200
+Message-Id: <20220823080059.973330551@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220823080059.091088642@linuxfoundation.org>
-References: <20220823080059.091088642@linuxfoundation.org>
+In-Reply-To: <20220823080053.202747790@linuxfoundation.org>
+References: <20220823080053.202747790@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -50,43 +50,31 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Xin Xiong <xiongx18@fudan.edu.cn>
+From: Damien Le Moal <damien.lemoal@opensource.wdc.com>
 
-commit bfc48f1b0505ffcb03a6d749139b7577d6b81ae0 upstream.
+commit d3122bf9aa4c974f5e2c0112f799757b3a2779da upstream.
 
-The issue happens on some error handling paths. When the function
-fails to grab the object `xprt`, it simply returns 0, forgetting to
-decrease the reference count of another object `xps`, which is
-increased by rpc_sysfs_xprt_kobj_get_xprt_switch(), causing refcount
-leaks. Also, the function forgets to check whether `xps` is valid
-before using it, which may result in NULL-dereferencing issues.
+Add the missing command name for ATA_CMD_NCQ_NON_DATA to
+ata_get_cmd_name().
 
-Fix it by adding proper error handling code when either `xprt` or
-`xps` is NULL.
-
-Fixes: 5b7eb78486cd ("SUNRPC: take a xprt offline using sysfs")
-Signed-off-by: Xin Xiong <xiongx18@fudan.edu.cn>
-Signed-off-by: Xin Tan <tanxin.ctf@gmail.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+Fixes: 661ce1f0c4a6 ("libata/libsas: Define ATA_CMD_NCQ_NON_DATA")
+Cc: stable@vger.kernel.org
+Signed-off-by: Damien Le Moal <damien.lemoal@opensource.wdc.com>
+Reviewed-by: Hannes Reinecke <hare@suse.de>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- net/sunrpc/sysfs.c |    6 ++++--
- 1 file changed, 4 insertions(+), 2 deletions(-)
+ drivers/ata/libata-eh.c |    1 +
+ 1 file changed, 1 insertion(+)
 
---- a/net/sunrpc/sysfs.c
-+++ b/net/sunrpc/sysfs.c
-@@ -282,8 +282,10 @@ static ssize_t rpc_sysfs_xprt_state_chan
- 	int offline = 0, online = 0, remove = 0;
- 	struct rpc_xprt_switch *xps = rpc_sysfs_xprt_kobj_get_xprt_switch(kobj);
- 
--	if (!xprt)
--		return 0;
-+	if (!xprt || !xps) {
-+		count = 0;
-+		goto out_put;
-+	}
- 
- 	if (!strncmp(buf, "offline", 7))
- 		offline = 1;
+--- a/drivers/ata/libata-eh.c
++++ b/drivers/ata/libata-eh.c
+@@ -2374,6 +2374,7 @@ const char *ata_get_cmd_descript(u8 comm
+ 		{ ATA_CMD_WRITE_QUEUED_FUA_EXT, "WRITE DMA QUEUED FUA EXT" },
+ 		{ ATA_CMD_FPDMA_READ,		"READ FPDMA QUEUED" },
+ 		{ ATA_CMD_FPDMA_WRITE,		"WRITE FPDMA QUEUED" },
++		{ ATA_CMD_NCQ_NON_DATA,		"NCQ NON-DATA" },
+ 		{ ATA_CMD_FPDMA_SEND,		"SEND FPDMA QUEUED" },
+ 		{ ATA_CMD_FPDMA_RECV,		"RECEIVE FPDMA QUEUED" },
+ 		{ ATA_CMD_PIO_READ,		"READ SECTOR(S)" },
 
 
