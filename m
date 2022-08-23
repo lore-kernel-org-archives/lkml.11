@@ -2,68 +2,75 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 21BEDC32774
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 07:48:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D592BC32774
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 07:49:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241199AbiHWHsx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 03:48:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58614 "EHLO
+        id S241208AbiHWHtF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 23 Aug 2022 03:49:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58882 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241186AbiHWHsv (ORCPT
+        with ESMTP id S241065AbiHWHtC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 03:48:51 -0400
-Received: from mail-m972.mail.163.com (mail-m972.mail.163.com [123.126.97.2])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id CE47812AB3
-        for <linux-kernel@vger.kernel.org>; Tue, 23 Aug 2022 00:48:49 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=163.com;
-        s=s110527; h=From:Subject:Date:Message-Id:MIME-Version; bh=RGiGH
-        p7oMEjT6uibunWe+zoBBBB1zHI0xeEhGOD4JUk=; b=lSpraQrDT1UgzBln6DywU
-        RoaCAcReaVSM4EqcaVMcpHSkAbh44L9aIkAYlmCZ/wCbst65YtCAQS75sZLzu8xb
-        2i+MAaB/NC/gdpT1uGXkLPqxSyUibjBa8r6Qiw9saYmYb1znCMaSByExu+o55kYZ
-        J6zMVf4Bkp3p1jPHnGCj8c=
-Received: from VM-0-11-ubuntu.. (unknown [49.235.41.28])
-        by smtp2 (Coremail) with SMTP id GtxpCgC3L_L2hQRjVX0BXg--.9755S4;
-        Tue, 23 Aug 2022 15:47:05 +0800 (CST)
-From:   suhui_kernel@163.com
-To:     mingo@kernel.org
-Cc:     akpm@linux-foundation.org, bp@alien8.de, dietmar.eggemann@arm.com,
-        juri.lelli@redhat.com, linux-kernel@vger.kernel.org,
-        luto@amacapital.net, mgorman@suse.de, peterz@infradead.org,
-        tglx@linutronix.de, torvalds@linux-foundation.org,
-        vincent.guittot@linaro.org, nhuck@google.com,
-        ndesaulniers@google.com, lukas.bulwahn@gmail.com,
-        masahiroy@kernel.org
-Subject: Re: [PATCH 09/15] sched/headers: Introduce kernel/sched/build_policy.c and build multiple .c files there
-Date:   Tue, 23 Aug 2022 15:47:02 +0800
-Message-Id: <20220823074702.2900118-1-suhui_kernel@163.com>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220315084247.40783-10-mingo@kernel.org>
-References: <20220315084247.40783-10-mingo@kernel.org>
+        Tue, 23 Aug 2022 03:49:02 -0400
+Received: from smtp-out2.suse.de (smtp-out2.suse.de [IPv6:2001:67c:2178:6::1d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 21E294DF0B
+        for <linux-kernel@vger.kernel.org>; Tue, 23 Aug 2022 00:49:01 -0700 (PDT)
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by smtp-out2.suse.de (Postfix) with ESMTPS id A5A005CE3B;
+        Tue, 23 Aug 2022 07:48:59 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
+        t=1661240939; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=WGHlWdvnBeHk92ACym3bq91DmzpEgoS6zL8C8Nn3/TM=;
+        b=uS+R/agkh3EO6JM/iLIH7mOR7PF/U0sRQFEgPVOfkdDfKZmuveB2rrR9DE9raLvQ9TG/f3
+        4S898IUf0KLrIvjmeqdNyjS2aGOwuxuklcxWrNTb+CGfOp6GmT6xzeczVwyR4gYRh5uSAz
+        Ttsw5gpU65lflm/4kJm3HV5KKlXnCFg=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
+        s=susede2_ed25519; t=1661240939;
+        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=WGHlWdvnBeHk92ACym3bq91DmzpEgoS6zL8C8Nn3/TM=;
+        b=h/B6WVkSxoEda8qZ22fs5HRe9TWdM+beMLDlaGaeuE8RG42GyFl4E06pjtkK2s5LeU6dPs
+        AdVR4qN/1eH+ZeCw==
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id 78AB913AB7;
+        Tue, 23 Aug 2022 07:48:59 +0000 (UTC)
+Received: from dovecot-director2.suse.de ([192.168.254.65])
+        by imap2.suse-dmz.suse.de with ESMTPSA
+        id 4dnPG2uGBGPLRAAAMHmgww
+        (envelope-from <jdelvare@suse.de>); Tue, 23 Aug 2022 07:48:59 +0000
+Date:   Tue, 23 Aug 2022 09:48:57 +0200
+From:   Jean Delvare <jdelvare@suse.de>
+To:     Linus Torvalds <torvalds@linux-foundation.org>
+Cc:     LKML <linux-kernel@vger.kernel.org>
+Subject: Re: [GIT PULL] dmi update for v5.19
+Message-ID: <20220823094857.27f3d924@endymion.delvare>
+In-Reply-To: <20220822141930.5f43b5e7@endymion.delvare>
+References: <20220822141930.5f43b5e7@endymion.delvare>
+Organization: SUSE Linux
+X-Mailer: Claws Mail 3.18.0 (GTK+ 2.24.32; x86_64-suse-linux-gnu)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-CM-TRANSID: GtxpCgC3L_L2hQRjVX0BXg--.9755S4
-X-Coremail-Antispam: 1Uf129KBjvdXoW7JrWkKF4fAF4xuF47KrWruFg_yoWDtwcEk3
-        40kw47Ww13CFyvqF13tF4fZrWkta9rta4rJFn7W3y3GFWktFs5WanIqF1fua45ta1Fvrn7
-        Krn3Xa4vyF129jkaLaAFLSUrUUUUUb8apTn2vfkv8UJUUUU8Yxn0WfASr-VFAUDa7-sFnT
-        9fnUUvcSsGvfC2KfnxnUUI43ZEXa7IUjQB_UUUUUU==
-X-Originating-IP: [49.235.41.28]
-X-CM-SenderInfo: 5vxk3xhbnh20lho6il2tof0z/xtbBsgJmbV75gIq+2wAAsz
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Ingo, Since commit f96eca432015ddc1b621632488ebc345bca06791 merged, the
-scripts/clang-tools/gen_compile_commands.py can't work very well.
-  In this patch the build_policy.c and build_utility.c include kernel/sched/xxx.c(
-such as rt.c idle.c...), so it compile the build_utility.o build_policy.o directly,
-and it won't generate kernel/sched/xxx.c(such as rt.o idle.o), so the gen_compile_commands.py
-can't work.
-  It will report "[8/23/2022, 3:24:06 PM] "rt.c" not found in "${workspaceFolder}/compile_commands.json".
-'includePath' from c_cpp_properties.json in folder 'linux' will be used for this file instead.".
-  And i test the kdump & crash tools, it can find the functions by line in kernel/sched/xxx.c(
-such as rt.c idle.c), it works well.
-  I can't solve this report error, so i want to get help.
-  Maybe we change the gen_compile_commands.py code can solve this problem or
-can we revert this change?(3.9% build wall time decrease really matter? it will
-destory all tool's parse result which depends on the compiled file result).
+On Mon, 22 Aug 2022 14:19:30 +0200, Jean Delvare wrote:
+> Please pull 1 dmi subsystem update for Linux v5.19 from:
 
+s/v5\.19/v6.0/, of course.
+
+-- 
+Jean Delvare
+SUSE L3 Support
