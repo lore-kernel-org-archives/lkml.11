@@ -2,34 +2,34 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A79EDC32792
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 90A3EC3F6B0
 	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 11:32:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350841AbiHWLbF (ORCPT
+        id S1350137AbiHWLa7 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 07:31:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60310 "EHLO
+        Tue, 23 Aug 2022 07:30:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37980 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357718AbiHWL0n (ORCPT
+        with ESMTP id S1357678AbiHWL0i (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 07:26:43 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B72578FD4A;
-        Tue, 23 Aug 2022 02:24:23 -0700 (PDT)
+        Tue, 23 Aug 2022 07:26:38 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F1556BFE89;
+        Tue, 23 Aug 2022 02:24:18 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id EF5A9B81C65;
-        Tue, 23 Aug 2022 09:24:21 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5C99BC433C1;
-        Tue, 23 Aug 2022 09:24:20 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 25DB9612B5;
+        Tue, 23 Aug 2022 09:24:18 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2E540C433C1;
+        Tue, 23 Aug 2022 09:24:16 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661246660;
-        bh=MFsGsa/L5EH25NvlY8VLTWUP44zmEilNOLgSIGRY8SA=;
+        s=korg; t=1661246657;
+        bh=re7zcDtxJno2oqiMy9XInb93oaaAzETIW9ezqafgn+Q=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=L1xjnTLfQtZnyOXY46vXSN8Zbn7d25v8rmVf4pjA1U0z0sSo2JBlALJSN7GNtpsba
-         SaYS5wuiw8KCFTg8fo1WBSw5BVAfxkbEvoNX1u9ge+TRYN/8sr5+tOxaHR7PF5FV+s
-         k2fP9zWb0sRNbmpPHRk+DQESYFtOTTWmvBR+2F0g=
+        b=y9WPGCN8it+orzrkfsAI8I1hmXutn1bp7s4RVtT6oNzEAsISNpK3USN9EKSh83CmJ
+         4z2thACYlHIOCy7YvxMavABVMV/vQWegU8GEn/Hp44m2kPoxv/GSh1Dt7IDocmXSki
+         DVIShBjZGBOmJSP2PA/gD87ZeSdkyvo6pTsL69iI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
@@ -37,9 +37,9 @@ Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
         Ulf Hansson <ulf.hansson@linaro.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 180/389] memstick/ms_block: Fix a memory leak
-Date:   Tue, 23 Aug 2022 10:24:18 +0200
-Message-Id: <20220823080123.157153426@linuxfoundation.org>
+Subject: [PATCH 5.4 179/389] memstick/ms_block: Fix some incorrect memory allocation
+Date:   Tue, 23 Aug 2022 10:24:17 +0200
+Message-Id: <20220823080123.107808446@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220823080115.331990024@linuxfoundation.org>
 References: <20220823080115.331990024@linuxfoundation.org>
@@ -53,32 +53,58 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
 
-[ Upstream commit 54eb7a55be6779c4d0c25eaf5056498a28595049 ]
+[ Upstream commit 2e531bc3e0d86362fcd8a577b3278d9ef3cc2ba0 ]
 
-'erased_blocks_bitmap' is never freed. As it is allocated at the same time
-as 'used_blocks_bitmap', it is likely that it should be freed also at the
-same time.
+Some functions of the bitmap API take advantage of the fact that a bitmap
+is an array of long.
 
-Add the corresponding bitmap_free() in msb_data_clear().
+So, to make sure this assertion is correct, allocate bitmaps with
+bitmap_zalloc() instead of kzalloc()+hand-computed number of bytes.
+
+While at it, also use bitmap_free() instead of kfree() to keep the
+semantic.
 
 Fixes: 0ab30494bc4f ("memstick: add support for legacy memorysticks")
 Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
-Link: https://lore.kernel.org/r/b3b78926569445962ea5c3b6e9102418a9effb88.1656155715.git.christophe.jaillet@wanadoo.fr
+Link: https://lore.kernel.org/r/dbf633c48c24ae6d95f852557e8d8b3bbdef65fe.1656155715.git.christophe.jaillet@wanadoo.fr
 Signed-off-by: Ulf Hansson <ulf.hansson@linaro.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/memstick/core/ms_block.c | 1 +
- 1 file changed, 1 insertion(+)
+ drivers/memstick/core/ms_block.c | 10 +++++-----
+ 1 file changed, 5 insertions(+), 5 deletions(-)
 
 diff --git a/drivers/memstick/core/ms_block.c b/drivers/memstick/core/ms_block.c
-index 399510585245..6014fcb49d7e 100644
+index 55907e4c36b1..399510585245 100644
 --- a/drivers/memstick/core/ms_block.c
 +++ b/drivers/memstick/core/ms_block.c
-@@ -1954,6 +1954,7 @@ static void msb_data_clear(struct msb_data *msb)
+@@ -1335,17 +1335,17 @@ static int msb_ftl_initialize(struct msb_data *msb)
+ 	msb->zone_count = msb->block_count / MS_BLOCKS_IN_ZONE;
+ 	msb->logical_block_count = msb->zone_count * 496 - 2;
+ 
+-	msb->used_blocks_bitmap = kzalloc(msb->block_count / 8, GFP_KERNEL);
+-	msb->erased_blocks_bitmap = kzalloc(msb->block_count / 8, GFP_KERNEL);
++	msb->used_blocks_bitmap = bitmap_zalloc(msb->block_count, GFP_KERNEL);
++	msb->erased_blocks_bitmap = bitmap_zalloc(msb->block_count, GFP_KERNEL);
+ 	msb->lba_to_pba_table =
+ 		kmalloc_array(msb->logical_block_count, sizeof(u16),
+ 			      GFP_KERNEL);
+ 
+ 	if (!msb->used_blocks_bitmap || !msb->lba_to_pba_table ||
+ 						!msb->erased_blocks_bitmap) {
+-		kfree(msb->used_blocks_bitmap);
++		bitmap_free(msb->used_blocks_bitmap);
++		bitmap_free(msb->erased_blocks_bitmap);
+ 		kfree(msb->lba_to_pba_table);
+-		kfree(msb->erased_blocks_bitmap);
+ 		return -ENOMEM;
+ 	}
+ 
+@@ -1953,7 +1953,7 @@ static int msb_bd_open(struct block_device *bdev, fmode_t mode)
+ static void msb_data_clear(struct msb_data *msb)
  {
  	kfree(msb->boot_page);
- 	bitmap_free(msb->used_blocks_bitmap);
-+	bitmap_free(msb->erased_blocks_bitmap);
+-	kfree(msb->used_blocks_bitmap);
++	bitmap_free(msb->used_blocks_bitmap);
  	kfree(msb->lba_to_pba_table);
  	kfree(msb->cache);
  	msb->card = NULL;
