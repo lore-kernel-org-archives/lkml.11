@@ -2,115 +2,115 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 87286C32772
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 08:37:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C91C7C32774
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 08:37:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245696AbiHWIhJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 04:37:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60340 "EHLO
+        id S1344609AbiHWIhR (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 23 Aug 2022 04:37:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35250 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243861AbiHWIeu (ORCPT
+        with ESMTP id S1344297AbiHWIfV (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 04:34:50 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9400A75CC9;
-        Tue, 23 Aug 2022 01:16:40 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id C138961344;
-        Tue, 23 Aug 2022 08:16:40 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CA2E3C433C1;
-        Tue, 23 Aug 2022 08:16:39 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661242600;
-        bh=3LxpO6UANFpzcH7sgn+B4QCjOOt7xt8SeRhvBqmqGg8=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=xf/q/vXISXBnlvHXyQV9StakO9oUjFQHcwAcQsdcgqP4TuWsw0nYa/cJsqjmhIePE
-         uezhEbZH1Ifgy0o25txG42kq+nnmxAru+hUICZfmONQ/GnVWDd/Oqs/LFq4NJ+dfBd
-         fN5Xj2xn+M4+bUxB2QuS3ujt2JvzqtUc2VkmiG3E=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, gautam.dawar@xilinx.com,
-        Stefano Garzarella <sgarzare@redhat.com>,
-        "Michael S. Tsirkin" <mst@redhat.com>,
-        =?UTF-8?q?Eugenio=20P=C3=A9rez?= <eperezma@redhat.com>
-Subject: [PATCH 5.19 143/365] vdpa_sim_blk: set number of address spaces and virtqueue groups
-Date:   Tue, 23 Aug 2022 10:00:44 +0200
-Message-Id: <20220823080124.214187072@linuxfoundation.org>
-X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220823080118.128342613@linuxfoundation.org>
-References: <20220823080118.128342613@linuxfoundation.org>
-User-Agent: quilt/0.67
+        Tue, 23 Aug 2022 04:35:21 -0400
+Received: from mx0a-00128a01.pphosted.com (mx0a-00128a01.pphosted.com [148.163.135.77])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6678275CE3;
+        Tue, 23 Aug 2022 01:16:44 -0700 (PDT)
+Received: from pps.filterd (m0167088.ppops.net [127.0.0.1])
+        by mx0a-00128a01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 27N75sfw011035;
+        Tue, 23 Aug 2022 04:15:49 -0400
+Received: from nwd2mta4.analog.com ([137.71.173.58])
+        by mx0a-00128a01.pphosted.com (PPS) with ESMTPS id 3j2whtmpgc-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Tue, 23 Aug 2022 04:15:49 -0400
+Received: from ASHBMBX9.ad.analog.com (ASHBMBX9.ad.analog.com [10.64.17.10])
+        by nwd2mta4.analog.com (8.14.7/8.14.7) with ESMTP id 27N8Fmem006842
+        (version=TLSv1/SSLv3 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL);
+        Tue, 23 Aug 2022 04:15:48 -0400
+Received: from ASHBCASHYB4.ad.analog.com (10.64.17.132) by
+ ASHBMBX9.ad.analog.com (10.64.17.10) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.986.14; Tue, 23 Aug 2022 04:15:47 -0400
+Received: from ASHBMBX9.ad.analog.com (10.64.17.10) by
+ ASHBCASHYB4.ad.analog.com (10.64.17.132) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.986.14; Tue, 23 Aug 2022 04:15:47 -0400
+Received: from zeus.spd.analog.com (10.66.68.11) by ashbmbx9.ad.analog.com
+ (10.64.17.10) with Microsoft SMTP Server id 15.2.986.14 via Frontend
+ Transport; Tue, 23 Aug 2022 04:15:47 -0400
+Received: from george-precision5560.ad.analog.com ([10.48.65.128])
+        by zeus.spd.analog.com (8.15.1/8.15.1) with ESMTP id 27N8FWog015257;
+        Tue, 23 Aug 2022 04:15:38 -0400
+From:   George Mois <george.mois@analog.com>
+To:     <jic23@kernel.org>, <robh+dt@kernel.org>,
+        <krzysztof.kozlowski+dt@linaro.org>, <linux-iio@vger.kernel.org>,
+        <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>
+CC:     <lucas.p.stankus@gmail.com>, George Mois <george.mois@analog.com>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Subject: [PATCH v2 1/2] bindings: iio: accel: extend adxl313 documentation file
+Date:   Tue, 23 Aug 2022 11:15:19 +0300
+Message-ID: <20220823081520.30313-1-george.mois@analog.com>
+X-Mailer: git-send-email 2.30.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-ADIRuleOP-NewSCL: Rule Triggered
+X-Proofpoint-ORIG-GUID: myYw96VtKdCjSHSw8uZtuZAns7rHYWKk
+X-Proofpoint-GUID: myYw96VtKdCjSHSw8uZtuZAns7rHYWKk
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.895,Hydra:6.0.517,FMLib:17.11.122.1
+ definitions=2022-08-23_04,2022-08-22_02,2022-06-22_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 spamscore=0 suspectscore=0
+ bulkscore=0 priorityscore=1501 clxscore=1011 malwarescore=0 mlxscore=0
+ phishscore=0 adultscore=0 lowpriorityscore=0 impostorscore=0
+ mlxlogscore=999 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2207270000 definitions=main-2208230032
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Stefano Garzarella <sgarzare@redhat.com>
+Extend the adi,adxl313.yaml file with information regrding the
+ADXL312 and ADXL314 devices.
 
-commit 19cd4a5471b8eaa4bd161b0fdb4567f2fc88d809 upstream.
-
-Commit bda324fd037a ("vdpasim: control virtqueue support") added two
-new fields (nas, ngroups) to vdpasim_dev_attr, but we forgot to
-initialize them for vdpa_sim_blk.
-
-When creating a new vdpa_sim_blk device this causes the kernel
-to panic in this way:
-    $ vdpa dev add mgmtdev vdpasim_blk name blk0
-    BUG: kernel NULL pointer dereference, address: 0000000000000030
-    ...
-    RIP: 0010:vhost_iotlb_add_range_ctx+0x41/0x220 [vhost_iotlb]
-    ...
-    Call Trace:
-     <TASK>
-     vhost_iotlb_add_range+0x11/0x800 [vhost_iotlb]
-     vdpasim_map_range+0x91/0xd0 [vdpa_sim]
-     vdpasim_alloc_coherent+0x56/0x90 [vdpa_sim]
-     ...
-
-This happens because vdpasim->iommu[0] is not initialized when
-dev_attr.nas is 0.
-
-Let's fix this issue by initializing both (nas, ngroups) to 1 for
-vdpa_sim_blk.
-
-Fixes: bda324fd037a ("vdpasim: control virtqueue support")
-Cc: gautam.dawar@xilinx.com
-Signed-off-by: Stefano Garzarella <sgarzare@redhat.com>
-Message-Id: <20220621151323.190431-1-sgarzare@redhat.com>
-Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
-Acked-by: Eugenio Pérez <eperezma@redhat.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: George Mois <george.mois@analog.com>
+Acked-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
 ---
- drivers/vdpa/vdpa_sim/vdpa_sim_blk.c |    6 ++++++
- 1 file changed, 6 insertions(+)
+no changes in v2.
+ .../devicetree/bindings/iio/accel/adi,adxl313.yaml     | 10 +++++++---
+ 1 file changed, 7 insertions(+), 3 deletions(-)
 
---- a/drivers/vdpa/vdpa_sim/vdpa_sim_blk.c
-+++ b/drivers/vdpa/vdpa_sim/vdpa_sim_blk.c
-@@ -34,7 +34,11 @@
- #define VDPASIM_BLK_CAPACITY	0x40000
- #define VDPASIM_BLK_SIZE_MAX	0x1000
- #define VDPASIM_BLK_SEG_MAX	32
-+
-+/* 1 virtqueue, 1 address space, 1 virtqueue group */
- #define VDPASIM_BLK_VQ_NUM	1
-+#define VDPASIM_BLK_AS_NUM	1
-+#define VDPASIM_BLK_GROUP_NUM	1
+diff --git a/Documentation/devicetree/bindings/iio/accel/adi,adxl313.yaml b/Documentation/devicetree/bindings/iio/accel/adi,adxl313.yaml
+index d6afc1b8c272..59d48ff1a16c 100644
+--- a/Documentation/devicetree/bindings/iio/accel/adi,adxl313.yaml
++++ b/Documentation/devicetree/bindings/iio/accel/adi,adxl313.yaml
+@@ -4,20 +4,24 @@
+ $id: http://devicetree.org/schemas/iio/accel/adi,adxl313.yaml#
+ $schema: http://devicetree.org/meta-schemas/core.yaml#
  
- static char vdpasim_blk_id[VIRTIO_BLK_ID_BYTES] = "vdpa_blk_sim";
+-title: Analog Devices ADXL313 3-Axis Digital Accelerometer
++title: Analog Devices ADXL312, ADXL313, and ADXL314 3-Axis Digital Accelerometers
  
-@@ -260,6 +264,8 @@ static int vdpasim_blk_dev_add(struct vd
- 	dev_attr.id = VIRTIO_ID_BLOCK;
- 	dev_attr.supported_features = VDPASIM_BLK_FEATURES;
- 	dev_attr.nvqs = VDPASIM_BLK_VQ_NUM;
-+	dev_attr.ngroups = VDPASIM_BLK_GROUP_NUM;
-+	dev_attr.nas = VDPASIM_BLK_AS_NUM;
- 	dev_attr.config_size = sizeof(struct virtio_blk_config);
- 	dev_attr.get_config = vdpasim_blk_get_config;
- 	dev_attr.work_fn = vdpasim_blk_work;
-
+ maintainers:
+   - Lucas Stankus <lucas.p.stankus@gmail.com>
+ 
+ description: |
+-  Analog Devices ADXL313 3-Axis Digital Accelerometer that supports
+-  both I2C & SPI interfaces.
++  Analog Devices ADXL312, ADXL313, and ADXL314 3-Axis Digital Accelerometer that
++  support both I2C & SPI interfaces.
++    https://www.analog.com/en/products/adxl312.html
+     https://www.analog.com/en/products/adxl313.html
++    https://www.analog.com/en/products/adxl314.html
+ 
+ properties:
+   compatible:
+     enum:
++      - adi,adxl312
+       - adi,adxl313
++      - adi,adxl314
+ 
+   reg:
+     maxItems: 1
+-- 
+2.30.2
 
