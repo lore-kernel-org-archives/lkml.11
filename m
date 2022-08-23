@@ -2,50 +2,50 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 607FEC32772
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 19:47:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6DE9EC32772
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 19:47:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230374AbiHWTrH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 15:47:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52148 "EHLO
+        id S233594AbiHWTrN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 23 Aug 2022 15:47:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52228 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233524AbiHWTqd (ORCPT
+        with ESMTP id S233556AbiHWTqd (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 23 Aug 2022 15:46:33 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6BD36D2748
-        for <linux-kernel@vger.kernel.org>; Tue, 23 Aug 2022 11:50:02 -0700 (PDT)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 78F34D1E14
+        for <linux-kernel@vger.kernel.org>; Tue, 23 Aug 2022 11:50:06 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 1F61DB8206B
-        for <linux-kernel@vger.kernel.org>; Tue, 23 Aug 2022 18:50:01 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BEF26C433C1;
-        Tue, 23 Aug 2022 18:49:57 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 141B561704
+        for <linux-kernel@vger.kernel.org>; Tue, 23 Aug 2022 18:50:06 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E92FFC433C1;
+        Tue, 23 Aug 2022 18:50:02 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1661280599;
-        bh=4m1byrsQRJLm/cJqTDuKbmUd4hieFD6ic0Yp5Uh7iUc=;
+        s=k20201202; t=1661280605;
+        bh=mtEmXoG1/qwtxZCLtpWfBQdyoqhvKwZ1HGbxl8n0VV4=;
         h=From:To:Cc:In-Reply-To:References:Subject:Date:From;
-        b=EDc86ypg0C2gWgwtP6WdeRwdjj9VXBXXmzAlmXTqPS+ZnvMuKTuWWtA3Skt8qjmYs
-         xMcuhlMKFYbNfML6QXJoG3MajtPomjOL2Cs7al+pVh3opxshqlZpdgPgGF+zwBOaC3
-         REhYwJNqCmbGhxu4MJT64qzUgrWDW7pqPLiFKT0C+Gsa2cTHJ9EaIZW5Z62a4SSF+e
-         gbMKe+16XyJvtVgpn/J64oZ9T42RSEG6tWfNrWdjht5y7+ooCEdhDjAp+926oI4v4p
-         kN976afNmOnPjjR2LqACAdonfxeQN2rzQefUXHDPnq4Qo0zZsC4yeshTJPBEA9H+al
-         /lKVlOpdI8vgQ==
+        b=mP9deo43+f6dw1Q3G2HmJkMvJ9R7mrHyPm8bllirJQoA6bgw/Gri1EXTSDz0QqPhe
+         hwsZd6c9WiabbUhdQbMJkNMNXAPhHpEVEnowsmEqTNFoyGo2tQ40CQmB/M5ccLLI8X
+         QV28o3A21I/GYSkYmIdTRmvLQJPGaU4DB+zSsvyI0hj51BZE2glDe3h3+rx999f99N
+         ajeG7ZPVlZ33SSKG5SQztcpftURZdIkQ5tKtMucloAJiamBQSnhGqdK6jbQXcodpda
+         fkrDMx5aMt14gG+b5Qr8r1RmthU1jeLOweT4P6apqPh7PrjajbbCDOAS6kSpXshoU+
+         Eb6uQAJToLKVg==
 From:   Mark Brown <broonie@kernel.org>
-To:     alsa-devel@alsa-project.org,
-        Daniel Baluta <daniel.baluta@oss.nxp.com>
-Cc:     ranjani.sridharan@linux.intel.com, yung-chuan.liao@linux.intel.com,
-        pierre-louis.bossart@linux.intel.com,
-        peter.ujfalusi@linux.intel.com,
-        Daniel Baluta <daniel.baluta@nxp.com>, lgirdwood@gmail.com,
-        kernel test robot <lkp@intel.com>,
-        linux-kernel@vger.kernel.org, kai.vehmanen@linux.intel.com
-In-Reply-To: <20220822174937.254873-1-daniel.baluta@oss.nxp.com>
-References: <20220822174937.254873-1-daniel.baluta@oss.nxp.com>
-Subject: Re: [PATCH] ASoC: SOF: compress: Remove dai_posn variable
-Message-Id: <166128059751.1031684.6362088791172112373.b4-ty@kernel.org>
-Date:   Tue, 23 Aug 2022 19:49:57 +0100
+To:     linux-kernel@vger.kernel.org, cgel.zte@gmail.com
+Cc:     linux-arm-kernel@lists.infradead.org, claudiu.beznea@microchip.com,
+        tiwai@suse.com, lgirdwood@gmail.com,
+        Zeal Robot <zealci@zte.com.cn>,
+        codrin.ciubotariu@microchip.com, alexandre.belloni@bootlin.com,
+        perex@perex.cz, alsa-devel@alsa-project.org,
+        ye xingchen <ye.xingchen@zte.com.cn>,
+        nicolas.ferre@microchip.com
+In-Reply-To: <20220823075335.209072-1-ye.xingchen@zte.com.cn>
+References: <20220823075335.209072-1-ye.xingchen@zte.com.cn>
+Subject: Re: [PATCH linux-next] ASoC: atmel_ssc_dai: Remove the unneeded result variable
+Message-Id: <166128060268.1031684.14434690087050758502.b4-ty@kernel.org>
+Date:   Tue, 23 Aug 2022 19:50:02 +0100
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
@@ -54,15 +54,13 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, 22 Aug 2022 20:49:37 +0300, Daniel Baluta wrote:
-> From: Daniel Baluta <daniel.baluta@nxp.com>
+On Tue, 23 Aug 2022 07:53:35 +0000, cgel.zte@gmail.com wrote:
+> From: ye xingchen <ye.xingchen@zte.com.cn>
 > 
-> dai_posn is set but never used. Initial intention was
-> to use dai_posn to shorthen one code line but it looks fine
-> without it too.
+> Return the value from asoc_ssc_init() directly instead of storing it
+> in another redundant variable.
 > 
 > 
-> [...]
 
 Applied to
 
@@ -70,8 +68,8 @@ Applied to
 
 Thanks!
 
-[1/1] ASoC: SOF: compress: Remove dai_posn variable
-      commit: d45f552a1e44e2885c4b7551564241959d8138be
+[1/1] ASoC: atmel_ssc_dai: Remove the unneeded result variable
+      commit: 62bd431bac942c90d908b1681d04f0c577f6c70f
 
 All being well this means that it will be integrated into the linux-next
 tree (usually sometime in the next 24 hours) and sent to Linus during
