@@ -2,45 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A68C2C32772
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 10:08:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9EAC0C32772
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 10:08:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352762AbiHWKIu (ORCPT
+        id S1352781AbiHWKIw (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 06:08:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43446 "EHLO
+        Tue, 23 Aug 2022 06:08:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43774 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352563AbiHWKCH (ORCPT
+        with ESMTP id S1352584AbiHWKCK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 06:02:07 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8D2907C330;
-        Tue, 23 Aug 2022 01:50:04 -0700 (PDT)
+        Tue, 23 Aug 2022 06:02:10 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 87E2D7C329;
+        Tue, 23 Aug 2022 01:50:09 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 012F761386;
-        Tue, 23 Aug 2022 08:50:04 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E4854C43470;
-        Tue, 23 Aug 2022 08:50:02 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id C7468B81C1C;
+        Tue, 23 Aug 2022 08:50:07 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1EEFDC433C1;
+        Tue, 23 Aug 2022 08:50:05 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661244603;
-        bh=e+yJzTQerwJUBXmocqiz1bulRsPaY47NFWa5KTCk2WM=;
+        s=korg; t=1661244606;
+        bh=v5/YKtomldikhe/i3h6gjddah5wV/t0Qwoy5NR3BAPQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=EG+bqQhUiDnE6DM745jBTJu6SKoQ+Vuoz4AvQn3Uie0qQ+mrC5Al/I6VFV9GxYQRS
-         8g9MYWXzWJFbRAJoklzS+ZGh8QwqVHUjp2YOzbPZMQ79OUDEUnCaDO+605TsQnT8Ex
-         F3NCgQi3eFUx3UOWGppFM29QZh4IcRKVw0mF3lWA=
+        b=GAzXUwRupk6uElk0tOdB83kTX7dJpzZccYvDRXVMLRGuINwQJ1bzG3Z164d0vKhwx
+         ujSRn4y6GncUehSLS6nZJGPYokrbQPMufwSD57tyPHkzXf7Jt/+Y+x8G+HKwbujMvA
+         5r6i9QlsCwZNBtpISWF0TRlOttjbUwH73fQLDRRU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Mikulas Patocka <mpatocka@redhat.com>,
-        Mike Snitzer <snitzer@kernel.org>
-Subject: [PATCH 4.14 163/229] dm raid: fix address sanitizer warning in raid_status
-Date:   Tue, 23 Aug 2022 10:25:24 +0200
-Message-Id: <20220823080059.492496579@linuxfoundation.org>
+        stable@vger.kernel.org, Philipp Zabel <p.zabel@pengutronix.de>,
+        Mark Brown <broonie@kernel.org>
+Subject: [PATCH 5.15 122/244] ASoC: codec: tlv320aic32x4: fix mono playback via I2S
+Date:   Tue, 23 Aug 2022 10:24:41 +0200
+Message-Id: <20220823080103.132900132@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220823080053.202747790@linuxfoundation.org>
-References: <20220823080053.202747790@linuxfoundation.org>
+In-Reply-To: <20220823080059.091088642@linuxfoundation.org>
+References: <20220823080059.091088642@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -49,63 +49,62 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Mikulas Patocka <mpatocka@redhat.com>
+From: Philipp Zabel <p.zabel@pengutronix.de>
 
-commit 1fbeea217d8f297fe0e0956a1516d14ba97d0396 upstream.
+commit b4b5f29a076e52181f63e45a2ad1bc88593072e3 upstream.
 
-There is this warning when using a kernel with the address sanitizer
-and running this testsuite:
-https://gitlab.com/cki-project/kernel-tests/-/tree/main/storage/swraid/scsi_raid
+The two commits referenced below break mono playback via I2S DAI because
+they set BCLK to half the required speed. For PCM transport over I2S, the
+number of transmitted channels is always 2, even for mono playback.
 
-==================================================================
-BUG: KASAN: slab-out-of-bounds in raid_status+0x1747/0x2820 [dm_raid]
-Read of size 4 at addr ffff888079d2c7e8 by task lvcreate/13319
-CPU: 0 PID: 13319 Comm: lvcreate Not tainted 5.18.0-0.rc3.<snip> #1
-Hardware name: Red Hat KVM, BIOS 0.5.1 01/01/2011
-Call Trace:
- <TASK>
- dump_stack_lvl+0x6a/0x9c
- print_address_description.constprop.0+0x1f/0x1e0
- print_report.cold+0x55/0x244
- kasan_report+0xc9/0x100
- raid_status+0x1747/0x2820 [dm_raid]
- dm_ima_measure_on_table_load+0x4b8/0xca0 [dm_mod]
- table_load+0x35c/0x630 [dm_mod]
- ctl_ioctl+0x411/0x630 [dm_mod]
- dm_ctl_ioctl+0xa/0x10 [dm_mod]
- __x64_sys_ioctl+0x12a/0x1a0
- do_syscall_64+0x5b/0x80
-
-The warning is caused by reading conf->max_nr_stripes in raid_status. The
-code in raid_status reads mddev->private, casts it to struct r5conf and
-reads the entry max_nr_stripes.
-
-However, if we have different raid type than 4/5/6, mddev->private
-doesn't point to struct r5conf; it may point to struct r0conf, struct
-r1conf, struct r10conf or struct mpconf. If we cast a pointer to one
-of these structs to struct r5conf, we will be reading invalid memory
-and KASAN warns about it.
-
-Fix this bug by reading struct r5conf only if raid type is 4, 5 or 6.
-
-Cc: stable@vger.kernel.org
-Signed-off-by: Mikulas Patocka <mpatocka@redhat.com>
-Signed-off-by: Mike Snitzer <snitzer@kernel.org>
+Fixes: dcd79364bff3 ("ASoC: codec: tlv3204: Enable 24 bit audio support")
+Fixes: 40b37136287b ("ASoC: tlv320aic32x4: Fix bdiv clock rate derivation")
+Signed-off-by: Philipp Zabel <p.zabel@pengutronix.de>
+Link: https://lore.kernel.org/r/20220810104156.665452-1-p.zabel@pengutronix.de
+Signed-off-by: Mark Brown <broonie@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/md/dm-raid.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ sound/soc/codecs/tlv320aic32x4.c |    9 +++++++++
+ 1 file changed, 9 insertions(+)
 
---- a/drivers/md/dm-raid.c
-+++ b/drivers/md/dm-raid.c
-@@ -3394,7 +3394,7 @@ static void raid_status(struct dm_target
+--- a/sound/soc/codecs/tlv320aic32x4.c
++++ b/sound/soc/codecs/tlv320aic32x4.c
+@@ -49,6 +49,8 @@ struct aic32x4_priv {
+ 	struct aic32x4_setup_data *setup;
+ 	struct device *dev;
+ 	enum aic32x4_type type;
++
++	unsigned int fmt;
+ };
+ 
+ static int aic32x4_reset_adc(struct snd_soc_dapm_widget *w,
+@@ -611,6 +613,7 @@ static int aic32x4_set_dai_sysclk(struct
+ static int aic32x4_set_dai_fmt(struct snd_soc_dai *codec_dai, unsigned int fmt)
  {
- 	struct raid_set *rs = ti->private;
- 	struct mddev *mddev = &rs->md;
--	struct r5conf *conf = mddev->private;
-+	struct r5conf *conf = rs_is_raid456(rs) ? mddev->private : NULL;
- 	int i, max_nr_stripes = conf ? conf->max_nr_stripes : 0;
- 	bool array_in_sync;
- 	unsigned int raid_param_cnt = 1; /* at least 1 for chunksize */
+ 	struct snd_soc_component *component = codec_dai->component;
++	struct aic32x4_priv *aic32x4 = snd_soc_component_get_drvdata(component);
+ 	u8 iface_reg_1 = 0;
+ 	u8 iface_reg_2 = 0;
+ 	u8 iface_reg_3 = 0;
+@@ -654,6 +657,8 @@ static int aic32x4_set_dai_fmt(struct sn
+ 		return -EINVAL;
+ 	}
+ 
++	aic32x4->fmt = fmt;
++
+ 	snd_soc_component_update_bits(component, AIC32X4_IFACE1,
+ 				AIC32X4_IFACE1_DATATYPE_MASK |
+ 				AIC32X4_IFACE1_MASTER_MASK, iface_reg_1);
+@@ -758,6 +763,10 @@ static int aic32x4_setup_clocks(struct s
+ 		return -EINVAL;
+ 	}
+ 
++	/* PCM over I2S is always 2-channel */
++	if ((aic32x4->fmt & SND_SOC_DAIFMT_FORMAT_MASK) == SND_SOC_DAIFMT_I2S)
++		channels = 2;
++
+ 	madc = DIV_ROUND_UP((32 * adc_resource_class), aosr);
+ 	max_dosr = (AIC32X4_MAX_DOSR_FREQ / sample_rate / dosr_increment) *
+ 			dosr_increment;
 
 
