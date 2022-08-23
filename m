@@ -2,41 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5B476C32772
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 09:53:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 768B4C32772
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 09:53:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240853AbiHWJxL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 05:53:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55956 "EHLO
+        id S240783AbiHWJxX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 23 Aug 2022 05:53:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41040 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352035AbiHWJvN (ORCPT
+        with ESMTP id S1352024AbiHWJvJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 05:51:13 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 02DBB9E2DB;
+        Tue, 23 Aug 2022 05:51:09 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 02CD09E2DA;
         Tue, 23 Aug 2022 01:45:41 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id BD988CE1B2C;
-        Tue, 23 Aug 2022 08:44:23 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CB919C433B5;
-        Tue, 23 Aug 2022 08:44:21 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 0B348614E7;
+        Tue, 23 Aug 2022 08:44:38 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 12153C433D6;
+        Tue, 23 Aug 2022 08:44:36 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661244262;
-        bh=8CmxgCYmN7CuAnJkg+oksYBTsGEpAazn0mrXZaAWCg0=;
+        s=korg; t=1661244277;
+        bh=yMB+nDLTD/CtAiCCGvVNDEAEOnYChjmtyxH/gkHlNcw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=GmHIrS+j6EdgwR1Hu8kjCZBTUdVheBe8O+1kIQ/Lygf20C1orCJtPFaD7LxAxe+uj
-         PwM3b6yYkPDWfa5Yh6P1hWvb+2heDHlOa/5x5WDkuyuQbnHVTmr5pvZBhbynlmoRTL
-         Ct21dTRocDYWvBvUnB7o0bn4klqKZN+GXnvp+BCk=
+        b=RMVocivEfS3XOKQxK+DV5pyZAG3wwIT87OZic8gD0aEiDQ8dKDq3cYwN0+mE7d1LN
+         bnxjEq6iu9rDH/YIJ8w6+PUkDBEP8+CaGWnn4yLqCskGNsjDzMdAFRkaV1jKwMoyuu
+         tmHkaicekXJ0Ymv8jZXYT+lRkdr1eWisWHahxO7Y=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Nikita Travkin <nikita@trvn.ru>,
+        stable@vger.kernel.org, Jernej Skrabec <jernej.skrabec@gmail.com>,
+        Heiko Stuebner <heiko@sntech.de>,
+        Samuel Holland <samuel@sholland.org>,
         Linus Walleij <linus.walleij@linaro.org>
-Subject: [PATCH 5.15 064/244] pinctrl: qcom: msm8916: Allow CAMSS GP clocks to be muxed
-Date:   Tue, 23 Aug 2022 10:23:43 +0200
-Message-Id: <20220823080101.217478232@linuxfoundation.org>
+Subject: [PATCH 5.15 066/244] pinctrl: sunxi: Add I/O bias setting for H6 R-PIO
+Date:   Tue, 23 Aug 2022 10:23:45 +0200
+Message-Id: <20220823080101.285051026@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220823080059.091088642@linuxfoundation.org>
 References: <20220823080059.091088642@linuxfoundation.org>
@@ -48,37 +50,67 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Nikita Travkin <nikita@trvn.ru>
+From: Samuel Holland <samuel@sholland.org>
 
-commit 44339391c666e46cba522d19c65a6ad1071c68b7 upstream.
+commit fc153c8f283bf5925615195fc9d4056414d7b168 upstream.
 
-GPIO 31, 32 can be muxed to GCC_CAMSS_GP(1,2)_CLK respectively but the
-function was never assigned to the pingroup (even though the function
-exists already).
+H6 requires I/O bias configuration on both of its PIO devices.
+Previously it was only done for the main PIO.
 
-Add this mode to the related pins.
+The setting for Port L is at bit 0, so the bank calculation needs to
+account for the pin base. Otherwise the wrong bit is used.
 
-Fixes: 5373a2c5abb6 ("pinctrl: qcom: Add msm8916 pinctrl driver")
-Signed-off-by: Nikita Travkin <nikita@trvn.ru>
-Link: https://lore.kernel.org/r/20220612145955.385787-4-nikita@trvn.ru
+Fixes: cc62383fcebe ("pinctrl: sunxi: Support I/O bias voltage setting on H6")
+Reviewed-by: Jernej Skrabec <jernej.skrabec@gmail.com>
+Tested-by: Heiko Stuebner <heiko@sntech.de>
+Signed-off-by: Samuel Holland <samuel@sholland.org>
+Link: https://lore.kernel.org/r/20220713025233.27248-3-samuel@sholland.org
 Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/pinctrl/qcom/pinctrl-msm8916.c |    4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ drivers/pinctrl/sunxi/pinctrl-sun50i-h6-r.c |    1 +
+ drivers/pinctrl/sunxi/pinctrl-sunxi.c       |    7 ++++---
+ 2 files changed, 5 insertions(+), 3 deletions(-)
 
---- a/drivers/pinctrl/qcom/pinctrl-msm8916.c
-+++ b/drivers/pinctrl/qcom/pinctrl-msm8916.c
-@@ -844,8 +844,8 @@ static const struct msm_pingroup msm8916
- 	PINGROUP(28, pwr_modem_enabled_a, NA, NA, NA, NA, NA, qdss_tracedata_b, NA, atest_combodac),
- 	PINGROUP(29, cci_i2c, NA, NA, NA, NA, NA, qdss_tracedata_b, NA, atest_combodac),
- 	PINGROUP(30, cci_i2c, NA, NA, NA, NA, NA, NA, NA, qdss_tracedata_b),
--	PINGROUP(31, cci_timer0, NA, NA, NA, NA, NA, NA, NA, NA),
--	PINGROUP(32, cci_timer1, NA, NA, NA, NA, NA, NA, NA, NA),
-+	PINGROUP(31, cci_timer0, flash_strobe, NA, NA, NA, NA, NA, NA, NA),
-+	PINGROUP(32, cci_timer1, flash_strobe, NA, NA, NA, NA, NA, NA, NA),
- 	PINGROUP(33, cci_async, NA, NA, NA, NA, NA, NA, NA, qdss_tracedata_b),
- 	PINGROUP(34, pwr_nav_enabled_a, NA, NA, NA, NA, NA, NA, NA, qdss_tracedata_b),
- 	PINGROUP(35, pwr_crypto_enabled_a, NA, NA, NA, NA, NA, NA, NA, qdss_tracedata_b),
+--- a/drivers/pinctrl/sunxi/pinctrl-sun50i-h6-r.c
++++ b/drivers/pinctrl/sunxi/pinctrl-sun50i-h6-r.c
+@@ -107,6 +107,7 @@ static const struct sunxi_pinctrl_desc s
+ 	.npins = ARRAY_SIZE(sun50i_h6_r_pins),
+ 	.pin_base = PL_BASE,
+ 	.irq_banks = 2,
++	.io_bias_cfg_variant = BIAS_VOLTAGE_PIO_POW_MODE_SEL,
+ };
+ 
+ static int sun50i_h6_r_pinctrl_probe(struct platform_device *pdev)
+--- a/drivers/pinctrl/sunxi/pinctrl-sunxi.c
++++ b/drivers/pinctrl/sunxi/pinctrl-sunxi.c
+@@ -624,7 +624,7 @@ static int sunxi_pinctrl_set_io_bias_cfg
+ 					 unsigned pin,
+ 					 struct regulator *supply)
+ {
+-	unsigned short bank = pin / PINS_PER_BANK;
++	unsigned short bank;
+ 	unsigned long flags;
+ 	u32 val, reg;
+ 	int uV;
+@@ -640,6 +640,9 @@ static int sunxi_pinctrl_set_io_bias_cfg
+ 	if (uV == 0)
+ 		return 0;
+ 
++	pin -= pctl->desc->pin_base;
++	bank = pin / PINS_PER_BANK;
++
+ 	switch (pctl->desc->io_bias_cfg_variant) {
+ 	case BIAS_VOLTAGE_GRP_CONFIG:
+ 		/*
+@@ -657,8 +660,6 @@ static int sunxi_pinctrl_set_io_bias_cfg
+ 		else
+ 			val = 0xD; /* 3.3V */
+ 
+-		pin -= pctl->desc->pin_base;
+-
+ 		reg = readl(pctl->membase + sunxi_grp_config_reg(pin));
+ 		reg &= ~IO_BIAS_MASK;
+ 		writel(reg | val, pctl->membase + sunxi_grp_config_reg(pin));
 
 
