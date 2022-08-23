@@ -2,80 +2,56 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4A7B8C32772
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 16:05:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2B1D6C32772
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 16:06:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244177AbiHWQFO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 12:05:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50582 "EHLO
+        id S244245AbiHWQG0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 23 Aug 2022 12:06:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33464 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243857AbiHWQEk (ORCPT
+        with ESMTP id S244315AbiHWQFz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 12:04:40 -0400
-Received: from bg5.exmail.qq.com (bg4.exmail.qq.com [43.154.221.58])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 55CEC99250
-        for <linux-kernel@vger.kernel.org>; Tue, 23 Aug 2022 05:16:25 -0700 (PDT)
-X-QQ-mid: bizesmtp83t1661256953tey1azri
-Received: from localhost.localdomain ( [182.148.14.124])
-        by bizesmtp.qq.com (ESMTP) with 
-        id ; Tue, 23 Aug 2022 20:15:51 +0800 (CST)
-X-QQ-SSF: 01000000002000C0D000B00A0000000
-X-QQ-FEAT: XBN7tc9DADKOu7nqgEn/xfy1ddb7BNa8BsdiV45GuuyAjUHAfmb3VhwZRoVY6
-        PGj/QHiiaJX0zblpPzgPPoVCIfjPDCuT5+5SyPVeqczjxvxlvSg7mmVk8EVLuiIxeaSkQIX
-        YtU89wfeK4/D/9jwOWgNA9UZFukNGpJIWb5tx962ANkF+0exmusw8ZfvG57TdRh+Uz4J3JZ
-        Hxs8JfKCkzlAUvP1pRDQwSHgw5QtXCRR1xh1sUmECJVlevMdaxnhURSdJvT8YucasJHAGhI
-        J+Ix95SaLzIoAeDPUzZJa/zUKRlCFCfyVqeTbY7u/6av/zCE/fmWye68vapIASTi1THtjgk
-        DyGt7NHNAujs64dxBzOYY1xvXwkgrk6ablIRkUj7FfJ2wGc5iail7bttd2OulRhikMMhFed
-X-QQ-GoodBg: 0
-From:   Jilin Yuan <yuanjilin@cdjrlc.com>
-To:     maarten.lankhorst@linux.intel.com, mripard@kernel.org,
-        tzimmermann@suse.de, airlied@linux.ie, daniel@ffwll.ch
-Cc:     dri-devel@lists.freedesktop.org, linux-kernel@vger.kernel.org,
-        Jilin Yuan <yuanjilin@cdjrlc.com>
-Subject: [PATCH] gpu/drm: fix repeated words in comments
-Date:   Tue, 23 Aug 2022 20:15:44 +0800
-Message-Id: <20220823121544.9082-1-yuanjilin@cdjrlc.com>
-X-Mailer: git-send-email 2.36.1
+        Tue, 23 Aug 2022 12:05:55 -0400
+Received: from gloria.sntech.de (gloria.sntech.de [185.11.138.130])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 60C117A741;
+        Tue, 23 Aug 2022 05:16:58 -0700 (PDT)
+Received: from ip5b412258.dynamic.kabel-deutschland.de ([91.65.34.88] helo=diego.localnet)
+        by gloria.sntech.de with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.94.2)
+        (envelope-from <heiko@sntech.de>)
+        id 1oQSQu-0004S9-Jv; Tue, 23 Aug 2022 13:51:00 +0200
+From:   Heiko =?ISO-8859-1?Q?St=FCbner?= <heiko@sntech.de>
+To:     linux-phy@lists.infradead.org, devicetree@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        linux-rockchip@lists.infradead.org, linux-kernel@vger.kernel.org,
+        Michael Riesch <michael.riesch@wolfvision.net>
+Cc:     Kishon Vijay Abraham I <kishon@ti.com>,
+        Vinod Koul <vkoul@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Peter Geis <pgwipeout@gmail.com>,
+        Michael Riesch <michael.riesch@wolfvision.net>,
+        Sascha Hauer <s.hauer@pengutronix.de>,
+        Nicolas Frattaroli <frattaroli.nicolas@gmail.com>,
+        Liang Chen <cl@rock-chips.com>
+Subject: Re: [PATCH 1/3] dt-bindings: phy: add compatible for rk356x to rockchip-inno-csi-dphy
+Date:   Tue, 23 Aug 2022 13:50:59 +0200
+Message-ID: <2716442.usQuhbGJ8B@diego>
+In-Reply-To: <20220720091527.1270365-2-michael.riesch@wolfvision.net>
+References: <20220720091527.1270365-1-michael.riesch@wolfvision.net> <20220720091527.1270365-2-michael.riesch@wolfvision.net>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-QQ-SENDSIZE: 520
-Feedback-ID: bizesmtp:cdjrlc.com:qybglogicsvr:qybglogicsvr4
+Content-Transfer-Encoding: 7Bit
+Content-Type: text/plain; charset="us-ascii"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
- Delete the redundant word 'old'.
- Delete the redundant word 'new'.
+Am Mittwoch, 20. Juli 2022, 11:15:25 CEST schrieb Michael Riesch:
+> The driver for the Innosilicon MIPI CSI DPHY is compatible with the variant
+> in the Rockchip RK356x SoCs. Add the compatible string to the binding.
+> 
+> Signed-off-by: Michael Riesch <michael.riesch@wolfvision.net>
 
-Signed-off-by: Jilin Yuan <yuanjilin@cdjrlc.com>
----
- drivers/gpu/drm/drm_context.c | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+Reviewed-by: Heiko Stuebner <heiko@sntech.de>
 
-diff --git a/drivers/gpu/drm/drm_context.c b/drivers/gpu/drm/drm_context.c
-index c6e6a3e7219a..2d871159162b 100644
---- a/drivers/gpu/drm/drm_context.c
-+++ b/drivers/gpu/drm/drm_context.c
-@@ -267,8 +267,8 @@ int drm_legacy_setsareactx(struct drm_device *dev, void *data,
-  * Switch context.
-  *
-  * \param dev DRM device.
-- * \param old old context handle.
-- * \param new new context handle.
-+ * \param old context handle.
-+ * \param new context handle.
-  * \return zero on success or a negative number on failure.
-  *
-  * Attempt to set drm_device::context_flag.
-@@ -294,7 +294,7 @@ static int drm_context_switch(struct drm_device * dev, int old, int new)
-  * Complete context switch.
-  *
-  * \param dev DRM device.
-- * \param new new context handle.
-+ * \param new context handle.
-  * \return zero on success or a negative number on failure.
-  *
-  * Updates drm_device::last_context and drm_device::last_switch. Verifies the
--- 
-2.36.1
 
