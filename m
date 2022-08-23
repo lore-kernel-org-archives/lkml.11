@@ -2,90 +2,116 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3F855C32789
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 19:22:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EF634C32772
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 19:22:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229791AbiHWTWT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 15:22:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37460 "EHLO
+        id S232697AbiHWTWe (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 23 Aug 2022 15:22:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35110 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231739AbiHWTVw (ORCPT
+        with ESMTP id S229547AbiHWTWD (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 15:21:52 -0400
-Received: from mail-yw1-f169.google.com (mail-yw1-f169.google.com [209.85.128.169])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EAED2B4425;
-        Tue, 23 Aug 2022 11:02:26 -0700 (PDT)
-Received: by mail-yw1-f169.google.com with SMTP id 00721157ae682-335624d1e26so400762497b3.4;
-        Tue, 23 Aug 2022 11:02:26 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc;
-        bh=tPcD7EUnD6n/pd4xrlexLo0BVKkP6oVxoQ1jP9+QRfY=;
-        b=dq9+DvYQEAGYeySAObrB8Sm77zs6J7I6OSPa27SGS/yS4RAYbRed2bRDS/7d+jegoq
-         qe1H8p1ZNBguBnZvjfS+acDWhra3fZGYhwidlnImLGYfRoJZwk+f0De5rXoZGDY8Wx0i
-         a393wIDbJYrM/zbh4V+G0KiFUptIpbl3rXDP4wqyQOLb9ExSfVqHB4/9r1wv4RImmWSo
-         H/VshsFStlMxDMoZIQOIlbkb++zZ1aV8yB78GhKyKBCsAFqlYsYvHC6hDeVqZX4hw0Xp
-         nJU6PfbMTHx7TRU0LsQccUXw1SO6pcPn+Uu2WGOhmxgXctem/yeeOVg5KmHJRhU82H81
-         8tEA==
-X-Gm-Message-State: ACgBeo2NMY4ZDm/8g1T+j6IGYMLzx3E6CL9XfHXZhW+leZwWQ0EYTS7k
-        2lUNxtVUiVqHOF2CLNtErm7oN2fT0MerfNILOuI=
-X-Google-Smtp-Source: AA6agR5itvcF2Towl5AH63xFZtsUG0OaVdX2gTPo9+tM4SABhEni3hBBXSHi+BCwk1FN1PKjRJ+1exKhcsqOiQuDcYI=
-X-Received: by 2002:a25:ec0c:0:b0:690:d092:2d56 with SMTP id
- j12-20020a25ec0c000000b00690d0922d56mr23726786ybh.622.1661277745810; Tue, 23
- Aug 2022 11:02:25 -0700 (PDT)
+        Tue, 23 Aug 2022 15:22:03 -0400
+Received: from bee.birch.relay.mailchannels.net (bee.birch.relay.mailchannels.net [23.83.209.14])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 123671322F4
+        for <linux-kernel@vger.kernel.org>; Tue, 23 Aug 2022 11:03:02 -0700 (PDT)
+X-Sender-Id: dreamhost|x-authsender|dave@stgolabs.net
+Received: from relay.mailchannels.net (localhost [127.0.0.1])
+        by relay.mailchannels.net (Postfix) with ESMTP id 5EB662A12D4;
+        Tue, 23 Aug 2022 18:03:01 +0000 (UTC)
+Received: from pdx1-sub0-mail-a212.dreamhost.com (unknown [127.0.0.6])
+        (Authenticated sender: dreamhost)
+        by relay.mailchannels.net (Postfix) with ESMTPA id 30D362A1E7B;
+        Tue, 23 Aug 2022 18:02:59 +0000 (UTC)
+ARC-Seal: i=1; s=arc-2022; d=mailchannels.net; t=1661277779; a=rsa-sha256;
+        cv=none;
+        b=1w1EdcQ371jtiZE5ssyXEy5vEAlE0ICcJTJV8VbDpfNJYJzTcpuKB3jYeINBGpjf0H+JwG
+        XK1lFBjmR5b2nGYq7CIL/qYlgIeQbNgXLs/jMToRKx4qSExoUbO4lAhMLOq7Ovfrnnh8Tq
+        vr/L4LKDjc+HM+Rv5O1M/gbeqSIuTh452Q+gXERoOOoQ2bXrCJU1i7Lec1rF1Dm37EzOXY
+        rV3V4liTFNjJ1KRMOLmFF0eEow8hn5jDwkj0Wchfo3nderlTGdK7QBW2nx9sc4pUpHppbk
+        XmBcehPbertTRB/z7MOda0G1aQnQt5hQ892i0KIxozOJ8ZZWZEtIFBoYrnwVwA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=mailchannels.net;
+        s=arc-2022; t=1661277779;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references:dkim-signature;
+        bh=3YD8UxhoVF/0CdPFuuWxAVwema5lF831lGxRQpQLviU=;
+        b=slTNJFpEAUiEk5ksFEmllc9CiE+1z+ivdSgvW8/pWGv48GmPBdC+A/gzzTYicRchzTDI1t
+        8wiJoCsJQsket7hotSaTY0lHvJV6nWT+suHUPquY/pRY5S+uk/Fz02MMFcHikrY2Q91e8U
+        zpdLITawLPIsyi7ha/FMFWmCwH5Kulg1B7O1ReH8C5LF52qexAvTlSmcfK5YC6lqW/qIqR
+        RT5L/sDILAIwedeAKohmbR5aILSDrQGoQC6j+xnua6a8yIliJFs/noy2U0d1vw5RaSqZSm
+        4Ex4E5bfehNfChhAAea9/hGdTLqhZy0HIGUJTjJ6w6pSMY7EbqRd4ioovTZagA==
+ARC-Authentication-Results: i=1;
+        rspamd-79945fd77c-6r7td;
+        auth=pass smtp.auth=dreamhost smtp.mailfrom=dave@stgolabs.net
+X-Sender-Id: dreamhost|x-authsender|dave@stgolabs.net
+X-MC-Relay: Neutral
+X-MailChannels-SenderId: dreamhost|x-authsender|dave@stgolabs.net
+X-MailChannels-Auth-Id: dreamhost
+X-Trail-Rock: 109bada36d217795_1661277779684_1833396601
+X-MC-Loop-Signature: 1661277779684:3521180439
+X-MC-Ingress-Time: 1661277779683
+Received: from pdx1-sub0-mail-a212.dreamhost.com (pop.dreamhost.com
+ [64.90.62.162])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384)
+        by 100.120.38.149 (trex/6.7.1);
+        Tue, 23 Aug 2022 18:02:59 +0000
+Received: from offworld (unknown [104.36.31.106])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-256) server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        (No client certificate requested)
+        (Authenticated sender: dave@stgolabs.net)
+        by pdx1-sub0-mail-a212.dreamhost.com (Postfix) with ESMTPSA id 4MBxsV208vz1PZ;
+        Tue, 23 Aug 2022 11:02:54 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=stgolabs.net;
+        s=dreamhost; t=1661277774;
+        bh=3YD8UxhoVF/0CdPFuuWxAVwema5lF831lGxRQpQLviU=;
+        h=Date:From:To:Cc:Subject:Content-Type;
+        b=dm4tTMhqjgm+Qp5pgxAZLTdXJKdLu6mY8mIPx+RBSiU1bEPQlqeLkHoiYcM8df0a0
+         OlIzzNOdxe2ZhZVEgkjcWJDHqv28283A8/VwJ/KUBTz8qE2MiHFGUiUaFJSbe129Qf
+         bYSR3OfjP/kUi53ck3AEf0DuTvxgB6B47x1E8l8UYnqdt9mk1+DA1m716YnEU9dypN
+         4W18xAMKwPQV9tV/Kq223SqH2RRD4AlXt+m1NphwDdDceUeWu07GVMLsf0a6rXpCi7
+         48tD/1LBlhPhOkrPCT0xTaxsruFL9RbDDmbm/6tDYAB0gBgpkq87j6ffRC/N48PdLh
+         KBTDFLjqkq89g==
+Date:   Tue, 23 Aug 2022 10:44:51 -0700
+From:   Davidlohr Bueso <dave@stgolabs.net>
+To:     Liam Howlett <liam.howlett@oracle.com>
+Cc:     "maple-tree@lists.infradead.org" <maple-tree@lists.infradead.org>,
+        "linux-mm@kvack.org" <linux-mm@kvack.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        "Matthew Wilcox (Oracle)" <willy@infradead.org>,
+        Vlastimil Babka <vbabka@suse.cz>
+Subject: Re: [PATCH v13 47/70] perf: use VMA iterator
+Message-ID: <20220823174451.lgdxhow6fkrdorva@offworld>
+Mail-Followup-To: Liam Howlett <liam.howlett@oracle.com>,
+        "maple-tree@lists.infradead.org" <maple-tree@lists.infradead.org>,
+        "linux-mm@kvack.org" <linux-mm@kvack.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        "Matthew Wilcox (Oracle)" <willy@infradead.org>,
+        Vlastimil Babka <vbabka@suse.cz>
+References: <20220822150128.1562046-1-Liam.Howlett@oracle.com>
+ <20220822150128.1562046-48-Liam.Howlett@oracle.com>
 MIME-Version: 1.0
-References: <20220816120157.24455-1-lukasz.luba@arm.com>
-In-Reply-To: <20220816120157.24455-1-lukasz.luba@arm.com>
-From:   "Rafael J. Wysocki" <rafael@kernel.org>
-Date:   Tue, 23 Aug 2022 20:02:14 +0200
-Message-ID: <CAJZ5v0jQpEL7SMjj83fbm-Afz7D7Wj41g5AFa2-8zoeehnRppg@mail.gmail.com>
-Subject: Re: [PATCH v2] cpufreq: check only freq_table in __resolve_freq()
-To:     Lukasz Luba <lukasz.luba@arm.com>
-Cc:     Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Linux PM <linux-pm@vger.kernel.org>,
-        Viresh Kumar <viresh.kumar@linaro.org>,
-        "Rafael J. Wysocki" <rafael@kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii; format=flowed
+Content-Disposition: inline
+In-Reply-To: <20220822150128.1562046-48-Liam.Howlett@oracle.com>
+User-Agent: NeoMutt/20220429
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Aug 16, 2022 at 2:02 PM Lukasz Luba <lukasz.luba@arm.com> wrote:
->
-> There is no need to check if the cpufreq driver implements callback
-> cpufreq_driver::target_index. The logic in the __resolve_freq uses
-> the frequency table available in the policy. It doesn't matter if the
-> driver provides 'target_index' or 'target' callback. It just has to
-> populate the 'policy->freq_table'.
->
-> Thus, check only frequency table during the frequency resolving call.
->
-> Acked-by: Viresh Kumar <viresh.kumar@linaro.org>
-> Signed-off-by: Lukasz Luba <lukasz.luba@arm.com>
-> ---
-> Changes:
-> v2:
-> - collected ACK from Viresh
-> - corrected patch description (Viresh)
->
->
->  drivers/cpufreq/cpufreq.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
->
-> diff --git a/drivers/cpufreq/cpufreq.c b/drivers/cpufreq/cpufreq.c
-> index 7820c4e74289..69b3d61852ac 100644
-> --- a/drivers/cpufreq/cpufreq.c
-> +++ b/drivers/cpufreq/cpufreq.c
-> @@ -532,7 +532,7 @@ static unsigned int __resolve_freq(struct cpufreq_policy *policy,
->
->         target_freq = clamp_val(target_freq, policy->min, policy->max);
->
-> -       if (!cpufreq_driver->target_index)
-> +       if (!policy->freq_table)
->                 return target_freq;
->
->         idx = cpufreq_frequency_table_target(policy, target_freq, relation);
-> --
+On Mon, 22 Aug 2022, Liam Howlett wrote:
 
-Applied as 6.0-rc material, thanks!
+>From: "Matthew Wilcox (Oracle)" <willy@infradead.org>
+>
+>The VMA iterator is faster than the linked list and removing the linked
+>list will shrink the vm_area_struct.
+>
+>Signed-off-by: Matthew Wilcox (Oracle) <willy@infradead.org>
+>Signed-off-by: Liam R. Howlett <Liam.Howlett@Oracle.com>
+>Acked-by: Vlastimil Babka <vbabka@suse.cz>
+
+Reviewed-by: Davidlohr Bueso <dave@stgolabs.net>
