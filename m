@@ -2,110 +2,88 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 19AAAC3814E
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 08:13:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 99EBCC32789
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 08:13:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242249AbiHWINR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 04:13:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33302 "EHLO
+        id S242252AbiHWINY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 23 Aug 2022 04:13:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59884 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241998AbiHWIK1 (ORCPT
+        with ESMTP id S242010AbiHWIK1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 23 Aug 2022 04:10:27 -0400
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 511F8659EF
-        for <linux-kernel@vger.kernel.org>; Tue, 23 Aug 2022 01:06:54 -0700 (PDT)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 214E9113E;
-        Tue, 23 Aug 2022 01:06:58 -0700 (PDT)
-Received: from localhost (ionvoi01-desktop.cambridge.arm.com [10.1.196.65])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 340EB3F718;
-        Tue, 23 Aug 2022 01:06:54 -0700 (PDT)
-Date:   Tue, 23 Aug 2022 09:06:52 +0100
-From:   Ionela Voinescu <ionela.voinescu@arm.com>
-To:     Yicong Yang <yangyicong@huawei.com>
-Cc:     sudeep.holla@arm.com, vincent.guittot@linaro.org,
-        linux-kernel@vger.kernel.org, gregkh@linuxfoundation.org,
-        rafael@kernel.org, 21cnbao@gmail.com, jonathan.cameron@huawei.com,
-        linuxarm@huawei.com, prime.zeng@huawei.com,
-        yangyicong@hisilicon.com
-Subject: Re: [PATCH] arch_topology: Make cluster topology span at least SMT
- CPUs
-Message-ID: <YwSKnGii2zdd7Fig@arm.com>
-References: <20220823073044.58697-1-yangyicong@huawei.com>
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 174EEF72;
+        Tue, 23 Aug 2022 01:07:04 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id C89FFB81BF8;
+        Tue, 23 Aug 2022 08:07:02 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 185B5C433D6;
+        Tue, 23 Aug 2022 08:07:00 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1661242021;
+        bh=ljrqwzOrbT0JrmQUw2UjpfLFC5dyyN3a2eOKGBHBJcM=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=osnCGq9MYk4S0aLIPgtIif1i+A4inue4Z5vSImTXHoCIdtEbm3PPLSEUET84Gjn9k
+         Q7mqEpv3l5Mnr7VG6dA/3FPXKo5oJWzr07KSH0i8TyzP8yIxK1ci5bXWJeHXP2AgKI
+         SB/qbhD7nONej5QB03ps7Pu/C6KkMJui6u0vZLcs=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        "Jason A. Donenfeld" <Jason@zx2c4.com>,
+        "Justin M. Forbes" <jforbes@fedoraproject.org>,
+        Ard Biesheuvel <ardb@kernel.org>,
+        Arnd Bergmann <arnd@arndb.de>, Nicolas Pitre <nico@linaro.org>,
+        Nathan Chancellor <nathan@kernel.org>,
+        Nick Desaulniers <ndesaulniers@google.com>
+Subject: [PATCH 4.9 007/101] ARM: crypto: comment out gcc warning that breaks clang builds
+Date:   Tue, 23 Aug 2022 10:02:40 +0200
+Message-Id: <20220823080034.874885836@linuxfoundation.org>
+X-Mailer: git-send-email 2.37.2
+In-Reply-To: <20220823080034.579196046@linuxfoundation.org>
+References: <20220823080034.579196046@linuxfoundation.org>
+User-Agent: quilt/0.67
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220823073044.58697-1-yangyicong@huawei.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Yicong,
+From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 
-On Tuesday 23 Aug 2022 at 15:30:44 (+0800), Yicong Yang wrote:
-> From: Yicong Yang <yangyicong@hisilicon.com>
-> 
-> Currently cpu_clustergroup_mask() will return CPU mask if cluster span
-> more or the same CPUs as cpu_coregroup_mask(). This will result topology
-> borken on non-Cluster SMT machines.
+The gcc build warning prevents all clang-built kernels from working
+properly, so comment it out to fix the build.
 
-Might be worth adding here:.. "when building with CONFIG_SCHED_CLUSTER=y"
+This is a -stable kernel only patch for now, it will be resolved
+differently in mainline releases in the future.
 
-> 
+Cc: "Jason A. Donenfeld" <Jason@zx2c4.com>
+Cc: "Justin M. Forbes" <jforbes@fedoraproject.org>
+Cc: Ard Biesheuvel <ardb@kernel.org>
+Acked-by: Arnd Bergmann <arnd@arndb.de>
+Cc: Nicolas Pitre <nico@linaro.org>
+Cc: Nathan Chancellor <nathan@kernel.org>
+Cc: Nick Desaulniers <ndesaulniers@google.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+---
+ arch/arm/lib/xor-neon.c |    3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-I thought I had covered this case, but I think I had considered LLC
-spanning more than one core (tested on TX2 as well).
+--- a/arch/arm/lib/xor-neon.c
++++ b/arch/arm/lib/xor-neon.c
+@@ -29,8 +29,9 @@ MODULE_LICENSE("GPL");
+  * While older versions of GCC do not generate incorrect code, they fail to
+  * recognize the parallel nature of these functions, and emit plain ARM code,
+  * which is known to be slower than the optimized ARM code in asm-arm/xor.h.
++ *
++ * #warning This code requires at least version 4.6 of GCC
+  */
+-#warning This code requires at least version 4.6 of GCC
+ #endif
+ 
+ #pragma GCC diagnostic ignored "-Wunused-variable"
 
-So you'd only hit this if LLC and cluster level span the same cores (a
-single core in this case, for non-cluster), in the presence of SMT.
 
-Reviewed-by: Ionela Voinescu <ionela.voinescu@arm.com>
-
-Many thanks,
-Ionela.
-
-> Test with:
-> qemu-system-aarch64 -enable-kvm -machine virt \
->  -net none \
->  -cpu host \
->  -bios ./QEMU_EFI.fd \
->  -m 2G \
->  -smp 48,sockets=2,cores=12,threads=2 \
->  -kernel $Image \
->  -initrd $Rootfs \
->  -nographic
->  -append "rdinit=init console=ttyAMA0 sched_verbose loglevel=8"
-> 
-> We'll get below error:
-> [    3.084568] BUG: arch topology borken
-> [    3.084570]      the SMT domain not a subset of the CLS domain
-> 
-> Since cluster is a level higher than SMT, fix this by making cluster
-> spans at least SMT CPUs.
-> 
-> Cc: Sudeep Holla <sudeep.holla@arm.com>
-> Cc: Vincent Guittot <vincent.guittot@linaro.org>
-> Cc: Ionela Voinescu <ionela.voinescu@arm.com>
-> Fixes: bfcc4397435d ("arch_topology: Limit span of cpu_clustergroup_mask()")
-> Signed-off-by: Yicong Yang <yangyicong@hisilicon.com>
-> ---
->  drivers/base/arch_topology.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
-> 
-> diff --git a/drivers/base/arch_topology.c b/drivers/base/arch_topology.c
-> index 0424b59b695e..0056a1273275 100644
-> --- a/drivers/base/arch_topology.c
-> +++ b/drivers/base/arch_topology.c
-> @@ -724,7 +724,7 @@ const struct cpumask *cpu_clustergroup_mask(int cpu)
->  	 */
->  	if (cpumask_subset(cpu_coregroup_mask(cpu),
->  			   &cpu_topology[cpu].cluster_sibling))
-> -		return get_cpu_mask(cpu);
-> +		return cpu_smt_mask(cpu);
->  
->  	return &cpu_topology[cpu].cluster_sibling;
->  }
-> -- 
-> 2.24.0
-> 
