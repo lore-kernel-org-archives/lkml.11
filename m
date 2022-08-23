@@ -2,83 +2,134 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AB066C32789
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 15:39:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2CCE3C32789
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 15:40:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242637AbiHWPj5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 11:39:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36714 "EHLO
+        id S241752AbiHWPkN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 23 Aug 2022 11:40:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33084 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241871AbiHWPjd (ORCPT
+        with ESMTP id S239278AbiHWPjs (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 11:39:33 -0400
-X-Greylist: delayed 5721 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Tue, 23 Aug 2022 04:31:57 PDT
-Received: from mslow1.mail.gandi.net (mslow1.mail.gandi.net [IPv6:2001:4b98:dc4:8::240])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D102EFC13E;
-        Tue, 23 Aug 2022 04:31:55 -0700 (PDT)
-Received: from relay6-d.mail.gandi.net (unknown [IPv6:2001:4b98:dc4:8::226])
-        by mslow1.mail.gandi.net (Postfix) with ESMTP id 87DF1C0732;
-        Tue, 23 Aug 2022 08:35:26 +0000 (UTC)
-Received: from booty (unknown [77.244.183.192])
-        (Authenticated sender: luca.ceresoli@bootlin.com)
-        by mail.gandi.net (Postfix) with ESMTPSA id 5F52DC000A;
-        Tue, 23 Aug 2022 08:34:02 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
-        t=1661243643;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=D9E0UhmB4IGyBAfhDmQBffQboxHt0fdw9tb81qz3IyY=;
-        b=UVo6Te/TryI77O+Fu64mjRwl4J2NAo4CVfBGyEo4QUjsSfIyBqMxbsvA81U32afl6dNXqX
-        9gPvL1gV2eieNePOw6aTlla1OiNLarx93c4O5uCiUNPA6TzvtW2HqDdokl5ybT3MztAoq2
-        Y+Juy4Zd3CXQgg0gbeY6Rf+NpJPAzB3Bm3T1PbxuLa0/542BuX00uRxgut3EYHmRMDWOJb
-        PcEyj0kh/L+BnAqhCivkdpiz9K19fXV3yEWaruuKUlXxqSKOd5X4PBmyLvtA3CLEaR6pQC
-        XtGKJer+LaiDa26+PV693oDzU3eSQOXgOSYyxRQbsSinZQv3I5TJy77+F+D1Ew==
-Date:   Tue, 23 Aug 2022 10:33:59 +0200
-From:   Luca Ceresoli <luca.ceresoli@bootlin.com>
-To:     Bagas Sanjaya <bagasdotme@gmail.com>
-Cc:     linux-doc@vger.kernel.org, linux-i2c@vger.kernel.org,
-        Wolfram Sang <wsa@kernel.org>, Peter Rosin <peda@axentia.se>,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2 3/3] docs: i2c: i2c-topology: fix typo
-Message-ID: <20220823103359.1462755e@booty>
-In-Reply-To: <78a90d0a-e0ba-0189-aa84-4ce2952e33f3@gmail.com>
-References: <20220822091050.47099-1-luca.ceresoli@bootlin.com>
-        <20220822091050.47099-4-luca.ceresoli@bootlin.com>
-        <78a90d0a-e0ba-0189-aa84-4ce2952e33f3@gmail.com>
-Organization: Bootlin
-X-Mailer: Claws Mail 4.0.0 (GTK+ 3.24.33; x86_64-pc-linux-gnu)
+        Tue, 23 Aug 2022 11:39:48 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 97E46C6966;
+        Tue, 23 Aug 2022 04:32:14 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 3EAE3613C5;
+        Tue, 23 Aug 2022 11:31:39 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 28BC2C433D6;
+        Tue, 23 Aug 2022 11:31:35 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1661254298;
+        bh=HMMDK4yYSV9hm8Y33k5jiYF0HqGibjiYVN4UI5136Ok=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=eSG6RpwdXQVjXqGGUGSzBgYYSjjWgqK6gbvzkYRyVINwqKx29HDxHMkUtsepj0ygb
+         3yft+3n5uIaY8Y5eeUicqzMTKjtQcK7bRHoIPBupQLfMnxrnPiIyBu9OX/UlhF8PUk
+         JEHGI4X+MfTcUjKGsdVdfhdBsWhqH2LFtgIHK+5AO7nO3ShU043O+AGhLEFMhf6Aru
+         4LB2YHR6z3H4fpx5j1KJY81JhWuBMDNIviXWyyOi/ZsWvjBFECr0Z81DeqkdBmajhF
+         KqGRo+AqloYIYMiEjXdSP9F2ovz5OC1MFpuf1v+Rss1/N6/WeaIQ2PesRpejZ0gcTa
+         ouQUX241mStIQ==
+Date:   Tue, 23 Aug 2022 12:31:32 +0100
+From:   Mark Brown <broonie@kernel.org>
+To:     Martin =?utf-8?Q?Povi=C5=A1er?= <povik+lin@cutebit.org>
+Cc:     Liam Girdwood <lgirdwood@gmail.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Hector Martin <marcan@marcan.st>,
+        Sven Peter <sven@svenpeter.dev>,
+        Philipp Zabel <p.zabel@pengutronix.de>,
+        Alyssa Rosenzweig <alyssa@rosenzweig.io>,
+        asahi@lists.linux.dev, alsa-devel@alsa-project.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2 3/4] ASoC: apple: mca: Start new platform driver
+Message-ID: <YwS6lHeGH0BZKHeB@sirena.org.uk>
+References: <20220819125430.4920-1-povik+lin@cutebit.org>
+ <20220819125430.4920-4-povik+lin@cutebit.org>
+ <YwO/aqs7eqZx07kS@sirena.org.uk>
+ <24C0ABFA-BF71-4492-8A6A-E9BE1462B403@cutebit.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="NBQO/q/cbDr7E10q"
+Content-Disposition: inline
+In-Reply-To: <24C0ABFA-BF71-4492-8A6A-E9BE1462B403@cutebit.org>
+X-Cookie: You can't take damsel here now.
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Bagas,
 
-On Mon, 22 Aug 2022 20:40:56 +0700
-Bagas Sanjaya <bagasdotme@gmail.com> wrote:
+--NBQO/q/cbDr7E10q
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-> On 8/22/22 16:10, luca.ceresoli@bootlin.com wrote:
-> > From: Luca Ceresoli <luca.ceresoli@bootlin.com>
-> > 
-> > "intension" should have probably been "intention", however "intent" seems
-> > even better.
-> > 
-> > Reported-by: Bagas Sanjaya <bagasdotme@gmail.com>
-> > Signed-off-by: Luca Ceresoli <luca.ceresoli@bootlin.com>
-> >   
-> 
-> The typo error is introduced in [2/3], so it makes sense to squash this
-> to the errored patch.
+On Tue, Aug 23, 2022 at 09:33:36AM +0200, Martin Povi=C5=A1er wrote:
+> > On 22. 8. 2022, at 19:39, Mark Brown <broonie@kernel.org> wrote:
+> > On Fri, Aug 19, 2022 at 02:54:29PM +0200, Martin Povi=C5=A1er wrote:
 
-Patch 2 just reformats the text. "intension" was there before patch 2
-and got unmodified. But if it is useful I can send a v3 with the typo
-fix in patch 1 and the other two patches following.
+> >> +// SPDX-License-Identifier: GPL-2.0-only
+> >> +/*
+> >> + * Apple SoCs MCA driver
+> >> + *
+> >> + * Copyright (C) The Asahi Linux Contributors
+> >> + *
+> >> + * The MCA peripheral is made up of a number of identical units calle=
+d clusters.
 
--- 
-Luca Ceresoli, Bootlin
-Embedded Linux and Kernel engineering
-https://bootlin.com
+> > Please make the entire comment block a C++ one so things look more
+> > intentional.
+
+> Is this so that it does not look like the SPDX header was added
+> mechanically? I will do it, just curious what the reasoning is.
+
+Yes, broadly.
+
+> >> +	/*
+> >> +	 * We can't power up the device earlier than this because
+> >> +	 * the power state driver would error out on seeing the device
+> >> +	 * as clock-gated.
+> >> +	 */
+> >> +	cl->pd_link =3D device_link_add(mca->dev, cl->pd_dev,
+> >> +				      DL_FLAG_STATELESS | DL_FLAG_PM_RUNTIME |
+> >> +					      DL_FLAG_RPM_ACTIVE);
+
+> > I'm not clear on this dynamically adding and removing device links stuff
+> > - it looks like the main (only?) purpose is to take a runtime PM
+> > reference to the target device which is fine but it's not clear why
+> > device links are involved given that the links are created and destroyed
+> > every time the DAI is used, AFAICT always in the same fixed
+> > relationship.  It's not a problem, it's just unclear.
+
+> Indeed the only purpose is powering up the cluster=E2=80=99s power domain=
+ (there=E2=80=99s
+> one domain for each cluster). Adding the links is the only way I know to
+> do it. They need to be added dynamically (as opposed to statically linkin=
+g,
+> say, the DAI=E2=80=99s ->dev to the cluster=E2=80=99s ->pd_dev, which I g=
+uess may do
+> something similar), because we need to sequence the power-up/power-down
+> with the enablement of the clocks.
+
+You could also just do the underlying runtime power management
+operations directly couldn't you?  It's not clear what the device link
+stuff is adding.
+
+--NBQO/q/cbDr7E10q
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAABCgAdFiEEreZoqmdXGLWf4p/qJNaLcl1Uh9AFAmMEupQACgkQJNaLcl1U
+h9DK1wf+JNGwnyOsdkMz+Zc28n5YvfvcyoQByI5EreszsWd//Rg/MxJpVjsrCXpo
+JkHBVOL9QMhZ8SBrmK3cZ80OpwHBZ1HnME6vXezsk0QzgH7jWXLvYZmEMcXSP/zJ
+8rGk+8LdxeZMvYEbi4xL1/gOSRgOEKO8GOtIQuRsGAiit8bCFL2ukdG+PUji4pim
+ZuNY1Hsh+hSHSG4jJDA0QaYqRBMcbMgZW8RTNkWIr02A12ZEDDs4ESd4ckDoYumX
+tdl+LCIGBJDYc9A0RIvRUfCTgEqKqyWHQvGtlN1Ia5Nyg7BCynhMJx9oGt2HDxVk
+Uvg0e3pz0L9taZVPcOrYU5p07Q8omQ==
+=8Yqm
+-----END PGP SIGNATURE-----
+
+--NBQO/q/cbDr7E10q--
