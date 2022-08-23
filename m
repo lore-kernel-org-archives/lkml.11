@@ -2,40 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2A913C32792
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 09:05:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 861DBC32793
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 09:06:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242271AbiHWJFz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 05:05:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51806 "EHLO
+        id S240817AbiHWJF6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 23 Aug 2022 05:05:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51894 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239780AbiHWJEp (ORCPT
+        with ESMTP id S243457AbiHWJFI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 05:04:45 -0400
+        Tue, 23 Aug 2022 05:05:08 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E964A844F5;
-        Tue, 23 Aug 2022 01:29:23 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 25C24844D7;
+        Tue, 23 Aug 2022 01:29:19 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 4C5DCB81C56;
-        Tue, 23 Aug 2022 08:28:19 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8136CC433D6;
-        Tue, 23 Aug 2022 08:28:17 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 08F57B81C54;
+        Tue, 23 Aug 2022 08:28:13 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 534FBC433C1;
+        Tue, 23 Aug 2022 08:28:11 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661243298;
-        bh=ZkGlN9afaf+S8OZYrv31ANxjGxSlJNGR2VacqwOjGP8=;
+        s=korg; t=1661243291;
+        bh=ZFjxRbiSTCcpDSWigsu2rT70OLmGRjEoFzUdbveCR54=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=pLa9tzd+W/XTh8m7gazwNXxhvCqCOeec3CyWo9FosXAv/b2zoHa97Yu1p75ovcWlv
-         0rKQNkDHjP4YTjPPGUP7tOyMJ9+5mirChPe7/nyUMK4lwLjMZGXJu/qA2OmJUJVam4
-         mqFIXfMwrtE91JwxYqIBmvITtFqvBV6sD7/KefBY=
+        b=tbAalBBabyavGiPT756JXSNRUjfTqMGER3tURX/vXoIL4PlJHOM455Kh/73AL5PQz
+         vyP8W5/f8hVehYgUXMSXdU8SWXihIBBL+ghoSSj4U2KB0nr0GRNmwD6oYvzVdWxoQX
+         /9Je85SS2wri6fjkYIPTwSO8NjxIzTS4dyJxsaNc=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Pablo Neira Ayuso <pablo@netfilter.org>
-Subject: [PATCH 5.19 202/365] netfilter: nf_tables: check NFT_SET_CONCAT flag if field_count is specified
-Date:   Tue, 23 Aug 2022 10:01:43 +0200
-Message-Id: <20220823080126.677720458@linuxfoundation.org>
+        stable@vger.kernel.org,
+        =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
+        <u.kleine-koenig@pengutronix.de>,
+        Oleksij Rempel <o.rempel@pengutronix.de>,
+        Wolfram Sang <wsa@kernel.org>
+Subject: [PATCH 5.19 229/365] i2c: imx: Make sure to unregister adapter on remove()
+Date:   Tue, 23 Aug 2022 10:02:10 +0200
+Message-Id: <20220823080127.791052445@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220823080118.128342613@linuxfoundation.org>
 References: <20220823080118.128342613@linuxfoundation.org>
@@ -47,40 +51,68 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Pablo Neira Ayuso <pablo@netfilter.org>
+From: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
 
-commit 1b6345d4160ecd3d04bd8cd75df90c67811e8cc9 upstream.
+commit d98bdd3a5b50446d8e010be5b04ce81c4eabf728 upstream.
 
-Since f3a2181e16f1 ("netfilter: nf_tables: Support for sets with
-multiple ranged fields"), it possible to combine intervals and
-concatenations. Later on, ef516e8625dd ("netfilter: nf_tables:
-reintroduce the NFT_SET_CONCAT flag") provides the NFT_SET_CONCAT flag
-for userspace to report that the set stores a concatenation.
+If for whatever reasons pm_runtime_resume_and_get() fails and .remove() is
+exited early, the i2c adapter stays around and the irq still calls its
+handler, while the driver data and the register mapping go away. So if
+later the i2c adapter is accessed or the irq triggers this results in
+havoc accessing freed memory and unmapped registers.
 
-Make sure NFT_SET_CONCAT is set on if field_count is specified for
-consistency. Otherwise, if NFT_SET_CONCAT is specified with no
-field_count, bail out with EINVAL.
+So unregister the software resources even if resume failed, and only skip
+the hardware access in that case.
 
-Fixes: ef516e8625dd ("netfilter: nf_tables: reintroduce the NFT_SET_CONCAT flag")
-Signed-off-by: Pablo Neira Ayuso <pablo@netfilter.org>
+Fixes: 588eb93ea49f ("i2c: imx: add runtime pm support to improve the performance")
+Signed-off-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
+Acked-by: Oleksij Rempel <o.rempel@pengutronix.de>
+Signed-off-by: Wolfram Sang <wsa@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- net/netfilter/nf_tables_api.c |    5 +++++
- 1 file changed, 5 insertions(+)
+ drivers/i2c/busses/i2c-imx.c |   20 +++++++++++---------
+ 1 file changed, 11 insertions(+), 9 deletions(-)
 
---- a/net/netfilter/nf_tables_api.c
-+++ b/net/netfilter/nf_tables_api.c
-@@ -4451,6 +4451,11 @@ static int nf_tables_newset(struct sk_bu
- 		err = nf_tables_set_desc_parse(&desc, nla[NFTA_SET_DESC]);
- 		if (err < 0)
- 			return err;
-+
-+		if (desc.field_count > 1 && !(flags & NFT_SET_CONCAT))
-+			return -EINVAL;
-+	} else if (flags & NFT_SET_CONCAT) {
-+		return -EINVAL;
- 	}
+--- a/drivers/i2c/busses/i2c-imx.c
++++ b/drivers/i2c/busses/i2c-imx.c
+@@ -1572,9 +1572,7 @@ static int i2c_imx_remove(struct platfor
+ 	struct imx_i2c_struct *i2c_imx = platform_get_drvdata(pdev);
+ 	int irq, ret;
  
- 	if (nla[NFTA_SET_EXPR] || nla[NFTA_SET_EXPRESSIONS])
+-	ret = pm_runtime_resume_and_get(&pdev->dev);
+-	if (ret < 0)
+-		return ret;
++	ret = pm_runtime_get_sync(&pdev->dev);
+ 
+ 	hrtimer_cancel(&i2c_imx->slave_timer);
+ 
+@@ -1585,17 +1583,21 @@ static int i2c_imx_remove(struct platfor
+ 	if (i2c_imx->dma)
+ 		i2c_imx_dma_free(i2c_imx);
+ 
+-	/* setup chip registers to defaults */
+-	imx_i2c_write_reg(0, i2c_imx, IMX_I2C_IADR);
+-	imx_i2c_write_reg(0, i2c_imx, IMX_I2C_IFDR);
+-	imx_i2c_write_reg(0, i2c_imx, IMX_I2C_I2CR);
+-	imx_i2c_write_reg(0, i2c_imx, IMX_I2C_I2SR);
++	if (ret == 0) {
++		/* setup chip registers to defaults */
++		imx_i2c_write_reg(0, i2c_imx, IMX_I2C_IADR);
++		imx_i2c_write_reg(0, i2c_imx, IMX_I2C_IFDR);
++		imx_i2c_write_reg(0, i2c_imx, IMX_I2C_I2CR);
++		imx_i2c_write_reg(0, i2c_imx, IMX_I2C_I2SR);
++		clk_disable(i2c_imx->clk);
++	}
+ 
+ 	clk_notifier_unregister(i2c_imx->clk, &i2c_imx->clk_change_nb);
+ 	irq = platform_get_irq(pdev, 0);
+ 	if (irq >= 0)
+ 		free_irq(irq, i2c_imx);
+-	clk_disable_unprepare(i2c_imx->clk);
++
++	clk_unprepare(i2c_imx->clk);
+ 
+ 	pm_runtime_put_noidle(&pdev->dev);
+ 	pm_runtime_disable(&pdev->dev);
 
 
