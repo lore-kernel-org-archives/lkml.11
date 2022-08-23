@@ -2,43 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 96773C32793
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 11:07:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id ED05FC32792
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 11:07:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356933AbiHWLH0 (ORCPT
+        id S1350314AbiHWLHE (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 07:07:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48706 "EHLO
+        Tue, 23 Aug 2022 07:07:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44258 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357187AbiHWLGQ (ORCPT
+        with ESMTP id S1356972AbiHWLEi (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 07:06:16 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5B34FB56E4;
-        Tue, 23 Aug 2022 02:15:48 -0700 (PDT)
+        Tue, 23 Aug 2022 07:04:38 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BE0BCB2769;
+        Tue, 23 Aug 2022 02:15:18 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 4B77CB81C86;
-        Tue, 23 Aug 2022 09:15:05 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9F846C433D6;
-        Tue, 23 Aug 2022 09:15:03 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 4BBF9B81C4E;
+        Tue, 23 Aug 2022 09:15:11 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 96E85C433D7;
+        Tue, 23 Aug 2022 09:15:09 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661246104;
-        bh=mgknNtwW7pP/qlOWW6dWa1CRY+AqZ6vJsuOFsqvzXE8=;
+        s=korg; t=1661246110;
+        bh=fkS0yNqWNFUiOtkYMouC7Nw4WkF0NzDt3nXIozKSnWU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=aT52L7YyphjeXwpy0heLyv2/Ds6CCxZy7K4ddNHh4PDFyRRl1HBUsFoNzq980lMN2
-         aQQlVj9+hmglb1hmq9VcHX2ajL7x9PoOiiY7ltCyAyNjCLkh/IZX+j5Oy6qMZpM6+u
-         e5SvZaktQ4NLnGwvH1+/bSSoT5bZprDPOs5j6b5A=
+        b=gjeN6iwcsiFlCyPI94xWydayo04FueqO4hScsfM+1pe3dB1WQ+DIBxiznaOXDpj/z
+         JxmwHZLefVQzCRdKMzdoXfoDey1V28wqeE9ePyR6hLtrtC5zOXMdrfQr+dQCGg05Eh
+         J2EH4CCyiwjTLskqsES+hqQ32On9No7jF7kv9Yjc=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Laurent Dufour <ldufour@linux.ibm.com>,
-        Michael Ellerman <mpe@ellerman.id.au>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.19 276/287] watchdog: export lockup_detector_reconfigure
-Date:   Tue, 23 Aug 2022 10:27:25 +0200
-Message-Id: <20220823080110.711119070@linuxfoundation.org>
+        stable@vger.kernel.org,
+        syzbot+1ee0910eca9c94f71f25@syzkaller.appspotmail.com,
+        syzbot+49b10793b867871ee26f@syzkaller.appspotmail.com,
+        syzbot+8285e973a41b5aa68902@syzkaller.appspotmail.com,
+        Takashi Iwai <tiwai@suse.de>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 4.19 278/287] ALSA: timer: Use deferred fasync helper
+Date:   Tue, 23 Aug 2022 10:27:27 +0200
+Message-Id: <20220823080110.795772629@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220823080100.268827165@linuxfoundation.org>
 References: <20220823080100.268827165@linuxfoundation.org>
@@ -50,113 +52,81 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Laurent Dufour <ldufour@linux.ibm.com>
+From: Takashi Iwai <tiwai@suse.de>
 
-[ Upstream commit 7c56a8733d0a2a4be2438a7512566e5ce552fccf ]
+[ Upstream commit 95cc637c1afd83fb7dd3d7c8a53710488f4caf9c ]
 
-In some circumstances it may be interesting to reconfigure the watchdog
-from inside the kernel.
+For avoiding the potential deadlock via kill_fasync() call, use the
+new fasync helpers to defer the invocation from PCI API.  Note that
+it's merely a workaround.
 
-On PowerPC, this may helpful before and after a LPAR migration (LPM) is
-initiated, because it implies some latencies, watchdog, and especially NMI
-watchdog is expected to be triggered during this operation. Reconfiguring
-the watchdog with a factor, would prevent it to happen too frequently
-during LPM.
-
-Rename lockup_detector_reconfigure() as __lockup_detector_reconfigure() and
-create a new function lockup_detector_reconfigure() calling
-__lockup_detector_reconfigure() under the protection of watchdog_mutex.
-
-Signed-off-by: Laurent Dufour <ldufour@linux.ibm.com>
-[mpe: Squash in build fix from Laurent, reported by Sachin]
-Signed-off-by: Michael Ellerman <mpe@ellerman.id.au>
-Link: https://lore.kernel.org/r/20220713154729.80789-3-ldufour@linux.ibm.com
+Reported-by: syzbot+1ee0910eca9c94f71f25@syzkaller.appspotmail.com
+Reported-by: syzbot+49b10793b867871ee26f@syzkaller.appspotmail.com
+Reported-by: syzbot+8285e973a41b5aa68902@syzkaller.appspotmail.com
+Link: https://lore.kernel.org/r/20220728125945.29533-3-tiwai@suse.de
+Signed-off-by: Takashi Iwai <tiwai@suse.de>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- include/linux/nmi.h |  2 ++
- kernel/watchdog.c   | 21 ++++++++++++++++-----
- 2 files changed, 18 insertions(+), 5 deletions(-)
+ sound/core/timer.c | 11 ++++++-----
+ 1 file changed, 6 insertions(+), 5 deletions(-)
 
-diff --git a/include/linux/nmi.h b/include/linux/nmi.h
-index 9003e29cde46..e972d1ae1ee6 100644
---- a/include/linux/nmi.h
-+++ b/include/linux/nmi.h
-@@ -122,6 +122,8 @@ int watchdog_nmi_probe(void);
- int watchdog_nmi_enable(unsigned int cpu);
- void watchdog_nmi_disable(unsigned int cpu);
+diff --git a/sound/core/timer.c b/sound/core/timer.c
+index 4920ec4f4594..f0e8b98f346e 100644
+--- a/sound/core/timer.c
++++ b/sound/core/timer.c
+@@ -75,7 +75,7 @@ struct snd_timer_user {
+ 	unsigned int filter;
+ 	struct timespec tstamp;		/* trigger tstamp */
+ 	wait_queue_head_t qchange_sleep;
+-	struct fasync_struct *fasync;
++	struct snd_fasync *fasync;
+ 	struct mutex ioctl_lock;
+ };
  
-+void lockup_detector_reconfigure(void);
-+
- /**
-  * touch_nmi_watchdog - restart NMI watchdog timeout.
-  *
-diff --git a/kernel/watchdog.c b/kernel/watchdog.c
-index 6d60701dc636..44096c4f4d60 100644
---- a/kernel/watchdog.c
-+++ b/kernel/watchdog.c
-@@ -561,7 +561,7 @@ int lockup_detector_offline_cpu(unsigned int cpu)
- 	return 0;
+@@ -1306,7 +1306,7 @@ static void snd_timer_user_interrupt(struct snd_timer_instance *timeri,
+ 	}
+       __wake:
+ 	spin_unlock(&tu->qlock);
+-	kill_fasync(&tu->fasync, SIGIO, POLL_IN);
++	snd_kill_fasync(tu->fasync, SIGIO, POLL_IN);
+ 	wake_up(&tu->qchange_sleep);
  }
  
--static void lockup_detector_reconfigure(void)
-+static void __lockup_detector_reconfigure(void)
- {
- 	cpus_read_lock();
- 	watchdog_nmi_stop();
-@@ -581,6 +581,13 @@ static void lockup_detector_reconfigure(void)
- 	__lockup_detector_cleanup();
+@@ -1343,7 +1343,7 @@ static void snd_timer_user_ccallback(struct snd_timer_instance *timeri,
+ 	spin_lock_irqsave(&tu->qlock, flags);
+ 	snd_timer_user_append_to_tqueue(tu, &r1);
+ 	spin_unlock_irqrestore(&tu->qlock, flags);
+-	kill_fasync(&tu->fasync, SIGIO, POLL_IN);
++	snd_kill_fasync(tu->fasync, SIGIO, POLL_IN);
+ 	wake_up(&tu->qchange_sleep);
  }
  
-+void lockup_detector_reconfigure(void)
-+{
-+	mutex_lock(&watchdog_mutex);
-+	__lockup_detector_reconfigure();
-+	mutex_unlock(&watchdog_mutex);
-+}
-+
- /*
-  * Create the watchdog thread infrastructure and configure the detector(s).
-  *
-@@ -601,13 +608,13 @@ static __init void lockup_detector_setup(void)
+@@ -1410,7 +1410,7 @@ static void snd_timer_user_tinterrupt(struct snd_timer_instance *timeri,
+ 	spin_unlock(&tu->qlock);
+ 	if (append == 0)
  		return;
- 
- 	mutex_lock(&watchdog_mutex);
--	lockup_detector_reconfigure();
-+	__lockup_detector_reconfigure();
- 	softlockup_initialized = true;
- 	mutex_unlock(&watchdog_mutex);
+-	kill_fasync(&tu->fasync, SIGIO, POLL_IN);
++	snd_kill_fasync(tu->fasync, SIGIO, POLL_IN);
+ 	wake_up(&tu->qchange_sleep);
  }
  
- #else /* CONFIG_SOFTLOCKUP_DETECTOR */
--static void lockup_detector_reconfigure(void)
-+static void __lockup_detector_reconfigure(void)
- {
- 	cpus_read_lock();
- 	watchdog_nmi_stop();
-@@ -615,9 +622,13 @@ static void lockup_detector_reconfigure(void)
- 	watchdog_nmi_start();
- 	cpus_read_unlock();
- }
-+void lockup_detector_reconfigure(void)
-+{
-+	__lockup_detector_reconfigure();
-+}
- static inline void lockup_detector_setup(void)
- {
--	lockup_detector_reconfigure();
-+	__lockup_detector_reconfigure();
- }
- #endif /* !CONFIG_SOFTLOCKUP_DETECTOR */
+@@ -1476,6 +1476,7 @@ static int snd_timer_user_release(struct inode *inode, struct file *file)
+ 		if (tu->timeri)
+ 			snd_timer_close(tu->timeri);
+ 		mutex_unlock(&tu->ioctl_lock);
++		snd_fasync_free(tu->fasync);
+ 		kfree(tu->queue);
+ 		kfree(tu->tqueue);
+ 		kfree(tu);
+@@ -2027,7 +2028,7 @@ static int snd_timer_user_fasync(int fd, struct file * file, int on)
+ 	struct snd_timer_user *tu;
  
-@@ -657,7 +668,7 @@ static void proc_watchdog_update(void)
- {
- 	/* Remove impossible cpus to keep sysctl output clean. */
- 	cpumask_and(&watchdog_cpumask, &watchdog_cpumask, cpu_possible_mask);
--	lockup_detector_reconfigure();
-+	__lockup_detector_reconfigure();
+ 	tu = file->private_data;
+-	return fasync_helper(fd, file, on, &tu->fasync);
++	return snd_fasync_helper(fd, file, on, &tu->fasync);
  }
  
- /*
+ static ssize_t snd_timer_user_read(struct file *file, char __user *buffer,
 -- 
 2.35.1
 
