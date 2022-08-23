@@ -2,43 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8B28FC32772
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 10:54:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 072FEC32772
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 10:54:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356326AbiHWKyG (ORCPT
+        id S1356445AbiHWKyJ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 06:54:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57704 "EHLO
+        Tue, 23 Aug 2022 06:54:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56728 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355971AbiHWKqE (ORCPT
+        with ESMTP id S1355984AbiHWKqG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 06:46:04 -0400
+        Tue, 23 Aug 2022 06:46:06 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2D82374CFE;
-        Tue, 23 Aug 2022 02:11:32 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4E27274DF6;
+        Tue, 23 Aug 2022 02:11:35 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 5A5D86069D;
-        Tue, 23 Aug 2022 09:11:31 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4E584C433D6;
-        Tue, 23 Aug 2022 09:11:30 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id A1E1460F85;
+        Tue, 23 Aug 2022 09:11:34 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8C233C433B5;
+        Tue, 23 Aug 2022 09:11:33 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661245890;
-        bh=9nPrtpR65w8b56LwHzABe1G5wYv2w6YiwZOjMphzI00=;
+        s=korg; t=1661245894;
+        bh=o5kMqKGNeYaD1QjftcGevNh2DTWdrdudlXdleTnx8zM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=XiY8tuiyZDvt+3eQafZzh1rEa4gCV7BG5hOnleA8Y0ZeZp2Ic3HZP+KADFWDq2J7V
-         ByrTK758H0hR7rFQKrIu+IBw5r+TUdxZbrE8I+1JQvN9rAMQU9KNXVDMKmyZdH8Fz8
-         kFIxpbEbjEyQi11phyXYvnygHeUH/seI8cvz8kN8=
+        b=vh9Iedn+mFjnUK19RPXvM/I//mIuujd0TbWfz+P+yITn39BGtugUjCRPIaChlI7xl
+         K3O48o3vxSTS5tIbMLLI2ZiZNdAnW8yMnroQVK04Udip1Cfbqkw0qPREtjkRAhbmbV
+         sTpQCjLysEKQvuobtkuKZOO60od+iPlVeuoeH95A=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
+To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Vitaly Kuznetsov <vkuznets@redhat.com>,
-        Paolo Bonzini <pbonzini@redhat.com>,
-        Stefan Ghinea <stefan.ghinea@windriver.com>
-Subject: [PATCH 4.19 205/287] KVM: x86: Avoid theoretical NULL pointer dereference in kvm_irq_delivery_to_apic_fast()
-Date:   Tue, 23 Aug 2022 10:26:14 +0200
-Message-Id: <20220823080107.801921160@linuxfoundation.org>
+        stable@vger.kernel.org, John Johansen <john.johansen@canonical.com>
+Subject: [PATCH 4.19 223/287] apparmor: fix quiet_denied for file rules
+Date:   Tue, 23 Aug 2022 10:26:32 +0200
+Message-Id: <20220823080108.509062348@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220823080100.268827165@linuxfoundation.org>
 References: <20220823080100.268827165@linuxfoundation.org>
@@ -50,36 +48,31 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Vitaly Kuznetsov <vkuznets@redhat.com>
+From: John Johansen <john.johansen@canonical.com>
 
-commit 00b5f37189d24ac3ed46cb7f11742094778c46ce upstream
+commit 68ff8540cc9e4ab557065b3f635c1ff4c96e1f1c upstream.
 
-When kvm_irq_delivery_to_apic_fast() is called with APIC_DEST_SELF
-shorthand, 'src' must not be NULL. Crash the VM with KVM_BUG_ON()
-instead of crashing the host.
+Global quieting of denied AppArmor generated file events is not
+handled correctly. Unfortunately the is checking if quieting of all
+audit events is set instead of just denied events.
 
-Signed-off-by: Vitaly Kuznetsov <vkuznets@redhat.com>
-Message-Id: <20220325132140.25650-3-vkuznets@redhat.com>
-Cc: stable@vger.kernel.org
-Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
-Signed-off-by: Stefan Ghinea <stefan.ghinea@windriver.com>
+Fixes: 67012e8209df ("AppArmor: basic auditing infrastructure.")
+Signed-off-by: John Johansen <john.johansen@canonical.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/x86/kvm/lapic.c |    4 ++++
- 1 file changed, 4 insertions(+)
+ security/apparmor/audit.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/arch/x86/kvm/lapic.c
-+++ b/arch/x86/kvm/lapic.c
-@@ -961,6 +961,10 @@ bool kvm_irq_delivery_to_apic_fast(struc
- 	*r = -1;
- 
- 	if (irq->shorthand == APIC_DEST_SELF) {
-+		if (KVM_BUG_ON(!src, kvm)) {
-+			*r = 0;
-+			return true;
-+		}
- 		*r = kvm_apic_set_irq(src->vcpu, irq, dest_map);
- 		return true;
+--- a/security/apparmor/audit.c
++++ b/security/apparmor/audit.c
+@@ -143,7 +143,7 @@ int aa_audit(int type, struct aa_profile
  	}
+ 	if (AUDIT_MODE(profile) == AUDIT_QUIET ||
+ 	    (type == AUDIT_APPARMOR_DENIED &&
+-	     AUDIT_MODE(profile) == AUDIT_QUIET))
++	     AUDIT_MODE(profile) == AUDIT_QUIET_DENIED))
+ 		return aad(sa)->error;
+ 
+ 	if (KILL_MODE(profile) && type == AUDIT_APPARMOR_DENIED)
 
 
