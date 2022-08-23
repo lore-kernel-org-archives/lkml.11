@@ -2,42 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 62E66C32774
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 12:13:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9D049C32792
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 12:13:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351288AbiHWMM6 (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 08:12:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45740 "EHLO
+        id S242574AbiHWMNT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 23 Aug 2022 08:13:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46828 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351906AbiHWMMR (ORCPT
+        with ESMTP id S1356023AbiHWMMb (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 08:12:17 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E4E2EE42F4;
-        Tue, 23 Aug 2022 02:39:37 -0700 (PDT)
+        Tue, 23 Aug 2022 08:12:31 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C26535A3E8;
+        Tue, 23 Aug 2022 02:39:19 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 72F60613CA;
-        Tue, 23 Aug 2022 09:38:54 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7D3C0C433D6;
-        Tue, 23 Aug 2022 09:38:53 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 6900D61389;
+        Tue, 23 Aug 2022 09:39:19 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6A5C2C433D6;
+        Tue, 23 Aug 2022 09:39:18 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661247533;
-        bh=EkgEL8VNg3xEP7YC4/zdUsjn0OhSMPb/3b8UAiUZx84=;
+        s=korg; t=1661247558;
+        bh=Ar0Ri1pXQ2u5TEvE1oM8+Sx9bnNlWLzCZzLjllN8NEw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=G5jVe4bbp6upFGtX59yFMB//Jn8KzI2ykflZkCaMAyv5esDTQYCQGN2CfGY6I9yZz
-         irHzSG1qyG0H1LTjFUC87VbUtE2W7pR2aMTyXUFBMYE3HytI/zzdiU558rdna5uBRq
-         eSb5gEAT9JzOHTdRIzl8CdmNg2crvly7n8OBEoEQ=
+        b=LIMVFsLxIb8TkbE0coDgLq+EgSoo3aNQbqr0GQS213P4wpz4i5wR6IPAN5v6h+h5p
+         zeHK24Ko/HpY/Z4qZVUb3oddzd1tQrFbZQ7awtTWJk/xF+bHvjnbB6yxTwohWO4Iun
+         lXX4zhJ7ml1qlh66/bgrHbN+g5RYBgLawGPtYvBQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Al Viro <viro@zeniv.linux.org.uk>,
-        Dinh Nguyen <dinguyen@kernel.org>
-Subject: [PATCH 5.10 065/158] nios2: dont leave NULLs in sys_call_table[]
-Date:   Tue, 23 Aug 2022 10:26:37 +0200
-Message-Id: <20220823080048.711344815@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Trond Myklebust <trond.myklebust@hammerspace.com>
+Subject: [PATCH 5.10 035/158] SUNRPC: Reinitialise the backchannel request buffers before reuse
+Date:   Tue, 23 Aug 2022 10:26:07 +0200
+Message-Id: <20220823080047.493046546@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220823080046.056825146@linuxfoundation.org>
 References: <20220823080046.056825146@linuxfoundation.org>
@@ -49,39 +48,50 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Al Viro <viro@zeniv.linux.org.uk>
+From: Trond Myklebust <trond.myklebust@hammerspace.com>
 
-commit 45ec746c65097c25e77d24eae8fee0def5b6cc5d upstream.
+commit 6622e3a73112fc336c1c2c582428fb5ef18e456a upstream.
 
-fill the gaps in there with sys_ni_syscall, as everyone does...
+When we're reusing the backchannel requests instead of freeing them,
+then we should reinitialise any values of the send/receive xdr_bufs so
+that they reflect the available space.
 
-Fixes: 82ed08dd1b0e ("nios2: Exception handling")
-Signed-off-by: Al Viro <viro@zeniv.linux.org.uk>
-Signed-off-by: Dinh Nguyen <dinguyen@kernel.org>
+Fixes: 0d2a970d0ae5 ("SUNRPC: Fix a backchannel race")
+Signed-off-by: Trond Myklebust <trond.myklebust@hammerspace.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/nios2/kernel/entry.S         |    1 -
- arch/nios2/kernel/syscall_table.c |    1 +
- 2 files changed, 1 insertion(+), 1 deletion(-)
+ net/sunrpc/backchannel_rqst.c |   14 ++++++++++++++
+ 1 file changed, 14 insertions(+)
 
---- a/arch/nios2/kernel/entry.S
-+++ b/arch/nios2/kernel/entry.S
-@@ -193,7 +193,6 @@ local_restart:
- 	movhi	r11, %hiadj(sys_call_table)
- 	add	r1, r1, r11
- 	ldw	r1, %lo(sys_call_table)(r1)
--	beq	r1, r0, ret_invsyscall
+--- a/net/sunrpc/backchannel_rqst.c
++++ b/net/sunrpc/backchannel_rqst.c
+@@ -64,6 +64,17 @@ static void xprt_free_allocation(struct
+ 	kfree(req);
+ }
  
- 	/* Check if we are being traced */
- 	GET_THREAD_INFO r11
---- a/arch/nios2/kernel/syscall_table.c
-+++ b/arch/nios2/kernel/syscall_table.c
-@@ -13,5 +13,6 @@
- #define __SYSCALL(nr, call) [nr] = (call),
- 
- void *sys_call_table[__NR_syscalls] = {
-+	[0 ... __NR_syscalls-1] = sys_ni_syscall,
- #include <asm/unistd.h>
- };
++static void xprt_bc_reinit_xdr_buf(struct xdr_buf *buf)
++{
++	buf->head[0].iov_len = PAGE_SIZE;
++	buf->tail[0].iov_len = 0;
++	buf->pages = NULL;
++	buf->page_len = 0;
++	buf->flags = 0;
++	buf->len = 0;
++	buf->buflen = PAGE_SIZE;
++}
++
+ static int xprt_alloc_xdr_buf(struct xdr_buf *buf, gfp_t gfp_flags)
+ {
+ 	struct page *page;
+@@ -292,6 +303,9 @@ void xprt_free_bc_rqst(struct rpc_rqst *
+ 	 */
+ 	spin_lock_bh(&xprt->bc_pa_lock);
+ 	if (xprt_need_to_requeue(xprt)) {
++		xprt_bc_reinit_xdr_buf(&req->rq_snd_buf);
++		xprt_bc_reinit_xdr_buf(&req->rq_rcv_buf);
++		req->rq_rcv_buf.len = PAGE_SIZE;
+ 		list_add_tail(&req->rq_bc_pa_list, &xprt->bc_pa_list);
+ 		xprt->bc_alloc_count++;
+ 		atomic_inc(&xprt->bc_slot_count);
 
 
