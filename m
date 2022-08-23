@@ -2,47 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0599EC32796
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 27FC3C32793
 	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 10:23:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354286AbiHWKVI (ORCPT
+        id S1354321AbiHWKVN (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 06:21:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60872 "EHLO
+        Tue, 23 Aug 2022 06:21:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60868 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352912AbiHWKJd (ORCPT
+        with ESMTP id S1352911AbiHWKJd (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 23 Aug 2022 06:09:33 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 464DE6B65A;
-        Tue, 23 Aug 2022 01:55:27 -0700 (PDT)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B0BE270E7C;
+        Tue, 23 Aug 2022 01:55:28 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 03BF2B81C28;
-        Tue, 23 Aug 2022 08:55:26 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D7A07C433C1;
-        Tue, 23 Aug 2022 08:55:23 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 4DDC061561;
+        Tue, 23 Aug 2022 08:55:28 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4D0B6C433D6;
+        Tue, 23 Aug 2022 08:55:27 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661244924;
-        bh=HOXCiQRCue+WqyhD977c9T+bU9sdz6fgKX43vY6tDYk=;
+        s=korg; t=1661244927;
+        bh=ItqQFXDDWb3IjtNXUtXeNW31x5hR5NXcdcX8U4BxumU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=iAs6PntlpGWwH7/UEl6nPjniqxps2CXEASynQkM1niMdcs8mvxg2Km3vZ3H5iNYKV
-         MaoKe6zw0bLTkxP9LWI67J8KuKHfsEs/cVV24IbTgUfe+QbcpIu0j4nrGSaH3Mgwpt
-         6MSFAuMcJJf1Y3vyAeEx0f2s1rVz5Yhc811GQq6I=
+        b=PHgwiq/qW2taCTcvf94myMNk/RRMSzqNdaZ2d9bN+CggEchecQPpYA9/byL1ULmxG
+         L+5dxxuuVGvjNNpWv1LG27pZqmIf+E4Cw6icSUqsCUE+om1Q2nUlTEU89iTn7WENaE
+         gBnPEmHq6/pwrhJ4/9U0KKwOqqP1fXxMkDJzcZyY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Sakari Ailus <sakari.ailus@linux.intel.com>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>
-Subject: [PATCH 4.14 190/229] ACPI: property: Return type of acpi_add_nondev_subnodes() should be bool
-Date:   Tue, 23 Aug 2022 10:25:51 +0200
-Message-Id: <20220823080100.397245393@linuxfoundation.org>
+        stable@vger.kernel.org, Stanley Chu <stanley.chu@mediatek.com>,
+        Po-Wen Kao <powen.kao@mediatek.com>,
+        "Martin K. Petersen" <martin.petersen@oracle.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 173/244] scsi: ufs: ufs-mediatek: Fix the timing of configuring device regulators
+Date:   Tue, 23 Aug 2022 10:25:32 +0200
+Message-Id: <20220823080105.047904117@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220823080053.202747790@linuxfoundation.org>
-References: <20220823080053.202747790@linuxfoundation.org>
+In-Reply-To: <20220823080059.091088642@linuxfoundation.org>
+References: <20220823080059.091088642@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -51,38 +51,115 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Sakari Ailus <sakari.ailus@linux.intel.com>
+From: Po-Wen Kao <powen.kao@mediatek.com>
 
-commit 85140ef275f577f64e8a2c5789447222dfc14fc4 upstream.
+[ Upstream commit 3fd23b8dfb54d9b74eba6dfdd3225db3ac116785 ]
 
-The value acpi_add_nondev_subnodes() returns is bool so change the return
-type of the function to match that.
+Currently the LPM configurations of device regulators may not work since
+VCC is not disabled yet while ufs_mtk_vreg_set_lpm() is executed.
 
-Fixes: 445b0eb058f5 ("ACPI / property: Add support for data-only subnodes")
-Signed-off-by: Sakari Ailus <sakari.ailus@linux.intel.com>
-Reviewed-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Signed-off-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Fix this by changing the timing of invoking ufs_mtk_vreg_set_lpm().
+
+Link: https://lore.kernel.org/r/20220616053725.5681-5-stanley.chu@mediatek.com
+Reviewed-by: Stanley Chu <stanley.chu@mediatek.com>
+Signed-off-by: Po-Wen Kao <powen.kao@mediatek.com>
+Signed-off-by: Stanley Chu <stanley.chu@mediatek.com>
+Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/acpi/property.c |    8 ++++----
- 1 file changed, 4 insertions(+), 4 deletions(-)
+ drivers/scsi/ufs/ufs-mediatek.c | 58 ++++++++++++++++++++++++++++++---
+ 1 file changed, 53 insertions(+), 5 deletions(-)
 
---- a/drivers/acpi/property.c
-+++ b/drivers/acpi/property.c
-@@ -132,10 +132,10 @@ static bool acpi_nondev_subnode_ok(acpi_
- 	return acpi_nondev_subnode_data_ok(handle, link, list, parent);
+diff --git a/drivers/scsi/ufs/ufs-mediatek.c b/drivers/scsi/ufs/ufs-mediatek.c
+index 4e53857605de..9f1d69d33149 100644
+--- a/drivers/scsi/ufs/ufs-mediatek.c
++++ b/drivers/scsi/ufs/ufs-mediatek.c
+@@ -949,7 +949,6 @@ static int ufs_mtk_suspend(struct ufs_hba *hba, enum ufs_pm_op pm_op)
+ 		 * ufshcd_suspend() re-enabling regulators while vreg is still
+ 		 * in low-power mode.
+ 		 */
+-		ufs_mtk_vreg_set_lpm(hba, true);
+ 		err = ufs_mtk_mphy_power_on(hba, false);
+ 		if (err)
+ 			goto fail;
+@@ -973,12 +972,13 @@ static int ufs_mtk_resume(struct ufs_hba *hba, enum ufs_pm_op pm_op)
+ {
+ 	int err;
+ 
++	if (hba->ufshcd_state != UFSHCD_STATE_OPERATIONAL)
++		ufs_mtk_vreg_set_lpm(hba, false);
++
+ 	err = ufs_mtk_mphy_power_on(hba, true);
+ 	if (err)
+ 		goto fail;
+ 
+-	ufs_mtk_vreg_set_lpm(hba, false);
+-
+ 	if (ufshcd_is_link_hibern8(hba)) {
+ 		err = ufs_mtk_link_set_hpm(hba);
+ 		if (err)
+@@ -1139,9 +1139,57 @@ static int ufs_mtk_remove(struct platform_device *pdev)
+ 	return 0;
  }
  
--static int acpi_add_nondev_subnodes(acpi_handle scope,
--				    const union acpi_object *links,
--				    struct list_head *list,
--				    struct fwnode_handle *parent)
-+static bool acpi_add_nondev_subnodes(acpi_handle scope,
-+				     const union acpi_object *links,
-+				     struct list_head *list,
-+				     struct fwnode_handle *parent)
- {
- 	bool ret = false;
- 	int i;
++int ufs_mtk_system_suspend(struct device *dev)
++{
++	struct ufs_hba *hba = dev_get_drvdata(dev);
++	int ret;
++
++	ret = ufshcd_system_suspend(dev);
++	if (ret)
++		return ret;
++
++	ufs_mtk_vreg_set_lpm(hba, true);
++
++	return 0;
++}
++
++int ufs_mtk_system_resume(struct device *dev)
++{
++	struct ufs_hba *hba = dev_get_drvdata(dev);
++
++	ufs_mtk_vreg_set_lpm(hba, false);
++
++	return ufshcd_system_resume(dev);
++}
++
++int ufs_mtk_runtime_suspend(struct device *dev)
++{
++	struct ufs_hba *hba = dev_get_drvdata(dev);
++	int ret = 0;
++
++	ret = ufshcd_runtime_suspend(dev);
++	if (ret)
++		return ret;
++
++	ufs_mtk_vreg_set_lpm(hba, true);
++
++	return 0;
++}
++
++int ufs_mtk_runtime_resume(struct device *dev)
++{
++	struct ufs_hba *hba = dev_get_drvdata(dev);
++
++	ufs_mtk_vreg_set_lpm(hba, false);
++
++	return ufshcd_runtime_resume(dev);
++}
++
+ static const struct dev_pm_ops ufs_mtk_pm_ops = {
+-	SET_SYSTEM_SLEEP_PM_OPS(ufshcd_system_suspend, ufshcd_system_resume)
+-	SET_RUNTIME_PM_OPS(ufshcd_runtime_suspend, ufshcd_runtime_resume, NULL)
++	SET_SYSTEM_SLEEP_PM_OPS(ufs_mtk_system_suspend,
++				ufs_mtk_system_resume)
++	SET_RUNTIME_PM_OPS(ufs_mtk_runtime_suspend,
++			   ufs_mtk_runtime_resume, NULL)
+ 	.prepare	 = ufshcd_suspend_prepare,
+ 	.complete	 = ufshcd_resume_complete,
+ };
+-- 
+2.35.1
+
 
 
