@@ -2,41 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7EF4CC32772
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 09:49:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A4EEDC32772
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 09:49:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243366AbiHWJta (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 05:49:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53744 "EHLO
+        id S244034AbiHWJtd (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 23 Aug 2022 05:49:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56122 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352571AbiHWJqf (ORCPT
+        with ESMTP id S1352587AbiHWJqg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 05:46:35 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 83EB74DB27;
-        Tue, 23 Aug 2022 01:44:19 -0700 (PDT)
+        Tue, 23 Aug 2022 05:46:36 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ABE679C21C;
+        Tue, 23 Aug 2022 01:44:13 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 3345661540;
-        Tue, 23 Aug 2022 08:43:20 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 29F27C433B5;
-        Tue, 23 Aug 2022 08:43:18 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 7B5FAB81C60;
+        Tue, 23 Aug 2022 08:43:14 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DB030C433D7;
+        Tue, 23 Aug 2022 08:43:12 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661244199;
-        bh=Ar0Ri1pXQ2u5TEvE1oM8+Sx9bnNlWLzCZzLjllN8NEw=;
+        s=korg; t=1661244193;
+        bh=Da3VX1ansjmk8r5ZZzofsjUfgE11Ot+/ZhI1/uTkoJo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=t3QaiXGALtus5VP4P49vqbKBhf+exQtlOg9QIwkTArpm2m5NONVjNGVf7BH76/dOE
-         lp7pPGXpG4Gb+d9y1PPSkM5wttDE3/suWF1p0S2CF78DPIJLTbmGSSbsTH/wfpwbRX
-         06dCKaybAwLTXnQngyqhOWXCSSoCbStallyVeelk=
+        b=WET/zY6+4Tw47dXgf+D0BZOgzNItYoKJR1fb2ydMccJpRxvXjQwxYABeFwJK+9REX
+         9iR08aeXOicB1BPbbF2CIvsrc19pXSVavcZ42ehx2Q3fPl5qYHgTp//dXWxD4fm/+R
+         zOqlZFzak2tLxix+v7+GzwMtkjx/KCexx50QXhkg=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
-        Trond Myklebust <trond.myklebust@hammerspace.com>
-Subject: [PATCH 5.15 055/244] SUNRPC: Reinitialise the backchannel request buffers before reuse
-Date:   Tue, 23 Aug 2022 10:23:34 +0200
-Message-Id: <20220823080100.903408710@linuxfoundation.org>
+        =?UTF-8?q?Sebastian=20W=C3=BCrl?= <sebastian.wuerl@ororatech.com>,
+        Marc Kleine-Budde <mkl@pengutronix.de>
+Subject: [PATCH 5.15 049/244] can: mcp251x: Fix race condition on receive interrupt
+Date:   Tue, 23 Aug 2022 10:23:28 +0200
+Message-Id: <20220823080100.702485928@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220823080059.091088642@linuxfoundation.org>
 References: <20220823080059.091088642@linuxfoundation.org>
@@ -48,50 +49,85 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Trond Myklebust <trond.myklebust@hammerspace.com>
+From: Sebastian Würl <sebastian.wuerl@ororatech.com>
 
-commit 6622e3a73112fc336c1c2c582428fb5ef18e456a upstream.
+commit d80d60b0db6ff3dd2e29247cc2a5166d7e9ae37e upstream.
 
-When we're reusing the backchannel requests instead of freeing them,
-then we should reinitialise any values of the send/receive xdr_bufs so
-that they reflect the available space.
+The mcp251x driver uses both receiving mailboxes of the CAN controller
+chips. For retrieving the CAN frames from the controller via SPI, it checks
+once per interrupt which mailboxes have been filled and will retrieve the
+messages accordingly.
 
-Fixes: 0d2a970d0ae5 ("SUNRPC: Fix a backchannel race")
-Signed-off-by: Trond Myklebust <trond.myklebust@hammerspace.com>
+This introduces a race condition, as another CAN frame can enter mailbox 1
+while mailbox 0 is emptied. If now another CAN frame enters mailbox 0 until
+the interrupt handler is called next, mailbox 0 is emptied before
+mailbox 1, leading to out-of-order CAN frames in the network device.
+
+This is fixed by checking the interrupt flags once again after freeing
+mailbox 0, to correctly also empty mailbox 1 before leaving the handler.
+
+For reproducing the bug I created the following setup:
+ - Two CAN devices, one Raspberry Pi with MCP2515, the other can be any.
+ - Setup CAN to 1 MHz
+ - Spam bursts of 5 CAN-messages with increasing CAN-ids
+ - Continue sending the bursts while sleeping a second between the bursts
+ - Check on the RPi whether the received messages have increasing CAN-ids
+ - Without this patch, every burst of messages will contain a flipped pair
+
+v3: https://lore.kernel.org/all/20220804075914.67569-1-sebastian.wuerl@ororatech.com
+v2: https://lore.kernel.org/all/20220804064803.63157-1-sebastian.wuerl@ororatech.com
+v1: https://lore.kernel.org/all/20220803153300.58732-1-sebastian.wuerl@ororatech.com
+
+Fixes: bf66f3736a94 ("can: mcp251x: Move to threaded interrupts instead of workqueues.")
+Signed-off-by: Sebastian Würl <sebastian.wuerl@ororatech.com>
+Link: https://lore.kernel.org/all/20220804081411.68567-1-sebastian.wuerl@ororatech.com
+[mkl: reduce scope of intf1, eflag1]
+Signed-off-by: Marc Kleine-Budde <mkl@pengutronix.de>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- net/sunrpc/backchannel_rqst.c |   14 ++++++++++++++
- 1 file changed, 14 insertions(+)
+ drivers/net/can/spi/mcp251x.c |   18 +++++++++++++++---
+ 1 file changed, 15 insertions(+), 3 deletions(-)
 
---- a/net/sunrpc/backchannel_rqst.c
-+++ b/net/sunrpc/backchannel_rqst.c
-@@ -64,6 +64,17 @@ static void xprt_free_allocation(struct
- 	kfree(req);
- }
+--- a/drivers/net/can/spi/mcp251x.c
++++ b/drivers/net/can/spi/mcp251x.c
+@@ -1074,9 +1074,6 @@ static irqreturn_t mcp251x_can_ist(int i
  
-+static void xprt_bc_reinit_xdr_buf(struct xdr_buf *buf)
-+{
-+	buf->head[0].iov_len = PAGE_SIZE;
-+	buf->tail[0].iov_len = 0;
-+	buf->pages = NULL;
-+	buf->page_len = 0;
-+	buf->flags = 0;
-+	buf->len = 0;
-+	buf->buflen = PAGE_SIZE;
-+}
+ 		mcp251x_read_2regs(spi, CANINTF, &intf, &eflag);
+ 
+-		/* mask out flags we don't care about */
+-		intf &= CANINTF_RX | CANINTF_TX | CANINTF_ERR;
+-
+ 		/* receive buffer 0 */
+ 		if (intf & CANINTF_RX0IF) {
+ 			mcp251x_hw_rx(spi, 0);
+@@ -1086,6 +1083,18 @@ static irqreturn_t mcp251x_can_ist(int i
+ 			if (mcp251x_is_2510(spi))
+ 				mcp251x_write_bits(spi, CANINTF,
+ 						   CANINTF_RX0IF, 0x00);
 +
- static int xprt_alloc_xdr_buf(struct xdr_buf *buf, gfp_t gfp_flags)
- {
- 	struct page *page;
-@@ -292,6 +303,9 @@ void xprt_free_bc_rqst(struct rpc_rqst *
- 	 */
- 	spin_lock_bh(&xprt->bc_pa_lock);
- 	if (xprt_need_to_requeue(xprt)) {
-+		xprt_bc_reinit_xdr_buf(&req->rq_snd_buf);
-+		xprt_bc_reinit_xdr_buf(&req->rq_rcv_buf);
-+		req->rq_rcv_buf.len = PAGE_SIZE;
- 		list_add_tail(&req->rq_bc_pa_list, &xprt->bc_pa_list);
- 		xprt->bc_alloc_count++;
- 		atomic_inc(&xprt->bc_slot_count);
++			/* check if buffer 1 is already known to be full, no need to re-read */
++			if (!(intf & CANINTF_RX1IF)) {
++				u8 intf1, eflag1;
++
++				/* intf needs to be read again to avoid a race condition */
++				mcp251x_read_2regs(spi, CANINTF, &intf1, &eflag1);
++
++				/* combine flags from both operations for error handling */
++				intf |= intf1;
++				eflag |= eflag1;
++			}
+ 		}
+ 
+ 		/* receive buffer 1 */
+@@ -1096,6 +1105,9 @@ static irqreturn_t mcp251x_can_ist(int i
+ 				clear_intf |= CANINTF_RX1IF;
+ 		}
+ 
++		/* mask out flags we don't care about */
++		intf &= CANINTF_RX | CANINTF_TX | CANINTF_ERR;
++
+ 		/* any error or tx interrupt we need to clear? */
+ 		if (intf & (CANINTF_ERR | CANINTF_TX))
+ 			clear_intf |= intf & (CANINTF_ERR | CANINTF_TX);
 
 
