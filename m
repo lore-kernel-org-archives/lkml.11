@@ -2,119 +2,105 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 80F4EC32772
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 19:45:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 61C25C32772
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 19:45:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233392AbiHWTpH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 15:45:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46926 "EHLO
+        id S233504AbiHWTpX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 23 Aug 2022 15:45:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58236 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229511AbiHWToc (ORCPT
+        with ESMTP id S232364AbiHWTo7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 15:44:32 -0400
-Received: from mga06.intel.com (mga06b.intel.com [134.134.136.31])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0911CB942D
-        for <linux-kernel@vger.kernel.org>; Tue, 23 Aug 2022 11:47:01 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1661280422; x=1692816422;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=ldZgYNfdYBSGbD0K/M+Boh0I8FVavFlXHoINWQ0ulGc=;
-  b=VEVaIHNgDdhy35RhU/ueQaonptAnUgTFBA8Vo0SYV5Qh1nn81wCmIa4u
-   6rW465mMUXeemrSBxTZ8AJLV36zKyDBYbQ4sB7P/WgHQlXJWBwykTw85U
-   P2M9ojj61Imld4nl3RBlkrYsApWsGdJ3/82Sf17fiFQ44uVnY7e9zinJd
-   BNYYkOoNHIFBkPlMMGbls48qsmCsBsUpG+lJnLh3/xYusjFoLZwPvOBvp
-   XyrQUq8Fcb7hp/i5FFUFxaewwvJDCZwNczGD0nQlFkqa4gj9CBepJX+rR
-   c6wmS4crlkGPluL9c/MwOBoB4wtDiRKIVtR+d8V4IrNrG0Cm5hFPL9NOe
-   w==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10448"; a="355499716"
-X-IronPort-AV: E=Sophos;i="5.93,258,1654585200"; 
-   d="scan'208";a="355499716"
-Received: from orsmga006.jf.intel.com ([10.7.209.51])
-  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Aug 2022 11:47:01 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.93,258,1654585200"; 
-   d="scan'208";a="586109432"
-Received: from lkp-server02.sh.intel.com (HELO 9bbcefcddf9f) ([10.239.97.151])
-  by orsmga006.jf.intel.com with ESMTP; 23 Aug 2022 11:47:00 -0700
-Received: from kbuild by 9bbcefcddf9f with local (Exim 4.96)
-        (envelope-from <lkp@intel.com>)
-        id 1oQYvT-0000RD-1e;
-        Tue, 23 Aug 2022 18:46:59 +0000
-Date:   Wed, 24 Aug 2022 02:46:11 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Wenpeng Liang <liangwenpeng@huawei.com>
-Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org,
-        Leon Romanovsky <leon@kernel.org>
-Subject: [leon-rdma:rdma-next 15/40]
- drivers/infiniband/hw/hns/hns_roce_hw_v2.c:5805:5: warning: no previous
- prototype for 'hns_roce_v2_query_mpt'
-Message-ID: <202208240240.7nXzYHkq-lkp@intel.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+        Tue, 23 Aug 2022 15:44:59 -0400
+Received: from mail-oo1-f54.google.com (mail-oo1-f54.google.com [209.85.161.54])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C88E46D9FE;
+        Tue, 23 Aug 2022 11:47:09 -0700 (PDT)
+Received: by mail-oo1-f54.google.com with SMTP id g5-20020a4ac4c5000000b0044af7c8c4b3so2484049ooq.1;
+        Tue, 23 Aug 2022 11:47:09 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=message-id:date:subject:references:in-reply-to:cc:to:from
+         :x-gm-message-state:from:to:cc;
+        bh=tHYjnzkUc2Gvy/va2RI2R+NsJzI7m0zroWi8SmJXJGE=;
+        b=8PqnGfPX1fQcmkrlGSTVL/fy6bUmd0/964r9vxqy3TDjwifCUL5FWjTFPubGuhHR6X
+         MWsZgAlH52uwhK3RoSkRqfGtufp7rH/4MbTf5oBT1+yaPIEkRVvM3aBtKEFccj/ccBoR
+         m4HTNHzf4nWbS6RiZ25gZG3SgP0aA1q5+zvgYp1w0gDlMrAEnj/n3K1QQxvis7l2y61r
+         M2ZQfUoFZgEp5t8EQeh2pJ02YqBdKEWVSAPCcY9NC7eOPZRggMaimFv9Zcdo38Ybpclu
+         gMx35ZUU135cNUK3XkJzhp225cBlxvIrPaEYEazftoVRhrgOAMkp//khH7DAbLdBDiEB
+         /ndQ==
+X-Gm-Message-State: ACgBeo0aQvUs+WHR+sVFPLPOcYjmj2zJkfVZrDvAR/Z4greLEXGCDSSV
+        kIimXRArvD30KDcSXWDERP9OOI6YnA==
+X-Google-Smtp-Source: AA6agR7MkfBFGnMVdJ7ZdvTTyviNRzCXNrqYz7IHn6hyMrk7BM/gV7icm1f6LC3vQCNiknGqYTbZwg==
+X-Received: by 2002:a4a:abcf:0:b0:428:47bc:4bc0 with SMTP id o15-20020a4aabcf000000b0042847bc4bc0mr8511436oon.15.1661280428885;
+        Tue, 23 Aug 2022 11:47:08 -0700 (PDT)
+Received: from robh.at.kernel.org (66-90-144-107.dyn.grandenetworks.net. [66.90.144.107])
+        by smtp.gmail.com with ESMTPSA id u15-20020a056870d58f00b0010e046491f8sm3980600oao.57.2022.08.23.11.47.08
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 23 Aug 2022 11:47:08 -0700 (PDT)
+Received: (nullmailer pid 3761037 invoked by uid 1000);
+        Tue, 23 Aug 2022 18:47:07 -0000
+From:   Rob Herring <robh@kernel.org>
+To:     Colin Foster <colin.foster@in-advantage.com>
+Cc:     linux-phy@lists.infradead.org,
+        Kishon Vijay Abraham I <kishon@ti.com>,
+        Vinod Koul <vkoul@kernel.org>, UNGLinuxDriver@microchip.com,
+        Rob Herring <robh+dt@kernel.org>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        linux-kernel@vger.kernel.org, linux-mips@vger.kernel.org,
+        devicetree@vger.kernel.org,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>
+In-Reply-To: <20220823060052.3921849-2-colin.foster@in-advantage.com>
+References: <20220823060052.3921849-1-colin.foster@in-advantage.com> <20220823060052.3921849-2-colin.foster@in-advantage.com>
+Subject: Re: [PATCH v1 1/1] dt-bindings: phy: ocelot-serdes: convert to YAML
+Date:   Tue, 23 Aug 2022 13:47:07 -0500
+Message-Id: <1661280427.824099.3761036.nullmailer@robh.at.kernel.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   https://git.kernel.org/pub/scm/linux/kernel/git/leon/linux-rdma.git rdma-next
-head:   07c7704e6a8741b28f249e1f53c6c1f66b718687
-commit: 436aa2aa24f6efe8f918709daa71f47d2d0713ae [15/40] RDMA/hns: Support MR's restrack raw ops for hns driver
-config: s390-allyesconfig (https://download.01.org/0day-ci/archive/20220824/202208240240.7nXzYHkq-lkp@intel.com/config)
-compiler: s390-linux-gcc (GCC) 12.1.0
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://git.kernel.org/pub/scm/linux/kernel/git/leon/linux-rdma.git/commit/?id=436aa2aa24f6efe8f918709daa71f47d2d0713ae
-        git remote add leon-rdma https://git.kernel.org/pub/scm/linux/kernel/git/leon/linux-rdma.git
-        git fetch --no-tags leon-rdma rdma-next
-        git checkout 436aa2aa24f6efe8f918709daa71f47d2d0713ae
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-12.1.0 make.cross W=1 O=build_dir ARCH=s390 SHELL=/bin/bash drivers/infiniband/
+On Mon, 22 Aug 2022 23:00:52 -0700, Colin Foster wrote:
+> Convert the phy-ocelot-serdes device tree binding to the new YAML format.
+> 
+> Additionally, add the file to MAINTAINERS since the original file didn't
+> exist.
+> 
+> Signed-off-by: Colin Foster <colin.foster@in-advantage.com>
+> ---
+>  .../bindings/phy/phy-ocelot-serdes.txt        | 43 -------------
+>  .../bindings/phy/phy-ocelot-serdes.yaml       | 61 +++++++++++++++++++
+>  MAINTAINERS                                   |  1 +
+>  3 files changed, 62 insertions(+), 43 deletions(-)
+>  delete mode 100644 Documentation/devicetree/bindings/phy/phy-ocelot-serdes.txt
+>  create mode 100644 Documentation/devicetree/bindings/phy/phy-ocelot-serdes.yaml
+> 
 
-If you fix the issue, kindly add following tag where applicable
-Reported-by: kernel test robot <lkp@intel.com>
+My bot found errors running 'make DT_CHECKER_FLAGS=-m dt_binding_check'
+on your patch (DT_CHECKER_FLAGS is new in v5.13):
 
-All warnings (new ones prefixed by >>):
+yamllint warnings/errors:
 
->> drivers/infiniband/hw/hns/hns_roce_hw_v2.c:5805:5: warning: no previous prototype for 'hns_roce_v2_query_mpt' [-Wmissing-prototypes]
-    5805 | int hns_roce_v2_query_mpt(struct hns_roce_dev *hr_dev, u32 key, void *buffer)
-         |     ^~~~~~~~~~~~~~~~~~~~~
+dtschema/dtc warnings/errors:
+/builds/robherring/linux-dt-review/Documentation/devicetree/bindings/phy/phy-ocelot-serdes.yaml: 'examlpes' is not one of ['$id', '$schema', 'title', 'description', 'examples', 'required', 'allOf', 'anyOf', 'oneOf', 'definitions', '$defs', 'additionalProperties', 'dependencies', 'dependentRequired', 'dependentSchemas', 'patternProperties', 'properties', 'if', 'then', 'else', 'unevaluatedProperties', 'deprecated', 'maintainers', 'select', '$ref']
+	from schema $id: http://devicetree.org/meta-schemas/base.yaml#
+/builds/robherring/linux-dt-review/Documentation/devicetree/bindings/phy/phy-ocelot-serdes.yaml: 'oneOf' conditional failed, one must be fixed:
+	'unevaluatedProperties' is a required property
+	'additionalProperties' is a required property
+	hint: Either unevaluatedProperties or additionalProperties must be present
+	from schema $id: http://devicetree.org/meta-schemas/core.yaml#
+/builds/robherring/linux-dt-review/Documentation/devicetree/bindings/phy/phy-ocelot-serdes.yaml: ignoring, error in schema: 
 
+doc reference errors (make refcheckdocs):
 
-vim +/hns_roce_v2_query_mpt +5805 drivers/infiniband/hw/hns/hns_roce_hw_v2.c
+See https://patchwork.ozlabs.org/patch/
 
-  5804	
-> 5805	int hns_roce_v2_query_mpt(struct hns_roce_dev *hr_dev, u32 key, void *buffer)
-  5806	{
-  5807		struct hns_roce_v2_mpt_entry *context;
-  5808		struct hns_roce_cmd_mailbox *mailbox;
-  5809		int ret;
-  5810	
-  5811		mailbox = hns_roce_alloc_cmd_mailbox(hr_dev);
-  5812		if (IS_ERR(mailbox))
-  5813			return PTR_ERR(mailbox);
-  5814	
-  5815		context = mailbox->buf;
-  5816		ret = hns_roce_cmd_mbox(hr_dev, 0, mailbox->dma, HNS_ROCE_CMD_QUERY_MPT,
-  5817					key_to_hw_index(key));
-  5818		if (ret) {
-  5819			ibdev_err(&hr_dev->ib_dev,
-  5820				  "failed to process cmd when querying MPT, ret = %d.\n",
-  5821				  ret);
-  5822			goto err_mailbox;
-  5823		}
-  5824	
-  5825		memcpy(buffer, context, sizeof(*context));
-  5826	
-  5827	err_mailbox:
-  5828		hns_roce_free_cmd_mailbox(hr_dev, mailbox);
-  5829	
-  5830		return ret;
-  5831	}
-  5832	
+This check can fail if there are any dependencies. The base for a patch
+series is generally the most recent rc1.
 
--- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+If you already ran 'make dt_binding_check' and didn't see the above
+error(s), then make sure 'yamllint' is installed and dt-schema is up to
+date:
+
+pip3 install dtschema --upgrade
+
+Please check and re-submit.
+
