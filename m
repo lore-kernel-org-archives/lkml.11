@@ -2,43 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 941F5C32796
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 10:37:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2C100C52D6C
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 10:37:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354299AbiHWKhE (ORCPT
+        id S1355687AbiHWKgy (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 06:37:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43924 "EHLO
+        Tue, 23 Aug 2022 06:36:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38786 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354797AbiHWKWO (ORCPT
+        with ESMTP id S1354681AbiHWKV7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 06:22:14 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F20F0B1E3;
-        Tue, 23 Aug 2022 02:03:29 -0700 (PDT)
+        Tue, 23 Aug 2022 06:21:59 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 747DA2DED;
+        Tue, 23 Aug 2022 02:03:22 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 187B561580;
-        Tue, 23 Aug 2022 09:03:29 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1B7E5C433D6;
-        Tue, 23 Aug 2022 09:03:27 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 97C02CE1B40;
+        Tue, 23 Aug 2022 09:03:20 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 91142C433C1;
+        Tue, 23 Aug 2022 09:03:18 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661245408;
-        bh=qLA7A5Br4kr6XCh5cM4QAi+8idAHdklGHyK/3mm2rt8=;
+        s=korg; t=1661245399;
+        bh=RZW52RKR3Uudu0bjrdyowQavWiTMX177M9w5TtGXDzg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=PtF1ZWLHX+lb0fBC229uxPfp31AUNIbihNHApTF/Np7r3C6rfp3Ignh/SEcXyMLxb
-         m2eR80BnsxSlkSU33rW0qMl4Cf5rvY9HB+aOzFHAd7JMgjkt5QUAex47G4msRG9WTD
-         n2+l28eusqTSYSXCZQ2JE8rEk4PCwGlSWWPTYXhQ=
+        b=WWqKQTp89OIXzI5vkTS97YxnUbNF93d9wiqXyzAnRYPRppWFXyYRgTaqPkue1GAp4
+         O98PTbXFu3TJ0M202Z2IY+WPfYtgYe0Bg3jcYLxHItyNTIX+PWmFqM2HpBWsDxk6/a
+         4QQ2Ki64JlSOX6hi1wyLlW6oaeIcxGCJI7B1KmdQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
-        Francis Laniel <flaniel@linux.microsoft.com>,
-        Will Deacon <will@kernel.org>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.19 039/287] arm64: Do not forget syscall when starting a new thread.
-Date:   Tue, 23 Aug 2022 10:23:28 +0200
-Message-Id: <20220823080101.584936413@linuxfoundation.org>
+        Nicolas Saenz Julienne <nsaenzju@redhat.com>,
+        "Peter Zijlstra (Intel)" <peterz@infradead.org>,
+        Valentin Schneider <vschneid@redhat.com>,
+        Phil Auld <pauld@redhat.com>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 4.19 065/287] nohz/full, sched/rt: Fix missed tick-reenabling bug in dequeue_task_rt()
+Date:   Tue, 23 Aug 2022 10:23:54 +0200
+Message-Id: <20220823080102.425385618@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220823080100.268827165@linuxfoundation.org>
 References: <20220823080100.268827165@linuxfoundation.org>
@@ -50,38 +52,115 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Francis Laniel <flaniel@linux.microsoft.com>
+From: Nicolas Saenz Julienne <nsaenzju@redhat.com>
 
-[ Upstream commit de6921856f99c11d3986c6702d851e1328d4f7f6 ]
+[ Upstream commit 5c66d1b9b30f737fcef85a0b75bfe0590e16b62a ]
 
-Enable tracing of the execve*() system calls with the
-syscalls:sys_exit_execve tracepoint by removing the call to
-forget_syscall() when starting a new thread and preserving the value of
-regs->syscallno across exec.
+dequeue_task_rt() only decrements 'rt_rq->rt_nr_running' after having
+called sched_update_tick_dependency() preventing it from re-enabling the
+tick on systems that no longer have pending SCHED_RT tasks but have
+multiple runnable SCHED_OTHER tasks:
 
-Signed-off-by: Francis Laniel <flaniel@linux.microsoft.com>
-Link: https://lore.kernel.org/r/20220608162447.666494-2-flaniel@linux.microsoft.com
-Signed-off-by: Will Deacon <will@kernel.org>
+  dequeue_task_rt()
+    dequeue_rt_entity()
+      dequeue_rt_stack()
+        dequeue_top_rt_rq()
+	  sub_nr_running()	// decrements rq->nr_running
+	    sched_update_tick_dependency()
+	      sched_can_stop_tick()	// checks rq->rt.rt_nr_running,
+	      ...
+        __dequeue_rt_entity()
+          dec_rt_tasks()	// decrements rq->rt.rt_nr_running
+	  ...
+
+Every other scheduler class performs the operation in the opposite
+order, and sched_update_tick_dependency() expects the values to be
+updated as such. So avoid the misbehaviour by inverting the order in
+which the above operations are performed in the RT scheduler.
+
+Fixes: 76d92ac305f2 ("sched: Migrate sched to use new tick dependency mask model")
+Signed-off-by: Nicolas Saenz Julienne <nsaenzju@redhat.com>
+Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
+Reviewed-by: Valentin Schneider <vschneid@redhat.com>
+Reviewed-by: Phil Auld <pauld@redhat.com>
+Link: https://lore.kernel.org/r/20220628092259.330171-1-nsaenzju@redhat.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/arm64/include/asm/processor.h | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ kernel/sched/rt.c | 15 +++++++++------
+ 1 file changed, 9 insertions(+), 6 deletions(-)
 
-diff --git a/arch/arm64/include/asm/processor.h b/arch/arm64/include/asm/processor.h
-index 773ea8e0e442..f81074c68ff3 100644
---- a/arch/arm64/include/asm/processor.h
-+++ b/arch/arm64/include/asm/processor.h
-@@ -172,8 +172,9 @@ void tls_preserve_current_state(void);
+diff --git a/kernel/sched/rt.c b/kernel/sched/rt.c
+index 70e8cd395474..9c6c3572b131 100644
+--- a/kernel/sched/rt.c
++++ b/kernel/sched/rt.c
+@@ -434,7 +434,7 @@ static inline void rt_queue_push_tasks(struct rq *rq)
+ #endif /* CONFIG_SMP */
  
- static inline void start_thread_common(struct pt_regs *regs, unsigned long pc)
+ static void enqueue_top_rt_rq(struct rt_rq *rt_rq);
+-static void dequeue_top_rt_rq(struct rt_rq *rt_rq);
++static void dequeue_top_rt_rq(struct rt_rq *rt_rq, unsigned int count);
+ 
+ static inline int on_rt_rq(struct sched_rt_entity *rt_se)
  {
-+	s32 previous_syscall = regs->syscallno;
- 	memset(regs, 0, sizeof(*regs));
--	forget_syscall(regs);
-+	regs->syscallno = previous_syscall;
- 	regs->pc = pc;
+@@ -516,7 +516,7 @@ static void sched_rt_rq_dequeue(struct rt_rq *rt_rq)
+ 	rt_se = rt_rq->tg->rt_se[cpu];
+ 
+ 	if (!rt_se) {
+-		dequeue_top_rt_rq(rt_rq);
++		dequeue_top_rt_rq(rt_rq, rt_rq->rt_nr_running);
+ 		/* Kick cpufreq (see the comment in kernel/sched/sched.h). */
+ 		cpufreq_update_util(rq_of_rt_rq(rt_rq), 0);
+ 	}
+@@ -602,7 +602,7 @@ static inline void sched_rt_rq_enqueue(struct rt_rq *rt_rq)
+ 
+ static inline void sched_rt_rq_dequeue(struct rt_rq *rt_rq)
+ {
+-	dequeue_top_rt_rq(rt_rq);
++	dequeue_top_rt_rq(rt_rq, rt_rq->rt_nr_running);
  }
  
+ static inline int rt_rq_throttled(struct rt_rq *rt_rq)
+@@ -1001,7 +1001,7 @@ static void update_curr_rt(struct rq *rq)
+ }
+ 
+ static void
+-dequeue_top_rt_rq(struct rt_rq *rt_rq)
++dequeue_top_rt_rq(struct rt_rq *rt_rq, unsigned int count)
+ {
+ 	struct rq *rq = rq_of_rt_rq(rt_rq);
+ 
+@@ -1012,7 +1012,7 @@ dequeue_top_rt_rq(struct rt_rq *rt_rq)
+ 
+ 	BUG_ON(!rq->nr_running);
+ 
+-	sub_nr_running(rq, rt_rq->rt_nr_running);
++	sub_nr_running(rq, count);
+ 	rt_rq->rt_queued = 0;
+ 
+ }
+@@ -1291,18 +1291,21 @@ static void __dequeue_rt_entity(struct sched_rt_entity *rt_se, unsigned int flag
+ static void dequeue_rt_stack(struct sched_rt_entity *rt_se, unsigned int flags)
+ {
+ 	struct sched_rt_entity *back = NULL;
++	unsigned int rt_nr_running;
+ 
+ 	for_each_sched_rt_entity(rt_se) {
+ 		rt_se->back = back;
+ 		back = rt_se;
+ 	}
+ 
+-	dequeue_top_rt_rq(rt_rq_of_se(back));
++	rt_nr_running = rt_rq_of_se(back)->rt_nr_running;
+ 
+ 	for (rt_se = back; rt_se; rt_se = rt_se->back) {
+ 		if (on_rt_rq(rt_se))
+ 			__dequeue_rt_entity(rt_se, flags);
+ 	}
++
++	dequeue_top_rt_rq(rt_rq_of_se(back), rt_nr_running);
+ }
+ 
+ static void enqueue_rt_entity(struct sched_rt_entity *rt_se, unsigned int flags)
 -- 
 2.35.1
 
