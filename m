@@ -2,229 +2,133 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 763A3C32774
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 08:22:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A0103C32774
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 08:23:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243107AbiHWIW4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 04:22:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42170 "EHLO
+        id S243127AbiHWIXE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 23 Aug 2022 04:23:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45216 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243072AbiHWIQd (ORCPT
+        with ESMTP id S243074AbiHWIQd (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 23 Aug 2022 04:16:33 -0400
-Received: from mail-lj1-x22c.google.com (mail-lj1-x22c.google.com [IPv6:2a00:1450:4864:20::22c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7B7E1F13
-        for <linux-kernel@vger.kernel.org>; Tue, 23 Aug 2022 01:11:12 -0700 (PDT)
-Received: by mail-lj1-x22c.google.com with SMTP id z20so12797130ljq.3
-        for <linux-kernel@vger.kernel.org>; Tue, 23 Aug 2022 01:11:12 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc;
-        bh=HFRkd6+GWv944FyJVUBe4iftku17LMXFRqWaLXS9n3M=;
-        b=VpgaNmVgn5wH2Q3FQgcpkx4MnWNXe49SeT0FaMxhOY6HoTzKBanqTCO5Nw6LhAJN1v
-         goPIrfr9lkaxbTliET0kVj90wVaBW/8I9h69rKgjYt4qsiH0pYrkM3UVUUmR0YM4F24P
-         LtuLDE1QFEnbzD7XKrE27xq30DHCaolSr8MNW/uzY7l3CZgnXza1OcI2WtitBIirM3O9
-         9IQh3wklF+kXvv3o1tqEt8XXnvZyqiuP7fqkRbdXtDk0hq4vHi37xNSR1UAT1S8Ac4gG
-         s/5CFrQ5yh6D50x+r2jhlPwM64UzIVVyKFZ0kFUvzTtOJtdbORJ+2vscorSmZ6CDDsFb
-         feaw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc;
-        bh=HFRkd6+GWv944FyJVUBe4iftku17LMXFRqWaLXS9n3M=;
-        b=3O7vPAGfZcaLS4Aa71FANQnFsJhjV9gDnklfXuypZo5jBXBx6dtZPPx7GOIeX6gHpY
-         Mgd90d3KyCB1YO6tvGgcqclkwvpYlnkOfHj3XCf+TZVXz2gd39OkYLuEy3xLvgRVsIxB
-         mxhYC8wzoupsWc2H0pTt6QeNVHA+lI4V63JG9VHMtiusXWIvYdaz3WX1iNIu7f8hhjpN
-         iugcnRw0qX4Kvvg5upYa/pBcmufkJ9h9fJcXBSz/fYJi4utvCSBV1Z4VBacsYD5X4tSX
-         L6NteZqHCQAjAoj3BSBi114Np72ajq7YztLCamtF5AgpeIvxxnSJ/iSnqdpUQAugvfiy
-         +wpA==
-X-Gm-Message-State: ACgBeo39H7QcTnC/CDdAvoGciCFosfXwNLjWlNpntSBMJ3eF+M4FZMaP
-        SrgnMVqIbt4F8cYoo1AmAy9unQ==
-X-Google-Smtp-Source: AA6agR5C5yM6uJJzx86YW/mN+Cz8M71DBVNM97M0b2F9KrryMrLvw8XY4Pg6c2wwrKMPu9a+hv1Hsw==
-X-Received: by 2002:a05:651c:2387:b0:261:de7f:f662 with SMTP id bk7-20020a05651c238700b00261de7ff662mr79352ljb.110.1661242270317;
-        Tue, 23 Aug 2022 01:11:10 -0700 (PDT)
-Received: from [192.168.0.11] (89-27-92-210.bb.dnainternet.fi. [89.27.92.210])
-        by smtp.gmail.com with ESMTPSA id a16-20020a056512391000b0048aa9d67483sm2379557lfu.160.2022.08.23.01.11.08
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 23 Aug 2022 01:11:09 -0700 (PDT)
-Message-ID: <6a803554-bc1a-9f53-b7e2-7571fffea7e0@linaro.org>
-Date:   Tue, 23 Aug 2022 11:11:08 +0300
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 08EDEC06;
+        Tue, 23 Aug 2022 01:11:13 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 6E6B1612D8;
+        Tue, 23 Aug 2022 08:11:12 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5A4E5C433C1;
+        Tue, 23 Aug 2022 08:11:11 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1661242271;
+        bh=I1xhZSiC9DRvT8rxyQAW4Nh+0v4H2XNl/oVbjpuEVrI=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=GIsp5bDGrka/7kTMNZFq4vbNlp+3ZTGoYiJKqvc7gCxd2jt1I2cJlSCLdNRqUopWM
+         1T3ucJEHM7ijM0HC6muejccz+kO7C6vEVZPhIub2xKX6t3G4iuFAnCaDiMT9kpUJ87
+         5FRvlbly4J+RaLk8d4jqBmupQ3kmcKxbF6gbZEIQ=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Sandor Bodo-Merle <sbodomerle@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Jakub Kicinski <kuba@kernel.org>
+Subject: [PATCH 5.19 086/365] net: bgmac: Fix a BUG triggered by wrong bytes_compl
+Date:   Tue, 23 Aug 2022 09:59:47 +0200
+Message-Id: <20220823080121.788256867@linuxfoundation.org>
+X-Mailer: git-send-email 2.37.2
+In-Reply-To: <20220823080118.128342613@linuxfoundation.org>
+References: <20220823080118.128342613@linuxfoundation.org>
+User-Agent: quilt/0.67
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.12.0
-Subject: Re: [PATCH 01/13] dt-bindings: memory: snps: Extend schema with
- IRQs/resets/clocks props
-Content-Language: en-US
-To:     Serge Semin <Sergey.Semin@baikalelectronics.ru>,
-        Michal Simek <michal.simek@xilinx.com>,
-        Borislav Petkov <bp@alien8.de>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
-        Tony Luck <tony.luck@intel.com>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Manish Narani <manish.narani@xilinx.com>
-Cc:     Serge Semin <fancer.lancer@gmail.com>,
-        Alexey Malahov <Alexey.Malahov@baikalelectronics.ru>,
-        Michail Ivanov <Michail.Ivanov@baikalelectronics.ru>,
-        Pavel Parkhomenko <Pavel.Parkhomenko@baikalelectronics.ru>,
-        Punnaiah Choudary Kalluri 
-        <punnaiah.choudary.kalluri@xilinx.com>,
-        Dinh Nguyen <dinguyen@kernel.org>,
-        James Morse <james.morse@arm.com>,
-        Robert Richter <rric@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-edac@vger.kernel.org, linux-kernel@vger.kernel.org
-References: <20220822191957.28546-1-Sergey.Semin@baikalelectronics.ru>
- <20220822191957.28546-2-Sergey.Semin@baikalelectronics.ru>
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-In-Reply-To: <20220822191957.28546-2-Sergey.Semin@baikalelectronics.ru>
 Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 22/08/2022 22:19, Serge Semin wrote:
-> First of all the DW uMCTL2 DDRC IP-core supports the individual IRQ lines
-> for each standard event: ECC Corrected Error, ECC Uncorrected Error, ECC
-> Address Protection, Scrubber-Done signal, DFI Parity/CRC Error. It's
-> possible that the platform engineers merge them up in the IRQ controller
-> level. So let's add both configuration support to the DT-schema.
-> 
-> Secondly each IP-core interface is supplied with a clock source like APB
-> reference clock, AXI-ports clock, main DDRC core reference clock and
-> Scrubber low-power clock. In addition to that each clock domain can have a
-> dedicated reset signal. Let's add the properties for at least the denoted
-> clock sources and the corresponding reset controls.
-> 
-> Signed-off-by: Serge Semin <Sergey.Semin@baikalelectronics.ru>
-> ---
->  .../snps,dw-umctl2-ddrc.yaml                  | 65 +++++++++++++++++--
->  1 file changed, 60 insertions(+), 5 deletions(-)
-> 
-> diff --git a/Documentation/devicetree/bindings/memory-controllers/snps,dw-umctl2-ddrc.yaml b/Documentation/devicetree/bindings/memory-controllers/snps,dw-umctl2-ddrc.yaml
-> index 787d91d64eee..8db92210cfe1 100644
-> --- a/Documentation/devicetree/bindings/memory-controllers/snps,dw-umctl2-ddrc.yaml
-> +++ b/Documentation/devicetree/bindings/memory-controllers/snps,dw-umctl2-ddrc.yaml
-> @@ -13,13 +13,13 @@ maintainers:
->  
->  description: |
->    Synopsys DesignWare Enhanced uMCTL2 DDR Memory Controller is cappable of
+From: Sandor Bodo-Merle <sbodomerle@gmail.com>
 
-Typo in original text: capable
+commit 1b7680c6c1f6de9904f1d9b05c952f0c64a03350 upstream.
 
-> -  working with DDR devices up to (LP)DDR4 protocol. It can be equipped
-> +  working with DDR devices upporting to (LP)DDR4 protocol. It can be equipped
+On one of our machines we got:
 
-Typo - supporting?
+kernel BUG at lib/dynamic_queue_limits.c:27!
+Internal error: Oops - BUG: 0 [#1] PREEMPT SMP ARM
+CPU: 0 PID: 1166 Comm: irq/41-bgmac Tainted: G        W  O    4.14.275-rt132 #1
+Hardware name: BRCM XGS iProc
+task: ee3415c0 task.stack: ee32a000
+PC is at dql_completed+0x168/0x178
+LR is at bgmac_poll+0x18c/0x6d8
+pc : [<c03b9430>]    lr : [<c04b5a18>]    psr: 800a0313
+sp : ee32be14  ip : 000005ea  fp : 00000bd4
+r10: ee558500  r9 : c0116298  r8 : 00000002
+r7 : 00000000  r6 : ef128810  r5 : 01993267  r4 : 01993851
+r3 : ee558000  r2 : 000070e1  r1 : 00000bd4  r0 : ee52c180
+Flags: Nzcv  IRQs on  FIQs on  Mode SVC_32  ISA ARM  Segment none
+Control: 12c5387d  Table: 8e88c04a  DAC: 00000051
+Process irq/41-bgmac (pid: 1166, stack limit = 0xee32a210)
+Stack: (0xee32be14 to 0xee32c000)
+be00:                                              ee558520 ee52c100 ef128810
+be20: 00000000 00000002 c0116298 c04b5a18 00000000 c0a0c8c4 c0951780 00000040
+be40: c0701780 ee558500 ee55d520 ef05b340 ef6f9780 ee558520 00000001 00000040
+be60: ffffe000 c0a56878 ef6fa040 c0952040 0000012c c0528744 ef6f97b0 fffcfb6a
+be80: c0a04104 2eda8000 c0a0c4ec c0a0d368 ee32bf44 c0153534 ee32be98 ee32be98
+bea0: ee32bea0 ee32bea0 ee32bea8 ee32bea8 00000000 c01462e4 ffffe000 ef6f22a8
+bec0: ffffe000 00000008 ee32bee4 c0147430 ffffe000 c094a2a8 00000003 ffffe000
+bee0: c0a54528 00208040 0000000c c0a0c8c4 c0a65980 c0124d3c 00000008 ee558520
+bf00: c094a23c c0a02080 00000000 c07a9910 ef136970 ef136970 ee30a440 ef136900
+bf20: ee30a440 00000001 ef136900 ee30a440 c016d990 00000000 c0108db0 c012500c
+bf40: ef136900 c016da14 ee30a464 ffffe000 00000001 c016dd14 00000000 c016db28
+bf60: ffffe000 ee21a080 ee30a400 00000000 ee32a000 ee30a440 c016dbfc ee25fd70
+bf80: ee21a09c c013edcc ee32a000 ee30a400 c013ec7c 00000000 00000000 00000000
+bfa0: 00000000 00000000 00000000 c0108470 00000000 00000000 00000000 00000000
+bfc0: 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000
+bfe0: 00000000 00000000 00000000 00000000 00000013 00000000 00000000 00000000
+[<c03b9430>] (dql_completed) from [<c04b5a18>] (bgmac_poll+0x18c/0x6d8)
+[<c04b5a18>] (bgmac_poll) from [<c0528744>] (net_rx_action+0x1c4/0x494)
+[<c0528744>] (net_rx_action) from [<c0124d3c>] (do_current_softirqs+0x1ec/0x43c)
+[<c0124d3c>] (do_current_softirqs) from [<c012500c>] (__local_bh_enable+0x80/0x98)
+[<c012500c>] (__local_bh_enable) from [<c016da14>] (irq_forced_thread_fn+0x84/0x98)
+[<c016da14>] (irq_forced_thread_fn) from [<c016dd14>] (irq_thread+0x118/0x1c0)
+[<c016dd14>] (irq_thread) from [<c013edcc>] (kthread+0x150/0x158)
+[<c013edcc>] (kthread) from [<c0108470>] (ret_from_fork+0x14/0x24)
+Code: a83f15e0 0200001a 0630a0e1 c3ffffea (f201f0e7)
 
->    with SEC/DEC ECC feature if DRAM data bus width is either 16-bits or
->    32-bits or 64-bits wide.
->  
-> -  The ZynqMP DDR controller is based on the DW uMCTL2 v2.40a controller.
-> -  It has an optional SEC/DEC ECC support in 64-bit and 32-bit bus width
-> -  configurations.
-> +  For instance the ZynqMP DDR controller is based on the DW uMCTL2 v2.40a
-> +  controller. It has an optional SEC/DEC ECC support in 64-bit and 32-bit
-> +  bus width configurations.
+The issue seems similar to commit 90b3b339364c ("net: hisilicon: Fix a BUG
+trigered by wrong bytes_compl") and potentially introduced by commit
+b38c83dd0866 ("bgmac: simplify tx ring index handling").
 
-These changes do not look related to your patch, so split them.
+If there is an RX interrupt between setting ring->end
+and netdev_sent_queue() we can hit the BUG_ON as bgmac_dma_tx_free()
+can miscalculate the queue size while called from bgmac_poll().
 
->  
->  properties:
->    compatible:
-> @@ -28,11 +28,55 @@ properties:
->        - xlnx,zynqmp-ddrc-2.40a
->  
->    interrupts:
-> -    maxItems: 1
-> +    description:
-> +      DW uMCTL2 DDRC IP-core provides individual IRQ signal for each event":"
-> +      ECC Corrected Error, ECC Uncorrected Error, ECC Address Protection,
-> +      Scrubber-Done signal, DFI Parity/CRC Error. Some platforms may have the
-> +      signals merged before they reach the IRQ controller or have some of them
-> +      absent in case if the corresponding feature is unavailable/disabled.
-> +    minItems: 1
-> +    maxItems: 5
+The machine which triggered the BUG runs a v4.14 RT kernel - but the issue
+seems present in mainline too.
 
-List has to be strictly ordered, so instead list and describe the
-items... unless you are sure that any of these interrupt lines can be
-merged into any other one?
+Fixes: b38c83dd0866 ("bgmac: simplify tx ring index handling")
+Signed-off-by: Sandor Bodo-Merle <sbodomerle@gmail.com>
+Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
+Link: https://lore.kernel.org/r/20220808173939.193804-1-sbodomerle@gmail.com
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+---
+ drivers/net/ethernet/broadcom/bgmac.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-> +
-> +  interrupt-names:
-> +    minItems: 1
-> +    maxItems: 5
-> +    oneOf:
-> +      - description: Common ECC CE/UE/Scrubber/DFI Errors IRQ
-> +        items:
-> +          - const: ecc
-> +      - description: Individual ECC CE/UE/Scrubber/DFI Errors IRQs
-> +        items:
-> +          enum: [ ecc_ce, ecc_ue, ecc_ap, ecc_sbr, dfi_e ]
->  
->    reg:
->      maxItems: 1
->  
-> +  clocks:
-> +    description:
-> +      A standard set of the clock sources contains CSRs bus clock, AXI-ports
-> +      reference clock, DDRC core clock, Scrubber standalone clock
-> +      (synchronous to the DDRC clock).
-> +    minItems: 1
-> +    maxItems: 4
-
-I expect list to be strictly defined, not flexible.
-
-> +
-> +  clock-names:
-> +    minItems: 1
-> +    maxItems: 4
-> +    items:
-> +      enum: [ pclk, aclk, core, sbr ]
-> +
-> +  resets:
-> +    description:
-> +      Each clock domain can have separate reset signal.
-> +    minItems: 1
-> +    maxItems: 4
-> +
-> +  reset-names:
-> +    minItems: 1
-> +    maxItems: 4
-> +    items:
-> +      enum: [ prst, arst, core, sbr ]
-
-The same.
-
-> +
->  required:
->    - compatible
->    - reg
-> @@ -48,4 +92,15 @@ examples:
->        interrupt-parent = <&gic>;
->        interrupts = <0 112 4>;
->      };
-> +  - |
-> +    memory-controller@fd070000 {
-> +      compatible = "snps,ddrc-3.80a";
-> +      reg = <0x3d400000 0x400000>;
-> +
-> +      interrupts = <0 147 4>, <0 148 4>, <0 149 4>, <0 150 4>;
-
-Use proper defines.
-
-> +      interrupt-names = "ecc_ce", "ecc_ue", "ecc_sbr", "dfi_e";
-> +
-> +      clocks = <&rcu 0>, <&rcu 5>, <&rcu 6>, <&rcu 7>;
-> +      clock-names = "pclk", "aclk", "core", "sbr";
-> +    };
->  ...
+--- a/drivers/net/ethernet/broadcom/bgmac.c
++++ b/drivers/net/ethernet/broadcom/bgmac.c
+@@ -189,8 +189,8 @@ static netdev_tx_t bgmac_dma_tx_add(stru
+ 	}
+ 
+ 	slot->skb = skb;
+-	ring->end += nr_frags + 1;
+ 	netdev_sent_queue(net_dev, skb->len);
++	ring->end += nr_frags + 1;
+ 
+ 	wmb();
+ 
 
 
-Best regards,
-Krzysztof
