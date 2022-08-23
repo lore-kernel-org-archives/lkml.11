@@ -2,168 +2,90 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 722F1C32792
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 01:53:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C007AC28D13
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 01:54:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239393AbiHWBxy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 22 Aug 2022 21:53:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51658 "EHLO
+        id S239224AbiHWBx6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 22 Aug 2022 21:53:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51768 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235691AbiHWBxw (ORCPT
+        with ESMTP id S239263AbiHWBxx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 22 Aug 2022 21:53:52 -0400
-Received: from inva021.nxp.com (inva021.nxp.com [92.121.34.21])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A8B903C160
-        for <linux-kernel@vger.kernel.org>; Mon, 22 Aug 2022 18:53:48 -0700 (PDT)
-Received: from inva021.nxp.com (localhost [127.0.0.1])
-        by inva021.eu-rdc02.nxp.com (Postfix) with ESMTP id 98BB9200424;
-        Tue, 23 Aug 2022 03:53:47 +0200 (CEST)
-Received: from aprdc01srsp001v.ap-rdc01.nxp.com (aprdc01srsp001v.ap-rdc01.nxp.com [165.114.16.16])
-        by inva021.eu-rdc02.nxp.com (Postfix) with ESMTP id 2D18A20043E;
-        Tue, 23 Aug 2022 03:53:47 +0200 (CEST)
-Received: from localhost.localdomain (shlinux2.ap.freescale.net [10.192.224.44])
-        by aprdc01srsp001v.ap-rdc01.nxp.com (Postfix) with ESMTP id AEBA2180031C;
-        Tue, 23 Aug 2022 09:53:45 +0800 (+08)
-From:   Shengjiu Wang <shengjiu.wang@nxp.com>
-To:     nicoleotsuka@gmail.com, Xiubo.Lee@gmail.com, festevam@gmail.com,
-        shengjiu.wang@gmail.com, lgirdwood@gmail.com, broonie@kernel.org,
-        perex@perex.cz, tiwai@suse.com, alsa-devel@alsa-project.org
-Cc:     linuxppc-dev@lists.ozlabs.org, linux-kernel@vger.kernel.org
-Subject: [RESEND PATCH] ASoC: fsl_sai: Add support multi fifo sdma script
-Date:   Tue, 23 Aug 2022 09:36:13 +0800
-Message-Id: <1661218573-2154-1-git-send-email-shengjiu.wang@nxp.com>
-X-Mailer: git-send-email 2.7.4
-X-Virus-Scanned: ClamAV using ClamSMTP
+        Mon, 22 Aug 2022 21:53:53 -0400
+Received: from mail-pl1-x633.google.com (mail-pl1-x633.google.com [IPv6:2607:f8b0:4864:20::633])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B36343C160;
+        Mon, 22 Aug 2022 18:53:52 -0700 (PDT)
+Received: by mail-pl1-x633.google.com with SMTP id p13so160630pld.6;
+        Mon, 22 Aug 2022 18:53:52 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc;
+        bh=Kacjm70FQm89JRlW4fxMW3VvkdKPicdgw1Nz1f/0eD8=;
+        b=TRAqeSVahhJMcsLu+Y1+Vi7/2L6A1AsplmxjlNrTORgYTNl8rUsuuPwo1OxFhl1ABa
+         w+RZOLzk3X7wmfMmpkwnfheFvIpo6NRWe0zDMUH2ySXk/uwlwytCwpzYD2eLNmwyQVEB
+         YhLUZcPjDwPOXi6ZSytR1z5yBzyArBnyNauRN8Ulb/EWU9QKyQrCm9AlO0tVabPx29CV
+         yqoxep+6OkWlSf3Xqakw4Zi4FuSbTYmY2AaT3qhWZsQnNDBdN8RJX0UQtR94is6yJnX7
+         NrJ1muM1FQ8+/vpG86G33fytc2MH8e5RZ9irKwC1cbJJ3hpVRcW1y9JdVJzk6ey231Ty
+         Qyww==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc;
+        bh=Kacjm70FQm89JRlW4fxMW3VvkdKPicdgw1Nz1f/0eD8=;
+        b=2U5sVoTbxwImWjGr7cUSp0GuVuzani9BJUY52wC6OupFT4wqRNJLYirNsVa/2hmf1v
+         HKGQNOe5osMw6Af7vHvr2/yKuNoqKzvca88yraXWwdlYN4dXhpSL39slULHZCXArrkVP
+         ybHAN7xGu6u4+RAAhTIPq5EbFc+eJwMh/+mh49XIzsi7qX3ecK7+f2rGVsavSr8d6TcP
+         E5dA3hBRuaLveir9TdjNGKV4mGAN8J6bjPtVnRC/5AWADZg9FL4fOdqdhloTkx52AtRE
+         jZ9RYDRcu3fjfPm9GMieKK6NkRlZMuf9Nd15ABIad8zgyQz5Q4vfGzA5Myh2zSR+TBUK
+         9aRQ==
+X-Gm-Message-State: ACgBeo2MQruvSn1SGuu/0LwcHF0JbIN1aSooUcOoJzWsDatHW73MszCI
+        DE2+7th3/OV13Ztoo3twIexmP3P30Ds=
+X-Google-Smtp-Source: AA6agR4EHEwVlo/lFTTk9Ic97Wlv3JkCe8qeyCpNFXr33OYwHHlV8Lc2GyzNF1KMdgLpYi3mc4H59w==
+X-Received: by 2002:a17:90b:1d84:b0:1f5:b66:7460 with SMTP id pf4-20020a17090b1d8400b001f50b667460mr1090565pjb.50.1661219632206;
+        Mon, 22 Aug 2022 18:53:52 -0700 (PDT)
+Received: from [192.168.43.80] (subs03-180-214-233-88.three.co.id. [180.214.233.88])
+        by smtp.gmail.com with ESMTPSA id n60-20020a17090a2cc200b001ef81574355sm10625894pjd.12.2022.08.22.18.53.49
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 22 Aug 2022 18:53:51 -0700 (PDT)
+Message-ID: <6d9a7094-274e-1227-d92b-5b282cdf9763@gmail.com>
+Date:   Tue, 23 Aug 2022 08:53:44 +0700
+MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.12.0
+Subject: Re: [PATCH v3] docs: admin-guide/mm: Improve grammar on MM concepts
+ documentation
+Content-Language: en-US
+To:     "Alex Zhu (Kernel)" <alexlzhu@fb.com>
+Cc:     "linux-doc@vger.kernel.org" <linux-doc@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        Kernel Team <Kernel-team@fb.com>
+References: <20220820000024.2494003-1-alexlzhu@fb.com>
+ <86a26310-eae0-35e8-ede9-e71825db1416@gmail.com>
+ <3C5EA425-A548-47B2-8590-35C38D6D47F2@fb.com>
+From:   Bagas Sanjaya <bagasdotme@gmail.com>
+In-Reply-To: <3C5EA425-A548-47B2-8590-35C38D6D47F2@fb.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-With disabling combine mode, the multiple successive
-FIFO registers or non successive FIFO registers of SAI module
-can work with the sdma multi fifo script.
+On 8/23/22 05:17, Alex Zhu (Kernel) wrote:
 
-This patch is to configure the necessary information to
-the SDMA engine driver for support multi fifo script.
+>> The changelog should be below the dashes. Otherwise LGTM.
+>>
+>> Reviewed-by: Bagas Sanjaya <bagasdotme@gmail.com>
+>>
+>> -- 
+>> An old man doll... just what I always wanted! - Clara
+> 
+> Can this be merged then? Or is a v4 needed? 
+> 
 
-'words_per_fifo' is the channels for each dataline
-'n_fifos_src' and 'n_fifos_dst' are the fifo number
-'stride_fifos_src' and 'stride_fifos_dst' are the stride
-between enable FIFOs
-'maxburst' is the multiply of datalines
+Please reroll (send v4).
 
-Signed-off-by: Shengjiu Wang <shengjiu.wang@nxp.com>
----
-changes in resend:
-- rebase to latest for-6.1
-
- sound/soc/fsl/fsl_sai.c | 37 ++++++++++++++++++++++++++++++++++++-
- sound/soc/fsl/fsl_sai.h |  3 +++
- 2 files changed, 39 insertions(+), 1 deletion(-)
-
-diff --git a/sound/soc/fsl/fsl_sai.c b/sound/soc/fsl/fsl_sai.c
-index a7fa6f0bf83d..0f92906d7a29 100644
---- a/sound/soc/fsl/fsl_sai.c
-+++ b/sound/soc/fsl/fsl_sai.c
-@@ -527,6 +527,7 @@ static int fsl_sai_hw_params(struct snd_pcm_substream *substream,
- 	u32 slot_width = word_width;
- 	int adir = tx ? RX : TX;
- 	u32 pins, bclk;
-+	u32 watermark;
- 	int ret, i;
- 
- 	if (sai->slots)
-@@ -619,7 +620,15 @@ static int fsl_sai_hw_params(struct snd_pcm_substream *substream,
- 				   FSL_SAI_CR5_FBT_MASK, val_cr5);
- 	}
- 
--	if (hweight8(dl_cfg[dl_cfg_idx].mask[tx]) <= 1)
-+	/*
-+	 * Combine mode has limation:
-+	 * - Can't used for singel dataline/FIFO case except the FIFO0
-+	 * - Can't used for multi dataline/FIFO case except the enabled FIFOs
-+	 *   are successive and start from FIFO0
-+	 *
-+	 * So for common usage, all multi fifo case disable the combine mode.
-+	 */
-+	if (hweight8(dl_cfg[dl_cfg_idx].mask[tx]) <= 1 || sai->is_multi_fifo_dma)
- 		regmap_update_bits(sai->regmap, FSL_SAI_xCR4(tx, ofs),
- 				   FSL_SAI_CR4_FCOMB_MASK, 0);
- 	else
-@@ -630,6 +639,26 @@ static int fsl_sai_hw_params(struct snd_pcm_substream *substream,
- 	dma_params->addr = sai->res->start + FSL_SAI_xDR0(tx) +
- 			   dl_cfg[dl_cfg_idx].start_off[tx] * 0x4;
- 
-+	if (sai->is_multi_fifo_dma) {
-+		sai->audio_config[tx].words_per_fifo = min(slots, channels);
-+		if (tx) {
-+			sai->audio_config[tx].n_fifos_dst = pins;
-+			sai->audio_config[tx].stride_fifos_dst = dl_cfg[dl_cfg_idx].next_off[tx];
-+		} else {
-+			sai->audio_config[tx].n_fifos_src = pins;
-+			sai->audio_config[tx].stride_fifos_src = dl_cfg[dl_cfg_idx].next_off[tx];
-+		}
-+		dma_params->maxburst = sai->audio_config[tx].words_per_fifo * pins;
-+		dma_params->peripheral_config = &sai->audio_config[tx];
-+		dma_params->peripheral_size = sizeof(sai->audio_config[tx]);
-+
-+		watermark = tx ? (sai->soc_data->fifo_depth - dma_params->maxburst) :
-+				 (dma_params->maxburst - 1);
-+		regmap_update_bits(sai->regmap, FSL_SAI_xCR1(tx, ofs),
-+				   FSL_SAI_CR1_RFW_MASK(sai->soc_data->fifo_depth),
-+				   watermark);
-+	}
-+
- 	/* Find a proper tcre setting */
- 	for (i = 0; i < sai->soc_data->pins; i++) {
- 		trce_mask = (1 << (i + 1)) - 1;
-@@ -1257,6 +1286,7 @@ static int fsl_sai_probe(struct platform_device *pdev)
- 	char tmp[8];
- 	int irq, ret, i;
- 	int index;
-+	u32 dmas[4];
- 
- 	sai = devm_kzalloc(dev, sizeof(*sai), GFP_KERNEL);
- 	if (!sai)
-@@ -1313,6 +1343,11 @@ static int fsl_sai_probe(struct platform_device *pdev)
- 	fsl_asoc_get_pll_clocks(&pdev->dev, &sai->pll8k_clk,
- 				&sai->pll11k_clk);
- 
-+	/* Use Multi FIFO mode depending on the support from SDMA script */
-+	ret = of_property_read_u32_array(np, "dmas", dmas, 4);
-+	if (!sai->soc_data->use_edma && !ret && dmas[2] == IMX_DMATYPE_MULTI_SAI)
-+		sai->is_multi_fifo_dma = true;
-+
- 	/* read dataline mask for rx and tx*/
- 	ret = fsl_sai_read_dlcfg(sai);
- 	if (ret < 0) {
-diff --git a/sound/soc/fsl/fsl_sai.h b/sound/soc/fsl/fsl_sai.h
-index 17956b5731dc..697f6690068c 100644
---- a/sound/soc/fsl/fsl_sai.h
-+++ b/sound/soc/fsl/fsl_sai.h
-@@ -6,6 +6,7 @@
- #ifndef __FSL_SAI_H
- #define __FSL_SAI_H
- 
-+#include <linux/dma/imx-dma.h>
- #include <sound/dmaengine_pcm.h>
- 
- #define FSL_SAI_FORMATS (SNDRV_PCM_FMTBIT_S16_LE |\
-@@ -281,6 +282,7 @@ struct fsl_sai {
- 	bool is_lsb_first;
- 	bool is_dsp_mode;
- 	bool is_pdm_mode;
-+	bool is_multi_fifo_dma;
- 	bool synchronous[2];
- 	struct fsl_sai_dl_cfg *dl_cfg;
- 	unsigned int dl_cfg_cnt;
-@@ -300,6 +302,7 @@ struct fsl_sai {
- 	struct pm_qos_request pm_qos_req;
- 	struct pinctrl *pinctrl;
- 	struct pinctrl_state *pins_state;
-+	struct sdma_peripheral_config audio_config[2];
- };
- 
- #define TX 1
 -- 
-2.34.1
-
+An old man doll... just what I always wanted! - Clara
