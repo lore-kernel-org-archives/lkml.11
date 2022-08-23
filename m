@@ -2,131 +2,82 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2DFA1C32772
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 10:09:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 00B72C32772
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 10:09:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352846AbiHWKJO (ORCPT
+        id S1352861AbiHWKJW (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 06:09:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45178 "EHLO
+        Tue, 23 Aug 2022 06:09:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46722 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352633AbiHWKCO (ORCPT
+        with ESMTP id S1352627AbiHWKCO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 23 Aug 2022 06:02:14 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8CBC97C509;
-        Tue, 23 Aug 2022 01:50:18 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C6AB0A2612;
+        Tue, 23 Aug 2022 01:50:17 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 94BA56123D;
-        Tue, 23 Aug 2022 08:50:17 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9DCF4C433D6;
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 8596A61555;
         Tue, 23 Aug 2022 08:50:16 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661244617;
-        bh=fqxtpDYui42e3oAumHWuDp8Hl2ILf0kVXWlvW13h+cU=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=hAJXefLtUpO2qMYr4yPCTqAC0g07eg7rXihZ7o/Yt5ZyZyKSa5jjrTWCwLYchyTMk
-         3XC3X0UtnWrySS+0nO5XiMftoC5AT/1rpxzlHgk6VZhr+ONxUzM7Hnddw53YyhOQjJ
-         HOt+6ctP+gifysQX0OCSOQ03mYAZ17YVKzV8vYes=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Qu Wenruo <wqu@suse.com>,
-        David Sterba <dsterba@suse.com>
-Subject: [PATCH 4.14 165/229] btrfs: reject log replay if there is unsupported RO compat flag
-Date:   Tue, 23 Aug 2022 10:25:26 +0200
-Message-Id: <20220823080059.557577359@linuxfoundation.org>
-X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220823080053.202747790@linuxfoundation.org>
-References: <20220823080053.202747790@linuxfoundation.org>
-User-Agent: quilt/0.67
+Received: by smtp.kernel.org (Postfix) with ESMTPS id E1B53C43470;
+        Tue, 23 Aug 2022 08:50:15 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1661244615;
+        bh=Lpc9iSu9482doUb6kGnjPZcPkACwQKAB2dLj5+TpHX4=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=rgudO6bC2vPOgAMYe2wN0YSjHxJNlrrTfUwaviS5jbrhTcgicec2wBKjfoVwV1+Al
+         ExSKPohH3XnzxejXWPsASl0XRUZpzK21ptEwv91zSqlQPNa6tmfEHhVkAd2Fb1DFiI
+         P1DDEAk1LdZcYDwBhtFn7CdYr3ZVReaezUBsOk3t+1kW/bpTqsSOBcU3QanCsV6GsM
+         /GTHSxW55+h5Eqv5F/VKNLaS5didnuU873Fulahf7Td5WqC96ULDd7tugKnZh+/Hdz
+         /nV7bcNya4MwBaUSpY+T3TU5le2i/uIGwIKOZf7Ksf9/RlFpkctV4biiVmt6m3u3nj
+         3zzP5b+TwtedQ==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id BC642C0C3EC;
+        Tue, 23 Aug 2022 08:50:15 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH net-next,v2] net: sched: remove duplicate check of user rights
+ in qdisc
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <166124461576.6596.11359882765801739049.git-patchwork-notify@kernel.org>
+Date:   Tue, 23 Aug 2022 08:50:15 +0000
+References: <20220819041854.83372-1-shaozhengchao@huawei.com>
+In-Reply-To: <20220819041854.83372-1-shaozhengchao@huawei.com>
+To:     Zhengchao Shao <shaozhengchao@huawei.com>
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        jhs@mojatatu.com, xiyou.wangcong@gmail.com, jiri@resnulli.us,
+        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+        pabeni@redhat.com, weiyongjun1@huawei.com, yuehaibing@huawei.com
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Qu Wenruo <wqu@suse.com>
+Hello:
 
-commit dc4d31684974d140250f3ee612c3f0cab13b3146 upstream.
+This patch was applied to netdev/net-next.git (master)
+by Paolo Abeni <pabeni@redhat.com>:
 
-[BUG]
-If we have a btrfs image with dirty log, along with an unsupported RO
-compatible flag:
+On Fri, 19 Aug 2022 12:18:54 +0800 you wrote:
+> In rtnetlink_rcv_msg function, the permission for all user operations
+> is checked except the GET operation, which is the same as the checking
+> in qdisc. Therefore, remove the user rights check in qdisc.
+> 
+> Signed-off-by: Zhengchao Shao <shaozhengchao@huawei.com>
+> ---
+> v1: incorrectly delete checking right in action
+> 
+> [...]
 
-log_root		30474240
-...
-compat_flags		0x0
-compat_ro_flags		0x40000003
-			( FREE_SPACE_TREE |
-			  FREE_SPACE_TREE_VALID |
-			  unknown flag: 0x40000000 )
+Here is the summary with links:
+  - [net-next,v2] net: sched: remove duplicate check of user rights in qdisc
+    https://git.kernel.org/netdev/net-next/c/ab4850819176
 
-Then even if we can only mount it RO, we will still cause metadata
-update for log replay:
-
-  BTRFS info (device dm-1): flagging fs with big metadata feature
-  BTRFS info (device dm-1): using free space tree
-  BTRFS info (device dm-1): has skinny extents
-  BTRFS info (device dm-1): start tree-log replay
-
-This is definitely against RO compact flag requirement.
-
-[CAUSE]
-RO compact flag only forces us to do RO mount, but we will still do log
-replay for plain RO mount.
-
-Thus this will result us to do log replay and update metadata.
-
-This can be very problematic for new RO compat flag, for example older
-kernel can not understand v2 cache, and if we allow metadata update on
-RO mount and invalidate/corrupt v2 cache.
-
-[FIX]
-Just reject the mount unless rescue=nologreplay is provided:
-
-  BTRFS error (device dm-1): cannot replay dirty log with unsupport optional features (0x40000000), try rescue=nologreplay instead
-
-We don't want to set rescue=nologreply directly, as this would make the
-end user to read the old data, and cause confusion.
-
-Since the such case is really rare, we're mostly fine to just reject the
-mount with an error message, which also includes the proper workaround.
-
-CC: stable@vger.kernel.org #4.9+
-Signed-off-by: Qu Wenruo <wqu@suse.com>
-Reviewed-by: David Sterba <dsterba@suse.com>
-Signed-off-by: David Sterba <dsterba@suse.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
----
- fs/btrfs/disk-io.c |   14 ++++++++++++++
- 1 file changed, 14 insertions(+)
-
---- a/fs/btrfs/disk-io.c
-+++ b/fs/btrfs/disk-io.c
-@@ -2718,6 +2718,20 @@ int open_ctree(struct super_block *sb,
- 		err = -EINVAL;
- 		goto fail_alloc;
- 	}
-+	/*
-+	 * We have unsupported RO compat features, although RO mounted, we
-+	 * should not cause any metadata write, including log replay.
-+	 * Or we could screw up whatever the new feature requires.
-+	 */
-+	if (unlikely(features && btrfs_super_log_root(disk_super) &&
-+		     !btrfs_test_opt(fs_info, NOLOGREPLAY))) {
-+		btrfs_err(fs_info,
-+"cannot replay dirty log with unsupported compat_ro features (0x%llx), try rescue=nologreplay",
-+			  features);
-+		err = -EINVAL;
-+		goto fail_alloc;
-+	}
-+
- 
- 	max_active = fs_info->thread_pool_size;
- 
+You are awesome, thank you!
+-- 
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
 
 
