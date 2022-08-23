@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4FEE4C32772
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 12:08:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D0862C32772
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 12:08:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1359385AbiHWMH6 (ORCPT
+        id S1359403AbiHWMIC (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 08:07:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57140 "EHLO
+        Tue, 23 Aug 2022 08:08:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57138 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1359325AbiHWMDl (ORCPT
+        with ESMTP id S1359331AbiHWMDl (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 23 Aug 2022 08:03:41 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 10C9DDAA06;
-        Tue, 23 Aug 2022 02:37:13 -0700 (PDT)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4431BDCFFA;
+        Tue, 23 Aug 2022 02:37:07 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id EF6EAB81C63;
-        Tue, 23 Aug 2022 09:36:51 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5773DC433D6;
-        Tue, 23 Aug 2022 09:36:50 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id D840161467;
+        Tue, 23 Aug 2022 09:37:06 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D9B71C433D7;
+        Tue, 23 Aug 2022 09:37:05 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661247410;
-        bh=DaQnnVDgFwZPMMhgq8n/IGkxtk0uMZiqPrINJIhDaIk=;
+        s=korg; t=1661247426;
+        bh=SZ+/sgtHqCsEHpNeUbek1EZlYk4KcpR5xLQujRwlQ7g=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=BQZY+ntb6cqozSNkj/wUKoIIKSgJ0MooxDK6YtysKaA6ETc/tks3v6cXTMYhcBQcG
-         RhVvoBOXJL8wjN2N6CC7rhltxArjQjmPxeJA26WbEVlmOmTzBno4Brbv8IpPSC0NBf
-         VI2bcM70kOp4LqEaXbwIq2Vm1FxZa+l2JexwpKh0=
+        b=0B3Dp8DhHRTMG96pa+poYz+aID5Gr6v6dfwV6TL3ERfLr7POyDpDUlJv2ZPuUZRvg
+         WJ5De3W2Hn3NzPIvRaK6kRu3Dwtt58S3yWx16LfsM+Hgmknq4lIa8bV76C3Z1PivEu
+         Ym2hwU8kzYN1nhx4McQ8DSGYk7YHO6AFTqrc4XpE=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org, Hou Tao <houtao1@huawei.com>,
-        Yonghong Song <yhs@fb.com>, Alexei Starovoitov <ast@kernel.org>
-Subject: [PATCH 5.10 027/158] bpf: Acquire map uref in .init_seq_private for array map iterator
-Date:   Tue, 23 Aug 2022 10:25:59 +0200
-Message-Id: <20220823080047.190919503@linuxfoundation.org>
+        Yonghong Song <yhs@fb.com>, Martin KaFai Lau <kafai@fb.com>,
+        Alexei Starovoitov <ast@kernel.org>
+Subject: [PATCH 5.10 031/158] bpf: Check the validity of max_rdwr_access for sock local storage map iterator
+Date:   Tue, 23 Aug 2022 10:26:03 +0200
+Message-Id: <20220823080047.340687367@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220823080046.056825146@linuxfoundation.org>
 References: <20220823080046.056825146@linuxfoundation.org>
@@ -51,52 +52,32 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Hou Tao <houtao1@huawei.com>
 
-commit f76fa6b338055054f80c72b29c97fb95c1becadc upstream.
+commit 52bd05eb7c88e1ad8541a48873188ccebca9da26 upstream.
 
-bpf_iter_attach_map() acquires a map uref, and the uref may be released
-before or in the middle of iterating map elements. For example, the uref
-could be released in bpf_iter_detach_map() as part of
-bpf_link_release(), or could be released in bpf_map_put_with_uref() as
-part of bpf_map_release().
+The value of sock local storage map is writable in map iterator, so check
+max_rdwr_access instead of max_rdonly_access.
 
-Alternative fix is acquiring an extra bpf_link reference just like
-a pinned map iterator does, but it introduces unnecessary dependency
-on bpf_link instead of bpf_map.
-
-So choose another fix: acquiring an extra map uref in .init_seq_private
-for array map iterator.
-
-Fixes: d3cc2ab546ad ("bpf: Implement bpf iterator for array maps")
+Fixes: 5ce6e77c7edf ("bpf: Implement bpf iterator for sock local storage map")
 Signed-off-by: Hou Tao <houtao1@huawei.com>
 Acked-by: Yonghong Song <yhs@fb.com>
-Link: https://lore.kernel.org/r/20220810080538.1845898-2-houtao@huaweicloud.com
+Acked-by: Martin KaFai Lau <kafai@fb.com>
+Link: https://lore.kernel.org/r/20220810080538.1845898-6-houtao@huaweicloud.com
 Signed-off-by: Alexei Starovoitov <ast@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- kernel/bpf/arraymap.c |    6 ++++++
- 1 file changed, 6 insertions(+)
+ net/core/bpf_sk_storage.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/kernel/bpf/arraymap.c
-+++ b/kernel/bpf/arraymap.c
-@@ -616,6 +616,11 @@ static int bpf_iter_init_array_map(void
- 		seq_info->percpu_value_buf = value_buf;
+--- a/net/core/bpf_sk_storage.c
++++ b/net/core/bpf_sk_storage.c
+@@ -823,7 +823,7 @@ static int bpf_iter_attach_map(struct bp
+ 	if (map->map_type != BPF_MAP_TYPE_SK_STORAGE)
+ 		goto put_map;
+ 
+-	if (prog->aux->max_rdonly_access > map->value_size) {
++	if (prog->aux->max_rdwr_access > map->value_size) {
+ 		err = -EACCES;
+ 		goto put_map;
  	}
- 
-+	/* bpf_iter_attach_map() acquires a map uref, and the uref may be
-+	 * released before or in the middle of iterating map elements, so
-+	 * acquire an extra map uref for iterator.
-+	 */
-+	bpf_map_inc_with_uref(map);
- 	seq_info->map = map;
- 	return 0;
- }
-@@ -624,6 +629,7 @@ static void bpf_iter_fini_array_map(void
- {
- 	struct bpf_iter_seq_array_map_info *seq_info = priv_data;
- 
-+	bpf_map_put_with_uref(seq_info->map);
- 	kfree(seq_info->percpu_value_buf);
- }
- 
 
 
