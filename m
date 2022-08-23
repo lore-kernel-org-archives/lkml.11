@@ -2,42 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 55F84C32772
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 09:49:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id ABD71C32772
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 09:49:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243338AbiHWJtn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 05:49:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53116 "EHLO
+        id S243194AbiHWJtr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 23 Aug 2022 05:49:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55870 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240307AbiHWJq7 (ORCPT
+        with ESMTP id S241981AbiHWJrL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 05:46:59 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 98B339C2D7;
-        Tue, 23 Aug 2022 01:44:24 -0700 (PDT)
+        Tue, 23 Aug 2022 05:47:11 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D220A8E0D1;
+        Tue, 23 Aug 2022 01:44:25 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 4BCE3611DD;
-        Tue, 23 Aug 2022 08:43:23 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4EAF8C433C1;
-        Tue, 23 Aug 2022 08:43:22 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 0BFA9B81C62;
+        Tue, 23 Aug 2022 08:43:55 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 112E6C433C1;
+        Tue, 23 Aug 2022 08:43:53 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661244202;
-        bh=bVQGyZY1n80bSzC1lyAdzRMkB8EVvkQLixSXwGrJx/8=;
+        s=korg; t=1661244233;
+        bh=ukwapbfI9bnj1qkrK8Q3hXNU2QLw365AmtkZrw2+F0Q=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=LymkP6XvBH03SRpCIyGAty/vRhwrIdf3CrhEdXd/2jHC+E/81rz8acCYtDgTtDPIz
-         C1RCUgnoE7GZYyPUg5d9cm9bK+rDtXuP92vAGE0RsOhLuL5NYIvNvA6IqPW5dcixk4
-         yAI6EUq9+8bj6SwVQM4N6/napNRZAaJwTUEwi+R4=
+        b=WovB5bfCKWi36ckgoYiR/GkAjL5bY7YhN7eb9g6CWMqTEPzLqMgkNdA+yMz4kuI6B
+         H432rz4gXYL2pDKogvINx5bQ3fs6gBCKMeYceke/r59BRxtSeD2OnIpNayXJ8YRSKI
+         gmxVoYEuOEm4hPnnC3ifJWVid2vpr+Cp+uATzMAg=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
-        Ulf Hansson <ulf.hansson@linaro.org>,
+        stable@vger.kernel.org, Scott Benesh <scott.benesh@microchip.com>,
+        Scott Teel <scott.teel@microchip.com>,
+        Mike McGowen <mike.mcgowen@microchip.com>,
+        Kevin Barnett <kevin.barnett@microchip.com>,
+        Mahesh Rajashekhara <Mahesh.Rajashekhara@microchip.com>,
+        Don Brace <don.brace@microchip.com>,
+        "Martin K. Petersen" <martin.petersen@oracle.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.14 102/229] mmc: sdhci-of-esdhc: Fix refcount leak in esdhc_signal_voltage_switch
-Date:   Tue, 23 Aug 2022 10:24:23 +0200
-Message-Id: <20220823080057.336974286@linuxfoundation.org>
+Subject: [PATCH 4.14 106/229] scsi: smartpqi: Fix DMA direction for RAID requests
+Date:   Tue, 23 Aug 2022 10:24:27 +0200
+Message-Id: <20220823080057.470653754@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220823080053.202747790@linuxfoundation.org>
 References: <20220823080053.202747790@linuxfoundation.org>
@@ -49,36 +54,66 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Miaoqian Lin <linmq006@gmail.com>
+From: Mahesh Rajashekhara <Mahesh.Rajashekhara@microchip.com>
 
-[ Upstream commit b5899a3e2f783a27b268e38d37f9b24c71bddf45 ]
+[ Upstream commit 69695aeaa6621bc49cdd7a8e5a8d1042461e496e ]
 
-of_find_matching_node() returns a node pointer with refcount
-incremented, we should use of_node_put() on it when not need anymore.
-Add missing of_node_put() to avoid refcount leak.
-of_node_put() checks null pointer.
+Correct a SOP READ and WRITE DMA flags for some requests.
 
-Fixes: ea35645a3c66 ("mmc: sdhci-of-esdhc: add support for signal voltage switch")
-Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
-Link: https://lore.kernel.org/r/20220523144255.10310-1-linmq006@gmail.com
-Signed-off-by: Ulf Hansson <ulf.hansson@linaro.org>
+This update corrects DMA direction issues with SCSI commands removed from
+the controller's internal lookup table.
+
+Currently, SCSI READ BLOCK LIMITS (0x5) was removed from the controller
+lookup table and exposed a DMA direction flag issue.
+
+SCSI READ BLOCK LIMITS was recently removed from our controller lookup
+table so the controller uses the respective IU flag field to set the DMA
+data direction. Since the DMA direction is incorrect the FW never completes
+the request causing a hang.
+
+Some SCSI commands which use SCSI READ BLOCK LIMITS
+
+      * sg_map
+      * mt -f /dev/stX status
+
+After updating controller firmware, users may notice their tape units
+failing. This patch resolves the issue.
+
+Also, the AIO path DMA direction is correct.
+
+The DMA direction flag is a day-one bug with no reported BZ.
+
+Fixes: 6c223761eb54 ("smartpqi: initial commit of Microsemi smartpqi driver")
+Link: https://lore.kernel.org/r/165730605618.177165.9054223644512926624.stgit@brunhilda
+Reviewed-by: Scott Benesh <scott.benesh@microchip.com>
+Reviewed-by: Scott Teel <scott.teel@microchip.com>
+Reviewed-by: Mike McGowen <mike.mcgowen@microchip.com>
+Reviewed-by: Kevin Barnett <kevin.barnett@microchip.com>
+Signed-off-by: Mahesh Rajashekhara <Mahesh.Rajashekhara@microchip.com>
+Signed-off-by: Don Brace <don.brace@microchip.com>
+Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/mmc/host/sdhci-of-esdhc.c | 1 +
- 1 file changed, 1 insertion(+)
+ drivers/scsi/smartpqi/smartpqi_init.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/mmc/host/sdhci-of-esdhc.c b/drivers/mmc/host/sdhci-of-esdhc.c
-index 3f00a7fc79b5..6bb1f4ad0216 100644
---- a/drivers/mmc/host/sdhci-of-esdhc.c
-+++ b/drivers/mmc/host/sdhci-of-esdhc.c
-@@ -671,6 +671,7 @@ static int esdhc_signal_voltage_switch(struct mmc_host *mmc,
- 		scfg_node = of_find_matching_node(NULL, scfg_device_ids);
- 		if (scfg_node)
- 			scfg_base = of_iomap(scfg_node, 0);
-+		of_node_put(scfg_node);
- 		if (scfg_base) {
- 			sdhciovselcr = SDHCIOVSELCR_TGLEN |
- 				       SDHCIOVSELCR_VSELVAL;
+diff --git a/drivers/scsi/smartpqi/smartpqi_init.c b/drivers/scsi/smartpqi/smartpqi_init.c
+index 4055753b495a..5b1f15720947 100644
+--- a/drivers/scsi/smartpqi/smartpqi_init.c
++++ b/drivers/scsi/smartpqi/smartpqi_init.c
+@@ -4652,10 +4652,10 @@ static int pqi_raid_submit_scsi_cmd_with_io_request(
+ 	}
+ 
+ 	switch (scmd->sc_data_direction) {
+-	case DMA_TO_DEVICE:
++	case DMA_FROM_DEVICE:
+ 		request->data_direction = SOP_READ_FLAG;
+ 		break;
+-	case DMA_FROM_DEVICE:
++	case DMA_TO_DEVICE:
+ 		request->data_direction = SOP_WRITE_FLAG;
+ 		break;
+ 	case DMA_NONE:
 -- 
 2.35.1
 
