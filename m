@@ -2,46 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A7002C32772
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 09:43:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C6046C32772
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 09:43:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232043AbiHWJnQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 05:43:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52264 "EHLO
+        id S242176AbiHWJnU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 23 Aug 2022 05:43:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60436 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351922AbiHWJkl (ORCPT
+        with ESMTP id S1351950AbiHWJkn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 05:40:41 -0400
+        Tue, 23 Aug 2022 05:40:43 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EAF1479A48;
-        Tue, 23 Aug 2022 01:41:43 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D693140BED;
+        Tue, 23 Aug 2022 01:41:44 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id BEE60B81C66;
-        Tue, 23 Aug 2022 08:41:09 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 17C65C433D6;
-        Tue, 23 Aug 2022 08:41:07 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 9A649B81C4F;
+        Tue, 23 Aug 2022 08:41:12 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E4BA1C433D6;
+        Tue, 23 Aug 2022 08:41:10 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661244068;
-        bh=k6l0jTys9X4jNwGOb/WlS1JIPlY5G2K38bc4mbzN3tQ=;
+        s=korg; t=1661244071;
+        bh=BynSNA2pLc0++aOd/nVe1u0EbpDodCq+xxgBLeUp6rg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=C59lMywTMRk5BYqFRUy/SxZOBojurhVJeTj8pwlBUIHCpMNDP5+JXiBSn59pssYM/
-         RKhXPWej4wJNUyfTkMeswJQiojiOBpXZ1PGyXhgIcq3yJlMOEN3x2JRMITiglZl5Re
-         TTbedqXAv0PdEQ0qaC9AO2c9GVcMuQ7C0/3ZK9uY=
+        b=abJTtjr2J0bjxocPwyo8CGnuMdfemCBOLT+L7XDUPuwYxlfKxaYj01IgTWbvRqvDC
+         vU5L8iL2elr+wMC78Y3PIBhH/1sClIBXih653nzRR8rGnQYkZ98QJtH0LszSjWs6Pv
+         yuCX+e2MGphtRG49jtnuXC+Dik9kerdWiDX1EfC4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Vincent Mailhol <mailhol.vincent@wanadoo.fr>,
-        Marc Kleine-Budde <mkl@pengutronix.de>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.14 081/229] can: sja1000: do not report txerr and rxerr during bus-off
-Date:   Tue, 23 Aug 2022 10:24:02 +0200
-Message-Id: <20220823080056.613928207@linuxfoundation.org>
+        stable@vger.kernel.org, John Johansen <john.johansen@canonical.com>
+Subject: [PATCH 5.15 032/244] apparmor: fix setting unconfined mode on a loaded profile
+Date:   Tue, 23 Aug 2022 10:23:11 +0200
+Message-Id: <20220823080100.132500494@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220823080053.202747790@linuxfoundation.org>
-References: <20220823080053.202747790@linuxfoundation.org>
+In-Reply-To: <20220823080059.091088642@linuxfoundation.org>
+References: <20220823080059.091088642@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -50,49 +47,46 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Vincent Mailhol <mailhol.vincent@wanadoo.fr>
+From: John Johansen <john.johansen@canonical.com>
 
-[ Upstream commit 164d7cb2d5a30f1b3a5ab4fab1a27731fb1494a8 ]
+commit 3bbb7b2e9bbcd22e539e23034da753898fe3b4dc upstream.
 
-During bus off, the error count is greater than 255 and can not fit in
-a u8.
+When loading a profile that is set to unconfined mode, that label
+flag is not set when it should be. Ensure it is set so that when
+used in a label the unconfined check will be applied correctly.
 
-Fixes: 215db1856e83 ("can: sja1000: Consolidate and unify state change handling")
-Link: https://lore.kernel.org/all/20220719143550.3681-4-mailhol.vincent@wanadoo.fr
-Signed-off-by: Vincent Mailhol <mailhol.vincent@wanadoo.fr>
-Signed-off-by: Marc Kleine-Budde <mkl@pengutronix.de>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Fixes: 038165070aa5 ("apparmor: allow setting any profile into the unconfined state")
+Signed-off-by: John Johansen <john.johansen@canonical.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/net/can/sja1000/sja1000.c | 7 ++++---
- 1 file changed, 4 insertions(+), 3 deletions(-)
+ security/apparmor/policy_unpack.c |   12 +++++++-----
+ 1 file changed, 7 insertions(+), 5 deletions(-)
 
-diff --git a/drivers/net/can/sja1000/sja1000.c b/drivers/net/can/sja1000/sja1000.c
-index 9f107798f904..e7327ceabb76 100644
---- a/drivers/net/can/sja1000/sja1000.c
-+++ b/drivers/net/can/sja1000/sja1000.c
-@@ -405,9 +405,6 @@ static int sja1000_err(struct net_device *dev, uint8_t isrc, uint8_t status)
- 	txerr = priv->read_reg(priv, SJA1000_TXERR);
- 	rxerr = priv->read_reg(priv, SJA1000_RXERR);
- 
--	cf->data[6] = txerr;
--	cf->data[7] = rxerr;
--
- 	if (isrc & IRQ_DOI) {
- 		/* data overrun interrupt */
- 		netdev_dbg(dev, "data overrun interrupt\n");
-@@ -429,6 +426,10 @@ static int sja1000_err(struct net_device *dev, uint8_t isrc, uint8_t status)
- 		else
- 			state = CAN_STATE_ERROR_ACTIVE;
- 	}
-+	if (state != CAN_STATE_BUS_OFF) {
-+		cf->data[6] = txerr;
-+		cf->data[7] = rxerr;
+--- a/security/apparmor/policy_unpack.c
++++ b/security/apparmor/policy_unpack.c
+@@ -746,16 +746,18 @@ static struct aa_profile *unpack_profile
+ 		profile->label.flags |= FLAG_HAT;
+ 	if (!unpack_u32(e, &tmp, NULL))
+ 		goto fail;
+-	if (tmp == PACKED_MODE_COMPLAIN || (e->version & FORCE_COMPLAIN_FLAG))
++	if (tmp == PACKED_MODE_COMPLAIN || (e->version & FORCE_COMPLAIN_FLAG)) {
+ 		profile->mode = APPARMOR_COMPLAIN;
+-	else if (tmp == PACKED_MODE_ENFORCE)
++	} else if (tmp == PACKED_MODE_ENFORCE) {
+ 		profile->mode = APPARMOR_ENFORCE;
+-	else if (tmp == PACKED_MODE_KILL)
++	} else if (tmp == PACKED_MODE_KILL) {
+ 		profile->mode = APPARMOR_KILL;
+-	else if (tmp == PACKED_MODE_UNCONFINED)
++	} else if (tmp == PACKED_MODE_UNCONFINED) {
+ 		profile->mode = APPARMOR_UNCONFINED;
+-	else
++		profile->label.flags |= FLAG_UNCONFINED;
++	} else {
+ 		goto fail;
 +	}
- 	if (isrc & IRQ_BEI) {
- 		/* bus error interrupt */
- 		priv->can.can_stats.bus_error++;
--- 
-2.35.1
-
+ 	if (!unpack_u32(e, &tmp, NULL))
+ 		goto fail;
+ 	if (tmp)
 
 
