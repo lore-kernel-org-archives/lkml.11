@@ -2,100 +2,90 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 750E2C3F6B0
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 11:10:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5F04AC3F6B0
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 11:11:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357235AbiHWLKT (ORCPT
+        id S1357189AbiHWLKY (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 07:10:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53378 "EHLO
+        Tue, 23 Aug 2022 07:10:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57684 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357180AbiHWLJS (ORCPT
+        with ESMTP id S1356872AbiHWLJ3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 07:09:18 -0400
-Received: from mail-pf1-x432.google.com (mail-pf1-x432.google.com [IPv6:2607:f8b0:4864:20::432])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2CEC4870B1;
-        Tue, 23 Aug 2022 02:16:32 -0700 (PDT)
-Received: by mail-pf1-x432.google.com with SMTP id f17so6746093pfk.11;
-        Tue, 23 Aug 2022 02:16:32 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc;
-        bh=vO2cufFWHkBmjDzjn1mkSS/vk95uz/MHe9FsZcNCmWA=;
-        b=NvbIS02J+dPcYVJkoAeLyAQ6qVgLcL5CQeUCtNA+7O+798nCg71DZyLJD6JmEGhuIL
-         uCbKKlAqNmENEDN2dUEGiyfVhwDOlijgUln+tBM8DgVKPmWxdrzBXYab4xbIUWJR5YCg
-         sjmB4FrRTbJK83T4SH452vnNs1tuIbEv8HNimvYYcl+2udNMcVkX89EZFFKpLa1virGk
-         Ny9oE4hYYCr3LLfqqMZvel9StxH6qRnFFtckp5Z6TfVxYaZbpsqOJB4VLHDGP5wZktrH
-         V+U1b7giT7OhzGXZopV4AR6EbyMMUdVZzf6aJqxA2jksamPYiva7lRvozr9g53F/I5/f
-         mg4g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc;
-        bh=vO2cufFWHkBmjDzjn1mkSS/vk95uz/MHe9FsZcNCmWA=;
-        b=PxFHdQZK7yL0RyL6LQwbGUa8v6WSxtc7ALSrroq1E2LYBEMX6fag8PHoFwhs4ralZh
-         Yoj0wa+9YvHuixDYTCJ8/hNtiOczdPdr7wVvRDdH+EEIqos7i9eOKRYBsZsbezfsV88h
-         g5tnIiQFFRUsBt6REnPc/AHEvoAhgl7WfRsPpUozA2MSJANlK29TIqkDbGfz/WIxoMid
-         RsE9PTytFnRuaYpHd/eXYWX5j8j9zMVH9XZrJsCakbFbPODbZ1IUZeZaMHnVq3jTaf1B
-         9gb1ZjXly4BHSVdNGXlnp5ZnX1lIaF1euvErH8GX/2/83zGTDSN2FglJkB1fhAB2ierh
-         ieBQ==
-X-Gm-Message-State: ACgBeo39i/WMqEFj39VWeNOKALEC1XfhcQpThRnS0HYuwkoZ+luru4AF
-        /B1kqmyvzO+KTCup+u+Ft2OV+E56TusffgX0Q/hinNb9
-X-Google-Smtp-Source: AA6agR4Z9Ug76sHdgr5vqfFPsa4GngIEWJKchsnJ3mFR9gFPsOS5jOPPCSp1RUrvJZ2wvBWFUsKerbxbqrwRqK9UHCA=
-X-Received: by 2002:a65:68cd:0:b0:42a:9a57:157d with SMTP id
- k13-20020a6568cd000000b0042a9a57157dmr9134050pgt.426.1661246187885; Tue, 23
- Aug 2022 02:16:27 -0700 (PDT)
+        Tue, 23 Aug 2022 07:09:29 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DD3D9B5E7E;
+        Tue, 23 Aug 2022 02:16:33 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id C1DDFB81C65;
+        Tue, 23 Aug 2022 09:16:26 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E1920C433C1;
+        Tue, 23 Aug 2022 09:16:24 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1661246185;
+        bh=bIhvwJ0cO3l3RJdTOuGmzssh9wbYGfWA10vvMIuUm+o=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=GUw/OGwniF7rW/xCvpAS92IxTABio5vFYhPOPOb9OFxQqmWlZCkCl78z5JRxpk+/u
+         Qnw2Lj10ub9Lov0sD1Td3trmxpp+zdiaUa8iq9z0d2v0Dp+6G7Vq570nXUmKeXgBdK
+         qY15hxVcbN/+7mONeJOir6NuCZ4e+wJskjZ0rnb4=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Zheyu Ma <zheyuma97@gmail.com>,
+        Takashi Iwai <tiwai@suse.de>
+Subject: [PATCH 5.4 004/389] ALSA: bcd2000: Fix a UAF bug on the error path of probing
+Date:   Tue, 23 Aug 2022 10:21:22 +0200
+Message-Id: <20220823080115.812665300@linuxfoundation.org>
+X-Mailer: git-send-email 2.37.2
+In-Reply-To: <20220823080115.331990024@linuxfoundation.org>
+References: <20220823080115.331990024@linuxfoundation.org>
+User-Agent: quilt/0.67
 MIME-Version: 1.0
-References: <20220822232046.1230-1-afd@ti.com>
-In-Reply-To: <20220822232046.1230-1-afd@ti.com>
-From:   Daniel Tang <dt.tangr@gmail.com>
-Date:   Tue, 23 Aug 2022 19:16:17 +1000
-Message-ID: <CAPnH9d=HhPRVNkveEPBe01g-JK0K5bR7suiTZzmCwm80Vpo0sw@mail.gmail.com>
-Subject: Re: [PATCH 0/2] TI-Nspire cleanups
-To:     Andrew Davis <afd@ti.com>
-Cc:     Arnd Bergmann <arnd@arndb.de>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Geert Uytterhoeven <geert+renesas@glider.be>,
-        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-kernel@vger.kernel.org, fabian@ritter-vogt.de
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-I've CC'd in Fabian, who has previously been able to assist testing
-kernel patches for this platform.
+From: Zheyu Ma <zheyuma97@gmail.com>
+
+commit ffb2759df7efbc00187bfd9d1072434a13a54139 upstream.
+
+When the driver fails in snd_card_register() at probe time, it will free
+the 'bcd2k->midi_out_urb' before killing it, which may cause a UAF bug.
+
+The following log can reveal it:
+
+[   50.727020] BUG: KASAN: use-after-free in bcd2000_input_complete+0x1f1/0x2e0 [snd_bcd2000]
+[   50.727623] Read of size 8 at addr ffff88810fab0e88 by task swapper/4/0
+[   50.729530] Call Trace:
+[   50.732899]  bcd2000_input_complete+0x1f1/0x2e0 [snd_bcd2000]
+
+Fix this by adding usb_kill_urb() before usb_free_urb().
+
+Fixes: b47a22290d58 ("ALSA: MIDI driver for Behringer BCD2000 USB device")
+Signed-off-by: Zheyu Ma <zheyuma97@gmail.com>
+Cc: <stable@vger.kernel.org>
+Link: https://lore.kernel.org/r/20220715010515.2087925-1-zheyuma97@gmail.com
+Signed-off-by: Takashi Iwai <tiwai@suse.de>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+---
+ sound/usb/bcd2000/bcd2000.c |    3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
+
+--- a/sound/usb/bcd2000/bcd2000.c
++++ b/sound/usb/bcd2000/bcd2000.c
+@@ -348,7 +348,8 @@ static int bcd2000_init_midi(struct bcd2
+ static void bcd2000_free_usb_related_resources(struct bcd2000 *bcd2k,
+ 						struct usb_interface *interface)
+ {
+-	/* usb_kill_urb not necessary, urb is aborted automatically */
++	usb_kill_urb(bcd2k->midi_out_urb);
++	usb_kill_urb(bcd2k->midi_in_urb);
+ 
+ 	usb_free_urb(bcd2k->midi_out_urb);
+ 	usb_free_urb(bcd2k->midi_in_urb);
 
 
-On Tue, 23 Aug 2022 at 09:20, Andrew Davis <afd@ti.com> wrote:
->
-> Hello all,
->
-> I don't have the hardware to test this (yes I know who my current
-> employer is), but it does look right and this lets us remove the rest
-> of mach-nspire/ without losing any functionality.
-> Does anyone have one of these to test with?
->
-> The second patch removes a couple defines that do not seem to have ever
-> been used, but if one want to implement it, then it should be a simple
-> generic syscon DT node.
->
-> Thanks,
-> Andrew
->
-> Andrew Davis (2):
->   ARM: nspire: Use syscon-reboot to handle restart
->   ARM: nspire: Remove unused header file mmio.h
->
->  arch/arm/boot/dts/nspire.dtsi |  7 ++++
->  arch/arm/mach-nspire/Kconfig  |  2 ++
->  arch/arm/mach-nspire/mmio.h   | 16 ----------
->  arch/arm/mach-nspire/nspire.c | 60 +++++++++++------------------------
->  4 files changed, 27 insertions(+), 58 deletions(-)
->  delete mode 100644 arch/arm/mach-nspire/mmio.h
->  rewrite arch/arm/mach-nspire/nspire.c (61%)
->
-> --
-> 2.36.1
->
