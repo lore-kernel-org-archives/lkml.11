@@ -2,93 +2,113 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0768FC3F6B0
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 655B4C38145
 	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 11:17:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241613AbiHWLRL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 07:17:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60098 "EHLO
+        id S1351092AbiHWLRP (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 23 Aug 2022 07:17:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37632 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357193AbiHWLOu (ORCPT
+        with ESMTP id S1357313AbiHWLOy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 07:14:50 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8BF30B9585;
-        Tue, 23 Aug 2022 02:18:57 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 04E0360959;
-        Tue, 23 Aug 2022 09:18:15 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0D996C433C1;
-        Tue, 23 Aug 2022 09:18:13 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661246294;
-        bh=gLRa4JDFNT1WAc43y93C/nn0NTx58M+fI/5frMkkNeQ=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=pRCONYYKTzB887x4hEbfi4QL+ZH3zPKOUkINlP8ORwNyphw8oY/bnp7GtsfmZVzjy
-         biiVm7h3Ir42npbeoWe58kfN/TlLqMJiz+3X/6g/HrRf6/9NHCEEPKdDm4nWMTniox
-         IeO0ccsu5HFVcSnCFSTa33+47HAjBiBnA3iPTm+Q=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Leo Li <sunpeng.li@amd.com>,
-        Alex Deucher <alexander.deucher@amd.com>,
-        =?UTF-8?q?Christian=20K=C3=B6nig?= <christian.koenig@amd.com>
-Subject: [PATCH 5.4 033/389] drm/amdgpu: Check BOs requested pinning domains against its preferred_domains
-Date:   Tue, 23 Aug 2022 10:21:51 +0200
-Message-Id: <20220823080117.059782553@linuxfoundation.org>
-X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220823080115.331990024@linuxfoundation.org>
-References: <20220823080115.331990024@linuxfoundation.org>
-User-Agent: quilt/0.67
+        Tue, 23 Aug 2022 07:14:54 -0400
+Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 298AEB95BD;
+        Tue, 23 Aug 2022 02:18:59 -0700 (PDT)
+Received: from canpemm500010.china.huawei.com (unknown [172.30.72.54])
+        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4MBk996J5lznTcS;
+        Tue, 23 Aug 2022 17:15:41 +0800 (CST)
+Received: from [10.174.178.185] (10.174.178.185) by
+ canpemm500010.china.huawei.com (7.192.105.118) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Tue, 23 Aug 2022 17:17:59 +0800
+Subject: Re: [PATCH RFC] jbd2: detect old record when do journal scan
+To:     Jan Kara <jack@suse.cz>
+References: <20220810013442.3474533-1-yebin10@huawei.com>
+ <20220819095445.yq4d2qhrhb73p3zk@quack3>
+CC:     <tytso@mit.edu>, <adilger.kernel@dilger.ca>,
+        <linux-ext4@vger.kernel.org>, <linux-kernel@vger.kernel.org>
+From:   yebin <yebin10@huawei.com>
+Message-ID: <63049B47.2000408@huawei.com>
+Date:   Tue, 23 Aug 2022 17:17:59 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:38.0) Gecko/20100101
+ Thunderbird/38.1.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+In-Reply-To: <20220819095445.yq4d2qhrhb73p3zk@quack3>
+Content-Type: text/plain; charset="windows-1252"; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.174.178.185]
+X-ClientProxiedBy: dggems705-chm.china.huawei.com (10.3.19.182) To
+ canpemm500010.china.huawei.com (7.192.105.118)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Leo Li <sunpeng.li@amd.com>
 
-commit f5ba14043621f4afdf3ad5f92ee2d8dbebbe4340 upstream.
 
-When pinning a buffer, we should check to see if there are any
-additional restrictions imposed by bo->preferred_domains. This will
-prevent the BO from being moved to an invalid domain when pinning.
-
-For example, this can happen if the user requests to create a BO in GTT
-domain for display scanout. amdgpu_dm will allow pinning to either VRAM
-or GTT domains, since DCN can scanout from either or. However, in
-amdgpu_bo_pin_restricted(), pinning to VRAM is preferred if there is
-adequate carveout. This can lead to pinning to VRAM despite the user
-requesting GTT placement for the BO.
-
-v2: Allow the kernel to override the domain, which can happen when
-    exporting a BO to a V4L camera (for example).
-
-Signed-off-by: Leo Li <sunpeng.li@amd.com>
-Reviewed-by: Alex Deucher <alexander.deucher@amd.com>
-Reviewed-by: Christian König <christian.koenig@amd.com>
-Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
-Cc: stable@vger.kernel.org
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
----
- drivers/gpu/drm/amd/amdgpu/amdgpu_object.c |    4 ++++
- 1 file changed, 4 insertions(+)
-
---- a/drivers/gpu/drm/amd/amdgpu/amdgpu_object.c
-+++ b/drivers/gpu/drm/amd/amdgpu/amdgpu_object.c
-@@ -892,6 +892,10 @@ int amdgpu_bo_pin_restricted(struct amdg
- 	if (WARN_ON_ONCE(min_offset > max_offset))
- 		return -EINVAL;
- 
-+	/* Check domain to be pinned to against preferred domains */
-+	if (bo->preferred_domains & domain)
-+		domain = bo->preferred_domains & domain;
-+
- 	/* A shared bo cannot be migrated to VRAM */
- 	if (bo->prime_shared_count) {
- 		if (domain & AMDGPU_GEM_DOMAIN_GTT)
-
+On 2022/8/19 17:54, Jan Kara wrote:
+> On Wed 10-08-22 09:34:42, Ye Bin wrote:
+>> As https://github.com/tytso/e2fsprogs/issues/120 describe tune2fs do not update
+>> j_tail_sequence when do journal recovery. This maybe recover old journal record,
+>> then will lead to file system corruption.
+>> To avoid file system corruption in this case, if detect current transaction's
+>> commit time earlier than previous transaction's commit time when do journal
+>> scan, just return error.
+>>
+>> Signed-off-by: Ye Bin <yebin10@huawei.com>
+> Thanks for the patch! Let me see if I understand your concern right. You
+> are concerned about the following scenario:
+>
+> 1) Kernel uses the filesystem, there's a crash.
+> 2) E2fsprogs replays the journal but fails to update sb->s_sequence in the
+> journal superblock.
+> 3) Kernel mounts the fs again - however note that even if kernel skips
+> recovery, it does scan the journal jbd2_journal_skip_recovery() and
+> journal->j_transaction_sequence is set based on the last transaction found
+> in the journal.
+>
+> So I don't think there is really possibility we will quickly reuse some
+> transaction IDs and thus possibility of corruption on replay? Am I missing
+> something?
+>
+> 								Honza
+The file system corruption I encountered was indeed because e2fsprogs 
+did not update
+journal - > J_ transaction_ Sequence leads to replay the old transaction.
+So I wonder whether the kernel should detect this kind of exception, at 
+least when there
+is a file system corruption, there are clues to trace.
+>
+>> ---
+>>   fs/jbd2/recovery.c | 11 ++++++++++-
+>>   1 file changed, 10 insertions(+), 1 deletion(-)
+>>
+>> diff --git a/fs/jbd2/recovery.c b/fs/jbd2/recovery.c
+>> index f548479615c6..f3def21a96a5 100644
+>> --- a/fs/jbd2/recovery.c
+>> +++ b/fs/jbd2/recovery.c
+>> @@ -812,8 +812,17 @@ static int do_one_pass(journal_t *journal,
+>>   					break;
+>>   				}
+>>   			}
+>> -			if (pass == PASS_SCAN)
+>> +			if (pass == PASS_SCAN) {
+>> +				if (commit_time < last_trans_commit_time) {
+>> +					pr_err("JBD2: old journal record found "
+>> +					       "in transaction %u\n",
+>> +					       next_commit_ID);
+>> +					err = -EFSBADCRC;
+>> +					brelse(bh);
+>> +					goto failed;
+>> +				}
+>>   				last_trans_commit_time = commit_time;
+>> +			}
+>>   			brelse(bh);
+>>   			next_commit_ID++;
+>>   			continue;
+>> -- 
+>> 2.31.1
+>>
 
