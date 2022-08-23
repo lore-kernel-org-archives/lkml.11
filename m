@@ -2,71 +2,80 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8FB98C32772
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 14:34:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E5DEDC32772
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 14:34:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242385AbiHWOeG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 10:34:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38666 "EHLO
+        id S241833AbiHWOeK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 23 Aug 2022 10:34:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37802 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239780AbiHWOdn (ORCPT
+        with ESMTP id S241359AbiHWOdx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 10:33:43 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5F7D8923CF
-        for <linux-kernel@vger.kernel.org>; Tue, 23 Aug 2022 04:49:33 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 55D7DCE1BAC
-        for <linux-kernel@vger.kernel.org>; Tue, 23 Aug 2022 11:34:34 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0F861C433D6;
-        Tue, 23 Aug 2022 11:34:30 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1661254472;
-        bh=IfD1lH1wb1IrL+OUiHKFIFvNOy4QYWDWxvrxYjx7Lhw=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=VJcXfpBVItOlFUXwRJg+CN0+F01Dx+uRRpQvM4DwDTM+8wGXfXEYuck0xbgYtSWeA
-         IEzsIWnrN4Zax2MaNPTOBKVkjoxLkJiENbR+AePsDcEhKDFZ6L2+zJAHcOSmp9p2/W
-         xQV68y5byxuDWNCGtc8kbtl4lquSQEk8Sn/eqzq1ciVj0ZycBgb1ksfR/lc82K4RpP
-         N1d/DCD9OHxGmtn8viObRJpUihNTvSnJ/lqWdF5CDNqflSbH9f1ptrxVgLQ7Cq1J13
-         4poaqJ4iaLJbixVH8P+HptzBdRyCYmDxrXwfjJfHgd25G6nB7ya4356X7nvJm1cHQ3
-         iHX8FrB1biLSg==
-From:   Will Deacon <will@kernel.org>
-To:     Kuan-Ying Lee <Kuan-Ying.Lee@mediatek.com>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Matthias Brugger <matthias.bgg@gmail.com>
-Cc:     kernel-team@android.com, Will Deacon <will@kernel.org>,
+        Tue, 23 Aug 2022 10:33:53 -0400
+Received: from gloria.sntech.de (gloria.sntech.de [185.11.138.130])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0092CA2D9C
+        for <linux-kernel@vger.kernel.org>; Tue, 23 Aug 2022 04:49:44 -0700 (PDT)
+Received: from ip5b412258.dynamic.kabel-deutschland.de ([91.65.34.88] helo=diego.localnet)
+        by gloria.sntech.de with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.94.2)
+        (envelope-from <heiko@sntech.de>)
+        id 1oQS2z-0004K1-CB; Tue, 23 Aug 2022 13:26:17 +0200
+From:   Heiko =?ISO-8859-1?Q?St=FCbner?= <heiko@sntech.de>
+To:     Kishon Vijay Abraham I <kishon@ti.com>,
+        Vinod Koul <vkoul@kernel.org>,
+        Samuel Holland <samuel@sholland.org>,
+        Peter Geis <pgwipeout@gmail.com>,
+        Peter Geis <pgwipeout@gmail.com>
+Cc:     Markus Reichl <m.reichl@fivetechno.de>,
+        Michael Riesch <michael.riesch@wolfvision.net>,
+        linux-phy@lists.infradead.org,
         linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org,
-        chinwen.chang@mediatek.com
-Subject: Re: [PATCH] arm64: Fix comment typo
-Date:   Tue, 23 Aug 2022 12:34:19 +0100
-Message-Id: <166124841460.3123906.3945586739365029922.b4-ty@kernel.org>
-X-Mailer: git-send-email 2.20.1
-In-Reply-To: <20220721030531.21234-1-Kuan-Ying.Lee@mediatek.com>
-References: <20220721030531.21234-1-Kuan-Ying.Lee@mediatek.com>
+        linux-rockchip@lists.infradead.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] phy: rockchip-inno-usb2: Return zero after otg sync
+Date:   Tue, 23 Aug 2022 13:26:16 +0200
+Message-ID: <6544199.MhkbZ0Pkbq@diego>
+In-Reply-To: <20220822103219.3985075-1-pgwipeout@gmail.com>
+References: <20220822103219.3985075-1-pgwipeout@gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7Bit
+Content-Type: text/plain; charset="us-ascii"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, 21 Jul 2022 11:05:31 +0800, Kuan-Ying Lee wrote:
-> Replace wrong 'FIQ EL1h' comment with 'FIQ EL1t'.
+Am Montag, 22. August 2022, 12:32:18 CEST schrieb Peter Geis:
+> The otg sync state patch reuses the ret variable, but fails to set it to
+> zero after use. This leads to a situation when the otg port is in
+> peripheral mode where the otg phy aborts halfway through setup. Fix this
+> by setting ret to zero after use.
 > 
+> Fixes: 8dc60f8da22f ("phy: rockchip-inno-usb2: Sync initial otg state")
 > 
+> Reported-by: Markus Reichl <m.reichl@fivetechno.de>
+> Reported-by: Michael Riesch <michael.riesch@wolfvision.net>
+> Signed-off-by: Peter Geis <pgwipeout@gmail.com>
+> Tested-by: Michael Riesch <michael.riesch@wolfvision.net>
+> Tested-by: Markus Reichl <m.reichl@fivetechno.de>
+> ---
+>  drivers/phy/rockchip/phy-rockchip-inno-usb2.c | 1 +
+>  1 file changed, 1 insertion(+)
+> 
+> diff --git a/drivers/phy/rockchip/phy-rockchip-inno-usb2.c b/drivers/phy/rockchip/phy-rockchip-inno-usb2.c
+> index 0b1e9337ee8e..5fc7c374a6b4 100644
+> --- a/drivers/phy/rockchip/phy-rockchip-inno-usb2.c
+> +++ b/drivers/phy/rockchip/phy-rockchip-inno-usb2.c
+> @@ -1169,6 +1169,7 @@ static int rockchip_usb2phy_otg_port_init(struct rockchip_usb2phy *rphy,
+>  			/* do initial sync of usb state */
+>  			ret = property_enabled(rphy->grf, &rport->port_cfg->utmi_id);
+>  			extcon_set_state_sync(rphy->edev, EXTCON_USB_HOST, !ret);
+> +			ret = 0;
+>  		}
+>  	}
 
-Applied to arm64 (for-next/fixes), thanks!
+I also ran into that issue just now :-) .
+So am looking forward to v2.
 
-[1/1] arm64: Fix comment typo
-      https://git.kernel.org/arm64/c/729a916599ea
+Thanks
+Heiko
 
-Cheers,
--- 
-Will
 
-https://fixes.arm64.dev
-https://next.arm64.dev
-https://will.arm64.dev
