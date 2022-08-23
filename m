@@ -2,46 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 74718C32774
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 09:52:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8CFE2C32792
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 09:53:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242834AbiHWJw4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 05:52:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55612 "EHLO
+        id S241785AbiHWJxB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 23 Aug 2022 05:53:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56376 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351896AbiHWJu7 (ORCPT
+        with ESMTP id S1351913AbiHWJvA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 05:50:59 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1B1059E2C0;
-        Tue, 23 Aug 2022 01:45:38 -0700 (PDT)
+        Tue, 23 Aug 2022 05:51:00 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5C4149E2D7;
+        Tue, 23 Aug 2022 01:45:41 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id B5E0461377;
-        Tue, 23 Aug 2022 08:44:19 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9AFB7C433C1;
-        Tue, 23 Aug 2022 08:44:18 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id A5E03B81C4D;
+        Tue, 23 Aug 2022 08:44:50 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id EE16CC433C1;
+        Tue, 23 Aug 2022 08:44:48 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661244259;
-        bh=SST7BgK6nRiYlNdnB7lLK158LHGtjk/AuY3lc7GNw78=;
+        s=korg; t=1661244289;
+        bh=DR1snfRLybVmdH1tOb3/8khLmueGUFR93/TihdxZuYM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Nl5Fa/4XFJvcjwumtloy/T0pI8AeuHn35MUyuxkuKumPuFDBqHKgwVvDibS95OVFU
-         abTFI+h5ABdF8AKKBdylf4us/DnlWCmek1Kj8JdT3Cj9OWmE+xnUeqKt0jPXZSPpDO
-         L+twpuvxAfsyoASJMCPVPziB8qvCUHi1oJ0nAt8g=
+        b=LgN/ROKslviYay73BT5PFe37Z9xKdY2gAOnXXsG0u/s01EwSs8zZao1wFMn/HcEAN
+         5Mg/opfFZC7GP7x5/PP36cYr6wT2bCrp6CPi8VHfniifTFx7/PjMNKZpqnSFWAY888
+         P6bFUI+sO2wmOP7MOxJTasQ7Ethb7l4TKrSh9igI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Liang He <windhl@126.com>,
-        Robert Richter <rric@kernel.org>,
-        Ulf Hansson <ulf.hansson@linaro.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.14 110/229] mmc: cavium-octeon: Add of_node_put() when breaking out of loop
-Date:   Tue, 23 Aug 2022 10:24:31 +0200
-Message-Id: <20220823080057.604900868@linuxfoundation.org>
+        stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
+        Dmitry Torokhov <dmitry.torokhov@gmail.com>
+Subject: [PATCH 5.15 068/244] Input: exc3000 - fix return value check of wait_for_completion_timeout
+Date:   Tue, 23 Aug 2022 10:23:47 +0200
+Message-Id: <20220823080101.347387951@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220823080053.202747790@linuxfoundation.org>
-References: <20220823080053.202747790@linuxfoundation.org>
+In-Reply-To: <20220823080059.091088642@linuxfoundation.org>
+References: <20220823080059.091088642@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -50,38 +48,46 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Liang He <windhl@126.com>
+From: Miaoqian Lin <linmq006@gmail.com>
 
-[ Upstream commit 19bbb49acf8d7a03cb83e05624363741a4c3ec6f ]
+commit 6bb7144c3fa16a5efb54a8e2aff1817b4168018e upstream.
 
-In octeon_mmc_probe(), we should call of_node_put() when breaking
-out of for_each_child_of_node() which has increased and decreased
-the refcount during each iteration.
+wait_for_completion_timeout() returns unsigned long not int.
+It returns 0 if timed out, and positive if completed.
+The check for <= 0 is ambiguous and should be == 0 here
+indicating timeout which is the only error case.
 
-Fixes: 01d95843335c ("mmc: cavium: Add MMC support for Octeon SOCs.")
-Signed-off-by: Liang He <windhl@126.com>
-Acked-by: Robert Richter <rric@kernel.org>
-Link: https://lore.kernel.org/r/20220719095216.1241601-1-windhl@126.com
-Signed-off-by: Ulf Hansson <ulf.hansson@linaro.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Fixes: 102feb1ddfd0 ("Input: exc3000 - factor out vendor data request")
+Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
+Link: https://lore.kernel.org/r/20220411105828.22140-1-linmq006@gmail.com
+Signed-off-by: Dmitry Torokhov <dmitry.torokhov@gmail.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/mmc/host/cavium-octeon.c | 1 +
- 1 file changed, 1 insertion(+)
+ drivers/input/touchscreen/exc3000.c |    7 ++++---
+ 1 file changed, 4 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/mmc/host/cavium-octeon.c b/drivers/mmc/host/cavium-octeon.c
-index 22aded1065ae..2245452a44c8 100644
---- a/drivers/mmc/host/cavium-octeon.c
-+++ b/drivers/mmc/host/cavium-octeon.c
-@@ -288,6 +288,7 @@ static int octeon_mmc_probe(struct platform_device *pdev)
- 		if (ret) {
- 			dev_err(&pdev->dev, "Error populating slots\n");
- 			octeon_mmc_set_shared_power(host, 0);
-+			of_node_put(cn);
- 			goto error;
+--- a/drivers/input/touchscreen/exc3000.c
++++ b/drivers/input/touchscreen/exc3000.c
+@@ -220,6 +220,7 @@ static int exc3000_vendor_data_request(s
+ {
+ 	u8 buf[EXC3000_LEN_VENDOR_REQUEST] = { 0x67, 0x00, 0x42, 0x00, 0x03 };
+ 	int ret;
++	unsigned long time_left;
+ 
+ 	mutex_lock(&data->query_lock);
+ 
+@@ -233,9 +234,9 @@ static int exc3000_vendor_data_request(s
+ 		goto out_unlock;
+ 
+ 	if (response) {
+-		ret = wait_for_completion_timeout(&data->wait_event,
+-						  timeout * HZ);
+-		if (ret <= 0) {
++		time_left = wait_for_completion_timeout(&data->wait_event,
++							timeout * HZ);
++		if (time_left == 0) {
+ 			ret = -ETIMEDOUT;
+ 			goto out_unlock;
  		}
- 		i++;
--- 
-2.35.1
-
 
 
