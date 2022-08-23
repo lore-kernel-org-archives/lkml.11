@@ -2,141 +2,73 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CF37CC3F6B0
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 18:00:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 17DF3C32772
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 18:02:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233018AbiHWSAJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 14:00:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46286 "EHLO
+        id S230478AbiHWSCu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 23 Aug 2022 14:02:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55102 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232918AbiHWR7t (ORCPT
+        with ESMTP id S229541AbiHWSBC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 13:59:49 -0400
-Received: from mail-pf1-x435.google.com (mail-pf1-x435.google.com [IPv6:2607:f8b0:4864:20::435])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0EAE6D4F77
-        for <linux-kernel@vger.kernel.org>; Tue, 23 Aug 2022 09:05:32 -0700 (PDT)
-Received: by mail-pf1-x435.google.com with SMTP id 67so5698702pfv.2
-        for <linux-kernel@vger.kernel.org>; Tue, 23 Aug 2022 09:05:32 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc;
-        bh=aVBt+IuocN3gZGMsPNsv72g8OF66w1EEamrVZjnB+J4=;
-        b=aHRlHO4kNIRNDNrpKgB2QM9cSMZjQBb6u4l59Y4E0tZW/BrvBnqckZTcn9cz3SUw3D
-         igHUCLBokcR+QGB8XUc1cJbRn7hVuyKGyfeg1tfWEOZHpP64tT9cUzSSzx1Y0vgX+Uyv
-         RPdN051ayBxF8NbSnhZI7UkDJIxJC2b9PXw94OGmVsv1/XB2K1qoCbLTnhTe5HqVT1w+
-         uDjWiexbtDjcheCp9qg/+R4RDyAtHxBooBSO8W1phCNDG09PvGpKx4gmxB38OKo5Au+a
-         wQuvSmBbg3eLIxGH8V0BVxy3Pbhs0aKjR4E9VsFcpOdyvMRpUtUfAdi6lWLpFgc21aKV
-         eFRg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc;
-        bh=aVBt+IuocN3gZGMsPNsv72g8OF66w1EEamrVZjnB+J4=;
-        b=C5dH7OHymtLo4jy64Vp4MpKGc7M+qeqBoYk5xXxU2FAGg34u33qkI7xv+TN89d5Kk1
-         xTCnIj/Or8rNZ85TY8Y2b2RsrTZSFrb18e5ksWkDhhNiHG1FF3R+4rkpio5YhEOXv7XQ
-         i+gN2tSBiggEfpcP49NpizVfM41qbF0y+Niq+zpan2rLuIBru1A+bDvDhVWybWNSnMnq
-         I5geYqBDfoKaEO7GFGJ6INKFp0aHEjFTjHuInBVJVUghil/VDiNvpdXb4qIjF+/A93pH
-         J5IDcZdcbNfUw2QanfUDpqd5IJc9BKVZQ/IGOLyxPvWOKTO9/HSsikHuzFAZ0XBluENG
-         nrAg==
-X-Gm-Message-State: ACgBeo1pYuiRrFU08hphtRXcZ7+7GIZzzN6UGfCLZGpq6kxrscqjgsYg
-        nwy8247Qnp3OKYNv3h8ckszgYw==
-X-Google-Smtp-Source: AA6agR7U2euXK2YAHsShhKay0KkYkkaAjkpwjugKPMjrIdRBiwJTOXGIGRCd9tb8zWpXTJzh2djP8w==
-X-Received: by 2002:a63:1c11:0:b0:41d:89d5:8ef0 with SMTP id c17-20020a631c11000000b0041d89d58ef0mr21289304pgc.403.1661270731660;
-        Tue, 23 Aug 2022 09:05:31 -0700 (PDT)
-Received: from google.com (7.104.168.34.bc.googleusercontent.com. [34.168.104.7])
-        by smtp.gmail.com with ESMTPSA id z27-20020aa7959b000000b00536ede9e344sm2384650pfj.14.2022.08.23.09.05.30
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 23 Aug 2022 09:05:31 -0700 (PDT)
-Date:   Tue, 23 Aug 2022 16:05:27 +0000
-From:   Sean Christopherson <seanjc@google.com>
-To:     David Hildenbrand <david@redhat.com>
-Cc:     Hugh Dickins <hughd@google.com>,
-        "Kirill A . Shutemov" <kirill.shutemov@linux.intel.com>,
-        Chao Peng <chao.p.peng@linux.intel.com>, kvm@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-mm@kvack.org,
-        linux-fsdevel@vger.kernel.org, linux-api@vger.kernel.org,
-        linux-doc@vger.kernel.org, qemu-devel@nongnu.org,
-        linux-kselftest@vger.kernel.org,
-        Paolo Bonzini <pbonzini@redhat.com>,
+        Tue, 23 Aug 2022 14:01:02 -0400
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 910E0DC5D6;
+        Tue, 23 Aug 2022 09:07:07 -0700 (PDT)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id E7C05113E;
+        Tue, 23 Aug 2022 09:07:10 -0700 (PDT)
+Received: from e121896.arm.com (unknown [10.57.14.228])
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPA id 0D21C3F718;
+        Tue, 23 Aug 2022 09:07:04 -0700 (PDT)
+From:   James Clark <james.clark@arm.com>
+To:     suzuki.poulose@arm.com, coresight@lists.linaro.org,
+        mathieu.poirier@linaro.org
+Cc:     mike.leach@linaro.org, leo.yan@linaro.org,
+        linux-kernel@vger.kernel.org, german.gomez@arm.com,
+        James Clark <james.clark@arm.com>,
         Jonathan Corbet <corbet@lwn.net>,
-        Vitaly Kuznetsov <vkuznets@redhat.com>,
-        Wanpeng Li <wanpengli@tencent.com>,
-        Jim Mattson <jmattson@google.com>,
-        Joerg Roedel <joro@8bytes.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
-        x86@kernel.org, "H . Peter Anvin" <hpa@zytor.com>,
-        Jeff Layton <jlayton@kernel.org>,
-        "J . Bruce Fields" <bfields@fieldses.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Shuah Khan <shuah@kernel.org>, Mike Rapoport <rppt@kernel.org>,
-        Steven Price <steven.price@arm.com>,
-        "Maciej S . Szmigiero" <mail@maciej.szmigiero.name>,
-        Vlastimil Babka <vbabka@suse.cz>,
-        Vishal Annapurve <vannapurve@google.com>,
-        Yu Zhang <yu.c.zhang@linux.intel.com>, luto@kernel.org,
-        jun.nakajima@intel.com, dave.hansen@intel.com, ak@linux.intel.com,
-        aarcange@redhat.com, ddutile@redhat.com, dhildenb@redhat.com,
-        Quentin Perret <qperret@google.com>,
-        Michael Roth <michael.roth@amd.com>, mhocko@suse.com,
-        Muchun Song <songmuchun@bytedance.com>,
-        "Gupta, Pankaj" <pankaj.gupta@amd.com>
-Subject: Re: [PATCH v7 00/14] KVM: mm: fd-based approach for supporting KVM
- guest private memory
-Message-ID: <YwT6x2g9jcMH60LI@google.com>
-References: <20220706082016.2603916-1-chao.p.peng@linux.intel.com>
- <ff5c5b97-acdf-9745-ebe5-c6609dd6322e@google.com>
- <20220818132421.6xmjqduempmxnnu2@box>
- <Yv7XTON3MwuC1Q3U@google.com>
- <226ab26d-9aa8-dce2-c7f0-9e3f5b65b63@google.com>
- <b2743a3a-a1b4-2d2e-98be-87b58ad387cf@redhat.com>
+        Catalin Marinas <catalin.marinas@arm.com>,
+        Will Deacon <will@kernel.org>,
+        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
+        linux-arm-kernel@lists.infradead.org, linux-doc@vger.kernel.org
+Subject: [PATCH v3 0/2] coresight: etm4x: Expose default timestamp source in sysfs
+Date:   Tue, 23 Aug 2022 17:06:48 +0100
+Message-Id: <20220823160650.455823-1-james.clark@arm.com>
+X-Mailer: git-send-email 2.28.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <b2743a3a-a1b4-2d2e-98be-87b58ad387cf@redhat.com>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Aug 23, 2022, David Hildenbrand wrote:
-> On 19.08.22 05:38, Hugh Dickins wrote:
-> > On Fri, 19 Aug 2022, Sean Christopherson wrote:
-> >> On Thu, Aug 18, 2022, Kirill A . Shutemov wrote:
-> >>> On Wed, Aug 17, 2022 at 10:40:12PM -0700, Hugh Dickins wrote:
-> >>>> On Wed, 6 Jul 2022, Chao Peng wrote:
-> >>>> But since then, TDX in particular has forced an effort into preventing
-> >>>> (by flags, seals, notifiers) almost everything that makes it shmem/tmpfs.
-> >>>>
-> >>>> Are any of the shmem.c mods useful to existing users of shmem.c? No.
-> >>>> Is MFD_INACCESSIBLE useful or comprehensible to memfd_create() users? No.
-> >>
-> >> But QEMU and other VMMs are users of shmem and memfd.  The new features certainly
-> >> aren't useful for _all_ existing users, but I don't think it's fair to say that
-> >> they're not useful for _any_ existing users.
-> > 
-> > Okay, I stand corrected: there exist some users of memfd_create()
-> > who will also have use for "INACCESSIBLE" memory.
-> 
-> As raised in reply to the relevant patch, I'm not sure if we really have
-> to/want to expose MFD_INACCESSIBLE to user space. I feel like this is a
-> requirement of specific memfd_notifer (memfile_notifier) implementations
-> -- such as TDX that will convert the memory and MCE-kill the machine on
-> ordinary write access. We might be able to set/enforce this when
-> registering a notifier internally instead, and fail notifier
-> registration if a condition isn't met (e.g., existing mmap).
->
-> So I'd be curious, which other users of shmem/memfd would benefit from
-> (MMU)-"INACCESSIBLE" memory obtained via memfd_create()?
+I've taken over this one from German because he's moved to a different
+team. I gave it a quick check and bumped the version number in the docs
+for the next release, but the month is an estimate.
 
-I agree that there's no need to expose the inaccessible behavior via uAPI.  Making
-it a kernel-internal thing that's negotiated/resolved when KVM binds to the fd
-would align INACCESSIBLE with the UNMOVABLE and UNRECLAIMABLE flags (and any other
-flags that get added in the future).
+Thanks
 
-AFAICT, the user-visible flag is a holdover from the early RFCs and doesn't provide
-any unique functionality.
+Changes since v2:
 
-If we go that route, we might want to have shmem/memfd require INACCESSIBLE to be
-set for the initial implementation.  I.e. disallow binding without INACCESSIBLE
-until there's a use case.
+  * Rebased onto coresight/next (b99ee26a1a)
+  * Bumped release version to 6.1
+
+Changes since v1:
+
+  * Inline etmv4_to_ts_source() function.
+  * Collect review tag from Leo.
+
+German Gomez (2):
+  coresight: etm4x: Expose default timestamp source in sysfs
+  coresight: etm4x: docs: Add documentation for 'ts_source' sysfs
+    interface
+
+ .../testing/sysfs-bus-coresight-devices-etm4x |  8 +++++
+ .../coresight/coresight-etm4x-reference.rst   | 14 +++++++++
+ arch/arm64/include/asm/sysreg.h               |  1 +
+ .../coresight/coresight-etm4x-sysfs.c         | 29 +++++++++++++++++++
+ 4 files changed, 52 insertions(+)
+
+-- 
+2.28.0
+
