@@ -2,45 +2,49 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 04857C32772
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 10:04:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AB4F0C32774
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 10:04:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352074AbiHWKEX (ORCPT
+        id S1352096AbiHWKEa (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 06:04:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56304 "EHLO
+        Tue, 23 Aug 2022 06:04:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56240 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348019AbiHWJ70 (ORCPT
+        with ESMTP id S242091AbiHWJ70 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 23 Aug 2022 05:59:26 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CA1B0A1D77;
-        Tue, 23 Aug 2022 01:48:05 -0700 (PDT)
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 15A75A220B;
+        Tue, 23 Aug 2022 01:48:08 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id E96A161517;
-        Tue, 23 Aug 2022 08:48:04 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D066BC433D7;
-        Tue, 23 Aug 2022 08:48:03 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 8A4F6B81C28;
+        Tue, 23 Aug 2022 08:48:08 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id EC30BC433C1;
+        Tue, 23 Aug 2022 08:48:06 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661244484;
-        bh=wTxpJY+B15fweHM9fBmoHGEdTlkxs3vXb9rtlhbnw7k=;
+        s=korg; t=1661244487;
+        bh=3KmEpMGR6c7BCp8aZrOzLRXP9eHflZRAsYfKvwD+VUA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=2LpBY1G3OjsVCwZh+3mf6tgtB+lygOAQT/uPPs7liC9EBlwqkRfyf8kFpxPqh/q0r
-         fWEHAT2CXu1w5zLYA4Ez2y6KU1BoWHXPa6UMDuxuDi7UIBhTqC7ZD3p9sCIzsFsnM0
-         Xr1vY/en0tlw0VdYzw64DSNy2vhN4C27em1UKw3A=
+        b=H1TtK7tDDAoaHeKeR66DnskG/vqBmR0qszvay5as5a9dJyHbBCIBeoIS9fqHT9ZMo
+         7pkw0HWiNo/kAWihOukMdO3R3woFnvxZSIxRNs3ynp0Xep4nrwmINRBnsrc6dxbLUX
+         su25fdk32siJxKNlWV4HMzGzSi79XgkGMuRQf+pY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Zheyu Ma <zheyuma97@gmail.com>,
-        Helge Deller <deller@gmx.de>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.14 144/229] video: fbdev: arkfb: Fix a divide-by-zero bug in ark_set_pixclock()
-Date:   Tue, 23 Aug 2022 10:25:05 +0200
-Message-Id: <20220823080058.812832833@linuxfoundation.org>
+        stable@vger.kernel.org, Adrian Hunter <adrian.hunter@intel.com>,
+        Ian Rogers <irogers@google.com>,
+        Jin Yao <yao.jin@linux.intel.com>,
+        Jiri Olsa <jolsa@kernel.org>,
+        Namhyung Kim <namhyung@kernel.org>,
+        Arnaldo Carvalho de Melo <acme@redhat.com>
+Subject: [PATCH 5.15 101/244] perf tests: Fix Track with sched_switch test for hybrid case
+Date:   Tue, 23 Aug 2022 10:24:20 +0200
+Message-Id: <20220823080102.404760852@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220823080053.202747790@linuxfoundation.org>
-References: <20220823080053.202747790@linuxfoundation.org>
+In-Reply-To: <20220823080059.091088642@linuxfoundation.org>
+References: <20220823080059.091088642@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -49,59 +53,60 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Zheyu Ma <zheyuma97@gmail.com>
+From: Adrian Hunter <adrian.hunter@intel.com>
 
-[ Upstream commit 2f1c4523f7a3aaabe7e53d3ebd378292947e95c8 ]
+commit 1da1d60774014137d776d0400fdf2f1779d8d4d5 upstream.
 
-Since the user can control the arguments of the ioctl() from the user
-space, under special arguments that may result in a divide-by-zero bug
-in:
-  drivers/video/fbdev/arkfb.c:784: ark_set_pixclock(info, (hdiv * info->var.pixclock) / hmul);
-with hdiv=1, pixclock=1 and hmul=2 you end up with (1*1)/2 = (int) 0.
-and then in:
-  drivers/video/fbdev/arkfb.c:504: rv = dac_set_freq(par->dac, 0, 1000000000 / pixclock);
-we'll get a division-by-zero.
+If cpu_core PMU event fails to parse, try also cpu_atom PMU event when
+parsing cycles event.
 
-The following log can reveal it:
-
-divide error: 0000 [#1] PREEMPT SMP KASAN PTI
-RIP: 0010:ark_set_pixclock drivers/video/fbdev/arkfb.c:504 [inline]
-RIP: 0010:arkfb_set_par+0x10fc/0x24c0 drivers/video/fbdev/arkfb.c:784
-Call Trace:
- fb_set_var+0x604/0xeb0 drivers/video/fbdev/core/fbmem.c:1034
- do_fb_ioctl+0x234/0x670 drivers/video/fbdev/core/fbmem.c:1110
- fb_ioctl+0xdd/0x130 drivers/video/fbdev/core/fbmem.c:1189
-
-Fix this by checking the argument of ark_set_pixclock() first.
-
-Fixes: 681e14730c73 ("arkfb: new framebuffer driver for ARK Logic cards")
-Signed-off-by: Zheyu Ma <zheyuma97@gmail.com>
-Signed-off-by: Helge Deller <deller@gmx.de>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Fixes: 43eb05d066795bdf ("perf tests: Support 'Track with sched_switch' test for hybrid")
+Signed-off-by: Adrian Hunter <adrian.hunter@intel.com>
+Cc: Ian Rogers <irogers@google.com>
+Cc: Jin Yao <yao.jin@linux.intel.com>
+Cc: Jiri Olsa <jolsa@kernel.org>
+Cc: Namhyung Kim <namhyung@kernel.org>
+Link: https://lore.kernel.org/r/20220809080702.6921-3-adrian.hunter@intel.com
+Signed-off-by: Arnaldo Carvalho de Melo <acme@redhat.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/video/fbdev/arkfb.c | 7 ++++++-
- 1 file changed, 6 insertions(+), 1 deletion(-)
+ tools/perf/tests/switch-tracking.c |   18 +++++++++++++-----
+ 1 file changed, 13 insertions(+), 5 deletions(-)
 
-diff --git a/drivers/video/fbdev/arkfb.c b/drivers/video/fbdev/arkfb.c
-index 13ba371e70aa..bfa221b68d71 100644
---- a/drivers/video/fbdev/arkfb.c
-+++ b/drivers/video/fbdev/arkfb.c
-@@ -778,7 +778,12 @@ static int arkfb_set_par(struct fb_info *info)
- 		return -EINVAL;
+--- a/tools/perf/tests/switch-tracking.c
++++ b/tools/perf/tests/switch-tracking.c
+@@ -324,6 +324,7 @@ out_free_nodes:
+ int test__switch_tracking(struct test *test __maybe_unused, int subtest __maybe_unused)
+ {
+ 	const char *sched_switch = "sched:sched_switch";
++	const char *cycles = "cycles:u";
+ 	struct switch_tracking switch_tracking = { .tids = NULL, };
+ 	struct record_opts opts = {
+ 		.mmap_pages	     = UINT_MAX,
+@@ -372,12 +373,19 @@ int test__switch_tracking(struct test *t
+ 	cpu_clocks_evsel = evlist__last(evlist);
+ 
+ 	/* Second event */
+-	if (perf_pmu__has_hybrid())
+-		err = parse_events(evlist, "cpu_core/cycles/u", NULL);
+-	else
+-		err = parse_events(evlist, "cycles:u", NULL);
++	if (perf_pmu__has_hybrid()) {
++		cycles = "cpu_core/cycles/u";
++		err = parse_events(evlist, cycles, NULL);
++		if (err) {
++			cycles = "cpu_atom/cycles/u";
++			pr_debug("Trying %s\n", cycles);
++			err = parse_events(evlist, cycles, NULL);
++		}
++	} else {
++		err = parse_events(evlist, cycles, NULL);
++	}
+ 	if (err) {
+-		pr_debug("Failed to parse event cycles:u\n");
++		pr_debug("Failed to parse event %s\n", cycles);
+ 		goto out_err;
  	}
  
--	ark_set_pixclock(info, (hdiv * info->var.pixclock) / hmul);
-+	value = (hdiv * info->var.pixclock) / hmul;
-+	if (!value) {
-+		fb_dbg(info, "invalid pixclock\n");
-+		value = 1;
-+	}
-+	ark_set_pixclock(info, value);
- 	svga_set_timings(par->state.vgabase, &ark_timing_regs, &(info->var), hmul, hdiv,
- 			 (info->var.vmode & FB_VMODE_DOUBLE)     ? 2 : 1,
- 			 (info->var.vmode & FB_VMODE_INTERLACED) ? 2 : 1,
--- 
-2.35.1
-
 
 
