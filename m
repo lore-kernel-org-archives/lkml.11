@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9E1EDC52D78
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 11:19:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5C6E6C32772
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 11:19:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239891AbiHWLTZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 07:19:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44028 "EHLO
+        id S1351579AbiHWLTm (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 23 Aug 2022 07:19:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34526 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357704AbiHWLQ3 (ORCPT
+        with ESMTP id S1357816AbiHWLQn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 07:16:29 -0400
+        Tue, 23 Aug 2022 07:16:43 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 278FC1AD91;
-        Tue, 23 Aug 2022 02:20:05 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3FCCFBD1FE;
+        Tue, 23 Aug 2022 02:20:19 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 1ED366122D;
-        Tue, 23 Aug 2022 09:19:27 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 12246C433D6;
-        Tue, 23 Aug 2022 09:19:25 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 1442761281;
+        Tue, 23 Aug 2022 09:19:58 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 18C59C433D6;
+        Tue, 23 Aug 2022 09:19:56 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661246366;
-        bh=16N7gqoDhgtgU26/uFo+Xnm3wcLCzPvXEWtJM8/2n9s=;
+        s=korg; t=1661246397;
+        bh=Ye9QrPC+cA+Mfgpb7t5m+ycVZGaN0oJIi8Pw6ohK8Gw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=gr8qq7d5YgiHFmyYmLA6V9bRRuH1lAsVakLfKm7AB55wwhCFrNjeWTc9mPOdYHRfA
-         N2OqzG1mgzAxWXjO/cmRvjrOgXrl80rmKqDnDsEpT5Hll4+kq8690uxxKJkOW0T5sc
-         f2TOdSWEBN5/4L0sGTPwhdWWHjmwLnGMn4gnjXJw=
+        b=EuMH0j59gKnJu8Ks9P6jFPiLO26JyVxc1jhB/NLJOePJjzuQBBVyYA8poxirPGcPD
+         5zRsvS7sGbvCOT6ttIqBak6RKjLNyXY3J449B7fs/lSoZeTG/0cErIEbnfF+z/1AXV
+         tX1/xl6scKQOVTT4K0WoSEOZysLmpP6nxCEXfmSk=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        stable@vger.kernel.org, Manyi Li <limanyi@uniontech.com>,
+        "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 086/389] ARM: dts: qcom: pm8841: add required thermal-sensor-cells
-Date:   Tue, 23 Aug 2022 10:22:44 +0200
-Message-Id: <20220823080119.235827764@linuxfoundation.org>
+Subject: [PATCH 5.4 066/389] ACPI: PM: save NVS memory for Lenovo G40-45
+Date:   Tue, 23 Aug 2022 10:22:24 +0200
+Message-Id: <20220823080118.371868219@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220823080115.331990024@linuxfoundation.org>
 References: <20220823080115.331990024@linuxfoundation.org>
@@ -50,33 +50,42 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+From: Manyi Li <limanyi@uniontech.com>
 
-[ Upstream commit e2759fa0676c9a32bbddb9aff955b54bb35066ad ]
+[ Upstream commit 4b7ef7b05afcde44142225c184bf43a0cd9e2178 ]
 
-The PM8841 temperature sensor has to define thermal-sensor-cells.
+[821d6f0359b0614792ab8e2fb93b503e25a65079] is to make machines
+produced from 2012 to now not saving NVS region to accelerate S3.
 
-Fixes: dab8134ca072 ("ARM: dts: qcom: Add PM8841 functions device nodes")
-Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Signed-off-by: Bjorn Andersson <bjorn.andersson@linaro.org>
-Link: https://lore.kernel.org/r/20220608112702.80873-2-krzysztof.kozlowski@linaro.org
+But, Lenovo G40-45, a platform released in 2015, still needs NVS memory
+saving during S3. A quirk is introduced for this platform.
+
+Signed-off-by: Manyi Li <limanyi@uniontech.com>
+Signed-off-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/arm/boot/dts/qcom-pm8841.dtsi | 1 +
- 1 file changed, 1 insertion(+)
+ drivers/acpi/sleep.c | 8 ++++++++
+ 1 file changed, 8 insertions(+)
 
-diff --git a/arch/arm/boot/dts/qcom-pm8841.dtsi b/arch/arm/boot/dts/qcom-pm8841.dtsi
-index 2fd59c440903..c73e5b149ac5 100644
---- a/arch/arm/boot/dts/qcom-pm8841.dtsi
-+++ b/arch/arm/boot/dts/qcom-pm8841.dtsi
-@@ -25,6 +25,7 @@ temp-alarm@2400 {
- 			compatible = "qcom,spmi-temp-alarm";
- 			reg = <0x2400>;
- 			interrupts = <4 0x24 0 IRQ_TYPE_EDGE_RISING>;
-+			#thermal-sensor-cells = <0>;
- 		};
- 	};
- 
+diff --git a/drivers/acpi/sleep.c b/drivers/acpi/sleep.c
+index 34966128293b..b9d203569ac1 100644
+--- a/drivers/acpi/sleep.c
++++ b/drivers/acpi/sleep.c
+@@ -361,6 +361,14 @@ static const struct dmi_system_id acpisleep_dmi_table[] __initconst = {
+ 		DMI_MATCH(DMI_PRODUCT_NAME, "80E3"),
+ 		},
+ 	},
++	{
++	.callback = init_nvs_save_s3,
++	.ident = "Lenovo G40-45",
++	.matches = {
++		DMI_MATCH(DMI_SYS_VENDOR, "LENOVO"),
++		DMI_MATCH(DMI_PRODUCT_NAME, "80E1"),
++		},
++	},
+ 	/*
+ 	 * ThinkPad X1 Tablet(2016) cannot do suspend-to-idle using
+ 	 * the Low Power S0 Idle firmware interface (see
 -- 
 2.35.1
 
