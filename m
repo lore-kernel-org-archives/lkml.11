@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E4358C32772
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 08:28:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 29613C32792
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 08:28:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243589AbiHWI2n (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 04:28:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59432 "EHLO
+        id S243619AbiHWI2v (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 23 Aug 2022 04:28:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46612 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243328AbiHWIY3 (ORCPT
+        with ESMTP id S243544AbiHWIZf (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 04:24:29 -0400
+        Tue, 23 Aug 2022 04:25:35 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 684AB1836B;
-        Tue, 23 Aug 2022 01:13:28 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7ED0C6A4BC;
+        Tue, 23 Aug 2022 01:13:40 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id C9AB361324;
-        Tue, 23 Aug 2022 08:13:02 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C22B0C433C1;
-        Tue, 23 Aug 2022 08:13:01 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 909C761257;
+        Tue, 23 Aug 2022 08:13:14 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9ECCFC433D6;
+        Tue, 23 Aug 2022 08:13:13 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661242382;
-        bh=198MJV5Vfc/FGWCXHEV8mqffz6z2Dlc0B5J2AMGuxB8=;
+        s=korg; t=1661242394;
+        bh=uGThrt33mi1eSMf2gxBEVQ79aDsfgcKb82P3o+mpreY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=tzAox7Vvg2s3HR7LbJhj0OMtp/ITaM78a42faJLH+8RfabHB7twnEz9OzwenVmwWr
-         EAbLD1TJpV9PGMEJ9RBOpLSox4HD3G9CXhEt7TYBSCDavcoiS2cIroC95jdOvqTBKx
-         tvqZ3i8KSa0ajnl8tNFriTh2VoKf5WaRG9fyZ58Q=
+        b=KEerS4iYBk1WCArn2tJ6CYhEYHA7fVNNcdZQxLUYa8Yg2gSET9+gOOo4Xg4/Y1Wpe
+         YiLTZRSSnWPXuYxU6Fkx0cxJrIHAuGgsI2v9iPfSmnAWWymxlzrdOC+PRJka1Iif+g
+         JvrTo9394MOEMyqsY7X7+YyDwLfbdzu7zrtQ2CH8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Laura Abbott <labbott@redhat.com>,
-        Kees Cook <keescook@chromium.org>,
-        Daniel Micay <danielmicay@gmail.com>,
-        Guenter Roeck <linux@roeck-us.net>
-Subject: [PATCH 4.9 063/101] nios2: time: Read timer in get_cycles only if initialized
-Date:   Tue, 23 Aug 2022 10:03:36 +0200
-Message-Id: <20220823080036.986294626@linuxfoundation.org>
+        stable@vger.kernel.org, Jamal Hadi Salim <jhs@mojatatu.com>,
+        Stephen Hemminger <stephen@networkplumber.org>,
+        "David S. Miller" <davem@davemloft.net>
+Subject: [PATCH 4.9 065/101] net_sched: cls_route: disallow handle of 0
+Date:   Tue, 23 Aug 2022 10:03:38 +0200
+Message-Id: <20220823080037.066078661@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220823080034.579196046@linuxfoundation.org>
 References: <20220823080034.579196046@linuxfoundation.org>
@@ -50,47 +49,83 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Guenter Roeck <linux@roeck-us.net>
+From: Jamal Hadi Salim <jhs@mojatatu.com>
 
-commit 65d1e3ddeae117f6a224535e10a09145f0f96508 upstream.
+commit 02799571714dc5dd6948824b9d080b44a295f695 upstream.
 
-Mainline crashes as follows when running nios2 images.
+Follows up on:
+https://lore.kernel.org/all/20220809170518.164662-1-cascardo@canonical.com/
 
-On node 0 totalpages: 65536
-free_area_init_node: node 0, pgdat c8408fa0, node_mem_map c8726000
-  Normal zone: 512 pages used for memmap
-  Normal zone: 0 pages reserved
-  Normal zone: 65536 pages, LIFO batch:15
-Unable to handle kernel NULL pointer dereference at virtual address 00000000
-ea = c8003cb0, ra = c81cbf40, cause = 15
-Kernel panic - not syncing: Oops
+handle of 0 implies from/to of universe realm which is not very
+sensible.
 
-Problem is seen because get_cycles() is called before the timer it depends
-on is initialized. Returning 0 in that situation fixes the problem.
+Lets see what this patch will do:
+$sudo tc qdisc add dev $DEV root handle 1:0 prio
 
-Fixes: 33d72f3822d7 ("init/main.c: extract early boot entropy from the ..")
-Cc: Laura Abbott <labbott@redhat.com>
-Cc: Kees Cook <keescook@chromium.org>
-Cc: Daniel Micay <danielmicay@gmail.com>
-Signed-off-by: Guenter Roeck <linux@roeck-us.net>
+//lets manufacture a way to insert handle of 0
+$sudo tc filter add dev $DEV parent 1:0 protocol ip prio 100 \
+route to 0 from 0 classid 1:10 action ok
+
+//gets rejected...
+Error: handle of 0 is not valid.
+We have an error talking to the kernel, -1
+
+//lets create a legit entry..
+sudo tc filter add dev $DEV parent 1:0 protocol ip prio 100 route from 10 \
+classid 1:10 action ok
+
+//what did the kernel insert?
+$sudo tc filter ls dev $DEV parent 1:0
+filter protocol ip pref 100 route chain 0
+filter protocol ip pref 100 route chain 0 fh 0x000a8000 flowid 1:10 from 10
+	action order 1: gact action pass
+	 random type none pass val 0
+	 index 1 ref 1 bind 1
+
+//Lets try to replace that legit entry with a handle of 0
+$ sudo tc filter replace dev $DEV parent 1:0 protocol ip prio 100 \
+handle 0x000a8000 route to 0 from 0 classid 1:10 action drop
+
+Error: Replacing with handle of 0 is invalid.
+We have an error talking to the kernel, -1
+
+And last, lets run Cascardo's POC:
+$ ./poc
+0
+0
+-22
+-22
+-22
+
+Signed-off-by: Jamal Hadi Salim <jhs@mojatatu.com>
+Acked-by: Stephen Hemminger <stephen@networkplumber.org>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/nios2/kernel/time.c |    5 ++++-
- 1 file changed, 4 insertions(+), 1 deletion(-)
+ net/sched/cls_route.c |    6 ++++++
+ 1 file changed, 6 insertions(+)
 
---- a/arch/nios2/kernel/time.c
-+++ b/arch/nios2/kernel/time.c
-@@ -107,7 +107,10 @@ static struct nios2_clocksource nios2_cs
+--- a/net/sched/cls_route.c
++++ b/net/sched/cls_route.c
+@@ -427,6 +427,9 @@ static int route4_set_parms(struct net *
+ 			goto errout;
+ 	}
  
- cycles_t get_cycles(void)
- {
--	return nios2_timer_read(&nios2_cs.cs);
-+	/* Only read timer if it has been initialized */
-+	if (nios2_cs.timer.base)
-+		return nios2_timer_read(&nios2_cs.cs);
-+	return 0;
- }
- EXPORT_SYMBOL(get_cycles);
++	if (!nhandle)
++		return -EINVAL;
++
+ 	h1 = to_hash(nhandle);
+ 	b = rtnl_dereference(head->table[h1]);
+ 	if (!b) {
+@@ -486,6 +489,9 @@ static int route4_change(struct net *net
+ 	int err;
+ 	bool new = true;
+ 
++	if (!handle)
++		return -EINVAL;
++
+ 	if (opt == NULL)
+ 		return handle ? -EINVAL : 0;
  
 
 
