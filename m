@@ -2,107 +2,101 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 51E41C32774
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 06:18:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C0AE8C32793
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 06:18:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239753AbiHWGSj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 02:18:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51378 "EHLO
+        id S240097AbiHWGSp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 23 Aug 2022 02:18:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51454 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239166AbiHWGSe (ORCPT
+        with ESMTP id S239880AbiHWGSk (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 02:18:34 -0400
-Received: from mail-pg1-x536.google.com (mail-pg1-x536.google.com [IPv6:2607:f8b0:4864:20::536])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CCBDFBC24
-        for <linux-kernel@vger.kernel.org>; Mon, 22 Aug 2022 23:18:31 -0700 (PDT)
-Received: by mail-pg1-x536.google.com with SMTP id r22so11425067pgm.5
-        for <linux-kernel@vger.kernel.org>; Mon, 22 Aug 2022 23:18:31 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=bytedance-com.20210112.gappssmtp.com; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc;
-        bh=3/lhotbB4Uar/lt4peIcoGTYHkX7iv9Q8q1pdoozNu0=;
-        b=HPvGXZlhi0nU7N1qbXgghsfXNeuVWNupf6HJIuUeCRUD+8IoJow9QQ7ZaoAYF9g2+C
-         hnnO0pM7HFbyVhJxv18B1ycqujMTc2vX71070Q9FFIBweuSgou7ZSEJMdRBijO0HA1/v
-         FziVPVgeu9nU3FeEU+XGUMmiPxP6Tqr6OUBx2ErNlGlCivCeGIEakr0+82PSQi4eaz/D
-         l2UYL0w2n9VktS8Ugo3FsCCvW+76y9QaTh8c387K5RFQD/DsfSQpgidjQvcDNGSloG4v
-         naUMJYfoeUsvz0VFr0vC18XrBtpusuu0Zoh2D1f673+pqa0E0rBuJnPgWiIanuG/4h8S
-         2JVg==
+        Tue, 23 Aug 2022 02:18:40 -0400
+Received: from mail-io1-f71.google.com (mail-io1-f71.google.com [209.85.166.71])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 40174BC24
+        for <linux-kernel@vger.kernel.org>; Mon, 22 Aug 2022 23:18:36 -0700 (PDT)
+Received: by mail-io1-f71.google.com with SMTP id p123-20020a6bbf81000000b00674f66cf13aso6925831iof.23
+        for <linux-kernel@vger.kernel.org>; Mon, 22 Aug 2022 23:18:36 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc;
-        bh=3/lhotbB4Uar/lt4peIcoGTYHkX7iv9Q8q1pdoozNu0=;
-        b=ibuxdwaW7Dw2kJPjjOYCAV6xMki/wN3DTZAoogdo6gNXAaMfHAyvOo77NpqRvryyeq
-         ILlUHjdZZjxWKl/0Y+Hy78TFjHKHeHA0knF70kepM4sO1Zf6l5juDLzgoDwq5UfMw5TK
-         /KqffvIc3y15KjtOHgeRhHJXLAF/QzDcWhB0HntFt1jYVcR5VsNcv/OdECWsnvGfAtBh
-         9Q5QaUyjw3Z09/HakwI5nkdcunUEHQpZdhZxP8eeJUXcYtBokZhFUKnB9vLMyAXlh7I8
-         c4xbGB/cmmZaM0ac5Unm+T69HtGhYjzn0rFs3ygiLZp6Hpr/g+k4xfr52DieMsksewuk
-         YV8w==
-X-Gm-Message-State: ACgBeo28GByZN6qeOZqf/l9/EHsyvKzkpyn+E79hdInjCS0qAZ/D98Ru
-        2Uf15NFU0K9W23GiMdJBUOqTBQ==
-X-Google-Smtp-Source: AA6agR4M47/Yf8Et3r8O9o96m8U+PWHhEeW9jgpZEjIOsqKpb7rtFRp/rPaUtx23rNWLMFjQ6aj99A==
-X-Received: by 2002:a65:6d14:0:b0:41d:5f95:179d with SMTP id bf20-20020a656d14000000b0041d5f95179dmr19300579pgb.580.1661235511395;
-        Mon, 22 Aug 2022 23:18:31 -0700 (PDT)
-Received: from [10.4.208.12] ([139.177.225.228])
-        by smtp.gmail.com with ESMTPSA id d5-20020a170903230500b00172ccb3f4ebsm6285338plh.160.2022.08.22.23.18.25
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 22 Aug 2022 23:18:30 -0700 (PDT)
-Message-ID: <9d1997a4-9278-07bd-7f57-952306b28b14@bytedance.com>
-Date:   Tue, 23 Aug 2022 14:18:21 +0800
+        h=to:from:subject:message-id:date:mime-version:x-gm-message-state
+         :from:to:cc;
+        bh=w7IBh16YCOLSqhh2JLVcXFQTO2VKalGU5Te6z3qBSMc=;
+        b=noGPIPOGO52F0gAGDWT13VvKp/qahJoAB0bHiquNBr5AdBNWB3rYPcpYfXqcK52FBt
+         9wVTnEqvhAfWGNUMwmy2NOrL55SivCp3dog52LzCJ3Ip5J83zc9qaKBHcEf2LWdjIBwI
+         qweuSQpK/v+Zx///Shl6bjPBvsj49/sbRvZeSveq0EdihGq1Ii32F5bdZgNnm4AT/suL
+         bFadvFXTr4Ox8HXQYKEfL9AZ2AgxVz5mZl34+frbOL2l8FHx6/Qch7NEPCo8wWSTnIT8
+         4pfqSwoSOFYPXOWLG+0NGcJFsBFMnxPCbomekKE/VOQ25VfUE/Ydq3fad9LruAkhUOdr
+         qyfQ==
+X-Gm-Message-State: ACgBeo2D2M0W0wGUbxUhqV7+1mz1q1sjt+Lzv8dNrO72DQ4lFI7G6h5a
+        0Z4XLQX4tqJL9CZW4flkjhVfvixXdPmzvjIHSoO69P/n3umW
+X-Google-Smtp-Source: AA6agR6ZjVfPnVgmZjl23yXcHlr22t2DH/cVcuWLiCkH385YErK52BwMvN4Ge2U5Gj99sViQbuYqE2WhAZKQzNWxEXweKfeCQkaE
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:102.0)
- Gecko/20100101 Thunderbird/102.1.2
-Subject: Re: [PATCH v2 09/10] sched/psi: per-cgroup PSI stats
- disable/re-enable interface
-Content-Language: en-US
-To:     =?UTF-8?Q?Michal_Koutn=c3=bd?= <mkoutny@suse.com>,
-        Johannes Weiner <hannes@cmpxchg.org>
-Cc:     Tejun Heo <tj@kernel.org>, corbet@lwn.net, surenb@google.com,
-        mingo@redhat.com, peterz@infradead.org, vincent.guittot@linaro.org,
-        dietmar.eggemann@arm.com, rostedt@goodmis.org, bsegall@google.com,
-        cgroups@vger.kernel.org, linux-doc@vger.kernel.org,
-        linux-kernel@vger.kernel.org, songmuchun@bytedance.com
-References: <20220808110341.15799-1-zhouchengming@bytedance.com>
- <20220808110341.15799-10-zhouchengming@bytedance.com>
- <YvKd6dezPM6UxfD/@slm.duckdns.org>
- <fcd0bd39-3049-a279-23e6-a6c02b4680a7@bytedance.com>
- <b89155d3-9315-fefc-408b-4cf538360a1c@bytedance.com>
- <YvPN07UlaPFAdlet@cmpxchg.org> <20220815132343.GA22640@blackbody.suse.cz>
-From:   Chengming Zhou <zhouchengming@bytedance.com>
-In-Reply-To: <20220815132343.GA22640@blackbody.suse.cz>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+X-Received: by 2002:a05:6e02:f04:b0:2e9:be2a:5fac with SMTP id
+ x4-20020a056e020f0400b002e9be2a5facmr4268302ilj.70.1661235515559; Mon, 22 Aug
+ 2022 23:18:35 -0700 (PDT)
+Date:   Mon, 22 Aug 2022 23:18:35 -0700
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <000000000000cb172905e6e28808@google.com>
+Subject: [syzbot] memory leak in ntfs_init_fs_context
+From:   syzbot <syzbot+9d67170b20e8f94351c8@syzkaller.appspotmail.com>
+To:     almaz.alexandrovich@paragon-software.com,
+        linux-kernel@vger.kernel.org, llvm@lists.linux.dev,
+        nathan@kernel.org, ndesaulniers@google.com, ntfs3@lists.linux.dev,
+        syzkaller-bugs@googlegroups.com, trix@redhat.com
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 2022/8/15 21:23, Michal Koutný wrote:
-> On Wed, Aug 10, 2022 at 11:25:07AM -0400, Johannes Weiner <hannes@cmpxchg.org> wrote:
->> cgroup.pressure.enable sounds good to me too. Or, because it's
->> default-enabled and that likely won't change, cgroup.pressure.disable.
-> 
-> Will it not change?
-> 
-> I'd say that user would be interested in particular level or even just
-> level in subtree for PSI, so the opt-out may result in lots of explicit
-> disablements (or even watch for cgroups created and disable PSI there)
-> to get some performance back.
-> 
-> I have two suggestions based on the above:
-> 1) Make the default globally configurable (mount option?)
-> 2) Allow implicit enablement upon trigger creation
-> 
+Hello,
 
-I think suggestion 1) make sense in some use case, like make per-cgroup
-PSI disabled by default using a mount option, then enable using the
-"cgroup.pressure" interface.
+syzbot found the following issue on:
 
-But suggestion 2) auto enable upon trigger creation, if we hide the
-{cpu,memory,io}.pressure files when disabled, how can we create trigger?
+HEAD commit:    1c23f9e627a7 Linux 6.0-rc2
+git tree:       upstream
+console output: https://syzkaller.appspot.com/x/log.txt?x=16caa92d080000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=b1831d905b683446
+dashboard link: https://syzkaller.appspot.com/bug?extid=9d67170b20e8f94351c8
+compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.2
+syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=161472f3080000
+C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=145f3e2d080000
 
-Want to see what do Johannes and Tejun think about these suggestions?
+IMPORTANT: if you fix the issue, please add the following tag to the commit:
+Reported-by: syzbot+9d67170b20e8f94351c8@syzkaller.appspotmail.com
 
-Thanks.
+executing program
+executing program
+BUG: memory leak
+unreferenced object 0xffff8881100918a0 (size 32):
+  comm "syz-executor151", pid 3611, jiffies 4294944949 (age 8.110s)
+  hex dump (first 32 bytes):
+    00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
+    00 00 00 00 00 00 00 00 c0 ff c0 ff 00 00 00 00  ................
+  backtrace:
+    [<ffffffff81b23cb2>] kmalloc include/linux/slab.h:600 [inline]
+    [<ffffffff81b23cb2>] kzalloc include/linux/slab.h:733 [inline]
+    [<ffffffff81b23cb2>] ntfs_init_fs_context+0x22/0x1e0 fs/ntfs3/super.c:1397
+    [<ffffffff81650025>] alloc_fs_context+0x225/0x3b0 fs/fs_context.c:290
+    [<ffffffff8162beb3>] do_new_mount fs/namespace.c:3025 [inline]
+    [<ffffffff8162beb3>] path_mount+0x6f3/0x10d0 fs/namespace.c:3370
+    [<ffffffff8162cfde>] do_mount fs/namespace.c:3383 [inline]
+    [<ffffffff8162cfde>] __do_sys_mount fs/namespace.c:3591 [inline]
+    [<ffffffff8162cfde>] __se_sys_mount fs/namespace.c:3568 [inline]
+    [<ffffffff8162cfde>] __x64_sys_mount+0x18e/0x1d0 fs/namespace.c:3568
+    [<ffffffff845e4855>] do_syscall_x64 arch/x86/entry/common.c:50 [inline]
+    [<ffffffff845e4855>] do_syscall_64+0x35/0xb0 arch/x86/entry/common.c:80
+    [<ffffffff84800087>] entry_SYSCALL_64_after_hwframe+0x63/0xcd
+
+
+
+---
+This report is generated by a bot. It may contain errors.
+See https://goo.gl/tpsmEJ for more information about syzbot.
+syzbot engineers can be reached at syzkaller@googlegroups.com.
+
+syzbot will keep track of this issue. See:
+https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
+syzbot can test patches for this issue, for details see:
+https://goo.gl/tpsmEJ#testing-patches
