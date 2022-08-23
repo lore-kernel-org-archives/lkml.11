@@ -2,45 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3F075C32772
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E9301C32792
 	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 10:06:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351828AbiHWKFV (ORCPT
+        id S1352291AbiHWKF1 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 06:05:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59096 "EHLO
+        Tue, 23 Aug 2022 06:05:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44488 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351996AbiHWKA7 (ORCPT
+        with ESMTP id S1352016AbiHWKBF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 06:00:59 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 61F4513DD7;
-        Tue, 23 Aug 2022 01:48:28 -0700 (PDT)
+        Tue, 23 Aug 2022 06:01:05 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6544127B2D;
+        Tue, 23 Aug 2022 01:48:36 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id A64F1B8105C;
-        Tue, 23 Aug 2022 08:48:27 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E75A6C433D6;
-        Tue, 23 Aug 2022 08:48:25 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 20EEC61386;
+        Tue, 23 Aug 2022 08:48:36 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 262B7C433C1;
+        Tue, 23 Aug 2022 08:48:34 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661244506;
-        bh=Lveu6uFlMWa/CVBVxi5kfsSkEcxc8ilbail2ZMSOKDk=;
+        s=korg; t=1661244515;
+        bh=hG3JMbhdNDO2gZbIp193qOzFN0q0GOPDtuYxgu3A/pg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=J2fByFeA7SaV816YCfUC8vglBrhkKXx/7PatnOfSMP1q/5GoeWkQnrZ0NvLpById6
-         ykyiDhKETGGTfnOFRDhg1DVPFUGX5TAUds0Y7SGS+bga8+pldiF+f19Al+nQgx/7Ha
-         KEsvNRFKkCw9BiF65jWScodJgk3msUEZyFGoIl5w=
+        b=wmSd4gVelAHIb39fyTlN3tGL3HgPR/IBUNPOnXJZ9xpBUTwg5R/4EOx0w/oo/xaul
+         suf+5WHq9YUI85TSeN7wnGjeVrS74heHYmuT0XWMrbZBB0UpGIDFZqCc9Wcrnb3f6/
+         bgBB1qI5ovOJtzwafX/xODvrc7JOW2ebaTrpuUug=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Zheyu Ma <zheyuma97@gmail.com>,
-        Helge Deller <deller@gmx.de>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.14 147/229] video: fbdev: arkfb: Check the size of screen before memset_io()
-Date:   Tue, 23 Aug 2022 10:25:08 +0200
-Message-Id: <20220823080058.930157019@linuxfoundation.org>
+        stable@vger.kernel.org, Dan Carpenter <dan.carpenter@oracle.com>,
+        Namjae Jeon <linkinjeon@kernel.org>,
+        Konstantin Komarov <almaz.alexandrovich@paragon-software.com>
+Subject: [PATCH 5.15 105/244] fs/ntfs3: Dont clear upper bits accidentally in log_replay()
+Date:   Tue, 23 Aug 2022 10:24:24 +0200
+Message-Id: <20220823080102.523538028@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220823080053.202747790@linuxfoundation.org>
-References: <20220823080053.202747790@linuxfoundation.org>
+In-Reply-To: <20220823080059.091088642@linuxfoundation.org>
+References: <20220823080059.091088642@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -49,50 +50,34 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Zheyu Ma <zheyuma97@gmail.com>
+From: Dan Carpenter <dan.carpenter@oracle.com>
 
-[ Upstream commit 96b550971c65d54d64728d8ba973487878a06454 ]
+commit 926034353d3c67db1ffeab47dcb7f6bdac02a263 upstream.
 
-In the function arkfb_set_par(), the value of 'screen_size' is
-calculated by the user input. If the user provides the improper value,
-the value of 'screen_size' may larger than 'info->screen_size', which
-may cause the following bug:
+The "vcn" variable is a 64 bit.  The "log->clst_per_page" variable is a
+u32.  This means that the mask accidentally clears out the high 32 bits
+when it was only supposed to clear some low bits.  Fix this by adding a
+cast to u64.
 
-[  659.399066] BUG: unable to handle page fault for address: ffffc90003000000
-[  659.399077] #PF: supervisor write access in kernel mode
-[  659.399079] #PF: error_code(0x0002) - not-present page
-[  659.399094] RIP: 0010:memset_orig+0x33/0xb0
-[  659.399116] Call Trace:
-[  659.399122]  arkfb_set_par+0x143f/0x24c0
-[  659.399130]  fb_set_var+0x604/0xeb0
-[  659.399161]  do_fb_ioctl+0x234/0x670
-[  659.399189]  fb_ioctl+0xdd/0x130
-
-Fix the this by checking the value of 'screen_size' before memset_io().
-
-Fixes: 681e14730c73 ("arkfb: new framebuffer driver for ARK Logic cards")
-Signed-off-by: Zheyu Ma <zheyuma97@gmail.com>
-Signed-off-by: Helge Deller <deller@gmx.de>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Fixes: b46acd6a6a62 ("fs/ntfs3: Add NTFS journal")
+Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
+Reviewed-by: Namjae Jeon <linkinjeon@kernel.org>
+Signed-off-by: Konstantin Komarov <almaz.alexandrovich@paragon-software.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/video/fbdev/arkfb.c | 2 ++
- 1 file changed, 2 insertions(+)
+ fs/ntfs3/fslog.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/video/fbdev/arkfb.c b/drivers/video/fbdev/arkfb.c
-index bfa221b68d71..f7920987dd24 100644
---- a/drivers/video/fbdev/arkfb.c
-+++ b/drivers/video/fbdev/arkfb.c
-@@ -794,6 +794,8 @@ static int arkfb_set_par(struct fb_info *info)
- 	value = ((value * hmul / hdiv) / 8) - 5;
- 	vga_wcrt(par->state.vgabase, 0x42, (value + 1) / 2);
+--- a/fs/ntfs3/fslog.c
++++ b/fs/ntfs3/fslog.c
+@@ -5057,7 +5057,7 @@ undo_action_next:
+ 		goto add_allocated_vcns;
  
-+	if (screen_size > info->screen_size)
-+		screen_size = info->screen_size;
- 	memset_io(info->screen_base, 0x00, screen_size);
- 	/* Device and screen back on */
- 	svga_wcrt_mask(par->state.vgabase, 0x17, 0x80, 0x80);
--- 
-2.35.1
-
+ 	vcn = le64_to_cpu(lrh->target_vcn);
+-	vcn &= ~(log->clst_per_page - 1);
++	vcn &= ~(u64)(log->clst_per_page - 1);
+ 
+ add_allocated_vcns:
+ 	for (i = 0, vcn = le64_to_cpu(lrh->target_vcn),
 
 
