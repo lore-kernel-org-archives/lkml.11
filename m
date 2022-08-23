@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E4B90C32796
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 11:17:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2F64BC49EC5
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 11:17:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357913AbiHWLRF (ORCPT
+        id S1357945AbiHWLR3 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 07:17:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59980 "EHLO
+        Tue, 23 Aug 2022 07:17:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38008 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357192AbiHWLOu (ORCPT
+        with ESMTP id S1357375AbiHWLPf (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 07:14:50 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4D397A98E0;
-        Tue, 23 Aug 2022 02:18:51 -0700 (PDT)
+        Tue, 23 Aug 2022 07:15:35 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D6DD5BB6AE;
+        Tue, 23 Aug 2022 02:19:10 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id B96016128D;
-        Tue, 23 Aug 2022 09:18:39 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BB0D5C433D6;
-        Tue, 23 Aug 2022 09:18:38 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 1DBC360F91;
+        Tue, 23 Aug 2022 09:18:18 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 266C1C433C1;
+        Tue, 23 Aug 2022 09:18:16 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661246319;
-        bh=seCT/ORXlSvodg00k6NkJU1CqWU/SW76DI4qvjh+el8=;
+        s=korg; t=1661246297;
+        bh=gzQ7LzangA592IXLLGzsXognqZYwWADhEorvI9asYZw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=jL6t809ZMTBTb4IjPvP5HaLRAlmY1JDEoGIFHxSt6D3QpO4myAjXxQSQ6RDWeY6dJ
-         i9etzF/yuWYlu4Shs8my8QIeAq1NAO3tXH0mT4buvrL/K4kSsTb8TI5TooEc4Jzket
-         zDDezrWOYf/0jh6yX4FabgL1qTDG/GDrpSd+IaG4=
+        b=k8JiW38yRw1yhDe+63NPfqVtK8mJBKyGdZyc9qe2n+/63g28zzs/g/xzRKDI8GwDB
+         /9+bQcw932mUL+3hKSiMN5zHiU7Bx+Jo7SjHV5HputuKkHh+BSLYf1P7WJrF2UAalt
+         00CvavJnOLLD8bX8OejLVKi8no6QyVLJfSg3JnAo=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Xiu Jianfeng <xiujianfeng@huawei.com>,
-        Paul Moore <paul@paul-moore.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 072/389] selinux: Add boundary check in put_entry()
-Date:   Tue, 23 Aug 2022 10:22:30 +0200
-Message-Id: <20220823080118.645560595@linuxfoundation.org>
+        stable@vger.kernel.org, Zheyu Ma <zheyuma97@gmail.com>,
+        Stable@vger.kernel.org,
+        Jonathan Cameron <Jonathan.Cameron@huawei.com>
+Subject: [PATCH 5.4 034/389] iio: light: isl29028: Fix the warning in isl29028_remove()
+Date:   Tue, 23 Aug 2022 10:21:52 +0200
+Message-Id: <20220823080117.090312039@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220823080115.331990024@linuxfoundation.org>
 References: <20220823080115.331990024@linuxfoundation.org>
@@ -50,35 +50,49 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Xiu Jianfeng <xiujianfeng@huawei.com>
+From: Zheyu Ma <zheyuma97@gmail.com>
 
-[ Upstream commit 15ec76fb29be31df2bccb30fc09875274cba2776 ]
+commit 06674fc7c003b9d0aa1d37fef7ab2c24802cc6ad upstream.
 
-Just like next_entry(), boundary check is necessary to prevent memory
-out-of-bound access.
+The driver use the non-managed form of the register function in
+isl29028_remove(). To keep the release order as mirroring the ordering
+in probe, the driver should use non-managed form in probe, too.
 
-Signed-off-by: Xiu Jianfeng <xiujianfeng@huawei.com>
-Signed-off-by: Paul Moore <paul@paul-moore.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+The following log reveals it:
+
+[   32.374955] isl29028 0-0010: remove
+[   32.376861] general protection fault, probably for non-canonical address 0xdffffc0000000006: 0000 [#1] PREEMPT SMP KASAN PTI
+[   32.377676] KASAN: null-ptr-deref in range [0x0000000000000030-0x0000000000000037]
+[   32.379432] RIP: 0010:kernfs_find_and_get_ns+0x28/0xe0
+[   32.385461] Call Trace:
+[   32.385807]  sysfs_unmerge_group+0x59/0x110
+[   32.386110]  dpm_sysfs_remove+0x58/0xc0
+[   32.386391]  device_del+0x296/0xe50
+[   32.386959]  cdev_device_del+0x1d/0xd0
+[   32.387231]  devm_iio_device_unreg+0x27/0xb0
+[   32.387542]  devres_release_group+0x319/0x3d0
+[   32.388162]  i2c_device_remove+0x93/0x1f0
+
+Fixes: 2db5054ac28d ("staging: iio: isl29028: add runtime power management support")
+Signed-off-by: Zheyu Ma <zheyuma97@gmail.com>
+Link: https://lore.kernel.org/r/20220717004241.2281028-1-zheyuma97@gmail.com
+Cc: <Stable@vger.kernel.org>
+Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- security/selinux/ss/policydb.h | 2 ++
- 1 file changed, 2 insertions(+)
+ drivers/iio/light/isl29028.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/security/selinux/ss/policydb.h b/security/selinux/ss/policydb.h
-index 162d0e79b85b..b18bc405f820 100644
---- a/security/selinux/ss/policydb.h
-+++ b/security/selinux/ss/policydb.h
-@@ -356,6 +356,8 @@ static inline int put_entry(const void *buf, size_t bytes, int num, struct polic
- {
- 	size_t len = bytes * num;
+--- a/drivers/iio/light/isl29028.c
++++ b/drivers/iio/light/isl29028.c
+@@ -628,7 +628,7 @@ static int isl29028_probe(struct i2c_cli
+ 					 ISL29028_POWER_OFF_DELAY_MS);
+ 	pm_runtime_use_autosuspend(&client->dev);
  
-+	if (len > fp->len)
-+		return -EINVAL;
- 	memcpy(fp->data, buf, len);
- 	fp->data += len;
- 	fp->len -= len;
--- 
-2.35.1
-
+-	ret = devm_iio_device_register(indio_dev->dev.parent, indio_dev);
++	ret = iio_device_register(indio_dev);
+ 	if (ret < 0) {
+ 		dev_err(&client->dev,
+ 			"%s(): iio registration failed with error %d\n",
 
 
