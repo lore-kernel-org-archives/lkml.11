@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0E90DC32772
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 11:18:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A58A8C32772
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 11:18:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243574AbiHWLSK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 07:18:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43544 "EHLO
+        id S1347807AbiHWLSP (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 23 Aug 2022 07:18:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37468 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357542AbiHWLQD (ORCPT
+        with ESMTP id S1357546AbiHWLQD (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 23 Aug 2022 07:16:03 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EA029BB938;
-        Tue, 23 Aug 2022 02:19:39 -0700 (PDT)
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 05CBEBCCE1;
+        Tue, 23 Aug 2022 02:19:53 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 9744861298;
-        Tue, 23 Aug 2022 09:19:39 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 96586C433C1;
-        Tue, 23 Aug 2022 09:19:38 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 5EA09B81C89;
+        Tue, 23 Aug 2022 09:19:43 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B5052C433D6;
+        Tue, 23 Aug 2022 09:19:41 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661246379;
-        bh=VpSDeaQJ9EoiRQpU/oG0/HC97bBbTXYhd/rde+chD1M=;
+        s=korg; t=1661246382;
+        bh=E2WSbuDq4C8F2YgMV7Map4BepoZ8zpRFLXYj2ouMi6k=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Pk9WUtEcYBEtFkMEzNa9412VR9B4bnTStR4rPxePmJs4USpK0jfh1IOA+na5dJ9xo
-         olUHFe/d0eJNRS7YJ2sjpDe9P1FPVDoQgtHi1T1HV4EI6OZSkAv73jKN237hPQv7nO
-         XIT+ToiXut82iJHNmRmG4pPexDI+bN2OwO2xJbCg=
+        b=kQcodNgDoDYVuUIJd0sGUddJG16GAJMNXKpdTaZhBOk4ycQQkwxAXcczqZC3nU9GN
+         /IjhBzWhRwHpW8zwxU1/UOqBjgc8RBjlvABuXcDZT2/VrMXniZ+76T6B/z2iAN8Yrv
+         UHonnrMzlLPemUPTQNwVN7NvyY6l1Q2WIJYfoGX0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Yi Zhang <yi.zhang@redhat.com>,
-        Ming Lei <ming.lei@redhat.com>, Christoph Hellwig <hch@lst.de>,
-        Jens Axboe <axboe@kernel.dk>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 090/389] blk-mq: dont create hctx debugfs dir until q->debugfs_dir is created
-Date:   Tue, 23 Aug 2022 10:22:48 +0200
-Message-Id: <20220823080119.377590916@linuxfoundation.org>
+        stable@vger.kernel.org, Liang He <windhl@126.com>,
+        Tony Lindgren <tony@atomide.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.4 064/389] ARM: OMAP2+: display: Fix refcount leak bug
+Date:   Tue, 23 Aug 2022 10:22:22 +0200
+Message-Id: <20220823080118.278171207@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220823080115.331990024@linuxfoundation.org>
 References: <20220823080115.331990024@linuxfoundation.org>
@@ -49,42 +50,34 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Ming Lei <ming.lei@redhat.com>
+From: Liang He <windhl@126.com>
 
-[ Upstream commit f3ec5d11554778c24ac8915e847223ed71d104fc ]
+[ Upstream commit 50b87a32a79bca6e275918a711fb8cc55e16d739 ]
 
-blk_mq_debugfs_register_hctx() can be called by blk_mq_update_nr_hw_queues
-when gendisk isn't added yet, such as nvme tcp.
+In omapdss_init_fbdev(), of_find_node_by_name() will return a node
+pointer with refcount incremented. We should use of_node_put() when
+it is not used anymore.
 
-Fixes the warning of 'debugfs: Directory 'hctx0' with parent '/' already present!'
-which can be observed reliably when running blktests nvme/005.
-
-Fixes: 6cfc0081b046 ("blk-mq: no need to check return value of debugfs_create functions")
-Reported-by: Yi Zhang <yi.zhang@redhat.com>
-Signed-off-by: Ming Lei <ming.lei@redhat.com>
-Tested-by: Yi Zhang <yi.zhang@redhat.com>
-Reviewed-by: Christoph Hellwig <hch@lst.de>
-Link: https://lore.kernel.org/r/20220711090808.259682-1-ming.lei@redhat.com
-Signed-off-by: Jens Axboe <axboe@kernel.dk>
+Signed-off-by: Liang He <windhl@126.com>
+Message-Id: <20220617145803.4050918-1-windhl@126.com>
+Signed-off-by: Tony Lindgren <tony@atomide.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- block/blk-mq-debugfs.c | 3 +++
- 1 file changed, 3 insertions(+)
+ arch/arm/mach-omap2/display.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/block/blk-mq-debugfs.c b/block/blk-mq-debugfs.c
-index 121f4c1e0697..772a6c6b1634 100644
---- a/block/blk-mq-debugfs.c
-+++ b/block/blk-mq-debugfs.c
-@@ -883,6 +883,9 @@ void blk_mq_debugfs_register_hctx(struct request_queue *q,
- 	char name[20];
- 	int i;
+diff --git a/arch/arm/mach-omap2/display.c b/arch/arm/mach-omap2/display.c
+index 1bd64f6ba8cf..d3b531d5d920 100644
+--- a/arch/arm/mach-omap2/display.c
++++ b/arch/arm/mach-omap2/display.c
+@@ -211,6 +211,7 @@ static int __init omapdss_init_fbdev(void)
+ 	node = of_find_node_by_name(NULL, "omap4_padconf_global");
+ 	if (node)
+ 		omap4_dsi_mux_syscon = syscon_node_to_regmap(node);
++	of_node_put(node);
  
-+	if (!q->debugfs_dir)
-+		return;
-+
- 	snprintf(name, sizeof(name), "hctx%u", hctx->queue_num);
- 	hctx->debugfs_dir = debugfs_create_dir(name, q->debugfs_dir);
- 
+ 	return 0;
+ }
 -- 
 2.35.1
 
