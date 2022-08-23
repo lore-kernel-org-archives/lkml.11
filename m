@@ -2,40 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 897F3C32772
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 09:01:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A6FC6C32772
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 09:01:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239882AbiHWJBG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 05:01:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45116 "EHLO
+        id S240949AbiHWJBK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 23 Aug 2022 05:01:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45082 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347443AbiHWJA2 (ORCPT
+        with ESMTP id S1347510AbiHWJAe (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 05:00:28 -0400
+        Tue, 23 Aug 2022 05:00:34 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8277F7330F;
-        Tue, 23 Aug 2022 01:27:01 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A1B418276C;
+        Tue, 23 Aug 2022 01:27:30 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 50E9461488;
-        Tue, 23 Aug 2022 08:26:58 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D35FDC433D6;
-        Tue, 23 Aug 2022 08:26:56 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 1D1486132D;
+        Tue, 23 Aug 2022 08:27:24 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0CB86C433C1;
+        Tue, 23 Aug 2022 08:27:22 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661243217;
-        bh=TmWiTKgfzoKoGyNX5HZwo3WU9A42IVlNd++im0xVLXE=;
+        s=korg; t=1661243243;
+        bh=I7mToTYrlG00p7FiW4DaYlyEvxUMSTtAGzBRGbiFV+Q=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ZxhdBitsTGTcMbXSL0W/O4I8Q3A5dRxqc+F9tM/48gknpUoUHBtD6YWmbAFe8GD9q
-         SDDE92bMh/VDaizGiDgBz4q/Xeem5s4yCfie05CMlyMjDNE/LHMNsDYWPYGWkgaXLm
-         u8IOI276zp/0N+/48+Ki1OUUI4AkljSyYYfmDb8A=
+        b=cbz3CEqxWzH5bD0e5pOMCcm84LpTjBtjPuJfO3cTZqre7lEOg2fbA/C130ErRhCne
+         STZJ3bitoWfoNglrg1tG4vv+ksTeNaPB5mOnS+7sIPl7F95rHRtK83dRoOZNxirv3c
+         b2fY0Z2NY/9em5cqpBC/ndGBSoeliN/pCoFoJVVs=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Pablo Neira Ayuso <pablo@netfilter.org>
-Subject: [PATCH 5.19 199/365] netfilter: nf_tables: validate NFTA_SET_ELEM_OBJREF based on NFT_SET_OBJECT flag
-Date:   Tue, 23 Aug 2022 10:01:40 +0200
-Message-Id: <20220823080126.553163524@linuxfoundation.org>
+        stable@vger.kernel.org, Vladimir Oltean <vladimir.oltean@nxp.com>,
+        Jakub Kicinski <kuba@kernel.org>
+Subject: [PATCH 5.19 215/365] net: dsa: felix: fix ethtool 256-511 and 512-1023 TX packet counters
+Date:   Tue, 23 Aug 2022 10:01:56 +0200
+Message-Id: <20220823080127.190879077@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220823080118.128342613@linuxfoundation.org>
 References: <20220823080118.128342613@linuxfoundation.org>
@@ -47,51 +48,32 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Pablo Neira Ayuso <pablo@netfilter.org>
+From: Vladimir Oltean <vladimir.oltean@nxp.com>
 
-commit 5a2f3dc31811e93be15522d9eb13ed61460b76c8 upstream.
+commit 40d21c4565bce064c73a03b79a157a3493c518b9 upstream.
 
-If the NFTA_SET_ELEM_OBJREF netlink attribute is present and
-NFT_SET_OBJECT flag is set on, report EINVAL.
+What the driver actually reports as 256-511 is in fact 512-1023, and the
+TX packets in the 256-511 bucket are not reported. Fix that.
 
-Move existing sanity check earlier to validate that NFT_SET_OBJECT
-requires NFTA_SET_ELEM_OBJREF.
-
-Fixes: 8aeff920dcc9 ("netfilter: nf_tables: add stateful object reference to set elements")
-Signed-off-by: Pablo Neira Ayuso <pablo@netfilter.org>
+Fixes: 56051948773e ("net: dsa: ocelot: add driver for Felix switch family")
+Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- net/netfilter/nf_tables_api.c |   13 +++++++++----
- 1 file changed, 9 insertions(+), 4 deletions(-)
+ drivers/net/dsa/ocelot/felix_vsc9959.c |    3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
---- a/net/netfilter/nf_tables_api.c
-+++ b/net/netfilter/nf_tables_api.c
-@@ -5848,6 +5848,15 @@ static int nft_add_set_elem(struct nft_c
- 			return -EINVAL;
- 	}
- 
-+	if (set->flags & NFT_SET_OBJECT) {
-+		if (!nla[NFTA_SET_ELEM_OBJREF] &&
-+		    !(flags & NFT_SET_ELEM_INTERVAL_END))
-+			return -EINVAL;
-+	} else {
-+		if (nla[NFTA_SET_ELEM_OBJREF])
-+			return -EINVAL;
-+	}
-+
- 	if ((flags & NFT_SET_ELEM_INTERVAL_END) &&
- 	     (nla[NFTA_SET_ELEM_DATA] ||
- 	      nla[NFTA_SET_ELEM_OBJREF] ||
-@@ -5986,10 +5995,6 @@ static int nft_add_set_elem(struct nft_c
- 	}
- 
- 	if (nla[NFTA_SET_ELEM_OBJREF] != NULL) {
--		if (!(set->flags & NFT_SET_OBJECT)) {
--			err = -EINVAL;
--			goto err_parse_key_end;
--		}
- 		obj = nft_obj_lookup(ctx->net, ctx->table,
- 				     nla[NFTA_SET_ELEM_OBJREF],
- 				     set->objtype, genmask);
+--- a/drivers/net/dsa/ocelot/felix_vsc9959.c
++++ b/drivers/net/dsa/ocelot/felix_vsc9959.c
+@@ -601,7 +601,8 @@ static const struct ocelot_stat_layout v
+ 	{ .offset = 0x87,	.name = "tx_frames_below_65_octets", },
+ 	{ .offset = 0x88,	.name = "tx_frames_65_to_127_octets", },
+ 	{ .offset = 0x89,	.name = "tx_frames_128_255_octets", },
+-	{ .offset = 0x8B,	.name = "tx_frames_256_511_octets", },
++	{ .offset = 0x8A,	.name = "tx_frames_256_511_octets", },
++	{ .offset = 0x8B,	.name = "tx_frames_512_1023_octets", },
+ 	{ .offset = 0x8C,	.name = "tx_frames_1024_1526_octets", },
+ 	{ .offset = 0x8D,	.name = "tx_frames_over_1526_octets", },
+ 	{ .offset = 0x8E,	.name = "tx_yellow_prio_0", },
 
 
