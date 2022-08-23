@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5045BC32772
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 10:38:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0172CC32772
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 10:38:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346658AbiHWKh6 (ORCPT
+        id S1355192AbiHWKiD (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 06:37:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40952 "EHLO
+        Tue, 23 Aug 2022 06:38:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44164 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355102AbiHWKWw (ORCPT
+        with ESMTP id S1355127AbiHWKW5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 06:22:52 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E339782D22;
-        Tue, 23 Aug 2022 02:04:03 -0700 (PDT)
+        Tue, 23 Aug 2022 06:22:57 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C2EAC83052;
+        Tue, 23 Aug 2022 02:04:09 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 9C00861579;
-        Tue, 23 Aug 2022 09:04:02 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 92166C433C1;
-        Tue, 23 Aug 2022 09:04:01 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id D816D6157B;
+        Tue, 23 Aug 2022 09:04:08 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7BB28C433C1;
+        Tue, 23 Aug 2022 09:04:07 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661245442;
-        bh=uFkwEnwYdM2knsy3Y3aTW+IQSNPBA1I+FmHWrWPgufA=;
+        s=korg; t=1661245448;
+        bh=xkG7HBVSpzEct9/zDdbjFzkOFGecZni2qgP8RFOi378=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=aCN8aBNNJTAITmmpLJzd7joGAEnWQOkKfVfziy+dTnPfw3r+wSDTMVyuVv9hHpB84
-         +vNtSn6IiLjjTgKTBINMP8kJfp/stkUlT1/ZeQz1YJFXN3oASXYk1WjI3khvbVqnGY
-         AcPAXn4ZyVuZS3kW1I+/kJtEycYOSNDZjnT/GF34=
+        b=RwaFwPK1HLZn9pBxaWcGnwopX5OHqk+4+VenFpK2ZcPO9AfLYHZ8JJk0U929jzFC1
+         NyvtF+KTxQ66H9UFpubVBX8wMWsdCnzoUJ+1l4yBaVgbCUouvSbSoP3XIrGrvMJ1i3
+         1aEOr1PfJUD1/GqXVYEaWDVWv9fwk9sQe+ktEbJU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Bo-Chen Chen <rex-bc.chen@mediatek.com>,
-        Chun-Kuang Hu <chunkuang.hu@kernel.org>,
+        stable@vger.kernel.org, Rob Clark <robdclark@chromium.org>,
+        Abhinav Kumar <quic_abhinavk@quicinc.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.19 080/287] drm/mediatek: dpi: Remove output format of YUV
-Date:   Tue, 23 Aug 2022 10:24:09 +0200
-Message-Id: <20220823080102.961692222@linuxfoundation.org>
+Subject: [PATCH 4.19 082/287] drm/msm/mdp5: Fix global state lock backoff
+Date:   Tue, 23 Aug 2022 10:24:11 +0200
+Message-Id: <20220823080103.031636281@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220823080100.268827165@linuxfoundation.org>
 References: <20220823080100.268827165@linuxfoundation.org>
@@ -50,71 +50,83 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Bo-Chen Chen <rex-bc.chen@mediatek.com>
+From: Rob Clark <robdclark@chromium.org>
 
-[ Upstream commit c9ed0713b3c35fc45677707ba47f432cad95da56 ]
+[ Upstream commit 92ef86ab513593c6329d04146e61f9a670e72fc5 ]
 
-DPI is not support output format as YUV, but there is the setting of
-configuring output YUV. Therefore, remove them in this patch.
+We need to grab the lock after the early return for !hwpipe case.
+Otherwise, we could have hit contention yet still returned 0.
 
-Fixes: 9e629c17aa8d ("drm/mediatek: Add DPI sub driver")
-Signed-off-by: Bo-Chen Chen <rex-bc.chen@mediatek.com>
-Link: https://patchwork.kernel.org/project/linux-mediatek/patch/20220701035845.16458-5-rex-bc.chen@mediatek.com/
-Signed-off-by: Chun-Kuang Hu <chunkuang.hu@kernel.org>
+Fixes an issue that the new CONFIG_DRM_DEBUG_MODESET_LOCK stuff flagged
+in CI:
+
+   WARNING: CPU: 0 PID: 282 at drivers/gpu/drm/drm_modeset_lock.c:296 drm_modeset_lock+0xf8/0x154
+   Modules linked in:
+   CPU: 0 PID: 282 Comm: kms_cursor_lega Tainted: G        W         5.19.0-rc2-15930-g875cc8bc536a #1
+   Hardware name: Qualcomm Technologies, Inc. DB820c (DT)
+   pstate: 60000005 (nZCv daif -PAN -UAO -TCO -DIT -SSBS BTYPE=--)
+   pc : drm_modeset_lock+0xf8/0x154
+   lr : drm_atomic_get_private_obj_state+0x84/0x170
+   sp : ffff80000cfab6a0
+   x29: ffff80000cfab6a0 x28: 0000000000000000 x27: ffff000083bc4d00
+   x26: 0000000000000038 x25: 0000000000000000 x24: ffff80000957ca58
+   x23: 0000000000000000 x22: ffff000081ace080 x21: 0000000000000001
+   x20: ffff000081acec18 x19: ffff80000cfabb80 x18: 0000000000000038
+   x17: 0000000000000000 x16: 0000000000000000 x15: fffffffffffea0d0
+   x14: 0000000000000000 x13: 284e4f5f4e524157 x12: 5f534b434f4c5f47
+   x11: ffff80000a386aa8 x10: 0000000000000029 x9 : ffff80000cfab610
+   x8 : 0000000000000029 x7 : 0000000000000014 x6 : 0000000000000000
+   x5 : 0000000000000001 x4 : ffff8000081ad904 x3 : 0000000000000029
+   x2 : ffff0000801db4c0 x1 : ffff80000cfabb80 x0 : ffff000081aceb58
+   Call trace:
+    drm_modeset_lock+0xf8/0x154
+    drm_atomic_get_private_obj_state+0x84/0x170
+    mdp5_get_global_state+0x54/0x6c
+    mdp5_pipe_release+0x2c/0xd4
+    mdp5_plane_atomic_check+0x2ec/0x414
+    drm_atomic_helper_check_planes+0xd8/0x210
+    drm_atomic_helper_check+0x54/0xb0
+    ...
+   ---[ end trace 0000000000000000 ]---
+   drm_modeset_lock attempting to lock a contended lock without backoff:
+      drm_modeset_lock+0x148/0x154
+      mdp5_get_global_state+0x30/0x6c
+      mdp5_pipe_release+0x2c/0xd4
+      mdp5_plane_atomic_check+0x290/0x414
+      drm_atomic_helper_check_planes+0xd8/0x210
+      drm_atomic_helper_check+0x54/0xb0
+      drm_atomic_check_only+0x4b0/0x8f4
+      drm_atomic_commit+0x68/0xe0
+
+Fixes: d59be579fa93 ("drm/msm/mdp5: Return error code in mdp5_pipe_release when deadlock is detected")
+Signed-off-by: Rob Clark <robdclark@chromium.org>
+Reviewed-by: Abhinav Kumar <quic_abhinavk@quicinc.com>
+Patchwork: https://patchwork.freedesktop.org/patch/492701/
+Link: https://lore.kernel.org/r/20220707162040.1594855-1-robdclark@gmail.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/gpu/drm/mediatek/mtk_dpi.c | 31 ++++++------------------------
- 1 file changed, 6 insertions(+), 25 deletions(-)
+ drivers/gpu/drm/msm/disp/mdp5/mdp5_pipe.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/gpu/drm/mediatek/mtk_dpi.c b/drivers/gpu/drm/mediatek/mtk_dpi.c
-index 6c0ea39d5739..a263ac4aaab2 100644
---- a/drivers/gpu/drm/mediatek/mtk_dpi.c
-+++ b/drivers/gpu/drm/mediatek/mtk_dpi.c
-@@ -52,13 +52,7 @@ enum mtk_dpi_out_channel_swap {
- };
- 
- enum mtk_dpi_out_color_format {
--	MTK_DPI_COLOR_FORMAT_RGB,
--	MTK_DPI_COLOR_FORMAT_RGB_FULL,
--	MTK_DPI_COLOR_FORMAT_YCBCR_444,
--	MTK_DPI_COLOR_FORMAT_YCBCR_422,
--	MTK_DPI_COLOR_FORMAT_XV_YCC,
--	MTK_DPI_COLOR_FORMAT_YCBCR_444_FULL,
--	MTK_DPI_COLOR_FORMAT_YCBCR_422_FULL
-+	MTK_DPI_COLOR_FORMAT_RGB
- };
- 
- struct mtk_dpi {
-@@ -347,24 +341,11 @@ static void mtk_dpi_config_2n_h_fre(struct mtk_dpi *dpi)
- static void mtk_dpi_config_color_format(struct mtk_dpi *dpi,
- 					enum mtk_dpi_out_color_format format)
+diff --git a/drivers/gpu/drm/msm/disp/mdp5/mdp5_pipe.c b/drivers/gpu/drm/msm/disp/mdp5/mdp5_pipe.c
+index 88de12225582..69fe09b41087 100644
+--- a/drivers/gpu/drm/msm/disp/mdp5/mdp5_pipe.c
++++ b/drivers/gpu/drm/msm/disp/mdp5/mdp5_pipe.c
+@@ -134,12 +134,13 @@ int mdp5_pipe_release(struct drm_atomic_state *s, struct mdp5_hw_pipe *hwpipe)
  {
--	if ((format == MTK_DPI_COLOR_FORMAT_YCBCR_444) ||
--	    (format == MTK_DPI_COLOR_FORMAT_YCBCR_444_FULL)) {
--		mtk_dpi_config_yuv422_enable(dpi, false);
--		mtk_dpi_config_csc_enable(dpi, true);
--		mtk_dpi_config_swap_input(dpi, false);
--		mtk_dpi_config_channel_swap(dpi, MTK_DPI_OUT_CHANNEL_SWAP_BGR);
--	} else if ((format == MTK_DPI_COLOR_FORMAT_YCBCR_422) ||
--		   (format == MTK_DPI_COLOR_FORMAT_YCBCR_422_FULL)) {
--		mtk_dpi_config_yuv422_enable(dpi, true);
--		mtk_dpi_config_csc_enable(dpi, true);
--		mtk_dpi_config_swap_input(dpi, true);
--		mtk_dpi_config_channel_swap(dpi, MTK_DPI_OUT_CHANNEL_SWAP_RGB);
--	} else {
--		mtk_dpi_config_yuv422_enable(dpi, false);
--		mtk_dpi_config_csc_enable(dpi, false);
--		mtk_dpi_config_swap_input(dpi, false);
--		mtk_dpi_config_channel_swap(dpi, MTK_DPI_OUT_CHANNEL_SWAP_RGB);
--	}
-+	/* only support RGB888 */
-+	mtk_dpi_config_yuv422_enable(dpi, false);
-+	mtk_dpi_config_csc_enable(dpi, false);
-+	mtk_dpi_config_swap_input(dpi, false);
-+	mtk_dpi_config_channel_swap(dpi, MTK_DPI_OUT_CHANNEL_SWAP_RGB);
- }
+ 	struct msm_drm_private *priv = s->dev->dev_private;
+ 	struct mdp5_kms *mdp5_kms = to_mdp5_kms(to_mdp_kms(priv->kms));
+-	struct mdp5_global_state *state = mdp5_get_global_state(s);
++	struct mdp5_global_state *state;
+ 	struct mdp5_hw_pipe_state *new_state;
  
- static void mtk_dpi_power_off(struct mtk_dpi *dpi, enum mtk_dpi_power_ctl pctl)
+ 	if (!hwpipe)
+ 		return 0;
+ 
++	state = mdp5_get_global_state(s);
+ 	if (IS_ERR(state))
+ 		return PTR_ERR(state);
+ 
 -- 
 2.35.1
 
