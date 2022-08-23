@@ -2,128 +2,118 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CD722C32772
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 16:24:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9E82FC32772
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 16:26:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244853AbiHWQY4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 12:24:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41896 "EHLO
+        id S242560AbiHWQ0N (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 23 Aug 2022 12:26:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41930 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244847AbiHWQYa (ORCPT
+        with ESMTP id S244661AbiHWQX5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 12:24:30 -0400
-Received: from szxga08-in.huawei.com (szxga08-in.huawei.com [45.249.212.255])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6D6ED9F1B3
-        for <linux-kernel@vger.kernel.org>; Tue, 23 Aug 2022 05:46:46 -0700 (PDT)
-Received: from dggpemm500022.china.huawei.com (unknown [172.30.72.55])
-        by szxga08-in.huawei.com (SkyGuard) with ESMTP id 4MBpmg2d4Cz1N7LJ;
-        Tue, 23 Aug 2022 20:43:15 +0800 (CST)
-Received: from dggpemm100009.china.huawei.com (7.185.36.113) by
- dggpemm500022.china.huawei.com (7.185.36.162) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Tue, 23 Aug 2022 20:46:44 +0800
-Received: from [10.174.179.24] (10.174.179.24) by
- dggpemm100009.china.huawei.com (7.185.36.113) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Tue, 23 Aug 2022 20:46:43 +0800
-Subject: Re: [PATCH -next v2] mm, proc: collect percpu free pages into the
- free pages
-To:     Michal Hocko <mhocko@suse.com>,
-        Andrew Morton <akpm@linux-foundation.org>
-References: <20220822023311.909316-1-liushixin2@huawei.com>
- <20220822033354.952849-1-liushixin2@huawei.com>
- <20220822141207.24ff7252913a62f80ea55e90@linux-foundation.org>
- <YwSGqtEICW5AlhWr@dhcp22.suse.cz>
-CC:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        huang ying <huang.ying.caritas@gmail.com>,
-        Aaron Lu <aaron.lu@intel.com>,
-        Dave Hansen <dave.hansen@intel.com>,
-        Jesper Dangaard Brouer <brouer@redhat.com>,
-        Vlastimil Babka <vbabka@suse.cz>,
-        Kemi Wang <kemi.wang@intel.com>,
-        "Kefeng Wang" <wangkefeng.wang@huawei.com>,
-        <linux-kernel@vger.kernel.org>, <linux-mm@kvack.org>
-From:   Liu Shixin <liushixin2@huawei.com>
-Message-ID: <6b2977fc-1e4a-f3d4-db24-7c4699e0773f@huawei.com>
-Date:   Tue, 23 Aug 2022 20:46:43 +0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:45.0) Gecko/20100101
- Thunderbird/45.7.1
+        Tue, 23 Aug 2022 12:23:57 -0400
+Received: from mx0b-001b2d01.pphosted.com (mx0b-001b2d01.pphosted.com [148.163.158.5])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C23299D66E;
+        Tue, 23 Aug 2022 05:46:09 -0700 (PDT)
+Received: from pps.filterd (m0098417.ppops.net [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 27NCXAw4012627;
+        Tue, 23 Aug 2022 12:46:00 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=date : from : to : cc :
+ subject : message-id : references : content-type : in-reply-to :
+ mime-version; s=pp1; bh=06Qsmq29OzqEWs4XDYpIrPYFzYQA1ylzCMRH9Rv30S4=;
+ b=gNBS326FmoN5AjgBPjvRO08XkOXupj9biZxRlT4uCRsnrKg8wFE+2kW1dHKXqwar93Pq
+ fpEznWW5fNs3v1WpWlFEW9nzIWvmFpIAP22uftXFr1OHOmvMLOAa8FFSMqmcu6LJuISb
+ 82230j2OUrqX1DSM0uIYMyp1rEexTGSYCI+PLrPjIdcPGKiRtXMkQcMXSXCpz9B4qBYn
+ f1oWf15DTPYI5Y9Db0ZwUGbaI+ZcS+lKWxutAatoN5+MAONBMPMdC8h+Le5GNi4NOgY+
+ y2Aewj7A6cjLtAiaM3mJnLcbPR11Ykzz58iXR5OR4DaWLAl+zTTEanpsKgEx7zdmnzp1 lw== 
+Received: from ppma04ams.nl.ibm.com (63.31.33a9.ip4.static.sl-reverse.com [169.51.49.99])
+        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3j4y0c8bnu-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Tue, 23 Aug 2022 12:46:00 +0000
+Received: from pps.filterd (ppma04ams.nl.ibm.com [127.0.0.1])
+        by ppma04ams.nl.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 27NCNZqU013165;
+        Tue, 23 Aug 2022 12:45:58 GMT
+Received: from b06cxnps3075.portsmouth.uk.ibm.com (d06relay10.portsmouth.uk.ibm.com [9.149.109.195])
+        by ppma04ams.nl.ibm.com with ESMTP id 3j2q88utfg-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Tue, 23 Aug 2022 12:45:58 +0000
+Received: from d06av21.portsmouth.uk.ibm.com (d06av21.portsmouth.uk.ibm.com [9.149.105.232])
+        by b06cxnps3075.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 27NCjtao32571826
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Tue, 23 Aug 2022 12:45:55 GMT
+Received: from d06av21.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id E17D952050;
+        Tue, 23 Aug 2022 12:45:54 +0000 (GMT)
+Received: from localhost (unknown [9.171.95.166])
+        by d06av21.portsmouth.uk.ibm.com (Postfix) with ESMTPS id 2F5C552054;
+        Tue, 23 Aug 2022 12:45:54 +0000 (GMT)
+Date:   Tue, 23 Aug 2022 14:45:52 +0200
+From:   Vasily Gorbik <gor@linux.ibm.com>
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     Wolfram Sang <wsa+renesas@sang-engineering.com>,
+        linux-kernel@vger.kernel.org, Stefan Haberland <sth@linux.ibm.com>,
+        Jan Hoeppner <hoeppner@linux.ibm.com>,
+        Heiko Carstens <hca@linux.ibm.com>,
+        Alexander Gordeev <agordeev@linux.ibm.com>,
+        Christian Borntraeger <borntraeger@linux.ibm.com>,
+        Sven Schnelle <svens@linux.ibm.com>,
+        Vineeth Vijayan <vneethv@linux.ibm.com>,
+        Peter Oberparleiter <oberpar@linux.ibm.com>,
+        Alexandra Winter <wintera@linux.ibm.com>,
+        Wenjia Zhang <wenjia@linux.ibm.com>,
+        Steffen Maier <maier@linux.ibm.com>,
+        Benjamin Block <bblock@linux.ibm.com>,
+        linux-s390@vger.kernel.org, netdev@vger.kernel.org
+Subject: Re: [PATCH] s390: move from strlcpy with unused retval to strscpy
+Message-ID: <your-ad-here.call-01661258752-ext-8248@work.hours>
+References: <20220818210102.7301-1-wsa+renesas@sang-engineering.com>
+ <20220822180249.2c79c7e8@kernel.org>
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <20220822180249.2c79c7e8@kernel.org>
+X-TM-AS-GCONF: 00
+X-Proofpoint-GUID: SVNN6Xt3WvYuy7K0mpuD76yH6KnR4CV0
+X-Proofpoint-ORIG-GUID: SVNN6Xt3WvYuy7K0mpuD76yH6KnR4CV0
+X-Proofpoint-UnRewURL: 0 URL was un-rewritten
 MIME-Version: 1.0
-In-Reply-To: <YwSGqtEICW5AlhWr@dhcp22.suse.cz>
-Content-Type: text/plain; charset="windows-1252"
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.174.179.24]
-X-ClientProxiedBy: dggems705-chm.china.huawei.com (10.3.19.182) To
- dggpemm100009.china.huawei.com (7.185.36.113)
-X-CFilter-Loop: Reflected
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.895,Hydra:6.0.517,FMLib:17.11.122.1
+ definitions=2022-08-23_05,2022-08-22_02,2022-06-22_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 bulkscore=0 suspectscore=0
+ impostorscore=0 priorityscore=1501 adultscore=0 spamscore=0
+ lowpriorityscore=0 clxscore=1011 malwarescore=0 mlxlogscore=755
+ phishscore=0 mlxscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2207270000 definitions=main-2208230050
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 2022/8/23 15:50, Michal Hocko wrote:
-> On Mon 22-08-22 14:12:07, Andrew Morton wrote:
->> On Mon, 22 Aug 2022 11:33:54 +0800 Liu Shixin <liushixin2@huawei.com> wrote:
->>
->>> The page on pcplist could be used, but not counted into memory free or
->>> avaliable, and pcp_free is only showed by show_mem() for now. Since commit
->>> d8a759b57035 ("mm, page_alloc: double zone's batchsize"), there is a
->>> significant decrease in the display of free memory, with a large number
->>> of cpus and zones, the number of pages in the percpu list can be very
->>> large, so it is better to let user to know the pcp count.
->>>
->>> On a machine with 3 zones and 72 CPUs. Before commit d8a759b57035, the
->>> maximum amount of pages in the pcp lists was theoretically 162MB(3*72*768KB).
->>> After the patch, the lists can hold 324MB. It has been observed to be 114MB
->>> in the idle state after system startup in practice(increased 80 MB).
->>>
->> Seems reasonable.
-> I have asked in the previous incarnation of the patch but haven't really
-> received any answer[1]. Is this a _real_ problem? The absolute amount of
-> memory could be perceived as a lot but is this really noticeable wrt
-> overall memory on those systems?
-This may not obvious when the memory is sufficient. However, as products monitor the
-memory to plan it. The change has caused warning. We have also considered using /proc/zoneinfo
-to calculate the total number of pcplists. However, we think it is more appropriate to add
-the total number of pcplists to free and available pages. After all, this part is also free pages.
-> Also the patch is accounting these pcp caches as free memory but that
-> can be misleading as this memory is not readily available for use in
-> general. E.g. MemAvailable is documented as:
-> 	An estimate of how much memory is available for starting new
-> 	applications, without swapping.
-> but pcp caches are drained only after direct reclaim fails which can
-> imply a lot of reclaim and runtime disruption.
-Maybe it makes more sense to add it only to free? Or handle it like page cache?
->
-> [1] http://lkml.kernel.org/r/YwMv1A1rVNZQuuOo@dhcp22.suse.cz
->
->>> diff --git a/mm/page_alloc.c b/mm/page_alloc.c
->>> index 033f1e26d15b..f89928d3ad4e 100644
->>> --- a/mm/page_alloc.c
->>> +++ b/mm/page_alloc.c
->>> @@ -5853,6 +5853,26 @@ static unsigned long nr_free_zone_pages(int offset)
->>>  	return sum;
->>>  }
->>>  
->>> +static unsigned long nr_free_zone_pcplist_pages(struct zone *zone)
->>> +{
->>> +	unsigned long sum = 0;
->>> +	int cpu;
->>> +
->>> +	for_each_online_cpu(cpu)
->>> +		sum += per_cpu_ptr(zone->per_cpu_pageset, cpu)->count;
->>> +	return sum;
->>> +}
->>> +
->>> +static unsigned long nr_free_pcplist_pages(void)
->>> +{
->>> +	unsigned long sum = 0;
->>> +	struct zone *zone;
->>> +
->>> +	for_each_zone(zone)
->>> +		sum += nr_free_zone_pcplist_pages(zone);
->>> +	return sum;
->>> +}
->> Prevention of races against zone/node hotplug?
-> Memory hotplug doesn't remove nodes nor its zones.
->
+On Mon, Aug 22, 2022 at 06:02:49PM -0700, Jakub Kicinski wrote:
+> On Thu, 18 Aug 2022 23:01:01 +0200 Wolfram Sang wrote:
+> > Follow the advice of the below link and prefer 'strscpy' in this
+> > subsystem. Conversion is 1:1 because the return value is not used.
+> > Generated by a coccinelle script.
+> > 
+> > Link: https://lore.kernel.org/r/CAHk-=wgfRnXz0W3D37d01q3JFkr_i_uTL=V6A6G1oUZcprmknw@mail.gmail.com/
+> > Signed-off-by: Wolfram Sang <wsa+renesas@sang-engineering.com>
+> > ---
+> >  drivers/s390/block/dasd_devmap.c | 2 +-
+> >  drivers/s390/block/dasd_eer.c    | 4 ++--
+> >  drivers/s390/block/dcssblk.c     | 2 +-
+> >  drivers/s390/char/hmcdrv_cache.c | 2 +-
+> >  drivers/s390/char/tape_class.c   | 4 ++--
+> >  drivers/s390/cio/qdio_debug.c    | 2 +-
+> >  drivers/s390/net/ctcm_main.c     | 2 +-
+> >  drivers/s390/net/fsm.c           | 2 +-
+> >  drivers/s390/net/qeth_ethtool.c  | 4 ++--
+> >  drivers/s390/scsi/zfcp_aux.c     | 2 +-
+> >  drivers/s390/scsi/zfcp_fc.c      | 2 +-
+> 
+> I'm assuming this will go via the s390 tree?
 
+Yes, I'll just take it via s390 tree. Thanks
+
+> 
+> Acked-by: Jakub Kicinski <kuba@kernel.org>
+> 
+> If nobody picks it up please feel free to resend the networking parts to us.
