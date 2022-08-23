@@ -2,79 +2,79 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 42AE1C32772
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 19:53:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CD357C32789
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 19:56:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233610AbiHWTxE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 15:53:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35156 "EHLO
+        id S229997AbiHWT4B (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 23 Aug 2022 15:56:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45210 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229945AbiHWTwm (ORCPT
+        with ESMTP id S233146AbiHWTzG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 15:52:42 -0400
-Received: from bee.birch.relay.mailchannels.net (bee.birch.relay.mailchannels.net [23.83.209.14])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AC2DF79ED6
-        for <linux-kernel@vger.kernel.org>; Tue, 23 Aug 2022 11:57:45 -0700 (PDT)
+        Tue, 23 Aug 2022 15:55:06 -0400
+Received: from beige.elm.relay.mailchannels.net (beige.elm.relay.mailchannels.net [23.83.212.16])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1B5B218A
+        for <linux-kernel@vger.kernel.org>; Tue, 23 Aug 2022 12:02:38 -0700 (PDT)
 X-Sender-Id: dreamhost|x-authsender|dave@stgolabs.net
 Received: from relay.mailchannels.net (localhost [127.0.0.1])
-        by relay.mailchannels.net (Postfix) with ESMTP id C9265226A9;
-        Tue, 23 Aug 2022 18:57:44 +0000 (UTC)
+        by relay.mailchannels.net (Postfix) with ESMTP id 41068200828;
+        Tue, 23 Aug 2022 19:02:33 +0000 (UTC)
 Received: from pdx1-sub0-mail-a212.dreamhost.com (unknown [127.0.0.6])
         (Authenticated sender: dreamhost)
-        by relay.mailchannels.net (Postfix) with ESMTPA id 3453A21C18;
-        Tue, 23 Aug 2022 18:57:44 +0000 (UTC)
-ARC-Seal: i=1; s=arc-2022; d=mailchannels.net; t=1661281064; a=rsa-sha256;
+        by relay.mailchannels.net (Postfix) with ESMTPA id 43203200F1B;
+        Tue, 23 Aug 2022 19:02:32 +0000 (UTC)
+ARC-Seal: i=1; s=arc-2022; d=mailchannels.net; t=1661281352; a=rsa-sha256;
         cv=none;
-        b=uKzT+YRXK/dRjQaQh4N83Ow1hQo8dDNjn0rfDvBGDg+xHFYKukgx+QxEZxMo4rrbImy97G
-        Iu4oY996VZ4BdGJR212hNRkp+MtduzrGjOkJRt5ugJq9Tc7NjAgf906CsI5eVEX4KZUhbT
-        FfHUNwPEoFI8zKcia35KUceH61XQzRNaTCNxry7Y9wF0VhshC/ylL22+cYYmHE6DevCoWZ
-        ZZxhWSPVXxeSJJ+FUh3ZuYAWKMi6nHQiDdR7cr/OnrsFI246qd7T2FWUuHE9YNRQpw+JUP
-        vPFfltPvpwurue07D+Z5aTd4kWSSiS3S8gNyGmESyx538PA/SH3Vjm4ATpMKfA==
+        b=pohZ/5FGdOh5o38XxIwB546V2RaOw/0tbVgnKfgE8UhbhI3kfHyFa0UKnWHG5007lYHVLR
+        fUfDbwRBlFqdTqiOslssj9P5bbVWMfwywRhZbiBiFInlIP5fw0UnO5nMbWIAstzyFXhX+J
+        bhNnOBw5lzKk4rGlEc83W71tXOk9WtwHOSPLDlMp7t0ldYVIJb39DW9eb/XWblaLqWhY08
+        4zX9OClTS3xIGPh1hy59QgO9HvnMm6GRUAazkReZYHQ08N/C4HZhYUE6G4eaXqTUARGgOe
+        r+1rtkIuN8WvuOfRYS26pfL/hZsFXqspOXFb14jM8z+HLPZNokAgDlD3TK9xwA==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed;
  d=mailchannels.net;
-        s=arc-2022; t=1661281064;
+        s=arc-2022; t=1661281352;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          in-reply-to:in-reply-to:references:references:dkim-signature;
-        bh=Tc3VDzBu61uAW3rO1cP+4NifjWG9bDMEkByxydyrgbE=;
-        b=AgnA58XldV7BHVJQ4mU/EyyxrmY32KrxIjXz1G1PugkdOIGMP51TJ8X0EwWsrSi1xePBQa
-        ZlmrtFsYErjQNt7R3dWwrzfT32S+3U7g0SGfwwy7gv/VKiCMowqDMeZ2U3jvWtFsqZUh5m
-        e62iLawKUCCx75U7MfNyhU0JUwUYF5agds6Vy7zePN//3KJRzyrFoMxSalqTI7IkNA8h0d
-        dZCLhF059EyFY+nog2Ic6kNkfm4BqD9vMI8aFaTkSuMKGYeKl0mNr8pRnxUAqb/HvuYnJR
-        +GT9ppMW6Vrf/+XRVUo3J7xGufiA6X/2cD/fLZFoLkcjP6EZj8TwED+JpkmQQA==
+        bh=KA64pA0DH1EGqcQRpI8y0V/oDzrbveA11q1ujgABL90=;
+        b=NY1D0o2fNYaaHUHlHRGq9j7R5gYSS7Ds3sCCmgwc5B49bUqStC9QbLAVyr3GlsQZwl2Vqh
+        Emo0E8T9YbIFLfR4D3B1Z8TYug+Yafnn2Jox9D6pFwvBD1DsgSGajFtsWvS/pFhodH1p3A
+        eLUcF3XCp5DVg2gT2jP3cJi7NPvWf1xLS0bg/slzFq0/ty6G4HWHnzveqPj5jpDVwrycds
+        aKuPA6NhCZIGMlXTcfhU0Mjpq1lriDwPuQehZ4pIB2N3r8gJIqimnSrrxgjxjsnLQRgzG4
+        b2p4fp94Exfwucoskcqg92DO/fwxNUqe31td/kAv7IMeJB0D4wz2WbPJw4FCfg==
 ARC-Authentication-Results: i=1;
-        rspamd-647d8dd55-nplfz;
+        rspamd-76867cc9c5-9h98h;
         auth=pass smtp.auth=dreamhost smtp.mailfrom=dave@stgolabs.net
 X-Sender-Id: dreamhost|x-authsender|dave@stgolabs.net
 X-MC-Relay: Neutral
 X-MailChannels-SenderId: dreamhost|x-authsender|dave@stgolabs.net
 X-MailChannels-Auth-Id: dreamhost
-X-Lonely-Callous: 77d87d6b3812293c_1661281064688_3672234468
-X-MC-Loop-Signature: 1661281064688:1146447862
-X-MC-Ingress-Time: 1661281064688
+X-Tasty-Well-Made: 7dfe35ae4c357fbf_1661281352664_2202564067
+X-MC-Loop-Signature: 1661281352664:568867792
+X-MC-Ingress-Time: 1661281352664
 Received: from pdx1-sub0-mail-a212.dreamhost.com (pop.dreamhost.com
  [64.90.62.162])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384)
-        by 100.124.238.95 (trex/6.7.1);
-        Tue, 23 Aug 2022 18:57:44 +0000
+        by 100.98.142.74 (trex/6.7.1);
+        Tue, 23 Aug 2022 19:02:32 +0000
 Received: from offworld (unknown [104.36.31.106])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
          key-exchange ECDHE (P-256) server-signature RSA-PSS (2048 bits) server-digest SHA256)
         (No client certificate requested)
         (Authenticated sender: dave@stgolabs.net)
-        by pdx1-sub0-mail-a212.dreamhost.com (Postfix) with ESMTPSA id 4MBz4l0c6Nz23;
-        Tue, 23 Aug 2022 11:57:43 -0700 (PDT)
+        by pdx1-sub0-mail-a212.dreamhost.com (Postfix) with ESMTPSA id 4MBzBH3fRZz1Pc;
+        Tue, 23 Aug 2022 12:02:31 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=stgolabs.net;
-        s=dreamhost; t=1661281063;
-        bh=Tc3VDzBu61uAW3rO1cP+4NifjWG9bDMEkByxydyrgbE=;
+        s=dreamhost; t=1661281352;
+        bh=KA64pA0DH1EGqcQRpI8y0V/oDzrbveA11q1ujgABL90=;
         h=Date:From:To:Cc:Subject:Content-Type;
-        b=o+TtfmboYWA8xe4M6eBwPVA6txqwUnAfp/dlPE6tQ2QPZEwwQ6HiPKIVdwdRDWk/K
-         d/fLSvwkZKJNstMtEYzwol010UzMiDn89IC2Up0siDSXLCFQA3AcDUXipi8iJ1s1E2
-         PoRmUYPTmkuPJrMsDZrNoXNlttKEa1pHOY3kptizyv1ITZaExxfitnrjdBWeyVa3Zf
-         DauydQFBsqs1PjA9/BFE2dCxzG84umLF6PZ/cYxnlaOxX7L4b4aHlsklkxqbnJRGBj
-         /4gPh9vINBoxFG7LGUyzDKZySG55J9m0yeCQgBELXGieqI7mMoNi5YfLOo5oBhUzU1
-         oKY4imCpOGPXA==
-Date:   Tue, 23 Aug 2022 11:39:40 -0700
+        b=RRW0YKjY1Gy3XjXUmeZeFyXsMrRHda8OMpH4DNAc2U0AISc//0a/kZYvCNIV02Ew3
+         w5hldtALtTTNIcn4IQWkjkn4wdrVqQbVWLfDGb1rP6CGSi5IwgOGh3gJowUiuv7nVS
+         AqNMDe02yLjmSoX4XzhC4uJiDSqKmS7TNqC8xt2DZIfK8YehyHBKhGIrrf8e+80C7O
+         s/ih14fyeMf0rweiQukST6xyJ5mcRgxUerbFtZhoyCK5p52PBfPis/erWSaXzMZfby
+         dhuuaeIZnRTsMBXKqKBrakjbPV07owBn1oSYBIh5dFWh1GNu73FiZlLOQwEx6faa6+
+         wwkd6LWPX7/IA==
+Date:   Tue, 23 Aug 2022 11:44:28 -0700
 From:   Davidlohr Bueso <dave@stgolabs.net>
 To:     Liam Howlett <liam.howlett@oracle.com>
 Cc:     "maple-tree@lists.infradead.org" <maple-tree@lists.infradead.org>,
@@ -83,8 +83,8 @@ Cc:     "maple-tree@lists.infradead.org" <maple-tree@lists.infradead.org>,
         Andrew Morton <akpm@linux-foundation.org>,
         "Matthew Wilcox (Oracle)" <willy@infradead.org>,
         Vlastimil Babka <vbabka@suse.cz>
-Subject: Re: [PATCH v13 46/70] acct: use VMA iterator instead of linked list
-Message-ID: <20220823183940.oct42fjqptqever3@offworld>
+Subject: Re: [PATCH v13 30/70] arm64: remove mmap linked list from vdso
+Message-ID: <20220823184428.vb5pcca4zlimyoh5@offworld>
 Mail-Followup-To: Liam Howlett <liam.howlett@oracle.com>,
         "maple-tree@lists.infradead.org" <maple-tree@lists.infradead.org>,
         "linux-mm@kvack.org" <linux-mm@kvack.org>,
@@ -93,11 +93,11 @@ Mail-Followup-To: Liam Howlett <liam.howlett@oracle.com>,
         "Matthew Wilcox (Oracle)" <willy@infradead.org>,
         Vlastimil Babka <vbabka@suse.cz>
 References: <20220822150128.1562046-1-Liam.Howlett@oracle.com>
- <20220822150128.1562046-47-Liam.Howlett@oracle.com>
+ <20220822150128.1562046-31-Liam.Howlett@oracle.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii; format=flowed
 Content-Disposition: inline
-In-Reply-To: <20220822150128.1562046-47-Liam.Howlett@oracle.com>
+In-Reply-To: <20220822150128.1562046-31-Liam.Howlett@oracle.com>
 User-Agent: NeoMutt/20220429
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
@@ -107,7 +107,7 @@ On Mon, 22 Aug 2022, Liam Howlett wrote:
 
 >From: "Matthew Wilcox (Oracle)" <willy@infradead.org>
 >
->The VMA iterator is faster than the linked list.
+>Use the VMA iterator instead.
 >
 >Signed-off-by: Matthew Wilcox (Oracle) <willy@infradead.org>
 >Signed-off-by: Liam R. Howlett <Liam.Howlett@Oracle.com>
