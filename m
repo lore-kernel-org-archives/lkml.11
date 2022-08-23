@@ -2,44 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7B01AC32793
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9AEE5C32789
 	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 08:22:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243073AbiHWIU2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 04:20:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41968 "EHLO
+        id S242905AbiHWITh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 23 Aug 2022 04:19:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39990 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242896AbiHWIQH (ORCPT
+        with ESMTP id S242470AbiHWIPX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 04:16:07 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 37C736DF84;
-        Tue, 23 Aug 2022 01:10:42 -0700 (PDT)
+        Tue, 23 Aug 2022 04:15:23 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E48AA6CF7A;
+        Tue, 23 Aug 2022 01:10:08 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 1CD116123D;
-        Tue, 23 Aug 2022 08:10:41 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2C632C433D6;
-        Tue, 23 Aug 2022 08:10:40 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 8075361298;
+        Tue, 23 Aug 2022 08:10:08 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 83FBEC433D6;
+        Tue, 23 Aug 2022 08:10:07 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661242240;
-        bh=Im3HBT1P0qQtoTxutY2VSJuAcACWfwsb36WFZEL1AcA=;
+        s=korg; t=1661242207;
+        bh=38z5+1E7HVbT6HeQjqkDPqJFtUVE6OakjVGr/qrHk+k=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=lcAyzliBANqfmzcYxMUAvjM7SIA5WTZU36Hp1dF3ZFW3AUbvwHwpSr8cgSaGPG+CV
-         w50pl6Qtvb7KCoAiFrGDlJtozWIsZPQRZTiI4GLAYOwelQk0ZwX4JTjfiuwyrt6z7n
-         v5zwi1MEfHIGm9by/iVFnkXSwefmv2b+SSsrbGGg=
+        b=h3iPVD5B+6fizRvEQACLzP6L+nRPB472DH0BCC6LhpMEreHS/6V1K76vbAXNUlb9e
+         WowP4jxkB03c9xrv8hNWgoXI3SDQu1OaTiihYRNkM+gOWgZgieX4+6e3r5XBgzeuR6
+         0GC7AQVsAcwhTD74yxU9eg36XbMFJvqbC5y2i+4o=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        =?UTF-8?q?Pali=20Roh=C3=A1r?= <pali@kernel.org>,
-        Bjorn Helgaas <bhelgaas@google.com>,
-        Naresh Kamboju <naresh.kamboju@linaro.org>,
-        Guenter Roeck <linux@roeck-us.net>
-Subject: [PATCH 4.9 041/101] PCI: Add defines for normal and subtractive PCI bridges
-Date:   Tue, 23 Aug 2022 10:03:14 +0200
-Message-Id: <20220823080036.120136049@linuxfoundation.org>
+        stable@vger.kernel.org, Timur Tabi <ttabi@nvidia.com>,
+        Karol Herbst <kherbst@redhat.com>,
+        Lyude Paul <lyude@redhat.com>
+Subject: [PATCH 4.9 036/101] drm/nouveau: fix another off-by-one in nvbios_addr
+Date:   Tue, 23 Aug 2022 10:03:09 +0200
+Message-Id: <20220823080035.956589692@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220823080034.579196046@linuxfoundation.org>
 References: <20220823080034.579196046@linuxfoundation.org>
@@ -51,40 +49,35 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Pali Rohár <pali@kernel.org>
+From: Timur Tabi <ttabi@nvidia.com>
 
-commit 904b10fb189cc15376e9bfce1ef0282e68b0b004 upstream.
+commit c441d28945fb113220d48d6c86ebc0b090a2b677 upstream.
 
-Add these PCI class codes to pci_ids.h:
+This check determines whether a given address is part of
+image 0 or image 1.  Image 1 starts at offset image0_size,
+so that address should be included.
 
-  PCI_CLASS_BRIDGE_PCI_NORMAL
-  PCI_CLASS_BRIDGE_PCI_SUBTRACTIVE
-
-Use these defines in all kernel code for describing PCI class codes for
-normal and subtractive PCI bridges.
-
-[bhelgaas: similar change in pci-mvebu.c]
-Link: https://lore.kernel.org/r/20220214114109.26809-1-pali@kernel.org
-Signed-off-by: Pali Rohár <pali@kernel.org>
-Signed-off-by: Bjorn Helgaas <bhelgaas@google.com>
-Cc: Guenter Roeck <linux@roeck-us.net>a
-Cc: Naresh Kamboju <naresh.kamboju@linaro.org>
-[ gregkh - take only the pci_ids.h portion for stable backports ]
+Fixes: 4d4e9907ff572 ("drm/nouveau/bios: guard against out-of-bounds accesses to image")
+Cc: <stable@vger.kernel.org> # v4.8+
+Signed-off-by: Timur Tabi <ttabi@nvidia.com>
+Reviewed-by: Karol Herbst <kherbst@redhat.com>
+Signed-off-by: Lyude Paul <lyude@redhat.com>
+Link: https://patchwork.freedesktop.org/patch/msgid/20220511163716.3520591-1-ttabi@nvidia.com
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- include/linux/pci_ids.h |    2 ++
- 1 file changed, 2 insertions(+)
+ drivers/gpu/drm/nouveau/nvkm/subdev/bios/base.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/include/linux/pci_ids.h
-+++ b/include/linux/pci_ids.h
-@@ -55,6 +55,8 @@
- #define PCI_CLASS_BRIDGE_EISA		0x0602
- #define PCI_CLASS_BRIDGE_MC		0x0603
- #define PCI_CLASS_BRIDGE_PCI		0x0604
-+#define PCI_CLASS_BRIDGE_PCI_NORMAL		0x060400
-+#define PCI_CLASS_BRIDGE_PCI_SUBTRACTIVE	0x060401
- #define PCI_CLASS_BRIDGE_PCMCIA		0x0605
- #define PCI_CLASS_BRIDGE_NUBUS		0x0606
- #define PCI_CLASS_BRIDGE_CARDBUS	0x0607
+--- a/drivers/gpu/drm/nouveau/nvkm/subdev/bios/base.c
++++ b/drivers/gpu/drm/nouveau/nvkm/subdev/bios/base.c
+@@ -33,7 +33,7 @@ nvbios_addr(struct nvkm_bios *bios, u32
+ {
+ 	u32 p = *addr;
+ 
+-	if (*addr > bios->image0_size && bios->imaged_addr) {
++	if (*addr >= bios->image0_size && bios->imaged_addr) {
+ 		*addr -= bios->image0_size;
+ 		*addr += bios->imaged_addr;
+ 	}
 
 
