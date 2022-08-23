@@ -2,101 +2,347 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 01C3FC32774
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 07:54:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 55D17C32793
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 07:54:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241313AbiHWHyh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 03:54:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39198 "EHLO
+        id S241397AbiHWHyp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 23 Aug 2022 03:54:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39392 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241373AbiHWHye (ORCPT
+        with ESMTP id S241373AbiHWHyn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 03:54:34 -0400
-Received: from mail-pf1-x429.google.com (mail-pf1-x429.google.com [IPv6:2607:f8b0:4864:20::429])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 905BB3C8E3
-        for <linux-kernel@vger.kernel.org>; Tue, 23 Aug 2022 00:54:33 -0700 (PDT)
-Received: by mail-pf1-x429.google.com with SMTP id 83so7009963pfw.6
-        for <linux-kernel@vger.kernel.org>; Tue, 23 Aug 2022 00:54:33 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc;
-        bh=Fhc6O7Qq+zYM2J7HupUPMiHA1uhYp0JcTthm4gtLpMk=;
-        b=eKLCQCWAmjeNQY1OQRr7S08CWDNeiCLxDDFGvLNINXnWtOrZLASoZsSQ0Ph+3K3QQZ
-         frwmfig0WFOxAq9gk5JssTOTZ6LtS/+sOxKh930lF4P8GDaRREGt/kcoQ3v2O0NCvR38
-         El1vo57dLAvErllDwVCFVn6a4f7mvlsCi2LRw4k711w/QpulUYNP1Kmcxfb1EGt8nwBN
-         o7hGrwKezS1mSIQqhzkQeWDpmP+ai8w/XBjjYVIjTPEiitPxesfd3I/0VlALCJ4LYQbV
-         jfhBsVKzE0N/WqlTt6sRwlR7egUpqKo1JWwmEPHggFYCn9DAvwqMS88BNSpoXhorShDE
-         +GAw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-message-state:from:to:cc;
-        bh=Fhc6O7Qq+zYM2J7HupUPMiHA1uhYp0JcTthm4gtLpMk=;
-        b=4QG2QGSHK6QIoVWIneRTmJ2o0OzPRVZhl9P/0YkhovKU6gg1zKoFR7qtXI0QnDIQM/
-         E/9pkVjVHXu+kUcZRQM0o5DPr2mAEjWIKqCTYjRwGMFwnN+Lu5jn8AzR7OS7RNNQ/l4z
-         C3SQ84jyYywcwIR6uua0n3T0bzphnE++DsvYI+SdOV+c911ZyrYNv6jnq0D8CStLnOvZ
-         AMsqhUYugMiflcgO/LH/HtIR287/5Yp8Fvyjt9SPX0zKVY1glcdbfX/Lta0wKqscICgu
-         0L/2TKO/w/ch1oYPI0fqIodlrxlx5yW7YvPygzjHs4CL1pdfmLafDeJVkGn2tzyXMVYP
-         uGSw==
-X-Gm-Message-State: ACgBeo1B0RV8Vqq8jK/EQYffpItbJ1mlwZMyi3wV8py48K263vm2dD2y
-        e9tLF0dllToXJs6Pg88qZVg=
-X-Google-Smtp-Source: AA6agR42r5dO1/gViA+AZieihQ4hhf5LzL7oacVP6Vd1GQ+y1OSyfKOBE2bT0T+YxAX1ZqxCr6apSQ==
-X-Received: by 2002:a05:6a00:1410:b0:528:5a5a:d846 with SMTP id l16-20020a056a00141000b005285a5ad846mr24614330pfu.9.1661241272696;
-        Tue, 23 Aug 2022 00:54:32 -0700 (PDT)
-Received: from localhost.localdomain ([193.203.214.57])
-        by smtp.gmail.com with ESMTPSA id e12-20020a170902d38c00b001636d95fe59sm4284033pld.172.2022.08.23.00.54.31
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 23 Aug 2022 00:54:32 -0700 (PDT)
-From:   cgel.zte@gmail.com
-X-Google-Original-From: ye.xingchen@zte.com.cn
-To:     agruenba@redhat.com, linux-kernel@vger.kernel.org
-Cc:     rpeterso@redhat.com, cluster-devel@redhat.com,
-        ye xingchen <ye.xingchen@zte.com.cn>,
-        Zeal Robot <zealci@zte.com.cn>
-Subject: [PATCH linux-next] gfs2: Remove the unneeded result variable
-Date:   Tue, 23 Aug 2022 07:54:29 +0000
-Message-Id: <20220823075429.209135-1-ye.xingchen@zte.com.cn>
-X-Mailer: git-send-email 2.25.1
+        Tue, 23 Aug 2022 03:54:43 -0400
+Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 83F2248E9C;
+        Tue, 23 Aug 2022 00:54:41 -0700 (PDT)
+Received: from dggpeml500026.china.huawei.com (unknown [172.30.72.57])
+        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4MBhGk4XLBzXdf0;
+        Tue, 23 Aug 2022 15:50:22 +0800 (CST)
+Received: from huawei.com (10.175.101.6) by dggpeml500026.china.huawei.com
+ (7.185.36.106) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Tue, 23 Aug
+ 2022 15:54:30 +0800
+From:   Zhengchao Shao <shaozhengchao@huawei.com>
+To:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <davem@davemloft.net>, <edumazet@google.com>, <kuba@kernel.org>,
+        <pabeni@redhat.com>, <jhs@mojatatu.com>,
+        <xiyou.wangcong@gmail.com>, <jiri@resnulli.us>,
+        <vinicius.gomes@intel.com>
+CC:     <weiyongjun1@huawei.com>, <yuehaibing@huawei.com>,
+        <shaozhengchao@huawei.com>
+Subject: [PATCH net-next] net: sched: delete duplicate cleanup of backlog and qlen
+Date:   Tue, 23 Aug 2022 15:57:17 +0800
+Message-ID: <20220823075717.28072-1-shaozhengchao@huawei.com>
+X-Mailer: git-send-email 2.17.1
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-Originating-IP: [10.175.101.6]
+X-ClientProxiedBy: dggems706-chm.china.huawei.com (10.3.19.183) To
+ dggpeml500026.china.huawei.com (7.185.36.106)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: ye xingchen <ye.xingchen@zte.com.cn>
+The qdisc_reset function has cleared the backlog and qlen of the qdisc.
+There is no need to clear them again in the specific reset function.
 
-Return the value from gfs2_iomap_get() directly instead of storing it
-in another redundant variable.
-
-Reported-by: Zeal Robot <zealci@zte.com.cn>
-Signed-off-by: ye xingchen <ye.xingchen@zte.com.cn>
+Signed-off-by: Zhengchao Shao <shaozhengchao@huawei.com>
 ---
- fs/gfs2/bmap.c | 5 +----
- 1 file changed, 1 insertion(+), 4 deletions(-)
+ include/net/sch_generic.h | 1 -
+ net/sched/sch_atm.c       | 1 -
+ net/sched/sch_cbq.c       | 1 -
+ net/sched/sch_choke.c     | 2 --
+ net/sched/sch_drr.c       | 2 --
+ net/sched/sch_dsmark.c    | 2 --
+ net/sched/sch_etf.c       | 3 ---
+ net/sched/sch_ets.c       | 2 --
+ net/sched/sch_fq_codel.c  | 2 --
+ net/sched/sch_fq_pie.c    | 3 ---
+ net/sched/sch_hfsc.c      | 2 --
+ net/sched/sch_htb.c       | 2 --
+ net/sched/sch_multiq.c    | 1 -
+ net/sched/sch_prio.c      | 2 --
+ net/sched/sch_qfq.c       | 2 --
+ net/sched/sch_red.c       | 2 --
+ net/sched/sch_sfb.c       | 2 --
+ net/sched/sch_skbprio.c   | 3 ---
+ net/sched/sch_taprio.c    | 2 --
+ net/sched/sch_tbf.c       | 2 --
+ net/sched/sch_teql.c      | 1 -
+ 21 files changed, 40 deletions(-)
 
-diff --git a/fs/gfs2/bmap.c b/fs/gfs2/bmap.c
-index 3bdb2c668a71..977d53db2994 100644
---- a/fs/gfs2/bmap.c
-+++ b/fs/gfs2/bmap.c
-@@ -2462,8 +2462,6 @@ int __gfs2_punch_hole(struct file *file, loff_t offset, loff_t length)
- static int gfs2_map_blocks(struct iomap_writepage_ctx *wpc, struct inode *inode,
- 		loff_t offset)
+diff --git a/include/net/sch_generic.h b/include/net/sch_generic.h
+index ec693fe7c553..f2958fb5ae08 100644
+--- a/include/net/sch_generic.h
++++ b/include/net/sch_generic.h
+@@ -1137,7 +1137,6 @@ static inline void __qdisc_reset_queue(struct qdisc_skb_head *qh)
+ static inline void qdisc_reset_queue(struct Qdisc *sch)
  {
--	int ret;
--
- 	if (WARN_ON_ONCE(gfs2_is_stuffed(GFS2_I(inode))))
- 		return -EIO;
- 
-@@ -2472,8 +2470,7 @@ static int gfs2_map_blocks(struct iomap_writepage_ctx *wpc, struct inode *inode,
- 		return 0;
- 
- 	memset(&wpc->iomap, 0, sizeof(wpc->iomap));
--	ret = gfs2_iomap_get(inode, offset, INT_MAX, &wpc->iomap);
--	return ret;
-+	return gfs2_iomap_get(inode, offset, INT_MAX, &wpc->iomap);
+ 	__qdisc_reset_queue(&sch->q);
+-	sch->qstats.backlog = 0;
  }
  
- const struct iomap_writeback_ops gfs2_writeback_ops = {
+ static inline struct Qdisc *qdisc_replace(struct Qdisc *sch, struct Qdisc *new,
+diff --git a/net/sched/sch_atm.c b/net/sched/sch_atm.c
+index 4c8e994cf0a5..816fd0d7ba38 100644
+--- a/net/sched/sch_atm.c
++++ b/net/sched/sch_atm.c
+@@ -577,7 +577,6 @@ static void atm_tc_reset(struct Qdisc *sch)
+ 	pr_debug("atm_tc_reset(sch %p,[qdisc %p])\n", sch, p);
+ 	list_for_each_entry(flow, &p->flows, list)
+ 		qdisc_reset(flow->q);
+-	sch->q.qlen = 0;
+ }
+ 
+ static void atm_tc_destroy(struct Qdisc *sch)
+diff --git a/net/sched/sch_cbq.c b/net/sched/sch_cbq.c
+index af126eb3e431..b026daca160e 100644
+--- a/net/sched/sch_cbq.c
++++ b/net/sched/sch_cbq.c
+@@ -975,7 +975,6 @@ cbq_reset(struct Qdisc *sch)
+ 			cl->cpriority = cl->priority;
+ 		}
+ 	}
+-	sch->q.qlen = 0;
+ }
+ 
+ 
+diff --git a/net/sched/sch_choke.c b/net/sched/sch_choke.c
+index 2adbd945bf15..25d2daaa8122 100644
+--- a/net/sched/sch_choke.c
++++ b/net/sched/sch_choke.c
+@@ -315,8 +315,6 @@ static void choke_reset(struct Qdisc *sch)
+ 		rtnl_qdisc_drop(skb, sch);
+ 	}
+ 
+-	sch->q.qlen = 0;
+-	sch->qstats.backlog = 0;
+ 	if (q->tab)
+ 		memset(q->tab, 0, (q->tab_mask + 1) * sizeof(struct sk_buff *));
+ 	q->head = q->tail = 0;
+diff --git a/net/sched/sch_drr.c b/net/sched/sch_drr.c
+index 18e4f7a0b291..4e5b1cf11b85 100644
+--- a/net/sched/sch_drr.c
++++ b/net/sched/sch_drr.c
+@@ -441,8 +441,6 @@ static void drr_reset_qdisc(struct Qdisc *sch)
+ 			qdisc_reset(cl->qdisc);
+ 		}
+ 	}
+-	sch->qstats.backlog = 0;
+-	sch->q.qlen = 0;
+ }
+ 
+ static void drr_destroy_qdisc(struct Qdisc *sch)
+diff --git a/net/sched/sch_dsmark.c b/net/sched/sch_dsmark.c
+index 4c100d105269..7da6dc38a382 100644
+--- a/net/sched/sch_dsmark.c
++++ b/net/sched/sch_dsmark.c
+@@ -409,8 +409,6 @@ static void dsmark_reset(struct Qdisc *sch)
+ 	pr_debug("%s(sch %p,[qdisc %p])\n", __func__, sch, p);
+ 	if (p->q)
+ 		qdisc_reset(p->q);
+-	sch->qstats.backlog = 0;
+-	sch->q.qlen = 0;
+ }
+ 
+ static void dsmark_destroy(struct Qdisc *sch)
+diff --git a/net/sched/sch_etf.c b/net/sched/sch_etf.c
+index c48f91075b5c..d96103b0e2bf 100644
+--- a/net/sched/sch_etf.c
++++ b/net/sched/sch_etf.c
+@@ -445,9 +445,6 @@ static void etf_reset(struct Qdisc *sch)
+ 	timesortedlist_clear(sch);
+ 	__qdisc_reset_queue(&sch->q);
+ 
+-	sch->qstats.backlog = 0;
+-	sch->q.qlen = 0;
+-
+ 	q->last = 0;
+ }
+ 
+diff --git a/net/sched/sch_ets.c b/net/sched/sch_ets.c
+index d73393493553..8de4365886e8 100644
+--- a/net/sched/sch_ets.c
++++ b/net/sched/sch_ets.c
+@@ -727,8 +727,6 @@ static void ets_qdisc_reset(struct Qdisc *sch)
+ 	}
+ 	for (band = 0; band < q->nbands; band++)
+ 		qdisc_reset(q->classes[band].qdisc);
+-	sch->qstats.backlog = 0;
+-	sch->q.qlen = 0;
+ }
+ 
+ static void ets_qdisc_destroy(struct Qdisc *sch)
+diff --git a/net/sched/sch_fq_codel.c b/net/sched/sch_fq_codel.c
+index 839e1235db05..23a042adb74d 100644
+--- a/net/sched/sch_fq_codel.c
++++ b/net/sched/sch_fq_codel.c
+@@ -347,8 +347,6 @@ static void fq_codel_reset(struct Qdisc *sch)
+ 		codel_vars_init(&flow->cvars);
+ 	}
+ 	memset(q->backlogs, 0, q->flows_cnt * sizeof(u32));
+-	sch->q.qlen = 0;
+-	sch->qstats.backlog = 0;
+ 	q->memory_usage = 0;
+ }
+ 
+diff --git a/net/sched/sch_fq_pie.c b/net/sched/sch_fq_pie.c
+index d6aba6edd16e..35c35465226b 100644
+--- a/net/sched/sch_fq_pie.c
++++ b/net/sched/sch_fq_pie.c
+@@ -521,9 +521,6 @@ static void fq_pie_reset(struct Qdisc *sch)
+ 		INIT_LIST_HEAD(&flow->flowchain);
+ 		pie_vars_init(&flow->vars);
+ 	}
+-
+-	sch->q.qlen = 0;
+-	sch->qstats.backlog = 0;
+ }
+ 
+ static void fq_pie_destroy(struct Qdisc *sch)
+diff --git a/net/sched/sch_hfsc.c b/net/sched/sch_hfsc.c
+index d3979a6000e7..03efc40e42fc 100644
+--- a/net/sched/sch_hfsc.c
++++ b/net/sched/sch_hfsc.c
+@@ -1484,8 +1484,6 @@ hfsc_reset_qdisc(struct Qdisc *sch)
+ 	}
+ 	q->eligible = RB_ROOT;
+ 	qdisc_watchdog_cancel(&q->watchdog);
+-	sch->qstats.backlog = 0;
+-	sch->q.qlen = 0;
+ }
+ 
+ static void
+diff --git a/net/sched/sch_htb.c b/net/sched/sch_htb.c
+index 23a9d6242429..cb5872d22ecf 100644
+--- a/net/sched/sch_htb.c
++++ b/net/sched/sch_htb.c
+@@ -1008,8 +1008,6 @@ static void htb_reset(struct Qdisc *sch)
+ 	}
+ 	qdisc_watchdog_cancel(&q->watchdog);
+ 	__qdisc_reset_queue(&q->direct_queue);
+-	sch->q.qlen = 0;
+-	sch->qstats.backlog = 0;
+ 	memset(q->hlevel, 0, sizeof(q->hlevel));
+ 	memset(q->row_mask, 0, sizeof(q->row_mask));
+ }
+diff --git a/net/sched/sch_multiq.c b/net/sched/sch_multiq.c
+index cd8ab90c4765..f28050c7f12d 100644
+--- a/net/sched/sch_multiq.c
++++ b/net/sched/sch_multiq.c
+@@ -152,7 +152,6 @@ multiq_reset(struct Qdisc *sch)
+ 
+ 	for (band = 0; band < q->bands; band++)
+ 		qdisc_reset(q->queues[band]);
+-	sch->q.qlen = 0;
+ 	q->curband = 0;
+ }
+ 
+diff --git a/net/sched/sch_prio.c b/net/sched/sch_prio.c
+index 3b8d7197c06b..c03a11dd990f 100644
+--- a/net/sched/sch_prio.c
++++ b/net/sched/sch_prio.c
+@@ -135,8 +135,6 @@ prio_reset(struct Qdisc *sch)
+ 
+ 	for (prio = 0; prio < q->bands; prio++)
+ 		qdisc_reset(q->queues[prio]);
+-	sch->qstats.backlog = 0;
+-	sch->q.qlen = 0;
+ }
+ 
+ static int prio_offload(struct Qdisc *sch, struct tc_prio_qopt *qopt)
+diff --git a/net/sched/sch_qfq.c b/net/sched/sch_qfq.c
+index d4ce58c90f9f..13246a9dc5c1 100644
+--- a/net/sched/sch_qfq.c
++++ b/net/sched/sch_qfq.c
+@@ -1458,8 +1458,6 @@ static void qfq_reset_qdisc(struct Qdisc *sch)
+ 			qdisc_reset(cl->qdisc);
+ 		}
+ 	}
+-	sch->qstats.backlog = 0;
+-	sch->q.qlen = 0;
+ }
+ 
+ static void qfq_destroy_qdisc(struct Qdisc *sch)
+diff --git a/net/sched/sch_red.c b/net/sched/sch_red.c
+index 40adf1f07a82..f1e013e3f04a 100644
+--- a/net/sched/sch_red.c
++++ b/net/sched/sch_red.c
+@@ -176,8 +176,6 @@ static void red_reset(struct Qdisc *sch)
+ 	struct red_sched_data *q = qdisc_priv(sch);
+ 
+ 	qdisc_reset(q->qdisc);
+-	sch->qstats.backlog = 0;
+-	sch->q.qlen = 0;
+ 	red_restart(&q->vars);
+ }
+ 
+diff --git a/net/sched/sch_sfb.c b/net/sched/sch_sfb.c
+index 3d061a13d7ed..31717fa45a4f 100644
+--- a/net/sched/sch_sfb.c
++++ b/net/sched/sch_sfb.c
+@@ -453,8 +453,6 @@ static void sfb_reset(struct Qdisc *sch)
+ 	struct sfb_sched_data *q = qdisc_priv(sch);
+ 
+ 	qdisc_reset(q->qdisc);
+-	sch->qstats.backlog = 0;
+-	sch->q.qlen = 0;
+ 	q->slot = 0;
+ 	q->double_buffering = false;
+ 	sfb_zero_all_buckets(q);
+diff --git a/net/sched/sch_skbprio.c b/net/sched/sch_skbprio.c
+index 7a5e4c454715..df72fb83d9c7 100644
+--- a/net/sched/sch_skbprio.c
++++ b/net/sched/sch_skbprio.c
+@@ -213,9 +213,6 @@ static void skbprio_reset(struct Qdisc *sch)
+ 	struct skbprio_sched_data *q = qdisc_priv(sch);
+ 	int prio;
+ 
+-	sch->qstats.backlog = 0;
+-	sch->q.qlen = 0;
+-
+ 	for (prio = 0; prio < SKBPRIO_MAX_PRIORITY; prio++)
+ 		__skb_queue_purge(&q->qdiscs[prio]);
+ 
+diff --git a/net/sched/sch_taprio.c b/net/sched/sch_taprio.c
+index 0b941dd63d26..db88a692ef81 100644
+--- a/net/sched/sch_taprio.c
++++ b/net/sched/sch_taprio.c
+@@ -1636,8 +1636,6 @@ static void taprio_reset(struct Qdisc *sch)
+ 			if (q->qdiscs[i])
+ 				qdisc_reset(q->qdiscs[i]);
+ 	}
+-	sch->qstats.backlog = 0;
+-	sch->q.qlen = 0;
+ }
+ 
+ static void taprio_destroy(struct Qdisc *sch)
+diff --git a/net/sched/sch_tbf.c b/net/sched/sch_tbf.c
+index 72102277449e..d0288e223542 100644
+--- a/net/sched/sch_tbf.c
++++ b/net/sched/sch_tbf.c
+@@ -330,8 +330,6 @@ static void tbf_reset(struct Qdisc *sch)
+ 	struct tbf_sched_data *q = qdisc_priv(sch);
+ 
+ 	qdisc_reset(q->qdisc);
+-	sch->qstats.backlog = 0;
+-	sch->q.qlen = 0;
+ 	q->t_c = ktime_get_ns();
+ 	q->tokens = q->buffer;
+ 	q->ptokens = q->mtu;
+diff --git a/net/sched/sch_teql.c b/net/sched/sch_teql.c
+index 6af6b95bdb67..79aaab51cbf5 100644
+--- a/net/sched/sch_teql.c
++++ b/net/sched/sch_teql.c
+@@ -124,7 +124,6 @@ teql_reset(struct Qdisc *sch)
+ 	struct teql_sched_data *dat = qdisc_priv(sch);
+ 
+ 	skb_queue_purge(&dat->q);
+-	sch->q.qlen = 0;
+ }
+ 
+ static void
 -- 
-2.25.1
+2.17.1
+
