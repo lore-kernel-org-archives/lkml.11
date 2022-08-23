@@ -2,45 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E76B5C32772
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 08:27:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AFF65C32793
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 08:27:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243396AbiHWI1c (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 04:27:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33298 "EHLO
+        id S243488AbiHWI1i (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 23 Aug 2022 04:27:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33472 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242890AbiHWIV6 (ORCPT
+        with ESMTP id S242889AbiHWIWX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 04:21:58 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7443E6B66F;
-        Tue, 23 Aug 2022 01:13:05 -0700 (PDT)
+        Tue, 23 Aug 2022 04:22:23 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0C6D26B8CA;
+        Tue, 23 Aug 2022 01:13:14 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id AAF22612DA;
-        Tue, 23 Aug 2022 08:12:38 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A8D98C43142;
-        Tue, 23 Aug 2022 08:12:37 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 47294B81C28;
+        Tue, 23 Aug 2022 08:12:48 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 88665C433C1;
+        Tue, 23 Aug 2022 08:12:46 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661242358;
-        bh=70zht3iXI+nD4lhGJ7awU9z0EeMuRPW/A6oszaYsjeo=;
+        s=korg; t=1661242367;
+        bh=OaRJyxx/1ocTQP4heOmBoJQJynAMAxskczaYHFrbYc8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=GTc+raHFE4y2rc97//cnIvmAw1TMnw7Ek3RRWMF1FfIDmdZT5P2HuFxYn1dfZcA9R
-         93JZE1+TMLRx1O2KF9ch0841FaexxTgOqIC0qJS1bilwZsRHStveoH239NW4E9TB4A
-         UAVH5UUnWQ8Go/TaNpl/ADW79OKl33qG6h8MocKI=
+        b=1lnzzLj8sj5YtdkzR0+JPXYf04yx1F/91Qz4IRCn3Mo+57VI+ELpMCcL5f/PR7mTJ
+         M2Q23jBsfDAB98AKH5FaIYV4eVSPP7Swyiv8ng4Z2ZEEEtgAyZnZ/CbGgHA5FQ79ec
+         8lbsvzhY8va1uZiuhQ95Llw9e5ZU7QFOVxR0D5Jg=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Fabien Parent <fparent@baylibre.com>,
-        Mattijs Korpershoek <mkorpershoek@baylibre.com>,
-        Dmitry Torokhov <dmitry.torokhov@gmail.com>
-Subject: [PATCH 5.19 103/365] Input: mt6779-keypad - match hardware matrix organization
-Date:   Tue, 23 Aug 2022 10:00:04 +0200
-Message-Id: <20220823080122.513731633@linuxfoundation.org>
+        stable@vger.kernel.org, Ronald Wahl <ronald.wahl@raritan.com>,
+        Jose Alonso <joalonsof@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>
+Subject: [PATCH 4.9 061/101] Revert "net: usb: ax88179_178a needs FLAG_SEND_ZLP"
+Date:   Tue, 23 Aug 2022 10:03:34 +0200
+Message-Id: <20220823080036.917269178@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220823080118.128342613@linuxfoundation.org>
-References: <20220823080118.128342613@linuxfoundation.org>
+In-Reply-To: <20220823080034.579196046@linuxfoundation.org>
+References: <20220823080034.579196046@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -49,61 +49,96 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Mattijs Korpershoek <mkorpershoek@baylibre.com>
+From: Jose Alonso <joalonsof@gmail.com>
 
-commit d6ed52583034f9d2e39dead7c18e03380fd4edf2 upstream.
+commit 6fd2c17fb6e02a8c0ab51df1cfec82ce96b8e83d upstream.
 
-The MediaTek keypad has a set of bits representing keys,
-from KEY0 to KEY77, arranged in 5 chunks of 15 bits split into 5 32-bit
-registers.
+This reverts commit 36a15e1cb134c0395261ba1940762703f778438c.
 
-In our implementation, we simply decided to use register number as row
-and offset in the register as column when encoding our "matrix".
+The usage of FLAG_SEND_ZLP causes problems to other firmware/hardware
+versions that have no issues.
 
-Because of this, we can have a 5x32 matrix which does not match the
-hardware at all, which is confusing.
+The FLAG_SEND_ZLP is not safe to use in this context.
+See:
+https://patchwork.ozlabs.org/project/netdev/patch/1270599787.8900.8.camel@Linuxdev4-laptop/#118378
+The original problem needs another way to solve.
 
-Change the row/column calculation to match the hardware.
-
-Fixes: f28af984e771 ("Input: mt6779-keypad - add MediaTek keypad driver")
-Co-developed-by: Fabien Parent <fparent@baylibre.com>
-Signed-off-by: Fabien Parent <fparent@baylibre.com>
-Signed-off-by: Mattijs Korpershoek <mkorpershoek@baylibre.com>
-Link: https://lore.kernel.org/r/20220707075236.126631-2-mkorpershoek@baylibre.com
-Signed-off-by: Dmitry Torokhov <dmitry.torokhov@gmail.com>
+Fixes: 36a15e1cb134 ("net: usb: ax88179_178a needs FLAG_SEND_ZLP")
+Cc: stable@vger.kernel.org
+Reported-by: Ronald Wahl <ronald.wahl@raritan.com>
+Link: https://bugzilla.kernel.org/show_bug.cgi?id=216327
+Link: https://bugs.archlinux.org/task/75491
+Signed-off-by: Jose Alonso <joalonsof@gmail.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/input/keyboard/mt6779-keypad.c | 8 +++++---
- 1 file changed, 5 insertions(+), 3 deletions(-)
+ drivers/net/usb/ax88179_178a.c |   14 +++++++-------
+ 1 file changed, 7 insertions(+), 7 deletions(-)
 
-diff --git a/drivers/input/keyboard/mt6779-keypad.c b/drivers/input/keyboard/mt6779-keypad.c
-index 2e7c9187c10f..bd86cb95bde3 100644
---- a/drivers/input/keyboard/mt6779-keypad.c
-+++ b/drivers/input/keyboard/mt6779-keypad.c
-@@ -42,7 +42,7 @@ static irqreturn_t mt6779_keypad_irq_handler(int irq, void *dev_id)
- 	const unsigned short *keycode = keypad->input_dev->keycode;
- 	DECLARE_BITMAP(new_state, MTK_KPD_NUM_BITS);
- 	DECLARE_BITMAP(change, MTK_KPD_NUM_BITS);
--	unsigned int bit_nr;
-+	unsigned int bit_nr, key;
- 	unsigned int row, col;
- 	unsigned int scancode;
- 	unsigned int row_shift = get_count_order(keypad->n_cols);
-@@ -61,8 +61,10 @@ static irqreturn_t mt6779_keypad_irq_handler(int irq, void *dev_id)
- 		if (bit_nr % 32 >= 16)
- 			continue;
- 
--		row = bit_nr / 32;
--		col = bit_nr % 32;
-+		key = bit_nr / 32 * 16 + bit_nr % 32;
-+		row = key / 9;
-+		col = key % 9;
-+
- 		scancode = MATRIX_SCAN_CODE(row, col, row_shift);
- 		/* 1: not pressed, 0: pressed */
- 		pressed = !test_bit(bit_nr, new_state);
--- 
-2.37.2
-
+--- a/drivers/net/usb/ax88179_178a.c
++++ b/drivers/net/usb/ax88179_178a.c
+@@ -1703,7 +1703,7 @@ static const struct driver_info ax88179_
+ 	.link_reset = ax88179_link_reset,
+ 	.reset = ax88179_reset,
+ 	.stop = ax88179_stop,
+-	.flags = FLAG_ETHER | FLAG_FRAMING_AX | FLAG_SEND_ZLP,
++	.flags = FLAG_ETHER | FLAG_FRAMING_AX,
+ 	.rx_fixup = ax88179_rx_fixup,
+ 	.tx_fixup = ax88179_tx_fixup,
+ };
+@@ -1716,7 +1716,7 @@ static const struct driver_info ax88178a
+ 	.link_reset = ax88179_link_reset,
+ 	.reset = ax88179_reset,
+ 	.stop = ax88179_stop,
+-	.flags = FLAG_ETHER | FLAG_FRAMING_AX | FLAG_SEND_ZLP,
++	.flags = FLAG_ETHER | FLAG_FRAMING_AX,
+ 	.rx_fixup = ax88179_rx_fixup,
+ 	.tx_fixup = ax88179_tx_fixup,
+ };
+@@ -1729,7 +1729,7 @@ static const struct driver_info cypress_
+ 	.link_reset = ax88179_link_reset,
+ 	.reset = ax88179_reset,
+ 	.stop = ax88179_stop,
+-	.flags = FLAG_ETHER | FLAG_FRAMING_AX | FLAG_SEND_ZLP,
++	.flags = FLAG_ETHER | FLAG_FRAMING_AX,
+ 	.rx_fixup = ax88179_rx_fixup,
+ 	.tx_fixup = ax88179_tx_fixup,
+ };
+@@ -1742,7 +1742,7 @@ static const struct driver_info dlink_du
+ 	.link_reset = ax88179_link_reset,
+ 	.reset = ax88179_reset,
+ 	.stop = ax88179_stop,
+-	.flags = FLAG_ETHER | FLAG_FRAMING_AX | FLAG_SEND_ZLP,
++	.flags = FLAG_ETHER | FLAG_FRAMING_AX,
+ 	.rx_fixup = ax88179_rx_fixup,
+ 	.tx_fixup = ax88179_tx_fixup,
+ };
+@@ -1755,7 +1755,7 @@ static const struct driver_info sitecom_
+ 	.link_reset = ax88179_link_reset,
+ 	.reset = ax88179_reset,
+ 	.stop = ax88179_stop,
+-	.flags = FLAG_ETHER | FLAG_FRAMING_AX | FLAG_SEND_ZLP,
++	.flags = FLAG_ETHER | FLAG_FRAMING_AX,
+ 	.rx_fixup = ax88179_rx_fixup,
+ 	.tx_fixup = ax88179_tx_fixup,
+ };
+@@ -1768,7 +1768,7 @@ static const struct driver_info samsung_
+ 	.link_reset = ax88179_link_reset,
+ 	.reset = ax88179_reset,
+ 	.stop = ax88179_stop,
+-	.flags = FLAG_ETHER | FLAG_FRAMING_AX | FLAG_SEND_ZLP,
++	.flags = FLAG_ETHER | FLAG_FRAMING_AX,
+ 	.rx_fixup = ax88179_rx_fixup,
+ 	.tx_fixup = ax88179_tx_fixup,
+ };
+@@ -1781,7 +1781,7 @@ static const struct driver_info lenovo_i
+ 	.link_reset = ax88179_link_reset,
+ 	.reset = ax88179_reset,
+ 	.stop = ax88179_stop,
+-	.flags = FLAG_ETHER | FLAG_FRAMING_AX | FLAG_SEND_ZLP,
++	.flags = FLAG_ETHER | FLAG_FRAMING_AX,
+ 	.rx_fixup = ax88179_rx_fixup,
+ 	.tx_fixup = ax88179_tx_fixup,
+ };
 
 
