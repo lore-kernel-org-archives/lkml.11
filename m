@@ -2,152 +2,95 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2AF4FC49EC1
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 10:42:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DCE7CC52D79
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 10:42:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356068AbiHWKlZ (ORCPT
+        id S1356257AbiHWKlq (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 06:41:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53606 "EHLO
+        Tue, 23 Aug 2022 06:41:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57388 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354791AbiHWK0X (ORCPT
+        with ESMTP id S1354531AbiHWK2P (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 06:26:23 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 71B8383BFB
-        for <linux-kernel@vger.kernel.org>; Tue, 23 Aug 2022 02:05:44 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1661245543;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=INN7PIgXiadwGovRAjy42jqyjlBtEC4HF54Zz7onxbw=;
-        b=Y/rufR7x9eQ31ob50BpbpiG3wsQtnxMkB+sXvHDYCWvrdwbE/f799IOP3RBj2VpS4widEY
-        rFpdZHPabwTb9cIxxf7BmP+H8r6Nagz9c3DvlnYUXV1L/EhcYLz1T63eduN9+vI/CJyeHJ
-        bm3SFke7LdmPAvBMaqCMHqvhopBQIcY=
-Received: from mail-pl1-f199.google.com (mail-pl1-f199.google.com
- [209.85.214.199]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
- us-mta-196-XP67eT6oMTKNqzi3ZoioQw-1; Tue, 23 Aug 2022 05:05:41 -0400
-X-MC-Unique: XP67eT6oMTKNqzi3ZoioQw-1
-Received: by mail-pl1-f199.google.com with SMTP id q6-20020a17090311c600b0017266460b8fso8751987plh.4
-        for <linux-kernel@vger.kernel.org>; Tue, 23 Aug 2022 02:05:41 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:references:in-reply-to:from
-         :subject:cc:to:message-id:date:x-gm-message-state:from:to:cc;
-        bh=INN7PIgXiadwGovRAjy42jqyjlBtEC4HF54Zz7onxbw=;
-        b=Z99n8vXLDFOfO7BnehPfWxRICFPYgfdTC0ZB7gmt8xoJSLF0JfVh1+EzrZVRqbtvoI
-         Cs6dWFcFpMvCAW867KlgbtEMIEigxXrWvDV/2ESYW5GEqSU+tpPJ7Y4fGaqXTh2pgpvq
-         LNYVO8uaKCHp4MvstE4J1/UGc5GEWwSmUH/ekqSekNGKviZuupzveIAhf4ITz7ERTjSO
-         T5c4l9gzLr38ExzT+WTXBhkVgSM0FcAQ06M9rsURU2c2fVMoNq/D+JZr76AQXG1z18qW
-         UVHFcxhWQBYfVZCFzsSuDOrS4Ejy9By6hf83jj34wTR1mDRbX4zY+VKVKNmUKhUPlhv4
-         YWIg==
-X-Gm-Message-State: ACgBeo1Q1QeMA6vWmAwDphKMlus2Sv4kwyKa/L44lK9qLLJCInANd/RV
-        wFETIzFqvaOHznwImE8K/cUc0LpeFy70kEIsQJZlCY7cVNNubFQasVptkjSFG8SWpB6VA3HVgZJ
-        ppQX+bqZEh/UW6SzyUiPZQHD7
-X-Received: by 2002:a63:82c8:0:b0:42a:498e:93ae with SMTP id w191-20020a6382c8000000b0042a498e93aemr14683682pgd.607.1661245540291;
-        Tue, 23 Aug 2022 02:05:40 -0700 (PDT)
-X-Google-Smtp-Source: AA6agR4DHhQSi/HHjksiZl3epz+OBvTIZi3etnh1KD+p/SnaECEwWLyrQSv5Xeq/sqgreQqQSPBTMg==
-X-Received: by 2002:a63:82c8:0:b0:42a:498e:93ae with SMTP id w191-20020a6382c8000000b0042a498e93aemr14683666pgd.607.1661245540056;
-        Tue, 23 Aug 2022 02:05:40 -0700 (PDT)
-Received: from localhost ([240d:1a:c0d:9f00:4f2f:926a:23dd:8588])
-        by smtp.gmail.com with ESMTPSA id l8-20020a170903244800b0016bea74d11esm6167062pls.267.2022.08.23.02.05.37
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 23 Aug 2022 02:05:39 -0700 (PDT)
-Date:   Tue, 23 Aug 2022 18:05:36 +0900 (JST)
-Message-Id: <20220823.180536.902316146510887788.syoshida@redhat.com>
-To:     apopple@nvidia.com
-Cc:     akpm@linux-foundation.org, linux-mm@kvack.org,
-        linux-kernel@vger.kernel.org,
-        syzbot+616ff0452fec30f4dcfd@syzkaller.appspotmail.com,
-        jhubbard@nvidia.com
-Subject: Re: [PATCH v2] mm/gup.c: Fix return value for
- __gup_longterm_locked()
-From:   Shigeru Yoshida <syoshida@redhat.com>
-In-Reply-To: <8735dnu53w.fsf@nvdebian.thelocal>
-References: <20220822153713.962904-1-syoshida@redhat.com>
-        <8735dnu53w.fsf@nvdebian.thelocal>
-X-Mailer: Mew version 6.8 on Emacs 28.1
-Mime-Version: 1.0
-Content-Type: Text/Plain; charset=us-ascii
-Content-Transfer-Encoding: 7bit
+        Tue, 23 Aug 2022 06:28:15 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 99309A407F;
+        Tue, 23 Aug 2022 02:06:06 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id D82F4B81C53;
+        Tue, 23 Aug 2022 09:06:04 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4B4EAC433C1;
+        Tue, 23 Aug 2022 09:06:03 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1661245563;
+        bh=mEH2bvmY8Id/t3eHeCjcTSSGLBfWCQpEEuV3o9xiOhI=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=AGW/Z5TPLdzeWX7veGvjXTrcd5+9undvcKWCnBKTFpdCY0FIyIflXODqfkd1z6Sn8
+         8kr99AvntsuuaPH8yQpHlDeaNvPLZkm0YsHVQlInKJ8vD/PrLphBzMH9JJDyrybCnw
+         d68iiKV4vg+wtI4KhTmhtIth92D3aG7FIvxIBg78=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org,
+        =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
+        <u.kleine-koenig@pengutronix.de>,
+        Miquel Raynal <miquel.raynal@bootlin.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 4.19 118/287] mtd: st_spi_fsm: Add a clk_disable_unprepare() in .probe()s error path
+Date:   Tue, 23 Aug 2022 10:24:47 +0200
+Message-Id: <20220823080104.358527106@linuxfoundation.org>
+X-Mailer: git-send-email 2.37.2
+In-Reply-To: <20220823080100.268827165@linuxfoundation.org>
+References: <20220823080100.268827165@linuxfoundation.org>
+User-Agent: quilt/0.67
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+From: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
 
-On Tue, 23 Aug 2022 11:15:29 +1000, Alistair Popple wrote:
-> 
-> Shigeru Yoshida <syoshida@redhat.com> writes:
-> 
->> __get_user_pages_locked() may return the number of pages less than
->> nr_pages.  So __gup_longterm_locked() have to return the number of
->> pages __get_user_pages_locked() returns if it succeeded, not nr_pages
->> requested.
-> 
-> Thanks for fixing this, I've been out the last few days so just catching
-> up. I think I missed that 'rc' was passed as nr_pages into
-> check_and_migrate_movable_pages(). Will double check that I don't make
-> the same mistake in my latest series.
+[ Upstream commit 28607b426c3d050714f250d0faeb99d2e9106e90 ]
 
-Thank you so much for your review.  Andrew has already applied the patch.
+For all but one error path clk_disable_unprepare() is already there. Add
+it to the one location where it's missing.
 
->> Fixes: 61c63c2076d9 (mm/gup.c: simplify and fix check_and_migrate_movable_pages() return codes)
-> 
-> I couldn't find that SHA1, I'm guessing due to rebasing, etc. of
-> mm-unstable? Not sure how that is dealt with, but feel free to also add:
+Fixes: 481815a6193b ("mtd: st_spi_fsm: Handle clk_prepare_enable/clk_disable_unprepare.")
+Fixes: 69d5af8d016c ("mtd: st_spi_fsm: Obtain and use EMI clock")
+Signed-off-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
+Signed-off-by: Miquel Raynal <miquel.raynal@bootlin.com>
+Link: https://lore.kernel.org/linux-mtd/20220607152458.232847-2-u.kleine-koenig@pengutronix.de
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ drivers/mtd/devices/st_spi_fsm.c | 8 +++++---
+ 1 file changed, 5 insertions(+), 3 deletions(-)
 
-Yes, actually this hash is from from linux-next tree.
+diff --git a/drivers/mtd/devices/st_spi_fsm.c b/drivers/mtd/devices/st_spi_fsm.c
+index 55d4a77f3b7f..533096c88ae1 100644
+--- a/drivers/mtd/devices/st_spi_fsm.c
++++ b/drivers/mtd/devices/st_spi_fsm.c
+@@ -2120,10 +2120,12 @@ static int stfsm_probe(struct platform_device *pdev)
+ 		(long long)fsm->mtd.size, (long long)(fsm->mtd.size >> 20),
+ 		fsm->mtd.erasesize, (fsm->mtd.erasesize >> 10));
+ 
+-	return mtd_device_register(&fsm->mtd, NULL, 0);
+-
++	ret = mtd_device_register(&fsm->mtd, NULL, 0);
++	if (ret) {
+ err_clk_unprepare:
+-	clk_disable_unprepare(fsm->clk);
++		clk_disable_unprepare(fsm->clk);
++	}
++
+ 	return ret;
+ }
+ 
+-- 
+2.35.1
 
-Thanks,
-Shigeru
 
-> Reviewed-by: Alistair Popple <apopple@nvidia.com>
-> 
->> CC: Alistair Popple <apopple@nvidia.com>
->> Reported-by: syzbot+616ff0452fec30f4dcfd@syzkaller.appspotmail.com
->> Reviewed-by: John Hubbard <jhubbard@nvidia.com>
->> Signed-off-by: Shigeru Yoshida <syoshida@redhat.com>
->> ---
->>  mm/gup.c | 14 ++++++++------
->>  1 file changed, 8 insertions(+), 6 deletions(-)
->>
->> diff --git a/mm/gup.c b/mm/gup.c
->> index 5aa7531a703b..66582203220a 100644
->> --- a/mm/gup.c
->> +++ b/mm/gup.c
->> @@ -2068,22 +2068,24 @@ static long __gup_longterm_locked(struct mm_struct *mm,
->>  				  unsigned int gup_flags)
->>  {
->>  	unsigned int flags;
->> -	long rc;
->> +	long rc, nr_pinned_pages;
->>
->>  	if (!(gup_flags & FOLL_LONGTERM))
->>  		return __get_user_pages_locked(mm, start, nr_pages, pages, vmas,
->>  					       NULL, gup_flags);
->>  	flags = memalloc_pin_save();
->>  	do {
->> -		rc = __get_user_pages_locked(mm, start, nr_pages, pages, vmas,
->> -					     NULL, gup_flags);
->> -		if (rc <= 0)
->> +		nr_pinned_pages =
->> +			__get_user_pages_locked(mm, start, nr_pages, pages,
->> +						vmas, NULL, gup_flags);
->> +		if (nr_pinned_pages <= 0)
->>  			break;
->> -		rc = check_and_migrate_movable_pages(rc, pages, gup_flags);
->> +		rc = check_and_migrate_movable_pages(nr_pinned_pages, pages,
->> +						     gup_flags);
->>  	} while (rc == -EAGAIN);
->>  	memalloc_pin_restore(flags);
->>
->> -	return rc ? rc : nr_pages;
->> +	return rc ? rc : nr_pinned_pages;
->>  }
->>
->>  static bool is_valid_gup_flags(unsigned int gup_flags)
-> 
 
