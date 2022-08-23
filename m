@@ -2,107 +2,101 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6A2F6C32772
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 21:51:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B94DFC32772
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 21:51:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229511AbiHWVvi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 17:51:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54440 "EHLO
+        id S229563AbiHWVvm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 23 Aug 2022 17:51:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54446 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231625AbiHWVvZ (ORCPT
+        with ESMTP id S231638AbiHWVvZ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 23 Aug 2022 17:51:25 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 99BA53DBC1
-        for <linux-kernel@vger.kernel.org>; Tue, 23 Aug 2022 14:51:21 -0700 (PDT)
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 366273E74A
+        for <linux-kernel@vger.kernel.org>; Tue, 23 Aug 2022 14:51:24 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 16B06615C6
-        for <linux-kernel@vger.kernel.org>; Tue, 23 Aug 2022 21:51:21 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7855FC433D6;
-        Tue, 23 Aug 2022 21:51:20 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id BD0CAB821B5
+        for <linux-kernel@vger.kernel.org>; Tue, 23 Aug 2022 21:51:22 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 447C6C43470;
+        Tue, 23 Aug 2022 21:51:21 +0000 (UTC)
 Received: from rostedt by gandalf.local.home with local (Exim 4.96)
         (envelope-from <rostedt@goodmis.org>)
-        id 1oQboB-009zst-17;
-        Tue, 23 Aug 2022 17:51:39 -0400
-Message-ID: <20220823214606.344269352@goodmis.org>
+        id 1oQboC-009zv8-11;
+        Tue, 23 Aug 2022 17:51:40 -0400
+Message-ID: <20220823215140.118072554@goodmis.org>
 User-Agent: quilt/0.66
-Date:   Tue, 23 Aug 2022 17:46:06 -0400
+Date:   Tue, 23 Aug 2022 17:46:10 -0400
 From:   Steven Rostedt <rostedt@goodmis.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Ingo Molnar <mingo@kernel.org>,
         Andrew Morton <akpm@linux-foundation.org>,
         Masami Hiramatsu <mhiramat@kernel.org>,
         Tom Zanussi <zanussi@kernel.org>
-Subject: [PATCH 0/4] tracing: Have filters and histograms use a call table instead of pointers
+Subject: [PATCH 4/4] tracing/filter: Call filter predicate functions directly via a switch
+ statement
+References: <20220823214606.344269352@goodmis.org>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-While looking at the histogram and filter code, I realized that it's filled
-with function pointers. With retpolines causing a big slowdown, I thought
-that was problematic. Thus, I decided to see what would happen if I changed
-the function pointers into enums, and instead called a single function
-that did a switch on those enums and called the necessary functions
-directly. The results were pretty clear.
+From: "Steven Rostedt (Google)" <rostedt@goodmis.org>
 
-The first patch was to update the trace event benchmark event to include
-a integer value "delta" of the delta that it took to complete
-(it currently only shows the delta as part of a string). By doing
-so, I could benchmark the histogram and filter logic with it.
+Due to retpolines, indirect calls are much more expensive than direct
+calls. The filters have a select set of functions it uses for the
+predicates. Instead of using function pointers to call them, create a
+filter_pred_fn_call() function that uses a switch statement to call the
+predicate functions directly. This gives almost a 10% speedup to the
+filter logic.
 
-Before this series, the histogram with a single filter (to ignore the
-first event, which has a delta of zero), had:
+Using the histogram benchmark:
 
-# event histogram
-#
-# trigger info: hist:keys=delta:vals=hitcount:sort=delta:size=2048 if delta > 0 [active]
-#
+Before:
 
-{ delta:        129 } hitcount:       2213
-{ delta:        130 } hitcount:     285965
-{ delta:        131 } hitcount:    1146545
-{ delta:        132 } hitcount:    5185432
-{ delta:        133 } hitcount:   19896215
-{ delta:        134 } hitcount:   53118616
-{ delta:        135 } hitcount:   83816709
-{ delta:        136 } hitcount:   68329562
-{ delta:        137 } hitcount:   41859349
-{ delta:        138 } hitcount:   46257797
-{ delta:        139 } hitcount:   54400831
-{ delta:        140 } hitcount:   72875007
-{ delta:        141 } hitcount:   76193272
-{ delta:        142 } hitcount:   49504263
-{ delta:        143 } hitcount:   38821072
-{ delta:        144 } hitcount:   47702679
-{ delta:        145 } hitcount:   41357297
-{ delta:        146 } hitcount:   22058238
-{ delta:        147 } hitcount:    9720002
-{ delta:        148 } hitcount:    3193542
-{ delta:        149 } hitcount:     927030
-{ delta:        150 } hitcount:     850772
-{ delta:        151 } hitcount:    1477380
-{ delta:        152 } hitcount:    2687977
-{ delta:        153 } hitcount:    2865985
-{ delta:        154 } hitcount:    1977492
-{ delta:        155 } hitcount:    2475607
-{ delta:        156 } hitcount:    3403612
-{ delta:        157 } hitcount:    2264011
-{ delta:        158 } hitcount:    1096214
-{ delta:        159 } hitcount:     504653
-{ delta:        160 } hitcount:     218869
-{ delta:        161 } hitcount:     103246
-[..]
+ # event histogram
+ #
+ # trigger info: hist:keys=delta:vals=hitcount:sort=delta:size=2048 if delta > 0 [active]
+ #
 
-Where the bulk was around 142ns, and the fastest time was 129ns.
+{ delta:        113 } hitcount:        272
+{ delta:        114 } hitcount:        840
+{ delta:        118 } hitcount:        344
+{ delta:        119 } hitcount:      25428
+{ delta:        120 } hitcount:     350590
+{ delta:        121 } hitcount:    1892484
+{ delta:        122 } hitcount:    6205004
+{ delta:        123 } hitcount:   11583521
+{ delta:        124 } hitcount:   37590979
+{ delta:        125 } hitcount:  108308504
+{ delta:        126 } hitcount:  131672461
+{ delta:        127 } hitcount:   88700598
+{ delta:        128 } hitcount:   65939870
+{ delta:        129 } hitcount:   45055004
+{ delta:        130 } hitcount:   33174464
+{ delta:        131 } hitcount:   31813493
+{ delta:        132 } hitcount:   29011676
+{ delta:        133 } hitcount:   22798782
+{ delta:        134 } hitcount:   22072486
+{ delta:        135 } hitcount:   17034113
+{ delta:        136 } hitcount:    8982490
+{ delta:        137 } hitcount:    2865908
+{ delta:        138 } hitcount:     980382
+{ delta:        139 } hitcount:    1651944
+{ delta:        140 } hitcount:    4112073
+{ delta:        141 } hitcount:    3963269
+{ delta:        142 } hitcount:    1712508
+{ delta:        143 } hitcount:     575941
 
-After this series:
+After:
 
-# event histogram
-#
-# trigger info: hist:keys=delta:vals=hitcount:sort=delta:size=2048 if delta > 0 [active]
-#
+ # event histogram
+ #
+ # trigger info: hist:keys=delta:vals=hitcount:sort=delta:size=2048 if delta > 0 [active]
+ #
 
 { delta:        103 } hitcount:         60
 { delta:        104 } hitcount:      16966
@@ -133,31 +127,382 @@ After this series:
 { delta:        129 } hitcount:      51242
 { delta:        130 } hitcount:      28361
 { delta:        131 } hitcount:      23926
-{ delta:        132 } hitcount:      22253
-{ delta:        133 } hitcount:      16994
-{ delta:        134 } hitcount:      14970
-{ delta:        135 } hitcount:      13464
-{ delta:        136 } hitcount:      11452
-{ delta:        137 } hitcount:      12212
-{ delta:        138 } hitcount:      12280
-{ delta:        139 } hitcount:       9127
-{ delta:        140 } hitcount:       9553
 
-Where the bulk was around 114ns and the fast time was 103ns.
+The peak before was 126ns per event, after the peak is 114ns, and the
+fastest time went from 113ns to 103ns.
 
-That's almost a 20% speedup!!!
+Signed-off-by: Steven Rostedt (Google) <rostedt@goodmis.org>
+---
+ kernel/trace/trace_events_filter.c | 230 ++++++++++++++++++++---------
+ 1 file changed, 157 insertions(+), 73 deletions(-)
 
-
-Steven Rostedt (Google) (4):
-      tracing: Add numeric delta time to the trace event benchmark
-      tracing/hist: Call hist functions directly via a switch statement
-      tracing: Move struct filter_pred into trace_events_filter.c
-      tracing/filter: Call filter predicate functions directly via a switch statement
-
-----
- kernel/trace/trace.h               |  13 --
- kernel/trace/trace_benchmark.c     |   2 +-
- kernel/trace/trace_benchmark.h     |   8 +-
- kernel/trace/trace_events_filter.c | 239 +++++++++++++++++++++++++-----------
- kernel/trace/trace_events_hist.c   | 244 +++++++++++++++++++++++++------------
- 5 files changed, 342 insertions(+), 164 deletions(-)
+diff --git a/kernel/trace/trace_events_filter.c b/kernel/trace/trace_events_filter.c
+index c49c689ce4ad..96acc2b71ac7 100644
+--- a/kernel/trace/trace_events_filter.c
++++ b/kernel/trace/trace_events_filter.c
+@@ -43,10 +43,33 @@ enum filter_op_ids { OPS };
+ 
+ static const char * ops[] = { OPS };
+ 
+-typedef int (*filter_pred_fn_t) (struct filter_pred *pred, void *event);
++enum filter_pred_fn {
++	FILTER_PRED_FN_NOP,
++	FILTER_PRED_FN_64,
++	FILTER_PRED_FN_S64,
++	FILTER_PRED_FN_U64,
++	FILTER_PRED_FN_32,
++	FILTER_PRED_FN_S32,
++	FILTER_PRED_FN_U32,
++	FILTER_PRED_FN_16,
++	FILTER_PRED_FN_S16,
++	FILTER_PRED_FN_U16,
++	FILTER_PRED_FN_8,
++	FILTER_PRED_FN_S8,
++	FILTER_PRED_FN_U8,
++	FILTER_PRED_FN_COMM,
++	FILTER_PRED_FN_STRING,
++	FILTER_PRED_FN_STRLOC,
++	FILTER_PRED_FN_STRRELLOC,
++	FILTER_PRED_FN_PCHAR_USER,
++	FILTER_PRED_FN_PCHAR,
++	FILTER_PRED_FN_CPU,
++	FILTER_PRED_FN_,
++	FILTER_PRED_TEST_VISITED,
++};
+ 
+ struct filter_pred {
+-	filter_pred_fn_t 	fn;
++	enum filter_pred_fn 	fn_num;
+ 	u64 			val;
+ 	struct regex		regex;
+ 	unsigned short		*ops;
+@@ -603,44 +626,48 @@ predicate_parse(const char *str, int nr_parens, int nr_preds,
+ 	return ERR_PTR(ret);
+ }
+ 
++enum pred_cmp_types {
++	PRED_CMP_TYPE_NOP,
++	PRED_CMP_TYPE_LT,
++	PRED_CMP_TYPE_LE,
++	PRED_CMP_TYPE_GT,
++	PRED_CMP_TYPE_GE,
++	PRED_CMP_TYPE_BAND,
++};
++
+ #define DEFINE_COMPARISON_PRED(type)					\
+-static int filter_pred_LT_##type(struct filter_pred *pred, void *event)	\
+-{									\
+-	type *addr = (type *)(event + pred->offset);			\
+-	type val = (type)pred->val;					\
+-	return *addr < val;						\
+-}									\
+-static int filter_pred_LE_##type(struct filter_pred *pred, void *event)	\
++static int filter_pred_##type(struct filter_pred *pred, void *event)	\
+ {									\
+-	type *addr = (type *)(event + pred->offset);			\
+-	type val = (type)pred->val;					\
+-	return *addr <= val;						\
+-}									\
+-static int filter_pred_GT_##type(struct filter_pred *pred, void *event)	\
+-{									\
+-	type *addr = (type *)(event + pred->offset);			\
+-	type val = (type)pred->val;					\
+-	return *addr > val;					\
+-}									\
+-static int filter_pred_GE_##type(struct filter_pred *pred, void *event)	\
+-{									\
+-	type *addr = (type *)(event + pred->offset);			\
+-	type val = (type)pred->val;					\
+-	return *addr >= val;						\
+-}									\
+-static int filter_pred_BAND_##type(struct filter_pred *pred, void *event) \
+-{									\
+-	type *addr = (type *)(event + pred->offset);			\
+-	type val = (type)pred->val;					\
+-	return !!(*addr & val);						\
+-}									\
+-static const filter_pred_fn_t pred_funcs_##type[] = {			\
+-	filter_pred_LE_##type,						\
+-	filter_pred_LT_##type,						\
+-	filter_pred_GE_##type,						\
+-	filter_pred_GT_##type,						\
+-	filter_pred_BAND_##type,					\
+-};
++	switch (pred->op) {						\
++	case OP_LT: {							\
++		type *addr = (type *)(event + pred->offset);		\
++		type val = (type)pred->val;				\
++		return *addr < val;					\
++	}								\
++	case OP_LE: {					\
++		type *addr = (type *)(event + pred->offset);		\
++		type val = (type)pred->val;				\
++		return *addr <= val;					\
++	}								\
++	case OP_GT: {					\
++		type *addr = (type *)(event + pred->offset);		\
++		type val = (type)pred->val;				\
++		return *addr > val;					\
++	}								\
++	case OP_GE: {					\
++		type *addr = (type *)(event + pred->offset);		\
++		type val = (type)pred->val;				\
++		return *addr >= val;					\
++	}								\
++	case OP_BAND: {					\
++		type *addr = (type *)(event + pred->offset);		\
++		type val = (type)pred->val;				\
++		return !!(*addr & val);					\
++	}								\
++	default:							\
++		return 0;						\
++	}								\
++}
+ 
+ #define DEFINE_EQUALITY_PRED(size)					\
+ static int filter_pred_##size(struct filter_pred *pred, void *event)	\
+@@ -849,11 +876,6 @@ static int filter_pred_comm(struct filter_pred *pred, void *event)
+ 	return cmp ^ pred->not;
+ }
+ 
+-static int filter_pred_none(struct filter_pred *pred, void *event)
+-{
+-	return 0;
+-}
+-
+ /*
+  * regex_match_foo - Basic regex callbacks
+  *
+@@ -999,6 +1021,19 @@ static void filter_build_regex(struct filter_pred *pred)
+ 	}
+ }
+ 
++
++#ifdef CONFIG_FTRACE_STARTUP_TEST
++static int test_pred_visited_fn(struct filter_pred *pred, void *event);
++#else
++static int test_pred_visited_fn(struct filter_pred *pred, void *event)
++{
++	return 0;
++}
++#endif
++
++
++static int filter_pred_fn_call(struct filter_pred *pred, void *event);
++
+ /* return 1 if event matches, 0 otherwise (discard) */
+ int filter_match_preds(struct event_filter *filter, void *rec)
+ {
+@@ -1016,7 +1051,7 @@ int filter_match_preds(struct event_filter *filter, void *rec)
+ 
+ 	for (i = 0; prog[i].pred; i++) {
+ 		struct filter_pred *pred = prog[i].pred;
+-		int match = pred->fn(pred, rec);
++		int match = filter_pred_fn_call(pred, rec);
+ 		if (match == prog[i].when_to_branch)
+ 			i = prog[i].target;
+ 	}
+@@ -1202,10 +1237,10 @@ int filter_assign_type(const char *type)
+ 	return FILTER_OTHER;
+ }
+ 
+-static filter_pred_fn_t select_comparison_fn(enum filter_op_ids op,
+-					    int field_size, int field_is_signed)
++static enum filter_pred_fn select_comparison_fn(enum filter_op_ids op,
++						int field_size, int field_is_signed)
+ {
+-	filter_pred_fn_t fn = NULL;
++	enum filter_pred_fn fn = FILTER_PRED_FN_NOP;
+ 	int pred_func_index = -1;
+ 
+ 	switch (op) {
+@@ -1214,50 +1249,99 @@ static filter_pred_fn_t select_comparison_fn(enum filter_op_ids op,
+ 		break;
+ 	default:
+ 		if (WARN_ON_ONCE(op < PRED_FUNC_START))
+-			return NULL;
++			return fn;
+ 		pred_func_index = op - PRED_FUNC_START;
+ 		if (WARN_ON_ONCE(pred_func_index > PRED_FUNC_MAX))
+-			return NULL;
++			return fn;
+ 	}
+ 
+ 	switch (field_size) {
+ 	case 8:
+ 		if (pred_func_index < 0)
+-			fn = filter_pred_64;
++			fn = FILTER_PRED_FN_64;
+ 		else if (field_is_signed)
+-			fn = pred_funcs_s64[pred_func_index];
++			fn = FILTER_PRED_FN_S64;
+ 		else
+-			fn = pred_funcs_u64[pred_func_index];
++			fn = FILTER_PRED_FN_U64;
+ 		break;
+ 	case 4:
+ 		if (pred_func_index < 0)
+-			fn = filter_pred_32;
++			fn = FILTER_PRED_FN_32;
+ 		else if (field_is_signed)
+-			fn = pred_funcs_s32[pred_func_index];
++			fn = FILTER_PRED_FN_S32;
+ 		else
+-			fn = pred_funcs_u32[pred_func_index];
++			fn = FILTER_PRED_FN_U32;
+ 		break;
+ 	case 2:
+ 		if (pred_func_index < 0)
+-			fn = filter_pred_16;
++			fn = FILTER_PRED_FN_16;
+ 		else if (field_is_signed)
+-			fn = pred_funcs_s16[pred_func_index];
++			fn = FILTER_PRED_FN_S16;
+ 		else
+-			fn = pred_funcs_u16[pred_func_index];
++			fn = FILTER_PRED_FN_U16;
+ 		break;
+ 	case 1:
+ 		if (pred_func_index < 0)
+-			fn = filter_pred_8;
++			fn = FILTER_PRED_FN_8;
+ 		else if (field_is_signed)
+-			fn = pred_funcs_s8[pred_func_index];
++			fn = FILTER_PRED_FN_S8;
+ 		else
+-			fn = pred_funcs_u8[pred_func_index];
++			fn = FILTER_PRED_FN_U8;
+ 		break;
+ 	}
+ 
+ 	return fn;
+ }
+ 
++
++static int filter_pred_fn_call(struct filter_pred *pred, void *event)
++{
++	switch (pred->fn_num) {
++	case FILTER_PRED_FN_64:
++		return filter_pred_64(pred, event);
++	case FILTER_PRED_FN_S64:
++		return filter_pred_s64(pred, event);
++	case FILTER_PRED_FN_U64:
++		return filter_pred_u64(pred, event);
++	case FILTER_PRED_FN_32:
++		return filter_pred_32(pred, event);
++	case FILTER_PRED_FN_S32:
++		return filter_pred_s32(pred, event);
++	case FILTER_PRED_FN_U32:
++		return filter_pred_u32(pred, event);
++	case FILTER_PRED_FN_16:
++		return filter_pred_16(pred, event);
++	case FILTER_PRED_FN_S16:
++		return filter_pred_s16(pred, event);
++	case FILTER_PRED_FN_U16:
++		return filter_pred_u16(pred, event);
++	case FILTER_PRED_FN_8:
++		return filter_pred_8(pred, event);
++	case FILTER_PRED_FN_S8:
++		return filter_pred_s8(pred, event);
++	case FILTER_PRED_FN_U8:
++		return filter_pred_u8(pred, event);
++	case FILTER_PRED_FN_COMM:
++		return filter_pred_comm(pred, event);
++	case FILTER_PRED_FN_STRING:
++		return filter_pred_string(pred, event);
++	case FILTER_PRED_FN_STRLOC:
++		return filter_pred_strloc(pred, event);
++	case FILTER_PRED_FN_STRRELLOC:
++		return filter_pred_strrelloc(pred, event);
++	case FILTER_PRED_FN_PCHAR_USER:
++		return filter_pred_pchar_user(pred, event);
++	case FILTER_PRED_FN_PCHAR:
++		return filter_pred_pchar(pred, event);
++	case FILTER_PRED_FN_CPU:
++		return filter_pred_cpu(pred, event);
++	case FILTER_PRED_TEST_VISITED:
++		return test_pred_visited_fn(pred, event);
++	default:
++		return 0;
++	}
++}
++
+ /* Called when a predicate is encountered by predicate_parse() */
+ static int parse_pred(const char *str, void *data,
+ 		      int pos, struct filter_parse_error *pe,
+@@ -1351,7 +1435,7 @@ static int parse_pred(const char *str, void *data,
+ 			parse_error(pe, FILT_ERR_IP_FIELD_ONLY, pos + i);
+ 			goto err_free;
+ 		}
+-		pred->fn = filter_pred_none;
++		pred->fn_num = FILTER_PRED_FN_NOP;
+ 
+ 		/*
+ 		 * Quotes are not required, but if they exist then we need
+@@ -1429,16 +1513,16 @@ static int parse_pred(const char *str, void *data,
+ 		filter_build_regex(pred);
+ 
+ 		if (field->filter_type == FILTER_COMM) {
+-			pred->fn = filter_pred_comm;
++			pred->fn_num = FILTER_PRED_FN_COMM;
+ 
+ 		} else if (field->filter_type == FILTER_STATIC_STRING) {
+-			pred->fn = filter_pred_string;
++			pred->fn_num = FILTER_PRED_FN_STRING;
+ 			pred->regex.field_len = field->size;
+ 
+ 		} else if (field->filter_type == FILTER_DYN_STRING) {
+-			pred->fn = filter_pred_strloc;
++			pred->fn_num = FILTER_PRED_FN_STRLOC;
+ 		} else if (field->filter_type == FILTER_RDYN_STRING)
+-			pred->fn = filter_pred_strrelloc;
++			pred->fn_num = FILTER_PRED_FN_STRRELLOC;
+ 		else {
+ 
+ 			if (!ustring_per_cpu) {
+@@ -1449,9 +1533,9 @@ static int parse_pred(const char *str, void *data,
+ 			}
+ 
+ 			if (ustring)
+-				pred->fn = filter_pred_pchar_user;
++				pred->fn_num = FILTER_PRED_FN_PCHAR_USER;
+ 			else
+-				pred->fn = filter_pred_pchar;
++				pred->fn_num = FILTER_PRED_FN_PCHAR;
+ 		}
+ 		/* go past the last quote */
+ 		i++;
+@@ -1499,10 +1583,10 @@ static int parse_pred(const char *str, void *data,
+ 		pred->val = val;
+ 
+ 		if (field->filter_type == FILTER_CPU)
+-			pred->fn = filter_pred_cpu;
++			pred->fn_num = FILTER_PRED_FN_CPU;
+ 		else {
+-			pred->fn = select_comparison_fn(pred->op, field->size,
+-							field->is_signed);
++			pred->fn_num = select_comparison_fn(pred->op, field->size,
++							    field->is_signed);
+ 			if (pred->op == OP_NE)
+ 				pred->not = 1;
+ 		}
+@@ -2309,7 +2393,7 @@ static void update_pred_fn(struct event_filter *filter, char *fields)
+ 		struct filter_pred *pred = prog[i].pred;
+ 		struct ftrace_event_field *field = pred->field;
+ 
+-		WARN_ON_ONCE(!pred->fn);
++		WARN_ON_ONCE(pred->fn_num == FILTER_PRED_FN_NOP);
+ 
+ 		if (!field) {
+ 			WARN_ONCE(1, "all leafs should have field defined %d", i);
+@@ -2319,7 +2403,7 @@ static void update_pred_fn(struct event_filter *filter, char *fields)
+ 		if (!strchr(fields, *field->name))
+ 			continue;
+ 
+-		pred->fn = test_pred_visited_fn;
++		pred->fn_num = FILTER_PRED_TEST_VISITED;
+ 	}
+ }
+ 
+-- 
+2.35.1
