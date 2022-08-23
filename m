@@ -2,47 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F20F4C32774
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 10:18:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DCB60C32792
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 10:18:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353723AbiHWKSM (ORCPT
+        id S1353738AbiHWKSQ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 06:18:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58334 "EHLO
+        Tue, 23 Aug 2022 06:18:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58332 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352547AbiHWKIC (ORCPT
+        with ESMTP id S1352516AbiHWKHs (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 06:08:02 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2E6B458090;
-        Tue, 23 Aug 2022 01:54:21 -0700 (PDT)
+        Tue, 23 Aug 2022 06:07:48 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 946BB57570;
+        Tue, 23 Aug 2022 01:54:19 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id BE98B61377;
-        Tue, 23 Aug 2022 08:54:20 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BA2B5C433D6;
-        Tue, 23 Aug 2022 08:54:19 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 3EFE4B81C35;
+        Tue, 23 Aug 2022 08:54:18 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 880E9C433C1;
+        Tue, 23 Aug 2022 08:54:16 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661244860;
-        bh=gLh/IqF4UW/uFOYR8tsOEPV+3tgPe4SDpXMVoAg0AvI=;
+        s=korg; t=1661244856;
+        bh=fdew62UuZcMsFie8kfqEEAZhB9kWdQ/7hAK9yJC/+Ls=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=vJmYFFs9sWxqfE74E5pLz1dOq11EH655/Z4ZjsHwZNNoaRT1rfClXVLA/NP5eydL+
-         ryVonBeKDE+EQJKrirZ4BejlktyKAMdosfWtcTEDRLAImIIWNEP979wkmLrD+Tzuqu
-         70KgiO36dW4Vkll/kcWpnWBK0aWexq0cWFQKRWG0=
+        b=GF/jLQv3VBTNHKBxj2i1XqwuckzgRG/qFGKvLgpmqFb3d41C7YE9RLDqkqWPeUfvH
+         Sy/dlxzkh0zyAE4gz/xvoKNuoaSVnFn8eceeGM0tvCqqIx1uOADRnVdiUJxOc2p4kL
+         2fxLXyv5Nz5U2SVh57lnWfJA6DZG0Em7eA7eMsE8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Pavan Chebbi <pavan.chebbi@broadcom.com>,
-        Michael Chan <michael.chan@broadcom.com>,
-        Bjorn Helgaas <bhelgaas@google.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 163/244] PCI: Add ACS quirk for Broadcom BCM5750x NICs
-Date:   Tue, 23 Aug 2022 10:25:22 +0200
-Message-Id: <20220823080104.649678654@linuxfoundation.org>
+        stable@vger.kernel.org, Nikita Travkin <nikita@trvn.ru>,
+        Linus Walleij <linus.walleij@linaro.org>
+Subject: [PATCH 4.14 189/229] pinctrl: qcom: msm8916: Allow CAMSS GP clocks to be muxed
+Date:   Tue, 23 Aug 2022 10:25:50 +0200
+Message-Id: <20220823080100.366382378@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220823080059.091088642@linuxfoundation.org>
-References: <20220823080059.091088642@linuxfoundation.org>
+In-Reply-To: <20220823080053.202747790@linuxfoundation.org>
+References: <20220823080053.202747790@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -51,44 +49,37 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Pavan Chebbi <pavan.chebbi@broadcom.com>
+From: Nikita Travkin <nikita@trvn.ru>
 
-[ Upstream commit afd306a65cedb9589564bdb23a0c368abc4215fd ]
+commit 44339391c666e46cba522d19c65a6ad1071c68b7 upstream.
 
-The Broadcom BCM5750x NICs may be multi-function devices.  They do not
-advertise ACS capability. Peer-to-peer transactions are not possible
-between the individual functions, so it is safe to treat them as fully
-isolated.
+GPIO 31, 32 can be muxed to GCC_CAMSS_GP(1,2)_CLK respectively but the
+function was never assigned to the pingroup (even though the function
+exists already).
 
-Add an ACS quirk for these devices so the functions can be in independent
-IOMMU groups and attached individually to userspace applications using
-VFIO.
+Add this mode to the related pins.
 
-Link: https://lore.kernel.org/r/1654796507-28610-1-git-send-email-michael.chan@broadcom.com
-Signed-off-by: Pavan Chebbi <pavan.chebbi@broadcom.com>
-Signed-off-by: Michael Chan <michael.chan@broadcom.com>
-Signed-off-by: Bjorn Helgaas <bhelgaas@google.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Fixes: 5373a2c5abb6 ("pinctrl: qcom: Add msm8916 pinctrl driver")
+Signed-off-by: Nikita Travkin <nikita@trvn.ru>
+Link: https://lore.kernel.org/r/20220612145955.385787-4-nikita@trvn.ru
+Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/pci/quirks.c | 3 +++
- 1 file changed, 3 insertions(+)
+ drivers/pinctrl/qcom/pinctrl-msm8916.c |    4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/pci/quirks.c b/drivers/pci/quirks.c
-index 4893b1e82403..a531064233f9 100644
---- a/drivers/pci/quirks.c
-+++ b/drivers/pci/quirks.c
-@@ -4923,6 +4923,9 @@ static const struct pci_dev_acs_enabled {
- 	{ PCI_VENDOR_ID_AMPERE, 0xE00C, pci_quirk_xgene_acs },
- 	/* Broadcom multi-function device */
- 	{ PCI_VENDOR_ID_BROADCOM, 0x16D7, pci_quirk_mf_endpoint_acs },
-+	{ PCI_VENDOR_ID_BROADCOM, 0x1750, pci_quirk_mf_endpoint_acs },
-+	{ PCI_VENDOR_ID_BROADCOM, 0x1751, pci_quirk_mf_endpoint_acs },
-+	{ PCI_VENDOR_ID_BROADCOM, 0x1752, pci_quirk_mf_endpoint_acs },
- 	{ PCI_VENDOR_ID_BROADCOM, 0xD714, pci_quirk_brcm_acs },
- 	/* Amazon Annapurna Labs */
- 	{ PCI_VENDOR_ID_AMAZON_ANNAPURNA_LABS, 0x0031, pci_quirk_al_acs },
--- 
-2.35.1
-
+--- a/drivers/pinctrl/qcom/pinctrl-msm8916.c
++++ b/drivers/pinctrl/qcom/pinctrl-msm8916.c
+@@ -852,8 +852,8 @@ static const struct msm_pingroup msm8916
+ 	PINGROUP(28, pwr_modem_enabled_a, NA, NA, NA, NA, NA, qdss_tracedata_b, NA, atest_combodac),
+ 	PINGROUP(29, cci_i2c, NA, NA, NA, NA, NA, qdss_tracedata_b, NA, atest_combodac),
+ 	PINGROUP(30, cci_i2c, NA, NA, NA, NA, NA, NA, NA, qdss_tracedata_b),
+-	PINGROUP(31, cci_timer0, NA, NA, NA, NA, NA, NA, NA, NA),
+-	PINGROUP(32, cci_timer1, NA, NA, NA, NA, NA, NA, NA, NA),
++	PINGROUP(31, cci_timer0, flash_strobe, NA, NA, NA, NA, NA, NA, NA),
++	PINGROUP(32, cci_timer1, flash_strobe, NA, NA, NA, NA, NA, NA, NA),
+ 	PINGROUP(33, cci_async, NA, NA, NA, NA, NA, NA, NA, qdss_tracedata_b),
+ 	PINGROUP(34, pwr_nav_enabled_a, NA, NA, NA, NA, NA, NA, NA, qdss_tracedata_b),
+ 	PINGROUP(35, pwr_crypto_enabled_a, NA, NA, NA, NA, NA, NA, NA, qdss_tracedata_b),
 
 
