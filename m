@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 93A28C3F6B0
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 09:47:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 801A5C32772
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 09:47:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240446AbiHWJq7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 05:46:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59274 "EHLO
+        id S240352AbiHWJrO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 23 Aug 2022 05:47:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41790 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352581AbiHWJlf (ORCPT
+        with ESMTP id S1352645AbiHWJlm (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 05:41:35 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5137B7A77C;
-        Tue, 23 Aug 2022 01:42:24 -0700 (PDT)
+        Tue, 23 Aug 2022 05:41:42 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 46F9699269;
+        Tue, 23 Aug 2022 01:42:20 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id DE7FC61257;
-        Tue, 23 Aug 2022 08:42:23 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DEF50C433B5;
-        Tue, 23 Aug 2022 08:42:22 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id E952A614E9;
+        Tue, 23 Aug 2022 08:42:14 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6B756C433D6;
+        Tue, 23 Aug 2022 08:42:13 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661244143;
-        bh=CmsG51oJ8EzkSt1t67kltCCBkqFOsG2kjKAsW1x6eOU=;
+        s=korg; t=1661244134;
+        bh=3YWFN+XdT8fZR01BOiGHTKj+hLvtm2wKp6jWFyaFJ34=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=sKts0qEuJLGyv7UIJL5tsTlQwpL5ZphB1hRqPF/a1pJb3W+T85iC63jyFUrrc9F7x
-         GeNgB+/kyq3YYJpMaCCW4BZmUjqc19oi/idVOaEVqwxDYsfa0xIK3NKVD4oXiwFXeO
-         r4SVtxKJo4FWfA4DPvJ+388DNaJvGmBFnG4lsucE=
+        b=q+orXx6TQk0XQu3Zqn//M2qVPuoxoKvpX3CG7qJpUo8Newmr9P/U8o+ob508gWhoV
+         P5rY8P0Sg6nXk8xXx73TmNlP2kyRzY7YJJuY/2u4k+TYOkthCBC0TX3QvwWDGQfkVH
+         P2Rcys7qSSfB6cVU9m8JyT6W5+rO6ZUXw5t7zzek=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Bernard Pidoux <f6bvp@free.fr>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
+        stable@vger.kernel.org, Brian Norris <briannorris@chromium.org>,
+        Sean Paul <seanpaul@chromium.org>,
+        Douglas Anderson <dianders@chromium.org>,
+        Heiko Stuebner <heiko@sntech.de>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.14 092/229] net: rose: fix netdev reference changes
-Date:   Tue, 23 Aug 2022 10:24:13 +0200
-Message-Id: <20220823080057.006498481@linuxfoundation.org>
+Subject: [PATCH 4.14 068/229] drm/rockchip: vop: Dont crash for invalid duplicate_state()
+Date:   Tue, 23 Aug 2022 10:23:49 +0200
+Message-Id: <20220823080056.147646905@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220823080053.202747790@linuxfoundation.org>
 References: <20220823080053.202747790@linuxfoundation.org>
@@ -50,108 +51,40 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Eric Dumazet <edumazet@google.com>
+From: Brian Norris <briannorris@chromium.org>
 
-[ Upstream commit 931027820e4dafabc78aff82af59f8c1c4bd3128 ]
+[ Upstream commit 1449110b0dade8b638d2c17ab7c5b0ff696bfccb ]
 
-Bernard reported that trying to unload rose module would lead
-to infamous messages:
+It's possible for users to try to duplicate the CRTC state even when the
+state doesn't exist. drm_atomic_helper_crtc_duplicate_state() (and other
+users of __drm_atomic_helper_crtc_duplicate_state()) already guard this
+with a WARN_ON() instead of crashing, so let's do that here too.
 
-unregistered_netdevice: waiting for rose0 to become free. Usage count = xx
-
-This patch solves the issue, by making sure each socket referring to
-a netdevice holds a reference count on it, and properly releases it
-in rose_release().
-
-rose_dev_first() is also fixed to take a device reference
-before leaving the rcu_read_locked section.
-
-Following patch will add ref_tracker annotations to ease
-future bug hunting.
-
-Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
-Reported-by: Bernard Pidoux <f6bvp@free.fr>
-Signed-off-by: Eric Dumazet <edumazet@google.com>
-Tested-by: Bernard Pidoux <f6bvp@free.fr>
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Fixes: 4e257d9eee23 ("drm/rockchip: get rid of rockchip_drm_crtc_mode_config")
+Signed-off-by: Brian Norris <briannorris@chromium.org>
+Reviewed-by: Sean Paul <seanpaul@chromium.org>
+Reviewed-by: Douglas Anderson <dianders@chromium.org>
+Signed-off-by: Heiko Stuebner <heiko@sntech.de>
+Link: https://patchwork.freedesktop.org/patch/msgid/20220617172623.1.I62db228170b1559ada60b8d3e1637e1688424926@changeid
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/rose/af_rose.c    | 11 +++++++++--
- net/rose/rose_route.c |  2 ++
- 2 files changed, 11 insertions(+), 2 deletions(-)
+ drivers/gpu/drm/rockchip/rockchip_drm_vop.c | 3 +++
+ 1 file changed, 3 insertions(+)
 
-diff --git a/net/rose/af_rose.c b/net/rose/af_rose.c
-index 6a5c4992cf61..b53468edf35a 100644
---- a/net/rose/af_rose.c
-+++ b/net/rose/af_rose.c
-@@ -194,6 +194,7 @@ static void rose_kill_by_device(struct net_device *dev)
- 			rose_disconnect(s, ENETUNREACH, ROSE_OUT_OF_ORDER, 0);
- 			if (rose->neighbour)
- 				rose->neighbour->use--;
-+			dev_put(rose->device);
- 			rose->device = NULL;
- 		}
- 	}
-@@ -594,6 +595,8 @@ static struct sock *rose_make_new(struct sock *osk)
- 	rose->idle	= orose->idle;
- 	rose->defer	= orose->defer;
- 	rose->device	= orose->device;
-+	if (rose->device)
-+		dev_hold(rose->device);
- 	rose->qbitincl	= orose->qbitincl;
+diff --git a/drivers/gpu/drm/rockchip/rockchip_drm_vop.c b/drivers/gpu/drm/rockchip/rockchip_drm_vop.c
+index 80a65eaed0be..feb6a458f82d 100644
+--- a/drivers/gpu/drm/rockchip/rockchip_drm_vop.c
++++ b/drivers/gpu/drm/rockchip/rockchip_drm_vop.c
+@@ -1068,6 +1068,9 @@ static struct drm_crtc_state *vop_crtc_duplicate_state(struct drm_crtc *crtc)
+ {
+ 	struct rockchip_crtc_state *rockchip_state;
  
- 	return sk;
-@@ -647,6 +650,7 @@ static int rose_release(struct socket *sock)
- 		break;
- 	}
- 
-+	dev_put(rose->device);
- 	sock->sk = NULL;
- 	release_sock(sk);
- 	sock_put(sk);
-@@ -721,7 +725,6 @@ static int rose_connect(struct socket *sock, struct sockaddr *uaddr, int addr_le
- 	struct rose_sock *rose = rose_sk(sk);
- 	struct sockaddr_rose *addr = (struct sockaddr_rose *)uaddr;
- 	unsigned char cause, diagnostic;
--	struct net_device *dev;
- 	ax25_uid_assoc *user;
- 	int n, err = 0;
- 
-@@ -778,9 +781,12 @@ static int rose_connect(struct socket *sock, struct sockaddr *uaddr, int addr_le
- 	}
- 
- 	if (sock_flag(sk, SOCK_ZAPPED)) {	/* Must bind first - autobinding in this may or may not work */
-+		struct net_device *dev;
++	if (WARN_ON(!crtc->state))
++		return NULL;
 +
- 		sock_reset_flag(sk, SOCK_ZAPPED);
- 
--		if ((dev = rose_dev_first()) == NULL) {
-+		dev = rose_dev_first();
-+		if (!dev) {
- 			err = -ENETUNREACH;
- 			goto out_release;
- 		}
-@@ -788,6 +794,7 @@ static int rose_connect(struct socket *sock, struct sockaddr *uaddr, int addr_le
- 		user = ax25_findbyuid(current_euid());
- 		if (!user) {
- 			err = -EINVAL;
-+			dev_put(dev);
- 			goto out_release;
- 		}
- 
-diff --git a/net/rose/rose_route.c b/net/rose/rose_route.c
-index 1027f52a45ab..25c6d1fa22f3 100644
---- a/net/rose/rose_route.c
-+++ b/net/rose/rose_route.c
-@@ -614,6 +614,8 @@ struct net_device *rose_dev_first(void)
- 			if (first == NULL || strncmp(dev->name, first->name, 3) < 0)
- 				first = dev;
- 	}
-+	if (first)
-+		dev_hold(first);
- 	rcu_read_unlock();
- 
- 	return first;
+ 	rockchip_state = kzalloc(sizeof(*rockchip_state), GFP_KERNEL);
+ 	if (!rockchip_state)
+ 		return NULL;
 -- 
 2.35.1
 
