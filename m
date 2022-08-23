@@ -2,46 +2,40 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 03ED9C38147
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 09:27:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 16480C49EC0
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 09:27:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349412AbiHWJ05 (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 05:26:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37740 "EHLO
+        id S240024AbiHWJ1F (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 23 Aug 2022 05:27:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40098 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349360AbiHWJXy (ORCPT
+        with ESMTP id S1349420AbiHWJX5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 05:23:54 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2C0868FD44;
-        Tue, 23 Aug 2022 01:35:28 -0700 (PDT)
+        Tue, 23 Aug 2022 05:23:57 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A0C7A8FD69;
+        Tue, 23 Aug 2022 01:35:39 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id DE824B81C55;
-        Tue, 23 Aug 2022 08:33:53 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 11B21C433B5;
-        Tue, 23 Aug 2022 08:33:51 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 6004FB81C5A;
+        Tue, 23 Aug 2022 08:35:37 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id AF6A3C433C1;
+        Tue, 23 Aug 2022 08:35:35 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661243632;
-        bh=okV8wTqSRwwrc7yagPrgh3wP5C7ga5hywXWTASOpLHk=;
+        s=korg; t=1661243736;
+        bh=b1NcyPeOU0MnkxOjOob0ZNsoHSNkdbDkrTUKTqRcK7A=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=YaEvRlgGRw+6bhG2eWGIuCZ3ouoAUpCZmZ/C0NBiVClD9XqYd8VZ7163kVWrcZjIe
-         N6xx7AlR1aEd/luY60RbX2q7spV6hF3IQM9gxerKPBb4y00+jsKAN/AL8U1LYc27yG
-         En54bUhb4q7KBK1ozahJ5ANKTDViaDYdBxE6xJLs=
+        b=AWM10ixog4v1kPye/sTjgc/xU0uwEaqz/wZgqgId6gABQkRMTLpdAK8Ssut1TZRlo
+         86DJTHBemhwlqhh6TamEbxTbB/SnQVZlfS+q0ZCrx028y9idO/wWo27tJ4nxp6f5x/
+         c0r8lGcts+eDnx2NYNwHMyass251Romq8otstCww=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>,
-        Ranjani Sridharan <ranjani.sridharan@linux.intel.com>,
-        Bard Liao <yung-chuan.liao@linux.intel.com>,
-        Mark Brown <broonie@kernel.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.19 339/365] ASoC: SOF: Intel: hda: add sanity check on SSP index reported by NHLT
-Date:   Tue, 23 Aug 2022 10:04:00 +0200
-Message-Id: <20220823080132.400854557@linuxfoundation.org>
+        stable@vger.kernel.org, Takashi Iwai <tiwai@suse.de>
+Subject: [PATCH 5.19 365/365] Revert "ALSA: hda: Fix page fault in snd_hda_codec_shutdown()"
+Date:   Tue, 23 Aug 2022 10:04:26 +0200
+Message-Id: <20220823080133.591066874@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220823080118.128342613@linuxfoundation.org>
 References: <20220823080118.128342613@linuxfoundation.org>
@@ -53,50 +47,88 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>
+From: Takashi Iwai <tiwai@suse.de>
 
-[ Upstream commit e51699505042fb365df3a0ce68b850ccd9ad0108 ]
+commit 53f07e9b010b966017e32be1ca1bbcbcc4cee73d upstream.
 
-We should have a limited trust in the BIOS and verify that the SSP
-index reported in NHLT is valid for each platform.
+This reverts commit 980b3a8790b402e959a6d773b38b771019682be1.
 
-Signed-off-by: Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>
-Reviewed-by: Ranjani Sridharan <ranjani.sridharan@linux.intel.com>
-Reviewed-by: Bard Liao <yung-chuan.liao@linux.intel.com>
-Link: https://lore.kernel.org/r/20220725195343.145603-2-pierre-louis.bossart@linux.intel.com
-Signed-off-by: Mark Brown <broonie@kernel.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+The commit didn't consider the fact that ASoC hdac-hda driver
+initializes the HD-audio stuff without calling
+snd_hda_codec_device_init().  Hence this caused a regression leading
+to Oops.
+
+Revert the commit to restore the behavior.
+
+Fixes: 980b3a8790b4 ("ALSA: hda: Fix page fault in snd_hda_codec_shutdown()")
+Link: https://lore.kernel.org/r/3c40df55-3aee-1e08-493b-7b30cd84dc00@linux.intel.com
+Link: https://lore.kernel.org/r/20220715182903.19594-1-tiwai@suse.de
+Signed-off-by: Takashi Iwai <tiwai@suse.de>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- sound/soc/sof/intel/hda.c | 7 +++++++
- 1 file changed, 7 insertions(+)
+ sound/pci/hda/hda_codec.c |   41 +++++++++++++++++++++--------------------
+ 1 file changed, 21 insertions(+), 20 deletions(-)
 
-diff --git a/sound/soc/sof/intel/hda.c b/sound/soc/sof/intel/hda.c
-index ed495b7ad1a9..17f2f3a982c3 100644
---- a/sound/soc/sof/intel/hda.c
-+++ b/sound/soc/sof/intel/hda.c
-@@ -1395,6 +1395,7 @@ struct snd_soc_acpi_mach *hda_machine_select(struct snd_sof_dev *sdev)
+--- a/sound/pci/hda/hda_codec.c
++++ b/sound/pci/hda/hda_codec.c
+@@ -931,28 +931,8 @@ snd_hda_codec_device_init(struct hda_bus
+ 	}
  
- 		if (mach->tplg_quirk_mask & SND_SOC_ACPI_TPLG_INTEL_SSP_NUMBER &&
- 		    mach->mach_params.i2s_link_mask) {
-+			const struct sof_intel_dsp_desc *chip = get_chip_info(sdev->pdata);
- 			int ssp_num;
+ 	codec->bus = bus;
+-	codec->depop_delay = -1;
+-	codec->fixup_id = HDA_FIXUP_ID_NOT_SET;
+-	codec->core.dev.release = snd_hda_codec_dev_release;
+-	codec->core.exec_verb = codec_exec_verb;
+ 	codec->core.type = HDA_DEV_LEGACY;
  
- 			if (hweight_long(mach->mach_params.i2s_link_mask) > 1 &&
-@@ -1404,6 +1405,12 @@ struct snd_soc_acpi_mach *hda_machine_select(struct snd_sof_dev *sdev)
- 			/* fls returns 1-based results, SSPs indices are 0-based */
- 			ssp_num = fls(mach->mach_params.i2s_link_mask) - 1;
+-	mutex_init(&codec->spdif_mutex);
+-	mutex_init(&codec->control_mutex);
+-	snd_array_init(&codec->mixers, sizeof(struct hda_nid_item), 32);
+-	snd_array_init(&codec->nids, sizeof(struct hda_nid_item), 32);
+-	snd_array_init(&codec->init_pins, sizeof(struct hda_pincfg), 16);
+-	snd_array_init(&codec->driver_pins, sizeof(struct hda_pincfg), 16);
+-	snd_array_init(&codec->cvt_setups, sizeof(struct hda_cvt_setup), 8);
+-	snd_array_init(&codec->spdif_out, sizeof(struct hda_spdif_out), 16);
+-	snd_array_init(&codec->jacktbl, sizeof(struct hda_jack_tbl), 16);
+-	snd_array_init(&codec->verbs, sizeof(struct hda_verb *), 8);
+-	INIT_LIST_HEAD(&codec->conn_list);
+-	INIT_LIST_HEAD(&codec->pcm_list_head);
+-	INIT_DELAYED_WORK(&codec->jackpoll_work, hda_jackpoll_work);
+-	refcount_set(&codec->pcm_ref, 1);
+-	init_waitqueue_head(&codec->remove_sleep);
+-
+ 	return codec;
+ }
+ EXPORT_SYMBOL_GPL(snd_hda_codec_device_init);
+@@ -1000,8 +980,29 @@ int snd_hda_codec_device_new(struct hda_
+ 	if (snd_BUG_ON(codec_addr > HDA_MAX_CODEC_ADDRESS))
+ 		return -EINVAL;
  
-+			if (ssp_num >= chip->ssp_count) {
-+				dev_err(sdev->dev, "Invalid SSP %d, max on this platform is %d\n",
-+					ssp_num, chip->ssp_count);
-+				return NULL;
-+			}
++	codec->core.dev.release = snd_hda_codec_dev_release;
++	codec->core.exec_verb = codec_exec_verb;
 +
- 			tplg_filename = devm_kasprintf(sdev->dev, GFP_KERNEL,
- 						       "%s%s%d",
- 						       sof_pdata->tplg_filename,
--- 
-2.35.1
-
+ 	codec->card = card;
+ 	codec->addr = codec_addr;
++	mutex_init(&codec->spdif_mutex);
++	mutex_init(&codec->control_mutex);
++	snd_array_init(&codec->mixers, sizeof(struct hda_nid_item), 32);
++	snd_array_init(&codec->nids, sizeof(struct hda_nid_item), 32);
++	snd_array_init(&codec->init_pins, sizeof(struct hda_pincfg), 16);
++	snd_array_init(&codec->driver_pins, sizeof(struct hda_pincfg), 16);
++	snd_array_init(&codec->cvt_setups, sizeof(struct hda_cvt_setup), 8);
++	snd_array_init(&codec->spdif_out, sizeof(struct hda_spdif_out), 16);
++	snd_array_init(&codec->jacktbl, sizeof(struct hda_jack_tbl), 16);
++	snd_array_init(&codec->verbs, sizeof(struct hda_verb *), 8);
++	INIT_LIST_HEAD(&codec->conn_list);
++	INIT_LIST_HEAD(&codec->pcm_list_head);
++	refcount_set(&codec->pcm_ref, 1);
++	init_waitqueue_head(&codec->remove_sleep);
++
++	INIT_DELAYED_WORK(&codec->jackpoll_work, hda_jackpoll_work);
++	codec->depop_delay = -1;
++	codec->fixup_id = HDA_FIXUP_ID_NOT_SET;
+ 
+ #ifdef CONFIG_PM
+ 	codec->power_jiffies = jiffies;
 
 
