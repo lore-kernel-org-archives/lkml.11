@@ -2,135 +2,88 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 246A8C32772
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 21:01:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C4208C32793
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 21:01:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229985AbiHWVBV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 17:01:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51156 "EHLO
+        id S230224AbiHWVBl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 23 Aug 2022 17:01:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52482 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229720AbiHWVBR (ORCPT
+        with ESMTP id S229742AbiHWVBi (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 17:01:17 -0400
-Received: from relay4-d.mail.gandi.net (relay4-d.mail.gandi.net [217.70.183.196])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 59F597C741;
-        Tue, 23 Aug 2022 14:01:14 -0700 (PDT)
-Received: from booty (unknown [77.244.183.192])
-        (Authenticated sender: luca.ceresoli@bootlin.com)
-        by mail.gandi.net (Postfix) with ESMTPSA id BE551E0006;
-        Tue, 23 Aug 2022 21:01:12 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
-        t=1661288473;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=uw23ZoP4oRVNIqUUbuxky1/ZKiVgZT6Zum30X3pKMxM=;
-        b=FELmDJgeYbw0KO2g4ykO3AGxnJ02o2MIf4t0E5/eZU0QyjyNgyf76zB9WEZLRuDb5JhB5e
-        wPHDHyuWia2G5Zhgkbx6v0sO68rUOloj06XhyvxgtivILokTnd9hZhQsiP+YHqcSgdydZq
-        HLrvjmeWgB95UTTvJnsSPz5/4VuOAEAklqqR7cNDs7qx5SuJB5yipcqriTnPPCGG//XKO2
-        UwZKYhlrppF36Q+Nn5j7Wu8lx7VcNW8DNPhlC6O1WSJRNlLHLitm/bpCE26BcH2wJB2fT3
-        EOPSKjqZh4vg+fq5Bco4U5zNDq+et62qA1BJ3YCsFgOREJQMhPG/0ECsyLqRTw==
-Date:   Tue, 23 Aug 2022 23:01:10 +0200
-From:   Luca Ceresoli <luca.ceresoli@bootlin.com>
-To:     Peter Rosin <peda@axentia.se>
-Cc:     linux-doc@vger.kernel.org, linux-i2c@vger.kernel.org,
-        Wolfram Sang <wsa@kernel.org>, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2 2/3] docs: i2c: i2c-topology: reorder sections more
- logically
-Message-ID: <20220823230110.115a3fc5@booty>
-In-Reply-To: <19a22449-c9fb-1eba-9a47-3e3d340a13a1@axentia.se>
-References: <20220822091050.47099-1-luca.ceresoli@bootlin.com>
-        <20220822091050.47099-3-luca.ceresoli@bootlin.com>
-        <19a22449-c9fb-1eba-9a47-3e3d340a13a1@axentia.se>
-Organization: Bootlin
-X-Mailer: Claws Mail 4.0.0 (GTK+ 3.24.33; x86_64-pc-linux-gnu)
+        Tue, 23 Aug 2022 17:01:38 -0400
+Received: from mail-pg1-x52a.google.com (mail-pg1-x52a.google.com [IPv6:2607:f8b0:4864:20::52a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C7CE17DF77;
+        Tue, 23 Aug 2022 14:01:36 -0700 (PDT)
+Received: by mail-pg1-x52a.google.com with SMTP id f4so11454840pgc.12;
+        Tue, 23 Aug 2022 14:01:36 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:sender:from:to:cc;
+        bh=ntOZuNJFNelgT/pkIxDQ8M2IKR1yIkb4TRuBWRbP3hQ=;
+        b=IRhzWO1pc+SnCmzeT8APuBZpSO1H711ZFWShgoG114cPTF7w99SFwZT/UST0C5Gmwk
+         esxw3gzjn8tem0G6TrDSk3IUHkBaRK3zmHoe48GU9TEdjnMcPnB07doS0stoY5Rp996P
+         UxRuje+PFkfq0TIGDMPi2IzIDtkO12z4MlWW/y9JTHTN0W/qzH4HeYih90SGTQv9LnD3
+         ZpANem9L1nMSztsE4r3zbUIGFuCOTzC9BGDQ8em54CaukZocy67dmk+WYcr1CJL/tzw9
+         xxE89fNQczyaOMlLHDbpi1H/sZPLKhx19EsL9+6wVDMWxSmfQvLLpG3WOWpauA6C2TYZ
+         GLCQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:sender:x-gm-message-state:from:to:cc;
+        bh=ntOZuNJFNelgT/pkIxDQ8M2IKR1yIkb4TRuBWRbP3hQ=;
+        b=KxBm1rQ1ujr7jbmpozv0w0mKlftDeLl02SQqxfnXwZMHLrEOBO9v+/eLyY4I2KDl4G
+         vAw6sjQGXXzPGD+WAY6HwMsTAbnDr5HkY2zNwI9ws/7tuF77fKXvXBiZmV34pKxEDWRZ
+         yTrFZUaCM5F/uo7h5Hj6hPKX7cNuMbTRyWB6d8bw6C5i1yO0az/uvbuOeiFH6W1uHZZs
+         KOTyDX/fpFPOKEQG5A3LccX89yKoDTH5OEw3LDAwFcm3qXnf07Ii3JI4JJZKqzzSUU+Z
+         k2GEQcur/JzmXMcE3KwMOSXgvxdiLcMW4hfMpVL4puuwoyrx/5ndvSMls1c1xnG4IQEH
+         9HMA==
+X-Gm-Message-State: ACgBeo2wdDWG94LUQvwbqTiJkJlQPWGImgPB32wvO9Z2Id5d+vcert1z
+        bYwC2p+6p7m8JcQAEdDZqMA=
+X-Google-Smtp-Source: AA6agR7TmlIpqJqz1tUUZ1eHB3FN0ipdEHpGdI4XMicTl5POBQ31CGMGtl/lEzYMUeMkKROMeVkh4A==
+X-Received: by 2002:a65:6e46:0:b0:42a:2c7e:4232 with SMTP id be6-20020a656e46000000b0042a2c7e4232mr19892993pgb.611.1661288496326;
+        Tue, 23 Aug 2022 14:01:36 -0700 (PDT)
+Received: from server.roeck-us.net ([2600:1700:e321:62f0:329c:23ff:fee3:9d7c])
+        by smtp.gmail.com with ESMTPSA id l9-20020a170902f68900b0016be96e07d1sm10851201plg.121.2022.08.23.14.01.35
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 23 Aug 2022 14:01:35 -0700 (PDT)
+Sender: Guenter Roeck <groeck7@gmail.com>
+Date:   Tue, 23 Aug 2022 14:01:34 -0700
+From:   Guenter Roeck <linux@roeck-us.net>
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc:     linux-kernel@vger.kernel.org, stable@vger.kernel.org,
+        torvalds@linux-foundation.org, akpm@linux-foundation.org,
+        shuah@kernel.org, patches@kernelci.org,
+        lkft-triage@lists.linaro.org, pavel@denx.de, jonathanh@nvidia.com,
+        f.fainelli@gmail.com, sudipm.mukherjee@gmail.com,
+        slade@sladewatkins.com
+Subject: Re: [PATCH 4.19 000/287] 4.19.256-rc1 review
+Message-ID: <20220823210134.GB2371231@roeck-us.net>
+References: <20220823080100.268827165@linuxfoundation.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220823080100.268827165@linuxfoundation.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Peter,
-
-On Tue, 23 Aug 2022 11:26:51 +0200
-Peter Rosin <peda@axentia.se> wrote:
-
-> 2022-08-22 at 11:10, luca.ceresoli@bootlin.com wrote:
-> > From: Luca Ceresoli <luca.ceresoli@bootlin.com>
-> > 
-> > The sequence of sections is a bit confusing here:
-> > 
-> >  * we list the mux locking scheme for existing drivers before introducing
-> >    what mux locking schemes are
-> >  * we list the caveats for each locking scheme (which are tricky) before
-> >    the example of the simple use case
-> > 
-> > Restructure it entirely with the following logic:
-> > 
-> >  * Intro ("I2C muxes and complex topologies")
-> >  * Locking
-> >    - mux-locked
-> >      - example
-> >      - caveats
-> >    - parent-locked
-> >      - example
-> >      - caveats
-> >  * Complex examples
-> >  * Mux type of existing device drivers
-> > 
-> > While there, also apply some other improvements:
-> > 
-> >  * convert the caveat list from a table (with only one column carrying
-> >    content) to a bullet list.  
+On Tue, Aug 23, 2022 at 10:22:49AM +0200, Greg Kroah-Hartman wrote:
+> This is the start of the stable review cycle for the 4.19.256 release.
+> There are 287 patches in this series, all will be posted as a response
+> to this one.  If anyone has any issues with these being applied, please
+> let me know.
 > 
-> I want to be able to refer to a specific caveat if/when someone has
-> questions, so I prefer to have the caveats "named". Not that this is
-> very frequent, but if we do remove the tags now I'm sure I'm going
-> to need them a few minutes later...
-
-Now I realize the reason for those labels. Thank you for taking time to
-explain!
-
-What about this one:
-
-  [ML1]
-    If you build a topology with ...
-
-It's a definition list, and the [ML1] gets rendered in bold.
-
-The advantage is the text is still rendered as a regular paragraph,
-with the same font etc, except the left margin is increased.
-
-> > +Parent-locked Caveats
-> > +~~~~~~~~~~~~~~~~~~~~~
-> > +
-> > +When using a parent-locked mux, be aware of the following restrictions:
-> > +
-> > +* If you build a topology with a parent-locked mux being the child
-> > +  of another mux, this might break a possible assumption from the
-> > +  child mux that the root adapter is unused between its select op
-> > +  and the actual transfer (e.g. if the child mux is auto-closing
-> > +  and the parent mux issues I2C transfers as part of its select).
-> > +  This is especially the case if the parent mux is mux-locked, but
-> > +  it may also happen if the parent mux is parent-locked.
-> > +
-> > +* If select/deselect calls out to other subsystems such as gpio,
-> > +  pinctrl, regmap or iio, it is essential that any I2C transfers
-> > +  caused by these subsystems are unlocked. This can be convoluted to
-> > +  accomplish, maybe even impossible if an acceptably clean solution
-> > +  is sought.
-> > +
-> > +
-> >    
+> Responses should be made by Thu, 25 Aug 2022 08:00:15 +0000.
+> Anything received after that time might be too late.
 > 
-> Three empty lines is excessive and inconsistent with the other two
-> ===-headers.
 
-Indeed! Fix ready for v3, waiting on the above proposal.
+Build results:
+	total: 157 pass: 157 fail: 0
+Qemu test results:
+	total: 422 pass: 422 fail: 0
 
--- 
-Luca Ceresoli, Bootlin
-Embedded Linux and Kernel engineering
-https://bootlin.com
+Tested-by: Guenter Roeck <linux@roeck-us.net>
+
+Guenter
