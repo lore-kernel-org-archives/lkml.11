@@ -2,131 +2,99 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D89D3C32772
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 17:45:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7F864C32772
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 17:45:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231833AbiHWRpG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 13:45:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49912 "EHLO
+        id S232198AbiHWRpN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 23 Aug 2022 13:45:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37862 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230252AbiHWRog (ORCPT
+        with ESMTP id S232008AbiHWRol (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 13:44:36 -0400
-Received: from mail-pj1-x1033.google.com (mail-pj1-x1033.google.com [IPv6:2607:f8b0:4864:20::1033])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D1C36B7D1
-        for <linux-kernel@vger.kernel.org>; Tue, 23 Aug 2022 08:31:59 -0700 (PDT)
-Received: by mail-pj1-x1033.google.com with SMTP id s36-20020a17090a69a700b001faad0a7a34so17568263pjj.4
-        for <linux-kernel@vger.kernel.org>; Tue, 23 Aug 2022 08:31:59 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=in-reply-to:content-transfer-encoding:content-disposition
-         :mime-version:references:message-id:subject:cc:to:from:date:from:to
-         :cc;
-        bh=qct9z1POCA7Jy2X8nJy6q3YtzWuUbY8HrzeX4jusHq4=;
-        b=lVeP3UhkfDNVJUMCfamBrw0VUh/SlY3tf79Q4V3Mo9XPr2BNDN9MDheA7ptj64ryOH
-         wnFO33a21kIeFSrxcgIEpY01+baeZxbcxsc5W26g46Y3GvuGFx8A4zPoejNY3gmdMsu5
-         5nfSbWWTGThTBHIuSVtp9BFnbj6+UCaCN9w3pTwecQsSD/z041P1WYXqZ2ZW7UzcGQkK
-         ZAdFYQr2XywegE2t+DnXm5qHvQ80Fd7vTO3aNBRSxy1PZbeSC0my0ZuIvjb/LelrhF6t
-         E5SU5+zR73hH5RBoMKWSYXAfH4zUabq6gQrp0nsSIyKd8RkN8++GuEyK9uMxOqOaezXu
-         oJ/w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=in-reply-to:content-transfer-encoding:content-disposition
-         :mime-version:references:message-id:subject:cc:to:from:date
-         :x-gm-message-state:from:to:cc;
-        bh=qct9z1POCA7Jy2X8nJy6q3YtzWuUbY8HrzeX4jusHq4=;
-        b=kJgg2T3eLAoOJdihVMoe9VDfNUySThU+qPp5bLXptajWMmLK8s/f2+Dhtdpd1Cf6sQ
-         yrBirAGHz+zB7nIXkyFU39+vAd3ypORK5pbPMX/oCtVb8z3VXyHi8Bi886cpcPA7knGH
-         iHlQfmjeuh36CaRsh2rxMJL0Ukw2zMvqrmGdMREs6r5aPNKuwv0/I6q5IxxxynNbi3tL
-         xRJy+nIK8eDVtg7c11VW5r3k79nQJVg3DzMqKM1UPmxi8dzOhVSSKHqF3fBklx0Uz88y
-         T/An6NsjxJWcV0gnBM6HCZElGWWCiFIPjpAXAmBswBK/qwiGev7V/ArilXJb0hvzkXYk
-         T0cw==
-X-Gm-Message-State: ACgBeo0WSm74atXDyxykR4Pd477vEP0FlxbnX9bHJhOXCTULrXYxOsZz
-        BKYE1ig4Jazjw8tHP+C7fC8Hw9mdNazF
-X-Google-Smtp-Source: AA6agR7jcesWlNnD7IhPKRcm+XBvX5f7MQ+5XS2sVM3V8pbihZ1qzUU3KfoXO29qUuES555fpng/8A==
-X-Received: by 2002:a17:90b:4a51:b0:1f5:8308:6ed7 with SMTP id lb17-20020a17090b4a5100b001f583086ed7mr3748418pjb.177.1661268719263;
-        Tue, 23 Aug 2022 08:31:59 -0700 (PDT)
-Received: from thinkpad ([220.158.159.146])
-        by smtp.gmail.com with ESMTPSA id b14-20020a170903228e00b001728eb339e2sm10706306plh.286.2022.08.23.08.31.54
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 23 Aug 2022 08:31:58 -0700 (PDT)
-Date:   Tue, 23 Aug 2022 21:01:52 +0530
-From:   Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
-To:     Sai Prakash Ranjan <quic_saipraka@quicinc.com>
-Cc:     bjorn.andersson@linaro.org, bp@alien8.de, mchehab@kernel.org,
-        james.morse@arm.com, rric@kernel.org,
-        linux-arm-msm@vger.kernel.org, linux-edac@vger.kernel.org,
-        linux-kernel@vger.kernel.org, quic_tsoni@quicinc.com
-Subject: Re: [PATCH v2 1/3] soc: qcom: llcc: Pass SoC specific EDAC register
- offsets to EDAC driver
-Message-ID: <20220823153152.GA6371@thinkpad>
-References: <20220812060602.7672-1-manivannan.sadhasivam@linaro.org>
- <20220812060602.7672-2-manivannan.sadhasivam@linaro.org>
- <396e6b2e-11d1-a11d-206a-cfd69f6cd358@quicinc.com>
+        Tue, 23 Aug 2022 13:44:41 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 20A4E6B8D8
+        for <linux-kernel@vger.kernel.org>; Tue, 23 Aug 2022 08:32:06 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id D695FB81E07
+        for <linux-kernel@vger.kernel.org>; Tue, 23 Aug 2022 15:32:04 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0870AC433D6;
+        Tue, 23 Aug 2022 15:32:02 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1661268723;
+        bh=kv7ZNDv1FBguuVmkE95CjI4JtqYhHJBmXuAD/LbhowE=;
+        h=From:To:Cc:Subject:Date:From;
+        b=lobSX5e6t4xjH5/Am6fGj9FTN7qbOtqS8ZtVc0h1dp4mZoJSzj0Mxq9yx2ugCllno
+         xKQSzJzK555RV247wINMtB4xxRKfX7zz8EDFdUp7CGSJbgie6ljkBvpypjs8MJzdPq
+         q3GdOx+3EaFaTFK7t19ORqo0uShAxluFSlyXktTyC4xieZYigLgrYzhUgY3xwW2Kae
+         0Rpsn04UI7bOEjiQqL2xbBJhRSrKyTmlEo1p9/krFguIgY3UMDs1lNE2EIC4IEhEF+
+         GwpJA6wWSvXow0CX3SS/AClKr9eQneE9QLY89H+ojUJuqH+05JsoCORV74M1a08AjZ
+         zBl4bgT0sh1PQ==
+From:   Nathan Chancellor <nathan@kernel.org>
+To:     Andrew Morton <akpm@linux-foundation.org>
+Cc:     Nick Desaulniers <ndesaulniers@google.com>,
+        Tom Rix <trix@redhat.com>, Rolf Eike Beer <eb@emlix.com>,
+        linux-mm@kvack.org, linux-kernel@vger.kernel.org,
+        llvm@lists.linux.dev, patches@lists.linux.dev,
+        Nathan Chancellor <nathan@kernel.org>
+Subject: [PATCH -next] mm: pagewalk: Restore err initialization in walk_hugetlb_range()
+Date:   Tue, 23 Aug 2022 08:30:56 -0700
+Message-Id: <20220823153055.2517764-1-nathan@kernel.org>
+X-Mailer: git-send-email 2.37.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <396e6b2e-11d1-a11d-206a-cfd69f6cd358@quicinc.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Aug 22, 2022 at 05:29:13PM +0530, Sai Prakash Ranjan wrote:
-> Hi Mani,
-> 
-> On 8/12/2022 11:36 AM, Manivannan Sadhasivam wrote:
-> > The LLCC EDAC register offsets varies between each SoCs. Until now, the
-> > EDAC driver used the hardcoded register offsets. But this caused crash
-> > on SM8450 SoC where the register offsets has been changed.
-> > 
-> > So to avoid this crash and also to make it easy to accomodate changes for
-> > new SoCs, let's pass the SoC specific register offsets to the EDAC driver.
-> > 
-> > Currently, two set of offsets are used. One is SM8450 specific and another
-> > one is common to all SoCs.
-> > 
-> > Signed-off-by: Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
-> 
-> <snip> ...
-> 
-> >   static const struct qcom_llcc_config sm8350_cfg = {
-> > @@ -309,6 +370,7 @@ static const struct qcom_llcc_config sm8350_cfg = {
-> >   	.size           = ARRAY_SIZE(sm8350_data),
-> >   	.need_llcc_cfg	= true,
-> >   	.reg_offset	= llcc_v1_2_reg_offset,
-> > +	.edac_reg	= &common_edac_reg,
-> >   };
-> >   static const struct qcom_llcc_config sm8450_cfg = {
-> > @@ -316,6 +378,7 @@ static const struct qcom_llcc_config sm8450_cfg = {
-> >   	.size           = ARRAY_SIZE(sm8450_data),
-> >   	.need_llcc_cfg	= true,
-> >   	.reg_offset	= llcc_v21_reg_offset,
-> > +	.edac_reg	= &sm8450_edac_reg,
-> >   };
-> > 
-> 
-> Can we have LLCC version specific register offsets instead of SoC specific similar to reg_offset callbacks?
-> For SM8450, it would be llcc_v21_edac_reg and for others llcc_v1_2_edac_reg instead of common_edac_reg.
-> common_edac_reg is very general and is not exactly common for all, its just common for SoCs with same LLCC.
-> 
+Clang warns:
 
-I thought about it but I was not sure if rest of the SoCs are using version
-v1.2. I know that reg_offset uses v1.2 but I was skeptical and hence used the
-SoC specific offsets.
+  mm/pagewalk.c:318:12: error: variable 'err' is used uninitialized whenever 'if' condition is false [-Werror,-Wsometimes-uninitialized]
+                  else if (ops->pte_hole)
+                          ^~~~~~~~~~~~~
+  mm/pagewalk.c:321:7: note: uninitialized use occurs here
+                  if (err)
+                      ^~~
+  mm/pagewalk.c:318:8: note: remove the 'if' if its condition is always true
+                  else if (ops->pte_hole)
+                      ^~~~~~~~~~~~~~~~~~
+  mm/pagewalk.c:311:10: note: initialize the variable 'err' to silence this warning
+                  int err;
+                        ^
+                          = 0
+  1 error generated.
 
-Can you confirm if rest of the SoCs are using v1.2?
+Restore the initialization of err to zero so that it cannot be used
+uninitialized.
 
-Thanks,
-Mani
+Fixes: 9ce1db56225a ("mm: pagewalk: make error checks more obvious")
+Link: https://github.com/ClangBuiltLinux/linux/issues/1694
+Signed-off-by: Nathan Chancellor <nathan@kernel.org>
+---
 
-> Version based is more applicable as multiple SoCs might use same LLCC versions and would reduce SoC specific data
-> which would be needed for every SoC in case some newer LLCC comes out. I know you could just call sm8450_edac_reg
-> for lets say sm8550 or so on to reduce duplication but that won't look good.
-> 
-> 
-> Thanks,
-> Sai
+I am sure that SHA is not stable and I expect this to be squashed into
+the original change.
 
+ mm/pagewalk.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/mm/pagewalk.c b/mm/pagewalk.c
+index 54b2a1beeeb3..76e5ccda8c88 100644
+--- a/mm/pagewalk.c
++++ b/mm/pagewalk.c
+@@ -308,7 +308,7 @@ static int walk_hugetlb_range(unsigned long addr, unsigned long end,
+ 	const struct mm_walk_ops *ops = walk->ops;
+ 
+ 	for (; addr < end; addr = next) {
+-		int err;
++		int err = 0;
+ 		pte_t *pte = huge_pte_offset(walk->mm, addr & hmask, sz);
+ 
+ 		next = hugetlb_entry_end(h, addr, end);
+
+base-commit: d711de4adbec4cb0b8769bcae971b13293e6d311
 -- 
-மணிவண்ணன் சதாசிவம்
+2.37.2
+
