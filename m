@@ -2,253 +2,409 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 42E66C32772
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6508AC32789
 	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 17:49:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230469AbiHWRsy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 13:48:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42706 "EHLO
+        id S232008AbiHWRtD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 23 Aug 2022 13:49:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48456 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233444AbiHWRsQ (ORCPT
+        with ESMTP id S231325AbiHWRs0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 13:48:16 -0400
-Received: from mail-pj1-x1032.google.com (mail-pj1-x1032.google.com [IPv6:2607:f8b0:4864:20::1032])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E14AEB0298
-        for <linux-kernel@vger.kernel.org>; Tue, 23 Aug 2022 08:45:32 -0700 (PDT)
-Received: by mail-pj1-x1032.google.com with SMTP id ds12-20020a17090b08cc00b001fae6343d9fso1747813pjb.0
-        for <linux-kernel@vger.kernel.org>; Tue, 23 Aug 2022 08:45:32 -0700 (PDT)
+        Tue, 23 Aug 2022 13:48:26 -0400
+Received: from mail-oo1-xc35.google.com (mail-oo1-xc35.google.com [IPv6:2607:f8b0:4864:20::c35])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D372FAF0D0
+        for <linux-kernel@vger.kernel.org>; Tue, 23 Aug 2022 08:47:41 -0700 (PDT)
+Received: by mail-oo1-xc35.google.com with SMTP id a1-20020a4ab101000000b0044acf001f83so2491259ooo.10
+        for <linux-kernel@vger.kernel.org>; Tue, 23 Aug 2022 08:47:41 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=in-reply-to:content-transfer-encoding:content-disposition
-         :mime-version:references:message-id:subject:cc:to:from:date:from:to
-         :cc;
-        bh=aXOmftwku6Y3qboGNOex5sTFkecyKGqHqqdOpA80U8Q=;
-        b=b1ecWrac5OQUnpKnoCY5mwpODALUKxMqJHOtJ0ZJI7XnI3h4WQgQ0m0LFULrZ8lT2S
-         pi66Pqr348BC5OlPcroDzWO2ubRI2Ykf/ZV5toizwLmHFd86TBAEbUjlZL8nOgkVj67H
-         Btvlv95vllbhkWBlI88MIZVAiIYpd8yS4vDex6lCQbwPxyncdQZmkhLFDwgildZO13dq
-         YbYCIFUZUG5su7367IEIZD7wGuJWlPu57SnPmqMqMWojcWtiQ8lBwfUwqfJdiDX1k+1G
-         Jj0uMyagxU7KawVOGfw6rCHbR+aEF5tOcFussbdBaS10+w1zB+hNBRbk8TqAZkLjC0BY
-         BSZA==
+        d=linuxfoundation.org; s=google;
+        h=content-transfer-encoding:content-language:in-reply-to:mime-version
+         :user-agent:date:message-id:from:references:cc:to:subject:from:to:cc;
+        bh=KRDDD/ZTQOm4jKNRqZwPa4ZNh2t/HyznlxFVrDjnB8U=;
+        b=U0+/YUjFon/lph3ldYw4TkScr3J/MCVglErPGQ/vLneIjcO1gaF5o5kOCT+o/eHcGQ
+         SupMAksppFSPyPxykYtJXnXyLaFvHiVLigvoxvWN3yO7JXzpn2KnJa5J+9jQQMgD94ah
+         TJMxrcFPWD6bdOXSgMKgdNxUyhd05pKT4u84M=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=in-reply-to:content-transfer-encoding:content-disposition
-         :mime-version:references:message-id:subject:cc:to:from:date
+        h=content-transfer-encoding:content-language:in-reply-to:mime-version
+         :user-agent:date:message-id:from:references:cc:to:subject
          :x-gm-message-state:from:to:cc;
-        bh=aXOmftwku6Y3qboGNOex5sTFkecyKGqHqqdOpA80U8Q=;
-        b=KqbElJdlsBt2aquuvEs+77TIy52ZORxto2NOPtpxhxROpjsixe/L2EWaSCvNxXkSzY
-         U06z14S+L0ukywOj+HBSCWX0rofdg+dJVPEh1KLQQC4x740VyihALG9SyXapriFfQ99K
-         C4efAY+OklSwL3cTGmUxnySeK10nioU6zDO7bHxC8OfyK7dM8EhS57K52RDfxZdxVe1w
-         x6hW/Vw2JLu4zMKosPTKf6Xk3WibXw12+eB9nkKDNW1ZfbLnbqTnpqS+vi0TLm91saAV
-         42oyuzb3BB7Cs+YZL1Fnd3JdMGrUxlRuStI5RZ02T/SvEoBxpg8py50kBmMXZfFlD8Pu
-         Ycxw==
-X-Gm-Message-State: ACgBeo3aMGVAkfe+DXf0Fsv2iUIAvyfeXnvTyNLJeXLAmc3SeMvQeOv/
-        VXwYOyD+4GDCsBfj90eRHQAi
-X-Google-Smtp-Source: AA6agR6a35exwO/28hItzLxrNIv1gt6gI+pn8DH3e5V5Ht+v9BXXp7TOSoKpBRlk9ZeLTmNoKXbIRw==
-X-Received: by 2002:a17:902:7247:b0:16e:ecb2:4870 with SMTP id c7-20020a170902724700b0016eecb24870mr25042399pll.110.1661269532319;
-        Tue, 23 Aug 2022 08:45:32 -0700 (PDT)
-Received: from thinkpad ([220.158.159.146])
-        by smtp.gmail.com with ESMTPSA id p13-20020a170902e74d00b0016d231e366fsm3751282plf.59.2022.08.23.08.45.28
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 23 Aug 2022 08:45:31 -0700 (PDT)
-Date:   Tue, 23 Aug 2022 21:15:26 +0530
-From:   Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
-To:     Serge Semin <Sergey.Semin@baikalelectronics.ru>
-Cc:     Gustavo Pimentel <gustavo.pimentel@synopsys.com>,
-        Vinod Koul <vkoul@kernel.org>, Rob Herring <robh@kernel.org>,
-        Bjorn Helgaas <bhelgaas@google.com>,
-        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
-        Jingoo Han <jingoohan1@gmail.com>, Frank Li <Frank.Li@nxp.com>,
-        Serge Semin <fancer.lancer@gmail.com>,
-        Alexey Malahov <Alexey.Malahov@baikalelectronics.ru>,
-        Pavel Parkhomenko <Pavel.Parkhomenko@baikalelectronics.ru>,
-        Krzysztof =?utf-8?Q?Wilczy=C5=84ski?= <kw@linux.com>,
-        linux-pci@vger.kernel.org, dmaengine@vger.kernel.org,
+        bh=KRDDD/ZTQOm4jKNRqZwPa4ZNh2t/HyznlxFVrDjnB8U=;
+        b=Uigzkakyz4Zers+5dkGqJlWCICIdP/xBwfnZO6cjxNTA7MW5RU6Tjlx2s6Y/k4kRGV
+         TuDBP3kZkMvfGFI0esL8PHW7xEcGJ/K9paYP2MOsb3722u2xj81DqcNxP6kIVSUdmSC8
+         r6edjO+iCSOedUoyZZho305KFnZztfaSF52GoBZySpESrOsjkNM88tWYk0voUG4UYshY
+         oXD65OY1hzjae2AOYRoA05RRVnnL3NLQiBmxUQgZl6njmrD8nfYOBajQQxzRjdJIKKSY
+         +eMrYzHFWr2t/6Kuu13vhVuln52fwCG2c+AscQi3ngldiUkl9i0cvCf1t475xlVJZ71r
+         Dv+g==
+X-Gm-Message-State: ACgBeo3B8JsIn+169wukSD0ById3xjNqdbCWzJTCD9QCF57BcTFPlhhl
+        tH2LLy4fcVJKtE5gVw/hlsifNQ==
+X-Google-Smtp-Source: AA6agR6YzN5it96eWePaUxUMLxCc1S5wDKWZtrIqKyxwFBsKCHEzkbrHxTXvzBuqngWPpKKk7XzXuA==
+X-Received: by 2002:a4a:4541:0:b0:435:cf9f:1a45 with SMTP id y62-20020a4a4541000000b00435cf9f1a45mr8241849ooa.17.1661269661024;
+        Tue, 23 Aug 2022 08:47:41 -0700 (PDT)
+Received: from [192.168.1.128] ([38.15.45.1])
+        by smtp.gmail.com with ESMTPSA id b23-20020a056830105700b006373175cde0sm3894735otp.44.2022.08.23.08.47.39
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 23 Aug 2022 08:47:40 -0700 (PDT)
+Subject: Re: [PATCH 25/31] selftests/net: Add TCP-AO library
+To:     Dmitry Safonov <dima@arista.com>,
+        Eric Dumazet <edumazet@google.com>,
+        "David S. Miller" <davem@davemloft.net>,
         linux-kernel@vger.kernel.org
-Subject: Re: [PATCH RESEND v5 00/24] dmaengine: dw-edma: Add RP/EP local DMA
- controllers support
-Message-ID: <20220823154526.GB6371@thinkpad>
-References: <20220822185332.26149-1-Sergey.Semin@baikalelectronics.ru>
+Cc:     Andy Lutomirski <luto@amacapital.net>,
+        Ard Biesheuvel <ardb@kernel.org>,
+        Bob Gilligan <gilligan@arista.com>,
+        David Ahern <dsahern@kernel.org>,
+        Dmitry Safonov <0x7f454c46@gmail.com>,
+        Eric Biggers <ebiggers@kernel.org>,
+        Francesco Ruggeri <fruggeri@arista.com>,
+        Herbert Xu <herbert@gondor.apana.org.au>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        Ivan Delalande <colona@arista.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Leonard Crestez <cdleonard@gmail.com>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Salam Noureddine <noureddine@arista.com>,
+        Shuah Khan <shuah@kernel.org>, netdev@vger.kernel.org,
+        linux-crypto@vger.kernel.org,
+        Shuah Khan <skhan@linuxfoundation.org>
+References: <20220818170005.747015-1-dima@arista.com>
+ <20220818170005.747015-26-dima@arista.com>
+From:   Shuah Khan <skhan@linuxfoundation.org>
+Message-ID: <aa0143bc-b0d1-69fb-c117-1e7241f0ad89@linuxfoundation.org>
+Date:   Tue, 23 Aug 2022 09:47:37 -0600
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.8.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20220822185332.26149-1-Sergey.Semin@baikalelectronics.ru>
+In-Reply-To: <20220818170005.747015-26-dima@arista.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Aug 22, 2022 at 09:53:08PM +0300, Serge Semin wrote:
-> This is a final patchset in the series created in the framework of
-> my Baikal-T1 PCIe/eDMA-related work:
+On 8/18/22 10:59 AM, Dmitry Safonov wrote:
+> Provide functions to create selftests dedicated to TCP-AO.
+> They can run in parallel, as they use temporary net namespaces.
+> They can be very specific to the feature being tested.
+> This will allow to create a lot of TCP-AO tests, without complicating
+> one binary with many --options and to create scenarios, that are
+> hard to put in bash script that uses one binary.
 > 
-> [1: Done v5] PCI: dwc: Various fixes and cleanups
-> Link: https://lore.kernel.org/linux-pci/20220624143428.8334-1-Sergey.Semin@baikalelectronics.ru/
-> Merged: kernel 6.0-rc1
-> [2: Done v4] PCI: dwc: Add hw version and dma-ranges support
-> Link: https://lore.kernel.org/linux-pci/20220624143947.8991-1-Sergey.Semin@baikalelectronics.ru
-> Merged: kernel 6.0-rc1
-> [3: In-review v5] PCI: dwc: Add generic resources and Baikal-T1 support
-> Link: https://lore.kernel.org/linux-pci/20220822184701.25246-1-Sergey.Semin@baikalelectronics.ru/
-> [4: Done v5] dmaengine: dw-edma: Add RP/EP local DMA support
-> Link: ---you are looking at it---
+> Signed-off-by: Dmitry Safonov <dima@arista.com>
+> ---
+>   tools/testing/selftests/Makefile              |   1 +
+>   tools/testing/selftests/net/tcp_ao/.gitignore |   2 +
+>   tools/testing/selftests/net/tcp_ao/Makefile   |  45 +++
+>   tools/testing/selftests/net/tcp_ao/connect.c  |  81 +++++
+>   .../testing/selftests/net/tcp_ao/lib/aolib.h  | 333 +++++++++++++++++
+>   .../selftests/net/tcp_ao/lib/netlink.c        | 341 ++++++++++++++++++
+>   tools/testing/selftests/net/tcp_ao/lib/proc.c | 267 ++++++++++++++
+>   .../testing/selftests/net/tcp_ao/lib/setup.c  | 297 +++++++++++++++
+>   tools/testing/selftests/net/tcp_ao/lib/sock.c | 294 +++++++++++++++
+>   .../testing/selftests/net/tcp_ao/lib/utils.c  |  30 ++
+>   10 files changed, 1691 insertions(+)
+>   create mode 100644 tools/testing/selftests/net/tcp_ao/.gitignore
+>   create mode 100644 tools/testing/selftests/net/tcp_ao/Makefile
+>   create mode 100644 tools/testing/selftests/net/tcp_ao/connect.c
+>   create mode 100644 tools/testing/selftests/net/tcp_ao/lib/aolib.h
+>   create mode 100644 tools/testing/selftests/net/tcp_ao/lib/netlink.c
+>   create mode 100644 tools/testing/selftests/net/tcp_ao/lib/proc.c
+>   create mode 100644 tools/testing/selftests/net/tcp_ao/lib/setup.c
+>   create mode 100644 tools/testing/selftests/net/tcp_ao/lib/sock.c
+>   create mode 100644 tools/testing/selftests/net/tcp_ao/lib/utils.c
 > 
-> Note it is very recommended to merge the patchsets in the same order as
-> they are listed in the set above in order to have them applied smoothly.
-> Nothing prevents them from being reviewed synchronously though.
-> 
-> Please note originally this series was self content, but due to Frank
-> being a bit faster in his work submission I had to rebase my patchset onto
-> his one. So now this patchset turns to be dependent on the Frank' work:
-> 
-> Link: https://lore.kernel.org/linux-pci/20220524152159.2370739-1-Frank.Li@nxp.com/
-> 
-> Here is a short summary regarding this patchset. The series starts with
-> fixes patches. We discovered that the dw-edma-pcie.c driver incorrectly
-> initializes the LL/DT base addresses for the platforms with not matching
-> CPU and PCIe memory spaces. It is fixed by using the pci_bus_address()
-> method to get a correct base address. After that you can find a series of
-> the interleaved xfers fixes. It turned out the interleaved transfers
-> implementation didn't work quite correctly from the very beginning for
-> instance missing src/dst addresses initialization, etc. In the framework
-> of the next two patches we suggest to add a new platform-specific
-> callback - pci_address() and use it to convert the CPU address to the PCIe
-> space address. It is at least required for the DW eDMA remote End-point
-> setup on the platforms with not-matching CPU/PCIe address spaces. In case
-> of the DW eDMA local RP/EP setup the conversion will be done automatically
-> by the outbound iATU (if no DMA-bypass flag is specified for the
-> corresponding iATU window). Then we introduce a set of the patches to make
-> the DebugFS part of the code supporting the multi-eDMA controllers
-> platforms. It starts with several cleanup patches and is closed joining
-> the Read/Write channels into a single DMA-device as they originally should
-> have been. After that you can find the patches with adding the non-atomic
-> io-64 methods usage, dropping DT-region descriptors allocation, replacing
-> chip IDs with the device name. In addition to that in order to have the
-> eDMA embedded into the DW PCIe RP/EP supported we need to bypass the
-> dma-ranges-based memory ranges mapping since in case of the root port DT
-> node it's applicable for the peripheral PCIe devices only. Finally at the
-> series closure we introduce a generic DW eDMA controller support being
-> available in the DW PCIe Root Port/Endpoint driver.
+> diff --git a/tools/testing/selftests/Makefile b/tools/testing/selftests/Makefile
+> index 10b34bb03bc1..2a3b15a13ccb 100644
+> --- a/tools/testing/selftests/Makefile
+> +++ b/tools/testing/selftests/Makefile
+> @@ -46,6 +46,7 @@ TARGETS += net
+>   TARGETS += net/af_unix
+>   TARGETS += net/forwarding
+>   TARGETS += net/mptcp
+> +TARGETS += net/tcp_ao
+
+Please look into a wayto invoke all of them instead of adding individual
+net/* to the main Makefile. This list seems to be growing. :)
+
+>   TARGETS += netfilter
+>   TARGETS += nsfs
+>   TARGETS += pidfd
+
+[snip]
+
+> +
+> +__attribute__((__format__(__printf__, 2, 3)))
+> +static inline void __test_print(void (*fn)(const char *), const char *fmt, ...)
+> +{
+> +#define TEST_MSG_BUFFER_SIZE 4096
+> +	char buf[TEST_MSG_BUFFER_SIZE];
+> +	va_list arg;
+> +
+> +	va_start(arg, fmt);
+> +	vsnprintf(buf, sizeof(buf), fmt, arg);
+> +	va_end(arg);
+> +	fn(buf);
+> +}
+> +
+
+Is there a reason add these instead of using kselftest_* print
+functions?
+
+> +#define test_print(fmt, ...)						\
+> +	__test_print(__test_msg, "%ld[%s:%u] " fmt "\n",		\
+> +		     syscall(SYS_gettid),				\
+> +		     __FILE__, __LINE__, ##__VA_ARGS__)
+> +
+> +#define test_ok(fmt, ...)						\
+> +	__test_print(__test_ok, fmt "\n", ##__VA_ARGS__)
+> +
+> +#define test_fail(fmt, ...)						\
+> +do {									\
+> +	if (errno)							\
+> +		__test_print(__test_fail, fmt ": %m\n", ##__VA_ARGS__);	\
+> +	else								\
+> +		__test_print(__test_fail, fmt "\n", ##__VA_ARGS__);	\
+> +	test_failed();							\
+> +} while(0)
+> +
+> +#define KSFT_FAIL  1
+> +#define test_error(fmt, ...)						\
+> +do {									\
+> +	if (errno)							\
+> +		__test_print(__test_error, "%ld[%s:%u] " fmt ": %m\n",	\
+> +			     syscall(SYS_gettid), __FILE__, __LINE__,	\
+> +			     ##__VA_ARGS__);				\
+> +	else								\
+> +		__test_print(__test_error, "%ld[%s:%u] " fmt "\n",	\
+> +			     syscall(SYS_gettid), __FILE__, __LINE__,	\
+> +			     ##__VA_ARGS__);				\
+> +	exit(KSFT_FAIL);						\
+> +} while(0)
+> +
+
+Is there a reason add these instead of using kselftest_* print
+functions?
+
+> + * Timeout on syscalls where failure is not expected.
+> + * You may want to rise it if the test machine is very busy.
+> + */
+> +#ifndef TEST_TIMEOUT_SEC
+> +#define TEST_TIMEOUT_SEC	5
+> +#endif
+> +
+
+Where is the TEST_TIMEOUT_SEC usually defined? Does this come
+from shell wrapper that runs this test? Can we add a message before
+starting the test print the timeout used?
+
+> +/*
+> + * Timeout on connect() where a failure is expected.
+> + * If set to 0 - kernel will try to retransmit SYN number of times, set in
+> + * /proc/sys/net/ipv4/tcp_syn_retries
+> + * By default set to 1 to make tests pass faster on non-busy machine.
+> + */
+> +#ifndef TEST_RETRANSMIT_SEC
+> +#define TEST_RETRANSMIT_SEC	1
+> +#endif
+> +
+
+Where would this TEST_RETRANSMIT_SEC defined usually?
+
+> +
+> +static inline int _test_connect_socket(int sk, const union tcp_addr taddr,
+> +					unsigned port, time_t timeout)
+> +{
+> +#ifdef IPV6_TEST
+> +	struct sockaddr_in6 addr = {
+> +		.sin6_family	= AF_INET6,
+> +		.sin6_port	= htons(port),
+> +		.sin6_addr	= taddr.a6,
+> +	};
+> +#else
+> +	struct sockaddr_in addr = {
+> +		.sin_family	= AF_INET,
+> +		.sin_port	= htons(port),
+> +		.sin_addr	= taddr.a4,
+> +	};
+> +#endif
+
+Why do we defined these here - are they also defined in a kernel
+header?
+
+> +	return __test_connect_socket(sk, (void *)&addr, sizeof(addr), timeout);
+> +}
+> +
+> +static inline int test_connect_socket(int sk,
+> +		const union tcp_addr taddr, unsigned port)
+> +{
+> +	return _test_connect_socket(sk, taddr, port, TEST_TIMEOUT_SEC);
+> +}
+> +
+> +extern int test_prepare_ao_sockaddr(struct tcp_ao *ao,
+> +		const char *alg, uint16_t flags,
+> +		void *addr, size_t addr_sz, uint8_t prefix,
+> +		uint8_t sndid, uint8_t rcvid, uint8_t maclen,
+> +		uint8_t keyflags, uint8_t keylen, const char *key);
+> +
+> +static inline int test_prepare_ao(struct tcp_ao *ao,
+> +		const char *alg, uint16_t flags,
+> +		union tcp_addr in_addr, uint8_t prefix,
+> +		uint8_t sndid, uint8_t rcvid, uint8_t maclen,
+> +		uint8_t keyflags, uint8_t keylen, const char *key)
+> +{
+> +#ifdef IPV6_TEST
+> +	struct sockaddr_in6 addr = {
+> +		.sin6_family	= AF_INET6,
+> +		.sin6_port	= 0,
+> +		.sin6_addr	= in_addr.a6,
+> +	};
+> +#else
+> +	struct sockaddr_in addr = {
+> +		.sin_family	= AF_INET,
+> +		.sin_port	= 0,
+> +		.sin_addr	= in_addr.a4,
+> +	};
+> +#endif
+> +
+
+Same question here. In general having these ifdefs isn't ideal without
+a good reason.
+
+> +	return test_prepare_ao_sockaddr(ao, alg, flags,
+> +			(void *)&addr, sizeof(addr), prefix, sndid, rcvid,
+> +			maclen, keyflags, keylen, key);
+> +}
+> +
+> +static inline int test_prepare_def_ao(struct tcp_ao *ao,
+> +		const char *key, uint16_t flags,
+> +		union tcp_addr in_addr, uint8_t prefix,
+> +		uint8_t sndid, uint8_t rcvid)
+> +{
+> +	if (prefix > DEFAULT_TEST_PREFIX)
+> +		prefix = DEFAULT_TEST_PREFIX;
+> +
+> +	return test_prepare_ao(ao, DEFAULT_TEST_ALGO, flags, in_addr,
+> +			prefix, sndid, rcvid, 0, 0, strlen(key), key);
+> +}
+> +
+> +extern int test_get_one_ao(int sk, struct tcp_ao_getsockopt *out,
+> +			   uint16_t flags, void *addr, size_t addr_sz,
+> +			   uint8_t prefix, uint8_t sndid, uint8_t rcvid);
+> +extern int test_cmp_getsockopt_setsockopt(const struct tcp_ao *a,
+> +					  const struct tcp_ao_getsockopt *b);
+> +
+> +static inline int test_verify_socket_ao(int sk, struct tcp_ao *ao)
+> +{
+> +	struct tcp_ao_getsockopt tmp;
+> +	int err;
+> +
+> +	err = test_get_one_ao(sk, &tmp, 0, &ao->tcpa_addr,
+> +			sizeof(ao->tcpa_addr), ao->tcpa_prefix,
+> +			ao->tcpa_sndid, ao->tcpa_rcvid);
+> +	if (err)
+> +		return err;
+
+Is this always an error or could this a skip if dependencies aren't
+met to run the test? This is a global comment for all error cases.
+
+> +
+> +	return test_cmp_getsockopt_setsockopt(ao, &tmp);
+> +}
+> +
+> +static inline int test_set_ao(int sk, const char *key, uint16_t flags,
+> +			      union tcp_addr in_addr, uint8_t prefix,
+> +			      uint8_t sndid, uint8_t rcvid)
+> +{
+> +	struct tcp_ao tmp;
+> +	int err;
+> +
+> +	err = test_prepare_def_ao(&tmp, key, flags, in_addr,
+> +			prefix, sndid, rcvid);
+> +	if (err)
+> +		return err;
+
+Same comment as above here.
+
+> +
+> +	if (setsockopt(sk, IPPROTO_TCP, TCP_AO, &tmp, sizeof(tmp)) < 0)
+> +		return -errno;
+> +
+> +	return test_verify_socket_ao(sk, &tmp);
+> +}
+> +
+> +extern ssize_t test_server_run(int sk, ssize_t quota, time_t timeout_sec);
+> +extern ssize_t test_client_loop(int sk, char *buf, size_t buf_sz,
+> +				const size_t msg_len, time_t timeout_sec);
+> +extern int test_client_verify(int sk, const size_t msg_len, const size_t nr,
+> +			      time_t timeout_sec);
+> +
+> +struct netstat;
+> +extern struct netstat *netstat_read(void);
+> +extern void netstat_free(struct netstat *ns);
+> +extern void netstat_print_diff(struct netstat *nsa, struct netstat *nsb);
+> +extern uint64_t netstat_get(struct netstat *ns,
+> +			    const char *name, bool *not_found);
+> +
+> +static inline uint64_t netstat_get_one(const char *name, bool *not_found)
+> +{
+> +	struct netstat *ns = netstat_read();
+> +	uint64_t ret;
+> +
+> +	ret = netstat_get(ns, name, not_found);
+> +
+> +	netstat_free(ns);
+> +	return ret;
+> +}
+> +
+> +#endif /* _AOLIB_H_ */
+> diff --git a/tools/testing/selftests/net/tcp_ao/lib/netlink.c b/tools/testing/selftests/net/tcp_ao/lib/netlink.c
+> new file mode 100644
+> index 000000000000..f04757c921d0
+> --- /dev/null
+> +++ b/tools/testing/selftests/net/tcp_ao/lib/netlink.c
+> @@ -0,0 +1,341 @@
+> +// SPDX-License-Identifier: GPL-2.0
+> +/* Original from tools/testing/selftests/net/ipsec.c */
+> +#include <linux/netlink.h>
+> +#include <linux/random.h>
+> +#include <linux/rtnetlink.h>
+> +#include <linux/veth.h>
+> +#include <net/if.h>
+> +#include <stdint.h>
+> +#include <string.h>
+> +#include <sys/socket.h>
+> +
+> +#include "aolib.h"
+> +
+> +#define MAX_PAYLOAD		2048
+
+tools/testing/selftests/net/gro.c seem to define this as:
+
+#define MAX_PAYLOAD (IP_MAXPACKET - sizeof(struct tcphdr) - sizeof(struct ipv6hdr))
+
+Can you do the same instead of hard-coding?
+
+
+> +
+> +const struct sockaddr_in6 addr_any6 = {
+> +	.sin6_family	= AF_INET6,
+> +};
+> +
+> +const struct sockaddr_in addr_any4 = {
+> +	.sin_family	= AF_INET,
+> +};
 > 
 
-I've tested this series on Qualcomm SM8450 SoC based dev board. So,
+A couple of things to look at closely. For some failures such as
+memory allocation for the test or not being able to open a file
 
-Tested-by: Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
+fnetstat = fopen("/proc/net/netstat", "r");
 
-Not sure what is the merging strategy for this one but this series should get
-merged into a single tree. Since the PCI patch is touching the designware
-driver, merging the series into dmaengine tree might result in conflict later.
+Is this a failure or missing config or not having the right permissions
+to open the fail. All of these cases would be a SKIP and not a test fail.
 
-Thanks,
-Mani
+thanks,
+-- Shuah
 
-> Link: https://lore.kernel.org/linux-pci/20220324014836.19149-1-Sergey.Semin@baikalelectronics.ru/
-> Changelog v2:
-> - Drop the patches:
->   [PATCH 1/25] dmaengine: dw-edma: Drop dma_slave_config.direction field usage
->   [PATCH 2/25] dmaengine: dw-edma: Fix eDMA Rd/Wr-channels and DMA-direction semantics
->   since they are going to be merged in in the framework of the
->   Frank's patchset.
-> - Add a new patch: "dmaengine: dw-edma: Release requested IRQs on
->   failure."
-> - Drop __iomem qualifier from the struct dw_edma_debugfs_entry instance
->   definition in the dw_edma_debugfs_u32_get() method. (@Manivannan)
-> - Add a new patch: "dmaengine: dw-edma: Rename DebugFS dentry variables to
->   'dent'." (@Manivannan)
-> - Slightly extend the eDMA name array size. (@Manivannan)
-> - Change the specific DMA mapping comment a bit to being
->   clearer. (@Manivannan)
-> - Add a new patch: "PCI: dwc: Add generic iATU/eDMA CSRs space detection
->   method."
-> - Don't fail eDMA detection procedure if the DW eDMA driver couldn't probe
->   device. That happens if the driver is disabled. (@Manivannan)
-> - Add "dma" registers resource mapping procedure. (@Manivannan)
-> - Move the eDMA CSRs space detection into the dw_pcie_map_detect() method.
-> - Remove eDMA on the dw_pcie_ep_init() internal errors. (@Manivannan)
-> - Remove eDMA in the dw_pcie_ep_exit() method.
-> - Move the dw_pcie_edma_detect() method execution to the tail of the
->   dw_pcie_ep_init() function.
-> 
-> Link: https://lore.kernel.org/linux-pci/20220503225104.12108-1-Sergey.Semin@baikalelectronics.ru/
-> Changelog v3:
-> - Conditionally set dchan->dev->device.dma_coherent field since it can
->   be missing on some platforms. (@Manivannan)
-> - Drop the patch: "PCI: dwc: Add generic iATU/eDMA CSRs space detection
->   method". A similar modification has been done in another patchset.
-> - Add more comprehensive and less regression prune eDMA block detection
->   procedure.
-> - Drop the patch: "dma-direct: take dma-ranges/offsets into account in
->   resource mapping". It will be separately reviewed.
-> - Remove Manivannan tb tag from the modified patches.
-> - Rebase onto the kernel v5.18.
-> 
-> Link: https://lore.kernel.org/linux-pci/20220610091459.17612-1-Sergey.Semin@baikalelectronics.ru
-> Changelog v4:
-> - Rabase onto the laters Frank Li series:
-> Link: https://lore.kernel.org/all/20220524152159.2370739-1-Frank.Li@nxp.com/
-> - Add Vinod' Ab-tag.
-> - Rebase onto the kernel v5.19-rcX.
-> 
-> Link: https://lore.kernel.org/linux-pci/20220728142841.12305-1-Sergey.Semin@baikalelectronics.ru
-> Changelog v5:
-> - Just resend.
-> - Rebase onto the kernel v6.0-rc2.
-> 
-> Signed-off-by: Serge Semin <Sergey.Semin@baikalelectronics.ru>
-> Reviewed-by: Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
-> Acked-By: Vinod Koul <vkoul@kernel.org>
-> Cc: Alexey Malahov <Alexey.Malahov@baikalelectronics.ru>
-> Cc: Pavel Parkhomenko <Pavel.Parkhomenko@baikalelectronics.ru>
-> Cc: "Krzysztof Wilczyński" <kw@linux.com>
-> Cc: linux-pci@vger.kernel.org
-> Cc: dmaengine@vger.kernel.org
-> Cc: linux-kernel@vger.kernel.org
-> 
-> Serge Semin (24):
->   dmaengine: Fix dma_slave_config.dst_addr description
->   dmaengine: dw-edma: Release requested IRQs on failure
->   dmaengine: dw-edma: Convert ll/dt phys-address to PCIe bus/DMA address
->   dmaengine: dw-edma: Fix missing src/dst address of the interleaved
->     xfers
->   dmaengine: dw-edma: Don't permit non-inc interleaved xfers
->   dmaengine: dw-edma: Fix invalid interleaved xfers semantics
->   dmaengine: dw-edma: Add CPU to PCIe bus address translation
->   dmaengine: dw-edma: Add PCIe bus address getter to the remote EP
->     glue-driver
->   dmaengine: dw-edma: Drop chancnt initialization
->   dmaengine: dw-edma: Fix DebugFS reg entry type
->   dmaengine: dw-edma: Stop checking debugfs_create_*() return value
->   dmaengine: dw-edma: Add dw_edma prefix to the DebugFS nodes descriptor
->   dmaengine: dw-edma: Convert DebugFS descs to being kz-allocated
->   dmaengine: dw-edma: Rename DebugFS dentry variables to 'dent'
->   dmaengine: dw-edma: Simplify the DebugFS context CSRs init procedure
->   dmaengine: dw-edma: Move eDMA data pointer to DebugFS node descriptor
->   dmaengine: dw-edma: Join Write/Read channels into a single device
->   dmaengine: dw-edma: Use DMA-engine device DebugFS subdirectory
->   dmaengine: dw-edma: Use non-atomic io-64 methods
->   dmaengine: dw-edma: Drop DT-region allocation
->   dmaengine: dw-edma: Replace chip ID number with device name
->   dmaengine: dw-edma: Bypass dma-ranges mapping for the local setup
->   dmaengine: dw-edma: Skip cleanup procedure if no private data found
->   PCI: dwc: Add DW eDMA engine support
-> 
->  drivers/dma/dw-edma/dw-edma-core.c            | 216 +++++-----
->  drivers/dma/dw-edma/dw-edma-core.h            |  10 +-
->  drivers/dma/dw-edma/dw-edma-pcie.c            |  24 +-
->  drivers/dma/dw-edma/dw-edma-v0-core.c         |  60 +--
->  drivers/dma/dw-edma/dw-edma-v0-core.h         |   1 -
->  drivers/dma/dw-edma/dw-edma-v0-debugfs.c      | 372 ++++++++----------
->  drivers/dma/dw-edma/dw-edma-v0-debugfs.h      |   5 -
->  .../pci/controller/dwc/pcie-designware-ep.c   |  12 +-
->  .../pci/controller/dwc/pcie-designware-host.c |  13 +-
->  drivers/pci/controller/dwc/pcie-designware.c  | 186 +++++++++
->  drivers/pci/controller/dwc/pcie-designware.h  |  20 +
->  include/linux/dma/edma.h                      |  18 +-
->  include/linux/dmaengine.h                     |   2 +-
->  13 files changed, 583 insertions(+), 356 deletions(-)
-> 
-> -- 
-> 2.35.1
-> 
-
--- 
-மணிவண்ணன் சதாசிவம்
