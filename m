@@ -2,103 +2,158 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A0E41C32772
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 19:48:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CB38CC32796
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 19:48:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231432AbiHWTsK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 15:48:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55440 "EHLO
+        id S231394AbiHWTsV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 23 Aug 2022 15:48:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54114 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230326AbiHWTrE (ORCPT
+        with ESMTP id S232359AbiHWTra (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 15:47:04 -0400
-Received: from linux.microsoft.com (linux.microsoft.com [13.77.154.182])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id BF59A78BF9;
-        Tue, 23 Aug 2022 11:51:09 -0700 (PDT)
-Received: from linuxonhyperv3.guj3yctzbm1etfxqx2vob5hsef.xx.internal.cloudapp.net (linux.microsoft.com [13.77.154.182])
-        by linux.microsoft.com (Postfix) with ESMTPSA id 563D42125976;
-        Tue, 23 Aug 2022 11:51:09 -0700 (PDT)
-DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com 563D42125976
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.microsoft.com;
-        s=default; t=1661280669;
-        bh=NBFeGJMwCnn/s60bkc/kPbdd0y34vbhoOIUgYJBG02k=;
-        h=From:To:Subject:Date:From;
-        b=IUxhbzEW7vaVZ4Ng+5wGWzMb9yRhskDwc0vqAVJdcKR1EDxy5lPqeD6yhI5DrAehI
-         KCTmfRLw8KGGFkzC3xhyKav2zSZeFJYqRM+EaW53o+8P3o126lHnPkE8eaXwMq/c75
-         1Uwz/VCxdHh05yIri3MNwg6cvnFXU1CeLR7upAUs=
-From:   Saurabh Sengar <ssengar@linux.microsoft.com>
-To:     song@kernel.org, shli@fb.com, neilb@suse.com,
-        linux-raid@vger.kernel.org, linux-kernel@vger.kernel.org,
-        ssengar@microsoft.com, mikelley@microsoft.com,
-        guoqing.jiang@linux.dev
-Subject: [PATCH v2] md : Replace snprintf with scnprintf
-Date:   Tue, 23 Aug 2022 11:51:04 -0700
-Message-Id: <1661280664-10588-1-git-send-email-ssengar@linux.microsoft.com>
-X-Mailer: git-send-email 1.8.3.1
+        Tue, 23 Aug 2022 15:47:30 -0400
+Received: from NAM10-MW2-obe.outbound.protection.outlook.com (mail-mw2nam10on2069.outbound.protection.outlook.com [40.107.94.69])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 58A9679A7E;
+        Tue, 23 Aug 2022 11:51:27 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=lpEvTF0zqQNFrwAMUOOQJg9OTdV3L4tj+zrdfHMF8djHZwJokr2ZP+zTOEoNDPUIUImunTUSMkXDkUpxEju+FXCJpTqowZNdwvjYyFAITL/XYuGZagLRtsUSYN8Y7wKhdO5Dqr8lEC24lp2P6jwOAY9b5FDpLsvYYYnrfzAWWsX6F0noxXXk1qnTaKGeKyFWG6CEZprIRBlV2z/DPO7BL2/HP8dZWb6SbTXhDbqqjlydZGhDqq9lPGPp/07mluSAx9JstPlozpxdTYlBx6NSCH73h6kygg46uNHnC0tfrX/LIY+AGobshZsrWZnX4aH1y+QZ+zD0m5ZaLCSYsQferg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=lFnR3bXw3qX7mpCr4BxgPiUUU7a3SMELH8mcisBCcOU=;
+ b=UT+Dq29fmxiOCIizlbm/5AqOey0PkJ+/0ab1aO1u6vB6DmoiN5kGe4quEJ2GM5wnEN60E6Xj0FezJMc3uCvpLabclLxC2BuT4EdpxFSeKapyQYK740JJXKfeTzA/DoIQUwROxw4+EbUA65RDGK37yAwG2+3+1VT5bYP0cU4AyG3ELTCJa2ndOpvhj1EzbA59BkpBBnzlPj7/JC+uTQP9c6ZW9GR+iutrA8m7Caa6F1kJqab+2/WOVo5MGFphyfVy61tYNZev6m7f+/89lpu41A2zsWjA8RowSdtNQszfgRMHiNMmWbuCwrOa5xwuKxGFAo3q3xTewo8+QXGzqZbM9g==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 165.204.84.17) smtp.rcpttodomain=kernel.org smtp.mailfrom=amd.com; dmarc=pass
+ (p=quarantine sp=quarantine pct=100) action=none header.from=amd.com;
+ dkim=none (message not signed); arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=lFnR3bXw3qX7mpCr4BxgPiUUU7a3SMELH8mcisBCcOU=;
+ b=dAPZljonxU0Xj61no47gh7896Eu661KiWDWYvdOrgXtHSSEOV7EtKK7OKXav9yrnDtWrkI+AXlOa5CCbQDHmWHMdxbTjckMv2KZWLx84cM89EfiOz3qzgJNRJLmHwqAnyXbXmsuBpEigPBMoNj18cCZySxDAQOFcDROvPdZ0dZg=
+Received: from MW4PR03CA0103.namprd03.prod.outlook.com (2603:10b6:303:b7::18)
+ by CY4PR12MB1784.namprd12.prod.outlook.com (2603:10b6:903:11e::19) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5546.21; Tue, 23 Aug
+ 2022 18:51:25 +0000
+Received: from CO1NAM11FT064.eop-nam11.prod.protection.outlook.com
+ (2603:10b6:303:b7:cafe::31) by MW4PR03CA0103.outlook.office365.com
+ (2603:10b6:303:b7::18) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5546.20 via Frontend
+ Transport; Tue, 23 Aug 2022 18:51:25 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 165.204.84.17)
+ smtp.mailfrom=amd.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=amd.com;
+Received-SPF: Pass (protection.outlook.com: domain of amd.com designates
+ 165.204.84.17 as permitted sender) receiver=protection.outlook.com;
+ client-ip=165.204.84.17; helo=SATLEXMB04.amd.com; pr=C
+Received: from SATLEXMB04.amd.com (165.204.84.17) by
+ CO1NAM11FT064.mail.protection.outlook.com (10.13.175.77) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.20.5566.15 via Frontend Transport; Tue, 23 Aug 2022 18:51:25 +0000
+Received: from AUS-LX-MLIMONCI.amd.com (10.180.168.240) by SATLEXMB04.amd.com
+ (10.181.40.145) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.28; Tue, 23 Aug
+ 2022 13:51:24 -0500
+From:   Mario Limonciello <mario.limonciello@amd.com>
+To:     <rafael@kernel.org>, Len Brown <lenb@kernel.org>
+CC:     <nouveau@lists.freedesktop.org>, <hdegoede@redhat.com>,
+        <ddadap@nvidia.com>, <Dell.Client.Kernel@dell.com>,
+        <kai.heng.feng@canonical.com>, <kherbst@redhat.com>,
+        Mario Limonciello <mario.limonciello@amd.com>,
+        <linux-acpi@vger.kernel.org>, <linux-kernel@vger.kernel.org>
+Subject: [PATCH 4/4] ACPI: OSI: Update Documentation on custom _OSI strings
+Date:   Tue, 23 Aug 2022 13:51:34 -0500
+Message-ID: <20220823185134.14464-5-mario.limonciello@amd.com>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20220823185134.14464-1-mario.limonciello@amd.com>
+References: <20220823185134.14464-1-mario.limonciello@amd.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-Originating-IP: [10.180.168.240]
+X-ClientProxiedBy: SATLEXMB03.amd.com (10.181.40.144) To SATLEXMB04.amd.com
+ (10.181.40.145)
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 29c8b374-d37d-4be9-8736-08da85387aff
+X-MS-TrafficTypeDiagnostic: CY4PR12MB1784:EE_
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: K+PHUQuXyAN9k3u26Re7Tg8/lsUs6dsi8hz83U0scoF+JwnRgVPbWhq10rFTVcxXOeeSEAOvCmcYNZxgFG4Mdf70rMDCv/hds39Wvdqz6AXAugueqNki3zihlH8tujoUlmC3Bx02OoeuKmhIVPlywQYKddw2DNYcqBkelGEOmr+mZUy6LP6NC74YRYPIbrRPcwyVj1cj4jaaKotiJo/T5h57kniPOrdZt1e0A6xCmM8kBo9itIgDnzfjavgZS02kWGvTfj4H1L1yWbEwEkCxLJjuqg/8ssDjGIQ1hZ7iQZmeoD5U5Dtmg9eA0JRvf1cNEOJcYAu3BC8Y7M5qeqCD0eJObjdt0tV5ovqdANuFf+8s4AUtYx+QocWg1ixDd+AnLgMf8x8gOdUfAFrbNvPpcHEII111be/DYtS4+3LNx8NzKlrVAUPD1eXgt14ZK8m1l14HiQjf3tW8qGAqXODWqjQ1fuanrFWYiVlgJTPoOva7yrtQiC8HEQDL8XYedgbzCS7ehHVjJnwv4mSkDiR2cf4DWeVVoQITGvfmw7i4IxEX2WH579v8VH6bm/X+/SnlaKGG3hYTTFmtXvsAagUAjM8SNRPJjxtmlBQlTcbVC3vGrhyzAtWS8XAyN6z6+xrdM42LmUZXE8BXXmKJjM8NsJpVI0p8Oe08lfI50oCBrS+tErgyXRS14Ig6tdOCvPXGBuGpjYxG3E4H1WKaeMbc77CjFiu4hCGYBsyVn32uSm9ZkJOe0UTZuvViSGC1W8DFBLrM0zRZufmZ+p80/Dc2h8+DgrPOLtgsi9TTLrhnjXEmTy7EZZTNb0kGpncfrl51
+X-Forefront-Antispam-Report: CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:SATLEXMB04.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230016)(4636009)(39860400002)(136003)(346002)(376002)(396003)(46966006)(40470700004)(36840700001)(1076003)(8676002)(70206006)(478600001)(70586007)(4326008)(54906003)(316002)(110136005)(5660300002)(41300700001)(8936002)(36756003)(7416002)(16526019)(2906002)(82310400005)(2616005)(47076005)(7696005)(15650500001)(6666004)(44832011)(426003)(83380400001)(26005)(40480700001)(36860700001)(336012)(356005)(86362001)(40460700003)(186003)(82740400003)(81166007)(36900700001);DIR:OUT;SFP:1101;
+X-OriginatorOrg: amd.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 23 Aug 2022 18:51:25.2701
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: 29c8b374-d37d-4be9-8736-08da85387aff
+X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=3dd8961f-e488-4e60-8e11-a82d994e183d;Ip=[165.204.84.17];Helo=[SATLEXMB04.amd.com]
+X-MS-Exchange-CrossTenant-AuthSource: CO1NAM11FT064.eop-nam11.prod.protection.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: CY4PR12MB1784
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Current code produces a warning as shown below when total characters
-in the constituent block device names plus the slashes exceeds 200.
-snprintf() returns the number of characters generated from the given
-input, which could cause the expression “200 – len” to wrap around
-to a large positive number. Fix this by using scnprintf() instead,
-which returns the actual number of characters written into the buffer.
+Originally when there was some custom ASL needed for Linux the guidance
+for Linux friendly OEMs was to introduced a new string in APCI tables
+and discuss it on the kernel mailing lists.  This lead to 3 strings
+being introduced.  Those strings now have the original problems fixed
+in the kernel and have since been removed.  The kernel no longer
+advertises any custom Linux-* _OSI strings for OEM use.
 
-[ 1513.267938] ------------[ cut here ]------------
-[ 1513.267943] WARNING: CPU: 15 PID: 37247 at <snip>/lib/vsprintf.c:2509 vsnprintf+0x2c8/0x510
-[ 1513.267944] Modules linked in:  <snip>
-[ 1513.267969] CPU: 15 PID: 37247 Comm: mdadm Not tainted 5.4.0-1085-azure #90~18.04.1-Ubuntu
-[ 1513.267969] Hardware name: Microsoft Corporation Virtual Machine/Virtual Machine, BIOS Hyper-V UEFI Release v4.1 05/09/2022
-[ 1513.267971] RIP: 0010:vsnprintf+0x2c8/0x510
-<-snip->
-[ 1513.267982] Call Trace:
-[ 1513.267986]  snprintf+0x45/0x70
-[ 1513.267990]  ? disk_name+0x71/0xa0
-[ 1513.267993]  dump_zones+0x114/0x240 [raid0]
-[ 1513.267996]  ? _cond_resched+0x19/0x40
-[ 1513.267998]  raid0_run+0x19e/0x270 [raid0]
-[ 1513.268000]  md_run+0x5e0/0xc50
-[ 1513.268003]  ? security_capable+0x3f/0x60
-[ 1513.268005]  do_md_run+0x19/0x110
-[ 1513.268006]  md_ioctl+0x195e/0x1f90
-[ 1513.268007]  blkdev_ioctl+0x91f/0x9f0
-[ 1513.268010]  block_ioctl+0x3d/0x50
-[ 1513.268012]  do_vfs_ioctl+0xa9/0x640
-[ 1513.268014]  ? __fput+0x162/0x260
-[ 1513.268016]  ksys_ioctl+0x75/0x80
-[ 1513.268017]  __x64_sys_ioctl+0x1a/0x20
-[ 1513.268019]  do_syscall_64+0x5e/0x200
-[ 1513.268021]  entry_SYSCALL_64_after_hwframe+0x44/0xa9
+It was discovered that these removed strings were actually being abused
+to detect Linux for unrelated reasons.  So drop the encouragement for
+new ones to be added.
 
-Fixes: 766038846e875 ("md/raid0: replace printk() with pr_*()")
-Reviewed-by: Michael Kelley <mikelley@microsoft.com>
-Acked-by: Guoqing Jiang <guoqing.jiang@linux.dev>
-Signed-off-by: Saurabh Sengar <ssengar@linux.microsoft.com>
+Signed-off-by: Mario Limonciello <mario.limonciello@amd.com>
 ---
-V2 :
-	- Rebase
+ Documentation/firmware-guide/acpi/osi.rst | 25 ++++++++++-------------
+ 1 file changed, 11 insertions(+), 14 deletions(-)
 
- drivers/md/raid0.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/drivers/md/raid0.c b/drivers/md/raid0.c
-index 78addfe..857c493 100644
---- a/drivers/md/raid0.c
-+++ b/drivers/md/raid0.c
-@@ -47,7 +47,7 @@ static void dump_zones(struct mddev *mddev)
- 		int len = 0;
+diff --git a/Documentation/firmware-guide/acpi/osi.rst b/Documentation/firmware-guide/acpi/osi.rst
+index 05869c0045d7..c9d508ba2ec7 100644
+--- a/Documentation/firmware-guide/acpi/osi.rst
++++ b/Documentation/firmware-guide/acpi/osi.rst
+@@ -41,26 +41,23 @@ But it is likely that they will all eventually be added.
+ What should an OEM do if they want to support Linux and Windows
+ using the same BIOS image?  Often they need to do something different
+ for Linux to deal with how Linux is different from Windows.
+-Here the BIOS should ask exactly what it wants to know:
  
- 		for (k = 0; k < conf->strip_zone[j].nb_dev; k++)
--			len += snprintf(line+len, 200-len, "%s%pg", k?"/":"",
-+			len += scnprintf(line+len, 200-len, "%s%pg", k?"/":"",
- 				conf->devlist[j * raid_disks + k]->bdev);
- 		pr_debug("md: zone%d=[%s]\n", j, line);
++In this case, the OEM should create custom ASL to be executed by the
++Linux kernel and changes to Linux kernel drivers to execute this custom
++ASL.  The easiest way to accomplish this is to introduce a device specific
++method (_DSM) that is called from the Linux kernel.
++
++In the past the kernel used to support something like:
+ _OSI("Linux-OEM-my_interface_name")
+ where 'OEM' is needed if this is an OEM-specific hook,
+ and 'my_interface_name' describes the hook, which could be a
+ quirk, a bug, or a bug-fix.
+ 
+-In addition, the OEM should send a patch to upstream Linux
+-via the linux-acpi@vger.kernel.org mailing list.  When that patch
+-is checked into Linux, the OS will answer "YES" when the BIOS
+-on the OEM's system uses _OSI to ask if the interface is supported
+-by the OS.  Linux distributors can back-port that patch for Linux
+-pre-installs, and it will be included by all distributions that
+-re-base to upstream.  If the distribution can not update the kernel binary,
+-they can also add an acpi_osi=Linux-OEM-my_interface_name
+-cmdline parameter to the boot loader, as needed.
+-
+-If the string refers to a feature where the upstream kernel
+-eventually grows support, a patch should be sent to remove
+-the string when that support is added to the kernel.
++However this was discovered to be abused by other BIOS vendors to change
++completely unrelated code on completely unrelated systems.  This prompted
++an evaluation of all of it's uses. This uncovered that they aren't needed
++for any of the original reasons. As such, the kernel will not respond to
++any custom Linux-* strings by default.
+ 
+ That was easy.  Read on, to find out how to do it wrong.
  
 -- 
-1.8.3.1
+2.34.1
 
