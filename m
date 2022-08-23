@@ -2,47 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id ED3EFC32772
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 09:36:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6F8A5C32772
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 09:37:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351218AbiHWJgy (ORCPT
+        id S1351239AbiHWJg7 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 05:36:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38908 "EHLO
+        Tue, 23 Aug 2022 05:36:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51704 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351348AbiHWJf3 (ORCPT
+        with ESMTP id S1351367AbiHWJfa (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 05:35:29 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3FB4E9751C;
-        Tue, 23 Aug 2022 01:39:51 -0700 (PDT)
+        Tue, 23 Aug 2022 05:35:30 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5D1119752E;
+        Tue, 23 Aug 2022 01:39:52 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id A21E461326;
-        Tue, 23 Aug 2022 08:38:44 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A4711C433C1;
-        Tue, 23 Aug 2022 08:38:43 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 3C575B81C5A;
+        Tue, 23 Aug 2022 08:38:51 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 978CCC433D7;
+        Tue, 23 Aug 2022 08:38:49 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661243924;
-        bh=jW7R1X5fVt9SZ7CcWc7egTN9A/dldQ6+CaJL5v2cE9A=;
+        s=korg; t=1661243930;
+        bh=Iu8/f8WauSIfLfX5/UEApQA6RVWbkuQeUJ2KoIzGL7c=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=JV9EUYsXKNOdmICIsOdK2j6UP+lgZKXrYyteU483ch14j9u4xtNuk8aHHCKSSx/IZ
-         p5B/YrYKN3ofAw1AT+IcTysfU3sIrpGcQiQYL2zWb0UZiwPxeOl6xU9x9DN6beT2b+
-         uL4ap2c6CKKzaFadkr/Vo/qTNDeQbB0fbctM751w=
+        b=f+f2Zvvibb9kmDwCr7gl8FinRl1HxspFEfGWSb+QApaK9HCGH1x6U4uALKQHQuD0C
+         sBVk3GXESrC41AyH5CmvB43OpsoJmpkCcTaf6ZXeZDkOmcuSrHYs0/LY0uiTaB1B+O
+         rpVgyaJtUoIeIVcY4dXBYpsHWHI3Tu+E2nU1+Bgw=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Dan Carpenter <dan.carpenter@oracle.com>,
-        Chris Park <Chris.Park@amd.com>,
-        Rodrigo Siqueira <Rodrigo.Siqueira@amd.com>,
-        Tom Chung <chiahsuan.chung@amd.com>,
-        Aurabindo Pillai <aurabindo.pillai@amd.com>,
-        Daniel Wheeler <daniel.wheeler@amd.com>,
-        Alex Deucher <alexander.deucher@amd.com>
-Subject: [PATCH 5.15 009/244] drm/amd/display: Check correct bounds for stream encoder instances for DCN303
-Date:   Tue, 23 Aug 2022 10:22:48 +0200
-Message-Id: <20220823080059.393790523@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Damien Le Moal <damien.lemoal@opensource.wdc.com>,
+        Hannes Reinecke <hare@suse.de>
+Subject: [PATCH 5.15 010/244] ata: libata-eh: Add missing command name
+Date:   Tue, 23 Aug 2022 10:22:49 +0200
+Message-Id: <20220823080059.433086337@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220823080059.091088642@linuxfoundation.org>
 References: <20220823080059.091088642@linuxfoundation.org>
@@ -54,41 +50,31 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Aurabindo Pillai <aurabindo.pillai@amd.com>
+From: Damien Le Moal <damien.lemoal@opensource.wdc.com>
 
-commit 89b008222c2bf21e50219725caed31590edfd9d1 upstream.
+commit d3122bf9aa4c974f5e2c0112f799757b3a2779da upstream.
 
-[Why & How]
-eng_id for DCN303 cannot be more than 1, since we have only two
-instances of stream encoders.
+Add the missing command name for ATA_CMD_NCQ_NON_DATA to
+ata_get_cmd_name().
 
-Check the correct boundary condition for engine ID for DCN303 prevent
-the potential out of bounds access.
-
-Fixes: cd6d421e3d1a ("drm/amd/display: Initial DC support for Beige Goby")
-Reported-by: Dan Carpenter <dan.carpenter@oracle.com>
+Fixes: 661ce1f0c4a6 ("libata/libsas: Define ATA_CMD_NCQ_NON_DATA")
 Cc: stable@vger.kernel.org
-Reviewed-by: Chris Park <Chris.Park@amd.com>
-Reviewed-by: Rodrigo Siqueira <Rodrigo.Siqueira@amd.com>
-Acked-by: Tom Chung <chiahsuan.chung@amd.com>
-Signed-off-by: Aurabindo Pillai <aurabindo.pillai@amd.com>
-Tested-by: Daniel Wheeler <daniel.wheeler@amd.com>
-Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
+Signed-off-by: Damien Le Moal <damien.lemoal@opensource.wdc.com>
+Reviewed-by: Hannes Reinecke <hare@suse.de>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/gpu/drm/amd/display/dc/dcn303/dcn303_resource.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/ata/libata-eh.c |    1 +
+ 1 file changed, 1 insertion(+)
 
---- a/drivers/gpu/drm/amd/display/dc/dcn303/dcn303_resource.c
-+++ b/drivers/gpu/drm/amd/display/dc/dcn303/dcn303_resource.c
-@@ -500,7 +500,7 @@ static struct stream_encoder *dcn303_str
- 	int afmt_inst;
- 
- 	/* Mapping of VPG, AFMT, DME register blocks to DIO block instance */
--	if (eng_id <= ENGINE_ID_DIGE) {
-+	if (eng_id <= ENGINE_ID_DIGB) {
- 		vpg_inst = eng_id;
- 		afmt_inst = eng_id;
- 	} else
+--- a/drivers/ata/libata-eh.c
++++ b/drivers/ata/libata-eh.c
+@@ -2130,6 +2130,7 @@ const char *ata_get_cmd_descript(u8 comm
+ 		{ ATA_CMD_WRITE_QUEUED_FUA_EXT, "WRITE DMA QUEUED FUA EXT" },
+ 		{ ATA_CMD_FPDMA_READ,		"READ FPDMA QUEUED" },
+ 		{ ATA_CMD_FPDMA_WRITE,		"WRITE FPDMA QUEUED" },
++		{ ATA_CMD_NCQ_NON_DATA,		"NCQ NON-DATA" },
+ 		{ ATA_CMD_FPDMA_SEND,		"SEND FPDMA QUEUED" },
+ 		{ ATA_CMD_FPDMA_RECV,		"RECEIVE FPDMA QUEUED" },
+ 		{ ATA_CMD_PIO_READ,		"READ SECTOR(S)" },
 
 
