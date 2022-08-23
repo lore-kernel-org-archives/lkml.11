@@ -2,42 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8FD75C32772
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 08:38:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F3864C32772
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 08:38:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344327AbiHWIii (ORCPT
+        id S1346159AbiHWIin (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 04:38:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33500 "EHLO
+        Tue, 23 Aug 2022 04:38:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45804 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244479AbiHWIdg (ORCPT
+        with ESMTP id S1345554AbiHWIfp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 04:33:36 -0400
+        Tue, 23 Aug 2022 04:35:45 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4A5DA754BC;
-        Tue, 23 Aug 2022 01:16:38 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AF7FE760FD;
+        Tue, 23 Aug 2022 01:17:05 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id CC0F961242;
-        Tue, 23 Aug 2022 08:16:37 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DBBD9C433C1;
-        Tue, 23 Aug 2022 08:16:36 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id D2DEF6131B;
+        Tue, 23 Aug 2022 08:17:04 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DE0F4C433C1;
+        Tue, 23 Aug 2022 08:17:03 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661242597;
-        bh=iS9yqPrrykOoJinZudE3RI49uScGLU+2ThjG/LbrXTs=;
+        s=korg; t=1661242624;
+        bh=WnMkrFmRqTr/C6KW7WcHvuKKxCCcy1TaXXmxhygiNlc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=rU6Bq8tOgsHx+TQiWEjZs9Ck+7zuFTaUtnitz3G/MpHlbJ3W8Hz/cpKshudUtsV4v
-         08zqNajXUconTh41jqi8uab8OQ/pSaSJncZP6BJ1pVpLdcHjHdLGwGKbhxaSqpX6Gu
-         cTctmKxAD4ZeYJWmWMjB5nzW+hsNQfpHRaquRtJE=
+        b=d4XaXvpTh3XxVNzZ+Epitm6b1As9LQa73pqF+VuRyVmeT51PCP/Lo1kDN/B095XdC
+         bmx1KrcQi+pyv/cHhPotTkWIW4CLiYJ8t8FrTvi0WNk1yAd8G+6BQOPCM3nTKWwkqq
+         b16jStfX/7a1voW2y1i2LpU8dUaW6a/202i2XCE4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Takashi Iwai <tiwai@suse.de>,
+        stable@vger.kernel.org,
+        "Sudip Mukherjee (Codethink)" <sudipm.mukherjee@gmail.com>,
+        Nathan Chancellor <nathan@kernel.org>,
+        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.9 097/101] ALSA: core: Add async signal helpers
-Date:   Tue, 23 Aug 2022 10:04:10 +0200
-Message-Id: <20220823080038.265741569@linuxfoundation.org>
+Subject: [PATCH 4.9 101/101] MIPS: tlbex: Explicitly compare _PAGE_NO_EXEC against 0
+Date:   Tue, 23 Aug 2022 10:04:14 +0200
+Message-Id: <20220823080038.398671207@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220823080034.579196046@linuxfoundation.org>
 References: <20220823080034.579196046@linuxfoundation.org>
@@ -49,156 +52,68 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Takashi Iwai <tiwai@suse.de>
+From: Nathan Chancellor <nathan@kernel.org>
 
-[ Upstream commit ef34a0ae7a2654bc9e58675e36898217fb2799d8 ]
+[ Upstream commit 74de14fe05dd6b151d73cb0c73c8ec874cbdcde6 ]
 
-Currently the call of kill_fasync() from an interrupt handler might
-lead to potential spin deadlocks, as spotted by syzkaller.
-Unfortunately, it's not so trivial to fix this lock chain as it's
-involved with the tasklist_lock that is touched in allover places.
+When CONFIG_XPA is enabled, Clang warns:
 
-As a temporary workaround, this patch provides the way to defer the
-async signal notification in a work.  The new helper functions,
-snd_fasync_helper() and snd_kill_faync() are replacements for
-fasync_helper() and kill_fasync(), respectively.  In addition,
-snd_fasync_free() needs to be called at the destructor of the relevant
-file object.
+  arch/mips/mm/tlbex.c:629:24: error: converting the result of '<<' to a boolean; did you mean '(1 << _PAGE_NO_EXEC_SHIFT) != 0'? [-Werror,-Wint-in-bool-context]
+          if (cpu_has_rixi && !!_PAGE_NO_EXEC) {
+                              ^
+  arch/mips/include/asm/pgtable-bits.h:174:28: note: expanded from macro '_PAGE_NO_EXEC'
+  # define _PAGE_NO_EXEC          (1 << _PAGE_NO_EXEC_SHIFT)
+                                     ^
+  arch/mips/mm/tlbex.c:2568:24: error: converting the result of '<<' to a boolean; did you mean '(1 << _PAGE_NO_EXEC_SHIFT) != 0'? [-Werror,-Wint-in-bool-context]
+          if (!cpu_has_rixi || !_PAGE_NO_EXEC) {
+                                ^
+  arch/mips/include/asm/pgtable-bits.h:174:28: note: expanded from macro '_PAGE_NO_EXEC'
+  # define _PAGE_NO_EXEC          (1 << _PAGE_NO_EXEC_SHIFT)
+                                     ^
+  2 errors generated.
 
-Link: https://lore.kernel.org/r/20220728125945.29533-2-tiwai@suse.de
-Signed-off-by: Takashi Iwai <tiwai@suse.de>
+_PAGE_NO_EXEC can be '0' or '1 << _PAGE_NO_EXEC_SHIFT' depending on the
+build and runtime configuration, which is what the negation operators
+are trying to convey. To silence the warning, explicitly compare against
+0 so the result of the '<<' operator is not implicitly converted to a
+boolean.
+
+According to its documentation, GCC enables -Wint-in-bool-context with
+-Wall but this warning is not visible when building the same
+configuration with GCC. It appears GCC only warns when compiling C++,
+not C, although the documentation makes no note of this:
+https://godbolt.org/z/x39q3brxf
+
+Reported-by: Sudip Mukherjee (Codethink) <sudipm.mukherjee@gmail.com>
+Signed-off-by: Nathan Chancellor <nathan@kernel.org>
+Signed-off-by: Thomas Bogendoerfer <tsbogend@alpha.franken.de>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- include/sound/core.h |  8 ++++
- sound/core/misc.c    | 94 ++++++++++++++++++++++++++++++++++++++++++++
- 2 files changed, 102 insertions(+)
+ arch/mips/mm/tlbex.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/include/sound/core.h b/include/sound/core.h
-index 31079ea5e484..d5d0e5e53920 100644
---- a/include/sound/core.h
-+++ b/include/sound/core.h
-@@ -457,4 +457,12 @@ snd_pci_quirk_lookup_id(u16 vendor, u16 device,
- }
- #endif
+diff --git a/arch/mips/mm/tlbex.c b/arch/mips/mm/tlbex.c
+index f625fd20b21e..65fed205383e 100644
+--- a/arch/mips/mm/tlbex.c
++++ b/arch/mips/mm/tlbex.c
+@@ -637,7 +637,7 @@ static __maybe_unused void build_convert_pte_to_entrylo(u32 **p,
+ 		return;
+ 	}
  
-+/* async signal helpers */
-+struct snd_fasync;
-+
-+int snd_fasync_helper(int fd, struct file *file, int on,
-+		      struct snd_fasync **fasyncp);
-+void snd_kill_fasync(struct snd_fasync *fasync, int signal, int poll);
-+void snd_fasync_free(struct snd_fasync *fasync);
-+
- #endif /* __SOUND_CORE_H */
-diff --git a/sound/core/misc.c b/sound/core/misc.c
-index f2e8226c88fb..efe26b8ca57f 100644
---- a/sound/core/misc.c
-+++ b/sound/core/misc.c
-@@ -25,6 +25,7 @@
- #include <linux/time.h>
- #include <linux/slab.h>
- #include <linux/ioport.h>
-+#include <linux/fs.h>
- #include <sound/core.h>
+-	if (cpu_has_rixi && !!_PAGE_NO_EXEC) {
++	if (cpu_has_rixi && _PAGE_NO_EXEC != 0) {
+ 		if (fill_includes_sw_bits) {
+ 			UASM_i_ROTR(p, reg, reg, ilog2(_PAGE_GLOBAL));
+ 		} else {
+@@ -2518,7 +2518,7 @@ static void check_pabits(void)
+ 	unsigned long entry;
+ 	unsigned pabits, fillbits;
  
- #ifdef CONFIG_SND_DEBUG
-@@ -153,3 +154,96 @@ snd_pci_quirk_lookup(struct pci_dev *pci, const struct snd_pci_quirk *list)
- }
- EXPORT_SYMBOL(snd_pci_quirk_lookup);
- #endif
-+
-+/*
-+ * Deferred async signal helpers
-+ *
-+ * Below are a few helper functions to wrap the async signal handling
-+ * in the deferred work.  The main purpose is to avoid the messy deadlock
-+ * around tasklist_lock and co at the kill_fasync() invocation.
-+ * fasync_helper() and kill_fasync() are replaced with snd_fasync_helper()
-+ * and snd_kill_fasync(), respectively.  In addition, snd_fasync_free() has
-+ * to be called at releasing the relevant file object.
-+ */
-+struct snd_fasync {
-+	struct fasync_struct *fasync;
-+	int signal;
-+	int poll;
-+	int on;
-+	struct list_head list;
-+};
-+
-+static DEFINE_SPINLOCK(snd_fasync_lock);
-+static LIST_HEAD(snd_fasync_list);
-+
-+static void snd_fasync_work_fn(struct work_struct *work)
-+{
-+	struct snd_fasync *fasync;
-+
-+	spin_lock_irq(&snd_fasync_lock);
-+	while (!list_empty(&snd_fasync_list)) {
-+		fasync = list_first_entry(&snd_fasync_list, struct snd_fasync, list);
-+		list_del_init(&fasync->list);
-+		spin_unlock_irq(&snd_fasync_lock);
-+		if (fasync->on)
-+			kill_fasync(&fasync->fasync, fasync->signal, fasync->poll);
-+		spin_lock_irq(&snd_fasync_lock);
-+	}
-+	spin_unlock_irq(&snd_fasync_lock);
-+}
-+
-+static DECLARE_WORK(snd_fasync_work, snd_fasync_work_fn);
-+
-+int snd_fasync_helper(int fd, struct file *file, int on,
-+		      struct snd_fasync **fasyncp)
-+{
-+	struct snd_fasync *fasync = NULL;
-+
-+	if (on) {
-+		fasync = kzalloc(sizeof(*fasync), GFP_KERNEL);
-+		if (!fasync)
-+			return -ENOMEM;
-+		INIT_LIST_HEAD(&fasync->list);
-+	}
-+
-+	spin_lock_irq(&snd_fasync_lock);
-+	if (*fasyncp) {
-+		kfree(fasync);
-+		fasync = *fasyncp;
-+	} else {
-+		if (!fasync) {
-+			spin_unlock_irq(&snd_fasync_lock);
-+			return 0;
-+		}
-+		*fasyncp = fasync;
-+	}
-+	fasync->on = on;
-+	spin_unlock_irq(&snd_fasync_lock);
-+	return fasync_helper(fd, file, on, &fasync->fasync);
-+}
-+EXPORT_SYMBOL_GPL(snd_fasync_helper);
-+
-+void snd_kill_fasync(struct snd_fasync *fasync, int signal, int poll)
-+{
-+	unsigned long flags;
-+
-+	if (!fasync || !fasync->on)
-+		return;
-+	spin_lock_irqsave(&snd_fasync_lock, flags);
-+	fasync->signal = signal;
-+	fasync->poll = poll;
-+	list_move(&fasync->list, &snd_fasync_list);
-+	schedule_work(&snd_fasync_work);
-+	spin_unlock_irqrestore(&snd_fasync_lock, flags);
-+}
-+EXPORT_SYMBOL_GPL(snd_kill_fasync);
-+
-+void snd_fasync_free(struct snd_fasync *fasync)
-+{
-+	if (!fasync)
-+		return;
-+	fasync->on = 0;
-+	flush_work(&snd_fasync_work);
-+	kfree(fasync);
-+}
-+EXPORT_SYMBOL_GPL(snd_fasync_free);
+-	if (!cpu_has_rixi || !_PAGE_NO_EXEC) {
++	if (!cpu_has_rixi || _PAGE_NO_EXEC == 0) {
+ 		/*
+ 		 * We'll only be making use of the fact that we can rotate bits
+ 		 * into the fill if the CPU supports RIXI, so don't bother
 -- 
 2.35.1
 
