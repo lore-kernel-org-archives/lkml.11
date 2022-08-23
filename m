@@ -2,44 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0692DC32772
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 11:54:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 410F3C32772
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 11:54:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358812AbiHWLyb (ORCPT
+        id S1358711AbiHWLyg (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 07:54:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57840 "EHLO
+        Tue, 23 Aug 2022 07:54:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52602 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1358953AbiHWLvX (ORCPT
+        with ESMTP id S1358976AbiHWLv0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 07:51:23 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 36747D3997;
-        Tue, 23 Aug 2022 02:32:09 -0700 (PDT)
+        Tue, 23 Aug 2022 07:51:26 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ADCE3D3985;
+        Tue, 23 Aug 2022 02:32:16 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 65520613EF;
-        Tue, 23 Aug 2022 09:32:05 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 55514C433D6;
-        Tue, 23 Aug 2022 09:32:04 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 309AFB81C95;
+        Tue, 23 Aug 2022 09:32:12 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 77B62C433D6;
+        Tue, 23 Aug 2022 09:32:10 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661247124;
-        bh=Y+qlWdUnCH0Y1VPWF46YVC7tY1kSdFucqEmRWPIB3ck=;
+        s=korg; t=1661247130;
+        bh=g50zDTVcQS08LAu01kQ31YSa+m5euRa8lzIjKbTqsww=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=iV2uKrEsawv0hZ1iNI9/2KSETpoyuQe8RpLkIykGHWLX0LnRbdQyaiKVc4F2N35a3
-         rg+e8rxw+bIN31etQ/fPx3JZyQFyh6ShQ2CAgJCvqtzoeP2JByUj0NMBEd91Vwy2jV
-         IiXx6DVYCGL1mGsPNvAK2vUnjVkB5P3cdeqjPUeU=
+        b=QUKm3LaJwmiZd0ujsoA38NYH+lKBDLAjd/+TW3YPwiiBuhSIOu4chR0I2CYDuTQAY
+         SkLCGmnJFAnAyeFwF531r4SXAPg79hnwwa75nR/4+R4X5cPUVWx3TkFs7yw7ptkN9F
+         uX35pGjKZ66Py4ImzVxTDEbcflioYkcu3XMm2UEA=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Louis Peens <louis.peens@corigine.com>,
-        Yu Xiao <yu.xiao@corigine.com>,
-        Simon Horman <simon.horman@corigine.com>,
-        Jakub Kicinski <kuba@kernel.org>
-Subject: [PATCH 5.4 324/389] nfp: ethtool: fix the display error of `ethtool -m DEVNAME`
-Date:   Tue, 23 Aug 2022 10:26:42 +0200
-Message-Id: <20220823080129.056893794@linuxfoundation.org>
+        stable@vger.kernel.org, Tom Rix <trix@redhat.com>,
+        John Johansen <john.johansen@canonical.com>
+Subject: [PATCH 5.4 297/389] apparmor: fix aa_label_asxprint return check
+Date:   Tue, 23 Aug 2022 10:26:15 +0200
+Message-Id: <20220823080127.964405043@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220823080115.331990024@linuxfoundation.org>
 References: <20220823080115.331990024@linuxfoundation.org>
@@ -51,43 +49,56 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Yu Xiao <yu.xiao@corigine.com>
+From: Tom Rix <trix@redhat.com>
 
-commit 4ae97cae07e15d41e5c0ebabba64c6eefdeb0bbe upstream.
+commit 3e2a3a0830a2090e766d0d887d52c67de2a6f323 upstream.
 
-The port flag isn't set to `NFP_PORT_CHANGED` when using
-`ethtool -m DEVNAME` before, so the port state (e.g. interface)
-cannot be updated. Therefore, it caused that `ethtool -m DEVNAME`
-sometimes cannot read the correct information.
+Clang static analysis reports this issue
+label.c:1802:3: warning: 2nd function call argument
+  is an uninitialized value
+  pr_info("%s", str);
+  ^~~~~~~~~~~~~~~~~~
 
-E.g. `ethtool -m DEVNAME` cannot work when load driver before plug
-in optical module, as the port interface is still NONE without port
-update.
+str is set from a successful call to aa_label_asxprint(&str, ...)
+On failure a negative value is returned, not a -1.  So change
+the check.
 
-Now update the port state before sending info to NIC to ensure that
-port interface is correct (latest state).
-
-Fixes: 61f7c6f44870 ("nfp: implement ethtool get module EEPROM")
-Reviewed-by: Louis Peens <louis.peens@corigine.com>
-Signed-off-by: Yu Xiao <yu.xiao@corigine.com>
-Signed-off-by: Simon Horman <simon.horman@corigine.com>
-Link: https://lore.kernel.org/r/20220802093355.69065-1-simon.horman@corigine.com
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Fixes: f1bd904175e8 ("apparmor: add the base fns() for domain labels")
+Signed-off-by: Tom Rix <trix@redhat.com>
+Signed-off-by: John Johansen <john.johansen@canonical.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/net/ethernet/netronome/nfp/nfp_net_ethtool.c |    2 ++
- 1 file changed, 2 insertions(+)
+ security/apparmor/label.c |    6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
---- a/drivers/net/ethernet/netronome/nfp/nfp_net_ethtool.c
-+++ b/drivers/net/ethernet/netronome/nfp/nfp_net_ethtool.c
-@@ -1127,6 +1127,8 @@ nfp_port_get_module_info(struct net_devi
- 	u8 data;
+--- a/security/apparmor/label.c
++++ b/security/apparmor/label.c
+@@ -1750,7 +1750,7 @@ void aa_label_xaudit(struct audit_buffer
+ 	if (!use_label_hname(ns, label, flags) ||
+ 	    display_mode(ns, label, flags)) {
+ 		len  = aa_label_asxprint(&name, ns, label, flags, gfp);
+-		if (len == -1) {
++		if (len < 0) {
+ 			AA_DEBUG("label print error");
+ 			return;
+ 		}
+@@ -1778,7 +1778,7 @@ void aa_label_seq_xprint(struct seq_file
+ 		int len;
  
- 	port = nfp_port_from_netdev(netdev);
-+	/* update port state to get latest interface */
-+	set_bit(NFP_PORT_CHANGED, &port->flags);
- 	eth_port = nfp_port_get_eth_port(port);
- 	if (!eth_port)
- 		return -EOPNOTSUPP;
+ 		len = aa_label_asxprint(&str, ns, label, flags, gfp);
+-		if (len == -1) {
++		if (len < 0) {
+ 			AA_DEBUG("label print error");
+ 			return;
+ 		}
+@@ -1801,7 +1801,7 @@ void aa_label_xprintk(struct aa_ns *ns,
+ 		int len;
+ 
+ 		len = aa_label_asxprint(&str, ns, label, flags, gfp);
+-		if (len == -1) {
++		if (len < 0) {
+ 			AA_DEBUG("label print error");
+ 			return;
+ 		}
 
 
