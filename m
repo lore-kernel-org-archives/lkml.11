@@ -2,42 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5B7EDC32772
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 10:18:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E7704C32772
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 10:18:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353744AbiHWKSY (ORCPT
+        id S1353704AbiHWKSb (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 06:18:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54178 "EHLO
+        Tue, 23 Aug 2022 06:18:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33934 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352417AbiHWKHc (ORCPT
+        with ESMTP id S1352558AbiHWKIE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 06:07:32 -0400
+        Tue, 23 Aug 2022 06:08:04 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DE6D34A813;
-        Tue, 23 Aug 2022 01:54:14 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5E1C45A2E8;
+        Tue, 23 Aug 2022 01:54:24 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 7C40C614E7;
-        Tue, 23 Aug 2022 08:54:14 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7DA5EC433C1;
-        Tue, 23 Aug 2022 08:54:13 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id C1A036150F;
+        Tue, 23 Aug 2022 08:54:23 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C3474C433D6;
+        Tue, 23 Aug 2022 08:54:22 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661244853;
-        bh=UlzcKidXqLG4HmGSEd5gPKAWOKksFX8ym+DBmzhofjk=;
+        s=korg; t=1661244863;
+        bh=GEkDlFdYejgeBRE8yTQaw/+MTKzDAMTi3p29YjlsrMw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=2AkRMm350zKwdMSalu8qz6JCvfRMeIBgOOm2RkaFxL6zD3HwvuXQxu5wxCsdLGHGs
-         Zrt3Q4pHioDH1+fS1eSWVCYUrfQ7RnvIA/0roeaZ+dKAijzRUCd3kRmyS9xmBvJXpL
-         sVMqpOTC/zzCnjSUMHrLw97W7u8hcppJ+KNRrJ1A=
+        b=nh9XG+JhwsHb/LfruR06+fRs8aT7Bl7L79CyK4hTg/N/UUVsNo8qS0WgMXLljRNTF
+         Glm+uDjU13XzMIICMfO7cczdnZ0GSexPTRZCl/e8NpzuhV/HL4nxJEMPruWwFc0bqx
+         I1yApGaja+HfKjcKVAMmSGv66+L7EwDHl9qu5rvM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Al Viro <viro@zeniv.linux.org.uk>,
-        Dinh Nguyen <dinguyen@kernel.org>
-Subject: [PATCH 4.14 202/229] nios2: add force_successful_syscall_return()
-Date:   Tue, 23 Aug 2022 10:26:03 +0200
-Message-Id: <20220823080100.858856218@linuxfoundation.org>
+        stable@vger.kernel.org, Pablo Neira Ayuso <pablo@netfilter.org>
+Subject: [PATCH 4.14 203/229] netfilter: nf_tables: really skip inactive sets when allocating name
+Date:   Tue, 23 Aug 2022 10:26:04 +0200
+Message-Id: <20220823080100.902840174@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220823080053.202747790@linuxfoundation.org>
 References: <20220823080053.202747790@linuxfoundation.org>
@@ -49,61 +48,30 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Al Viro <viro@zeniv.linux.org.uk>
+From: Pablo Neira Ayuso <pablo@netfilter.org>
 
-commit fd0c153daad135d0ec1a53c5dbe6936a724d6ae1 upstream.
+commit 271c5ca826e0c3c53e0eb4032f8eaedea1ee391c upstream.
 
-If we use the ancient SysV syscall ABI, we'd better have tell the
-kernel how to claim that a negative return value is a success.
-Use ->orig_r2 for that - it's inaccessible via ptrace, so it's
-a fair game for changes and it's normally[*] non-negative on return
-from syscall.  Set to -1; syscall is not going to be restart-worthy
-by definition, so we won't interfere with that use either.
+While looping to build the bitmap of used anonymous set names, check the
+current set in the iteration, instead of the one that is being created.
 
-[*] the only exception is rt_sigreturn(), where we skip the entire
-messing with r1/r2 anyway.
-
-Fixes: 82ed08dd1b0e ("nios2: Exception handling")
-Signed-off-by: Al Viro <viro@zeniv.linux.org.uk>
-Signed-off-by: Dinh Nguyen <dinguyen@kernel.org>
+Fixes: 37a9cc525525 ("netfilter: nf_tables: add generation mask to sets")
+Signed-off-by: Pablo Neira Ayuso <pablo@netfilter.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/nios2/include/asm/ptrace.h |    2 ++
- arch/nios2/kernel/entry.S       |    6 ++++++
- 2 files changed, 8 insertions(+)
+ net/netfilter/nf_tables_api.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/arch/nios2/include/asm/ptrace.h
-+++ b/arch/nios2/include/asm/ptrace.h
-@@ -74,6 +74,8 @@ extern void show_regs(struct pt_regs *);
- 	((struct pt_regs *)((unsigned long)current_thread_info() + THREAD_SIZE)\
- 		- 1)
+--- a/net/netfilter/nf_tables_api.c
++++ b/net/netfilter/nf_tables_api.c
+@@ -2797,7 +2797,7 @@ cont:
+ 		list_for_each_entry(i, &ctx->table->sets, list) {
+ 			int tmp;
  
-+#define force_successful_syscall_return() (current_pt_regs()->orig_r2 = -1)
-+
- int do_syscall_trace_enter(void);
- void do_syscall_trace_exit(void);
- #endif /* __ASSEMBLY__ */
---- a/arch/nios2/kernel/entry.S
-+++ b/arch/nios2/kernel/entry.S
-@@ -213,6 +213,9 @@ local_restart:
- translate_rc_and_ret:
- 	movi	r1, 0
- 	bge	r2, zero, 3f
-+	ldw	r1, PT_ORIG_R2(sp)
-+	addi	r1, r1, 1
-+	beq	r1, zero, 3f
- 	sub	r2, zero, r2
- 	movi	r1, 1
- 3:
-@@ -276,6 +279,9 @@ traced_system_call:
- translate_rc_and_ret2:
- 	movi	r1, 0
- 	bge	r2, zero, 4f
-+	ldw	r1, PT_ORIG_R2(sp)
-+	addi	r1, r1, 1
-+	beq	r1, zero, 4f
- 	sub	r2, zero, r2
- 	movi	r1, 1
- 4:
+-			if (!nft_is_active_next(ctx->net, set))
++			if (!nft_is_active_next(ctx->net, i))
+ 				continue;
+ 			if (!sscanf(i->name, name, &tmp))
+ 				continue;
 
 
