@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BE69CC32772
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 10:29:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B8295C32772
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 10:29:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354887AbiHWK3s (ORCPT
+        id S1354906AbiHWK3z (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 06:29:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47190 "EHLO
+        Tue, 23 Aug 2022 06:29:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47880 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353343AbiHWKNZ (ORCPT
+        with ESMTP id S1352736AbiHWKN1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 06:13:25 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0220572B79;
-        Tue, 23 Aug 2022 01:59:31 -0700 (PDT)
+        Tue, 23 Aug 2022 06:13:27 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D94407284E;
+        Tue, 23 Aug 2022 01:59:35 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 9129461524;
-        Tue, 23 Aug 2022 08:59:30 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7F32AC433C1;
-        Tue, 23 Aug 2022 08:59:29 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 80CFFB81C1C;
+        Tue, 23 Aug 2022 08:59:34 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DBFDEC433D6;
+        Tue, 23 Aug 2022 08:59:32 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661245170;
-        bh=6SRByEKUyJPn1PDZBkn4uOumc2OTkqEOF++mfzePOz4=;
+        s=korg; t=1661245173;
+        bh=barHYbJ38GWSZZ4f3neFi2+4tV/8a0RE6MuxMx1Rpw8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=OwMJyyHkddJ8YR0X6jHk+ZoYPs4fRi6pTOijK+4Bgcd+Oy0n5epq/91+n6EFngQRD
-         pwRJ1Kn1pfU6yectNYyrw01OTFAfbUy0JOtXyF9KpzUIBXasDHVIe+WPSDrEOwKkQb
-         VqKdMsxfXOuxenDVsOX6WRLKy9d+7bfmK3IO9hgA=
+        b=XHu6N09U9iFhEXRnCHxRWDoIk1aikbagRvGygbv6ODyzhMCoRMN7uKHChSDUwThwR
+         dSZwZxhBn33jgpeXUG+H55WqqU8l4QQa4l3N3iR8Wg5ZbW/tOjjX0GrDCIHsKN1zWL
+         E1qJgqPaPgg/gj2h6pNp47+41L/Fon8458cvAWYU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Brian Foster <bfoster@redhat.com>,
         "Darrick J. Wong" <djwong@kernel.org>,
         Dave Chinner <dchinner@redhat.com>,
         Leah Rumancik <leah.rumancik@gmail.com>
-Subject: [PATCH 5.15 238/244] xfs: reserve quota for target dir expansion when renaming files
-Date:   Tue, 23 Aug 2022 10:26:37 +0200
-Message-Id: <20220823080107.529005534@linuxfoundation.org>
+Subject: [PATCH 5.15 239/244] xfs: remove infinite loop when reserving free block pool
+Date:   Tue, 23 Aug 2022 10:26:38 +0200
+Message-Id: <20220823080107.580775752@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220823080059.091088642@linuxfoundation.org>
 References: <20220823080059.091088642@linuxfoundation.org>
@@ -52,104 +53,91 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: "Darrick J. Wong" <djwong@kernel.org>
 
-[ Upstream commit 41667260bc84db4dfe566e3f6ab6da5293d60d8d ]
+[ Upstream commit 15f04fdc75aaaa1cccb0b8b3af1be290e118a7bc ]
 
-XFS does not reserve quota for directory expansion when renaming
-children into a directory.  This means that we don't reject the
-expansion with EDQUOT when we're at or near a hard limit, which means
-that unprivileged userspace can use rename() to exceed quota.
+Infinite loops in kernel code are scary.  Calls to xfs_reserve_blocks
+should be rare (people should just use the defaults!) so we really don't
+need to try so hard.  Simplify the logic here by removing the infinite
+loop.
 
-Rename operations don't always expand the target directory, and we allow
-a rename to proceed with no space reservation if we don't need to add a
-block to the target directory to handle the addition.  Moreover, the
-unlink operation on the source directory generally does not expand the
-directory (you'd have to free a block and then cause a btree split) and
-it's probably of little consequence to leave the corner case that
-renaming a file out of a directory can increase its size.
-
-As with link and unlink, there is a further bug in that we do not
-trigger the blockgc workers to try to clear space when we're out of
-quota.
-
-Because rename is its own special tricky animal, we'll patch xfs_rename
-directly to reserve quota to the rename transaction.  We'll leave
-cleaning up the rest of xfs_rename for the metadata directory tree
-patchset.
-
+Cc: Brian Foster <bfoster@redhat.com>
 Signed-off-by: Darrick J. Wong <djwong@kernel.org>
 Reviewed-by: Dave Chinner <dchinner@redhat.com>
 Signed-off-by: Leah Rumancik <leah.rumancik@gmail.com>
 Acked-by: Darrick J. Wong <djwong@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- fs/xfs/xfs_inode.c |   33 ++++++++++++++++++++++++++++++++-
- 1 file changed, 32 insertions(+), 1 deletion(-)
+ fs/xfs/xfs_fsops.c |   50 ++++++++++++++++++++------------------------------
+ 1 file changed, 20 insertions(+), 30 deletions(-)
 
---- a/fs/xfs/xfs_inode.c
-+++ b/fs/xfs/xfs_inode.c
-@@ -3103,7 +3103,8 @@ xfs_rename(
- 	bool			new_parent = (src_dp != target_dp);
- 	bool			src_is_directory = S_ISDIR(VFS_I(src_ip)->i_mode);
- 	int			spaceres;
--	int			error;
-+	bool			retried = false;
-+	int			error, nospace_error = 0;
+--- a/fs/xfs/xfs_fsops.c
++++ b/fs/xfs/xfs_fsops.c
+@@ -430,46 +430,36 @@ xfs_reserve_blocks(
+ 	 * If the request is larger than the current reservation, reserve the
+ 	 * blocks before we update the reserve counters. Sample m_fdblocks and
+ 	 * perform a partial reservation if the request exceeds free space.
++	 *
++	 * The code below estimates how many blocks it can request from
++	 * fdblocks to stash in the reserve pool.  This is a classic TOCTOU
++	 * race since fdblocks updates are not always coordinated via
++	 * m_sb_lock.
+ 	 */
+-	error = -ENOSPC;
+-	do {
+-		free = percpu_counter_sum(&mp->m_fdblocks) -
++	free = percpu_counter_sum(&mp->m_fdblocks) -
+ 						xfs_fdblocks_unavailable(mp);
+-		if (free <= 0)
+-			break;
+-
+-		delta = request - mp->m_resblks;
+-		lcounter = free - delta;
+-		if (lcounter < 0)
+-			/* We can't satisfy the request, just get what we can */
+-			fdblks_delta = free;
+-		else
+-			fdblks_delta = delta;
+-
++	delta = request - mp->m_resblks;
++	if (delta > 0 && free > 0) {
+ 		/*
+ 		 * We'll either succeed in getting space from the free block
+-		 * count or we'll get an ENOSPC. If we get a ENOSPC, it means
+-		 * things changed while we were calculating fdblks_delta and so
+-		 * we should try again to see if there is anything left to
+-		 * reserve.
+-		 *
+-		 * Don't set the reserved flag here - we don't want to reserve
+-		 * the extra reserve blocks from the reserve.....
++		 * count or we'll get an ENOSPC.  Don't set the reserved flag
++		 * here - we don't want to reserve the extra reserve blocks
++		 * from the reserve.
+ 		 */
++		fdblks_delta = min(free, delta);
+ 		spin_unlock(&mp->m_sb_lock);
+ 		error = xfs_mod_fdblocks(mp, -fdblks_delta, 0);
+ 		spin_lock(&mp->m_sb_lock);
+-	} while (error == -ENOSPC);
  
- 	trace_xfs_rename(src_dp, target_dp, src_name, target_name);
- 
-@@ -3127,9 +3128,12 @@ xfs_rename(
- 	xfs_sort_for_rename(src_dp, target_dp, src_ip, target_ip, wip,
- 				inodes, &num_inodes);
- 
-+retry:
-+	nospace_error = 0;
- 	spaceres = XFS_RENAME_SPACE_RES(mp, target_name->len);
- 	error = xfs_trans_alloc(mp, &M_RES(mp)->tr_rename, spaceres, 0, 0, &tp);
- 	if (error == -ENOSPC) {
-+		nospace_error = error;
- 		spaceres = 0;
- 		error = xfs_trans_alloc(mp, &M_RES(mp)->tr_rename, 0, 0, 0,
- 				&tp);
-@@ -3184,6 +3188,31 @@ xfs_rename(
- 					spaceres);
- 
- 	/*
-+	 * Try to reserve quota to handle an expansion of the target directory.
-+	 * We'll allow the rename to continue in reservationless mode if we hit
-+	 * a space usage constraint.  If we trigger reservationless mode, save
-+	 * the errno if there isn't any free space in the target directory.
-+	 */
-+	if (spaceres != 0) {
-+		error = xfs_trans_reserve_quota_nblks(tp, target_dp, spaceres,
-+				0, false);
-+		if (error == -EDQUOT || error == -ENOSPC) {
-+			if (!retried) {
-+				xfs_trans_cancel(tp);
-+				xfs_blockgc_free_quota(target_dp, 0);
-+				retried = true;
-+				goto retry;
-+			}
-+
-+			nospace_error = error;
-+			spaceres = 0;
-+			error = 0;
+-	/*
+-	 * Update the reserve counters if blocks have been successfully
+-	 * allocated.
+-	 */
+-	if (!error && fdblks_delta) {
+-		mp->m_resblks += fdblks_delta;
+-		mp->m_resblks_avail += fdblks_delta;
++		/*
++		 * Update the reserve counters if blocks have been successfully
++		 * allocated.
++		 */
++		if (!error) {
++			mp->m_resblks += fdblks_delta;
++			mp->m_resblks_avail += fdblks_delta;
 +		}
-+		if (error)
-+			goto out_trans_cancel;
-+	}
-+
-+	/*
- 	 * Check for expected errors before we dirty the transaction
- 	 * so we can return an error without a transaction abort.
- 	 *
-@@ -3429,6 +3458,8 @@ out_trans_cancel:
- out_release_wip:
- 	if (wip)
- 		xfs_irele(wip);
-+	if (error == -ENOSPC && nospace_error)
-+		error = nospace_error;
- 	return error;
- }
- 
+ 	}
+-
+ out:
+ 	if (outval) {
+ 		outval->resblks = mp->m_resblks;
 
 
