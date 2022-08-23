@@ -2,205 +2,155 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 33904C32772
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 09:54:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 07341C32772
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 09:55:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240676AbiHWJyx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 05:54:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40740 "EHLO
+        id S241964AbiHWJy5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 23 Aug 2022 05:54:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39328 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352405AbiHWJvm (ORCPT
+        with ESMTP id S239498AbiHWJvp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 05:51:42 -0400
-Received: from madras.collabora.co.uk (madras.collabora.co.uk [IPv6:2a00:1098:0:82:1000:25:2eeb:e5ab])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A32CE9F0C0;
-        Tue, 23 Aug 2022 01:45:47 -0700 (PDT)
-Received: from [10.3.2.13] (zone.collabora.co.uk [167.235.23.81])
-        (using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
-         key-exchange X25519 server-signature RSA-PSS (4096 bits))
+        Tue, 23 Aug 2022 05:51:45 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 57B739F199;
+        Tue, 23 Aug 2022 01:46:06 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        (Authenticated sender: dmitry.osipenko)
-        by madras.collabora.co.uk (Postfix) with ESMTPSA id AF4B5660035D;
-        Tue, 23 Aug 2022 09:45:02 +0100 (BST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
-        s=mail; t=1661244303;
-        bh=MB2Qk+RxUws0IOBMaJlk3RN6WN03sqbEJpsq6QhTiEM=;
-        h=Date:Subject:From:To:References:Cc:In-Reply-To:From;
-        b=WqIfcZKyImmTfB1AChHEp/cNhSy5VfGIwKlqyu4BjRlo31mlsYSLXy73lgbbDuQ6d
-         m/ScKTpMI7l932ttZBnbj5ChU9vo799g3Fx4ZTqle5C11uniuCIMrGHsePZW50eoBp
-         Q7Z+fTKI2fNlset1cpqhGiQN8bGmhqWs/wqyDgQu8QvmADPSDLU9wrmVMluwxvyl3W
-         KVCEbcJDb785SthcHCYLwN7HRWrGB3sipx47623NWwHjedJ3GR/dH+gXMOqpCL2Kh3
-         iHWTIEmzNLlQIWLy7AlD/wHCyVSTJvHjHUh+0dvqxmaWOn4gnEkobPC1Mzdr/RQ1eJ
-         uZFHfCH4XdQlw==
-Message-ID: <c9ba2629-fc81-cefd-0d6d-991084781ec3@collabora.com>
-Date:   Tue, 23 Aug 2022 11:45:00 +0300
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 0FDFE61538;
+        Tue, 23 Aug 2022 08:45:09 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1C088C433D6;
+        Tue, 23 Aug 2022 08:45:07 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1661244308;
+        bh=RV5lvrGojSt03S8hfAZkFwEi+RNIqI0sjsluXw/4lY0=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=rcunCx1iXGi9M6ZC2V07KBb7hoVFdSI0K955khr1sqboeW5x/NHXEZLN4wK66coBv
+         6VC1mXnNr/zZjmAtEd5f93ogR6jOXCaBWk3stNwv3sOOqhuG6IHB6UADzNe/x5UuEM
+         R7eHfZBFsAa6v3V4EDGzF+oyrCP5RQeruG4ybr/8=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Zhihao Cheng <chengzhihao1@huawei.com>,
+        Theodore Tso <tytso@mit.edu>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 4.14 117/229] jbd2: fix assertion jh->b_frozen_data == NULL failure when journal aborted
+Date:   Tue, 23 Aug 2022 10:24:38 +0200
+Message-Id: <20220823080057.872861919@linuxfoundation.org>
+X-Mailer: git-send-email 2.37.2
+In-Reply-To: <20220823080053.202747790@linuxfoundation.org>
+References: <20220823080053.202747790@linuxfoundation.org>
+User-Agent: quilt/0.67
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.12.0
-Subject: Re: [PATCH RESEND 1/2] i2c: tegra: Add GPCDMA support
-Content-Language: en-US
-From:   Dmitry Osipenko <dmitry.osipenko@collabora.com>
-To:     Akhil R <akhilrajeev@nvidia.com>,
-        Dmitry Osipenko <digetx@gmail.com>,
-        Jonathan Hunter <jonathanh@nvidia.com>,
-        Laxman Dewangan <ldewangan@nvidia.com>,
-        "linux-i2c@vger.kernel.org" <linux-i2c@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "linux-tegra@vger.kernel.org" <linux-tegra@vger.kernel.org>,
-        "thierry.reding@gmail.com" <thierry.reding@gmail.com>,
-        "wsa@kernel.org" <wsa@kernel.org>
-References: <20220819122313.40445-1-akhilrajeev@nvidia.com>
- <20220819122313.40445-2-akhilrajeev@nvidia.com>
- <20281ca7-e597-7030-4861-5f9a3594726d@gmail.com>
- <89a746fd-a98e-3147-7811-33c5051c2b6d@gmail.com>
- <SJ1PR12MB6339FC1F82EB1BB7417E533BC0719@SJ1PR12MB6339.namprd12.prod.outlook.com>
- <ebb0764f-db92-d69d-49ac-151f4e3e0b8a@collabora.com>
- <SJ1PR12MB63396DC508F63807F1CE9901C0719@SJ1PR12MB6339.namprd12.prod.outlook.com>
- <fac10841-1682-845f-3e4a-5668f59caed0@gmail.com>
- <cd0374f1-2c05-7e61-7187-cfc9c42edf63@gmail.com>
- <SJ1PR12MB63397BBD4EF314A742680F2CC0709@SJ1PR12MB6339.namprd12.prod.outlook.com>
- <a7ba27c4-992b-28d1-f6c2-3937b4f275ce@collabora.com>
-Cc:     "robh+dt@kernel.org" <robh+dt@kernel.org>,
-        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
-        "christian.koenig@amd.com" <christian.koenig@amd.com>,
-        "sumit.semwal@linaro.org" <sumit.semwal@linaro.org>
-In-Reply-To: <a7ba27c4-992b-28d1-f6c2-3937b4f275ce@collabora.com>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 8/23/22 11:39, Dmitry Osipenko wrote:
-> On 8/23/22 08:17, Akhil R wrote:
->>> 22.08.2022 23:33, Dmitry Osipenko пишет:
->>>> 22.08.2022 13:29, Akhil R пишет:
->>>>>> On 8/22/22 09:56, Akhil R wrote:
->>>>>>>> 19.08.2022 18:15, Dmitry Osipenko пишет:
->>>>>>>>> 19.08.2022 15:23, Akhil R пишет:
->>>>>>>>>>      if (of_device_is_compatible(np, "nvidia,tegra210-i2c-vi"))
->>>>>>>>>>              i2c_dev->is_vi = true;
->>>>>>>>>> +    else
->>>>>>>>>> +            i2c_dev->dma_support = !!(of_find_property(np, "dmas",
->>>>>>>>>> + NULL));
->>>>>>>>>
->>>>>>>>> 1. You leak the np returned by of_find_property().
->>>>>>>>>
->>>>>>>>> 2. There is device_property_read_bool() for this kind of
->>>>>>>>> property-exists checks.
->>>>>>> Okay. I went by the implementation in of_dma_request_slave_channel() to
->>>>>>> check 'dmas'.
->>>>>>>
->>>>>>>>>
->>>>>>>>> 3. If "dmas" is missing in DT, then dma_request_chan() should return
->>>>>>>>> NULL and everything will work fine. I suppose you haven't tried to
->>>>>>>>> test this code.
->>>>>>>>
->>>>>>>> Although, no. It should return ERR_PTR(-ENODEV) and then you should
->>> check
->>>>>>>> the return code.
->>>>>>> Yes. Agree that it is more agnostic to check for ERR_PTR(-ENODEV). But
->>> since I
->>>>>>> call tegra_init_dma() for every large transfer until DMA is initialized,
->>> wouldn't
->>>>>>> it be better to have a flag inside the driver so that we do not have to go
->>>>>> through
->>>>>>> so many functions for every attempted DMA transaction to find out that
->>> the
->>>>>> DT
->>>>>>> properties don't exist?
->>>>>>>
->>>>>>> Shall I just put i2c_dev->dma_support = true here since DMA is supported
->>> by
->>>>>>> hardware? It would turn false if dma_request_chan() returns something
->>> other
->>>>>>> than -EPROBE_DEFER.
->>>>>>>
->>>>>>>       if (of_device_is_compatible(np, "nvidia,tegra210-i2c-vi"))
->>>>>>>               i2c_dev->is_vi = true;
->>>>>>>  +    else
->>>>>>>  +            i2c_dev->dma_support = true;
->>>>>>
->>>>>> The code already has dma_mode for that. I don't see why another variable
->>>>>> is needed.
->>>>>>
->>>>>> Either add new generic dma_request_chan_optional() that will return NULL
->>>>>> if channel is not available and make Tegra I2C driver to use it, or
->>>>>> handle the error code returned by dma_request_chan().
->>>>>
->>>>> Let me elaborate my thoughts.
->>>>>
->>>>> The function tegra_i2c_init_dma() is also called inside tegra_i2c_xfer_msg() if
->>>>> DMA is not initialized before, i.e. if (!i2c_dev->dma_buf).
->>>>
->>>> This is not true
->>>>
->>>> i2c_dev->dma_mode=false if !i2c_dev->dma_buf and that's it
->>>>
->>>> https://elixir.bootlin.com/linux/v6.0-rc2/source/drivers/i2c/busses/i2c-
->>> tegra.c#L1253
->>>>
->>>> tegra_i2c_init_dma() is invoked only during probe
->>>>
->>>>> So, if suppose there is no DT entry for dmas, the driver would have to go take
->>> the
->>>>> path tegra_i2c_init_dma() -> dma_request_chan() -> of_*() apis -> ... and
->>> then figure
->>>>> out that DMA is not supported. This would happen for each transfer of size
->>> larger than
->>>>> I2C_PIO_MODE_PREFERRED_LEN.
->>>>>
->>>>> To avoid this, I am looking for a variable/flag which can indicate if the driver
->>> should attempt
->>>>> to configure DMA or not. I didn't quite get the idea if dma_mode can be
->>> extended to support
->>>>> this, because it is updated based on xfer_size on each transfer. My idea of
->>> i2c_dev->dma_support
->>>>> is that it will be constant after the probe().
->>>
->>> I see now that it's you added tegra_i2c_init_dma() to
->>> tegra_i2c_xfer_msg(). And tegra_i2c_init_dma() already falls back to PIO
->>> if DMA is unavailable.
->>>
->>> I don't remember why !IS_ENABLED(CONFIG_TEGRA20_APB_DMA) was added
->>> to
->>> tegra_i2c_init_dma(), but if dma_request_chan() returns -EPROBE_DEFER
->>> when there is no DMA channel available at all, then you should fix it.
->>>
->>> Trying to initialize DMA during transfer if it failed to initialize
->>> during probe is a wrong approach. DMA must be initialized only once
->>> during probe. Please make the probe to work properly.
->>
->> What I am trying for is to have a mechanism that doesn't halt the i2c transfers
->> till DMA is available. Also, I do not want to drop DMA because it was unavailable
->> during probe().
-> 
-> Why is it unavailable? Sounds like you're not packaging kernel properly.
-> 
->> This situation is sure to hit if we have I2C driver as built in and DMA driver as a 
->> module. In such cases, I2C will never be able to use the DMA.
-> 
-> For Tegra I2C built-in + DMA driver module you should add the dma.ko to
-> initramfs and then it will work. This is a common practice for many
-> kernel drivers.
-> 
-> It's also similar to a problem with firmware files that must be
-> available to drivers during boot,
-> 
->> Another option I thought about was to request and free DMA channel for each
->> transfer, which many serial drivers already do. But I am a bit anxious if that will
->> increase the latency of transfer.
-> 
-> Perhaps all you need to do is to add MODULE_SOFTDEP to Tegra I2C driver
-> like we did it for the EMC driver [1].
-> 
-> [1]
-> https://git.kernel.org/pub/scm/linux/kernel/git/next/linux-next.git/commit/?id=14b43c20c283de36131da0cb44f3170b9ffa7630
-> 
+From: Zhihao Cheng <chengzhihao1@huawei.com>
 
-Although, probably MODULE_SOFTDEP won't work for a built-in driver. In
-that case, change Tegra I2C kconfig to depend on the DMA driver.
+[ Upstream commit 4a734f0869f970b8a9b65062ea40b09a5da9dba8 ]
 
+Following process will fail assertion 'jh->b_frozen_data == NULL' in
+jbd2_journal_dirty_metadata():
+
+                   jbd2_journal_commit_transaction
+unlink(dir/a)
+ jh->b_transaction = trans1
+ jh->b_jlist = BJ_Metadata
+                    journal->j_running_transaction = NULL
+                    trans1->t_state = T_COMMIT
+unlink(dir/b)
+ handle->h_trans = trans2
+ do_get_write_access
+  jh->b_modified = 0
+  jh->b_frozen_data = frozen_buffer
+  jh->b_next_transaction = trans2
+ jbd2_journal_dirty_metadata
+  is_handle_aborted
+   is_journal_aborted // return false
+
+           --> jbd2 abort <--
+
+                     while (commit_transaction->t_buffers)
+                      if (is_journal_aborted)
+                       jbd2_journal_refile_buffer
+                        __jbd2_journal_refile_buffer
+                         WRITE_ONCE(jh->b_transaction,
+						jh->b_next_transaction)
+                         WRITE_ONCE(jh->b_next_transaction, NULL)
+                         __jbd2_journal_file_buffer(jh, BJ_Reserved)
+        J_ASSERT_JH(jh, jh->b_frozen_data == NULL) // assertion failure !
+
+The reproducer (See detail in [Link]) reports:
+ ------------[ cut here ]------------
+ kernel BUG at fs/jbd2/transaction.c:1629!
+ invalid opcode: 0000 [#1] PREEMPT SMP
+ CPU: 2 PID: 584 Comm: unlink Tainted: G        W
+ 5.19.0-rc6-00115-g4a57a8400075-dirty #697
+ RIP: 0010:jbd2_journal_dirty_metadata+0x3c5/0x470
+ RSP: 0018:ffffc90000be7ce0 EFLAGS: 00010202
+ Call Trace:
+  <TASK>
+  __ext4_handle_dirty_metadata+0xa0/0x290
+  ext4_handle_dirty_dirblock+0x10c/0x1d0
+  ext4_delete_entry+0x104/0x200
+  __ext4_unlink+0x22b/0x360
+  ext4_unlink+0x275/0x390
+  vfs_unlink+0x20b/0x4c0
+  do_unlinkat+0x42f/0x4c0
+  __x64_sys_unlink+0x37/0x50
+  do_syscall_64+0x35/0x80
+
+After journal aborting, __jbd2_journal_refile_buffer() is executed with
+holding @jh->b_state_lock, we can fix it by moving 'is_handle_aborted()'
+into the area protected by @jh->b_state_lock.
+
+Link: https://bugzilla.kernel.org/show_bug.cgi?id=216251
+Fixes: 470decc613ab20 ("[PATCH] jbd2: initial copy of files from jbd")
+Signed-off-by: Zhihao Cheng <chengzhihao1@huawei.com>
+Link: https://lore.kernel.org/r/20220715125152.4022726-1-chengzhihao1@huawei.com
+Signed-off-by: Theodore Ts'o <tytso@mit.edu>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ fs/jbd2/transaction.c | 14 ++++++++++++--
+ 1 file changed, 12 insertions(+), 2 deletions(-)
+
+diff --git a/fs/jbd2/transaction.c b/fs/jbd2/transaction.c
+index 3311b1e684de..7eb4f7c0a43b 100644
+--- a/fs/jbd2/transaction.c
++++ b/fs/jbd2/transaction.c
+@@ -1338,8 +1338,6 @@ int jbd2_journal_dirty_metadata(handle_t *handle, struct buffer_head *bh)
+ 	struct journal_head *jh;
+ 	int ret = 0;
+ 
+-	if (is_handle_aborted(handle))
+-		return -EROFS;
+ 	if (!buffer_jbd(bh))
+ 		return -EUCLEAN;
+ 
+@@ -1386,6 +1384,18 @@ int jbd2_journal_dirty_metadata(handle_t *handle, struct buffer_head *bh)
+ 	journal = transaction->t_journal;
+ 	jbd_lock_bh_state(bh);
+ 
++	if (is_handle_aborted(handle)) {
++		/*
++		 * Check journal aborting with @jh->b_state_lock locked,
++		 * since 'jh->b_transaction' could be replaced with
++		 * 'jh->b_next_transaction' during old transaction
++		 * committing if journal aborted, which may fail
++		 * assertion on 'jh->b_frozen_data == NULL'.
++		 */
++		ret = -EROFS;
++		goto out_unlock_bh;
++	}
++
+ 	if (jh->b_modified == 0) {
+ 		/*
+ 		 * This buffer's got modified and becoming part
 -- 
-Best regards,
-Dmitry
+2.35.1
+
+
+
