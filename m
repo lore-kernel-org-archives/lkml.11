@@ -2,127 +2,136 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 01CA3C32774
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 07:50:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2D5BCC32793
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 07:50:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241234AbiHWHuB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 03:50:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59626 "EHLO
+        id S240751AbiHWHuN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 23 Aug 2022 03:50:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59818 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240751AbiHWHt5 (ORCPT
+        with ESMTP id S241248AbiHWHuI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 03:49:57 -0400
-Received: from mail-yw1-x112a.google.com (mail-yw1-x112a.google.com [IPv6:2607:f8b0:4864:20::112a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7568765260
-        for <linux-kernel@vger.kernel.org>; Tue, 23 Aug 2022 00:49:56 -0700 (PDT)
-Received: by mail-yw1-x112a.google.com with SMTP id 00721157ae682-333b049f231so358340767b3.1
-        for <linux-kernel@vger.kernel.org>; Tue, 23 Aug 2022 00:49:56 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc;
-        bh=W4yJx9S8mFfWH0v+ukIx1ED5012zS2zZvLgaX95wtyo=;
-        b=hC/lT+0OpnJ9SOvA0o3nWPBpG1gZlRIQmycndxhYoKnT/I8/0ulu3Ru4mXPWjtb30O
-         TNGS4IvJXvnpD9M7fS1fEWqpDWzfZIcCuZB7biQrdFzlxUPDHlbOnkYLqyWZievFqJ8l
-         Whjj8Xb99f7Jnn4CSy8GwuwHa02ld7xEXISE74mevYZU+87FPOPKtSqeFbRmpIAbWZry
-         sPJHlauhaK0iNe9+7PUSLfLWhldnOKPIxvh5CIVFyI0VN4aExoGDX/kS3K+hXEDgMBt1
-         gfYskJT4/+ocjQq40aBHkUsGnk+zwYY/RKWEPLCcX2W6jf8aMChJHOMd1N9xAdC6quKD
-         Ek0w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc;
-        bh=W4yJx9S8mFfWH0v+ukIx1ED5012zS2zZvLgaX95wtyo=;
-        b=XpgpNB+qvMpMbrF5CP3kwLP57FXr97GfhR4XIwZuE/QWu9twqdQPTBWOWTUcmWhOJu
-         MgHMMPCEKlbAXyEIPom4j/MOkTQt64heVvrvDdoIFSpfLnOLW68GiSvbVIAtx77/hn+i
-         faAMMM81SOMTcynh2n2i85EEYo3ufvRe5GUGQ4lpwyNHupSCo6dAUe6ABtQI/+ipEnk3
-         8OAdwBRgz+VEI2ExzEzBHxhKebPwXpQXMOa13aFsFXK1rVwPKtxEM8A+gCDiL8/ax0ko
-         56yIxTeYIG86aeHHNFEWgixJ7h0ddNcSdvci4V/kh0s0GoZt8WxMZLyR2NRR4zLYE75J
-         MX1g==
-X-Gm-Message-State: ACgBeo0srM5PG8iOp5hSWdgfqDKD0y+sZZtQdgTrcaDXqWU4SEjELPIq
-        F25QuU/8srXVgNYYqvaMt1AzLaRkwp1x1mc/lqICqw==
-X-Google-Smtp-Source: AA6agR7U6iEwtgMUk1oElngi4DHHxtoTYFOR3PFuFVvu4hdX8DvQOZiBTde13trDl0s0CzmDqZ/jrc9FJn3I0eMEgI4=
-X-Received: by 2002:a05:6902:91d:b0:672:e583:9ed9 with SMTP id
- bu29-20020a056902091d00b00672e5839ed9mr22966153ybb.225.1661240995694; Tue, 23
- Aug 2022 00:49:55 -0700 (PDT)
+        Tue, 23 Aug 2022 03:50:08 -0400
+Received: from smtp-out2.suse.de (smtp-out2.suse.de [IPv6:2001:67c:2178:6::1d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8717D6527F
+        for <linux-kernel@vger.kernel.org>; Tue, 23 Aug 2022 00:50:04 -0700 (PDT)
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by smtp-out2.suse.de (Postfix) with ESMTPS id 1C19E5CCE3;
+        Tue, 23 Aug 2022 07:50:03 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
+        t=1661241003; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=Tzmy0pSRA+QcMUPJOK7gtyRNCVOK3XUksuGeis4aWYQ=;
+        b=ljEkiY86MjjLOgZw3r4zwArfDh9x+EugKc3nklnhxtgiyl2xRF0BGMBBzNevIlb4OuE1FO
+        pqQI97UslW1TpgcxkONLllvJdX6U3FVhriy4EWb08JOb1SJkuZptQNoCH1ufhJ4cwfCVyg
+        TcsSGGvuID1+pBiZj9PbJdhPvkCI9wc=
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id EED2F13AB7;
+        Tue, 23 Aug 2022 07:50:02 +0000 (UTC)
+Received: from dovecot-director2.suse.de ([192.168.254.65])
+        by imap2.suse-dmz.suse.de with ESMTPSA
+        id xGhFOqqGBGNkRQAAMHmgww
+        (envelope-from <mhocko@suse.com>); Tue, 23 Aug 2022 07:50:02 +0000
+Date:   Tue, 23 Aug 2022 09:50:02 +0200
+From:   Michal Hocko <mhocko@suse.com>
+To:     Andrew Morton <akpm@linux-foundation.org>
+Cc:     Liu Shixin <liushixin2@huawei.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        huang ying <huang.ying.caritas@gmail.com>,
+        Aaron Lu <aaron.lu@intel.com>,
+        Dave Hansen <dave.hansen@intel.com>,
+        Jesper Dangaard Brouer <brouer@redhat.com>,
+        Vlastimil Babka <vbabka@suse.cz>,
+        Kemi Wang <kemi.wang@intel.com>,
+        Kefeng Wang <wangkefeng.wang@huawei.com>,
+        linux-kernel@vger.kernel.org, linux-mm@kvack.org
+Subject: Re: [PATCH -next v2] mm, proc: collect percpu free pages into the
+ free pages
+Message-ID: <YwSGqtEICW5AlhWr@dhcp22.suse.cz>
+References: <20220822023311.909316-1-liushixin2@huawei.com>
+ <20220822033354.952849-1-liushixin2@huawei.com>
+ <20220822141207.24ff7252913a62f80ea55e90@linux-foundation.org>
 MIME-Version: 1.0
-References: <20220818124805.601-1-zhouchengming@bytedance.com> <20220818124805.601-10-zhouchengming@bytedance.com>
-In-Reply-To: <20220818124805.601-10-zhouchengming@bytedance.com>
-From:   Vincent Guittot <vincent.guittot@linaro.org>
-Date:   Tue, 23 Aug 2022 09:49:44 +0200
-Message-ID: <CAKfTPtBvJha6Lt3411awLv9DukBWgObt8=4WtMM0c-Fusx2=-Q@mail.gmail.com>
-Subject: Re: [PATCH v6 9/9] sched/fair: don't init util/runnable_avg for !fair task
-To:     Chengming Zhou <zhouchengming@bytedance.com>
-Cc:     dietmar.eggemann@arm.com, mingo@redhat.com, peterz@infradead.org,
-        rostedt@goodmis.org, bsegall@google.com, vschneid@redhat.com,
-        linux-kernel@vger.kernel.org, tj@kernel.org
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220822141207.24ff7252913a62f80ea55e90@linux-foundation.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, 18 Aug 2022 at 14:48, Chengming Zhou
-<zhouchengming@bytedance.com> wrote:
->
-> post_init_entity_util_avg() init task util_avg according to the cpu util_avg
-> at the time of fork, which will decay when switched_to_fair() some time later,
-> we'd better to not set them at all in the case of !fair task.
->
-> Suggested-by: Vincent Guittot <vincent.guittot@linaro.org>
-> Signed-off-by: Chengming Zhou <zhouchengming@bytedance.com>
+On Mon 22-08-22 14:12:07, Andrew Morton wrote:
+> On Mon, 22 Aug 2022 11:33:54 +0800 Liu Shixin <liushixin2@huawei.com> wrote:
+> 
+> > The page on pcplist could be used, but not counted into memory free or
+> > avaliable, and pcp_free is only showed by show_mem() for now. Since commit
+> > d8a759b57035 ("mm, page_alloc: double zone's batchsize"), there is a
+> > significant decrease in the display of free memory, with a large number
+> > of cpus and zones, the number of pages in the percpu list can be very
+> > large, so it is better to let user to know the pcp count.
+> > 
+> > On a machine with 3 zones and 72 CPUs. Before commit d8a759b57035, the
+> > maximum amount of pages in the pcp lists was theoretically 162MB(3*72*768KB).
+> > After the patch, the lists can hold 324MB. It has been observed to be 114MB
+> > in the idle state after system startup in practice(increased 80 MB).
+> > 
+> 
+> Seems reasonable.
 
-Reviewed-by: Vincent Guittot <vincent.guittot@linaro.org>
+I have asked in the previous incarnation of the patch but haven't really
+received any answer[1]. Is this a _real_ problem? The absolute amount of
+memory could be perceived as a lot but is this really noticeable wrt
+overall memory on those systems?
 
-> ---
->  kernel/sched/fair.c | 28 ++++++++++++++--------------
->  1 file changed, 14 insertions(+), 14 deletions(-)
->
-> diff --git a/kernel/sched/fair.c b/kernel/sched/fair.c
-> index 93d7c7b110dd..621bd19e10ae 100644
-> --- a/kernel/sched/fair.c
-> +++ b/kernel/sched/fair.c
-> @@ -833,20 +833,6 @@ void post_init_entity_util_avg(struct task_struct *p)
->         long cpu_scale = arch_scale_cpu_capacity(cpu_of(rq_of(cfs_rq)));
->         long cap = (long)(cpu_scale - cfs_rq->avg.util_avg) / 2;
->
-> -       if (cap > 0) {
-> -               if (cfs_rq->avg.util_avg != 0) {
-> -                       sa->util_avg  = cfs_rq->avg.util_avg * se->load.weight;
-> -                       sa->util_avg /= (cfs_rq->avg.load_avg + 1);
-> -
-> -                       if (sa->util_avg > cap)
-> -                               sa->util_avg = cap;
-> -               } else {
-> -                       sa->util_avg = cap;
-> -               }
-> -       }
-> -
-> -       sa->runnable_avg = sa->util_avg;
-> -
->         if (p->sched_class != &fair_sched_class) {
->                 /*
->                  * For !fair tasks do:
-> @@ -861,6 +847,20 @@ void post_init_entity_util_avg(struct task_struct *p)
->                 se->avg.last_update_time = cfs_rq_clock_pelt(cfs_rq);
->                 return;
->         }
-> +
-> +       if (cap > 0) {
-> +               if (cfs_rq->avg.util_avg != 0) {
-> +                       sa->util_avg  = cfs_rq->avg.util_avg * se->load.weight;
-> +                       sa->util_avg /= (cfs_rq->avg.load_avg + 1);
-> +
-> +                       if (sa->util_avg > cap)
-> +                               sa->util_avg = cap;
-> +               } else {
-> +                       sa->util_avg = cap;
-> +               }
-> +       }
-> +
-> +       sa->runnable_avg = sa->util_avg;
->  }
->
->  #else /* !CONFIG_SMP */
-> --
-> 2.37.2
->
+Also the patch is accounting these pcp caches as free memory but that
+can be misleading as this memory is not readily available for use in
+general. E.g. MemAvailable is documented as:
+	An estimate of how much memory is available for starting new
+	applications, without swapping.
+but pcp caches are drained only after direct reclaim fails which can
+imply a lot of reclaim and runtime disruption.
+
+[1] http://lkml.kernel.org/r/YwMv1A1rVNZQuuOo@dhcp22.suse.cz
+
+> > 
+> > diff --git a/mm/page_alloc.c b/mm/page_alloc.c
+> > index 033f1e26d15b..f89928d3ad4e 100644
+> > --- a/mm/page_alloc.c
+> > +++ b/mm/page_alloc.c
+> > @@ -5853,6 +5853,26 @@ static unsigned long nr_free_zone_pages(int offset)
+> >  	return sum;
+> >  }
+> >  
+> > +static unsigned long nr_free_zone_pcplist_pages(struct zone *zone)
+> > +{
+> > +	unsigned long sum = 0;
+> > +	int cpu;
+> > +
+> > +	for_each_online_cpu(cpu)
+> > +		sum += per_cpu_ptr(zone->per_cpu_pageset, cpu)->count;
+> > +	return sum;
+> > +}
+> > +
+> > +static unsigned long nr_free_pcplist_pages(void)
+> > +{
+> > +	unsigned long sum = 0;
+> > +	struct zone *zone;
+> > +
+> > +	for_each_zone(zone)
+> > +		sum += nr_free_zone_pcplist_pages(zone);
+> > +	return sum;
+> > +}
+> 
+> Prevention of races against zone/node hotplug?
+
+Memory hotplug doesn't remove nodes nor its zones.
+
+-- 
+Michal Hocko
+SUSE Labs
