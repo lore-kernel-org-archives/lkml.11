@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 27700C32772
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 12:20:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D4E13C32772
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 12:20:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242145AbiHWMUE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 08:20:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46768 "EHLO
+        id S244084AbiHWMUJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 23 Aug 2022 08:20:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45830 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1359558AbiHWMP5 (ORCPT
+        with ESMTP id S1359550AbiHWMP4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 08:15:57 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 233B1796A4;
-        Tue, 23 Aug 2022 02:41:31 -0700 (PDT)
+        Tue, 23 Aug 2022 08:15:56 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6F3D6EA147;
+        Tue, 23 Aug 2022 02:41:25 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 337D1B81C65;
-        Tue, 23 Aug 2022 09:41:18 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 998D4C433C1;
-        Tue, 23 Aug 2022 09:41:16 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id A1F70614C4;
+        Tue, 23 Aug 2022 09:40:52 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id AECACC433C1;
+        Tue, 23 Aug 2022 09:40:51 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661247677;
-        bh=zuynUB4qvXHwuhHt93KM7PDIxN+C9d44hf1QyZClopY=;
+        s=korg; t=1661247652;
+        bh=HWPvRsRbImhp+mxkyDgXuQ+z0w/UFpkDqwsXmE51S2M=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=C4dzdps/Orja196TZLq4mdClXTPm6UhGV9lx5UWGguNInK+WLPkSZDUwgxN9CT4cK
-         KLaLrUaLdlw92BqfT4n+o7qY81GUJvqkQOX+LG2PdpZ7vGFNJ9pT2EJNEI5oWEWWNS
-         yh9cKL/abf0xYS0HrTJVOLhf8m/ukLbkGhyBd5MA=
+        b=P0hCKbEoY/4YTbA7bfMzdeTFft8xIIZQ3vMByWb9I9R7t3iQDoT+x0UeyKhLv6/3f
+         t5+6GIr12oULvvi8Rq5uGtDkvfJqIdTAdLE/+EW/AZYxza1bSN+V+rDu6R3MfG6MoO
+         UKSSmUUJQqcMWHj5vktlgZu6+GN38TZfcsPzeC/s=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Hans de Goede <hdegoede@redhat.com>,
-        Pascal Terjan <pterjan@google.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 112/158] vboxguest: Do not use devm for irq
-Date:   Tue, 23 Aug 2022 10:27:24 +0200
-Message-Id: <20220823080050.477796219@linuxfoundation.org>
+        stable@vger.kernel.org,
+        =?UTF-8?q?Martin=20Povi=C5=A1er?= <povik+lin@cutebit.org>,
+        Mark Brown <broonie@kernel.org>
+Subject: [PATCH 5.10 073/158] ASoC: tas2770: Drop conflicting set_bias_level power setting
+Date:   Tue, 23 Aug 2022 10:26:45 +0200
+Message-Id: <20220823080049.005365066@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220823080046.056825146@linuxfoundation.org>
 References: <20220823080046.056825146@linuxfoundation.org>
@@ -49,81 +49,72 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Pascal Terjan <pterjan@google.com>
+From: Martin Povišer <povik+lin@cutebit.org>
 
-[ Upstream commit 6169525b76764acb81918aa387ac168fb9a55575 ]
+commit 482c23fbc7e9bf5a7a74defd0735d5346215db58 upstream.
 
-When relying on devm it doesn't get freed early enough which causes the
-following warning when unloading the module:
+The driver is setting the PWR_CTRL field in both the set_bias_level
+callback and on DAPM events of the DAC widget (and also in the
+mute_stream method). Drop the set_bias_level callback altogether as the
+power setting it does is in conflict with the other code paths.
 
-[249348.837181] remove_proc_entry: removing non-empty directory 'irq/20', leaking at least 'vboxguest'
-[249348.837219] WARNING: CPU: 0 PID: 6708 at fs/proc/generic.c:715 remove_proc_entry+0x119/0x140
-
-[249348.837379] Call Trace:
-[249348.837385]  unregister_irq_proc+0xbd/0xe0
-[249348.837392]  free_desc+0x23/0x60
-[249348.837396]  irq_free_descs+0x4a/0x70
-[249348.837401]  irq_domain_free_irqs+0x160/0x1a0
-[249348.837452]  mp_unmap_irq+0x5c/0x60
-[249348.837458]  acpi_unregister_gsi_ioapic+0x29/0x40
-[249348.837463]  acpi_unregister_gsi+0x17/0x30
-[249348.837467]  acpi_pci_irq_disable+0xbf/0xe0
-[249348.837473]  pcibios_disable_device+0x20/0x30
-[249348.837478]  pci_disable_device+0xef/0x120
-[249348.837482]  vbg_pci_remove+0x6c/0x70 [vboxguest]
-
-Reviewed-by: Hans de Goede <hdegoede@redhat.com>
-Signed-off-by: Pascal Terjan <pterjan@google.com>
-Link: https://lore.kernel.org/r/20220612133744.4030602-1-pterjan@google.com
+Fixes: 1a476abc723e ("tas2770: add tas2770 smart PA kernel driver")
+Signed-off-by: Martin Povišer <povik+lin@cutebit.org>
+Link: https://lore.kernel.org/r/20220808141246.5749-4-povik+lin@cutebit.org
+Signed-off-by: Mark Brown <broonie@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/virt/vboxguest/vboxguest_linux.c | 9 ++++++---
- 1 file changed, 6 insertions(+), 3 deletions(-)
+ sound/soc/codecs/tas2770.c |   33 ---------------------------------
+ 1 file changed, 33 deletions(-)
 
-diff --git a/drivers/virt/vboxguest/vboxguest_linux.c b/drivers/virt/vboxguest/vboxguest_linux.c
-index 73eb34849eab..4ccfd30c2a30 100644
---- a/drivers/virt/vboxguest/vboxguest_linux.c
-+++ b/drivers/virt/vboxguest/vboxguest_linux.c
-@@ -356,8 +356,8 @@ static int vbg_pci_probe(struct pci_dev *pci, const struct pci_device_id *id)
- 		goto err_vbg_core_exit;
- 	}
+--- a/sound/soc/codecs/tas2770.c
++++ b/sound/soc/codecs/tas2770.c
+@@ -46,38 +46,6 @@ static void tas2770_reset(struct tas2770
+ 	usleep_range(1000, 2000);
+ }
  
--	ret = devm_request_irq(dev, pci->irq, vbg_core_isr, IRQF_SHARED,
--			       DEVICE_NAME, gdev);
-+	ret = request_irq(pci->irq, vbg_core_isr, IRQF_SHARED, DEVICE_NAME,
-+			  gdev);
- 	if (ret) {
- 		vbg_err("vboxguest: Error requesting irq: %d\n", ret);
- 		goto err_vbg_core_exit;
-@@ -367,7 +367,7 @@ static int vbg_pci_probe(struct pci_dev *pci, const struct pci_device_id *id)
- 	if (ret) {
- 		vbg_err("vboxguest: Error misc_register %s failed: %d\n",
- 			DEVICE_NAME, ret);
--		goto err_vbg_core_exit;
-+		goto err_free_irq;
- 	}
- 
- 	ret = misc_register(&gdev->misc_device_user);
-@@ -403,6 +403,8 @@ static int vbg_pci_probe(struct pci_dev *pci, const struct pci_device_id *id)
- 	misc_deregister(&gdev->misc_device_user);
- err_unregister_misc_device:
- 	misc_deregister(&gdev->misc_device);
-+err_free_irq:
-+	free_irq(pci->irq, gdev);
- err_vbg_core_exit:
- 	vbg_core_exit(gdev);
- err_disable_pcidev:
-@@ -419,6 +421,7 @@ static void vbg_pci_remove(struct pci_dev *pci)
- 	vbg_gdev = NULL;
- 	mutex_unlock(&vbg_gdev_mutex);
- 
-+	free_irq(pci->irq, gdev);
- 	device_remove_file(gdev->dev, &dev_attr_host_features);
- 	device_remove_file(gdev->dev, &dev_attr_host_version);
- 	misc_deregister(&gdev->misc_device_user);
--- 
-2.35.1
-
+-static int tas2770_set_bias_level(struct snd_soc_component *component,
+-				 enum snd_soc_bias_level level)
+-{
+-	struct tas2770_priv *tas2770 =
+-			snd_soc_component_get_drvdata(component);
+-
+-	switch (level) {
+-	case SND_SOC_BIAS_ON:
+-		snd_soc_component_update_bits(component, TAS2770_PWR_CTRL,
+-					      TAS2770_PWR_CTRL_MASK,
+-					      TAS2770_PWR_CTRL_ACTIVE);
+-		break;
+-	case SND_SOC_BIAS_STANDBY:
+-	case SND_SOC_BIAS_PREPARE:
+-		snd_soc_component_update_bits(component, TAS2770_PWR_CTRL,
+-					      TAS2770_PWR_CTRL_MASK,
+-					      TAS2770_PWR_CTRL_MUTE);
+-		break;
+-	case SND_SOC_BIAS_OFF:
+-		snd_soc_component_update_bits(component, TAS2770_PWR_CTRL,
+-					      TAS2770_PWR_CTRL_MASK,
+-					      TAS2770_PWR_CTRL_SHUTDOWN);
+-		break;
+-
+-	default:
+-		dev_err(tas2770->dev, "wrong power level setting %d\n", level);
+-		return -EINVAL;
+-	}
+-
+-	return 0;
+-}
+-
+ #ifdef CONFIG_PM
+ static int tas2770_codec_suspend(struct snd_soc_component *component)
+ {
+@@ -555,7 +523,6 @@ static const struct snd_soc_component_dr
+ 	.probe			= tas2770_codec_probe,
+ 	.suspend		= tas2770_codec_suspend,
+ 	.resume			= tas2770_codec_resume,
+-	.set_bias_level = tas2770_set_bias_level,
+ 	.controls		= tas2770_snd_controls,
+ 	.num_controls		= ARRAY_SIZE(tas2770_snd_controls),
+ 	.dapm_widgets		= tas2770_dapm_widgets,
 
 
