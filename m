@@ -2,45 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 48558C32793
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 57C3EC32789
 	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 08:16:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242499AbiHWIP0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 04:15:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32864 "EHLO
+        id S242534AbiHWIPa (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 23 Aug 2022 04:15:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34618 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242224AbiHWIKy (ORCPT
+        with ESMTP id S242254AbiHWIK6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 04:10:54 -0400
+        Tue, 23 Aug 2022 04:10:58 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D919BC6D;
-        Tue, 23 Aug 2022 01:08:12 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 70D482DDD;
+        Tue, 23 Aug 2022 01:08:16 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 2DB0BB81C24;
-        Tue, 23 Aug 2022 08:08:11 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 66394C433D6;
-        Tue, 23 Aug 2022 08:08:09 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 5A20AB81C22;
+        Tue, 23 Aug 2022 08:08:14 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9B890C433D7;
+        Tue, 23 Aug 2022 08:08:12 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661242089;
-        bh=XV+sDCF2H0TMW3uVGya0oLcmGejz6RfqmHqZJx6l0Ig=;
+        s=korg; t=1661242093;
+        bh=qCWJLLimkWOnuEsGie3QDabtJTu5m+R5KpFDeCyqPBg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=hV0CNtp1ft7qPG4hjm2UuQzyYdBZKAGSE3XGnZzMXZ5VlGweF/Hoohde3RHXB6fg4
-         ioE43gv3UvyH1pJCD2VUdCUF6RwrLUo1/qnKJXfkb3jJJYR3eHwmudyDr5GxYnoyhR
-         5MehmXa3Uu7aBCSVzvOe4rcTR8+NSqpMf69Y/ns8=
+        b=KSPwfftVO8z67GgUd9Tdp2jOe5/cuAwFkVGYGqTdj71m3gm7QHHVTGsU9KOuNbQpi
+         fE/HfkSh9bRVf9Bg7P1/D4e4F+Zmb8ZHrmfpWNKJ8FCC1KYIVLEsnC8rtPlt7EcbQZ
+         raNgDh1C1iuRjIzTsuvOvA4CL/RWI4Ujixi+kvDk=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Viresh Kumar <viresh.kumar@linaro.org>,
-        Jiri Kosina <jkosina@suse.cz>,
-        Hans-Christian Noren Egtvedt <hegtvedt@cisco.com>
-Subject: [PATCH 4.9 017/101] init/main: Fix double "the" in comment
-Date:   Tue, 23 Aug 2022 10:02:50 +0200
-Message-Id: <20220823080035.225456988@linuxfoundation.org>
+        stable@vger.kernel.org, Jiri Olsa <jolsa@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Mat Martineau <mathew.j.martineau@linux.intel.com>,
+        Martin KaFai Lau <kafai@fb.com>
+Subject: [PATCH 5.19 057/365] mptcp, btf: Add struct mptcp_sock definition when CONFIG_MPTCP is disabled
+Date:   Tue, 23 Aug 2022 09:59:18 +0200
+Message-Id: <20220823080120.567931174@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220823080034.579196046@linuxfoundation.org>
-References: <20220823080034.579196046@linuxfoundation.org>
+In-Reply-To: <20220823080118.128342613@linuxfoundation.org>
+References: <20220823080118.128342613@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -49,30 +50,45 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Viresh Kumar <viresh.kumar@linaro.org>
+From: Jiri Olsa <jolsa@kernel.org>
 
-commit 6623f1c6150c09ce946c8e27a4c814d64919495b upstream.
+commit f1d41f7720c89705c20e4335a807b1c518c2e7be upstream.
 
-s/the\ the/the
+The btf_sock_ids array needs struct mptcp_sock BTF ID for the
+bpf_skc_to_mptcp_sock helper.
 
-Signed-off-by: Viresh Kumar <viresh.kumar@linaro.org>
-Signed-off-by: Jiri Kosina <jkosina@suse.cz>
-Signed-off-by: Hans-Christian Noren Egtvedt <hegtvedt@cisco.com>
+When CONFIG_MPTCP is disabled, the 'struct mptcp_sock' is not
+defined and resolve_btfids will complain with:
+
+  [...]
+  BTFIDS  vmlinux
+  WARN: resolve_btfids: unresolved symbol mptcp_sock
+  [...]
+
+Add an empty definition for struct mptcp_sock when CONFIG_MPTCP
+is disabled.
+
+Fixes: 3bc253c2e652 ("bpf: Add bpf_skc_to_mptcp_sock_proto")
+Signed-off-by: Jiri Olsa <jolsa@kernel.org>
+Signed-off-by: Daniel Borkmann <daniel@iogearbox.net>
+Reviewed-by: Mat Martineau <mathew.j.martineau@linux.intel.com>
+Acked-by: Martin KaFai Lau <kafai@fb.com>
+Link: https://lore.kernel.org/bpf/20220802163324.1873044-1-jolsa@kernel.org
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- init/main.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ include/net/mptcp.h |    4 ++++
+ 1 file changed, 4 insertions(+)
 
---- a/init/main.c
-+++ b/init/main.c
-@@ -488,7 +488,7 @@ asmlinkage __visible void __init start_k
- 	debug_objects_early_init();
+--- a/include/net/mptcp.h
++++ b/include/net/mptcp.h
+@@ -290,4 +290,8 @@ struct mptcp_sock *bpf_mptcp_sock_from_s
+ static inline struct mptcp_sock *bpf_mptcp_sock_from_subflow(struct sock *sk) { return NULL; }
+ #endif
  
- 	/*
--	 * Set up the the initial canary ASAP:
-+	 * Set up the initial canary ASAP:
- 	 */
- 	add_latent_entropy();
- 	boot_init_stack_canary();
++#if !IS_ENABLED(CONFIG_MPTCP)
++struct mptcp_sock { };
++#endif
++
+ #endif /* __NET_MPTCP_H */
 
 
