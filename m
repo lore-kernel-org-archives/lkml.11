@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 77AC4C32772
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 11:58:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CA323C32774
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 11:58:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358746AbiHWL53 (ORCPT
+        id S1358968AbiHWL6N (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 07:57:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37260 "EHLO
+        Tue, 23 Aug 2022 07:58:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41932 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1358820AbiHWLyg (ORCPT
+        with ESMTP id S1359064AbiHWL4H (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 07:54:36 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 37977E0FD;
-        Tue, 23 Aug 2022 02:33:23 -0700 (PDT)
+        Tue, 23 Aug 2022 07:56:07 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9BB7F7284D;
+        Tue, 23 Aug 2022 02:33:38 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 8B40EB81C89;
-        Tue, 23 Aug 2022 09:32:48 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id EC73FC4347C;
-        Tue, 23 Aug 2022 09:32:46 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 10F31B81C98;
+        Tue, 23 Aug 2022 09:33:30 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6890DC43148;
+        Tue, 23 Aug 2022 09:33:28 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661247167;
-        bh=5YsuL1rXMFxHroUtJboMymafT37h5Z12yG4GQBInd8Q=;
+        s=korg; t=1661247208;
+        bh=hRPBfczdm15C8/gZO/F3YClMCpGorCXgOhAyyTX1B+M=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=IJ1M4DCTcOB8LldiqnjMN8fraQEIG9rPuyEMRPHWtxELvkGWXLyEaWtkp0ob0BFct
-         IqesnqNA6KmQQ6Gp+aeNfaPHR2Nyj6n0mvrYXKfqRLVy9GojMJqoi1Q3lRwber0dQe
-         KbNpPw389cgPoYn1ejuOm9oUJuWZWj5bgMtrBLp4=
+        b=XhBG/zMLXdsbhwhAMnWZLYn+439Tmu3/icWTnyA7HoRBSurAPNMyVtqKzSPeEQ44A
+         jKmNd822l3lHvspFvnQWSfa/vOLwFgO224fC93Cz1aQepwcbX35ANRdACy0XX55QLQ
+         82rHkIwgWA3GbFcLoPr17848lY6duHsLCN7l4a8Q=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Sergei Antonov <saproj@gmail.com>,
-        Andrew Lunn <andrew@lunn.ch>, Jakub Kicinski <kuba@kernel.org>
-Subject: [PATCH 5.4 340/389] net: moxa: pass pdev instead of ndev to DMA functions
-Date:   Tue, 23 Aug 2022 10:26:58 +0200
-Message-Id: <20220823080129.732696842@linuxfoundation.org>
+        stable@vger.kernel.org, Marc Zyngier <maz@kernel.org>,
+        Sai Prakash Ranjan <quic_saipraka@quicinc.com>,
+        Arnd Bergmann <arnd@arndb.de>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.4 352/389] irqchip/tegra: Fix overflow implicit truncation warnings
+Date:   Tue, 23 Aug 2022 10:27:10 +0200
+Message-Id: <20220823080130.252693175@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220823080115.331990024@linuxfoundation.org>
 References: <20220823080115.331990024@linuxfoundation.org>
@@ -49,111 +50,73 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Sergei Antonov <saproj@gmail.com>
+From: Sai Prakash Ranjan <quic_saipraka@quicinc.com>
 
-commit 3a12df22a8f68954a4ba48435c06b3d1791c87c4 upstream.
+[ Upstream commit 443685992bda9bb4f8b17fc02c9f6c60e62b1461 ]
 
-dma_map_single() calls fail in moxart_mac_setup_desc_ring() and
-moxart_mac_start_xmit() which leads to an incessant output of this:
+Fix -Woverflow warnings for tegra irqchip driver which is a result
+of moving arm64 custom MMIO accessor macros to asm-generic function
+implementations giving a bonus type-checking now and uncovering these
+overflow warnings.
 
-[   16.043925] moxart-ethernet 92000000.mac eth0: DMA mapping error
-[   16.050957] moxart-ethernet 92000000.mac eth0: DMA mapping error
-[   16.058229] moxart-ethernet 92000000.mac eth0: DMA mapping error
+drivers/irqchip/irq-tegra.c: In function ‘tegra_ictlr_suspend’:
+drivers/irqchip/irq-tegra.c:151:18: warning: large integer implicitly truncated to unsigned type [-Woverflow]
+   writel_relaxed(~0ul, ictlr + ICTLR_COP_IER_CLR);
+                  ^
 
-Passing pdev to DMA is a common approach among net drivers.
-
-Fixes: 6c821bd9edc9 ("net: Add MOXA ART SoCs ethernet driver")
-Signed-off-by: Sergei Antonov <saproj@gmail.com>
-Suggested-by: Andrew Lunn <andrew@lunn.ch>
-Reviewed-by: Andrew Lunn <andrew@lunn.ch>
-Link: https://lore.kernel.org/r/20220812171339.2271788-1-saproj@gmail.com
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Suggested-by: Marc Zyngier <maz@kernel.org>
+Signed-off-by: Sai Prakash Ranjan <quic_saipraka@quicinc.com>
+Reviewed-by: Arnd Bergmann <arnd@arndb.de>
+Cc: Marc Zyngier <maz@kernel.org>
+Signed-off-by: Arnd Bergmann <arnd@arndb.de>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/moxa/moxart_ether.c |   20 ++++++++++----------
- 1 file changed, 10 insertions(+), 10 deletions(-)
+ drivers/irqchip/irq-tegra.c | 10 +++++-----
+ 1 file changed, 5 insertions(+), 5 deletions(-)
 
---- a/drivers/net/ethernet/moxa/moxart_ether.c
-+++ b/drivers/net/ethernet/moxa/moxart_ether.c
-@@ -77,7 +77,7 @@ static void moxart_mac_free_memory(struc
- 	int i;
+diff --git a/drivers/irqchip/irq-tegra.c b/drivers/irqchip/irq-tegra.c
+index e1f771c72fc4..ad3e2c1b3c87 100644
+--- a/drivers/irqchip/irq-tegra.c
++++ b/drivers/irqchip/irq-tegra.c
+@@ -148,10 +148,10 @@ static int tegra_ictlr_suspend(void)
+ 		lic->cop_iep[i] = readl_relaxed(ictlr + ICTLR_COP_IEP_CLASS);
  
- 	for (i = 0; i < RX_DESC_NUM; i++)
--		dma_unmap_single(&ndev->dev, priv->rx_mapping[i],
-+		dma_unmap_single(&priv->pdev->dev, priv->rx_mapping[i],
- 				 priv->rx_buf_size, DMA_FROM_DEVICE);
+ 		/* Disable COP interrupts */
+-		writel_relaxed(~0ul, ictlr + ICTLR_COP_IER_CLR);
++		writel_relaxed(GENMASK(31, 0), ictlr + ICTLR_COP_IER_CLR);
  
- 	if (priv->tx_desc_base)
-@@ -147,11 +147,11 @@ static void moxart_mac_setup_desc_ring(s
- 		       desc + RX_REG_OFFSET_DESC1);
+ 		/* Disable CPU interrupts */
+-		writel_relaxed(~0ul, ictlr + ICTLR_CPU_IER_CLR);
++		writel_relaxed(GENMASK(31, 0), ictlr + ICTLR_CPU_IER_CLR);
  
- 		priv->rx_buf[i] = priv->rx_buf_base + priv->rx_buf_size * i;
--		priv->rx_mapping[i] = dma_map_single(&ndev->dev,
-+		priv->rx_mapping[i] = dma_map_single(&priv->pdev->dev,
- 						     priv->rx_buf[i],
- 						     priv->rx_buf_size,
- 						     DMA_FROM_DEVICE);
--		if (dma_mapping_error(&ndev->dev, priv->rx_mapping[i]))
-+		if (dma_mapping_error(&priv->pdev->dev, priv->rx_mapping[i]))
- 			netdev_err(ndev, "DMA mapping error\n");
+ 		/* Enable the wakeup sources of ictlr */
+ 		writel_relaxed(lic->ictlr_wake_mask[i], ictlr + ICTLR_CPU_IER_SET);
+@@ -172,12 +172,12 @@ static void tegra_ictlr_resume(void)
  
- 		moxart_desc_write(priv->rx_mapping[i],
-@@ -240,7 +240,7 @@ static int moxart_rx_poll(struct napi_st
- 		if (len > RX_BUF_SIZE)
- 			len = RX_BUF_SIZE;
- 
--		dma_sync_single_for_cpu(&ndev->dev,
-+		dma_sync_single_for_cpu(&priv->pdev->dev,
- 					priv->rx_mapping[rx_head],
- 					priv->rx_buf_size, DMA_FROM_DEVICE);
- 		skb = netdev_alloc_skb_ip_align(ndev, len);
-@@ -294,7 +294,7 @@ static void moxart_tx_finished(struct ne
- 	unsigned int tx_tail = priv->tx_tail;
- 
- 	while (tx_tail != tx_head) {
--		dma_unmap_single(&ndev->dev, priv->tx_mapping[tx_tail],
-+		dma_unmap_single(&priv->pdev->dev, priv->tx_mapping[tx_tail],
- 				 priv->tx_len[tx_tail], DMA_TO_DEVICE);
- 
- 		ndev->stats.tx_packets++;
-@@ -357,9 +357,9 @@ static int moxart_mac_start_xmit(struct
- 
- 	len = skb->len > TX_BUF_SIZE ? TX_BUF_SIZE : skb->len;
- 
--	priv->tx_mapping[tx_head] = dma_map_single(&ndev->dev, skb->data,
-+	priv->tx_mapping[tx_head] = dma_map_single(&priv->pdev->dev, skb->data,
- 						   len, DMA_TO_DEVICE);
--	if (dma_mapping_error(&ndev->dev, priv->tx_mapping[tx_head])) {
-+	if (dma_mapping_error(&priv->pdev->dev, priv->tx_mapping[tx_head])) {
- 		netdev_err(ndev, "DMA mapping error\n");
- 		goto out_unlock;
+ 		writel_relaxed(lic->cpu_iep[i],
+ 			       ictlr + ICTLR_CPU_IEP_CLASS);
+-		writel_relaxed(~0ul, ictlr + ICTLR_CPU_IER_CLR);
++		writel_relaxed(GENMASK(31, 0), ictlr + ICTLR_CPU_IER_CLR);
+ 		writel_relaxed(lic->cpu_ier[i],
+ 			       ictlr + ICTLR_CPU_IER_SET);
+ 		writel_relaxed(lic->cop_iep[i],
+ 			       ictlr + ICTLR_COP_IEP_CLASS);
+-		writel_relaxed(~0ul, ictlr + ICTLR_COP_IER_CLR);
++		writel_relaxed(GENMASK(31, 0), ictlr + ICTLR_COP_IER_CLR);
+ 		writel_relaxed(lic->cop_ier[i],
+ 			       ictlr + ICTLR_COP_IER_SET);
  	}
-@@ -378,7 +378,7 @@ static int moxart_mac_start_xmit(struct
- 		len = ETH_ZLEN;
- 	}
+@@ -312,7 +312,7 @@ static int __init tegra_ictlr_init(struct device_node *node,
+ 		lic->base[i] = base;
  
--	dma_sync_single_for_device(&ndev->dev, priv->tx_mapping[tx_head],
-+	dma_sync_single_for_device(&priv->pdev->dev, priv->tx_mapping[tx_head],
- 				   priv->tx_buf_size, DMA_TO_DEVICE);
+ 		/* Disable all interrupts */
+-		writel_relaxed(~0UL, base + ICTLR_CPU_IER_CLR);
++		writel_relaxed(GENMASK(31, 0), base + ICTLR_CPU_IER_CLR);
+ 		/* All interrupts target IRQ */
+ 		writel_relaxed(0, base + ICTLR_CPU_IEP_CLASS);
  
- 	txdes1 = TX_DESC1_LTS | TX_DESC1_FTS | (len & TX_DESC1_BUF_SIZE_MASK);
-@@ -498,7 +498,7 @@ static int moxart_mac_probe(struct platf
- 	priv->tx_buf_size = TX_BUF_SIZE;
- 	priv->rx_buf_size = RX_BUF_SIZE;
- 
--	priv->tx_desc_base = dma_alloc_coherent(&pdev->dev, TX_REG_DESC_SIZE *
-+	priv->tx_desc_base = dma_alloc_coherent(p_dev, TX_REG_DESC_SIZE *
- 						TX_DESC_NUM, &priv->tx_base,
- 						GFP_DMA | GFP_KERNEL);
- 	if (!priv->tx_desc_base) {
-@@ -506,7 +506,7 @@ static int moxart_mac_probe(struct platf
- 		goto init_fail;
- 	}
- 
--	priv->rx_desc_base = dma_alloc_coherent(&pdev->dev, RX_REG_DESC_SIZE *
-+	priv->rx_desc_base = dma_alloc_coherent(p_dev, RX_REG_DESC_SIZE *
- 						RX_DESC_NUM, &priv->rx_base,
- 						GFP_DMA | GFP_KERNEL);
- 	if (!priv->rx_desc_base) {
+-- 
+2.35.1
+
 
 
