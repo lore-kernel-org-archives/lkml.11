@@ -2,46 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7EFACC38145
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 09:57:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B52ACC32774
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 09:57:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351386AbiHWJzt (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 05:55:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40740 "EHLO
+        id S241895AbiHWJ5V (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 23 Aug 2022 05:57:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42388 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344438AbiHWJyE (ORCPT
+        with ESMTP id S1346083AbiHWJyJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 05:54:04 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 298DC6A49A;
-        Tue, 23 Aug 2022 01:46:22 -0700 (PDT)
+        Tue, 23 Aug 2022 05:54:09 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4748D9FA90;
+        Tue, 23 Aug 2022 01:46:30 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 9CCFD6153C;
-        Tue, 23 Aug 2022 08:45:57 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 91F55C433D6;
-        Tue, 23 Aug 2022 08:45:56 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 9427261377;
+        Tue, 23 Aug 2022 08:45:54 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 90B47C433C1;
+        Tue, 23 Aug 2022 08:45:53 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661244357;
-        bh=bfj1rlsQXGQ8Wn6QfQwt2YuiHr8K9dNN60BDvqIIFzk=;
+        s=korg; t=1661244354;
+        bh=THXOj36MzhJ+yi1Yw0TX0gh0da2JWEUKFOzW1NHTs9Q=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=AWHqa+ANDAEjO0GwqjFp3L5ECdlJJv8fIjgtubPkaosekCOypYnqL9sW92rGvRUem
-         lVODCU1eoVbrJeQSC60AV7uiMb8zs8aD3pljJeEbAl1X5mX1dVXMSMzq/pKqZdZeB5
-         zE5jwDjJrAL/tao4Is0/3AzKW3LHRYWgHpiB/dUo=
+        b=YlyTN1TWwfhfXVVVAVO97J18kVHm5B6NVnNCjYF8C10TKnRL455pC6TM5DvJgnKD7
+         FBP0uyNN5grk+eyK5sBmlI+v67PiXbGEEbIs22gFUhryFXiLA1C8EswGL1wSNziVf0
+         h/xFZ5KIVdRp4h2gsmAHzWRE56YetOEo7f1TcpVQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Guillaume Nault <gnault@redhat.com>,
-        Matthias May <matthias.may@westermo.com>,
-        Jakub Kicinski <kuba@kernel.org>
-Subject: [PATCH 5.15 078/244] ipv6: do not use RT_TOS for IPv6 flowlabel
-Date:   Tue, 23 Aug 2022 10:23:57 +0200
-Message-Id: <20220823080101.656251834@linuxfoundation.org>
+        stable@vger.kernel.org, Daniel Starke <daniel.starke@siemens.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 4.14 124/229] tty: n_gsm: fix race condition in gsmld_write()
+Date:   Tue, 23 Aug 2022 10:24:45 +0200
+Message-Id: <20220823080058.148785851@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220823080059.091088642@linuxfoundation.org>
-References: <20220823080059.091088642@linuxfoundation.org>
+In-Reply-To: <20220823080053.202747790@linuxfoundation.org>
+References: <20220823080053.202747790@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -50,42 +48,62 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Matthias May <matthias.may@westermo.com>
+From: Daniel Starke <daniel.starke@siemens.com>
 
-commit ab7e2e0dfa5d37540ab1dc5376e9a2cb9188925d upstream.
+[ Upstream commit 32dd59f96924f45e33bc79854f7a00679c0fa28e ]
 
-According to Guillaume Nault RT_TOS should never be used for IPv6.
+The function may be used by the user directly and also by the n_gsm
+internal functions. They can lead into a race condition which results in
+interleaved frames if both are writing at the same time. The receiving side
+is not able to decode those interleaved frames correctly.
 
-Quote:
-RT_TOS() is an old macro used to interprete IPv4 TOS as described in
-the obsolete RFC 1349. It's conceptually wrong to use it even in IPv4
-code, although, given the current state of the code, most of the
-existing calls have no consequence.
+Add a lock around the low side tty write to avoid race conditions and frame
+interleaving between user originated writes and n_gsm writes.
 
-But using RT_TOS() in IPv6 code is always a bug: IPv6 never had a "TOS"
-field to be interpreted the RFC 1349 way. There's no historical
-compatibility to worry about.
-
-Fixes: 571912c69f0e ("net: UDP tunnel encapsulation module for tunnelling different protocols like MPLS, IP, NSH etc.")
-Acked-by: Guillaume Nault <gnault@redhat.com>
-Signed-off-by: Matthias May <matthias.may@westermo.com>
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Fixes: e1eaea46bb40 ("tty: n_gsm line discipline")
+Signed-off-by: Daniel Starke <daniel.starke@siemens.com>
+Link: https://lore.kernel.org/r/20220701061652.39604-9-daniel.starke@siemens.com
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/ipv6/ip6_output.c |    3 +--
- 1 file changed, 1 insertion(+), 2 deletions(-)
+ drivers/tty/n_gsm.c | 21 +++++++++++++++++----
+ 1 file changed, 17 insertions(+), 4 deletions(-)
 
---- a/net/ipv6/ip6_output.c
-+++ b/net/ipv6/ip6_output.c
-@@ -1289,8 +1289,7 @@ struct dst_entry *ip6_dst_lookup_tunnel(
- 	fl6.daddr = info->key.u.ipv6.dst;
- 	fl6.saddr = info->key.u.ipv6.src;
- 	prio = info->key.tos;
--	fl6.flowlabel = ip6_make_flowinfo(RT_TOS(prio),
--					  info->key.label);
-+	fl6.flowlabel = ip6_make_flowinfo(prio, info->key.label);
+diff --git a/drivers/tty/n_gsm.c b/drivers/tty/n_gsm.c
+index 62af08e5caa5..18878ab707af 100644
+--- a/drivers/tty/n_gsm.c
++++ b/drivers/tty/n_gsm.c
+@@ -2533,11 +2533,24 @@ static ssize_t gsmld_read(struct tty_struct *tty, struct file *file,
+ static ssize_t gsmld_write(struct tty_struct *tty, struct file *file,
+ 			   const unsigned char *buf, size_t nr)
+ {
+-	int space = tty_write_room(tty);
++	struct gsm_mux *gsm = tty->disc_data;
++	unsigned long flags;
++	int space;
++	int ret;
++
++	if (!gsm)
++		return -ENODEV;
++
++	ret = -ENOBUFS;
++	spin_lock_irqsave(&gsm->tx_lock, flags);
++	space = tty_write_room(tty);
+ 	if (space >= nr)
+-		return tty->ops->write(tty, buf, nr);
+-	set_bit(TTY_DO_WRITE_WAKEUP, &tty->flags);
+-	return -ENOBUFS;
++		ret = tty->ops->write(tty, buf, nr);
++	else
++		set_bit(TTY_DO_WRITE_WAKEUP, &tty->flags);
++	spin_unlock_irqrestore(&gsm->tx_lock, flags);
++
++	return ret;
+ }
  
- 	dst = ipv6_stub->ipv6_dst_lookup_flow(net, sock->sk, &fl6,
- 					      NULL);
+ /**
+-- 
+2.35.1
+
 
 
