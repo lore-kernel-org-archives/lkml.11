@@ -2,147 +2,82 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 766B1C32772
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 21:01:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 85C9FC32793
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 21:01:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230501AbiHWVBw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 17:01:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53194 "EHLO
+        id S229628AbiHWVBy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 23 Aug 2022 17:01:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53380 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229628AbiHWVBs (ORCPT
+        with ESMTP id S229742AbiHWVBu (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 17:01:48 -0400
-Received: from mail-vs1-xe34.google.com (mail-vs1-xe34.google.com [IPv6:2607:f8b0:4864:20::e34])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 901757E837
-        for <linux-kernel@vger.kernel.org>; Tue, 23 Aug 2022 14:01:46 -0700 (PDT)
-Received: by mail-vs1-xe34.google.com with SMTP id p6so15306514vsr.9
-        for <linux-kernel@vger.kernel.org>; Tue, 23 Aug 2022 14:01:46 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc;
-        bh=pO7ZqfRiAmnavkU8GmZ06Kcz4TLBMS10b+H3mC3wfmU=;
-        b=OVGYBmdyPJ8RRrVeNjcQD3+Vq4FTxBUG+dj4v4VrW40FjbP+uLaK80uyXaHoGi3pYd
-         Nps0IxRCRhlJJZZL66k1c2eYBrBNCZEUz4hLFXZbXNFnBXZT7l8orRKsAS3lAF4JO8rp
-         abCtDO2uJepmv+wMMo/k4GcRE9k7pNRdYcTE7J6eKAg3zM5U5gYUMkfJQXly/WbI7Ct2
-         TjqPyvCZZGPgfy9hT9rrNaYN5w8S4eiuiA8yVOht4sObJnUWJ4tVWH6BWeKgItVpp+CX
-         RbwZMUP/ee+xhz1KPgTOblF3/wQ2aDRQEYvoDa5VoH4llMnXfYNacxwq5/0SN7sCxGUp
-         Zxjw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc;
-        bh=pO7ZqfRiAmnavkU8GmZ06Kcz4TLBMS10b+H3mC3wfmU=;
-        b=D4/KuJm3qe3j3bxsRphgBdk2Tth0FaJH41QqX/f2rAqFD0BTKz9lEFLw5Teb2sqS1w
-         PXtHaVkqFWGupm4RZY/Lvns4SCRx8K0UUMketwbWAfQ2dL/3lII8cw3uEa2JcKzE8N6O
-         4wbA/mKVBuRZMry1t3/MZHPD0ZUGM51b2goE5MG9LrpxmfrLZHxWKKoYlJGXMXyDGn4b
-         J2qvY2LWbC2TC3VWotPv2pMtUZqm9ECxLdBj4k7OTc8b0R4e4sZFdQEB1a1Zy33zjeYr
-         eXeGZljBiv2+1wcY5B/9h/SYvKTWc7pQxue37oYXstwJv8EDas0KWap0c/eQ0nExhOyT
-         zBSQ==
-X-Gm-Message-State: ACgBeo0n3dEZgmrjmIvwSycChNdi0psrnE5lgjFkE8Fjx0AJxn92dpE2
-        YBTgHW4L5bGDeJcTvXnyADnmRk0ISYWzxMdH4QrYo0YtSr7JxrLi
-X-Google-Smtp-Source: AA6agR61EaCs5pkD4JW0vpgV7j5D9H/ME8bnIG4kRzC8Mj9moq2yJIOm6N7SLV6Cl5LVKp8JI2qh5mo1Jz1pHeGfqkk=
-X-Received: by 2002:a05:6102:3005:b0:390:5c54:7aea with SMTP id
- s5-20020a056102300500b003905c547aeamr4855722vsa.50.1661288505413; Tue, 23 Aug
- 2022 14:01:45 -0700 (PDT)
+        Tue, 23 Aug 2022 17:01:50 -0400
+Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0971E7E838
+        for <linux-kernel@vger.kernel.org>; Tue, 23 Aug 2022 14:01:50 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1661288510; x=1692824510;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=+ChPF7qdSV5GBDSnQpAfoD+W29jGyOYLG91l5gHBPyY=;
+  b=WWNYKxCKEgedqk/3vMRTUdSpTqVEBrkFkCPcPUvyofCuRxHrUJ91SiyT
+   /eHIC+vYLiHKvzamkhqXUBxv5u6gn7vrP2JYTjhxtpMlUV/clcLIoHa3k
+   rNms+ZzU07EZ1FKT819Z71yy4PCyK1gne4WIgpQ/fCMDNMosBhVL+Dl5R
+   v466sVVoUJ/7UtCOKzJkbc0zgaGuR5k4TDxn1lWOC7mia8ybbI6aFAzRU
+   UAvwkjkfiHEQEwHLoIrr4gx27xpCM10Wn+hGdG92iMsaIRENujXY3YomK
+   msoXOlvrJRX3wpy4vi/BygT/pAfLmCUI+avLEZy7QiRsBUU6n7/N0l74S
+   A==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10448"; a="357769296"
+X-IronPort-AV: E=Sophos;i="5.93,258,1654585200"; 
+   d="scan'208";a="357769296"
+Received: from fmsmga003.fm.intel.com ([10.253.24.29])
+  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Aug 2022 14:01:49 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.93,258,1654585200"; 
+   d="scan'208";a="698812588"
+Received: from kanliang-dev.jf.intel.com ([10.165.154.102])
+  by FMSMGA003.fm.intel.com with ESMTP; 23 Aug 2022 14:01:48 -0700
+From:   kan.liang@linux.intel.com
+To:     peterz@infradead.org, mingo@redhat.com,
+        linux-kernel@vger.kernel.org
+Cc:     Kan Liang <kan.liang@linux.intel.com>
+Subject: [PATCH 1/4] perf/x86: Add new Raptor Lake S support
+Date:   Tue, 23 Aug 2022 14:01:26 -0700
+Message-Id: <20220823210129.979394-1-kan.liang@linux.intel.com>
+X-Mailer: git-send-email 2.35.1
 MIME-Version: 1.0
-References: <20220811161331.37055-1-peterx@redhat.com> <20220811161331.37055-4-peterx@redhat.com>
- <87lerudwcb.fsf@yhuang6-desk2.ccr.corp.intel.com>
-In-Reply-To: <87lerudwcb.fsf@yhuang6-desk2.ccr.corp.intel.com>
-From:   Yu Zhao <yuzhao@google.com>
-Date:   Tue, 23 Aug 2022 15:01:09 -0600
-Message-ID: <CAOUHufaVC2Za-p8m0aiHw6YkheDcrO-C3wRGixwDS32VTS+k1w@mail.gmail.com>
-Subject: Re: [PATCH v4 3/7] mm/swap: Add swp_offset_pfn() to fetch PFN from
- swap entry
-To:     Peter Xu <peterx@redhat.com>,
-        Andrew Morton <akpm@linux-foundation.org>
-Cc:     "Huang, Ying" <ying.huang@intel.com>,
-        Linux-MM <linux-mm@kvack.org>,
-        linux-kernel <linux-kernel@vger.kernel.org>,
-        Hugh Dickins <hughd@google.com>,
-        "Kirill A . Shutemov" <kirill@shutemov.name>,
-        Alistair Popple <apopple@nvidia.com>,
-        Andrea Arcangeli <aarcange@redhat.com>,
-        Minchan Kim <minchan@kernel.org>,
-        David Hildenbrand <david@redhat.com>,
-        Andi Kleen <andi.kleen@intel.com>,
-        Nadav Amit <nadav.amit@gmail.com>,
-        Vlastimil Babka <vbabka@suse.cz>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Aug 11, 2022 at 8:33 PM Huang, Ying <ying.huang@intel.com> wrote:
->
-> Peter Xu <peterx@redhat.com> writes:
->
-> > We've got a bunch of special swap entries that stores PFN inside the swap
-> > offset fields.  To fetch the PFN, normally the user just calls swp_offset()
-> > assuming that'll be the PFN.
-> >
-> > Add a helper swp_offset_pfn() to fetch the PFN instead, fetching only the
-> > max possible length of a PFN on the host, meanwhile doing proper check with
-> > MAX_PHYSMEM_BITS to make sure the swap offsets can actually store the PFNs
-> > properly always using the BUILD_BUG_ON() in is_pfn_swap_entry().
-> >
-> > One reason to do so is we never tried to sanitize whether swap offset can
-> > really fit for storing PFN.  At the meantime, this patch also prepares us
-> > with the future possibility to store more information inside the swp offset
-> > field, so assuming "swp_offset(entry)" to be the PFN will not stand any
-> > more very soon.
-> >
-> > Replace many of the swp_offset() callers to use swp_offset_pfn() where
-> > proper.  Note that many of the existing users are not candidates for the
-> > replacement, e.g.:
-> >
-> >   (1) When the swap entry is not a pfn swap entry at all, or,
-> >   (2) when we wanna keep the whole swp_offset but only change the swp type.
-> >
-> > For the latter, it can happen when fork() triggered on a write-migration
-> > swap entry pte, we may want to only change the migration type from
-> > write->read but keep the rest, so it's not "fetching PFN" but "changing
-> > swap type only".  They're left aside so that when there're more information
-> > within the swp offset they'll be carried over naturally in those cases.
-> >
-> > Since at it, dropping hwpoison_entry_to_pfn() because that's exactly what
-> > the new swp_offset_pfn() is about.
-> >
-> > Signed-off-by: Peter Xu <peterx@redhat.com>
->
-> LGTM, Thanks!
->
-> Reviewed-by: "Huang, Ying" <ying.huang@intel.com>
+From: Kan Liang <kan.liang@linux.intel.com>
 
-Hi,
+From the PMU's perspective, the new Raptor Lake S is the same as the
+other {ALDER,RAPTOP}LAKE.
 
-I hit the following crash on mm-everything-2022-08-22-22-59. Please take a look.
+Signed-off-by: Kan Liang <kan.liang@linux.intel.com>
+---
 
-Thanks.
+The series must be on top of commit ea902bcc1943 ("x86/cpu: Add new
+Raptor Lake CPU model number")
 
-  kernel BUG at include/linux/swapops.h:117!
-  CPU: 46 PID: 5245 Comm: EventManager_De Tainted: G S         O L
-6.0.0-dbg-DEV #2
-  RIP: 0010:pfn_swap_entry_to_page+0x72/0xf0
-  Code: c6 48 8b 36 48 83 fe ff 74 53 48 01 d1 48 83 c1 08 48 8b 09 f6
-c1 01 75 7b 66 90 48 89 c1 48 8b 09 f6 c1 01 74 74 5d c3 eb 9e <0f> 0b
-48 ba ff ff ff ff 03 00 00 00 eb ae a9 ff 0f 00 00 75 13 48
-  RSP: 0018:ffffa59e73fabb80 EFLAGS: 00010282
-  RAX: 00000000ffffffe8 RBX: 0c00000000000000 RCX: ffffcd5440000000
-  RDX: 1ffffffffff7a80a RSI: 0000000000000000 RDI: 0c0000000000042b
-  RBP: ffffa59e73fabb80 R08: ffff9965ca6e8bb8 R09: 0000000000000000
-  R10: ffffffffa5a2f62d R11: 0000030b372e9fff R12: ffff997b79db5738
-  R13: 000000000000042b R14: 0c0000000000042b R15: 1ffffffffff7a80a
-  FS:  00007f549d1bb700(0000) GS:ffff99d3cf680000(0000) knlGS:0000000000000000
-  CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-  CR2: 0000440d035b3180 CR3: 0000002243176004 CR4: 00000000003706e0
-  DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-  DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
-  Call Trace:
-   <TASK>
-   change_pte_range+0x36e/0x880
-   change_p4d_range+0x2e8/0x670
-   change_protection_range+0x14e/0x2c0
-   mprotect_fixup+0x1ee/0x330
-   do_mprotect_pkey+0x34c/0x440
-   __x64_sys_mprotect+0x1d/0x30
+ arch/x86/events/intel/core.c | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/arch/x86/events/intel/core.c b/arch/x86/events/intel/core.c
+index 2db93498ff71..3b21f068fcce 100644
+--- a/arch/x86/events/intel/core.c
++++ b/arch/x86/events/intel/core.c
+@@ -6321,6 +6321,7 @@ __init int intel_pmu_init(void)
+ 	case INTEL_FAM6_ALDERLAKE_N:
+ 	case INTEL_FAM6_RAPTORLAKE:
+ 	case INTEL_FAM6_RAPTORLAKE_P:
++	case INTEL_FAM6_RAPTORLAKE_S:
+ 		/*
+ 		 * Alder Lake has 2 types of CPU, core and atom.
+ 		 *
+-- 
+2.35.1
+
