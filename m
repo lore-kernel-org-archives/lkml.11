@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3B4A4C3F6B0
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7367BC32796
 	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 10:47:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355929AbiHWKpw (ORCPT
+        id S1355977AbiHWKqE (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 06:45:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43154 "EHLO
+        Tue, 23 Aug 2022 06:46:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46718 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355308AbiHWKiJ (ORCPT
+        with ESMTP id S1355426AbiHWKiX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 06:38:09 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A4FA0A6C7D;
-        Tue, 23 Aug 2022 02:07:39 -0700 (PDT)
+        Tue, 23 Aug 2022 06:38:23 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DB3A1A720F;
+        Tue, 23 Aug 2022 02:07:45 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 37852B81C85;
-        Tue, 23 Aug 2022 09:07:38 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8313BC433D6;
-        Tue, 23 Aug 2022 09:07:36 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 3AFE5B81C65;
+        Tue, 23 Aug 2022 09:07:44 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A6F92C433C1;
+        Tue, 23 Aug 2022 09:07:42 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661245657;
-        bh=gAP38tcAj7LlaKrsijqfJ1GSUGU8jMf8tiBpQP4uIZ0=;
+        s=korg; t=1661245663;
+        bh=5Yabsf9P9O//Eym2yywOLLQ57DVHSg+BZbAaS79Jszs=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=j0uWNVLBLjlAAzwZ1tXynTuWQv0ih2b3HQPEzpY9jX75pT6d+cSeoYu9ns8sLngL1
-         NuK+B+TXs5fJjJ81BF5ftM0l24hKjR9FvFD53G3lq4JOwfdk/vOwO5OlEQNtEpbQ4C
-         Swng1G3HwUoB2MXtNgv3v9hSl5lQhtns5ob0aiPQ=
+        b=KL6NdvaMjez7UwcLEg3oYA/enpqul4I7Czn6q7dEaa7UbHCW428ZtSNdvRC+MrgZZ
+         tnZPKU3pfHoAzrtg+CFMbH1TpBMjKoHG+qiblr2J0PhrGEaA6+8Drw9xoXsx1/xnwv
+         dnWINX608e0nBx6wV4ArJ8/EwKFmpN0VVpEnNd4w=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jiasheng Jiang <jiasheng@iscas.ac.cn>,
-        Mark Brown <broonie@kernel.org>,
+        stable@vger.kernel.org,
+        Andy Shevchenko <andy.shevchenko@gmail.com>,
+        =?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.19 148/287] ASoC: codecs: da7210: add check for i2c_add_driver
-Date:   Tue, 23 Aug 2022 10:25:17 +0200
-Message-Id: <20220823080105.554865945@linuxfoundation.org>
+Subject: [PATCH 4.19 150/287] serial: 8250_dw: Store LSR into lsr_saved_flags in dw8250_tx_wait_empty()
+Date:   Tue, 23 Aug 2022 10:25:19 +0200
+Message-Id: <20220823080105.646601472@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220823080100.268827165@linuxfoundation.org>
 References: <20220823080100.268827165@linuxfoundation.org>
@@ -50,39 +51,48 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jiasheng Jiang <jiasheng@iscas.ac.cn>
+From: Ilpo Järvinen <ilpo.jarvinen@linux.intel.com>
 
-[ Upstream commit 82fa8f581a954ddeec1602bed9f8b4a09d100e6e ]
+[ Upstream commit af14f3007e2dca0d112f10f6717ba43093f74e81 ]
 
-As i2c_add_driver could return error if fails, it should be
-better to check the return value.
-However, if the CONFIG_I2C and CONFIG_SPI_MASTER are both true,
-the return value of i2c_add_driver will be covered by
-spi_register_driver.
-Therefore, it is necessary to add check and return error if fails.
+Make sure LSR flags are preserved in dw8250_tx_wait_empty(). This
+function is called from a low-level out function and therefore cannot
+call serial_lsr_in() as it would lead to infinite recursion.
 
-Fixes: aa0e25caafb7 ("ASoC: da7210: Add support for spi regmap")
-Signed-off-by: Jiasheng Jiang <jiasheng@iscas.ac.cn>
-Link: https://lore.kernel.org/r/20220531094712.2376759-1-jiasheng@iscas.ac.cn
-Signed-off-by: Mark Brown <broonie@kernel.org>
+It is borderline if the flags need to be saved here at all since this
+code relates to writing LCR register which usually implies no important
+characters should be arriving.
+
+Fixes: 914eaf935ec7 ("serial: 8250_dw: Allow TX FIFO to drain before writing to UART_LCR")
+Reviewed-by: Andy Shevchenko <andy.shevchenko@gmail.com>
+Signed-off-by: Ilpo Järvinen <ilpo.jarvinen@linux.intel.com>
+Link: https://lore.kernel.org/r/20220608095431.18376-7-ilpo.jarvinen@linux.intel.com
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- sound/soc/codecs/da7210.c | 2 ++
- 1 file changed, 2 insertions(+)
+ drivers/tty/serial/8250/8250_dw.c | 3 +++
+ 1 file changed, 3 insertions(+)
 
-diff --git a/sound/soc/codecs/da7210.c b/sound/soc/codecs/da7210.c
-index e172913d04a4..efc5049c0796 100644
---- a/sound/soc/codecs/da7210.c
-+++ b/sound/soc/codecs/da7210.c
-@@ -1333,6 +1333,8 @@ static int __init da7210_modinit(void)
- 	int ret = 0;
- #if IS_ENABLED(CONFIG_I2C)
- 	ret = i2c_add_driver(&da7210_i2c_driver);
-+	if (ret)
-+		return ret;
- #endif
- #if defined(CONFIG_SPI_MASTER)
- 	ret = spi_register_driver(&da7210_spi_driver);
+diff --git a/drivers/tty/serial/8250/8250_dw.c b/drivers/tty/serial/8250/8250_dw.c
+index c73d0eddd9b8..cc9d1f416db8 100644
+--- a/drivers/tty/serial/8250/8250_dw.c
++++ b/drivers/tty/serial/8250/8250_dw.c
+@@ -140,12 +140,15 @@ static void dw8250_check_lcr(struct uart_port *p, int value)
+ /* Returns once the transmitter is empty or we run out of retries */
+ static void dw8250_tx_wait_empty(struct uart_port *p)
+ {
++	struct uart_8250_port *up = up_to_u8250p(p);
+ 	unsigned int tries = 20000;
+ 	unsigned int delay_threshold = tries - 1000;
+ 	unsigned int lsr;
+ 
+ 	while (tries--) {
+ 		lsr = readb (p->membase + (UART_LSR << p->regshift));
++		up->lsr_saved_flags |= lsr & LSR_SAVE_FLAGS;
++
+ 		if (lsr & UART_LSR_TEMT)
+ 			break;
+ 
 -- 
 2.35.1
 
