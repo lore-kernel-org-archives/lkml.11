@@ -2,44 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3DC7DC49EC1
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 11:32:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 02805C32772
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 11:32:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357974AbiHWLcH (ORCPT
+        id S1357840AbiHWLcA (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 07:32:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38210 "EHLO
+        Tue, 23 Aug 2022 07:32:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37910 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1358070AbiHWL1P (ORCPT
+        with ESMTP id S1358024AbiHWL1I (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 07:27:15 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A5518C2EB6;
-        Tue, 23 Aug 2022 02:24:57 -0700 (PDT)
+        Tue, 23 Aug 2022 07:27:08 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B6F136DF89;
+        Tue, 23 Aug 2022 02:24:50 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 736F161298;
-        Tue, 23 Aug 2022 09:24:56 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 361FDC433C1;
-        Tue, 23 Aug 2022 09:24:54 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id D5ACD6098A;
+        Tue, 23 Aug 2022 09:24:49 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CFC13C433D6;
+        Tue, 23 Aug 2022 09:24:48 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661246695;
-        bh=/RaeS7m5dAmIU2S1dxom5JWgLdGUIw6c/w0E9WlM5zo=;
+        s=korg; t=1661246689;
+        bh=GF4TbJ1hutDZOonw/FVmEopGTSDIsLj01qpR16/WWcE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=qyhi5t+EUApExrirMXkZi6IUS88sh3zS+yS9AuZSzWgdIF+7EjxGe9pFDtXLKEX6M
-         837KpacI9JmmHNsJpZ6AT5ROiC/E8mrm7nrltNzEEIYzmZn/36kry/sIzsQa/7N6T0
-         qtjVwZPhErVJzfzLspDBydySc4Hfe/1ulULE5gZM=
+        b=i6NXa5z7gm6xzRGPSz3PVO/Y3E6ABawV0Drv3tUL2lAeRhqd9huGoQ/dxbOdI64x/
+         +ZINUwC4XVF8KgFsBdgSCoKgLI3xPcwyii1xx76v5t7hWKe46UPnQKYqCcwyAUmWla
+         h/CAh6xncFgb5Ov4yROudlgkTmXUuYKtZ1YBzsuQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org, Liang He <windhl@126.com>,
-        Robert Richter <rric@kernel.org>,
-        Ulf Hansson <ulf.hansson@linaro.org>,
+        Bartosz Golaszewski <brgl@bgdev.pl>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 190/389] mmc: cavium-thunderx: Add of_node_put() when breaking out of loop
-Date:   Tue, 23 Aug 2022 10:24:28 +0200
-Message-Id: <20220823080123.560573012@linuxfoundation.org>
+Subject: [PATCH 5.4 188/389] gpio: gpiolib-of: Fix refcount bugs in of_mm_gpiochip_add_data()
+Date:   Tue, 23 Aug 2022 10:24:26 +0200
+Message-Id: <20220823080123.494544792@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220823080115.331990024@linuxfoundation.org>
 References: <20220823080115.331990024@linuxfoundation.org>
@@ -53,38 +52,49 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Liang He <windhl@126.com>
 
-[ Upstream commit 7ee480795e41db314f2c445c65ed854a5d6e8e32 ]
+[ Upstream commit 5d07a692f9562f9c06e62cce369e9dd108173a0f ]
 
-In thunder_mmc_probe(), we should call of_node_put() when breaking
-out of for_each_child_of_node() which has increased and decreased
-the refcount during each iteration.
+We should use of_node_get() when a new reference of device_node
+is created. It is noted that the old reference stored in
+'mm_gc->gc.of_node' should also be decreased.
 
-Fixes: 166bac38c3c5 ("mmc: cavium: Add MMC PCI driver for ThunderX SOCs")
+This patch is based on the fact that there is a call site in function
+'qe_add_gpiochips()' of src file 'drivers\soc\fsl\qe\gpio.c'. In this
+function, of_mm_gpiochip_add_data() is contained in an iteration of
+for_each_compatible_node() which will automatically increase and
+decrease the refcount. So we need additional of_node_get() for the
+reference escape in of_mm_gpiochip_add_data().
+
+Fixes: a19e3da5bc5f ("of/gpio: Kill of_gpio_chip and add members directly to gpio_chip")
 Signed-off-by: Liang He <windhl@126.com>
-Acked-by: Robert Richter <rric@kernel.org>
-Link: https://lore.kernel.org/r/20220719095216.1241601-2-windhl@126.com
-Signed-off-by: Ulf Hansson <ulf.hansson@linaro.org>
+Signed-off-by: Bartosz Golaszewski <brgl@bgdev.pl>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/mmc/host/cavium-thunderx.c | 4 +++-
+ drivers/gpio/gpiolib-of.c | 4 +++-
  1 file changed, 3 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/mmc/host/cavium-thunderx.c b/drivers/mmc/host/cavium-thunderx.c
-index eee08d81b242..f79806e31e7e 100644
---- a/drivers/mmc/host/cavium-thunderx.c
-+++ b/drivers/mmc/host/cavium-thunderx.c
-@@ -138,8 +138,10 @@ static int thunder_mmc_probe(struct pci_dev *pdev,
- 				continue;
+diff --git a/drivers/gpio/gpiolib-of.c b/drivers/gpio/gpiolib-of.c
+index b1dcd2dd52e6..73807c897391 100644
+--- a/drivers/gpio/gpiolib-of.c
++++ b/drivers/gpio/gpiolib-of.c
+@@ -734,7 +734,8 @@ int of_mm_gpiochip_add_data(struct device_node *np,
+ 	if (mm_gc->save_regs)
+ 		mm_gc->save_regs(mm_gc);
  
- 			ret = cvm_mmc_of_slot_probe(&host->slot_pdev[i]->dev, host);
--			if (ret)
-+			if (ret) {
-+				of_node_put(child_node);
- 				goto error;
-+			}
- 		}
- 		i++;
- 	}
+-	mm_gc->gc.of_node = np;
++	of_node_put(mm_gc->gc.of_node);
++	mm_gc->gc.of_node = of_node_get(np);
+ 
+ 	ret = gpiochip_add_data(gc, data);
+ 	if (ret)
+@@ -742,6 +743,7 @@ int of_mm_gpiochip_add_data(struct device_node *np,
+ 
+ 	return 0;
+ err2:
++	of_node_put(np);
+ 	iounmap(mm_gc->regs);
+ err1:
+ 	kfree(gc->label);
 -- 
 2.35.1
 
