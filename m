@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7ECA6C32772
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 11:12:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7F493C32772
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 11:12:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242919AbiHWLMl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 07:12:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49322 "EHLO
+        id S1357214AbiHWLMr (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 23 Aug 2022 07:12:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52570 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351349AbiHWLIs (ORCPT
+        with ESMTP id S1357151AbiHWLIt (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 07:08:48 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2CF88B5E7C;
-        Tue, 23 Aug 2022 02:16:33 -0700 (PDT)
+        Tue, 23 Aug 2022 07:08:49 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 504D387688;
+        Tue, 23 Aug 2022 02:16:30 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id EF89461224;
-        Tue, 23 Aug 2022 09:16:28 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E7D48C433D6;
-        Tue, 23 Aug 2022 09:16:27 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 160D8B8105C;
+        Tue, 23 Aug 2022 09:16:17 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 779CEC433D6;
+        Tue, 23 Aug 2022 09:16:15 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661246188;
-        bh=mpEHv+2osM9qlxR5+ep/wk80+Y9tSPcDK7YRuosmWwk=;
+        s=korg; t=1661246175;
+        bh=/LXsrzw1yxQGL9b1Zmq8Ccx2wUQqoyNaeI0G2abhPFo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=FbW6uDDdl0Zjyp15PjYde+7Ejp++SInzna31s1eTR4JsrxAOuZfdt7Wa4a4iJ+wpR
-         /EbzSkEyTtL2hE0Xj3vAgm/wgSXYUlYgocs7lGVn6YrXJH/02Wy5oETSHDJwrX4f4z
-         u0Eeletld5e9xzh8eaaElg2awb2JbY2FLv4MziUI=
+        b=HG0NmLXPjVZdncWQkK7z6ux8njlUE33uYSn2bZ/L5GmjUnIH06lhYtyR6b5mDrsv8
+         +YbiKiMH7m82BYZoJMYVn6XtHjfF8kAFsDU2AImSMuzD4klzM0Qq25O+MPDKtlnkOb
+         hhzkLjrgteehUjYNRNQCfGtDPq5SkT6IINmutAug=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Sasha Neftin <sasha.neftin@intel.com>,
-        Dvora Fuxbrumer <dvorax.fuxbrumer@linux.intel.com>,
-        Tony Nguyen <anthony.l.nguyen@intel.com>,
-        Linjun Bao <meljbao@gmail.com>
-Subject: [PATCH 5.4 005/389] igc: Remove _I_PHY_ID checking
-Date:   Tue, 23 Aug 2022 10:21:23 +0200
-Message-Id: <20220823080115.865660221@linuxfoundation.org>
+        stable@vger.kernel.org, Di Shen <di.shen@unisoc.com>,
+        "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>
+Subject: [PATCH 5.4 025/389] thermal: sysfs: Fix cooling_device_stats_setup() error code path
+Date:   Tue, 23 Aug 2022 10:21:43 +0200
+Message-Id: <20220823080116.750336144@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220823080115.331990024@linuxfoundation.org>
 References: <20220823080115.331990024@linuxfoundation.org>
@@ -50,77 +49,69 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Sasha Neftin <sasha.neftin@intel.com>
+From: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
 
-commit 7c496de538eebd8212dc2a3c9a468386b264d0d4 upstream.
+commit d5a8aa5d7d80d21ab6b266f1bed4194b61746199 upstream.
 
-i225 devices have only one PHY vendor. There is no point checking
-_I_PHY_ID during the link establishment and auto-negotiation process.
-This patch comes to clean up these pointless checkings.
+If cooling_device_stats_setup() fails to create the stats object, it
+must clear the last slot in cooling_device_attr_groups that was
+initially empty (so as to make it possible to add stats attributes to
+the cooling device attribute groups).
 
-Signed-off-by: Sasha Neftin <sasha.neftin@intel.com>
-Tested-by: Dvora Fuxbrumer <dvorax.fuxbrumer@linux.intel.com>
-Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
-Cc: Linjun Bao <meljbao@gmail.com>
+Failing to do so may cause the stats attributes to be created by
+mistake for a device that doesn't have a stats object, because the
+slot in question might be populated previously during the registration
+of another cooling device.
+
+Fixes: 8ea229511e06 ("thermal: Add cooling device's statistics in sysfs")
+Reported-by: Di Shen <di.shen@unisoc.com>
+Tested-by: Di Shen <di.shen@unisoc.com>
+Cc: 4.17+ <stable@vger.kernel.org> # 4.17+
+Signed-off-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/net/ethernet/intel/igc/igc_base.c |   10 +---------
- drivers/net/ethernet/intel/igc/igc_main.c |    3 +--
- drivers/net/ethernet/intel/igc/igc_phy.c  |    6 ++----
- 3 files changed, 4 insertions(+), 15 deletions(-)
+ drivers/thermal/thermal_sysfs.c |   10 +++++++---
+ 1 file changed, 7 insertions(+), 3 deletions(-)
 
---- a/drivers/net/ethernet/intel/igc/igc_base.c
-+++ b/drivers/net/ethernet/intel/igc/igc_base.c
-@@ -187,15 +187,7 @@ static s32 igc_init_phy_params_base(stru
+--- a/drivers/thermal/thermal_sysfs.c
++++ b/drivers/thermal/thermal_sysfs.c
+@@ -909,12 +909,13 @@ static const struct attribute_group cool
  
- 	igc_check_for_copper_link(hw);
+ static void cooling_device_stats_setup(struct thermal_cooling_device *cdev)
+ {
++	const struct attribute_group *stats_attr_group = NULL;
+ 	struct cooling_dev_stats *stats;
+ 	unsigned long states;
+ 	int var;
  
--	/* Verify phy id and set remaining function pointers */
--	switch (phy->id) {
--	case I225_I_PHY_ID:
--		phy->type	= igc_phy_i225;
--		break;
--	default:
--		ret_val = -IGC_ERR_PHY;
--		goto out;
--	}
-+	phy->type = igc_phy_i225;
+ 	if (cdev->ops->get_max_state(cdev, &states))
+-		return;
++		goto out;
  
- out:
- 	return ret_val;
---- a/drivers/net/ethernet/intel/igc/igc_main.c
-+++ b/drivers/net/ethernet/intel/igc/igc_main.c
-@@ -2884,8 +2884,7 @@ bool igc_has_link(struct igc_adapter *ad
- 		break;
- 	}
+ 	states++; /* Total number of states is highest state + 1 */
  
--	if (hw->mac.type == igc_i225 &&
--	    hw->phy.id == I225_I_PHY_ID) {
-+	if (hw->mac.type == igc_i225) {
- 		if (!netif_carrier_ok(adapter->netdev)) {
- 			adapter->flags &= ~IGC_FLAG_NEED_LINK_UPDATE;
- 		} else if (!(adapter->flags & IGC_FLAG_NEED_LINK_UPDATE)) {
---- a/drivers/net/ethernet/intel/igc/igc_phy.c
-+++ b/drivers/net/ethernet/intel/igc/igc_phy.c
-@@ -235,8 +235,7 @@ static s32 igc_phy_setup_autoneg(struct
- 			return ret_val;
- 	}
+@@ -924,7 +925,7 @@ static void cooling_device_stats_setup(s
  
--	if ((phy->autoneg_mask & ADVERTISE_2500_FULL) &&
--	    hw->phy.id == I225_I_PHY_ID) {
-+	if (phy->autoneg_mask & ADVERTISE_2500_FULL) {
- 		/* Read the MULTI GBT AN Control Register - reg 7.32 */
- 		ret_val = phy->ops.read_reg(hw, (STANDARD_AN_REG_MASK <<
- 					    MMD_DEVADDR_SHIFT) |
-@@ -376,8 +375,7 @@ static s32 igc_phy_setup_autoneg(struct
- 		ret_val = phy->ops.write_reg(hw, PHY_1000T_CTRL,
- 					     mii_1000t_ctrl_reg);
+ 	stats = kzalloc(var, GFP_KERNEL);
+ 	if (!stats)
+-		return;
++		goto out;
  
--	if ((phy->autoneg_mask & ADVERTISE_2500_FULL) &&
--	    hw->phy.id == I225_I_PHY_ID)
-+	if (phy->autoneg_mask & ADVERTISE_2500_FULL)
- 		ret_val = phy->ops.write_reg(hw,
- 					     (STANDARD_AN_REG_MASK <<
- 					     MMD_DEVADDR_SHIFT) |
+ 	stats->time_in_state = (ktime_t *)(stats + 1);
+ 	stats->trans_table = (unsigned int *)(stats->time_in_state + states);
+@@ -934,9 +935,12 @@ static void cooling_device_stats_setup(s
+ 
+ 	spin_lock_init(&stats->lock);
+ 
++	stats_attr_group = &cooling_device_stats_attr_group;
++
++out:
+ 	/* Fill the empty slot left in cooling_device_attr_groups */
+ 	var = ARRAY_SIZE(cooling_device_attr_groups) - 2;
+-	cooling_device_attr_groups[var] = &cooling_device_stats_attr_group;
++	cooling_device_attr_groups[var] = stats_attr_group;
+ }
+ 
+ static void cooling_device_stats_destroy(struct thermal_cooling_device *cdev)
 
 
