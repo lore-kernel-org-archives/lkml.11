@@ -2,41 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3D0E8C32772
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7C69BC32792
 	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 08:36:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244188AbiHWIfX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 04:35:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35128 "EHLO
+        id S1344413AbiHWIf3 (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 23 Aug 2022 04:35:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60694 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347221AbiHWIcR (ORCPT
+        with ESMTP id S1347254AbiHWIcS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 04:32:17 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7DEA06DF80;
-        Tue, 23 Aug 2022 01:16:23 -0700 (PDT)
+        Tue, 23 Aug 2022 04:32:18 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AEAE4FEF;
+        Tue, 23 Aug 2022 01:16:26 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 97ADF6132D;
-        Tue, 23 Aug 2022 08:15:45 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 96DA1C433D6;
-        Tue, 23 Aug 2022 08:15:44 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id CCBF4B81C36;
+        Tue, 23 Aug 2022 08:16:25 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3E957C433C1;
+        Tue, 23 Aug 2022 08:16:24 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661242545;
-        bh=FRJzzAnCaxoDotjb7MHc+PSZZr5SJZD7UjAEYcm83gc=;
+        s=korg; t=1661242584;
+        bh=j3Uq1S6p1wxJpc6tFreDzh8tlF7KqJESrAe7E/cF9bg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Q8CG2NM3bOSpRTK7/FJEgVnuwXJOvuUTj5ke1cH5YKz90stVVw3O2mesLaaIsej8W
-         iAsGAFrgVlPwzqUb+JmOC18i0H/0smNPc3Lr4bTu77skVfwOpdp6zSY/jtNS3Nc58c
-         4sKTaatbyXavj4wxl31012flgEwcZstRYta4TuOk=
+        b=XEfW3uGWgZC8JSvw8Hs5+lLI8uPWiORQw7fyFZ/YKLrdlBt8Y47cY+U8G2w8DUU9t
+         w8YAjr96vBF4x7CS927PKegBVc48Pzj7aVnVu7P3GIX0AI2/NBnITaHLPbeJA3lzEn
+         Ic2/k+Mn9ZPo7FqGE3cIPuEGLyJ3b+vv2PsqZJck=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jozef Martiniak <jomajm@gmail.com>,
+        stable@vger.kernel.org, Schspa Shi <schspa@gmail.com>,
+        Cornelia Huck <cohuck@redhat.com>,
+        Alex Williamson <alex.williamson@redhat.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.9 089/101] gadgetfs: ep_io - wait until IRQ finishes
-Date:   Tue, 23 Aug 2022 10:04:02 +0200
-Message-Id: <20220823080037.947955274@linuxfoundation.org>
+Subject: [PATCH 4.9 095/101] vfio: Clear the caps->buf to NULL after free
+Date:   Tue, 23 Aug 2022 10:04:08 +0200
+Message-Id: <20220823080038.199805303@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220823080034.579196046@linuxfoundation.org>
 References: <20220823080034.579196046@linuxfoundation.org>
@@ -48,35 +51,36 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jozef Martiniak <jomajm@gmail.com>
+From: Schspa Shi <schspa@gmail.com>
 
-[ Upstream commit 04cb742d4d8f30dc2e83b46ac317eec09191c68e ]
+[ Upstream commit 6641085e8d7b3f061911517f79a2a15a0a21b97b ]
 
-after usb_ep_queue() if wait_for_completion_interruptible() is
-interrupted we need to wait until IRQ gets finished.
+On buffer resize failure, vfio_info_cap_add() will free the buffer,
+report zero for the size, and return -ENOMEM.  As additional
+hardening, also clear the buffer pointer to prevent any chance of a
+double free.
 
-Otherwise complete() from epio_complete() can corrupt stack.
-
-Signed-off-by: Jozef Martiniak <jomajm@gmail.com>
-Link: https://lore.kernel.org/r/20220708070645.6130-1-jomajm@gmail.com
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Schspa Shi <schspa@gmail.com>
+Reviewed-by: Cornelia Huck <cohuck@redhat.com>
+Link: https://lore.kernel.org/r/20220629022948.55608-1-schspa@gmail.com
+Signed-off-by: Alex Williamson <alex.williamson@redhat.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/usb/gadget/legacy/inode.c | 1 +
+ drivers/vfio/vfio.c | 1 +
  1 file changed, 1 insertion(+)
 
-diff --git a/drivers/usb/gadget/legacy/inode.c b/drivers/usb/gadget/legacy/inode.c
-index 2b30b5a1b577..8d53b3ac31c6 100644
---- a/drivers/usb/gadget/legacy/inode.c
-+++ b/drivers/usb/gadget/legacy/inode.c
-@@ -365,6 +365,7 @@ ep_io (struct ep_data *epdata, void *buf, unsigned len)
- 				spin_unlock_irq (&epdata->dev->lock);
- 
- 				DBG (epdata->dev, "endpoint gone\n");
-+				wait_for_completion(&done);
- 				epdata->status = -ENODEV;
- 			}
- 		}
+diff --git a/drivers/vfio/vfio.c b/drivers/vfio/vfio.c
+index 881fc3a55edc..5798965f42b5 100644
+--- a/drivers/vfio/vfio.c
++++ b/drivers/vfio/vfio.c
+@@ -1793,6 +1793,7 @@ struct vfio_info_cap_header *vfio_info_cap_add(struct vfio_info_cap *caps,
+ 	buf = krealloc(caps->buf, caps->size + size, GFP_KERNEL);
+ 	if (!buf) {
+ 		kfree(caps->buf);
++		caps->buf = NULL;
+ 		caps->size = 0;
+ 		return ERR_PTR(-ENOMEM);
+ 	}
 -- 
 2.35.1
 
