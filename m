@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 87210C32772
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 11:43:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 90343C32772
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 11:43:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358101AbiHWLnb (ORCPT
+        id S1358075AbiHWLnh (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 07:43:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59108 "EHLO
+        Tue, 23 Aug 2022 07:43:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58432 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352185AbiHWLi7 (ORCPT
+        with ESMTP id S1357885AbiHWLjd (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 07:38:59 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 54C58AE5D;
-        Tue, 23 Aug 2022 02:28:29 -0700 (PDT)
+        Tue, 23 Aug 2022 07:39:33 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3E71A6F55D;
+        Tue, 23 Aug 2022 02:28:34 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id E85C5B81C97;
-        Tue, 23 Aug 2022 09:28:23 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 245F6C433C1;
-        Tue, 23 Aug 2022 09:28:21 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 2665EB81C66;
+        Tue, 23 Aug 2022 09:28:33 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 56230C433C1;
+        Tue, 23 Aug 2022 09:28:31 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661246902;
-        bh=K+xC2B7yXHKQSBu1Ps72dpcme431uHzv0qF71KFVKdo=;
+        s=korg; t=1661246911;
+        bh=xwMDHTFnMLKH4+U7KF18c69Qbn3zdxCc6asbHfolpLg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=pMU4OTsTQyv2UGvuvhdPEF7+BUmWBlVnXcYdxZ+wRAiLeaUt5F4Wt07YkP3f8WQQO
-         smc/5u7uC7Sy6edzG7hKrugAlGFnxIXyARz2w2Blov12j2cM98zNR7x8ajX25VkdAt
-         8lZDPVpe9pKAs0vf5++5Ip09BzKuZi6C1OnvOXGg=
+        b=RCY7DVprYVpscYjhfT51AJt6Kwqd5/3hcaWqHSCbceKXPX2ZcKOI8mwvO4/BjQzip
+         uO2RoaQ61rm6YdF0nvPCSfu5+WhuHoNiPfERD1OQo47nivwC/QKaREtVQhnqLBVViR
+         Z4u1Ybxod2mGHKKSnnIL3qVsvio8+jcw8fOzyAHY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Filipe Manana <fdmanana@suse.com>,
-        Josef Bacik <josef@toxicpanda.com>,
-        David Sterba <dsterba@suse.com>
-Subject: [PATCH 5.4 256/389] btrfs: reset block group chunk force if we have to wait
-Date:   Tue, 23 Aug 2022 10:25:34 +0200
-Message-Id: <20220823080126.299999279@linuxfoundation.org>
+        stable@vger.kernel.org, Baokun Li <libaokun1@huawei.com>,
+        Jan Kara <jack@suse.cz>,
+        "Ritesh Harjani (IBM)" <ritesh.list@gmail.com>,
+        Theodore Tso <tytso@mit.edu>
+Subject: [PATCH 5.4 257/389] ext4: add EXT4_INODE_HAS_XATTR_SPACE macro in xattr.h
+Date:   Tue, 23 Aug 2022 10:25:35 +0200
+Message-Id: <20220823080126.331222029@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220823080115.331990024@linuxfoundation.org>
 References: <20220823080115.331990024@linuxfoundation.org>
@@ -50,37 +51,45 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Josef Bacik <josef@toxicpanda.com>
+From: Baokun Li <libaokun1@huawei.com>
 
-commit 1314ca78b2c35d3e7d0f097268a2ee6dc0d369ef upstream.
+commit 179b14152dcb6a24c3415200603aebca70ff13af upstream.
 
-If you try to force a chunk allocation, but you race with another chunk
-allocation, you will end up waiting on the chunk allocation that just
-occurred and then allocate another chunk.  If you have many threads all
-doing this at once you can way over-allocate chunks.
+When adding an xattr to an inode, we must ensure that the inode_size is
+not less than EXT4_GOOD_OLD_INODE_SIZE + extra_isize + pad. Otherwise,
+the end position may be greater than the start position, resulting in UAF.
 
-Fix this by resetting force to NO_FORCE, that way if we think we need to
-allocate we can, otherwise we don't force another chunk allocation if
-one is already happening.
-
-Reviewed-by: Filipe Manana <fdmanana@suse.com>
-CC: stable@vger.kernel.org # 5.4+
-Signed-off-by: Josef Bacik <josef@toxicpanda.com>
-Signed-off-by: David Sterba <dsterba@suse.com>
+Signed-off-by: Baokun Li <libaokun1@huawei.com>
+Reviewed-by: Jan Kara <jack@suse.cz>
+Reviewed-by: Ritesh Harjani (IBM) <ritesh.list@gmail.com>
+Link: https://lore.kernel.org/r/20220616021358.2504451-2-libaokun1@huawei.com
+Signed-off-by: Theodore Ts'o <tytso@mit.edu>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- fs/btrfs/block-group.c |    1 +
- 1 file changed, 1 insertion(+)
+ fs/ext4/xattr.h |   13 +++++++++++++
+ 1 file changed, 13 insertions(+)
 
---- a/fs/btrfs/block-group.c
-+++ b/fs/btrfs/block-group.c
-@@ -2938,6 +2938,7 @@ int btrfs_chunk_alloc(struct btrfs_trans
- 			 * attempt.
- 			 */
- 			wait_for_alloc = true;
-+			force = CHUNK_ALLOC_NO_FORCE;
- 			spin_unlock(&space_info->lock);
- 			mutex_lock(&fs_info->chunk_mutex);
- 			mutex_unlock(&fs_info->chunk_mutex);
+--- a/fs/ext4/xattr.h
++++ b/fs/ext4/xattr.h
+@@ -95,6 +95,19 @@ struct ext4_xattr_entry {
+ 
+ #define EXT4_ZERO_XATTR_VALUE ((void *)-1)
+ 
++/*
++ * If we want to add an xattr to the inode, we should make sure that
++ * i_extra_isize is not 0 and that the inode size is not less than
++ * EXT4_GOOD_OLD_INODE_SIZE + extra_isize + pad.
++ *   EXT4_GOOD_OLD_INODE_SIZE   extra_isize header   entry   pad  data
++ * |--------------------------|------------|------|---------|---|-------|
++ */
++#define EXT4_INODE_HAS_XATTR_SPACE(inode)				\
++	((EXT4_I(inode)->i_extra_isize != 0) &&				\
++	 (EXT4_GOOD_OLD_INODE_SIZE + EXT4_I(inode)->i_extra_isize +	\
++	  sizeof(struct ext4_xattr_ibody_header) + EXT4_XATTR_PAD <=	\
++	  EXT4_INODE_SIZE((inode)->i_sb)))
++
+ struct ext4_xattr_info {
+ 	const char *name;
+ 	const void *value;
 
 
