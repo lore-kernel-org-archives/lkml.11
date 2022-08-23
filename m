@@ -2,41 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EE22DC32772
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 08:45:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 78FFBC32772
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 08:45:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243313AbiHWIo6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 04:44:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60502 "EHLO
+        id S240545AbiHWIpP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 23 Aug 2022 04:45:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32996 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345004AbiHWImN (ORCPT
+        with ESMTP id S1347018AbiHWInR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 04:42:13 -0400
+        Tue, 23 Aug 2022 04:43:17 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 09D0161722;
-        Tue, 23 Aug 2022 01:20:35 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A14F37B28D;
+        Tue, 23 Aug 2022 01:20:46 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 5C27C61212;
-        Tue, 23 Aug 2022 08:19:37 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5C3DCC433C1;
-        Tue, 23 Aug 2022 08:19:36 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 2FDDE61347;
+        Tue, 23 Aug 2022 08:19:49 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3FC14C433D6;
+        Tue, 23 Aug 2022 08:19:48 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661242776;
-        bh=KUI2cN9pa6NkqKzcH5G8VxQkrWLwmBFwrdOxH167Smo=;
+        s=korg; t=1661242788;
+        bh=EkgEL8VNg3xEP7YC4/zdUsjn0OhSMPb/3b8UAiUZx84=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ifXsTVpBdqOD/x62nbeL59BfCRuDBOmCMDdJLXNzz7H4Y+sAA9rhTfPsdpnGDzusF
-         GMr0glUW7Sh2N6lasBHL3dKmYtGHN6/UDlFVYBwZaD0/9+7gvvvayJIZNfYh6hC57N
-         UoMPI+5HbPoTwTPhdqZc9LJDcshZQ8AA/D5AmhJQ=
+        b=byYYsYGCHVyOg33WUQSBzZmpLgFDbrD0ReTMaXvj4KvcZDlDyIeKF8v9L0YRZYHCe
+         C6Iv1eaO+QbkmF0MQtwrDp8udsXyw4rR7/ePbl2sPGcOxJ18PKia6jO/SWiAS+w3Zk
+         Y6hxU+yP0OM1uruX/QhY4lMv5N34YoAai7fBLBbw=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Florian Westphal <fw@strlen.de>,
-        Pablo Neira Ayuso <pablo@netfilter.org>
-Subject: [PATCH 5.19 195/365] netfilter: nf_ct_irc: cap packet search space to 4k
-Date:   Tue, 23 Aug 2022 10:01:36 +0200
-Message-Id: <20220823080126.378613262@linuxfoundation.org>
+        stable@vger.kernel.org, Al Viro <viro@zeniv.linux.org.uk>,
+        Dinh Nguyen <dinguyen@kernel.org>
+Subject: [PATCH 5.19 167/365] nios2: dont leave NULLs in sys_call_table[]
+Date:   Tue, 23 Aug 2022 10:01:08 +0200
+Message-Id: <20220823080125.196317360@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220823080118.128342613@linuxfoundation.org>
 References: <20220823080118.128342613@linuxfoundation.org>
@@ -48,84 +48,39 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Florian Westphal <fw@strlen.de>
+From: Al Viro <viro@zeniv.linux.org.uk>
 
-commit 976bf59c69cd2e2c17f0ab20a14c0e700cba0f15 upstream.
+commit 45ec746c65097c25e77d24eae8fee0def5b6cc5d upstream.
 
-This uses a pseudo-linearization scheme with a 64k global buffer,
-but BIG TCP arrival means IPv6 TCP stack can generate skbs
-that exceed this size.
+fill the gaps in there with sys_ni_syscall, as everyone does...
 
-In practice, IRC commands are not expected to exceed 512 bytes, plus
-this is interactive protocol, so we should not see large packets
-in practice.
-
-Given most IRC connections nowadays use TLS so this helper could also be
-removed in the near future.
-
-Fixes: 7c4e983c4f3c ("net: allow gso_max_size to exceed 65536")
-Fixes: 0fe79f28bfaf ("net: allow gro_max_size to exceed 65536")
-Signed-off-by: Florian Westphal <fw@strlen.de>
-Signed-off-by: Pablo Neira Ayuso <pablo@netfilter.org>
+Fixes: 82ed08dd1b0e ("nios2: Exception handling")
+Signed-off-by: Al Viro <viro@zeniv.linux.org.uk>
+Signed-off-by: Dinh Nguyen <dinguyen@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- net/netfilter/nf_conntrack_irc.c | 12 +++++++++---
- 1 file changed, 9 insertions(+), 3 deletions(-)
+ arch/nios2/kernel/entry.S         |    1 -
+ arch/nios2/kernel/syscall_table.c |    1 +
+ 2 files changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/net/netfilter/nf_conntrack_irc.c b/net/netfilter/nf_conntrack_irc.c
-index 08ee4e760a3d..1796c456ac98 100644
---- a/net/netfilter/nf_conntrack_irc.c
-+++ b/net/netfilter/nf_conntrack_irc.c
-@@ -39,6 +39,7 @@ unsigned int (*nf_nat_irc_hook)(struct sk_buff *skb,
- EXPORT_SYMBOL_GPL(nf_nat_irc_hook);
+--- a/arch/nios2/kernel/entry.S
++++ b/arch/nios2/kernel/entry.S
+@@ -193,7 +193,6 @@ local_restart:
+ 	movhi	r11, %hiadj(sys_call_table)
+ 	add	r1, r1, r11
+ 	ldw	r1, %lo(sys_call_table)(r1)
+-	beq	r1, r0, ret_invsyscall
  
- #define HELPER_NAME "irc"
-+#define MAX_SEARCH_SIZE	4095
+ 	/* Check if we are being traced */
+ 	GET_THREAD_INFO r11
+--- a/arch/nios2/kernel/syscall_table.c
++++ b/arch/nios2/kernel/syscall_table.c
+@@ -13,5 +13,6 @@
+ #define __SYSCALL(nr, call) [nr] = (call),
  
- MODULE_AUTHOR("Harald Welte <laforge@netfilter.org>");
- MODULE_DESCRIPTION("IRC (DCC) connection tracking helper");
-@@ -121,6 +122,7 @@ static int help(struct sk_buff *skb, unsigned int protoff,
- 	int i, ret = NF_ACCEPT;
- 	char *addr_beg_p, *addr_end_p;
- 	typeof(nf_nat_irc_hook) nf_nat_irc;
-+	unsigned int datalen;
- 
- 	/* If packet is coming from IRC server */
- 	if (dir == IP_CT_DIR_REPLY)
-@@ -140,8 +142,12 @@ static int help(struct sk_buff *skb, unsigned int protoff,
- 	if (dataoff >= skb->len)
- 		return NF_ACCEPT;
- 
-+	datalen = skb->len - dataoff;
-+	if (datalen > MAX_SEARCH_SIZE)
-+		datalen = MAX_SEARCH_SIZE;
-+
- 	spin_lock_bh(&irc_buffer_lock);
--	ib_ptr = skb_header_pointer(skb, dataoff, skb->len - dataoff,
-+	ib_ptr = skb_header_pointer(skb, dataoff, datalen,
- 				    irc_buffer);
- 	if (!ib_ptr) {
- 		spin_unlock_bh(&irc_buffer_lock);
-@@ -149,7 +155,7 @@ static int help(struct sk_buff *skb, unsigned int protoff,
- 	}
- 
- 	data = ib_ptr;
--	data_limit = ib_ptr + skb->len - dataoff;
-+	data_limit = ib_ptr + datalen;
- 
- 	/* strlen("\1DCC SENT t AAAAAAAA P\1\n")=24
- 	 * 5+MINMATCHLEN+strlen("t AAAAAAAA P\1\n")=14 */
-@@ -251,7 +257,7 @@ static int __init nf_conntrack_irc_init(void)
- 	irc_exp_policy.max_expected = max_dcc_channels;
- 	irc_exp_policy.timeout = dcc_timeout;
- 
--	irc_buffer = kmalloc(65536, GFP_KERNEL);
-+	irc_buffer = kmalloc(MAX_SEARCH_SIZE + 1, GFP_KERNEL);
- 	if (!irc_buffer)
- 		return -ENOMEM;
- 
--- 
-2.37.2
-
+ void *sys_call_table[__NR_syscalls] = {
++	[0 ... __NR_syscalls-1] = sys_ni_syscall,
+ #include <asm/unistd.h>
+ };
 
 
