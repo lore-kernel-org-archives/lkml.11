@@ -2,152 +2,244 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F32FEC38145
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 11:56:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 32D0FC48BEA
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 11:56:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1359055AbiHWL4H (ORCPT
+        id S1359170AbiHWL4U (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 07:56:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34974 "EHLO
+        Tue, 23 Aug 2022 07:56:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35518 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1358459AbiHWLwb (ORCPT
+        with ESMTP id S1358700AbiHWLw6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 07:52:31 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0643A1CFCE;
-        Tue, 23 Aug 2022 02:32:44 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id A9B58B81C4B;
-        Tue, 23 Aug 2022 09:32:42 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 030C7C43149;
-        Tue, 23 Aug 2022 09:32:40 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661247161;
-        bh=zhu1T9zcaG1eb+/a5Tgb4CKFR0EPSiq+lQRFbBpBptc=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=DKG0ldaZKlJ5JIdWnQAaxlIqpo1h2ci/Ljg7Fi7bATWz29S2vtcUOyhvuC3OxXrrp
-         pda09MHubADSYAVCoARs+KbtLQ5XtqDbniBsYNkNw62+U/XSkkvof7+T09L7VO8kUP
-         Lz8Mgcm3jjPIFcVNR4c8NeDf01ppc48K0Pm0Xz1Y=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Guenter Roeck <linux@roeck-us.net>,
-        Michael Ellerman <mpe@ellerman.id.au>
-Subject: [PATCH 5.4 338/389] powerpc/pci: Fix get_phb_number() locking
-Date:   Tue, 23 Aug 2022 10:26:56 +0200
-Message-Id: <20220823080129.637306382@linuxfoundation.org>
+        Tue, 23 Aug 2022 07:52:58 -0400
+Received: from mail-pf1-x42c.google.com (mail-pf1-x42c.google.com [IPv6:2607:f8b0:4864:20::42c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F3960D59A7;
+        Tue, 23 Aug 2022 02:33:04 -0700 (PDT)
+Received: by mail-pf1-x42c.google.com with SMTP id p9so11852422pfq.13;
+        Tue, 23 Aug 2022 02:33:04 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:from:to:cc;
+        bh=/IKVzfhBQXEpapBjo70h6YuHbpTsL9mny3LHoRffMJs=;
+        b=FZnyOdE08/dlPRvpgom/0NDmrRE8eCsvTigdBVJpLqkOFIqIHAGsbM/UkMSiJJVvA0
+         6+2jt2IzlwbPGX8z2DAZEE+20fnE+yqR3312eUjFDr4uGrHNaWFPTFGf+NaAmdFgZtkw
+         Gci9cc7sjc21GJeE/WgBnjrnvwDl16b9Q/CtmbdlAvHgk/HOLuR3pOUIQQurh+2CzE8q
+         0IISZ1+L+8tbGh0VKWDtGkOSTGex7OsQ7CtM/FwoW6rej0aVaspiO7XVnN1CvD1znr9l
+         eMidWn/4QPuB8RkvVlwNv5HNqKLpko64lhOC2PxSiuvJi1pwi9CSf4qqA2i3oSBc1Lqc
+         yXGg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc;
+        bh=/IKVzfhBQXEpapBjo70h6YuHbpTsL9mny3LHoRffMJs=;
+        b=WVFfMKdMKYGoKVKkKOKeJNSC+ysephMgSE7zQbZFSQ9U2k4cIWDNOL0P8hPvmykfUI
+         5TahmKW5Tqka+qIuBD/lfEbLRAR1sSGwJJlu3fZo2gTBlil30yBkUHAWe2CV8IGzKYlX
+         yAdsdI7P2Pyy9qVOWKDfYhooJJuvKTJOXlJ49w9bjYPDyj24s/aqC6G5nqJWPqiJAgwr
+         XUuCel4hXeynpwoIOJJQ8rxWn9zVWDSDCqzB4GqwGh2tf4wJij+Ek+4KqbcNMA/kIhG6
+         IeOG9vHdN9mqs0a8irDj9CBVWtPxoza7vMMse6meFzViL03V8RUmDqT/d4PMA76rQxOx
+         eSOA==
+X-Gm-Message-State: ACgBeo3bAPwQp8krqcKcEDsN7aT1CvVzzeTTFwBCUqPXUZkJMiaaksGh
+        tHvYWeyWRTi/5DnlM2NcmG0=
+X-Google-Smtp-Source: AA6agR7vZf0um13O/sGVqgfT8zI+7tCAywQiXHqFbDS2ImQPFFukABtRQjPXXgbogJ+X5X3lzen2tw==
+X-Received: by 2002:a05:6a00:1a44:b0:52a:ecd5:bbef with SMTP id h4-20020a056a001a4400b0052aecd5bbefmr24021554pfv.28.1661247180774;
+        Tue, 23 Aug 2022 02:33:00 -0700 (PDT)
+Received: from localhost.localdomain ([103.7.29.32])
+        by smtp.gmail.com with ESMTPSA id 13-20020a170902c24d00b0017297a6b39dsm10057212plg.265.2022.08.23.02.32.58
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 23 Aug 2022 02:33:00 -0700 (PDT)
+From:   Like Xu <like.xu.linux@gmail.com>
+X-Google-Original-From: Like Xu <likexu@tencent.com>
+To:     Sean Christopherson <seanjc@google.com>,
+        Paolo Bonzini <pbonzini@redhat.com>
+Cc:     Jim Mattson <jmattson@google.com>, linux-kernel@vger.kernel.org,
+        kvm@vger.kernel.org
+Subject: [PATCH RESEND v2 8/8] KVM: x86/svm/pmu: Rewrite get_gp_pmc_amd() for more counters scalability
+Date:   Tue, 23 Aug 2022 17:32:21 +0800
+Message-Id: <20220823093221.38075-9-likexu@tencent.com>
 X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220823080115.331990024@linuxfoundation.org>
-References: <20220823080115.331990024@linuxfoundation.org>
-User-Agent: quilt/0.67
+In-Reply-To: <20220823093221.38075-1-likexu@tencent.com>
+References: <20220823093221.38075-1-likexu@tencent.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Michael Ellerman <mpe@ellerman.id.au>
+From: Like Xu <likexu@tencent.com>
 
-commit 8d48562a2729742f767b0fdd994d6b2a56a49c63 upstream.
+If the number of AMD gp counters continues to grow, the code will
+be very clumsy and the switch-case design of inline get_gp_pmc_amd()
+will also bloat the kernel text size.
 
-The recent change to get_phb_number() causes a DEBUG_ATOMIC_SLEEP
-warning on some systems:
+The target code is taught to manage two groups of MSRs, each
+representing a different version of the AMD PMU counter MSRs.
+The MSR addresses of each group are contiguous, with no holes,
+and there is no intersection between two sets of addresses,
+but they are discrete in functionality by design like this:
 
-  BUG: sleeping function called from invalid context at kernel/locking/mutex.c:580
-  in_atomic(): 1, irqs_disabled(): 0, non_block: 0, pid: 1, name: swapper
-  preempt_count: 1, expected: 0
-  RCU nest depth: 0, expected: 0
-  1 lock held by swapper/1:
-   #0: c157efb0 (hose_spinlock){+.+.}-{2:2}, at: pcibios_alloc_controller+0x64/0x220
-  Preemption disabled at:
-  [<00000000>] 0x0
-  CPU: 0 PID: 1 Comm: swapper Not tainted 5.19.0-yocto-standard+ #1
-  Call Trace:
-  [d101dc90] [c073b264] dump_stack_lvl+0x50/0x8c (unreliable)
-  [d101dcb0] [c0093b70] __might_resched+0x258/0x2a8
-  [d101dcd0] [c0d3e634] __mutex_lock+0x6c/0x6ec
-  [d101dd50] [c0a84174] of_alias_get_id+0x50/0xf4
-  [d101dd80] [c002ec78] pcibios_alloc_controller+0x1b8/0x220
-  [d101ddd0] [c140c9dc] pmac_pci_init+0x198/0x784
-  [d101de50] [c140852c] discover_phbs+0x30/0x4c
-  [d101de60] [c0007fd4] do_one_initcall+0x94/0x344
-  [d101ded0] [c1403b40] kernel_init_freeable+0x1a8/0x22c
-  [d101df10] [c00086e0] kernel_init+0x34/0x160
-  [d101df30] [c001b334] ret_from_kernel_thread+0x5c/0x64
+[Group A : All counter MSRs are tightly bound to all event select MSRs ]
 
-This is because pcibios_alloc_controller() holds hose_spinlock but
-of_alias_get_id() takes of_mutex which can sleep.
+  MSR_K7_EVNTSEL0			0xc0010000
+  MSR_K7_EVNTSELi			0xc0010000 + i
+  ...
+  MSR_K7_EVNTSEL3			0xc0010003
+  MSR_K7_PERFCTR0			0xc0010004
+  MSR_K7_PERFCTRi			0xc0010004 + i
+  ...
+  MSR_K7_PERFCTR3			0xc0010007
 
-The hose_spinlock protects the phb_bitmap, and also the hose_list, but
-it doesn't need to be held while get_phb_number() calls the OF routines,
-because those are only looking up information in the device tree.
+[Group B : The counter MSRs are interleaved with the event select MSRs ]
 
-So fix it by having get_phb_number() take the hose_spinlock itself, only
-where required, and then dropping the lock before returning.
-pcibios_alloc_controller() then needs to take the lock again before the
-list_add() but that's safe, the order of the list is not important.
+  MSR_F15H_PERF_CTL0		0xc0010200
+  MSR_F15H_PERF_CTR0		(0xc0010200 + 1)
+  ...
+  MSR_F15H_PERF_CTLi		(0xc0010200 + 2 * i)
+  MSR_F15H_PERF_CTRi		(0xc0010200 + 2 * i + 1)
+  ...
+  MSR_F15H_PERF_CTL5		(0xc0010200 + 2 * 5)
+  MSR_F15H_PERF_CTR5		(0xc0010200 + 2 * 5 + 1)
 
-Fixes: 0fe1e96fef0a ("powerpc/pci: Prefer PCI domain assignment via DT 'linux,pci-domain' and alias")
-Reported-by: Guenter Roeck <linux@roeck-us.net>
-Signed-off-by: Michael Ellerman <mpe@ellerman.id.au>
-Link: https://lore.kernel.org/r/20220815065550.1303620-1-mpe@ellerman.id.au
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Rewrite get_gp_pmc_amd() in this way: first determine which group of
+registers is accessed, then determine if it matches its requested type,
+applying different scaling ratios respectively, and finally get pmc_idx
+to pass into amd_pmc_idx_to_pmc().
+
+Signed-off-by: Like Xu <likexu@tencent.com>
 ---
- arch/powerpc/kernel/pci-common.c |   16 ++++++++++------
- 1 file changed, 10 insertions(+), 6 deletions(-)
+ arch/x86/kvm/svm/pmu.c | 85 +++++++++---------------------------------
+ 1 file changed, 17 insertions(+), 68 deletions(-)
 
---- a/arch/powerpc/kernel/pci-common.c
-+++ b/arch/powerpc/kernel/pci-common.c
-@@ -66,10 +66,6 @@ void set_pci_dma_ops(const struct dma_ma
- 	pci_dma_ops = dma_ops;
- }
+diff --git a/arch/x86/kvm/svm/pmu.c b/arch/x86/kvm/svm/pmu.c
+index e57eb0555a04..c7ff6a910679 100644
+--- a/arch/x86/kvm/svm/pmu.c
++++ b/arch/x86/kvm/svm/pmu.c
+@@ -23,90 +23,49 @@ enum pmu_type {
+ 	PMU_TYPE_EVNTSEL,
+ };
  
--/*
-- * This function should run under locking protection, specifically
-- * hose_spinlock.
-- */
- static int get_phb_number(struct device_node *dn)
+-enum index {
+-	INDEX_ZERO = 0,
+-	INDEX_ONE,
+-	INDEX_TWO,
+-	INDEX_THREE,
+-	INDEX_FOUR,
+-	INDEX_FIVE,
+-	INDEX_ERROR,
+-};
+-
+-static enum index msr_to_index(u32 msr)
++static struct kvm_pmc *amd_pmc_idx_to_pmc(struct kvm_pmu *pmu, int pmc_idx)
  {
- 	int ret, phb_id = -1;
-@@ -106,15 +102,20 @@ static int get_phb_number(struct device_
- 	if (!ret)
- 		phb_id = (int)(prop & (MAX_PHBS - 1));
- 
-+	spin_lock(&hose_spinlock);
+-	switch (msr) {
+-	case MSR_F15H_PERF_CTL0:
+-	case MSR_F15H_PERF_CTR0:
+-	case MSR_K7_EVNTSEL0:
+-	case MSR_K7_PERFCTR0:
+-		return INDEX_ZERO;
+-	case MSR_F15H_PERF_CTL1:
+-	case MSR_F15H_PERF_CTR1:
+-	case MSR_K7_EVNTSEL1:
+-	case MSR_K7_PERFCTR1:
+-		return INDEX_ONE;
+-	case MSR_F15H_PERF_CTL2:
+-	case MSR_F15H_PERF_CTR2:
+-	case MSR_K7_EVNTSEL2:
+-	case MSR_K7_PERFCTR2:
+-		return INDEX_TWO;
+-	case MSR_F15H_PERF_CTL3:
+-	case MSR_F15H_PERF_CTR3:
+-	case MSR_K7_EVNTSEL3:
+-	case MSR_K7_PERFCTR3:
+-		return INDEX_THREE;
+-	case MSR_F15H_PERF_CTL4:
+-	case MSR_F15H_PERF_CTR4:
+-		return INDEX_FOUR;
+-	case MSR_F15H_PERF_CTL5:
+-	case MSR_F15H_PERF_CTR5:
+-		return INDEX_FIVE;
+-	default:
+-		return INDEX_ERROR;
+-	}
++	unsigned int num_counters = pmu->nr_arch_gp_counters;
 +
- 	/* We need to be sure to not use the same PHB number twice. */
- 	if ((phb_id >= 0) && !test_and_set_bit(phb_id, phb_bitmap))
--		return phb_id;
-+		goto out_unlock;
- 
- 	/* If everything fails then fallback to dynamic PHB numbering. */
- 	phb_id = find_first_zero_bit(phb_bitmap, MAX_PHBS);
- 	BUG_ON(phb_id >= MAX_PHBS);
- 	set_bit(phb_id, phb_bitmap);
- 
-+out_unlock:
-+	spin_unlock(&hose_spinlock);
++	if (pmc_idx >= num_counters)
++		return NULL;
 +
- 	return phb_id;
++	return &pmu->gp_counters[array_index_nospec(pmc_idx, num_counters)];
  }
  
-@@ -125,10 +126,13 @@ struct pci_controller *pcibios_alloc_con
- 	phb = zalloc_maybe_bootmem(sizeof(struct pci_controller), GFP_KERNEL);
- 	if (phb == NULL)
+ static inline struct kvm_pmc *get_gp_pmc_amd(struct kvm_pmu *pmu, u32 msr,
+ 					     enum pmu_type type)
+ {
+ 	struct kvm_vcpu *vcpu = pmu_to_vcpu(pmu);
++	unsigned int idx;
+ 
+ 	if (!vcpu->kvm->arch.enable_pmu)
  		return NULL;
--	spin_lock(&hose_spinlock);
-+
- 	phb->global_number = get_phb_number(dev);
-+
-+	spin_lock(&hose_spinlock);
- 	list_add_tail(&phb->list_node, &hose_list);
- 	spin_unlock(&hose_spinlock);
-+
- 	phb->dn = dev;
- 	phb->is_dynamic = slab_is_available();
- #ifdef CONFIG_PPC64
-
+ 
+ 	switch (msr) {
+-	case MSR_F15H_PERF_CTL0:
+-	case MSR_F15H_PERF_CTL1:
+-	case MSR_F15H_PERF_CTL2:
+-	case MSR_F15H_PERF_CTL3:
+-	case MSR_F15H_PERF_CTL4:
+-	case MSR_F15H_PERF_CTL5:
++	case MSR_F15H_PERF_CTL0 ... MSR_F15H_PERF_CTR5:
+ 		if (!guest_cpuid_has(vcpu, X86_FEATURE_PERFCTR_CORE))
+ 			return NULL;
+-		fallthrough;
++		idx = (unsigned int)((msr - MSR_F15H_PERF_CTL0) / 2);
++		if ((msr == (MSR_F15H_PERF_CTL0 + 2 * idx)) !=
++		    (type == PMU_TYPE_EVNTSEL))
++			return NULL;
++		break;
+ 	case MSR_K7_EVNTSEL0 ... MSR_K7_EVNTSEL3:
+ 		if (type != PMU_TYPE_EVNTSEL)
+ 			return NULL;
++		idx = msr - MSR_K7_EVNTSEL0;
+ 		break;
+-	case MSR_F15H_PERF_CTR0:
+-	case MSR_F15H_PERF_CTR1:
+-	case MSR_F15H_PERF_CTR2:
+-	case MSR_F15H_PERF_CTR3:
+-	case MSR_F15H_PERF_CTR4:
+-	case MSR_F15H_PERF_CTR5:
+-		if (!guest_cpuid_has(vcpu, X86_FEATURE_PERFCTR_CORE))
+-			return NULL;
+-		fallthrough;
+ 	case MSR_K7_PERFCTR0 ... MSR_K7_PERFCTR3:
+ 		if (type != PMU_TYPE_COUNTER)
+ 			return NULL;
++		idx = msr - MSR_K7_PERFCTR0;
+ 		break;
+ 	default:
+ 		return NULL;
+ 	}
+ 
+-	return &pmu->gp_counters[msr_to_index(msr)];
++	return amd_pmc_idx_to_pmc(pmu, idx);
+ }
+ 
+ static bool amd_hw_event_available(struct kvm_pmc *pmc)
+@@ -122,16 +81,6 @@ static bool amd_pmc_is_enabled(struct kvm_pmc *pmc)
+ 	return true;
+ }
+ 
+-static struct kvm_pmc *amd_pmc_idx_to_pmc(struct kvm_pmu *pmu, int pmc_idx)
+-{
+-	unsigned int num_counters = pmu->nr_arch_gp_counters;
+-
+-	if (pmc_idx >= num_counters)
+-		return NULL;
+-
+-	return &pmu->gp_counters[array_index_nospec(pmc_idx, num_counters)];
+-}
+-
+ static bool amd_is_valid_rdpmc_ecx(struct kvm_vcpu *vcpu, unsigned int idx)
+ {
+ 	struct kvm_pmu *pmu = vcpu_to_pmu(vcpu);
+-- 
+2.37.2
 
