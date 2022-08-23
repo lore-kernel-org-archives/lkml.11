@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 64E44C32774
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 09:36:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AC2EAC32792
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 09:36:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351101AbiHWJgp (ORCPT
+        id S1351152AbiHWJgt (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 05:36:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39454 "EHLO
+        Tue, 23 Aug 2022 05:36:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48898 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351242AbiHWJfG (ORCPT
+        with ESMTP id S1351129AbiHWJfP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 05:35:06 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CDF7E95E5F;
-        Tue, 23 Aug 2022 01:39:36 -0700 (PDT)
+        Tue, 23 Aug 2022 05:35:15 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 290A695E7F;
+        Tue, 23 Aug 2022 01:39:38 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id CF7C4B81C6D;
-        Tue, 23 Aug 2022 08:38:26 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3FD88C433D6;
-        Tue, 23 Aug 2022 08:38:25 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 889106132D;
+        Tue, 23 Aug 2022 08:38:35 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 788F4C433D6;
+        Tue, 23 Aug 2022 08:38:34 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661243905;
-        bh=JLgT1YjRQoCyfhyImHJaeFjmVBeCtSn+RgWnOxdaFZI=;
+        s=korg; t=1661243915;
+        bh=b09QnvDg7xfHPslMRVg7vHUSCPbJTeYQlqKvtTja7U4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=GI3O3i8sb4GMGEWsb9o52i6/itAK5gQDRF9U5Szbx13lqZkeoBaoBST0RC86xeYSf
-         /pHts2jMJ202u5hsFttmvghL5WaFLfGFQkL262J1eBw92IdPXtsAIb/6Mf3ajhHRzK
-         JKEeoqJcz76yFlyrNGtf3OTk/cFgOpFcoZ8mwO5Y=
+        b=xByAZDETCrENvkjbaP4OnqiZ4zUWxKq99jrHto5unDhGUvAv9jYC1vx8/U4NoWemc
+         LWoAJbAiqFW9lCzCZ/Rqv/IWt/vfR4/oYvDm6uAWOpxyXSbBYFalHRbiQEfMPzrGvH
+         tTNkrAzLLScRcFGDzIHr0xToJ4BxaKN7I6utPcbw=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
-        Michal Simek <michal.simek@amd.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.14 054/229] cpufreq: zynq: Fix refcount leak in zynq_get_revision
-Date:   Tue, 23 Aug 2022 10:23:35 +0200
-Message-Id: <20220823080055.643224062@linuxfoundation.org>
+        stable@vger.kernel.org, "Jason A. Donenfeld" <Jason@zx2c4.com>,
+        Michael Ellerman <mpe@ellerman.id.au>
+Subject: [PATCH 4.14 035/229] powerpc/powernv: Avoid crashing if rng is NULL
+Date:   Tue, 23 Aug 2022 10:23:16 +0200
+Message-Id: <20220823080054.807322627@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220823080053.202747790@linuxfoundation.org>
 References: <20220823080053.202747790@linuxfoundation.org>
@@ -50,37 +49,39 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Miaoqian Lin <linmq006@gmail.com>
+From: Michael Ellerman <mpe@ellerman.id.au>
 
-[ Upstream commit d1ff2559cef0f6f8d97fba6337b28adb10689e16 ]
+commit 90b5d4fe0b3ba7f589c6723c6bfb559d9e83956a upstream.
 
-of_find_compatible_node() returns a node pointer with refcount
-incremented, we should use of_node_put() on it when done.
-Add missing of_node_put() to avoid refcount leak.
+On a bare-metal Power8 system that doesn't have an "ibm,power-rng", a
+malicious QEMU and guest that ignore the absence of the
+KVM_CAP_PPC_HWRNG flag, and calls H_RANDOM anyway, will dereference a
+NULL pointer.
 
-Fixes: 00f7dc636366 ("ARM: zynq: Add support for SOC_BUS")
-Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
-Link: https://lore.kernel.org/r/20220605082807.21526-1-linmq006@gmail.com
-Signed-off-by: Michal Simek <michal.simek@amd.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+In practice all Power8 machines have an "ibm,power-rng", but let's not
+rely on that, add a NULL check and early return in
+powernv_get_random_real_mode().
+
+Fixes: e928e9cb3601 ("KVM: PPC: Book3S HV: Add fast real-mode H_RANDOM implementation.")
+Cc: stable@vger.kernel.org # v4.1+
+Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
+Signed-off-by: Michael Ellerman <mpe@ellerman.id.au>
+Link: https://lore.kernel.org/r/20220727143219.2684192-1-mpe@ellerman.id.au
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/arm/mach-zynq/common.c | 1 +
- 1 file changed, 1 insertion(+)
+ arch/powerpc/platforms/powernv/rng.c |    2 ++
+ 1 file changed, 2 insertions(+)
 
-diff --git a/arch/arm/mach-zynq/common.c b/arch/arm/mach-zynq/common.c
-index 6aba9ebf8041..a8b1b9c6626e 100644
---- a/arch/arm/mach-zynq/common.c
-+++ b/arch/arm/mach-zynq/common.c
-@@ -84,6 +84,7 @@ static int __init zynq_get_revision(void)
- 	}
+--- a/arch/powerpc/platforms/powernv/rng.c
++++ b/arch/powerpc/platforms/powernv/rng.c
+@@ -63,6 +63,8 @@ int powernv_get_random_real_mode(unsigne
+ 	struct powernv_rng *rng;
  
- 	zynq_devcfg_base = of_iomap(np, 0);
-+	of_node_put(np);
- 	if (!zynq_devcfg_base) {
- 		pr_err("%s: Unable to map I/O memory\n", __func__);
- 		return -1;
--- 
-2.35.1
-
+ 	rng = raw_cpu_read(powernv_rng);
++	if (!rng)
++		return 0;
+ 
+ 	*v = rng_whiten(rng, __raw_rm_readq(rng->regs_real));
+ 
 
 
