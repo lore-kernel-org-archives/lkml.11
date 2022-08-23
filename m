@@ -2,119 +2,121 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1AC05C32772
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 16:31:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 23197C32772
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 16:32:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244711AbiHWQbs (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 12:31:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45278 "EHLO
+        id S242894AbiHWQch (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 23 Aug 2022 12:32:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45736 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244928AbiHWQac (ORCPT
+        with ESMTP id S244774AbiHWQcC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 12:30:32 -0400
-Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.220.28])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B533F183B7;
-        Tue, 23 Aug 2022 06:00:07 -0700 (PDT)
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        Tue, 23 Aug 2022 12:32:02 -0400
+Received: from mx1.molgen.mpg.de (mx3.molgen.mpg.de [141.14.17.11])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 56953A2872;
+        Tue, 23 Aug 2022 06:03:50 -0700 (PDT)
+Received: from [141.14.220.45] (g45.guest.molgen.mpg.de [141.14.220.45])
+        (using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
+         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
         (No client certificate requested)
-        by smtp-out1.suse.de (Postfix) with ESMTPS id 42F3022AF8;
-        Tue, 23 Aug 2022 13:00:06 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
-        t=1661259606; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=SeCJBSVqOhAGWvX3rLkYeyZ0F7kVhjopz07El5TE35g=;
-        b=dTe0UjB0yIX4nY3F+zS/45UC/LYnMpG/bzHrG777J0GXX56UWfZAqtaLxrKBZ2xZdAipyW
-        OPwm+hEPTUlKGJUqf8a4in/v5bPEpPl8WUIIRUKXyB2b/2b788rVR/9rQjKNxYy5GEyoo4
-        /qNFOoaTCBO3rgspBD74zkUFwuM71pM=
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
-        s=susede2_ed25519; t=1661259606;
-        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=SeCJBSVqOhAGWvX3rLkYeyZ0F7kVhjopz07El5TE35g=;
-        b=1RnAL5TU+0iluQFJM11wgDO7i6gMipFzGf7G919num4t1EGMDljjFIXBOzonsjjpaw63iF
-        z8jiEIzW0hE9SyAQ==
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
-        (No client certificate requested)
-        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id D5A2D13A89;
-        Tue, 23 Aug 2022 13:00:05 +0000 (UTC)
-Received: from dovecot-director2.suse.de ([192.168.254.65])
-        by imap2.suse-dmz.suse.de with ESMTPSA
-        id upyNMlXPBGMBVgAAMHmgww
-        (envelope-from <jdelvare@suse.de>); Tue, 23 Aug 2022 13:00:05 +0000
-Date:   Tue, 23 Aug 2022 15:00:03 +0200
-From:   Jean Delvare <jdelvare@suse.de>
-To:     linux-watchdog@vger.kernel.org, LKML <linux-kernel@vger.kernel.org>
-Cc:     Wim Van Sebroeck <wim@linux-watchdog.org>,
-        Guenter Roeck <linux@roeck-us.net>,
-        Mika Westerberg <mika.westerberg@linux.intel.com>,
-        "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>,
-        Liu Xinpeng <liuxp11@chinatelecom.cn>
-Subject: Re: [PATCH v2] watchdog: wdat_wdt: Set the min and max timeout
- values properly
-Message-ID: <20220823150003.6199b8fd@endymion.delvare>
-In-Reply-To: <20220806081524.5636461a@endymion.delvare>
-References: <20220806081524.5636461a@endymion.delvare>
-Organization: SUSE Linux
-X-Mailer: Claws Mail 3.18.0 (GTK+ 2.24.32; x86_64-suse-linux-gnu)
+        (Authenticated sender: pmenzel)
+        by mx.molgen.mpg.de (Postfix) with ESMTPSA id 301D761EA192D;
+        Tue, 23 Aug 2022 15:03:47 +0200 (CEST)
+Message-ID: <03f4ae8c-c918-0499-c70c-50a19a8abd30@molgen.mpg.de>
+Date:   Tue, 23 Aug 2022 15:03:46 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.1.2
+Content-Language: en-US
+To:     Clemens Ladisch <clemens@ladisch.de>
+Cc:     LKML <linux-kernel@vger.kernel.org>,
+        ACPI Devel Maling List <linux-acpi@vger.kernel.org>,
+        Dell.Client.Kernel@dell.com
+From:   Paul Menzel <pmenzel@molgen.mpg.de>
+Subject: Dell XPS 13 9370: hpet_acpi_add: no address or irqs in _CRS
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi all,
+Dear Linux folks,
 
-On Sat, 6 Aug 2022 08:15:24 +0200, Jean Delvare wrote:
-> The wdat_wdt driver is misusing the min_hw_heartbeat_ms field. This
-> field should only be used when the hardware watchdog device should not
-> be pinged more frequently than a specific period. The ACPI WDAT
-> "Minimum Count" field, on the other hand, specifies the minimum
-> timeout value that can be set. This corresponds to the min_timeout
-> field in Linux's watchdog infrastructure.
-> 
-> Setting min_hw_heartbeat_ms instead can cause pings to the hardware
-> to be delayed when there is no reason for that, eventually leading to
-> unexpected firing of the watchdog timer (and thus unexpected reboot).
-> (...)
 
-This patch no longer applies as it conflicts with:
+On the Dell XPS 13 9370 with Debian sid/unstable Linux 5.18.16 warns 
+about missing values in _CRS:
 
-commit 6d72c7ac9fbe26a77800676507da980436b40b2f
-Author: Liu Xinpeng
-Date:   Tue Apr 26 22:53:28 2022 +0800
+     [    0.000000] DMI: Dell Inc. XPS 13 9370/0RMYH9, BIOS 1.21.0 
+07/06/2022
 
-which made it into kernel v5.19.
+     [    1.868930] calling  hpet_init+0x0/0x76 @ 1
+     [    1.869360] hpet_acpi_add: no address or irqs in _CRS
+     [    1.869812] initcall hpet_init+0x0/0x76 returned 0 after 876 usecs
 
-Having reviewed the commit mentioned above, I must say I'm skeptical. I
-can't see how setting min_timeout to 1 arbitrarily has been considered
-a good thing. This allows setting timeout values lower than the ACPI
-WDAT "Minimum Count" field, while presumably the hardware does not
-support such short timeouts.
+All HPET logs:
 
-Furthermore, calling watchdog_timeout_invalid() to validate the timeout
-value is a good idea in principle, however, given that min_timeout is
-now 1 and max_hw_heartbeat_ms is defined, the function is no longer
-checking much.
+     $ dmesg | grep -i HPET
+     [    0.008467] ACPI: HPET 0x000000003F0E8CD8 000038 (v01 DELL 
+CBX3     01072009 AMI. 0005000B)
+     [    0.008477] ACPI: HPET 0x000000003F0EA378 000038 (v01 INTEL 
+KBL-ULT  00000001 MSFT 0000005F)
+     [    0.008539] ACPI: Reserving HPET table memory at [mem 
+0x3f0e8cd8-0x3f0e8d0f]
+     [    0.008542] ACPI: Reserving HPET table memory at [mem 
+0x3f0ea378-0x3f0ea3af]
+     [    0.013206] ACPI: HPET id: 0x8086a701 base: 0xfed00000
+     [    0.055379] hpet: HPET dysfunctional in PC10. Force disabled.
+     [    0.055401] DMAR-IR: HPET id 0 under DRHD base 0xfed91000
+     [    0.542049] hpet_acpi_add: no address or irqs in _CRS
 
-My understanding is that the original code was checking the right
-limits (from the WDAT table's perspective) using the wrong fields (from
-the watchdog core's perspective). This fix from Liu is not really fixing
-the problem (min_hw_heartbeat_ms and max_hw_heartbeat_ms are still set,
-which enables watchdog core facilities that the driver doesn't need
-IMHO) and is adding a new problem (the timeout limits defined in the
-ACPI WDAT table are no longer checked).
+I attached the full Linux logs (`dmesg`), and the output of `acpidump` 
+to the bug #216402 in the Linux kernel bugtracker [1].
 
-I will rebase my patch on top and address both problems.
+ From the disassembled DSDT:
 
--- 
-Jean Delvare
-SUSE L3 Support
+         Device (HPET)
+         {
+             Name (_HID, EisaId ("PNP0103") /* HPET System Timer */)  // 
+_HID: Hardware ID
+             Name (_UID, Zero)  // _UID: Unique ID
+             Name (BUF0, ResourceTemplate ()
+             {
+                 Memory32Fixed (ReadWrite,
+                     0xFED00000,         // Address Base
+                     0x00000400,         // Address Length
+                     _Y34)
+             })
+             Method (_STA, 0, NotSerialized)  // _STA: Status
+             {
+                 If (HPTE)
+                 {
+                     Return (0x0F)
+                 }
+
+                 Return (Zero)
+             }
+
+             Method (_CRS, 0, Serialized)  // _CRS: Current Resource 
+Settings
+             {
+                 If (HPTE)
+                 {
+                     CreateDWordField (BUF0, 
+\_SB.PCI0.LPCB.HPET._Y34._BAS, HPT0)  // _BAS: Base Address
+                     HPT0 = HPTB /* \HPTB */
+                 }
+
+                 Return (BUF0) /* \_SB_.PCI0.LPCB.HPET.BUF0 */
+             }
+         }
+
+Besides adding `hpet=disable` to Linux’ CLI, is there a way to address 
+the warning?
+
+
+Kind regards,
+
+Paul
+
+
+[1]: https://bugzilla.kernel.org/show_bug.cgi?id=216402
