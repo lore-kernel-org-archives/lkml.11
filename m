@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A25FFC32772
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 12:08:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EE8ACC32792
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 12:08:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1359415AbiHWMIM (ORCPT
+        id S1359437AbiHWMIQ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 08:08:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48756 "EHLO
+        Tue, 23 Aug 2022 08:08:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52898 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1359373AbiHWMDq (ORCPT
+        with ESMTP id S244277AbiHWMD4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 08:03:46 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2D37BDCFFB;
-        Tue, 23 Aug 2022 02:37:17 -0700 (PDT)
+        Tue, 23 Aug 2022 08:03:56 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8BA38DDB58;
+        Tue, 23 Aug 2022 02:37:21 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 528626146C;
-        Tue, 23 Aug 2022 09:36:54 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 57E3FC433D7;
-        Tue, 23 Aug 2022 09:36:53 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 97A1DB81C65;
+        Tue, 23 Aug 2022 09:37:04 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D07F4C433D6;
+        Tue, 23 Aug 2022 09:37:02 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661247413;
-        bh=MCxlSMJOR6HhiMSpgL2jvCmdzjbKMba/TcDZg6n5OjI=;
+        s=korg; t=1661247423;
+        bh=UCYycxyPUwO1hHOBKfBA1QUnk84cOVlOhcqdGlDU2ck=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Jf3VxXpt83uxwO49PMx2q635FGo+kuin2dEmr9sqjj2fWNKrIkRc4OvnLSEG3DqUz
-         31xkn/TaeyNpo9RXgleJ/p2W0IEVm/L4HynVPIfUv6i9LtZjvZd0rFvheegHTDKrKI
-         GK+uKXyAQycyIL60INYQTySBe897099ziJ1Qo2ak=
+        b=p7fTU/ZvVZF9FkVg93Il3Lh+L+B+/DuFegiEnqguk37m892hS6Lt0BYyXm7Dh+68G
+         6E9CEEHP9mHubhstyoQLxEe2QbHGHsWzW3qxXzLtwBFDF5jfV9nn3cwrpDWduLwkbX
+         D7N/nCFocjfhboDzZ9RBZehtQ1xvzneVFgcRj2vc=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Hou Tao <houtao1@huawei.com>,
-        Yonghong Song <yhs@fb.com>, Alexei Starovoitov <ast@kernel.org>
-Subject: [PATCH 5.10 028/158] bpf: Acquire map uref in .init_seq_private for hash map iterator
-Date:   Tue, 23 Aug 2022 10:26:00 +0200
-Message-Id: <20220823080047.230320318@linuxfoundation.org>
+        stable@vger.kernel.org, Mikulas Patocka <mpatocka@redhat.com>,
+        "David S. Miller" <davem@davemloft.net>
+Subject: [PATCH 5.10 004/158] rds: add missing barrier to release_refill
+Date:   Tue, 23 Aug 2022 10:25:36 +0200
+Message-Id: <20220823080046.230216609@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220823080046.056825146@linuxfoundation.org>
 References: <20220823080046.056825146@linuxfoundation.org>
@@ -49,46 +49,33 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Hou Tao <houtao1@huawei.com>
+From: Mikulas Patocka <mpatocka@redhat.com>
 
-commit ef1e93d2eeb58a1f08c37b22a2314b94bc045f15 upstream.
+commit 9f414eb409daf4f778f011cf8266d36896bb930b upstream.
 
-bpf_iter_attach_map() acquires a map uref, and the uref may be released
-before or in the middle of iterating map elements. For example, the uref
-could be released in bpf_iter_detach_map() as part of
-bpf_link_release(), or could be released in bpf_map_put_with_uref() as
-part of bpf_map_release().
+The functions clear_bit and set_bit do not imply a memory barrier, thus it
+may be possible that the waitqueue_active function (which does not take
+any locks) is moved before clear_bit and it could miss a wakeup event.
 
-So acquiring an extra map uref in bpf_iter_init_hash_map() and
-releasing it in bpf_iter_fini_hash_map().
+Fix this bug by adding a memory barrier after clear_bit.
 
-Fixes: d6c4503cc296 ("bpf: Implement bpf iterator for hash maps")
-Signed-off-by: Hou Tao <houtao1@huawei.com>
-Acked-by: Yonghong Song <yhs@fb.com>
-Link: https://lore.kernel.org/r/20220810080538.1845898-3-houtao@huaweicloud.com
-Signed-off-by: Alexei Starovoitov <ast@kernel.org>
+Signed-off-by: Mikulas Patocka <mpatocka@redhat.com>
+Cc: stable@vger.kernel.org
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- kernel/bpf/hashtab.c |    2 ++
- 1 file changed, 2 insertions(+)
+ net/rds/ib_recv.c |    1 +
+ 1 file changed, 1 insertion(+)
 
---- a/kernel/bpf/hashtab.c
-+++ b/kernel/bpf/hashtab.c
-@@ -1801,6 +1801,7 @@ static int bpf_iter_init_hash_map(void *
- 		seq_info->percpu_value_buf = value_buf;
- 	}
- 
-+	bpf_map_inc_with_uref(map);
- 	seq_info->map = map;
- 	seq_info->htab = container_of(map, struct bpf_htab, map);
- 	return 0;
-@@ -1810,6 +1811,7 @@ static void bpf_iter_fini_hash_map(void
+--- a/net/rds/ib_recv.c
++++ b/net/rds/ib_recv.c
+@@ -363,6 +363,7 @@ static int acquire_refill(struct rds_con
+ static void release_refill(struct rds_connection *conn)
  {
- 	struct bpf_iter_seq_hash_map_info *seq_info = priv_data;
+ 	clear_bit(RDS_RECV_REFILL, &conn->c_flags);
++	smp_mb__after_atomic();
  
-+	bpf_map_put_with_uref(seq_info->map);
- 	kfree(seq_info->percpu_value_buf);
- }
- 
+ 	/* We don't use wait_on_bit()/wake_up_bit() because our waking is in a
+ 	 * hot path and finding waiters is very rare.  We don't want to walk
 
 
