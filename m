@@ -2,47 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id ABD71C32772
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 09:49:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 83DC5C32774
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 09:49:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243194AbiHWJtr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 05:49:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55870 "EHLO
+        id S243836AbiHWJtv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 23 Aug 2022 05:49:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54538 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241981AbiHWJrL (ORCPT
+        with ESMTP id S238966AbiHWJrW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 05:47:11 -0400
+        Tue, 23 Aug 2022 05:47:22 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D220A8E0D1;
-        Tue, 23 Aug 2022 01:44:25 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 899DA9C8CE;
+        Tue, 23 Aug 2022 01:44:34 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 0BFA9B81C62;
-        Tue, 23 Aug 2022 08:43:55 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 112E6C433C1;
-        Tue, 23 Aug 2022 08:43:53 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 1B12AB81C4A;
+        Tue, 23 Aug 2022 08:44:01 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9733BC433B5;
+        Tue, 23 Aug 2022 08:43:59 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661244233;
-        bh=ukwapbfI9bnj1qkrK8Q3hXNU2QLw365AmtkZrw2+F0Q=;
+        s=korg; t=1661244239;
+        bh=azrkHgPOnQs884ZEUGFFFLQT6q0lJFF7yhUhaKnD080=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=WovB5bfCKWi36ckgoYiR/GkAjL5bY7YhN7eb9g6CWMqTEPzLqMgkNdA+yMz4kuI6B
-         H432rz4gXYL2pDKogvINx5bQ3fs6gBCKMeYceke/r59BRxtSeD2OnIpNayXJ8YRSKI
-         gmxVoYEuOEm4hPnnC3ifJWVid2vpr+Cp+uATzMAg=
+        b=RWExlh+fyrRuwMbIxKr/2863jpg53DDS8GIMBy9wXUfwpcEfm5lEdzncqx4HV/QIo
+         GFBOPINW6aH4pFTiOpn3xO2LHWozElYjn+OK+n3cOFWu7ez00L8yU+0ggTBIkJUtR7
+         EyJFUNkXLA7b8cC7QT1I/ALs35hStapQ42VD9cYQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Scott Benesh <scott.benesh@microchip.com>,
-        Scott Teel <scott.teel@microchip.com>,
-        Mike McGowen <mike.mcgowen@microchip.com>,
-        Kevin Barnett <kevin.barnett@microchip.com>,
-        Mahesh Rajashekhara <Mahesh.Rajashekhara@microchip.com>,
-        Don Brace <don.brace@microchip.com>,
-        "Martin K. Petersen" <martin.petersen@oracle.com>,
+        stable@vger.kernel.org,
+        Raviteja Garimella <raviteja.garimella@broadcom.com>,
+        Felipe Balbi <balbi@kernel.org>, linux-usb@vger.kernel.org,
+        Randy Dunlap <rdunlap@infradead.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.14 106/229] scsi: smartpqi: Fix DMA direction for RAID requests
-Date:   Tue, 23 Aug 2022 10:24:27 +0200
-Message-Id: <20220823080057.470653754@linuxfoundation.org>
+Subject: [PATCH 4.14 107/229] usb: gadget: udc: amd5536 depends on HAS_DMA
+Date:   Tue, 23 Aug 2022 10:24:28 +0200
+Message-Id: <20220823080057.502281644@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220823080053.202747790@linuxfoundation.org>
 References: <20220823080053.202747790@linuxfoundation.org>
@@ -54,66 +51,47 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Mahesh Rajashekhara <Mahesh.Rajashekhara@microchip.com>
+From: Randy Dunlap <rdunlap@infradead.org>
 
-[ Upstream commit 69695aeaa6621bc49cdd7a8e5a8d1042461e496e ]
+[ Upstream commit 8097cf2fb3b2205257f1c76f4808e3398d66b6d9 ]
 
-Correct a SOP READ and WRITE DMA flags for some requests.
+USB_AMD5536UDC should depend on HAS_DMA since it selects USB_SNP_CORE,
+which depends on HAS_DMA and since 'select' does not follow any
+dependency chains.
 
-This update corrects DMA direction issues with SCSI commands removed from
-the controller's internal lookup table.
+Fixes this kconfig warning:
 
-Currently, SCSI READ BLOCK LIMITS (0x5) was removed from the controller
-lookup table and exposed a DMA direction flag issue.
+WARNING: unmet direct dependencies detected for USB_SNP_CORE
+  Depends on [n]: USB_SUPPORT [=y] && USB_GADGET [=y] && (USB_AMD5536UDC [=y] || USB_SNP_UDC_PLAT [=n]) && HAS_DMA [=n]
+  Selected by [y]:
+  - USB_AMD5536UDC [=y] && USB_SUPPORT [=y] && USB_GADGET [=y] && USB_PCI [=y]
 
-SCSI READ BLOCK LIMITS was recently removed from our controller lookup
-table so the controller uses the respective IU flag field to set the DMA
-data direction. Since the DMA direction is incorrect the FW never completes
-the request causing a hang.
-
-Some SCSI commands which use SCSI READ BLOCK LIMITS
-
-      * sg_map
-      * mt -f /dev/stX status
-
-After updating controller firmware, users may notice their tape units
-failing. This patch resolves the issue.
-
-Also, the AIO path DMA direction is correct.
-
-The DMA direction flag is a day-one bug with no reported BZ.
-
-Fixes: 6c223761eb54 ("smartpqi: initial commit of Microsemi smartpqi driver")
-Link: https://lore.kernel.org/r/165730605618.177165.9054223644512926624.stgit@brunhilda
-Reviewed-by: Scott Benesh <scott.benesh@microchip.com>
-Reviewed-by: Scott Teel <scott.teel@microchip.com>
-Reviewed-by: Mike McGowen <mike.mcgowen@microchip.com>
-Reviewed-by: Kevin Barnett <kevin.barnett@microchip.com>
-Signed-off-by: Mahesh Rajashekhara <Mahesh.Rajashekhara@microchip.com>
-Signed-off-by: Don Brace <don.brace@microchip.com>
-Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
+Fixes: 97b3ffa233b9 ("usb: gadget: udc: amd5536: split core and PCI layer")
+Cc: Raviteja Garimella <raviteja.garimella@broadcom.com>
+Cc: Felipe Balbi <balbi@kernel.org>
+Cc: linux-usb@vger.kernel.org
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Randy Dunlap <rdunlap@infradead.org>
+Link: https://lore.kernel.org/r/20220709013601.7536-1-rdunlap@infradead.org
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/scsi/smartpqi/smartpqi_init.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ drivers/usb/gadget/udc/Kconfig | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/scsi/smartpqi/smartpqi_init.c b/drivers/scsi/smartpqi/smartpqi_init.c
-index 4055753b495a..5b1f15720947 100644
---- a/drivers/scsi/smartpqi/smartpqi_init.c
-+++ b/drivers/scsi/smartpqi/smartpqi_init.c
-@@ -4652,10 +4652,10 @@ static int pqi_raid_submit_scsi_cmd_with_io_request(
- 	}
+diff --git a/drivers/usb/gadget/udc/Kconfig b/drivers/usb/gadget/udc/Kconfig
+index 3291ea22853c..4c6eaf2a3b73 100644
+--- a/drivers/usb/gadget/udc/Kconfig
++++ b/drivers/usb/gadget/udc/Kconfig
+@@ -309,7 +309,7 @@ source "drivers/usb/gadget/udc/bdc/Kconfig"
  
- 	switch (scmd->sc_data_direction) {
--	case DMA_TO_DEVICE:
-+	case DMA_FROM_DEVICE:
- 		request->data_direction = SOP_READ_FLAG;
- 		break;
--	case DMA_FROM_DEVICE:
-+	case DMA_TO_DEVICE:
- 		request->data_direction = SOP_WRITE_FLAG;
- 		break;
- 	case DMA_NONE:
+ config USB_AMD5536UDC
+ 	tristate "AMD5536 UDC"
+-	depends on USB_PCI
++	depends on USB_PCI && HAS_DMA
+ 	select USB_SNP_CORE
+ 	help
+ 	   The AMD5536 UDC is part of the AMD Geode CS5536, an x86 southbridge.
 -- 
 2.35.1
 
