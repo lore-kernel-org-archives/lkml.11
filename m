@@ -2,45 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1A5D8C32772
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 10:12:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1CD2CC32772
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 10:12:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352863AbiHWKMm (ORCPT
+        id S1352955AbiHWKMq (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 06:12:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44490 "EHLO
+        Tue, 23 Aug 2022 06:12:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44686 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352609AbiHWKF4 (ORCPT
+        with ESMTP id S1352622AbiHWKF6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 06:05:56 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0860B7C757;
-        Tue, 23 Aug 2022 01:52:15 -0700 (PDT)
+        Tue, 23 Aug 2022 06:05:58 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 419C97171C;
+        Tue, 23 Aug 2022 01:52:16 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 5C24ACE1B4A;
-        Tue, 23 Aug 2022 08:52:13 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3A319C433C1;
-        Tue, 23 Aug 2022 08:52:11 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 7E478611DD;
+        Tue, 23 Aug 2022 08:52:15 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 804EFC433C1;
+        Tue, 23 Aug 2022 08:52:14 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661244731;
-        bh=yRfbSEmiNTKD8CgTYYkOZDifnY/nDW1hQjWqoS4iblc=;
+        s=korg; t=1661244734;
+        bh=j8glXLaB887gBfr17FRE16vXIkJMGlKP3T3etGltaow=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=saJZZkN+zwbEXKeS9LJD0lwQUyhj2/YFZTyeYhE2rVJMIY0+FWQK2vvNW9TLuwO9O
-         x0HbC4xHyw0SsP1YkRG93GpCuwpo1TG9ZnlpOtaTGwl53NlknadYl8PWTS7+He85cU
-         Rd4GkS96a5L7L2rv+meWplI9ADMB+G9Se4aIGOF0=
+        b=K1lNCSg7S1h2dg2TnTjSwL2vTbltGikzDzuAlyw+2rsrUjoxFBU0P80c3Km+1Lr2v
+         DsWSqQ8GUM9alkanKq/YGnJqYQiWpkb9pIX6Ja9lhR4wD3DJGl1fTt6/cQMR5DvujR
+         z0GBXim9U/WbQUUp6y/oGwU1BqVOskUcE5WtmogM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Vladimir Oltean <vladimir.oltean@nxp.com>,
-        Jakub Kicinski <kuba@kernel.org>
-Subject: [PATCH 5.15 140/244] net: dsa: felix: fix ethtool 256-511 and 512-1023 TX packet counters
-Date:   Tue, 23 Aug 2022 10:24:59 +0200
-Message-Id: <20220823080103.837697151@linuxfoundation.org>
+        stable@vger.kernel.org, John Johansen <john.johansen@canonical.com>
+Subject: [PATCH 4.14 182/229] apparmor: Fix failed mount permission check error message
+Date:   Tue, 23 Aug 2022 10:25:43 +0200
+Message-Id: <20220823080100.111525150@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220823080059.091088642@linuxfoundation.org>
-References: <20220823080059.091088642@linuxfoundation.org>
+In-Reply-To: <20220823080053.202747790@linuxfoundation.org>
+References: <20220823080053.202747790@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -49,32 +48,45 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Vladimir Oltean <vladimir.oltean@nxp.com>
+From: John Johansen <john.johansen@canonical.com>
 
-commit 40d21c4565bce064c73a03b79a157a3493c518b9 upstream.
+commit ec240b5905bbb09a03dccffee03062cf39e38dc2 upstream.
 
-What the driver actually reports as 256-511 is in fact 512-1023, and the
-TX packets in the 256-511 bucket are not reported. Fix that.
+When the mount check fails due to a permission check failure instead
+of explicitly at one of the subcomponent checks, AppArmor is reporting
+a failure in the flags match. However this is not true and AppArmor
+can not attribute the error at this point to any particular component,
+and should only indicate the mount failed due to missing permissions.
 
-Fixes: 56051948773e ("net: dsa: ocelot: add driver for Felix switch family")
-Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Fixes: 2ea3ffb7782a ("apparmor: add mount mediation")
+Signed-off-by: John Johansen <john.johansen@canonical.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/net/dsa/ocelot/felix_vsc9959.c |    3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ security/apparmor/mount.c |    7 ++++---
+ 1 file changed, 4 insertions(+), 3 deletions(-)
 
---- a/drivers/net/dsa/ocelot/felix_vsc9959.c
-+++ b/drivers/net/dsa/ocelot/felix_vsc9959.c
-@@ -578,7 +578,8 @@ static const struct ocelot_stat_layout v
- 	{ .offset = 0x87,	.name = "tx_frames_below_65_octets", },
- 	{ .offset = 0x88,	.name = "tx_frames_65_to_127_octets", },
- 	{ .offset = 0x89,	.name = "tx_frames_128_255_octets", },
--	{ .offset = 0x8B,	.name = "tx_frames_256_511_octets", },
-+	{ .offset = 0x8A,	.name = "tx_frames_256_511_octets", },
-+	{ .offset = 0x8B,	.name = "tx_frames_512_1023_octets", },
- 	{ .offset = 0x8C,	.name = "tx_frames_1024_1526_octets", },
- 	{ .offset = 0x8D,	.name = "tx_frames_over_1526_octets", },
- 	{ .offset = 0x8E,	.name = "tx_yellow_prio_0", },
+--- a/security/apparmor/mount.c
++++ b/security/apparmor/mount.c
+@@ -233,7 +233,8 @@ static const char * const mnt_info_table
+ 	"failed srcname match",
+ 	"failed type match",
+ 	"failed flags match",
+-	"failed data match"
++	"failed data match",
++	"failed perms check"
+ };
+ 
+ /*
+@@ -288,8 +289,8 @@ static int do_match_mnt(struct aa_dfa *d
+ 			return 0;
+ 	}
+ 
+-	/* failed at end of flags match */
+-	return 4;
++	/* failed at perms check, don't confuse with flags match */
++	return 6;
+ }
+ 
+ 
 
 
