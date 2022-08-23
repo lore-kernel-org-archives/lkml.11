@@ -2,45 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 58ED4C32792
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 09:07:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 248D4C32772
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 09:08:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347670AbiHWJHz (ORCPT
+        id S1348058AbiHWJH7 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 05:07:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51846 "EHLO
+        Tue, 23 Aug 2022 05:07:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58114 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346279AbiHWJGf (ORCPT
+        with ESMTP id S1347750AbiHWJGo (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 05:06:35 -0400
+        Tue, 23 Aug 2022 05:06:44 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BC93185F9B;
-        Tue, 23 Aug 2022 01:29:46 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0C8C285FFE;
+        Tue, 23 Aug 2022 01:29:57 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id D33BE614C2;
-        Tue, 23 Aug 2022 08:28:58 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D8C2CC433D6;
-        Tue, 23 Aug 2022 08:28:57 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 0AD7F61326;
+        Tue, 23 Aug 2022 08:28:34 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 03452C4314C;
+        Tue, 23 Aug 2022 08:28:32 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661243338;
-        bh=P3egnqUA6ktWyvgwGA+OKZtXZmA0Wg8B7BsVUmsHoUw=;
+        s=korg; t=1661243313;
+        bh=9vjKezl3dOytaASgrXKh7da9oZaZWQxs9UU973wrK9M=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=0sqMs1IWECNXUVTNltDtq3Yq9aA0N75+Cis2sYghkAGYi3yVmGig3SNqpX58ux9f5
-         VcFk6nH1oQVf4iONanwANwM4SrHlhTCsKGKfKwsfBt9DMsnR9MJbcEk8g8wmGZ5EEe
-         8bSBADDFeyajfCHhXx8EUAAWDINUx6MU6MkEJUpg=
+        b=WjyeJAcc8zQA4for3QIc9Gwn6514e6AfrPM6yCe55DBpW5ntZO3bBqpHeTku+E0AQ
+         sM7bIY+e4PcDvM/bSP4jQxmsJW3q7zjT8MAH0Et5R52lxf8kHjohb6384yf9/KV4xE
+         nZ+aphSzNY/paoxzdiOY1nxr7VPFDlNSUt5EauDQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org, dri-devel@lists.freedesktop.org
+To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Marek Vasut <marex@denx.de>,
-        Laurent Pinchart <laurent.pinchart@ideasonboard.com>,
-        Sam Ravnborg <sam@ravnborg.org>,
-        Neil Armstrong <narmstrong@baylibre.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.19 246/365] drm/bridge: lvds-codec: Fix error checking of drm_of_lvds_get_data_mapping()
-Date:   Tue, 23 Aug 2022 10:02:27 +0200
-Message-Id: <20220823080128.500334591@linuxfoundation.org>
+        stable@vger.kernel.org, Maxim Kochetkov <fido_max@inbox.ru>,
+        Hemant Kumar <quic_hemantk@quicinc.com>,
+        Manivannan Sadhasivam <mani@kernel.org>,
+        Loic Poulain <loic.poulain@linaro.org>,
+        "David S. Miller" <davem@davemloft.net>
+Subject: [PATCH 5.19 207/365] net: qrtr: start MHI channel after endpoit creation
+Date:   Tue, 23 Aug 2022 10:01:48 +0200
+Message-Id: <20220823080126.857789357@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220823080118.128342613@linuxfoundation.org>
 References: <20220823080118.128342613@linuxfoundation.org>
@@ -52,42 +52,75 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Marek Vasut <marex@denx.de>
+From: Maxim Kochetkov <fido_max@inbox.ru>
 
-[ Upstream commit 2bba782002c5dab6ca8d608b778b386fb912adff ]
+commit 68a838b84effb7b57ba7d50b1863fc6ae35a54ce upstream.
 
-The drm_of_lvds_get_data_mapping() returns either negative value on
-error or MEDIA_BUS_FMT_* otherwise. The check for 'ret' would also
-catch the positive case of MEDIA_BUS_FMT_* and lead to probe failure
-every time 'data-mapping' DT property is specified.
+MHI channel may generates event/interrupt right after enabling.
+It may leads to 2 race conditions issues.
 
-Fixes: 7c4dd0a266527 ("drm: of: Add drm_of_lvds_get_data_mapping")
-Signed-off-by: Marek Vasut <marex@denx.de>
-Cc: Laurent Pinchart <laurent.pinchart@ideasonboard.com>
-Cc: Sam Ravnborg <sam@ravnborg.org>
-To: dri-devel@lists.freedesktop.org
-Reviewed-by: Neil Armstrong <narmstrong@baylibre.com>
-Link: https://patchwork.freedesktop.org/patch/msgid/20220801125419.167562-1-marex@denx.de
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+1)
+Such event may be dropped by qcom_mhi_qrtr_dl_callback() at check:
+
+	if (!qdev || mhi_res->transaction_status)
+		return;
+
+Because dev_set_drvdata(&mhi_dev->dev, qdev) may be not performed at
+this moment. In this situation qrtr-ns will be unable to enumerate
+services in device.
+---------------------------------------------------------------
+
+2)
+Such event may come at the moment after dev_set_drvdata() and
+before qrtr_endpoint_register(). In this case kernel will panic with
+accessing wrong pointer at qcom_mhi_qrtr_dl_callback():
+
+	rc = qrtr_endpoint_post(&qdev->ep, mhi_res->buf_addr,
+				mhi_res->bytes_xferd);
+
+Because endpoint is not created yet.
+--------------------------------------------------------------
+So move mhi_prepare_for_transfer_autoqueue after endpoint creation
+to fix it.
+
+Fixes: a2e2cc0dbb11 ("net: qrtr: Start MHI channels during init")
+Signed-off-by: Maxim Kochetkov <fido_max@inbox.ru>
+Reviewed-by: Hemant Kumar <quic_hemantk@quicinc.com>
+Reviewed-by: Manivannan Sadhasivam <mani@kernel.org>
+Reviewed-by: Loic Poulain <loic.poulain@linaro.org>
+Signed-off-by: David S. Miller <davem@davemloft.net>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/gpu/drm/bridge/lvds-codec.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ net/qrtr/mhi.c |   12 +++++++-----
+ 1 file changed, 7 insertions(+), 5 deletions(-)
 
-diff --git a/drivers/gpu/drm/bridge/lvds-codec.c b/drivers/gpu/drm/bridge/lvds-codec.c
-index 702ea803a743..39e7004de720 100644
---- a/drivers/gpu/drm/bridge/lvds-codec.c
-+++ b/drivers/gpu/drm/bridge/lvds-codec.c
-@@ -180,7 +180,7 @@ static int lvds_codec_probe(struct platform_device *pdev)
- 		of_node_put(bus_node);
- 		if (ret == -ENODEV) {
- 			dev_warn(dev, "missing 'data-mapping' DT property\n");
--		} else if (ret) {
-+		} else if (ret < 0) {
- 			dev_err(dev, "invalid 'data-mapping' DT property\n");
- 			return ret;
- 		} else {
--- 
-2.35.1
-
+--- a/net/qrtr/mhi.c
++++ b/net/qrtr/mhi.c
+@@ -78,11 +78,6 @@ static int qcom_mhi_qrtr_probe(struct mh
+ 	struct qrtr_mhi_dev *qdev;
+ 	int rc;
+ 
+-	/* start channels */
+-	rc = mhi_prepare_for_transfer_autoqueue(mhi_dev);
+-	if (rc)
+-		return rc;
+-
+ 	qdev = devm_kzalloc(&mhi_dev->dev, sizeof(*qdev), GFP_KERNEL);
+ 	if (!qdev)
+ 		return -ENOMEM;
+@@ -96,6 +91,13 @@ static int qcom_mhi_qrtr_probe(struct mh
+ 	if (rc)
+ 		return rc;
+ 
++	/* start channels */
++	rc = mhi_prepare_for_transfer_autoqueue(mhi_dev);
++	if (rc) {
++		qrtr_endpoint_unregister(&qdev->ep);
++		return rc;
++	}
++
+ 	dev_dbg(qdev->dev, "Qualcomm MHI QRTR driver probed\n");
+ 
+ 	return 0;
 
 
