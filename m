@@ -2,46 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 905F7C32772
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 09:52:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EA09EC32772
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 09:52:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242537AbiHWJwr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 05:52:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55348 "EHLO
+        id S242701AbiHWJww (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 23 Aug 2022 05:52:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40562 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351794AbiHWJuz (ORCPT
+        with ESMTP id S1351841AbiHWJu5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 05:50:55 -0400
+        Tue, 23 Aug 2022 05:50:57 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6EB349E110;
-        Tue, 23 Aug 2022 01:45:28 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 04B8E61728;
+        Tue, 23 Aug 2022 01:45:30 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id A56EDB81C56;
-        Tue, 23 Aug 2022 08:34:08 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 056A3C4347C;
-        Tue, 23 Aug 2022 08:34:06 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 7D07EB81C6C;
+        Tue, 23 Aug 2022 08:45:21 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DC41DC433D6;
+        Tue, 23 Aug 2022 08:45:19 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661243647;
-        bh=8Vs1K216HeZwGcDjWgWfkjFQVdk3bJl/msDS7/SN7ug=;
+        s=korg; t=1661244320;
+        bh=EjuNj/W6yvY3QRPw/sASGRs/Haf5FAtW1SwjLFbn8ho=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=BkGoTgAds6UCcopmFRCkeNAvCL7tfKFf3vsIMkH94TTl8sNvVf4NszW+NgbVoy+VG
-         a0XWGOdbJoy9es73zKGDWZJQHKIcuUjE9vLL9twVYdQfwn1Obf/pFVe6uB4IIq8fQb
-         m7jbyJBVyr+uCwvvyexQx0wRVWv9KrBIjwa8rAjE=
+        b=i7uOU+xhTlDzZmi6sIsZ1a1qhCRfratKmUHXgCSrbgnOn7ZsWAn/MU0dKFmT0uZWb
+         pR6p0DnTBmwfqqV0UXOEPZP4xpO0Hpcea5LuLuNeq8yk/EzMabo9tGqGPeOC4NCy7U
+         7Yzwd5zDmRo0zWzD1BI2iRcy1istRL+p4eXunFmM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Laurent Dufour <ldufour@linux.ibm.com>,
-        Nicholas Piggin <npiggin@gmail.com>,
-        Michael Ellerman <mpe@ellerman.id.au>,
+        stable@vger.kernel.org, Jiasheng Jiang <jiasheng@iscas.ac.cn>,
+        Mark Brown <broonie@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.19 344/365] powerpc/watchdog: introduce a NMI watchdogs factor
-Date:   Tue, 23 Aug 2022 10:04:05 +0200
-Message-Id: <20220823080132.629878606@linuxfoundation.org>
+Subject: [PATCH 4.14 119/229] ASoC: codecs: da7210: add check for i2c_add_driver
+Date:   Tue, 23 Aug 2022 10:24:40 +0200
+Message-Id: <20220823080057.953286886@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220823080118.128342613@linuxfoundation.org>
-References: <20220823080118.128342613@linuxfoundation.org>
+In-Reply-To: <20220823080053.202747790@linuxfoundation.org>
+References: <20220823080053.202747790@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -50,87 +49,39 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Laurent Dufour <ldufour@linux.ibm.com>
+From: Jiasheng Jiang <jiasheng@iscas.ac.cn>
 
-[ Upstream commit f5e74e836097d1004077390717d4bd95d4a2c27a ]
+[ Upstream commit 82fa8f581a954ddeec1602bed9f8b4a09d100e6e ]
 
-Introduce a factor which would apply to the NMI watchdog timeout.
+As i2c_add_driver could return error if fails, it should be
+better to check the return value.
+However, if the CONFIG_I2C and CONFIG_SPI_MASTER are both true,
+the return value of i2c_add_driver will be covered by
+spi_register_driver.
+Therefore, it is necessary to add check and return error if fails.
 
-This factor is a percentage added to the watchdog_tresh value. The value is
-set under the watchdog_mutex protection and lockup_detector_reconfigure()
-is called to recompute wd_panic_timeout_tb.
-
-Once the factor is set, it remains until it is set back to 0, which means
-no impact.
-
-Signed-off-by: Laurent Dufour <ldufour@linux.ibm.com>
-Reviewed-by: Nicholas Piggin <npiggin@gmail.com>
-Signed-off-by: Michael Ellerman <mpe@ellerman.id.au>
-Link: https://lore.kernel.org/r/20220713154729.80789-4-ldufour@linux.ibm.com
+Fixes: aa0e25caafb7 ("ASoC: da7210: Add support for spi regmap")
+Signed-off-by: Jiasheng Jiang <jiasheng@iscas.ac.cn>
+Link: https://lore.kernel.org/r/20220531094712.2376759-1-jiasheng@iscas.ac.cn
+Signed-off-by: Mark Brown <broonie@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/powerpc/include/asm/nmi.h |  2 ++
- arch/powerpc/kernel/watchdog.c | 21 ++++++++++++++++++++-
- 2 files changed, 22 insertions(+), 1 deletion(-)
+ sound/soc/codecs/da7210.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
-diff --git a/arch/powerpc/include/asm/nmi.h b/arch/powerpc/include/asm/nmi.h
-index ea0e487f87b1..c3c7adef74de 100644
---- a/arch/powerpc/include/asm/nmi.h
-+++ b/arch/powerpc/include/asm/nmi.h
-@@ -5,8 +5,10 @@
- #ifdef CONFIG_PPC_WATCHDOG
- extern void arch_touch_nmi_watchdog(void);
- long soft_nmi_interrupt(struct pt_regs *regs);
-+void watchdog_nmi_set_timeout_pct(u64 pct);
- #else
- static inline void arch_touch_nmi_watchdog(void) {}
-+static inline void watchdog_nmi_set_timeout_pct(u64 pct) {}
+diff --git a/sound/soc/codecs/da7210.c b/sound/soc/codecs/da7210.c
+index 1af443ccbc51..ba38ea99b1da 100644
+--- a/sound/soc/codecs/da7210.c
++++ b/sound/soc/codecs/da7210.c
+@@ -1351,6 +1351,8 @@ static int __init da7210_modinit(void)
+ 	int ret = 0;
+ #if IS_ENABLED(CONFIG_I2C)
+ 	ret = i2c_add_driver(&da7210_i2c_driver);
++	if (ret)
++		return ret;
  #endif
- 
- #ifdef CONFIG_NMI_IPI
-diff --git a/arch/powerpc/kernel/watchdog.c b/arch/powerpc/kernel/watchdog.c
-index 7d28b9553654..5d903e63f932 100644
---- a/arch/powerpc/kernel/watchdog.c
-+++ b/arch/powerpc/kernel/watchdog.c
-@@ -91,6 +91,10 @@ static cpumask_t wd_smp_cpus_pending;
- static cpumask_t wd_smp_cpus_stuck;
- static u64 wd_smp_last_reset_tb;
- 
-+#ifdef CONFIG_PPC_PSERIES
-+static u64 wd_timeout_pct;
-+#endif
-+
- /*
-  * Try to take the exclusive watchdog action / NMI IPI / printing lock.
-  * wd_smp_lock must be held. If this fails, we should return and wait
-@@ -527,7 +531,13 @@ static int stop_watchdog_on_cpu(unsigned int cpu)
- 
- static void watchdog_calc_timeouts(void)
- {
--	wd_panic_timeout_tb = watchdog_thresh * ppc_tb_freq;
-+	u64 threshold = watchdog_thresh;
-+
-+#ifdef CONFIG_PPC_PSERIES
-+	threshold += (READ_ONCE(wd_timeout_pct) * threshold) / 100;
-+#endif
-+
-+	wd_panic_timeout_tb = threshold * ppc_tb_freq;
- 
- 	/* Have the SMP detector trigger a bit later */
- 	wd_smp_panic_timeout_tb = wd_panic_timeout_tb * 3 / 2;
-@@ -570,3 +580,12 @@ int __init watchdog_nmi_probe(void)
- 	}
- 	return 0;
- }
-+
-+#ifdef CONFIG_PPC_PSERIES
-+void watchdog_nmi_set_timeout_pct(u64 pct)
-+{
-+	pr_info("Set the NMI watchdog timeout factor to %llu%%\n", pct);
-+	WRITE_ONCE(wd_timeout_pct, pct);
-+	lockup_detector_reconfigure();
-+}
-+#endif
+ #if defined(CONFIG_SPI_MASTER)
+ 	ret = spi_register_driver(&da7210_spi_driver);
 -- 
 2.35.1
 
