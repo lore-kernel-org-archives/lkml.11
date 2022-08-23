@@ -2,47 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 448C9C3F6B0
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 257C8C38145
 	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 10:02:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351999AbiHWKBA (ORCPT
+        id S1351939AbiHWKA4 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 06:01:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56904 "EHLO
+        Tue, 23 Aug 2022 06:00:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56642 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352369AbiHWJ4u (ORCPT
+        with ESMTP id S1352320AbiHWJ4n (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 05:56:50 -0400
+        Tue, 23 Aug 2022 05:56:43 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DABE0A1A52;
-        Tue, 23 Aug 2022 01:47:32 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 51F80A0300;
+        Tue, 23 Aug 2022 01:47:29 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 2BC9E6153C;
-        Tue, 23 Aug 2022 08:47:28 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 34327C433D7;
-        Tue, 23 Aug 2022 08:47:27 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id DC50B611DD;
+        Tue, 23 Aug 2022 08:47:24 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E0335C433C1;
+        Tue, 23 Aug 2022 08:47:23 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661244447;
-        bh=eZGbWIQ2aOVW6x2f3lasoFB+MV6rwSXUOguTXwzahKY=;
+        s=korg; t=1661244444;
+        bh=+EWlPLXccA8DIb+f4YN3r+iDOk1ctotMAa2U6XA4CPg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=rpCsSr2NY6dxciOW01oD4qwzhNHJL3q4DWiH8aCwLrHUS7rdhe7q0sP+icb5bHqUG
-         EcK6uDJkxSR3LDcl2Qgmlo+paA3PTkLijbtFS912a2PCefkUFYa+YW/UFhEe9Fz05H
-         ff6EHlymqAD3XfwKIFBC7mhDM8pIIH6L2knklaT0=
+        b=m3N1onIKnCCPtSUTvG5odikgIhNvyfQ9Nlm3ej8NtMO2gB+oYdt/uzW/Y+d04mgy4
+         Hx1g/1TNdZPxxpVvFae/BZoEaYGI5pkijQSWVviq8iKDx2jn4x5eWPJIxM3YYvYfHu
+         NZSlWRbQFv3gMljPGU9czxhAqcaI+CV2vUcdgrZk=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Louis Peens <louis.peens@corigine.com>,
-        Yu Xiao <yu.xiao@corigine.com>,
-        Simon Horman <simon.horman@corigine.com>,
-        Jakub Kicinski <kuba@kernel.org>
-Subject: [PATCH 5.15 095/244] nfp: ethtool: fix the display error of `ethtool -m DEVNAME`
-Date:   Tue, 23 Aug 2022 10:24:14 +0200
-Message-Id: <20220823080102.187733538@linuxfoundation.org>
+        stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
+        Michael Ellerman <mpe@ellerman.id.au>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 4.14 138/229] powerpc/xive: Fix refcount leak in xive_get_max_prio
+Date:   Tue, 23 Aug 2022 10:24:59 +0200
+Message-Id: <20220823080058.616954930@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220823080059.091088642@linuxfoundation.org>
-References: <20220823080059.091088642@linuxfoundation.org>
+In-Reply-To: <20220823080053.202747790@linuxfoundation.org>
+References: <20220823080053.202747790@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -51,43 +50,37 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Yu Xiao <yu.xiao@corigine.com>
+From: Miaoqian Lin <linmq006@gmail.com>
 
-commit 4ae97cae07e15d41e5c0ebabba64c6eefdeb0bbe upstream.
+[ Upstream commit 255b650cbec6849443ce2e0cdd187fd5e61c218c ]
 
-The port flag isn't set to `NFP_PORT_CHANGED` when using
-`ethtool -m DEVNAME` before, so the port state (e.g. interface)
-cannot be updated. Therefore, it caused that `ethtool -m DEVNAME`
-sometimes cannot read the correct information.
+of_find_node_by_path() returns a node pointer with
+refcount incremented, we should use of_node_put() on it when done.
+Add missing of_node_put() to avoid refcount leak.
 
-E.g. `ethtool -m DEVNAME` cannot work when load driver before plug
-in optical module, as the port interface is still NONE without port
-update.
-
-Now update the port state before sending info to NIC to ensure that
-port interface is correct (latest state).
-
-Fixes: 61f7c6f44870 ("nfp: implement ethtool get module EEPROM")
-Reviewed-by: Louis Peens <louis.peens@corigine.com>
-Signed-off-by: Yu Xiao <yu.xiao@corigine.com>
-Signed-off-by: Simon Horman <simon.horman@corigine.com>
-Link: https://lore.kernel.org/r/20220802093355.69065-1-simon.horman@corigine.com
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Fixes: eac1e731b59e ("powerpc/xive: guest exploitation of the XIVE interrupt controller")
+Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
+Signed-off-by: Michael Ellerman <mpe@ellerman.id.au>
+Link: https://lore.kernel.org/r/20220605053225.56125-1-linmq006@gmail.com
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/netronome/nfp/nfp_net_ethtool.c |    2 ++
- 1 file changed, 2 insertions(+)
+ arch/powerpc/sysdev/xive/spapr.c | 1 +
+ 1 file changed, 1 insertion(+)
 
---- a/drivers/net/ethernet/netronome/nfp/nfp_net_ethtool.c
-+++ b/drivers/net/ethernet/netronome/nfp/nfp_net_ethtool.c
-@@ -1219,6 +1219,8 @@ nfp_port_get_module_info(struct net_devi
- 	u8 data;
+diff --git a/arch/powerpc/sysdev/xive/spapr.c b/arch/powerpc/sysdev/xive/spapr.c
+index 10235098a726..e9b8e06c9dce 100644
+--- a/arch/powerpc/sysdev/xive/spapr.c
++++ b/arch/powerpc/sysdev/xive/spapr.c
+@@ -569,6 +569,7 @@ static bool xive_get_max_prio(u8 *max_prio)
+ 	}
  
- 	port = nfp_port_from_netdev(netdev);
-+	/* update port state to get latest interface */
-+	set_bit(NFP_PORT_CHANGED, &port->flags);
- 	eth_port = nfp_port_get_eth_port(port);
- 	if (!eth_port)
- 		return -EOPNOTSUPP;
+ 	reg = of_get_property(rootdn, "ibm,plat-res-int-priorities", &len);
++	of_node_put(rootdn);
+ 	if (!reg) {
+ 		pr_err("Failed to read 'ibm,plat-res-int-priorities' property\n");
+ 		return false;
+-- 
+2.35.1
+
 
 
