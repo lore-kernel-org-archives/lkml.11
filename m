@@ -2,120 +2,127 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F3864C32772
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 08:38:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E9B4DC32772
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 08:38:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346159AbiHWIin (ORCPT
+        id S1346182AbiHWIis (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 04:38:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45804 "EHLO
+        Tue, 23 Aug 2022 04:38:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46548 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345554AbiHWIfp (ORCPT
+        with ESMTP id S1343969AbiHWIhM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 04:35:45 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AF7FE760FD;
-        Tue, 23 Aug 2022 01:17:05 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id D2DEF6131B;
-        Tue, 23 Aug 2022 08:17:04 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DE0F4C433C1;
-        Tue, 23 Aug 2022 08:17:03 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661242624;
-        bh=WnMkrFmRqTr/C6KW7WcHvuKKxCCcy1TaXXmxhygiNlc=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=d4XaXvpTh3XxVNzZ+Epitm6b1As9LQa73pqF+VuRyVmeT51PCP/Lo1kDN/B095XdC
-         bmx1KrcQi+pyv/cHhPotTkWIW4CLiYJ8t8FrTvi0WNk1yAd8G+6BQOPCM3nTKWwkqq
-         b16jStfX/7a1voW2y1i2LpU8dUaW6a/202i2XCE4=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        "Sudip Mukherjee (Codethink)" <sudipm.mukherjee@gmail.com>,
-        Nathan Chancellor <nathan@kernel.org>,
-        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.9 101/101] MIPS: tlbex: Explicitly compare _PAGE_NO_EXEC against 0
-Date:   Tue, 23 Aug 2022 10:04:14 +0200
-Message-Id: <20220823080038.398671207@linuxfoundation.org>
-X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220823080034.579196046@linuxfoundation.org>
-References: <20220823080034.579196046@linuxfoundation.org>
-User-Agent: quilt/0.67
+        Tue, 23 Aug 2022 04:37:12 -0400
+Received: from mail-lf1-x12a.google.com (mail-lf1-x12a.google.com [IPv6:2a00:1450:4864:20::12a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 174FC77E86
+        for <linux-kernel@vger.kernel.org>; Tue, 23 Aug 2022 01:17:56 -0700 (PDT)
+Received: by mail-lf1-x12a.google.com with SMTP id z6so18634490lfu.9
+        for <linux-kernel@vger.kernel.org>; Tue, 23 Aug 2022 01:17:56 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc;
+        bh=9OqpWtEeuh8ypX1cXc7uAcrCW4m6r/tanmkI11A3Ifk=;
+        b=eTFAgLCB/8cpoPAhYcbVqIDJ2pl/IkkvWPYmcey5kKfMuCCk0rGizy9SyweRQyHtHl
+         WI5+Zy6cGOh/076pcrjt4lRApsuZLiwfqc8b0BBKrHceyBIeTQtrd5DooiBwhCozMI1z
+         +K58OvvT8GV8rPsenMeI2YUun/SFPmcjq31yfu6XKtvJ3U99AXwDZg2uoTyInitkHNLT
+         9ZksMgIJGPUHGoJ6vYxJk8KK4+nmKbPiOp34Y52JdEeN/18JcIS9CvFWXiEXCPo86W9/
+         sqkYy610lz1XikvfXKtzIpU1RfwKLioMZ0hyKegAHDfT3X2aIxP+gQiXMuiOfvF2+wWo
+         pzWg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc;
+        bh=9OqpWtEeuh8ypX1cXc7uAcrCW4m6r/tanmkI11A3Ifk=;
+        b=w4vHpzsl587xLEK4PxI/DIsabhi7kA7EBDZOERSyGuCJ/HtaIBZZ3lq41iisg0yVCA
+         3lHmgH17C8ZfXZWa7PnQ5NFVBKuT0DcRWFfjyWz9k0iRuJ4xBThE4ehnH72e8biXTcUl
+         NAvBMnJHRiQgeIfNGNMU3MJ47WHWUX1JEjQFxFgTr3BoygTKMD4n3ejkHvsFRwfIFh7f
+         0/6jAiu/DTuy9kUm7LnWNlajksheg1cxxqq5f3gehcRev4Kvad/8IbLLx/64yteaqsyJ
+         XcaOmNULewO76IuAAGtysFp4rgFapZ/iRM9+YHtZ6RUOnMIQLIomoWVJlNdfI8CmHUED
+         uX0g==
+X-Gm-Message-State: ACgBeo2ycmYhgrdAcrz4v2uvzFKpEAUJ7vGxa15H9qRM2n2fm7eyd4f2
+        fu1Ehq504hT9Kl5/kSxEY++1Wg==
+X-Google-Smtp-Source: AA6agR53e29e30P7d7REqgiaaLN5FMBaCGv2iuqS7/6pzPEEi/wAmrdSXEzVfrevBl6W4oRZ5Y2p5g==
+X-Received: by 2002:a05:6512:3b8e:b0:492:f799:76b9 with SMTP id g14-20020a0565123b8e00b00492f79976b9mr544446lfv.207.1661242645734;
+        Tue, 23 Aug 2022 01:17:25 -0700 (PDT)
+Received: from [192.168.0.11] (89-27-92-210.bb.dnainternet.fi. [89.27.92.210])
+        by smtp.gmail.com with ESMTPSA id s8-20020a19ad48000000b0048ae316caf0sm2379428lfd.18.2022.08.23.01.17.24
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 23 Aug 2022 01:17:24 -0700 (PDT)
+Message-ID: <a5a15749-1047-74ea-831e-54d27a6d6cdf@linaro.org>
+Date:   Tue, 23 Aug 2022 11:17:23 +0300
 MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.12.0
+Subject: Re: [PATCH 16/20] dt-bindings: memory: snps: Detach Zynq DDRC
+ controller support
+Content-Language: en-US
+To:     Serge Semin <Sergey.Semin@baikalelectronics.ru>,
+        Rob Herring <robh@kernel.org>,
+        Michal Simek <michal.simek@xilinx.com>,
+        Borislav Petkov <bp@alien8.de>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Tony Luck <tony.luck@intel.com>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Manish Narani <manish.narani@xilinx.com>
+Cc:     Serge Semin <fancer.lancer@gmail.com>,
+        Alexey Malahov <Alexey.Malahov@baikalelectronics.ru>,
+        Michail Ivanov <Michail.Ivanov@baikalelectronics.ru>,
+        Pavel Parkhomenko <Pavel.Parkhomenko@baikalelectronics.ru>,
+        Punnaiah Choudary Kalluri 
+        <punnaiah.choudary.kalluri@xilinx.com>,
+        Dinh Nguyen <dinguyen@kernel.org>,
+        James Morse <james.morse@arm.com>,
+        Robert Richter <rric@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-edac@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <20220822190730.27277-1-Sergey.Semin@baikalelectronics.ru>
+ <20220822190730.27277-17-Sergey.Semin@baikalelectronics.ru>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+In-Reply-To: <20220822190730.27277-17-Sergey.Semin@baikalelectronics.ru>
 Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Nathan Chancellor <nathan@kernel.org>
+On 22/08/2022 22:07, Serge Semin wrote:
+> The Zynq A05 DDRC controller has nothing in common with DW uMCTL2 DDRC:
+> the CSRs layout is absolutely different and it doesn't has IRQ unlike DW
+> uMCTL2 DDR controller of all versions (v1.x, v2.x and v3.x). Thus there is
+> no any reason to have these controllers described by the same bindings.
+> Thus let's split them up.
+> 
+> While at it rename the original Synopsys uMCTL2 DT-schema file to a more
+> descriptive - snps,dw-umctl2-ddrc.yaml and add a more detailed title and
+> description of the device bindings.
 
-[ Upstream commit 74de14fe05dd6b151d73cb0c73c8ec874cbdcde6 ]
+Filename should be based on compatible, so if renaming then
+snps,ddrc-3.80a.yaml or snps,ddrc.yaml... which leads to original
+filename anyway. Therefore nack for rename.
 
-When CONFIG_XPA is enabled, Clang warns:
-
-  arch/mips/mm/tlbex.c:629:24: error: converting the result of '<<' to a boolean; did you mean '(1 << _PAGE_NO_EXEC_SHIFT) != 0'? [-Werror,-Wint-in-bool-context]
-          if (cpu_has_rixi && !!_PAGE_NO_EXEC) {
-                              ^
-  arch/mips/include/asm/pgtable-bits.h:174:28: note: expanded from macro '_PAGE_NO_EXEC'
-  # define _PAGE_NO_EXEC          (1 << _PAGE_NO_EXEC_SHIFT)
-                                     ^
-  arch/mips/mm/tlbex.c:2568:24: error: converting the result of '<<' to a boolean; did you mean '(1 << _PAGE_NO_EXEC_SHIFT) != 0'? [-Werror,-Wint-in-bool-context]
-          if (!cpu_has_rixi || !_PAGE_NO_EXEC) {
-                                ^
-  arch/mips/include/asm/pgtable-bits.h:174:28: note: expanded from macro '_PAGE_NO_EXEC'
-  # define _PAGE_NO_EXEC          (1 << _PAGE_NO_EXEC_SHIFT)
-                                     ^
-  2 errors generated.
-
-_PAGE_NO_EXEC can be '0' or '1 << _PAGE_NO_EXEC_SHIFT' depending on the
-build and runtime configuration, which is what the negation operators
-are trying to convey. To silence the warning, explicitly compare against
-0 so the result of the '<<' operator is not implicitly converted to a
-boolean.
-
-According to its documentation, GCC enables -Wint-in-bool-context with
--Wall but this warning is not visible when building the same
-configuration with GCC. It appears GCC only warns when compiling C++,
-not C, although the documentation makes no note of this:
-https://godbolt.org/z/x39q3brxf
-
-Reported-by: Sudip Mukherjee (Codethink) <sudipm.mukherjee@gmail.com>
-Signed-off-by: Nathan Chancellor <nathan@kernel.org>
-Signed-off-by: Thomas Bogendoerfer <tsbogend@alpha.franken.de>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- arch/mips/mm/tlbex.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
-
-diff --git a/arch/mips/mm/tlbex.c b/arch/mips/mm/tlbex.c
-index f625fd20b21e..65fed205383e 100644
---- a/arch/mips/mm/tlbex.c
-+++ b/arch/mips/mm/tlbex.c
-@@ -637,7 +637,7 @@ static __maybe_unused void build_convert_pte_to_entrylo(u32 **p,
- 		return;
- 	}
- 
--	if (cpu_has_rixi && !!_PAGE_NO_EXEC) {
-+	if (cpu_has_rixi && _PAGE_NO_EXEC != 0) {
- 		if (fill_includes_sw_bits) {
- 			UASM_i_ROTR(p, reg, reg, ilog2(_PAGE_GLOBAL));
- 		} else {
-@@ -2518,7 +2518,7 @@ static void check_pabits(void)
- 	unsigned long entry;
- 	unsigned pabits, fillbits;
- 
--	if (!cpu_has_rixi || !_PAGE_NO_EXEC) {
-+	if (!cpu_has_rixi || _PAGE_NO_EXEC == 0) {
- 		/*
- 		 * We'll only be making use of the fact that we can rotate bits
- 		 * into the fill if the CPU supports RIXI, so don't bother
--- 
-2.35.1
+BTW, if you perform renames, generate patches with proper -M/-C/-B
+arguments so this is detected.
 
 
+> 
+> Signed-off-by: Serge Semin <Sergey.Semin@baikalelectronics.ru>
+> --->  .../snps,dw-umctl2-ddrc.yaml                  | 51 +++++++++++++
 
+This is a mess. I did not get any cover letters, any other patches any
+description of relation between this and your other one.
+
+It seems you make independent and conflicting changes to the same file,
+so this has to be properly organized.
+
+Send entire patchset with cover letter with description of all
+dependencies to all maintainers.
+
+This is unreviewable now, so a no.
+
+Best regards,
+Krzysztof
