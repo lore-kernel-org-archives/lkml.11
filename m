@@ -2,95 +2,71 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2D3B4C32772
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 16:54:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F0F96C32772
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 16:55:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245637AbiHWQyv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 12:54:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53098 "EHLO
+        id S245647AbiHWQzP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 23 Aug 2022 12:55:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53360 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245529AbiHWQyd (ORCPT
+        with ESMTP id S245632AbiHWQyo (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 12:54:33 -0400
-Received: from mail-pg1-x531.google.com (mail-pg1-x531.google.com [IPv6:2607:f8b0:4864:20::531])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 42B851365EC
-        for <linux-kernel@vger.kernel.org>; Tue, 23 Aug 2022 06:23:30 -0700 (PDT)
-Received: by mail-pg1-x531.google.com with SMTP id d71so12234681pgc.13
-        for <linux-kernel@vger.kernel.org>; Tue, 23 Aug 2022 06:23:30 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=kernel-dk.20210112.gappssmtp.com; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:content-language
-         :references:cc:to:subject:user-agent:mime-version:date:message-id
-         :from:to:cc;
-        bh=dsnQjm2aeQSPHxgMCEVQhHLhdbZVZgzIFBIMZn/yc4g=;
-        b=zLOIG4kzUo02wThJ1sFTDaJUaKIjo7Zl2wfZhGz1UjLMeoqBlkPo7FeyrdyC3i3j1X
-         KUt7J4cNBAdmjYwzmoni6OTa3lw9yWBRNmjknYYH+2/6KvGtqxO0N3xPoJLyH16wtI7H
-         jt49qWGH/mISIPw+p8+4mIuG90FrXEljShY6ksQEDrjRod9+WV5Eo7LAsyj/Af37t4fw
-         hzpBTQ3JtLEtDyIyeHQknuaP2EFNAjRQlSdCaIhGLyQu9UawqznQhB1okeT4p67CegZO
-         0fEkmkmRTIiLboqwrZQ4zAvdOtwBQ5w/fTMZNcVqYOChcKtKrmMfOaE3OlgSw1zwaPwW
-         NDGQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:content-language
-         :references:cc:to:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc;
-        bh=dsnQjm2aeQSPHxgMCEVQhHLhdbZVZgzIFBIMZn/yc4g=;
-        b=8BCfcSVPclR97H8yS/BBI5uZu6yVMtKmK2iT7C7H39fl5vtP+WNNsOIlp5uzsX17eb
-         b9jN0A9GiYIpfFhiBbNED3k0ZaawhfasUHLviLKCT0NbXHG0McV03kDmqcuhAOXIYJxK
-         iXC/FF1naGdhCpyqc5QqsgoXnpFPMei5JbTEyfs89zyXrg4IXqFZdiOvBqYPLdLvVGis
-         UzgUPybcno+dauW1l2siuqM4xj3kgBzQPlwbbTtQDs004pGp2SlP64fhh6ZS32WN7vI0
-         jdbXuEIo+vugBvEytxpIQtBHbjRLa2Y1/KK64CesF7eEW2inVjpkZQmSWHDDtwnWo+eQ
-         HbiA==
-X-Gm-Message-State: ACgBeo3w7QhBarUGNMPR2dotrPKyi69BK5jVd3rHKDDFQGH52Nwc7hiG
-        NHyxq1zjSWax//2JOYWOCpKNLw==
-X-Google-Smtp-Source: AA6agR78DUrQxEFL3FYUsKmK9NA09YKVQiuX98syAqM7Sveh0Pk2FWDokPiB4SdGsO3SoqLVmgpWBg==
-X-Received: by 2002:a63:1c06:0:b0:423:317a:1e03 with SMTP id c6-20020a631c06000000b00423317a1e03mr20991438pgc.438.1661261009624;
-        Tue, 23 Aug 2022 06:23:29 -0700 (PDT)
-Received: from [192.168.1.136] ([198.8.77.157])
-        by smtp.gmail.com with ESMTPSA id z62-20020a623341000000b005360dc9c45csm8616771pfz.43.2022.08.23.06.23.27
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 23 Aug 2022 06:23:27 -0700 (PDT)
-Message-ID: <f67b6e7d-0f06-692e-30ee-b4ce68b7efcb@kernel.dk>
-Date:   Tue, 23 Aug 2022 07:23:26 -0600
+        Tue, 23 Aug 2022 12:54:44 -0400
+Received: from bg5.exmail.qq.com (bg4.exmail.qq.com [43.154.221.58])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0968590811
+        for <linux-kernel@vger.kernel.org>; Tue, 23 Aug 2022 07:18:59 -0700 (PDT)
+X-QQ-mid: bizesmtp88t1661264325tb54gilq
+Received: from localhost.localdomain ( [182.148.14.124])
+        by bizesmtp.qq.com (ESMTP) with 
+        id ; Tue, 23 Aug 2022 22:18:43 +0800 (CST)
+X-QQ-SSF: 0100000000200040B000B00A0000000
+X-QQ-FEAT: ILHsT53NKPgLTuHpE6ccSHE70S/G0EX2mN4fT6dumbwx7YjyhfDhsWAnefi8+
+        sf6o3pVtUwhUSCFlIAZARgDB8TvsFn2X3rBV3TbDNQMr1l3g2jhdnCTm1rAfpyn1qI0MAhC
+        njWcuSxPK4v7kwhUZzuMYr8s9+BxfZYYoF6GJKsD8ebVcZwSL0A8ffznYyVjUZm9b1c0uuR
+        IP3PHz6O7iqmUCKsBEi3s63DSxC18sVY1qXfi/PqQwpgd/P0UQMJwePOFAV05D70EA31FBz
+        3EGHhjbyuV4twtM3sdGvyIE+ZH6AQYtNObJHvE29D80nu9few/S+8STQ2WMKV7FaNF32MVG
+        BZ6qHQ3UgJirabWgIEOp+9Ga1prxOP7idbkoo06zR/cgh65DeO7N79Or6iUBw==
+X-QQ-GoodBg: 0
+From:   wangjianli <wangjianli@cdjrlc.com>
+To:     zhenyuw@linux.intel.com, zhi.a.wang@intel.com,
+        jani.nikula@linux.intel.com, joonas.lahtinen@linux.intel.com,
+        odrigo.vivi@intel.com, tvrtko.ursulin@linux.intel.com,
+        airlied@linux.ie, daniel@ffwll.ch
+Cc:     intel-gvt-dev@lists.freedesktop.org,
+        intel-gfx@lists.freedesktop.org, dri-devel@lists.freedesktop.org,
+        linux-kernel@vger.kernel.org, wangjianli <wangjianli@cdjrlc.com>
+Subject: [PATCH] i915/gvt: fix repeated words in comments
+Date:   Tue, 23 Aug 2022 22:18:36 +0800
+Message-Id: <20220823141836.14176-1-wangjianli@cdjrlc.com>
+X-Mailer: git-send-email 2.36.1
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux aarch64; rv:102.0) Gecko/20100101
- Thunderbird/102.1.2
-Subject: Re: [PATCH 0/2] Maintainer and uapi header update
-To:     Ammar Faizi <ammarfaizi2@gnuweeb.org>
-Cc:     io-uring Mailing List <io-uring@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        GNU/Weeb Mailing List <gwml@vger.gnuweeb.org>,
-        Bart Van Assche <bvanassche@acm.org>,
-        Dylan Yudaken <dylany@fb.com>,
-        Facebook Kernel Team <kernel-team@fb.com>,
-        Kanna Scarlet <knscarlet@gnuweeb.org>
-References: <20220823114337.2858669-1-ammar.faizi@intel.com>
-Content-Language: en-US
-From:   Jens Axboe <axboe@kernel.dk>
-In-Reply-To: <20220823114337.2858669-1-ammar.faizi@intel.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
+X-QQ-SENDSIZE: 520
+Feedback-ID: bizesmtp:cdjrlc.com:qybglogicsvr:qybglogicsvr7
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 8/23/22 5:45 AM, Ammar Faizi wrote:
-> From: Ammar Faizi <ammarfaizi2@gnuweeb.org>
-> 
-> Hi Jens,
-> 
-> There are two patches in this series.
-> 
-> 1) MAINTAINERS: Add `include/linux/io_uring_types.h`.
-> 
-> File include/linux/io_uring_types.h doesn't have a maintainer, add it
-> to the io_uring section.
-> 
-> 2) io_uring: uapi: Add `extern "C"` in io_uring.h for liburing.
+ Delete the redundant word 'the'.
 
-Applied, thanks.
+Signed-off-by: wangjianli <wangjianli@cdjrlc.com>
+---
+ drivers/gpu/drm/i915/gvt/gtt.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
+diff --git a/drivers/gpu/drm/i915/gvt/gtt.c b/drivers/gpu/drm/i915/gvt/gtt.c
+index b4f69364f9a1..62e5f27adca9 100644
+--- a/drivers/gpu/drm/i915/gvt/gtt.c
++++ b/drivers/gpu/drm/i915/gvt/gtt.c
+@@ -2786,7 +2786,7 @@ int intel_gvt_init_gtt(struct intel_gvt *gvt)
+  * @gvt: GVT device
+  *
+  * This function is called at the driver unloading stage, to clean up the
+- * the mm components of a GVT device.
++ * mm components of a GVT device.
+  *
+  */
+ void intel_gvt_clean_gtt(struct intel_gvt *gvt)
 -- 
-Jens Axboe
-
+2.36.1
 
