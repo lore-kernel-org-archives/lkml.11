@@ -2,131 +2,129 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E9A56C32774
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 03:09:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0284EC28D13
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 03:11:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239818AbiHWDJl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 22 Aug 2022 23:09:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33432 "EHLO
+        id S239793AbiHWDLj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 22 Aug 2022 23:11:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32912 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240009AbiHWDIq (ORCPT
+        with ESMTP id S240180AbiHWDKy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 22 Aug 2022 23:08:46 -0400
-Received: from out1-smtp.messagingengine.com (out1-smtp.messagingengine.com [66.111.4.25])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 79B4413DC2;
-        Mon, 22 Aug 2022 20:07:17 -0700 (PDT)
-Received: from compute4.internal (compute4.nyi.internal [10.202.2.44])
-        by mailout.nyi.internal (Postfix) with ESMTP id 2E2C65C0130;
-        Mon, 22 Aug 2022 23:07:14 -0400 (EDT)
-Received: from mailfrontend2 ([10.202.2.163])
-  by compute4.internal (MEProxy); Mon, 22 Aug 2022 23:07:14 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=sholland.org; h=
-        cc:cc:content-transfer-encoding:content-type:date:date:from:from
-        :in-reply-to:in-reply-to:message-id:mime-version:references
-        :reply-to:sender:subject:subject:to:to; s=fm2; t=1661224034; x=
-        1661310434; bh=LGz61TGMJw4eB4K1edx3Y0jE6fpIOCMFMqzcbFbb+4s=; b=0
-        3GRcXBcM6whAkg4wrC6xHUSAX5fzIWR4YLs6tDxiZ4NKmvHC8EeKxJd92UxYgzGm
-        HBvDD5idFIcyyrSAc/Rh+i2YmheOpqmFWao26W4/7GsUrdoqANuN1xEUFOfsggBP
-        uHBiZ/kS9W8qARau8tyJlEYqeD1m6hBMbAA7Dtc56sh/kwNTkFiFkQkaQnZLBjaJ
-        Mi7oP5UTIUVcl+fbg6VxiPGCrOia9/utO3cJ26XU5+NnYLG7iiT768jwXEXplpop
-        U84ceKp5mf43inu6lSYOhHusI1uWbd0i3AqL5NbRnufAEs+IIfV+J3GUdSXHX9t9
-        emXmQ11SnJjucdAEd1tMA==
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        messagingengine.com; h=cc:cc:content-transfer-encoding
-        :content-type:date:date:feedback-id:feedback-id:from:from
-        :in-reply-to:in-reply-to:message-id:mime-version:references
-        :reply-to:sender:subject:subject:to:to:x-me-proxy:x-me-proxy
-        :x-me-sender:x-me-sender:x-sasl-enc; s=fm1; t=1661224034; x=
-        1661310434; bh=LGz61TGMJw4eB4K1edx3Y0jE6fpIOCMFMqzcbFbb+4s=; b=y
-        NZGT1yP4oTwzsKphPMf8kLo3Nh5wWmYuA4BXo3p65RQuAEkkiXA5fuhyPdbuoTFE
-        1l55jlMun1Rr7hBuCtT+xktw+uDfZrYvxCmG9qXFk5kwvJ6mVN84HipEh/S+UAw9
-        w+WPTXircOp6k2M8Uc55cAcDiDywyTBOzgE3yO886KOGN9purztsqIUg+cUnBzha
-        RajOFVRm/Cs0BrXY5syeon+Wa5DbfZoxOftBCy7bzpRhx3rn7TOeEjMuNC9YHfPq
-        ORDLSzZBADgQq0D6tmFW4fg5kEx1ipeRoUjaGVVCNjo29hTRySC6Nz17wiEbU0dR
-        dMZ+KGWp3grEaS3J38mCw==
-X-ME-Sender: <xms:YUQEY86ajBIkBtX2kcxoyZ9J8ZNU2lBtvnNWAi5EMMOOPG9A3PCflw>
-    <xme:YUQEY94Z0dr54yhZqEMUfz0zj_d10-xsYxQ4XqKROy6DvG0sluSW2fL-MEzI4M601
-    Xko6GVwE-bV1ZBYgg>
-X-ME-Received: <xmr:YUQEY7fPTVxuMj5mVfXhktBftqCZY5qXLpdm1uRlflgIjDNQjebkwoFCgoRPj4SaPhU4oR2jHEfkug5sutbKNK2wXXN_ZNEFWXcQVRK_-oK_kWY6cv5UZmeiQg>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvfedrvdeikedgieekucetufdoteggodetrfdotf
-    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
-    uceurghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmne
-    cujfgurhepuffvvehfhffkffgfgggjtgfgsehtkeertddtfeejnecuhfhrohhmpefurghm
-    uhgvlhcujfholhhlrghnugcuoehsrghmuhgvlhesshhhohhllhgrnhgurdhorhhgqeenuc
-    ggtffrrghtthgvrhhnpedtvefhheehgfdvkeetffeludeuudehudeuvddtveelleekvedv
-    uedviefhkeeuheenucevlhhushhtvghrufhiiigvpedtnecurfgrrhgrmhepmhgrihhlfh
-    hrohhmpehsrghmuhgvlhesshhhohhllhgrnhgurdhorhhg
-X-ME-Proxy: <xmx:YUQEYxJHV6kWpE6Z9A-DqsMoaevhrVFsEwXjiI5AV4UPHcjEgSZ49Q>
-    <xmx:YUQEYwIz3-BmWn_uibdL40Sa8dtCpDIBhu3H6aRSTW-ObOTcgRygRQ>
-    <xmx:YUQEYywgm4lmPS8SWjGimxIs7A0ITKBqj4KW_utJA0OSsiqjsrg_Xw>
-    <xmx:YkQEY5rXTBxSXpWS_WFJGmYR_NCzAynSp-eHOhNKlnj-WHCynfDzLw>
-Feedback-ID: i0ad843c9:Fastmail
-Received: by mail.messagingengine.com (Postfix) with ESMTPA; Mon,
- 22 Aug 2022 23:07:13 -0400 (EDT)
-Subject: Re: [PATCH v2 4/4] arm64: dts: allwinner: beelink-gs1: Enable GPU OPP
-To:     =?UTF-8?B?Q2zDqW1lbnQgUMOpcm9u?= <peron.clem@gmail.com>,
-        Chen-Yu Tsai <wens@csie.org>,
-        Jernej Skrabec <jernej.skrabec@gmail.com>
-Cc:     Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-sunxi@lists.linux.dev, linux-kernel@vger.kernel.org
-References: <20220821173051.155038-1-peron.clem@gmail.com>
- <20220821173051.155038-5-peron.clem@gmail.com>
-From:   Samuel Holland <samuel@sholland.org>
-Message-ID: <0c028109-bb50-fbaa-de18-9876706a7477@sholland.org>
-Date:   Mon, 22 Aug 2022 22:07:12 -0500
+        Mon, 22 Aug 2022 23:10:54 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1CF7C5C9F9
+        for <linux-kernel@vger.kernel.org>; Mon, 22 Aug 2022 20:09:50 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1661224189;
+        h=from:from:reply-to:reply-to:subject:subject:date:date:
+         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
+         content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=PdyIPdKorQDXK1tldjSfL+LVZR0k6xko4u2KPDklhbE=;
+        b=Eoo/flel6hLt/KZy7cD9iidZ7wNixoQud4lCyOkgFFotYgL9bOqE06EOK0tUuljW78oYyl
+        JzUkvaLEf5q44yYoQx/JMNsBPtnMH4dBfNmpEvRC57mlgzipcBrcttVbYQ/+c7dyujaWuv
+        k1FgpzIGTExgr1/EZKqklYyd4S9aJco=
+Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
+ [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-663-d3zYu98qMW-lWG9QS1UrQg-1; Mon, 22 Aug 2022 23:09:42 -0400
+X-MC-Unique: d3zYu98qMW-lWG9QS1UrQg-1
+Received: from smtp.corp.redhat.com (int-mx10.intmail.prod.int.rdu2.redhat.com [10.11.54.10])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 7EADE185A79C;
+        Tue, 23 Aug 2022 03:09:41 +0000 (UTC)
+Received: from [10.64.54.16] (vpn2-54-16.bne.redhat.com [10.64.54.16])
+        by smtp.corp.redhat.com (Postfix) with ESMTPS id 6E92E492C3B;
+        Tue, 23 Aug 2022 03:09:32 +0000 (UTC)
+Reply-To: Gavin Shan <gshan@redhat.com>
+Subject: Re: [PATCH v1 3/5] KVM: selftests: Dirty host pages in dirty_log_test
+From:   Gavin Shan <gshan@redhat.com>
+To:     Andrew Jones <andrew.jones@linux.dev>
+Cc:     kvmarm@lists.cs.columbia.edu, linux-arm-kernel@lists.infradead.org,
+        kvm@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-doc@vger.kernel.org, linux-kselftest@vger.kernel.org,
+        peterx@redhat.com, pbonzini@redhat.com, corbet@lwn.net,
+        maz@kernel.org, james.morse@arm.com, alexandru.elisei@arm.com,
+        suzuki.poulose@arm.com, oliver.upton@linux.dev,
+        catalin.marinas@arm.com, will@kernel.org, shuah@kernel.org,
+        seanjc@google.com, drjones@redhat.com, dmatlack@google.com,
+        bgardon@google.com, ricarkol@google.com, zhenyzha@redhat.com,
+        shan.gavin@gmail.com
+References: <20220819005601.198436-1-gshan@redhat.com>
+ <20220819005601.198436-4-gshan@redhat.com>
+ <20220819052805.qnhw2d3arxixzvhl@kamzik>
+ <3abb690f-e616-630f-ba40-e590ec8bb5c1@redhat.com>
+Message-ID: <0496fe72-e3da-9778-b307-eb5cc157e8fe@redhat.com>
+Date:   Tue, 23 Aug 2022 13:09:28 +1000
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.6.0
+ Thunderbird/68.2.0
 MIME-Version: 1.0
-In-Reply-To: <20220821173051.155038-5-peron.clem@gmail.com>
-Content-Type: text/plain; charset=utf-8
+In-Reply-To: <3abb690f-e616-630f-ba40-e590ec8bb5c1@redhat.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7bit
+X-Scanned-By: MIMEDefang 2.85 on 10.11.54.10
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 8/21/22 12:30 PM, Clément Péron wrote:
-> Enable GPU OPP table for Beelink GS1
+Hi Drew,
+
+On 8/22/22 4:29 PM, Gavin Shan wrote:
+> On 8/19/22 3:28 PM, Andrew Jones wrote:
+>> On Fri, Aug 19, 2022 at 08:55:59AM +0800, Gavin Shan wrote:
+>>> It's assumed that 1024 host pages, instead of guest pages, are dirtied
+>>> in each iteration in guest_code(). The current implementation misses
+>>> the case of mismatched page sizes in host and guest. For example,
+>>> ARM64 could have 64KB page size in guest, but 4KB page size in host.
+>>> (TEST_PAGES_PER_LOOP / 16), instead of TEST_PAGES_PER_LOOP, host pages
+>>> are dirtied in every iteration.
+>>>
+>>> Fix the issue by touching all sub-pages when we have mismatched
+>>> page sizes in host and guest.
+>>
+>> I'll let the dirty-log test authors decide what's best to do for this
+>> test, but I'd think we should let the guest continue dirtying its
+>> pages without knowledge of the host pages. Then, adjust the host test
+>> code to assert all sub-pages, other than the ones it expects the guest
+>> to have written, remain untouched.
+>>
 > 
-> Signed-off-by: Clément Péron <peron.clem@gmail.com>
-> ---
->  arch/arm64/boot/dts/allwinner/sun50i-h6-beelink-gs1.dts | 2 ++
->  1 file changed, 2 insertions(+)
+> I don't think what is clarified in the change log is correct. The current
+> implementation already had the logic to handle the mismatched page sizes
+> in vm_dirty_log_verify() where 'step' is used for it by fetching value
+> from vm_num_host_pages(mode, 1). Please ignore this patch for now, as
+> explained below.
 > 
-> diff --git a/arch/arm64/boot/dts/allwinner/sun50i-h6-beelink-gs1.dts b/arch/arm64/boot/dts/allwinner/sun50i-h6-beelink-gs1.dts
-> index 6249e9e02928..20fc0584d1c6 100644
-> --- a/arch/arm64/boot/dts/allwinner/sun50i-h6-beelink-gs1.dts
-> +++ b/arch/arm64/boot/dts/allwinner/sun50i-h6-beelink-gs1.dts
-> @@ -5,6 +5,7 @@
->  
->  #include "sun50i-h6.dtsi"
->  #include "sun50i-h6-cpu-opp.dtsi"
-> +#include "sun50i-h6-gpu-opp.dtsi"
->  
->  #include <dt-bindings/gpio/gpio.h>
->  
-> @@ -261,6 +262,7 @@ reg_dcdca: dcdca {
->  			};
->  
->  			reg_dcdcc: dcdcc {
-> +				regulator-always-on;
-
-Why is this necessary? This file already has:
-
-&gpu {
-	mali-supply = <&reg_dcdcc>;
-	status = "okay";
-};
-
-So there is a consumer for this regulator.
-
-Regards,
-Samuel
-
->  				regulator-enable-ramp-delay = <32000>;
->  				regulator-min-microvolt = <810000>;
->  				regulator-max-microvolt = <1080000>;
+> The issue I have is the 'dirty_log_test' hangs when I have 4KB host page size
+> and 64KB guest page size. It seems the vcpu doesn't exit due to full ring
+> buffer state or kick-off. I will have more investigations to figure out the
+> root cause.
 > 
+
+[...]
+
+Please ignore this PATCH[3/5], I think this should be fixed by selecting
+correct dirty ring count and the fix will be folded to PATCH[5/5] in next
+revision.
+
+In dirty_log_test, we have 1GB memory for guest to write and make them
+dirty. When we have mismatch page sizes on host and guest, which is either
+4kb-host-64kb-guest or 64kb-host-4kb-guest apart from 16kb case, 16384 host
+pages are dirtied in each iteration. The default dirty ring count is 65536.
+So the vcpu never exit due to full-dirty-ring-buffer state. This leads the
+guest's code keep running and the dirty log isn't collected by the main
+thread.
+
+     #define TEST_DIRTY_RING_COUNT           65536
+
+     dirty_pages_per_iteration = (0x40000000 / 0x10000)
+                               = 0x4000
+                               = 16384
+
+Thanks,
+Gavin
 
