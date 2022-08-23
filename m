@@ -2,45 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 58BD0C32772
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 08:43:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 30ADBC32772
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 08:44:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347168AbiHWIny (ORCPT
+        id S1347194AbiHWIn7 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 04:43:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59860 "EHLO
+        Tue, 23 Aug 2022 04:43:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46536 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348223AbiHWIlY (ORCPT
+        with ESMTP id S1347604AbiHWIlA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 04:41:24 -0400
+        Tue, 23 Aug 2022 04:41:00 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7F34F40BE1;
-        Tue, 23 Aug 2022 01:19:41 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0E9B15F234;
+        Tue, 23 Aug 2022 01:19:13 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 625E76135D;
-        Tue, 23 Aug 2022 08:18:18 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 61061C43470;
-        Tue, 23 Aug 2022 08:18:17 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 2930661360;
+        Tue, 23 Aug 2022 08:17:51 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1D8A3C433D6;
+        Tue, 23 Aug 2022 08:17:49 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661242697;
-        bh=X6jgYWZ4Mu4BRn1XVD+JQfc78HmS4SDy8hx0sB+nn/s=;
+        s=korg; t=1661242670;
+        bh=Rb8RqMWonuLosEt81hl+n3DDIYofEdVxfe5kXGS+gVU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=moqOTMh9KaV8bJAre+F84omy0uPGRK1mKU+rM3OVlCWHGXWNuzE8fupn24himOk/s
-         qin33wZsTgLt9D6HIKUQ8iimE13fJT97QQwhhzSlWY6tn17ZgPPYCDDswTJQGDe4Vx
-         hWBB++00jxIi+PGpdSwj2MR6kOGgqdyn5WFGZ65k=
+        b=OYT7Djebl8/ySjAl7YMKNXWh7UvmaPlL4DVuK55d6HLL2Ft9obw55m+mIXkLuxCvC
+         6QDWkqD9WAqaZv92EaQjmw5OTCVfO1fcKgjKvIRm+SG9L8VuO0yqI/n0+CIhBO+Eq8
+         zj39QPTEOxgF+UWfdo2THaCevitfzhsbGB6YZCbg=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Przemyslaw Patynowski <przemyslawx.patynowski@intel.com>,
-        Jedrzej Jagielski <jedrzej.jagielski@intel.com>,
-        Marek Szlosek <marek.szlosek@intel.com>,
-        Tony Nguyen <anthony.l.nguyen@intel.com>
-Subject: [PATCH 5.19 172/365] iavf: Fix adminq error handling
-Date:   Tue, 23 Aug 2022 10:01:13 +0200
-Message-Id: <20220823080125.404036511@linuxfoundation.org>
+        stable@vger.kernel.org, Yan Lei <chinayanlei2002@163.com>,
+        Konstantin Komarov <almaz.alexandrovich@paragon-software.com>
+Subject: [PATCH 5.19 160/365] fs/ntfs3: Fix using uninitialized value n when calling indx_read
+Date:   Tue, 23 Aug 2022 10:01:01 +0200
+Message-Id: <20220823080124.909853406@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220823080118.128342613@linuxfoundation.org>
 References: <20220823080118.128342613@linuxfoundation.org>
@@ -52,82 +49,30 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Przemyslaw Patynowski <przemyslawx.patynowski@intel.com>
+From: Yan Lei <chinayanlei2002@163.com>
 
-commit 419831617ed349992c84344dbd9e627f9e68f842 upstream.
+commit ae5a4e46916fc307288227b64c1d062352eb93b7 upstream.
 
-iavf_alloc_asq_bufs/iavf_alloc_arq_bufs allocates with dma_alloc_coherent
-memory for VF mailbox.
-Free DMA regions for both ASQ and ARQ in case error happens during
-configuration of ASQ/ARQ registers.
-Without this change it is possible to see when unloading interface:
-74626.583369: dma_debug_device_change: device driver has pending DMA allocations while released from device [count=32]
-One of leaked entries details: [device address=0x0000000b27ff9000] [size=4096 bytes] [mapped with DMA_BIDIRECTIONAL] [mapped as coherent]
+This value is checked in indx_read, so it must be initialized
+Fixes: 82cae269cfa9 ("fs/ntfs3: Add initialization of super block")
 
-Fixes: d358aa9a7a2d ("i40evf: init code and hardware support")
-Signed-off-by: Przemyslaw Patynowski <przemyslawx.patynowski@intel.com>
-Signed-off-by: Jedrzej Jagielski <jedrzej.jagielski@intel.com>
-Tested-by: Marek Szlosek <marek.szlosek@intel.com>
-Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
+Signed-off-by: Yan Lei <chinayanlei2002@163.com>
+Signed-off-by: Konstantin Komarov <almaz.alexandrovich@paragon-software.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/net/ethernet/intel/iavf/iavf_adminq.c |   15 +++++++++++++--
- 1 file changed, 13 insertions(+), 2 deletions(-)
+ fs/ntfs3/index.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/drivers/net/ethernet/intel/iavf/iavf_adminq.c
-+++ b/drivers/net/ethernet/intel/iavf/iavf_adminq.c
-@@ -324,6 +324,7 @@ static enum iavf_status iavf_config_arq_
- static enum iavf_status iavf_init_asq(struct iavf_hw *hw)
+--- a/fs/ntfs3/index.c
++++ b/fs/ntfs3/index.c
+@@ -1994,7 +1994,7 @@ static int indx_free_children(struct ntf
+ 			      const struct NTFS_DE *e, bool trim)
  {
- 	enum iavf_status ret_code = 0;
-+	int i;
- 
- 	if (hw->aq.asq.count > 0) {
- 		/* queue already initialized */
-@@ -354,12 +355,17 @@ static enum iavf_status iavf_init_asq(st
- 	/* initialize base registers */
- 	ret_code = iavf_config_asq_regs(hw);
- 	if (ret_code)
--		goto init_adminq_free_rings;
-+		goto init_free_asq_bufs;
- 
- 	/* success! */
- 	hw->aq.asq.count = hw->aq.num_asq_entries;
- 	goto init_adminq_exit;
- 
-+init_free_asq_bufs:
-+	for (i = 0; i < hw->aq.num_asq_entries; i++)
-+		iavf_free_dma_mem(hw, &hw->aq.asq.r.asq_bi[i]);
-+	iavf_free_virt_mem(hw, &hw->aq.asq.dma_head);
-+
- init_adminq_free_rings:
- 	iavf_free_adminq_asq(hw);
- 
-@@ -383,6 +389,7 @@ init_adminq_exit:
- static enum iavf_status iavf_init_arq(struct iavf_hw *hw)
- {
- 	enum iavf_status ret_code = 0;
-+	int i;
- 
- 	if (hw->aq.arq.count > 0) {
- 		/* queue already initialized */
-@@ -413,12 +420,16 @@ static enum iavf_status iavf_init_arq(st
- 	/* initialize base registers */
- 	ret_code = iavf_config_arq_regs(hw);
- 	if (ret_code)
--		goto init_adminq_free_rings;
-+		goto init_free_arq_bufs;
- 
- 	/* success! */
- 	hw->aq.arq.count = hw->aq.num_arq_entries;
- 	goto init_adminq_exit;
- 
-+init_free_arq_bufs:
-+	for (i = 0; i < hw->aq.num_arq_entries; i++)
-+		iavf_free_dma_mem(hw, &hw->aq.arq.r.arq_bi[i]);
-+	iavf_free_virt_mem(hw, &hw->aq.arq.dma_head);
- init_adminq_free_rings:
- 	iavf_free_adminq_arq(hw);
- 
+ 	int err;
+-	struct indx_node *n;
++	struct indx_node *n = NULL;
+ 	struct INDEX_HDR *hdr;
+ 	CLST vbn = de_get_vbn(e);
+ 	size_t i;
 
 
