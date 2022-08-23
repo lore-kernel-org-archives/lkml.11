@@ -2,42 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 97B13C32772
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 09:12:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 67121C32792
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 09:12:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243295AbiHWJMa (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 05:12:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33328 "EHLO
+        id S243359AbiHWJMf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 23 Aug 2022 05:12:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33802 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348448AbiHWJKE (ORCPT
+        with ESMTP id S1348468AbiHWJKU (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 05:10:04 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 60DEF74DFA;
-        Tue, 23 Aug 2022 01:30:59 -0700 (PDT)
+        Tue, 23 Aug 2022 05:10:20 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 45A096CD3B;
+        Tue, 23 Aug 2022 01:31:07 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 5A791B81C48;
-        Tue, 23 Aug 2022 08:29:37 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B5F18C433C1;
-        Tue, 23 Aug 2022 08:29:35 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id EB5BB614CA;
+        Tue, 23 Aug 2022 08:31:06 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D6231C433C1;
+        Tue, 23 Aug 2022 08:31:05 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661243376;
-        bh=ebo6kPnfZ6o+Q1fsjAA8jeQY9HT8MUugEfOa0/b02xE=;
+        s=korg; t=1661243466;
+        bh=QT4ELwD36/p5x2JGWEwyso4qQpwPkC03HMsNuMjrIMQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=VkZaIoRMmjUMK/JN87Wl8jcjS2Jgx8Aqrb8Em0EM20fpK5I3xeIAdcCDzGP8Jkzm0
-         r3CPDaoG1yF+wYzkEtl+7Pn7+YguL8pQvWkBx5wijqRnp+ha+uUzsVJpyuc+CHY/0P
-         F92xqy9yRYZ5Ax4Vf5ciKu1Ub/1uPYT3EGmXLfB4=
+        b=d9j/R096LBHlVT9fh0kKf23cZ/08mLAjxoTnPw1pRAB4dQMHgMhceH3j4P/HbMjJT
+         NFmMH8KWDLPE5LeHu9W5O4G2LZ/90axBrY9mbnMvUljTFz7jfqm2PDVOfCaL0wksdJ
+         Z1ebGvJSviS7mM9eHG5WWHzLe/JBYHumShkJaC1M=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Gil Fine <gil.fine@intel.com>,
-        Mika Westerberg <mika.westerberg@linux.intel.com>,
+        stable@vger.kernel.org, Jozef Martiniak <jomajm@gmail.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.19 257/365] thunderbolt: Change downstream routers TMU rate in both TMU uni/bidir mode
-Date:   Tue, 23 Aug 2022 10:02:38 +0200
-Message-Id: <20220823080128.954306927@linuxfoundation.org>
+Subject: [PATCH 5.19 286/365] gadgetfs: ep_io - wait until IRQ finishes
+Date:   Tue, 23 Aug 2022 10:03:07 +0200
+Message-Id: <20220823080130.159590630@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220823080118.128342613@linuxfoundation.org>
 References: <20220823080118.128342613@linuxfoundation.org>
@@ -49,51 +48,35 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Gil Fine <gil.fine@intel.com>
+From: Jozef Martiniak <jomajm@gmail.com>
 
-[ Upstream commit 5fd6b9a5cbe63fea4c490fee8af34144a139a266 ]
+[ Upstream commit 04cb742d4d8f30dc2e83b46ac317eec09191c68e ]
 
-In case of uni-directional time sync, TMU handshake is
-initiated by upstream router. In case of bi-directional
-time sync, TMU handshake is initiated by downstream router.
-In order to handle correctly the case of uni-directional mode,
-we avoid changing the upstream router's rate to off,
-because it might have another downstream router plugged that is set to
-uni-directional mode (and we don't want to change its mode).
-Instead, we always change downstream router's rate.
+after usb_ep_queue() if wait_for_completion_interruptible() is
+interrupted we need to wait until IRQ gets finished.
 
-Signed-off-by: Gil Fine <gil.fine@intel.com>
-Signed-off-by: Mika Westerberg <mika.westerberg@linux.intel.com>
+Otherwise complete() from epio_complete() can corrupt stack.
+
+Signed-off-by: Jozef Martiniak <jomajm@gmail.com>
+Link: https://lore.kernel.org/r/20220708070645.6130-1-jomajm@gmail.com
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/thunderbolt/tmu.c | 13 +++++++------
- 1 file changed, 7 insertions(+), 6 deletions(-)
+ drivers/usb/gadget/legacy/inode.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/drivers/thunderbolt/tmu.c b/drivers/thunderbolt/tmu.c
-index e4a07a26f693..93ba1d00335b 100644
---- a/drivers/thunderbolt/tmu.c
-+++ b/drivers/thunderbolt/tmu.c
-@@ -359,13 +359,14 @@ int tb_switch_tmu_disable(struct tb_switch *sw)
- 		 * In case of uni-directional time sync, TMU handshake is
- 		 * initiated by upstream router. In case of bi-directional
- 		 * time sync, TMU handshake is initiated by downstream router.
--		 * Therefore, we change the rate to off in the respective
--		 * router.
-+		 * We change downstream router's rate to off for both uni/bidir
-+		 * cases although it is needed only for the bi-directional mode.
-+		 * We avoid changing upstream router's mode since it might
-+		 * have another downstream router plugged, that is set to
-+		 * uni-directional mode and we don't want to change it's TMU
-+		 * mode.
- 		 */
--		if (unidirectional)
--			tb_switch_tmu_rate_write(parent, TB_SWITCH_TMU_RATE_OFF);
--		else
--			tb_switch_tmu_rate_write(sw, TB_SWITCH_TMU_RATE_OFF);
-+		tb_switch_tmu_rate_write(sw, TB_SWITCH_TMU_RATE_OFF);
+diff --git a/drivers/usb/gadget/legacy/inode.c b/drivers/usb/gadget/legacy/inode.c
+index 79990597c39f..01c3ead7d1b4 100644
+--- a/drivers/usb/gadget/legacy/inode.c
++++ b/drivers/usb/gadget/legacy/inode.c
+@@ -362,6 +362,7 @@ ep_io (struct ep_data *epdata, void *buf, unsigned len)
+ 				spin_unlock_irq (&epdata->dev->lock);
  
- 		tb_port_tmu_time_sync_disable(up);
- 		ret = tb_port_tmu_time_sync_disable(down);
+ 				DBG (epdata->dev, "endpoint gone\n");
++				wait_for_completion(&done);
+ 				epdata->status = -ENODEV;
+ 			}
+ 		}
 -- 
 2.35.1
 
