@@ -2,47 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DFAC5C32792
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 12:04:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 77C4DC32772
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 12:04:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1359175AbiHWMEr (ORCPT
+        id S1359182AbiHWMEy (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 08:04:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47520 "EHLO
+        Tue, 23 Aug 2022 08:04:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46152 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1359292AbiHWMBG (ORCPT
+        with ESMTP id S1359568AbiHWMB4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 08:01:06 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 416C595E58;
-        Tue, 23 Aug 2022 02:35:30 -0700 (PDT)
+        Tue, 23 Aug 2022 08:01:56 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C0D4497D7A;
+        Tue, 23 Aug 2022 02:36:17 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id E0122B81C9E;
-        Tue, 23 Aug 2022 09:34:32 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 52172C433C1;
-        Tue, 23 Aug 2022 09:34:31 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 357AC60F50;
+        Tue, 23 Aug 2022 09:36:17 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2A995C433D6;
+        Tue, 23 Aug 2022 09:36:15 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661247271;
-        bh=k5okc+zVslx3PutPnaZoy3YGfFGkTasVTIwBgkj4g38=;
+        s=korg; t=1661247376;
+        bh=BynSNA2pLc0++aOd/nVe1u0EbpDodCq+xxgBLeUp6rg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=n7NkAbBcM2HMNrgnmPsuvC15tksQ0IPopk012sUPme6QnLieKXci/Hj1QCeCrM7Tu
-         usqLDxyUpHBGU1hYb+yrY6yhHEZH26TMUK9pQNHAdo3Ghit0S4EXIxb0053ZBYQc3l
-         ydr5IFiGFC/aFfIOI40dW47utvQDDe0d1UXb9rBU=
+        b=XWBwAPKzQUB+s+5vbxqkdoOPP4A6GBkHUmT2sZy067fYGjrE2xvuCHRzGNPjQdr9k
+         ZkvY8RZocakcmOe+Aq4xmJ0URSq+v1DvwlFK55kTabHOZptosMIA4pOBdVMGV/ohMU
+         WknSPjnIyoyAa+0svmmW1LFjv+shR7d/qtb9OfzE=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Brice Goglin <Brice.Goglin@inria.fr>,
-        Conor Dooley <conor.dooley@microchip.com>,
-        Palmer Dabbelt <palmer@rivosinc.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 373/389] riscv: dts: sifive: Add fu540 topology information
-Date:   Tue, 23 Aug 2022 10:27:31 +0200
-Message-Id: <20220823080131.131270250@linuxfoundation.org>
+        stable@vger.kernel.org, John Johansen <john.johansen@canonical.com>
+Subject: [PATCH 5.10 017/158] apparmor: fix setting unconfined mode on a loaded profile
+Date:   Tue, 23 Aug 2022 10:25:49 +0200
+Message-Id: <20220823080046.769431105@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220823080115.331990024@linuxfoundation.org>
-References: <20220823080115.331990024@linuxfoundation.org>
+In-Reply-To: <20220823080046.056825146@linuxfoundation.org>
+References: <20220823080046.056825146@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -51,60 +48,46 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Conor Dooley <conor.dooley@microchip.com>
+From: John Johansen <john.johansen@canonical.com>
 
-[ Upstream commit af8f260abc608c06e4466a282b53f1e2dc09f042 ]
+commit 3bbb7b2e9bbcd22e539e23034da753898fe3b4dc upstream.
 
-The fu540 has no cpu-map node, so tools like hwloc cannot correctly
-parse the topology. Add the node using the existing node labels.
+When loading a profile that is set to unconfined mode, that label
+flag is not set when it should be. Ensure it is set so that when
+used in a label the unconfined check will be applied correctly.
 
-Reported-by: Brice Goglin <Brice.Goglin@inria.fr>
-Link: https://github.com/open-mpi/hwloc/issues/536
-Signed-off-by: Conor Dooley <conor.dooley@microchip.com>
-Link: https://lore.kernel.org/r/20220705190435.1790466-3-mail@conchuod.ie
-Signed-off-by: Palmer Dabbelt <palmer@rivosinc.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Fixes: 038165070aa5 ("apparmor: allow setting any profile into the unconfined state")
+Signed-off-by: John Johansen <john.johansen@canonical.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/riscv/boot/dts/sifive/fu540-c000.dtsi | 24 ++++++++++++++++++++++
- 1 file changed, 24 insertions(+)
+ security/apparmor/policy_unpack.c |   12 +++++++-----
+ 1 file changed, 7 insertions(+), 5 deletions(-)
 
-diff --git a/arch/riscv/boot/dts/sifive/fu540-c000.dtsi b/arch/riscv/boot/dts/sifive/fu540-c000.dtsi
-index afa43c7ea369..0e4514f32576 100644
---- a/arch/riscv/boot/dts/sifive/fu540-c000.dtsi
-+++ b/arch/riscv/boot/dts/sifive/fu540-c000.dtsi
-@@ -129,6 +129,30 @@
- 				interrupt-controller;
- 			};
- 		};
-+
-+		cpu-map {
-+			cluster0 {
-+				core0 {
-+					cpu = <&cpu0>;
-+				};
-+
-+				core1 {
-+					cpu = <&cpu1>;
-+				};
-+
-+				core2 {
-+					cpu = <&cpu2>;
-+				};
-+
-+				core3 {
-+					cpu = <&cpu3>;
-+				};
-+
-+				core4 {
-+					cpu = <&cpu4>;
-+				};
-+			};
-+		};
- 	};
- 	soc {
- 		#address-cells = <2>;
--- 
-2.35.1
-
+--- a/security/apparmor/policy_unpack.c
++++ b/security/apparmor/policy_unpack.c
+@@ -746,16 +746,18 @@ static struct aa_profile *unpack_profile
+ 		profile->label.flags |= FLAG_HAT;
+ 	if (!unpack_u32(e, &tmp, NULL))
+ 		goto fail;
+-	if (tmp == PACKED_MODE_COMPLAIN || (e->version & FORCE_COMPLAIN_FLAG))
++	if (tmp == PACKED_MODE_COMPLAIN || (e->version & FORCE_COMPLAIN_FLAG)) {
+ 		profile->mode = APPARMOR_COMPLAIN;
+-	else if (tmp == PACKED_MODE_ENFORCE)
++	} else if (tmp == PACKED_MODE_ENFORCE) {
+ 		profile->mode = APPARMOR_ENFORCE;
+-	else if (tmp == PACKED_MODE_KILL)
++	} else if (tmp == PACKED_MODE_KILL) {
+ 		profile->mode = APPARMOR_KILL;
+-	else if (tmp == PACKED_MODE_UNCONFINED)
++	} else if (tmp == PACKED_MODE_UNCONFINED) {
+ 		profile->mode = APPARMOR_UNCONFINED;
+-	else
++		profile->label.flags |= FLAG_UNCONFINED;
++	} else {
+ 		goto fail;
++	}
+ 	if (!unpack_u32(e, &tmp, NULL))
+ 		goto fail;
+ 	if (tmp)
 
 
