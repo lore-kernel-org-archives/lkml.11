@@ -2,47 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 41B0FC49EC6
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 10:37:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 941F5C32796
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 10:37:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355713AbiHWKg4 (ORCPT
+        id S1354299AbiHWKhE (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 06:36:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38842 "EHLO
+        Tue, 23 Aug 2022 06:37:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43924 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354691AbiHWKWA (ORCPT
+        with ESMTP id S1354797AbiHWKWO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 06:22:00 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DE3546140;
-        Tue, 23 Aug 2022 02:03:24 -0700 (PDT)
+        Tue, 23 Aug 2022 06:22:14 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F20F0B1E3;
+        Tue, 23 Aug 2022 02:03:29 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 806E1B81C53;
-        Tue, 23 Aug 2022 09:03:23 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D4B1CC433D6;
-        Tue, 23 Aug 2022 09:03:21 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 187B561580;
+        Tue, 23 Aug 2022 09:03:29 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1B7E5C433D6;
+        Tue, 23 Aug 2022 09:03:27 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661245402;
-        bh=xrT7sCDqJzbwaabInFSOooM42pz6YylOw5GrLACf6Gk=;
+        s=korg; t=1661245408;
+        bh=qLA7A5Br4kr6XCh5cM4QAi+8idAHdklGHyK/3mm2rt8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=P2TBSylCESE11zt+nS1HEoul/g7IBImdu7V8ysLYKX4MRuc3Ul67t4f9wiLdtDW1i
-         ch8FriSa9n9bu0J5XEcCAlqJgvOmr/JBb48ltkKLeEBhAnz7eUp8qOfeOGGRX+crPY
-         EY+ZXQDPoIF6v1SDR6qXVRE3jLcefQ2M/8Zdgp6M=
+        b=PtF1ZWLHX+lb0fBC229uxPfp31AUNIbihNHApTF/Np7r3C6rfp3Ignh/SEcXyMLxb
+         m2eR80BnsxSlkSU33rW0qMl4Cf5rvY9HB+aOzFHAd7JMgjkt5QUAex47G4msRG9WTD
+         n2+l28eusqTSYSXCZQ2JE8rEk4PCwGlSWWPTYXhQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Markus Mayer <mmayer@broadcom.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Sumeet Pawnikar <sumeet.r.pawnikar@intel.com>,
-        =?UTF-8?q?Alejandro=20Gonz=C3=A1lez?= 
-        <alejandro.gonzalez.correo@gmail.com>,
-        Daniel Lezcano <daniel.lezcano@linaro.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.19 066/287] thermal/tools/tmon: Include pthread and time headers in tmon.h
-Date:   Tue, 23 Aug 2022 10:23:55 +0200
-Message-Id: <20220823080102.455071090@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Francis Laniel <flaniel@linux.microsoft.com>,
+        Will Deacon <will@kernel.org>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 4.19 039/287] arm64: Do not forget syscall when starting a new thread.
+Date:   Tue, 23 Aug 2022 10:23:28 +0200
+Message-Id: <20220823080101.584936413@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220823080100.268827165@linuxfoundation.org>
 References: <20220823080100.268827165@linuxfoundation.org>
@@ -54,57 +50,38 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Markus Mayer <mmayer@broadcom.com>
+From: Francis Laniel <flaniel@linux.microsoft.com>
 
-[ Upstream commit 0cf51bfe999524377fbb71becb583b4ca6d07cfc ]
+[ Upstream commit de6921856f99c11d3986c6702d851e1328d4f7f6 ]
 
-Include sys/time.h and pthread.h in tmon.h, so that types
-"pthread_mutex_t" and "struct timeval tv" are known when tmon.h
-references them.
+Enable tracing of the execve*() system calls with the
+syscalls:sys_exit_execve tracepoint by removing the call to
+forget_syscall() when starting a new thread and preserving the value of
+regs->syscallno across exec.
 
-Without these headers, compiling tmon against musl-libc will fail with
-these errors:
-
-In file included from sysfs.c:31:0:
-tmon.h:47:8: error: unknown type name 'pthread_mutex_t'
- extern pthread_mutex_t input_lock;
-        ^~~~~~~~~~~~~~~
-make[3]: *** [<builtin>: sysfs.o] Error 1
-make[3]: *** Waiting for unfinished jobs....
-In file included from tui.c:31:0:
-tmon.h:54:17: error: field 'tv' has incomplete type
-  struct timeval tv;
-                 ^~
-make[3]: *** [<builtin>: tui.o] Error 1
-make[2]: *** [Makefile:83: tmon] Error 2
-
-Signed-off-by: Markus Mayer <mmayer@broadcom.com>
-Acked-by: Florian Fainelli <f.fainelli@gmail.com>
-Reviewed-by: Sumeet Pawnikar <sumeet.r.pawnikar@intel.com>
-Acked-by: Alejandro González <alejandro.gonzalez.correo@gmail.com>
-Tested-by: Alejandro González <alejandro.gonzalez.correo@gmail.com>
-Fixes: 94f69966faf8 ("tools/thermal: Introduce tmon, a tool for thermal  subsystem")
-Link: https://lore.kernel.org/r/20220718031040.44714-1-f.fainelli@gmail.com
-Signed-off-by: Daniel Lezcano <daniel.lezcano@linaro.org>
+Signed-off-by: Francis Laniel <flaniel@linux.microsoft.com>
+Link: https://lore.kernel.org/r/20220608162447.666494-2-flaniel@linux.microsoft.com
+Signed-off-by: Will Deacon <will@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- tools/thermal/tmon/tmon.h | 3 +++
- 1 file changed, 3 insertions(+)
+ arch/arm64/include/asm/processor.h | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-diff --git a/tools/thermal/tmon/tmon.h b/tools/thermal/tmon/tmon.h
-index 9e3c49c547ac..7b090a6c95b6 100644
---- a/tools/thermal/tmon/tmon.h
-+++ b/tools/thermal/tmon/tmon.h
-@@ -36,6 +36,9 @@
- #define NR_LINES_TZDATA 1
- #define TMON_LOG_FILE "/var/tmp/tmon.log"
+diff --git a/arch/arm64/include/asm/processor.h b/arch/arm64/include/asm/processor.h
+index 773ea8e0e442..f81074c68ff3 100644
+--- a/arch/arm64/include/asm/processor.h
++++ b/arch/arm64/include/asm/processor.h
+@@ -172,8 +172,9 @@ void tls_preserve_current_state(void);
  
-+#include <sys/time.h>
-+#include <pthread.h>
-+
- extern unsigned long ticktime;
- extern double time_elapsed;
- extern unsigned long target_temp_user;
+ static inline void start_thread_common(struct pt_regs *regs, unsigned long pc)
+ {
++	s32 previous_syscall = regs->syscallno;
+ 	memset(regs, 0, sizeof(*regs));
+-	forget_syscall(regs);
++	regs->syscallno = previous_syscall;
+ 	regs->pc = pc;
+ }
+ 
 -- 
 2.35.1
 
