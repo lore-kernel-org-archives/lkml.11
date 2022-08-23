@@ -2,66 +2,95 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3E114C32792
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 01:46:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DE87AC28D13
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 01:47:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239210AbiHWBqB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 22 Aug 2022 21:46:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43602 "EHLO
+        id S239219AbiHWBrZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 22 Aug 2022 21:47:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44134 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234840AbiHWBp5 (ORCPT
+        with ESMTP id S234840AbiHWBrV (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 22 Aug 2022 21:45:57 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7002B33E2C;
-        Mon, 22 Aug 2022 18:45:56 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 19F32B81257;
-        Tue, 23 Aug 2022 01:45:55 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5B39BC433D6;
-        Tue, 23 Aug 2022 01:45:53 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1661219153;
-        bh=2U3JVa53oidkjOoPz7Z3M9E9nhiMVAytXWsA/3ptYks=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=SsuirfiHwmlZpOXcb6UQlqDAa+a2hbO5LxmXyZq27QPqKFUxoaOv5VQFTsU9U7V+h
-         02oVJGNblllBdTuSFizdfvw7vQrfu2e6PinXdVnraLXvkrYQDhPvSO601G9uIMD5KC
-         zAbcVLNW4o/mqkxOYKbFA4EykVUynSuOjRnJOjFa4dTYhN7YpD/uJJFW/i0ZGwiOIu
-         CTyNvHEElhf+QcTZRdt97uXMve+QdcMzCBO01SX6zywV+6oKXLj5dWm8gsUNhPhunn
-         LGxODMdsxiZVf+CrmRbfFBY++6nXGRZVzDJ29b+RmAubMWL18hr5SJb2wuc67N2nTz
-         QOUvwOvGDjAVA==
-Date:   Mon, 22 Aug 2022 18:45:52 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Yevhen Orlov <yevhen.orlov@plvision.eu>
-Cc:     netdev@vger.kernel.org,
-        Volodymyr Mytnyk <volodymyr.mytnyk@plvision.eu>,
-        Taras Chornyi <taras.chornyi@plvision.eu>,
-        Mickey Rachamim <mickeyr@marvell.com>,
-        Serhiy Pshyk <serhiy.pshyk@plvision.eu>,
-        "David S . Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Paolo Abeni <pabeni@redhat.com>, Andrew Lunn <andrew@lunn.ch>,
-        Stephen Hemminger <stephen@networkplumber.org>,
-        linux-kernel@vger.kernel.org, Taras Chornyi <tchornyi@marvell.com>,
-        Oleksandr Mazur <oleksandr.mazur@plvision.eu>
-Subject: Re: [PATCH net-next v3 0/9] net: marvell: prestera: add nexthop
- routes offloading
-Message-ID: <20220822184552.7d87c95b@kernel.org>
-In-Reply-To: <20220823001047.24784-1-yevhen.orlov@plvision.eu>
-References: <20220823001047.24784-1-yevhen.orlov@plvision.eu>
+        Mon, 22 Aug 2022 21:47:21 -0400
+Received: from szxga08-in.huawei.com (szxga08-in.huawei.com [45.249.212.255])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CA4DD5A828;
+        Mon, 22 Aug 2022 18:47:20 -0700 (PDT)
+Received: from dggpemm500022.china.huawei.com (unknown [172.30.72.55])
+        by szxga08-in.huawei.com (SkyGuard) with ESMTP id 4MBX7p61Ttz1N7TJ;
+        Tue, 23 Aug 2022 09:43:50 +0800 (CST)
+Received: from huawei.com (10.175.103.91) by dggpemm500022.china.huawei.com
+ (7.185.36.162) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Tue, 23 Aug
+ 2022 09:47:18 +0800
+From:   Zeng Heng <zengheng4@huawei.com>
+To:     <djwong@kernel.org>
+CC:     <linux-xfs@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <zengheng4@huawei.com>
+Subject: [PATCH -next] xfs: remove "%Lu" which doesn't meet C standard
+Date:   Tue, 23 Aug 2022 09:55:17 +0800
+Message-ID: <20220823015517.4160583-1-zengheng4@huawei.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.175.103.91]
+X-ClientProxiedBy: dggems704-chm.china.huawei.com (10.3.19.181) To
+ dggpemm500022.china.huawei.com (7.185.36.162)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, 23 Aug 2022 03:10:38 +0300 Yevhen Orlov wrote:
-> Add support for nexthop routes for Marvell Prestera driver.
-> Subscribe on NEIGH_UPDATE events.
+The "%Lu" specifier, which represents long long unsigned,
+doesn't meet C language standard, and even more,
+it makes people easily mistake with "%lu", which represent
+long unsigned. So replace "%Lu" with "llu".
 
-Does not apply. 
+Signed-off-by: Zeng Heng <zengheng4@huawei.com>
+---
+ fs/xfs/xfs_inode.c | 8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
 
-Please make sure you wait the required 24h period before posing v4.
+diff --git a/fs/xfs/xfs_inode.c b/fs/xfs/xfs_inode.c
+index 28493c8e9bb2..b3eeeae3afe1 100644
+--- a/fs/xfs/xfs_inode.c
++++ b/fs/xfs/xfs_inode.c
+@@ -3119,7 +3119,7 @@ xfs_iflush(
+ 	if (XFS_TEST_ERROR(dip->di_magic != cpu_to_be16(XFS_DINODE_MAGIC),
+ 			       mp, XFS_ERRTAG_IFLUSH_1)) {
+ 		xfs_alert_tag(mp, XFS_PTAG_IFLUSH,
+-			"%s: Bad inode %Lu magic number 0x%x, ptr "PTR_FMT,
++			"%s: Bad inode %llu magic number 0x%x, ptr "PTR_FMT,
+ 			__func__, ip->i_ino, be16_to_cpu(dip->di_magic), dip);
+ 		goto flush_out;
+ 	}
+@@ -3129,7 +3129,7 @@ xfs_iflush(
+ 		    ip->i_df.if_format != XFS_DINODE_FMT_BTREE,
+ 		    mp, XFS_ERRTAG_IFLUSH_3)) {
+ 			xfs_alert_tag(mp, XFS_PTAG_IFLUSH,
+-				"%s: Bad regular inode %Lu, ptr "PTR_FMT,
++				"%s: Bad regular inode %llu, ptr "PTR_FMT,
+ 				__func__, ip->i_ino, ip);
+ 			goto flush_out;
+ 		}
+@@ -3140,7 +3140,7 @@ xfs_iflush(
+ 		    ip->i_df.if_format != XFS_DINODE_FMT_LOCAL,
+ 		    mp, XFS_ERRTAG_IFLUSH_4)) {
+ 			xfs_alert_tag(mp, XFS_PTAG_IFLUSH,
+-				"%s: Bad directory inode %Lu, ptr "PTR_FMT,
++				"%s: Bad directory inode %llu, ptr "PTR_FMT,
+ 				__func__, ip->i_ino, ip);
+ 			goto flush_out;
+ 		}
+@@ -3158,7 +3158,7 @@ xfs_iflush(
+ 	if (XFS_TEST_ERROR(ip->i_forkoff > mp->m_sb.sb_inodesize,
+ 				mp, XFS_ERRTAG_IFLUSH_6)) {
+ 		xfs_alert_tag(mp, XFS_PTAG_IFLUSH,
+-			"%s: bad inode %Lu, forkoff 0x%x, ptr "PTR_FMT,
++			"%s: bad inode %llu, forkoff 0x%x, ptr "PTR_FMT,
+ 			__func__, ip->i_ino, ip->i_forkoff, ip);
+ 		goto flush_out;
+ 	}
+-- 
+2.25.1
+
