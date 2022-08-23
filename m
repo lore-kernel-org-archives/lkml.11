@@ -2,41 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 59357C32774
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C40FCC3F6B0
 	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 08:32:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243916AbiHWIaj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 04:30:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46624 "EHLO
+        id S244066AbiHWIar (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 23 Aug 2022 04:30:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44886 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344799AbiHWI1D (ORCPT
+        with ESMTP id S243564AbiHWI1G (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 04:27:03 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A281774CE7;
-        Tue, 23 Aug 2022 01:14:59 -0700 (PDT)
+        Tue, 23 Aug 2022 04:27:06 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E213F74CC2;
+        Tue, 23 Aug 2022 01:14:53 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 0044961345;
-        Tue, 23 Aug 2022 08:14:51 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 087BAC4347C;
-        Tue, 23 Aug 2022 08:14:49 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id CED79612DA;
+        Tue, 23 Aug 2022 08:14:07 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D019EC433C1;
+        Tue, 23 Aug 2022 08:14:06 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661242490;
-        bh=ZhkPRONPRsdklvEmDO5ZqnezVhTgjCAugxYUuo/Z7Lg=;
+        s=korg; t=1661242447;
+        bh=fMHn/Vf6sz9I5BG9XFOTBqc05WPfoxjFlUueGrdfOEI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=jjR4ZjHtIE/PXnkxP/LEAxs01od5YyrBibALML27IU4/OH9b0ahm9UG6GoEKikVJM
-         6cv9bG1kza+P2lWZ5ph6BdzrXUp5QDEL8oXfF+X6AlT0yypwq+sMWvE7zXB68L1Tfp
-         oXszJLZr6f2p9C1DYvr1wVNaTmHXzAS7/rk8w2v4=
+        b=O+nkrvqY1kSOT/dfnT+A+gS4TVmlcLYGdD94ZSBe/6Wi5zlguFL87gcmI5YMVfDP9
+         1vt3MlhrUXTl5P8Zp8Z1d49HgxKwErkvTjbhCjijC5uVBZklvKVLPpaQi5c1zrFNqV
+         kDnU3+M/dvmr+kyXaKuEUe3X/r1KXiYn7rNBJsxg=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Al Viro <viro@zeniv.linux.org.uk>,
-        Dinh Nguyen <dinguyen@kernel.org>
-Subject: [PATCH 4.9 079/101] nios2: dont leave NULLs in sys_call_table[]
-Date:   Tue, 23 Aug 2022 10:03:52 +0200
-Message-Id: <20220823080037.597334264@linuxfoundation.org>
+        stable@vger.kernel.org, stable@kernel.org,
+        Baokun Li <libaokun1@huawei.com>,
+        "Ritesh Harjani (IBM)" <ritesh.list@gmail.com>,
+        Jan Kara <jack@suse.cz>, Theodore Tso <tytso@mit.edu>
+Subject: [PATCH 4.9 055/101] ext4: correct max_inline_xattr_value_size computing
+Date:   Tue, 23 Aug 2022 10:03:28 +0200
+Message-Id: <20220823080036.657404616@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220823080034.579196046@linuxfoundation.org>
 References: <20220823080034.579196046@linuxfoundation.org>
@@ -48,39 +50,36 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Al Viro <viro@zeniv.linux.org.uk>
+From: Baokun Li <libaokun1@huawei.com>
 
-commit 45ec746c65097c25e77d24eae8fee0def5b6cc5d upstream.
+commit c9fd167d57133c5b748d16913c4eabc55e531c73 upstream.
 
-fill the gaps in there with sys_ni_syscall, as everyone does...
+If the ext4 inode does not have xattr space, 0 is returned in the
+get_max_inline_xattr_value_size function. Otherwise, the function returns
+a negative value when the inode does not contain EXT4_STATE_XATTR.
 
-Fixes: 82ed08dd1b0e ("nios2: Exception handling")
-Signed-off-by: Al Viro <viro@zeniv.linux.org.uk>
-Signed-off-by: Dinh Nguyen <dinguyen@kernel.org>
+Cc: stable@kernel.org
+Signed-off-by: Baokun Li <libaokun1@huawei.com>
+Reviewed-by: Ritesh Harjani (IBM) <ritesh.list@gmail.com>
+Reviewed-by: Jan Kara <jack@suse.cz>
+Link: https://lore.kernel.org/r/20220616021358.2504451-4-libaokun1@huawei.com
+Signed-off-by: Theodore Ts'o <tytso@mit.edu>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/nios2/kernel/entry.S         |    1 -
- arch/nios2/kernel/syscall_table.c |    1 +
- 2 files changed, 1 insertion(+), 1 deletion(-)
+ fs/ext4/inline.c |    3 +++
+ 1 file changed, 3 insertions(+)
 
---- a/arch/nios2/kernel/entry.S
-+++ b/arch/nios2/kernel/entry.S
-@@ -193,7 +193,6 @@ local_restart:
- 	movhi	r11, %hiadj(sys_call_table)
- 	add	r1, r1, r11
- 	ldw	r1, %lo(sys_call_table)(r1)
--	beq	r1, r0, ret_invsyscall
+--- a/fs/ext4/inline.c
++++ b/fs/ext4/inline.c
+@@ -40,6 +40,9 @@ static int get_max_inline_xattr_value_si
+ 	struct ext4_inode *raw_inode;
+ 	int free, min_offs;
  
- 	/* Check if we are being traced */
- 	GET_THREAD_INFO r11
---- a/arch/nios2/kernel/syscall_table.c
-+++ b/arch/nios2/kernel/syscall_table.c
-@@ -25,5 +25,6 @@
- #define __SYSCALL(nr, call) [nr] = (call),
- 
- void *sys_call_table[__NR_syscalls] = {
-+	[0 ... __NR_syscalls-1] = sys_ni_syscall,
- #include <asm/unistd.h>
- };
++	if (!EXT4_INODE_HAS_XATTR_SPACE(inode))
++		return 0;
++
+ 	min_offs = EXT4_SB(inode->i_sb)->s_inode_size -
+ 			EXT4_GOOD_OLD_INODE_SIZE -
+ 			EXT4_I(inode)->i_extra_isize -
 
 
