@@ -2,48 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B3749C32772
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 10:13:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3C660C32772
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 10:13:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353347AbiHWKNZ (ORCPT
+        id S1353390AbiHWKNa (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 06:13:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46090 "EHLO
+        Tue, 23 Aug 2022 06:13:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57576 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352736AbiHWKGL (ORCPT
+        with ESMTP id S1352729AbiHWKGI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 06:06:11 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B89D371733;
-        Tue, 23 Aug 2022 01:52:37 -0700 (PDT)
+        Tue, 23 Aug 2022 06:06:08 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A5F217CB55;
+        Tue, 23 Aug 2022 01:52:35 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 443A6611DD;
-        Tue, 23 Aug 2022 08:52:37 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 51D59C433D6;
-        Tue, 23 Aug 2022 08:52:36 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 4FFCE6123D;
+        Tue, 23 Aug 2022 08:52:34 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5CDF8C433C1;
+        Tue, 23 Aug 2022 08:52:33 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661244756;
-        bh=0dcqyPKtuvYuqhuGOTA2PfPgKoo20KhKXVF0lcFfqyk=;
+        s=korg; t=1661244753;
+        bh=VVOGpGuRObIIU3JAdx4GBxXudbBcNeXZlSAeDAsUEUQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=LhhPioN2OfD9ppDS5SeXGSJNXVqw8q9e7cEO+kjaX7MGhB3LVhc+KeXTSIISGKrhe
-         ENpbCkhWBLJ7aKy9MqWZTuhZ6B9/x//3hp+KS29rhKr8om9dpTOHF8bR5iEqsbvFq7
-         wD2euTbKVQ4BYBGso0MSmGH3i2oFL2CwNQHpjElk=
+        b=wA/8wU2a0uicnU3BFQaHTaXvbFn7m0skK9md7Wd7+Wsp+EyLLC+kjRSHUDNO9fj2B
+         Rij64nZvIzDYTLJeBQqnvU+dUyjTpI44Rr7Uf/XtT+Z/byi3z/GTJ32g2r5/7xBFmf
+         sTXzkoasmr4mGR1sneU3Eq+rNiA3yLhEMbClcqFA=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Grzegorz Siwik <grzegorz.siwik@intel.com>,
-        Jaroslav Pulchart <jaroslav.pulchart@gooddata.com>,
-        Igor Raits <igor@gooddata.com>,
-        Tony Nguyen <anthony.l.nguyen@intel.com>,
-        Gurucharan <gurucharanx.g@intel.com>
-Subject: [PATCH 5.15 144/244] ice: Ignore EEXIST when setting promisc mode
-Date:   Tue, 23 Aug 2022 10:25:03 +0200
-Message-Id: <20220823080103.979269040@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Trond Myklebust <trond.myklebust@hammerspace.com>
+Subject: [PATCH 4.14 185/229] NFSv4: Fix races in the legacy idmapper upcall
+Date:   Tue, 23 Aug 2022 10:25:46 +0200
+Message-Id: <20220823080100.222924440@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220823080059.091088642@linuxfoundation.org>
-References: <20220823080059.091088642@linuxfoundation.org>
+In-Reply-To: <20220823080053.202747790@linuxfoundation.org>
+References: <20220823080053.202747790@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -52,38 +49,138 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Grzegorz Siwik <grzegorz.siwik@intel.com>
+From: Trond Myklebust <trond.myklebust@hammerspace.com>
 
-commit 11e551a2efa4481bd4f616ab75374a2710b480e9 upstream.
+commit 51fd2eb52c0ca8275a906eed81878ef50ae94eb0 upstream.
 
-Ignore EEXIST error when setting promiscuous mode.
-This fix is needed because the driver could set promiscuous mode
-when it still has not cleared properly.
-Promiscuous mode could be set only once, so setting it second
-time will be rejected.
+nfs_idmap_instantiate() will cause the process that is waiting in
+request_key_with_auxdata() to wake up and exit. If there is a second
+process waiting for the idmap->idmap_mutex, then it may wake up and
+start a new call to request_key_with_auxdata(). If the call to
+idmap_pipe_downcall() from the first process has not yet finished
+calling nfs_idmap_complete_pipe_upcall_locked(), then we may end up
+triggering the WARN_ON_ONCE() in nfs_idmap_prepare_pipe_upcall().
 
-Fixes: 5eda8afd6bcc ("ice: Add support for PF/VF promiscuous mode")
-Signed-off-by: Grzegorz Siwik <grzegorz.siwik@intel.com>
-Link: https://lore.kernel.org/all/CAK8fFZ7m-KR57M_rYX6xZN39K89O=LGooYkKsu6HKt0Bs+x6xQ@mail.gmail.com/
-Tested-by: Jaroslav Pulchart <jaroslav.pulchart@gooddata.com>
-Tested-by: Igor Raits <igor@gooddata.com>
-Tested-by: Gurucharan <gurucharanx.g@intel.com> (A Contingent worker at Intel)
-Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
+The fix is to ensure that we clear idmap->idmap_upcall_data before
+calling nfs_idmap_instantiate().
+
+Fixes: e9ab41b620e4 ("NFSv4: Clean up the legacy idmapper upcall")
+Signed-off-by: Trond Myklebust <trond.myklebust@hammerspace.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/net/ethernet/intel/ice/ice_switch.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ fs/nfs/nfs4idmap.c |   46 ++++++++++++++++++++++++----------------------
+ 1 file changed, 24 insertions(+), 22 deletions(-)
 
---- a/drivers/net/ethernet/intel/ice/ice_switch.c
-+++ b/drivers/net/ethernet/intel/ice/ice_switch.c
-@@ -2614,7 +2614,7 @@ ice_set_vlan_vsi_promisc(struct ice_hw *
- 		else
- 			status = ice_set_vsi_promisc(hw, vsi_handle,
- 						     promisc_mask, vlan_id);
--		if (status)
-+		if (status && status != -EEXIST)
- 			break;
+--- a/fs/nfs/nfs4idmap.c
++++ b/fs/nfs/nfs4idmap.c
+@@ -543,22 +543,20 @@ nfs_idmap_prepare_pipe_upcall(struct idm
+ 	return true;
+ }
+ 
+-static void
+-nfs_idmap_complete_pipe_upcall_locked(struct idmap *idmap, int ret)
++static void nfs_idmap_complete_pipe_upcall(struct idmap_legacy_upcalldata *data,
++					   int ret)
+ {
+-	struct key *authkey = idmap->idmap_upcall_data->authkey;
+-
+-	kfree(idmap->idmap_upcall_data);
+-	idmap->idmap_upcall_data = NULL;
+-	complete_request_key(authkey, ret);
+-	key_put(authkey);
++	complete_request_key(data->authkey, ret);
++	key_put(data->authkey);
++	kfree(data);
+ }
+ 
+-static void
+-nfs_idmap_abort_pipe_upcall(struct idmap *idmap, int ret)
++static void nfs_idmap_abort_pipe_upcall(struct idmap *idmap,
++					struct idmap_legacy_upcalldata *data,
++					int ret)
+ {
+-	if (idmap->idmap_upcall_data != NULL)
+-		nfs_idmap_complete_pipe_upcall_locked(idmap, ret);
++	if (cmpxchg(&idmap->idmap_upcall_data, data, NULL) == data)
++		nfs_idmap_complete_pipe_upcall(data, ret);
+ }
+ 
+ static int nfs_idmap_legacy_upcall(struct key *authkey, void *aux)
+@@ -595,7 +593,7 @@ static int nfs_idmap_legacy_upcall(struc
+ 
+ 	ret = rpc_queue_upcall(idmap->idmap_pipe, msg);
+ 	if (ret < 0)
+-		nfs_idmap_abort_pipe_upcall(idmap, ret);
++		nfs_idmap_abort_pipe_upcall(idmap, data, ret);
+ 
+ 	return ret;
+ out2:
+@@ -651,6 +649,7 @@ idmap_pipe_downcall(struct file *filp, c
+ 	struct request_key_auth *rka;
+ 	struct rpc_inode *rpci = RPC_I(file_inode(filp));
+ 	struct idmap *idmap = (struct idmap *)rpci->private;
++	struct idmap_legacy_upcalldata *data;
+ 	struct key *authkey;
+ 	struct idmap_msg im;
+ 	size_t namelen_in;
+@@ -660,10 +659,11 @@ idmap_pipe_downcall(struct file *filp, c
+ 	 * will have been woken up and someone else may now have used
+ 	 * idmap_key_cons - so after this point we may no longer touch it.
+ 	 */
+-	if (idmap->idmap_upcall_data == NULL)
++	data = xchg(&idmap->idmap_upcall_data, NULL);
++	if (data == NULL)
+ 		goto out_noupcall;
+ 
+-	authkey = idmap->idmap_upcall_data->authkey;
++	authkey = data->authkey;
+ 	rka = get_request_key_auth(authkey);
+ 
+ 	if (mlen != sizeof(im)) {
+@@ -685,18 +685,17 @@ idmap_pipe_downcall(struct file *filp, c
+ 	if (namelen_in == 0 || namelen_in == IDMAP_NAMESZ) {
+ 		ret = -EINVAL;
+ 		goto out;
+-}
++	}
+ 
+-	ret = nfs_idmap_read_and_verify_message(&im,
+-			&idmap->idmap_upcall_data->idmap_msg,
+-			rka->target_key, authkey);
++	ret = nfs_idmap_read_and_verify_message(&im, &data->idmap_msg,
++						rka->target_key, authkey);
+ 	if (ret >= 0) {
+ 		key_set_timeout(rka->target_key, nfs_idmap_cache_timeout);
+ 		ret = mlen;
  	}
  
+ out:
+-	nfs_idmap_complete_pipe_upcall_locked(idmap, ret);
++	nfs_idmap_complete_pipe_upcall(data, ret);
+ out_noupcall:
+ 	return ret;
+ }
+@@ -710,7 +709,7 @@ idmap_pipe_destroy_msg(struct rpc_pipe_m
+ 	struct idmap *idmap = data->idmap;
+ 
+ 	if (msg->errno)
+-		nfs_idmap_abort_pipe_upcall(idmap, msg->errno);
++		nfs_idmap_abort_pipe_upcall(idmap, data, msg->errno);
+ }
+ 
+ static void
+@@ -718,8 +717,11 @@ idmap_release_pipe(struct inode *inode)
+ {
+ 	struct rpc_inode *rpci = RPC_I(inode);
+ 	struct idmap *idmap = (struct idmap *)rpci->private;
++	struct idmap_legacy_upcalldata *data;
+ 
+-	nfs_idmap_abort_pipe_upcall(idmap, -EPIPE);
++	data = xchg(&idmap->idmap_upcall_data, NULL);
++	if (data)
++		nfs_idmap_complete_pipe_upcall(data, -EPIPE);
+ }
+ 
+ int nfs_map_name_to_uid(const struct nfs_server *server, const char *name, size_t namelen, kuid_t *uid)
 
 
