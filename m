@@ -2,46 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D5195C32772
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 08:30:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 68577C32772
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 08:30:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243814AbiHWIaC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 04:30:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47688 "EHLO
+        id S243825AbiHWIaG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 23 Aug 2022 04:30:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47694 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244257AbiHWI0b (ORCPT
+        with ESMTP id S244293AbiHWI0b (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 23 Aug 2022 04:26:31 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4B2C173921;
-        Tue, 23 Aug 2022 01:14:25 -0700 (PDT)
+Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 16FCE72FFB;
+        Tue, 23 Aug 2022 01:14:17 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 24A016129A;
-        Tue, 23 Aug 2022 08:14:23 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 30644C433C1;
-        Tue, 23 Aug 2022 08:14:22 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id C5167CE1B35;
+        Tue, 23 Aug 2022 08:14:14 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CCFA3C433C1;
+        Tue, 23 Aug 2022 08:14:12 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661242462;
-        bh=w/ws2DL+rOAPKGt41HhTtwj8mh2+FQSFUgu3NzsRKgY=;
+        s=korg; t=1661242453;
+        bh=71pQm5UX7KUdV3OYns4yypzPi12FmpAs/Vlutlh9J9Q=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=kEadTVknMWwBbQ1z6SmS9/MUcrCyn/so+gazDohkZyumaK9D0nPKatmpABE+zgwV/
-         aZPZCMC0LWm3ZajY8pH1HIsa3+hRB1T/g7P1y2R4tCjRLO5BQqX5GnE4D6ddkCH1GQ
-         kCHb44TRguP2n9zYLvBBpvgFUE1fL/JERxu59YFM=
+        b=FC2nS6fjQhptsuZbmhQYUXNumaLWcE7xU9F3yOOYZfOx1bhaVWwEqnjSegdt71cdd
+         X1KjgJJR9MVKxF5hGbOkpE26mZhEQCwJoYWuO5Nu2EeJV6P/RfsPMb2e1AAVmtj6Dn
+         frX3ZY1F2zooNo976NEo2JIvs853X6GLVhQxrZ9A=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Stefano Garzarella <sgarzare@redhat.com>,
-        Peilin Ye <peilin.ye@bytedance.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        syzbot+b03f55bf128f9a38f064@syzkaller.appspotmail.com
-Subject: [PATCH 4.9 075/101] vsock: Fix memory leak in vsock_connect()
-Date:   Tue, 23 Aug 2022 10:03:48 +0200
-Message-Id: <20220823080037.435200290@linuxfoundation.org>
+        stable@vger.kernel.org, Subbaraya Sundeep <sbhatta@marvell.com>,
+        Sunil Goutham <sgoutham@marvell.com>,
+        Jakub Kicinski <kuba@kernel.org>
+Subject: [PATCH 5.19 117/365] octeontx2-af: Fix mcam entry resource leak
+Date:   Tue, 23 Aug 2022 10:00:18 +0200
+Message-Id: <20220823080123.101243885@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220823080034.579196046@linuxfoundation.org>
-References: <20220823080034.579196046@linuxfoundation.org>
+In-Reply-To: <20220823080118.128342613@linuxfoundation.org>
+References: <20220823080118.128342613@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -50,83 +49,62 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Peilin Ye <peilin.ye@bytedance.com>
+From: Subbaraya Sundeep <sbhatta@marvell.com>
 
-commit 7e97cfed9929eaabc41829c395eb0d1350fccb9d upstream.
+commit 3f8fe40ab7730cf8eb6f8b8ff412012f7f6f8f48 upstream.
 
-An O_NONBLOCK vsock_connect() request may try to reschedule
-@connect_work.  Imagine the following sequence of vsock_connect()
-requests:
+The teardown sequence in FLR handler returns if no NIX LF
+is attached to PF/VF because it indicates that graceful
+shutdown of resources already happened. But there is a
+chance of all allocated MCAM entries not being freed by
+PF/VF. Hence free mcam entries even in case of detached LF.
 
-  1. The 1st, non-blocking request schedules @connect_work, which will
-     expire after 200 jiffies.  Socket state is now SS_CONNECTING;
-
-  2. Later, the 2nd, blocking request gets interrupted by a signal after
-     a few jiffies while waiting for the connection to be established.
-     Socket state is back to SS_UNCONNECTED, but @connect_work is still
-     pending, and will expire after 100 jiffies.
-
-  3. Now, the 3rd, non-blocking request tries to schedule @connect_work
-     again.  Since @connect_work is already scheduled,
-     schedule_delayed_work() silently returns.  sock_hold() is called
-     twice, but sock_put() will only be called once in
-     vsock_connect_timeout(), causing a memory leak reported by syzbot:
-
-  BUG: memory leak
-  unreferenced object 0xffff88810ea56a40 (size 1232):
-    comm "syz-executor756", pid 3604, jiffies 4294947681 (age 12.350s)
-    hex dump (first 32 bytes):
-      00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
-      28 00 07 40 00 00 00 00 00 00 00 00 00 00 00 00  (..@............
-    backtrace:
-      [<ffffffff837c830e>] sk_prot_alloc+0x3e/0x1b0 net/core/sock.c:1930
-      [<ffffffff837cbe22>] sk_alloc+0x32/0x2e0 net/core/sock.c:1989
-      [<ffffffff842ccf68>] __vsock_create.constprop.0+0x38/0x320 net/vmw_vsock/af_vsock.c:734
-      [<ffffffff842ce8f1>] vsock_create+0xc1/0x2d0 net/vmw_vsock/af_vsock.c:2203
-      [<ffffffff837c0cbb>] __sock_create+0x1ab/0x2b0 net/socket.c:1468
-      [<ffffffff837c3acf>] sock_create net/socket.c:1519 [inline]
-      [<ffffffff837c3acf>] __sys_socket+0x6f/0x140 net/socket.c:1561
-      [<ffffffff837c3bba>] __do_sys_socket net/socket.c:1570 [inline]
-      [<ffffffff837c3bba>] __se_sys_socket net/socket.c:1568 [inline]
-      [<ffffffff837c3bba>] __x64_sys_socket+0x1a/0x20 net/socket.c:1568
-      [<ffffffff84512815>] do_syscall_x64 arch/x86/entry/common.c:50 [inline]
-      [<ffffffff84512815>] do_syscall_64+0x35/0x80 arch/x86/entry/common.c:80
-      [<ffffffff84600068>] entry_SYSCALL_64_after_hwframe+0x44/0xae
-  <...>
-
-Use mod_delayed_work() instead: if @connect_work is already scheduled,
-reschedule it, and undo sock_hold() to keep the reference count
-balanced.
-
-Reported-and-tested-by: syzbot+b03f55bf128f9a38f064@syzkaller.appspotmail.com
-Fixes: d021c344051a ("VSOCK: Introduce VM Sockets")
-Co-developed-by: Stefano Garzarella <sgarzare@redhat.com>
-Signed-off-by: Stefano Garzarella <sgarzare@redhat.com>
-Reviewed-by: Stefano Garzarella <sgarzare@redhat.com>
-Signed-off-by: Peilin Ye <peilin.ye@bytedance.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+Fixes: c554f9c1574e ("octeontx2-af: Teardown NPA, NIX LF upon receiving FLR")
+Signed-off-by: Subbaraya Sundeep <sbhatta@marvell.com>
+Signed-off-by: Sunil Goutham <sgoutham@marvell.com>
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- net/vmw_vsock/af_vsock.c |    9 ++++++++-
- 1 file changed, 8 insertions(+), 1 deletion(-)
+ drivers/net/ethernet/marvell/octeontx2/af/rvu.c     |    6 ++++++
+ drivers/net/ethernet/marvell/octeontx2/af/rvu_npc.c |    6 ++++++
+ 2 files changed, 12 insertions(+)
 
---- a/net/vmw_vsock/af_vsock.c
-+++ b/net/vmw_vsock/af_vsock.c
-@@ -1205,7 +1205,14 @@ static int vsock_stream_connect(struct s
- 			 * timeout fires.
- 			 */
- 			sock_hold(sk);
--			schedule_delayed_work(&vsk->connect_work, timeout);
+--- a/drivers/net/ethernet/marvell/octeontx2/af/rvu.c
++++ b/drivers/net/ethernet/marvell/octeontx2/af/rvu.c
+@@ -2564,6 +2564,12 @@ static void __rvu_flr_handler(struct rvu
+ 	rvu_blklf_teardown(rvu, pcifunc, BLKADDR_NPA);
+ 	rvu_reset_lmt_map_tbl(rvu, pcifunc);
+ 	rvu_detach_rsrcs(rvu, NULL, pcifunc);
++	/* In scenarios where PF/VF drivers detach NIXLF without freeing MCAM
++	 * entries, check and free the MCAM entries explicitly to avoid leak.
++	 * Since LF is detached use LF number as -1.
++	 */
++	rvu_npc_free_mcam_entries(rvu, pcifunc, -1);
 +
-+			/* If the timeout function is already scheduled,
-+			 * reschedule it, then ungrab the socket refcount to
-+			 * keep it balanced.
-+			 */
-+			if (mod_delayed_work(system_wq, &vsk->connect_work,
-+					     timeout))
-+				sock_put(sk);
+ 	mutex_unlock(&rvu->flr_lock);
+ }
  
- 			/* Skip ahead to preserve error code set above. */
- 			goto out_wait;
+--- a/drivers/net/ethernet/marvell/octeontx2/af/rvu_npc.c
++++ b/drivers/net/ethernet/marvell/octeontx2/af/rvu_npc.c
+@@ -1096,6 +1096,9 @@ static void npc_enadis_default_entries(s
+ 
+ void rvu_npc_disable_default_entries(struct rvu *rvu, u16 pcifunc, int nixlf)
+ {
++	if (nixlf < 0)
++		return;
++
+ 	npc_enadis_default_entries(rvu, pcifunc, nixlf, false);
+ 
+ 	/* Delete multicast and promisc MCAM entries */
+@@ -1107,6 +1110,9 @@ void rvu_npc_disable_default_entries(str
+ 
+ void rvu_npc_enable_default_entries(struct rvu *rvu, u16 pcifunc, int nixlf)
+ {
++	if (nixlf < 0)
++		return;
++
+ 	/* Enables only broadcast match entry. Promisc/Allmulti are enabled
+ 	 * in set_rx_mode mbox handler.
+ 	 */
 
 
