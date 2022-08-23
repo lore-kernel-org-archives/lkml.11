@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DF369C32772
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 11:23:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DD9A4C32772
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 11:23:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347708AbiHWLXH (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 07:23:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37468 "EHLO
+        id S240527AbiHWLXL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 23 Aug 2022 07:23:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43634 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357522AbiHWLRk (ORCPT
+        with ESMTP id S1357532AbiHWLRl (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 07:17:40 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5816989828;
-        Tue, 23 Aug 2022 02:21:20 -0700 (PDT)
+        Tue, 23 Aug 2022 07:17:41 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 88211753A4;
+        Tue, 23 Aug 2022 02:21:26 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id D234A60F91;
-        Tue, 23 Aug 2022 09:21:19 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D8B57C433D6;
-        Tue, 23 Aug 2022 09:21:18 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 23E9161220;
+        Tue, 23 Aug 2022 09:21:26 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 18FF8C433D6;
+        Tue, 23 Aug 2022 09:21:24 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661246479;
-        bh=8njpsnWF1Zh3tqoTkQO/LTe/AkDeuMCTFEDJG4ZiugQ=;
+        s=korg; t=1661246485;
+        bh=791j+2hWy8TOd/D1gDSC01GR07M5nk56qoSUdhg5FAU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Ob/QeDKlvXDdBG5pfmRTBT44iFYWEfx638wEDdOrHzteisHB89mOzVEX/76JYNJoI
-         OE/W64vz7sz/e23i+EFrL48rlv8d7c8WtBoO9BiMmCKl2H9eZEW+tMm0HC84nqX5lB
-         ifNdisAkKOh2fT3KiFtAlmS7CK9BhqvF85QUC+r4=
+        b=PQAuYltDIv85U8CRgEQnSXrb4AKnY5+qN4m7zfSt5JiufbEISgh8qlumNEZ+7IXZI
+         swQr45CpI7/xyYvEIOrXGfl1jJCKmED0hsoC+aAFJp3KD8VYiAL4GfDW4FpJY6DmJC
+         pNlc+P2F56INBdMjZLlolMuFKLgaydSJrYJfRKRQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Anquan Wu <leiqi96@hotmail.com>,
-        Andrii Nakryiko <andrii@kernel.org>,
+        stable@vger.kernel.org,
+        Wolfram Sang <wsa+renesas@sang-engineering.com>,
+        John Stultz <jstultz@google.com>,
+        Shuah Khan <skhan@linuxfoundation.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 123/389] libbpf: Fix the name of a reused map
-Date:   Tue, 23 Aug 2022 10:23:21 +0200
-Message-Id: <20220823080120.742141330@linuxfoundation.org>
+Subject: [PATCH 5.4 124/389] selftests: timers: valid-adjtimex: build fix for newer toolchains
+Date:   Tue, 23 Aug 2022 10:23:22 +0200
+Message-Id: <20220823080120.782310676@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220823080115.331990024@linuxfoundation.org>
 References: <20220823080115.331990024@linuxfoundation.org>
@@ -50,69 +51,37 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Anquan Wu <leiqi96@hotmail.com>
+From: Wolfram Sang <wsa+renesas@sang-engineering.com>
 
-[ Upstream commit bf3f00378524adae16628cbadbd11ba7211863bb ]
+[ Upstream commit 9a162977d20436be5678a8e21a8e58eb4616d86a ]
 
-BPF map name is limited to BPF_OBJ_NAME_LEN.
-A map name is defined as being longer than BPF_OBJ_NAME_LEN,
-it will be truncated to BPF_OBJ_NAME_LEN when a userspace program
-calls libbpf to create the map. A pinned map also generates a path
-in the /sys. If the previous program wanted to reuse the map，
-it can not get bpf_map by name, because the name of the map is only
-partially the same as the name which get from pinned path.
+Toolchains with an include file 'sys/timex.h' based on 3.18 will have a
+'clock_adjtime' definition added, so it can't be static in the code:
 
-The syscall information below show that map name "process_pinned_map"
-is truncated to "process_pinned_".
+valid-adjtimex.c:43:12: error: static declaration of ‘clock_adjtime’ follows non-static declaration
 
-    bpf(BPF_OBJ_GET, {pathname="/sys/fs/bpf/process_pinned_map",
-    bpf_fd=0, file_flags=0}, 144) = -1 ENOENT (No such file or directory)
-
-    bpf(BPF_MAP_CREATE, {map_type=BPF_MAP_TYPE_HASH, key_size=4,
-    value_size=4,max_entries=1024, map_flags=0, inner_map_fd=0,
-    map_name="process_pinned_",map_ifindex=0, btf_fd=3, btf_key_type_id=6,
-    btf_value_type_id=10,btf_vmlinux_value_type_id=0}, 72) = 4
-
-This patch check that if the name of pinned map are the same as the
-actual name for the first (BPF_OBJ_NAME_LEN - 1),
-bpf map still uses the name which is included in bpf object.
-
-Fixes: 26736eb9a483 ("tools: libbpf: allow map reuse")
-Signed-off-by: Anquan Wu <leiqi96@hotmail.com>
-Signed-off-by: Andrii Nakryiko <andrii@kernel.org>
-Link: https://lore.kernel.org/bpf/OSZP286MB1725CEA1C95C5CB8E7CCC53FB8869@OSZP286MB1725.JPNP286.PROD.OUTLOOK.COM
+Fixes: e03a58c320e1 ("kselftests: timers: Add adjtimex SETOFFSET validity tests")
+Signed-off-by: Wolfram Sang <wsa+renesas@sang-engineering.com>
+Acked-by: John Stultz <jstultz@google.com>
+Signed-off-by: Shuah Khan <skhan@linuxfoundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- tools/lib/bpf/libbpf.c | 9 +++++++--
- 1 file changed, 7 insertions(+), 2 deletions(-)
+ tools/testing/selftests/timers/valid-adjtimex.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/tools/lib/bpf/libbpf.c b/tools/lib/bpf/libbpf.c
-index 2a1dbf52fc9a..b8849812449c 100644
---- a/tools/lib/bpf/libbpf.c
-+++ b/tools/lib/bpf/libbpf.c
-@@ -1884,7 +1884,7 @@ static int bpf_map_find_btf_info(struct bpf_object *obj, struct bpf_map *map)
- int bpf_map__reuse_fd(struct bpf_map *map, int fd)
+diff --git a/tools/testing/selftests/timers/valid-adjtimex.c b/tools/testing/selftests/timers/valid-adjtimex.c
+index 5397de708d3c..48b9a803235a 100644
+--- a/tools/testing/selftests/timers/valid-adjtimex.c
++++ b/tools/testing/selftests/timers/valid-adjtimex.c
+@@ -40,7 +40,7 @@
+ #define ADJ_SETOFFSET 0x0100
+ 
+ #include <sys/syscall.h>
+-static int clock_adjtime(clockid_t id, struct timex *tx)
++int clock_adjtime(clockid_t id, struct timex *tx)
  {
- 	struct bpf_map_info info = {};
--	__u32 len = sizeof(info);
-+	__u32 len = sizeof(info), name_len;
- 	int new_fd, err;
- 	char *new_name;
- 
-@@ -1892,7 +1892,12 @@ int bpf_map__reuse_fd(struct bpf_map *map, int fd)
- 	if (err)
- 		return err;
- 
--	new_name = strdup(info.name);
-+	name_len = strlen(info.name);
-+	if (name_len == BPF_OBJ_NAME_LEN - 1 && strncmp(map->name, info.name, name_len) == 0)
-+		new_name = strdup(map->name);
-+	else
-+		new_name = strdup(info.name);
-+
- 	if (!new_name)
- 		return -errno;
- 
+ 	return syscall(__NR_clock_adjtime, id, tx);
+ }
 -- 
 2.35.1
 
