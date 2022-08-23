@@ -2,33 +2,33 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0A7E1C3F6B0
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 09:41:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2CD80C32796
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 09:41:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241712AbiHWJlt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 05:41:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52398 "EHLO
+        id S243363AbiHWJlx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 23 Aug 2022 05:41:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49794 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242766AbiHWJj1 (ORCPT
+        with ESMTP id S242879AbiHWJj1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 23 Aug 2022 05:39:27 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 016FA78BDF;
-        Tue, 23 Aug 2022 01:41:09 -0700 (PDT)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AC23322BC2;
+        Tue, 23 Aug 2022 01:41:10 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 205E7B81C4A;
-        Tue, 23 Aug 2022 08:40:25 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 628CBC433C1;
-        Tue, 23 Aug 2022 08:40:23 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 3B57E614E7;
+        Tue, 23 Aug 2022 08:40:18 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4B3EEC433C1;
+        Tue, 23 Aug 2022 08:40:17 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661244023;
-        bh=/bz97d8eC9tLEAccbjF2RV+Ifl5jlUarddDXwnlxLb8=;
+        s=korg; t=1661244017;
+        bh=791j+2hWy8TOd/D1gDSC01GR07M5nk56qoSUdhg5FAU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=L4W68bxRP3FofIL6/LDNVmDyopE3TdZhUc8xtI0NkNpc7MhglzpBfPPVg7hDodT0K
-         N0AGaq4IC4+mUlArXxqMROv+k/ikHoFCaWQtnJoBa6Uwkf9Ao1yFGuo1GMDVYI1hv5
-         leVIxLAjv7Zm5HYLd7Bwg8JGA9IdM5HCVHuu2qhg=
+        b=VIh6GOuSr/7lKgPKH3szZshSvRy3n0eQBEBGdRimYKCEvF4bYP8NrlrzKgWNShkXK
+         T0dFkQ2OTaKe8FVejq0FzxP9uqJhpPEQrcuXZip7ijxrUChUhRGOse3hRfYTppco4E
+         aEmnBAGZ2TH+NmRdEF389Tdv4unUilRMQDoCm3uk=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
@@ -37,9 +37,9 @@ Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         John Stultz <jstultz@google.com>,
         Shuah Khan <skhan@linuxfoundation.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.14 074/229] selftests: timers: clocksource-switch: fix passing errors from child
-Date:   Tue, 23 Aug 2022 10:23:55 +0200
-Message-Id: <20220823080056.367643955@linuxfoundation.org>
+Subject: [PATCH 4.14 073/229] selftests: timers: valid-adjtimex: build fix for newer toolchains
+Date:   Tue, 23 Aug 2022 10:23:54 +0200
+Message-Id: <20220823080056.336287734@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220823080053.202747790@linuxfoundation.org>
 References: <20220823080053.202747790@linuxfoundation.org>
@@ -53,39 +53,35 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Wolfram Sang <wsa+renesas@sang-engineering.com>
 
-[ Upstream commit 4d8f52ac5fa9eede7b7aa2f2d67c841d9eeb655f ]
+[ Upstream commit 9a162977d20436be5678a8e21a8e58eb4616d86a ]
 
-The return value from system() is a waitpid-style integer. Do not return
-it directly because with the implicit masking in exit() it will always
-return 0. Access it with appropriate macros to really pass on errors.
+Toolchains with an include file 'sys/timex.h' based on 3.18 will have a
+'clock_adjtime' definition added, so it can't be static in the code:
 
-Fixes: 7290ce1423c3 ("selftests/timers: Add clocksource-switch test from timetest suite")
+valid-adjtimex.c:43:12: error: static declaration of ‘clock_adjtime’ follows non-static declaration
+
+Fixes: e03a58c320e1 ("kselftests: timers: Add adjtimex SETOFFSET validity tests")
 Signed-off-by: Wolfram Sang <wsa+renesas@sang-engineering.com>
 Acked-by: John Stultz <jstultz@google.com>
 Signed-off-by: Shuah Khan <skhan@linuxfoundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- tools/testing/selftests/timers/clocksource-switch.c | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+ tools/testing/selftests/timers/valid-adjtimex.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/tools/testing/selftests/timers/clocksource-switch.c b/tools/testing/selftests/timers/clocksource-switch.c
-index bfc974b4572d..c18313a5f357 100644
---- a/tools/testing/selftests/timers/clocksource-switch.c
-+++ b/tools/testing/selftests/timers/clocksource-switch.c
-@@ -110,10 +110,10 @@ int run_tests(int secs)
+diff --git a/tools/testing/selftests/timers/valid-adjtimex.c b/tools/testing/selftests/timers/valid-adjtimex.c
+index 5397de708d3c..48b9a803235a 100644
+--- a/tools/testing/selftests/timers/valid-adjtimex.c
++++ b/tools/testing/selftests/timers/valid-adjtimex.c
+@@ -40,7 +40,7 @@
+ #define ADJ_SETOFFSET 0x0100
  
- 	sprintf(buf, "./inconsistency-check -t %i", secs);
- 	ret = system(buf);
--	if (ret)
--		return ret;
-+	if (WIFEXITED(ret) && WEXITSTATUS(ret))
-+		return WEXITSTATUS(ret);
- 	ret = system("./nanosleep");
--	return ret;
-+	return WIFEXITED(ret) ? WEXITSTATUS(ret) : 0;
+ #include <sys/syscall.h>
+-static int clock_adjtime(clockid_t id, struct timex *tx)
++int clock_adjtime(clockid_t id, struct timex *tx)
+ {
+ 	return syscall(__NR_clock_adjtime, id, tx);
  }
- 
- 
 -- 
 2.35.1
 
