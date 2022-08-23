@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0B494C32792
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 08:33:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1DDA4C32772
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 08:33:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244570AbiHWIdo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 04:33:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52506 "EHLO
+        id S244685AbiHWIdt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 23 Aug 2022 04:33:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60664 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344157AbiHWIb0 (ORCPT
+        with ESMTP id S1343753AbiHWIbR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 04:31:26 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E1ECE66A44;
-        Tue, 23 Aug 2022 01:15:59 -0700 (PDT)
+        Tue, 23 Aug 2022 04:31:17 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2817074E2F;
+        Tue, 23 Aug 2022 01:15:45 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 12427B81C4A;
-        Tue, 23 Aug 2022 08:15:13 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 59313C433D7;
-        Tue, 23 Aug 2022 08:15:11 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 01B9F6129A;
+        Tue, 23 Aug 2022 08:14:54 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0070CC433C1;
+        Tue, 23 Aug 2022 08:14:52 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661242511;
-        bh=cxO9xjSZDQUeRiS2q8YwS5yaRpm8BDG2uREKH4M2LC8=;
+        s=korg; t=1661242493;
+        bh=Rfq4sGxkv7PUq84xlx59lHyoBQyqRqYH7SkfBniubrg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=BOl5aDxmKnhfEgx+g6BftKBNGjq1I0dv15XdmpRTqKGtmFC3ggoJ8MKScZ+gcCGYT
-         KEKRD5UhD19Nkt2XIxNwEA8DI+EDPNq7FpYLxLfawweZms7AGDLN6Mbwkfzo+I01nv
-         E0kiKPgqsqjCfOnOW/qPWLyscGbmPdr2Lo7cq0U8=
+        b=u7uVWiKy3VeDe/1qpGMsUob6025P/vx3FEJ97U6u9uElFnHjrXdoItC7K5Slkvwgc
+         rsCrqopN5YYosjq1hP20fPDhPWVnlwEAVJuYHcvkor1EEveIrTxnKpOZcIQtiNALoB
+         WOJ9IEWMAwK8Ftp+9QhSTlNxsvoLxOmN3/8jyzkE=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Stefano Garzarella <sgarzare@redhat.com>,
-        Peilin Ye <peilin.ye@bytedance.com>,
-        "David S. Miller" <davem@davemloft.net>
-Subject: [PATCH 5.19 126/365] vsock: Set socket state back to SS_UNCONNECTED in vsock_connect_timeout()
-Date:   Tue, 23 Aug 2022 10:00:27 +0200
-Message-Id: <20220823080123.460404019@linuxfoundation.org>
+        stable@vger.kernel.org, Guillaume Nault <gnault@redhat.com>,
+        Matthias May <matthias.may@westermo.com>,
+        Jakub Kicinski <kuba@kernel.org>
+Subject: [PATCH 5.19 123/365] ipv6: do not use RT_TOS for IPv6 flowlabel
+Date:   Tue, 23 Aug 2022 10:00:24 +0200
+Message-Id: <20220823080123.340298617@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220823080118.128342613@linuxfoundation.org>
 References: <20220823080118.128342613@linuxfoundation.org>
@@ -49,41 +49,42 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Peilin Ye <peilin.ye@bytedance.com>
+From: Matthias May <matthias.may@westermo.com>
 
-commit a3e7b29e30854ed67be0d17687e744ad0c769c4b upstream.
+commit ab7e2e0dfa5d37540ab1dc5376e9a2cb9188925d upstream.
 
-Imagine two non-blocking vsock_connect() requests on the same socket.
-The first request schedules @connect_work, and after it times out,
-vsock_connect_timeout() sets *sock* state back to TCP_CLOSE, but keeps
-*socket* state as SS_CONNECTING.
+According to Guillaume Nault RT_TOS should never be used for IPv6.
 
-Later, the second request returns -EALREADY, meaning the socket "already
-has a pending connection in progress", even though the first request has
-already timed out.
+Quote:
+RT_TOS() is an old macro used to interprete IPv4 TOS as described in
+the obsolete RFC 1349. It's conceptually wrong to use it even in IPv4
+code, although, given the current state of the code, most of the
+existing calls have no consequence.
 
-As suggested by Stefano, fix it by setting *socket* state back to
-SS_UNCONNECTED, so that the second request will return -ETIMEDOUT.
+But using RT_TOS() in IPv6 code is always a bug: IPv6 never had a "TOS"
+field to be interpreted the RFC 1349 way. There's no historical
+compatibility to worry about.
 
-Suggested-by: Stefano Garzarella <sgarzare@redhat.com>
-Fixes: d021c344051a ("VSOCK: Introduce VM Sockets")
-Reviewed-by: Stefano Garzarella <sgarzare@redhat.com>
-Signed-off-by: Peilin Ye <peilin.ye@bytedance.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+Fixes: 571912c69f0e ("net: UDP tunnel encapsulation module for tunnelling different protocols like MPLS, IP, NSH etc.")
+Acked-by: Guillaume Nault <gnault@redhat.com>
+Signed-off-by: Matthias May <matthias.may@westermo.com>
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- net/vmw_vsock/af_vsock.c |    1 +
- 1 file changed, 1 insertion(+)
+ net/ipv6/ip6_output.c |    3 +--
+ 1 file changed, 1 insertion(+), 2 deletions(-)
 
---- a/net/vmw_vsock/af_vsock.c
-+++ b/net/vmw_vsock/af_vsock.c
-@@ -1286,6 +1286,7 @@ static void vsock_connect_timeout(struct
- 	if (sk->sk_state == TCP_SYN_SENT &&
- 	    (sk->sk_shutdown != SHUTDOWN_MASK)) {
- 		sk->sk_state = TCP_CLOSE;
-+		sk->sk_socket->state = SS_UNCONNECTED;
- 		sk->sk_err = ETIMEDOUT;
- 		sk_error_report(sk);
- 		vsock_transport_cancel_pkt(vsk);
+--- a/net/ipv6/ip6_output.c
++++ b/net/ipv6/ip6_output.c
+@@ -1311,8 +1311,7 @@ struct dst_entry *ip6_dst_lookup_tunnel(
+ 	fl6.daddr = info->key.u.ipv6.dst;
+ 	fl6.saddr = info->key.u.ipv6.src;
+ 	prio = info->key.tos;
+-	fl6.flowlabel = ip6_make_flowinfo(RT_TOS(prio),
+-					  info->key.label);
++	fl6.flowlabel = ip6_make_flowinfo(prio, info->key.label);
+ 
+ 	dst = ipv6_stub->ipv6_dst_lookup_flow(net, sock->sk, &fl6,
+ 					      NULL);
 
 
