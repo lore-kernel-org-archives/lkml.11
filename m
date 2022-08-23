@@ -2,240 +2,148 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2C1D2C32772
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 20:04:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D9C72C32772
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 20:04:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233954AbiHWUE1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 16:04:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37276 "EHLO
+        id S234000AbiHWUEd (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 23 Aug 2022 16:04:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39540 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233911AbiHWUED (ORCPT
+        with ESMTP id S229847AbiHWUEG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 16:04:03 -0400
-Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.153.233])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 83B03E084;
-        Tue, 23 Aug 2022 12:17:57 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1661282278; x=1692818278;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=od9EKCDhRArRaGPV2RxuCjiGWzeVGL06v4Tyo/Ik6Ls=;
-  b=TMy7qufY/YNWxZ1Tfohep6rWZSi5WMlwyh/QBGCVT/8ylsO1FAMQX20B
-   iEND5axQAKeVmDPnSAN5acEFJBbra9GYwtbGsRzKJdy5XCxH1sgVfBLXH
-   wgvaRPsu68WnDvr41T0HWtktERkikmf/xvQFtghBGSF4KiwsYXK01qBiK
-   42GKozRxtaWIKJwhbvSY5glMH04TvMKWIjYP+XqMZm2R6EOr4F/UfqrFm
-   qq3mleOGV5qaWuTsF3cVpSIOu+RdoxnyoYWLM9lEF6jSlltxnkNn7/Jcx
-   NzyV21WAxKdR+6VhHQOxNPOy9j5P7ngkY3OVfO473V9j/O9uxnaB8zVKj
-   Q==;
-X-IronPort-AV: E=Sophos;i="5.93,258,1654585200"; 
-   d="scan'208";a="187761601"
-Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
-  by esa1.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 23 Aug 2022 12:17:57 -0700
-Received: from chn-vm-ex04.mchp-main.com (10.10.85.152) by
- chn-vm-ex04.mchp-main.com (10.10.85.152) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.12; Tue, 23 Aug 2022 12:17:56 -0700
-Received: from localhost (10.10.115.15) by chn-vm-ex04.mchp-main.com
- (10.10.85.152) with Microsoft SMTP Server id 15.1.2507.12 via Frontend
- Transport; Tue, 23 Aug 2022 12:17:56 -0700
-Date:   Tue, 23 Aug 2022 21:22:10 +0200
-From:   Horatiu Vultur - M31836 <Horatiu.Vultur@microchip.com>
-To:     Claudiu Beznea - M18063 <Claudiu.Beznea@microchip.com>
-CC:     "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
-        "linux-arm-kernel@lists.infradead.org" 
-        <linux-arm-kernel@lists.infradead.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "robh+dt@kernel.org" <robh+dt@kernel.org>,
-        "krzysztof.kozlowski+dt@linaro.org" 
-        <krzysztof.kozlowski+dt@linaro.org>,
-        "arnd@arndb.de" <arnd@arndb.de>, "olof@lixom.net" <olof@lixom.net>,
-        "soc@kernel.org" <soc@kernel.org>,
-        Nicolas Ferre - M43238 <Nicolas.Ferre@microchip.com>,
-        UNGLinuxDriver <UNGLinuxDriver@microchip.com>,
-        "maxime.chevallier@bootlin.com" <maxime.chevallier@bootlin.com>
-Subject: Re: [PATCH] ARM: dts: lan966x: add support for pcb8290
-Message-ID: <20220823192210.cnkxmdb2eryg4hnz@soft-dev3-1.localhost>
-References: <20220817190027.1632721-1-horatiu.vultur@microchip.com>
- <8e6c780e-28ee-1f37-c14c-f0ca5f590743@microchip.com>
+        Tue, 23 Aug 2022 16:04:06 -0400
+Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com [148.163.156.1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DC51C6B17F;
+        Tue, 23 Aug 2022 12:18:06 -0700 (PDT)
+Received: from pps.filterd (m0098404.ppops.net [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 27NJ18pH032376;
+        Tue, 23 Aug 2022 19:18:06 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : date :
+ mime-version : subject : from : to : cc : references : in-reply-to :
+ content-type : content-transfer-encoding; s=pp1;
+ bh=hYI5wQbk46HuU9DogCcm5GnSiESCEzQY7HBqFtIr1PE=;
+ b=HnTQER1PNvlio7DYFV56iMouLD9qkUNS1zw7QHGC8flNAqfhcJww3FzpWSA7/pPUZLSc
+ bjjuAgUpdt+BgNF5swmBUDfvpoAz3BEeFYIwYAWO6G2uWOaJNee3U0s2/EQ1VPX+6d/o
+ voX9qf6OZ0ZTBU9MvttY7ghTHxdwFTuHD5wfbT83J2MecKg5UCoEYtyQqTDoS5l+BrA3
+ Kayz2nsAc79MvFK9B+Nzt9P0gN5MG+KKTzmqK+VQdWNUFG+sULITL8TrFZO3hnScjn6T
+ 1Og+xZ0Cz4tw9MzwlarZ1do8jnSSnfIVECvUw12Gs11CtAkYunZTmyZobocC4pwepjJF YQ== 
+Received: from pps.reinject (localhost [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3j54je141d-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Tue, 23 Aug 2022 19:18:05 +0000
+Received: from m0098404.ppops.net (m0098404.ppops.net [127.0.0.1])
+        by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 27NJ1Cat000734;
+        Tue, 23 Aug 2022 19:18:05 GMT
+Received: from ppma04dal.us.ibm.com (7a.29.35a9.ip4.static.sl-reverse.com [169.53.41.122])
+        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3j54je1414-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Tue, 23 Aug 2022 19:18:05 +0000
+Received: from pps.filterd (ppma04dal.us.ibm.com [127.0.0.1])
+        by ppma04dal.us.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 27NIp3rt020198;
+        Tue, 23 Aug 2022 19:18:04 GMT
+Received: from b03cxnp08026.gho.boulder.ibm.com (b03cxnp08026.gho.boulder.ibm.com [9.17.130.18])
+        by ppma04dal.us.ibm.com with ESMTP id 3j2q8a22ca-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Tue, 23 Aug 2022 19:18:04 +0000
+Received: from b03ledav006.gho.boulder.ibm.com (b03ledav006.gho.boulder.ibm.com [9.17.130.237])
+        by b03cxnp08026.gho.boulder.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 27NJI3h18782572
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Tue, 23 Aug 2022 19:18:03 GMT
+Received: from b03ledav006.gho.boulder.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 254C9C605B;
+        Tue, 23 Aug 2022 19:18:03 +0000 (GMT)
+Received: from b03ledav006.gho.boulder.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id B49ABC605A;
+        Tue, 23 Aug 2022 19:18:01 +0000 (GMT)
+Received: from [9.211.112.122] (unknown [9.211.112.122])
+        by b03ledav006.gho.boulder.ibm.com (Postfix) with ESMTP;
+        Tue, 23 Aug 2022 19:18:01 +0000 (GMT)
+Message-ID: <c558a8c8-4d87-13ee-8d33-ba0285445d62@linux.ibm.com>
+Date:   Tue, 23 Aug 2022 15:18:01 -0400
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Disposition: inline
-In-Reply-To: <8e6c780e-28ee-1f37-c14c-f0ca5f590743@microchip.com>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.12.0
+Subject: Re: [PATCH] KVM: s390: pci: fix plain integer as NULL pointer
+ warnings
+Content-Language: en-US
+From:   Matthew Rosato <mjrosato@linux.ibm.com>
+To:     linux-s390@vger.kernel.org, frankja@linux.ibm.com
+Cc:     farman@linux.ibm.com, schnelle@linux.ibm.com, pmorel@linux.ibm.com,
+        borntraeger@linux.ibm.com, imbrenda@linux.ibm.com,
+        david@redhat.com, hca@linux.ibm.com, gor@linux.ibm.com,
+        gerald.schaefer@linux.ibm.com, agordeev@linux.ibm.com,
+        svens@linux.ibm.com, kvm@vger.kernel.org,
+        linux-kernel@vger.kernel.org, kernel test robot <lkp@intel.com>
+References: <20220823191548.77526-1-mjrosato@linux.ibm.com>
+In-Reply-To: <20220823191548.77526-1-mjrosato@linux.ibm.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-TM-AS-GCONF: 00
+X-Proofpoint-ORIG-GUID: oTP1Ss4Gkc_1GdAfVMnNZHkj5TTSuhkQ
+X-Proofpoint-GUID: o2uygq3sU7XsrUaUMO0jLqx7OcOlX7gq
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.895,Hydra:6.0.517,FMLib:17.11.122.1
+ definitions=2022-08-23_07,2022-08-22_02,2022-06-22_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 mlxlogscore=999
+ impostorscore=0 lowpriorityscore=0 spamscore=0 mlxscore=0
+ priorityscore=1501 suspectscore=0 bulkscore=0 adultscore=0 phishscore=0
+ clxscore=1015 malwarescore=0 classifier=spam adjust=0 reason=mlx
+ scancount=1 engine=8.12.0-2207270000 definitions=main-2208230072
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The 08/23/2022 07:11, Claudiu Beznea - M18063 wrote:
+On 8/23/22 3:15 PM, Matthew Rosato wrote:
+> Fix some sparse warnings that a plain integer 0 is being used instead of
+> NULL.
+> 
+> Reported-by: kernel test robot <lkp@intel.com>
+> Signed-off-by: Matthew Rosato <mjrosato@linux.ibm.com>
 
-Hi Claudiu,
+@Janosch, since you are taking the other PCI fix can you also take this small cleanup through KVM?
 
-> > +&gpio {
-> > +	miim_a_pins: mdio-pins {
-> > +		/* MDC, MDIO */
-> > +		pins =  "GPIO_28", "GPIO_29";
-> > +		function = "miim_a";
-> > +	};
-> > +
-> > +	pps_out_pins: pps-out-pins {
+> ---
+>  arch/s390/kvm/pci.c | 4 ++--
+>  arch/s390/kvm/pci.h | 6 +++---
+>  2 files changed, 5 insertions(+), 5 deletions(-)
 > 
-> Can you also document this one as well? I can do it while applying if you
-> provide the strings.
+> diff --git a/arch/s390/kvm/pci.c b/arch/s390/kvm/pci.c
+> index bb8c335d17b9..3c12637ce08c 100644
+> --- a/arch/s390/kvm/pci.c
+> +++ b/arch/s390/kvm/pci.c
+> @@ -58,7 +58,7 @@ static int zpci_setup_aipb(u8 nisc)
+>  	if (!zpci_aipb)
+>  		return -ENOMEM;
+>  
+> -	aift->sbv = airq_iv_create(ZPCI_NR_DEVICES, AIRQ_IV_ALLOC, 0);
+> +	aift->sbv = airq_iv_create(ZPCI_NR_DEVICES, AIRQ_IV_ALLOC, NULL);
+>  	if (!aift->sbv) {
+>  		rc = -ENOMEM;
+>  		goto free_aipb;
+> @@ -373,7 +373,7 @@ static int kvm_s390_pci_aif_disable(struct zpci_dev *zdev, bool force)
+>  		gaite->gisc = 0;
+>  		gaite->aisbo = 0;
+>  		gaite->gisa = 0;
+> -		aift->kzdev[zdev->aisb] = 0;
+> +		aift->kzdev[zdev->aisb] = NULL;
+>  		/* Clear zdev info */
+>  		airq_iv_free_bit(aift->sbv, zdev->aisb);
+>  		airq_iv_release(zdev->aibv);
+> diff --git a/arch/s390/kvm/pci.h b/arch/s390/kvm/pci.h
+> index 3a3606c3a0fe..7be5568d8bd2 100644
+> --- a/arch/s390/kvm/pci.h
+> +++ b/arch/s390/kvm/pci.h
+> @@ -46,9 +46,9 @@ extern struct zpci_aift *aift;
+>  static inline struct kvm *kvm_s390_pci_si_to_kvm(struct zpci_aift *aift,
+>  						 unsigned long si)
+>  {
+> -	if (!IS_ENABLED(CONFIG_VFIO_PCI_ZDEV_KVM) || aift->kzdev == 0 ||
+> -	    aift->kzdev[si] == 0)
+> -		return 0;
+> +	if (!IS_ENABLED(CONFIG_VFIO_PCI_ZDEV_KVM) || aift->kzdev == NULL ||
+> +	    aift->kzdev[si] == NULL)
+> +		return NULL;
+>  	return aift->kzdev[si]->kvm;
+>  };
+>  
 
-Yes, I will do that.
-I will send a new version because I have seen that there is also a small
-error in the commit message.
-
-> 
-> > +		pins = "GPIO_38";
-> > +		function = "ptpsync_3";
-> > +	};
-> > +
-> > +	ptp_ext_pins: ptp-ext-pins {
-> 
-> Ditto
-> 
-> Thank you,
-> Claudiu Beznea
-> 
-> > +		pins = "GPIO_35";
-> > +		function = "ptpsync_0";
-> > +	};
-> > +
-> > +	udc_pins: ucd-pins {
-> > +		/* VBUS_DET B */
-> > +		pins = "GPIO_8";
-> > +		function = "usb_slave_b";
-> > +	};
-> > +};
-> > +
-> > +&mdio0 {
-> > +	pinctrl-0 = <&miim_a_pins>;
-> > +	pinctrl-names = "default";
-> > +	status = "okay";
-> > +
-> > +	ext_phy0: ethernet-phy@7 {
-> > +		reg = <7>;
-> > +		coma-mode-gpios = <&gpio 60 GPIO_ACTIVE_HIGH>;
-> > +	};
-> > +
-> > +	ext_phy1: ethernet-phy@8 {
-> > +		reg = <8>;
-> > +		coma-mode-gpios = <&gpio 60 GPIO_ACTIVE_HIGH>;
-> > +	};
-> > +
-> > +	ext_phy2: ethernet-phy@9 {
-> > +		reg = <9>;
-> > +		coma-mode-gpios = <&gpio 60 GPIO_ACTIVE_HIGH>;
-> > +	};
-> > +
-> > +	ext_phy3: ethernet-phy@10 {
-> > +		reg = <10>;
-> > +		coma-mode-gpios = <&gpio 60 GPIO_ACTIVE_HIGH>;
-> > +	};
-> > +
-> > +	ext_phy4: ethernet-phy@15 {
-> > +		reg = <15>;
-> > +		coma-mode-gpios = <&gpio 60 GPIO_ACTIVE_HIGH>;
-> > +	};
-> > +
-> > +	ext_phy5: ethernet-phy@16 {
-> > +		reg = <16>;
-> > +		coma-mode-gpios = <&gpio 60 GPIO_ACTIVE_HIGH>;
-> > +	};
-> > +
-> > +	ext_phy6: ethernet-phy@17 {
-> > +		reg = <17>;
-> > +		coma-mode-gpios = <&gpio 60 GPIO_ACTIVE_HIGH>;
-> > +	};
-> > +
-> > +	ext_phy7: ethernet-phy@18 {
-> > +		reg = <18>;
-> > +		coma-mode-gpios = <&gpio 60 GPIO_ACTIVE_HIGH>;
-> > +	};
-> > +};
-> > +
-> > +&port0 {
-> > +	reg = <2>;
-> > +	phy-handle = <&ext_phy2>;
-> > +	phy-mode = "qsgmii";
-> > +	phys = <&serdes 0 SERDES6G(1)>;
-> > +	status = "okay";
-> > +};
-> > +
-> > +&port1 {
-> > +	reg = <3>;
-> > +	phy-handle = <&ext_phy3>;
-> > +	phy-mode = "qsgmii";
-> > +	phys = <&serdes 1 SERDES6G(1)>;
-> > +	status = "okay";
-> > +};
-> > +
-> > +&port2 {
-> > +	reg = <0>;
-> > +	phy-handle = <&ext_phy0>;
-> > +	phy-mode = "qsgmii";
-> > +	phys = <&serdes 2 SERDES6G(1)>;
-> > +	status = "okay";
-> > +};
-> > +
-> > +&port3 {
-> > +	reg = <1>;
-> > +	phy-handle = <&ext_phy1>;
-> > +	phy-mode = "qsgmii";
-> > +	phys = <&serdes 3 SERDES6G(1)>;
-> > +	status = "okay";
-> > +};
-> > +
-> > +&port4 {
-> > +	reg = <6>;
-> > +	phy-handle = <&ext_phy6>;
-> > +	phy-mode = "qsgmii";
-> > +	phys = <&serdes 4 SERDES6G(2)>;
-> > +	status = "okay";
-> > +};
-> > +
-> > +&port5 {
-> > +	reg = <7>;
-> > +	phy-handle = <&ext_phy7>;
-> > +	phy-mode = "qsgmii";
-> > +	phys = <&serdes 5 SERDES6G(2)>;
-> > +	status = "okay";
-> > +};
-> > +
-> > +&port6 {
-> > +	reg = <4>;
-> > +	phy-handle = <&ext_phy4>;
-> > +	phy-mode = "qsgmii";
-> > +	phys = <&serdes 6 SERDES6G(2)>;
-> > +	status = "okay";
-> > +};
-> > +
-> > +&port7 {
-> > +	reg = <5>;
-> > +	phy-handle = <&ext_phy5>;
-> > +	phy-mode = "qsgmii";
-> > +	phys = <&serdes 7 SERDES6G(2)>;
-> > +	status = "okay";
-> > +};
-> > +
-> > +&serdes {
-> > +	status = "okay";
-> > +};
-> > +
-> > +&switch {
-> > +	pinctrl-0 = <&pps_out_pins>, <&ptp_ext_pins>;
-> > +	pinctrl-names = "default";
-> > +	status = "okay";
-> > +};
-> > +
-> > +&udc {
-> > +	pinctrl-0 = <&udc_pins>;
-> > +	pinctrl-names = "default";
-> > +	atmel,vbus-gpio = <&gpio 8 GPIO_ACTIVE_HIGH>;
-> > +	status = "okay";
-> > +};
-> 
-
--- 
-/Horatiu
