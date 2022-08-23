@@ -2,103 +2,135 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3913CC32772
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 19:16:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 315EFC32789
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 19:16:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233754AbiHWTQj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 15:16:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53706 "EHLO
+        id S234146AbiHWTQo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 23 Aug 2022 15:16:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52710 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233637AbiHWTQR (ORCPT
+        with ESMTP id S230059AbiHWTQW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 15:16:17 -0400
-Received: from mail-lj1-x22c.google.com (mail-lj1-x22c.google.com [IPv6:2a00:1450:4864:20::22c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4524583F14
-        for <linux-kernel@vger.kernel.org>; Tue, 23 Aug 2022 10:53:20 -0700 (PDT)
-Received: by mail-lj1-x22c.google.com with SMTP id n24so12184258ljc.13
-        for <linux-kernel@vger.kernel.org>; Tue, 23 Aug 2022 10:53:20 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=amarulasolutions.com; s=google;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc;
-        bh=sDBaSDMG+UDgCifIbR0AL6vcpXr497JaPO6dIyVU0V8=;
-        b=cOtt44z0CW7ImM4UGItCd0A/tffXqphjetu1mC4+/9A3wkWlIVtFs3gUJ6pHNA6bQL
-         1ulcES3mGiIX6weI5XktG9SCa9bJZiYVc+zqV4xH1Aza8ad1Yr+nFT6VJupWVgmeQddx
-         E/LgKQCCo0TOWwGqMmCai5rKflV231vDSRPJw=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc;
-        bh=sDBaSDMG+UDgCifIbR0AL6vcpXr497JaPO6dIyVU0V8=;
-        b=c0idmcvsT24x749hxoPcjkrb1RrVWTyP8XW2tNnMDKwtlig5ezav68xndjNq1BRJcW
-         i0WHqhwPQ1na7UgE6pJg5LJWLnNhVZKoWeJYbE07S5AlrCGqVJv6JaYTWK/pIHvH5l7H
-         vOCAJp5jSrBgVtVhPFUZqZCvHp84fyqS1MRsiAHBmyPMNMFEn+SAWMCgjsZpI47fdh/d
-         IqGwu8DEj+0aDgMv05/LdGZ19Clnz6eRLKH/ofdE1L9m436KN1k3cB26w9dQ4ZIQStHM
-         D1rzsS+J8B7bhQY2tN8sBGrXTF2JQXqh/L6ursPMYjLonvDhZU6uHsMAOQX2zTyZ2gQz
-         eE/w==
-X-Gm-Message-State: ACgBeo01jdysXsZBmMKBOaJTYndJBPKlrpt8m86rmJPzzNXIM+DaXiwC
-        IEbeA9ntv3CxX/9yMzGTr0Uf+IJ993+dHw==
-X-Google-Smtp-Source: AA6agR6AC9qvPpVh8ikeSZzI7M8wWx7sWIn+kkW4Gdr7Uch+tdArCg472GbKPuyDQfEjNxvARvYAbw==
-X-Received: by 2002:a05:6402:5203:b0:446:a378:54a5 with SMTP id s3-20020a056402520300b00446a37854a5mr4438303edd.321.1661276616038;
-        Tue, 23 Aug 2022 10:43:36 -0700 (PDT)
-Received: from tom-ThinkPad-T14s-Gen-2i (net-188-217-57-252.cust.vodafonedsl.it. [188.217.57.252])
-        by smtp.gmail.com with ESMTPSA id t26-20020a50c25a000000b0043bbc9503ddsm1789775edf.76.2022.08.23.10.43.35
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 23 Aug 2022 10:43:35 -0700 (PDT)
-Date:   Tue, 23 Aug 2022 19:43:33 +0200
-From:   Tommaso Merciai <tommaso.merciai@amarulasolutions.com>
-To:     wangjianli <wangjianli@cdjrlc.com>
-Cc:     awalls@md.metrocast.net, mchehab@kernel.org,
-        linux-media@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] pci/ivtv: fix repeated words in comments
-Message-ID: <20220823174333.GA1277033@tom-ThinkPad-T14s-Gen-2i>
-References: <20220823145530.45102-1-wangjianli@cdjrlc.com>
+        Tue, 23 Aug 2022 15:16:22 -0400
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id A646A9CCDE
+        for <linux-kernel@vger.kernel.org>; Tue, 23 Aug 2022 10:53:26 -0700 (PDT)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 2574B113E;
+        Tue, 23 Aug 2022 10:53:29 -0700 (PDT)
+Received: from localhost (ionvoi01-desktop.cambridge.arm.com [10.1.196.65])
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 0993D3F718;
+        Tue, 23 Aug 2022 10:53:24 -0700 (PDT)
+Date:   Tue, 23 Aug 2022 18:53:23 +0100
+From:   Ionela Voinescu <ionela.voinescu@arm.com>
+To:     Yicong Yang <yangyicong@huawei.com>
+Cc:     yangyicong@hisilicon.com, sudeep.holla@arm.com,
+        vincent.guittot@linaro.org, linux-kernel@vger.kernel.org,
+        gregkh@linuxfoundation.org, rafael@kernel.org, 21cnbao@gmail.com,
+        jonathan.cameron@huawei.com, linuxarm@huawei.com,
+        prime.zeng@huawei.com
+Subject: Re: [PATCH] arch_topology: Make cluster topology span at least SMT
+ CPUs
+Message-ID: <YwUUEzULS1ha1rqY@arm.com>
+References: <20220823073044.58697-1-yangyicong@huawei.com>
+ <YwSKnGii2zdd7Fig@arm.com>
+ <d0bc04af-5481-5df2-ff75-9072b4b047c1@huawei.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220823145530.45102-1-wangjianli@cdjrlc.com>
+In-Reply-To: <d0bc04af-5481-5df2-ff75-9072b4b047c1@huawei.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Aug 23, 2022 at 10:55:30PM +0800, wangjianli wrote:
-> Delete the redundant word 'the'.
-> 
-> Signed-off-by: wangjianli <wangjianli@cdjrlc.com>
-> ---
->  drivers/media/pci/ivtv/ivtv-yuv.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
-> 
-> diff --git a/drivers/media/pci/ivtv/ivtv-yuv.c b/drivers/media/pci/ivtv/ivtv-yuv.c
-> index e79e8a5a744a..4ba10c34a16a 100644
-> --- a/drivers/media/pci/ivtv/ivtv-yuv.c
-> +++ b/drivers/media/pci/ivtv/ivtv-yuv.c
-> @@ -538,7 +538,7 @@ static void ivtv_yuv_handle_vertical(struct ivtv *itv, struct yuv_frame_info *f)
->  	reg_2964 = (reg_2964 << 16) + reg_2964 + (reg_2964 * 46 / 94);
->  
->  	/* Okay, we've wasted time working out the correct value,
-> -	   but if we use it, it fouls the the window alignment.
-> +	   but if we use it, it fouls the window alignment.
->  	   Fudge it to what we want... */
->  	reg_2964 = 0x00010001 + ((reg_2964 & 0x0000FFFF) - (reg_2964 >> 16));
->  	reg_2968 = 0x00010001 + ((reg_2968 & 0x0000FFFF) - (reg_2968 >> 16));
-> -- 
-> 2.36.1
-> 
-
 Hi,
-Looks good to me.
 
-Tommaso
+On Tuesday 23 Aug 2022 at 21:05:47 (+0800), Yicong Yang wrote:
+> On 2022/8/23 16:06, Ionela Voinescu wrote:
+> > Hi Yicong,
+> > 
+> > On Tuesday 23 Aug 2022 at 15:30:44 (+0800), Yicong Yang wrote:
+> >> From: Yicong Yang <yangyicong@hisilicon.com>
+> >>
+> >> Currently cpu_clustergroup_mask() will return CPU mask if cluster span
+> >> more or the same CPUs as cpu_coregroup_mask(). This will result topology
+> >> borken on non-Cluster SMT machines.
+> > 
+> > Might be worth adding here:.. "when building with CONFIG_SCHED_CLUSTER=y"
+> > 
+> 
+> will add this qualifier. thanks.
+> 
+> >>
+> > 
+> > I thought I had covered this case, but I think I had considered LLC
+> > spanning more than one core (tested on TX2 as well).
+> > 
+> > So you'd only hit this if LLC and cluster level span the same cores (a
+> > single core in this case, for non-cluster), in the presence of SMT.
+> > 
+> 
+> Not sure I understand it correctly but in the below case I think the LLC may span
+> the same core with socket?
 
--- 
-Tommaso Merciai
-Embedded Linux Engineer
-tommaso.merciai@amarulasolutions.com
-__________________________________
+Ah, I've jumped to conclusions based on the "non-cluster" mention. Does
+"non-cluster" just mean that there's no intermediary "cluster" grouping of
+CPUs between core and LLC? How does the PPTT table look like, by the
+way?
 
-Amarula Solutions SRL
-Via Le Canevare 30, 31100 Treviso, Veneto, IT
-T. +39 042 243 5310
-info@amarulasolutions.com
-www.amarulasolutions.com
+Thanks,
+Ionela.
+
+> 
+> > Reviewed-by: Ionela Voinescu <ionela.voinescu@arm.com>
+> > 
+> > Many thanks,
+> > Ionela.
+> > 
+> >> Test with:
+> >> qemu-system-aarch64 -enable-kvm -machine virt \
+> >>  -net none \
+> >>  -cpu host \
+> >>  -bios ./QEMU_EFI.fd \
+> >>  -m 2G \
+> >>  -smp 48,sockets=2,cores=12,threads=2 \
+> >>  -kernel $Image \
+> >>  -initrd $Rootfs \
+> >>  -nographic
+> >>  -append "rdinit=init console=ttyAMA0 sched_verbose loglevel=8"
+> >>
+> >> We'll get below error:
+> >> [    3.084568] BUG: arch topology borken
+> >> [    3.084570]      the SMT domain not a subset of the CLS domain
+> >>
+> >> Since cluster is a level higher than SMT, fix this by making cluster
+> >> spans at least SMT CPUs.
+> >>
+> >> Cc: Sudeep Holla <sudeep.holla@arm.com>
+> >> Cc: Vincent Guittot <vincent.guittot@linaro.org>
+> >> Cc: Ionela Voinescu <ionela.voinescu@arm.com>
+> >> Fixes: bfcc4397435d ("arch_topology: Limit span of cpu_clustergroup_mask()")
+> >> Signed-off-by: Yicong Yang <yangyicong@hisilicon.com>
+> >> ---
+> >>  drivers/base/arch_topology.c | 2 +-
+> >>  1 file changed, 1 insertion(+), 1 deletion(-)
+> >>
+> >> diff --git a/drivers/base/arch_topology.c b/drivers/base/arch_topology.c
+> >> index 0424b59b695e..0056a1273275 100644
+> >> --- a/drivers/base/arch_topology.c
+> >> +++ b/drivers/base/arch_topology.c
+> >> @@ -724,7 +724,7 @@ const struct cpumask *cpu_clustergroup_mask(int cpu)
+> >>  	 */
+> >>  	if (cpumask_subset(cpu_coregroup_mask(cpu),
+> >>  			   &cpu_topology[cpu].cluster_sibling))
+> >> -		return get_cpu_mask(cpu);
+> >> +		return cpu_smt_mask(cpu);
+> >>  
+> >>  	return &cpu_topology[cpu].cluster_sibling;
+> >>  }
+> >> -- 
+> >> 2.24.0
+> >>
+> > 
+> > .
+> > 
