@@ -2,102 +2,130 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8220AC32772
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 15:27:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 96D4EC32772
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 15:27:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243634AbiHWP1U (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 11:27:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52748 "EHLO
+        id S241796AbiHWP10 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 23 Aug 2022 11:27:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52636 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242984AbiHWP1E (ORCPT
+        with ESMTP id S244130AbiHWPZd (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 11:27:04 -0400
-Received: from mail-lj1-x230.google.com (mail-lj1-x230.google.com [IPv6:2a00:1450:4864:20::230])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E9075B5145
-        for <linux-kernel@vger.kernel.org>; Tue, 23 Aug 2022 04:06:29 -0700 (PDT)
-Received: by mail-lj1-x230.google.com with SMTP id bn9so5610126ljb.6
-        for <linux-kernel@vger.kernel.org>; Tue, 23 Aug 2022 04:06:29 -0700 (PDT)
+        Tue, 23 Aug 2022 11:25:33 -0400
+Received: from mail-ej1-x633.google.com (mail-ej1-x633.google.com [IPv6:2a00:1450:4864:20::633])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5CBA8135B3A
+        for <linux-kernel@vger.kernel.org>; Tue, 23 Aug 2022 04:02:18 -0700 (PDT)
+Received: by mail-ej1-x633.google.com with SMTP id h22so16394334ejk.4
+        for <linux-kernel@vger.kernel.org>; Tue, 23 Aug 2022 04:02:17 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=linaro.org; s=google;
         h=content-transfer-encoding:in-reply-to:from:references:cc:to
          :content-language:subject:user-agent:mime-version:date:message-id
          :from:to:cc;
-        bh=yGKM2I7UEt0vdW0TbqK/IUc9qD27rValEiMJNQwZVjg=;
-        b=ufPztWR2ngWfrbxMEAb6f3dXCo0gFdTtTmwimLCWzMYoKe7v37RMteWpmqKZpPAkAV
-         1Lh0t8V9UnrpAUDwKqdvRnCVKEGY3NN7N4VjCyEP6hdzmUrsI76S+hNr31CmBbAVbXEz
-         vn06k98hKekCkp9zzj9FAKkeI3VUvEwfbIOx4PKHWJXXCp6W/2Cva8qK/4WT3FJRB2tH
-         PHqQpIPkhD0JrIuAf1kTUp6dZ+NpXqpEQLXk7BC97fPIxFKAD93CNaoORb6IyGYIzGkv
-         2qprWXTL9R2go6TJVZrE2U1xAB1zGO5u1wR33qSfiIZ2Y39KeXuv6s4RsEtzVpwnXqZG
-         xP1g==
+        bh=NPkz8CIReFRkXXNi+9wXJA08oHYjzaiWMjPixEXkoww=;
+        b=iigcejhnAnjVrYq+8ynJNXJJa0Vfsj8KP5tp65+xPF/AC9cPRgUrB26NE3gtauWUwx
+         qQD9jaFSKTuo5y6taEgj4zT5WglBx2XFrToeNbs7P2yVO/qXm550HoYgwANo/8U3l2X/
+         qD6uIGFVGhfDTFVBzn0eLuBTuJDoRlIwZQ+IIvjVqLH3q805BXxLnwm4kY/v8HsVVfbb
+         a8o8/TZEs0PF91gyok9kM1GOBPuEXGkN/kg9f0C7mM/4R2yBD7QZXsKgCsCNKc0P0EIV
+         jbxzrxOeX0LPVaXkLwbTQ/iqDPUtOab3XBE2USm0iPAzVuHlVxBxdzZJjjqrjHU3TtnO
+         r1pQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=content-transfer-encoding:in-reply-to:from:references:cc:to
          :content-language:subject:user-agent:mime-version:date:message-id
          :x-gm-message-state:from:to:cc;
-        bh=yGKM2I7UEt0vdW0TbqK/IUc9qD27rValEiMJNQwZVjg=;
-        b=I9V0c6MlY5T6Z1j/HpCUpMaYnffx8+rnv95BjBdGopKqrZQOUyeKxMRpNwKpG8xwGr
-         kRATZIsffzGzVtcv7UdM4TjbWb/jpKtkUCOhuPim5g4+tQeCATNfR9WjFzhmp2s6TSh+
-         D/XjOnPJ4qJ7hRBGlJEEyQCFHELnIFG0uxQlbzcT/WeXUn4aT4VXvf0lMEe6ix0tZdkU
-         Znh4iGWXyhb6DU2QkVPvKlmZeNKCkXjZEr9xpiK7RdSsRCkpjhzyTWV57Z6Xs61RgUpV
-         Z2jyAx2pchNOnsImmW06JVxWEAiyRSWTJqOjSJzur66Xvk3oPSZ59BXPb1qVld67RiLv
-         2UZw==
-X-Gm-Message-State: ACgBeo3CWv9SZB4svoDqb00TNc5eKWQUaoeCzdApgkn9RHVF8thjLV9t
-        CQRzqIdEt/iXhMy3EKQvsW31xw==
-X-Google-Smtp-Source: AA6agR7LQZqic18Ny4TRgU5tXACZsr/Um9gWa1WzwzvlFs+fOfXqJ4LO1H1vqpbF9RIuGuN6WEDzYQ==
-X-Received: by 2002:a05:651c:b98:b0:261:ab8f:3905 with SMTP id bg24-20020a05651c0b9800b00261ab8f3905mr6910952ljb.518.1661252751496;
-        Tue, 23 Aug 2022 04:05:51 -0700 (PDT)
+        bh=NPkz8CIReFRkXXNi+9wXJA08oHYjzaiWMjPixEXkoww=;
+        b=wRdNn6PTdBEsB169i2aHUH4Gzy6q7lfm4Mfb67KFodihQ9XsdvAsH05np2pplO0aAP
+         DgRqXzrnDMTTaLfSwQbPW0w53qrhDwBvtmi1uZkSIUvq8c+XpTD6Hj92WtufzB4HAU0n
+         EEBvzEmX/yI9RxnuNdTNBI3cWbjlP0hhWvmObaZjzDJC3aIwDFloPNqE8iVsPs0M8v+j
+         fCIlT5+Iq6i4SanAY3VCStTxX0Th/gIUchDDCoOryjuZeNXbIcFMdlP35yfffmmeUmhQ
+         9EXselym2goQQH5dBOR3ghZNDXMO4PxxMhxoG4gPgeLIdsMXY+AsXwoe8Ao8I4yRzWbr
+         hwtw==
+X-Gm-Message-State: ACgBeo3zuw69uCiZWMrd3cIcfKySkVpwkyNgEFY8LGBmkE9WV1SLQQA1
+        8hhj7O6eK87Vz7XxlNNX0rLkg4ZcpyVzZFPx
+X-Google-Smtp-Source: AA6agR7u26JTojsyB4JuWJX8y8BItLKRip4aR1+/399iD/iKWu9l7BTdi42s42J+uuQrVDAiJBBmGQ==
+X-Received: by 2002:a05:6512:c10:b0:492:d263:f918 with SMTP id z16-20020a0565120c1000b00492d263f918mr5533940lfu.501.1661251676796;
+        Tue, 23 Aug 2022 03:47:56 -0700 (PDT)
 Received: from [192.168.0.11] (89-27-92-210.bb.dnainternet.fi. [89.27.92.210])
-        by smtp.gmail.com with ESMTPSA id a17-20020a19ca11000000b00492b679d5aesm1722089lfg.81.2022.08.23.04.05.50
+        by smtp.gmail.com with ESMTPSA id x16-20020a056512131000b00489e812f05asm2441697lfu.21.2022.08.23.03.47.55
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 23 Aug 2022 04:05:50 -0700 (PDT)
-Message-ID: <04f61840-451f-c323-938f-ca91bc65e854@linaro.org>
-Date:   Tue, 23 Aug 2022 14:05:49 +0300
+        Tue, 23 Aug 2022 03:47:56 -0700 (PDT)
+Message-ID: <c24da513-e015-8bc6-8874-ba63c22be5d6@linaro.org>
+Date:   Tue, 23 Aug 2022 13:47:54 +0300
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
  Thunderbird/91.12.0
-Subject: Re: [PATCH v4 1/8] dt-bindings: arm: fsl: Rename compatibles for
- Kontron i.MX8MM SoM/board
+Subject: Re: [PATCH v4 4/6] dt-bindings: net: dsa: mediatek,mt7530: define
+ port binding per switch
 Content-Language: en-US
-To:     Frieder Schrempf <frieder@fris.de>, devicetree@vger.kernel.org,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        linux-kernel@vger.kernel.org, Li Yang <leoyang.li@nxp.com>,
+To:     =?UTF-8?B?QXLEsW7DpyDDnE5BTA==?= <arinc.unal@arinc9.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
         Rob Herring <robh+dt@kernel.org>,
-        Shawn Guo <shawnguo@kernel.org>
-Cc:     linux-arm-kernel@lists.infradead.org,
-        Frieder Schrempf <frieder.schrempf@kontron.de>,
-        Alexander Stein <alexander.stein@ew.tq-group.com>,
-        Denys Drozdov <denys.drozdov@toradex.com>,
-        Fabio Estevam <festevam@denx.de>,
-        Marcel Ziswiler <marcel.ziswiler@toradex.com>,
-        Marek Vasut <marex@denx.de>,
-        Matthias Schiffer <matthias.schiffer@tq-group.com>,
-        Max Krummenacher <max.krummenacher@toradex.com>,
-        Rob Herring <robh@kernel.org>
-References: <20220822080357.24478-1-frieder@fris.de>
- <20220822080357.24478-2-frieder@fris.de>
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        Sean Wang <sean.wang@mediatek.com>,
+        Landen Chao <Landen.Chao@mediatek.com>,
+        DENG Qingfang <dqfext@gmail.com>,
+        Frank Wunderlich <frank-w@public-files.de>,
+        Luiz Angelo Daros de Luca <luizluca@gmail.com>,
+        Sander Vanheule <sander@svanheule.net>,
+        =?UTF-8?Q?Ren=c3=a9_van_Dorst?= <opensource@vdorst.com>,
+        Daniel Golle <daniel@makrotopia.org>, erkin.bozoglu@xeront.com,
+        Sergio Paracuellos <sergio.paracuellos@gmail.com>
+Cc:     netdev@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org
+References: <20220820080758.9829-1-arinc.unal@arinc9.com>
+ <20220820080758.9829-5-arinc.unal@arinc9.com>
 From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-In-Reply-To: <20220822080357.24478-2-frieder@fris.de>
+In-Reply-To: <20220820080758.9829-5-arinc.unal@arinc9.com>
 Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 22/08/2022 11:03, Frieder Schrempf wrote:
-> From: Frieder Schrempf <frieder.schrempf@kontron.de>
+On 20/08/2022 11:07, Arınç ÜNAL wrote:
+> Define DSA port binding per switch model as each switch model requires
+> different values for certain properties.
 > 
-> This updates the bindings in order to use names for the boards that
-> follow the latest convention used by Kontron marketing.
+> Define reg property on $defs as it's the same for all switch models.
 > 
-> By updating we make sure, that we can maintain this more easily in
-> future and make sure that the proper devicetree can be selected for
-> the hardware.
+> Remove unnecessary lines as they are already included from the referred
+> dsa.yaml.
 > 
-> Signed-off-by: Frieder Schrempf <frieder.schrempf@kontron.de>
+> Signed-off-by: Arınç ÜNAL <arinc.unal@arinc9.com>
+> ---
+>  .../bindings/net/dsa/mediatek,mt7530.yaml     | 56 +++++++++++--------
+>  1 file changed, 34 insertions(+), 22 deletions(-)
+> 
+> diff --git a/Documentation/devicetree/bindings/net/dsa/mediatek,mt7530.yaml b/Documentation/devicetree/bindings/net/dsa/mediatek,mt7530.yaml
+> index 657e162a1c01..7c4374e16f96 100644
+> --- a/Documentation/devicetree/bindings/net/dsa/mediatek,mt7530.yaml
+> +++ b/Documentation/devicetree/bindings/net/dsa/mediatek,mt7530.yaml
+> @@ -130,38 +130,47 @@ properties:
+>        ethsys.
+>      maxItems: 1
+>  
+> -patternProperties:
+> -  "^(ethernet-)?ports$":
+> -    type: object
+> -
+> -    patternProperties:
+> -      "^(ethernet-)?port@[0-9]+$":
+> -        type: object
+> -        description: Ethernet switch ports
 
-
-Acked-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-
+Again, I don't understand why do you remove definitions of these nodes
+from top-level properties. I explained what I expect in previous
+discussion and I am confused to hear "this cannot be done".
 
 Best regards,
 Krzysztof
