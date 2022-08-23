@@ -2,167 +2,82 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6C573C32772
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 14:47:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4C965C32772
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 14:50:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242039AbiHWOrb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 10:47:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46076 "EHLO
+        id S240968AbiHWOt7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 23 Aug 2022 10:49:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48226 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243351AbiHWOpv (ORCPT
+        with ESMTP id S242620AbiHWOtK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 10:45:51 -0400
-Received: from mail-pl1-x632.google.com (mail-pl1-x632.google.com [IPv6:2607:f8b0:4864:20::632])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3D9732E0D87;
-        Tue, 23 Aug 2022 05:07:17 -0700 (PDT)
-Received: by mail-pl1-x632.google.com with SMTP id g8so8724022plq.11;
-        Tue, 23 Aug 2022 05:07:17 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:sender:from:to:cc;
-        bh=M5pm4/VJrTNRCgV/1Wc0seJfX5yLDcrWOklZuTfCCtY=;
-        b=mZogj9xQ/+Vr8S1jpK658n2Aj6QC8la6Mu9cjfOmB9kNWjGGC9cQXzFTKC79hcf2Al
-         iApFcNWbN+fGk4x4EwXIpvjKYnfyJLaupJhr+DvGL293rVOKGiVa5ArAwZr0bA91Zamm
-         LK7Zts76zmrF40Y8XdbaYrMXuYdd//mM8L8B9Ih+NKblceMjwDBIEVE+/2pbNKtXeoki
-         LtluyOn1PhbNCwCYifRzOxDnUZ7sNQA2RCTeEWwiCTElBqe0AmQzMAY8nN7rU3VNdIvU
-         2XeNxogrjLCx8HZ/4nSFiBXu3N5xQUHu2oji2nz/AqkGGjAVZ0RYrp0LQyO5SsmIFUka
-         H1DA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:sender:x-gm-message-state:from:to:cc;
-        bh=M5pm4/VJrTNRCgV/1Wc0seJfX5yLDcrWOklZuTfCCtY=;
-        b=HoUOJP4AVBH4QCJEhc+ifClEjNGq4gds57huSMV84ZzcmO7B9JUEheaHBO9h2eOr54
-         NZsMR73ZUtCYf/G+L+F6VjSouR4T2cRxfOFKrZJWMECw1SNHbYPP2cs7uYwwynxd3/Tz
-         5FtCZsZR5L7yYmxWLzg4sfUdGX2iQRU+QlBOCOQu9F1g40V7hf2s+Q19kdaFfAB6XbOo
-         GS/R3MPdIysRW4AA4zL7xkCzWVQOT66kGS7omWjc32el8DXI5Ow0HG8UHdHX3Fg8hT3x
-         bSK78oSP5N3ncoW9NVdluHd/GycUMmTsmma7sfJDUTaNkqXwe+AZtRp8U/7xoqVjN12e
-         4daA==
-X-Gm-Message-State: ACgBeo0slDv3Q/g4EtUExHV5EN5T7r8rbhUIW7Vc9MZ/MxuuI2y5r0we
-        R3Zx6P02JRbu96MZCRdUhW4=
-X-Google-Smtp-Source: AA6agR6AKJbbncEdljYSR29LkZvk9rh/Ilz5/vWWK3pRLPjSRG84vapc9XlKp48gYeP57U0Da/y1Gw==
-X-Received: by 2002:a17:90b:1c8e:b0:1f7:524f:bfcc with SMTP id oo14-20020a17090b1c8e00b001f7524fbfccmr3025566pjb.132.1661256418503;
-        Tue, 23 Aug 2022 05:06:58 -0700 (PDT)
-Received: from server.roeck-us.net ([2600:1700:e321:62f0:329c:23ff:fee3:9d7c])
-        by smtp.gmail.com with ESMTPSA id g1-20020a170902e38100b0016bdf0032b9sm10206494ple.110.2022.08.23.05.06.57
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 23 Aug 2022 05:06:57 -0700 (PDT)
-Sender: Guenter Roeck <groeck7@gmail.com>
-Date:   Tue, 23 Aug 2022 05:06:56 -0700
-From:   Guenter Roeck <linux@roeck-us.net>
-To:     "Alice Guo (OSS)" <alice.guo@oss.nxp.com>
-Cc:     "wim@linux-watchdog.org" <wim@linux-watchdog.org>,
-        "shawnguo@kernel.org" <shawnguo@kernel.org>,
-        "s.hauer@pengutronix.de" <s.hauer@pengutronix.de>,
-        "festevam@gmail.com" <festevam@gmail.com>,
-        "kernel@pengutronix.de" <kernel@pengutronix.de>,
-        dl-linux-imx <linux-imx@nxp.com>,
-        "linux-watchdog@vger.kernel.org" <linux-watchdog@vger.kernel.org>,
-        "linux-arm-kernel@lists.infradead.org" 
-        <linux-arm-kernel@lists.infradead.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH 4/7] watchdog: imx7ulp_wdt: Fix RCS timeout issue
-Message-ID: <20220823120656.GC203169@roeck-us.net>
-References: <20220816043643.26569-1-alice.guo@oss.nxp.com>
- <20220816043643.26569-5-alice.guo@oss.nxp.com>
- <20220822140946.GC4087281@roeck-us.net>
- <AM6PR04MB60533A1ABDFA1DEDE59BB847E2709@AM6PR04MB6053.eurprd04.prod.outlook.com>
+        Tue, 23 Aug 2022 10:49:10 -0400
+Received: from bg5.exmail.qq.com (bg4.exmail.qq.com [43.154.221.58])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A4BD01561E3
+        for <linux-kernel@vger.kernel.org>; Tue, 23 Aug 2022 05:12:24 -0700 (PDT)
+X-QQ-mid: bizesmtp68t1661256679tov9dh2x
+Received: from localhost.localdomain ( [182.148.14.124])
+        by bizesmtp.qq.com (ESMTP) with 
+        id ; Tue, 23 Aug 2022 20:11:17 +0800 (CST)
+X-QQ-SSF: 01000000002000C0D000B00A0000000
+X-QQ-FEAT: 4do7Yod3Qisv2fBV3BL8PyGx5qFmkAnPeIRHODAsHOnet4x0f7jRE8B9GKE0a
+        mp8mH1ERDA8l9KwqSwptYfEJObC1HlARMrXwOW/m9rCS3ndkjZY5y2tHqw4L6JBqxNQvRIB
+        tM9zH3TmWvcmcfvTE3LBxX/XUIgpJz9wNcp4HMIh/zM4wlY/B+hD9PrQUksNfjlAfj8dd79
+        InNJCWKFrflelwMOyPHnARQ44EIKzD0fGyZOhYzWDrIY4dFv6XuYWZxc5eZulmW1HPgB/39
+        IpTFEM8wR6PWa3QYtdqtXE0+QATWIP57abu1zUbQ2gY8pBqCz2bpOEtmhrzoIYxubNaL4GU
+        5J5Q2lQMSwQlc2nyzZ26MBpylvJZtVVuEI6N6cPBCZ+ZvgefbHqyRMvvRaBMDWJIXOYtNP6
+X-QQ-GoodBg: 0
+From:   Jilin Yuan <yuanjilin@cdjrlc.com>
+To:     maarten.lankhorst@linux.intel.com, mripard@kernel.org,
+        tzimmermann@suse.de, airlied@linux.ie, aniel@ffwll.ch
+Cc:     dri-devel@lists.freedesktop.org, linux-kernel@vger.kernel.org,
+        Jilin Yuan <yuanjilin@cdjrlc.com>
+Subject: [PATCH] gpu/drm: fix repeated words in comments
+Date:   Tue, 23 Aug 2022 20:11:12 +0800
+Message-Id: <20220823121112.5087-1-yuanjilin@cdjrlc.com>
+X-Mailer: git-send-email 2.36.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <AM6PR04MB60533A1ABDFA1DEDE59BB847E2709@AM6PR04MB6053.eurprd04.prod.outlook.com>
+Content-Transfer-Encoding: 8bit
+X-QQ-SENDSIZE: 520
+Feedback-ID: bizesmtp:cdjrlc.com:qybglogicsvr:qybglogicsvr4
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Aug 23, 2022 at 05:59:11AM +0000, Alice Guo (OSS) wrote:
-> 
-> 
-> > -----Original Message-----
-> > From: Guenter Roeck <groeck7@gmail.com> On Behalf Of Guenter Roeck
-> > Sent: Monday, August 22, 2022 10:10 PM
-> > To: Alice Guo (OSS) <alice.guo@oss.nxp.com>
-> > Cc: wim@linux-watchdog.org; shawnguo@kernel.org;
-> > s.hauer@pengutronix.de; festevam@gmail.com; kernel@pengutronix.de;
-> > dl-linux-imx <linux-imx@nxp.com>; linux-watchdog@vger.kernel.org;
-> > linux-arm-kernel@lists.infradead.org; linux-kernel@vger.kernel.org
-> > Subject: Re: [PATCH 4/7] watchdog: imx7ulp_wdt: Fix RCS timeout issue
-> > 
-> > On Tue, Aug 16, 2022 at 12:36:40PM +0800, Alice Guo (OSS) wrote:
-> > > From: Ye Li <ye.li@nxp.com>
-> > >
-> > > According to measure on i.MX7ULP and i.MX8ULP, the RCS done needs
-> > > about 3400us and 6700us respectively. So current 20us timeout is not
-> > > enough. When reconfiguring is on-going, unlock and configure CS will
-> > > lead to unknown result.
-> > >
-> > > Increase the wait timeout value to 10ms and check the return value of
-> > > RCS wait to fix the issue
-> > >
-> > 
-> > You'll have to find a better solution. An active (non-sleep) wait of
-> > 10 ms is unacceptable.
-> > 
-> > Guenter
-> 
-> Hi Guenter,
-> 
-> Sorry. I think this patch should be merged with " watchdog: imx7ulp_wdt: Handle wdog reconfigure failure", but I didn't merge them. I will send v2.
-> 
+ Delete the redundant word 'the'.
 
-That doesn't change the fact that a 10 ms hot wait is unacceptable.
+Signed-off-by: Jilin Yuan <yuanjilin@cdjrlc.com>
+---
+ drivers/gpu/drm/drm_ioctl.c    | 2 +-
+ drivers/gpu/drm/drm_mipi_dsi.c | 2 +-
+ 2 files changed, 2 insertions(+), 2 deletions(-)
 
-Thanks,
-Guenter
+diff --git a/drivers/gpu/drm/drm_ioctl.c b/drivers/gpu/drm/drm_ioctl.c
+index 51fcf1298023..8faad23dc1d8 100644
+--- a/drivers/gpu/drm/drm_ioctl.c
++++ b/drivers/gpu/drm/drm_ioctl.c
+@@ -83,7 +83,7 @@
+  *
+  * 1. Directly call VERSION to get the version and to match against the driver
+  *    name returned by that ioctl. Note that SET_VERSION is not called, which
+- *    means the the unique name for the master node just opening is _not_ filled
++ *    means the unique name for the master node just opening is _not_ filled
+  *    out. This despite that with current drm device nodes are always bound to
+  *    one device, and can't be runtime assigned like with drm 1.0.
+  * 2. Match driver name. If it mismatches, proceed to the next device node.
+diff --git a/drivers/gpu/drm/drm_mipi_dsi.c b/drivers/gpu/drm/drm_mipi_dsi.c
+index c40bde96cfdf..fd2790a5664d 100644
+--- a/drivers/gpu/drm/drm_mipi_dsi.c
++++ b/drivers/gpu/drm/drm_mipi_dsi.c
+@@ -606,7 +606,7 @@ EXPORT_SYMBOL(mipi_dsi_turn_on_peripheral);
+ 
+ /*
+  * mipi_dsi_set_maximum_return_packet_size() - specify the maximum size of the
+- *    the payload in a long packet transmitted from the peripheral back to the
++ *    payload in a long packet transmitted from the peripheral back to the
+  *    host processor
+  * @dsi: DSI peripheral device
+  * @value: the maximum size of the payload
+-- 
+2.36.1
 
-> Best Regards,
-> Alice Guo
-> 
-> > > Signed-off-by: Ye Li <ye.li@nxp.com>
-> > > Signed-off-by: Alice Guo <alice.guo@nxp.com>
-> > > Reviewed-by: Jacky Bai <ping.bai@nxp.com>
-> > > Acked-by: Jason Liu <jason.hui.liu@nxp.com>
-> > > ---
-> > >  drivers/watchdog/imx7ulp_wdt.c | 8 +++++---
-> > >  1 file changed, 5 insertions(+), 3 deletions(-)
-> > >
-> > > diff --git a/drivers/watchdog/imx7ulp_wdt.c
-> > > b/drivers/watchdog/imx7ulp_wdt.c index a0f6b8cea78f..12715c248688
-> > > 100644
-> > > --- a/drivers/watchdog/imx7ulp_wdt.c
-> > > +++ b/drivers/watchdog/imx7ulp_wdt.c
-> > > @@ -39,7 +39,7 @@
-> > >  #define DEFAULT_TIMEOUT	60
-> > >  #define MAX_TIMEOUT	128
-> > >  #define WDOG_CLOCK_RATE	1000
-> > > -#define WDOG_WAIT_TIMEOUT	20
-> > > +#define WDOG_WAIT_TIMEOUT	10000
-> > >
-> > >  static bool nowayout = WATCHDOG_NOWAYOUT;
-> > module_param(nowayout,
-> > > bool, 0000); @@ -80,7 +80,7 @@ static int imx7ulp_wdt_enable(struct
-> > > watchdog_device *wdog, bool enable)
-> > >  		writel(val | WDOG_CS_EN, wdt->base + WDOG_CS);
-> > >  	else
-> > >  		writel(val & ~WDOG_CS_EN, wdt->base + WDOG_CS);
-> > > -	imx7ulp_wdt_wait(wdt->base, WDOG_CS_RCS);
-> > > +	ret = imx7ulp_wdt_wait(wdt->base, WDOG_CS_RCS);
-> > >
-> > >  enable_out:
-> > >  	local_irq_enable();
-> > > @@ -127,7 +127,9 @@ static int imx7ulp_wdt_set_timeout(struct
-> > watchdog_device *wdog,
-> > >  	if (ret)
-> > >  		goto timeout_out;
-> > >  	writel(val, wdt->base + WDOG_TOVAL);
-> > > -	imx7ulp_wdt_wait(wdt->base, WDOG_CS_RCS);
-> > > +	ret = imx7ulp_wdt_wait(wdt->base, WDOG_CS_RCS);
-> > > +	if (ret)
-> > > +		goto timeout_out;
-> > >
-> > >  	wdog->timeout = timeout;
-> > >
-> > > --
-> > > 2.17.1
-> > >
