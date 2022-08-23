@@ -2,167 +2,144 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 11257C32772
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 11:23:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B99F9C3F6B0
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 11:23:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241772AbiHWLXS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 07:23:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39194 "EHLO
+        id S1346593AbiHWLVu (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 23 Aug 2022 07:21:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43496 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357549AbiHWLRn (ORCPT
+        with ESMTP id S1357488AbiHWLRh (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 07:17:43 -0400
-Received: from mail-lf1-x12f.google.com (mail-lf1-x12f.google.com [IPv6:2a00:1450:4864:20::12f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5FDFA89819;
-        Tue, 23 Aug 2022 02:21:29 -0700 (PDT)
-Received: by mail-lf1-x12f.google.com with SMTP id z25so18861480lfr.2;
-        Tue, 23 Aug 2022 02:21:29 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc;
-        bh=+DWGPIPc3ISzDYgpuxxTGtSNnOcnHXPhDpdYriuehoA=;
-        b=W+2mwoq3OWMQOasY34q5ndf9QlyFCqrsVYi8MwQDe1BCxhmcZpZ0Z1p+h0jGQpBVe5
-         YI9nZKuyu12VLCXV5aKWyXzAhYFJubm5BcTqhOm5wrL2+a9v0L3eEFhNb94C8Abjpofk
-         H0FkmNc+BE+pbY/Jr172MT/PHEpCKyW3hnF2iqXiX5hvBxOZ/qMwweAvrRfGGGPP9cMA
-         PGbqH0aMl7DQRqBGNw6Li+N3SzBnJJrYXLBoPOnFpF+kdMmRbo657HDBtrY4+QrpjzCd
-         0mnRokYL7mKXy66KYnO+0RA+rYX2cxrA4dx4W+HwqBjtx4j2xBHFHBg81zAcG6FZrpes
-         b2jg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc;
-        bh=+DWGPIPc3ISzDYgpuxxTGtSNnOcnHXPhDpdYriuehoA=;
-        b=LCyyyL22Cgx62Kx/935uxnVEqGO96+XlxcwzUpfVRxYShIk5LmPs13I6XlhcwOo8Un
-         gP+881ZDAc5G0W/Y7HjMO8a9Skrk+3VyLECtClxeJx9uStabffi97rPK0nyLjybZ2uW9
-         /AYNr02ucudRPmXCDOL3vBo2muBkaOnBuqHBrgpGjHfchJzQi4I9mQQFdTrtWyRDpF/G
-         c7Q7SxJnLF6e2RFITMxpzjywWn1rV3qAWnR45xKHvTpmt66KWb2htPKvNPDfHXQtKC4O
-         K8M2mcQ8NlU6QyP90S+JHayLzw5Ci0JDZCa5RKZBex6zU/8fwDZZ9xrv5g9du4XRmpFm
-         h44Q==
-X-Gm-Message-State: ACgBeo1vFRUAk9FcPc2/f5k+PNtSO60ZQVqRlnLvdTu1M9LUnJEAvf3K
-        l36brOReBkzBfehdywgg6hKdMhMf+ga3vLAfqG8Y/CNe
-X-Google-Smtp-Source: AA6agR4+KWoZ7AaIB7FncIy8FTWaR54rys+sYhXWsAOHt1uJIh9H5Lnf6SzVrLAGohOucXvT3iQ9PYabEoIZSSYmXNA=
-X-Received: by 2002:a05:6512:68f:b0:492:cbb1:c4b2 with SMTP id
- t15-20020a056512068f00b00492cbb1c4b2mr7138192lfe.130.1661246487607; Tue, 23
- Aug 2022 02:21:27 -0700 (PDT)
+        Tue, 23 Aug 2022 07:17:37 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 53BDE57557;
+        Tue, 23 Aug 2022 02:21:05 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id E3A4B6098A;
+        Tue, 23 Aug 2022 09:21:04 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id ED956C433C1;
+        Tue, 23 Aug 2022 09:21:03 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1661246464;
+        bh=9aXsm5QZcA5DpCnWv2w5sEZ5lXM2+tsF17p3eKY9m+0=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=BWUKvIQ55+iU+f85M1fwuptaNdtVX8w34SJEhX8i6hsoxMEXELEbeOp+HUjwf7i3+
+         nOOt9Gp0WxcVJHgEE9xD7+fGWsu2DDgtl+FvIQO9eTyfuIb5lttjgB/RB+b5DHK6wG
+         XpicaMSRSc2u02diIg5nKFjSzUf82TIZ17A5BAs8=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Zhengchao Shao <shaozhengchao@huawei.com>,
+        Herbert Xu <herbert@gondor.apana.org.au>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.4 118/389] crypto: hisilicon - Kunpeng916 crypto driver dont sleep when in softirq
+Date:   Tue, 23 Aug 2022 10:23:16 +0200
+Message-Id: <20220823080120.540366901@linuxfoundation.org>
+X-Mailer: git-send-email 2.37.2
+In-Reply-To: <20220823080115.331990024@linuxfoundation.org>
+References: <20220823080115.331990024@linuxfoundation.org>
+User-Agent: quilt/0.67
 MIME-Version: 1.0
-References: <1660908562-17409-1-git-send-email-zhaoyang.huang@unisoc.com>
- <Yv+6YjaGAv52yvq9@slm.duckdns.org> <CALvZod7QdLSMdBoD2WztL72qS8kJe7F79JuCH6t19rRcw6Pn1w@mail.gmail.com>
- <Yv/EArPDTcCrGqJh@slm.duckdns.org> <YwNpI1ydy0yDnBH0@dhcp22.suse.cz>
- <CAGWkznEB+R0YBaBFBL7dPqs8R=qKC6+ixTWEGCYy2PaczXkaPA@mail.gmail.com>
- <YwRjyx6wFLk8WTDe@dhcp22.suse.cz> <CAGWkznGaYTv4u4kOo-rupfyWzDNJXNKTchwP6dbUK-=UXWm47w@mail.gmail.com>
- <YwSQ4APOu/H7lYGL@dhcp22.suse.cz>
-In-Reply-To: <YwSQ4APOu/H7lYGL@dhcp22.suse.cz>
-From:   Zhaoyang Huang <huangzhaoyang@gmail.com>
-Date:   Tue, 23 Aug 2022 17:20:59 +0800
-Message-ID: <CAGWkznGd6mgareABseMKY5p0f1=5dkfVkj=NS7_B6OkXBYSwyw@mail.gmail.com>
-Subject: Re: [RFC PATCH] memcg: use root_mem_cgroup when css is inherited
-To:     Michal Hocko <mhocko@suse.com>
-Cc:     Suren Baghdasaryan <surenb@google.com>, Tejun Heo <tj@kernel.org>,
-        Shakeel Butt <shakeelb@google.com>,
-        "zhaoyang.huang" <zhaoyang.huang@unisoc.com>,
-        Johannes Weiner <hannes@cmpxchg.org>,
-        Linux MM <linux-mm@kvack.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Cgroups <cgroups@vger.kernel.org>, Ke Wang <ke.wang@unisoc.com>,
-        Zefan Li <lizefan.x@bytedance.com>,
-        Roman Gushchin <roman.gushchin@linux.dev>,
-        Muchun Song <songmuchun@bytedance.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Aug 23, 2022 at 4:33 PM Michal Hocko <mhocko@suse.com> wrote:
->
-> On Tue 23-08-22 14:03:04, Zhaoyang Huang wrote:
-> > On Tue, Aug 23, 2022 at 1:21 PM Michal Hocko <mhocko@suse.com> wrote:
-> > >
-> > > On Tue 23-08-22 10:31:57, Zhaoyang Huang wrote:
-> [...]
-> > > > I would like to quote the comments from google side for more details
-> > > > which can also be observed from different vendors.
-> > > > "Also be advised that when you enable memcg v2 you will be using
-> > > > per-app memcg configuration which implies noticeable overhead because
-> > > > every app will have its own group. For example pagefault path will
-> > > > regress by about 15%. And obviously there will be some memory overhead
-> > > > as well. That's the reason we don't enable them in Android by
-> > > > default."
-> > >
-> > > This should be reported and investigated. Because per-application memcg
-> > > vs. memcg in general shouldn't make much of a difference from the
-> > > performance side. I can see a potential performance impact for no-memcg
-> > > vs. memcg case but even then 15% is quite a lot.
-> > Less efficiency on memory reclaim caused by multi-LRU should be one of
-> > the reason, which has been proved by comparing per-app memcg on/off.
-> > Besides, theoretically workingset could also broken as LRU is too
-> > short to compose workingset.
->
-> Do you have any data to back these claims? Is this something that could
-> be handled on the configuration level? E.g. by applying low limit
-> protection to keep the workingset in the memory?
-I don't think so. IMO, workingset works when there are pages evicted
-from LRU and then refault which provide refault distance for pages.
-Applying memcg's protection will have all LRU out of evicted which
-make the mechanism fail.
->
-> > > > > My very vague understanding is that the Android system would like to
-> > > > > freeze specific applications and for that it requires each application
-> > > > > to live in its own cgroup. This clashes with a requirement to age and
-> > > > > reclaim memory on a different granularity (aka no per process reclaim).
-> > > > > So in fact something that cgroup v1 would achieve by having 2
-> > > > > hierarchies, one for the freezer which would have a dedicated cgroup for
-> > > > > each application and the other for the memory controller where tasks are
-> > > > > grouped by a different criteria. This would rule out that a global (or
-> > > > > any external memory pressure) reclaim would age LRUs that contain a mix
-> > > > > bag of application pages rather than iterate over per-application LRUs.
-> > > > > Is that understanding correct?
-> > > > Correct, this is just our confusion. Besides, we believe that charge
-> > > > the pages to implicit memory enabled parent control group doesn't make
-> > > > sense as the memory cannot be managed at all.
-> > >
-> > > I do not get that part. The parent can manange and control the memory
-> > > usage so how come it cannot be managed at all?
-> > What I mean is the kind of parent which is enabled implicitly by
-> > enabling on its sibling group like belowing hierarchy. Imagine that C
-> > has no intention of memory control but has to be enabled as B would
-> > have it. IMO, it doesn't make sense to charge C1's memory.current to C
-> > until an explicitly echo "+memory" >  C/subtree_control.
-> > A----B---B1
-> >      \ C---C1
->
-> So let me just expand your example for clarity
->
-> A.cgroup.controllers = memory
-> A.cgroup.subtree_control = memory
->
-> A/B.cgroup.controllers = memory
-> A/B.cgroup.subtree_control = memory
-> A/B/B1.cgroup.controllers = memory
->
-> A/C.cgroup.controllers = memory
-> A/C.cgroup.subtree_control = ""
-> A/C/C1.cgroup.controllers = ""
-Yes for above hierarchy and configuration.
->
-> Is your concern that C1 is charged to A/C or that you cannot actually make
-> A/C.cgroup.controllers = "" because you want to maintain memory in A?
-> Because that would be breaking the internal node constrain rule AFAICS.
-No. I just want to keep memory on B.
->
-> Or maybe you just really want a different hierarchy where
-> A == root_cgroup and want the memory acocunted in B
-> (root/B.cgroup.controllers = memory) but not in C (root/C.cgroup.controllers = "")?
-Yes.
->
-> That would mean that C memory would be maintained on the global (root
-> memcg) LRUs which is the only internal node which is allowed to have
-> resources because it is special.
-Exactly. I would like to have all groups like C which have no parent's
-subtree_control = memory charge memory to root. Under this
-implementation, memory under enabled group will be protected by
-min/low while other groups' memory share the same LRU to have
-workingset things take effect.
-> --
-> Michal Hocko
-> SUSE Labs
+From: Zhengchao Shao <shaozhengchao@huawei.com>
+
+[ Upstream commit 68740ab505431f268dc1ee26a54b871e75f0ddaa ]
+
+When kunpeng916 encryption driver is used to deencrypt and decrypt
+packets during the softirq, it is not allowed to use mutex lock.
+
+Fixes: 915e4e8413da ("crypto: hisilicon - SEC security accelerator driver")
+Signed-off-by: Zhengchao Shao <shaozhengchao@huawei.com>
+Signed-off-by: Herbert Xu <herbert@gondor.apana.org.au>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ drivers/crypto/hisilicon/sec/sec_algs.c | 14 +++++++-------
+ drivers/crypto/hisilicon/sec/sec_drv.h  |  2 +-
+ 2 files changed, 8 insertions(+), 8 deletions(-)
+
+diff --git a/drivers/crypto/hisilicon/sec/sec_algs.c b/drivers/crypto/hisilicon/sec/sec_algs.c
+index 4ad4ffd90cee..2402941a7f2f 100644
+--- a/drivers/crypto/hisilicon/sec/sec_algs.c
++++ b/drivers/crypto/hisilicon/sec/sec_algs.c
+@@ -449,7 +449,7 @@ static void sec_skcipher_alg_callback(struct sec_bd_info *sec_resp,
+ 		 */
+ 	}
+ 
+-	mutex_lock(&ctx->queue->queuelock);
++	spin_lock_bh(&ctx->queue->queuelock);
+ 	/* Put the IV in place for chained cases */
+ 	switch (ctx->cipher_alg) {
+ 	case SEC_C_AES_CBC_128:
+@@ -509,7 +509,7 @@ static void sec_skcipher_alg_callback(struct sec_bd_info *sec_resp,
+ 			list_del(&backlog_req->backlog_head);
+ 		}
+ 	}
+-	mutex_unlock(&ctx->queue->queuelock);
++	spin_unlock_bh(&ctx->queue->queuelock);
+ 
+ 	mutex_lock(&sec_req->lock);
+ 	list_del(&sec_req_el->head);
+@@ -798,7 +798,7 @@ static int sec_alg_skcipher_crypto(struct skcipher_request *skreq,
+ 	 */
+ 
+ 	/* Grab a big lock for a long time to avoid concurrency issues */
+-	mutex_lock(&queue->queuelock);
++	spin_lock_bh(&queue->queuelock);
+ 
+ 	/*
+ 	 * Can go on to queue if we have space in either:
+@@ -814,15 +814,15 @@ static int sec_alg_skcipher_crypto(struct skcipher_request *skreq,
+ 		ret = -EBUSY;
+ 		if ((skreq->base.flags & CRYPTO_TFM_REQ_MAY_BACKLOG)) {
+ 			list_add_tail(&sec_req->backlog_head, &ctx->backlog);
+-			mutex_unlock(&queue->queuelock);
++			spin_unlock_bh(&queue->queuelock);
+ 			goto out;
+ 		}
+ 
+-		mutex_unlock(&queue->queuelock);
++		spin_unlock_bh(&queue->queuelock);
+ 		goto err_free_elements;
+ 	}
+ 	ret = sec_send_request(sec_req, queue);
+-	mutex_unlock(&queue->queuelock);
++	spin_unlock_bh(&queue->queuelock);
+ 	if (ret)
+ 		goto err_free_elements;
+ 
+@@ -881,7 +881,7 @@ static int sec_alg_skcipher_init(struct crypto_skcipher *tfm)
+ 	if (IS_ERR(ctx->queue))
+ 		return PTR_ERR(ctx->queue);
+ 
+-	mutex_init(&ctx->queue->queuelock);
++	spin_lock_init(&ctx->queue->queuelock);
+ 	ctx->queue->havesoftqueue = false;
+ 
+ 	return 0;
+diff --git a/drivers/crypto/hisilicon/sec/sec_drv.h b/drivers/crypto/hisilicon/sec/sec_drv.h
+index 4d9063a8b10b..0bf4d7c3856c 100644
+--- a/drivers/crypto/hisilicon/sec/sec_drv.h
++++ b/drivers/crypto/hisilicon/sec/sec_drv.h
+@@ -347,7 +347,7 @@ struct sec_queue {
+ 	DECLARE_BITMAP(unprocessed, SEC_QUEUE_LEN);
+ 	DECLARE_KFIFO_PTR(softqueue, typeof(struct sec_request_el *));
+ 	bool havesoftqueue;
+-	struct mutex queuelock;
++	spinlock_t queuelock;
+ 	void *shadow[SEC_QUEUE_LEN];
+ };
+ 
+-- 
+2.35.1
+
+
+
