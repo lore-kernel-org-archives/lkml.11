@@ -2,192 +2,106 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CB481C48BEA
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 11:42:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7D64FC49EC0
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 11:42:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358279AbiHWLlY (ORCPT
+        id S1358361AbiHWLlg (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 07:41:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49070 "EHLO
+        Tue, 23 Aug 2022 07:41:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58492 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357526AbiHWLfj (ORCPT
+        with ESMTP id S1357843AbiHWLgZ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 07:35:39 -0400
-Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 439D4910A0;
-        Tue, 23 Aug 2022 02:27:35 -0700 (PDT)
-Date:   Tue, 23 Aug 2022 09:27:32 -0000
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1661246854;
-        h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
-         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
-         content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=3quqcTNyN/mUOUlhCcLV5IeXBWpbn7rt3x+6aK7yOxE=;
-        b=sxz92VFjnneuL7yMXNDV06kgpKXtb4XO7T33nq9rqaoyzExBGZO+8o9Cu3mtr2M+Wxu9Q7
-        l7F7pBOEYyORoBLE6IuIar+ZT1KmnYJ8s+jzBftLC2fnGQ3OnZPF3dENwVy63XJ+YM/jVU
-        XU0jbQ4FPscCiv2eDBqC0rrxB2sPD756z554CV6c/l1Pi/VaVonz85j/VjqFyBl3noriii
-        +KjGowz7fUwoQY9XYcOrU3c6xJ4RJ+map80asMUe6GsxHIpIZE0UdF6vYI07hUwD3KfNXg
-        ro1cuhXt0UZM8TtVnrn9qO1Go969jANoF4PYuTtH7zaFCYzkxeiVEGkTE7gYfA==
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1661246854;
-        h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
-         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
-         content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=3quqcTNyN/mUOUlhCcLV5IeXBWpbn7rt3x+6aK7yOxE=;
-        b=2V8K2x5kVUvQrBfFNBIPaRVhkqPvi//PjfbMaU2qBvu0PHA3VWX+LYYnHgoz6Gaw6RNRFC
-        338Vv87CqxuXhNCA==
-From:   "tip-bot2 for Chengming Zhou" <tip-bot2@linutronix.de>
-Sender: tip-bot2@linutronix.de
-Reply-to: linux-kernel@vger.kernel.org
-To:     linux-tip-commits@vger.kernel.org
-Subject: [tip: sched/core] sched/fair: Combine detach into dequeue when migrating task
-Cc:     Chengming Zhou <zhouchengming@bytedance.com>,
-        "Peter Zijlstra (Intel)" <peterz@infradead.org>,
-        Vincent Guittot <vincent.guittot@linaro.org>, x86@kernel.org,
-        linux-kernel@vger.kernel.org
-In-Reply-To: <20220818124805.601-6-zhouchengming@bytedance.com>
-References: <20220818124805.601-6-zhouchengming@bytedance.com>
+        Tue, 23 Aug 2022 07:36:25 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 269CFC7BB2;
+        Tue, 23 Aug 2022 02:27:41 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by sin.source.kernel.org (Postfix) with ESMTPS id C28CECE1B40;
+        Tue, 23 Aug 2022 09:27:39 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C5B43C43470;
+        Tue, 23 Aug 2022 09:27:37 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1661246858;
+        bh=2ABQeTaiivDcrlC5faO0wA2XSbDIrWekcbpo1kVetIY=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=YVrEE+4GarfEg8areo5IytIFFsdY5btVTzxaGmZIMQfF6B/P405NGm8B4a7qr93MM
+         nojxGqRx1G7lmRk3VBnW2Pe7ue5Hg71edavzn2k8V+4M1J0FSwOrdf9CUdNIChx0fn
+         LWO08Ilcb+ZLJ8PWLSMS8Pr8pzheuhR70jHtpceQ=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Zheyu Ma <zheyuma97@gmail.com>,
+        Helge Deller <deller@gmx.de>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.4 243/389] video: fbdev: arkfb: Fix a divide-by-zero bug in ark_set_pixclock()
+Date:   Tue, 23 Aug 2022 10:25:21 +0200
+Message-Id: <20220823080125.716606426@linuxfoundation.org>
+X-Mailer: git-send-email 2.37.2
+In-Reply-To: <20220823080115.331990024@linuxfoundation.org>
+References: <20220823080115.331990024@linuxfoundation.org>
+User-Agent: quilt/0.67
 MIME-Version: 1.0
-Message-ID: <166124685291.401.6431095984775044781.tip-bot2@tip-bot2>
-Robot-ID: <tip-bot2@linutronix.de>
-Robot-Unsubscribe: Contact <mailto:tglx@linutronix.de> to get blacklisted from these emails
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The following commit has been merged into the sched/core branch of tip:
+From: Zheyu Ma <zheyuma97@gmail.com>
 
-Commit-ID:     e1f078f50478a51849453341e7356cb298df00cf
-Gitweb:        https://git.kernel.org/tip/e1f078f50478a51849453341e7356cb298df00cf
-Author:        Chengming Zhou <zhouchengming@bytedance.com>
-AuthorDate:    Thu, 18 Aug 2022 20:48:01 +08:00
-Committer:     Peter Zijlstra <peterz@infradead.org>
-CommitterDate: Tue, 23 Aug 2022 11:01:18 +02:00
+[ Upstream commit 2f1c4523f7a3aaabe7e53d3ebd378292947e95c8 ]
 
-sched/fair: Combine detach into dequeue when migrating task
+Since the user can control the arguments of the ioctl() from the user
+space, under special arguments that may result in a divide-by-zero bug
+in:
+  drivers/video/fbdev/arkfb.c:784: ark_set_pixclock(info, (hdiv * info->var.pixclock) / hmul);
+with hdiv=1, pixclock=1 and hmul=2 you end up with (1*1)/2 = (int) 0.
+and then in:
+  drivers/video/fbdev/arkfb.c:504: rv = dac_set_freq(par->dac, 0, 1000000000 / pixclock);
+we'll get a division-by-zero.
 
-When we are migrating task out of the CPU, we can combine detach and
-propagation into dequeue_entity() to save the detach_entity_cfs_rq()
-in migrate_task_rq_fair().
+The following log can reveal it:
 
-This optimization is like combining DO_ATTACH in the enqueue_entity()
-when migrating task to the CPU. So we don't have to traverse the CFS tree
-extra time to do the detach_entity_cfs_rq() -> propagate_entity_cfs_rq(),
-which wouldn't be called anymore with this patch's change.
+divide error: 0000 [#1] PREEMPT SMP KASAN PTI
+RIP: 0010:ark_set_pixclock drivers/video/fbdev/arkfb.c:504 [inline]
+RIP: 0010:arkfb_set_par+0x10fc/0x24c0 drivers/video/fbdev/arkfb.c:784
+Call Trace:
+ fb_set_var+0x604/0xeb0 drivers/video/fbdev/core/fbmem.c:1034
+ do_fb_ioctl+0x234/0x670 drivers/video/fbdev/core/fbmem.c:1110
+ fb_ioctl+0xdd/0x130 drivers/video/fbdev/core/fbmem.c:1189
 
-detach_task()
-  deactivate_task()
-    dequeue_task_fair()
-      for_each_sched_entity(se)
-        dequeue_entity()
-          update_load_avg() /* (1) */
-            detach_entity_load_avg()
+Fix this by checking the argument of ark_set_pixclock() first.
 
-  set_task_cpu()
-    migrate_task_rq_fair()
-      detach_entity_cfs_rq() /* (2) */
-        update_load_avg();
-        detach_entity_load_avg();
-        propagate_entity_cfs_rq();
-          for_each_sched_entity()
-            update_load_avg()
-
-This patch save the detach_entity_cfs_rq() called in (2) by doing
-the detach_entity_load_avg() for a CPU migrating task inside (1)
-(the task being the first se in the loop)
-
-Signed-off-by: Chengming Zhou <zhouchengming@bytedance.com>
-Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
-Reviewed-by: Vincent Guittot <vincent.guittot@linaro.org>
-Link: https://lore.kernel.org/r/20220818124805.601-6-zhouchengming@bytedance.com
+Fixes: 681e14730c73 ("arkfb: new framebuffer driver for ARK Logic cards")
+Signed-off-by: Zheyu Ma <zheyuma97@gmail.com>
+Signed-off-by: Helge Deller <deller@gmx.de>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- kernel/sched/fair.c | 28 ++++++++++++++++------------
- 1 file changed, 16 insertions(+), 12 deletions(-)
+ drivers/video/fbdev/arkfb.c | 7 ++++++-
+ 1 file changed, 6 insertions(+), 1 deletion(-)
 
-diff --git a/kernel/sched/fair.c b/kernel/sched/fair.c
-index 52de830..f52e7dc 100644
---- a/kernel/sched/fair.c
-+++ b/kernel/sched/fair.c
-@@ -4003,6 +4003,7 @@ static void detach_entity_load_avg(struct cfs_rq *cfs_rq, struct sched_entity *s
- #define UPDATE_TG	0x1
- #define SKIP_AGE_LOAD	0x2
- #define DO_ATTACH	0x4
-+#define DO_DETACH	0x8
- 
- /* Update task and its cfs_rq load average */
- static inline void update_load_avg(struct cfs_rq *cfs_rq, struct sched_entity *se, int flags)
-@@ -4032,6 +4033,13 @@ static inline void update_load_avg(struct cfs_rq *cfs_rq, struct sched_entity *s
- 		attach_entity_load_avg(cfs_rq, se);
- 		update_tg_load_avg(cfs_rq);
- 
-+	} else if (flags & DO_DETACH) {
-+		/*
-+		 * DO_DETACH means we're here from dequeue_entity()
-+		 * and we are migrating task out of the CPU.
-+		 */
-+		detach_entity_load_avg(cfs_rq, se);
-+		update_tg_load_avg(cfs_rq);
- 	} else if (decayed) {
- 		cfs_rq_util_change(cfs_rq, 0);
- 
-@@ -4292,6 +4300,7 @@ static inline bool cfs_rq_is_decayed(struct cfs_rq *cfs_rq)
- #define UPDATE_TG	0x0
- #define SKIP_AGE_LOAD	0x0
- #define DO_ATTACH	0x0
-+#define DO_DETACH	0x0
- 
- static inline void update_load_avg(struct cfs_rq *cfs_rq, struct sched_entity *se, int not_used1)
- {
-@@ -4512,6 +4521,11 @@ static __always_inline void return_cfs_rq_runtime(struct cfs_rq *cfs_rq);
- static void
- dequeue_entity(struct cfs_rq *cfs_rq, struct sched_entity *se, int flags)
- {
-+	int action = UPDATE_TG;
-+
-+	if (entity_is_task(se) && task_on_rq_migrating(task_of(se)))
-+		action |= DO_DETACH;
-+
- 	/*
- 	 * Update run-time statistics of the 'current'.
- 	 */
-@@ -4526,7 +4540,7 @@ dequeue_entity(struct cfs_rq *cfs_rq, struct sched_entity *se, int flags)
- 	 *   - For group entity, update its weight to reflect the new share
- 	 *     of its group cfs_rq.
- 	 */
--	update_load_avg(cfs_rq, se, UPDATE_TG);
-+	update_load_avg(cfs_rq, se, action);
- 	se_update_runnable(se);
- 
- 	update_stats_dequeue_fair(cfs_rq, se, flags);
-@@ -7078,8 +7092,6 @@ select_task_rq_fair(struct task_struct *p, int prev_cpu, int wake_flags)
- 	return new_cpu;
- }
- 
--static void detach_entity_cfs_rq(struct sched_entity *se);
--
- /*
-  * Called immediately before a task is migrated to a new CPU; task_cpu(p) and
-  * cfs_rq_of(p) references at time of call are still valid and identify the
-@@ -7101,15 +7113,7 @@ static void migrate_task_rq_fair(struct task_struct *p, int new_cpu)
- 		se->vruntime -= u64_u32_load(cfs_rq->min_vruntime);
+diff --git a/drivers/video/fbdev/arkfb.c b/drivers/video/fbdev/arkfb.c
+index f940e8b66b85..311f7ea57625 100644
+--- a/drivers/video/fbdev/arkfb.c
++++ b/drivers/video/fbdev/arkfb.c
+@@ -778,7 +778,12 @@ static int arkfb_set_par(struct fb_info *info)
+ 		return -EINVAL;
  	}
  
--	if (p->on_rq == TASK_ON_RQ_MIGRATING) {
--		/*
--		 * In case of TASK_ON_RQ_MIGRATING we in fact hold the 'old'
--		 * rq->lock and can modify state directly.
--		 */
--		lockdep_assert_rq_held(task_rq(p));
--		detach_entity_cfs_rq(se);
--
--	} else {
-+	if (!task_on_rq_migrating(p)) {
- 		remove_entity_load_avg(se);
- 
- 		/*
+-	ark_set_pixclock(info, (hdiv * info->var.pixclock) / hmul);
++	value = (hdiv * info->var.pixclock) / hmul;
++	if (!value) {
++		fb_dbg(info, "invalid pixclock\n");
++		value = 1;
++	}
++	ark_set_pixclock(info, value);
+ 	svga_set_timings(par->state.vgabase, &ark_timing_regs, &(info->var), hmul, hdiv,
+ 			 (info->var.vmode & FB_VMODE_DOUBLE)     ? 2 : 1,
+ 			 (info->var.vmode & FB_VMODE_INTERLACED) ? 2 : 1,
+-- 
+2.35.1
+
+
+
