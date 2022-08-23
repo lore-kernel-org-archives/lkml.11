@@ -2,77 +2,103 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 85E3EC32772
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 15:41:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BC1ABC32772
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 15:41:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242414AbiHWPlV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 11:41:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36872 "EHLO
+        id S241841AbiHWPlw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 23 Aug 2022 11:41:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36896 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243900AbiHWPkb (ORCPT
+        with ESMTP id S241545AbiHWPlK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 11:40:31 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 80EFE2871BE
-        for <linux-kernel@vger.kernel.org>; Tue, 23 Aug 2022 04:35:43 -0700 (PDT)
+        Tue, 23 Aug 2022 11:41:10 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 186C1760FC;
+        Tue, 23 Aug 2022 04:36:48 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id F2F366146C
-        for <linux-kernel@vger.kernel.org>; Tue, 23 Aug 2022 11:34:35 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 48052C43140;
-        Tue, 23 Aug 2022 11:34:33 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id BB5E0B81CCF;
+        Tue, 23 Aug 2022 11:35:59 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5FFB8C433D6;
+        Tue, 23 Aug 2022 11:35:58 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1661254475;
-        bh=e7ujlYGQy+ILTGDj+HqZf7WB+jlKh84s1EqEvQJvi+Y=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=d+OGk8d23f285DWgCWnocLb62X6I5b5JooIc+lwxAj1axicdm8NlaYpfc1kN1D6FH
-         8taOWmJEwC8g8Bde1BO9IlL4mpj5gABE4PZGGq+oXCZLfyItLJAevhiaXO7BW9L1Rv
-         whdJBJAcrJQ7+iEeq17wlEeLjttYUVsQV/j+6p3SnPuSYxN71fSHCvILum0gsrS/3+
-         Qshdrl86SOclVuWVRkBLkLgIEEEbu/7ZAQpccr6CpPuQzKlUzhLI6uZqcBKCQqVWRC
-         dpH5BudO/ouzaZiYcpBe0rpQAkoO0ntqD+/bAPF2cGxZRs3yNEcphAbQ+WMqbKbSI+
-         T2Fqt2XQdBkNA==
-From:   Will Deacon <will@kernel.org>
-To:     Mark Rutland <mark.rutland@arm.com>,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
-Cc:     catalin.marinas@arm.com, kernel-team@android.com,
-        Will Deacon <will@kernel.org>, willy@infradead.org,
-        andy.shevchenko@gmail.com, jvgediya@linux.ibm.com, ardb@kernel.org,
-        rdunlap@infradead.org
-Subject: Re: [PATCH] arm64: fix rodata=full
-Date:   Tue, 23 Aug 2022 12:34:20 +0100
-Message-Id: <166124892296.3125128.7339949940987512196.b4-ty@kernel.org>
-X-Mailer: git-send-email 2.20.1
-In-Reply-To: <20220817154022.3974645-1-mark.rutland@arm.com>
-References: <20220817154022.3974645-1-mark.rutland@arm.com>
+        s=k20201202; t=1661254558;
+        bh=lrNGnTi7OrnogAjkHr5SAO67riv511ycxt2FHZbAVZw=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=CtVawSmcELTO7GRiu4HkWLwofIZjcdKqhSOGEUNchQgbqdUh8kmXcNx4qh509zCqp
+         vDQYqkIR5sxaxfw18R2rC0QKm2fxGCqPTVcTE20GgjVStR/IsD1hjqR33c7diC/d6a
+         BEpkK257PLuu7ajgCm1hCE5rjYLXFkUv9V8L7Z9GZK5ARUImJ2bJsPCoM4GJA9pej4
+         +dDy0SQtFTXytRDsEX3RdOkaxeARTM33b8Niq00VtzkMlmje+9YB2KwIq56tM89XLv
+         YOv41TVBsMoRQsfdGjtifQ/szrgxwA6l5M/17Oduzr8LuMlvPtGJEwAolKRf2cFxpN
+         cMqGeEIQCaRpw==
+Received: from johan by xi.lan with local (Exim 4.94.2)
+        (envelope-from <johan@kernel.org>)
+        id 1oQSCL-0002Q4-F8; Tue, 23 Aug 2022 13:35:58 +0200
+Date:   Tue, 23 Aug 2022 13:35:57 +0200
+From:   Johan Hovold <johan@kernel.org>
+To:     Matthias Kaehlcke <mka@chromium.org>
+Cc:     Johan Hovold <johan+linaro@kernel.org>, andersson@kernel.org,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Andy Gross <agross@kernel.org>,
+        Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>,
+        Konrad Dybcio <konrad.dybcio@somainline.org>,
+        Sandeep Maheswaram <quic_c_sanm@quicinc.com>,
+        Krishna Kurapati <quic_kriskura@quicinc.com>,
+        Pavankumar Kondeti <quic_pkondeti@quicinc.com>,
+        quic_ppratap@quicinc.com, quic_vpulyala@quicinc.com,
+        linux-arm-msm@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] arm64: dts: qcom: sc7280: move USB wakeup-source property
+Message-ID: <YwS7ndGJ5cgERJhz@hovoldconsulting.com>
+References: <20220802152642.2516-1-johan+linaro@kernel.org>
+ <YwOBEhViD1iY14yL@hovoldconsulting.com>
+ <YwQDuXXkgwPAu55D@google.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <YwQDuXXkgwPAu55D@google.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, 17 Aug 2022 16:40:22 +0100, Mark Rutland wrote:
-> On arm64, "rodata=full" has been suppored (but not documented) since
-> commit:
+On Mon, Aug 22, 2022 at 03:31:21PM -0700, Matthias Kaehlcke wrote:
+> On Mon, Aug 22, 2022 at 03:13:54PM +0200, Johan Hovold wrote:
+> > On Tue, Aug 02, 2022 at 05:26:42PM +0200, Johan Hovold wrote:
+> > > Move the USB-controller wakeup-source property to the dwc3 glue node to
+> > > match the updated binding.
+> > > 
+> > > Signed-off-by: Johan Hovold <johan+linaro@kernel.org>
+> > > ---
+> > > 
+> > > This one can be applied once the following series has been merged:
+> > > 
+> > > 	https://lore.kernel.org/all/20220802151404.1797-1-johan+linaro@kernel.org
+> > 
+> > The above series has now been merged (for 6.0):
+> > 
+> > 	https://lore.kernel.org/all/Yv56fFpuUsxCSxJ8@kroah.com/
+> > 
+> > so that this patch can be applied.
 > 
->   c55191e96caa9d78 ("arm64: mm: apply r/o permissions of VM areas to its linear alias as well")
-> 
-> As it's necessary to determine the rodata configuration early during
-> boot, arm64 has an early_param() handler for this, whereas init/main.c
-> has a __setup() handler which is run later.
-> 
-> [...]
+> Please apply it together with "clk: qcom: gcc-sc7280: Keep USB GDSC power
+> domains on when USB wakeup is enabled" [1], otherwise USB wakeup won't work,
+> and worse, USB would be broken after returning from system suspend.
 
-Applied to arm64 (for-next/fixes), thanks!
+If you really need [1] for wakeup to work then it's already broken as
+the hack added to 6.0-rc1 that kept the power domain on in suspend has
+been reverted.
 
-[1/1] arm64: fix rodata=full
-      https://git.kernel.org/arm64/c/2e8cff0a0eee
+If [1] is also needed for USB to work after resume, we either have a
+bigger problem as I alluded to in my comment to [1] (and the PD needs to
+be always on) or this is due to the PHY no longer being powered down in
+suspend.
 
-Cheers,
--- 
-Will
+Only in the latter case, does this patch need to be held of until [1]
+has been merged AFAICT.
 
-https://fixes.arm64.dev
-https://next.arm64.dev
-https://will.arm64.dev
+Johan
+
+> [1] https://patchwork.kernel.org/project/linux-arm-msm/patch/20220822115246.2.If09027f73daa6e1ed95f5eab02326b543c67132e@changeid/
