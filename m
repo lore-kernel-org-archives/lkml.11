@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 83CD5C54EEA
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6DF87C54EEB
 	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 10:42:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356399AbiHWKmK (ORCPT
+        id S1356363AbiHWKmD (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 06:42:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56380 "EHLO
+        Tue, 23 Aug 2022 06:42:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52626 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354826AbiHWK3c (ORCPT
+        with ESMTP id S1354779AbiHWK3R (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 06:29:32 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7ADF3A50C8;
-        Tue, 23 Aug 2022 02:06:19 -0700 (PDT)
+        Tue, 23 Aug 2022 06:29:17 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 394B8844EE;
+        Tue, 23 Aug 2022 02:06:16 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 269E7B81C65;
-        Tue, 23 Aug 2022 09:06:18 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5193AC43470;
-        Tue, 23 Aug 2022 09:06:15 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 721E3B81C86;
+        Tue, 23 Aug 2022 09:06:14 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9E7B1C433C1;
+        Tue, 23 Aug 2022 09:06:12 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661245576;
-        bh=lAUp43C3JTUgYhZPYiP1jP9u7t9uEzm6x8sRKe7/Weg=;
+        s=korg; t=1661245573;
+        bh=JE7U2DwI2Vi5ZdWxe9WFbt81QvbcBOFm9AeVIF6LAMk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ZjUQYCAPB2lyPjC/1BEFyIcLcjlZ+slzRrl8fhYPSyi7fQnSzsdW3fVw/4tB/q9R2
-         1l/HtpydPUM3Ftom4vAYj+OquVdUDHsbfQs0YkybBtdSdyOvTciz9M60ylOImlpV9J
-         s03PxFGocCugL44xzENwwxeIx7xSn0eE1zaOpufU=
+        b=pFTfJYABQwe/+V60Ca/W68PFqSexp7HHap07P0fvb/C/4t09sZoGZS48sh7QidgRw
+         /d8E1y26S0iLzjX4Q9zIGun/66Jaq3/lP4V4Nt8Xz0JkxUdlVuOz4qxQbYMYOEyz3+
+         XwvxyxTXfc0MEZG2bXfp8vYhUTggnlo/VGDDQXS0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jiasheng Jiang <jiasheng@iscas.ac.cn>,
-        Marcel Holtmann <marcel@holtmann.org>,
+        stable@vger.kernel.org, Alan Stern <stern@rowland.harvard.edu>,
+        Miaoqian Lin <linmq006@gmail.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.19 104/287] Bluetooth: hci_intel: Add check for platform_driver_register
-Date:   Tue, 23 Aug 2022 10:24:33 +0200
-Message-Id: <20220823080103.882935359@linuxfoundation.org>
+Subject: [PATCH 4.19 121/287] usb: ohci-nxp: Fix refcount leak in ohci_hcd_nxp_probe
+Date:   Tue, 23 Aug 2022 10:24:50 +0200
+Message-Id: <20220823080104.469135781@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220823080100.268827165@linuxfoundation.org>
 References: <20220823080100.268827165@linuxfoundation.org>
@@ -50,39 +50,36 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jiasheng Jiang <jiasheng@iscas.ac.cn>
+From: Miaoqian Lin <linmq006@gmail.com>
 
-[ Upstream commit ab2d2a982ff721f4b029282d9a40602ea46a745e ]
+[ Upstream commit 302970b4cad3ebfda2c05ce06c322ccdc447d17e ]
 
-As platform_driver_register() could fail, it should be better
-to deal with the return value in order to maintain the code
-consisitency.
+of_parse_phandle() returns a node pointer with refcount
+incremented, we should use of_node_put() on it when not need anymore.
+Add missing of_node_put() to avoid refcount leak.
 
-Fixes: 1ab1f239bf17 ("Bluetooth: hci_intel: Add support for platform driver")
-Signed-off-by: Jiasheng Jiang <jiasheng@iscas.ac.cn>
-Signed-off-by: Marcel Holtmann <marcel@holtmann.org>
+Fixes: 73108aa90cbf ("USB: ohci-nxp: Use isp1301 driver")
+Acked-by: Alan Stern <stern@rowland.harvard.edu>
+Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
+Link: https://lore.kernel.org/r/20220603141231.979-1-linmq006@gmail.com
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/bluetooth/hci_intel.c | 6 +++++-
- 1 file changed, 5 insertions(+), 1 deletion(-)
+ drivers/usb/host/ohci-nxp.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/drivers/bluetooth/hci_intel.c b/drivers/bluetooth/hci_intel.c
-index e9228520e4c7..727fa4347b1e 100644
---- a/drivers/bluetooth/hci_intel.c
-+++ b/drivers/bluetooth/hci_intel.c
-@@ -1253,7 +1253,11 @@ static struct platform_driver intel_driver = {
+diff --git a/drivers/usb/host/ohci-nxp.c b/drivers/usb/host/ohci-nxp.c
+index f5f532601092..a964a93ff35b 100644
+--- a/drivers/usb/host/ohci-nxp.c
++++ b/drivers/usb/host/ohci-nxp.c
+@@ -153,6 +153,7 @@ static int ohci_hcd_nxp_probe(struct platform_device *pdev)
+ 	}
  
- int __init intel_init(void)
- {
--	platform_driver_register(&intel_driver);
-+	int err;
-+
-+	err = platform_driver_register(&intel_driver);
-+	if (err)
-+		return err;
+ 	isp1301_i2c_client = isp1301_get_client(isp1301_node);
++	of_node_put(isp1301_node);
+ 	if (!isp1301_i2c_client)
+ 		return -EPROBE_DEFER;
  
- 	return hci_uart_register_proto(&intel_proto);
- }
 -- 
 2.35.1
 
