@@ -2,47 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5E270C32774
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 09:37:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5616EC32774
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 09:37:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351284AbiHWJhD (ORCPT
+        id S1351326AbiHWJhI (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 05:37:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39194 "EHLO
+        Tue, 23 Aug 2022 05:37:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48898 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351366AbiHWJfa (ORCPT
+        with ESMTP id S1351462AbiHWJfi (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 05:35:30 -0400
+        Tue, 23 Aug 2022 05:35:38 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3D50B96FEC;
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 239946DF85;
         Tue, 23 Aug 2022 01:39:45 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 5F7C861377;
-        Tue, 23 Aug 2022 08:38:32 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5CFDEC433B5;
-        Tue, 23 Aug 2022 08:38:31 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 5BD6561545;
+        Tue, 23 Aug 2022 08:38:23 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 48DD1C433C1;
+        Tue, 23 Aug 2022 08:38:22 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661243911;
-        bh=16N7gqoDhgtgU26/uFo+Xnm3wcLCzPvXEWtJM8/2n9s=;
+        s=korg; t=1661243902;
+        bh=n/610ybo0Q8VX/qdPiQAgzKGu5QXTZKOJay/mqFZBEg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Izz6ntPeuGcgTQPBjogT6+kSPA2Nkrz1kp1breh76rzaxHIT7EOGv/zZWdNBtAciS
-         xydVrOPcBIB/Rn1j3cW2CgQ5s7j6q6ymAkct0IPKFpVwclmX6mriXiDdLBxtETJowQ
-         CqpXfJeqWKCc+493jRZyFZsOPafHyGdWqLZwhlgw=
+        b=UibuwGxmtr5Wi/EgcsmVhMzmIa/rcaAr6ukMwvbBVhLzdsa6xS5eBD4sRRD8swxBG
+         +61xa8vxea7qdVcl+E2ih5pkMy+wxdJ5mrTnxldOapS8BoslYWeydS4VQWR6YQWkGq
+         lUxq1tV3B/0EHF31n6qgQWvTYu3uLeOejhVF8410=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
-        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.14 055/229] ARM: dts: qcom: pm8841: add required thermal-sensor-cells
-Date:   Tue, 23 Aug 2022 10:23:36 +0200
-Message-Id: <20220823080055.675282770@linuxfoundation.org>
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        Hector Martin <marcan@marcan.st>,
+        Will Deacon <will@kernel.org>, Arnd Bergmann <arnd@arndb.de>
+Subject: [PATCH 5.15 006/244] locking/atomic: Make test_and_*_bit() ordered on failure
+Date:   Tue, 23 Aug 2022 10:22:45 +0200
+Message-Id: <20220823080059.302168003@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220823080053.202747790@linuxfoundation.org>
-References: <20220823080053.202747790@linuxfoundation.org>
+In-Reply-To: <20220823080059.091088642@linuxfoundation.org>
+References: <20220823080059.091088642@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -51,35 +51,75 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+From: Hector Martin <marcan@marcan.st>
 
-[ Upstream commit e2759fa0676c9a32bbddb9aff955b54bb35066ad ]
+commit 415d832497098030241605c52ea83d4e2cfa7879 upstream.
 
-The PM8841 temperature sensor has to define thermal-sensor-cells.
+These operations are documented as always ordered in
+include/asm-generic/bitops/instrumented-atomic.h, and producer-consumer
+type use cases where one side needs to ensure a flag is left pending
+after some shared data was updated rely on this ordering, even in the
+failure case.
 
-Fixes: dab8134ca072 ("ARM: dts: qcom: Add PM8841 functions device nodes")
-Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Signed-off-by: Bjorn Andersson <bjorn.andersson@linaro.org>
-Link: https://lore.kernel.org/r/20220608112702.80873-2-krzysztof.kozlowski@linaro.org
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+This is the case with the workqueue code, which currently suffers from a
+reproducible ordering violation on Apple M1 platforms (which are
+notoriously out-of-order) that ends up causing the TTY layer to fail to
+deliver data to userspace properly under the right conditions.  This
+change fixes that bug.
+
+Change the documentation to restrict the "no order on failure" story to
+the _lock() variant (for which it makes sense), and remove the
+early-exit from the generic implementation, which is what causes the
+missing barrier semantics in that case.  Without this, the remaining
+atomic op is fully ordered (including on ARM64 LSE, as of recent
+versions of the architecture spec).
+
+Suggested-by: Linus Torvalds <torvalds@linux-foundation.org>
+Cc: stable@vger.kernel.org
+Fixes: e986a0d6cb36 ("locking/atomics, asm-generic/bitops/atomic.h: Rewrite using atomic_*() APIs")
+Fixes: 61e02392d3c7 ("locking/atomic/bitops: Document and clarify ordering semantics for failed test_and_{}_bit()")
+Signed-off-by: Hector Martin <marcan@marcan.st>
+Acked-by: Will Deacon <will@kernel.org>
+Reviewed-by: Arnd Bergmann <arnd@arndb.de>
+Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/arm/boot/dts/qcom-pm8841.dtsi | 1 +
- 1 file changed, 1 insertion(+)
+ Documentation/atomic_bitops.txt     |    2 +-
+ include/asm-generic/bitops/atomic.h |    6 ------
+ 2 files changed, 1 insertion(+), 7 deletions(-)
 
-diff --git a/arch/arm/boot/dts/qcom-pm8841.dtsi b/arch/arm/boot/dts/qcom-pm8841.dtsi
-index 2fd59c440903..c73e5b149ac5 100644
---- a/arch/arm/boot/dts/qcom-pm8841.dtsi
-+++ b/arch/arm/boot/dts/qcom-pm8841.dtsi
-@@ -25,6 +25,7 @@ temp-alarm@2400 {
- 			compatible = "qcom,spmi-temp-alarm";
- 			reg = <0x2400>;
- 			interrupts = <4 0x24 0 IRQ_TYPE_EDGE_RISING>;
-+			#thermal-sensor-cells = <0>;
- 		};
- 	};
+--- a/Documentation/atomic_bitops.txt
++++ b/Documentation/atomic_bitops.txt
+@@ -59,7 +59,7 @@ Like with atomic_t, the rule of thumb is
+  - RMW operations that have a return value are fully ordered.
  
--- 
-2.35.1
-
+  - RMW operations that are conditional are unordered on FAILURE,
+-   otherwise the above rules apply. In the case of test_and_{}_bit() operations,
++   otherwise the above rules apply. In the case of test_and_set_bit_lock(),
+    if the bit in memory is unchanged by the operation then it is deemed to have
+    failed.
+ 
+--- a/include/asm-generic/bitops/atomic.h
++++ b/include/asm-generic/bitops/atomic.h
+@@ -39,9 +39,6 @@ arch_test_and_set_bit(unsigned int nr, v
+ 	unsigned long mask = BIT_MASK(nr);
+ 
+ 	p += BIT_WORD(nr);
+-	if (READ_ONCE(*p) & mask)
+-		return 1;
+-
+ 	old = arch_atomic_long_fetch_or(mask, (atomic_long_t *)p);
+ 	return !!(old & mask);
+ }
+@@ -53,9 +50,6 @@ arch_test_and_clear_bit(unsigned int nr,
+ 	unsigned long mask = BIT_MASK(nr);
+ 
+ 	p += BIT_WORD(nr);
+-	if (!(READ_ONCE(*p) & mask))
+-		return 0;
+-
+ 	old = arch_atomic_long_fetch_andnot(mask, (atomic_long_t *)p);
+ 	return !!(old & mask);
+ }
 
 
