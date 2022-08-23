@@ -2,46 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 18B8AC32772
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 12:15:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CD837C32792
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 12:17:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351617AbiHWMPF (ORCPT
+        id S1355963AbiHWMNo (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 08:15:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46008 "EHLO
+        Tue, 23 Aug 2022 08:13:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47364 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351906AbiHWMO2 (ORCPT
+        with ESMTP id S1355277AbiHWMMf (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 08:14:28 -0400
+        Tue, 23 Aug 2022 08:12:35 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 032CC19280;
-        Tue, 23 Aug 2022 02:40:26 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 254DEE3432;
+        Tue, 23 Aug 2022 02:39:39 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 910A7B81C9A;
-        Tue, 23 Aug 2022 09:39:40 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id F2E46C433C1;
-        Tue, 23 Aug 2022 09:39:38 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 73667B81B1F;
+        Tue, 23 Aug 2022 09:38:12 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9C3B6C433C1;
+        Tue, 23 Aug 2022 09:38:10 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661247579;
-        bh=RVt6G3W9mdbfkIy7nW8MAcnxPBPOKSh1h3YBa/FUnjU=;
+        s=korg; t=1661247491;
+        bh=3c/OSqaY8uRcFPRq3DKY7IaUNCD747jPXqH4BrwgPEI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=y8y5P1Z5M0WD7hL0vilUQGgKT5ajRUfoeL1fIN0BRf4cyUFZh4qfCnmF9h2CIYlOz
-         NzLbi/Xy0EbQIPZisJ+BLXIEek3ek4IWjU7E0Qi8z05kEIW7t1eehox8rpKGYNiNIz
-         Ph7YhDcebbiwjY6l9pXzJ/qL+eBSFwo/lO1A9Vqs=
+        b=wEHnE4B+4a50sQhk027e/ZW259NpNjtJR1HkS0roD67SThdSlnU7rbSFUK8Q6GbRo
+         zeSDoj5BpKKnB0uapvhmfzzmfG3ovSjFeBEO7kXvCmHXBypNlDqkPGTiiJzsGVB/v+
+         jv4SwjHyz1DznU/HVlylEJXweTUVNWtWL2XC2L/o=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Vivien Didelot <vivien.didelot@savoirfairelinux.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Sergei Antonov <saproj@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        Jakub Kicinski <kuba@kernel.org>
-Subject: [PATCH 5.10 080/158] net: dsa: mv88e6060: prevent crash on an unused port
-Date:   Tue, 23 Aug 2022 10:26:52 +0200
-Message-Id: <20220823080049.274585314@linuxfoundation.org>
+        stable@vger.kernel.org, Jeff Layton <jlayton@kernel.org>,
+        =?UTF-8?q?Lu=C3=ADs=20Henriques?= <lhenriques@suse.de>,
+        Ilya Dryomov <idryomov@gmail.com>
+Subject: [PATCH 5.10 054/158] ceph: dont leak snap_rwsem in handle_cap_grant
+Date:   Tue, 23 Aug 2022 10:26:26 +0200
+Message-Id: <20220823080048.266840116@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220823080046.056825146@linuxfoundation.org>
 References: <20220823080046.056825146@linuxfoundation.org>
@@ -53,53 +50,63 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Sergei Antonov <saproj@gmail.com>
+From: Jeff Layton <jlayton@kernel.org>
 
-commit 246bbf2f977ea36aaf41f5d24370fef433250728 upstream.
+commit 58dd4385577ed7969b80cdc9e2a31575aba6c712 upstream.
 
-If the port isn't a CPU port nor a user port, 'cpu_dp'
-is a null pointer and a crash happened on dereferencing
-it in mv88e6060_setup_port():
+When handle_cap_grant is called on an IMPORT op, then the snap_rwsem is
+held and the function is expected to release it before returning. It
+currently fails to do that in all cases which could lead to a deadlock.
 
-[    9.575872] Unable to handle kernel NULL pointer dereference at virtual address 00000014
-...
-[    9.942216]  mv88e6060_setup from dsa_register_switch+0x814/0xe84
-[    9.948616]  dsa_register_switch from mdio_probe+0x2c/0x54
-[    9.954433]  mdio_probe from really_probe.part.0+0x98/0x2a0
-[    9.960375]  really_probe.part.0 from driver_probe_device+0x30/0x10c
-[    9.967029]  driver_probe_device from __device_attach_driver+0xb8/0x13c
-[    9.973946]  __device_attach_driver from bus_for_each_drv+0x90/0xe0
-[    9.980509]  bus_for_each_drv from __device_attach+0x110/0x184
-[    9.986632]  __device_attach from bus_probe_device+0x8c/0x94
-[    9.992577]  bus_probe_device from deferred_probe_work_func+0x78/0xa8
-[    9.999311]  deferred_probe_work_func from process_one_work+0x290/0x73c
-[   10.006292]  process_one_work from worker_thread+0x30/0x4b8
-[   10.012155]  worker_thread from kthread+0xd4/0x10c
-[   10.017238]  kthread from ret_from_fork+0x14/0x3c
-
-Fixes: 0abfd494deef ("net: dsa: use dedicated CPU port")
-CC: Vivien Didelot <vivien.didelot@savoirfairelinux.com>
-CC: Florian Fainelli <f.fainelli@gmail.com>
-Signed-off-by: Sergei Antonov <saproj@gmail.com>
-Signed-off-by: Vladimir Oltean <olteanv@gmail.com>
-Link: https://lore.kernel.org/r/20220811070939.1717146-1-saproj@gmail.com
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Fixes: 6f05b30ea063 ("ceph: reset i_requested_max_size if file write is not wanted")
+Link: https://tracker.ceph.com/issues/55857
+Signed-off-by: Jeff Layton <jlayton@kernel.org>
+Reviewed-by: Luís Henriques <lhenriques@suse.de>
+Signed-off-by: Ilya Dryomov <idryomov@gmail.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/net/dsa/mv88e6060.c |    3 +++
- 1 file changed, 3 insertions(+)
+ fs/ceph/caps.c |   27 +++++++++++++--------------
+ 1 file changed, 13 insertions(+), 14 deletions(-)
 
---- a/drivers/net/dsa/mv88e6060.c
-+++ b/drivers/net/dsa/mv88e6060.c
-@@ -118,6 +118,9 @@ static int mv88e6060_setup_port(struct m
- 	int addr = REG_PORT(p);
- 	int ret;
+--- a/fs/ceph/caps.c
++++ b/fs/ceph/caps.c
+@@ -3501,24 +3501,23 @@ static void handle_cap_grant(struct inod
+ 			fill_inline = true;
+ 	}
  
-+	if (dsa_is_unused_port(priv->ds, p))
-+		return 0;
-+
- 	/* Do not force flow control, disable Ingress and Egress
- 	 * Header tagging, disable VLAN tunneling, and set the port
- 	 * state to Forwarding.  Additionally, if this is the CPU
+-	if (ci->i_auth_cap == cap &&
+-	    le32_to_cpu(grant->op) == CEPH_CAP_OP_IMPORT) {
+-		if (newcaps & ~extra_info->issued)
+-			wake = true;
++	if (le32_to_cpu(grant->op) == CEPH_CAP_OP_IMPORT) {
++		if (ci->i_auth_cap == cap) {
++			if (newcaps & ~extra_info->issued)
++				wake = true;
+ 
+-		if (ci->i_requested_max_size > max_size ||
+-		    !(le32_to_cpu(grant->wanted) & CEPH_CAP_ANY_FILE_WR)) {
+-			/* re-request max_size if necessary */
+-			ci->i_requested_max_size = 0;
+-			wake = true;
+-		}
++			if (ci->i_requested_max_size > max_size ||
++			    !(le32_to_cpu(grant->wanted) & CEPH_CAP_ANY_FILE_WR)) {
++				/* re-request max_size if necessary */
++				ci->i_requested_max_size = 0;
++				wake = true;
++			}
+ 
+-		ceph_kick_flushing_inode_caps(session, ci);
+-		spin_unlock(&ci->i_ceph_lock);
++			ceph_kick_flushing_inode_caps(session, ci);
++		}
+ 		up_read(&session->s_mdsc->snap_rwsem);
+-	} else {
+-		spin_unlock(&ci->i_ceph_lock);
+ 	}
++	spin_unlock(&ci->i_ceph_lock);
+ 
+ 	if (fill_inline)
+ 		ceph_fill_inline_data(inode, NULL, extra_info->inline_data,
 
 
