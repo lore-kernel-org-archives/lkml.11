@@ -2,67 +2,96 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4C31AC32772
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 16:49:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0D48BC32772
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 16:50:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244436AbiHWQtF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 12:49:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42034 "EHLO
+        id S244078AbiHWQt6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 23 Aug 2022 12:49:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41424 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245381AbiHWQsf (ORCPT
+        with ESMTP id S245755AbiHWQt0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 12:48:35 -0400
-Received: from bg5.exmail.qq.com (bg4.exmail.qq.com [43.155.67.158])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 16EF8A3D12
-        for <linux-kernel@vger.kernel.org>; Tue, 23 Aug 2022 07:21:11 -0700 (PDT)
-X-QQ-mid: bizesmtp81t1661264458tp8bojah
-Received: from localhost.localdomain ( [182.148.14.124])
-        by bizesmtp.qq.com (ESMTP) with 
-        id ; Tue, 23 Aug 2022 22:20:56 +0800 (CST)
-X-QQ-SSF: 0100000000200040B000B00A0000000
-X-QQ-FEAT: Wp4pj0u9TId1/p9vqY4ReYjQFRg3a8LWVD+xyr4nV9JKXGLknbcBEXjK7esi3
-        69862IWWlVSEL8Z/h69e2eL20A0F30L1Fxxl2sLyu04RtfnN8Y63IUeOskf3B0OpQiS4Q6d
-        /GDJ1OKDZ2v/BUWko3ED5ndKp2RlCy4S0VYEzECdouqdvlop0Cj6tj8ryy+CwtpSrOPoazn
-        Pwsiy3mlMOI+xJAT8bSFYpNm21oV5S+OVdb9YuGkiXNpKQ03Xp7ifWT9pjHk7L/zDqNF07A
-        dtN/ythjPRhbCxjqZ1HbKCNb7APHX6bcBfXRWfb1TKG9fogl7k0hnejmmPRAI7gISzJbxEW
-        koz1Li6Ez/PVte7ssJQo34tLKXsTSJ3vJf7xB3ZdKd/p2bI+bu3Ix1lHA3d7AdBPWIN/+rv
-X-QQ-GoodBg: 0
-From:   wangjianli <wangjianli@cdjrlc.com>
-To:     hdegoede@redhat.com, airlied@linux.ie, daniel@ffwll.ch
-Cc:     dri-devel@lists.freedesktop.org, linux-kernel@vger.kernel.org,
-        wangjianli <wangjianli@cdjrlc.com>
-Subject: [PATCH] vboxvideo: fix repeated words in comments
-Date:   Tue, 23 Aug 2022 22:20:50 +0800
-Message-Id: <20220823142050.15519-1-wangjianli@cdjrlc.com>
-X-Mailer: git-send-email 2.36.1
+        Tue, 23 Aug 2022 12:49:26 -0400
+Received: from mail-yw1-x1136.google.com (mail-yw1-x1136.google.com [IPv6:2607:f8b0:4864:20::1136])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2D8DC128448
+        for <linux-kernel@vger.kernel.org>; Tue, 23 Aug 2022 06:17:08 -0700 (PDT)
+Received: by mail-yw1-x1136.google.com with SMTP id 00721157ae682-334dc616f86so377996947b3.8
+        for <linux-kernel@vger.kernel.org>; Tue, 23 Aug 2022 06:17:08 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc;
+        bh=FTs5W/CsbRtqh/vi77RbH8WiK86F7dlns571CuGae0w=;
+        b=QlDaspLdb9+BWzybPcHwBLL62/TeGED5WKU1iAfY060Z02rugnl0yYuoUiFi0uDWZz
+         a5tl+tfml+dBuLz+bTRTjh8ZjhYHEXvxi++9nA1WMW/rfGMspc9BHS3Eu8je4DUWxT08
+         60NB0UaEPc1ie28UKA+5DDT0e9usEzoCxIz/C1Ime/bm4Gnd09grip2rRXWasIztFePk
+         irEvlW1PvBq1wfJq60mnGiPh17QcGMW8ngi1/LuyiqgUKU8SoC3yyWOFOIedD62HPNba
+         vnX5r/YN2pN/FQ5XxFckcfvyt5KlvNaAvwh55jDN0jRihBR1jvBQWx/TuHbuz9LwmZ6V
+         YKNw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc;
+        bh=FTs5W/CsbRtqh/vi77RbH8WiK86F7dlns571CuGae0w=;
+        b=Le9+Nk2lSTxXx8MoUisvm64n2WIl6fAvKtGAZF0Qzlqy5a8YK/DRh86q+k/l+evFZ+
+         jHrDKd8sFIWwa/GtebikdaJ1FUx4sow3fOMUgAm8MANGdmUseqbV9HRjyu72tI5DGUEe
+         pU6QmTmvKlU5BQb68TPB+26O/U8GQ4xu0dlUCe4i6MH9bBhFFckzdbdmdDF7ku7Nl8Vn
+         Chc9Hxmu0iurbyc4vww5d3QsRF7FX3mwK3A387B0bK9Inp/gvFeoBVh8g10fJi5rQEjM
+         PWSGDQV/Rn+jp92B7JWcWI57mHv6CQOv1EIjgKoJNtJ9O+o/zaktceISiPuLsPbGljX6
+         SQwA==
+X-Gm-Message-State: ACgBeo2OxZNpRRZN/sTr88V6OlH6HRh+r66v3AWzDV61ToybYbjBpTbw
+        97ZToLgbbYQxdio1TxFkbqoL5W1HBoHIgnKkbct9RA==
+X-Google-Smtp-Source: AA6agR56wu7Il9bBNGqKJMHGme0hQw//Mh3YW9l/6XS4CTlFOhieFb23Gk/f2IzAAspaApiM8T9wR22GEypFP/lfYKs=
+X-Received: by 2002:a0d:cc0f:0:b0:334:c52e:83c4 with SMTP id
+ o15-20020a0dcc0f000000b00334c52e83c4mr24731437ywd.324.1661260627245; Tue, 23
+ Aug 2022 06:17:07 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-QQ-SENDSIZE: 520
-Feedback-ID: bizesmtp:cdjrlc.com:qybglogicsvr:qybglogicsvr7
+References: <20220815041803.17954-1-kirill.shutemov@linux.intel.com>
+ <20220815041803.17954-7-kirill.shutemov@linux.intel.com> <CAG_fn=VnedgJL62cL2bvjsp1yrxc_ngbtRPoLXhY9JsJJhz+2w@mail.gmail.com>
+In-Reply-To: <CAG_fn=VnedgJL62cL2bvjsp1yrxc_ngbtRPoLXhY9JsJJhz+2w@mail.gmail.com>
+From:   Alexander Potapenko <glider@google.com>
+Date:   Tue, 23 Aug 2022 15:16:30 +0200
+Message-ID: <CAG_fn=XZEo00mBLUFzxMVEf0eKajkaDWj-ry3na_n5dzC_P_AA@mail.gmail.com>
+Subject: Re: [PATCHv6 06/11] x86/mm: Provide arch_prctl() interface for LAM
+To:     "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>
+Cc:     Dave Hansen <dave.hansen@linux.intel.com>,
+        Andy Lutomirski <luto@kernel.org>,
+        Peter Zijlstra <peterz@infradead.org>,
+        "the arch/x86 maintainers" <x86@kernel.org>,
+        Kostya Serebryany <kcc@google.com>,
+        Andrey Ryabinin <ryabinin.a.a@gmail.com>,
+        Andrey Konovalov <andreyknvl@gmail.com>,
+        Taras Madan <tarasmadan@google.com>,
+        Dmitry Vyukov <dvyukov@google.com>,
+        "H . J . Lu" <hjl.tools@gmail.com>,
+        Andi Kleen <ak@linux.intel.com>,
+        Rick Edgecombe <rick.p.edgecombe@intel.com>,
+        Linux Memory Management List <linux-mm@kvack.org>,
+        LKML <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
- Delete the redundant word 'the'.
+On Mon, Aug 22, 2022 at 11:32 AM Alexander Potapenko <glider@google.com> wrote:
+>
+> On Mon, Aug 15, 2022 at 6:15 AM Kirill A. Shutemov
+> <kirill.shutemov@linux.intel.com> wrote:
+> >
+> > Add a couple of arch_prctl() handles:
+> >
+> >  - ARCH_ENABLE_TAGGED_ADDR enabled LAM. The argument is required number
+> >    of tag bits. It is rounded up to the nearest LAM mode that can
+> >    provide it. For now only LAM_U57 is supported, with 6 tag bits.
+> >
+> >  - ARCH_GET_UNTAG_MASK returns untag mask. It can indicates where tag
+> >    bits located in the address.
+> >
+> >  - ARCH_GET_MAX_TAG_BITS returns the maximum tag bits user can request.
+> >    Zero if LAM is not supported.
+> >
+> > Signed-off-by: Kirill A. Shutemov <kirill.shutemov@linux.intel.com>
+> Reviewed-by: Alexander Potapenko <glider@google.com>
+And also:
 
-Signed-off-by: wangjianli <wangjianli@cdjrlc.com>
----
- drivers/gpu/drm/vboxvideo/vboxvideo.h | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/drivers/gpu/drm/vboxvideo/vboxvideo.h b/drivers/gpu/drm/vboxvideo/vboxvideo.h
-index a5de40fe1a76..f60d82504da0 100644
---- a/drivers/gpu/drm/vboxvideo/vboxvideo.h
-+++ b/drivers/gpu/drm/vboxvideo/vboxvideo.h
-@@ -43,7 +43,7 @@
-  * VBE_DISPI_INDEX_VBOX_VIDEO is used to read the configuration information
-  * from the host and issue commands to the host.
-  *
-- * The guest writes the VBE_DISPI_INDEX_VBOX_VIDEO index register, the the
-+ * The guest writes the VBE_DISPI_INDEX_VBOX_VIDEO index register, the
-  * following operations with the VBE data register can be performed:
-  *
-  * Operation            Result
--- 
-2.36.1
-
+Tested-by: Alexander Potapenko <glider@google.com>
