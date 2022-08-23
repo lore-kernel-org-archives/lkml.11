@@ -2,44 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8DC34C32772
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 10:49:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 83431C32792
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 10:49:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356180AbiHWKtr (ORCPT
+        id S1350940AbiHWKt4 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 06:49:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52620 "EHLO
+        Tue, 23 Aug 2022 06:49:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52706 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356535AbiHWKma (ORCPT
+        with ESMTP id S1356551AbiHWKme (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 06:42:30 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DA4E18607C;
-        Tue, 23 Aug 2022 02:09:59 -0700 (PDT)
+        Tue, 23 Aug 2022 06:42:34 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0189E86716;
+        Tue, 23 Aug 2022 02:10:04 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 3BBD9CE1B40;
-        Tue, 23 Aug 2022 09:09:58 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 54B32C433C1;
-        Tue, 23 Aug 2022 09:09:56 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 904A860DF6;
+        Tue, 23 Aug 2022 09:10:03 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 95BFAC433C1;
+        Tue, 23 Aug 2022 09:10:02 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661245796;
-        bh=F2zdgkDF/XedTRQAuWZeDhYcXnbH11Mv0smvHCoCLAY=;
+        s=korg; t=1661245803;
+        bh=Vq/CxUdZbrRnISxfatH6tOi54rpnqIkg0lWLUJUzXew=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=oYdd6q0xCs7ooStLdbCmZFcqbVAxygmzOmO0Fr1T8fRbFc8M51RD2dg5aNB3/FIx0
-         xOANMTkNeRekYT24n0Jr2IwoUXeN5y1O3V9n+fESOpezvAloaV5EoR05zk/crJAZsa
-         3OPO9egKnqtoLpDlKQkf4rowklJ1rygKv8WFj+9o=
+        b=jDgIJSjEf4Fh2vESOXHXcA60BhBuPq0Y0KXk2gbc8SK2J9WFwpZ6k6U7uQrcJSiCd
+         wDg6PA42UPtjFIXPE5uSOhVMVYTvJk3Zomp7+KZ9vkqoyjQ8WDL0GYy8X8jtaAaizl
+         RsP0CTWsqoO/1mTyuT4EVnRYi4OeVXedh5eroLQI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, stable@kernel.org,
-        Baokun Li <libaokun1@huawei.com>,
-        "Ritesh Harjani (IBM)" <ritesh.list@gmail.com>,
-        Jan Kara <jack@suse.cz>, Theodore Tso <tytso@mit.edu>
-Subject: [PATCH 4.19 192/287] ext4: correct max_inline_xattr_value_size computing
-Date:   Tue, 23 Aug 2022 10:26:01 +0200
-Message-Id: <20220823080107.290379462@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        stable <stable@kernel.org>,
+        Alexander Shishkin <alexander.shishkin@linux.intel.com>
+Subject: [PATCH 4.19 194/287] intel_th: pci: Add Raptor Lake-S CPU support
+Date:   Tue, 23 Aug 2022 10:26:03 +0200
+Message-Id: <20220823080107.373235923@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220823080100.268827165@linuxfoundation.org>
 References: <20220823080100.268827165@linuxfoundation.org>
@@ -51,36 +51,34 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Baokun Li <libaokun1@huawei.com>
+From: Alexander Shishkin <alexander.shishkin@linux.intel.com>
 
-commit c9fd167d57133c5b748d16913c4eabc55e531c73 upstream.
+commit ff46a601afc5a66a81c3945b83d0a2caeb88e8bc upstream.
 
-If the ext4 inode does not have xattr space, 0 is returned in the
-get_max_inline_xattr_value_size function. Otherwise, the function returns
-a negative value when the inode does not contain EXT4_STATE_XATTR.
+Add support for the Trace Hub in Raptor Lake-S CPU.
 
-Cc: stable@kernel.org
-Signed-off-by: Baokun Li <libaokun1@huawei.com>
-Reviewed-by: Ritesh Harjani (IBM) <ritesh.list@gmail.com>
-Reviewed-by: Jan Kara <jack@suse.cz>
-Link: https://lore.kernel.org/r/20220616021358.2504451-4-libaokun1@huawei.com
-Signed-off-by: Theodore Ts'o <tytso@mit.edu>
+Reviewed-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Cc: stable <stable@kernel.org>
+Signed-off-by: Alexander Shishkin <alexander.shishkin@linux.intel.com>
+Link: https://lore.kernel.org/r/20220705082637.59979-7-alexander.shishkin@linux.intel.com
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- fs/ext4/inline.c |    3 +++
- 1 file changed, 3 insertions(+)
+ drivers/hwtracing/intel_th/pci.c |    5 +++++
+ 1 file changed, 5 insertions(+)
 
---- a/fs/ext4/inline.c
-+++ b/fs/ext4/inline.c
-@@ -34,6 +34,9 @@ static int get_max_inline_xattr_value_si
- 	struct ext4_inode *raw_inode;
- 	int free, min_offs;
- 
-+	if (!EXT4_INODE_HAS_XATTR_SPACE(inode))
-+		return 0;
-+
- 	min_offs = EXT4_SB(inode->i_sb)->s_inode_size -
- 			EXT4_GOOD_OLD_INODE_SIZE -
- 			EXT4_I(inode)->i_extra_isize -
+--- a/drivers/hwtracing/intel_th/pci.c
++++ b/drivers/hwtracing/intel_th/pci.c
+@@ -246,6 +246,11 @@ static const struct pci_device_id intel_
+ 		.driver_data = (kernel_ulong_t)&intel_th_2x,
+ 	},
+ 	{
++		/* Raptor Lake-S CPU */
++		PCI_DEVICE(PCI_VENDOR_ID_INTEL, 0xa76f),
++		.driver_data = (kernel_ulong_t)&intel_th_2x,
++	},
++	{
+ 		/* Rocket Lake CPU */
+ 		PCI_DEVICE(PCI_VENDOR_ID_INTEL, 0x4c19),
+ 		.driver_data = (kernel_ulong_t)&intel_th_2x,
 
 
