@@ -2,44 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 01BCEC32772
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 10:09:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9363CC32796
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 10:09:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352973AbiHWKJt (ORCPT
+        id S1352993AbiHWKJz (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 06:09:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44494 "EHLO
+        Tue, 23 Aug 2022 06:09:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44684 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352696AbiHWKCV (ORCPT
+        with ESMTP id S1352717AbiHWKCZ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 06:02:21 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 770417C741;
-        Tue, 23 Aug 2022 01:50:30 -0700 (PDT)
+        Tue, 23 Aug 2022 06:02:25 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 31B3F7C53E;
+        Tue, 23 Aug 2022 01:50:35 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 0635F6122F;
-        Tue, 23 Aug 2022 08:50:30 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0D687C433D6;
-        Tue, 23 Aug 2022 08:50:28 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id B5F07B8105C;
+        Tue, 23 Aug 2022 08:50:33 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0619FC433C1;
+        Tue, 23 Aug 2022 08:50:31 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661244629;
-        bh=7XvzYG1/pjFVKJRC1vdT57a3gpQ/VTg3095N79BMJe8=;
+        s=korg; t=1661244632;
+        bh=KHKdcDR1KcGMN127IkrwnlFmcCyodJnypzzaBS50q94=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Wqm2P+kjjpAQ0i09Ovk+mC2xEgzXV/213ZKlnaQ6rfIEpimk6WuLxI2aa3WRTqHZA
-         5CERb7Jix20PbRvsY7IuQf0WgcOEmGFae3E6UYOa6CizFz/GBm8p5M6FzPwu/up4Da
-         XPV5PqCCiBa0kbCQaJWyOlk43IUeZSIfjkzZC0oI=
+        b=mGOuJUTltSaEgam8ToqSubkZgGtl4VNAlzLrKDYzfgT7Xl6UTjkKahx/tzMzQWLEk
+         fAJFI7m2tKUD39zU8VHbjKn3JJkUh9lh2vMYWD/fSAhCz1gMEEQt9MqhlVUydsKe+7
+         KuL2X/3CAMMXqxwedx2q3WLgoKzOG+aBzKiJTukM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
+To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Pablo Neira Ayuso <pablo@netfilter.org>
-Subject: [PATCH 5.15 125/244] netfilter: nf_tables: disallow NFTA_SET_ELEM_KEY_END with NFT_SET_ELEM_INTERVAL_END flag
-Date:   Tue, 23 Aug 2022 10:24:44 +0200
-Message-Id: <20220823080103.250852622@linuxfoundation.org>
+        Vitaly Kuznetsov <vkuznets@redhat.com>,
+        Paolo Bonzini <pbonzini@redhat.com>,
+        Stefan Ghinea <stefan.ghinea@windriver.com>
+Subject: [PATCH 4.14 167/229] KVM: x86: Check lapic_in_kernel() before attempting to set a SynIC irq
+Date:   Tue, 23 Aug 2022 10:25:28 +0200
+Message-Id: <20220823080059.622082211@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220823080059.091088642@linuxfoundation.org>
-References: <20220823080059.091088642@linuxfoundation.org>
+In-Reply-To: <20220823080053.202747790@linuxfoundation.org>
+References: <20220823080053.202747790@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -48,28 +50,39 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Pablo Neira Ayuso <pablo@netfilter.org>
+From: Vitaly Kuznetsov <vkuznets@redhat.com>
 
-commit 4963674c2e71fc062f8f089f0f58ffbb5533060b upstream.
+commit 7ec37d1cbe17d8189d9562178d8b29167fe1c31a upstream
 
-These are mutually exclusive, actually NFTA_SET_ELEM_KEY_END replaces
-the flag notation.
+When KVM_CAP_HYPERV_SYNIC{,2} is activated, KVM already checks for
+irqchip_in_kernel() so normally SynIC irqs should never be set. It is,
+however,  possible for a misbehaving VMM to write to SYNIC/STIMER MSRs
+causing erroneous behavior.
 
-Fixes: 7b225d0b5c6d ("netfilter: nf_tables: add NFTA_SET_ELEM_KEY_END attribute")
-Signed-off-by: Pablo Neira Ayuso <pablo@netfilter.org>
+The immediate issue being fixed is that kvm_irq_delivery_to_apic()
+(kvm_irq_delivery_to_apic_fast()) crashes when called with
+'irq.shorthand = APIC_DEST_SELF' and 'src == NULL'.
+
+Signed-off-by: Vitaly Kuznetsov <vkuznets@redhat.com>
+Message-Id: <20220325132140.25650-2-vkuznets@redhat.com>
+Cc: stable@vger.kernel.org
+Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
+Signed-off-by: Stefan Ghinea <stefan.ghinea@windriver.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- net/netfilter/nf_tables_api.c |    1 +
- 1 file changed, 1 insertion(+)
+ arch/x86/kvm/hyperv.c |    3 +++
+ 1 file changed, 3 insertions(+)
 
---- a/net/netfilter/nf_tables_api.c
-+++ b/net/netfilter/nf_tables_api.c
-@@ -5768,6 +5768,7 @@ static int nft_add_set_elem(struct nft_c
- 	      nla[NFTA_SET_ELEM_EXPIRATION] ||
- 	      nla[NFTA_SET_ELEM_USERDATA] ||
- 	      nla[NFTA_SET_ELEM_EXPR] ||
-+	      nla[NFTA_SET_ELEM_KEY_END] ||
- 	      nla[NFTA_SET_ELEM_EXPRESSIONS]))
+--- a/arch/x86/kvm/hyperv.c
++++ b/arch/x86/kvm/hyperv.c
+@@ -317,6 +317,9 @@ static int synic_set_irq(struct kvm_vcpu
+ 	struct kvm_lapic_irq irq;
+ 	int ret, vector;
+ 
++	if (KVM_BUG_ON(!lapic_in_kernel(vcpu), vcpu->kvm))
++		return -EINVAL;
++
+ 	if (sint >= ARRAY_SIZE(synic->sint))
  		return -EINVAL;
  
 
