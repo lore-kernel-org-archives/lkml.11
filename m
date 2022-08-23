@@ -2,44 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5DDFBC32772
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 12:25:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 368F8C32772
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 12:26:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243117AbiHWMZV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 08:25:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36992 "EHLO
+        id S243057AbiHWMXd (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 23 Aug 2022 08:23:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51646 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357763AbiHWMVo (ORCPT
+        with ESMTP id S1352948AbiHWMSC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 08:21:44 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5B99612AA3;
-        Tue, 23 Aug 2022 02:43:32 -0700 (PDT)
+        Tue, 23 Aug 2022 08:18:02 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1E8F7EEC58;
+        Tue, 23 Aug 2022 02:42:31 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id D281B61389;
-        Tue, 23 Aug 2022 09:42:38 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9FB91C433C1;
-        Tue, 23 Aug 2022 09:42:36 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 11382B81C53;
+        Tue, 23 Aug 2022 09:42:14 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 626ADC433C1;
+        Tue, 23 Aug 2022 09:42:12 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661247758;
-        bh=YA7qGjAoZ0w68jbN59Y8bWwXYBlkSuhDhVnrXYHcvq8=;
+        s=korg; t=1661247732;
+        bh=5al+6LErGki/bhO/CqhGcnv4fL+cBKxwlRvMI/DCKE4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=dn/rWDI9B/nlL0EAt08aeqmhd2qmVpdnNwAV4Xb9ST4iJkG2z30K70rmi1/v2TYaw
-         qNATpEttpQ2GMVsWHSFzIbVcBanob5gUZsmtoTNs5nPcZ1CvGTDo0NIIUc9YBPQEeU
-         0ko9B4jUL6o8HCeNoEhJDkzpi+uTuD2LVpU74uK8=
+        b=IFECqSlzZsZAMYTCftJQ2hJN00RMG7OW+oqjW4DuhSKcteW69xoHRm0bciXo6G1nX
+         OscmFD8ERYXBIV2QC1sASNFhZXr3tVNKbSQpsFgXSwW+gaPI7ZG+tlO02Ih/XKM/7W
+         I5q0sBqwGEem5lSo7zVABEXunYD9gDUJbPRFbJZM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, kernel test robot <lkp@intel.com>,
-        Sai Prakash Ranjan <quic_saipraka@quicinc.com>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Neil Armstrong <narmstrong@baylibre.com>,
+        stable@vger.kernel.org, Wentao_Liang <Wentao_Liang_g@163.com>,
+        Song Liu <song@kernel.org>, Jens Axboe <axboe@kernel.dk>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 107/158] drm/meson: Fix overflow implicit truncation warnings
-Date:   Tue, 23 Aug 2022 10:27:19 +0200
-Message-Id: <20220823080050.305284021@linuxfoundation.org>
+Subject: [PATCH 5.10 129/158] drivers:md:fix a potential use-after-free bug
+Date:   Tue, 23 Aug 2022 10:27:41 +0200
+Message-Id: <20220823080051.091959410@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220823080046.056825146@linuxfoundation.org>
 References: <20220823080046.056825146@linuxfoundation.org>
@@ -51,67 +49,42 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Sai Prakash Ranjan <quic_saipraka@quicinc.com>
+From: Wentao_Liang <Wentao_Liang_g@163.com>
 
-[ Upstream commit 98692f52c588225034cbff458622c2c06dfcb544 ]
+[ Upstream commit 104212471b1c1817b311771d817fb692af983173 ]
 
-Fix -Woverflow warnings for drm/meson driver which is a result
-of moving arm64 custom MMIO accessor macros to asm-generic function
-implementations giving a bonus type-checking now and uncovering these
-overflow warnings.
+In line 2884, "raid5_release_stripe(sh);" drops the reference to sh and
+may cause sh to be released. However, sh is subsequently used in lines
+2886 "if (sh->batch_head && sh != sh->batch_head)". This may result in an
+use-after-free bug.
 
-drivers/gpu/drm/meson/meson_viu.c: In function ‘meson_viu_init’:
-drivers/gpu/drm/meson/meson_registers.h:1826:48: error: large integer implicitly truncated to unsigned type [-Werror=overflow]
- #define  VIU_OSD_BLEND_REORDER(dest, src)      ((src) << (dest * 4))
-                                                ^
-drivers/gpu/drm/meson/meson_viu.c:472:18: note: in expansion of macro ‘VIU_OSD_BLEND_REORDER’
-   writel_relaxed(VIU_OSD_BLEND_REORDER(0, 1) |
-                  ^~~~~~~~~~~~~~~~~~~~~
+It can be fixed by moving "raid5_release_stripe(sh);" to the bottom of
+the function.
 
-Reported-by: kernel test robot <lkp@intel.com>
-Signed-off-by: Sai Prakash Ranjan <quic_saipraka@quicinc.com>
-Reviewed-by: Arnd Bergmann <arnd@arndb.de>
-Cc: Arnd Bergmann <arnd@arndb.de>
-Cc: Neil Armstrong <narmstrong@baylibre.com>
-Signed-off-by: Arnd Bergmann <arnd@arndb.de>
+Signed-off-by: Wentao_Liang <Wentao_Liang_g@163.com>
+Signed-off-by: Song Liu <song@kernel.org>
+Signed-off-by: Jens Axboe <axboe@kernel.dk>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/gpu/drm/meson/meson_viu.c | 22 +++++++++++-----------
- 1 file changed, 11 insertions(+), 11 deletions(-)
+ drivers/md/raid5.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/gpu/drm/meson/meson_viu.c b/drivers/gpu/drm/meson/meson_viu.c
-index 259f3e6bec90..bb7e109534de 100644
---- a/drivers/gpu/drm/meson/meson_viu.c
-+++ b/drivers/gpu/drm/meson/meson_viu.c
-@@ -469,17 +469,17 @@ void meson_viu_init(struct meson_drm *priv)
- 			priv->io_base + _REG(VD2_IF0_LUMA_FIFO_SIZE));
+diff --git a/drivers/md/raid5.c b/drivers/md/raid5.c
+index c8cafdb094aa..01c7edf32936 100644
+--- a/drivers/md/raid5.c
++++ b/drivers/md/raid5.c
+@@ -2864,10 +2864,10 @@ static void raid5_end_write_request(struct bio *bi)
+ 	if (!test_and_clear_bit(R5_DOUBLE_LOCKED, &sh->dev[i].flags))
+ 		clear_bit(R5_LOCKED, &sh->dev[i].flags);
+ 	set_bit(STRIPE_HANDLE, &sh->state);
+-	raid5_release_stripe(sh);
  
- 	if (meson_vpu_is_compatible(priv, VPU_COMPATIBLE_G12A)) {
--		writel_relaxed(VIU_OSD_BLEND_REORDER(0, 1) |
--			       VIU_OSD_BLEND_REORDER(1, 0) |
--			       VIU_OSD_BLEND_REORDER(2, 0) |
--			       VIU_OSD_BLEND_REORDER(3, 0) |
--			       VIU_OSD_BLEND_DIN_EN(1) |
--			       VIU_OSD_BLEND1_DIN3_BYPASS_TO_DOUT1 |
--			       VIU_OSD_BLEND1_DOUT_BYPASS_TO_BLEND2 |
--			       VIU_OSD_BLEND_DIN0_BYPASS_TO_DOUT0 |
--			       VIU_OSD_BLEND_BLEN2_PREMULT_EN(1) |
--			       VIU_OSD_BLEND_HOLD_LINES(4),
--			       priv->io_base + _REG(VIU_OSD_BLEND_CTRL));
-+		u32 val = (u32)VIU_OSD_BLEND_REORDER(0, 1) |
-+			  (u32)VIU_OSD_BLEND_REORDER(1, 0) |
-+			  (u32)VIU_OSD_BLEND_REORDER(2, 0) |
-+			  (u32)VIU_OSD_BLEND_REORDER(3, 0) |
-+			  (u32)VIU_OSD_BLEND_DIN_EN(1) |
-+			  (u32)VIU_OSD_BLEND1_DIN3_BYPASS_TO_DOUT1 |
-+			  (u32)VIU_OSD_BLEND1_DOUT_BYPASS_TO_BLEND2 |
-+			  (u32)VIU_OSD_BLEND_DIN0_BYPASS_TO_DOUT0 |
-+			  (u32)VIU_OSD_BLEND_BLEN2_PREMULT_EN(1) |
-+			  (u32)VIU_OSD_BLEND_HOLD_LINES(4);
-+		writel_relaxed(val, priv->io_base + _REG(VIU_OSD_BLEND_CTRL));
+ 	if (sh->batch_head && sh != sh->batch_head)
+ 		raid5_release_stripe(sh->batch_head);
++	raid5_release_stripe(sh);
+ }
  
- 		writel_relaxed(OSD_BLEND_PATH_SEL_ENABLE,
- 			       priv->io_base + _REG(OSD1_BLEND_SRC_CTRL));
+ static void raid5_error(struct mddev *mddev, struct md_rdev *rdev)
 -- 
 2.35.1
 
