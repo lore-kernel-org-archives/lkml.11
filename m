@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F1AE0C3F6B0
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 12:27:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E7736C32772
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 12:27:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240701AbiHWM1K (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 08:27:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39104 "EHLO
+        id S241659AbiHWM1R (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 23 Aug 2022 08:27:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39882 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1359578AbiHWMVz (ORCPT
+        with ESMTP id S241452AbiHWMXp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 08:21:55 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9BE7F75FE5;
-        Tue, 23 Aug 2022 02:43:36 -0700 (PDT)
+        Tue, 23 Aug 2022 08:23:45 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F2DC699B63;
+        Tue, 23 Aug 2022 02:43:50 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id E3A50B81C63;
-        Tue, 23 Aug 2022 09:43:10 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3A0D5C433D6;
-        Tue, 23 Aug 2022 09:43:09 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 9C5F5CE1B67;
+        Tue, 23 Aug 2022 09:43:20 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id AFF94C433C1;
+        Tue, 23 Aug 2022 09:43:18 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661247789;
-        bh=EuZaGYluLH1sBfX+LwCyGdBsOg1V0gcuWQeFvYE1Lew=;
+        s=korg; t=1661247799;
+        bh=3SgRBEcKdUq1jSyw/M+5HbWwcg4l3qiIjgF+3iRVqLQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=DphVdaCpZn2rEup6eG0AgNDNSGS7U3hkhOvGMr2592f4iWEdUaZxebZS4Pn6BoVqY
-         aeKCD44O4lzF9aCYCoxOPN1mTvo/o5S7UznhxWRGAuMKtQIupWIyURYDqOEEpDPQ37
-         nR6t7hxsCTUG+/0AOAGDJFgiEl4RZC4ko7a9SXYc=
+        b=Z/fC7Z5KjD8EIax71z8IkV9BVdLh2vnuFO0Bi/+NfdN5rDBVs3bRWHJs31IafyJU/
+         Dv0UU5uUeOQZ8oSFe/n1FqCPtn8pUp7UgeViGfhbnFB18B4QKzK/7mx2BFlCa5b1O3
+         TLc3Ysib8pEZJGxHKAsecneeaYaJdMGn5di3JfKY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Michael Ellerman <mpe@ellerman.id.au>,
-        Zhouyi Zhou <zhouzhouyi@gmail.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 148/158] powerpc/64: Init jump labels before parse_early_param()
-Date:   Tue, 23 Aug 2022 10:28:00 +0200
-Message-Id: <20220823080051.795388345@linuxfoundation.org>
+        stable@vger.kernel.org, Dan Carpenter <dan.carpenter@oracle.com>,
+        Paul Moore <paul@paul-moore.com>,
+        Pablo Neira Ayuso <pablo@netfilter.org>
+Subject: [PATCH 5.10 151/158] netfilter: nftables: fix a warning message in nf_tables_commit_audit_collect()
+Date:   Tue, 23 Aug 2022 10:28:03 +0200
+Message-Id: <20220823080051.904861510@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220823080046.056825146@linuxfoundation.org>
 References: <20220823080046.056825146@linuxfoundation.org>
@@ -49,65 +49,33 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Zhouyi Zhou <zhouzhouyi@gmail.com>
+From: Dan Carpenter <dan.carpenter@oracle.com>
 
-[ Upstream commit ca829e05d3d4f728810cc5e4b468d9ebc7745eb3 ]
+commit dadf33c9f6b5f694e842d224a4d071f59ac665ee upstream.
 
-On 64-bit, calling jump_label_init() in setup_feature_keys() is too
-late because static keys may be used in subroutines of
-parse_early_param() which is again subroutine of early_init_devtree().
+The first argument of a WARN_ONCE() is a condition.  This WARN_ONCE()
+will only print the table name, and is potentially problematic if the
+table name has a %s in it.
 
-For example booting with "threadirqs":
-
-  static_key_enable_cpuslocked(): static key '0xc000000002953260' used before call to jump_label_init()
-  WARNING: CPU: 0 PID: 0 at kernel/jump_label.c:166 static_key_enable_cpuslocked+0xfc/0x120
-  ...
-  NIP static_key_enable_cpuslocked+0xfc/0x120
-  LR  static_key_enable_cpuslocked+0xf8/0x120
-  Call Trace:
-    static_key_enable_cpuslocked+0xf8/0x120 (unreliable)
-    static_key_enable+0x30/0x50
-    setup_forced_irqthreads+0x28/0x40
-    do_early_param+0xa0/0x108
-    parse_args+0x290/0x4e0
-    parse_early_options+0x48/0x5c
-    parse_early_param+0x58/0x84
-    early_init_devtree+0xd4/0x518
-    early_setup+0xb4/0x214
-
-So call jump_label_init() just before parse_early_param() in
-early_init_devtree().
-
-Suggested-by: Michael Ellerman <mpe@ellerman.id.au>
-Signed-off-by: Zhouyi Zhou <zhouzhouyi@gmail.com>
-[mpe: Add call trace to change log and minor wording edits.]
-Signed-off-by: Michael Ellerman <mpe@ellerman.id.au>
-Link: https://lore.kernel.org/r/20220726015747.11754-1-zhouzhouyi@gmail.com
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Fixes: c520292f29b8 ("audit: log nftables configuration change events once per table")
+Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
+Reviewed-by: Paul Moore <paul@paul-moore.com>
+Signed-off-by: Pablo Neira Ayuso <pablo@netfilter.org>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/powerpc/kernel/prom.c | 7 +++++++
- 1 file changed, 7 insertions(+)
+ net/netfilter/nf_tables_api.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/arch/powerpc/kernel/prom.c b/arch/powerpc/kernel/prom.c
-index 7a14a094be8a..1dfb4c213fea 100644
---- a/arch/powerpc/kernel/prom.c
-+++ b/arch/powerpc/kernel/prom.c
-@@ -750,6 +750,13 @@ void __init early_init_devtree(void *params)
- 	of_scan_flat_dt(early_init_dt_scan_root, NULL);
- 	of_scan_flat_dt(early_init_dt_scan_memory_ppc, NULL);
- 
-+	/*
-+	 * As generic code authors expect to be able to use static keys
-+	 * in early_param() handlers, we initialize the static keys just
-+	 * before parsing early params (it's fine to call jump_label_init()
-+	 * more than once).
-+	 */
-+	jump_label_init();
- 	parse_early_param();
- 
- 	/* make sure we've parsed cmdline for mem= before this */
--- 
-2.35.1
-
+--- a/net/netfilter/nf_tables_api.c
++++ b/net/netfilter/nf_tables_api.c
+@@ -7828,7 +7828,7 @@ static void nf_tables_commit_audit_colle
+ 		if (adp->table == table)
+ 			goto found;
+ 	}
+-	WARN_ONCE("table=%s not expected in commit list", table->name);
++	WARN_ONCE(1, "table=%s not expected in commit list", table->name);
+ 	return;
+ found:
+ 	adp->entries++;
 
 
