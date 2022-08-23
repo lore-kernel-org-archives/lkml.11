@@ -2,41 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 76C4AC32772
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 08:29:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 96EBCC32772
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 08:30:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243793AbiHWI3z (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 04:29:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46610 "EHLO
+        id S243803AbiHWIaA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 23 Aug 2022 04:30:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42156 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244013AbiHWI0X (ORCPT
+        with ESMTP id S244207AbiHWI0a (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 04:26:23 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E9F7B72FD1;
-        Tue, 23 Aug 2022 01:14:14 -0700 (PDT)
+        Tue, 23 Aug 2022 04:26:30 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 06E6A72FD4;
+        Tue, 23 Aug 2022 01:14:13 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id C402861242;
-        Tue, 23 Aug 2022 08:14:10 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C97A6C433C1;
-        Tue, 23 Aug 2022 08:14:09 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id DF24BB81C26;
+        Tue, 23 Aug 2022 08:13:43 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 39EDBC433C1;
+        Tue, 23 Aug 2022 08:13:42 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661242450;
-        bh=ROwYacelnhogMjbaFhx5Z+LfPE39x335YCVt9z0dvRA=;
+        s=korg; t=1661242422;
+        bh=1R4vBcGtvywwK6mm74BckJoc44zv4MEOsFxv7R4miYo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=gmrpIr7gb72Bs9NVmJzZTwsjsU9FmmXQ6alDZug+Ed9QoYr6B3srS0yJ32xa2eq+H
-         Pz+itSMmtHzNdRa4bgeaoXGJe3bWhVBK7Z5y9CfQT+CgCPzLds9dMuuFsYVzeuTpei
-         hMDLM+NeFxHIVNDs9xOoybheYIKSipJAcewhfVig=
+        b=mvkVtz83tox0/kM20mpb2XrSGGUJTaI5eQkqyg6prJLRHHz4Y6bTxHOM2eB1KFhVg
+         NfKs/M9i+GJminagW0VQhCkoX6q17OmuD5PomXk/Fm4q7InsaliyJPz3ggybwXFDLb
+         neUOmntVfn1+fjY8kRcN2Ua1ZTEjzdDxu5zP0/lI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
-        Linus Walleij <linus.walleij@linaro.org>
-Subject: [PATCH 4.9 073/101] pinctrl: nomadik: Fix refcount leak in nmk_pinctrl_dt_subnode_to_map
-Date:   Tue, 23 Aug 2022 10:03:46 +0200
-Message-Id: <20220823080037.344231233@linuxfoundation.org>
+        stable@vger.kernel.org, Filipe Manana <fdmanana@suse.com>,
+        David Sterba <dsterba@suse.com>
+Subject: [PATCH 4.9 069/101] btrfs: fix lost error handling when looking up extended ref on log replay
+Date:   Tue, 23 Aug 2022 10:03:42 +0200
+Message-Id: <20220823080037.197439038@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220823080034.579196046@linuxfoundation.org>
 References: <20220823080034.579196046@linuxfoundation.org>
@@ -48,36 +48,43 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Miaoqian Lin <linmq006@gmail.com>
+From: Filipe Manana <fdmanana@suse.com>
 
-commit 4b32e054335ea0ce50967f63a7bfd4db058b14b9 upstream.
+commit 7a6b75b79902e47f46328b57733f2604774fa2d9 upstream.
 
-of_parse_phandle() returns a node pointer with refcount
-incremented, we should use of_node_put() on it when not need anymore.
-Add missing of_node_put() to avoid refcount leak."
+During log replay, when processing inode references, if we get an error
+when looking up for an extended reference at __add_inode_ref(), we ignore
+it and proceed, returning success (0) if no other error happens after the
+lookup. This is obviously wrong because in case an extended reference
+exists and it encodes some name not in the log, we need to unlink it,
+otherwise the filesystem state will not match the state it had after the
+last fsync.
 
-Fixes: c2f6d059abfc ("pinctrl: nomadik: refactor DT parser to take two paths")
-Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
-Link: https://lore.kernel.org/r/20220607111602.57355-1-linmq006@gmail.com
-Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
+So just make __add_inode_ref() return an error it gets from the extended
+reference lookup.
+
+Fixes: f186373fef005c ("btrfs: extended inode refs")
+CC: stable@vger.kernel.org # 4.9+
+Signed-off-by: Filipe Manana <fdmanana@suse.com>
+Reviewed-by: David Sterba <dsterba@suse.com>
+Signed-off-by: David Sterba <dsterba@suse.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/pinctrl/nomadik/pinctrl-nomadik.c |    4 +++-
+ fs/btrfs/tree-log.c |    4 +++-
  1 file changed, 3 insertions(+), 1 deletion(-)
 
---- a/drivers/pinctrl/nomadik/pinctrl-nomadik.c
-+++ b/drivers/pinctrl/nomadik/pinctrl-nomadik.c
-@@ -1455,8 +1455,10 @@ static int nmk_pinctrl_dt_subnode_to_map
- 
- 	has_config = nmk_pinctrl_dt_get_config(np, &configs);
- 	np_config = of_parse_phandle(np, "ste,config", 0);
--	if (np_config)
-+	if (np_config) {
- 		has_config |= nmk_pinctrl_dt_get_config(np_config, &configs);
-+		of_node_put(np_config);
-+	}
- 	if (has_config) {
- 		const char *gpio_name;
- 		const char *pin;
+--- a/fs/btrfs/tree-log.c
++++ b/fs/btrfs/tree-log.c
+@@ -1074,7 +1074,9 @@ again:
+ 	extref = btrfs_lookup_inode_extref(NULL, root, path, name, namelen,
+ 					   inode_objectid, parent_objectid, 0,
+ 					   0);
+-	if (!IS_ERR_OR_NULL(extref)) {
++	if (IS_ERR(extref)) {
++		return PTR_ERR(extref);
++	} else if (extref) {
+ 		u32 item_size;
+ 		u32 cur_offset = 0;
+ 		unsigned long base;
 
 
