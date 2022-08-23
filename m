@@ -2,99 +2,118 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B6FE4C32772
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 16:36:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 078A0C32772
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 16:36:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244995AbiHWQgh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 12:36:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53494 "EHLO
+        id S244952AbiHWQgw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 23 Aug 2022 12:36:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51138 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245443AbiHWQgA (ORCPT
+        with ESMTP id S244939AbiHWQgb (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 12:36:00 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1EDB8BCB2;
-        Tue, 23 Aug 2022 06:06:36 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id AD603614D1;
-        Tue, 23 Aug 2022 13:06:35 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 50939C433D6;
-        Tue, 23 Aug 2022 13:06:33 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1661259995;
-        bh=H8h0RHLn6+JPT0ZVlwXJ4vwSe51HEfutMbaRAkltf4o=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=eTC4CsZPJhQPvAAqMNaRmhc+GWcLHArz3Ok0OJBhL/Qt3r11I5bcFchOdk5TCZBuK
-         cTi3PShOjAfQEmiDdM9EoYeK/R3rFYXmMk8alFomd38l5Z4w9V00ekY/CLVg5wtPUG
-         cd1fexliwWx6meFgLre6v8tCdtsotGNZwRWBb6DKBMPLpvIzJK6gx7dPJ1/BUksyUL
-         AvbvTQ86Y74Y6gMx7gvvDccar5p/ga6ag/SoBSgQCOucWgOzCV+qIaje4Ay17H1401
-         EsRDWlNTETXDCcNa0tlYnQS4NE4lLq6aupAwRCMFiCDFU0yiTi4VJkKAUYLh1c8XvL
-         /69x1Wd2TRaDA==
-Date:   Tue, 23 Aug 2022 14:06:30 +0100
-From:   Mark Brown <broonie@kernel.org>
-To:     Doug Anderson <dianders@chromium.org>
-Cc:     Andrew Halaney <ahalaney@redhat.com>,
-        Andy Gross <agross@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Konrad Dybcio <konrad.dybcio@somainline.org>,
-        Liam Girdwood <lgirdwood@gmail.com>,
-        linux-arm-msm <linux-arm-msm@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH] regulator: qcom-rpmh: Implement get_optimum_mode(), not
- set_load()
-Message-ID: <YwTQ1i5s5cwowRss@sirena.org.uk>
-References: <20220726102024.1.Icc838fe7bf0ef54a014ab2fee8af311654f5342a@changeid>
- <20220822193153.zn2oxljmd76awqot@halaneylaptop>
- <CAD=FV=V_V-M1fJmeWH_=wG4GB9GERL9ToAZTwAjX9i-6k6QkWA@mail.gmail.com>
+        Tue, 23 Aug 2022 12:36:31 -0400
+Received: from mail-qt1-x833.google.com (mail-qt1-x833.google.com [IPv6:2607:f8b0:4864:20::833])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CCE01DF4D6
+        for <linux-kernel@vger.kernel.org>; Tue, 23 Aug 2022 07:47:33 -0700 (PDT)
+Received: by mail-qt1-x833.google.com with SMTP id h22so10522447qtu.2
+        for <linux-kernel@vger.kernel.org>; Tue, 23 Aug 2022 07:47:33 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc;
+        bh=b8EYUe3JugOX0krlcI4SIAy+UPYGVeLR4PxCSdVOZKA=;
+        b=kds/eg8K8iDSgVtBJnyCXPYIJMTjIe4TyWFlnVvOJk99djqYpAvmv2YGgDbvzOJPeA
+         cE2QB/DTRvulIqdttMXeB9CLHfx2bIc2bsNRauw5PA0xGRIeStBVoAoHKLlT6RPuGZuV
+         qFHH/TY6hqKpwWuWFIjJ5jikWkkWE4fBYdn+eyxk5YbSy7FNs9SK0jNuni93x7hSD0vs
+         kQIqtSBLS3ML00Sq65XA8Ax7JZBDQriWvnPMN0ME5oOoRi/EZWOhMBsxT4kCByC5E9Qt
+         PNM2JAFW7DafoTylAIZxeFPmkjhy3JFfkDuIgwzcQPEch9CAFRi7E4qa/uqBiOaS3J3v
+         PYBA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc;
+        bh=b8EYUe3JugOX0krlcI4SIAy+UPYGVeLR4PxCSdVOZKA=;
+        b=mS07gWvCF9xqR1lAPQNfvDRfl1qSguFXl2im/f0tPILcoh4TdPgMh0ZIkLs3gC+vj/
+         hc59S4n0P+Wwjq6gPwtVtUknsQtkf+XMliflfRJsS4aKjX4ymZbipMQ7XUhaZp52ymra
+         9Nt2/leFvbr+HuHPGfssN7hcYQGmwClIC5j1Z6KYSKZKdghdGz0AfOvqbP7QTtvcYBeO
+         dkXcYWiuNbzRe1o9HdaYUIOe5s+9zEzS9PcfFYfeWmBvyav7fIkIl/SKgPPxbEjGWI40
+         3/wPbjtdQ9Yxz2rKTiSaSj7BBdTTjyNMrhkvZStSZd9eZOVJ0tjsh5TEbgQGSMqBkBA7
+         gk6g==
+X-Gm-Message-State: ACgBeo3k7Ot8PIpEaSXSIU3P5Qu0ZRFqBVP2yfT/hFNx9jLZa/yXeomT
+        cfiIXQj9eOBZbI0J5bSLdMw=
+X-Google-Smtp-Source: AA6agR5pSSGs0EgS8b/26ah8lKzgSPS8zmBy7jeWzv2OusfHLi0QCQsN/9wfq3U41+VJTU8fy5CYcw==
+X-Received: by 2002:ac8:7f83:0:b0:343:869a:7db9 with SMTP id z3-20020ac87f83000000b00343869a7db9mr19705477qtj.46.1661266052867;
+        Tue, 23 Aug 2022 07:47:32 -0700 (PDT)
+Received: from master-x64.sparksnet ([2601:153:901:9131::10])
+        by smtp.gmail.com with ESMTPSA id y9-20020a05620a25c900b006bb83c2be40sm13304284qko.59.2022.08.23.07.47.31
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 23 Aug 2022 07:47:32 -0700 (PDT)
+From:   Peter Geis <pgwipeout@gmail.com>
+To:     Heiko Stuebner <heiko@sntech.de>,
+        Kishon Vijay Abraham I <kishon@ti.com>,
+        Vinod Koul <vkoul@kernel.org>,
+        Peter Geis <pgwipeout@gmail.com>,
+        Samuel Holland <samuel@sholland.org>
+Cc:     Markus Reichl <m.reichl@fivetechno.de>,
+        Michael Riesch <michael.riesch@wolfvision.net>,
+        linux-phy@lists.infradead.org,
+        linux-arm-kernel@lists.infradead.org,
+        linux-rockchip@lists.infradead.org, linux-kernel@vger.kernel.org
+Subject: [PATCH v2] phy: rockchip-inno-usb2: Return zero after otg sync
+Date:   Tue, 23 Aug 2022 10:47:28 -0400
+Message-Id: <20220823144728.47068-1-pgwipeout@gmail.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="X6FF6FFLRgFUYXaS"
-Content-Disposition: inline
-In-Reply-To: <CAD=FV=V_V-M1fJmeWH_=wG4GB9GERL9ToAZTwAjX9i-6k6QkWA@mail.gmail.com>
-X-Cookie: You can't take damsel here now.
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+The otg sync state patch reuses the ret variable, but fails to set it to
+zero after use. This leads to a situation when the otg port is in
+peripheral mode where the otg phy aborts halfway through setup.  It also
+fails to account for a failure to register the extcon notifier. Fix this
+by using our own variable and skipping otg sync in case of failure.
 
---X6FF6FFLRgFUYXaS
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+Fixes: 8dc60f8da22f ("phy: rockchip-inno-usb2: Sync initial otg state")
 
-On Mon, Aug 22, 2022 at 01:13:55PM -0700, Doug Anderson wrote:
+Reported-by: Markus Reichl <m.reichl@fivetechno.de>
+Reported-by: Michael Riesch <michael.riesch@wolfvision.net>
+Signed-off-by: Peter Geis <pgwipeout@gmail.com>
+Tested-by: Michael Riesch <michael.riesch@wolfvision.net>
+Tested-by: Markus Reichl <m.reichl@fivetechno.de>
+---
+ drivers/phy/rockchip/phy-rockchip-inno-usb2.c | 7 ++++---
+ 1 file changed, 4 insertions(+), 3 deletions(-)
 
-> I guess at this point I'll wait for Mark to give his suggestion for
-> what to do. Options I'm aware of:
+diff --git a/drivers/phy/rockchip/phy-rockchip-inno-usb2.c b/drivers/phy/rockchip/phy-rockchip-inno-usb2.c
+index 0b1e9337ee8e..d579a22c61df 100644
+--- a/drivers/phy/rockchip/phy-rockchip-inno-usb2.c
++++ b/drivers/phy/rockchip/phy-rockchip-inno-usb2.c
+@@ -1124,7 +1124,7 @@ static int rockchip_usb2phy_otg_port_init(struct rockchip_usb2phy *rphy,
+ 					  struct rockchip_usb2phy_port *rport,
+ 					  struct device_node *child_np)
+ {
+-	int ret;
++	int ret, id;
+ 
+ 	rport->port_id = USB2PHY_PORT_OTG;
+ 	rport->port_cfg = &rphy->phy_cfg->port_cfgs[USB2PHY_PORT_OTG];
+@@ -1164,11 +1164,12 @@ static int rockchip_usb2phy_otg_port_init(struct rockchip_usb2phy *rphy,
+ 					EXTCON_USB_HOST, &rport->event_nb);
+ 		if (ret)
+ 			dev_err(rphy->dev, "register USB HOST notifier failed\n");
++			goto out;
+ 
+ 		if (!of_property_read_bool(rphy->dev->of_node, "extcon")) {
+ 			/* do initial sync of usb state */
+-			ret = property_enabled(rphy->grf, &rport->port_cfg->utmi_id);
+-			extcon_set_state_sync(rphy->edev, EXTCON_USB_HOST, !ret);
++			id = property_enabled(rphy->grf, &rport->port_cfg->utmi_id);
++			extcon_set_state_sync(rphy->edev, EXTCON_USB_HOST, !id);
+ 		}
+ 	}
+ 
+-- 
+2.25.1
 
-> a) ${SUBJECT} patch was written as a cleanup as per Mark's request and
-> we could just revert it.
-
-> b) We could make it so that failures to get the input/output voltages
-> doesn't count as an error when going through the get_optimum_mode()
-> path.
-
-We could push the checks for a valid voltage down into the drivers, a
-lot of things aren't particularly sensitive to the output voltage here
-and are much more sensitive to the current draw.  Depending on people's
-attitudes to DT stability for Qualcomm platforms we could also fix the
-affected DTs as well, though that doesn't stop us handling this in the
-core too.
-
---X6FF6FFLRgFUYXaS
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAABCgAdFiEEreZoqmdXGLWf4p/qJNaLcl1Uh9AFAmME0NUACgkQJNaLcl1U
-h9A/qAf+L08yi+AfUUOKiU+RzeDrbdpo0B+MwdqVLYM65myh59wA/z7dIUHNWslx
-QSLK+T8ppVRnu/qedfMqhWKigjP69HkVs8aVDVNx5InAXyYL9fWpS+sIq9PTrYpO
-crrASb+hFdboUdcrIbMq6xVSD0C9u5R98AgjTbAuGoYrRosXjWtViQVivCiBn3fm
-cNeDwOU5CEoouqAAvtjpjjbUbkIn6SZdTt95yIhWvUQuU7nOShmngfCQ+uQAbt0s
-hW4jcN4RS4Q1wPzDC0ccZl44BI2U0UvhMH/otFKXvjPnTU8DFH0tgBTTldmbPjd7
-wOKME+0yd4AvtUjLkUauv4iJuVESKQ==
-=QS7l
------END PGP SIGNATURE-----
-
---X6FF6FFLRgFUYXaS--
