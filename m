@@ -2,82 +2,67 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 87EB6C32772
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 16:44:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 91E7AC32774
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 16:44:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244103AbiHWQoF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 12:44:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36932 "EHLO
+        id S245352AbiHWQon (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 23 Aug 2022 12:44:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38814 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245548AbiHWQnf (ORCPT
+        with ESMTP id S244078AbiHWQoV (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 12:43:35 -0400
-Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A0BF512421C
-        for <linux-kernel@vger.kernel.org>; Tue, 23 Aug 2022 06:12:18 -0700 (PDT)
-Received: from dggpemm500022.china.huawei.com (unknown [172.30.72.56])
-        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4MBqJz46S7zXdjc;
-        Tue, 23 Aug 2022 21:07:47 +0800 (CST)
-Received: from dggpemm100009.china.huawei.com (7.185.36.113) by
- dggpemm500022.china.huawei.com (7.185.36.162) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Tue, 23 Aug 2022 21:12:04 +0800
-Received: from [10.174.179.24] (10.174.179.24) by
- dggpemm100009.china.huawei.com (7.185.36.113) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Tue, 23 Aug 2022 21:12:03 +0800
-Subject: Re: [PATCH -next v2] mm, proc: collect percpu free pages into the
- free pages
-To:     Andrew Morton <akpm@linux-foundation.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        huang ying <huang.ying.caritas@gmail.com>,
-        Aaron Lu <aaron.lu@intel.com>,
-        Dave Hansen <dave.hansen@intel.com>,
-        "Michal Hocko" <mhocko@suse.com>,
-        Jesper Dangaard Brouer <brouer@redhat.com>,
-        Vlastimil Babka <vbabka@suse.cz>,
-        Kemi Wang <kemi.wang@intel.com>,
-        "Kefeng Wang" <wangkefeng.wang@huawei.com>,
-        <linux-kernel@vger.kernel.org>, <linux-mm@kvack.org>
-References: <20220822023311.909316-1-liushixin2@huawei.com>
- <20220822033354.952849-1-liushixin2@huawei.com>
- <20220822141207.24ff7252913a62f80ea55e90@linux-foundation.org>
- <20220822141309.3b7382db0367b63b6cd72c14@linux-foundation.org>
-From:   Liu Shixin <liushixin2@huawei.com>
-Message-ID: <4687e93d-9245-300e-6193-d5428a76c9b8@huawei.com>
-Date:   Tue, 23 Aug 2022 21:12:03 +0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:45.0) Gecko/20100101
- Thunderbird/45.7.1
+        Tue, 23 Aug 2022 12:44:21 -0400
+Received: from bg5.exmail.qq.com (bg4.exmail.qq.com [43.155.67.158])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4DD199924D;
+        Tue, 23 Aug 2022 07:35:31 -0700 (PDT)
+X-QQ-mid: bizesmtp63t1661265306tcjl87k1
+Received: from localhost.localdomain ( [182.148.14.124])
+        by bizesmtp.qq.com (ESMTP) with 
+        id ; Tue, 23 Aug 2022 22:35:05 +0800 (CST)
+X-QQ-SSF: 0100000000200040B000B00A0000000
+X-QQ-FEAT: CR3LFp2JE4lsMi4y5SOOx7rBpqqJUbpxns7R41MYtoWzw4TkT6PbPgcsIBUjE
+        O8TFio6RF7CKukJ84ap9pCXYJY5T8cG4gl7EK2h2E8eCXnSy/qwHuqTNfGXxXoF68etUjIJ
+        eQLCETxxepsdSTYVMHKgc3RL7PFpXGVtTy4xCENlLdXNkG1G3k4jJ4CEyGq7xEvFYprp1NI
+        Ex9/SJrJGyhsVv8VUSUyi5jFhUOPMvAYVJaNb/a2m7BExWZvFId7SlBH+q7FG8uli+vGCE0
+        ozgy0Nyxswm0sD/mGYfodwQvGnomdcmDttJ3YPorprWx7pU2pS45mTC/IR2JtEYnbCFaET3
+        iX8Lihr7CIHZSs5lEgj84gAul56251ozxOUoxzv7+r+Tkwv1cSt6buVFUmW4g==
+X-QQ-GoodBg: 0
+From:   wangjianli <wangjianli@cdjrlc.com>
+To:     adrian.hunter@intel.com, ulf.hansson@linaro.org
+Cc:     linux-mmc@vger.kernel.org, linux-kernel@vger.kernel.org,
+        wangjianli <wangjianli@cdjrlc.com>
+Subject: [PATCH] mmc/host: fix repeated words in comments
+Date:   Tue, 23 Aug 2022 22:34:59 +0800
+Message-Id: <20220823143459.27942-1-wangjianli@cdjrlc.com>
+X-Mailer: git-send-email 2.36.1
 MIME-Version: 1.0
-In-Reply-To: <20220822141309.3b7382db0367b63b6cd72c14@linux-foundation.org>
-Content-Type: text/plain; charset="windows-1252"
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.174.179.24]
-X-ClientProxiedBy: dggems706-chm.china.huawei.com (10.3.19.183) To
- dggpemm100009.china.huawei.com (7.185.36.113)
-X-CFilter-Loop: Reflected
+Content-Transfer-Encoding: 8bit
+X-QQ-SENDSIZE: 520
+Feedback-ID: bizesmtp:cdjrlc.com:qybglogicsvr:qybglogicsvr7
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 2022/8/23 5:13, Andrew Morton wrote:
-> On Mon, 22 Aug 2022 14:12:07 -0700 Andrew Morton <akpm@linux-foundation.org> wrote:
->
->> Prevention of races against zone/node hotplug?
-> I meant "cpu/node", of course.
-> .
-Thanks for your advice, but I didn't quite understand what you meant.
-Do you mean that I should use cpus_read_lock() to protect cpu hotplug just like this?
-+       cpus_read_lock();
-        for_each_online_cpu(cpu)
-                sum += per_cpu_ptr(zone->per_cpu_pageset, cpu)->count;
-+       cpus_read_unlock();
+Delete the redundant word 'the'.
 
-I see there is some areas were not protected by the cpus_{read/write}_lock, so I was confused
-as to whether I should add it.
+Signed-off-by: wangjianli <wangjianli@cdjrlc.com>
+---
+ drivers/mmc/host/sdhci-acpi.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-I want to replace for_each_zone with for_each_populated_zone, what else should I do to protect
-node hotplug.
-
-Thanks.
+diff --git a/drivers/mmc/host/sdhci-acpi.c b/drivers/mmc/host/sdhci-acpi.c
+index c0350e9c03f3..93fe6e5a5f9f 100644
+--- a/drivers/mmc/host/sdhci-acpi.c
++++ b/drivers/mmc/host/sdhci-acpi.c
+@@ -648,7 +648,7 @@ static int sdhci_acpi_emmc_amd_probe_slot(struct platform_device *pdev,
+ 	 *       in reading a garbage value and using the wrong presets.
+ 	 *
+ 	 *       Since HS400 and HS200 presets must be identical, we could
+-	 *       instead use the the SDR104 preset register.
++	 *       instead use the SDR104 preset register.
+ 	 *
+ 	 *    If the above issues are resolved we could remove this quirk for
+ 	 *    firmware that that has valid presets (i.e., SDR12 <= 12 MHz).
+-- 
+2.36.1
 
