@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 45C22C32772
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 11:44:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DC1D3C32772
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 11:44:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358228AbiHWLor (ORCPT
+        id S1358070AbiHWLow (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 07:44:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59976 "EHLO
+        Tue, 23 Aug 2022 07:44:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40584 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1358249AbiHWLlU (ORCPT
+        with ESMTP id S1358271AbiHWLlX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 07:41:20 -0400
+        Tue, 23 Aug 2022 07:41:23 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CF384915DA;
-        Tue, 23 Aug 2022 02:28:59 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2472CCAC49;
+        Tue, 23 Aug 2022 02:29:02 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id B386661384;
-        Tue, 23 Aug 2022 09:28:58 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 744BFC433C1;
-        Tue, 23 Aug 2022 09:28:57 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id D1F1E61380;
+        Tue, 23 Aug 2022 09:29:01 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CF7B5C433D6;
+        Tue, 23 Aug 2022 09:29:00 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661246938;
-        bh=mDUD6X7hd0XBnBBWrF1dnehGnWJdI8S5zoWzjyBZ3IA=;
+        s=korg; t=1661246941;
+        bh=r8ZmBHQ/RJfNsWVpUAvQ9s2Wzj7LryuW23JauTIsPDc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=PjU7JhBNUk+OdNN77seXstnzOOAUpRKY4hZx7jjVElhxEkuPxZEqIf+USCdcknsez
-         bahGZD3tToRdOs8e/SzB1C6ASn1DdNKaaB6kKYWTB+mbSghOykiYmyVDyuPkA/iMrO
-         +BdLDW76VNbXnkvJv2sfPzONxp8RUQD34wnJlnDU=
+        b=PwCFt2qGe5JXdN7yDTYa1bVD5hq6LBP+wRr+pPLm9wA/el2q0jpBZaRVhLllfejRL
+         ofjG51rJJisK9vcfQIrkDuUqqCV6mZgL9gSKP8umo0JPfOUzRRJyc8lLG5QNBSMHQM
+         uGbJTS0ea/1nZDiZUdwMhSdO/rFWdFYzuc4q7/P0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
-        Michael Ellerman <mpe@ellerman.id.au>,
+        stable@vger.kernel.org, Xie Yongji <xieyongji@bytedance.com>,
+        Miklos Szeredi <mszeredi@redhat.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 236/389] powerpc/cell/axon_msi: Fix refcount leak in setup_msi_msg_address
-Date:   Tue, 23 Aug 2022 10:25:14 +0200
-Message-Id: <20220823080125.438397913@linuxfoundation.org>
+Subject: [PATCH 5.4 227/389] fuse: Remove the control interface for virtio-fs
+Date:   Tue, 23 Aug 2022 10:25:05 +0200
+Message-Id: <20220823080125.082736779@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220823080115.331990024@linuxfoundation.org>
 References: <20220823080115.331990024@linuxfoundation.org>
@@ -50,35 +50,48 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Miaoqian Lin <linmq006@gmail.com>
+From: Xie Yongji <xieyongji@bytedance.com>
 
-[ Upstream commit df5d4b616ee76abc97e5bd348e22659c2b095b1c ]
+[ Upstream commit c64797809a64c73497082aa05e401a062ec1af34 ]
 
-of_get_next_parent() returns a node pointer with refcount incremented,
-we should use of_node_put() on it when not need anymore.
-Add missing of_node_put() in the error path to avoid refcount leak.
+The commit 15c8e72e88e0 ("fuse: allow skipping control interface and forced
+unmount") tries to remove the control interface for virtio-fs since it does
+not support aborting requests which are being processed. But it doesn't
+work now.
 
-Fixes: ce21b3c9648a ("[CELL] add support for MSI on Axon-based Cell systems")
-Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
-Signed-off-by: Michael Ellerman <mpe@ellerman.id.au>
-Link: https://lore.kernel.org/r/20220605065129.63906-1-linmq006@gmail.com
+This patch fixes it by skipping creating the control interface if
+fuse_conn->no_control is set.
+
+Fixes: 15c8e72e88e0 ("fuse: allow skipping control interface and forced unmount")
+Signed-off-by: Xie Yongji <xieyongji@bytedance.com>
+Signed-off-by: Miklos Szeredi <mszeredi@redhat.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/powerpc/platforms/cell/axon_msi.c | 1 +
- 1 file changed, 1 insertion(+)
+ fs/fuse/control.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/arch/powerpc/platforms/cell/axon_msi.c b/arch/powerpc/platforms/cell/axon_msi.c
-index 57c4e0e86c88..ba33140e671d 100644
---- a/arch/powerpc/platforms/cell/axon_msi.c
-+++ b/arch/powerpc/platforms/cell/axon_msi.c
-@@ -226,6 +226,7 @@ static int setup_msi_msg_address(struct pci_dev *dev, struct msi_msg *msg)
- 	if (!prop) {
- 		dev_dbg(&dev->dev,
- 			"axon_msi: no msi-address-(32|64) properties found\n");
-+		of_node_put(dn);
- 		return -ENOENT;
- 	}
+diff --git a/fs/fuse/control.c b/fs/fuse/control.c
+index c23f6f243ad4..2742d74cedda 100644
+--- a/fs/fuse/control.c
++++ b/fs/fuse/control.c
+@@ -265,7 +265,7 @@ int fuse_ctl_add_conn(struct fuse_conn *fc)
+ 	struct dentry *parent;
+ 	char name[32];
  
+-	if (!fuse_control_sb)
++	if (!fuse_control_sb || fc->no_control)
+ 		return 0;
+ 
+ 	parent = fuse_control_sb->s_root;
+@@ -303,7 +303,7 @@ void fuse_ctl_remove_conn(struct fuse_conn *fc)
+ {
+ 	int i;
+ 
+-	if (!fuse_control_sb)
++	if (!fuse_control_sb || fc->no_control)
+ 		return;
+ 
+ 	for (i = fc->ctl_ndents - 1; i >= 0; i--) {
 -- 
 2.35.1
 
