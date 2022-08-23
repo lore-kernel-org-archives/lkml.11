@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 02805C32772
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 11:32:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5E704C32774
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 11:32:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357840AbiHWLcA (ORCPT
+        id S1358006AbiHWLcO (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 07:32:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37910 "EHLO
+        Tue, 23 Aug 2022 07:32:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37666 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1358024AbiHWL1I (ORCPT
+        with ESMTP id S1358124AbiHWL1X (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 07:27:08 -0400
+        Tue, 23 Aug 2022 07:27:23 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B6F136DF89;
-        Tue, 23 Aug 2022 02:24:50 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 197932BC9;
+        Tue, 23 Aug 2022 02:25:03 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id D5ACD6098A;
-        Tue, 23 Aug 2022 09:24:49 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CFC13C433D6;
-        Tue, 23 Aug 2022 09:24:48 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 36B6361321;
+        Tue, 23 Aug 2022 09:25:03 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2D4AFC433D6;
+        Tue, 23 Aug 2022 09:25:01 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661246689;
-        bh=GF4TbJ1hutDZOonw/FVmEopGTSDIsLj01qpR16/WWcE=;
+        s=korg; t=1661246702;
+        bh=GfzdxVCertLB2uPJqZ9KQxIPR8FwJWUnAX9p0S7Y20Q=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=i6NXa5z7gm6xzRGPSz3PVO/Y3E6ABawV0Drv3tUL2lAeRhqd9huGoQ/dxbOdI64x/
-         +ZINUwC4XVF8KgFsBdgSCoKgLI3xPcwyii1xx76v5t7hWKe46UPnQKYqCcwyAUmWla
-         h/CAh6xncFgb5Ov4yROudlgkTmXUuYKtZ1YBzsuQ=
+        b=zfa2IF2odq3ct1QBWEYH50UuLi+UYABJ/4Bb1Z2accExD137P59Lv/lDpU/EKCvQt
+         ny3rNcRgXRIY4ZdFbutS628EEExyrI+Yc0Uc/oKMppcZ8iN9k7+QLi8fcGJlzFeiEq
+         pZUkeT8TPsfWM4Hxa6QTXBG5hzyz+X7XmENqUx/E=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Liang He <windhl@126.com>,
-        Bartosz Golaszewski <brgl@bgdev.pl>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 188/389] gpio: gpiolib-of: Fix refcount bugs in of_mm_gpiochip_add_data()
-Date:   Tue, 23 Aug 2022 10:24:26 +0200
-Message-Id: <20220823080123.494544792@linuxfoundation.org>
+        stable@vger.kernel.org, Artem Borisov <dedsa2002@gmail.com>,
+        Jiri Kosina <jkosina@suse.cz>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.4 191/389] HID: alps: Declare U1_UNICORN_LEGACY support
+Date:   Tue, 23 Aug 2022 10:24:29 +0200
+Message-Id: <20220823080123.601191906@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220823080115.331990024@linuxfoundation.org>
 References: <20220823080115.331990024@linuxfoundation.org>
@@ -50,51 +49,34 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Liang He <windhl@126.com>
+From: Artem Borisov <dedsa2002@gmail.com>
 
-[ Upstream commit 5d07a692f9562f9c06e62cce369e9dd108173a0f ]
+[ Upstream commit 1117d182c5d72abd7eb8b7d5e7b8c3373181c3ab ]
 
-We should use of_node_get() when a new reference of device_node
-is created. It is noted that the old reference stored in
-'mm_gc->gc.of_node' should also be decreased.
+U1_UNICORN_LEGACY id was added to the driver, but was not declared
+in the device id table, making it impossible to use.
 
-This patch is based on the fact that there is a call site in function
-'qe_add_gpiochips()' of src file 'drivers\soc\fsl\qe\gpio.c'. In this
-function, of_mm_gpiochip_add_data() is contained in an iteration of
-for_each_compatible_node() which will automatically increase and
-decrease the refcount. So we need additional of_node_get() for the
-reference escape in of_mm_gpiochip_add_data().
-
-Fixes: a19e3da5bc5f ("of/gpio: Kill of_gpio_chip and add members directly to gpio_chip")
-Signed-off-by: Liang He <windhl@126.com>
-Signed-off-by: Bartosz Golaszewski <brgl@bgdev.pl>
+Fixes: 640e403 ("HID: alps: Add AUI1657 device ID")
+Signed-off-by: Artem Borisov <dedsa2002@gmail.com>
+Signed-off-by: Jiri Kosina <jkosina@suse.cz>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/gpio/gpiolib-of.c | 4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
+ drivers/hid/hid-alps.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
-diff --git a/drivers/gpio/gpiolib-of.c b/drivers/gpio/gpiolib-of.c
-index b1dcd2dd52e6..73807c897391 100644
---- a/drivers/gpio/gpiolib-of.c
-+++ b/drivers/gpio/gpiolib-of.c
-@@ -734,7 +734,8 @@ int of_mm_gpiochip_add_data(struct device_node *np,
- 	if (mm_gc->save_regs)
- 		mm_gc->save_regs(mm_gc);
- 
--	mm_gc->gc.of_node = np;
-+	of_node_put(mm_gc->gc.of_node);
-+	mm_gc->gc.of_node = of_node_get(np);
- 
- 	ret = gpiochip_add_data(gc, data);
- 	if (ret)
-@@ -742,6 +743,7 @@ int of_mm_gpiochip_add_data(struct device_node *np,
- 
- 	return 0;
- err2:
-+	of_node_put(np);
- 	iounmap(mm_gc->regs);
- err1:
- 	kfree(gc->label);
+diff --git a/drivers/hid/hid-alps.c b/drivers/hid/hid-alps.c
+index 2477b2a3f7c3..464a48906d01 100644
+--- a/drivers/hid/hid-alps.c
++++ b/drivers/hid/hid-alps.c
+@@ -831,6 +831,8 @@ static const struct hid_device_id alps_id[] = {
+ 		USB_VENDOR_ID_ALPS_JP, HID_DEVICE_ID_ALPS_U1_DUAL) },
+ 	{ HID_DEVICE(HID_BUS_ANY, HID_GROUP_ANY,
+ 		USB_VENDOR_ID_ALPS_JP, HID_DEVICE_ID_ALPS_U1) },
++	{ HID_DEVICE(HID_BUS_ANY, HID_GROUP_ANY,
++		USB_VENDOR_ID_ALPS_JP, HID_DEVICE_ID_ALPS_U1_UNICORN_LEGACY) },
+ 	{ HID_DEVICE(HID_BUS_ANY, HID_GROUP_ANY,
+ 		USB_VENDOR_ID_ALPS_JP, HID_DEVICE_ID_ALPS_T4_BTNLESS) },
+ 	{ }
 -- 
 2.35.1
 
