@@ -2,136 +2,131 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2D5BCC32793
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 07:50:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0EDB7C32774
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 07:50:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240751AbiHWHuN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 03:50:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59818 "EHLO
+        id S241257AbiHWHuQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 23 Aug 2022 03:50:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59936 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241248AbiHWHuI (ORCPT
+        with ESMTP id S241205AbiHWHuM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 03:50:08 -0400
-Received: from smtp-out2.suse.de (smtp-out2.suse.de [IPv6:2001:67c:2178:6::1d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8717D6527F
-        for <linux-kernel@vger.kernel.org>; Tue, 23 Aug 2022 00:50:04 -0700 (PDT)
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
-        (No client certificate requested)
-        by smtp-out2.suse.de (Postfix) with ESMTPS id 1C19E5CCE3;
-        Tue, 23 Aug 2022 07:50:03 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
-        t=1661241003; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=Tzmy0pSRA+QcMUPJOK7gtyRNCVOK3XUksuGeis4aWYQ=;
-        b=ljEkiY86MjjLOgZw3r4zwArfDh9x+EugKc3nklnhxtgiyl2xRF0BGMBBzNevIlb4OuE1FO
-        pqQI97UslW1TpgcxkONLllvJdX6U3FVhriy4EWb08JOb1SJkuZptQNoCH1ufhJ4cwfCVyg
-        TcsSGGvuID1+pBiZj9PbJdhPvkCI9wc=
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
-        (No client certificate requested)
-        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id EED2F13AB7;
-        Tue, 23 Aug 2022 07:50:02 +0000 (UTC)
-Received: from dovecot-director2.suse.de ([192.168.254.65])
-        by imap2.suse-dmz.suse.de with ESMTPSA
-        id xGhFOqqGBGNkRQAAMHmgww
-        (envelope-from <mhocko@suse.com>); Tue, 23 Aug 2022 07:50:02 +0000
-Date:   Tue, 23 Aug 2022 09:50:02 +0200
-From:   Michal Hocko <mhocko@suse.com>
-To:     Andrew Morton <akpm@linux-foundation.org>
-Cc:     Liu Shixin <liushixin2@huawei.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        huang ying <huang.ying.caritas@gmail.com>,
-        Aaron Lu <aaron.lu@intel.com>,
-        Dave Hansen <dave.hansen@intel.com>,
-        Jesper Dangaard Brouer <brouer@redhat.com>,
-        Vlastimil Babka <vbabka@suse.cz>,
-        Kemi Wang <kemi.wang@intel.com>,
-        Kefeng Wang <wangkefeng.wang@huawei.com>,
-        linux-kernel@vger.kernel.org, linux-mm@kvack.org
-Subject: Re: [PATCH -next v2] mm, proc: collect percpu free pages into the
- free pages
-Message-ID: <YwSGqtEICW5AlhWr@dhcp22.suse.cz>
-References: <20220822023311.909316-1-liushixin2@huawei.com>
- <20220822033354.952849-1-liushixin2@huawei.com>
- <20220822141207.24ff7252913a62f80ea55e90@linux-foundation.org>
+        Tue, 23 Aug 2022 03:50:12 -0400
+Received: from mx07-00178001.pphosted.com (mx07-00178001.pphosted.com [185.132.182.106])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 197D565275
+        for <linux-kernel@vger.kernel.org>; Tue, 23 Aug 2022 00:50:08 -0700 (PDT)
+Received: from pps.filterd (m0241204.ppops.net [127.0.0.1])
+        by mx07-00178001.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 27N7I4IW032328;
+        Tue, 23 Aug 2022 09:49:41 +0200
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=foss.st.com; h=message-id : date :
+ mime-version : subject : to : cc : references : from : in-reply-to :
+ content-type : content-transfer-encoding; s=selector1;
+ bh=dr9XcxuypM8CL3EgCI4gKBX4+hvBoN2grFdSFcg0Hc8=;
+ b=PP2RvDxXg1E7cuT/as4rWMupNinszVZTq1+A5sqWRPPm+AOPbpFWySEbvbMdIL2MEGuL
+ J8XLBM8IdjEOvcETVvEBfq9xSg7ShhcK3DubnkeQYm4jxJJT/I2UNtw6s0UN5zNpc3Mn
+ Ad9UTeXzXa7xLTpeXONcQYOrsi4cHgJwzO767JiYvbQS0AfCXKOCMbNxd7X1te7Jhc3E
+ JR10PxchjM/HeC5vPtgQ1Bqoaxn948wrzFwPLFE9pWEc0Yybr0f7UvkUZhkUSgTcqciD
+ Dpkm0jFgRAyUVuxhI8H/F/o5u7yU2Qg44/aVfd0PbPB2JckAtXxmUPdsNFraSSycWb2y 7Q== 
+Received: from beta.dmz-eu.st.com (beta.dmz-eu.st.com [164.129.1.35])
+        by mx07-00178001.pphosted.com (PPS) with ESMTPS id 3j2w2pvm9h-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Tue, 23 Aug 2022 09:49:41 +0200
+Received: from euls16034.sgp.st.com (euls16034.sgp.st.com [10.75.44.20])
+        by beta.dmz-eu.st.com (STMicroelectronics) with ESMTP id 65B2C100034;
+        Tue, 23 Aug 2022 09:49:39 +0200 (CEST)
+Received: from Webmail-eu.st.com (shfdag1node2.st.com [10.75.129.70])
+        by euls16034.sgp.st.com (STMicroelectronics) with ESMTP id 5729C216ED1;
+        Tue, 23 Aug 2022 09:49:39 +0200 (CEST)
+Received: from [10.48.0.175] (10.75.127.45) by SHFDAG1NODE2.st.com
+ (10.75.129.70) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256) id 15.1.2308.20; Tue, 23 Aug
+ 2022 09:49:38 +0200
+Message-ID: <3efb5636-1f20-fbc9-8f0f-0047d0165a96@foss.st.com>
+Date:   Tue, 23 Aug 2022 09:49:37 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220822141207.24ff7252913a62f80ea55e90@linux-foundation.org>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.11.0
+Subject: Re: [PATCH v1 04/19] mtd: rawnand: stm32_fmc2: Fix dma_map_sg error
+ check
+Content-Language: en-US
+To:     Jack Wang <jinpu.wang@ionos.com>, <linux-kernel@vger.kernel.org>
+CC:     Miquel Raynal <miquel.raynal@bootlin.com>,
+        Richard Weinberger <richard@nod.at>,
+        Vignesh Raghavendra <vigneshr@ti.com>,
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+        Alexandre Torgue <alexandre.torgue@foss.st.com>,
+        Philipp Zabel <p.zabel@pengutronix.de>,
+        Cai Huoqing <cai.huoqing@linux.dev>,
+        <linux-mtd@lists.infradead.org>,
+        <linux-stm32@st-md-mailman.stormreply.com>,
+        <linux-arm-kernel@lists.infradead.org>
+References: <20220819060801.10443-1-jinpu.wang@ionos.com>
+ <20220819060801.10443-5-jinpu.wang@ionos.com>
+From:   Christophe Kerello <christophe.kerello@foss.st.com>
+In-Reply-To: <20220819060801.10443-5-jinpu.wang@ionos.com>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.75.127.45]
+X-ClientProxiedBy: SFHDAG2NODE3.st.com (10.75.127.6) To SHFDAG1NODE2.st.com
+ (10.75.129.70)
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.895,Hydra:6.0.517,FMLib:17.11.122.1
+ definitions=2022-08-23_03,2022-08-22_02,2022-06-22_01
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon 22-08-22 14:12:07, Andrew Morton wrote:
-> On Mon, 22 Aug 2022 11:33:54 +0800 Liu Shixin <liushixin2@huawei.com> wrote:
+Hi Jack,
+
+On 8/19/22 08:07, Jack Wang wrote:
+> dma_map_sg return 0 on error, in case of error return -EIO.
 > 
-> > The page on pcplist could be used, but not counted into memory free or
-> > avaliable, and pcp_free is only showed by show_mem() for now. Since commit
-> > d8a759b57035 ("mm, page_alloc: double zone's batchsize"), there is a
-> > significant decrease in the display of free memory, with a large number
-> > of cpus and zones, the number of pages in the percpu list can be very
-> > large, so it is better to let user to know the pcp count.
-> > 
-> > On a machine with 3 zones and 72 CPUs. Before commit d8a759b57035, the
-> > maximum amount of pages in the pcp lists was theoretically 162MB(3*72*768KB).
-> > After the patch, the lists can hold 324MB. It has been observed to be 114MB
-> > in the idle state after system startup in practice(increased 80 MB).
-> > 
+> Cc: Miquel Raynal <miquel.raynal@bootlin.com>
+> Cc: Richard Weinberger <richard@nod.at>
+> Cc: Vignesh Raghavendra <vigneshr@ti.com>
+> Cc: Maxime Coquelin <mcoquelin.stm32@gmail.com>
+> Cc: Alexandre Torgue <alexandre.torgue@foss.st.com>
+> Cc: Philipp Zabel <p.zabel@pengutronix.de>
+> Cc: Christophe Kerello <christophe.kerello@foss.st.com>
+> Cc: Cai Huoqing <cai.huoqing@linux.dev>
+> Cc: linux-mtd@lists.infradead.org
+> Cc: linux-stm32@st-md-mailman.stormreply.com
+> Cc: linux-arm-kernel@lists.infradead.org
+> Cc: linux-kernel@vger.kernel.org
+> Signed-off-by: Jack Wang <jinpu.wang@ionos.com>
+> ---
+>   drivers/mtd/nand/raw/stm32_fmc2_nand.c | 8 +++++---
+>   1 file changed, 5 insertions(+), 3 deletions(-)
 > 
-> Seems reasonable.
+> diff --git a/drivers/mtd/nand/raw/stm32_fmc2_nand.c b/drivers/mtd/nand/raw/stm32_fmc2_nand.c
+> index 87c1c7dd97eb..a0c825af19fa 100644
+> --- a/drivers/mtd/nand/raw/stm32_fmc2_nand.c
+> +++ b/drivers/mtd/nand/raw/stm32_fmc2_nand.c
+> @@ -862,8 +862,8 @@ static int stm32_fmc2_nfc_xfer(struct nand_chip *chip, const u8 *buf,
+>   
+>   	ret = dma_map_sg(nfc->dev, nfc->dma_data_sg.sgl,
+>   			 eccsteps, dma_data_dir);
+> -	if (ret < 0)
+> -		return ret;
+> +	if (!ret)
+> +		return -EIO;
+>   
+>   	desc_data = dmaengine_prep_slave_sg(dma_ch, nfc->dma_data_sg.sgl,
+>   					    eccsteps, dma_transfer_dir,
+> @@ -893,8 +893,10 @@ static int stm32_fmc2_nfc_xfer(struct nand_chip *chip, const u8 *buf,
+>   
+>   		ret = dma_map_sg(nfc->dev, nfc->dma_ecc_sg.sgl,
+>   				 eccsteps, dma_data_dir);
+> -		if (ret < 0)
+> +		if (!ret) {
+> +			ret = -EIO;
+>   			goto err_unmap_data;
+> +		}
+>   
+>   		desc_ecc = dmaengine_prep_slave_sg(nfc->dma_ecc_ch,
+>   						   nfc->dma_ecc_sg.sgl,
 
-I have asked in the previous incarnation of the patch but haven't really
-received any answer[1]. Is this a _real_ problem? The absolute amount of
-memory could be perceived as a lot but is this really noticeable wrt
-overall memory on those systems?
+Reviewed-by: Christophe Kerello <christophe.kerello@foss.st.com>
 
-Also the patch is accounting these pcp caches as free memory but that
-can be misleading as this memory is not readily available for use in
-general. E.g. MemAvailable is documented as:
-	An estimate of how much memory is available for starting new
-	applications, without swapping.
-but pcp caches are drained only after direct reclaim fails which can
-imply a lot of reclaim and runtime disruption.
-
-[1] http://lkml.kernel.org/r/YwMv1A1rVNZQuuOo@dhcp22.suse.cz
-
-> > 
-> > diff --git a/mm/page_alloc.c b/mm/page_alloc.c
-> > index 033f1e26d15b..f89928d3ad4e 100644
-> > --- a/mm/page_alloc.c
-> > +++ b/mm/page_alloc.c
-> > @@ -5853,6 +5853,26 @@ static unsigned long nr_free_zone_pages(int offset)
-> >  	return sum;
-> >  }
-> >  
-> > +static unsigned long nr_free_zone_pcplist_pages(struct zone *zone)
-> > +{
-> > +	unsigned long sum = 0;
-> > +	int cpu;
-> > +
-> > +	for_each_online_cpu(cpu)
-> > +		sum += per_cpu_ptr(zone->per_cpu_pageset, cpu)->count;
-> > +	return sum;
-> > +}
-> > +
-> > +static unsigned long nr_free_pcplist_pages(void)
-> > +{
-> > +	unsigned long sum = 0;
-> > +	struct zone *zone;
-> > +
-> > +	for_each_zone(zone)
-> > +		sum += nr_free_zone_pcplist_pages(zone);
-> > +	return sum;
-> > +}
-> 
-> Prevention of races against zone/node hotplug?
-
-Memory hotplug doesn't remove nodes nor its zones.
-
--- 
-Michal Hocko
-SUSE Labs
+Regards,
+Christophe Kerello.
