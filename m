@@ -2,76 +2,106 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 633CEC32772
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 13:42:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A8CCEC32772
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 13:42:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241388AbiHWNma (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 09:42:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59378 "EHLO
+        id S241683AbiHWNmk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 23 Aug 2022 09:42:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59890 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241252AbiHWNmI (ORCPT
+        with ESMTP id S241684AbiHWNmN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 09:42:08 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8786E171FB1
-        for <linux-kernel@vger.kernel.org>; Tue, 23 Aug 2022 03:46:39 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 03BF26151E
-        for <linux-kernel@vger.kernel.org>; Tue, 23 Aug 2022 10:45:30 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B4D3AC433C1;
-        Tue, 23 Aug 2022 10:45:28 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661251529;
-        bh=WTOXHVgyyQjMUt941kPahRztf3QGl+pFnO2JvMlKtNk=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=VJc9M1AidWuN5injMt3nhYTx7JswGArYsG27kWO4dMJSuLqhoxweFb9+R8trpJ4BL
-         Hh0PQzAeguFfu7wccseOKUnmVNFHLgDy6LikhTlIR86QFSnD9tpx8G8XXntjdGiGbu
-         /ME+gbRKztbisTVQg8k6pyYk2u4IdvZuSFRy7Wcg=
-Date:   Tue, 23 Aug 2022 12:45:26 +0200
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     Christian Brauner <brauner@kernel.org>
-Cc:     Todd Kjos <tkjos@android.com>, linux-kernel@vger.kernel.org,
-        Al Viro <viro@zeniv.linux.org.uk>,
-        Arve =?iso-8859-1?B?SGr4bm5lduVn?= <arve@android.com>,
-        Martijn Coenen <maco@android.com>,
-        Joel Fernandes <joel@joelfernandes.org>,
-        Carlos Llamas <cmllamas@google.com>,
-        Suren Baghdasaryan <surenb@google.com>,
-        Kees Cook <keescook@chromium.org>,
-        Dongliang Mu <mudongliangabcd@gmail.com>,
-        syzkaller <syzkaller@googlegroups.com>
-Subject: Re: [PATCH v2] binderfs: rework superblock destruction
-Message-ID: <YwSvxrA6efdt9Gix@kroah.com>
-References: <20220823095339.853371-1-brauner@kernel.org>
+        Tue, 23 Aug 2022 09:42:13 -0400
+Received: from mail-ej1-x634.google.com (mail-ej1-x634.google.com [IPv6:2a00:1450:4864:20::634])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2B7F61F7608
+        for <linux-kernel@vger.kernel.org>; Tue, 23 Aug 2022 03:46:50 -0700 (PDT)
+Received: by mail-ej1-x634.google.com with SMTP id bj12so9541105ejb.13
+        for <linux-kernel@vger.kernel.org>; Tue, 23 Aug 2022 03:46:50 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc;
+        bh=mubN9uvQYvqaelFvUGOLV/uSSqf/r8cU2dBz7KX7Wps=;
+        b=qFWY6NjWAV4o1T6Z/bUOiafOxEuFlqlAGXySAToBX9Mbxmug4DHCSs6f8pPo1YwUhb
+         MoNPByYuW156Ep3vctvZSpFDsu9WD+QLm1N93ALxqCj5Yjzp63bzUVUIXiOzJcC84mB6
+         4jEJHDZ8hYbHIIuPWzsEGKkyAK/PAD8D3c4A1aZ/eyzzwDxrtIyW+ghmZLD2RUu+oD4t
+         18TZ9J6KuRs0Xkv/mjFArnK/ChQOTiElidjXtyJq6m5plbIWx95S0RjeXGoWspnGt39R
+         PWntb1oLjpgkbrxoOIiGOPlqc8v7bcYckU0za5HedCvk3oO0LTPB16jrKd5yykDxbj37
+         kZOA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc;
+        bh=mubN9uvQYvqaelFvUGOLV/uSSqf/r8cU2dBz7KX7Wps=;
+        b=c6tThcW6FOnHKYi7yZEOpj3nFxTGMbq1rhIbpQ64tDXdHBWX/MkkQ3+/LS3EGZn0R0
+         1PP67hBnBCI+Z8kyH1Qxbh+LH4sIqpHZ41caPDXC6wMAOGV0wyCu3NYrICTX5sl5oJ+6
+         N1wKCxXZLBVSYqUKmPo+apKERXNLwlN+pq9H8WJ+jIPUT7Q+BF+l68xGHzgIG2+vfF/R
+         52PG3lmav22b+rSS9wpjurV5hB0i+0kopmNyMMqcJS60fH9XKtNDoVrVYCkzh+zMEoTi
+         RsBxdDFuRmQsPGHSV9pz5zj2jPelP6XXoFyzXF9ie92JHIzShNjFZlobNiOD13m0iIP7
+         hwiA==
+X-Gm-Message-State: ACgBeo1XnICNI+0Zdk2G+nIx10MvyuF9cxzU+cL3PTacrNvBa6kJg3im
+        UTPdG98WYAn8QtQ8N8TV0GbT4SfxjjAjwMdn
+X-Google-Smtp-Source: AA6agR48VHsnB0Zwbx/ckxFpRxJam2Py1a7/AX9eB8O2ot2NL9+QtniRGSAw498OpIqHMw/Tim8aGQ==
+X-Received: by 2002:a2e:5cd:0:b0:261:a774:36d0 with SMTP id 196-20020a2e05cd000000b00261a77436d0mr7050422ljf.312.1661250811356;
+        Tue, 23 Aug 2022 03:33:31 -0700 (PDT)
+Received: from [192.168.0.11] (89-27-92-210.bb.dnainternet.fi. [89.27.92.210])
+        by smtp.gmail.com with ESMTPSA id n26-20020a05651203fa00b00492e6642937sm900014lfq.200.2022.08.23.03.33.30
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 23 Aug 2022 03:33:30 -0700 (PDT)
+Message-ID: <145e872c-e7fc-a1f9-edb2-fad507d84018@linaro.org>
+Date:   Tue, 23 Aug 2022 13:33:29 +0300
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220823095339.853371-1-brauner@kernel.org>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.12.0
+Subject: Re: [PATCHv2 resend] dt-bindings: leds: Expand LED_COLOR_ID
+ definitions
+Content-Language: en-US
+To:     Olliver Schinagl <oliver@schinagl.nl>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>
+Cc:     Jacek Anaszewski <jacek.anaszewski@gmail.com>,
+        Baolin Wang <baolin.wang@linaro.org>,
+        Daniel Mack <daniel@zonque.org>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Oleh Kravchenko <oleg@kaa.org.ua>,
+        Sakari Ailus <sakari.ailus@linux.intel.com>,
+        Simon Shields <simon@lineageos.org>,
+        Olliver Schinagl <oliver+list@schinagl.nl>,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <20220819152904.433514-1-oliver@schinagl.nl>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+In-Reply-To: <20220819152904.433514-1-oliver@schinagl.nl>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Aug 23, 2022 at 11:53:39AM +0200, Christian Brauner wrote:
-> From: Al Viro <viro@zeniv.linux.org.uk>
+On 19/08/2022 18:29, Olliver Schinagl wrote:
+> In commit 853a78a7d6c7 (dt-bindings: leds: Add LED_COLOR_ID definitions,
+> Sun Jun 9 20:19:04 2019 +0200) the most basic color definitions where
+> added. However, there's a little more very common LED colors.
 > 
-> So far we relied on
-> .put_super = binderfs_put_super()
-> to destroy info we stashed in sb->s_fs_info. This gave us the required ordering
-> between ->evict_inode() and sb->s_fs_info destruction.
+> While the documentation states 'add what is missing', engineers tend to
+> be lazy and will just use what currently exists. So this patch will take
+> (a) list from online retailers [0], [1], [2] and use the common LED colors
+> from there, this being reasonable as this is what is currently available to
+> purchase.
 > 
-> But the current implementation of binderfs_fill_super() has a memory leak in
-> the rare circumstance that d_make_root() fails because ->put_super() is only
-> called when sb->s_root is initialized. Fix this by removing ->put_super() and
-> simply do all that work in binderfs_kill_super().
+> Note, that LIME seems to be the modern take to 'Yellow-green' or
+> 'Yellowish-green' from some older datasheets.
 > 
-> Reported-by: Dongliang Mu <mudongliangabcd@gmail.com>
-> Signed-off-by: Al Viro <viro@zeniv.linux.org.uk>
-> Signed-off-by: Christian Brauner (Microsoft) <brauner@kernel.org>
-> ---
->  drivers/android/binderfs.c | 30 +++++++++++++++++-------------
->  1 file changed, 17 insertions(+), 13 deletions(-)
+> [0]: https://www.digikey.com/en/products/filter/led-lighting-color/125
+> [1]: https://eu.mouser.com/c/optoelectronics/led-lighting/led-emitters/standard-leds-smd
+> [2]: https://nl.farnell.com/en-NL/c/optoelectronics-displays/led-products/standard-single-colour-leds-under-75ma
+> 
+> Signed-off-by: Olliver Schinagl <oliver@schinagl.nl>
 
-What changed from v1?
 
+Acked-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+
+
+Best regards,
+Krzysztof
