@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 94DE7C32792
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 12:07:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9AAB4C32772
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 12:07:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351974AbiHWMHr (ORCPT
+        id S1359359AbiHWMHw (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 08:07:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59204 "EHLO
+        Tue, 23 Aug 2022 08:07:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59308 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1359289AbiHWMDg (ORCPT
+        with ESMTP id S1359309AbiHWMDi (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 08:03:36 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4D34FDD756;
-        Tue, 23 Aug 2022 02:37:10 -0700 (PDT)
+        Tue, 23 Aug 2022 08:03:38 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9F144DD777;
+        Tue, 23 Aug 2022 02:37:12 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id E5DCF61389;
-        Tue, 23 Aug 2022 09:37:09 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id F2D6EC433D6;
-        Tue, 23 Aug 2022 09:37:08 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id AE8BEB81C99;
+        Tue, 23 Aug 2022 09:36:45 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1D26EC4314E;
+        Tue, 23 Aug 2022 09:36:43 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661247429;
-        bh=Da3VX1ansjmk8r5ZZzofsjUfgE11Ot+/ZhI1/uTkoJo=;
+        s=korg; t=1661247404;
+        bh=d3Ob9abDiTAfOZ3qvqCRvYikEzulRXNDwrhM6Vtjwqs=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=nko5iZ74D2IAEKY1YnWR8R4q7TaponPsQoejH1RhlI5jEZj0BPqYfWAYnfUhRWM6E
-         qK3DdeFyE8vZtI9R+LYZ2nSH2fDPkS9oKjXp445Stm6ZfJjGMATacEvZyUYWcNSk3R
-         mlXFBpA7hRYHxQ+OYr0JBz2uvo53sN417NhLFHqs=
+        b=pcHWFhbpyGdqgdHpVoBahY5iSFHU6CwfzfRdPg65bs9CZoMW1dFLgL3Fc0/3r0uL5
+         QqNn52hrOGiFQGk3URka1PcZ6EFXNn8c8nBBuM6mO8Xn2bj3dO4ZzOJ7is9v/ITFZr
+         IvrG8CZ8dFIXgjjtXLG9TtETuvwAZ5gV3adyRbEo=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        =?UTF-8?q?Sebastian=20W=C3=BCrl?= <sebastian.wuerl@ororatech.com>,
-        Marc Kleine-Budde <mkl@pengutronix.de>
-Subject: [PATCH 5.10 032/158] can: mcp251x: Fix race condition on receive interrupt
-Date:   Tue, 23 Aug 2022 10:26:04 +0200
-Message-Id: <20220823080047.376758021@linuxfoundation.org>
+        stable@vger.kernel.org, Zhang Xianwei <zhang.xianwei8@zte.com.cn>,
+        Yi Wang <wang.yi59@zte.com.cn>,
+        Trond Myklebust <trond.myklebust@hammerspace.com>
+Subject: [PATCH 5.10 025/158] NFSv4.1: RECLAIM_COMPLETE must handle EACCES
+Date:   Tue, 23 Aug 2022 10:25:57 +0200
+Message-Id: <20220823080047.105148997@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220823080046.056825146@linuxfoundation.org>
 References: <20220823080046.056825146@linuxfoundation.org>
@@ -50,85 +50,38 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Sebastian Würl <sebastian.wuerl@ororatech.com>
+From: Zhang Xianwei <zhang.xianwei8@zte.com.cn>
 
-commit d80d60b0db6ff3dd2e29247cc2a5166d7e9ae37e upstream.
+commit e35a5e782f67ed76a65ad0f23a484444a95f000f upstream.
 
-The mcp251x driver uses both receiving mailboxes of the CAN controller
-chips. For retrieving the CAN frames from the controller via SPI, it checks
-once per interrupt which mailboxes have been filled and will retrieve the
-messages accordingly.
+A client should be able to handle getting an EACCES error while doing
+a mount operation to reclaim state due to NFS4CLNT_RECLAIM_REBOOT
+being set. If the server returns RPC_AUTH_BADCRED because authentication
+failed when we execute "exportfs -au", then RECLAIM_COMPLETE will go a
+wrong way. After mount succeeds, all OPEN call will fail due to an
+NFS4ERR_GRACE error being returned. This patch is to fix it by resending
+a RPC request.
 
-This introduces a race condition, as another CAN frame can enter mailbox 1
-while mailbox 0 is emptied. If now another CAN frame enters mailbox 0 until
-the interrupt handler is called next, mailbox 0 is emptied before
-mailbox 1, leading to out-of-order CAN frames in the network device.
-
-This is fixed by checking the interrupt flags once again after freeing
-mailbox 0, to correctly also empty mailbox 1 before leaving the handler.
-
-For reproducing the bug I created the following setup:
- - Two CAN devices, one Raspberry Pi with MCP2515, the other can be any.
- - Setup CAN to 1 MHz
- - Spam bursts of 5 CAN-messages with increasing CAN-ids
- - Continue sending the bursts while sleeping a second between the bursts
- - Check on the RPi whether the received messages have increasing CAN-ids
- - Without this patch, every burst of messages will contain a flipped pair
-
-v3: https://lore.kernel.org/all/20220804075914.67569-1-sebastian.wuerl@ororatech.com
-v2: https://lore.kernel.org/all/20220804064803.63157-1-sebastian.wuerl@ororatech.com
-v1: https://lore.kernel.org/all/20220803153300.58732-1-sebastian.wuerl@ororatech.com
-
-Fixes: bf66f3736a94 ("can: mcp251x: Move to threaded interrupts instead of workqueues.")
-Signed-off-by: Sebastian Würl <sebastian.wuerl@ororatech.com>
-Link: https://lore.kernel.org/all/20220804081411.68567-1-sebastian.wuerl@ororatech.com
-[mkl: reduce scope of intf1, eflag1]
-Signed-off-by: Marc Kleine-Budde <mkl@pengutronix.de>
+Signed-off-by: Zhang Xianwei <zhang.xianwei8@zte.com.cn>
+Signed-off-by: Yi Wang <wang.yi59@zte.com.cn>
+Fixes: aa5190d0ed7d ("NFSv4: Kill nfs4_async_handle_error() abuses by NFSv4.1")
+Signed-off-by: Trond Myklebust <trond.myklebust@hammerspace.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/net/can/spi/mcp251x.c |   18 +++++++++++++++---
- 1 file changed, 15 insertions(+), 3 deletions(-)
+ fs/nfs/nfs4proc.c |    3 +++
+ 1 file changed, 3 insertions(+)
 
---- a/drivers/net/can/spi/mcp251x.c
-+++ b/drivers/net/can/spi/mcp251x.c
-@@ -1074,9 +1074,6 @@ static irqreturn_t mcp251x_can_ist(int i
- 
- 		mcp251x_read_2regs(spi, CANINTF, &intf, &eflag);
- 
--		/* mask out flags we don't care about */
--		intf &= CANINTF_RX | CANINTF_TX | CANINTF_ERR;
--
- 		/* receive buffer 0 */
- 		if (intf & CANINTF_RX0IF) {
- 			mcp251x_hw_rx(spi, 0);
-@@ -1086,6 +1083,18 @@ static irqreturn_t mcp251x_can_ist(int i
- 			if (mcp251x_is_2510(spi))
- 				mcp251x_write_bits(spi, CANINTF,
- 						   CANINTF_RX0IF, 0x00);
-+
-+			/* check if buffer 1 is already known to be full, no need to re-read */
-+			if (!(intf & CANINTF_RX1IF)) {
-+				u8 intf1, eflag1;
-+
-+				/* intf needs to be read again to avoid a race condition */
-+				mcp251x_read_2regs(spi, CANINTF, &intf1, &eflag1);
-+
-+				/* combine flags from both operations for error handling */
-+				intf |= intf1;
-+				eflag |= eflag1;
-+			}
- 		}
- 
- 		/* receive buffer 1 */
-@@ -1096,6 +1105,9 @@ static irqreturn_t mcp251x_can_ist(int i
- 				clear_intf |= CANINTF_RX1IF;
- 		}
- 
-+		/* mask out flags we don't care about */
-+		intf &= CANINTF_RX | CANINTF_TX | CANINTF_ERR;
-+
- 		/* any error or tx interrupt we need to clear? */
- 		if (intf & (CANINTF_ERR | CANINTF_TX))
- 			clear_intf |= intf & (CANINTF_ERR | CANINTF_TX);
+--- a/fs/nfs/nfs4proc.c
++++ b/fs/nfs/nfs4proc.c
+@@ -9273,6 +9273,9 @@ static int nfs41_reclaim_complete_handle
+ 		rpc_delay(task, NFS4_POLL_RETRY_MAX);
+ 		fallthrough;
+ 	case -NFS4ERR_RETRY_UNCACHED_REP:
++	case -EACCES:
++		dprintk("%s: failed to reclaim complete error %d for server %s, retrying\n",
++			__func__, task->tk_status, clp->cl_hostname);
+ 		return -EAGAIN;
+ 	case -NFS4ERR_BADSESSION:
+ 	case -NFS4ERR_DEADSESSION:
 
 
