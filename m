@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B640BC38147
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C7490C3814E
 	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 10:47:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356093AbiHWKq2 (ORCPT
+        id S1356121AbiHWKqd (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 06:46:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51140 "EHLO
+        Tue, 23 Aug 2022 06:46:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52752 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355553AbiHWKjN (ORCPT
+        with ESMTP id S1355200AbiHWKkC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 06:39:13 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2C334A7221;
-        Tue, 23 Aug 2022 02:07:59 -0700 (PDT)
+        Tue, 23 Aug 2022 06:40:02 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EE689A723B;
+        Tue, 23 Aug 2022 02:08:03 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id BE1FC6159A;
-        Tue, 23 Aug 2022 09:07:58 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C4304C433C1;
-        Tue, 23 Aug 2022 09:07:57 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 7327FB81C4E;
+        Tue, 23 Aug 2022 09:08:02 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C0B7BC433C1;
+        Tue, 23 Aug 2022 09:08:00 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661245678;
-        bh=RUCb4Wufwc6kH8giP5LlkCfjdRcwlVShfA9Qcx7N+xk=;
+        s=korg; t=1661245681;
+        bh=8oectIyZt6VRJD/c0vemqJWQCt3u+kU50lQPATG608M=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=XxKKaeNzWpKx/XaqopOSBEZN1u/tJFGByi3yfiwJaAnj6PntXYjJjKbw07KDd3EAI
-         9/B8yAIdCrwV+Jr4uqch024GmihVJAzVSa+VeBA6NWJ59yUcO+71nkyazPiay3fjVs
-         FCUYbhBa7k/QE4whNUUMlfTNzuIarq5L7Dy1j52A=
+        b=gttL7T/jly3XWt+Qf0z0zDMzprTDmEPwc1GLMYrMcb07KyeK2Dikhhz6LHKPet2P8
+         Xiua3sjsg9wB5s905arL6N8FP/fnkWH9V5SkfRFSXu5VlWspMNMCOIBVY2dEiZhgPJ
+         Hjk3/9ntOT7egLL/llkI6M+H7Rdv5cBwPbuUh5UY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Sireesh Kodali <sireeshkodali1@gmail.com>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        stable@vger.kernel.org, Eric Farman <farman@linux.ibm.com>,
+        Matthew Rosato <mjrosato@linux.ibm.com>,
+        Alex Williamson <alex.williamson@redhat.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.19 155/287] remoteproc: qcom: wcnss: Fix handling of IRQs
-Date:   Tue, 23 Aug 2022 10:25:24 +0200
-Message-Id: <20220823080105.861982236@linuxfoundation.org>
+Subject: [PATCH 4.19 156/287] vfio/ccw: Do not change FSM state in subchannel event
+Date:   Tue, 23 Aug 2022 10:25:25 +0200
+Message-Id: <20220823080105.905442984@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220823080100.268827165@linuxfoundation.org>
 References: <20220823080100.268827165@linuxfoundation.org>
@@ -50,58 +51,59 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Sireesh Kodali <sireeshkodali1@gmail.com>
+From: Eric Farman <farman@linux.ibm.com>
 
-[ Upstream commit bed0adac1ded4cb486ba19a3a7e730fbd9a1c9c6 ]
+[ Upstream commit cffcc109fd682075dee79bade3d60a07152a8fd1 ]
 
-The wcnss_get_irq function is expected to return a value > 0 in the
-event that an IRQ is succssfully obtained, but it instead returns 0.
-This causes the stop and ready IRQs to never actually be used despite
-being defined in the device-tree. This patch fixes that.
+The routine vfio_ccw_sch_event() is tasked with handling subchannel events,
+specifically machine checks, on behalf of vfio-ccw. It correctly calls
+cio_update_schib(), and if that fails (meaning the subchannel is gone)
+it makes an FSM event call to mark the subchannel Not Operational.
 
-Fixes: aed361adca9f ("remoteproc: qcom: Introduce WCNSS peripheral image loader")
-Signed-off-by: Sireesh Kodali <sireeshkodali1@gmail.com>
-Signed-off-by: Bjorn Andersson <bjorn.andersson@linaro.org>
-Link: https://lore.kernel.org/r/20220526141740.15834-2-sireeshkodali1@gmail.com
+If that worked, however, then it decides that if the FSM state was already
+Not Operational (implying the subchannel just came back), then it should
+simply change the FSM to partially- or fully-open.
+
+Remove this trickery, since a subchannel returning will require more
+probing than simply "oh all is well again" to ensure it works correctly.
+
+Fixes: bbe37e4cb8970 ("vfio: ccw: introduce a finite state machine")
+Signed-off-by: Eric Farman <farman@linux.ibm.com>
+Reviewed-by: Matthew Rosato <mjrosato@linux.ibm.com>
+Link: https://lore.kernel.org/r/20220707135737.720765-4-farman@linux.ibm.com
+Signed-off-by: Alex Williamson <alex.williamson@redhat.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/remoteproc/qcom_wcnss.c | 10 ++++++++--
- 1 file changed, 8 insertions(+), 2 deletions(-)
+ drivers/s390/cio/vfio_ccw_drv.c | 14 +++-----------
+ 1 file changed, 3 insertions(+), 11 deletions(-)
 
-diff --git a/drivers/remoteproc/qcom_wcnss.c b/drivers/remoteproc/qcom_wcnss.c
-index 6cc0f9a5533e..63726d8fb332 100644
---- a/drivers/remoteproc/qcom_wcnss.c
-+++ b/drivers/remoteproc/qcom_wcnss.c
-@@ -415,6 +415,7 @@ static int wcnss_request_irq(struct qcom_wcnss *wcnss,
- 			     irq_handler_t thread_fn)
- {
- 	int ret;
-+	int irq_number;
+diff --git a/drivers/s390/cio/vfio_ccw_drv.c b/drivers/s390/cio/vfio_ccw_drv.c
+index 7a06cdff6572..862b0eb0fe6d 100644
+--- a/drivers/s390/cio/vfio_ccw_drv.c
++++ b/drivers/s390/cio/vfio_ccw_drv.c
+@@ -205,19 +205,11 @@ static int vfio_ccw_sch_event(struct subchannel *sch, int process)
+ 	if (work_pending(&sch->todo_work))
+ 		goto out_unlock;
  
- 	ret = platform_get_irq_byname(pdev, name);
- 	if (ret < 0 && optional) {
-@@ -425,14 +426,19 @@ static int wcnss_request_irq(struct qcom_wcnss *wcnss,
- 		return ret;
- 	}
+-	if (cio_update_schib(sch)) {
+-		vfio_ccw_fsm_event(private, VFIO_CCW_EVENT_NOT_OPER);
+-		rc = 0;
+-		goto out_unlock;
+-	}
+-
+-	private = dev_get_drvdata(&sch->dev);
+-	if (private->state == VFIO_CCW_STATE_NOT_OPER) {
+-		private->state = private->mdev ? VFIO_CCW_STATE_IDLE :
+-				 VFIO_CCW_STATE_STANDBY;
+-	}
+ 	rc = 0;
  
-+	irq_number = ret;
++	if (cio_update_schib(sch))
++		vfio_ccw_fsm_event(private, VFIO_CCW_EVENT_NOT_OPER);
 +
- 	ret = devm_request_threaded_irq(&pdev->dev, ret,
- 					NULL, thread_fn,
- 					IRQF_TRIGGER_RISING | IRQF_ONESHOT,
- 					"wcnss", wcnss);
--	if (ret)
-+	if (ret) {
- 		dev_err(&pdev->dev, "request %s IRQ failed\n", name);
-+		return ret;
-+	}
+ out_unlock:
+ 	spin_unlock_irqrestore(sch->lock, flags);
  
--	return ret;
-+	/* Return the IRQ number if the IRQ was successfully acquired */
-+	return irq_number;
- }
- 
- static int wcnss_alloc_memory_region(struct qcom_wcnss *wcnss)
 -- 
 2.35.1
 
