@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9A2A8C32772
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 09:32:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 664C1C32772
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 09:32:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350683AbiHWJce (ORCPT
+        id S1350704AbiHWJch (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 05:32:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53302 "EHLO
+        Tue, 23 Aug 2022 05:32:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38530 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350932AbiHWJbC (ORCPT
+        with ESMTP id S1350940AbiHWJbD (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 05:31:02 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7A443923FB;
-        Tue, 23 Aug 2022 01:38:06 -0700 (PDT)
+        Tue, 23 Aug 2022 05:31:03 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C57DE77562;
+        Tue, 23 Aug 2022 01:38:07 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 06727614E9;
-        Tue, 23 Aug 2022 08:36:51 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0B3FDC433C1;
-        Tue, 23 Aug 2022 08:36:49 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id A41CD61541;
+        Tue, 23 Aug 2022 08:37:18 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id AA383C433D6;
+        Tue, 23 Aug 2022 08:37:17 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661243810;
-        bh=sAdOeYBAPi9CerLXn7XWAIKEmLZgLjt+4p7AzfjIoMk=;
+        s=korg; t=1661243838;
+        bh=kAAceLf1VywHIek44vBXTfsB0yb0I7oJ0SqPKKlSA08=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Q5dUJ/SwQCcvuDq0GWdJohR461JN/SvMld572MgP4VKfct5aapXYXLTWl9nQHYJtI
-         ks6BxHynsSNILUzLxSV1CJ0fFSQcKOCBvJZ8hRlDcxJvpwCQWTEtEyGvY3XCr7/Bhn
-         5tkkOCtdKHclG4wR1SS4RdSjKbqXsp3DDJ114VUI=
+        b=RWwB4xcbtC1S/Yj+gjW+9s+5voP1G8LgzaYUC5VESlgjxINngAXaB6toxf0VaVeHF
+         gWHPezaxsLMGJEwEMzDN/UQr25cc2we582JCrJuy6L6Kw4ydAYLdIDAm5sVFj+ieiK
+         c8gtPkEPEI8vs100TYLoz57YuP4bh5dza3noePeQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Leo Li <sunpeng.li@amd.com>,
-        Alex Deucher <alexander.deucher@amd.com>,
-        =?UTF-8?q?Christian=20K=C3=B6nig?= <christian.koenig@amd.com>
-Subject: [PATCH 4.14 028/229] drm/amdgpu: Check BOs requested pinning domains against its preferred_domains
-Date:   Tue, 23 Aug 2022 10:23:09 +0200
-Message-Id: <20220823080054.483979397@linuxfoundation.org>
+        stable@vger.kernel.org, Werner Sembach <wse@tuxedocomputers.com>,
+        Hans de Goede <hdegoede@redhat.com>,
+        "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>
+Subject: [PATCH 4.14 010/229] ACPI: video: Force backlight native for some TongFang devices
+Date:   Tue, 23 Aug 2022 10:22:51 +0200
+Message-Id: <20220823080053.733076151@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220823080053.202747790@linuxfoundation.org>
 References: <20220823080053.202747790@linuxfoundation.org>
@@ -50,46 +50,90 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Leo Li <sunpeng.li@amd.com>
+From: Werner Sembach <wse@tuxedocomputers.com>
 
-commit f5ba14043621f4afdf3ad5f92ee2d8dbebbe4340 upstream.
+commit c752089f7cf5b5800c6ace4cdd1a8351ee78a598 upstream.
 
-When pinning a buffer, we should check to see if there are any
-additional restrictions imposed by bo->preferred_domains. This will
-prevent the BO from being moved to an invalid domain when pinning.
+The TongFang PF5PU1G, PF4NU1F, PF5NU1G, and PF5LUXG/TUXEDO BA15 Gen10,
+Pulse 14/15 Gen1, and Pulse 15 Gen2 have the same problem as the Clevo
+NL5xRU and NL5xNU/TUXEDO Aura 15 Gen1 and Gen2:
+They have a working native and video interface. However the default
+detection mechanism first registers the video interface before
+unregistering it again and switching to the native interface during boot.
+This results in a dangling SBIOS request for backlight change for some
+reason, causing the backlight to switch to ~2% once per boot on the first
+power cord connect or disconnect event. Setting the native interface
+explicitly circumvents this buggy behaviour by avoiding the unregistering
+process.
 
-For example, this can happen if the user requests to create a BO in GTT
-domain for display scanout. amdgpu_dm will allow pinning to either VRAM
-or GTT domains, since DCN can scanout from either or. However, in
-amdgpu_bo_pin_restricted(), pinning to VRAM is preferred if there is
-adequate carveout. This can lead to pinning to VRAM despite the user
-requesting GTT placement for the BO.
-
-v2: Allow the kernel to override the domain, which can happen when
-    exporting a BO to a V4L camera (for example).
-
-Signed-off-by: Leo Li <sunpeng.li@amd.com>
-Reviewed-by: Alex Deucher <alexander.deucher@amd.com>
-Reviewed-by: Christian König <christian.koenig@amd.com>
-Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
-Cc: stable@vger.kernel.org
+Signed-off-by: Werner Sembach <wse@tuxedocomputers.com>
+Cc: All applicable <stable@vger.kernel.org>
+Reviewed-by: Hans de Goede <hdegoede@redhat.com>
+Signed-off-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/gpu/drm/amd/amdgpu/amdgpu_object.c |    4 ++++
- 1 file changed, 4 insertions(+)
+ drivers/acpi/video_detect.c |   51 +++++++++++++++++++++++++++++++++++++++++++-
+ 1 file changed, 50 insertions(+), 1 deletion(-)
 
---- a/drivers/gpu/drm/amd/amdgpu/amdgpu_object.c
-+++ b/drivers/gpu/drm/amd/amdgpu/amdgpu_object.c
-@@ -682,6 +682,10 @@ int amdgpu_bo_pin_restricted(struct amdg
- 	if (WARN_ON_ONCE(min_offset > max_offset))
- 		return -EINVAL;
- 
-+	/* Check domain to be pinned to against preferred domains */
-+	if (bo->preferred_domains & domain)
-+		domain = bo->preferred_domains & domain;
-+
- 	/* A shared bo cannot be migrated to VRAM */
- 	if (bo->prime_shared_count) {
- 		if (domain & AMDGPU_GEM_DOMAIN_GTT)
+--- a/drivers/acpi/video_detect.c
++++ b/drivers/acpi/video_detect.c
+@@ -431,7 +431,56 @@ static const struct dmi_system_id video_
+ 		DMI_MATCH(DMI_BOARD_NAME, "NL5xNU"),
+ 		},
+ 	},
+-
++	/*
++	 * The TongFang PF5PU1G, PF4NU1F, PF5NU1G, and PF5LUXG/TUXEDO BA15 Gen10,
++	 * Pulse 14/15 Gen1, and Pulse 15 Gen2 have the same problem as the Clevo
++	 * NL5xRU and NL5xNU/TUXEDO Aura 15 Gen1 and Gen2. See the description
++	 * above.
++	 */
++	{
++	.callback = video_detect_force_native,
++	.ident = "TongFang PF5PU1G",
++	.matches = {
++		DMI_MATCH(DMI_BOARD_NAME, "PF5PU1G"),
++		},
++	},
++	{
++	.callback = video_detect_force_native,
++	.ident = "TongFang PF4NU1F",
++	.matches = {
++		DMI_MATCH(DMI_BOARD_NAME, "PF4NU1F"),
++		},
++	},
++	{
++	.callback = video_detect_force_native,
++	.ident = "TongFang PF4NU1F",
++	.matches = {
++		DMI_MATCH(DMI_SYS_VENDOR, "TUXEDO"),
++		DMI_MATCH(DMI_BOARD_NAME, "PULSE1401"),
++		},
++	},
++	{
++	.callback = video_detect_force_native,
++	.ident = "TongFang PF5NU1G",
++	.matches = {
++		DMI_MATCH(DMI_BOARD_NAME, "PF5NU1G"),
++		},
++	},
++	{
++	.callback = video_detect_force_native,
++	.ident = "TongFang PF5NU1G",
++	.matches = {
++		DMI_MATCH(DMI_SYS_VENDOR, "TUXEDO"),
++		DMI_MATCH(DMI_BOARD_NAME, "PULSE1501"),
++		},
++	},
++	{
++	.callback = video_detect_force_native,
++	.ident = "TongFang PF5LUXG",
++	.matches = {
++		DMI_MATCH(DMI_BOARD_NAME, "PF5LUXG"),
++		},
++	},
+ 	/*
+ 	 * Desktops which falsely report a backlight and which our heuristics
+ 	 * for this do not catch.
 
 
