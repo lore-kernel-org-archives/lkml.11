@@ -2,45 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 88687C32772
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 10:07:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BFCBAC32772
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 10:08:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352517AbiHWKHt (ORCPT
+        id S1352531AbiHWKH7 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 06:07:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44338 "EHLO
+        Tue, 23 Aug 2022 06:07:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46246 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352443AbiHWKBy (ORCPT
+        with ESMTP id S1352435AbiHWKBy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 23 Aug 2022 06:01:54 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 91E417C1A1;
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7D9786B640;
         Tue, 23 Aug 2022 01:49:43 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id A1639B81C67;
-        Tue, 23 Aug 2022 08:39:22 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D838CC433C1;
-        Tue, 23 Aug 2022 08:39:20 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 5DE4FB81C1C;
+        Tue, 23 Aug 2022 08:35:28 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C1DDFC433D7;
+        Tue, 23 Aug 2022 08:35:26 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661243961;
-        bh=b5WWhPm4tN/qjLDw8OdQq86f6/et3lf3Vl+6V9cC7do=;
+        s=korg; t=1661243727;
+        bh=feQFNZ1S7BhDIdTLYLh+/Cpkv2mdA7IxHtZ5KdwUEPg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=wpUbZmK/86AM36yZQwWdagXFTMpxbRqHHYejbPFztj5rMAJSfijxk9KXgkjRpKulQ
-         2l6iNyImSvBCV8BeWvi8lPTPYeOfG44N242ew13zun77V+fRxTStNF2tEp/XgXonBf
-         Mvfxo0ILT+GLEvHqGVJ3lkwGGUgF3DM9wuNO+67Q=
+        b=FwF//Reg6Tc+JIlUe/l7o7kNtaA9i8I7v09dyiStBEhSkr//TfIqe9OsXBq2a9skO
+         FDlT4EkIHt1ZL/dKcm34Sq3kNVzDaOCvuphK2UY+V81nnVloZjnclQjDq6GYNXxo7z
+         nRSzrAU0qUN/fwgkpJ89FtZOfGHWm+isZoHz+a3A=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Xu Wang <vulab@iscas.ac.cn>,
-        Wolfram Sang <wsa@kernel.org>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.14 062/229] i2c: Fix a potential use after free
-Date:   Tue, 23 Aug 2022 10:23:43 +0200
-Message-Id: <20220823080055.953083003@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Kai-Heng Feng <kai.heng.feng@canonical.com>,
+        Lucas Tanure <tanureal@opensource.cirrus.com>,
+        Takashi Iwai <tiwai@suse.de>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.19 338/365] ALSA: hda/realtek: Enable speaker and mute LEDs for HP laptops
+Date:   Tue, 23 Aug 2022 10:03:59 +0200
+Message-Id: <20220823080132.356410307@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220823080053.202747790@linuxfoundation.org>
-References: <20220823080053.202747790@linuxfoundation.org>
+In-Reply-To: <20220823080118.128342613@linuxfoundation.org>
+References: <20220823080118.128342613@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -49,38 +51,39 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Xu Wang <vulab@iscas.ac.cn>
+From: Kai-Heng Feng <kai.heng.feng@canonical.com>
 
-[ Upstream commit e4c72c06c367758a14f227c847f9d623f1994ecf ]
+[ Upstream commit c578d5da10dc429c6676ab09f3fec0b79b31633a ]
 
-Free the adap structure only after we are done using it.
-This patch just moves the put_device() down a bit to avoid the
-use after free.
+Two more HP laptops that use cs35l41 AMP for speaker and GPIO for mute
+LEDs.
 
-Fixes: 611e12ea0f12 ("i2c: core: manage i2c bus device refcount in i2c_[get|put]_adapter")
-Signed-off-by: Xu Wang <vulab@iscas.ac.cn>
-[wsa: added comment to the code, added Fixes tag]
-Signed-off-by: Wolfram Sang <wsa@kernel.org>
+So use the existing quirk to enable them accordingly.
+
+[ Sort the entries at the SSID order by tiwai ]
+
+Signed-off-by: Kai-Heng Feng <kai.heng.feng@canonical.com>
+Reviewed-by: Lucas Tanure <tanureal@opensource.cirrus.com>
+Link: https://lore.kernel.org/r/20220719142015.244426-1-kai.heng.feng@canonical.com
+Signed-off-by: Takashi Iwai <tiwai@suse.de>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/i2c/i2c-core-base.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ sound/pci/hda/patch_realtek.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
-diff --git a/drivers/i2c/i2c-core-base.c b/drivers/i2c/i2c-core-base.c
-index b7fe8075f2b8..c1fc49365189 100644
---- a/drivers/i2c/i2c-core-base.c
-+++ b/drivers/i2c/i2c-core-base.c
-@@ -2243,8 +2243,9 @@ void i2c_put_adapter(struct i2c_adapter *adap)
- 	if (!adap)
- 		return;
- 
--	put_device(&adap->dev);
- 	module_put(adap->owner);
-+	/* Should be last, otherwise we risk use-after-free with 'adap' */
-+	put_device(&adap->dev);
- }
- EXPORT_SYMBOL(i2c_put_adapter);
- 
+diff --git a/sound/pci/hda/patch_realtek.c b/sound/pci/hda/patch_realtek.c
+index 09d97a8afdda..1ae9674fa8a3 100644
+--- a/sound/pci/hda/patch_realtek.c
++++ b/sound/pci/hda/patch_realtek.c
+@@ -9234,6 +9234,8 @@ static const struct snd_pci_quirk alc269_fixup_tbl[] = {
+ 	SND_PCI_QUIRK(0x103c, 0x8aa3, "HP ProBook 450 G9 (MB 8AA1)", ALC236_FIXUP_HP_GPIO_LED),
+ 	SND_PCI_QUIRK(0x103c, 0x8aa8, "HP EliteBook 640 G9 (MB 8AA6)", ALC236_FIXUP_HP_GPIO_LED),
+ 	SND_PCI_QUIRK(0x103c, 0x8aab, "HP EliteBook 650 G9 (MB 8AA9)", ALC236_FIXUP_HP_GPIO_LED),
++	SND_PCI_QUIRK(0x103c, 0x8ad1, "HP EliteBook 840 14 inch G9 Notebook PC", ALC245_FIXUP_CS35L41_SPI_2_HP_GPIO_LED),
++	SND_PCI_QUIRK(0x103c, 0x8ad2, "HP EliteBook 860 16 inch G9 Notebook PC", ALC245_FIXUP_CS35L41_SPI_2_HP_GPIO_LED),
+ 	SND_PCI_QUIRK(0x1043, 0x103e, "ASUS X540SA", ALC256_FIXUP_ASUS_MIC),
+ 	SND_PCI_QUIRK(0x1043, 0x103f, "ASUS TX300", ALC282_FIXUP_ASUS_TX300),
+ 	SND_PCI_QUIRK(0x1043, 0x106d, "Asus K53BE", ALC269_FIXUP_LIMIT_INT_MIC_BOOST),
 -- 
 2.35.1
 
