@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 385F0C54F63
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 22D4CC54F45
 	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 10:53:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357040AbiHWKwy (ORCPT
+        id S1357002AbiHWKwv (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 06:52:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57486 "EHLO
+        Tue, 23 Aug 2022 06:52:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58426 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354595AbiHWKpD (ORCPT
+        with ESMTP id S1355860AbiHWKo7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 06:45:03 -0400
+        Tue, 23 Aug 2022 06:44:59 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1DABC6CD05;
-        Tue, 23 Aug 2022 02:10:58 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 832356CD0D;
+        Tue, 23 Aug 2022 02:10:52 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id C5C45B81C4E;
-        Tue, 23 Aug 2022 09:10:56 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 24129C433C1;
-        Tue, 23 Aug 2022 09:10:54 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 2DC22B81C63;
+        Tue, 23 Aug 2022 09:10:51 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 07A83C433C1;
+        Tue, 23 Aug 2022 09:10:48 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661245855;
-        bh=T+cjKnqP5c+d0j/ipL7rhJOCgCi5Mifx3c2EKwNwMCE=;
+        s=korg; t=1661245849;
+        bh=wTxpJY+B15fweHM9fBmoHGEdTlkxs3vXb9rtlhbnw7k=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=xqCNAfteGwzA9T1PNnX6AW00S/me6gJTTbZkoqkGmTC6mP6QOqJpd2HBJIfrMNUNB
-         EigsBFJChY9YgOb5xfi+vG8um7cmgpiJuVpdgmiv57BvynUWeZVviKm12wTZMr5pas
-         94TKcuXwi6wU1W8XkdqNInS9YMk4i5X6OoAxoRMI=
+        b=uu3U7LB94U5jj9wxbLi4ExC1mbXY2yk84S1r9m7Aqp/wzAbS89ckaWivwOxyrKa1Q
+         XF1yCAUXYzPhxSPnyyh0x1P1yUPCG4/0P5brgbAzeWuZdPE1J+E59+Y6YCfSRpcfkP
+         gu4BlUOLI8JTdp2J0S01Ag7CAz6GgtZrf/P7gpfM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
+To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Vitaly Kuznetsov <vkuznets@redhat.com>,
-        Paolo Bonzini <pbonzini@redhat.com>,
-        Stefan Ghinea <stefan.ghinea@windriver.com>
-Subject: [PATCH 4.19 204/287] KVM: x86: Check lapic_in_kernel() before attempting to set a SynIC irq
-Date:   Tue, 23 Aug 2022 10:26:13 +0200
-Message-Id: <20220823080107.757910945@linuxfoundation.org>
+        stable@vger.kernel.org, Zheyu Ma <zheyuma97@gmail.com>,
+        Helge Deller <deller@gmx.de>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 4.19 179/287] video: fbdev: arkfb: Fix a divide-by-zero bug in ark_set_pixclock()
+Date:   Tue, 23 Aug 2022 10:25:48 +0200
+Message-Id: <20220823080106.800250184@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220823080100.268827165@linuxfoundation.org>
 References: <20220823080100.268827165@linuxfoundation.org>
@@ -50,40 +49,59 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Vitaly Kuznetsov <vkuznets@redhat.com>
+From: Zheyu Ma <zheyuma97@gmail.com>
 
-commit 7ec37d1cbe17d8189d9562178d8b29167fe1c31a upstream
+[ Upstream commit 2f1c4523f7a3aaabe7e53d3ebd378292947e95c8 ]
 
-When KVM_CAP_HYPERV_SYNIC{,2} is activated, KVM already checks for
-irqchip_in_kernel() so normally SynIC irqs should never be set. It is,
-however,  possible for a misbehaving VMM to write to SYNIC/STIMER MSRs
-causing erroneous behavior.
+Since the user can control the arguments of the ioctl() from the user
+space, under special arguments that may result in a divide-by-zero bug
+in:
+  drivers/video/fbdev/arkfb.c:784: ark_set_pixclock(info, (hdiv * info->var.pixclock) / hmul);
+with hdiv=1, pixclock=1 and hmul=2 you end up with (1*1)/2 = (int) 0.
+and then in:
+  drivers/video/fbdev/arkfb.c:504: rv = dac_set_freq(par->dac, 0, 1000000000 / pixclock);
+we'll get a division-by-zero.
 
-The immediate issue being fixed is that kvm_irq_delivery_to_apic()
-(kvm_irq_delivery_to_apic_fast()) crashes when called with
-'irq.shorthand = APIC_DEST_SELF' and 'src == NULL'.
+The following log can reveal it:
 
-Signed-off-by: Vitaly Kuznetsov <vkuznets@redhat.com>
-Message-Id: <20220325132140.25650-2-vkuznets@redhat.com>
-Cc: stable@vger.kernel.org
-Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
-Signed-off-by: Stefan Ghinea <stefan.ghinea@windriver.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+divide error: 0000 [#1] PREEMPT SMP KASAN PTI
+RIP: 0010:ark_set_pixclock drivers/video/fbdev/arkfb.c:504 [inline]
+RIP: 0010:arkfb_set_par+0x10fc/0x24c0 drivers/video/fbdev/arkfb.c:784
+Call Trace:
+ fb_set_var+0x604/0xeb0 drivers/video/fbdev/core/fbmem.c:1034
+ do_fb_ioctl+0x234/0x670 drivers/video/fbdev/core/fbmem.c:1110
+ fb_ioctl+0xdd/0x130 drivers/video/fbdev/core/fbmem.c:1189
+
+Fix this by checking the argument of ark_set_pixclock() first.
+
+Fixes: 681e14730c73 ("arkfb: new framebuffer driver for ARK Logic cards")
+Signed-off-by: Zheyu Ma <zheyuma97@gmail.com>
+Signed-off-by: Helge Deller <deller@gmx.de>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/x86/kvm/hyperv.c |    3 +++
- 1 file changed, 3 insertions(+)
+ drivers/video/fbdev/arkfb.c | 7 ++++++-
+ 1 file changed, 6 insertions(+), 1 deletion(-)
 
---- a/arch/x86/kvm/hyperv.c
-+++ b/arch/x86/kvm/hyperv.c
-@@ -341,6 +341,9 @@ static int synic_set_irq(struct kvm_vcpu
- 	struct kvm_lapic_irq irq;
- 	int ret, vector;
- 
-+	if (KVM_BUG_ON(!lapic_in_kernel(vcpu), vcpu->kvm))
-+		return -EINVAL;
-+
- 	if (sint >= ARRAY_SIZE(synic->sint))
+diff --git a/drivers/video/fbdev/arkfb.c b/drivers/video/fbdev/arkfb.c
+index 13ba371e70aa..bfa221b68d71 100644
+--- a/drivers/video/fbdev/arkfb.c
++++ b/drivers/video/fbdev/arkfb.c
+@@ -778,7 +778,12 @@ static int arkfb_set_par(struct fb_info *info)
  		return -EINVAL;
+ 	}
  
+-	ark_set_pixclock(info, (hdiv * info->var.pixclock) / hmul);
++	value = (hdiv * info->var.pixclock) / hmul;
++	if (!value) {
++		fb_dbg(info, "invalid pixclock\n");
++		value = 1;
++	}
++	ark_set_pixclock(info, value);
+ 	svga_set_timings(par->state.vgabase, &ark_timing_regs, &(info->var), hmul, hdiv,
+ 			 (info->var.vmode & FB_VMODE_DOUBLE)     ? 2 : 1,
+ 			 (info->var.vmode & FB_VMODE_INTERLACED) ? 2 : 1,
+-- 
+2.35.1
+
 
 
