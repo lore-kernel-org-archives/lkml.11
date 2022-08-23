@@ -2,44 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C8E87C32792
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 10:08:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B9ED2C32772
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 10:08:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352597AbiHWKIN (ORCPT
+        id S1352618AbiHWKIS (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 06:08:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44496 "EHLO
+        Tue, 23 Aug 2022 06:08:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35626 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352466AbiHWKB4 (ORCPT
+        with ESMTP id S1352506AbiHWKCA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 06:01:56 -0400
+        Tue, 23 Aug 2022 06:02:00 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 25BA97C302;
-        Tue, 23 Aug 2022 01:49:46 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4185F7C500;
+        Tue, 23 Aug 2022 01:49:54 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 8D823B81B90;
-        Tue, 23 Aug 2022 08:49:45 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BF0A2C433C1;
-        Tue, 23 Aug 2022 08:49:43 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id BD116B81B90;
+        Tue, 23 Aug 2022 08:49:52 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0E005C433D6;
+        Tue, 23 Aug 2022 08:49:50 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661244584;
-        bh=JqeXyUSafTDR1CCZmv9/KUNztoOdz6JdHP9rzp7oSk8=;
+        s=korg; t=1661244591;
+        bh=X6jgYWZ4Mu4BRn1XVD+JQfc78HmS4SDy8hx0sB+nn/s=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=nXUGWO9Y/fqU7N6Lm60+bwUu++8xTausspGNcsdqraUOP6M8L1/NOvbM2pZEc0wj5
-         5+KiFOKqAqyKUEGdIv1RmyFMiwfAnf0r6Q2zl3ZOu8ZlPdEZ36NVLJHGUW5nEgEJgV
-         Iy+CRsJYfiP7+FsnkzMsm/YsOssWIsW5MzvI3qFI=
+        b=GdoemA72jeiWJn7anC3QowU7ye370EJdbOZGZD5hHKurmmYSSdoZAuWI2u232Foc5
+         vfHN1F90dvhWfs1mKv0X86pnU3afu+cC4n1Y6fI4d+Xj+21Q8F+uNCPZUEbRmqZxlk
+         GIKloLbuA2Rw0bUqJDnTNJZf2XU9oZhVZmpvYID8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
-        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
-        Michal Simek <michal.simek@amd.com>,
-        Mark Brown <broonie@kernel.org>
-Subject: [PATCH 5.15 087/244] spi: dt-bindings: cadence: add missing required
-Date:   Tue, 23 Aug 2022 10:24:06 +0200
-Message-Id: <20220823080101.934302261@linuxfoundation.org>
+        Przemyslaw Patynowski <przemyslawx.patynowski@intel.com>,
+        Jedrzej Jagielski <jedrzej.jagielski@intel.com>,
+        Marek Szlosek <marek.szlosek@intel.com>,
+        Tony Nguyen <anthony.l.nguyen@intel.com>
+Subject: [PATCH 5.15 115/244] iavf: Fix adminq error handling
+Date:   Tue, 23 Aug 2022 10:24:34 +0200
+Message-Id: <20220823080102.854229679@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220823080059.091088642@linuxfoundation.org>
 References: <20220823080059.091088642@linuxfoundation.org>
@@ -51,42 +52,82 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+From: Przemyslaw Patynowski <przemyslawx.patynowski@intel.com>
 
-commit 6eee27c598fde65988723b785a9c9192d5ffb93a upstream.
+commit 419831617ed349992c84344dbd9e627f9e68f842 upstream.
 
-During the conversion the bindings lost list of required properties.
+iavf_alloc_asq_bufs/iavf_alloc_arq_bufs allocates with dma_alloc_coherent
+memory for VF mailbox.
+Free DMA regions for both ASQ and ARQ in case error happens during
+configuration of ASQ/ARQ registers.
+Without this change it is possible to see when unloading interface:
+74626.583369: dma_debug_device_change: device driver has pending DMA allocations while released from device [count=32]
+One of leaked entries details: [device address=0x0000000b27ff9000] [size=4096 bytes] [mapped with DMA_BIDIRECTIONAL] [mapped as coherent]
 
-Fixes: aa7968682a2b ("spi: convert Cadence SPI bindings to YAML")
-Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Reviewed-by: Michal Simek <michal.simek@amd.com>
-Link: https://lore.kernel.org/r/20220704130618.199231-1-krzysztof.kozlowski@linaro.org
-Signed-off-by: Mark Brown <broonie@kernel.org>
+Fixes: d358aa9a7a2d ("i40evf: init code and hardware support")
+Signed-off-by: Przemyslaw Patynowski <przemyslawx.patynowski@intel.com>
+Signed-off-by: Jedrzej Jagielski <jedrzej.jagielski@intel.com>
+Tested-by: Marek Szlosek <marek.szlosek@intel.com>
+Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- Documentation/devicetree/bindings/spi/spi-cadence.yaml | 7 +++++++
- 1 file changed, 7 insertions(+)
+ drivers/net/ethernet/intel/iavf/iavf_adminq.c |   15 +++++++++++++--
+ 1 file changed, 13 insertions(+), 2 deletions(-)
 
-diff --git a/Documentation/devicetree/bindings/spi/spi-cadence.yaml b/Documentation/devicetree/bindings/spi/spi-cadence.yaml
-index 9787be21318e..82d0ca5c00f3 100644
---- a/Documentation/devicetree/bindings/spi/spi-cadence.yaml
-+++ b/Documentation/devicetree/bindings/spi/spi-cadence.yaml
-@@ -49,6 +49,13 @@ properties:
-     enum: [ 0, 1 ]
-     default: 0
+--- a/drivers/net/ethernet/intel/iavf/iavf_adminq.c
++++ b/drivers/net/ethernet/intel/iavf/iavf_adminq.c
+@@ -324,6 +324,7 @@ static enum iavf_status iavf_config_arq_
+ static enum iavf_status iavf_init_asq(struct iavf_hw *hw)
+ {
+ 	enum iavf_status ret_code = 0;
++	int i;
  
-+required:
-+  - compatible
-+  - reg
-+  - interrupts
-+  - clock-names
-+  - clocks
+ 	if (hw->aq.asq.count > 0) {
+ 		/* queue already initialized */
+@@ -354,12 +355,17 @@ static enum iavf_status iavf_init_asq(st
+ 	/* initialize base registers */
+ 	ret_code = iavf_config_asq_regs(hw);
+ 	if (ret_code)
+-		goto init_adminq_free_rings;
++		goto init_free_asq_bufs;
+ 
+ 	/* success! */
+ 	hw->aq.asq.count = hw->aq.num_asq_entries;
+ 	goto init_adminq_exit;
+ 
++init_free_asq_bufs:
++	for (i = 0; i < hw->aq.num_asq_entries; i++)
++		iavf_free_dma_mem(hw, &hw->aq.asq.r.asq_bi[i]);
++	iavf_free_virt_mem(hw, &hw->aq.asq.dma_head);
 +
- unevaluatedProperties: false
+ init_adminq_free_rings:
+ 	iavf_free_adminq_asq(hw);
  
- examples:
--- 
-2.37.2
-
+@@ -383,6 +389,7 @@ init_adminq_exit:
+ static enum iavf_status iavf_init_arq(struct iavf_hw *hw)
+ {
+ 	enum iavf_status ret_code = 0;
++	int i;
+ 
+ 	if (hw->aq.arq.count > 0) {
+ 		/* queue already initialized */
+@@ -413,12 +420,16 @@ static enum iavf_status iavf_init_arq(st
+ 	/* initialize base registers */
+ 	ret_code = iavf_config_arq_regs(hw);
+ 	if (ret_code)
+-		goto init_adminq_free_rings;
++		goto init_free_arq_bufs;
+ 
+ 	/* success! */
+ 	hw->aq.arq.count = hw->aq.num_arq_entries;
+ 	goto init_adminq_exit;
+ 
++init_free_arq_bufs:
++	for (i = 0; i < hw->aq.num_arq_entries; i++)
++		iavf_free_dma_mem(hw, &hw->aq.arq.r.arq_bi[i]);
++	iavf_free_virt_mem(hw, &hw->aq.arq.dma_head);
+ init_adminq_free_rings:
+ 	iavf_free_adminq_arq(hw);
+ 
 
 
