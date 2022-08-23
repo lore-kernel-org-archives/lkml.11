@@ -2,46 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DBE4AC32772
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 10:14:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0139DC32772
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 10:14:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353325AbiHWKOi (ORCPT
+        id S1353350AbiHWKOq (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 06:14:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46712 "EHLO
+        Tue, 23 Aug 2022 06:14:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57952 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352800AbiHWKGR (ORCPT
+        with ESMTP id S1352806AbiHWKGS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 06:06:17 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A6A8C32E;
-        Tue, 23 Aug 2022 01:53:01 -0700 (PDT)
+        Tue, 23 Aug 2022 06:06:18 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EFDCF25C59;
+        Tue, 23 Aug 2022 01:53:04 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 436C361377;
-        Tue, 23 Aug 2022 08:53:01 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 43BEFC433C1;
-        Tue, 23 Aug 2022 08:53:00 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 51E6461377;
+        Tue, 23 Aug 2022 08:53:04 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 50BF5C433C1;
+        Tue, 23 Aug 2022 08:53:03 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661244780;
-        bh=0RH08DlYaBDEIvYoq52VEKqDG4diNbNpOF8jgqGa704=;
+        s=korg; t=1661244783;
+        bh=Wm76leAtdAQRADGFxpYZND+YCExrA9wLWggAG8r2BQE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=c2kgCilD/Bd7VQYjGQmxPQ75/7cw4vyCfzOYpTl5tg/CSutfNnkeic3VugEsLVu1z
-         pMpf3WoiXLZxxEvBycFoDm/ECQbmMv5NyxLd87xIZPv99P3C00ug8zoOg0eiTcLyLU
-         arau9qEuNERKvM4SPpUKnmZWEQFDjleLxGfBtLvM=
+        b=jNdW4woIuuMuxxiNnfbcA+w3E6Uv0/zAru4vTU/iaE5bN7fvsjozSWx0Fl3BqVn5M
+         sepbMt6xNomyeCOQUovuuL2OA1pM/7vLLIE5A8XhaVFpW9aMHyl+vqLFxMH3zPWrmp
+         3ELoGx/AB4cDBiJ8Gv090+W24t33XsruUpki5ZFM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
-        =?UTF-8?q?Martin=20Povi=C5=A1er?= <povik+lin@cutebit.org>,
-        Mark Brown <broonie@kernel.org>
-Subject: [PATCH 5.15 119/244] ASoC: tas2770: Allow mono streams
-Date:   Tue, 23 Aug 2022 10:24:38 +0200
-Message-Id: <20220823080103.004658234@linuxfoundation.org>
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        stable <stable@kernel.org>,
+        Alexander Shishkin <alexander.shishkin@linux.intel.com>
+Subject: [PATCH 4.14 161/229] intel_th: pci: Add Meteor Lake-P support
+Date:   Tue, 23 Aug 2022 10:25:22 +0200
+Message-Id: <20220823080059.422115503@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220823080059.091088642@linuxfoundation.org>
-References: <20220823080059.091088642@linuxfoundation.org>
+In-Reply-To: <20220823080053.202747790@linuxfoundation.org>
+References: <20220823080053.202747790@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -50,32 +51,34 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Martin Povišer <povik+lin@cutebit.org>
+From: Alexander Shishkin <alexander.shishkin@linux.intel.com>
 
-commit bf54d97a835dfe62d4d29e245e170c63d0089be7 upstream.
+commit 802a9a0b1d91274ef10d9fe429b4cc1e8c200aef upstream.
 
-The part is a mono speaker amp, but it can do downmix and switch between
-left and right channel, so the right channel range is 1 to 2.
+Add support for the Trace Hub in Meteor Lake-P.
 
-Fixes: 1a476abc723e ("tas2770: add tas2770 smart PA kernel driver")
-Signed-off-by: Martin Povišer <povik+lin@cutebit.org>
-Link: https://lore.kernel.org/r/20220808141246.5749-3-povik+lin@cutebit.org
-Signed-off-by: Mark Brown <broonie@kernel.org>
+Reviewed-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Cc: stable <stable@kernel.org>
+Signed-off-by: Alexander Shishkin <alexander.shishkin@linux.intel.com>
+Link: https://lore.kernel.org/r/20220705082637.59979-5-alexander.shishkin@linux.intel.com
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- sound/soc/codecs/tas2770.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/hwtracing/intel_th/pci.c |    5 +++++
+ 1 file changed, 5 insertions(+)
 
---- a/sound/soc/codecs/tas2770.c
-+++ b/sound/soc/codecs/tas2770.c
-@@ -507,7 +507,7 @@ static struct snd_soc_dai_driver tas2770
- 		.id = 0,
- 		.playback = {
- 			.stream_name    = "ASI1 Playback",
--			.channels_min   = 2,
-+			.channels_min   = 1,
- 			.channels_max   = 2,
- 			.rates      = TAS2770_RATES,
- 			.formats    = TAS2770_FORMATS,
+--- a/drivers/hwtracing/intel_th/pci.c
++++ b/drivers/hwtracing/intel_th/pci.c
+@@ -264,6 +264,11 @@ static const struct pci_device_id intel_
+ 		.driver_data = (kernel_ulong_t)&intel_th_2x,
+ 	},
+ 	{
++		/* Meteor Lake-P */
++		PCI_DEVICE(PCI_VENDOR_ID_INTEL, 0x7e24),
++		.driver_data = (kernel_ulong_t)&intel_th_2x,
++	},
++	{
+ 		/* Rocket Lake CPU */
+ 		PCI_DEVICE(PCI_VENDOR_ID_INTEL, 0x4c19),
+ 		.driver_data = (kernel_ulong_t)&intel_th_2x,
 
 
