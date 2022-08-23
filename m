@@ -2,45 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3DFCDC32774
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 11:59:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DDA9DC32772
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 11:59:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358877AbiHWL7a (ORCPT
+        id S1359126AbiHWL7j (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 07:59:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41240 "EHLO
+        Tue, 23 Aug 2022 07:59:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41518 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1359293AbiHWL4e (ORCPT
+        with ESMTP id S1359315AbiHWL4g (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 07:56:34 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7B4FAD6BAD;
-        Tue, 23 Aug 2022 02:34:16 -0700 (PDT)
+        Tue, 23 Aug 2022 07:56:36 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 51AAB857E4;
+        Tue, 23 Aug 2022 02:34:08 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id D7B30B81C89;
-        Tue, 23 Aug 2022 09:34:11 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2ADA9C433C1;
-        Tue, 23 Aug 2022 09:34:10 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 17632612D6;
+        Tue, 23 Aug 2022 09:34:08 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 069DFC433D6;
+        Tue, 23 Aug 2022 09:34:06 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661247250;
-        bh=X6jgYWZ4Mu4BRn1XVD+JQfc78HmS4SDy8hx0sB+nn/s=;
+        s=korg; t=1661247247;
+        bh=UlzcKidXqLG4HmGSEd5gPKAWOKksFX8ym+DBmzhofjk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=lwKcA03ErS6NUopAAOpxPiVc4xCzX+H+dcyQsSvtjBCDzu54Crf+8ifhLYduqPXiI
-         0ia16yBFIiozkJR3qFvzCyndgyfer57RgUkK/s86FhlxNArGnT3PfKO0ThW1JoulxA
-         nYec0ntzDhbwyCBAcHoEBWGLyxObr2gzwvzpexZI=
+        b=Zt+M1/kKLzuGgz2VlKJf1CiEKPDWN5HwKUm/nMAtvU9P0k6CKmGEO5rdM2qunj3ag
+         ZlfpbVKLsOXEouj5+rSiFp9oS2tlfF7U9/GIzzNTVlGokCrO3S3B0kv54Vqx3ibrm7
+         yj+A76RJhFJh8l58WE9sw1c0S7HAqr0SNpK2wvY0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Przemyslaw Patynowski <przemyslawx.patynowski@intel.com>,
-        Jedrzej Jagielski <jedrzej.jagielski@intel.com>,
-        Marek Szlosek <marek.szlosek@intel.com>,
-        Tony Nguyen <anthony.l.nguyen@intel.com>
-Subject: [PATCH 5.4 335/389] iavf: Fix adminq error handling
-Date:   Tue, 23 Aug 2022 10:26:53 +0200
-Message-Id: <20220823080129.510039394@linuxfoundation.org>
+        stable@vger.kernel.org, Al Viro <viro@zeniv.linux.org.uk>,
+        Dinh Nguyen <dinguyen@kernel.org>
+Subject: [PATCH 5.4 334/389] nios2: add force_successful_syscall_return()
+Date:   Tue, 23 Aug 2022 10:26:52 +0200
+Message-Id: <20220823080129.465760193@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220823080115.331990024@linuxfoundation.org>
 References: <20220823080115.331990024@linuxfoundation.org>
@@ -52,82 +49,61 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Przemyslaw Patynowski <przemyslawx.patynowski@intel.com>
+From: Al Viro <viro@zeniv.linux.org.uk>
 
-commit 419831617ed349992c84344dbd9e627f9e68f842 upstream.
+commit fd0c153daad135d0ec1a53c5dbe6936a724d6ae1 upstream.
 
-iavf_alloc_asq_bufs/iavf_alloc_arq_bufs allocates with dma_alloc_coherent
-memory for VF mailbox.
-Free DMA regions for both ASQ and ARQ in case error happens during
-configuration of ASQ/ARQ registers.
-Without this change it is possible to see when unloading interface:
-74626.583369: dma_debug_device_change: device driver has pending DMA allocations while released from device [count=32]
-One of leaked entries details: [device address=0x0000000b27ff9000] [size=4096 bytes] [mapped with DMA_BIDIRECTIONAL] [mapped as coherent]
+If we use the ancient SysV syscall ABI, we'd better have tell the
+kernel how to claim that a negative return value is a success.
+Use ->orig_r2 for that - it's inaccessible via ptrace, so it's
+a fair game for changes and it's normally[*] non-negative on return
+from syscall.  Set to -1; syscall is not going to be restart-worthy
+by definition, so we won't interfere with that use either.
 
-Fixes: d358aa9a7a2d ("i40evf: init code and hardware support")
-Signed-off-by: Przemyslaw Patynowski <przemyslawx.patynowski@intel.com>
-Signed-off-by: Jedrzej Jagielski <jedrzej.jagielski@intel.com>
-Tested-by: Marek Szlosek <marek.szlosek@intel.com>
-Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
+[*] the only exception is rt_sigreturn(), where we skip the entire
+messing with r1/r2 anyway.
+
+Fixes: 82ed08dd1b0e ("nios2: Exception handling")
+Signed-off-by: Al Viro <viro@zeniv.linux.org.uk>
+Signed-off-by: Dinh Nguyen <dinguyen@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/net/ethernet/intel/iavf/iavf_adminq.c |   15 +++++++++++++--
- 1 file changed, 13 insertions(+), 2 deletions(-)
+ arch/nios2/include/asm/ptrace.h |    2 ++
+ arch/nios2/kernel/entry.S       |    6 ++++++
+ 2 files changed, 8 insertions(+)
 
---- a/drivers/net/ethernet/intel/iavf/iavf_adminq.c
-+++ b/drivers/net/ethernet/intel/iavf/iavf_adminq.c
-@@ -324,6 +324,7 @@ static enum iavf_status iavf_config_arq_
- static enum iavf_status iavf_init_asq(struct iavf_hw *hw)
- {
- 	enum iavf_status ret_code = 0;
-+	int i;
+--- a/arch/nios2/include/asm/ptrace.h
++++ b/arch/nios2/include/asm/ptrace.h
+@@ -74,6 +74,8 @@ extern void show_regs(struct pt_regs *);
+ 	((struct pt_regs *)((unsigned long)current_thread_info() + THREAD_SIZE)\
+ 		- 1)
  
- 	if (hw->aq.asq.count > 0) {
- 		/* queue already initialized */
-@@ -354,12 +355,17 @@ static enum iavf_status iavf_init_asq(st
- 	/* initialize base registers */
- 	ret_code = iavf_config_asq_regs(hw);
- 	if (ret_code)
--		goto init_adminq_free_rings;
-+		goto init_free_asq_bufs;
- 
- 	/* success! */
- 	hw->aq.asq.count = hw->aq.num_asq_entries;
- 	goto init_adminq_exit;
- 
-+init_free_asq_bufs:
-+	for (i = 0; i < hw->aq.num_asq_entries; i++)
-+		iavf_free_dma_mem(hw, &hw->aq.asq.r.asq_bi[i]);
-+	iavf_free_virt_mem(hw, &hw->aq.asq.dma_head);
++#define force_successful_syscall_return() (current_pt_regs()->orig_r2 = -1)
 +
- init_adminq_free_rings:
- 	iavf_free_adminq_asq(hw);
- 
-@@ -383,6 +389,7 @@ init_adminq_exit:
- static enum iavf_status iavf_init_arq(struct iavf_hw *hw)
- {
- 	enum iavf_status ret_code = 0;
-+	int i;
- 
- 	if (hw->aq.arq.count > 0) {
- 		/* queue already initialized */
-@@ -413,12 +420,16 @@ static enum iavf_status iavf_init_arq(st
- 	/* initialize base registers */
- 	ret_code = iavf_config_arq_regs(hw);
- 	if (ret_code)
--		goto init_adminq_free_rings;
-+		goto init_free_arq_bufs;
- 
- 	/* success! */
- 	hw->aq.arq.count = hw->aq.num_arq_entries;
- 	goto init_adminq_exit;
- 
-+init_free_arq_bufs:
-+	for (i = 0; i < hw->aq.num_arq_entries; i++)
-+		iavf_free_dma_mem(hw, &hw->aq.arq.r.arq_bi[i]);
-+	iavf_free_virt_mem(hw, &hw->aq.arq.dma_head);
- init_adminq_free_rings:
- 	iavf_free_adminq_arq(hw);
- 
+ int do_syscall_trace_enter(void);
+ void do_syscall_trace_exit(void);
+ #endif /* __ASSEMBLY__ */
+--- a/arch/nios2/kernel/entry.S
++++ b/arch/nios2/kernel/entry.S
+@@ -213,6 +213,9 @@ local_restart:
+ translate_rc_and_ret:
+ 	movi	r1, 0
+ 	bge	r2, zero, 3f
++	ldw	r1, PT_ORIG_R2(sp)
++	addi	r1, r1, 1
++	beq	r1, zero, 3f
+ 	sub	r2, zero, r2
+ 	movi	r1, 1
+ 3:
+@@ -276,6 +279,9 @@ traced_system_call:
+ translate_rc_and_ret2:
+ 	movi	r1, 0
+ 	bge	r2, zero, 4f
++	ldw	r1, PT_ORIG_R2(sp)
++	addi	r1, r1, 1
++	beq	r1, zero, 4f
+ 	sub	r2, zero, r2
+ 	movi	r1, 1
+ 4:
 
 
