@@ -2,195 +2,88 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8D151C3F6B0
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 19:12:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3F5A0C32772
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 19:12:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230319AbiHWTMP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 15:12:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45738 "EHLO
+        id S232242AbiHWTMh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 23 Aug 2022 15:12:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46192 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230128AbiHWTLs (ORCPT
+        with ESMTP id S232246AbiHWTL4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 15:11:48 -0400
-Received: from mail-yw1-f178.google.com (mail-yw1-f178.google.com [209.85.128.178])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B8861AE9C6;
-        Tue, 23 Aug 2022 10:49:37 -0700 (PDT)
-Received: by mail-yw1-f178.google.com with SMTP id 00721157ae682-3321c2a8d4cso399310017b3.5;
-        Tue, 23 Aug 2022 10:49:37 -0700 (PDT)
+        Tue, 23 Aug 2022 15:11:56 -0400
+Received: from mail-ej1-x629.google.com (mail-ej1-x629.google.com [IPv6:2a00:1450:4864:20::629])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4A11F11F76C
+        for <linux-kernel@vger.kernel.org>; Tue, 23 Aug 2022 10:49:48 -0700 (PDT)
+Received: by mail-ej1-x629.google.com with SMTP id gb36so28885222ejc.10
+        for <linux-kernel@vger.kernel.org>; Tue, 23 Aug 2022 10:49:48 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linux-foundation.org; s=google;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc;
+        bh=L5vDksmX6kl63axC8fTX4W4UjA4ULlvaj4B5Lk9Uogw=;
+        b=L+f8XLyA+qC3dl1BiCC63A2xsLWVaxkUCI8S39DAVQxI//2aOX6pcoVv2ZPow3f3tC
+         cK4lPzuqIIdDHFHXKyO2KRbploN722Rcfnxi0O2cYIf2lTkK9Fw2w0sZDrK1Ee8IxrD+
+         yU8xkJbWfAL0qZkeN4oSBiGVPBJpQQw9qv15o=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=cc:to:subject:message-id:date:from:in-reply-to:references
          :mime-version:x-gm-message-state:from:to:cc;
-        bh=cHZxn2xN5dke6+dNAjI8WzSBH2ufuylF5p6Im82PJYA=;
-        b=1Y9oOnWY/x925N/LyL3MuiLNh9cvPXF0Qo0CpueFgwahzq++RrcMO6VkzT1iJD0R3w
-         vzPa3RdLaVWpOgkFuC5LdtCVEsTTB0B4t15JX7GHmPzCM04X4dqk2PZBtAeUViTC+tBh
-         EWbC4+EjA4l5MUh7YczMUbe4c4JdsdFsXdaG5G+07M6IBmKkSVHikhDDq429IDnGOqaO
-         FbBSmWWHdY4DV+BDmkPIavWvmIyF00IuoRm5+pCKuE/o0Nu7l2mlyt3DcXkvCUS+IOyk
-         WYmLbFWkyrjsJFoajKwXEk08M9Nusz+rUDORq9074NtdWhLtdTcuNFpem4w6mVwlfm02
-         om4w==
-X-Gm-Message-State: ACgBeo3v2DGJn7DXMVI1GG91vme+MtpgU2bKUKsjeE3bIc/HuTWt4AR4
-        xYB4qn1hd0hdavKMgyb+aQck32efb8PtXf/5440=
-X-Google-Smtp-Source: AA6agR5ElR8/Ik+ufD/0IBqmq0NIBmLipbEwLaA6qtCd49CRxw4U5zKcjSfbDS9814wwC7ywC6xuHW2m+99Kfn075RU=
-X-Received: by 2002:a25:ec0c:0:b0:690:d092:2d56 with SMTP id
- j12-20020a25ec0c000000b00690d0922d56mr23676520ybh.622.1661276888513; Tue, 23
- Aug 2022 10:48:08 -0700 (PDT)
+        bh=L5vDksmX6kl63axC8fTX4W4UjA4ULlvaj4B5Lk9Uogw=;
+        b=Ho2dHF2fJULG83q8x5cUjP4Rv/wBLnK6pZYedWYy/mYiLxcgGFy1Vx5xdA+cW7u8MI
+         U4AdRjdBR9KsIvKcb9OHCTjCBE8Rs1EwyN4Gd2qEuMfxVDtfMIUC45ehrOT1vKzgOOed
+         GPZgrQ766ZrmaItenCg+ita4zSPAFkyIYtbaaDwLKv0g4DsCDERzjmZwTfSEpk3JbXJ5
+         qzbxZwRReOSV3s6sToxVdkJBKNGkeNMQtOFbaUS5m2ZYkYZUrO5LBe1aCCauXJw/yO8x
+         zJaM6AOF5pVOdY+uk+2P59IcMHOSTkyqUBGUyqgaQnANaYAIFDEXUd3tm9IujEJNtggu
+         72Eg==
+X-Gm-Message-State: ACgBeo1uhmrRrxHMvG1CLL8BDyvDkmTgwgwNRSk/SkWHTLWZWEoaOUq7
+        su1XR3bvTbRxN79gfUdkxr3p5Mpjj0GZ5ycUe0g=
+X-Google-Smtp-Source: AA6agR66jamEWZ+iX5s/Dw1SmmtBzgnAEUrEKoaF1rPj+ZDlc73iA9cClwcHGXBYN8gAkRUQFCfhoQ==
+X-Received: by 2002:a05:6402:350e:b0:447:3ca9:1162 with SMTP id b14-20020a056402350e00b004473ca91162mr1509511edd.170.1661276276087;
+        Tue, 23 Aug 2022 10:37:56 -0700 (PDT)
+Received: from mail-wm1-f46.google.com (mail-wm1-f46.google.com. [209.85.128.46])
+        by smtp.gmail.com with ESMTPSA id 10-20020a170906218a00b00731747c3107sm144394eju.73.2022.08.23.10.37.55
+        for <linux-kernel@vger.kernel.org>
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 23 Aug 2022 10:37:55 -0700 (PDT)
+Received: by mail-wm1-f46.google.com with SMTP id h1so7560040wmd.3
+        for <linux-kernel@vger.kernel.org>; Tue, 23 Aug 2022 10:37:55 -0700 (PDT)
+X-Received: by 2002:a05:600c:3556:b0:3a6:220e:6242 with SMTP id
+ i22-20020a05600c355600b003a6220e6242mr2799346wmq.145.1661276274837; Tue, 23
+ Aug 2022 10:37:54 -0700 (PDT)
 MIME-Version: 1.0
-References: <20220808174107.38676-1-paul@crapouillou.net> <20220808174107.38676-2-paul@crapouillou.net>
-In-Reply-To: <20220808174107.38676-2-paul@crapouillou.net>
-From:   "Rafael J. Wysocki" <rafael@kernel.org>
-Date:   Tue, 23 Aug 2022 19:47:57 +0200
-Message-ID: <CAJZ5v0h3hf06xQsJGOfOyGbD470jyxkPNuaHP+E-pvXbS6Egxg@mail.gmail.com>
-Subject: Re: [PATCH v2 01/30] pm: Improve EXPORT_*_DEV_PM_OPS macros
-To:     Paul Cercueil <paul@crapouillou.net>
-Cc:     Lee Jones <lee.jones@linaro.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Jonathan Cameron <jic23@kernel.org>,
-        "Rafael J . Wysocki" <rafael@kernel.org>,
-        linux-pm <linux-pm@vger.kernel.org>
+References: <CAH2r5mtDFpaAWeGCtrfm_WPM6j-Gkt_O80=nKfp6y39aXaBr6w@mail.gmail.com>
+ <CAHk-=wi+xbVq++uqW9YgWpHjyBHNB8a-xad+Xp23-B+eodLCEA@mail.gmail.com> <YwSWLH4Wp6yDMeKf@arm.com>
+In-Reply-To: <YwSWLH4Wp6yDMeKf@arm.com>
+From:   Linus Torvalds <torvalds@linux-foundation.org>
+Date:   Tue, 23 Aug 2022 10:37:38 -0700
+X-Gmail-Original-Message-ID: <CAHk-=whU7QiwWeO81Rf+KGh0rGS9CEfKUXc5eik+Z0GaVJgu4A@mail.gmail.com>
+Message-ID: <CAHk-=whU7QiwWeO81Rf+KGh0rGS9CEfKUXc5eik+Z0GaVJgu4A@mail.gmail.com>
+Subject: Re: strlcpy() notes (was Re: [GIT PULL] smb3 client fixes)
+To:     Catalin Marinas <catalin.marinas@arm.com>
+Cc:     Steve French <smfrench@gmail.com>,
+        CIFS <linux-cifs@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        linux-arch <linux-arch@vger.kernel.org>
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Aug 8, 2022 at 7:41 PM Paul Cercueil <paul@crapouillou.net> wrote:
+On Tue, Aug 23, 2022 at 1:56 AM Catalin Marinas <catalin.marinas@arm.com> wrote:
 >
-> Update the _EXPORT_DEV_PM_OPS() internal macro. It was not used anywhere
-> outside pm.h and pm_runtime.h, so it is safe to update it.
->
-> Before, this macro would take a few parameters to be used as sleep and
-> runtime callbacks. This made it unsuitable to use with different
-> callbacks, for instance the "noirq" ones.
->
-> It is now semantically different: instead of creating a conditionally
-> exported dev_pm_ops structure, it only contains part of the definition.
->
-> This macro should however never be used directly (hence the trailing
-> underscore). Instead, the following four macros are provided:
-> - EXPORT_DEV_PM_OPS(name)
-> - EXPORT_GPL_DEV_PM_OPS(name)
-> - EXPORT_NS_DEV_PM_OPS(name, ns)
-> - EXPORT_NS_GPL_DEV_PM_OPS(name, ns)
->
-> For instance, it is now possible to conditionally export noirq
-> suspend/resume PM functions like this:
->
-> EXPORT_GPL_DEV_PM_OPS(foo_pm_ops) = {
->     NOIRQ_SYSTEM_SLEEP_PM_OPS(suspend_fn, resume_fn)
-> };
->
-> The existing helper macros EXPORT_*_SIMPLE_DEV_PM_OPS() and
-> EXPORT_*_RUNTIME_DEV_PM_OPS() have been updated to use these new macros.
->
-> Signed-off-by: Paul Cercueil <paul@crapouillou.net>
+> With load_unaligned_zeropad(), the arm64 implementation disables tag
+> checking temporarily. We could do the same with read_word_at_a_time()
+> (there is a kasan_check_read() in this function but it wrongly uses a
+> size of 1).
 
-Acked-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
+The "size of 1" is not wrong, it's intentional, exactly because people
+do things like
 
-or please let me know if you need me to pick up this one.
+    strscpy(dst, "string", sizeof(dst));
 
-> ---
-> Cc: Jonathan Cameron <jic23@kernel.org>
-> Cc: Rafael J. Wysocki <rafael@kernel.org>
-> Cc: linux-pm <linux-pm@vger.kernel.org>
->
->  include/linux/pm.h         | 37 +++++++++++++++++++++++--------------
->  include/linux/pm_runtime.h | 20 ++++++++++++--------
->  2 files changed, 35 insertions(+), 22 deletions(-)
->
-> diff --git a/include/linux/pm.h b/include/linux/pm.h
-> index 871c9c49ec9d..93cd34f00822 100644
-> --- a/include/linux/pm.h
-> +++ b/include/linux/pm.h
-> @@ -375,19 +375,20 @@ const struct dev_pm_ops name = { \
->  }
->
->  #ifdef CONFIG_PM
-> -#define _EXPORT_DEV_PM_OPS(name, suspend_fn, resume_fn, runtime_suspend_fn, \
-> -                          runtime_resume_fn, idle_fn, sec, ns)         \
-> -       _DEFINE_DEV_PM_OPS(name, suspend_fn, resume_fn, runtime_suspend_fn, \
-> -                          runtime_resume_fn, idle_fn); \
-> -       __EXPORT_SYMBOL(name, sec, ns)
-> +#define _EXPORT_DEV_PM_OPS(name, sec, ns)                              \
-> +       const struct dev_pm_ops name;                                   \
-> +       __EXPORT_SYMBOL(name, sec, ns);                                 \
-> +       const struct dev_pm_ops name
->  #else
-> -#define _EXPORT_DEV_PM_OPS(name, suspend_fn, resume_fn, runtime_suspend_fn, \
-> -                          runtime_resume_fn, idle_fn, sec, ns) \
-> -static __maybe_unused _DEFINE_DEV_PM_OPS(__static_##name, suspend_fn, \
-> -                                        resume_fn, runtime_suspend_fn, \
-> -                                        runtime_resume_fn, idle_fn)
-> +#define _EXPORT_DEV_PM_OPS(name, sec, ns)                              \
-> +       static __maybe_unused const struct dev_pm_ops __static_##name
->  #endif
->
-> +#define EXPORT_DEV_PM_OPS(name) _EXPORT_DEV_PM_OPS(name, "", "")
-> +#define EXPORT_GPL_DEV_PM_OPS(name) _EXPORT_DEV_PM_OPS(name, "_gpl", "")
-> +#define EXPORT_NS_DEV_PM_OPS(name, ns) _EXPORT_DEV_PM_OPS(name, "", #ns)
-> +#define EXPORT_NS_GPL_DEV_PM_OPS(name, ns) _EXPORT_DEV_PM_OPS(name, "_gpl", #ns)
-> +
->  /*
->   * Use this if you want to use the same suspend and resume callbacks for suspend
->   * to RAM and hibernation.
-> @@ -399,13 +400,21 @@ static __maybe_unused _DEFINE_DEV_PM_OPS(__static_##name, suspend_fn, \
->         _DEFINE_DEV_PM_OPS(name, suspend_fn, resume_fn, NULL, NULL, NULL)
->
->  #define EXPORT_SIMPLE_DEV_PM_OPS(name, suspend_fn, resume_fn) \
-> -       _EXPORT_DEV_PM_OPS(name, suspend_fn, resume_fn, NULL, NULL, NULL, "", "")
-> +       EXPORT_DEV_PM_OPS(name) = { \
-> +               SYSTEM_SLEEP_PM_OPS(suspend_fn, resume_fn) \
-> +       }
->  #define EXPORT_GPL_SIMPLE_DEV_PM_OPS(name, suspend_fn, resume_fn) \
-> -       _EXPORT_DEV_PM_OPS(name, suspend_fn, resume_fn, NULL, NULL, NULL, "_gpl", "")
-> +       EXPORT_GPL_DEV_PM_OPS(name) = { \
-> +               SYSTEM_SLEEP_PM_OPS(suspend_fn, resume_fn) \
-> +       }
->  #define EXPORT_NS_SIMPLE_DEV_PM_OPS(name, suspend_fn, resume_fn, ns)   \
-> -       _EXPORT_DEV_PM_OPS(name, suspend_fn, resume_fn, NULL, NULL, NULL, "", #ns)
-> +       EXPORT_NS_DEV_PM_OPS(name, ns) = { \
-> +               SYSTEM_SLEEP_PM_OPS(suspend_fn, resume_fn) \
-> +       }
->  #define EXPORT_NS_GPL_SIMPLE_DEV_PM_OPS(name, suspend_fn, resume_fn, ns)       \
-> -       _EXPORT_DEV_PM_OPS(name, suspend_fn, resume_fn, NULL, NULL, NULL, "_gpl", #ns)
-> +       EXPORT_NS_GPL_DEV_PM_OPS(name, ns) = { \
-> +               SYSTEM_SLEEP_PM_OPS(suspend_fn, resume_fn) \
-> +       }
->
->  /* Deprecated. Use DEFINE_SIMPLE_DEV_PM_OPS() instead. */
->  #define SIMPLE_DEV_PM_OPS(name, suspend_fn, resume_fn) \
-> diff --git a/include/linux/pm_runtime.h b/include/linux/pm_runtime.h
-> index 9e4d056967c6..ba2077d9e366 100644
-> --- a/include/linux/pm_runtime.h
-> +++ b/include/linux/pm_runtime.h
-> @@ -40,17 +40,21 @@
->                            resume_fn, idle_fn)
->
->  #define EXPORT_RUNTIME_DEV_PM_OPS(name, suspend_fn, resume_fn, idle_fn) \
-> -       _EXPORT_DEV_PM_OPS(name, pm_runtime_force_suspend, pm_runtime_force_resume, \
-> -                          suspend_fn, resume_fn, idle_fn, "", "")
-> +       EXPORT_DEV_PM_OPS(name) = { \
-> +               RUNTIME_PM_OPS(suspend_fn, resume_fn, idle_fn) \
-> +       }
->  #define EXPORT_GPL_RUNTIME_DEV_PM_OPS(name, suspend_fn, resume_fn, idle_fn) \
-> -       _EXPORT_DEV_PM_OPS(name, pm_runtime_force_suspend, pm_runtime_force_resume, \
-> -                          suspend_fn, resume_fn, idle_fn, "_gpl", "")
-> +       EXPORT_GPL_DEV_PM_OPS(name) = { \
-> +               RUNTIME_PM_OPS(suspend_fn, resume_fn, idle_fn) \
-> +       }
->  #define EXPORT_NS_RUNTIME_DEV_PM_OPS(name, suspend_fn, resume_fn, idle_fn, ns) \
-> -       _EXPORT_DEV_PM_OPS(name, pm_runtime_force_suspend, pm_runtime_force_resume, \
-> -                          suspend_fn, resume_fn, idle_fn, "", #ns)
-> +       EXPORT_NS_DEV_PM_OPS(name, ns) = { \
-> +               RUNTIME_PM_OPS(suspend_fn, resume_fn, idle_fn) \
-> +       }
->  #define EXPORT_NS_GPL_RUNTIME_DEV_PM_OPS(name, suspend_fn, resume_fn, idle_fn, ns) \
-> -       _EXPORT_DEV_PM_OPS(name, pm_runtime_force_suspend, pm_runtime_force_resume, \
-> -                          suspend_fn, resume_fn, idle_fn, "_gpl", #ns)
-> +       EXPORT_NS_GPL_DEV_PM_OPS(name, ns) = { \
-> +               RUNTIME_PM_OPS(suspend_fn, resume_fn, idle_fn) \
-> +       }
->
->  #ifdef CONFIG_PM
->  extern struct workqueue_struct *pm_wq;
-> --
-> 2.35.1
->
+which is a bit unfortunate, but very understandable and intended to
+work. So that thing may over-read the string by up to a word. And
+KASAN ends up being unhappy.
+
+            Linus
