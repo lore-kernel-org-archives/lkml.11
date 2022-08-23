@@ -2,267 +2,187 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2852CC32793
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 05:49:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1C08FC32789
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 05:50:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239800AbiHWFtU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 01:49:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48790 "EHLO
+        id S240272AbiHWFuq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 23 Aug 2022 01:50:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49560 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239903AbiHWFtS (ORCPT
+        with ESMTP id S235552AbiHWFun (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 01:49:18 -0400
-Received: from mail-pg1-x52f.google.com (mail-pg1-x52f.google.com [IPv6:2607:f8b0:4864:20::52f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0F2C95EDC5
-        for <linux-kernel@vger.kernel.org>; Mon, 22 Aug 2022 22:49:16 -0700 (PDT)
-Received: by mail-pg1-x52f.google.com with SMTP id w13so6285176pgq.7
-        for <linux-kernel@vger.kernel.org>; Mon, 22 Aug 2022 22:49:16 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=bytedance-com.20210112.gappssmtp.com; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc;
-        bh=nBQCK7s4P+8G2l7/O4mq0zwvV5D0rsozdPx4AKdfVp0=;
-        b=X6FJ186xClxU/g1BeXVBDCh0LvHZNi1tam4jdWJp6WGc5kQKNcxLuhe6jqOsHk9VHN
-         yaAwQ5XQSbCc0Gj3aeoAgYd6hekFOkHqZ9fFyrLQNIlqkqmJIJmdjHMg0xlGF9LXQ0NM
-         ECSba6FhN5kDoFtmAmfxcfL5xLBKJI7SSSCgOpThr+D883tUV32xipM8i5g0qzad85Qa
-         Tex288qZp4UtlLUEEGMezFKfSzKsaezaI7/kSKxo1FyJFUF8vLHvYKH3eLyKapYwnXPu
-         2P6o1QAdDV6uZMM2tj8sNaQVry8TIyBbk6iph6WoLqJpDCUhgJlcTYcRULG3kT3WcrtH
-         PoXA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc;
-        bh=nBQCK7s4P+8G2l7/O4mq0zwvV5D0rsozdPx4AKdfVp0=;
-        b=xRA9mzseNH61/aGgv8hqwAGSwcax5neV1D2CrLv0gTOIp7ZG8olpHlCGQuNlVTfRql
-         Y1z9Fm2Eifhru6FT2tuksVDLewB6hXKyVmT7RRhNz0WnxI6KpYH9eJ6WEVpY9SSDtQXd
-         p1/eHfnz3X7RO5Xf1tYZJj0aamSbpna1w1cqY/e/Ke88APxjbSdjJ5gNhhSQcAFd2qEn
-         25jRoNgYh0o85ZtaN7wIltMgigPjg05k18945G+fKnE0iIkVdxRJ9XrDEIe8PHnp2oBv
-         W4BrGOh32ZbXQKbVVqaFQMxKsaSikzghmobcgJzrCoNHX9zePR67QNOqZZb5McNQNJ1n
-         VwJQ==
-X-Gm-Message-State: ACgBeo0+9CozhDn4kyzIF81woCkoVXeph48QWDYSqXFgQTXVpn1ygovG
-        e00nxZKVG0AUQmSv1FVN/ReQrg==
-X-Google-Smtp-Source: AA6agR5r3KdWUnPfi1I59uQpT6h5DPVD8k4UyU2EXI/nmMQ2j/tS7NJIW9+YaQ4HRpDrUzJUFqF9Cg==
-X-Received: by 2002:a05:6a00:1da0:b0:536:f5c1:10df with SMTP id z32-20020a056a001da000b00536f5c110dfmr2036979pfw.73.1661233755475;
-        Mon, 22 Aug 2022 22:49:15 -0700 (PDT)
-Received: from [10.4.208.12] ([139.177.225.244])
-        by smtp.gmail.com with ESMTPSA id n34-20020a635c62000000b0041c3ab14ca1sm8423471pgm.0.2022.08.22.22.49.12
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 22 Aug 2022 22:49:15 -0700 (PDT)
-Message-ID: <d918a1f5-40f4-c90c-a7f5-720dcfddb89b@bytedance.com>
-Date:   Tue, 23 Aug 2022 13:49:07 +0800
+        Tue, 23 Aug 2022 01:50:43 -0400
+Received: from EUR02-AM5-obe.outbound.protection.outlook.com (mail-eopbgr00055.outbound.protection.outlook.com [40.107.0.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 003B55EDD8;
+        Mon, 22 Aug 2022 22:50:41 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=T48SJOjbGxcMTHlFfxV1CI3vWHDvf3syW3i7P76xcIv8H0Tq4T51R2YTMSh52J7uqSFbZPE1HmNhT3j0IbEPuGzciGBaUePwkrRmvNKivsYFCOL+pMKs4L2r9enmMb4VQ8zCck6gCW4//dqIfe4ikQk07sdl76uR0NB4623ddT5MsZB6Dafpy8h/7sXQhGhc7DNh3aONmO+MV3k6MEb1wDXtrW9le/L6TuW7ZsgPRryNghVdsk64mR0tSVv+RP8s49DEp7GcmCKYAIcB/tSRCqSbQGa3/mVT2Ajulu5ofqAMt+KuZyXFi7ZsNVGkHInE+WBbe1YEz4WPAObxtDNQpg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=Adw4CXFYsZTvhf21DlI8CGwN/V9E/1/CNTrMVORfkfA=;
+ b=kWBkDMYACBx01XgEnDakdd9qhzHsZUpPTSTCC1/YKnd3mnPWBpeWxADM3Ue2YV/Rf6gZYYkiZm+59+TzzCbh/4sAHvhrKVKJwm22hrnRJ8QQgElYYyEw5p/2+a0Lv8HcBvFnYUiy2HQ9DVGJNXm6/dPdoN3devAjpyIZfaYeMZXqXRWDbbL9/RZJijTXvAaYKbqKLUq44DngJkRT3Seom3nQQyHABkcoSkFZH5kMVZ4IwgXa2gN84c9l2kIUOPlVu1zMOnZeHG9qTwMP9o4dia+KpafuiqPyXgoIwb53zn5SbpuQcd2YGL5CEPpXYEjz6axXrM804KsPKZmrDnRkWA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=oss.nxp.com; dmarc=pass action=none header.from=oss.nxp.com;
+ dkim=pass header.d=oss.nxp.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=NXP1.onmicrosoft.com;
+ s=selector2-NXP1-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=Adw4CXFYsZTvhf21DlI8CGwN/V9E/1/CNTrMVORfkfA=;
+ b=jqxhxFcAL8XJjsPmrHz0gcXtU/tOWYuu9R9oBjqxCFAiBBWvip4Bw5YzYftQwd08sX720qryIrf1lJvQQ6V9wtE0QJq1+G0HXgIgmEJOmdelLWs8DFPROVPMWpmPOusbFrwdGcWCidWZ4zwaqsWsZO/RBAw9oTboj35w0d6dRRM=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=oss.nxp.com;
+Received: from DU0PR04MB9417.eurprd04.prod.outlook.com (2603:10a6:10:358::11)
+ by AM0PR0402MB3778.eurprd04.prod.outlook.com (2603:10a6:208:6::15) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5546.22; Tue, 23 Aug
+ 2022 05:50:36 +0000
+Received: from DU0PR04MB9417.eurprd04.prod.outlook.com
+ ([fe80::3c6c:b7e6:a93d:d442]) by DU0PR04MB9417.eurprd04.prod.outlook.com
+ ([fe80::3c6c:b7e6:a93d:d442%4]) with mapi id 15.20.5546.023; Tue, 23 Aug 2022
+ 05:50:36 +0000
+From:   "Peng Fan (OSS)" <peng.fan@oss.nxp.com>
+To:     robh+dt@kernel.org, krzysztof.kozlowski+dt@linaro.org,
+        shawnguo@kernel.org, s.hauer@pengutronix.de
+Cc:     kernel@pengutronix.de, festevam@gmail.com, linux-imx@nxp.com,
+        aisheng.dong@nxp.com, devicetree@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        Peng Fan <peng.fan@nxp.com>
+Subject: [PATCH V8 0/6] imx: support i.MX93 SRC and mediamix blk ctrl
+Date:   Tue, 23 Aug 2022 13:52:09 +0800
+Message-Id: <20220823055215.1139197-1-peng.fan@oss.nxp.com>
+X-Mailer: git-send-email 2.37.1
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-ClientProxiedBy: SG3P274CA0004.SGPP274.PROD.OUTLOOK.COM (2603:1096:4:be::16)
+ To DU0PR04MB9417.eurprd04.prod.outlook.com (2603:10a6:10:358::11)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:102.0)
- Gecko/20100101 Thunderbird/102.1.2
-Subject: Re: [PATCH 6/7] kernfs: Allow kernfs nodes to be deactivated and
- re-activated
-Content-Language: en-US
-To:     Tejun Heo <tj@kernel.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc:     linux-kernel@vger.kernel.org, linux-fsdevel@vger.kernel.org,
-        Johannes Weiner <hannes@cmpxchg.org>,
-        Imran Khan <imran.f.khan@oracle.com>, kernel-team@fb.com
-References: <20220820000550.367085-1-tj@kernel.org>
- <20220820000550.367085-7-tj@kernel.org>
-From:   Chengming Zhou <zhouchengming@bytedance.com>
-In-Reply-To: <20220820000550.367085-7-tj@kernel.org>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+X-MS-Exchange-MessageSentRepresentingType: 1
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 0e35c5d5-09cc-4b21-734e-08da84cb666c
+X-MS-TrafficTypeDiagnostic: AM0PR0402MB3778:EE_
+X-MS-Exchange-SharedMailbox-RoutingAgent-Processed: True
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: nCEYBy6ROkkFs4d8oCB+ICuqMeKPtKM9PvP5/2isNOPAJEKPnDM2Zct+prwjss0woMmiicKzTMlwCIxFdDyAVoggDbTPqJNnqdfUnBjVt4ypTJbHPWgRunDdgmBqhC4OZ3YeGLyOf+YnkXOYRCEL6qJX4AUFA9Tydg79Rpe1JfVIhq07vNOgSz6TF8tX6Vc+tt0yGSGDgGxEANFDbBa69N0LhtyF8XgKycF3YIEzwZhvvskt24I3GlTBbi/1XmPBqEGz8NZBBVmtYc9VZ2xJC7fwflhfrjnETluGh0kohB5/dLFAgn0fGtbQOTysdPfSIFr0QLqr+OVh+7KLvmHXnrJog7dKz+f64cQBI4Ppxt5Gi5fKQ4QkXf4B/JJjj5od/esYLgVV9Cv7FQo1pLfhPCfwMY1mVLpE+fyTk7NkL0Tp7pvBQe3BGMqC5jNtI86Np0XADzfUzaY/qyO58deJJrDYyNaSizHE+NlMiPyWr2TtUKo3DRaYABWPD/W52sJTU3IW9Z+PdpyyQyjr6eLJsMhcqXH1FkJEwKFPVM3hUXrIldXwcvEC2ovaXOfufnOZKAVjtPEzEDSBjsHbK4dLm6z8DkaRf9rJZ+hJjC+EKPswHe3ZTYdW9h+CRi4nYwVDhicUyJEqpUU16Z+zbdL1ZfOcRxtW2waf+LSVKMR5gzCagBKzThBJx73eUFEv4Mz8XDK+LPXXNAQ5qVdYnRIaLu1bFsonvlZWdzClogNW6jtdbGz3QLSX64eg1vNSLYlv0b2CAfiI9ce0uEHYyN6tTjLBhQMeirWoM85FpD8UBsc=
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DU0PR04MB9417.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(4636009)(396003)(136003)(39860400002)(366004)(376002)(346002)(8936002)(2906002)(83380400001)(38350700002)(38100700002)(66946007)(316002)(66476007)(6486002)(66556008)(4326008)(478600001)(8676002)(6506007)(86362001)(26005)(6512007)(966005)(2616005)(186003)(1076003)(41300700001)(5660300002)(6666004)(52116002);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?4Xzq9eOluszNrkJPORq1thzKWvJg3zZVLyRdl7MfzciWBsAaEuXZaSb+41b0?=
+ =?us-ascii?Q?3lCThBCSdkLnM8Uy4ZeB0I+2aMVqsJTAW2x6DSY9IELqjNl+A5gjA0mj8ERA?=
+ =?us-ascii?Q?xBg93peP07MHkaKkLthUote8X9la6CDH1aTf/MSHkuImnfcu2d0zFOQFXa2C?=
+ =?us-ascii?Q?gHVYaCfEYEXxakosRu/5wYhkEfpYHI0X4rQ8FzDKk0gI4zx8UjcmrGo0ZAks?=
+ =?us-ascii?Q?ifKl8GONnBFtE8t1EKevT/OSY9r9hf3qkt+kUwGMOw7T46/DiYRHAmFdJ9v/?=
+ =?us-ascii?Q?SiUgH02Lg6mCwJC8ntTSCS2/hsFQgidFL4WJ0Tm8vX6DQ9Im30H1VHy9GMVA?=
+ =?us-ascii?Q?zQojaxntWCr1wUitlCA9ajVOtJR2Vj8bDuU9/4Dvviijji9DWG4FVIt6/M7K?=
+ =?us-ascii?Q?Whp7BqFayRCGh1Jsm+4AOr/nnZdOteG1Kw0g3GRDXnsVRYYZoAdAzprwQ1cz?=
+ =?us-ascii?Q?7H3DorfK+fRrpGlHhQf0fSePLGaXiGL0A6CqfCcywVP+LYJmbvH40oxUwFFF?=
+ =?us-ascii?Q?p0kSDfg1JADhxhTFZwWBFOQwZXgHMgEpKIgbS363ySVsMYmpAjY65vleYQ8V?=
+ =?us-ascii?Q?4eBW4q6uUvSXRTPCne26HqnRcUTBsJJ1RpAt2paHoAUz0wWRyx6sMjoUz5Ue?=
+ =?us-ascii?Q?s6aweRPdLeJWalAC4SEVBk9pqDuYIXktzHYxvfszFHGZK5JVWoiBMbJT2LZi?=
+ =?us-ascii?Q?S6Bce54QU8X8RuB4pFNSVBqirGB2/9BqeqR4gLRUptA7MOVhNoaKgX0YVLlZ?=
+ =?us-ascii?Q?EcYpg/IXUkPmNGPPBhSJNQAwEXqaOtDMIfdd2hfq01RXQLze8ovVZU0Wqzyf?=
+ =?us-ascii?Q?UDteYfgcYZptarxc4deTDCCjFM73LfnO8tGsOsbtGu6WxxkPePmKPGrmhfNO?=
+ =?us-ascii?Q?rOlZvUvcCQ4HktpKwRPTHIsvFiexNbXo216At1k3uQ/gBBHXcON94sOa1D7w?=
+ =?us-ascii?Q?ZeVxwGDqR/57texgHUXR6eABx+Ot3qmV/Ng3U+cD4R0Fio4OEp2CX0y+VSE5?=
+ =?us-ascii?Q?ezkiUi6aMWuHOASh+Vhw/snyfwuKemx0GZhQgQoUNNuQscNUMaXN7NCD/hef?=
+ =?us-ascii?Q?/JuUSQOxvKo06W8xzw3Ezv81hHfnj3pQwVaxf/O0m7C2TnSrmPxZvoD5g5IL?=
+ =?us-ascii?Q?n1hq26+pU3cAzFLQVpgQeQOiF/CrbW0ubiUWV4L1rBxeNP2D+3KCmANRgnE/?=
+ =?us-ascii?Q?/AHETpsAt36un2OaMGBodmmuaKWbFzPDDFg5JbHGdJQVkwuSinuSFfmQyWEw?=
+ =?us-ascii?Q?2iMNpIHlh0k8Vv6Qfoxg35mR4dKihLKe6VXaLrG+Y5lYhTESusgkepbyDAAm?=
+ =?us-ascii?Q?n0+6HfPJbzqJBUdSM2ZgqOCrh/4+Jxd0YPSGiTM6nbqSVsAn8jIyvSeE3h9y?=
+ =?us-ascii?Q?cPjyH7OGGhnWHUe//6J+2/tshOYegwqUQFoPCfbuRMgBwelZwCkVealI/gx7?=
+ =?us-ascii?Q?uwKC9T0ZygUWGbb6h+A2SVev3ZpyWR9hKMBzAaQR1fTCiMOdFzH3QDzjPS8n?=
+ =?us-ascii?Q?8MnbMH3gs5nDN55XADMTlyOrK2COlok9Yp3aNbYe+MkVJmtpxty5s5+McpFb?=
+ =?us-ascii?Q?4eNxVg6TbWPww5kW/SWSokHAOLigSBbCjDYtyAYG?=
+X-OriginatorOrg: oss.nxp.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 0e35c5d5-09cc-4b21-734e-08da84cb666c
+X-MS-Exchange-CrossTenant-AuthSource: DU0PR04MB9417.eurprd04.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 23 Aug 2022 05:50:36.0925
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: fNkU+EykoL7KBzssU9e8Y7DpjrOf7NKqGGZFOqId6RvGhOUOA/QR4V7P8AHrQQ4BrqIA60P9PMII6nNRD4hlAg==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM0PR0402MB3778
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 2022/8/20 08:05, Tejun Heo wrote:
-> Currently, kernfs nodes can be created deactivated and activated later to
-> allow creation of multiple nodes to succeed or fail as a group. Extend this
-> capability so that kernfs nodes can be deactivated and re-activated anytime
-> and however many times. This can be used to toggle interface files for
-> features which can be dynamically turned on and off.
-> 
-> kernfs_activate()'s skip conditions are updated so that it doesn't ignore
-> re-activations and suppress re-activations of files which are being removed.
-> 
-> Signed-off-by: Tejun Heo <tj@kernel.org>
-> Cc: Chengming Zhou <zhouchengming@bytedance.com>
-> Cc: Johannes Weiner <hannes@cmpxchg.org>
-> ---
->  fs/kernfs/dir.c        | 89 ++++++++++++++++++++++++++++++------------
->  include/linux/kernfs.h |  2 +
->  2 files changed, 65 insertions(+), 26 deletions(-)
-> 
-> diff --git a/fs/kernfs/dir.c b/fs/kernfs/dir.c
-> index f857731598cd..6db031362585 100644
-> --- a/fs/kernfs/dir.c
-> +++ b/fs/kernfs/dir.c
-> @@ -483,7 +483,7 @@ static bool kernfs_drain(struct kernfs_node *kn)
->  	 * worrying about draining.
->  	 */
->  	if (atomic_read(&kn->active) == KN_DEACTIVATED_BIAS &&
-> -	    kernfs_should_drain_open_files(kn))
-> +	    !kernfs_should_drain_open_files(kn))
->  		return false;
->  
->  	up_write(&root->kernfs_rwsem);
-> @@ -1321,14 +1321,15 @@ static struct kernfs_node *kernfs_next_descendant_post(struct kernfs_node *pos,
->  }
->  
->  /**
-> - * kernfs_activate - activate a node which started deactivated
-> + * kernfs_activate - activate a node's subtree
->   * @kn: kernfs_node whose subtree is to be activated
->   *
-> - * If the root has KERNFS_ROOT_CREATE_DEACTIVATED set, a newly created node
-> - * needs to be explicitly activated.  A node which hasn't been activated
-> - * isn't visible to userland and deactivation is skipped during its
-> - * removal.  This is useful to construct atomic init sequences where
-> - * creation of multiple nodes should either succeed or fail atomically.
-> + * If newly created on a root w/ %KERNFS_ROOT_CREATE_DEACTIVATED or after a
-> + * kernfs_deactivate() call, @kn is deactivated and invisible to userland. This
-> + * function activates all nodes in @kn's inclusive subtree making them visible.
-> + *
-> + * %KERNFS_ROOT_CREATE_DEACTIVATED is useful when constructing init sequences
-> + * where creation of multiple nodes should either succeed or fail atomically.
->   *
->   * The caller is responsible for ensuring that this function is not called
->   * after kernfs_remove*() is invoked on @kn.
-> @@ -1342,7 +1343,7 @@ void kernfs_activate(struct kernfs_node *kn)
->  
->  	pos = NULL;
->  	while ((pos = kernfs_next_descendant_post(pos, kn))) {
-> -		if (pos->flags & KERNFS_ACTIVATED)
-> +		if (kernfs_active(pos) || (kn->flags & KERNFS_REMOVING))
+From: Peng Fan <peng.fan@nxp.com>
 
-May I ask a question, what's the difference between kernfs_active() and KERNFS_ACTIVATED?
+V8:
+ Fix error reported by kernel test robot
 
-KERNFS_ACTIVATED is always set when kernfs_activate() and never clear, so I think it means:
+V7:
+ Added R-b for dt-bindings
+ Addressed Shawn's comments for patch 3, 4
+ Included NoC default settings in patch in patch 4
+ Use regmap access table to restrict the access to blk-ctrl register in patch 4
+ Update node name in patch 5, 6
 
-1. !KERNFS_ACTIVATED : allocated but not activated
-2. KERNFS_ACTIVATED && !kernfs_active() : make deactivated by kernfs_deactivate_locked()
+V6:
+ Per Rob's comments to patch 1:
+  Drop the ref to power-domain.yaml
+  Describe each item of reg
+ Per Randy's comment, drop duplicated support in Kconfig
+ Per kernel test robot, use `void __iomem *` instead `void * __iomem`
+ not default select PM_GENERIC_DOMAINS for SOC_IMX9
 
-I see most code check kernfs_active(), but two places check KERNFS_ACTIVATED, I'm not sure where
-should check KERNFS_ACTIVATED, or is there any chance we can remove KERNFS_ACTIVATED?
+V5:
+ Update bindings for SRC, remove the slices node
+   Although there are several mix-slices, mem-slices, but actually
+   they should work together, so I use one node to group a mix/mem with
+   dual reg entries.
+ Add SRC driver to include a driver to populate subnodes of SRC node
+ Restructure SRC-PD driver, because slices node dropped.
+ Drop the patch to export of_clk_bulk_get_all, which is not needed.
 
-Thanks!
+ https://lore.kernel.org/all/20220711062452.3575032-1-peng.fan@oss.nxp.com/
 
+V4:
+ Correct including fsl,imx93-power.h, not imx93-power.h in driver
 
->  			continue;
->  
->  		WARN_ON_ONCE(pos->parent && RB_EMPTY_NODE(&pos->rb));
-> @@ -1355,6 +1356,58 @@ void kernfs_activate(struct kernfs_node *kn)
->  	up_write(&root->kernfs_rwsem);
->  }
->  
-> +static void kernfs_deactivate_locked(struct kernfs_node *kn, bool removing)
-> +{
-> +	struct kernfs_root *root = kernfs_root(kn);
-> +	struct kernfs_node *pos;
-> +
-> +	lockdep_assert_held_write(&root->kernfs_rwsem);
-> +
-> +	/* prevent any new usage under @kn by deactivating all nodes */
-> +	pos = NULL;
-> +	while ((pos = kernfs_next_descendant_post(pos, kn))) {
-> +		if (kernfs_active(pos))
-> +			atomic_add(KN_DEACTIVATED_BIAS, &pos->active);
-> +		if (removing)
-> +			pos->flags |= KERNFS_REMOVING;
-> +	}
-> +
-> +	/*
-> +	 * No new active usage can be created. Drain existing ones. As
-> +	 * kernfs_drain() may drop kernfs_rwsem temporarily, pin @pos so that it
-> +	 * doesn't go away underneath us.
-> +	 *
-> +	 * If kernfs_rwsem was released, restart from the beginning. Forward
-> +	 * progress is guaranteed as a drained node is guaranteed to stay
-> +	 * drained. In the unlikely case that the loop restart ever becomes a
-> +	 * problem, we should be able to work around by batching up the
-> +	 * draining.
-> +	 */
-> +	pos = NULL;
-> +	while ((pos = kernfs_next_descendant_post(pos, kn))) {
-> +		kernfs_get(pos);
-> +		if (kernfs_drain(pos))
-> +			pos = NULL;
-> +		kernfs_put(pos);
-> +	}
-> +}
-> +
-> +/**
-> + * kernfs_deactivate - deactivate a node's subtree
-> + * @kn: kernfs_node whose subtree is to be deactivated
-> + *
-> + * Deactivate @kn's inclusive subtree. On return, the subtree is invisible to
-> + * userland and there are no in-flight file operations.
-> + */
-> +void kernfs_deactivate(struct kernfs_node *kn)
-> +{
-> +	struct kernfs_root *root = kernfs_root(kn);
-> +
-> +	down_write(&root->kernfs_rwsem);
-> +	kernfs_deactivate_locked(kn, false);
-> +	up_write(&root->kernfs_rwsem);
-> +}
-> +
->  static void __kernfs_remove(struct kernfs_node *kn)
->  {
->  	struct kernfs_node *pos;
-> @@ -1374,26 +1427,12 @@ static void __kernfs_remove(struct kernfs_node *kn)
->  
->  	pr_debug("kernfs %s: removing\n", kn->name);
->  
-> -	/* prevent any new usage under @kn by deactivating all nodes */
-> -	pos = NULL;
-> -	while ((pos = kernfs_next_descendant_post(pos, kn)))
-> -		if (kernfs_active(pos))
-> -			atomic_add(KN_DEACTIVATED_BIAS, &pos->active);
-> +	kernfs_deactivate_locked(kn, true);
->  
-> -	/* deactivate and unlink the subtree node-by-node */
-> +	/* unlink the subtree node-by-node */
->  	do {
->  		pos = kernfs_leftmost_descendant(kn);
->  
-> -		/*
-> -		 * kernfs_drain() may drop kernfs_rwsem temporarily and @pos's
-> -		 * base ref could have been put by someone else by the time
-> -		 * the function returns.  Make sure it doesn't go away
-> -		 * underneath us.
-> -		 */
-> -		kernfs_get(pos);
-> -
-> -		kernfs_drain(pos);
-> -
->  		/*
->  		 * kernfs_unlink_sibling() succeeds once per node.  Use it
->  		 * to decide who's responsible for cleanups.
-> @@ -1410,8 +1449,6 @@ static void __kernfs_remove(struct kernfs_node *kn)
->  
->  			kernfs_put(pos);
->  		}
-> -
-> -		kernfs_put(pos);
->  	} while (pos != kn);
->  }
->  
-> diff --git a/include/linux/kernfs.h b/include/linux/kernfs.h
-> index 367044d7708c..657eea1395b6 100644
-> --- a/include/linux/kernfs.h
-> +++ b/include/linux/kernfs.h
-> @@ -112,6 +112,7 @@ enum kernfs_node_flag {
->  	KERNFS_SUICIDED		= 0x0800,
->  	KERNFS_EMPTY_DIR	= 0x1000,
->  	KERNFS_HAS_RELEASE	= 0x2000,
-> +	KERNFS_REMOVING		= 0x4000,
->  };
->  
->  /* @flags for kernfs_create_root() */
-> @@ -429,6 +430,7 @@ struct kernfs_node *kernfs_create_link(struct kernfs_node *parent,
->  				       const char *name,
->  				       struct kernfs_node *target);
->  void kernfs_activate(struct kernfs_node *kn);
-> +void kernfs_deactivate(struct kernfs_node *kn);
->  void kernfs_remove(struct kernfs_node *kn);
->  void kernfs_break_active_protection(struct kernfs_node *kn);
->  void kernfs_unbreak_active_protection(struct kernfs_node *kn);
+V3:
+  Move src yaml to power directory.
+  Update slice name to slices
+
+V2:
+  yaml fix
+
+This patchset is to support i.MX93 SRC and mediamix blk ctrl.
+SRC functions as power domain provider as i.MX8M GPC.
+mediamix blk ctrl is similar with i.MX8M blk ctrl, but much simplier from
+software view.
+
+Add bindings and dts node
+
+Peng Fan (6):
+  dt-bindings: soc: add i.MX93 SRC
+  dt-bindings: soc: add i.MX93 mediamix blk ctrl
+  soc: imx: add i.MX93 SRC power domain driver
+  soc: imx: add i.MX93 media blk ctrl driver
+  arm64: dts: imx93: add src node
+  arm64: dts: imx93: add mediamix blk ctrl node
+
+ .../soc/imx/fsl,imx93-media-blk-ctrl.yaml     |  80 ++++
+ .../bindings/soc/imx/fsl,imx93-src.yaml       |  96 ++++
+ arch/arm64/boot/dts/freescale/imx93.dtsi      |  45 ++
+ drivers/soc/imx/Kconfig                       |   8 +
+ drivers/soc/imx/Makefile                      |   1 +
+ drivers/soc/imx/imx93-blk-ctrl.c              | 452 ++++++++++++++++++
+ drivers/soc/imx/imx93-pd.c                    | 164 +++++++
+ drivers/soc/imx/imx93-src.c                   |  33 ++
+ include/dt-bindings/power/fsl,imx93-power.h   |  15 +
+ 9 files changed, 894 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/soc/imx/fsl,imx93-media-blk-ctrl.yaml
+ create mode 100644 Documentation/devicetree/bindings/soc/imx/fsl,imx93-src.yaml
+ create mode 100644 drivers/soc/imx/imx93-blk-ctrl.c
+ create mode 100644 drivers/soc/imx/imx93-pd.c
+ create mode 100644 drivers/soc/imx/imx93-src.c
+ create mode 100644 include/dt-bindings/power/fsl,imx93-power.h
+
+-- 
+2.37.1
+
