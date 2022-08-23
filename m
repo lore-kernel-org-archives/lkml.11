@@ -2,197 +2,101 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 37658C32772
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 15:09:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9A87CC3F6B0
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 15:10:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243376AbiHWPJt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 11:09:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36174 "EHLO
+        id S243617AbiHWPKV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 23 Aug 2022 11:10:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37460 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243309AbiHWPJb (ORCPT
+        with ESMTP id S241070AbiHWPKD (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 11:09:31 -0400
-Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 891F4107758;
-        Tue, 23 Aug 2022 05:39:15 -0700 (PDT)
-Received: from dggpemm500022.china.huawei.com (unknown [172.30.72.54])
-        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4MBnlC3xpmzlVpd;
-        Tue, 23 Aug 2022 19:56:55 +0800 (CST)
-Received: from dggpemm500006.china.huawei.com (7.185.36.236) by
- dggpemm500022.china.huawei.com (7.185.36.162) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Tue, 23 Aug 2022 20:00:08 +0800
-Received: from [10.174.178.55] (10.174.178.55) by
- dggpemm500006.china.huawei.com (7.185.36.236) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Tue, 23 Aug 2022 20:00:07 +0800
-Subject: Re: [PATCH v4 1/2] rcu: Eliminate rcu_state.nocb_is_setup
-To:     <paulmck@kernel.org>
-CC:     Frederic Weisbecker <frederic@kernel.org>,
-        Neeraj Upadhyay <quic_neeraju@quicinc.com>,
-        Josh Triplett <josh@joshtriplett.org>,
-        "Steven Rostedt" <rostedt@goodmis.org>,
-        Mathieu Desnoyers <mathieu.desnoyers@efficios.com>,
-        Lai Jiangshan <jiangshanlai@gmail.com>,
-        Joel Fernandes <joel@joelfernandes.org>, <rcu@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>
-References: <20220817014253.1982-1-thunder.leizhen@huawei.com>
- <20220817014253.1982-2-thunder.leizhen@huawei.com>
- <20220822163411.GF6159@paulmck-ThinkPad-P17-Gen-1>
-From:   "Leizhen (ThunderTown)" <thunder.leizhen@huawei.com>
-Message-ID: <89bd14ea-6980-4857-9e2a-9d89c94e88a7@huawei.com>
-Date:   Tue, 23 Aug 2022 20:00:07 +0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:60.0) Gecko/20100101
- Thunderbird/60.7.0
+        Tue, 23 Aug 2022 11:10:03 -0400
+Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com [148.163.156.1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C4B1513A395;
+        Tue, 23 Aug 2022 05:43:33 -0700 (PDT)
+Received: from pps.filterd (m0098409.ppops.net [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 27NCGsdl021750;
+        Tue, 23 Aug 2022 12:43:30 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=date : from : to : cc :
+ subject : message-id : references : content-type : in-reply-to :
+ mime-version; s=pp1; bh=WbtKC7chpqC1IcOcrEjrWtevRugPmoaBI9Cx6n4JziY=;
+ b=JHGbi38DwxXPWEP2G/nacxqSd58GJP1XY0ADDjNIO9cAkqOZJtd9Dm3TgErkUwGje9TX
+ 7uG7fby/nZ2F5ft1h45x7TaCAEHQbvzGP032v+2sAm0g5x+YZK7DFUc3pYQTi5n1MYYA
+ iC37zbV3XDp42cAEmHbNCEFMM6q90rMkTtD6GpjAuRsqMMKS+MWUkpccyH9dZWuY5mYR
+ x8WItYgmZU8aNZHB/PrJy9qFCwoigV91JTYpkpspbXfEsBSVcA1nDS/8hD682i3TP2cw
+ EGq+7iSI2QdK5QqAcoo94kk37jq1Gouy+WEovCUEuLX+GW+FJTyOpBkLEG4H0KoQo14I 5g== 
+Received: from ppma02fra.de.ibm.com (47.49.7a9f.ip4.static.sl-reverse.com [159.122.73.71])
+        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3j4xru0sc9-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Tue, 23 Aug 2022 12:43:29 +0000
+Received: from pps.filterd (ppma02fra.de.ibm.com [127.0.0.1])
+        by ppma02fra.de.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 27NCMtbs014099;
+        Tue, 23 Aug 2022 12:43:27 GMT
+Received: from b06cxnps3074.portsmouth.uk.ibm.com (d06relay09.portsmouth.uk.ibm.com [9.149.109.194])
+        by ppma02fra.de.ibm.com with ESMTP id 3j2q88ts54-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Tue, 23 Aug 2022 12:43:27 +0000
+Received: from d06av25.portsmouth.uk.ibm.com (d06av25.portsmouth.uk.ibm.com [9.149.105.61])
+        by b06cxnps3074.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 27NChOpo33292782
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Tue, 23 Aug 2022 12:43:24 GMT
+Received: from d06av25.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 5C52B11C04C;
+        Tue, 23 Aug 2022 12:43:24 +0000 (GMT)
+Received: from d06av25.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 9B47D11C052;
+        Tue, 23 Aug 2022 12:43:23 +0000 (GMT)
+Received: from localhost (unknown [9.171.95.166])
+        by d06av25.portsmouth.uk.ibm.com (Postfix) with ESMTPS;
+        Tue, 23 Aug 2022 12:43:23 +0000 (GMT)
+Date:   Tue, 23 Aug 2022 14:43:22 +0200
+From:   Vasily Gorbik <gor@linux.ibm.com>
+To:     Wolfram Sang <wsa+renesas@sang-engineering.com>
+Cc:     linux-kernel@vger.kernel.org, Stefan Haberland <sth@linux.ibm.com>,
+        Jan Hoeppner <hoeppner@linux.ibm.com>,
+        Heiko Carstens <hca@linux.ibm.com>,
+        Alexander Gordeev <agordeev@linux.ibm.com>,
+        Christian Borntraeger <borntraeger@linux.ibm.com>,
+        Sven Schnelle <svens@linux.ibm.com>,
+        Vineeth Vijayan <vneethv@linux.ibm.com>,
+        Peter Oberparleiter <oberpar@linux.ibm.com>,
+        Alexandra Winter <wintera@linux.ibm.com>,
+        Wenjia Zhang <wenjia@linux.ibm.com>,
+        Steffen Maier <maier@linux.ibm.com>,
+        Benjamin Block <bblock@linux.ibm.com>,
+        linux-s390@vger.kernel.org, netdev@vger.kernel.org
+Subject: Re: [PATCH] s390: move from strlcpy with unused retval to strscpy
+Message-ID: <your-ad-here.call-01661258602-ext-1883@work.hours>
+References: <20220818210102.7301-1-wsa+renesas@sang-engineering.com>
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <20220818210102.7301-1-wsa+renesas@sang-engineering.com>
+X-TM-AS-GCONF: 00
+X-Proofpoint-GUID: Kjxn_1es0zlqUhLUsQAhDxF_kltSf8R8
+X-Proofpoint-ORIG-GUID: Kjxn_1es0zlqUhLUsQAhDxF_kltSf8R8
+X-Proofpoint-UnRewURL: 0 URL was un-rewritten
 MIME-Version: 1.0
-In-Reply-To: <20220822163411.GF6159@paulmck-ThinkPad-P17-Gen-1>
-Content-Type: text/plain; charset="utf-8"
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.174.178.55]
-X-ClientProxiedBy: dggems703-chm.china.huawei.com (10.3.19.180) To
- dggpemm500006.china.huawei.com (7.185.36.236)
-X-CFilter-Loop: Reflected
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.895,Hydra:6.0.517,FMLib:17.11.122.1
+ definitions=2022-08-23_05,2022-08-22_02,2022-06-22_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 spamscore=0
+ priorityscore=1501 lowpriorityscore=0 suspectscore=0 impostorscore=0
+ bulkscore=0 malwarescore=0 clxscore=1011 mlxscore=0 adultscore=0
+ phishscore=0 mlxlogscore=894 classifier=spam adjust=0 reason=mlx
+ scancount=1 engine=8.12.0-2207270000 definitions=main-2208230050
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-
-
-On 2022/8/23 0:34, Paul E. McKenney wrote:
-> On Wed, Aug 17, 2022 at 09:42:52AM +0800, Zhen Lei wrote:
->> 'rcu_state.nocb_is_setup' is initialized to true only if 'rcu_nocb_mask'
->> successfully allocates memory. So it can be replaced by
->> 'cpumask_available(rcu_nocb_mask)'. More importantly, the latter is more
->> intuitive, and it has been used in several places.
->>
->> Signed-off-by: Zhen Lei <thunder.leizhen@huawei.com>
+On Thu, Aug 18, 2022 at 11:01:01PM +0200, Wolfram Sang wrote:
+> Follow the advice of the below link and prefer 'strscpy' in this
+> subsystem. Conversion is 1:1 because the return value is not used.
+> Generated by a coccinelle script.
 > 
-> One of the implementations of cpumask_available() does indeed check
-> for NULL.  But here is the other one:
-> 
-> static inline bool cpumask_available(cpumask_var_t mask)
-> {
-> 	return true;
-> }
+> Link: https://lore.kernel.org/r/CAHk-=wgfRnXz0W3D37d01q3JFkr_i_uTL=V6A6G1oUZcprmknw@mail.gmail.com/
+> Signed-off-by: Wolfram Sang <wsa+renesas@sang-engineering.com>
 
-Thanks for the heads-up.
-
-> 
-> So I have to ask...  In a kernel built with CONFIG_CPUMASK_OFFSTACK=n,
-> will this change really work?
-
-Yes, I run the test cases on arm64, which does not turn on option
-CONFIG_CPUMASK_OFFSTACK by default.
-
-I've listed a combination of build options in the cover-letter. In
-this case, cpumask_empty(rcu_nocb_mask) is true.
-----
-CONFIG_NO_HZ_FULL=n, CONFIG_RCU_NOCB_CPU_DEFAULT_ALL=n, cmdline without rcu_nocbs
-[    0.000000] rcu:     Offload RCU callbacks from CPUs: (none).
-----
-
-> 
-> Another important question is "Do all of the existing uses of
-> cpumask_available() really work?"  Yes, I do believe that they do
-
-The only functional change caused by this patch is:
-For clarity, CONFIG_RCU_NOCB_CPU=y and CONFIG_RCU_NOCB_CPU_DEFAULT_ALL=n are
-omitted from the following conditions.
-
-When
-  CONFIG_NO_HZ_FULL=n and boot cmdline without 'rcu_nocbs='.
-or
-  CONFIG_NO_HZ_FULL=y and boot cmdline without 'nohz_full='.
-
-The rdp->nocb_gp_kthread and rdp->nocb_cb_kthread threads are still created.
-
-But we have provided EXPORT_SYMBOL_GPL functions rcu_nocb_cpu_deoffload() and
-rcu_nocb_cpu_offload(), which can dynamically modify 'rcu_nocb_mask'. So it
-seems appropriate to prepare these threads in advance. Of course, it looks like
-only 'rcutorture' currently uses these two functions now.
-
-Otherwise, we can do some optimization:
-If none of the CPUs in a 'nocb_gp' group is marked in rcu_nocb_mask, this
-grouping does not need to create corresponding threads "rcuog/%d" and "rcuo%c/%d".
-
-And in rcu_init_nohz():
--       if (!rcu_state.nocb_is_setup)
-+       if (!cpumask_available(rcu_nocb_mask) || cpumask_empty(rcu_nocb_mask))
-                return;
-
-
-
-> work, but it would be good to get another set of eyes on that code.
-> "All software developers are blind!"  ;-)
-> 
-> 							Thanx, Paul
-> 
->> ---
->>  kernel/rcu/tree.h      | 1 -
->>  kernel/rcu/tree_nocb.h | 8 +++-----
->>  2 files changed, 3 insertions(+), 6 deletions(-)
->>
->> diff --git a/kernel/rcu/tree.h b/kernel/rcu/tree.h
->> index d4a97e40ea9c3e2..06f659c63d2d192 100644
->> --- a/kernel/rcu/tree.h
->> +++ b/kernel/rcu/tree.h
->> @@ -375,7 +375,6 @@ struct rcu_state {
->>  	arch_spinlock_t ofl_lock ____cacheline_internodealigned_in_smp;
->>  						/* Synchronize offline with */
->>  						/*  GP pre-initialization. */
->> -	int nocb_is_setup;			/* nocb is setup from boot */
->>  };
->>  
->>  /* Values for rcu_state structure's gp_flags field. */
->> diff --git a/kernel/rcu/tree_nocb.h b/kernel/rcu/tree_nocb.h
->> index 0a5f0ef41484518..ff763e7dc53551f 100644
->> --- a/kernel/rcu/tree_nocb.h
->> +++ b/kernel/rcu/tree_nocb.h
->> @@ -69,7 +69,6 @@ static int __init rcu_nocb_setup(char *str)
->>  			cpumask_setall(rcu_nocb_mask);
->>  		}
->>  	}
->> -	rcu_state.nocb_is_setup = true;
->>  	return 1;
->>  }
->>  __setup("rcu_nocbs", rcu_nocb_setup);
->> @@ -1215,7 +1214,7 @@ void __init rcu_init_nohz(void)
->>  	struct rcu_data *rdp;
->>  
->>  #if defined(CONFIG_RCU_NOCB_CPU_DEFAULT_ALL)
->> -	if (!rcu_state.nocb_is_setup) {
->> +	if (!cpumask_available(rcu_nocb_mask)) {
->>  		need_rcu_nocb_mask = true;
->>  		offload_all = true;
->>  	}
->> @@ -1235,10 +1234,9 @@ void __init rcu_init_nohz(void)
->>  				return;
->>  			}
->>  		}
->> -		rcu_state.nocb_is_setup = true;
->>  	}
->>  
->> -	if (!rcu_state.nocb_is_setup)
->> +	if (!cpumask_available(rcu_nocb_mask))
->>  		return;
->>  
->>  #if defined(CONFIG_NO_HZ_FULL)
->> @@ -1299,7 +1297,7 @@ static void rcu_spawn_cpu_nocb_kthread(int cpu)
->>  	struct task_struct *t;
->>  	struct sched_param sp;
->>  
->> -	if (!rcu_scheduler_fully_active || !rcu_state.nocb_is_setup)
->> +	if (!rcu_scheduler_fully_active || !cpumask_available(rcu_nocb_mask))
->>  		return;
->>  
->>  	/* If there already is an rcuo kthread, then nothing to do. */
->> -- 
->> 2.25.1
->>
-> .
-> 
-
--- 
-Regards,
-  Zhen Lei
+Squashed it together with
+https://lore.kernel.org/r/20220818205948.6360-1-wsa+renesas@sang-engineering.com
+and applied to s390 tree. Thank you!
