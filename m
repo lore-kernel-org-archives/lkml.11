@@ -2,233 +2,88 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 00CD2C32772
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 18:11:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 41E11C32789
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 18:11:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230162AbiHWSLO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 14:11:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36428 "EHLO
+        id S231265AbiHWSLq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 23 Aug 2022 14:11:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37402 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234164AbiHWSKo (ORCPT
+        with ESMTP id S230426AbiHWSLS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 14:10:44 -0400
-Received: from mail-yw1-x1129.google.com (mail-yw1-x1129.google.com [IPv6:2607:f8b0:4864:20::1129])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 02FE99DF9C
-        for <linux-kernel@vger.kernel.org>; Tue, 23 Aug 2022 09:21:28 -0700 (PDT)
-Received: by mail-yw1-x1129.google.com with SMTP id 00721157ae682-334dc616f86so392918047b3.8
-        for <linux-kernel@vger.kernel.org>; Tue, 23 Aug 2022 09:21:28 -0700 (PDT)
+        Tue, 23 Aug 2022 14:11:18 -0400
+Received: from mail-pj1-x1030.google.com (mail-pj1-x1030.google.com [IPv6:2607:f8b0:4864:20::1030])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A74946F266
+        for <linux-kernel@vger.kernel.org>; Tue, 23 Aug 2022 09:23:01 -0700 (PDT)
+Received: by mail-pj1-x1030.google.com with SMTP id s31-20020a17090a2f2200b001faaf9d92easo17706933pjd.3
+        for <linux-kernel@vger.kernel.org>; Tue, 23 Aug 2022 09:23:01 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc;
-        bh=Xs/HommssY7s0B/PLHAjlcRJ4mqHCr3IhAd1yTCEzCE=;
-        b=J1Vec7bio8CJXhkUKFR6AzmUJeklF7b0qMyGawJeDXz5GGJgAljz1jk82Jwg21H8b8
-         MJDJD1xs5FwNkG1j2kMpeWNyP8pdGsmfN7aU3UVQEvk9NhMuUsL6r683dw6VoMlDcd8G
-         psVsV9/S3s8Q4wef27D6xaRF+221cD3tzkamSJpXS2MAQsDQckI8ZFsOYbX6rALQQaSV
-         46ZkmcB6yVW57VjIJmlDnR5Wkv5Dus4vv871VPSQX4sYGeuTFuwOcwZL9uOnR/Xn+Kui
-         XKgQrFZnf+EpiWWc/svuhx+dAmCsL20Vwn/xBwhpc8LO+atcSrj5yMcOkVlkDmN25JPa
-         m/9A==
+        d=gmail.com; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:sender:from:to:cc;
+        bh=sr+/MYTdy+Hb+ViTpSI674A/Fgsv5oXGjKt3k8niW6E=;
+        b=F8K1uc4a7GIvY5YEhN3k3CQDZGWvAusCXcTbHH8+tdzRfb/CwXlDJj26VRtrQct2Lz
+         A/xIrxjjnqjvNFqaXgFCYTsm+hndyJD/E3x+T0rC78RVK6eKc30Ovr9uxOSKqtHaMnfH
+         Hvf2xY7Wc5Q/dUIrUeisGkp1ONwdWT4sN6wqUjrcZyySfjgcbSNz4JySvZ4e17bt5LYe
+         xmNQxcnWcYBVUpUNtqPiK+hCqU4KQhZObnn8xx2YsAxRBRIhvqCrILcE1kLcWWebiVdY
+         D4r4sZZl+TH8U973SfKYksBMDBsimN/hnFwVtskI+SKzvsxfMuOnsi6rkKcDnZXviKNn
+         jvSg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc;
-        bh=Xs/HommssY7s0B/PLHAjlcRJ4mqHCr3IhAd1yTCEzCE=;
-        b=l39UCXlfi/VWd23+x4UpM1/TqIpB8+UpdtTfcP7wd3hm+MOMzq28agMSv3jtt1XtYl
-         ncPY9Qvm4Zg9H2G9CIBMwXUTILBWbqBxbtJFacsX28llH7C/H7TA6ws5MYn6GLetzLp9
-         pfXCdqMUtzdOmggSdS2ca5qNPDoX8qxEDH9s3i/FMMiExyDsUMfI5RVBsxMRtZPpjmC2
-         quaN9poH5K4s3Fw6eMg8126lug2t1Q7M3IZEvCUiqicoSZOmSlglW/5fbKOzr1jgTPiz
-         LTIUi0/VlG5x5HCZdEmV1/MV85gMzJwzRsln6pKaF70SyFgkVaA4eXfdowwM0Yi7ryMB
-         hc5g==
-X-Gm-Message-State: ACgBeo00YutyZx0C7jrZMFaUs9XtdeJ5OPvoqkMZhjqEhZ22bnSvd9lZ
-        faKgmRgxCsB1c+Std20mBizVQBSYnNK08+Mu/YU23A==
-X-Google-Smtp-Source: AA6agR47/L67Bj7Cc/lyZkYwlGjaDqvzkMLSsjTeVk3+ad19DdfL5aVeIkNzpxKNNVDICRVyPaS7fnN/yTQab9d+4Rw=
-X-Received: by 2002:a05:6902:1366:b0:691:4335:455b with SMTP id
- bt6-20020a056902136600b006914335455bmr24056494ybb.282.1661271687900; Tue, 23
- Aug 2022 09:21:27 -0700 (PDT)
-MIME-Version: 1.0
-References: <1660908562-17409-1-git-send-email-zhaoyang.huang@unisoc.com>
- <Yv+6YjaGAv52yvq9@slm.duckdns.org> <CALvZod7QdLSMdBoD2WztL72qS8kJe7F79JuCH6t19rRcw6Pn1w@mail.gmail.com>
- <Yv/EArPDTcCrGqJh@slm.duckdns.org> <YwNpI1ydy0yDnBH0@dhcp22.suse.cz>
- <CAGWkznEB+R0YBaBFBL7dPqs8R=qKC6+ixTWEGCYy2PaczXkaPA@mail.gmail.com>
- <YwRjyx6wFLk8WTDe@dhcp22.suse.cz> <CAGWkznGaYTv4u4kOo-rupfyWzDNJXNKTchwP6dbUK-=UXWm47w@mail.gmail.com>
- <YwSQ4APOu/H7lYGL@dhcp22.suse.cz> <CAGWkznGd6mgareABseMKY5p0f1=5dkfVkj=NS7_B6OkXBYSwyw@mail.gmail.com>
- <YwS/S9Sd1OWnT81Q@dhcp22.suse.cz>
-In-Reply-To: <YwS/S9Sd1OWnT81Q@dhcp22.suse.cz>
-From:   Suren Baghdasaryan <surenb@google.com>
-Date:   Tue, 23 Aug 2022 09:21:16 -0700
-Message-ID: <CAJuCfpH+T9+eOVYDfOv9yNSfAvq=pJtMp4ZaoYaM7iMY9XkaUw@mail.gmail.com>
-Subject: Re: [RFC PATCH] memcg: use root_mem_cgroup when css is inherited
-To:     Michal Hocko <mhocko@suse.com>
-Cc:     Zhaoyang Huang <huangzhaoyang@gmail.com>,
-        Tejun Heo <tj@kernel.org>, Shakeel Butt <shakeelb@google.com>,
-        "zhaoyang.huang" <zhaoyang.huang@unisoc.com>,
-        Johannes Weiner <hannes@cmpxchg.org>,
-        Linux MM <linux-mm@kvack.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Cgroups <cgroups@vger.kernel.org>, Ke Wang <ke.wang@unisoc.com>,
-        Zefan Li <lizefan.x@bytedance.com>,
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:sender:x-gm-message-state:from:to:cc;
+        bh=sr+/MYTdy+Hb+ViTpSI674A/Fgsv5oXGjKt3k8niW6E=;
+        b=oL2t3nphINX5I2uH0HqjuwmO6AZ31ZcnSWDN9bkw44VDFOUxlFKJOlOl7lSnEXYMOM
+         VBHj2+NilOM3Nlncu+OtRAbpmiOTDXrgixuDVNRY8KIh3K/wpLNIyyYZvMF76LMoI6AH
+         6vBXi5tXwMJYH4trvb1cxspYJta48YnyeF6O6Ukkb6RhTNoeS51R6QbpEv70QGZxUKoE
+         X1G9VBoJSOW+yV7RtMX5KO77vHXLyLVwJ3JP4l77T++as1KPFxyb76yhE9O6TWtTMJXj
+         gyoFwB+wHjwUVumwWiejBbIkgyYhEsKOHsLGz1ErZ0E6FPe1iqUEoFh9riM+SoeBVqda
+         Yn3w==
+X-Gm-Message-State: ACgBeo0aHcPvB2YnQrvS91ITAAMODJLD4LL0lFb3osgg9vSi7dtwcSRe
+        eTvO91RZxilv8aJNSpsvwV/Z4CAxb1U=
+X-Google-Smtp-Source: AA6agR54r7eQ8pJOXAqC2eJalPRtAmQd1x/ma/uKsnCxb+E4KrezW3C/YEF98fdT2JI0IvCxI4+Pmw==
+X-Received: by 2002:a17:90b:198e:b0:1fb:fb8:1072 with SMTP id mv14-20020a17090b198e00b001fb0fb81072mr4017061pjb.51.1661271780957;
+        Tue, 23 Aug 2022 09:23:00 -0700 (PDT)
+Received: from localhost (2603-800c-1a02-1bae-a7fa-157f-969a-4cde.res6.spectrum.com. [2603:800c:1a02:1bae:a7fa:157f:969a:4cde])
+        by smtp.gmail.com with ESMTPSA id x124-20020a623182000000b00534cb3872edsm10965706pfx.166.2022.08.23.09.23.00
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 23 Aug 2022 09:23:00 -0700 (PDT)
+Sender: Tejun Heo <htejun@gmail.com>
+Date:   Tue, 23 Aug 2022 06:22:59 -1000
+From:   Tejun Heo <tj@kernel.org>
+To:     Vasily Averin <vvs@openvz.org>
+Cc:     Michal =?iso-8859-1?Q?Koutn=FD?= <mkoutny@suse.com>,
         Roman Gushchin <roman.gushchin@linux.dev>,
-        Muchun Song <songmuchun@bytedance.com>
-Content-Type: text/plain; charset="UTF-8"
+        gregkh@linuxfoundation.org, hannes@cmpxchg.org, kernel@openvz.org,
+        linux-kernel@vger.kernel.org, mhocko@suse.com, shakeelb@google.com,
+        songmuchun@bytedance.com, viro@zeniv.linux.org.uk,
+        Christian Brauner <brauner@kernel.org>
+Subject: Re: [RFC PATCH] memcg: adjust memcg for new cgroup allocations
+Message-ID: <YwT+4zHz2gUWnI5S@slm.duckdns.org>
+References: <62188f37-f816-08e9-cdd5-8df23131746d@openvz.org>
+ <45a04b75-d61b-4c7a-7169-c971995a6049@openvz.org>
+ <20220817091728.GA23229@blackbody.suse.cz>
+ <Yv0aMqMIafD7cOQX@slm.duckdns.org>
+ <b64759d9-e183-99a2-3ec5-9241035eca69@openvz.org>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <b64759d9-e183-99a2-3ec5-9241035eca69@openvz.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Aug 23, 2022 at 4:51 AM Michal Hocko <mhocko@suse.com> wrote:
->
-> On Tue 23-08-22 17:20:59, Zhaoyang Huang wrote:
-> > On Tue, Aug 23, 2022 at 4:33 PM Michal Hocko <mhocko@suse.com> wrote:
-> > >
-> > > On Tue 23-08-22 14:03:04, Zhaoyang Huang wrote:
-> > > > On Tue, Aug 23, 2022 at 1:21 PM Michal Hocko <mhocko@suse.com> wrote:
-> > > > >
-> > > > > On Tue 23-08-22 10:31:57, Zhaoyang Huang wrote:
-> > > [...]
-> > > > > > I would like to quote the comments from google side for more details
-> > > > > > which can also be observed from different vendors.
-> > > > > > "Also be advised that when you enable memcg v2 you will be using
-> > > > > > per-app memcg configuration which implies noticeable overhead because
-> > > > > > every app will have its own group. For example pagefault path will
-> > > > > > regress by about 15%. And obviously there will be some memory overhead
-> > > > > > as well. That's the reason we don't enable them in Android by
-> > > > > > default."
-> > > > >
-> > > > > This should be reported and investigated. Because per-application memcg
-> > > > > vs. memcg in general shouldn't make much of a difference from the
-> > > > > performance side. I can see a potential performance impact for no-memcg
-> > > > > vs. memcg case but even then 15% is quite a lot.
-> > > > Less efficiency on memory reclaim caused by multi-LRU should be one of
-> > > > the reason, which has been proved by comparing per-app memcg on/off.
-> > > > Besides, theoretically workingset could also broken as LRU is too
-> > > > short to compose workingset.
-> > >
-> > > Do you have any data to back these claims? Is this something that could
-> > > be handled on the configuration level? E.g. by applying low limit
-> > > protection to keep the workingset in the memory?
-> > I don't think so. IMO, workingset works when there are pages evicted
-> > from LRU and then refault which provide refault distance for pages.
-> > Applying memcg's protection will have all LRU out of evicted which
-> > make the mechanism fail.
->
-> It is really hard to help you out without any actual data. The idea was
-> though to use the low limit protection to adaptively configure
-> respective memcgs to reduce refaults. You already have data about
-> refaults ready so increasing the limit for often refaulting memcgs would
-> reduce the trashing.
+Hello,
 
-Sorry for joining late.
-A couple years ago I tested root-memcg vs per-app memcg configurations
-on an Android phone. Here is a snapshot from my findings:
+On Tue, Aug 23, 2022 at 03:04:31PM +0300, Vasily Averin wrote:
+> I would like to properly handle cgroup1 case too.
+> To do it we can enable accounting for new 'struct cgroup' objects, 
+> and bind them to memcg of creator task.
 
-Problem
-=======
-We see tangible increase in major faults and workingset refaults when
-transitioning from root-only memory cgroup to per-application cgroups
-on Android.
+I'm not sure it'd be a good idea to introduce two different behaviors for
+handling the same thing. I'd just leave cgroup1 as-is.
 
-Test results
-============
-Results while running memory-demanding workload:
-root memcg     per-app memcg     delta
-workingset_refault 1771228 3874281 +118.73%
-workingset_nodereclaim 4543 13928 +206.58%
-pgpgin 13319208 20618944 +54.81%
-pgpgout 1739552 3080664 +77.1%
-pgpgoutclean 2616571 4805755 +83.67%
-pswpin 359211 3918716 +990.92%
-pswpout 1082238 5697463 +426.45%
-pgfree 28978393 32531010 +12.26%
-pgactivate 2586562 8731113 +237.56%
-pgdeactivate 3811074 11670051 +206.21%
-pgfault 38692510 46096963 +19.14%
-pgmajfault 441288 4100020 +829.1%
-pgrefill 4590451 12768165 +178.15%
+Thanks.
 
-Results while running application cycle test (20 apps, 20 cycles):
-root memcg     per-app memcg     delta
-workingset_refault 10634691 11429223 +7.47%
-workingset_nodereclaim 37477 59033 +57.52%
-pgpgin 70662840 69569516 -1.55%
-pgpgout 2605968 2695596 +3.44%
-pgpgoutclean 13514955 14980610 +10.84%
-pswpin 1489851 3780868 +153.77%
-pswpout 4125547 8050819 +95.15%
-pgfree 99823083 105104637 +5.29%
-pgactivate 7685275 11647913 +51.56%
-pgdeactivate 14193660 21459784 +51.19%
-pgfault 89173166 100598528 +12.81%
-pgmajfault 1856172 4227190 +127.74%
-pgrefill 16643554 23203927 +39.42%
-
-Tests were conducted on an Android phone with 4GB RAM.
-Similar regression was reported a couple years ago here:
-https://www.spinics.net/lists/linux-mm/msg121665.html
-
-I plan on checking the difference again on newer kernels (likely 5.15)
-after LPC this September.
-
->
-> [...]
-> > > A.cgroup.controllers = memory
-> > > A.cgroup.subtree_control = memory
-> > >
-> > > A/B.cgroup.controllers = memory
-> > > A/B.cgroup.subtree_control = memory
-> > > A/B/B1.cgroup.controllers = memory
-> > >
-> > > A/C.cgroup.controllers = memory
-> > > A/C.cgroup.subtree_control = ""
-> > > A/C/C1.cgroup.controllers = ""
-> > Yes for above hierarchy and configuration.
-> > >
-> > > Is your concern that C1 is charged to A/C or that you cannot actually make
-> > > A/C.cgroup.controllers = "" because you want to maintain memory in A?
-> > > Because that would be breaking the internal node constrain rule AFAICS.
-> > No. I just want to keep memory on B.
->
-> That would require A to be without controllers which is not possible due
-> to hierarchical constrain.
->
-> > > Or maybe you just really want a different hierarchy where
-> > > A == root_cgroup and want the memory acocunted in B
-> > > (root/B.cgroup.controllers = memory) but not in C (root/C.cgroup.controllers = "")?
-> > Yes.
-> > >
-> > > That would mean that C memory would be maintained on the global (root
-> > > memcg) LRUs which is the only internal node which is allowed to have
-> > > resources because it is special.
-> > Exactly. I would like to have all groups like C which have no parent's
-> > subtree_control = memory charge memory to root. Under this
-> > implementation, memory under enabled group will be protected by
-> > min/low while other groups' memory share the same LRU to have
-> > workingset things take effect.
->
-> One way to achieve that would be shaping the hierarchy the following way
->             root
->         /         \
-> no_memcg[1]      memcg[2]
-> ||||||||         |||||
-> app_cgroups     app_cgroups
->
-> with
-> no_memcg.subtree_control = ""
-> memcg.subtree_control = memory
->
-> no?
->
-> You haven't really described why you need per application freezer cgroup
-> but I suspect you want to selectively freeze applications. Is there
-> any obstacle to have a dedicated frozen cgroup and migrate tasks to be
-> frozen there?
-
-We intend for Android to gradually migrate to v2 cgroups for all
-controllers and given that it has to use a unified hierarchy,
-per-application hierarchy provides highest flexibility. That way we
-can control every aspect of every app without affecting others. Of
-course that comes with its overhead.
-Thanks,
-Suren.
-
-> --
-> Michal Hocko
-> SUSE Labs
+-- 
+tejun
