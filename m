@@ -2,44 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E3B9AC32796
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 09:46:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8CF42C32796
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 09:47:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238012AbiHWJqw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 05:46:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42218 "EHLO
+        id S242031AbiHWJrI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 23 Aug 2022 05:47:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42470 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352563AbiHWJld (ORCPT
+        with ESMTP id S1352623AbiHWJlk (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 05:41:33 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5F1D979625;
-        Tue, 23 Aug 2022 01:41:54 -0700 (PDT)
+        Tue, 23 Aug 2022 05:41:40 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1BCBA7A52F;
+        Tue, 23 Aug 2022 01:42:18 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 19F6061446;
-        Tue, 23 Aug 2022 08:41:53 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 20E77C433C1;
-        Tue, 23 Aug 2022 08:41:51 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 86FB8B81C20;
+        Tue, 23 Aug 2022 08:42:18 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CF509C433D6;
+        Tue, 23 Aug 2022 08:42:16 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661244112;
-        bh=20lKauL1YVUqyPxh4iNRKgHY+P1m62xaHe6u7/78kJY=;
+        s=korg; t=1661244137;
+        bh=tczueR9QBrw1L/jEpqXkCntMM2hD+Z9tSAUmw/5z380=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=YAHmlnZ48hQ8iS2n7fWa5pZfT5k6k+a5m5Dk1KB+yCycCcy89FsBQf7tLXCi/10nh
-         7+aiW2cIye25f8mI/tRrBdnFB6KkYftYTbqXemwtN24m8fnuX6+ivkLVE5wyKGti7W
-         sCuWWt9+88U7XMsxcDX4hIbmP0d+5NA/lqPfys9k=
+        b=sXmT0FnKtAtFel77Td0/pHjK1QCUPIm18rEFhL0/6DNYIWp+dfcrqxoHWnRrzMP2S
+         7JqwNg6HaQaN52W4q+7T9XVL8B7+Igxwl1T9DFD1nnfBXI+k5IBg1WK3qZ3U506fB1
+         lodt+JTTgSuWxKJuRU8+/zx00iB0N+mOwZQJ0Hns=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Trond Myklebust <trond.myklebust@hammerspace.com>
-Subject: [PATCH 5.15 038/244] NFSv4.1: Handle NFS4ERR_DELAY replies to OP_SEQUENCE correctly
-Date:   Tue, 23 Aug 2022 10:23:17 +0200
-Message-Id: <20220823080100.329675799@linuxfoundation.org>
+        stable@vger.kernel.org, Hangyu Hua <hbh25y@gmail.com>,
+        Kalle Valo <kvalo@kernel.org>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 4.14 091/229] wifi: libertas: Fix possible refcount leak in if_usb_probe()
+Date:   Tue, 23 Aug 2022 10:24:12 +0200
+Message-Id: <20220823080056.960820374@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220823080059.091088642@linuxfoundation.org>
-References: <20220823080059.091088642@linuxfoundation.org>
+In-Reply-To: <20220823080053.202747790@linuxfoundation.org>
+References: <20220823080053.202747790@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -48,29 +48,37 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Trond Myklebust <trond.myklebust@hammerspace.com>
+From: Hangyu Hua <hbh25y@gmail.com>
 
-commit 7ccafd4b2b9f34e6d8185f796f151c47424e273e upstream.
+[ Upstream commit 6fd57e1d120bf13d4dc6c200a7cf914e6347a316 ]
 
-Don't assume that the NFS4ERR_DELAY means that the server is processing
-this slot id.
+usb_get_dev will be called before lbs_get_firmware_async which means that
+usb_put_dev need to be called when lbs_get_firmware_async fails.
 
-Fixes: 3453d5708b33 ("NFSv4.1: Avoid false retries when RPC calls are interrupted")
-Signed-off-by: Trond Myklebust <trond.myklebust@hammerspace.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Fixes: ce84bb69f50e ("libertas USB: convert to asynchronous firmware loading")
+Signed-off-by: Hangyu Hua <hbh25y@gmail.com>
+Signed-off-by: Kalle Valo <kvalo@kernel.org>
+Link: https://lore.kernel.org/r/20220620092350.39960-1-hbh25y@gmail.com
+Link: https://lore.kernel.org/r/20220622113402.16969-1-colin.i.king@gmail.com
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- fs/nfs/nfs4proc.c |    1 -
- 1 file changed, 1 deletion(-)
+ drivers/net/wireless/marvell/libertas/if_usb.c | 1 +
+ 1 file changed, 1 insertion(+)
 
---- a/fs/nfs/nfs4proc.c
-+++ b/fs/nfs/nfs4proc.c
-@@ -856,7 +856,6 @@ static int nfs41_sequence_process(struct
- 			__func__,
- 			slot->slot_nr,
- 			slot->seq_nr);
--		nfs4_slot_sequence_acked(slot, slot->seq_nr);
- 		goto out_retry;
- 	case -NFS4ERR_RETRY_UNCACHED_REP:
- 	case -NFS4ERR_SEQ_FALSE_RETRY:
+diff --git a/drivers/net/wireless/marvell/libertas/if_usb.c b/drivers/net/wireless/marvell/libertas/if_usb.c
+index bbfc89d9d65a..40a8003220bb 100644
+--- a/drivers/net/wireless/marvell/libertas/if_usb.c
++++ b/drivers/net/wireless/marvell/libertas/if_usb.c
+@@ -283,6 +283,7 @@ static int if_usb_probe(struct usb_interface *intf,
+ 	return 0;
+ 
+ err_get_fw:
++	usb_put_dev(udev);
+ 	lbs_remove_card(priv);
+ err_add_card:
+ 	if_usb_reset_device(cardp);
+-- 
+2.35.1
+
 
 
