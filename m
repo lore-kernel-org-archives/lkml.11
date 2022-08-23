@@ -2,111 +2,74 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9922EC32772
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 17:16:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 25A4BC32772
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 17:17:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244895AbiHWRQi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 13:16:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54640 "EHLO
+        id S1344727AbiHWRQW (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 23 Aug 2022 13:16:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56316 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344106AbiHWRPd (ORCPT
+        with ESMTP id S244541AbiHWROx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 13:15:33 -0400
-Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 73E75145BBC;
-        Tue, 23 Aug 2022 06:49:57 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1661262598; x=1692798598;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=7URe0xxC6qIsgHX2iNkaSTs6I2GXYi/eCN2P9MNn59g=;
-  b=WXj3n/J46Pbux/1Zyu41y+jG5NrJnU3Aovzu9CgAHzSx1goXwSm6BuPg
-   oafg1w4UCP3hiTQ0CbeEJSv5+NZSNZdgNyQ87zAgtklNPO3u//TA+2XNY
-   IPlnxCjPX2iZ/Cr1PDUMUt4rzAH816XyGNiVvvNFtHeICALMvyOjuSRlS
-   3Hk4m7/AIImhYJbBLz92Ug9PqnQQocI3Zjx+SK6r+3DNtmKPdVATrHBNA
-   2LUu87IXU0LKoVX4TIcI6SpL8+4mv2TFRf9rvqvcylq+1ArUUfYvznE/6
-   O6rL1A3TUGGTvoP6iIJtQ6Qven59474nnEbacE9DuvZE1FT4Sbyjk8FqG
-   w==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10448"; a="292435544"
-X-IronPort-AV: E=Sophos;i="5.93,257,1654585200"; 
-   d="scan'208";a="292435544"
-Received: from orsmga003.jf.intel.com ([10.7.209.27])
-  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Aug 2022 06:49:57 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.93,257,1654585200"; 
-   d="scan'208";a="560172799"
-Received: from lkp-server02.sh.intel.com (HELO 9bbcefcddf9f) ([10.239.97.151])
-  by orsmga003.jf.intel.com with ESMTP; 23 Aug 2022 06:49:53 -0700
-Received: from kbuild by 9bbcefcddf9f with local (Exim 4.96)
-        (envelope-from <lkp@intel.com>)
-        id 1oQUHw-0000HX-2u;
-        Tue, 23 Aug 2022 13:49:52 +0000
-Date:   Tue, 23 Aug 2022 21:49:40 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Daniel Xu <dxu@dxuuu.xyz>, bpf@vger.kernel.org, ast@kernel.org,
-        daniel@iogearbox.net, andrii@kernel.org, memxor@gmail.com
-Cc:     kbuild-all@lists.01.org, Daniel Xu <dxu@dxuuu.xyz>,
-        pablo@netfilter.org, fw@strlen.de, toke@kernel.org,
-        martin.lau@linux.dev, netfilter-devel@vger.kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH bpf-next v4 4/5] bpf: Add support for writing to
- nf_conn:mark
-Message-ID: <202208232110.vsR1bsL0-lkp@intel.com>
-References: <073173502d762faf87bde0ca23e609c84848dd7e.1661192455.git.dxu@dxuuu.xyz>
+        Tue, 23 Aug 2022 13:14:53 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 72E9D100977;
+        Tue, 23 Aug 2022 06:40:24 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 6F8386154C;
+        Tue, 23 Aug 2022 13:40:24 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D8BCBC433C1;
+        Tue, 23 Aug 2022 13:40:18 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1661262023;
+        bh=2+G8RngWyxAqke4bxt5usQSl46UvUFATARmSK6gRm08=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=UR4Yhx5x3P7UUehzGuqNuzCVIf2gG92TqIHiUZCgn2xLTwYRb2BVaZrDxywPFMTuS
+         DfZsw9vCLLbY7N/bQZC23Zkjy41FwvdEeo5Tun5uOeKnzCyF74pyaeEisT3P6+PjEs
+         BsgOioP5FYI114KFoLroQy1P5Lnh4LYS0nwkjlMLhNMEg8PJQXqgj+lwFwiN+c9KN8
+         8lYKt4V/iCZLVw0/KJPCUfWw+PNu4zvZrY0ehvbtPOVGWPXckhaBR3eX9u+geCzmem
+         W4PXWcPnwonjUG5yfZfHDDOds0GFC5E483C5vp3iorMnxsgwARYXAeEgllZNj0blXb
+         AiehE9Npm4yuQ==
+From:   Lorenzo Pieralisi <lpieralisi@kernel.org>
+To:     Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Bjorn Helgaas <bhelgaas@google.com>,
+        Jianjun Wang <jianjun.wang@mediatek.com>
+Cc:     Lorenzo Pieralisi <lpieralisi@kernel.org>,
+        Ryder Lee <ryder.lee@mediatek.com>, devicetree@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, linux-pci@vger.kernel.org,
+        Rex-BC.Chen@mediatek.com, Liju-clr.Chen@mediatek.com,
+        linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org,
+        Jian.Yang@mediatek.com, TingHan.Shen@mediatek.com
+Subject: Re: [PATCH v4] dt-bindings: PCI: mediatek-gen3: Add support for MT8188 and MT8195
+Date:   Tue, 23 Aug 2022 15:40:15 +0200
+Message-Id: <166126199986.63298.9651112044432926221.b4-ty@kernel.org>
+X-Mailer: git-send-email 2.34.1
+In-Reply-To: <20220802120624.19258-1-jianjun.wang@mediatek.com>
+References: <20220802120624.19258-1-jianjun.wang@mediatek.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <073173502d762faf87bde0ca23e609c84848dd7e.1661192455.git.dxu@dxuuu.xyz>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Daniel,
+On Tue, 2 Aug 2022 20:06:24 +0800, Jianjun Wang wrote:
+> MT8188 and MT8195 are ARM platform SoCs with the same PCIe IP as MT8192.
+> 
+> Also add new clock name "peri_mem" since the MT8188 and MT8195 use clock
+> "peri_mem" instead of "top_133m".
+> 
+> 
 
-Thank you for the patch! Yet something to improve:
+Applied to pci/dt, thanks!
 
-[auto build test ERROR on bpf-next/master]
+[1/1] dt-bindings: PCI: mediatek-gen3: Add support for MT8188 and MT8195
+      https://git.kernel.org/lpieralisi/pci/c/7f08e806a03e
 
-url:    https://github.com/intel-lab-lkp/linux/commits/Daniel-Xu/bpf-Remove-duplicate-PTR_TO_BTF_ID-RO-check/20220823-032643
-base:   https://git.kernel.org/pub/scm/linux/kernel/git/bpf/bpf-next.git master
-config: x86_64-rhel-8.3-kselftests (https://download.01.org/0day-ci/archive/20220823/202208232110.vsR1bsL0-lkp@intel.com/config)
-compiler: gcc-11 (Debian 11.3.0-5) 11.3.0
-reproduce (this is a W=1 build):
-        # https://github.com/intel-lab-lkp/linux/commit/496ec6d75c8e8758f93c6b987eee83713c911a05
-        git remote add linux-review https://github.com/intel-lab-lkp/linux
-        git fetch --no-tags linux-review Daniel-Xu/bpf-Remove-duplicate-PTR_TO_BTF_ID-RO-check/20220823-032643
-        git checkout 496ec6d75c8e8758f93c6b987eee83713c911a05
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        make W=1 O=build_dir ARCH=x86_64 SHELL=/bin/bash
-
-If you fix the issue, kindly add following tag where applicable
-Reported-by: kernel test robot <lkp@intel.com>
-
-All errors (new ones prefixed by >>):
-
-   ld: net/core/filter.o: in function `tc_cls_act_btf_struct_access':
-   net/core/filter.c:8644: undefined reference to `nf_conntrack_btf_struct_access'
-   ld: net/core/filter.o: in function `xdp_btf_struct_access':
->> include/net/net_namespace.h:369: undefined reference to `nf_conntrack_btf_struct_access'
-   pahole: .tmp_vmlinux.btf: Invalid argument
-   .btf.vmlinux.bin.o: file not recognized: file format not recognized
-
-
-vim +369 include/net/net_namespace.h
-
-8f424b5f32d78b Eric Dumazet      2008-11-12  365  
-0c5c9fb5510633 Eric W. Biederman 2015-03-11  366  static inline struct net *read_pnet(const possible_net_t *pnet)
-8f424b5f32d78b Eric Dumazet      2008-11-12  367  {
-0c5c9fb5510633 Eric W. Biederman 2015-03-11  368  #ifdef CONFIG_NET_NS
-0c5c9fb5510633 Eric W. Biederman 2015-03-11 @369  	return pnet->net;
-8f424b5f32d78b Eric Dumazet      2008-11-12  370  #else
-0c5c9fb5510633 Eric W. Biederman 2015-03-11  371  	return &init_net;
-8f424b5f32d78b Eric Dumazet      2008-11-12  372  #endif
-0c5c9fb5510633 Eric W. Biederman 2015-03-11  373  }
-5d1e4468a7705d Denis V. Lunev    2008-04-16  374  
-
--- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+Thanks,
+Lorenzo
