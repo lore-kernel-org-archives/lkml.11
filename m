@@ -2,44 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 29654C32774
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 09:16:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1200CC32792
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 09:16:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349268AbiHWJPC (ORCPT
+        id S1350292AbiHWJQy (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 05:15:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39128 "EHLO
+        Tue, 23 Aug 2022 05:16:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37894 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234244AbiHWJL5 (ORCPT
+        with ESMTP id S1348371AbiHWJMu (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 05:11:57 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 552E986FCC;
-        Tue, 23 Aug 2022 01:31:49 -0700 (PDT)
+        Tue, 23 Aug 2022 05:12:50 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6082786FE3;
+        Tue, 23 Aug 2022 01:31:52 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 176B16132D;
-        Tue, 23 Aug 2022 08:31:49 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 25677C433C1;
-        Tue, 23 Aug 2022 08:31:47 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 5961661326;
+        Tue, 23 Aug 2022 08:31:29 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 49ACBC433C1;
+        Tue, 23 Aug 2022 08:31:28 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661243508;
-        bh=K8+HU82cIH/0qwDMa0Dv+OBDT+wFIxbdQiqvPEXazeo=;
+        s=korg; t=1661243488;
+        bh=qt61o7YewrXnnLL9ocm5HDs/bnCH6kg7cv3t1Ds3lw8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=LCu6WYT13YGrhhy1+CTp3sDfXbl7ZozQr3np6kzAgVi6/6kLLh3u4HzR0IPAf6KbJ
-         EuQQDxwwPu9ZRVtG0HyGVZwaH19b8lN3zTxMF1KoV9/+vEruZasdd99GEZE0kMjeqr
-         ZTDO2PhW9/IFBBueTx7144mpRwyJ1IsXO19MYtGk=
+        b=eADwtF/8Y3SzTRsvsabIRkRDcFXDvTppzb3BEolvMOt1xSOx+tY0NCF4RiGR2ayPo
+         N3Kr3+vPHRl/n3n4su7wZFK4htMzvDlhopbOdKbdaN423ppTNUVM3LXfNGp2hd0Op9
+         9lAX3SkksxOy8iBZmTxqyJ9TTBxfkltYDC/R5l0k=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
-        Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+        Chanho Park <chanho61.park@samsung.com>,
         "Martin K. Petersen" <martin.petersen@oracle.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.19 269/365] scsi: ufs: core: Add UFSHCD_QUIRK_HIBERN_FASTAUTO
-Date:   Tue, 23 Aug 2022 10:02:50 +0200
-Message-Id: <20220823080129.437569823@linuxfoundation.org>
+Subject: [PATCH 5.19 293/365] scsi: ufs: ufs-exynos: Change ufs phy control sequence
+Date:   Tue, 23 Aug 2022 10:03:14 +0200
+Message-Id: <20220823080130.466427548@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220823080118.128342613@linuxfoundation.org>
 References: <20220823080118.128342613@linuxfoundation.org>
@@ -51,59 +52,82 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
+From: Chanho Park <chanho61.park@samsung.com>
 
-[ Upstream commit 2f11bbc2c7f37e3a6151ac548b1c0679cc90ea83 ]
+[ Upstream commit 3d73b200f9893d8f5ba5d105e8b69c8d16744fa2 ]
 
-Add UFSHCD_QUIRK_HIBERN_FASTAUTO quirk for host controllers which supports
-auto-hibernate the capability but only FASTAUTO mode.
+Since commit 1599069a62c6 ("phy: core: Warn when phy_power_on is called
+before phy_init"), the following warning has been reported:
 
-Link: https://lore.kernel.org/r/20220603110524.1997825-4-yoshihiro.shimoda.uh@renesas.com
-Signed-off-by: Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
+	phy_power_on was called before phy_init
+
+To address this, we need to remove phy_power_on from exynos_ufs_phy_init()
+and move it after phy_init. phy_power_off and phy_exit are also necessary
+in exynos_ufs_remove().
+
+Link: https://lore.kernel.org/r/20220706020255.151177-4-chanho61.park@samsung.com
+Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Signed-off-by: Chanho Park <chanho61.park@samsung.com>
 Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/ufs/core/ufshcd.c | 9 +++++++--
- include/ufs/ufshcd.h      | 6 ++++++
- 2 files changed, 13 insertions(+), 2 deletions(-)
+ drivers/ufs/host/ufs-exynos.c | 17 ++++++++++-------
+ 1 file changed, 10 insertions(+), 7 deletions(-)
 
-diff --git a/drivers/ufs/core/ufshcd.c b/drivers/ufs/core/ufshcd.c
-index 141fff01a662..a51ca56a0ebe 100644
---- a/drivers/ufs/core/ufshcd.c
-+++ b/drivers/ufs/core/ufshcd.c
-@@ -4292,8 +4292,13 @@ static int ufshcd_get_max_pwr_mode(struct ufs_hba *hba)
- 	if (hba->max_pwr_info.is_valid)
- 		return 0;
+diff --git a/drivers/ufs/host/ufs-exynos.c b/drivers/ufs/host/ufs-exynos.c
+index a81d8cbd542f..25995667c832 100644
+--- a/drivers/ufs/host/ufs-exynos.c
++++ b/drivers/ufs/host/ufs-exynos.c
+@@ -910,9 +910,13 @@ static int exynos_ufs_phy_init(struct exynos_ufs *ufs)
+ 	if (ret) {
+ 		dev_err(hba->dev, "%s: phy init failed, ret = %d\n",
+ 			__func__, ret);
+-		goto out_exit_phy;
++		return ret;
+ 	}
  
--	pwr_info->pwr_tx = FAST_MODE;
--	pwr_info->pwr_rx = FAST_MODE;
-+	if (hba->quirks & UFSHCD_QUIRK_HIBERN_FASTAUTO) {
-+		pwr_info->pwr_tx = FASTAUTO_MODE;
-+		pwr_info->pwr_rx = FASTAUTO_MODE;
-+	} else {
-+		pwr_info->pwr_tx = FAST_MODE;
-+		pwr_info->pwr_rx = FAST_MODE;
-+	}
- 	pwr_info->hs_rate = PA_HS_MODE_B;
- 
- 	/* Get the connected lane count */
-diff --git a/include/ufs/ufshcd.h b/include/ufs/ufshcd.h
-index 795c8951341d..991aea081ec7 100644
---- a/include/ufs/ufshcd.h
-+++ b/include/ufs/ufshcd.h
-@@ -583,6 +583,12 @@ enum ufshcd_quirks {
- 	 * 64-bit addressing supported capability but it doesn't work.
- 	 */
- 	UFSHCD_QUIRK_BROKEN_64BIT_ADDRESS		= 1 << 17,
++	ret = phy_power_on(generic_phy);
++	if (ret)
++		goto out_exit_phy;
 +
-+	/*
-+	 * This quirk needs to be enabled if the host controller has
-+	 * auto-hibernate capability but it's FASTAUTO only.
-+	 */
-+	UFSHCD_QUIRK_HIBERN_FASTAUTO			= 1 << 18,
- };
+ 	return 0;
  
- enum ufshcd_caps {
+ out_exit_phy:
+@@ -1174,10 +1178,6 @@ static int exynos_ufs_init(struct ufs_hba *hba)
+ 		goto out;
+ 	}
+ 
+-	ret = phy_power_on(ufs->phy);
+-	if (ret)
+-		goto phy_off;
+-
+ 	exynos_ufs_priv_init(hba, ufs);
+ 
+ 	if (ufs->drv_data->drv_init) {
+@@ -1195,8 +1195,6 @@ static int exynos_ufs_init(struct ufs_hba *hba)
+ 	exynos_ufs_config_smu(ufs);
+ 	return 0;
+ 
+-phy_off:
+-	phy_power_off(ufs->phy);
+ out:
+ 	hba->priv = NULL;
+ 	return ret;
+@@ -1514,9 +1512,14 @@ static int exynos_ufs_probe(struct platform_device *pdev)
+ static int exynos_ufs_remove(struct platform_device *pdev)
+ {
+ 	struct ufs_hba *hba =  platform_get_drvdata(pdev);
++	struct exynos_ufs *ufs = ufshcd_get_variant(hba);
+ 
+ 	pm_runtime_get_sync(&(pdev)->dev);
+ 	ufshcd_remove(hba);
++
++	phy_power_off(ufs->phy);
++	phy_exit(ufs->phy);
++
+ 	return 0;
+ }
+ 
 -- 
 2.35.1
 
