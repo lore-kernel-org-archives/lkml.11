@@ -2,47 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7C69BC32792
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9219FC32774
 	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 08:36:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344413AbiHWIf3 (ORCPT
+        id S1344566AbiHWIfb (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 04:35:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60694 "EHLO
+        Tue, 23 Aug 2022 04:35:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33500 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347254AbiHWIcS (ORCPT
+        with ESMTP id S237737AbiHWIcV (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 04:32:18 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AEAE4FEF;
-        Tue, 23 Aug 2022 01:16:26 -0700 (PDT)
+        Tue, 23 Aug 2022 04:32:21 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 55E8FF72;
+        Tue, 23 Aug 2022 01:16:37 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id CCBF4B81C36;
-        Tue, 23 Aug 2022 08:16:25 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3E957C433C1;
-        Tue, 23 Aug 2022 08:16:24 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 1A76A6129A;
+        Tue, 23 Aug 2022 08:16:07 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 133C9C433D6;
+        Tue, 23 Aug 2022 08:16:05 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661242584;
-        bh=j3Uq1S6p1wxJpc6tFreDzh8tlF7KqJESrAe7E/cF9bg=;
+        s=korg; t=1661242566;
+        bh=/eYVGXAuKL4bcGDnI5yMXcniIu7V/yBLApdzeAGaCAE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=XEfW3uGWgZC8JSvw8Hs5+lLI8uPWiORQw7fyFZ/YKLrdlBt8Y47cY+U8G2w8DUU9t
-         w8YAjr96vBF4x7CS927PKegBVc48Pzj7aVnVu7P3GIX0AI2/NBnITaHLPbeJA3lzEn
-         Ic2/k+Mn9ZPo7FqGE3cIPuEGLyJ3b+vv2PsqZJck=
+        b=GYUH1k+PRQuQrclGFKKk0XJUzIusvtJ5HmND0l/tNxF8P6y21dQsEvr7g9WIU8PtP
+         GL4ZcAdgOQUOHSAGWM2LO1JOi+nCKnZ4kVb951G6VGtXEN8iQ/WGbjvvukHgUDcMuo
+         d6psQmtofzdoFNPS273Idg+EYP2vuS8De3HjUmGQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Schspa Shi <schspa@gmail.com>,
-        Cornelia Huck <cohuck@redhat.com>,
-        Alex Williamson <alex.williamson@redhat.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.9 095/101] vfio: Clear the caps->buf to NULL after free
-Date:   Tue, 23 Aug 2022 10:04:08 +0200
-Message-Id: <20220823080038.199805303@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Jonathan Cameron <Jonathan.Cameron@huawei.com>,
+        Dan Williams <dan.j.williams@intel.com>
+Subject: [PATCH 5.19 138/365] tools/testing/cxl: Fix decoder default state
+Date:   Tue, 23 Aug 2022 10:00:39 +0200
+Message-Id: <20220823080123.987647295@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220823080034.579196046@linuxfoundation.org>
-References: <20220823080034.579196046@linuxfoundation.org>
+In-Reply-To: <20220823080118.128342613@linuxfoundation.org>
+References: <20220823080118.128342613@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -51,38 +50,36 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Schspa Shi <schspa@gmail.com>
+From: Dan Williams <dan.j.williams@intel.com>
 
-[ Upstream commit 6641085e8d7b3f061911517f79a2a15a0a21b97b ]
+commit 08f8d040a11d539481b9aee7b482430561281a28 upstream.
 
-On buffer resize failure, vfio_info_cap_add() will free the buffer,
-report zero for the size, and return -ENOMEM.  As additional
-hardening, also clear the buffer pointer to prevent any chance of a
-double free.
+The 'enabled' state is reserved for committed decoders. By default,
+cxl_test decoders are uncommitted at init time.
 
-Signed-off-by: Schspa Shi <schspa@gmail.com>
-Reviewed-by: Cornelia Huck <cohuck@redhat.com>
-Link: https://lore.kernel.org/r/20220629022948.55608-1-schspa@gmail.com
-Signed-off-by: Alex Williamson <alex.williamson@redhat.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Fixes: 7c7d68db0254 ("tools/testing/cxl: Enumerate mock decoders")
+Reviewed-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
+Link: https://lore.kernel.org/r/165603888091.551046.6312322707378021172.stgit@dwillia2-xfh
+Signed-off-by: Dan Williams <dan.j.williams@intel.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/vfio/vfio.c | 1 +
- 1 file changed, 1 insertion(+)
+ tools/testing/cxl/test/cxl.c | 1 -
+ 1 file changed, 1 deletion(-)
 
-diff --git a/drivers/vfio/vfio.c b/drivers/vfio/vfio.c
-index 881fc3a55edc..5798965f42b5 100644
---- a/drivers/vfio/vfio.c
-+++ b/drivers/vfio/vfio.c
-@@ -1793,6 +1793,7 @@ struct vfio_info_cap_header *vfio_info_cap_add(struct vfio_info_cap *caps,
- 	buf = krealloc(caps->buf, caps->size + size, GFP_KERNEL);
- 	if (!buf) {
- 		kfree(caps->buf);
-+		caps->buf = NULL;
- 		caps->size = 0;
- 		return ERR_PTR(-ENOMEM);
- 	}
+diff --git a/tools/testing/cxl/test/cxl.c b/tools/testing/cxl/test/cxl.c
+index 91444279f9a2..6e086fbc5c5b 100644
+--- a/tools/testing/cxl/test/cxl.c
++++ b/tools/testing/cxl/test/cxl.c
+@@ -466,7 +466,6 @@ static int mock_cxl_enumerate_decoders(struct cxl_hdm *cxlhdm)
+ 			.end = -1,
+ 		};
+ 
+-		cxld->flags = CXL_DECODER_F_ENABLE;
+ 		cxld->interleave_ways = min_not_zero(target_count, 1);
+ 		cxld->interleave_granularity = SZ_4K;
+ 		cxld->target_type = CXL_DECODER_EXPANDER;
 -- 
-2.35.1
+2.37.2
 
 
 
