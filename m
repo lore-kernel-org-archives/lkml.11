@@ -2,46 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1E46BC32772
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 11:07:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A0803C32772
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 11:08:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357028AbiHWLHq (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 07:07:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48700 "EHLO
+        id S242001AbiHWLH4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 23 Aug 2022 07:07:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41476 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357186AbiHWLGQ (ORCPT
+        with ESMTP id S1357184AbiHWLGQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 23 Aug 2022 07:06:16 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 723CEB4428;
-        Tue, 23 Aug 2022 02:15:43 -0700 (PDT)
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C206CB3B37;
+        Tue, 23 Aug 2022 02:15:40 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 2DBAB6113E;
-        Tue, 23 Aug 2022 09:15:43 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2DB62C433D6;
-        Tue, 23 Aug 2022 09:15:42 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 78EABB81C65;
+        Tue, 23 Aug 2022 09:14:52 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D884AC433D6;
+        Tue, 23 Aug 2022 09:14:50 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661246142;
-        bh=mDlYbZ72tFL3h6CgQb2aswkXH6xQo02++k4Kfhq0lG4=;
+        s=korg; t=1661246091;
+        bh=AADhrfsoE2oKlEtyRwFQCoi7heCZSF3AbdRcEZrnhZo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=zGz60ejMkcgItNYt0anbNWv4zJD0RcEBfrSyW5XlexuhZ+DKF/pCzSJXwBBr3+5dL
-         qvk6h2ULGF6SylQteFINCywRNg6cwX3QWftQLu8PJquddECyn1pSl34vTM+/oAMum0
-         xOa7gbaKWzbmZ41udAeLCmF9h3AQnY5c6mMX/kzU=
+        b=Qm30pYb46DFqXDAYW7Zfzc0xNT++B4wIkoSFwVF0MOBjagObqqZw04+GzCxI+Qfow
+         59iOqSWrXeldBqYVfGIybt2nZqov80I9ap77eH7+z90HEtMJ+xIdLKuvkygI6VJsUY
+         gq1WmtUb7BIM4BoliSIy/rdTbpOZRJya6piOf38A=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, David Matlack <dmatlack@google.com>,
-        Sean Christopherson <seanjc@google.com>,
-        Paolo Bonzini <pbonzini@redhat.com>
-Subject: [PATCH 5.4 015/389] KVM: nVMX: Let userspace set nVMX MSR to any _host_ supported value
-Date:   Tue, 23 Aug 2022 10:21:33 +0200
-Message-Id: <20220823080116.324525248@linuxfoundation.org>
+        stable@vger.kernel.org, David Sterba <dsterba@suse.com>,
+        Qu Wenruo <wqu@suse.com>
+Subject: [PATCH 4.19 287/287] btrfs: raid56: dont trust any cached sector in __raid56_parity_recover()
+Date:   Tue, 23 Aug 2022 10:27:36 +0200
+Message-Id: <20220823080111.212598235@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220823080115.331990024@linuxfoundation.org>
-References: <20220823080115.331990024@linuxfoundation.org>
+In-Reply-To: <20220823080100.268827165@linuxfoundation.org>
+References: <20220823080100.268827165@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -50,175 +48,204 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Sean Christopherson <seanjc@google.com>
+From: Qu Wenruo <wqu@suse.com>
 
-commit f8ae08f9789ad59d318ea75b570caa454aceda81 upstream.
+commit f6065f8edeb25f4a9dfe0b446030ad995a84a088 upstream.
 
-Restrict the nVMX MSRs based on KVM's config, not based on the guest's
-current config.  Using the guest's config to audit the new config
-prevents userspace from restoring the original config (KVM's config) if
-at any point in the past the guest's config was restricted in any way.
+[BUG]
+There is a small workload which will always fail with recent kernel:
+(A simplified version from btrfs/125 test case)
 
-Fixes: 62cc6b9dc61e ("KVM: nVMX: support restore of VMX capability MSRs")
-Cc: stable@vger.kernel.org
-Cc: David Matlack <dmatlack@google.com>
-Signed-off-by: Sean Christopherson <seanjc@google.com>
-Message-Id: <20220607213604.3346000-6-seanjc@google.com>
-Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
+  mkfs.btrfs -f -m raid5 -d raid5 -b 1G $dev1 $dev2 $dev3
+  mount $dev1 $mnt
+  xfs_io -f -c "pwrite -S 0xee 0 1M" $mnt/file1
+  sync
+  umount $mnt
+  btrfs dev scan -u $dev3
+  mount -o degraded $dev1 $mnt
+  xfs_io -f -c "pwrite -S 0xff 0 128M" $mnt/file2
+  umount $mnt
+  btrfs dev scan
+  mount $dev1 $mnt
+  btrfs balance start --full-balance $mnt
+  umount $mnt
+
+The failure is always failed to read some tree blocks:
+
+  BTRFS info (device dm-4): relocating block group 217710592 flags data|raid5
+  BTRFS error (device dm-4): parent transid verify failed on 38993920 wanted 9 found 7
+  BTRFS error (device dm-4): parent transid verify failed on 38993920 wanted 9 found 7
+  ...
+
+[CAUSE]
+With the recently added debug output, we can see all RAID56 operations
+related to full stripe 38928384:
+
+  56.1183: raid56_read_partial: full_stripe=38928384 devid=2 type=DATA1 offset=0 opf=0x0 physical=9502720 len=65536
+  56.1185: raid56_read_partial: full_stripe=38928384 devid=3 type=DATA2 offset=16384 opf=0x0 physical=9519104 len=16384
+  56.1185: raid56_read_partial: full_stripe=38928384 devid=3 type=DATA2 offset=49152 opf=0x0 physical=9551872 len=16384
+  56.1187: raid56_write_stripe: full_stripe=38928384 devid=3 type=DATA2 offset=0 opf=0x1 physical=9502720 len=16384
+  56.1188: raid56_write_stripe: full_stripe=38928384 devid=3 type=DATA2 offset=32768 opf=0x1 physical=9535488 len=16384
+  56.1188: raid56_write_stripe: full_stripe=38928384 devid=1 type=PQ1 offset=0 opf=0x1 physical=30474240 len=16384
+  56.1189: raid56_write_stripe: full_stripe=38928384 devid=1 type=PQ1 offset=32768 opf=0x1 physical=30507008 len=16384
+  56.1218: raid56_write_stripe: full_stripe=38928384 devid=3 type=DATA2 offset=49152 opf=0x1 physical=9551872 len=16384
+  56.1219: raid56_write_stripe: full_stripe=38928384 devid=1 type=PQ1 offset=49152 opf=0x1 physical=30523392 len=16384
+  56.2721: raid56_parity_recover: full stripe=38928384 eb=39010304 mirror=2
+  56.2723: raid56_parity_recover: full stripe=38928384 eb=39010304 mirror=2
+  56.2724: raid56_parity_recover: full stripe=38928384 eb=39010304 mirror=2
+
+Before we enter raid56_parity_recover(), we have triggered some metadata
+write for the full stripe 38928384, this leads to us to read all the
+sectors from disk.
+
+Furthermore, btrfs raid56 write will cache its calculated P/Q sectors to
+avoid unnecessary read.
+
+This means, for that full stripe, after any partial write, we will have
+stale data, along with P/Q calculated using that stale data.
+
+Thankfully due to patch "btrfs: only write the sectors in the vertical stripe
+which has data stripes" we haven't submitted all the corrupted P/Q to disk.
+
+When we really need to recover certain range, aka in
+raid56_parity_recover(), we will use the cached rbio, along with its
+cached sectors (the full stripe is all cached).
+
+This explains why we have no event raid56_scrub_read_recover()
+triggered.
+
+Since we have the cached P/Q which is calculated using the stale data,
+the recovered one will just be stale.
+
+In our particular test case, it will always return the same incorrect
+metadata, thus causing the same error message "parent transid verify
+failed on 39010304 wanted 9 found 7" again and again.
+
+[BTRFS DESTRUCTIVE RMW PROBLEM]
+
+Test case btrfs/125 (and above workload) always has its trouble with
+the destructive read-modify-write (RMW) cycle:
+
+        0       32K     64K
+Data1:  | Good  | Good  |
+Data2:  | Bad   | Bad   |
+Parity: | Good  | Good  |
+
+In above case, if we trigger any write into Data1, we will use the bad
+data in Data2 to re-generate parity, killing the only chance to recovery
+Data2, thus Data2 is lost forever.
+
+This destructive RMW cycle is not specific to btrfs RAID56, but there
+are some btrfs specific behaviors making the case even worse:
+
+- Btrfs will cache sectors for unrelated vertical stripes.
+
+  In above example, if we're only writing into 0~32K range, btrfs will
+  still read data range (32K ~ 64K) of Data1, and (64K~128K) of Data2.
+  This behavior is to cache sectors for later update.
+
+  Incidentally commit d4e28d9b5f04 ("btrfs: raid56: make steal_rbio()
+  subpage compatible") has a bug which makes RAID56 to never trust the
+  cached sectors, thus slightly improve the situation for recovery.
+
+  Unfortunately, follow up fix "btrfs: update stripe_sectors::uptodate in
+  steal_rbio" will revert the behavior back to the old one.
+
+- Btrfs raid56 partial write will update all P/Q sectors and cache them
+
+  This means, even if data at (64K ~ 96K) of Data2 is free space, and
+  only (96K ~ 128K) of Data2 is really stale data.
+  And we write into that (96K ~ 128K), we will update all the parity
+  sectors for the full stripe.
+
+  This unnecessary behavior will completely kill the chance of recovery.
+
+  Thankfully, an unrelated optimization "btrfs: only write the sectors
+  in the vertical stripe which has data stripes" will prevent
+  submitting the write bio for untouched vertical sectors.
+
+  That optimization will keep the on-disk P/Q untouched for a chance for
+  later recovery.
+
+[FIX]
+Although we have no good way to completely fix the destructive RMW
+(unless we go full scrub for each partial write), we can still limit the
+damage.
+
+With patch "btrfs: only write the sectors in the vertical stripe which
+has data stripes" now we won't really submit the P/Q of unrelated
+vertical stripes, so the on-disk P/Q should still be fine.
+
+Now we really need to do is just drop all the cached sectors when doing
+recovery.
+
+By this, we have a chance to read the original P/Q from disk, and have a
+chance to recover the stale data, while still keep the cache to speed up
+regular write path.
+
+In fact, just dropping all the cache for recovery path is good enough to
+allow the test case btrfs/125 along with the small script to pass
+reliably.
+
+The lack of metadata write after the degraded mount, and forced metadata
+COW is saving us this time.
+
+So this patch will fix the behavior by not trust any cache in
+__raid56_parity_recover(), to solve the problem while still keep the
+cache useful.
+
+But please note that this test pass DOES NOT mean we have solved the
+destructive RMW problem, we just do better damage control a little
+better.
+
+Related patches:
+
+- btrfs: only write the sectors in the vertical stripe
+- d4e28d9b5f04 ("btrfs: raid56: make steal_rbio() subpage compatible")
+- btrfs: update stripe_sectors::uptodate in steal_rbio
+
+Acked-by: David Sterba <dsterba@suse.com>
+Signed-off-by: Qu Wenruo <wqu@suse.com>
+Signed-off-by: David Sterba <dsterba@suse.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/x86/kvm/vmx/nested.c |   70 ++++++++++++++++++++++++----------------------
- 1 file changed, 37 insertions(+), 33 deletions(-)
+ fs/btrfs/raid56.c |   19 ++++++-------------
+ 1 file changed, 6 insertions(+), 13 deletions(-)
 
---- a/arch/x86/kvm/vmx/nested.c
-+++ b/arch/x86/kvm/vmx/nested.c
-@@ -1060,7 +1060,7 @@ static int vmx_restore_vmx_basic(struct
- 		BIT_ULL(49) | BIT_ULL(54) | BIT_ULL(55) |
- 		/* reserved */
- 		BIT_ULL(31) | GENMASK_ULL(47, 45) | GENMASK_ULL(63, 56);
--	u64 vmx_basic = vmx->nested.msrs.basic;
-+	u64 vmx_basic = vmcs_config.nested.basic;
- 
- 	if (!is_bitwise_subset(vmx_basic, data, feature_and_reserved))
- 		return -EINVAL;
-@@ -1083,36 +1083,42 @@ static int vmx_restore_vmx_basic(struct
- 	return 0;
- }
- 
--static int
--vmx_restore_control_msr(struct vcpu_vmx *vmx, u32 msr_index, u64 data)
-+static void vmx_get_control_msr(struct nested_vmx_msrs *msrs, u32 msr_index,
-+				u32 **low, u32 **high)
- {
--	u64 supported;
--	u32 *lowp, *highp;
--
- 	switch (msr_index) {
- 	case MSR_IA32_VMX_TRUE_PINBASED_CTLS:
--		lowp = &vmx->nested.msrs.pinbased_ctls_low;
--		highp = &vmx->nested.msrs.pinbased_ctls_high;
-+		*low = &msrs->pinbased_ctls_low;
-+		*high = &msrs->pinbased_ctls_high;
- 		break;
- 	case MSR_IA32_VMX_TRUE_PROCBASED_CTLS:
--		lowp = &vmx->nested.msrs.procbased_ctls_low;
--		highp = &vmx->nested.msrs.procbased_ctls_high;
-+		*low = &msrs->procbased_ctls_low;
-+		*high = &msrs->procbased_ctls_high;
- 		break;
- 	case MSR_IA32_VMX_TRUE_EXIT_CTLS:
--		lowp = &vmx->nested.msrs.exit_ctls_low;
--		highp = &vmx->nested.msrs.exit_ctls_high;
-+		*low = &msrs->exit_ctls_low;
-+		*high = &msrs->exit_ctls_high;
- 		break;
- 	case MSR_IA32_VMX_TRUE_ENTRY_CTLS:
--		lowp = &vmx->nested.msrs.entry_ctls_low;
--		highp = &vmx->nested.msrs.entry_ctls_high;
-+		*low = &msrs->entry_ctls_low;
-+		*high = &msrs->entry_ctls_high;
- 		break;
- 	case MSR_IA32_VMX_PROCBASED_CTLS2:
--		lowp = &vmx->nested.msrs.secondary_ctls_low;
--		highp = &vmx->nested.msrs.secondary_ctls_high;
-+		*low = &msrs->secondary_ctls_low;
-+		*high = &msrs->secondary_ctls_high;
- 		break;
- 	default:
- 		BUG();
- 	}
-+}
-+
-+static int
-+vmx_restore_control_msr(struct vcpu_vmx *vmx, u32 msr_index, u64 data)
-+{
-+	u32 *lowp, *highp;
-+	u64 supported;
-+
-+	vmx_get_control_msr(&vmcs_config.nested, msr_index, &lowp, &highp);
- 
- 	supported = vmx_control_msr(*lowp, *highp);
- 
-@@ -1124,6 +1130,7 @@ vmx_restore_control_msr(struct vcpu_vmx
- 	if (!is_bitwise_subset(supported, data, GENMASK_ULL(63, 32)))
- 		return -EINVAL;
- 
-+	vmx_get_control_msr(&vmx->nested.msrs, msr_index, &lowp, &highp);
- 	*lowp = data;
- 	*highp = data >> 32;
- 	return 0;
-@@ -1137,10 +1144,8 @@ static int vmx_restore_vmx_misc(struct v
- 		BIT_ULL(28) | BIT_ULL(29) | BIT_ULL(30) |
- 		/* reserved */
- 		GENMASK_ULL(13, 9) | BIT_ULL(31);
--	u64 vmx_misc;
--
--	vmx_misc = vmx_control_msr(vmx->nested.msrs.misc_low,
--				   vmx->nested.msrs.misc_high);
-+	u64 vmx_misc = vmx_control_msr(vmcs_config.nested.misc_low,
-+				       vmcs_config.nested.misc_high);
- 
- 	if (!is_bitwise_subset(vmx_misc, data, feature_and_reserved_bits))
- 		return -EINVAL;
-@@ -1168,10 +1173,8 @@ static int vmx_restore_vmx_misc(struct v
- 
- static int vmx_restore_vmx_ept_vpid_cap(struct vcpu_vmx *vmx, u64 data)
- {
--	u64 vmx_ept_vpid_cap;
--
--	vmx_ept_vpid_cap = vmx_control_msr(vmx->nested.msrs.ept_caps,
--					   vmx->nested.msrs.vpid_caps);
-+	u64 vmx_ept_vpid_cap = vmx_control_msr(vmcs_config.nested.ept_caps,
-+					       vmcs_config.nested.vpid_caps);
- 
- 	/* Every bit is either reserved or a feature bit. */
- 	if (!is_bitwise_subset(vmx_ept_vpid_cap, data, -1ULL))
-@@ -1182,20 +1185,21 @@ static int vmx_restore_vmx_ept_vpid_cap(
- 	return 0;
- }
- 
--static int vmx_restore_fixed0_msr(struct vcpu_vmx *vmx, u32 msr_index, u64 data)
-+static u64 *vmx_get_fixed0_msr(struct nested_vmx_msrs *msrs, u32 msr_index)
- {
--	u64 *msr;
--
- 	switch (msr_index) {
- 	case MSR_IA32_VMX_CR0_FIXED0:
--		msr = &vmx->nested.msrs.cr0_fixed0;
--		break;
-+		return &msrs->cr0_fixed0;
- 	case MSR_IA32_VMX_CR4_FIXED0:
--		msr = &vmx->nested.msrs.cr4_fixed0;
--		break;
-+		return &msrs->cr4_fixed0;
- 	default:
- 		BUG();
- 	}
-+}
-+
-+static int vmx_restore_fixed0_msr(struct vcpu_vmx *vmx, u32 msr_index, u64 data)
-+{
-+	const u64 *msr = vmx_get_fixed0_msr(&vmcs_config.nested, msr_index);
+--- a/fs/btrfs/raid56.c
++++ b/fs/btrfs/raid56.c
+@@ -2101,9 +2101,12 @@ static int __raid56_parity_recover(struc
+ 	atomic_set(&rbio->error, 0);
  
  	/*
- 	 * 1 bits (which indicates bits which "must-be-1" during VMX operation)
-@@ -1204,7 +1208,7 @@ static int vmx_restore_fixed0_msr(struct
- 	if (!is_bitwise_subset(data, *msr, -1ULL))
- 		return -EINVAL;
+-	 * read everything that hasn't failed.  Thanks to the
+-	 * stripe cache, it is possible that some or all of these
+-	 * pages are going to be uptodate.
++	 * Read everything that hasn't failed. However this time we will
++	 * not trust any cached sector.
++	 * As we may read out some stale data but higher layer is not reading
++	 * that stale part.
++	 *
++	 * So here we always re-read everything in recovery path.
+ 	 */
+ 	for (stripe = 0; stripe < rbio->real_stripes; stripe++) {
+ 		if (rbio->faila == stripe || rbio->failb == stripe) {
+@@ -2112,16 +2115,6 @@ static int __raid56_parity_recover(struc
+ 		}
  
--	*msr = data;
-+	*vmx_get_fixed0_msr(&vmx->nested.msrs, msr_index) = data;
- 	return 0;
- }
- 
-@@ -1265,7 +1269,7 @@ int vmx_set_vmx_msr(struct kvm_vcpu *vcp
- 		vmx->nested.msrs.vmcs_enum = data;
- 		return 0;
- 	case MSR_IA32_VMX_VMFUNC:
--		if (data & ~vmx->nested.msrs.vmfunc_controls)
-+		if (data & ~vmcs_config.nested.vmfunc_controls)
- 			return -EINVAL;
- 		vmx->nested.msrs.vmfunc_controls = data;
- 		return 0;
+ 		for (pagenr = 0; pagenr < rbio->stripe_npages; pagenr++) {
+-			struct page *p;
+-
+-			/*
+-			 * the rmw code may have already read this
+-			 * page in
+-			 */
+-			p = rbio_stripe_page(rbio, stripe, pagenr);
+-			if (PageUptodate(p))
+-				continue;
+-
+ 			ret = rbio_add_io_page(rbio, &bio_list,
+ 				       rbio_stripe_page(rbio, stripe, pagenr),
+ 				       stripe, pagenr, rbio->stripe_len);
 
 
