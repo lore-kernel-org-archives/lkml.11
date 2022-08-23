@@ -2,107 +2,86 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0CF5CC32772
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 08:47:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A76A6C32772
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 08:47:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241422AbiHWIrT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 04:47:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60872 "EHLO
+        id S1345167AbiHWIrY (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 23 Aug 2022 04:47:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46650 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347652AbiHWIp3 (ORCPT
+        with ESMTP id S1348405AbiHWIq1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 04:45:29 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F3E9E6E8AA;
-        Tue, 23 Aug 2022 01:21:15 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 49CC1612D8;
-        Tue, 23 Aug 2022 08:15:18 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 35791C433D7;
-        Tue, 23 Aug 2022 08:15:17 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661242517;
-        bh=UlzcKidXqLG4HmGSEd5gPKAWOKksFX8ym+DBmzhofjk=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=1Mc44K3bXX3xjEqzdqKQvAip8UkrSO+YyNOe/jCcFOjpfW0o0BXxXByr9Q4W3G+Bb
-         4/AC/CKNlXihdvq1aoKAHA+wC8iBtP2SFJeTyi9TflfU/5+SBaWye1eOvIBT83LXNF
-         0K82408+kzAN2EBIRIIXWiVuWXsESWTKyO+1WMdo=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Al Viro <viro@zeniv.linux.org.uk>,
-        Dinh Nguyen <dinguyen@kernel.org>
-Subject: [PATCH 4.9 083/101] nios2: add force_successful_syscall_return()
-Date:   Tue, 23 Aug 2022 10:03:56 +0200
-Message-Id: <20220823080037.723244063@linuxfoundation.org>
-X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220823080034.579196046@linuxfoundation.org>
-References: <20220823080034.579196046@linuxfoundation.org>
-User-Agent: quilt/0.67
+        Tue, 23 Aug 2022 04:46:27 -0400
+Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0DAB46EF27;
+        Tue, 23 Aug 2022 01:21:33 -0700 (PDT)
+Received: from dggemv703-chm.china.huawei.com (unknown [172.30.72.54])
+        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4MBhtG2Cq6zlW6Y;
+        Tue, 23 Aug 2022 16:17:42 +0800 (CST)
+Received: from kwepemm600016.china.huawei.com (7.193.23.20) by
+ dggemv703-chm.china.huawei.com (10.3.19.46) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Tue, 23 Aug 2022 16:20:54 +0800
+Received: from [10.67.102.67] (10.67.102.67) by kwepemm600016.china.huawei.com
+ (7.193.23.20) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Tue, 23 Aug
+ 2022 16:20:54 +0800
+Subject: Re: [PATCH net-next 0/2] net: ethtool add VxLAN to the NFC API
+To:     Jakub Kicinski <kuba@kernel.org>
+CC:     <davem@davemloft.net>, <idosch@nvidia.com>,
+        <linux@rempel-privat.de>, <mkubecek@suse.cz>,
+        <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <lipeng321@huawei.com>, <shenjian15@huawei.com>
+References: <20220817143538.43717-1-huangguangbin2@huawei.com>
+ <20220817111656.7f4afaf3@kernel.org>
+ <5062c7ae-3415-adf6-6488-f9a05177d2c2@huawei.com>
+ <20220822095327.00b4ebd5@kernel.org>
+From:   "huangguangbin (A)" <huangguangbin2@huawei.com>
+Message-ID: <1371811b-2dca-7e99-6076-8090ee93616e@huawei.com>
+Date:   Tue, 23 Aug 2022 16:20:53 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
+ Thunderbird/68.2.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+In-Reply-To: <20220822095327.00b4ebd5@kernel.org>
+Content-Type: text/plain; charset="utf-8"; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.67.102.67]
+X-ClientProxiedBy: dggems705-chm.china.huawei.com (10.3.19.182) To
+ kwepemm600016.china.huawei.com (7.193.23.20)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Al Viro <viro@zeniv.linux.org.uk>
-
-commit fd0c153daad135d0ec1a53c5dbe6936a724d6ae1 upstream.
-
-If we use the ancient SysV syscall ABI, we'd better have tell the
-kernel how to claim that a negative return value is a success.
-Use ->orig_r2 for that - it's inaccessible via ptrace, so it's
-a fair game for changes and it's normally[*] non-negative on return
-from syscall.  Set to -1; syscall is not going to be restart-worthy
-by definition, so we won't interfere with that use either.
-
-[*] the only exception is rt_sigreturn(), where we skip the entire
-messing with r1/r2 anyway.
-
-Fixes: 82ed08dd1b0e ("nios2: Exception handling")
-Signed-off-by: Al Viro <viro@zeniv.linux.org.uk>
-Signed-off-by: Dinh Nguyen <dinguyen@kernel.org>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
----
- arch/nios2/include/asm/ptrace.h |    2 ++
- arch/nios2/kernel/entry.S       |    6 ++++++
- 2 files changed, 8 insertions(+)
-
---- a/arch/nios2/include/asm/ptrace.h
-+++ b/arch/nios2/include/asm/ptrace.h
-@@ -74,6 +74,8 @@ extern void show_regs(struct pt_regs *);
- 	((struct pt_regs *)((unsigned long)current_thread_info() + THREAD_SIZE)\
- 		- 1)
- 
-+#define force_successful_syscall_return() (current_pt_regs()->orig_r2 = -1)
-+
- int do_syscall_trace_enter(void);
- void do_syscall_trace_exit(void);
- #endif /* __ASSEMBLY__ */
---- a/arch/nios2/kernel/entry.S
-+++ b/arch/nios2/kernel/entry.S
-@@ -213,6 +213,9 @@ local_restart:
- translate_rc_and_ret:
- 	movi	r1, 0
- 	bge	r2, zero, 3f
-+	ldw	r1, PT_ORIG_R2(sp)
-+	addi	r1, r1, 1
-+	beq	r1, zero, 3f
- 	sub	r2, zero, r2
- 	movi	r1, 1
- 3:
-@@ -276,6 +279,9 @@ traced_system_call:
- translate_rc_and_ret2:
- 	movi	r1, 0
- 	bge	r2, zero, 4f
-+	ldw	r1, PT_ORIG_R2(sp)
-+	addi	r1, r1, 1
-+	beq	r1, zero, 4f
- 	sub	r2, zero, r2
- 	movi	r1, 1
- 4:
 
 
+On 2022/8/23 0:53, Jakub Kicinski wrote:
+> On Mon, 22 Aug 2022 22:46:14 +0800 huangguangbin (A) wrote:
+>> 1. I check the manual and implement of TC flower, it doesn't seems
+>>      to support configuring flows steering to a specific queue.
+> 
+> We got an answer from Sridhar on that one (thanks!)
+> I know it was discussed so it's a SMOC.
+> 
+>> 2. Our hns3 driver has supported configuring some type of flows
+>>      steering to a specific queue by ethtool -U command, many users
+>>      have already use ethtool way.
+>> 3. In addition, if our driver supports TC flower to configure flows
+>>      steering to a specific queue, can we allow user to simultaneously
+>>      use TC flower and ethtool to configure flow rules? Could the rules
+>>      configured by TC flower be queried by ethtool -u?
+>>      If two ways can be existing, I think it is more complicated for
+>>      driver to manage flow rules.
+> 
+> I understand your motivation and these are very valid points.
+> However, we have to draw the line somewhere. We have at least
+> three ways of configuring flow offloads (ethtool, nft, tc).
+> Supporting all of them is a lot of work for the drivers, leading
+> to a situation where there's no "standard Linux API" because each
+> vendor picks a slightly different approach :(
+> TC seems the most popular because of the OVS offload, so my preference
+> is to pick it over the other APIs.
+> .
+> 
+Ok.
