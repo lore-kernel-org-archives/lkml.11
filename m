@@ -2,95 +2,103 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CC810C32772
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 19:14:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4FC06C32772
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 19:14:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231970AbiHWTOR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 15:14:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53708 "EHLO
+        id S231984AbiHWTOc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 23 Aug 2022 15:14:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49054 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232460AbiHWTN4 (ORCPT
+        with ESMTP id S231493AbiHWTOH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 15:13:56 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C42EC122BD5
-        for <linux-kernel@vger.kernel.org>; Tue, 23 Aug 2022 10:51:23 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1661277006;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=CVE4380sDAsovAGhR6AZYNuZ8oLCxAJEqDFiZxuOg2E=;
-        b=E8ehTqZt4vQtsTnIq2s/VyNMvx7JAQzA4VS/ikBMGOXMf9Bb0guFa2FEDDECldvDxmKW4H
-        AbJfbEMpFiwrihN/4LsTXOVZhtqO9sxr3FDz+Hdby+fYMEatvwIpj9/MbXFhZ7Fb4QQVSo
-        K2QATkcOAyXGyADverqGcMGFwMJExLI=
-Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
- [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-9-Zfk5GIb7MMiRaz01Ckvxkw-1; Tue, 23 Aug 2022 13:42:55 -0400
-X-MC-Unique: Zfk5GIb7MMiRaz01Ckvxkw-1
-Received: from smtp.corp.redhat.com (int-mx07.intmail.prod.int.rdu2.redhat.com [10.11.54.7])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id C1845101E985;
-        Tue, 23 Aug 2022 17:42:54 +0000 (UTC)
-Received: from cmirabil.redhat.com (unknown [10.22.33.37])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 5368214152E0;
-        Tue, 23 Aug 2022 17:42:54 +0000 (UTC)
-From:   Charles Mirabile <cmirabil@redhat.com>
-To:     linux-kernel@vger.kernel.org
-Cc:     Charles Mirabile <cmirabil@redhat.com>,
-        Peter Robinson <pbrobinson@gmail.com>,
-        Serge Schneider <serge@raspberrypi.org>,
-        Stefan Wahren <stefan.wahren@i2se.com>,
-        Nicolas Saenz Julienne <nicolassaenzj@gmail.com>,
-        Mattias Brugger <mbrugger@suse.com>,
-        linux-rpi-kernel@lists.infradead.org,
-        linux-arm-kernel@lists.infradead.org, rh-kdlp@googlegroups.com,
-        Joel Savitz <jsavitz@redhat.com>
-Subject: [PATCH 4/5] MAINTAINERS: Add sensehat driver authors to MAINTAINERS
-Date:   Tue, 23 Aug 2022 13:41:57 -0400
-Message-Id: <20220823174158.45579-5-cmirabil@redhat.com>
-In-Reply-To: <20220823174158.45579-1-cmirabil@redhat.com>
-References: <20220823174158.45579-1-cmirabil@redhat.com>
+        Tue, 23 Aug 2022 15:14:07 -0400
+Received: from mail-ed1-x52f.google.com (mail-ed1-x52f.google.com [IPv6:2a00:1450:4864:20::52f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 82576120AE
+        for <linux-kernel@vger.kernel.org>; Tue, 23 Aug 2022 10:51:28 -0700 (PDT)
+Received: by mail-ed1-x52f.google.com with SMTP id 2so10981176edx.2
+        for <linux-kernel@vger.kernel.org>; Tue, 23 Aug 2022 10:51:28 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=amarulasolutions.com; s=google;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc;
+        bh=G8pk0TfYrEmE764xSTeThT6Yy6xUqAqvtkBl9x4MKBo=;
+        b=gJ0iUJmmijw1HXoSFcooRNmiWw0B3gLGrREiRZtFBWGZhh9Fwn1h4mLidFz8/QDXQk
+         lerEj9+ilGXQsPCdd59yWlXAaN9/J2dmRtHFIsxWiIzzv6Da5Tk/qEO4ghVAO+T+c1uY
+         1HsVZV91dqULZXW8va4nSBmxwgJYB9Jbq1Hy0=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc;
+        bh=G8pk0TfYrEmE764xSTeThT6Yy6xUqAqvtkBl9x4MKBo=;
+        b=mbfUeO4A0+0WQpvSkW1VydM+J6LEd2rvs4r9t7jBklSS4p15YwJyDLQew02qwPkEOX
+         QK98fqjxZfA2cYOGo3rKrH82BOy6vsWpQ9J5pUZJEEHrziE3hcHUO/MQCVBFuoV34Qf6
+         4hCEkr2hbJ1lX9t5vq8r25PF7aSgfbvS4EqicF0JEtZljX+YG3bRmuP1jSVhdzCKqEIX
+         wB1j3PgLS/TBTDQ8H/2m7+jD//UMxa6IwgrLJiz45tfd5OHukGDstgFdoaTlS1ue8xjo
+         dzpmg2zVx+Nk60OuaFTELJ17he1hoK1SP5q64K67By61s8KBZ9wKxGoFEzOCo7rTtMgi
+         NLTA==
+X-Gm-Message-State: ACgBeo2RvrnwZgoBvhrnJBPRZpF9HyHCp3RxT9/YL99DG3bwRxhD9hU2
+        uvBjGil4xKtI/ridA79eQY3NCA==
+X-Google-Smtp-Source: AA6agR7Nz69W25+ky8gdE+VXUXxTmV5rgYkNbc7FPirulJJQ5duw+KQVwuZUO5i2tZ+QxBJRTpx8tg==
+X-Received: by 2002:a05:6402:40c1:b0:447:154e:856d with SMTP id z1-20020a05640240c100b00447154e856dmr4004666edb.319.1661277048108;
+        Tue, 23 Aug 2022 10:50:48 -0700 (PDT)
+Received: from tom-ThinkPad-T14s-Gen-2i (net-188-217-57-252.cust.vodafonedsl.it. [188.217.57.252])
+        by smtp.gmail.com with ESMTPSA id cu9-20020a170906e00900b00726c0e63b94sm177410ejb.27.2022.08.23.10.50.47
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 23 Aug 2022 10:50:47 -0700 (PDT)
+Date:   Tue, 23 Aug 2022 19:50:45 +0200
+From:   Tommaso Merciai <tommaso.merciai@amarulasolutions.com>
+To:     wangjianli <wangjianli@cdjrlc.com>
+Cc:     mchehab@kernel.org, linux-media@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] pci/saa7164: fix repeated words in comments
+Message-ID: <20220823175045.GB1277033@tom-ThinkPad-T14s-Gen-2i>
+References: <20220823145709.46069-1-wangjianli@cdjrlc.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Scanned-By: MIMEDefang 2.85 on 10.11.54.7
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220823145709.46069-1-wangjianli@cdjrlc.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This patch adds the driver authors to MAINAINERS.
+On Tue, Aug 23, 2022 at 10:57:09PM +0800, wangjianli wrote:
+> Delete the redundant word 'the'.
+> 
+> Signed-off-by: wangjianli <wangjianli@cdjrlc.com>
+> ---
+>  drivers/media/pci/saa7164/saa7164-core.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+> 
+> diff --git a/drivers/media/pci/saa7164/saa7164-core.c b/drivers/media/pci/saa7164/saa7164-core.c
+> index 7973ae42873a..d5f32e3ff544 100644
+> --- a/drivers/media/pci/saa7164/saa7164-core.c
+> +++ b/drivers/media/pci/saa7164/saa7164-core.c
+> @@ -626,7 +626,7 @@ static irqreturn_t saa7164_irq(int irq, void *dev_id)
+>  	portf = &dev->ports[SAA7164_PORT_VBI2];
+>  
+>  	/* Check that the hardware is accessible. If the status bytes are
+> -	 * 0xFF then the device is not accessible, the the IRQ belongs
+> +	 * 0xFF then the device is not accessible, the IRQ belongs
+>  	 * to another driver.
+>  	 * 4 x u32 interrupt registers.
+>  	 */
+> -- 
+> 2.36.1
+> 
 
-Co-developed-by: Joel Savitz <jsavitz@redhat.com>
-Signed-off-by: Joel Savitz <jsavitz@redhat.com>
-Signed-off-by: Charles Mirabile <cmirabil@redhat.com>
----
- MAINTAINERS | 10 ++++++++++
- 1 file changed, 10 insertions(+)
+Hi,
+Looks good.
 
-diff --git a/MAINTAINERS b/MAINTAINERS
-index 96f47a7865d6..3af3238a1535 100644
---- a/MAINTAINERS
-+++ b/MAINTAINERS
-@@ -18344,6 +18344,16 @@ F:	Documentation/ABI/testing/sysfs-bus-iio-chemical-sunrise-co2
- F:	Documentation/devicetree/bindings/iio/chemical/senseair,sunrise.yaml
- F:	drivers/iio/chemical/sunrise_co2.c
- 
-+SENSEHAT DRIVER
-+M:	Charles Mirabile <cmirabil@redhat.com>
-+M:	Joel Savitz <jsavitz@redhat.com>
-+S:	Maintained
-+F:	Documentation/devicetree/bindings/auxdisplay/raspberrypi,sensehat-display.yaml
-+F:	Documentation/devicetree/bindings/input/raspberrypi,sensehat-joystick.yaml
-+F:	Documentation/devicetree/bindings/mfd/raspberrypi,sensehat.yaml
-+F:	drivers/auxdisplay/sensehat-display.c
-+F:	drivers/input/joystick/sensehat-joystick.c
-+
- SENSIRION SCD30 CARBON DIOXIDE SENSOR DRIVER
- M:	Tomasz Duszynski <tomasz.duszynski@octakon.com>
- S:	Maintained
+Tommaso
+
 -- 
-2.31.1
+Tommaso Merciai
+Embedded Linux Engineer
+tommaso.merciai@amarulasolutions.com
+__________________________________
 
+Amarula Solutions SRL
+Via Le Canevare 30, 31100 Treviso, Veneto, IT
+T. +39 042 243 5310
+info@amarulasolutions.com
+www.amarulasolutions.com
