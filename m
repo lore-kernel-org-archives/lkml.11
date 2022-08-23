@@ -2,45 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6F4A8C32772
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 09:29:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id ADA8CC32772
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 09:29:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350238AbiHWJ3H (ORCPT
+        id S1350256AbiHWJ3L (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 05:29:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51038 "EHLO
+        Tue, 23 Aug 2022 05:29:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51224 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350719AbiHWJ0T (ORCPT
+        with ESMTP id S1350817AbiHWJ0X (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 05:26:19 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 41F6276764;
-        Tue, 23 Aug 2022 01:36:31 -0700 (PDT)
+        Tue, 23 Aug 2022 05:26:23 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EF26C760DB;
+        Tue, 23 Aug 2022 01:36:48 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 94EFB6132D;
-        Tue, 23 Aug 2022 08:35:15 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A08B0C433D6;
-        Tue, 23 Aug 2022 08:35:14 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 0600CB81C53;
+        Tue, 23 Aug 2022 08:30:15 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5ACCEC433D6;
+        Tue, 23 Aug 2022 08:30:13 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661243715;
-        bh=q4e5RPgusHolD8fcDqoi4kybf9uPxbFOEi5uXMdW6QA=;
+        s=korg; t=1661243413;
+        bh=gpZlTkMgtQZhjdaTnXjvpPHUJqnBmdmQfvXUs6qO6OE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=L3XigLwJA8a+fsIwKhEaIhL7mGFePqQJLCkPPWE6DP87nS/5iINKQsIoU0rgighLO
-         3Uh+JrywlsCXXU7jwniHPNwvNL6eO/mG3n5OaIGgmmlxrYT3wjT9WC2o3rLxdfr1bJ
-         Nx2xfueRKKV8mxIZPx/FjhxD7ArTjg/L+Pz9xfB8=
+        b=QcZidmmsrMychWtAdN86heOZaWGnMraMLhG/FZxDE7W4cF65y3vL0QC79+jw7w4Kp
+         pLwn0XQYJokSbpVrrP/wRwGtrDPtsJDFcBah/5azFcudTCtE5e6logtR6C51I/VODG
+         WgZOZSZzMnTeL4SapwhdfyzGp+DafSdrFvgeklyY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Brice Goglin <Brice.Goglin@inria.fr>,
-        Conor Dooley <conor.dooley@microchip.com>,
-        Damien Le Moal <damien.lemoal@opensource.wdc.com>,
-        Palmer Dabbelt <palmer@rivosinc.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.19 334/365] riscv: dts: canaan: Add k210 topology information
-Date:   Tue, 23 Aug 2022 10:03:55 +0200
-Message-Id: <20220823080132.189132574@linuxfoundation.org>
+        stable@vger.kernel.org, Masahiro Yamada <masahiroy@kernel.org>
+Subject: [PATCH 5.19 239/365] kbuild: fix the modules order between drivers and libs
+Date:   Tue, 23 Aug 2022 10:02:20 +0200
+Message-Id: <20220823080128.240505129@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220823080118.128342613@linuxfoundation.org>
 References: <20220823080118.128342613@linuxfoundation.org>
@@ -52,49 +48,48 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Conor Dooley <conor.dooley@microchip.com>
+From: Masahiro Yamada <masahiroy@kernel.org>
 
-[ Upstream commit d9d193dea8666bbf69fc21c5bdcdabaa34a466e3 ]
+commit 113147510b48e764e624e3d0e6707a1e48bc05a9 upstream.
 
-The k210 has no cpu-map node, so tools like hwloc cannot correctly
-parse the topology. Add the node using the existing node labels.
+Commit b2c885549122 ("kbuild: update modules.order only when contained
+modules are updated") accidentally changed the modules order.
 
-Reported-by: Brice Goglin <Brice.Goglin@inria.fr>
-Link: https://github.com/open-mpi/hwloc/issues/536
-Signed-off-by: Conor Dooley <conor.dooley@microchip.com>
-Reviewed-by: Damien Le Moal <damien.lemoal@opensource.wdc.com>
-Link: https://lore.kernel.org/r/20220705190435.1790466-6-mail@conchuod.ie
-Signed-off-by: Palmer Dabbelt <palmer@rivosinc.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Prior to that commit, the modules order was determined based on
+vmlinux-dirs, which lists core-y/m, drivers-y/m, libs-y/m, in this order.
+
+Now, subdir-modorder lists them in a different order: core-y/m, libs-y/m,
+drivers-y/m.
+
+Presumably, there was no practical issue because the modules in drivers
+and libs are orthogonal, but there is no reason to have this distortion.
+
+Get back to the original order.
+
+Fixes: b2c885549122 ("kbuild: update modules.order only when contained modules are updated")
+Signed-off-by: Masahiro Yamada <masahiroy@kernel.org>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/riscv/boot/dts/canaan/k210.dtsi | 12 ++++++++++++
- 1 file changed, 12 insertions(+)
+ Makefile |    6 ++----
+ 1 file changed, 2 insertions(+), 4 deletions(-)
 
-diff --git a/arch/riscv/boot/dts/canaan/k210.dtsi b/arch/riscv/boot/dts/canaan/k210.dtsi
-index 44d338514761..ec944d1537dc 100644
---- a/arch/riscv/boot/dts/canaan/k210.dtsi
-+++ b/arch/riscv/boot/dts/canaan/k210.dtsi
-@@ -65,6 +65,18 @@
- 				compatible = "riscv,cpu-intc";
- 			};
- 		};
-+
-+		cpu-map {
-+			cluster0 {
-+				core0 {
-+					cpu = <&cpu0>;
-+				};
-+
-+				core1 {
-+					cpu = <&cpu1>;
-+				};
-+			};
-+		};
- 	};
+--- a/Makefile
++++ b/Makefile
+@@ -1112,13 +1112,11 @@ vmlinux-alldirs	:= $(sort $(vmlinux-dirs
+ 		     $(patsubst %/,%,$(filter %/, $(core-) \
+ 			$(drivers-) $(libs-))))
  
- 	sram: memory@80000000 {
--- 
-2.35.1
-
+-subdir-modorder := $(addsuffix modules.order,$(filter %/, \
+-			$(core-y) $(core-m) $(libs-y) $(libs-m) \
+-			$(drivers-y) $(drivers-m)))
+-
+ build-dirs	:= $(vmlinux-dirs)
+ clean-dirs	:= $(vmlinux-alldirs)
+ 
++subdir-modorder := $(addsuffix /modules.order, $(build-dirs))
++
+ # Externally visible symbols (used by link-vmlinux.sh)
+ KBUILD_VMLINUX_OBJS := $(head-y) $(patsubst %/,%/built-in.a, $(core-y))
+ KBUILD_VMLINUX_OBJS += $(addsuffix built-in.a, $(filter %/, $(libs-y)))
 
 
