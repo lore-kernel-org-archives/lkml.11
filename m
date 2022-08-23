@@ -2,47 +2,49 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E7F11C32772
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 10:03:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 652CEC32792
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 10:03:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351886AbiHWKDn (ORCPT
+        id S1351930AbiHWKDx (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 06:03:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45940 "EHLO
+        Tue, 23 Aug 2022 06:03:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55230 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243699AbiHWJ56 (ORCPT
+        with ESMTP id S1345397AbiHWJ6V (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 05:57:58 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E75CEA1D1E;
-        Tue, 23 Aug 2022 01:47:47 -0700 (PDT)
+        Tue, 23 Aug 2022 05:58:21 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CD0E8A1D6D;
+        Tue, 23 Aug 2022 01:48:04 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 6191AB81C3B;
-        Tue, 23 Aug 2022 08:47:47 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A09D7C433D7;
-        Tue, 23 Aug 2022 08:47:45 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 8BABDCE1B53;
+        Tue, 23 Aug 2022 08:48:02 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A2E49C433D7;
+        Tue, 23 Aug 2022 08:48:00 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661244466;
-        bh=cGv9YYiCAnF/hXVtpd8NFHpulmJj4WgT2Ko+E71vVug=;
+        s=korg; t=1661244481;
+        bh=nd5+KB9Lr171c9+sykLDGdxdvhZMEc6ArTh1VfBEg5M=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=OP8SxbLdDrD5qcxJT8qXnaJQyhxyQ/UayEBZi5fMwoGZF+IohwWczYNN7ZWHtmyFq
-         f0aIts7KgSZfesKZFkf9/+eayiGqKCThxL1RbvrxRkxUWqWklskI/Cw2Yc+03/1+TX
-         b5sTZPKfkS12M+30Xmeu2YdpShxlnRbngZHKJIVQ=
+        b=gQ+lIUdQyWqBqaVSRdiODBTW0I9K8KBPpIZ2dB0diJMcyybHiUjEElaDG3KzInE+v
+         2B6FrojRfOhkwIJVLkHXhW8fDgnzgso/8/hanQ+0LI00pH5k7yg3cyBQD1hmHegqpC
+         MzXUfYIyS3bDXH1IuVRR8KSFXrJbSpcXB9fEmP4s=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        =?UTF-8?q?Pali=20Roh=C3=A1r?= <pali@kernel.org>,
-        Michael Ellerman <mpe@ellerman.id.au>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.14 141/229] powerpc/pci: Fix PHB numbering when using opal-phbid
-Date:   Tue, 23 Aug 2022 10:25:02 +0200
-Message-Id: <20220823080058.719989060@linuxfoundation.org>
+        stable@vger.kernel.org, Adrian Hunter <adrian.hunter@intel.com>,
+        Ian Rogers <irogers@google.com>,
+        Jin Yao <yao.jin@linux.intel.com>,
+        Jiri Olsa <jolsa@kernel.org>,
+        Namhyung Kim <namhyung@kernel.org>,
+        Arnaldo Carvalho de Melo <acme@redhat.com>
+Subject: [PATCH 5.15 100/244] perf parse-events: Fix segfault when event parser gets an error
+Date:   Tue, 23 Aug 2022 10:24:19 +0200
+Message-Id: <20220823080102.374205156@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220823080053.202747790@linuxfoundation.org>
-References: <20220823080053.202747790@linuxfoundation.org>
+In-Reply-To: <20220823080059.091088642@linuxfoundation.org>
+References: <20220823080059.091088642@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -51,58 +53,57 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Michael Ellerman <mpe@ellerman.id.au>
+From: Adrian Hunter <adrian.hunter@intel.com>
 
-[ Upstream commit f4b39e88b42d13366b831270306326b5c20971ca ]
+commit 2e828582b81f5bc76a4fe8e7812df259ab208302 upstream.
 
-The recent change to the PHB numbering logic has a logic error in the
-handling of "ibm,opal-phbid".
+parse_events() is often called with parse_events_error set to NULL.
+Make parse_events_error__handle() not segfault in that case.
 
-When an "ibm,opal-phbid" property is present, &prop is written to and
-ret is set to zero.
+A subsequent patch changes to avoid passing NULL in the first place.
 
-The following call to of_alias_get_id() is skipped because ret == 0.
-
-But then the if (ret >= 0) is true, and the body of that if statement
-sets prop = ret which throws away the value that was just read from
-"ibm,opal-phbid".
-
-Fix the logic by only doing the ret >= 0 check in the of_alias_get_id()
-case.
-
-Fixes: 0fe1e96fef0a ("powerpc/pci: Prefer PCI domain assignment via DT 'linux,pci-domain' and alias")
-Reviewed-by: Pali Rohár <pali@kernel.org>
-Signed-off-by: Michael Ellerman <mpe@ellerman.id.au>
-Link: https://lore.kernel.org/r/20220802105723.1055178-1-mpe@ellerman.id.au
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Fixes: 43eb05d066795bdf ("perf tests: Support 'Track with sched_switch' test for hybrid")
+Signed-off-by: Adrian Hunter <adrian.hunter@intel.com>
+Cc: Ian Rogers <irogers@google.com>
+Cc: Jin Yao <yao.jin@linux.intel.com>
+Cc: Jiri Olsa <jolsa@kernel.org>
+Cc: Namhyung Kim <namhyung@kernel.org>
+Link: https://lore.kernel.org/r/20220809080702.6921-2-adrian.hunter@intel.com
+Signed-off-by: Arnaldo Carvalho de Melo <acme@redhat.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/powerpc/kernel/pci-common.c | 10 ++++++----
- 1 file changed, 6 insertions(+), 4 deletions(-)
+ tools/perf/util/parse-events.c |   14 +++++++++++---
+ 1 file changed, 11 insertions(+), 3 deletions(-)
 
-diff --git a/arch/powerpc/kernel/pci-common.c b/arch/powerpc/kernel/pci-common.c
-index 2e2cc80bf592..936f24d7ab4c 100644
---- a/arch/powerpc/kernel/pci-common.c
-+++ b/arch/powerpc/kernel/pci-common.c
-@@ -96,11 +96,13 @@ static int get_phb_number(struct device_node *dn)
+--- a/tools/perf/util/parse-events.c
++++ b/tools/perf/util/parse-events.c
+@@ -196,9 +196,12 @@ static int tp_event_has_id(const char *d
+ void parse_events__handle_error(struct parse_events_error *err, int idx,
+ 				char *str, char *help)
+ {
+-	if (WARN(!str, "WARNING: failed to provide error string\n")) {
+-		free(help);
+-		return;
++	if (WARN(!str, "WARNING: failed to provide error string\n"))
++		goto out_free;
++	if (!err) {
++		/* Assume caller does not want message printed */
++		pr_debug("event syntax error: %s\n", str);
++		goto out_free;
  	}
- 	if (ret)
- 		ret = of_property_read_u64(dn, "ibm,opal-phbid", &prop);
--	if (ret)
+ 	switch (err->num_errors) {
+ 	case 0:
+@@ -224,6 +227,11 @@ void parse_events__handle_error(struct p
+ 		break;
+ 	}
+ 	err->num_errors++;
++	return;
 +
-+	if (ret) {
- 		ret = of_alias_get_id(dn, "pci");
--	if (ret >= 0) {
--		prop = ret;
--		ret = 0;
-+		if (ret >= 0) {
-+			prop = ret;
-+			ret = 0;
-+		}
- 	}
- 	if (ret) {
- 		u32 prop_32;
--- 
-2.35.1
-
++out_free:
++	free(str);
++	free(help);
+ }
+ 
+ struct tracepoint_path *tracepoint_id_to_path(u64 config)
 
 
