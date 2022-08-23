@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 664C1C32772
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 09:32:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 26036C32772
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 09:32:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350704AbiHWJch (ORCPT
+        id S1350724AbiHWJcm (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 05:32:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38530 "EHLO
+        Tue, 23 Aug 2022 05:32:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38816 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350940AbiHWJbD (ORCPT
+        with ESMTP id S1351024AbiHWJbN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 05:31:03 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C57DE77562;
-        Tue, 23 Aug 2022 01:38:07 -0700 (PDT)
+        Tue, 23 Aug 2022 05:31:13 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B9872627F;
+        Tue, 23 Aug 2022 01:38:17 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id A41CD61541;
-        Tue, 23 Aug 2022 08:37:18 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id AA383C433D6;
-        Tue, 23 Aug 2022 08:37:17 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id ED9896132D;
+        Tue, 23 Aug 2022 08:37:05 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id F4176C433C1;
+        Tue, 23 Aug 2022 08:37:04 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661243838;
-        bh=kAAceLf1VywHIek44vBXTfsB0yb0I7oJ0SqPKKlSA08=;
+        s=korg; t=1661243825;
+        bh=3SEtrh6MNpXnvKk3vVEPj7E7RPsWRJCj7UxewlvKznA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=RWwB4xcbtC1S/Yj+gjW+9s+5voP1G8LgzaYUC5VESlgjxINngAXaB6toxf0VaVeHF
-         gWHPezaxsLMGJEwEMzDN/UQr25cc2we582JCrJuy6L6Kw4ydAYLdIDAm5sVFj+ieiK
-         c8gtPkEPEI8vs100TYLoz57YuP4bh5dza3noePeQ=
+        b=UAImMthU8y+HfBX240HX51T3xh7Q8eJH4844pBY1gC7o21uK1tnNE6OeynGIPvRCO
+         YsLO8/x7MjM0S+o/6Uunx17PY3BDtQ4zxOWG+fgJ85CnKVDk5xD6Zz/lBf87Sa37a+
+         K7GQ05YRpZV0u4e33Nvcsmg23zaSEJUrvDFB6mIw=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Werner Sembach <wse@tuxedocomputers.com>,
-        Hans de Goede <hdegoede@redhat.com>,
-        "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>
-Subject: [PATCH 4.14 010/229] ACPI: video: Force backlight native for some TongFang devices
-Date:   Tue, 23 Aug 2022 10:22:51 +0200
-Message-Id: <20220823080053.733076151@linuxfoundation.org>
+        stable@vger.kernel.org, Liang He <windhl@126.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 4.14 006/229] net: sungem_phy: Add of_node_put() for reference returned by of_get_parent()
+Date:   Tue, 23 Aug 2022 10:22:47 +0200
+Message-Id: <20220823080053.536799407@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220823080053.202747790@linuxfoundation.org>
 References: <20220823080053.202747790@linuxfoundation.org>
@@ -50,90 +50,36 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Werner Sembach <wse@tuxedocomputers.com>
+From: Liang He <windhl@126.com>
 
-commit c752089f7cf5b5800c6ace4cdd1a8351ee78a598 upstream.
+[ Upstream commit ebbbe23fdf6070e31509638df3321688358cc211 ]
 
-The TongFang PF5PU1G, PF4NU1F, PF5NU1G, and PF5LUXG/TUXEDO BA15 Gen10,
-Pulse 14/15 Gen1, and Pulse 15 Gen2 have the same problem as the Clevo
-NL5xRU and NL5xNU/TUXEDO Aura 15 Gen1 and Gen2:
-They have a working native and video interface. However the default
-detection mechanism first registers the video interface before
-unregistering it again and switching to the native interface during boot.
-This results in a dangling SBIOS request for backlight change for some
-reason, causing the backlight to switch to ~2% once per boot on the first
-power cord connect or disconnect event. Setting the native interface
-explicitly circumvents this buggy behaviour by avoiding the unregistering
-process.
+In bcm5421_init(), we should call of_node_put() for the reference
+returned by of_get_parent() which has increased the refcount.
 
-Signed-off-by: Werner Sembach <wse@tuxedocomputers.com>
-Cc: All applicable <stable@vger.kernel.org>
-Reviewed-by: Hans de Goede <hdegoede@redhat.com>
-Signed-off-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Fixes: 3c326fe9cb7a ("[PATCH] ppc64: Add new PHY to sungem")
+Signed-off-by: Liang He <windhl@126.com>
+Link: https://lore.kernel.org/r/20220720131003.1287426-1-windhl@126.com
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/acpi/video_detect.c |   51 +++++++++++++++++++++++++++++++++++++++++++-
- 1 file changed, 50 insertions(+), 1 deletion(-)
+ drivers/net/sungem_phy.c | 1 +
+ 1 file changed, 1 insertion(+)
 
---- a/drivers/acpi/video_detect.c
-+++ b/drivers/acpi/video_detect.c
-@@ -431,7 +431,56 @@ static const struct dmi_system_id video_
- 		DMI_MATCH(DMI_BOARD_NAME, "NL5xNU"),
- 		},
- 	},
--
-+	/*
-+	 * The TongFang PF5PU1G, PF4NU1F, PF5NU1G, and PF5LUXG/TUXEDO BA15 Gen10,
-+	 * Pulse 14/15 Gen1, and Pulse 15 Gen2 have the same problem as the Clevo
-+	 * NL5xRU and NL5xNU/TUXEDO Aura 15 Gen1 and Gen2. See the description
-+	 * above.
-+	 */
-+	{
-+	.callback = video_detect_force_native,
-+	.ident = "TongFang PF5PU1G",
-+	.matches = {
-+		DMI_MATCH(DMI_BOARD_NAME, "PF5PU1G"),
-+		},
-+	},
-+	{
-+	.callback = video_detect_force_native,
-+	.ident = "TongFang PF4NU1F",
-+	.matches = {
-+		DMI_MATCH(DMI_BOARD_NAME, "PF4NU1F"),
-+		},
-+	},
-+	{
-+	.callback = video_detect_force_native,
-+	.ident = "TongFang PF4NU1F",
-+	.matches = {
-+		DMI_MATCH(DMI_SYS_VENDOR, "TUXEDO"),
-+		DMI_MATCH(DMI_BOARD_NAME, "PULSE1401"),
-+		},
-+	},
-+	{
-+	.callback = video_detect_force_native,
-+	.ident = "TongFang PF5NU1G",
-+	.matches = {
-+		DMI_MATCH(DMI_BOARD_NAME, "PF5NU1G"),
-+		},
-+	},
-+	{
-+	.callback = video_detect_force_native,
-+	.ident = "TongFang PF5NU1G",
-+	.matches = {
-+		DMI_MATCH(DMI_SYS_VENDOR, "TUXEDO"),
-+		DMI_MATCH(DMI_BOARD_NAME, "PULSE1501"),
-+		},
-+	},
-+	{
-+	.callback = video_detect_force_native,
-+	.ident = "TongFang PF5LUXG",
-+	.matches = {
-+		DMI_MATCH(DMI_BOARD_NAME, "PF5LUXG"),
-+		},
-+	},
- 	/*
- 	 * Desktops which falsely report a backlight and which our heuristics
- 	 * for this do not catch.
+diff --git a/drivers/net/sungem_phy.c b/drivers/net/sungem_phy.c
+index 63a8ff816e59..e556b00dfed2 100644
+--- a/drivers/net/sungem_phy.c
++++ b/drivers/net/sungem_phy.c
+@@ -453,6 +453,7 @@ static int bcm5421_init(struct mii_phy* phy)
+ 		int can_low_power = 1;
+ 		if (np == NULL || of_get_property(np, "no-autolowpower", NULL))
+ 			can_low_power = 0;
++		of_node_put(np);
+ 		if (can_low_power) {
+ 			/* Enable automatic low-power */
+ 			sungem_phy_write(phy, 0x1c, 0x9002);
+-- 
+2.35.1
+
 
 
