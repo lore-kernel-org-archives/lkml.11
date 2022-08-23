@@ -2,45 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 92DEEC32772
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 09:48:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5F7A1C32772
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 09:48:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242180AbiHWJsQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 05:48:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53556 "EHLO
+        id S1344258AbiHWJsU (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 23 Aug 2022 05:48:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55342 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352120AbiHWJp5 (ORCPT
+        with ESMTP id S1352164AbiHWJqA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 05:45:57 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B179F1183A;
-        Tue, 23 Aug 2022 01:43:27 -0700 (PDT)
+        Tue, 23 Aug 2022 05:46:00 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1CDFE60509;
+        Tue, 23 Aug 2022 01:43:47 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 4A971B81C55;
-        Tue, 23 Aug 2022 08:43:27 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7E102C433C1;
-        Tue, 23 Aug 2022 08:43:25 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 3E964CE1B39;
+        Tue, 23 Aug 2022 08:33:23 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 529CDC433D7;
+        Tue, 23 Aug 2022 08:33:21 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661244206;
-        bh=N33/0tyB2ogA33cfEjn1YFSkrKBa93ZvpLZceAjDIK0=;
+        s=korg; t=1661243601;
+        bh=zZLL++bYvl0F92rMoTpAbVJJgVpyIgrqAToCvPmUEYA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Sr9tz+qURkG9hb7xT/xhgJTzfxslxPgwJHq4Ovsch+RuMxWX+2MJYFqxnwQpbAe+g
-         PUCzBJN9tBiCoy8fHZWzKo7niJZlUJ7LZr8W14T4wbS7aqzQHDG4pyCRRLdflnS4qv
-         7+cT487EAC4VcB0Lp0pP201dCfIcVRpRW4gGErxY=
+        b=VmRSCqBn//LUADhOOiNW8oEzqoLeoGhx5UdtPDY5pUsSKn+hge+eReoH6I1cd+fdF
+         KavDY1+klCUGk+x8A5i8+Ya4FOkomML2tZktmrM51mfdsE/irMv5F9lmezcgeuP2t2
+         6xu5LXEqr+Z6oRqGSFr8UAaY9aLWK4Df2lXMToYg=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Xuan Zhuo <xuanzhuo@linux.alibaba.com>,
-        Jason Wang <jasowang@redhat.com>,
-        "David S. Miller" <davem@davemloft.net>
-Subject: [PATCH 5.15 056/244] virtio_net: fix memory leak inside XPD_TX with mergeable
-Date:   Tue, 23 Aug 2022 10:23:35 +0200
-Message-Id: <20220823080100.932689364@linuxfoundation.org>
+        stable@vger.kernel.org, Helge Deller <deller@gmx.de>,
+        Luis Chamberlain <mcgrof@kernel.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.19 327/365] modules: Ensure natural alignment for .altinstructions and __bug_table sections
+Date:   Tue, 23 Aug 2022 10:03:48 +0200
+Message-Id: <20220823080131.868020705@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220823080059.091088642@linuxfoundation.org>
-References: <20220823080059.091088642@linuxfoundation.org>
+In-Reply-To: <20220823080118.128342613@linuxfoundation.org>
+References: <20220823080118.128342613@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -49,38 +50,56 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Xuan Zhuo <xuanzhuo@linux.alibaba.com>
+From: Helge Deller <deller@gmx.de>
 
-commit 7a542bee27c6a57e45c33cbbdc963325fd6493af upstream.
+[ Upstream commit 87c482bdfa79f378297d92af49cdf265be199df5 ]
 
-When we call xdp_convert_buff_to_frame() to get xdpf, if it returns
-NULL, we should check if xdp_page was allocated by xdp_linearize_page().
-If it is newly allocated, it should be freed here alone. Just like any
-other "goto err_xdp".
+In the kernel image vmlinux.lds.S linker scripts the .altinstructions
+and __bug_table sections are 4- or 8-byte aligned because they hold 32-
+and/or 64-bit values.
 
-Fixes: 44fa2dbd4759 ("xdp: transition into using xdp_frame for ndo_xdp_xmit")
-Signed-off-by: Xuan Zhuo <xuanzhuo@linux.alibaba.com>
-Acked-by: Jason Wang <jasowang@redhat.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Most architectures use altinstructions and BUG() or WARN() in modules as
+well, but in the module linker script (module.lds.S) those sections are
+currently missing. As consequence the linker will store their content
+byte-aligned by default, which then can lead to unnecessary unaligned
+memory accesses by the CPU when those tables are processed at runtime.
+
+Usually unaligned memory accesses are unnoticed, because either the
+hardware (as on x86 CPUs) or in-kernel exception handlers (e.g. on
+parisc or sparc) emulate and fix them up at runtime. Nevertheless, such
+unaligned accesses introduce a performance penalty and can even crash
+the kernel if there is a bug in the unalignment exception handlers
+(which happened once to me on the parisc architecture and which is why I
+noticed that issue at all).
+
+This patch fixes a non-critical issue and might be backported at any time.
+It's trivial and shouldn't introduce any regression because it simply
+tells the linker to use a different (8-byte alignment) for those
+sections by default.
+
+Signed-off-by: Helge Deller <deller@gmx.de>
+Link: https://lore.kernel.org/all/Yr8%2Fgr8e8I7tVX4d@p100/
+Signed-off-by: Luis Chamberlain <mcgrof@kernel.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/virtio_net.c |    5 ++++-
- 1 file changed, 4 insertions(+), 1 deletion(-)
+ scripts/module.lds.S | 2 ++
+ 1 file changed, 2 insertions(+)
 
---- a/drivers/net/virtio_net.c
-+++ b/drivers/net/virtio_net.c
-@@ -1017,8 +1017,11 @@ static struct sk_buff *receive_mergeable
- 		case XDP_TX:
- 			stats->xdp_tx++;
- 			xdpf = xdp_convert_buff_to_frame(&xdp);
--			if (unlikely(!xdpf))
-+			if (unlikely(!xdpf)) {
-+				if (unlikely(xdp_page != page))
-+					put_page(xdp_page);
- 				goto err_xdp;
-+			}
- 			err = virtnet_xdp_xmit(dev, 1, &xdpf, 0);
- 			if (unlikely(!err)) {
- 				xdp_return_frame_rx_napi(xdpf);
+diff --git a/scripts/module.lds.S b/scripts/module.lds.S
+index 1d0e1e4dc3d2..3a3aa2354ed8 100644
+--- a/scripts/module.lds.S
++++ b/scripts/module.lds.S
+@@ -27,6 +27,8 @@ SECTIONS {
+ 	.ctors			0 : ALIGN(8) { *(SORT(.ctors.*)) *(.ctors) }
+ 	.init_array		0 : ALIGN(8) { *(SORT(.init_array.*)) *(.init_array) }
+ 
++	.altinstructions	0 : ALIGN(8) { KEEP(*(.altinstructions)) }
++	__bug_table		0 : ALIGN(8) { KEEP(*(__bug_table)) }
+ 	__jump_table		0 : ALIGN(8) { KEEP(*(__jump_table)) }
+ 
+ 	__patchable_function_entries : { *(__patchable_function_entries) }
+-- 
+2.35.1
+
 
 
