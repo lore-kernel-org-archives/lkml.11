@@ -2,85 +2,159 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 14B6FC32772
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 13:49:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C842BC32772
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 13:51:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229874AbiHWNtW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 09:49:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34822 "EHLO
+        id S241161AbiHWNv4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 23 Aug 2022 09:51:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36200 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239324AbiHWNrr (ORCPT
+        with ESMTP id S240884AbiHWNvb (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 09:47:47 -0400
-Received: from perceval.ideasonboard.com (perceval.ideasonboard.com [IPv6:2001:4b98:dc2:55:216:3eff:fef7:d647])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4463320984C;
-        Tue, 23 Aug 2022 03:52:34 -0700 (PDT)
-Received: from pendragon.ideasonboard.com (62-78-145-57.bb.dnainternet.fi [62.78.145.57])
-        by perceval.ideasonboard.com (Postfix) with ESMTPSA id 9E3BA440;
-        Tue, 23 Aug 2022 12:40:54 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=ideasonboard.com;
-        s=mail; t=1661251254;
-        bh=qtB/GHrhmBGbFTFOqU8r92UoGanWbvaJR09DP0TwpEI=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=tS2Rs/F+MOfHTNWsI+H3m05aDeJAOtf8tSyFbGcMxlDkCQsCPLhe9L8m1+l+krphh
-         JlthAFo+rUPhGU1YsAd/yehvqfSLWAh4rBTy2J6WB+Cf615tZMk5HlMmB7VHw4Rme+
-         ogK54hF/L1LRWOeI4VuxuMQk4A33kWS6CnDFPN7o=
-Date:   Tue, 23 Aug 2022 13:40:50 +0300
-From:   Laurent Pinchart <laurent.pinchart@ideasonboard.com>
-To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Cc:     Andrzej Hajda <andrzej.hajda@intel.com>,
-        Neil Armstrong <narmstrong@baylibre.com>,
-        Robert Foss <robert.foss@linaro.org>,
-        Jonas Karlman <jonas@kwiboo.se>,
-        Jernej Skrabec <jernej.skrabec@gmail.com>,
-        David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>,
+        Tue, 23 Aug 2022 09:51:31 -0400
+Received: from mail-wr1-x42c.google.com (mail-wr1-x42c.google.com [IPv6:2a00:1450:4864:20::42c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5D4AF217472
+        for <linux-kernel@vger.kernel.org>; Tue, 23 Aug 2022 03:57:04 -0700 (PDT)
+Received: by mail-wr1-x42c.google.com with SMTP id u5so8712818wrt.11
+        for <linux-kernel@vger.kernel.org>; Tue, 23 Aug 2022 03:57:04 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc;
+        bh=4iCZIPBqKk4aWYa7eJT+SaYkcQXkWhohlhOpL9YUDVU=;
+        b=E/VbHdOW7s+2eeUSVsRs5XJAI+yAma5X7QmOdeUSyI23lBuncOs23O+KSvjE/CB8/x
+         vQ0yLqWOc8zCsUK3qE6LHVCT5n6wWkx1uUoexhfa/Ef7uH8kWkUNTyouNAkO1GsSvs52
+         2c5Io2guzADNJZOb5ZLlwLwyjSpbmzXGRT22xT4ArShG24fQJiRcCB7hnBvwROwTKEwA
+         O10oUQmtEZqIJJypRhKbT1R6+l93NSoAC3YtGXFDFkP0+HzvK6nbxPTK3kLElZh+fWxL
+         0YglQdYiqnYRKbYZP258n9+0y9FxZaOQk/YTqTzUUxofQdoiGFeMqFhZ6bmIPPrgIzYS
+         8kIA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc;
+        bh=4iCZIPBqKk4aWYa7eJT+SaYkcQXkWhohlhOpL9YUDVU=;
+        b=gbMowb/8dWXuxhd4FTTMEIPV7N7m583tp22/av9kwuZdzt5NCbJk39nh2jtr2m0H8m
+         G0SgqKj97d0ypk6Z/ArxvZWP5AOQXVlV6jnOlwD7otDpou/jyW/r8kMzQEOK28CI/ecB
+         bIiocQunTwzJJfofOvyJWbMIFDOy4Gh2HhD44cUNJokRpw9ZkkyMD5V5dEj0rJQNPr7Q
+         qGvsxIKxFz3xq4LE3k9L85t6mwQJC4z7m5zqY7yTQcEce5jIHGSx7/6Dks2ePAE65mnq
+         E/ecby7WaYjio03HXB9vGZ2tWYiic6T6Q6Cg22wR4U7WkZo4iFEb6vAIa0zb4q+V50oH
+         tjUg==
+X-Gm-Message-State: ACgBeo0WkAS9lWgdMmqplhQuUXuKF2svf6h94cNQu8FAnk/NzvajjY6R
+        xx8c/dFQ3Gfe6ffBW60vICD9G4zI7Q9bHJVZ
+X-Google-Smtp-Source: AA6agR4WBOwY8UcpEmJ1aepVJpP/ZPvtXXCBnO8R0qkAsHVgv+/VM/SWcR0hP2kXefVSXz44zxUwPg==
+X-Received: by 2002:a2e:92c8:0:b0:25d:6ddf:e71d with SMTP id k8-20020a2e92c8000000b0025d6ddfe71dmr6570635ljh.170.1661251716963;
+        Tue, 23 Aug 2022 03:48:36 -0700 (PDT)
+Received: from [192.168.0.11] (89-27-92-210.bb.dnainternet.fi. [89.27.92.210])
+        by smtp.gmail.com with ESMTPSA id u7-20020a05651220c700b0048b003c4bf7sm1535952lfr.169.2022.08.23.03.48.35
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 23 Aug 2022 03:48:36 -0700 (PDT)
+Message-ID: <50eaf3b1-0681-a0a9-b120-4ade4e91e83a@linaro.org>
+Date:   Tue, 23 Aug 2022 13:48:35 +0300
+MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.12.0
+Subject: Re: [PATCH v2 4/7] dt-bindings: net: dsa: mediatek,mt7530: define
+ port binding per compatible
+Content-Language: en-US
+To:     =?UTF-8?B?QXLEsW7DpyDDnE5BTA==?= <arinc.unal@arinc9.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
         Rob Herring <robh+dt@kernel.org>,
         Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        dri-devel@lists.freedesktop.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] dt-bindings: display: synopsys,dw-hdmi: drop ref from
- reg-io-width
-Message-ID: <YwSusqWrapWASOSK@pendragon.ideasonboard.com>
-References: <20220823101031.387082-1-krzysztof.kozlowski@linaro.org>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <20220823101031.387082-1-krzysztof.kozlowski@linaro.org>
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        Sean Wang <sean.wang@mediatek.com>,
+        Landen Chao <Landen.Chao@mediatek.com>,
+        DENG Qingfang <dqfext@gmail.com>,
+        Frank Wunderlich <frank-w@public-files.de>,
+        Luiz Angelo Daros de Luca <luizluca@gmail.com>,
+        Sander Vanheule <sander@svanheule.net>,
+        =?UTF-8?Q?Ren=c3=a9_van_Dorst?= <opensource@vdorst.com>,
+        Daniel Golle <daniel@makrotopia.org>, erkin.bozoglu@xeront.com,
+        Sergio Paracuellos <sergio.paracuellos@gmail.com>
+Cc:     netdev@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org
+References: <20220813154415.349091-1-arinc.unal@arinc9.com>
+ <20220813154415.349091-5-arinc.unal@arinc9.com>
+ <d2279a7d-bbc3-c772-1f30-251f056341bb@linaro.org>
+ <0bf02926-753e-e8d5-1d87-f286ed743fb2@arinc9.com>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+In-Reply-To: <0bf02926-753e-e8d5-1d87-f286ed743fb2@arinc9.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Krzysztof,
-
-Thank you for the patch.
-
-On Tue, Aug 23, 2022 at 01:10:31PM +0300, Krzysztof Kozlowski wrote:
-> reg-io-width is a standard property, so no need for defining its type
-> with $ref.
+On 20/08/2022 10:34, Arınç ÜNAL wrote:
+> On 19.08.2022 15:43, Krzysztof Kozlowski wrote:
+>> On 13/08/2022 18:44, Arınç ÜNAL wrote:
+>>> Define DSA port binding under each compatible device as each device
+>>> requires different values for certain properties.
+>>>
+>>> Signed-off-by: Arınç ÜNAL <arinc.unal@arinc9.com>
+>>> ---
+>>>   .../bindings/net/dsa/mediatek,mt7530.yaml     | 116 +++++++++++++-----
+>>>   1 file changed, 87 insertions(+), 29 deletions(-)
+>>>
+>>> diff --git a/Documentation/devicetree/bindings/net/dsa/mediatek,mt7530.yaml b/Documentation/devicetree/bindings/net/dsa/mediatek,mt7530.yaml
+>>> index cc87f48d4d07..ff51a2f6875f 100644
+>>> --- a/Documentation/devicetree/bindings/net/dsa/mediatek,mt7530.yaml
+>>> +++ b/Documentation/devicetree/bindings/net/dsa/mediatek,mt7530.yaml
+>>> @@ -130,35 +130,6 @@ properties:
+>>>         ethsys.
+>>>       maxItems: 1
+>>>   
+>>> -patternProperties:
+>>> -  "^(ethernet-)?ports$":
+>>> -    type: object
+>>> -
+>>> -    patternProperties:
+>>> -      "^(ethernet-)?port@[0-9]+$":
+>>> -        type: object
+>>> -        description: Ethernet switch ports
+>>> -
+>>
+>> my comments from v1 apply here
+>>
+>> None of the reasons you said force you to define properties in some
+>> allOf:if:then subblock. These force you to constrain the properties in
+>> allOf:if:then, but not define.
+>>
+>>
+>>> I can split patternProperties to two sections, but I can't directly
+>>> define the reg property like you put above.
+>>
+>> Of course you can and original bindings were doing it.
+>>
+>> Let me ask specific questions (yes, no):
+>> 1. Are ethernet-ports and ethernet-port present in each variant?
+>> 2. Is dsa-port.yaml applicable to each variant? (looks like that - three
+>> compatibles, three all:if:then)
+>> 3. If reg appearing in each variant?
+>> 4. If above is true, if reg is maximum one item in each variant?
 > 
-> Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-
-Reviewed-by: Laurent Pinchart <laurent.pinchart+renesas@ideasonboard.com>
-
-> ---
->  .../devicetree/bindings/display/bridge/synopsys,dw-hdmi.yaml     | 1 -
->  1 file changed, 1 deletion(-)
+> All yes.
 > 
-> diff --git a/Documentation/devicetree/bindings/display/bridge/synopsys,dw-hdmi.yaml b/Documentation/devicetree/bindings/display/bridge/synopsys,dw-hdmi.yaml
-> index b00246faea57..4b7e54a8f037 100644
-> --- a/Documentation/devicetree/bindings/display/bridge/synopsys,dw-hdmi.yaml
-> +++ b/Documentation/devicetree/bindings/display/bridge/synopsys,dw-hdmi.yaml
-> @@ -26,7 +26,6 @@ properties:
->    reg-io-width:
->      description:
->        Width (in bytes) of the registers specified by the reg property.
-> -    $ref: /schemas/types.yaml#/definitions/uint32
->      enum: [1, 4]
->      default: 1
->  
+>>
+>> Looking at your patch, I think answer is 4x yes, which means you can
+>> define them in one place and constrain in allOf:if:then, just like all
+>> other schemas, because this one is not different.
+> 
+> If I understand correctly, I do this already with v3. Properties are 
+> defined under the constructed node. Accepted values for properties are 
+> constrained under if:then.
 
--- 
-Regards,
+v4 doesn't do it. You removed there patternProperties - again.
 
-Laurent Pinchart
+
+Best regards,
+Krzysztof
