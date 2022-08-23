@@ -2,49 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E0D33C3F6B0
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 12:11:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 82FFDC32772
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 12:11:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352148AbiHWMLU (ORCPT
+        id S1353299AbiHWMLe (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 08:11:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35628 "EHLO
+        Tue, 23 Aug 2022 08:11:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35516 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1359622AbiHWMKr (ORCPT
+        with ESMTP id S1359520AbiHWMJP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 08:10:47 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A90D369F4C;
-        Tue, 23 Aug 2022 02:38:48 -0700 (PDT)
+        Tue, 23 Aug 2022 08:09:15 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9CD8959266;
+        Tue, 23 Aug 2022 02:38:32 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 30782B81C65;
-        Tue, 23 Aug 2022 09:37:38 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 972E3C433D6;
-        Tue, 23 Aug 2022 09:37:36 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 4501A612D6;
+        Tue, 23 Aug 2022 09:38:32 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 344E6C433C1;
+        Tue, 23 Aug 2022 09:38:31 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661247457;
-        bh=ypEv1n++CtxAilts2e0nw7v+ULA4+1lQCQ2OdLMVVwA=;
+        s=korg; t=1661247511;
+        bh=w0p436ssZfj/lQdy31bDOBkJyI06WCHkjyGiFQ8EqOQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=gOjqxUl5aJLfx+AxvuYaRN8hKUDHsgnCVdVOERJvD900Wg3zAXtwBmXKDXHD4N6gK
-         13nTM+F6Kk/ShzIURa4eA9jwWPJ2REAYl2onSKU+L30dZQlItvhdFo0kaRAACh4vRz
-         nElh/+6yiHtMSqD0IfI+8i1fEeMikTakiZisnMmU=
+        b=PyAwfbnKoetoX3kDDqPNtmM6PJZqgX9wXp+02b8rirOgLjnvSzZlbXT8juj/U8NrK
+         cTmI06TDNKHZOY0WSTdbtpEiGOxJIrmpzMKFuduzloXW8GDTKYsetpMmQgOP59hesC
+         I9sHWyBMNiimoUd5s4bBCZNI8Lnz2LgoUNvO9V9o=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        =?UTF-8?q?Amadeusz=20S=C5=82awi=C5=84ski?= 
-        <amadeuszx.slawinski@linux.intel.com>, Takashi Iwai <tiwai@suse.de>
-Subject: [PATCH 5.10 001/158] ALSA: info: Fix llseek return value when using callback
-Date:   Tue, 23 Aug 2022 10:25:33 +0200
-Message-Id: <20220823080046.105831093@linuxfoundation.org>
+        stable@vger.kernel.org, Dan Carpenter <dan.carpenter@oracle.com>,
+        Oleksandr Tyshchenko <oleksandr_tyshchenko@epam.com>,
+        Juergen Gross <jgross@suse.com>
+Subject: [PATCH 5.10 059/158] xen/xenbus: fix return type in xenbus_file_read()
+Date:   Tue, 23 Aug 2022 10:26:31 +0200
+Message-Id: <20220823080048.450524486@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220823080046.056825146@linuxfoundation.org>
 References: <20220823080046.056825146@linuxfoundation.org>
 User-Agent: quilt/0.67
-X-stable: review
-X-Patchwork-Hint: ignore
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
@@ -52,51 +50,48 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Amadeusz Sławiński <amadeuszx.slawinski@linux.intel.com>
+From: Dan Carpenter <dan.carpenter@oracle.com>
 
-commit 9be080edcca330be4af06b19916c35227891e8bc upstream.
+commit 32ad11127b95236dfc52375f3707853194a7f4b4 upstream.
 
-When using callback there was a flow of
+This code tries to store -EFAULT in an unsigned int.  The
+xenbus_file_read() function returns type ssize_t so the negative value
+is returned as a positive value to the user.
 
-	ret = -EINVAL
-	if (callback) {
-		offset = callback();
-		goto out;
-	}
-	...
-	offset = some other value in case of no callback;
-	ret = offset;
-out:
-	return ret;
+This change forces another change to the min() macro.  Originally, the
+min() macro used "unsigned" type which checkpatch complains about.  Also
+unsigned type would break if "len" were not capped at MAX_RW_COUNT.  Use
+size_t for the min().  (No effect on runtime for the min_t() change).
 
-which causes the snd_info_entry_llseek() to return -EINVAL when there is
-callback handler. Fix this by setting "ret" directly to callback return
-value before jumping to "out".
-
-Fixes: 73029e0ff18d ("ALSA: info - Implement common llseek for binary mode")
-Signed-off-by: Amadeusz Sławiński <amadeuszx.slawinski@linux.intel.com>
-Cc: <stable@vger.kernel.org>
-Link: https://lore.kernel.org/r/20220817124924.3974577-1-amadeuszx.slawinski@linux.intel.com
-Signed-off-by: Takashi Iwai <tiwai@suse.de>
+Fixes: 2fb3683e7b16 ("xen: Add xenbus device driver")
+Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
+Reviewed-by: Oleksandr Tyshchenko <oleksandr_tyshchenko@epam.com>
+Link: https://lore.kernel.org/r/YutxJUaUYRG/VLVc@kili
+Signed-off-by: Juergen Gross <jgross@suse.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- sound/core/info.c |    6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+ drivers/xen/xenbus/xenbus_dev_frontend.c |    4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
---- a/sound/core/info.c
-+++ b/sound/core/info.c
-@@ -112,9 +112,9 @@ static loff_t snd_info_entry_llseek(stru
- 	entry = data->entry;
- 	mutex_lock(&entry->access);
- 	if (entry->c.ops->llseek) {
--		offset = entry->c.ops->llseek(entry,
--					      data->file_private_data,
--					      file, offset, orig);
-+		ret = entry->c.ops->llseek(entry,
-+					   data->file_private_data,
-+					   file, offset, orig);
- 		goto out;
- 	}
+--- a/drivers/xen/xenbus/xenbus_dev_frontend.c
++++ b/drivers/xen/xenbus/xenbus_dev_frontend.c
+@@ -128,7 +128,7 @@ static ssize_t xenbus_file_read(struct f
+ {
+ 	struct xenbus_file_priv *u = filp->private_data;
+ 	struct read_buffer *rb;
+-	unsigned i;
++	ssize_t i;
+ 	int ret;
+ 
+ 	mutex_lock(&u->reply_mutex);
+@@ -148,7 +148,7 @@ again:
+ 	rb = list_entry(u->read_buffers.next, struct read_buffer, list);
+ 	i = 0;
+ 	while (i < len) {
+-		unsigned sz = min((unsigned)len - i, rb->len - rb->cons);
++		size_t sz = min_t(size_t, len - i, rb->len - rb->cons);
+ 
+ 		ret = copy_to_user(ubuf + i, &rb->msg[rb->cons], sz);
  
 
 
