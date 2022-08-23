@@ -2,155 +2,97 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E0232C3814E
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 11:27:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4673AC48BE4
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 11:27:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357546AbiHWL0U (ORCPT
+        id S1357599AbiHWL02 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 07:26:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44028 "EHLO
+        Tue, 23 Aug 2022 07:26:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47304 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357666AbiHWLUr (ORCPT
+        with ESMTP id S1357715AbiHWLUz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 07:20:47 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B2AC78C02B;
-        Tue, 23 Aug 2022 02:22:44 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 4DDE26121F;
-        Tue, 23 Aug 2022 09:22:43 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 425F9C433D6;
-        Tue, 23 Aug 2022 09:22:42 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661246562;
-        bh=eCa0mB0c5GsKscPjdyXyKcwbYEbh4le6XWboPcUYGiQ=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=RJvU9u6miqJtGN3Poo61B+IOwQ+mlTeWhZ1C7+wrieQmaCtgNl42+o6PUtWIhhJzM
-         E1WP2GVUMwvXfWYzmsG2doo48VeaaFPSUZ25TOEhZ6o3Tc1P4B+CnYEMGf5eG9NMN4
-         HPlAmidjwGwGc7DTWJJjTfIdiiJjHxQc8plZRKGs=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Przemyslaw Patynowski <przemyslawx.patynowski@intel.com>,
-        Jun Zhang <xuejun.zhang@intel.com>,
-        Bharathi Sreenivas <bharathi.sreenivas@intel.com>,
-        Tony Nguyen <anthony.l.nguyen@intel.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 149/389] iavf: Fix max_rate limiting
-Date:   Tue, 23 Aug 2022 10:23:47 +0200
-Message-Id: <20220823080121.818079376@linuxfoundation.org>
-X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220823080115.331990024@linuxfoundation.org>
-References: <20220823080115.331990024@linuxfoundation.org>
-User-Agent: quilt/0.67
+        Tue, 23 Aug 2022 07:20:55 -0400
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 47B1F8C46C
+        for <linux-kernel@vger.kernel.org>; Tue, 23 Aug 2022 02:22:49 -0700 (PDT)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id DBB0D113E;
+        Tue, 23 Aug 2022 02:22:51 -0700 (PDT)
+Received: from bogus (unknown [10.57.44.200])
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id A16143F718;
+        Tue, 23 Aug 2022 02:22:45 -0700 (PDT)
+Date:   Tue, 23 Aug 2022 10:22:20 +0100
+From:   Sudeep Holla <sudeep.holla@arm.com>
+To:     Yicong Yang <yangyicong@huawei.com>
+Cc:     vincent.guittot@linaro.org, ionela.voinescu@arm.com,
+        linux-kernel@vger.kernel.org, gregkh@linuxfoundation.org,
+        rafael@kernel.org, 21cnbao@gmail.com, jonathan.cameron@huawei.com,
+        linuxarm@huawei.com, prime.zeng@huawei.com,
+        yangyicong@hisilicon.com
+Subject: Re: [PATCH] arch_topology: Make cluster topology span at least SMT
+ CPUs
+Message-ID: <20220823092220.2p4tsq5rvmfk5ne4@bogus>
+References: <20220823073044.58697-1-yangyicong@huawei.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220823073044.58697-1-yangyicong@huawei.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Przemyslaw Patynowski <przemyslawx.patynowski@intel.com>
+On Tue, Aug 23, 2022 at 03:30:44PM +0800, Yicong Yang wrote:
+> From: Yicong Yang <yangyicong@hisilicon.com>
+> 
+> Currently cpu_clustergroup_mask() will return CPU mask if cluster span
+> more or the same CPUs as cpu_coregroup_mask(). This will result topology
+> borken on non-Cluster SMT machines.
+> 
+> Test with:
+> qemu-system-aarch64 -enable-kvm -machine virt \
+>  -net none \
+>  -cpu host \
+>  -bios ./QEMU_EFI.fd \
+>  -m 2G \
+>  -smp 48,sockets=2,cores=12,threads=2 \
+>  -kernel $Image \
+>  -initrd $Rootfs \
+>  -nographic
+>  -append "rdinit=init console=ttyAMA0 sched_verbose loglevel=8"
+> 
+> We'll get below error:
+> [    3.084568] BUG: arch topology borken
+> [    3.084570]      the SMT domain not a subset of the CLS domain
+> 
+> Since cluster is a level higher than SMT, fix this by making cluster
+> spans at least SMT CPUs.
+> 
+> Cc: Sudeep Holla <sudeep.holla@arm.com>
 
-[ Upstream commit ec60d54cb9a3d43a02c5612a03093c18233e6601 ]
+Reviewed-by: Sudeep Holla <sudeep.holla@arm.com>
 
-Fix max_rate option in TC, check for proper quanta boundaries.
-Check for minimum value provided and if it fits expected 50Mbps
-quanta.
+> Cc: Vincent Guittot <vincent.guittot@linaro.org>
+> Cc: Ionela Voinescu <ionela.voinescu@arm.com>
+> Fixes: bfcc4397435d ("arch_topology: Limit span of cpu_clustergroup_mask()")
+> Signed-off-by: Yicong Yang <yangyicong@hisilicon.com>
+> ---
+>  drivers/base/arch_topology.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+> 
+> diff --git a/drivers/base/arch_topology.c b/drivers/base/arch_topology.c
+> index 0424b59b695e..0056a1273275 100644
+> --- a/drivers/base/arch_topology.c
+> +++ b/drivers/base/arch_topology.c
+> @@ -724,7 +724,7 @@ const struct cpumask *cpu_clustergroup_mask(int cpu)
+>  	 */
+>  	if (cpumask_subset(cpu_coregroup_mask(cpu),
+>  			   &cpu_topology[cpu].cluster_sibling))
+> -		return get_cpu_mask(cpu);
 
-Without this patch, iavf could send settings for max_rate limiting
-that would be accepted from by PF even the max_rate option is less
-than expected 50Mbps quanta. It results in no rate limiting
-on traffic as rate limiting will be floored to 0.
+Sorry for this, for some reason I assumed the get_cpu_mask() will cover
+threads too.
 
-Example:
-tc qdisc add dev $vf root mqprio num_tc 3 map 0 2 1 queues \
-2@0 2@2 2@4 hw 1 mode channel shaper bw_rlimit \
-max_rate 50Mbps 500Mbps 500Mbps
-
-Should limit TC0 to circa 50 Mbps
-
-tc qdisc add dev $vf root mqprio num_tc 3 map 0 2 1 queues \
-2@0 2@2 2@4 hw 1 mode channel shaper bw_rlimit \
-max_rate 0Mbps 100Kbit 500Mbps
-
-Should return error
-
-Fixes: d5b33d024496 ("i40evf: add ndo_setup_tc callback to i40evf")
-Signed-off-by: Przemyslaw Patynowski <przemyslawx.patynowski@intel.com>
-Signed-off-by: Jun Zhang <xuejun.zhang@intel.com>
-Tested-by: Bharathi Sreenivas <bharathi.sreenivas@intel.com>
-Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- drivers/net/ethernet/intel/iavf/iavf.h      |  1 +
- drivers/net/ethernet/intel/iavf/iavf_main.c | 25 +++++++++++++++++++--
- 2 files changed, 24 insertions(+), 2 deletions(-)
-
-diff --git a/drivers/net/ethernet/intel/iavf/iavf.h b/drivers/net/ethernet/intel/iavf/iavf.h
-index 81ca6472937d..85275b6ede4d 100644
---- a/drivers/net/ethernet/intel/iavf/iavf.h
-+++ b/drivers/net/ethernet/intel/iavf/iavf.h
-@@ -86,6 +86,7 @@ struct iavf_vsi {
- #define IAVF_HKEY_ARRAY_SIZE ((IAVF_VFQF_HKEY_MAX_INDEX + 1) * 4)
- #define IAVF_HLUT_ARRAY_SIZE ((IAVF_VFQF_HLUT_MAX_INDEX + 1) * 4)
- #define IAVF_MBPS_DIVISOR	125000 /* divisor to convert to Mbps */
-+#define IAVF_MBPS_QUANTA	50
- 
- #define IAVF_VIRTCHNL_VF_RESOURCE_SIZE (sizeof(struct virtchnl_vf_resource) + \
- 					(IAVF_MAX_VF_VSI * \
-diff --git a/drivers/net/ethernet/intel/iavf/iavf_main.c b/drivers/net/ethernet/intel/iavf/iavf_main.c
-index e8850ba5604c..4c41bb47fc1a 100644
---- a/drivers/net/ethernet/intel/iavf/iavf_main.c
-+++ b/drivers/net/ethernet/intel/iavf/iavf_main.c
-@@ -2581,6 +2581,7 @@ static int iavf_validate_ch_config(struct iavf_adapter *adapter,
- 				   struct tc_mqprio_qopt_offload *mqprio_qopt)
- {
- 	u64 total_max_rate = 0;
-+	u32 tx_rate_rem = 0;
- 	int i, num_qps = 0;
- 	u64 tx_rate = 0;
- 	int ret = 0;
-@@ -2595,12 +2596,32 @@ static int iavf_validate_ch_config(struct iavf_adapter *adapter,
- 			return -EINVAL;
- 		if (mqprio_qopt->min_rate[i]) {
- 			dev_err(&adapter->pdev->dev,
--				"Invalid min tx rate (greater than 0) specified\n");
-+				"Invalid min tx rate (greater than 0) specified for TC%d\n",
-+				i);
- 			return -EINVAL;
- 		}
--		/*convert to Mbps */
-+
-+		/* convert to Mbps */
- 		tx_rate = div_u64(mqprio_qopt->max_rate[i],
- 				  IAVF_MBPS_DIVISOR);
-+
-+		if (mqprio_qopt->max_rate[i] &&
-+		    tx_rate < IAVF_MBPS_QUANTA) {
-+			dev_err(&adapter->pdev->dev,
-+				"Invalid max tx rate for TC%d, minimum %dMbps\n",
-+				i, IAVF_MBPS_QUANTA);
-+			return -EINVAL;
-+		}
-+
-+		(void)div_u64_rem(tx_rate, IAVF_MBPS_QUANTA, &tx_rate_rem);
-+
-+		if (tx_rate_rem != 0) {
-+			dev_err(&adapter->pdev->dev,
-+				"Invalid max tx rate for TC%d, not divisible by %d\n",
-+				i, IAVF_MBPS_QUANTA);
-+			return -EINVAL;
-+		}
-+
- 		total_max_rate += tx_rate;
- 		num_qps += mqprio_qopt->qopt.count[i];
- 	}
 -- 
-2.35.1
-
-
-
+Regards,
+Sudeep
