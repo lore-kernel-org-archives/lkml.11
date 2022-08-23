@@ -2,205 +2,131 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DB980C32772
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 13:33:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B00A0C32772
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 13:36:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231696AbiHWNdo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 09:33:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48266 "EHLO
+        id S238209AbiHWNgl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 23 Aug 2022 09:36:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50798 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244000AbiHWNba (ORCPT
+        with ESMTP id S241821AbiHWNgM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 09:31:30 -0400
-Received: from mail-lf1-x12d.google.com (mail-lf1-x12d.google.com [IPv6:2a00:1450:4864:20::12d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AE52E1631D5
-        for <linux-kernel@vger.kernel.org>; Tue, 23 Aug 2022 03:32:04 -0700 (PDT)
-Received: by mail-lf1-x12d.google.com with SMTP id m5so8395166lfj.4
-        for <linux-kernel@vger.kernel.org>; Tue, 23 Aug 2022 03:32:04 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc;
-        bh=Nn4yg27RpfUKH0YwS0M7KTMeTIZP8soc1NaWLCIj4V8=;
-        b=gkDFGfVmjxorFP0c8X8RqzS6sIe38tA8r5/IRMeJD58cuS654rYWUc0VUpTgkQsX6D
-         oC5y6aFltTHtCfp7gWAu0dVG3v+vvjlTMXsMhnYVenk42cE1/C1FmZbiUfcWCSJ3oiza
-         tZaFzvpe7KIIwM3G2VxVyR1Xae5YWI0FxkpvTb+1J0fISLkxbqWnUF/qEq+xmuvLhHRC
-         ARQCtQeK00NcVks36jyX9RiVypEIK9iNk27XMriXHTjK2k4G/lp3CAZm/6GuAply/rNJ
-         Fzjafy7WN5H0uDU3jDwjFiopKU2J1wOguxA+9/V5Ql6F189yfsiXdXUzIxAIznQOwYxj
-         L7MA==
+        Tue, 23 Aug 2022 09:36:12 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 582661DC34D
+        for <linux-kernel@vger.kernel.org>; Tue, 23 Aug 2022 03:37:14 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1661250979;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=I+XmamW+3KCH3IL/ZlnTQBO91CZuDPkzzeMMrWghge4=;
+        b=hqOPuJ9NFwy8/dQOCO/nCRDWJbwweehywyBHsjMU/fvnVUY/fHUGBUZvtokkONCnHeVE55
+        gI5WfSeTD/NBBY+tz2UhhA6SQnk/PJNsSvkTnI0UsDy3Q1WVLdvKSwGfXMEhzV4LTvpJl7
+        iGfmTs08K1xZP1ix9CzzRyes9MsG1F4=
+Received: from mail-wm1-f72.google.com (mail-wm1-f72.google.com
+ [209.85.128.72]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
+ us-mta-631-8ji8OPBSMvCbUbO_I6gcUw-1; Tue, 23 Aug 2022 06:36:18 -0400
+X-MC-Unique: 8ji8OPBSMvCbUbO_I6gcUw-1
+Received: by mail-wm1-f72.google.com with SMTP id i132-20020a1c3b8a000000b003a537064611so7738885wma.4
+        for <linux-kernel@vger.kernel.org>; Tue, 23 Aug 2022 03:36:18 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc;
-        bh=Nn4yg27RpfUKH0YwS0M7KTMeTIZP8soc1NaWLCIj4V8=;
-        b=SanYR3Jnb6CHXGGRP2W2YeR/6CTvBINJmZL4TnFEx0/MmVvJOg+GgbmJ1Qies2N4ru
-         p4DDQZifwyKUc6ou1eoZ4yGiTg/u3wKZtKVTqS43cmX5sf7yjhJOupN15klG5eqEIK3P
-         7RQGuBYCKNGVREDZ5yLDjTRH35gy7YY+ei04LHK4IznCq7+fHID2CI8D2f2dq3m9MjKI
-         xzEFrSZXf+GGdlbAylk1wlcqQeoZ71iGmhPYBGZiBwuB4aQ/xM9I2j8uNpbGrQyjmgE6
-         o7HYXiCh0lX2fOLq/eRFImkdG8AaSWjiIYQie/HfyGUdD1F31Lj/vM5AB1pIGrPjqs/5
-         Cw6g==
-X-Gm-Message-State: ACgBeo00Cygvfnqh24NKX82Dm9qgg7jvksOml1QegoDdNqMLutM6w1y+
-        vE4JmgBXgGT/So10GbcoLJdJIg==
-X-Google-Smtp-Source: AA6agR6ZRkMVMh+0YxEKZ+XwxyYWZ3pJDxMNBgaSOGfr08HN4I6//S4wDDlMs98filiwjQ7OQ3HNrg==
-X-Received: by 2002:a19:4903:0:b0:492:e648:5bc0 with SMTP id w3-20020a194903000000b00492e6485bc0mr2531218lfa.288.1661250664301;
-        Tue, 23 Aug 2022 03:31:04 -0700 (PDT)
-Received: from [192.168.0.11] (89-27-92-210.bb.dnainternet.fi. [89.27.92.210])
-        by smtp.gmail.com with ESMTPSA id 6-20020a2e1646000000b0025e2c5a12b6sm2271863ljw.129.2022.08.23.03.31.03
+        h=content-transfer-encoding:in-reply-to:organization:from:references
+         :cc:to:content-language:subject:user-agent:mime-version:date
+         :message-id:x-gm-message-state:from:to:cc;
+        bh=I+XmamW+3KCH3IL/ZlnTQBO91CZuDPkzzeMMrWghge4=;
+        b=huV5PZdn7M0mr7DFv43rAUzBjmBmdycyqLokeRkwnC3S4vNcYD6JKX+eOds04L4FSB
+         233Zaymg1BpQ7dhmvDOnYirF4QJklfxX9CQQzPKvU0O6nFuRbkfJ54v97QnaIby8E0tT
+         o91V3f/ObiJCUncRLWb7TMeMPo7JknIpC2crvlnVyz5NesQRoR6sMdL68lRBhTN65RIz
+         2uhdqe4GE7OXKeepcd5IMCRfopvGkebFOGQii35/Fn15gO0PKJXO2fr0rrFnhomFZzMt
+         31x4yulog8OJyM76lJHwHE3RZzilQm1I9+PawZo03j2e9RBZvQH1uvdwjBkvrbp8PiJi
+         6Lug==
+X-Gm-Message-State: ACgBeo1DKVoPOHu/WAGbFFYSbt33AK9NDCDU771pw4wlwGTGarKFQ05R
+        PvbxGJaxdH6lCXBWJ2rJGkBlL4fi+RVWepVKLNxfvEDrUgiI834eGK889EXnJmrpyueFenFlVTr
+        VY+ybLoQLoi4U3scY2FV9etzD
+X-Received: by 2002:a7b:c045:0:b0:3a5:ff4e:5528 with SMTP id u5-20020a7bc045000000b003a5ff4e5528mr1802862wmc.150.1661250977101;
+        Tue, 23 Aug 2022 03:36:17 -0700 (PDT)
+X-Google-Smtp-Source: AA6agR50zssAIWyW1NcEa71aF+5HM7fzk5YasmUkHJtycFU+9mNi8F9TjaaXWZSXDKmO118IQz2YPQ==
+X-Received: by 2002:a7b:c045:0:b0:3a5:ff4e:5528 with SMTP id u5-20020a7bc045000000b003a5ff4e5528mr1802841wmc.150.1661250976859;
+        Tue, 23 Aug 2022 03:36:16 -0700 (PDT)
+Received: from ?IPV6:2003:cb:c70b:1600:c48b:1fab:a330:5182? (p200300cbc70b1600c48b1faba3305182.dip0.t-ipconnect.de. [2003:cb:c70b:1600:c48b:1fab:a330:5182])
+        by smtp.gmail.com with ESMTPSA id c9-20020a05600c100900b003a2f6367049sm16693484wmc.48.2022.08.23.03.36.15
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 23 Aug 2022 03:31:03 -0700 (PDT)
-Message-ID: <8712b866-af22-d9ac-fd84-7d77c2628682@linaro.org>
-Date:   Tue, 23 Aug 2022 13:31:02 +0300
+        Tue, 23 Aug 2022 03:36:16 -0700 (PDT)
+Message-ID: <30dd7d1f-df39-ad89-94aa-d1562b84fa8b@redhat.com>
+Date:   Tue, 23 Aug 2022 12:36:15 +0200
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.12.0
-Subject: Re: [PATCH RFC i2c-master] i2c: microchip: pci1xxxx: Add driver for
- I2C host controller in multifunction endpoint of pci1xxxx switch
+ Thunderbird/91.11.0
+Subject: Re: [RFC PATCH v2 06/12] fs: proc: use pageblock_nr_pages for
+ reschedule period in read_kcore()
 Content-Language: en-US
-To:     Tharun Kumar P <tharunkumar.pasumarthi@microchip.com>,
-        linux-i2c@vger.kernel.org, linux-kernel@vger.kernel.org,
-        wsa@kernel.org
-Cc:     andriy.shevchenko@linux.intel.com, jarkko.nikula@linux.intel.com,
-        robh@kernel.org, semen.protsenko@linaro.org, sven@svenpeter.dev,
-        jsd@semihalf.com, rafal@milecki.pl, olof@lixom.net, arnd@arndb.de,
-        UNGLinuxDriver@microchip.com
-References: <20220823145603.2606475-1-tharunkumar.pasumarthi@microchip.com>
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-In-Reply-To: <20220823145603.2606475-1-tharunkumar.pasumarthi@microchip.com>
+To:     Zi Yan <ziy@nvidia.com>, linux-mm@kvack.org
+Cc:     Matthew Wilcox <willy@infradead.org>,
+        Vlastimil Babka <vbabka@suse.cz>,
+        "Kirill A . Shutemov" <kirill.shutemov@linux.intel.com>,
+        Mike Kravetz <mike.kravetz@oracle.com>,
+        John Hubbard <jhubbard@nvidia.com>,
+        Yang Shi <shy828301@gmail.com>,
+        David Rientjes <rientjes@google.com>,
+        James Houghton <jthoughton@google.com>,
+        Mike Rapoport <rppt@kernel.org>, linux-kernel@vger.kernel.org
+References: <20220811231643.1012912-1-zi.yan@sent.com>
+ <20220811231643.1012912-7-zi.yan@sent.com>
+From:   David Hildenbrand <david@redhat.com>
+Organization: Red Hat
+In-Reply-To: <20220811231643.1012912-7-zi.yan@sent.com>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 23/08/2022 17:56, Tharun Kumar P wrote:
-> Microchip PCI1XXXX is an unmanaged PCIe3.1a Switch for Consumer,
-> Industrial and Automotive applications. This switch has multiple
-> downstream ports. In one of the Switch's Downstream port, there
-> is a multifunction endpoint for peripherals which includes an I2C
-> host controller. The I2C function in the endpoint operates at 100KHz,
-> 400KHz and 1 MHz and has buffer depth of 128 bytes.
-> This patch provides the I2C controller driver for the I2C endpoint
-> of the switch.
+On 12.08.22 01:16, Zi Yan wrote:
+> From: Zi Yan <ziy@nvidia.com>
+> 
+> MAX_ORDER_NR_PAGES can be increased when it becomes a boot time parameter
+> in later commits. To make sure read_kcore() reschedule its work in a
+> constant period, use pageblock_nr_pages instead for reschedule period,
+> since pageblock_nr_pages is a constant and either the same or half of
+> MAX_ORDER_NR_PAGES.
+> 
+> Signed-off-by: Zi Yan <ziy@nvidia.com>
+> Cc: Mike Rapoport <rppt@kernel.org>
+> Cc: David Hildenbrand <david@redhat.com>
+> Cc: Oscar Salvador <osalvador@suse.de>
+> Cc: Ying Chen <chenying.kernel@bytedance.com>
+> Cc: Feng Zhou <zhoufeng.zf@bytedance.com>
+> Cc: linux-fsdevel@vger.kernel.org
+> Cc: linux-mm@kvack.org
+> Cc: linux-kernel@vger.kernel.org
+> ---
+>  fs/proc/kcore.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+> 
+> diff --git a/fs/proc/kcore.c b/fs/proc/kcore.c
+> index dff921f7ca33..7dc09d211b48 100644
+> --- a/fs/proc/kcore.c
+> +++ b/fs/proc/kcore.c
+> @@ -491,7 +491,7 @@ read_kcore(struct file *file, char __user *buffer, size_t buflen, loff_t *fpos)
+>  			}
+>  		}
+>  
+> -		if (page_offline_frozen++ % MAX_ORDER_NR_PAGES == 0) {
+> +		if (page_offline_frozen++ % pageblock_nr_pages == 0) {
+>  			page_offline_thaw();
+>  			cond_resched();
+>  			page_offline_freeze();
 
-(...)
+Yeah, the exact number doesn't actually matter here.
 
-> +static int pci1xxxx_i2c_suspend(struct device *dev)
-> +{
-> +	struct pci1xxxx_i2c *i2c = dev_get_drvdata(dev);
-> +	struct pci_dev *pdev = to_pci_dev(dev);
-> +	u32 regval;
-> +
-> +	i2c_mark_adapter_suspended(&i2c->adap);
-> +
-> +	while ((i2c->i2c_xfer_in_progress))
-> +		msleep(20);
-> +
-> +	pci1xxxx_i2c_config_high_level_intr(i2c,
-> +					    SMBALERT_WAKE_INTR_MASK,
-> +					    true);
-> +
-> +	/*Enable the PERST_DIS bit to mask the PERST from
-> +	 *resetting the core regs
-> +	 */
+Reviewed-by: David Hildenbrand <david@redhat.com>
 
-Use Linux coding style comments. Everywhere...
+-- 
+Thanks,
 
-(...)
+David / dhildenb
 
-> +
-> +static int pci1xxxx_i2c_probe_pci(struct pci_dev *pdev,
-> +				  const struct pci_device_id *ent)
-> +{
-> +	struct pci1xxxx_i2c *i2c;
-> +	int ret;
-> +
-> +	i2c = devm_kzalloc(&pdev->dev, sizeof(*i2c), GFP_KERNEL);
-> +	if (!i2c)
-> +		return -ENOMEM;
-> +
-> +	pci_set_drvdata(pdev, i2c);
-> +
-> +	i2c->i2c_xfer_in_progress = false;
-> +
-> +	ret = pcim_enable_device(pdev);
-> +	if (ret)
-> +		return ret;
-> +
-> +	pci_set_master(pdev);
-> +
-> +	/* we are getting the base address of the SMB core. SMB core uses
-> +	 * BAR0 and 32K is the size here pci_resource_len returns 32K by
-> +	 * reading BAR0
-> +	 */
-> +
-> +	ret = pcim_iomap_regions(pdev, BIT(0), pci_name(pdev));
-> +	if (ret < 0)
-> +		return -ENOMEM;
-> +
-> +	i2c->i2c_base =	pcim_iomap_table(pdev)[0];
-> +
-> +	init_completion(&i2c->i2c_xfer_done);
-> +
-> +	pci1xxxx_i2c_init(i2c);
-> +
-> +	dev_info(&pdev->dev, "i2c clock freq: %d\n", i2c->freq);
-
-That's not a helpful print. Don't pollute dmesg.
-
-> +
-> +	ret = pci_alloc_irq_vectors(pdev, 1, 1, PCI_IRQ_ALL_TYPES);
-> +	if (ret < 0)
-> +		return ret;
-> +
-> +	/*Register the isr. we are not using any isr flags here.*/
-
-Use Linux coding style comments. Everywhere...
-
-> +	ret = devm_request_irq(&pdev->dev, pci_irq_vector(pdev, 0),
-> +			       pci1xxxx_i2c_isr, PCI1XXXX_IRQ_FLAGS,
-> +			       pci_name(pdev), i2c);
-> +	if (ret)
-> +		goto err_free_region;
-> +
-> +	i2c->adap = pci1xxxx_i2c_ops;
-> +	i2c->adap.class = I2C_CLASS_SPD;
-> +	i2c->adap.dev.parent = &pdev->dev;
-> +
-> +	snprintf(i2c->adap.name, sizeof(i2c->adap.name),
-> +		 "MCHP PCI1xxxx i2c adapter at %s", pci_name(pdev));
-> +
-> +	i2c_set_adapdata(&i2c->adap, i2c);
-> +
-> +	ret = i2c_add_adapter(&i2c->adap);
-> +	if (ret) {
-> +		dev_err(&pdev->dev, "i2c add adapter failed = %d\n", ret);
-> +		pci1xxxx_i2c_shutdown(i2c);
-
-Why do you call here pci1xxxx_i2c_shutdown() but not in previous error path?
-
-> +		goto err_free_region;
-> +	}
-> +
-> +	return 0;
-> +
-> +err_free_region:
-> +	pci_free_irq_vectors(pdev);
-> +	return ret;
-> +}
-> +
-> +static void pci1xxxx_i2c_remove_pci(struct pci_dev *pdev)
-> +{
-> +	struct pci1xxxx_i2c *i2c = pci_get_drvdata(pdev);
-
-No need for pci_free_irq_vectors()?
-
-> +
-> +	i2c_del_adapter(&i2c->adap);
-> +	pci1xxxx_i2c_shutdown(i2c);
-> +}
-> +
-
-Best regards,
-Krzysztof
