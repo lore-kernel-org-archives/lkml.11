@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6BEA6C3F6B0
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7C075C32796
 	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 09:13:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348539AbiHWJMR (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 05:12:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33280 "EHLO
+        id S236782AbiHWJMW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 23 Aug 2022 05:12:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33236 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348263AbiHWJKD (ORCPT
+        with ESMTP id S1348272AbiHWJKD (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 23 Aug 2022 05:10:03 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F016674E0C;
-        Tue, 23 Aug 2022 01:31:02 -0700 (PDT)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D82AD3C8F9;
+        Tue, 23 Aug 2022 01:30:57 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 47597B81C3E;
-        Tue, 23 Aug 2022 08:18:58 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8E1BEC433B5;
-        Tue, 23 Aug 2022 08:18:56 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 841456147B;
+        Tue, 23 Aug 2022 08:30:57 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 836E7C433C1;
+        Tue, 23 Aug 2022 08:30:56 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661242737;
-        bh=v5/YKtomldikhe/i3h6gjddah5wV/t0Qwoy5NR3BAPQ=;
+        s=korg; t=1661243456;
+        bh=+i4OAVjsezCjpE4qAdcOFuVqKcJU3N0nC8AZ8789inQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=qj3HGkjwGSyeVQ0S2U3jJuo01kGAvwwwyJpuRx+Xm/gT2bD1P1GSH6yBeY3fZsFSF
-         Fc+zhCZyDWnFTed93V0lKYrskH7XTn+vOqRjpr6YSSGILDsWAFz6t625NpsZkH9cep
-         pX9TIw4fJmM+gvfN/Qs0KoQtwl2z6CvF8A9Fg+vc=
+        b=cl68uBwdvY1wuaiS2+P1j9t8QD4OZ4JD8coL4GhsFJE8G2zQeeENYwX5VNhC7LhjW
+         rnOOqy0DBdxLnQmJCVayIrfHCKtYGCpbMo1zRWyapLpJLYtQvmRVHNtCVBHVpId6mD
+         SrbyCymq4fW+nReW7RDQ3hy5AwYKrDstHFfg3Dt0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Philipp Zabel <p.zabel@pengutronix.de>,
-        Mark Brown <broonie@kernel.org>
-Subject: [PATCH 5.19 184/365] ASoC: codec: tlv320aic32x4: fix mono playback via I2S
-Date:   Tue, 23 Aug 2022 10:01:25 +0200
-Message-Id: <20220823080125.922323509@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Laurent Pinchart <laurent.pinchart@ideasonboard.com>,
+        Michael Grzeschik <m.grzeschik@pengutronix.de>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.19 266/365] usb: gadget: uvc: call uvc uvcg_warn on completed status instead of uvcg_info
+Date:   Tue, 23 Aug 2022 10:02:47 +0200
+Message-Id: <20220823080129.306009002@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220823080118.128342613@linuxfoundation.org>
 References: <20220823080118.128342613@linuxfoundation.org>
@@ -49,62 +50,38 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Philipp Zabel <p.zabel@pengutronix.de>
+From: Michael Grzeschik <m.grzeschik@pengutronix.de>
 
-commit b4b5f29a076e52181f63e45a2ad1bc88593072e3 upstream.
+[ Upstream commit a725d0f6dfc5d3739d6499f30ec865305ba3544d ]
 
-The two commits referenced below break mono playback via I2S DAI because
-they set BCLK to half the required speed. For PCM transport over I2S, the
-number of transmitted channels is always 2, even for mono playback.
+Likewise to the uvcvideo hostside driver, this patch is changing the
+usb_request message of an non zero completion handler call from dev_info
+to dev_warn.
 
-Fixes: dcd79364bff3 ("ASoC: codec: tlv3204: Enable 24 bit audio support")
-Fixes: 40b37136287b ("ASoC: tlv320aic32x4: Fix bdiv clock rate derivation")
-Signed-off-by: Philipp Zabel <p.zabel@pengutronix.de>
-Link: https://lore.kernel.org/r/20220810104156.665452-1-p.zabel@pengutronix.de
-Signed-off-by: Mark Brown <broonie@kernel.org>
+Reviewed-by: Laurent Pinchart <laurent.pinchart@ideasonboard.com>
+Signed-off-by: Michael Grzeschik <m.grzeschik@pengutronix.de>
+Link: https://lore.kernel.org/r/20220529223848.105914-4-m.grzeschik@pengutronix.de
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- sound/soc/codecs/tlv320aic32x4.c |    9 +++++++++
- 1 file changed, 9 insertions(+)
+ drivers/usb/gadget/function/uvc_video.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/sound/soc/codecs/tlv320aic32x4.c
-+++ b/sound/soc/codecs/tlv320aic32x4.c
-@@ -49,6 +49,8 @@ struct aic32x4_priv {
- 	struct aic32x4_setup_data *setup;
- 	struct device *dev;
- 	enum aic32x4_type type;
-+
-+	unsigned int fmt;
- };
+diff --git a/drivers/usb/gadget/function/uvc_video.c b/drivers/usb/gadget/function/uvc_video.c
+index ce421d9cc241..c00ce0e91f5d 100644
+--- a/drivers/usb/gadget/function/uvc_video.c
++++ b/drivers/usb/gadget/function/uvc_video.c
+@@ -261,7 +261,7 @@ uvc_video_complete(struct usb_ep *ep, struct usb_request *req)
+ 		break;
  
- static int aic32x4_reset_adc(struct snd_soc_dapm_widget *w,
-@@ -611,6 +613,7 @@ static int aic32x4_set_dai_sysclk(struct
- static int aic32x4_set_dai_fmt(struct snd_soc_dai *codec_dai, unsigned int fmt)
- {
- 	struct snd_soc_component *component = codec_dai->component;
-+	struct aic32x4_priv *aic32x4 = snd_soc_component_get_drvdata(component);
- 	u8 iface_reg_1 = 0;
- 	u8 iface_reg_2 = 0;
- 	u8 iface_reg_3 = 0;
-@@ -654,6 +657,8 @@ static int aic32x4_set_dai_fmt(struct sn
- 		return -EINVAL;
- 	}
- 
-+	aic32x4->fmt = fmt;
-+
- 	snd_soc_component_update_bits(component, AIC32X4_IFACE1,
- 				AIC32X4_IFACE1_DATATYPE_MASK |
- 				AIC32X4_IFACE1_MASTER_MASK, iface_reg_1);
-@@ -758,6 +763,10 @@ static int aic32x4_setup_clocks(struct s
- 		return -EINVAL;
- 	}
- 
-+	/* PCM over I2S is always 2-channel */
-+	if ((aic32x4->fmt & SND_SOC_DAIFMT_FORMAT_MASK) == SND_SOC_DAIFMT_I2S)
-+		channels = 2;
-+
- 	madc = DIV_ROUND_UP((32 * adc_resource_class), aosr);
- 	max_dosr = (AIC32X4_MAX_DOSR_FREQ / sample_rate / dosr_increment) *
- 			dosr_increment;
+ 	default:
+-		uvcg_info(&video->uvc->func,
++		uvcg_warn(&video->uvc->func,
+ 			  "VS request completed with status %d.\n",
+ 			  req->status);
+ 		uvcg_queue_cancel(queue, 0);
+-- 
+2.35.1
+
 
 
