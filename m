@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 51F50C49EC0
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 10:37:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C6A6AC32772
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 10:37:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355577AbiHWKgc (ORCPT
+        id S1355463AbiHWKgP (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 06:36:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60996 "EHLO
+        Tue, 23 Aug 2022 06:36:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32890 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354541AbiHWKVm (ORCPT
+        with ESMTP id S1354363AbiHWKVU (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 06:21:42 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C845582749;
-        Tue, 23 Aug 2022 02:03:00 -0700 (PDT)
+        Tue, 23 Aug 2022 06:21:20 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1D1112B4;
+        Tue, 23 Aug 2022 02:02:42 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 658B06157B;
-        Tue, 23 Aug 2022 09:03:00 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6687FC433D7;
-        Tue, 23 Aug 2022 09:02:59 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id AD91F6157A;
+        Tue, 23 Aug 2022 09:02:41 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B9C45C433D6;
+        Tue, 23 Aug 2022 09:02:40 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661245379;
-        bh=JLgT1YjRQoCyfhyImHJaeFjmVBeCtSn+RgWnOxdaFZI=;
+        s=korg; t=1661245361;
+        bh=nG40SrpwH05RUaTNDokzBhRBZLU45UtT+Af64EuE6Yo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Lrzhf91LgIeMFUPEZW5Us2GBLPSrEZDMKV/S8hp4kQGMxLaKS/VrXE1Wwpku0kJRM
-         P5DR3Cyvvcb0Ae4F7sUgu5PWAzNjwrkD+/QVzFsWm8MpBSuCY2gL9ZqWUu6W1JtBor
-         EuP26b/9Efb+DVroZmSMjg7VTUP+8jDZ/57XLi0o=
+        b=N3EhEFr6XGmGdDC9x+rg58Lf+ZIZ26Ds/vPsbY8fukszDGg1hXp4mrOiLQoyJMXbK
+         j0Xj+iPrd8qAVm605klzzjAfEXdD3umMWIgG33vgh2nwskZcxcJtky2/FKNFineJoD
+         eZY+sXreDSMczZR23K8qbmF/tRaBQruwvgDo6GHw=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
-        Michal Simek <michal.simek@amd.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.19 060/287] cpufreq: zynq: Fix refcount leak in zynq_get_revision
-Date:   Tue, 23 Aug 2022 10:23:49 +0200
-Message-Id: <20220823080102.259960163@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Thadeu Lima de Souza Cascardo <cascardo@canonical.com>,
+        Pablo Neira Ayuso <pablo@netfilter.org>
+Subject: [PATCH 4.19 037/287] netfilter: nf_tables: do not allow SET_ID to refer to another table
+Date:   Tue, 23 Aug 2022 10:23:26 +0200
+Message-Id: <20220823080101.519704894@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220823080100.268827165@linuxfoundation.org>
 References: <20220823080100.268827165@linuxfoundation.org>
@@ -50,37 +50,57 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Miaoqian Lin <linmq006@gmail.com>
+From: Thadeu Lima de Souza Cascardo <cascardo@canonical.com>
 
-[ Upstream commit d1ff2559cef0f6f8d97fba6337b28adb10689e16 ]
+commit 470ee20e069a6d05ae549f7d0ef2bdbcee6a81b2 upstream.
 
-of_find_compatible_node() returns a node pointer with refcount
-incremented, we should use of_node_put() on it when done.
-Add missing of_node_put() to avoid refcount leak.
+When doing lookups for sets on the same batch by using its ID, a set from a
+different table can be used.
 
-Fixes: 00f7dc636366 ("ARM: zynq: Add support for SOC_BUS")
-Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
-Link: https://lore.kernel.org/r/20220605082807.21526-1-linmq006@gmail.com
-Signed-off-by: Michal Simek <michal.simek@amd.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Then, when the table is removed, a reference to the set may be kept after
+the set is freed, leading to a potential use-after-free.
+
+When looking for sets by ID, use the table that was used for the lookup by
+name, and only return sets belonging to that same table.
+
+This fixes CVE-2022-2586, also reported as ZDI-CAN-17470.
+
+Reported-by: Team Orca of Sea Security (@seasecresponse)
+Fixes: 958bee14d071 ("netfilter: nf_tables: use new transaction infrastructure to handle sets")
+Signed-off-by: Thadeu Lima de Souza Cascardo <cascardo@canonical.com>
+Cc: <stable@vger.kernel.org>
+Signed-off-by: Pablo Neira Ayuso <pablo@netfilter.org>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/arm/mach-zynq/common.c | 1 +
- 1 file changed, 1 insertion(+)
+ net/netfilter/nf_tables_api.c |    4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
 
-diff --git a/arch/arm/mach-zynq/common.c b/arch/arm/mach-zynq/common.c
-index 6aba9ebf8041..a8b1b9c6626e 100644
---- a/arch/arm/mach-zynq/common.c
-+++ b/arch/arm/mach-zynq/common.c
-@@ -84,6 +84,7 @@ static int __init zynq_get_revision(void)
- 	}
+--- a/net/netfilter/nf_tables_api.c
++++ b/net/netfilter/nf_tables_api.c
+@@ -3039,6 +3039,7 @@ static struct nft_set *nft_set_lookup_by
+ }
  
- 	zynq_devcfg_base = of_iomap(np, 0);
-+	of_node_put(np);
- 	if (!zynq_devcfg_base) {
- 		pr_err("%s: Unable to map I/O memory\n", __func__);
- 		return -1;
--- 
-2.35.1
-
+ static struct nft_set *nft_set_lookup_byid(const struct net *net,
++					   const struct nft_table *table,
+ 					   const struct nlattr *nla, u8 genmask)
+ {
+ 	struct nft_trans *trans;
+@@ -3049,6 +3050,7 @@ static struct nft_set *nft_set_lookup_by
+ 			struct nft_set *set = nft_trans_set(trans);
+ 
+ 			if (id == nft_trans_set_id(trans) &&
++			    set->table == table &&
+ 			    nft_active_genmask(set, genmask))
+ 				return set;
+ 		}
+@@ -3069,7 +3071,7 @@ struct nft_set *nft_set_lookup_global(co
+ 		if (!nla_set_id)
+ 			return set;
+ 
+-		set = nft_set_lookup_byid(net, nla_set_id, genmask);
++		set = nft_set_lookup_byid(net, table, nla_set_id, genmask);
+ 	}
+ 	return set;
+ }
 
 
