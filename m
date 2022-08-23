@@ -2,47 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EFEB3C32792
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 10:20:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6C90DC32772
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 10:20:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352547AbiHWKUP (ORCPT
+        id S1354092AbiHWKUS (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 06:20:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36504 "EHLO
+        Tue, 23 Aug 2022 06:20:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37890 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352748AbiHWKIm (ORCPT
+        with ESMTP id S1352812AbiHWKI7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 06:08:42 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1A6457D7B2;
-        Tue, 23 Aug 2022 01:54:56 -0700 (PDT)
+        Tue, 23 Aug 2022 06:08:59 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E38EE7D7B7;
+        Tue, 23 Aug 2022 01:54:58 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id C476FB81C39;
-        Tue, 23 Aug 2022 08:54:54 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 09407C433C1;
-        Tue, 23 Aug 2022 08:54:52 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 96D02B81C39;
+        Tue, 23 Aug 2022 08:54:57 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 00F8AC433C1;
+        Tue, 23 Aug 2022 08:54:55 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661244893;
-        bh=0xmzYS9JKv/gH2gwltp26rclflnWUUbQ+LSzV/TKBQc=;
+        s=korg; t=1661244896;
+        bh=R9WSvWCXx76BsI8euW0jKufvJkvEvjle4/TwJ7m2w88=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=MN54MXBJPbbngbzz91n18Iiu7ry+TbDGTzq85Xmz9TZqaXefBH4ZDyEOCHZJ7i4Du
-         LpaEqJdeyjzPGaYY4ZvEy5wqzjV9uFZ7f6rVRHzYleOw5ZzmiryRGVqeZq2T+I9wk2
-         37MMHPHTjEJo2qMXPj9YbmU0k2Jk5efqQCGiuCZs=
+        b=rZcXDAF6LatjQAn7IBTSx3aEF/Z3a8NeoQ1lQ29JSo820zohGqHOtcW6zVHjBMa47
+         xPz4SZEd0r9Y4uRrnCZpE57o7QsTAeUu6mum8w8uJpVNcpPfqQPb/sMMjFEdfEKSaQ
+         JWHc46iqpxbn7Z97+4MfGOa036YQMxrQ+3KIOxf0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
-        Laurent Pinchart <laurent.pinchart@ideasonboard.com>,
-        Michael Grzeschik <m.grzeschik@pengutronix.de>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 168/244] usb: gadget: uvc: call uvc uvcg_warn on completed status instead of uvcg_info
-Date:   Tue, 23 Aug 2022 10:25:27 +0200
-Message-Id: <20220823080104.844913789@linuxfoundation.org>
+        Masahiro Yamada <yamada.masahiro@socionext.com>,
+        Nicolas Pitre <nico@linaro.org>
+Subject: [PATCH 4.14 208/229] kbuild: clear LDFLAGS in the top Makefile
+Date:   Tue, 23 Aug 2022 10:26:09 +0200
+Message-Id: <20220823080101.073098690@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220823080059.091088642@linuxfoundation.org>
-References: <20220823080059.091088642@linuxfoundation.org>
+In-Reply-To: <20220823080053.202747790@linuxfoundation.org>
+References: <20220823080053.202747790@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -51,38 +50,35 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Michael Grzeschik <m.grzeschik@pengutronix.de>
+From: Masahiro Yamada <yamada.masahiro@socionext.com>
 
-[ Upstream commit a725d0f6dfc5d3739d6499f30ec865305ba3544d ]
+commit ce99d0bf312daf0178e640da9e3c93b773a67e7d upstream.
 
-Likewise to the uvcvideo hostside driver, this patch is changing the
-usb_request message of an non zero completion handler call from dev_info
-to dev_warn.
+Currently LDFLAGS is not cleared, so same flags are accumulated in
+LDFLAGS when the top Makefile is recursively invoked.
 
-Reviewed-by: Laurent Pinchart <laurent.pinchart@ideasonboard.com>
-Signed-off-by: Michael Grzeschik <m.grzeschik@pengutronix.de>
-Link: https://lore.kernel.org/r/20220529223848.105914-4-m.grzeschik@pengutronix.de
+I found unneeded rebuild for ARCH=arm64 when CONFIG_TRIM_UNUSED_KSYMS
+is enabled.  If include/generated/autoksyms.h is updated, the top
+Makefile is recursively invoked, then arch/arm64/Makefile adds one
+more '-maarch64linux'.  Due to the command line change, modules are
+rebuilt needlessly.
+
+Signed-off-by: Masahiro Yamada <yamada.masahiro@socionext.com>
+Acked-by: Nicolas Pitre <nico@linaro.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/usb/gadget/function/uvc_video.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ Makefile |    1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/drivers/usb/gadget/function/uvc_video.c b/drivers/usb/gadget/function/uvc_video.c
-index b4a763e5f70e..e170e88abf3a 100644
---- a/drivers/usb/gadget/function/uvc_video.c
-+++ b/drivers/usb/gadget/function/uvc_video.c
-@@ -225,7 +225,7 @@ uvc_video_complete(struct usb_ep *ep, struct usb_request *req)
- 		break;
+--- a/Makefile
++++ b/Makefile
+@@ -426,6 +426,7 @@ KBUILD_CFLAGS_KERNEL :=
+ KBUILD_AFLAGS_MODULE  := -DMODULE
+ KBUILD_CFLAGS_MODULE  := -DMODULE
+ KBUILD_LDFLAGS_MODULE := -T $(srctree)/scripts/module-common.lds
++LDFLAGS :=
+ GCC_PLUGINS_CFLAGS :=
+ CLANG_FLAGS :=
  
- 	default:
--		uvcg_info(&video->uvc->func,
-+		uvcg_warn(&video->uvc->func,
- 			  "VS request completed with status %d.\n",
- 			  req->status);
- 		uvcg_queue_cancel(queue, 0);
--- 
-2.35.1
-
 
 
