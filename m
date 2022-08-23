@@ -2,134 +2,76 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2CCE3C32789
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 15:40:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 54EF2C32772
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 15:41:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241752AbiHWPkN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 11:40:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33084 "EHLO
+        id S240928AbiHWPk4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 23 Aug 2022 11:40:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37516 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239278AbiHWPjs (ORCPT
+        with ESMTP id S242406AbiHWPjz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 11:39:48 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 97E46C6966;
-        Tue, 23 Aug 2022 04:32:14 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 3EAE3613C5;
-        Tue, 23 Aug 2022 11:31:39 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 28BC2C433D6;
-        Tue, 23 Aug 2022 11:31:35 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1661254298;
-        bh=HMMDK4yYSV9hm8Y33k5jiYF0HqGibjiYVN4UI5136Ok=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=eSG6RpwdXQVjXqGGUGSzBgYYSjjWgqK6gbvzkYRyVINwqKx29HDxHMkUtsepj0ygb
-         3yft+3n5uIaY8Y5eeUicqzMTKjtQcK7bRHoIPBupQLfMnxrnPiIyBu9OX/UlhF8PUk
-         JEHGI4X+MfTcUjKGsdVdfhdBsWhqH2LFtgIHK+5AO7nO3ShU043O+AGhLEFMhf6Aru
-         4LB2YHR6z3H4fpx5j1KJY81JhWuBMDNIviXWyyOi/ZsWvjBFECr0Z81DeqkdBmajhF
-         KqGRo+AqloYIYMiEjXdSP9F2ovz5OC1MFpuf1v+Rss1/N6/WeaIQ2PesRpejZ0gcTa
-         ouQUX241mStIQ==
-Date:   Tue, 23 Aug 2022 12:31:32 +0100
-From:   Mark Brown <broonie@kernel.org>
-To:     Martin =?utf-8?Q?Povi=C5=A1er?= <povik+lin@cutebit.org>
-Cc:     Liam Girdwood <lgirdwood@gmail.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Hector Martin <marcan@marcan.st>,
-        Sven Peter <sven@svenpeter.dev>,
-        Philipp Zabel <p.zabel@pengutronix.de>,
-        Alyssa Rosenzweig <alyssa@rosenzweig.io>,
-        asahi@lists.linux.dev, alsa-devel@alsa-project.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2 3/4] ASoC: apple: mca: Start new platform driver
-Message-ID: <YwS6lHeGH0BZKHeB@sirena.org.uk>
-References: <20220819125430.4920-1-povik+lin@cutebit.org>
- <20220819125430.4920-4-povik+lin@cutebit.org>
- <YwO/aqs7eqZx07kS@sirena.org.uk>
- <24C0ABFA-BF71-4492-8A6A-E9BE1462B403@cutebit.org>
-MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="NBQO/q/cbDr7E10q"
-Content-Disposition: inline
-In-Reply-To: <24C0ABFA-BF71-4492-8A6A-E9BE1462B403@cutebit.org>
-X-Cookie: You can't take damsel here now.
+        Tue, 23 Aug 2022 11:39:55 -0400
+X-Greylist: delayed 578 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Tue, 23 Aug 2022 04:32:27 PDT
+Received: from zg8tmja5ljk3lje4ms43mwaa.icoremail.net (zg8tmja5ljk3lje4ms43mwaa.icoremail.net [209.97.181.73])
+        by lindbergh.monkeyblade.net (Postfix) with SMTP id 0E51776754;
+        Tue, 23 Aug 2022 04:32:26 -0700 (PDT)
+Received: from ubuntu.localdomain (unknown [218.12.19.15])
+        by mail-app2 (Coremail) with SMTP id by_KCgDnqrA5uARjm7mFAw--.5982S2;
+        Tue, 23 Aug 2022 19:21:39 +0800 (CST)
+From:   Duoming Zhou <duoming@zju.edu.cn>
+To:     linux-kernel@vger.kernel.org, gregkh@linuxfoundation.org,
+        briannorris@chromium.org
+Cc:     johannes@sipsolutions.net, rafael@kernel.org, amitkarwar@gmail.com,
+        ganapathi017@gmail.com, sharvari.harisangam@nxp.com,
+        huxinming820@gmail.com, kvalo@kernel.org, davem@davemloft.net,
+        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        Duoming Zhou <duoming@zju.edu.cn>
+Subject: [PATCH v8 0/2] Add new APIs of devcoredump and fix bugs
+Date:   Tue, 23 Aug 2022 19:21:25 +0800
+Message-Id: <cover.1661252818.git.duoming@zju.edu.cn>
+X-Mailer: git-send-email 2.17.1
+X-CM-TRANSID: by_KCgDnqrA5uARjm7mFAw--.5982S2
+X-Coremail-Antispam: 1UD129KBjvdXoWrZF48XryktryrCrykGw15urg_yoWxtrX_G3
+        yIvayIyF4kG3W2qFWjy3W5Ary0yrW7XF1fG3W7trWkGFW7JrW5XrnxZr98t34UGFnFyrnx
+        JFyDAFZ7ZasrZjkaLaAFLSUrUUUUUb8apTn2vfkv8UJUUUU8Yxn0WfASr-VFAUDa7-sFnT
+        9fnUUIcSsGvfJTRUUUbx8FF20E14v26ryj6rWUM7CY07I20VC2zVCF04k26cxKx2IYs7xG
+        6rWj6s0DM7CIcVAFz4kK6r1j6r18M28lY4IEw2IIxxk0rwA2F7IY1VAKz4vEj48ve4kI8w
+        A2z4x0Y4vE2Ix0cI8IcVAFwI0_tr0E3s1l84ACjcxK6xIIjxv20xvEc7CjxVAFwI0_Gr1j
+        6F4UJwA2z4x0Y4vEx4A2jsIE14v26rxl6s0DM28EF7xvwVC2z280aVCY1x0267AKxVW0oV
+        Cq3wAS0I0E0xvYzxvE52x082IY62kv0487Mc02F40EFcxC0VAKzVAqx4xG6I80ewAv7VC0
+        I7IYx2IY67AKxVWUJVWUGwAv7VC2z280aVAFwI0_Jr0_Gr1lOx8S6xCaFVCjc4AY6r1j6r
+        4UM4x0Y48IcxkI7VAKI48JM4x0x7Aq67IIx4CEVc8vx2IErcIFxwACI402YVCY1x02628v
+        n2kIc2xKxwCF04k20xvY0x0EwIxGrwCFx2IqxVCFs4IE7xkEbVWUJVW8JwC20s026c02F4
+        0E14v26r1j6r18MI8I3I0E7480Y4vE14v26r106r1rMI8E67AF67kF1VAFwI0_GFv_Wryl
+        IxkGc2Ij64vIr41lIxAIcVC0I7IYx2IY67AKxVWUJVWUCwCI42IY6xIIjxv20xvEc7CjxV
+        AFwI0_Gr0_Cr1lIxAIcVCF04k26cxKx2IYs7xG6r1j6r1xMIIF0xvEx4A2jsIE14v26r1j
+        6r4UMIIF0xvEx4A2jsIEc7CjxVAFwI0_Gr0_Gr1UYxBIdaVFxhVjvjDU0xZFpf9x0JUQvt
+        AUUUUU=
+X-CM-SenderInfo: qssqjiasttq6lmxovvfxof0/1tbiAgULAVZdtbI0NQASsS
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+The first patch adds new APIs to support migration of users
+from old device coredump related APIs.
 
---NBQO/q/cbDr7E10q
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+The second patch fix sleep in atomic context bugs of mwifiex
+caused by dev_coredumpv().
 
-On Tue, Aug 23, 2022 at 09:33:36AM +0200, Martin Povi=C5=A1er wrote:
-> > On 22. 8. 2022, at 19:39, Mark Brown <broonie@kernel.org> wrote:
-> > On Fri, Aug 19, 2022 at 02:54:29PM +0200, Martin Povi=C5=A1er wrote:
+Duoming Zhou (2):
+  devcoredump: add new APIs to support migration of users from old
+    device coredump related APIs
+  mwifiex: fix sleep in atomic context bugs caused by dev_coredumpv
 
-> >> +// SPDX-License-Identifier: GPL-2.0-only
-> >> +/*
-> >> + * Apple SoCs MCA driver
-> >> + *
-> >> + * Copyright (C) The Asahi Linux Contributors
-> >> + *
-> >> + * The MCA peripheral is made up of a number of identical units calle=
-d clusters.
+ drivers/base/devcoredump.c                    | 116 ++++++++++++++++++
+ drivers/net/wireless/marvell/mwifiex/init.c   |   9 +-
+ drivers/net/wireless/marvell/mwifiex/main.h   |   3 +-
+ .../net/wireless/marvell/mwifiex/sta_event.c  |   6 +-
+ include/linux/devcoredump.h                   |  34 +++++
+ 5 files changed, 160 insertions(+), 8 deletions(-)
 
-> > Please make the entire comment block a C++ one so things look more
-> > intentional.
+-- 
+2.17.1
 
-> Is this so that it does not look like the SPDX header was added
-> mechanically? I will do it, just curious what the reasoning is.
-
-Yes, broadly.
-
-> >> +	/*
-> >> +	 * We can't power up the device earlier than this because
-> >> +	 * the power state driver would error out on seeing the device
-> >> +	 * as clock-gated.
-> >> +	 */
-> >> +	cl->pd_link =3D device_link_add(mca->dev, cl->pd_dev,
-> >> +				      DL_FLAG_STATELESS | DL_FLAG_PM_RUNTIME |
-> >> +					      DL_FLAG_RPM_ACTIVE);
-
-> > I'm not clear on this dynamically adding and removing device links stuff
-> > - it looks like the main (only?) purpose is to take a runtime PM
-> > reference to the target device which is fine but it's not clear why
-> > device links are involved given that the links are created and destroyed
-> > every time the DAI is used, AFAICT always in the same fixed
-> > relationship.  It's not a problem, it's just unclear.
-
-> Indeed the only purpose is powering up the cluster=E2=80=99s power domain=
- (there=E2=80=99s
-> one domain for each cluster). Adding the links is the only way I know to
-> do it. They need to be added dynamically (as opposed to statically linkin=
-g,
-> say, the DAI=E2=80=99s ->dev to the cluster=E2=80=99s ->pd_dev, which I g=
-uess may do
-> something similar), because we need to sequence the power-up/power-down
-> with the enablement of the clocks.
-
-You could also just do the underlying runtime power management
-operations directly couldn't you?  It's not clear what the device link
-stuff is adding.
-
---NBQO/q/cbDr7E10q
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAABCgAdFiEEreZoqmdXGLWf4p/qJNaLcl1Uh9AFAmMEupQACgkQJNaLcl1U
-h9DK1wf+JNGwnyOsdkMz+Zc28n5YvfvcyoQByI5EreszsWd//Rg/MxJpVjsrCXpo
-JkHBVOL9QMhZ8SBrmK3cZ80OpwHBZ1HnME6vXezsk0QzgH7jWXLvYZmEMcXSP/zJ
-8rGk+8LdxeZMvYEbi4xL1/gOSRgOEKO8GOtIQuRsGAiit8bCFL2ukdG+PUji4pim
-ZuNY1Hsh+hSHSG4jJDA0QaYqRBMcbMgZW8RTNkWIr02A12ZEDDs4ESd4ckDoYumX
-tdl+LCIGBJDYc9A0RIvRUfCTgEqKqyWHQvGtlN1Ia5Nyg7BCynhMJx9oGt2HDxVk
-Uvg0e3pz0L9taZVPcOrYU5p07Q8omQ==
-=8Yqm
------END PGP SIGNATURE-----
-
---NBQO/q/cbDr7E10q--
