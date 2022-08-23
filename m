@@ -2,44 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A735EC32772
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 11:53:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 86C84C32772
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 11:53:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358618AbiHWLxe (ORCPT
+        id S1358744AbiHWLxj (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 07:53:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52672 "EHLO
+        Tue, 23 Aug 2022 07:53:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53200 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1358641AbiHWLuc (ORCPT
+        with ESMTP id S1358661AbiHWLue (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 07:50:32 -0400
+        Tue, 23 Aug 2022 07:50:34 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C943862C5;
-        Tue, 23 Aug 2022 02:31:32 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 339BF93513;
+        Tue, 23 Aug 2022 02:31:39 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 70227B81C85;
-        Tue, 23 Aug 2022 09:31:31 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9CDBEC433C1;
-        Tue, 23 Aug 2022 09:31:29 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 91FB2B81C96;
+        Tue, 23 Aug 2022 09:31:37 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D7D09C433D6;
+        Tue, 23 Aug 2022 09:31:35 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661247090;
-        bh=UhQPgBaeXgUoLlYqc0u6KRD3hvwuwBYnfoQghB36ZbQ=;
+        s=korg; t=1661247096;
+        bh=9LN2saROmHALtmiOnpaAY1N33gGbVoxE8JDeFdfKGC8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=JEdi4wF+X1zjc5x0a98RB+w+QJNcyQ7izSJB3VJOeOWcyhGYXZddWLp5XiC1rq1yu
-         iBM6PSpSTerRMHlLF19Qije0wQxWjm4XVR00YOo+1+2t2pH39GSrsxSxkVWcEG9a3x
-         vIicfgrqZQTdLaDkXN6ZeEXQogaP9yosSg1w+yho=
+        b=zixDSMdploOS+o1ZxTt4cc3r9xSTCK/yvt+y6qlkfT1OH49PPq6qEyGxzipukLO4Q
+         v1ip7wDlaVQp1QwGRg/Oekpn5QtZdcBkCJhvdR1IpBoehzZdTBv1s5byxCZQtH5wX6
+         Hi7hM0Get8u+6b3oE9GChSIOauq/gA/979PeohPg=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jernej Skrabec <jernej.skrabec@gmail.com>,
-        Heiko Stuebner <heiko@sntech.de>,
-        Samuel Holland <samuel@sholland.org>,
-        Linus Walleij <linus.walleij@linaro.org>
-Subject: [PATCH 5.4 314/389] pinctrl: sunxi: Add I/O bias setting for H6 R-PIO
-Date:   Tue, 23 Aug 2022 10:26:32 +0200
-Message-Id: <20220823080128.679233996@linuxfoundation.org>
+        stable@vger.kernel.org, Guillaume Nault <gnault@redhat.com>,
+        Matthias May <matthias.may@westermo.com>,
+        Jakub Kicinski <kuba@kernel.org>
+Subject: [PATCH 5.4 316/389] geneve: do not use RT_TOS for IPv6 flowlabel
+Date:   Tue, 23 Aug 2022 10:26:34 +0200
+Message-Id: <20220823080128.751314179@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220823080115.331990024@linuxfoundation.org>
 References: <20220823080115.331990024@linuxfoundation.org>
@@ -51,67 +50,42 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Samuel Holland <samuel@sholland.org>
+From: Matthias May <matthias.may@westermo.com>
 
-commit fc153c8f283bf5925615195fc9d4056414d7b168 upstream.
+commit ca2bb69514a8bc7f83914122f0d596371352416c upstream.
 
-H6 requires I/O bias configuration on both of its PIO devices.
-Previously it was only done for the main PIO.
+According to Guillaume Nault RT_TOS should never be used for IPv6.
 
-The setting for Port L is at bit 0, so the bank calculation needs to
-account for the pin base. Otherwise the wrong bit is used.
+Quote:
+RT_TOS() is an old macro used to interprete IPv4 TOS as described in
+the obsolete RFC 1349. It's conceptually wrong to use it even in IPv4
+code, although, given the current state of the code, most of the
+existing calls have no consequence.
 
-Fixes: cc62383fcebe ("pinctrl: sunxi: Support I/O bias voltage setting on H6")
-Reviewed-by: Jernej Skrabec <jernej.skrabec@gmail.com>
-Tested-by: Heiko Stuebner <heiko@sntech.de>
-Signed-off-by: Samuel Holland <samuel@sholland.org>
-Link: https://lore.kernel.org/r/20220713025233.27248-3-samuel@sholland.org
-Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
+But using RT_TOS() in IPv6 code is always a bug: IPv6 never had a "TOS"
+field to be interpreted the RFC 1349 way. There's no historical
+compatibility to worry about.
+
+Fixes: 3a56f86f1be6 ("geneve: handle ipv6 priority like ipv4 tos")
+Acked-by: Guillaume Nault <gnault@redhat.com>
+Signed-off-by: Matthias May <matthias.may@westermo.com>
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/pinctrl/sunxi/pinctrl-sun50i-h6-r.c |    1 +
- drivers/pinctrl/sunxi/pinctrl-sunxi.c       |    7 ++++---
- 2 files changed, 5 insertions(+), 3 deletions(-)
+ drivers/net/geneve.c |    3 +--
+ 1 file changed, 1 insertion(+), 2 deletions(-)
 
---- a/drivers/pinctrl/sunxi/pinctrl-sun50i-h6-r.c
-+++ b/drivers/pinctrl/sunxi/pinctrl-sun50i-h6-r.c
-@@ -105,6 +105,7 @@ static const struct sunxi_pinctrl_desc s
- 	.npins = ARRAY_SIZE(sun50i_h6_r_pins),
- 	.pin_base = PL_BASE,
- 	.irq_banks = 2,
-+	.io_bias_cfg_variant = BIAS_VOLTAGE_PIO_POW_MODE_SEL,
- };
+--- a/drivers/net/geneve.c
++++ b/drivers/net/geneve.c
+@@ -851,8 +851,7 @@ static struct dst_entry *geneve_get_v6_d
+ 		use_cache = false;
+ 	}
  
- static int sun50i_h6_r_pinctrl_probe(struct platform_device *pdev)
---- a/drivers/pinctrl/sunxi/pinctrl-sunxi.c
-+++ b/drivers/pinctrl/sunxi/pinctrl-sunxi.c
-@@ -616,7 +616,7 @@ static int sunxi_pinctrl_set_io_bias_cfg
- 					 unsigned pin,
- 					 struct regulator *supply)
- {
--	unsigned short bank = pin / PINS_PER_BANK;
-+	unsigned short bank;
- 	unsigned long flags;
- 	u32 val, reg;
- 	int uV;
-@@ -632,6 +632,9 @@ static int sunxi_pinctrl_set_io_bias_cfg
- 	if (uV == 0)
- 		return 0;
- 
-+	pin -= pctl->desc->pin_base;
-+	bank = pin / PINS_PER_BANK;
-+
- 	switch (pctl->desc->io_bias_cfg_variant) {
- 	case BIAS_VOLTAGE_GRP_CONFIG:
- 		/*
-@@ -649,8 +652,6 @@ static int sunxi_pinctrl_set_io_bias_cfg
- 		else
- 			val = 0xD; /* 3.3V */
- 
--		pin -= pctl->desc->pin_base;
--
- 		reg = readl(pctl->membase + sunxi_grp_config_reg(pin));
- 		reg &= ~IO_BIAS_MASK;
- 		writel(reg | val, pctl->membase + sunxi_grp_config_reg(pin));
+-	fl6->flowlabel = ip6_make_flowinfo(RT_TOS(prio),
+-					   info->key.label);
++	fl6->flowlabel = ip6_make_flowinfo(prio, info->key.label);
+ 	dst_cache = (struct dst_cache *)&info->dst_cache;
+ 	if (use_cache) {
+ 		dst = dst_cache_get_ip6(dst_cache, &fl6->saddr);
 
 
