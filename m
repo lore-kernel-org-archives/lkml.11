@@ -2,43 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 38B3EC32772
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 11:54:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8BEE4C32792
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 11:54:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358825AbiHWLyn (ORCPT
+        id S1358832AbiHWLyq (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 07:54:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56986 "EHLO
+        Tue, 23 Aug 2022 07:54:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52296 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1359014AbiHWLvb (ORCPT
+        with ESMTP id S1359035AbiHWLvg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 07:51:31 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D9B3BD39A6;
-        Tue, 23 Aug 2022 02:32:11 -0700 (PDT)
+        Tue, 23 Aug 2022 07:51:36 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 40FF8D3E68;
+        Tue, 23 Aug 2022 02:32:17 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 549CC612D6;
-        Tue, 23 Aug 2022 09:32:08 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 57A9DC433D6;
-        Tue, 23 Aug 2022 09:32:07 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 243C1B81C96;
+        Tue, 23 Aug 2022 09:32:15 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6AAEBC433C1;
+        Tue, 23 Aug 2022 09:32:13 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661247127;
-        bh=w0p436ssZfj/lQdy31bDOBkJyI06WCHkjyGiFQ8EqOQ=;
+        s=korg; t=1661247133;
+        bh=xtzz9eBK+owALhajEDHehpsCM+hAxbsgv57CdLLHDE8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=d2vYTKV2p2p0V29I+cC+czTm1Q9nWdavRNhVQLlTO9w8YwPk+Tv+fpNHdTxNPkE+u
-         SFjOQIfSjbk2in0bSc/IC4hOjc7YS6MqlgFP95PwohVDBY0Kwi3i6sjyueb3PD8gL6
-         3F6cdhcbk37CnV5wwcSnTmBEmT/ewH+gaCYEobZI=
+        b=BYmBJBZWxjc3SwtinpjUbUmQmrEvFkV4uHM+MMhEQjapQZHtwITT5m9LU4TDGtcye
+         uBPuTeDz/rBpwcM/9Vh98+JJVuPJ0DSVcAroCEJs0LBUIzYrhTHyrgIavsOAwU45qY
+         8EeOoKTGZAJhhfMGj7v7TWrZuOtNDDimtTdkQmXg=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Dan Carpenter <dan.carpenter@oracle.com>,
-        Oleksandr Tyshchenko <oleksandr_tyshchenko@epam.com>,
-        Juergen Gross <jgross@suse.com>
-Subject: [PATCH 5.4 325/389] xen/xenbus: fix return type in xenbus_file_read()
-Date:   Tue, 23 Aug 2022 10:26:43 +0200
-Message-Id: <20220823080129.097332959@linuxfoundation.org>
+        stable@vger.kernel.org, John Johansen <john.johansen@canonical.com>
+Subject: [PATCH 5.4 298/389] apparmor: fix overlapping attachment computation
+Date:   Tue, 23 Aug 2022 10:26:16 +0200
+Message-Id: <20220823080127.996462689@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220823080115.331990024@linuxfoundation.org>
 References: <20220823080115.331990024@linuxfoundation.org>
@@ -50,48 +48,46 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Dan Carpenter <dan.carpenter@oracle.com>
+From: John Johansen <john.johansen@canonical.com>
 
-commit 32ad11127b95236dfc52375f3707853194a7f4b4 upstream.
+commit 2504db207146543736e877241f3b3de005cbe056 upstream.
 
-This code tries to store -EFAULT in an unsigned int.  The
-xenbus_file_read() function returns type ssize_t so the negative value
-is returned as a positive value to the user.
+When finding the profile via patterned attachments, the longest left
+match is being set to the static compile time value and not using the
+runtime computed value.
 
-This change forces another change to the min() macro.  Originally, the
-min() macro used "unsigned" type which checkpatch complains about.  Also
-unsigned type would break if "len" were not capped at MAX_RW_COUNT.  Use
-size_t for the min().  (No effect on runtime for the min_t() change).
+Fix this by setting the candidate value to the greater of the
+precomputed value or runtime computed value.
 
-Fixes: 2fb3683e7b16 ("xen: Add xenbus device driver")
-Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
-Reviewed-by: Oleksandr Tyshchenko <oleksandr_tyshchenko@epam.com>
-Link: https://lore.kernel.org/r/YutxJUaUYRG/VLVc@kili
-Signed-off-by: Juergen Gross <jgross@suse.com>
+Fixes: 21f606610502 ("apparmor: improve overlapping domain attachment resolution")
+Signed-off-by: John Johansen <john.johansen@canonical.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/xen/xenbus/xenbus_dev_frontend.c |    4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ security/apparmor/domain.c         |    2 +-
+ security/apparmor/include/policy.h |    2 +-
+ 2 files changed, 2 insertions(+), 2 deletions(-)
 
---- a/drivers/xen/xenbus/xenbus_dev_frontend.c
-+++ b/drivers/xen/xenbus/xenbus_dev_frontend.c
-@@ -128,7 +128,7 @@ static ssize_t xenbus_file_read(struct f
- {
- 	struct xenbus_file_priv *u = filp->private_data;
- 	struct read_buffer *rb;
--	unsigned i;
-+	ssize_t i;
- 	int ret;
+--- a/security/apparmor/domain.c
++++ b/security/apparmor/domain.c
+@@ -460,7 +460,7 @@ restart:
+ 				 * xattrs, or a longer match
+ 				 */
+ 				candidate = profile;
+-				candidate_len = profile->xmatch_len;
++				candidate_len = max(count, profile->xmatch_len);
+ 				candidate_xattrs = ret;
+ 				conflict = false;
+ 			}
+--- a/security/apparmor/include/policy.h
++++ b/security/apparmor/include/policy.h
+@@ -135,7 +135,7 @@ struct aa_profile {
  
- 	mutex_lock(&u->reply_mutex);
-@@ -148,7 +148,7 @@ again:
- 	rb = list_entry(u->read_buffers.next, struct read_buffer, list);
- 	i = 0;
- 	while (i < len) {
--		unsigned sz = min((unsigned)len - i, rb->len - rb->cons);
-+		size_t sz = min_t(size_t, len - i, rb->len - rb->cons);
- 
- 		ret = copy_to_user(ubuf + i, &rb->msg[rb->cons], sz);
- 
+ 	const char *attach;
+ 	struct aa_dfa *xmatch;
+-	int xmatch_len;
++	unsigned int xmatch_len;
+ 	enum audit_mode audit;
+ 	long mode;
+ 	u32 path_flags;
 
 
