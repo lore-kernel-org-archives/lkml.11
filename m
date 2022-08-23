@@ -2,44 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D0A42C52D79
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C056FC49EC6
 	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 10:57:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357138AbiHWK4g (ORCPT
+        id S1357124AbiHWK4c (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 06:56:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50116 "EHLO
+        Tue, 23 Aug 2022 06:56:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49652 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357013AbiHWKww (ORCPT
+        with ESMTP id S1356994AbiHWKwu (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 06:52:52 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7DB86ABF1E;
-        Tue, 23 Aug 2022 02:13:04 -0700 (PDT)
+        Tue, 23 Aug 2022 06:52:50 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0C359ABD6A;
+        Tue, 23 Aug 2022 02:12:57 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id B1BC66113E;
-        Tue, 23 Aug 2022 09:13:02 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A0EF7C433C1;
-        Tue, 23 Aug 2022 09:13:01 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 9821D60F54;
+        Tue, 23 Aug 2022 09:12:53 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9DDE1C433C1;
+        Tue, 23 Aug 2022 09:12:52 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661245982;
-        bh=8hgEPptPotcAEFQiDmgZ8x/yHxxyNyJ3aCUqRbrzYe0=;
+        s=korg; t=1661245973;
+        bh=UlzcKidXqLG4HmGSEd5gPKAWOKksFX8ym+DBmzhofjk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ytihZ/N9wF0bVs3WJBc+aY5YMp3HJbuPjLbu8/kHd4Ay9JtQO7wt7BROG5sPkGzNA
-         BdH4KdU0QkMdMNXdK0IQbxdOANHwP8LYYpYF2p7Y249M7Qkz3d7R7GtBWKRv4eeKmY
-         RJyZsvagqdJfOVvAVs5EbYGG3cELFFRtuYmyHMzc=
+        b=iMHYqbjATnTNp3WW1N/FA9j8Gtdm2GSWf3RDa5wONZ2x6t7ZvDWLZkO+Zryly67Tj
+         lG5SlVw3fpJ3VVyPRLjxDnx5T6kBlEsZ3vyKKGJUm3/gDPuONr6A7JlvXezAeTagDh
+         WDOb9Q/donnNuypI1wQropOM/z5MTiPdTeNEI8UU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Alan Brady <alan.brady@intel.com>,
-        Mateusz Palczewski <mateusz.palczewski@intel.com>,
-        Tony Nguyen <anthony.l.nguyen@intel.com>,
-        Gurucharan <gurucharanx.g@intel.com>
-Subject: [PATCH 4.19 252/287] i40e: Fix to stop tx_timeout recovery if GLOBR fails
-Date:   Tue, 23 Aug 2022 10:27:01 +0200
-Message-Id: <20220823080109.695712144@linuxfoundation.org>
+        stable@vger.kernel.org, Al Viro <viro@zeniv.linux.org.uk>,
+        Dinh Nguyen <dinguyen@kernel.org>
+Subject: [PATCH 4.19 249/287] nios2: add force_successful_syscall_return()
+Date:   Tue, 23 Aug 2022 10:26:58 +0200
+Message-Id: <20220823080109.556316374@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220823080100.268827165@linuxfoundation.org>
 References: <20220823080100.268827165@linuxfoundation.org>
@@ -51,42 +49,61 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Alan Brady <alan.brady@intel.com>
+From: Al Viro <viro@zeniv.linux.org.uk>
 
-commit 57c942bc3bef0970f0b21f8e0998e76a900ea80d upstream.
+commit fd0c153daad135d0ec1a53c5dbe6936a724d6ae1 upstream.
 
-When a tx_timeout fires, the PF attempts to recover by incrementally
-resetting.  First we try a PFR, then CORER and finally a GLOBR.  If the
-GLOBR fails, then we keep hitting the tx_timeout and incrementing the
-recovery level and issuing dmesgs, which is both annoying to the user
-and accomplishes nothing.
+If we use the ancient SysV syscall ABI, we'd better have tell the
+kernel how to claim that a negative return value is a success.
+Use ->orig_r2 for that - it's inaccessible via ptrace, so it's
+a fair game for changes and it's normally[*] non-negative on return
+from syscall.  Set to -1; syscall is not going to be restart-worthy
+by definition, so we won't interfere with that use either.
 
-If the GLOBR fails, then we're pretty much totally hosed, and there's
-not much else we can do to recover, so this makes it such that we just
-kill the VSI and stop hitting the tx_timeout in such a case.
+[*] the only exception is rt_sigreturn(), where we skip the entire
+messing with r1/r2 anyway.
 
-Fixes: 41c445ff0f48 ("i40e: main driver core")
-Signed-off-by: Alan Brady <alan.brady@intel.com>
-Signed-off-by: Mateusz Palczewski <mateusz.palczewski@intel.com>
-Tested-by: Gurucharan <gurucharanx.g@intel.com> (A Contingent worker at Intel)
-Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
+Fixes: 82ed08dd1b0e ("nios2: Exception handling")
+Signed-off-by: Al Viro <viro@zeniv.linux.org.uk>
+Signed-off-by: Dinh Nguyen <dinguyen@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/net/ethernet/intel/i40e/i40e_main.c |    4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
+ arch/nios2/include/asm/ptrace.h |    2 ++
+ arch/nios2/kernel/entry.S       |    6 ++++++
+ 2 files changed, 8 insertions(+)
 
---- a/drivers/net/ethernet/intel/i40e/i40e_main.c
-+++ b/drivers/net/ethernet/intel/i40e/i40e_main.c
-@@ -397,7 +397,9 @@ static void i40e_tx_timeout(struct net_d
- 		set_bit(__I40E_GLOBAL_RESET_REQUESTED, pf->state);
- 		break;
- 	default:
--		netdev_err(netdev, "tx_timeout recovery unsuccessful\n");
-+		netdev_err(netdev, "tx_timeout recovery unsuccessful, device is in non-recoverable state.\n");
-+		set_bit(__I40E_DOWN_REQUESTED, pf->state);
-+		set_bit(__I40E_VSI_DOWN_REQUESTED, vsi->state);
- 		break;
- 	}
+--- a/arch/nios2/include/asm/ptrace.h
++++ b/arch/nios2/include/asm/ptrace.h
+@@ -74,6 +74,8 @@ extern void show_regs(struct pt_regs *);
+ 	((struct pt_regs *)((unsigned long)current_thread_info() + THREAD_SIZE)\
+ 		- 1)
  
++#define force_successful_syscall_return() (current_pt_regs()->orig_r2 = -1)
++
+ int do_syscall_trace_enter(void);
+ void do_syscall_trace_exit(void);
+ #endif /* __ASSEMBLY__ */
+--- a/arch/nios2/kernel/entry.S
++++ b/arch/nios2/kernel/entry.S
+@@ -213,6 +213,9 @@ local_restart:
+ translate_rc_and_ret:
+ 	movi	r1, 0
+ 	bge	r2, zero, 3f
++	ldw	r1, PT_ORIG_R2(sp)
++	addi	r1, r1, 1
++	beq	r1, zero, 3f
+ 	sub	r2, zero, r2
+ 	movi	r1, 1
+ 3:
+@@ -276,6 +279,9 @@ traced_system_call:
+ translate_rc_and_ret2:
+ 	movi	r1, 0
+ 	bge	r2, zero, 4f
++	ldw	r1, PT_ORIG_R2(sp)
++	addi	r1, r1, 1
++	beq	r1, zero, 4f
+ 	sub	r2, zero, r2
+ 	movi	r1, 1
+ 4:
 
 
