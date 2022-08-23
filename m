@@ -2,131 +2,281 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3233CC32772
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 13:19:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2D3A9C32772
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 13:20:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241320AbiHWNTz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 09:19:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57676 "EHLO
+        id S236396AbiHWNUj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 23 Aug 2022 09:20:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57678 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241173AbiHWNTc (ORCPT
+        with ESMTP id S241025AbiHWNTv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 09:19:32 -0400
-Received: from out29-76.mail.aliyun.com (out29-76.mail.aliyun.com [115.124.29.76])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AFCC08053F;
-        Tue, 23 Aug 2022 03:18:12 -0700 (PDT)
-X-Alimail-AntiSpam: AC=CONTINUE;BC=0.07436883|-1;BR=01201311R841S44rulernew998_84748_2000303;CH=blue;DM=|CONTINUE|false|;DS=CONTINUE|ham_regular_dialog|0.0147595-0.000491414-0.984749;FP=0|0|0|0|0|-1|-1|-1;HT=ay29a033018047193;MF=michael@allwinnertech.com;NM=1;PH=DS;RN=5;RT=5;SR=0;TI=SMTPD_---.OzvLOEv_1661249816;
-Received: from 192.168.220.136(mailfrom:michael@allwinnertech.com fp:SMTPD_---.OzvLOEv_1661249816)
-          by smtp.aliyun-inc.com;
-          Tue, 23 Aug 2022 18:16:59 +0800
-Message-ID: <6412c518-426a-69a4-e419-83dc97bebe27@allwinnertech.com>
-Date:   Tue, 23 Aug 2022 18:16:56 +0800
+        Tue, 23 Aug 2022 09:19:51 -0400
+Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 03721140BD6
+        for <linux-kernel@vger.kernel.org>; Tue, 23 Aug 2022 03:18:58 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1661249940; x=1692785940;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=uZyR5G+AOydbxrOOok2HEUuikNWiFlgo84gXHP/S3TI=;
+  b=E1+AOGUSETwnC2ReCb+yvJjdps5iAjLX/5Gh7nNwhZcwjcp3S9IC6eVT
+   ygEl7RGpKH8+KFUlvxnZPS+kb6rIpPuMblZo1gRqn+SsyTwr3eEf5jL/G
+   rWQ/3KGgJXJsDdFaoBeBvgmrCQJyruPPFAryP0YO27sW4pvQus7zQxkO6
+   pkhERDtWomQIs+/FOJtXrob11JYt3qAcIIqarxCgQ3PIkG2yrG6lM0Njz
+   2vFf7If6lF8xSHajkBH9lKdJX4pM/Vxa0mevDZd538bMkx9U14rcaPk0e
+   1VQzSy34iWdrDnHpIDejKQJsV6CePj3PBAREpXz/MCHlRfbK3I/cO92Lw
+   Q==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10447"; a="291206606"
+X-IronPort-AV: E=Sophos;i="5.93,257,1654585200"; 
+   d="scan'208";a="291206606"
+Received: from fmsmga001.fm.intel.com ([10.253.24.23])
+  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Aug 2022 03:18:08 -0700
+X-IronPort-AV: E=Sophos;i="5.93,257,1654585200"; 
+   d="scan'208";a="751639951"
+Received: from jabish-mobl2.amr.corp.intel.com (HELO paris.amr.corp.intel.com) ([10.254.9.209])
+  by fmsmga001-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Aug 2022 03:18:03 -0700
+From:   Gwan-gyeong Mun <gwan-gyeong.mun@intel.com>
+To:     intel-gfx@lists.freedesktop.org
+Cc:     linux-kernel@vger.kernel.org, dri-devel@lists.freedesktop.org,
+        mchehab@kernel.org, chris@chris-wilson.co.uk,
+        matthew.auld@intel.com, thomas.hellstrom@linux.intel.com,
+        jani.nikula@intel.com, nirmoy.das@intel.com, airlied@linux.ie,
+        daniel@ffwll.ch, andi.shyti@linux.intel.com,
+        andrzej.hajda@intel.com, keescook@chromium.org,
+        mauro.chehab@linux.intel.com,
+        intel-gfx-trybot@lists.freedesktop.org
+Subject: [PATCH v8 4/8] drm/i915: Check for integer truncation on scatterlist creation
+Date:   Tue, 23 Aug 2022 19:17:25 +0900
+Message-Id: <20220823101729.2098841-5-gwan-gyeong.mun@intel.com>
+X-Mailer: git-send-email 2.37.1
+In-Reply-To: <20220823101729.2098841-1-gwan-gyeong.mun@intel.com>
+References: <20220823101729.2098841-1-gwan-gyeong.mun@intel.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.9.0
-Subject: Re: [PATCH] scsi: core: Fix block I/O error of USB card reader during
- resume
-Content-Language: en-US
-To:     Bart Van Assche <bvanassche@acm.org>, jejb@linux.ibm.com,
-        martin.petersen@oracle.com
-Cc:     linux-scsi@vger.kernel.org, linux-kernel@vger.kernel.org
-References: <20220817083438.118293-1-michael@allwinnertech.com>
- <ceba3c96-5f32-9b5a-bacc-0eb942b9b90b@acm.org>
-From:   Michael Wu <michael@allwinnertech.com>
-In-Reply-To: <ceba3c96-5f32-9b5a-bacc-0eb942b9b90b@acm.org>
-Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 8/17/2022 9:52 PM, Bart Van Assche wrote:
-> On 8/17/22 01:34, Michael Wu wrote:
->> When accessing storage device via an USB card reader, a block I/O error
->> occurs during resume:
->>
->> PM: suspend exit
->> sd 0: 0:0:0: [sda] tag#0 UNKNOWN(0x2003) Result: hostbyte=0x00 driverbyte
->> =0x08
->> sd 0: 0:0:0: [sda] tag#0 Sense Key : 0x6 [current]
->> sd 0: 0:0:0: [sda] tag#0 ASC=0x28 ASCQ=0x0
->> sd 0: 0:0:0: [sda] tag#0 CDB: opcode=0x28 28 00 00 17 ce e1 00 00 f0 00
->> blk_update_request: I/O error, dev sda, sector 1560289 op 0x0:(READ) 
->> flags
->> 0x84700 phys_seg 19 prio class 0
->> sd 0: 0:0:0: [sda] tag#0 device offline or changed
->>
->> Fix it by changing the action in scsi_io_completion_action() from
->> ACTION_FAIL to ACTION_RETRY by adding the condition `cmd->device->
->> lockable`.
->>
->> Signed-off-by: Michael Wu <michael@allwinnertech.com>
->> ---
->>   drivers/scsi/scsi_lib.c | 3 ++-
->>   1 file changed, 2 insertions(+), 1 deletion(-)
->>
->> diff --git a/drivers/scsi/scsi_lib.c b/drivers/scsi/scsi_lib.c
->> index 4dbd29ab1dcc..4bc480721947 100644
->> --- a/drivers/scsi/scsi_lib.c
->> +++ b/drivers/scsi/scsi_lib.c
->> @@ -704,7 +704,8 @@ static void scsi_io_completion_action(struct 
->> scsi_cmnd *cmd, int result)
->>       } else if (sense_valid && sense_current) {
->>           switch (sshdr.sense_key) {
->>           case UNIT_ATTENTION:
->> -            if (cmd->device->removable) {
->> +            if (cmd->device->removable &&
->> +                cmd->device->lockable) {
->>                   /* Detected disc change.  Set a bit
->>                    * and quietly refuse further access.
->>                    */
-> 
-> To me the above doesn't look like a good way to address this. I don't 
-> see why a device being lockable should control whether or not a unit 
-> attention results in a retry? Shouldn't the decision taken by 
-> scsi_io_completion_action() depend on the ASC and ASCQ codes rather than 
-> on whether a device is removable and/or lockable?
-> 
-Dear Bart,
-Yes... My patch did seem suspicious. Here's the scene about the block 
-I/O error: Some card reader does not respond the command 'MEDIUM REMOVAL 
-PREVENT' correctly, as a result, the host does not send subsequent cmd 
-'MEDIUM REMOVAL ALLOW'/'MEDIUM REMOVAL PREVENT' before/after sleep, 
-which leads to a enumeration failure after system resume.
-I wonder, without changing the behavior of the device, is there's a 
-better way to solve this? -- Modifying the scsi core should not be a 
-good idea though :(
+From: Chris Wilson <chris@chris-wilson.co.uk>
 
-> BTW, the code modified by the above patch is old. This is what I found 
-> in the 2002 version of scsi_lib.c:
-> 
-> if ((SCpnt->sense_buffer[0] & 0x7f) == 0x70
->      && (SCpnt->sense_buffer[2] & 0xf) == UNIT_ATTENTION) {
->          if (SCpnt->device->removable) {
->                  /* detected disc change.  set a bit and quietly refuse
->                   * further access.
->                   */
->                  SCpnt->device->changed = 1;
->                  SCpnt = scsi_end_request(SCpnt, 0, this_count);
->                  return;
->          } else {
->                  /*
->                   * Must have been a power glitch, or a
->                   * bus reset.  Could not have been a
->                   * media change, so we just retry the
->                   * request and see what happens.
->                   */
->                  scsi_queue_next_request(q, SCpnt);
->                  return;
-> }
-> 
-> Bart.
-> 
-> Thanks,
-Thanks for your kindly notice. I looked around in the latest linux 
-mainline repo, but could not find this code. Where can I get this 2002 
-version of scsi_lib.c? Thank you.
+There is an impedance mismatch between the scatterlist API using unsigned
+int and our memory/page accounting in unsigned long. That is we may try
+to create a scatterlist for a large object that overflows returning a
+small table into which we try to fit very many pages. As the object size
+is under control of userspace, we have to be prudent and catch the
+conversion errors.
 
+To catch the implicit truncation as we switch from unsigned long into the
+scatterlist's unsigned int, we use overflows_type check and report
+E2BIG prior to the operation. This is already used in our create ioctls to
+indicate if the uABI request is simply too large for the backing store.
+Failing that type check, we have a second check at sg_alloc_table time
+to make sure the values we are passing into the scatterlist API are not
+truncated.
+
+It uses pgoff_t for locals that are dealing with page indices, in this
+case, the page count is the limit of the page index.
+And it uses safe_conversion() macro which performs a type conversion (cast)
+of an integer value into a new variable, checking that the destination is
+large enough to hold the source value.
+
+v2: Move added i915_utils's macro into drm_util header (Jani N)
+v5: Fix macros to be enclosed in parentheses for complex values
+    Fix too long line warning
+v8: Replace safe_conversion() with check_assign() (Kees)
+
+Signed-off-by: Chris Wilson <chris@chris-wilson.co.uk>
+Signed-off-by: Gwan-gyeong Mun <gwan-gyeong.mun@intel.com>
+Cc: Tvrtko Ursulin <tvrtko.ursulin@intel.com>
+Cc: Brian Welty <brian.welty@intel.com>
+Cc: Matthew Auld <matthew.auld@intel.com>
+Cc: Thomas Hellström <thomas.hellstrom@linux.intel.com>
+Reviewed-by: Nirmoy Das <nirmoy.das@intel.com>
+Reviewed-by: Mauro Carvalho Chehab <mchehab@kernel.org>
+Reviewed-by: Andrzej Hajda <andrzej.hajda@intel.com>
+---
+ drivers/gpu/drm/i915/gem/i915_gem_internal.c |  6 ++++--
+ drivers/gpu/drm/i915/gem/i915_gem_object.h   |  3 ---
+ drivers/gpu/drm/i915/gem/i915_gem_phys.c     |  4 ++++
+ drivers/gpu/drm/i915/gem/i915_gem_shmem.c    |  5 ++++-
+ drivers/gpu/drm/i915/gem/i915_gem_ttm.c      |  4 ++++
+ drivers/gpu/drm/i915/gem/i915_gem_userptr.c  |  5 ++++-
+ drivers/gpu/drm/i915/gvt/dmabuf.c            |  9 +++++----
+ drivers/gpu/drm/i915/i915_scatterlist.h      | 11 +++++++++++
+ 8 files changed, 36 insertions(+), 11 deletions(-)
+
+diff --git a/drivers/gpu/drm/i915/gem/i915_gem_internal.c b/drivers/gpu/drm/i915/gem/i915_gem_internal.c
+index c698f95af15f..53fa27e1c950 100644
+--- a/drivers/gpu/drm/i915/gem/i915_gem_internal.c
++++ b/drivers/gpu/drm/i915/gem/i915_gem_internal.c
+@@ -37,10 +37,13 @@ static int i915_gem_object_get_pages_internal(struct drm_i915_gem_object *obj)
+ 	struct sg_table *st;
+ 	struct scatterlist *sg;
+ 	unsigned int sg_page_sizes;
+-	unsigned int npages;
++	pgoff_t npages; /* restricted by sg_alloc_table */
+ 	int max_order;
+ 	gfp_t gfp;
+ 
++	if (check_assign(obj->base.size >> PAGE_SHIFT, &npages))
++		return -E2BIG;
++
+ 	max_order = MAX_ORDER;
+ #ifdef CONFIG_SWIOTLB
+ 	if (is_swiotlb_active(obj->base.dev->dev)) {
+@@ -67,7 +70,6 @@ static int i915_gem_object_get_pages_internal(struct drm_i915_gem_object *obj)
+ 	if (!st)
+ 		return -ENOMEM;
+ 
+-	npages = obj->base.size / PAGE_SIZE;
+ 	if (sg_alloc_table(st, npages, GFP_KERNEL)) {
+ 		kfree(st);
+ 		return -ENOMEM;
+diff --git a/drivers/gpu/drm/i915/gem/i915_gem_object.h b/drivers/gpu/drm/i915/gem/i915_gem_object.h
+index 5da872afc4ba..0cf31adbfd41 100644
+--- a/drivers/gpu/drm/i915/gem/i915_gem_object.h
++++ b/drivers/gpu/drm/i915/gem/i915_gem_object.h
+@@ -26,9 +26,6 @@ enum intel_region_id;
+  * this and catch if we ever need to fix it. In the meantime, if you do
+  * spot such a local variable, please consider fixing!
+  *
+- * Aside from our own locals (for which we have no excuse!):
+- * - sg_table embeds unsigned int for nents
+- *
+  * We can check for invalidly typed locals with typecheck(), see for example
+  * i915_gem_object_get_sg().
+  */
+diff --git a/drivers/gpu/drm/i915/gem/i915_gem_phys.c b/drivers/gpu/drm/i915/gem/i915_gem_phys.c
+index 0d0e46dae559..88ba7266a3a5 100644
+--- a/drivers/gpu/drm/i915/gem/i915_gem_phys.c
++++ b/drivers/gpu/drm/i915/gem/i915_gem_phys.c
+@@ -28,6 +28,10 @@ static int i915_gem_object_get_pages_phys(struct drm_i915_gem_object *obj)
+ 	void *dst;
+ 	int i;
+ 
++	/* Contiguous chunk, with a single scatterlist element */
++	if (overflows_type(obj->base.size, sg->length))
++		return -E2BIG;
++
+ 	if (GEM_WARN_ON(i915_gem_object_needs_bit17_swizzle(obj)))
+ 		return -EINVAL;
+ 
+diff --git a/drivers/gpu/drm/i915/gem/i915_gem_shmem.c b/drivers/gpu/drm/i915/gem/i915_gem_shmem.c
+index f42ca1179f37..339b0a9cf2d0 100644
+--- a/drivers/gpu/drm/i915/gem/i915_gem_shmem.c
++++ b/drivers/gpu/drm/i915/gem/i915_gem_shmem.c
+@@ -193,13 +193,16 @@ static int shmem_get_pages(struct drm_i915_gem_object *obj)
+ 	struct drm_i915_private *i915 = to_i915(obj->base.dev);
+ 	struct intel_memory_region *mem = obj->mm.region;
+ 	struct address_space *mapping = obj->base.filp->f_mapping;
+-	const unsigned long page_count = obj->base.size / PAGE_SIZE;
+ 	unsigned int max_segment = i915_sg_segment_size();
+ 	struct sg_table *st;
+ 	struct sgt_iter sgt_iter;
++	pgoff_t page_count;
+ 	struct page *page;
+ 	int ret;
+ 
++	if (check_assign(obj->base.size >> PAGE_SHIFT, &page_count))
++		return -E2BIG;
++
+ 	/*
+ 	 * Assert that the object is not currently in any GPU domain. As it
+ 	 * wasn't in the GTT, there shouldn't be any way it could have been in
+diff --git a/drivers/gpu/drm/i915/gem/i915_gem_ttm.c b/drivers/gpu/drm/i915/gem/i915_gem_ttm.c
+index 4148126e7b1b..d708c4c2a9bd 100644
+--- a/drivers/gpu/drm/i915/gem/i915_gem_ttm.c
++++ b/drivers/gpu/drm/i915/gem/i915_gem_ttm.c
+@@ -783,6 +783,10 @@ static int i915_ttm_get_pages(struct drm_i915_gem_object *obj)
+ {
+ 	struct ttm_place requested, busy[I915_TTM_MAX_PLACEMENTS];
+ 	struct ttm_placement placement;
++	pgoff_t num_pages;
++
++	if (check_assign(obj->base.size >> PAGE_SHIFT, &num_pages))
++		return -E2BIG;
+ 
+ 	GEM_BUG_ON(obj->mm.n_placements > I915_TTM_MAX_PLACEMENTS);
+ 
+diff --git a/drivers/gpu/drm/i915/gem/i915_gem_userptr.c b/drivers/gpu/drm/i915/gem/i915_gem_userptr.c
+index 8423df021b71..48237e443863 100644
+--- a/drivers/gpu/drm/i915/gem/i915_gem_userptr.c
++++ b/drivers/gpu/drm/i915/gem/i915_gem_userptr.c
+@@ -128,13 +128,16 @@ static void i915_gem_object_userptr_drop_ref(struct drm_i915_gem_object *obj)
+ 
+ static int i915_gem_userptr_get_pages(struct drm_i915_gem_object *obj)
+ {
+-	const unsigned long num_pages = obj->base.size >> PAGE_SHIFT;
+ 	unsigned int max_segment = i915_sg_segment_size();
+ 	struct sg_table *st;
+ 	unsigned int sg_page_sizes;
+ 	struct page **pvec;
++	pgoff_t num_pages; /* limited by sg_alloc_table_from_pages_segment */
+ 	int ret;
+ 
++	if (check_assign(obj->base.size >> PAGE_SHIFT, &num_pages))
++		return -E2BIG;
++
+ 	st = kmalloc(sizeof(*st), GFP_KERNEL);
+ 	if (!st)
+ 		return -ENOMEM;
+diff --git a/drivers/gpu/drm/i915/gvt/dmabuf.c b/drivers/gpu/drm/i915/gvt/dmabuf.c
+index 01e54b45c5c1..bc6e823584ad 100644
+--- a/drivers/gpu/drm/i915/gvt/dmabuf.c
++++ b/drivers/gpu/drm/i915/gvt/dmabuf.c
+@@ -42,8 +42,7 @@
+ 
+ #define GEN8_DECODE_PTE(pte) (pte & GENMASK_ULL(63, 12))
+ 
+-static int vgpu_gem_get_pages(
+-		struct drm_i915_gem_object *obj)
++static int vgpu_gem_get_pages(struct drm_i915_gem_object *obj)
+ {
+ 	struct drm_i915_private *dev_priv = to_i915(obj->base.dev);
+ 	struct intel_vgpu *vgpu;
+@@ -52,7 +51,10 @@ static int vgpu_gem_get_pages(
+ 	int i, j, ret;
+ 	gen8_pte_t __iomem *gtt_entries;
+ 	struct intel_vgpu_fb_info *fb_info;
+-	u32 page_num;
++	pgoff_t page_num;
++
++	if (check_assign(obj->base.size >> PAGE_SHIFT, &page_num))
++		return -E2BIG;
+ 
+ 	fb_info = (struct intel_vgpu_fb_info *)obj->gvt_info;
+ 	if (drm_WARN_ON(&dev_priv->drm, !fb_info))
+@@ -66,7 +68,6 @@ static int vgpu_gem_get_pages(
+ 	if (unlikely(!st))
+ 		return -ENOMEM;
+ 
+-	page_num = obj->base.size >> PAGE_SHIFT;
+ 	ret = sg_alloc_table(st, page_num, GFP_KERNEL);
+ 	if (ret) {
+ 		kfree(st);
+diff --git a/drivers/gpu/drm/i915/i915_scatterlist.h b/drivers/gpu/drm/i915/i915_scatterlist.h
+index 9ddb3e743a3e..1d1802beb42b 100644
+--- a/drivers/gpu/drm/i915/i915_scatterlist.h
++++ b/drivers/gpu/drm/i915/i915_scatterlist.h
+@@ -220,4 +220,15 @@ struct i915_refct_sgt *i915_rsgt_from_buddy_resource(struct ttm_resource *res,
+ 						     u64 region_start,
+ 						     u32 page_alignment);
+ 
++/* Wrap scatterlist.h to sanity check for integer truncation */
++typedef unsigned int __sg_size_t; /* see linux/scatterlist.h */
++#define sg_alloc_table(sgt, nents, gfp) \
++	overflows_type(nents, __sg_size_t) ? -E2BIG \
++		: ((sg_alloc_table)(sgt, (__sg_size_t)(nents), gfp))
++
++#define sg_alloc_table_from_pages_segment(sgt, pages, npages, offset, size, max_segment, gfp) \
++	overflows_type(npages, __sg_size_t) ? -E2BIG \
++		: ((sg_alloc_table_from_pages_segment)(sgt, pages, (__sg_size_t)(npages), offset, \
++						       size, max_segment, gfp))
++
+ #endif
 -- 
-Regards,
-Michael Wu
+2.37.1
+
