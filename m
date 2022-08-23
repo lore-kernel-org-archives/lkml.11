@@ -2,121 +2,116 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 97A40C32792
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 11:40:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4019EC32772
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 11:40:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241444AbiHWLkB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 07:40:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48964 "EHLO
+        id S1357976AbiHWLkH (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 23 Aug 2022 07:40:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48960 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348544AbiHWLdY (ORCPT
+        with ESMTP id S1348213AbiHWLdX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 07:33:24 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B45F09109D;
-        Tue, 23 Aug 2022 02:26:58 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id D32CE61227;
-        Tue, 23 Aug 2022 09:26:57 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CE8EDC433C1;
-        Tue, 23 Aug 2022 09:26:56 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661246817;
-        bh=XRMX3midtATI9hujgoxy0IUHmmmKv8GdcEeUHf6Ogcw=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=QD60Pk0WZewdIYmrRwHpNgyITz6RNZUT3Zqt32YNxbQXVxdhqPFMRuXEy0LPU6QsT
-         NWQiUqvwrZdiVYheddjy5Z+ZEh2KnOCwzvc9WG0azTo9Sq6ouBNGivjAL2NzqRgMHP
-         Ta1lmVreS3X0enZ4Kxp604UshQAaWNX6q4PCyUfY=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Zhang Yi <yi.zhang@huawei.com>,
-        Jan Kara <jack@suse.cz>, Theodore Tso <tytso@mit.edu>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 199/389] jbd2: fix outstanding credits assert in jbd2_journal_commit_transaction()
-Date:   Tue, 23 Aug 2022 10:24:37 +0200
-Message-Id: <20220823080123.957197290@linuxfoundation.org>
-X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220823080115.331990024@linuxfoundation.org>
-References: <20220823080115.331990024@linuxfoundation.org>
-User-Agent: quilt/0.67
+        Tue, 23 Aug 2022 07:33:23 -0400
+Received: from mx0b-001b2d01.pphosted.com (mx0b-001b2d01.pphosted.com [148.163.158.5])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 16405C6CD5;
+        Tue, 23 Aug 2022 02:27:00 -0700 (PDT)
+Received: from pps.filterd (m0098421.ppops.net [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 27N8PGXE022459;
+        Tue, 23 Aug 2022 09:26:56 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=date : from : to : cc :
+ subject : message-id : references : mime-version : content-type :
+ content-transfer-encoding : in-reply-to; s=pp1;
+ bh=2vei+MS82V0X3c1p2oKJzYV81h4jfWZJXKgnSJtOV3M=;
+ b=S6EfbDBsKbuAylSq63HeJxvjxh75ADg29RzhwkY2QP957FAdZQkq+XJKOdVa+oggyprv
+ Km+xxVie6X7gxU24DoCmmwdK5s+tVaos38I/1wIObASUbACaQwx1Ttfi67SM1TULx5+U
+ 2YOcoF2DKPuyLkhup561ZpjMfM+EF7SGjNTHjifB239Wp4R5vsmNOugefHMufjSiuLBD
+ H4WqGbN9Ym9+Jp/FVdshN0yDDfFNuXlOONmHebh+apIYk33/QylzGcqSNAvEeIm06+xz
+ yXfzhPbrvKqpDbh73njwAGY773yXFLt8pdwTquGqqUm4LiWyHub70X42UijSzM2lCwuD NA== 
+Received: from ppma01fra.de.ibm.com (46.49.7a9f.ip4.static.sl-reverse.com [159.122.73.70])
+        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3j4uc99q0d-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Tue, 23 Aug 2022 09:26:56 +0000
+Received: from pps.filterd (ppma01fra.de.ibm.com [127.0.0.1])
+        by ppma01fra.de.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 27N9LTvw012628;
+        Tue, 23 Aug 2022 09:26:54 GMT
+Received: from b06cxnps4075.portsmouth.uk.ibm.com (d06relay12.portsmouth.uk.ibm.com [9.149.109.197])
+        by ppma01fra.de.ibm.com with ESMTP id 3j2q88tkhu-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Tue, 23 Aug 2022 09:26:54 +0000
+Received: from d06av21.portsmouth.uk.ibm.com (d06av21.portsmouth.uk.ibm.com [9.149.105.232])
+        by b06cxnps4075.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 27N9QpWQ32113070
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Tue, 23 Aug 2022 09:26:51 GMT
+Received: from d06av21.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 423FF5204F;
+        Tue, 23 Aug 2022 09:26:51 +0000 (GMT)
+Received: from osiris (unknown [9.145.80.88])
+        by d06av21.portsmouth.uk.ibm.com (Postfix) with ESMTPS id E75155204E;
+        Tue, 23 Aug 2022 09:26:50 +0000 (GMT)
+Date:   Tue, 23 Aug 2022 11:26:49 +0200
+From:   Heiko Carstens <hca@linux.ibm.com>
+To:     Arnaldo Carvalho de Melo <acme@kernel.org>
+Cc:     Thomas Richter <tmricht@linux.ibm.com>,
+        linux-kernel@vger.kernel.org, linux-perf-users@vger.kernel.org,
+        svens@linux.ibm.com, gor@linux.ibm.com, sumanthk@linux.ibm.com
+Subject: Re: [PATCH v2] perf list: Add PMU pai_crypto event description for
+ IBM z16
+Message-ID: <YwSdWUt02SFzrMUm@osiris>
+References: <20220804075221.1132849-1-tmricht@linux.ibm.com>
+ <YvOq3B02x8GqkVPA@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
+In-Reply-To: <YvOq3B02x8GqkVPA@kernel.org>
+X-TM-AS-GCONF: 00
+X-Proofpoint-ORIG-GUID: HhpzBzzd8F6ifxvoDAMc2tTnzIpJa4jm
+X-Proofpoint-GUID: HhpzBzzd8F6ifxvoDAMc2tTnzIpJa4jm
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.895,Hydra:6.0.517,FMLib:17.11.122.1
+ definitions=2022-08-23_04,2022-08-22_02,2022-06-22_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 impostorscore=0
+ suspectscore=0 phishscore=0 mlxlogscore=999 priorityscore=1501 mlxscore=0
+ adultscore=0 bulkscore=0 lowpriorityscore=0 malwarescore=0 clxscore=1011
+ spamscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2207270000 definitions=main-2208230035
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Zhang Yi <yi.zhang@huawei.com>
+On Wed, Aug 10, 2022 at 09:55:56AM -0300, Arnaldo Carvalho de Melo wrote:
+> Em Thu, Aug 04, 2022 at 09:52:21AM +0200, Thomas Richter escreveu:
+> > Add the event description for the IBM z16 pai_crypto PMU released with
+> > commit 1bf54f32f525 ("s390/pai: Add support for cryptography counters")
+> 
+> What tree is this? I tried on torvalds/master:
+> 
+> ⬢[acme@toolbox perf]$ git remote update torvalds
+> Fetching torvalds
+> ⬢[acme@toolbox perf]$ git log --oneline -1 torvalds/master
+> d4252071b97d2027 (torvalds/master) add barriers to buffer_uptodate and set_buffer_uptodate
+> ⬢[acme@toolbox perf]$ git show torvalds/master d4252071b97d2027 | head -5
+> commit d4252071b97d2027d246f6a82cbee4d52f618b47
+> Author: Mikulas Patocka <mpatocka@redhat.com>
+> Date:   Tue Aug 9 14:32:13 2022 -0400
+> 
+>     add barriers to buffer_uptodate and set_buffer_uptodate
+> ⬢[acme@toolbox perf]$ git show torvalds/master 1bf54f32f525 | head -5
+> fatal: ambiguous argument '1bf54f32f525': unknown revision or path not in the working tree.
+> Use '--' to separate paths from revisions, like this:
+> 'git <command> [<revision>...] -- [<file>...]'
+> ⬢[acme@toolbox perf]$ git log --oneline torvalds/master | grep "pai: Add support for cryptography counters"
+> ⬢[acme@toolbox perf]$
+> ⬢[acme@toolbox perf]$ git show torvalds/master d4252071b97d2027 | head -4
+> commit d4252071b97d2027d246f6a82cbee4d52f618b47
+> Author: Mikulas Patocka <mpatocka@redhat.com>
+> Date:   Tue Aug 9 14:32:13 2022 -0400
+> 
+> I'm applying it locally so that it gets included in testing, but please
+> clarify where is that 1bf54f32f525 cset.
 
-[ Upstream commit a89573ce4ad32f19f43ec669771726817e185be0 ]
+Thomas mixed up our non public development tree and Linus' tree.
+Correct commit id + subject are:
 
-We catch an assert problem in jbd2_journal_commit_transaction() when
-doing fsstress and request falut injection tests. The problem is
-happened in a race condition between jbd2_journal_commit_transaction()
-and ext4_end_io_end(). Firstly, ext4_writepages() writeback dirty pages
-and start reserved handle, and then the journal was aborted due to some
-previous metadata IO error, jbd2_journal_abort() start to commit current
-running transaction, the committing procedure could be raced by
-ext4_end_io_end() and lead to subtract j_reserved_credits twice from
-commit_transaction->t_outstanding_credits, finally the
-t_outstanding_credits is mistakenly smaller than t_nr_buffers and
-trigger assert.
-
-kjournald2           kworker
-
-jbd2_journal_commit_transaction()
- write_unlock(&journal->j_state_lock);
- atomic_sub(j_reserved_credits, t_outstanding_credits); //sub once
-
-     	             jbd2_journal_start_reserved()
-     	              start_this_handle()  //detect aborted journal
-     	              jbd2_journal_free_reserved()  //get running transaction
-                       read_lock(&journal->j_state_lock)
-     	                __jbd2_journal_unreserve_handle()
-     	               atomic_sub(j_reserved_credits, t_outstanding_credits);
-                       //sub again
-                       read_unlock(&journal->j_state_lock);
-
- journal->j_running_transaction = NULL;
- J_ASSERT(t_nr_buffers <= t_outstanding_credits) //bomb!!!
-
-Fix this issue by using journal->j_state_lock to protect the subtraction
-in jbd2_journal_commit_transaction().
-
-Fixes: 96f1e0974575 ("jbd2: avoid long hold times of j_state_lock while committing a transaction")
-Signed-off-by: Zhang Yi <yi.zhang@huawei.com>
-Reviewed-by: Jan Kara <jack@suse.cz>
-Link: https://lore.kernel.org/r/20220611130426.2013258-1-yi.zhang@huawei.com
-Signed-off-by: Theodore Ts'o <tytso@mit.edu>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- fs/jbd2/commit.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/fs/jbd2/commit.c b/fs/jbd2/commit.c
-index d45ceb2e2149..8d5aced7ed0c 100644
---- a/fs/jbd2/commit.c
-+++ b/fs/jbd2/commit.c
-@@ -514,13 +514,13 @@ void jbd2_journal_commit_transaction(journal_t *journal)
- 	 */
- 	jbd2_journal_switch_revoke_table(journal);
- 
-+	write_lock(&journal->j_state_lock);
- 	/*
- 	 * Reserved credits cannot be claimed anymore, free them
- 	 */
- 	atomic_sub(atomic_read(&journal->j_reserved_credits),
- 		   &commit_transaction->t_outstanding_credits);
- 
--	write_lock(&journal->j_state_lock);
- 	trace_jbd2_commit_flushing(journal, commit_transaction);
- 	stats.run.rs_flushing = jiffies;
- 	stats.run.rs_locked = jbd2_time_diff(stats.run.rs_locked,
--- 
-2.35.1
-
-
-
+39d62336f5c1 ("s390/pai: add support for cryptography counters")
