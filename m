@@ -2,46 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 80F92C32796
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 09:57:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 58051C32772
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 09:57:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243018AbiHWJ5f (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 05:57:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41890 "EHLO
+        id S243149AbiHWJ5k (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 23 Aug 2022 05:57:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41962 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243052AbiHWJwY (ORCPT
+        with ESMTP id S243182AbiHWJw0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 05:52:24 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C34C49F751;
-        Tue, 23 Aug 2022 01:46:18 -0700 (PDT)
+        Tue, 23 Aug 2022 05:52:26 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5B28F6E2CE;
+        Tue, 23 Aug 2022 01:46:00 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 8544FB81C65;
-        Tue, 23 Aug 2022 08:45:12 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id ED888C433C1;
-        Tue, 23 Aug 2022 08:45:10 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id B577D6155E;
+        Tue, 23 Aug 2022 08:46:00 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B8BF0C433C1;
+        Tue, 23 Aug 2022 08:45:59 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661244311;
-        bh=cx2ysTK87stMeHPikefVBj+1WkzeP9H1M67m6Mj+Bvg=;
+        s=korg; t=1661244360;
+        bh=sU7kMdmw1T09diqjB56YXbqQYh3v9L7FstmGIRDNvRE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=JU1AgNEtkmpLXWAxeVBa7shcEYET+OysNQ76CZPBM9mZkemWPti5q0pCUvlQyYaI1
-         BX3jMdChVhBZncM9gB5U9zjuRNU4aCNSnDI+n22bbpHFJcPkNH76aQJdmzxm6X5SN8
-         wUZIFbQrvOKiLsSFTw72ezWro/CeLQ5PFpk9xTz0=
+        b=zMw3wJRGH1XfcLV7tRs/DVnqA/5DPZ/Ag2xcrhp3fGyQLRnBDmXfRsAMWN+GM7Agj
+         OVwOjv1vsojLK3UIOMXrg9z6Lo81RCOuezB8eXaHhLTxfgS+rRBzQxM1bxPxj+xh+n
+         +nrjq64riDSAAqniImMFFEGprHsqtDUvNsHaL6AI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Stanislaw Kardach <skardach@marvell.com>,
-        Subbaraya Sundeep <sbhatta@marvell.com>,
-        Sunil Goutham <sgoutham@marvell.com>,
-        Jakub Kicinski <kuba@kernel.org>
-Subject: [PATCH 5.15 071/244] octeontx2-af: Apply tx nibble fixup always
-Date:   Tue, 23 Aug 2022 10:23:50 +0200
-Message-Id: <20220823080101.437283560@linuxfoundation.org>
+        stable@vger.kernel.org, Sireesh Kodali <sireeshkodali1@gmail.com>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 4.14 125/229] remoteproc: qcom: wcnss: Fix handling of IRQs
+Date:   Tue, 23 Aug 2022 10:24:46 +0200
+Message-Id: <20220823080058.188394524@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220823080059.091088642@linuxfoundation.org>
-References: <20220823080059.091088642@linuxfoundation.org>
+In-Reply-To: <20220823080053.202747790@linuxfoundation.org>
+References: <20220823080053.202747790@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -50,52 +49,60 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Stanislaw Kardach <skardach@marvell.com>
+From: Sireesh Kodali <sireeshkodali1@gmail.com>
 
-commit dd1d1a8a6b29b6b472fd0d449b29eb806c411dd2 upstream.
+[ Upstream commit bed0adac1ded4cb486ba19a3a7e730fbd9a1c9c6 ]
 
-NPC_PARSE_NIBBLE for TX interface has to be equal to the RX one for some
-silicon revisions. Mistakenly this fixup was only applied to the default
-MKEX profile while it should also be applied to any loaded profile.
+The wcnss_get_irq function is expected to return a value > 0 in the
+event that an IRQ is succssfully obtained, but it instead returns 0.
+This causes the stop and ready IRQs to never actually be used despite
+being defined in the device-tree. This patch fixes that.
 
-Fixes: 1c1935c9945d ("octeontx2-af: Add NIX1 interfaces to NPC")
-Signed-off-by: Stanislaw Kardach <skardach@marvell.com>
-Signed-off-by: Subbaraya Sundeep <sbhatta@marvell.com>
-Signed-off-by: Sunil Goutham <sgoutham@marvell.com>
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Fixes: aed361adca9f ("remoteproc: qcom: Introduce WCNSS peripheral image loader")
+Signed-off-by: Sireesh Kodali <sireeshkodali1@gmail.com>
+Signed-off-by: Bjorn Andersson <bjorn.andersson@linaro.org>
+Link: https://lore.kernel.org/r/20220526141740.15834-2-sireeshkodali1@gmail.com
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/marvell/octeontx2/af/rvu_npc.c |    7 ++++---
- 1 file changed, 4 insertions(+), 3 deletions(-)
+ drivers/remoteproc/qcom_wcnss.c | 10 ++++++++--
+ 1 file changed, 8 insertions(+), 2 deletions(-)
 
---- a/drivers/net/ethernet/marvell/octeontx2/af/rvu_npc.c
-+++ b/drivers/net/ethernet/marvell/octeontx2/af/rvu_npc.c
-@@ -1915,6 +1915,7 @@ static void rvu_npc_hw_init(struct rvu *
- 
- static void rvu_npc_setup_interfaces(struct rvu *rvu, int blkaddr)
+diff --git a/drivers/remoteproc/qcom_wcnss.c b/drivers/remoteproc/qcom_wcnss.c
+index bc399fb29592..bb11419ff151 100644
+--- a/drivers/remoteproc/qcom_wcnss.c
++++ b/drivers/remoteproc/qcom_wcnss.c
+@@ -418,6 +418,7 @@ static int wcnss_request_irq(struct qcom_wcnss *wcnss,
+ 			     irq_handler_t thread_fn)
  {
-+	struct npc_mcam_kex *mkex = rvu->kpu.mkex;
- 	struct npc_mcam *mcam = &rvu->hw->mcam;
- 	struct rvu_hwinfo *hw = rvu->hw;
- 	u64 nibble_ena, rx_kex, tx_kex;
-@@ -1927,15 +1928,15 @@ static void rvu_npc_setup_interfaces(str
- 	mcam->counters.max--;
- 	mcam->rx_miss_act_cntr = mcam->counters.max;
+ 	int ret;
++	int irq_number;
  
--	rx_kex = npc_mkex_default.keyx_cfg[NIX_INTF_RX];
--	tx_kex = npc_mkex_default.keyx_cfg[NIX_INTF_TX];
-+	rx_kex = mkex->keyx_cfg[NIX_INTF_RX];
-+	tx_kex = mkex->keyx_cfg[NIX_INTF_TX];
- 	nibble_ena = FIELD_GET(NPC_PARSE_NIBBLE, rx_kex);
- 
- 	nibble_ena = rvu_npc_get_tx_nibble_cfg(rvu, nibble_ena);
- 	if (nibble_ena) {
- 		tx_kex &= ~NPC_PARSE_NIBBLE;
- 		tx_kex |= FIELD_PREP(NPC_PARSE_NIBBLE, nibble_ena);
--		npc_mkex_default.keyx_cfg[NIX_INTF_TX] = tx_kex;
-+		mkex->keyx_cfg[NIX_INTF_TX] = tx_kex;
+ 	ret = platform_get_irq_byname(pdev, name);
+ 	if (ret < 0 && optional) {
+@@ -428,14 +429,19 @@ static int wcnss_request_irq(struct qcom_wcnss *wcnss,
+ 		return ret;
  	}
  
- 	/* Configure RX interfaces */
++	irq_number = ret;
++
+ 	ret = devm_request_threaded_irq(&pdev->dev, ret,
+ 					NULL, thread_fn,
+ 					IRQF_TRIGGER_RISING | IRQF_ONESHOT,
+ 					"wcnss", wcnss);
+-	if (ret)
++	if (ret) {
+ 		dev_err(&pdev->dev, "request %s IRQ failed\n", name);
++		return ret;
++	}
+ 
+-	return ret;
++	/* Return the IRQ number if the IRQ was successfully acquired */
++	return irq_number;
+ }
+ 
+ static int wcnss_alloc_memory_region(struct qcom_wcnss *wcnss)
+-- 
+2.35.1
+
 
 
