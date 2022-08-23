@@ -2,94 +2,169 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5F92DC54F66
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 10:53:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E50BBC54F37
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 10:53:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351477AbiHWKxA (ORCPT
+        id S1356947AbiHWKwq (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 06:53:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55528 "EHLO
+        Tue, 23 Aug 2022 06:52:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53408 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355840AbiHWKpV (ORCPT
+        with ESMTP id S1350891AbiHWKo7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 06:45:21 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E67A0275E0;
-        Tue, 23 Aug 2022 02:11:03 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 9F12AB81C4E;
-        Tue, 23 Aug 2022 09:11:02 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id F310FC433D6;
-        Tue, 23 Aug 2022 09:11:00 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661245861;
-        bh=0Jt2oS8ajL4CdGUQpCZ3kNZmqzcv3sKuganqUxlGuhw=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=cIoboEmjQunT864OtrG3GjX3cWL/9mOW8zp136Dza2RIbluvL2us6Smtqb5vvld7C
-         R7grxUlwdi/CPIi6f5UQouzAJQ0yKxDokM2dJwZOi0eKnWeFc2oy1zPf2CiWAz6tWT
-         u6g0AlF6zzgYno5lryFS+NZ05twP/E0dPMXG4jmg=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Christophe Leroy <christophe.leroy@csgroup.eu>,
-        Michael Ellerman <mpe@ellerman.id.au>
-Subject: [PATCH 4.19 214/287] powerpc/ptdump: Fix display of RW pages on FSL_BOOK3E
-Date:   Tue, 23 Aug 2022 10:26:23 +0200
-Message-Id: <20220823080108.163917288@linuxfoundation.org>
-X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220823080100.268827165@linuxfoundation.org>
-References: <20220823080100.268827165@linuxfoundation.org>
-User-Agent: quilt/0.67
+        Tue, 23 Aug 2022 06:44:59 -0400
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 38F2974E04
+        for <linux-kernel@vger.kernel.org>; Tue, 23 Aug 2022 02:10:47 -0700 (PDT)
+Received: from ptx.hi.pengutronix.de ([2001:67c:670:100:1d::c0])
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <mfe@pengutronix.de>)
+        id 1oQPvZ-0005FD-CQ; Tue, 23 Aug 2022 11:10:29 +0200
+Received: from mfe by ptx.hi.pengutronix.de with local (Exim 4.92)
+        (envelope-from <mfe@pengutronix.de>)
+        id 1oQPvX-0006WH-PG; Tue, 23 Aug 2022 11:10:27 +0200
+Date:   Tue, 23 Aug 2022 11:10:27 +0200
+From:   Marco Felsch <m.felsch@pengutronix.de>
+To:     "Alice Guo (OSS)" <alice.guo@oss.nxp.com>
+Cc:     Guenter Roeck <linux@roeck-us.net>,
+        "wim@linux-watchdog.org" <wim@linux-watchdog.org>,
+        "shawnguo@kernel.org" <shawnguo@kernel.org>,
+        "s.hauer@pengutronix.de" <s.hauer@pengutronix.de>,
+        "festevam@gmail.com" <festevam@gmail.com>,
+        "linux-arm-kernel@lists.infradead.org" 
+        <linux-arm-kernel@lists.infradead.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        dl-linux-imx <linux-imx@nxp.com>,
+        "kernel@pengutronix.de" <kernel@pengutronix.de>,
+        "linux-watchdog@vger.kernel.org" <linux-watchdog@vger.kernel.org>
+Subject: Re: [PATCH 2/7] watchdog: imx7ulp: Add explict memory barrier for
+ unlock sequence
+Message-ID: <20220823091027.ezyxkn64asajvjom@pengutronix.de>
+References: <20220816043643.26569-1-alice.guo@oss.nxp.com>
+ <20220816043643.26569-3-alice.guo@oss.nxp.com>
+ <20220816062330.z2fvurteg337krw2@pengutronix.de>
+ <AM6PR04MB60537292F559EC012F0EB510E2719@AM6PR04MB6053.eurprd04.prod.outlook.com>
+ <20220822080010.ecdphpm3i26cco5f@pengutronix.de>
+ <20220822140347.GA4087281@roeck-us.net>
+ <AM6PR04MB6053E26CB59410EBCC2C93AEE2709@AM6PR04MB6053.eurprd04.prod.outlook.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <AM6PR04MB6053E26CB59410EBCC2C93AEE2709@AM6PR04MB6053.eurprd04.prod.outlook.com>
+User-Agent: NeoMutt/20180716
+X-SA-Exim-Connect-IP: 2001:67c:670:100:1d::c0
+X-SA-Exim-Mail-From: mfe@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: linux-kernel@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Christophe Leroy <christophe.leroy@csgroup.eu>
+On 22-08-23, Alice Guo (OSS) wrote:
+> 
+> 
+> > -----Original Message-----
+> > From: Guenter Roeck <groeck7@gmail.com> On Behalf Of Guenter Roeck
+> > Sent: Monday, August 22, 2022 10:04 PM
+> > To: Marco Felsch <m.felsch@pengutronix.de>
+> > Cc: Alice Guo (OSS) <alice.guo@oss.nxp.com>; wim@linux-watchdog.org;
+> > shawnguo@kernel.org; s.hauer@pengutronix.de; festevam@gmail.com;
+> > linux-arm-kernel@lists.infradead.org; linux-kernel@vger.kernel.org;
+> > dl-linux-imx <linux-imx@nxp.com>; kernel@pengutronix.de;
+> > linux-watchdog@vger.kernel.org
+> > Subject: Re: [PATCH 2/7] watchdog: imx7ulp: Add explict memory barrier for
+> > unlock sequence
+> > 
+> > On Mon, Aug 22, 2022 at 10:00:10AM +0200, Marco Felsch wrote:
+> > > On 22-08-22, Alice Guo (OSS) wrote:
+> > > > > -----Original Message-----
+> > > > > From: Marco Felsch <m.felsch@pengutronix.de>
+> > > > > Sent: Tuesday, August 16, 2022 2:24 PM
+> > > > > To: Alice Guo (OSS) <alice.guo@oss.nxp.com>
+> > > > > Cc: wim@linux-watchdog.org; linux@roeck-us.net;
+> > > > > shawnguo@kernel.org; s.hauer@pengutronix.de; festevam@gmail.com;
+> > > > > linux-arm-kernel@lists.infradead.org;
+> > > > > linux-kernel@vger.kernel.org; dl-linux-imx <linux-imx@nxp.com>;
+> > > > > kernel@pengutronix.de; linux-watchdog@vger.kernel.org
+> > > > > Subject: Re: [PATCH 2/7] watchdog: imx7ulp: Add explict memory
+> > > > > barrier for unlock sequence
+> > > > >
+> > > > > On 22-08-16, Alice Guo (OSS) wrote:
+> > > > > > From: Jacky Bai <ping.bai@nxp.com>
+> > > > > >
+> > > > > > Add explict memory barrier for the wdog unlock sequence.
+> > > > >
+> > > > > Did you inspected any failures? It's not enough to say what you
+> > > > > did, you need to specify the why as well.
+> > > > >
+> > > > > Regards,
+> > > > >   Marco
+> > > >
+> > > > Hi,
+> > > >
+> > > > Two 16-bit writes of unlocking the Watchdog should be completed within a
+> > certain time. The first mb() is used to ensure that previous instructions are
+> > completed.
+> > > > The second mb() is used to ensure that the unlock sequence cannot be
+> > affected by subsequent instructions. The reason will be added in the commit
+> > log of v2.
+> > >
+> > > Hi,
+> > >
+> > > I know what memory barriers are. My question was, did you see any
+> > > issues? Since the driver is used mainline and no one reported issues.
+> > >
+> > > Also just don't use the *_relaxed() versions is more common, than
+> > > adding
+> > > mb() calls around *_relaxed() versions.
+> > >
+> > 
+> > Agreed with both. The series is a bit short in explaining _why_ the changes are
+> > made.
+> > 
+> > Guenter
+> > 
+> > > Regards,
+> > >   Marco
+> > >
+> > > >
+> 
+> Hi Guenter and Marco,
+> 
+> 1. did you see any issues?
+> This WDOG Timer first appeared in i.MX7ULP, no one report issues
+> probably because few people use i.MX7ULP. This issue was found when we
+> did a stress test on it. When we reconfigure the WDOG Timer, there is
+> a certain probability that it reset. The reason for the error is that
+> when WDOG_CS[CMD32EN] is 0, the unlock sequence is two 16-bit writes
+> (0xC520, 0xD928) to the CNT register within 16 bus clocks, and
+> improper unlock sequence causes the WDOG to reset. Adding mb() is to
+> guarantee that two 16-bit writes are finished within 16 bus clocks.
 
-commit dd8de84b57b02ba9c1fe530a6d916c0853f136bd upstream.
+After this explanation the whole imx7ulp_wdt_init() seems a bit buggy
+because writel_relaxed() as well as writel() are 32bit access functions.
+So the very first thing to do is to enable the 32-bit mode.
 
-On FSL_BOOK3E, _PAGE_RW is defined with two bits, one for user and one
-for supervisor. As soon as one of the two bits is set, the page has
-to be display as RW. But the way it is implemented today requires both
-bits to be set in order to display it as RW.
+Also this is a explanation worth to be added to the commit message ;)
 
-Instead of display RW when _PAGE_RW bits are set and R otherwise,
-reverse the logic and display R when _PAGE_RW bits are all 0 and
-RW otherwise.
+> 2. Also just don't use the *_relaxed() versions is more common, than
+> adding mb() calls around *_relaxed() versions.  Memory barriers cannot
+> be added between two 16-bit writes. I do not know the reason.
 
-This change has no impact on other platforms as _PAGE_RW is a single
-bit on all of them.
+As written above, writel() as well as writel_relaxed() are not 16-bit
+access functions.
 
-Fixes: 8eb07b187000 ("powerpc/mm: Dump linux pagetables")
-Cc: stable@vger.kernel.org
-Signed-off-by: Christophe Leroy <christophe.leroy@csgroup.eu>
-Signed-off-by: Michael Ellerman <mpe@ellerman.id.au>
-Link: https://lore.kernel.org/r/0c33b96317811edf691e81698aaee8fa45ec3449.1656427391.git.christophe.leroy@csgroup.eu
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
----
- arch/powerpc/mm/dump_linuxpagetables-generic.c |    6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+So to me it looks as you need first to ensure that 32-bit access mode is
+enabled. After that you can write drop the to writel_relaxed() functions
+and instead just write:
 
---- a/arch/powerpc/mm/dump_linuxpagetables-generic.c
-+++ b/arch/powerpc/mm/dump_linuxpagetables-generic.c
-@@ -17,9 +17,9 @@ static const struct flag_info flag_array
- 		.clear	= "    ",
- 	}, {
- 		.mask	= _PAGE_RW,
--		.val	= _PAGE_RW,
--		.set	= "rw",
--		.clear	= "r ",
-+		.val	= 0,
-+		.set	= "r ",
-+		.clear	= "rw",
- 	}, {
- #ifndef CONFIG_PPC_BOOK3S_32
- 		.mask	= _PAGE_EXEC,
+   writel(UNLOCK, wdt->base + WDOG_CNT);
 
+Also why do we need to unlock the watchdog during imx7ulp_wdt_init()?
+This is handled just fine during imx7ulp_wdt_enable() and during
+imx7ulp_wdt_set_timeout(). So just drop those relaxed writes and
+everything should be fine.
 
+Regards,
+  Marco
