@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6B207C32792
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 08:44:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E4093C32772
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 08:44:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346296AbiHWIoY (ORCPT
+        id S1346410AbiHWIo1 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 04:44:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48982 "EHLO
+        Tue, 23 Aug 2022 04:44:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59402 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242061AbiHWIkI (ORCPT
+        with ESMTP id S238953AbiHWIlu (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 04:40:08 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CB1D44BD06;
-        Tue, 23 Aug 2022 01:18:44 -0700 (PDT)
+        Tue, 23 Aug 2022 04:41:50 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 461777A752;
+        Tue, 23 Aug 2022 01:19:57 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id E6B32B81C26;
-        Tue, 23 Aug 2022 08:17:23 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3A874C433C1;
-        Tue, 23 Aug 2022 08:17:22 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 872ACCE1B37;
+        Tue, 23 Aug 2022 08:19:01 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 869E9C433D6;
+        Tue, 23 Aug 2022 08:18:59 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661242642;
-        bh=MmA8+czNp1+q5KyrKW/oAit6SlhxwV+dRrfMMv9Mlwk=;
+        s=korg; t=1661242740;
+        bh=25cqBIIziV/XcfFoMUqaT4vBZAn3Vln87Mt8tEYrRsI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=mfTpyFDaRvfVz4m4mUS7AzQHSgLGYeBtwMIOEUsRLV/AIlfIS6lUt53C2iKTGGPgv
-         TzDttE/gCTwMvuuZVqbxSk9kZOLGLkCtEm/exYxRMt2DaKpyDB6RmdfTj4PKVhc+3i
-         PqIuUnE84BzBWXxlRndsG1+p8d6v0xSNxoUaf2xc=
+        b=CEVzZGKrOC1fPL1DJfZlhp58rgpZFnnrNsJZ0Qvm7ZtoZ8ojmaasTzKqqMonTl4/C
+         oA9fZcqUTBRuiv3aRJflHFHeCgxTpwNXogXO99vxXPbhzfMCX6nGHoqbyQKq4LDIHK
+         5VjubVuEhvgY7RTTkYbolULgs9kK3VNfKBTKOB98=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Duoming Zhou <duoming@zju.edu.cn>,
-        Jakub Kicinski <kuba@kernel.org>
-Subject: [PATCH 5.19 151/365] atm: idt77252: fix use-after-free bugs caused by tst_timer
-Date:   Tue, 23 Aug 2022 10:00:52 +0200
-Message-Id: <20220823080124.546175111@linuxfoundation.org>
+        stable@vger.kernel.org, Sergey Gorenko <sergeygo@nvidia.com>,
+        Max Gurtovoy <mgurtovoy@nvidia.com>,
+        Leon Romanovsky <leon@kernel.org>
+Subject: [PATCH 5.19 185/365] IB/iser: Fix login with authentication
+Date:   Tue, 23 Aug 2022 10:01:26 +0200
+Message-Id: <20220823080125.955814036@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220823080118.128342613@linuxfoundation.org>
 References: <20220823080118.128342613@linuxfoundation.org>
@@ -49,51 +50,68 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Duoming Zhou <duoming@zju.edu.cn>
+From: Sergey Gorenko <sergeygo@nvidia.com>
 
-commit 3f4093e2bf4673f218c0bf17d8362337c400e77b upstream.
+commit d6d142cb7f79bec6051c5ecf744b7a5309c5a0ee upstream.
 
-There are use-after-free bugs caused by tst_timer. The root cause
-is that there are no functions to stop tst_timer in idt77252_exit().
-One of the possible race conditions is shown below:
+The iSER Initiator uses two types of receive buffers:
 
-    (thread 1)          |        (thread 2)
-                        |  idt77252_init_one
-                        |    init_card
-                        |      fill_tst
-                        |        mod_timer(&card->tst_timer, ...)
-idt77252_exit           |  (wait a time)
-                        |  tst_timer
-                        |
-                        |    ...
-  kfree(card) // FREE   |
-                        |    card->soft_tst[e] // USE
+  - one big login buffer posted by iser_post_recvl();
+  - several small message buffers posted by iser_post_recvm().
 
-The idt77252_dev is deallocated in idt77252_exit() and used in
-timer handler.
+The login buffer is used at the login phase and full feature phase in
+the discovery session. It may take a few requests and responses to
+complete the login phase. The message buffers are only used in the
+normal operational session at the full feature phase.
 
-This patch adds del_timer_sync() in idt77252_exit() in order that
-the timer handler could be stopped before the idt77252_dev is
-deallocated.
+After the commit referred in the fixes line, the login operation fails
+if the authentication is enabled. That happens because the Initiator
+posts a small receive buffer after the first response from Target. So,
+the next send operation fails because Target's second response does not
+fit into the small receive buffer.
 
-Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
-Signed-off-by: Duoming Zhou <duoming@zju.edu.cn>
-Link: https://lore.kernel.org/r/20220805070008.18007-1-duoming@zju.edu.cn
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+This commit adds additional checks to prevent posting small receive
+buffers until the full feature phase.
+
+Fixes: 39b169ea0d36 ("IB/iser: Fix RNR errors")
+Link: https://lore.kernel.org/r/20220805060135.18493-1-sergeygo@nvidia.com
+Signed-off-by: Sergey Gorenko <sergeygo@nvidia.com>
+Reviewed-by: Max Gurtovoy <mgurtovoy@nvidia.com>
+Signed-off-by: Leon Romanovsky <leon@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/atm/idt77252.c |    1 +
- 1 file changed, 1 insertion(+)
+ drivers/infiniband/ulp/iser/iser_initiator.c |    7 ++++++-
+ 1 file changed, 6 insertions(+), 1 deletion(-)
 
---- a/drivers/atm/idt77252.c
-+++ b/drivers/atm/idt77252.c
-@@ -3752,6 +3752,7 @@ static void __exit idt77252_exit(void)
- 		card = idt77252_chain;
- 		dev = card->atmdev;
- 		idt77252_chain = card->next;
-+		del_timer_sync(&card->tst_timer);
+--- a/drivers/infiniband/ulp/iser/iser_initiator.c
++++ b/drivers/infiniband/ulp/iser/iser_initiator.c
+@@ -537,6 +537,7 @@ void iser_login_rsp(struct ib_cq *cq, st
+ 	struct iscsi_hdr *hdr;
+ 	char *data;
+ 	int length;
++	bool full_feature_phase;
  
- 		if (dev->phy->stop)
- 			dev->phy->stop(dev);
+ 	if (unlikely(wc->status != IB_WC_SUCCESS)) {
+ 		iser_err_comp(wc, "login_rsp");
+@@ -550,6 +551,9 @@ void iser_login_rsp(struct ib_cq *cq, st
+ 	hdr = desc->rsp + sizeof(struct iser_ctrl);
+ 	data = desc->rsp + ISER_HEADERS_LEN;
+ 	length = wc->byte_len - ISER_HEADERS_LEN;
++	full_feature_phase = ((hdr->flags & ISCSI_FULL_FEATURE_PHASE) ==
++			      ISCSI_FULL_FEATURE_PHASE) &&
++			     (hdr->flags & ISCSI_FLAG_CMD_FINAL);
+ 
+ 	iser_dbg("op 0x%x itt 0x%x dlen %d\n", hdr->opcode,
+ 		 hdr->itt, length);
+@@ -560,7 +564,8 @@ void iser_login_rsp(struct ib_cq *cq, st
+ 				      desc->rsp_dma, ISER_RX_LOGIN_SIZE,
+ 				      DMA_FROM_DEVICE);
+ 
+-	if (iser_conn->iscsi_conn->session->discovery_sess)
++	if (!full_feature_phase ||
++	    iser_conn->iscsi_conn->session->discovery_sess)
+ 		return;
+ 
+ 	/* Post the first RX buffer that is skipped in iser_post_rx_bufs() */
 
 
