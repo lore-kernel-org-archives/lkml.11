@@ -2,53 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5D72EC49EC2
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7E60AC38159
 	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 11:42:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358107AbiHWLkw (ORCPT
+        id S1358598AbiHWLmJ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 07:40:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49678 "EHLO
+        Tue, 23 Aug 2022 07:42:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55410 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245319AbiHWLfR (ORCPT
+        with ESMTP id S1358070AbiHWLgq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 07:35:17 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 53AEEC6E8C;
-        Tue, 23 Aug 2022 02:27:30 -0700 (PDT)
+        Tue, 23 Aug 2022 07:36:46 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 50A3776973;
+        Tue, 23 Aug 2022 02:27:52 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 84FF661227;
-        Tue, 23 Aug 2022 09:27:29 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 445A6C433D6;
-        Tue, 23 Aug 2022 09:27:28 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id E253CB81C98;
+        Tue, 23 Aug 2022 09:27:48 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 34F86C433B5;
+        Tue, 23 Aug 2022 09:27:47 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661246848;
-        bh=3PkGHcka/DfFwtOsUWVB+ZlnkYOjRyZCig8SvtQSvBQ=;
+        s=korg; t=1661246867;
+        bh=JKS/wh036ZMy+NNFjEtQnsz40COVFi65ZJtIo5klez8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=xihmgdn3ahcWHcXVdfnkFPnZnQbxQ47MHxR21DDlGQkc9zXEwuHZxrtqbt7AcJm3m
-         RkCVH6ezJzzQUoEhJjgdW1TeFo8olb0Oef1zAX/ucqKQiqLRKUw+raf0Zx7GCDgLqk
-         Z1X8a21oaM5YVhSfMhB4LGM7Cr/ENzWUcGw+mY2E=
+        b=R8edEF4gKCbOAS60CcTyTeiZ5m+VRNu0xkB2aW/PM5i0iS7GonYaspsaHcxjFdLp0
+         DEE/VYrHuqxSljYZsv6p4oxAoFXcY44mDfsk7Jkn1OH1BdJsjwV3dED4NbqHqOc4mx
+         cqUqG3yHLqpeYGe+VSrb0kw7PBd1FVmzcXAtwinw=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        =?UTF-8?q?=E8=B0=AD=E6=A2=93=E7=85=8A?= <tanzixuan.me@gmail.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Jiri Olsa <jolsa@kernel.org>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>, Martin KaFai Lau <kafai@fb.com>,
-        Nick Terrell <terrelln@fb.com>,
-        Song Liu <songliubraving@fb.com>,
-        Stephane Eranian <eranian@google.com>,
-        Arnaldo Carvalho de Melo <acme@redhat.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 240/389] genelf: Use HAVE_LIBCRYPTO_SUPPORT, not the never defined HAVE_LIBCRYPTO
-Date:   Tue, 23 Aug 2022 10:25:18 +0200
-Message-Id: <20220823080125.588289313@linuxfoundation.org>
+        stable@vger.kernel.org, Zheyu Ma <zheyuma97@gmail.com>,
+        Helge Deller <deller@gmx.de>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.4 246/389] video: fbdev: arkfb: Check the size of screen before memset_io()
+Date:   Tue, 23 Aug 2022 10:25:24 +0200
+Message-Id: <20220823080125.846934036@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220823080115.331990024@linuxfoundation.org>
 References: <20220823080115.331990024@linuxfoundation.org>
@@ -60,53 +49,48 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Arnaldo Carvalho de Melo <acme@redhat.com>
+From: Zheyu Ma <zheyuma97@gmail.com>
 
-[ Upstream commit 91cea6be90e436c55cde8770a15e4dac9d3032d0 ]
+[ Upstream commit 96b550971c65d54d64728d8ba973487878a06454 ]
 
-When genelf was introduced it tested for HAVE_LIBCRYPTO not
-HAVE_LIBCRYPTO_SUPPORT, which is the define the feature test for openssl
-defines, fix it.
+In the function arkfb_set_par(), the value of 'screen_size' is
+calculated by the user input. If the user provides the improper value,
+the value of 'screen_size' may larger than 'info->screen_size', which
+may cause the following bug:
 
-This also adds disables the deprecation warning, someone has to fix this
-to build with openssl 3.0 before the warning becomes a hard error.
+[  659.399066] BUG: unable to handle page fault for address: ffffc90003000000
+[  659.399077] #PF: supervisor write access in kernel mode
+[  659.399079] #PF: error_code(0x0002) - not-present page
+[  659.399094] RIP: 0010:memset_orig+0x33/0xb0
+[  659.399116] Call Trace:
+[  659.399122]  arkfb_set_par+0x143f/0x24c0
+[  659.399130]  fb_set_var+0x604/0xeb0
+[  659.399161]  do_fb_ioctl+0x234/0x670
+[  659.399189]  fb_ioctl+0xdd/0x130
 
-Fixes: 9b07e27f88b9cd78 ("perf inject: Add jitdump mmap injection support")
-Reported-by: 谭梓煊 <tanzixuan.me@gmail.com>
-Cc: Alexei Starovoitov <ast@kernel.org>
-Cc: Andrii Nakryiko <andrii@kernel.org>
-Cc: Daniel Borkmann <daniel@iogearbox.net>
-Cc: Jiri Olsa <jolsa@kernel.org>
-Cc: John Fastabend <john.fastabend@gmail.com>
-Cc: KP Singh <kpsingh@kernel.org>
-Cc: Martin KaFai Lau <kafai@fb.com>
-Cc: Nick Terrell <terrelln@fb.com>
-Cc: Song Liu <songliubraving@fb.com>
-Cc: Stephane Eranian <eranian@google.com>
-Link: http://lore.kernel.org/lkml/YulpPqXSOG0Q4J1o@kernel.org
-Signed-off-by: Arnaldo Carvalho de Melo <acme@redhat.com>
+Fix the this by checking the value of 'screen_size' before memset_io().
+
+Fixes: 681e14730c73 ("arkfb: new framebuffer driver for ARK Logic cards")
+Signed-off-by: Zheyu Ma <zheyuma97@gmail.com>
+Signed-off-by: Helge Deller <deller@gmx.de>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- tools/perf/util/genelf.c | 6 +++++-
- 1 file changed, 5 insertions(+), 1 deletion(-)
+ drivers/video/fbdev/arkfb.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
-diff --git a/tools/perf/util/genelf.c b/tools/perf/util/genelf.c
-index f9f18b8b1df9..17b74aba8b9a 100644
---- a/tools/perf/util/genelf.c
-+++ b/tools/perf/util/genelf.c
-@@ -35,7 +35,11 @@
+diff --git a/drivers/video/fbdev/arkfb.c b/drivers/video/fbdev/arkfb.c
+index 311f7ea57625..6b1ad19b8db4 100644
+--- a/drivers/video/fbdev/arkfb.c
++++ b/drivers/video/fbdev/arkfb.c
+@@ -794,6 +794,8 @@ static int arkfb_set_par(struct fb_info *info)
+ 	value = ((value * hmul / hdiv) / 8) - 5;
+ 	vga_wcrt(par->state.vgabase, 0x42, (value + 1) / 2);
  
- #define BUILD_ID_URANDOM /* different uuid for each run */
- 
--#ifdef HAVE_LIBCRYPTO
-+// FIXME, remove this and fix the deprecation warnings before its removed and
-+// We'll break for good here...
-+#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
-+
-+#ifdef HAVE_LIBCRYPTO_SUPPORT
- 
- #define BUILD_ID_MD5
- #undef BUILD_ID_SHA	/* does not seem to work well when linked with Java */
++	if (screen_size > info->screen_size)
++		screen_size = info->screen_size;
+ 	memset_io(info->screen_base, 0x00, screen_size);
+ 	/* Device and screen back on */
+ 	svga_wcrt_mask(par->state.vgabase, 0x17, 0x80, 0x80);
 -- 
 2.35.1
 
