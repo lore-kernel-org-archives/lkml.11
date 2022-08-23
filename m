@@ -2,42 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C6B96C32772
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 11:53:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8BEA4C32792
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 11:53:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358727AbiHWLxU (ORCPT
+        id S1358612AbiHWLx1 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 07:53:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52606 "EHLO
+        Tue, 23 Aug 2022 07:53:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52880 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1358633AbiHWLu3 (ORCPT
+        with ESMTP id S1358647AbiHWLuc (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 07:50:29 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F2ED2923FB;
-        Tue, 23 Aug 2022 02:31:24 -0700 (PDT)
+        Tue, 23 Aug 2022 07:50:32 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2D96762CE;
+        Tue, 23 Aug 2022 02:31:35 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 86449612D6;
-        Tue, 23 Aug 2022 09:31:24 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8AAC4C433C1;
-        Tue, 23 Aug 2022 09:31:23 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 6CC33B8105C;
+        Tue, 23 Aug 2022 09:31:34 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B1D9EC433D6;
+        Tue, 23 Aug 2022 09:31:32 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661247084;
-        bh=RvjSZfdVXccz8CkWmcCeyG9PczJS9MftdpEwo4a8NfM=;
+        s=korg; t=1661247093;
+        bh=P/OgRbBal2oMJ65e+9HknwAw+1Ro5mp3YCbEB9NHDko=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=FxLeNf5kYss4G5C7IHkY1C2yOqBcr9mPNbkWg1CzaE6NsmInstgU8e7TCmrZ5bMXL
-         wc+IlHsAy5m2IclPKwnkdh9Whz0AlTHbfm5/ne0IQE/Gnx5gGLmlJvmf/ZmjEO/uZ3
-         hRhjsL8lfHfb60wdBqtNMp6kXP8K3dgnN9JG/5ME=
+        b=qq52aYV7aD8knLmOMYNoHAFBzD1AeEf2DZqWqBCMe+WcZlabME5cvCbdkTFXqQqSU
+         6giLOxMCKa7lOHg36Q7xXUINrdfOV06ZJtA7tK2GEMiuOSa9+Yv2vF+kw7MwX/6kYy
+         RQKOui6bswsdGMYA85+idA1rlH8Z7K5d+unBD1iU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Casey Schaufler <casey@schaufler-ca.com>,
-        John Johansen <john.johansen@canonical.com>
-Subject: [PATCH 5.4 295/389] apparmor: fix absroot causing audited secids to begin with =
-Date:   Tue, 23 Aug 2022 10:26:13 +0200
-Message-Id: <20220823080127.883579954@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Sakari Ailus <sakari.ailus@linux.intel.com>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>
+Subject: [PATCH 5.4 315/389] ACPI: property: Return type of acpi_add_nondev_subnodes() should be bool
+Date:   Tue, 23 Aug 2022 10:26:33 +0200
+Message-Id: <20220823080128.710422856@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220823080115.331990024@linuxfoundation.org>
 References: <20220823080115.331990024@linuxfoundation.org>
@@ -49,76 +51,38 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: John Johansen <john.johansen@canonical.com>
+From: Sakari Ailus <sakari.ailus@linux.intel.com>
 
-commit 511f7b5b835726e844a5fc7444c18e4b8672edfd upstream.
+commit 85140ef275f577f64e8a2c5789447222dfc14fc4 upstream.
 
-AppArmor is prefixing secids that are converted to secctx with the =
-to indicate the secctx should only be parsed from an absolute root
-POV. This allows catching errors where secctx are reparsed back into
-internal labels.
+The value acpi_add_nondev_subnodes() returns is bool so change the return
+type of the function to match that.
 
-Unfortunately because audit is using secid to secctx conversion this
-means that subject and object labels can result in a very unfortunate
-== that can break audit parsing.
-
-eg. the subj==unconfined term in the below audit message
-
-type=USER_LOGIN msg=audit(1639443365.233:160): pid=1633 uid=0 auid=1000
-ses=3 subj==unconfined msg='op=login id=1000 exe="/usr/sbin/sshd"
-hostname=192.168.122.1 addr=192.168.122.1 terminal=/dev/pts/1 res=success'
-
-Fix this by switch the prepending of = to a _. This still works as a
-special character to flag this case without breaking audit. Also move
-this check behind debug as it should not be needed during normal
-operqation.
-
-Fixes: 26b7899510ae ("apparmor: add support for absolute root view based labels")
-Reported-by: Casey Schaufler <casey@schaufler-ca.com>
-Signed-off-by: John Johansen <john.johansen@canonical.com>
+Fixes: 445b0eb058f5 ("ACPI / property: Add support for data-only subnodes")
+Signed-off-by: Sakari Ailus <sakari.ailus@linux.intel.com>
+Reviewed-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Signed-off-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- security/apparmor/include/lib.h |    5 +++++
- security/apparmor/label.c       |    7 ++++---
- 2 files changed, 9 insertions(+), 3 deletions(-)
+ drivers/acpi/property.c |    8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
 
---- a/security/apparmor/include/lib.h
-+++ b/security/apparmor/include/lib.h
-@@ -22,6 +22,11 @@
-  */
+--- a/drivers/acpi/property.c
++++ b/drivers/acpi/property.c
+@@ -152,10 +152,10 @@ static bool acpi_nondev_subnode_ok(acpi_
+ 	return acpi_nondev_subnode_data_ok(handle, link, list, parent);
+ }
  
- #define DEBUG_ON (aa_g_debug)
-+/*
-+ * split individual debug cases out in preparation for finer grained
-+ * debug controls in the future.
-+ */
-+#define AA_DEBUG_LABEL DEBUG_ON
- #define dbg_printk(__fmt, __args...) pr_debug(__fmt, ##__args)
- #define AA_DEBUG(fmt, args...)						\
- 	do {								\
---- a/security/apparmor/label.c
-+++ b/security/apparmor/label.c
-@@ -1637,9 +1637,9 @@ int aa_label_snxprint(char *str, size_t
- 	AA_BUG(!str && size != 0);
- 	AA_BUG(!label);
- 
--	if (flags & FLAG_ABS_ROOT) {
-+	if (AA_DEBUG_LABEL && (flags & FLAG_ABS_ROOT)) {
- 		ns = root_ns;
--		len = snprintf(str, size, "=");
-+		len = snprintf(str, size, "_");
- 		update_for_len(total, len, size, str);
- 	} else if (!ns) {
- 		ns = labels_ns(label);
-@@ -1901,7 +1901,8 @@ struct aa_label *aa_label_strn_parse(str
- 	AA_BUG(!str);
- 
- 	str = skipn_spaces(str, n);
--	if (str == NULL || (*str == '=' && base != &root_ns->unconfined->label))
-+	if (str == NULL || (AA_DEBUG_LABEL && *str == '_' &&
-+			    base != &root_ns->unconfined->label))
- 		return ERR_PTR(-EINVAL);
- 
- 	len = label_count_strn_entries(str, end - str);
+-static int acpi_add_nondev_subnodes(acpi_handle scope,
+-				    const union acpi_object *links,
+-				    struct list_head *list,
+-				    struct fwnode_handle *parent)
++static bool acpi_add_nondev_subnodes(acpi_handle scope,
++				     const union acpi_object *links,
++				     struct list_head *list,
++				     struct fwnode_handle *parent)
+ {
+ 	bool ret = false;
+ 	int i;
 
 
