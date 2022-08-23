@@ -2,99 +2,93 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7525FC32774
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 15:29:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E72A8C32789
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 15:32:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243281AbiHWP3G (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 11:29:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53734 "EHLO
+        id S242977AbiHWPcT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 23 Aug 2022 11:32:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56110 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242984AbiHWP2r (ORCPT
+        with ESMTP id S238336AbiHWPcB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 11:28:47 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ED683B6D4E;
-        Tue, 23 Aug 2022 04:10:48 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id EA515B81CD7;
-        Tue, 23 Aug 2022 11:09:35 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9E3EDC433D6;
-        Tue, 23 Aug 2022 11:09:34 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1661252974;
-        bh=UpEoL/7Dt4dHrMZYSGjJSXKxqA1hFx3KNHDWHtgrliQ=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=XTjGj4vRbWLLEGxGZ03VClIdP7C+R35uKFwlMeibUAhMbp54Ni0IRvL+5Zo1DGnWS
-         mDaCSiVKu+U6Ao4kE1ILd95fJr9hQkpnqg5Y71XJLja/6SHl0BAD+d00V6uA56OGYr
-         RHfZqHEMInlMJNHnxmtsILKLaiz8uDCqhGDO4O2MLJxHCBMykVEzXj8xgDf7r+XBOF
-         xESw7EcE3aoNa08cQNgVmYIvg1ih5Z6wST+HbY4aICW0nDtdoOOYY8s+kUJL+bFFnE
-         pyoAjiafC4n4ndQwL+AJr6MZfyrIp+rzSk6BDLThCoQW8+xncTcnN1UZlvQstj4alp
-         BpZI8nQaCkhpw==
-Received: from johan by xi.lan with local (Exim 4.94.2)
-        (envelope-from <johan@kernel.org>)
-        id 1oQRmn-0002G1-Rh; Tue, 23 Aug 2022 13:09:34 +0200
-Date:   Tue, 23 Aug 2022 13:09:33 +0200
-From:   Johan Hovold <johan@kernel.org>
-To:     Stephen Boyd <sboyd@kernel.org>
-Cc:     Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Johan Hovold <johan+linaro@kernel.org>,
-        Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>,
-        Andy Gross <agross@kernel.org>,
-        Konrad Dybcio <konrad.dybcio@somainline.org>,
-        Michael Turquette <mturquette@baylibre.com>,
-        linux-arm-msm@vger.kernel.org, linux-clk@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 0/2] clk: gcc-sc8280xp: fix broken suspend
-Message-ID: <YwS1bWufBYE6buSy@hovoldconsulting.com>
-References: <20220805121250.10347-1-johan+linaro@kernel.org>
- <20220823021528.7291FC433D6@smtp.kernel.org>
+        Tue, 23 Aug 2022 11:32:01 -0400
+Received: from mail-ed1-x531.google.com (mail-ed1-x531.google.com [IPv6:2a00:1450:4864:20::531])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D1FFB250D83
+        for <linux-kernel@vger.kernel.org>; Tue, 23 Aug 2022 04:17:45 -0700 (PDT)
+Received: by mail-ed1-x531.google.com with SMTP id b16so17587757edd.4
+        for <linux-kernel@vger.kernel.org>; Tue, 23 Aug 2022 04:17:45 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc;
+        bh=MrLxb4E2DjxfMfHqX0aKpuYkCzfN45dEHvfq2u/Glfc=;
+        b=oMu9LroE0RFKYUnrnUWRhbLqwE9SXGBkir2MBGkEE7vrSFbD1xoFjCFMdpG2eTJQq8
+         GpWfKMT1LLuh0BLCNuyWdS35eZ+BbWTHta3HmqkrPOXvdth/lE7EhwIL7TL1dieNQI5u
+         OhlZY3yoAKcJCmjiRKB7vWei+EB5dlzhS6au8bsxgqgLHKO2XnM1/ioP15HhbEQJlz93
+         M5ZW7Fmu47MTlftRuoeWk2DqzbXvaatLwOl/NyauE9Gcv5TbFw0SBa7vOcLs3sS2rVEn
+         Uuo0Zuy8gQUg7RiiWjfryxeinpc5E+uyw4sOGHaZgKTHRyCpEzE6jT5ep29j867EkRVJ
+         bCFQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc;
+        bh=MrLxb4E2DjxfMfHqX0aKpuYkCzfN45dEHvfq2u/Glfc=;
+        b=4SvD6Kb6GYlcOfZ2O2eOsiyexzIrzRLrVkCkbjI2arj5Tez4fkEM8IZWv/+gaNo1+M
+         d6NEK8B2aZZ5y2i+ibhrGV/NKGLA44jXDXyUpVbG1von65sD0wMAqrut38odhgf5pEyJ
+         3OUPquCYBucB2z48xK61Ycw5unXAJdZFbdr0I/yEt4IVjNYWN2sCylhtBegUXYOe2D6E
+         I+vBIA2BFfntNwgsC4k5niyYjr8C2RzPcg0VT62sN650S2DWiHJSlVj9+w6nlkHAn6Am
+         8VV5Kdog5r4iqWb35HkSUFV6jSIatClueP2wGTwfUcfZncfb28CEFWrNMfpeIar/2/5W
+         t2nw==
+X-Gm-Message-State: ACgBeo3D1oIESPTf4PnltzwNJ86p5/U6Rc2sBPrHegpTpU1AN1MSjdZH
+        BG3IdEcqtHsGFK05hhPGfM23ACohF60xreXB
+X-Google-Smtp-Source: AA6agR5tvu9knEhQdwzyYF2Q1oGh+SSN0iH2VVVvmeqNz9MLv8SEOAHKU+FHbuM9D26qpMR1MObYRw==
+X-Received: by 2002:a2e:505d:0:b0:261:ce76:52b7 with SMTP id v29-20020a2e505d000000b00261ce7652b7mr2327656ljd.286.1661252943789;
+        Tue, 23 Aug 2022 04:09:03 -0700 (PDT)
+Received: from [192.168.0.11] (89-27-92-210.bb.dnainternet.fi. [89.27.92.210])
+        by smtp.gmail.com with ESMTPSA id q9-20020a056512210900b0048b1d92991asm2375015lfr.303.2022.08.23.04.09.02
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 23 Aug 2022 04:09:03 -0700 (PDT)
+Message-ID: <2c14cc93-ae8d-365d-ac58-2e615d359fd7@linaro.org>
+Date:   Tue, 23 Aug 2022 14:09:02 +0300
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220823021528.7291FC433D6@smtp.kernel.org>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.12.0
+Subject: Re: [PATCH 3/3] drivers: iio: adc: Rename the LTC249x iio device
+Content-Language: en-US
+To:     Ciprian Regus <ciprian.regus@analog.com>, jic23@kernel.org,
+        krzysztof.kozlowski+dt@linaro.org, robh+dt@kernel.org,
+        linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Cc:     u.kleine-koenig@pengutronix.de
+References: <20220822125106.1106798-1-ciprian.regus@analog.com>
+ <20220822125106.1106798-4-ciprian.regus@analog.com>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+In-Reply-To: <20220822125106.1106798-4-ciprian.regus@analog.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Aug 22, 2022 at 07:15:25PM -0700, Stephen Boyd wrote:
-> Quoting Johan Hovold (2022-08-05 05:12:48)
-> > The Qualcomm PCIe driver currently does not implement suspend at all so
-> > we need to mark the GDSCs as always-on to prevent genpd from disabling
-> > them.
-> > 
-> > Similarly, the Qualcomm dwc3 USB suspend implementation is also
-> > incomplete and the controller doesn't currently survive a suspend cycle
-> > unless the GDSC is kept on. Note that this has nothing to with whether
-> > wakeup is enabled or not (cf. [1]).
-> > 
-> > With these two workarounds, we have somewhat functional suspend on the
-> > SC8280XP reference design and Lenovo Thinkpad X13s until the missing
-> > driver support is in place (even USB remote wakeup works with [2]
-> > applied).
-> 
-> Are these urgently needed for this release or does suspend not really
-> work yet on sc8280xp? I'm trying to understand if we need to apply
-> these to the fixes tree (in which case why isn't there a Fixes tag
-> targetting whatever commit broke suspend) or if they can wait for the
-> next release and come through clk-next.
+On 22/08/2022 15:51, Ciprian Regus wrote:
 
-They are urgently needed as sc8280xp does not survive a suspend cycle
-without them (e.g. crashes on resume) and this is not something that
-users expect when closing the lid of their laptops.
+(...)
 
-This is not a regression, but I guess I could have pointed to the commit
-adding the sc8280xp clock driver and GDSC power-domain definitions:
+>  
+> diff --git a/drivers/iio/adc/ltc2497.h b/drivers/iio/adc/ltc2497.h
+> index f4d939cfd48b..0e86e38248ee 100644
+> --- a/drivers/iio/adc/ltc2497.h
+> +++ b/drivers/iio/adc/ltc2497.h
+> @@ -12,6 +12,7 @@ enum chip_type {
+>  
+>  struct chip_info {
+>  	u32 resolution;
+> +	char *name;
 
-Fixes: d65d005f9a6c ("clk: qcom: add sc8280xp GCC driver")
+const char *
 
-As several Qualcomm drivers simply ignore system PM and, for example,
-leave clocks enabled during suspend, we also need to keep the
-power-domains enabled.
 
-I noticed that Bjorn applied these for 6.1, but I believe this is 6.0
-material (or at the least the USB one is as PCI support for sc8280xp is
-being added in 6.1).
-
-Johan
+Best regards,
+Krzysztof
