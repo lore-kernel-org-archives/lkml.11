@@ -2,117 +2,141 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4508FC28D13
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 03:02:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2593EC28D13
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 03:02:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239530AbiHWDCB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 22 Aug 2022 23:02:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53738 "EHLO
+        id S239603AbiHWDCK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 22 Aug 2022 23:02:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53768 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239808AbiHWDBL (ORCPT
+        with ESMTP id S239802AbiHWDBJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 22 Aug 2022 23:01:11 -0400
-Received: from mail-pj1-x1033.google.com (mail-pj1-x1033.google.com [IPv6:2607:f8b0:4864:20::1033])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A6C5A5A839;
-        Mon, 22 Aug 2022 20:01:10 -0700 (PDT)
-Received: by mail-pj1-x1033.google.com with SMTP id pm13so3884503pjb.5;
-        Mon, 22 Aug 2022 20:01:10 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc;
-        bh=8LTvgu3eG+no37lZJ/vGjO+POGUS+yqe3hYSH8LxyPU=;
-        b=cXk8C7OwZaBQd+i8rei7z+/fU39R4PhBoSP8Pi3KcSjWGDA/IJGdOvu9hPlBIiZgFX
-         /8todvatRo5NUGNkTaOpOmav8df1vaVyMQhPCsaeXzzERVhrGpsZaq9rxrw2ejKWUQb3
-         q06unBvArEWW7Uzs9NFsMfFdimLDQXR8cFOJN5za0t7nNXwFRvB1RqlU1plvc7HGGZlu
-         IV9/KfNH32gHsNvAMtK8QP6HO34DQ2h0vAOt4USTmnQfBPg/ir8LlQXQbBszRc5HPzqA
-         pDBhAgBJr/sv1VomKkxn81CyZvaqSwlps8Zk1kp7G4QLYIhrFKWMw/m6tRoJ9vN3AaRA
-         KQpg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc;
-        bh=8LTvgu3eG+no37lZJ/vGjO+POGUS+yqe3hYSH8LxyPU=;
-        b=u4T6PLgZgI4eg4lUzXTMxBg0i93B8hSzWXXM7On6lOsRV0AaUvpmDVYZAUmx09RKuv
-         TUz5VGynfZPEZH9PfNxeueF04NZA3xabx2hbj99t30lm2PSO/X+MaH2dWCe6I8c+c0g7
-         yXIiXZPN5G8eW9L1H6fyO0cUxl52p41olTR2pXrmsjhp/sbil26x3gZ7C+Fsvm6JglBz
-         5Os1b4eiFLqrcK0lk5/UVcF4ONZ9Heb5K/5vrKZa/IWvPtO06pl7vqIiQrDX2gu2/HbR
-         NR37eSuEGx6yCZNz9S6l/QtpawXt0XoE8/g6NmzQu4qWCYKbINCvJ7Ri+ej7oFPcLTKo
-         hJDA==
-X-Gm-Message-State: ACgBeo2j6fOwleKxDigSzXqD2wbt0pOAq1xVcz0sqZfSDOlCKZmlCJ+W
-        W60VLvd+GHyKBulOCM561OnxMLn3ByM=
-X-Google-Smtp-Source: AA6agR7Usq8qO39CF0GcXSfNd0l5Or2tQdeC7/Iij2PzNR0XtTPxPmItyEpe5w6lRlbd/EiJu2LcTA==
-X-Received: by 2002:a17:90a:bc83:b0:1fa:d302:928 with SMTP id x3-20020a17090abc8300b001fad3020928mr1260281pjr.91.1661223669945;
-        Mon, 22 Aug 2022 20:01:09 -0700 (PDT)
-Received: from debian.. (subs03-180-214-233-72.three.co.id. [180.214.233.72])
-        by smtp.gmail.com with ESMTPSA id c3-20020a170903234300b00172f1256590sm2385305plh.281.2022.08.22.20.01.06
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 22 Aug 2022 20:01:09 -0700 (PDT)
-From:   Bagas Sanjaya <bagasdotme@gmail.com>
-To:     linux-doc@vger.kernel.org, linux-mips@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Cc:     Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
-        Rikard Falkeborn <rikard.falkeborn@gmail.com>,
-        Sergey Ryazanov <ryazanov.s.a@gmail.com>,
-        Ralf Baechle <ralf@linux-mips.org>,
-        Jonathan Corbet <corbet@lwn.net>,
-        Aditya Srivastava <yashsri421@gmail.com>,
-        Bagas Sanjaya <bagasdotme@gmail.com>,
-        kernel test robot <lkp@intel.com>, stable@vger.kernel.org
-Subject: [PATCH] mips: pci: remove extraneous asterisk from top level comment of ar2315 PCI driver
-Date:   Tue, 23 Aug 2022 10:00:56 +0700
-Message-Id: <20220823030056.123709-1-bagasdotme@gmail.com>
-X-Mailer: git-send-email 2.37.2
-In-Reply-To: <202208221854.8ASrzjKa-lkp@intel.com>
-References: <202208221854.8ASrzjKa-lkp@intel.com>
-MIME-Version: 1.0
-X-Developer-Signature: v=1; a=openpgp-sha256; l=1723; i=bagasdotme@gmail.com; h=from:subject; bh=grs6Phzy0fj8UUZxS8TxEqELiZEA9kf5e2WhfxsdBrY=; b=owGbwMvMwCH2bWenZ2ig32LG02pJDMksTi8W7Jks8z4wVYK/MbF/5ZzU0rL3DFasC488v9BYarb0 V9PujlIWBjEOBlkxRZZJiXxNp3cZiVxoX+sIM4eVCWQIAxenAExE+CPDf9e0GYfmnIgIkvvaN/XX4U kNl0I3L0pgiDYKfzCfZ9M3/iaGv0LGWzQvFFfPC/JdGMC1Zu7BMz1b44xDZsiuEYuovy6YzgMA
-X-Developer-Key: i=bagasdotme@gmail.com; a=openpgp; fpr=701B806FDCA5D3A58FFB8F7D7C276C64A5E44A1D
+        Mon, 22 Aug 2022 23:01:09 -0400
+Received: from EUR05-VI1-obe.outbound.protection.outlook.com (mail-vi1eur05on2041.outbound.protection.outlook.com [40.107.21.41])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A6B4F5C96B;
+        Mon, 22 Aug 2022 20:01:07 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=hErJTyr0znLBO+5QLuDTx6zpF4x7wbNbpgGvV6kNXeIExQ7Tjjn6qOcE2Ie3pJgBfaE3kU6QjIXY+Fp+Tv13eEATRA4XwmzTkZpW99xB6IMHkyJknBjz9wG35MpK4rU6ImGhO+46/D+3rB3Ww/9pHwgEucw5IwSYNnqZMDyFtxInyhSi/gM5gjbxMylr/GKRJ5iiNKHCCSm9NP0Xtp7Zm6FhSI8EvbfYDQOSmdoRvxen2D0FWi58p3V5alog+ZylNB1ubCqAoQJk5JZAnmFjk7ZgTV68yZEBhDApghoFJBt5gE4YTj/ECn69IHL9C/TO8/s4n/0mR+uxlxzpa9eLlw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=oNeEk9dv+lQOYrPqypppxmPR6F4phkmh3IOeN7xKiyM=;
+ b=LqIJjsb8DevVWIfejLdqcwq9Se4iTNXmARYgzWpa0zlfknRFM7JoX7ryulfrSfjL43wowMbUvGGd0qNgeZ2wCq8ll1V2/zlCqvbpG7aL481JAWr5Q8XKPJhX64gkGdVq8RowUC26huBc1V1RmYnbEaEAuJxn58r7GAuSvXTCqqJEHg1OqL0vkUi50pZimWOc+ymLFeela3wtnB3ez8hvepUZIZ9lAFy7+U0Xziq4SZDqNC3Mg3jUU3/WqKKrskEPX/lYZ/oSsJZIrQ+nwQvgfyXxCfMKDeiWI3d5kG0cwfyJEPUt4ZkFWxBEGjRltgXw2vKQlNErOq+WtRaEwCWc2w==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=oss.nxp.com; dmarc=pass action=none header.from=oss.nxp.com;
+ dkim=pass header.d=oss.nxp.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=NXP1.onmicrosoft.com;
+ s=selector2-NXP1-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=oNeEk9dv+lQOYrPqypppxmPR6F4phkmh3IOeN7xKiyM=;
+ b=JQhZNsiCfJOdMr/pWLMFPUNXhDCKmzaovJpCRv3lAfaoECMS8kmaZnYTEPAS1mOT1gH2VlxpN/wwzwy1xSTH+tnMlHDEq7kyD8LRrXhiGwWabPxDqeSv/6XifHcj4FDoGZZOtNOCkfWJ5j0U+AlNjbA74n/PaRVgJ80KslTvbKM=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=oss.nxp.com;
+Received: from DU0PR04MB9417.eurprd04.prod.outlook.com (2603:10a6:10:358::11)
+ by DU2PR04MB8824.eurprd04.prod.outlook.com (2603:10a6:10:2e3::22) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5525.10; Tue, 23 Aug
+ 2022 03:01:05 +0000
+Received: from DU0PR04MB9417.eurprd04.prod.outlook.com
+ ([fe80::3c6c:b7e6:a93d:d442]) by DU0PR04MB9417.eurprd04.prod.outlook.com
+ ([fe80::3c6c:b7e6:a93d:d442%4]) with mapi id 15.20.5546.023; Tue, 23 Aug 2022
+ 03:01:05 +0000
+From:   "Peng Fan (OSS)" <peng.fan@oss.nxp.com>
+To:     wsa@kernel.org, aisheng.dong@nxp.com, robh+dt@kernel.org,
+        krzysztof.kozlowski+dt@linaro.org, shawnguo@kernel.org,
+        s.hauer@pengutronix.de
+Cc:     kernel@pengutronix.de, festevam@gmail.com, linux-imx@nxp.com,
+        linux-i2c@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        xiaoning.wang@nxp.com, Peng Fan <peng.fan@nxp.com>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Subject: [PATCH V3 4/7] dt-bindings: i2c: i2c-imx-lpi2c: add i.MX93
+Date:   Tue, 23 Aug 2022 11:02:12 +0800
+Message-Id: <20220823030215.870414-5-peng.fan@oss.nxp.com>
+X-Mailer: git-send-email 2.37.1
+In-Reply-To: <20220823030215.870414-1-peng.fan@oss.nxp.com>
+References: <20220823030215.870414-1-peng.fan@oss.nxp.com>
 Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-ClientProxiedBy: SGXP274CA0024.SGPP274.PROD.OUTLOOK.COM (2603:1096:4:b8::36)
+ To DU0PR04MB9417.eurprd04.prod.outlook.com (2603:10a6:10:358::11)
+MIME-Version: 1.0
+X-MS-Exchange-MessageSentRepresentingType: 1
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: d2909b49-b12f-478e-5889-08da84b3b801
+X-MS-TrafficTypeDiagnostic: DU2PR04MB8824:EE_
+X-MS-Exchange-SharedMailbox-RoutingAgent-Processed: True
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: MUvAm3AbDAsRnkd9+gZqW19swlDlg2hxFn6huoK7w08AY+BjHJY8EDbJLnmA+7cOCDhrGEXGx/9eh+ypQWsVmJgNflIIMRMF+lVU4qaWuKaQxx7fb9v9+9sADVV3QMbNbIg35D3p+nnOn7FhFAJOqssHDet9R9j3Wp+eDz7pYrPpmmKtaeE/CJQvL47KyA7iXixJJIGEbe3p4zci4kM1JEY/MchxUr6o1G1RV9uB97aQ0aiZ3FKA4QjZiTEP+Vy81t0rmQeC7a2cnQa3+6+2gXHxnsVpi92ZNmlgYiZ85xd1LIVFws33GUXz+824d+BC+DbUDbTbxgalnpBO13ZXxnF9cLd4+Hm7B1KYLtF30MLNsk/LEIYZSfT52Xdg4QdRcN64af+/GxA8sOOpkaBJYWvUlg/EtTI++Ovm0rYM68tl1dxndjE5TV9SWza5+PuEsWR8GBM1QfkKgSyr+2h7uugy7FWYlYbaSfAkYJzui+9Irp2Ax8KQOTLAKKvigeVvrFGpWm1ik+vTqbSiY4uh5tlMjLND9rMN4Sc7obEcvAv2GohnXfCxXvSdAprgppd0JekYi976r4nUe95e9vcQ56KugKsBTIo7BOy4DDmxHKoiI57D/kEwEL2mQN5dUb7zgoCBH1fpEToHJltkagfaQh80p70VyPm3N2+0oNyv3BgId+BqNPcNfDUUhD1ShnT0H2hk1sNdAV6J9F7pFdQP4OQSY/xecua7FknIqeiqOJBArimwm2bW+OCpRtbaRqMT0j/8hx7fD4bSeExNoaCDyA==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DU0PR04MB9417.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(4636009)(136003)(376002)(39860400002)(346002)(366004)(396003)(54906003)(38350700002)(8676002)(38100700002)(5660300002)(4326008)(66556008)(66476007)(66946007)(186003)(52116002)(8936002)(6486002)(478600001)(4744005)(7416002)(316002)(26005)(6512007)(6666004)(41300700001)(1076003)(2616005)(6506007)(86362001)(2906002);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?R+9yTZOv67uVaelsL81TT1XRFDCdnYyTAIj2kxkdSU+33smXtH82Fn8/oVzg?=
+ =?us-ascii?Q?FF3VVs52o7xKrFRh6MrTUcbh3907TumKNOOCrJcT/YCWdkDR5SmolunLLa9N?=
+ =?us-ascii?Q?RvPL03Meeq1y0+z3Fi/TZ6GHP4mfn4jq8IBL3crpu6gElzHI8AtJx47paoO/?=
+ =?us-ascii?Q?DBX7yZPIpRydIzHVgJu+EZMor6ch1DZrTYNnitlVPi06/dzugsGpU/N7caEl?=
+ =?us-ascii?Q?vowqgMTQATytT6E5zg8kBaeHAeL33bvdutsCKk6vDVs+vaKToWVDT/C1Iedw?=
+ =?us-ascii?Q?xvsBgR/Wyt2xVgqjPk9iefwOymd3tihCdfAB015dVsf9++Y6Y7RwKK4Lsx4o?=
+ =?us-ascii?Q?7gMbJYRoDr7oO8I6Fk27tebgyeEoFL19aciJla+gFkseeQmnc1BPSwCxsiTt?=
+ =?us-ascii?Q?Aa0GVxEKLSQbr+xJBvSdfvt8lzuZn1m77/bH1Tdnpf/lFgYpI8o1Fn9k0gm+?=
+ =?us-ascii?Q?J+cQa/5Bx1exTSPu243+KtkCyUZIN8845UeMvI4fiwS36/Ss+AF+pxs0zE4X?=
+ =?us-ascii?Q?c13stwzlirW4268NcvMMptWFvqe5/vHka12qBpn1jbiA6+Ai/B74gPqrW/CF?=
+ =?us-ascii?Q?bss7A05NYVHFYMAoYiU/QHqd8Io+b0pJTfqhvnBBcCmekBTbX9zncPgRjrvU?=
+ =?us-ascii?Q?knHSYF6dpSI0EfLTWXLVl3BfarNZzPmbVspuSudd/qSb5xQ6yQCT2wP+bHem?=
+ =?us-ascii?Q?KO0fnm7rEX+1r6zu775zg7Kg98d2+qc/40tywP2cF1xkPckUHryPlYbCxzpS?=
+ =?us-ascii?Q?MOg3dCSRDiZk+ob2IQ3V33iZ3OBiZ6ytP0BryXicHcogXqD4HN/upe0zp6gO?=
+ =?us-ascii?Q?ReSS+C3LaJOQ72g6NVHR4PGXHBoViCN53qrGiiRykquWrBxW7GQE73I26TwF?=
+ =?us-ascii?Q?N/yw2IiRWh35vZGd40/i7CZDj71hUMZHDG33aszm+nvEtR2oc2SLr4pgRij7?=
+ =?us-ascii?Q?0xJkw99Rp/ck/PmPJBOJijDiJQ9S7mGm3hLvXh7qRCqtEkINX9dO6+LRZA2d?=
+ =?us-ascii?Q?DmOQEswiI23xOE9CxRdwq2Kyg+oLZwNb5gdGjCTgu8p/UyLqUi0EGXACj7ua?=
+ =?us-ascii?Q?zxzrLCIqwTyM1Yt0CkWn4CP0J2Pw5kcukPoKjn7aLZS/TtmxyXbvJqVho7zK?=
+ =?us-ascii?Q?zhqryTMMIzrL7S8RLEpLsR6T/jlE/RwCWVFY69ocwHrsPi1greY8wLiNmPGo?=
+ =?us-ascii?Q?aprryiTyxMxTz6uThjsQ+it01HiJVz9YjkwkRSHBymT0UM9ggkDeud4lre+b?=
+ =?us-ascii?Q?MWxv3RUz5VZHqVjf/GaSIaryTqwB2rE95WMEOImz24EYeuhtax6tRrGGbH8X?=
+ =?us-ascii?Q?uJuHS4ATWyxrguUzRj07CVkh/Ragh37fuN5eRjzwWP65QxhuE0gYLL/bdr8k?=
+ =?us-ascii?Q?p7lhASjqJe7VkjzjBvWVSk1cYX5/IfsfWsqNloqPe+S8cmwkbzS9FMPDT75Z?=
+ =?us-ascii?Q?9AoR8MEz0GR7RWKcIi26jxikoBt6UlIftwBonT0T/JGt5dBaHB8kLAhTpqqA?=
+ =?us-ascii?Q?Y9zoABipnaYps8W0e37CK1OJ8MPMwFvtYtAKSsumCxq02ODVN+kTmPcIx1sx?=
+ =?us-ascii?Q?CzWV1y3I5tOvCYms0/s1PHEDWoZhs+m/SBwmflhQ?=
+X-OriginatorOrg: oss.nxp.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: d2909b49-b12f-478e-5889-08da84b3b801
+X-MS-Exchange-CrossTenant-AuthSource: DU0PR04MB9417.eurprd04.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 23 Aug 2022 03:01:05.0747
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: 0cEbJV0mhmr06BAzDX5Hv7c4W7NMdo/KfvwyUvlQYrebytp4XrQuyCFW/R2J80dzpNnAAa7CQcnu2QCEZ0eeFg==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DU2PR04MB8824
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-kernel test robot reported kernel-doc warning:
+From: Peng Fan <peng.fan@nxp.com>
 
-arch/mips/pci/pci-ar2315.c:6: warning: This comment starts with '/**', but isn't a kernel-doc comment. Refer Documentation/doc-guide/kernel-doc.rst
-    * Both AR2315 and AR2316 chips have PCI interface unit, which supports DMA
+Add i.MX93 LPI2C compatible string.
 
-The warning above is caused by an extraneous asterisk on the top level
-(description) comment of pci-ar2315.c, for which the comment is confused as
-kernel-doc comment instead.
-
-Remove the asterisk.
-
-Link: https://lore.kernel.org/linux-doc/202208221854.8ASrzjKa-lkp@intel.com/
-Fixes: 3ed7a2a702dc0f ("MIPS: ath25: add AR2315 PCI host controller driver")
-Fixes: 3e58e839150db0 ("scripts: kernel-doc: add warning for comment not following kernel-doc syntax")
-Reported-by: kernel test robot <lkp@intel.com>
-Cc: stable@vger.kernel.org # v5.15, v5.19
-Signed-off-by: Bagas Sanjaya <bagasdotme@gmail.com>
+Acked-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Reviewed-by: Dong Aisheng <aisheng.dong@nxp.com>
+Signed-off-by: Peng Fan <peng.fan@nxp.com>
 ---
- The second Fixes: commit exposes the kernel-doc warning, which the
- culprit is actually the first Fixes: commit, so it make sense to apply
- this patch to supported stable branches after the second commit one.
+ Documentation/devicetree/bindings/i2c/i2c-imx-lpi2c.yaml | 1 +
+ 1 file changed, 1 insertion(+)
 
- arch/mips/pci/pci-ar2315.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/arch/mips/pci/pci-ar2315.c b/arch/mips/pci/pci-ar2315.c
-index 30e0922f4ceaec..e17d862cfa4c6a 100644
---- a/arch/mips/pci/pci-ar2315.c
-+++ b/arch/mips/pci/pci-ar2315.c
-@@ -2,7 +2,7 @@
- /*
-  */
+diff --git a/Documentation/devicetree/bindings/i2c/i2c-imx-lpi2c.yaml b/Documentation/devicetree/bindings/i2c/i2c-imx-lpi2c.yaml
+index 08b81d57d7e1..4656f5112b84 100644
+--- a/Documentation/devicetree/bindings/i2c/i2c-imx-lpi2c.yaml
++++ b/Documentation/devicetree/bindings/i2c/i2c-imx-lpi2c.yaml
+@@ -23,6 +23,7 @@ properties:
+               - fsl,imx8dxl-lpi2c
+               - fsl,imx8qm-lpi2c
+               - fsl,imx8ulp-lpi2c
++              - fsl,imx93-lpi2c
+           - const: fsl,imx7ulp-lpi2c
  
--/**
-+/*
-  * Both AR2315 and AR2316 chips have PCI interface unit, which supports DMA
-  * and interrupt. PCI interface supports MMIO access method, but does not
-  * seem to support I/O ports.
-
-base-commit: 072e51356cd5a4a1c12c1020bc054c99b98333df
+   reg:
 -- 
-An old man doll... just what I always wanted! - Clara
+2.37.1
 
