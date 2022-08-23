@@ -2,90 +2,90 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C007AC28D13
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 01:54:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 71629C28D13
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 01:55:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239224AbiHWBx6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 22 Aug 2022 21:53:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51768 "EHLO
+        id S231894AbiHWBzz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 22 Aug 2022 21:55:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52662 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239263AbiHWBxx (ORCPT
+        with ESMTP id S236110AbiHWBzy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 22 Aug 2022 21:53:53 -0400
-Received: from mail-pl1-x633.google.com (mail-pl1-x633.google.com [IPv6:2607:f8b0:4864:20::633])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B36343C160;
-        Mon, 22 Aug 2022 18:53:52 -0700 (PDT)
-Received: by mail-pl1-x633.google.com with SMTP id p13so160630pld.6;
-        Mon, 22 Aug 2022 18:53:52 -0700 (PDT)
+        Mon, 22 Aug 2022 21:55:54 -0400
+Received: from mail-pj1-x1032.google.com (mail-pj1-x1032.google.com [IPv6:2607:f8b0:4864:20::1032])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7BB445A8B4;
+        Mon, 22 Aug 2022 18:55:53 -0700 (PDT)
+Received: by mail-pj1-x1032.google.com with SMTP id t11-20020a17090a510b00b001fac77e9d1fso13056255pjh.5;
+        Mon, 22 Aug 2022 18:55:53 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=content-transfer-encoding:in-reply-to:from:references:cc:to
          :content-language:subject:user-agent:mime-version:date:message-id
          :from:to:cc;
-        bh=Kacjm70FQm89JRlW4fxMW3VvkdKPicdgw1Nz1f/0eD8=;
-        b=TRAqeSVahhJMcsLu+Y1+Vi7/2L6A1AsplmxjlNrTORgYTNl8rUsuuPwo1OxFhl1ABa
-         w+RZOLzk3X7wmfMmpkwnfheFvIpo6NRWe0zDMUH2ySXk/uwlwytCwpzYD2eLNmwyQVEB
-         YhLUZcPjDwPOXi6ZSytR1z5yBzyArBnyNauRN8Ulb/EWU9QKyQrCm9AlO0tVabPx29CV
-         yqoxep+6OkWlSf3Xqakw4Zi4FuSbTYmY2AaT3qhWZsQnNDBdN8RJX0UQtR94is6yJnX7
-         NrJ1muM1FQ8+/vpG86G33fytc2MH8e5RZ9irKwC1cbJJ3hpVRcW1y9JdVJzk6ey231Ty
-         Qyww==
+        bh=0EIzSvniEU8Di6h9z2X0aRQ8+RtMeXbYmqbE9+Vumnc=;
+        b=o4X4LXPNSkjvTbPIB7yxc1tkDbDZeQ03qvqvqbyDapXa7JEUzDw7ef2koEg9fHe+l4
+         MKrk9CYDewk/3kbf3d9ffqWnDUFrFoXD4l0plfJ7KC6dvurVARidXNFWqrHcbmfJaj9s
+         +7hsvxWMx5vPguIoc3hDxUhLusD+Zwg0aJvsWkMu7dDAqFrcbZPR6SbTYxVeEOcipMRZ
+         FpI94LEJ/PgHqKUORPmzCtghmnDKVgh26v0elI/irez65MlsJ99prHBqLp5dDnQYWtKl
+         PSztblWD8Kb0rJTT3Eom6dtFIog8MyHKRDugFVJRSgnzeehyzw66CywFcGK39SWRvHPU
+         bhrQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=content-transfer-encoding:in-reply-to:from:references:cc:to
          :content-language:subject:user-agent:mime-version:date:message-id
          :x-gm-message-state:from:to:cc;
-        bh=Kacjm70FQm89JRlW4fxMW3VvkdKPicdgw1Nz1f/0eD8=;
-        b=2U5sVoTbxwImWjGr7cUSp0GuVuzani9BJUY52wC6OupFT4wqRNJLYirNsVa/2hmf1v
-         HKGQNOe5osMw6Af7vHvr2/yKuNoqKzvca88yraXWwdlYN4dXhpSL39slULHZCXArrkVP
-         ybHAN7xGu6u4+RAAhTIPq5EbFc+eJwMh/+mh49XIzsi7qX3ecK7+f2rGVsavSr8d6TcP
-         E5dA3hBRuaLveir9TdjNGKV4mGAN8J6bjPtVnRC/5AWADZg9FL4fOdqdhloTkx52AtRE
-         jZ9RYDRcu3fjfPm9GMieKK6NkRlZMuf9Nd15ABIad8zgyQz5Q4vfGzA5Myh2zSR+TBUK
-         9aRQ==
-X-Gm-Message-State: ACgBeo2MQruvSn1SGuu/0LwcHF0JbIN1aSooUcOoJzWsDatHW73MszCI
-        DE2+7th3/OV13Ztoo3twIexmP3P30Ds=
-X-Google-Smtp-Source: AA6agR4EHEwVlo/lFTTk9Ic97Wlv3JkCe8qeyCpNFXr33OYwHHlV8Lc2GyzNF1KMdgLpYi3mc4H59w==
-X-Received: by 2002:a17:90b:1d84:b0:1f5:b66:7460 with SMTP id pf4-20020a17090b1d8400b001f50b667460mr1090565pjb.50.1661219632206;
-        Mon, 22 Aug 2022 18:53:52 -0700 (PDT)
+        bh=0EIzSvniEU8Di6h9z2X0aRQ8+RtMeXbYmqbE9+Vumnc=;
+        b=J1haCADDJEJ7xp7NIfOvl849PEGfAQbTajkgDbpV02TbnHUjqdcVhmLi4NPekr1PZs
+         KHXwwHX/sFDowwBg5D/2y3VIyW4NZz9iKDp7+agC3eFsEuDWdv0UNNHVn5/OFo6tiCio
+         jybGPI3lgQyDIbzCZNCL3TgQKaTNc24LU5wcrJ99FYBn1uAlQzwxIjTlzhqyghbtj8wV
+         TZfQlfkHmGzKZ7Za2ioiVvEuukFRTNmrf5TpieNaxUNrOLPxYp1y1MVKjp6gsl7DIfmJ
+         b8QLlAH5TJ4PtZYNChu3U+bMxQ1J9xwCKVjsoRsOgtKqArl8u/4xZAnTfg1xR8tJf8a1
+         bObw==
+X-Gm-Message-State: ACgBeo1L0uQxVEa+0EpKkKSXJ9JNk0XjPibzzFe/kjJV/Rr6QyVAkiuc
+        7Z5ELEXeX0MadzI5wfKaULU=
+X-Google-Smtp-Source: AA6agR6MSWizYm99GZWo8NaJDMWMME8XtDKLq/5QNYW1LBPiOspGSYzLMdIoEZbPc26eHUkFRyCGZg==
+X-Received: by 2002:a17:90b:3e8b:b0:1f5:8706:18a1 with SMTP id rj11-20020a17090b3e8b00b001f5870618a1mr1114711pjb.112.1661219752979;
+        Mon, 22 Aug 2022 18:55:52 -0700 (PDT)
 Received: from [192.168.43.80] (subs03-180-214-233-88.three.co.id. [180.214.233.88])
-        by smtp.gmail.com with ESMTPSA id n60-20020a17090a2cc200b001ef81574355sm10625894pjd.12.2022.08.22.18.53.49
+        by smtp.gmail.com with ESMTPSA id o7-20020a170902d4c700b001709e3c750dsm9102012plg.194.2022.08.22.18.55.48
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 22 Aug 2022 18:53:51 -0700 (PDT)
-Message-ID: <6d9a7094-274e-1227-d92b-5b282cdf9763@gmail.com>
-Date:   Tue, 23 Aug 2022 08:53:44 +0700
+        Mon, 22 Aug 2022 18:55:52 -0700 (PDT)
+Message-ID: <6e0a5b51-06a0-b84c-3bd5-048be028f1e1@gmail.com>
+Date:   Tue, 23 Aug 2022 08:55:46 +0700
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
  Thunderbird/91.12.0
-Subject: Re: [PATCH v3] docs: admin-guide/mm: Improve grammar on MM concepts
- documentation
+Subject: Re: [PATCH v3 08/10] x86/resctrl: Add the sysfs interface to read the
+ event configuration
 Content-Language: en-US
-To:     "Alex Zhu (Kernel)" <alexlzhu@fb.com>
-Cc:     "linux-doc@vger.kernel.org" <linux-doc@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        Kernel Team <Kernel-team@fb.com>
-References: <20220820000024.2494003-1-alexlzhu@fb.com>
- <86a26310-eae0-35e8-ede9-e71825db1416@gmail.com>
- <3C5EA425-A548-47B2-8590-35C38D6D47F2@fb.com>
+To:     babu.moger@amd.com, fenghua.yu@intel.com,
+        reinette.chatre@intel.com, tglx@linutronix.de, mingo@redhat.com,
+        bp@alien8.de
+Cc:     eranian@google.com, dave.hansen@linux.intel.com, x86@kernel.org,
+        hpa@zytor.com, corbet@lwn.net, linux-kernel@vger.kernel.org,
+        linux-doc@vger.kernel.org
+References: <166117559756.6695.16047463526634290701.stgit@bmoger-ubuntu>
+ <166117586269.6695.16560984025494646306.stgit@bmoger-ubuntu>
+ <d75aa75d-92e5-f946-8b41-fd63a6169eb5@gmail.com>
+ <9888d756-4bb1-a48f-3301-5dbd00bf6530@amd.com>
 From:   Bagas Sanjaya <bagasdotme@gmail.com>
-In-Reply-To: <3C5EA425-A548-47B2-8590-35C38D6D47F2@fb.com>
+In-Reply-To: <9888d756-4bb1-a48f-3301-5dbd00bf6530@amd.com>
 Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 8/23/22 05:17, Alex Zhu (Kernel) wrote:
-
->> The changelog should be below the dashes. Otherwise LGTM.
->>
->> Reviewed-by: Bagas Sanjaya <bagasdotme@gmail.com>
->>
->> -- 
->> An old man doll... just what I always wanted! - Clara
+On 8/22/22 20:55, Moger, Babu wrote:
+>> If the table above was in Documentation/, Sphinx would flag it as
+>> malformed table. Regardless (because it is in the patch description),
+>> I'd like to see it properly formatted.
 > 
-> Can this be merged then? Or is a v4 needed? 
+> Actually, I ran "make htmldocs" and didn't see any warnings. I will try to
+> fix this though. 
 > 
 
-Please reroll (send v4).
+That's because the table is in patch description, not in the diff.
 
 -- 
 An old man doll... just what I always wanted! - Clara
