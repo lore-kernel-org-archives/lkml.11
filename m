@@ -2,42 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 75DDFC52D78
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A638EC54EEB
 	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 10:53:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356824AbiHWKwQ (ORCPT
+        id S1356873AbiHWKwb (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 06:52:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54380 "EHLO
+        Tue, 23 Aug 2022 06:52:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58246 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355770AbiHWKoR (ORCPT
+        with ESMTP id S1355838AbiHWKoy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 06:44:17 -0400
+        Tue, 23 Aug 2022 06:44:54 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 99C2B868B6;
-        Tue, 23 Aug 2022 02:10:32 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8D20AAB05E;
+        Tue, 23 Aug 2022 02:10:35 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 884E260DF6;
-        Tue, 23 Aug 2022 09:10:31 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 93645C433D6;
-        Tue, 23 Aug 2022 09:10:30 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id D798A60EFB;
+        Tue, 23 Aug 2022 09:10:34 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DA8BFC433C1;
+        Tue, 23 Aug 2022 09:10:33 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661245831;
-        bh=3fugVo6TbpnGxFPfuFIJRDl1aYklh6ri5IkSSvgTZ0c=;
+        s=korg; t=1661245834;
+        bh=nSVXgxZC2TqTRvLOmt8W7a5C2RKHcTGAbGR3K/+fB68=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=CQHOkOIVX9OMZXd9YEy3B2rZRFgWpYTvp4avVKAQOtSFi1Yr3z6Ibsa9z+8wHfXO5
-         1+fhsmk29k3M4qdbyS9ea3J/6fqj0XxAY+NdfWmR0Firt4q5CxaWvnXHNS2EiL2I4z
-         JDMYoUsNrlTcXs4brKy+B7+CQKsvTlybxlGX46wk=
+        b=OWf0VoNmWrYizqM4tHiSwTkO2M1NECZe4Qs74mcHZb2kxdii3u0WiybSTLxJ8TItA
+         E6bfT1wXiKWEQvG/t+YPAmcE6GkDEWub1U81yyHr6mdvvR0sfbgq8cMl7A/6MPtf1m
+         tULtZssdk3s+yRuNJq0JcYVG2KaRwhjR+e19jcyQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Qu Wenruo <wqu@suse.com>,
-        David Sterba <dsterba@suse.com>
-Subject: [PATCH 4.19 202/287] btrfs: reject log replay if there is unsupported RO compat flag
-Date:   Tue, 23 Aug 2022 10:26:11 +0200
-Message-Id: <20220823080107.675539451@linuxfoundation.org>
+        stable@vger.kernel.org, Chen Zhongjin <chenzhongjin@huawei.com>,
+        Ingo Molnar <mingo@kernel.org>,
+        "Masami Hiramatsu (Google)" <mhiramat@kernel.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 4.19 174/287] kprobes: Forbid probing on trampoline and BPF code areas
+Date:   Tue, 23 Aug 2022 10:25:43 +0200
+Message-Id: <20220823080106.619249065@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220823080100.268827165@linuxfoundation.org>
 References: <20220823080100.268827165@linuxfoundation.org>
@@ -49,84 +51,52 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Qu Wenruo <wqu@suse.com>
+From: Chen Zhongjin <chenzhongjin@huawei.com>
 
-commit dc4d31684974d140250f3ee612c3f0cab13b3146 upstream.
+[ Upstream commit 28f6c37a2910f565b4f5960df52b2eccae28c891 ]
 
-[BUG]
-If we have a btrfs image with dirty log, along with an unsupported RO
-compatible flag:
+kernel_text_address() treats ftrace_trampoline, kprobe_insn_slot
+and bpf_text_address as valid kprobe addresses - which is not ideal.
 
-log_root		30474240
-...
-compat_flags		0x0
-compat_ro_flags		0x40000003
-			( FREE_SPACE_TREE |
-			  FREE_SPACE_TREE_VALID |
-			  unknown flag: 0x40000000 )
+These text areas are removable and changeable without any notification
+to kprobes, and probing on them can trigger unexpected behavior:
 
-Then even if we can only mount it RO, we will still cause metadata
-update for log replay:
+  https://lkml.org/lkml/2022/7/26/1148
 
-  BTRFS info (device dm-1): flagging fs with big metadata feature
-  BTRFS info (device dm-1): using free space tree
-  BTRFS info (device dm-1): has skinny extents
-  BTRFS info (device dm-1): start tree-log replay
+Considering that jump_label and static_call text are already
+forbiden to probe, kernel_text_address() should be replaced with
+core_kernel_text() and is_module_text_address() to check other text
+areas which are unsafe to kprobe.
 
-This is definitely against RO compact flag requirement.
+[ mingo: Rewrote the changelog. ]
 
-[CAUSE]
-RO compact flag only forces us to do RO mount, but we will still do log
-replay for plain RO mount.
-
-Thus this will result us to do log replay and update metadata.
-
-This can be very problematic for new RO compat flag, for example older
-kernel can not understand v2 cache, and if we allow metadata update on
-RO mount and invalidate/corrupt v2 cache.
-
-[FIX]
-Just reject the mount unless rescue=nologreplay is provided:
-
-  BTRFS error (device dm-1): cannot replay dirty log with unsupport optional features (0x40000000), try rescue=nologreplay instead
-
-We don't want to set rescue=nologreply directly, as this would make the
-end user to read the old data, and cause confusion.
-
-Since the such case is really rare, we're mostly fine to just reject the
-mount with an error message, which also includes the proper workaround.
-
-CC: stable@vger.kernel.org #4.9+
-Signed-off-by: Qu Wenruo <wqu@suse.com>
-Reviewed-by: David Sterba <dsterba@suse.com>
-Signed-off-by: David Sterba <dsterba@suse.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Fixes: 5b485629ba0d ("kprobes, extable: Identify kprobes trampolines as kernel text area")
+Fixes: 74451e66d516 ("bpf: make jited programs visible in traces")
+Signed-off-by: Chen Zhongjin <chenzhongjin@huawei.com>
+Signed-off-by: Ingo Molnar <mingo@kernel.org>
+Acked-by: Masami Hiramatsu (Google) <mhiramat@kernel.org>
+Link: https://lore.kernel.org/r/20220801033719.228248-1-chenzhongjin@huawei.com
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- fs/btrfs/disk-io.c |   14 ++++++++++++++
- 1 file changed, 14 insertions(+)
+ kernel/kprobes.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
---- a/fs/btrfs/disk-io.c
-+++ b/fs/btrfs/disk-io.c
-@@ -2920,6 +2920,20 @@ int open_ctree(struct super_block *sb,
- 		err = -EINVAL;
- 		goto fail_alloc;
- 	}
-+	/*
-+	 * We have unsupported RO compat features, although RO mounted, we
-+	 * should not cause any metadata write, including log replay.
-+	 * Or we could screw up whatever the new feature requires.
-+	 */
-+	if (unlikely(features && btrfs_super_log_root(disk_super) &&
-+		     !btrfs_test_opt(fs_info, NOLOGREPLAY))) {
-+		btrfs_err(fs_info,
-+"cannot replay dirty log with unsupported compat_ro features (0x%llx), try rescue=nologreplay",
-+			  features);
-+		err = -EINVAL;
-+		goto fail_alloc;
-+	}
-+
+diff --git a/kernel/kprobes.c b/kernel/kprobes.c
+index 993b84cc1db5..099191716d4c 100644
+--- a/kernel/kprobes.c
++++ b/kernel/kprobes.c
+@@ -1566,7 +1566,8 @@ static int check_kprobe_address_safe(struct kprobe *p,
+ 	preempt_disable();
  
- 	ret = btrfs_init_workqueues(fs_info, fs_devices);
- 	if (ret) {
+ 	/* Ensure it is not in reserved area nor out of text */
+-	if (!kernel_text_address((unsigned long) p->addr) ||
++	if (!(core_kernel_text((unsigned long) p->addr) ||
++	    is_module_text_address((unsigned long) p->addr)) ||
+ 	    within_kprobe_blacklist((unsigned long) p->addr) ||
+ 	    jump_label_text_reserved(p->addr, p->addr) ||
+ 	    find_bug((unsigned long)p->addr)) {
+-- 
+2.35.1
+
 
 
