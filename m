@@ -2,42 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2C05CC32772
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 11:35:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 553A0C32772
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 11:35:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243150AbiHWLfA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 07:35:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45108 "EHLO
+        id S1349610AbiHWLfF (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 23 Aug 2022 07:35:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48868 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357317AbiHWLbg (ORCPT
+        with ESMTP id S1357490AbiHWLbj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 07:31:36 -0400
+        Tue, 23 Aug 2022 07:31:39 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ACFC58F956;
-        Tue, 23 Aug 2022 02:25:40 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4D76B6612E;
+        Tue, 23 Aug 2022 02:25:48 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 2C3D9612B5;
-        Tue, 23 Aug 2022 09:25:35 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 330BDC433C1;
-        Tue, 23 Aug 2022 09:25:34 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 0A8A46130E;
+        Tue, 23 Aug 2022 09:25:47 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id EB2E6C433D6;
+        Tue, 23 Aug 2022 09:25:45 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661246734;
-        bh=YcBMqvhV+F0IBf4JpO7+0HnjAx/i8V8xOh8U7HuEtzY=;
+        s=korg; t=1661246746;
+        bh=OJLTec2hXfd6nyC4dMNAnRYZc1Klp15sXbFH0oMSZsE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=1CWgHwdHRwdDUpKRqdvVNJCdotxws6wnR3cpZe6GjYbLaT2j4R826ZIUj31/7Dqtw
-         pEwvAJiWOIOyoZAMJHmODimk3P8f6k6ycbHn92zGBlHiEPoJ6Ta+270IAjSJyIQTHF
-         x/q5+s089P/OTUSPki8AJAcixn9l3mB4NznDNc8E=
+        b=wmf/quD2uHYQa02t92WZNqleCjouVTu6tIKT/5ujfSN2mww91HOSB53CSTY0ZeeBB
+         /zJafIYOvCNQ3qu6eS1O6n0/kOlLSiZnj9GDaBfme3J1TTkMOJ32v1hQjr5yQm2l2w
+         ioMbKGaJOZp+15b+0D15fWNwfeDRDLilmXHDN/8o=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Dan Carpenter <dan.carpenter@oracle.com>,
-        Hans de Goede <hdegoede@redhat.com>,
+        stable@vger.kernel.org,
+        Andy Shevchenko <andy.shevchenko@gmail.com>,
+        =?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 195/389] platform/olpc: Fix uninitialized data in debugfs write
-Date:   Tue, 23 Aug 2022 10:24:33 +0200
-Message-Id: <20220823080123.780375921@linuxfoundation.org>
+Subject: [PATCH 5.4 207/389] serial: 8250_dw: Store LSR into lsr_saved_flags in dw8250_tx_wait_empty()
+Date:   Tue, 23 Aug 2022 10:24:45 +0200
+Message-Id: <20220823080124.280771589@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220823080115.331990024@linuxfoundation.org>
 References: <20220823080115.331990024@linuxfoundation.org>
@@ -49,48 +51,48 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Dan Carpenter <dan.carpenter@oracle.com>
+From: Ilpo Järvinen <ilpo.jarvinen@linux.intel.com>
 
-[ Upstream commit 40ec787e1adf302c11668d4cc69838f4d584187d ]
+[ Upstream commit af14f3007e2dca0d112f10f6717ba43093f74e81 ]
 
-The call to:
+Make sure LSR flags are preserved in dw8250_tx_wait_empty(). This
+function is called from a low-level out function and therefore cannot
+call serial_lsr_in() as it would lead to infinite recursion.
 
-	size = simple_write_to_buffer(cmdbuf, sizeof(cmdbuf), ppos, buf, size);
+It is borderline if the flags need to be saved here at all since this
+code relates to writing LCR register which usually implies no important
+characters should be arriving.
 
-will succeed if at least one byte is written to the "cmdbuf" buffer.
-The "*ppos" value controls which byte is written.  Another problem is
-that this code does not check for errors so it's possible for the entire
-buffer to be uninitialized.
-
-Inintialize the struct to zero to prevent reading uninitialized stack
-data.
-
-Debugfs is normally only writable by root so the impact of this bug is
-very minimal.
-
-Fixes: 6cca83d498bd ("Platform: OLPC: move debugfs support from x86 EC driver")
-Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
-Link: https://lore.kernel.org/r/YthIKn+TfZSZMEcM@kili
-Reviewed-by: Hans de Goede <hdegoede@redhat.com>
-Signed-off-by: Hans de Goede <hdegoede@redhat.com>
+Fixes: 914eaf935ec7 ("serial: 8250_dw: Allow TX FIFO to drain before writing to UART_LCR")
+Reviewed-by: Andy Shevchenko <andy.shevchenko@gmail.com>
+Signed-off-by: Ilpo Järvinen <ilpo.jarvinen@linux.intel.com>
+Link: https://lore.kernel.org/r/20220608095431.18376-7-ilpo.jarvinen@linux.intel.com
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/platform/olpc/olpc-ec.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/tty/serial/8250/8250_dw.c | 3 +++
+ 1 file changed, 3 insertions(+)
 
-diff --git a/drivers/platform/olpc/olpc-ec.c b/drivers/platform/olpc/olpc-ec.c
-index 2db7113383fd..89d9fca02fe9 100644
---- a/drivers/platform/olpc/olpc-ec.c
-+++ b/drivers/platform/olpc/olpc-ec.c
-@@ -265,7 +265,7 @@ static ssize_t ec_dbgfs_cmd_write(struct file *file, const char __user *buf,
- 	int i, m;
- 	unsigned char ec_cmd[EC_MAX_CMD_ARGS];
- 	unsigned int ec_cmd_int[EC_MAX_CMD_ARGS];
--	char cmdbuf[64];
-+	char cmdbuf[64] = "";
- 	int ec_cmd_bytes;
+diff --git a/drivers/tty/serial/8250/8250_dw.c b/drivers/tty/serial/8250/8250_dw.c
+index 381c5117aec1..2d5a039229ac 100644
+--- a/drivers/tty/serial/8250/8250_dw.c
++++ b/drivers/tty/serial/8250/8250_dw.c
+@@ -110,12 +110,15 @@ static void dw8250_check_lcr(struct uart_port *p, int value)
+ /* Returns once the transmitter is empty or we run out of retries */
+ static void dw8250_tx_wait_empty(struct uart_port *p)
+ {
++	struct uart_8250_port *up = up_to_u8250p(p);
+ 	unsigned int tries = 20000;
+ 	unsigned int delay_threshold = tries - 1000;
+ 	unsigned int lsr;
  
- 	mutex_lock(&ec_dbgfs_lock);
+ 	while (tries--) {
+ 		lsr = readb (p->membase + (UART_LSR << p->regshift));
++		up->lsr_saved_flags |= lsr & LSR_SAVE_FLAGS;
++
+ 		if (lsr & UART_LSR_TEMT)
+ 			break;
+ 
 -- 
 2.35.1
 
