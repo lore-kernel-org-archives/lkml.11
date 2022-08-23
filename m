@@ -2,115 +2,64 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AAEDCC32772
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 19:50:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 26202C32772
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 19:50:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232852AbiHWTuF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 15:50:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52614 "EHLO
+        id S231940AbiHWTuz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 23 Aug 2022 15:50:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37266 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232385AbiHWTte (ORCPT
+        with ESMTP id S233635AbiHWTui (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 15:49:34 -0400
-Received: from beige.elm.relay.mailchannels.net (beige.elm.relay.mailchannels.net [23.83.212.16])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ED0889E69D
-        for <linux-kernel@vger.kernel.org>; Tue, 23 Aug 2022 11:52:56 -0700 (PDT)
-X-Sender-Id: dreamhost|x-authsender|dave@stgolabs.net
-Received: from relay.mailchannels.net (localhost [127.0.0.1])
-        by relay.mailchannels.net (Postfix) with ESMTP id B1D162C1EA6;
-        Tue, 23 Aug 2022 18:52:55 +0000 (UTC)
-Received: from pdx1-sub0-mail-a212.dreamhost.com (unknown [127.0.0.6])
-        (Authenticated sender: dreamhost)
-        by relay.mailchannels.net (Postfix) with ESMTPA id E8B1A2C1E9E;
-        Tue, 23 Aug 2022 18:52:54 +0000 (UTC)
-ARC-Seal: i=1; s=arc-2022; d=mailchannels.net; t=1661280775; a=rsa-sha256;
-        cv=none;
-        b=KGmH7iyJd2eSoXWsDJ6nC7v7FxKNWpQIrH/eoiQ+NktQda7584haboh4sQwiDu7vC05NKH
-        ptPl0mMxUQi7797CtIgQ+QexVsHWh0TUEvHwc2fA7Qrwiqve9JIKnIe41jx541uaTtHPAK
-        rg3AzBcCCvnJH3YDOO93FKEH+CRetKldnTjKiLPOWYiRmZmmqUFFhVr1IMB8d2wxTNM1RW
-        juspih8p43LBX6D1crFrKMVtKLKW1a8tF6ZUTcGv9mMO4XkL9kgZzYo563UdpKTZSmj3Ko
-        tUaFP3l10Qnj9AQeh3PY5e8MJQBMtDfFdrSDqP0gkDPmEwPrXHg5FdBQk2QDCg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed;
- d=mailchannels.net;
-        s=arc-2022; t=1661280775;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references:dkim-signature;
-        bh=KA64pA0DH1EGqcQRpI8y0V/oDzrbveA11q1ujgABL90=;
-        b=npRN4qNmMnMaoFIxjsD757lskhnGTMxgBkzewmOc258FSrKL5a4X7O4GFYqUoBm3H+tZrC
-        /LBAT9tIxbuSjsgGqxRhgZL0Oy680KkkX9kta3EXbtE2E6Tn8b34rzsDolY21i4AvnZi23
-        jUx1/0v7ptkUPoWZ2lO8iEEAY9tdm96CNVAbMDrXOsSLScxCnG7ZXurNxmi2LOtW1ypDig
-        X1pZc0M4k6ThXiGGS30zI7gk6bycOpORJ2uEGz5gBjPuIwXpy4xFycUvzasQEwnPnWHSwL
-        acrc50ovEy/l8zVuEXpcIjHxccBtSim+eVw3o3G6NPuDbbjAMJtP7T3GpDjCbw==
-ARC-Authentication-Results: i=1;
-        rspamd-79945fd77c-vbjzp;
-        auth=pass smtp.auth=dreamhost smtp.mailfrom=dave@stgolabs.net
-X-Sender-Id: dreamhost|x-authsender|dave@stgolabs.net
-X-MC-Relay: Neutral
-X-MailChannels-SenderId: dreamhost|x-authsender|dave@stgolabs.net
-X-MailChannels-Auth-Id: dreamhost
-X-Arch-Minister: 078f9ac55faa30c7_1661280775428_1173728395
-X-MC-Loop-Signature: 1661280775428:1852935285
-X-MC-Ingress-Time: 1661280775428
-Received: from pdx1-sub0-mail-a212.dreamhost.com (pop.dreamhost.com
- [64.90.62.162])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384)
-        by 100.120.38.149 (trex/6.7.1);
-        Tue, 23 Aug 2022 18:52:55 +0000
-Received: from offworld (unknown [104.36.31.106])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-256) server-signature RSA-PSS (2048 bits) server-digest SHA256)
-        (No client certificate requested)
-        (Authenticated sender: dave@stgolabs.net)
-        by pdx1-sub0-mail-a212.dreamhost.com (Postfix) with ESMTPSA id 4MByzB1bVSzPS;
-        Tue, 23 Aug 2022 11:52:54 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=stgolabs.net;
-        s=dreamhost; t=1661280774;
-        bh=KA64pA0DH1EGqcQRpI8y0V/oDzrbveA11q1ujgABL90=;
-        h=Date:From:To:Cc:Subject:Content-Type;
-        b=VfC5TptjeaWDVe5VzQpc3XNpYHjVl8ek74FV8aRSn5jAHg/JD7eOAtwwK6IGdxolX
-         e/wJ2NwW9xkn/ACZ7gmcJczVrdAjqihCOHtjRknvnNLreRGr5msbefs0Ba9wTcI+qL
-         8ryJ/g4XLh136pwrTKPZZSiwEx/Q3pMTCM1C5U45fghZhlyx0Aq6wsdCZFUtv5RjL3
-         pENC6WmyOwkULjXImM4txrf0najehg9VmwdlZjfza21MD4UXOBPFfyKLnF4KBP2EYi
-         FHjA3/hVIWVusR88KVbaQjZi3t3kjZHJ57TiRWbISP3ghAZ0vX5EH2ecNmGx6lAJt+
-         PkWm9y2JPMQAQ==
-Date:   Tue, 23 Aug 2022 11:34:51 -0700
-From:   Davidlohr Bueso <dave@stgolabs.net>
-To:     Liam Howlett <liam.howlett@oracle.com>
-Cc:     "maple-tree@lists.infradead.org" <maple-tree@lists.infradead.org>,
-        "linux-mm@kvack.org" <linux-mm@kvack.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        "Matthew Wilcox (Oracle)" <willy@infradead.org>,
-        Vlastimil Babka <vbabka@suse.cz>
-Subject: Re: [PATCH v13 34/70] s390: remove vma linked list walks
-Message-ID: <20220823183451.su3fflupt5w5nnsn@offworld>
-Mail-Followup-To: Liam Howlett <liam.howlett@oracle.com>,
-        "maple-tree@lists.infradead.org" <maple-tree@lists.infradead.org>,
-        "linux-mm@kvack.org" <linux-mm@kvack.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        "Matthew Wilcox (Oracle)" <willy@infradead.org>,
-        Vlastimil Babka <vbabka@suse.cz>
-References: <20220822150128.1562046-1-Liam.Howlett@oracle.com>
- <20220822150128.1562046-35-Liam.Howlett@oracle.com>
+        Tue, 23 Aug 2022 15:50:38 -0400
+Received: from vps0.lunn.ch (vps0.lunn.ch [185.16.172.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6FF19275F1;
+        Tue, 23 Aug 2022 11:54:12 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
+        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
+        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
+        bh=CCT8l4Jdhsxcwji/TezZ/Fu/OlayOt1KuTU85zcfZEQ=; b=t39JR/pXmQeA63Hmxn5waOEGPr
+        gwFqebqip2LAbcyXX6WwD5pK3lMT+1kDRCeo4WijkiiLVdzX/KvsSGPsQDooau7LpSxPiF6aEcmD4
+        dPD40jdcm//RgAi5YOkqWGEtltHJaxRvxO7n3DKtUVDAFEm8/E6vfmapj8uxqotOhp/k=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1oQZ2A-00ENXw-RO; Tue, 23 Aug 2022 20:53:54 +0200
+Date:   Tue, 23 Aug 2022 20:53:54 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     Frank <Frank.Sae@motor-comm.com>, Peter Geis <pgwipeout@gmail.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
+        "David S . Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Paolo Abeni <pabeni@redhat.com>, yinghong.zhang@motor-comm.com,
+        fei.zhang@motor-comm.com, hua.sun@motor-comm.com,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v4.4] net: phy: Add driver for Motorcomm yt8521 gigabit
+ ethernet phy
+Message-ID: <YwUiQgSGBhbvk7T6@lunn.ch>
+References: <20220817112554.383-1-Frank.Sae@motor-comm.com>
+ <20220822202147.4be904de@kernel.org>
+ <YwTguA0azox3j5vi@lunn.ch>
+ <20220823113712.4c530516@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii; format=flowed
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220822150128.1562046-35-Liam.Howlett@oracle.com>
-User-Agent: NeoMutt/20220429
+In-Reply-To: <20220823113712.4c530516@kernel.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, 22 Aug 2022, Liam Howlett wrote:
+> > The user could of changed the pause settings, which are going to be
+> > ignored here. Also, you should not assume the MAC can actually do
+> > asymmetric pause, not all can. phydev->advertising will be set to only
+> > include what the MAC can actually do.
+ 
+> Interesting. Just to confirm - regardless of the two-sided design..
+> -edness.. IIUC my question has merit and we need v5?
 
->From: "Matthew Wilcox (Oracle)" <willy@infradead.org>
->
->Use the VMA iterator instead.
->
->Signed-off-by: Matthew Wilcox (Oracle) <willy@infradead.org>
->Signed-off-by: Liam R. Howlett <Liam.Howlett@Oracle.com>
->Acked-by: Vlastimil Babka <vbabka@suse.cz>
+Yes, phydev->advertising should be take into account.
 
-Reviewed-by: Davidlohr Bueso <dave@stgolabs.net>
+     Andrew
