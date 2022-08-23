@@ -2,139 +2,298 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B294DC32772
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 15:12:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 61E38C32772
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 15:12:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243463AbiHWPMI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 11:12:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36174 "EHLO
+        id S243650AbiHWPMi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 23 Aug 2022 11:12:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37908 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243384AbiHWPLw (ORCPT
+        with ESMTP id S240411AbiHWPMJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 11:11:52 -0400
-Received: from mail-lj1-x233.google.com (mail-lj1-x233.google.com [IPv6:2a00:1450:4864:20::233])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2E189147BD1
-        for <linux-kernel@vger.kernel.org>; Tue, 23 Aug 2022 03:22:03 -0700 (PDT)
-Received: by mail-lj1-x233.google.com with SMTP id x10so13072584ljq.4
-        for <linux-kernel@vger.kernel.org>; Tue, 23 Aug 2022 03:22:03 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=cc:to:subject:message-id:date:from:mime-version:from:to:cc;
-        bh=rcpUjo+cyhxrF2PUlntwQQeQhblXyhNJQMZ6x8R4WfU=;
-        b=fXlMHdh22iAOkp3d197BppcPR8XsI4EebfdCp2ByM+AuZbMtpcWbm8oUBwGpGUFc7k
-         6cR4QkyyMUZ2DCwkTQ0hUKYkRxUdkHasMqeKndSQHnqV2oeYLDjuPFiedCijZsoQsc/M
-         d321fxsRuympwfr9adDcnLOkaisFvOINQvsYaBD9ROWTX00k4q2lxZT9oJjfbSJlegjS
-         5GD+SOcHYTi7TqlE/b3u8E70GYK7T/73PHyyRYRJee2RLY5bGv2FiNs3VTg8kgkiXf8y
-         LQEN539+FVp//KzJVqb4O2O7//UbhoYo/Wj7C8tjrbvdptXYl05DA6fsllEAN5sxi2cA
-         Fngw==
+        Tue, 23 Aug 2022 11:12:09 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 270C0CD
+        for <linux-kernel@vger.kernel.org>; Tue, 23 Aug 2022 03:22:16 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1661250098;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=pQgsmCPlb+zxinxjCoRmOdMYgNutUmbY+EPSFFWc23Q=;
+        b=CZMjzp02fREgYFPGY5tlSfiMRziXd8VzJrN9bKdbLiQnbNBccwDAg4bMcx2OuuIuhpT8ml
+        CBDDDtr1NUqHI5RThVM3Wbac2EEfLefBq7EkZoA+RQpRd7a/kF0wCt4Wg6Bf1ug60B4mno
+        XqiPdEm0bGMWsIAONICua2WPfVnyVXQ=
+Received: from mail-wr1-f72.google.com (mail-wr1-f72.google.com
+ [209.85.221.72]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
+ us-mta-456-O0o1BMRhOM-NYi4o6WwSOw-1; Tue, 23 Aug 2022 06:21:37 -0400
+X-MC-Unique: O0o1BMRhOM-NYi4o6WwSOw-1
+Received: by mail-wr1-f72.google.com with SMTP id r23-20020adfa157000000b00225660d47b7so272452wrr.6
+        for <linux-kernel@vger.kernel.org>; Tue, 23 Aug 2022 03:21:36 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:mime-version:x-gm-message-state
-         :from:to:cc;
-        bh=rcpUjo+cyhxrF2PUlntwQQeQhblXyhNJQMZ6x8R4WfU=;
-        b=FoWhDGrpddOj0ZCRXUKsrHJvndZimX2mq7PbPdbVCkBsu49IQTsuuBL6nGzUMLGSjc
-         KA7vf4wb6Qgb2W5Zx3Pq2gzxyUfsMPOgbH6On+/2tE3tWAvUg5xHGUdK+3dAFnu5zks1
-         ei/c+5/D/AcJEqfUof9OTHOYM4SRteIrrdaRBdMa30fQkY4fyVD0OWAVcstODneoCbCU
-         hVkOPIH6bwG00NVxur9537eIHyXBqq7Njyyda9ei5S4rxCA+9KuJYiZzIyAurQeneT93
-         B3XpD8xsmX0v656nSfDp4A0XC97kEyUCN6NwZXXnq2XWpHYfP2iaw6KYhP6yd11mdpXo
-         ApqQ==
-X-Gm-Message-State: ACgBeo1iyxU4fJlqTDkavujx6wqClM6PKVNHZc39v+KBGdLOzXnIK7xU
-        SaGSrA54UozeHA+DpHf3dWZxrwGqC4LZuPFFNc+VcIM7xs76CA==
-X-Google-Smtp-Source: AA6agR6NV/6jojdTjYjTVv3lqUiVn7Xxllsko6ljv3UJddHUctRmt+3eGXXi1SJS8oCEFxsto2JNt1A8K7u5y7RNmb0=
-X-Received: by 2002:a17:906:fe46:b0:73d:939a:ec99 with SMTP id
- wz6-20020a170906fe4600b0073d939aec99mr3100308ejb.169.1661249657957; Tue, 23
- Aug 2022 03:14:17 -0700 (PDT)
+        h=content-transfer-encoding:in-reply-to:subject:organization:from
+         :references:cc:to:content-language:user-agent:mime-version:date
+         :message-id:x-gm-message-state:from:to:cc;
+        bh=pQgsmCPlb+zxinxjCoRmOdMYgNutUmbY+EPSFFWc23Q=;
+        b=aLF4flKUjrxYotzzSBazJhhbX6n4X0RURTem51BiGOEXm2QzkZdM/e8aq28NeB6jZq
+         LjNbgjmcOcjpDGDYaAzQ2boa2uYveOn/mxeBZivv1CwtM2n6vfPxRMVPEPtKsuYQ3ZcI
+         TjJzGelOpbesoJilSQnGZqnj0WnvVSgEql0X84mRWKzZabskood5ogoB8HkBisLl1oh3
+         OjOh84nzvTDV4x4oWhSVVSlwjJqjs2LZwr7sbHW3fuWBDHIcPJVXuCzImUsm09tOGQt0
+         y3QTl6nJ+9p7lFjGNE4vidK0eZTIfp7drxDVrH4CRKUG90zHwwST544bJEnkZHj3JrZd
+         pKZw==
+X-Gm-Message-State: ACgBeo2iySlaE25lMk0li2eCn/ZRcXPwnWu8e90PjIA7V6yc/aMakurb
+        nyplV6igI0NWz6tabuP481oKP8oGH2ykV+h3NPCE9Dcar7+g+7vcG3KLj2nGRDkGCLhSXmTbHk3
+        AxPfoJmeC4vAAcWrCYvNKFHL7
+X-Received: by 2002:a1c:7c18:0:b0:3a5:aaae:d203 with SMTP id x24-20020a1c7c18000000b003a5aaaed203mr1753541wmc.2.1661250095732;
+        Tue, 23 Aug 2022 03:21:35 -0700 (PDT)
+X-Google-Smtp-Source: AA6agR5jY1+l93jubKbrfBeLVufXcUK74eww7Bkgb5AljLD0KmIpk2K/goe1cipCs3utuQsv7ZHgIg==
+X-Received: by 2002:a1c:7c18:0:b0:3a5:aaae:d203 with SMTP id x24-20020a1c7c18000000b003a5aaaed203mr1753517wmc.2.1661250095401;
+        Tue, 23 Aug 2022 03:21:35 -0700 (PDT)
+Received: from ?IPV6:2003:cb:c70b:1600:c48b:1fab:a330:5182? (p200300cbc70b1600c48b1faba3305182.dip0.t-ipconnect.de. [2003:cb:c70b:1600:c48b:1fab:a330:5182])
+        by smtp.gmail.com with ESMTPSA id t185-20020a1c46c2000000b003a673055e68sm5361666wma.0.2022.08.23.03.21.34
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 23 Aug 2022 03:21:34 -0700 (PDT)
+Message-ID: <60933ffc-b850-976c-78a0-0ee6e0ea9ef0@redhat.com>
+Date:   Tue, 23 Aug 2022 12:21:34 +0200
 MIME-Version: 1.0
-From:   Naresh Kamboju <naresh.kamboju@linaro.org>
-Date:   Tue, 23 Aug 2022 15:44:06 +0530
-Message-ID: <CA+G9fYsm_2WZncWJbwkJkbnOJFvnC76jQdUWkHhyih4GRKjMGg@mail.gmail.com>
-Subject: [next] mm/pagewalk.c:318:12: error: variable 'err' is used
- uninitialized whenever 'if' condition is false [-Werror,-Wsometimes-uninitialized]
-To:     open list <linux-kernel@vger.kernel.org>,
-        Linux-Next Mailing List <linux-next@vger.kernel.org>,
-        regressions@lists.linux.dev, lkft-triage@lists.linaro.org,
-        linux-mm <linux-mm@kvack.org>
-Cc:     Rolf Eike Beer <eb@emlix.com>,
-        Andrew Morton <akpm@linux-foundation.org>
-Content-Type: text/plain; charset="UTF-8"
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.11.0
+Content-Language: en-US
+To:     Muchun Song <songmuchun@bytedance.com>, gregkh@linuxfoundation.org,
+        rafael@kernel.org, mike.kravetz@oracle.com,
+        akpm@linux-foundation.org, osalvador@suse.de, andi@firstfloor.org
+Cc:     linux-kernel@vger.kernel.org, linux-mm@kvack.org,
+        muchun.song@linux.dev
+References: <20220819080029.12241-1-songmuchun@bytedance.com>
+From:   David Hildenbrand <david@redhat.com>
+Organization: Red Hat
+Subject: Re: [PATCH RESEND] mm: hugetlb: simplify per-node sysfs creation and
+ removal
+In-Reply-To: <20220819080029.12241-1-songmuchun@bytedance.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-x86_64 defconfig builds failed on Linux next-20220823 tag with clang toolchain.
+On 19.08.22 10:00, Muchun Song wrote:
+> The following commit offload per-node sysfs creation and removal to a kworker and
+> did not say why it is needed.  And it also said "I don't know that this is
+> absolutely required".  It seems like the author was not sure as well.  Since it
+> only complicates the code, this patch will revert the changes to simplify the code.
+> 
+>   39da08cb074c ("hugetlb: offload per node attribute registrations")
+> 
+> We could use memory hotplug notifier to do per-node sysfs creation and removal
+> instead of inserting those operations to node registration and unregistration.
+> Then, it can reduce the code coupling between node.c and hugetlb.c.  Also, it can
+> simplify the code.
+> 
+> Signed-off-by: Muchun Song <songmuchun@bytedance.com>
 
-Reported-by: Linux Kernel Functional Testing <lkft@linaro.org>
 
-Regressions found on x86_64:
-   - build-clang-13-x86_64_defconfig
-   - build-clang-14-lkftconfig-kcsan
-   - build-clang-nightly-lkftconfig
-   - build-clang-11-x86_64_defconfig
-   - build-clang-14-lkftconfig
-   - build-clang-nightly-x86_64_defconfig
-   - build-clang-14-x86_64_defconfig
-   - build-clang-13-lkftconfig
-   - build-clang-12-x86_64_defconfig
-   - build-clang-12-lkftconfig
+[...]
 
-Regressions found on i386:
-   - build-clang-11-defconfig
-   - build-clang-nightly-lkftconfig
-   - build-clang-nightly-defconfig
-   - build-clang-14-lkftconfig
-   - build-clang-14-defconfig
-   - build-clang-12-defconfig
-   - build-clang-13-lkftconfig
-   - build-clang-13-defconfig
-   - build-clang-12-lkftconfig
+> @@ -683,7 +626,6 @@ static int register_node(struct node *node, int num)
+>  void unregister_node(struct node *node)
+>  {
+>  	compaction_unregister_node(node);
+> -	hugetlb_unregister_node(node);		/* no-op, if memoryless node */
+>  	node_remove_accesses(node);
+>  	node_remove_caches(node);
+>  	device_unregister(&node->dev);
+> @@ -905,74 +847,8 @@ void register_memory_blocks_under_node(int nid, unsigned long start_pfn,
+>  			   (void *)&nid, func);
+>  	return;
+>  }
 
-make --silent --keep-going --jobs=8 O=/home/tux   -
-build-.cache/tuxmake/builds/1/build LLVM=1 LLVM_IAS=1 ARCH=x86_64
-CROSS_COMPILE=x86_64-linux-gnu- 'HOSTCC=sccache clang' 'CC=sccache
-clang' olddefconfig
-.config:5286:warning: override: UNWINDER_FRAME_POINTER changes choice state
-make --silent --keep-going --jobs=8 O=/home/tux   -
-build-.cache/tuxmake/builds/1/build LLVM=1 LLVM_IAS=1 ARCH=x86_64
-CROSS_COMPILE=x86_64-linux-gnu- 'HOSTCC=sccache clang' 'CC=sccache
-clang'
+[...]
 
-mm/pagewalk.c:318:12: error: variable 'err' is used uninitialized
-whenever 'if' condition is false [-Werror,-Wsometimes-uninitialized]
-                else if (ops->pte_hole)
-                         ^~~~~~~~~~~~~
-mm/pagewalk.c:321:7: note: uninitialized use occurs here
-                if (err)
-                    ^~~
-mm/pagewalk.c:318:8: note: remove the 'if' if its condition is always true
-                else if (ops->pte_hole)
-                     ^~~~~~~~~~~~~~~~~~
-mm/pagewalk.c:311:10: note: initialize the variable 'err' to silence
-this warning
-                int err;
-                       ^
-                        = 0
-1 error generated.
+>  	/*
+>  	 * Create all node devices, which will properly link the node
+>  	 * to applicable memory block devices and already created cpu devices.
+> diff --git a/include/linux/node.h b/include/linux/node.h
+> index 40d641a8bfb0..ea817b507f54 100644
+> --- a/include/linux/node.h
+> +++ b/include/linux/node.h
+> @@ -2,15 +2,15 @@
+>  /*
+>   * include/linux/node.h - generic node definition
+>   *
+> - * This is mainly for topological representation. We define the 
+> - * basic 'struct node' here, which can be embedded in per-arch 
+> + * This is mainly for topological representation. We define the
+> + * basic 'struct node' here, which can be embedded in per-arch
+>   * definitions of processors.
+>   *
+>   * Basic handling of the devices is done in drivers/base/node.c
+> - * and system devices are handled in drivers/base/sys.c. 
+> + * and system devices are handled in drivers/base/sys.c.
+>   *
+>   * Nodes are exported via driverfs in the class/node/devices/
+> - * directory. 
+> + * directory.
 
-metadata:
-Build: https://builds.tuxbuild.com/2DkF28RfJ2VeMSGwDNhsXXu3dbo/
-config: https://builds.tuxbuild.com/2DkF28RfJ2VeMSGwDNhsXXu3dbo/config
-git_describe: next-20220823
-git_repo: https://gitlab.com/Linaro/lkft/mirrors/next/linux-next
-git_sha: 05477f3653b82d8b3bcf39d2937d9893124976db
-git_short_log: 05477f3653b8 ("Add linux-next specific files for 20220823")
-toolchain: clang
+Unrelated changes.
 
-Steps to reproduce:
-------------------------
-# To install tuxmake on your system globally:
-# sudo pip3 install -U tuxmake
-#
-# See https://docs.tuxmake.org/ for complete documentation.
-# Original tuxmake command with fragments listed below.
+>   */
+>  #ifndef _LINUX_NODE_H_
+>  #define _LINUX_NODE_H_
+> @@ -18,7 +18,6 @@
+>  #include <linux/device.h>
+>  #include <linux/cpumask.h>
+>  #include <linux/list.h>
+> -#include <linux/workqueue.h>
+>  
+>  /**
+>   * struct node_hmem_attrs - heterogeneous memory performance attributes
+> @@ -84,10 +83,6 @@ static inline void node_set_perf_attrs(unsigned int nid,
+>  struct node {
+>  	struct device	dev;
+>  	struct list_head access_list;
+> -
+> -#if defined(CONFIG_MEMORY_HOTPLUG) && defined(CONFIG_HUGETLBFS)
+> -	struct work_struct	node_work;
+> -#endif
+>  #ifdef CONFIG_HMEM_REPORTING
+>  	struct list_head cache_attrs;
+>  	struct device *cache_dev;
+> @@ -96,7 +91,6 @@ struct node {
+>  
+>  struct memory_block;
+>  extern struct node *node_devices[];
+> -typedef  void (*node_registration_func_t)(struct node *);
+>  
+>  #if defined(CONFIG_MEMORY_HOTPLUG) && defined(CONFIG_NUMA)
+>  void register_memory_blocks_under_node(int nid, unsigned long start_pfn,
+> @@ -144,11 +138,6 @@ extern void unregister_memory_block_under_nodes(struct memory_block *mem_blk);
+>  extern int register_memory_node_under_compute_node(unsigned int mem_nid,
+>  						   unsigned int cpu_nid,
+>  						   unsigned access);
+> -
+> -#ifdef CONFIG_HUGETLBFS
+> -extern void register_hugetlbfs_with_node(node_registration_func_t doregister,
+> -					 node_registration_func_t unregister);
+> -#endif
+>  #else
+>  static inline void node_dev_init(void)
+>  {
+> @@ -176,11 +165,6 @@ static inline int unregister_cpu_under_node(unsigned int cpu, unsigned int nid)
+>  static inline void unregister_memory_block_under_nodes(struct memory_block *mem_blk)
+>  {
+>  }
+> -
+> -static inline void register_hugetlbfs_with_node(node_registration_func_t reg,
+> -						node_registration_func_t unreg)
+> -{
+> -}
+>  #endif
+>  
+>  #define to_node(device) container_of(device, struct node, dev)
+> diff --git a/mm/hugetlb.c b/mm/hugetlb.c
+> index 536a52c29035..9a72499486c1 100644
+> --- a/mm/hugetlb.c
+> +++ b/mm/hugetlb.c
+> @@ -33,6 +33,7 @@
+>  #include <linux/migrate.h>
+>  #include <linux/nospec.h>
+>  #include <linux/delayacct.h>
+> +#include <linux/memory.h>
+>  
+>  #include <asm/page.h>
+>  #include <asm/pgalloc.h>
+> @@ -3967,19 +3968,19 @@ static void hugetlb_unregister_node(struct node *node)
+>   * Register hstate attributes for a single node device.
+>   * No-op if attributes already registered.
+>   */
+> -static void hugetlb_register_node(struct node *node)
+> +static int hugetlb_register_node(struct node *node)
+>  {
+>  	struct hstate *h;
+>  	struct node_hstate *nhs = &node_hstates[node->dev.id];
+>  	int err;
+>  
+>  	if (nhs->hugepages_kobj)
+> -		return;		/* already allocated */
+> +		return 0;		/* already allocated */
+>  
+>  	nhs->hugepages_kobj = kobject_create_and_add("hugepages",
+>  							&node->dev.kobj);
+>  	if (!nhs->hugepages_kobj)
+> -		return;
+> +		return -ENOMEM;
+>  
+>  	for_each_hstate(h) {
+>  		err = hugetlb_sysfs_add_hstate(h, nhs->hugepages_kobj,
+> @@ -3989,9 +3990,28 @@ static void hugetlb_register_node(struct node *node)
+>  			pr_err("HugeTLB: Unable to add hstate %s for node %d\n",
+>  				h->name, node->dev.id);
+>  			hugetlb_unregister_node(node);
+> -			break;
+> +			return -ENOMEM;
+>  		}
+>  	}
+> +	return 0;
+> +}
+> +
+> +static int __meminit hugetlb_memory_callback(struct notifier_block *self,
+> +					     unsigned long action, void *arg)
+> +{
+> +	int ret = 0;
+> +	struct memory_notify *mnb = arg;
+> +	int nid = mnb->status_change_nid;
+> +
+> +	if (nid == NUMA_NO_NODE)
+> +		return NOTIFY_DONE;
+> +
+> +	if (action == MEM_GOING_ONLINE)
+> +		ret = hugetlb_register_node(node_devices[nid]);
+> +	else if (action == MEM_CANCEL_ONLINE || action == MEM_OFFLINE)
+> +		hugetlb_unregister_node(node_devices[nid]);
+> +
+> +	return notifier_from_errno(ret);
+>  }
+>  
+>  /*
+> @@ -4003,18 +4023,11 @@ static void __init hugetlb_register_all_nodes(void)
+>  {
+>  	int nid;
+>  
+> -	for_each_node_state(nid, N_MEMORY) {
+> -		struct node *node = node_devices[nid];
+> -		if (node->dev.id == nid)
+> -			hugetlb_register_node(node);
+> -	}
+> -
+> -	/*
+> -	 * Let the node device driver know we're here so it can
+> -	 * [un]register hstate attributes on node hotplug.
+> -	 */
+> -	register_hugetlbfs_with_node(hugetlb_register_node,
+> -				     hugetlb_unregister_node);
+> +	get_online_mems();
+> +	hotplug_memory_notifier(hugetlb_memory_callback, 0);
+> +	for_each_node_state(nid, N_MEMORY)
+> +		hugetlb_register_node(node_devices[nid]);
+> +	put_online_mems();
+>  }
+>  #else	/* !CONFIG_NUMA */
 
-# tuxmake --runtime podman --target-arch x86_64 --toolchain clang-14
---kconfig x86_64_defconfig LLVM=1 LLVM_IAS=1
+Do we really *need* the memory hotplug notifier and the added complexity
+due for handling memory-less nodes?
 
---
-Linaro LKFT
-https://lkft.linaro.org
+Why can't we simply register/unregister sysfs entries in
+register_node/unregister_node and call it a day?
+
+TBH, we should just have sysfs entries for memory-less nodes and not
+care about such (corner) cases.
+
+
+-- 
+Thanks,
+
+David / dhildenb
+
