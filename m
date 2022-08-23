@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6DF87C54EEB
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 58B4FC52D7A
 	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 10:42:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356363AbiHWKmD (ORCPT
+        id S1356336AbiHWKl6 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 06:42:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52626 "EHLO
+        Tue, 23 Aug 2022 06:41:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51680 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354779AbiHWK3R (ORCPT
+        with ESMTP id S244071AbiHWK2r (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 06:29:17 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 394B8844EE;
-        Tue, 23 Aug 2022 02:06:16 -0700 (PDT)
+        Tue, 23 Aug 2022 06:28:47 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B2357A4B2D;
+        Tue, 23 Aug 2022 02:06:11 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 721E3B81C86;
-        Tue, 23 Aug 2022 09:06:14 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9E7B1C433C1;
-        Tue, 23 Aug 2022 09:06:12 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id A8C526159E;
+        Tue, 23 Aug 2022 09:06:10 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 67BB1C433D6;
+        Tue, 23 Aug 2022 09:06:08 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661245573;
-        bh=JE7U2DwI2Vi5ZdWxe9WFbt81QvbcBOFm9AeVIF6LAMk=;
+        s=korg; t=1661245570;
+        bh=luHBUrRIV4gNJjcdb9dB0gLzv7xn9uBt9hJKAdIwS1c=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=pFTfJYABQwe/+V60Ca/W68PFqSexp7HHap07P0fvb/C/4t09sZoGZS48sh7QidgRw
-         /d8E1y26S0iLzjX4Q9zIGun/66Jaq3/lP4V4Nt8Xz0JkxUdlVuOz4qxQbYMYOEyz3+
-         XwvxyxTXfc0MEZG2bXfp8vYhUTggnlo/VGDDQXS0=
+        b=ll2af/yfryt76RCc2hGw3TCJGPRsBwhqkoQmNCR+uNmtBPr1b9lTL7Qf9lq+UpDiK
+         X+UPw1on9ABXIgc/GYjTXiDmH7F3xpclL0LmY4be/c9uD9Bk4FyVMI49a8ezV8133N
+         r5U6TfoHjtXEnyZiudrv/DEutGTiFHkjdU1F85E4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org, Alan Stern <stern@rowland.harvard.edu>,
         Miaoqian Lin <linmq006@gmail.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.19 121/287] usb: ohci-nxp: Fix refcount leak in ohci_hcd_nxp_probe
-Date:   Tue, 23 Aug 2022 10:24:50 +0200
-Message-Id: <20220823080104.469135781@linuxfoundation.org>
+Subject: [PATCH 4.19 120/287] usb: host: Fix refcount leak in ehci_hcd_ppc_of_probe
+Date:   Tue, 23 Aug 2022 10:24:49 +0200
+Message-Id: <20220823080104.429242261@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220823080100.268827165@linuxfoundation.org>
 References: <20220823080100.268827165@linuxfoundation.org>
@@ -52,34 +52,34 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Miaoqian Lin <linmq006@gmail.com>
 
-[ Upstream commit 302970b4cad3ebfda2c05ce06c322ccdc447d17e ]
+[ Upstream commit b5c5b13cb45e2c88181308186b0001992cb41954 ]
 
-of_parse_phandle() returns a node pointer with refcount
-incremented, we should use of_node_put() on it when not need anymore.
+of_find_compatible_node() returns a node pointer with refcount
+incremented, we should use of_node_put() on it when done.
 Add missing of_node_put() to avoid refcount leak.
 
-Fixes: 73108aa90cbf ("USB: ohci-nxp: Use isp1301 driver")
+Fixes: 796bcae7361c ("USB: powerpc: Workaround for the PPC440EPX USBH_23 errata [take 3]")
 Acked-by: Alan Stern <stern@rowland.harvard.edu>
 Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
-Link: https://lore.kernel.org/r/20220603141231.979-1-linmq006@gmail.com
+Link: https://lore.kernel.org/r/20220602110849.58549-1-linmq006@gmail.com
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/usb/host/ohci-nxp.c | 1 +
+ drivers/usb/host/ehci-ppc-of.c | 1 +
  1 file changed, 1 insertion(+)
 
-diff --git a/drivers/usb/host/ohci-nxp.c b/drivers/usb/host/ohci-nxp.c
-index f5f532601092..a964a93ff35b 100644
---- a/drivers/usb/host/ohci-nxp.c
-+++ b/drivers/usb/host/ohci-nxp.c
-@@ -153,6 +153,7 @@ static int ohci_hcd_nxp_probe(struct platform_device *pdev)
+diff --git a/drivers/usb/host/ehci-ppc-of.c b/drivers/usb/host/ehci-ppc-of.c
+index 576f7d79ad4e..d1dc644b215c 100644
+--- a/drivers/usb/host/ehci-ppc-of.c
++++ b/drivers/usb/host/ehci-ppc-of.c
+@@ -148,6 +148,7 @@ static int ehci_hcd_ppc_of_probe(struct platform_device *op)
+ 		} else {
+ 			ehci->has_amcc_usb23 = 1;
+ 		}
++		of_node_put(np);
  	}
  
- 	isp1301_i2c_client = isp1301_get_client(isp1301_node);
-+	of_node_put(isp1301_node);
- 	if (!isp1301_i2c_client)
- 		return -EPROBE_DEFER;
- 
+ 	if (of_get_property(dn, "big-endian", NULL)) {
 -- 
 2.35.1
 
