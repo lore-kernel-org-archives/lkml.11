@@ -2,112 +2,174 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 740DEC28D13
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 02:06:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3FA89C32774
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 02:07:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239499AbiHWCGh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 22 Aug 2022 22:06:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34876 "EHLO
+        id S239500AbiHWCHa (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 22 Aug 2022 22:07:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35958 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239483AbiHWCGb (ORCPT
+        with ESMTP id S239468AbiHWCH2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 22 Aug 2022 22:06:31 -0400
-Received: from szxga03-in.huawei.com (szxga03-in.huawei.com [45.249.212.189])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 38DC012AF5
-        for <linux-kernel@vger.kernel.org>; Mon, 22 Aug 2022 19:06:29 -0700 (PDT)
-Received: from kwepemi500012.china.huawei.com (unknown [172.30.72.56])
-        by szxga03-in.huawei.com (SkyGuard) with ESMTP id 4MBXbz6gJrzGpgt;
-        Tue, 23 Aug 2022 10:04:47 +0800 (CST)
-Received: from [10.67.110.176] (10.67.110.176) by
- kwepemi500012.china.huawei.com (7.221.188.12) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Tue, 23 Aug 2022 10:06:25 +0800
-Subject: Re: [PATCH next] audit: fix potential double free on error path from
- fsnotify_add_inode_mark
-To:     Paul Moore <paul@paul-moore.com>, Jan Kara <jack@suse.cz>,
-        <cuigaosheng1@huawei.com>
-CC:     <eparis@redhat.com>, <mszeredi@redhat.com>, <amir73il@gmail.com>,
-        <linux-audit@redhat.com>, <linux-kernel@vger.kernel.org>
-References: <20220822022905.1949007-1-cuigaosheng1@huawei.com>
- <20220822085050.hxj6qmgj2x2tj6uv@quack3>
- <CAHC9VhSw0zJWQEm-GCzQy_-4-X-yVuzvX1wBFcYMkG1mOXy+BA@mail.gmail.com>
- <20220822152055.hitwrvi3lmldhcgx@quack3>
- <CAHC9VhQoTHZ4SFz2k7=2OLKFdrpmxq8ei-sNDNfV0MFtJsqpFg@mail.gmail.com>
- <20220822175907.q35mhoqdtdqxture@quack3>
- <CAHC9VhTpLqvZ7PCi3kn1NE6Sq967wLZA1MgnONUVYa0+j_EXbA@mail.gmail.com>
-From:   cuigaosheng <cuigaosheng1@huawei.com>
-Message-ID: <ab871457-8754-2d06-20f3-7743289d1ae9@huawei.com>
-Date:   Tue, 23 Aug 2022 10:06:24 +0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
- Thunderbird/78.6.1
+        Mon, 22 Aug 2022 22:07:28 -0400
+Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9031811C10;
+        Mon, 22 Aug 2022 19:07:27 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1661220447; x=1692756447;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=4cmZW6Vu98JaUut+RBH8civw9HwCH7BhKgrjabJJBRo=;
+  b=L8UpMC4VqWZA4FSBImjHRXH3ychD4rNc4f1CWqZQ0q0igLuG6lcnV6ag
+   PmHQzEIfrju+6edMQXORTECgHXJFYnWI/3JSaiWDwNC9CtES5jf+spEQx
+   0JfRnKTNHgXhed8OL3uEQqg8a2FhV+fZochFKg5zawKjnvgRfi3mX0ERp
+   rn+7BlLmGYqZrVH3tYfbqyJH8Qepn+jx8R9thrCS5R1qAgmeY5nLLdrPI
+   A9ECU7bNn92htWQ/7VAxtVDzidVAiBBFs0PwR+btLd4I2QDQMslRiZ8Cd
+   dOmSeA2+dqw8c5/hOJAvr2U8B47lV+lGlluEHVD0jMG/0F4vavavDErJJ
+   A==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10447"; a="379858758"
+X-IronPort-AV: E=Sophos;i="5.93,256,1654585200"; 
+   d="scan'208";a="379858758"
+Received: from fmsmga003.fm.intel.com ([10.253.24.29])
+  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Aug 2022 19:07:27 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.93,256,1654585200"; 
+   d="scan'208";a="698506673"
+Received: from lkp-server01.sh.intel.com (HELO dd9b29378baa) ([10.239.97.150])
+  by FMSMGA003.fm.intel.com with ESMTP; 22 Aug 2022 19:07:23 -0700
+Received: from kbuild by dd9b29378baa with local (Exim 4.96)
+        (envelope-from <lkp@intel.com>)
+        id 1oQJK6-00012F-2y;
+        Tue, 23 Aug 2022 02:07:22 +0000
+Date:   Tue, 23 Aug 2022 10:07:19 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Serge Semin <Sergey.Semin@baikalelectronics.ru>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzk@kernel.org>,
+        Bjorn Helgaas <helgaas@kernel.org>,
+        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
+        Jingoo Han <jingoohan1@gmail.com>,
+        Gustavo Pimentel <gustavo.pimentel@synopsys.com>,
+        Krzysztof =?utf-8?Q?Wilczy=C5=84ski?= <kw@linux.com>
+Cc:     kbuild-all@lists.01.org,
+        Serge Semin <Sergey.Semin@baikalelectronics.ru>,
+        Alexey Malahov <Alexey.Malahov@baikalelectronics.ru>,
+        Pavel Parkhomenko <Pavel.Parkhomenko@baikalelectronics.ru>,
+        Frank Li <Frank.Li@nxp.com>,
+        Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>,
+        linux-pci@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v5 17/20] PCI: dwc: Introduce generic resources getter
+Message-ID: <202208230934.dgkY2hhH-lkp@intel.com>
+References: <20220822184701.25246-18-Sergey.Semin@baikalelectronics.ru>
 MIME-Version: 1.0
-In-Reply-To: <CAHC9VhTpLqvZ7PCi3kn1NE6Sq967wLZA1MgnONUVYa0+j_EXbA@mail.gmail.com>
-Content-Type: text/plain; charset="utf-8"; format=flowed
-Content-Transfer-Encoding: 8bit
-X-Originating-IP: [10.67.110.176]
-X-ClientProxiedBy: dggems705-chm.china.huawei.com (10.3.19.182) To
- kwepemi500012.china.huawei.com (7.221.188.12)
-X-CFilter-Loop: Reflected
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220822184701.25246-18-Sergey.Semin@baikalelectronics.ru>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+Hi Serge,
 
-在 2022/8/23 6:49, Paul Moore 写道:
-> On Mon, Aug 22, 2022 at 1:59 PM Jan Kara <jack@suse.cz> wrote:
->> On Mon 22-08-22 13:39:23, Paul Moore wrote:
->>> On Mon, Aug 22, 2022 at 11:20 AM Jan Kara <jack@suse.cz> wrote:
->>>> On Mon 22-08-22 10:34:15, Paul Moore wrote:
->>>>> On Mon, Aug 22, 2022 at 4:50 AM Jan Kara <jack@suse.cz> wrote:
->>>>>> On Mon 22-08-22 10:29:05, Gaosheng Cui wrote:
->>>>>>> Audit_alloc_mark() assign pathname to audit_mark->path, on error path
->>>>>>> from fsnotify_add_inode_mark(), fsnotify_put_mark will free memory
->>>>>>> of audit_mark->path, but the caller of audit_alloc_mark will free
->>>>>>> the pathname again, so there will be double free problem.
->>>>>>>
->>>>>>> Fix this by resetting audit_mark->path to NULL pointer on error path
->>>>>>> from fsnotify_add_inode_mark().
->>>>>>>
->>>>>>> Fixes: 7b1293234084d ("fsnotify: Add group pointer in fsnotify_init_mark()")
->>>>>>> Signed-off-by: Gaosheng Cui <cuigaosheng1@huawei.com>
->>>>>> Good spotting! The patch looks good to me. Feel free to add:
->>>>>>
->>>>>> Reviewed-by: Jan Kara <jack@suse.cz>
->>>>>>
->>>>>>> ---
->>>>>>>   kernel/audit_fsnotify.c | 1 +
->>>>>>>   1 file changed, 1 insertion(+)
->>>>>>>
->>>>>>> diff --git a/kernel/audit_fsnotify.c b/kernel/audit_fsnotify.c
->>>>>>> index 6432a37ac1c9..c565fbf66ac8 100644
->>>>>>> --- a/kernel/audit_fsnotify.c
->>>>>>> +++ b/kernel/audit_fsnotify.c
->>>>>>> @@ -102,6 +102,7 @@ struct audit_fsnotify_mark *audit_alloc_mark(struct audit_krule *krule, char *pa
->>>>>>>
->>>>>>>        ret = fsnotify_add_inode_mark(&audit_mark->mark, inode, 0);
->>>>>>>        if (ret < 0) {
->>>>>>> +             audit_mark->path = NULL;
->>>>>>>                fsnotify_put_mark(&audit_mark->mark);
->>>>> As I'm tracing the code path from audit through fsnotify, and back
->>>>> into audit, I'm wondering if we still have a problem.  When
->>>>> fsnotify_add_inode_mark() fails it will end up freeing not just
->>>>> audit_mark->path, but audit_mark itself via audit_fsnotify_mark_free()
->>>>> (via a call into fsnotify_put_mark()), yes?
->>>> I don't think so. fsnotify_add_mark_locked() will call fsnotify_put_mark()
->>>> but that is just a counter part to fsnotify_get_mark() a few lines above.
->>>> The caller of fsnotify_add_inode_mark() still holds its own mark reference
->>>> which prevents mark from being freed.
->>> Okay, that sounds reasonable, but I'm still looking for a code path
->>> that only frees audit_mark:path and not the audit_mark itself.  What
->>> am I not seeing?
->> The callers of audit_alloc_mark() call kfree(path) if audit_alloc_mark()
->> returns error (which is a sensible thing because in some cases path indeed
->> needs freeing).
-> Of course!  Thanks for that, I think I got a bit of tunnel vision on
-> this for some reason.
->
-> I'll merge this into audit/stable-6.0 now and once testing is complete
-> I'll send it up to Linus.  Thanks everyone!
+I love your patch! Yet something to improve:
 
-Thanks for taking the time to review this patch. Thanks everyone!
+[auto build test ERROR on helgaas-pci/next]
+[also build test ERROR on robh/for-next linus/master v6.0-rc2 next-20220822]
+[cannot apply to krzk-dt/for-next]
+[If your patch is applied to the wrong git tree, kindly drop us a note.
+And when submitting patch, we suggest to use '--base' as documented in
+https://git-scm.com/docs/git-format-patch#_base_tree_information]
 
+url:    https://github.com/intel-lab-lkp/linux/commits/Serge-Semin/PCI-dwc-Add-generic-resources-and-Baikal-T1-support/20220823-025041
+base:   https://git.kernel.org/pub/scm/linux/kernel/git/helgaas/pci.git next
+config: openrisc-randconfig-r001-20220821 (https://download.01.org/0day-ci/archive/20220823/202208230934.dgkY2hhH-lkp@intel.com/config)
+compiler: or1k-linux-gcc (GCC) 12.1.0
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # https://github.com/intel-lab-lkp/linux/commit/224f55689ef22eddaeb641cf793de934a60e1be9
+        git remote add linux-review https://github.com/intel-lab-lkp/linux
+        git fetch --no-tags linux-review Serge-Semin/PCI-dwc-Add-generic-resources-and-Baikal-T1-support/20220823-025041
+        git checkout 224f55689ef22eddaeb641cf793de934a60e1be9
+        # save the config file
+        mkdir build_dir && cp config build_dir/.config
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-12.1.0 make.cross W=1 O=build_dir ARCH=openrisc SHELL=/bin/bash drivers/pci/controller/dwc/
+
+If you fix the issue, kindly add following tag where applicable
+Reported-by: kernel test robot <lkp@intel.com>
+
+All errors (new ones prefixed by >>):
+
+   drivers/pci/controller/dwc/pcie-designware-ep.c: In function 'dw_pcie_ep_init':
+>> drivers/pci/controller/dwc/pcie-designware-ep.c:734:35: error: 'np' undeclared (first use in this function); did you mean 'ep'?
+     734 |         ret = of_property_read_u8(np, "max-functions", &epc->max_functions);
+         |                                   ^~
+         |                                   ep
+   drivers/pci/controller/dwc/pcie-designware-ep.c:734:35: note: each undeclared identifier is reported only once for each function it appears in
+
+
+vim +734 drivers/pci/controller/dwc/pcie-designware-ep.c
+
+e966f7390da935e drivers/pci/controller/dwc/pcie-designware-ep.c Vidya Sagar            2020-02-17  678  
+e966f7390da935e drivers/pci/controller/dwc/pcie-designware-ep.c Vidya Sagar            2020-02-17  679  int dw_pcie_ep_init(struct dw_pcie_ep *ep)
+e966f7390da935e drivers/pci/controller/dwc/pcie-designware-ep.c Vidya Sagar            2020-02-17  680  {
+f8aed6ec624fb43 drivers/pci/dwc/pcie-designware-ep.c            Kishon Vijay Abraham I 2017-03-27  681  	int ret;
+f8aed6ec624fb43 drivers/pci/dwc/pcie-designware-ep.c            Kishon Vijay Abraham I 2017-03-27  682  	void *addr;
+47a062609a30d82 drivers/pci/controller/dwc/pcie-designware-ep.c Xiaowei Bao            2020-09-18  683  	u8 func_no;
+a0fd361db8e508b drivers/pci/controller/dwc/pcie-designware-ep.c Rob Herring            2020-11-05  684  	struct resource *res;
+f8aed6ec624fb43 drivers/pci/dwc/pcie-designware-ep.c            Kishon Vijay Abraham I 2017-03-27  685  	struct pci_epc *epc;
+f8aed6ec624fb43 drivers/pci/dwc/pcie-designware-ep.c            Kishon Vijay Abraham I 2017-03-27  686  	struct dw_pcie *pci = to_dw_pcie_from_ep(ep);
+f8aed6ec624fb43 drivers/pci/dwc/pcie-designware-ep.c            Kishon Vijay Abraham I 2017-03-27  687  	struct device *dev = pci->dev;
+a0fd361db8e508b drivers/pci/controller/dwc/pcie-designware-ep.c Rob Herring            2020-11-05  688  	struct platform_device *pdev = to_platform_device(dev);
+e966f7390da935e drivers/pci/controller/dwc/pcie-designware-ep.c Vidya Sagar            2020-02-17  689  	const struct pci_epc_features *epc_features;
+47a062609a30d82 drivers/pci/controller/dwc/pcie-designware-ep.c Xiaowei Bao            2020-09-18  690  	struct dw_pcie_ep_func *ep_func;
+47a062609a30d82 drivers/pci/controller/dwc/pcie-designware-ep.c Xiaowei Bao            2020-09-18  691  
+47a062609a30d82 drivers/pci/controller/dwc/pcie-designware-ep.c Xiaowei Bao            2020-09-18  692  	INIT_LIST_HEAD(&ep->func_list);
+f8aed6ec624fb43 drivers/pci/dwc/pcie-designware-ep.c            Kishon Vijay Abraham I 2017-03-27  693  
+224f55689ef22ed drivers/pci/controller/dwc/pcie-designware-ep.c Serge Semin            2022-08-22  694  	ret = dw_pcie_get_resources(pci);
+224f55689ef22ed drivers/pci/controller/dwc/pcie-designware-ep.c Serge Semin            2022-08-22  695  	if (ret)
+224f55689ef22ed drivers/pci/controller/dwc/pcie-designware-ep.c Serge Semin            2022-08-22  696  		return ret;
+f8aed6ec624fb43 drivers/pci/dwc/pcie-designware-ep.c            Kishon Vijay Abraham I 2017-03-27  697  
+a0fd361db8e508b drivers/pci/controller/dwc/pcie-designware-ep.c Rob Herring            2020-11-05  698  	res = platform_get_resource_byname(pdev, IORESOURCE_MEM, "addr_space");
+a0fd361db8e508b drivers/pci/controller/dwc/pcie-designware-ep.c Rob Herring            2020-11-05  699  	if (!res)
+a0fd361db8e508b drivers/pci/controller/dwc/pcie-designware-ep.c Rob Herring            2020-11-05  700  		return -EINVAL;
+a0fd361db8e508b drivers/pci/controller/dwc/pcie-designware-ep.c Rob Herring            2020-11-05  701  
+a0fd361db8e508b drivers/pci/controller/dwc/pcie-designware-ep.c Rob Herring            2020-11-05  702  	ep->phys_base = res->start;
+a0fd361db8e508b drivers/pci/controller/dwc/pcie-designware-ep.c Rob Herring            2020-11-05  703  	ep->addr_size = resource_size(res);
+a0fd361db8e508b drivers/pci/controller/dwc/pcie-designware-ep.c Rob Herring            2020-11-05  704  
+13e9d3900c20247 drivers/pci/controller/dwc/pcie-designware-ep.c Serge Semin            2022-06-24  705  	dw_pcie_version_detect(pci);
+13e9d3900c20247 drivers/pci/controller/dwc/pcie-designware-ep.c Serge Semin            2022-06-24  706  
+e3dc79adfac96d7 drivers/pci/controller/dwc/pcie-designware-ep.c Serge Semin            2022-06-24  707  	dw_pcie_iatu_detect(pci);
+e3dc79adfac96d7 drivers/pci/controller/dwc/pcie-designware-ep.c Serge Semin            2022-06-24  708  
+6be6f8529bd7f3e drivers/pci/controller/dwc/pcie-designware-ep.c Christophe JAILLET     2022-07-09  709  	ep->ib_window_map = devm_bitmap_zalloc(dev, pci->num_ib_windows,
+ad4a5becc689c3f drivers/pci/dwc/pcie-designware-ep.c            Niklas Cassel          2017-12-14  710  					       GFP_KERNEL);
+ad4a5becc689c3f drivers/pci/dwc/pcie-designware-ep.c            Niklas Cassel          2017-12-14  711  	if (!ep->ib_window_map)
+ad4a5becc689c3f drivers/pci/dwc/pcie-designware-ep.c            Niklas Cassel          2017-12-14  712  		return -ENOMEM;
+ad4a5becc689c3f drivers/pci/dwc/pcie-designware-ep.c            Niklas Cassel          2017-12-14  713  
+6be6f8529bd7f3e drivers/pci/controller/dwc/pcie-designware-ep.c Christophe JAILLET     2022-07-09  714  	ep->ob_window_map = devm_bitmap_zalloc(dev, pci->num_ob_windows,
+ad4a5becc689c3f drivers/pci/dwc/pcie-designware-ep.c            Niklas Cassel          2017-12-14  715  					       GFP_KERNEL);
+ad4a5becc689c3f drivers/pci/dwc/pcie-designware-ep.c            Niklas Cassel          2017-12-14  716  	if (!ep->ob_window_map)
+ad4a5becc689c3f drivers/pci/dwc/pcie-designware-ep.c            Niklas Cassel          2017-12-14  717  		return -ENOMEM;
+f8aed6ec624fb43 drivers/pci/dwc/pcie-designware-ep.c            Kishon Vijay Abraham I 2017-03-27  718  
+9ca17af552bcd28 drivers/pci/controller/dwc/pcie-designware-ep.c Rob Herring            2020-11-05  719  	addr = devm_kcalloc(dev, pci->num_ob_windows, sizeof(phys_addr_t),
+f8aed6ec624fb43 drivers/pci/dwc/pcie-designware-ep.c            Kishon Vijay Abraham I 2017-03-27  720  			    GFP_KERNEL);
+f8aed6ec624fb43 drivers/pci/dwc/pcie-designware-ep.c            Kishon Vijay Abraham I 2017-03-27  721  	if (!addr)
+f8aed6ec624fb43 drivers/pci/dwc/pcie-designware-ep.c            Kishon Vijay Abraham I 2017-03-27  722  		return -ENOMEM;
+f8aed6ec624fb43 drivers/pci/dwc/pcie-designware-ep.c            Kishon Vijay Abraham I 2017-03-27  723  	ep->outbound_addr = addr;
+f8aed6ec624fb43 drivers/pci/dwc/pcie-designware-ep.c            Kishon Vijay Abraham I 2017-03-27  724  
+f8aed6ec624fb43 drivers/pci/dwc/pcie-designware-ep.c            Kishon Vijay Abraham I 2017-03-27  725  	epc = devm_pci_epc_create(dev, &epc_ops);
+f8aed6ec624fb43 drivers/pci/dwc/pcie-designware-ep.c            Kishon Vijay Abraham I 2017-03-27  726  	if (IS_ERR(epc)) {
+b4a8a51caf7de47 drivers/pci/dwc/pcie-designware-ep.c            Gustavo Pimentel       2018-05-14  727  		dev_err(dev, "Failed to create epc device\n");
+f8aed6ec624fb43 drivers/pci/dwc/pcie-designware-ep.c            Kishon Vijay Abraham I 2017-03-27  728  		return PTR_ERR(epc);
+f8aed6ec624fb43 drivers/pci/dwc/pcie-designware-ep.c            Kishon Vijay Abraham I 2017-03-27  729  	}
+f8aed6ec624fb43 drivers/pci/dwc/pcie-designware-ep.c            Kishon Vijay Abraham I 2017-03-27  730  
+4e965ede1856ed6 drivers/pci/controller/dwc/pcie-designware-ep.c Gustavo Pimentel       2018-07-19  731  	ep->epc = epc;
+4e965ede1856ed6 drivers/pci/controller/dwc/pcie-designware-ep.c Gustavo Pimentel       2018-07-19  732  	epc_set_drvdata(epc, ep);
+4e965ede1856ed6 drivers/pci/controller/dwc/pcie-designware-ep.c Gustavo Pimentel       2018-07-19  733  
+f8aed6ec624fb43 drivers/pci/dwc/pcie-designware-ep.c            Kishon Vijay Abraham I 2017-03-27 @734  	ret = of_property_read_u8(np, "max-functions", &epc->max_functions);
+
+-- 
+0-DAY CI Kernel Test Service
+https://01.org/lkp
