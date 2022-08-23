@@ -2,44 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CAE42C32792
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 12:22:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 53F00C32774
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 12:23:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241776AbiHWMWv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 08:22:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57284 "EHLO
+        id S242511AbiHWMW7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 23 Aug 2022 08:22:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55366 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1376322AbiHWMQv (ORCPT
+        with ESMTP id S1376397AbiHWMRB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 08:16:51 -0400
+        Tue, 23 Aug 2022 08:17:01 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C2829ED001;
-        Tue, 23 Aug 2022 02:41:58 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B53C5EE4AE;
+        Tue, 23 Aug 2022 02:42:16 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id C0AD86138B;
-        Tue, 23 Aug 2022 09:41:57 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B46B1C433C1;
-        Tue, 23 Aug 2022 09:41:56 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 5303E614CD;
+        Tue, 23 Aug 2022 09:42:16 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 56A6FC433C1;
+        Tue, 23 Aug 2022 09:42:15 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661247717;
-        bh=5dBZbZXQNfVHSjI8nHnSrIYAGDA/pPykGZHL7T7DMKE=;
+        s=korg; t=1661247735;
+        bh=+gAVzedRg5hbt6VmclYOGXcGsYYb3fqaVr571ioaz00=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=JRt1cvGBT6DcYRPK2PQKP7Ibg6wI7BsaDSY3xfUub163rMAFNPzzlnAtukJq/NBIU
-         w53I52HC1CdO4/BCAqYaHibpzWzkXSs94ltfKQnSvB1bE1FZHLHCGd59lSYir7Abox
-         +Ff8DhQlh2DTynbPw4Vc9Cz2NEEP8H+SFKr6EWlI=
+        b=eI/lZEWdXBRfL8pcgpNtsdWqTYK2kqtiF31AhfEF1H2w489DN9JxBMQtIKcjlUCK5
+         HpAzLx0OFVxoKFS6tskjAzPeE4p3nDl74k+UE/r0xH6yPyj8J4KoimFW7tbwo0Ct4F
+         oTh1CQipM6Yoan1oqxwotik+zO+506SA63dhEL1c=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Chen Guokai <chenguokai17@mails.ucas.ac.cn>,
-        "Masami Hiramatsu (Google)" <mhiramat@kernel.org>,
-        Liao Chang <liaochang1@huawei.com>,
-        Guo Ren <guoren@kernel.org>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 124/158] csky/kprobe: reclaim insn_slot on kprobe unregistration
-Date:   Tue, 23 Aug 2022 10:27:36 +0200
-Message-Id: <20220823080050.907178186@linuxfoundation.org>
+        stable@vger.kernel.org, Guenter Roeck <groeck@chromium.org>,
+        Tzung-Bi Shih <tzungbi@kernel.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.10 103/158] platform/chrome: cros_ec_proto: dont show MKBP version if unsupported
+Date:   Tue, 23 Aug 2022 10:27:15 +0200
+Message-Id: <20220823080050.184064778@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220823080046.056825146@linuxfoundation.org>
 References: <20220823080046.056825146@linuxfoundation.org>
@@ -51,38 +49,45 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Liao Chang <liaochang1@huawei.com>
+From: Tzung-Bi Shih <tzungbi@kernel.org>
 
-[ Upstream commit a2310c74d418deca0f1d749c45f1f43162510f51 ]
+[ Upstream commit b36f0643ff14a2fb281b105418e4e73c9d7c11d0 ]
 
-On kprobe registration kernel allocate one insn_slot for new kprobe,
-but it forget to reclaim the insn_slot on unregistration, leading to a
-potential leakage.
+It wrongly showed the following message when it doesn't support MKBP:
+"MKBP support version 4294967295".
 
-Reported-by: Chen Guokai <chenguokai17@mails.ucas.ac.cn>
-Reviewed-by: Masami Hiramatsu (Google) <mhiramat@kernel.org>
-Signed-off-by: Liao Chang <liaochang1@huawei.com>
-Signed-off-by: Guo Ren <guoren@kernel.org>
+Fix it.
+
+Reviewed-by: Guenter Roeck <groeck@chromium.org>
+Signed-off-by: Tzung-Bi Shih <tzungbi@kernel.org>
+Link: https://lore.kernel.org/r/20220609084957.3684698-14-tzungbi@kernel.org
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/csky/kernel/probes/kprobes.c | 4 ++++
- 1 file changed, 4 insertions(+)
+ drivers/platform/chrome/cros_ec_proto.c | 8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
 
-diff --git a/arch/csky/kernel/probes/kprobes.c b/arch/csky/kernel/probes/kprobes.c
-index 556b9ba61ec0..79272dde72db 100644
---- a/arch/csky/kernel/probes/kprobes.c
-+++ b/arch/csky/kernel/probes/kprobes.c
-@@ -124,6 +124,10 @@ void __kprobes arch_disarm_kprobe(struct kprobe *p)
+diff --git a/drivers/platform/chrome/cros_ec_proto.c b/drivers/platform/chrome/cros_ec_proto.c
+index e1fadf059e05..3a2a78ff3330 100644
+--- a/drivers/platform/chrome/cros_ec_proto.c
++++ b/drivers/platform/chrome/cros_ec_proto.c
+@@ -507,13 +507,13 @@ int cros_ec_query_all(struct cros_ec_device *ec_dev)
+ 	ret = cros_ec_get_host_command_version_mask(ec_dev,
+ 						    EC_CMD_GET_NEXT_EVENT,
+ 						    &ver_mask);
+-	if (ret < 0 || ver_mask == 0)
++	if (ret < 0 || ver_mask == 0) {
+ 		ec_dev->mkbp_event_supported = 0;
+-	else
++	} else {
+ 		ec_dev->mkbp_event_supported = fls(ver_mask);
  
- void __kprobes arch_remove_kprobe(struct kprobe *p)
- {
-+	if (p->ainsn.api.insn) {
-+		free_insn_slot(p->ainsn.api.insn, 0);
-+		p->ainsn.api.insn = NULL;
+-	dev_dbg(ec_dev->dev, "MKBP support version %u\n",
+-		ec_dev->mkbp_event_supported - 1);
++		dev_dbg(ec_dev->dev, "MKBP support version %u\n", ec_dev->mkbp_event_supported - 1);
 +	}
- }
  
- static void __kprobes save_previous_kprobe(struct kprobe_ctlblk *kcb)
+ 	/* Probe if host sleep v1 is supported for S0ix failure detection. */
+ 	ret = cros_ec_get_host_command_version_mask(ec_dev,
 -- 
 2.35.1
 
