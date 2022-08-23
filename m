@@ -2,47 +2,48 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8339DC3F6B0
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 10:07:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 84F19C32796
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 10:07:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352296AbiHWKHU (ORCPT
+        id S1352334AbiHWKH0 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 06:07:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59034 "EHLO
+        Tue, 23 Aug 2022 06:07:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59032 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352424AbiHWKBx (ORCPT
+        with ESMTP id S1352419AbiHWKBx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 23 Aug 2022 06:01:53 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9109E7C1FD;
-        Tue, 23 Aug 2022 01:49:41 -0700 (PDT)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 803518689D;
+        Tue, 23 Aug 2022 01:49:42 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id CB782B81C20;
-        Tue, 23 Aug 2022 08:44:32 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1A1C3C433D6;
-        Tue, 23 Aug 2022 08:44:30 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 89FC361377;
+        Tue, 23 Aug 2022 08:49:41 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8C835C433C1;
+        Tue, 23 Aug 2022 08:49:40 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661244271;
-        bh=QCAT40jz6DzuhbQvwb9GjoIt8t1fPD3p63K10A1Y/jA=;
+        s=korg; t=1661244581;
+        bh=qg+/edhD8Dj7xYw7+5T+IE/jl2tVylbiDANkfdB+QyI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=MaZ/kjbPWpNrdc3rrPMaa2LrF3wRHCOUiwJUBAKsD1cIkOzNgdXEc6mcNWYigOf8M
-         Y5Dcww8aZN/C22gBj9pZ6RJyIU85JkkkMgdHpYxUw1/QTGtFxDlPBN4UHQvhE9mQVx
-         HCly2gaaJGzb/oSAXppSnVEjnSU+IYIkNjH9XnLo=
+        b=XWActTxssoXAYItvce5FDiHp084N0SO/fLQzjev1KwE4YE3bBvfQ6BD/Uv31Toyss
+         Mj3EvA1JMi0oFP+t4CtLMYreIyyPINwR8McAmpz3swzIhmtbLvhX8hbpdqDy6B0C9j
+         Hjv2ovIn0XNsvsfky/UOLDfuPmA2vIZH2Qp9J42g=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Mario Limonciello <mario.limonciello@amd.com>,
-        Basavaraj Natikar <Basavaraj.Natikar@amd.com>,
-        Linus Walleij <linus.walleij@linaro.org>
-Subject: [PATCH 5.15 065/244] pinctrl: amd: Dont save/restore interrupt status and wake status bits
-Date:   Tue, 23 Aug 2022 10:23:44 +0200
-Message-Id: <20220823080101.247252803@linuxfoundation.org>
+        stable@vger.kernel.org, Dan Carpenter <dan.carpenter@oracle.com>,
+        Stefani Seibold <stefani@seibold.net>,
+        Randy Dunlap <randy.dunlap@oracle.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 4.14 130/229] kfifo: fix kfifo_to_user() return type
+Date:   Tue, 23 Aug 2022 10:24:51 +0200
+Message-Id: <20220823080058.362416018@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220823080059.091088642@linuxfoundation.org>
-References: <20220823080059.091088642@linuxfoundation.org>
+In-Reply-To: <20220823080053.202747790@linuxfoundation.org>
+References: <20220823080053.202747790@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -51,64 +52,44 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Basavaraj Natikar <Basavaraj.Natikar@amd.com>
+From: Dan Carpenter <dan.carpenter@oracle.com>
 
-commit b8c824a869f220c6b46df724f85794349bafbf23 upstream.
+[ Upstream commit 045ed31e23aea840648c290dbde04797064960db ]
 
-Saving/restoring interrupt and wake status bits across suspend can
-cause the suspend to fail if an IRQ is serviced across the
-suspend cycle.
+The kfifo_to_user() macro is supposed to return zero for success or
+negative error codes.  Unfortunately, there is a signedness bug so it
+returns unsigned int.  This only affects callers which try to save the
+result in ssize_t and as far as I can see the only place which does that
+is line6_hwdep_read().
 
-Signed-off-by: Mario Limonciello <mario.limonciello@amd.com>
-Signed-off-by: Basavaraj Natikar <Basavaraj.Natikar@amd.com>
-Fixes: 79d2c8bede2c ("pinctrl/amd: save pin registers over suspend/resume")
-Link: https://lore.kernel.org/r/20220613064127.220416-3-Basavaraj.Natikar@amd.com
-Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+TL;DR: s/_uint/_int/.
+
+Link: https://lkml.kernel.org/r/YrVL3OJVLlNhIMFs@kili
+Fixes: 144ecf310eb5 ("kfifo: fix kfifo_alloc() to return a signed int value")
+Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
+Cc: Stefani Seibold <stefani@seibold.net>
+Cc: Randy Dunlap <randy.dunlap@oracle.com>
+Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/pinctrl/pinctrl-amd.c |   11 +++++++++--
- 1 file changed, 9 insertions(+), 2 deletions(-)
+ include/linux/kfifo.h | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/drivers/pinctrl/pinctrl-amd.c
-+++ b/drivers/pinctrl/pinctrl-amd.c
-@@ -912,6 +912,7 @@ static int amd_gpio_suspend(struct devic
- {
- 	struct amd_gpio *gpio_dev = dev_get_drvdata(dev);
- 	struct pinctrl_desc *desc = gpio_dev->pctrl->desc;
-+	unsigned long flags;
- 	int i;
- 
- 	for (i = 0; i < desc->npins; i++) {
-@@ -920,7 +921,9 @@ static int amd_gpio_suspend(struct devic
- 		if (!amd_gpio_should_save(gpio_dev, pin))
- 			continue;
- 
--		gpio_dev->saved_regs[i] = readl(gpio_dev->base + pin*4);
-+		raw_spin_lock_irqsave(&gpio_dev->lock, flags);
-+		gpio_dev->saved_regs[i] = readl(gpio_dev->base + pin * 4) & ~PIN_IRQ_PENDING;
-+		raw_spin_unlock_irqrestore(&gpio_dev->lock, flags);
- 	}
- 
- 	return 0;
-@@ -930,6 +933,7 @@ static int amd_gpio_resume(struct device
- {
- 	struct amd_gpio *gpio_dev = dev_get_drvdata(dev);
- 	struct pinctrl_desc *desc = gpio_dev->pctrl->desc;
-+	unsigned long flags;
- 	int i;
- 
- 	for (i = 0; i < desc->npins; i++) {
-@@ -938,7 +942,10 @@ static int amd_gpio_resume(struct device
- 		if (!amd_gpio_should_save(gpio_dev, pin))
- 			continue;
- 
--		writel(gpio_dev->saved_regs[i], gpio_dev->base + pin*4);
-+		raw_spin_lock_irqsave(&gpio_dev->lock, flags);
-+		gpio_dev->saved_regs[i] |= readl(gpio_dev->base + pin * 4) & PIN_IRQ_PENDING;
-+		writel(gpio_dev->saved_regs[i], gpio_dev->base + pin * 4);
-+		raw_spin_unlock_irqrestore(&gpio_dev->lock, flags);
- 	}
- 
- 	return 0;
+diff --git a/include/linux/kfifo.h b/include/linux/kfifo.h
+index 86b5fb08e96c..d1781f35dea4 100644
+--- a/include/linux/kfifo.h
++++ b/include/linux/kfifo.h
+@@ -629,7 +629,7 @@ __kfifo_uint_must_check_helper( \
+  * writer, you don't need extra locking to use these macro.
+  */
+ #define	kfifo_to_user(fifo, to, len, copied) \
+-__kfifo_uint_must_check_helper( \
++__kfifo_int_must_check_helper( \
+ ({ \
+ 	typeof((fifo) + 1) __tmp = (fifo); \
+ 	void __user *__to = (to); \
+-- 
+2.35.1
+
 
 
