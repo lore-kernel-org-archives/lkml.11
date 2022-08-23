@@ -2,46 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E1F53C49EC2
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 10:12:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 132A6C49EC5
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 10:12:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353720AbiHWKL4 (ORCPT
+        id S1353809AbiHWKMJ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 06:11:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44488 "EHLO
+        Tue, 23 Aug 2022 06:12:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54178 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348269AbiHWKEj (ORCPT
+        with ESMTP id S1352179AbiHWKEl (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 06:04:39 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 08E687CA8A;
-        Tue, 23 Aug 2022 01:51:39 -0700 (PDT)
+        Tue, 23 Aug 2022 06:04:41 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 767FD7CB49;
+        Tue, 23 Aug 2022 01:51:46 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 80661B8105C;
-        Tue, 23 Aug 2022 08:51:38 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D2FC0C433D6;
-        Tue, 23 Aug 2022 08:51:36 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id DF3BAB81BF8;
+        Tue, 23 Aug 2022 08:51:44 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2FC5BC433C1;
+        Tue, 23 Aug 2022 08:51:42 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661244697;
-        bh=RVt6G3W9mdbfkIy7nW8MAcnxPBPOKSh1h3YBa/FUnjU=;
+        s=korg; t=1661244703;
+        bh=xchc2uYcdy/PHF2UcBVcST9d80rgCnHTzb/KmibmEeg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=uaSvOLeShmLywXMXdQhtgdaBc+zTsOSQB/9OdvYyDjASLM3H7yJ0yP5uO/SKJ/ida
-         Z4xuGkSZZE/Yf6GFBDxBWGNQEoAtW/R6OpBUT7m1MwZuLZu3/UCOO1vxnN8pG7W8uC
-         RzvKnHn4PvTYW8WssOr5D29gSK9Dy7dE5SnLYe4I=
+        b=mWmfsGD2tCKrJh5yYm6kPc1k8B5Gb1ia36kW9ImL7VtqYCpQ/qz2EqInmD87361qP
+         3MKkXBqWt8T08YI3rREbEvBMnzq5CP2I/pmU7p/9j63ZJ7uNv07FMq+Kg/stAapQnZ
+         9LJ4uvqpObmHeoYYPxYTBE68CY64NYJC4JibBslY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Vivien Didelot <vivien.didelot@savoirfairelinux.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Sergei Antonov <saproj@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        Jakub Kicinski <kuba@kernel.org>
-Subject: [PATCH 5.15 135/244] net: dsa: mv88e6060: prevent crash on an unused port
-Date:   Tue, 23 Aug 2022 10:24:54 +0200
-Message-Id: <20220823080103.644982901@linuxfoundation.org>
+        stable@vger.kernel.org, Amit Cohen <amcohen@nvidia.com>,
+        Ido Schimmel <idosch@nvidia.com>,
+        Petr Machata <petrm@nvidia.com>,
+        "David S. Miller" <davem@davemloft.net>
+Subject: [PATCH 5.15 136/244] mlxsw: spectrum: Clear PTP configuration after unregistering the netdevice
+Date:   Tue, 23 Aug 2022 10:24:55 +0200
+Message-Id: <20220823080103.693521759@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220823080059.091088642@linuxfoundation.org>
 References: <20220823080059.091088642@linuxfoundation.org>
@@ -53,53 +51,41 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Sergei Antonov <saproj@gmail.com>
+From: Amit Cohen <amcohen@nvidia.com>
 
-commit 246bbf2f977ea36aaf41f5d24370fef433250728 upstream.
+commit a159e986ad26d3f35c0157ac92760ba5e44e6785 upstream.
 
-If the port isn't a CPU port nor a user port, 'cpu_dp'
-is a null pointer and a crash happened on dereferencing
-it in mv88e6060_setup_port():
+Currently as part of removing port, PTP API is called to clear the
+existing configuration and set the 'rx_filter' and 'tx_type' to zero.
+The clearing is done before unregistering the netdevice, which means that
+there is a window of time in which the user can reconfigure PTP in the
+port, and this configuration will not be cleared.
 
-[    9.575872] Unable to handle kernel NULL pointer dereference at virtual address 00000014
-...
-[    9.942216]  mv88e6060_setup from dsa_register_switch+0x814/0xe84
-[    9.948616]  dsa_register_switch from mdio_probe+0x2c/0x54
-[    9.954433]  mdio_probe from really_probe.part.0+0x98/0x2a0
-[    9.960375]  really_probe.part.0 from driver_probe_device+0x30/0x10c
-[    9.967029]  driver_probe_device from __device_attach_driver+0xb8/0x13c
-[    9.973946]  __device_attach_driver from bus_for_each_drv+0x90/0xe0
-[    9.980509]  bus_for_each_drv from __device_attach+0x110/0x184
-[    9.986632]  __device_attach from bus_probe_device+0x8c/0x94
-[    9.992577]  bus_probe_device from deferred_probe_work_func+0x78/0xa8
-[    9.999311]  deferred_probe_work_func from process_one_work+0x290/0x73c
-[   10.006292]  process_one_work from worker_thread+0x30/0x4b8
-[   10.012155]  worker_thread from kthread+0xd4/0x10c
-[   10.017238]  kthread from ret_from_fork+0x14/0x3c
+Reorder the operations, clear PTP configuration after unregistering the
+netdevice.
 
-Fixes: 0abfd494deef ("net: dsa: use dedicated CPU port")
-CC: Vivien Didelot <vivien.didelot@savoirfairelinux.com>
-CC: Florian Fainelli <f.fainelli@gmail.com>
-Signed-off-by: Sergei Antonov <saproj@gmail.com>
-Signed-off-by: Vladimir Oltean <olteanv@gmail.com>
-Link: https://lore.kernel.org/r/20220811070939.1717146-1-saproj@gmail.com
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Fixes: 8748642751ede ("mlxsw: spectrum: PTP: Support SIOCGHWTSTAMP, SIOCSHWTSTAMP ioctls")
+Signed-off-by: Amit Cohen <amcohen@nvidia.com>
+Signed-off-by: Ido Schimmel <idosch@nvidia.com>
+Signed-off-by: Petr Machata <petrm@nvidia.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/net/dsa/mv88e6060.c |    3 +++
- 1 file changed, 3 insertions(+)
+ drivers/net/ethernet/mellanox/mlxsw/spectrum.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/drivers/net/dsa/mv88e6060.c
-+++ b/drivers/net/dsa/mv88e6060.c
-@@ -118,6 +118,9 @@ static int mv88e6060_setup_port(struct m
- 	int addr = REG_PORT(p);
- 	int ret;
+--- a/drivers/net/ethernet/mellanox/mlxsw/spectrum.c
++++ b/drivers/net/ethernet/mellanox/mlxsw/spectrum.c
+@@ -1730,9 +1730,9 @@ static void mlxsw_sp_port_remove(struct
  
-+	if (dsa_is_unused_port(priv->ds, p))
-+		return 0;
-+
- 	/* Do not force flow control, disable Ingress and Egress
- 	 * Header tagging, disable VLAN tunneling, and set the port
- 	 * state to Forwarding.  Additionally, if this is the CPU
+ 	cancel_delayed_work_sync(&mlxsw_sp_port->periodic_hw_stats.update_dw);
+ 	cancel_delayed_work_sync(&mlxsw_sp_port->ptp.shaper_dw);
+-	mlxsw_sp_port_ptp_clear(mlxsw_sp_port);
+ 	mlxsw_core_port_clear(mlxsw_sp->core, local_port, mlxsw_sp);
+ 	unregister_netdev(mlxsw_sp_port->dev); /* This calls ndo_stop */
++	mlxsw_sp_port_ptp_clear(mlxsw_sp_port);
+ 	mlxsw_sp_port_vlan_classification_set(mlxsw_sp_port, true, true);
+ 	mlxsw_sp->ports[local_port] = NULL;
+ 	mlxsw_sp_port_vlan_flush(mlxsw_sp_port, true);
 
 
