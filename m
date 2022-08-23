@@ -2,50 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 565DEC32774
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 10:04:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7C9BAC32774
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 10:04:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348916AbiHWKD7 (ORCPT
+        id S1351520AbiHWKEE (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 06:03:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56716 "EHLO
+        Tue, 23 Aug 2022 06:04:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58604 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242892AbiHWJ6X (ORCPT
+        with ESMTP id S239339AbiHWJ6z (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 05:58:23 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 30FEFA1D4A;
-        Tue, 23 Aug 2022 01:47:58 -0700 (PDT)
+        Tue, 23 Aug 2022 05:58:55 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AAE136FA13;
+        Tue, 23 Aug 2022 01:48:07 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 5E3D5B81C3A;
-        Tue, 23 Aug 2022 08:47:56 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7DAE6C433C1;
-        Tue, 23 Aug 2022 08:47:54 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 81462B81C66;
+        Tue, 23 Aug 2022 08:43:05 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D575AC433C1;
+        Tue, 23 Aug 2022 08:43:03 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661244475;
-        bh=OiF9Vciiallwzx+M+oH/zhtKHR7aGt/6vvnZGDtF6Fw=;
+        s=korg; t=1661244184;
+        bh=8JdS3sLV+wxFTBujS2gA+PG7URNVNxZCqEuDH7Q+Seo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=AFQSIxUGVQflSEoQWPU7SDJojrP9HrBpgXxlSbXBPw/siSOIZKOlc2onbkfeQ3k8O
-         ox2FDtdi8EK5ap5ap+rbXNNVCZmLU9qVak2W6Y1o0txNpnC6dpFj7TCESbg+Uh15iE
-         GWC+EjTt4QBL9kLIfy64sAj70ul/V1OjluhlbOtw=
+        b=WXXE8H6fWeXjT3JUtViPlUYBQ3Vew5HkqiDRHzDrKG1byiBVkHoBAwwzh3LeC1LqG
+         t7GzAQB0t+bNm2LYUac/dpDijiWuO4xFc1vaHByTx8GSAi25DSPd4TpZ1nRM/Hi8Nl
+         yT7a2tKCh7Slhm+daLlNSXJo4Qcc0FVamCmXHBNI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
+        stable@vger.kernel.org, Ingo Molnar <mingo@kernel.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
         Masami Hiramatsu <mhiramat@kernel.org>,
-        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
-        Ingo Molnar <mingo@redhat.com>, Jiri Olsa <jolsa@kernel.org>,
-        kernel-janitors@vger.kernel.org,
-        Mark Rutland <mark.rutland@arm.com>,
-        Namhyung Kim <namhyung@kernel.org>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Arnaldo Carvalho de Melo <acme@redhat.com>
-Subject: [PATCH 5.15 099/244] perf probe: Fix an error handling path in parse_perf_probe_command()
-Date:   Tue, 23 Aug 2022 10:24:18 +0200
-Message-Id: <20220823080102.334584924@linuxfoundation.org>
+        Tzvetomir Stoyanov <tz.stoyanov@gmail.com>,
+        Tom Zanussi <zanussi@kernel.org>,
+        "Steven Rostedt (Google)" <rostedt@goodmis.org>
+Subject: [PATCH 5.15 021/244] tracing/eprobes: Do not hardcode $comm as a string
+Date:   Tue, 23 Aug 2022 10:23:00 +0200
+Message-Id: <20220823080059.775899567@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220823080059.091088642@linuxfoundation.org>
 References: <20220823080059.091088642@linuxfoundation.org>
@@ -57,44 +53,48 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+From: Steven Rostedt (Google) <rostedt@goodmis.org>
 
-commit 4bf6dcaa93bcd083a13c278a91418fe10e6d23a0 upstream.
+commit 02333de90e5945e2fe7fc75b15b4eb9aee187f0a upstream.
 
-If a memory allocation fail, we should branch to the error handling path
-in order to free some resources allocated a few lines above.
+The variable $comm is hard coded as a string, which is true for both
+kprobes and uprobes, but for event probes (eprobes) it is a field name. In
+most cases the "comm" field would be a string, but there's no guarantee of
+that fact.
 
-Fixes: 15354d54698648e2 ("perf probe: Generate event name with line number")
-Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
-Acked-by: Masami Hiramatsu <mhiramat@kernel.org>
-Cc: Alexander Shishkin <alexander.shishkin@linux.intel.com>
-Cc: Ingo Molnar <mingo@redhat.com>
-Cc: Jiri Olsa <jolsa@kernel.org>
-Cc: kernel-janitors@vger.kernel.org
-Cc: Mark Rutland <mark.rutland@arm.com>
-Cc: Namhyung Kim <namhyung@kernel.org>
-Cc: Peter Zijlstra <peterz@infradead.org>
-Link: https://lore.kernel.org/r/b71bcb01fa0c7b9778647235c3ab490f699ba278.1659797452.git.christophe.jaillet@wanadoo.fr
-Signed-off-by: Arnaldo Carvalho de Melo <acme@redhat.com>
+Do not assume that comm is a string. Not to mention, it currently forces
+comm fields to fault, as string processing for event probes is currently
+broken.
+
+Link: https://lkml.kernel.org/r/20220820134400.756152112@goodmis.org
+
+Cc: stable@vger.kernel.org
+Cc: Ingo Molnar <mingo@kernel.org>
+Cc: Andrew Morton <akpm@linux-foundation.org>
+Cc: Masami Hiramatsu <mhiramat@kernel.org>
+Cc: Tzvetomir Stoyanov <tz.stoyanov@gmail.com>
+Cc: Tom Zanussi <zanussi@kernel.org>
+Fixes: 7491e2c44278 ("tracing: Add a probe that attaches to trace events")
+Signed-off-by: Steven Rostedt (Google) <rostedt@goodmis.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- tools/perf/util/probe-event.c |    6 ++++--
- 1 file changed, 4 insertions(+), 2 deletions(-)
+ kernel/trace/trace_probe.c |    5 +++--
+ 1 file changed, 3 insertions(+), 2 deletions(-)
 
---- a/tools/perf/util/probe-event.c
-+++ b/tools/perf/util/probe-event.c
-@@ -1775,8 +1775,10 @@ int parse_perf_probe_command(const char
- 	if (!pev->event && pev->point.function && pev->point.line
- 			&& !pev->point.lazy_line && !pev->point.offset) {
- 		if (asprintf(&pev->event, "%s_L%d", pev->point.function,
--			pev->point.line) < 0)
--			return -ENOMEM;
-+			pev->point.line) < 0) {
-+			ret = -ENOMEM;
-+			goto out;
-+		}
- 	}
+--- a/kernel/trace/trace_probe.c
++++ b/kernel/trace/trace_probe.c
+@@ -618,9 +618,10 @@ static int traceprobe_parse_probe_arg_bo
  
- 	/* Copy arguments and ensure return probe has no C argument */
+ 	/*
+ 	 * Since $comm and immediate string can not be dereferenced,
+-	 * we can find those by strcmp.
++	 * we can find those by strcmp. But ignore for eprobes.
+ 	 */
+-	if (strcmp(arg, "$comm") == 0 || strncmp(arg, "\\\"", 2) == 0) {
++	if (!(flags & TPARG_FL_TPOINT) &&
++	    (strcmp(arg, "$comm") == 0 || strncmp(arg, "\\\"", 2) == 0)) {
+ 		/* The type of $comm must be "string", and not an array. */
+ 		if (parg->count || (t && strcmp(t, "string")))
+ 			goto out;
 
 
