@@ -2,48 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 97AB5C38159
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 10:23:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CA5BAC49EC1
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 10:23:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355332AbiHWKXe (ORCPT
+        id S1355282AbiHWKX0 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 06:23:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46862 "EHLO
+        Tue, 23 Aug 2022 06:23:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33250 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353458AbiHWKLa (ORCPT
+        with ESMTP id S1353440AbiHWKL3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 06:11:30 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AC429B1CB;
-        Tue, 23 Aug 2022 01:56:49 -0700 (PDT)
+        Tue, 23 Aug 2022 06:11:29 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E67237F088;
+        Tue, 23 Aug 2022 01:56:46 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 4273C61377;
-        Tue, 23 Aug 2022 08:56:49 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5181CC433D6;
-        Tue, 23 Aug 2022 08:56:48 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 83AA7614E7;
+        Tue, 23 Aug 2022 08:56:46 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 84157C433D6;
+        Tue, 23 Aug 2022 08:56:45 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661245008;
-        bh=NQE+D1YIAmhEbIgHZMr35QDB/H8Pj1G4SuYfoV8s4vQ=;
+        s=korg; t=1661245005;
+        bh=XpSNX1f32Q6TMFam1wAor2QPc0RbNk2vlmC0HXRK4HU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=gAG7lYrZE7p1flRzjjlnwzSvv9gL+JB6XUJzlcOqIz43eCT/KxXS28YSvSZng3u0I
-         b2IQGB2zh61b/FAnYm18F0PcQS+JJZv13ibMTdf8Bbbdq2uK4o3PNOFi6gfQqsP+Hs
-         1oWz9mtdHBeSW7tJV4WO0cc6+ulyo++sNjNgqNHQ=
+        b=vyAYj4fR39pmAuInkNtnIeIZwrkwR+1z2qlq2m0dKDyo7pdzISZQmipq4qo544PU7
+         JQQc5sDn+hNF44zV8TdNMhNFr/icmqdmDJje29F/FYRA0XmIlPKKe8D5GwoIXmXAiX
+         KI2EOhG6ZSxgqSCBd1sUqwIezsAFDO9Go38pEEMo=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        "Sudip Mukherjee (Codethink)" <sudipm.mukherjee@gmail.com>,
-        Nathan Chancellor <nathan@kernel.org>,
-        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
+        stable@vger.kernel.org, Oded Gabbay <ogabbay@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.14 229/229] MIPS: tlbex: Explicitly compare _PAGE_NO_EXEC against 0
-Date:   Tue, 23 Aug 2022 10:26:30 +0200
-Message-Id: <20220823080101.806263541@linuxfoundation.org>
+Subject: [PATCH 5.15 187/244] habanalabs/gaudi: mask constant value before cast
+Date:   Tue, 23 Aug 2022 10:25:46 +0200
+Message-Id: <20220823080105.602580987@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220823080053.202747790@linuxfoundation.org>
-References: <20220823080053.202747790@linuxfoundation.org>
+In-Reply-To: <20220823080059.091088642@linuxfoundation.org>
+References: <20220823080059.091088642@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -52,68 +49,47 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Nathan Chancellor <nathan@kernel.org>
+From: Oded Gabbay <ogabbay@kernel.org>
 
-[ Upstream commit 74de14fe05dd6b151d73cb0c73c8ec874cbdcde6 ]
+[ Upstream commit e3f49437a2e0221a387ecd192d742ae1434e1e3a ]
 
-When CONFIG_XPA is enabled, Clang warns:
+This fixes a sparse warning of
+"cast truncates bits from constant value"
 
-  arch/mips/mm/tlbex.c:629:24: error: converting the result of '<<' to a boolean; did you mean '(1 << _PAGE_NO_EXEC_SHIFT) != 0'? [-Werror,-Wint-in-bool-context]
-          if (cpu_has_rixi && !!_PAGE_NO_EXEC) {
-                              ^
-  arch/mips/include/asm/pgtable-bits.h:174:28: note: expanded from macro '_PAGE_NO_EXEC'
-  # define _PAGE_NO_EXEC          (1 << _PAGE_NO_EXEC_SHIFT)
-                                     ^
-  arch/mips/mm/tlbex.c:2568:24: error: converting the result of '<<' to a boolean; did you mean '(1 << _PAGE_NO_EXEC_SHIFT) != 0'? [-Werror,-Wint-in-bool-context]
-          if (!cpu_has_rixi || !_PAGE_NO_EXEC) {
-                                ^
-  arch/mips/include/asm/pgtable-bits.h:174:28: note: expanded from macro '_PAGE_NO_EXEC'
-  # define _PAGE_NO_EXEC          (1 << _PAGE_NO_EXEC_SHIFT)
-                                     ^
-  2 errors generated.
-
-_PAGE_NO_EXEC can be '0' or '1 << _PAGE_NO_EXEC_SHIFT' depending on the
-build and runtime configuration, which is what the negation operators
-are trying to convey. To silence the warning, explicitly compare against
-0 so the result of the '<<' operator is not implicitly converted to a
-boolean.
-
-According to its documentation, GCC enables -Wint-in-bool-context with
--Wall but this warning is not visible when building the same
-configuration with GCC. It appears GCC only warns when compiling C++,
-not C, although the documentation makes no note of this:
-https://godbolt.org/z/x39q3brxf
-
-Reported-by: Sudip Mukherjee (Codethink) <sudipm.mukherjee@gmail.com>
-Signed-off-by: Nathan Chancellor <nathan@kernel.org>
-Signed-off-by: Thomas Bogendoerfer <tsbogend@alpha.franken.de>
+Signed-off-by: Oded Gabbay <ogabbay@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/mips/mm/tlbex.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ drivers/misc/habanalabs/gaudi/gaudi.c | 8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
 
-diff --git a/arch/mips/mm/tlbex.c b/arch/mips/mm/tlbex.c
-index b55c74a7f7a4..82cd14e7b20d 100644
---- a/arch/mips/mm/tlbex.c
-+++ b/arch/mips/mm/tlbex.c
-@@ -634,7 +634,7 @@ static __maybe_unused void build_convert_pte_to_entrylo(u32 **p,
- 		return;
- 	}
+diff --git a/drivers/misc/habanalabs/gaudi/gaudi.c b/drivers/misc/habanalabs/gaudi/gaudi.c
+index 801acab048eb..8132200dca67 100644
+--- a/drivers/misc/habanalabs/gaudi/gaudi.c
++++ b/drivers/misc/habanalabs/gaudi/gaudi.c
+@@ -3318,19 +3318,19 @@ static void gaudi_init_nic_qman(struct hl_device *hdev, u32 nic_offset,
+ 	u32 nic_qm_err_cfg, irq_handler_offset;
+ 	u32 q_off;
  
--	if (cpu_has_rixi && !!_PAGE_NO_EXEC) {
-+	if (cpu_has_rixi && _PAGE_NO_EXEC != 0) {
- 		if (fill_includes_sw_bits) {
- 			UASM_i_ROTR(p, reg, reg, ilog2(_PAGE_GLOBAL));
- 		} else {
-@@ -2577,7 +2577,7 @@ static void check_pabits(void)
- 	unsigned long entry;
- 	unsigned pabits, fillbits;
- 
--	if (!cpu_has_rixi || !_PAGE_NO_EXEC) {
-+	if (!cpu_has_rixi || _PAGE_NO_EXEC == 0) {
- 		/*
- 		 * We'll only be making use of the fact that we can rotate bits
- 		 * into the fill if the CPU supports RIXI, so don't bother
+-	mtr_base_en_lo = lower_32_bits(CFG_BASE +
++	mtr_base_en_lo = lower_32_bits((CFG_BASE & U32_MAX) +
+ 			mmSYNC_MNGR_E_N_SYNC_MNGR_OBJS_MON_PAY_ADDRL_0);
+ 	mtr_base_en_hi = upper_32_bits(CFG_BASE +
+ 				mmSYNC_MNGR_E_N_SYNC_MNGR_OBJS_MON_PAY_ADDRL_0);
+-	so_base_en_lo = lower_32_bits(CFG_BASE +
++	so_base_en_lo = lower_32_bits((CFG_BASE & U32_MAX) +
+ 				mmSYNC_MNGR_E_N_SYNC_MNGR_OBJS_SOB_OBJ_0);
+ 	so_base_en_hi = upper_32_bits(CFG_BASE +
+ 				mmSYNC_MNGR_E_N_SYNC_MNGR_OBJS_SOB_OBJ_0);
+-	mtr_base_ws_lo = lower_32_bits(CFG_BASE +
++	mtr_base_ws_lo = lower_32_bits((CFG_BASE & U32_MAX) +
+ 				mmSYNC_MNGR_W_S_SYNC_MNGR_OBJS_MON_PAY_ADDRL_0);
+ 	mtr_base_ws_hi = upper_32_bits(CFG_BASE +
+ 				mmSYNC_MNGR_W_S_SYNC_MNGR_OBJS_MON_PAY_ADDRL_0);
+-	so_base_ws_lo = lower_32_bits(CFG_BASE +
++	so_base_ws_lo = lower_32_bits((CFG_BASE & U32_MAX) +
+ 				mmSYNC_MNGR_W_S_SYNC_MNGR_OBJS_SOB_OBJ_0);
+ 	so_base_ws_hi = upper_32_bits(CFG_BASE +
+ 				mmSYNC_MNGR_W_S_SYNC_MNGR_OBJS_SOB_OBJ_0);
 -- 
 2.35.1
 
