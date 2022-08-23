@@ -2,47 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9F4D0C32774
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 08:13:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8BBE1C32789
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 08:13:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241846AbiHWINO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 04:13:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59896 "EHLO
+        id S241787AbiHWILt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 23 Aug 2022 04:11:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33234 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241997AbiHWIK1 (ORCPT
+        with ESMTP id S241834AbiHWIJY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 04:10:27 -0400
+        Tue, 23 Aug 2022 04:09:24 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 522FF66A4C;
-        Tue, 23 Aug 2022 01:06:55 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2125C24BD4;
+        Tue, 23 Aug 2022 01:06:11 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id ED5EBB81C20;
-        Tue, 23 Aug 2022 08:06:53 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 46C48C433D6;
-        Tue, 23 Aug 2022 08:06:52 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 4C142B81C19;
+        Tue, 23 Aug 2022 08:06:10 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 974EAC433D7;
+        Tue, 23 Aug 2022 08:06:08 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661242012;
-        bh=oVWkrboSkv9Bnu5R4qvw2tZvMFAhnopG10Deyehvyss=;
+        s=korg; t=1661241969;
+        bh=T+DYn5Fq8FGf1pD9DE5wI13Mf79PBMKBMOI7+SrtCaQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=tGalO4DRbtG+fp27SwhzI5kz7QvXz6At3RvoOPAgvJvn4uysBWULP9SackP5nF0bT
-         f+4qDKxPhjM54Uum7Lif1WAkOBIv7y+jubYS2/qGUPlfLVSkGufBNIR2I6/rb8dixK
-         Dzy4rIBUZSEdx2QNMFeIpI8gHEinBvoGEXCyFur8=
+        b=zqKplEop9y6qYbQfWqR1CfEqFvpAcoDW7FWWPPOFvDTKHcPXWBWzRjOXzWe0XT8va
+         32M25+laYPQy7AGFjqjYW7fufuS8uC1JT76+Rt1Ip1Bfr23FdpvaNMyx5tFumTcwdP
+         aXcDCfEj57Xg1GezDBoh/jGjOxcdihHefqQKBxjI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Domingo Dirutigliano <pwnzer0tt1@proton.me>,
-        Florian Westphal <fw@strlen.de>,
-        Pablo Neira Ayuso <pablo@netfilter.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.9 006/101] netfilter: nf_queue: do not allow packet truncation below transport header offset
-Date:   Tue, 23 Aug 2022 10:02:39 +0200
-Message-Id: <20220823080034.838634482@linuxfoundation.org>
+        stable@vger.kernel.org, Karol Herbst <kherbst@redhat.com>,
+        Lyude Paul <lyude@redhat.com>
+Subject: [PATCH 5.19 009/365] drm/nouveau: recognise GA103
+Date:   Tue, 23 Aug 2022 09:58:30 +0200
+Message-Id: <20220823080118.557303638@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220823080034.579196046@linuxfoundation.org>
-References: <20220823080034.579196046@linuxfoundation.org>
+In-Reply-To: <20220823080118.128342613@linuxfoundation.org>
+References: <20220823080118.128342613@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -51,52 +48,58 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Florian Westphal <fw@strlen.de>
+From: Karol Herbst <kherbst@redhat.com>
 
-[ Upstream commit 99a63d36cb3ed5ca3aa6fcb64cffbeaf3b0fb164 ]
+commit c20ee5749a3f688d9bab83a3b09b75587153ff13 upstream.
 
-Domingo Dirutigliano and Nicola Guerrera report kernel panic when
-sending nf_queue verdict with 1-byte nfta_payload attribute.
+Appears to be ok with general GA10x code.
 
-The IP/IPv6 stack pulls the IP(v6) header from the packet after the
-input hook.
-
-If user truncates the packet below the header size, this skb_pull() will
-result in a malformed skb (skb->len < 0).
-
-Fixes: 7af4cc3fa158 ("[NETFILTER]: Add "nfnetlink_queue" netfilter queue handler over nfnetlink")
-Reported-by: Domingo Dirutigliano <pwnzer0tt1@proton.me>
-Signed-off-by: Florian Westphal <fw@strlen.de>
-Reviewed-by: Pablo Neira Ayuso <pablo@netfilter.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Signed-off-by: Karol Herbst <kherbst@redhat.com>
+Cc: <stable@vger.kernel.org> # v5.15+
+Reviewed-by: Lyude Paul <lyude@redhat.com>
+Link: https://patchwork.freedesktop.org/patch/msgid/20220803142745.2679510-1-kherbst@redhat.com
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- net/netfilter/nfnetlink_queue.c | 7 ++++++-
- 1 file changed, 6 insertions(+), 1 deletion(-)
+ drivers/gpu/drm/nouveau/nvkm/engine/device/base.c |   22 ++++++++++++++++++++++
+ 1 file changed, 22 insertions(+)
 
-diff --git a/net/netfilter/nfnetlink_queue.c b/net/netfilter/nfnetlink_queue.c
-index 66814a9d030c..80715b495d7c 100644
---- a/net/netfilter/nfnetlink_queue.c
-+++ b/net/netfilter/nfnetlink_queue.c
-@@ -807,11 +807,16 @@ nfqnl_enqueue_packet(struct nf_queue_entry *entry, unsigned int queuenum)
- }
+--- a/drivers/gpu/drm/nouveau/nvkm/engine/device/base.c
++++ b/drivers/gpu/drm/nouveau/nvkm/engine/device/base.c
+@@ -2606,6 +2606,27 @@ nv172_chipset = {
+ };
  
- static int
--nfqnl_mangle(void *data, int data_len, struct nf_queue_entry *e, int diff)
-+nfqnl_mangle(void *data, unsigned int data_len, struct nf_queue_entry *e, int diff)
- {
- 	struct sk_buff *nskb;
- 
- 	if (diff < 0) {
-+		unsigned int min_len = skb_transport_offset(e->skb);
+ static const struct nvkm_device_chip
++nv173_chipset = {
++	.name = "GA103",
++	.bar      = { 0x00000001, tu102_bar_new },
++	.bios     = { 0x00000001, nvkm_bios_new },
++	.devinit  = { 0x00000001, ga100_devinit_new },
++	.fb       = { 0x00000001, ga102_fb_new },
++	.gpio     = { 0x00000001, ga102_gpio_new },
++	.i2c      = { 0x00000001, gm200_i2c_new },
++	.imem     = { 0x00000001, nv50_instmem_new },
++	.mc       = { 0x00000001, ga100_mc_new },
++	.mmu      = { 0x00000001, tu102_mmu_new },
++	.pci      = { 0x00000001, gp100_pci_new },
++	.privring = { 0x00000001, gm200_privring_new },
++	.timer    = { 0x00000001, gk20a_timer_new },
++	.top      = { 0x00000001, ga100_top_new },
++	.disp     = { 0x00000001, ga102_disp_new },
++	.dma      = { 0x00000001, gv100_dma_new },
++	.fifo     = { 0x00000001, ga102_fifo_new },
++};
 +
-+		if (data_len < min_len)
-+			return -EINVAL;
-+
- 		if (pskb_trim(e->skb, data_len))
- 			return -ENOMEM;
- 	} else if (diff > 0) {
--- 
-2.35.1
-
++static const struct nvkm_device_chip
+ nv174_chipset = {
+ 	.name = "GA104",
+ 	.bar      = { 0x00000001, tu102_bar_new },
+@@ -3092,6 +3113,7 @@ nvkm_device_ctor(const struct nvkm_devic
+ 		case 0x167: device->chip = &nv167_chipset; break;
+ 		case 0x168: device->chip = &nv168_chipset; break;
+ 		case 0x172: device->chip = &nv172_chipset; break;
++		case 0x173: device->chip = &nv173_chipset; break;
+ 		case 0x174: device->chip = &nv174_chipset; break;
+ 		case 0x176: device->chip = &nv176_chipset; break;
+ 		case 0x177: device->chip = &nv177_chipset; break;
 
 
