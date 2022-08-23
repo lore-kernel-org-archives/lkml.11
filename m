@@ -2,83 +2,101 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A1724C32772
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 12:08:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E08FCC32772
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 12:08:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1359464AbiHWMIb (ORCPT
+        id S1359471AbiHWMIf (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 08:08:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59334 "EHLO
+        Tue, 23 Aug 2022 08:08:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59308 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1359515AbiHWMGH (ORCPT
+        with ESMTP id S1359508AbiHWMGF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 08:06:07 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8AAB7DF4D8;
-        Tue, 23 Aug 2022 02:37:44 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 8BE236149B;
-        Tue, 23 Aug 2022 09:37:25 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8FC2DC433D6;
-        Tue, 23 Aug 2022 09:37:24 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661247445;
-        bh=XXnsT8YnvLr5n07bfMayojz6yEaBHQq9iwO02OlXMVs=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=S8cc5pQgl3sotyCE+y5+5XbdmnM4gCkS3UOGqQqM2EoT1OLUZ1ZXpgP1iNGSPFeUM
-         YODD5bV3bLKXMiw16BStTE1/+ZZe35oGpUdSXDtEG2+rO1nkgVPH7TFGv5NfFj87Ks
-         f2k1OlQazbPH/YloT3Gx/EvW30z4j5TKDxM46pHY=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
-        Ulf Hansson <ulf.hansson@linaro.org>
-Subject: [PATCH 5.10 007/158] mmc: pxamci: Fix an error handling path in pxamci_probe()
-Date:   Tue, 23 Aug 2022 10:25:39 +0200
-Message-Id: <20220823080046.359281137@linuxfoundation.org>
-X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220823080046.056825146@linuxfoundation.org>
-References: <20220823080046.056825146@linuxfoundation.org>
-User-Agent: quilt/0.67
+        Tue, 23 Aug 2022 08:06:05 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 62216DF4F8
+        for <linux-kernel@vger.kernel.org>; Tue, 23 Aug 2022 02:37:47 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1661247423;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=nEnl5FVShRbfX9bxOxgHI5l05EhEroNOdj3tfZ7Zdw4=;
+        b=IP0WAamgJScfmT2gxd6XJakZV1GpC5RiV/VKiGxqdhaqsOu185VU+lhn/cha2uJGU485Np
+        PblpzFWpwe0KS2ZjuHCjozlpx3MU/ROv0F1D9U9tCfiH8lWq85komNqaJwvhwQWNxoZ6oJ
+        CBgGlE9dUuY/UottnlgGBZ0GSgyiGH8=
+Received: from mail-wm1-f69.google.com (mail-wm1-f69.google.com
+ [209.85.128.69]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
+ us-mta-582-yxyTD2FHOe6EYqXMcIFCDw-1; Tue, 23 Aug 2022 05:37:00 -0400
+X-MC-Unique: yxyTD2FHOe6EYqXMcIFCDw-1
+Received: by mail-wm1-f69.google.com with SMTP id 203-20020a1c02d4000000b003a5f5bce876so9996913wmc.2
+        for <linux-kernel@vger.kernel.org>; Tue, 23 Aug 2022 02:37:00 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:in-reply-to:organization:from:references
+         :cc:to:content-language:subject:user-agent:mime-version:date
+         :message-id:x-gm-message-state:from:to:cc;
+        bh=nEnl5FVShRbfX9bxOxgHI5l05EhEroNOdj3tfZ7Zdw4=;
+        b=7P/0esde1Eh7ONE6nK5XLY4f0RAT1pAu2uAMjr0/VeLmi71iEYdC1OTucKz4NclHTK
+         qqkGNMmMEFooPua3JT+/ut9vBwtEm7RLpy3I21JZjADHILhhbzTjiN3AB+28XWcukAlk
+         6o5ZAzPD6+BJEgVvEPC40aSKmhTY8AygRGxA09/u351RcyCO12Us3LfmOcocu6nfekuS
+         +9XVv2G79yR9R/Xpq84/cTPWenNpRo36c7MLxCF7LCNyJ9mv0rw6XavUBCGAS4C8pw1Y
+         J9kDvWd3I/LHuFnQsUDdIwvddRVRqUg9PJlvDAgJAPtfHB6JSgJd37u+ZkrhrmHjsYou
+         RGtw==
+X-Gm-Message-State: ACgBeo3xA5MqsBrGsztGEc3YoWlB7mYVYT/ZXdQldwCokeVv7b4X1LDr
+        F0meg7uDvsa8i5MEDvoduFEEB3AuixbUH35Lv/y332nOPpMJd7wkzURaO+kb5VS37nTzn6G9K81
+        tGkfJtTzRNfPTqDcfRnpsF3P1
+X-Received: by 2002:a05:6000:15ca:b0:225:4575:746d with SMTP id y10-20020a05600015ca00b002254575746dmr7719041wry.147.1661247419142;
+        Tue, 23 Aug 2022 02:36:59 -0700 (PDT)
+X-Google-Smtp-Source: AA6agR7XJsJFK4+5+04kPo9xzd7r7glHujIb/q9IfHO4DPFp9HoQNR1VaEwbfBReHf1AjZ2VMxslEw==
+X-Received: by 2002:a05:6000:15ca:b0:225:4575:746d with SMTP id y10-20020a05600015ca00b002254575746dmr7719028wry.147.1661247418852;
+        Tue, 23 Aug 2022 02:36:58 -0700 (PDT)
+Received: from ?IPV6:2003:cb:c70b:1600:c48b:1fab:a330:5182? (p200300cbc70b1600c48b1faba3305182.dip0.t-ipconnect.de. [2003:cb:c70b:1600:c48b:1fab:a330:5182])
+        by smtp.gmail.com with ESMTPSA id l18-20020a5d5612000000b0021ee65426a2sm13599193wrv.65.2022.08.23.02.36.58
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 23 Aug 2022 02:36:58 -0700 (PDT)
+Message-ID: <6382c2d4-ac0b-644e-4c69-8650afe30bb9@redhat.com>
+Date:   Tue, 23 Aug 2022 11:36:57 +0200
 MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.11.0
+Subject: Re: [PATCH v2 1/8] memblock tests: update tests to check if
+ memblock_alloc zeroed memory
+Content-Language: en-US
+To:     Rebecca Mckeever <remckee0@gmail.com>,
+        Mike Rapoport <rppt@kernel.org>, linux-mm@kvack.org,
+        linux-kernel@vger.kernel.org
+Cc:     Shaoqin Huang <shaoqin.huang@intel.com>
+References: <cover.1660897732.git.remckee0@gmail.com>
+ <669782f4f508c3dd60c5efd6d130d12a77573448.1660897732.git.remckee0@gmail.com>
+From:   David Hildenbrand <david@redhat.com>
+Organization: Red Hat
+In-Reply-To: <669782f4f508c3dd60c5efd6d130d12a77573448.1660897732.git.remckee0@gmail.com>
 Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+On 19.08.22 10:34, Rebecca Mckeever wrote:
+> Add an assert in memblock_alloc() tests where allocation is expected to
+> occur. The assert checks whether the entire chunk of allocated memory is
+> cleared.
+> 
+> The current memblock_alloc() tests do not check whether the allocated
+> memory was zeroed. memblock_alloc() should zero the allocated memory since
+> it is a wrapper for memblock_alloc_try_nid().
+> 
+> Reviewed-by: Shaoqin Huang <shaoqin.huang@intel.com>
+> Signed-off-by: Rebecca Mckeever <remckee0@gmail.com>
 
-commit 98d7c5e5792b8ce3e1352196dac7f404bb1b46ec upstream.
+Reviewed-by: David Hildenbrand <david@redhat.com>
 
-The commit in Fixes: has moved some code around without updating gotos to
-the error handling path.
 
-Update it now and release some resources if pxamci_of_init() fails.
+-- 
+Thanks,
 
-Fixes: fa3a5115469c ("mmc: pxamci: call mmc_of_parse()")
-Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
-Cc: stable@vger.kernel.org
-Link: https://lore.kernel.org/r/6d75855ad4e2470e9ed99e0df21bc30f0c925a29.1658862932.git.christophe.jaillet@wanadoo.fr
-Signed-off-by: Ulf Hansson <ulf.hansson@linaro.org>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
----
- drivers/mmc/host/pxamci.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
---- a/drivers/mmc/host/pxamci.c
-+++ b/drivers/mmc/host/pxamci.c
-@@ -648,7 +648,7 @@ static int pxamci_probe(struct platform_
- 
- 	ret = pxamci_of_init(pdev, mmc);
- 	if (ret)
--		return ret;
-+		goto out;
- 
- 	host = mmc_priv(mmc);
- 	host->mmc = mmc;
-
+David / dhildenb
 
