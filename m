@@ -2,45 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D17E3C32772
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 12:30:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E0D9CC32792
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 12:30:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238936AbiHWMaE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 08:30:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51454 "EHLO
+        id S242813AbiHWMaK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 23 Aug 2022 08:30:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47472 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241388AbiHWM3G (ORCPT
+        with ESMTP id S241713AbiHWM3G (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 23 Aug 2022 08:29:06 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 81A00FEEA7;
-        Tue, 23 Aug 2022 02:44:37 -0700 (PDT)
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4043D9A958;
+        Tue, 23 Aug 2022 02:44:38 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id E6D13B81CA1;
-        Tue, 23 Aug 2022 09:43:29 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 49CFEC433C1;
-        Tue, 23 Aug 2022 09:43:28 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id D30CAB81B1F;
+        Tue, 23 Aug 2022 09:43:38 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 12116C433C1;
+        Tue, 23 Aug 2022 09:43:36 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661247808;
-        bh=A2eRBh8AG3rkoETG7aGwcgq5CIWQoyR/4YyJOxLnGZI=;
+        s=korg; t=1661247817;
+        bh=HkMScfXmII+cpUmWSaLVtvIHTrO0ZrRCfD+PbfeV+Z0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=cXn7qINTJ8WKlpJZA/ohyhL6tpUZ8SwMUA3l7M27WX5hsXQdXcc2ABYTiydaWzQpH
-         BAc98Mjhlgb5AF3BFKROdJjdy2Q+rlcZZZasTkWv/q4VfCqXUx3qc2C/9L1XGTX5et
-         Z42QzyfbhGWJrDCFRPDShPy/fDw1s9veJ3BZwUyA=
+        b=uL+Bo7QnrL3INV2PC8I3EijtxFdqVp839fInac/qOJ4zqPuyeH6KRydlfgOiaLzo5
+         c9xCCOThmFdhPeZuUdSDZ2CF2y9s3TuGWfJpoFL+I1rAPOmBV1C7zlxzOuK50/qDZk
+         PmqAduRglBeoIh6zbc6kEx3b13Dd4sn3a+0FYo58=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Ingo Molnar <mingo@kernel.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Tzvetomir Stoyanov <tz.stoyanov@gmail.com>,
-        Tom Zanussi <zanussi@kernel.org>,
-        "Masami Hiramatsu (Google)" <mhiramat@kernel.org>,
-        "Steven Rostedt (Google)" <rostedt@goodmis.org>
-Subject: [PATCH 5.10 153/158] tracing/probes: Have kprobes and uprobes use $COMM too
-Date:   Tue, 23 Aug 2022 10:28:05 +0200
-Message-Id: <20220823080051.965215858@linuxfoundation.org>
+        stable@vger.kernel.org, Hinko Kocevar <hinko.kocevar@ess.eu>,
+        Hedi Berriche <hedi.berriche@hpe.com>,
+        Keith Busch <kbusch@kernel.org>,
+        Bjorn Helgaas <bhelgaas@google.com>,
+        Sean V Kelley <sean.v.kelley@intel.com>,
+        Dominique Martinet <dominique.martinet@atmark-techno.com>
+Subject: [PATCH 5.10 156/158] PCI/ERR: Retain status from error notification
+Date:   Tue, 23 Aug 2022 10:28:08 +0200
+Message-Id: <20220823080052.060267888@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220823080046.056825146@linuxfoundation.org>
 References: <20220823080046.056825146@linuxfoundation.org>
@@ -52,53 +52,39 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Steven Rostedt (Google) <rostedt@goodmis.org>
+From: Keith Busch <kbusch@kernel.org>
 
-commit ab8384442ee512fc0fc72deeb036110843d0e7ff upstream.
+commit 387c72cdd7fb6bef650fb078d0f6ae9682abf631 upstream.
 
-Both $comm and $COMM can be used to get current->comm in eprobes and the
-filtering and histogram logic. Make kprobes and uprobes consistent in this
-regard and allow both $comm and $COMM as well. Currently kprobes and
-uprobes only handle $comm, which is inconsistent with the other utilities,
-and can be confusing to users.
+Overwriting the frozen detected status with the result of the link reset
+loses the NEED_RESET result that drivers are depending on for error
+handling to report the .slot_reset() callback. Retain this status so
+that subsequent error handling has the correct flow.
 
-Link: https://lkml.kernel.org/r/20220820134401.317014913@goodmis.org
-Link: https://lore.kernel.org/all/20220820220442.776e1ddaf8836e82edb34d01@kernel.org/
-
-Cc: stable@vger.kernel.org
-Cc: Ingo Molnar <mingo@kernel.org>
-Cc: Andrew Morton <akpm@linux-foundation.org>
-Cc: Tzvetomir Stoyanov <tz.stoyanov@gmail.com>
-Cc: Tom Zanussi <zanussi@kernel.org>
-Fixes: 533059281ee5 ("tracing: probeevent: Introduce new argument fetching code")
-Suggested-by: Masami Hiramatsu (Google) <mhiramat@kernel.org>
-Acked-by: Masami Hiramatsu (Google) <mhiramat@kernel.org>
-Signed-off-by: Steven Rostedt (Google) <rostedt@goodmis.org>
+Link: https://lore.kernel.org/r/20210104230300.1277180-4-kbusch@kernel.org
+Reported-by: Hinko Kocevar <hinko.kocevar@ess.eu>
+Tested-by: Hedi Berriche <hedi.berriche@hpe.com>
+Signed-off-by: Keith Busch <kbusch@kernel.org>
+Signed-off-by: Bjorn Helgaas <bhelgaas@google.com>
+Acked-by: Sean V Kelley <sean.v.kelley@intel.com>
+Acked-by: Hedi Berriche <hedi.berriche@hpe.com>
+Cc: Dominique Martinet <dominique.martinet@atmark-techno.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- kernel/trace/trace_probe.c |    5 +++--
- 1 file changed, 3 insertions(+), 2 deletions(-)
+ drivers/pci/pcie/err.c |    3 +--
+ 1 file changed, 1 insertion(+), 2 deletions(-)
 
---- a/kernel/trace/trace_probe.c
-+++ b/kernel/trace/trace_probe.c
-@@ -300,7 +300,7 @@ static int parse_probe_vars(char *arg, c
- 			}
- 		} else
- 			goto inval_var;
--	} else if (strcmp(arg, "comm") == 0) {
-+	} else if (strcmp(arg, "comm") == 0 || strcmp(arg, "COMM") == 0) {
- 		code->op = FETCH_OP_COMM;
- #ifdef CONFIG_HAVE_FUNCTION_ARG_ACCESS_API
- 	} else if (((flags & TPARG_FL_MASK) ==
-@@ -595,7 +595,8 @@ static int traceprobe_parse_probe_arg_bo
- 	 * Since $comm and immediate string can not be dereferred,
- 	 * we can find those by strcmp.
- 	 */
--	if (strcmp(arg, "$comm") == 0 || strncmp(arg, "\\\"", 2) == 0) {
-+	if (strcmp(arg, "$comm") == 0 || strcmp(arg, "$COMM") == 0 ||
-+	    strncmp(arg, "\\\"", 2) == 0) {
- 		/* The type of $comm must be "string", and not an array. */
- 		if (parg->count || (t && strcmp(t, "string")))
- 			return -EINVAL;
+--- a/drivers/pci/pcie/err.c
++++ b/drivers/pci/pcie/err.c
+@@ -196,8 +196,7 @@ pci_ers_result_t pcie_do_recovery(struct
+ 	pci_dbg(bridge, "broadcast error_detected message\n");
+ 	if (state == pci_channel_io_frozen) {
+ 		pci_walk_bridge(bridge, report_frozen_detected, &status);
+-		status = reset_subordinates(bridge);
+-		if (status != PCI_ERS_RESULT_RECOVERED) {
++		if (reset_subordinates(bridge) != PCI_ERS_RESULT_RECOVERED) {
+ 			pci_warn(bridge, "subordinate device reset failed\n");
+ 			goto failed;
+ 		}
 
 
