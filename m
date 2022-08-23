@@ -2,44 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 90130C32772
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 10:15:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DDBEEC32772
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 10:15:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353194AbiHWKO4 (ORCPT
+        id S1353448AbiHWKPF (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 06:14:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44152 "EHLO
+        Tue, 23 Aug 2022 06:15:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46324 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352529AbiHWKFv (ORCPT
+        with ESMTP id S1352646AbiHWKGE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 06:05:51 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9069F6B672;
-        Tue, 23 Aug 2022 01:52:06 -0700 (PDT)
+        Tue, 23 Aug 2022 06:06:04 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 85BB56308;
+        Tue, 23 Aug 2022 01:52:20 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 2504E6150F;
-        Tue, 23 Aug 2022 08:52:06 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 342ADC433D6;
-        Tue, 23 Aug 2022 08:52:05 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 3E626B8105C;
+        Tue, 23 Aug 2022 08:52:19 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 85167C433C1;
+        Tue, 23 Aug 2022 08:52:17 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661244725;
-        bh=o5kMqKGNeYaD1QjftcGevNh2DTWdrdudlXdleTnx8zM=;
+        s=korg; t=1661244737;
+        bh=f6OXRID0uCEqVUMBcp3Ki0tg3pVmjI2z9M8ylE8p0OY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=eejVIGHQ3sBSZ7nONPs8Dfsd3ZCO9M9lBjgpj1fBjP/AcYUdfepBfKq92z2O1nH+h
-         xBvCCHm+XpiuqPS+IsYoC/qFhsm1AL5npbE7gV2l/khvlJoVIntt5FZQpeosQvdz3X
-         gQiRSPtyYO5dmMKt9OlQWA8MDmVwxUY7+/pzqvSc=
+        b=QJo5bn2c7MGKGiGbzif5OiF05wMd5hvpH56CdH3YWQWGLBlkng3s5A5peQmsMY8cc
+         FSdajP7FkQbj8UiVq5G56Dwo8tC3/lTa+Qs077m99O+p0QXCtOWc9TduH2FxlqIcJg
+         XpHPlTf+IUyUMQbkQmFjh4tZcu7FzTBs0B6G6TFo=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, John Johansen <john.johansen@canonical.com>
-Subject: [PATCH 4.14 181/229] apparmor: fix quiet_denied for file rules
-Date:   Tue, 23 Aug 2022 10:25:42 +0200
-Message-Id: <20220823080100.081326681@linuxfoundation.org>
+        stable@vger.kernel.org,
+        syzbot+dc54d9ba8153b216cae0@syzkaller.appspotmail.com,
+        Jakub Kicinski <kuba@kernel.org>
+Subject: [PATCH 5.15 141/244] net: genl: fix error path memory leak in policy dumping
+Date:   Tue, 23 Aug 2022 10:25:00 +0200
+Message-Id: <20220823080103.868849234@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220823080053.202747790@linuxfoundation.org>
-References: <20220823080053.202747790@linuxfoundation.org>
+In-Reply-To: <20220823080059.091088642@linuxfoundation.org>
+References: <20220823080059.091088642@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -48,31 +50,84 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: John Johansen <john.johansen@canonical.com>
+From: Jakub Kicinski <kuba@kernel.org>
 
-commit 68ff8540cc9e4ab557065b3f635c1ff4c96e1f1c upstream.
+commit 249801360db3dec4f73768c502192020bfddeacc upstream.
 
-Global quieting of denied AppArmor generated file events is not
-handled correctly. Unfortunately the is checking if quieting of all
-audit events is set instead of just denied events.
+If construction of the array of policies fails when recording
+non-first policy we need to unwind.
 
-Fixes: 67012e8209df ("AppArmor: basic auditing infrastructure.")
-Signed-off-by: John Johansen <john.johansen@canonical.com>
+netlink_policy_dump_add_policy() itself also needs fixing as
+it currently gives up on error without recording the allocated
+pointer in the pstate pointer.
+
+Reported-by: syzbot+dc54d9ba8153b216cae0@syzkaller.appspotmail.com
+Fixes: 50a896cf2d6f ("genetlink: properly support per-op policy dumping")
+Link: https://lore.kernel.org/r/20220816161939.577583-1-kuba@kernel.org
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- security/apparmor/audit.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ net/netlink/genetlink.c |    6 +++++-
+ net/netlink/policy.c    |   14 ++++++++++++--
+ 2 files changed, 17 insertions(+), 3 deletions(-)
 
---- a/security/apparmor/audit.c
-+++ b/security/apparmor/audit.c
-@@ -143,7 +143,7 @@ int aa_audit(int type, struct aa_profile
+--- a/net/netlink/genetlink.c
++++ b/net/netlink/genetlink.c
+@@ -1174,13 +1174,17 @@ static int ctrl_dumppolicy_start(struct
+ 							     op.policy,
+ 							     op.maxattr);
+ 			if (err)
+-				return err;
++				goto err_free_state;
+ 		}
  	}
- 	if (AUDIT_MODE(profile) == AUDIT_QUIET ||
- 	    (type == AUDIT_APPARMOR_DENIED &&
--	     AUDIT_MODE(profile) == AUDIT_QUIET))
-+	     AUDIT_MODE(profile) == AUDIT_QUIET_DENIED))
- 		return aad(sa)->error;
  
- 	if (KILL_MODE(profile) && type == AUDIT_APPARMOR_DENIED)
+ 	if (!ctx->state)
+ 		return -ENODATA;
+ 	return 0;
++
++err_free_state:
++	netlink_policy_dump_free(ctx->state);
++	return err;
+ }
+ 
+ static void *ctrl_dumppolicy_prep(struct sk_buff *skb,
+--- a/net/netlink/policy.c
++++ b/net/netlink/policy.c
+@@ -144,7 +144,7 @@ int netlink_policy_dump_add_policy(struc
+ 
+ 	err = add_policy(&state, policy, maxtype);
+ 	if (err)
+-		return err;
++		goto err_try_undo;
+ 
+ 	for (policy_idx = 0;
+ 	     policy_idx < state->n_alloc && state->policies[policy_idx].policy;
+@@ -164,7 +164,7 @@ int netlink_policy_dump_add_policy(struc
+ 						 policy[type].nested_policy,
+ 						 policy[type].len);
+ 				if (err)
+-					return err;
++					goto err_try_undo;
+ 				break;
+ 			default:
+ 				break;
+@@ -174,6 +174,16 @@ int netlink_policy_dump_add_policy(struc
+ 
+ 	*pstate = state;
+ 	return 0;
++
++err_try_undo:
++	/* Try to preserve reasonable unwind semantics - if we're starting from
++	 * scratch clean up fully, otherwise record what we got and caller will.
++	 */
++	if (!*pstate)
++		netlink_policy_dump_free(state);
++	else
++		*pstate = state;
++	return err;
+ }
+ 
+ static bool
 
 
