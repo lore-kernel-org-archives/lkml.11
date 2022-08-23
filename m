@@ -2,46 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A775CC32774
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 10:07:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D4020C32772
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 10:07:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352410AbiHWKHf (ORCPT
+        id S1352460AbiHWKHk (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 06:07:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44246 "EHLO
+        Tue, 23 Aug 2022 06:07:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45178 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352428AbiHWKBx (ORCPT
+        with ESMTP id S1352430AbiHWKBx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 23 Aug 2022 06:01:53 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9254C9753D;
-        Tue, 23 Aug 2022 01:49:43 -0700 (PDT)
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7E4357C1C3;
+        Tue, 23 Aug 2022 01:49:42 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 0BE39B81C4E;
-        Tue, 23 Aug 2022 08:34:24 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 68159C4314B;
-        Tue, 23 Aug 2022 08:34:22 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 7BA2FB81C4C;
+        Tue, 23 Aug 2022 08:34:30 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B2DD1C433D6;
+        Tue, 23 Aug 2022 08:34:28 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661243662;
-        bh=HsE6Hc1g0L5kt8Rb3CEnOB/34WTJkVgtm0Yx9+swGaY=;
+        s=korg; t=1661243669;
+        bh=t0TSqAFuhyH1+CMJ7UbBnSE+KHqu5QO/EWY90mPSeHY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=lccaubqsTk8obb6MKEW1x12wA2929Y7jpQvg7LrxB05169ouXwlgYoNegwXyIXf2R
-         ZMO4olhQMRnUlB17to1/YLXtiY2MsDRDTz20bLD9B5qYkSuYFUmNzzgRI8qKwXSLXJ
-         leUAhIoiv7U4bUFQeRoCc5Tuf8ZuiqGRg3rQ3k+Q=
+        b=XP7+8gwUK+RlQ2syisO10kgb1tEsOGEEzUmfmF9BqL+gxersn460Fc7bOkFAyHVdS
+         4yhfjEvV1FlNaebmIYF1SEdYWwOQpGMVJa92YflI5eYMDUy6uTmq1ePzTkYohW2u1F
+         6V9p9sVvVagBwFFK2kIoglQ/WaszmlurbV1QoUXA=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Nguyen Bao Nguyen <nguyen.nguyen.yj@renesas.com>,
-        Nishiyama Kunihiko <kunihiko.nishiyama.dn@renesas.com>,
-        Kuninori Morimoto <kuninori.morimoto.gx@renesas.com>,
-        Mark Brown <broonie@kernel.org>,
+        stable@vger.kernel.org, Alexey Kardashevskiy <aik@ozlabs.ru>,
+        Michael Ellerman <mpe@ellerman.id.au>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.19 331/365] ASoC: rsnd: care default case on rsnd_ssiu_busif_err_irq_ctrl()
-Date:   Tue, 23 Aug 2022 10:03:52 +0200
-Message-Id: <20220823080132.062538913@linuxfoundation.org>
+Subject: [PATCH 5.19 350/365] powerpc/ioda/iommu/debugfs: Generate unique debugfs entries
+Date:   Tue, 23 Aug 2022 10:04:11 +0200
+Message-Id: <20220823080132.903219215@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220823080118.128342613@linuxfoundation.org>
 References: <20220823080118.128342613@linuxfoundation.org>
@@ -53,40 +50,46 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Kuninori Morimoto <kuninori.morimoto.gx@renesas.com>
+From: Alexey Kardashevskiy <aik@ozlabs.ru>
 
-[ Upstream commit ef30911d3c39fd57884c348c29b9cbff88def155 ]
+[ Upstream commit d73b46c3c1449bf27f793b9d9ee86ed70c7a7163 ]
 
-Before, ssiu.c didn't care SSI5-8, thus,
-commit b1384d4c95088d0 ("ASoC: rsnd: care default case on
-rsnd_ssiu_busif_err_status_clear()") cares it for status clear.
+The iommu_table::it_index is a LIOBN which is not initialized on PowerNV
+as it is not used except IOMMU debugfs where it is used for a node name.
 
-But we should care it for error irq handling, too.
-This patch cares it.
+This initializes it_index witn a unique number to avoid warnings and
+have a node for every iommu_table.
 
-Reported-by: Nguyen Bao Nguyen <nguyen.nguyen.yj@renesas.com>
-Reported-by: Nishiyama Kunihiko <kunihiko.nishiyama.dn@renesas.com>
-Signed-off-by: Kuninori Morimoto <kuninori.morimoto.gx@renesas.com>
-Link: https://lore.kernel.org/r/871quocio1.wl-kuninori.morimoto.gx@renesas.com
-Signed-off-by: Mark Brown <broonie@kernel.org>
+This should not cause any behavioral change without CONFIG_IOMMU_DEBUGFS.
+
+Signed-off-by: Alexey Kardashevskiy <aik@ozlabs.ru>
+Signed-off-by: Michael Ellerman <mpe@ellerman.id.au>
+Link: https://lore.kernel.org/r/20220714080800.3712998-1-aik@ozlabs.ru
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- sound/soc/sh/rcar/ssiu.c | 2 ++
+ arch/powerpc/platforms/powernv/pci-ioda.c | 2 ++
  1 file changed, 2 insertions(+)
 
-diff --git a/sound/soc/sh/rcar/ssiu.c b/sound/soc/sh/rcar/ssiu.c
-index 4b8a63e336c7..d7f4646ee029 100644
---- a/sound/soc/sh/rcar/ssiu.c
-+++ b/sound/soc/sh/rcar/ssiu.c
-@@ -67,6 +67,8 @@ static void rsnd_ssiu_busif_err_irq_ctrl(struct rsnd_mod *mod, int enable)
- 		shift  = 1;
- 		offset = 1;
- 		break;
-+	default:
-+		return;
+diff --git a/arch/powerpc/platforms/powernv/pci-ioda.c b/arch/powerpc/platforms/powernv/pci-ioda.c
+index c8cf2728031a..9de9b2fb163d 100644
+--- a/arch/powerpc/platforms/powernv/pci-ioda.c
++++ b/arch/powerpc/platforms/powernv/pci-ioda.c
+@@ -1609,6 +1609,7 @@ static void pnv_pci_ioda1_setup_dma_pe(struct pnv_phb *phb,
+ 	tbl->it_ops = &pnv_ioda1_iommu_ops;
+ 	pe->table_group.tce32_start = tbl->it_offset << tbl->it_page_shift;
+ 	pe->table_group.tce32_size = tbl->it_size << tbl->it_page_shift;
++	tbl->it_index = (phb->hose->global_number << 16) | pe->pe_number;
+ 	if (!iommu_init_table(tbl, phb->hose->node, 0, 0))
+ 		panic("Failed to initialize iommu table");
+ 
+@@ -1779,6 +1780,7 @@ static long pnv_pci_ioda2_setup_default_config(struct pnv_ioda_pe *pe)
+ 		res_end = min(window_size, SZ_4G) >> tbl->it_page_shift;
  	}
  
- 	for (i = 0; i < 4; i++) {
++	tbl->it_index = (pe->phb->hose->global_number << 16) | pe->pe_number;
+ 	if (iommu_init_table(tbl, pe->phb->hose->node, res_start, res_end))
+ 		rc = pnv_pci_ioda2_set_window(&pe->table_group, 0, tbl);
+ 	else
 -- 
 2.35.1
 
