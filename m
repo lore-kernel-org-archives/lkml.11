@@ -2,43 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 77CD2C32774
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 09:02:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 416A7C32772
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 09:02:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241104AbiHWJCU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 05:02:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42216 "EHLO
+        id S240812AbiHWJCZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 23 Aug 2022 05:02:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42418 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347260AbiHWJBo (ORCPT
+        with ESMTP id S241632AbiHWJBv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 05:01:44 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B393865D5;
-        Tue, 23 Aug 2022 01:28:14 -0700 (PDT)
+        Tue, 23 Aug 2022 05:01:51 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6077E233;
+        Tue, 23 Aug 2022 01:28:17 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 91242B81C50;
-        Tue, 23 Aug 2022 08:27:45 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 00DA8C433D6;
-        Tue, 23 Aug 2022 08:27:43 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 3C29D61326;
+        Tue, 23 Aug 2022 08:27:17 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 305CAC433D7;
+        Tue, 23 Aug 2022 08:27:15 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661243264;
-        bh=eva9J/HnGNK4Hs9Yy6N/uH0vPgm9Li4iFFPXZNd2K3c=;
+        s=korg; t=1661243236;
+        bh=gFrB6xe1KXgTAI+7ObVJ1Fp1IKo64uT9FKvA9uEdWR8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=nxkypWfcISAjEuJ8j+HQmQ515vKXvdwTCuMThdRs/jON7hIo7cH7J8hqAdE+Opd6S
-         Eq9kCB6MUmy3abWgPywD37kvDadrYVTAgRlHpY3lSKAC9Q/pB5RmmttQNUQogHiSF6
-         WYFl0jaioAr/l+FHpCaxiTSpb31V1J6nWzjQgyIM=
+        b=obk91VtWGTwE/3sfnlOD/ZS+mtx4agY5M2nX/ptsDJcWUKyb/1Z9L3hfiJA2A316t
+         7eEICRcmDnAYFTSVg/yjwUemY04ur/hfSztWknw3E/b0mtYdGavTE389o9kBiovxWs
+         8g8eGeQ+kF2jJefPrKObzRbw9ZalzwLI2UL1p0xk=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Benjamin Mikailenko <benjamin.mikailenko@intel.com>,
-        Marek Szlosek <marek.szlosek@intel.com>,
-        Tony Nguyen <anthony.l.nguyen@intel.com>
-Subject: [PATCH 5.19 221/365] ice: Fix VSI rebuild WARN_ON check for VF
-Date:   Tue, 23 Aug 2022 10:02:02 +0200
-Message-Id: <20220823080127.431744065@linuxfoundation.org>
+        stable@vger.kernel.org, Zhengchao Shao <shaozhengchao@huawei.com>,
+        Jakub Kicinski <kuba@kernel.org>
+Subject: [PATCH 5.19 213/365] net: sched: fix misuse of qcpu->backlog in gnet_stats_add_queue_cpu
+Date:   Tue, 23 Aug 2022 10:01:54 +0200
+Message-Id: <20220823080127.120619852@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220823080118.128342613@linuxfoundation.org>
 References: <20220823080118.128342613@linuxfoundation.org>
@@ -50,36 +48,32 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Benjamin Mikailenko <benjamin.mikailenko@intel.com>
+From: Zhengchao Shao <shaozhengchao@huawei.com>
 
-commit 7fe05e125d5f730bd2d0fc53985bee77b6c762f0 upstream.
+commit de64b6b6fb6f369840d171b7c5a9baf31b8b2630 upstream.
 
-In commit b03d519d3460 ("ice: store VF pointer instead of VF ID")
-WARN_ON checks were added to validate the vsi->vf pointer and
-catch programming errors. However, one check to vsi->vf was missed.
-This caused a call trace when resetting VFs.
+In the gnet_stats_add_queue_cpu function, the qstats->qlen statistics
+are incorrectly set to qcpu->backlog.
 
-Fix ice_vsi_rebuild by encompassing VF pointer in WARN_ON check.
-
-Fixes: b03d519d3460 ("ice: store VF pointer instead of VF ID")
-Signed-off-by: Benjamin Mikailenko <benjamin.mikailenko@intel.com>
-Tested-by: Marek Szlosek <marek.szlosek@intel.com>
-Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
+Fixes: 448e163f8b9b ("gen_stats: Add gnet_stats_add_queue()")
+Signed-off-by: Zhengchao Shao <shaozhengchao@huawei.com>
+Link: https://lore.kernel.org/r/20220815030848.276746-1-shaozhengchao@huawei.com
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/net/ethernet/intel/ice/ice_lib.c |    2 +-
+ net/core/gen_stats.c |    2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/drivers/net/ethernet/intel/ice/ice_lib.c
-+++ b/drivers/net/ethernet/intel/ice/ice_lib.c
-@@ -3178,7 +3178,7 @@ int ice_vsi_rebuild(struct ice_vsi *vsi,
+--- a/net/core/gen_stats.c
++++ b/net/core/gen_stats.c
+@@ -345,7 +345,7 @@ static void gnet_stats_add_queue_cpu(str
+ 	for_each_possible_cpu(i) {
+ 		const struct gnet_stats_queue *qcpu = per_cpu_ptr(q, i);
  
- 	pf = vsi->back;
- 	vtype = vsi->type;
--	if (WARN_ON(vtype == ICE_VSI_VF) && !vsi->vf)
-+	if (WARN_ON(vtype == ICE_VSI_VF && !vsi->vf))
- 		return -EINVAL;
- 
- 	ice_vsi_init_vlan_ops(vsi);
+-		qstats->qlen += qcpu->backlog;
++		qstats->qlen += qcpu->qlen;
+ 		qstats->backlog += qcpu->backlog;
+ 		qstats->drops += qcpu->drops;
+ 		qstats->requeues += qcpu->requeues;
 
 
