@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3A680C32772
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 11:29:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 920A4C32772
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 11:29:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244015AbiHWL3O (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 07:29:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55592 "EHLO
+        id S245204AbiHWL3Z (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 23 Aug 2022 07:29:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60080 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243051AbiHWLXV (ORCPT
+        with ESMTP id S1350660AbiHWLXc (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 07:23:21 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 28C676C101;
-        Tue, 23 Aug 2022 02:23:42 -0700 (PDT)
+        Tue, 23 Aug 2022 07:23:32 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 92D0D2CE27;
+        Tue, 23 Aug 2022 02:23:34 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id AED6C60F91;
-        Tue, 23 Aug 2022 09:23:41 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A6C1FC433C1;
-        Tue, 23 Aug 2022 09:23:40 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id DBAFEB81C65;
+        Tue, 23 Aug 2022 09:23:32 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 369CFC433D7;
+        Tue, 23 Aug 2022 09:23:31 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661246621;
-        bh=GqRCdQk5gcrQtkUm0Jh9s9TsuaLzbGufsrzGeFlIiVM=;
+        s=korg; t=1661246611;
+        bh=wnngqfsE+bRxrgxv6Enaz7IS0b9Cs5VTQ2A8SW40pXU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=o8zMx/iyUrjOAxJuqK9hYuxIwlwT4ncOd/9CFOBfUUrGWyHiRJMJYza2ODo3u6WVB
-         1V+Gl3KdpPLb6/QRiiZ5FISieLGSTi0XxWvsk6Kijj289GtebGDlNIfuDTOXjBfEnO
-         b1lghVpRGyAbF2hEn10/+NW/4CvTlvwyIliRsU0s=
+        b=EUjtMe0ZAJ7WLeMrhM2b2Wwh5mm4I6IbxiKHJAA7uECGxFJvs2o+GQ2CNPGyOehZT
+         VfBOUvnxiPfAomtstN56sOJPHE9tBgsi/0grcuqm/+orYI1YbUv/lP3WIe1/j1IkGx
+         pGgb7ssKCe70z2/4VTEDZDlVBGfcPFf4UFBor1mg=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jimmy Assarsson <extja@kvaser.com>,
+        stable@vger.kernel.org,
         Vincent Mailhol <mailhol.vincent@wanadoo.fr>,
         Marc Kleine-Budde <mkl@pengutronix.de>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 137/389] can: kvaser_usb_leaf: do not report txerr and rxerr during bus-off
-Date:   Tue, 23 Aug 2022 10:23:35 +0200
-Message-Id: <20220823080121.328868318@linuxfoundation.org>
+Subject: [PATCH 5.4 134/389] can: hi311x: do not report txerr and rxerr during bus-off
+Date:   Tue, 23 Aug 2022 10:23:32 +0200
+Message-Id: <20220823080121.208629866@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220823080115.331990024@linuxfoundation.org>
 References: <20220823080115.331990024@linuxfoundation.org>
@@ -52,38 +52,43 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Vincent Mailhol <mailhol.vincent@wanadoo.fr>
 
-[ Upstream commit a57732084e06791d37ea1ea447cca46220737abd ]
+[ Upstream commit a22bd630cfff496b270211745536e50e98eb3a45 ]
 
 During bus off, the error count is greater than 255 and can not fit in
 a u8.
 
-Fixes: 7259124eac7d1 ("can: kvaser_usb: Split driver into kvaser_usb_core.c and kvaser_usb_leaf.c")
-Link: https://lore.kernel.org/all/20220719143550.3681-9-mailhol.vincent@wanadoo.fr
-CC: Jimmy Assarsson <extja@kvaser.com>
+Fixes: 57e83fb9b746 ("can: hi311x: Add Holt HI-311x CAN driver")
+Link: https://lore.kernel.org/all/20220719143550.3681-6-mailhol.vincent@wanadoo.fr
 Signed-off-by: Vincent Mailhol <mailhol.vincent@wanadoo.fr>
 Signed-off-by: Marc Kleine-Budde <mkl@pengutronix.de>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/can/usb/kvaser_usb/kvaser_usb_leaf.c | 6 ++++--
- 1 file changed, 4 insertions(+), 2 deletions(-)
+ drivers/net/can/spi/hi311x.c | 5 +++--
+ 1 file changed, 3 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/net/can/usb/kvaser_usb/kvaser_usb_leaf.c b/drivers/net/can/usb/kvaser_usb/kvaser_usb_leaf.c
-index 0e0403dd0550..5e281249ad5f 100644
---- a/drivers/net/can/usb/kvaser_usb/kvaser_usb_leaf.c
-+++ b/drivers/net/can/usb/kvaser_usb/kvaser_usb_leaf.c
-@@ -857,8 +857,10 @@ static void kvaser_usb_leaf_rx_error(const struct kvaser_usb *dev,
- 		break;
- 	}
+diff --git a/drivers/net/can/spi/hi311x.c b/drivers/net/can/spi/hi311x.c
+index 7d2315c8cacb..28273e84171a 100644
+--- a/drivers/net/can/spi/hi311x.c
++++ b/drivers/net/can/spi/hi311x.c
+@@ -670,8 +670,6 @@ static irqreturn_t hi3110_can_ist(int irq, void *dev_id)
  
--	cf->data[6] = es->txerr;
--	cf->data[7] = es->rxerr;
-+	if (new_state != CAN_STATE_BUS_OFF) {
-+		cf->data[6] = es->txerr;
-+		cf->data[7] = es->rxerr;
-+	}
+ 			txerr = hi3110_read(spi, HI3110_READ_TEC);
+ 			rxerr = hi3110_read(spi, HI3110_READ_REC);
+-			cf->data[6] = txerr;
+-			cf->data[7] = rxerr;
+ 			tx_state = txerr >= rxerr ? new_state : 0;
+ 			rx_state = txerr <= rxerr ? new_state : 0;
+ 			can_change_state(net, cf, tx_state, rx_state);
+@@ -684,6 +682,9 @@ static irqreturn_t hi3110_can_ist(int irq, void *dev_id)
+ 					hi3110_hw_sleep(spi);
+ 					break;
+ 				}
++			} else {
++				cf->data[6] = txerr;
++				cf->data[7] = rxerr;
+ 			}
+ 		}
  
- 	stats->rx_packets++;
- 	stats->rx_bytes += cf->can_dlc;
 -- 
 2.35.1
 
