@@ -2,44 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 96DB7C32792
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 10:35:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C88C3C32772
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 10:35:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349672AbiHWKfE (ORCPT
+        id S1354668AbiHWKfI (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 06:35:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40952 "EHLO
+        Tue, 23 Aug 2022 06:35:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60564 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354104AbiHWKUX (ORCPT
+        with ESMTP id S1354114AbiHWKU0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 06:20:23 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ECF17816A9;
-        Tue, 23 Aug 2022 02:02:05 -0700 (PDT)
+        Tue, 23 Aug 2022 06:20:26 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 783684F1A9;
+        Tue, 23 Aug 2022 02:02:07 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 6AC61B81C28;
-        Tue, 23 Aug 2022 09:02:04 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A01D5C433C1;
-        Tue, 23 Aug 2022 09:02:02 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id E56396153D;
+        Tue, 23 Aug 2022 09:02:06 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A8617C433C1;
+        Tue, 23 Aug 2022 09:02:05 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661245323;
-        bh=bLCLK6K8yuOyc8MbJTgMJSd+85QxC9+CZ5FW4UNulCE=;
+        s=korg; t=1661245326;
+        bh=rSEzHNXqm8pHZ+x8zbV44v6My3VXDzjSN1WlrWy8fdE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=oAFHrhBFS4/HAS2OCtNnR/m5dMDYaXE/915nUoxDxj4BAYaJyJJCPaSFk7E7rqhom
-         RPuiITM903mwcA6TUM+T2Sxj4Uf6j7JppzOd6BJnAgY4pWLiwzwU4m31H1ScGF9XoJ
-         p3DAR2/SYQuGMQd+N5YshgBN0cRXF5+aZTT4ry2s=
+        b=vSzBZoNT3yVLGe+LfcU3FISjIsNvHyCyTkXhuXYrUZ83NkrojbiPadbzlDNzrkXW/
+         ccLL2pa1SZw0BceZs8EchIuecUGBAYQhZYwrp0te1gSU5dDYItTpltlsGdYrsYNWv7
+         EtQb/Hz9b22Wn0oYdJjvsZP94wZxZm5KN2Gl47R8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Fangrui Song <maskray@google.com>,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        Jens Axboe <axboe@kernel.dk>
-Subject: [PATCH 4.19 002/287] x86: link vdso and boot with -z noexecstack --no-warn-rwx-segments
-Date:   Tue, 23 Aug 2022 10:22:51 +0200
-Message-Id: <20220823080100.348256127@linuxfoundation.org>
+        stable@vger.kernel.org, stable <stable@kernel.org>,
+        Alan Stern <stern@rowland.harvard.edu>,
+        Weitao Wang <WeitaoWang-oc@zhaoxin.com>
+Subject: [PATCH 4.19 036/287] USB: HCD: Fix URB giveback issue in tasklet function
+Date:   Tue, 23 Aug 2022 10:23:25 +0200
+Message-Id: <20220823080101.490987018@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220823080100.268827165@linuxfoundation.org>
 References: <20220823080100.268827165@linuxfoundation.org>
@@ -51,82 +50,124 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Nick Desaulniers <ndesaulniers@google.com>
+From: Weitao Wang <WeitaoWang-oc@zhaoxin.com>
 
-commit ffcf9c5700e49c0aee42dcba9a12ba21338e8136 upstream.
+commit 26c6c2f8a907c9e3a2f24990552a4d77235791e6 upstream.
 
-Users of GNU ld (BFD) from binutils 2.39+ will observe multiple
-instances of a new warning when linking kernels in the form:
+Usb core introduce the mechanism of giveback of URB in tasklet context to
+reduce hardware interrupt handling time. On some test situation(such as
+FIO with 4KB block size), when tasklet callback function called to
+giveback URB, interrupt handler add URB node to the bh->head list also.
+If check bh->head list again after finish all URB giveback of local_list,
+then it may introduce a "dynamic balance" between giveback URB and add URB
+to bh->head list. This tasklet callback function may not exit for a long
+time, which will cause other tasklet function calls to be delayed. Some
+real-time applications(such as KB and Mouse) will see noticeable lag.
 
-  ld: warning: arch/x86/boot/pmjump.o: missing .note.GNU-stack section implies executable stack
-  ld: NOTE: This behaviour is deprecated and will be removed in a future version of the linker
-  ld: warning: arch/x86/boot/compressed/vmlinux has a LOAD segment with RWX permissions
+In order to prevent the tasklet function from occupying the cpu for a long
+time at a time, new URBS will not be added to the local_list even though
+the bh->head list is not empty. But also need to ensure the left URB
+giveback to be processed in time, so add a member high_prio for structure
+giveback_urb_bh to prioritize tasklet and schelule this tasklet again if
+bh->head list is not empty.
 
-Generally, we would like to avoid the stack being executable.  Because
-there could be a need for the stack to be executable, assembler sources
-have to opt-in to this security feature via explicit creation of the
-.note.GNU-stack feature (which compilers create by default) or command
-line flag --noexecstack.  Or we can simply tell the linker the
-production of such sections is irrelevant and to link the stack as
---noexecstack.
+At the same time, we are able to prioritize tasklet through structure
+member high_prio. So, replace the local high_prio_bh variable with this
+structure member in usb_hcd_giveback_urb.
 
-LLVM's LLD linker defaults to -z noexecstack, so this flag isn't
-strictly necessary when linking with LLD, only BFD, but it doesn't hurt
-to be explicit here for all linkers IMO.  --no-warn-rwx-segments is
-currently BFD specific and only available in the current latest release,
-so it's wrapped in an ld-option check.
-
-While the kernel makes extensive usage of ELF sections, it doesn't use
-permissions from ELF segments.
-
-Link: https://lore.kernel.org/linux-block/3af4127a-f453-4cf7-f133-a181cce06f73@kernel.dk/
-Link: https://sourceware.org/git/?p=binutils-gdb.git;a=commit;h=ba951afb99912da01a6e8434126b8fac7aa75107
-Link: https://github.com/llvm/llvm-project/issues/57009
-Reported-and-tested-by: Jens Axboe <axboe@kernel.dk>
-Suggested-by: Fangrui Song <maskray@google.com>
-Signed-off-by: Nick Desaulniers <ndesaulniers@google.com>
-Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
+Fixes: 94dfd7edfd5c ("USB: HCD: support giveback of URB in tasklet context")
+Cc: stable <stable@kernel.org>
+Reviewed-by: Alan Stern <stern@rowland.harvard.edu>
+Signed-off-by: Weitao Wang <WeitaoWang-oc@zhaoxin.com>
+Link: https://lore.kernel.org/r/20220726074918.5114-1-WeitaoWang-oc@zhaoxin.com
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/x86/boot/Makefile            |    2 +-
- arch/x86/boot/compressed/Makefile |    4 ++++
- arch/x86/entry/vdso/Makefile      |    2 +-
- 3 files changed, 6 insertions(+), 2 deletions(-)
+ drivers/usb/core/hcd.c  |   26 +++++++++++++++-----------
+ include/linux/usb/hcd.h |    1 +
+ 2 files changed, 16 insertions(+), 11 deletions(-)
 
---- a/arch/x86/boot/Makefile
-+++ b/arch/x86/boot/Makefile
-@@ -100,7 +100,7 @@ $(obj)/zoffset.h: $(obj)/compressed/vmli
- AFLAGS_header.o += -I$(objtree)/$(obj)
- $(obj)/header.o: $(obj)/zoffset.h
+--- a/drivers/usb/core/hcd.c
++++ b/drivers/usb/core/hcd.c
+@@ -1805,7 +1805,6 @@ static void usb_giveback_urb_bh(unsigned
  
--LDFLAGS_setup.elf	:= -m elf_i386 -T
-+LDFLAGS_setup.elf	:= -m elf_i386 -z noexecstack -T
- $(obj)/setup.elf: $(src)/setup.ld $(SETUP_OBJS) FORCE
- 	$(call if_changed,ld)
+ 	spin_lock_irq(&bh->lock);
+ 	bh->running = true;
+- restart:
+ 	list_replace_init(&bh->head, &local_list);
+ 	spin_unlock_irq(&bh->lock);
  
---- a/arch/x86/boot/compressed/Makefile
-+++ b/arch/x86/boot/compressed/Makefile
-@@ -57,6 +57,10 @@ else
- KBUILD_LDFLAGS += $(shell $(LD) --help 2>&1 | grep -q "\-z noreloc-overflow" \
- 	&& echo "-z noreloc-overflow -pie --no-dynamic-linker")
- endif
-+
-+KBUILD_LDFLAGS += -z noexecstack
-+KBUILD_LDFLAGS += $(call ld-option,--no-warn-rwx-segments)
-+
- LDFLAGS_vmlinux := -T
+@@ -1819,10 +1818,17 @@ static void usb_giveback_urb_bh(unsigned
+ 		bh->completing_ep = NULL;
+ 	}
  
- hostprogs-y	:= mkpiggy
---- a/arch/x86/entry/vdso/Makefile
-+++ b/arch/x86/entry/vdso/Makefile
-@@ -172,7 +172,7 @@ quiet_cmd_vdso = VDSO    $@
+-	/* check if there are new URBs to giveback */
++	/*
++	 * giveback new URBs next time to prevent this function
++	 * from not exiting for a long time.
++	 */
+ 	spin_lock_irq(&bh->lock);
+-	if (!list_empty(&bh->head))
+-		goto restart;
++	if (!list_empty(&bh->head)) {
++		if (bh->high_prio)
++			tasklet_hi_schedule(&bh->bh);
++		else
++			tasklet_schedule(&bh->bh);
++	}
+ 	bh->running = false;
+ 	spin_unlock_irq(&bh->lock);
+ }
+@@ -1847,7 +1853,7 @@ static void usb_giveback_urb_bh(unsigned
+ void usb_hcd_giveback_urb(struct usb_hcd *hcd, struct urb *urb, int status)
+ {
+ 	struct giveback_urb_bh *bh;
+-	bool running, high_prio_bh;
++	bool running;
  
- VDSO_LDFLAGS = -shared $(call ld-option, --hash-style=both) \
- 	$(call ld-option, --build-id) $(call ld-option, --eh-frame-hdr) \
--	-Bsymbolic
-+	-Bsymbolic -z noexecstack
- GCOV_PROFILE := n
+ 	/* pass status to tasklet via unlinked */
+ 	if (likely(!urb->unlinked))
+@@ -1858,13 +1864,10 @@ void usb_hcd_giveback_urb(struct usb_hcd
+ 		return;
+ 	}
  
- #
+-	if (usb_pipeisoc(urb->pipe) || usb_pipeint(urb->pipe)) {
++	if (usb_pipeisoc(urb->pipe) || usb_pipeint(urb->pipe))
+ 		bh = &hcd->high_prio_bh;
+-		high_prio_bh = true;
+-	} else {
++	else
+ 		bh = &hcd->low_prio_bh;
+-		high_prio_bh = false;
+-	}
+ 
+ 	spin_lock(&bh->lock);
+ 	list_add_tail(&urb->urb_list, &bh->head);
+@@ -1873,7 +1876,7 @@ void usb_hcd_giveback_urb(struct usb_hcd
+ 
+ 	if (running)
+ 		;
+-	else if (high_prio_bh)
++	else if (bh->high_prio)
+ 		tasklet_hi_schedule(&bh->bh);
+ 	else
+ 		tasklet_schedule(&bh->bh);
+@@ -2881,6 +2884,7 @@ int usb_add_hcd(struct usb_hcd *hcd,
+ 
+ 	/* initialize tasklets */
+ 	init_giveback_urb_bh(&hcd->high_prio_bh);
++	hcd->high_prio_bh.high_prio = true;
+ 	init_giveback_urb_bh(&hcd->low_prio_bh);
+ 
+ 	/* enable irqs just before we start the controller,
+--- a/include/linux/usb/hcd.h
++++ b/include/linux/usb/hcd.h
+@@ -66,6 +66,7 @@
+ 
+ struct giveback_urb_bh {
+ 	bool running;
++	bool high_prio;
+ 	spinlock_t lock;
+ 	struct list_head  head;
+ 	struct tasklet_struct bh;
 
 
