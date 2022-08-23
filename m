@@ -2,46 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 68B80C32772
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 10:19:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BEF87C32774
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 10:19:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347954AbiHWKTp (ORCPT
+        id S1354044AbiHWKTv (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 06:19:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57872 "EHLO
+        Tue, 23 Aug 2022 06:19:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57848 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352709AbiHWKIf (ORCPT
+        with ESMTP id S1352720AbiHWKIf (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 23 Aug 2022 06:08:35 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E31746E2CB;
-        Tue, 23 Aug 2022 01:54:46 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D1BD26E2CF;
+        Tue, 23 Aug 2022 01:54:43 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 8D74EB81C39;
-        Tue, 23 Aug 2022 08:54:45 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DF3DFC433C1;
-        Tue, 23 Aug 2022 08:54:43 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 7B4EFB81C48;
+        Tue, 23 Aug 2022 08:38:48 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A6E4BC43145;
+        Tue, 23 Aug 2022 08:38:46 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661244884;
-        bh=d9zByOqMLOF3FIcefgl0t3MfVCirt6tjn609U+L5Uy0=;
+        s=korg; t=1661243927;
+        bh=drOoGIBMOeRwHmzS4ziAXbQ0TDul30Lkh7ed/X2k6Ss=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=pfGj1Zou0viuiteCmBH6RdR7ZwfOJ6g7rV+Sh5iF3k7Ip1olhV17tngcr4rwcichF
-         cnxVFp71j71tsyjsvnC6FZXHnvliKTRiefMxRb446tt89lJ8Eq1XMFDIB0akRMDoqJ
-         mO/6uNOYc996gQ/yfWt45qK/3xW1h57gagZQQ4+o=
+        b=j7bZ8yo5AO+fJB5yHu/wJE2aT4po1Z+cTg7SjkgnT9U0Wzjk1uYtpptlFPeys6Sz7
+         LIoTKlMqx8Y0cF0MxvRFk/kfy6z/uS0XodTU+lvX/g11oXTi+jswm4mz+clsagAezp
+         Sc/7k6aaetVm2TXfXOvQrd9xoI88vemY9G8KQZw0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Dan Vacura <w36195@motorola.com>,
-        Michael Grzeschik <m.grzeschik@pengutronix.de>,
+        stable@vger.kernel.org, Liang He <windhl@126.com>,
+        Mark Brown <broonie@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 167/244] usb: gadget: uvc: calculate the number of request depending on framesize
-Date:   Tue, 23 Aug 2022 10:25:26 +0200
-Message-Id: <20220823080104.803122251@linuxfoundation.org>
+Subject: [PATCH 4.14 057/229] regulator: of: Fix refcount leak bug in of_get_regulation_constraints()
+Date:   Tue, 23 Aug 2022 10:23:38 +0200
+Message-Id: <20220823080055.767674846@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220823080059.091088642@linuxfoundation.org>
-References: <20220823080059.091088642@linuxfoundation.org>
+In-Reply-To: <20220823080053.202747790@linuxfoundation.org>
+References: <20220823080053.202747790@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -50,68 +50,40 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Michael Grzeschik <m.grzeschik@pengutronix.de>
+From: Liang He <windhl@126.com>
 
-[ Upstream commit 87d76b5f1d8eeb49efa16e2018e188864cbb9401 ]
+[ Upstream commit 66efb665cd5ad69b27dca8571bf89fc6b9c628a4 ]
 
-The current limitation of possible number of requests being handled is
-dependent on the gadget speed. It makes more sense to depend on the
-typical frame size when calculating the number of requests. This patch
-is changing this and is using the previous limits as boundaries for
-reasonable minimum and maximum number of requests.
+We should call the of_node_put() for the reference returned by
+of_get_child_by_name() which has increased the refcount.
 
-For a 1080p jpeg encoded video stream with a maximum imagesize of
-e.g. 800kB with a maxburst of 8 and an multiplier of 1 the resulting
-number of requests is calculated to 49.
-
-        800768         1
-nreqs = ------ * -------------- ~= 49
-          2      (1024 * 8 * 1)
-
-Tested-by: Dan Vacura <w36195@motorola.com>
-Signed-off-by: Michael Grzeschik <m.grzeschik@pengutronix.de>
-Link: https://lore.kernel.org/r/20220529223848.105914-2-m.grzeschik@pengutronix.de
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Fixes: 40e20d68bb3f ("regulator: of: Add support for parsing regulator_state for suspend state")
+Signed-off-by: Liang He <windhl@126.com>
+Link: https://lore.kernel.org/r/20220715111027.391032-1-windhl@126.com
+Signed-off-by: Mark Brown <broonie@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/usb/gadget/function/uvc_queue.c | 17 ++++++++++++-----
- 1 file changed, 12 insertions(+), 5 deletions(-)
+ drivers/regulator/of_regulator.c | 6 +++++-
+ 1 file changed, 5 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/usb/gadget/function/uvc_queue.c b/drivers/usb/gadget/function/uvc_queue.c
-index 99dc9adf56ef..a64b842665b9 100644
---- a/drivers/usb/gadget/function/uvc_queue.c
-+++ b/drivers/usb/gadget/function/uvc_queue.c
-@@ -44,7 +44,8 @@ static int uvc_queue_setup(struct vb2_queue *vq,
- {
- 	struct uvc_video_queue *queue = vb2_get_drv_priv(vq);
- 	struct uvc_video *video = container_of(queue, struct uvc_video, queue);
--	struct usb_composite_dev *cdev = video->uvc->func.config->cdev;
-+	unsigned int req_size;
-+	unsigned int nreq;
+diff --git a/drivers/regulator/of_regulator.c b/drivers/regulator/of_regulator.c
+index a3bf7c993723..f82b522bffa7 100644
+--- a/drivers/regulator/of_regulator.c
++++ b/drivers/regulator/of_regulator.c
+@@ -158,8 +158,12 @@ static void of_get_regulation_constraints(struct device_node *np,
+ 		}
  
- 	if (*nbuffers > UVC_MAX_VIDEO_BUFFERS)
- 		*nbuffers = UVC_MAX_VIDEO_BUFFERS;
-@@ -53,10 +54,16 @@ static int uvc_queue_setup(struct vb2_queue *vq,
+ 		suspend_np = of_get_child_by_name(np, regulator_states[i]);
+-		if (!suspend_np || !suspend_state)
++		if (!suspend_np)
+ 			continue;
++		if (!suspend_state) {
++			of_node_put(suspend_np);
++			continue;
++		}
  
- 	sizes[0] = video->imagesize;
- 
--	if (cdev->gadget->speed < USB_SPEED_SUPER)
--		video->uvc_num_requests = 4;
--	else
--		video->uvc_num_requests = 64;
-+	req_size = video->ep->maxpacket
-+		 * max_t(unsigned int, video->ep->maxburst, 1)
-+		 * (video->ep->mult);
-+
-+	/* We divide by two, to increase the chance to run
-+	 * into fewer requests for smaller framesizes.
-+	 */
-+	nreq = DIV_ROUND_UP(DIV_ROUND_UP(sizes[0], 2), req_size);
-+	nreq = clamp(nreq, 4U, 64U);
-+	video->uvc_num_requests = nreq;
- 
- 	return 0;
- }
+ 		if (!of_property_read_u32(suspend_np, "regulator-mode",
+ 					  &pval)) {
 -- 
 2.35.1
 
