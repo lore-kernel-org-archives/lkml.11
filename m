@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4B968C32774
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 11:13:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7E376C32774
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 11:14:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357266AbiHWLN4 (ORCPT
+        id S1357299AbiHWLOG (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 07:13:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59980 "EHLO
+        Tue, 23 Aug 2022 07:14:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37662 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347074AbiHWLNF (ORCPT
+        with ESMTP id S241582AbiHWLNO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 07:13:05 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2B29DB941E;
-        Tue, 23 Aug 2022 02:17:58 -0700 (PDT)
+        Tue, 23 Aug 2022 07:13:14 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 67E2BB9405;
+        Tue, 23 Aug 2022 02:17:57 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id AF293CE1B55;
-        Tue, 23 Aug 2022 09:17:35 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C9628C433D6;
-        Tue, 23 Aug 2022 09:17:33 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 73B29B81C85;
+        Tue, 23 Aug 2022 09:17:54 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C02B3C433C1;
+        Tue, 23 Aug 2022 09:17:52 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661246254;
-        bh=Sp/9EUuJILzRdg6nBJEcMJpl4b+6BEiUl7qd5kaShWk=;
+        s=korg; t=1661246273;
+        bh=Ys9TIHJ9edNtGbf4XQYHNXCNCYaeXKhfNyZOp3p4xek=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ztzfZ/bpeCYfYw4okD2FxgVnA59JRDuaIA8E7H49zYBDJNuA9kSQnh4OJy0mUWX2X
-         XoCU6A7ziEPNU3RBRJ2m6MpJcpTJz53TXmRe13gf11PltLNg8alKAy9TnNSALJ91Eq
-         ITXoFcM4BcdLlftBBXrcjAOJd0PMhpuE6F9MadJ8=
+        b=oQc3GlH8MtNjrUMsXaeh+yjNlcceX1K8FePkfnHdiXzKQzN/D0ZCpLYTcdRPkCOOf
+         pYibJrTAat3bVTuFn8GUm0K3EpR72b+t+uzjOOANIJHKMDbiHA8HusbHyEJDDKX0AY
+         AQnTPszuFJdaybZeuzBOFmICnjs8ZQRKqpvxiE80=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, mingi cho <mgcho.minic@gmail.com>,
-        Florian Westphal <fw@strlen.de>,
-        Pablo Neira Ayuso <pablo@netfilter.org>
-Subject: [PATCH 5.4 050/389] netfilter: nf_tables: fix null deref due to zeroed list head
-Date:   Tue, 23 Aug 2022 10:22:08 +0200
-Message-Id: <20220823080117.694305417@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Antonio Borneo <antonio.borneo@foss.st.com>,
+        Marc Zyngier <maz@kernel.org>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.4 056/389] genirq: Dont return error on missing optional irq_request_resources()
+Date:   Tue, 23 Aug 2022 10:22:14 +0200
+Message-Id: <20220823080117.942081719@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220823080115.331990024@linuxfoundation.org>
 References: <20220823080115.331990024@linuxfoundation.org>
@@ -50,45 +50,41 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Florian Westphal <fw@strlen.de>
+From: Antonio Borneo <antonio.borneo@foss.st.com>
 
-commit 580077855a40741cf511766129702d97ff02f4d9 upstream.
+[ Upstream commit 95001b756467ecc9f5973eb5e74e97699d9bbdf1 ]
 
-In nf_tables_updtable, if nf_tables_table_enable returns an error,
-nft_trans_destroy is called to free the transaction object.
+Function irq_chip::irq_request_resources() is reported as optional
+in the declaration of struct irq_chip.
+If the parent irq_chip does not implement it, we should ignore it
+and return.
 
-nft_trans_destroy() calls list_del(), but the transaction was never
-placed on a list -- the list head is all zeroes, this results in
-a null dereference:
+Don't return error if the functions is missing.
 
-BUG: KASAN: null-ptr-deref in nft_trans_destroy+0x26/0x59
-Call Trace:
- nft_trans_destroy+0x26/0x59
- nf_tables_newtable+0x4bc/0x9bc
- [..]
-
-Its sane to assume that nft_trans_destroy() can be called
-on the transaction object returned by nft_trans_alloc(), so
-make sure the list head is initialised.
-
-Fixes: 55dd6f93076b ("netfilter: nf_tables: use new transaction infrastructure to handle table")
-Reported-by: mingi cho <mgcho.minic@gmail.com>
-Signed-off-by: Florian Westphal <fw@strlen.de>
-Signed-off-by: Pablo Neira Ayuso <pablo@netfilter.org>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Antonio Borneo <antonio.borneo@foss.st.com>
+Signed-off-by: Marc Zyngier <maz@kernel.org>
+Link: https://lore.kernel.org/r/20220512160544.13561-1-antonio.borneo@foss.st.com
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/netfilter/nf_tables_api.c |    1 +
- 1 file changed, 1 insertion(+)
+ kernel/irq/chip.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
---- a/net/netfilter/nf_tables_api.c
-+++ b/net/netfilter/nf_tables_api.c
-@@ -113,6 +113,7 @@ static struct nft_trans *nft_trans_alloc
- 	if (trans == NULL)
- 		return NULL;
+diff --git a/kernel/irq/chip.c b/kernel/irq/chip.c
+index 856f0297dc73..521121c2666c 100644
+--- a/kernel/irq/chip.c
++++ b/kernel/irq/chip.c
+@@ -1484,7 +1484,8 @@ int irq_chip_request_resources_parent(struct irq_data *data)
+ 	if (data->chip->irq_request_resources)
+ 		return data->chip->irq_request_resources(data);
  
-+	INIT_LIST_HEAD(&trans->list);
- 	trans->msg_type = msg_type;
- 	trans->ctx	= *ctx;
+-	return -ENOSYS;
++	/* no error on missing optional irq_chip::irq_request_resources */
++	return 0;
+ }
+ EXPORT_SYMBOL_GPL(irq_chip_request_resources_parent);
  
+-- 
+2.35.1
+
 
 
