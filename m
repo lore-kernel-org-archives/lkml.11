@@ -2,44 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0054CC54F33
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 10:53:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5F92DC54F66
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 10:53:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356973AbiHWKws (ORCPT
+        id S1351477AbiHWKxA (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 06:52:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53490 "EHLO
+        Tue, 23 Aug 2022 06:53:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55528 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355859AbiHWKo7 (ORCPT
+        with ESMTP id S1355840AbiHWKpV (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 06:44:59 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A8F5047B81;
-        Tue, 23 Aug 2022 02:10:53 -0700 (PDT)
+        Tue, 23 Aug 2022 06:45:21 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E67A0275E0;
+        Tue, 23 Aug 2022 02:11:03 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 45CF5608D5;
-        Tue, 23 Aug 2022 09:10:53 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4D9A7C433D6;
-        Tue, 23 Aug 2022 09:10:52 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 9F12AB81C4E;
+        Tue, 23 Aug 2022 09:11:02 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id F310FC433D6;
+        Tue, 23 Aug 2022 09:11:00 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661245852;
-        bh=qvYNxEp4BkVpp0o3cY2gldmCMqgQYuRgKAATdhdUjZU=;
+        s=korg; t=1661245861;
+        bh=0Jt2oS8ajL4CdGUQpCZ3kNZmqzcv3sKuganqUxlGuhw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=RMqj3/w6douiztT7LCD7bc+yrbQcJ7fXJkMC4uX+1U8evJiSNbHTju0ppgh5QT5hN
-         q0hvGyK8k/7Tlmu3Va7kMOhg/YkxAaryqJOKb+mKxB38svc5C8js7jUg6Kze831fpU
-         aXPfgQ/AphvduuzUPjnew63eVLXMoOgxLkfkT1ts=
+        b=cIoboEmjQunT864OtrG3GjX3cWL/9mOW8zp136Dza2RIbluvL2us6Smtqb5vvld7C
+         R7grxUlwdi/CPIi6f5UQouzAJQ0yKxDokM2dJwZOi0eKnWeFc2oy1zPf2CiWAz6tWT
+         u6g0AlF6zzgYno5lryFS+NZ05twP/E0dPMXG4jmg=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
-        =?UTF-8?q?Pali=20Roh=C3=A1r?= <pali@kernel.org>,
-        Michael Ellerman <mpe@ellerman.id.au>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.19 170/287] powerpc/pci: Prefer PCI domain assignment via DT linux,pci-domain and alias
-Date:   Tue, 23 Aug 2022 10:25:39 +0200
-Message-Id: <20220823080106.487551248@linuxfoundation.org>
+        Christophe Leroy <christophe.leroy@csgroup.eu>,
+        Michael Ellerman <mpe@ellerman.id.au>
+Subject: [PATCH 4.19 214/287] powerpc/ptdump: Fix display of RW pages on FSL_BOOK3E
+Date:   Tue, 23 Aug 2022 10:26:23 +0200
+Message-Id: <20220823080108.163917288@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220823080100.268827165@linuxfoundation.org>
 References: <20220823080100.268827165@linuxfoundation.org>
@@ -51,84 +50,46 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Pali Rohár <pali@kernel.org>
+From: Christophe Leroy <christophe.leroy@csgroup.eu>
 
-[ Upstream commit 0fe1e96fef0a5c53b4c0d1500d356f3906000f81 ]
+commit dd8de84b57b02ba9c1fe530a6d916c0853f136bd upstream.
 
-Other Linux architectures use DT property 'linux,pci-domain' for
-specifying fixed PCI domain of PCI controller specified in Device-Tree.
+On FSL_BOOK3E, _PAGE_RW is defined with two bits, one for user and one
+for supervisor. As soon as one of the two bits is set, the page has
+to be display as RW. But the way it is implemented today requires both
+bits to be set in order to display it as RW.
 
-And lot of Freescale powerpc boards have defined numbered pci alias in
-Device-Tree for every PCIe controller which number specify preferred PCI
-domain.
+Instead of display RW when _PAGE_RW bits are set and R otherwise,
+reverse the logic and display R when _PAGE_RW bits are all 0 and
+RW otherwise.
 
-So prefer usage of DT property 'linux,pci-domain' (via function
-of_get_pci_domain_nr()) and DT pci alias (via function
-of_alias_get_id()) on powerpc architecture for assigning PCI domain to
-PCI controller.
+This change has no impact on other platforms as _PAGE_RW is a single
+bit on all of them.
 
-Fixes: 63a72284b159 ("powerpc/pci: Assign fixed PHB number based on device-tree properties")
-Signed-off-by: Pali Rohár <pali@kernel.org>
+Fixes: 8eb07b187000 ("powerpc/mm: Dump linux pagetables")
+Cc: stable@vger.kernel.org
+Signed-off-by: Christophe Leroy <christophe.leroy@csgroup.eu>
 Signed-off-by: Michael Ellerman <mpe@ellerman.id.au>
-Link: https://lore.kernel.org/r/20220706102148.5060-2-pali@kernel.org
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Link: https://lore.kernel.org/r/0c33b96317811edf691e81698aaee8fa45ec3449.1656427391.git.christophe.leroy@csgroup.eu
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/powerpc/kernel/pci-common.c | 27 +++++++++++++++++++--------
- 1 file changed, 19 insertions(+), 8 deletions(-)
+ arch/powerpc/mm/dump_linuxpagetables-generic.c |    6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
-diff --git a/arch/powerpc/kernel/pci-common.c b/arch/powerpc/kernel/pci-common.c
-index 74628aca2bf1..b0bd55f2ce3a 100644
---- a/arch/powerpc/kernel/pci-common.c
-+++ b/arch/powerpc/kernel/pci-common.c
-@@ -82,16 +82,30 @@ EXPORT_SYMBOL(get_pci_dma_ops);
- static int get_phb_number(struct device_node *dn)
- {
- 	int ret, phb_id = -1;
--	u32 prop_32;
- 	u64 prop;
- 
- 	/*
- 	 * Try fixed PHB numbering first, by checking archs and reading
--	 * the respective device-tree properties. Firstly, try powernv by
--	 * reading "ibm,opal-phbid", only present in OPAL environment.
-+	 * the respective device-tree properties. Firstly, try reading
-+	 * standard "linux,pci-domain", then try reading "ibm,opal-phbid"
-+	 * (only present in powernv OPAL environment), then try device-tree
-+	 * alias and as the last try to use lower bits of "reg" property.
- 	 */
--	ret = of_property_read_u64(dn, "ibm,opal-phbid", &prop);
-+	ret = of_get_pci_domain_nr(dn);
-+	if (ret >= 0) {
-+		prop = ret;
-+		ret = 0;
-+	}
-+	if (ret)
-+		ret = of_property_read_u64(dn, "ibm,opal-phbid", &prop);
-+	if (ret)
-+		ret = of_alias_get_id(dn, "pci");
-+	if (ret >= 0) {
-+		prop = ret;
-+		ret = 0;
-+	}
- 	if (ret) {
-+		u32 prop_32;
- 		ret = of_property_read_u32_index(dn, "reg", 1, &prop_32);
- 		prop = prop_32;
- 	}
-@@ -103,10 +117,7 @@ static int get_phb_number(struct device_node *dn)
- 	if ((phb_id >= 0) && !test_and_set_bit(phb_id, phb_bitmap))
- 		return phb_id;
- 
--	/*
--	 * If not pseries nor powernv, or if fixed PHB numbering tried to add
--	 * the same PHB number twice, then fallback to dynamic PHB numbering.
--	 */
-+	/* If everything fails then fallback to dynamic PHB numbering. */
- 	phb_id = find_first_zero_bit(phb_bitmap, MAX_PHBS);
- 	BUG_ON(phb_id >= MAX_PHBS);
- 	set_bit(phb_id, phb_bitmap);
--- 
-2.35.1
-
+--- a/arch/powerpc/mm/dump_linuxpagetables-generic.c
++++ b/arch/powerpc/mm/dump_linuxpagetables-generic.c
+@@ -17,9 +17,9 @@ static const struct flag_info flag_array
+ 		.clear	= "    ",
+ 	}, {
+ 		.mask	= _PAGE_RW,
+-		.val	= _PAGE_RW,
+-		.set	= "rw",
+-		.clear	= "r ",
++		.val	= 0,
++		.set	= "r ",
++		.clear	= "rw",
+ 	}, {
+ #ifndef CONFIG_PPC_BOOK3S_32
+ 		.mask	= _PAGE_EXEC,
 
 
