@@ -2,140 +2,101 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 18004C32793
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 08:17:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AE57DC32774
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 08:17:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242532AbiHWIRi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 04:17:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32814 "EHLO
+        id S242447AbiHWIRp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 23 Aug 2022 04:17:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32906 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241817AbiHWILu (ORCPT
+        with ESMTP id S242510AbiHWIL1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 04:11:50 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EF7056B16A;
-        Tue, 23 Aug 2022 01:08:55 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 242126122D;
-        Tue, 23 Aug 2022 08:08:55 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2ED48C433D6;
-        Tue, 23 Aug 2022 08:08:54 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661242134;
-        bh=F9SU6UtgP0gCccx4Zboydln91y1JAzmAWCxO5fihL5g=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=whYeu29QEkuLhQrXkjSO/LSDjE2yL52Ei0F7mn6fQP10nodCtHGXxAdnn6+AGjUY0
-         kZrI+yGu0GokZzyRk8A6KYGsJZ8bgs+5E5iFDtkas8wNDZ6WqL1Kbzy9LvZ5MmlpLU
-         52Xbid9WRlZefAHjNcg/rWxJH0jalC906dZIOAc0=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Takashi Iwai <tiwai@suse.de>
-Subject: [PATCH 5.19 037/365] ALSA: usb-audio: More comprehensive mixer map for ASUS ROG Zenith II
-Date:   Tue, 23 Aug 2022 09:58:58 +0200
-Message-Id: <20220823080119.744796915@linuxfoundation.org>
-X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220823080118.128342613@linuxfoundation.org>
-References: <20220823080118.128342613@linuxfoundation.org>
-User-Agent: quilt/0.67
+        Tue, 23 Aug 2022 04:11:27 -0400
+Received: from mail-pj1-x102f.google.com (mail-pj1-x102f.google.com [IPv6:2607:f8b0:4864:20::102f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 541D6E033;
+        Tue, 23 Aug 2022 01:08:34 -0700 (PDT)
+Received: by mail-pj1-x102f.google.com with SMTP id x14-20020a17090a8a8e00b001fb61a71d99so1296657pjn.2;
+        Tue, 23 Aug 2022 01:08:34 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc;
+        bh=rxqK6Y9ADvrz5Qb+wgm4oP/mkFK1hFUakcQeyZkdrjg=;
+        b=qa9kpU15MBZeI3ijyNK+ezq/HuCWZTPrm8SqDeM3OhmYMHlEIsxRQ81auUqgXa5sMk
+         mSPVHEtY8NIBKqYxWij27UCrey7fmy2dFAi7PCbv6LG20nhoh4hOfa3Vh7qnxMl3d0TG
+         FSEn47px272RJY08U2c2gnFCw7LVrAgwXRx5nhKPyAZuOmTZNSM/bCbOrF+x39b1MqXP
+         eEk7ISR6NhbQn/pxqsF8GF1G2PpJITJN+NaU6ZDIqxQ/+akfKBs/DuJY7WKXIy1g2Gj+
+         JXM2c51DUHfA1hF2pbaDkXRldSoM2MjQ34wC6vcskU22oS5edk4m2hxXuNcL8EaSSrRX
+         9SCA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc;
+        bh=rxqK6Y9ADvrz5Qb+wgm4oP/mkFK1hFUakcQeyZkdrjg=;
+        b=kWodTwXudlVoVx6hSRkoM2gJtMKZwz8vTFw8y2MDXm+jeGZe7++045RgIOX9DiEd55
+         xatckscbLVC1Ysh0Lj52IQIT6FDuPZZeFtJmJHJVaIpEFEXOe4wYuA2D2Xcz1QwHSNEZ
+         07BJKHwMSUB2u8Wb04TdeW+39wburX8xOUtHS2c/z90L9bTdyrj3qiL4Z95DOc3DfZsz
+         bImRs+SHGjZVA5Mv2Ns8NHBrKOxCK4gdXePKQzhpwUZWnN3cDyPOYwk4P3/kknoy6cow
+         wcOBcXpoeo7PU0O6eRYHWbJPNKBrvleQbwj3Ed2+PDuLoByzUCKoEKJR+9SUG5VGOwXb
+         TlKw==
+X-Gm-Message-State: ACgBeo1KLxawv+7bWy9yAeIpm506aJnFiE/bANdzGg1rZH1LxlBYrzcl
+        KJVcskYLlVq8z//BYaxXKhk=
+X-Google-Smtp-Source: AA6agR6N4egFU92pUmyxhcXqsOyU+Q8ywulCC4ChqVABz3U2dM4ePorwqXZKy7WP8jur17QK6kVrAw==
+X-Received: by 2002:a17:90a:e7c2:b0:1f4:feeb:20ee with SMTP id kb2-20020a17090ae7c200b001f4feeb20eemr2200781pjb.114.1661242113171;
+        Tue, 23 Aug 2022 01:08:33 -0700 (PDT)
+Received: from localhost ([192.55.55.51])
+        by smtp.gmail.com with ESMTPSA id p127-20020a625b85000000b00536bbfa4963sm3012743pfb.139.2022.08.23.01.08.32
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 23 Aug 2022 01:08:32 -0700 (PDT)
+Date:   Tue, 23 Aug 2022 01:08:31 -0700
+From:   Isaku Yamahata <isaku.yamahata@gmail.com>
+To:     Chao Gao <chao.gao@intel.com>
+Cc:     isaku.yamahata@intel.com, kvm@vger.kernel.org,
+        linux-kernel@vger.kernel.org, isaku.yamahata@gmail.com,
+        Paolo Bonzini <pbonzini@redhat.com>,
+        Sean Christopherson <seanjc@google.com>,
+        Kai Huang <kai.huang@intel.com>, Will Deacon <will@kernel.org>
+Subject: Re: [RFC PATCH 12/18] KVM: Do processor compatibility check on cpu
+ online and resume
+Message-ID: <20220823080831.GE2147148@ls.amr.corp.intel.com>
+References: <cover.1660974106.git.isaku.yamahata@intel.com>
+ <60f9ec74499c673c474e9d909c2f3176bc6711c3.1660974106.git.isaku.yamahata@intel.com>
+ <YwSGsbpuJ5cdNmDG@gao-cwp>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <YwSGsbpuJ5cdNmDG@gao-cwp>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Takashi Iwai <tiwai@suse.de>
+On Tue, Aug 23, 2022 at 03:50:09PM +0800,
+Chao Gao <chao.gao@intel.com> wrote:
 
-commit 6bc2906253e723d1ab1acc652b55b83e286bfec2 upstream.
+> >diff --git a/virt/kvm/kvm_arch.c b/virt/kvm/kvm_arch.c
+> >index 2ed8de0591c9..20971f43df95 100644
+> >--- a/virt/kvm/kvm_arch.c
+> >+++ b/virt/kvm/kvm_arch.c
+> >@@ -99,9 +99,15 @@ __weak int kvm_arch_del_vm(int usage_count)
+> > 
+> > __weak int kvm_arch_online_cpu(unsigned int cpu, int usage_count)
+> > {
+> >-	if (usage_count)
+> >-		return __hardware_enable();
+> >-	return 0;
+> >+	int r;
+> >+
+> >+	if (!usage_count)
+> >+		return 0;
+> >+
+> >+	r = kvm_arch_check_processor_compat();
+> >+	if (r)
+> >+		return r;
+> 
+> I think kvm_arch_check_processor_compat() should be called even when
+> usage_count is 0. Otherwise, compatibility checks may be missing on some
+> CPUs if no VM is running when those CPUs becomes online.
 
-ASUS ROG Zenith II has two USB interfaces, one for the front headphone
-and another for the rest I/O.  Currently we provided the mixer mapping
-for the latter but with an incomplete form.
-
-This patch corrects and provides more comprehensive mixer mapping, as
-well as providing the proper device names for both the front headphone
-and main audio.
-
-BugLink: https://bugzilla.kernel.org/show_bug.cgi?id=211005
-Fixes: 2a48218f8e23 ("ALSA: usb-audio: Add mixer workaround for TRX40 and co")
-Link: https://lore.kernel.org/r/20220809073259.18849-1-tiwai@suse.de
-Signed-off-by: Takashi Iwai <tiwai@suse.de>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
----
- sound/usb/card.c       |    8 ++++++++
- sound/usb/mixer_maps.c |   34 +++++++++++++++++++++++++---------
- 2 files changed, 33 insertions(+), 9 deletions(-)
-
---- a/sound/usb/card.c
-+++ b/sound/usb/card.c
-@@ -387,6 +387,14 @@ static const struct usb_audio_device_nam
- 	DEVICE_NAME(0x05e1, 0x0408, "Syntek", "STK1160"),
- 	DEVICE_NAME(0x05e1, 0x0480, "Hauppauge", "Woodbury"),
- 
-+	/* ASUS ROG Zenith II: this machine has also two devices, one for
-+	 * the front headphone and another for the rest
-+	 */
-+	PROFILE_NAME(0x0b05, 0x1915, "ASUS", "Zenith II Front Headphone",
-+		     "Zenith-II-Front-Headphone"),
-+	PROFILE_NAME(0x0b05, 0x1916, "ASUS", "Zenith II Main Audio",
-+		     "Zenith-II-Main-Audio"),
-+
- 	/* ASUS ROG Strix */
- 	PROFILE_NAME(0x0b05, 0x1917,
- 		     "Realtek", "ALC1220-VB-DT", "Realtek-ALC1220-VB-Desktop"),
---- a/sound/usb/mixer_maps.c
-+++ b/sound/usb/mixer_maps.c
-@@ -374,13 +374,28 @@ static const struct usbmix_name_map cors
- 	{ 0 }
- };
- 
--/* Some mobos shipped with a dummy HD-audio show the invalid GET_MIN/GET_MAX
-- * response for Input Gain Pad (id=19, control=12) and the connector status
-- * for SPDIF terminal (id=18).  Skip them.
-- */
--static const struct usbmix_name_map asus_rog_map[] = {
--	{ 18, NULL }, /* OT, connector control */
--	{ 19, NULL, 12 }, /* FU, Input Gain Pad */
-+/* ASUS ROG Zenith II with Realtek ALC1220-VB */
-+static const struct usbmix_name_map asus_zenith_ii_map[] = {
-+	{ 19, NULL, 12 }, /* FU, Input Gain Pad - broken response, disabled */
-+	{ 16, "Speaker" },		/* OT */
-+	{ 22, "Speaker Playback" },	/* FU */
-+	{ 7, "Line" },			/* IT */
-+	{ 19, "Line Capture" },		/* FU */
-+	{ 8, "Mic" },			/* IT */
-+	{ 20, "Mic Capture" },		/* FU */
-+	{ 9, "Front Mic" },		/* IT */
-+	{ 21, "Front Mic Capture" },	/* FU */
-+	{ 17, "IEC958" },		/* OT */
-+	{ 23, "IEC958 Playback" },	/* FU */
-+	{}
-+};
-+
-+static const struct usbmix_connector_map asus_zenith_ii_connector_map[] = {
-+	{ 10, 16 },	/* (Back) Speaker */
-+	{ 11, 17 },	/* SPDIF */
-+	{ 13, 7 },	/* Line */
-+	{ 14, 8 },	/* Mic */
-+	{ 15, 9 },	/* Front Mic */
- 	{}
- };
- 
-@@ -611,9 +626,10 @@ static const struct usbmix_ctl_map usbmi
- 		.map = gigabyte_b450_map,
- 		.connector_map = gigabyte_b450_connector_map,
- 	},
--	{	/* ASUS ROG Zenith II */
-+	{	/* ASUS ROG Zenith II (main audio) */
- 		.id = USB_ID(0x0b05, 0x1916),
--		.map = asus_rog_map,
-+		.map = asus_zenith_ii_map,
-+		.connector_map = asus_zenith_ii_connector_map,
- 	},
- 	{	/* ASUS ROG Strix */
- 		.id = USB_ID(0x0b05, 0x1917),
-
-
+Oh, right. Compatibility check should be done unconditionally.
+-- 
+Isaku Yamahata <isaku.yamahata@gmail.com>
