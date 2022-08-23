@@ -2,112 +2,110 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EE560C32772
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 19:31:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 96B17C32772
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 19:31:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231857AbiHWTaZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 15:30:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46316 "EHLO
+        id S232220AbiHWTbm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 23 Aug 2022 15:31:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51690 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230014AbiHWTaE (ORCPT
+        with ESMTP id S234196AbiHWTbG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 15:30:04 -0400
-Received: from bee.birch.relay.mailchannels.net (bee.birch.relay.mailchannels.net [23.83.209.14])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2F0ACD25C3
-        for <linux-kernel@vger.kernel.org>; Tue, 23 Aug 2022 11:18:39 -0700 (PDT)
-X-Sender-Id: dreamhost|x-authsender|dave@stgolabs.net
-Received: from relay.mailchannels.net (localhost [127.0.0.1])
-        by relay.mailchannels.net (Postfix) with ESMTP id 071B4820E73;
-        Tue, 23 Aug 2022 18:18:18 +0000 (UTC)
-Received: from pdx1-sub0-mail-a212.dreamhost.com (unknown [127.0.0.6])
-        (Authenticated sender: dreamhost)
-        by relay.mailchannels.net (Postfix) with ESMTPA id 6D448821C18;
-        Tue, 23 Aug 2022 18:18:17 +0000 (UTC)
-ARC-Seal: i=1; s=arc-2022; d=mailchannels.net; t=1661278697; a=rsa-sha256;
-        cv=none;
-        b=3OQOquQh0Q8RB88NCf+qNQO3S/B9pWZFQCCRYLNKOJoZ/yHCnjcCvYQBVPjH1QVAaPU8OE
-        T8ZkQDignUb9tI1HGgWBwQgVDiBGkcXeEIhHRS62BGdVd3Uv3B5uKsdvDJpOL84urlF+4R
-        rLZ6sm6GR8Kr18/5urs7xXqVy565pOktvkvEtXMBsXOfao4X3C1hRnLLkchf+ZrEt4q4Gm
-        qiaOqCMjqBqZmOWmvrLUqrC9fm9GXICX81dGthSbF/PE0+PX+EiFljW4OyfHJAyHsB0FHf
-        T4nqfNap5i2OLs9lKbP3LQjIX+rWyDOYBiIhpCCVzwBbriAkYZD9jXMN6juB0Q==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed;
- d=mailchannels.net;
-        s=arc-2022; t=1661278697;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references:dkim-signature;
-        bh=BoFTfa6Pmpocvq1dOP3/e5ti6Vn5XMkAjsi+9n9j/UQ=;
-        b=ByHFOErcDJgQqsw19rbViJvVwQOlgV820SJ0aoyeTu0h9ke1vXgMGurX5byF4g8fc/dcs0
-        OIH6pxrw2SHl8bvuH6p7YVzkYem6PpBP6EVuTrXimeDtG13owzyPS1z84/q+DpDG8VV1jm
-        g9apbsP7Sv6Q8y4siccvuSCRTkMAGt/aJPg/GaSsPgOfmIB8gjlNOzHMAsxkFKULRkFE0U
-        dR5GXuSffWodFI3qMNm3vqy3+B3qU/kFiuZXQ0gETvfLDgE63DjJskIOdJne6cksjHzsrw
-        6Y0lpcqNjtH5ru2QbNzkegXK3LV8XnnDOUi7v3Wjc0/+VXTJ+pS06To+ichmJA==
-ARC-Authentication-Results: i=1;
-        rspamd-76867cc9c5-87nb9;
-        auth=pass smtp.auth=dreamhost smtp.mailfrom=dave@stgolabs.net
-X-Sender-Id: dreamhost|x-authsender|dave@stgolabs.net
-X-MC-Relay: Neutral
-X-MailChannels-SenderId: dreamhost|x-authsender|dave@stgolabs.net
-X-MailChannels-Auth-Id: dreamhost
-X-Cold-Dime: 288e4e58333a2f8c_1661278697719_300024312
-X-MC-Loop-Signature: 1661278697719:1880717708
-X-MC-Ingress-Time: 1661278697719
-Received: from pdx1-sub0-mail-a212.dreamhost.com (pop.dreamhost.com
- [64.90.62.162])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384)
-        by 100.119.194.202 (trex/6.7.1);
-        Tue, 23 Aug 2022 18:18:17 +0000
-Received: from offworld (unknown [104.36.31.106])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-256) server-signature RSA-PSS (2048 bits) server-digest SHA256)
-        (No client certificate requested)
-        (Authenticated sender: dave@stgolabs.net)
-        by pdx1-sub0-mail-a212.dreamhost.com (Postfix) with ESMTPSA id 4MByCD4pCVz1PX;
-        Tue, 23 Aug 2022 11:18:16 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=stgolabs.net;
-        s=dreamhost; t=1661278697;
-        bh=BoFTfa6Pmpocvq1dOP3/e5ti6Vn5XMkAjsi+9n9j/UQ=;
-        h=Date:From:To:Cc:Subject:Content-Type;
-        b=qa3XvDz82ZnJnUPfrl0i3TXqyyyK2VCs8mXsJlNo0jWPe9xSPvMYyrhV1g5uuPOuE
-         76zEVM4h04kNFUy+AR+pMXo3SKTVRLZosTz9x7so9AWL8oY+gGoTI9BMjpuBRAFaSY
-         oi89pGx8YXTQ0ZryKdUZFsrq3EwdUORiYzk6I1OsALwRsvLfz+LKhSd8Hw4jVaaSyB
-         LpjWsb2IfY+e3SBefm/yrXwJkpv4myEhGJatMYwXF2WujmrSsLtxlXTyS1sa5qz7Hx
-         W3yuP9OQrfb94aUh7i3qp9Wz6KgD7P0gCbpPqT2Ko/L1Tuj9CCSJV9as3ZXHBVtf67
-         7Q+cLcLGYq1dg==
-Date:   Tue, 23 Aug 2022 11:00:09 -0700
-From:   Davidlohr Bueso <dave@stgolabs.net>
-To:     Liam Howlett <liam.howlett@oracle.com>
-Cc:     "maple-tree@lists.infradead.org" <maple-tree@lists.infradead.org>,
-        "linux-mm@kvack.org" <linux-mm@kvack.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        "Matthew Wilcox (Oracle)" <willy@infradead.org>
-Subject: Re: [PATCH v13 39/70] um: remove vma linked list walk
-Message-ID: <20220823180009.3l2vbcenndiyhuf5@offworld>
-Mail-Followup-To: Liam Howlett <liam.howlett@oracle.com>,
-        "maple-tree@lists.infradead.org" <maple-tree@lists.infradead.org>,
-        "linux-mm@kvack.org" <linux-mm@kvack.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        "Matthew Wilcox (Oracle)" <willy@infradead.org>
-References: <20220822150128.1562046-1-Liam.Howlett@oracle.com>
- <20220822150128.1562046-40-Liam.Howlett@oracle.com>
+        Tue, 23 Aug 2022 15:31:06 -0400
+Received: from mail-qk1-x732.google.com (mail-qk1-x732.google.com [IPv6:2607:f8b0:4864:20::732])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4FA5DD7D11
+        for <linux-kernel@vger.kernel.org>; Tue, 23 Aug 2022 11:21:46 -0700 (PDT)
+Received: by mail-qk1-x732.google.com with SMTP id n21so10949609qkk.3
+        for <linux-kernel@vger.kernel.org>; Tue, 23 Aug 2022 11:21:46 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc;
+        bh=VRH9i7gn6G7q7zM5zkrgK8otWVHlhX+rKEaQTiTTOG8=;
+        b=MZCbr/WEbJydxnsRP5iDs8/+UKHC04XK4zcpwO5zyFGAWWy/6HFHsOKp7qYfTJmKBT
+         fBzs3v7/7AQJ0KzQ8i+gXfbYpjMe2dGZrjRk4LEtEg8YwZ+TcO0L/E4zM2ooV1ss+2+B
+         Gr1DyQWP/qboa72UXqPFD27ZSZg7AfE02sPVw=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc;
+        bh=VRH9i7gn6G7q7zM5zkrgK8otWVHlhX+rKEaQTiTTOG8=;
+        b=0fLtOqac/NBlRRDJS5znTK6Ov7rbVYjIVJ4TclFTmNiRbF4q3Xfp7FexJHwrTQjVz3
+         LoyyFUVM2QqrQkcw02PQe0BRrE+t3tcaUKcNAI1mBq7BLuSPeJ1+OBKTR+0D5nsZuPbX
+         Z/ZTxAVntcDcUmMR4qw2kT7ywIii8dH7oRslNuJdzCR4LyL4N1vIRSiv9PBoT2JwzIHD
+         5+QsouHfzFGY5g+iA+KZKDRIIDql3kxnTOiIBK3G7jsGdbCb/Gb54uQlm1XjwqhzH9jE
+         UcYmwG/lxZr+j04Og4gQ63wDhgdhtpn2kKYLrsLFsN4Bv2SjBR37WU2Tia/+rOgRYdtt
+         miFQ==
+X-Gm-Message-State: ACgBeo1PoQeL2vQtRU4RRqe/q+sdRTYPA1uVeXF5wvAXUdfoTAli7dGp
+        HBpe51YJtye2LjBhhFDqJ04yRxlaTmHBpj7FRMF1bg==
+X-Google-Smtp-Source: AA6agR7Tplpl0I6QcELlwZXfwpUh5dE7G8dVWSaIMwN975uDfjb3e5Hod1U6v27fYqIISntknbMDFc+HKE9bvLh75Ek=
+X-Received: by 2002:a05:620a:c44:b0:6b6:5c63:aebc with SMTP id
+ u4-20020a05620a0c4400b006b65c63aebcmr17241718qki.170.1661278905154; Tue, 23
+ Aug 2022 11:21:45 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii; format=flowed
-Content-Disposition: inline
-In-Reply-To: <20220822150128.1562046-40-Liam.Howlett@oracle.com>
-User-Agent: NeoMutt/20220429
+References: <20220810204750.3672362-1-bjorn.andersson@linaro.org>
+ <20220810204750.3672362-2-bjorn.andersson@linaro.org> <a13bce60-25b4-d075-d56a-d1283e91e3ba@linaro.org>
+ <20220814210104.GA690892-robh@kernel.org> <Yv1y9Wjp16CstJvK@baldur>
+ <CAE-0n53AjJ_G6yZoTALWpKvZUdF+8nFZ+TQh=Ch=8xgdMVqDkw@mail.gmail.com>
+ <CACeCKadP-AZ8OU4A=7CrwAz7yuLvMvjvAcw7K-FORFmkMvx7cA@mail.gmail.com>
+ <CAE-0n53C+D=9gdSXKsjr4KZVrb-gpeo_EyuX3DfNKp19FoicXA@mail.gmail.com>
+ <YwADGgNVwtKacUBR@builder.lan> <CACeCKaeXpU+AxFNAwkutMX9LT2XLgAv1XmwJRyj7Exqxg6v8rA@mail.gmail.com>
+ <YwBdTAIqFbedC6Oa@builder.lan>
+In-Reply-To: <YwBdTAIqFbedC6Oa@builder.lan>
+From:   Prashant Malani <pmalani@chromium.org>
+Date:   Tue, 23 Aug 2022 11:21:33 -0700
+Message-ID: <CACeCKafDfiZ8o2Ac-QYTcWT0dFtX6gXfrBPsGgwxRG+-FF4aQw@mail.gmail.com>
+Subject: Re: [PATCH 1/2] dt-bindings: usb: Introduce GPIO-based SBU mux
+To:     Bjorn Andersson <bjorn.andersson@linaro.org>
+Cc:     Stephen Boyd <swboyd@chromium.org>, Rob Herring <robh@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Heikki Krogerus <heikki.krogerus@linux.intel.com>,
+        linux-usb@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-arm-msm@vger.kernel.org,
+        Pin-yen Lin <treapking@chromium.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, 22 Aug 2022, Liam Howlett wrote:
-
->From: "Matthew Wilcox (Oracle)" <willy@infradead.org>
+On Fri, Aug 19, 2022 at 9:04 PM Bjorn Andersson
+<bjorn.andersson@linaro.org> wrote:
 >
->Use the VMA iterator instead.
+> On Fri 19 Aug 17:18 CDT 2022, Prashant Malani wrote:
 >
->Signed-off-by: Matthew Wilcox (Oracle) <willy@infradead.org>
->Signed-off-by: Liam R. Howlett <Liam.Howlett@Oracle.com>
+> > On Fri, Aug 19, 2022 at 2:39 PM Bjorn Andersson
+> > <bjorn.andersson@linaro.org> wrote:
+>
+> Are you saying that two of your SS-lanes in connector A are connected to
+> directly to the QMP PHY at the same time as two SS-lanes from connector
+> B are connected to the same two pads on the QMP PHY - without any
+> mux etc inbetween?
+>
+> I.e. that there are a set of pins in connector A which is directly
+> connected to a set of pins in connector B?
+>
+>
+> I was under the impression that in your hardware there's some component
+> muxing the single DP output to one of the connectors. If so there should
+> be no graph-link directly connecting the two usb-c-connectors and the
+> one QMP PHY.
+>
+> Is this not the case?
 
-Reviewed-by: Davidlohr Bueso <dave@stgolabs.net>
+I can't speak to the QMP PHY specifically (since I'm not using that hardware),
+but your impression is right.
+There is a component (anx7625) muxing the single DP output to the 2
+usb-c-connectors
+(specifically, 2 lanes each from the 2 usb-c-connectors).
+The other 2 lanes (from the 2 USB-C-connectors) go to a USB3 hub; hence the need
+for 2 endpoints for each usb-c-connector).
+
+So,  the anx7625 should register the mode switches and it needs the
+graph connections
+from 2 usb-c-connectors
+
+BR,
+
+-Prashant
