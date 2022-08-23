@@ -2,77 +2,145 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DB32FC32772
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 15:46:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D1ED4C32772
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 15:47:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243858AbiHWPqG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 11:46:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38946 "EHLO
+        id S243865AbiHWPrH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 23 Aug 2022 11:47:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43238 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244368AbiHWPpp (ORCPT
+        with ESMTP id S243751AbiHWPqv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 11:45:45 -0400
-Received: from mailout-taastrup.gigahost.dk (mailout-taastrup.gigahost.dk [46.183.139.199])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9459114EBD6;
-        Tue, 23 Aug 2022 04:42:13 -0700 (PDT)
-Received: from mailout.gigahost.dk (mailout.gigahost.dk [89.186.169.112])
-        by mailout-taastrup.gigahost.dk (Postfix) with ESMTP id CA1721884B1B;
-        Tue, 23 Aug 2022 11:41:51 +0000 (UTC)
-Received: from smtp.gigahost.dk (smtp.gigahost.dk [89.186.169.109])
-        by mailout.gigahost.dk (Postfix) with ESMTP id C450D25032B7;
-        Tue, 23 Aug 2022 11:41:51 +0000 (UTC)
-Received: by smtp.gigahost.dk (Postfix, from userid 1000)
-        id BEC5AA1A004A; Tue, 23 Aug 2022 11:41:51 +0000 (UTC)
-X-Screener-Id: 413d8c6ce5bf6eab4824d0abaab02863e8e3f662
-MIME-Version: 1.0
-Date:   Tue, 23 Aug 2022 13:41:51 +0200
-From:   netdev@kapio-technology.com
-To:     Ido Schimmel <idosch@nvidia.com>
-Cc:     Vladimir Oltean <olteanv@gmail.com>, davem@davemloft.net,
-        kuba@kernel.org, netdev@vger.kernel.org,
-        Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Eric Dumazet <edumazet@google.com>,
-        Paolo Abeni <pabeni@redhat.com>, Jiri Pirko <jiri@resnulli.us>,
-        Ivan Vecera <ivecera@redhat.com>,
-        Roopa Prabhu <roopa@nvidia.com>,
-        Nikolay Aleksandrov <razor@blackwall.org>,
-        Shuah Khan <shuah@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        linux-kernel@vger.kernel.org, bridge@lists.linux-foundation.org,
-        linux-kselftest@vger.kernel.org
-Subject: Re: [PATCH v4 net-next 3/6] drivers: net: dsa: add locked fdb entry
- flag to drivers
-In-Reply-To: <YwR4MQ2xOMlvKocw@shredder>
-References: <5a4cfc6246f621d006af69d4d1f61ed1@kapio-technology.com>
- <YvkM7UJ0SX+jkts2@shredder>
- <34dd1318a878494e7ab595f8727c7d7d@kapio-technology.com>
- <YwHZ1J9DZW00aJDU@shredder>
- <ce4266571b2b47ae8d56bd1f790cb82a@kapio-technology.com>
- <YwMW4iGccDu6jpaZ@shredder>
- <c2822d6dd66a1239ff8b7bfd06019008@kapio-technology.com>
- <YwR4MQ2xOMlvKocw@shredder>
-User-Agent: Gigahost Webmail
-Message-ID: <15407e4b247e91fd8326b1013d1a8640@kapio-technology.com>
-X-Sender: netdev@kapio-technology.com
-Content-Type: text/plain; charset=US-ASCII;
- format=flowed
-Content-Transfer-Encoding: 7bit
+        Tue, 23 Aug 2022 11:46:51 -0400
+Received: from smtp-out1.suse.de (smtp-out1.suse.de [IPv6:2001:67c:2178:6::1c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 71CE02AB3C2
+        for <linux-kernel@vger.kernel.org>; Tue, 23 Aug 2022 04:47:08 -0700 (PDT)
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by smtp-out1.suse.de (Postfix) with ESMTPS id F3E5A2249F;
+        Tue, 23 Aug 2022 11:46:36 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
+        t=1661255197; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=9o5iSdVTRwCUBgwkGJPpuGhtLCLbWfRwPX9fK6q7WKU=;
+        b=oQtudiJdms3SmnDi5sa5DnPCU57m9UeixY3Xdmh1Mlfw9rwYTdx/Y8QmKWs3oKC2JvuWoT
+        v4zGdfNnP4hGJSv0n8/1oiWEN/6i74OzjzaMI0EMmx4XlhxIjoqET9pLqPB2WWfet49QZ2
+        J4iy10FMb+nwaopI+K2MZjLYls5WSHo=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
+        s=susede2_ed25519; t=1661255197;
+        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=9o5iSdVTRwCUBgwkGJPpuGhtLCLbWfRwPX9fK6q7WKU=;
+        b=e/lU9SYExuOuyeB4j/bQaW92vLIhHMDHPPo1CUTPDe64WM2ACKDI0pSDprkbVkVQB80aZ/
+        U4Ku1BAYIl5+jlCw==
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id BA6D713AB7;
+        Tue, 23 Aug 2022 11:46:36 +0000 (UTC)
+Received: from dovecot-director2.suse.de ([192.168.254.65])
+        by imap2.suse-dmz.suse.de with ESMTPSA
+        id ClWrLBy+BGOlMwAAMHmgww
+        (envelope-from <tiwai@suse.de>); Tue, 23 Aug 2022 11:46:36 +0000
+Date:   Tue, 23 Aug 2022 13:46:36 +0200
+Message-ID: <87ilmjqj1f.wl-tiwai@suse.de>
+From:   Takashi Iwai <tiwai@suse.de>
+To:     Jason Gunthorpe <jgg@nvidia.com>
+Cc:     Lu Baolu <baolu.lu@linux.intel.com>,
+        Joerg Roedel <jroedel@suse.de>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Bjorn Helgaas <bhelgaas@google.com>,
+        Robin Murphy <robin.murphy@arm.com>,
+        Eric Auger <eric.auger@redhat.com>,
+        regressions@lists.linux.dev, linux-kernel@vger.kernel.org
+Subject: Re: [REGRESSION 5.19.x] AMD HD-audio devices missing on 5.19
+In-Reply-To: <87h723sdde.wl-tiwai@suse.de>
+References: <874jy4cqok.wl-tiwai@suse.de>
+        <20220823010021.GA5967@nvidia.com>
+        <87h723sdde.wl-tiwai@suse.de>
+User-Agent: Wanderlust/2.15.9 (Almost Unreal) Emacs/27.2 Mule/6.0
+MIME-Version: 1.0 (generated by SEMI-EPG 1.14.7 - "Harue")
+Content-Type: text/plain; charset=US-ASCII
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 2022-08-23 08:48, Ido Schimmel wrote:
+On Tue, 23 Aug 2022 08:06:05 +0200,
+Takashi Iwai wrote:
 > 
-> I'm not good at naming, but "blackhole" is at least consistent with 
-> what
-> we already have for routes and nexthop objects.
+> On Tue, 23 Aug 2022 03:00:21 +0200,
+> Jason Gunthorpe wrote:
+> > 
+> > On Mon, Aug 22, 2022 at 04:12:59PM +0200, Takashi Iwai wrote:
+> > > Hi,
+> > > 
+> > > we've received regression reports about the missing HD-audio devices
+> > > on AMD platforms, and this turned out to be caused by the commit
+> > > 512881eacfa72c2136b27b9934b7b27504a9efc2
+> > >     bus: platform,amba,fsl-mc,PCI: Add device DMA ownership management
+> > > 
+> > > The details are found in openSUSE bugzilla:
+> > >   https://bugzilla.suse.com/show_bug.cgi?id=1202492
+> > > 
+> > > The problem seems to be that HD-audio (both onboard analog and HDMI)
+> > > PCI devices are assigned to the same IOMMU group as AMD graphics PCI
+> > > device, and once after the AMDGPU is initialized beforehand, those
+> > > audio devices can't be probed since iommu_device_use_default_domain()
+> > > returns -EBUSY.
+> > 
+> > Can you describe exactly what drivers are involved in this? If it is
+> > the above commit then several devices are sharing an iommu group and
+> > one of them (well, the only one already attached, I suppose) has made
+> > the group unsharable.
+> > 
+> > With grep I don't see an obvious place where the AMDGPU driver would
+> > mess with the iommu configuration, so I have no guess.
 > 
+> I have also no concrete clue, either :)
+> At least, drivers/gpu/drm/amd/amdkfd/kfd_iommu.c calls
+> amd_iommu_init_device(), and this invokes iommu_attach_group(), which
+> may change group->domain.  But it was just my wild guess, and it might
+> be others, indeed.
+> 
+> > It would be good to have some debugging to confirm if it is
+> > group->owner (should be impossible, suggests memory corruption if it
+> > is) or group->domain != group->default_domain.
+> >
+> > Most likely it is the later, but I can't see how that could happen on
+> > a system like this.. There is no obvious manipulation in AMDGPU, for
+> > instance.
+> > 
+> > So debugging to find the backtrace for exactly when 
+> >  group->domain != group->default_domain
+> > Occurs for the troubled group would be necessary.
+> 
+> OK, will try to build a test kernel with some debug prints and ask the
+> reporters.  It may take some time.
 
-I have changed it the name "masked", as that is also the term used in 
-the documentation for the zero-DPV entries, and I think that it will 
-generally be a more accepted term.
-Thus the name of the flag is now "BR_FDB_ENTRY_MASKED".
+It was tested now and confirmed that the call path is via AMDGPU, as
+expected:
+  amdgpu_pci_probe ->
+  amdgpu_driver_load_kms ->
+  amdgpu_device_init ->
+  amdgpu_amdkfd_device_init ->
+  kgd2kfd_device_init ->
+  kgd2kfd_resume_iommu ->
+  kfd_iommu_resume ->
+  amd_iommu_init_device ->
+  iommu_attach_group ->
+  __iommu_attach_group
 
-I hope that is fine with you?
+At first AMDGPU driver is probed, and the iommu_attach_group() call
+above changes the assigned group->domain.  Afterwards, when HD-audio
+devices are probed, it fails because:
+- Both HD-audio PCI devices belong to the very same IOMMU group as the
+  AMD graphics PCI device
+- PCI core calls iommu_device_use_default_domain() and the check
+  fails there because group->domain != group->default_domain
+
+Takashi
