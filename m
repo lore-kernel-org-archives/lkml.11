@@ -2,111 +2,113 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 36BC2C32772
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 16:37:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 18594C32772
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 16:38:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245065AbiHWQhg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 12:37:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53866 "EHLO
+        id S245100AbiHWQiA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 23 Aug 2022 12:38:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53518 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244812AbiHWQhH (ORCPT
+        with ESMTP id S245016AbiHWQhY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 12:37:07 -0400
-Received: from mail-ej1-x62d.google.com (mail-ej1-x62d.google.com [IPv6:2a00:1450:4864:20::62d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5E087D8E24;
-        Tue, 23 Aug 2022 07:45:19 -0700 (PDT)
-Received: by mail-ej1-x62d.google.com with SMTP id sd33so6553796ejc.8;
-        Tue, 23 Aug 2022 07:45:19 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc;
-        bh=PZ5m+k6B5YpUHHcwQLGup/SYaFkGlGf+jzFdRUX/fG8=;
-        b=baEOqFgNSVvs8MlfO5CupK9gJ3bJ0PxrrYky6ITqJ4DxTkmzgwCIzaw6vnFphQ4LQ4
-         7p3/o7miOj2HWJm9DiYrb4gwtimZURw6hrwbtS8MjE7hsubu/m/yU6lHqrKsAtBra4D3
-         odGjU6ZztSdbqIp9cJRrOPX2AiY3j/2RbYqLlJd/96QeLR3jTY+TM+s2eZ96+Lr+PTHU
-         ayKBYVG7tV0DM5ZclpCCVkJpboywGve0nnYYAl1+3b181cW4yggunNrAQwuSz1LFH4Pf
-         R10AH5AOlTR4RcV/uhiwlPpXcPa8Ym7u6BJonUxk/RFw/OmNq8kA0evV19VuAC9xFFSq
-         GeYw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc;
-        bh=PZ5m+k6B5YpUHHcwQLGup/SYaFkGlGf+jzFdRUX/fG8=;
-        b=6aIV5daQYmE++gaDdNPcWdnlW4Dv6GWosDGRgooHFTPva+3QhXMIRAuCUfxURw0yBo
-         ySZAbwRJR4+3b0XhcgMlg9lxAHo6TQiwQkbproVXdOCfUaJ4IUoA1tm+CqEbAWAH5ArU
-         dCmun/vex6kox4nyapja//b62P1fH4NBpGZaSQcz024lmGa+wTUi9S6yfjmgjEJPPUeb
-         kDPc//+sdRiaXVAu8eso1udNOPqWLoLjpzZPA98yzc1+Cqre21hVWA5q6JZnPX7ItleI
-         lLEHNtYcN+4o9Za0gDO8dTeucd9EXl322t9nC+cR5vudLjQJle/wlcrdB/I5m/QjuHqi
-         PBNw==
-X-Gm-Message-State: ACgBeo1UAq6EvZHQQMPFSDP9PBaRCEMVktV73UpPXUAlTo8/4G61KxO4
-        NjyA1nROTC1jKcfQzjvn3IE=
-X-Google-Smtp-Source: AA6agR42/cMoZsbKpueyZTJXUy+J6e3t8HQp+OnDR8JqyGASO7jH4lLv0/5emULABnpmW/qLvcnoqw==
-X-Received: by 2002:a17:906:478d:b0:73d:8ba3:d999 with SMTP id cw13-20020a170906478d00b0073d8ba3d999mr5365517ejc.77.1661265918186;
-        Tue, 23 Aug 2022 07:45:18 -0700 (PDT)
-Received: from ?IPV6:2a04:241e:502:a09c:f5c4:cca0:9b39:e8aa? ([2a04:241e:502:a09c:f5c4:cca0:9b39:e8aa])
-        by smtp.gmail.com with ESMTPSA id kz22-20020a17090777d600b0073cc17cdb92sm6569354ejc.106.2022.08.23.07.45.16
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 23 Aug 2022 07:45:17 -0700 (PDT)
-Message-ID: <b1ef1422-ec84-0e36-8c85-d7d24642d9f2@gmail.com>
-Date:   Tue, 23 Aug 2022 17:45:15 +0300
+        Tue, 23 Aug 2022 12:37:24 -0400
+Received: from out1.migadu.com (out1.migadu.com [IPv6:2001:41d0:2:863f::])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 98C7D6D54D;
+        Tue, 23 Aug 2022 07:44:51 -0700 (PDT)
+Date:   Tue, 23 Aug 2022 09:44:42 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.dev; s=key1;
+        t=1661265889;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=wYTxuO09xQHamH8HB9DanmNLqgTyS7iN+66gFB/iGcs=;
+        b=KzS2iPpdIzfHDC3yepdSeojEKRrJeBGV61JZxpWQCWAB5NKd2i2D94pZKSuDM3G2eJ+izs
+        YH21AVjrNOZyMSuuQy6w0ir/+3q7zjahK2l6toOyZkSk/VUDgyVAMtk9rvwdQk0szY003u
+        jUrrEx4Pa3dRbNvCt5aPDinF0ofcJvA=
+X-Report-Abuse: Please report any abuse attempt to abuse@migadu.com and include these headers.
+From:   Oliver Upton <oliver.upton@linux.dev>
+To:     Marc Zyngier <maz@kernel.org>
+Cc:     Gavin Shan <gshan@redhat.com>, kvmarm@lists.cs.columbia.edu,
+        linux-arm-kernel@lists.infradead.org, kvm@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-doc@vger.kernel.org,
+        linux-kselftest@vger.kernel.org, peterx@redhat.com,
+        pbonzini@redhat.com, corbet@lwn.net, james.morse@arm.com,
+        alexandru.elisei@arm.com, suzuki.poulose@arm.com,
+        catalin.marinas@arm.com, will@kernel.org, shuah@kernel.org,
+        seanjc@google.com, drjones@redhat.com, dmatlack@google.com,
+        bgardon@google.com, ricarkol@google.com, zhenyzha@redhat.com,
+        shan.gavin@gmail.com
+Subject: Re: [PATCH v1 1/5] KVM: arm64: Enable ring-based dirty memory
+ tracking
+Message-ID: <YwTn2r6FLCx9mAU7@google.com>
+References: <20220819005601.198436-1-gshan@redhat.com>
+ <20220819005601.198436-2-gshan@redhat.com>
+ <87lerkwtm5.wl-maz@kernel.org>
+ <41fb5a1f-29a9-e6bb-9fab-4c83a2a8fce5@redhat.com>
+ <87fshovtu0.wl-maz@kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.11.0
-Subject: Re: [PATCH 23/31] net/tcp: Add getsockopt(TCP_AO_GET)
-Content-Language: en-US
-To:     Dmitry Safonov <dima@arista.com>
-Cc:     Andy Lutomirski <luto@amacapital.net>,
-        Ard Biesheuvel <ardb@kernel.org>,
-        Bob Gilligan <gilligan@arista.com>,
-        David Ahern <dsahern@kernel.org>,
-        Dmitry Safonov <0x7f454c46@gmail.com>,
-        Eric Biggers <ebiggers@kernel.org>,
-        Francesco Ruggeri <fruggeri@arista.com>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        Ivan Delalande <colona@arista.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Salam Noureddine <noureddine@arista.com>,
-        Shuah Khan <shuah@kernel.org>, netdev@vger.kernel.org,
-        linux-crypto@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Eric Dumazet <edumazet@google.com>,
-        "David S. Miller" <davem@davemloft.net>
-References: <20220818170005.747015-1-dima@arista.com>
- <20220818170005.747015-24-dima@arista.com>
-From:   Leonard Crestez <cdleonard@gmail.com>
-In-Reply-To: <20220818170005.747015-24-dima@arista.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <87fshovtu0.wl-maz@kernel.org>
+X-Migadu-Flow: FLOW_OUT
+X-Migadu-Auth-User: linux.dev
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 8/18/22 19:59, Dmitry Safonov wrote:
-> Introduce getsockopt() that let user get TCP-AO keys and their
-> properties from a socket. A user can provide a filter to match
-> a specific key to be dumped or TCP_AO_GET_ALL flag may be used to dump
-> all keys in one syscall.
+On Mon, Aug 22, 2022 at 10:42:15PM +0100, Marc Zyngier wrote:
+> Hi Gavin,
+> 
+> On Mon, 22 Aug 2022 02:58:20 +0100,
+> Gavin Shan <gshan@redhat.com> wrote:
+> > 
+> > Hi Marc,
+> > 
+> > On 8/19/22 6:00 PM, Marc Zyngier wrote:
+> > > On Fri, 19 Aug 2022 01:55:57 +0100,
+> > > Gavin Shan <gshan@redhat.com> wrote:
+> > >> 
+> > >> The ring-based dirty memory tracking has been available and enabled
+> > >> on x86 for a while. The feature is beneficial when the number of
+> > >> dirty pages is small in a checkpointing system or live migration
+> > >> scenario. More details can be found from fb04a1eddb1a ("KVM: X86:
+> > >> Implement ring-based dirty memory tracking").
+> > >> 
+> > >> This enables the ring-based dirty memory tracking on ARM64. It's
+> > >> notable that no extra reserved ring entries are needed on ARM64
+> > >> because the huge pages are always split into base pages when page
+> > >> dirty tracking is enabled.
+> > > 
+> > > Can you please elaborate on this? Adding a per-CPU ring of course
+> > > results in extra memory allocation, so there must be a subtle
+> > > x86-specific detail that I'm not aware of...
+> > > 
+> > 
+> > Sure. I guess it's helpful to explain how it works in next revision.
+> > Something like below:
+> > 
+> > This enables the ring-based dirty memory tracking on ARM64. The feature
+> > is enabled by CONFIG_HAVE_KVM_DIRTY_RING, detected and enabled by
+> > CONFIG_HAVE_KVM_DIRTY_RING. A ring buffer is created on every vcpu and
+> > each entry is described by 'struct kvm_dirty_gfn'. The ring buffer is
+> > pushed by host when page becomes dirty and pulled by userspace. A vcpu
+> > exit is forced when the ring buffer becomes full. The ring buffers on
+> > all vcpus can be reset by ioctl command KVM_RESET_DIRTY_RINGS.
+> > 
+> > Yes, I think so. Adding a per-CPU ring results in extra memory allocation.
+> > However, it's avoiding synchronization among multiple vcpus when dirty
+> > pages happen on multiple vcpus. More discussion can be found from [1]
+> 
+> Oh, I totally buy the relaxation of the synchronisation (though I
+> doubt this will have any visible effect until we have something like
+> Oliver's patches to allow parallel faulting).
+> 
 
-No equivalent for this exists for TCP_MD5SIG or my TCP_AUTHOPT series. I 
-do however have a proc file to dump all keys in the system.
-
-The list of keys is normally fully controlled by a single application so 
-it shouldn't need to read back the keys that it wrote itself. The real 
-reason this exists is because on the server side keys are copied on 
-"synack" rather than "accept" and userspace can't know if a newly 
-accepted socket has all the latest keychain updates.
-
-This effectively dumps responsibility for a kernel implementation race 
-onto userspace. At least you should mention how it's meant to be used in 
-the commit message, and that it's not really optional.
-
-I think making keys global is easier for userspace to use, despite the 
-difference versus TCP_MD5.
+Heh, yeah I need to get that out the door. I'll also note that Gavin's
+changes are still relevant without that series, as we do write unprotect
+in parallel at PTE granularity after commit f783ef1c0e82 ("KVM: arm64:
+Add fast path to handle permission relaxation during dirty logging").
 
 --
-Regards,
-Leonard
+Thanks,
+Oliver
