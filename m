@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DA0D5C3F6B0
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 10:17:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5ED3CC3814E
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 10:17:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353618AbiHWKPW (ORCPT
+        id S1353805AbiHWKP5 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 06:15:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46754 "EHLO
+        Tue, 23 Aug 2022 06:15:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46418 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352820AbiHWKGU (ORCPT
+        with ESMTP id S1352910AbiHWKG1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 06:06:20 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EC54D1E0;
-        Tue, 23 Aug 2022 01:53:13 -0700 (PDT)
+        Tue, 23 Aug 2022 06:06:27 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7765411172;
+        Tue, 23 Aug 2022 01:53:34 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 65A66CE1B41;
-        Tue, 23 Aug 2022 08:53:12 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 43F57C433D6;
-        Tue, 23 Aug 2022 08:53:10 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 221B7B81C1C;
+        Tue, 23 Aug 2022 08:53:33 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 845CBC433D6;
+        Tue, 23 Aug 2022 08:53:31 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661244790;
-        bh=wfxCBtMasHoEFMn9oqLYg4hdLmiDL38+6fTcxBgzW1k=;
+        s=korg; t=1661244811;
+        bh=y2Uk6kUiCZrxv1Byz5ipE9DsC/gbpMLsnOK3xfZGDSI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=iI8VXE41VYyu8+fkTbYT4s+JZ7gxRmyC6XGsQ3u+V0+d2RdtorTwkGG3GXuirO2MN
-         p5Ub47d5beX6dbfXKK4TH1Wj5I6SNs8mClaSOBON5TBVduB2+V4OWbikOuaCDKxUZV
-         vjW5woFWS2mYhNUod9bvIIIrR3N+C6TypkpV3fzQ=
+        b=WEhtXVTATTJWd9gyKaVnlNiDWnb4wxNn9OCd0AEqFAoVbyfyfqc48PCtG/Pc+6IN9
+         oRTbfszIua9BRRpAMsjcrbthvXZsLPxekzG1emiAUMJWRduOroHIkv6fKGKGl4HOvK
+         uROl5Hc1faL8EaEqYAmqXRl2fx1W+IwMqVDHCE4E=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        =?UTF-8?q?Cs=C3=B3k=C3=A1s=20Bence?= <csokas.bence@prolan.hu>,
-        Jakub Kicinski <kuba@kernel.org>
-Subject: [PATCH 5.15 148/244] fec: Fix timer capture timing in `fec_ptp_enable_pps()`
-Date:   Tue, 23 Aug 2022 10:25:07 +0200
-Message-Id: <20220823080104.111648482@linuxfoundation.org>
+        stable@vger.kernel.org, Takashi Iwai <tiwai@suse.de>,
+        Mark Brown <broonie@kernel.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 156/244] ASoC: SOF: Intel: hda: Fix potential buffer overflow by snprintf()
+Date:   Tue, 23 Aug 2022 10:25:15 +0200
+Message-Id: <20220823080104.402123475@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220823080059.091088642@linuxfoundation.org>
 References: <20220823080059.091088642@linuxfoundation.org>
@@ -50,36 +50,41 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Csókás Bence <csokas.bence@prolan.hu>
+From: Takashi Iwai <tiwai@suse.de>
 
-commit 61d5e2a251fb20c2c5e998c3f1d52ed6d5360319 upstream.
+[ Upstream commit 94c1ceb043c1a002de9649bb630c8e8347645982 ]
 
-Code reimplements functionality already in `fec_ptp_read()`,
-but misses check for FEC_QUIRK_BUG_CAPTURE. Replace with function call.
+snprintf() returns the would-be-filled size when the string overflows
+the given buffer size, hence using this value may result in the buffer
+overflow (although it's unrealistic).
 
-Fixes: 28b5f058cf1d ("net: fec: ptp: fix convergence issue to support LinuxPTP stack")
-Signed-off-by: Csókás Bence <csokas.bence@prolan.hu>
-Link: https://lore.kernel.org/r/20220811101348.13755-1-csokas.bence@prolan.hu
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+This patch replaces with a safer version, scnprintf() for papering
+over such a potential issue.
+
+Fixes: 29c8e4398f02 ("ASoC: SOF: Intel: hda: add extended rom status dump to error log")
+Signed-off-by: Takashi Iwai <tiwai@suse.de>
+Link: https://lore.kernel.org/r/20220801165420.25978-4-tiwai@suse.de
+Signed-off-by: Mark Brown <broonie@kernel.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/freescale/fec_ptp.c |    6 +-----
- 1 file changed, 1 insertion(+), 5 deletions(-)
+ sound/soc/sof/intel/hda.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/drivers/net/ethernet/freescale/fec_ptp.c
-+++ b/drivers/net/ethernet/freescale/fec_ptp.c
-@@ -136,11 +136,7 @@ static int fec_ptp_enable_pps(struct fec
- 		 * NSEC_PER_SEC - ts.tv_nsec. Add the remaining nanoseconds
- 		 * to current timer would be next second.
- 		 */
--		tempval = readl(fep->hwp + FEC_ATIME_CTRL);
--		tempval |= FEC_T_CTRL_CAPTURE;
--		writel(tempval, fep->hwp + FEC_ATIME_CTRL);
--
--		tempval = readl(fep->hwp + FEC_ATIME);
-+		tempval = fep->cc.read(&fep->cc);
- 		/* Convert the ptp local counter to 1588 timestamp */
- 		ns = timecounter_cyc2time(&fep->tc, tempval);
- 		ts = ns_to_timespec64(ns);
+diff --git a/sound/soc/sof/intel/hda.c b/sound/soc/sof/intel/hda.c
+index e733c401562f..35cbef171f4a 100644
+--- a/sound/soc/sof/intel/hda.c
++++ b/sound/soc/sof/intel/hda.c
+@@ -413,7 +413,7 @@ static void hda_dsp_dump_ext_rom_status(struct snd_sof_dev *sdev, u32 flags)
+ 	chip = get_chip_info(sdev->pdata);
+ 	for (i = 0; i < HDA_EXT_ROM_STATUS_SIZE; i++) {
+ 		value = snd_sof_dsp_read(sdev, HDA_DSP_BAR, chip->rom_status_reg + i * 0x4);
+-		len += snprintf(msg + len, sizeof(msg) - len, " 0x%x", value);
++		len += scnprintf(msg + len, sizeof(msg) - len, " 0x%x", value);
+ 	}
+ 
+ 	sof_dev_dbg_or_err(sdev->dev, flags & SOF_DBG_DUMP_FORCE_ERR_LEVEL,
+-- 
+2.35.1
+
 
 
