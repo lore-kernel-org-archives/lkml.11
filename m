@@ -2,44 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 90DB5C32772
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 11:05:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A3759C32772
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 11:07:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240396AbiHWLFY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 07:05:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41642 "EHLO
+        id S1348272AbiHWLG5 (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 23 Aug 2022 07:06:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41118 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356662AbiHWLDe (ORCPT
+        with ESMTP id S1356576AbiHWLEQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 07:03:34 -0400
+        Tue, 23 Aug 2022 07:04:16 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4D6B0B2866;
-        Tue, 23 Aug 2022 02:15:10 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 752E0B2873;
+        Tue, 23 Aug 2022 02:15:23 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 2CA6F61183;
-        Tue, 23 Aug 2022 09:14:39 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3A9D4C433C1;
-        Tue, 23 Aug 2022 09:14:38 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id AB08F60F50;
+        Tue, 23 Aug 2022 09:15:17 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B0F75C433C1;
+        Tue, 23 Aug 2022 09:15:16 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661246078;
-        bh=0nBwYGTh2d6brre8QZyzFCu/z0haKKRiLE6m6lOqEck=;
+        s=korg; t=1661246117;
+        bh=Syn49+GFPMqD0AC+qtGcAiSRfizHIhpdfBenoWSbbRE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=vJxOTUM+DXX7lXuNG/l59faCl13Ch52o3qNlgFm1p18nnju4DUfA4kdouUAVAOqz7
-         MyNqX3YQ8Z0fvyZZyM3Sp8pN6aJrUv9uR2x/bZG7nQHLO43+fGbUa7PNuCtkyhPOE1
-         F5OJcCdXYbBP+qga0GdCBTMFRe/R/ZCAswIvjeC0=
+        b=MspJHyAmdQSUn3HWObtXeLyRGyHR+Zy5VQfDRmOGpk9AYGv7culqaIkzUkWJnmr3p
+         U26vZOS6jg5LO2L+4zpbO+1twv7K3IWbyaf3UE33Te/FbndzVINnnzaImJyfNvNmk1
+         NYKoi7TWUb5of+N9LCDniC02aUdcYme7aEbAIZWs=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        "Sudip Mukherjee (Codethink)" <sudipm.mukherjee@gmail.com>,
-        Nathan Chancellor <nathan@kernel.org>,
-        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
+        stable@vger.kernel.org, Ronnie Sahlberg <lsahlber@redhat.com>,
+        Steve French <stfrench@microsoft.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.19 283/287] MIPS: tlbex: Explicitly compare _PAGE_NO_EXEC against 0
-Date:   Tue, 23 Aug 2022 10:27:32 +0200
-Message-Id: <20220823080111.024459620@linuxfoundation.org>
+Subject: [PATCH 4.19 280/287] smb3: check xattr value length earlier
+Date:   Tue, 23 Aug 2022 10:27:29 +0200
+Message-Id: <20220823080110.890263139@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220823080100.268827165@linuxfoundation.org>
 References: <20220823080100.268827165@linuxfoundation.org>
@@ -51,68 +50,49 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Nathan Chancellor <nathan@kernel.org>
+From: Steve French <stfrench@microsoft.com>
 
-[ Upstream commit 74de14fe05dd6b151d73cb0c73c8ec874cbdcde6 ]
+[ Upstream commit 5fa2cffba0b82336a2244d941322eb1627ff787b ]
 
-When CONFIG_XPA is enabled, Clang warns:
+Coverity complains about assigning a pointer based on
+value length before checking that value length goes
+beyond the end of the SMB.  Although this is even more
+unlikely as value length is a single byte, and the
+pointer is not dereferenced until laterm, it is clearer
+to check the lengths first.
 
-  arch/mips/mm/tlbex.c:629:24: error: converting the result of '<<' to a boolean; did you mean '(1 << _PAGE_NO_EXEC_SHIFT) != 0'? [-Werror,-Wint-in-bool-context]
-          if (cpu_has_rixi && !!_PAGE_NO_EXEC) {
-                              ^
-  arch/mips/include/asm/pgtable-bits.h:174:28: note: expanded from macro '_PAGE_NO_EXEC'
-  # define _PAGE_NO_EXEC          (1 << _PAGE_NO_EXEC_SHIFT)
-                                     ^
-  arch/mips/mm/tlbex.c:2568:24: error: converting the result of '<<' to a boolean; did you mean '(1 << _PAGE_NO_EXEC_SHIFT) != 0'? [-Werror,-Wint-in-bool-context]
-          if (!cpu_has_rixi || !_PAGE_NO_EXEC) {
-                                ^
-  arch/mips/include/asm/pgtable-bits.h:174:28: note: expanded from macro '_PAGE_NO_EXEC'
-  # define _PAGE_NO_EXEC          (1 << _PAGE_NO_EXEC_SHIFT)
-                                     ^
-  2 errors generated.
-
-_PAGE_NO_EXEC can be '0' or '1 << _PAGE_NO_EXEC_SHIFT' depending on the
-build and runtime configuration, which is what the negation operators
-are trying to convey. To silence the warning, explicitly compare against
-0 so the result of the '<<' operator is not implicitly converted to a
-boolean.
-
-According to its documentation, GCC enables -Wint-in-bool-context with
--Wall but this warning is not visible when building the same
-configuration with GCC. It appears GCC only warns when compiling C++,
-not C, although the documentation makes no note of this:
-https://godbolt.org/z/x39q3brxf
-
-Reported-by: Sudip Mukherjee (Codethink) <sudipm.mukherjee@gmail.com>
-Signed-off-by: Nathan Chancellor <nathan@kernel.org>
-Signed-off-by: Thomas Bogendoerfer <tsbogend@alpha.franken.de>
+Addresses-Coverity: 1467704 ("Speculative execution data leak")
+Reviewed-by: Ronnie Sahlberg <lsahlber@redhat.com>
+Signed-off-by: Steve French <stfrench@microsoft.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/mips/mm/tlbex.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ fs/cifs/smb2ops.c | 5 +++--
+ 1 file changed, 3 insertions(+), 2 deletions(-)
 
-diff --git a/arch/mips/mm/tlbex.c b/arch/mips/mm/tlbex.c
-index 620abc968624..a97b3e5a1c00 100644
---- a/arch/mips/mm/tlbex.c
-+++ b/arch/mips/mm/tlbex.c
-@@ -630,7 +630,7 @@ static __maybe_unused void build_convert_pte_to_entrylo(u32 **p,
- 		return;
- 	}
+diff --git a/fs/cifs/smb2ops.c b/fs/cifs/smb2ops.c
+index cc34a28aecbc..f906984eb25b 100644
+--- a/fs/cifs/smb2ops.c
++++ b/fs/cifs/smb2ops.c
+@@ -762,9 +762,7 @@ move_smb2_ea_to_cifs(char *dst, size_t dst_size,
+ 	size_t name_len, value_len, user_name_len;
  
--	if (cpu_has_rixi && !!_PAGE_NO_EXEC) {
-+	if (cpu_has_rixi && _PAGE_NO_EXEC != 0) {
- 		if (fill_includes_sw_bits) {
- 			UASM_i_ROTR(p, reg, reg, ilog2(_PAGE_GLOBAL));
- 		} else {
-@@ -2559,7 +2559,7 @@ static void check_pabits(void)
- 	unsigned long entry;
- 	unsigned pabits, fillbits;
+ 	while (src_size > 0) {
+-		name = &src->ea_data[0];
+ 		name_len = (size_t)src->ea_name_length;
+-		value = &src->ea_data[src->ea_name_length + 1];
+ 		value_len = (size_t)le16_to_cpu(src->ea_value_length);
  
--	if (!cpu_has_rixi || !_PAGE_NO_EXEC) {
-+	if (!cpu_has_rixi || _PAGE_NO_EXEC == 0) {
- 		/*
- 		 * We'll only be making use of the fact that we can rotate bits
- 		 * into the fill if the CPU supports RIXI, so don't bother
+ 		if (name_len == 0) {
+@@ -777,6 +775,9 @@ move_smb2_ea_to_cifs(char *dst, size_t dst_size,
+ 			goto out;
+ 		}
+ 
++		name = &src->ea_data[0];
++		value = &src->ea_data[src->ea_name_length + 1];
++
+ 		if (ea_name) {
+ 			if (ea_name_len == name_len &&
+ 			    memcmp(ea_name, name, name_len) == 0) {
 -- 
 2.35.1
 
