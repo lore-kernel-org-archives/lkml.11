@@ -2,44 +2,49 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2F86CC32774
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1FBBCC32792
 	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 11:32:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244127AbiHWLc3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 07:32:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59292 "EHLO
+        id S1357451AbiHWLbi (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 23 Aug 2022 07:31:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59726 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243315AbiHWLY5 (ORCPT
+        with ESMTP id S1357859AbiHWL0y (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 07:24:57 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 42353876B6;
-        Tue, 23 Aug 2022 02:23:58 -0700 (PDT)
+        Tue, 23 Aug 2022 07:26:54 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0DE6FC0E5B;
+        Tue, 23 Aug 2022 02:24:33 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id BE70D612F4;
-        Tue, 23 Aug 2022 09:23:57 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B0F7EC4314A;
-        Tue, 23 Aug 2022 09:23:56 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 7605EB81C89;
+        Tue, 23 Aug 2022 09:24:31 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 84D0AC4314B;
+        Tue, 23 Aug 2022 09:24:29 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661246637;
-        bh=hL/16M+dei/IXOjD5UfzwMn82C1KO1dHKyhbnjte2ME=;
+        s=korg; t=1661246670;
+        bh=2tU/kM5H2cvuoqxSUPxpQ9SiENVxFijCjzjdIv813eA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=fw98ut9huRWEUQwR1fVhwueHujHg1CniWvMaFQ6Z/tRKIqd4bmMt416MqE9kmxx7O
-         2QAtS1HWtoQ1r8Ye0SLQN9v5IKP1SAGksQJIumw2xZRyLz7HwnAkkcYnQtUZmza216
-         JJiH4NEG6neSI1XaFHbYLGB0WynRHFHXpbJ1AVOY=
+        b=Y+R9DJKSo1p6oV/YqDLFewfWUa0B0EOZs0cac4dUo9l7qH/SBO3i0L4su208puTVA
+         2W3k/mGUHn4CWEP2ZDwTnRVx4BobdMh2isTICLnFEabkd/SIFxVkUjc1vHItAZneAA
+         qv9SmylUudsXt9O5X2VY9yccy6/Wf6J1hqjI0BXg=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>,
-        Rander Wang <rander.wang@intel.com>,
-        Bard Liao <yung-chuan.liao@linux.intel.com>,
-        Vinod Koul <vkoul@kernel.org>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 173/389] soundwire: bus_type: fix remove and shutdown support
-Date:   Tue, 23 Aug 2022 10:24:11 +0200
-Message-Id: <20220823080122.860846311@linuxfoundation.org>
+        stable@vger.kernel.org, Stefan Roese <sr@denx.de>,
+        Bjorn Helgaas <bhelgaas@google.com>,
+        =?UTF-8?q?Pali=20Roh=C3=A1r?= <pali@kernel.org>,
+        "Rafael J. Wysocki" <rjw@rjwysocki.net>,
+        Bharat Kumar Gogada <bharat.kumar.gogada@xilinx.com>,
+        Michal Simek <michal.simek@xilinx.com>,
+        Yao Hongbo <yaohongbo@linux.alibaba.com>,
+        Naveen Naidu <naveennaidu479@gmail.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.4 182/389] PCI/portdrv: Dont disable AER reporting in get_port_device_capability()
+Date:   Tue, 23 Aug 2022 10:24:20 +0200
+Message-Id: <20220823080123.228828362@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220823080115.331990024@linuxfoundation.org>
 References: <20220823080115.331990024@linuxfoundation.org>
@@ -51,52 +56,100 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>
+From: Stefan Roese <sr@denx.de>
 
-[ Upstream commit df6407782964dc7e35ad84230abb38f46314b245 ]
+[ Upstream commit 8795e182b02dc87e343c79e73af6b8b7f9c5e635 ]
 
-The bus sdw_drv_remove() and sdw_drv_shutdown() helpers are used
-conditionally, if the driver provides these routines.
+AER reporting is currently disabled in the DevCtl registers of all non Root
+Port PCIe devices on systems using pcie_ports_native || host->native_aer,
+disabling AER completely in such systems. This is because 2bd50dd800b5
+("PCI: PCIe: Disable PCIe port services during port initialization"), added
+a call to pci_disable_pcie_error_reporting() *after* the AER setup was
+completed for the PCIe device tree.
 
-These helpers already test if the driver provides a .remove or
-.shutdown callback, so there's no harm in invoking the
-sdw_drv_remove() and sdw_drv_shutdown() unconditionally.
+Here a longer analysis about the current status of AER enabling /
+disabling upon bootup provided by Bjorn:
 
-In addition, the current code is imbalanced with
-dev_pm_domain_attach() called from sdw_drv_probe(), but
-dev_pm_domain_detach() called from sdw_drv_remove() only if the driver
-provides a .remove callback.
+  pcie_portdrv_probe
+    pcie_port_device_register
+      get_port_device_capability
+        pci_disable_pcie_error_reporting
+          clear CERE NFERE FERE URRE               # <-- disable for RP USP DSP
+      pcie_device_init
+        device_register                            # new AER service device
+          aer_probe
+            aer_enable_rootport                    # RP only
+              set_downstream_devices_error_reporting
+                set_device_error_reporting         # self (RP)
+                  if (RP || USP || DSP)
+                    pci_enable_pcie_error_reporting
+                      set CERE NFERE FERE URRE     # <-- enable for RP
+                pci_walk_bus
+                  set_device_error_reporting
+                    if (RP || USP || DSP)
+                      pci_enable_pcie_error_reporting
+                        set CERE NFERE FERE URRE   # <-- enable for USP DSP
 
-Fixes: 9251345dca24b ("soundwire: Add SoundWire bus type")
-Signed-off-by: Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>
-Reviewed-by: Rander Wang <rander.wang@intel.com>
-Signed-off-by: Bard Liao <yung-chuan.liao@linux.intel.com>
-Link: https://lore.kernel.org/r/20220610015105.25987-1-yung-chuan.liao@linux.intel.com
-Signed-off-by: Vinod Koul <vkoul@kernel.org>
+In a typical Root Port -> Endpoint hierarchy, the above:
+  - Disables Error Reporting for the Root Port,
+  - Enables Error Reporting for the Root Port,
+  - Does NOT enable Error Reporting for the Endpoint because it is not a
+    Root Port or Switch Port.
+
+In a deeper Root Port -> Upstream Switch Port -> Downstream Switch
+Port -> Endpoint hierarchy:
+  - Disables Error Reporting for the Root Port,
+  - Enables Error Reporting for the Root Port,
+  - Enables Error Reporting for both Switch Ports,
+  - Does NOT enable Error Reporting for the Endpoint because it is not a
+    Root Port or Switch Port,
+  - Disables Error Reporting for the Switch Ports when pcie_portdrv_probe()
+    claims them.  AER does not re-enable it because these are not Root
+    Ports.
+
+Remove this call to pci_disable_pcie_error_reporting() from
+get_port_device_capability(), leaving the already enabled AER configuration
+intact. With this change, AER is enabled in the Root Port and the PCIe
+switch upstream and downstream ports. Only the PCIe Endpoints don't have
+AER enabled yet. A follow-up patch will take care of this Endpoint
+enabling.
+
+Fixes: 2bd50dd800b5 ("PCI: PCIe: Disable PCIe port services during port initialization")
+Link: https://lore.kernel.org/r/20220125071820.2247260-3-sr@denx.de
+Signed-off-by: Stefan Roese <sr@denx.de>
+Signed-off-by: Bjorn Helgaas <bhelgaas@google.com>
+Reviewed-by: Pali Rohár <pali@kernel.org>
+Cc: Rafael J. Wysocki <rjw@rjwysocki.net>
+Cc: Bharat Kumar Gogada <bharat.kumar.gogada@xilinx.com>
+Cc: Michal Simek <michal.simek@xilinx.com>
+Cc: Yao Hongbo <yaohongbo@linux.alibaba.com>
+Cc: Naveen Naidu <naveennaidu479@gmail.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/soundwire/bus_type.c | 8 ++------
- 1 file changed, 2 insertions(+), 6 deletions(-)
+ drivers/pci/pcie/portdrv_core.c | 9 +--------
+ 1 file changed, 1 insertion(+), 8 deletions(-)
 
-diff --git a/drivers/soundwire/bus_type.c b/drivers/soundwire/bus_type.c
-index 4a465f55039f..2fe5a51918c8 100644
---- a/drivers/soundwire/bus_type.c
-+++ b/drivers/soundwire/bus_type.c
-@@ -155,12 +155,8 @@ int __sdw_register_driver(struct sdw_driver *drv, struct module *owner)
+diff --git a/drivers/pci/pcie/portdrv_core.c b/drivers/pci/pcie/portdrv_core.c
+index 8637f6068f9c..066406d6d0ee 100644
+--- a/drivers/pci/pcie/portdrv_core.c
++++ b/drivers/pci/pcie/portdrv_core.c
+@@ -222,15 +222,8 @@ static int get_port_device_capability(struct pci_dev *dev)
  
- 	drv->driver.owner = owner;
- 	drv->driver.probe = sdw_drv_probe;
+ #ifdef CONFIG_PCIEAER
+ 	if (dev->aer_cap && pci_aer_available() &&
+-	    (pcie_ports_native || host->native_aer)) {
++	    (pcie_ports_native || host->native_aer))
+ 		services |= PCIE_PORT_SERVICE_AER;
 -
--	if (drv->remove)
--		drv->driver.remove = sdw_drv_remove;
--
--	if (drv->shutdown)
--		drv->driver.shutdown = sdw_drv_shutdown;
-+	drv->driver.remove = sdw_drv_remove;
-+	drv->driver.shutdown = sdw_drv_shutdown;
+-		/*
+-		 * Disable AER on this port in case it's been enabled by the
+-		 * BIOS (the AER service driver will enable it when necessary).
+-		 */
+-		pci_disable_pcie_error_reporting(dev);
+-	}
+ #endif
  
- 	return driver_register(&drv->driver);
- }
+ 	/*
 -- 
 2.35.1
 
