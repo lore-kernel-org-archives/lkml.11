@@ -2,90 +2,138 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E9CE5C3F6B0
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 02:31:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id ACC5EC28D13
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 02:32:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237742AbiHWCbY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 22 Aug 2022 22:31:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56338 "EHLO
+        id S239119AbiHWCcb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 22 Aug 2022 22:32:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58254 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239710AbiHWCab (ORCPT
+        with ESMTP id S239218AbiHWCc2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 22 Aug 2022 22:30:31 -0400
-Received: from bombadil.infradead.org (bombadil.infradead.org [IPv6:2607:7c80:54:3::133])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9F5615B076
-        for <linux-kernel@vger.kernel.org>; Mon, 22 Aug 2022 19:30:30 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=bombadil.20210309; h=Content-Transfer-Encoding:
-        Content-Type:In-Reply-To:From:References:Cc:To:Subject:MIME-Version:Date:
-        Message-ID:Sender:Reply-To:Content-ID:Content-Description;
-        bh=zffW8Lsyp3cRBNb29LrtUIepUivLrp6J7Y14E2p56ZA=; b=gPhNpilya0ATGyVMwhHpAyRQmR
-        pzTe/uukd8Ld+upONgXxSMeuskztJiyCV3Rz7F21eGpy5iU5yZRSfM0m4Oy1OgDrnY/KmH5hKhc2J
-        /tQGHBufFHbKjn+KPv4cw8AV47qkzgskhnJ0E61PyzSXO5DR91iBGKh89GZ6D0uFfW2rDAtAVkS5C
-        dS//DwbkQ6pd52lRPefQLTXfr2MI2qF2vmXe3z2+rD7WIbMK1nSt274j7qVnVvUtAGka1w3yJmgxh
-        vOOwCnfLFLOgC4gf/X2lr3M9oFa1MYwEH2jw0f52dcyLQhpgLRWFgOEzHQVejfMoIrAcdGJaMLWy7
-        Jpiq23XA==;
-Received: from [2601:1c0:6280:3f0::a6b3]
-        by bombadil.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1oQJgG-000PV4-5a; Tue, 23 Aug 2022 02:30:16 +0000
-Message-ID: <50c85455-91ae-c517-15da-251445f4127a@infradead.org>
-Date:   Mon, 22 Aug 2022 19:30:14 -0700
+        Mon, 22 Aug 2022 22:32:28 -0400
+Received: from mail-lf1-x136.google.com (mail-lf1-x136.google.com [IPv6:2a00:1450:4864:20::136])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8BAF85C343;
+        Mon, 22 Aug 2022 19:32:27 -0700 (PDT)
+Received: by mail-lf1-x136.google.com with SMTP id s1so15045536lfp.6;
+        Mon, 22 Aug 2022 19:32:27 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc;
+        bh=azDpKc6FmKTWyiu0fmvIHIHwLpZTiSK1Vlo7KGhRPTI=;
+        b=mOKeqhKYQhMwTLb/MJ8y4BKHtrVT0tL2CLpCqVd982RWh8CKypL1YXMQXH9RXkOYQr
+         svAS8E3tjh/3TZXskHT6eiLzVii7BtFjyyzENE09sgcCl7PJOTZQWNQD8oFDmCLcPXxa
+         R/SMm/X+qEvkdwTnfYLBoFOyLKxMa7H4tewBNQKxpr2iMRa4oHMf6GfZsxsD05kpWw6K
+         L/savuxwWhzpBfzVfVKYEpe6LpvurZbJQkwKDJE7yHE72w3Ud+yG4pGeBHqQHKtM7eGC
+         4y4R1fkzSDJznz1sFG8M7pcRZw1BIJ/Zv3f9VGj0uvD2h7jmIDOaTWdLm9GEI9Yyev0m
+         4fOA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc;
+        bh=azDpKc6FmKTWyiu0fmvIHIHwLpZTiSK1Vlo7KGhRPTI=;
+        b=JAYRxH3ruUM+Tzk7cEfLyjp/wWYpr0T87q4PZbpZ0lxEZkW4tpJvY4+Ms8rX5M6kYQ
+         cfnyNNIcZEkxyr+hyVbazcxuwS41J4Nbzc7+KFb/udjlKmZ6JaksGawMIlkN0wuxNT8m
+         sUEJGc2EvuqnFViRdaxV2XBifJCC2Z/jbBW0fkdMh5OvpIiU8Rq6fJoVisFuLMGHUZ2a
+         5eox/0MwjB79SngpsyZPdP2SvT1KVioq/nwGKjL4uD+m/UdUxDdT9iNKxyWJ6ZgGOrYv
+         48q0iGtOn+yLUcp3UgD4sgrmQ3dLNbNeFAzSaPyum93aom/d5j2Je47c53hmPmIuwUOk
+         myiA==
+X-Gm-Message-State: ACgBeo2rcfcuaLz99kWyjrIe5FqkuvTZTdCN+BCveDLUFU1Ze9iCZ8Iz
+        Sc35KH1BS7ZUBXRgqngt7cUV9wS4F24WFMRlkqU=
+X-Google-Smtp-Source: AA6agR7n7DYHM3nnCy3WsU33BTmDevHz36ukTKY/dIEFVwM+0Xllyb5Tl//2wtM9CLs3Zive755sFqin5YU2aVXNPCY=
+X-Received: by 2002:a05:6512:1527:b0:48b:99:f3ff with SMTP id
+ bq39-20020a056512152700b0048b0099f3ffmr7843690lfb.81.1661221945792; Mon, 22
+ Aug 2022 19:32:25 -0700 (PDT)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.1.2
-Subject: Re: [PATCH -next] drm/hisilicon/hibmc: Fix COMPILE_TEST building
- without MMU
-Content-Language: en-US
-To:     YueHaibing <yuehaibing@huawei.com>, xinliang.liu@linaro.org,
-        tiantao6@hisilicon.com, jstultz@google.com,
-        kong.kongxinwei@hisilicon.com, puck.chen@hisilicon.com,
-        airlied@linux.ie, daniel@ffwll.ch, tzimmermann@suse.de,
-        javierm@redhat.com
-Cc:     dri-devel@lists.freedesktop.org, linux-kernel@vger.kernel.org
-References: <20220823020920.11008-1-yuehaibing@huawei.com>
-From:   Randy Dunlap <rdunlap@infradead.org>
-In-Reply-To: <20220823020920.11008-1-yuehaibing@huawei.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+References: <1660908562-17409-1-git-send-email-zhaoyang.huang@unisoc.com>
+ <Yv+6YjaGAv52yvq9@slm.duckdns.org> <CALvZod7QdLSMdBoD2WztL72qS8kJe7F79JuCH6t19rRcw6Pn1w@mail.gmail.com>
+ <Yv/EArPDTcCrGqJh@slm.duckdns.org> <YwNpI1ydy0yDnBH0@dhcp22.suse.cz>
+In-Reply-To: <YwNpI1ydy0yDnBH0@dhcp22.suse.cz>
+From:   Zhaoyang Huang <huangzhaoyang@gmail.com>
+Date:   Tue, 23 Aug 2022 10:31:57 +0800
+Message-ID: <CAGWkznEB+R0YBaBFBL7dPqs8R=qKC6+ixTWEGCYy2PaczXkaPA@mail.gmail.com>
+Subject: Re: [RFC PATCH] memcg: use root_mem_cgroup when css is inherited
+To:     Michal Hocko <mhocko@suse.com>,
+        Suren Baghdasaryan <surenb@google.com>
+Cc:     Tejun Heo <tj@kernel.org>, Shakeel Butt <shakeelb@google.com>,
+        "zhaoyang.huang" <zhaoyang.huang@unisoc.com>,
+        Johannes Weiner <hannes@cmpxchg.org>,
+        Linux MM <linux-mm@kvack.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Cgroups <cgroups@vger.kernel.org>, Ke Wang <ke.wang@unisoc.com>,
+        Zefan Li <lizefan.x@bytedance.com>,
+        Roman Gushchin <roman.gushchin@linux.dev>,
+        Muchun Song <songmuchun@bytedance.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-
-
-On 8/22/22 19:09, YueHaibing wrote:
-> WARNING: unmet direct dependencies detected for DRM_TTM
->   Depends on [n]: HAS_IOMEM [=y] && DRM [=y] && MMU [=n]
->   Selected by [y]:
->   - DRM_TTM_HELPER [=y] && HAS_IOMEM [=y] && DRM [=y]
->   - DRM_HISI_HIBMC [=y] && HAS_IOMEM [=y] && DRM [=y] && PCI [=y] && (ARM64 || COMPILE_TEST [=y])
-> 
-> Add missing MMU dependency to fix this.
-> 
-> Fixes: a0f25a6bb319 ("drm/hisilicon/hibmc: Allow to be built if COMPILE_TEST is enabled")
-> Signed-off-by: YueHaibing <yuehaibing@huawei.com>
-> ---
->  drivers/gpu/drm/hisilicon/hibmc/Kconfig | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
-> 
-> diff --git a/drivers/gpu/drm/hisilicon/hibmc/Kconfig b/drivers/gpu/drm/hisilicon/hibmc/Kconfig
-> index 073adfe438dd..e5ef1b573732 100644
-> --- a/drivers/gpu/drm/hisilicon/hibmc/Kconfig
-> +++ b/drivers/gpu/drm/hisilicon/hibmc/Kconfig
-> @@ -1,7 +1,7 @@
->  # SPDX-License-Identifier: GPL-2.0-only
->  config DRM_HISI_HIBMC
->  	tristate "DRM Support for Hisilicon Hibmc"
-> -	depends on DRM && PCI && (ARM64 || COMPILE_TEST)
-> +	depends on DRM && PCI && (ARM64 || COMPILE_TEST) && MMU
->  	select DRM_KMS_HELPER
->  	select DRM_VRAM_HELPER
->  	select DRM_TTM
-
-Yes, or this one from April 8, 2022:
-https://lore.kernel.org/lkml/20220409030504.16089-1-rdunlap@infradead.org/
-
-thanks.
-
--- 
-~Randy
+On Mon, Aug 22, 2022 at 7:31 PM Michal Hocko <mhocko@suse.com> wrote:
+>
+> On Fri 19-08-22 07:10:26, Tejun Heo wrote:
+> > On Fri, Aug 19, 2022 at 10:08:59AM -0700, Shakeel Butt wrote:
+> > > On Fri, Aug 19, 2022 at 9:29 AM Tejun Heo <tj@kernel.org> wrote:
+> > > >
+> > > > On Fri, Aug 19, 2022 at 07:29:22PM +0800, zhaoyang.huang wrote:
+> > > > > From: Zhaoyang Huang <zhaoyang.huang@unisoc.com>
+> > > > >
+> > > > > It is observed in android system where per-app cgroup is demanded by freezer
+> > > > > subsys and part of groups require memory control. The hierarchy could be simplized
+> > > > > as bellowing where memory charged on group B abserved while we only want have
+> > > > > group E's memory be controlled and B's descendants compete freely for memory.
+> > > > > This should be the consequences of unified hierarchy.
+> > > > > Under this scenario, less efficient memory reclaim is observed when comparing
+> > > > > with no memory control. It is believed that multi LRU scanning introduces some
+> > > > > of the overhead. Furthermore, page thrashing is also heavier than global LRU
+> > > > > which could be the consequences of partial failure of WORKINGSET mechanism as
+> > > > > LRU is too short to protect the active pages.
+> > > > >
+> > > > > A(subtree_control = memory) - B(subtree_control = NULL) - C()
+> > > > >                                                       \ D()
+> > > > >                           - E(subtree_control = memory) - F()
+> > > > >                                                         \ G()
+> > > > >
+> > > > > Signed-off-by: Zhaoyang Huang <zhaoyang.huang@unisoc.com>
+> > > >
+> > > > Just in case it wasn't clear.
+> > > >
+> > > > Nacked-by: Tejun Heo <tj@kernel.org>
+> > > >
+> > > > Thanks.
+> > > >
+> > >
+> > > Was there a previous discussion on this? The commit message is unreadable.
+> >
+> > http://lkml.kernel.org/r/1660298966-11493-1-git-send-email-zhaoyang.huang@unisoc.com
+>
+> Even that discussion doesn't really explain the real underlying problem.
+> There are statements about inefficiency and trashing without any further
+> details or clarifications.
+I would like to quote the comments from google side for more details
+which can also be observed from different vendors.
+"Also be advised that when you enable memcg v2 you will be using
+per-app memcg configuration which implies noticeable overhead because
+every app will have its own group. For example pagefault path will
+regress by about 15%. And obviously there will be some memory overhead
+as well. That's the reason we don't enable them in Android by
+default."
+>
+> My very vague understanding is that the Android system would like to
+> freeze specific applications and for that it requires each application
+> to live in its own cgroup. This clashes with a requirement to age and
+> reclaim memory on a different granularity (aka no per process reclaim).
+> So in fact something that cgroup v1 would achieve by having 2
+> hierarchies, one for the freezer which would have a dedicated cgroup for
+> each application and the other for the memory controller where tasks are
+> grouped by a different criteria. This would rule out that a global (or
+> any external memory pressure) reclaim would age LRUs that contain a mix
+> bag of application pages rather than iterate over per-application LRUs.
+> Is that understanding correct?
+Correct, this is just our confusion. Besides, we believe that charge
+the pages to implicit memory enabled parent control group doesn't make
+sense as the memory cannot be managed at all.
+> --
+> Michal Hocko
+> SUSE Labs
