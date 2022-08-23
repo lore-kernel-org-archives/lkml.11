@@ -2,45 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6E030C32772
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 09:52:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 905F7C32772
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 09:52:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239820AbiHWJwn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 05:52:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41040 "EHLO
+        id S242537AbiHWJwr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 23 Aug 2022 05:52:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55348 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351767AbiHWJux (ORCPT
+        with ESMTP id S1351794AbiHWJuz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 05:50:53 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 330606E2D9;
-        Tue, 23 Aug 2022 01:45:24 -0700 (PDT)
+        Tue, 23 Aug 2022 05:50:55 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6EB349E110;
+        Tue, 23 Aug 2022 01:45:28 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id C21796150F;
-        Tue, 23 Aug 2022 08:45:23 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BB4E5C433D6;
-        Tue, 23 Aug 2022 08:45:22 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id A56EDB81C56;
+        Tue, 23 Aug 2022 08:34:08 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 056A3C4347C;
+        Tue, 23 Aug 2022 08:34:06 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661244323;
-        bh=Gw5twUXOvoHjEK0G5Er3C/B887fyZ4ZMAvf9n6M7dVs=;
+        s=korg; t=1661243647;
+        bh=8Vs1K216HeZwGcDjWgWfkjFQVdk3bJl/msDS7/SN7ug=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=TrHjzJiOp3cZtALkR8wFf1/y8sdIK786jbtLvuhAIchgvUla5bxn0AGvWK7KIeged
-         Wx9I08omfe70GXHk78ZOhFkhm+v2x96J27jqVyciR+8Etuaj4tHNd8oeVLdF7LLR0+
-         /GXIIn/yP6418hQ1T9AU/7hro8pF0xr0hGOdyBmc=
+        b=BkGoTgAds6UCcopmFRCkeNAvCL7tfKFf3vsIMkH94TTl8sNvVf4NszW+NgbVoy+VG
+         a0XWGOdbJoy9es73zKGDWZJQHKIcuUjE9vLL9twVYdQfwn1Obf/pFVe6uB4IIq8fQb
+         m7jbyJBVyr+uCwvvyexQx0wRVWv9KrBIjwa8rAjE=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Subbaraya Sundeep <sbhatta@marvell.com>,
-        Sunil Goutham <sgoutham@marvell.com>,
-        Jakub Kicinski <kuba@kernel.org>
-Subject: [PATCH 5.15 073/244] octeontx2-af: Fix mcam entry resource leak
-Date:   Tue, 23 Aug 2022 10:23:52 +0200
-Message-Id: <20220823080101.496529284@linuxfoundation.org>
+        stable@vger.kernel.org, Laurent Dufour <ldufour@linux.ibm.com>,
+        Nicholas Piggin <npiggin@gmail.com>,
+        Michael Ellerman <mpe@ellerman.id.au>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.19 344/365] powerpc/watchdog: introduce a NMI watchdogs factor
+Date:   Tue, 23 Aug 2022 10:04:05 +0200
+Message-Id: <20220823080132.629878606@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220823080059.091088642@linuxfoundation.org>
-References: <20220823080059.091088642@linuxfoundation.org>
+In-Reply-To: <20220823080118.128342613@linuxfoundation.org>
+References: <20220823080118.128342613@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -49,62 +50,89 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Subbaraya Sundeep <sbhatta@marvell.com>
+From: Laurent Dufour <ldufour@linux.ibm.com>
 
-commit 3f8fe40ab7730cf8eb6f8b8ff412012f7f6f8f48 upstream.
+[ Upstream commit f5e74e836097d1004077390717d4bd95d4a2c27a ]
 
-The teardown sequence in FLR handler returns if no NIX LF
-is attached to PF/VF because it indicates that graceful
-shutdown of resources already happened. But there is a
-chance of all allocated MCAM entries not being freed by
-PF/VF. Hence free mcam entries even in case of detached LF.
+Introduce a factor which would apply to the NMI watchdog timeout.
 
-Fixes: c554f9c1574e ("octeontx2-af: Teardown NPA, NIX LF upon receiving FLR")
-Signed-off-by: Subbaraya Sundeep <sbhatta@marvell.com>
-Signed-off-by: Sunil Goutham <sgoutham@marvell.com>
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+This factor is a percentage added to the watchdog_tresh value. The value is
+set under the watchdog_mutex protection and lockup_detector_reconfigure()
+is called to recompute wd_panic_timeout_tb.
+
+Once the factor is set, it remains until it is set back to 0, which means
+no impact.
+
+Signed-off-by: Laurent Dufour <ldufour@linux.ibm.com>
+Reviewed-by: Nicholas Piggin <npiggin@gmail.com>
+Signed-off-by: Michael Ellerman <mpe@ellerman.id.au>
+Link: https://lore.kernel.org/r/20220713154729.80789-4-ldufour@linux.ibm.com
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/marvell/octeontx2/af/rvu.c     |    6 ++++++
- drivers/net/ethernet/marvell/octeontx2/af/rvu_npc.c |    6 ++++++
- 2 files changed, 12 insertions(+)
+ arch/powerpc/include/asm/nmi.h |  2 ++
+ arch/powerpc/kernel/watchdog.c | 21 ++++++++++++++++++++-
+ 2 files changed, 22 insertions(+), 1 deletion(-)
 
---- a/drivers/net/ethernet/marvell/octeontx2/af/rvu.c
-+++ b/drivers/net/ethernet/marvell/octeontx2/af/rvu.c
-@@ -2504,6 +2504,12 @@ static void __rvu_flr_handler(struct rvu
- 	rvu_blklf_teardown(rvu, pcifunc, BLKADDR_NPA);
- 	rvu_reset_lmt_map_tbl(rvu, pcifunc);
- 	rvu_detach_rsrcs(rvu, NULL, pcifunc);
-+	/* In scenarios where PF/VF drivers detach NIXLF without freeing MCAM
-+	 * entries, check and free the MCAM entries explicitly to avoid leak.
-+	 * Since LF is detached use LF number as -1.
-+	 */
-+	rvu_npc_free_mcam_entries(rvu, pcifunc, -1);
+diff --git a/arch/powerpc/include/asm/nmi.h b/arch/powerpc/include/asm/nmi.h
+index ea0e487f87b1..c3c7adef74de 100644
+--- a/arch/powerpc/include/asm/nmi.h
++++ b/arch/powerpc/include/asm/nmi.h
+@@ -5,8 +5,10 @@
+ #ifdef CONFIG_PPC_WATCHDOG
+ extern void arch_touch_nmi_watchdog(void);
+ long soft_nmi_interrupt(struct pt_regs *regs);
++void watchdog_nmi_set_timeout_pct(u64 pct);
+ #else
+ static inline void arch_touch_nmi_watchdog(void) {}
++static inline void watchdog_nmi_set_timeout_pct(u64 pct) {}
+ #endif
+ 
+ #ifdef CONFIG_NMI_IPI
+diff --git a/arch/powerpc/kernel/watchdog.c b/arch/powerpc/kernel/watchdog.c
+index 7d28b9553654..5d903e63f932 100644
+--- a/arch/powerpc/kernel/watchdog.c
++++ b/arch/powerpc/kernel/watchdog.c
+@@ -91,6 +91,10 @@ static cpumask_t wd_smp_cpus_pending;
+ static cpumask_t wd_smp_cpus_stuck;
+ static u64 wd_smp_last_reset_tb;
+ 
++#ifdef CONFIG_PPC_PSERIES
++static u64 wd_timeout_pct;
++#endif
 +
- 	mutex_unlock(&rvu->flr_lock);
+ /*
+  * Try to take the exclusive watchdog action / NMI IPI / printing lock.
+  * wd_smp_lock must be held. If this fails, we should return and wait
+@@ -527,7 +531,13 @@ static int stop_watchdog_on_cpu(unsigned int cpu)
+ 
+ static void watchdog_calc_timeouts(void)
+ {
+-	wd_panic_timeout_tb = watchdog_thresh * ppc_tb_freq;
++	u64 threshold = watchdog_thresh;
++
++#ifdef CONFIG_PPC_PSERIES
++	threshold += (READ_ONCE(wd_timeout_pct) * threshold) / 100;
++#endif
++
++	wd_panic_timeout_tb = threshold * ppc_tb_freq;
+ 
+ 	/* Have the SMP detector trigger a bit later */
+ 	wd_smp_panic_timeout_tb = wd_panic_timeout_tb * 3 / 2;
+@@ -570,3 +580,12 @@ int __init watchdog_nmi_probe(void)
+ 	}
+ 	return 0;
  }
- 
---- a/drivers/net/ethernet/marvell/octeontx2/af/rvu_npc.c
-+++ b/drivers/net/ethernet/marvell/octeontx2/af/rvu_npc.c
-@@ -1096,6 +1096,9 @@ static void npc_enadis_default_entries(s
- 
- void rvu_npc_disable_default_entries(struct rvu *rvu, u16 pcifunc, int nixlf)
- {
-+	if (nixlf < 0)
-+		return;
 +
- 	npc_enadis_default_entries(rvu, pcifunc, nixlf, false);
- 
- 	/* Delete multicast and promisc MCAM entries */
-@@ -1107,6 +1110,9 @@ void rvu_npc_disable_default_entries(str
- 
- void rvu_npc_enable_default_entries(struct rvu *rvu, u16 pcifunc, int nixlf)
- {
-+	if (nixlf < 0)
-+		return;
-+
- 	/* Enables only broadcast match entry. Promisc/Allmulti are enabled
- 	 * in set_rx_mode mbox handler.
- 	 */
++#ifdef CONFIG_PPC_PSERIES
++void watchdog_nmi_set_timeout_pct(u64 pct)
++{
++	pr_info("Set the NMI watchdog timeout factor to %llu%%\n", pct);
++	WRITE_ONCE(wd_timeout_pct, pct);
++	lockup_detector_reconfigure();
++}
++#endif
+-- 
+2.35.1
+
 
 
