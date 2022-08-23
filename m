@@ -2,49 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BEDBBC48BEA
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 10:32:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0B975C49EC3
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 10:32:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355227AbiHWKb1 (ORCPT
+        id S1355331AbiHWKbo (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 06:31:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47382 "EHLO
+        Tue, 23 Aug 2022 06:31:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46760 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353205AbiHWKPP (ORCPT
+        with ESMTP id S1353636AbiHWKP0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 06:15:15 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2767C74348;
-        Tue, 23 Aug 2022 02:00:39 -0700 (PDT)
+        Tue, 23 Aug 2022 06:15:26 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C711E6C76D;
+        Tue, 23 Aug 2022 02:00:43 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id D7AA0B81C3A;
-        Tue, 23 Aug 2022 09:00:37 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 11416C433C1;
-        Tue, 23 Aug 2022 09:00:36 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 63E9261524;
+        Tue, 23 Aug 2022 09:00:43 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4D166C433D6;
+        Tue, 23 Aug 2022 09:00:42 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661245236;
-        bh=IGDBEkHT1pZ8hKcwC2DsQNonTbxCMoyXiydF2Q3tDkM=;
+        s=korg; t=1661245242;
+        bh=/LXsrzw1yxQGL9b1Zmq8Ccx2wUQqoyNaeI0G2abhPFo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ziU1jtNn+f6ZaeGART+6b6BAtdmPztUnR80WSlyDR62AgF7WCL66OUaqN1SOF29Z0
-         CN7E0gFsbLr/uc/H0B2u14YgquOkf0yHE3IzSFJ+Sj+vuoYV4by6rBJAW3SPNsA1cE
-         ByobVMECg4NfOIXknc/1q6mIKUfqwcFe88UOkZZg=
+        b=OtY3ulT05xSBEW003e5R4T3iwxP948MnrvURxGF4Zl1riZdUBJeYoHFE1onJrL827
+         bKHNg/x9ilUSQlWS1U8LhIfF077DrktlzDEiDjqYX85yOcM53L6qjRliGUq9XClXj/
+         Kbp0tF8YNlOP0n3Gvi9t9riDR9C44rUlrHgro4T8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, David Howells <dhowells@redhat.com>,
-        Jeff Layton <jlayton@kernel.org>,
-        Namjae Jeon <linkinjeon@kernel.org>, stable@kernel.org,
-        Alexander Viro <viro@zeniv.linux.org.uk>,
-        Steve French <sfrench@samba.org>,
-        Hyunchul Lee <hyc.lee@gmail.com>,
-        Chuck Lever <chuck.lever@oracle.com>,
-        Dave Wysochanski <dwysocha@redhat.com>,
-        Linus Torvalds <torvalds@linux-foundation.org>
-Subject: [PATCH 4.19 015/287] vfs: Check the truncate maximum size in inode_newsize_ok()
-Date:   Tue, 23 Aug 2022 10:23:04 +0200
-Message-Id: <20220823080100.798358252@linuxfoundation.org>
+        stable@vger.kernel.org, Di Shen <di.shen@unisoc.com>,
+        "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>
+Subject: [PATCH 4.19 017/287] thermal: sysfs: Fix cooling_device_stats_setup() error code path
+Date:   Tue, 23 Aug 2022 10:23:06 +0200
+Message-Id: <20220823080100.860829216@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220823080100.268827165@linuxfoundation.org>
 References: <20220823080100.268827165@linuxfoundation.org>
@@ -56,68 +49,69 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: David Howells <dhowells@redhat.com>
+From: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
 
-commit e2ebff9c57fe4eb104ce4768f6ebcccf76bef849 upstream.
+commit d5a8aa5d7d80d21ab6b266f1bed4194b61746199 upstream.
 
-If something manages to set the maximum file size to MAX_OFFSET+1, this
-can cause the xfs and ext4 filesystems at least to become corrupt.
+If cooling_device_stats_setup() fails to create the stats object, it
+must clear the last slot in cooling_device_attr_groups that was
+initially empty (so as to make it possible to add stats attributes to
+the cooling device attribute groups).
 
-Ordinarily, the kernel protects against userspace trying this by
-checking the value early in the truncate() and ftruncate() system calls
-calls - but there are at least two places that this check is bypassed:
+Failing to do so may cause the stats attributes to be created by
+mistake for a device that doesn't have a stats object, because the
+slot in question might be populated previously during the registration
+of another cooling device.
 
- (1) Cachefiles will round up the EOF of the backing file to DIO block
-     size so as to allow DIO on the final block - but this might push
-     the offset negative. It then calls notify_change(), but this
-     inadvertently bypasses the checking. This can be triggered if
-     someone puts an 8EiB-1 file on a server for someone else to try and
-     access by, say, nfs.
-
- (2) ksmbd doesn't check the value it is given in set_end_of_file_info()
-     and then calls vfs_truncate() directly - which also bypasses the
-     check.
-
-In both cases, it is potentially possible for a network filesystem to
-cause a disk filesystem to be corrupted: cachefiles in the client's
-cache filesystem; ksmbd in the server's filesystem.
-
-nfsd is okay as it checks the value, but we can then remove this check
-too.
-
-Fix this by adding a check to inode_newsize_ok(), as called from
-setattr_prepare(), thereby catching the issue as filesystems set up to
-perform the truncate with minimal opportunity for bypassing the new
-check.
-
-Fixes: 1f08c925e7a3 ("cachefiles: Implement backing file wrangling")
-Fixes: f44158485826 ("cifsd: add file operations")
-Signed-off-by: David Howells <dhowells@redhat.com>
-Reported-by: Jeff Layton <jlayton@kernel.org>
-Tested-by: Jeff Layton <jlayton@kernel.org>
-Reviewed-by: Namjae Jeon <linkinjeon@kernel.org>
-Cc: stable@kernel.org
-Acked-by: Alexander Viro <viro@zeniv.linux.org.uk>
-cc: Steve French <sfrench@samba.org>
-cc: Hyunchul Lee <hyc.lee@gmail.com>
-cc: Chuck Lever <chuck.lever@oracle.com>
-cc: Dave Wysochanski <dwysocha@redhat.com>
-Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
+Fixes: 8ea229511e06 ("thermal: Add cooling device's statistics in sysfs")
+Reported-by: Di Shen <di.shen@unisoc.com>
+Tested-by: Di Shen <di.shen@unisoc.com>
+Cc: 4.17+ <stable@vger.kernel.org> # 4.17+
+Signed-off-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- fs/attr.c |    2 ++
- 1 file changed, 2 insertions(+)
+ drivers/thermal/thermal_sysfs.c |   10 +++++++---
+ 1 file changed, 7 insertions(+), 3 deletions(-)
 
---- a/fs/attr.c
-+++ b/fs/attr.c
-@@ -134,6 +134,8 @@ EXPORT_SYMBOL(setattr_prepare);
-  */
- int inode_newsize_ok(const struct inode *inode, loff_t offset)
- {
-+	if (offset < 0)
-+		return -EINVAL;
- 	if (inode->i_size < offset) {
- 		unsigned long limit;
+--- a/drivers/thermal/thermal_sysfs.c
++++ b/drivers/thermal/thermal_sysfs.c
+@@ -909,12 +909,13 @@ static const struct attribute_group cool
  
+ static void cooling_device_stats_setup(struct thermal_cooling_device *cdev)
+ {
++	const struct attribute_group *stats_attr_group = NULL;
+ 	struct cooling_dev_stats *stats;
+ 	unsigned long states;
+ 	int var;
+ 
+ 	if (cdev->ops->get_max_state(cdev, &states))
+-		return;
++		goto out;
+ 
+ 	states++; /* Total number of states is highest state + 1 */
+ 
+@@ -924,7 +925,7 @@ static void cooling_device_stats_setup(s
+ 
+ 	stats = kzalloc(var, GFP_KERNEL);
+ 	if (!stats)
+-		return;
++		goto out;
+ 
+ 	stats->time_in_state = (ktime_t *)(stats + 1);
+ 	stats->trans_table = (unsigned int *)(stats->time_in_state + states);
+@@ -934,9 +935,12 @@ static void cooling_device_stats_setup(s
+ 
+ 	spin_lock_init(&stats->lock);
+ 
++	stats_attr_group = &cooling_device_stats_attr_group;
++
++out:
+ 	/* Fill the empty slot left in cooling_device_attr_groups */
+ 	var = ARRAY_SIZE(cooling_device_attr_groups) - 2;
+-	cooling_device_attr_groups[var] = &cooling_device_stats_attr_group;
++	cooling_device_attr_groups[var] = stats_attr_group;
+ }
+ 
+ static void cooling_device_stats_destroy(struct thermal_cooling_device *cdev)
 
 
