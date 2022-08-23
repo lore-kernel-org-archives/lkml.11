@@ -2,270 +2,182 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A5E6CC32774
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 06:55:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7B587C32774
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 06:55:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240375AbiHWGzE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 02:55:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57360 "EHLO
+        id S239488AbiHWGzG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 23 Aug 2022 02:55:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57366 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231491AbiHWGzB (ORCPT
+        with ESMTP id S240368AbiHWGzE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 02:55:01 -0400
-Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 44E771C939
-        for <linux-kernel@vger.kernel.org>; Mon, 22 Aug 2022 23:54:59 -0700 (PDT)
-Received: from dggemv703-chm.china.huawei.com (unknown [172.30.72.54])
-        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4MBg065l5lznTmP;
-        Tue, 23 Aug 2022 14:52:38 +0800 (CST)
-Received: from kwepemm600008.china.huawei.com (7.193.23.88) by
- dggemv703-chm.china.huawei.com (10.3.19.46) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Tue, 23 Aug 2022 14:54:38 +0800
-Received: from huawei.com (10.175.100.227) by kwepemm600008.china.huawei.com
- (7.193.23.88) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Tue, 23 Aug
- 2022 14:54:37 +0800
-From:   shangxiaojing <shangxiaojing@huawei.com>
-To:     <mingo@redhat.com>, <peterz@infradead.org>,
-        <juri.lelli@redhat.com>, <vincent.guittot@linaro.org>,
-        <dietmar.eggemann@arm.com>, <rostedt@goodmis.org>,
-        <bsegall@google.com>, <mgorman@suse.de>, <bristot@redhat.com>,
-        <vschneid@redhat.com>, <linux-kernel@vger.kernel.org>
-CC:     <shangxiaojing@huawei.com>, <cj.chengjian@huawei.com>
-Subject: [PATCH -next] sched: Add dequeue_and_put_task and enqueue_and_set_task helper
-Date:   Tue, 23 Aug 2022 15:29:47 +0800
-Message-ID: <20220823072947.16720-1-shangxiaojing@huawei.com>
-X-Mailer: git-send-email 2.17.1
+        Tue, 23 Aug 2022 02:55:04 -0400
+Received: from smtp-out1.suse.de (smtp-out1.suse.de [IPv6:2001:67c:2178:6::1c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 167521C92F;
+        Mon, 22 Aug 2022 23:55:03 -0700 (PDT)
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by smtp-out1.suse.de (Postfix) with ESMTPS id B7B7233E9A;
+        Tue, 23 Aug 2022 06:55:01 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
+        t=1661237701; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:  content-transfer-encoding:content-transfer-encoding;
+        bh=xPlPtKHBgq7RQTNQA1zEw4TmJa8fjWY+RJIaAM0asCw=;
+        b=KHk5YS2EyrhTbETr7mPxsr8vtPT91xvppFrTDxSrMmQurpj3gPFsvlKPPc1p8aNxlgN2/u
+        oBKxEu12s2oxda38AO9kVEX9sdSbqvsUBDusRirPrD0aqiDZH19LImnkfA+9JZMmYSnSfU
+        reEgWFsCET+CFWJOMMLuHccEQO7cam8=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
+        s=susede2_ed25519; t=1661237701;
+        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:  content-transfer-encoding:content-transfer-encoding;
+        bh=xPlPtKHBgq7RQTNQA1zEw4TmJa8fjWY+RJIaAM0asCw=;
+        b=8xA9cZ415mr56tCEg2dM7sz7kFPanBMagw5zb9xg/rATHvOIb4dufjzTmXdrz0SbeCJUmg
+        YAfyELIL9A/8l+CA==
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id 8E2F913A89;
+        Tue, 23 Aug 2022 06:55:01 +0000 (UTC)
+Received: from dovecot-director2.suse.de ([192.168.254.65])
+        by imap2.suse-dmz.suse.de with ESMTPSA
+        id S9fnIcV5BGNwMAAAMHmgww
+        (envelope-from <tiwai@suse.de>); Tue, 23 Aug 2022 06:55:01 +0000
+From:   Takashi Iwai <tiwai@suse.de>
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc:     Heikki Krogerus <heikki.krogerus@linux.intel.com>,
+        Linyu Yuan <quic_linyyuan@quicinc.com>,
+        linux-usb@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH] Revert "usb: typec: ucsi: add a common function ucsi_unregister_connectors()"
+Date:   Tue, 23 Aug 2022 08:54:55 +0200
+Message-Id: <20220823065455.32579-1-tiwai@suse.de>
+X-Mailer: git-send-email 2.35.3
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.175.100.227]
-X-ClientProxiedBy: dggems704-chm.china.huawei.com (10.3.19.181) To
- kwepemm600008.china.huawei.com (7.193.23.88)
-X-CFilter-Loop: Reflected
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Wrap repeated code in helper functions dequeue_and_put_task and
-enqueue_and_set_task, note that dequeue_and_put_task is not
-applyed in __do_set_cpus_allowed cause the lock assert.
+The recent commit 87d0e2f41b8c ("usb: typec: ucsi: add a common
+function ucsi_unregister_connectors()") introduced a regression that
+caused NULL dereference at reading the power supply sysfs.  It's a
+stale sysfs entry that should have been removed but remains with NULL
+ops.  The commit changed the error handling to skip the entries after
+a NULL con->wq, and this leaves the power device unreleased.
 
-Signed-off-by: shangxiaojing <shangxiaojing@huawei.com>
+For addressing the regression, the straight revert is applied here.
+Further code improvements can be done from the scratch again.
+
+Fixes: 87d0e2f41b8c ("usb: typec: ucsi: add a common function ucsi_unregister_connectors()")
+Link: https://bugzilla.suse.com/show_bug.cgi?id=1202386
+Link: https://lore.kernel.org/r/87r11cmbx0.wl-tiwai@suse.de
+Cc: <stable@vger.kernel.org>
+Signed-off-by: Takashi Iwai <tiwai@suse.de>
 ---
- kernel/sched/core.c | 103 ++++++++++++++++++--------------------------
- 1 file changed, 42 insertions(+), 61 deletions(-)
+ drivers/usb/typec/ucsi/ucsi.c | 53 ++++++++++++++++-------------------
+ 1 file changed, 24 insertions(+), 29 deletions(-)
 
-diff --git a/kernel/sched/core.c b/kernel/sched/core.c
-index 61436b8e0337..46d6ba551e04 100644
---- a/kernel/sched/core.c
-+++ b/kernel/sched/core.c
-@@ -2540,6 +2540,28 @@ void set_cpus_allowed_common(struct task_struct *p, const struct cpumask *new_ma
- 	p->nr_cpus_allowed = cpumask_weight(new_mask);
+diff --git a/drivers/usb/typec/ucsi/ucsi.c b/drivers/usb/typec/ucsi/ucsi.c
+index 1aea46493b85..7f2624f42724 100644
+--- a/drivers/usb/typec/ucsi/ucsi.c
++++ b/drivers/usb/typec/ucsi/ucsi.c
+@@ -1200,32 +1200,6 @@ static int ucsi_register_port(struct ucsi *ucsi, int index)
+ 	return ret;
  }
  
-+static __always_inline
-+void dequeue_and_put_task(struct rq *rq, struct task_struct *p, int flags,
-+			  bool *queued, bool *running)
-+{
-+	*queued = task_on_rq_queued(p);
-+	*running = task_current(rq, p);
-+	if (*queued)
-+		dequeue_task(rq, p, flags);
-+	if (*running)
-+		put_prev_task(rq, p);
-+}
-+
-+static __always_inline
-+void enqueue_and_set_task(struct rq *rq, struct task_struct *p, int flags,
-+			  bool queued, bool running)
-+{
-+	if (queued)
-+		enqueue_task(rq, p, flags);
-+	if (running)
-+		set_next_task(rq, p);
-+}
-+
- static void
- __do_set_cpus_allowed(struct task_struct *p, const struct cpumask *new_mask, u32 flags)
- {
-@@ -2579,10 +2601,7 @@ __do_set_cpus_allowed(struct task_struct *p, const struct cpumask *new_mask, u32
- 
- 	p->sched_class->set_cpus_allowed(p, new_mask, flags);
- 
--	if (queued)
--		enqueue_task(rq, p, ENQUEUE_RESTORE | ENQUEUE_NOCLOCK);
--	if (running)
--		set_next_task(rq, p);
-+	enqueue_and_set_task(rq, p, ENQUEUE_RESTORE | ENQUEUE_NOCLOCK, queued, running);
- }
- 
- void do_set_cpus_allowed(struct task_struct *p, const struct cpumask *new_mask)
-@@ -6876,8 +6895,9 @@ static inline int rt_effective_prio(struct task_struct *p, int prio)
-  */
- void rt_mutex_setprio(struct task_struct *p, struct task_struct *pi_task)
- {
--	int prio, oldprio, queued, running, queue_flag =
-+	int prio, oldprio, queue_flag =
- 		DEQUEUE_SAVE | DEQUEUE_MOVE | DEQUEUE_NOCLOCK;
-+	bool queued, running;
- 	const struct sched_class *prev_class;
- 	struct rq_flags rf;
- 	struct rq *rq;
-@@ -6936,12 +6956,7 @@ void rt_mutex_setprio(struct task_struct *p, struct task_struct *pi_task)
- 		queue_flag &= ~DEQUEUE_MOVE;
- 
- 	prev_class = p->sched_class;
--	queued = task_on_rq_queued(p);
--	running = task_current(rq, p);
--	if (queued)
--		dequeue_task(rq, p, queue_flag);
--	if (running)
--		put_prev_task(rq, p);
-+	dequeue_and_put_task(rq, p, queue_flag, &queued, &running);
- 
- 	/*
- 	 * Boosting condition are:
-@@ -6975,10 +6990,7 @@ void rt_mutex_setprio(struct task_struct *p, struct task_struct *pi_task)
- 
- 	__setscheduler_prio(p, prio);
- 
--	if (queued)
--		enqueue_task(rq, p, queue_flag);
--	if (running)
--		set_next_task(rq, p);
-+	enqueue_and_set_task(rq, p, queue_flag, queued, running);
- 
- 	check_class_changed(rq, p, prev_class, oldprio);
- out_unlock:
-@@ -7024,22 +7036,14 @@ void set_user_nice(struct task_struct *p, long nice)
- 		p->static_prio = NICE_TO_PRIO(nice);
- 		goto out_unlock;
- 	}
--	queued = task_on_rq_queued(p);
--	running = task_current(rq, p);
--	if (queued)
--		dequeue_task(rq, p, DEQUEUE_SAVE | DEQUEUE_NOCLOCK);
--	if (running)
--		put_prev_task(rq, p);
-+	dequeue_and_put_task(rq, p, DEQUEUE_SAVE | DEQUEUE_NOCLOCK, &queued, &running);
- 
- 	p->static_prio = NICE_TO_PRIO(nice);
- 	set_load_weight(p, true);
- 	old_prio = p->prio;
- 	p->prio = effective_prio(p);
- 
--	if (queued)
--		enqueue_task(rq, p, ENQUEUE_RESTORE | ENQUEUE_NOCLOCK);
--	if (running)
--		set_next_task(rq, p);
-+	enqueue_and_set_task(rq, p, ENQUEUE_RESTORE | ENQUEUE_NOCLOCK, queued, running);
- 
- 	/*
- 	 * If the task increased its priority or is running and
-@@ -7423,7 +7427,8 @@ static int __sched_setscheduler(struct task_struct *p,
- 				bool user, bool pi)
- {
- 	int oldpolicy = -1, policy = attr->sched_policy;
--	int retval, oldprio, newprio, queued, running;
-+	int retval, oldprio, newprio;
-+	bool queued, running;
- 	const struct sched_class *prev_class;
- 	struct callback_head *head;
- 	struct rq_flags rf;
-@@ -7588,12 +7593,7 @@ static int __sched_setscheduler(struct task_struct *p,
- 			queue_flags &= ~DEQUEUE_MOVE;
- 	}
- 
--	queued = task_on_rq_queued(p);
--	running = task_current(rq, p);
--	if (queued)
--		dequeue_task(rq, p, queue_flags);
--	if (running)
--		put_prev_task(rq, p);
-+	dequeue_and_put_task(rq, p, queue_flags, &queued, &running);
- 
- 	prev_class = p->sched_class;
- 
-@@ -7603,18 +7603,15 @@ static int __sched_setscheduler(struct task_struct *p,
- 	}
- 	__setscheduler_uclamp(p, attr);
- 
--	if (queued) {
-+	if (queued & (oldprio < p->prio)) {
- 		/*
- 		 * We enqueue to tail when the priority of a task is
- 		 * increased (user space view).
- 		 */
--		if (oldprio < p->prio)
--			queue_flags |= ENQUEUE_HEAD;
+-static void ucsi_unregister_connectors(struct ucsi *ucsi)
+-{
+-	struct ucsi_connector *con;
+-	int i;
 -
--		enqueue_task(rq, p, queue_flags);
-+		queue_flags |= ENQUEUE_HEAD;
- 	}
--	if (running)
--		set_next_task(rq, p);
-+
-+	enqueue_and_set_task(rq, p, queue_flags, queued, running);
- 
- 	check_class_changed(rq, p, prev_class, oldprio);
- 
-@@ -9094,20 +9091,12 @@ void sched_setnuma(struct task_struct *p, int nid)
- 	struct rq *rq;
- 
- 	rq = task_rq_lock(p, &rf);
--	queued = task_on_rq_queued(p);
--	running = task_current(rq, p);
- 
--	if (queued)
--		dequeue_task(rq, p, DEQUEUE_SAVE);
--	if (running)
--		put_prev_task(rq, p);
-+	dequeue_and_put_task(rq, p, DEQUEUE_SAVE, &queued, &running);
- 
- 	p->numa_preferred_nid = nid;
- 
--	if (queued)
--		enqueue_task(rq, p, ENQUEUE_RESTORE | ENQUEUE_NOCLOCK);
--	if (running)
--		set_next_task(rq, p);
-+	enqueue_and_set_task(rq, p, ENQUEUE_RESTORE | ENQUEUE_NOCLOCK, queued, running);
- 	task_rq_unlock(rq, p, &rf);
- }
- #endif /* CONFIG_NUMA_BALANCING */
-@@ -10198,28 +10187,20 @@ static void sched_change_group(struct task_struct *tsk, int type)
-  */
- void sched_move_task(struct task_struct *tsk)
- {
--	int queued, running, queue_flags =
--		DEQUEUE_SAVE | DEQUEUE_MOVE | DEQUEUE_NOCLOCK;
-+	int queue_flags = DEQUEUE_SAVE | DEQUEUE_MOVE | DEQUEUE_NOCLOCK;
-+	bool queued, running;
- 	struct rq_flags rf;
- 	struct rq *rq;
- 
- 	rq = task_rq_lock(tsk, &rf);
- 	update_rq_clock(rq);
- 
--	running = task_current(rq, tsk);
--	queued = task_on_rq_queued(tsk);
+-	if (!ucsi->connector)
+-		return;
 -
--	if (queued)
--		dequeue_task(rq, tsk, queue_flags);
--	if (running)
--		put_prev_task(rq, tsk);
-+	dequeue_and_put_task(rq, tsk, queue_flags, &queued, &running);
+-	for (i = 0; i < ucsi->cap.num_connectors; i++) {
+-		con = &ucsi->connector[i];
+-
+-		if (!con->wq)
+-			break;
+-
+-		cancel_work_sync(&con->work);
+-		ucsi_unregister_partner(con);
+-		ucsi_unregister_altmodes(con, UCSI_RECIPIENT_CON);
+-		ucsi_unregister_port_psy(con);
+-		destroy_workqueue(con->wq);
+-		typec_unregister_port(con->port);
+-	}
+-
+-	kfree(ucsi->connector);
+-	ucsi->connector = NULL;
+-}
+-
+ /**
+  * ucsi_init - Initialize UCSI interface
+  * @ucsi: UCSI to be initialized
+@@ -1234,6 +1208,7 @@ static void ucsi_unregister_connectors(struct ucsi *ucsi)
+  */
+ static int ucsi_init(struct ucsi *ucsi)
+ {
++	struct ucsi_connector *con;
+ 	u64 command;
+ 	int ret;
+ 	int i;
+@@ -1264,7 +1239,7 @@ static int ucsi_init(struct ucsi *ucsi)
+ 	}
  
- 	sched_change_group(tsk, TASK_MOVE_GROUP);
+ 	/* Allocate the connectors. Released in ucsi_unregister() */
+-	ucsi->connector = kcalloc(ucsi->cap.num_connectors,
++	ucsi->connector = kcalloc(ucsi->cap.num_connectors + 1,
+ 				  sizeof(*ucsi->connector), GFP_KERNEL);
+ 	if (!ucsi->connector) {
+ 		ret = -ENOMEM;
+@@ -1288,7 +1263,15 @@ static int ucsi_init(struct ucsi *ucsi)
+ 	return 0;
  
--	if (queued)
--		enqueue_task(rq, tsk, queue_flags);
-+	enqueue_and_set_task(rq, tsk, queue_flags, queued, running);
- 	if (running) {
--		set_next_task(rq, tsk);
- 		/*
- 		 * After changing group, the running task may have joined a
- 		 * throttled one but it's still the running task. Trigger a
+ err_unregister:
+-	ucsi_unregister_connectors(ucsi);
++	for (con = ucsi->connector; con->port; con++) {
++		ucsi_unregister_partner(con);
++		ucsi_unregister_altmodes(con, UCSI_RECIPIENT_CON);
++		ucsi_unregister_port_psy(con);
++		if (con->wq)
++			destroy_workqueue(con->wq);
++		typec_unregister_port(con->port);
++		con->port = NULL;
++	}
+ 
+ err_reset:
+ 	memset(&ucsi->cap, 0, sizeof(ucsi->cap));
+@@ -1402,6 +1385,7 @@ EXPORT_SYMBOL_GPL(ucsi_register);
+ void ucsi_unregister(struct ucsi *ucsi)
+ {
+ 	u64 cmd = UCSI_SET_NOTIFICATION_ENABLE;
++	int i;
+ 
+ 	/* Make sure that we are not in the middle of driver initialization */
+ 	cancel_delayed_work_sync(&ucsi->work);
+@@ -1409,7 +1393,18 @@ void ucsi_unregister(struct ucsi *ucsi)
+ 	/* Disable notifications */
+ 	ucsi->ops->async_write(ucsi, UCSI_CONTROL, &cmd, sizeof(cmd));
+ 
+-	ucsi_unregister_connectors(ucsi);
++	for (i = 0; i < ucsi->cap.num_connectors; i++) {
++		cancel_work_sync(&ucsi->connector[i].work);
++		ucsi_unregister_partner(&ucsi->connector[i]);
++		ucsi_unregister_altmodes(&ucsi->connector[i],
++					 UCSI_RECIPIENT_CON);
++		ucsi_unregister_port_psy(&ucsi->connector[i]);
++		if (ucsi->connector[i].wq)
++			destroy_workqueue(ucsi->connector[i].wq);
++		typec_unregister_port(ucsi->connector[i].port);
++	}
++
++	kfree(ucsi->connector);
+ }
+ EXPORT_SYMBOL_GPL(ucsi_unregister);
+ 
 -- 
-2.17.1
+2.35.3
 
