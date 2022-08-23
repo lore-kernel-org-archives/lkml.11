@@ -2,44 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 67598C32774
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 10:13:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B3749C32772
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 10:13:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351993AbiHWKM1 (ORCPT
+        id S1353347AbiHWKNZ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 06:12:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46214 "EHLO
+        Tue, 23 Aug 2022 06:13:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46090 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352427AbiHWKFk (ORCPT
+        with ESMTP id S1352736AbiHWKGL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 06:05:40 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 27272A3448;
-        Tue, 23 Aug 2022 01:52:03 -0700 (PDT)
+        Tue, 23 Aug 2022 06:06:11 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B89D371733;
+        Tue, 23 Aug 2022 01:52:37 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 2FC08611DD;
-        Tue, 23 Aug 2022 08:52:03 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1EE2DC433C1;
-        Tue, 23 Aug 2022 08:52:01 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 443A6611DD;
+        Tue, 23 Aug 2022 08:52:37 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 51D59C433D6;
+        Tue, 23 Aug 2022 08:52:36 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661244722;
-        bh=Lj3vgTIfpEYlX7Q9QBsnBXWw2WeUak/ATk2ICgEljuo=;
+        s=korg; t=1661244756;
+        bh=0dcqyPKtuvYuqhuGOTA2PfPgKoo20KhKXVF0lcFfqyk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=KCew92kTEalx7DJ4Qk5J6lgAnd/abseY9v6S5UHwlgjl9jLi0RSeZzXI7uCddWOt8
-         pQtAxWFr4eFMdnFtzuwU7SpUNLT3Jd5lUTL6GzIggL8q4aw4czY4Pr0EZcXZ3oCfYg
-         yIJ0wHVGY6qt+xoYB+PYP3e2ZraICF2CdFUCSmag=
+        b=LhhPioN2OfD9ppDS5SeXGSJNXVqw8q9e7cEO+kjaX7MGhB3LVhc+KeXTSIISGKrhe
+         ENpbCkhWBLJ7aKy9MqWZTuhZ6B9/x//3hp+KS29rhKr8om9dpTOHF8bR5iEqsbvFq7
+         wD2euTbKVQ4BYBGso0MSmGH3i2oFL2CwNQHpjElk=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Arun Ramadoss <arun.ramadoss@microchip.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        Jakub Kicinski <kuba@kernel.org>
-Subject: [PATCH 5.15 139/244] net: dsa: microchip: ksz9477: fix fdb_dump last invalid entry
-Date:   Tue, 23 Aug 2022 10:24:58 +0200
-Message-Id: <20220823080103.795969863@linuxfoundation.org>
+        stable@vger.kernel.org, Grzegorz Siwik <grzegorz.siwik@intel.com>,
+        Jaroslav Pulchart <jaroslav.pulchart@gooddata.com>,
+        Igor Raits <igor@gooddata.com>,
+        Tony Nguyen <anthony.l.nguyen@intel.com>,
+        Gurucharan <gurucharanx.g@intel.com>
+Subject: [PATCH 5.15 144/244] ice: Ignore EEXIST when setting promisc mode
+Date:   Tue, 23 Aug 2022 10:25:03 +0200
+Message-Id: <20220823080103.979269040@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220823080059.091088642@linuxfoundation.org>
 References: <20220823080059.091088642@linuxfoundation.org>
@@ -51,41 +52,38 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Arun Ramadoss <arun.ramadoss@microchip.com>
+From: Grzegorz Siwik <grzegorz.siwik@intel.com>
 
-commit 36c0d935015766bf20d621c18313f17691bda5e3 upstream.
+commit 11e551a2efa4481bd4f616ab75374a2710b480e9 upstream.
 
-In the ksz9477_fdb_dump function it reads the ALU control register and
-exit from the timeout loop if there is valid entry or search is
-complete. After exiting the loop, it reads the alu entry and report to
-the user space irrespective of entry is valid. It works till the valid
-entry. If the loop exited when search is complete, it reads the alu
-table. The table returns all ones and it is reported to user space. So
-bridge fdb show gives ff:ff:ff:ff:ff:ff as last entry for every port.
-To fix it, after exiting the loop the entry is reported only if it is
-valid one.
+Ignore EEXIST error when setting promiscuous mode.
+This fix is needed because the driver could set promiscuous mode
+when it still has not cleared properly.
+Promiscuous mode could be set only once, so setting it second
+time will be rejected.
 
-Fixes: b987e98e50ab ("dsa: add DSA switch driver for Microchip KSZ9477")
-Signed-off-by: Arun Ramadoss <arun.ramadoss@microchip.com>
-Reviewed-by: Vladimir Oltean <olteanv@gmail.com>
-Link: https://lore.kernel.org/r/20220816105516.18350-1-arun.ramadoss@microchip.com
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Fixes: 5eda8afd6bcc ("ice: Add support for PF/VF promiscuous mode")
+Signed-off-by: Grzegorz Siwik <grzegorz.siwik@intel.com>
+Link: https://lore.kernel.org/all/CAK8fFZ7m-KR57M_rYX6xZN39K89O=LGooYkKsu6HKt0Bs+x6xQ@mail.gmail.com/
+Tested-by: Jaroslav Pulchart <jaroslav.pulchart@gooddata.com>
+Tested-by: Igor Raits <igor@gooddata.com>
+Tested-by: Gurucharan <gurucharanx.g@intel.com> (A Contingent worker at Intel)
+Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/net/dsa/microchip/ksz9477.c |    3 +++
- 1 file changed, 3 insertions(+)
+ drivers/net/ethernet/intel/ice/ice_switch.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/drivers/net/dsa/microchip/ksz9477.c
-+++ b/drivers/net/dsa/microchip/ksz9477.c
-@@ -759,6 +759,9 @@ static int ksz9477_port_fdb_dump(struct
- 			goto exit;
- 		}
- 
-+		if (!(ksz_data & ALU_VALID))
-+			continue;
-+
- 		/* read ALU table */
- 		ksz9477_read_table(dev, alu_table);
+--- a/drivers/net/ethernet/intel/ice/ice_switch.c
++++ b/drivers/net/ethernet/intel/ice/ice_switch.c
+@@ -2614,7 +2614,7 @@ ice_set_vlan_vsi_promisc(struct ice_hw *
+ 		else
+ 			status = ice_set_vsi_promisc(hw, vsi_handle,
+ 						     promisc_mask, vlan_id);
+-		if (status)
++		if (status && status != -EEXIST)
+ 			break;
+ 	}
  
 
 
