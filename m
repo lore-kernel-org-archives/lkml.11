@@ -2,85 +2,98 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6D9F3C32792
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 14:04:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AFFD9C32774
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 14:04:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243349AbiHWOER (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 10:04:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46584 "EHLO
+        id S241921AbiHWOEZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 23 Aug 2022 10:04:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43402 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244843AbiHWOCh (ORCPT
+        with ESMTP id S242560AbiHWOAh (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 10:02:37 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E065C243BAD;
-        Tue, 23 Aug 2022 04:11:40 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 8CC9461598;
-        Tue, 23 Aug 2022 11:10:48 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 330A6C433D6;
-        Tue, 23 Aug 2022 11:10:47 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661253048;
-        bh=Ej2f/4SpSbdrp05Uz+VxdpFfI9gh8J1Jjq0tLjxbmaQ=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=j8QWfzI/dkSetVrmDfn95WQZXErTwU5c+cA4e/WPgqDc19snvHoNt7GHVoSFvlfPb
-         aMC5luBPN/JT7cOxQWhow7bffkN8qeTIKteNFTntXjPk4eeCFehC01/10AGecxPfJi
-         SkiOcmjOItpJzWlA8OS5iVOqcZciLsUrUh6Ar3sc=
-Date:   Tue, 23 Aug 2022 13:10:44 +0200
-From:   Greg KH <gregkh@linuxfoundation.org>
-To:     Conor.Dooley@microchip.com
-Cc:     linux-kernel@vger.kernel.org, stable@vger.kernel.org,
-        Brice.Goglin@inria.fr, palmer@rivosinc.com, sashal@kernel.org
-Subject: Re: [PATCH 5.19 332/365] riscv: dts: sifive: Add fu540 topology
- information
-Message-ID: <YwS1tCGsk/N0D18r@kroah.com>
-References: <20220823080118.128342613@linuxfoundation.org>
- <20220823080132.111184627@linuxfoundation.org>
- <b92e80fc-c8f5-0a19-44ff-f08e2674b7cc@microchip.com>
+        Tue, 23 Aug 2022 10:00:37 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 01BEA23A4AD
+        for <linux-kernel@vger.kernel.org>; Tue, 23 Aug 2022 04:07:47 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1661252814;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=9vFwWtlaXBJfhkm+20Q4BimLsKsx1b4GpBGhXdNHVUg=;
+        b=UgHO9k/cLIFkdC9FQMzGD5E0HrriR51EyG7NjOj5ufDT2F0ZreGbnXbFaoYZhYBCWZJF6Y
+        y4k6PIoj5xfFj0JpOg0kjVuDJ/31h4yU3TaRAIfRHrvjHxysCBfoiiFx2J6Bec9mGgp7ya
+        SQoQHElxC9ybaTuB/CCh+DOnVQ/JnXk=
+Received: from mail-wm1-f70.google.com (mail-wm1-f70.google.com
+ [209.85.128.70]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
+ us-mta-584-PWv75rylNQiZ-c4OAsANWA-1; Tue, 23 Aug 2022 07:06:53 -0400
+X-MC-Unique: PWv75rylNQiZ-c4OAsANWA-1
+Received: by mail-wm1-f70.google.com with SMTP id n7-20020a1c2707000000b003a638356355so5607058wmn.2
+        for <linux-kernel@vger.kernel.org>; Tue, 23 Aug 2022 04:06:52 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:mime-version:user-agent:references
+         :in-reply-to:date:cc:to:from:subject:message-id:x-gm-message-state
+         :from:to:cc;
+        bh=9vFwWtlaXBJfhkm+20Q4BimLsKsx1b4GpBGhXdNHVUg=;
+        b=eb459yDQSHbgOe4nu0YxidogYVBc6AtDyxCAEjzV+I2iro0DAxLis2fw56wBxp8Iw5
+         qmVdsMiFOkpfLwKZYY8p+R6HqDdOMcCC+/yerlxwM0yP5gyWLL99ix7Mw+I8JxzSt2Xi
+         AZkAa7IVvJXXaftcBPcvrai63/gSBk8bFV8Gpt61iYaR3to0UJ/OvpMOJfCM0H76+1jA
+         iYK7rERVRHJhoGhzrASOMQhw5QVSc1waQ/6vgrON4OsYf5YMb9K+PnxIKw39k7SAOWkt
+         IIpfnDVo65PTmkAbvLP9We85YFDa+/KabUkzTAFKONPo4qCdN0bnPQtYcGHf1rwmaXkR
+         wMiw==
+X-Gm-Message-State: ACgBeo1TQqbJfcVxU6sPHARURGml0MGm0boIB4B41g9TCYNGJFEuyR74
+        H/dNSUvUV8gtlCy3MzM3B3IM2bAiDOF9kPZFcEWfE7WyxprdmE96yOlibqXecgnAz9X5qgk1F8v
+        WOJiU2yABl5UCO5BhUN2dn4Sp
+X-Received: by 2002:a05:600c:384f:b0:3a6:603c:4338 with SMTP id s15-20020a05600c384f00b003a6603c4338mr1822491wmr.192.1661252811619;
+        Tue, 23 Aug 2022 04:06:51 -0700 (PDT)
+X-Google-Smtp-Source: AA6agR5DCT0OQblrn5cXEd8HIrkGgjZmmi8yFbjusnd23J8AN0pMS1n6Obdq1k352nw99irqcnP1SQ==
+X-Received: by 2002:a05:600c:384f:b0:3a6:603c:4338 with SMTP id s15-20020a05600c384f00b003a6603c4338mr1822481wmr.192.1661252811386;
+        Tue, 23 Aug 2022 04:06:51 -0700 (PDT)
+Received: from gerbillo.redhat.com (146-241-97-176.dyn.eolo.it. [146.241.97.176])
+        by smtp.gmail.com with ESMTPSA id i6-20020a5d4386000000b0022159d92004sm8043071wrq.82.2022.08.23.04.06.50
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 23 Aug 2022 04:06:50 -0700 (PDT)
+Message-ID: <6e47d3d9f8cc73c6baf26d2b5f320d51f67d9a04.camel@redhat.com>
+Subject: Re: [kernel PATCH v2 1/1] Bluetooth: hci_sync: hold hdev->lock when
+ cleanup hci_conn
+From:   Paolo Abeni <pabeni@redhat.com>
+To:     Zhengping Jiang <jiangzp@google.com>,
+        linux-bluetooth@vger.kernel.org, marcel@holtmann.org
+Cc:     chromeos-bluetooth-upstreaming@chromium.org,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Johan Hedberg <johan.hedberg@gmail.com>,
+        Luiz Augusto von Dentz <luiz.dentz@gmail.com>,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org
+Date:   Tue, 23 Aug 2022 13:06:49 +0200
+In-Reply-To: <20220822214430.kernel.v2.1.I1d10fc551cadae988dcf2fc66ad8c9eec2d7026b@changeid>
+References: <20220823044434.3402413-1-jiangzp@google.com>
+         <20220822214430.kernel.v2.1.I1d10fc551cadae988dcf2fc66ad8c9eec2d7026b@changeid>
+Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.42.4 (3.42.4-2.fc35) 
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <b92e80fc-c8f5-0a19-44ff-f08e2674b7cc@microchip.com>
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Aug 23, 2022 at 09:49:35AM +0000, Conor.Dooley@microchip.com wrote:
-> On 23/08/2022 09:03, Greg Kroah-Hartman wrote:
-> > EXTERNAL EMAIL: Do not click links or open attachments unless you know the content is safe
-> > 
-> > From: Conor Dooley <conor.dooley@microchip.com>
-> > 
-> > [ Upstream commit af8f260abc608c06e4466a282b53f1e2dc09f042 ]
-> > 
-> > The fu540 has no cpu-map node, so tools like hwloc cannot correctly
-> > parse the topology. Add the node using the existing node labels.
-> > 
-> > Reported-by: Brice Goglin <Brice.Goglin@inria.fr>
-> > Link: https://github.com/open-mpi/hwloc/issues/536
-> > Signed-off-by: Conor Dooley <conor.dooley@microchip.com>
-> > Link: https://lore.kernel.org/r/20220705190435.1790466-3-mail@conchuod.ie
-> > Signed-off-by: Palmer Dabbelt <palmer@rivosinc.com>
-> > Signed-off-by: Sasha Levin <sashal@kernel.org>
+On Mon, 2022-08-22 at 21:44 -0700, Zhengping Jiang wrote:
+> When disconnecting all devices, hci_conn_failed is used to cleanup
+> hci_conn object when the hci_conn object cannot be aborted.
+> The function hci_conn_failed requires the caller holds hdev->lock.
 > 
-> Hey Greg,
-> I pointed out on the AUTOSEL'd version of these patches that
-> adding the optional dt property papers over the problem rather than
-> really fixing it & Sudeep suggested the time that these patches were
-> not stable worthy, hence the lack of a CC: stable.
+> Fixes: 9b3628d79b46f ("Bluetooth: hci_sync: Cleanup hci_conn if it cannot be aborted")
 > 
-> The following has been merged into riscv/for-next & is pending for
-> arm64/driver core as an actual fix for RISC-V's default topology
-> reporting:
-> https://lore.kernel.org/linux-riscv/4849490e-b362-c13a-c2e4-82acc3268a3f@microchip.com/#t
-> 
-> As I said to Sasha, I defer to your (plural) better judgement here,
-> but just so that you're aware of the context.
+> Signed-off-by: Zhengping Jiang <jiangzp@google.com>
 
-Thanks for letting me know, I've now dropped it from all stable release
-queues.
+For the records, you should avoid empty lines between the 'fixes' tag
+and your SoB.
 
-greg k-h
+Cheers,
+
+Paolo
+
