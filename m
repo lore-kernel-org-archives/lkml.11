@@ -2,114 +2,98 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8DEE2C32772
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 22:44:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3AD5AC32796
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 22:45:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232052AbiHWWoM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 18:44:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41448 "EHLO
+        id S232299AbiHWWpk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 23 Aug 2022 18:45:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43270 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229518AbiHWWoJ (ORCPT
+        with ESMTP id S232841AbiHWWpg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 18:44:09 -0400
-Received: from qproxy5-pub.mail.unifiedlayer.com (qproxy5-pub.mail.unifiedlayer.com [69.89.21.30])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4E9E7876A6
-        for <linux-kernel@vger.kernel.org>; Tue, 23 Aug 2022 15:44:08 -0700 (PDT)
-Received: from gproxy1-pub.mail.unifiedlayer.com (gproxy1-pub.mail.unifiedlayer.com [69.89.25.95])
-        by qproxy5.mail.unifiedlayer.com (Postfix) with ESMTP id DDBCD8031082
-        for <linux-kernel@vger.kernel.org>; Tue, 23 Aug 2022 22:43:57 +0000 (UTC)
-Received: from cmgw11.mail.unifiedlayer.com (unknown [10.0.90.126])
-        by progateway3.mail.pro1.eigbox.com (Postfix) with ESMTP id D182110042417
-        for <linux-kernel@vger.kernel.org>; Tue, 23 Aug 2022 22:43:23 +0000 (UTC)
-Received: from box5620.bluehost.com ([162.241.219.59])
-        by cmsmtp with ESMTP
-        id QccFojEXBmB5LQccFoW4aX; Tue, 23 Aug 2022 22:43:23 +0000
-X-Authority-Reason: nr=8
-X-Authority-Analysis: v=2.4 cv=MaSpB7zf c=1 sm=1 tr=0 ts=6305580b
- a=30941lsx5skRcbJ0JMGu9A==:117 a=30941lsx5skRcbJ0JMGu9A==:17
- a=dLZJa+xiwSxG16/P+YVxDGlgEgI=:19 a=IkcTkHD0fZMA:10:nop_charset_1
- a=biHskzXt2R4A:10:nop_rcvd_month_year
- a=-Ou01B_BuAIA:10:endurance_base64_authed_username_1 a=VwQbUJbxAAAA:8
- a=HaFmDPmJAAAA:8 a=ucdZCbjJP0blHsZw7AsA:9 a=QEXdDO2ut3YA:10:nop_charset_2
- a=AjGcO6oz07-iQ99wixmX:22 a=nmWuMzfKamIsx3l42hEX:22
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=w6rz.net;
-        s=default; h=Content-Transfer-Encoding:Content-Type:MIME-Version:Date:
-        Message-ID:From:In-Reply-To:References:Cc:To:Subject:Sender:Reply-To:
-        Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
-        Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:
-        List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=4hC6aCHzSbWCDPOoJZOmyf50A9wbfuB0mrWxYTOdCAg=; b=UZ19BAfxBrKG6+FJlOh9cdQ0tR
-        hPaLMS+iX/CBusdZ5y3lc+6D6WjS9Pao9+crMfQK1ZLUxgtJr4Gxl6uTvmQ6oXB9sfbffoI2GFlqY
-        pu5gcbGwLt0QZq38yoDMItr8RDGeODRlmGAKyJ9+Y9yVjWR3kH08Y0zHhXVCQuDuFdrnvrjw5+Iz2
-        TUsViNgrciEjaHCtNDu/kA2Hnw29CJ6y38KhN/VGQZHBP8gaV/LNHEFWk0rYW4F/8KQBywNqYYH59
-        nZGQpMjYG0oxckqRWhVwupYNHYImbqx3gQ94PcGuOpnRSHlvwflk+0O494wnwP0tkVQ35hSTUTOxk
-        xB/zsIag==;
-Received: from c-73-162-232-9.hsd1.ca.comcast.net ([73.162.232.9]:41482 helo=[10.0.1.48])
-        by box5620.bluehost.com with esmtpsa  (TLS1.2) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.95)
-        (envelope-from <re@w6rz.net>)
-        id 1oQccD-001VLn-Ok;
-        Tue, 23 Aug 2022 16:43:21 -0600
-Subject: Re: [PATCH 5.19 000/365] 5.19.4-rc1 review
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        linux-kernel@vger.kernel.org
-Cc:     stable@vger.kernel.org, torvalds@linux-foundation.org,
-        akpm@linux-foundation.org, linux@roeck-us.net, shuah@kernel.org,
-        patches@kernelci.org, lkft-triage@lists.linaro.org, pavel@denx.de,
-        jonathanh@nvidia.com, f.fainelli@gmail.com,
-        sudipm.mukherjee@gmail.com, slade@sladewatkins.com
-References: <20220823080118.128342613@linuxfoundation.org>
-In-Reply-To: <20220823080118.128342613@linuxfoundation.org>
-From:   Ron Economos <re@w6rz.net>
-Message-ID: <87bb8595-5be3-76c1-5e7c-f70af4da22b9@w6rz.net>
-Date:   Tue, 23 Aug 2022 15:43:19 -0700
-User-Agent: Mozilla/5.0 (X11; Linux armv7l; rv:78.0) Gecko/20100101
- Thunderbird/78.14.0
+        Tue, 23 Aug 2022 18:45:36 -0400
+Received: from mail-oi1-f176.google.com (mail-oi1-f176.google.com [209.85.167.176])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F40B57FFAB;
+        Tue, 23 Aug 2022 15:45:35 -0700 (PDT)
+Received: by mail-oi1-f176.google.com with SMTP id o184so17688494oif.13;
+        Tue, 23 Aug 2022 15:45:35 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc;
+        bh=oHodqhGQVJUpYZFLY/dKxJcLvNCw1wll2BgbUR8IyRA=;
+        b=ur63j5doB31+aKQ7n01E5tE7nrAOum/teo2y5QRmkBIkaZaVUiI8sfPftA2VGQZf6F
+         zHlrQlU8jd7TyK6neOoN0YlsOOWsXR32tuSbmhHaCpFPNk9+0kSItUsuK/NKDqCPJvND
+         EAmyJ8rqx0ikle4TSHPW95/bDJzXWMHBSzmF92VO+8toqUk08vqNy2S/WNtVDcpemwyk
+         pXYasoEFBEvnvd16gZH3CkL5O0lv9D8YHPf/yubXmP8ZQ+E8ruVBbZHye28aSlqCDMau
+         5gtMCM/NXYdG90hagbaF0sunDOd5sXHve1idMJcM2EALMmHOCG+/UXcq9rpE6S636sdc
+         Hcgw==
+X-Gm-Message-State: ACgBeo1ysCiuXaxdRFmHpKjy65StvjUsvyy5iF8if1dGvm+DI1PS+niP
+        QK7go8jo01XYCpiR+ALQBqfcptjg6Hp0NVtuXYQ=
+X-Google-Smtp-Source: AA6agR5QGf6/wKMX1dkxJ79qzB3ojAV6RPDLxuvjeqQBBJ/Ty7vG4R/UxIh9oGZT7FjwvgGXaOFAFRvaVAbsYftkFSE=
+X-Received: by 2002:aca:ba86:0:b0:33a:c6f7:3001 with SMTP id
+ k128-20020acaba86000000b0033ac6f73001mr2215025oif.5.1661294735248; Tue, 23
+ Aug 2022 15:45:35 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 7bit
-Content-Language: en-US
-X-AntiAbuse: This header was added to track abuse, please include it with any abuse report
-X-AntiAbuse: Primary Hostname - box5620.bluehost.com
-X-AntiAbuse: Original Domain - vger.kernel.org
-X-AntiAbuse: Originator/Caller UID/GID - [47 12] / [47 12]
-X-AntiAbuse: Sender Address Domain - w6rz.net
-X-BWhitelist: no
-X-Source-IP: 73.162.232.9
-X-Source-L: No
-X-Exim-ID: 1oQccD-001VLn-Ok
-X-Source: 
-X-Source-Args: 
-X-Source-Dir: 
-X-Source-Sender: c-73-162-232-9.hsd1.ca.comcast.net ([10.0.1.48]) [73.162.232.9]:41482
-X-Source-Auth: re@w6rz.net
-X-Email-Count: 2
-X-Source-Cap: d3NpeHJ6bmU7d3NpeHJ6bmU7Ym94NTYyMC5ibHVlaG9zdC5jb20=
-X-Local-Domain: yes
+References: <20220823210354.1407473-1-namhyung@kernel.org> <95708205-66EA-4622-A580-FD234E6CE2DA@fb.com>
+In-Reply-To: <95708205-66EA-4622-A580-FD234E6CE2DA@fb.com>
+From:   Namhyung Kim <namhyung@kernel.org>
+Date:   Tue, 23 Aug 2022 15:45:24 -0700
+Message-ID: <CAM9d7cgxP6+R2BkVZfRAVvFUaJcknu8wAvKa_b1TBnTdKKiQvw@mail.gmail.com>
+Subject: Re: [PATCH bpf-next] bpf: Add bpf_read_raw_record() helper
+To:     Song Liu <songliubraving@fb.com>
+Cc:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>, Martin Lau <kafai@fb.com>,
+        Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>,
+        Stanislav Fomichev <sdf@google.com>,
+        Hao Luo <haoluo@google.com>, Jiri Olsa <jolsa@kernel.org>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Ingo Molnar <mingo@kernel.org>,
+        "bpf@vger.kernel.org" <bpf@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 8/23/22 12:58 AM, Greg Kroah-Hartman wrote:
-> This is the start of the stable review cycle for the 5.19.4 release.
-> There are 365 patches in this series, all will be posted as a response
-> to this one.  If anyone has any issues with these being applied, please
-> let me know.
->
-> Responses should be made by Thu, 25 Aug 2022 08:00:15 +0000.
-> Anything received after that time might be too late.
->
-> The whole patch series can be found in one patch at:
-> 	https://www.kernel.org/pub/linux/kernel/v5.x/stable-review/patch-5.19.4-rc1.gz
-> or in the git tree and branch at:
-> 	git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git linux-5.19.y
-> and the diffstat can be found below.
->
-> thanks,
->
-> greg k-h
+Hi Song,
 
-Built and booted successfully on RISC-V RV64 (HiFive Unmatched).
+On Tue, Aug 23, 2022 at 3:19 PM Song Liu <songliubraving@fb.com> wrote:
+>
+>
+>
+> > On Aug 23, 2022, at 2:03 PM, Namhyung Kim <namhyung@kernel.org> wrote:
+> >
+> > The helper is for BPF programs attached to perf_event in order to read
+> > event-specific raw data.  I followed the convention of the
+> > bpf_read_branch_records() helper so that it can tell the size of
+> > record using BPF_F_GET_RAW_RECORD flag.
+> >
+> > The use case is to filter perf event samples based on the HW provided
+> > data which have more detailed information about the sample.
+> >
+> > Note that it only reads the first fragment of the raw record.  But it
+> > seems mostly ok since all the existing PMU raw data have only single
+> > fragment and the multi-fragment records are only for BPF output attached
+> > to sockets.  So unless it's used with such an extreme case, it'd work
+> > for most of tracing use cases.
+> >
+> > Signed-off-by: Namhyung Kim <namhyung@kernel.org>
+> > ---
+> > I don't know how to test this.  As the raw data is available on some
+> > hardware PMU only (e.g. AMD IBS).  I tried a tracepoint event but it was
+> > rejected by the verifier.  Actually it needs a bpf_perf_event_data
+> > context so that's not an option IIUC.
+>
+> Can we add a software event that generates raw data for testing?
 
-Tested-by: Ron Economos <re@w6rz.net>
+Ok, now I think that I can use a bpf-output sw event.  It would need
+another BPF program to write data to the event and the test program
+can read it from BPF using this helper. :)
 
+Thanks,
+Namhyung
