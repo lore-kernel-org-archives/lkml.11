@@ -2,45 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EF814C32792
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 11:43:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CA7AEC32772
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 11:43:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357982AbiHWLnA (ORCPT
+        id S1358065AbiHWLnG (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 07:43:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60222 "EHLO
+        Tue, 23 Aug 2022 07:43:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59820 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357384AbiHWLhq (ORCPT
+        with ESMTP id S1357715AbiHWLiE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 07:37:46 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 684E7A475;
-        Tue, 23 Aug 2022 02:28:21 -0700 (PDT)
+        Tue, 23 Aug 2022 07:38:04 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3F1C21054A;
+        Tue, 23 Aug 2022 02:28:23 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 433D7B81B1F;
-        Tue, 23 Aug 2022 09:28:01 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8FFF2C433C1;
-        Tue, 23 Aug 2022 09:27:59 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 88A6CB81C85;
+        Tue, 23 Aug 2022 09:28:20 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D203CC433C1;
+        Tue, 23 Aug 2022 09:28:18 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661246880;
-        bh=endJk+ACyFfb201hJXGiey3lovGUucIMGyidZKnYtZ0=;
+        s=korg; t=1661246899;
+        bh=SQXOfBhhjusfyQ7h7S2cvioqr/p4Hpbw5vz6sQzz1Wk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=FbVDwdZ7hc68HCQ2RSeKi2xwdsuofswilU54gSqbgZqRauQRH6qcbowOuVlYECJSS
-         KvDSU/fkF3R9IPknUtskXAnnSQ3LQWVzpDZtMj+aWSOK15u/duLjGqlll+3pu5CrcG
-         J/AOKolZrsWwfVtNzzLSCeuWLwZwUzcPcUg9PWlg=
+        b=SkI16JYsi2c/l5fDN6rzH6CtbkpHXhOObXBf3CgXXIdfB0qLIUFQv6GmEm9gkQr+R
+         EjEpnQTCGEBjWxN8xv5Pwxhu0y8NG60YC0vxIeKgV2LdZ6acwRwZyX5I+raIEQPpb1
+         j1sX/UXGKgmM7KBxWjjF/DB4GFTXaDBfKxlITTM0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Tony Battersby <tonyb@cybernetics.com>,
-        Himanshu Madhani <himanshu.madhani@oracle.com>,
-        Arun Easi <aeasi@marvell.com>,
-        Nilesh Javali <njavali@marvell.com>,
-        "Martin K. Petersen" <martin.petersen@oracle.com>
-Subject: [PATCH 5.4 249/389] scsi: qla2xxx: Fix discovery issues in FC-AL topology
-Date:   Tue, 23 Aug 2022 10:25:27 +0200
-Message-Id: <20220823080125.977099866@linuxfoundation.org>
+        stable@vger.kernel.org, WANG Xuerui <git@xen0n.name>,
+        Huacai Chen <chenhuacai@loongson.cn>,
+        Jarkko Sakkinen <jarkko@kernel.org>
+Subject: [PATCH 5.4 255/389] tpm: eventlog: Fix section mismatch for DEBUG_SECTION_MISMATCH
+Date:   Tue, 23 Aug 2022 10:25:33 +0200
+Message-Id: <20220823080126.253203932@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220823080115.331990024@linuxfoundation.org>
 References: <20220823080115.331990024@linuxfoundation.org>
@@ -52,107 +50,42 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Arun Easi <aeasi@marvell.com>
+From: Huacai Chen <chenhuacai@loongson.cn>
 
-commit 47ccb113cead905bdc236571bf8ac6fed90321b3 upstream.
+commit bed4593645366ad7362a3aa7bc0d100d8d8236a8 upstream.
 
-A direct attach tape device, when gets swapped with another, was not
-discovered. Fix this by looking at loop map and reinitialize link if there
-are devices present.
+If DEBUG_SECTION_MISMATCH enabled, __calc_tpm2_event_size() will not be
+inlined, this cause section mismatch like this:
 
-Link: https://lore.kernel.org/linux-scsi/baef87c3-5dad-3b47-44c1-6914bfc90108@cybernetics.com/
-Link: https://lore.kernel.org/r/20220713052045.10683-8-njavali@marvell.com
-Cc: stable@vger.kernel.org
-Reported-by: Tony Battersby <tonyb@cybernetics.com>
-Tested-by: Tony Battersby <tonyb@cybernetics.com>
-Reviewed-by: Himanshu Madhani <himanshu.madhani@oracle.com>
-Signed-off-by: Arun Easi <aeasi@marvell.com>
-Signed-off-by: Nilesh Javali <njavali@marvell.com>
-Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
+WARNING: modpost: vmlinux.o(.text.unlikely+0xe30c): Section mismatch in reference from the variable L0 to the function .init.text:early_ioremap()
+The function L0() references
+the function __init early_memremap().
+This is often because L0 lacks a __init
+annotation or the annotation of early_ioremap is wrong.
+
+Fix it by using __always_inline instead of inline for the called-once
+function __calc_tpm2_event_size().
+
+Fixes: 44038bc514a2 ("tpm: Abstract crypto agile event size calculations")
+Cc: stable@vger.kernel.org # v5.3
+Reported-by: WANG Xuerui <git@xen0n.name>
+Signed-off-by: Huacai Chen <chenhuacai@loongson.cn>
+Signed-off-by: Jarkko Sakkinen <jarkko@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/scsi/qla2xxx/qla_gbl.h  |    3 ++-
- drivers/scsi/qla2xxx/qla_init.c |   29 +++++++++++++++++++++++++++++
- drivers/scsi/qla2xxx/qla_mbx.c  |    5 ++++-
- 3 files changed, 35 insertions(+), 2 deletions(-)
+ include/linux/tpm_eventlog.h |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/drivers/scsi/qla2xxx/qla_gbl.h
-+++ b/drivers/scsi/qla2xxx/qla_gbl.h
-@@ -397,7 +397,8 @@ extern int
- qla2x00_get_resource_cnts(scsi_qla_host_t *);
- 
- extern int
--qla2x00_get_fcal_position_map(scsi_qla_host_t *ha, char *pos_map);
-+qla2x00_get_fcal_position_map(scsi_qla_host_t *ha, char *pos_map,
-+		u8 *num_entries);
- 
- extern int
- qla2x00_get_link_status(scsi_qla_host_t *, uint16_t, struct link_statistics *,
---- a/drivers/scsi/qla2xxx/qla_init.c
-+++ b/drivers/scsi/qla2xxx/qla_init.c
-@@ -5068,6 +5068,22 @@ qla2x00_configure_loop(scsi_qla_host_t *
- 	return (rval);
- }
- 
-+static void
-+qla_reinitialize_link(scsi_qla_host_t *vha)
-+{
-+	int rval;
-+
-+	atomic_set(&vha->loop_state, LOOP_DOWN);
-+	atomic_set(&vha->loop_down_timer, LOOP_DOWN_TIME);
-+	rval = qla2x00_full_login_lip(vha);
-+	if (rval == QLA_SUCCESS) {
-+		ql_dbg(ql_dbg_disc, vha, 0xd050, "Link reinitialized\n");
-+	} else {
-+		ql_dbg(ql_dbg_disc, vha, 0xd051,
-+			"Link reinitialization failed (%d)\n", rval);
-+	}
-+}
-+
- /*
-  * qla2x00_configure_local_loop
-  *	Updates Fibre Channel Device Database with local loop devices.
-@@ -5132,6 +5148,19 @@ skip_login:
- 		spin_unlock_irqrestore(&vha->work_lock, flags);
- 
- 		if (vha->scan.scan_retry < MAX_SCAN_RETRIES) {
-+			u8 loop_map_entries = 0;
-+			int rc;
-+
-+			rc = qla2x00_get_fcal_position_map(vha, NULL,
-+						&loop_map_entries);
-+			if (rc == QLA_SUCCESS && loop_map_entries > 1) {
-+				/*
-+				 * There are devices that are still not logged
-+				 * in. Reinitialize to give them a chance.
-+				 */
-+				qla_reinitialize_link(vha);
-+				return QLA_FUNCTION_FAILED;
-+			}
- 			set_bit(LOCAL_LOOP_UPDATE, &vha->dpc_flags);
- 			set_bit(LOOP_RESYNC_NEEDED, &vha->dpc_flags);
- 		}
---- a/drivers/scsi/qla2xxx/qla_mbx.c
-+++ b/drivers/scsi/qla2xxx/qla_mbx.c
-@@ -2928,7 +2928,8 @@ qla2x00_get_resource_cnts(scsi_qla_host_
-  *	Kernel context.
+--- a/include/linux/tpm_eventlog.h
++++ b/include/linux/tpm_eventlog.h
+@@ -157,7 +157,7 @@ struct tcg_algorithm_info {
+  * Return: size of the event on success, 0 on failure
   */
- int
--qla2x00_get_fcal_position_map(scsi_qla_host_t *vha, char *pos_map)
-+qla2x00_get_fcal_position_map(scsi_qla_host_t *vha, char *pos_map,
-+		u8 *num_entries)
+ 
+-static inline int __calc_tpm2_event_size(struct tcg_pcr_event2_head *event,
++static __always_inline int __calc_tpm2_event_size(struct tcg_pcr_event2_head *event,
+ 					 struct tcg_pcr_event *event_header,
+ 					 bool do_mapping)
  {
- 	int rval;
- 	mbx_cmd_t mc;
-@@ -2968,6 +2969,8 @@ qla2x00_get_fcal_position_map(scsi_qla_h
- 
- 		if (pos_map)
- 			memcpy(pos_map, pmap, FCAL_MAP_SIZE);
-+		if (num_entries)
-+			*num_entries = pmap[0];
- 	}
- 	dma_pool_free(ha->s_dma_pool, pmap, pmap_dma);
- 
 
 
