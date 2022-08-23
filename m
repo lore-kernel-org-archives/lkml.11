@@ -2,113 +2,82 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 37D0EC32772
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 16:43:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 87EB6C32772
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 16:44:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245169AbiHWQnn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 12:43:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57180 "EHLO
+        id S244103AbiHWQoF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 23 Aug 2022 12:44:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36932 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244922AbiHWQlD (ORCPT
+        with ESMTP id S245548AbiHWQnf (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 12:41:03 -0400
-Received: from mx0a-0031df01.pphosted.com (mx0a-0031df01.pphosted.com [205.220.168.131])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E27DAE2C7F;
-        Tue, 23 Aug 2022 07:36:27 -0700 (PDT)
-Received: from pps.filterd (m0279867.ppops.net [127.0.0.1])
-        by mx0a-0031df01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 27NDMwqx020875;
-        Tue, 23 Aug 2022 14:35:44 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=quicinc.com; h=message-id : date :
- mime-version : subject : to : references : from : in-reply-to :
- content-type : content-transfer-encoding; s=qcppdkim1;
- bh=6fn2CweGoHgya+2f7Ycyc4pUnLkSVsKXAd7bStPGUB8=;
- b=j9BLx1ZLu3wpqeSX9ENgRVONBz2+SATIc0x6R9vKU3PyybRIJ9LoOQe5x8E9krx8LMnK
- MDqMfkUsPOv68t8QmR5PFYyvZlnjFUOfwSzHo2zdBawfk7+2IsI9by8MoMYn/NJpvx23
- l8P6n5HvrBR969aoOjyx+286KzUF/DecT4hBVpLu9djQpdoUblYHN4/r5KZaEz6P7/jR
- qFpaJYoMCPklTS0e46nLnnljq4o9dfmdrmMp2DhxXNsW5vOyDkPFG0EoiQI67mE7oy/L
- xv57jN9u4vythO++GNz7qAjbPLkNLohCpUhoENtw/hpXxtbjF2uNGUCN5HQftr3NO+ZH TA== 
-Received: from nalasppmta01.qualcomm.com (Global_NAT1.qualcomm.com [129.46.96.20])
-        by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 3j4t6xt2ph-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Tue, 23 Aug 2022 14:35:44 +0000
-Received: from nalasex01a.na.qualcomm.com (nalasex01a.na.qualcomm.com [10.47.209.196])
-        by NALASPPMTA01.qualcomm.com (8.17.1.5/8.17.1.5) with ESMTPS id 27NEZhAL018905
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Tue, 23 Aug 2022 14:35:43 GMT
-Received: from [10.216.11.8] (10.80.80.8) by nalasex01a.na.qualcomm.com
- (10.47.209.196) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.29; Tue, 23 Aug
- 2022 07:35:37 -0700
-Message-ID: <5346e9c8-847d-d39e-5fe9-fbc393bcd57d@quicinc.com>
-Date:   Tue, 23 Aug 2022 20:05:34 +0530
+        Tue, 23 Aug 2022 12:43:35 -0400
+Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A0BF512421C
+        for <linux-kernel@vger.kernel.org>; Tue, 23 Aug 2022 06:12:18 -0700 (PDT)
+Received: from dggpemm500022.china.huawei.com (unknown [172.30.72.56])
+        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4MBqJz46S7zXdjc;
+        Tue, 23 Aug 2022 21:07:47 +0800 (CST)
+Received: from dggpemm100009.china.huawei.com (7.185.36.113) by
+ dggpemm500022.china.huawei.com (7.185.36.162) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Tue, 23 Aug 2022 21:12:04 +0800
+Received: from [10.174.179.24] (10.174.179.24) by
+ dggpemm100009.china.huawei.com (7.185.36.113) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Tue, 23 Aug 2022 21:12:03 +0800
+Subject: Re: [PATCH -next v2] mm, proc: collect percpu free pages into the
+ free pages
+To:     Andrew Morton <akpm@linux-foundation.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        huang ying <huang.ying.caritas@gmail.com>,
+        Aaron Lu <aaron.lu@intel.com>,
+        Dave Hansen <dave.hansen@intel.com>,
+        "Michal Hocko" <mhocko@suse.com>,
+        Jesper Dangaard Brouer <brouer@redhat.com>,
+        Vlastimil Babka <vbabka@suse.cz>,
+        Kemi Wang <kemi.wang@intel.com>,
+        "Kefeng Wang" <wangkefeng.wang@huawei.com>,
+        <linux-kernel@vger.kernel.org>, <linux-mm@kvack.org>
+References: <20220822023311.909316-1-liushixin2@huawei.com>
+ <20220822033354.952849-1-liushixin2@huawei.com>
+ <20220822141207.24ff7252913a62f80ea55e90@linux-foundation.org>
+ <20220822141309.3b7382db0367b63b6cd72c14@linux-foundation.org>
+From:   Liu Shixin <liushixin2@huawei.com>
+Message-ID: <4687e93d-9245-300e-6193-d5428a76c9b8@huawei.com>
+Date:   Tue, 23 Aug 2022 21:12:03 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:45.0) Gecko/20100101
+ Thunderbird/45.7.1
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.11.0
-Subject: Re: [RESEND v5 3/7] remoteproc: qcom: Add compatible name for SC7280
- ADSP
-Content-Language: en-US
-To:     Stephen Boyd <swboyd@chromium.org>, <agross@kernel.org>,
-        <bgoswami@quicinc.com>, <bjorn.andersson@linaro.org>,
-        <broonie@kernel.org>, <devicetree@vger.kernel.org>,
-        <judyhsiao@chromium.org>, <lgirdwood@gmail.com>,
-        <linux-arm-msm@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <linux-remoteproc@vger.kernel.org>, <perex@perex.cz>,
-        <quic_plai@quicinc.com>, <quic_rohkumar@quicinc.com>,
-        <robh+dt@kernel.org>, <srinivas.kandagatla@linaro.org>,
-        <tiwai@suse.com>
-References: <1661156523-22611-1-git-send-email-quic_srivasam@quicinc.com>
- <1661156523-22611-4-git-send-email-quic_srivasam@quicinc.com>
- <CAE-0n52iLf0R0ovrpzMs0jp_Ty-RsONy0gcUvDsBvCz38R1fWw@mail.gmail.com>
-From:   Srinivasa Rao Mandadapu <quic_srivasam@quicinc.com>
-Organization: Qualcomm
-In-Reply-To: <CAE-0n52iLf0R0ovrpzMs0jp_Ty-RsONy0gcUvDsBvCz38R1fWw@mail.gmail.com>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
+In-Reply-To: <20220822141309.3b7382db0367b63b6cd72c14@linux-foundation.org>
+Content-Type: text/plain; charset="windows-1252"
 Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.80.80.8]
-X-ClientProxiedBy: nasanex01a.na.qualcomm.com (10.52.223.231) To
- nalasex01a.na.qualcomm.com (10.47.209.196)
-X-QCInternal: smtphost
-X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=5800 signatures=585085
-X-Proofpoint-GUID: oT9_wJEsHpKdwh59s5YAJVVVxdKYY8oh
-X-Proofpoint-ORIG-GUID: oT9_wJEsHpKdwh59s5YAJVVVxdKYY8oh
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.895,Hydra:6.0.517,FMLib:17.11.122.1
- definitions=2022-08-23_05,2022-08-22_02,2022-06-22_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 mlxscore=0 lowpriorityscore=0
- priorityscore=1501 phishscore=0 impostorscore=0 clxscore=1015
- malwarescore=0 bulkscore=0 spamscore=0 suspectscore=0 adultscore=0
- mlxlogscore=999 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2207270000 definitions=main-2208230059
+X-Originating-IP: [10.174.179.24]
+X-ClientProxiedBy: dggems706-chm.china.huawei.com (10.3.19.183) To
+ dggpemm100009.china.huawei.com (7.185.36.113)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-
-On 8/23/2022 8:35 AM, Stephen Boyd wrote:
-Thanks for your time Stephen!!!
-> Quoting Srinivasa Rao Mandadapu (2022-08-22 01:21:59)
->> diff --git a/drivers/remoteproc/qcom_q6v5_adsp.c b/drivers/remoteproc/qcom_q6v5_adsp.c
->> index d0b767f..6d409ca 100644
->> --- a/drivers/remoteproc/qcom_q6v5_adsp.c
->> +++ b/drivers/remoteproc/qcom_q6v5_adsp.c
->> @@ -701,6 +701,22 @@ static const struct adsp_pil_data adsp_resource_init = {
->>          },
->>   };
->>
->> +static const struct adsp_pil_data adsp_sc7280_resource_init = {
->> +       .crash_reason_smem = 423,
->> +       .firmware_name = "adsp.mbn",
->> +       .load_state = "adsp",
->> +       .ssr_name = "lpass",
->> +       .sysmon_name = "adsp",
->> +       .ssctl_id = 0x14,
->> +       .is_wpss = false,
-> This can be left out, it's the default.
-Okay. Will remove it and re-spin the patch.
+On 2022/8/23 5:13, Andrew Morton wrote:
+> On Mon, 22 Aug 2022 14:12:07 -0700 Andrew Morton <akpm@linux-foundation.org> wrote:
 >
->> +       .adsp_sandbox_needed = true,
->> +       .auto_boot = true,
->> +       .clk_ids = (const char*[]) {
->> +               "gcc_cfg_noc_lpass", NULL
->> +       },
->> +       .num_clks = 1,
+>> Prevention of races against zone/node hotplug?
+> I meant "cpu/node", of course.
+> .
+Thanks for your advice, but I didn't quite understand what you meant.
+Do you mean that I should use cpus_read_lock() to protect cpu hotplug just like this?
++       cpus_read_lock();
+        for_each_online_cpu(cpu)
+                sum += per_cpu_ptr(zone->per_cpu_pageset, cpu)->count;
++       cpus_read_unlock();
+
+I see there is some areas were not protected by the cpus_{read/write}_lock, so I was confused
+as to whether I should add it.
+
+I want to replace for_each_zone with for_each_populated_zone, what else should I do to protect
+node hotplug.
+
+Thanks.
+
