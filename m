@@ -2,41 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A0E55C32772
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 10:06:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1A0C9C32772
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 10:06:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243886AbiHWKGl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 06:06:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58716 "EHLO
+        id S1352003AbiHWKGu (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 23 Aug 2022 06:06:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44826 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352318AbiHWKBk (ORCPT
+        with ESMTP id S1352334AbiHWKBm (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 06:01:40 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AB2BC82FB8;
-        Tue, 23 Aug 2022 01:49:18 -0700 (PDT)
+        Tue, 23 Aug 2022 06:01:42 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8926177EA5;
+        Tue, 23 Aug 2022 01:49:23 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 59EC9B81BF8;
-        Tue, 23 Aug 2022 08:49:17 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 98111C433C1;
-        Tue, 23 Aug 2022 08:49:15 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 1856F61377;
+        Tue, 23 Aug 2022 08:49:23 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1F909C433C1;
+        Tue, 23 Aug 2022 08:49:21 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661244556;
-        bh=fxlNh0LwhOpWUkF19exROe077tMNe7vdcr/NJnAVD5A=;
+        s=korg; t=1661244562;
+        bh=c6C804I79hfM6elqVFd462FubGbxEZh/S4AomCrJqhU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=zjRrD1TyCzWVQjegqugJ1qb121IBtSnWPQY34ozu9BqmMdSJ8xwCbpWDjZrJcdly+
-         Nq5ksBYHUlo0AnIgxfaTStOueI01Vflzikkj68kaOsep/mDZ3gGXv7VzYvqXzuHcAU
-         9W8cVOfh0MjVVzszVFAE5o+xZOTUcbEP8HeYrlOE=
+        b=LxC+JAkYPIhFul3bhv/tESQasaknuQKPHm8IKqHQg8iW5FeU0q4m2NMl9uyVlVc44
+         +80GiY7hx1ilw8s8DIRKDqln/dxoXpwPfsg6+wU2yLx7eEk442LBaHf6jxAHPqtXNq
+         CenU+sr5Te8SBgZ+Z7Ku86/c4aIjSeUKme4sazd4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org, Al Viro <viro@zeniv.linux.org.uk>,
         Dinh Nguyen <dinguyen@kernel.org>
-Subject: [PATCH 5.15 111/244] nios2: traced syscall does need to check the syscall number
-Date:   Tue, 23 Aug 2022 10:24:30 +0200
-Message-Id: <20220823080102.729748247@linuxfoundation.org>
+Subject: [PATCH 5.15 112/244] nios2: fix syscall restart checks
+Date:   Tue, 23 Aug 2022 10:24:31 +0200
+Message-Id: <20220823080102.759563448@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220823080059.091088642@linuxfoundation.org>
 References: <20220823080059.091088642@linuxfoundation.org>
@@ -50,45 +51,33 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Al Viro <viro@zeniv.linux.org.uk>
 
-commit 25ba820ef36bdbaf9884adeac69b6e1821a7df76 upstream.
+commit 2d631bd58fe0ea3e3350212e23c9aba1fb606514 upstream.
 
-all checks done before letting the tracer modify the register
-state are worthless...
+sys_foo() returns -512 (aka -ERESTARTSYS) => do_signal() sees
+512 in r2 and 1 in r1.
 
-Fixes: 82ed08dd1b0e ("nios2: Exception handling")
+sys_foo() returns 512 => do_signal() sees 512 in r2 and 0 in r1.
+
+The former is restart-worthy; the latter obviously isn't.
+
+Fixes: b53e906d255d ("nios2: Signal handling support")
 Signed-off-by: Al Viro <viro@zeniv.linux.org.uk>
 Signed-off-by: Dinh Nguyen <dinguyen@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/nios2/kernel/entry.S |   11 ++++++++---
- 1 file changed, 8 insertions(+), 3 deletions(-)
+ arch/nios2/kernel/signal.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/arch/nios2/kernel/entry.S
-+++ b/arch/nios2/kernel/entry.S
-@@ -255,9 +255,9 @@ traced_system_call:
- 	ldw	r6, PT_R6(sp)
- 	ldw	r7, PT_R7(sp)
- 
--	/* Fetch the syscall function, we don't need to check the boundaries
--	 * since this is already done.
--	 */
-+	/* Fetch the syscall function. */
-+	movui	r1, __NR_syscalls
-+	bgeu	r2, r1, traced_invsyscall
- 	slli	r1, r2, 2
- 	movhi	r11,%hiadj(sys_call_table)
- 	add	r1, r1, r11
-@@ -287,6 +287,11 @@ end_translate_rc_and_ret2:
- 	RESTORE_SWITCH_STACK
- 	br	ret_from_exception
- 
-+	/* If the syscall number was invalid return ENOSYS */
-+traced_invsyscall:
-+	movi	r2, -ENOSYS
-+	br	translate_rc_and_ret2
-+
- Luser_return:
- 	GET_THREAD_INFO	r11			/* get thread_info pointer */
- 	ldw	r10, TI_FLAGS(r11)		/* get thread_info->flags */
+--- a/arch/nios2/kernel/signal.c
++++ b/arch/nios2/kernel/signal.c
+@@ -242,7 +242,7 @@ static int do_signal(struct pt_regs *reg
+ 	/*
+ 	 * If we were from a system call, check for system call restarting...
+ 	 */
+-	if (regs->orig_r2 >= 0) {
++	if (regs->orig_r2 >= 0 && regs->r1) {
+ 		continue_addr = regs->ea;
+ 		restart_addr = continue_addr - 4;
+ 		retval = regs->r2;
 
 
