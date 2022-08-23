@@ -2,45 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 41FC6C3F6B0
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 11:59:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EDAF0C32793
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 11:59:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358920AbiHWL5o (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 07:57:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34888 "EHLO
+        id S244508AbiHWL5m (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 23 Aug 2022 07:57:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41954 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1358996AbiHWLz4 (ORCPT
+        with ESMTP id S1358919AbiHWLzc (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 07:55:56 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1717567C9D;
-        Tue, 23 Aug 2022 02:33:33 -0700 (PDT)
+        Tue, 23 Aug 2022 07:55:32 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 87C574BD2E;
+        Tue, 23 Aug 2022 02:33:27 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 650EB612D6;
-        Tue, 23 Aug 2022 09:32:54 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6AEC0C433C1;
-        Tue, 23 Aug 2022 09:32:53 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 30A86B81C99;
+        Tue, 23 Aug 2022 09:33:24 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 75FABC433C1;
+        Tue, 23 Aug 2022 09:33:22 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661247173;
-        bh=vuQge0PulIGZ9pyZu2DcvjEEixulXcuj83UwgGzf73s=;
+        s=korg; t=1661247202;
+        bh=alwZg7Pm/vtkDLVFTe2uuR2ES6OCPdj8VDhWPiZKH8Y=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=vB6XHpFxw6rCv4MFBAzPzubCtqGeUNhvayZwI5nKO3vUmc3g0RiM1kmrq9Fj0NZT+
-         EDImSQdW3rK5c1Oa7bFqGVktuUmffiJ8gvCez7PD5/Ix+55aNsggTEtw/MABdAsoD/
-         eMx2ZFeyBx7BxkuzzHBFoYYiQ2r+uIEW+CqwQqvY=
+        b=iDir4a42DAK/i3M5YHgUl9RMDPBKUV2wR0M+S3GNSn2KPJLDaR2ztitE8lS43ENJc
+         2I4WuEmmX7j8Fh3xdytsD4U+scbPMcM4Z1uaBBQCFc+9drR0tTRG7hBDckNgvygsfI
+         L5QfI0jSm6pPD7GGCcSvddcyjEUkHfMMhG0oqhjs=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Grzegorz Siwik <grzegorz.siwik@intel.com>,
-        Jaroslav Pulchart <jaroslav.pulchart@gooddata.com>,
-        Igor Raits <igor@gooddata.com>,
-        Tony Nguyen <anthony.l.nguyen@intel.com>,
-        Gurucharan <gurucharanx.g@intel.com>
-Subject: [PATCH 5.4 342/389] ice: Ignore EEXIST when setting promisc mode
-Date:   Tue, 23 Aug 2022 10:27:00 +0200
-Message-Id: <20220823080129.825300310@linuxfoundation.org>
+        stable@vger.kernel.org, Frank Li <Frank.Li@nxp.com>,
+        Faqiang Zhu <faqiang.zhu@nxp.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.4 350/389] usb: cdns3 fix use-after-free at workaround 2
+Date:   Tue, 23 Aug 2022 10:27:08 +0200
+Message-Id: <20220823080130.162788721@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220823080115.331990024@linuxfoundation.org>
 References: <20220823080115.331990024@linuxfoundation.org>
@@ -52,38 +49,53 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Grzegorz Siwik <grzegorz.siwik@intel.com>
+From: Frank Li <Frank.Li@nxp.com>
 
-commit 11e551a2efa4481bd4f616ab75374a2710b480e9 upstream.
+[ Upstream commit 7d602f30149a117eea260208b1661bc404c21dfd ]
 
-Ignore EEXIST error when setting promiscuous mode.
-This fix is needed because the driver could set promiscuous mode
-when it still has not cleared properly.
-Promiscuous mode could be set only once, so setting it second
-time will be rejected.
+BUG: KFENCE: use-after-free read in __list_del_entry_valid+0x10/0xac
 
-Fixes: 5eda8afd6bcc ("ice: Add support for PF/VF promiscuous mode")
-Signed-off-by: Grzegorz Siwik <grzegorz.siwik@intel.com>
-Link: https://lore.kernel.org/all/CAK8fFZ7m-KR57M_rYX6xZN39K89O=LGooYkKsu6HKt0Bs+x6xQ@mail.gmail.com/
-Tested-by: Jaroslav Pulchart <jaroslav.pulchart@gooddata.com>
-Tested-by: Igor Raits <igor@gooddata.com>
-Tested-by: Gurucharan <gurucharanx.g@intel.com> (A Contingent worker at Intel)
-Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
+cdns3_wa2_remove_old_request()
+{
+	...
+	kfree(priv_req->request.buf);
+	cdns3_gadget_ep_free_request(&priv_ep->endpoint, &priv_req->request);
+	list_del_init(&priv_req->list);
+	^^^ use after free
+	...
+}
+
+cdns3_gadget_ep_free_request() free the space pointed by priv_req,
+but priv_req is used in the following list_del_init().
+
+This patch move list_del_init() before cdns3_gadget_ep_free_request().
+
+Signed-off-by: Frank Li <Frank.Li@nxp.com>
+Signed-off-by: Faqiang Zhu <faqiang.zhu@nxp.com>
+Link: https://lore.kernel.org/r/20220608190430.2814358-1-Frank.Li@nxp.com
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/intel/ice/ice_switch.c |    2 +-
+ drivers/usb/cdns3/gadget.c | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/drivers/net/ethernet/intel/ice/ice_switch.c
-+++ b/drivers/net/ethernet/intel/ice/ice_switch.c
-@@ -2627,7 +2627,7 @@ ice_set_vlan_vsi_promisc(struct ice_hw *
- 		else
- 			status = ice_set_vsi_promisc(hw, vsi_handle,
- 						     promisc_mask, vlan_id);
--		if (status)
-+		if (status && status != -EEXIST)
- 			break;
- 	}
+diff --git a/drivers/usb/cdns3/gadget.c b/drivers/usb/cdns3/gadget.c
+index 296f2ee1b680..a9399f2b3930 100644
+--- a/drivers/usb/cdns3/gadget.c
++++ b/drivers/usb/cdns3/gadget.c
+@@ -549,9 +549,9 @@ static void cdns3_wa2_remove_old_request(struct cdns3_endpoint *priv_ep)
+ 		trace_cdns3_wa2(priv_ep, "removes eldest request");
  
+ 		kfree(priv_req->request.buf);
++		list_del_init(&priv_req->list);
+ 		cdns3_gadget_ep_free_request(&priv_ep->endpoint,
+ 					     &priv_req->request);
+-		list_del_init(&priv_req->list);
+ 		--priv_ep->wa2_counter;
+ 
+ 		if (!chain)
+-- 
+2.35.1
+
 
 
