@@ -2,157 +2,111 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 72A9AC32774
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 08:24:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EFC5DC32774
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 08:24:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243252AbiHWIYB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 04:24:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46472 "EHLO
+        id S243260AbiHWIYG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 23 Aug 2022 04:24:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46562 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242515AbiHWIRf (ORCPT
+        with ESMTP id S242560AbiHWIRz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 04:17:35 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DE9571F2F9;
-        Tue, 23 Aug 2022 01:11:39 -0700 (PDT)
+        Tue, 23 Aug 2022 04:17:55 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0CC1B655C;
+        Tue, 23 Aug 2022 01:11:43 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 9443AB81C29;
-        Tue, 23 Aug 2022 08:11:38 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CA6D9C433B5;
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 7FBF36129B;
+        Tue, 23 Aug 2022 08:11:42 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3B1C7C433C1;
         Tue, 23 Aug 2022 08:11:36 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661242297;
-        bh=rVd4J0guZ65vkhwgCDxawhFODU/bU6NhtmHAr44jMRY=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=dKJxMvch6CSK/dDCpiSqT8+Ni5a5iSMCEaHSl88yS4uipVnsbdkRsyU4ck7crFGW+
-         pRfZu1IVT0WK2KkmTW/XeXfjz9rjK1QiNg5sT/bharbjXcvr09s6kxBwcB7ir0e70D
-         8AMLZdX40o1Y9vvMQVNadegXy0ctLCqgLu7TtXgc=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1661242301;
+        bh=ZMn1wFd6P28w1tT+WxK1KNO2SOwhs16BL7x3iFsoQk0=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=nDj/GuXIV02S+bEtqiVRh31cKYd2KRgbJqbI2xHK6Fro22GKICkJQdRCI8GZU5Yfx
+         +rmwVh+EtTHjIwfJusfxk7xNyZuPuL6MsqLrGEJdEp1S8/w8vCwIa9qOTvH+2Rtrxu
+         1D43pHTzhqyy5+yIGJ90kDGPDg7xi5rdCMfKF+ofRaOdkVnWY1+nRM9SXUa60GWU92
+         btNflJCasnz8Qle5FBlqRVobbWdlpcxaisk/zTZJ/FkllgpaKdiMBNFf9Gudrbp8Gx
+         2KO5FbQwF9aPGpJx1j+EUBRmne2pJ1HPPFOmdRa2MPZLFZSv78iKk5vkdHlT3AbzvH
+         b50Q+R7MKCj/A==
+Date:   Tue, 23 Aug 2022 09:11:32 +0100
+From:   Jean-Philippe Brucker <jpb@kernel.org>
+To:     Saravana Kannan <saravanak@google.com>
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Stephen Boyd <sboyd@kernel.org>,
-        "Steven Rostedt (Google)" <rostedt@goodmis.org>,
-        David Collins <quic_collinsd@quicinc.com>
-Subject: [PATCH 4.9 049/101] spmi: trace: fix stack-out-of-bound access in SPMI tracing functions
-Date:   Tue, 23 Aug 2022 10:03:22 +0200
-Message-Id: <20220823080036.420431808@linuxfoundation.org>
-X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220823080034.579196046@linuxfoundation.org>
-References: <20220823080034.579196046@linuxfoundation.org>
-User-Agent: quilt/0.67
+        "Rafael J. Wysocki" <rafael@kernel.org>,
+        Kevin Hilman <khilman@kernel.org>,
+        Ulf Hansson <ulf.hansson@linaro.org>,
+        Pavel Machek <pavel@ucw.cz>, Len Brown <len.brown@intel.com>,
+        Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
+        Robin Murphy <robin.murphy@arm.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>, Peng Fan <peng.fan@nxp.com>,
+        Luca Weiss <luca.weiss@fairphone.com>,
+        Doug Anderson <dianders@chromium.org>,
+        Colin Foster <colin.foster@in-advantage.com>,
+        Tony Lindgren <tony@atomide.com>,
+        Alexander Stein <alexander.stein@ew.tq-group.com>,
+        Naresh Kamboju <naresh.kamboju@linaro.org>,
+        Geert Uytterhoeven <geert@linux-m68k.org>,
+        kernel-team@android.com, linux-kernel@vger.kernel.org,
+        linux-pm@vger.kernel.org, iommu@lists.linux.dev,
+        netdev@vger.kernel.org
+Subject: Re: [PATCH v2 4/4] Revert "iommu/of: Delete usage of
+ driver_deferred_probe_check_state()"
+Message-ID: <YwSLtPBeOotDSUa8@myrica>
+References: <20220819221616.2107893-1-saravanak@google.com>
+ <20220819221616.2107893-5-saravanak@google.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220819221616.2107893-5-saravanak@google.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: David Collins <quic_collinsd@quicinc.com>
+On Fri, Aug 19, 2022 at 03:16:14PM -0700, Saravana Kannan wrote:
+> This reverts commit b09796d528bbf06e3e10a4a8f78038719da7ebc6.
+> 
+> An issue was reported[1] on the original commit. I'll need to address that
+> before I can delete the use of driver_deferred_probe_check_state().  So,
+> bring it back for now.
+> 
+> [1] - https://lore.kernel.org/lkml/4799738.LvFx2qVVIh@steina-w/
 
-commit 2af28b241eea816e6f7668d1954f15894b45d7e3 upstream.
+https://lore.kernel.org/lkml/Yv+dpeIPvde7oDHi@myrica/
 
-trace_spmi_write_begin() and trace_spmi_read_end() both call
-memcpy() with a length of "len + 1".  This leads to one extra
-byte being read beyond the end of the specified buffer.  Fix
-this out-of-bound memory access by using a length of "len"
-instead.
+> 
+> Fixes: b09796d528bb ("iommu/of: Delete usage of driver_deferred_probe_check_state()")
+> Reported-by: Jean-Philippe Brucker <jpb@kernel.org>
+> Signed-off-by: Saravana Kannan <saravanak@google.com>
 
-Here is a KASAN log showing the issue:
+Tested-by: Jean-Philippe Brucker <jpb@kernel.org>
 
-BUG: KASAN: stack-out-of-bounds in trace_event_raw_event_spmi_read_end+0x1d0/0x234
-Read of size 2 at addr ffffffc0265b7540 by task thermal@2.0-ser/1314
-...
-Call trace:
- dump_backtrace+0x0/0x3e8
- show_stack+0x2c/0x3c
- dump_stack_lvl+0xdc/0x11c
- print_address_description+0x74/0x384
- kasan_report+0x188/0x268
- kasan_check_range+0x270/0x2b0
- memcpy+0x90/0xe8
- trace_event_raw_event_spmi_read_end+0x1d0/0x234
- spmi_read_cmd+0x294/0x3ac
- spmi_ext_register_readl+0x84/0x9c
- regmap_spmi_ext_read+0x144/0x1b0 [regmap_spmi]
- _regmap_raw_read+0x40c/0x754
- regmap_raw_read+0x3a0/0x514
- regmap_bulk_read+0x418/0x494
- adc5_gen3_poll_wait_hs+0xe8/0x1e0 [qcom_spmi_adc5_gen3]
- ...
- __arm64_sys_read+0x4c/0x60
- invoke_syscall+0x80/0x218
- el0_svc_common+0xec/0x1c8
- ...
-
-addr ffffffc0265b7540 is located in stack of task thermal@2.0-ser/1314 at offset 32 in frame:
- adc5_gen3_poll_wait_hs+0x0/0x1e0 [qcom_spmi_adc5_gen3]
-
-this frame has 1 object:
- [32, 33) 'status'
-
-Memory state around the buggy address:
- ffffffc0265b7400: 00 00 00 00 00 00 00 00 00 00 00 00 f1 f1 f1 f1
- ffffffc0265b7480: 04 f3 f3 f3 00 00 00 00 00 00 00 00 00 00 00 00
->ffffffc0265b7500: 00 00 00 00 f1 f1 f1 f1 01 f3 f3 f3 00 00 00 00
-                                           ^
- ffffffc0265b7580: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
- ffffffc0265b7600: f1 f1 f1 f1 01 f2 07 f2 f2 f2 01 f3 00 00 00 00
-==================================================================
-
-Fixes: a9fce374815d ("spmi: add command tracepoints for SPMI")
-Cc: stable@vger.kernel.org
-Reviewed-by: Stephen Boyd <sboyd@kernel.org>
-Acked-by: Steven Rostedt (Google) <rostedt@goodmis.org>
-Signed-off-by: David Collins <quic_collinsd@quicinc.com>
-Link: https://lore.kernel.org/r/20220627235512.2272783-1-quic_collinsd@quicinc.com
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
----
- include/trace/events/spmi.h |   12 ++++++------
- 1 file changed, 6 insertions(+), 6 deletions(-)
-
---- a/include/trace/events/spmi.h
-+++ b/include/trace/events/spmi.h
-@@ -20,15 +20,15 @@ TRACE_EVENT(spmi_write_begin,
- 		__field		( u8,         sid       )
- 		__field		( u16,        addr      )
- 		__field		( u8,         len       )
--		__dynamic_array	( u8,   buf,  len + 1   )
-+		__dynamic_array	( u8,   buf,  len       )
- 	),
- 
- 	TP_fast_assign(
- 		__entry->opcode = opcode;
- 		__entry->sid    = sid;
- 		__entry->addr   = addr;
--		__entry->len    = len + 1;
--		memcpy(__get_dynamic_array(buf), buf, len + 1);
-+		__entry->len    = len;
-+		memcpy(__get_dynamic_array(buf), buf, len);
- 	),
- 
- 	TP_printk("opc=%d sid=%02d addr=0x%04x len=%d buf=0x[%*phD]",
-@@ -91,7 +91,7 @@ TRACE_EVENT(spmi_read_end,
- 		__field		( u16,        addr      )
- 		__field		( int,        ret       )
- 		__field		( u8,         len       )
--		__dynamic_array	( u8,   buf,  len + 1   )
-+		__dynamic_array	( u8,   buf,  len       )
- 	),
- 
- 	TP_fast_assign(
-@@ -99,8 +99,8 @@ TRACE_EVENT(spmi_read_end,
- 		__entry->sid    = sid;
- 		__entry->addr   = addr;
- 		__entry->ret    = ret;
--		__entry->len    = len + 1;
--		memcpy(__get_dynamic_array(buf), buf, len + 1);
-+		__entry->len    = len;
-+		memcpy(__get_dynamic_array(buf), buf, len);
- 	),
- 
- 	TP_printk("opc=%d sid=%02d addr=0x%04x ret=%d len=%02d buf=0x[%*phD]",
-
-
+> ---
+>  drivers/iommu/of_iommu.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+> 
+> diff --git a/drivers/iommu/of_iommu.c b/drivers/iommu/of_iommu.c
+> index 41f4eb005219..5696314ae69e 100644
+> --- a/drivers/iommu/of_iommu.c
+> +++ b/drivers/iommu/of_iommu.c
+> @@ -40,7 +40,7 @@ static int of_iommu_xlate(struct device *dev,
+>  	 * a proper probe-ordering dependency mechanism in future.
+>  	 */
+>  	if (!ops)
+> -		return -ENODEV;
+> +		return driver_deferred_probe_check_state(dev);
+>  
+>  	if (!try_module_get(ops->owner))
+>  		return -ENODEV;
+> -- 
+> 2.37.1.595.g718a3a8f04-goog
+> 
