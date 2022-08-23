@@ -2,44 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 00965C32792
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 09:00:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C3EA6C32772
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 09:00:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241143AbiHWJAF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 05:00:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42066 "EHLO
+        id S1345696AbiHWJAI (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 23 Aug 2022 05:00:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45216 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242738AbiHWI7e (ORCPT
+        with ESMTP id S241411AbiHWI7g (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 04:59:34 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9F08481695;
-        Tue, 23 Aug 2022 01:27:01 -0700 (PDT)
+        Tue, 23 Aug 2022 04:59:36 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A123872861;
+        Tue, 23 Aug 2022 01:26:50 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 5E93761257;
-        Tue, 23 Aug 2022 08:18:12 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 54FFBC433C1;
-        Tue, 23 Aug 2022 08:18:11 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 0726761326;
+        Tue, 23 Aug 2022 08:19:13 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DE79AC433C1;
+        Tue, 23 Aug 2022 08:19:11 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661242691;
-        bh=xe8Uq66NVrhkE+7JA/3WsA5acKqjJEYJNQKoATvDWGk=;
+        s=korg; t=1661242752;
+        bh=Y6ANw5KX4DbdM59Da3Kv2+eYubJ10ZRx8yC/Z07q1iU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Zi4LR1VGx87R70o3De9mvGIvwQ86SRktMXEDXdKNGKid6Qf2f49YUFkpKrptHtXOb
-         GRPb4vJGqC/2lejLcBFJLIEMYSLpfwuSyvXHjpNcvzu5h5VEpWCPNjWlnJzfaJABCD
-         7FdWNN5CQdH/GBuJn8SyTs5LFcYa74eskqiCoK6k=
+        b=CdXpHORVMWKYER3eghs0Z/SK8NAHKYdx+TOy6RzTBpMbQ2hVa8eLVeGPOM06fNley
+         LAxE/3gu8nL8X5Ee7+1st6gar3PxhN9ZbA6lc/uFxPbrOmekU2AnDGFhnuvQc7pCUK
+         +AU4SHk8Z6/rka9tHqlqjlRC7nepfJ0FjKvEzSrM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
-        Rob Herring <robh@kernel.org>,
-        Stephan Gerhold <stephan@gerhold.net>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>
-Subject: [PATCH 5.19 128/365] dt-bindings: arm: qcom: fix Longcheer L8150 compatibles
-Date:   Tue, 23 Aug 2022 10:00:29 +0200
-Message-Id: <20220823080123.538422696@linuxfoundation.org>
+        stable@vger.kernel.org, Pablo Neira Ayuso <pablo@netfilter.org>
+Subject: [PATCH 5.19 189/365] netfilter: nf_tables: use READ_ONCE and WRITE_ONCE for shared generation id access
+Date:   Tue, 23 Aug 2022 10:01:30 +0200
+Message-Id: <20220823080126.128862257@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220823080118.128342613@linuxfoundation.org>
 References: <20220823080118.128342613@linuxfoundation.org>
@@ -51,45 +48,109 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+From: Pablo Neira Ayuso <pablo@netfilter.org>
 
-commit 25d203d0751ca191301bc578ba5d59fa401f1fbf upstream.
+commit 3400278328285a8c2f121904496aff5e7b610a01 upstream.
 
-The MSM8916 Longcheer L8150 uses a fallback in compatible:
+The generation ID is bumped from the commit path while holding the
+mutex, however, netlink dump operations rely on RCU.
 
-  msm8916-longcheer-l8150.dtb: /: compatible: 'oneOf' conditional failed, one must be fixed:
-    ['longcheer,l8150', 'qcom,msm8916-v1-qrd/9-v1', 'qcom,msm8916'] is too long
+This patch also adds missing cb->base_eq initialization in
+nf_tables_dump_set().
 
-Fixes: b72160fa886d ("dt-bindings: qcom: Document bindings for new MSM8916 devices")
-Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Acked-by: Rob Herring <robh@kernel.org>
-Reviewed-by: Stephan Gerhold <stephan@gerhold.net>
-Link: https://lore.kernel.org/r/20220520123252.365762-2-krzysztof.kozlowski@linaro.org
-Signed-off-by: Bjorn Andersson <bjorn.andersson@linaro.org>
+Fixes: 38e029f14a97 ("netfilter: nf_tables: set NLM_F_DUMP_INTR if netlink dumping is stale")
+Signed-off-by: Pablo Neira Ayuso <pablo@netfilter.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- Documentation/devicetree/bindings/arm/qcom.yaml |    6 +++++-
- 1 file changed, 5 insertions(+), 1 deletion(-)
+ net/netfilter/nf_tables_api.c |   20 +++++++++++++-------
+ 1 file changed, 13 insertions(+), 7 deletions(-)
 
---- a/Documentation/devicetree/bindings/arm/qcom.yaml
-+++ b/Documentation/devicetree/bindings/arm/qcom.yaml
-@@ -160,12 +160,16 @@ properties:
-       - items:
-           - enum:
-               - alcatel,idol347
--              - longcheer,l8150
-               - samsung,a3u-eur
-               - samsung,a5u-eur
-           - const: qcom,msm8916
+--- a/net/netfilter/nf_tables_api.c
++++ b/net/netfilter/nf_tables_api.c
+@@ -889,7 +889,7 @@ static int nf_tables_dump_tables(struct
  
-       - items:
-+          - const: longcheer,l8150
-+          - const: qcom,msm8916-v1-qrd/9-v1
-+          - const: qcom,msm8916
+ 	rcu_read_lock();
+ 	nft_net = nft_pernet(net);
+-	cb->seq = nft_net->base_seq;
++	cb->seq = READ_ONCE(nft_net->base_seq);
+ 
+ 	list_for_each_entry_rcu(table, &nft_net->tables, list) {
+ 		if (family != NFPROTO_UNSPEC && family != table->family)
+@@ -1705,7 +1705,7 @@ static int nf_tables_dump_chains(struct
+ 
+ 	rcu_read_lock();
+ 	nft_net = nft_pernet(net);
+-	cb->seq = nft_net->base_seq;
++	cb->seq = READ_ONCE(nft_net->base_seq);
+ 
+ 	list_for_each_entry_rcu(table, &nft_net->tables, list) {
+ 		if (family != NFPROTO_UNSPEC && family != table->family)
+@@ -3149,7 +3149,7 @@ static int nf_tables_dump_rules(struct s
+ 
+ 	rcu_read_lock();
+ 	nft_net = nft_pernet(net);
+-	cb->seq = nft_net->base_seq;
++	cb->seq = READ_ONCE(nft_net->base_seq);
+ 
+ 	list_for_each_entry_rcu(table, &nft_net->tables, list) {
+ 		if (family != NFPROTO_UNSPEC && family != table->family)
+@@ -4133,7 +4133,7 @@ static int nf_tables_dump_sets(struct sk
+ 
+ 	rcu_read_lock();
+ 	nft_net = nft_pernet(net);
+-	cb->seq = nft_net->base_seq;
++	cb->seq = READ_ONCE(nft_net->base_seq);
+ 
+ 	list_for_each_entry_rcu(table, &nft_net->tables, list) {
+ 		if (ctx->family != NFPROTO_UNSPEC &&
+@@ -5061,6 +5061,8 @@ static int nf_tables_dump_set(struct sk_
+ 
+ 	rcu_read_lock();
+ 	nft_net = nft_pernet(net);
++	cb->seq = READ_ONCE(nft_net->base_seq);
 +
-+      - items:
-           - enum:
-               - sony,karin_windy
-               - sony,karin-row
+ 	list_for_each_entry_rcu(table, &nft_net->tables, list) {
+ 		if (dump_ctx->ctx.family != NFPROTO_UNSPEC &&
+ 		    dump_ctx->ctx.family != table->family)
+@@ -6887,7 +6889,7 @@ static int nf_tables_dump_obj(struct sk_
+ 
+ 	rcu_read_lock();
+ 	nft_net = nft_pernet(net);
+-	cb->seq = nft_net->base_seq;
++	cb->seq = READ_ONCE(nft_net->base_seq);
+ 
+ 	list_for_each_entry_rcu(table, &nft_net->tables, list) {
+ 		if (family != NFPROTO_UNSPEC && family != table->family)
+@@ -7819,7 +7821,7 @@ static int nf_tables_dump_flowtable(stru
+ 
+ 	rcu_read_lock();
+ 	nft_net = nft_pernet(net);
+-	cb->seq = nft_net->base_seq;
++	cb->seq = READ_ONCE(nft_net->base_seq);
+ 
+ 	list_for_each_entry_rcu(table, &nft_net->tables, list) {
+ 		if (family != NFPROTO_UNSPEC && family != table->family)
+@@ -8752,6 +8754,7 @@ static int nf_tables_commit(struct net *
+ 	struct nft_trans_elem *te;
+ 	struct nft_chain *chain;
+ 	struct nft_table *table;
++	unsigned int base_seq;
+ 	LIST_HEAD(adl);
+ 	int err;
+ 
+@@ -8801,9 +8804,12 @@ static int nf_tables_commit(struct net *
+ 	 * Bump generation counter, invalidate any dump in progress.
+ 	 * Cannot fail after this point.
+ 	 */
+-	while (++nft_net->base_seq == 0)
++	base_seq = READ_ONCE(nft_net->base_seq);
++	while (++base_seq == 0)
+ 		;
+ 
++	WRITE_ONCE(nft_net->base_seq, base_seq);
++
+ 	/* step 3. Start new generation, rules_gen_X now in use. */
+ 	net->nft.gencursor = nft_gencursor_next(net);
+ 
 
 
