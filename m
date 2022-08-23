@@ -2,96 +2,86 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1E337C32772
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 19:15:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0522FC3F6B0
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 19:15:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232208AbiHWTPu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 15:15:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53114 "EHLO
+        id S233061AbiHWTPz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 23 Aug 2022 15:15:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52710 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231617AbiHWTO4 (ORCPT
+        with ESMTP id S234110AbiHWTPa (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 15:14:56 -0400
-Received: from mail-vk1-xa34.google.com (mail-vk1-xa34.google.com [IPv6:2607:f8b0:4864:20::a34])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C07918E9B7
-        for <linux-kernel@vger.kernel.org>; Tue, 23 Aug 2022 10:52:19 -0700 (PDT)
-Received: by mail-vk1-xa34.google.com with SMTP id i129so7490686vke.3
-        for <linux-kernel@vger.kernel.org>; Tue, 23 Aug 2022 10:52:19 -0700 (PDT)
+        Tue, 23 Aug 2022 15:15:30 -0400
+Received: from mail-qt1-x834.google.com (mail-qt1-x834.google.com [IPv6:2607:f8b0:4864:20::834])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7CE5E78200
+        for <linux-kernel@vger.kernel.org>; Tue, 23 Aug 2022 10:52:53 -0700 (PDT)
+Received: by mail-qt1-x834.google.com with SMTP id g14so1408756qto.11
+        for <linux-kernel@vger.kernel.org>; Tue, 23 Aug 2022 10:52:53 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
+        d=chromium.org; s=google;
         h=cc:to:subject:message-id:date:from:in-reply-to:references
          :mime-version:from:to:cc;
-        bh=Es/SKRV3OFmw44FXdjOkfiW1qF34GTyugA5yXeHJg1o=;
-        b=Htyr6zgvLeb7VOm7M8YiX0MsuKqOQFg/1Dp9MRFHsmMgRGKEd9WwyKRrcHeLFHDm29
-         nM/bfzgL5k3eFrWzgPUgctn35VeUeDiJtJePnx7M8C0hWVKT2REkwMdmxOUxw1i9Lfw/
-         CbaaQ7uMsAT/X0Ph7VPdpGckzFqaPwgU378K5NGCsUHDagyqlzkGONXRTiXCOcBGYWCI
-         q+YsgKQhl5xhXQB8Pc+6yWmSx4zaOylSieaKP7lpCxr22IPB5+DWeJotUqS+aEZLUsRo
-         lVTqqaXDT5t9QEmcI+bIRPwSAPgzInt39jLGTIsGH1dQuSP7u56N7t5qOqn2Fr4w4b5y
-         /Ucw==
+        bh=aVY44zUJCCDQ7+jE7lahWZfCJK6yRD2rgu0a7TJeScs=;
+        b=QPGtAhAC9IPHz4YOehFybYLcoAHltpwZeYqPHM0Aef8Vz+ZD765VxYLhu6SP3ggXE+
+         sgo+WBPoZVhj0Xuo4AvreWK6N77yPPSw2kS68dqP1X+JgbttRrQ7XcTBVuZ29H2ajhqb
+         uZ7q4rSRSjBMa+uuLEWw224WUWt1jLNhjcC4g=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=cc:to:subject:message-id:date:from:in-reply-to:references
          :mime-version:x-gm-message-state:from:to:cc;
-        bh=Es/SKRV3OFmw44FXdjOkfiW1qF34GTyugA5yXeHJg1o=;
-        b=QFyHiHkHZHroWyVZHbD6BcDbtYP90ixQRvuGyS68ggSEZMIxdrgOuBNI+KOnNpb6Cs
-         p6jNhJoI4tzW3bLjd+L8m+zjjel3E3/TXh0Hfug4TP/Bp/QghwEN9vtygOMRaIEFIjjw
-         ozuKKkkYAJ+GTZTqF6LE4EHkU7OZAAHE2fBWY2/rUfdp5D4uAxReNujmiSjTJhET0Isy
-         NQe5zvpsRwTfZ5NFXwgv8FAmsrzvMvezaWnuQpA4C5PUY9n1bveLNR+YXga3KrfyltEL
-         BUIM+UVsN4i6q+bQG8Txw7ERtJdgPG044bc85LvTIOJYbton+XnLOBvmyJ9l9niKtKyK
-         kW1g==
-X-Gm-Message-State: ACgBeo2CA7nI/2dA9zz43KddRcpIf+FiOM9wgUV7DNqxUagAvQJdq4Pn
-        m7zhYyofcenjT5b78LaR9Uk+dMeadziq8NCe9dJnPg==
-X-Google-Smtp-Source: AA6agR5LT5c2oH4HlSHea9+vMd6hW5j0wL9NLrJYmoLqS7f6O+74rga8DGg+9ywWJM7NvmxoN1meBCLo0cewOr+i/3A=
-X-Received: by 2002:a1f:9b07:0:b0:378:7c48:c6c with SMTP id
- d7-20020a1f9b07000000b003787c480c6cmr9890448vke.32.1661277112758; Tue, 23 Aug
- 2022 10:51:52 -0700 (PDT)
+        bh=aVY44zUJCCDQ7+jE7lahWZfCJK6yRD2rgu0a7TJeScs=;
+        b=VaAaD5bieWSdia42V4dehNHiCVXgu1PgnpBRwy3Yx1fBCkVCwAxfLvoZm3KZbqSNik
+         IaZrJzCYAs5SCtSdF3EcKQpg7f4KrX+xGRlrj6NtNBpnHIYUk4M7JCOds83+5N50q4zu
+         JbBYsxr0vuljZZ0cB4LIjudVgOkD+J6h6w4B+hSXCtSMvJ3dtRsOBOhIPY6Q9plyfl0Z
+         jUkPtnnDHGyQQDCZBi6Bq0wXXMSeQrzkesv82OiReY23KIR4oEPWgnsUqaru7f2r9Il/
+         aFuQYKhIqMnodzx6AUuRgc2KxSDy/vVkbeBmHzfyYNaD73MnL1352ZbbtGB0yRqrY4rf
+         8l0Q==
+X-Gm-Message-State: ACgBeo1ojiW4N09ZzhU8G/ODJKl6BlvAZ2v1WOKJUQSvyHrQtGlJrBjZ
+        MPYzli9satTG47MECmjS/YPyEjRz/LVnFkVfk8mBUQ==
+X-Google-Smtp-Source: AA6agR5k2ANBaD6tQI8kPLr5fMj3MFS9ARNHhCcTviM5G2mWb7zBc16KvcPvRdNRxlf/qtdj8rA/YTXLchgXYZpx/Cw=
+X-Received: by 2002:a05:622a:15d6:b0:344:6a92:d8ca with SMTP id
+ d22-20020a05622a15d600b003446a92d8camr20589533qty.540.1661277171274; Tue, 23
+ Aug 2022 10:52:51 -0700 (PDT)
 MIME-Version: 1.0
-References: <20220823080118.128342613@linuxfoundation.org> <20220823080131.532813281@linuxfoundation.org>
- <c49d3b2b-9f5a-4257-9085-f7ac107cff40@oracle.com>
-In-Reply-To: <c49d3b2b-9f5a-4257-9085-f7ac107cff40@oracle.com>
-From:   Yu Zhao <yuzhao@google.com>
-Date:   Tue, 23 Aug 2022 11:51:16 -0600
-Message-ID: <CAOUHufagA1x4jyjH9Q0RX65fwF3SyYHUTkNnB0S_t-2GqbiC2A@mail.gmail.com>
-Subject: Re: [PATCH 5.19 319/365] swiotlb: panic if nslabs is too small
-To:     Dongli Zhang <dongli.zhang@oracle.com>
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Christoph Hellwig <hch@lst.de>,
-        Robin Murphy <robin.murphy@arm.com>,
-        stable <stable@vger.kernel.org>, Sasha Levin <sashal@kernel.org>,
-        linux-kernel <linux-kernel@vger.kernel.org>,
-        iommu@lists.linux.dev
+References: <20220819190807.1275937-1-pmalani@chromium.org>
+ <20220819190807.1275937-4-pmalani@chromium.org> <YwRa/QxA/RRtxU3P@google.com> <YwSNCFt48Q9Eo02I@kuha.fi.intel.com>
+In-Reply-To: <YwSNCFt48Q9Eo02I@kuha.fi.intel.com>
+From:   Prashant Malani <pmalani@chromium.org>
+Date:   Tue, 23 Aug 2022 10:52:39 -0700
+Message-ID: <CACeCKae8YYQUk0dKKbuq-S-3D4=rPFHyjwgK7b55q_T=u9QjLw@mail.gmail.com>
+Subject: Re: [PATCH 3/4] platform/chrome: cros_ec_typec: Stash port driver info
+To:     Heikki Krogerus <heikki.krogerus@linux.intel.com>
+Cc:     Tzung-Bi Shih <tzungbi@kernel.org>, linux-kernel@vger.kernel.org,
+        chrome-platform@lists.linux.dev, bleung@chromium.org,
+        Enric Balletbo i Serra <enric.balletbo@collabora.com>,
+        Guenter Roeck <groeck@chromium.org>
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Aug 23, 2022 at 11:25 AM Dongli Zhang <dongli.zhang@oracle.com> wrote:
+Thanks for the reviews folks.
+
+On Tue, Aug 23, 2022 at 1:17 AM Heikki Krogerus
+<heikki.krogerus@linux.intel.com> wrote:
 >
-> Adding Robin, Yu and swiotlb list.
-
-Thanks.
-
-> There is an on-going discussion whether to revert this patch, because it breaks
-> a corner case in MIPS
-
-I wouldn't call it a corner case. Cavium Octeon is the major platform
-we use to test Debian MIPS ports [1], and 4 out of 5 best-selling
-Wi-Fi routers are MIPS-based [2].
-
-[1] https://wiki.debian.org/MIPSPort
-[2] https://www.amazon.com/bestsellers/pc/300189
-
-> when many kernel CONFIGs are not enabled (related to PCI
-> and device). As a result, MIPS pre-allocates only PAGE_SIZE buffer as swiotlb.
+> On Tue, Aug 23, 2022 at 04:43:41AM +0000, Tzung-Bi Shih wrote:
+> > On Fri, Aug 19, 2022 at 07:08:04PM +0000, Prashant Malani wrote:
+> > > Stash port number and a pointer to the driver-specific struct in the
+> > > local Type-C port struct.
+> > >
+> > > These can be useful to the port driver to figure out how to communicate
+> > > with the ChromeOS EC when an altmode driver related callback is invoked
+> > > from the Type-C class code.
+> >
+> > The patch looks good to me.  But I would suggest to send it in later series
+> > that uses the driver-specific struct (e.g. in altmode driver related callbacks)
+> > to make the usage clear.
 >
-> https://lore.kernel.org/all/20220820012031.1285979-1-yuzhao@google.com/
->
-> However, the core idea of the patch is to panic on purpose if the swiotlb is
-> configured with <1MB memory, in order to sync with the remap failure handler in
-> swiotlb_init_remap().
->
-> Therefore, I am waiting for suggestion from Christoph whether (1) to revert this
-> patch, or (2) enforce the restriction to disallow <1MB allocation.
+> I agree.
 
-There are other archs (arm, ppc, riscv, s390, etc.) that call
-swiotlb_init(). Have you verified them all?
+Ok. I will resend this along with the alt mode series.
+
+BR,
+
+-Prashant
