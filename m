@@ -2,48 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1E963C32772
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 10:09:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 82E93C32772
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 10:09:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352799AbiHWKI5 (ORCPT
+        id S1352307AbiHWKJD (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 06:08:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45054 "EHLO
+        Tue, 23 Aug 2022 06:09:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44114 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352608AbiHWKCM (ORCPT
+        with ESMTP id S1352614AbiHWKCM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 23 Aug 2022 06:02:12 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DD3A8481E5;
-        Tue, 23 Aug 2022 01:50:12 -0700 (PDT)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 81061A2615;
+        Tue, 23 Aug 2022 01:50:14 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 3892DB81BF8;
-        Tue, 23 Aug 2022 08:50:11 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6E49CC433C1;
-        Tue, 23 Aug 2022 08:50:09 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 858A661499;
+        Tue, 23 Aug 2022 08:50:13 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 908C3C433D6;
+        Tue, 23 Aug 2022 08:50:12 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661244609;
-        bh=aBpW8P6JAzg18R0ex/FMrFPmZRwmlbCx0SvikDrfELc=;
+        s=korg; t=1661244613;
+        bh=Sx7YHlC+iMKeMwWYo50W0TgzSYAvSksJ9vsSXpoXKBc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=pSuosgHa4tngWMaHWBjNnp/QMZ92ygjD/r8O+PSB25eWEjDZK75lxthvd0ibOF1VM
-         MTSmFQSao6MJyoVY23ZEew4wDZHNWMXGWLcmLJVhHlQbagf5PrIlVqi6YqKZtQamD8
-         etq5DxsS+EXU77ElmbIgH/ZnPVRJu+7bN+2OnKmM=
+        b=ghHvpV5gkn4qrhyl9Y1cgwNxWrw2H/H/w2GiTfJHF3pXU1/5ELcQ6euhh9tdlplEu
+         nOeg7ajiMZlLWKhKbNyA/ecWkILoam8zd3EyJxpvLorGhsWsC60mu0ZWoCve6YPhuL
+         cg4c2pzCL+NZkUTTPp92L7fOWA7ga9hrEK531ksQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Zhenpeng Lin <zplin@u.northwestern.edu>,
-        Thadeu Lima de Souza Cascardo <cascardo@canonical.com>,
-        Kamal Mostafa <kamal@canonical.com>,
-        Jamal Hadi Salim <jhs@mojatatu.com>,
-        Jakub Kicinski <kuba@kernel.org>
-Subject: [PATCH 4.14 164/229] net_sched: cls_route: remove from list when handle is 0
-Date:   Tue, 23 Aug 2022 10:25:25 +0200
-Message-Id: <20220823080059.527782547@linuxfoundation.org>
+        stable@vger.kernel.org, Pablo Neira Ayuso <pablo@netfilter.org>
+Subject: [PATCH 5.15 123/244] netfilter: nf_tables: use READ_ONCE and WRITE_ONCE for shared generation id access
+Date:   Tue, 23 Aug 2022 10:24:42 +0200
+Message-Id: <20220823080103.171945337@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220823080053.202747790@linuxfoundation.org>
-References: <20220823080053.202747790@linuxfoundation.org>
+In-Reply-To: <20220823080059.091088642@linuxfoundation.org>
+References: <20220823080059.091088642@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -52,45 +48,109 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Thadeu Lima de Souza Cascardo <cascardo@canonical.com>
+From: Pablo Neira Ayuso <pablo@netfilter.org>
 
-commit 9ad36309e2719a884f946678e0296be10f0bb4c1 upstream.
+commit 3400278328285a8c2f121904496aff5e7b610a01 upstream.
 
-When a route filter is replaced and the old filter has a 0 handle, the old
-one won't be removed from the hashtable, while it will still be freed.
+The generation ID is bumped from the commit path while holding the
+mutex, however, netlink dump operations rely on RCU.
 
-The test was there since before commit 1109c00547fc ("net: sched: RCU
-cls_route"), when a new filter was not allocated when there was an old one.
-The old filter was reused and the reinserting would only be necessary if an
-old filter was replaced. That was still wrong for the same case where the
-old handle was 0.
+This patch also adds missing cb->base_eq initialization in
+nf_tables_dump_set().
 
-Remove the old filter from the list independently from its handle value.
-
-This fixes CVE-2022-2588, also reported as ZDI-CAN-17440.
-
-Reported-by: Zhenpeng Lin <zplin@u.northwestern.edu>
-Signed-off-by: Thadeu Lima de Souza Cascardo <cascardo@canonical.com>
-Reviewed-by: Kamal Mostafa <kamal@canonical.com>
-Cc: <stable@vger.kernel.org>
-Acked-by: Jamal Hadi Salim <jhs@mojatatu.com>
-Link: https://lore.kernel.org/r/20220809170518.164662-1-cascardo@canonical.com
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Fixes: 38e029f14a97 ("netfilter: nf_tables: set NLM_F_DUMP_INTR if netlink dumping is stale")
+Signed-off-by: Pablo Neira Ayuso <pablo@netfilter.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- net/sched/cls_route.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ net/netfilter/nf_tables_api.c |   20 +++++++++++++-------
+ 1 file changed, 13 insertions(+), 7 deletions(-)
 
---- a/net/sched/cls_route.c
-+++ b/net/sched/cls_route.c
-@@ -531,7 +531,7 @@ static int route4_change(struct net *net
- 	rcu_assign_pointer(f->next, f1);
- 	rcu_assign_pointer(*fp, f);
+--- a/net/netfilter/nf_tables_api.c
++++ b/net/netfilter/nf_tables_api.c
+@@ -837,7 +837,7 @@ static int nf_tables_dump_tables(struct
  
--	if (fold && fold->handle && f->handle != fold->handle) {
-+	if (fold) {
- 		th = to_hash(fold->handle);
- 		h = from_hash(fold->handle >> 16);
- 		b = rtnl_dereference(head->table[th]);
+ 	rcu_read_lock();
+ 	nft_net = nft_pernet(net);
+-	cb->seq = nft_net->base_seq;
++	cb->seq = READ_ONCE(nft_net->base_seq);
+ 
+ 	list_for_each_entry_rcu(table, &nft_net->tables, list) {
+ 		if (family != NFPROTO_UNSPEC && family != table->family)
+@@ -1626,7 +1626,7 @@ static int nf_tables_dump_chains(struct
+ 
+ 	rcu_read_lock();
+ 	nft_net = nft_pernet(net);
+-	cb->seq = nft_net->base_seq;
++	cb->seq = READ_ONCE(nft_net->base_seq);
+ 
+ 	list_for_each_entry_rcu(table, &nft_net->tables, list) {
+ 		if (family != NFPROTO_UNSPEC && family != table->family)
+@@ -3054,7 +3054,7 @@ static int nf_tables_dump_rules(struct s
+ 
+ 	rcu_read_lock();
+ 	nft_net = nft_pernet(net);
+-	cb->seq = nft_net->base_seq;
++	cb->seq = READ_ONCE(nft_net->base_seq);
+ 
+ 	list_for_each_entry_rcu(table, &nft_net->tables, list) {
+ 		if (family != NFPROTO_UNSPEC && family != table->family)
+@@ -4036,7 +4036,7 @@ static int nf_tables_dump_sets(struct sk
+ 
+ 	rcu_read_lock();
+ 	nft_net = nft_pernet(net);
+-	cb->seq = nft_net->base_seq;
++	cb->seq = READ_ONCE(nft_net->base_seq);
+ 
+ 	list_for_each_entry_rcu(table, &nft_net->tables, list) {
+ 		if (ctx->family != NFPROTO_UNSPEC &&
+@@ -4964,6 +4964,8 @@ static int nf_tables_dump_set(struct sk_
+ 
+ 	rcu_read_lock();
+ 	nft_net = nft_pernet(net);
++	cb->seq = READ_ONCE(nft_net->base_seq);
++
+ 	list_for_each_entry_rcu(table, &nft_net->tables, list) {
+ 		if (dump_ctx->ctx.family != NFPROTO_UNSPEC &&
+ 		    dump_ctx->ctx.family != table->family)
+@@ -6796,7 +6798,7 @@ static int nf_tables_dump_obj(struct sk_
+ 
+ 	rcu_read_lock();
+ 	nft_net = nft_pernet(net);
+-	cb->seq = nft_net->base_seq;
++	cb->seq = READ_ONCE(nft_net->base_seq);
+ 
+ 	list_for_each_entry_rcu(table, &nft_net->tables, list) {
+ 		if (family != NFPROTO_UNSPEC && family != table->family)
+@@ -7728,7 +7730,7 @@ static int nf_tables_dump_flowtable(stru
+ 
+ 	rcu_read_lock();
+ 	nft_net = nft_pernet(net);
+-	cb->seq = nft_net->base_seq;
++	cb->seq = READ_ONCE(nft_net->base_seq);
+ 
+ 	list_for_each_entry_rcu(table, &nft_net->tables, list) {
+ 		if (family != NFPROTO_UNSPEC && family != table->family)
+@@ -8612,6 +8614,7 @@ static int nf_tables_commit(struct net *
+ 	struct nft_trans_elem *te;
+ 	struct nft_chain *chain;
+ 	struct nft_table *table;
++	unsigned int base_seq;
+ 	LIST_HEAD(adl);
+ 	int err;
+ 
+@@ -8661,9 +8664,12 @@ static int nf_tables_commit(struct net *
+ 	 * Bump generation counter, invalidate any dump in progress.
+ 	 * Cannot fail after this point.
+ 	 */
+-	while (++nft_net->base_seq == 0)
++	base_seq = READ_ONCE(nft_net->base_seq);
++	while (++base_seq == 0)
+ 		;
+ 
++	WRITE_ONCE(nft_net->base_seq, base_seq);
++
+ 	/* step 3. Start new generation, rules_gen_X now in use. */
+ 	net->nft.gencursor = nft_gencursor_next(net);
+ 
 
 
