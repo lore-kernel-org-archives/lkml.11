@@ -2,43 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 847E2C32774
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 11:56:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0E9BBC38159
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 11:56:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358901AbiHWLz0 (ORCPT
+        id S1359083AbiHWL4J (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 07:55:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56904 "EHLO
+        Tue, 23 Aug 2022 07:56:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35998 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1359246AbiHWLwR (ORCPT
+        with ESMTP id S1358642AbiHWLwc (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 07:52:17 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1C41BD51D4;
-        Tue, 23 Aug 2022 02:32:47 -0700 (PDT)
+        Tue, 23 Aug 2022 07:52:32 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 38BAED5980;
+        Tue, 23 Aug 2022 02:32:59 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id D5AFE612D6;
-        Tue, 23 Aug 2022 09:32:32 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A940CC4314C;
-        Tue, 23 Aug 2022 09:32:31 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 92FC9B8105C;
+        Tue, 23 Aug 2022 09:32:39 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CC60DC433D6;
+        Tue, 23 Aug 2022 09:32:37 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661247152;
-        bh=N6Hrsh66fIpJqgREzVXpH3vUpho0BglNX6qFgtggWPg=;
+        s=korg; t=1661247158;
+        bh=+dGsXXUzWfY49oCGU7uvrd9pRam1ngxeyH+kljj5MNg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ku3aHorX/Yjwfwlk+4DR79/3Za8ZgtrWuA2vhJYJuuU31CQwP4OJ+CQEu3PwHGDG9
-         tpdjngrPJ/ZUZcscnQnzZTVk1h34uuNar+FjfEYt8v5s71LoVY/BA7eS1xSVkpkWAv
-         Z48DolEI8cFg/amydj0qUUTbOwiB415n8n/GWNjI=
+        b=0rIvDi114LHl+W9DriSHMHiZWB/1f/QalfsE4MDbUIz/qWIIxhbKG0PvboCutSE2v
+         5+bzGqEIx/JOvHtvzFqmwuiJILGpo9HIPJ8D6Ibvb6VwzC6UFGtHhSWbmb08ke5n0r
+         SB05+1/1pL9/Db/YtTn8qXOxkzu2jrFwWPgSjtuE=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Chen Lin <chen.lin5@zte.com.cn>,
-        Ioana Ciornei <ioana.ciornei@nxp.com>,
-        Jakub Kicinski <kuba@kernel.org>
-Subject: [PATCH 5.4 327/389] dpaa2-eth: trace the allocated address instead of page struct
-Date:   Tue, 23 Aug 2022 10:26:45 +0200
-Message-Id: <20220823080129.174178043@linuxfoundation.org>
+        stable@vger.kernel.org, Pablo Neira Ayuso <pablo@netfilter.org>
+Subject: [PATCH 5.4 337/389] netfilter: nf_tables: really skip inactive sets when allocating name
+Date:   Tue, 23 Aug 2022 10:26:55 +0200
+Message-Id: <20220823080129.597683392@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220823080115.331990024@linuxfoundation.org>
 References: <20220823080115.331990024@linuxfoundation.org>
@@ -50,34 +48,30 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Chen Lin <chen45464546@163.com>
+From: Pablo Neira Ayuso <pablo@netfilter.org>
 
-commit e34f49348f8b7a53205b6f77707a3a6a40cf420b upstream.
+commit 271c5ca826e0c3c53e0eb4032f8eaedea1ee391c upstream.
 
-We should trace the allocated address instead of page struct.
+While looping to build the bitmap of used anonymous set names, check the
+current set in the iteration, instead of the one that is being created.
 
-Fixes: 27c874867c4e ("dpaa2-eth: Use a single page per Rx buffer")
-Signed-off-by: Chen Lin <chen.lin5@zte.com.cn>
-Reviewed-by: Ioana Ciornei <ioana.ciornei@nxp.com>
-Link: https://lore.kernel.org/r/20220811151651.3327-1-chen45464546@163.com
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Fixes: 37a9cc525525 ("netfilter: nf_tables: add generation mask to sets")
+Signed-off-by: Pablo Neira Ayuso <pablo@netfilter.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.c |    4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ net/netfilter/nf_tables_api.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.c
-+++ b/drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.c
-@@ -971,8 +971,8 @@ static int add_bufs(struct dpaa2_eth_pri
- 		buf_array[i] = addr;
+--- a/net/netfilter/nf_tables_api.c
++++ b/net/netfilter/nf_tables_api.c
+@@ -3253,7 +3253,7 @@ cont:
+ 		list_for_each_entry(i, &ctx->table->sets, list) {
+ 			int tmp;
  
- 		/* tracing point */
--		trace_dpaa2_eth_buf_seed(priv->net_dev,
--					 page, DPAA2_ETH_RX_BUF_RAW_SIZE,
-+		trace_dpaa2_eth_buf_seed(priv->net_dev, page_address(page),
-+					 DPAA2_ETH_RX_BUF_RAW_SIZE,
- 					 addr, priv->rx_buf_size,
- 					 bpid);
- 	}
+-			if (!nft_is_active_next(ctx->net, set))
++			if (!nft_is_active_next(ctx->net, i))
+ 				continue;
+ 			if (!sscanf(i->name, name, &tmp))
+ 				continue;
 
 
