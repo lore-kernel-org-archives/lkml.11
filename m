@@ -2,87 +2,109 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D072AC32772
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 08:37:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 28E1AC32772
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 08:37:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345215AbiHWIhk (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 04:37:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45594 "EHLO
+        id S240795AbiHWIhy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 23 Aug 2022 04:37:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46362 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345385AbiHWIfk (ORCPT
+        with ESMTP id S1346182AbiHWIgA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 04:35:40 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 22FBE75FC1;
-        Tue, 23 Aug 2022 01:16:46 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 4117A611DD;
-        Tue, 23 Aug 2022 08:16:28 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4B27BC433C1;
-        Tue, 23 Aug 2022 08:16:27 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661242587;
-        bh=1e9KjvU5ZaXcqUBiFyeUVgiokV8izTmy6Xit8Plxk3w=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=gM+ddHL5cqH9CtBH9nBV/0oUKT+0kndozH0Ftf+z0NFXpe9VPNiGStB6jiZ0boXMF
-         vPhBBz/cJGtkNeEo5L05Wc5yniLBpxi86tHEOgxAY9w6sMerg9f/ZghE7mKzd+gUFA
-         rq0AoVDA4LaqAvynV0VAPhx1ELasfYD74VNEnvyQ=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jacky Bai <ping.bai@nxp.com>,
-        Peng Fan <peng.fan@nxp.com>, Abel Vesa <abel.vesa@linaro.org>
-Subject: [PATCH 5.19 141/365] clk: imx93: Correct the edma1s parent clock
-Date:   Tue, 23 Aug 2022 10:00:42 +0200
-Message-Id: <20220823080124.126432044@linuxfoundation.org>
-X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220823080118.128342613@linuxfoundation.org>
-References: <20220823080118.128342613@linuxfoundation.org>
-User-Agent: quilt/0.67
+        Tue, 23 Aug 2022 04:36:00 -0400
+Received: from mail-lj1-x232.google.com (mail-lj1-x232.google.com [IPv6:2a00:1450:4864:20::232])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AF891760FE
+        for <linux-kernel@vger.kernel.org>; Tue, 23 Aug 2022 01:17:05 -0700 (PDT)
+Received: by mail-lj1-x232.google.com with SMTP id l19so9645874ljg.8
+        for <linux-kernel@vger.kernel.org>; Tue, 23 Aug 2022 01:17:04 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=openvz-org.20210112.gappssmtp.com; s=20210112;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc;
+        bh=dsUb3JwxKrpGEtwaM0xXt8nmsJshMrpryqMcaqMUxgw=;
+        b=HVGb4rTve0Fn0XJnLuQnerqws3m5Uhfk3U25WThW/5EA2sh13xN47kcg6Kb0M0oDOd
+         9uV1jUMBYfese4AM4viw6rZp9A7dtiq+5cYAc8rkGxkcuECk2C04awFUvG7TcWNfpl5H
+         vYBBxcx8pcmw7RkgdzctvGuCdMGJeyTT23ZCaJ9m/iA4/MLiL8J4ohtX7iQByuNsULCg
+         GlTdQYgiScAhgclk132QhLpCCJJnI+2bWqFQSjPTVBQgIS9UxJ+6JEMIQdLw/yrlUMt5
+         LfRW+2FL9L/3LbTujvlPjCxbQ7t6VvdDZ5YDayNVICak4OiAHEewMAL7QAkAlcINZiw2
+         /h8w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc;
+        bh=dsUb3JwxKrpGEtwaM0xXt8nmsJshMrpryqMcaqMUxgw=;
+        b=uIahdYlrnIB/Fp2Vb61nWf9qihr3jpisKCGEalFZFFziS90oSsdb10Zpv2bTqlae+b
+         L75kYsZLc5pS3cPFttXNGoGhi0IZITHl0nLyyrJ5jdoUPrjs/WQUKIBmZQBzQbHCtURr
+         zDopL+5H9XQvKz8HdWtW6f1g3HNCrqR+AuVNhI+Mg3gmIsoj0zotBUVbDOWH4Ei/5Kg4
+         HLqNrPERRtmAtOYy7Z+ML8h9Uy8TUH8wiUAYcTXQSjteiCi9YgInQNqQHQ+DYyFkSkN/
+         uYlyjg+776tEs3KY7/1rj/oweWPsGvx/8ogNM5VcOXx74BDx08dkX4qz0bQbVDmDGVkx
+         uSzg==
+X-Gm-Message-State: ACgBeo0uuOvlaDGHt4yLwdk+++E9/4gtNDgHFqlKgcBZXS4yGwaMuQlJ
+        RyzUP/8oOjlSDbCq6vp3FRO+0g==
+X-Google-Smtp-Source: AA6agR79ZeQOdFEdVULVnemohBGH9LmWT7OumoXb1UHf8vB7YnOku6VNElwDzXeWV5YXEmxTiLfvhw==
+X-Received: by 2002:a2e:a7d6:0:b0:261:caab:a952 with SMTP id x22-20020a2ea7d6000000b00261caaba952mr2985133ljp.425.1661242622922;
+        Tue, 23 Aug 2022 01:17:02 -0700 (PDT)
+Received: from [192.168.1.65] ([46.188.121.143])
+        by smtp.gmail.com with ESMTPSA id s10-20020a056512314a00b00492e36cb723sm1057328lfi.179.2022.08.23.01.17.01
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 23 Aug 2022 01:17:02 -0700 (PDT)
+Message-ID: <fba5dccb-2549-30fe-5d65-8668aebd3811@openvz.org>
+Date:   Tue, 23 Aug 2022 11:17:01 +0300
 MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.11.0
+Subject: Re: [RFC PATCH] memcg: adjust memcg used to charge for new
+ simple_xattrs objects
+Content-Language: en-US
+To:     =?UTF-8?Q?Michal_Koutn=c3=bd?= <mkoutny@suse.com>
+Cc:     Roman Gushchin <roman.gushchin@linux.dev>, tj@kernel.org,
+        gregkh@linuxfoundation.org, hannes@cmpxchg.org, kernel@openvz.org,
+        linux-kernel@vger.kernel.org, mhocko@suse.com, shakeelb@google.com,
+        songmuchun@bytedance.com, viro@zeniv.linux.org.uk,
+        Christian Brauner <brauner@kernel.org>
+References: <62188f37-f816-08e9-cdd5-8df23131746d@openvz.org>
+ <f58bd7c8-0053-316c-db06-ced13ffcf867@openvz.org>
+ <20220818122743.GB19175@blackbody.suse.cz>
+From:   Vasily Averin <vvs@openvz.org>
+In-Reply-To: <20220818122743.GB19175@blackbody.suse.cz>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jacky Bai <ping.bai@nxp.com>
+On 8/18/22 15:27, Michal Koutný wrote:
+> On Thu, Aug 18, 2022 at 12:10:45PM +0300, Vasily Averin <vvs@openvz.org> wrote:
+>> sys_set[f]xattr uses simple_xattr infrastructure to create a new
+>> extended attribute for in-memory file systems like sysfs and tmpfs.
+>> Number and size of allocated objects are controlled by user space,
+>> they are always living in memory and its lifetime is indefinitely long.
+>> Therefore this memory should be properly accounted.
+>>
+>> By default new memory is accounted to memcg of creator process.
+> 
+> despite objects aren't bound to this process lifetime.
+> 
+> (I think this was the main argument for this approach and should be in
+> the commit message then.)
 
-commit ebb4f1eb9360036be5ea70de82c5703ca0e64d43 upstream.
+Thank you for the remark, I'll update patch description in the next version
 
-For EDMA1 in AONMIX, its parent clock should be from cm33_root,
-so Correct it.
+>> As a result, neighboring xattrs of the same inode can be charged to
+>> different memcgs. This looks unexpected and makes hard the
+>> investigation of the memcg accounting issues.
+>>
+>> This patch adjust memcg used for such allocations. For kernfs
+>> it gives memcg from kernfs node, for shmem -- from shmem_info.
+>> This allows to cahrge all inode-sepcific objects to the same
+>> memory cgroup.
+> 
+> IIUC you intend to inherit association from shmem_inode_info (i.e.
+> whoever created the inode). shmem_inode_cachep has SLAB_ACCOUNT, so it's valid.
 
-Fixes: 24defbe194b65("clk: imx: add i.MX93 clk")
-Signed-off-by: Jacky Bai <ping.bai@nxp.com>
-Signed-off-by: Peng Fan <peng.fan@nxp.com>
-Reviewed-by: Peng Fan <peng.fan@nxp.com>
-Reviewed-by: Abel Vesa <abel.vesa@linaro.org>
-Link: https://lore.kernel.org/r/20220609132902.3504651-4-peng.fan@oss.nxp.com
-Signed-off-by: Abel Vesa <abel.vesa@linaro.org>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
----
- drivers/clk/imx/clk-imx93.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+Yes, you are right, I'll clarify this in next patch version.
 
-diff --git a/drivers/clk/imx/clk-imx93.c b/drivers/clk/imx/clk-imx93.c
-index 26885bd3971c..f5c9fa40491c 100644
---- a/drivers/clk/imx/clk-imx93.c
-+++ b/drivers/clk/imx/clk-imx93.c
-@@ -160,7 +160,7 @@ static const struct imx93_clk_ccgr {
- 	{ IMX93_CLK_SEMA2_GATE,		"sema2",	"bus_wakeup_root",	0x8480, },
- 	{ IMX93_CLK_MU_A_GATE,		"mu_a",		"bus_aon_root",		0x84c0, },
- 	{ IMX93_CLK_MU_B_GATE,		"mu_b",		"bus_aon_root",		0x8500, },
--	{ IMX93_CLK_EDMA1_GATE,		"edma1",	"wakeup_axi_root",	0x8540, },
-+	{ IMX93_CLK_EDMA1_GATE,		"edma1",	"m33_root",		0x8540, },
- 	{ IMX93_CLK_EDMA2_GATE,		"edma2",	"wakeup_axi_root",	0x8580, },
- 	{ IMX93_CLK_FLEXSPI1_GATE,	"flexspi",	"flexspi_root",		0x8640, },
- 	{ IMX93_CLK_GPIO1_GATE,		"gpio1",	"m33_root",		0x8880, },
--- 
-2.37.2
-
-
-
+Thank you,
+	Vasily Averin
