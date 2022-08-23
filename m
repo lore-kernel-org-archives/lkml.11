@@ -2,44 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A7ED6C38147
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 10:06:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A0E55C32772
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 10:06:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243211AbiHWKGh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 06:06:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45832 "EHLO
+        id S243886AbiHWKGl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 23 Aug 2022 06:06:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58716 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352322AbiHWKBl (ORCPT
+        with ESMTP id S1352318AbiHWKBk (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 06:01:41 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 13F127B7B0;
-        Tue, 23 Aug 2022 01:49:21 -0700 (PDT)
+        Tue, 23 Aug 2022 06:01:40 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AB2BC82FB8;
+        Tue, 23 Aug 2022 01:49:18 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 198046122F;
-        Tue, 23 Aug 2022 08:49:20 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C3BEEC433D6;
-        Tue, 23 Aug 2022 08:49:18 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 59EC9B81BF8;
+        Tue, 23 Aug 2022 08:49:17 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 98111C433C1;
+        Tue, 23 Aug 2022 08:49:15 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661244559;
-        bh=7o9wGdshU5JpHoJS4v5+Ldi10mCK71DBv3aRF5U5Y9A=;
+        s=korg; t=1661244556;
+        bh=fxlNh0LwhOpWUkF19exROe077tMNe7vdcr/NJnAVD5A=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=OwQr2xjwdwIEDhl0F2/2xg5dVXaQbk46eBmLzkcTZWlaxvDiOuqeAgzW9vGLcSDbG
-         CXmj9xL0pyo7Bd9RVE13fbQ6l20Kt8Dl7L2LWRB4QJpbvnhiuZUNnYofc+rm6ljtCi
-         w0Y77nlG8fAJrbJ41Ly4Or4Y35Cdzetpdm/aXAjM=
+        b=zjRrD1TyCzWVQjegqugJ1qb121IBtSnWPQY34ozu9BqmMdSJ8xwCbpWDjZrJcdly+
+         Nq5ksBYHUlo0AnIgxfaTStOueI01Vflzikkj68kaOsep/mDZ3gGXv7VzYvqXzuHcAU
+         9W8cVOfh0MjVVzszVFAE5o+xZOTUcbEP8HeYrlOE=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Theodore Tso <tytso@mit.edu>,
-        stable@kernel.org, Andreas Dilger <adilger@dilger.ca>
-Subject: [PATCH 4.14 155/229] ext4: update s_overhead_clusters in the superblock during an on-line resize
-Date:   Tue, 23 Aug 2022 10:25:16 +0200
-Message-Id: <20220823080059.208458416@linuxfoundation.org>
+        stable@vger.kernel.org, Al Viro <viro@zeniv.linux.org.uk>,
+        Dinh Nguyen <dinguyen@kernel.org>
+Subject: [PATCH 5.15 111/244] nios2: traced syscall does need to check the syscall number
+Date:   Tue, 23 Aug 2022 10:24:30 +0200
+Message-Id: <20220823080102.729748247@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220823080053.202747790@linuxfoundation.org>
-References: <20220823080053.202747790@linuxfoundation.org>
+In-Reply-To: <20220823080059.091088642@linuxfoundation.org>
+References: <20220823080059.091088642@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -48,45 +48,47 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Theodore Ts'o <tytso@mit.edu>
+From: Al Viro <viro@zeniv.linux.org.uk>
 
-commit de394a86658ffe4e89e5328fd4993abfe41b7435 upstream.
+commit 25ba820ef36bdbaf9884adeac69b6e1821a7df76 upstream.
 
-When doing an online resize, the on-disk superblock on-disk wasn't
-updated.  This means that when the file system is unmounted and
-remounted, and the on-disk overhead value is non-zero, this would
-result in the results of statfs(2) to be incorrect.
+all checks done before letting the tracer modify the register
+state are worthless...
 
-This was partially fixed by Commits 10b01ee92df5 ("ext4: fix overhead
-calculation to account for the reserved gdt blocks"), 85d825dbf489
-("ext4: force overhead calculation if the s_overhead_cluster makes no
-sense"), and eb7054212eac ("ext4: update the cached overhead value in
-the superblock").
-
-However, since it was too expensive to forcibly recalculate the
-overhead for bigalloc file systems at every mount, this didn't fix the
-problem for bigalloc file systems.  This commit should address the
-problem when resizing file systems with the bigalloc feature enabled.
-
-Signed-off-by: Theodore Ts'o <tytso@mit.edu>
-Cc: stable@kernel.org
-Reviewed-by: Andreas Dilger <adilger@dilger.ca>
-Link: https://lore.kernel.org/r/20220629040026.112371-1-tytso@mit.edu
-Signed-off-by: Theodore Ts'o <tytso@mit.edu>
+Fixes: 82ed08dd1b0e ("nios2: Exception handling")
+Signed-off-by: Al Viro <viro@zeniv.linux.org.uk>
+Signed-off-by: Dinh Nguyen <dinguyen@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- fs/ext4/resize.c |    1 +
- 1 file changed, 1 insertion(+)
+ arch/nios2/kernel/entry.S |   11 ++++++++---
+ 1 file changed, 8 insertions(+), 3 deletions(-)
 
---- a/fs/ext4/resize.c
-+++ b/fs/ext4/resize.c
-@@ -1456,6 +1456,7 @@ static void ext4_update_super(struct sup
- 	 * Update the fs overhead information
- 	 */
- 	ext4_calculate_overhead(sb);
-+	es->s_overhead_clusters = cpu_to_le32(sbi->s_overhead);
+--- a/arch/nios2/kernel/entry.S
++++ b/arch/nios2/kernel/entry.S
+@@ -255,9 +255,9 @@ traced_system_call:
+ 	ldw	r6, PT_R6(sp)
+ 	ldw	r7, PT_R7(sp)
  
- 	if (test_opt(sb, DEBUG))
- 		printk(KERN_DEBUG "EXT4-fs: added group %u:"
+-	/* Fetch the syscall function, we don't need to check the boundaries
+-	 * since this is already done.
+-	 */
++	/* Fetch the syscall function. */
++	movui	r1, __NR_syscalls
++	bgeu	r2, r1, traced_invsyscall
+ 	slli	r1, r2, 2
+ 	movhi	r11,%hiadj(sys_call_table)
+ 	add	r1, r1, r11
+@@ -287,6 +287,11 @@ end_translate_rc_and_ret2:
+ 	RESTORE_SWITCH_STACK
+ 	br	ret_from_exception
+ 
++	/* If the syscall number was invalid return ENOSYS */
++traced_invsyscall:
++	movi	r2, -ENOSYS
++	br	translate_rc_and_ret2
++
+ Luser_return:
+ 	GET_THREAD_INFO	r11			/* get thread_info pointer */
+ 	ldw	r10, TI_FLAGS(r11)		/* get thread_info->flags */
 
 
