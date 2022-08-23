@@ -2,46 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0F20CC32796
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 10:17:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DA0D5C3F6B0
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 10:17:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353681AbiHWKPi (ORCPT
+        id S1353618AbiHWKPW (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 06:15:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58148 "EHLO
+        Tue, 23 Aug 2022 06:15:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46754 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352848AbiHWKGW (ORCPT
+        with ESMTP id S1352820AbiHWKGU (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 06:06:22 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 673752DEF;
-        Tue, 23 Aug 2022 01:53:19 -0700 (PDT)
+        Tue, 23 Aug 2022 06:06:20 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EC54D1E0;
+        Tue, 23 Aug 2022 01:53:13 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 578F6B8105C;
-        Tue, 23 Aug 2022 08:53:18 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id ADEC6C433C1;
-        Tue, 23 Aug 2022 08:53:16 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 65A66CE1B41;
+        Tue, 23 Aug 2022 08:53:12 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 43F57C433D6;
+        Tue, 23 Aug 2022 08:53:10 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661244797;
-        bh=1I0ofOchYddj05pVP0sCfvBSf9N7V0uSneCL4SeRj2U=;
+        s=korg; t=1661244790;
+        bh=wfxCBtMasHoEFMn9oqLYg4hdLmiDL38+6fTcxBgzW1k=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=AZtWrZ3RshjFZXxQ88cTnTJCsWTbyK4FV8HaCgw3mdaYG/B99DJ9ztcaKgr9JdCG7
-         OwftvFZ4rcWv52DC1syLn+alSPb5Tc3lTdAUBko6h7/WbZqX4FzUJpXtOqr5C64U6M
-         pro6ylN2i3MEq1OUlsJHn3IqbEphA1mvFLz1cll8=
+        b=iI8VXE41VYyu8+fkTbYT4s+JZ7gxRmyC6XGsQ3u+V0+d2RdtorTwkGG3GXuirO2MN
+         p5Ub47d5beX6dbfXKK4TH1Wj5I6SNs8mClaSOBON5TBVduB2+V4OWbikOuaCDKxUZV
+         vjW5woFWS2mYhNUod9bvIIIrR3N+C6TypkpV3fzQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Stefano Garzarella <sgarzare@redhat.com>,
-        Peilin Ye <peilin.ye@bytedance.com>,
-        "David S. Miller" <davem@davemloft.net>
-Subject: [PATCH 4.14 193/229] vsock: Set socket state back to SS_UNCONNECTED in vsock_connect_timeout()
-Date:   Tue, 23 Aug 2022 10:25:54 +0200
-Message-Id: <20220823080100.511422086@linuxfoundation.org>
+        stable@vger.kernel.org,
+        =?UTF-8?q?Cs=C3=B3k=C3=A1s=20Bence?= <csokas.bence@prolan.hu>,
+        Jakub Kicinski <kuba@kernel.org>
+Subject: [PATCH 5.15 148/244] fec: Fix timer capture timing in `fec_ptp_enable_pps()`
+Date:   Tue, 23 Aug 2022 10:25:07 +0200
+Message-Id: <20220823080104.111648482@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220823080053.202747790@linuxfoundation.org>
-References: <20220823080053.202747790@linuxfoundation.org>
+In-Reply-To: <20220823080059.091088642@linuxfoundation.org>
+References: <20220823080059.091088642@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -50,41 +50,36 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Peilin Ye <peilin.ye@bytedance.com>
+From: Csókás Bence <csokas.bence@prolan.hu>
 
-commit a3e7b29e30854ed67be0d17687e744ad0c769c4b upstream.
+commit 61d5e2a251fb20c2c5e998c3f1d52ed6d5360319 upstream.
 
-Imagine two non-blocking vsock_connect() requests on the same socket.
-The first request schedules @connect_work, and after it times out,
-vsock_connect_timeout() sets *sock* state back to TCP_CLOSE, but keeps
-*socket* state as SS_CONNECTING.
+Code reimplements functionality already in `fec_ptp_read()`,
+but misses check for FEC_QUIRK_BUG_CAPTURE. Replace with function call.
 
-Later, the second request returns -EALREADY, meaning the socket "already
-has a pending connection in progress", even though the first request has
-already timed out.
-
-As suggested by Stefano, fix it by setting *socket* state back to
-SS_UNCONNECTED, so that the second request will return -ETIMEDOUT.
-
-Suggested-by: Stefano Garzarella <sgarzare@redhat.com>
-Fixes: d021c344051a ("VSOCK: Introduce VM Sockets")
-Reviewed-by: Stefano Garzarella <sgarzare@redhat.com>
-Signed-off-by: Peilin Ye <peilin.ye@bytedance.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+Fixes: 28b5f058cf1d ("net: fec: ptp: fix convergence issue to support LinuxPTP stack")
+Signed-off-by: Csókás Bence <csokas.bence@prolan.hu>
+Link: https://lore.kernel.org/r/20220811101348.13755-1-csokas.bence@prolan.hu
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- net/vmw_vsock/af_vsock.c |    1 +
- 1 file changed, 1 insertion(+)
+ drivers/net/ethernet/freescale/fec_ptp.c |    6 +-----
+ 1 file changed, 1 insertion(+), 5 deletions(-)
 
---- a/net/vmw_vsock/af_vsock.c
-+++ b/net/vmw_vsock/af_vsock.c
-@@ -1125,6 +1125,7 @@ static void vsock_connect_timeout(struct
- 	if (sk->sk_state == TCP_SYN_SENT &&
- 	    (sk->sk_shutdown != SHUTDOWN_MASK)) {
- 		sk->sk_state = TCP_CLOSE;
-+		sk->sk_socket->state = SS_UNCONNECTED;
- 		sk->sk_err = ETIMEDOUT;
- 		sk->sk_error_report(sk);
- 		vsock_transport_cancel_pkt(vsk);
+--- a/drivers/net/ethernet/freescale/fec_ptp.c
++++ b/drivers/net/ethernet/freescale/fec_ptp.c
+@@ -136,11 +136,7 @@ static int fec_ptp_enable_pps(struct fec
+ 		 * NSEC_PER_SEC - ts.tv_nsec. Add the remaining nanoseconds
+ 		 * to current timer would be next second.
+ 		 */
+-		tempval = readl(fep->hwp + FEC_ATIME_CTRL);
+-		tempval |= FEC_T_CTRL_CAPTURE;
+-		writel(tempval, fep->hwp + FEC_ATIME_CTRL);
+-
+-		tempval = readl(fep->hwp + FEC_ATIME);
++		tempval = fep->cc.read(&fep->cc);
+ 		/* Convert the ptp local counter to 1588 timestamp */
+ 		ns = timecounter_cyc2time(&fep->tc, tempval);
+ 		ts = ns_to_timespec64(ns);
 
 
