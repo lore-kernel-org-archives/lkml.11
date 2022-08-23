@@ -2,136 +2,151 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5A13FC32792
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 09:23:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 39A8CC32774
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 09:23:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241027AbiHWJXN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 05:23:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37516 "EHLO
+        id S1348818AbiHWJXS (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 23 Aug 2022 05:23:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40148 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350134AbiHWJVa (ORCPT
+        with ESMTP id S1350397AbiHWJVp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 05:21:30 -0400
-Received: from gandalf.ozlabs.org (gandalf.ozlabs.org [150.107.74.76])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 777A48C456;
-        Tue, 23 Aug 2022 01:34:36 -0700 (PDT)
-Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
+        Tue, 23 Aug 2022 05:21:45 -0400
+Received: from smtp-out2.suse.de (smtp-out2.suse.de [IPv6:2001:67c:2178:6::1d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A14D38C039;
+        Tue, 23 Aug 2022 01:34:31 -0700 (PDT)
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
         (No client certificate requested)
-        by mail.ozlabs.org (Postfix) with ESMTPSA id 4MBjDH5BJcz4xYS;
-        Tue, 23 Aug 2022 18:33:19 +1000 (AEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ellerman.id.au;
-        s=201909; t=1661243600;
-        bh=jzL+tYVj4e9+zENm5e4p359zO1COy5i/CDx3a5RuXi0=;
-        h=From:To:Cc:Subject:In-Reply-To:References:Date:From;
-        b=DWH/riAmZijXBMyFpMOiCjZL/u14KNbC33rDY2XPlmwRTlIHFZEyB3l4hZ6CutX2M
-         /hxh+Z+F6vNEwwgMah0o1MIoBK/i6qQfhDYcu9Ac4BZf6IxKGhWAcJIfsROANYVH0M
-         2cJCD7cGrgSm+6Hle+5F8DQiDlE3nNy4QRjFvW+n5WL+2Nkq4AKPDtSCDwkc9uk8QA
-         KEzBaddNdy74sR7hw0/y6OjlExq3oBBYjU97e95jCsGLYAR20kqphSEuAqjx6FngzL
-         qNIH2G9b0IyZaSi49GgtXATGN0SmKeTKjGlFe7UyPR4YxQbjQdI+Z1PfSv2CDedkjL
-         cs//ozxWcigLA==
-From:   Michael Ellerman <mpe@ellerman.id.au>
-To:     Zhouyi Zhou <zhouzhouyi@gmail.com>, npiggin@gmail.com,
-        christophe.leroy@csgroup.eu, atrajeev@linux.vnet.ibm.com,
-        linuxppc-dev@lists.ozlabs.org, linux-kernel@vger.kernel.org,
-        lance@osuosl.org, paulmck@kernel.org, rcu@vger.kernel.org
-Cc:     Zhouyi Zhou <zhouzhouyi@gmail.com>
-Subject: Re: [PATCH linux-next] powerpc: disable sanitizer in irq_soft_mask_set
-In-Reply-To: <20220821010030.97539-1-zhouzhouyi@gmail.com>
-References: <20220821010030.97539-1-zhouzhouyi@gmail.com>
-Date:   Tue, 23 Aug 2022 18:33:14 +1000
-Message-ID: <87edx7l5px.fsf@mpe.ellerman.id.au>
+        by smtp-out2.suse.de (Postfix) with ESMTPS id 7A80020EFF;
+        Tue, 23 Aug 2022 08:33:37 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
+        t=1661243617; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=JXhtiVs1Pea0+3tSyFvIt2OFwCvUnOkhvBpBR3hLHJ0=;
+        b=itIsnssHRKDHR9XCvqruAA80oSf8XNyabWsyTGumPDHDXGN9IEy42MmKzZi7rYCqRALpUy
+        anrc2/ssKuHRWVtuu0qrWAxP8cCFlfwjJKBTlxdsmpO0ESwlj3fToH3WoPcL+5pXSPOu2e
+        Jtss8aiqbHbTvHKhu+P2bl7GijmoUo0=
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id 5E8B013A89;
+        Tue, 23 Aug 2022 08:33:37 +0000 (UTC)
+Received: from dovecot-director2.suse.de ([192.168.254.65])
+        by imap2.suse-dmz.suse.de with ESMTPSA
+        id HnZcFuGQBGPeWAAAMHmgww
+        (envelope-from <mhocko@suse.com>); Tue, 23 Aug 2022 08:33:37 +0000
+Date:   Tue, 23 Aug 2022 10:33:36 +0200
+From:   Michal Hocko <mhocko@suse.com>
+To:     Zhaoyang Huang <huangzhaoyang@gmail.com>
+Cc:     Suren Baghdasaryan <surenb@google.com>, Tejun Heo <tj@kernel.org>,
+        Shakeel Butt <shakeelb@google.com>,
+        "zhaoyang.huang" <zhaoyang.huang@unisoc.com>,
+        Johannes Weiner <hannes@cmpxchg.org>,
+        Linux MM <linux-mm@kvack.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Cgroups <cgroups@vger.kernel.org>, Ke Wang <ke.wang@unisoc.com>,
+        Zefan Li <lizefan.x@bytedance.com>,
+        Roman Gushchin <roman.gushchin@linux.dev>,
+        Muchun Song <songmuchun@bytedance.com>
+Subject: Re: [RFC PATCH] memcg: use root_mem_cgroup when css is inherited
+Message-ID: <YwSQ4APOu/H7lYGL@dhcp22.suse.cz>
+References: <1660908562-17409-1-git-send-email-zhaoyang.huang@unisoc.com>
+ <Yv+6YjaGAv52yvq9@slm.duckdns.org>
+ <CALvZod7QdLSMdBoD2WztL72qS8kJe7F79JuCH6t19rRcw6Pn1w@mail.gmail.com>
+ <Yv/EArPDTcCrGqJh@slm.duckdns.org>
+ <YwNpI1ydy0yDnBH0@dhcp22.suse.cz>
+ <CAGWkznEB+R0YBaBFBL7dPqs8R=qKC6+ixTWEGCYy2PaczXkaPA@mail.gmail.com>
+ <YwRjyx6wFLk8WTDe@dhcp22.suse.cz>
+ <CAGWkznGaYTv4u4kOo-rupfyWzDNJXNKTchwP6dbUK-=UXWm47w@mail.gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAGWkznGaYTv4u4kOo-rupfyWzDNJXNKTchwP6dbUK-=UXWm47w@mail.gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Zhouyi Zhou <zhouzhouyi@gmail.com> writes:
-> In ppc, compiler based sanitizer will generate instrument instructions
-> around statement WRITE_ONCE(local_paca->irq_soft_mask, mask):
->
->    0xc000000000295cb0 <+0>:	addis   r2,r12,774
->    0xc000000000295cb4 <+4>:	addi    r2,r2,16464
->    0xc000000000295cb8 <+8>:	mflr    r0
->    0xc000000000295cbc <+12>:	bl      0xc00000000008bb4c <mcount>
->    0xc000000000295cc0 <+16>:	mflr    r0
->    0xc000000000295cc4 <+20>:	std     r31,-8(r1)
->    0xc000000000295cc8 <+24>:	addi    r3,r13,2354
->    0xc000000000295ccc <+28>:	mr      r31,r13
->    0xc000000000295cd0 <+32>:	std     r0,16(r1)
->    0xc000000000295cd4 <+36>:	stdu    r1,-48(r1)
->    0xc000000000295cd8 <+40>:	bl      0xc000000000609b98 <__asan_store1+8>
->    0xc000000000295cdc <+44>:	nop
->    0xc000000000295ce0 <+48>:	li      r9,1
->    0xc000000000295ce4 <+52>:	stb     r9,2354(r31)
->    0xc000000000295ce8 <+56>:	addi    r1,r1,48
->    0xc000000000295cec <+60>:	ld      r0,16(r1)
->    0xc000000000295cf0 <+64>:	ld      r31,-8(r1)
->    0xc000000000295cf4 <+68>:	mtlr    r0
->
-> If there is a context switch before "stb     r9,2354(r31)", r31 may
-> not equal to r13, in such case, irq soft mask will not work.
->
-> This patch disable sanitizer in irq_soft_mask_set.
->
-> Signed-off-by: Zhouyi Zhou <zhouzhouyi@gmail.com>
-> ---
-> Dear PPC developers
->
-> I found this bug when trying to do rcutorture tests in ppc VM of
-> Open Source Lab of Oregon State University following Paul E. McKenny's guidance.
->
-> console.log report following bug:
->
-> [  346.527467][  T100] BUG: using smp_processor_id() in preemptible [00000000] code: rcu_torture_rea/100^M
-> [  346.529416][  T100] caller is rcu_preempt_deferred_qs_irqrestore+0x74/0xed0^M
-> [  346.531157][  T100] CPU: 4 PID: 100 Comm: rcu_torture_rea Tainted: G        W          5.19.0-rc5-next-20220708-dirty #253^M
-> [  346.533620][  T100] Call Trace:^M
-> [  346.534449][  T100] [c0000000094876c0] [c000000000ce2b68] dump_stack_lvl+0xbc/0x108 (unreliable)^M
-> [  346.536632][  T100] [c000000009487710] [c000000001712954] check_preemption_disabled+0x154/0x160^M
-> [  346.538665][  T100] [c0000000094877a0] [c0000000002ce2d4] rcu_preempt_deferred_qs_irqrestore+0x74/0xed0^M
-> [  346.540830][  T100] [c0000000094878b0] [c0000000002cf3c0] __rcu_read_unlock+0x290/0x3b0^M
-> [  346.542746][  T100] [c000000009487910] [c0000000002bb330] rcu_torture_read_unlock+0x30/0xb0^M
-> [  346.544779][  T100] [c000000009487930] [c0000000002b7ff8] rcutorture_one_extend+0x198/0x810^M
-> [  346.546851][  T100] [c000000009487a10] [c0000000002b8bfc] rcu_torture_one_read+0x58c/0xc90^M
-> [  346.548844][  T100] [c000000009487ca0] [c0000000002b942c] rcu_torture_reader+0x12c/0x360^M
-> [  346.550784][  T100] [c000000009487db0] [c0000000001de978] kthread+0x1e8/0x220^M
-> [  346.552555][  T100] [c000000009487e10] [c00000000000cd54] ret_from_kernel_thread+0x5c/0x64^M
->
-> After 12 days debugging, I finally narrow the problem to irq_soft_mask_set.
+On Tue 23-08-22 14:03:04, Zhaoyang Huang wrote:
+> On Tue, Aug 23, 2022 at 1:21 PM Michal Hocko <mhocko@suse.com> wrote:
+> >
+> > On Tue 23-08-22 10:31:57, Zhaoyang Huang wrote:
+[...]
+> > > I would like to quote the comments from google side for more details
+> > > which can also be observed from different vendors.
+> > > "Also be advised that when you enable memcg v2 you will be using
+> > > per-app memcg configuration which implies noticeable overhead because
+> > > every app will have its own group. For example pagefault path will
+> > > regress by about 15%. And obviously there will be some memory overhead
+> > > as well. That's the reason we don't enable them in Android by
+> > > default."
+> >
+> > This should be reported and investigated. Because per-application memcg
+> > vs. memcg in general shouldn't make much of a difference from the
+> > performance side. I can see a potential performance impact for no-memcg
+> > vs. memcg case but even then 15% is quite a lot.
+> Less efficiency on memory reclaim caused by multi-LRU should be one of
+> the reason, which has been proved by comparing per-app memcg on/off.
+> Besides, theoretically workingset could also broken as LRU is too
+> short to compose workingset.
 
-Thanks for spending 12 days debugging it! O_o
+Do you have any data to back these claims? Is this something that could
+be handled on the configuration level? E.g. by applying low limit
+protection to keep the workingset in the memory?
 
-> diff --git a/arch/powerpc/include/asm/hw_irq.h b/arch/powerpc/include/asm/hw_irq.h
-> index 26ede09c521d..a5ae8d82cc9d 100644
-> --- a/arch/powerpc/include/asm/hw_irq.h
-> +++ b/arch/powerpc/include/asm/hw_irq.h
-> @@ -121,7 +121,7 @@ static inline notrace unsigned long irq_soft_mask_return(void)
->   * for the critical section and as a clobber because
->   * we changed paca->irq_soft_mask
->   */
-> -static inline notrace void irq_soft_mask_set(unsigned long mask)
-> +static inline notrace __no_kcsan __no_sanitize_address void irq_soft_mask_set(unsigned long mask)
->  {
->  	/*
->  	 * The irq mask must always include the STD bit if any are set.
+> > > > My very vague understanding is that the Android system would like to
+> > > > freeze specific applications and for that it requires each application
+> > > > to live in its own cgroup. This clashes with a requirement to age and
+> > > > reclaim memory on a different granularity (aka no per process reclaim).
+> > > > So in fact something that cgroup v1 would achieve by having 2
+> > > > hierarchies, one for the freezer which would have a dedicated cgroup for
+> > > > each application and the other for the memory controller where tasks are
+> > > > grouped by a different criteria. This would rule out that a global (or
+> > > > any external memory pressure) reclaim would age LRUs that contain a mix
+> > > > bag of application pages rather than iterate over per-application LRUs.
+> > > > Is that understanding correct?
+> > > Correct, this is just our confusion. Besides, we believe that charge
+> > > the pages to implicit memory enabled parent control group doesn't make
+> > > sense as the memory cannot be managed at all.
+> >
+> > I do not get that part. The parent can manange and control the memory
+> > usage so how come it cannot be managed at all?
+> What I mean is the kind of parent which is enabled implicitly by
+> enabling on its sibling group like belowing hierarchy. Imagine that C
+> has no intention of memory control but has to be enabled as B would
+> have it. IMO, it doesn't make sense to charge C1's memory.current to C
+> until an explicitly echo "+memory" >  C/subtree_control.
+> A----B---B1
+>      \ C---C1
 
-My worry is that this will force irq_soft_mask_set() out of line, which
-we would rather avoid. It's meant to be a fast path.
+So let me just expand your example for clarity
 
-In fact with this applied I see nearly 300 out-of-line copies of the
-function when building a defconfig, and ~1700 calls to it.
+A.cgroup.controllers = memory
+A.cgroup.subtree_control = memory
 
-Normally it is inlined at every call site.
+A/B.cgroup.controllers = memory
+A/B.cgroup.subtree_control = memory
+A/B/B1.cgroup.controllers = memory
 
+A/C.cgroup.controllers = memory
+A/C.cgroup.subtree_control = ""
+A/C/C1.cgroup.controllers = ""
 
-So I think I'm inclined to revert ef5b570d3700 ("powerpc/irq: Don't open
-code irq_soft_mask helpers").
+Is your concern that C1 is charged to A/C or that you cannot actually make
+A/C.cgroup.controllers = "" because you want to maintain memory in A?
+Because that would be breaking the internal node constrain rule AFAICS.
 
-It was a nice looking cleanup, but those loads must not be instrumented
-by KASAN, but we also want them inlined, and AFAICS the only way to
-achieve that is to go back to inline asm.
+Or maybe you just really want a different hierarchy where
+A == root_cgroup and want the memory acocunted in B
+(root/B.cgroup.controllers = memory) but not in C (root/C.cgroup.controllers = "")?
 
-cheers
+That would mean that C memory would be maintained on the global (root
+memcg) LRUs which is the only internal node which is allowed to have
+resources because it is special.
+-- 
+Michal Hocko
+SUSE Labs
