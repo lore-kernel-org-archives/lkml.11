@@ -2,64 +2,122 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A5F9DC52D6C
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 86FB4C32792
 	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 10:23:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354962AbiHWKWf (ORCPT
+        id S1354929AbiHWKW1 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 06:22:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35350 "EHLO
+        Tue, 23 Aug 2022 06:22:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58204 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353260AbiHWKLI (ORCPT
+        with ESMTP id S1353208AbiHWKLD (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 06:11:08 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8D8E87E829;
-        Tue, 23 Aug 2022 01:56:17 -0700 (PDT)
+        Tue, 23 Aug 2022 06:11:03 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C743F7E330;
+        Tue, 23 Aug 2022 01:56:13 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id B0507B81C28;
-        Tue, 23 Aug 2022 08:56:15 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D8700C433D7;
+        by dfw.source.kernel.org (Postfix) with ESMTPS id ABF34614E7;
         Tue, 23 Aug 2022 08:56:12 +0000 (UTC)
-Date:   Tue, 23 Aug 2022 09:56:12 +0100
-From:   Catalin Marinas <catalin.marinas@arm.com>
-To:     Linus Torvalds <torvalds@linux-foundation.org>
-Cc:     Steve French <smfrench@gmail.com>,
-        CIFS <linux-cifs@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        linux-arch <linux-arch@vger.kernel.org>
-Subject: Re: strlcpy() notes (was Re: [GIT PULL] smb3 client fixes)
-Message-ID: <YwSWLH4Wp6yDMeKf@arm.com>
-References: <CAH2r5mtDFpaAWeGCtrfm_WPM6j-Gkt_O80=nKfp6y39aXaBr6w@mail.gmail.com>
- <CAHk-=wi+xbVq++uqW9YgWpHjyBHNB8a-xad+Xp23-B+eodLCEA@mail.gmail.com>
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id ACCA7C433C1;
+        Tue, 23 Aug 2022 08:56:11 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1661244972;
+        bh=kGnKy4ot8MT8zCT9ellggAB0zIaX/bDGSKngr+K3OEw=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=HAHpxZ4yp9vXmGp+3I4b3o7MTsI0nQfY0M5IsP5An2cdAJOBRjfaXS97S37nP0sSk
+         3i8TkIFQBEbgiylTUHqtZdZseytkY7sSFnn1jF7RTPybYN95ad5i3vRJHMNST+G83y
+         aBfDki3hR3ge7qmDH7wIfqDrAaPwvlvmKydJqZmk=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Yury Norov <yury.norov@gmail.com>,
+        Erhard Furtner <erhard_f@mailbox.org>,
+        Andrew Donnellan <ajd@linux.ibm.com>,
+        Kees Cook <keescook@chromium.org>
+Subject: [PATCH 5.15 152/244] gcc-plugins: Undefine LATENT_ENTROPY_PLUGIN when plugin disabled for a file
+Date:   Tue, 23 Aug 2022 10:25:11 +0200
+Message-Id: <20220823080104.259578002@linuxfoundation.org>
+X-Mailer: git-send-email 2.37.2
+In-Reply-To: <20220823080059.091088642@linuxfoundation.org>
+References: <20220823080059.091088642@linuxfoundation.org>
+User-Agent: quilt/0.67
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAHk-=wi+xbVq++uqW9YgWpHjyBHNB8a-xad+Xp23-B+eodLCEA@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sun, Aug 21, 2022 at 11:13:28AM -0700, Linus Torvalds wrote:
-> It's also worth pointing out that the kernel implementation of
-> 'strscpy()' will not do the chunk-sized accesses across an unaligned
-> page boundary. So it won't actually take a page fault past the
-> terminating NUL character, but if you pass it an 'N' that is bigger
-> than the source buffer, and you have sub-page faults in the kernel, we
-> might need to do some further work in this are. Catalin?
+From: Andrew Donnellan <ajd@linux.ibm.com>
 
-We can probably hit sub-page faults if the function reads past the end
-of a string. Strange that we haven't hit any so far (well, it needs
-KASAN_HW_TAGS enabled, it doesn't get as much coverage).
+commit 012e8d2034f1bda8863435cd589636e618d6a659 upstream.
 
-With load_unaligned_zeropad(), the arm64 implementation disables tag
-checking temporarily. We could do the same with read_word_at_a_time()
-(there is a kasan_check_read() in this function but it wrongly uses a
-size of 1).
+Commit 36d4b36b6959 ("lib/nodemask: inline next_node_in() and
+node_random()") refactored some code by moving node_random() from
+lib/nodemask.c to include/linux/nodemask.h, thus requiring nodemask.h to
+include random.h, which conditionally defines add_latent_entropy()
+depending on whether the macro LATENT_ENTROPY_PLUGIN is defined.
 
-I'll send a patch but most likely next week (I'm still on holiday).
+This broke the build on powerpc, where nodemask.h is indirectly included
+in arch/powerpc/kernel/prom_init.c, part of the early boot machinery that
+is excluded from the latent entropy plugin using
+DISABLE_LATENT_ENTROPY_PLUGIN. It turns out that while we add a gcc flag
+to disable the actual plugin, we don't undefine LATENT_ENTROPY_PLUGIN.
 
--- 
-Catalin
+This leads to the following:
+
+    CC      arch/powerpc/kernel/prom_init.o
+  In file included from ./include/linux/nodemask.h:97,
+                   from ./include/linux/mmzone.h:17,
+                   from ./include/linux/gfp.h:7,
+                   from ./include/linux/xarray.h:15,
+                   from ./include/linux/radix-tree.h:21,
+                   from ./include/linux/idr.h:15,
+                   from ./include/linux/kernfs.h:12,
+                   from ./include/linux/sysfs.h:16,
+                   from ./include/linux/kobject.h:20,
+                   from ./include/linux/pci.h:35,
+                   from arch/powerpc/kernel/prom_init.c:24:
+  ./include/linux/random.h: In function 'add_latent_entropy':
+  ./include/linux/random.h:25:46: error: 'latent_entropy' undeclared (first use in this function); did you mean 'add_latent_entropy'?
+     25 |         add_device_randomness((const void *)&latent_entropy, sizeof(latent_entropy));
+        |                                              ^~~~~~~~~~~~~~
+        |                                              add_latent_entropy
+  ./include/linux/random.h:25:46: note: each undeclared identifier is reported only once for each function it appears in
+  make[2]: *** [scripts/Makefile.build:249: arch/powerpc/kernel/prom_init.o] Fehler 1
+  make[1]: *** [scripts/Makefile.build:465: arch/powerpc/kernel] Fehler 2
+  make: *** [Makefile:1855: arch/powerpc] Error 2
+
+Change the DISABLE_LATENT_ENTROPY_PLUGIN flags to undefine
+LATENT_ENTROPY_PLUGIN for files where the plugin is disabled.
+
+Cc: Yury Norov <yury.norov@gmail.com>
+Fixes: 38addce8b600 ("gcc-plugins: Add latent_entropy plugin")
+Link: https://bugzilla.kernel.org/show_bug.cgi?id=216367
+Link: https://lore.kernel.org/linuxppc-dev/alpine.DEB.2.22.394.2208152006320.289321@ramsan.of.borg/
+Reported-by: Erhard Furtner <erhard_f@mailbox.org>
+Signed-off-by: Andrew Donnellan <ajd@linux.ibm.com>
+Reviewed-by: Yury Norov <yury.norov@gmail.com>
+Signed-off-by: Kees Cook <keescook@chromium.org>
+Link: https://lore.kernel.org/r/20220816051720.44108-1-ajd@linux.ibm.com
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+---
+ scripts/Makefile.gcc-plugins |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+--- a/scripts/Makefile.gcc-plugins
++++ b/scripts/Makefile.gcc-plugins
+@@ -6,7 +6,7 @@ gcc-plugin-$(CONFIG_GCC_PLUGIN_LATENT_EN
+ gcc-plugin-cflags-$(CONFIG_GCC_PLUGIN_LATENT_ENTROPY)		\
+ 		+= -DLATENT_ENTROPY_PLUGIN
+ ifdef CONFIG_GCC_PLUGIN_LATENT_ENTROPY
+-    DISABLE_LATENT_ENTROPY_PLUGIN += -fplugin-arg-latent_entropy_plugin-disable
++    DISABLE_LATENT_ENTROPY_PLUGIN += -fplugin-arg-latent_entropy_plugin-disable -ULATENT_ENTROPY_PLUGIN
+ endif
+ export DISABLE_LATENT_ENTROPY_PLUGIN
+ 
+
+
