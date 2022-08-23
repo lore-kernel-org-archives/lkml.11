@@ -2,45 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 76142C32774
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 08:14:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 06B0FC32774
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 08:14:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242141AbiHWIN7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 04:13:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58144 "EHLO
+        id S242312AbiHWIOD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 23 Aug 2022 04:14:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32814 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242039AbiHWIKb (ORCPT
+        with ESMTP id S242047AbiHWIKc (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 04:10:31 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 30045BCA2;
-        Tue, 23 Aug 2022 01:07:19 -0700 (PDT)
+        Tue, 23 Aug 2022 04:10:32 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DE8CEF3B;
+        Tue, 23 Aug 2022 01:07:20 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id D10E3B81C18;
-        Tue, 23 Aug 2022 08:07:17 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 25831C433C1;
-        Tue, 23 Aug 2022 08:07:15 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 5D62E610AA;
+        Tue, 23 Aug 2022 08:07:20 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4FC2FC433D6;
+        Tue, 23 Aug 2022 08:07:19 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661242036;
-        bh=wAb9caDwUzbk7UBhI7cFlk+Z8maI1Aajsuhg8IEI720=;
+        s=korg; t=1661242039;
+        bh=t4F7UxwgqjJIxKuZKRMLCgcA54hql5brZfQwsEScR3c=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=tYDDFkACIelWAlOq8iB8pDShaVi0OjYZgKsXKOXyLLpniy0ayYW80FdrZXyhBHRgL
-         8H5A+rx3LhjE7h+B78d6wElD0miiBVUNK2kns1SYdcVd93GSr3YFVxyuaLbRe95+xb
-         x3a+jhMMeUy4y99Vn7edHADs0e+pFctzH27JGWeY=
+        b=xq+APEnbMWFsk5wySC1a6MaH81N0DtDziN6aE6gSJHeFkjMxRMhPlz3/hEESJicdf
+         9t4H/FLvgevq7XYGhap3yg2/DiXeBVWrJLDbcBqBt0QXrEHZpnDNSFtXukPnxlTVi3
+         hDERDk3u3bTekL71Y0p7BPioNjB/5Bx2lzg/WYos=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Qifu Zhang <zhangqifu@bytedance.com>,
-        Tony Luck <tony.luck@intel.com>,
-        "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>
-Subject: [PATCH 5.19 049/365] Documentation: ACPI: EINJ: Fix obsolete example
-Date:   Tue, 23 Aug 2022 09:59:10 +0200
-Message-Id: <20220823080120.237178456@linuxfoundation.org>
+        stable@vger.kernel.org, Andreas Gruenbacher <agruenba@redhat.com>,
+        Paul Moore <paul@paul-moore.com>,
+        Alexander Grund <theflamefire89@gmail.com>
+Subject: [PATCH 4.9 010/101] selinux: Minor cleanups
+Date:   Tue, 23 Aug 2022 10:02:43 +0200
+Message-Id: <20220823080034.977764462@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220823080118.128342613@linuxfoundation.org>
-References: <20220823080118.128342613@linuxfoundation.org>
+In-Reply-To: <20220823080034.579196046@linuxfoundation.org>
+References: <20220823080034.579196046@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -49,33 +49,62 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Qifu Zhang <zhangqifu@bytedance.com>
+From: Andreas Gruenbacher <agruenba@redhat.com>
 
-commit 9066e151c37950af92c3be6a7270daa8e8063db9 upstream.
+commit 420591128cb206201dc444c2d42fb6f299b2ecd0 upstream.
 
-Since commit 488dac0c9237 ("libfs: fix error cast of negative value in
-simple_attr_write()"), the EINJ debugfs interface no longer accepts
-negative values as input. Attempt to do so will result in EINVAL.
+Fix the comment for function __inode_security_revalidate, which returns
+an integer.
 
-Fixes: 488dac0c9237 ("libfs: fix error cast of negative value in simple_attr_write()")
-Signed-off-by: Qifu Zhang <zhangqifu@bytedance.com>
-Reviewed-by: Tony Luck <tony.luck@intel.com>
-Signed-off-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
+Use the LABEL_* constants consistently for isec->initialized.
+
+Signed-off-by: Andreas Gruenbacher <agruenba@redhat.com>
+Signed-off-by: Paul Moore <paul@paul-moore.com>
+Signed-off-by: Alexander Grund <theflamefire89@gmail.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- Documentation/firmware-guide/acpi/apei/einj.rst |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ security/selinux/hooks.c     |    3 ++-
+ security/selinux/selinuxfs.c |    4 ++--
+ 2 files changed, 4 insertions(+), 3 deletions(-)
 
---- a/Documentation/firmware-guide/acpi/apei/einj.rst
-+++ b/Documentation/firmware-guide/acpi/apei/einj.rst
-@@ -168,7 +168,7 @@ An error injection example::
-   0x00000008	Memory Correctable
-   0x00000010	Memory Uncorrectable non-fatal
-   # echo 0x12345000 > param1		# Set memory address for injection
--  # echo $((-1 << 12)) > param2		# Mask 0xfffffffffffff000 - anywhere in this page
-+  # echo 0xfffffffffffff000 > param2		# Mask - anywhere in this page
-   # echo 0x8 > error_type			# Choose correctable memory error
-   # echo 1 > error_inject			# Inject now
+--- a/security/selinux/hooks.c
++++ b/security/selinux/hooks.c
+@@ -237,6 +237,7 @@ static int inode_alloc_security(struct i
+ 	isec->sid = SECINITSID_UNLABELED;
+ 	isec->sclass = SECCLASS_FILE;
+ 	isec->task_sid = sid;
++	isec->initialized = LABEL_INVALID;
+ 	inode->i_security = isec;
  
+ 	return 0;
+@@ -247,7 +248,7 @@ static int inode_doinit_with_dentry(stru
+ /*
+  * Try reloading inode security labels that have been marked as invalid.  The
+  * @may_sleep parameter indicates when sleeping and thus reloading labels is
+- * allowed; when set to false, returns ERR_PTR(-ECHILD) when the label is
++ * allowed; when set to false, returns -ECHILD when the label is
+  * invalid.  The @opt_dentry parameter should be set to a dentry of the inode;
+  * when no dentry is available, set it to NULL instead.
+  */
+--- a/security/selinux/selinuxfs.c
++++ b/security/selinux/selinuxfs.c
+@@ -1301,7 +1301,7 @@ static int sel_make_bools(void)
+ 			goto out;
+ 
+ 		isec->sid = sid;
+-		isec->initialized = 1;
++		isec->initialized = LABEL_INITIALIZED;
+ 		inode->i_fop = &sel_bool_ops;
+ 		inode->i_ino = i|SEL_BOOL_INO_OFFSET;
+ 		d_add(dentry, inode);
+@@ -1835,7 +1835,7 @@ static int sel_fill_super(struct super_b
+ 	isec = (struct inode_security_struct *)inode->i_security;
+ 	isec->sid = SECINITSID_DEVNULL;
+ 	isec->sclass = SECCLASS_CHR_FILE;
+-	isec->initialized = 1;
++	isec->initialized = LABEL_INITIALIZED;
+ 
+ 	init_special_inode(inode, S_IFCHR | S_IRUGO | S_IWUGO, MKDEV(MEM_MAJOR, 3));
+ 	d_add(dentry, inode);
 
 
