@@ -2,43 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D82DDC32772
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 12:26:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D7BFAC32792
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 12:27:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243489AbiHWM0z (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 08:26:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38654 "EHLO
+        id S238424AbiHWM1B (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 23 Aug 2022 08:27:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37770 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1359447AbiHWMVt (ORCPT
+        with ESMTP id S1359545AbiHWMVw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 08:21:49 -0400
+        Tue, 23 Aug 2022 08:21:52 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 49AF37549A;
-        Tue, 23 Aug 2022 02:43:36 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4DDDD7FE41;
+        Tue, 23 Aug 2022 02:43:41 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id B4C0EB81CA0;
-        Tue, 23 Aug 2022 09:43:35 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 06D16C433C1;
-        Tue, 23 Aug 2022 09:43:33 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 2DBA4B81C53;
+        Tue, 23 Aug 2022 09:43:14 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6E323C433C1;
+        Tue, 23 Aug 2022 09:43:12 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661247814;
-        bh=JBtUajIUUTvXn1dwEIei/vptr1iv5ncaSZumZ5qjilw=;
+        s=korg; t=1661247792;
+        bh=OojDaQ+Fj1kBMmiaCQt6cXVPGlHuy71ux3UaODHdAoY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=xIKD8xHFZ8J7vacRALOhWFBCDx4vDRixhbdJ/obFTwrjLcHq81YntAs0boHFe4Yrz
-         TOup7iQ6nDqsPRVbvQ/XCfHZouNMm6BDEi4K0Fh3R88pCuzgiBwZHDdcNx5hz7cQBV
-         xxsbymaGJyWB1wuoujBJLWqpcb8CVF+HcXbBdHn8=
+        b=YZt5CNi55O/2ngQY2lwM6jKZ8GVlEs9545StVwwdfePcyEGt2dPtdhHAWVY5aMriC
+         xuGuSXQRYv3KvtP/fs0NooHspGyN5HzDYA9nCjAKYKIDwxPnSKatX5Q8W7LOxXnDQx
+         dKYUQvkSugrYvYkF/amnliiPpahhBuq6vrP2G7nM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Oleksij Rempel <o.rempel@pengutronix.de>,
-        Fedor Pchelkin <pchelkin@ispras.ru>,
-        Alexey Khoroshilov <khoroshilov@ispras.ru>,
-        Marc Kleine-Budde <mkl@pengutronix.de>
-Subject: [PATCH 5.10 155/158] can: j1939: j1939_session_destroy(): fix memory leak of skbs
-Date:   Tue, 23 Aug 2022 10:28:07 +0200
-Message-Id: <20220823080052.025921543@linuxfoundation.org>
+        stable@vger.kernel.org, Zheyu Ma <zheyuma97@gmail.com>,
+        Helge Deller <deller@gmx.de>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.10 149/158] video: fbdev: i740fb: Check the argument of i740_calc_vclk()
+Date:   Tue, 23 Aug 2022 10:28:01 +0200
+Message-Id: <20220823080051.829353912@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220823080046.056825146@linuxfoundation.org>
 References: <20220823080046.056825146@linuxfoundation.org>
@@ -50,55 +48,67 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Fedor Pchelkin <pchelkin@ispras.ru>
+From: Zheyu Ma <zheyuma97@gmail.com>
 
-commit 8c21c54a53ab21842f5050fa090f26b03c0313d6 upstream.
+[ Upstream commit 40bf722f8064f50200b8c4f8946cd625b441dda9 ]
 
-We need to drop skb references taken in j1939_session_skb_queue() when
-destroying a session in j1939_session_destroy(). Otherwise those skbs
-would be lost.
+Since the user can control the arguments of the ioctl() from the user
+space, under special arguments that may result in a divide-by-zero bug.
 
-Link to Syzkaller info and repro: https://forge.ispras.ru/issues/11743.
+If the user provides an improper 'pixclock' value that makes the argumet
+of i740_calc_vclk() less than 'I740_RFREQ_FIX', it will cause a
+divide-by-zero bug in:
+    drivers/video/fbdev/i740fb.c:353 p_best = min(15, ilog2(I740_MAX_VCO_FREQ / (freq / I740_RFREQ_FIX)));
 
-Found by Linux Verification Center (linuxtesting.org) with Syzkaller.
+The following log can reveal it:
 
-V1: https://lore.kernel.org/all/20220708175949.539064-1-pchelkin@ispras.ru
+divide error: 0000 [#1] PREEMPT SMP KASAN PTI
+RIP: 0010:i740_calc_vclk drivers/video/fbdev/i740fb.c:353 [inline]
+RIP: 0010:i740fb_decode_var drivers/video/fbdev/i740fb.c:646 [inline]
+RIP: 0010:i740fb_set_par+0x163f/0x3b70 drivers/video/fbdev/i740fb.c:742
+Call Trace:
+ fb_set_var+0x604/0xeb0 drivers/video/fbdev/core/fbmem.c:1034
+ do_fb_ioctl+0x234/0x670 drivers/video/fbdev/core/fbmem.c:1110
+ fb_ioctl+0xdd/0x130 drivers/video/fbdev/core/fbmem.c:1189
 
-Fixes: 9d71dd0c7009 ("can: add support of SAE J1939 protocol")
-Suggested-by: Oleksij Rempel <o.rempel@pengutronix.de>
-Signed-off-by: Fedor Pchelkin <pchelkin@ispras.ru>
-Signed-off-by: Alexey Khoroshilov <khoroshilov@ispras.ru>
-Acked-by: Oleksij Rempel <o.rempel@pengutronix.de>
-Link: https://lore.kernel.org/all/20220805150216.66313-1-pchelkin@ispras.ru
-Signed-off-by: Marc Kleine-Budde <mkl@pengutronix.de>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Fix this by checking the argument of i740_calc_vclk() first.
+
+Signed-off-by: Zheyu Ma <zheyuma97@gmail.com>
+Signed-off-by: Helge Deller <deller@gmx.de>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/can/j1939/transport.c |    8 +++++++-
- 1 file changed, 7 insertions(+), 1 deletion(-)
+ drivers/video/fbdev/i740fb.c | 9 +++++++--
+ 1 file changed, 7 insertions(+), 2 deletions(-)
 
---- a/net/can/j1939/transport.c
-+++ b/net/can/j1939/transport.c
-@@ -260,6 +260,8 @@ static void __j1939_session_drop(struct
+diff --git a/drivers/video/fbdev/i740fb.c b/drivers/video/fbdev/i740fb.c
+index 52cce0db8bd3..ad5ced4ef972 100644
+--- a/drivers/video/fbdev/i740fb.c
++++ b/drivers/video/fbdev/i740fb.c
+@@ -400,7 +400,7 @@ static int i740fb_decode_var(const struct fb_var_screeninfo *var,
+ 	u32 xres, right, hslen, left, xtotal;
+ 	u32 yres, lower, vslen, upper, ytotal;
+ 	u32 vxres, xoffset, vyres, yoffset;
+-	u32 bpp, base, dacspeed24, mem;
++	u32 bpp, base, dacspeed24, mem, freq;
+ 	u8 r7;
+ 	int i;
  
- static void j1939_session_destroy(struct j1939_session *session)
- {
-+	struct sk_buff *skb;
-+
- 	if (session->err)
- 		j1939_sk_errqueue(session, J1939_ERRQUEUE_ABORT);
- 	else
-@@ -270,7 +272,11 @@ static void j1939_session_destroy(struct
- 	WARN_ON_ONCE(!list_empty(&session->sk_session_queue_entry));
- 	WARN_ON_ONCE(!list_empty(&session->active_session_list_entry));
+@@ -643,7 +643,12 @@ static int i740fb_decode_var(const struct fb_var_screeninfo *var,
+ 	par->atc[VGA_ATC_OVERSCAN] = 0;
  
--	skb_queue_purge(&session->skb_queue);
-+	while ((skb = skb_dequeue(&session->skb_queue)) != NULL) {
-+		/* drop ref taken in j1939_session_skb_queue() */
-+		skb_unref(skb);
-+		kfree_skb(skb);
+ 	/* Calculate VCLK that most closely matches the requested dot clock */
+-	i740_calc_vclk((((u32)1e9) / var->pixclock) * (u32)(1e3), par);
++	freq = (((u32)1e9) / var->pixclock) * (u32)(1e3);
++	if (freq < I740_RFREQ_FIX) {
++		fb_dbg(info, "invalid pixclock\n");
++		freq = I740_RFREQ_FIX;
 +	}
- 	__j1939_session_drop(session);
- 	j1939_priv_put(session->priv);
- 	kfree(session);
++	i740_calc_vclk(freq, par);
+ 
+ 	/* Since we program the clocks ourselves, always use VCLK2. */
+ 	par->misc |= 0x0C;
+-- 
+2.35.1
+
 
 
