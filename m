@@ -2,45 +2,49 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D9731C32772
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 09:36:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EECABC32792
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 09:36:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351282AbiHWJfW (ORCPT
+        id S1352122AbiHWJgc (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 05:35:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38702 "EHLO
+        Tue, 23 Aug 2022 05:36:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43254 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351140AbiHWJei (ORCPT
+        with ESMTP id S1351157AbiHWJek (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 05:34:38 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CF11F956BC;
-        Tue, 23 Aug 2022 01:39:21 -0700 (PDT)
+        Tue, 23 Aug 2022 05:34:40 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3452F95AF9;
+        Tue, 23 Aug 2022 01:39:29 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 2042461485;
-        Tue, 23 Aug 2022 08:38:17 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 100A4C433C1;
-        Tue, 23 Aug 2022 08:38:15 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 99F6EB81C69;
+        Tue, 23 Aug 2022 08:39:28 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C9602C433D6;
+        Tue, 23 Aug 2022 08:39:26 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661243896;
-        bh=UCYycxyPUwO1hHOBKfBA1QUnk84cOVlOhcqdGlDU2ck=;
+        s=korg; t=1661243967;
+        bh=59tvkVufFs3JBdPukARV/TssrDo3G4tUPk9jkp5A+2s=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=aeA8avaasroYimosAlrL+L5iAk+pw1/BuKYDX9Z1o2Pj6pmw8XjtPFMcFrL8Q8nd8
-         4e9hPq/qdVTZ7zI85zcdlkKN4cXmnNaLDkctQkoGAZ2btWPigO3t1DMrWrbHthGeUt
-         s3RufXuc87Py9Ctc+MCCcyhUS+zjqv3qGQQmtNNY=
+        b=wspHXVuczCAzqggz6hSAUDd9TamVzcftfotRxYh1ZwUtYEsw+LcjCAJh56IZS25Cz
+         WhzrHM/20uZBmserxDdnCj/0YFAFtY1acYX5xA2MJ0mJWi3xujLYhUyfXhD21LM1V3
+         oacadoJw9OWOnRXHD9LZFOmetqKA3tedP/I+uM7Y=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Mikulas Patocka <mpatocka@redhat.com>,
-        "David S. Miller" <davem@davemloft.net>
-Subject: [PATCH 5.15 005/244] rds: add missing barrier to release_refill
-Date:   Tue, 23 Aug 2022 10:22:44 +0200
-Message-Id: <20220823080059.271888385@linuxfoundation.org>
+        stable@vger.kernel.org, Pavel Skripkin <paskripkin@gmail.com>,
+        =?UTF-8?q?Toke=20H=C3=B8iland-J=C3=B8rgensen?= <toke@toke.dk>,
+        Kalle Valo <quic_kvalo@quicinc.com>,
+        Sasha Levin <sashal@kernel.org>,
+        syzbot+03110230a11411024147@syzkaller.appspotmail.com,
+        syzbot+c6dde1f690b60e0b9fbe@syzkaller.appspotmail.com
+Subject: [PATCH 4.14 063/229] ath9k: fix use-after-free in ath9k_hif_usb_rx_cb
+Date:   Tue, 23 Aug 2022 10:23:44 +0200
+Message-Id: <20220823080055.986173465@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220823080059.091088642@linuxfoundation.org>
-References: <20220823080059.091088642@linuxfoundation.org>
+In-Reply-To: <20220823080053.202747790@linuxfoundation.org>
+References: <20220823080053.202747790@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -49,33 +53,91 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Mikulas Patocka <mpatocka@redhat.com>
+From: Pavel Skripkin <paskripkin@gmail.com>
 
-commit 9f414eb409daf4f778f011cf8266d36896bb930b upstream.
+[ Upstream commit 0ac4827f78c7ffe8eef074bc010e7e34bc22f533 ]
 
-The functions clear_bit and set_bit do not imply a memory barrier, thus it
-may be possible that the waitqueue_active function (which does not take
-any locks) is moved before clear_bit and it could miss a wakeup event.
+Syzbot reported use-after-free Read in ath9k_hif_usb_rx_cb() [0]. The
+problem was in incorrect htc_handle->drv_priv initialization.
 
-Fix this bug by adding a memory barrier after clear_bit.
+Probable call trace which can trigger use-after-free:
 
-Signed-off-by: Mikulas Patocka <mpatocka@redhat.com>
-Cc: stable@vger.kernel.org
-Signed-off-by: David S. Miller <davem@davemloft.net>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+ath9k_htc_probe_device()
+  /* htc_handle->drv_priv = priv; */
+  ath9k_htc_wait_for_target()      <--- Failed
+  ieee80211_free_hw()		   <--- priv pointer is freed
+
+<IRQ>
+...
+ath9k_hif_usb_rx_cb()
+  ath9k_hif_usb_rx_stream()
+   RX_STAT_INC()		<--- htc_handle->drv_priv access
+
+In order to not add fancy protection for drv_priv we can move
+htc_handle->drv_priv initialization at the end of the
+ath9k_htc_probe_device() and add helper macro to make
+all *_STAT_* macros NULL safe, since syzbot has reported related NULL
+deref in that macros [1]
+
+Link: https://syzkaller.appspot.com/bug?id=6ead44e37afb6866ac0c7dd121b4ce07cb665f60 [0]
+Link: https://syzkaller.appspot.com/bug?id=b8101ffcec107c0567a0cd8acbbacec91e9ee8de [1]
+Fixes: fb9987d0f748 ("ath9k_htc: Support for AR9271 chipset.")
+Reported-and-tested-by: syzbot+03110230a11411024147@syzkaller.appspotmail.com
+Reported-and-tested-by: syzbot+c6dde1f690b60e0b9fbe@syzkaller.appspotmail.com
+Signed-off-by: Pavel Skripkin <paskripkin@gmail.com>
+Acked-by: Toke Høiland-Jørgensen <toke@toke.dk>
+Signed-off-by: Kalle Valo <quic_kvalo@quicinc.com>
+Link: https://lore.kernel.org/r/d57bbedc857950659bfacac0ab48790c1eda00c8.1655145743.git.paskripkin@gmail.com
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/rds/ib_recv.c |    1 +
- 1 file changed, 1 insertion(+)
+ drivers/net/wireless/ath/ath9k/htc.h          | 10 +++++-----
+ drivers/net/wireless/ath/ath9k/htc_drv_init.c |  3 ++-
+ 2 files changed, 7 insertions(+), 6 deletions(-)
 
---- a/net/rds/ib_recv.c
-+++ b/net/rds/ib_recv.c
-@@ -363,6 +363,7 @@ static int acquire_refill(struct rds_con
- static void release_refill(struct rds_connection *conn)
- {
- 	clear_bit(RDS_RECV_REFILL, &conn->c_flags);
-+	smp_mb__after_atomic();
+diff --git a/drivers/net/wireless/ath/ath9k/htc.h b/drivers/net/wireless/ath/ath9k/htc.h
+index 16dff4b89a86..d66d3c9299fb 100644
+--- a/drivers/net/wireless/ath/ath9k/htc.h
++++ b/drivers/net/wireless/ath/ath9k/htc.h
+@@ -325,11 +325,11 @@ static inline struct ath9k_htc_tx_ctl *HTC_SKB_CB(struct sk_buff *skb)
+ }
  
- 	/* We don't use wait_on_bit()/wake_up_bit() because our waking is in a
- 	 * hot path and finding waiters is very rare.  We don't want to walk
+ #ifdef CONFIG_ATH9K_HTC_DEBUGFS
+-
+-#define TX_STAT_INC(c) (hif_dev->htc_handle->drv_priv->debug.tx_stats.c++)
+-#define TX_STAT_ADD(c, a) (hif_dev->htc_handle->drv_priv->debug.tx_stats.c += a)
+-#define RX_STAT_INC(c) (hif_dev->htc_handle->drv_priv->debug.skbrx_stats.c++)
+-#define RX_STAT_ADD(c, a) (hif_dev->htc_handle->drv_priv->debug.skbrx_stats.c += a)
++#define __STAT_SAFE(expr) (hif_dev->htc_handle->drv_priv ? (expr) : 0)
++#define TX_STAT_INC(c) __STAT_SAFE(hif_dev->htc_handle->drv_priv->debug.tx_stats.c++)
++#define TX_STAT_ADD(c, a) __STAT_SAFE(hif_dev->htc_handle->drv_priv->debug.tx_stats.c += a)
++#define RX_STAT_INC(c) __STAT_SAFE(hif_dev->htc_handle->drv_priv->debug.skbrx_stats.c++)
++#define RX_STAT_ADD(c, a) __STAT_SAFE(hif_dev->htc_handle->drv_priv->debug.skbrx_stats.c += a)
+ #define CAB_STAT_INC   priv->debug.tx_stats.cab_queued++
+ 
+ #define TX_QSTAT_INC(q) (priv->debug.tx_stats.queue_stats[q]++)
+diff --git a/drivers/net/wireless/ath/ath9k/htc_drv_init.c b/drivers/net/wireless/ath/ath9k/htc_drv_init.c
+index 88e3b4a4de31..9fcdda6f7088 100644
+--- a/drivers/net/wireless/ath/ath9k/htc_drv_init.c
++++ b/drivers/net/wireless/ath/ath9k/htc_drv_init.c
+@@ -946,7 +946,6 @@ int ath9k_htc_probe_device(struct htc_target *htc_handle, struct device *dev,
+ 	priv->hw = hw;
+ 	priv->htc = htc_handle;
+ 	priv->dev = dev;
+-	htc_handle->drv_priv = priv;
+ 	SET_IEEE80211_DEV(hw, priv->dev);
+ 
+ 	ret = ath9k_htc_wait_for_target(priv);
+@@ -967,6 +966,8 @@ int ath9k_htc_probe_device(struct htc_target *htc_handle, struct device *dev,
+ 	if (ret)
+ 		goto err_init;
+ 
++	htc_handle->drv_priv = priv;
++
+ 	return 0;
+ 
+ err_init:
+-- 
+2.35.1
+
 
 
