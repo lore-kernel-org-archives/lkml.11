@@ -2,45 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 13F0DC32772
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 10:14:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0CAABC32774
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 10:14:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353113AbiHWKOW (ORCPT
+        id S1353188AbiHWKO3 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 06:14:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46704 "EHLO
+        Tue, 23 Aug 2022 06:14:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46686 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352782AbiHWKGQ (ORCPT
+        with ESMTP id S1352775AbiHWKGQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 23 Aug 2022 06:06:16 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0FAB4BC0F;
-        Tue, 23 Aug 2022 01:52:57 -0700 (PDT)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6D2AA54CB1;
+        Tue, 23 Aug 2022 01:52:52 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id A87BBB81C28;
-        Tue, 23 Aug 2022 08:52:55 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E4CF4C433D6;
-        Tue, 23 Aug 2022 08:52:53 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id F3C59611DD;
+        Tue, 23 Aug 2022 08:52:51 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 03699C433D7;
+        Tue, 23 Aug 2022 08:52:50 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661244774;
-        bh=ROwYacelnhogMjbaFhx5Z+LfPE39x335YCVt9z0dvRA=;
+        s=korg; t=1661244771;
+        bh=vYopN2OvdoOaGtVHd9gj1WN5klnOVbI44044XMYR80o=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=MRn1ejosB9+EBAl7NaJJ5n3KpQoDgDmQHwcAjLCxCejVq7LYKtDl09qB2tIpHu6KS
-         lJ7hZkr7PFQ/w+IsNS9S9e1KBI4eAtDzO2gIV9vB5bPMCb8KOFBvu71YHAgoNDiqHO
-         JiqAaCWwho5bSQfUxk4G78/qSS7HFCtMEcEm5q/A=
+        b=qh5HBMDmuUMzU2Er8b4XKEAiOuF6J0WjWw0eeNPe/xPqRff64YLjE3WbVCh67/LiK
+         lWIbmD9wl86DIoitZ4/Vg4yRSDEhChqBPcEDsQi15WH6NLza/6sxEyCCwOGRVQVOA6
+         xa+uKxoSPnkwfpMJSFABkX8++83pX0dOFiFUZNq0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
-        Linus Walleij <linus.walleij@linaro.org>
-Subject: [PATCH 4.14 188/229] pinctrl: nomadik: Fix refcount leak in nmk_pinctrl_dt_subnode_to_map
-Date:   Tue, 23 Aug 2022 10:25:49 +0200
-Message-Id: <20220823080100.324783308@linuxfoundation.org>
+        stable@vger.kernel.org, Mark Brown <broonie@kernel.org>,
+        Frieder Schrempf <frieder.schrempf@kontron.de>
+Subject: [PATCH 5.15 146/244] regulator: pca9450: Remove restrictions for regulator-name
+Date:   Tue, 23 Aug 2022 10:25:05 +0200
+Message-Id: <20220823080104.052218001@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220823080053.202747790@linuxfoundation.org>
-References: <20220823080053.202747790@linuxfoundation.org>
+In-Reply-To: <20220823080059.091088642@linuxfoundation.org>
+References: <20220823080059.091088642@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -49,36 +49,50 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Miaoqian Lin <linmq006@gmail.com>
+From: Frieder Schrempf <frieder.schrempf@kontron.de>
 
-commit 4b32e054335ea0ce50967f63a7bfd4db058b14b9 upstream.
+commit b0de7fa706506bf0591037908376351beda8c5d6 upstream.
 
-of_parse_phandle() returns a node pointer with refcount
-incremented, we should use of_node_put() on it when not need anymore.
-Add missing of_node_put() to avoid refcount leak."
+The device bindings shouldn't put any constraints on the regulator-name
+property specified in the generic bindings. This allows using arbitrary
+and descriptive names for the regulators.
 
-Fixes: c2f6d059abfc ("pinctrl: nomadik: refactor DT parser to take two paths")
-Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
-Link: https://lore.kernel.org/r/20220607111602.57355-1-linmq006@gmail.com
-Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
+Suggested-by: Mark Brown <broonie@kernel.org>
+Fixes: 7ae9e3a6bf3f ("dt-bindings: regulator: add pca9450 regulator yaml")
+Signed-off-by: Frieder Schrempf <frieder.schrempf@kontron.de>
+Link: https://lore.kernel.org/r/20220802064335.8481-1-frieder@fris.de
+Signed-off-by: Mark Brown <broonie@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/pinctrl/nomadik/pinctrl-nomadik.c |    4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
+ Documentation/devicetree/bindings/regulator/nxp,pca9450-regulator.yaml |   11 ----------
+ 1 file changed, 11 deletions(-)
 
---- a/drivers/pinctrl/nomadik/pinctrl-nomadik.c
-+++ b/drivers/pinctrl/nomadik/pinctrl-nomadik.c
-@@ -1455,8 +1455,10 @@ static int nmk_pinctrl_dt_subnode_to_map
+--- a/Documentation/devicetree/bindings/regulator/nxp,pca9450-regulator.yaml
++++ b/Documentation/devicetree/bindings/regulator/nxp,pca9450-regulator.yaml
+@@ -47,12 +47,6 @@ properties:
+         description:
+           Properties for single LDO regulator.
  
- 	has_config = nmk_pinctrl_dt_get_config(np, &configs);
- 	np_config = of_parse_phandle(np, "ste,config", 0);
--	if (np_config)
-+	if (np_config) {
- 		has_config |= nmk_pinctrl_dt_get_config(np_config, &configs);
-+		of_node_put(np_config);
-+	}
- 	if (has_config) {
- 		const char *gpio_name;
- 		const char *pin;
+-        properties:
+-          regulator-name:
+-            pattern: "^LDO[1-5]$"
+-            description:
+-              should be "LDO1", ..., "LDO5"
+-
+         unevaluatedProperties: false
+ 
+       "^BUCK[1-6]$":
+@@ -62,11 +56,6 @@ properties:
+           Properties for single BUCK regulator.
+ 
+         properties:
+-          regulator-name:
+-            pattern: "^BUCK[1-6]$"
+-            description:
+-              should be "BUCK1", ..., "BUCK6"
+-
+           nxp,dvs-run-voltage:
+             $ref: "/schemas/types.yaml#/definitions/uint32"
+             minimum: 600000
 
 
