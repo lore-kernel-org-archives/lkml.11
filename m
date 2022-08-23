@@ -2,94 +2,168 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 90343C32772
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 11:43:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 53F37C32772
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 11:43:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358075AbiHWLnh (ORCPT
+        id S1358134AbiHWLnp (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 07:43:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58432 "EHLO
+        Tue, 23 Aug 2022 07:43:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60184 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357885AbiHWLjd (ORCPT
+        with ESMTP id S1357895AbiHWLjc (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 07:39:33 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3E71A6F55D;
+        Tue, 23 Aug 2022 07:39:32 -0400
+Received: from fllv0015.ext.ti.com (fllv0015.ext.ti.com [198.47.19.141])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3EC7E70E55;
         Tue, 23 Aug 2022 02:28:34 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 2665EB81C66;
-        Tue, 23 Aug 2022 09:28:33 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 56230C433C1;
-        Tue, 23 Aug 2022 09:28:31 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661246911;
-        bh=xwMDHTFnMLKH4+U7KF18c69Qbn3zdxCc6asbHfolpLg=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=RCY7DVprYVpscYjhfT51AJt6Kwqd5/3hcaWqHSCbceKXPX2ZcKOI8mwvO4/BjQzip
-         uO2RoaQ61rm6YdF0nvPCSfu5+WhuHoNiPfERD1OQo47nivwC/QKaREtVQhnqLBVViR
-         Z4u1Ybxod2mGHKKSnnIL3qVsvio8+jcw8fOzyAHY=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Baokun Li <libaokun1@huawei.com>,
-        Jan Kara <jack@suse.cz>,
-        "Ritesh Harjani (IBM)" <ritesh.list@gmail.com>,
-        Theodore Tso <tytso@mit.edu>
-Subject: [PATCH 5.4 257/389] ext4: add EXT4_INODE_HAS_XATTR_SPACE macro in xattr.h
-Date:   Tue, 23 Aug 2022 10:25:35 +0200
-Message-Id: <20220823080126.331222029@linuxfoundation.org>
-X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220823080115.331990024@linuxfoundation.org>
-References: <20220823080115.331990024@linuxfoundation.org>
-User-Agent: quilt/0.67
+Received: from lelv0266.itg.ti.com ([10.180.67.225])
+        by fllv0015.ext.ti.com (8.15.2/8.15.2) with ESMTP id 27N9RwWQ080103;
+        Tue, 23 Aug 2022 04:27:58 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
+        s=ti-com-17Q1; t=1661246878;
+        bh=xd4qm/j7upLytEKeiy06TJdA6DbvK6VC227evNzbywg=;
+        h=Date:CC:Subject:To:References:From:In-Reply-To;
+        b=MmhNIicLemZVBqA7iUZ+/2S9/VTqObVudRkclB6P03U/ynv1XIahQKCKFvLQL5mlE
+         l7SrT3cog495av+XnkJFY5VoOaCPtzsEC9AMOTPKdLFeIZhIi47KkYu9K5bsxyFbaP
+         ehswb6ecd5j3bxcZMf2/9FPNewy6Z1pJleyqVxq8=
+Received: from DFLE102.ent.ti.com (dfle102.ent.ti.com [10.64.6.23])
+        by lelv0266.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 27N9RwZc068060
+        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
+        Tue, 23 Aug 2022 04:27:58 -0500
+Received: from DFLE115.ent.ti.com (10.64.6.36) by DFLE102.ent.ti.com
+ (10.64.6.23) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2507.6; Tue, 23
+ Aug 2022 04:27:58 -0500
+Received: from fllv0040.itg.ti.com (10.64.41.20) by DFLE115.ent.ti.com
+ (10.64.6.36) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2507.6 via
+ Frontend Transport; Tue, 23 Aug 2022 04:27:58 -0500
+Received: from [10.24.69.241] (ileax41-snat.itg.ti.com [10.172.224.153])
+        by fllv0040.itg.ti.com (8.15.2/8.15.2) with ESMTP id 27N9RsMR112681;
+        Tue, 23 Aug 2022 04:27:55 -0500
+Message-ID: <7cd7e745-11d1-476b-a7f6-3131a4ad2bd3@ti.com>
+Date:   Tue, 23 Aug 2022 14:57:53 +0530
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.11.0
+CC:     <lee.jones@linaro.org>, <krzysztof.kozlowski@linaro.org>,
+        <krzysztof.kozlowski+dt@linaro.org>, <kishon@ti.com>,
+        <vkoul@kernel.org>, <dan.carpenter@oracle.com>,
+        <grygorii.strashko@ti.com>, <rogerq@kernel.org>,
+        <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <linux-phy@lists.infradead.org>, <s-vadapalli@ti.com>
+Subject: Re: [PATCH v3 1/2] dt-bindings: phy: ti: phy-gmii-sel: Add bindings
+ for J7200
+Content-Language: en-US
+To:     Rob Herring <robh@kernel.org>
+References: <20220822065631.27933-1-s-vadapalli@ti.com>
+ <20220822065631.27933-2-s-vadapalli@ti.com>
+ <20220822214126.GA896562-robh@kernel.org>
+From:   Siddharth Vadapalli <s-vadapalli@ti.com>
+In-Reply-To: <20220822214126.GA896562-robh@kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 7bit
+X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Baokun Li <libaokun1@huawei.com>
+Hello Rob,
 
-commit 179b14152dcb6a24c3415200603aebca70ff13af upstream.
+On 23/08/22 03:11, Rob Herring wrote:
+> On Mon, Aug 22, 2022 at 12:26:30PM +0530, Siddharth Vadapalli wrote:
+>> TI's J7200 SoC supports additional PHY modes like QSGMII and SGMII
+>> that are not supported on earlier SoCs. Add a compatible for it.
+>>
+>> Signed-off-by: Siddharth Vadapalli <s-vadapalli@ti.com>
+>> ---
+>>  .../mfd/ti,j721e-system-controller.yaml       |  6 ++++
+>>  .../bindings/phy/ti,phy-gmii-sel.yaml         | 30 ++++++++++++++++++-
+>>  2 files changed, 35 insertions(+), 1 deletion(-)
+>>
+>> diff --git a/Documentation/devicetree/bindings/mfd/ti,j721e-system-controller.yaml b/Documentation/devicetree/bindings/mfd/ti,j721e-system-controller.yaml
+>> index 73cffc45e056..466724cb4157 100644
+>> --- a/Documentation/devicetree/bindings/mfd/ti,j721e-system-controller.yaml
+>> +++ b/Documentation/devicetree/bindings/mfd/ti,j721e-system-controller.yaml
+>> @@ -54,6 +54,12 @@ patternProperties:
+>>      description:
+>>        Clock provider for TI EHRPWM nodes.
+>>  
+>> +  "phy@[0-9a-f]+$":
+>> +    type: object
+>> +    $ref: ../phy/ti,phy-gmii-sel.yaml
+> 
+> /schemas/phy/...
 
-When adding an xattr to an inode, we must ensure that the inode_size is
-not less than EXT4_GOOD_OLD_INODE_SIZE + extra_isize + pad. Otherwise,
-the end position may be greater than the start position, resulting in UAF.
+Thank you for reviewing the patch. I will update $ref to
+/schemas/phy/phy-provider.yaml.
 
-Signed-off-by: Baokun Li <libaokun1@huawei.com>
-Reviewed-by: Jan Kara <jack@suse.cz>
-Reviewed-by: Ritesh Harjani (IBM) <ritesh.list@gmail.com>
-Link: https://lore.kernel.org/r/20220616021358.2504451-2-libaokun1@huawei.com
-Signed-off-by: Theodore Ts'o <tytso@mit.edu>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
----
- fs/ext4/xattr.h |   13 +++++++++++++
- 1 file changed, 13 insertions(+)
+> 
+>> +    description:
+>> +      This is the register to set phy mode through phy-gmii-sel driver.
+>> +
+>>  required:
+>>    - compatible
+>>    - reg
+>> diff --git a/Documentation/devicetree/bindings/phy/ti,phy-gmii-sel.yaml b/Documentation/devicetree/bindings/phy/ti,phy-gmii-sel.yaml
+>> index ff8a6d9eb153..0ffb97f1a77c 100644
+>> --- a/Documentation/devicetree/bindings/phy/ti,phy-gmii-sel.yaml
+>> +++ b/Documentation/devicetree/bindings/phy/ti,phy-gmii-sel.yaml
+>> @@ -53,12 +53,24 @@ properties:
+>>        - ti,am43xx-phy-gmii-sel
+>>        - ti,dm814-phy-gmii-sel
+>>        - ti,am654-phy-gmii-sel
+>> +      - ti,j7200-cpsw5g-phy-gmii-sel
+>>  
+>>    reg:
+>>      maxItems: 1
+>>  
+>>    '#phy-cells': true
+>>  
+>> +  ti,qsgmii-main-ports:
+>> +    $ref: /schemas/types.yaml#/definitions/uint32-array
+>> +    description: |
+>> +      Required only for QSGMII mode. Array to select the port for
+>> +      QSGMII main mode. Rest of the ports are selected as QSGMII_SUB
+>> +      ports automatically. Any one of the 4 CPSW5G ports can act as the
+>> +      main port with the rest of them being the QSGMII_SUB ports.
+>> +    items:
+>> +      minimum: 1
+>> +      maximum: 4
+>> +
+>>  allOf:
+>>    - if:
+>>        properties:
+>> @@ -73,6 +85,22 @@ allOf:
+>>          '#phy-cells':
+>>            const: 1
+>>            description: CPSW port number (starting from 1)
+>> +  - if:
+>> +      properties:
+>> +        compatible:
+>> +          contains:
+>> +            enum:
+>> +              - ti,j7200-cpsw5g-phy-gmii-sel
+>> +    then:
+>> +      properties:
+>> +        '#phy-cells':
+>> +          const: 1
+>> +          description: CPSW port number (starting from 1)
+>> +        ti,qsgmii-main-ports:
+>> +          maxItems: 1
+> 
+> If the array size can only ever be 1, then it's a uint32, not a 
+> uint32-array.
 
---- a/fs/ext4/xattr.h
-+++ b/fs/ext4/xattr.h
-@@ -95,6 +95,19 @@ struct ext4_xattr_entry {
- 
- #define EXT4_ZERO_XATTR_VALUE ((void *)-1)
- 
-+/*
-+ * If we want to add an xattr to the inode, we should make sure that
-+ * i_extra_isize is not 0 and that the inode size is not less than
-+ * EXT4_GOOD_OLD_INODE_SIZE + extra_isize + pad.
-+ *   EXT4_GOOD_OLD_INODE_SIZE   extra_isize header   entry   pad  data
-+ * |--------------------------|------------|------|---------|---|-------|
-+ */
-+#define EXT4_INODE_HAS_XATTR_SPACE(inode)				\
-+	((EXT4_I(inode)->i_extra_isize != 0) &&				\
-+	 (EXT4_GOOD_OLD_INODE_SIZE + EXT4_I(inode)->i_extra_isize +	\
-+	  sizeof(struct ext4_xattr_ibody_header) + EXT4_XATTR_PAD <=	\
-+	  EXT4_INODE_SIZE((inode)->i_sb)))
-+
- struct ext4_xattr_info {
- 	const char *name;
- 	const void *value;
+For the current device, there can be only one QSGMII main port and
+uint32 will be sufficient. However, I plan to send patches for TI's
+J721e device which supports up to 2 QSGMII main ports. I wish to
+implement the property such that it can be reused by J721e. For this
+reason, I am defining the property as a uint32-array. With this
+implementation, J7200 will use the property as an array with one
+element, while J721e will use the property as an array with two
+elements. This is being done to avoid adding a new property in the
+future just for J721e. Please let me know if this is fine.
 
-
+Regards,
+Siddharth.
