@@ -2,44 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 489F4C32772
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 08:29:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 13228C32772
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 08:29:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243770AbiHWI3o (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 04:29:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47562 "EHLO
+        id S243781AbiHWI3s (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 23 Aug 2022 04:29:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47578 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243790AbiHWIZ6 (ORCPT
+        with ESMTP id S243793AbiHWIZ7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 04:25:58 -0400
+        Tue, 23 Aug 2022 04:25:59 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 87D4172878;
-        Tue, 23 Aug 2022 01:14:02 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 222B27287D;
+        Tue, 23 Aug 2022 01:14:03 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id C60B761242;
-        Tue, 23 Aug 2022 08:14:01 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CD5E6C433D6;
-        Tue, 23 Aug 2022 08:14:00 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 09CD66132D;
+        Tue, 23 Aug 2022 08:13:34 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1B330C433C1;
+        Tue, 23 Aug 2022 08:13:32 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661242441;
-        bh=OQlvZM+K22KXk20z/y80Vu43gP5UH4g2hFg4EP4s7Wc=;
+        s=korg; t=1661242413;
+        bh=yMB+nDLTD/CtAiCCGvVNDEAEOnYChjmtyxH/gkHlNcw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=tTyhsHBKDp9sX+/UYMQV2jNXjYU+NRIwRXGRevcCEFCbORHJlubPs5dblOTHwyf7c
-         eQ8P4V8p8UdxfFp2jBD4P55VjfbK9vzbtQCqVespyfwKx5kZseH60h0IUxIBbnJbpz
-         kpiF9mKeVIZhdPQdq3hVzk3F/NfAy2GErvf5LppI=
+        b=euY9V/DV2othFdOXHCmAbDWXZWIpc/vqyWCxI67j3CE0w8raEBuuTfnyb1DtKhXWI
+         EJ5C6PCW3Qj4BYsIkgqYA9yt1AP+4GU0jEJ7hahaHMhpzdVBinib+D3iL+lNXBrBwS
+         Wy7RxbniHWdSzxV01h3klvBbmTQjm6Be7Zo8668o=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Trond Myklebust <trond.myklebust@hammerspace.com>
-Subject: [PATCH 4.9 072/101] SUNRPC: Reinitialise the backchannel request buffers before reuse
-Date:   Tue, 23 Aug 2022 10:03:45 +0200
-Message-Id: <20220823080037.304300421@linuxfoundation.org>
+        stable@vger.kernel.org, Jernej Skrabec <jernej.skrabec@gmail.com>,
+        Heiko Stuebner <heiko@sntech.de>,
+        Samuel Holland <samuel@sholland.org>,
+        Linus Walleij <linus.walleij@linaro.org>
+Subject: [PATCH 5.19 098/365] pinctrl: sunxi: Add I/O bias setting for H6 R-PIO
+Date:   Tue, 23 Aug 2022 09:59:59 +0200
+Message-Id: <20220823080122.301567818@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220823080034.579196046@linuxfoundation.org>
-References: <20220823080034.579196046@linuxfoundation.org>
+In-Reply-To: <20220823080118.128342613@linuxfoundation.org>
+References: <20220823080118.128342613@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -48,50 +50,67 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Trond Myklebust <trond.myklebust@hammerspace.com>
+From: Samuel Holland <samuel@sholland.org>
 
-commit 6622e3a73112fc336c1c2c582428fb5ef18e456a upstream.
+commit fc153c8f283bf5925615195fc9d4056414d7b168 upstream.
 
-When we're reusing the backchannel requests instead of freeing them,
-then we should reinitialise any values of the send/receive xdr_bufs so
-that they reflect the available space.
+H6 requires I/O bias configuration on both of its PIO devices.
+Previously it was only done for the main PIO.
 
-Fixes: 0d2a970d0ae5 ("SUNRPC: Fix a backchannel race")
-Signed-off-by: Trond Myklebust <trond.myklebust@hammerspace.com>
+The setting for Port L is at bit 0, so the bank calculation needs to
+account for the pin base. Otherwise the wrong bit is used.
+
+Fixes: cc62383fcebe ("pinctrl: sunxi: Support I/O bias voltage setting on H6")
+Reviewed-by: Jernej Skrabec <jernej.skrabec@gmail.com>
+Tested-by: Heiko Stuebner <heiko@sntech.de>
+Signed-off-by: Samuel Holland <samuel@sholland.org>
+Link: https://lore.kernel.org/r/20220713025233.27248-3-samuel@sholland.org
+Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- net/sunrpc/backchannel_rqst.c |   14 ++++++++++++++
- 1 file changed, 14 insertions(+)
+ drivers/pinctrl/sunxi/pinctrl-sun50i-h6-r.c |    1 +
+ drivers/pinctrl/sunxi/pinctrl-sunxi.c       |    7 ++++---
+ 2 files changed, 5 insertions(+), 3 deletions(-)
 
---- a/net/sunrpc/backchannel_rqst.c
-+++ b/net/sunrpc/backchannel_rqst.c
-@@ -69,6 +69,17 @@ static void xprt_free_allocation(struct
- 	kfree(req);
- }
+--- a/drivers/pinctrl/sunxi/pinctrl-sun50i-h6-r.c
++++ b/drivers/pinctrl/sunxi/pinctrl-sun50i-h6-r.c
+@@ -107,6 +107,7 @@ static const struct sunxi_pinctrl_desc s
+ 	.npins = ARRAY_SIZE(sun50i_h6_r_pins),
+ 	.pin_base = PL_BASE,
+ 	.irq_banks = 2,
++	.io_bias_cfg_variant = BIAS_VOLTAGE_PIO_POW_MODE_SEL,
+ };
  
-+static void xprt_bc_reinit_xdr_buf(struct xdr_buf *buf)
-+{
-+	buf->head[0].iov_len = PAGE_SIZE;
-+	buf->tail[0].iov_len = 0;
-+	buf->pages = NULL;
-+	buf->page_len = 0;
-+	buf->flags = 0;
-+	buf->len = 0;
-+	buf->buflen = PAGE_SIZE;
-+}
-+
- static int xprt_alloc_xdr_buf(struct xdr_buf *buf, gfp_t gfp_flags)
+ static int sun50i_h6_r_pinctrl_probe(struct platform_device *pdev)
+--- a/drivers/pinctrl/sunxi/pinctrl-sunxi.c
++++ b/drivers/pinctrl/sunxi/pinctrl-sunxi.c
+@@ -624,7 +624,7 @@ static int sunxi_pinctrl_set_io_bias_cfg
+ 					 unsigned pin,
+ 					 struct regulator *supply)
  {
- 	struct page *page;
-@@ -291,6 +302,9 @@ void xprt_free_bc_rqst(struct rpc_rqst *
- 	 */
- 	spin_lock_bh(&xprt->bc_pa_lock);
- 	if (xprt_need_to_requeue(xprt)) {
-+		xprt_bc_reinit_xdr_buf(&req->rq_snd_buf);
-+		xprt_bc_reinit_xdr_buf(&req->rq_rcv_buf);
-+		req->rq_rcv_buf.len = PAGE_SIZE;
- 		list_add_tail(&req->rq_bc_pa_list, &xprt->bc_pa_list);
- 		xprt->bc_alloc_count++;
- 		req = NULL;
+-	unsigned short bank = pin / PINS_PER_BANK;
++	unsigned short bank;
+ 	unsigned long flags;
+ 	u32 val, reg;
+ 	int uV;
+@@ -640,6 +640,9 @@ static int sunxi_pinctrl_set_io_bias_cfg
+ 	if (uV == 0)
+ 		return 0;
+ 
++	pin -= pctl->desc->pin_base;
++	bank = pin / PINS_PER_BANK;
++
+ 	switch (pctl->desc->io_bias_cfg_variant) {
+ 	case BIAS_VOLTAGE_GRP_CONFIG:
+ 		/*
+@@ -657,8 +660,6 @@ static int sunxi_pinctrl_set_io_bias_cfg
+ 		else
+ 			val = 0xD; /* 3.3V */
+ 
+-		pin -= pctl->desc->pin_base;
+-
+ 		reg = readl(pctl->membase + sunxi_grp_config_reg(pin));
+ 		reg &= ~IO_BIAS_MASK;
+ 		writel(reg | val, pctl->membase + sunxi_grp_config_reg(pin));
 
 
