@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A6D05C32772
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 10:55:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EC7ACC32772
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 10:57:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356373AbiHWKzQ (ORCPT
+        id S1356769AbiHWKyt (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 06:55:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40094 "EHLO
+        Tue, 23 Aug 2022 06:54:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34266 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355947AbiHWKse (ORCPT
+        with ESMTP id S1348712AbiHWKrg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 06:48:34 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A96EC25E8F;
-        Tue, 23 Aug 2022 02:12:11 -0700 (PDT)
+        Tue, 23 Aug 2022 06:47:36 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7FE0E86B60;
+        Tue, 23 Aug 2022 02:11:54 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 6C7E8B81C66;
-        Tue, 23 Aug 2022 09:12:10 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B0C3EC433D6;
-        Tue, 23 Aug 2022 09:12:08 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id EB62E60F50;
+        Tue, 23 Aug 2022 09:11:53 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E7FD2C433D7;
+        Tue, 23 Aug 2022 09:11:52 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661245929;
-        bh=OQlvZM+K22KXk20z/y80Vu43gP5UH4g2hFg4EP4s7Wc=;
+        s=korg; t=1661245913;
+        bh=2xyhPch0MJygp7RYrx8cqb8RHV1ck2BsROSzHKc8JQ8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Ro28e8kxR/SfEbZfBlYwCvrG49ZT/o8oMnVYdAGHgcNFN/hF4QcMcVvpDRaMoJXE+
-         zavLMQyxWtI/HmxLKNDf3uqoIKz4IkmImbZdITq1keLWe+4BS1oGxiQtPXan/u9TT1
-         TATvKEQTyaEOWFBXds4sjf2KL6SQAEMGaMKygZMo=
+        b=Zxy++z+J7gmG1jE1aSKeCFO+QSaKYPreuBDGTocRw6Zs+QzHOSLUkpArb1yyD3IKs
+         LPO8jE5PZ4VbUrJJPXXjU+MJv3NLJdkPOKZpNuY5Ks7VFGglbiLWB0n27VRWz/PAxI
+         EchE5gK2Z/MTVcDTCJ0hnQKLjQU2jDK5YKIFrzN8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Trond Myklebust <trond.myklebust@hammerspace.com>
-Subject: [PATCH 4.19 233/287] SUNRPC: Reinitialise the backchannel request buffers before reuse
-Date:   Tue, 23 Aug 2022 10:26:42 +0200
-Message-Id: <20220823080108.889190037@linuxfoundation.org>
+        stable@vger.kernel.org, Xiu Jianfeng <xiujianfeng@huawei.com>,
+        John Johansen <john.johansen@canonical.com>
+Subject: [PATCH 4.19 229/287] apparmor: Fix memleak in aa_simple_write_to_buffer()
+Date:   Tue, 23 Aug 2022 10:26:38 +0200
+Message-Id: <20220823080108.728228207@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220823080100.268827165@linuxfoundation.org>
 References: <20220823080100.268827165@linuxfoundation.org>
@@ -49,50 +49,33 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Trond Myklebust <trond.myklebust@hammerspace.com>
+From: Xiu Jianfeng <xiujianfeng@huawei.com>
 
-commit 6622e3a73112fc336c1c2c582428fb5ef18e456a upstream.
+commit 417ea9fe972d2654a268ad66e89c8fcae67017c3 upstream.
 
-When we're reusing the backchannel requests instead of freeing them,
-then we should reinitialise any values of the send/receive xdr_bufs so
-that they reflect the available space.
+When copy_from_user failed, the memory is freed by kvfree. however the
+management struct and data blob are allocated independently, so only
+kvfree(data) cause a memleak issue here. Use aa_put_loaddata(data) to
+fix this issue.
 
-Fixes: 0d2a970d0ae5 ("SUNRPC: Fix a backchannel race")
-Signed-off-by: Trond Myklebust <trond.myklebust@hammerspace.com>
+Fixes: a6a52579e52b5 ("apparmor: split load data into management struct and data blob")
+Signed-off-by: Xiu Jianfeng <xiujianfeng@huawei.com>
+Signed-off-by: John Johansen <john.johansen@canonical.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- net/sunrpc/backchannel_rqst.c |   14 ++++++++++++++
- 1 file changed, 14 insertions(+)
+ security/apparmor/apparmorfs.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/net/sunrpc/backchannel_rqst.c
-+++ b/net/sunrpc/backchannel_rqst.c
-@@ -69,6 +69,17 @@ static void xprt_free_allocation(struct
- 	kfree(req);
- }
+--- a/security/apparmor/apparmorfs.c
++++ b/security/apparmor/apparmorfs.c
+@@ -403,7 +403,7 @@ static struct aa_loaddata *aa_simple_wri
  
-+static void xprt_bc_reinit_xdr_buf(struct xdr_buf *buf)
-+{
-+	buf->head[0].iov_len = PAGE_SIZE;
-+	buf->tail[0].iov_len = 0;
-+	buf->pages = NULL;
-+	buf->page_len = 0;
-+	buf->flags = 0;
-+	buf->len = 0;
-+	buf->buflen = PAGE_SIZE;
-+}
-+
- static int xprt_alloc_xdr_buf(struct xdr_buf *buf, gfp_t gfp_flags)
- {
- 	struct page *page;
-@@ -291,6 +302,9 @@ void xprt_free_bc_rqst(struct rpc_rqst *
- 	 */
- 	spin_lock_bh(&xprt->bc_pa_lock);
- 	if (xprt_need_to_requeue(xprt)) {
-+		xprt_bc_reinit_xdr_buf(&req->rq_snd_buf);
-+		xprt_bc_reinit_xdr_buf(&req->rq_rcv_buf);
-+		req->rq_rcv_buf.len = PAGE_SIZE;
- 		list_add_tail(&req->rq_bc_pa_list, &xprt->bc_pa_list);
- 		xprt->bc_alloc_count++;
- 		req = NULL;
+ 	data->size = copy_size;
+ 	if (copy_from_user(data->data, userbuf, copy_size)) {
+-		kvfree(data);
++		aa_put_loaddata(data);
+ 		return ERR_PTR(-EFAULT);
+ 	}
+ 
 
 
