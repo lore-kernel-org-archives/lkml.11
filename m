@@ -2,46 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 556FEC52D7A
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 10:23:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id ABF5DC49EC0
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 10:23:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355245AbiHWKXW (ORCPT
+        id S1354908AbiHWKWY (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 06:23:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46692 "EHLO
+        Tue, 23 Aug 2022 06:22:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58122 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353402AbiHWKL0 (ORCPT
+        with ESMTP id S1353164AbiHWKK7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 06:11:26 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C0E387F094;
-        Tue, 23 Aug 2022 01:56:42 -0700 (PDT)
+        Tue, 23 Aug 2022 06:10:59 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 83F5A7E308;
+        Tue, 23 Aug 2022 01:56:10 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 0C4FEB81C3E;
-        Tue, 23 Aug 2022 08:56:41 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4F00CC433D6;
-        Tue, 23 Aug 2022 08:56:39 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id D849A61555;
+        Tue, 23 Aug 2022 08:56:09 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D5189C433C1;
+        Tue, 23 Aug 2022 08:56:08 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661244999;
-        bh=Qv6ZPkimk60J/z99QV34gPcNVKVWvbzTNrs91mDfqTY=;
+        s=korg; t=1661244969;
+        bh=JI/03GeTwMgOsMygXf7J1KB/3ZHFrEc0d5hp42a4KF4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ITZ5Agz8P9NiqzZ9GZBfO01aYHqx8fHjuUyUFEAy5prxYVBF8FrGPmFCqIKkRgeGe
-         /fR7Ge4vLtQIOur2xbjvSBx5hJ1DNSm+pakQ7F5HiToC+92q0FVb4MlKhpy6NpGF93
-         MZqoIAtXnoRBwb3b5IkrYN61d1rPEmMDb4wHwJg4=
+        b=xejPmJxDRYfafbP7wSz/wX/4BZBUMadfJDyZEIPYJ+wKr4CAzfXtemD0dWEgoHX4b
+         uqJ6A4ryrJNlcW5ArGGx6usZ1AGj2X95XQDru/2clclJ9ziOM3c1AZx6/FVQxcYorb
+         iMbOOqnIbjCC26VITXA4ME+1v/Zm0X7cIyXsI8Tg=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Ofir Bitton <obitton@habana.ai>,
-        Oded Gabbay <ogabbay@kernel.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 186/244] habanalabs/gaudi: fix shift out of bounds
-Date:   Tue, 23 Aug 2022 10:25:45 +0200
-Message-Id: <20220823080105.561121637@linuxfoundation.org>
+        stable@vger.kernel.org, Guillaume Nault <gnault@redhat.com>,
+        Matthias May <matthias.may@westermo.com>,
+        Jakub Kicinski <kuba@kernel.org>
+Subject: [PATCH 4.14 191/229] geneve: do not use RT_TOS for IPv6 flowlabel
+Date:   Tue, 23 Aug 2022 10:25:52 +0200
+Message-Id: <20220823080100.429142200@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220823080059.091088642@linuxfoundation.org>
-References: <20220823080059.091088642@linuxfoundation.org>
+In-Reply-To: <20220823080053.202747790@linuxfoundation.org>
+References: <20220823080053.202747790@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -50,52 +50,42 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Ofir Bitton <obitton@habana.ai>
+From: Matthias May <matthias.may@westermo.com>
 
-[ Upstream commit 01622098aeb05a5efbb727199bbc2a4653393255 ]
+commit ca2bb69514a8bc7f83914122f0d596371352416c upstream.
 
-When validating NIC queues, queue offset calculation must be
-performed only for NIC queues.
+According to Guillaume Nault RT_TOS should never be used for IPv6.
 
-Signed-off-by: Ofir Bitton <obitton@habana.ai>
-Reviewed-by: Oded Gabbay <ogabbay@kernel.org>
-Signed-off-by: Oded Gabbay <ogabbay@kernel.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Quote:
+RT_TOS() is an old macro used to interprete IPv4 TOS as described in
+the obsolete RFC 1349. It's conceptually wrong to use it even in IPv4
+code, although, given the current state of the code, most of the
+existing calls have no consequence.
+
+But using RT_TOS() in IPv6 code is always a bug: IPv6 never had a "TOS"
+field to be interpreted the RFC 1349 way. There's no historical
+compatibility to worry about.
+
+Fixes: 3a56f86f1be6 ("geneve: handle ipv6 priority like ipv4 tos")
+Acked-by: Guillaume Nault <gnault@redhat.com>
+Signed-off-by: Matthias May <matthias.may@westermo.com>
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/misc/habanalabs/gaudi/gaudi.c | 16 +++++++++-------
- 1 file changed, 9 insertions(+), 7 deletions(-)
+ drivers/net/geneve.c |    3 +--
+ 1 file changed, 1 insertion(+), 2 deletions(-)
 
-diff --git a/drivers/misc/habanalabs/gaudi/gaudi.c b/drivers/misc/habanalabs/gaudi/gaudi.c
-index 14da87b38e83..801acab048eb 100644
---- a/drivers/misc/habanalabs/gaudi/gaudi.c
-+++ b/drivers/misc/habanalabs/gaudi/gaudi.c
-@@ -5744,15 +5744,17 @@ static int gaudi_parse_cb_no_ext_queue(struct hl_device *hdev,
- {
- 	struct asic_fixed_properties *asic_prop = &hdev->asic_prop;
- 	struct gaudi_device *gaudi = hdev->asic_specific;
--	u32 nic_mask_q_id = 1 << (HW_CAP_NIC_SHIFT +
--		((parser->hw_queue_id - GAUDI_QUEUE_ID_NIC_0_0) >> 2));
-+	u32 nic_queue_offset, nic_mask_q_id;
- 
- 	if ((parser->hw_queue_id >= GAUDI_QUEUE_ID_NIC_0_0) &&
--			(parser->hw_queue_id <= GAUDI_QUEUE_ID_NIC_9_3) &&
--			(!(gaudi->hw_cap_initialized & nic_mask_q_id))) {
--		dev_err(hdev->dev, "h/w queue %d is disabled\n",
--				parser->hw_queue_id);
--		return -EINVAL;
-+			(parser->hw_queue_id <= GAUDI_QUEUE_ID_NIC_9_3)) {
-+		nic_queue_offset = parser->hw_queue_id - GAUDI_QUEUE_ID_NIC_0_0;
-+		nic_mask_q_id = 1 << (HW_CAP_NIC_SHIFT + (nic_queue_offset >> 2));
-+
-+		if (!(gaudi->hw_cap_initialized & nic_mask_q_id)) {
-+			dev_err(hdev->dev, "h/w queue %d is disabled\n", parser->hw_queue_id);
-+			return -EINVAL;
-+		}
+--- a/drivers/net/geneve.c
++++ b/drivers/net/geneve.c
+@@ -795,8 +795,7 @@ static struct dst_entry *geneve_get_v6_d
+ 		use_cache = false;
  	}
  
- 	/* For internal queue jobs just check if CB address is valid */
--- 
-2.35.1
-
+-	fl6->flowlabel = ip6_make_flowinfo(RT_TOS(prio),
+-					   info->key.label);
++	fl6->flowlabel = ip6_make_flowinfo(prio, info->key.label);
+ 	dst_cache = (struct dst_cache *)&info->dst_cache;
+ 	if (use_cache) {
+ 		dst = dst_cache_get_ip6(dst_cache, &fl6->saddr);
 
 
