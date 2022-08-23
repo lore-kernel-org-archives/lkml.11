@@ -2,225 +2,101 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4EF48C32793
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 23:19:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 98D42C38142
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 23:23:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231161AbiHWXTQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 19:19:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54836 "EHLO
+        id S231527AbiHWXXv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 23 Aug 2022 19:23:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39990 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231163AbiHWXTM (ORCPT
+        with ESMTP id S229445AbiHWXXs (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 19:19:12 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5B3BC6C13A
-        for <linux-kernel@vger.kernel.org>; Tue, 23 Aug 2022 16:19:11 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1661296750;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=Ejd2XqlPIsLaN92xua+1YOCeIUPLipE6EMcANIURHpk=;
-        b=GaRBxrW7Se08u39DZdK8ByMaOQVXRtkTe70bkf5M1TxrF50rczUQPAdx6a8ZqW8djylJfA
-        wFsV+46uqnkzAeYbntY+/JkrCF/y+F6aAdelTM7lD0uekIla1OCSlI6lXZdq+0/wfMtQfA
-        eSg2KUOIKmjatZ/c4MC2efo3nl9AQxQ=
-Received: from mail-qk1-f197.google.com (mail-qk1-f197.google.com
- [209.85.222.197]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
- us-mta-465-9gupkTVqOsq-8bsNY8JIxg-1; Tue, 23 Aug 2022 19:19:09 -0400
-X-MC-Unique: 9gupkTVqOsq-8bsNY8JIxg-1
-Received: by mail-qk1-f197.google.com with SMTP id bj2-20020a05620a190200b006bba055ab6eso13296205qkb.12
-        for <linux-kernel@vger.kernel.org>; Tue, 23 Aug 2022 16:19:09 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc;
-        bh=Ejd2XqlPIsLaN92xua+1YOCeIUPLipE6EMcANIURHpk=;
-        b=SDJpvSu+EBzc3oolRSrEjeuKRJw2NiexZpdPTHXOFt/KOgVRz0lR4+XovEjXMzZTCY
-         ndUSBzTVi98tpRfb3/sxR2SsUMv2VVqbCanAjYtT562p6Mf4nRctrkdLoOKM0M9t87Bp
-         7qxUfc5pCglE+Lsq/uljGs//6x9xL5evyf35PqisFOk8qk1R/yorDd6KN/DiqMJeDoAI
-         MV+YiZHR7Cn+PaZDO67Q+D7Pwm3tToBZlYCXvUrol3q0rYiJWDzsVtDi1BbDVTsuwKFg
-         pNHD9xwAoGW4xwVNKAHvvu5TcoaXH1tTbMfyLs4ZTUY/nXc1hPSRzvYQ3RJG4FWeCVEN
-         zvRQ==
-X-Gm-Message-State: ACgBeo099KY8t0OZkbw2ELZODvKssT+p8kviY6Xi5lHYF8MVjGlj7JGe
-        YLLrbJSNNumu+atfp6D7JW1Um/iQK/6gKAuDDY4AMOFV4ZOiI52TAbYKOf5qjPi1X0qvtg+mEtr
-        7YJiADQ4TlJDGM2nj/G83oUHV
-X-Received: by 2002:a37:b243:0:b0:6bc:3d04:623f with SMTP id b64-20020a37b243000000b006bc3d04623fmr4888003qkf.672.1661296748656;
-        Tue, 23 Aug 2022 16:19:08 -0700 (PDT)
-X-Google-Smtp-Source: AA6agR68qAn5UZduxSvc7YFRPNkyTTJD1EBYt7TKsqkGY0aznLoNst64fUxKKLOOcY75RG0ZX5cbHQ==
-X-Received: by 2002:a37:b243:0:b0:6bc:3d04:623f with SMTP id b64-20020a37b243000000b006bc3d04623fmr4887979qkf.672.1661296748284;
-        Tue, 23 Aug 2022 16:19:08 -0700 (PDT)
-Received: from xz-m1.local (bras-base-aurron9127w-grc-35-70-27-3-10.dsl.bell.ca. [70.27.3.10])
-        by smtp.gmail.com with ESMTPSA id dm33-20020a05620a1d6100b006b5f8f32a8fsm15149348qkb.114.2022.08.23.16.19.05
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 23 Aug 2022 16:19:07 -0700 (PDT)
-Date:   Tue, 23 Aug 2022 19:19:04 -0400
-From:   Peter Xu <peterx@redhat.com>
-To:     Marc Zyngier <maz@kernel.org>
-Cc:     Gavin Shan <gshan@redhat.com>, kvmarm@lists.cs.columbia.edu,
-        linux-arm-kernel@lists.infradead.org, kvm@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-doc@vger.kernel.org,
-        linux-kselftest@vger.kernel.org, pbonzini@redhat.com,
-        corbet@lwn.net, james.morse@arm.com, alexandru.elisei@arm.com,
-        suzuki.poulose@arm.com, oliver.upton@linux.dev,
-        catalin.marinas@arm.com, will@kernel.org, shuah@kernel.org,
-        seanjc@google.com, dmatlack@google.com, bgardon@google.com,
-        ricarkol@google.com, zhenyzha@redhat.com, shan.gavin@gmail.com
-Subject: Re: [PATCH v1 1/5] KVM: arm64: Enable ring-based dirty memory
- tracking
-Message-ID: <YwVgaGp3HOGzC8k2@xz-m1.local>
-References: <20220819005601.198436-1-gshan@redhat.com>
- <20220819005601.198436-2-gshan@redhat.com>
- <87lerkwtm5.wl-maz@kernel.org>
- <41fb5a1f-29a9-e6bb-9fab-4c83a2a8fce5@redhat.com>
- <87fshovtu0.wl-maz@kernel.org>
- <171d0159-4698-354b-8b2f-49d920d03b1b@redhat.com>
- <YwTc++Lz6lh3aR4F@xz-m1.local>
- <87bksawz0w.wl-maz@kernel.org>
- <YwVEoM1pj2MPCELp@xz-m1.local>
- <878rnewpaw.wl-maz@kernel.org>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <878rnewpaw.wl-maz@kernel.org>
+        Tue, 23 Aug 2022 19:23:48 -0400
+Received: from mga06.intel.com (mga06b.intel.com [134.134.136.31])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 12DDC895EB;
+        Tue, 23 Aug 2022 16:23:48 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1661297028; x=1692833028;
+  h=from:to:cc:subject:date:message-id;
+  bh=/r6rDwgWkkCE1tN6P9RzY0x7Kd+iQJ3tzAXrWfBRZlo=;
+  b=M47vtwfwOFG8LHp+gzFJW/P1cnDdokR72010sE8XwxmqtgtufL33OggP
+   mdQt9BmSl8pO5O8wFetA3I46WPFuPBzs1WBKdEgKfheb2cNlmO97eGyrK
+   i6yIO3cCkl46cWf4P42ZcdySorhhVzapNbdjebjhhviBOItBMjso0q/lK
+   YmSrtcjxMCMWBxheF81Ztlbna8HjJRvBGGtE4JLbUu10tbINzS6Dr6mXu
+   H4fQcLzuWMT43qZm6CKCVrexlml39+UW5iQHOYhhXzdleqy/bQW2BBq3z
+   onkJtoAOV/JRns8b9QXIUFVq3XDYp+JFUOLmJtwvwAvy8XqtDczW3jgr3
+   g==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10448"; a="355547570"
+X-IronPort-AV: E=Sophos;i="5.93,259,1654585200"; 
+   d="scan'208";a="355547570"
+Received: from orsmga007.jf.intel.com ([10.7.209.58])
+  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Aug 2022 16:23:47 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.93,259,1654585200"; 
+   d="scan'208";a="605831215"
+Received: from chang-linux-3.sc.intel.com ([172.25.66.173])
+  by orsmga007.jf.intel.com with ESMTP; 23 Aug 2022 16:23:47 -0700
+From:   "Chang S. Bae" <chang.seok.bae@intel.com>
+To:     kvm@vger.kernel.org, pbonzini@redhat.com
+Cc:     linux-kernel@vger.kernel.org, yang.zhong@intel.com,
+        chang.seok.bae@intel.com
+Subject: [RFC PATCH 0/2] KVM: x86: Add a new attribute to control dynamic XSTATE components
+Date:   Tue, 23 Aug 2022 16:14:00 -0700
+Message-Id: <20220823231402.7839-1-chang.seok.bae@intel.com>
+X-Mailer: git-send-email 2.17.1
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Aug 23, 2022 at 11:47:03PM +0100, Marc Zyngier wrote:
-> On Tue, 23 Aug 2022 22:20:32 +0100,
-> Peter Xu <peterx@redhat.com> wrote:
-> > 
-> > On Tue, Aug 23, 2022 at 08:17:03PM +0100, Marc Zyngier wrote:
-> > > I don't think we really need this check on the hot path. All we need
-> > > is to make the request sticky until userspace gets their act together
-> > > and consumes elements in the ring. Something like:
-> > > 
-> > > diff --git a/arch/arm64/kvm/arm.c b/arch/arm64/kvm/arm.c
-> > > index 986cee6fbc7f..e8ed5e1af159 100644
-> > > --- a/arch/arm64/kvm/arm.c
-> > > +++ b/arch/arm64/kvm/arm.c
-> > > @@ -747,6 +747,14 @@ static int check_vcpu_requests(struct kvm_vcpu *vcpu)
-> > >  
-> > >  		if (kvm_check_request(KVM_REQ_SUSPEND, vcpu))
-> > >  			return kvm_vcpu_suspend(vcpu);
-> > > +
-> > > +		if (kvm_check_request(KVM_REQ_RING_SOFT_FULL, vcpu) &&
-> > > +		    kvm_dirty_ring_soft_full(vcpu)) {
-> > > +			kvm_make_request(KVM_REQ_RING_SOFT_FULL, vcpu);
-> > > +			vcpu->run->exit_reason = KVM_EXIT_DIRTY_RING_FULL;
-> > > +			trace_kvm_dirty_ring_exit(vcpu);
-> > > +			return 0;
-> > > +		}
-> > >  	}
-> > >  
-> > >  	return 1;
-> > 
-> > Right, this seems working.  We can also use kvm_test_request() here.
-> > 
-> > > 
-> > > 
-> > > However, I'm a bit concerned by the reset side of things. It iterates
-> > > over the vcpus and expects the view of each ring to be consistent,
-> > > even if userspace is hacking at it from another CPU. For example, I
-> > > can't see what guarantees that the kernel observes the writes from
-> > > userspace in the order they are being performed (the documentation
-> > > provides no requirements other than "it must collect the dirty GFNs in
-> > > sequence", which doesn't mean much from an ordering perspective).
-> > > 
-> > > I can see that working on a strongly ordered architecture, but on
-> > > something as relaxed as ARM, the CPUs may^Wwill aggressively reorder
-> > > stuff that isn't explicitly ordered. I have the feeling that a CAS
-> > > operation on both sides would be enough, but someone who actually
-> > > understands how this works should have a look...
-> > 
-> > I definitely don't think I 100% understand all the ordering things since
-> > they're complicated.. but my understanding is that the reset procedure
-> > didn't need memory barrier (unlike pushing, where we have explicit wmb),
-> > because we assumed the userapp is not hostile so logically it should only
-> > modify the flags which is a 32bit field, assuming atomicity guaranteed.
-> 
-> Atomicity doesn't guarantee ordering, unfortunately.
+Hi KVM folks,
 
-Right, sorry to be misleading.  The "atomicity" part I was trying to say
-the kernel will always see consistent update on the fields.
+While documenting the ARCH_{REQ|GET}_XCOMP_GUEST_PERM options [1], I came
+to think of this new attribute as it can provide more consistent way of
+enabling dynamic features for QEMU/KVM.
 
-The ordering should also be guaranteed, because things must happen with
-below sequence:
+== Background ==
 
-  (1) kernel publish dirty GFN data (slot, offset)
-  (2) kernel publish dirty GFN flag (set to DIRTY)
-  (3) user sees DIRTY, collects (slots, offset)
-  (4) user sets it to RESET
-  (5) kernel reads RESET
+The new x86 arch_prctl() options [2] help to support dynamic AMX state
+enabling. As the VCPU permission should be separate, additional options are
+added for the userspace VMM like QEMU: ARCH_GET_XCOMP_GUEST_PERM and
+ARCH_REQ_XCOMP_GUEST_PERM.
 
-So the ordering of single-entry is guaranteed in that when (5) happens it
-must be after stablized (1+2).
+== Problem ==
 
-> Take the
-> following example: CPU0 is changing a bunch of flags for GFNs A, B, C,
-> D that exist in the ring in that order, and CPU1 performs an ioctl to
-> reset the page state.
-> 
-> CPU0:
->     write_flag(A, KVM_DIRTY_GFN_F_RESET)
->     write_flag(B, KVM_DIRTY_GFN_F_RESET)
->     write_flag(C, KVM_DIRTY_GFN_F_RESET)
->     write_flag(D, KVM_DIRTY_GFN_F_RESET)
->     [...]
-> 
-> CPU1:
->    ioctl(KVM_RESET_DIRTY_RINGS)
-> 
-> Since CPU0 writes do not have any ordering, CPU1 can observe the
-> writes in a sequence that have nothing to do with program order, and
-> could for example observe that GFN A and D have been reset, but not B
-> and C. This in turn breaks the logic in the reset code (B, C, and D
-> don't get reset), despite userspace having followed the spec to the
-> letter. If each was a store-release (which is the case on x86), it
-> wouldn't be a problem, but nothing calls it in the documentation.
-> 
-> Maybe that's not a big deal if it is expected that each CPU will issue
-> a KVM_RESET_DIRTY_RINGS itself, ensuring that it observe its own
-> writes. But expecting this to work across CPUs without any barrier is
-> wishful thinking.
+KVM has already established a set of ioctls to control VM attributes. It
+has the attribute to expose the KVM-supported XSTATE components [3].
+This interface, however, is not necessarily compatible with those
+arch_prctl() options. KVM may choose and expose some of the host-supported
+features. Then using the host-provided interface may not comply with this
+KVM policy.
 
-I see what you meant...
+== Solution ==
 
-Firstly I'm actually curious whether that'll really happen if the gfns are
-collected in something like a for loop:
+The patchset adds a new attribute to control XSTATE permission:
+KVM_X86_XCOMP_GUEST_PERM, and it is available through the
+KVM_GET_DEVICE_ATTR/KVM_SET_DEVICE_ATTR APIs. The KVM AMX test is updated
+to use this. Then QEMU may switch to keep using the KVM API, which is more
+consistent.
 
-  for(i = 0; i < N; i++)
-    collect_dirty_gfn(ring, i);
+[1]: https://lore.kernel.org/lkml/ec95b28f-51a1-a9cf-7d72-a3a865797c7d@intel.com/
+[2]: https://docs.kernel.org/x86/xstate.html
+[3]: https://gitlab.com/qemu-project/qemu/-/blob/master/linux-headers/asm-x86/kvm.h#L456
 
-Because since all the gfps to be read will depend on variable "i", IIUC no
-reordering should happen, but I'm not really sure, so more of a pure
-question.
+Chang S. Bae (2):
+  KVM: x86: Add a new system attribute for dynamic XSTATE component
+  selftests: kvm: Use the KVM API to enable dynamic XSTATE features
 
-Besides, the other thing to mention is that I think it is fine the RESET
-ioctl didn't recycle all the gfns got set to reset state.  Taking above
-example of GFNs A-D, if when reaching the RESET ioctl only A & D's flags
-are updated, the ioctl will recycle gfn A but stop at gfn B assuming B-D
-are not reset.  But IMHO it's okay because it means we reset partial of the
-gfns not all of them, and it's safe to do so.  It means the next ring full
-event can come earlier because we recycled less, but that's functionally
-safe to me.
+ arch/x86/include/asm/fpu/api.h                |  1 +
+ arch/x86/include/uapi/asm/kvm.h               |  1 +
+ arch/x86/kernel/fpu/xstate.c                  |  6 ++++
+ arch/x86/kvm/x86.c                            | 31 +++++++++++++++++++
+ tools/arch/x86/include/uapi/asm/kvm.h         |  1 +
+ .../selftests/kvm/lib/x86_64/processor.c      | 22 +++++++++----
+ 6 files changed, 56 insertions(+), 6 deletions(-)
 
-> 
-> > IIRC we used to discuss similar questions on "what if the user is hostile
-> > and wants to hack the process by messing up with the ring", and our
-> > conclusion was as long as the process wouldn't mess up anything outside
-> > itself it should be okay. E.g. It should not be able to either cause the
-> > host to misfunction, or trigger kernel warnings in dmesg, etc..
-> 
-> I'm not even discussing safety here. I'm purely discussing the
-> interactions between userspace and kernel based on the documentation
-> and the existing kernel code.
 
-I see.  Please let me know if above makes sense.
-
-Thanks!
-
+base-commit: 1c23f9e627a7b412978b4e852793c5e3c3efc555
 -- 
-Peter Xu
+2.17.1
 
