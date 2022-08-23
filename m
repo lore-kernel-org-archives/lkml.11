@@ -2,41 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 24681C32772
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 08:29:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 85D46C32772
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 08:29:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243298AbiHWI3P (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 04:29:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45280 "EHLO
+        id S243722AbiHWI3T (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 23 Aug 2022 04:29:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34312 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243657AbiHWIZp (ORCPT
+        with ESMTP id S243698AbiHWIZs (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 04:25:45 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9938B6B169;
-        Tue, 23 Aug 2022 01:13:41 -0700 (PDT)
+        Tue, 23 Aug 2022 04:25:48 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0043D71BE0;
+        Tue, 23 Aug 2022 01:13:50 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 21970B81C29;
-        Tue, 23 Aug 2022 08:13:41 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 743D4C433D7;
-        Tue, 23 Aug 2022 08:13:39 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id A4B7561228;
+        Tue, 23 Aug 2022 08:13:24 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id AE34EC433D6;
+        Tue, 23 Aug 2022 08:13:23 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661242419;
-        bh=ckMBl119NctqlvjDKtx+0nKMG/fB7D6nQeW4nRBcDOg=;
+        s=korg; t=1661242404;
+        bh=/9L/V64GOfJegWqVypiLB77vzs67y2ykCnPES2HTip8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=J3K3MAOmN/waxmPQAkaoTmVrLU8wyxZokPXSY2qA9sNmHPLfPi3EB/1s2kxMUuDOk
-         yAIpM6oGwrSXrTbB+9QwhwNAu9Ib1G8z7BdHpekaDkelpXXbIyUm+UId+S5JnXPRCw
-         VBam0vf58qKDKdqC5AU0csvNxQNDM9QHr6ozZBwQ=
+        b=FRwExk4jQikcDcuO87VCUQGe9ZFek3LZem2uisc4DRWiuERW89WY7cBPyEFY/VzzM
+         hrLlMNek5vGbmoULm7CeXFfHIv8m9dwgBd11y+I6qLHfGr0j0noaIBAAG+uNJJYi/D
+         S7LUDJgw+M0JjzNz8WvYI+Tcq6WTEWkRMcoYciCQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org, Jeff LaBundy <jeff@labundy.com>,
         Dmitry Torokhov <dmitry.torokhov@gmail.com>
-Subject: [PATCH 5.19 112/365] dt-bindings: input: iqs7222: Extend slider-mapped GPIO to IQS7222C
-Date:   Tue, 23 Aug 2022 10:00:13 +0200
-Message-Id: <20220823080122.897868947@linuxfoundation.org>
+Subject: [PATCH 5.19 110/365] dt-bindings: input: iqs7222: Remove support for RF filter
+Date:   Tue, 23 Aug 2022 10:00:11 +0200
+Message-Id: <20220823080122.807189406@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220823080118.128342613@linuxfoundation.org>
 References: <20220823080118.128342613@linuxfoundation.org>
@@ -50,71 +50,35 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Jeff LaBundy <jeff@labundy.com>
 
-commit f0ea452715d72bc365d2b401ceb458f5ae82eeec upstream.
+commit f5d2c1ed72c26152e6883ed67dc3004a39165098 upstream.
 
-Although the IQS7222C does not offer slider gesture support, the
-press/release event can still be mapped to any of the IQS7222C's
-three GPIO pins. Update the binding to reflect this relationship.
+The vendor has marked the RF filter enable control as reserved in
+the datasheet; remove it from the binding.
 
 Fixes: 44dc42d254bf ("dt-bindings: input: Add bindings for Azoteq IQS7222A/B/C")
 Signed-off-by: Jeff LaBundy <jeff@labundy.com>
-Link: https://lore.kernel.org/r/20220626072412.475211-10-jeff@labundy.com
+Link: https://lore.kernel.org/r/20220626072412.475211-8-jeff@labundy.com
 Signed-off-by: Dmitry Torokhov <dmitry.torokhov@gmail.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- .../bindings/input/azoteq,iqs7222.yaml        | 21 ++++++++++++-------
- 1 file changed, 13 insertions(+), 8 deletions(-)
+ Documentation/devicetree/bindings/input/azoteq,iqs7222.yaml | 4 ----
+ 1 file changed, 4 deletions(-)
 
 diff --git a/Documentation/devicetree/bindings/input/azoteq,iqs7222.yaml b/Documentation/devicetree/bindings/input/azoteq,iqs7222.yaml
-index c9c3a1e9bcae..32d0d5190334 100644
+index a3a1e5a65306..6180f7ee2284 100644
 --- a/Documentation/devicetree/bindings/input/azoteq,iqs7222.yaml
 +++ b/Documentation/devicetree/bindings/input/azoteq,iqs7222.yaml
-@@ -611,16 +611,15 @@ patternProperties:
-           azoteq,gpio-select:
-             $ref: /schemas/types.yaml#/definitions/uint32-array
-             minItems: 1
--            maxItems: 1
-+            maxItems: 3
-             items:
-               minimum: 0
--              maximum: 0
-+              maximum: 2
-             description: |
--              Specifies an individual GPIO mapped to a tap, swipe or flick
--              gesture as follows:
-+              Specifies one or more GPIO mapped to the event as follows:
-               0: GPIO0
--              1: GPIO3 (reserved)
--              2: GPIO4 (reserved)
-+              1: GPIO3 (IQS7222C only)
-+              2: GPIO4 (IQS7222C only)
+@@ -37,10 +37,6 @@ properties:
+       device is temporarily held in hardware reset prior to initialization if
+       this property is present.
  
-               Note that although multiple events can be mapped to a single
-               GPIO, they must all be of the same type (proximity, touch or
-@@ -705,6 +704,14 @@ allOf:
-               multipleOf: 4
-               maximum: 1020
- 
-+          patternProperties:
-+            "^event-(press|tap|(swipe|flick)-(pos|neg))$":
-+              properties:
-+                azoteq,gpio-select:
-+                  maxItems: 1
-+                  items:
-+                    maximum: 0
-+
-     else:
-       patternProperties:
-         "^channel-([0-9]|1[0-9])$":
-@@ -721,8 +728,6 @@ allOf:
- 
-                 azoteq,gesture-dist: false
- 
--                azoteq,gpio-select: false
+-  azoteq,rf-filt-enable:
+-    type: boolean
+-    description: Enables the device's internal RF filter.
 -
- required:
-   - compatible
-   - reg
+   azoteq,max-counts:
+     $ref: /schemas/types.yaml#/definitions/uint32
+     enum: [0, 1, 2, 3]
 -- 
 2.37.2
 
