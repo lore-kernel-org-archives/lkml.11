@@ -2,44 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B0C32C32772
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 11:19:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id ACEA3C3F6B0
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 11:19:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357462AbiHWLTO (ORCPT
+        id S1357390AbiHWLRV (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 07:19:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40424 "EHLO
+        Tue, 23 Aug 2022 07:17:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59618 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357679AbiHWLQ0 (ORCPT
+        with ESMTP id S244252AbiHWLPT (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 07:16:26 -0400
+        Tue, 23 Aug 2022 07:15:19 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8B79E222BC;
-        Tue, 23 Aug 2022 02:20:02 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 79DA4BA160;
+        Tue, 23 Aug 2022 02:19:03 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id C3300B81C99;
-        Tue, 23 Aug 2022 09:19:11 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 139DCC433B5;
-        Tue, 23 Aug 2022 09:19:09 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id A0B50B81C95;
+        Tue, 23 Aug 2022 09:18:03 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 04466C433D7;
+        Tue, 23 Aug 2022 09:18:01 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661246350;
-        bh=LfRrn7OKuh/oM8iWgkmoEwrZM11OPwZvU2DkIdgTWKI=;
+        s=korg; t=1661246282;
+        bh=rlZoPdOOJ0HA2H9/i8phZ/Z4JXOvD+sXUYV96nhCgFY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=DAU2j1gGDa+DrzFVuy0hsMJC3RBa3bAQ7GNz4wAcMlnFiAc9ROJiReQP2dUotmFUQ
-         KmmxIXD2hEvlUImieINDjiz9AlbZR2A03wsSiu4ZDApIVpPRXNUEXXXyJTEC6na+h/
-         huEoICU6QB6pVsbJyJ7lCn4Nb5aSI7CgVcZc/l7A=
+        b=deWaO5Kr73xSnYI8ZtUonl7FIEeNM4DBaXrfkKzeeFH7/ZRWHjBU7wpQ3pThuYd2Z
+         R31mgZg/J0zi0K0SG4Pg49qJyU6kkNjReaCqO71i+iULq8QTuEt/GPgfl0cn2oED59
+         A61bDs5PHipOpQ4pFOHkyCcE/QohJaYvxUWOAPto=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
-        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Alexander Stein <alexander.stein@ew.tq-group.com>,
+        Shawn Guo <shawnguo@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 081/389] ARM: dts: qcom: mdm9615: add missing PMIC GPIO reg
-Date:   Tue, 23 Aug 2022 10:22:39 +0200
-Message-Id: <20220823080119.021485921@linuxfoundation.org>
+Subject: [PATCH 5.4 058/389] ARM: dts: imx6ul: add missing properties for sram
+Date:   Tue, 23 Aug 2022 10:22:16 +0200
+Message-Id: <20220823080118.016735708@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220823080115.331990024@linuxfoundation.org>
 References: <20220823080115.331990024@linuxfoundation.org>
@@ -51,34 +51,37 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+From: Alexander Stein <alexander.stein@ew.tq-group.com>
 
-[ Upstream commit dc590cdc31f636ea15658f1206c3e380a53fb78e ]
+[ Upstream commit 5655699cf5cff9f4c4ee703792156bdd05d1addf ]
 
-'reg' property is required in SSBI children:
-  qcom-mdm9615-wp8548-mangoh-green.dtb: gpio@150: 'reg' is a required property
+All 3 properties are required by sram.yaml. Fixes the dtbs_check
+warning:
+sram@900000: '#address-cells' is a required property
+sram@900000: '#size-cells' is a required property
+sram@900000: 'ranges' is a required property
 
-Fixes: 2c5e596524e7 ("ARM: dts: Add MDM9615 dtsi")
-Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Signed-off-by: Bjorn Andersson <bjorn.andersson@linaro.org>
-Link: https://lore.kernel.org/r/20220507194913.261121-11-krzysztof.kozlowski@linaro.org
+Signed-off-by: Alexander Stein <alexander.stein@ew.tq-group.com>
+Signed-off-by: Shawn Guo <shawnguo@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/arm/boot/dts/qcom-mdm9615.dtsi | 1 +
- 1 file changed, 1 insertion(+)
+ arch/arm/boot/dts/imx6ul.dtsi | 3 +++
+ 1 file changed, 3 insertions(+)
 
-diff --git a/arch/arm/boot/dts/qcom-mdm9615.dtsi b/arch/arm/boot/dts/qcom-mdm9615.dtsi
-index 356e9535f7a6..ffb4dcdb62d2 100644
---- a/arch/arm/boot/dts/qcom-mdm9615.dtsi
-+++ b/arch/arm/boot/dts/qcom-mdm9615.dtsi
-@@ -323,6 +323,7 @@ rtc@11d {
+diff --git a/arch/arm/boot/dts/imx6ul.dtsi b/arch/arm/boot/dts/imx6ul.dtsi
+index f008036e9294..630643013bdc 100644
+--- a/arch/arm/boot/dts/imx6ul.dtsi
++++ b/arch/arm/boot/dts/imx6ul.dtsi
+@@ -157,6 +157,9 @@ soc {
+ 		ocram: sram@900000 {
+ 			compatible = "mmio-sram";
+ 			reg = <0x00900000 0x20000>;
++			ranges = <0 0x00900000 0x20000>;
++			#address-cells = <1>;
++			#size-cells = <1>;
+ 		};
  
- 				pmicgpio: gpio@150 {
- 					compatible = "qcom,pm8018-gpio", "qcom,ssbi-gpio";
-+					reg = <0x150>;
- 					interrupt-controller;
- 					#interrupt-cells = <2>;
- 					gpio-controller;
+ 		intc: interrupt-controller@a01000 {
 -- 
 2.35.1
 
