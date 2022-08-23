@@ -2,41 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D2D8EC32772
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 08:29:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 24681C32772
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 08:29:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243325AbiHWI3K (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 04:29:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34140 "EHLO
+        id S243298AbiHWI3P (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 23 Aug 2022 04:29:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45280 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243628AbiHWIZn (ORCPT
+        with ESMTP id S243657AbiHWIZp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 04:25:43 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E7E426FA3E;
-        Tue, 23 Aug 2022 01:13:45 -0700 (PDT)
+        Tue, 23 Aug 2022 04:25:45 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9938B6B169;
+        Tue, 23 Aug 2022 01:13:41 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 5D0F56129A;
-        Tue, 23 Aug 2022 08:13:18 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E6FCCC433D7;
-        Tue, 23 Aug 2022 08:13:16 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 21970B81C29;
+        Tue, 23 Aug 2022 08:13:41 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 743D4C433D7;
+        Tue, 23 Aug 2022 08:13:39 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661242397;
-        bh=mLBY6Fsf6WZ2u0NsCDFnW8EU6G375hSpNr7EVGFAr1o=;
+        s=korg; t=1661242419;
+        bh=ckMBl119NctqlvjDKtx+0nKMG/fB7D6nQeW4nRBcDOg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Okg3i6g0mxpnReqEbzhLb2dmMg5iG+qw9kc+AqO+u1uk71gs5ZLILKX4TCJ8/ZU2f
-         /lF1jbm9r+ViLZA6vtHEuXAyC30JWn61ABWJhPL5yZ7JZRm/39MHeEM9yzZrXRj20A
-         GH8/bI+jwjXhOWd8CYKl5EWE+GEip6cpNpincS9M=
+        b=J3K3MAOmN/waxmPQAkaoTmVrLU8wyxZokPXSY2qA9sNmHPLfPi3EB/1s2kxMUuDOk
+         yAIpM6oGwrSXrTbB+9QwhwNAu9Ib1G8z7BdHpekaDkelpXXbIyUm+UId+S5JnXPRCw
+         VBam0vf58qKDKdqC5AU0csvNxQNDM9QHr6ozZBwQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org, Jeff LaBundy <jeff@labundy.com>,
         Dmitry Torokhov <dmitry.torokhov@gmail.com>
-Subject: [PATCH 5.19 109/365] Input: iqs7222 - remove support for RF filter
-Date:   Tue, 23 Aug 2022 10:00:10 +0200
-Message-Id: <20220823080122.758836359@linuxfoundation.org>
+Subject: [PATCH 5.19 112/365] dt-bindings: input: iqs7222: Extend slider-mapped GPIO to IQS7222C
+Date:   Tue, 23 Aug 2022 10:00:13 +0200
+Message-Id: <20220823080122.897868947@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220823080118.128342613@linuxfoundation.org>
 References: <20220823080118.128342613@linuxfoundation.org>
@@ -50,38 +50,71 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Jeff LaBundy <jeff@labundy.com>
 
-commit 381932cf61d52bde656c8596c0cb8f46bed53dc0 upstream.
+commit f0ea452715d72bc365d2b401ceb458f5ae82eeec upstream.
 
-The vendor has marked the RF filter enable control as reserved in
-the datasheet; remove it from the driver.
+Although the IQS7222C does not offer slider gesture support, the
+press/release event can still be mapped to any of the IQS7222C's
+three GPIO pins. Update the binding to reflect this relationship.
 
-Fixes: e505edaedcb9 ("Input: add support for Azoteq IQS7222A/B/C")
+Fixes: 44dc42d254bf ("dt-bindings: input: Add bindings for Azoteq IQS7222A/B/C")
 Signed-off-by: Jeff LaBundy <jeff@labundy.com>
-Link: https://lore.kernel.org/r/20220626072412.475211-7-jeff@labundy.com
+Link: https://lore.kernel.org/r/20220626072412.475211-10-jeff@labundy.com
 Signed-off-by: Dmitry Torokhov <dmitry.torokhov@gmail.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/input/misc/iqs7222.c | 7 -------
- 1 file changed, 7 deletions(-)
+ .../bindings/input/azoteq,iqs7222.yaml        | 21 ++++++++++++-------
+ 1 file changed, 13 insertions(+), 8 deletions(-)
 
-diff --git a/drivers/input/misc/iqs7222.c b/drivers/input/misc/iqs7222.c
-index e65260d290cc..b2e8097a2e6d 100644
---- a/drivers/input/misc/iqs7222.c
-+++ b/drivers/input/misc/iqs7222.c
-@@ -557,13 +557,6 @@ static const struct iqs7222_prop_desc iqs7222_props[] = {
- 		.reg_width = 4,
- 		.label = "current reference trim",
- 	},
--	{
--		.name = "azoteq,rf-filt-enable",
--		.reg_grp = IQS7222_REG_GRP_GLBL,
--		.reg_offset = 0,
--		.reg_shift = 15,
--		.reg_width = 1,
--	},
- 	{
- 		.name = "azoteq,max-counts",
- 		.reg_grp = IQS7222_REG_GRP_GLBL,
+diff --git a/Documentation/devicetree/bindings/input/azoteq,iqs7222.yaml b/Documentation/devicetree/bindings/input/azoteq,iqs7222.yaml
+index c9c3a1e9bcae..32d0d5190334 100644
+--- a/Documentation/devicetree/bindings/input/azoteq,iqs7222.yaml
++++ b/Documentation/devicetree/bindings/input/azoteq,iqs7222.yaml
+@@ -611,16 +611,15 @@ patternProperties:
+           azoteq,gpio-select:
+             $ref: /schemas/types.yaml#/definitions/uint32-array
+             minItems: 1
+-            maxItems: 1
++            maxItems: 3
+             items:
+               minimum: 0
+-              maximum: 0
++              maximum: 2
+             description: |
+-              Specifies an individual GPIO mapped to a tap, swipe or flick
+-              gesture as follows:
++              Specifies one or more GPIO mapped to the event as follows:
+               0: GPIO0
+-              1: GPIO3 (reserved)
+-              2: GPIO4 (reserved)
++              1: GPIO3 (IQS7222C only)
++              2: GPIO4 (IQS7222C only)
+ 
+               Note that although multiple events can be mapped to a single
+               GPIO, they must all be of the same type (proximity, touch or
+@@ -705,6 +704,14 @@ allOf:
+               multipleOf: 4
+               maximum: 1020
+ 
++          patternProperties:
++            "^event-(press|tap|(swipe|flick)-(pos|neg))$":
++              properties:
++                azoteq,gpio-select:
++                  maxItems: 1
++                  items:
++                    maximum: 0
++
+     else:
+       patternProperties:
+         "^channel-([0-9]|1[0-9])$":
+@@ -721,8 +728,6 @@ allOf:
+ 
+                 azoteq,gesture-dist: false
+ 
+-                azoteq,gpio-select: false
+-
+ required:
+   - compatible
+   - reg
 -- 
 2.37.2
 
