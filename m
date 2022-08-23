@@ -2,128 +2,108 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9DF8BC32772
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 17:07:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 465B1C32772
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 17:08:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343936AbiHWRH4 (ORCPT
+        id S1343924AbiHWRIA (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 13:07:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41134 "EHLO
+        Tue, 23 Aug 2022 13:08:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41220 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344868AbiHWRGF (ORCPT
+        with ESMTP id S1345997AbiHWRGm (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 13:06:05 -0400
-Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1F99512B057
-        for <linux-kernel@vger.kernel.org>; Tue, 23 Aug 2022 06:34:51 -0700 (PDT)
-Received: from dggpemm500022.china.huawei.com (unknown [172.30.72.55])
-        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4MBqr81mPrzkWSD;
-        Tue, 23 Aug 2022 21:31:20 +0800 (CST)
-Received: from dggpemm500013.china.huawei.com (7.185.36.172) by
- dggpemm500022.china.huawei.com (7.185.36.162) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Tue, 23 Aug 2022 21:34:49 +0800
-Received: from ubuntu1804.huawei.com (10.67.175.36) by
- dggpemm500013.china.huawei.com (7.185.36.172) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Tue, 23 Aug 2022 21:34:35 +0800
-From:   Chen Zhongjin <chenzhongjin@huawei.com>
-To:     <linux-kernel@vger.kernel.org>, <linuxppc-dev@lists.ozlabs.org>
-CC:     <jpoimboe@kernel.org>, <peterz@infradead.org>, <bp@suse.de>,
-        <mhiramat@kernel.org>, <sv@linux.ibm.com>,
-        <christophe.leroy@csgroup.eu>, <naveen.n.rao@linux.vnet.ibm.com>,
-        <chenzhongjin@huawei.com>
-Subject: [PATCH] objtool: replace _ASM_PTR with quad in macros
-Date:   Tue, 23 Aug 2022 21:31:24 +0800
-Message-ID: <20220823133124.55914-1-chenzhongjin@huawei.com>
-X-Mailer: git-send-email 2.17.1
+        Tue, 23 Aug 2022 13:06:42 -0400
+Received: from smtp-out1.suse.de (smtp-out1.suse.de [IPv6:2001:67c:2178:6::1c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F1779D4F61
+        for <linux-kernel@vger.kernel.org>; Tue, 23 Aug 2022 07:04:52 -0700 (PDT)
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by smtp-out1.suse.de (Postfix) with ESMTPS id E7152224A5;
+        Tue, 23 Aug 2022 14:04:50 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
+        t=1661263490; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=CD2l+I4MjMw0C0NBz+C57caAVjEFsSwQ3UTNjf+/spY=;
+        b=sKLpVxYTCFCzey+bXYirzI2nbMxT0IYTquNrqguhNiiE6MT21Ae+d+HsWWNZu6elEZkXd5
+        /75ZgG1c6s7Y3j1dOsPksjTdxygCq4oj0sEzepx6bEGbUA1yiURVubdNzeOvlGcViwiCFN
+        /ivpUxhpDntQFz2WfKrZfL1EfHMmM5Y=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
+        s=susede2_ed25519; t=1661263490;
+        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=CD2l+I4MjMw0C0NBz+C57caAVjEFsSwQ3UTNjf+/spY=;
+        b=gp14rMbaORLZCoNIRXyN7Ael/iuuDMsMhhsT/RaYpp7/I4NIGO9V8QEXN3msc0rvONKwNG
+        yMyXbNMdZvY//gDg==
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id AB0BF13AB7;
+        Tue, 23 Aug 2022 14:04:50 +0000 (UTC)
+Received: from dovecot-director2.suse.de ([192.168.254.65])
+        by imap2.suse-dmz.suse.de with ESMTPSA
+        id Tl8tKILeBGPhdQAAMHmgww
+        (envelope-from <vbabka@suse.cz>); Tue, 23 Aug 2022 14:04:50 +0000
+Message-ID: <04adfdfd-8907-fd26-06cd-bb03f39eeed8@suse.cz>
+Date:   Tue, 23 Aug 2022 16:04:50 +0200
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.67.175.36]
-X-ClientProxiedBy: dggems703-chm.china.huawei.com (10.3.19.180) To
- dggpemm500013.china.huawei.com (7.185.36.172)
-X-CFilter-Loop: Reflected
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.1.2
+Subject: Re: [PATCH linux-next] mm/slab_common: Remove the unneeded result
+ variable
+Content-Language: en-US
+To:     cgel.zte@gmail.com, 42.hyeyoo@gmail.com
+Cc:     cl@linux.com, rientjes@google.com, iamjoonsoo.kim@lge.com,
+        roman.gushchin@linux.dev, linux-mm@kvack.org,
+        linux-kernel@vger.kernel.org, ye xingchen <ye.xingchen@zte.com.cn>,
+        Zeal Robot <zealci@zte.com.cn>
+References: <20220823075241.209009-1-ye.xingchen@zte.com.cn>
+From:   Vlastimil Babka <vbabka@suse.cz>
+In-Reply-To: <20220823075241.209009-1-ye.xingchen@zte.com.cn>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Macros STACK_FRAME_NON_STANDARD and ANNOTATE_NOENDBR uses
-_ASM_PTR. It switch between .long and .quad based on 32bit
-or 64bit. However objtool doesn't work for 32bit, so _ASM_PTR
-makes no sense.
+On 8/23/22 09:52, cgel.zte@gmail.com wrote:
+> From: ye xingchen <ye.xingchen@zte.com.cn>
+> 
+> Return the value from __kmem_cache_shrink() directly instead of storing it
+>  in another redundant variable.
+> 
+> Reported-by: Zeal Robot <zealci@zte.com.cn>
+> Signed-off-by: ye xingchen <ye.xingchen@zte.com.cn>
 
-Considering that _ASM_PTR comes from asm.h, which is x86
-specific head file, while objtool.h is generic. Replace
-_ASM_PTR with quad and remove asm.h reference.
+Thanks, added to slab.git for-6.1/trivial
 
-Signed-off-by: Chen Zhongjin <chenzhongjin@huawei.com>
----
- include/linux/objtool.h       | 6 ++----
- tools/include/linux/objtool.h | 6 ++----
- 2 files changed, 4 insertions(+), 8 deletions(-)
-
-diff --git a/include/linux/objtool.h b/include/linux/objtool.h
-index 62c54ffbeeaa..d2413cb78037 100644
---- a/include/linux/objtool.h
-+++ b/include/linux/objtool.h
-@@ -45,8 +45,6 @@ struct unwind_hint {
- 
- #ifdef CONFIG_OBJTOOL
- 
--#include <asm/asm.h>
--
- #ifndef __ASSEMBLY__
- 
- #define UNWIND_HINT(sp_reg, sp_offset, type, end)		\
-@@ -87,7 +85,7 @@ struct unwind_hint {
- #define ANNOTATE_NOENDBR					\
- 	"986: \n\t"						\
- 	".pushsection .discard.noendbr\n\t"			\
--	_ASM_PTR " 986b\n\t"					\
-+	".quad 986b\n\t"					\
- 	".popsection\n\t"
- 
- #define ASM_REACHABLE							\
-@@ -144,7 +142,7 @@ struct unwind_hint {
- 
- .macro STACK_FRAME_NON_STANDARD func:req
- 	.pushsection .discard.func_stack_frame_non_standard, "aw"
--	_ASM_PTR \func
-+	.quad \func
- 	.popsection
- .endm
- 
-diff --git a/tools/include/linux/objtool.h b/tools/include/linux/objtool.h
-index 62c54ffbeeaa..d2413cb78037 100644
---- a/tools/include/linux/objtool.h
-+++ b/tools/include/linux/objtool.h
-@@ -45,8 +45,6 @@ struct unwind_hint {
- 
- #ifdef CONFIG_OBJTOOL
- 
--#include <asm/asm.h>
--
- #ifndef __ASSEMBLY__
- 
- #define UNWIND_HINT(sp_reg, sp_offset, type, end)		\
-@@ -87,7 +85,7 @@ struct unwind_hint {
- #define ANNOTATE_NOENDBR					\
- 	"986: \n\t"						\
- 	".pushsection .discard.noendbr\n\t"			\
--	_ASM_PTR " 986b\n\t"					\
-+	".quad 986b\n\t"					\
- 	".popsection\n\t"
- 
- #define ASM_REACHABLE							\
-@@ -144,7 +142,7 @@ struct unwind_hint {
- 
- .macro STACK_FRAME_NON_STANDARD func:req
- 	.pushsection .discard.func_stack_frame_non_standard, "aw"
--	_ASM_PTR \func
-+	.quad \func
- 	.popsection
- .endm
- 
--- 
-2.17.1
+> ---
+>  mm/slab_common.c | 6 +-----
+>  1 file changed, 1 insertion(+), 5 deletions(-)
+> 
+> diff --git a/mm/slab_common.c b/mm/slab_common.c
+> index 17996649cfe3..0dfa3cfb6be5 100644
+> --- a/mm/slab_common.c
+> +++ b/mm/slab_common.c
+> @@ -495,13 +495,9 @@ EXPORT_SYMBOL(kmem_cache_destroy);
+>   */
+>  int kmem_cache_shrink(struct kmem_cache *cachep)
+>  {
+> -	int ret;
+> -
+> -
+>  	kasan_cache_shrink(cachep);
+> -	ret = __kmem_cache_shrink(cachep);
+>  
+> -	return ret;
+> +	return __kmem_cache_shrink(cachep);
+>  }
+>  EXPORT_SYMBOL(kmem_cache_shrink);
+>  
 
