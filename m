@@ -2,46 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 64625C32772
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 09:42:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 33B70C32796
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 09:42:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234181AbiHWJmZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 05:42:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52832 "EHLO
+        id S242972AbiHWJma (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 23 Aug 2022 05:42:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52354 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351676AbiHWJkB (ORCPT
+        with ESMTP id S1344258AbiHWJkX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 05:40:01 -0400
+        Tue, 23 Aug 2022 05:40:23 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 451BA98C9E;
-        Tue, 23 Aug 2022 01:41:19 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AA22E78BFA;
+        Tue, 23 Aug 2022 01:41:23 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 55B8861540;
-        Tue, 23 Aug 2022 08:40:30 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5E456C433D6;
-        Tue, 23 Aug 2022 08:40:29 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 782426155E;
+        Tue, 23 Aug 2022 08:40:27 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 774D6C433D7;
+        Tue, 23 Aug 2022 08:40:26 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661244029;
-        bh=o680fSd5QgG2dGfNBgWcGxeyA9nWVhvUlqlhj7sYoHI=;
+        s=korg; t=1661244026;
+        bh=N1qxb1d5A0ahyPnmnnSrdHQ4ijl9mV+imj7CvZo3YMY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=p1DqDv4j42uJXkt/aSj3FkTEK4SFWS/nbBb1VZiX/1Q0nCXB16iz/YHdyI7Hre+VT
-         Br4ncJWwodvBwNQc0dOxTNu/ON0xdh7wpDg60Kd2R5daVOSWn3G6+rSr8n7kLGLtqK
-         qLqthDCz72z089suhoeM/zC3PMt41qR+hqn+GwQA=
+        b=OKcjXJceHAGcpx7xyiUDOJjsk83FOzQTvrzUF9ib/ge9BjitUFbVb5TidB+hZ7Jam
+         5CTJy8B72QIaKrzQjliEPG9XsSSYMoxUkHzhq4ohjzUnD2py2iXK8ed9I8XJscw5dM
+         sy4yz5L/JgWg9BfSKBhe++nRtvseP6pGKP6146Hk=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jens Axboe <axboe@kernel.dk>,
-        "Jason A. Donenfeld" <Jason@zx2c4.com>,
-        Al Viro <viro@zeniv.linux.org.uk>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.14 075/229] fs: check FMODE_LSEEK to control internal pipe splicing
-Date:   Tue, 23 Aug 2022 10:23:56 +0200
-Message-Id: <20220823080056.398968527@linuxfoundation.org>
+        stable@vger.kernel.org,
+        "=?UTF-8?q?N=C3=ADcolas=20F . =20R . =20A . =20Prado?=" 
+        <nfraprado@collabora.com>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+        Chunfeng Yun <chunfeng.yun@mediatek.com>
+Subject: [PATCH 5.15 026/244] dt-bindings: usb: mtk-xhci: Allow wakeup interrupt-names to be optional
+Date:   Tue, 23 Aug 2022 10:23:05 +0200
+Message-Id: <20220823080059.925877376@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220823080053.202747790@linuxfoundation.org>
-References: <20220823080053.202747790@linuxfoundation.org>
+In-Reply-To: <20220823080059.091088642@linuxfoundation.org>
+References: <20220823080059.091088642@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -50,58 +51,32 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jason A. Donenfeld <Jason@zx2c4.com>
+From: Nícolas F. R. A. Prado <nfraprado@collabora.com>
 
-[ Upstream commit 97ef77c52b789ec1411d360ed99dca1efe4b2c81 ]
+commit b2c510ffe29f20a5f6ff31ae28d32ffa494b8cfb upstream.
 
-The original direct splicing mechanism from Jens required the input to
-be a regular file because it was avoiding the special socket case. It
-also recognized blkdevs as being close enough to a regular file. But it
-forgot about chardevs, which behave the same way and work fine here.
+Add missing "minItems: 1" to the interrupt-names property to allow the
+second interrupt-names, "wakeup", to be optional.
 
-This is an okayish heuristic, but it doesn't totally work. For example,
-a few chardevs should be spliceable here. And a few regular files
-shouldn't. This patch fixes this by instead checking whether FMODE_LSEEK
-is set, which represents decently enough what we need rewinding for when
-splicing to internal pipes.
-
-Fixes: b92ce5589374 ("[PATCH] splice: add direct fd <-> fd splicing support")
-Cc: Jens Axboe <axboe@kernel.dk>
-Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
-Signed-off-by: Al Viro <viro@zeniv.linux.org.uk>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Fixes: fe8e488058c4 ("dt-bindings: usb: mtk-xhci: add wakeup interrupt")
+Signed-off-by: Nícolas F. R. A. Prado <nfraprado@collabora.com>
+Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Acked-by: Chunfeng Yun <chunfeng.yun@mediatek.com>
+Link: https://lore.kernel.org/r/20220623193702.817996-2-nfraprado@collabora.com
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- fs/splice.c | 10 ++++------
- 1 file changed, 4 insertions(+), 6 deletions(-)
+ Documentation/devicetree/bindings/usb/mediatek,mtk-xhci.yaml |    1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/fs/splice.c b/fs/splice.c
-index c84ac7e97e21..04d25af25a42 100644
---- a/fs/splice.c
-+++ b/fs/splice.c
-@@ -898,17 +898,15 @@ ssize_t splice_direct_to_actor(struct file *in, struct splice_desc *sd,
- {
- 	struct pipe_inode_info *pipe;
- 	long ret, bytes;
--	umode_t i_mode;
- 	size_t len;
- 	int i, flags, more;
+--- a/Documentation/devicetree/bindings/usb/mediatek,mtk-xhci.yaml
++++ b/Documentation/devicetree/bindings/usb/mediatek,mtk-xhci.yaml
+@@ -56,6 +56,7 @@ properties:
+       - description: optional, wakeup interrupt used to support runtime PM
  
- 	/*
--	 * We require the input being a regular file, as we don't want to
--	 * randomly drop data for eg socket -> socket splicing. Use the
--	 * piped splicing for that!
-+	 * We require the input to be seekable, as we don't want to randomly
-+	 * drop data for eg socket -> socket splicing. Use the piped splicing
-+	 * for that!
- 	 */
--	i_mode = file_inode(in)->i_mode;
--	if (unlikely(!S_ISREG(i_mode) && !S_ISBLK(i_mode)))
-+	if (unlikely(!(in->f_mode & FMODE_LSEEK)))
- 		return -EINVAL;
- 
- 	/*
--- 
-2.35.1
-
+   interrupt-names:
++    minItems: 1
+     items:
+       - const: host
+       - const: wakeup
 
 
