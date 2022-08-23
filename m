@@ -2,70 +2,173 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 675D0C32772
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 14:56:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 73D06C32772
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 14:58:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242620AbiHWO4I (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 10:56:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56168 "EHLO
+        id S242890AbiHWO6Y (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 23 Aug 2022 10:58:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56354 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243051AbiHWOzg (ORCPT
+        with ESMTP id S241791AbiHWO6H (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 10:55:36 -0400
-Received: from bg5.exmail.qq.com (bg4.exmail.qq.com [43.155.67.158])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7B94074DF3
-        for <linux-kernel@vger.kernel.org>; Tue, 23 Aug 2022 05:20:35 -0700 (PDT)
-X-QQ-mid: bizesmtp90t1661257156t9gmmv7c
-Received: from localhost.localdomain ( [182.148.14.124])
-        by bizesmtp.qq.com (ESMTP) with 
-        id ; Tue, 23 Aug 2022 20:19:15 +0800 (CST)
-X-QQ-SSF: 01000000002000C0D000B00A0000000
-X-QQ-FEAT: 5q30pvLz2icLKpNbf+F1dZ4MtBijbcMDlPnAwkmzhoH2yxFy/xuKFyBhHsTZ5
-        TwCt164T3CdsA4/Epucm3SLsK4EO6HKvM8zPknLYfJDOB3oY9U1BXog2DkbON76lVDovrL5
-        UUqd2FzkZ5YjNyBAGxNrjKOru77MFSlkbGHpBRy5/zkbhfl3PIV4mAyjPv750bDFav9n9B2
-        3C61hZxszng8QbVOt+KW6f/EAzoXnd/wKp1PZt0fwurfN+aIFgZ7W2fc9gd+DLl7rIHCUMh
-        PRWIdMs2KQTE+AEos88bA3fwzvG2Fd6ed6y+JwCC2TcWvcIXMYWZq0XUq40KWcerFKzl++q
-        Ajg8eBVEA2b4PPW4neDlv8TGb7o0AhF3Wp/nrZ0mlSa6jFOvMclgi7G214Xs1OcLWUP6WWG
-X-QQ-GoodBg: 0
-From:   Jilin Yuan <yuanjilin@cdjrlc.com>
-To:     airlied@linux.ie, daniel@ffwll.ch
-Cc:     dri-devel@lists.freedesktop.org, linux-kernel@vger.kernel.org,
-        Jilin Yuan <yuanjilin@cdjrlc.com>
-Subject: [PATCH] drm/display: fix repeated words in comments
-Date:   Tue, 23 Aug 2022 20:19:09 +0800
-Message-Id: <20220823121909.13553-1-yuanjilin@cdjrlc.com>
-X-Mailer: git-send-email 2.36.1
+        Tue, 23 Aug 2022 10:58:07 -0400
+Received: from relay12.mail.gandi.net (relay12.mail.gandi.net [IPv6:2001:4b98:dc4:8::232])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 544A430A79E;
+        Tue, 23 Aug 2022 05:23:31 -0700 (PDT)
+Received: (Authenticated sender: paul.kocialkowski@bootlin.com)
+        by mail.gandi.net (Postfix) with ESMTPSA id B6140200004;
+        Tue, 23 Aug 2022 12:22:49 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
+        t=1661257371;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=mH/IsYL2UPBaCXvhJbSLyyoriNuaQXpxdb7a7Mfls2k=;
+        b=DAzEwz0Yj5FE2S/Gf2B5PDjuh2A9BbgMkrwUgaEn6TEf+aSR3AWc5hjukvQOyOUIX2tjnT
+        VqHvjbLQRHRi83kxjT8K4c88QHMOcDAeSxydZnwV/NPnW4a7B5cx4tytI0vZMGagEYlGT8
+        Wq9aDliGZjnH+ItFFvPkeblGaypN0er1s0CmnRvpvfPU1uONta8FqtcbSoCU+5A7wM3R3g
+        HdM2rf13SnCK0/ta9Tn4S/AVqUE9mhik4oQhhEYpANOwI6HHZIDL8f7gR+IJ8MFa0ATeWa
+        Gro75d/mDXIQ/4nkvme6/rwYAwas01UqUck8kxNFPfDGk/xTj+J0V38F/WC5ww==
+Date:   Tue, 23 Aug 2022 14:22:44 +0200
+From:   Paul Kocialkowski <paul.kocialkowski@bootlin.com>
+To:     Samuel Holland <samuel@sholland.org>
+Cc:     Jernej =?utf-8?Q?=C5=A0krabec?= <jernej.skrabec@gmail.com>,
+        linux-media@vger.kernel.org, Maxime Ripard <mripard@kernel.org>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Chen-Yu Tsai <wens@csie.org>,
+        Nicolas Dufresne <nicolas.dufresne@collabora.com>,
+        kernel@collabora.com,
+        Dmitry Osipenko <dmitry.osipenko@collabora.com>,
+        stable@vger.kernel.org, linux-staging@lists.linux.dev,
+        linux-arm-kernel@lists.infradead.org, linux-sunxi@lists.linux.dev,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v1 2/3] media: cedrus: Set the platform driver data
+ earlier
+Message-ID: <YwTGlENw/7+SDal/@aptenodytes>
+References: <20220818203308.439043-1-nicolas.dufresne@collabora.com>
+ <4418189.LvFx2qVVIh@jernej-laptop>
+ <47ce07adc73887b5afaf9815a78b793d0e9a6b54.camel@collabora.com>
+ <4733096.GXAFRqVoOG@jernej-laptop>
+ <0aab3720-7211-9414-0005-6a419b5f04c8@sholland.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-QQ-SENDSIZE: 520
-Feedback-ID: bizesmtp:cdjrlc.com:qybglogicsvr:qybglogicsvr4
+Content-Type: multipart/signed; micalg=pgp-sha256;
+        protocol="application/pgp-signature"; boundary="VACStzkiwKlyW1sA"
+Content-Disposition: inline
+In-Reply-To: <0aab3720-7211-9414-0005-6a419b5f04c8@sholland.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
- Delete the redundant word 'the'.
 
-Signed-off-by: Jilin Yuan <yuanjilin@cdjrlc.com>
----
- drivers/gpu/drm/display/drm_dp_helper.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+--VACStzkiwKlyW1sA
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-diff --git a/drivers/gpu/drm/display/drm_dp_helper.c b/drivers/gpu/drm/display/drm_dp_helper.c
-index e7c22c2ca90c..c258cbd6857b 100644
---- a/drivers/gpu/drm/display/drm_dp_helper.c
-+++ b/drivers/gpu/drm/display/drm_dp_helper.c
-@@ -1595,9 +1595,9 @@ static int drm_dp_aux_reply_duration(const struct drm_dp_aux_msg *msg)
- 
- /*
-  * Calculate the length of the i2c transfer in usec, assuming
-- * the i2c bus speed is as specified. Gives the the "worst"
-+ * the i2c bus speed is as specified. Gives the "worst"
-  * case estimate, ie. successful while as long as possible.
-- * Doesn't account the the "MOT" bit, and instead assumes each
-+ * Doesn't account the "MOT" bit, and instead assumes each
-  * message includes a START, ADDRESS and STOP. Neither does it
-  * account for additional random variables such as clock stretching.
-  */
--- 
-2.36.1
+Hi,
 
+On Mon 22 Aug 22, 22:57, Samuel Holland wrote:
+> On 8/20/22 3:25 AM, Jernej =C5=A0krabec wrote:
+> > Dne petek, 19. avgust 2022 ob 17:37:20 CEST je Nicolas Dufresne napisal=
+(a):
+> >> Le vendredi 19 ao=C3=BBt 2022 =C3=A0 06:17 +0200, Jernej =C5=A0krabec =
+a =C3=A9crit :
+> >>> Dne =C4=8Detrtek, 18. avgust 2022 ob 22:33:07 CEST je Nicolas Dufresn=
+e=20
+> > napisal(a):
+> >>>> From: Dmitry Osipenko <dmitry.osipenko@collabora.com>
+> >>>>
+> >>>> The cedrus_hw_resume() crashes with NULL deference on driver probe if
+> >>>> runtime PM is disabled because it uses platform data that hasn't been
+> >>>> set up yet. Fix this by setting the platform data earlier during pro=
+be.
+> >>>
+> >>> Does it even work without PM? Maybe it would be better if Cedrus would
+> >>> select PM in Kconfig.
+> >>
+> >> I cannot comment myself on this, but it does not seem to invalidate th=
+is
+> >> Dmitry's fix.
+> >=20
+> > If NULL pointer dereference happens only when PM is disabled, then it d=
+oes. I=20
+> > have PM always enabled and I never experienced above issue.
+>=20
+> There's still a bug even with PM enabled: the v4l2 device is exposed to
+> userspace, and therefore userspace could trigger a PM resume, before
+> platform_set_drvdata() is called.
+
+Absolutely agreed!
+
+> >>>> Cc: stable@vger.kernel.org
+> >>>> Signed-off-by: Dmitry Osipenko <dmitry.osipenko@collabora.com>
+> >>>> Signed-off-by: Nicolas Dufresne <nicolas.dufresne@collabora.com>
+>=20
+> Please add a Fixes tag. With that:
+>=20
+> Reviewed-by: Samuel Holland <samuel@sholland.org>
+
+Same here:
+
+Acked-by: Paul Kocialkowski <paul.kocialkowski@bootlin.com>
+
+Thanks!
+
+Paul
+
+> >>>> ---
+> >>>>
+> >>>>  drivers/staging/media/sunxi/cedrus/cedrus.c | 4 ++--
+> >>>>  1 file changed, 2 insertions(+), 2 deletions(-)
+> >>>>
+> >>>> diff --git a/drivers/staging/media/sunxi/cedrus/cedrus.c
+> >>>> b/drivers/staging/media/sunxi/cedrus/cedrus.c index
+> >>>> 960a0130cd620..55c54dfdc585c 100644
+> >>>> --- a/drivers/staging/media/sunxi/cedrus/cedrus.c
+> >>>> +++ b/drivers/staging/media/sunxi/cedrus/cedrus.c
+> >>>> @@ -448,6 +448,8 @@ static int cedrus_probe(struct platform_device
+> >>>> *pdev)
+> >>>>
+> >>>>  	if (!dev)
+> >>>>  		return -ENOMEM;
+> >>>>
+> >>>> +	platform_set_drvdata(pdev, dev);
+> >>>> +
+> >>>>  	dev->vfd =3D cedrus_video_device;
+> >>>>  	dev->dev =3D &pdev->dev;
+> >>>>  	dev->pdev =3D pdev;
+> >>>>
+> >>>> @@ -521,8 +523,6 @@ static int cedrus_probe(struct platform_device
+> >>>> *pdev)
+> >>>>
+> >>>>  		goto err_m2m_mc;
+> >>>>  	}
+> >>>>
+> >>>> -	platform_set_drvdata(pdev, dev);
+> >>>> -
+> >>>>  	return 0;
+> >>>> =20
+> >>>>  err_m2m_mc:
+
+--=20
+Paul Kocialkowski, Bootlin
+Embedded Linux and kernel engineering
+https://bootlin.com
+
+--VACStzkiwKlyW1sA
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAEBCAAdFiEEJZpWjZeIetVBefti3cLmz3+fv9EFAmMExpQACgkQ3cLmz3+f
+v9Hphgf/RHIkNtIHgUBj1wEt+9CgUUYKzkUCP8Iwi0xIbXLJz4GeHQwIrL8VNnrT
+1xZCbn9LrUxPEx48WPdyxs2DMCk3JgIw0M4xGltx8VBPsmRo2GzslC8nWGYt9HyX
+r3sVL/Vx8GC0Do/yTaTA22LfBQOBOMebdEWZx2M05z/UL5aYC5QLHeaRo88fXqlE
+RLUhSbWZg3CIRQK4K8aIIa20mW/BpPGvp4af+NqFMezJiY9XsvAmv23dNhnYxZk9
+vrkXYKOK5L9WppdzVxqkBGl2jjeKqf5DHAwpIiQaf1iq7DJmdUTPZ193Vs3T9pHC
+c9btoDAjNoaJGV5Vir/sRaOTUBxmrg==
+=Aw5f
+-----END PGP SIGNATURE-----
+
+--VACStzkiwKlyW1sA--
