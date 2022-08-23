@@ -2,44 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 281ECC3F6B0
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 09:11:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7DFF8C32774
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 09:11:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348626AbiHWJKf (ORCPT
+        id S1348552AbiHWJKb (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 05:10:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37608 "EHLO
+        Tue, 23 Aug 2022 05:10:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33330 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240882AbiHWJJU (ORCPT
+        with ESMTP id S1348009AbiHWJJS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 05:09:20 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 04A0C868AE;
-        Tue, 23 Aug 2022 01:30:39 -0700 (PDT)
+        Tue, 23 Aug 2022 05:09:18 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 83405868A1;
+        Tue, 23 Aug 2022 01:30:38 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 5E05AB81C57;
-        Tue, 23 Aug 2022 08:30:39 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9762EC433D7;
-        Tue, 23 Aug 2022 08:30:37 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 3A2F761338;
+        Tue, 23 Aug 2022 08:29:49 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 26467C433C1;
+        Tue, 23 Aug 2022 08:29:47 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661243438;
-        bh=j2KoHzmv7mNAD0mAEpA0x+P63+btGz4TXSLAu6PoG78=;
+        s=korg; t=1661243388;
+        bh=bpP3v+DcvV2AxMnSmPB9/sNRdImi4ZKRLo9adOSSbiM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=suDVOI6txxvCQSzwg1TUqBJ6rUENr70AJ6kCsGqtv7DO0OUxVXqOWNbpAIam9xrc8
-         GEFfP8urpQ/ixjuOzmroMhNfdkQSVZX3yAyv+qKpviLdGlDe1ypp8j1TO7yv5IpXMr
-         AKXWTO4kKHzf4DmkXUyhoMRabO4vqowRsDpcmBBA=
+        b=YhvolnvbPIzW7ZlSt/ikqR6/PqDz1HLG+KSsvvDDo7AyIz0mLtPdiv++4am1+vngq
+         cHZW06OEj1FkyUC+8daB0bcPWC5Uo74Dox1TPYILxhC5dXz94a+nt8pkA0Ulo288EV
+         8L5Gg+KTJF2FOK+UhKHqf9/TUIftE16bJ+CPpY9c=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Minas Harutyunyan <hminas@synopsys.com>,
-        Amelie Delaunay <amelie.delaunay@foss.st.com>,
-        Fabrice Gasnier <fabrice.gasnier@foss.st.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.19 278/365] usb: dwc2: gadget: remove D+ pull-up while no vbus with usb-role-switch
-Date:   Tue, 23 Aug 2022 10:02:59 +0200
-Message-Id: <20220823080129.796689734@linuxfoundation.org>
+        stable@vger.kernel.org, Ben Hutchings <benh@debian.org>,
+        Daniel Bristot de Oliveira <bristot@kernel.org>,
+        "Steven Rostedt (Google)" <rostedt@goodmis.org>
+Subject: [PATCH 5.19 234/365] tools/rtla: Fix command symlinks
+Date:   Tue, 23 Aug 2022 10:02:15 +0200
+Message-Id: <20220823080128.020429824@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220823080118.128342613@linuxfoundation.org>
 References: <20220823080118.128342613@linuxfoundation.org>
@@ -51,44 +50,43 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Amelie Delaunay <amelie.delaunay@foss.st.com>
+From: Ben Hutchings <benh@debian.org>
 
-[ Upstream commit db638c6500abaffb8f7770b2a69c40d003d54ae1 ]
+commit ff5a55dcdb343e3db9b9fb08795b78544b032773 upstream.
 
-When using usb-role-switch, D+ pull-up is set as soon as DTCL_SFTDISCON is
-cleared, whatever the vbus valid signal state is. The pull-up should not
-be set when vbus isn't present (this is determined by the drd controller).
+"ln -s" stores the next argument directly as the symlink target, so
+it needs to be a relative path.  In this case, just "rtla".
 
-This patch ensures that B-Session (so Peripheral role + vbus valid signal)
-is valid before clearing the DCTL_SFTDISCON bit when role switch is used.
-Keep original behavior when usb-role-switch isn't used.
+Link: https://lore.kernel.org/linux-trace-devel/YtLBXMI6Ui4HLIF1@decadent.org.uk
 
-Acked-by: Minas Harutyunyan <hminas@synopsys.com>
-Signed-off-by: Amelie Delaunay <amelie.delaunay@foss.st.com>
-Signed-off-by: Fabrice Gasnier <fabrice.gasnier@foss.st.com>
-Link: https://lore.kernel.org/r/20220622160717.314580-1-fabrice.gasnier@foss.st.com
+Fixes: 0605bf009f18 ("rtla: Add osnoise tool")
+Fixes: a828cd18bc4a ("rtla: Add timerlat tool and timelart top mode")
+Signed-off-by: Ben Hutchings <benh@debian.org>
+Acked-by: Daniel Bristot de Oliveira <bristot@kernel.org>
+Signed-off-by: Steven Rostedt (Google) <rostedt@goodmis.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/usb/dwc2/gadget.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ tools/tracing/rtla/Makefile | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/usb/dwc2/gadget.c b/drivers/usb/dwc2/gadget.c
-index fe2a58c75861..8b15742d9e8a 100644
---- a/drivers/usb/dwc2/gadget.c
-+++ b/drivers/usb/dwc2/gadget.c
-@@ -3594,7 +3594,8 @@ void dwc2_hsotg_core_disconnect(struct dwc2_hsotg *hsotg)
- void dwc2_hsotg_core_connect(struct dwc2_hsotg *hsotg)
- {
- 	/* remove the soft-disconnect and let's go */
--	dwc2_clear_bit(hsotg, DCTL, DCTL_SFTDISCON);
-+	if (!hsotg->role_sw || (dwc2_readl(hsotg, GOTGCTL) & GOTGCTL_BSESVLD))
-+		dwc2_clear_bit(hsotg, DCTL, DCTL_SFTDISCON);
- }
+diff --git a/tools/tracing/rtla/Makefile b/tools/tracing/rtla/Makefile
+index 1bea2d16d4c1..b8fe10d941ce 100644
+--- a/tools/tracing/rtla/Makefile
++++ b/tools/tracing/rtla/Makefile
+@@ -108,9 +108,9 @@ install: doc_install
+ 	$(INSTALL) rtla -m 755 $(DESTDIR)$(BINDIR)
+ 	$(STRIP) $(DESTDIR)$(BINDIR)/rtla
+ 	@test ! -f $(DESTDIR)$(BINDIR)/osnoise || rm $(DESTDIR)$(BINDIR)/osnoise
+-	ln -s $(DESTDIR)$(BINDIR)/rtla $(DESTDIR)$(BINDIR)/osnoise
++	ln -s rtla $(DESTDIR)$(BINDIR)/osnoise
+ 	@test ! -f $(DESTDIR)$(BINDIR)/timerlat || rm $(DESTDIR)$(BINDIR)/timerlat
+-	ln -s $(DESTDIR)$(BINDIR)/rtla $(DESTDIR)$(BINDIR)/timerlat
++	ln -s rtla $(DESTDIR)$(BINDIR)/timerlat
  
- /**
+ .PHONY: clean tarball
+ clean: doc_clean
 -- 
-2.35.1
+2.37.2
 
 
 
