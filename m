@@ -2,66 +2,130 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 26450C32796
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 08:22:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 56CB8C32774
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 08:22:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242915AbiHWIW1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 04:22:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46472 "EHLO
+        id S242943AbiHWIWe (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 23 Aug 2022 04:22:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43872 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242992AbiHWIQZ (ORCPT
+        with ESMTP id S242990AbiHWIQZ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 23 Aug 2022 04:16:25 -0400
-Received: from smtp2.axis.com (smtp2.axis.com [195.60.68.18])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0ACD36455;
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0A8F863C8;
         Tue, 23 Aug 2022 01:10:47 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=axis.com; q=dns/txt; s=axis-central1; t=1661242248;
-  x=1692778248;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=90lMTt/ZXObsrajbLvhxlhFniuNo3NYsG99rwzGubV4=;
-  b=QtHPZwfZYRIrxwYMvcrxSu9EztzKiz0nXdQYG4DB28m2xocRELb0vAac
-   OhEdvcjR859428A2NfsfbZwSyO+4PfruV4Xrt5pp7S1X/hc3vodDXj3cG
-   2RI/K3hPyQ2rOWbWuzXu5Fpu/UVYSNiNUnefOE7+O4BWwnFFzBd5/it3C
-   mbiNhFaZj7kJkkLjpl4qklEWfDw/3AAveXd0mEMY/HXgXzb5I3AmEnU/i
-   Ek3Ib0SDq2CuNV9451Mo6cNvm0XOp5IiDhQHiSKAYiz0O+mHhfYSauya1
-   bFBvqKWv+6iknPPLzCgJJnAZtJuLlIHLZDs0cwqsn7wYluqxOaxzFrHsA
-   A==;
-Date:   Tue, 23 Aug 2022 10:10:45 +0200
-From:   Vincent Whitchurch <vincent.whitchurch@axis.com>
-To:     Jonathan Cameron <jic23@kernel.org>
-CC:     Andy Shevchenko <andy.shevchenko@gmail.com>,
-        kernel <kernel@axis.com>, Lars-Peter Clausen <lars@metafoo.de>,
-        linux-iio <linux-iio@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH] iio: buffer: Silence lock nesting splat
-Message-ID: <YwSLhWFbGb26B3mx@axis.com>
-References: <20220816080828.1218667-1-vincent.whitchurch@axis.com>
- <CAHp75VebQfdHrfYTmF0w9M556ZV8fG5jJ2rAN5a3mrB1mbvOQw@mail.gmail.com>
- <20220820120800.519b5eb5@jic23-huawei>
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 22C246126A;
+        Tue, 23 Aug 2022 08:10:47 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 12E62C433D6;
+        Tue, 23 Aug 2022 08:10:45 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1661242246;
+        bh=2aHTUycXkri3A1Jm6kJsITOtTncPDRgxibmlOA+RV+U=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=hQg7GxbAgwubu3xlPD8bnE2kTKogS1exgIg3ECnwsrMH4hsIZPLvEvyFDQ38sl7H8
+         sQn0VrCTsxVazd3CKplTrgtyvEGg4TjOEf1bOIRnkVq60B8/lcilLnqYXyfZp/d29P
+         /E3cgAOBam+MSKpShwX5saaQO9xyilM+gP23JoAg=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org,
+        =?UTF-8?q?Pali=20Roh=C3=A1r?= <pali@kernel.org>,
+        Michael Ellerman <mpe@ellerman.id.au>
+Subject: [PATCH 4.9 042/101] powerpc/fsl-pci: Fix Class Code of PCIe Root Port
+Date:   Tue, 23 Aug 2022 10:03:15 +0200
+Message-Id: <20220823080036.149960090@linuxfoundation.org>
+X-Mailer: git-send-email 2.37.2
+In-Reply-To: <20220823080034.579196046@linuxfoundation.org>
+References: <20220823080034.579196046@linuxfoundation.org>
+User-Agent: quilt/0.67
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Disposition: inline
-In-Reply-To: <20220820120800.519b5eb5@jic23-huawei>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sat, Aug 20, 2022 at 01:08:00PM +0200, Jonathan Cameron wrote:
-> On Fri, 19 Aug 2022 11:03:55 +0300
-> Andy Shevchenko <andy.shevchenko@gmail.com> wrote:
-> > On top of that, Fixes tag?
-> It's going to be tricky to identify - the interface predates usecases that were IIO
-> drivers by a long way.  I guess introduction of first IIO driver that used
-> a callback buffer? No idea which one that was :(
+From: Pali Rohár <pali@kernel.org>
 
-AFAICS there's only one IIO driver upstream using a callback buffer, and
-it's lmp91000, so I can point the fixes tag to the patch which added
-that.
+commit 0c551abfa004ce154d487d91777bf221c808a64f upstream.
 
-By the way, note that lmp91000 actually fails to probe in mainline
-without extra patches, and it seems to have been that way for a while
-now.  I noticed this lockdep splat when working on a new driver which
-also uses a callback buffer.  I can post the fixes I used to get
-lmp91000 to probe successfully (in roadtest) separately.
+By default old pre-3.0 Freescale PCIe controllers reports invalid PCI Class
+Code 0x0b20 for PCIe Root Port. It can be seen by lspci -b output on P2020
+board which has this pre-3.0 controller:
+
+  $ lspci -bvnn
+  00:00.0 Power PC [0b20]: Freescale Semiconductor Inc P2020E [1957:0070] (rev 21)
+          !!! Invalid class 0b20 for header type 01
+          Capabilities: [4c] Express Root Port (Slot-), MSI 00
+
+Fix this issue by programming correct PCI Class Code 0x0604 for PCIe Root
+Port to the Freescale specific PCIe register 0x474.
+
+With this change lspci -b output is:
+
+  $ lspci -bvnn
+  00:00.0 PCI bridge [0604]: Freescale Semiconductor Inc P2020E [1957:0070] (rev 21) (prog-if 00 [Normal decode])
+          Capabilities: [4c] Express Root Port (Slot-), MSI 00
+
+Without any "Invalid class" error. So class code was properly reflected
+into standard (read-only) PCI register 0x08.
+
+Same fix is already implemented in U-Boot pcie_fsl.c driver in commit:
+http://source.denx.de/u-boot/u-boot/-/commit/d18d06ac35229345a0af80977a408cfbe1d1015b
+
+Fix activated by U-Boot stay active also after booting Linux kernel.
+But boards which use older U-Boot version without that fix are affected and
+still require this fix.
+
+So implement this class code fix also in kernel fsl_pci.c driver.
+
+Cc: stable@vger.kernel.org
+Signed-off-by: Pali Rohár <pali@kernel.org>
+Signed-off-by: Michael Ellerman <mpe@ellerman.id.au>
+Link: https://lore.kernel.org/r/20220706101043.4867-1-pali@kernel.org
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+---
+ arch/powerpc/sysdev/fsl_pci.c |    8 ++++++++
+ arch/powerpc/sysdev/fsl_pci.h |    1 +
+ 2 files changed, 9 insertions(+)
+
+--- a/arch/powerpc/sysdev/fsl_pci.c
++++ b/arch/powerpc/sysdev/fsl_pci.c
+@@ -524,6 +524,7 @@ int fsl_add_bridge(struct platform_devic
+ 	struct resource rsrc;
+ 	const int *bus_range;
+ 	u8 hdr_type, progif;
++	u32 class_code;
+ 	struct device_node *dev;
+ 	struct ccsr_pci __iomem *pci;
+ 	u16 temp;
+@@ -597,6 +598,13 @@ int fsl_add_bridge(struct platform_devic
+ 			PPC_INDIRECT_TYPE_SURPRESS_PRIMARY_BUS;
+ 		if (fsl_pcie_check_link(hose))
+ 			hose->indirect_type |= PPC_INDIRECT_TYPE_NO_PCIE_LINK;
++		/* Fix Class Code to PCI_CLASS_BRIDGE_PCI_NORMAL for pre-3.0 controller */
++		if (in_be32(&pci->block_rev1) < PCIE_IP_REV_3_0) {
++			early_read_config_dword(hose, 0, 0, PCIE_FSL_CSR_CLASSCODE, &class_code);
++			class_code &= 0xff;
++			class_code |= PCI_CLASS_BRIDGE_PCI_NORMAL << 8;
++			early_write_config_dword(hose, 0, 0, PCIE_FSL_CSR_CLASSCODE, class_code);
++		}
+ 	} else {
+ 		/*
+ 		 * Set PBFR(PCI Bus Function Register)[10] = 1 to
+--- a/arch/powerpc/sysdev/fsl_pci.h
++++ b/arch/powerpc/sysdev/fsl_pci.h
+@@ -23,6 +23,7 @@ struct platform_device;
+ 
+ #define PCIE_LTSSM	0x0404		/* PCIE Link Training and Status */
+ #define PCIE_LTSSM_L0	0x16		/* L0 state */
++#define PCIE_FSL_CSR_CLASSCODE	0x474	/* FSL GPEX CSR */
+ #define PCIE_IP_REV_2_2		0x02080202 /* PCIE IP block version Rev2.2 */
+ #define PCIE_IP_REV_3_0		0x02080300 /* PCIE IP block version Rev3.0 */
+ #define PIWAR_EN		0x80000000	/* Enable */
+
+
