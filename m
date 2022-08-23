@@ -2,118 +2,172 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 88783C32772
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 22:46:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 80912C32789
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 22:47:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232428AbiHWWqD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 18:46:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43512 "EHLO
+        id S232119AbiHWWrK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 23 Aug 2022 18:47:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44386 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232427AbiHWWp5 (ORCPT
+        with ESMTP id S229825AbiHWWrH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 18:45:57 -0400
-Received: from beige.elm.relay.mailchannels.net (beige.elm.relay.mailchannels.net [23.83.212.16])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E5A2B88DCF
-        for <linux-kernel@vger.kernel.org>; Tue, 23 Aug 2022 15:45:54 -0700 (PDT)
-X-Sender-Id: dreamhost|x-authsender|dave@stgolabs.net
-Received: from relay.mailchannels.net (localhost [127.0.0.1])
-        by relay.mailchannels.net (Postfix) with ESMTP id 7534C3E0987;
-        Tue, 23 Aug 2022 22:45:53 +0000 (UTC)
-Received: from pdx1-sub0-mail-a223.dreamhost.com (unknown [127.0.0.6])
-        (Authenticated sender: dreamhost)
-        by relay.mailchannels.net (Postfix) with ESMTPA id 9F3F73E0A1B;
-        Tue, 23 Aug 2022 22:45:52 +0000 (UTC)
-ARC-Seal: i=1; s=arc-2022; d=mailchannels.net; t=1661294752; a=rsa-sha256;
-        cv=none;
-        b=u4bNRxIUmZk7aF9jWHaGKLjZlZgNYF6CRnhBWlZ+UPrl4FftbdNNYa4vfoPlNJ4ez/CEFq
-        feE9lBRSlXDBWJ0A8qwvk7UDS9YQKsJEo2wpDshUdtyOVhy0u49+aCkrH8OhZQ6+Z/dtgC
-        F9BUzIAbXmN3UK4bthS1+xjnmjnda9z4qg6e/xi6c+O7qhm7cuNV6FkfBVQZBBG7YIAgP+
-        tFrMWUJRpE5TbKMfyMEOiNKUAAe5K/xSvTw/dCd5eDZOW/+Qxr8ii1+BkI+EcERbqIlzYC
-        L1h2cZ74J1lhc2gbciPFL/vkC/Q6FZwkg2FfAiipZxg1+/Y0lX8NLVsV5hg4nA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed;
- d=mailchannels.net;
-        s=arc-2022; t=1661294752;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references:dkim-signature;
-        bh=PEBSasmgg/6BVDCQaXtcCu++zDN+LuETOm83M4+x2yY=;
-        b=KGmcrXO68FCQG+abb+y+ne91dJVvoUinmMqYVbPgGtGUOpwA7BYAi4FalEKrqRC2P2K3kh
-        rJ70qR84Tqy1VVp6UZApnKoyS2z9vnmbrXTs83nABQInsZke7c/AOLStZagBCYtTHB/UID
-        lArGsKi7llUXkctaI03eGhNQVdmxhXmJNcT2XwnCKG05FKOgkVxHZgSnUhEjsJwKikCdWR
-        8ef6zycL5LGYjIyDhYsiE2nOe79tGiH6wf2KSu71Y5U3vJMRdq6G1ZlJaJacb8zzOEd5hp
-        9nXUkesgW00+yIGbp/XmjhfhkPWZ04h2/F4MbIKmtizGIWG7UeCMThdvlWeg5Q==
-ARC-Authentication-Results: i=1;
-        rspamd-5cbff9fff7-gmw4l;
-        auth=pass smtp.auth=dreamhost smtp.mailfrom=dave@stgolabs.net
-X-Sender-Id: dreamhost|x-authsender|dave@stgolabs.net
-X-MC-Relay: Neutral
-X-MailChannels-SenderId: dreamhost|x-authsender|dave@stgolabs.net
-X-MailChannels-Auth-Id: dreamhost
-X-Macabre-Shoe: 239145552e2697b0_1661294752943_3545556701
-X-MC-Loop-Signature: 1661294752943:2020262021
-X-MC-Ingress-Time: 1661294752942
-Received: from pdx1-sub0-mail-a223.dreamhost.com (pop.dreamhost.com
- [64.90.62.162])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384)
-        by 100.119.194.202 (trex/6.7.1);
-        Tue, 23 Aug 2022 22:45:52 +0000
-Received: from offworld (unknown [104.36.31.106])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-256) server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        Tue, 23 Aug 2022 18:47:07 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C5E8C883F4;
+        Tue, 23 Aug 2022 15:47:06 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        (Authenticated sender: dave@stgolabs.net)
-        by pdx1-sub0-mail-a223.dreamhost.com (Postfix) with ESMTPSA id 4MC47w3VgPz9d;
-        Tue, 23 Aug 2022 15:45:48 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=stgolabs.net;
-        s=dreamhost; t=1661294748;
-        bh=PEBSasmgg/6BVDCQaXtcCu++zDN+LuETOm83M4+x2yY=;
-        h=Date:From:To:Cc:Subject:Content-Type;
-        b=nQwgyV4a+C8T57rU9aSJxRv47rUZYKnK0J+qJmN5HvAX0b1JNGlAAK0fgLVl8oOhq
-         cuHiV6Xc7SsQbCkNQehQtzzHbgZVYgNTH7p5dv17e8chAaSsWEeDHZNpIf5sA9+SLU
-         6A1Nb38f12QGJVvl8bntg7ZEuZKVwEuPdq3DDVfORaXTctveWBvG758n1HL3dxVpJ8
-         /mXYpiVDWDFjRKzb1qrsI/Rpa0p+7UfeX07CYkeSZM3vUrQON2m92UhpX1cYegOniU
-         p71MsOTvtWJnhuMt1SD1Oh/KchoeqgC4qaPf1ziwQ65km8RuzhFu3avIUQoGg+P5aH
-         s9C7vsF+9k29A==
-Date:   Tue, 23 Aug 2022 15:27:43 -0700
-From:   Davidlohr Bueso <dave@stgolabs.net>
-To:     Liam Howlett <liam.howlett@oracle.com>
-Cc:     "maple-tree@lists.infradead.org" <maple-tree@lists.infradead.org>,
-        "linux-mm@kvack.org" <linux-mm@kvack.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Will Deacon <will@kernel.org>
-Subject: Re: [PATCH v13 31/70] arm64: Change elfcore for_each_mte_vma() to
- use VMA iterator
-Message-ID: <20220823222743.h6nykigrg4pcrosw@offworld>
-Mail-Followup-To: Liam Howlett <liam.howlett@oracle.com>,
-        "maple-tree@lists.infradead.org" <maple-tree@lists.infradead.org>,
-        "linux-mm@kvack.org" <linux-mm@kvack.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Will Deacon <will@kernel.org>
-References: <20220822150128.1562046-1-Liam.Howlett@oracle.com>
- <20220822150128.1562046-32-Liam.Howlett@oracle.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii; format=flowed
-Content-Disposition: inline
-In-Reply-To: <20220822150128.1562046-32-Liam.Howlett@oracle.com>
-User-Agent: NeoMutt/20220429
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 5F02E61701;
+        Tue, 23 Aug 2022 22:47:06 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id AFC92C433D6;
+        Tue, 23 Aug 2022 22:47:05 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1661294825;
+        bh=mIdkXaJU12XPc/v1eI1SmEBn2eXK40Tc2GKZ2bh56IQ=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=PvKWuYH7LzURRWG2uBfTZoqdR2VuQQqVwYk91ZT4xs+pNAX8p0ZPGebqwKGcGvWsw
+         GoUsisFbfXbphw/ArYdEGhpuApqBSfKBE1hCpdK0MtV5idNvsmpHu4izogGKT4agwJ
+         didDFhjjvxPLmLCTKMkhCG7QeQTsf7RLoFgcC6e5tFw4gcSQJDZ6CVaAGQOa6SApau
+         zFP5jzetWE1fQW5n6Ts6y7cE8gcK3rMH6LJsw1t4kBC1LzIOyRQ1weWVya8eBlE6j8
+         sGSESGojwA+XkGsawcc45JFYMZnl9aP7YRxwddrD68qtzwFb8Eq2/hEwVZR9SjbKfY
+         nxiP9lu/ioTug==
+Received: from sofa.misterjones.org ([185.219.108.64] helo=why.misterjones.org)
+        by disco-boy.misterjones.org with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.95)
+        (envelope-from <maz@kernel.org>)
+        id 1oQcfn-005JQ9-Di;
+        Tue, 23 Aug 2022 23:47:03 +0100
+Date:   Tue, 23 Aug 2022 23:47:03 +0100
+Message-ID: <878rnewpaw.wl-maz@kernel.org>
+From:   Marc Zyngier <maz@kernel.org>
+To:     Peter Xu <peterx@redhat.com>
+Cc:     Gavin Shan <gshan@redhat.com>, kvmarm@lists.cs.columbia.edu,
+        linux-arm-kernel@lists.infradead.org, kvm@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-doc@vger.kernel.org,
+        linux-kselftest@vger.kernel.org, pbonzini@redhat.com,
+        corbet@lwn.net, james.morse@arm.com, alexandru.elisei@arm.com,
+        suzuki.poulose@arm.com, oliver.upton@linux.dev,
+        catalin.marinas@arm.com, will@kernel.org, shuah@kernel.org,
+        seanjc@google.com, dmatlack@google.com, bgardon@google.com,
+        ricarkol@google.com, zhenyzha@redhat.com, shan.gavin@gmail.com
+Subject: Re: [PATCH v1 1/5] KVM: arm64: Enable ring-based dirty memory tracking
+In-Reply-To: <YwVEoM1pj2MPCELp@xz-m1.local>
+References: <20220819005601.198436-1-gshan@redhat.com>
+        <20220819005601.198436-2-gshan@redhat.com>
+        <87lerkwtm5.wl-maz@kernel.org>
+        <41fb5a1f-29a9-e6bb-9fab-4c83a2a8fce5@redhat.com>
+        <87fshovtu0.wl-maz@kernel.org>
+        <171d0159-4698-354b-8b2f-49d920d03b1b@redhat.com>
+        <YwTc++Lz6lh3aR4F@xz-m1.local>
+        <87bksawz0w.wl-maz@kernel.org>
+        <YwVEoM1pj2MPCELp@xz-m1.local>
+User-Agent: Wanderlust/2.15.9 (Almost Unreal) SEMI-EPG/1.14.7 (Harue)
+ FLIM-LB/1.14.9 (=?UTF-8?B?R29qxY0=?=) APEL-LB/10.8 EasyPG/1.0.0 Emacs/27.1
+ (x86_64-pc-linux-gnu) MULE/6.0 (HANACHIRUSATO)
+MIME-Version: 1.0 (generated by SEMI-EPG 1.14.7 - "Harue")
+Content-Type: text/plain; charset=US-ASCII
+X-SA-Exim-Connect-IP: 185.219.108.64
+X-SA-Exim-Rcpt-To: peterx@redhat.com, gshan@redhat.com, kvmarm@lists.cs.columbia.edu, linux-arm-kernel@lists.infradead.org, kvm@vger.kernel.org, linux-kernel@vger.kernel.org, linux-doc@vger.kernel.org, linux-kselftest@vger.kernel.org, pbonzini@redhat.com, corbet@lwn.net, james.morse@arm.com, alexandru.elisei@arm.com, suzuki.poulose@arm.com, oliver.upton@linux.dev, catalin.marinas@arm.com, will@kernel.org, shuah@kernel.org, seanjc@google.com, dmatlack@google.com, bgardon@google.com, ricarkol@google.com, zhenyzha@redhat.com, shan.gavin@gmail.com
+X-SA-Exim-Mail-From: maz@kernel.org
+X-SA-Exim-Scanned: No (on disco-boy.misterjones.org); SAEximRunCond expanded to false
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, 22 Aug 2022, Liam Howlett wrote:
+On Tue, 23 Aug 2022 22:20:32 +0100,
+Peter Xu <peterx@redhat.com> wrote:
+> 
+> On Tue, Aug 23, 2022 at 08:17:03PM +0100, Marc Zyngier wrote:
+> > I don't think we really need this check on the hot path. All we need
+> > is to make the request sticky until userspace gets their act together
+> > and consumes elements in the ring. Something like:
+> > 
+> > diff --git a/arch/arm64/kvm/arm.c b/arch/arm64/kvm/arm.c
+> > index 986cee6fbc7f..e8ed5e1af159 100644
+> > --- a/arch/arm64/kvm/arm.c
+> > +++ b/arch/arm64/kvm/arm.c
+> > @@ -747,6 +747,14 @@ static int check_vcpu_requests(struct kvm_vcpu *vcpu)
+> >  
+> >  		if (kvm_check_request(KVM_REQ_SUSPEND, vcpu))
+> >  			return kvm_vcpu_suspend(vcpu);
+> > +
+> > +		if (kvm_check_request(KVM_REQ_RING_SOFT_FULL, vcpu) &&
+> > +		    kvm_dirty_ring_soft_full(vcpu)) {
+> > +			kvm_make_request(KVM_REQ_RING_SOFT_FULL, vcpu);
+> > +			vcpu->run->exit_reason = KVM_EXIT_DIRTY_RING_FULL;
+> > +			trace_kvm_dirty_ring_exit(vcpu);
+> > +			return 0;
+> > +		}
+> >  	}
+> >  
+> >  	return 1;
+> 
+> Right, this seems working.  We can also use kvm_test_request() here.
+> 
+> > 
+> > 
+> > However, I'm a bit concerned by the reset side of things. It iterates
+> > over the vcpus and expects the view of each ring to be consistent,
+> > even if userspace is hacking at it from another CPU. For example, I
+> > can't see what guarantees that the kernel observes the writes from
+> > userspace in the order they are being performed (the documentation
+> > provides no requirements other than "it must collect the dirty GFNs in
+> > sequence", which doesn't mean much from an ordering perspective).
+> > 
+> > I can see that working on a strongly ordered architecture, but on
+> > something as relaxed as ARM, the CPUs may^Wwill aggressively reorder
+> > stuff that isn't explicitly ordered. I have the feeling that a CAS
+> > operation on both sides would be enough, but someone who actually
+> > understands how this works should have a look...
+> 
+> I definitely don't think I 100% understand all the ordering things since
+> they're complicated.. but my understanding is that the reset procedure
+> didn't need memory barrier (unlike pushing, where we have explicit wmb),
+> because we assumed the userapp is not hostile so logically it should only
+> modify the flags which is a 32bit field, assuming atomicity guaranteed.
 
->From: "Liam R. Howlett" <Liam.Howlett@Oracle.com>
->
->Rework for_each_mte_vma() to use a VMA iterator instead of an explicit
->linked-list.
->
->Signed-off-by: Liam R. Howlett <Liam.Howlett@oracle.com>
->Acked-by: Catalin Marinas <catalin.marinas@arm.com>
->Link: https://lore.kernel.org/r/20220218023650.672072-1-Liam.Howlett@oracle.com
->Signed-off-by: Will Deacon <will@kernel.org>
+Atomicity doesn't guarantee ordering, unfortunately. Take the
+following example: CPU0 is changing a bunch of flags for GFNs A, B, C,
+D that exist in the ring in that order, and CPU1 performs an ioctl to
+reset the page state.
 
-Reviewed-by: Davidlohr Bueso <dave@stgolabs.net>
+CPU0:
+    write_flag(A, KVM_DIRTY_GFN_F_RESET)
+    write_flag(B, KVM_DIRTY_GFN_F_RESET)
+    write_flag(C, KVM_DIRTY_GFN_F_RESET)
+    write_flag(D, KVM_DIRTY_GFN_F_RESET)
+    [...]
+
+CPU1:
+   ioctl(KVM_RESET_DIRTY_RINGS)
+
+Since CPU0 writes do not have any ordering, CPU1 can observe the
+writes in a sequence that have nothing to do with program order, and
+could for example observe that GFN A and D have been reset, but not B
+and C. This in turn breaks the logic in the reset code (B, C, and D
+don't get reset), despite userspace having followed the spec to the
+letter. If each was a store-release (which is the case on x86), it
+wouldn't be a problem, but nothing calls it in the documentation.
+
+Maybe that's not a big deal if it is expected that each CPU will issue
+a KVM_RESET_DIRTY_RINGS itself, ensuring that it observe its own
+writes. But expecting this to work across CPUs without any barrier is
+wishful thinking.
+
+> IIRC we used to discuss similar questions on "what if the user is hostile
+> and wants to hack the process by messing up with the ring", and our
+> conclusion was as long as the process wouldn't mess up anything outside
+> itself it should be okay. E.g. It should not be able to either cause the
+> host to misfunction, or trigger kernel warnings in dmesg, etc..
+
+I'm not even discussing safety here. I'm purely discussing the
+interactions between userspace and kernel based on the documentation
+and the existing kernel code.
+
+Thanks,
+
+	M.
+
+-- 
+Without deviation from the norm, progress is not possible.
