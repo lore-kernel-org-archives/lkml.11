@@ -2,40 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 96EAAC3F6B0
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 11:11:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0F4F8C32772
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 11:11:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244199AbiHWLL0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 07:11:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55358 "EHLO
+        id S1350900AbiHWLLg (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 23 Aug 2022 07:11:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58612 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357190AbiHWLJy (ORCPT
+        with ESMTP id S244234AbiHWLJz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 07:09:54 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 99256883FE;
-        Tue, 23 Aug 2022 02:16:53 -0700 (PDT)
+        Tue, 23 Aug 2022 07:09:55 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BD80A883CE;
+        Tue, 23 Aug 2022 02:16:55 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 4F619B8105C;
-        Tue, 23 Aug 2022 09:16:51 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7B697C433D7;
-        Tue, 23 Aug 2022 09:16:49 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 178EDB81C4E;
+        Tue, 23 Aug 2022 09:16:54 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 79C27C433C1;
+        Tue, 23 Aug 2022 09:16:52 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661246210;
-        bh=7M4uIosGCQ+JVXn5ixS/gPXhPLLzxgVy6nzH25ETjwQ=;
+        s=korg; t=1661246212;
+        bh=YLHITOvYu0lt7iEImGEtaN+nTdRoAlJHZbNZO7E2YxY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=gJK9siP8IirNEzmRJsPB06dZq4G1+ALLsVleRTG7wCnqOH+eIeKbo9BXUukhGZNeG
-         +4DViwZO50n4zHMEwU1iaRo+FbOBOF3G1v2Z5SIiTzw6vLBccPWbmfg+Gj9h5Fu69d
-         HkyDylejg/I5odIBkdmDubVktCpbXIcvMOR9myjI=
+        b=LfrDA4SUgG5fPNlpkWwOyCOO9qjBGxdvUC0G+NVV2rifYr5oEoSTfVMuKNwwQ7ECz
+         URBZa0j4citBlHaQAR/MmhkeFJCf6JgreU8hIjecM11ZSSq9RDom1zM+OJ29YmFWM/
+         FA543WGCBwyJ8sEUawO+CNasZme2qeAz3HUF589w=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Helge Deller <deller@gmx.de>
-Subject: [PATCH 5.4 029/389] parisc: Fix device names in /proc/iomem
-Date:   Tue, 23 Aug 2022 10:21:47 +0200
-Message-Id: <20220823080116.907959741@linuxfoundation.org>
+        stable@vger.kernel.org, kernel test robot <lkp@intel.com>,
+        Alexander Lobakin <alexandr.lobakin@intel.com>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Yury Norov <yury.norov@gmail.com>
+Subject: [PATCH 5.4 038/389] ia64, processor: fix -Wincompatible-pointer-types in ia64_get_irr()
+Date:   Tue, 23 Aug 2022 10:21:56 +0200
+Message-Id: <20220823080117.228375414@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220823080115.331990024@linuxfoundation.org>
 References: <20220823080115.331990024@linuxfoundation.org>
@@ -47,45 +51,44 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Helge Deller <deller@gmx.de>
+From: Alexander Lobakin <alexandr.lobakin@intel.com>
 
-commit cab56b51ec0e69128909cef4650e1907248d821b upstream.
+commit e5a16a5c4602c119262f350274021f90465f479d upstream.
 
-Fix the output of /proc/iomem to show the real hardware device name
-including the pa_pathname, e.g. "Merlin 160 Core Centronics [8:16:0]".
-Up to now only the pa_pathname ("[8:16.0]") was shown.
+test_bit(), as any other bitmap op, takes `unsigned long *` as a
+second argument (pointer to the actual bitmap), as any bitmap
+itself is an array of unsigned longs. However, the ia64_get_irr()
+code passes a ref to `u64` as a second argument.
+This works with the ia64 bitops implementation due to that they
+have `void *` as the second argument and then cast it later on.
+This works with the bitmap API itself due to that `unsigned long`
+has the same size on ia64 as `u64` (`unsigned long long`), but
+from the compiler PoV those two are different.
+Define @irr as `unsigned long` to fix that. That implies no
+functional changes. Has been hidden for 16 years!
 
-Signed-off-by: Helge Deller <deller@gmx.de>
-Cc: <stable@vger.kernel.org> # v4.9+
+Fixes: a58786917ce2 ("[IA64] avoid broken SAL_CACHE_FLUSH implementations")
+Cc: stable@vger.kernel.org # 2.6.16+
+Reported-by: kernel test robot <lkp@intel.com>
+Signed-off-by: Alexander Lobakin <alexandr.lobakin@intel.com>
+Reviewed-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Reviewed-by: Yury Norov <yury.norov@gmail.com>
+Signed-off-by: Yury Norov <yury.norov@gmail.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/parisc/kernel/drivers.c |    9 ++++-----
- 1 file changed, 4 insertions(+), 5 deletions(-)
+ arch/ia64/include/asm/processor.h |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/arch/parisc/kernel/drivers.c
-+++ b/arch/parisc/kernel/drivers.c
-@@ -520,7 +520,6 @@ alloc_pa_dev(unsigned long hpa, struct h
- 	dev->id.hversion_rev = iodc_data[1] & 0x0f;
- 	dev->id.sversion = ((iodc_data[4] & 0x0f) << 16) |
- 			(iodc_data[5] << 8) | iodc_data[6];
--	dev->hpa.name = parisc_pathname(dev);
- 	dev->hpa.start = hpa;
- 	/* This is awkward.  The STI spec says that gfx devices may occupy
- 	 * 32MB or 64MB.  Unfortunately, we don't know how to tell whether
-@@ -534,10 +533,10 @@ alloc_pa_dev(unsigned long hpa, struct h
- 		dev->hpa.end = hpa + 0xfff;
- 	}
- 	dev->hpa.flags = IORESOURCE_MEM;
--	name = parisc_hardware_description(&dev->id);
--	if (name) {
--		strlcpy(dev->name, name, sizeof(dev->name));
--	}
-+	dev->hpa.name = dev->name;
-+	name = parisc_hardware_description(&dev->id) ? : "unknown";
-+	snprintf(dev->name, sizeof(dev->name), "%s [%s]",
-+		name, parisc_pathname(dev));
+--- a/arch/ia64/include/asm/processor.h
++++ b/arch/ia64/include/asm/processor.h
+@@ -552,7 +552,7 @@ ia64_get_irr(unsigned int vector)
+ {
+ 	unsigned int reg = vector / 64;
+ 	unsigned int bit = vector % 64;
+-	u64 irr;
++	unsigned long irr;
  
- 	/* Silently fail things like mouse ports which are subsumed within
- 	 * the keyboard controller
+ 	switch (reg) {
+ 	case 0: irr = ia64_getreg(_IA64_REG_CR_IRR0); break;
 
 
