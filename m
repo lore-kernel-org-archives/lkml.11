@@ -2,107 +2,99 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1F022C52D78
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 10:42:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 445C3C32792
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 10:43:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356283AbiHWKlt (ORCPT
+        id S1356440AbiHWKmS (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 06:41:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53606 "EHLO
+        Tue, 23 Aug 2022 06:42:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59962 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354566AbiHWK2W (ORCPT
+        with ESMTP id S1354851AbiHWK3d (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 06:28:22 -0400
-Received: from mx0b-0031df01.pphosted.com (mx0b-0031df01.pphosted.com [205.220.180.131])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 59779A4B0D;
-        Tue, 23 Aug 2022 02:06:08 -0700 (PDT)
-Received: from pps.filterd (m0279869.ppops.net [127.0.0.1])
-        by mx0a-0031df01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 27N3tqFm001761;
-        Tue, 23 Aug 2022 09:05:58 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=quicinc.com; h=from : to : cc :
- subject : date : message-id : mime-version : content-type; s=qcppdkim1;
- bh=LM0sqG3wWiXEL/Wnkor2Tjkj6umw1AfTQiffQFf5arI=;
- b=AuQfXJFyFQha7cfahHhXSpUtM8hBgRip4e0cqGURMloBhUL4rzP19uSJJNQwofaqJtym
- Jazbsv39STH+YE450RNbOnCQdsITtNC8/mYNDNzkhTU1s50K+lFvfjJ08YcOP0N9e+E4
- ziSZMmSDVw/09OkNN2UxFC9eACIqeeqsTDSR6hlUS0ZVjlWxru9PmYDppmTM6ajwklyY
- ryvNb00zvQ0A93PWW4qIsX8OFBrb8sKgJR9i1Sgft7cEIv/RJgrYckIueGVkuvGB7Yf8
- 62Jyva9p0CsH9VoB0J2eQjn1uYEQ8drffIZyGXDDJb0PTfZ1poBsVicdLDZj62n6wc90 7g== 
-Received: from nalasppmta05.qualcomm.com (Global_NAT1.qualcomm.com [129.46.96.20])
-        by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 3j4dgy2kbj-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Tue, 23 Aug 2022 09:05:58 +0000
-Received: from nalasex01a.na.qualcomm.com (nalasex01a.na.qualcomm.com [10.47.209.196])
-        by NALASPPMTA05.qualcomm.com (8.17.1.5/8.17.1.5) with ESMTPS id 27N95vPV010885
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Tue, 23 Aug 2022 09:05:57 GMT
-Received: from c-skakit-linux.qualcomm.com (10.80.80.8) by
- nalasex01a.na.qualcomm.com (10.47.209.196) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.29; Tue, 23 Aug 2022 02:05:53 -0700
-From:   Satya Priya <quic_c_skakit@quicinc.com>
-To:     Bjorn Andersson <bjorn.andersson@linaro.org>
-CC:     Douglas Anderson <dianders@chromium.org>,
-        Stephen Boyd <swboyd@chromium.org>,
-        Andy Gross <agross@kernel.org>, <mka@chromium.org>,
-        <linux-arm-msm@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <quic_tdas@quicinc.com>, <quic_c_skakit@quicinc.com>,
-        <linux-clk@vger.kernel.org>
-Subject: [PATCH] clk: qcom: lpass: Fix the invalid index errors seen at bootup
-Date:   Tue, 23 Aug 2022 14:35:27 +0530
-Message-ID: <1661245527-5596-1-git-send-email-quic_c_skakit@quicinc.com>
-X-Mailer: git-send-email 2.7.4
+        Tue, 23 Aug 2022 06:29:33 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BCDD2A4B37;
+        Tue, 23 Aug 2022 02:06:20 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 7F3BA61598;
+        Tue, 23 Aug 2022 09:06:20 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 83D5BC433D6;
+        Tue, 23 Aug 2022 09:06:19 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1661245579;
+        bh=EMvzIdefN3lMaZ3idynwCzn/gclQRL0S2MQySKvo1z8=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=Y3dCPzURf2rNWxxM+dWBFxdGdkSqkS6lPhzQmhagVsv03a78JM3cyIAowuvXJSCg3
+         jA4Lj7czdXCm53nSWHv5xljTRF5pNKo3TrOqj/BJ7xwD7ZGwnvbWoksyCv6bFfzsmp
+         tjdqvRW1cQIbpt0LzcXm1hDuhQexvbDRqWbIPa20=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org,
+        Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 4.19 122/287] misc: rtsx: Fix an error handling path in rtsx_pci_probe()
+Date:   Tue, 23 Aug 2022 10:24:51 +0200
+Message-Id: <20220823080104.499177350@linuxfoundation.org>
+X-Mailer: git-send-email 2.37.2
+In-Reply-To: <20220823080100.268827165@linuxfoundation.org>
+References: <20220823080100.268827165@linuxfoundation.org>
+User-Agent: quilt/0.67
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.80.80.8]
-X-ClientProxiedBy: nasanex01a.na.qualcomm.com (10.52.223.231) To
- nalasex01a.na.qualcomm.com (10.47.209.196)
-X-QCInternal: smtphost
-X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=5800 signatures=585085
-X-Proofpoint-ORIG-GUID: wPDLZBy73CuDUBPiGVk9AIEq5_wa6DS3
-X-Proofpoint-GUID: wPDLZBy73CuDUBPiGVk9AIEq5_wa6DS3
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.895,Hydra:6.0.517,FMLib:17.11.122.1
- definitions=2022-08-23_04,2022-08-22_02,2022-06-22_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 impostorscore=0 bulkscore=0
- spamscore=0 suspectscore=0 phishscore=0 lowpriorityscore=0 clxscore=1011
- priorityscore=1501 adultscore=0 mlxlogscore=859 mlxscore=0 malwarescore=0
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2207270000
- definitions=main-2208230035
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-After support for resets is added, qcom_cc_really_probe()
-would be called twice for the same cc which causes
-invalid index errors in qcom_clk_hw_get().
+From: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
 
-qcom_cc_clk_hw_get: invalid index 5
-qcom_cc_clk_hw_get: invalid index 6
-qcom_cc_clk_hw_get: invalid index 7
+[ Upstream commit 44fd1917314e9d4f53dd95dd65df1c152f503d3a ]
 
-Fixes: a9dd26639d05 ("clk: qcom: lpass: Add support for LPASS clock controller for SC7280")
-Signed-off-by: Taniya Das <quic_tdas@quicinc.com>
-Signed-off-by: Satya Priya <quic_c_skakit@quicinc.com>
+If an error occurs after a successful idr_alloc() call, the corresponding
+resource must be released with idr_remove() as already done in the .remove
+function.
+
+Update the error handling path to add the missing idr_remove() call.
+
+Fixes: ada8a8a13b13 ("mfd: Add realtek pcie card reader driver")
+Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+Link: https://lore.kernel.org/r/e8dc41716cbf52fb37a12e70d8972848e69df6d6.1655271216.git.christophe.jaillet@wanadoo.fr
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
-This patch depends on [1] 
-[1] https://patchwork.kernel.org/project/linux-arm-msm/list/?series=667984
+ drivers/misc/cardreader/rtsx_pcr.c | 6 +++++-
+ 1 file changed, 5 insertions(+), 1 deletion(-)
 
- drivers/clk/qcom/lpassaudiocc-sc7280.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/drivers/clk/qcom/lpassaudiocc-sc7280.c b/drivers/clk/qcom/lpassaudiocc-sc7280.c
-index 063e036..5d4bc56 100644
---- a/drivers/clk/qcom/lpassaudiocc-sc7280.c
-+++ b/drivers/clk/qcom/lpassaudiocc-sc7280.c
-@@ -785,7 +785,7 @@ static int lpass_audio_cc_sc7280_probe(struct platform_device *pdev)
- 	regmap_write(regmap, 0x4, 0x3b);
- 	regmap_write(regmap, 0x8, 0xff05);
+diff --git a/drivers/misc/cardreader/rtsx_pcr.c b/drivers/misc/cardreader/rtsx_pcr.c
+index 3eb3c237f339..80b9f36dbca4 100644
+--- a/drivers/misc/cardreader/rtsx_pcr.c
++++ b/drivers/misc/cardreader/rtsx_pcr.c
+@@ -1479,7 +1479,7 @@ static int rtsx_pci_probe(struct pci_dev *pcidev,
+ 	pcr->remap_addr = ioremap_nocache(base, len);
+ 	if (!pcr->remap_addr) {
+ 		ret = -ENOMEM;
+-		goto free_handle;
++		goto free_idr;
+ 	}
  
--	ret = qcom_cc_really_probe(pdev, &lpass_audio_cc_sc7280_desc, regmap);
-+	ret = qcom_cc_probe_by_index(pdev, 0, &lpass_audio_cc_sc7280_desc);
- 	if (ret) {
- 		dev_err(&pdev->dev, "Failed to register LPASS AUDIO CC clocks\n");
- 		pm_runtime_disable(&pdev->dev);
+ 	pcr->rtsx_resv_buf = dma_alloc_coherent(&(pcidev->dev),
+@@ -1541,6 +1541,10 @@ static int rtsx_pci_probe(struct pci_dev *pcidev,
+ 			pcr->rtsx_resv_buf, pcr->rtsx_resv_buf_addr);
+ unmap:
+ 	iounmap(pcr->remap_addr);
++free_idr:
++	spin_lock(&rtsx_pci_lock);
++	idr_remove(&rtsx_pci_idr, pcr->id);
++	spin_unlock(&rtsx_pci_lock);
+ free_handle:
+ 	kfree(handle);
+ free_pcr:
 -- 
-2.7.4
+2.35.1
+
+
 
