@@ -2,44 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1345AC32772
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 09:54:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C4BDFC32772
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 09:54:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241997AbiHWJye (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 05:54:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42428 "EHLO
+        id S242309AbiHWJyi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 23 Aug 2022 05:54:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41044 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352284AbiHWJv3 (ORCPT
+        with ESMTP id S1352290AbiHWJv3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 23 Aug 2022 05:51:29 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EBEE89F0EA;
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B57627B2A2;
         Tue, 23 Aug 2022 01:45:53 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 224AEB81C39;
-        Tue, 23 Aug 2022 08:17:33 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 75668C433C1;
-        Tue, 23 Aug 2022 08:17:31 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 67387B81C5B;
+        Tue, 23 Aug 2022 08:35:07 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C64D0C433C1;
+        Tue, 23 Aug 2022 08:35:05 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661242651;
-        bh=VjhgaeQuIzUr58TJv2AShtXaQvD2k3yhALj3E6r+uoM=;
+        s=korg; t=1661243706;
+        bh=pVh0kY2dRG6Xb0FG85icTj2NW55fBngQJ94RJpxzoGQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Y0UiCzsoCUYkF+2JN9VOaXzDq6zsdvFS/Ivwt9iUvaef/Wfci57YRDAVabn1obLOP
-         s2Ae/eWPJNXbTb7z71J6eLtTkNjYtz8LwMgSQtUPANmiG8pJKbqAwm/g3I41lz++UK
-         G2wC14ZHKnx2vCwU2q/3HAAJKNufa6g5hknrOOdg=
+        b=Bx+k0r/u0NXhsAjRaUXadsl3Ng0JaG9Qj6gv7lArn7Xojpfdhh0/H9BcFGVNGIsdZ
+         HRWgFixBGRMJgABIWI61wksRcaCpZ9cQQETXrSPC74YkNaMfiPMIAQEL/n/vR87wV3
+         +dQQ0jHYTKW8KTQ/YAEqYJm5VOhH9urARgPbnJMg=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Christoph Hellwig <hch@lst.de>,
-        Chaitanya Kulkarni <kch@nvidia.com>,
-        "Ewan D. Milne" <emilne@redhat.com>,
-        James Smart <jsmart2021@gmail.com>,
-        Muneendra Kumar M <muneendra.kumar@broadcom.com>
-Subject: [PATCH 5.19 154/365] nvme-fc: fix the fc_appid_store return value
-Date:   Tue, 23 Aug 2022 10:00:55 +0200
-Message-Id: <20220823080124.671691940@linuxfoundation.org>
+        stable@vger.kernel.org,
+        "Sudip Mukherjee (Codethink)" <sudipm.mukherjee@gmail.com>,
+        Nathan Chancellor <nathan@kernel.org>,
+        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.19 361/365] MIPS: tlbex: Explicitly compare _PAGE_NO_EXEC against 0
+Date:   Tue, 23 Aug 2022 10:04:22 +0200
+Message-Id: <20220823080133.394797517@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220823080118.128342613@linuxfoundation.org>
 References: <20220823080118.128342613@linuxfoundation.org>
@@ -51,51 +51,70 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Christoph Hellwig <hch@lst.de>
+From: Nathan Chancellor <nathan@kernel.org>
 
-commit 9317d0014499182c77a03cd095e83bcfb0f53750 upstream.
+[ Upstream commit 74de14fe05dd6b151d73cb0c73c8ec874cbdcde6 ]
 
-"nvme-fc: fold t fc_update_appid into fc_appid_store" accidentally
-changed the userspace interface for the appid attribute, because the code
-that decrements "count" to remove a trailing '\n' in the parsing results
-in the decremented value being incorrectly be returned from the sysfs
-write.  Fix this by keeping an orig_count variable for the full length
-of the write.
+When CONFIG_XPA is enabled, Clang warns:
 
-Fixes: c814153c83a8 ("nvme-fc: fold t fc_update_appid into fc_appid_store")
-Signed-off-by: Christoph Hellwig <hch@lst.de>
-Reviewed-by: Chaitanya Kulkarni <kch@nvidia.com>
-Reviewed-by: Ewan D. Milne <emilne@redhat.com>
-Reviewed-by: James Smart <jsmart2021@gmail.com>
-Tested-by:  Muneendra Kumar M <muneendra.kumar@broadcom.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+  arch/mips/mm/tlbex.c:629:24: error: converting the result of '<<' to a boolean; did you mean '(1 << _PAGE_NO_EXEC_SHIFT) != 0'? [-Werror,-Wint-in-bool-context]
+          if (cpu_has_rixi && !!_PAGE_NO_EXEC) {
+                              ^
+  arch/mips/include/asm/pgtable-bits.h:174:28: note: expanded from macro '_PAGE_NO_EXEC'
+  # define _PAGE_NO_EXEC          (1 << _PAGE_NO_EXEC_SHIFT)
+                                     ^
+  arch/mips/mm/tlbex.c:2568:24: error: converting the result of '<<' to a boolean; did you mean '(1 << _PAGE_NO_EXEC_SHIFT) != 0'? [-Werror,-Wint-in-bool-context]
+          if (!cpu_has_rixi || !_PAGE_NO_EXEC) {
+                                ^
+  arch/mips/include/asm/pgtable-bits.h:174:28: note: expanded from macro '_PAGE_NO_EXEC'
+  # define _PAGE_NO_EXEC          (1 << _PAGE_NO_EXEC_SHIFT)
+                                     ^
+  2 errors generated.
+
+_PAGE_NO_EXEC can be '0' or '1 << _PAGE_NO_EXEC_SHIFT' depending on the
+build and runtime configuration, which is what the negation operators
+are trying to convey. To silence the warning, explicitly compare against
+0 so the result of the '<<' operator is not implicitly converted to a
+boolean.
+
+According to its documentation, GCC enables -Wint-in-bool-context with
+-Wall but this warning is not visible when building the same
+configuration with GCC. It appears GCC only warns when compiling C++,
+not C, although the documentation makes no note of this:
+https://godbolt.org/z/x39q3brxf
+
+Reported-by: Sudip Mukherjee (Codethink) <sudipm.mukherjee@gmail.com>
+Signed-off-by: Nathan Chancellor <nathan@kernel.org>
+Signed-off-by: Thomas Bogendoerfer <tsbogend@alpha.franken.de>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/nvme/host/fc.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ arch/mips/mm/tlbex.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/nvme/host/fc.c b/drivers/nvme/host/fc.c
-index 8d14df8eeab8..127abaf9ba5d 100644
---- a/drivers/nvme/host/fc.c
-+++ b/drivers/nvme/host/fc.c
-@@ -3880,6 +3880,7 @@ static int fc_parse_cgrpid(const char *buf, u64 *id)
- static ssize_t fc_appid_store(struct device *dev,
- 		struct device_attribute *attr, const char *buf, size_t count)
- {
-+	size_t orig_count = count;
- 	u64 cgrp_id;
- 	int appid_len = 0;
- 	int cgrpid_len = 0;
-@@ -3904,7 +3905,7 @@ static ssize_t fc_appid_store(struct device *dev,
- 	ret = blkcg_set_fc_appid(app_id, cgrp_id, sizeof(app_id));
- 	if (ret < 0)
- 		return ret;
--	return count;
-+	return orig_count;
- }
- static DEVICE_ATTR(appid_store, 0200, NULL, fc_appid_store);
- #endif /* CONFIG_BLK_CGROUP_FC_APPID */
+diff --git a/arch/mips/mm/tlbex.c b/arch/mips/mm/tlbex.c
+index 8dbbd99fc7e8..be4d4670d649 100644
+--- a/arch/mips/mm/tlbex.c
++++ b/arch/mips/mm/tlbex.c
+@@ -626,7 +626,7 @@ static __maybe_unused void build_convert_pte_to_entrylo(u32 **p,
+ 		return;
+ 	}
+ 
+-	if (cpu_has_rixi && !!_PAGE_NO_EXEC) {
++	if (cpu_has_rixi && _PAGE_NO_EXEC != 0) {
+ 		if (fill_includes_sw_bits) {
+ 			UASM_i_ROTR(p, reg, reg, ilog2(_PAGE_GLOBAL));
+ 		} else {
+@@ -2565,7 +2565,7 @@ static void check_pabits(void)
+ 	unsigned long entry;
+ 	unsigned pabits, fillbits;
+ 
+-	if (!cpu_has_rixi || !_PAGE_NO_EXEC) {
++	if (!cpu_has_rixi || _PAGE_NO_EXEC == 0) {
+ 		/*
+ 		 * We'll only be making use of the fact that we can rotate bits
+ 		 * into the fill if the CPU supports RIXI, so don't bother
 -- 
-2.37.2
+2.35.1
 
 
 
