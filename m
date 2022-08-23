@@ -2,154 +2,112 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1742AC32772
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 19:59:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5589CC32772
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 20:01:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229945AbiHWT7I (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 15:59:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55252 "EHLO
+        id S233759AbiHWUBF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 23 Aug 2022 16:01:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33476 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229896AbiHWT6r (ORCPT
+        with ESMTP id S234187AbiHWUAn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 15:58:47 -0400
-Received: from crane.ash.relay.mailchannels.net (crane.ash.relay.mailchannels.net [23.83.222.43])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 15EA890186
-        for <linux-kernel@vger.kernel.org>; Tue, 23 Aug 2022 12:09:55 -0700 (PDT)
-X-Sender-Id: dreamhost|x-authsender|dave@stgolabs.net
-Received: from relay.mailchannels.net (localhost [127.0.0.1])
-        by relay.mailchannels.net (Postfix) with ESMTP id 477BA8C1801;
-        Tue, 23 Aug 2022 19:09:51 +0000 (UTC)
-Received: from pdx1-sub0-mail-a212.dreamhost.com (unknown [127.0.0.6])
-        (Authenticated sender: dreamhost)
-        by relay.mailchannels.net (Postfix) with ESMTPA id 94A0E8C101F;
-        Tue, 23 Aug 2022 19:09:49 +0000 (UTC)
-ARC-Seal: i=1; s=arc-2022; d=mailchannels.net; t=1661281790; a=rsa-sha256;
-        cv=none;
-        b=lmG9Tw8EGSeZND4joDeu48YZlxokQLqgCdI/O69HSbnFT1r2gscGYe5cYlSfYkDBdnaY4T
-        /aniTS4+Vhif4/Zui9jw9izH8sLa8fNr2teY5LiCBsmXiwRLhks1o/hjRnZqemFHNPRps3
-        XQ73+PcFQfd9C1j9pPou5z49IcOEE3nT5CWTEgGCbp0oTEiqKQgSPxdNn/57rCXuUKhOMN
-        0oBSkGU+HKekLrOPiAtu56O9OLnxg8VW1vbqUwwl5sGengqi5b2EnfTw9ZzjQb/JN+u2Xk
-        Q7g+De2wPPXcSH2+ONjJXH+27xFOFcg51jXTLJKVL0251l5vdL/KdzSxg8W36g==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed;
- d=mailchannels.net;
-        s=arc-2022; t=1661281790;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references:dkim-signature;
-        bh=RePCAjRmxTgvfrJFiJji/FcnlgED11O0Jsa0IkQPkag=;
-        b=ANDq04V3Vf6p3HoHJoL43e+DFX/UqcEwdNLwcUIIAlG/xV70/6bT5lGN3Z/xkd743bwJrh
-        mZufmqMNA/n7ubu+Rd0/7OG1h9KJ2SIBMGZluUyYJ/7Up9tTvOsATI8qDz96tSEyXIGift
-        K1SL5GSXG2u9k0VKLTWHA+UxP23gcwG+CoL7gxfenIBxSCz+e0pgNMKOvwN05YFx0WFBkC
-        qFZMRZDev9/s1ZEsFPO8Xi/mcVP13ekUOjsWbUos6QAnIbcA1fm8czcSFQl9JI8oudp+x/
-        Y65tn+XEGBJZC9Xb5sFddV+5m5SraNzg0S6MoNINEEdH1MhuKRU+g9WAjdDtmg==
-ARC-Authentication-Results: i=1;
-        rspamd-76867cc9c5-7stgk;
-        auth=pass smtp.auth=dreamhost smtp.mailfrom=dave@stgolabs.net
-X-Sender-Id: dreamhost|x-authsender|dave@stgolabs.net
-X-MC-Relay: Neutral
-X-MailChannels-SenderId: dreamhost|x-authsender|dave@stgolabs.net
-X-MailChannels-Auth-Id: dreamhost
-X-Keen-Whimsical: 0a7423aa152d839e_1661281791062_1936149744
-X-MC-Loop-Signature: 1661281791062:710606637
-X-MC-Ingress-Time: 1661281791062
-Received: from pdx1-sub0-mail-a212.dreamhost.com (pop.dreamhost.com
- [64.90.62.162])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384)
-        by 100.109.219.74 (trex/6.7.1);
-        Tue, 23 Aug 2022 19:09:51 +0000
-Received: from offworld (unknown [104.36.31.106])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-256) server-signature RSA-PSS (2048 bits) server-digest SHA256)
-        (No client certificate requested)
-        (Authenticated sender: dave@stgolabs.net)
-        by pdx1-sub0-mail-a212.dreamhost.com (Postfix) with ESMTPSA id 4MBzLh3YyHz1q;
-        Tue, 23 Aug 2022 12:09:48 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=stgolabs.net;
-        s=dreamhost; t=1661281789;
-        bh=RePCAjRmxTgvfrJFiJji/FcnlgED11O0Jsa0IkQPkag=;
-        h=Date:From:To:Cc:Subject:Content-Type;
-        b=oyrod9XrrZW1qVmOHoBb7nCLmVdL6ECR601aRxtb75J2Lw7pGsqoTA5Y9khNa2FAB
-         nRIMzMh2+2sfD7jNV/m0KBJFO3INR44wQ+CVyo9LKkiqZuHX3riQxg2QC7VHxdSUiB
-         bj2TCfyTxqrRpaAKaDdJSBksGsTQpFh8CVksV71vFgl5ymy/Tof/jrKdR1fVqMhbr2
-         rTIaSGWoVbI5QL8LlzHNhRXu2hUkaeg9921b+Up5v83JQwXVIaScspoJOW33eipK8A
-         +8rwm3Llg04bDUtjhi+jF7UkU+tQxub4eBL56F/38MTwU60nmx0nhcsLD0OJ39FDHN
-         ZM7omNRfzy/Tg==
-Date:   Tue, 23 Aug 2022 11:51:45 -0700
-From:   Davidlohr Bueso <dave@stgolabs.net>
-To:     Liam Howlett <liam.howlett@oracle.com>
-Cc:     "maple-tree@lists.infradead.org" <maple-tree@lists.infradead.org>,
-        "linux-mm@kvack.org" <linux-mm@kvack.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        "Matthew Wilcox (Oracle)" <willy@infradead.org>,
-        Michael Ellerman <mpe@ellerman.id.au>,
-        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
-        Paul Mackerras <paulus@samba.org>,
-        Christophe Leroy <christophe.leroy@csgroup.eu>,
-        Vlastimil Babka <vbabka@suse.cz>
-Subject: Re: [PATCH v13 33/70] powerpc: remove mmap linked list walks
-Message-ID: <20220823185145.gjvb3xmzebewi6os@offworld>
-Mail-Followup-To: Liam Howlett <liam.howlett@oracle.com>,
-        "maple-tree@lists.infradead.org" <maple-tree@lists.infradead.org>,
-        "linux-mm@kvack.org" <linux-mm@kvack.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        "Matthew Wilcox (Oracle)" <willy@infradead.org>,
-        Michael Ellerman <mpe@ellerman.id.au>,
-        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
-        Paul Mackerras <paulus@samba.org>,
-        Christophe Leroy <christophe.leroy@csgroup.eu>,
-        Vlastimil Babka <vbabka@suse.cz>
-References: <20220822150128.1562046-1-Liam.Howlett@oracle.com>
- <20220822150128.1562046-34-Liam.Howlett@oracle.com>
+        Tue, 23 Aug 2022 16:00:43 -0400
+Received: from mail-wr1-x433.google.com (mail-wr1-x433.google.com [IPv6:2a00:1450:4864:20::433])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 759111B781
+        for <linux-kernel@vger.kernel.org>; Tue, 23 Aug 2022 12:13:24 -0700 (PDT)
+Received: by mail-wr1-x433.google.com with SMTP id a4so18156606wrq.1
+        for <linux-kernel@vger.kernel.org>; Tue, 23 Aug 2022 12:13:24 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=arista.com; s=google;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc;
+        bh=5HEozkN1eNSdRGMPEViSDPwooyUds18YjrCvv9Tq5PM=;
+        b=JcEA4IBNP7ncyTN3CDgegKfm8PDRnp7A2SQsupOGwRFzoXrMkEjkRPXhsyEQUXtmc0
+         uH80uPGU93JVu0ihwsF+XUqvG9Wv5BmDO6pfOyZOqBvaEUv8jl2eCzC828kLenl1lBza
+         KqN6wEy/4S5mGi3tXtdUe6STKwVw5+cUeJQs2681POnzYwP5W74w3K5ZMBJPbJ7Qf/xY
+         5L80FOve8JgO7nEiyy3MkQ6EqXx8fNgn+yUqvJbOTIo5Q3knkzN1z5RAHgnNnecHroSj
+         3kNmjtRbztx8c+XzyT24BA7SDtzTMdNy9Qw8JlA8+wBrsqRs+ajUh5ufpZBJ6s5dpuL6
+         aBsQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc;
+        bh=5HEozkN1eNSdRGMPEViSDPwooyUds18YjrCvv9Tq5PM=;
+        b=gRvsMgf63HBYTiTO93W30l1BqUDzvapNCHkhvKlm/4X+aglUhxTDr4n1jcfD8Kqhb4
+         tecjGrcINzfmJMVCK/qdLrn6juukbt7a7bA7poVAiH9PIBfOSpflm2EYZwLvMJGcRvMK
+         9HhnMk4NZxgCTc65xAI2wyp+TAaf2WROpfOvAL1KJHLPghkjqGihHgkILU9yI0/R823l
+         RylPSyLmTF7C4ZIfe/gJyXoM5cCyMVRafGHoZy4NvyGWA6WFheq05XrJAadMTqTPOmi8
+         ZkC9S7z2dO4DnrO/tKzfQzzl2zq/0vNRgixwNQAsg3mqqYLGXPn0sKfEmoKvIN++tJZo
+         ojTg==
+X-Gm-Message-State: ACgBeo35+bfKp6sMB3DoH1IpPaKmmFtbfXlCXED09LHJ+yIbeMxSt0KZ
+        eCPqbkh+z8xj0lF92dKODPV6jesHQMd+8Cw/
+X-Google-Smtp-Source: AA6agR53ishkcncmQIKDj+9xe5xiVe6/2+ifQ+YB9Hqp1Fv0TSHoNuYxqGR/AucFKxKXXpbdTJMvQA==
+X-Received: by 2002:a5d:660d:0:b0:225:59cc:9ad9 with SMTP id n13-20020a5d660d000000b0022559cc9ad9mr6140863wru.14.1661282002968;
+        Tue, 23 Aug 2022 12:13:22 -0700 (PDT)
+Received: from [10.83.37.24] ([217.173.96.166])
+        by smtp.gmail.com with ESMTPSA id r1-20020a0560001b8100b002253d865715sm11781738wru.87.2022.08.23.12.13.21
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 23 Aug 2022 12:13:22 -0700 (PDT)
+Message-ID: <4e46e053-5240-aaa1-91c7-7aabdc7a2db3@arista.com>
+Date:   Tue, 23 Aug 2022 20:13:15 +0100
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii; format=flowed
-Content-Disposition: inline
-In-Reply-To: <20220822150128.1562046-34-Liam.Howlett@oracle.com>
-User-Agent: NeoMutt/20220429
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.12.0
+Subject: Re: [PATCH v3 00/23] Add generic vdso_base tracking
+Content-Language: en-US
+To:     Christophe Leroy <christophe.leroy@csgroup.eu>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Cc:     Dmitry Safonov <0x7f454c46@gmail.com>,
+        Alexander Viro <viro@zeniv.linux.org.uk>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Andy Lutomirski <luto@kernel.org>,
+        Arnd Bergmann <arnd@arndb.de>, Borislav Petkov <bp@alien8.de>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        Guo Ren <guoren@kernel.org>, "H. Peter Anvin" <hpa@zytor.com>,
+        Ingo Molnar <mingo@redhat.com>,
+        Oleg Nesterov <oleg@redhat.com>,
+        Russell King <linux@armlinux.org.uk>,
+        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Vincenzo Frascino <vincenzo.frascino@arm.com>,
+        Will Deacon <will@kernel.org>,
+        "x86@kernel.org" <x86@kernel.org>
+References: <20210611180242.711399-1-dima@arista.com>
+ <8bba9ed8-ae1f-7c98-fde5-808927935447@csgroup.eu>
+ <6b2513db-7c31-8da4-38ec-0b9898c6589c@arista.com>
+ <ad912d91-c6e8-12ab-f309-d52b8cd9a92a@csgroup.eu>
+From:   Dmitry Safonov <dima@arista.com>
+In-Reply-To: <ad912d91-c6e8-12ab-f309-d52b8cd9a92a@csgroup.eu>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, 22 Aug 2022, Liam Howlett wrote:
+Hi Christophe,
 
->From: "Matthew Wilcox (Oracle)" <willy@infradead.org>
->
->Use the VMA iterator instead.
->
->Signed-off-by: Matthew Wilcox (Oracle) <willy@infradead.org>
->Signed-off-by: Liam R. Howlett <Liam.Howlett@Oracle.com>
->Reviewed-by: Vlastimil Babka <vbabka@suse.cz>
+On 8/19/22 10:17, Christophe Leroy wrote:
+> Hi Dmitry,
+> 
+> Le 10/03/2022 à 22:17, Dmitry Safonov a écrit :
+>> Hi Christophe,
+>>
+>> On 3/9/22 15:41, Christophe Leroy wrote:
+>>> Hi Dmitry,
+>>>
+>>> I'm wondering the status of this series.
+>>
+>> Yeah, I plan to work on v4 addressing the reviews.
+>> WFH has quite affected my work on side-projects and I've laid aside for
+>> a while this patch set that touches every architecture and is besides
+>> a bit challenging to upstream.
+> 
+> Any progress ?
 
-Reviewed-by: Davidlohr Bueso <dave@stgolabs.net>
+Yeah, I'm back to the office, so will spend some time on v4, thanks for
+pinging.
 
->---
-> arch/powerpc/kernel/vdso.c              |  6 +++---
-> arch/powerpc/mm/book3s32/tlb.c          | 11 ++++++-----
-> arch/powerpc/mm/book3s64/subpage_prot.c | 13 ++-----------
-> 3 files changed, 11 insertions(+), 19 deletions(-)
->
->diff --git a/arch/powerpc/kernel/vdso.c b/arch/powerpc/kernel/vdso.c
->index 0da287544054..94a8fa5017c3 100644
->--- a/arch/powerpc/kernel/vdso.c
->+++ b/arch/powerpc/kernel/vdso.c
->@@ -113,18 +113,18 @@ struct vdso_data *arch_get_vdso_data(void *vvar_page)
-> int vdso_join_timens(struct task_struct *task, struct time_namespace *ns)
-> {
->	struct mm_struct *mm = task->mm;
->+	VMA_ITERATOR(vmi, mm, 0);
->	struct vm_area_struct *vma;
->
->	mmap_read_lock(mm);
->-
->-	for (vma = mm->mmap; vma; vma = vma->vm_next) {
->+	for_each_vma(vmi, vma) {
->		unsigned long size = vma->vm_end - vma->vm_start;
-
-Unrelated, but maybe worth abstracting?
-
-$> grep "vma->vm_end - vma->vm_start" |wc -l
-216
-
-Thanks,
-Davidlohr
+Thank you,
+          Dmitry
