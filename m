@@ -2,45 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 036F5C32774
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 10:42:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D7B61C32772
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 10:42:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355688AbiHWKkb (ORCPT
+        id S1355396AbiHWKkX (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 06:40:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51996 "EHLO
+        Tue, 23 Aug 2022 06:40:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43924 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354438AbiHWKZh (ORCPT
+        with ESMTP id S1354383AbiHWKZ2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 06:25:37 -0400
+        Tue, 23 Aug 2022 06:25:28 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DD790A4054;
-        Tue, 23 Aug 2022 02:05:02 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B5D43832E9;
+        Tue, 23 Aug 2022 02:04:59 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 7A1036158C;
-        Tue, 23 Aug 2022 09:05:02 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 61B71C433C1;
-        Tue, 23 Aug 2022 09:05:01 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 4591261584;
+        Tue, 23 Aug 2022 09:04:59 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 407A9C433C1;
+        Tue, 23 Aug 2022 09:04:58 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661245501;
-        bh=vtRXCHze60S9N+iuu3PGeK93PaQSS+De1RgKrNFEUBE=;
+        s=korg; t=1661245498;
+        bh=XZPsukZTb+hTMSm+/vEq+mEJkXlwXdR0DPErYIV/FtM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=x/HusN+Ae4yvwFpTWZuoSp8NF+IdXf3jdljKxbIObVjXBR32RTZF/J+k8sylpzyL9
-         bRtVwwC5Q8HBRDal8z3o/58hy+V8GwZfPs5XV3f3f5ba95YQzwy9tyzllpCuScw4De
-         Dij1n70jq4XObPXF5pofkigM2RUlTxaKUwCQzPiw=
+        b=DN5FpuZjEq5qDRsucJaXEBT/Bk6iE+cd4URqYFTqpFJaVpxkLlmTag51F3+5avfc/
+         Pc+gGad3/K7pHrYqRTKzH0mNQQvUhEpM1CJDn8CsQHjdzNxh84aIJTPvneFCpOgB5+
+         aYA+BIzbis4MAO/fNya5XIdjoX0k0PKOkXDOQfUk=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jitao Shi <jitao.shi@mediatek.com>,
-        Xinlei Lee <xinlei.lee@mediatek.com>,
-        Rex-BC Chen <rex-bc.chen@mediatek.com>,
-        Chun-Kuang Hu <chunkuang.hu@kernel.org>,
+        stable@vger.kernel.org,
+        Vincent Mailhol <mailhol.vincent@wanadoo.fr>,
+        Marc Kleine-Budde <mkl@pengutronix.de>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.19 071/287] drm/mediatek: Add pull-down MIPI operation in mtk_dsi_poweroff function
-Date:   Tue, 23 Aug 2022 10:24:00 +0200
-Message-Id: <20220823080102.623144799@linuxfoundation.org>
+Subject: [PATCH 4.19 097/287] can: hi311x: do not report txerr and rxerr during bus-off
+Date:   Tue, 23 Aug 2022 10:24:26 +0200
+Message-Id: <20220823080103.623190342@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220823080100.268827165@linuxfoundation.org>
 References: <20220823080100.268827165@linuxfoundation.org>
@@ -52,45 +51,44 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Xinlei Lee <xinlei.lee@mediatek.com>
+From: Vincent Mailhol <mailhol.vincent@wanadoo.fr>
 
-[ Upstream commit fa5d0a0205c34734c5b8daa77e39ac2817f63a10 ]
+[ Upstream commit a22bd630cfff496b270211745536e50e98eb3a45 ]
 
-In the dsi_enable function, mtk_dsi_rxtx_control is to
-pull up the MIPI signal operation. Before dsi_disable,
-MIPI should also be pulled down by writing a register
-instead of disabling dsi.
+During bus off, the error count is greater than 255 and can not fit in
+a u8.
 
-If disable dsi without pulling the mipi signal low, the value of
-the register will still maintain the setting of the mipi signal being
-pulled high.
-After resume, even if the mipi signal is not pulled high, it will still
-be in the high state.
-
-Fixes: 2e54c14e310f ("drm/mediatek: Add DSI sub driver")
-
-Link: https://patchwork.kernel.org/project/linux-mediatek/patch/1653012007-11854-5-git-send-email-xinlei.lee@mediatek.com/
-Signed-off-by: Jitao Shi <jitao.shi@mediatek.com>
-Signed-off-by: Xinlei Lee <xinlei.lee@mediatek.com>
-Reviewed-by: Rex-BC Chen <rex-bc.chen@mediatek.com>
-Signed-off-by: Chun-Kuang Hu <chunkuang.hu@kernel.org>
+Fixes: 57e83fb9b746 ("can: hi311x: Add Holt HI-311x CAN driver")
+Link: https://lore.kernel.org/all/20220719143550.3681-6-mailhol.vincent@wanadoo.fr
+Signed-off-by: Vincent Mailhol <mailhol.vincent@wanadoo.fr>
+Signed-off-by: Marc Kleine-Budde <mkl@pengutronix.de>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/gpu/drm/mediatek/mtk_dsi.c | 2 ++
- 1 file changed, 2 insertions(+)
+ drivers/net/can/spi/hi311x.c | 5 +++--
+ 1 file changed, 3 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/gpu/drm/mediatek/mtk_dsi.c b/drivers/gpu/drm/mediatek/mtk_dsi.c
-index 0dd317ac5fe5..a629a69c2756 100644
---- a/drivers/gpu/drm/mediatek/mtk_dsi.c
-+++ b/drivers/gpu/drm/mediatek/mtk_dsi.c
-@@ -651,6 +651,8 @@ static void mtk_dsi_poweroff(struct mtk_dsi *dsi)
- 	mtk_dsi_reset_engine(dsi);
- 	mtk_dsi_lane0_ulp_mode_enter(dsi);
- 	mtk_dsi_clk_ulp_mode_enter(dsi);
-+	/* set the lane number as 0 to pull down mipi */
-+	writel(0, dsi->regs + DSI_TXRX_CTRL);
+diff --git a/drivers/net/can/spi/hi311x.c b/drivers/net/can/spi/hi311x.c
+index 472175e37055..5f730f791c27 100644
+--- a/drivers/net/can/spi/hi311x.c
++++ b/drivers/net/can/spi/hi311x.c
+@@ -688,8 +688,6 @@ static irqreturn_t hi3110_can_ist(int irq, void *dev_id)
  
- 	mtk_dsi_disable(dsi);
+ 			txerr = hi3110_read(spi, HI3110_READ_TEC);
+ 			rxerr = hi3110_read(spi, HI3110_READ_REC);
+-			cf->data[6] = txerr;
+-			cf->data[7] = rxerr;
+ 			tx_state = txerr >= rxerr ? new_state : 0;
+ 			rx_state = txerr <= rxerr ? new_state : 0;
+ 			can_change_state(net, cf, tx_state, rx_state);
+@@ -702,6 +700,9 @@ static irqreturn_t hi3110_can_ist(int irq, void *dev_id)
+ 					hi3110_hw_sleep(spi);
+ 					break;
+ 				}
++			} else {
++				cf->data[6] = txerr;
++				cf->data[7] = rxerr;
+ 			}
+ 		}
  
 -- 
 2.35.1
