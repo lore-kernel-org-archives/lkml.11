@@ -2,70 +2,53 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C38DBC32772
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 17:23:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 73C28C32789
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 17:23:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233780AbiHWRXb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 13:23:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38528 "EHLO
+        id S229731AbiHWRXj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 23 Aug 2022 13:23:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56100 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239257AbiHWRVG (ORCPT
+        with ESMTP id S241803AbiHWRVS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 13:21:06 -0400
-Received: from mail-oi1-f174.google.com (mail-oi1-f174.google.com [209.85.167.174])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CBFD3CE481;
-        Tue, 23 Aug 2022 07:57:20 -0700 (PDT)
-Received: by mail-oi1-f174.google.com with SMTP id s199so16320310oie.3;
-        Tue, 23 Aug 2022 07:57:20 -0700 (PDT)
+        Tue, 23 Aug 2022 13:21:18 -0400
+Received: from mail-oa1-f46.google.com (mail-oa1-f46.google.com [209.85.160.46])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5C867AC253;
+        Tue, 23 Aug 2022 07:57:31 -0700 (PDT)
+Received: by mail-oa1-f46.google.com with SMTP id 586e51a60fabf-11cb3c811d9so15414890fac.1;
+        Tue, 23 Aug 2022 07:57:31 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=content-transfer-encoding:mime-version:message-id:date:subject:cc
          :to:from:x-gm-message-state:from:to:cc;
-        bh=h0CnVKrOjJedjISgP9+nhkN7E189WcSV8KiZ+ezPrBE=;
-        b=Hj6YOfcwMIipZypYQRxbGh8/KWopFRMDiU4nOJYryQLL8PkwRSedtDDZ51lSb9tWUt
-         PkgEfsDEo4XNQHtB+Pgf0+9y0gA7qgeVF0Q0cldC7gNc/q6PyKOTZ4SGsXSgel/y0QTZ
-         LdR6iLdyJKT3hQuI4bnVjGXAxz946W1VLikufYnKzhPz55fykFYpuTOr4x8UVH81VUTQ
-         UyW9/BMwWW5euMZtBxmBhYJVtX1rA7Q/pmVsafdeprhRTGVzDLiEyvwlqgbC08pyQCSw
-         zOauHE3bKx+uPXc3gDkqPBrK07nQ0wMMjwVH9X8sA5EMF4NDE5d50TgJ1YEz1sHoBTBR
-         vwTQ==
-X-Gm-Message-State: ACgBeo3FqBygZ0OCoKY1EYFMt9raSuzW8FxdEFGgrbxd1BR6CVda64X+
-        wmBDvKpWvPN/o2zz3ri9iw==
-X-Google-Smtp-Source: AA6agR5OARvxdnc8BmaUXFTmBiSwYZaPHP9yws/NVD55WI4mBLuEUcY0qCEgGgE0JHMJhoGGEYBTzg==
-X-Received: by 2002:aca:f054:0:b0:345:7285:1147 with SMTP id o81-20020acaf054000000b0034572851147mr1505615oih.108.1661266640082;
-        Tue, 23 Aug 2022 07:57:20 -0700 (PDT)
+        bh=E/n8+ANvvCKxMrSrOzblZTP/tD99uJWGC/nHupfAwYo=;
+        b=E+pfZ3tJr1FZeXPLVk1bJpMl+9N8QcPKUrE2JKh/r3ur4KVA2A/0nD09h+5QZm4UQt
+         DqUkUn+WyHaTuVPESupRsiX0w3SS5kbKt+6eaHUHt4apn9h2CkqUezINQ4W0HMcD+m2v
+         xLMQe6ePi7qQs9pw0RlHqvJ+H2WG7oUR9GvukuYifn40Z1HJD0HV6Pb+QbusbnRxT5sc
+         5VUqXDr9ojE4nAtlrchh00ok34R3/cSDfJC4PKB7E0MNkitm0JQ/V1R6jAJYuw44/HPz
+         2MMJ60f/PtCDX+3slxILen9GJM+AD2o4I7hwKZzd1sXwUSJVj+lF3k/OSDgkazps6fGA
+         4jTQ==
+X-Gm-Message-State: ACgBeo2IDIYaTP407r52OmdclNZO8gaSMVJmgPBEYdnVDEEkVmn//XEP
+        i835zPwr6RP3+ww7B783mA==
+X-Google-Smtp-Source: AA6agR5lMb2hvsauCXLU1ijbcXQY+dQlE0/NaS2H77wDnbGqI8QJsLlxfEIGjr6TYMdtd3ranumubw==
+X-Received: by 2002:a05:6870:c0c8:b0:101:b3c3:abc3 with SMTP id e8-20020a056870c0c800b00101b3c3abc3mr1568061oad.144.1661266650452;
+        Tue, 23 Aug 2022 07:57:30 -0700 (PDT)
 Received: from xps15.. (66-90-144-107.dyn.grandenetworks.net. [66.90.144.107])
-        by smtp.googlemail.com with ESMTPSA id t1-20020a056870600100b0011c65559b04sm3840637oaa.34.2022.08.23.07.57.18
+        by smtp.googlemail.com with ESMTPSA id t1-20020a056870600100b0011c65559b04sm3840637oaa.34.2022.08.23.07.57.29
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 23 Aug 2022 07:57:19 -0700 (PDT)
+        Tue, 23 Aug 2022 07:57:29 -0700 (PDT)
 From:   Rob Herring <robh@kernel.org>
-To:     =?UTF-8?q?Rafa=C5=82=20Mi=C5=82ecki?= <rafal@milecki.pl>,
-        Broadcom internal kernel review list 
-        <bcm-kernel-feedback-list@broadcom.com>,
-        Linus Walleij <linus.walleij@linaro.org>,
+To:     Andy Gross <agross@kernel.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Konrad Dybcio <konrad.dybcio@somainline.org>,
+        Mathieu Poirier <mathieu.poirier@linaro.org>,
         Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        =?UTF-8?q?Jonathan=20Neusch=C3=A4fer?= <j.neuschaefer@gmx.net>,
-        Geert Uytterhoeven <geert+renesas@glider.be>,
-        Tomasz Figa <tomasz.figa@gmail.com>,
-        Sylwester Nawrocki <s.nawrocki@samsung.com>,
-        Alim Akhtar <alim.akhtar@samsung.com>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-        Alexandre Torgue <alexandre.torgue@foss.st.com>,
-        Nobuhiro Iwamatsu <nobuhiro1.iwamatsu@toshiba.co.jp>,
-        Sowjanya D <lakshmi.sowjanya.d@intel.com>,
-        Chris Packham <chris.packham@alliedtelesis.co.nz>,
-        Andy Teng <andy.teng@mediatek.com>,
-        Jacopo Mondi <jacopo+renesas@jmondi.org>
-Cc:     Krzysztof Kozlowski <krzk@kernel.org>, linux-gpio@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org, openbmc@lists.ozlabs.org,
-        linux-renesas-soc@vger.kernel.org,
-        linux-samsung-soc@vger.kernel.org,
-        linux-stm32@st-md-mailman.stormreply.com
-Subject: [PATCH] dt-bindings: pinctrl: Add missing (unevaluated|additional)Properties on child nodes
-Date:   Tue, 23 Aug 2022 09:56:37 -0500
-Message-Id: <20220823145649.3118479-6-robh@kernel.org>
+        Sibi Sankar <quic_sibis@quicinc.com>
+Cc:     linux-arm-msm@vger.kernel.org, linux-remoteproc@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH] dt-bindings: remoteproc: Add missing (unevaluated|additional)Properties on child nodes
+Date:   Tue, 23 Aug 2022 09:56:41 -0500
+Message-Id: <20220823145649.3118479-10-robh@kernel.org>
 X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
@@ -79,146 +62,47 @@ must have unevaluatedProperties or additionalProperties set to false
 
 Signed-off-by: Rob Herring <robh@kernel.org>
 ---
- .../devicetree/bindings/pinctrl/brcm,bcm4908-pinctrl.yaml      | 1 +
- .../devicetree/bindings/pinctrl/intel,pinctrl-keembay.yaml     | 1 +
- .../devicetree/bindings/pinctrl/intel,pinctrl-thunderbay.yaml  | 1 +
- .../devicetree/bindings/pinctrl/marvell,ac5-pinctrl.yaml       | 1 +
- .../devicetree/bindings/pinctrl/mediatek,mt6779-pinctrl.yaml   | 2 ++
- .../devicetree/bindings/pinctrl/nuvoton,wpcm450-pinctrl.yaml   | 1 +
- .../devicetree/bindings/pinctrl/renesas,rza1-ports.yaml        | 1 +
- Documentation/devicetree/bindings/pinctrl/samsung,pinctrl.yaml | 3 +++
- .../devicetree/bindings/pinctrl/st,stm32-pinctrl.yaml          | 3 +++
- .../devicetree/bindings/pinctrl/toshiba,visconti-pinctrl.yaml  | 1 +
- 10 files changed, 15 insertions(+)
+ .../devicetree/bindings/remoteproc/qcom,sc7180-mss-pil.yaml      | 1 +
+ .../devicetree/bindings/remoteproc/qcom,sc7280-mss-pil.yaml      | 1 +
+ .../devicetree/bindings/remoteproc/qcom,sc7280-wpss-pil.yaml     | 1 +
+ 3 files changed, 3 insertions(+)
 
-diff --git a/Documentation/devicetree/bindings/pinctrl/brcm,bcm4908-pinctrl.yaml b/Documentation/devicetree/bindings/pinctrl/brcm,bcm4908-pinctrl.yaml
-index 175a992f15e1..8a9fb9b433ca 100644
---- a/Documentation/devicetree/bindings/pinctrl/brcm,bcm4908-pinctrl.yaml
-+++ b/Documentation/devicetree/bindings/pinctrl/brcm,bcm4908-pinctrl.yaml
-@@ -23,6 +23,7 @@ patternProperties:
-   '-pins$':
-     type: object
-     $ref: pinmux-node.yaml#
-+    additionalProperties: false
+diff --git a/Documentation/devicetree/bindings/remoteproc/qcom,sc7180-mss-pil.yaml b/Documentation/devicetree/bindings/remoteproc/qcom,sc7180-mss-pil.yaml
+index e76c861165dd..e4a7da8020f4 100644
+--- a/Documentation/devicetree/bindings/remoteproc/qcom,sc7180-mss-pil.yaml
++++ b/Documentation/devicetree/bindings/remoteproc/qcom,sc7180-mss-pil.yaml
+@@ -140,6 +140,7 @@ properties:
  
-     properties:
-       function:
-diff --git a/Documentation/devicetree/bindings/pinctrl/intel,pinctrl-keembay.yaml b/Documentation/devicetree/bindings/pinctrl/intel,pinctrl-keembay.yaml
-index 5e99d79499b4..846651ff77c9 100644
---- a/Documentation/devicetree/bindings/pinctrl/intel,pinctrl-keembay.yaml
-+++ b/Documentation/devicetree/bindings/pinctrl/intel,pinctrl-keembay.yaml
-@@ -44,6 +44,7 @@ properties:
- patternProperties:
-   '^gpio@[0-9a-f]*$':
-     type: object
-+    additionalProperties: false
- 
+   glink-edge:
+     $ref: qcom,glink-edge.yaml#
++    unevaluatedProperties: false
      description:
-       Child nodes can be specified to contain pin configuration information,
-diff --git a/Documentation/devicetree/bindings/pinctrl/intel,pinctrl-thunderbay.yaml b/Documentation/devicetree/bindings/pinctrl/intel,pinctrl-thunderbay.yaml
-index 0ec476248f21..6f30b5337ca2 100644
---- a/Documentation/devicetree/bindings/pinctrl/intel,pinctrl-thunderbay.yaml
-+++ b/Documentation/devicetree/bindings/pinctrl/intel,pinctrl-thunderbay.yaml
-@@ -42,6 +42,7 @@ properties:
- patternProperties:
-   '^gpio@[0-9a-f]*$':
-     type: object
-+    additionalProperties: false
+       Qualcomm G-Link subnode which represents communication edge, channels
+       and devices related to the DSP.
+diff --git a/Documentation/devicetree/bindings/remoteproc/qcom,sc7280-mss-pil.yaml b/Documentation/devicetree/bindings/remoteproc/qcom,sc7280-mss-pil.yaml
+index da1a5de3d38b..b4de0521a89d 100644
+--- a/Documentation/devicetree/bindings/remoteproc/qcom,sc7280-mss-pil.yaml
++++ b/Documentation/devicetree/bindings/remoteproc/qcom,sc7280-mss-pil.yaml
+@@ -154,6 +154,7 @@ properties:
  
+   glink-edge:
+     $ref: qcom,glink-edge.yaml#
++    unevaluatedProperties: false
      description:
-       Child nodes can be specified to contain pin configuration information,
-diff --git a/Documentation/devicetree/bindings/pinctrl/marvell,ac5-pinctrl.yaml b/Documentation/devicetree/bindings/pinctrl/marvell,ac5-pinctrl.yaml
-index a651b2744caf..491f67e7cc4f 100644
---- a/Documentation/devicetree/bindings/pinctrl/marvell,ac5-pinctrl.yaml
-+++ b/Documentation/devicetree/bindings/pinctrl/marvell,ac5-pinctrl.yaml
-@@ -24,6 +24,7 @@ patternProperties:
-   '-pins$':
-     type: object
-     $ref: pinmux-node.yaml#
-+    additionalProperties: false
+       Qualcomm G-Link subnode which represents communication edge, channels
+       and devices related to the DSP.
+diff --git a/Documentation/devicetree/bindings/remoteproc/qcom,sc7280-wpss-pil.yaml b/Documentation/devicetree/bindings/remoteproc/qcom,sc7280-wpss-pil.yaml
+index 3f06d66cbe47..b6bd33438584 100644
+--- a/Documentation/devicetree/bindings/remoteproc/qcom,sc7280-wpss-pil.yaml
++++ b/Documentation/devicetree/bindings/remoteproc/qcom,sc7280-wpss-pil.yaml
+@@ -107,6 +107,7 @@ properties:
  
-     properties:
-       marvell,function:
-diff --git a/Documentation/devicetree/bindings/pinctrl/mediatek,mt6779-pinctrl.yaml b/Documentation/devicetree/bindings/pinctrl/mediatek,mt6779-pinctrl.yaml
-index e7601c0f5a69..840f649e36ce 100644
---- a/Documentation/devicetree/bindings/pinctrl/mediatek,mt6779-pinctrl.yaml
-+++ b/Documentation/devicetree/bindings/pinctrl/mediatek,mt6779-pinctrl.yaml
-@@ -76,6 +76,8 @@ required:
- patternProperties:
-   '-[0-9]*$':
-     type: object
-+    additionalProperties: false
-+
-     patternProperties:
-       '-pins*$':
-         type: object
-diff --git a/Documentation/devicetree/bindings/pinctrl/nuvoton,wpcm450-pinctrl.yaml b/Documentation/devicetree/bindings/pinctrl/nuvoton,wpcm450-pinctrl.yaml
-index 7a11beb8f222..7b7f840ffc4c 100644
---- a/Documentation/devicetree/bindings/pinctrl/nuvoton,wpcm450-pinctrl.yaml
-+++ b/Documentation/devicetree/bindings/pinctrl/nuvoton,wpcm450-pinctrl.yaml
-@@ -30,6 +30,7 @@ patternProperties:
- 
-   "^gpio@[0-7]$":
-     type: object
-+    additionalProperties: false
- 
+   glink-edge:
+     $ref: qcom,glink-edge.yaml#
++    unevaluatedProperties: false
      description:
-       Eight GPIO banks (gpio@0 to gpio@7), that each contain between 14 and 18
-diff --git a/Documentation/devicetree/bindings/pinctrl/renesas,rza1-ports.yaml b/Documentation/devicetree/bindings/pinctrl/renesas,rza1-ports.yaml
-index 8ed4b98a1628..9083040c996a 100644
---- a/Documentation/devicetree/bindings/pinctrl/renesas,rza1-ports.yaml
-+++ b/Documentation/devicetree/bindings/pinctrl/renesas,rza1-ports.yaml
-@@ -41,6 +41,7 @@ required:
- patternProperties:
-   "^gpio-[0-9]*$":
-     type: object
-+    additionalProperties: false
- 
-     description:
-       Each port of the r7s72100 pin controller hardware is itself a GPIO
-diff --git a/Documentation/devicetree/bindings/pinctrl/samsung,pinctrl.yaml b/Documentation/devicetree/bindings/pinctrl/samsung,pinctrl.yaml
-index 3a65c66ca71d..d006a940c7c6 100644
---- a/Documentation/devicetree/bindings/pinctrl/samsung,pinctrl.yaml
-+++ b/Documentation/devicetree/bindings/pinctrl/samsung,pinctrl.yaml
-@@ -97,6 +97,9 @@ patternProperties:
-         additionalProperties: false
- 
-   "^(initial|sleep)-state$":
-+    type: object
-+    additionalProperties: false
-+
-     patternProperties:
-       "^(pin-[a-z0-9-]+|[a-z0-9-]+-pin)$":
-         $ref: samsung,pinctrl-pins-cfg.yaml
-diff --git a/Documentation/devicetree/bindings/pinctrl/st,stm32-pinctrl.yaml b/Documentation/devicetree/bindings/pinctrl/st,stm32-pinctrl.yaml
-index d35dcc4f0242..53c952d93ea2 100644
---- a/Documentation/devicetree/bindings/pinctrl/st,stm32-pinctrl.yaml
-+++ b/Documentation/devicetree/bindings/pinctrl/st,stm32-pinctrl.yaml
-@@ -115,9 +115,12 @@ patternProperties:
- 
-   '-[0-9]*$':
-     type: object
-+    additionalProperties: false
-+
-     patternProperties:
-       '^pins':
-         type: object
-+        additionalProperties: false
-         description: |
-           A pinctrl node should contain at least one subnode representing the
-           pinctrl group available on the machine. Each subnode will list the
-diff --git a/Documentation/devicetree/bindings/pinctrl/toshiba,visconti-pinctrl.yaml b/Documentation/devicetree/bindings/pinctrl/toshiba,visconti-pinctrl.yaml
-index 306524885a2b..98b4663f9766 100644
---- a/Documentation/devicetree/bindings/pinctrl/toshiba,visconti-pinctrl.yaml
-+++ b/Documentation/devicetree/bindings/pinctrl/toshiba,visconti-pinctrl.yaml
-@@ -36,6 +36,7 @@ patternProperties:
-       pins it needs, and how they should be configured, with regard to muxer
-       configuration, pullups, drive strength.
-     $ref: "pinmux-node.yaml"
-+    additionalProperties: false
- 
-     properties:
-       function:
+       Qualcomm G-Link subnode which represents communication edge, channels
+       and devices related to the ADSP.
 -- 
 2.34.1
 
