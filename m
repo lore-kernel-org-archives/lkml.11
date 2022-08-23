@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C056FC49EC6
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 10:57:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 92EF6C32793
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 10:57:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357124AbiHWK4c (ORCPT
+        id S1356404AbiHWK5c (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 06:56:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49652 "EHLO
+        Tue, 23 Aug 2022 06:57:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51864 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356994AbiHWKwu (ORCPT
+        with ESMTP id S1357097AbiHWKxB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 06:52:50 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0C359ABD6A;
-        Tue, 23 Aug 2022 02:12:57 -0700 (PDT)
+        Tue, 23 Aug 2022 06:53:01 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 208E0ACA04;
+        Tue, 23 Aug 2022 02:13:08 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 9821D60F54;
-        Tue, 23 Aug 2022 09:12:53 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9DDE1C433C1;
-        Tue, 23 Aug 2022 09:12:52 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 660A8B81C66;
+        Tue, 23 Aug 2022 09:13:06 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B6A05C433C1;
+        Tue, 23 Aug 2022 09:13:04 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661245973;
-        bh=UlzcKidXqLG4HmGSEd5gPKAWOKksFX8ym+DBmzhofjk=;
+        s=korg; t=1661245985;
+        bh=NSWtoY/b14STqguOXNn0kkCnYB/ON/ex+GeP1Dr7dog=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=iMHYqbjATnTNp3WW1N/FA9j8Gtdm2GSWf3RDa5wONZ2x6t7ZvDWLZkO+Zryly67Tj
-         lG5SlVw3fpJ3VVyPRLjxDnx5T6kBlEsZ3vyKKGJUm3/gDPuONr6A7JlvXezAeTagDh
-         WDOb9Q/donnNuypI1wQropOM/z5MTiPdTeNEI8UU=
+        b=nnFOZPD591/xW/HK5V9pbvaK7Wu+GEC1pKpCSQt4ucAMsJBj5PS840H69mYTeJZjz
+         nCiPqr21yoBdjgZyr/VLDjuiPOOFJw9c37AKvu2oBASG10JHojuqp7ivLf0cRoM97b
+         klxWL6QYR3Xjkxnf7pH+aOKNhbamjdij7bs2C47c=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Al Viro <viro@zeniv.linux.org.uk>,
-        Dinh Nguyen <dinguyen@kernel.org>
-Subject: [PATCH 4.19 249/287] nios2: add force_successful_syscall_return()
-Date:   Tue, 23 Aug 2022 10:26:58 +0200
-Message-Id: <20220823080109.556316374@linuxfoundation.org>
+        stable@vger.kernel.org,
+        =?UTF-8?q?Cs=C3=B3k=C3=A1s=20Bence?= <csokas.bence@prolan.hu>,
+        Jakub Kicinski <kuba@kernel.org>
+Subject: [PATCH 4.19 253/287] fec: Fix timer capture timing in `fec_ptp_enable_pps()`
+Date:   Tue, 23 Aug 2022 10:27:02 +0200
+Message-Id: <20220823080109.746251659@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220823080100.268827165@linuxfoundation.org>
 References: <20220823080100.268827165@linuxfoundation.org>
@@ -49,61 +50,36 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Al Viro <viro@zeniv.linux.org.uk>
+From: Csókás Bence <csokas.bence@prolan.hu>
 
-commit fd0c153daad135d0ec1a53c5dbe6936a724d6ae1 upstream.
+commit 61d5e2a251fb20c2c5e998c3f1d52ed6d5360319 upstream.
 
-If we use the ancient SysV syscall ABI, we'd better have tell the
-kernel how to claim that a negative return value is a success.
-Use ->orig_r2 for that - it's inaccessible via ptrace, so it's
-a fair game for changes and it's normally[*] non-negative on return
-from syscall.  Set to -1; syscall is not going to be restart-worthy
-by definition, so we won't interfere with that use either.
+Code reimplements functionality already in `fec_ptp_read()`,
+but misses check for FEC_QUIRK_BUG_CAPTURE. Replace with function call.
 
-[*] the only exception is rt_sigreturn(), where we skip the entire
-messing with r1/r2 anyway.
-
-Fixes: 82ed08dd1b0e ("nios2: Exception handling")
-Signed-off-by: Al Viro <viro@zeniv.linux.org.uk>
-Signed-off-by: Dinh Nguyen <dinguyen@kernel.org>
+Fixes: 28b5f058cf1d ("net: fec: ptp: fix convergence issue to support LinuxPTP stack")
+Signed-off-by: Csókás Bence <csokas.bence@prolan.hu>
+Link: https://lore.kernel.org/r/20220811101348.13755-1-csokas.bence@prolan.hu
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/nios2/include/asm/ptrace.h |    2 ++
- arch/nios2/kernel/entry.S       |    6 ++++++
- 2 files changed, 8 insertions(+)
+ drivers/net/ethernet/freescale/fec_ptp.c |    6 +-----
+ 1 file changed, 1 insertion(+), 5 deletions(-)
 
---- a/arch/nios2/include/asm/ptrace.h
-+++ b/arch/nios2/include/asm/ptrace.h
-@@ -74,6 +74,8 @@ extern void show_regs(struct pt_regs *);
- 	((struct pt_regs *)((unsigned long)current_thread_info() + THREAD_SIZE)\
- 		- 1)
- 
-+#define force_successful_syscall_return() (current_pt_regs()->orig_r2 = -1)
-+
- int do_syscall_trace_enter(void);
- void do_syscall_trace_exit(void);
- #endif /* __ASSEMBLY__ */
---- a/arch/nios2/kernel/entry.S
-+++ b/arch/nios2/kernel/entry.S
-@@ -213,6 +213,9 @@ local_restart:
- translate_rc_and_ret:
- 	movi	r1, 0
- 	bge	r2, zero, 3f
-+	ldw	r1, PT_ORIG_R2(sp)
-+	addi	r1, r1, 1
-+	beq	r1, zero, 3f
- 	sub	r2, zero, r2
- 	movi	r1, 1
- 3:
-@@ -276,6 +279,9 @@ traced_system_call:
- translate_rc_and_ret2:
- 	movi	r1, 0
- 	bge	r2, zero, 4f
-+	ldw	r1, PT_ORIG_R2(sp)
-+	addi	r1, r1, 1
-+	beq	r1, zero, 4f
- 	sub	r2, zero, r2
- 	movi	r1, 1
- 4:
+--- a/drivers/net/ethernet/freescale/fec_ptp.c
++++ b/drivers/net/ethernet/freescale/fec_ptp.c
+@@ -141,11 +141,7 @@ static int fec_ptp_enable_pps(struct fec
+ 		 * NSEC_PER_SEC - ts.tv_nsec. Add the remaining nanoseconds
+ 		 * to current timer would be next second.
+ 		 */
+-		tempval = readl(fep->hwp + FEC_ATIME_CTRL);
+-		tempval |= FEC_T_CTRL_CAPTURE;
+-		writel(tempval, fep->hwp + FEC_ATIME_CTRL);
+-
+-		tempval = readl(fep->hwp + FEC_ATIME);
++		tempval = fep->cc.read(&fep->cc);
+ 		/* Convert the ptp local counter to 1588 timestamp */
+ 		ns = timecounter_cyc2time(&fep->tc, tempval);
+ 		ts = ns_to_timespec64(ns);
 
 
