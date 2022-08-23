@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 95A7AC32772
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 08:34:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BC315C32772
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 08:34:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240871AbiHWIeN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 04:34:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60808 "EHLO
+        id S245192AbiHWIeS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 23 Aug 2022 04:34:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60886 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345953AbiHWIbq (ORCPT
+        with ESMTP id S1346018AbiHWIbr (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 04:31:46 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8AC596D57A;
-        Tue, 23 Aug 2022 01:15:48 -0700 (PDT)
+        Tue, 23 Aug 2022 04:31:47 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 12DA66DAE1;
+        Tue, 23 Aug 2022 01:16:09 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 197B3B81C3A;
-        Tue, 23 Aug 2022 08:15:01 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 69446C433C1;
-        Tue, 23 Aug 2022 08:14:59 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 5056F61238;
+        Tue, 23 Aug 2022 08:15:33 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 504D7C433D6;
+        Tue, 23 Aug 2022 08:15:32 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661242499;
-        bh=5b2KOXIlNhpiLODn1vjNTLwHdqHZGoh1tLrygHJOIf8=;
+        s=korg; t=1661242532;
+        bh=kuYKk88RSu7FYIAyVvO8z2+iR0hHyGGdWODZnXNj8zk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=wdxsxFElTIHKhg1c32bLtBKgraBjKwTE8a2guwHLve+0RtCLx5OjmDMtmkFYunXXn
-         HYvbzIdEuNKY06xqIy0vweXIL7uyH7Vz8TXGjYiOcpFm38afWuL6Deo23CUASN52d2
-         mPDO413U5w9KwnOvAwhwJ7ZW9p7Qy7Nig+O7xUDU=
+        b=1vXXPvMHE+npdAC/RN4Z1+bk/raK/fquuLMnHWzbe93PEu8dqB3HFXwHoWU6zfZyk
+         HcCXuNx4XC45F/XUkP6oMusoNqtVBGvLvjQJSVF2KTSINmwjTW31RjoZXZq8gjqU9+
+         BVN0iLGzLs3jhwSeJgNKHPIItsAnrspMxhYGJqV8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, kernel test robot <oliver.sang@intel.com>,
-        Florian Westphal <fw@strlen.de>,
-        Jakub Kicinski <kuba@kernel.org>
-Subject: [PATCH 5.19 124/365] plip: avoid rcu debug splat
-Date:   Tue, 23 Aug 2022 10:00:25 +0200
-Message-Id: <20220823080123.378364257@linuxfoundation.org>
+        stable@vger.kernel.org, Zeng Jingxiang <linuszeng@tencent.com>,
+        Viresh Kumar <viresh.kumar@linaro.org>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>
+Subject: [PATCH 5.19 101/365] rtc: spear: set range max
+Date:   Tue, 23 Aug 2022 10:00:02 +0200
+Message-Id: <20220823080122.421683701@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220823080118.128342613@linuxfoundation.org>
 References: <20220823080118.128342613@linuxfoundation.org>
@@ -49,36 +49,41 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Florian Westphal <fw@strlen.de>
+From: Zeng Jingxiang <linuszeng@tencent.com>
 
-commit bc3c8fe3c79bcdae4d90e3726054fac5cca8ac32 upstream.
+commit 03c4cd6f89e074a51e289eb9129ac646f0f2bd29 upstream.
 
-WARNING: suspicious RCU usage
-5.2.0-rc2-00605-g2638eb8b50cfc #1 Not tainted
-drivers/net/plip/plip.c:1110 suspicious rcu_dereference_check() usage!
+In the commit f395e1d3b28d7c2c67b73bd467c4fb79523e1c65
+("rtc: spear: set range"), the value of
+RTC_TIMESTAMP_END_9999 was incorrectly set to range_min.
+390	config->rtc->range_min = RTC_TIMESTAMP_BEGIN_0000;
+391	config->rtc->range_max = RTC_TIMESTAMP_END_9999;
 
-plip_open is called with RTNL held, switch to the correct helper.
-
-Fixes: 2638eb8b50cf ("net: ipv4: provide __rcu annotation for ifa_list")
-Reported-by: kernel test robot <oliver.sang@intel.com>
-Signed-off-by: Florian Westphal <fw@strlen.de>
-Link: https://lore.kernel.org/r/20220807115304.13257-1-fw@strlen.de
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Fixes: f395e1d3b28d ("rtc: spear: set range")
+Signed-off-by: Zeng Jingxiang <linuszeng@tencent.com>
+Acked-by: Viresh Kumar <viresh.kumar@linaro.org>
+Signed-off-by: Alexandre Belloni <alexandre.belloni@bootlin.com>
+Link: https://lore.kernel.org/r/20220728100101.1906801-1-zengjx95@gmail.com
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/net/plip/plip.c |    2 +-
+ drivers/rtc/rtc-spear.c | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/drivers/net/plip/plip.c
-+++ b/drivers/net/plip/plip.c
-@@ -1111,7 +1111,7 @@ plip_open(struct net_device *dev)
- 		/* Any address will do - we take the first. We already
- 		   have the first two bytes filled with 0xfc, from
- 		   plip_init_dev(). */
--		const struct in_ifaddr *ifa = rcu_dereference(in_dev->ifa_list);
-+		const struct in_ifaddr *ifa = rtnl_dereference(in_dev->ifa_list);
- 		if (ifa != NULL) {
- 			dev_addr_mod(dev, 2, &ifa->ifa_local, 4);
- 		}
+diff --git a/drivers/rtc/rtc-spear.c b/drivers/rtc/rtc-spear.c
+index d4777b01ab22..736fe535cd45 100644
+--- a/drivers/rtc/rtc-spear.c
++++ b/drivers/rtc/rtc-spear.c
+@@ -388,7 +388,7 @@ static int spear_rtc_probe(struct platform_device *pdev)
+ 
+ 	config->rtc->ops = &spear_rtc_ops;
+ 	config->rtc->range_min = RTC_TIMESTAMP_BEGIN_0000;
+-	config->rtc->range_min = RTC_TIMESTAMP_END_9999;
++	config->rtc->range_max = RTC_TIMESTAMP_END_9999;
+ 
+ 	status = devm_rtc_register_device(config->rtc);
+ 	if (status)
+-- 
+2.37.2
+
 
 
