@@ -2,43 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 07019C32774
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 08:18:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 077A7C32774
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 08:18:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242606AbiHWISN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 04:18:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60262 "EHLO
+        id S242615AbiHWISR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 23 Aug 2022 04:18:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60998 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242140AbiHWIMf (ORCPT
+        with ESMTP id S242205AbiHWIM4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 04:12:35 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 142B46BD73;
-        Tue, 23 Aug 2022 01:09:04 -0700 (PDT)
+        Tue, 23 Aug 2022 04:12:56 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E4A116C11F;
+        Tue, 23 Aug 2022 01:09:07 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 187026123D;
-        Tue, 23 Aug 2022 08:09:04 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 12749C433D6;
-        Tue, 23 Aug 2022 08:09:02 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 16DC96128E;
+        Tue, 23 Aug 2022 08:09:07 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1AA62C433D6;
+        Tue, 23 Aug 2022 08:09:05 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661242143;
-        bh=t5e8m7zUSZLlKDZ0aO+vYJnddTUtFWDaqH96W3GXM0M=;
+        s=korg; t=1661242146;
+        bh=v4KGrEVskcMrBDA4KqT7FNFEnwx3XEfxBHbjvZzK7pY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=eat9G/JtCA4ktfCfn9LAwxsk6mrPrNXfU1h/KGWhpek/NgXlDKTPr819ephEvkTyg
-         vVe/XpITKuzrj1hN1BxuUeEmmxoyy29rtsd2yZN3LCuihYzyfYzmxh60V3LlL4oG58
-         nMTV/xRDKJUDtv+3+gL/O0QEZkZ/q/GLNmeCC62c=
+        b=DAvsNNjdDmjGfrT/FaxJLxFcIR58aLrZROR9FhMMkuJAd2FFYX3Ikaiz07G/hY7pT
+         Cq0l2/F++hiBboO3FAjZv2r4dajxMhR3l7xhkVajygo7F9967Fzf3siYLR47gK5bP7
+         7K4H8ENZ9l7BVm/3XxTMi9kCsJ7i2m+ZRhAkRc4Y=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Gerhard Uttenthaler <uttenthaler@ems-wuensche.com>,
-        Sebastian Haas <haas@ems-wuensche.com>,
-        Marc Kleine-Budde <mkl@pengutronix.de>
-Subject: [PATCH 5.19 040/365] can: ems_usb: fix clangs -Wunaligned-access warning
-Date:   Tue, 23 Aug 2022 09:59:01 +0200
-Message-Id: <20220823080119.870866102@linuxfoundation.org>
+        stable@vger.kernel.org, Ingo Molnar <mingo@kernel.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Tzvetomir Stoyanov <tz.stoyanov@gmail.com>,
+        Tom Zanussi <zanussi@kernel.org>,
+        "Masami Hiramatsu (Google)" <mhiramat@kernel.org>,
+        "Steven Rostedt (Google)" <rostedt@goodmis.org>
+Subject: [PATCH 5.19 031/365] tracing/eprobes: Do not allow eprobes to use $stack, or % for regs
+Date:   Tue, 23 Aug 2022 09:58:52 +0200
+Message-Id: <20220823080119.509826276@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220823080118.128342613@linuxfoundation.org>
 References: <20220823080118.128342613@linuxfoundation.org>
@@ -50,65 +52,123 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Marc Kleine-Budde <mkl@pengutronix.de>
+From: Steven Rostedt (Google) <rostedt@goodmis.org>
 
-commit a4cb6e62ea4d36e53fb3c0f18ea4503d7b76674f upstream.
+commit 2673c60ee67e71f2ebe34386e62d348f71edee47 upstream.
 
-clang emits a -Wunaligned-access warning on struct __packed
-ems_cpc_msg.
+While playing with event probes (eprobes), I tried to see what would
+happen if I attempted to retrieve the instruction pointer (%rip) knowing
+that event probes do not use pt_regs. The result was:
 
-The reason is that the anonymous union msg (not declared as packed) is
-being packed right after some non naturally aligned variables (3*8
-bits + 2*32) inside a packed struct:
+ BUG: kernel NULL pointer dereference, address: 0000000000000024
+ #PF: supervisor read access in kernel mode
+ #PF: error_code(0x0000) - not-present page
+ PGD 0 P4D 0
+ Oops: 0000 [#1] PREEMPT SMP PTI
+ CPU: 1 PID: 1847 Comm: trace-cmd Not tainted 5.19.0-rc5-test+ #309
+ Hardware name: Hewlett-Packard HP Compaq Pro 6300 SFF/339A, BIOS K01
+v03.03 07/14/2016
+ RIP: 0010:get_event_field.isra.0+0x0/0x50
+ Code: ff 48 c7 c7 c0 8f 74 a1 e8 3d 8b f5 ff e8 88 09 f6 ff 4c 89 e7 e8
+50 6a 13 00 48 89 ef 5b 5d 41 5c 41 5d e9 42 6a 13 00 66 90 <48> 63 47 24
+8b 57 2c 48 01 c6 8b 47 28 83 f8 02 74 0e 83 f8 04 74
+ RSP: 0018:ffff916c394bbaf0 EFLAGS: 00010086
+ RAX: ffff916c854041d8 RBX: ffff916c8d9fbf50 RCX: ffff916c255d2000
+ RDX: 0000000000000000 RSI: ffff916c255d2008 RDI: 0000000000000000
+ RBP: 0000000000000000 R08: ffff916c3a2a0c08 R09: ffff916c394bbda8
+ R10: 0000000000000000 R11: 0000000000000000 R12: ffff916c854041d8
+ R13: ffff916c854041b0 R14: 0000000000000000 R15: 0000000000000000
+ FS:  0000000000000000(0000) GS:ffff916c9ea40000(0000)
+knlGS:0000000000000000
+ CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+ CR2: 0000000000000024 CR3: 000000011b60a002 CR4: 00000000001706e0
+ Call Trace:
+  <TASK>
+  get_eprobe_size+0xb4/0x640
+  ? __mod_node_page_state+0x72/0xc0
+  __eprobe_trace_func+0x59/0x1a0
+  ? __mod_lruvec_page_state+0xaa/0x1b0
+  ? page_remove_file_rmap+0x14/0x230
+  ? page_remove_rmap+0xda/0x170
+  event_triggers_call+0x52/0xe0
+  trace_event_buffer_commit+0x18f/0x240
+  trace_event_raw_event_sched_wakeup_template+0x7a/0xb0
+  try_to_wake_up+0x260/0x4c0
+  __wake_up_common+0x80/0x180
+  __wake_up_common_lock+0x7c/0xc0
+  do_notify_parent+0x1c9/0x2a0
+  exit_notify+0x1a9/0x220
+  do_exit+0x2ba/0x450
+  do_group_exit+0x2d/0x90
+  __x64_sys_exit_group+0x14/0x20
+  do_syscall_64+0x3b/0x90
+  entry_SYSCALL_64_after_hwframe+0x46/0xb0
 
-| struct __packed ems_cpc_msg {
-| 	u8 type;	/* type of message */
-| 	u8 length;	/* length of data within union 'msg' */
-| 	u8 msgid;	/* confirmation handle */
-| 	__le32 ts_sec;	/* timestamp in seconds */
-| 	__le32 ts_nsec;	/* timestamp in nano seconds */
-|	/* ^ not naturally aligned */
-|
-| 	union {
-| 	/* ^ not declared as packed */
-| 		u8 generic[64];
-| 		struct cpc_can_msg can_msg;
-| 		struct cpc_can_params can_params;
-| 		struct cpc_confirm confirmation;
-| 		struct cpc_overrun overrun;
-| 		struct cpc_can_error error;
-| 		struct cpc_can_err_counter err_counter;
-| 		u8 can_state;
-| 	} msg;
-| };
+Obviously this is not the desired result.
 
-Starting from LLVM 14, having an unpacked struct nested in a packed
-struct triggers a warning. c.f. [1].
+Move the testing for TPARG_FL_TPOINT which is only used for event probes
+to the top of the "$" variable check, as all the other variables are not
+used for event probes. Also add a check in the register parsing "%" to
+fail if an event probe is used.
 
-Fix the warning by marking the anonymous union as packed.
+Link: https://lkml.kernel.org/r/20220820134400.564426983@goodmis.org
 
-[1] https://github.com/llvm/llvm-project/issues/55520
-
-Fixes: 702171adeed3 ("ems_usb: Added support for EMS CPC-USB/ARM7 CAN/USB interface")
-Link: https://lore.kernel.org/all/20220802094021.959858-1-mkl@pengutronix.de
-Cc: Gerhard Uttenthaler <uttenthaler@ems-wuensche.com>
-Cc: Sebastian Haas <haas@ems-wuensche.com>
-Signed-off-by: Marc Kleine-Budde <mkl@pengutronix.de>
+Cc: stable@vger.kernel.org
+Cc: Ingo Molnar <mingo@kernel.org>
+Cc: Andrew Morton <akpm@linux-foundation.org>
+Cc: Tzvetomir Stoyanov <tz.stoyanov@gmail.com>
+Cc: Tom Zanussi <zanussi@kernel.org>
+Fixes: 7491e2c44278 ("tracing: Add a probe that attaches to trace events")
+Acked-by: Masami Hiramatsu (Google) <mhiramat@kernel.org>
+Signed-off-by: Steven Rostedt (Google) <rostedt@goodmis.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/net/can/usb/ems_usb.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ kernel/trace/trace_probe.c |   21 +++++++++++++--------
+ 1 file changed, 13 insertions(+), 8 deletions(-)
 
---- a/drivers/net/can/usb/ems_usb.c
-+++ b/drivers/net/can/usb/ems_usb.c
-@@ -194,7 +194,7 @@ struct __packed ems_cpc_msg {
- 	__le32 ts_sec;	/* timestamp in seconds */
- 	__le32 ts_nsec;	/* timestamp in nano seconds */
+--- a/kernel/trace/trace_probe.c
++++ b/kernel/trace/trace_probe.c
+@@ -279,7 +279,14 @@ static int parse_probe_vars(char *arg, c
+ 	int ret = 0;
+ 	int len;
  
--	union {
-+	union __packed {
- 		u8 generic[64];
- 		struct cpc_can_msg can_msg;
- 		struct cpc_can_params can_params;
+-	if (strcmp(arg, "retval") == 0) {
++	if (flags & TPARG_FL_TPOINT) {
++		if (code->data)
++			return -EFAULT;
++		code->data = kstrdup(arg, GFP_KERNEL);
++		if (!code->data)
++			return -ENOMEM;
++		code->op = FETCH_OP_TP_ARG;
++	} else if (strcmp(arg, "retval") == 0) {
+ 		if (flags & TPARG_FL_RETURN) {
+ 			code->op = FETCH_OP_RETVAL;
+ 		} else {
+@@ -319,13 +326,6 @@ static int parse_probe_vars(char *arg, c
+ 		code->op = FETCH_OP_ARG;
+ 		code->param = (unsigned int)param - 1;
+ #endif
+-	} else if (flags & TPARG_FL_TPOINT) {
+-		if (code->data)
+-			return -EFAULT;
+-		code->data = kstrdup(arg, GFP_KERNEL);
+-		if (!code->data)
+-			return -ENOMEM;
+-		code->op = FETCH_OP_TP_ARG;
+ 	} else
+ 		goto inval_var;
+ 
+@@ -380,6 +380,11 @@ parse_probe_arg(char *arg, const struct
+ 		break;
+ 
+ 	case '%':	/* named register */
++		if (flags & TPARG_FL_TPOINT) {
++			/* eprobes do not handle registers */
++			trace_probe_log_err(offs, BAD_VAR);
++			break;
++		}
+ 		ret = regs_query_register_offset(arg + 1);
+ 		if (ret >= 0) {
+ 			code->op = FETCH_OP_REG;
 
 
