@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1B6F3C32792
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 11:22:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 93318C32772
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 11:22:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242275AbiHWLVo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 07:21:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43422 "EHLO
+        id S242168AbiHWLWH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 23 Aug 2022 07:22:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43544 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357480AbiHWLRh (ORCPT
+        with ESMTP id S1357505AbiHWLRi (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 07:17:37 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 45D5F89815;
-        Tue, 23 Aug 2022 02:21:02 -0700 (PDT)
+        Tue, 23 Aug 2022 07:17:38 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ED4E28981E;
+        Tue, 23 Aug 2022 02:21:15 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id D699F6121F;
-        Tue, 23 Aug 2022 09:21:01 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E3379C433C1;
-        Tue, 23 Aug 2022 09:21:00 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id A8C1EB81C53;
+        Tue, 23 Aug 2022 09:21:14 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D6C92C433C1;
+        Tue, 23 Aug 2022 09:21:12 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661246461;
-        bh=qthlUxLyneTrQoXxQBbYo31Gy/R5BpXEYmeBs7zGNCU=;
+        s=korg; t=1661246473;
+        bh=cyfN+59jNgkanq4FoOQTalAigzTyoMHShmnVag08GSc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=mjbLSY6GQAexzQoMHeQxdizIjDbpO7E7jEibVek1qwzLlimCQWBRuJPAzla3q5gks
-         ppNLkWOUZKVYc4xyz+FDZXKKGCY2F/L+ee3GYno3S/+SA2cjl/ZjO/gO+dS/PxkYtK
-         5zSPRuq1JFfpEBEVU+49xi+vjTDvnHVQ3GFrfVPE=
+        b=S1xfOh5RlEx0i+MRKtgnSgGz2rMSzYAMOcXuIfeQ/i2J/iesFKvAYDq68eUtYAX0h
+         I9kX6tkmo9aG79ROve4npS34qbi76FgZX0vZEPlFhe9Qrm2LRgWvVMpd6qZ2lCTD9T
+         WhD7AeJo+b2xLosGiWND2kfToPaEn3j6gh0g3hSI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Rob Clark <robdclark@chromium.org>,
-        Abhinav Kumar <quic_abhinavk@quicinc.com>,
+        stable@vger.kernel.org, Hulk Robot <hulkci@huawei.com>,
+        Jian Zhang <zhangjian210@huawei.com>,
+        Inki Dae <inki.dae@samsung.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 117/389] drm/msm/mdp5: Fix global state lock backoff
-Date:   Tue, 23 Aug 2022 10:23:15 +0200
-Message-Id: <20220823080120.501465746@linuxfoundation.org>
+Subject: [PATCH 5.4 121/389] drm/exynos/exynos7_drm_decon: free resources when clk_set_parent() failed.
+Date:   Tue, 23 Aug 2022 10:23:19 +0200
+Message-Id: <20220823080120.651635678@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220823080115.331990024@linuxfoundation.org>
 References: <20220823080115.331990024@linuxfoundation.org>
@@ -49,82 +50,71 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Rob Clark <robdclark@chromium.org>
+From: Jian Zhang <zhangjian210@huawei.com>
 
-[ Upstream commit 92ef86ab513593c6329d04146e61f9a670e72fc5 ]
+[ Upstream commit 48b927770f8ad3f8cf4a024a552abf272af9f592 ]
 
-We need to grab the lock after the early return for !hwpipe case.
-Otherwise, we could have hit contention yet still returned 0.
+In exynos7_decon_resume, When it fails, we must use clk_disable_unprepare()
+to free resource that have been used.
 
-Fixes an issue that the new CONFIG_DRM_DEBUG_MODESET_LOCK stuff flagged
-in CI:
-
-   WARNING: CPU: 0 PID: 282 at drivers/gpu/drm/drm_modeset_lock.c:296 drm_modeset_lock+0xf8/0x154
-   Modules linked in:
-   CPU: 0 PID: 282 Comm: kms_cursor_lega Tainted: G        W         5.19.0-rc2-15930-g875cc8bc536a #1
-   Hardware name: Qualcomm Technologies, Inc. DB820c (DT)
-   pstate: 60000005 (nZCv daif -PAN -UAO -TCO -DIT -SSBS BTYPE=--)
-   pc : drm_modeset_lock+0xf8/0x154
-   lr : drm_atomic_get_private_obj_state+0x84/0x170
-   sp : ffff80000cfab6a0
-   x29: ffff80000cfab6a0 x28: 0000000000000000 x27: ffff000083bc4d00
-   x26: 0000000000000038 x25: 0000000000000000 x24: ffff80000957ca58
-   x23: 0000000000000000 x22: ffff000081ace080 x21: 0000000000000001
-   x20: ffff000081acec18 x19: ffff80000cfabb80 x18: 0000000000000038
-   x17: 0000000000000000 x16: 0000000000000000 x15: fffffffffffea0d0
-   x14: 0000000000000000 x13: 284e4f5f4e524157 x12: 5f534b434f4c5f47
-   x11: ffff80000a386aa8 x10: 0000000000000029 x9 : ffff80000cfab610
-   x8 : 0000000000000029 x7 : 0000000000000014 x6 : 0000000000000000
-   x5 : 0000000000000001 x4 : ffff8000081ad904 x3 : 0000000000000029
-   x2 : ffff0000801db4c0 x1 : ffff80000cfabb80 x0 : ffff000081aceb58
-   Call trace:
-    drm_modeset_lock+0xf8/0x154
-    drm_atomic_get_private_obj_state+0x84/0x170
-    mdp5_get_global_state+0x54/0x6c
-    mdp5_pipe_release+0x2c/0xd4
-    mdp5_plane_atomic_check+0x2ec/0x414
-    drm_atomic_helper_check_planes+0xd8/0x210
-    drm_atomic_helper_check+0x54/0xb0
-    ...
-   ---[ end trace 0000000000000000 ]---
-   drm_modeset_lock attempting to lock a contended lock without backoff:
-      drm_modeset_lock+0x148/0x154
-      mdp5_get_global_state+0x30/0x6c
-      mdp5_pipe_release+0x2c/0xd4
-      mdp5_plane_atomic_check+0x290/0x414
-      drm_atomic_helper_check_planes+0xd8/0x210
-      drm_atomic_helper_check+0x54/0xb0
-      drm_atomic_check_only+0x4b0/0x8f4
-      drm_atomic_commit+0x68/0xe0
-
-Fixes: d59be579fa93 ("drm/msm/mdp5: Return error code in mdp5_pipe_release when deadlock is detected")
-Signed-off-by: Rob Clark <robdclark@chromium.org>
-Reviewed-by: Abhinav Kumar <quic_abhinavk@quicinc.com>
-Patchwork: https://patchwork.freedesktop.org/patch/492701/
-Link: https://lore.kernel.org/r/20220707162040.1594855-1-robdclark@gmail.com
+Fixes: 6f83d20838c09 ("drm/exynos: use DRM_DEV_ERROR to print out error
+message")
+Reported-by: Hulk Robot <hulkci@huawei.com>
+Signed-off-by: Jian Zhang <zhangjian210@huawei.com>
+Signed-off-by: Inki Dae <inki.dae@samsung.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/gpu/drm/msm/disp/mdp5/mdp5_pipe.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ drivers/gpu/drm/exynos/exynos7_drm_decon.c | 17 +++++++++++++----
+ 1 file changed, 13 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/gpu/drm/msm/disp/mdp5/mdp5_pipe.c b/drivers/gpu/drm/msm/disp/mdp5/mdp5_pipe.c
-index a4f5cb90f3e8..e4b8a789835a 100644
---- a/drivers/gpu/drm/msm/disp/mdp5/mdp5_pipe.c
-+++ b/drivers/gpu/drm/msm/disp/mdp5/mdp5_pipe.c
-@@ -123,12 +123,13 @@ int mdp5_pipe_release(struct drm_atomic_state *s, struct mdp5_hw_pipe *hwpipe)
- {
- 	struct msm_drm_private *priv = s->dev->dev_private;
- 	struct mdp5_kms *mdp5_kms = to_mdp5_kms(to_mdp_kms(priv->kms));
--	struct mdp5_global_state *state = mdp5_get_global_state(s);
-+	struct mdp5_global_state *state;
- 	struct mdp5_hw_pipe_state *new_state;
+diff --git a/drivers/gpu/drm/exynos/exynos7_drm_decon.c b/drivers/gpu/drm/exynos/exynos7_drm_decon.c
+index 6fd40410dfd2..afca5fc46020 100644
+--- a/drivers/gpu/drm/exynos/exynos7_drm_decon.c
++++ b/drivers/gpu/drm/exynos/exynos7_drm_decon.c
+@@ -800,31 +800,40 @@ static int exynos7_decon_resume(struct device *dev)
+ 	if (ret < 0) {
+ 		DRM_DEV_ERROR(dev, "Failed to prepare_enable the pclk [%d]\n",
+ 			      ret);
+-		return ret;
++		goto err_pclk_enable;
+ 	}
  
- 	if (!hwpipe)
- 		return 0;
+ 	ret = clk_prepare_enable(ctx->aclk);
+ 	if (ret < 0) {
+ 		DRM_DEV_ERROR(dev, "Failed to prepare_enable the aclk [%d]\n",
+ 			      ret);
+-		return ret;
++		goto err_aclk_enable;
+ 	}
  
-+	state = mdp5_get_global_state(s);
- 	if (IS_ERR(state))
- 		return PTR_ERR(state);
+ 	ret = clk_prepare_enable(ctx->eclk);
+ 	if  (ret < 0) {
+ 		DRM_DEV_ERROR(dev, "Failed to prepare_enable the eclk [%d]\n",
+ 			      ret);
+-		return ret;
++		goto err_eclk_enable;
+ 	}
+ 
+ 	ret = clk_prepare_enable(ctx->vclk);
+ 	if  (ret < 0) {
+ 		DRM_DEV_ERROR(dev, "Failed to prepare_enable the vclk [%d]\n",
+ 			      ret);
+-		return ret;
++		goto err_vclk_enable;
+ 	}
+ 
+ 	return 0;
++
++err_vclk_enable:
++	clk_disable_unprepare(ctx->eclk);
++err_eclk_enable:
++	clk_disable_unprepare(ctx->aclk);
++err_aclk_enable:
++	clk_disable_unprepare(ctx->pclk);
++err_pclk_enable:
++	return ret;
+ }
+ #endif
  
 -- 
 2.35.1
