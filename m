@@ -2,46 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 72924C38159
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 884A0C3814E
 	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 12:22:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355299AbiHWMVK (ORCPT
+        id S1355652AbiHWMVO (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 08:21:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55384 "EHLO
+        Tue, 23 Aug 2022 08:21:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51486 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1359618AbiHWMQE (ORCPT
+        with ESMTP id S1359641AbiHWMQG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 08:16:04 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3A09D4C613;
-        Tue, 23 Aug 2022 02:41:32 -0700 (PDT)
+        Tue, 23 Aug 2022 08:16:06 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 129CB98D1A;
+        Tue, 23 Aug 2022 02:41:33 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 480D46138B;
-        Tue, 23 Aug 2022 09:41:27 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 490D4C433D6;
-        Tue, 23 Aug 2022 09:41:26 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 46EADB81B1F;
+        Tue, 23 Aug 2022 09:40:56 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A29F2C433C1;
+        Tue, 23 Aug 2022 09:40:54 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661247686;
-        bh=9oSHigocV2XvvM+6VuFD2ZFWpYY21AKOJNsjAjIvVtg=;
+        s=korg; t=1661247655;
+        bh=4jrCeDH5htUTAKRPY4r395KdKhET1ApCrWau5EWtYyM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=tl8eJlPRxAyRBuLT2P283EjHaGEhiQUVN0fFZi/RTBwJYjkPbK+sV7w5CEMLzQnsO
-         KfSQO/wupi9pHRtVe7SLnt5vFemp0IkfkZ3t7B1tZS4I/V9hlww9O96GogJkI2v3kW
-         alUu3DkCpaeq9OxUEeYMUe68FQQsi5ZU5WR8+DSg=
+        b=equF9FAebRAWJiuyXYRFLaCIsa3qfFYyeqkIJHdkzF5Utir6sNj2HuBvaxjtmwQqx
+         137c6FSBmNRhMHfA4LBphbGz3YSDQ5lEpdFAvjuLbPnzWhalgFlVaP0ijnYaLpJbGz
+         H3aNn3sZLN3dNP6uBpTnPU5yZWQ5y0CBde0b/aRQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
-        Sergey Senozhatsky <senozhatsky@chromium.org>,
-        Minchan Kim <minchan@kernel.org>,
-        Nitin Gupta <ngupta@vflare.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 115/158] zram: do not lookup algorithm in backends table
-Date:   Tue, 23 Aug 2022 10:27:27 +0200
-Message-Id: <20220823080050.586763796@linuxfoundation.org>
+        =?UTF-8?q?Martin=20Povi=C5=A1er?= <povik+lin@cutebit.org>,
+        Mark Brown <broonie@kernel.org>
+Subject: [PATCH 5.10 074/158] ASoC: tas2770: Fix handling of mute/unmute
+Date:   Tue, 23 Aug 2022 10:26:46 +0200
+Message-Id: <20220823080049.036054652@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220823080046.056825146@linuxfoundation.org>
 References: <20220823080046.056825146@linuxfoundation.org>
@@ -53,100 +50,132 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Sergey Senozhatsky <senozhatsky@chromium.org>
+From: Martin Povišer <povik+lin@cutebit.org>
 
-[ Upstream commit dc89997264de565999a1cb55db3f295d3a8e457b ]
+commit 1e5907bcb3a3b569be0a03ebe668bba2ed320a50 upstream.
 
-Always use crypto_has_comp() so that crypto can lookup module, call
-usermodhelper to load the modules, wait for usermodhelper to finish and so
-on.  Otherwise crypto will do all of these steps under CPU hot-plug lock
-and this looks like too much stuff to handle under the CPU hot-plug lock.
-Besides this can end up in a deadlock when usermodhelper triggers a code
-path that attempts to lock the CPU hot-plug lock, that zram already holds.
+Because the PWR_CTRL field is modeled as the power state of the DAC
+widget, and at the same time it is used to implement mute/unmute, we
+need some additional book-keeping to have the right end result no matter
+the sequence of calls. Without this fix, one can mute an ongoing stream
+by toggling a speaker pin control.
 
-An example of such deadlock:
-
-- path A. zram grabs CPU hot-plug lock, execs /sbin/modprobe from crypto
-  and waits for modprobe to finish
-
-disksize_store
- zcomp_create
-  __cpuhp_state_add_instance
-   __cpuhp_state_add_instance_cpuslocked
-    zcomp_cpu_up_prepare
-     crypto_alloc_base
-      crypto_alg_mod_lookup
-       call_usermodehelper_exec
-        wait_for_completion_killable
-         do_wait_for_common
-          schedule
-
-- path B. async work kthread that brings in scsi device. It wants to
-  register CPUHP states at some point, and it needs the CPU hot-plug
-  lock for that, which is owned by zram.
-
-async_run_entry_fn
- scsi_probe_and_add_lun
-  scsi_mq_alloc_queue
-   blk_mq_init_queue
-    blk_mq_init_allocated_queue
-     blk_mq_realloc_hw_ctxs
-      __cpuhp_state_add_instance
-       __cpuhp_state_add_instance_cpuslocked
-        mutex_lock
-         schedule
-
-- path C. modprobe sleeps, waiting for all aync works to finish.
-
-load_module
- do_init_module
-  async_synchronize_full
-   async_synchronize_cookie_domain
-    schedule
-
-[senozhatsky@chromium.org: add comment]
-  Link: https://lkml.kernel.org/r/20220624060606.1014474-1-senozhatsky@chromium.org
-Link: https://lkml.kernel.org/r/20220622023501.517125-1-senozhatsky@chromium.org
-Signed-off-by: Sergey Senozhatsky <senozhatsky@chromium.org>
-Cc: Minchan Kim <minchan@kernel.org>
-Cc: Nitin Gupta <ngupta@vflare.org>
-Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Fixes: 1a476abc723e ("tas2770: add tas2770 smart PA kernel driver")
+Signed-off-by: Martin Povišer <povik+lin@cutebit.org>
+Link: https://lore.kernel.org/r/20220808141246.5749-5-povik+lin@cutebit.org
+Signed-off-by: Mark Brown <broonie@kernel.org>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/block/zram/zcomp.c | 11 +++++------
- 1 file changed, 5 insertions(+), 6 deletions(-)
+ sound/soc/codecs/tas2770.c |   57 +++++++++++++++++++++++----------------------
+ sound/soc/codecs/tas2770.h |    2 +
+ 2 files changed, 32 insertions(+), 27 deletions(-)
 
-diff --git a/drivers/block/zram/zcomp.c b/drivers/block/zram/zcomp.c
-index 33e3b76c4fa9..b08650417bf0 100644
---- a/drivers/block/zram/zcomp.c
-+++ b/drivers/block/zram/zcomp.c
-@@ -61,12 +61,6 @@ static int zcomp_strm_init(struct zcomp_strm *zstrm, struct zcomp *comp)
+--- a/sound/soc/codecs/tas2770.c
++++ b/sound/soc/codecs/tas2770.c
+@@ -46,6 +46,26 @@ static void tas2770_reset(struct tas2770
+ 	usleep_range(1000, 2000);
+ }
  
- bool zcomp_available_algorithm(const char *comp)
++static int tas2770_update_pwr_ctrl(struct tas2770_priv *tas2770)
++{
++	struct snd_soc_component *component = tas2770->component;
++	unsigned int val;
++	int ret;
++
++	if (tas2770->dac_powered)
++		val = tas2770->unmuted ?
++			TAS2770_PWR_CTRL_ACTIVE : TAS2770_PWR_CTRL_MUTE;
++	else
++		val = TAS2770_PWR_CTRL_SHUTDOWN;
++
++	ret = snd_soc_component_update_bits(component, TAS2770_PWR_CTRL,
++					    TAS2770_PWR_CTRL_MASK, val);
++	if (ret < 0)
++		return ret;
++
++	return 0;
++}
++
+ #ifdef CONFIG_PM
+ static int tas2770_codec_suspend(struct snd_soc_component *component)
  {
--	int i;
--
--	i = sysfs_match_string(backends, comp);
--	if (i >= 0)
--		return true;
--
- 	/*
- 	 * Crypto does not ignore a trailing new line symbol,
- 	 * so make sure you don't supply a string containing
-@@ -215,6 +209,11 @@ struct zcomp *zcomp_create(const char *compress)
- 	struct zcomp *comp;
- 	int error;
+@@ -82,9 +102,7 @@ static int tas2770_codec_resume(struct s
+ 		gpiod_set_value_cansleep(tas2770->sdz_gpio, 1);
+ 		usleep_range(1000, 2000);
+ 	} else {
+-		ret = snd_soc_component_update_bits(component, TAS2770_PWR_CTRL,
+-						    TAS2770_PWR_CTRL_MASK,
+-						    TAS2770_PWR_CTRL_ACTIVE);
++		ret = tas2770_update_pwr_ctrl(tas2770);
+ 		if (ret < 0)
+ 			return ret;
+ 	}
+@@ -120,24 +138,19 @@ static int tas2770_dac_event(struct snd_
  
-+	/*
-+	 * Crypto API will execute /sbin/modprobe if the compression module
-+	 * is not loaded yet. We must do it here, otherwise we are about to
-+	 * call /sbin/modprobe under CPU hot-plug lock.
-+	 */
- 	if (!zcomp_available_algorithm(compress))
- 		return ERR_PTR(-EINVAL);
+ 	switch (event) {
+ 	case SND_SOC_DAPM_POST_PMU:
+-		ret = snd_soc_component_update_bits(component, TAS2770_PWR_CTRL,
+-						    TAS2770_PWR_CTRL_MASK,
+-						    TAS2770_PWR_CTRL_MUTE);
++		tas2770->dac_powered = 1;
++		ret = tas2770_update_pwr_ctrl(tas2770);
+ 		break;
+ 	case SND_SOC_DAPM_PRE_PMD:
+-		ret = snd_soc_component_update_bits(component, TAS2770_PWR_CTRL,
+-						    TAS2770_PWR_CTRL_MASK,
+-						    TAS2770_PWR_CTRL_SHUTDOWN);
++		tas2770->dac_powered = 0;
++		ret = tas2770_update_pwr_ctrl(tas2770);
+ 		break;
+ 	default:
+ 		dev_err(tas2770->dev, "Not supported evevt\n");
+ 		return -EINVAL;
+ 	}
  
--- 
-2.35.1
-
+-	if (ret < 0)
+-		return ret;
+-
+-	return 0;
++	return ret;
+ }
+ 
+ static const struct snd_kcontrol_new isense_switch =
+@@ -171,21 +184,11 @@ static const struct snd_soc_dapm_route t
+ static int tas2770_mute(struct snd_soc_dai *dai, int mute, int direction)
+ {
+ 	struct snd_soc_component *component = dai->component;
+-	int ret;
+-
+-	if (mute)
+-		ret = snd_soc_component_update_bits(component, TAS2770_PWR_CTRL,
+-						    TAS2770_PWR_CTRL_MASK,
+-						    TAS2770_PWR_CTRL_MUTE);
+-	else
+-		ret = snd_soc_component_update_bits(component, TAS2770_PWR_CTRL,
+-						    TAS2770_PWR_CTRL_MASK,
+-						    TAS2770_PWR_CTRL_ACTIVE);
+-
+-	if (ret < 0)
+-		return ret;
++	struct tas2770_priv *tas2770 =
++			snd_soc_component_get_drvdata(component);
+ 
+-	return 0;
++	tas2770->unmuted = !mute;
++	return tas2770_update_pwr_ctrl(tas2770);
+ }
+ 
+ static int tas2770_set_bitwidth(struct tas2770_priv *tas2770, int bitwidth)
+--- a/sound/soc/codecs/tas2770.h
++++ b/sound/soc/codecs/tas2770.h
+@@ -138,6 +138,8 @@ struct tas2770_priv {
+ 	struct device *dev;
+ 	int v_sense_slot;
+ 	int i_sense_slot;
++	bool dac_powered;
++	bool unmuted;
+ };
+ 
+ #endif /* __TAS2770__ */
 
 
