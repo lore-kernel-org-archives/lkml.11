@@ -2,97 +2,159 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4673AC48BE4
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7FD20C38159
 	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 11:27:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357599AbiHWL02 (ORCPT
+        id S1357626AbiHWL0f (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 07:26:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47304 "EHLO
+        Tue, 23 Aug 2022 07:26:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51806 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357715AbiHWLUz (ORCPT
+        with ESMTP id S1357746AbiHWLVE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 07:20:55 -0400
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 47B1F8C46C
-        for <linux-kernel@vger.kernel.org>; Tue, 23 Aug 2022 02:22:49 -0700 (PDT)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id DBB0D113E;
-        Tue, 23 Aug 2022 02:22:51 -0700 (PDT)
-Received: from bogus (unknown [10.57.44.200])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id A16143F718;
-        Tue, 23 Aug 2022 02:22:45 -0700 (PDT)
-Date:   Tue, 23 Aug 2022 10:22:20 +0100
-From:   Sudeep Holla <sudeep.holla@arm.com>
-To:     Yicong Yang <yangyicong@huawei.com>
-Cc:     vincent.guittot@linaro.org, ionela.voinescu@arm.com,
-        linux-kernel@vger.kernel.org, gregkh@linuxfoundation.org,
-        rafael@kernel.org, 21cnbao@gmail.com, jonathan.cameron@huawei.com,
-        linuxarm@huawei.com, prime.zeng@huawei.com,
-        yangyicong@hisilicon.com
-Subject: Re: [PATCH] arch_topology: Make cluster topology span at least SMT
- CPUs
-Message-ID: <20220823092220.2p4tsq5rvmfk5ne4@bogus>
-References: <20220823073044.58697-1-yangyicong@huawei.com>
+        Tue, 23 Aug 2022 07:21:04 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A37188C010;
+        Tue, 23 Aug 2022 02:22:52 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by sin.source.kernel.org (Postfix) with ESMTPS id B153ACE1B5A;
+        Tue, 23 Aug 2022 09:22:50 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id AB3BCC433C1;
+        Tue, 23 Aug 2022 09:22:48 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1661246569;
+        bh=kDQvoALiwbXOtZbi36c5Qj8hpGlknv2dFFzCTSNrSQY=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=qR1rIV/S0eEwRDD9iwj90EeFu0QwdnaXxXYSno62YQGBE7SwSy1N07LVgPQiA6VWF
+         p49smYVAOQOevOEIyXSqVjRadsFmIx8vK8i9lpai95m0IihTC4VAPZvXdVwq79Ryp2
+         C3mgSjgS23GdxTeegWGbviX8nAwU3XjrF/4LeQgc=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Bernard Pidoux <f6bvp@free.fr>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.4 151/389] net: rose: fix netdev reference changes
+Date:   Tue, 23 Aug 2022 10:23:49 +0200
+Message-Id: <20220823080121.910594626@linuxfoundation.org>
+X-Mailer: git-send-email 2.37.2
+In-Reply-To: <20220823080115.331990024@linuxfoundation.org>
+References: <20220823080115.331990024@linuxfoundation.org>
+User-Agent: quilt/0.67
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220823073044.58697-1-yangyicong@huawei.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Aug 23, 2022 at 03:30:44PM +0800, Yicong Yang wrote:
-> From: Yicong Yang <yangyicong@hisilicon.com>
-> 
-> Currently cpu_clustergroup_mask() will return CPU mask if cluster span
-> more or the same CPUs as cpu_coregroup_mask(). This will result topology
-> borken on non-Cluster SMT machines.
-> 
-> Test with:
-> qemu-system-aarch64 -enable-kvm -machine virt \
->  -net none \
->  -cpu host \
->  -bios ./QEMU_EFI.fd \
->  -m 2G \
->  -smp 48,sockets=2,cores=12,threads=2 \
->  -kernel $Image \
->  -initrd $Rootfs \
->  -nographic
->  -append "rdinit=init console=ttyAMA0 sched_verbose loglevel=8"
-> 
-> We'll get below error:
-> [    3.084568] BUG: arch topology borken
-> [    3.084570]      the SMT domain not a subset of the CLS domain
-> 
-> Since cluster is a level higher than SMT, fix this by making cluster
-> spans at least SMT CPUs.
-> 
-> Cc: Sudeep Holla <sudeep.holla@arm.com>
+From: Eric Dumazet <edumazet@google.com>
 
-Reviewed-by: Sudeep Holla <sudeep.holla@arm.com>
+[ Upstream commit 931027820e4dafabc78aff82af59f8c1c4bd3128 ]
 
-> Cc: Vincent Guittot <vincent.guittot@linaro.org>
-> Cc: Ionela Voinescu <ionela.voinescu@arm.com>
-> Fixes: bfcc4397435d ("arch_topology: Limit span of cpu_clustergroup_mask()")
-> Signed-off-by: Yicong Yang <yangyicong@hisilicon.com>
-> ---
->  drivers/base/arch_topology.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
-> 
-> diff --git a/drivers/base/arch_topology.c b/drivers/base/arch_topology.c
-> index 0424b59b695e..0056a1273275 100644
-> --- a/drivers/base/arch_topology.c
-> +++ b/drivers/base/arch_topology.c
-> @@ -724,7 +724,7 @@ const struct cpumask *cpu_clustergroup_mask(int cpu)
->  	 */
->  	if (cpumask_subset(cpu_coregroup_mask(cpu),
->  			   &cpu_topology[cpu].cluster_sibling))
-> -		return get_cpu_mask(cpu);
+Bernard reported that trying to unload rose module would lead
+to infamous messages:
 
-Sorry for this, for some reason I assumed the get_cpu_mask() will cover
-threads too.
+unregistered_netdevice: waiting for rose0 to become free. Usage count = xx
 
+This patch solves the issue, by making sure each socket referring to
+a netdevice holds a reference count on it, and properly releases it
+in rose_release().
+
+rose_dev_first() is also fixed to take a device reference
+before leaving the rcu_read_locked section.
+
+Following patch will add ref_tracker annotations to ease
+future bug hunting.
+
+Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
+Reported-by: Bernard Pidoux <f6bvp@free.fr>
+Signed-off-by: Eric Dumazet <edumazet@google.com>
+Tested-by: Bernard Pidoux <f6bvp@free.fr>
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ net/rose/af_rose.c    | 11 +++++++++--
+ net/rose/rose_route.c |  2 ++
+ 2 files changed, 11 insertions(+), 2 deletions(-)
+
+diff --git a/net/rose/af_rose.c b/net/rose/af_rose.c
+index 6a0df7c8a939..95dda29058a0 100644
+--- a/net/rose/af_rose.c
++++ b/net/rose/af_rose.c
+@@ -169,6 +169,7 @@ static void rose_kill_by_device(struct net_device *dev)
+ 			rose_disconnect(s, ENETUNREACH, ROSE_OUT_OF_ORDER, 0);
+ 			if (rose->neighbour)
+ 				rose->neighbour->use--;
++			dev_put(rose->device);
+ 			rose->device = NULL;
+ 		}
+ 	}
+@@ -569,6 +570,8 @@ static struct sock *rose_make_new(struct sock *osk)
+ 	rose->idle	= orose->idle;
+ 	rose->defer	= orose->defer;
+ 	rose->device	= orose->device;
++	if (rose->device)
++		dev_hold(rose->device);
+ 	rose->qbitincl	= orose->qbitincl;
+ 
+ 	return sk;
+@@ -622,6 +625,7 @@ static int rose_release(struct socket *sock)
+ 		break;
+ 	}
+ 
++	dev_put(rose->device);
+ 	sock->sk = NULL;
+ 	release_sock(sk);
+ 	sock_put(sk);
+@@ -698,7 +702,6 @@ static int rose_connect(struct socket *sock, struct sockaddr *uaddr, int addr_le
+ 	struct rose_sock *rose = rose_sk(sk);
+ 	struct sockaddr_rose *addr = (struct sockaddr_rose *)uaddr;
+ 	unsigned char cause, diagnostic;
+-	struct net_device *dev;
+ 	ax25_uid_assoc *user;
+ 	int n, err = 0;
+ 
+@@ -755,9 +758,12 @@ static int rose_connect(struct socket *sock, struct sockaddr *uaddr, int addr_le
+ 	}
+ 
+ 	if (sock_flag(sk, SOCK_ZAPPED)) {	/* Must bind first - autobinding in this may or may not work */
++		struct net_device *dev;
++
+ 		sock_reset_flag(sk, SOCK_ZAPPED);
+ 
+-		if ((dev = rose_dev_first()) == NULL) {
++		dev = rose_dev_first();
++		if (!dev) {
+ 			err = -ENETUNREACH;
+ 			goto out_release;
+ 		}
+@@ -765,6 +771,7 @@ static int rose_connect(struct socket *sock, struct sockaddr *uaddr, int addr_le
+ 		user = ax25_findbyuid(current_euid());
+ 		if (!user) {
+ 			err = -EINVAL;
++			dev_put(dev);
+ 			goto out_release;
+ 		}
+ 
+diff --git a/net/rose/rose_route.c b/net/rose/rose_route.c
+index 5f32113c9bbd..64d441d3b653 100644
+--- a/net/rose/rose_route.c
++++ b/net/rose/rose_route.c
+@@ -613,6 +613,8 @@ struct net_device *rose_dev_first(void)
+ 			if (first == NULL || strncmp(dev->name, first->name, 3) < 0)
+ 				first = dev;
+ 	}
++	if (first)
++		dev_hold(first);
+ 	rcu_read_unlock();
+ 
+ 	return first;
 -- 
-Regards,
-Sudeep
+2.35.1
+
+
+
