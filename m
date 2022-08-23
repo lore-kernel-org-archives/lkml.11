@@ -2,44 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D3B50C32793
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BCB43C32792
 	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 09:26:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350108AbiHWJZ0 (ORCPT
+        id S1349995AbiHWJZA (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 05:25:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37516 "EHLO
+        Tue, 23 Aug 2022 05:25:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40080 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346369AbiHWJYa (ORCPT
+        with ESMTP id S1349421AbiHWJWl (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 05:24:30 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A53EF9019A;
-        Tue, 23 Aug 2022 01:35:48 -0700 (PDT)
+        Tue, 23 Aug 2022 05:22:41 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 295B78F961;
+        Tue, 23 Aug 2022 01:35:22 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 0D5A6B81C1B;
-        Tue, 23 Aug 2022 08:34:40 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 569D5C433D7;
-        Tue, 23 Aug 2022 08:34:38 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 4CAF261475;
+        Tue, 23 Aug 2022 08:34:17 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3C032C433D6;
+        Tue, 23 Aug 2022 08:34:16 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661243678;
-        bh=BWjidRQ+edWUR4aH7drez7StIMEyzcJyA/RtL4QAKXA=;
+        s=korg; t=1661243656;
+        bh=rgl2pl075cMqiv5B6oltGiEO3MKkPYTTm1hS0wc0SuE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=PaeCGs2OXk/8avndwVV/HgzjRsy1ZuS4sp3oWw8bQBBNjO847CQDfE1ExPGoYj5k0
-         GaGu25whOtxyL2q4VdnEjLUSskvrzoNcbnwcMl0N3HSSU797xQkqFtotgsP4QD7/Jt
-         XldaoiSGob7OUIYGMdkOzlqC8JK0z9RDpcZ13ydg=
+        b=lug6VElr4AfMYbEedK0NC5H4t4rlJDZ8GHPEO/3b7HwlliSXOVvsKf5fhBgxhNLir
+         iPgRVVdN62CdwX9LaC+h9ChNeHT9qQJ/My3jFkRzxV5Qz9FsdoVafi/WzZfwaGixNm
+         +4720aG0/yKtka8ni/uHTbaSGTNYZpvJ5S1WuLM0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
-        syzbot+8285e973a41b5aa68902@syzkaller.appspotmail.com,
-        syzbot+669c9abf11a6a011dd09@syzkaller.appspotmail.com,
-        Takashi Iwai <tiwai@suse.de>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.19 353/365] ALSA: pcm: Use deferred fasync helper
-Date:   Tue, 23 Aug 2022 10:04:14 +0200
-Message-Id: <20220823080133.039157499@linuxfoundation.org>
+        =?UTF-8?q?Pali=20Roh=C3=A1r?= <pali@kernel.org>,
+        Christophe Leroy <christophe.leroy@csgroup.eu>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Segher Boessenkool <segher@kernel.crashing.org>,
+        Michael Ellerman <mpe@ellerman.id.au>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.19 347/365] powerpc/32: Dont always pass -mcpu=powerpc to the compiler
+Date:   Tue, 23 Aug 2022 10:04:08 +0200
+Message-Id: <20220823080132.777072411@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220823080118.128342613@linuxfoundation.org>
 References: <20220823080118.128342613@linuxfoundation.org>
@@ -51,77 +54,146 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Takashi Iwai <tiwai@suse.de>
+From: Christophe Leroy <christophe.leroy@csgroup.eu>
 
-[ Upstream commit 96b097091c66df4f6fbf5cbff21df6cc02a2f055 ]
+[ Upstream commit 446cda1b21d9a6b3697fe399c6a3a00ff4a285f5 ]
 
-For avoiding the potential deadlock via kill_fasync() call, use the
-new fasync helpers to defer the invocation from timer API.  Note that
-it's merely a workaround.
+Since commit 4bf4f42a2feb ("powerpc/kbuild: Set default generic
+machine type for 32-bit compile"), when building a 32 bits kernel
+with a bi-arch version of GCC, or when building a book3s/32 kernel,
+the option -mcpu=powerpc is passed to GCC at all time, relying on it
+being eventually overriden by a subsequent -mcpu=xxxx.
 
-Reported-by: syzbot+8285e973a41b5aa68902@syzkaller.appspotmail.com
-Reported-by: syzbot+669c9abf11a6a011dd09@syzkaller.appspotmail.com
-Link: https://lore.kernel.org/r/20220728125945.29533-4-tiwai@suse.de
-Signed-off-by: Takashi Iwai <tiwai@suse.de>
+But when building the same kernel with a 32 bits only version of GCC,
+that is not done, relying on gcc being built with the expected default
+CPU.
+
+This logic has two problems. First, it is a bit fragile to rely on
+whether the GCC version is bi-arch or not, because today we can have
+bi-arch versions of GCC configured with a 32 bits default. Second,
+there are some versions of GCC which don't support -mcpu=powerpc,
+for instance for e500 SPE-only versions.
+
+So, stop relying on this approximative logic and allow the user to
+decide whether he/she wants to use the toolchain's default CPU or if
+he/she wants to set one, and allow only possible CPUs based on the
+selected target.
+
+Reported-by: Pali Rohár <pali@kernel.org>
+Signed-off-by: Christophe Leroy <christophe.leroy@csgroup.eu>
+Tested-by: Pali Rohár <pali@kernel.org>
+Reviewed-by: Arnd Bergmann <arnd@arndb.de>
+Reviewed-by: Segher Boessenkool <segher@kernel.crashing.org>
+Signed-off-by: Michael Ellerman <mpe@ellerman.id.au>
+Link: https://lore.kernel.org/r/d4df724691351531bf46d685d654689e5dfa0d74.1657549153.git.christophe.leroy@csgroup.eu
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- include/sound/pcm.h     | 2 +-
- sound/core/pcm.c        | 1 +
- sound/core/pcm_lib.c    | 2 +-
- sound/core/pcm_native.c | 2 +-
- 4 files changed, 4 insertions(+), 3 deletions(-)
+ arch/powerpc/Makefile                  | 26 +-------------------------
+ arch/powerpc/platforms/Kconfig.cputype | 21 ++++++++++++++++++---
+ 2 files changed, 19 insertions(+), 28 deletions(-)
 
-diff --git a/include/sound/pcm.h b/include/sound/pcm.h
-index 6b99310b5b88..6987110843f0 100644
---- a/include/sound/pcm.h
-+++ b/include/sound/pcm.h
-@@ -399,7 +399,7 @@ struct snd_pcm_runtime {
- 	snd_pcm_uframes_t twake; 	/* do transfer (!poll) wakeup if non-zero */
- 	wait_queue_head_t sleep;	/* poll sleep */
- 	wait_queue_head_t tsleep;	/* transfer sleep */
--	struct fasync_struct *fasync;
-+	struct snd_fasync *fasync;
- 	bool stop_operating;		/* sync_stop will be called */
- 	struct mutex buffer_mutex;	/* protect for buffer changes */
- 	atomic_t buffer_accessing;	/* >0: in r/w operation, <0: blocked */
-diff --git a/sound/core/pcm.c b/sound/core/pcm.c
-index 977d54320a5c..c917ac84a7e5 100644
---- a/sound/core/pcm.c
-+++ b/sound/core/pcm.c
-@@ -1005,6 +1005,7 @@ void snd_pcm_detach_substream(struct snd_pcm_substream *substream)
- 		substream->runtime = NULL;
- 	}
- 	mutex_destroy(&runtime->buffer_mutex);
-+	snd_fasync_free(runtime->fasync);
- 	kfree(runtime);
- 	put_pid(substream->pid);
- 	substream->pid = NULL;
-diff --git a/sound/core/pcm_lib.c b/sound/core/pcm_lib.c
-index 1fc7c50ffa62..40751e5aff09 100644
---- a/sound/core/pcm_lib.c
-+++ b/sound/core/pcm_lib.c
-@@ -1822,7 +1822,7 @@ void snd_pcm_period_elapsed_under_stream_lock(struct snd_pcm_substream *substrea
- 		snd_timer_interrupt(substream->timer, 1);
- #endif
-  _end:
--	kill_fasync(&runtime->fasync, SIGIO, POLL_IN);
-+	snd_kill_fasync(runtime->fasync, SIGIO, POLL_IN);
- }
- EXPORT_SYMBOL(snd_pcm_period_elapsed_under_stream_lock);
+diff --git a/arch/powerpc/Makefile b/arch/powerpc/Makefile
+index a0cd70712061..d54e1fe03551 100644
+--- a/arch/powerpc/Makefile
++++ b/arch/powerpc/Makefile
+@@ -15,23 +15,6 @@ HAS_BIARCH	:= $(call cc-option-yn, -m32)
+ # Set default 32 bits cross compilers for vdso and boot wrapper
+ CROSS32_COMPILE ?=
  
-diff --git a/sound/core/pcm_native.c b/sound/core/pcm_native.c
-index 4adaee62ef33..16fcf57c6f03 100644
---- a/sound/core/pcm_native.c
-+++ b/sound/core/pcm_native.c
-@@ -3945,7 +3945,7 @@ static int snd_pcm_fasync(int fd, struct file * file, int on)
- 	runtime = substream->runtime;
- 	if (runtime->status->state == SNDRV_PCM_STATE_DISCONNECTED)
- 		return -EBADFD;
--	return fasync_helper(fd, file, on, &runtime->fasync);
-+	return snd_fasync_helper(fd, file, on, &runtime->fasync);
- }
+-ifeq ($(HAS_BIARCH),y)
+-ifeq ($(CROSS32_COMPILE),)
+-ifdef CONFIG_PPC32
+-# These options will be overridden by any -mcpu option that the CPU
+-# or platform code sets later on the command line, but they are needed
+-# to set a sane 32-bit cpu target for the 64-bit cross compiler which
+-# may default to the wrong ISA.
+-KBUILD_CFLAGS		+= -mcpu=powerpc
+-KBUILD_AFLAGS		+= -mcpu=powerpc
+-endif
+-endif
+-endif
+-
+-ifdef CONFIG_PPC_BOOK3S_32
+-KBUILD_CFLAGS		+= -mcpu=powerpc
+-endif
+-
+ # If we're on a ppc/ppc64/ppc64le machine use that defconfig, otherwise just use
+ # ppc64_defconfig because we have nothing better to go on.
+ uname := $(shell uname -m)
+@@ -183,6 +166,7 @@ endif
+ endif
  
- /*
+ CFLAGS-$(CONFIG_TARGET_CPU_BOOL) += $(call cc-option,-mcpu=$(CONFIG_TARGET_CPU))
++AFLAGS-$(CONFIG_TARGET_CPU_BOOL) += $(call cc-option,-mcpu=$(CONFIG_TARGET_CPU))
+ 
+ # Altivec option not allowed with e500mc64 in GCC.
+ ifdef CONFIG_ALTIVEC
+@@ -193,14 +177,6 @@ endif
+ CFLAGS-$(CONFIG_E5500_CPU) += $(E5500_CPU)
+ CFLAGS-$(CONFIG_E6500_CPU) += $(call cc-option,-mcpu=e6500,$(E5500_CPU))
+ 
+-ifdef CONFIG_PPC32
+-ifdef CONFIG_PPC_E500MC
+-CFLAGS-y += $(call cc-option,-mcpu=e500mc,-mcpu=powerpc)
+-else
+-CFLAGS-$(CONFIG_E500) += $(call cc-option,-mcpu=8540 -msoft-float,-mcpu=powerpc)
+-endif
+-endif
+-
+ asinstr := $(call as-instr,lis 9$(comma)foo@high,-DHAVE_AS_ATHIGH=1)
+ 
+ KBUILD_CPPFLAGS	+= -I $(srctree)/arch/$(ARCH) $(asinstr)
+diff --git a/arch/powerpc/platforms/Kconfig.cputype b/arch/powerpc/platforms/Kconfig.cputype
+index 3629fd73083e..18115cabaedf 100644
+--- a/arch/powerpc/platforms/Kconfig.cputype
++++ b/arch/powerpc/platforms/Kconfig.cputype
+@@ -136,9 +136,9 @@ config GENERIC_CPU
+ 	select ARCH_HAS_FAST_MULTIPLIER
+ 	select PPC_64S_HASH_MMU
+ 
+-config GENERIC_CPU
++config POWERPC_CPU
+ 	bool "Generic 32 bits powerpc"
+-	depends on PPC32 && !PPC_8xx
++	depends on PPC32 && !PPC_8xx && !PPC_85xx
+ 
+ config CELL_CPU
+ 	bool "Cell Broadband Engine"
+@@ -197,11 +197,23 @@ config G4_CPU
+ 	depends on PPC_BOOK3S_32
+ 	select ALTIVEC
+ 
++config E500_CPU
++	bool "e500 (8540)"
++	depends on PPC_85xx && !PPC_E500MC
++
++config E500MC_CPU
++	bool "e500mc"
++	depends on PPC_85xx && PPC_E500MC
++
++config TOOLCHAIN_DEFAULT_CPU
++	bool "Rely on the toolchain's implicit default CPU"
++	depends on PPC32
++
+ endchoice
+ 
+ config TARGET_CPU_BOOL
+ 	bool
+-	default !GENERIC_CPU
++	default !GENERIC_CPU && !TOOLCHAIN_DEFAULT_CPU
+ 
+ config TARGET_CPU
+ 	string
+@@ -216,6 +228,9 @@ config TARGET_CPU
+ 	default "e300c2" if E300C2_CPU
+ 	default "e300c3" if E300C3_CPU
+ 	default "G4" if G4_CPU
++	default "8540" if E500_CPU
++	default "e500mc" if E500MC_CPU
++	default "powerpc" if POWERPC_CPU
+ 
+ config PPC_BOOK3S
+ 	def_bool y
 -- 
 2.35.1
 
