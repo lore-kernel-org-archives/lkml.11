@@ -2,116 +2,90 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AF3FCC32792
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 09:32:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B37D1C32772
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 09:32:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350473AbiHWJcK (ORCPT
+        id S1350538AbiHWJcQ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 05:32:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38702 "EHLO
+        Tue, 23 Aug 2022 05:32:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38784 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350672AbiHWJal (ORCPT
+        with ESMTP id S1350694AbiHWJan (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 05:30:41 -0400
-Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CF15992F62;
-        Tue, 23 Aug 2022 01:37:54 -0700 (PDT)
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        Tue, 23 Aug 2022 05:30:43 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 567B777E98;
+        Tue, 23 Aug 2022 01:37:50 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by smtp-out2.suse.de (Postfix) with ESMTPS id D650D20F15;
-        Tue, 23 Aug 2022 08:36:15 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
-        t=1661243775; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=GQ02uGY4LaDgfuC0EhK53ZvKSS1XQwJHJ3fflLYmAjg=;
-        b=cFE5YYpE9evSSKSJipAkRPfcz4A+d9gBKDJiEO/9R3S8iyIw0VuSlrAuELwxRULshwDWtf
-        y4B7TJLPyl0RvCl65sLFFLblBcZw4v6lI0KigGg0mFZXDeVi99q3aSc7CHZw+G1jpvbDcg
-        j9widh2Ih6uLGUegCaae2cVUgj40qRA=
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
-        (No client certificate requested)
-        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id C3E6713A89;
-        Tue, 23 Aug 2022 08:36:15 +0000 (UTC)
-Received: from dovecot-director2.suse.de ([192.168.254.65])
-        by imap2.suse-dmz.suse.de with ESMTPSA
-        id qJIaL3+RBGPnWQAAMHmgww
-        (envelope-from <mhocko@suse.com>); Tue, 23 Aug 2022 08:36:15 +0000
-Date:   Tue, 23 Aug 2022 10:36:15 +0200
-From:   Michal Hocko <mhocko@suse.com>
-To:     Yu Zhao <yuzhao@google.com>
-Cc:     Andrew Morton <akpm@linux-foundation.org>,
-        Suren Baghdasaryan <surenb@google.com>,
-        David Rientjes <rientjes@google.com>,
-        Matthew Wilcox <willy@infradead.org>,
-        Johannes Weiner <hannes@cmpxchg.org>,
-        Roman Gushchin <guro@fb.com>, Minchan Kim <minchan@kernel.org>,
-        "Kirill A . Shutemov" <kirill@shutemov.name>,
-        Andrea Arcangeli <aarcange@redhat.com>, brauner@kernel.org,
-        Christoph Hellwig <hch@infradead.org>, oleg@redhat.com,
-        David Hildenbrand <david@redhat.com>,
-        Jann Horn <jannh@google.com>,
-        Shakeel Butt <shakeelb@google.com>,
-        Peter Xu <peterx@redhat.com>,
-        John Hubbard <jhubbard@nvidia.com>, shuah@kernel.org,
-        linux-kernel <linux-kernel@vger.kernel.org>,
-        Linux-MM <linux-mm@kvack.org>, linux-kselftest@vger.kernel.org,
-        kernel-team@android.com
-Subject: Re: [PATCH RESEND v2 2/2] mm: delete unused MMF_OOM_VICTIM flag
-Message-ID: <YwSRf3LZ7gXwWaNN@dhcp22.suse.cz>
-References: <20220531223100.510392-1-surenb@google.com>
- <20220531223100.510392-2-surenb@google.com>
- <20220822152119.96d40c884078229ee3e6b25e@linux-foundation.org>
- <CAOUHufbysRjhX_AiFirjvWCR129t4_bELd1wFQG+fBsZpzhgYw@mail.gmail.com>
- <20220822154822.366a9e4527b748cf99d98637@linux-foundation.org>
- <CAOUHufa1zc3fMWsyyz1uB6_gsgVPk1Hw_T31WzWK58QVgsQSAQ@mail.gmail.com>
- <20220822161603.9e19edfe2daaea3bf591910a@linux-foundation.org>
- <CAOUHufbyWwkOAJTD4G82sLcwE_33Yy=s4Q+gGBujwXvEBZ8iqA@mail.gmail.com>
+        by ams.source.kernel.org (Postfix) with ESMTPS id 0B61FB81C59;
+        Tue, 23 Aug 2022 08:36:39 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 37C8EC433D6;
+        Tue, 23 Aug 2022 08:36:37 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1661243797;
+        bh=8+uI3dGK+g1A3bAEeGbQ0dbGyAfd+7/26+/vSwy/3pA=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=0CRtaL3aF9XPGKEqFuLbWDlnyCuMQWp4s1F+A1uVVlQc2QSNHSB4RWnUXFuUZ5/1W
+         3od4gpa7A8EVhLIIeECPXBFIFzTZmbrSKVqfUnSTBdvDjKQFaSPVLJdRcWn18xkEKP
+         maMQsRZQ/ukqzZT1w2zbEyocXXWP4FoGXe5NITyU=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org,
+        "Christian Brauner (Microsoft)" <brauner@kernel.org>,
+        "Darrick J. Wong" <djwong@kernel.org>,
+        Yang Xu <xuyang2018.jy@fujitsu.com>,
+        Jeff Layton <jlayton@kernel.org>
+Subject: [PATCH 4.14 024/229] fs: Add missing umask strip in vfs_tmpfile
+Date:   Tue, 23 Aug 2022 10:23:05 +0200
+Message-Id: <20220823080054.313390750@linuxfoundation.org>
+X-Mailer: git-send-email 2.37.2
+In-Reply-To: <20220823080053.202747790@linuxfoundation.org>
+References: <20220823080053.202747790@linuxfoundation.org>
+User-Agent: quilt/0.67
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAOUHufbyWwkOAJTD4G82sLcwE_33Yy=s4Q+gGBujwXvEBZ8iqA@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon 22-08-22 17:20:17, Yu Zhao wrote:
-> On Mon, Aug 22, 2022 at 5:16 PM Andrew Morton <akpm@linux-foundation.org> wrote:
-> >
-> > On Mon, 22 Aug 2022 16:59:29 -0600 Yu Zhao <yuzhao@google.com> wrote:
-> >
-> > > > > @@ -4109,7 +4109,7 @@ static int walk_pud_range(p4d_t *p4d, unsigned
-> > > > > long start, unsigned long end,
-> > > > >
-> > > > >                 walk_pmd_range(&val, addr, next, args);
-> > > > >
-> > > > > -               if (mm_is_oom_victim(args->mm))
-> > > > > +               if (test_bit(MMF_OOM_REAP_QUEUED, &args->mm->flags))
-> > > > >                         return 1;
-> > > > >
-> > > > >                 /* a racy check to curtail the waiting time */
-> > > >
-> > > > Oh.  Why?  What does this change do?
-> > >
-> > > The MMF_OOM_REAP_QUEUED flag is similar to the deleted MMF_OOM_VICTIM
-> > > flag, but it's set at a later stage during an OOM kill.
-> > >
-> > > When either is set, the OOM reaper is probably already freeing the
-> > > memory of this mm_struct, or at least it's going to. So there is no
-> > > need to dwell on it in the reclaim path, hence not about correctness.
-> >
-> > Thanks.  That sounds worthy of some code comments?
-> 
-> Will do. Thanks.
+From: Yang Xu <xuyang2018.jy@fujitsu.com>
 
-I would rather not see this abuse. You cannot really make any
-assumptions about oom_reaper and how quickly it is going to free the
-memory. If this is really worth it (and I have to say I doubt it) then
-it should be a separate patch with numbers justifying it.
+commit ac6800e279a22b28f4fc21439843025a0d5bf03e upstream.
 
--- 
-Michal Hocko
-SUSE Labs
+All creation paths except for O_TMPFILE handle umask in the vfs directly
+if the filesystem doesn't support or enable POSIX ACLs. If the filesystem
+does then umask handling is deferred until posix_acl_create().
+Because, O_TMPFILE misses umask handling in the vfs it will not honor
+umask settings. Fix this by adding the missing umask handling.
+
+Link: https://lore.kernel.org/r/1657779088-2242-2-git-send-email-xuyang2018.jy@fujitsu.com
+Fixes: 60545d0d4610 ("[O_TMPFILE] it's still short a few helpers, but infrastructure should be OK now...")
+Cc: <stable@vger.kernel.org> # 4.19+
+Reported-by: Christian Brauner (Microsoft) <brauner@kernel.org>
+Reviewed-by: Darrick J. Wong <djwong@kernel.org>
+Reviewed-and-Tested-by: Jeff Layton <jlayton@kernel.org>
+Acked-by: Christian Brauner (Microsoft) <brauner@kernel.org>
+Signed-off-by: Yang Xu <xuyang2018.jy@fujitsu.com>
+Signed-off-by: Christian Brauner (Microsoft) <brauner@kernel.org>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+---
+ fs/namei.c |    2 ++
+ 1 file changed, 2 insertions(+)
+
+--- a/fs/namei.c
++++ b/fs/namei.c
+@@ -3465,6 +3465,8 @@ struct dentry *vfs_tmpfile(struct dentry
+ 	child = d_alloc(dentry, &slash_name);
+ 	if (unlikely(!child))
+ 		goto out_err;
++	if (!IS_POSIXACL(dir))
++		mode &= ~current_umask();
+ 	error = dir->i_op->tmpfile(dir, child, mode);
+ 	if (error)
+ 		goto out_err;
+
+
