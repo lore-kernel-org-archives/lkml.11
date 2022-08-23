@@ -2,127 +2,86 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E9B4DC32772
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 08:38:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F1AB4C32772
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 08:39:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346182AbiHWIis (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 04:38:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46548 "EHLO
+        id S240923AbiHWIjG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 23 Aug 2022 04:39:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45726 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343969AbiHWIhM (ORCPT
+        with ESMTP id S1344284AbiHWIhP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 04:37:12 -0400
-Received: from mail-lf1-x12a.google.com (mail-lf1-x12a.google.com [IPv6:2a00:1450:4864:20::12a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 174FC77E86
-        for <linux-kernel@vger.kernel.org>; Tue, 23 Aug 2022 01:17:56 -0700 (PDT)
-Received: by mail-lf1-x12a.google.com with SMTP id z6so18634490lfu.9
-        for <linux-kernel@vger.kernel.org>; Tue, 23 Aug 2022 01:17:56 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc;
-        bh=9OqpWtEeuh8ypX1cXc7uAcrCW4m6r/tanmkI11A3Ifk=;
-        b=eTFAgLCB/8cpoPAhYcbVqIDJ2pl/IkkvWPYmcey5kKfMuCCk0rGizy9SyweRQyHtHl
-         WI5+Zy6cGOh/076pcrjt4lRApsuZLiwfqc8b0BBKrHceyBIeTQtrd5DooiBwhCozMI1z
-         +K58OvvT8GV8rPsenMeI2YUun/SFPmcjq31yfu6XKtvJ3U99AXwDZg2uoTyInitkHNLT
-         9ZksMgIJGPUHGoJ6vYxJk8KK4+nmKbPiOp34Y52JdEeN/18JcIS9CvFWXiEXCPo86W9/
-         sqkYy610lz1XikvfXKtzIpU1RfwKLioMZ0hyKegAHDfT3X2aIxP+gQiXMuiOfvF2+wWo
-         pzWg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc;
-        bh=9OqpWtEeuh8ypX1cXc7uAcrCW4m6r/tanmkI11A3Ifk=;
-        b=w4vHpzsl587xLEK4PxI/DIsabhi7kA7EBDZOERSyGuCJ/HtaIBZZ3lq41iisg0yVCA
-         3lHmgH17C8ZfXZWa7PnQ5NFVBKuT0DcRWFfjyWz9k0iRuJ4xBThE4ehnH72e8biXTcUl
-         NAvBMnJHRiQgeIfNGNMU3MJ47WHWUX1JEjQFxFgTr3BoygTKMD4n3ejkHvsFRwfIFh7f
-         0/6jAiu/DTuy9kUm7LnWNlajksheg1cxxqq5f3gehcRev4Kvad/8IbLLx/64yteaqsyJ
-         XcaOmNULewO76IuAAGtysFp4rgFapZ/iRM9+YHtZ6RUOnMIQLIomoWVJlNdfI8CmHUED
-         uX0g==
-X-Gm-Message-State: ACgBeo2ycmYhgrdAcrz4v2uvzFKpEAUJ7vGxa15H9qRM2n2fm7eyd4f2
-        fu1Ehq504hT9Kl5/kSxEY++1Wg==
-X-Google-Smtp-Source: AA6agR53e29e30P7d7REqgiaaLN5FMBaCGv2iuqS7/6pzPEEi/wAmrdSXEzVfrevBl6W4oRZ5Y2p5g==
-X-Received: by 2002:a05:6512:3b8e:b0:492:f799:76b9 with SMTP id g14-20020a0565123b8e00b00492f79976b9mr544446lfv.207.1661242645734;
-        Tue, 23 Aug 2022 01:17:25 -0700 (PDT)
-Received: from [192.168.0.11] (89-27-92-210.bb.dnainternet.fi. [89.27.92.210])
-        by smtp.gmail.com with ESMTPSA id s8-20020a19ad48000000b0048ae316caf0sm2379428lfd.18.2022.08.23.01.17.24
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 23 Aug 2022 01:17:24 -0700 (PDT)
-Message-ID: <a5a15749-1047-74ea-831e-54d27a6d6cdf@linaro.org>
-Date:   Tue, 23 Aug 2022 11:17:23 +0300
+        Tue, 23 Aug 2022 04:37:15 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 05CA577EB5;
+        Tue, 23 Aug 2022 01:17:58 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by sin.source.kernel.org (Postfix) with ESMTPS id C53BCCE1B34;
+        Tue, 23 Aug 2022 08:16:56 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C87EDC433C1;
+        Tue, 23 Aug 2022 08:16:54 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1661242615;
+        bh=epO8K098BtRj6Sc5ipRdBeNNa94m9Yx6xf3h4PdWRFY=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=xhJFL6nhxQEmCq8NbRpC4ENDNTtLzV5BWoujyXM1KcepPHwSPbpBMxVqfaWXzfMKs
+         wiNXs03rq8N0b3fQRZci+Hf18zx/Qn07zJQ3yUm5vMsGIBaQ2qLbtSa0Nt8QOjEbfp
+         sGYHvp0bX6n7wOFFKqP/8ma/09Xf98RBP4NkwC1Y=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Ondrej Mosnacek <omosnace@redhat.com>,
+        Masahiro Yamada <masahiroy@kernel.org>
+Subject: [PATCH 5.19 145/365] kbuild: dummy-tools: avoid tmpdir leak in dummy gcc
+Date:   Tue, 23 Aug 2022 10:00:46 +0200
+Message-Id: <20220823080124.294570326@linuxfoundation.org>
+X-Mailer: git-send-email 2.37.2
+In-Reply-To: <20220823080118.128342613@linuxfoundation.org>
+References: <20220823080118.128342613@linuxfoundation.org>
+User-Agent: quilt/0.67
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.12.0
-Subject: Re: [PATCH 16/20] dt-bindings: memory: snps: Detach Zynq DDRC
- controller support
-Content-Language: en-US
-To:     Serge Semin <Sergey.Semin@baikalelectronics.ru>,
-        Rob Herring <robh@kernel.org>,
-        Michal Simek <michal.simek@xilinx.com>,
-        Borislav Petkov <bp@alien8.de>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
-        Tony Luck <tony.luck@intel.com>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Manish Narani <manish.narani@xilinx.com>
-Cc:     Serge Semin <fancer.lancer@gmail.com>,
-        Alexey Malahov <Alexey.Malahov@baikalelectronics.ru>,
-        Michail Ivanov <Michail.Ivanov@baikalelectronics.ru>,
-        Pavel Parkhomenko <Pavel.Parkhomenko@baikalelectronics.ru>,
-        Punnaiah Choudary Kalluri 
-        <punnaiah.choudary.kalluri@xilinx.com>,
-        Dinh Nguyen <dinguyen@kernel.org>,
-        James Morse <james.morse@arm.com>,
-        Robert Richter <rric@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-edac@vger.kernel.org, linux-kernel@vger.kernel.org
-References: <20220822190730.27277-1-Sergey.Semin@baikalelectronics.ru>
- <20220822190730.27277-17-Sergey.Semin@baikalelectronics.ru>
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-In-Reply-To: <20220822190730.27277-17-Sergey.Semin@baikalelectronics.ru>
 Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 22/08/2022 22:07, Serge Semin wrote:
-> The Zynq A05 DDRC controller has nothing in common with DW uMCTL2 DDRC:
-> the CSRs layout is absolutely different and it doesn't has IRQ unlike DW
-> uMCTL2 DDR controller of all versions (v1.x, v2.x and v3.x). Thus there is
-> no any reason to have these controllers described by the same bindings.
-> Thus let's split them up.
-> 
-> While at it rename the original Synopsys uMCTL2 DT-schema file to a more
-> descriptive - snps,dw-umctl2-ddrc.yaml and add a more detailed title and
-> description of the device bindings.
+From: Ondrej Mosnacek <omosnace@redhat.com>
 
-Filename should be based on compatible, so if renaming then
-snps,ddrc-3.80a.yaml or snps,ddrc.yaml... which leads to original
-filename anyway. Therefore nack for rename.
+commit aac289653fa5adf9e9985e4912c1d24a3e8cbab2 upstream.
 
-BTW, if you perform renames, generate patches with proper -M/-C/-B
-arguments so this is detected.
+When passed -print-file-name=plugin, the dummy gcc script creates a
+temporary directory that is never cleaned up. To avoid cluttering
+$TMPDIR, instead use a static directory included in the source tree.
+
+Fixes: 76426e238834 ("kbuild: add dummy toolchains to enable all cc-option etc. in Kconfig")
+Signed-off-by: Ondrej Mosnacek <omosnace@redhat.com>
+Signed-off-by: Masahiro Yamada <masahiroy@kernel.org>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+---
+ .../dummy-tools/dummy-plugin-dir/include/plugin-version.h | 0
+ scripts/dummy-tools/gcc |    8 ++------
+ 1 file changed, 2 insertions(+), 6 deletions(-)
+ create mode 100644 scripts/dummy-tools/dummy-plugin-dir/include/plugin-version.h
+
+--- a/scripts/dummy-tools/gcc
++++ b/scripts/dummy-tools/gcc
+@@ -96,12 +96,8 @@ fi
+ 
+ # To set GCC_PLUGINS
+ if arg_contain -print-file-name=plugin "$@"; then
+-	plugin_dir=$(mktemp -d)
+-
+-	mkdir -p $plugin_dir/include
+-	touch $plugin_dir/include/plugin-version.h
+-
+-	echo $plugin_dir
++	# Use $0 to find the in-tree dummy directory
++	echo "$(dirname "$(readlink -f "$0")")/dummy-plugin-dir"
+ 	exit 0
+ fi
+ 
 
 
-> 
-> Signed-off-by: Serge Semin <Sergey.Semin@baikalelectronics.ru>
-> --->  .../snps,dw-umctl2-ddrc.yaml                  | 51 +++++++++++++
-
-This is a mess. I did not get any cover letters, any other patches any
-description of relation between this and your other one.
-
-It seems you make independent and conflicting changes to the same file,
-so this has to be properly organized.
-
-Send entire patchset with cover letter with description of all
-dependencies to all maintainers.
-
-This is unreviewable now, so a no.
-
-Best regards,
-Krzysztof
