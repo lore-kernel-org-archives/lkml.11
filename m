@@ -2,59 +2,114 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 03D63C32789
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 19:22:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 170E3C32772
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 19:22:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231153AbiHWTWI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 15:22:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35102 "EHLO
+        id S233048AbiHWTWL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 23 Aug 2022 15:22:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37958 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233048AbiHWTVq (ORCPT
+        with ESMTP id S229742AbiHWTVr (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 15:21:46 -0400
-Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BB0B5B8F08;
-        Tue, 23 Aug 2022 11:02:06 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=casper.20170209; h=In-Reply-To:Content-Type:MIME-Version:
-        References:Message-ID:Subject:To:From:Date:Sender:Reply-To:Cc:
-        Content-Transfer-Encoding:Content-ID:Content-Description;
-        bh=F7agJyyQPBoKNSgYn2p8RhiVuoRJhF3uXfjMiiS+Xls=; b=Wkq47664wvidT/E01+KEhjp+FD
-        R/XHD8tSjJ7wbSR/mUYAeZLcN9Qztr4HbAaptjmHf13Xvc/HhezApMdO9elvyO4yJky2geT4qJGiw
-        ETVjqHkgyGMdGpfM/33Fu3FbWJdqyfvE7Gomlu8XUsphUa3UHMz1vW6QuUX6itShiWHOgh4mGnADK
-        YLDxjyt+6hcWU3rUXSjXdG6cQBEL2pNTZFjh++GgJJwfdeTjQ2/EajCeR3hrpA1nrARg48VXIBoRv
-        OY5Z8UvCwBhsFnazcFBsKtMiFMSi83zfhtHu4mnNppp6ZoBJ+FcwKhqsvBLgMFWMPweTwDT8k1nEh
-        EeOcNoqQ==;
-Received: from willy by casper.infradead.org with local (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1oQYDz-00FUl4-TM; Tue, 23 Aug 2022 18:02:03 +0000
-Date:   Tue, 23 Aug 2022 19:02:03 +0100
-From:   Matthew Wilcox <willy@infradead.org>
-To:     dsterba@suse.cz, "Vishal Moola (Oracle)" <vishal.moola@gmail.com>,
-        linux-fsdevel@vger.kernel.org, linux-btrfs@vger.kernel.org,
-        linux-nilfs@vger.kernel.org, linux-mm@kvack.org,
+        Tue, 23 Aug 2022 15:21:47 -0400
+Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 73A1C1306A9;
+        Tue, 23 Aug 2022 11:02:14 -0700 (PDT)
+Date:   Tue, 23 Aug 2022 18:02:10 -0000
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020; t=1661277731;
+        h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
+         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
+         content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=2RC0sxKMivGTVluKWaMxuJ3KPssF3MfXxyKVUs8ULFc=;
+        b=ccXCKyVPEnFRSlF8yjJfyDz38ZZGzlIlmxd0aue1eFRniZvbAw7aql6036TPzAGQchFMzW
+        svATwxhZcyhBq4Tz/+KX3Y/JqrK9qeTltdfw/DJSrdUFiJ2I+EPFRJdqVRDSIQ7UFEkSiM
+        wniJHxH9fYkWaQdOClBVdHeyFImEXPce6/1VUhUYMz22XMXukj4CqY/4wj4Iev/iaVXKdQ
+        OgAfbktLxAhDKlAY+WSG9wjeU961WnPGebs1Ot3YXatETQaCJIRxqxrbOVacNvG2xsCshS
+        nmZacoEzObq074mwYb1Bs2PEkFBTVTCay28VwQDEoeYPw524GwHSpPeXVsKpaA==
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020e; t=1661277731;
+        h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
+         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
+         content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=2RC0sxKMivGTVluKWaMxuJ3KPssF3MfXxyKVUs8ULFc=;
+        b=TXGQY3z36yqPOAJgdmnt2JhYWkLwR5uu4Kv3LedFy3wpOMVGUzHnNE4oKMRWD+T13aOESW
+        nW5MBYmQYETScnCA==
+From:   "tip-bot2 for Tony Luck" <tip-bot2@linutronix.de>
+Sender: tip-bot2@linutronix.de
+Reply-to: linux-kernel@vger.kernel.org
+To:     linux-tip-commits@vger.kernel.org
+Subject: [tip: x86/urgent] x86/cpu: Add new Raptor Lake CPU model number
+Cc:     Tony Luck <tony.luck@intel.com>,
+        Dave Hansen <dave.hansen@linux.intel.com>, x86@kernel.org,
         linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2 0/7] Convert to filemap_get_folios_contig()
-Message-ID: <YwUWG73OkS+3Eelr@casper.infradead.org>
-References: <20220816175246.42401-1-vishal.moola@gmail.com>
- <20220823172642.GJ13489@twin.jikos.cz>
+In-Reply-To: <20220823174819.223941-1-tony.luck@intel.com>
+References: <20220823174819.223941-1-tony.luck@intel.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220823172642.GJ13489@twin.jikos.cz>
+Message-ID: <166127773014.401.12112620191231972274.tip-bot2@tip-bot2>
+Robot-ID: <tip-bot2@linutronix.de>
+Robot-Unsubscribe: Contact <mailto:tglx@linutronix.de> to get blacklisted from these emails
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Aug 23, 2022 at 07:26:42PM +0200, David Sterba wrote:
-> I've tested the whole branch in my fstest setup, no issues found and
-> did a light review of the code changes, looks ok as well.
+The following commit has been merged into the x86/urgent branch of tip:
 
-Thanks!
+Commit-ID:     ea902bcc1943f7539200ec464de3f54335588774
+Gitweb:        https://git.kernel.org/tip/ea902bcc1943f7539200ec464de3f54335588774
+Author:        Tony Luck <tony.luck@intel.com>
+AuthorDate:    Tue, 23 Aug 2022 10:48:19 -07:00
+Committer:     Dave Hansen <dave.hansen@linux.intel.com>
+CommitterDate: Tue, 23 Aug 2022 10:58:21 -07:00
 
-> How do you want get the patches merged? As it's an API conversion I can
-> ack it and let it go via the mm tree. So far there are no conflicts with
-> our btrfs development patches, I assume it'll be a clean merge in the
-> future too.
+x86/cpu: Add new Raptor Lake CPU model number
 
-I was planning on taking this patch series through the pagecache tree;
-it's in -next, so any problems will show up as conflicts there.
+Note1: Model 0xB7 already claimed the "no suffix" #define for a regular
+client part, so add (yet another) suffix "S" to distinguish this new
+part from the earlier one.
+
+Note2: the RAPTORLAKE* and ALDERLAKE* processors are very similar from a
+software enabling point of view.  There are no known features that have
+model-specific enabling and also differ between the two.  In other words,
+every single place that list *one* or more RAPTORLAKE* or ALDERLAKE*
+processors should list all of them.
+
+Note3: This is being merged before there is an in-tree user.  Merging
+this provides an "anchor" so that the different folks can update their
+subsystems (like perf) in parallel to use this define and test it.
+
+[ dhansen: add a note about why this has no in-tree users yet ]
+
+Signed-off-by: Tony Luck <tony.luck@intel.com>
+Signed-off-by: Dave Hansen <dave.hansen@linux.intel.com>
+Link: https://lkml.kernel.org/r/20220823174819.223941-1-tony.luck@intel.com
+---
+ arch/x86/include/asm/intel-family.h | 2 ++
+ 1 file changed, 2 insertions(+)
+
+diff --git a/arch/x86/include/asm/intel-family.h b/arch/x86/include/asm/intel-family.h
+index def6ca1..aeb3802 100644
+--- a/arch/x86/include/asm/intel-family.h
++++ b/arch/x86/include/asm/intel-family.h
+@@ -27,6 +27,7 @@
+  *		_X	- regular server parts
+  *		_D	- micro server parts
+  *		_N,_P	- other mobile parts
++ *		_S	- other client parts
+  *
+  *		Historical OPTDIFFs:
+  *
+@@ -112,6 +113,7 @@
+ 
+ #define INTEL_FAM6_RAPTORLAKE		0xB7
+ #define INTEL_FAM6_RAPTORLAKE_P		0xBA
++#define INTEL_FAM6_RAPTORLAKE_S		0xBF
+ 
+ /* "Small Core" Processors (Atom) */
+ 
