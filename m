@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BBEBDC32792
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 09:43:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 810A6C32772
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 09:44:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240330AbiHWJn5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 05:43:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53338 "EHLO
+        id S241984AbiHWJoE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 23 Aug 2022 05:44:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58900 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352084AbiHWJkz (ORCPT
+        with ESMTP id S1352120AbiHWJk4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 05:40:55 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 081F545041;
-        Tue, 23 Aug 2022 01:41:47 -0700 (PDT)
+        Tue, 23 Aug 2022 05:40:56 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 214327A50E;
+        Tue, 23 Aug 2022 01:41:49 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 75F99B81C69;
-        Tue, 23 Aug 2022 08:41:28 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C9B5FC433C1;
-        Tue, 23 Aug 2022 08:41:26 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id D713761257;
+        Tue, 23 Aug 2022 08:41:48 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BCBB0C433C1;
+        Tue, 23 Aug 2022 08:41:47 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661244087;
-        bh=6o7dFMo7ClTdnFjrVOtoQR+dS9HFFHcI3I/lUGs2dLs=;
+        s=korg; t=1661244108;
+        bh=i6FXr4E8XnfuMt9Ll0SUB8OusLyDbQ0jV4V7ZXzwMAI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=17fsAOGYS3LkFdWTsVaFOCRC+uwAp9DAL9B2UDD6rg19XE1ZMK8EC21dotMlXqKMe
-         K2/sXgVkv26rWp87er0NNmOxP6ELg338TNTAZAeaWenyZgkWauDkaP7j1IDX02RNOk
-         3ooP05QRGGimmFhbo/WhB4EVv/ByLj3081ihjOck=
+        b=qsJjY1fjncRyJXOgFCWKU762V10KhkpguGxo/6vMJLo7m3ENUWoTkS/y3CJ7j6odr
+         tq7MspQvSYhaThC99z5ZyZJpdVjZEpCAz/tyYneCy0dpRvyv2e27ZcEXOlH1XTg/2k
+         SVJXKhy0mVxQrENYNrylSX9riHnZK5ohzvFne/d0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Vincent Mailhol <mailhol.vincent@wanadoo.fr>,
-        Marc Kleine-Budde <mkl@pengutronix.de>,
+        stable@vger.kernel.org, Jiasheng Jiang <jiasheng@iscas.ac.cn>,
+        Marcel Holtmann <marcel@holtmann.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.14 084/229] can: usb_8dev: do not report txerr and rxerr during bus-off
-Date:   Tue, 23 Aug 2022 10:24:05 +0200
-Message-Id: <20220823080056.731785849@linuxfoundation.org>
+Subject: [PATCH 4.14 087/229] Bluetooth: hci_intel: Add check for platform_driver_register
+Date:   Tue, 23 Aug 2022 10:24:08 +0200
+Message-Id: <20220823080056.829750151@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220823080053.202747790@linuxfoundation.org>
 References: <20220823080053.202747790@linuxfoundation.org>
@@ -50,40 +49,39 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Vincent Mailhol <mailhol.vincent@wanadoo.fr>
+From: Jiasheng Jiang <jiasheng@iscas.ac.cn>
 
-[ Upstream commit aebe8a2433cd090ccdc222861f44bddb75eb01de ]
+[ Upstream commit ab2d2a982ff721f4b029282d9a40602ea46a745e ]
 
-During bus off, the error count is greater than 255 and can not fit in
-a u8.
+As platform_driver_register() could fail, it should be better
+to deal with the return value in order to maintain the code
+consisitency.
 
-Fixes: 0024d8ad1639 ("can: usb_8dev: Add support for USB2CAN interface from 8 devices")
-Link: https://lore.kernel.org/all/20220719143550.3681-10-mailhol.vincent@wanadoo.fr
-Signed-off-by: Vincent Mailhol <mailhol.vincent@wanadoo.fr>
-Signed-off-by: Marc Kleine-Budde <mkl@pengutronix.de>
+Fixes: 1ab1f239bf17 ("Bluetooth: hci_intel: Add support for platform driver")
+Signed-off-by: Jiasheng Jiang <jiasheng@iscas.ac.cn>
+Signed-off-by: Marcel Holtmann <marcel@holtmann.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/can/usb/usb_8dev.c | 7 ++++---
- 1 file changed, 4 insertions(+), 3 deletions(-)
+ drivers/bluetooth/hci_intel.c | 6 +++++-
+ 1 file changed, 5 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/net/can/usb/usb_8dev.c b/drivers/net/can/usb/usb_8dev.c
-index 232f45f722f0..5cb5be4dc941 100644
---- a/drivers/net/can/usb/usb_8dev.c
-+++ b/drivers/net/can/usb/usb_8dev.c
-@@ -453,9 +453,10 @@ static void usb_8dev_rx_err_msg(struct usb_8dev_priv *priv,
+diff --git a/drivers/bluetooth/hci_intel.c b/drivers/bluetooth/hci_intel.c
+index c75311d4dd31..cbe4a2159d43 100644
+--- a/drivers/bluetooth/hci_intel.c
++++ b/drivers/bluetooth/hci_intel.c
+@@ -1303,7 +1303,11 @@ static struct platform_driver intel_driver = {
  
- 	if (rx_errors)
- 		stats->rx_errors++;
--
--	cf->data[6] = txerr;
--	cf->data[7] = rxerr;
-+	if (priv->can.state != CAN_STATE_BUS_OFF) {
-+		cf->data[6] = txerr;
-+		cf->data[7] = rxerr;
-+	}
+ int __init intel_init(void)
+ {
+-	platform_driver_register(&intel_driver);
++	int err;
++
++	err = platform_driver_register(&intel_driver);
++	if (err)
++		return err;
  
- 	priv->bec.txerr = txerr;
- 	priv->bec.rxerr = rxerr;
+ 	return hci_uart_register_proto(&intel_proto);
+ }
 -- 
 2.35.1
 
