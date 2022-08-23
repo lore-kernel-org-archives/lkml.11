@@ -2,116 +2,156 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4019EC32772
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 11:40:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7FFD7C32772
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 11:40:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357976AbiHWLkH (ORCPT
+        id S1357782AbiHWLkO (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 07:40:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48960 "EHLO
+        Tue, 23 Aug 2022 07:40:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49070 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348213AbiHWLdX (ORCPT
+        with ESMTP id S1349802AbiHWLdj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 07:33:23 -0400
-Received: from mx0b-001b2d01.pphosted.com (mx0b-001b2d01.pphosted.com [148.163.158.5])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 16405C6CD5;
-        Tue, 23 Aug 2022 02:27:00 -0700 (PDT)
-Received: from pps.filterd (m0098421.ppops.net [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 27N8PGXE022459;
-        Tue, 23 Aug 2022 09:26:56 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=date : from : to : cc :
- subject : message-id : references : mime-version : content-type :
- content-transfer-encoding : in-reply-to; s=pp1;
- bh=2vei+MS82V0X3c1p2oKJzYV81h4jfWZJXKgnSJtOV3M=;
- b=S6EfbDBsKbuAylSq63HeJxvjxh75ADg29RzhwkY2QP957FAdZQkq+XJKOdVa+oggyprv
- Km+xxVie6X7gxU24DoCmmwdK5s+tVaos38I/1wIObASUbACaQwx1Ttfi67SM1TULx5+U
- 2YOcoF2DKPuyLkhup561ZpjMfM+EF7SGjNTHjifB239Wp4R5vsmNOugefHMufjSiuLBD
- H4WqGbN9Ym9+Jp/FVdshN0yDDfFNuXlOONmHebh+apIYk33/QylzGcqSNAvEeIm06+xz
- yXfzhPbrvKqpDbh73njwAGY773yXFLt8pdwTquGqqUm4LiWyHub70X42UijSzM2lCwuD NA== 
-Received: from ppma01fra.de.ibm.com (46.49.7a9f.ip4.static.sl-reverse.com [159.122.73.70])
-        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3j4uc99q0d-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Tue, 23 Aug 2022 09:26:56 +0000
-Received: from pps.filterd (ppma01fra.de.ibm.com [127.0.0.1])
-        by ppma01fra.de.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 27N9LTvw012628;
-        Tue, 23 Aug 2022 09:26:54 GMT
-Received: from b06cxnps4075.portsmouth.uk.ibm.com (d06relay12.portsmouth.uk.ibm.com [9.149.109.197])
-        by ppma01fra.de.ibm.com with ESMTP id 3j2q88tkhu-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Tue, 23 Aug 2022 09:26:54 +0000
-Received: from d06av21.portsmouth.uk.ibm.com (d06av21.portsmouth.uk.ibm.com [9.149.105.232])
-        by b06cxnps4075.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 27N9QpWQ32113070
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Tue, 23 Aug 2022 09:26:51 GMT
-Received: from d06av21.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 423FF5204F;
-        Tue, 23 Aug 2022 09:26:51 +0000 (GMT)
-Received: from osiris (unknown [9.145.80.88])
-        by d06av21.portsmouth.uk.ibm.com (Postfix) with ESMTPS id E75155204E;
-        Tue, 23 Aug 2022 09:26:50 +0000 (GMT)
-Date:   Tue, 23 Aug 2022 11:26:49 +0200
-From:   Heiko Carstens <hca@linux.ibm.com>
-To:     Arnaldo Carvalho de Melo <acme@kernel.org>
-Cc:     Thomas Richter <tmricht@linux.ibm.com>,
-        linux-kernel@vger.kernel.org, linux-perf-users@vger.kernel.org,
-        svens@linux.ibm.com, gor@linux.ibm.com, sumanthk@linux.ibm.com
-Subject: Re: [PATCH v2] perf list: Add PMU pai_crypto event description for
- IBM z16
-Message-ID: <YwSdWUt02SFzrMUm@osiris>
-References: <20220804075221.1132849-1-tmricht@linux.ibm.com>
- <YvOq3B02x8GqkVPA@kernel.org>
+        Tue, 23 Aug 2022 07:33:39 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F1A46C6CF3;
+        Tue, 23 Aug 2022 02:27:04 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id B9DB66133A;
+        Tue, 23 Aug 2022 09:27:03 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BD755C433D6;
+        Tue, 23 Aug 2022 09:27:02 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1661246823;
+        bh=+nrm8rt8GRkyPlcrkGTD0rMmIru5+ErV50pcg9tTFSM=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=hsd3CKUigjcC3aKkj0uIcxHyHHfZ1QkgbZ+vcrc36S/kkVdwWlsn7WNAz12TrLWQx
+         skXtFWce4VnEjmYKcv2fbJm7tRltFa3tcdYFF7Uk/U9nqj2K7lXJ9/FlWwFPTh8/2R
+         DCKD0l5G5DmHiZ+FzNBPsfKyMdgTdpLYsRtOrb0A=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Zhihao Cheng <chengzhihao1@huawei.com>,
+        Theodore Tso <tytso@mit.edu>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.4 201/389] jbd2: fix assertion jh->b_frozen_data == NULL failure when journal aborted
+Date:   Tue, 23 Aug 2022 10:24:39 +0200
+Message-Id: <20220823080124.042681302@linuxfoundation.org>
+X-Mailer: git-send-email 2.37.2
+In-Reply-To: <20220823080115.331990024@linuxfoundation.org>
+References: <20220823080115.331990024@linuxfoundation.org>
+User-Agent: quilt/0.67
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <YvOq3B02x8GqkVPA@kernel.org>
-X-TM-AS-GCONF: 00
-X-Proofpoint-ORIG-GUID: HhpzBzzd8F6ifxvoDAMc2tTnzIpJa4jm
-X-Proofpoint-GUID: HhpzBzzd8F6ifxvoDAMc2tTnzIpJa4jm
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.895,Hydra:6.0.517,FMLib:17.11.122.1
- definitions=2022-08-23_04,2022-08-22_02,2022-06-22_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 impostorscore=0
- suspectscore=0 phishscore=0 mlxlogscore=999 priorityscore=1501 mlxscore=0
- adultscore=0 bulkscore=0 lowpriorityscore=0 malwarescore=0 clxscore=1011
- spamscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2207270000 definitions=main-2208230035
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Aug 10, 2022 at 09:55:56AM -0300, Arnaldo Carvalho de Melo wrote:
-> Em Thu, Aug 04, 2022 at 09:52:21AM +0200, Thomas Richter escreveu:
-> > Add the event description for the IBM z16 pai_crypto PMU released with
-> > commit 1bf54f32f525 ("s390/pai: Add support for cryptography counters")
-> 
-> What tree is this? I tried on torvalds/master:
-> 
-> ⬢[acme@toolbox perf]$ git remote update torvalds
-> Fetching torvalds
-> ⬢[acme@toolbox perf]$ git log --oneline -1 torvalds/master
-> d4252071b97d2027 (torvalds/master) add barriers to buffer_uptodate and set_buffer_uptodate
-> ⬢[acme@toolbox perf]$ git show torvalds/master d4252071b97d2027 | head -5
-> commit d4252071b97d2027d246f6a82cbee4d52f618b47
-> Author: Mikulas Patocka <mpatocka@redhat.com>
-> Date:   Tue Aug 9 14:32:13 2022 -0400
-> 
->     add barriers to buffer_uptodate and set_buffer_uptodate
-> ⬢[acme@toolbox perf]$ git show torvalds/master 1bf54f32f525 | head -5
-> fatal: ambiguous argument '1bf54f32f525': unknown revision or path not in the working tree.
-> Use '--' to separate paths from revisions, like this:
-> 'git <command> [<revision>...] -- [<file>...]'
-> ⬢[acme@toolbox perf]$ git log --oneline torvalds/master | grep "pai: Add support for cryptography counters"
-> ⬢[acme@toolbox perf]$
-> ⬢[acme@toolbox perf]$ git show torvalds/master d4252071b97d2027 | head -4
-> commit d4252071b97d2027d246f6a82cbee4d52f618b47
-> Author: Mikulas Patocka <mpatocka@redhat.com>
-> Date:   Tue Aug 9 14:32:13 2022 -0400
-> 
-> I'm applying it locally so that it gets included in testing, but please
-> clarify where is that 1bf54f32f525 cset.
+From: Zhihao Cheng <chengzhihao1@huawei.com>
 
-Thomas mixed up our non public development tree and Linus' tree.
-Correct commit id + subject are:
+[ Upstream commit 4a734f0869f970b8a9b65062ea40b09a5da9dba8 ]
 
-39d62336f5c1 ("s390/pai: add support for cryptography counters")
+Following process will fail assertion 'jh->b_frozen_data == NULL' in
+jbd2_journal_dirty_metadata():
+
+                   jbd2_journal_commit_transaction
+unlink(dir/a)
+ jh->b_transaction = trans1
+ jh->b_jlist = BJ_Metadata
+                    journal->j_running_transaction = NULL
+                    trans1->t_state = T_COMMIT
+unlink(dir/b)
+ handle->h_trans = trans2
+ do_get_write_access
+  jh->b_modified = 0
+  jh->b_frozen_data = frozen_buffer
+  jh->b_next_transaction = trans2
+ jbd2_journal_dirty_metadata
+  is_handle_aborted
+   is_journal_aborted // return false
+
+           --> jbd2 abort <--
+
+                     while (commit_transaction->t_buffers)
+                      if (is_journal_aborted)
+                       jbd2_journal_refile_buffer
+                        __jbd2_journal_refile_buffer
+                         WRITE_ONCE(jh->b_transaction,
+						jh->b_next_transaction)
+                         WRITE_ONCE(jh->b_next_transaction, NULL)
+                         __jbd2_journal_file_buffer(jh, BJ_Reserved)
+        J_ASSERT_JH(jh, jh->b_frozen_data == NULL) // assertion failure !
+
+The reproducer (See detail in [Link]) reports:
+ ------------[ cut here ]------------
+ kernel BUG at fs/jbd2/transaction.c:1629!
+ invalid opcode: 0000 [#1] PREEMPT SMP
+ CPU: 2 PID: 584 Comm: unlink Tainted: G        W
+ 5.19.0-rc6-00115-g4a57a8400075-dirty #697
+ RIP: 0010:jbd2_journal_dirty_metadata+0x3c5/0x470
+ RSP: 0018:ffffc90000be7ce0 EFLAGS: 00010202
+ Call Trace:
+  <TASK>
+  __ext4_handle_dirty_metadata+0xa0/0x290
+  ext4_handle_dirty_dirblock+0x10c/0x1d0
+  ext4_delete_entry+0x104/0x200
+  __ext4_unlink+0x22b/0x360
+  ext4_unlink+0x275/0x390
+  vfs_unlink+0x20b/0x4c0
+  do_unlinkat+0x42f/0x4c0
+  __x64_sys_unlink+0x37/0x50
+  do_syscall_64+0x35/0x80
+
+After journal aborting, __jbd2_journal_refile_buffer() is executed with
+holding @jh->b_state_lock, we can fix it by moving 'is_handle_aborted()'
+into the area protected by @jh->b_state_lock.
+
+Link: https://bugzilla.kernel.org/show_bug.cgi?id=216251
+Fixes: 470decc613ab20 ("[PATCH] jbd2: initial copy of files from jbd")
+Signed-off-by: Zhihao Cheng <chengzhihao1@huawei.com>
+Link: https://lore.kernel.org/r/20220715125152.4022726-1-chengzhihao1@huawei.com
+Signed-off-by: Theodore Ts'o <tytso@mit.edu>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ fs/jbd2/transaction.c | 14 ++++++++++++--
+ 1 file changed, 12 insertions(+), 2 deletions(-)
+
+diff --git a/fs/jbd2/transaction.c b/fs/jbd2/transaction.c
+index be05fb96757c..e0bd73140415 100644
+--- a/fs/jbd2/transaction.c
++++ b/fs/jbd2/transaction.c
+@@ -1375,8 +1375,6 @@ int jbd2_journal_dirty_metadata(handle_t *handle, struct buffer_head *bh)
+ 	struct journal_head *jh;
+ 	int ret = 0;
+ 
+-	if (is_handle_aborted(handle))
+-		return -EROFS;
+ 	if (!buffer_jbd(bh))
+ 		return -EUCLEAN;
+ 
+@@ -1423,6 +1421,18 @@ int jbd2_journal_dirty_metadata(handle_t *handle, struct buffer_head *bh)
+ 	journal = transaction->t_journal;
+ 	jbd_lock_bh_state(bh);
+ 
++	if (is_handle_aborted(handle)) {
++		/*
++		 * Check journal aborting with @jh->b_state_lock locked,
++		 * since 'jh->b_transaction' could be replaced with
++		 * 'jh->b_next_transaction' during old transaction
++		 * committing if journal aborted, which may fail
++		 * assertion on 'jh->b_frozen_data == NULL'.
++		 */
++		ret = -EROFS;
++		goto out_unlock_bh;
++	}
++
+ 	if (jh->b_modified == 0) {
+ 		/*
+ 		 * This buffer's got modified and becoming part
+-- 
+2.35.1
+
+
+
