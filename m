@@ -2,42 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7F493C32772
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 11:12:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EB74CC32772
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 11:12:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357214AbiHWLMr (ORCPT
+        id S1357228AbiHWLMv (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 07:12:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52570 "EHLO
+        Tue, 23 Aug 2022 07:12:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57710 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357151AbiHWLIt (ORCPT
+        with ESMTP id S1357491AbiHWLLG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 07:08:49 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 504D387688;
-        Tue, 23 Aug 2022 02:16:30 -0700 (PDT)
+        Tue, 23 Aug 2022 07:11:06 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A08F0B7EF6;
+        Tue, 23 Aug 2022 02:17:33 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 160D8B8105C;
-        Tue, 23 Aug 2022 09:16:17 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 779CEC433D6;
-        Tue, 23 Aug 2022 09:16:15 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 4FE3860F54;
+        Tue, 23 Aug 2022 09:17:25 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 36668C433C1;
+        Tue, 23 Aug 2022 09:17:24 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661246175;
-        bh=/LXsrzw1yxQGL9b1Zmq8Ccx2wUQqoyNaeI0G2abhPFo=;
+        s=korg; t=1661246244;
+        bh=7pMGTLfm7+yf402Et0WC41HMCYeZJIfscGaDIL9XAwM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=HG0NmLXPjVZdncWQkK7z6ux8njlUE33uYSn2bZ/L5GmjUnIH06lhYtyR6b5mDrsv8
-         +YbiKiMH7m82BYZoJMYVn6XtHjfF8kAFsDU2AImSMuzD4klzM0Qq25O+MPDKtlnkOb
-         hhzkLjrgteehUjYNRNQCfGtDPq5SkT6IINmutAug=
+        b=14naSlA/iCy0MwR8aVj7px/7mJ1JFIGcKveDImepEkIuMUDulyVXZWZpN6qvDSMnl
+         QZm7kV8PkKesWqASe48SQAFaJ5AjRt+QFTPqerjyI06UgUWSIHVtqk6VRNEpbT4rMi
+         1iV5V/1gDG9rdbiLPoa7D6bBaX1zQcFnbTDnQM7Y=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Di Shen <di.shen@unisoc.com>,
-        "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>
-Subject: [PATCH 5.4 025/389] thermal: sysfs: Fix cooling_device_stats_setup() error code path
-Date:   Tue, 23 Aug 2022 10:21:43 +0200
-Message-Id: <20220823080116.750336144@linuxfoundation.org>
+        stable@vger.kernel.org, Helge Deller <deller@gmx.de>
+Subject: [PATCH 5.4 030/389] parisc: io_pgetevents_time64() needs compat syscall in 32-bit compat mode
+Date:   Tue, 23 Aug 2022 10:21:48 +0200
+Message-Id: <20220823080116.947594802@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220823080115.331990024@linuxfoundation.org>
 References: <20220823080115.331990024@linuxfoundation.org>
@@ -49,69 +48,36 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
+From: Helge Deller <deller@gmx.de>
 
-commit d5a8aa5d7d80d21ab6b266f1bed4194b61746199 upstream.
+commit 6431e92fc827bdd2d28f79150d90415ba9ce0d21 upstream.
 
-If cooling_device_stats_setup() fails to create the stats object, it
-must clear the last slot in cooling_device_attr_groups that was
-initially empty (so as to make it possible to add stats attributes to
-the cooling device attribute groups).
+For all syscalls in 32-bit compat mode on 64-bit kernels the upper
+32-bits of the 64-bit registers are zeroed out, so a negative 32-bit
+signed value will show up as positive 64-bit signed value.
 
-Failing to do so may cause the stats attributes to be created by
-mistake for a device that doesn't have a stats object, because the
-slot in question might be populated previously during the registration
-of another cooling device.
+This behaviour breaks the io_pgetevents_time64() syscall which expects
+signed 64-bit values for the "min_nr" and "nr" parameters.
+Fix this by switching to the compat_sys_io_pgetevents_time64() syscall,
+which uses "compat_long_t" types for those parameters.
 
-Fixes: 8ea229511e06 ("thermal: Add cooling device's statistics in sysfs")
-Reported-by: Di Shen <di.shen@unisoc.com>
-Tested-by: Di Shen <di.shen@unisoc.com>
-Cc: 4.17+ <stable@vger.kernel.org> # 4.17+
-Signed-off-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
+Cc: <stable@vger.kernel.org> # v5.1+
+Signed-off-by: Helge Deller <deller@gmx.de>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/thermal/thermal_sysfs.c |   10 +++++++---
- 1 file changed, 7 insertions(+), 3 deletions(-)
+ arch/parisc/kernel/syscalls/syscall.tbl |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/drivers/thermal/thermal_sysfs.c
-+++ b/drivers/thermal/thermal_sysfs.c
-@@ -909,12 +909,13 @@ static const struct attribute_group cool
- 
- static void cooling_device_stats_setup(struct thermal_cooling_device *cdev)
- {
-+	const struct attribute_group *stats_attr_group = NULL;
- 	struct cooling_dev_stats *stats;
- 	unsigned long states;
- 	int var;
- 
- 	if (cdev->ops->get_max_state(cdev, &states))
--		return;
-+		goto out;
- 
- 	states++; /* Total number of states is highest state + 1 */
- 
-@@ -924,7 +925,7 @@ static void cooling_device_stats_setup(s
- 
- 	stats = kzalloc(var, GFP_KERNEL);
- 	if (!stats)
--		return;
-+		goto out;
- 
- 	stats->time_in_state = (ktime_t *)(stats + 1);
- 	stats->trans_table = (unsigned int *)(stats->time_in_state + states);
-@@ -934,9 +935,12 @@ static void cooling_device_stats_setup(s
- 
- 	spin_lock_init(&stats->lock);
- 
-+	stats_attr_group = &cooling_device_stats_attr_group;
-+
-+out:
- 	/* Fill the empty slot left in cooling_device_attr_groups */
- 	var = ARRAY_SIZE(cooling_device_attr_groups) - 2;
--	cooling_device_attr_groups[var] = &cooling_device_stats_attr_group;
-+	cooling_device_attr_groups[var] = stats_attr_group;
- }
- 
- static void cooling_device_stats_destroy(struct thermal_cooling_device *cdev)
+--- a/arch/parisc/kernel/syscalls/syscall.tbl
++++ b/arch/parisc/kernel/syscalls/syscall.tbl
+@@ -413,7 +413,7 @@
+ 412	32	utimensat_time64		sys_utimensat			sys_utimensat
+ 413	32	pselect6_time64			sys_pselect6			compat_sys_pselect6_time64
+ 414	32	ppoll_time64			sys_ppoll			compat_sys_ppoll_time64
+-416	32	io_pgetevents_time64		sys_io_pgetevents		sys_io_pgetevents
++416	32	io_pgetevents_time64		sys_io_pgetevents		compat_sys_io_pgetevents_time64
+ 417	32	recvmmsg_time64			sys_recvmmsg			compat_sys_recvmmsg_time64
+ 418	32	mq_timedsend_time64		sys_mq_timedsend		sys_mq_timedsend
+ 419	32	mq_timedreceive_time64		sys_mq_timedreceive		sys_mq_timedreceive
 
 
