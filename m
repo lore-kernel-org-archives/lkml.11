@@ -2,43 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9EE1BC32772
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 11:08:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4D7A6C32772
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 11:08:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357061AbiHWLIK (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 07:08:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41730 "EHLO
+        id S239481AbiHWLIQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 23 Aug 2022 07:08:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43880 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357209AbiHWLGT (ORCPT
+        with ESMTP id S1357250AbiHWLGZ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 07:06:19 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 90370B516C;
-        Tue, 23 Aug 2022 02:15:45 -0700 (PDT)
+        Tue, 23 Aug 2022 07:06:25 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6E2D7B5148;
+        Tue, 23 Aug 2022 02:15:50 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id D5D1961183;
-        Tue, 23 Aug 2022 09:15:33 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D69E5C433C1;
-        Tue, 23 Aug 2022 09:15:32 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id D6C1EB81C66;
+        Tue, 23 Aug 2022 09:15:49 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3AF72C433D7;
+        Tue, 23 Aug 2022 09:15:48 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661246133;
-        bh=zUKg06zh818Ca6lgrCTltvZCNiOxsKkS5v4EFO6nHSg=;
+        s=korg; t=1661246148;
+        bh=JRaGfZ/uzKtNbXkllMOv46TThxaawTHl0BCldoBf3is=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=qPWsiOTOJ7QVOe49koMYLmX8jpF0RKftvlVuz6ZDVFRi665yZ53Fhs/hvQVHd6jds
-         zZtj0CQ9QT3N3f1nn/sgEbMoaHX7hl1lxgWVMDx+rw7MzFC3Gz3hcXaK4CAyPOaiYE
-         FSqqr+Af2xPFZQnzxajjUoclhp/8bMbiIkvIb0zo=
+        b=aV40q3zpmC6Db9987+Ia3P1AmvboPJY6dSFCAYzCuTe4xqyHFLj7C/wBEIh64UbTl
+         tNaJcIlb0QpTANRRt3tyqmy6+XMaeKiK/cFZxApWgnVuMSNJ0w6NZVEeyp7kgMRuWO
+         DGBQWhOvV02+3okutM/0XptBncEi6YkPsheqsi/Y=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Lei Wang <lei4.wang@intel.com>,
-        Sean Christopherson <seanjc@google.com>,
-        Paolo Bonzini <pbonzini@redhat.com>
-Subject: [PATCH 5.4 012/389] KVM: nVMX: Snapshot pre-VM-Enter BNDCFGS for !nested_run_pending case
-Date:   Tue, 23 Aug 2022 10:21:30 +0200
-Message-Id: <20220823080116.183989866@linuxfoundation.org>
+        stable@vger.kernel.org, Sean Christopherson <seanjc@google.com>,
+        Maxim Levitsky <mlevitsk@redhat.com>
+Subject: [PATCH 5.4 017/389] KVM: x86: Set error code to segment selector on LLDT/LTR non-canonical #GP
+Date:   Tue, 23 Aug 2022 10:21:35 +0200
+Message-Id: <20220823080116.428675218@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220823080115.331990024@linuxfoundation.org>
 References: <20220823080115.331990024@linuxfoundation.org>
@@ -52,51 +50,39 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Sean Christopherson <seanjc@google.com>
 
-commit fa578398a0ba2c079fa1170da21fa5baae0cedb2 upstream.
+commit 2626206963ace9e8bf92b6eea5ff78dd674c555c upstream.
 
-If a nested run isn't pending, snapshot vmcs01.GUEST_BNDCFGS irrespective
-of whether or not VM_ENTRY_LOAD_BNDCFGS is set in vmcs12.  When restoring
-nested state, e.g. after migration, without a nested run pending,
-prepare_vmcs02() will propagate nested.vmcs01_guest_bndcfgs to vmcs02,
-i.e. will load garbage/zeros into vmcs02.GUEST_BNDCFGS.
+When injecting a #GP on LLDT/LTR due to a non-canonical LDT/TSS base, set
+the error code to the selector.  Intel SDM's says nothing about the #GP,
+but AMD's APM explicitly states that both LLDT and LTR set the error code
+to the selector, not zero.
 
-If userspace restores nested state before MSRs, then loading garbage is a
-non-issue as loading BNDCFGS will also update vmcs02.  But if usersepace
-restores MSRs first, then KVM is responsible for propagating L2's value,
-which is actually thrown into vmcs01, into vmcs02.
+Note, a non-canonical memory operand on LLDT/LTR does generate a #GP(0),
+but the KVM code in question is specific to the base from the descriptor.
 
-Restoring L2 MSRs into vmcs01, i.e. loading all MSRs before nested state
-is all kinds of bizarre and ideally would not be supported.  Sadly, some
-VMMs do exactly that and rely on KVM to make things work.
-
-Note, there's still a lurking SMM bug, as propagating vmcs01.GUEST_BNDFGS
-to vmcs02 across RSM may corrupt L2's BNDCFGS.  But KVM's entire VMX+SMM
-emulation is flawed as SMI+RSM should not toouch _any_ VMCS when use the
-"default treatment of SMIs", i.e. when not using an SMI Transfer Monitor.
-
-Link: https://lore.kernel.org/all/Yobt1XwOfb5M6Dfa@google.com
-Fixes: 62cf9bd8118c ("KVM: nVMX: Fix emulation of VM_ENTRY_LOAD_BNDCFGS")
+Fixes: e37a75a13cda ("KVM: x86: Emulator ignores LDTR/TR extended base on LLDT/LTR")
 Cc: stable@vger.kernel.org
-Cc: Lei Wang <lei4.wang@intel.com>
 Signed-off-by: Sean Christopherson <seanjc@google.com>
-Message-Id: <20220614215831.3762138-2-seanjc@google.com>
-Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
+Reviewed-by: Maxim Levitsky <mlevitsk@redhat.com>
+Link: https://lore.kernel.org/r/20220711232750.1092012-3-seanjc@google.com
+Signed-off-by: Sean Christopherson <seanjc@google.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/x86/kvm/vmx/nested.c |    3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ arch/x86/kvm/emulate.c |    4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
---- a/arch/x86/kvm/vmx/nested.c
-+++ b/arch/x86/kvm/vmx/nested.c
-@@ -3068,7 +3068,8 @@ enum nvmx_vmentry_status nested_vmx_ente
- 	if (!(vmcs12->vm_entry_controls & VM_ENTRY_LOAD_DEBUG_CONTROLS))
- 		vmx->nested.vmcs01_debugctl = vmcs_read64(GUEST_IA32_DEBUGCTL);
- 	if (kvm_mpx_supported() &&
--		!(vmcs12->vm_entry_controls & VM_ENTRY_LOAD_BNDCFGS))
-+	    (!vmx->nested.nested_run_pending ||
-+	     !(vmcs12->vm_entry_controls & VM_ENTRY_LOAD_BNDCFGS)))
- 		vmx->nested.vmcs01_guest_bndcfgs = vmcs_read64(GUEST_BNDCFGS);
+--- a/arch/x86/kvm/emulate.c
++++ b/arch/x86/kvm/emulate.c
+@@ -1790,8 +1790,8 @@ static int __load_segment_descriptor(str
+ 		if (ret != X86EMUL_CONTINUE)
+ 			return ret;
+ 		if (emul_is_noncanonical_address(get_desc_base(&seg_desc) |
+-				((u64)base3 << 32), ctxt))
+-			return emulate_gp(ctxt, 0);
++						 ((u64)base3 << 32), ctxt))
++			return emulate_gp(ctxt, err_code);
+ 	}
  
- 	/*
+ 	if (seg == VCPU_SREG_TR) {
 
 
