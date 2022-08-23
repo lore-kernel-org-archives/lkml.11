@@ -2,45 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B47C2C52D79
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 41E9CC52D6C
 	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 10:12:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353928AbiHWKMS (ORCPT
+        id S1353884AbiHWKMQ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 06:12:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45806 "EHLO
+        Tue, 23 Aug 2022 06:12:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44770 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352252AbiHWKFI (ORCPT
+        with ESMTP id S1352249AbiHWKFG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 06:05:08 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2DC577CB5E;
-        Tue, 23 Aug 2022 01:51:53 -0700 (PDT)
+        Tue, 23 Aug 2022 06:05:06 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 491116B653;
+        Tue, 23 Aug 2022 01:51:52 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 39F516150F;
-        Tue, 23 Aug 2022 08:51:53 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3ED85C433D6;
-        Tue, 23 Aug 2022 08:51:52 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id E54E4B81C1C;
+        Tue, 23 Aug 2022 08:51:50 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3574CC433D6;
+        Tue, 23 Aug 2022 08:51:48 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661244712;
-        bh=l1hHllYzgE1Bcw27PDIeyRbRqgXZ1yIg4OE0bNPY3QE=;
+        s=korg; t=1661244709;
+        bh=ADkFv/zaUyh6dKNv1NNmSV5iAz1hx6hB7vMUJariuSA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=qtBtKD8P56WqTsBtGD9/zPKl9Qx5K/7elZmvcwi5uJmglXefJ+vnsSzX8F/mtpXIQ
-         j5gupnDa7MBHNSCkneFfsFu/qFDU18UK0R2ElYooY7ZBMCmhps9S4jOgR7ljjTZjF9
-         WFy5yZBFn7x9L4seW5snyy2fBfHe3d1WJ3bqT170=
+        b=DpNbWefnJkxmMia3UoPZ70gKI/7Yt4kbJSGgBehYicOYAyS+hZPPi4bc2VGt3S6c+
+         dQbEvXpSgD0d8YsZxPetjunjq0U32iJmzq40J1yMv14axafxHhtkPyt6qdrvruTKS9
+         VS7OB3YzQeYwWak15yF+aBfjGuJPVvRuOWE9gunQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Filipe Manana <fdmanana@suse.com>,
-        David Sterba <dsterba@suse.com>
-Subject: [PATCH 4.14 179/229] btrfs: fix lost error handling when looking up extended ref on log replay
-Date:   Tue, 23 Aug 2022 10:25:40 +0200
-Message-Id: <20220823080100.012041778@linuxfoundation.org>
+        stable@vger.kernel.org, Sergei Antonov <saproj@gmail.com>,
+        Andrew Lunn <andrew@lunn.ch>, Jakub Kicinski <kuba@kernel.org>
+Subject: [PATCH 5.15 137/244] net: moxa: pass pdev instead of ndev to DMA functions
+Date:   Tue, 23 Aug 2022 10:24:56 +0200
+Message-Id: <20220823080103.724444033@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220823080053.202747790@linuxfoundation.org>
-References: <20220823080053.202747790@linuxfoundation.org>
+In-Reply-To: <20220823080059.091088642@linuxfoundation.org>
+References: <20220823080059.091088642@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -49,43 +49,111 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Filipe Manana <fdmanana@suse.com>
+From: Sergei Antonov <saproj@gmail.com>
 
-commit 7a6b75b79902e47f46328b57733f2604774fa2d9 upstream.
+commit 3a12df22a8f68954a4ba48435c06b3d1791c87c4 upstream.
 
-During log replay, when processing inode references, if we get an error
-when looking up for an extended reference at __add_inode_ref(), we ignore
-it and proceed, returning success (0) if no other error happens after the
-lookup. This is obviously wrong because in case an extended reference
-exists and it encodes some name not in the log, we need to unlink it,
-otherwise the filesystem state will not match the state it had after the
-last fsync.
+dma_map_single() calls fail in moxart_mac_setup_desc_ring() and
+moxart_mac_start_xmit() which leads to an incessant output of this:
 
-So just make __add_inode_ref() return an error it gets from the extended
-reference lookup.
+[   16.043925] moxart-ethernet 92000000.mac eth0: DMA mapping error
+[   16.050957] moxart-ethernet 92000000.mac eth0: DMA mapping error
+[   16.058229] moxart-ethernet 92000000.mac eth0: DMA mapping error
 
-Fixes: f186373fef005c ("btrfs: extended inode refs")
-CC: stable@vger.kernel.org # 4.9+
-Signed-off-by: Filipe Manana <fdmanana@suse.com>
-Reviewed-by: David Sterba <dsterba@suse.com>
-Signed-off-by: David Sterba <dsterba@suse.com>
+Passing pdev to DMA is a common approach among net drivers.
+
+Fixes: 6c821bd9edc9 ("net: Add MOXA ART SoCs ethernet driver")
+Signed-off-by: Sergei Antonov <saproj@gmail.com>
+Suggested-by: Andrew Lunn <andrew@lunn.ch>
+Reviewed-by: Andrew Lunn <andrew@lunn.ch>
+Link: https://lore.kernel.org/r/20220812171339.2271788-1-saproj@gmail.com
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- fs/btrfs/tree-log.c |    4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
+ drivers/net/ethernet/moxa/moxart_ether.c |   20 ++++++++++----------
+ 1 file changed, 10 insertions(+), 10 deletions(-)
 
---- a/fs/btrfs/tree-log.c
-+++ b/fs/btrfs/tree-log.c
-@@ -1100,7 +1100,9 @@ again:
- 	extref = btrfs_lookup_inode_extref(NULL, root, path, name, namelen,
- 					   inode_objectid, parent_objectid, 0,
- 					   0);
--	if (!IS_ERR_OR_NULL(extref)) {
-+	if (IS_ERR(extref)) {
-+		return PTR_ERR(extref);
-+	} else if (extref) {
- 		u32 item_size;
- 		u32 cur_offset = 0;
- 		unsigned long base;
+--- a/drivers/net/ethernet/moxa/moxart_ether.c
++++ b/drivers/net/ethernet/moxa/moxart_ether.c
+@@ -77,7 +77,7 @@ static void moxart_mac_free_memory(struc
+ 	int i;
+ 
+ 	for (i = 0; i < RX_DESC_NUM; i++)
+-		dma_unmap_single(&ndev->dev, priv->rx_mapping[i],
++		dma_unmap_single(&priv->pdev->dev, priv->rx_mapping[i],
+ 				 priv->rx_buf_size, DMA_FROM_DEVICE);
+ 
+ 	if (priv->tx_desc_base)
+@@ -147,11 +147,11 @@ static void moxart_mac_setup_desc_ring(s
+ 		       desc + RX_REG_OFFSET_DESC1);
+ 
+ 		priv->rx_buf[i] = priv->rx_buf_base + priv->rx_buf_size * i;
+-		priv->rx_mapping[i] = dma_map_single(&ndev->dev,
++		priv->rx_mapping[i] = dma_map_single(&priv->pdev->dev,
+ 						     priv->rx_buf[i],
+ 						     priv->rx_buf_size,
+ 						     DMA_FROM_DEVICE);
+-		if (dma_mapping_error(&ndev->dev, priv->rx_mapping[i]))
++		if (dma_mapping_error(&priv->pdev->dev, priv->rx_mapping[i]))
+ 			netdev_err(ndev, "DMA mapping error\n");
+ 
+ 		moxart_desc_write(priv->rx_mapping[i],
+@@ -240,7 +240,7 @@ static int moxart_rx_poll(struct napi_st
+ 		if (len > RX_BUF_SIZE)
+ 			len = RX_BUF_SIZE;
+ 
+-		dma_sync_single_for_cpu(&ndev->dev,
++		dma_sync_single_for_cpu(&priv->pdev->dev,
+ 					priv->rx_mapping[rx_head],
+ 					priv->rx_buf_size, DMA_FROM_DEVICE);
+ 		skb = netdev_alloc_skb_ip_align(ndev, len);
+@@ -294,7 +294,7 @@ static void moxart_tx_finished(struct ne
+ 	unsigned int tx_tail = priv->tx_tail;
+ 
+ 	while (tx_tail != tx_head) {
+-		dma_unmap_single(&ndev->dev, priv->tx_mapping[tx_tail],
++		dma_unmap_single(&priv->pdev->dev, priv->tx_mapping[tx_tail],
+ 				 priv->tx_len[tx_tail], DMA_TO_DEVICE);
+ 
+ 		ndev->stats.tx_packets++;
+@@ -358,9 +358,9 @@ static netdev_tx_t moxart_mac_start_xmit
+ 
+ 	len = skb->len > TX_BUF_SIZE ? TX_BUF_SIZE : skb->len;
+ 
+-	priv->tx_mapping[tx_head] = dma_map_single(&ndev->dev, skb->data,
++	priv->tx_mapping[tx_head] = dma_map_single(&priv->pdev->dev, skb->data,
+ 						   len, DMA_TO_DEVICE);
+-	if (dma_mapping_error(&ndev->dev, priv->tx_mapping[tx_head])) {
++	if (dma_mapping_error(&priv->pdev->dev, priv->tx_mapping[tx_head])) {
+ 		netdev_err(ndev, "DMA mapping error\n");
+ 		goto out_unlock;
+ 	}
+@@ -379,7 +379,7 @@ static netdev_tx_t moxart_mac_start_xmit
+ 		len = ETH_ZLEN;
+ 	}
+ 
+-	dma_sync_single_for_device(&ndev->dev, priv->tx_mapping[tx_head],
++	dma_sync_single_for_device(&priv->pdev->dev, priv->tx_mapping[tx_head],
+ 				   priv->tx_buf_size, DMA_TO_DEVICE);
+ 
+ 	txdes1 = TX_DESC1_LTS | TX_DESC1_FTS | (len & TX_DESC1_BUF_SIZE_MASK);
+@@ -493,7 +493,7 @@ static int moxart_mac_probe(struct platf
+ 	priv->tx_buf_size = TX_BUF_SIZE;
+ 	priv->rx_buf_size = RX_BUF_SIZE;
+ 
+-	priv->tx_desc_base = dma_alloc_coherent(&pdev->dev, TX_REG_DESC_SIZE *
++	priv->tx_desc_base = dma_alloc_coherent(p_dev, TX_REG_DESC_SIZE *
+ 						TX_DESC_NUM, &priv->tx_base,
+ 						GFP_DMA | GFP_KERNEL);
+ 	if (!priv->tx_desc_base) {
+@@ -501,7 +501,7 @@ static int moxart_mac_probe(struct platf
+ 		goto init_fail;
+ 	}
+ 
+-	priv->rx_desc_base = dma_alloc_coherent(&pdev->dev, RX_REG_DESC_SIZE *
++	priv->rx_desc_base = dma_alloc_coherent(p_dev, RX_REG_DESC_SIZE *
+ 						RX_DESC_NUM, &priv->rx_base,
+ 						GFP_DMA | GFP_KERNEL);
+ 	if (!priv->rx_desc_base) {
 
 
