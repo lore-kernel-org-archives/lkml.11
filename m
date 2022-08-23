@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AEBC0C32772
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 11:15:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3A144C32772
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 11:15:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357328AbiHWLPJ (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 07:15:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40816 "EHLO
+        id S243013AbiHWLPR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 23 Aug 2022 07:15:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58262 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243911AbiHWLOd (ORCPT
+        with ESMTP id S240876AbiHWLOf (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 07:14:33 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CDEAB6B15D;
-        Tue, 23 Aug 2022 02:18:32 -0700 (PDT)
+        Tue, 23 Aug 2022 07:14:35 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A517C6B142;
+        Tue, 23 Aug 2022 02:18:47 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id A29CE60F54;
-        Tue, 23 Aug 2022 09:17:50 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 96515C433D6;
-        Tue, 23 Aug 2022 09:17:49 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id B76876121F;
+        Tue, 23 Aug 2022 09:18:36 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B18D4C433C1;
+        Tue, 23 Aug 2022 09:18:35 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661246270;
-        bh=4oKy8Yajs9DOcAGOEyap/imW96KE11w4nqzOJVQiI90=;
+        s=korg; t=1661246316;
+        bh=fsWJpVlbdSP6aK71pA9OxUeNSHt9OvDhrKF+Ylw6rhM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=tvYieE5MZPjV0YTe/GhL11d5z+sRuCfciBMqk5p3XoG916bQaN1lp3pL/XvjN3BbJ
-         Xn3Xi6jIpdlZYo2jnGgQD6sjHdEMWArTLlHaSe8EE7K1wD64WqJWl5+YEfKa/MmfMj
-         y1BRQP37gJ3UuelY1kjWdV71WmQQEoCNxjixT4Vc=
+        b=KSN1v42vywQM9MG50vstptZfEkxzw469e5Mwb+laHMaCbjFkDClYC4dhu7CjNjfm1
+         W+flC3B38D7WCcxymcVXdGxckPOVEL5jiVT+tUWTL65UxfaK+hccUBbXzyGXoQ8l80
+         yXNfKhbQBiuVQHgdahJf+f67GnPQxqM+6BPRcCMo=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
-        syzbot+d273f7d7f58afd93be48@syzkaller.appspotmail.com,
-        Jan Kara <jack@suse.cz>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 055/389] ext2: Add more validity checks for inode counts
-Date:   Tue, 23 Aug 2022 10:22:13 +0200
-Message-Id: <20220823080117.899460667@linuxfoundation.org>
+        syzbot <syzbot+358c9ab4c93da7b7238c@syzkaller.appspotmail.com>,
+        Tetsuo Handa <penguin-kernel@I-love.SAKURA.ne.jp>,
+        "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.4 071/389] PM: hibernate: defer device probing when resuming from hibernation
+Date:   Tue, 23 Aug 2022 10:22:29 +0200
+Message-Id: <20220823080118.597058908@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220823080115.331990024@linuxfoundation.org>
 References: <20220823080115.331990024@linuxfoundation.org>
@@ -50,53 +51,104 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jan Kara <jack@suse.cz>
+From: Tetsuo Handa <penguin-kernel@I-love.SAKURA.ne.jp>
 
-[ Upstream commit fa78f336937240d1bc598db817d638086060e7e9 ]
+[ Upstream commit 8386c414e27caba8501119948e9551e52b527f59 ]
 
-Add checks verifying number of inodes stored in the superblock matches
-the number computed from number of inodes per group. Also verify we have
-at least one block worth of inodes per group. This prevents crashes on
-corrupted filesystems.
+syzbot is reporting hung task at misc_open() [1], for there is a race
+window of AB-BA deadlock which involves probe_count variable. Currently
+wait_for_device_probe() from snapshot_open() from misc_open() can sleep
+forever with misc_mtx held if probe_count cannot become 0.
 
-Reported-by: syzbot+d273f7d7f58afd93be48@syzkaller.appspotmail.com
-Signed-off-by: Jan Kara <jack@suse.cz>
+When a device is probed by hub_event() work function, probe_count is
+incremented before the probe function starts, and probe_count is
+decremented after the probe function completed.
+
+There are three cases that can prevent probe_count from dropping to 0.
+
+  (a) A device being probed stopped responding (i.e. broken/malicious
+      hardware).
+
+  (b) A process emulating a USB device using /dev/raw-gadget interface
+      stopped responding for some reason.
+
+  (c) New device probe requests keeps coming in before existing device
+      probe requests complete.
+
+The phenomenon syzbot is reporting is (b). A process which is holding
+system_transition_mutex and misc_mtx is waiting for probe_count to become
+0 inside wait_for_device_probe(), but the probe function which is called
+ from hub_event() work function is waiting for the processes which are
+blocked at mutex_lock(&misc_mtx) to respond via /dev/raw-gadget interface.
+
+This patch mitigates (b) by deferring wait_for_device_probe() from
+snapshot_open() to snapshot_write() and snapshot_ioctl(). Please note that
+the possibility of (b) remains as long as any thread which is emulating a
+USB device via /dev/raw-gadget interface can be blocked by uninterruptible
+blocking operations (e.g. mutex_lock()).
+
+Please also note that (a) and (c) are not addressed. Regarding (c), we
+should change the code to wait for only one device which contains the
+image for resuming from hibernation. I don't know how to address (a), for
+use of timeout for wait_for_device_probe() might result in loss of user
+data in the image. Maybe we should require the userland to wait for the
+image device before opening /dev/snapshot interface.
+
+Link: https://syzkaller.appspot.com/bug?extid=358c9ab4c93da7b7238c [1]
+Reported-by: syzbot <syzbot+358c9ab4c93da7b7238c@syzkaller.appspotmail.com>
+Signed-off-by: Tetsuo Handa <penguin-kernel@I-love.SAKURA.ne.jp>
+Tested-by: syzbot <syzbot+358c9ab4c93da7b7238c@syzkaller.appspotmail.com>
+Signed-off-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- fs/ext2/super.c | 12 ++++++++++--
- 1 file changed, 10 insertions(+), 2 deletions(-)
+ kernel/power/user.c | 13 ++++++++++++-
+ 1 file changed, 12 insertions(+), 1 deletion(-)
 
-diff --git a/fs/ext2/super.c b/fs/ext2/super.c
-index db403c01d4d5..644c83c115bc 100644
---- a/fs/ext2/super.c
-+++ b/fs/ext2/super.c
-@@ -1077,9 +1077,10 @@ static int ext2_fill_super(struct super_block *sb, void *data, int silent)
- 			sbi->s_frags_per_group);
- 		goto failed_mount;
- 	}
--	if (sbi->s_inodes_per_group > sb->s_blocksize * 8) {
-+	if (sbi->s_inodes_per_group < sbi->s_inodes_per_block ||
-+	    sbi->s_inodes_per_group > sb->s_blocksize * 8) {
- 		ext2_msg(sb, KERN_ERR,
--			"error: #inodes per group too big: %lu",
-+			"error: invalid #inodes per group: %lu",
- 			sbi->s_inodes_per_group);
- 		goto failed_mount;
- 	}
-@@ -1089,6 +1090,13 @@ static int ext2_fill_super(struct super_block *sb, void *data, int silent)
- 	sbi->s_groups_count = ((le32_to_cpu(es->s_blocks_count) -
- 				le32_to_cpu(es->s_first_data_block) - 1)
- 					/ EXT2_BLOCKS_PER_GROUP(sb)) + 1;
-+	if ((u64)sbi->s_groups_count * sbi->s_inodes_per_group !=
-+	    le32_to_cpu(es->s_inodes_count)) {
-+		ext2_msg(sb, KERN_ERR, "error: invalid #inodes: %u vs computed %llu",
-+			 le32_to_cpu(es->s_inodes_count),
-+			 (u64)sbi->s_groups_count * sbi->s_inodes_per_group);
-+		goto failed_mount;
+diff --git a/kernel/power/user.c b/kernel/power/user.c
+index 77438954cc2b..672d4e28fa8a 100644
+--- a/kernel/power/user.c
++++ b/kernel/power/user.c
+@@ -26,6 +26,7 @@
+ 
+ #include "power.h"
+ 
++static bool need_wait;
+ 
+ #define SNAPSHOT_MINOR	231
+ 
+@@ -79,7 +80,7 @@ static int snapshot_open(struct inode *inode, struct file *filp)
+ 		 * Resuming.  We may need to wait for the image device to
+ 		 * appear.
+ 		 */
+-		wait_for_device_probe();
++		need_wait = true;
+ 
+ 		data->swap = -1;
+ 		data->mode = O_WRONLY;
+@@ -171,6 +172,11 @@ static ssize_t snapshot_write(struct file *filp, const char __user *buf,
+ 	ssize_t res;
+ 	loff_t pg_offp = *offp & ~PAGE_MASK;
+ 
++	if (need_wait) {
++		wait_for_device_probe();
++		need_wait = false;
 +	}
- 	db_count = (sbi->s_groups_count + EXT2_DESC_PER_BLOCK(sb) - 1) /
- 		   EXT2_DESC_PER_BLOCK(sb);
- 	sbi->s_group_desc = kmalloc_array (db_count,
++
+ 	lock_system_sleep();
+ 
+ 	data = filp->private_data;
+@@ -206,6 +212,11 @@ static long snapshot_ioctl(struct file *filp, unsigned int cmd,
+ 	loff_t size;
+ 	sector_t offset;
+ 
++	if (need_wait) {
++		wait_for_device_probe();
++		need_wait = false;
++	}
++
+ 	if (_IOC_TYPE(cmd) != SNAPSHOT_IOC_MAGIC)
+ 		return -ENOTTY;
+ 	if (_IOC_NR(cmd) > SNAPSHOT_IOC_MAXNR)
 -- 
 2.35.1
 
