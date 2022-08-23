@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B6B55C32772
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 09:59:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C90EDC32774
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 09:59:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348218AbiHWJ7f (ORCPT
+        id S1348700AbiHWJ7i (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 05:59:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45940 "EHLO
+        Tue, 23 Aug 2022 05:59:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56580 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351739AbiHWJzw (ORCPT
+        with ESMTP id S1351787AbiHWJzz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 05:55:52 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0B5BEA00E3;
-        Tue, 23 Aug 2022 01:46:56 -0700 (PDT)
+        Tue, 23 Aug 2022 05:55:55 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7B2E54C603;
+        Tue, 23 Aug 2022 01:46:58 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id E1AAEB8105C;
-        Tue, 23 Aug 2022 08:46:52 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 56804C433C1;
-        Tue, 23 Aug 2022 08:46:51 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 501D3B81C39;
+        Tue, 23 Aug 2022 08:46:40 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 809F4C433C1;
+        Tue, 23 Aug 2022 08:46:38 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661244411;
-        bh=tZSJGZcu29hov5KyLe01/mQJdshxtNc7fhWtD6BhF4I=;
+        s=korg; t=1661244399;
+        bh=zB3vcfByeeRaNK19bHJNOfxahrTKbnldYjcp2+CARZI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=EhPtwrlQTVu2WftJ6XtUUkqdpwmohZI7SSpXrWDIZpHWhD9P9e/CK01PpZmf9MC7k
-         sXkgX9utPBPl/IvikVtN+4xiYiS/UvmIT7FpJ6krH+OFThSJkKJiuQox48bbwc2PkP
-         vgiJEuAi/I0cOV6a2R2M5wF5oauyNQlHUm5k4mpI=
+        b=uqpIXsMFSsOkOYM7h55uHmyW7ReiUEoalITM7pzU8zbqAPDGUcc4IjhtXj/bngVFf
+         Pa6oLdz9Dtj4+sVw431kAPQcNZjZ3fNNHAvyrjrJwvnzCFkTuuAb9v8nSwX5Gdu9Ka
+         cyc3tm+Iz5oiyLoadeHU4bMN+K3KUnMuGgICiQ4s=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Yuanzheng Song <songyuanzheng@huawei.com>,
-        "Tobin C. Harding" <tobin@kernel.org>,
-        Andrew Morton <akpm@linux-foundation.org>
-Subject: [PATCH 5.15 090/244] tools/vm/slabinfo: use alphabetic order when two values are equal
-Date:   Tue, 23 Aug 2022 10:24:09 +0200
-Message-Id: <20220823080102.026017060@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+        Michal Simek <michal.simek@amd.com>,
+        Mark Brown <broonie@kernel.org>
+Subject: [PATCH 5.15 088/244] spi: dt-bindings: zynqmp-qspi: add missing required
+Date:   Tue, 23 Aug 2022 10:24:07 +0200
+Message-Id: <20220823080101.965367455@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220823080059.091088642@linuxfoundation.org>
 References: <20220823080059.091088642@linuxfoundation.org>
@@ -50,100 +51,42 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Yuanzheng Song <songyuanzheng@huawei.com>
+From: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
 
-commit 4f5ceb8851f0081af54313abbf56de1615911faf upstream.
+commit acfc34f008c3e66bbcb7b9162c80c8327b6e800f upstream.
 
-When the number of partial slabs in each cache is the same (e.g., the
-value are 0), the results of the `slabinfo -X -N5` and `slabinfo -P -N5`
-are different.
+During the conversion the bindings lost list of required properties.
 
-/ # slabinfo -X -N5
-...
-Slabs sorted by number of partial slabs
----------------------------------------
-Name                   Objects Objsize           Space Slabs/Part/Cpu  O/S O %Fr %Ef Flg
-inode_cache              15180     392         6217728        758/0/1   20 1   0  95 a
-kernfs_node_cache        22494      88         2002944        488/0/1   46 0   0  98
-shmem_inode_cache          663     464          319488         38/0/1   17 1   0  96
-biovec-max                  50    3072          163840          4/0/1   10 3   0  93 A
-dentry                   19050     136         2600960        633/0/2   30 0   0  99 a
-
-/ # slabinfo -P -N5
-Name                   Objects Objsize           Space Slabs/Part/Cpu  O/S O %Fr %Ef Flg
-bdev_cache                  32     984           32.7K          1/0/1   16 2   0  96 Aa
-ext4_inode_cache            42     752           32.7K          1/0/1   21 2   0  96 a
-dentry                   19050     136            2.6M        633/0/2   30 0   0  99 a
-TCPv6                       17    1840           32.7K          0/0/1   17 3   0  95 A
-RAWv6                       18     856           16.3K          0/0/1   18 2   0  94 A
-
-This problem is caused by the sort_slabs().  So let's use alphabetic order
-when two values are equal in the sort_slabs().
-
-By the way, the content of the `slabinfo -h` is not aligned because the
-
-`-P|--partial Sort by number of partial slabs`
-
-uses tabs instead of spaces.  So let's use spaces instead of tabs to fix
-it.
-
-Link: https://lkml.kernel.org/r/20220528063117.935158-1-songyuanzheng@huawei.com
-Fixes: 1106b205a3fe ("tools/vm/slabinfo: add partial slab listing to -X")
-Signed-off-by: Yuanzheng Song <songyuanzheng@huawei.com>
-Cc: "Tobin C. Harding" <tobin@kernel.org>
-Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
+Fixes: c58db2abb19f ("spi: convert Xilinx Zynq UltraScale+ MPSoC GQSPI bindings to YAML")
+Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Reviewed-by: Michal Simek <michal.simek@amd.com>
+Link: https://lore.kernel.org/r/20220704130618.199231-2-krzysztof.kozlowski@linaro.org
+Signed-off-by: Mark Brown <broonie@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- tools/vm/slabinfo.c |   32 ++++++++++++++++++++++----------
- 1 file changed, 22 insertions(+), 10 deletions(-)
+ Documentation/devicetree/bindings/spi/spi-zynqmp-qspi.yaml | 7 +++++++
+ 1 file changed, 7 insertions(+)
 
---- a/tools/vm/slabinfo.c
-+++ b/tools/vm/slabinfo.c
-@@ -125,7 +125,7 @@ static void usage(void)
- 		"-n|--numa              Show NUMA information\n"
- 		"-N|--lines=K           Show the first K slabs\n"
- 		"-o|--ops               Show kmem_cache_ops\n"
--		"-P|--partial		Sort by number of partial slabs\n"
-+		"-P|--partial           Sort by number of partial slabs\n"
- 		"-r|--report            Detailed report on single slabs\n"
- 		"-s|--shrink            Shrink slabs\n"
- 		"-S|--Size              Sort by size\n"
-@@ -1067,15 +1067,27 @@ static void sort_slabs(void)
- 		for (s2 = s1 + 1; s2 < slabinfo + slabs; s2++) {
- 			int result;
+diff --git a/Documentation/devicetree/bindings/spi/spi-zynqmp-qspi.yaml b/Documentation/devicetree/bindings/spi/spi-zynqmp-qspi.yaml
+index ea72c8001256..fafde1c06be6 100644
+--- a/Documentation/devicetree/bindings/spi/spi-zynqmp-qspi.yaml
++++ b/Documentation/devicetree/bindings/spi/spi-zynqmp-qspi.yaml
+@@ -30,6 +30,13 @@ properties:
+   clocks:
+     maxItems: 2
  
--			if (sort_size)
--				result = slab_size(s1) < slab_size(s2);
--			else if (sort_active)
--				result = slab_activity(s1) < slab_activity(s2);
--			else if (sort_loss)
--				result = slab_waste(s1) < slab_waste(s2);
--			else if (sort_partial)
--				result = s1->partial < s2->partial;
--			else
-+			if (sort_size) {
-+				if (slab_size(s1) == slab_size(s2))
-+					result = strcasecmp(s1->name, s2->name);
-+				else
-+					result = slab_size(s1) < slab_size(s2);
-+			} else if (sort_active) {
-+				if (slab_activity(s1) == slab_activity(s2))
-+					result = strcasecmp(s1->name, s2->name);
-+				else
-+					result = slab_activity(s1) < slab_activity(s2);
-+			} else if (sort_loss) {
-+				if (slab_waste(s1) == slab_waste(s2))
-+					result = strcasecmp(s1->name, s2->name);
-+				else
-+					result = slab_waste(s1) < slab_waste(s2);
-+			} else if (sort_partial) {
-+				if (s1->partial == s2->partial)
-+					result = strcasecmp(s1->name, s2->name);
-+				else
-+					result = s1->partial < s2->partial;
-+			} else
- 				result = strcasecmp(s1->name, s2->name);
++required:
++  - compatible
++  - reg
++  - interrupts
++  - clock-names
++  - clocks
++
+ unevaluatedProperties: false
  
- 			if (show_inverted)
+ examples:
+-- 
+2.37.2
+
 
 
