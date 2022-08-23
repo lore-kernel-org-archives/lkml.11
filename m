@@ -2,47 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id ECC75C32774
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 10:07:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8339DC3F6B0
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 10:07:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352270AbiHWKHP (ORCPT
+        id S1352296AbiHWKHU (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 06:07:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43886 "EHLO
+        Tue, 23 Aug 2022 06:07:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59034 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352409AbiHWKBw (ORCPT
+        with ESMTP id S1352424AbiHWKBx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 06:01:52 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 28DB81408A;
-        Tue, 23 Aug 2022 01:49:36 -0700 (PDT)
+        Tue, 23 Aug 2022 06:01:53 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9109E7C1FD;
+        Tue, 23 Aug 2022 01:49:41 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 82C736123D;
-        Tue, 23 Aug 2022 08:49:35 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7600EC433D6;
-        Tue, 23 Aug 2022 08:49:34 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id CB782B81C20;
+        Tue, 23 Aug 2022 08:44:32 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1A1C3C433D6;
+        Tue, 23 Aug 2022 08:44:30 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661244574;
-        bh=fMHn/Vf6sz9I5BG9XFOTBqc05WPfoxjFlUueGrdfOEI=;
+        s=korg; t=1661244271;
+        bh=QCAT40jz6DzuhbQvwb9GjoIt8t1fPD3p63K10A1Y/jA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=FHcv5Cpwutkflnnd1wgE7PkI2tV4BZI1YSTb0ki3OrRYx15wq9t35AcK7pTWeZ09+
-         Tmj7HCNtjzMv8R5bKt8gvA7tPcRwkrPmunmgjTWD3hwIeAkCGyZ5XvzjUE9+nIvTGA
-         E2S5BrFaviElXxBBr638gD6zUR+RDz5HVxm1XPoU=
+        b=MaZ/kjbPWpNrdc3rrPMaa2LrF3wRHCOUiwJUBAKsD1cIkOzNgdXEc6mcNWYigOf8M
+         Y5Dcww8aZN/C22gBj9pZ6RJyIU85JkkkMgdHpYxUw1/QTGtFxDlPBN4UHQvhE9mQVx
+         HCly2gaaJGzb/oSAXppSnVEjnSU+IYIkNjH9XnLo=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, stable@kernel.org,
-        Baokun Li <libaokun1@huawei.com>,
-        "Ritesh Harjani (IBM)" <ritesh.list@gmail.com>,
-        Jan Kara <jack@suse.cz>, Theodore Tso <tytso@mit.edu>
-Subject: [PATCH 4.14 157/229] ext4: correct max_inline_xattr_value_size computing
-Date:   Tue, 23 Aug 2022 10:25:18 +0200
-Message-Id: <20220823080059.288334047@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Mario Limonciello <mario.limonciello@amd.com>,
+        Basavaraj Natikar <Basavaraj.Natikar@amd.com>,
+        Linus Walleij <linus.walleij@linaro.org>
+Subject: [PATCH 5.15 065/244] pinctrl: amd: Dont save/restore interrupt status and wake status bits
+Date:   Tue, 23 Aug 2022 10:23:44 +0200
+Message-Id: <20220823080101.247252803@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220823080053.202747790@linuxfoundation.org>
-References: <20220823080053.202747790@linuxfoundation.org>
+In-Reply-To: <20220823080059.091088642@linuxfoundation.org>
+References: <20220823080059.091088642@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -51,36 +51,64 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Baokun Li <libaokun1@huawei.com>
+From: Basavaraj Natikar <Basavaraj.Natikar@amd.com>
 
-commit c9fd167d57133c5b748d16913c4eabc55e531c73 upstream.
+commit b8c824a869f220c6b46df724f85794349bafbf23 upstream.
 
-If the ext4 inode does not have xattr space, 0 is returned in the
-get_max_inline_xattr_value_size function. Otherwise, the function returns
-a negative value when the inode does not contain EXT4_STATE_XATTR.
+Saving/restoring interrupt and wake status bits across suspend can
+cause the suspend to fail if an IRQ is serviced across the
+suspend cycle.
 
-Cc: stable@kernel.org
-Signed-off-by: Baokun Li <libaokun1@huawei.com>
-Reviewed-by: Ritesh Harjani (IBM) <ritesh.list@gmail.com>
-Reviewed-by: Jan Kara <jack@suse.cz>
-Link: https://lore.kernel.org/r/20220616021358.2504451-4-libaokun1@huawei.com
-Signed-off-by: Theodore Ts'o <tytso@mit.edu>
+Signed-off-by: Mario Limonciello <mario.limonciello@amd.com>
+Signed-off-by: Basavaraj Natikar <Basavaraj.Natikar@amd.com>
+Fixes: 79d2c8bede2c ("pinctrl/amd: save pin registers over suspend/resume")
+Link: https://lore.kernel.org/r/20220613064127.220416-3-Basavaraj.Natikar@amd.com
+Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- fs/ext4/inline.c |    3 +++
- 1 file changed, 3 insertions(+)
+ drivers/pinctrl/pinctrl-amd.c |   11 +++++++++--
+ 1 file changed, 9 insertions(+), 2 deletions(-)
 
---- a/fs/ext4/inline.c
-+++ b/fs/ext4/inline.c
-@@ -40,6 +40,9 @@ static int get_max_inline_xattr_value_si
- 	struct ext4_inode *raw_inode;
- 	int free, min_offs;
+--- a/drivers/pinctrl/pinctrl-amd.c
++++ b/drivers/pinctrl/pinctrl-amd.c
+@@ -912,6 +912,7 @@ static int amd_gpio_suspend(struct devic
+ {
+ 	struct amd_gpio *gpio_dev = dev_get_drvdata(dev);
+ 	struct pinctrl_desc *desc = gpio_dev->pctrl->desc;
++	unsigned long flags;
+ 	int i;
  
-+	if (!EXT4_INODE_HAS_XATTR_SPACE(inode))
-+		return 0;
-+
- 	min_offs = EXT4_SB(inode->i_sb)->s_inode_size -
- 			EXT4_GOOD_OLD_INODE_SIZE -
- 			EXT4_I(inode)->i_extra_isize -
+ 	for (i = 0; i < desc->npins; i++) {
+@@ -920,7 +921,9 @@ static int amd_gpio_suspend(struct devic
+ 		if (!amd_gpio_should_save(gpio_dev, pin))
+ 			continue;
+ 
+-		gpio_dev->saved_regs[i] = readl(gpio_dev->base + pin*4);
++		raw_spin_lock_irqsave(&gpio_dev->lock, flags);
++		gpio_dev->saved_regs[i] = readl(gpio_dev->base + pin * 4) & ~PIN_IRQ_PENDING;
++		raw_spin_unlock_irqrestore(&gpio_dev->lock, flags);
+ 	}
+ 
+ 	return 0;
+@@ -930,6 +933,7 @@ static int amd_gpio_resume(struct device
+ {
+ 	struct amd_gpio *gpio_dev = dev_get_drvdata(dev);
+ 	struct pinctrl_desc *desc = gpio_dev->pctrl->desc;
++	unsigned long flags;
+ 	int i;
+ 
+ 	for (i = 0; i < desc->npins; i++) {
+@@ -938,7 +942,10 @@ static int amd_gpio_resume(struct device
+ 		if (!amd_gpio_should_save(gpio_dev, pin))
+ 			continue;
+ 
+-		writel(gpio_dev->saved_regs[i], gpio_dev->base + pin*4);
++		raw_spin_lock_irqsave(&gpio_dev->lock, flags);
++		gpio_dev->saved_regs[i] |= readl(gpio_dev->base + pin * 4) & PIN_IRQ_PENDING;
++		writel(gpio_dev->saved_regs[i], gpio_dev->base + pin * 4);
++		raw_spin_unlock_irqrestore(&gpio_dev->lock, flags);
+ 	}
+ 
+ 	return 0;
 
 
