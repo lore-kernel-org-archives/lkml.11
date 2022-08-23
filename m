@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 810A6C32772
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 09:44:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2AF63C32772
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 09:44:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241984AbiHWJoE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 05:44:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58900 "EHLO
+        id S242306AbiHWJoK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 23 Aug 2022 05:44:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41624 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352120AbiHWJk4 (ORCPT
+        with ESMTP id S1352165AbiHWJk7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 05:40:56 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 214327A50E;
+        Tue, 23 Aug 2022 05:40:59 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 605DA79A57;
         Tue, 23 Aug 2022 01:41:49 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id D713761257;
-        Tue, 23 Aug 2022 08:41:48 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BCBB0C433C1;
-        Tue, 23 Aug 2022 08:41:47 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 72EFDB81C6B;
+        Tue, 23 Aug 2022 08:41:34 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C22A9C433D7;
+        Tue, 23 Aug 2022 08:41:32 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661244108;
-        bh=i6FXr4E8XnfuMt9Ll0SUB8OusLyDbQ0jV4V7ZXzwMAI=;
+        s=korg; t=1661244093;
+        bh=xmnsuXtUw8sGw9bxdWq+/4tnHuPDrOAAJeRf/dZAQZ8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=qsJjY1fjncRyJXOgFCWKU762V10KhkpguGxo/6vMJLo7m3ENUWoTkS/y3CJ7j6odr
-         tq7MspQvSYhaThC99z5ZyZJpdVjZEpCAz/tyYneCy0dpRvyv2e27ZcEXOlH1XTg/2k
-         SVJXKhy0mVxQrENYNrylSX9riHnZK5ohzvFne/d0=
+        b=co78bTfTD5idZAGbZogxZsT2A2gUKo7D/8iM6xWOQZLLGeD5ni5I9CPWi5jN2u0Sn
+         ppAB8IrTUIV9TLRnN/SjcU9cove7oLKo4U874mTCN1zJe1BisWOHo82vfK+vH6cjcb
+         9fyAGlTwBVlx2vLJOSuaXMPBbmpq6SA64R/ZPvwQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jiasheng Jiang <jiasheng@iscas.ac.cn>,
-        Marcel Holtmann <marcel@holtmann.org>,
+        stable@vger.kernel.org,
+        Vincent Mailhol <mailhol.vincent@wanadoo.fr>,
+        Marc Kleine-Budde <mkl@pengutronix.de>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.14 087/229] Bluetooth: hci_intel: Add check for platform_driver_register
-Date:   Tue, 23 Aug 2022 10:24:08 +0200
-Message-Id: <20220823080056.829750151@linuxfoundation.org>
+Subject: [PATCH 4.14 085/229] can: error: specify the values of data[5..7] of CAN error frames
+Date:   Tue, 23 Aug 2022 10:24:06 +0200
+Message-Id: <20220823080056.762652145@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220823080053.202747790@linuxfoundation.org>
 References: <20220823080053.202747790@linuxfoundation.org>
@@ -49,39 +50,47 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jiasheng Jiang <jiasheng@iscas.ac.cn>
+From: Vincent Mailhol <mailhol.vincent@wanadoo.fr>
 
-[ Upstream commit ab2d2a982ff721f4b029282d9a40602ea46a745e ]
+[ Upstream commit e70a3263a7eed768d5f947b8f2aff8d2a79c9d97 ]
 
-As platform_driver_register() could fail, it should be better
-to deal with the return value in order to maintain the code
-consisitency.
+Currently, data[5..7] of struct can_frame, when used as a CAN error
+frame, are defined as being "controller specific". Device specific
+behaviours are problematic because it prevents someone from writing
+code which is portable between devices.
 
-Fixes: 1ab1f239bf17 ("Bluetooth: hci_intel: Add support for platform driver")
-Signed-off-by: Jiasheng Jiang <jiasheng@iscas.ac.cn>
-Signed-off-by: Marcel Holtmann <marcel@holtmann.org>
+As a matter of fact, data[5] is never used, data[6] is always used to
+report TX error counter and data[7] is always used to report RX error
+counter. can-utils also relies on this.
+
+This patch updates the comment in the uapi header to specify that
+data[5] is reserved (and thus should not be used) and that data[6..7]
+are used for error counters.
+
+Fixes: 0d66548a10cb ("[CAN]: Add PF_CAN core module")
+Link: https://lore.kernel.org/all/20220719143550.3681-11-mailhol.vincent@wanadoo.fr
+Signed-off-by: Vincent Mailhol <mailhol.vincent@wanadoo.fr>
+Signed-off-by: Marc Kleine-Budde <mkl@pengutronix.de>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/bluetooth/hci_intel.c | 6 +++++-
- 1 file changed, 5 insertions(+), 1 deletion(-)
+ include/uapi/linux/can/error.h | 5 ++++-
+ 1 file changed, 4 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/bluetooth/hci_intel.c b/drivers/bluetooth/hci_intel.c
-index c75311d4dd31..cbe4a2159d43 100644
---- a/drivers/bluetooth/hci_intel.c
-+++ b/drivers/bluetooth/hci_intel.c
-@@ -1303,7 +1303,11 @@ static struct platform_driver intel_driver = {
+diff --git a/include/uapi/linux/can/error.h b/include/uapi/linux/can/error.h
+index bfc4b5d22a5e..383f3d508a53 100644
+--- a/include/uapi/linux/can/error.h
++++ b/include/uapi/linux/can/error.h
+@@ -120,6 +120,9 @@
+ #define CAN_ERR_TRX_CANL_SHORT_TO_GND  0x70 /* 0111 0000 */
+ #define CAN_ERR_TRX_CANL_SHORT_TO_CANH 0x80 /* 1000 0000 */
  
- int __init intel_init(void)
- {
--	platform_driver_register(&intel_driver);
-+	int err;
+-/* controller specific additional information / data[5..7] */
++/* data[5] is reserved (do not use) */
 +
-+	err = platform_driver_register(&intel_driver);
-+	if (err)
-+		return err;
++/* TX error counter / data[6] */
++/* RX error counter / data[7] */
  
- 	return hci_uart_register_proto(&intel_proto);
- }
+ #endif /* _UAPI_CAN_ERROR_H */
 -- 
 2.35.1
 
