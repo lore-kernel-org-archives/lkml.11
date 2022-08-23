@@ -2,42 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F26DEC32774
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 08:22:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 512E4C32774
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 08:22:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242968AbiHWIWj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 04:22:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41968 "EHLO
+        id S242998AbiHWIWo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 23 Aug 2022 04:22:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41470 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243058AbiHWIQc (ORCPT
+        with ESMTP id S243041AbiHWIQb (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 04:16:32 -0400
+        Tue, 23 Aug 2022 04:16:31 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A331E1BF;
-        Tue, 23 Aug 2022 01:11:09 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7699D696FF;
+        Tue, 23 Aug 2022 01:10:57 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 3F81B61257;
-        Tue, 23 Aug 2022 08:11:09 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 30F93C433C1;
-        Tue, 23 Aug 2022 08:11:08 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id BB7396125C;
+        Tue, 23 Aug 2022 08:10:56 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id AB454C433C1;
+        Tue, 23 Aug 2022 08:10:55 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661242268;
-        bh=X3AJkPmUqLdsQc3MyHd3FN2wXTjAslfCmRrWYx2Pk8U=;
+        s=korg; t=1661242256;
+        bh=7JAZnDt9lcHI9LQLfpATVy4VPp1dPuVcZFLyzYVRfB8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=zI3sT51cMjRKYJYCSzJ+GyzOkTQXz5KNdtN+hq2YzPlfX+bJbNuoIr1MXHjyIC8iu
-         VviQdit0i5cMO7NDg4IaNL3rj3j97ykg8lNaVKhPSuwlSCG9w+XLZf6WyawiOEbkgA
-         Dja0Kr+oQPCK7/PMwEx8A+OpsxKST/PTbZSTWaE4=
+        b=pUpPF8b5Z4Co5+lkFP5mE/4Jf6upBWyTENqXNPer64L3aNsxWSMN9/sdmzRDl3iHy
+         Vv/CAR0tDk69xoU1o7exmplTEQgj1zsDczLfBfSpNYpma+c9nEuSNIprXjQW4QIHyo
+         enpJwmqOj/08hmNwwq8S5veMlZx+UlP2WfigbaEQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, stable <stable@kernel.org>,
-        Alan Stern <stern@rowland.harvard.edu>,
-        Weitao Wang <WeitaoWang-oc@zhaoxin.com>
-Subject: [PATCH 4.9 045/101] USB: HCD: Fix URB giveback issue in tasklet function
-Date:   Tue, 23 Aug 2022 10:03:18 +0200
-Message-Id: <20220823080036.259251159@linuxfoundation.org>
+        stable@vger.kernel.org, "Jason A. Donenfeld" <Jason@zx2c4.com>,
+        Michael Ellerman <mpe@ellerman.id.au>
+Subject: [PATCH 4.9 043/101] powerpc/powernv: Avoid crashing if rng is NULL
+Date:   Tue, 23 Aug 2022 10:03:16 +0200
+Message-Id: <20220823080036.179213506@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220823080034.579196046@linuxfoundation.org>
 References: <20220823080034.579196046@linuxfoundation.org>
@@ -49,124 +48,39 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Weitao Wang <WeitaoWang-oc@zhaoxin.com>
+From: Michael Ellerman <mpe@ellerman.id.au>
 
-commit 26c6c2f8a907c9e3a2f24990552a4d77235791e6 upstream.
+commit 90b5d4fe0b3ba7f589c6723c6bfb559d9e83956a upstream.
 
-Usb core introduce the mechanism of giveback of URB in tasklet context to
-reduce hardware interrupt handling time. On some test situation(such as
-FIO with 4KB block size), when tasklet callback function called to
-giveback URB, interrupt handler add URB node to the bh->head list also.
-If check bh->head list again after finish all URB giveback of local_list,
-then it may introduce a "dynamic balance" between giveback URB and add URB
-to bh->head list. This tasklet callback function may not exit for a long
-time, which will cause other tasklet function calls to be delayed. Some
-real-time applications(such as KB and Mouse) will see noticeable lag.
+On a bare-metal Power8 system that doesn't have an "ibm,power-rng", a
+malicious QEMU and guest that ignore the absence of the
+KVM_CAP_PPC_HWRNG flag, and calls H_RANDOM anyway, will dereference a
+NULL pointer.
 
-In order to prevent the tasklet function from occupying the cpu for a long
-time at a time, new URBS will not be added to the local_list even though
-the bh->head list is not empty. But also need to ensure the left URB
-giveback to be processed in time, so add a member high_prio for structure
-giveback_urb_bh to prioritize tasklet and schelule this tasklet again if
-bh->head list is not empty.
+In practice all Power8 machines have an "ibm,power-rng", but let's not
+rely on that, add a NULL check and early return in
+powernv_get_random_real_mode().
 
-At the same time, we are able to prioritize tasklet through structure
-member high_prio. So, replace the local high_prio_bh variable with this
-structure member in usb_hcd_giveback_urb.
-
-Fixes: 94dfd7edfd5c ("USB: HCD: support giveback of URB in tasklet context")
-Cc: stable <stable@kernel.org>
-Reviewed-by: Alan Stern <stern@rowland.harvard.edu>
-Signed-off-by: Weitao Wang <WeitaoWang-oc@zhaoxin.com>
-Link: https://lore.kernel.org/r/20220726074918.5114-1-WeitaoWang-oc@zhaoxin.com
+Fixes: e928e9cb3601 ("KVM: PPC: Book3S HV: Add fast real-mode H_RANDOM implementation.")
+Cc: stable@vger.kernel.org # v4.1+
+Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
+Signed-off-by: Michael Ellerman <mpe@ellerman.id.au>
+Link: https://lore.kernel.org/r/20220727143219.2684192-1-mpe@ellerman.id.au
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/usb/core/hcd.c  |   26 +++++++++++++++-----------
- include/linux/usb/hcd.h |    1 +
- 2 files changed, 16 insertions(+), 11 deletions(-)
+ arch/powerpc/platforms/powernv/rng.c |    2 ++
+ 1 file changed, 2 insertions(+)
 
---- a/drivers/usb/core/hcd.c
-+++ b/drivers/usb/core/hcd.c
-@@ -1803,7 +1803,6 @@ static void usb_giveback_urb_bh(unsigned
+--- a/arch/powerpc/platforms/powernv/rng.c
++++ b/arch/powerpc/platforms/powernv/rng.c
+@@ -67,6 +67,8 @@ int powernv_get_random_real_mode(unsigne
+ 	struct powernv_rng *rng;
  
- 	spin_lock_irq(&bh->lock);
- 	bh->running = true;
-- restart:
- 	list_replace_init(&bh->head, &local_list);
- 	spin_unlock_irq(&bh->lock);
+ 	rng = raw_cpu_read(powernv_rng);
++	if (!rng)
++		return 0;
  
-@@ -1817,10 +1816,17 @@ static void usb_giveback_urb_bh(unsigned
- 		bh->completing_ep = NULL;
- 	}
+ 	*v = rng_whiten(rng, in_rm64(rng->regs_real));
  
--	/* check if there are new URBs to giveback */
-+	/*
-+	 * giveback new URBs next time to prevent this function
-+	 * from not exiting for a long time.
-+	 */
- 	spin_lock_irq(&bh->lock);
--	if (!list_empty(&bh->head))
--		goto restart;
-+	if (!list_empty(&bh->head)) {
-+		if (bh->high_prio)
-+			tasklet_hi_schedule(&bh->bh);
-+		else
-+			tasklet_schedule(&bh->bh);
-+	}
- 	bh->running = false;
- 	spin_unlock_irq(&bh->lock);
- }
-@@ -1845,7 +1851,7 @@ static void usb_giveback_urb_bh(unsigned
- void usb_hcd_giveback_urb(struct usb_hcd *hcd, struct urb *urb, int status)
- {
- 	struct giveback_urb_bh *bh;
--	bool running, high_prio_bh;
-+	bool running;
- 
- 	/* pass status to tasklet via unlinked */
- 	if (likely(!urb->unlinked))
-@@ -1856,13 +1862,10 @@ void usb_hcd_giveback_urb(struct usb_hcd
- 		return;
- 	}
- 
--	if (usb_pipeisoc(urb->pipe) || usb_pipeint(urb->pipe)) {
-+	if (usb_pipeisoc(urb->pipe) || usb_pipeint(urb->pipe))
- 		bh = &hcd->high_prio_bh;
--		high_prio_bh = true;
--	} else {
-+	else
- 		bh = &hcd->low_prio_bh;
--		high_prio_bh = false;
--	}
- 
- 	spin_lock(&bh->lock);
- 	list_add_tail(&urb->urb_list, &bh->head);
-@@ -1871,7 +1874,7 @@ void usb_hcd_giveback_urb(struct usb_hcd
- 
- 	if (running)
- 		;
--	else if (high_prio_bh)
-+	else if (bh->high_prio)
- 		tasklet_hi_schedule(&bh->bh);
- 	else
- 		tasklet_schedule(&bh->bh);
-@@ -2880,6 +2883,7 @@ int usb_add_hcd(struct usb_hcd *hcd,
- 
- 	/* initialize tasklets */
- 	init_giveback_urb_bh(&hcd->high_prio_bh);
-+	hcd->high_prio_bh.high_prio = true;
- 	init_giveback_urb_bh(&hcd->low_prio_bh);
- 
- 	/* enable irqs just before we start the controller,
---- a/include/linux/usb/hcd.h
-+++ b/include/linux/usb/hcd.h
-@@ -65,6 +65,7 @@
- 
- struct giveback_urb_bh {
- 	bool running;
-+	bool high_prio;
- 	spinlock_t lock;
- 	struct list_head  head;
- 	struct tasklet_struct bh;
 
 
