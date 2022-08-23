@@ -2,175 +2,155 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E93D4C3F6B0
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 11:56:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3404AC32793
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 11:57:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358642AbiHWL4z (ORCPT
+        id S1358683AbiHWL46 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 07:56:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34948 "EHLO
+        Tue, 23 Aug 2022 07:56:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34966 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1358742AbiHWLxj (ORCPT
+        with ESMTP id S1358745AbiHWLxl (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 07:53:39 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1BCF4D5DE1;
-        Tue, 23 Aug 2022 02:33:11 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id F17EA61389;
-        Tue, 23 Aug 2022 09:33:03 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C1511C433C1;
-        Tue, 23 Aug 2022 09:33:02 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661247183;
-        bh=xK2M1WLYf7vV6q0FqCGPn4zL+UX/2Lz0cBFiFLJGSRE=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Z/icwRpH/bgkAQsLxF979bMnRGoutjvlfBi95nzZp8BbptpilqDjsoq7mThNpgQE2
-         0eYMT6YQHBkw6lr6rTA4g+YhkowZos6sbGjjW6QjTNanF8OYQn42Gz3T8KoIuISY7M
-         vBjPxw1+CYDkcnM7ezMQwDcrK9zXfCjPtQdZCM9I=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Lin Ma <linma@zju.edu.cn>,
-        Konrad Jankowski <konrad0.jankowski@intel.com>,
-        Tony Nguyen <anthony.l.nguyen@intel.com>,
-        Jakub Kicinski <kuba@kernel.org>
-Subject: [PATCH 5.4 345/389] igb: Add lock to avoid data race
-Date:   Tue, 23 Aug 2022 10:27:03 +0200
-Message-Id: <20220823080129.945215032@linuxfoundation.org>
+        Tue, 23 Aug 2022 07:53:41 -0400
+Received: from mail-pj1-x1034.google.com (mail-pj1-x1034.google.com [IPv6:2607:f8b0:4864:20::1034])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A4EB3D59A4;
+        Tue, 23 Aug 2022 02:33:04 -0700 (PDT)
+Received: by mail-pj1-x1034.google.com with SMTP id x63-20020a17090a6c4500b001fabbf8debfso14037527pjj.4;
+        Tue, 23 Aug 2022 02:33:04 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:from:to:cc;
+        bh=jibgJOGd240HxEROEv/c/zVWj7my7wQDRjzZTRSYIhM=;
+        b=oMLNqAxfBLjtjE01u/Hw9QLDMdq90VWOYmmQRF1gnUac/j5OCmgsh9gWkju2oE4d7W
+         zkQ0W02e7NDzXd0Qg/zgCkdQNr6nRQMh8NgiX7DdZw0TTgF0hedIOCQv7D9ooHbrufz3
+         NPsyBjOKaT3b1dE+09xEaoEr+9lP3KbwIM0IN/KsXkUteWjPEyI1gkiENKsxa1TyrqTN
+         xn8zEebwUEPz4NjROP+CoX5fvi0ywVw/5oQGTMZheKnLLyl8rnPzmi04y6gSdqJbqfiB
+         hSowz0Zf6V+53iOfQScYJSc4F8HnPkwxjQNJFfWFXGa2+a1fgkQ8Yq0hiiHTvdjD6JN6
+         K8rA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc;
+        bh=jibgJOGd240HxEROEv/c/zVWj7my7wQDRjzZTRSYIhM=;
+        b=myrzvCqK8DlX+Bplt3jNYWggSVJoYkvhJWto+yPNhmIvnCxpjJRd8Ou6j7hr4Oyz4e
+         1qF9sEh4V6V3u9FMhlxAUhGam/imUkxiT2TRFBej3KP0lrQ22+UJL5Q7PubO01vyIZ7R
+         j0hLqspOF+Tw7bkwJWWJa47UsSywD7VmfgQudnsQ3jyg+jtByf6arU+1Fm8cgX3QKoQq
+         bFtWOQazgLF1pOlH/mTZf6N+JX2S2WW4gemXJt/QuTAtZI/YB6GkBkZ3sW7Bs3E+nsGI
+         K6wz+IavUHmwb8BocncYT1zAP4NDCiPfH7qvWyxLwknLY9JKfm/QK/SKgVullB+kO+tg
+         /hqw==
+X-Gm-Message-State: ACgBeo0LVhYPd++fIWzS4Lfo50dWt3Op7WrAFwqeNdsWKgMt2TYk1ybl
+        lcdYMAYzTtQYf73ih9ruhV4Ud+N6buA=
+X-Google-Smtp-Source: AA6agR6WcaW+eA8Nd539bAAzHgymQCdl9IhadkT//t7peiazcYBH6mG9SgMp90MOYT2aqll2ML81rg==
+X-Received: by 2002:a17:902:aa87:b0:172:689f:106b with SMTP id d7-20020a170902aa8700b00172689f106bmr23581514plr.127.1661247177916;
+        Tue, 23 Aug 2022 02:32:57 -0700 (PDT)
+Received: from localhost.localdomain ([103.7.29.32])
+        by smtp.gmail.com with ESMTPSA id 13-20020a170902c24d00b0017297a6b39dsm10057212plg.265.2022.08.23.02.32.56
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 23 Aug 2022 02:32:57 -0700 (PDT)
+From:   Like Xu <like.xu.linux@gmail.com>
+X-Google-Original-From: Like Xu <likexu@tencent.com>
+To:     Sean Christopherson <seanjc@google.com>,
+        Paolo Bonzini <pbonzini@redhat.com>
+Cc:     Jim Mattson <jmattson@google.com>, linux-kernel@vger.kernel.org,
+        kvm@vger.kernel.org
+Subject: [PATCH RESEND v2 7/8] KVM: x86/svm/pmu: Direct access pmu->gp_counter[] to implement amd_*_to_pmc()
+Date:   Tue, 23 Aug 2022 17:32:20 +0800
+Message-Id: <20220823093221.38075-8-likexu@tencent.com>
 X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220823080115.331990024@linuxfoundation.org>
-References: <20220823080115.331990024@linuxfoundation.org>
-User-Agent: quilt/0.67
+In-Reply-To: <20220823093221.38075-1-likexu@tencent.com>
+References: <20220823093221.38075-1-likexu@tencent.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Lin Ma <linma@zju.edu.cn>
+From: Like Xu <likexu@tencent.com>
 
-commit 6faee3d4ee8be0f0367d0c3d826afb3571b7a5e0 upstream.
+AMD only has gp counters, whose corresponding vPMCs are initialised
+and stored in pmu->gp_counter[] in order of idx, so we can access this
+array directly based on any valid pmc->idx, without any help from other
+interfaces at all. The amd_rdpmc_ecx_to_pmc() can now reuse this part
+of the code quite naturally.
 
-The commit c23d92b80e0b ("igb: Teardown SR-IOV before
-unregister_netdev()") places the unregister_netdev() call after the
-igb_disable_sriov() call to avoid functionality issue.
+Opportunistically apply array_index_nospec() to reduce the attack
+surface for speculative execution and remove the dead code.
 
-However, it introduces several race conditions when detaching a device.
-For example, when .remove() is called, the below interleaving leads to
-use-after-free.
-
- (FREE from device detaching)      |   (USE from netdev core)
-igb_remove                         |  igb_ndo_get_vf_config
- igb_disable_sriov                 |  vf >= adapter->vfs_allocated_count?
-  kfree(adapter->vf_data)          |
-  adapter->vfs_allocated_count = 0 |
-                                   |    memcpy(... adapter->vf_data[vf]
-
-Moreover, the igb_disable_sriov() also suffers from data race with the
-requests from VF driver.
-
- (FREE from device detaching)      |   (USE from requests)
-igb_remove                         |  igb_msix_other
- igb_disable_sriov                 |   igb_msg_task
-  kfree(adapter->vf_data)          |    vf < adapter->vfs_allocated_count
-  adapter->vfs_allocated_count = 0 |
-
-To this end, this commit first eliminates the data races from netdev
-core by using rtnl_lock (similar to commit 719479230893 ("dpaa2-eth: add
-MAC/PHY support through phylink")). And then adds a spinlock to
-eliminate races from driver requests. (similar to commit 1e53834ce541
-("ixgbe: Add locking to prevent panic when setting sriov_numvfs to zero")
-
-Fixes: c23d92b80e0b ("igb: Teardown SR-IOV before unregister_netdev()")
-Signed-off-by: Lin Ma <linma@zju.edu.cn>
-Tested-by: Konrad Jankowski <konrad0.jankowski@intel.com>
-Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
-Link: https://lore.kernel.org/r/20220817184921.735244-1-anthony.l.nguyen@intel.com
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Like Xu <likexu@tencent.com>
 ---
- drivers/net/ethernet/intel/igb/igb.h      |    2 ++
- drivers/net/ethernet/intel/igb/igb_main.c |   12 +++++++++++-
- 2 files changed, 13 insertions(+), 1 deletion(-)
+ arch/x86/kvm/svm/pmu.c | 41 +++++------------------------------------
+ 1 file changed, 5 insertions(+), 36 deletions(-)
 
---- a/drivers/net/ethernet/intel/igb/igb.h
-+++ b/drivers/net/ethernet/intel/igb/igb.h
-@@ -594,6 +594,8 @@ struct igb_adapter {
- 	struct igb_mac_addr *mac_table;
- 	struct vf_mac_filter vf_macs;
- 	struct vf_mac_filter *vf_mac_list;
-+	/* lock for VF resources */
-+	spinlock_t vfs_lock;
+diff --git a/arch/x86/kvm/svm/pmu.c b/arch/x86/kvm/svm/pmu.c
+index e9c66dd659a6..e57eb0555a04 100644
+--- a/arch/x86/kvm/svm/pmu.c
++++ b/arch/x86/kvm/svm/pmu.c
+@@ -33,23 +33,6 @@ enum index {
+ 	INDEX_ERROR,
  };
  
- /* flags controlling PTP/1588 function */
---- a/drivers/net/ethernet/intel/igb/igb_main.c
-+++ b/drivers/net/ethernet/intel/igb/igb_main.c
-@@ -3491,6 +3491,7 @@ static int igb_disable_sriov(struct pci_
- 	struct net_device *netdev = pci_get_drvdata(pdev);
- 	struct igb_adapter *adapter = netdev_priv(netdev);
- 	struct e1000_hw *hw = &adapter->hw;
-+	unsigned long flags;
- 
- 	/* reclaim resources allocated to VFs */
- 	if (adapter->vf_data) {
-@@ -3503,12 +3504,13 @@ static int igb_disable_sriov(struct pci_
- 			pci_disable_sriov(pdev);
- 			msleep(500);
- 		}
+-static unsigned int get_msr_base(struct kvm_pmu *pmu, enum pmu_type type)
+-{
+-	struct kvm_vcpu *vcpu = pmu_to_vcpu(pmu);
 -
-+		spin_lock_irqsave(&adapter->vfs_lock, flags);
- 		kfree(adapter->vf_mac_list);
- 		adapter->vf_mac_list = NULL;
- 		kfree(adapter->vf_data);
- 		adapter->vf_data = NULL;
- 		adapter->vfs_allocated_count = 0;
-+		spin_unlock_irqrestore(&adapter->vfs_lock, flags);
- 		wr32(E1000_IOVCTL, E1000_IOVCTL_REUSE_VFQ);
- 		wrfl();
- 		msleep(100);
-@@ -3668,7 +3670,9 @@ static void igb_remove(struct pci_dev *p
- 	igb_release_hw_control(adapter);
- 
- #ifdef CONFIG_PCI_IOV
-+	rtnl_lock();
- 	igb_disable_sriov(pdev);
-+	rtnl_unlock();
- #endif
- 
- 	unregister_netdev(netdev);
-@@ -3829,6 +3833,9 @@ static int igb_sw_init(struct igb_adapte
- 
- 	spin_lock_init(&adapter->nfc_lock);
- 	spin_lock_init(&adapter->stats64_lock);
-+
-+	/* init spinlock to avoid concurrency of VF resources */
-+	spin_lock_init(&adapter->vfs_lock);
- #ifdef CONFIG_PCI_IOV
- 	switch (hw->mac.type) {
- 	case e1000_82576:
-@@ -7569,8 +7576,10 @@ unlock:
- static void igb_msg_task(struct igb_adapter *adapter)
+-	if (guest_cpuid_has(vcpu, X86_FEATURE_PERFCTR_CORE)) {
+-		if (type == PMU_TYPE_COUNTER)
+-			return MSR_F15H_PERF_CTR;
+-		else
+-			return MSR_F15H_PERF_CTL;
+-	} else {
+-		if (type == PMU_TYPE_COUNTER)
+-			return MSR_K7_PERFCTR0;
+-		else
+-			return MSR_K7_EVNTSEL0;
+-	}
+-}
+-
+ static enum index msr_to_index(u32 msr)
  {
- 	struct e1000_hw *hw = &adapter->hw;
-+	unsigned long flags;
- 	u32 vf;
+ 	switch (msr) {
+@@ -141,18 +124,12 @@ static bool amd_pmc_is_enabled(struct kvm_pmc *pmc)
  
-+	spin_lock_irqsave(&adapter->vfs_lock, flags);
- 	for (vf = 0; vf < adapter->vfs_allocated_count; vf++) {
- 		/* process any reset requests */
- 		if (!igb_check_for_rst(hw, vf))
-@@ -7584,6 +7593,7 @@ static void igb_msg_task(struct igb_adap
- 		if (!igb_check_for_ack(hw, vf))
- 			igb_rcv_ack_from_vf(adapter, vf);
- 	}
-+	spin_unlock_irqrestore(&adapter->vfs_lock, flags);
+ static struct kvm_pmc *amd_pmc_idx_to_pmc(struct kvm_pmu *pmu, int pmc_idx)
+ {
+-	unsigned int base = get_msr_base(pmu, PMU_TYPE_COUNTER);
+-	struct kvm_vcpu *vcpu = pmu_to_vcpu(pmu);
++	unsigned int num_counters = pmu->nr_arch_gp_counters;
+ 
+-	if (guest_cpuid_has(vcpu, X86_FEATURE_PERFCTR_CORE)) {
+-		/*
+-		 * The idx is contiguous. The MSRs are not. The counter MSRs
+-		 * are interleaved with the event select MSRs.
+-		 */
+-		pmc_idx *= 2;
+-	}
++	if (pmc_idx >= num_counters)
++		return NULL;
+ 
+-	return get_gp_pmc_amd(pmu, base + pmc_idx, PMU_TYPE_COUNTER);
++	return &pmu->gp_counters[array_index_nospec(pmc_idx, num_counters)];
  }
  
- /**
-
+ static bool amd_is_valid_rdpmc_ecx(struct kvm_vcpu *vcpu, unsigned int idx)
+@@ -168,15 +145,7 @@ static bool amd_is_valid_rdpmc_ecx(struct kvm_vcpu *vcpu, unsigned int idx)
+ static struct kvm_pmc *amd_rdpmc_ecx_to_pmc(struct kvm_vcpu *vcpu,
+ 	unsigned int idx, u64 *mask)
+ {
+-	struct kvm_pmu *pmu = vcpu_to_pmu(vcpu);
+-	struct kvm_pmc *counters;
+-
+-	idx &= ~(3u << 30);
+-	if (idx >= pmu->nr_arch_gp_counters)
+-		return NULL;
+-	counters = pmu->gp_counters;
+-
+-	return &counters[idx];
++	return amd_pmc_idx_to_pmc(vcpu_to_pmu(vcpu), idx & ~(3u << 30));
+ }
+ 
+ static bool amd_is_valid_msr(struct kvm_vcpu *vcpu, u32 msr)
+-- 
+2.37.2
 
