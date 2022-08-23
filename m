@@ -2,46 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 589B2C32774
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 08:15:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C571FC32774
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 08:15:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242179AbiHWIPF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 04:15:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33284 "EHLO
+        id S242330AbiHWIPM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 23 Aug 2022 04:15:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33320 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242132AbiHWIKn (ORCPT
+        with ESMTP id S242137AbiHWIKp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 04:10:43 -0400
+        Tue, 23 Aug 2022 04:10:45 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 785FF69F6C;
-        Tue, 23 Aug 2022 01:07:55 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 66DFD69F79;
+        Tue, 23 Aug 2022 01:07:58 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 14CA26123F;
-        Tue, 23 Aug 2022 08:07:55 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0A7FFC433C1;
-        Tue, 23 Aug 2022 08:07:53 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 02F7F6125A;
+        Tue, 23 Aug 2022 08:07:58 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0B8E5C433C1;
+        Tue, 23 Aug 2022 08:07:56 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661242074;
-        bh=HGZuHszCVXMKiPLMwr7I2qv6J3qZJWqweO7wKCDi7TU=;
+        s=korg; t=1661242077;
+        bh=zW9GOKdgBwtfC4XKSkr+hf13NidY6ZR2lj8tB2nxVEA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=eWBkwSH5vctso18R54dKOKIMCC6sGN4R5dwTiHh8t7dKj9Z4KWtL4BEzeerE57kp3
-         T2/GcxGkvuqcn38NcdcdzEgOy3VmwO9vfGhbrUpYHQOIjqXtYIDQPJ2aBL7hx/T2B5
-         CZx3XMeybHjhQhQ07JvgsevgU87RZTu3kgvfRlUY=
+        b=izSQzBcydbTwZb6XqIDWFHOAeabxUiUo9KAaCjeePAeCR77gMEz/6kADTTKeHOsn3
+         9HEPYSLMZLdh6C7CT49rM97vWwOl95pkiwzcXDimsFN68Tt72Ack8t93uzSHjNQe0t
+         Gl32r4c9L0rwwGG/fqxl99ICsvE5rlI6arm0gGLg=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Sven Schnelle <svens@linux.ibm.com>,
-        Ondrej Mosnacek <omosnace@redhat.com>,
-        Paul Moore <paul@paul-moore.com>,
-        Alexander Grund <theflamefire89@gmail.com>
-Subject: [PATCH 4.9 015/101] selinux: fix inode_doinit_with_dentry() LABEL_INVALID error handling
-Date:   Tue, 23 Aug 2022 10:02:48 +0200
-Message-Id: <20220823080035.146702826@linuxfoundation.org>
+        stable@vger.kernel.org, Zhang Xianwei <zhang.xianwei8@zte.com.cn>,
+        Yi Wang <wang.yi59@zte.com.cn>,
+        Trond Myklebust <trond.myklebust@hammerspace.com>
+Subject: [PATCH 5.19 055/365] NFSv4.1: RECLAIM_COMPLETE must handle EACCES
+Date:   Tue, 23 Aug 2022 09:59:16 +0200
+Message-Id: <20220823080120.490852500@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220823080034.579196046@linuxfoundation.org>
-References: <20220823080034.579196046@linuxfoundation.org>
+In-Reply-To: <20220823080118.128342613@linuxfoundation.org>
+References: <20220823080118.128342613@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -50,97 +49,38 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Paul Moore <paul@paul-moore.com>
+From: Zhang Xianwei <zhang.xianwei8@zte.com.cn>
 
-commit 200ea5a2292dc444a818b096ae6a32ba3caa51b9 upstream.
+commit e35a5e782f67ed76a65ad0f23a484444a95f000f upstream.
 
-A previous fix, commit 83370b31a915 ("selinux: fix error initialization
-in inode_doinit_with_dentry()"), changed how failures were handled
-before a SELinux policy was loaded.  Unfortunately that patch was
-potentially problematic for two reasons: it set the isec->initialized
-state without holding a lock, and it didn't set the inode's SELinux
-label to the "default" for the particular filesystem.  The later can
-be a problem if/when a later attempt to revalidate the inode fails
-and SELinux reverts to the existing inode label.
+A client should be able to handle getting an EACCES error while doing
+a mount operation to reclaim state due to NFS4CLNT_RECLAIM_REBOOT
+being set. If the server returns RPC_AUTH_BADCRED because authentication
+failed when we execute "exportfs -au", then RECLAIM_COMPLETE will go a
+wrong way. After mount succeeds, all OPEN call will fail due to an
+NFS4ERR_GRACE error being returned. This patch is to fix it by resending
+a RPC request.
 
-This patch should restore the default inode labeling that existed
-before the original fix, without affecting the LABEL_INVALID marking
-such that revalidation will still be attempted in the future.
-
-Fixes: 83370b31a915 ("selinux: fix error initialization in inode_doinit_with_dentry()")
-Reported-by: Sven Schnelle <svens@linux.ibm.com>
-Tested-by: Sven Schnelle <svens@linux.ibm.com>
-Reviewed-by: Ondrej Mosnacek <omosnace@redhat.com>
-Signed-off-by: Paul Moore <paul@paul-moore.com>
-Signed-off-by: Alexander Grund <theflamefire89@gmail.com>
+Signed-off-by: Zhang Xianwei <zhang.xianwei8@zte.com.cn>
+Signed-off-by: Yi Wang <wang.yi59@zte.com.cn>
+Fixes: aa5190d0ed7d ("NFSv4: Kill nfs4_async_handle_error() abuses by NFSv4.1")
+Signed-off-by: Trond Myklebust <trond.myklebust@hammerspace.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- security/selinux/hooks.c |   31 +++++++++++++------------------
- 1 file changed, 13 insertions(+), 18 deletions(-)
+ fs/nfs/nfs4proc.c |    3 +++
+ 1 file changed, 3 insertions(+)
 
---- a/security/selinux/hooks.c
-+++ b/security/selinux/hooks.c
-@@ -1450,13 +1450,7 @@ static int inode_doinit_with_dentry(stru
- 			 * inode_doinit with a dentry, before these inodes could
- 			 * be used again by userspace.
- 			 */
--			isec->initialized = LABEL_INVALID;
--			/*
--			 * There is nothing useful to jump to the "out"
--			 * label, except a needless spin lock/unlock
--			 * cycle.
--			 */
--			return 0;
-+			goto out_invalid;
- 		}
- 
- 		len = INITCONTEXTLEN;
-@@ -1564,15 +1558,8 @@ static int inode_doinit_with_dentry(stru
- 			 * inode_doinit() with a dentry, before these inodes
- 			 * could be used again by userspace.
- 			 */
--			if (!dentry) {
--				isec->initialized = LABEL_INVALID;
--				/*
--				 * There is nothing useful to jump to the "out"
--				 * label, except a needless spin lock/unlock
--				 * cycle.
--				 */
--				return 0;
--			}
-+			if (!dentry)
-+				goto out_invalid;
- 			rc = selinux_genfs_get_sid(dentry, sclass,
- 						   sbsec->flags, &sid);
- 			dput(dentry);
-@@ -1585,11 +1572,10 @@ static int inode_doinit_with_dentry(stru
- out:
- 	spin_lock(&isec->lock);
- 	if (isec->initialized == LABEL_PENDING) {
--		if (!sid || rc) {
-+		if (rc) {
- 			isec->initialized = LABEL_INVALID;
- 			goto out_unlock;
- 		}
--
- 		isec->initialized = LABEL_INITIALIZED;
- 		isec->sid = sid;
- 	}
-@@ -1597,6 +1583,15 @@ out:
- out_unlock:
- 	spin_unlock(&isec->lock);
- 	return rc;
-+
-+out_invalid:
-+	spin_lock(&isec->lock);
-+	if (isec->initialized == LABEL_PENDING) {
-+		isec->initialized = LABEL_INVALID;
-+		isec->sid = sid;
-+	}
-+	spin_unlock(&isec->lock);
-+	return 0;
- }
- 
- /* Convert a Linux signal to an access vector. */
+--- a/fs/nfs/nfs4proc.c
++++ b/fs/nfs/nfs4proc.c
+@@ -9475,6 +9475,9 @@ static int nfs41_reclaim_complete_handle
+ 		rpc_delay(task, NFS4_POLL_RETRY_MAX);
+ 		fallthrough;
+ 	case -NFS4ERR_RETRY_UNCACHED_REP:
++	case -EACCES:
++		dprintk("%s: failed to reclaim complete error %d for server %s, retrying\n",
++			__func__, task->tk_status, clp->cl_hostname);
+ 		return -EAGAIN;
+ 	case -NFS4ERR_BADSESSION:
+ 	case -NFS4ERR_DEADSESSION:
 
 
