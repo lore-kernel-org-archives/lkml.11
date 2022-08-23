@@ -2,47 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EEF19C32774
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 09:32:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F2ED5C32793
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 09:32:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350817AbiHWJcs (ORCPT
+        id S1350849AbiHWJcv (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 05:32:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36118 "EHLO
+        Tue, 23 Aug 2022 05:32:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51124 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351056AbiHWJbP (ORCPT
+        with ESMTP id S1350274AbiHWJ3M (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 05:31:15 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B993862C5;
-        Tue, 23 Aug 2022 01:38:15 -0700 (PDT)
+        Tue, 23 Aug 2022 05:29:12 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C2DD791D3B;
+        Tue, 23 Aug 2022 01:37:29 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id E70A861540;
-        Tue, 23 Aug 2022 08:37:02 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id EB2BCC433D6;
-        Tue, 23 Aug 2022 08:37:01 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id A0E8E61517;
+        Tue, 23 Aug 2022 08:36:16 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A9D4AC433C1;
+        Tue, 23 Aug 2022 08:36:15 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661243822;
-        bh=Ko2KFsJXefQC6uhU20nFUKfN9T0HQZh3ccGCRZW+100=;
+        s=korg; t=1661243776;
+        bh=+6p6i+rNtRJweP0roXLoLTkhcZV/0hxAM7C3fBVXD18=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=h2bV2RwNPOWxMUgYuD0TWHvShDz3kE7hpH4u5auRO+4hQRDAYdDuqBGIvCFndtPMG
-         YJkAgncBQxa/yud5oa7Nz7TruNg3sazZIc6mNUtF9WwwY3iUPJRjtZWaf5PNnqpqFi
-         sULqjmKYThmykm7WxTZEew07ph1ujDZwbmqPMQWI=
+        b=h/r1+BeJTcR+x2aCTXy/D9IMSvtvfbVYsoIwDQXZFim4GnpdgORhgCedpkvl98tmZ
+         qM0nSqpQnhIuGjHFdc90j1P54bzLXq8OaBvPOU8Wz46+DRu7IY4a3E18wqkmNse+r4
+         +rlop/JgD3gD5ZubtaTLBa3wku7ELEqXnWb40wnQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        syzbot+a8430774139ec3ab7176@syzkaller.appspotmail.com,
-        Ayushman Dutta <ayudutta@amazon.com>,
-        Kuniyuki Iwashima <kuniyu@amazon.com>,
-        David Ahern <dsahern@kernel.org>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>
-Subject: [PATCH 4.14 005/229] net: ping6: Fix memleak in ipv6_renew_options().
-Date:   Tue, 23 Aug 2022 10:22:46 +0200
-Message-Id: <20220823080053.481732597@linuxfoundation.org>
+        stable@vger.kernel.org, Sean Christopherson <seanjc@google.com>,
+        "Maciej S. Szmigiero" <maciej.szmigiero@oracle.com>,
+        Paolo Bonzini <pbonzini@redhat.com>
+Subject: [PATCH 4.14 018/229] KVM: SVM: Dont BUG if userspace injects an interrupt with GIF=0
+Date:   Tue, 23 Aug 2022 10:22:59 +0200
+Message-Id: <20220823080054.084215205@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220823080053.202747790@linuxfoundation.org>
 References: <20220823080053.202747790@linuxfoundation.org>
@@ -54,105 +50,62 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Kuniyuki Iwashima <kuniyu@amazon.com>
+From: Maciej S. Szmigiero <maciej.szmigiero@oracle.com>
 
-commit e27326009a3d247b831eda38878c777f6f4eb3d1 upstream.
+commit f17c31c48e5cde9895a491d91c424eeeada3e134 upstream.
 
-When we close ping6 sockets, some resources are left unfreed because
-pingv6_prot is missing sk->sk_prot->destroy().  As reported by
-syzbot [0], just three syscalls leak 96 bytes and easily cause OOM.
+Don't BUG/WARN on interrupt injection due to GIF being cleared,
+since it's trivial for userspace to force the situation via
+KVM_SET_VCPU_EVENTS (even if having at least a WARN there would be correct
+for KVM internally generated injections).
 
-    struct ipv6_sr_hdr *hdr;
-    char data[24] = {0};
-    int fd;
+  kernel BUG at arch/x86/kvm/svm/svm.c:3386!
+  invalid opcode: 0000 [#1] SMP
+  CPU: 15 PID: 926 Comm: smm_test Not tainted 5.17.0-rc3+ #264
+  Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS 0.0.0 02/06/2015
+  RIP: 0010:svm_inject_irq+0xab/0xb0 [kvm_amd]
+  Code: <0f> 0b 0f 1f 00 0f 1f 44 00 00 80 3d ac b3 01 00 00 55 48 89 f5 53
+  RSP: 0018:ffffc90000b37d88 EFLAGS: 00010246
+  RAX: 0000000000000000 RBX: ffff88810a234ac0 RCX: 0000000000000006
+  RDX: 0000000000000000 RSI: ffffc90000b37df7 RDI: ffff88810a234ac0
+  RBP: ffffc90000b37df7 R08: ffff88810a1fa410 R09: 0000000000000000
+  R10: 0000000000000000 R11: 0000000000000000 R12: 0000000000000000
+  R13: ffff888109571000 R14: ffff88810a234ac0 R15: 0000000000000000
+  FS:  0000000001821380(0000) GS:ffff88846fdc0000(0000) knlGS:0000000000000000
+  CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+  CR2: 00007f74fc550008 CR3: 000000010a6fe000 CR4: 0000000000350ea0
+  Call Trace:
+   <TASK>
+   inject_pending_event+0x2f7/0x4c0 [kvm]
+   kvm_arch_vcpu_ioctl_run+0x791/0x17a0 [kvm]
+   kvm_vcpu_ioctl+0x26d/0x650 [kvm]
+   __x64_sys_ioctl+0x82/0xb0
+   do_syscall_64+0x3b/0xc0
+   entry_SYSCALL_64_after_hwframe+0x44/0xae
+   </TASK>
 
-    hdr = (struct ipv6_sr_hdr *)data;
-    hdr->hdrlen = 2;
-    hdr->type = IPV6_SRCRT_TYPE_4;
-
-    fd = socket(AF_INET6, SOCK_DGRAM, NEXTHDR_ICMP);
-    setsockopt(fd, IPPROTO_IPV6, IPV6_RTHDR, data, 24);
-    close(fd);
-
-To fix memory leaks, let's add a destroy function.
-
-Note the socket() syscall checks if the GID is within the range of
-net.ipv4.ping_group_range.  The default value is [1, 0] so that no
-GID meets the condition (1 <= GID <= 0).  Thus, the local DoS does
-not succeed until we change the default value.  However, at least
-Ubuntu/Fedora/RHEL loosen it.
-
-    $ cat /usr/lib/sysctl.d/50-default.conf
-    ...
-    -net.ipv4.ping_group_range = 0 2147483647
-
-Also, there could be another path reported with these options, and
-some of them require CAP_NET_RAW.
-
-  setsockopt
-      IPV6_ADDRFORM (inet6_sk(sk)->pktoptions)
-      IPV6_RECVPATHMTU (inet6_sk(sk)->rxpmtu)
-      IPV6_HOPOPTS (inet6_sk(sk)->opt)
-      IPV6_RTHDRDSTOPTS (inet6_sk(sk)->opt)
-      IPV6_RTHDR (inet6_sk(sk)->opt)
-      IPV6_DSTOPTS (inet6_sk(sk)->opt)
-      IPV6_2292PKTOPTIONS (inet6_sk(sk)->opt)
-
-  getsockopt
-      IPV6_FLOWLABEL_MGR (inet6_sk(sk)->ipv6_fl_list)
-
-For the record, I left a different splat with syzbot's one.
-
-  unreferenced object 0xffff888006270c60 (size 96):
-    comm "repro2", pid 231, jiffies 4294696626 (age 13.118s)
-    hex dump (first 32 bytes):
-      01 00 00 00 44 00 00 00 00 00 00 00 00 00 00 00  ....D...........
-      00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
-    backtrace:
-      [<00000000f6bc7ea9>] sock_kmalloc (net/core/sock.c:2564 net/core/sock.c:2554)
-      [<000000006d699550>] do_ipv6_setsockopt.constprop.0 (net/ipv6/ipv6_sockglue.c:715)
-      [<00000000c3c3b1f5>] ipv6_setsockopt (net/ipv6/ipv6_sockglue.c:1024)
-      [<000000007096a025>] __sys_setsockopt (net/socket.c:2254)
-      [<000000003a8ff47b>] __x64_sys_setsockopt (net/socket.c:2265 net/socket.c:2262 net/socket.c:2262)
-      [<000000007c409dcb>] do_syscall_64 (arch/x86/entry/common.c:50 arch/x86/entry/common.c:80)
-      [<00000000e939c4a9>] entry_SYSCALL_64_after_hwframe (arch/x86/entry/entry_64.S:120)
-
-[0]: https://syzkaller.appspot.com/bug?extid=a8430774139ec3ab7176
-
-Fixes: 6d0bfe226116 ("net: ipv6: Add IPv6 support to the ping socket.")
-Reported-by: syzbot+a8430774139ec3ab7176@syzkaller.appspotmail.com
-Reported-by: Ayushman Dutta <ayudutta@amazon.com>
-Signed-off-by: Kuniyuki Iwashima <kuniyu@amazon.com>
-Reviewed-by: David Ahern <dsahern@kernel.org>
-Reviewed-by: Eric Dumazet <edumazet@google.com>
-Link: https://lore.kernel.org/r/20220728012220.46918-1-kuniyu@amazon.com
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Fixes: 219b65dcf6c0 ("KVM: SVM: Improve nested interrupt injection")
+Cc: stable@vger.kernel.org
+Co-developed-by: Sean Christopherson <seanjc@google.com>
+Signed-off-by: Sean Christopherson <seanjc@google.com>
+Signed-off-by: Maciej S. Szmigiero <maciej.szmigiero@oracle.com>
+Message-Id: <35426af6e123cbe91ec7ce5132ce72521f02b1b5.1651440202.git.maciej.szmigiero@oracle.com>
+Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- net/ipv6/ping.c |    6 ++++++
- 1 file changed, 6 insertions(+)
+ arch/x86/kvm/svm.c |    2 --
+ 1 file changed, 2 deletions(-)
 
---- a/net/ipv6/ping.c
-+++ b/net/ipv6/ping.c
-@@ -26,6 +26,11 @@
- #include <net/transp_v6.h>
- #include <net/ping.h>
+--- a/arch/x86/kvm/svm.c
++++ b/arch/x86/kvm/svm.c
+@@ -4611,8 +4611,6 @@ static void svm_set_irq(struct kvm_vcpu
+ {
+ 	struct vcpu_svm *svm = to_svm(vcpu);
  
-+static void ping_v6_destroy(struct sock *sk)
-+{
-+	inet6_destroy_sock(sk);
-+}
-+
- /* Compatibility glue so we can support IPv6 when it's compiled as a module */
- static int dummy_ipv6_recv_error(struct sock *sk, struct msghdr *msg, int len,
- 				 int *addr_len)
-@@ -173,6 +178,7 @@ struct proto pingv6_prot = {
- 	.owner =	THIS_MODULE,
- 	.init =		ping_init_sock,
- 	.close =	ping_close,
-+	.destroy =	ping_v6_destroy,
- 	.connect =	ip6_datagram_connect_v6_only,
- 	.disconnect =	__udp_disconnect,
- 	.setsockopt =	ipv6_setsockopt,
+-	BUG_ON(!(gif_set(svm)));
+-
+ 	trace_kvm_inj_virq(vcpu->arch.interrupt.nr);
+ 	++vcpu->stat.irq_injections;
+ 
 
 
