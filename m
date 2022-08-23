@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F1A79C32772
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 11:58:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8040FC32792
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 11:58:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1359010AbiHWL6a (ORCPT
+        id S1359038AbiHWL6i (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 07:58:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39488 "EHLO
+        Tue, 23 Aug 2022 07:58:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34888 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1359111AbiHWL4O (ORCPT
+        with ESMTP id S1359162AbiHWL4S (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 07:56:14 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0136E7E30D;
-        Tue, 23 Aug 2022 02:33:45 -0700 (PDT)
+        Tue, 23 Aug 2022 07:56:18 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 79690C59EC;
+        Tue, 23 Aug 2022 02:33:56 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 086A9B81C9B;
-        Tue, 23 Aug 2022 09:33:39 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 64B87C433D7;
-        Tue, 23 Aug 2022 09:33:37 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 7E1CE612D6;
+        Tue, 23 Aug 2022 09:33:54 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 86E86C433D6;
+        Tue, 23 Aug 2022 09:33:53 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661247217;
-        bh=9krYIMZkWByFYm0Z2MCMjTdo/cKY77hHZASSi3Elm3k=;
+        s=korg; t=1661247233;
+        bh=EkgEL8VNg3xEP7YC4/zdUsjn0OhSMPb/3b8UAiUZx84=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=j7VefHjfdEFjfdAsqr92jkcS+dsXi7QmTXCn9ycEU0ZlanFINmkpNayTtV6aB8AaC
-         sFkCsu39UyXmRLs76PZBlaBQ9q9HBPKyItPPqKUlp8G6LOUAxuoNyw47pGKCMfAzFt
-         5Dd0nWYAReUTf/tubqBxSvwRVjQ4caJAWyRTieMY=
+        b=jLqG6JqQh0Lvm9PlM2ztGRTvuAvI2HSxBxbUUKmCQGyPvlCbokOxE2lHFqjlpTdLH
+         GXVrx3Scx4ou0S/2RJKYFonqiDv3vOmG1imsv58bpjEIh+9H8clxslzcqnjrIxR0r8
+         57Q9KkAPvpsTrsZycvtpsANFKWoeT3umcCiybLs8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Liang He <windhl@126.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 355/389] usb: renesas: Fix refcount leak bug
-Date:   Tue, 23 Aug 2022 10:27:13 +0200
-Message-Id: <20220823080130.386443783@linuxfoundation.org>
+        stable@vger.kernel.org, Al Viro <viro@zeniv.linux.org.uk>,
+        Dinh Nguyen <dinguyen@kernel.org>
+Subject: [PATCH 5.4 330/389] nios2: dont leave NULLs in sys_call_table[]
+Date:   Tue, 23 Aug 2022 10:26:48 +0200
+Message-Id: <20220823080129.306100652@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220823080115.331990024@linuxfoundation.org>
 References: <20220823080115.331990024@linuxfoundation.org>
@@ -49,39 +49,39 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Liang He <windhl@126.com>
+From: Al Viro <viro@zeniv.linux.org.uk>
 
-[ Upstream commit 9d6d5303c39b8bc182475b22f45504106a07f086 ]
+commit 45ec746c65097c25e77d24eae8fee0def5b6cc5d upstream.
 
-In usbhs_rza1_hardware_init(), of_find_node_by_name() will return
-a node pointer with refcount incremented. We should use of_node_put()
-when it is not used anymore.
+fill the gaps in there with sys_ni_syscall, as everyone does...
 
-Signed-off-by: Liang He <windhl@126.com>
-Link: https://lore.kernel.org/r/20220618023205.4056548-1-windhl@126.com
+Fixes: 82ed08dd1b0e ("nios2: Exception handling")
+Signed-off-by: Al Viro <viro@zeniv.linux.org.uk>
+Signed-off-by: Dinh Nguyen <dinguyen@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/usb/renesas_usbhs/rza.c | 4 ++++
- 1 file changed, 4 insertions(+)
+ arch/nios2/kernel/entry.S         |    1 -
+ arch/nios2/kernel/syscall_table.c |    1 +
+ 2 files changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/usb/renesas_usbhs/rza.c b/drivers/usb/renesas_usbhs/rza.c
-index 24de64edb674..2d77edefb4b3 100644
---- a/drivers/usb/renesas_usbhs/rza.c
-+++ b/drivers/usb/renesas_usbhs/rza.c
-@@ -23,6 +23,10 @@ static int usbhs_rza1_hardware_init(struct platform_device *pdev)
- 	extal_clk = of_find_node_by_name(NULL, "extal");
- 	of_property_read_u32(usb_x1_clk, "clock-frequency", &freq_usb);
- 	of_property_read_u32(extal_clk, "clock-frequency", &freq_extal);
-+
-+	of_node_put(usb_x1_clk);
-+	of_node_put(extal_clk);
-+
- 	if (freq_usb == 0) {
- 		if (freq_extal == 12000000) {
- 			/* Select 12MHz XTAL */
--- 
-2.35.1
-
+--- a/arch/nios2/kernel/entry.S
++++ b/arch/nios2/kernel/entry.S
+@@ -193,7 +193,6 @@ local_restart:
+ 	movhi	r11, %hiadj(sys_call_table)
+ 	add	r1, r1, r11
+ 	ldw	r1, %lo(sys_call_table)(r1)
+-	beq	r1, r0, ret_invsyscall
+ 
+ 	/* Check if we are being traced */
+ 	GET_THREAD_INFO r11
+--- a/arch/nios2/kernel/syscall_table.c
++++ b/arch/nios2/kernel/syscall_table.c
+@@ -13,5 +13,6 @@
+ #define __SYSCALL(nr, call) [nr] = (call),
+ 
+ void *sys_call_table[__NR_syscalls] = {
++	[0 ... __NR_syscalls-1] = sys_ni_syscall,
+ #include <asm/unistd.h>
+ };
 
 
