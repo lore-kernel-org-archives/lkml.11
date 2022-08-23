@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 838A1C32772
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 10:39:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 70433C32772
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 10:39:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355536AbiHWKjI (ORCPT
+        id S1353362AbiHWKjN (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 06:39:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44360 "EHLO
+        Tue, 23 Aug 2022 06:39:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39158 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355281AbiHWKX0 (ORCPT
+        with ESMTP id S244046AbiHWKX2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 06:23:26 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 66C72A3465;
-        Tue, 23 Aug 2022 02:04:27 -0700 (PDT)
+        Tue, 23 Aug 2022 06:23:28 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F223A832C1;
+        Tue, 23 Aug 2022 02:04:30 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 9F13FB81C89;
-        Tue, 23 Aug 2022 09:04:25 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id EB073C433C1;
-        Tue, 23 Aug 2022 09:04:23 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id BE4EAB8105C;
+        Tue, 23 Aug 2022 09:04:28 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 19AE7C433C1;
+        Tue, 23 Aug 2022 09:04:26 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661245464;
-        bh=eO4wzGcORruDBbQHGEoSVy8v7g9gEkJj9bYk1j+gKKM=;
+        s=korg; t=1661245467;
+        bh=R9mVadXHaS5xspBheWQX2CP25D+fdWydUR/Iv+zRx6s=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=GGOc/OJLUxdutP/2ddfZWPtY5x4tIiAk/7Tb6gWpgja0yQ3DitnrTxBai+qU/T0bV
-         6k4P7cFnhPaRRv7pAs1A2yV9QvBBq0zYO7HTY39OqeEmAlLBm9pY4pJeIRvnDj+dxD
-         cZNL4Btvc1dT3qNHjzQJUyFUuzpde5gr/m+UvAm8=
+        b=p/VXF0kI4x1jcFx8e0KXsjjWQBkhjHrv5A+DM3i3EqhqszPD0LHAeGzEb1OsXvbIg
+         eKnXzOP2mitVC9Jb7ZSOgeKWsssccLD0BQdV1olMRFtCBuMjYfbUFWWAz9dUHoQ8gg
+         i5H9nReEfHFO22VAtDCXzrNQnpxTSYFofhd0EMv0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Anquan Wu <leiqi96@hotmail.com>,
-        Andrii Nakryiko <andrii@kernel.org>,
+        stable@vger.kernel.org,
+        Alexey Kodanev <aleksei.kodanev@bell-sw.com>,
+        Alex Deucher <alexander.deucher@amd.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.19 087/287] libbpf: Fix the name of a reused map
-Date:   Tue, 23 Aug 2022 10:24:16 +0200
-Message-Id: <20220823080103.224063724@linuxfoundation.org>
+Subject: [PATCH 4.19 070/287] drm/radeon: fix potential buffer overflow in ni_set_mc_special_registers()
+Date:   Tue, 23 Aug 2022 10:23:59 +0200
+Message-Id: <20220823080102.594220603@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220823080100.268827165@linuxfoundation.org>
 References: <20220823080100.268827165@linuxfoundation.org>
@@ -50,69 +51,58 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Anquan Wu <leiqi96@hotmail.com>
+From: Alexey Kodanev <aleksei.kodanev@bell-sw.com>
 
-[ Upstream commit bf3f00378524adae16628cbadbd11ba7211863bb ]
+[ Upstream commit 136f614931a2bb73616b292cf542da3a18daefd5 ]
 
-BPF map name is limited to BPF_OBJ_NAME_LEN.
-A map name is defined as being longer than BPF_OBJ_NAME_LEN,
-it will be truncated to BPF_OBJ_NAME_LEN when a userspace program
-calls libbpf to create the map. A pinned map also generates a path
-in the /sys. If the previous program wanted to reuse the map，
-it can not get bpf_map by name, because the name of the map is only
-partially the same as the name which get from pinned path.
+The last case label can write two buffers 'mc_reg_address[j]' and
+'mc_data[j]' with 'j' offset equal to SMC_NISLANDS_MC_REGISTER_ARRAY_SIZE
+since there are no checks for this value in both case labels after the
+last 'j++'.
 
-The syscall information below show that map name "process_pinned_map"
-is truncated to "process_pinned_".
+Instead of changing '>' to '>=' there, add the bounds check at the start
+of the second 'case' (the first one already has it).
 
-    bpf(BPF_OBJ_GET, {pathname="/sys/fs/bpf/process_pinned_map",
-    bpf_fd=0, file_flags=0}, 144) = -1 ENOENT (No such file or directory)
+Also, remove redundant last checks for 'j' index bigger than array size.
+The expression is always false. Moreover, before or after the patch
+'table->last' can be equal to SMC_NISLANDS_MC_REGISTER_ARRAY_SIZE and it
+seems it can be a valid value.
 
-    bpf(BPF_MAP_CREATE, {map_type=BPF_MAP_TYPE_HASH, key_size=4,
-    value_size=4,max_entries=1024, map_flags=0, inner_map_fd=0,
-    map_name="process_pinned_",map_ifindex=0, btf_fd=3, btf_key_type_id=6,
-    btf_value_type_id=10,btf_vmlinux_value_type_id=0}, 72) = 4
-
-This patch check that if the name of pinned map are the same as the
-actual name for the first (BPF_OBJ_NAME_LEN - 1),
-bpf map still uses the name which is included in bpf object.
-
-Fixes: 26736eb9a483 ("tools: libbpf: allow map reuse")
-Signed-off-by: Anquan Wu <leiqi96@hotmail.com>
-Signed-off-by: Andrii Nakryiko <andrii@kernel.org>
-Link: https://lore.kernel.org/bpf/OSZP286MB1725CEA1C95C5CB8E7CCC53FB8869@OSZP286MB1725.JPNP286.PROD.OUTLOOK.COM
+Detected using the static analysis tool - Svace.
+Fixes: 69e0b57a91ad ("drm/radeon/kms: add dpm support for cayman (v5)")
+Signed-off-by: Alexey Kodanev <aleksei.kodanev@bell-sw.com>
+Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- tools/lib/bpf/libbpf.c | 9 +++++++--
- 1 file changed, 7 insertions(+), 2 deletions(-)
+ drivers/gpu/drm/radeon/ni_dpm.c | 6 ++----
+ 1 file changed, 2 insertions(+), 4 deletions(-)
 
-diff --git a/tools/lib/bpf/libbpf.c b/tools/lib/bpf/libbpf.c
-index 249fa8d7376e..76cf63705c86 100644
---- a/tools/lib/bpf/libbpf.c
-+++ b/tools/lib/bpf/libbpf.c
-@@ -1060,7 +1060,7 @@ static int bpf_map_find_btf_info(struct bpf_map *map, const struct btf *btf)
- int bpf_map__reuse_fd(struct bpf_map *map, int fd)
- {
- 	struct bpf_map_info info = {};
--	__u32 len = sizeof(info);
-+	__u32 len = sizeof(info), name_len;
- 	int new_fd, err;
- 	char *new_name;
- 
-@@ -1068,7 +1068,12 @@ int bpf_map__reuse_fd(struct bpf_map *map, int fd)
- 	if (err)
- 		return err;
- 
--	new_name = strdup(info.name);
-+	name_len = strlen(info.name);
-+	if (name_len == BPF_OBJ_NAME_LEN - 1 && strncmp(map->name, info.name, name_len) == 0)
-+		new_name = strdup(map->name);
-+	else
-+		new_name = strdup(info.name);
-+
- 	if (!new_name)
- 		return -errno;
- 
+diff --git a/drivers/gpu/drm/radeon/ni_dpm.c b/drivers/gpu/drm/radeon/ni_dpm.c
+index f86ca163dcf3..a7273c01de34 100644
+--- a/drivers/gpu/drm/radeon/ni_dpm.c
++++ b/drivers/gpu/drm/radeon/ni_dpm.c
+@@ -2738,10 +2738,10 @@ static int ni_set_mc_special_registers(struct radeon_device *rdev,
+ 					table->mc_reg_table_entry[k].mc_data[j] |= 0x100;
+ 			}
+ 			j++;
+-			if (j > SMC_NISLANDS_MC_REGISTER_ARRAY_SIZE)
+-				return -EINVAL;
+ 			break;
+ 		case MC_SEQ_RESERVE_M >> 2:
++			if (j >= SMC_NISLANDS_MC_REGISTER_ARRAY_SIZE)
++				return -EINVAL;
+ 			temp_reg = RREG32(MC_PMG_CMD_MRS1);
+ 			table->mc_reg_address[j].s1 = MC_PMG_CMD_MRS1 >> 2;
+ 			table->mc_reg_address[j].s0 = MC_SEQ_PMG_CMD_MRS1_LP >> 2;
+@@ -2750,8 +2750,6 @@ static int ni_set_mc_special_registers(struct radeon_device *rdev,
+ 					(temp_reg & 0xffff0000) |
+ 					(table->mc_reg_table_entry[k].mc_data[i] & 0x0000ffff);
+ 			j++;
+-			if (j > SMC_NISLANDS_MC_REGISTER_ARRAY_SIZE)
+-				return -EINVAL;
+ 			break;
+ 		default:
+ 			break;
 -- 
 2.35.1
 
