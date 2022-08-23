@@ -2,44 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0199BC32772
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 11:12:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7ECA6C32772
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 11:12:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240971AbiHWLMg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 07:12:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52350 "EHLO
+        id S242919AbiHWLMl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 23 Aug 2022 07:12:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49322 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357086AbiHWLIS (ORCPT
+        with ESMTP id S1351349AbiHWLIs (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 07:08:18 -0400
+        Tue, 23 Aug 2022 07:08:48 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DE16F870BA;
-        Tue, 23 Aug 2022 02:16:24 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2CF88B5E7C;
+        Tue, 23 Aug 2022 02:16:33 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id AE11760DB4;
-        Tue, 23 Aug 2022 09:16:22 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A7654C433D7;
-        Tue, 23 Aug 2022 09:16:21 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id EF89461224;
+        Tue, 23 Aug 2022 09:16:28 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E7D48C433D6;
+        Tue, 23 Aug 2022 09:16:27 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661246182;
-        bh=h4SRFRwWDGFpd+Pvz9NJz6+4oQ+lzHmWydHpMm9CVU4=;
+        s=korg; t=1661246188;
+        bh=mpEHv+2osM9qlxR5+ep/wk80+Y9tSPcDK7YRuosmWwk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=fjEMau6YXCzaC6IeS0KQ8s8iRvALqIes9egXoFbcHyNE1cjcK6XYqB+YDNaElNsJv
-         wLkXqgvE5gguSgptmmywaBUP82xk89BuRYg4XuRPLhqESCLakwPOnSbggkJtX5ua5W
-         XkrAacDUoDtLniDwdGqoLsVaEM56aqBAXJgjm1dM=
+        b=FbW6uDDdl0Zjyp15PjYde+7Ejp++SInzna31s1eTR4JsrxAOuZfdt7Wa4a4iJ+wpR
+         /EbzSkEyTtL2hE0Xj3vAgm/wgSXYUlYgocs7lGVn6YrXJH/02Wy5oETSHDJwrX4f4z
+         u0Eeletld5e9xzh8eaaElg2awb2JbY2FLv4MziUI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jann Horn <jannh@google.com>,
-        Oleksij Rempel <o.rempel@pengutronix.de>,
-        Lukas Wunner <lukas@wunner.de>,
-        Oliver Neukum <oneukum@suse.com>,
-        Jakub Kicinski <kuba@kernel.org>
-Subject: [PATCH 5.4 027/389] usbnet: Fix linkwatch use-after-free on disconnect
-Date:   Tue, 23 Aug 2022 10:21:45 +0200
-Message-Id: <20220823080116.827872846@linuxfoundation.org>
+        stable@vger.kernel.org, Sasha Neftin <sasha.neftin@intel.com>,
+        Dvora Fuxbrumer <dvorax.fuxbrumer@linux.intel.com>,
+        Tony Nguyen <anthony.l.nguyen@intel.com>,
+        Linjun Bao <meljbao@gmail.com>
+Subject: [PATCH 5.4 005/389] igc: Remove _I_PHY_ID checking
+Date:   Tue, 23 Aug 2022 10:21:23 +0200
+Message-Id: <20220823080115.865660221@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220823080115.331990024@linuxfoundation.org>
 References: <20220823080115.331990024@linuxfoundation.org>
@@ -51,85 +50,77 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Lukas Wunner <lukas@wunner.de>
+From: Sasha Neftin <sasha.neftin@intel.com>
 
-commit a69e617e533edddf3fa3123149900f36e0a6dc74 upstream.
+commit 7c496de538eebd8212dc2a3c9a468386b264d0d4 upstream.
 
-usbnet uses the work usbnet_deferred_kevent() to perform tasks which may
-sleep.  On disconnect, completion of the work was originally awaited in
-->ndo_stop().  But in 2003, that was moved to ->disconnect() by historic
-commit "[PATCH] USB: usbnet, prevent exotic rtnl deadlock":
+i225 devices have only one PHY vendor. There is no point checking
+_I_PHY_ID during the link establishment and auto-negotiation process.
+This patch comes to clean up these pointless checkings.
 
-  https://git.kernel.org/tglx/history/c/0f138bbfd83c
-
-The change was made because back then, the kernel's workqueue
-implementation did not allow waiting for a single work.  One had to wait
-for completion of *all* work by calling flush_scheduled_work(), and that
-could deadlock when waiting for usbnet_deferred_kevent() with rtnl_mutex
-held in ->ndo_stop().
-
-The commit solved one problem but created another:  It causes a
-use-after-free in USB Ethernet drivers aqc111.c, asix_devices.c,
-ax88179_178a.c, ch9200.c and smsc75xx.c:
-
-* If the drivers receive a link change interrupt immediately before
-  disconnect, they raise EVENT_LINK_RESET in their (non-sleepable)
-  ->status() callback and schedule usbnet_deferred_kevent().
-* usbnet_deferred_kevent() invokes the driver's ->link_reset() callback,
-  which calls netif_carrier_{on,off}().
-* That in turn schedules the work linkwatch_event().
-
-Because usbnet_deferred_kevent() is awaited after unregister_netdev(),
-netif_carrier_{on,off}() may operate on an unregistered netdev and
-linkwatch_event() may run after free_netdev(), causing a use-after-free.
-
-In 2010, usbnet was changed to only wait for a single instance of
-usbnet_deferred_kevent() instead of *all* work by commit 23f333a2bfaf
-("drivers/net: don't use flush_scheduled_work()").
-
-Unfortunately the commit neglected to move the wait back to
-->ndo_stop().  Rectify that omission at long last.
-
-Reported-by: Jann Horn <jannh@google.com>
-Link: https://lore.kernel.org/netdev/CAG48ez0MHBbENX5gCdHAUXZ7h7s20LnepBF-pa5M=7Bi-jZrEA@mail.gmail.com/
-Reported-by: Oleksij Rempel <o.rempel@pengutronix.de>
-Link: https://lore.kernel.org/netdev/20220315113841.GA22337@pengutronix.de/
-Signed-off-by: Lukas Wunner <lukas@wunner.de>
-Cc: stable@vger.kernel.org
-Acked-by: Oliver Neukum <oneukum@suse.com>
-Link: https://lore.kernel.org/r/d1c87ebe9fc502bffcd1576e238d685ad08321e4.1655987888.git.lukas@wunner.de
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Signed-off-by: Sasha Neftin <sasha.neftin@intel.com>
+Tested-by: Dvora Fuxbrumer <dvorax.fuxbrumer@linux.intel.com>
+Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
+Cc: Linjun Bao <meljbao@gmail.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/net/usb/usbnet.c |    8 ++------
- 1 file changed, 2 insertions(+), 6 deletions(-)
+ drivers/net/ethernet/intel/igc/igc_base.c |   10 +---------
+ drivers/net/ethernet/intel/igc/igc_main.c |    3 +--
+ drivers/net/ethernet/intel/igc/igc_phy.c  |    6 ++----
+ 3 files changed, 4 insertions(+), 15 deletions(-)
 
---- a/drivers/net/usb/usbnet.c
-+++ b/drivers/net/usb/usbnet.c
-@@ -833,13 +833,11 @@ int usbnet_stop (struct net_device *net)
+--- a/drivers/net/ethernet/intel/igc/igc_base.c
++++ b/drivers/net/ethernet/intel/igc/igc_base.c
+@@ -187,15 +187,7 @@ static s32 igc_init_phy_params_base(stru
  
- 	mpn = !test_and_clear_bit(EVENT_NO_RUNTIME_PM, &dev->flags);
+ 	igc_check_for_copper_link(hw);
  
--	/* deferred work (task, timer, softirq) must also stop.
--	 * can't flush_scheduled_work() until we drop rtnl (later),
--	 * else workers could deadlock; so make workers a NOP.
--	 */
-+	/* deferred work (timer, softirq, task) must also stop */
- 	dev->flags = 0;
- 	del_timer_sync (&dev->delay);
- 	tasklet_kill (&dev->bh);
-+	cancel_work_sync(&dev->kevent);
- 	if (!pm)
- 		usb_autopm_put_interface(dev->intf);
+-	/* Verify phy id and set remaining function pointers */
+-	switch (phy->id) {
+-	case I225_I_PHY_ID:
+-		phy->type	= igc_phy_i225;
+-		break;
+-	default:
+-		ret_val = -IGC_ERR_PHY;
+-		goto out;
+-	}
++	phy->type = igc_phy_i225;
  
-@@ -1603,8 +1601,6 @@ void usbnet_disconnect (struct usb_inter
- 	net = dev->net;
- 	unregister_netdev (net);
+ out:
+ 	return ret_val;
+--- a/drivers/net/ethernet/intel/igc/igc_main.c
++++ b/drivers/net/ethernet/intel/igc/igc_main.c
+@@ -2884,8 +2884,7 @@ bool igc_has_link(struct igc_adapter *ad
+ 		break;
+ 	}
  
--	cancel_work_sync(&dev->kevent);
--
- 	usb_scuttle_anchored_urbs(&dev->deferred);
+-	if (hw->mac.type == igc_i225 &&
+-	    hw->phy.id == I225_I_PHY_ID) {
++	if (hw->mac.type == igc_i225) {
+ 		if (!netif_carrier_ok(adapter->netdev)) {
+ 			adapter->flags &= ~IGC_FLAG_NEED_LINK_UPDATE;
+ 		} else if (!(adapter->flags & IGC_FLAG_NEED_LINK_UPDATE)) {
+--- a/drivers/net/ethernet/intel/igc/igc_phy.c
++++ b/drivers/net/ethernet/intel/igc/igc_phy.c
+@@ -235,8 +235,7 @@ static s32 igc_phy_setup_autoneg(struct
+ 			return ret_val;
+ 	}
  
- 	if (dev->driver_info->unbind)
+-	if ((phy->autoneg_mask & ADVERTISE_2500_FULL) &&
+-	    hw->phy.id == I225_I_PHY_ID) {
++	if (phy->autoneg_mask & ADVERTISE_2500_FULL) {
+ 		/* Read the MULTI GBT AN Control Register - reg 7.32 */
+ 		ret_val = phy->ops.read_reg(hw, (STANDARD_AN_REG_MASK <<
+ 					    MMD_DEVADDR_SHIFT) |
+@@ -376,8 +375,7 @@ static s32 igc_phy_setup_autoneg(struct
+ 		ret_val = phy->ops.write_reg(hw, PHY_1000T_CTRL,
+ 					     mii_1000t_ctrl_reg);
+ 
+-	if ((phy->autoneg_mask & ADVERTISE_2500_FULL) &&
+-	    hw->phy.id == I225_I_PHY_ID)
++	if (phy->autoneg_mask & ADVERTISE_2500_FULL)
+ 		ret_val = phy->ops.write_reg(hw,
+ 					     (STANDARD_AN_REG_MASK <<
+ 					     MMD_DEVADDR_SHIFT) |
 
 
