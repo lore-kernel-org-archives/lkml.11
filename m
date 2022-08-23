@@ -2,45 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 31264C32774
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 08:23:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 72A9AC32774
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 08:24:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243227AbiHWIXy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 04:23:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44590 "EHLO
+        id S243252AbiHWIYB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 23 Aug 2022 04:24:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46472 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243044AbiHWIQb (ORCPT
+        with ESMTP id S242515AbiHWIRf (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 04:16:31 -0400
+        Tue, 23 Aug 2022 04:17:35 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B667E26E2;
-        Tue, 23 Aug 2022 01:10:56 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DE9571F2F9;
+        Tue, 23 Aug 2022 01:11:39 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 79071B81C22;
-        Tue, 23 Aug 2022 08:10:54 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CD585C433C1;
-        Tue, 23 Aug 2022 08:10:52 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 9443AB81C29;
+        Tue, 23 Aug 2022 08:11:38 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CA6D9C433B5;
+        Tue, 23 Aug 2022 08:11:36 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661242253;
-        bh=wE1MWHXt1CfxolFIPiBMUvia5BDn8Ipk8H0X6Ivmhrs=;
+        s=korg; t=1661242297;
+        bh=rVd4J0guZ65vkhwgCDxawhFODU/bU6NhtmHAr44jMRY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Soc+v4OGNdRFSB8O3hmRvr/kY9bIjtVyKvAyUzpFA9M0vUSBTteR0dQyALasRlxRp
-         NQBegfRMkjrYKat7NKSuXkj2H3X+VhZ0GaopSFKWlM8FJXWxuBBkmPwFY4auYNUCN1
-         /gPqZ2eONifcghmrEwcIdpYAnoo6NkQ6k3qyhlqc=
+        b=dKJxMvch6CSK/dDCpiSqT8+Ni5a5iSMCEaHSl88yS4uipVnsbdkRsyU4ck7crFGW+
+         pRfZu1IVT0WK2KkmTW/XeXfjz9rjK1QiNg5sT/bharbjXcvr09s6kxBwcB7ir0e70D
+         8AMLZdX40o1Y9vvMQVNadegXy0ctLCqgLu7TtXgc=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Hou Tao <houtao1@huawei.com>,
-        Yonghong Song <yhs@fb.com>, Martin KaFai Lau <kafai@fb.com>,
-        Alexei Starovoitov <ast@kernel.org>
-Subject: [PATCH 5.19 066/365] bpf: Acquire map uref in .init_seq_private for sock local storage map iterator
-Date:   Tue, 23 Aug 2022 09:59:27 +0200
-Message-Id: <20220823080120.970254399@linuxfoundation.org>
+        stable@vger.kernel.org, Stephen Boyd <sboyd@kernel.org>,
+        "Steven Rostedt (Google)" <rostedt@goodmis.org>,
+        David Collins <quic_collinsd@quicinc.com>
+Subject: [PATCH 4.9 049/101] spmi: trace: fix stack-out-of-bound access in SPMI tracing functions
+Date:   Tue, 23 Aug 2022 10:03:22 +0200
+Message-Id: <20220823080036.420431808@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220823080118.128342613@linuxfoundation.org>
-References: <20220823080118.128342613@linuxfoundation.org>
+In-Reply-To: <20220823080034.579196046@linuxfoundation.org>
+References: <20220823080034.579196046@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -49,59 +49,110 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Hou Tao <houtao1@huawei.com>
+From: David Collins <quic_collinsd@quicinc.com>
 
-commit 3c5f6e698b5c538bbb23cd453b22e1e4922cffd8 upstream.
+commit 2af28b241eea816e6f7668d1954f15894b45d7e3 upstream.
 
-bpf_iter_attach_map() acquires a map uref, and the uref may be released
-before or in the middle of iterating map elements. For example, the uref
-could be released in bpf_iter_detach_map() as part of
-bpf_link_release(), or could be released in bpf_map_put_with_uref() as
-part of bpf_map_release().
+trace_spmi_write_begin() and trace_spmi_read_end() both call
+memcpy() with a length of "len + 1".  This leads to one extra
+byte being read beyond the end of the specified buffer.  Fix
+this out-of-bound memory access by using a length of "len"
+instead.
 
-So acquiring an extra map uref in bpf_iter_init_sk_storage_map() and
-releasing it in bpf_iter_fini_sk_storage_map().
+Here is a KASAN log showing the issue:
 
-Fixes: 5ce6e77c7edf ("bpf: Implement bpf iterator for sock local storage map")
-Signed-off-by: Hou Tao <houtao1@huawei.com>
-Acked-by: Yonghong Song <yhs@fb.com>
-Acked-by: Martin KaFai Lau <kafai@fb.com>
-Link: https://lore.kernel.org/r/20220810080538.1845898-4-houtao@huaweicloud.com
-Signed-off-by: Alexei Starovoitov <ast@kernel.org>
+BUG: KASAN: stack-out-of-bounds in trace_event_raw_event_spmi_read_end+0x1d0/0x234
+Read of size 2 at addr ffffffc0265b7540 by task thermal@2.0-ser/1314
+...
+Call trace:
+ dump_backtrace+0x0/0x3e8
+ show_stack+0x2c/0x3c
+ dump_stack_lvl+0xdc/0x11c
+ print_address_description+0x74/0x384
+ kasan_report+0x188/0x268
+ kasan_check_range+0x270/0x2b0
+ memcpy+0x90/0xe8
+ trace_event_raw_event_spmi_read_end+0x1d0/0x234
+ spmi_read_cmd+0x294/0x3ac
+ spmi_ext_register_readl+0x84/0x9c
+ regmap_spmi_ext_read+0x144/0x1b0 [regmap_spmi]
+ _regmap_raw_read+0x40c/0x754
+ regmap_raw_read+0x3a0/0x514
+ regmap_bulk_read+0x418/0x494
+ adc5_gen3_poll_wait_hs+0xe8/0x1e0 [qcom_spmi_adc5_gen3]
+ ...
+ __arm64_sys_read+0x4c/0x60
+ invoke_syscall+0x80/0x218
+ el0_svc_common+0xec/0x1c8
+ ...
+
+addr ffffffc0265b7540 is located in stack of task thermal@2.0-ser/1314 at offset 32 in frame:
+ adc5_gen3_poll_wait_hs+0x0/0x1e0 [qcom_spmi_adc5_gen3]
+
+this frame has 1 object:
+ [32, 33) 'status'
+
+Memory state around the buggy address:
+ ffffffc0265b7400: 00 00 00 00 00 00 00 00 00 00 00 00 f1 f1 f1 f1
+ ffffffc0265b7480: 04 f3 f3 f3 00 00 00 00 00 00 00 00 00 00 00 00
+>ffffffc0265b7500: 00 00 00 00 f1 f1 f1 f1 01 f3 f3 f3 00 00 00 00
+                                           ^
+ ffffffc0265b7580: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+ ffffffc0265b7600: f1 f1 f1 f1 01 f2 07 f2 f2 f2 01 f3 00 00 00 00
+==================================================================
+
+Fixes: a9fce374815d ("spmi: add command tracepoints for SPMI")
+Cc: stable@vger.kernel.org
+Reviewed-by: Stephen Boyd <sboyd@kernel.org>
+Acked-by: Steven Rostedt (Google) <rostedt@goodmis.org>
+Signed-off-by: David Collins <quic_collinsd@quicinc.com>
+Link: https://lore.kernel.org/r/20220627235512.2272783-1-quic_collinsd@quicinc.com
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- net/core/bpf_sk_storage.c |   10 +++++++++-
- 1 file changed, 9 insertions(+), 1 deletion(-)
+ include/trace/events/spmi.h |   12 ++++++------
+ 1 file changed, 6 insertions(+), 6 deletions(-)
 
---- a/net/core/bpf_sk_storage.c
-+++ b/net/core/bpf_sk_storage.c
-@@ -875,10 +875,18 @@ static int bpf_iter_init_sk_storage_map(
- {
- 	struct bpf_iter_seq_sk_storage_map_info *seq_info = priv_data;
+--- a/include/trace/events/spmi.h
++++ b/include/trace/events/spmi.h
+@@ -20,15 +20,15 @@ TRACE_EVENT(spmi_write_begin,
+ 		__field		( u8,         sid       )
+ 		__field		( u16,        addr      )
+ 		__field		( u8,         len       )
+-		__dynamic_array	( u8,   buf,  len + 1   )
++		__dynamic_array	( u8,   buf,  len       )
+ 	),
  
-+	bpf_map_inc_with_uref(aux->map);
- 	seq_info->map = aux->map;
- 	return 0;
- }
+ 	TP_fast_assign(
+ 		__entry->opcode = opcode;
+ 		__entry->sid    = sid;
+ 		__entry->addr   = addr;
+-		__entry->len    = len + 1;
+-		memcpy(__get_dynamic_array(buf), buf, len + 1);
++		__entry->len    = len;
++		memcpy(__get_dynamic_array(buf), buf, len);
+ 	),
  
-+static void bpf_iter_fini_sk_storage_map(void *priv_data)
-+{
-+	struct bpf_iter_seq_sk_storage_map_info *seq_info = priv_data;
-+
-+	bpf_map_put_with_uref(seq_info->map);
-+}
-+
- static int bpf_iter_attach_map(struct bpf_prog *prog,
- 			       union bpf_iter_link_info *linfo,
- 			       struct bpf_iter_aux_info *aux)
-@@ -924,7 +932,7 @@ static const struct seq_operations bpf_s
- static const struct bpf_iter_seq_info iter_seq_info = {
- 	.seq_ops		= &bpf_sk_storage_map_seq_ops,
- 	.init_seq_private	= bpf_iter_init_sk_storage_map,
--	.fini_seq_private	= NULL,
-+	.fini_seq_private	= bpf_iter_fini_sk_storage_map,
- 	.seq_priv_size		= sizeof(struct bpf_iter_seq_sk_storage_map_info),
- };
+ 	TP_printk("opc=%d sid=%02d addr=0x%04x len=%d buf=0x[%*phD]",
+@@ -91,7 +91,7 @@ TRACE_EVENT(spmi_read_end,
+ 		__field		( u16,        addr      )
+ 		__field		( int,        ret       )
+ 		__field		( u8,         len       )
+-		__dynamic_array	( u8,   buf,  len + 1   )
++		__dynamic_array	( u8,   buf,  len       )
+ 	),
  
+ 	TP_fast_assign(
+@@ -99,8 +99,8 @@ TRACE_EVENT(spmi_read_end,
+ 		__entry->sid    = sid;
+ 		__entry->addr   = addr;
+ 		__entry->ret    = ret;
+-		__entry->len    = len + 1;
+-		memcpy(__get_dynamic_array(buf), buf, len + 1);
++		__entry->len    = len;
++		memcpy(__get_dynamic_array(buf), buf, len);
+ 	),
+ 
+ 	TP_printk("opc=%d sid=%02d addr=0x%04x ret=%d len=%02d buf=0x[%*phD]",
 
 
