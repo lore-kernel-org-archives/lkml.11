@@ -2,44 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1C7AEC32792
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 43912C38147
 	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 11:42:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358126AbiHWLk4 (ORCPT
+        id S1358156AbiHWLlI (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 07:40:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49616 "EHLO
+        Tue, 23 Aug 2022 07:41:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49606 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355917AbiHWLfO (ORCPT
+        with ESMTP id S1355734AbiHWLfM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 07:35:14 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 23FD5760F8;
-        Tue, 23 Aug 2022 02:27:27 -0700 (PDT)
+        Tue, 23 Aug 2022 07:35:12 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 50C3277561;
+        Tue, 23 Aug 2022 02:27:25 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 60846612B5;
-        Tue, 23 Aug 2022 09:27:26 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4C7C4C433D6;
-        Tue, 23 Aug 2022 09:27:25 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id CBE7AB81C86;
+        Tue, 23 Aug 2022 09:27:23 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 13F28C433D6;
+        Tue, 23 Aug 2022 09:27:21 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661246845;
-        bh=yYN7JIlT5Ga9i8Qv78xFR4sQVOL1lB8OmPWG7slatzo=;
+        s=korg; t=1661246842;
+        bh=ny41RisFgH2lXvSY1az4/VFPso6COSCs+418G2y4p4s=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=iyNRuf5AuxF08eP8Y9+RlZssGt2csDB3MB7ISJvKzbYlHFWZDrCephWSF1u0d0HNq
-         MjrDQfiTMwy7Er/h2NrU1vSej67Jaq16j1xZkB7LZzCGx/nwtKXV/sYfP3aWBKbp+z
-         6e9o2g+D73tT47zEC/ZMu0U9BK5dKga5/e5/bEx4=
+        b=JwztcuajnhSe14CbMYBT4/bSPUyI/L+2BU4k8TIQIITufpd/vuQH+8IFpJu1tA7Um
+         PKzzDkc14a8p5WwM64RAlNrQf+E8jtTwg6QQGCdqBtIb4Vq6S0APAfsE+J7vH2+zeK
+         xnVv+TEHvhfv6eGWdGADsUMsykVKTNvXx4d/oQi4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        =?UTF-8?q?Pali=20Roh=C3=A1r?= <pali@kernel.org>,
-        Michael Ellerman <mpe@ellerman.id.au>,
+        stable@vger.kernel.org, Chen Zhongjin <chenzhongjin@huawei.com>,
+        Ingo Molnar <mingo@kernel.org>,
+        "Masami Hiramatsu (Google)" <mhiramat@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 239/389] powerpc/pci: Fix PHB numbering when using opal-phbid
-Date:   Tue, 23 Aug 2022 10:25:17 +0200
-Message-Id: <20220823080125.547440481@linuxfoundation.org>
+Subject: [PATCH 5.4 238/389] kprobes: Forbid probing on trampoline and BPF code areas
+Date:   Tue, 23 Aug 2022 10:25:16 +0200
+Message-Id: <20220823080125.507143076@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220823080115.331990024@linuxfoundation.org>
 References: <20220823080115.331990024@linuxfoundation.org>
@@ -51,56 +51,50 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Michael Ellerman <mpe@ellerman.id.au>
+From: Chen Zhongjin <chenzhongjin@huawei.com>
 
-[ Upstream commit f4b39e88b42d13366b831270306326b5c20971ca ]
+[ Upstream commit 28f6c37a2910f565b4f5960df52b2eccae28c891 ]
 
-The recent change to the PHB numbering logic has a logic error in the
-handling of "ibm,opal-phbid".
+kernel_text_address() treats ftrace_trampoline, kprobe_insn_slot
+and bpf_text_address as valid kprobe addresses - which is not ideal.
 
-When an "ibm,opal-phbid" property is present, &prop is written to and
-ret is set to zero.
+These text areas are removable and changeable without any notification
+to kprobes, and probing on them can trigger unexpected behavior:
 
-The following call to of_alias_get_id() is skipped because ret == 0.
+  https://lkml.org/lkml/2022/7/26/1148
 
-But then the if (ret >= 0) is true, and the body of that if statement
-sets prop = ret which throws away the value that was just read from
-"ibm,opal-phbid".
+Considering that jump_label and static_call text are already
+forbiden to probe, kernel_text_address() should be replaced with
+core_kernel_text() and is_module_text_address() to check other text
+areas which are unsafe to kprobe.
 
-Fix the logic by only doing the ret >= 0 check in the of_alias_get_id()
-case.
+[ mingo: Rewrote the changelog. ]
 
-Fixes: 0fe1e96fef0a ("powerpc/pci: Prefer PCI domain assignment via DT 'linux,pci-domain' and alias")
-Reviewed-by: Pali Rohár <pali@kernel.org>
-Signed-off-by: Michael Ellerman <mpe@ellerman.id.au>
-Link: https://lore.kernel.org/r/20220802105723.1055178-1-mpe@ellerman.id.au
+Fixes: 5b485629ba0d ("kprobes, extable: Identify kprobes trampolines as kernel text area")
+Fixes: 74451e66d516 ("bpf: make jited programs visible in traces")
+Signed-off-by: Chen Zhongjin <chenzhongjin@huawei.com>
+Signed-off-by: Ingo Molnar <mingo@kernel.org>
+Acked-by: Masami Hiramatsu (Google) <mhiramat@kernel.org>
+Link: https://lore.kernel.org/r/20220801033719.228248-1-chenzhongjin@huawei.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/powerpc/kernel/pci-common.c | 10 ++++++----
- 1 file changed, 6 insertions(+), 4 deletions(-)
+ kernel/kprobes.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-diff --git a/arch/powerpc/kernel/pci-common.c b/arch/powerpc/kernel/pci-common.c
-index 1e827e3769a8..622463a88f05 100644
---- a/arch/powerpc/kernel/pci-common.c
-+++ b/arch/powerpc/kernel/pci-common.c
-@@ -89,11 +89,13 @@ static int get_phb_number(struct device_node *dn)
- 	}
- 	if (ret)
- 		ret = of_property_read_u64(dn, "ibm,opal-phbid", &prop);
--	if (ret)
-+
-+	if (ret) {
- 		ret = of_alias_get_id(dn, "pci");
--	if (ret >= 0) {
--		prop = ret;
--		ret = 0;
-+		if (ret >= 0) {
-+			prop = ret;
-+			ret = 0;
-+		}
- 	}
- 	if (ret) {
- 		u32 prop_32;
+diff --git a/kernel/kprobes.c b/kernel/kprobes.c
+index c93340bae3ac..671b51782182 100644
+--- a/kernel/kprobes.c
++++ b/kernel/kprobes.c
+@@ -1594,7 +1594,8 @@ static int check_kprobe_address_safe(struct kprobe *p,
+ 	preempt_disable();
+ 
+ 	/* Ensure it is not in reserved area nor out of text */
+-	if (!kernel_text_address((unsigned long) p->addr) ||
++	if (!(core_kernel_text((unsigned long) p->addr) ||
++	    is_module_text_address((unsigned long) p->addr)) ||
+ 	    within_kprobe_blacklist((unsigned long) p->addr) ||
+ 	    jump_label_text_reserved(p->addr, p->addr) ||
+ 	    find_bug((unsigned long)p->addr)) {
 -- 
 2.35.1
 
