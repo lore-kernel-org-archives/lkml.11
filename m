@@ -2,46 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id ABA28C32772
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 08:35:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3D0E8C32772
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 08:36:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344237AbiHWIfS (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 04:35:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60264 "EHLO
+        id S244188AbiHWIfX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 23 Aug 2022 04:35:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35128 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346992AbiHWIcK (ORCPT
+        with ESMTP id S1347221AbiHWIcR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 04:32:10 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 337C374E23;
-        Tue, 23 Aug 2022 01:16:22 -0700 (PDT)
+        Tue, 23 Aug 2022 04:32:17 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7DEA06DF80;
+        Tue, 23 Aug 2022 01:16:23 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 4CA5661238;
-        Tue, 23 Aug 2022 08:16:22 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3950CC433D6;
-        Tue, 23 Aug 2022 08:16:21 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 97ADF6132D;
+        Tue, 23 Aug 2022 08:15:45 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 96DA1C433D6;
+        Tue, 23 Aug 2022 08:15:44 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661242581;
-        bh=2cnvJBgNQeP6YaccfYEAUaqtV2LiY3X/dI5JdqXJ8wg=;
+        s=korg; t=1661242545;
+        bh=FRJzzAnCaxoDotjb7MHc+PSZZr5SJZD7UjAEYcm83gc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=zrNftSmdBrA1CMyT/AtlPjCXCt3aB9jixH8LfdZC8Qho5k3PCqJWuccGBAaho/p4D
-         KvbpghxthJWGfRMftJmY4spTP1dQGTyh8tfTL/8Usb2VxGsznRvF/tinwB4Rc2610Q
-         j2jccqHnxfX29fYu/TP6Q6qG7+UL5uuJqF6Mx378=
+        b=Q8CG2NM3bOSpRTK7/FJEgVnuwXJOvuUTj5ke1cH5YKz90stVVw3O2mesLaaIsej8W
+         iAsGAFrgVlPwzqUb+JmOC18i0H/0smNPc3Lr4bTu77skVfwOpdp6zSY/jtNS3Nc58c
+         4sKTaatbyXavj4wxl31012flgEwcZstRYta4TuOk=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jeff Layton <jlayton@kernel.org>,
-        =?UTF-8?q?Lu=C3=ADs=20Henriques?= <lhenriques@suse.de>,
-        Ilya Dryomov <idryomov@gmail.com>
-Subject: [PATCH 5.19 140/365] ceph: dont leak snap_rwsem in handle_cap_grant
-Date:   Tue, 23 Aug 2022 10:00:41 +0200
-Message-Id: <20220823080124.073498675@linuxfoundation.org>
+        stable@vger.kernel.org, Jozef Martiniak <jomajm@gmail.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 4.9 089/101] gadgetfs: ep_io - wait until IRQ finishes
+Date:   Tue, 23 Aug 2022 10:04:02 +0200
+Message-Id: <20220823080037.947955274@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220823080118.128342613@linuxfoundation.org>
-References: <20220823080118.128342613@linuxfoundation.org>
+In-Reply-To: <20220823080034.579196046@linuxfoundation.org>
+References: <20220823080034.579196046@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -50,63 +48,37 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jeff Layton <jlayton@kernel.org>
+From: Jozef Martiniak <jomajm@gmail.com>
 
-commit 58dd4385577ed7969b80cdc9e2a31575aba6c712 upstream.
+[ Upstream commit 04cb742d4d8f30dc2e83b46ac317eec09191c68e ]
 
-When handle_cap_grant is called on an IMPORT op, then the snap_rwsem is
-held and the function is expected to release it before returning. It
-currently fails to do that in all cases which could lead to a deadlock.
+after usb_ep_queue() if wait_for_completion_interruptible() is
+interrupted we need to wait until IRQ gets finished.
 
-Fixes: 6f05b30ea063 ("ceph: reset i_requested_max_size if file write is not wanted")
-Link: https://tracker.ceph.com/issues/55857
-Signed-off-by: Jeff Layton <jlayton@kernel.org>
-Reviewed-by: Luís Henriques <lhenriques@suse.de>
-Signed-off-by: Ilya Dryomov <idryomov@gmail.com>
+Otherwise complete() from epio_complete() can corrupt stack.
+
+Signed-off-by: Jozef Martiniak <jomajm@gmail.com>
+Link: https://lore.kernel.org/r/20220708070645.6130-1-jomajm@gmail.com
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- fs/ceph/caps.c |   27 +++++++++++++--------------
- 1 file changed, 13 insertions(+), 14 deletions(-)
+ drivers/usb/gadget/legacy/inode.c | 1 +
+ 1 file changed, 1 insertion(+)
 
---- a/fs/ceph/caps.c
-+++ b/fs/ceph/caps.c
-@@ -3578,24 +3578,23 @@ static void handle_cap_grant(struct inod
- 			fill_inline = true;
- 	}
+diff --git a/drivers/usb/gadget/legacy/inode.c b/drivers/usb/gadget/legacy/inode.c
+index 2b30b5a1b577..8d53b3ac31c6 100644
+--- a/drivers/usb/gadget/legacy/inode.c
++++ b/drivers/usb/gadget/legacy/inode.c
+@@ -365,6 +365,7 @@ ep_io (struct ep_data *epdata, void *buf, unsigned len)
+ 				spin_unlock_irq (&epdata->dev->lock);
  
--	if (ci->i_auth_cap == cap &&
--	    le32_to_cpu(grant->op) == CEPH_CAP_OP_IMPORT) {
--		if (newcaps & ~extra_info->issued)
--			wake = true;
-+	if (le32_to_cpu(grant->op) == CEPH_CAP_OP_IMPORT) {
-+		if (ci->i_auth_cap == cap) {
-+			if (newcaps & ~extra_info->issued)
-+				wake = true;
- 
--		if (ci->i_requested_max_size > max_size ||
--		    !(le32_to_cpu(grant->wanted) & CEPH_CAP_ANY_FILE_WR)) {
--			/* re-request max_size if necessary */
--			ci->i_requested_max_size = 0;
--			wake = true;
--		}
-+			if (ci->i_requested_max_size > max_size ||
-+			    !(le32_to_cpu(grant->wanted) & CEPH_CAP_ANY_FILE_WR)) {
-+				/* re-request max_size if necessary */
-+				ci->i_requested_max_size = 0;
-+				wake = true;
-+			}
- 
--		ceph_kick_flushing_inode_caps(session, ci);
--		spin_unlock(&ci->i_ceph_lock);
-+			ceph_kick_flushing_inode_caps(session, ci);
-+		}
- 		up_read(&session->s_mdsc->snap_rwsem);
--	} else {
--		spin_unlock(&ci->i_ceph_lock);
- 	}
-+	spin_unlock(&ci->i_ceph_lock);
- 
- 	if (fill_inline)
- 		ceph_fill_inline_data(inode, NULL, extra_info->inline_data,
+ 				DBG (epdata->dev, "endpoint gone\n");
++				wait_for_completion(&done);
+ 				epdata->status = -ENODEV;
+ 			}
+ 		}
+-- 
+2.35.1
+
 
 
