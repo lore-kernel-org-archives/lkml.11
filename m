@@ -2,34 +2,34 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1DB42C48BEA
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3DC7DC49EC1
 	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 11:32:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357889AbiHWLcD (ORCPT
+        id S1357974AbiHWLcH (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 07:32:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37980 "EHLO
+        Tue, 23 Aug 2022 07:32:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38210 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1358043AbiHWL1L (ORCPT
+        with ESMTP id S1358070AbiHWL1P (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 07:27:11 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E8EDEC22A9;
-        Tue, 23 Aug 2022 02:24:53 -0700 (PDT)
+        Tue, 23 Aug 2022 07:27:15 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A5518C2EB6;
+        Tue, 23 Aug 2022 02:24:57 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id DACBB61298;
-        Tue, 23 Aug 2022 09:24:52 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D7A1EC433C1;
-        Tue, 23 Aug 2022 09:24:51 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 736F161298;
+        Tue, 23 Aug 2022 09:24:56 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 361FDC433C1;
+        Tue, 23 Aug 2022 09:24:54 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661246692;
-        bh=SST7BgK6nRiYlNdnB7lLK158LHGtjk/AuY3lc7GNw78=;
+        s=korg; t=1661246695;
+        bh=/RaeS7m5dAmIU2S1dxom5JWgLdGUIw6c/w0E9WlM5zo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=z9oG9eNuXxIJsrMT08YndL/zsMpiIUY8fcn2rVYeK0vOqh9ZdY/+9pD7ZWiB3cm4e
-         imd+NGLn3Y4ZIJHSFoaAlI6KRw1SsvZXIYZNjL5fqBbD34N1Uhfi7umhAO10AX7N42
-         ahhXzsJctIJHCXuy5Dh5lPGURSOBtjDhY5sI3BTA=
+        b=qyhi5t+EUApExrirMXkZi6IUS88sh3zS+yS9AuZSzWgdIF+7EjxGe9pFDtXLKEX6M
+         837KpacI9JmmHNsJpZ6AT5ROiC/E8mrm7nrltNzEEIYzmZn/36kry/sIzsQa/7N6T0
+         qtjVwZPhErVJzfzLspDBydySc4Hfe/1ulULE5gZM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
@@ -37,9 +37,9 @@ Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Robert Richter <rric@kernel.org>,
         Ulf Hansson <ulf.hansson@linaro.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 189/389] mmc: cavium-octeon: Add of_node_put() when breaking out of loop
-Date:   Tue, 23 Aug 2022 10:24:27 +0200
-Message-Id: <20220823080123.525084938@linuxfoundation.org>
+Subject: [PATCH 5.4 190/389] mmc: cavium-thunderx: Add of_node_put() when breaking out of loop
+Date:   Tue, 23 Aug 2022 10:24:28 +0200
+Message-Id: <20220823080123.560573012@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220823080115.331990024@linuxfoundation.org>
 References: <20220823080115.331990024@linuxfoundation.org>
@@ -53,34 +53,38 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Liang He <windhl@126.com>
 
-[ Upstream commit 19bbb49acf8d7a03cb83e05624363741a4c3ec6f ]
+[ Upstream commit 7ee480795e41db314f2c445c65ed854a5d6e8e32 ]
 
-In octeon_mmc_probe(), we should call of_node_put() when breaking
+In thunder_mmc_probe(), we should call of_node_put() when breaking
 out of for_each_child_of_node() which has increased and decreased
 the refcount during each iteration.
 
-Fixes: 01d95843335c ("mmc: cavium: Add MMC support for Octeon SOCs.")
+Fixes: 166bac38c3c5 ("mmc: cavium: Add MMC PCI driver for ThunderX SOCs")
 Signed-off-by: Liang He <windhl@126.com>
 Acked-by: Robert Richter <rric@kernel.org>
-Link: https://lore.kernel.org/r/20220719095216.1241601-1-windhl@126.com
+Link: https://lore.kernel.org/r/20220719095216.1241601-2-windhl@126.com
 Signed-off-by: Ulf Hansson <ulf.hansson@linaro.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/mmc/host/cavium-octeon.c | 1 +
- 1 file changed, 1 insertion(+)
+ drivers/mmc/host/cavium-thunderx.c | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/mmc/host/cavium-octeon.c b/drivers/mmc/host/cavium-octeon.c
-index 22aded1065ae..2245452a44c8 100644
---- a/drivers/mmc/host/cavium-octeon.c
-+++ b/drivers/mmc/host/cavium-octeon.c
-@@ -288,6 +288,7 @@ static int octeon_mmc_probe(struct platform_device *pdev)
- 		if (ret) {
- 			dev_err(&pdev->dev, "Error populating slots\n");
- 			octeon_mmc_set_shared_power(host, 0);
-+			of_node_put(cn);
- 			goto error;
+diff --git a/drivers/mmc/host/cavium-thunderx.c b/drivers/mmc/host/cavium-thunderx.c
+index eee08d81b242..f79806e31e7e 100644
+--- a/drivers/mmc/host/cavium-thunderx.c
++++ b/drivers/mmc/host/cavium-thunderx.c
+@@ -138,8 +138,10 @@ static int thunder_mmc_probe(struct pci_dev *pdev,
+ 				continue;
+ 
+ 			ret = cvm_mmc_of_slot_probe(&host->slot_pdev[i]->dev, host);
+-			if (ret)
++			if (ret) {
++				of_node_put(child_node);
+ 				goto error;
++			}
  		}
  		i++;
+ 	}
 -- 
 2.35.1
 
