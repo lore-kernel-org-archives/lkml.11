@@ -2,46 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1A46BC32772
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 29654C32774
 	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 09:16:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349231AbiHWJO6 (ORCPT
+        id S1349268AbiHWJPC (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 05:14:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40808 "EHLO
+        Tue, 23 Aug 2022 05:15:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39128 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349149AbiHWJLR (ORCPT
+        with ESMTP id S234244AbiHWJL5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 05:11:17 -0400
+        Tue, 23 Aug 2022 05:11:57 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BB41C66A6E;
-        Tue, 23 Aug 2022 01:31:26 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 552E986FCC;
+        Tue, 23 Aug 2022 01:31:49 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 976FF61338;
-        Tue, 23 Aug 2022 08:30:51 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9C710C433C1;
-        Tue, 23 Aug 2022 08:30:50 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 176B16132D;
+        Tue, 23 Aug 2022 08:31:49 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 25677C433C1;
+        Tue, 23 Aug 2022 08:31:47 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661243451;
-        bh=g8DqRUnEJ1CxvVsgj9EkQ/vTlZZXVk/+ZnUNVFzMwU4=;
+        s=korg; t=1661243508;
+        bh=K8+HU82cIH/0qwDMa0Dv+OBDT+wFIxbdQiqvPEXazeo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=0zOcLC8YOu/RS3e1yUSccPXXYzCr07bG3VtAbQoJLOP6e9g5bBGFKossxNlO+n+HB
-         fw4nS+2Nx70onNBDu9YwyXPvag7Erqp6GmUnUcCpKb36d+ZDoJejQFhfw4qrx/HvWa
-         jhtEAidDqNrwAkjMT2EnY6pug9UNWDYsuKMgItSA=
+        b=LCu6WYT13YGrhhy1+CTp3sDfXbl7ZozQr3np6kzAgVi6/6kLLh3u4HzR0IPAf6KbJ
+         EuQQDxwwPu9ZRVtG0HyGVZwaH19b8lN3zTxMF1KoV9/+vEruZasdd99GEZE0kMjeqr
+         ZTDO2PhW9/IFBBueTx7144mpRwyJ1IsXO19MYtGk=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
-        Sergey Senozhatsky <senozhatsky@chromium.org>,
-        Minchan Kim <minchan@kernel.org>,
-        Nitin Gupta <ngupta@vflare.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
+        Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>,
+        "Martin K. Petersen" <martin.petersen@oracle.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.19 282/365] zram: do not lookup algorithm in backends table
-Date:   Tue, 23 Aug 2022 10:03:03 +0200
-Message-Id: <20220823080129.969722274@linuxfoundation.org>
+Subject: [PATCH 5.19 269/365] scsi: ufs: core: Add UFSHCD_QUIRK_HIBERN_FASTAUTO
+Date:   Tue, 23 Aug 2022 10:02:50 +0200
+Message-Id: <20220823080129.437569823@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220823080118.128342613@linuxfoundation.org>
 References: <20220823080118.128342613@linuxfoundation.org>
@@ -53,98 +51,59 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Sergey Senozhatsky <senozhatsky@chromium.org>
+From: Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
 
-[ Upstream commit dc89997264de565999a1cb55db3f295d3a8e457b ]
+[ Upstream commit 2f11bbc2c7f37e3a6151ac548b1c0679cc90ea83 ]
 
-Always use crypto_has_comp() so that crypto can lookup module, call
-usermodhelper to load the modules, wait for usermodhelper to finish and so
-on.  Otherwise crypto will do all of these steps under CPU hot-plug lock
-and this looks like too much stuff to handle under the CPU hot-plug lock.
-Besides this can end up in a deadlock when usermodhelper triggers a code
-path that attempts to lock the CPU hot-plug lock, that zram already holds.
+Add UFSHCD_QUIRK_HIBERN_FASTAUTO quirk for host controllers which supports
+auto-hibernate the capability but only FASTAUTO mode.
 
-An example of such deadlock:
-
-- path A. zram grabs CPU hot-plug lock, execs /sbin/modprobe from crypto
-  and waits for modprobe to finish
-
-disksize_store
- zcomp_create
-  __cpuhp_state_add_instance
-   __cpuhp_state_add_instance_cpuslocked
-    zcomp_cpu_up_prepare
-     crypto_alloc_base
-      crypto_alg_mod_lookup
-       call_usermodehelper_exec
-        wait_for_completion_killable
-         do_wait_for_common
-          schedule
-
-- path B. async work kthread that brings in scsi device. It wants to
-  register CPUHP states at some point, and it needs the CPU hot-plug
-  lock for that, which is owned by zram.
-
-async_run_entry_fn
- scsi_probe_and_add_lun
-  scsi_mq_alloc_queue
-   blk_mq_init_queue
-    blk_mq_init_allocated_queue
-     blk_mq_realloc_hw_ctxs
-      __cpuhp_state_add_instance
-       __cpuhp_state_add_instance_cpuslocked
-        mutex_lock
-         schedule
-
-- path C. modprobe sleeps, waiting for all aync works to finish.
-
-load_module
- do_init_module
-  async_synchronize_full
-   async_synchronize_cookie_domain
-    schedule
-
-[senozhatsky@chromium.org: add comment]
-  Link: https://lkml.kernel.org/r/20220624060606.1014474-1-senozhatsky@chromium.org
-Link: https://lkml.kernel.org/r/20220622023501.517125-1-senozhatsky@chromium.org
-Signed-off-by: Sergey Senozhatsky <senozhatsky@chromium.org>
-Cc: Minchan Kim <minchan@kernel.org>
-Cc: Nitin Gupta <ngupta@vflare.org>
-Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
+Link: https://lore.kernel.org/r/20220603110524.1997825-4-yoshihiro.shimoda.uh@renesas.com
+Signed-off-by: Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
+Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/block/zram/zcomp.c | 11 +++++------
- 1 file changed, 5 insertions(+), 6 deletions(-)
+ drivers/ufs/core/ufshcd.c | 9 +++++++--
+ include/ufs/ufshcd.h      | 6 ++++++
+ 2 files changed, 13 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/block/zram/zcomp.c b/drivers/block/zram/zcomp.c
-index 052aa3f65514..0916de952e09 100644
---- a/drivers/block/zram/zcomp.c
-+++ b/drivers/block/zram/zcomp.c
-@@ -63,12 +63,6 @@ static int zcomp_strm_init(struct zcomp_strm *zstrm, struct zcomp *comp)
+diff --git a/drivers/ufs/core/ufshcd.c b/drivers/ufs/core/ufshcd.c
+index 141fff01a662..a51ca56a0ebe 100644
+--- a/drivers/ufs/core/ufshcd.c
++++ b/drivers/ufs/core/ufshcd.c
+@@ -4292,8 +4292,13 @@ static int ufshcd_get_max_pwr_mode(struct ufs_hba *hba)
+ 	if (hba->max_pwr_info.is_valid)
+ 		return 0;
  
- bool zcomp_available_algorithm(const char *comp)
- {
--	int i;
--
--	i = sysfs_match_string(backends, comp);
--	if (i >= 0)
--		return true;
--
- 	/*
- 	 * Crypto does not ignore a trailing new line symbol,
- 	 * so make sure you don't supply a string containing
-@@ -217,6 +211,11 @@ struct zcomp *zcomp_create(const char *compress)
- 	struct zcomp *comp;
- 	int error;
+-	pwr_info->pwr_tx = FAST_MODE;
+-	pwr_info->pwr_rx = FAST_MODE;
++	if (hba->quirks & UFSHCD_QUIRK_HIBERN_FASTAUTO) {
++		pwr_info->pwr_tx = FASTAUTO_MODE;
++		pwr_info->pwr_rx = FASTAUTO_MODE;
++	} else {
++		pwr_info->pwr_tx = FAST_MODE;
++		pwr_info->pwr_rx = FAST_MODE;
++	}
+ 	pwr_info->hs_rate = PA_HS_MODE_B;
  
+ 	/* Get the connected lane count */
+diff --git a/include/ufs/ufshcd.h b/include/ufs/ufshcd.h
+index 795c8951341d..991aea081ec7 100644
+--- a/include/ufs/ufshcd.h
++++ b/include/ufs/ufshcd.h
+@@ -583,6 +583,12 @@ enum ufshcd_quirks {
+ 	 * 64-bit addressing supported capability but it doesn't work.
+ 	 */
+ 	UFSHCD_QUIRK_BROKEN_64BIT_ADDRESS		= 1 << 17,
++
 +	/*
-+	 * Crypto API will execute /sbin/modprobe if the compression module
-+	 * is not loaded yet. We must do it here, otherwise we are about to
-+	 * call /sbin/modprobe under CPU hot-plug lock.
++	 * This quirk needs to be enabled if the host controller has
++	 * auto-hibernate capability but it's FASTAUTO only.
 +	 */
- 	if (!zcomp_available_algorithm(compress))
- 		return ERR_PTR(-EINVAL);
++	UFSHCD_QUIRK_HIBERN_FASTAUTO			= 1 << 18,
+ };
  
+ enum ufshcd_caps {
 -- 
 2.35.1
 
