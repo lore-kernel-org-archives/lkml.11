@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 998A6C54796
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B47C2C52D79
 	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 10:12:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353403AbiHWKL1 (ORCPT
+        id S1353928AbiHWKMS (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 06:11:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45178 "EHLO
+        Tue, 23 Aug 2022 06:12:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45806 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352123AbiHWKEe (ORCPT
+        with ESMTP id S1352252AbiHWKFI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 06:04:34 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9E9437CAB3;
-        Tue, 23 Aug 2022 01:51:26 -0700 (PDT)
+        Tue, 23 Aug 2022 06:05:08 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2DC577CB5E;
+        Tue, 23 Aug 2022 01:51:53 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 82C53611DD;
-        Tue, 23 Aug 2022 08:51:25 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6908BC433D6;
-        Tue, 23 Aug 2022 08:51:24 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 39F516150F;
+        Tue, 23 Aug 2022 08:51:53 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3ED85C433D6;
+        Tue, 23 Aug 2022 08:51:52 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661244684;
-        bh=940HAywEM73UL70jDkF4U0wYf98SJc6UM4UQiogCvyg=;
+        s=korg; t=1661244712;
+        bh=l1hHllYzgE1Bcw27PDIeyRbRqgXZ1yIg4OE0bNPY3QE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=R+5wkFIx6o0gmkcPMR9WGjcVB5WW9NPVr/E76sSq8D8J5ykdIBTZWxtcghhdgUtrN
-         79JZVvfne0L+c24sdiYJCcR4VSAS0G2h49KYNxGtnQHSn6AR4ihc8U3lUMqUZdc9ti
-         ZTm7VQYjaiVe6O196/kci8Zdr2sSzOAeKaZvHK5I=
+        b=qtBtKD8P56WqTsBtGD9/zPKl9Qx5K/7elZmvcwi5uJmglXefJ+vnsSzX8F/mtpXIQ
+         j5gupnDa7MBHNSCkneFfsFu/qFDU18UK0R2ElYooY7ZBMCmhps9S4jOgR7ljjTZjF9
+         WFy5yZBFn7x9L4seW5snyy2fBfHe3d1WJ3bqT170=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Christophe Leroy <christophe.leroy@csgroup.eu>,
-        Michael Ellerman <mpe@ellerman.id.au>
-Subject: [PATCH 4.14 175/229] powerpc/ptdump: Fix display of RW pages on FSL_BOOK3E
-Date:   Tue, 23 Aug 2022 10:25:36 +0200
-Message-Id: <20220823080059.865938476@linuxfoundation.org>
+        stable@vger.kernel.org, Filipe Manana <fdmanana@suse.com>,
+        David Sterba <dsterba@suse.com>
+Subject: [PATCH 4.14 179/229] btrfs: fix lost error handling when looking up extended ref on log replay
+Date:   Tue, 23 Aug 2022 10:25:40 +0200
+Message-Id: <20220823080100.012041778@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220823080053.202747790@linuxfoundation.org>
 References: <20220823080053.202747790@linuxfoundation.org>
@@ -50,53 +49,43 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Christophe Leroy <christophe.leroy@csgroup.eu>
+From: Filipe Manana <fdmanana@suse.com>
 
-commit dd8de84b57b02ba9c1fe530a6d916c0853f136bd upstream.
+commit 7a6b75b79902e47f46328b57733f2604774fa2d9 upstream.
 
-On FSL_BOOK3E, _PAGE_RW is defined with two bits, one for user and one
-for supervisor. As soon as one of the two bits is set, the page has
-to be display as RW. But the way it is implemented today requires both
-bits to be set in order to display it as RW.
+During log replay, when processing inode references, if we get an error
+when looking up for an extended reference at __add_inode_ref(), we ignore
+it and proceed, returning success (0) if no other error happens after the
+lookup. This is obviously wrong because in case an extended reference
+exists and it encodes some name not in the log, we need to unlink it,
+otherwise the filesystem state will not match the state it had after the
+last fsync.
 
-Instead of display RW when _PAGE_RW bits are set and R otherwise,
-reverse the logic and display R when _PAGE_RW bits are all 0 and
-RW otherwise.
+So just make __add_inode_ref() return an error it gets from the extended
+reference lookup.
 
-This change has no impact on other platforms as _PAGE_RW is a single
-bit on all of them.
-
-Fixes: 8eb07b187000 ("powerpc/mm: Dump linux pagetables")
-Cc: stable@vger.kernel.org
-Signed-off-by: Christophe Leroy <christophe.leroy@csgroup.eu>
-Signed-off-by: Michael Ellerman <mpe@ellerman.id.au>
-Link: https://lore.kernel.org/r/0c33b96317811edf691e81698aaee8fa45ec3449.1656427391.git.christophe.leroy@csgroup.eu
+Fixes: f186373fef005c ("btrfs: extended inode refs")
+CC: stable@vger.kernel.org # 4.9+
+Signed-off-by: Filipe Manana <fdmanana@suse.com>
+Reviewed-by: David Sterba <dsterba@suse.com>
+Signed-off-by: David Sterba <dsterba@suse.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/powerpc/mm/dump_linuxpagetables.c |   13 ++++---------
- 1 file changed, 4 insertions(+), 9 deletions(-)
+ fs/btrfs/tree-log.c |    4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
 
---- a/arch/powerpc/mm/dump_linuxpagetables.c
-+++ b/arch/powerpc/mm/dump_linuxpagetables.c
-@@ -123,15 +123,10 @@ static const struct flag_info flag_array
- 		.set	= "user",
- 		.clear	= "    ",
- 	}, {
--#if _PAGE_RO == 0
--		.mask	= _PAGE_RW,
--		.val	= _PAGE_RW,
--#else
--		.mask	= _PAGE_RO,
--		.val	= 0,
--#endif
--		.set	= "rw",
--		.clear	= "ro",
-+		.mask	= _PAGE_RW | _PAGE_RO,
-+		.val	= _PAGE_RO,
-+		.set	= "ro",
-+		.clear	= "rw",
- 	}, {
- 		.mask	= _PAGE_EXEC,
- 		.val	= _PAGE_EXEC,
+--- a/fs/btrfs/tree-log.c
++++ b/fs/btrfs/tree-log.c
+@@ -1100,7 +1100,9 @@ again:
+ 	extref = btrfs_lookup_inode_extref(NULL, root, path, name, namelen,
+ 					   inode_objectid, parent_objectid, 0,
+ 					   0);
+-	if (!IS_ERR_OR_NULL(extref)) {
++	if (IS_ERR(extref)) {
++		return PTR_ERR(extref);
++	} else if (extref) {
+ 		u32 item_size;
+ 		u32 cur_offset = 0;
+ 		unsigned long base;
 
 
