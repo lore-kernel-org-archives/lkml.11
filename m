@@ -2,46 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 257C8C38145
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9E46FC3814E
 	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 10:02:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351939AbiHWKA4 (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 06:00:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56642 "EHLO
+        id S232903AbiHWKAN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 23 Aug 2022 06:00:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52674 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352320AbiHWJ4n (ORCPT
+        with ESMTP id S1351939AbiHWJ4J (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 05:56:43 -0400
+        Tue, 23 Aug 2022 05:56:09 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 51F80A0300;
-        Tue, 23 Aug 2022 01:47:29 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 99C266E2F1;
+        Tue, 23 Aug 2022 01:47:05 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id DC50B611DD;
-        Tue, 23 Aug 2022 08:47:24 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E0335C433C1;
-        Tue, 23 Aug 2022 08:47:23 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 766D661377;
+        Tue, 23 Aug 2022 08:47:04 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7FED3C433D6;
+        Tue, 23 Aug 2022 08:47:03 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661244444;
-        bh=+EWlPLXccA8DIb+f4YN3r+iDOk1ctotMAa2U6XA4CPg=;
+        s=korg; t=1661244423;
+        bh=V8FuMfxWiHZBxPbrlGmg+HCvzmlMc32jHvv7Xlh8gbo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=m3N1onIKnCCPtSUTvG5odikgIhNvyfQ9Nlm3ej8NtMO2gB+oYdt/uzW/Y+d04mgy4
-         Hx1g/1TNdZPxxpVvFae/BZoEaYGI5pkijQSWVviq8iKDx2jn4x5eWPJIxM3YYvYfHu
-         NZSlWRbQFv3gMljPGU9czxhAqcaI+CV2vUcdgrZk=
+        b=icm6VwMY5n0xWWazuniyrNM/18hKvfUlCpDK6SDOP4bigRVXagnd0KDHlmBaEQp0U
+         dQffGQOCsAvlvb95iLDFs/jSWwbbHNQTB79B5eC+OK5Msu7qc93gSqdNlDEO6hjCoi
+         MECOGjiA++f/l2DSC3WmUUAn2wf24chlLd41dofQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
-        Michael Ellerman <mpe@ellerman.id.au>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.14 138/229] powerpc/xive: Fix refcount leak in xive_get_max_prio
-Date:   Tue, 23 Aug 2022 10:24:59 +0200
-Message-Id: <20220823080058.616954930@linuxfoundation.org>
+        stable@vger.kernel.org, Ondrej Mosnacek <omosnace@redhat.com>,
+        Masahiro Yamada <masahiroy@kernel.org>
+Subject: [PATCH 5.15 092/244] kbuild: dummy-tools: avoid tmpdir leak in dummy gcc
+Date:   Tue, 23 Aug 2022 10:24:11 +0200
+Message-Id: <20220823080102.089385419@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220823080053.202747790@linuxfoundation.org>
-References: <20220823080053.202747790@linuxfoundation.org>
+In-Reply-To: <20220823080059.091088642@linuxfoundation.org>
+References: <20220823080059.091088642@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -50,37 +48,48 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Miaoqian Lin <linmq006@gmail.com>
+From: Ondrej Mosnacek <omosnace@redhat.com>
 
-[ Upstream commit 255b650cbec6849443ce2e0cdd187fd5e61c218c ]
+commit aac289653fa5adf9e9985e4912c1d24a3e8cbab2 upstream.
 
-of_find_node_by_path() returns a node pointer with
-refcount incremented, we should use of_node_put() on it when done.
-Add missing of_node_put() to avoid refcount leak.
+When passed -print-file-name=plugin, the dummy gcc script creates a
+temporary directory that is never cleaned up. To avoid cluttering
+$TMPDIR, instead use a static directory included in the source tree.
 
-Fixes: eac1e731b59e ("powerpc/xive: guest exploitation of the XIVE interrupt controller")
-Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
-Signed-off-by: Michael Ellerman <mpe@ellerman.id.au>
-Link: https://lore.kernel.org/r/20220605053225.56125-1-linmq006@gmail.com
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Fixes: 76426e238834 ("kbuild: add dummy toolchains to enable all cc-option etc. in Kconfig")
+Signed-off-by: Ondrej Mosnacek <omosnace@redhat.com>
+Signed-off-by: Masahiro Yamada <masahiroy@kernel.org>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/powerpc/sysdev/xive/spapr.c | 1 +
- 1 file changed, 1 insertion(+)
+ .../dummy-tools/dummy-plugin-dir/include/plugin-version.h | 0
+ scripts/dummy-tools/gcc                                   | 8 ++------
+ 2 files changed, 2 insertions(+), 6 deletions(-)
+ create mode 100644 scripts/dummy-tools/dummy-plugin-dir/include/plugin-version.h
 
-diff --git a/arch/powerpc/sysdev/xive/spapr.c b/arch/powerpc/sysdev/xive/spapr.c
-index 10235098a726..e9b8e06c9dce 100644
---- a/arch/powerpc/sysdev/xive/spapr.c
-+++ b/arch/powerpc/sysdev/xive/spapr.c
-@@ -569,6 +569,7 @@ static bool xive_get_max_prio(u8 *max_prio)
- 	}
+diff --git a/scripts/dummy-tools/dummy-plugin-dir/include/plugin-version.h b/scripts/dummy-tools/dummy-plugin-dir/include/plugin-version.h
+new file mode 100644
+index 000000000000..e69de29bb2d1
+diff --git a/scripts/dummy-tools/gcc b/scripts/dummy-tools/gcc
+index b2483149bbe5..7db825843435 100755
+--- a/scripts/dummy-tools/gcc
++++ b/scripts/dummy-tools/gcc
+@@ -96,12 +96,8 @@ fi
  
- 	reg = of_get_property(rootdn, "ibm,plat-res-int-priorities", &len);
-+	of_node_put(rootdn);
- 	if (!reg) {
- 		pr_err("Failed to read 'ibm,plat-res-int-priorities' property\n");
- 		return false;
+ # To set GCC_PLUGINS
+ if arg_contain -print-file-name=plugin "$@"; then
+-	plugin_dir=$(mktemp -d)
+-
+-	mkdir -p $plugin_dir/include
+-	touch $plugin_dir/include/plugin-version.h
+-
+-	echo $plugin_dir
++	# Use $0 to find the in-tree dummy directory
++	echo "$(dirname "$(readlink -f "$0")")/dummy-plugin-dir"
+ 	exit 0
+ fi
+ 
 -- 
-2.35.1
+2.37.2
 
 
 
