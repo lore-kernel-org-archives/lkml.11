@@ -2,45 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 84142C3F6B0
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 08:32:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DE0E2C32792
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 08:32:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243698AbiHWIcq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 04:32:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46292 "EHLO
+        id S243736AbiHWIcv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 23 Aug 2022 04:32:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59138 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243751AbiHWI3g (ORCPT
+        with ESMTP id S243412AbiHWIaP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 04:29:36 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F050674366;
-        Tue, 23 Aug 2022 01:15:29 -0700 (PDT)
+        Tue, 23 Aug 2022 04:30:15 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0338974E0B;
+        Tue, 23 Aug 2022 01:15:17 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 2A3A6B81C3E;
-        Tue, 23 Aug 2022 08:14:33 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6FA41C433D7;
-        Tue, 23 Aug 2022 08:14:31 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 71974CE1B35;
+        Tue, 23 Aug 2022 08:15:04 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 879BCC433D7;
+        Tue, 23 Aug 2022 08:15:02 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661242471;
-        bh=Lw6+OHZALDDUo+C/EBstKYdK92NMO1shHUb3tm6rKQk=;
+        s=korg; t=1661242502;
+        bh=74BDVeIvMBWQuIu/Rh+9XV75YMCsgnfcdiv4ClaKEQU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=A4CzQ6aYhBLU3jR2bzo6e7cojVeSF5TvoeqEGNtZxT2kPKigp0lr31SDlm6e1xte0
-         4DLRyX8bnME+VPe1BIf7gr+vo1vtxv7GiGz1UTHMQ8vAgXXkgQFGjhHIvbCOA5ulqv
-         D3XmGqFOk2qx+UZejZxr2T+baEzac/t5w4l5Zn6Q=
+        b=faJo7Th67wI3Y8hrR1CeMEKasabHROba2H7QK58JoivYuQATcinlfIlRfOulbzrlS
+         MYCOs2I54Xey4PTPLtXQXe7aFnpb0vCZ69m5rx0M9W6mFzRs52trJIXMzasWS42VRb
+         bvQdmP9BMVRTwmCK2GKI/jKiBb3oH4m/W8YYp9gA=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Guillaume Nault <gnault@redhat.com>,
-        Matthias May <matthias.may@westermo.com>,
-        Jakub Kicinski <kuba@kernel.org>
-Subject: [PATCH 5.19 120/365] geneve: do not use RT_TOS for IPv6 flowlabel
-Date:   Tue, 23 Aug 2022 10:00:21 +0200
-Message-Id: <20220823080123.212222973@linuxfoundation.org>
+        stable@vger.kernel.org, Al Viro <viro@zeniv.linux.org.uk>,
+        Dinh Nguyen <dinguyen@kernel.org>
+Subject: [PATCH 4.9 081/101] nios2: fix syscall restart checks
+Date:   Tue, 23 Aug 2022 10:03:54 +0200
+Message-Id: <20220823080037.661864419@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220823080118.128342613@linuxfoundation.org>
-References: <20220823080118.128342613@linuxfoundation.org>
+In-Reply-To: <20220823080034.579196046@linuxfoundation.org>
+References: <20220823080034.579196046@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -49,42 +48,35 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Matthias May <matthias.may@westermo.com>
+From: Al Viro <viro@zeniv.linux.org.uk>
 
-commit ca2bb69514a8bc7f83914122f0d596371352416c upstream.
+commit 2d631bd58fe0ea3e3350212e23c9aba1fb606514 upstream.
 
-According to Guillaume Nault RT_TOS should never be used for IPv6.
+sys_foo() returns -512 (aka -ERESTARTSYS) => do_signal() sees
+512 in r2 and 1 in r1.
 
-Quote:
-RT_TOS() is an old macro used to interprete IPv4 TOS as described in
-the obsolete RFC 1349. It's conceptually wrong to use it even in IPv4
-code, although, given the current state of the code, most of the
-existing calls have no consequence.
+sys_foo() returns 512 => do_signal() sees 512 in r2 and 0 in r1.
 
-But using RT_TOS() in IPv6 code is always a bug: IPv6 never had a "TOS"
-field to be interpreted the RFC 1349 way. There's no historical
-compatibility to worry about.
+The former is restart-worthy; the latter obviously isn't.
 
-Fixes: 3a56f86f1be6 ("geneve: handle ipv6 priority like ipv4 tos")
-Acked-by: Guillaume Nault <gnault@redhat.com>
-Signed-off-by: Matthias May <matthias.may@westermo.com>
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Fixes: b53e906d255d ("nios2: Signal handling support")
+Signed-off-by: Al Viro <viro@zeniv.linux.org.uk>
+Signed-off-by: Dinh Nguyen <dinguyen@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/net/geneve.c |    3 +--
- 1 file changed, 1 insertion(+), 2 deletions(-)
+ arch/nios2/kernel/signal.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/drivers/net/geneve.c
-+++ b/drivers/net/geneve.c
-@@ -876,8 +876,7 @@ static struct dst_entry *geneve_get_v6_d
- 		use_cache = false;
- 	}
- 
--	fl6->flowlabel = ip6_make_flowinfo(RT_TOS(prio),
--					   info->key.label);
-+	fl6->flowlabel = ip6_make_flowinfo(prio, info->key.label);
- 	dst_cache = (struct dst_cache *)&info->dst_cache;
- 	if (use_cache) {
- 		dst = dst_cache_get_ip6(dst_cache, &fl6->saddr);
+--- a/arch/nios2/kernel/signal.c
++++ b/arch/nios2/kernel/signal.c
+@@ -240,7 +240,7 @@ static int do_signal(struct pt_regs *reg
+ 	/*
+ 	 * If we were from a system call, check for system call restarting...
+ 	 */
+-	if (regs->orig_r2 >= 0) {
++	if (regs->orig_r2 >= 0 && regs->r1) {
+ 		continue_addr = regs->ea;
+ 		restart_addr = continue_addr - 4;
+ 		retval = regs->r2;
 
 
