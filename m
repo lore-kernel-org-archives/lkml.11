@@ -2,68 +2,148 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 38E3CC3F6B0
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 16:39:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 46802C32789
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 16:39:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245224AbiHWQjj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 12:39:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57070 "EHLO
+        id S245283AbiHWQjp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 23 Aug 2022 12:39:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56244 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245201AbiHWQi6 (ORCPT
+        with ESMTP id S244834AbiHWQjM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 12:38:58 -0400
-X-Greylist: delayed 67 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Tue, 23 Aug 2022 07:43:39 PDT
-Received: from bg5.exmail.qq.com (bg4.exmail.qq.com [43.154.221.58])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 26CC08E4F8;
-        Tue, 23 Aug 2022 07:43:38 -0700 (PDT)
-X-QQ-mid: bizesmtp83t1661265814t78ql9yd
-Received: from localhost.localdomain ( [182.148.14.124])
-        by bizesmtp.qq.com (ESMTP) with 
-        id ; Tue, 23 Aug 2022 22:43:33 +0800 (CST)
-X-QQ-SSF: 0100000000200040B000B00A0000000
-X-QQ-FEAT: ILHsT53NKPhbzSS+gh/Vju1HDO7D+TMwTHiXgGN3VFKcrXUlfKwnbIOsVKxVM
-        HzGHF3+I3YzNZNGMSf9WvYbRexYSSRL/S6Yna01vxHdDrz+B4RF8QGby+QXpl4tAN3JNLLr
-        ZFx0h8RgdqNcNZ2xjw4+KF/drowED5vCgeySUxJZTY8cwYPdl3D62z/YRwKCqDzagZjex0j
-        sNRsFowhzt2e8G12HtBtsIiiJXutDMkqs6RJulqpIZ8CXuaap7bBP2OLbMmGDCNHbPEN/tt
-        +NSQja37ntXVPQj7kEdRqRacc7w2NpQHFs/0JCkCkTYm7xqm2jMMMl+fEQA/Pec2LLh/4t1
-        FMVajbogSv52zbCeQOAfhIlV507PrcRR4rEp+67ZHB9zDwk22GZ4S9rPbUvLA==
-X-QQ-GoodBg: 0
-From:   wangjianli <wangjianli@cdjrlc.com>
-To:     mchehab@kernel.org
-Cc:     linux-media@vger.kernel.org, linux-kernel@vger.kernel.org,
-        wangjianli <wangjianli@cdjrlc.com>
-Subject: [PATCH] media/dvb-frontends: fix repeated words in comments
-Date:   Tue, 23 Aug 2022 22:43:27 +0800
-Message-Id: <20220823144327.33107-1-wangjianli@cdjrlc.com>
-X-Mailer: git-send-email 2.36.1
+        Tue, 23 Aug 2022 12:39:12 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7579E606A7
+        for <linux-kernel@vger.kernel.org>; Tue, 23 Aug 2022 06:07:51 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1661260070;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=YAOIxblxocTtO3BL0vdfFElttBlZxbKdOb+H6jWEd7M=;
+        b=fNgdcccuRlVz9pfgy7SxPPjNWf573WoXc/Kygaf5nFUC5eWjL6ig0VMFcOmiU3G5jMs9b2
+        T9C3rPFaOGpLpfvdFx05yMYGuyXdMs64/wWVhyNFuxTgkA5g8Lkt2cg2V5qzPYJ1TbpxsD
+        8Bax1hUhIuRvBqy5tUcpPi3bDBEMIRI=
+Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
+ [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-464-lxsTvF6MOa6DNJO6C88fTQ-1; Tue, 23 Aug 2022 09:07:47 -0400
+X-MC-Unique: lxsTvF6MOa6DNJO6C88fTQ-1
+Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.rdu2.redhat.com [10.11.54.1])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 8CDD43C0CD5A;
+        Tue, 23 Aug 2022 13:07:43 +0000 (UTC)
+Received: from warthog.procyon.org.uk (unknown [10.33.36.72])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 6817F40CFD0A;
+        Tue, 23 Aug 2022 13:07:42 +0000 (UTC)
+Organization: Red Hat UK Ltd. Registered Address: Red Hat UK Ltd, Amberley
+        Place, 107-111 Peascod Street, Windsor, Berkshire, SI4 1TE, United
+        Kingdom.
+        Registered in England and Wales under Company Registration No. 3798903
+Subject: [PATCH 3/5] smb3: fix temporary data corruption in collapse range
+From:   David Howells <dhowells@redhat.com>
+To:     sfrench@samba.org, linux-cifs@vger.kernel.org
+Cc:     lsahlber@redhat.com, jlayton@kernel.org, dchinner@redhat.com,
+        willy@infradead.org, linux-fsdevel@vger.kernel.org,
+        linux-kernel@vger.kernel.org, samba-technical@lists.samba.org
+Date:   Tue, 23 Aug 2022 14:07:41 +0100
+Message-ID: <166126006184.548536.12909933168251738646.stgit@warthog.procyon.org.uk>
+In-Reply-To: <166126004083.548536.11195647088995116235.stgit@warthog.procyon.org.uk>
+References: <166126004083.548536.11195647088995116235.stgit@warthog.procyon.org.uk>
+User-Agent: StGit/1.4
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-QQ-SENDSIZE: 520
-Feedback-ID: bizesmtp:cdjrlc.com:qybglogicsvr:qybglogicsvr7
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+X-Scanned-By: MIMEDefang 2.84 on 10.11.54.1
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Delete the redundant word 'the'.
+From: Steve French <stfrench@microsoft.com>
 
-Signed-off-by: wangjianli <wangjianli@cdjrlc.com>
+collapse range doesn't discard the affected cached region
+so can risk temporarily corrupting the file data. This
+fixes xfstest generic/031
+
+I also decided to merge a minor cleanup to this into the same patch
+(avoiding rereading inode size repeatedly unnecessarily) to make it
+clearer.
+
+Cc: stable@vger.kernel.org
+Fixes: 5476b5dd82c8b ("cifs: add support for FALLOC_FL_COLLAPSE_RANGE")
+Reported-by: David Howells <dhowells@redhat.com>
+Tested-by: David Howells <dhowells@redhat.com>
+Reviewed-by: David Howells <dhowells@redhat.com>
+Signed-off-by: Steve French <stfrench@microsoft.com>
+cc: Ronnie Sahlberg <lsahlber@redhat.com>
 ---
- drivers/media/dvb-frontends/tda10048.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/media/dvb-frontends/tda10048.c b/drivers/media/dvb-frontends/tda10048.c
-index d1d206ebdedd..0b3f6999515e 100644
---- a/drivers/media/dvb-frontends/tda10048.c
-+++ b/drivers/media/dvb-frontends/tda10048.c
-@@ -1118,7 +1118,7 @@ struct dvb_frontend *tda10048_attach(const struct tda10048_config *config,
- 		state->pll_pfactor = 0;
+ fs/cifs/smb2ops.c |   26 ++++++++++++++++----------
+ 1 file changed, 16 insertions(+), 10 deletions(-)
+
+diff --git a/fs/cifs/smb2ops.c b/fs/cifs/smb2ops.c
+index 1c5a93ced946..75fcf6a0df56 100644
+--- a/fs/cifs/smb2ops.c
++++ b/fs/cifs/smb2ops.c
+@@ -3669,41 +3669,47 @@ static long smb3_collapse_range(struct file *file, struct cifs_tcon *tcon,
+ {
+ 	int rc;
+ 	unsigned int xid;
+-	struct inode *inode;
++	struct inode *inode = file_inode(file);
+ 	struct cifsFileInfo *cfile = file->private_data;
+-	struct cifsInodeInfo *cifsi;
++	struct cifsInodeInfo *cifsi = CIFS_I(inode);
+ 	__le64 eof;
++	loff_t old_eof;
+ 
+ 	xid = get_xid();
+ 
+-	inode = d_inode(cfile->dentry);
+-	cifsi = CIFS_I(inode);
++	inode_lock(inode);
+ 
+-	if (off >= i_size_read(inode) ||
+-	    off + len >= i_size_read(inode)) {
++	old_eof = i_size_read(inode);
++	if ((off >= old_eof) ||
++	    off + len >= old_eof) {
+ 		rc = -EINVAL;
+ 		goto out;
  	}
  
--	/* Establish any defaults the the user didn't pass */
-+	/* Establish any defaults the user didn't pass */
- 	tda10048_establish_defaults(&state->frontend);
++	filemap_invalidate_lock(inode->i_mapping);
+ 	filemap_write_and_wait(inode->i_mapping);
++	truncate_pagecache_range(inode, off, old_eof);
  
- 	/* Set the xtal and freq defaults */
--- 
-2.36.1
+ 	rc = smb2_copychunk_range(xid, cfile, cfile, off + len,
+-				  i_size_read(inode) - off - len, off);
++				  old_eof - off - len, off);
+ 	if (rc < 0)
+-		goto out;
++		goto out_2;
+ 
+-	eof = cpu_to_le64(i_size_read(inode) - len);
++	eof = cpu_to_le64(old_eof - len);
+ 	rc = SMB2_set_eof(xid, tcon, cfile->fid.persistent_fid,
+ 			  cfile->fid.volatile_fid, cfile->pid, &eof);
+ 	if (rc < 0)
+-		goto out;
++		goto out_2;
+ 
+ 	rc = 0;
+ 
+ 	cifsi->server_eof = i_size_read(inode) - len;
+ 	truncate_setsize(inode, cifsi->server_eof);
+ 	fscache_resize_cookie(cifs_inode_cookie(inode), cifsi->server_eof);
++out_2:
++	filemap_invalidate_unlock(inode->i_mapping);
+  out:
++	inode_unlock(inode);
+ 	free_xid(xid);
+ 	return rc;
+ }
+
 
