@@ -2,46 +2,56 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9E251C32774
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 10:03:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 718A4C32772
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 10:03:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351739AbiHWKD1 (ORCPT
+        id S1351817AbiHWKDf (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 06:03:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56304 "EHLO
+        Tue, 23 Aug 2022 06:03:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56420 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352460AbiHWJ46 (ORCPT
+        with ESMTP id S242856AbiHWJ5v (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 05:56:58 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4381CA1A77;
-        Tue, 23 Aug 2022 01:47:39 -0700 (PDT)
+        Tue, 23 Aug 2022 05:57:51 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 944F0A1D04;
+        Tue, 23 Aug 2022 01:47:54 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id D88B5B81C35;
-        Tue, 23 Aug 2022 08:47:34 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 334D1C433C1;
-        Tue, 23 Aug 2022 08:47:33 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id A0640614E9;
+        Tue, 23 Aug 2022 08:47:52 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 70653C433D6;
+        Tue, 23 Aug 2022 08:47:51 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661244453;
-        bh=w0p436ssZfj/lQdy31bDOBkJyI06WCHkjyGiFQ8EqOQ=;
+        s=korg; t=1661244472;
+        bh=CY49xwXKB0Rto104rE1C9k3u/W9bO7VSoKqt0iyrc0Q=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=1ndqCl6W+nIih8vE6fAXd8KbgmZ4NmDjcgPgFhV9YcgLysd43meI2vTnKSFr2CCgE
-         RsHx875my14uPutC80DZLkO/44mzgPn5KFnxwI8fnpSyLKD6dm6ymJkPKQRzp/V42Y
-         agYgiSEvxkQQ/aQkePNrqIgo0KQvH15FKcBjY+6o=
+        b=oE+o2AH+ofoVRpg8lTA/E6/6C2Vsz/Jb+oT7jRzXHYEBJyuE/SzNdQEBUZXxbt/Zr
+         3kpqUHW2rF6cDLdcu3tkzmo5gDmTYqarM56kM+XpLNEYawP1ajnrKGRxwW5XYz3tlX
+         ptFxnH1HVbYhZHSXNNnarLdYaMhJc8Voir0k7QV4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Dan Carpenter <dan.carpenter@oracle.com>,
-        Oleksandr Tyshchenko <oleksandr_tyshchenko@epam.com>,
-        Juergen Gross <jgross@suse.com>
-Subject: [PATCH 5.15 096/244] xen/xenbus: fix return type in xenbus_file_read()
-Date:   Tue, 23 Aug 2022 10:24:15 +0200
-Message-Id: <20220823080102.226698313@linuxfoundation.org>
+        stable@vger.kernel.org,
+        =?UTF-8?q?=E8=B0=AD=E6=A2=93=E7=85=8A?= <tanzixuan.me@gmail.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Jiri Olsa <jolsa@kernel.org>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>, Martin KaFai Lau <kafai@fb.com>,
+        Nick Terrell <terrelln@fb.com>,
+        Song Liu <songliubraving@fb.com>,
+        Stephane Eranian <eranian@google.com>,
+        Arnaldo Carvalho de Melo <acme@redhat.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 4.14 142/229] genelf: Use HAVE_LIBCRYPTO_SUPPORT, not the never defined HAVE_LIBCRYPTO
+Date:   Tue, 23 Aug 2022 10:25:03 +0200
+Message-Id: <20220823080058.751627291@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220823080059.091088642@linuxfoundation.org>
-References: <20220823080059.091088642@linuxfoundation.org>
+In-Reply-To: <20220823080053.202747790@linuxfoundation.org>
+References: <20220823080053.202747790@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -50,48 +60,55 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Dan Carpenter <dan.carpenter@oracle.com>
+From: Arnaldo Carvalho de Melo <acme@redhat.com>
 
-commit 32ad11127b95236dfc52375f3707853194a7f4b4 upstream.
+[ Upstream commit 91cea6be90e436c55cde8770a15e4dac9d3032d0 ]
 
-This code tries to store -EFAULT in an unsigned int.  The
-xenbus_file_read() function returns type ssize_t so the negative value
-is returned as a positive value to the user.
+When genelf was introduced it tested for HAVE_LIBCRYPTO not
+HAVE_LIBCRYPTO_SUPPORT, which is the define the feature test for openssl
+defines, fix it.
 
-This change forces another change to the min() macro.  Originally, the
-min() macro used "unsigned" type which checkpatch complains about.  Also
-unsigned type would break if "len" were not capped at MAX_RW_COUNT.  Use
-size_t for the min().  (No effect on runtime for the min_t() change).
+This also adds disables the deprecation warning, someone has to fix this
+to build with openssl 3.0 before the warning becomes a hard error.
 
-Fixes: 2fb3683e7b16 ("xen: Add xenbus device driver")
-Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
-Reviewed-by: Oleksandr Tyshchenko <oleksandr_tyshchenko@epam.com>
-Link: https://lore.kernel.org/r/YutxJUaUYRG/VLVc@kili
-Signed-off-by: Juergen Gross <jgross@suse.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Fixes: 9b07e27f88b9cd78 ("perf inject: Add jitdump mmap injection support")
+Reported-by: 谭梓煊 <tanzixuan.me@gmail.com>
+Cc: Alexei Starovoitov <ast@kernel.org>
+Cc: Andrii Nakryiko <andrii@kernel.org>
+Cc: Daniel Borkmann <daniel@iogearbox.net>
+Cc: Jiri Olsa <jolsa@kernel.org>
+Cc: John Fastabend <john.fastabend@gmail.com>
+Cc: KP Singh <kpsingh@kernel.org>
+Cc: Martin KaFai Lau <kafai@fb.com>
+Cc: Nick Terrell <terrelln@fb.com>
+Cc: Song Liu <songliubraving@fb.com>
+Cc: Stephane Eranian <eranian@google.com>
+Link: http://lore.kernel.org/lkml/YulpPqXSOG0Q4J1o@kernel.org
+Signed-off-by: Arnaldo Carvalho de Melo <acme@redhat.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/xen/xenbus/xenbus_dev_frontend.c |    4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ tools/perf/util/genelf.c | 6 +++++-
+ 1 file changed, 5 insertions(+), 1 deletion(-)
 
---- a/drivers/xen/xenbus/xenbus_dev_frontend.c
-+++ b/drivers/xen/xenbus/xenbus_dev_frontend.c
-@@ -128,7 +128,7 @@ static ssize_t xenbus_file_read(struct f
- {
- 	struct xenbus_file_priv *u = filp->private_data;
- 	struct read_buffer *rb;
--	unsigned i;
-+	ssize_t i;
- 	int ret;
+diff --git a/tools/perf/util/genelf.c b/tools/perf/util/genelf.c
+index c540d47583e7..ad64ff620c75 100644
+--- a/tools/perf/util/genelf.c
++++ b/tools/perf/util/genelf.c
+@@ -35,7 +35,11 @@
  
- 	mutex_lock(&u->reply_mutex);
-@@ -148,7 +148,7 @@ again:
- 	rb = list_entry(u->read_buffers.next, struct read_buffer, list);
- 	i = 0;
- 	while (i < len) {
--		unsigned sz = min((unsigned)len - i, rb->len - rb->cons);
-+		size_t sz = min_t(size_t, len - i, rb->len - rb->cons);
+ #define BUILD_ID_URANDOM /* different uuid for each run */
  
- 		ret = copy_to_user(ubuf + i, &rb->msg[rb->cons], sz);
+-#ifdef HAVE_LIBCRYPTO
++// FIXME, remove this and fix the deprecation warnings before its removed and
++// We'll break for good here...
++#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
++
++#ifdef HAVE_LIBCRYPTO_SUPPORT
  
+ #define BUILD_ID_MD5
+ #undef BUILD_ID_SHA	/* does not seem to work well when linked with Java */
+-- 
+2.35.1
+
 
 
