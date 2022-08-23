@@ -2,31 +2,31 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 35F99C32789
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 08:03:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 30393C32793
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 08:03:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241576AbiHWIDD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 04:03:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48206 "EHLO
+        id S240481AbiHWIDI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 23 Aug 2022 04:03:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48204 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241490AbiHWICw (ORCPT
+        with ESMTP id S241482AbiHWICw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 23 Aug 2022 04:02:52 -0400
 Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 909B2659D0
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 206C7659C7
         for <linux-kernel@vger.kernel.org>; Tue, 23 Aug 2022 01:02:51 -0700 (PDT)
 Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
         by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
         (Exim 4.92)
         (envelope-from <ore@pengutronix.de>)
-        id 1oQOrt-0002vz-O0; Tue, 23 Aug 2022 10:02:37 +0200
+        id 1oQOrt-0002vp-OU; Tue, 23 Aug 2022 10:02:38 +0200
 Received: from [2a0a:edc0:0:1101:1d::ac] (helo=dude04.red.stw.pengutronix.de)
         by drehscheibe.grey.stw.pengutronix.de with esmtp (Exim 4.94.2)
         (envelope-from <ore@pengutronix.de>)
-        id 1oQOrs-001Sva-AW; Tue, 23 Aug 2022 10:02:36 +0200
+        id 1oQOrr-001SvF-QS; Tue, 23 Aug 2022 10:02:35 +0200
 Received: from ore by dude04.red.stw.pengutronix.de with local (Exim 4.94.2)
         (envelope-from <ore@pengutronix.de>)
-        id 1oQOrp-00ALZW-8n; Tue, 23 Aug 2022 10:02:33 +0200
+        id 1oQOrp-00ALYe-5T; Tue, 23 Aug 2022 10:02:33 +0200
 From:   Oleksij Rempel <o.rempel@pengutronix.de>
 To:     Woojung Huh <woojung.huh@microchip.com>,
         UNGLinuxDriver@microchip.com, Andrew Lunn <andrew@lunn.ch>,
@@ -39,9 +39,9 @@ To:     Woojung Huh <woojung.huh@microchip.com>,
         Paolo Abeni <pabeni@redhat.com>
 Cc:     Oleksij Rempel <o.rempel@pengutronix.de>, kernel@pengutronix.de,
         linux-kernel@vger.kernel.org, netdev@vger.kernel.org
-Subject: [PATCH net-next v3 13/17] net: dsa: microchip: ksz9477: use internal_phy instead of phy_port_cnt
-Date:   Tue, 23 Aug 2022 10:02:27 +0200
-Message-Id: <20220823080231.2466017-14-o.rempel@pengutronix.de>
+Subject: [PATCH net-next v3 07/17] net: dsa: microchip: ksz8795: add error handling to ksz8_r/w_phy
+Date:   Tue, 23 Aug 2022 10:02:21 +0200
+Message-Id: <20220823080231.2466017-8-o.rempel@pengutronix.de>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20220823080231.2466017-1-o.rempel@pengutronix.de>
 References: <20220823080231.2466017-1-o.rempel@pengutronix.de>
@@ -55,89 +55,209 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-With code refactoring was introduced new variable internal_phy. Let's
-use it.
+Now ksz_pread/ksz_pwrite can return error value. So, make use of it.
 
 Signed-off-by: Oleksij Rempel <o.rempel@pengutronix.de>
+Reviewed-by: Vladimir Oltean <olteanv@gmail.com>
 ---
- drivers/net/dsa/microchip/ksz9477.c | 20 +++++++-------------
- 1 file changed, 7 insertions(+), 13 deletions(-)
+ drivers/net/dsa/microchip/ksz8795.c | 102 ++++++++++++++++++++++------
+ 1 file changed, 81 insertions(+), 21 deletions(-)
 
-diff --git a/drivers/net/dsa/microchip/ksz9477.c b/drivers/net/dsa/microchip/ksz9477.c
-index cb5bd0ceb8df4..2982c8cb0983c 100644
---- a/drivers/net/dsa/microchip/ksz9477.c
-+++ b/drivers/net/dsa/microchip/ksz9477.c
-@@ -291,7 +291,7 @@ int ksz9477_r_phy(struct ksz_device *dev, u16 addr, u16 reg, u16 *data)
- 	 * For RGMII PHY there is no way to access it so the fixed PHY should
- 	 * be used.  For SGMII PHY the supporting code will be added later.
- 	 */
--	if (addr >= dev->phy_port_cnt) {
-+	if (!dev->info->internal_phy[addr]) {
- 		struct ksz_port *p = &dev->ports[addr];
+diff --git a/drivers/net/dsa/microchip/ksz8795.c b/drivers/net/dsa/microchip/ksz8795.c
+index f2dd75ee0e075..f020d9f402845 100644
+--- a/drivers/net/dsa/microchip/ksz8795.c
++++ b/drivers/net/dsa/microchip/ksz8795.c
+@@ -560,14 +560,24 @@ int ksz8_r_phy(struct ksz_device *dev, u16 phy, u16 reg, u16 *val)
+ 	u8 val1, val2;
+ 	u16 data = 0;
+ 	u8 p = phy;
++	int ret;
  
- 		switch (reg) {
-@@ -339,7 +339,7 @@ int ksz9477_r_phy(struct ksz_device *dev, u16 addr, u16 reg, u16 *data)
- int ksz9477_w_phy(struct ksz_device *dev, u16 addr, u16 reg, u16 val)
- {
- 	/* No real PHY after this. */
--	if (addr >= dev->phy_port_cnt)
-+	if (!dev->info->internal_phy[addr])
- 		return 0;
+ 	regs = dev->info->regs;
  
- 	return ksz_pwrite16(dev, addr, 0x100 + (reg << 1), val);
-@@ -888,7 +888,7 @@ static phy_interface_t ksz9477_get_interface(struct ksz_device *dev, int port)
- 	phy_interface_t interface;
- 	bool gbit;
+ 	switch (reg) {
+ 	case MII_BMCR:
+-		ksz_pread8(dev, p, regs[P_NEG_RESTART_CTRL], &restart);
+-		ksz_pread8(dev, p, regs[P_SPEED_STATUS], &speed);
+-		ksz_pread8(dev, p, regs[P_FORCE_CTRL], &ctrl);
++		ret = ksz_pread8(dev, p, regs[P_NEG_RESTART_CTRL], &restart);
++		if (ret)
++			return ret;
++
++		ret = ksz_pread8(dev, p, regs[P_SPEED_STATUS], &speed);
++		if (ret)
++			return ret;
++
++		ret = ksz_pread8(dev, p, regs[P_FORCE_CTRL], &ctrl);
++		if (ret)
++			return ret;
++
+ 		if (restart & PORT_PHY_LOOPBACK)
+ 			data |= BMCR_LOOPBACK;
+ 		if (ctrl & PORT_FORCE_100_MBIT)
+@@ -597,7 +607,10 @@ int ksz8_r_phy(struct ksz_device *dev, u16 phy, u16 reg, u16 *val)
+ 			data |= KSZ886X_BMCR_DISABLE_LED;
+ 		break;
+ 	case MII_BMSR:
+-		ksz_pread8(dev, p, regs[P_LINK_STATUS], &link);
++		ret = ksz_pread8(dev, p, regs[P_LINK_STATUS], &link);
++		if (ret)
++			return ret;
++
+ 		data = BMSR_100FULL |
+ 		       BMSR_100HALF |
+ 		       BMSR_10FULL |
+@@ -618,7 +631,10 @@ int ksz8_r_phy(struct ksz_device *dev, u16 phy, u16 reg, u16 *val)
+ 			data = KSZ8795_ID_LO;
+ 		break;
+ 	case MII_ADVERTISE:
+-		ksz_pread8(dev, p, regs[P_LOCAL_CTRL], &ctrl);
++		ret = ksz_pread8(dev, p, regs[P_LOCAL_CTRL], &ctrl);
++		if (ret)
++			return ret;
++
+ 		data = ADVERTISE_CSMA;
+ 		if (ctrl & PORT_AUTO_NEG_SYM_PAUSE)
+ 			data |= ADVERTISE_PAUSE_CAP;
+@@ -632,7 +648,10 @@ int ksz8_r_phy(struct ksz_device *dev, u16 phy, u16 reg, u16 *val)
+ 			data |= ADVERTISE_10HALF;
+ 		break;
+ 	case MII_LPA:
+-		ksz_pread8(dev, p, regs[P_REMOTE_STATUS], &link);
++		ret = ksz_pread8(dev, p, regs[P_REMOTE_STATUS], &link);
++		if (ret)
++			return ret;
++
+ 		data = LPA_SLCT;
+ 		if (link & PORT_REMOTE_SYM_PAUSE)
+ 			data |= LPA_PAUSE_CAP;
+@@ -648,8 +667,14 @@ int ksz8_r_phy(struct ksz_device *dev, u16 phy, u16 reg, u16 *val)
+ 			data |= LPA_LPACK;
+ 		break;
+ 	case PHY_REG_LINK_MD:
+-		ksz_pread8(dev, p, REG_PORT_LINK_MD_CTRL, &val1);
+-		ksz_pread8(dev, p, REG_PORT_LINK_MD_RESULT, &val2);
++		ret = ksz_pread8(dev, p, REG_PORT_LINK_MD_CTRL, &val1);
++		if (ret)
++			return ret;
++
++		ret = ksz_pread8(dev, p, REG_PORT_LINK_MD_RESULT, &val2);
++		if (ret)
++			return ret;
++
+ 		if (val1 & PORT_START_CABLE_DIAG)
+ 			data |= PHY_START_CABLE_DIAG;
  
--	if (port < dev->phy_port_cnt)
-+	if (dev->info->internal_phy[port])
- 		return PHY_INTERFACE_MODE_NA;
+@@ -664,7 +689,10 @@ int ksz8_r_phy(struct ksz_device *dev, u16 phy, u16 reg, u16 *val)
+ 				FIELD_GET(PORT_CABLE_FAULT_COUNTER_L, val2));
+ 		break;
+ 	case PHY_REG_PHY_CTRL:
+-		ksz_pread8(dev, p, regs[P_LINK_STATUS], &link);
++		ret = ksz_pread8(dev, p, regs[P_LINK_STATUS], &link);
++		if (ret)
++			return ret;
++
+ 		if (link & PORT_MDIX_STATUS)
+ 			data |= KSZ886X_CTRL_MDIX_STAT;
+ 		break;
+@@ -683,6 +711,7 @@ int ksz8_w_phy(struct ksz_device *dev, u16 phy, u16 reg, u16 val)
+ 	u8 restart, speed, ctrl, data;
+ 	const u16 *regs;
+ 	u8 p = phy;
++	int ret;
  
- 	gbit = ksz_get_gbit(dev, port);
-@@ -995,7 +995,7 @@ void ksz9477_port_setup(struct ksz_device *dev, int port, bool cpu_port)
- 	/* enable 802.1p priority */
- 	ksz_port_cfg(dev, port, P_PRIO_CTRL, PORT_802_1P_PRIO_ENABLE, true);
+ 	regs = dev->info->regs;
  
--	if (port < dev->phy_port_cnt) {
-+	if (dev->info->internal_phy[port]) {
- 		/* do not force flow control */
- 		ksz_port_cfg(dev, port, REG_PORT_CTRL_0,
- 			     PORT_FORCE_TX_FLOW_CTRL | PORT_FORCE_RX_FLOW_CTRL,
-@@ -1018,7 +1018,7 @@ void ksz9477_port_setup(struct ksz_device *dev, int port, bool cpu_port)
- 	ksz9477_cfg_port_member(dev, port, member);
- 
- 	/* clear pending interrupts */
--	if (port < dev->phy_port_cnt)
-+	if (dev->info->internal_phy[port])
- 		ksz_pread16(dev, port, REG_PORT_PHY_INT_ENABLE, &data16);
- }
- 
-@@ -1081,7 +1081,7 @@ void ksz9477_config_cpu_port(struct dsa_switch *ds)
- 
- 		ksz_port_stp_state_set(ds, i, BR_STATE_DISABLED);
- 		p->on = 1;
--		if (i < dev->phy_port_cnt)
-+		if (dev->info->internal_phy[i])
- 			p->phy = 1;
- 		if (dev->chip_id == 0x00947700 && i == 6) {
- 			p->sgmii = 1;
-@@ -1177,15 +1177,9 @@ int ksz9477_switch_init(struct ksz_device *dev)
- 	if (ret)
- 		return ret;
- 
--	/* Number of ports can be reduced depending on chip. */
--	dev->phy_port_cnt = 5;
--
--	if (dev->chip_id == KSZ9893_CHIP_ID) {
-+	if (dev->chip_id == KSZ9893_CHIP_ID)
- 		dev->features |= IS_9893;
- 
--		dev->phy_port_cnt = 2;
--	}
--
- 	return 0;
- }
- 
+@@ -692,15 +721,26 @@ int ksz8_w_phy(struct ksz_device *dev, u16 phy, u16 reg, u16 val)
+ 		/* Do not support PHY reset function. */
+ 		if (val & BMCR_RESET)
+ 			break;
+-		ksz_pread8(dev, p, regs[P_SPEED_STATUS], &speed);
++		ret = ksz_pread8(dev, p, regs[P_SPEED_STATUS], &speed);
++		if (ret)
++			return ret;
++
+ 		data = speed;
+ 		if (val & KSZ886X_BMCR_HP_MDIX)
+ 			data |= PORT_HP_MDIX;
+ 		else
+ 			data &= ~PORT_HP_MDIX;
+-		if (data != speed)
+-			ksz_pwrite8(dev, p, regs[P_SPEED_STATUS], data);
+-		ksz_pread8(dev, p, regs[P_FORCE_CTRL], &ctrl);
++
++		if (data != speed) {
++			ret = ksz_pwrite8(dev, p, regs[P_SPEED_STATUS], data);
++			if (ret)
++				return ret;
++		}
++
++		ret = ksz_pread8(dev, p, regs[P_FORCE_CTRL], &ctrl);
++		if (ret)
++			return ret;
++
+ 		data = ctrl;
+ 		if (ksz_is_ksz88x3(dev)) {
+ 			if ((val & BMCR_ANENABLE))
+@@ -726,9 +766,17 @@ int ksz8_w_phy(struct ksz_device *dev, u16 phy, u16 reg, u16 val)
+ 			data |= PORT_FORCE_FULL_DUPLEX;
+ 		else
+ 			data &= ~PORT_FORCE_FULL_DUPLEX;
+-		if (data != ctrl)
+-			ksz_pwrite8(dev, p, regs[P_FORCE_CTRL], data);
+-		ksz_pread8(dev, p, regs[P_NEG_RESTART_CTRL], &restart);
++
++		if (data != ctrl) {
++			ret = ksz_pwrite8(dev, p, regs[P_FORCE_CTRL], data);
++			if (ret)
++				return ret;
++		}
++
++		ret = ksz_pread8(dev, p, regs[P_NEG_RESTART_CTRL], &restart);
++		if (ret)
++			return ret;
++
+ 		data = restart;
+ 		if (val & KSZ886X_BMCR_DISABLE_LED)
+ 			data |= PORT_LED_OFF;
+@@ -758,11 +806,19 @@ int ksz8_w_phy(struct ksz_device *dev, u16 phy, u16 reg, u16 val)
+ 			data |= PORT_PHY_LOOPBACK;
+ 		else
+ 			data &= ~PORT_PHY_LOOPBACK;
+-		if (data != restart)
+-			ksz_pwrite8(dev, p, regs[P_NEG_RESTART_CTRL], data);
++
++		if (data != restart) {
++			ret = ksz_pwrite8(dev, p, regs[P_NEG_RESTART_CTRL],
++					  data);
++			if (ret)
++				return ret;
++		}
+ 		break;
+ 	case MII_ADVERTISE:
+-		ksz_pread8(dev, p, regs[P_LOCAL_CTRL], &ctrl);
++		ret = ksz_pread8(dev, p, regs[P_LOCAL_CTRL], &ctrl);
++		if (ret)
++			return ret;
++
+ 		data = ctrl;
+ 		data &= ~(PORT_AUTO_NEG_SYM_PAUSE |
+ 			  PORT_AUTO_NEG_100BTX_FD |
+@@ -779,8 +835,12 @@ int ksz8_w_phy(struct ksz_device *dev, u16 phy, u16 reg, u16 val)
+ 			data |= PORT_AUTO_NEG_10BT_FD;
+ 		if (val & ADVERTISE_10HALF)
+ 			data |= PORT_AUTO_NEG_10BT;
+-		if (data != ctrl)
+-			ksz_pwrite8(dev, p, regs[P_LOCAL_CTRL], data);
++
++		if (data != ctrl) {
++			ret = ksz_pwrite8(dev, p, regs[P_LOCAL_CTRL], data);
++			if (ret)
++				return ret;
++		}
+ 		break;
+ 	case PHY_REG_LINK_MD:
+ 		if (val & PHY_START_CABLE_DIAG)
 -- 
 2.30.2
 
