@@ -2,44 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E9D71C32792
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 12:11:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EF281C32772
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 12:12:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1359489AbiHWML4 (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 08:11:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45768 "EHLO
+        id S243095AbiHWMMB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 23 Aug 2022 08:12:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38926 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1359739AbiHWMLF (ORCPT
+        with ESMTP id S1359768AbiHWMLJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 08:11:05 -0400
+        Tue, 23 Aug 2022 08:11:09 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D7D73C7F92;
-        Tue, 23 Aug 2022 02:38:58 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0F2A8E0FFA;
+        Tue, 23 Aug 2022 02:39:09 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 81FFAB81C97;
-        Tue, 23 Aug 2022 09:37:59 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CE943C433C1;
-        Tue, 23 Aug 2022 09:37:57 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 00382B81C9A;
+        Tue, 23 Aug 2022 09:39:01 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4A594C433D6;
+        Tue, 23 Aug 2022 09:38:59 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661247478;
-        bh=AjRQHlxk2wBIgYkQ7J3Gw7hX5PZJd+nwnR53i7RFcK8=;
+        s=korg; t=1661247539;
+        bh=8x8a63ntKhqkoOD+w91XE3oumOK0E4SykLQt4bVGTB8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=CZyn+Pmsp2Rv3ZwizuVMjbqNy1jxkw/hOK/b/7wVZ89OhtsBdMzjDjgV92ZOPLn0F
-         0f0AVnnkPjNslmnUawi2zBBfqBtpUMynK6+ATMIJztFRn9jfgkrzgXkW0CpWqU9XSL
-         k/Ezt3awmj0md1LJU0STvoAGTB//bxkvfwq5DvqU=
+        b=ap4XRKEsT/IBz/FfUNolqjSRFlTCrd6fpNHD864fkHToqCOkx78k3C+Gyn0rLzXZL
+         Cr0RpOdoGRcHqVZmIJ7T9b0WaUgRfRDYzQdlWmaLbmKimkg3zMbweFtJSrrnVjhVdq
+         52Vnj4V95zjTRmSt0qiBl6vFuwqAZGVH2mhwGbck=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
-        Rob Herring <robh@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>
-Subject: [PATCH 5.10 050/158] dt-bindings: arm: qcom: fix MSM8916 MTP compatibles
-Date:   Tue, 23 Aug 2022 10:26:22 +0200
-Message-Id: <20220823080048.113954231@linuxfoundation.org>
+        stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
+        Linus Walleij <linus.walleij@linaro.org>
+Subject: [PATCH 5.10 039/158] pinctrl: nomadik: Fix refcount leak in nmk_pinctrl_dt_subnode_to_map
+Date:   Tue, 23 Aug 2022 10:26:11 +0200
+Message-Id: <20220823080047.639775358@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220823080046.056825146@linuxfoundation.org>
 References: <20220823080046.056825146@linuxfoundation.org>
@@ -51,36 +48,36 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+From: Miaoqian Lin <linmq006@gmail.com>
 
-commit bb35fe1efbae4114bd288fae0f56070f563adcfc upstream.
+commit 4b32e054335ea0ce50967f63a7bfd4db058b14b9 upstream.
 
-The order of compatibles for MSM8916 MTP board is different:
+of_parse_phandle() returns a node pointer with refcount
+incremented, we should use of_node_put() on it when not need anymore.
+Add missing of_node_put() to avoid refcount leak."
 
-  msm8916-mtp.dtb: /: compatible: 'oneOf' conditional failed, one must be fixed:
-    ['qcom,msm8916-mtp', 'qcom,msm8916-mtp/1', 'qcom,msm8916'] is too long
-
-Fixes: 9d3ef77fe568 ("dt-bindings: arm: Convert QCom board/soc bindings to json-schema")
-Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Acked-by: Rob Herring <robh@kernel.org>
-Link: https://lore.kernel.org/r/20220520123252.365762-3-krzysztof.kozlowski@linaro.org
-Signed-off-by: Bjorn Andersson <bjorn.andersson@linaro.org>
+Fixes: c2f6d059abfc ("pinctrl: nomadik: refactor DT parser to take two paths")
+Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
+Link: https://lore.kernel.org/r/20220607111602.57355-1-linmq006@gmail.com
+Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- Documentation/devicetree/bindings/arm/qcom.yaml |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/pinctrl/nomadik/pinctrl-nomadik.c |    4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
 
---- a/Documentation/devicetree/bindings/arm/qcom.yaml
-+++ b/Documentation/devicetree/bindings/arm/qcom.yaml
-@@ -123,8 +123,8 @@ properties:
-           - const: qcom,msm8974
+--- a/drivers/pinctrl/nomadik/pinctrl-nomadik.c
++++ b/drivers/pinctrl/nomadik/pinctrl-nomadik.c
+@@ -1421,8 +1421,10 @@ static int nmk_pinctrl_dt_subnode_to_map
  
-       - items:
--          - const: qcom,msm8916-mtp/1
-           - const: qcom,msm8916-mtp
-+          - const: qcom,msm8916-mtp/1
-           - const: qcom,msm8916
- 
-       - items:
+ 	has_config = nmk_pinctrl_dt_get_config(np, &configs);
+ 	np_config = of_parse_phandle(np, "ste,config", 0);
+-	if (np_config)
++	if (np_config) {
+ 		has_config |= nmk_pinctrl_dt_get_config(np_config, &configs);
++		of_node_put(np_config);
++	}
+ 	if (has_config) {
+ 		const char *gpio_name;
+ 		const char *pin;
 
 
