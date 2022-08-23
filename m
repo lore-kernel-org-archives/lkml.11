@@ -2,42 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6A66EC32792
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A2644C32772
 	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 11:59:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1359093AbiHWL7N (ORCPT
+        id S1358894AbiHWL5e (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 07:59:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35598 "EHLO
+        Tue, 23 Aug 2022 07:57:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40772 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1359266AbiHWL4a (ORCPT
+        with ESMTP id S1358851AbiHWLy5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 07:56:30 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E30CC844C4;
-        Tue, 23 Aug 2022 02:34:05 -0700 (PDT)
+        Tue, 23 Aug 2022 07:54:57 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AC87427B3C;
+        Tue, 23 Aug 2022 02:33:24 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id D83286146E;
-        Tue, 23 Aug 2022 09:34:04 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D84E7C433C1;
-        Tue, 23 Aug 2022 09:34:03 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 34BF5CE1B61;
+        Tue, 23 Aug 2022 09:33:21 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 33277C43145;
+        Tue, 23 Aug 2022 09:33:18 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661247244;
-        bh=fy9Hbiarz6gfSjxp30zSLiolvV9NwPqMSdgxPIu22Qs=;
+        s=korg; t=1661247199;
+        bh=s9lab+a5xifcAa284CeV2WZkDk2Ia40oFHO0Pen9x6Y=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=QupQEscY90MmE3zSGsSq54TdzggXwFSXQyfHMTtgZk8GrHdW3p1BvgqJLTF0V2ccF
-         MC4FR1inkjUdtpgxjyTdylE4bNvPccc7/HocMGXdhQHSbp6JgCbCYYjuhobGaYN76U
-         4RqqnWrrtOjDlhTGaWPhR/Z1ZdkqBraKngbsCWZ4=
+        b=2BA9dMuaeXkvtXhS5Fzu1v0dH8KGOPzdwqDNSGtkYQpqAquPRn6VHGt1gexe8e75E
+         lP82jHHVjtg4BiIk825Z9MU/A8+5E7WZACvXFAFXX1wdxLOath5ANCeOHYp7xRoKdB
+         GpN92+MezO3MNT/31RiRJ+WgZ4ed0POv49RI90eM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Al Viro <viro@zeniv.linux.org.uk>,
-        Dinh Nguyen <dinguyen@kernel.org>
-Subject: [PATCH 5.4 333/389] nios2: restarts apply only to the first sigframe we build...
-Date:   Tue, 23 Aug 2022 10:26:51 +0200
-Message-Id: <20220823080129.426286082@linuxfoundation.org>
+        stable@vger.kernel.org, Pavan Chebbi <pavan.chebbi@broadcom.com>,
+        Michael Chan <michael.chan@broadcom.com>,
+        Bjorn Helgaas <bhelgaas@google.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.4 349/389] PCI: Add ACS quirk for Broadcom BCM5750x NICs
+Date:   Tue, 23 Aug 2022 10:27:07 +0200
+Message-Id: <20220823080130.123967066@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220823080115.331990024@linuxfoundation.org>
 References: <20220823080115.331990024@linuxfoundation.org>
@@ -49,27 +51,44 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Al Viro <viro@zeniv.linux.org.uk>
+From: Pavan Chebbi <pavan.chebbi@broadcom.com>
 
-commit 411a76b7219555c55867466c82d70ce928d6c9e1 upstream.
+[ Upstream commit afd306a65cedb9589564bdb23a0c368abc4215fd ]
 
-Fixes: b53e906d255d ("nios2: Signal handling support")
-Signed-off-by: Al Viro <viro@zeniv.linux.org.uk>
-Signed-off-by: Dinh Nguyen <dinguyen@kernel.org>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+The Broadcom BCM5750x NICs may be multi-function devices.  They do not
+advertise ACS capability. Peer-to-peer transactions are not possible
+between the individual functions, so it is safe to treat them as fully
+isolated.
+
+Add an ACS quirk for these devices so the functions can be in independent
+IOMMU groups and attached individually to userspace applications using
+VFIO.
+
+Link: https://lore.kernel.org/r/1654796507-28610-1-git-send-email-michael.chan@broadcom.com
+Signed-off-by: Pavan Chebbi <pavan.chebbi@broadcom.com>
+Signed-off-by: Michael Chan <michael.chan@broadcom.com>
+Signed-off-by: Bjorn Helgaas <bhelgaas@google.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/nios2/kernel/signal.c |    1 +
- 1 file changed, 1 insertion(+)
+ drivers/pci/quirks.c | 3 +++
+ 1 file changed, 3 insertions(+)
 
---- a/arch/nios2/kernel/signal.c
-+++ b/arch/nios2/kernel/signal.c
-@@ -261,6 +261,7 @@ static int do_signal(struct pt_regs *reg
- 			regs->ea = restart_addr;
- 			break;
- 		}
-+		regs->orig_r2 = -1;
- 	}
- 
- 	if (get_signal(&ksig)) {
+diff --git a/drivers/pci/quirks.c b/drivers/pci/quirks.c
+index 2a4bc8df8563..8b98b7f3eb24 100644
+--- a/drivers/pci/quirks.c
++++ b/drivers/pci/quirks.c
+@@ -4943,6 +4943,9 @@ static const struct pci_dev_acs_enabled {
+ 	{ PCI_VENDOR_ID_AMPERE, 0xE00C, pci_quirk_xgene_acs },
+ 	/* Broadcom multi-function device */
+ 	{ PCI_VENDOR_ID_BROADCOM, 0x16D7, pci_quirk_mf_endpoint_acs },
++	{ PCI_VENDOR_ID_BROADCOM, 0x1750, pci_quirk_mf_endpoint_acs },
++	{ PCI_VENDOR_ID_BROADCOM, 0x1751, pci_quirk_mf_endpoint_acs },
++	{ PCI_VENDOR_ID_BROADCOM, 0x1752, pci_quirk_mf_endpoint_acs },
+ 	{ PCI_VENDOR_ID_BROADCOM, 0xD714, pci_quirk_brcm_acs },
+ 	/* Amazon Annapurna Labs */
+ 	{ PCI_VENDOR_ID_AMAZON_ANNAPURNA_LABS, 0x0031, pci_quirk_al_acs },
+-- 
+2.35.1
+
 
 
