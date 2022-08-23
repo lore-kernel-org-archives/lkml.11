@@ -2,137 +2,133 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0F50DC32772
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 12:46:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3A00DC32772
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 12:52:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242038AbiHWMqZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 08:46:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48362 "EHLO
+        id S243526AbiHWMwx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 23 Aug 2022 08:52:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33416 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241529AbiHWMqC (ORCPT
+        with ESMTP id S243156AbiHWMwa (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 08:46:02 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 25D929D8CD
-        for <linux-kernel@vger.kernel.org>; Tue, 23 Aug 2022 02:53:56 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id BCB89B81C29
-        for <linux-kernel@vger.kernel.org>; Tue, 23 Aug 2022 09:53:52 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7DB3CC433C1;
-        Tue, 23 Aug 2022 09:53:47 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1661248431;
-        bh=Q5FEnebqitjiFea4DJafW7oybDFur+9NDnzsl+DMiHk=;
-        h=From:To:Cc:Subject:Date:From;
-        b=cydQGhX2IUbSZYu1cl7DoVMMqZ1FJcefxzn+x7FoMB12ErNrwU5STC1eR1t0oaFPt
-         zLvgDlHO/JCzUwufwHkULnGbWxTxlNy0E2+s/KHzkgPuRCftqXz+M5xYJBr/6M6Mh6
-         kQ6HNLH7XfoHB3aPrUfYN0G6pxHB+Hh5KmweXVEo7v0sk05lh+8zIvxsXYtiGwnZzC
-         OVlx6KjKpN9yopLER+FhOKnTn9+/4D4ERyXxD8+vIdobobhiNOzazah7gvqwUplwnR
-         2WDyFNsEY7W0kM6FsxSV2k7JKxekWgCw3oIPVRlhz9zpze7rJ5qQTObFtr738c/RT6
-         yDhTXblnLbRmQ==
-From:   Christian Brauner <brauner@kernel.org>
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Todd Kjos <tkjos@android.com>, linux-kernel@vger.kernel.org
-Cc:     Al Viro <viro@zeniv.linux.org.uk>,
-        =?UTF-8?q?Arve=20Hj=C3=B8nnev=C3=A5g?= <arve@android.com>,
-        Martijn Coenen <maco@android.com>,
-        Joel Fernandes <joel@joelfernandes.org>,
-        Carlos Llamas <cmllamas@google.com>,
-        Suren Baghdasaryan <surenb@google.com>,
-        Kees Cook <keescook@chromium.org>,
-        Dongliang Mu <mudongliangabcd@gmail.com>,
-        syzkaller <syzkaller@googlegroups.com>
-Subject: [PATCH v2] binderfs: rework superblock destruction
-Date:   Tue, 23 Aug 2022 11:53:39 +0200
-Message-Id: <20220823095339.853371-1-brauner@kernel.org>
-X-Mailer: git-send-email 2.34.1
+        Tue, 23 Aug 2022 08:52:30 -0400
+Received: from mail-wm1-x332.google.com (mail-wm1-x332.google.com [IPv6:2a00:1450:4864:20::332])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E05C26325
+        for <linux-kernel@vger.kernel.org>; Tue, 23 Aug 2022 02:58:15 -0700 (PDT)
+Received: by mail-wm1-x332.google.com with SMTP id r83-20020a1c4456000000b003a5cb389944so9243621wma.4
+        for <linux-kernel@vger.kernel.org>; Tue, 23 Aug 2022 02:58:15 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc;
+        bh=BbqAlWYfZGsyfPLY71apTq3nIwqXzvuPF15BxrlLdaw=;
+        b=MByJSC+DhVZo4v7UMC9BN4C3Ekn0xjud697Z7uxkms5N3Wp8X1tiX7L2YteroRiMZm
+         Tty7jqW0+nS6dq8odTqzz9w5y0IusBhMIyCijuhNIP/Gl/vQMPpvdEWEltpHTUEjFZ/F
+         cNKX+Mv/G8OP+1ZR6NBPB3rW9GJZJ5+Ziw+LrVryAORNPM3jfR06KGZf5MyB69OAH9Cu
+         AZ24f4qfEZyWvgiqJHF5AtorvsYi2hzrlBcGzZiA9z956emS+mOfRvkX4MlVk5zsJnYd
+         eWDOjWrxFN8RxPXAXAPWVnaRzoSanR6wdgs5/K2h2Y/Bpr/Po6rEEpbgBwHwijUhGtJ2
+         LIhQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc;
+        bh=BbqAlWYfZGsyfPLY71apTq3nIwqXzvuPF15BxrlLdaw=;
+        b=TD98emWaGfDqQoYrgW9OXV6QM1Mn2KQbw0+MURyELH7EYhMy1dtnKNLtqvg3RJZvkm
+         85hQmPuY9uWAc2wvN6JD5jw4CTiekNiVDlnGPrZLrKwuC+sCq80uu669ilIWicgp3JaC
+         N0NUYsOxLaouC1jGN9l7AAdpV2RySfHtgafKX53B5fJOfc2Uo031a7flq61UXCnnH4Qu
+         bmUib+WDACLx8KzbZwrjSM8tE67aGknlSRDABxLIjDBXiHP5EJYgnhNIx8+qATVsHKB4
+         ENlLcne7sTdN5hLGWmemtzm+4BdezLMXDgoIEygyVX1IUlXfCcHnNAgFs9yGB7QpoFzp
+         Epkg==
+X-Gm-Message-State: ACgBeo1SRkp7rNztFfzT4nChscQ0W6yZi2amK4LoaOTXg8IHsTkH1mIV
+        +3FCPu6x4YH667rCgCqUJ5nmd5rupyT8GLSv
+X-Google-Smtp-Source: AA6agR7KCCEiVwgbungNN9V/KW365pmudGRPb1bTDOxB0xPshfGIMwdaZoc/y8laIo0cKC1R2SsmNg==
+X-Received: by 2002:a05:600c:19c8:b0:3a5:ec6a:8d16 with SMTP id u8-20020a05600c19c800b003a5ec6a8d16mr1592882wmq.182.1661248693717;
+        Tue, 23 Aug 2022 02:58:13 -0700 (PDT)
+Received: from myrica (cpc92880-cmbg19-2-0-cust679.5-4.cable.virginm.net. [82.27.106.168])
+        by smtp.gmail.com with ESMTPSA id y9-20020adff149000000b0022549ecba02sm8462201wro.19.2022.08.23.02.58.13
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 23 Aug 2022 02:58:13 -0700 (PDT)
+Date:   Tue, 23 Aug 2022 10:58:10 +0100
+From:   Jean-Philippe Brucker <jean-philippe@linaro.org>
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc:     linux-kernel@vger.kernel.org, stable@vger.kernel.org,
+        John Fastabend <john.fastabend@gmail.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Ovidiu Panait <ovidiu.panait@windriver.com>
+Subject: Re: [PATCH 4.19 026/287] selftests/bpf: Fix "dubious pointer
+ arithmetic" test
+Message-ID: <YwSksjAucU2zwo0y@myrica>
+References: <20220823080100.268827165@linuxfoundation.org>
+ <20220823080101.156298170@linuxfoundation.org>
 MIME-Version: 1.0
-X-Developer-Signature: v=1; a=openpgp-sha256; l=2417; i=brauner@kernel.org; h=from:subject; bh=2fbddUWii2vIogxqCBndRUeMJ0elbAaMYulczrf2jOY=; b=owGbwMvMwCU28Zj0gdSKO4sYT6slMSSzLJ6k+8fEN1FLU2vPlswFL2uEtquq/ra9OeOFGUdA17LP l3pFOkpZGMS4GGTFFFkc2k3C5ZbzVGw2ytSAmcPKBDKEgYtTACbiGcXI0FwQ8DBFXXHBLgXr/FCupv aFnJOLAyN1T8W3Ta7fWHyWkZFhUdyJVxv21QlrdWZu49gS1xj0NOLuuo7rx4TtpOcrChzmBQA=
-X-Developer-Key: i=brauner@kernel.org; a=openpgp; fpr=4880B8C9BD0E5106FC070F4F7B3C391EFEA93624
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220823080101.156298170@linuxfoundation.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Al Viro <viro@zeniv.linux.org.uk>
+Hi,
 
-So far we relied on
-.put_super = binderfs_put_super()
-to destroy info we stashed in sb->s_fs_info. This gave us the required ordering
-between ->evict_inode() and sb->s_fs_info destruction.
+On Tue, Aug 23, 2022 at 10:23:15AM +0200, Greg Kroah-Hartman wrote:
+> From: Ovidiu Panait <ovidiu.panait@windriver.com>
+> 
+> From: Jean-Philippe Brucker <jean-philippe@linaro.org>
+> 
+> commit 3615bdf6d9b19db12b1589861609b4f1c6a8d303 upstream.
 
-But the current implementation of binderfs_fill_super() has a memory leak in
-the rare circumstance that d_make_root() fails because ->put_super() is only
-called when sb->s_root is initialized. Fix this by removing ->put_super() and
-simply do all that work in binderfs_kill_super().
+This shouldn't be backported to 4.19, because it adjusts the selftest due
+to commit b02709587ea3 ("bpf: Fix propagation of 32-bit signed bounds from
+64-bit bounds."), which wasn't backported further than 5.9.
 
-Reported-by: Dongliang Mu <mudongliangabcd@gmail.com>
-Signed-off-by: Al Viro <viro@zeniv.linux.org.uk>
-Signed-off-by: Christian Brauner (Microsoft) <brauner@kernel.org>
----
- drivers/android/binderfs.c | 30 +++++++++++++++++-------------
- 1 file changed, 17 insertions(+), 13 deletions(-)
+See [1] for the report about these BPF backports to v5.4, which we are
+still trying to unravel. Given how painful building the BPF tests used to
+be even on 5.4, I'd rather not do the same on 4.19!
 
-diff --git a/drivers/android/binderfs.c b/drivers/android/binderfs.c
-index 588d753a7a19..927776fdeb1a 100644
---- a/drivers/android/binderfs.c
-+++ b/drivers/android/binderfs.c
-@@ -340,22 +340,10 @@ static int binderfs_show_options(struct seq_file *seq, struct dentry *root)
- 	return 0;
- }
- 
--static void binderfs_put_super(struct super_block *sb)
--{
--	struct binderfs_info *info = sb->s_fs_info;
--
--	if (info && info->ipc_ns)
--		put_ipc_ns(info->ipc_ns);
--
--	kfree(info);
--	sb->s_fs_info = NULL;
--}
--
- static const struct super_operations binderfs_super_ops = {
- 	.evict_inode    = binderfs_evict_inode,
- 	.show_options	= binderfs_show_options,
- 	.statfs         = simple_statfs,
--	.put_super	= binderfs_put_super,
- };
- 
- static inline bool is_binderfs_control_device(const struct dentry *dentry)
-@@ -785,11 +773,27 @@ static int binderfs_init_fs_context(struct fs_context *fc)
- 	return 0;
- }
- 
-+static void binderfs_kill_super(struct super_block *sb)
-+{
-+	struct binderfs_info *info = sb->s_fs_info;
-+
-+	/*
-+	 * During inode eviction struct binderfs_info is needed.
-+	 * So first wipe the super_block then free struct binderfs_info.
-+	 */
-+	kill_litter_super(sb);
-+
-+	if (info && info->ipc_ns)
-+		put_ipc_ns(info->ipc_ns);
-+
-+	kfree(info);
-+}
-+
- static struct file_system_type binder_fs_type = {
- 	.name			= "binder",
- 	.init_fs_context	= binderfs_init_fs_context,
- 	.parameters		= binderfs_fs_parameters,
--	.kill_sb		= kill_litter_super,
-+	.kill_sb		= binderfs_kill_super,
- 	.fs_flags		= FS_USERNS_MOUNT,
- };
- 
+[1] https://lore.kernel.org/lkml/CAPXMrf-C5XEUfOJd3GCtgtHOkc8DxDGbLxE5=GFmr+Py0zKxJA@mail.gmail.com/
 
-base-commit: 1c23f9e627a7b412978b4e852793c5e3c3efc555
--- 
-2.34.1
+Thanks,
+Jean
 
+> 
+> The verifier trace changed following a bugfix. After checking the 64-bit
+> sign, only the upper bit mask is known, not bit 31. Update the test
+> accordingly.
+> 
+> Signed-off-by: Jean-Philippe Brucker <jean-philippe@linaro.org>
+> Acked-by: John Fastabend <john.fastabend@gmail.com>
+> Signed-off-by: Alexei Starovoitov <ast@kernel.org>
+> [OP: adjust for 4.19 selftests]
+> Signed-off-by: Ovidiu Panait <ovidiu.panait@windriver.com>
+> Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+> ---
+>  tools/testing/selftests/bpf/test_align.c |    8 ++++----
+>  1 file changed, 4 insertions(+), 4 deletions(-)
+> 
+> --- a/tools/testing/selftests/bpf/test_align.c
+> +++ b/tools/testing/selftests/bpf/test_align.c
+> @@ -475,10 +475,10 @@ static struct bpf_align_test tests[] = {
+>  			 */
+>  			{7, "R5=inv(id=0,smin_value=-9223372036854775806,smax_value=9223372036854775806,umin_value=2,umax_value=18446744073709551614,var_off=(0x2; 0xfffffffffffffffc)"},
+>  			/* Checked s>=0 */
+> -			{9, "R5=inv(id=0,umin_value=2,umax_value=9223372034707292158,var_off=(0x2; 0x7fffffff7ffffffc)"},
+> +			{9, "R5=inv(id=0,umin_value=2,umax_value=9223372036854775806,var_off=(0x2; 0x7ffffffffffffffc)"},
+>  			/* packet pointer + nonnegative (4n+2) */
+> -			{11, "R6_w=pkt(id=1,off=0,r=0,umin_value=2,umax_value=9223372034707292158,var_off=(0x2; 0x7fffffff7ffffffc)"},
+> -			{13, "R4=pkt(id=1,off=4,r=0,umin_value=2,umax_value=9223372034707292158,var_off=(0x2; 0x7fffffff7ffffffc)"},
+> +			{11, "R6_w=pkt(id=1,off=0,r=0,umin_value=2,umax_value=9223372036854775806,var_off=(0x2; 0x7ffffffffffffffc)"},
+> +			{13, "R4=pkt(id=1,off=4,r=0,umin_value=2,umax_value=9223372036854775806,var_off=(0x2; 0x7ffffffffffffffc)"},
+>  			/* NET_IP_ALIGN + (4n+2) == (4n), alignment is fine.
+>  			 * We checked the bounds, but it might have been able
+>  			 * to overflow if the packet pointer started in the
+> @@ -486,7 +486,7 @@ static struct bpf_align_test tests[] = {
+>  			 * So we did not get a 'range' on R6, and the access
+>  			 * attempt will fail.
+>  			 */
+> -			{15, "R6=pkt(id=1,off=0,r=0,umin_value=2,umax_value=9223372034707292158,var_off=(0x2; 0x7fffffff7ffffffc)"},
+> +			{15, "R6=pkt(id=1,off=0,r=0,umin_value=2,umax_value=9223372036854775806,var_off=(0x2; 0x7ffffffffffffffc)"},
+>  		}
+>  	},
+>  	{
+> 
+> 
