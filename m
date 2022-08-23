@@ -2,45 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AB5BCC3F6B0
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 10:07:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7D835C32774
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 10:07:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352190AbiHWKHB (ORCPT
+        id S1352228AbiHWKHG (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 06:07:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58958 "EHLO
+        Tue, 23 Aug 2022 06:07:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43874 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352403AbiHWKBw (ORCPT
+        with ESMTP id S1352401AbiHWKBw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 23 Aug 2022 06:01:52 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 494797C1BB;
-        Tue, 23 Aug 2022 01:49:33 -0700 (PDT)
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 75F3182FB9;
+        Tue, 23 Aug 2022 01:49:31 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 6D94B6122F;
-        Tue, 23 Aug 2022 08:49:32 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6FD22C433D6;
-        Tue, 23 Aug 2022 08:49:31 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 0158EB81BF8;
+        Tue, 23 Aug 2022 08:49:30 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 35CD2C433C1;
+        Tue, 23 Aug 2022 08:49:28 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661244571;
-        bh=P8ClimO+H2U7s8xsr2RV/hjyQfg0HAP3IMy45wBgbco=;
+        s=korg; t=1661244568;
+        bh=CVSo7CjZGkrDLL6BVK+W8HD7/XYyGy3iyIB5aosrHrs=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=tR1RJ91txZbFW88UejkmoRlVF4zgXgwtBf6z1k+PmRC4KoSE8ziBBMv6HoEEXbNoE
-         jhxhbyrYckji7LrNlEmCgYYavUuUiy5TvOhwLb/0HIfu4VUQ8Y/b+RZPfUCXPjnzZ7
-         8m90YFWsQBoa1FdQ1/1XVolnqOcdEejN2g1Fypsg=
+        b=fKrSMzYZWVRAnqLrREASiOHOz5WqPMCaJf0KOL+Kpl065iLSYM69/nNzr9/SP33ls
+         J08uc4TnC8zmmcjW5Rc0wHnYQ831+9YljU6eFGqtykUMpmftYTlV35I9yQWsaqtln7
+         AQ4AZcZlvI44nsd0bNccMzZhiZddJo97KxkZrUJA=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Al Viro <viro@zeniv.linux.org.uk>,
-        Dinh Nguyen <dinguyen@kernel.org>
-Subject: [PATCH 5.15 113/244] nios2: restarts apply only to the first sigframe we build...
-Date:   Tue, 23 Aug 2022 10:24:32 +0200
-Message-Id: <20220823080102.794073051@linuxfoundation.org>
+        stable@vger.kernel.org, stable@kernel.org,
+        Ye Bin <yebin10@huawei.com>, Eric Whitney <enwlinux@gmail.com>,
+        Theodore Tso <tytso@mit.edu>
+Subject: [PATCH 4.14 156/229] ext4: fix extent status tree race in writeback error recovery path
+Date:   Tue, 23 Aug 2022 10:25:17 +0200
+Message-Id: <20220823080059.248175868@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220823080059.091088642@linuxfoundation.org>
-References: <20220823080059.091088642@linuxfoundation.org>
+In-Reply-To: <20220823080053.202747790@linuxfoundation.org>
+References: <20220823080053.202747790@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -49,27 +50,52 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Al Viro <viro@zeniv.linux.org.uk>
+From: Eric Whitney <enwlinux@gmail.com>
 
-commit 411a76b7219555c55867466c82d70ce928d6c9e1 upstream.
+commit 7f0d8e1d607c1a4fa9a27362a108921d82230874 upstream.
 
-Fixes: b53e906d255d ("nios2: Signal handling support")
-Signed-off-by: Al Viro <viro@zeniv.linux.org.uk>
-Signed-off-by: Dinh Nguyen <dinguyen@kernel.org>
+A race can occur in the unlikely event ext4 is unable to allocate a
+physical cluster for a delayed allocation in a bigalloc file system
+during writeback.  Failure to allocate a cluster forces error recovery
+that includes a call to mpage_release_unused_pages().  That function
+removes any corresponding delayed allocated blocks from the extent
+status tree.  If a new delayed write is in progress on the same cluster
+simultaneously, resulting in the addition of an new extent containing
+one or more blocks in that cluster to the extent status tree, delayed
+block accounting can be thrown off if that delayed write then encounters
+a similar cluster allocation failure during future writeback.
+
+Write lock the i_data_sem in mpage_release_unused_pages() to fix this
+problem.  Ext4's block/cluster accounting code for bigalloc relies on
+i_data_sem for mutual exclusion, as is found in the delayed write path,
+and the locking in mpage_release_unused_pages() is missing.
+
+Cc: stable@kernel.org
+Reported-by: Ye Bin <yebin10@huawei.com>
+Signed-off-by: Eric Whitney <enwlinux@gmail.com>
+Link: https://lore.kernel.org/r/20220615160530.1928801-1-enwlinux@gmail.com
+Signed-off-by: Theodore Ts'o <tytso@mit.edu>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/nios2/kernel/signal.c |    1 +
- 1 file changed, 1 insertion(+)
+ fs/ext4/inode.c |    7 +++++++
+ 1 file changed, 7 insertions(+)
 
---- a/arch/nios2/kernel/signal.c
-+++ b/arch/nios2/kernel/signal.c
-@@ -264,6 +264,7 @@ static int do_signal(struct pt_regs *reg
- 			regs->ea = restart_addr;
- 			break;
- 		}
-+		regs->orig_r2 = -1;
+--- a/fs/ext4/inode.c
++++ b/fs/ext4/inode.c
+@@ -1754,7 +1754,14 @@ static void mpage_release_unused_pages(s
+ 		ext4_lblk_t start, last;
+ 		start = index << (PAGE_SHIFT - inode->i_blkbits);
+ 		last = end << (PAGE_SHIFT - inode->i_blkbits);
++
++		/*
++		 * avoid racing with extent status tree scans made by
++		 * ext4_insert_delayed_block()
++		 */
++		down_write(&EXT4_I(inode)->i_data_sem);
+ 		ext4_es_remove_extent(inode, start, last - start + 1);
++		up_write(&EXT4_I(inode)->i_data_sem);
  	}
  
- 	if (get_signal(&ksig)) {
+ 	pagevec_init(&pvec, 0);
 
 
