@@ -2,169 +2,575 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E50BBC54F37
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 10:53:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 10FC9C54F39
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 10:53:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356947AbiHWKwq (ORCPT
+        id S1357068AbiHWKw5 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 06:52:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53408 "EHLO
+        Tue, 23 Aug 2022 06:52:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55514 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350891AbiHWKo7 (ORCPT
+        with ESMTP id S1354826AbiHWKpU (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 06:44:59 -0400
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 38F2974E04
-        for <linux-kernel@vger.kernel.org>; Tue, 23 Aug 2022 02:10:47 -0700 (PDT)
-Received: from ptx.hi.pengutronix.de ([2001:67c:670:100:1d::c0])
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <mfe@pengutronix.de>)
-        id 1oQPvZ-0005FD-CQ; Tue, 23 Aug 2022 11:10:29 +0200
-Received: from mfe by ptx.hi.pengutronix.de with local (Exim 4.92)
-        (envelope-from <mfe@pengutronix.de>)
-        id 1oQPvX-0006WH-PG; Tue, 23 Aug 2022 11:10:27 +0200
-Date:   Tue, 23 Aug 2022 11:10:27 +0200
-From:   Marco Felsch <m.felsch@pengutronix.de>
-To:     "Alice Guo (OSS)" <alice.guo@oss.nxp.com>
-Cc:     Guenter Roeck <linux@roeck-us.net>,
-        "wim@linux-watchdog.org" <wim@linux-watchdog.org>,
-        "shawnguo@kernel.org" <shawnguo@kernel.org>,
-        "s.hauer@pengutronix.de" <s.hauer@pengutronix.de>,
-        "festevam@gmail.com" <festevam@gmail.com>,
-        "linux-arm-kernel@lists.infradead.org" 
-        <linux-arm-kernel@lists.infradead.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        dl-linux-imx <linux-imx@nxp.com>,
-        "kernel@pengutronix.de" <kernel@pengutronix.de>,
-        "linux-watchdog@vger.kernel.org" <linux-watchdog@vger.kernel.org>
-Subject: Re: [PATCH 2/7] watchdog: imx7ulp: Add explict memory barrier for
- unlock sequence
-Message-ID: <20220823091027.ezyxkn64asajvjom@pengutronix.de>
-References: <20220816043643.26569-1-alice.guo@oss.nxp.com>
- <20220816043643.26569-3-alice.guo@oss.nxp.com>
- <20220816062330.z2fvurteg337krw2@pengutronix.de>
- <AM6PR04MB60537292F559EC012F0EB510E2719@AM6PR04MB6053.eurprd04.prod.outlook.com>
- <20220822080010.ecdphpm3i26cco5f@pengutronix.de>
- <20220822140347.GA4087281@roeck-us.net>
- <AM6PR04MB6053E26CB59410EBCC2C93AEE2709@AM6PR04MB6053.eurprd04.prod.outlook.com>
+        Tue, 23 Aug 2022 06:45:20 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6B6F727CD3;
+        Tue, 23 Aug 2022 02:10:59 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 07AB060DB4;
+        Tue, 23 Aug 2022 09:10:59 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0E003C433D6;
+        Tue, 23 Aug 2022 09:10:57 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1661245858;
+        bh=DbugGScHIkvIP6Pd4hT6Ur37vKutWJFJ6tLVmCrkrCs=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=UTd+VMp21Tf9tsI7FW9OGqi93UkB6qfIQ0cr9X3+IdmO9P8ugc0DyQXCNnyx4YYUb
+         Vd9Gue25bE3T8pkaSBtYkVf0pRJafjdin6azq8c/p4V+Xo3e6rkI7KXPP6mF7joa3Y
+         EjZNsOTuwp0e5dszlypwz4YZyrmXYKXtcRnEGNtg=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org,
+        "Aneesh Kumar K.V" <aneesh.kumar@linux.ibm.com>,
+        Christophe Leroy <christophe.leroy@c-s.fr>,
+        Michael Ellerman <mpe@ellerman.id.au>
+Subject: [PATCH 4.19 213/287] powerpc/mm: Split dump_pagelinuxtables flag_array table
+Date:   Tue, 23 Aug 2022 10:26:22 +0200
+Message-Id: <20220823080108.114894774@linuxfoundation.org>
+X-Mailer: git-send-email 2.37.2
+In-Reply-To: <20220823080100.268827165@linuxfoundation.org>
+References: <20220823080100.268827165@linuxfoundation.org>
+User-Agent: quilt/0.67
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <AM6PR04MB6053E26CB59410EBCC2C93AEE2709@AM6PR04MB6053.eurprd04.prod.outlook.com>
-User-Agent: NeoMutt/20180716
-X-SA-Exim-Connect-IP: 2001:67c:670:100:1d::c0
-X-SA-Exim-Mail-From: mfe@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 22-08-23, Alice Guo (OSS) wrote:
-> 
-> 
-> > -----Original Message-----
-> > From: Guenter Roeck <groeck7@gmail.com> On Behalf Of Guenter Roeck
-> > Sent: Monday, August 22, 2022 10:04 PM
-> > To: Marco Felsch <m.felsch@pengutronix.de>
-> > Cc: Alice Guo (OSS) <alice.guo@oss.nxp.com>; wim@linux-watchdog.org;
-> > shawnguo@kernel.org; s.hauer@pengutronix.de; festevam@gmail.com;
-> > linux-arm-kernel@lists.infradead.org; linux-kernel@vger.kernel.org;
-> > dl-linux-imx <linux-imx@nxp.com>; kernel@pengutronix.de;
-> > linux-watchdog@vger.kernel.org
-> > Subject: Re: [PATCH 2/7] watchdog: imx7ulp: Add explict memory barrier for
-> > unlock sequence
-> > 
-> > On Mon, Aug 22, 2022 at 10:00:10AM +0200, Marco Felsch wrote:
-> > > On 22-08-22, Alice Guo (OSS) wrote:
-> > > > > -----Original Message-----
-> > > > > From: Marco Felsch <m.felsch@pengutronix.de>
-> > > > > Sent: Tuesday, August 16, 2022 2:24 PM
-> > > > > To: Alice Guo (OSS) <alice.guo@oss.nxp.com>
-> > > > > Cc: wim@linux-watchdog.org; linux@roeck-us.net;
-> > > > > shawnguo@kernel.org; s.hauer@pengutronix.de; festevam@gmail.com;
-> > > > > linux-arm-kernel@lists.infradead.org;
-> > > > > linux-kernel@vger.kernel.org; dl-linux-imx <linux-imx@nxp.com>;
-> > > > > kernel@pengutronix.de; linux-watchdog@vger.kernel.org
-> > > > > Subject: Re: [PATCH 2/7] watchdog: imx7ulp: Add explict memory
-> > > > > barrier for unlock sequence
-> > > > >
-> > > > > On 22-08-16, Alice Guo (OSS) wrote:
-> > > > > > From: Jacky Bai <ping.bai@nxp.com>
-> > > > > >
-> > > > > > Add explict memory barrier for the wdog unlock sequence.
-> > > > >
-> > > > > Did you inspected any failures? It's not enough to say what you
-> > > > > did, you need to specify the why as well.
-> > > > >
-> > > > > Regards,
-> > > > >   Marco
-> > > >
-> > > > Hi,
-> > > >
-> > > > Two 16-bit writes of unlocking the Watchdog should be completed within a
-> > certain time. The first mb() is used to ensure that previous instructions are
-> > completed.
-> > > > The second mb() is used to ensure that the unlock sequence cannot be
-> > affected by subsequent instructions. The reason will be added in the commit
-> > log of v2.
-> > >
-> > > Hi,
-> > >
-> > > I know what memory barriers are. My question was, did you see any
-> > > issues? Since the driver is used mainline and no one reported issues.
-> > >
-> > > Also just don't use the *_relaxed() versions is more common, than
-> > > adding
-> > > mb() calls around *_relaxed() versions.
-> > >
-> > 
-> > Agreed with both. The series is a bit short in explaining _why_ the changes are
-> > made.
-> > 
-> > Guenter
-> > 
-> > > Regards,
-> > >   Marco
-> > >
-> > > >
-> 
-> Hi Guenter and Marco,
-> 
-> 1. did you see any issues?
-> This WDOG Timer first appeared in i.MX7ULP, no one report issues
-> probably because few people use i.MX7ULP. This issue was found when we
-> did a stress test on it. When we reconfigure the WDOG Timer, there is
-> a certain probability that it reset. The reason for the error is that
-> when WDOG_CS[CMD32EN] is 0, the unlock sequence is two 16-bit writes
-> (0xC520, 0xD928) to the CNT register within 16 bus clocks, and
-> improper unlock sequence causes the WDOG to reset. Adding mb() is to
-> guarantee that two 16-bit writes are finished within 16 bus clocks.
+From: Christophe Leroy <christophe.leroy@c-s.fr>
 
-After this explanation the whole imx7ulp_wdt_init() seems a bit buggy
-because writel_relaxed() as well as writel() are 32bit access functions.
-So the very first thing to do is to enable the 32-bit mode.
+commit 97026b5a5ac26541b3d294146f5c941491a9e609 upstream.
 
-Also this is a explanation worth to be added to the commit message ;)
+To reduce the complexity of flag_array, and allow the removal of
+default 0 value of non existing flags, lets have one flag_array
+table for each platform family with only the really existing flags.
 
-> 2. Also just don't use the *_relaxed() versions is more common, than
-> adding mb() calls around *_relaxed() versions.  Memory barriers cannot
-> be added between two 16-bit writes. I do not know the reason.
+Reviewed-by: Aneesh Kumar K.V <aneesh.kumar@linux.ibm.com>
+Signed-off-by: Christophe Leroy <christophe.leroy@c-s.fr>
+Signed-off-by: Michael Ellerman <mpe@ellerman.id.au>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+---
+ arch/powerpc/mm/Makefile                        |    7 +
+ arch/powerpc/mm/dump_linuxpagetables-8xx.c      |   82 ++++++++++++
+ arch/powerpc/mm/dump_linuxpagetables-book3s64.c |  115 +++++++++++++++++
+ arch/powerpc/mm/dump_linuxpagetables-generic.c  |   82 ++++++++++++
+ arch/powerpc/mm/dump_linuxpagetables.c          |  155 ------------------------
+ arch/powerpc/mm/dump_linuxpagetables.h          |   19 ++
+ 6 files changed, 307 insertions(+), 153 deletions(-)
+ create mode 100644 arch/powerpc/mm/dump_linuxpagetables-8xx.c
+ create mode 100644 arch/powerpc/mm/dump_linuxpagetables-book3s64.c
+ create mode 100644 arch/powerpc/mm/dump_linuxpagetables-generic.c
+ create mode 100644 arch/powerpc/mm/dump_linuxpagetables.h
 
-As written above, writel() as well as writel_relaxed() are not 16-bit
-access functions.
+--- a/arch/powerpc/mm/Makefile
++++ b/arch/powerpc/mm/Makefile
+@@ -43,5 +43,12 @@ obj-$(CONFIG_HIGHMEM)		+= highmem.o
+ obj-$(CONFIG_PPC_COPRO_BASE)	+= copro_fault.o
+ obj-$(CONFIG_SPAPR_TCE_IOMMU)	+= mmu_context_iommu.o
+ obj-$(CONFIG_PPC_PTDUMP)	+= dump_linuxpagetables.o
++ifdef CONFIG_PPC_PTDUMP
++obj-$(CONFIG_4xx)		+= dump_linuxpagetables-generic.o
++obj-$(CONFIG_PPC_8xx)		+= dump_linuxpagetables-8xx.o
++obj-$(CONFIG_PPC_BOOK3E_MMU)	+= dump_linuxpagetables-generic.o
++obj-$(CONFIG_PPC_BOOK3S_32)	+= dump_linuxpagetables-generic.o
++obj-$(CONFIG_PPC_BOOK3S_64)	+= dump_linuxpagetables-book3s64.o
++endif
+ obj-$(CONFIG_PPC_HTDUMP)	+= dump_hashpagetable.o
+ obj-$(CONFIG_PPC_MEM_KEYS)	+= pkeys.o
+--- /dev/null
++++ b/arch/powerpc/mm/dump_linuxpagetables-8xx.c
+@@ -0,0 +1,82 @@
++// SPDX-License-Identifier: GPL-2.0
++/*
++ * From split of dump_linuxpagetables.c
++ * Copyright 2016, Rashmica Gupta, IBM Corp.
++ *
++ */
++#include <linux/kernel.h>
++#include <asm/pgtable.h>
++
++#include "dump_linuxpagetables.h"
++
++static const struct flag_info flag_array[] = {
++	{
++		.mask	= _PAGE_PRIVILEGED,
++		.val	= 0,
++		.set	= "user",
++		.clear	= "    ",
++	}, {
++		.mask	= _PAGE_RO | _PAGE_NA,
++		.val	= 0,
++		.set	= "rw",
++	}, {
++		.mask	= _PAGE_RO | _PAGE_NA,
++		.val	= _PAGE_RO,
++		.set	= "r ",
++	}, {
++		.mask	= _PAGE_RO | _PAGE_NA,
++		.val	= _PAGE_NA,
++		.set	= "  ",
++	}, {
++		.mask	= _PAGE_EXEC,
++		.val	= _PAGE_EXEC,
++		.set	= " X ",
++		.clear	= "   ",
++	}, {
++		.mask	= _PAGE_PRESENT,
++		.val	= _PAGE_PRESENT,
++		.set	= "present",
++		.clear	= "       ",
++	}, {
++		.mask	= _PAGE_GUARDED,
++		.val	= _PAGE_GUARDED,
++		.set	= "guarded",
++		.clear	= "       ",
++	}, {
++		.mask	= _PAGE_DIRTY,
++		.val	= _PAGE_DIRTY,
++		.set	= "dirty",
++		.clear	= "     ",
++	}, {
++		.mask	= _PAGE_ACCESSED,
++		.val	= _PAGE_ACCESSED,
++		.set	= "accessed",
++		.clear	= "        ",
++	}, {
++		.mask	= _PAGE_NO_CACHE,
++		.val	= _PAGE_NO_CACHE,
++		.set	= "no cache",
++		.clear	= "        ",
++	}, {
++		.mask	= _PAGE_SPECIAL,
++		.val	= _PAGE_SPECIAL,
++		.set	= "special",
++	}
++};
++
++struct pgtable_level pg_level[5] = {
++	{
++	}, { /* pgd */
++		.flag	= flag_array,
++		.num	= ARRAY_SIZE(flag_array),
++	}, { /* pud */
++		.flag	= flag_array,
++		.num	= ARRAY_SIZE(flag_array),
++	}, { /* pmd */
++		.flag	= flag_array,
++		.num	= ARRAY_SIZE(flag_array),
++	}, { /* pte */
++		.flag	= flag_array,
++		.num	= ARRAY_SIZE(flag_array),
++	},
++};
+--- /dev/null
++++ b/arch/powerpc/mm/dump_linuxpagetables-book3s64.c
+@@ -0,0 +1,115 @@
++// SPDX-License-Identifier: GPL-2.0
++/*
++ * From split of dump_linuxpagetables.c
++ * Copyright 2016, Rashmica Gupta, IBM Corp.
++ *
++ */
++#include <linux/kernel.h>
++#include <asm/pgtable.h>
++
++#include "dump_linuxpagetables.h"
++
++static const struct flag_info flag_array[] = {
++	{
++		.mask	= _PAGE_PRIVILEGED,
++		.val	= 0,
++		.set	= "user",
++		.clear	= "    ",
++	}, {
++		.mask	= _PAGE_READ,
++		.val	= _PAGE_READ,
++		.set	= "r",
++		.clear	= " ",
++	}, {
++		.mask	= _PAGE_WRITE,
++		.val	= _PAGE_WRITE,
++		.set	= "w",
++		.clear	= " ",
++	}, {
++		.mask	= _PAGE_EXEC,
++		.val	= _PAGE_EXEC,
++		.set	= " X ",
++		.clear	= "   ",
++	}, {
++		.mask	= _PAGE_PTE,
++		.val	= _PAGE_PTE,
++		.set	= "pte",
++		.clear	= "   ",
++	}, {
++		.mask	= _PAGE_PRESENT,
++		.val	= _PAGE_PRESENT,
++		.set	= "present",
++		.clear	= "       ",
++	}, {
++		.mask	= H_PAGE_HASHPTE,
++		.val	= H_PAGE_HASHPTE,
++		.set	= "hpte",
++		.clear	= "    ",
++	}, {
++		.mask	= _PAGE_DIRTY,
++		.val	= _PAGE_DIRTY,
++		.set	= "dirty",
++		.clear	= "     ",
++	}, {
++		.mask	= _PAGE_ACCESSED,
++		.val	= _PAGE_ACCESSED,
++		.set	= "accessed",
++		.clear	= "        ",
++	}, {
++		.mask	= _PAGE_NON_IDEMPOTENT,
++		.val	= _PAGE_NON_IDEMPOTENT,
++		.set	= "non-idempotent",
++		.clear	= "              ",
++	}, {
++		.mask	= _PAGE_TOLERANT,
++		.val	= _PAGE_TOLERANT,
++		.set	= "tolerant",
++		.clear	= "        ",
++	}, {
++		.mask	= H_PAGE_BUSY,
++		.val	= H_PAGE_BUSY,
++		.set	= "busy",
++	}, {
++#ifdef CONFIG_PPC_64K_PAGES
++		.mask	= H_PAGE_COMBO,
++		.val	= H_PAGE_COMBO,
++		.set	= "combo",
++	}, {
++		.mask	= H_PAGE_4K_PFN,
++		.val	= H_PAGE_4K_PFN,
++		.set	= "4K_pfn",
++	}, {
++#else /* CONFIG_PPC_64K_PAGES */
++		.mask	= H_PAGE_F_GIX,
++		.val	= H_PAGE_F_GIX,
++		.set	= "f_gix",
++		.is_val	= true,
++		.shift	= H_PAGE_F_GIX_SHIFT,
++	}, {
++		.mask	= H_PAGE_F_SECOND,
++		.val	= H_PAGE_F_SECOND,
++		.set	= "f_second",
++	}, {
++#endif /* CONFIG_PPC_64K_PAGES */
++		.mask	= _PAGE_SPECIAL,
++		.val	= _PAGE_SPECIAL,
++		.set	= "special",
++	}
++};
++
++struct pgtable_level pg_level[5] = {
++	{
++	}, { /* pgd */
++		.flag	= flag_array,
++		.num	= ARRAY_SIZE(flag_array),
++	}, { /* pud */
++		.flag	= flag_array,
++		.num	= ARRAY_SIZE(flag_array),
++	}, { /* pmd */
++		.flag	= flag_array,
++		.num	= ARRAY_SIZE(flag_array),
++	}, { /* pte */
++		.flag	= flag_array,
++		.num	= ARRAY_SIZE(flag_array),
++	},
++};
+--- /dev/null
++++ b/arch/powerpc/mm/dump_linuxpagetables-generic.c
+@@ -0,0 +1,82 @@
++// SPDX-License-Identifier: GPL-2.0
++/*
++ * From split of dump_linuxpagetables.c
++ * Copyright 2016, Rashmica Gupta, IBM Corp.
++ *
++ */
++#include <linux/kernel.h>
++#include <asm/pgtable.h>
++
++#include "dump_linuxpagetables.h"
++
++static const struct flag_info flag_array[] = {
++	{
++		.mask	= _PAGE_USER,
++		.val	= _PAGE_USER,
++		.set	= "user",
++		.clear	= "    ",
++	}, {
++		.mask	= _PAGE_RW,
++		.val	= _PAGE_RW,
++		.set	= "rw",
++		.clear	= "r ",
++	}, {
++#ifndef CONFIG_PPC_BOOK3S_32
++		.mask	= _PAGE_EXEC,
++		.val	= _PAGE_EXEC,
++		.set	= " X ",
++		.clear	= "   ",
++	}, {
++#endif
++		.mask	= _PAGE_PRESENT,
++		.val	= _PAGE_PRESENT,
++		.set	= "present",
++		.clear	= "       ",
++	}, {
++		.mask	= _PAGE_GUARDED,
++		.val	= _PAGE_GUARDED,
++		.set	= "guarded",
++		.clear	= "       ",
++	}, {
++		.mask	= _PAGE_DIRTY,
++		.val	= _PAGE_DIRTY,
++		.set	= "dirty",
++		.clear	= "     ",
++	}, {
++		.mask	= _PAGE_ACCESSED,
++		.val	= _PAGE_ACCESSED,
++		.set	= "accessed",
++		.clear	= "        ",
++	}, {
++		.mask	= _PAGE_WRITETHRU,
++		.val	= _PAGE_WRITETHRU,
++		.set	= "write through",
++		.clear	= "             ",
++	}, {
++		.mask	= _PAGE_NO_CACHE,
++		.val	= _PAGE_NO_CACHE,
++		.set	= "no cache",
++		.clear	= "        ",
++	}, {
++		.mask	= _PAGE_SPECIAL,
++		.val	= _PAGE_SPECIAL,
++		.set	= "special",
++	}
++};
++
++struct pgtable_level pg_level[5] = {
++	{
++	}, { /* pgd */
++		.flag	= flag_array,
++		.num	= ARRAY_SIZE(flag_array),
++	}, { /* pud */
++		.flag	= flag_array,
++		.num	= ARRAY_SIZE(flag_array),
++	}, { /* pmd */
++		.flag	= flag_array,
++		.num	= ARRAY_SIZE(flag_array),
++	}, { /* pte */
++		.flag	= flag_array,
++		.num	= ARRAY_SIZE(flag_array),
++	},
++};
+--- a/arch/powerpc/mm/dump_linuxpagetables.c
++++ b/arch/powerpc/mm/dump_linuxpagetables.c
+@@ -28,6 +28,8 @@
+ #include <asm/page.h>
+ #include <asm/pgalloc.h>
+ 
++#include "dump_linuxpagetables.h"
++
+ #ifdef CONFIG_PPC32
+ #define KERN_VIRT_START	0
+ #endif
+@@ -102,159 +104,6 @@ static struct addr_marker address_marker
+ 	{ -1,	NULL },
+ };
+ 
+-struct flag_info {
+-	u64		mask;
+-	u64		val;
+-	const char	*set;
+-	const char	*clear;
+-	bool		is_val;
+-	int		shift;
+-};
+-
+-static const struct flag_info flag_array[] = {
+-	{
+-		.mask	= _PAGE_USER | _PAGE_PRIVILEGED,
+-		.val	= _PAGE_USER,
+-		.set	= "user",
+-		.clear	= "    ",
+-	}, {
+-		.mask	= _PAGE_RW | _PAGE_RO | _PAGE_NA,
+-		.val	= _PAGE_RW,
+-		.set	= "rw",
+-	}, {
+-		.mask	= _PAGE_RW | _PAGE_RO | _PAGE_NA,
+-		.val	= _PAGE_RO,
+-		.set	= "ro",
+-	}, {
+-#if _PAGE_NA != 0
+-		.mask	= _PAGE_RW | _PAGE_RO | _PAGE_NA,
+-		.val	= _PAGE_RO,
+-		.set	= "na",
+-	}, {
+-#endif
+-		.mask	= _PAGE_EXEC,
+-		.val	= _PAGE_EXEC,
+-		.set	= " X ",
+-		.clear	= "   ",
+-	}, {
+-		.mask	= _PAGE_PTE,
+-		.val	= _PAGE_PTE,
+-		.set	= "pte",
+-		.clear	= "   ",
+-	}, {
+-		.mask	= _PAGE_PRESENT,
+-		.val	= _PAGE_PRESENT,
+-		.set	= "present",
+-		.clear	= "       ",
+-	}, {
+-#ifdef CONFIG_PPC_BOOK3S_64
+-		.mask	= H_PAGE_HASHPTE,
+-		.val	= H_PAGE_HASHPTE,
+-#else
+-		.mask	= _PAGE_HASHPTE,
+-		.val	= _PAGE_HASHPTE,
+-#endif
+-		.set	= "hpte",
+-		.clear	= "    ",
+-	}, {
+-#ifndef CONFIG_PPC_BOOK3S_64
+-		.mask	= _PAGE_GUARDED,
+-		.val	= _PAGE_GUARDED,
+-		.set	= "guarded",
+-		.clear	= "       ",
+-	}, {
+-#endif
+-		.mask	= _PAGE_DIRTY,
+-		.val	= _PAGE_DIRTY,
+-		.set	= "dirty",
+-		.clear	= "     ",
+-	}, {
+-		.mask	= _PAGE_ACCESSED,
+-		.val	= _PAGE_ACCESSED,
+-		.set	= "accessed",
+-		.clear	= "        ",
+-	}, {
+-#ifndef CONFIG_PPC_BOOK3S_64
+-		.mask	= _PAGE_WRITETHRU,
+-		.val	= _PAGE_WRITETHRU,
+-		.set	= "write through",
+-		.clear	= "             ",
+-	}, {
+-#endif
+-#ifndef CONFIG_PPC_BOOK3S_64
+-		.mask	= _PAGE_NO_CACHE,
+-		.val	= _PAGE_NO_CACHE,
+-		.set	= "no cache",
+-		.clear	= "        ",
+-	}, {
+-#else
+-		.mask	= _PAGE_NON_IDEMPOTENT,
+-		.val	= _PAGE_NON_IDEMPOTENT,
+-		.set	= "non-idempotent",
+-		.clear	= "              ",
+-	}, {
+-		.mask	= _PAGE_TOLERANT,
+-		.val	= _PAGE_TOLERANT,
+-		.set	= "tolerant",
+-		.clear	= "        ",
+-	}, {
+-#endif
+-#ifdef CONFIG_PPC_BOOK3S_64
+-		.mask	= H_PAGE_BUSY,
+-		.val	= H_PAGE_BUSY,
+-		.set	= "busy",
+-	}, {
+-#ifdef CONFIG_PPC_64K_PAGES
+-		.mask	= H_PAGE_COMBO,
+-		.val	= H_PAGE_COMBO,
+-		.set	= "combo",
+-	}, {
+-		.mask	= H_PAGE_4K_PFN,
+-		.val	= H_PAGE_4K_PFN,
+-		.set	= "4K_pfn",
+-	}, {
+-#else /* CONFIG_PPC_64K_PAGES */
+-		.mask	= H_PAGE_F_GIX,
+-		.val	= H_PAGE_F_GIX,
+-		.set	= "f_gix",
+-		.is_val	= true,
+-		.shift	= H_PAGE_F_GIX_SHIFT,
+-	}, {
+-		.mask	= H_PAGE_F_SECOND,
+-		.val	= H_PAGE_F_SECOND,
+-		.set	= "f_second",
+-	}, {
+-#endif /* CONFIG_PPC_64K_PAGES */
+-#endif
+-		.mask	= _PAGE_SPECIAL,
+-		.val	= _PAGE_SPECIAL,
+-		.set	= "special",
+-	}
+-};
+-
+-struct pgtable_level {
+-	const struct flag_info *flag;
+-	size_t num;
+-	u64 mask;
+-};
+-
+-static struct pgtable_level pg_level[] = {
+-	{
+-	}, { /* pgd */
+-		.flag	= flag_array,
+-		.num	= ARRAY_SIZE(flag_array),
+-	}, { /* pud */
+-		.flag	= flag_array,
+-		.num	= ARRAY_SIZE(flag_array),
+-	}, { /* pmd */
+-		.flag	= flag_array,
+-		.num	= ARRAY_SIZE(flag_array),
+-	}, { /* pte */
+-		.flag	= flag_array,
+-		.num	= ARRAY_SIZE(flag_array),
+-	},
+-};
+-
+ static void dump_flag_info(struct pg_state *st, const struct flag_info
+ 		*flag, u64 pte, int num)
+ {
+--- /dev/null
++++ b/arch/powerpc/mm/dump_linuxpagetables.h
+@@ -0,0 +1,19 @@
++/* SPDX-License-Identifier: GPL-2.0 */
++#include <linux/types.h>
++
++struct flag_info {
++	u64		mask;
++	u64		val;
++	const char	*set;
++	const char	*clear;
++	bool		is_val;
++	int		shift;
++};
++
++struct pgtable_level {
++	const struct flag_info *flag;
++	size_t num;
++	u64 mask;
++};
++
++extern struct pgtable_level pg_level[5];
 
-So to me it looks as you need first to ensure that 32-bit access mode is
-enabled. After that you can write drop the to writel_relaxed() functions
-and instead just write:
 
-   writel(UNLOCK, wdt->base + WDOG_CNT);
-
-Also why do we need to unlock the watchdog during imx7ulp_wdt_init()?
-This is handled just fine during imx7ulp_wdt_enable() and during
-imx7ulp_wdt_set_timeout(). So just drop those relaxed writes and
-everything should be fine.
-
-Regards,
-  Marco
