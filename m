@@ -2,116 +2,104 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DE431C32774
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 16:36:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 36146C32772
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 16:37:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244986AbiHWQgy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 12:36:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56262 "EHLO
+        id S245043AbiHWQhM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 23 Aug 2022 12:37:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53882 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244941AbiHWQgb (ORCPT
+        with ESMTP id S244871AbiHWQgr (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 12:36:31 -0400
-Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8D0EDDF4F2
-        for <linux-kernel@vger.kernel.org>; Tue, 23 Aug 2022 07:47:37 -0700 (PDT)
-Received: from dggpemm500023.china.huawei.com (unknown [172.30.72.56])
-        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4MBsS45vpGzkWV3;
-        Tue, 23 Aug 2022 22:44:04 +0800 (CST)
-Received: from dggpemm500001.china.huawei.com (7.185.36.107) by
- dggpemm500023.china.huawei.com (7.185.36.83) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Tue, 23 Aug 2022 22:47:34 +0800
-Received: from [10.174.177.243] (10.174.177.243) by
- dggpemm500001.china.huawei.com (7.185.36.107) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Tue, 23 Aug 2022 22:47:33 +0800
-Message-ID: <16cf184f-95ec-a763-0606-7423db8dcb0f@huawei.com>
-Date:   Tue, 23 Aug 2022 22:47:33 +0800
+        Tue, 23 Aug 2022 12:36:47 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B52BFB5E46
+        for <linux-kernel@vger.kernel.org>; Tue, 23 Aug 2022 07:46:34 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1661265993;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=u6WCJy76wyGRQ/+mlD3iaHvNl3EBMPU7sOD/gN0Mivg=;
+        b=CNj0dw/lFaqDH06AHqq+ZjJDgZG2r/QuQYF0swIMDMCMzfJU7U2UCpALbBgI2MpoXhphJX
+        cVOLLqgpZTsIj1RfIl6D2VT051irZP02+GMB/piLHbCRZz14IaRGn1VFugDzPZU3mdNrcE
+        yOrn3SUC6ZxJvwppdWPNTdYdqZs0KYk=
+Received: from mail-pl1-f200.google.com (mail-pl1-f200.google.com
+ [209.85.214.200]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
+ us-mta-574-1Vcdei84NZeZqvq4WW8sOw-1; Tue, 23 Aug 2022 10:46:32 -0400
+X-MC-Unique: 1Vcdei84NZeZqvq4WW8sOw-1
+Received: by mail-pl1-f200.google.com with SMTP id h12-20020a170902f54c00b0016f8858ce9bso9133146plf.9
+        for <linux-kernel@vger.kernel.org>; Tue, 23 Aug 2022 07:46:32 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc;
+        bh=u6WCJy76wyGRQ/+mlD3iaHvNl3EBMPU7sOD/gN0Mivg=;
+        b=rkq1zKm5usTBxt8zVTJogubBPITDLdiSY9uRng6QX/H7K1NMcAHr/j2+NEfHj+CvDo
+         kp/JIdfG+cdn3XS7frqDI5advKo5qUrtjvXF8Mwoq/LqhM5YRgORYBzmvLnwTRH1aAU/
+         bxQfTGF4wk/J0JMwKQr697cBHj+O9QVzhWmyjl+lwtnZf3DkR8f9h0yykUI+ERsysJ82
+         8Hutz1KQ41eKmhxEVMvl0uGQsrCv1KPykuVWLty4v6cogHCmSkCNtho97nzLBQPZdomO
+         URCHARTla5USoKw3Fj4QKWMfBzvdNV7sfUkVtiqEcMQVOug5kRukBrPdSob26YDOJi1U
+         BvPQ==
+X-Gm-Message-State: ACgBeo3uxWbGz28epzaYy2N+lQRjB/7jqlNdOD7VK3bPgl6l8hVjhJ7/
+        /PvGoQusb54ctqZYdavJvD9yvhfmrwsd7aWiW/GukVUuhBbeg86F++60chrUIpPeaf7FBDenUCV
+        LQ0E3xsHCJwhz8Yi7LaT06dmQ
+X-Received: by 2002:a17:90a:bc47:b0:1fa:e634:739c with SMTP id t7-20020a17090abc4700b001fae634739cmr3595504pjv.120.1661265991316;
+        Tue, 23 Aug 2022 07:46:31 -0700 (PDT)
+X-Google-Smtp-Source: AA6agR7EcORGG0DtriXJLrLj+1Vy8+kFi8dMSE0nWfTxuMefbW3Yi+Gt9GSVqnoMs/8V8/1cNZVjPA==
+X-Received: by 2002:a17:90a:bc47:b0:1fa:e634:739c with SMTP id t7-20020a17090abc4700b001fae634739cmr3595488pjv.120.1661265991087;
+        Tue, 23 Aug 2022 07:46:31 -0700 (PDT)
+Received: from xps13.. ([240d:1a:c0d:9f00:4f2f:926a:23dd:8588])
+        by smtp.gmail.com with ESMTPSA id l63-20020a622542000000b00535e49245d6sm10519824pfl.12.2022.08.23.07.46.29
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 23 Aug 2022 07:46:30 -0700 (PDT)
+From:   Shigeru Yoshida <syoshida@redhat.com>
+To:     almaz.alexandrovich@paragon-software.com
+Cc:     ntfs3@lists.linux.dev, linux-kernel@vger.kernel.org,
+        Shigeru Yoshida <syoshida@redhat.com>,
+        "Author : Randy Dunlap" <rdunlap@infradead.org>,
+        syzbot+35b87c668935bb55e666@syzkaller.appspotmail.com
+Subject: [PATCH] fs/ntfs3: Avoid UBSAN error on true_sectors_per_clst()
+Date:   Tue, 23 Aug 2022 23:46:25 +0900
+Message-Id: <20220823144625.1627736-1-syoshida@redhat.com>
+X-Mailer: git-send-email 2.37.2
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.9.1
-Subject: Re: [PATCH] mm: fix pgdat->kswap accessed concurrently
-Content-Language: en-US
-From:   Kefeng Wang <wangkefeng.wang@huawei.com>
-To:     Andrew Morton <akpm@linux-foundation.org>,
-        Muchun Song <muchun.song@linux.dev>
-CC:     Linux MM <linux-mm@kvack.org>, <linux-kernel@vger.kernel.org>
-References: <20220820032506.126860-1-wangkefeng.wang@huawei.com>
- <1E87F09C-4904-49E2-B45C-C408DD5F6F62@linux.dev>
- <20220820135955.1520aa480fe04ab31d4fce1f@linux-foundation.org>
- <abe568d8-2d48-7e73-fe66-822915c0bd74@huawei.com>
-In-Reply-To: <abe568d8-2d48-7e73-fe66-822915c0bd74@huawei.com>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
 Content-Transfer-Encoding: 8bit
-X-Originating-IP: [10.174.177.243]
-X-ClientProxiedBy: dggems703-chm.china.huawei.com (10.3.19.180) To
- dggpemm500001.china.huawei.com (7.185.36.107)
-X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+syzbot reported UBSAN error as below:
 
-On 2022/8/23 9:07, Kefeng Wang wrote:
->
-> On 2022/8/21 4:59, Andrew Morton wrote:
->> On Sat, 20 Aug 2022 15:33:04 +0800 Muchun Song 
->> <muchun.song@linux.dev> wrote:
->>
->>>
->>>> +    if (IS_ERR(t)) {
->>>>         /* failure at boot is fatal */
->>>>         BUG_ON(system_state < SYSTEM_RUNNING);
->>>>         pr_err("Failed to start kswapd on node %d\n", nid);
->>>> -        pgdat->kswapd = NULL;
->>>> +        WRITE_ONCE(pgdat->kswapd, NULL);
->>>> +    } else {
->>>> +        WRITE_ONCE(pgdat->kswapd, t);
->>>>     }
->>>> }
->>> IIUC, the race is like the followings:
->>>
->>> CPU 0:                    CPU 1:
->>>
->>> kswapd_run()
->>>     pgdat->kswapd = kthread_run()
->>>     if (IS_ERR(pgdat->kswapd))
->>>                     kswapd_is_running
->>>                         // load pgdat->kswapd and it is NOT NULL.
->>>         pgdat->kswapd = NULL
->>>                         task_is_running(pgdat->kswapd); // NULL 
->>> pointer dereference
->>>
->> But don't we still have a bug?  Sure, kswapd_is_running() will no
->> longer deref a null pointer.  But it now runs kswapd_is_running()
->> against a task which has exited - a use-after-free?
+[   76.901829][ T6677] ================================================================================
+[   76.903908][ T6677] UBSAN: shift-out-of-bounds in fs/ntfs3/super.c:675:13
+[   76.905363][ T6677] shift exponent -247 is negative
 
-The UAF is caused by race between kswapd_stop() and kcompactd(), right?
+This patch avoid this error.
 
-so  kcompactd() should be stop before kswapd_stop() to avoid the above UAF.
+Link: https://syzkaller.appspot.com/bug?id=b0299c09a14aababf0f1c862dd4ebc8ab9eb0179
+Fixes: a3b774342fa7 (fs/ntfs3: validate BOOT sectors_per_clusters)
+Cc: Author: Randy Dunlap <rdunlap@infradead.org>
+Reported-by: syzbot+35b87c668935bb55e666@syzkaller.appspotmail.com
+Signed-off-by: Shigeru Yoshida <syoshida@redhat.com>
+---
+ fs/ntfs3/super.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-$ git diff
-diff --git a/mm/memory_hotplug.c b/mm/memory_hotplug.c
-index fad6d1f2262a..2fd45ccbce45 100644
---- a/mm/memory_hotplug.c
-+++ b/mm/memory_hotplug.c
-@@ -1940,8 +1940,8 @@ int __ref offline_pages(unsigned long start_pfn, 
-unsigned long nr_pages,
+diff --git a/fs/ntfs3/super.c b/fs/ntfs3/super.c
+index 47012c9bf505..adc4f73722b7 100644
+--- a/fs/ntfs3/super.c
++++ b/fs/ntfs3/super.c
+@@ -672,7 +672,7 @@ static u32 true_sectors_per_clst(const struct NTFS_BOOT *boot)
+ 	if (boot->sectors_per_clusters <= 0x80)
+ 		return boot->sectors_per_clusters;
+ 	if (boot->sectors_per_clusters >= 0xf4) /* limit shift to 2MB max */
+-		return 1U << (0 - boot->sectors_per_clusters);
++		return 1U << -(s8)boot->sectors_per_clusters;
+ 	return -EINVAL;
+ }
+ 
+-- 
+2.37.2
 
-         node_states_clear_node(node, &arg);
-         if (arg.status_change_nid >= 0) {
--               kswapd_stop(node);
-                 kcompactd_stop(node);
-+               kswapd_stop(node);
-         }
-
-         writeback_set_ratelimit();
-
-> we could add get/put_task_struct() to avoid the UAF， will update， 
-> thanks.
-
-sorry, the task refcount won't fix anything.
-
-
-> .
