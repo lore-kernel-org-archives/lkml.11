@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7E115C32792
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 12:12:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4EA9CC32772
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 12:12:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353603AbiHWMMT (ORCPT
+        id S1347532AbiHWMMd (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 08:12:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45760 "EHLO
+        Tue, 23 Aug 2022 08:12:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38674 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352567AbiHWMLW (ORCPT
+        with ESMTP id S1359344AbiHWML0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 08:11:22 -0400
+        Tue, 23 Aug 2022 08:11:26 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9F8A3E1AB1;
-        Tue, 23 Aug 2022 02:39:14 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8DD87E0FF1;
+        Tue, 23 Aug 2022 02:39:09 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id BF094B81C97;
-        Tue, 23 Aug 2022 09:39:13 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2534DC433D6;
-        Tue, 23 Aug 2022 09:39:11 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 8AB0AB81CA0;
+        Tue, 23 Aug 2022 09:38:48 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C2D98C433C1;
+        Tue, 23 Aug 2022 09:38:46 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661247552;
-        bh=KVV9LSKv94xjVZyS3EhPLIwl0hPqOnV0rioQJ+Wgwmk=;
+        s=korg; t=1661247527;
+        bh=FiKJFq3p3hNMNAz/G+j1Jr63XmO/Uxj1ECLA2jSv+YM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=tNsWeLWyx9QQX+yZ5SwF7jkZ7wzMklSZ09dL6Dt+OM/eNZuuL9afSkmvpO/D7hvEz
-         kTmHfVRa6/YWoXLQOD0JvwLGnlOxN+rGgA30+IfZfmxR89/1jchaywS0FOvbgRrHS6
-         f0H1LwGmkfV9e0Z5Rn65nFJCUkw+PzaVqz3A9zos=
+        b=yIZGtENePEp3HbULfgdQxL02ORbH8+JGp9pBJXeJ3Auf2F+0IoHkVySLUWMMJFAbo
+         dnFGohV4oAk4BPwY3zeFNNfNWNpkieLbRwN0bx7Trij27opK+C+i2IaurIzKnskBZh
+         oraWjzBFStrArhU7PnTHHzoFao6zW5Eku7YZf9nA=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        "Peter Zijlstra (Intel)" <peterz@infradead.org>,
-        Richard Weinberger <richard@nod.at>
-Subject: [PATCH 5.10 043/158] um: Add missing apply_returns()
-Date:   Tue, 23 Aug 2022 10:26:15 +0200
-Message-Id: <20220823080047.810865424@linuxfoundation.org>
+        stable@vger.kernel.org, Al Viro <viro@zeniv.linux.org.uk>,
+        Dinh Nguyen <dinguyen@kernel.org>
+Subject: [PATCH 5.10 064/158] nios2: page fault et.al. are *not* restartable syscalls...
+Date:   Tue, 23 Aug 2022 10:26:36 +0200
+Message-Id: <20220823080048.669109248@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220823080046.056825146@linuxfoundation.org>
 References: <20220823080046.056825146@linuxfoundation.org>
@@ -50,34 +49,53 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Peter Zijlstra <peterz@infradead.org>
+From: Al Viro <viro@zeniv.linux.org.uk>
 
-commit 637285e7f8d6da70a70c64e7895cb0672357a1f7 upstream.
+commit 8535c239ac674f7ead0f2652932d35c52c4123b2 upstream.
 
-Implement apply_returns() stub for UM, just like all the other patching
-routines.
+make sure that ->orig_r2 is negative for everything except
+the syscalls.
 
-Fixes: 15e67227c49a ("x86: Undo return-thunk damage")
-Reported-by: Randy Dunlap <rdunlap@infradead.org)
-Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
-Signed-off-by: Richard Weinberger <richard@nod.at>
+Fixes: 82ed08dd1b0e ("nios2: Exception handling")
+Signed-off-by: Al Viro <viro@zeniv.linux.org.uk>
+Signed-off-by: Dinh Nguyen <dinguyen@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/um/kernel/um_arch.c |    4 ++++
- 1 file changed, 4 insertions(+)
+ arch/nios2/include/asm/entry.h |    3 ++-
+ arch/nios2/kernel/entry.S      |    4 +---
+ 2 files changed, 3 insertions(+), 4 deletions(-)
 
---- a/arch/um/kernel/um_arch.c
-+++ b/arch/um/kernel/um_arch.c
-@@ -367,6 +367,10 @@ void apply_returns(s32 *start, s32 *end)
- {
- }
+--- a/arch/nios2/include/asm/entry.h
++++ b/arch/nios2/include/asm/entry.h
+@@ -50,7 +50,8 @@
+ 	stw	r13, PT_R13(sp)
+ 	stw	r14, PT_R14(sp)
+ 	stw	r15, PT_R15(sp)
+-	stw	r2, PT_ORIG_R2(sp)
++	movi	r24, -1
++	stw	r24, PT_ORIG_R2(sp)
+ 	stw	r7, PT_ORIG_R7(sp)
  
-+void apply_returns(s32 *start, s32 *end)
-+{
-+}
-+
- void apply_alternatives(struct alt_instr *start, struct alt_instr *end)
- {
- }
+ 	stw	ra, PT_RA(sp)
+--- a/arch/nios2/kernel/entry.S
++++ b/arch/nios2/kernel/entry.S
+@@ -185,6 +185,7 @@ ENTRY(handle_system_call)
+ 	ldw	r5, PT_R5(sp)
+ 
+ local_restart:
++	stw	r2, PT_ORIG_R2(sp)
+ 	/* Check that the requested system call is within limits */
+ 	movui	r1, __NR_syscalls
+ 	bgeu	r2, r1, ret_invsyscall
+@@ -336,9 +337,6 @@ external_interrupt:
+ 	/* skip if no interrupt is pending */
+ 	beq	r12, r0, ret_from_interrupt
+ 
+-	movi	r24, -1
+-	stw	r24, PT_ORIG_R2(sp)
+-
+ 	/*
+ 	 * Process an external hardware interrupt.
+ 	 */
 
 
