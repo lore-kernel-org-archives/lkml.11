@@ -2,43 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 965D9C32772
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 09:06:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4A65EC32772
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 09:07:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347929AbiHWJG5 (ORCPT
+        id S1347951AbiHWJHG (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 05:06:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51894 "EHLO
+        Tue, 23 Aug 2022 05:07:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58114 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348118AbiHWJFs (ORCPT
+        with ESMTP id S1348119AbiHWJFs (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 23 Aug 2022 05:05:48 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BD05E85F9E;
-        Tue, 23 Aug 2022 01:29:46 -0700 (PDT)
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AD819844EB;
+        Tue, 23 Aug 2022 01:29:21 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 1932161257;
-        Tue, 23 Aug 2022 08:28:28 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1F624C433D7;
-        Tue, 23 Aug 2022 08:28:26 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 30860B81C53;
+        Tue, 23 Aug 2022 08:28:16 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 630F8C433C1;
+        Tue, 23 Aug 2022 08:28:14 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661243307;
-        bh=/0xUtoBD7lVWZLLkImr4H5x1++n8+L53UF+qUa8F/D0=;
+        s=korg; t=1661243294;
+        bh=kBIJUnYoiF4hvWbezr8bvwVph0x8Ae5+cW9bccerPLw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=OnipR9Gdr1LQKXmpZpu90OVVNu0W75NDjtCAw4pHyy1FDVRjaKKIJH5w9ZOB5F1l7
-         JIy4Gbx8R7DEQLda8pB4hF7gijDTKDn8TN8YSmgmfIrUGfG86AlFHXbxKpyWlo0DmF
-         XByY9sUvBzVSR0CMBcOjJGRkzPw2LdQ14mVwZqr8=
+        b=X6VVkbPBAyigqFonlavrZ+3lM60kb/gXzg6QDkAtd7+neTC7uEEpNrDw67CmLLxLu
+         mkGyxk1KWGMM4aMeGnf2im5r8gUFn/Z5Nk1nXsv8BgnQen0+sGftlXUlBRjXUFuyPJ
+         2/lFP7ZuWBAQBk2qVq9yuojNoMNOKt2BSvg4Qd4s=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Xin Xiong <xiongx18@fudan.edu.cn>,
-        Xin Tan <tanxin.ctf@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>
-Subject: [PATCH 5.19 205/365] net/sunrpc: fix potential memory leaks in rpc_sysfs_xprt_state_change()
-Date:   Tue, 23 Aug 2022 10:01:46 +0200
-Message-Id: <20220823080126.779775500@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Przemyslaw Patynowski <przemyslawx.patynowski@intel.com>,
+        Mateusz Palczewski <mateusz.palczewski@intel.com>,
+        Marek Szlosek <marek.szlosek@intel.com>,
+        Tony Nguyen <anthony.l.nguyen@intel.com>
+Subject: [PATCH 5.19 230/365] i40e: Fix tunnel checksum offload with fragmented traffic
+Date:   Tue, 23 Aug 2022 10:02:11 +0200
+Message-Id: <20220823080127.841289110@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220823080118.128342613@linuxfoundation.org>
 References: <20220823080118.128342613@linuxfoundation.org>
@@ -50,43 +52,59 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Xin Xiong <xiongx18@fudan.edu.cn>
+From: Przemyslaw Patynowski <przemyslawx.patynowski@intel.com>
 
-commit bfc48f1b0505ffcb03a6d749139b7577d6b81ae0 upstream.
+commit 2c6482091f01ba104cf8ee549aa5c717e80d43ea upstream.
 
-The issue happens on some error handling paths. When the function
-fails to grab the object `xprt`, it simply returns 0, forgetting to
-decrease the reference count of another object `xps`, which is
-increased by rpc_sysfs_xprt_kobj_get_xprt_switch(), causing refcount
-leaks. Also, the function forgets to check whether `xps` is valid
-before using it, which may result in NULL-dereferencing issues.
+Fix checksum offload on VXLAN tunnels.
+In case, when mpls protocol is not used, set l4 header to transport
+header of skb. This fixes case, when user tries to offload checksums
+of VXLAN tunneled traffic.
 
-Fix it by adding proper error handling code when either `xprt` or
-`xps` is NULL.
+Steps for reproduction (requires link partner with tunnels):
+ip l s enp130s0f0 up
+ip a f enp130s0f0
+ip a a 10.10.110.2/24 dev enp130s0f0
+ip l s enp130s0f0 mtu 1600
+ip link add vxlan12_sut type vxlan id 12 group 238.168.100.100 dev \
+enp130s0f0 dstport 4789
+ip l s vxlan12_sut up
+ip a a 20.10.110.2/24 dev vxlan12_sut
+iperf3 -c 20.10.110.1 #should connect
 
-Fixes: 5b7eb78486cd ("SUNRPC: take a xprt offline using sysfs")
-Signed-off-by: Xin Xiong <xiongx18@fudan.edu.cn>
-Signed-off-by: Xin Tan <tanxin.ctf@gmail.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+Without this patch, TX descriptor was using wrong data, due to
+l4 header pointing wrong address. NIC would then drop those packets
+internally, due to incorrect TX descriptor data, which increased
+GLV_TEPC register.
+
+Fixes: b4fb2d33514a ("i40e: Add support for MPLS + TSO")
+Signed-off-by: Przemyslaw Patynowski <przemyslawx.patynowski@intel.com>
+Signed-off-by: Mateusz Palczewski <mateusz.palczewski@intel.com>
+Tested-by: Marek Szlosek <marek.szlosek@intel.com>
+Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- net/sunrpc/sysfs.c |    6 ++++--
- 1 file changed, 4 insertions(+), 2 deletions(-)
+ drivers/net/ethernet/intel/i40e/i40e_txrx.c |    8 +++++---
+ 1 file changed, 5 insertions(+), 3 deletions(-)
 
---- a/net/sunrpc/sysfs.c
-+++ b/net/sunrpc/sysfs.c
-@@ -291,8 +291,10 @@ static ssize_t rpc_sysfs_xprt_state_chan
- 	int offline = 0, online = 0, remove = 0;
- 	struct rpc_xprt_switch *xps = rpc_sysfs_xprt_kobj_get_xprt_switch(kobj);
+--- a/drivers/net/ethernet/intel/i40e/i40e_txrx.c
++++ b/drivers/net/ethernet/intel/i40e/i40e_txrx.c
+@@ -3204,11 +3204,13 @@ static int i40e_tx_enable_csum(struct sk
  
--	if (!xprt)
--		return 0;
-+	if (!xprt || !xps) {
-+		count = 0;
-+		goto out_put;
+ 	protocol = vlan_get_protocol(skb);
+ 
+-	if (eth_p_mpls(protocol))
++	if (eth_p_mpls(protocol)) {
+ 		ip.hdr = skb_inner_network_header(skb);
+-	else
++		l4.hdr = skb_checksum_start(skb);
++	} else {
+ 		ip.hdr = skb_network_header(skb);
+-	l4.hdr = skb_checksum_start(skb);
++		l4.hdr = skb_transport_header(skb);
 +	}
  
- 	if (!strncmp(buf, "offline", 7))
- 		offline = 1;
+ 	/* set the tx_flags to indicate the IP protocol type. this is
+ 	 * required so that checksum header computation below is accurate.
 
 
