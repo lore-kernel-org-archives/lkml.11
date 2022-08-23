@@ -2,42 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5A29BC32792
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 09:11:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 281ECC3F6B0
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 09:11:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348496AbiHWJK2 (ORCPT
+        id S1348626AbiHWJKf (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 05:10:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33274 "EHLO
+        Tue, 23 Aug 2022 05:10:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37608 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240382AbiHWJJP (ORCPT
+        with ESMTP id S240882AbiHWJJU (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 05:09:15 -0400
+        Tue, 23 Aug 2022 05:09:20 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CB87E86890;
-        Tue, 23 Aug 2022 01:30:36 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 04A0C868AE;
+        Tue, 23 Aug 2022 01:30:39 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 22BBEB81C35;
-        Tue, 23 Aug 2022 08:29:12 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 688B3C433D6;
-        Tue, 23 Aug 2022 08:29:10 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 5E05AB81C57;
+        Tue, 23 Aug 2022 08:30:39 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9762EC433D7;
+        Tue, 23 Aug 2022 08:30:37 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661243350;
-        bh=XZXeOQ3dfzBQRzr9znYm6A/X4LWQ1Y7x+rJXgcRbj20=;
+        s=korg; t=1661243438;
+        bh=j2KoHzmv7mNAD0mAEpA0x+P63+btGz4TXSLAu6PoG78=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=yPU8LGtc6e7pNSZZEroWwKz6U2N2Oye3CSUGhbkwe3iMgrVlJ3+jFV5/LoCHVJibi
-         Fw1uOeWnEJ7kyAKlyo2e3LdByIwcAIBSxHisYum7PXU0hJwawZJlbQbHy7DxOaY5N7
-         jqCZTtlCzasR5+CLIhd2f88fadBQ30qFC3gjYAdk=
+        b=suDVOI6txxvCQSzwg1TUqBJ6rUENr70AJ6kCsGqtv7DO0OUxVXqOWNbpAIam9xrc8
+         GEFfP8urpQ/ixjuOzmroMhNfdkQSVZX3yAyv+qKpviLdGlDe1ypp8j1TO7yv5IpXMr
+         AKXWTO4kKHzf4DmkXUyhoMRabO4vqowRsDpcmBBA=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Oliver Upton <oliver.upton@linux.dev>,
-        Marc Zyngier <maz@kernel.org>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.19 250/365] KVM: arm64: Reject 32bit user PSTATE on asymmetric systems
-Date:   Tue, 23 Aug 2022 10:02:31 +0200
-Message-Id: <20220823080128.650304002@linuxfoundation.org>
+        stable@vger.kernel.org, Minas Harutyunyan <hminas@synopsys.com>,
+        Amelie Delaunay <amelie.delaunay@foss.st.com>,
+        Fabrice Gasnier <fabrice.gasnier@foss.st.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.19 278/365] usb: dwc2: gadget: remove D+ pull-up while no vbus with usb-role-switch
+Date:   Tue, 23 Aug 2022 10:02:59 +0200
+Message-Id: <20220823080129.796689734@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220823080118.128342613@linuxfoundation.org>
 References: <20220823080118.128342613@linuxfoundation.org>
@@ -49,41 +51,42 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Oliver Upton <oliver.upton@linux.dev>
+From: Amelie Delaunay <amelie.delaunay@foss.st.com>
 
-[ Upstream commit b10d86fb8e46cc812171728bcd326df2f34e9ed5 ]
+[ Upstream commit db638c6500abaffb8f7770b2a69c40d003d54ae1 ]
 
-KVM does not support AArch32 EL0 on asymmetric systems. To that end,
-prevent userspace from configuring a vCPU in such a state through
-setting PSTATE.
+When using usb-role-switch, D+ pull-up is set as soon as DTCL_SFTDISCON is
+cleared, whatever the vbus valid signal state is. The pull-up should not
+be set when vbus isn't present (this is determined by the drd controller).
 
-It is already ABI that KVM rejects such a write on a system where
-AArch32 EL0 is unsupported. Though the kernel's definition of a 32bit
-system changed in commit 2122a833316f ("arm64: Allow mismatched
-32-bit EL0 support"), KVM's did not.
+This patch ensures that B-Session (so Peripheral role + vbus valid signal)
+is valid before clearing the DCTL_SFTDISCON bit when role switch is used.
+Keep original behavior when usb-role-switch isn't used.
 
-Fixes: 2122a833316f ("arm64: Allow mismatched 32-bit EL0 support")
-Signed-off-by: Oliver Upton <oliver.upton@linux.dev>
-Signed-off-by: Marc Zyngier <maz@kernel.org>
-Link: https://lore.kernel.org/r/20220816192554.1455559-3-oliver.upton@linux.dev
+Acked-by: Minas Harutyunyan <hminas@synopsys.com>
+Signed-off-by: Amelie Delaunay <amelie.delaunay@foss.st.com>
+Signed-off-by: Fabrice Gasnier <fabrice.gasnier@foss.st.com>
+Link: https://lore.kernel.org/r/20220622160717.314580-1-fabrice.gasnier@foss.st.com
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/arm64/kvm/guest.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/usb/dwc2/gadget.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-diff --git a/arch/arm64/kvm/guest.c b/arch/arm64/kvm/guest.c
-index 8c607199cad1..f802a3b3f8db 100644
---- a/arch/arm64/kvm/guest.c
-+++ b/arch/arm64/kvm/guest.c
-@@ -242,7 +242,7 @@ static int set_core_reg(struct kvm_vcpu *vcpu, const struct kvm_one_reg *reg)
- 		u64 mode = (*(u64 *)valp) & PSR_AA32_MODE_MASK;
- 		switch (mode) {
- 		case PSR_AA32_MODE_USR:
--			if (!system_supports_32bit_el0())
-+			if (!kvm_supports_32bit_el0())
- 				return -EINVAL;
- 			break;
- 		case PSR_AA32_MODE_FIQ:
+diff --git a/drivers/usb/dwc2/gadget.c b/drivers/usb/dwc2/gadget.c
+index fe2a58c75861..8b15742d9e8a 100644
+--- a/drivers/usb/dwc2/gadget.c
++++ b/drivers/usb/dwc2/gadget.c
+@@ -3594,7 +3594,8 @@ void dwc2_hsotg_core_disconnect(struct dwc2_hsotg *hsotg)
+ void dwc2_hsotg_core_connect(struct dwc2_hsotg *hsotg)
+ {
+ 	/* remove the soft-disconnect and let's go */
+-	dwc2_clear_bit(hsotg, DCTL, DCTL_SFTDISCON);
++	if (!hsotg->role_sw || (dwc2_readl(hsotg, GOTGCTL) & GOTGCTL_BSESVLD))
++		dwc2_clear_bit(hsotg, DCTL, DCTL_SFTDISCON);
+ }
+ 
+ /**
 -- 
 2.35.1
 
