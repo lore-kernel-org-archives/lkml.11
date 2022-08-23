@@ -2,116 +2,98 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C1516C32774
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 07:52:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 92A85C32774
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 07:52:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241340AbiHWHwm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 03:52:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34394 "EHLO
+        id S241348AbiHWHwu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 23 Aug 2022 03:52:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35912 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241260AbiHWHwg (ORCPT
+        with ESMTP id S241260AbiHWHws (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 03:52:36 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2681C65252
-        for <linux-kernel@vger.kernel.org>; Tue, 23 Aug 2022 00:52:35 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 9FA03CE1B0B
-        for <linux-kernel@vger.kernel.org>; Tue, 23 Aug 2022 07:52:33 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E279EC433C1;
-        Tue, 23 Aug 2022 07:52:31 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1661241151;
-        bh=iSO3PHv91eS3Mg/NxRVM4R0uyfbRFbYAiJtmZp7lFO0=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=oK4Vrj3+oRe77PnPSsTGrWx4aKWHOHTYyEeYSGf/YMOMu0z0ngkuIh4o8yd3Ojltc
-         IcufgUnnfDEwdzKGUFlb/qbosJkgMNin1AATxWzi1o7vpIusBabt1QlIWRso/qTjac
-         v9R16zDH2woBfaki20os5n/O0RZu3BmKY6bz7r3OpHsPorWQy3cPI1jGA1rPpK+nq4
-         V7Pta4MOymBDbvyMmCXFsjhqYrkjZi52BET5WdzRyT0YHRXSRvgwK4BLKTvvDE1T7+
-         +7ZQlbytw6srR1AkqR8vCpRWUkdlCC57ViXXZkXYnxdW32hb063znF/XZWxyShCvib
-         ik4RPoO0CHAQg==
-Received: from johan by xi.lan with local (Exim 4.94.2)
-        (envelope-from <johan@kernel.org>)
-        id 1oQOi6-0004ZR-Ps; Tue, 23 Aug 2022 09:52:31 +0200
-Date:   Tue, 23 Aug 2022 09:52:30 +0200
-From:   Johan Hovold <johan@kernel.org>
-To:     Doug Anderson <dianders@chromium.org>
-Cc:     Johan Hovold <johan+linaro@kernel.org>,
-        Thierry Reding <thierry.reding@gmail.com>,
-        Sam Ravnborg <sam@ravnborg.org>,
-        David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        dri-devel <dri-devel@lists.freedesktop.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Rob Clark <robdclark@gmail.com>
-Subject: Re: [PATCH] drm/panel-edp: add AUO B133UAN02.1 panel entry
-Message-ID: <YwSHPooA189qn/Qx@hovoldconsulting.com>
-References: <20220711075202.21775-1-johan+linaro@kernel.org>
- <YtpyeCHojFovBKxv@hovoldconsulting.com>
- <YwOGCPFTx0+MNfN2@hovoldconsulting.com>
- <CAD=FV=XRjpbeMnh_dtLh1hb-zfWOk6UJwqFBr+otk=sq9vjm3A@mail.gmail.com>
+        Tue, 23 Aug 2022 03:52:48 -0400
+Received: from mail-pg1-x532.google.com (mail-pg1-x532.google.com [IPv6:2607:f8b0:4864:20::532])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 99A5665544
+        for <linux-kernel@vger.kernel.org>; Tue, 23 Aug 2022 00:52:46 -0700 (PDT)
+Received: by mail-pg1-x532.google.com with SMTP id 202so11576390pgc.8
+        for <linux-kernel@vger.kernel.org>; Tue, 23 Aug 2022 00:52:46 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc;
+        bh=MgN+KREEFxa4xm6tdK3/YoM4YbnrbMSDZ+9EuL3RHVM=;
+        b=dEqbckJOMJZcX6/v3PLFyyPYN2v2QaTFyFRXKUoMvhiNvJRYqWL/OUvflzM+bwV7ZW
+         aU8/3/w2QO70sc2k+D89CQScTDJ8TcqH0xrxT6bGN/zI6TloQZsOWPwIgPA2MsXWg4q2
+         ELZOXOlB+5fE8kBSgbF1+c6ocYcf18YzVj0pjG/y2Xbyw5nUHfET9TQysbdYFnrqbDBB
+         dlX05q1p9zkwTQlcw9PLEhTV3qlhDowyM7ZdlKHLzSOVDADUpzmyQjOQ3+FkcMdYL//x
+         bh/mdZfSIISUTADk6wwlImvTZVQF/zU+5Wow5c0zklytq/mUKHRtauza2wPk/ps2mBmm
+         rixA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc;
+        bh=MgN+KREEFxa4xm6tdK3/YoM4YbnrbMSDZ+9EuL3RHVM=;
+        b=cYK6A14OaMLBUQ8rXRLHlVAEFy4iV6bvpfm0MzgmRl/uWLxY69KPlY2SX+rr1WAgaS
+         xky37wJW7TZcbj3smO3LqXK7U24LWQNrbUnkBsqPimhWhUJFlGnLQrKVXFa97AKMdaZB
+         yZaIkGJHTCMHzXBVsJOpqtrUtdlpJkdD+Od59mtIwA2fKPCmMGVgOa1S2pbReuzrIpbY
+         kxe3A1/lEmD+rmeIf18olzrcKHlUDy/VgbCEGEwJANhMxOyitXojlYiBeyWBO/aN8Jq2
+         PxbjeyK6nTGqitOuXdIoK1rvJ5GwlcEyROuZ/54lHnXLJARQW+7MXUIwRsADyA2vLQEI
+         rqzQ==
+X-Gm-Message-State: ACgBeo1wig80d71q/sA1eXGMUjcyRTTrloOrk/dR2bPqHsJCZoFOkP7K
+        WH+4hxmVvlXjq+tF6qn6RS4=
+X-Google-Smtp-Source: AA6agR6tK9o+kL139TUNt9pXwhRG3QQMgJm5L6Ql0waoJDaieYwaBti0inwQ3JasWVBnO6YijcZErQ==
+X-Received: by 2002:a05:6a00:2185:b0:520:7276:6570 with SMTP id h5-20020a056a00218500b0052072766570mr24305446pfi.84.1661241166130;
+        Tue, 23 Aug 2022 00:52:46 -0700 (PDT)
+Received: from localhost.localdomain ([193.203.214.57])
+        by smtp.gmail.com with ESMTPSA id bn20-20020a056a02031400b00419ab8f8d2csm8604216pgb.20.2022.08.23.00.52.44
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 23 Aug 2022 00:52:45 -0700 (PDT)
+From:   cgel.zte@gmail.com
+X-Google-Original-From: ye.xingchen@zte.com.cn
+To:     42.hyeyoo@gmail.com
+Cc:     cl@linux.com, rientjes@google.com, iamjoonsoo.kim@lge.com,
+        vbabka@suse.cz, roman.gushchin@linux.dev, linux-mm@kvack.org,
+        linux-kernel@vger.kernel.org, ye xingchen <ye.xingchen@zte.com.cn>,
+        Zeal Robot <zealci@zte.com.cn>
+Subject: [PATCH linux-next] mm/slab_common: Remove the unneeded result variable
+Date:   Tue, 23 Aug 2022 07:52:41 +0000
+Message-Id: <20220823075241.209009-1-ye.xingchen@zte.com.cn>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAD=FV=XRjpbeMnh_dtLh1hb-zfWOk6UJwqFBr+otk=sq9vjm3A@mail.gmail.com>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Aug 22, 2022 at 10:33:40AM -0700, Doug Anderson wrote:
-> Hi,
-> 
-> On Mon, Aug 22, 2022 at 6:35 AM Johan Hovold <johan@kernel.org> wrote:
-> >
-> > On Fri, Jul 22, 2022 at 11:48:40AM +0200, Johan Hovold wrote:
-> > > On Mon, Jul 11, 2022 at 09:52:02AM +0200, Johan Hovold wrote:
-> > > > Add an eDP panel entry for AUO B133UAN02.1.
-> > > >
-> > > > Due to lack of documentation, use the delay_200_500_e50 timings like
-> > > > some other AUO entries for now.
-> > > >
-> > > > Signed-off-by: Johan Hovold <johan+linaro@kernel.org>
+From: ye xingchen <ye.xingchen@zte.com.cn>
 
-> > This one still hasn't been picked up.
-> >
-> > Is this something you can do, Doug? I noticed you applied a couple of
-> > patches to this driver recently.
-> >
-> > Or who is really responsible for this driver?
-> 
-> Officially it falls within this section of maintainers:
-> 
-> DRM PANEL DRIVERS
-> M:      Thierry Reding <thierry.reding@gmail.com>
-> R:      Sam Ravnborg <sam@ravnborg.org>
-> L:      dri-devel@lists.freedesktop.org
-> S:      Maintained
-> T:      git git://anongit.freedesktop.org/drm/drm-misc
-> F:      Documentation/devicetree/bindings/display/panel/
-> F:      drivers/gpu/drm/drm_panel.c
-> F:      drivers/gpu/drm/panel/
-> F:      include/drm/drm_panel.h
-> 
-> ...and then you just have to know that if the "tree" is drm-misc that
-> it falls under drm-misc rules. That means that anyone who is a
-> drm-misc-next committer can commit it.
-> 
-> I've been trying to keep an eye on panel-edp ever since I split it out
-> from panel-simple, though. I'll post up a MAINTAINERS entry to try to
-> make that more official.
+Return the value from __kmem_cache_shrink() directly instead of storing it
+ in another redundant variable.
 
-Sounds good.
+Reported-by: Zeal Robot <zealci@zte.com.cn>
+Signed-off-by: ye xingchen <ye.xingchen@zte.com.cn>
+---
+ mm/slab_common.c | 6 +-----
+ 1 file changed, 1 insertion(+), 5 deletions(-)
 
-> In any case, I've landed this on drm-misc-next:
-> 
-> ee50b0024408 drm/panel-edp: add AUO B133UAN02.1 panel entry
-
-Thanks for that! Perhaps you can take look also at this one:
-
-	https://lore.kernel.org/all/20220720054152.2450-1-steev@kali.org/
-
-which is for another panel found on some X13s?
-
-Johan
+diff --git a/mm/slab_common.c b/mm/slab_common.c
+index 17996649cfe3..0dfa3cfb6be5 100644
+--- a/mm/slab_common.c
++++ b/mm/slab_common.c
+@@ -495,13 +495,9 @@ EXPORT_SYMBOL(kmem_cache_destroy);
+  */
+ int kmem_cache_shrink(struct kmem_cache *cachep)
+ {
+-	int ret;
+-
+-
+ 	kasan_cache_shrink(cachep);
+-	ret = __kmem_cache_shrink(cachep);
+ 
+-	return ret;
++	return __kmem_cache_shrink(cachep);
+ }
+ EXPORT_SYMBOL(kmem_cache_shrink);
+ 
+-- 
+2.25.1
