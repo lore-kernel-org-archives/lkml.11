@@ -2,44 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9A80CC48BEA
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 11:21:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1ACA7C49EC2
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 11:21:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357710AbiHWLUy (ORCPT
+        id S1357938AbiHWLVY (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 07:20:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38104 "EHLO
+        Tue, 23 Aug 2022 07:21:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37662 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346593AbiHWLRN (ORCPT
+        with ESMTP id S232910AbiHWLR1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 07:17:13 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 74C9DBD75E;
-        Tue, 23 Aug 2022 02:20:35 -0700 (PDT)
+        Tue, 23 Aug 2022 07:17:27 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2B2945FF43;
+        Tue, 23 Aug 2022 02:20:48 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id EB1DB60F85;
-        Tue, 23 Aug 2022 09:20:34 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id EBF29C433D7;
-        Tue, 23 Aug 2022 09:20:33 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id B9E16B81B1F;
+        Tue, 23 Aug 2022 09:20:47 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 24409C433C1;
+        Tue, 23 Aug 2022 09:20:45 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661246434;
-        bh=I84a5gVb/NLiQQOrHwz9RdfRGp+3FyR7lZPvKAxpz2o=;
+        s=korg; t=1661246446;
+        bh=H5MXShAtHWxxOpSOSpBdOoTIxXQrfmWAG0T7BIY0HVc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=SeQ5xqJgJ8irXhPvFqgk6/N+VKC++eqbIkN8orPCYiIr6E2YleRsmEkOYiC0j74E8
-         flPoHyniogiN/taCD19+kvh1D1t0zEneiCWt/rsBoPUabwTdD0x/1IsPpu4WYVM53X
-         7OFsdldGO062//28CLTYEm5I5u4/xsAmPEdbsOJY=
+        b=VH9lNhrjzGtZZ4kyH7wz2w1CaMU3oRJfKHXkz7T8r6PnS5j5aMdRhTezaokFZMunB
+         13JwF8+IUYUbKsx1TI+5LMjb0q6lsBJHXTaNZQT1ijx0BRA+1kWMH72bNEwPVbkAKy
+         aA3gjAbwZv5k5U2XqyK3zSAnskV/MQ3p6fVDSsD4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
-        Dave Stevenson <dave.stevenson@raspberrypi.com>,
-        Maxime Ripard <maxime@cerno.tech>,
+        Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
+        Heiko Stuebner <heiko@sntech.de>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 109/389] drm/vc4: plane: Fix margin calculations for the right/bottom edges
-Date:   Tue, 23 Aug 2022 10:23:07 +0200
-Message-Id: <20220823080120.160869237@linuxfoundation.org>
+Subject: [PATCH 5.4 113/389] drm/rockchip: Fix an error handling path rockchip_dp_probe()
+Date:   Tue, 23 Aug 2022 10:23:11 +0200
+Message-Id: <20220823080120.348857799@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220823080115.331990024@linuxfoundation.org>
 References: <20220823080115.331990024@linuxfoundation.org>
@@ -51,49 +51,43 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Dave Stevenson <dave.stevenson@raspberrypi.com>
+From: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
 
-[ Upstream commit b7c3d6821627861f4ea3e1f2b595d0ed9e80aac8 ]
+[ Upstream commit 5074376822fe99fa4ce344b851c5016d00c0444f ]
 
-The current plane margin calculation code clips the right and bottom
-edges of the range based using the left and top margins.
+Should component_add() fail, we should call analogix_dp_remove() in the
+error handling path, as already done in the remove function.
 
-This is obviously wrong, so let's fix it.
-
-Fixes: 666e73587f90 ("drm/vc4: Take margin setup into account when updating planes")
-Signed-off-by: Dave Stevenson <dave.stevenson@raspberrypi.com>
-Link: https://lore.kernel.org/r/20220613144800.326124-6-maxime@cerno.tech
-Signed-off-by: Maxime Ripard <maxime@cerno.tech>
+Fixes: 152cce0006ab ("drm/bridge: analogix_dp: Split bind() into probe() and real bind()")
+Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+Signed-off-by: Heiko Stuebner <heiko@sntech.de>
+Link: https://patchwork.freedesktop.org/patch/msgid/b719d9061bb97eb85145fbd3c5e63f4549f2e13e.1655572071.git.christophe.jaillet@wanadoo.fr
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/gpu/drm/vc4/vc4_plane.c | 8 ++++----
- 1 file changed, 4 insertions(+), 4 deletions(-)
+ drivers/gpu/drm/rockchip/analogix_dp-rockchip.c | 10 +++++++++-
+ 1 file changed, 9 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/gpu/drm/vc4/vc4_plane.c b/drivers/gpu/drm/vc4/vc4_plane.c
-index 6e787f684e52..cdcd19698b3c 100644
---- a/drivers/gpu/drm/vc4/vc4_plane.c
-+++ b/drivers/gpu/drm/vc4/vc4_plane.c
-@@ -288,16 +288,16 @@ static int vc4_plane_margins_adj(struct drm_plane_state *pstate)
- 					       adjhdisplay,
- 					       crtc_state->mode.hdisplay);
- 	vc4_pstate->crtc_x += left;
--	if (vc4_pstate->crtc_x > crtc_state->mode.hdisplay - left)
--		vc4_pstate->crtc_x = crtc_state->mode.hdisplay - left;
-+	if (vc4_pstate->crtc_x > crtc_state->mode.hdisplay - right)
-+		vc4_pstate->crtc_x = crtc_state->mode.hdisplay - right;
+diff --git a/drivers/gpu/drm/rockchip/analogix_dp-rockchip.c b/drivers/gpu/drm/rockchip/analogix_dp-rockchip.c
+index ce98c08aa8b4..48281e29b5d4 100644
+--- a/drivers/gpu/drm/rockchip/analogix_dp-rockchip.c
++++ b/drivers/gpu/drm/rockchip/analogix_dp-rockchip.c
+@@ -401,7 +401,15 @@ static int rockchip_dp_probe(struct platform_device *pdev)
+ 	if (IS_ERR(dp->adp))
+ 		return PTR_ERR(dp->adp);
  
- 	adjvdisplay = crtc_state->mode.vdisplay - (top + bottom);
- 	vc4_pstate->crtc_y = DIV_ROUND_CLOSEST(vc4_pstate->crtc_y *
- 					       adjvdisplay,
- 					       crtc_state->mode.vdisplay);
- 	vc4_pstate->crtc_y += top;
--	if (vc4_pstate->crtc_y > crtc_state->mode.vdisplay - top)
--		vc4_pstate->crtc_y = crtc_state->mode.vdisplay - top;
-+	if (vc4_pstate->crtc_y > crtc_state->mode.vdisplay - bottom)
-+		vc4_pstate->crtc_y = crtc_state->mode.vdisplay - bottom;
+-	return component_add(dev, &rockchip_dp_component_ops);
++	ret = component_add(dev, &rockchip_dp_component_ops);
++	if (ret)
++		goto err_dp_remove;
++
++	return 0;
++
++err_dp_remove:
++	analogix_dp_remove(dp->adp);
++	return ret;
+ }
  
- 	vc4_pstate->crtc_w = DIV_ROUND_CLOSEST(vc4_pstate->crtc_w *
- 					       adjhdisplay,
+ static int rockchip_dp_remove(struct platform_device *pdev)
 -- 
 2.35.1
 
