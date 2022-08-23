@@ -2,91 +2,97 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 113AAC32772
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 20:24:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D4B8EC32772
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 20:28:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230379AbiHWUYw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 16:24:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59588 "EHLO
+        id S232713AbiHWU2z (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 23 Aug 2022 16:28:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38306 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232097AbiHWUYd (ORCPT
+        with ESMTP id S232562AbiHWU21 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 16:24:33 -0400
-Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1B64ED4BC0;
-        Tue, 23 Aug 2022 12:51:51 -0700 (PDT)
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
-        (No client certificate requested)
-        by smtp-out2.suse.de (Postfix) with ESMTPS id 5BDEB1F8AC;
-        Tue, 23 Aug 2022 19:51:50 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
-        t=1661284310;
-        h=from:from:reply-to:reply-to:date:date:message-id:message-id:to:to:
-         cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=2RCUwt1b+lcpY49aMgbRIAVLt9QpUtE7/soKWVObSPU=;
-        b=P8H/rWXj/Zjoc0NMM0FOcZpRJmCIUAK9pBQhVCZnIXqukc5vzCdZF17heyMqwFMuGr+SXI
-        FLOPEwDY7nfgXm6NlfGbBCibvgduB3rrOZcF4amzZsh/kjUnAqak3izLa/kwcAkgx7cIkm
-        7Ly4lZJF1bDIhS15wFd7o71RAJy0854=
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
-        s=susede2_ed25519; t=1661284310;
-        h=from:from:reply-to:reply-to:date:date:message-id:message-id:to:to:
-         cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=2RCUwt1b+lcpY49aMgbRIAVLt9QpUtE7/soKWVObSPU=;
-        b=pavdNYUSyduIZiGeGrOST6NK7MGuRB5eV27vIpkmfD/oUluWAdFQUVnrSI8/Razi8VV6AQ
-        r6CRyPwWtRlwKpBA==
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
-        (No client certificate requested)
-        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id 1B80F13A89;
-        Tue, 23 Aug 2022 19:51:50 +0000 (UTC)
-Received: from dovecot-director2.suse.de ([192.168.254.65])
-        by imap2.suse-dmz.suse.de with ESMTPSA
-        id rnopBdYvBWMQeQAAMHmgww
-        (envelope-from <dsterba@suse.cz>); Tue, 23 Aug 2022 19:51:50 +0000
-Date:   Tue, 23 Aug 2022 21:46:35 +0200
-From:   David Sterba <dsterba@suse.cz>
-To:     "Maciej S. Szmigiero" <mail@maciej.szmigiero.name>
-Cc:     Chris Mason <clm@fb.com>, Josef Bacik <josef@toxicpanda.com>,
-        David Sterba <dsterba@suse.com>, linux-btrfs@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] btrfs: don't print information about space cache or tree
- every remount
-Message-ID: <20220823194635.GM13489@twin.jikos.cz>
-Reply-To: dsterba@suse.cz
-Mail-Followup-To: dsterba@suse.cz,
-        "Maciej S. Szmigiero" <mail@maciej.szmigiero.name>,
-        Chris Mason <clm@fb.com>, Josef Bacik <josef@toxicpanda.com>,
-        David Sterba <dsterba@suse.com>, linux-btrfs@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-References: <ca82edf897ae4cbd71277e76f43c6631ffd26b5a.1661268435.git.maciej.szmigiero@oracle.com>
+        Tue, 23 Aug 2022 16:28:27 -0400
+Received: from mail-ot1-x32c.google.com (mail-ot1-x32c.google.com [IPv6:2607:f8b0:4864:20::32c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0F34980EBD;
+        Tue, 23 Aug 2022 13:02:38 -0700 (PDT)
+Received: by mail-ot1-x32c.google.com with SMTP id br15-20020a056830390f00b0061c9d73b8bdso10483540otb.6;
+        Tue, 23 Aug 2022 13:02:38 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc;
+        bh=8bau2TXRrZKeJhPFcC8W9KtfZ4MQyFla4E+DjQSW6uE=;
+        b=GbyDZvPOc3JMfcAJs2BH7uEB0W+WV4FmqW0rADnEGHo4+9DQjVYBNqTovBq9149WYB
+         S7LpwRMV0gtEXvHrCwA6vjSABAZJMDPfnRp784RsgTRGh6CA/pKsmeJdyXzFJWxls7O2
+         SNzml90+l7AkxIVDrgWIr3S0sWxjR3pxitJyzdlv84SsCUKzjVOX4Xw/vyJPiYNdtssi
+         nj14NpNBxY+q5d1QDgtcx5gvbLaW6q+nnWzcbXwsEp1Th3jdwc3+0ApCCSUrTxJBerh0
+         VYFuREjlbsCgpBg3WXJ5+fj0lqwJ8t8aQngC+/1opd1UR4p5kVipGO5LJDM+g7H8UJXX
+         20Ig==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc;
+        bh=8bau2TXRrZKeJhPFcC8W9KtfZ4MQyFla4E+DjQSW6uE=;
+        b=19cNwk44E4iQfyW29HndYMyugwgqh69TJGas08MzbLK/nm2ynQYSLgtN/m6j+mu5xJ
+         q++lv2NfhKSYOaKKOiDTzfOQw2j77vs/h6Il1jq9QziiDoIrZFPmEh1RwODggIz9zRdV
+         QJ2pjxkh7OAlfAwtW9IIrKmJCssm0eA7k275a9gR340fVjb42opy+eSyQQrwoX8vJtTg
+         /tJW78TDEYqGC2iR+R9Z5jlA+UiGooGy5att4+NKnzT7xidaFD19IGLB5NxTCuz1jE20
+         GgVOhexp+33bFsIxQs+WOUrFQ9gTKbJ1FHo3hJT1oqk/DnbRJ88Pi0dXB0LEcDO512jW
+         Luog==
+X-Gm-Message-State: ACgBeo0p6j4ST9jwjC+LgLxiiDXvSqPpLg+Mpfiw2+22p7Tk6CHKXyU1
+        oijk0t8IYzPNYaBL1mkwsBU=
+X-Google-Smtp-Source: AA6agR5Gr6QSRj/ESdHOG1BM3JeEExT4UC/hG42YuHE35l0X2SrBP4Od61EPkzjWIRDYMZ4Z2d/MLA==
+X-Received: by 2002:a05:6830:1e09:b0:638:8984:b49e with SMTP id s9-20020a0568301e0900b006388984b49emr10267108otr.368.1661284957410;
+        Tue, 23 Aug 2022 13:02:37 -0700 (PDT)
+Received: from xps8900.attlocal.net ([2600:1700:2442:6db0:4ca1:8e5f:8b29:974d])
+        by smtp.gmail.com with ESMTPSA id u15-20020a056870d58f00b0010e046491f8sm4050216oao.57.2022.08.23.13.02.36
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 23 Aug 2022 13:02:36 -0700 (PDT)
+From:   frowand.list@gmail.com
+To:     Rob Herring <robh+dt@kernel.org>
+Cc:     devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH 1/1] of: unittest: taint the kernel when of unittest runs
+Date:   Tue, 23 Aug 2022 15:01:52 -0500
+Message-Id: <20220823200152.3465751-1-frowand.list@gmail.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <ca82edf897ae4cbd71277e76f43c6631ffd26b5a.1661268435.git.maciej.szmigiero@oracle.com>
-User-Agent: Mutt/1.5.23.1-rc1 (2014-03-12)
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Aug 23, 2022 at 05:28:20PM +0200, Maciej S. Szmigiero wrote:
-> From: "Maciej S. Szmigiero" <maciej.szmigiero@oracle.com>
-> 
-> btrfs currently prints information about space cache or free space tree
-> being in use on every remount, regardless whether such remount actually
-> enabled or disabled one of these features.
-> 
-> This is actually unnecessary since providing remount options changing the
-> state of these features will explicitly print the appropriate notice.
-> 
-> Let's instead print such unconditional information just on an initial mount
-> to avoid filling the kernel log when, for example, laptop-mode-tools
-> remount the fs on some events.
-> 
-> Signed-off-by: Maciej S. Szmigiero <maciej.szmigiero@oracle.com>
+From: Frank Rowand <frank.rowand@sony.com>
 
-Makes sense, added to misc-next, thanks.
+Make OF unittest trigger the new TAINT_TEST taint when OF unittest runs.
+Due to OF unittest not being intended to run on production systems, and
+potentially causing problems (or security issues like leaking kernel
+addresses), the kernel's state should not be considered safe for
+production use after OF unittest runs.
+
+Signed-off-by: Frank Rowand <frank.rowand@sony.com>
+---
+
+Follow the precedent set by KUnit tests in v6.0-rc1:
+  commit c272612cb4a2 ("kunit: Taint the kernel when KUnit tests are run")
+  commit 2852ca7fba9f ("panic: Taint kernel if tests are run")
+
+ drivers/of/unittest.c | 3 +++
+ 1 file changed, 3 insertions(+)
+
+diff --git a/drivers/of/unittest.c b/drivers/of/unittest.c
+index eafa8ffefbd0..4f8cc1b21ac4 100644
+--- a/drivers/of/unittest.c
++++ b/drivers/of/unittest.c
+@@ -3467,6 +3467,9 @@ static int __init of_unittest(void)
+ 
+ 	pr_info("start of unittest - you will see error messages\n");
+ 
++	/* Taint the kernel so we know we've run tests. */
++	add_taint(TAINT_TEST, LOCKDEP_STILL_OK);
++
+ 	/* adding data for unittest */
+ 
+ 	if (IS_ENABLED(CONFIG_UML))
+-- 
+Frank Rowand <frank.rowand@sony.com>
+
