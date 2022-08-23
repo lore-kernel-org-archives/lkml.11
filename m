@@ -2,45 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 34B81C32772
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 09:06:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E09C9C32772
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 09:06:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347787AbiHWJGs (ORCPT
+        id S1347828AbiHWJGx (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 05:06:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50264 "EHLO
+        Tue, 23 Aug 2022 05:06:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53110 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348073AbiHWJFq (ORCPT
+        with ESMTP id S1348112AbiHWJFr (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 05:05:46 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 25D8284EF1;
-        Tue, 23 Aug 2022 01:29:28 -0700 (PDT)
+        Tue, 23 Aug 2022 05:05:47 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EA9A685AA3;
+        Tue, 23 Aug 2022 01:29:38 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 497E561490;
-        Tue, 23 Aug 2022 08:27:57 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4F635C433C1;
-        Tue, 23 Aug 2022 08:27:56 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id CF0A061484;
+        Tue, 23 Aug 2022 08:28:21 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C516AC433D7;
+        Tue, 23 Aug 2022 08:28:20 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661243276;
-        bh=1c39BiNd7SQ5EjNVpwpii3C/c76JTx3O9Q0M7TYzoc8=;
+        s=korg; t=1661243301;
+        bh=JUNb4crmTtug/p7cqIm18MA46f2ZGlje8nkEmYEvpfc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=BBaFj+cIXSDkWNHY/2k9Ymlg4+jyIAv65YkKRg8ByyV2EMD+PT2/CrGAjg2q8fjUz
-         M4Qra9vUFkhmExxdZ2ZvvpR8ZrZv74QnJU7J4piSRxJt1Upx1t3slXzNsK0M69pGcn
-         YsDHzNBMlxdmJhFnJZWRwDNxJ7AUxG1J/gCippVY=
+        b=katzGMdzFTBtSR8Xfddtmwx+DWuZZvfIJyT0hRDDMhp6ivKlfJ12HwTonGfmdbXa0
+         e1Vk/CD4xjv7RaDZZjJ6ZcGAZge3X/Qti3WqYsBJMKCM/0dqPrvn+8oys84PScVxy/
+         DvReq6qnl/XBx88xi+8iwfnxhGBCCIGJ1bCQzt3s=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Grzegorz Siwik <grzegorz.siwik@intel.com>,
-        Jaroslav Pulchart <jaroslav.pulchart@gooddata.com>,
-        Igor Raits <igor@gooddata.com>,
-        Tony Nguyen <anthony.l.nguyen@intel.com>,
-        Gurucharan <gurucharanx.g@intel.com>
-Subject: [PATCH 5.19 225/365] ice: Ignore EEXIST when setting promisc mode
-Date:   Tue, 23 Aug 2022 10:02:06 +0200
-Message-Id: <20220823080127.610838708@linuxfoundation.org>
+        stable@vger.kernel.org, Guenter Roeck <linux@roeck-us.net>,
+        Michael Ellerman <mpe@ellerman.id.au>
+Subject: [PATCH 5.19 203/365] powerpc/pci: Fix get_phb_number() locking
+Date:   Tue, 23 Aug 2022 10:01:44 +0200
+Message-Id: <20220823080126.718264222@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220823080118.128342613@linuxfoundation.org>
 References: <20220823080118.128342613@linuxfoundation.org>
@@ -52,38 +49,105 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Grzegorz Siwik <grzegorz.siwik@intel.com>
+From: Michael Ellerman <mpe@ellerman.id.au>
 
-commit 11e551a2efa4481bd4f616ab75374a2710b480e9 upstream.
+commit 8d48562a2729742f767b0fdd994d6b2a56a49c63 upstream.
 
-Ignore EEXIST error when setting promiscuous mode.
-This fix is needed because the driver could set promiscuous mode
-when it still has not cleared properly.
-Promiscuous mode could be set only once, so setting it second
-time will be rejected.
+The recent change to get_phb_number() causes a DEBUG_ATOMIC_SLEEP
+warning on some systems:
 
-Fixes: 5eda8afd6bcc ("ice: Add support for PF/VF promiscuous mode")
-Signed-off-by: Grzegorz Siwik <grzegorz.siwik@intel.com>
-Link: https://lore.kernel.org/all/CAK8fFZ7m-KR57M_rYX6xZN39K89O=LGooYkKsu6HKt0Bs+x6xQ@mail.gmail.com/
-Tested-by: Jaroslav Pulchart <jaroslav.pulchart@gooddata.com>
-Tested-by: Igor Raits <igor@gooddata.com>
-Tested-by: Gurucharan <gurucharanx.g@intel.com> (A Contingent worker at Intel)
-Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
+  BUG: sleeping function called from invalid context at kernel/locking/mutex.c:580
+  in_atomic(): 1, irqs_disabled(): 0, non_block: 0, pid: 1, name: swapper
+  preempt_count: 1, expected: 0
+  RCU nest depth: 0, expected: 0
+  1 lock held by swapper/1:
+   #0: c157efb0 (hose_spinlock){+.+.}-{2:2}, at: pcibios_alloc_controller+0x64/0x220
+  Preemption disabled at:
+  [<00000000>] 0x0
+  CPU: 0 PID: 1 Comm: swapper Not tainted 5.19.0-yocto-standard+ #1
+  Call Trace:
+  [d101dc90] [c073b264] dump_stack_lvl+0x50/0x8c (unreliable)
+  [d101dcb0] [c0093b70] __might_resched+0x258/0x2a8
+  [d101dcd0] [c0d3e634] __mutex_lock+0x6c/0x6ec
+  [d101dd50] [c0a84174] of_alias_get_id+0x50/0xf4
+  [d101dd80] [c002ec78] pcibios_alloc_controller+0x1b8/0x220
+  [d101ddd0] [c140c9dc] pmac_pci_init+0x198/0x784
+  [d101de50] [c140852c] discover_phbs+0x30/0x4c
+  [d101de60] [c0007fd4] do_one_initcall+0x94/0x344
+  [d101ded0] [c1403b40] kernel_init_freeable+0x1a8/0x22c
+  [d101df10] [c00086e0] kernel_init+0x34/0x160
+  [d101df30] [c001b334] ret_from_kernel_thread+0x5c/0x64
+
+This is because pcibios_alloc_controller() holds hose_spinlock but
+of_alias_get_id() takes of_mutex which can sleep.
+
+The hose_spinlock protects the phb_bitmap, and also the hose_list, but
+it doesn't need to be held while get_phb_number() calls the OF routines,
+because those are only looking up information in the device tree.
+
+So fix it by having get_phb_number() take the hose_spinlock itself, only
+where required, and then dropping the lock before returning.
+pcibios_alloc_controller() then needs to take the lock again before the
+list_add() but that's safe, the order of the list is not important.
+
+Fixes: 0fe1e96fef0a ("powerpc/pci: Prefer PCI domain assignment via DT 'linux,pci-domain' and alias")
+Reported-by: Guenter Roeck <linux@roeck-us.net>
+Signed-off-by: Michael Ellerman <mpe@ellerman.id.au>
+Link: https://lore.kernel.org/r/20220815065550.1303620-1-mpe@ellerman.id.au
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/net/ethernet/intel/ice/ice_switch.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ arch/powerpc/kernel/pci-common.c |   16 ++++++++++------
+ 1 file changed, 10 insertions(+), 6 deletions(-)
 
---- a/drivers/net/ethernet/intel/ice/ice_switch.c
-+++ b/drivers/net/ethernet/intel/ice/ice_switch.c
-@@ -4428,7 +4428,7 @@ ice_set_vlan_vsi_promisc(struct ice_hw *
- 		else
- 			status = ice_set_vsi_promisc(hw, vsi_handle,
- 						     promisc_mask, vlan_id);
--		if (status)
-+		if (status && status != -EEXIST)
- 			break;
- 	}
+--- a/arch/powerpc/kernel/pci-common.c
++++ b/arch/powerpc/kernel/pci-common.c
+@@ -67,10 +67,6 @@ void __init set_pci_dma_ops(const struct
+ 	pci_dma_ops = dma_ops;
+ }
  
+-/*
+- * This function should run under locking protection, specifically
+- * hose_spinlock.
+- */
+ static int get_phb_number(struct device_node *dn)
+ {
+ 	int ret, phb_id = -1;
+@@ -107,15 +103,20 @@ static int get_phb_number(struct device_
+ 	if (!ret)
+ 		phb_id = (int)(prop & (MAX_PHBS - 1));
+ 
++	spin_lock(&hose_spinlock);
++
+ 	/* We need to be sure to not use the same PHB number twice. */
+ 	if ((phb_id >= 0) && !test_and_set_bit(phb_id, phb_bitmap))
+-		return phb_id;
++		goto out_unlock;
+ 
+ 	/* If everything fails then fallback to dynamic PHB numbering. */
+ 	phb_id = find_first_zero_bit(phb_bitmap, MAX_PHBS);
+ 	BUG_ON(phb_id >= MAX_PHBS);
+ 	set_bit(phb_id, phb_bitmap);
+ 
++out_unlock:
++	spin_unlock(&hose_spinlock);
++
+ 	return phb_id;
+ }
+ 
+@@ -126,10 +127,13 @@ struct pci_controller *pcibios_alloc_con
+ 	phb = zalloc_maybe_bootmem(sizeof(struct pci_controller), GFP_KERNEL);
+ 	if (phb == NULL)
+ 		return NULL;
+-	spin_lock(&hose_spinlock);
++
+ 	phb->global_number = get_phb_number(dev);
++
++	spin_lock(&hose_spinlock);
+ 	list_add_tail(&phb->list_node, &hose_list);
+ 	spin_unlock(&hose_spinlock);
++
+ 	phb->dn = dev;
+ 	phb->is_dynamic = slab_is_available();
+ #ifdef CONFIG_PPC64
 
 
