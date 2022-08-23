@@ -2,46 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4F095C32774
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 64DD7C3F6B0
 	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 08:22:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242999AbiHWIUV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 04:20:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46554 "EHLO
+        id S243024AbiHWIUZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 23 Aug 2022 04:20:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41914 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242851AbiHWIQD (ORCPT
+        with ESMTP id S242890AbiHWIQG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 04:16:03 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2BF2867C91;
-        Tue, 23 Aug 2022 01:10:37 -0700 (PDT)
+        Tue, 23 Aug 2022 04:16:06 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 06D8167477;
+        Tue, 23 Aug 2022 01:10:40 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 190E5B81C23;
-        Tue, 23 Aug 2022 08:10:36 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 497A7C433D6;
-        Tue, 23 Aug 2022 08:10:34 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id EA645B81C22;
+        Tue, 23 Aug 2022 08:10:38 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 51EEDC433C1;
+        Tue, 23 Aug 2022 08:10:37 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661242234;
-        bh=e3aMXbjLjJFXWg8t0FJRpF8xQC0xpUH+N3XN8tF3TQE=;
+        s=korg; t=1661242237;
+        bh=MOhTH0quh9EdEM1uMx2W4WbcH4+nwmhT1nm92vb4wWQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=i1AjJatMyAuv8lra9SlQLBTZnDW5aO5Nd44S8GX5tTKWg5kxmADSKinazFjH5sSkV
-         jQ0ShLvK6QpVcuaF70aUEK2hc/V9vkkS/DMaB7uZ5yqMTnxz8x3fvN5bwU5Iv+FND2
-         JkX9s4wA4kBf994KWw5N/+DH0497IZK5UrUIe6Hk=
+        b=N5eA9lUed6/ucyDAc4B5T0cujQjmcbDPAVUzMptbSWtiD8hXufJxtzPVpqKFEp1di
+         AC7o4bulnlNWZT6w1XiMUN4OAiEpv0dvCJr0u+cxL7b51uMr/Y00cLArAhCET08Nyh
+         mJZ9CObOBRtWw6941oQorMkw2nKd7ins51cs6uK8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, kernel test robot <lkp@intel.com>,
-        Alexander Lobakin <alexandr.lobakin@intel.com>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Yury Norov <yury.norov@gmail.com>
-Subject: [PATCH 4.9 040/101] ia64, processor: fix -Wincompatible-pointer-types in ia64_get_irr()
-Date:   Tue, 23 Aug 2022 10:03:13 +0200
-Message-Id: <20220823080036.088798465@linuxfoundation.org>
+        stable@vger.kernel.org, Ido Schimmel <idosch@nvidia.com>,
+        Jiri Pirko <jiri@nvidia.com>,
+        "David S. Miller" <davem@davemloft.net>
+Subject: [PATCH 5.19 081/365] devlink: Fix use-after-free after a failed reload
+Date:   Tue, 23 Aug 2022 09:59:42 +0200
+Message-Id: <20220823080121.581205970@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220823080034.579196046@linuxfoundation.org>
-References: <20220823080034.579196046@linuxfoundation.org>
+In-Reply-To: <20220823080118.128342613@linuxfoundation.org>
+References: <20220823080118.128342613@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -50,44 +49,105 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Alexander Lobakin <alexandr.lobakin@intel.com>
+From: Ido Schimmel <idosch@nvidia.com>
 
-commit e5a16a5c4602c119262f350274021f90465f479d upstream.
+commit 6b4db2e528f650c7fb712961aac36455468d5902 upstream.
 
-test_bit(), as any other bitmap op, takes `unsigned long *` as a
-second argument (pointer to the actual bitmap), as any bitmap
-itself is an array of unsigned longs. However, the ia64_get_irr()
-code passes a ref to `u64` as a second argument.
-This works with the ia64 bitops implementation due to that they
-have `void *` as the second argument and then cast it later on.
-This works with the bitmap API itself due to that `unsigned long`
-has the same size on ia64 as `u64` (`unsigned long long`), but
-from the compiler PoV those two are different.
-Define @irr as `unsigned long` to fix that. That implies no
-functional changes. Has been hidden for 16 years!
+After a failed devlink reload, devlink parameters are still registered,
+which means user space can set and get their values. In the case of the
+mlxsw "acl_region_rehash_interval" parameter, these operations will
+trigger a use-after-free [1].
 
-Fixes: a58786917ce2 ("[IA64] avoid broken SAL_CACHE_FLUSH implementations")
-Cc: stable@vger.kernel.org # 2.6.16+
-Reported-by: kernel test robot <lkp@intel.com>
-Signed-off-by: Alexander Lobakin <alexandr.lobakin@intel.com>
-Reviewed-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Reviewed-by: Yury Norov <yury.norov@gmail.com>
-Signed-off-by: Yury Norov <yury.norov@gmail.com>
+Fix this by rejecting set and get operations while in the failed state.
+Return the "-EOPNOTSUPP" error code which does not abort the parameters
+dump, but instead causes it to skip over the problematic parameter.
+
+Another possible fix is to perform these checks in the mlxsw parameter
+callbacks, but other drivers might be affected by the same problem and I
+am not aware of scenarios where these stricter checks will cause a
+regression.
+
+[1]
+mlxsw_spectrum3 0000:00:10.0: Port 125: Failed to register netdev
+mlxsw_spectrum3 0000:00:10.0: Failed to create ports
+
+==================================================================
+BUG: KASAN: use-after-free in mlxsw_sp_acl_tcam_vregion_rehash_intrvl_get+0xbd/0xd0 drivers/net/ethernet/mellanox/mlxsw/spectrum_acl_tcam.c:904
+Read of size 4 at addr ffff8880099dcfd8 by task kworker/u4:4/777
+
+CPU: 1 PID: 777 Comm: kworker/u4:4 Not tainted 5.19.0-rc7-custom-126601-gfe26f28c586d #1
+Hardware name: QEMU MSN4700, BIOS rel-1.13.0-0-gf21b5a4aeb02-prebuilt.qemu.org 04/01/2014
+Workqueue: netns cleanup_net
+Call Trace:
+ <TASK>
+ __dump_stack lib/dump_stack.c:88 [inline]
+ dump_stack_lvl+0x92/0xbd lib/dump_stack.c:106
+ print_address_description mm/kasan/report.c:313 [inline]
+ print_report.cold+0x5e/0x5cf mm/kasan/report.c:429
+ kasan_report+0xb9/0xf0 mm/kasan/report.c:491
+ __asan_report_load4_noabort+0x14/0x20 mm/kasan/report_generic.c:306
+ mlxsw_sp_acl_tcam_vregion_rehash_intrvl_get+0xbd/0xd0 drivers/net/ethernet/mellanox/mlxsw/spectrum_acl_tcam.c:904
+ mlxsw_sp_acl_region_rehash_intrvl_get+0x49/0x60 drivers/net/ethernet/mellanox/mlxsw/spectrum_acl.c:1106
+ mlxsw_sp_params_acl_region_rehash_intrvl_get+0x33/0x80 drivers/net/ethernet/mellanox/mlxsw/spectrum.c:3854
+ devlink_param_get net/core/devlink.c:4981 [inline]
+ devlink_nl_param_fill+0x238/0x12d0 net/core/devlink.c:5089
+ devlink_param_notify+0xe5/0x230 net/core/devlink.c:5168
+ devlink_ns_change_notify net/core/devlink.c:4417 [inline]
+ devlink_ns_change_notify net/core/devlink.c:4396 [inline]
+ devlink_reload+0x15f/0x700 net/core/devlink.c:4507
+ devlink_pernet_pre_exit+0x112/0x1d0 net/core/devlink.c:12272
+ ops_pre_exit_list net/core/net_namespace.c:152 [inline]
+ cleanup_net+0x494/0xc00 net/core/net_namespace.c:582
+ process_one_work+0x9fc/0x1710 kernel/workqueue.c:2289
+ worker_thread+0x675/0x10b0 kernel/workqueue.c:2436
+ kthread+0x30c/0x3d0 kernel/kthread.c:376
+ ret_from_fork+0x1f/0x30 arch/x86/entry/entry_64.S:306
+ </TASK>
+
+The buggy address belongs to the physical page:
+page:ffffea0000267700 refcount:0 mapcount:0 mapping:0000000000000000 index:0x0 pfn:0x99dc
+flags: 0x100000000000000(node=0|zone=1)
+raw: 0100000000000000 0000000000000000 dead000000000122 0000000000000000
+raw: 0000000000000000 0000000000000000 00000000ffffffff 0000000000000000
+page dumped because: kasan: bad access detected
+
+Memory state around the buggy address:
+ ffff8880099dce80: ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff
+ ffff8880099dcf00: ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff
+>ffff8880099dcf80: ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff
+                                                    ^
+ ffff8880099dd000: ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff
+ ffff8880099dd080: ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff
+==================================================================
+
+Fixes: 98bbf70c1c41 ("mlxsw: spectrum: add "acl_region_rehash_interval" devlink param")
+Signed-off-by: Ido Schimmel <idosch@nvidia.com>
+Reviewed-by: Jiri Pirko <jiri@nvidia.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/ia64/include/asm/processor.h |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ net/core/devlink.c |    4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
---- a/arch/ia64/include/asm/processor.h
-+++ b/arch/ia64/include/asm/processor.h
-@@ -554,7 +554,7 @@ ia64_get_irr(unsigned int vector)
+--- a/net/core/devlink.c
++++ b/net/core/devlink.c
+@@ -4943,7 +4943,7 @@ static int devlink_param_get(struct devl
+ 			     const struct devlink_param *param,
+ 			     struct devlink_param_gset_ctx *ctx)
  {
- 	unsigned int reg = vector / 64;
- 	unsigned int bit = vector % 64;
--	u64 irr;
-+	unsigned long irr;
- 
- 	switch (reg) {
- 	case 0: irr = ia64_getreg(_IA64_REG_CR_IRR0); break;
+-	if (!param->get)
++	if (!param->get || devlink->reload_failed)
+ 		return -EOPNOTSUPP;
+ 	return param->get(devlink, param->id, ctx);
+ }
+@@ -4952,7 +4952,7 @@ static int devlink_param_set(struct devl
+ 			     const struct devlink_param *param,
+ 			     struct devlink_param_gset_ctx *ctx)
+ {
+-	if (!param->set)
++	if (!param->set || devlink->reload_failed)
+ 		return -EOPNOTSUPP;
+ 	return param->set(devlink, param->id, ctx);
+ }
 
 
