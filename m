@@ -2,41 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E5FE2C32774
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 08:13:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D4782C32774
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 08:13:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242053AbiHWINe (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 04:13:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60362 "EHLO
+        id S241520AbiHWINh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 23 Aug 2022 04:13:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33314 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242021AbiHWIK3 (ORCPT
+        with ESMTP id S242009AbiHWIK1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 04:10:29 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BC3FFB486;
-        Tue, 23 Aug 2022 01:07:11 -0700 (PDT)
+        Tue, 23 Aug 2022 04:10:27 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BC7EF2BC9;
+        Tue, 23 Aug 2022 01:06:56 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 5A3B4611A8;
-        Tue, 23 Aug 2022 08:07:11 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4CB83C433D6;
-        Tue, 23 Aug 2022 08:07:10 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 0EB97611DD;
+        Tue, 23 Aug 2022 08:06:56 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1BE64C433D6;
+        Tue, 23 Aug 2022 08:06:54 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661242030;
-        bh=2lB3I7+8Hem0I6Ax5aso+WvIIZirR+UtJ+Zd6sfcEwc=;
+        s=korg; t=1661242015;
+        bh=fPU2t9eLDqNauoToSdAkjI0cyo4HWW1yisfgWfJvenU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=EZ37ls95H5d2tWxsmAjFPtXSL2W5Uu/piW37u+NwHFZf7Mp3c60yf6pcV7qHPwOap
-         UR06kovDU53DDFCY5eIKDaZ6XG1OCvQ9MXucQ0Md+z5c+b/MY4pb5pmWXrzi6ajlaf
-         mCE8r9DzQAdN+Udy+S9cTfiwTObyuFtrpMMw5VOo=
+        b=LY9v1zzFtJvu3vtxLyrRUbsil8+7Ur0uGrORLpoFoqNBZ/X6uF5vY8G+u8TEx2yuD
+         V2p/4LdXezI7aZLwdy6HprA/Xfu4aqkC3TsraXd9QT7DUFd7+emfRgslHRh1uM5jYM
+         9bu83t2Ge2w8QHr8BCDefJn2VHW2FJFSZTmIfnfY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Xiu Jianfeng <xiujianfeng@huawei.com>,
-        John Johansen <john.johansen@canonical.com>
-Subject: [PATCH 5.19 048/365] apparmor: Fix memleak in aa_simple_write_to_buffer()
-Date:   Tue, 23 Aug 2022 09:59:09 +0200
-Message-Id: <20220823080120.191326733@linuxfoundation.org>
+        stable@vger.kernel.org, Ingo Molnar <mingo@kernel.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Tzvetomir Stoyanov <tz.stoyanov@gmail.com>,
+        Tom Zanussi <zanussi@kernel.org>,
+        "Masami Hiramatsu (Google)" <mhiramat@kernel.org>,
+        "Steven Rostedt (Google)" <rostedt@goodmis.org>
+Subject: [PATCH 5.19 033/365] tracing/eprobes: Fix reading of string fields
+Date:   Tue, 23 Aug 2022 09:58:54 +0200
+Message-Id: <20220823080119.596808360@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220823080118.128342613@linuxfoundation.org>
 References: <20220823080118.128342613@linuxfoundation.org>
@@ -48,33 +52,64 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Xiu Jianfeng <xiujianfeng@huawei.com>
+From: Steven Rostedt (Google) <rostedt@goodmis.org>
 
-commit 417ea9fe972d2654a268ad66e89c8fcae67017c3 upstream.
+commit f04dec93466a0481763f3b56cdadf8076e28bfbf upstream.
 
-When copy_from_user failed, the memory is freed by kvfree. however the
-management struct and data blob are allocated independently, so only
-kvfree(data) cause a memleak issue here. Use aa_put_loaddata(data) to
-fix this issue.
+Currently when an event probe (eprobe) hooks to a string field, it does
+not display it as a string, but instead as a number. This makes the field
+rather useless. Handle the different kinds of strings, dynamic, static,
+relational/dynamic etc.
 
-Fixes: a6a52579e52b5 ("apparmor: split load data into management struct and data blob")
-Signed-off-by: Xiu Jianfeng <xiujianfeng@huawei.com>
-Signed-off-by: John Johansen <john.johansen@canonical.com>
+Now when a string field is used, the ":string" type can be used to display
+it:
+
+  echo "e:sw sched/sched_switch comm=$next_comm:string" > dynamic_events
+
+Link: https://lkml.kernel.org/r/20220820134400.959640191@goodmis.org
+
+Cc: stable@vger.kernel.org
+Cc: Ingo Molnar <mingo@kernel.org>
+Cc: Andrew Morton <akpm@linux-foundation.org>
+Cc: Tzvetomir Stoyanov <tz.stoyanov@gmail.com>
+Cc: Tom Zanussi <zanussi@kernel.org>
+Fixes: 7491e2c44278 ("tracing: Add a probe that attaches to trace events")
+Acked-by: Masami Hiramatsu (Google) <mhiramat@kernel.org>
+Signed-off-by: Steven Rostedt (Google) <rostedt@goodmis.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- security/apparmor/apparmorfs.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ kernel/trace/trace_eprobe.c |   21 +++++++++++++++++++++
+ 1 file changed, 21 insertions(+)
 
---- a/security/apparmor/apparmorfs.c
-+++ b/security/apparmor/apparmorfs.c
-@@ -401,7 +401,7 @@ static struct aa_loaddata *aa_simple_wri
+--- a/kernel/trace/trace_eprobe.c
++++ b/kernel/trace/trace_eprobe.c
+@@ -310,6 +310,27 @@ static unsigned long get_event_field(str
  
- 	data->size = copy_size;
- 	if (copy_from_user(data->data, userbuf, copy_size)) {
--		kvfree(data);
-+		aa_put_loaddata(data);
- 		return ERR_PTR(-EFAULT);
- 	}
+ 	addr = rec + field->offset;
  
++	if (is_string_field(field)) {
++		switch (field->filter_type) {
++		case FILTER_DYN_STRING:
++			val = (unsigned long)(rec + (*(unsigned int *)addr & 0xffff));
++			break;
++		case FILTER_RDYN_STRING:
++			val = (unsigned long)(addr + (*(unsigned int *)addr & 0xffff));
++			break;
++		case FILTER_STATIC_STRING:
++			val = (unsigned long)addr;
++			break;
++		case FILTER_PTR_STRING:
++			val = (unsigned long)(*(char *)addr);
++			break;
++		default:
++			WARN_ON_ONCE(1);
++			return 0;
++		}
++		return val;
++	}
++
+ 	switch (field->size) {
+ 	case 1:
+ 		if (field->is_signed)
 
 
