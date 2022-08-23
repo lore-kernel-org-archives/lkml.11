@@ -2,99 +2,84 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EC2A9C32772
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 12:34:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CC3FBC32772
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 12:34:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243444AbiHWMeV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 08:34:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59980 "EHLO
+        id S243571AbiHWMe2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 23 Aug 2022 08:34:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53208 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349547AbiHWMbt (ORCPT
+        with ESMTP id S244578AbiHWMbE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 08:31:49 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A6B4B206
-        for <linux-kernel@vger.kernel.org>; Tue, 23 Aug 2022 02:45:55 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1661247903;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=CRVlovo98Y63Ora7pIDLAYaVags/Zx8gD9Y9NQogzCI=;
-        b=TYM//Z1qd0fnLvrEn1Wk/1ICQhv37mvsCc2rZixaDR4emxTk/NFPcCmqMEEyZVRx6VLSoc
-        gmYwlf7KkAjRleDUOrK1icajYa2PuQ4VD0kOnI2RnVnjxrg+sIjkkLFsqGVncUQwpOLb6g
-        SPDbfxkpQmFhbSI5hksNhwHdu9qRGOA=
-Received: from mail-wr1-f69.google.com (mail-wr1-f69.google.com
- [209.85.221.69]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
- us-mta-85-Fdmxe_6KNMuedw8vjC4GFg-1; Tue, 23 Aug 2022 05:37:56 -0400
-X-MC-Unique: Fdmxe_6KNMuedw8vjC4GFg-1
-Received: by mail-wr1-f69.google.com with SMTP id h21-20020adfaa95000000b002252a5b0917so2112812wrc.9
-        for <linux-kernel@vger.kernel.org>; Tue, 23 Aug 2022 02:37:56 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:organization:from:references
-         :to:content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc;
-        bh=CRVlovo98Y63Ora7pIDLAYaVags/Zx8gD9Y9NQogzCI=;
-        b=GcthvLfSji+IQ5TldftCWTFc6881T8FJobgK5mNHnW55FHBVGsJmT3+rjcNp8RFxby
-         x2KGE+KCf3ETXFKLZRDRKBbqFIbk0B6nX7gTsUELpdPrRdChbzZORXesh0FOY0BAGKXY
-         7J7wv4Bnk1u3QJZAAywNEmI3PRr+FpR027emldY0oN4vqc+JGTN7Z7ZcPJlhDGUjuc2p
-         KvXjQAKfybOMWVg5Cg1s/oI80cGqBip8QPL6CAnUVaYXHV5vCi0g3cjeXgVVeprPLqnM
-         kxaMAT/aoR75PJgRt+C69Q2gyUfDIPkrcihAi6Hruibzs/+VHf5Y6HAXA/uYGYKrtblk
-         bUzQ==
-X-Gm-Message-State: ACgBeo3fUH268kiZenlnfOeHkf04mCpzE3n6HxPtOUr4pjJL3LHiFStz
-        qr2ml+621J+XJaHHuR2BqHcE1vHhCAc+4BZ/togJX2XpJ4pLcvO0hs59loUL0iuvXJ56ddALLKK
-        5Z4ss2Hqoyj5h7QHF8CjzyqyW
-X-Received: by 2002:a05:6000:18a2:b0:221:7db8:de02 with SMTP id b2-20020a05600018a200b002217db8de02mr13027301wri.132.1661247475585;
-        Tue, 23 Aug 2022 02:37:55 -0700 (PDT)
-X-Google-Smtp-Source: AA6agR5NNxDZo0JtEBe15rIXcKpNp2OSAcdwyisFO81B1Fq3JNCTxzQZ5cbS5nYZUBA1gkycfelrxA==
-X-Received: by 2002:a05:6000:18a2:b0:221:7db8:de02 with SMTP id b2-20020a05600018a200b002217db8de02mr13027291wri.132.1661247475359;
-        Tue, 23 Aug 2022 02:37:55 -0700 (PDT)
-Received: from ?IPV6:2003:cb:c70b:1600:c48b:1fab:a330:5182? (p200300cbc70b1600c48b1faba3305182.dip0.t-ipconnect.de. [2003:cb:c70b:1600:c48b:1fab:a330:5182])
-        by smtp.gmail.com with ESMTPSA id g17-20020a5d46d1000000b0020fff0ea0a3sm13697885wrs.116.2022.08.23.02.37.54
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 23 Aug 2022 02:37:54 -0700 (PDT)
-Message-ID: <fb230dec-cd9d-6543-fb7f-02016ca59245@redhat.com>
-Date:   Tue, 23 Aug 2022 11:37:54 +0200
+        Tue, 23 Aug 2022 08:31:04 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DEF4C10158E;
+        Tue, 23 Aug 2022 02:45:26 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id AED786151B;
+        Tue, 23 Aug 2022 09:44:07 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id AE800C433D6;
+        Tue, 23 Aug 2022 09:44:06 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1661247847;
+        bh=H6UKRo4fZU5TbBWywQodFTRoIUfFUhzsV6K5s9BhEjY=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=ivJjUhEjuCEKfJpVkBcw3Odl/+ZrUyTQvbCUBtbYFEw3+2mIr3FQ69/Yb75LZkcen
+         yLFu/VqnQMrI3+z72GxHBJocMtq0DHFJUE39oVaUy4pFq0NHB4i9raljz4RqM+6gOy
+         iHFLvMn5p24bMDvb/givybmcRhv0agNb2sq7/0r4=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Timur Tabi <timur@kernel.org>,
+        Liang He <windhl@126.com>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.10 133/158] tty: serial: Fix refcount leak bug in ucc_uart.c
+Date:   Tue, 23 Aug 2022 10:27:45 +0200
+Message-Id: <20220823080051.228232313@linuxfoundation.org>
+X-Mailer: git-send-email 2.37.2
+In-Reply-To: <20220823080046.056825146@linuxfoundation.org>
+References: <20220823080046.056825146@linuxfoundation.org>
+User-Agent: quilt/0.67
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.11.0
-Subject: Re: [PATCH v2 3/8] memblock tests: add labels to verbose output for
- generic alloc tests
-Content-Language: en-US
-To:     Rebecca Mckeever <remckee0@gmail.com>,
-        Mike Rapoport <rppt@kernel.org>, linux-mm@kvack.org,
-        linux-kernel@vger.kernel.org
-References: <cover.1660897732.git.remckee0@gmail.com>
- <b68f49313bb64305b23168953a2802f27878f953.1660897732.git.remckee0@gmail.com>
-From:   David Hildenbrand <david@redhat.com>
-Organization: Red Hat
-In-Reply-To: <b68f49313bb64305b23168953a2802f27878f953.1660897732.git.remckee0@gmail.com>
 Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 19.08.22 10:34, Rebecca Mckeever wrote:
-> Generic tests for memblock_alloc*() functions do not use separate
-> functions for testing top-down and bottom-up allocation directions.
-> Therefore, the function name that is displayed in the verbose testing
-> output does not include the allocation direction.
-> 
-> Add an additional prefix when running generic tests for
-> memblock_alloc*() functions that indicates which allocation direction is
-> set. The prefix will be displayed when the tests are run in verbose mode.
-> 
-> Signed-off-by: Rebecca Mckeever <remckee0@gmail.com>
+From: Liang He <windhl@126.com>
 
-Reviewed-by: David Hildenbrand <david@redhat.com>
+[ Upstream commit d24d7bb2cd947676f9b71fb944d045e09b8b282f ]
 
+In soc_info(), of_find_node_by_type() will return a node pointer
+with refcount incremented. We should use of_node_put() when it is
+not used anymore.
 
+Acked-by: Timur Tabi <timur@kernel.org>
+Signed-off-by: Liang He <windhl@126.com>
+Link: https://lore.kernel.org/r/20220618060850.4058525-1-windhl@126.com
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ drivers/tty/serial/ucc_uart.c | 2 ++
+ 1 file changed, 2 insertions(+)
+
+diff --git a/drivers/tty/serial/ucc_uart.c b/drivers/tty/serial/ucc_uart.c
+index d6a8604157ab..d1fecc88330e 100644
+--- a/drivers/tty/serial/ucc_uart.c
++++ b/drivers/tty/serial/ucc_uart.c
+@@ -1137,6 +1137,8 @@ static unsigned int soc_info(unsigned int *rev_h, unsigned int *rev_l)
+ 		/* No compatible property, so try the name. */
+ 		soc_string = np->name;
+ 
++	of_node_put(np);
++
+ 	/* Extract the SOC number from the "PowerPC," string */
+ 	if ((sscanf(soc_string, "PowerPC,%u", &soc) != 1) || !soc)
+ 		return 0;
 -- 
-Thanks,
+2.35.1
 
-David / dhildenb
+
 
