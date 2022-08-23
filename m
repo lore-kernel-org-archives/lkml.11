@@ -2,83 +2,84 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DFAEDC32796
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CACDCC32793
 	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 06:25:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240658AbiHWGZ3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 02:25:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57956 "EHLO
+        id S240636AbiHWGZZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 23 Aug 2022 02:25:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57950 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238940AbiHWGZO (ORCPT
+        with ESMTP id S240584AbiHWGZN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 02:25:14 -0400
-Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 046062B252;
-        Mon, 22 Aug 2022 23:25:14 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1661235913; x=1692771913;
-  h=message-id:date:mime-version:cc:subject:to:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=5FdhoBKt2vIYyRD6ilpkOeWukzgkLGNhyzycjYZlBjc=;
-  b=VmnztkoF3QcVo5ba++curZ577L1D0ZR5oBae4k8K6mDGqZNm0k3Sznsv
-   iHzZShVKNUhJgHv7b5cBpQYJ0m+wKOC2cCg2HXyoyWrC9mJ/2Osi2DsIa
-   Dx/HlDAI/+nIK8D3kfnpSXThqxyPSuv0QiXLFgqru8TT4VKN03vI/PY1l
-   1zZJZjiSdnUPqjKYtIJPhQwCYsPhYTIVoojfRUPOgeb/XF/OCuqjhyX6E
-   n2yfAytot9XnrdsTzxtk7yiohlLYfEqm4UJzJQwTKmBXTeg12L/09dfRS
-   6ovqdIboZFefUXoF5OuNaTnGi72Bfofgjd2yDoLUj9p4XF28KxI4pxpTU
-   w==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10447"; a="319643830"
-X-IronPort-AV: E=Sophos;i="5.93,256,1654585200"; 
-   d="scan'208";a="319643830"
-Received: from orsmga001.jf.intel.com ([10.7.209.18])
-  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Aug 2022 23:25:13 -0700
-X-IronPort-AV: E=Sophos;i="5.93,256,1654585200"; 
-   d="scan'208";a="642324148"
-Received: from xujinlon-mobl.ccr.corp.intel.com (HELO [10.254.211.102]) ([10.254.211.102])
-  by orsmga001-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Aug 2022 23:25:11 -0700
-Message-ID: <8702c6eb-bfd6-49d1-f96e-e9ae08cd87b0@linux.intel.com>
-Date:   Tue, 23 Aug 2022 14:25:09 +0800
+        Tue, 23 Aug 2022 02:25:13 -0400
+X-Greylist: delayed 62 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Mon, 22 Aug 2022 23:25:12 PDT
+Received: from mta-64-225.siemens.flowmailer.net (mta-64-225.siemens.flowmailer.net [185.136.64.225])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C765060524
+        for <linux-kernel@vger.kernel.org>; Mon, 22 Aug 2022 23:25:12 -0700 (PDT)
+Received: by mta-64-225.siemens.flowmailer.net with ESMTPSA id 202208230624079cde02a96a41454f16
+        for <linux-kernel@vger.kernel.org>;
+        Tue, 23 Aug 2022 08:24:07 +0200
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; s=fm1;
+ d=siemens.com; i=daniel.starke@siemens.com;
+ h=Date:From:Subject:To:Message-ID:MIME-Version:Content-Type:Content-Transfer-Encoding:Cc:References:In-Reply-To;
+ bh=yrhprMDTlGL4plZ3xVQSKewwsGW84oYrlZ/o+UkYd40=;
+ b=T66vzWwTQYCS/dpWOxW1+UKUvi2PHm9vChyFSVHBhw8LKY76bcJ2zRaRSmLVQUGiiNFpVN
+ xX0ipuwSOIhDZC2CjXRfVwhVzO33WOVlWlBKM+nt9+taN5K6vuzUBdPRiO/JCFlK0nwHCs5E
+ iiBuWZ7CsaI6mt4zLIPg65OCWES0c=;
+From:   "D. Starke" <daniel.starke@siemens.com>
+To:     linux-serial@vger.kernel.org, gregkh@linuxfoundation.org,
+        jirislaby@kernel.org
+Cc:     linux-kernel@vger.kernel.org,
+        Daniel Starke <daniel.starke@siemens.com>
+Subject: [PATCH v2 6/6] tty: n_gsm: add debug bit for user payload
+Date:   Tue, 23 Aug 2022 08:22:59 +0200
+Message-Id: <20220823062259.4754-6-daniel.starke@siemens.com>
+In-Reply-To: <20220823062259.4754-1-daniel.starke@siemens.com>
+References: <20220823062259.4754-1-daniel.starke@siemens.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.11.0
-Cc:     baolu.lu@linux.intel.com, Joerg Roedel <joro@8bytes.org>,
-        Will Deacon <will@kernel.org>,
-        Robin Murphy <robin.murphy@arm.com>,
-        Kevin Tian <kevin.tian@intel.com>,
-        raghunathan.srinivasan@intel.com, yi.l.liu@intel.com,
-        linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Subject: Re: [PATCH 1/1] iommu/vt-d: Correctly calculate sagaw value of IOMMU
-Content-Language: en-US
-To:     iommu@lists.linux.dev
-References: <20220817023558.3253263-1-baolu.lu@linux.intel.com>
-From:   Baolu Lu <baolu.lu@linux.intel.com>
-In-Reply-To: <20220817023558.3253263-1-baolu.lu@linux.intel.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
+X-Flowmailer-Platform: Siemens
+Feedback-ID: 519:519-314044:519-21489:flowmailer
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 2022/8/17 10:35, Lu Baolu wrote:
-> The Intel IOMMU driver possibly selects between the first-level and the
-> second-level translation tables for DMA address translation. However,
-> the levels of page-table walks for the 4KB base page size are calculated
-> from the SAGAW field of the capability register, which is only valid for
-> the second-level page table. This causes the IOMMU driver to stop working
-> if the hardware (or the emulated IOMMU) advertises only first-level
-> translation capability and reports the SAGAW field as 0.
-> 
-> This solves the above problem by considering both the first level and the
-> second level when calculating the supported page table levels.
-> 
-> Fixes: b802d070a52a1 ("iommu/vt-d: Use iova over first level")
-> Cc:stable@vger.kernel.org
-> Signed-off-by: Lu Baolu<baolu.lu@linux.intel.com>
+From: Daniel Starke <daniel.starke@siemens.com>
 
-This patch has been queued:
+A debug bit to output a complete transmission dump exists. Sometimes only
+the user frames are relevant. Add an additional bit which limits the
+transmission dump output to user data frames if set.
 
-https://lore.kernel.org/linux-iommu/20220823061557.1631056-1-baolu.lu@linux.intel.com/
+Signed-off-by: Daniel Starke <daniel.starke@siemens.com>
+---
+ drivers/tty/n_gsm.c | 5 +++++
+ 1 file changed, 5 insertions(+)
 
-Best regards,
-baolu
+No changes since v1.
+
+diff --git a/drivers/tty/n_gsm.c b/drivers/tty/n_gsm.c
+index fcf2d52d5095..f3f0668f0a73 100644
+--- a/drivers/tty/n_gsm.c
++++ b/drivers/tty/n_gsm.c
+@@ -69,6 +69,7 @@ module_param(debug, int, 0600);
+ #define DBG_DATA	(1 << 2) /* Data transmission details. */
+ #define DBG_ERRORS	(1 << 3) /* Details for fail conditions. */
+ #define DBG_TTY		(1 << 4) /* Transmission statistics for DLCI TTYs. */
++#define DBG_PAYLOAD	(1 << 5) /* Limits DBG_DUMP to payload frames. */
+ 
+ /* Defaults: these are from the specification */
+ 
+@@ -598,6 +599,10 @@ static void gsm_print_packet(const char *hdr, int addr, int cr,
+ {
+ 	if (!(debug & DBG_DUMP))
+ 		return;
++	/* Only show user payload frames if debug & DBG_PAYLOAD */
++	if (!(debug & DBG_PAYLOAD) && addr != 0)
++		if ((control & ~PF) == UI || (control & ~PF) == UIH)
++			return;
+ 
+ 	pr_info("%s %d) %c: ", hdr, addr, "RC"[cr]);
+ 
+-- 
+2.34.1
+
