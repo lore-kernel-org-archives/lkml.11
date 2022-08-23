@@ -2,115 +2,93 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4E9B2C32772
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 16:54:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4FFA9C32774
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 16:54:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244686AbiHWQyW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 12:54:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53278 "EHLO
+        id S245457AbiHWQyq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 23 Aug 2022 12:54:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53344 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244812AbiHWQx6 (ORCPT
+        with ESMTP id S245360AbiHWQya (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 12:53:58 -0400
-Received: from mail-pf1-x436.google.com (mail-pf1-x436.google.com [IPv6:2607:f8b0:4864:20::436])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 81E40133BBB;
-        Tue, 23 Aug 2022 06:22:43 -0700 (PDT)
-Received: by mail-pf1-x436.google.com with SMTP id p9so12374303pfq.13;
-        Tue, 23 Aug 2022 06:22:43 -0700 (PDT)
+        Tue, 23 Aug 2022 12:54:30 -0400
+Received: from mail-pj1-x1032.google.com (mail-pj1-x1032.google.com [IPv6:2607:f8b0:4864:20::1032])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4D89E1367DF
+        for <linux-kernel@vger.kernel.org>; Tue, 23 Aug 2022 06:23:43 -0700 (PDT)
+Received: by mail-pj1-x1032.google.com with SMTP id m10-20020a17090a730a00b001fa986fd8eeso17249240pjk.0
+        for <linux-kernel@vger.kernel.org>; Tue, 23 Aug 2022 06:23:43 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
+        d=kernel-dk.20210112.gappssmtp.com; s=20210112;
         h=content-transfer-encoding:in-reply-to:from:references:cc:to
          :content-language:subject:user-agent:mime-version:date:message-id
          :from:to:cc;
-        bh=ShH42rQzWj1EeMirCoVLYtSWZK8NNLe3xFxBUFTqrzg=;
-        b=gO54e0Jh/ejzga4Xgm6cPvu7HZg3zY285ZKPkD32+C3f/CCYJBb4T1DAXmFn3hypNK
-         hHId8K1IaqItWbI+8qIAVM64nWpvnrwUWfYmKtmWbI3KwIxYd+HTUFon/Y4QnIiZdCe4
-         pWCMbzooR4lOryyEGvhfbAeybYtUIN5f2Spmgf3O9R9iK776sH6Ds40jD8VuDSLIdbvS
-         UHyzAfUXxm6l2w40tukAX3jzgEntEITKilHOpt9yK21bEabtItQcxHYqNes7AlAVJACd
-         c5/QfajFS28j8ux3PtGw7hFjj4Fx5KHTFhg8cQ6oouU6WFxVagCl9ANTTccYmUvuk097
-         rBjQ==
+        bh=zqgEOt/TK3wL9wlmq1dIyUheKT1/TvyscS8U/UOxg50=;
+        b=WVljkVoKoCDGdZ3EvIR47a3FVfptjEqMh75J0HuMzDu97524zwum4RT7h+6tmgAh/5
+         sp69YR7PZ8RZx1/++gzHoNClG4UGCeURKfpEN5gnLI4iuf33zgW84boywVDt/ncFS2XH
+         XyGOA7txzhB3ypg+1QudaN1n9h5k/Fx9LYcE3eFehu1yzjpIe75IjDUSkVALJQF+QVuw
+         Ob7Iw9FicJShOGP0kS3g5nTvhMAXx2dHyJruNa9TZXudZvDAKUEFbcJz+ir7EA5EryKR
+         WpxppYfqCNumpRXJms3lQHQ1mfgeFtktuAZhM2sUQ7IxNhaVSIiKYXU15jro3mYVl5Zh
+         NDCg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=content-transfer-encoding:in-reply-to:from:references:cc:to
          :content-language:subject:user-agent:mime-version:date:message-id
          :x-gm-message-state:from:to:cc;
-        bh=ShH42rQzWj1EeMirCoVLYtSWZK8NNLe3xFxBUFTqrzg=;
-        b=THbHL8O2OPHmFyQg0ASfdfZKlGlC4OdavmAOTujXQjdMi72Tn0sz9uvPI9S9TCuwHR
-         2A8pfeQv0cpczR7DwUTQzjauD36LmzBTyK+Oqw5GCSKPiBFv0lxBlfw2vowFPUEqhEDK
-         kArCOc/j0Bm0IuDorc5DDnAg3T60njL0f8js9ED2hRMybexFkdpAN65coU0XlaQ/N6HO
-         Rg62Wmvevy9feZaHbE3luZbqG4uLXvGzFVLuaqs0AcD/hZBBfBcEpIqaBVHYajZ16Hkc
-         fuIni/MzmE/l5osSHHHhNjkIUdZeZfgmNXRq37Y66iIm+Sfs4FzhkXMBPi3IkfFPEoxu
-         K+uQ==
-X-Gm-Message-State: ACgBeo3J9uVejclyzqM+cBChUuxCTaAKSkMGELGxKiRkZ9cdwOYIFy9n
-        PuuX9pgOHmAcdXV21piirBs=
-X-Google-Smtp-Source: AA6agR7u1aXeZyCxkPHIApJ5NqY0DcNDwSeniR7tuBytw0DKzogsqXa/urfzofZjb3ptQA08BjC7Uw==
-X-Received: by 2002:a63:4a50:0:b0:41d:a203:a45d with SMTP id j16-20020a634a50000000b0041da203a45dmr20892659pgl.451.1661260962935;
-        Tue, 23 Aug 2022 06:22:42 -0700 (PDT)
-Received: from [192.168.50.208] (ip98-164-255-77.oc.oc.cox.net. [98.164.255.77])
-        by smtp.gmail.com with ESMTPSA id k1-20020aa79721000000b0053675c0b773sm5326274pfg.88.2022.08.23.06.22.41
+        bh=zqgEOt/TK3wL9wlmq1dIyUheKT1/TvyscS8U/UOxg50=;
+        b=GJGtNFpnnUSBARzUQEKljo4O5T5Oe88wbSRdJ0wpqi6n4bCg6vX7bWWkyALjCaKiVo
+         +dIy4IYwhOQ+w/ttCaIAKD/vucyWWF3G/543swvMxtsRgpoHHZb8RGjRlry6vLfo6kGK
+         OSulAQ+Eqp9a7yPGSMcMNdZDt40+AUoDujZp5vZEWF8e3fRPkk8NgTO+VEeUCx7Zcw7J
+         7+0czorbFSfeeF/fF6TVjLuCUSe6bUSHKyqhVebPoN5vg9g+0M8rgqndTWTbjfAH+2Ak
+         88uCtcYmTrIzbQljHNan8TRxSkuv6KEl72S4S0fVRO9LXIbehKDdGSidHCbe22gzKjPJ
+         MqVQ==
+X-Gm-Message-State: ACgBeo3tQB2pXxdfMNbpuPXuTbxdz+TIY/+Mkfe2y3fmEHppLudYJXWM
+        RCzSk0ErG873GQW/Mx4i6Mu6qA==
+X-Google-Smtp-Source: AA6agR7WdzCoE1JL+CoVyUMNuw7bM5L56qez9WvHY4et7Hh19jpwj5T6mv6ii+vELcSSSw647qnKDQ==
+X-Received: by 2002:a17:90b:2644:b0:1fa:e0be:4dcb with SMTP id pa4-20020a17090b264400b001fae0be4dcbmr3202423pjb.85.1661261022785;
+        Tue, 23 Aug 2022 06:23:42 -0700 (PDT)
+Received: from [192.168.1.136] ([198.8.77.157])
+        by smtp.gmail.com with ESMTPSA id d22-20020a63fd16000000b0042ae03134a0sm2037708pgh.48.2022.08.23.06.23.41
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 23 Aug 2022 06:22:42 -0700 (PDT)
-Message-ID: <ec487d40-2bb0-b9b3-d520-c1516488c251@gmail.com>
-Date:   Tue, 23 Aug 2022 06:22:42 -0700
+        Tue, 23 Aug 2022 06:23:41 -0700 (PDT)
+Message-ID: <63368ff3-d78a-5be3-2d38-5a9ff3cf7805@kernel.dk>
+Date:   Tue, 23 Aug 2022 07:23:40 -0600
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
+User-Agent: Mozilla/5.0 (X11; Linux aarch64; rv:102.0) Gecko/20100101
  Thunderbird/102.1.2
-Subject: Re: [PATCH -next v2] scsi: lpfc: add missing destroy_workqueue() on
- error path in lpfc_sli4_driver_resource_setup()
+Subject: Re: [PATCH liburing 0/2] liburing uapi and manpage update
 Content-Language: en-US
-To:     Yang Yingliang <yangyingliang@huawei.com>,
-        linux-kernel@vger.kernel.org, linux-scsi@vger.kernel.org,
-        martin.petersen@oracle.com
-Cc:     james.smart@broadcom.com, dick.kennedy@broadcom.com
-References: <20220823044237.285643-1-yangyingliang@huawei.com>
-From:   James Smart <jsmart2021@gmail.com>
-In-Reply-To: <20220823044237.285643-1-yangyingliang@huawei.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
+To:     Ammar Faizi <ammarfaizi2@gnuweeb.org>
+Cc:     io-uring Mailing List <io-uring@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        GNU/Weeb Mailing List <gwml@vger.gnuweeb.org>,
+        Bart Van Assche <bvanassche@acm.org>,
+        Dylan Yudaken <dylany@fb.com>,
+        Facebook Kernel Team <kernel-team@fb.com>,
+        Kanna Scarlet <knscarlet@gnuweeb.org>
+References: <20220823114813.2865890-1-ammar.faizi@intel.com>
+From:   Jens Axboe <axboe@kernel.dk>
+In-Reply-To: <20220823114813.2865890-1-ammar.faizi@intel.com>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 8/22/2022 9:42 PM, Yang Yingliang wrote:
-> Add the missing destroy_workqueue() before return from
-> lpfc_sli4_driver_resource_setup() in error path.
+On 8/23/22 5:52 AM, Ammar Faizi wrote:
+> From: Ammar Faizi <ammarfaizi2@gnuweeb.org>
 > 
-> Fixes: 3cee98db2610 ("scsi: lpfc: Fix crash on driver unload in wq free")
-> Signed-off-by: Yang Yingliang <yangyingliang@huawei.com>
-> ---
-> v2:
->    correct label spelling error
-> ---
->   drivers/scsi/lpfc/lpfc_init.c | 5 ++++-
->   1 file changed, 4 insertions(+), 1 deletion(-)
+> Hi Jens,
 > 
-> diff --git a/drivers/scsi/lpfc/lpfc_init.c b/drivers/scsi/lpfc/lpfc_init.c
-> index c69c5a0979ec..55a1ad6eed03 100644
-> --- a/drivers/scsi/lpfc/lpfc_init.c
-> +++ b/drivers/scsi/lpfc/lpfc_init.c
-> @@ -8053,7 +8053,7 @@ lpfc_sli4_driver_resource_setup(struct lpfc_hba *phba)
->   	/* Allocate device driver memory */
->   	rc = lpfc_mem_alloc(phba, SGL_ALIGN_SZ);
->   	if (rc)
-> -		return -ENOMEM;
-> +		goto out_destroy_workqueue;
->   
->   	/* IF Type 2 ports get initialized now. */
->   	if (bf_get(lpfc_sli_intf_if_type, &phba->sli4_hba.sli_intf) >=
-> @@ -8481,6 +8481,9 @@ lpfc_sli4_driver_resource_setup(struct lpfc_hba *phba)
->   	lpfc_destroy_bootstrap_mbox(phba);
->   out_free_mem:
->   	lpfc_mem_free(phba);
-> +out_destroy_workqueue:
-> +	destroy_workqueue(phba->wq);
-> +	phba->wq = NULL;
->   	return rc;
->   }
->   
+> There are two patches in this series.
+> 
+> 1) Sync the argument data type with `man 2 renameat`.
+> 
+> 2) On top of io_uring series I just sent, copy uapi io_uring.h to
+>    liburing. Sync with the kernel.
 
-Thank You!
+Applied, thanks.
 
-Reviewed-by: James Smart <jsmart2021@gmail.com>
+-- 
+Jens Axboe
 
--- james
 
