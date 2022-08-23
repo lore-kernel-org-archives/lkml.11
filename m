@@ -2,41 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4A74AC32792
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 11:03:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6AC6BC32793
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 11:03:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241859AbiHWLDC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 07:03:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41942 "EHLO
+        id S1356581AbiHWLDJ (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 23 Aug 2022 07:03:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34636 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357261AbiHWLBw (ORCPT
+        with ESMTP id S1357196AbiHWLBi (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 07:01:52 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4DDDA86FC3;
-        Tue, 23 Aug 2022 02:14:31 -0700 (PDT)
+        Tue, 23 Aug 2022 07:01:38 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1B36BAF0E0;
+        Tue, 23 Aug 2022 02:14:21 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id D871A60F54;
-        Tue, 23 Aug 2022 09:14:23 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DFF3BC433D7;
-        Tue, 23 Aug 2022 09:14:22 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 39548B81C98;
+        Tue, 23 Aug 2022 09:14:12 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7ED85C433C1;
+        Tue, 23 Aug 2022 09:14:10 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661246063;
-        bh=fxlNh0LwhOpWUkF19exROe077tMNe7vdcr/NJnAVD5A=;
+        s=korg; t=1661246050;
+        bh=w0p436ssZfj/lQdy31bDOBkJyI06WCHkjyGiFQ8EqOQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=2wdoEnJgZAOHjE3ZgcYDKyj40L/KOxRUyAMOBcNx3zOlBXstinjTps8m1OAs0PTJX
-         TD09RAkffRaqYQZI1hXBooo1QWafWk6jhOZ72syBrd+6xDqPcTsswu4L8RukKV1AFB
-         3zVKPXcSotgR9hOXm+j6EsQsMhJJ8ehT/OPSHVRo=
+        b=vqu5CRm0LKLCgJo/DLyKRKTJcBMxB+0qpVIl70CeR/85GaXi/2L4RmLcTOr4MIs6q
+         u+qEuedvVqMr2QK/+IvQCp7mgauhuDaZeddFqD7pXYr6I9c0SwLMPxPpGBcgT/kPPV
+         2YuNCoaiZAAFu4baTqWuX9eXjw65xc7g0Qaur8+0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Al Viro <viro@zeniv.linux.org.uk>,
-        Dinh Nguyen <dinguyen@kernel.org>
-Subject: [PATCH 4.19 246/287] nios2: traced syscall does need to check the syscall number
-Date:   Tue, 23 Aug 2022 10:26:55 +0200
-Message-Id: <20220823080109.423177007@linuxfoundation.org>
+        stable@vger.kernel.org, Dan Carpenter <dan.carpenter@oracle.com>,
+        Oleksandr Tyshchenko <oleksandr_tyshchenko@epam.com>,
+        Juergen Gross <jgross@suse.com>
+Subject: [PATCH 4.19 242/287] xen/xenbus: fix return type in xenbus_file_read()
+Date:   Tue, 23 Aug 2022 10:26:51 +0200
+Message-Id: <20220823080109.246499863@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220823080100.268827165@linuxfoundation.org>
 References: <20220823080100.268827165@linuxfoundation.org>
@@ -48,47 +50,48 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Al Viro <viro@zeniv.linux.org.uk>
+From: Dan Carpenter <dan.carpenter@oracle.com>
 
-commit 25ba820ef36bdbaf9884adeac69b6e1821a7df76 upstream.
+commit 32ad11127b95236dfc52375f3707853194a7f4b4 upstream.
 
-all checks done before letting the tracer modify the register
-state are worthless...
+This code tries to store -EFAULT in an unsigned int.  The
+xenbus_file_read() function returns type ssize_t so the negative value
+is returned as a positive value to the user.
 
-Fixes: 82ed08dd1b0e ("nios2: Exception handling")
-Signed-off-by: Al Viro <viro@zeniv.linux.org.uk>
-Signed-off-by: Dinh Nguyen <dinguyen@kernel.org>
+This change forces another change to the min() macro.  Originally, the
+min() macro used "unsigned" type which checkpatch complains about.  Also
+unsigned type would break if "len" were not capped at MAX_RW_COUNT.  Use
+size_t for the min().  (No effect on runtime for the min_t() change).
+
+Fixes: 2fb3683e7b16 ("xen: Add xenbus device driver")
+Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
+Reviewed-by: Oleksandr Tyshchenko <oleksandr_tyshchenko@epam.com>
+Link: https://lore.kernel.org/r/YutxJUaUYRG/VLVc@kili
+Signed-off-by: Juergen Gross <jgross@suse.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/nios2/kernel/entry.S |   11 ++++++++---
- 1 file changed, 8 insertions(+), 3 deletions(-)
+ drivers/xen/xenbus/xenbus_dev_frontend.c |    4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
---- a/arch/nios2/kernel/entry.S
-+++ b/arch/nios2/kernel/entry.S
-@@ -255,9 +255,9 @@ traced_system_call:
- 	ldw	r6, PT_R6(sp)
- 	ldw	r7, PT_R7(sp)
+--- a/drivers/xen/xenbus/xenbus_dev_frontend.c
++++ b/drivers/xen/xenbus/xenbus_dev_frontend.c
+@@ -128,7 +128,7 @@ static ssize_t xenbus_file_read(struct f
+ {
+ 	struct xenbus_file_priv *u = filp->private_data;
+ 	struct read_buffer *rb;
+-	unsigned i;
++	ssize_t i;
+ 	int ret;
  
--	/* Fetch the syscall function, we don't need to check the boundaries
--	 * since this is already done.
--	 */
-+	/* Fetch the syscall function. */
-+	movui	r1, __NR_syscalls
-+	bgeu	r2, r1, traced_invsyscall
- 	slli	r1, r2, 2
- 	movhi	r11,%hiadj(sys_call_table)
- 	add	r1, r1, r11
-@@ -287,6 +287,11 @@ end_translate_rc_and_ret2:
- 	RESTORE_SWITCH_STACK
- 	br	ret_from_exception
+ 	mutex_lock(&u->reply_mutex);
+@@ -148,7 +148,7 @@ again:
+ 	rb = list_entry(u->read_buffers.next, struct read_buffer, list);
+ 	i = 0;
+ 	while (i < len) {
+-		unsigned sz = min((unsigned)len - i, rb->len - rb->cons);
++		size_t sz = min_t(size_t, len - i, rb->len - rb->cons);
  
-+	/* If the syscall number was invalid return ENOSYS */
-+traced_invsyscall:
-+	movi	r2, -ENOSYS
-+	br	translate_rc_and_ret2
-+
- Luser_return:
- 	GET_THREAD_INFO	r11			/* get thread_info pointer */
- 	ldw	r10, TI_FLAGS(r11)		/* get thread_info->flags */
+ 		ret = copy_to_user(ubuf + i, &rb->msg[rb->cons], sz);
+ 
 
 
