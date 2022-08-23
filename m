@@ -2,93 +2,88 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A2D42C32772
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 14:45:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7D3E2C32772
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 14:46:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240057AbiHWOpK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 10:45:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45520 "EHLO
+        id S243093AbiHWOq4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 23 Aug 2022 10:46:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46066 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241152AbiHWOof (ORCPT
+        with ESMTP id S242814AbiHWOpc (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 10:44:35 -0400
-X-Greylist: delayed 131 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Tue, 23 Aug 2022 05:05:28 PDT
-Received: from bg5.exmail.qq.com (bg4.exmail.qq.com [43.154.221.58])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5969A13D75C
-        for <linux-kernel@vger.kernel.org>; Tue, 23 Aug 2022 05:05:28 -0700 (PDT)
-X-QQ-mid: bizesmtp90t1661256243te08ayk5
-Received: from localhost.localdomain ( [182.148.14.124])
-        by bizesmtp.qq.com (ESMTP) with 
-        id ; Tue, 23 Aug 2022 20:04:01 +0800 (CST)
-X-QQ-SSF: 01000000002000C0D000B00A0000000
-X-QQ-FEAT: QityeSR92A109gpJ54mVbw2f3kU8xWUS9YrEt9YHoZj/m8QuegRSwsytsJt9G
-        PiugPdiJhCd0UDm1b2PKKLD0ObiV5B0qwL/4n+Czpt8xToPIzw/G2SlSXzyG+u+KmNBzEke
-        yHZfV1jDW0w+Oimk6oaReqX46/20Hql4Si65eah/nZDLAWUI2kfJbkkJ8EAwpbWrS18ZuWB
-        Zp9MmeHD1N8jNsPYrLAAa6OLmNrLTjeUiIWGHDZJt8do8v5gpFdsOc9am1YyhlvKRX24lYk
-        aP7oA+vpdAnSGrKM6IrZzQzHUF5SIWoLuUN0mcSEHjM47BOzoumQtseN2HAZSRO2xRGW7LG
-        khqU3YE9DG4pxJ55Ut2zVAVyRYYbxyZLQZngenAUUyxOKzyMqFZcKcJepiLtR5mHdlB+Fzl
-X-QQ-GoodBg: 0
-From:   Jilin Yuan <yuanjilin@cdjrlc.com>
-To:     maarten.lankhorst@linux.intel.com, mripard@kernel.org,
-        tzimmermann@suse.de, airlied@linux.ie, daniel@ffwll.ch
-Cc:     dri-devel@lists.freedesktop.org, linux-kernel@vger.kernel.org,
-        Jilin Yuan <yuanjilin@cdjrlc.com>
-Subject: [PATCH] gpu/drm: fix repeated words in comments
-Date:   Tue, 23 Aug 2022 20:03:55 +0800
-Message-Id: <20220823120355.64996-1-yuanjilin@cdjrlc.com>
-X-Mailer: git-send-email 2.36.1
+        Tue, 23 Aug 2022 10:45:32 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CBA062DF767;
+        Tue, 23 Aug 2022 05:06:42 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 46191615B4;
+        Tue, 23 Aug 2022 12:06:18 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CBEB8C433D6;
+        Tue, 23 Aug 2022 12:06:15 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1661256377;
+        bh=nAP0qzks6gVn5Zi51T/jnpO8q7K05qtrEhchRMrXEho=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=ehLhM25C776yGvnlRfUpApU4JH17JXj9hEg2MlapBomf+ExB5N5JjWBvwLWnSCxiT
+         6hgQXrG95GCMnX/75gqAvsOomwqiTcdTXYAja8xp4oLilfBarjK0tK+gCIRWinmYVl
+         Ti8QAAL4e83+Od+/lQncwrrCFC+FMxBxIWdoTPkwZv5joJn2XC9NpMAq0QwI9rJLgP
+         w5c/XBuTysv+HtY/Zwt56WNQ3jmnq0cuVUNlQkVVCBkELPmhLOTdi5h9etuyGYYkmE
+         m3Fc9ouH1L1cKOKoX3krK2nSp2ViGw+CDMtnko4+QTPLw/u44zGH+WeMwvlqRIYmLS
+         TrfQ70iovX3EA==
+Date:   Tue, 23 Aug 2022 13:06:12 +0100
+From:   Mark Brown <broonie@kernel.org>
+To:     Serge Semin <Sergey.Semin@baikalelectronics.ru>
+Cc:     Serge Semin <fancer.lancer@gmail.com>,
+        Alexey Malahov <Alexey.Malahov@baikalelectronics.ru>,
+        Pavel Parkhomenko <Pavel.Parkhomenko@baikalelectronics.ru>,
+        Andy Shevchenko <andy.shevchenko@gmail.com>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        linux-spi@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] spi: dw: Add deferred controller registration support
+Message-ID: <YwTCtOp30H2JIkkV@sirena.org.uk>
+References: <20220822181853.23063-1-Sergey.Semin@baikalelectronics.ru>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-QQ-SENDSIZE: 520
-Feedback-ID: bizesmtp:cdjrlc.com:qybglogicsvr:qybglogicsvr4
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="Poi0BA6RrE2EcrsC"
+Content-Disposition: inline
+In-Reply-To: <20220822181853.23063-1-Sergey.Semin@baikalelectronics.ru>
+X-Cookie: The revolution will not be televised.
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
- Delete the redundant word 'the'.
- Delete the redundant word 'this'.
 
-Signed-off-by: Jilin Yuan <yuanjilin@cdjrlc.com>
----
- drivers/gpu/drm/drm_panel_orientation_quirks.c | 4 ++--
- drivers/gpu/drm/drm_prime.c                    | 2 +-
- 2 files changed, 3 insertions(+), 3 deletions(-)
+--Poi0BA6RrE2EcrsC
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 
-diff --git a/drivers/gpu/drm/drm_panel_orientation_quirks.c b/drivers/gpu/drm/drm_panel_orientation_quirks.c
-index 4e853acfd1e8..63f002d5143a 100644
---- a/drivers/gpu/drm/drm_panel_orientation_quirks.c
-+++ b/drivers/gpu/drm/drm_panel_orientation_quirks.c
-@@ -187,7 +187,7 @@ static const struct dmi_system_id orientation_data[] = {
- 		},
- 		.driver_data = (void *)&lcd800x1280_rightside_up,
- 	}, {	/*
--		 * GPD Pocket, note that the the DMI data is less generic then
-+		 * GPD Pocket, note that the DMI data is less generic then
- 		 * it seems, devices with a board-vendor of "AMI Corporation"
- 		 * are quite rare, as are devices which have both board- *and*
- 		 * product-id set to "Default String"
-@@ -328,7 +328,7 @@ static const struct dmi_system_id orientation_data[] = {
-  * resolution expected by the quirk-table entry.
-  *
-  * Note this function is also used outside of the drm-subsys, by for example
-- * the efifb code. Because of this this function gets compiled into its own
-+ * the efifb code. Because of this function gets compiled into its own
-  * kernel-module when built as a module.
-  *
-  * Returns:
-diff --git a/drivers/gpu/drm/drm_prime.c b/drivers/gpu/drm/drm_prime.c
-index e3f09f18110c..a3f180653b8b 100644
---- a/drivers/gpu/drm/drm_prime.c
-+++ b/drivers/gpu/drm/drm_prime.c
-@@ -839,7 +839,7 @@ EXPORT_SYMBOL(drm_prime_pages_to_sg);
-  * @sgt: sg_table describing the buffer to check
-  *
-  * This helper calculates the contiguous size in the DMA address space
-- * of the the buffer described by the provided sg_table.
-+ * of the buffer described by the provided sg_table.
-  *
-  * This is useful for implementing
-  * &drm_gem_object_funcs.gem_prime_import_sg_table.
--- 
-2.36.1
+On Mon, Aug 22, 2022 at 09:18:53PM +0300, Serge Semin wrote:
+> It's pretty possible to have the spi_register_controller() method
+> returning -EPROBE_DEFER status in case, for instance, if the GPIOs used
+> for the CS implementation aren't ready to be requested due to the
+> corresponding platform devices still pending to be probed. Let's make sure
+> the DW SSI driver won't print error message in that case by calling the
+> dev_err_probe() function if the SPI-registration procedure exited with
+> a non-zero status.
 
+This isn't adding any new support, it's making the logging less verbose
+- deferred probe worked perfectly fine without this patch.
+
+--Poi0BA6RrE2EcrsC
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAABCgAdFiEEreZoqmdXGLWf4p/qJNaLcl1Uh9AFAmMEwrMACgkQJNaLcl1U
+h9Bl1gf+Msioy2Df8da5Fhj/2K2KV4WM2KH1K9TJoZfs8rWO0URZ8y1GV3PTDgbm
+ycx3fcmvP0uyzv3PoCrwrHftTyZ3lPRHpKTrzvbZhYj+FAVwZnBWI7/jrhjnRjtg
+GU116AwtYRglf+Wd4A/Bc2sepIA35oYOYxw4sC2BIr96ACS32YtTKimEamQIXCps
+FmFfl3C2ix9Auiv5aDGYf9byD8Xt7iYgKucCNMf5RDfRTpa0SnqpMbpQeyEoXB6R
+U9QW4D54XZWC+pgUq99e8WRGRpk6bnrGPzelrs2yBiCSyJ/MtTh/z6+5oP+UflAx
+Qn7PKVfROgnnw4hsmln4hvuSoG+SPw==
+=VYuY
+-----END PGP SIGNATURE-----
+
+--Poi0BA6RrE2EcrsC--
