@@ -2,43 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 93764C32774
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 08:11:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7ECD1C38159
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 08:12:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241623AbiHWILo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 04:11:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59792 "EHLO
+        id S242008AbiHWIL6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 23 Aug 2022 04:11:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59886 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241830AbiHWIJY (ORCPT
+        with ESMTP id S241852AbiHWIJ2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 04:09:24 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B21FC66A65;
-        Tue, 23 Aug 2022 01:06:09 -0700 (PDT)
+        Tue, 23 Aug 2022 04:09:28 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B3D7265817;
+        Tue, 23 Aug 2022 01:06:17 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 3F08EB81C18;
-        Tue, 23 Aug 2022 08:06:07 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 90AD5C433C1;
-        Tue, 23 Aug 2022 08:06:05 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id F33506122D;
+        Tue, 23 Aug 2022 08:06:15 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 04A38C433C1;
+        Tue, 23 Aug 2022 08:06:14 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661241966;
-        bh=n/610ybo0Q8VX/qdPiQAgzKGu5QXTZKOJay/mqFZBEg=;
+        s=korg; t=1661241975;
+        bh=wCsjM0Y0qINZDdkkfipcM2J/EeyQyOFc0gXcZwLfdbU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=HjnQn7h6U2A+TJNBzZBsROU1qnEbAQY5qs7KlUTA4zWfNjrTdFj/Rpm1oKeUgj0Au
-         eYIhNFuAqQV8h7ZfLNzoVU80QnqSuAvG6zJNnRYhdd80iesfAmYitio2Jx9Sjt01V5
-         hEvbSnOAcUTUVD+6Dbe3ynYSOET82/ditMCPOCD8=
+        b=ovcN/UgtweX4OROOgYFHG3FDjuve1eUL2Cnajp6orszPBZo2ekTeaq6eH2mi8P63V
+         +8JEWcbpHKZCntVid61NDk/nxBc0LYwWGQB1WLX2+qkOyt5ngzapWiLS1fWjXzBj69
+         kN6omfGo1tuVY6X0FALW2M6XjKuyF9sSscZGXaJI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        Hector Martin <marcan@marcan.st>,
-        Will Deacon <will@kernel.org>, Arnd Bergmann <arnd@arndb.de>
-Subject: [PATCH 5.19 008/365] locking/atomic: Make test_and_*_bit() ordered on failure
-Date:   Tue, 23 Aug 2022 09:58:29 +0200
-Message-Id: <20220823080118.507275261@linuxfoundation.org>
+        stable@vger.kernel.org, Alex Deucher <alexander.deucher@amd.com>,
+        Mario Limonciello <mario.limonciello@amd.com>
+Subject: [PATCH 5.19 011/365] drm/amdgpu: Only disable prefer_shadow on hawaii
+Date:   Tue, 23 Aug 2022 09:58:32 +0200
+Message-Id: <20220823080118.645851103@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220823080118.128342613@linuxfoundation.org>
 References: <20220823080118.128342613@linuxfoundation.org>
@@ -50,75 +48,108 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Hector Martin <marcan@marcan.st>
+From: Alex Deucher <alexander.deucher@amd.com>
 
-commit 415d832497098030241605c52ea83d4e2cfa7879 upstream.
+commit a6250bdb6c4677ee77d699b338e077b900f94c0c upstream.
 
-These operations are documented as always ordered in
-include/asm-generic/bitops/instrumented-atomic.h, and producer-consumer
-type use cases where one side needs to ensure a flag is left pending
-after some shared data was updated rely on this ordering, even in the
-failure case.
+We changed it for all asics due to a hibernation regression
+on hawaii, but the workaround breaks suspend on a polaris12.
+Just disable it for hawaii.
 
-This is the case with the workqueue code, which currently suffers from a
-reproducible ordering violation on Apple M1 platforms (which are
-notoriously out-of-order) that ends up causing the TTY layer to fail to
-deliver data to userspace properly under the right conditions.  This
-change fixes that bug.
-
-Change the documentation to restrict the "no order on failure" story to
-the _lock() variant (for which it makes sense), and remove the
-early-exit from the generic implementation, which is what causes the
-missing barrier semantics in that case.  Without this, the remaining
-atomic op is fully ordered (including on ARM64 LSE, as of recent
-versions of the architecture spec).
-
-Suggested-by: Linus Torvalds <torvalds@linux-foundation.org>
+Link: https://bugzilla.kernel.org/show_bug.cgi?id=216119
+Fixes: 3a4b1cc28fbd ("drm/amdgpu/display: disable prefer_shadow for generic fb helpers")
+Reviewed-and-tested-by: Mario Limonciello <mario.limonciello@amd.com>
+Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
 Cc: stable@vger.kernel.org
-Fixes: e986a0d6cb36 ("locking/atomics, asm-generic/bitops/atomic.h: Rewrite using atomic_*() APIs")
-Fixes: 61e02392d3c7 ("locking/atomic/bitops: Document and clarify ordering semantics for failed test_and_{}_bit()")
-Signed-off-by: Hector Martin <marcan@marcan.st>
-Acked-by: Will Deacon <will@kernel.org>
-Reviewed-by: Arnd Bergmann <arnd@arndb.de>
-Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- Documentation/atomic_bitops.txt     |    2 +-
- include/asm-generic/bitops/atomic.h |    6 ------
- 2 files changed, 1 insertion(+), 7 deletions(-)
+ drivers/gpu/drm/amd/amdgpu/amdgpu_vkms.c          |    3 +--
+ drivers/gpu/drm/amd/amdgpu/dce_v10_0.c            |    3 +--
+ drivers/gpu/drm/amd/amdgpu/dce_v11_0.c            |    3 +--
+ drivers/gpu/drm/amd/amdgpu/dce_v6_0.c             |    3 +--
+ drivers/gpu/drm/amd/amdgpu/dce_v8_0.c             |    7 +++++--
+ drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm.c |    7 +++++--
+ 6 files changed, 14 insertions(+), 12 deletions(-)
 
---- a/Documentation/atomic_bitops.txt
-+++ b/Documentation/atomic_bitops.txt
-@@ -59,7 +59,7 @@ Like with atomic_t, the rule of thumb is
-  - RMW operations that have a return value are fully ordered.
+--- a/drivers/gpu/drm/amd/amdgpu/amdgpu_vkms.c
++++ b/drivers/gpu/drm/amd/amdgpu/amdgpu_vkms.c
+@@ -496,8 +496,7 @@ static int amdgpu_vkms_sw_init(void *han
+ 	adev_to_drm(adev)->mode_config.max_height = YRES_MAX;
  
-  - RMW operations that are conditional are unordered on FAILURE,
--   otherwise the above rules apply. In the case of test_and_{}_bit() operations,
-+   otherwise the above rules apply. In the case of test_and_set_bit_lock(),
-    if the bit in memory is unchanged by the operation then it is deemed to have
-    failed.
+ 	adev_to_drm(adev)->mode_config.preferred_depth = 24;
+-	/* disable prefer shadow for now due to hibernation issues */
+-	adev_to_drm(adev)->mode_config.prefer_shadow = 0;
++	adev_to_drm(adev)->mode_config.prefer_shadow = 1;
  
---- a/include/asm-generic/bitops/atomic.h
-+++ b/include/asm-generic/bitops/atomic.h
-@@ -39,9 +39,6 @@ arch_test_and_set_bit(unsigned int nr, v
- 	unsigned long mask = BIT_MASK(nr);
+ 	adev_to_drm(adev)->mode_config.fb_base = adev->gmc.aper_base;
  
- 	p += BIT_WORD(nr);
--	if (READ_ONCE(*p) & mask)
--		return 1;
--
- 	old = arch_atomic_long_fetch_or(mask, (atomic_long_t *)p);
- 	return !!(old & mask);
- }
-@@ -53,9 +50,6 @@ arch_test_and_clear_bit(unsigned int nr,
- 	unsigned long mask = BIT_MASK(nr);
+--- a/drivers/gpu/drm/amd/amdgpu/dce_v10_0.c
++++ b/drivers/gpu/drm/amd/amdgpu/dce_v10_0.c
+@@ -2796,8 +2796,7 @@ static int dce_v10_0_sw_init(void *handl
+ 	adev_to_drm(adev)->mode_config.max_height = 16384;
  
- 	p += BIT_WORD(nr);
--	if (!(READ_ONCE(*p) & mask))
--		return 0;
--
- 	old = arch_atomic_long_fetch_andnot(mask, (atomic_long_t *)p);
- 	return !!(old & mask);
- }
+ 	adev_to_drm(adev)->mode_config.preferred_depth = 24;
+-	/* disable prefer shadow for now due to hibernation issues */
+-	adev_to_drm(adev)->mode_config.prefer_shadow = 0;
++	adev_to_drm(adev)->mode_config.prefer_shadow = 1;
+ 
+ 	adev_to_drm(adev)->mode_config.fb_modifiers_not_supported = true;
+ 
+--- a/drivers/gpu/drm/amd/amdgpu/dce_v11_0.c
++++ b/drivers/gpu/drm/amd/amdgpu/dce_v11_0.c
+@@ -2914,8 +2914,7 @@ static int dce_v11_0_sw_init(void *handl
+ 	adev_to_drm(adev)->mode_config.max_height = 16384;
+ 
+ 	adev_to_drm(adev)->mode_config.preferred_depth = 24;
+-	/* disable prefer shadow for now due to hibernation issues */
+-	adev_to_drm(adev)->mode_config.prefer_shadow = 0;
++	adev_to_drm(adev)->mode_config.prefer_shadow = 1;
+ 
+ 	adev_to_drm(adev)->mode_config.fb_modifiers_not_supported = true;
+ 
+--- a/drivers/gpu/drm/amd/amdgpu/dce_v6_0.c
++++ b/drivers/gpu/drm/amd/amdgpu/dce_v6_0.c
+@@ -2673,8 +2673,7 @@ static int dce_v6_0_sw_init(void *handle
+ 	adev_to_drm(adev)->mode_config.max_width = 16384;
+ 	adev_to_drm(adev)->mode_config.max_height = 16384;
+ 	adev_to_drm(adev)->mode_config.preferred_depth = 24;
+-	/* disable prefer shadow for now due to hibernation issues */
+-	adev_to_drm(adev)->mode_config.prefer_shadow = 0;
++	adev_to_drm(adev)->mode_config.prefer_shadow = 1;
+ 	adev_to_drm(adev)->mode_config.fb_modifiers_not_supported = true;
+ 	adev_to_drm(adev)->mode_config.fb_base = adev->gmc.aper_base;
+ 
+--- a/drivers/gpu/drm/amd/amdgpu/dce_v8_0.c
++++ b/drivers/gpu/drm/amd/amdgpu/dce_v8_0.c
+@@ -2693,8 +2693,11 @@ static int dce_v8_0_sw_init(void *handle
+ 	adev_to_drm(adev)->mode_config.max_height = 16384;
+ 
+ 	adev_to_drm(adev)->mode_config.preferred_depth = 24;
+-	/* disable prefer shadow for now due to hibernation issues */
+-	adev_to_drm(adev)->mode_config.prefer_shadow = 0;
++	if (adev->asic_type == CHIP_HAWAII)
++		/* disable prefer shadow for now due to hibernation issues */
++		adev_to_drm(adev)->mode_config.prefer_shadow = 0;
++	else
++		adev_to_drm(adev)->mode_config.prefer_shadow = 1;
+ 
+ 	adev_to_drm(adev)->mode_config.fb_modifiers_not_supported = true;
+ 
+--- a/drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm.c
++++ b/drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm.c
+@@ -3894,8 +3894,11 @@ static int amdgpu_dm_mode_config_init(st
+ 	adev_to_drm(adev)->mode_config.max_height = 16384;
+ 
+ 	adev_to_drm(adev)->mode_config.preferred_depth = 24;
+-	/* disable prefer shadow for now due to hibernation issues */
+-	adev_to_drm(adev)->mode_config.prefer_shadow = 0;
++	if (adev->asic_type == CHIP_HAWAII)
++		/* disable prefer shadow for now due to hibernation issues */
++		adev_to_drm(adev)->mode_config.prefer_shadow = 0;
++	else
++		adev_to_drm(adev)->mode_config.prefer_shadow = 1;
+ 	/* indicates support for immediate flip */
+ 	adev_to_drm(adev)->mode_config.async_page_flip = true;
+ 
 
 
