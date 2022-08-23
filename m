@@ -2,101 +2,183 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DF71AC32772
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 10:39:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 63DE0C32772
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 10:39:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349325AbiHWKjs (ORCPT
+        id S1355593AbiHWKjz (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 06:39:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38700 "EHLO
+        Tue, 23 Aug 2022 06:39:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42580 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353843AbiHWKX7 (ORCPT
+        with ESMTP id S1354244AbiHWKYp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 06:23:59 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0659EA3D4C;
-        Tue, 23 Aug 2022 02:04:44 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 67A7C61589;
-        Tue, 23 Aug 2022 09:04:43 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6ADB2C433B5;
-        Tue, 23 Aug 2022 09:04:42 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661245482;
-        bh=UnsYK3CCZV3d4U2OT6f8xJcmMIqfdF3LWGKXGLp2kE4=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Wp+o2TCfC6SgQxji6J+i0tfHIbd5d8qJTOp4F6Myy00aIGq6Pe/Y31bdTugGUTIGu
-         H5GqAYPMXFmij005RuDKd7UmDrmIwZDMa3+c34vn/xWzhvoN3maMEm653HjP1NnX9/
-         K4LlbuysMrMY1oh0wISgmUb10Zb6djlnu9rQHn4k=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
-        Christian Lamparter <chunkeey@gmail.com>,
-        Kalle Valo <kvalo@kernel.org>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.19 092/287] wifi: p54: Fix an error handling path in p54spi_probe()
-Date:   Tue, 23 Aug 2022 10:24:21 +0200
-Message-Id: <20220823080103.406277168@linuxfoundation.org>
-X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220823080100.268827165@linuxfoundation.org>
-References: <20220823080100.268827165@linuxfoundation.org>
-User-Agent: quilt/0.67
+        Tue, 23 Aug 2022 06:24:45 -0400
+Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A1A5CA3D7E
+        for <linux-kernel@vger.kernel.org>; Tue, 23 Aug 2022 02:04:47 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1661245487; x=1692781487;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=9SOYythy7j/MXfRmlQCo9b2tnL50CgZqRYrTw3v6/MI=;
+  b=dOMescNLYiHQQA88j7sBMaizavg18RHEIWhzGijQ9RubOe0Q7L7kRtzz
+   Fb3MliHjTPF36JGOZjV0sUzo6ejCq5Zsk+B3gV8OBxHMg9xO4RwG+iC93
+   3b5eZ9koXRLCVuVjUZAVrt77yjw1zqVZoY1AbxPlNoRAjvcAEEHZoNOPz
+   PMB+T9Uq3NJGqTTL8uDSt47sAu6p1SExkp0B6hRl0JfPqefNOSO4QPSHq
+   ZDJYjTMQJytRElgoNVL0oGNTJ68VjMbbw+Opvh71SdfaYkWKBptb7M1Ai
+   rxEuqHFvm2dHphRf+dd7iwR7bzeKMmTpS6nNyxnRWA/2sEC/K0SO4vYgE
+   Q==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10447"; a="294424186"
+X-IronPort-AV: E=Sophos;i="5.93,257,1654585200"; 
+   d="scan'208";a="294424186"
+Received: from fmsmga005.fm.intel.com ([10.253.24.32])
+  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Aug 2022 02:04:47 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.93,257,1654585200"; 
+   d="scan'208";a="937388230"
+Received: from lkp-server02.sh.intel.com (HELO 9bbcefcddf9f) ([10.239.97.151])
+  by fmsmga005.fm.intel.com with ESMTP; 23 Aug 2022 02:04:45 -0700
+Received: from kbuild by 9bbcefcddf9f with local (Exim 4.96)
+        (envelope-from <lkp@intel.com>)
+        id 1oQPq1-00003r-0G;
+        Tue, 23 Aug 2022 09:04:45 +0000
+Date:   Tue, 23 Aug 2022 17:04:21 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Hans de Goede <hdegoede@redhat.com>
+Cc:     kbuild-all@lists.01.org,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Hans de Goede <hdegoede@redhat.com>,
+        linux-kernel@vger.kernel.org, Lyude Paul <lyude@redhat.com>
+Subject: [pdx86-platform-drivers-x86:backlight-detect-refactor-v3 5/31]
+ drivers/gpu/drm/nouveau/nouveau_backlight.c:410: undefined reference to
+ `acpi_video_backlight_use_native'
+Message-ID: <202208231625.icHjRXDI-lkp@intel.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+tree:   https://git.kernel.org/pub/scm/linux/kernel/git/pdx86/platform-drivers-x86.git backlight-detect-refactor-v3
+head:   137c0ecca7db6e41715a3b3506871ef45cec29b4
+commit: eeefca542f6b6d7f7b99692aadbd2204b5053d3b [5/31] drm/nouveau: Don't register backlight when another backlight should be used
+config: ia64-randconfig-r002-20220821 (https://download.01.org/0day-ci/archive/20220823/202208231625.icHjRXDI-lkp@intel.com/config)
+compiler: ia64-linux-gcc (GCC) 12.1.0
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # https://git.kernel.org/pub/scm/linux/kernel/git/pdx86/platform-drivers-x86.git/commit/?id=eeefca542f6b6d7f7b99692aadbd2204b5053d3b
+        git remote add pdx86-platform-drivers-x86 https://git.kernel.org/pub/scm/linux/kernel/git/pdx86/platform-drivers-x86.git
+        git fetch --no-tags pdx86-platform-drivers-x86 backlight-detect-refactor-v3
+        git checkout eeefca542f6b6d7f7b99692aadbd2204b5053d3b
+        # save the config file
+        mkdir build_dir && cp config build_dir/.config
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-12.1.0 make.cross W=1 O=build_dir ARCH=ia64 SHELL=/bin/bash
 
-[ Upstream commit 83781f0162d080fec7dcb911afd1bc2f5ad04471 ]
+If you fix the issue, kindly add following tag where applicable
+Reported-by: kernel test robot <lkp@intel.com>
 
-If an error occurs after a successful call to p54spi_request_firmware(), it
-must be undone by a corresponding release_firmware() as already done in
-the error handling path of p54spi_request_firmware() and in the .remove()
-function.
+All errors (new ones prefixed by >>):
 
-Add the missing call in the error handling path and remove it from
-p54spi_request_firmware() now that it is the responsibility of the caller
-to release the firmware
+   ia64-linux-ld: drivers/gpu/drm/nouveau/nouveau_backlight.o: in function `nouveau_backlight_init':
+>> drivers/gpu/drm/nouveau/nouveau_backlight.c:410: undefined reference to `acpi_video_backlight_use_native'
 
-Fixes: cd8d3d321285 ("p54spi: p54spi driver")
-Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
-Acked-by: Christian Lamparter <chunkeey@gmail.com>
-Signed-off-by: Kalle Valo <kvalo@kernel.org>
-Link: https://lore.kernel.org/r/297d2547ff2ee627731662abceeab9dbdaf23231.1655068321.git.christophe.jaillet@wanadoo.fr
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- drivers/net/wireless/intersil/p54/p54spi.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/net/wireless/intersil/p54/p54spi.c b/drivers/net/wireless/intersil/p54/p54spi.c
-index e41bf042352e..3dcfad5b61ff 100644
---- a/drivers/net/wireless/intersil/p54/p54spi.c
-+++ b/drivers/net/wireless/intersil/p54/p54spi.c
-@@ -177,7 +177,7 @@ static int p54spi_request_firmware(struct ieee80211_hw *dev)
- 
- 	ret = p54_parse_firmware(dev, priv->firmware);
- 	if (ret) {
--		release_firmware(priv->firmware);
-+		/* the firmware is released by the caller */
- 		return ret;
- 	}
- 
-@@ -672,6 +672,7 @@ static int p54spi_probe(struct spi_device *spi)
- 	return 0;
- 
- err_free_common:
-+	release_firmware(priv->firmware);
- 	free_irq(gpio_to_irq(p54spi_gpio_irq), spi);
- err_free_gpio_irq:
- 	gpio_free(p54spi_gpio_irq);
+vim +410 drivers/gpu/drm/nouveau/nouveau_backlight.c
+
+   352	
+   353	int
+   354	nouveau_backlight_init(struct drm_connector *connector)
+   355	{
+   356		struct nouveau_drm *drm = nouveau_drm(connector->dev);
+   357		struct nouveau_backlight *bl;
+   358		struct nouveau_encoder *nv_encoder = NULL;
+   359		struct nvif_device *device = &drm->client.device;
+   360		char backlight_name[BL_NAME_SIZE];
+   361		struct backlight_properties props = {0};
+   362		const struct backlight_ops *ops;
+   363		int ret;
+   364	
+   365		if (apple_gmux_present()) {
+   366			NV_INFO_ONCE(drm, "Apple GMUX detected: not registering Nouveau backlight interface\n");
+   367			return 0;
+   368		}
+   369	
+   370		if (connector->connector_type == DRM_MODE_CONNECTOR_LVDS)
+   371			nv_encoder = find_encoder(connector, DCB_OUTPUT_LVDS);
+   372		else if (connector->connector_type == DRM_MODE_CONNECTOR_eDP)
+   373			nv_encoder = find_encoder(connector, DCB_OUTPUT_DP);
+   374		else
+   375			return 0;
+   376	
+   377		if (!nv_encoder)
+   378			return 0;
+   379	
+   380		bl = kzalloc(sizeof(*bl), GFP_KERNEL);
+   381		if (!bl)
+   382			return -ENOMEM;
+   383	
+   384		switch (device->info.family) {
+   385		case NV_DEVICE_INFO_V0_CURIE:
+   386			ret = nv40_backlight_init(nv_encoder, &props, &ops);
+   387			break;
+   388		case NV_DEVICE_INFO_V0_TESLA:
+   389		case NV_DEVICE_INFO_V0_FERMI:
+   390		case NV_DEVICE_INFO_V0_KEPLER:
+   391		case NV_DEVICE_INFO_V0_MAXWELL:
+   392		case NV_DEVICE_INFO_V0_PASCAL:
+   393		case NV_DEVICE_INFO_V0_VOLTA:
+   394		case NV_DEVICE_INFO_V0_TURING:
+   395		case NV_DEVICE_INFO_V0_AMPERE: //XXX: not confirmed
+   396			ret = nv50_backlight_init(bl, nouveau_connector(connector),
+   397						  nv_encoder, &props, &ops);
+   398			break;
+   399		default:
+   400			ret = 0;
+   401			goto fail_alloc;
+   402		}
+   403	
+   404		if (ret) {
+   405			if (ret == -ENODEV)
+   406				ret = 0;
+   407			goto fail_alloc;
+   408		}
+   409	
+ > 410		if (!acpi_video_backlight_use_native()) {
+   411			NV_INFO(drm, "Skipping nv_backlight registration\n");
+   412			goto fail_alloc;
+   413		}
+   414	
+   415		if (!nouveau_get_backlight_name(backlight_name, bl)) {
+   416			NV_ERROR(drm, "Failed to retrieve a unique name for the backlight interface\n");
+   417			goto fail_alloc;
+   418		}
+   419	
+   420		props.type = BACKLIGHT_RAW;
+   421		bl->dev = backlight_device_register(backlight_name, connector->kdev,
+   422						    nv_encoder, ops, &props);
+   423		if (IS_ERR(bl->dev)) {
+   424			if (bl->id >= 0)
+   425				ida_free(&bl_ida, bl->id);
+   426			ret = PTR_ERR(bl->dev);
+   427			goto fail_alloc;
+   428		}
+   429	
+   430		nouveau_connector(connector)->backlight = bl;
+   431		if (!bl->dev->props.brightness)
+   432			bl->dev->props.brightness =
+   433				bl->dev->ops->get_brightness(bl->dev);
+   434		backlight_update_status(bl->dev);
+   435	
+   436		return 0;
+   437	
+   438	fail_alloc:
+   439		kfree(bl);
+   440		return ret;
+   441	}
+   442	
+
 -- 
-2.35.1
-
-
-
+0-DAY CI Kernel Test Service
+https://01.org/lkp
