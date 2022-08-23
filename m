@@ -2,47 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 90AB6C38145
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A0442C38159
 	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 10:26:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354647AbiHWK0B (ORCPT
+        id S1354685AbiHWK0G (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 06:26:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33072 "EHLO
+        Tue, 23 Aug 2022 06:26:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46880 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353644AbiHWKLr (ORCPT
+        with ESMTP id S1353655AbiHWKLs (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 06:11:47 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AF3F14F1BD;
-        Tue, 23 Aug 2022 01:57:55 -0700 (PDT)
+        Tue, 23 Aug 2022 06:11:48 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B3EB42AC4;
+        Tue, 23 Aug 2022 01:58:06 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 4C78F6123D;
-        Tue, 23 Aug 2022 08:57:55 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 46741C433C1;
-        Tue, 23 Aug 2022 08:57:54 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 5F296B81C3B;
+        Tue, 23 Aug 2022 08:58:05 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8E3B2C433C1;
+        Tue, 23 Aug 2022 08:58:03 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661245074;
-        bh=5QEhkpbOIt5ZQhJj4twQe+roC+RNayxcEOZD8bg916A=;
+        s=korg; t=1661245084;
+        bh=/rrdra+UNE0LoJsFdhBak/JV5VbATvgQuE34YKLAAEA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=aPuvZJC/NO7OHNpcFfLLLDQ3XvSZsAlJm/Pqw7fxfPeTUECx4rekPvgyuQZUdK8eo
-         4A5+aC9WO7JctGIlxHyilf3q8+rqmjR9ojeHIKmuUoV8QdeE3ZH4dfFdbf0xUw2kj4
-         vJklpbP3FfEt3B0k+JkI5tsP0OZ/GCTNVldsrRys=
+        b=YTkenXUP2X3s4SUwxsggpIYLFeFrrzFLEa8Kb+KJY6J5qZGWpkyfRZynKt2JA6NMK
+         zGsJpjZqUylQ4z5WDPgCEzXAuV/1o/DBPMbqKV4zxVdEylye22q8Pp/S8LnSAbN5LP
+         NYt8b98gQJ38g3P/DvnC5CVyrwyXNb0jRweN3B7Y=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Guenter Roeck <linux@roeck-us.net>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
+        stable@vger.kernel.org, Schspa Shi <schspa@gmail.com>,
+        Cornelia Huck <cohuck@redhat.com>,
+        Alex Williamson <alex.williamson@redhat.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 206/244] lib/list_debug.c: Detect uninitialized lists
-Date:   Tue, 23 Aug 2022 10:26:05 +0200
-Message-Id: <20220823080106.380597402@linuxfoundation.org>
+Subject: [PATCH 4.14 222/229] vfio: Clear the caps->buf to NULL after free
+Date:   Tue, 23 Aug 2022 10:26:23 +0200
+Message-Id: <20220823080101.560890277@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220823080059.091088642@linuxfoundation.org>
-References: <20220823080059.091088642@linuxfoundation.org>
+In-Reply-To: <20220823080053.202747790@linuxfoundation.org>
+References: <20220823080053.202747790@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -51,78 +51,36 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Guenter Roeck <linux@roeck-us.net>
+From: Schspa Shi <schspa@gmail.com>
 
-[ Upstream commit 0cc011c576aaa4de505046f7a6c90933d7c749a9 ]
+[ Upstream commit 6641085e8d7b3f061911517f79a2a15a0a21b97b ]
 
-In some circumstances, attempts are made to add entries to or to remove
-entries from an uninitialized list.  A prime example is
-amdgpu_bo_vm_destroy(): It is indirectly called from
-ttm_bo_init_reserved() if that function fails, and tries to remove an
-entry from a list.  However, that list is only initialized in
-amdgpu_bo_create_vm() after the call to ttm_bo_init_reserved() returned
-success.  This results in crashes such as
+On buffer resize failure, vfio_info_cap_add() will free the buffer,
+report zero for the size, and return -ENOMEM.  As additional
+hardening, also clear the buffer pointer to prevent any chance of a
+double free.
 
- BUG: kernel NULL pointer dereference, address: 0000000000000000
- #PF: supervisor read access in kernel mode
- #PF: error_code(0x0000) - not-present page
- PGD 0 P4D 0
- Oops: 0000 [#1] PREEMPT SMP NOPTI
- CPU: 1 PID: 1479 Comm: chrome Not tainted 5.10.110-15768-g29a72e65dae5
- Hardware name: Google Grunt/Grunt, BIOS Google_Grunt.11031.149.0 07/15/2020
- RIP: 0010:__list_del_entry_valid+0x26/0x7d
- ...
- Call Trace:
-  amdgpu_bo_vm_destroy+0x48/0x8b
-  ttm_bo_init_reserved+0x1d7/0x1e0
-  amdgpu_bo_create+0x212/0x476
-  ? amdgpu_bo_user_destroy+0x23/0x23
-  ? kmem_cache_alloc+0x60/0x271
-  amdgpu_bo_create_vm+0x40/0x7d
-  amdgpu_vm_pt_create+0xe8/0x24b
- ...
-
-Check if the list's prev and next pointers are NULL to catch such problems.
-
-Link: https://lkml.kernel.org/r/20220531222951.92073-1-linux@roeck-us.net
-Signed-off-by: Guenter Roeck <linux@roeck-us.net>
-Cc: Steven Rostedt <rostedt@goodmis.org>
-Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
+Signed-off-by: Schspa Shi <schspa@gmail.com>
+Reviewed-by: Cornelia Huck <cohuck@redhat.com>
+Link: https://lore.kernel.org/r/20220629022948.55608-1-schspa@gmail.com
+Signed-off-by: Alex Williamson <alex.williamson@redhat.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- lib/list_debug.c | 12 ++++++++++--
- 1 file changed, 10 insertions(+), 2 deletions(-)
+ drivers/vfio/vfio.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/lib/list_debug.c b/lib/list_debug.c
-index 5d5424b51b74..413daa72a3d8 100644
---- a/lib/list_debug.c
-+++ b/lib/list_debug.c
-@@ -20,7 +20,11 @@
- bool __list_add_valid(struct list_head *new, struct list_head *prev,
- 		      struct list_head *next)
- {
--	if (CHECK_DATA_CORRUPTION(next->prev != prev,
-+	if (CHECK_DATA_CORRUPTION(prev == NULL,
-+			"list_add corruption. prev is NULL.\n") ||
-+	    CHECK_DATA_CORRUPTION(next == NULL,
-+			"list_add corruption. next is NULL.\n") ||
-+	    CHECK_DATA_CORRUPTION(next->prev != prev,
- 			"list_add corruption. next->prev should be prev (%px), but was %px. (next=%px).\n",
- 			prev, next->prev, next) ||
- 	    CHECK_DATA_CORRUPTION(prev->next != next,
-@@ -42,7 +46,11 @@ bool __list_del_entry_valid(struct list_head *entry)
- 	prev = entry->prev;
- 	next = entry->next;
- 
--	if (CHECK_DATA_CORRUPTION(next == LIST_POISON1,
-+	if (CHECK_DATA_CORRUPTION(next == NULL,
-+			"list_del corruption, %px->next is NULL\n", entry) ||
-+	    CHECK_DATA_CORRUPTION(prev == NULL,
-+			"list_del corruption, %px->prev is NULL\n", entry) ||
-+	    CHECK_DATA_CORRUPTION(next == LIST_POISON1,
- 			"list_del corruption, %px->next is LIST_POISON1 (%px)\n",
- 			entry, LIST_POISON1) ||
- 	    CHECK_DATA_CORRUPTION(prev == LIST_POISON2,
+diff --git a/drivers/vfio/vfio.c b/drivers/vfio/vfio.c
+index 0d73d913c18b..747eb5c70238 100644
+--- a/drivers/vfio/vfio.c
++++ b/drivers/vfio/vfio.c
+@@ -1813,6 +1813,7 @@ struct vfio_info_cap_header *vfio_info_cap_add(struct vfio_info_cap *caps,
+ 	buf = krealloc(caps->buf, caps->size + size, GFP_KERNEL);
+ 	if (!buf) {
+ 		kfree(caps->buf);
++		caps->buf = NULL;
+ 		caps->size = 0;
+ 		return ERR_PTR(-ENOMEM);
+ 	}
 -- 
 2.35.1
 
