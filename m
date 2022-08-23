@@ -2,101 +2,131 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7CEA2C32772
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 19:47:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 459D3C32796
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 19:47:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232788AbiHWTrh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 15:47:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56500 "EHLO
+        id S232079AbiHWTro (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 23 Aug 2022 15:47:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54652 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232364AbiHWTqy (ORCPT
+        with ESMTP id S231873AbiHWTqz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 15:46:54 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1BC505A15F;
+        Tue, 23 Aug 2022 15:46:55 -0400
+Received: from mail-pl1-x635.google.com (mail-pl1-x635.google.com [IPv6:2607:f8b0:4864:20::635])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ECE09659E4
+        for <linux-kernel@vger.kernel.org>; Tue, 23 Aug 2022 11:50:36 -0700 (PDT)
+Received: by mail-pl1-x635.google.com with SMTP id g8so9709792plq.11
+        for <linux-kernel@vger.kernel.org>; Tue, 23 Aug 2022 11:50:36 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google;
+        h=in-reply-to:content-transfer-encoding:content-disposition
+         :mime-version:references:message-id:subject:cc:to:from:date:from:to
+         :cc;
+        bh=/6MgYQynlKjVO5yQ/ZXe7vd/aFxPZ1CaapAzvUa4a4g=;
+        b=ikM7qhdIpjbLzfr7suns0qY6EZit4upFDcclekoxK6tByYgIRc1jLEEPVb6RPqT83i
+         WoY7jYIligukD49jBrzQfVu2P37v2fwqfdnI/N4YOU0eaHNqobPJp/FngkZXXxZ0w/Ui
+         ScXFhPgIIHD/ZyfVsUanwCt3unLFIIDB8UGSo=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=in-reply-to:content-transfer-encoding:content-disposition
+         :mime-version:references:message-id:subject:cc:to:from:date
+         :x-gm-message-state:from:to:cc;
+        bh=/6MgYQynlKjVO5yQ/ZXe7vd/aFxPZ1CaapAzvUa4a4g=;
+        b=qznFZLPSqEmKpiFeYpsum/byQ7W1R23IDHFYVgpHdPfNKAAq9KNbn5NnCho/19iJVF
+         BNTWMuONj1C6nr7qpCdhiPM6/64pBgdRD5NcZajc0ZEkwFrV57lL/pYn0sBn+aJ+5XA3
+         btObKD0c4rJhZo5pm/UbEjNjnNJjJAwh6jPzk+y37xbFVNpd3td+8V4wRU4V8Rb33aLp
+         PBISjmJwkcQHfJvhz8c9COm1gcLYjPIBPVB2ofZidzxfM7e6AHerlA8LkumHNMK/HtBd
+         QWi5gfMxe7A7IyfA4LkLC3+xzEnHjvSd2yMsoEV+g/ylOkeYdbKXJlSZKLKCvclHw/0e
+         CpbQ==
+X-Gm-Message-State: ACgBeo2lq6l/WAyb+k0Fk2gh4TwzLj89yEj4S4au25RmB1CmMbylURLq
+        dfuT1xryNy/laQpw8M3YVAouBA==
+X-Google-Smtp-Source: AA6agR4PhBa4xTP/Cmb3RzX7gXe2wQgYBokWSWZsPSyAv0+QXeCgAXxsHtiwuqEXuxSK4dvlVmwU/g==
+X-Received: by 2002:a17:90b:3b4f:b0:1fb:5b03:6822 with SMTP id ot15-20020a17090b3b4f00b001fb5b036822mr4539924pjb.87.1661280636070;
+        Tue, 23 Aug 2022 11:50:36 -0700 (PDT)
+Received: from google.com ([2620:15c:202:201:34e2:c40e:42d3:27e0])
+        by smtp.gmail.com with ESMTPSA id e10-20020a17090301ca00b0016e8178aa9csm10928202plh.210.2022.08.23.11.50.34
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
         Tue, 23 Aug 2022 11:50:35 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id AB76F6170D;
-        Tue, 23 Aug 2022 18:50:34 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 32DEDC433B5;
-        Tue, 23 Aug 2022 18:50:30 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1661280634;
-        bh=Oyq3LAklv8BSoebYYWHKIy5H9iMh+4uB439rsWCYqJk=;
-        h=From:To:Cc:In-Reply-To:References:Subject:Date:From;
-        b=XoZeQPipdtTarbtkshQSe12v5T0JUKXWQL33TnqBdI0ZyeJjx+IMm1F29DMTHxtOU
-         i86mANEPVU9AA3QQXinb2Vo6yYzVsP2/E9AuP7QpQ51xcqfnglZq+upx0dFofMfwrQ
-         IUksfOAVEFwLaONGuLz1Iv+I9WixBNsB4PRW85fnkWqECojsBHABBS2j+I72b73N9b
-         E682Xl1EdaW0bQnAMIStv73bqKJ8MGYorGJGrIj+DJE0Ab7hAQSsUS5RGUIkuAo4ax
-         ve5aDYmbFheIBWO/A5tg3ZmC9jab8dtmxpbqAx5xU8u7m6Ak8vW/kHE0lPAU8j8VDu
-         aTLIlFM4x6ezg==
-From:   Mark Brown <broonie@kernel.org>
-To:     Matti Vaittinen <matti.vaittinen@fi.rohmeurope.com>,
-        Konrad Dybcio <konrad.dybcio@somainline.org>,
-        Robert Marko <robimarko@gmail.com>,
-        Adam Ward <Adam.Ward.opensource@diasemi.com>,
-        Javier Martinez Canillas <javier@dowhile0.org>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        Liam Girdwood <lgirdwood@gmail.com>,
-        Rob Herring <robh@kernel.org>,
-        Sumit Semwal <sumit.semwal@linaro.org>,
-        ChiYuan Huang <cy_huang@richtek.com>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Support Opensource <support.opensource@diasemi.com>,
-        Andy Gross <agross@kernel.org>,
-        Hsin-Hsiung Wang <hsin-hsiung.wang@mediatek.com>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>
-Cc:     linux-kernel@vger.kernel.org, linux-mediatek@lists.infradead.org,
-        linux-arm-kernel@lists.infradead.org,
-        linux-arm-msm@vger.kernel.org,
-        Krzysztof Kozlowski <krzk@kernel.org>,
-        devicetree@vger.kernel.org
-In-Reply-To: <20220823145649.3118479-7-robh@kernel.org>
-References: <20220823145649.3118479-7-robh@kernel.org>
-Subject: Re: [PATCH] regulator: dt-bindings: Add missing (unevaluated|additional)Properties on child nodes
-Message-Id: <166128062992.1031899.17043641765652674620.b4-ty@kernel.org>
-Date:   Tue, 23 Aug 2022 19:50:29 +0100
+Date:   Tue, 23 Aug 2022 11:50:32 -0700
+From:   Brian Norris <briannorris@chromium.org>
+To:     Chen Jeffy <jeffy.chen@rock-chips.com>
+Cc:     Doug Anderson <dianders@chromium.org>,
+        Heiko Stuebner <heiko@sntech.de>,
+        "open list:ARM/Rockchip SoC..." <linux-rockchip@lists.infradead.org>,
+        Bartosz Golaszewski <brgl@bgdev.pl>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        "open list:GPIO SUBSYSTEM" <linux-gpio@vger.kernel.org>,
+        Linux ARM <linux-arm-kernel@lists.infradead.org>
+Subject: Re: [PATCH 2/2] gpio/rockchip: Toggle edge trigger mode after acking
+Message-ID: <YwUheATnV+Iuhnl5@google.com>
+References: <20220820095933.20234-1-jeffy.chen@rock-chips.com>
+ <20220820095933.20234-2-jeffy.chen@rock-chips.com>
+ <CAD=FV=X0qJ2OC1SrAmhSQ5YeKEwvsSCbfVGPh457YYEuPCbRtg@mail.gmail.com>
+ <5cb0a457-b667-76e5-d383-6e93457d5d12@rock-chips.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-X-Mailer: b4 0.10.0-dev-0c1df
+In-Reply-To: <5cb0a457-b667-76e5-d383-6e93457d5d12@rock-chips.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, 23 Aug 2022 09:56:38 -0500, Rob Herring wrote:
-> In order to ensure only documented properties are present, node schemas
-> must have unevaluatedProperties or additionalProperties set to false
-> (typically).
-> 
-> 
+Hi,
 
-Applied to
+On Tue, Aug 23, 2022 at 10:50:16AM +0800, Jeffy Chen wrote:
+> On 8/23 星期二 1:08, Doug Anderson wrote:
+> > I'm happy to let others say for sure, but from my point of view I'm
+> > not convinced. It feels like with your new code you could lose edges.
 
-   https://git.kernel.org/pub/scm/linux/kernel/git/broonie/regulator.git for-next
+I won't claim to know for sure either, but I'm trying to follow along,
+because we've dealt with various sorts of nasty logical errors in the
+gpio and/or irqchip areas here :)
 
-Thanks!
+> > ...in other words an edge happened _after_ the IRQ handler ran but we
+> > didn't call the IRQ handler again. I don't think this is right.
 
-[1/1] regulator: dt-bindings: Add missing (unevaluated|additional)Properties on child nodes
-      commit: de6fbef10c4b9c589f3b84bd926e56ba742263ea
+I believe Doug has identified one problem correctly -- that we can't
+handle the both-edge toggling entirely after the ack+dispatch.
 
-All being well this means that it will be integrated into the linux-next
-tree (usually sometime in the next 24 hours) and sent to Linus during
-the next merge window (or sooner if it is a bug fix), however if
-problems are discovered then the patch may be dropped or reverted.
+(out-of-order quote:)
+> So if an edge come in between, that new IRQ status would be acked(cleared)
+> in the following GPIO irq handler as well as the old one, without triggering
+> another IRQ demux() to toggle the trigger mode.
 
-You may get further e-mails resulting from automated or manual testing
-and review of the tree, please engage with people reporting problems and
-send followup patches addressing any issues that are reported if needed.
+I believe Jeffy has identified another -- that we can't handle the
+both-edge toggling entirely before the ack+dispatch.
 
-If any updates are required or you are submitting further changes they
-should be sent as incremental updates against current git, existing
-patches will not be replaced.
+> Right, so guessing we could somehow move the IRQ ack into the toggling flow
+> to make sure that it would not clear the new IRQ?
 
-Please add any relevant lists and maintainers to the CCs when replying
-to this mail.
+This sounds like we need the toggling to happen within the .irq_ack()
+callback, in between the ACK and the chain dispatch.
 
-Thanks,
-Mark
+I'm not sure I've fully walked through this yet, but would it suffice to
+move the 'toggle_edge_mode' loop into irq_ack(), right after writing the
+EOI register? That way we're in one of these cases within irq_ack():
+
+(1) no further edges occurred after the ACK/EIO write: the toggle-loop
+will toggle correctly, and then we dispatch the chained handler.
+
+(2) one or more additional edges occurred after the ACK/EIO write
+(possibly during the toggle-loop): the loop only exits when we're sure
+things have quiesced, so future edges will toggle correctly (i.e.,
+polarity is correct). We continue to dispatch the chained handler (which
+"handles" all these edge(s)). We may still have leave an IRQ pending (if
+many edges happen, racing with the toggle loop) and fire again shortly,
+but that's OK.
+
+Does this make sense to anyone else?
+
+> And it looks like there are quite a few drivers having this kind of need,
+> would it make sense to handle it in the framework?
+
+I suppose it would be possible to implement the above as a general
+irq_gc_ack*() helper, instead of open-coding it, although it might need
+the irqchip framework to gain a better understanding of a chip's
+polarity register.
+
+Brian
