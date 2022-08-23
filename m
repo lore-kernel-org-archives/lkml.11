@@ -2,46 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id ABE51C38159
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BABE9C3814E
 	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 10:42:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355873AbiHWKk6 (ORCPT
+        id S1355915AbiHWKlE (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 06:40:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52786 "EHLO
+        Tue, 23 Aug 2022 06:41:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42282 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354595AbiHWKZ6 (ORCPT
+        with ESMTP id S1354610AbiHWKZ7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 06:25:58 -0400
+        Tue, 23 Aug 2022 06:25:59 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A53B574BA7;
-        Tue, 23 Aug 2022 02:05:24 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A076874CC5;
+        Tue, 23 Aug 2022 02:05:27 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 3468261538;
-        Tue, 23 Aug 2022 09:05:24 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 38918C433D6;
-        Tue, 23 Aug 2022 09:05:23 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 3EC9B6157B;
+        Tue, 23 Aug 2022 09:05:27 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3DEBCC433D6;
+        Tue, 23 Aug 2022 09:05:26 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661245523;
-        bh=QBiBFmZLq6hWWcLJrT6U1VOx9qjX3C7gqo4H5DwXIDU=;
+        s=korg; t=1661245526;
+        bh=ljTxXHMuDcwS8wbr/+tJlNXTojI1MAVrPBctDNCGIH8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=m1bm+0rPbYHUyJI61c8MOEcinO6v9HM3X9aUTPNOZrW43B/Xr2PFTLfp7YJzfdnoV
-         YMcJ5ilHxvALNt8ZNjIQqd9pfh9IeoXch1bjqCG3kqYVQlou+5FgcdpwvTEaWC7RmY
-         R/F/8KzAjb1YekTY7gTrI67Gdo1CuuWf3AjBopOY=
+        b=o4YCDyhFrb3ERQtJc9MlhWN1czgpR03tixRHGijEb4PyubxAzHJBuCslergzewxeK
+         /d0dNkocCnWd3Yj48/4xhiu35ZYTg8TvpZ3G3LFN6goKgdhqXEql5KRyNumguumLLs
+         qZInyfjclBO9u60VSP2p5WoPU7DmS2PmTRXq8Ku0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Pavel Skripkin <paskripkin@gmail.com>,
-        =?UTF-8?q?Toke=20H=C3=B8iland-J=C3=B8rgensen?= <toke@toke.dk>,
-        Kalle Valo <quic_kvalo@quicinc.com>,
-        Sasha Levin <sashal@kernel.org>,
-        syzbot+03110230a11411024147@syzkaller.appspotmail.com,
-        syzbot+c6dde1f690b60e0b9fbe@syzkaller.appspotmail.com
-Subject: [PATCH 4.19 074/287] ath9k: fix use-after-free in ath9k_hif_usb_rx_cb
-Date:   Tue, 23 Aug 2022 10:24:03 +0200
-Message-Id: <20220823080102.712567731@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Alexey Kodanev <aleksei.kodanev@bell-sw.com>,
+        Kalle Valo <kvalo@kernel.org>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 4.19 075/287] wifi: iwlegacy: 4965: fix potential off-by-one overflow in il4965_rs_fill_link_cmd()
+Date:   Tue, 23 Aug 2022 10:24:04 +0200
+Message-Id: <20220823080102.752636929@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220823080100.268827165@linuxfoundation.org>
 References: <20220823080100.268827165@linuxfoundation.org>
@@ -53,89 +50,61 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Pavel Skripkin <paskripkin@gmail.com>
+From: Alexey Kodanev <aleksei.kodanev@bell-sw.com>
 
-[ Upstream commit 0ac4827f78c7ffe8eef074bc010e7e34bc22f533 ]
+[ Upstream commit a8eb8e6f7159c7c20c0ddac428bde3d110890aa7 ]
 
-Syzbot reported use-after-free Read in ath9k_hif_usb_rx_cb() [0]. The
-problem was in incorrect htc_handle->drv_priv initialization.
+As a result of the execution of the inner while loop, the value
+of 'idx' can be equal to LINK_QUAL_MAX_RETRY_NUM. However, this
+is not checked after the loop and 'idx' is used to write the
+LINK_QUAL_MAX_RETRY_NUM size array 'lq_cmd->rs_table[idx]' below
+in the outer loop.
 
-Probable call trace which can trigger use-after-free:
+The fix is to check the new value of 'idx' inside the nested loop,
+and break both loops if index equals the size. Checking it at the
+start is now pointless, so let's remove it.
 
-ath9k_htc_probe_device()
-  /* htc_handle->drv_priv = priv; */
-  ath9k_htc_wait_for_target()      <--- Failed
-  ieee80211_free_hw()		   <--- priv pointer is freed
+Detected using the static analysis tool - Svace.
 
-<IRQ>
-...
-ath9k_hif_usb_rx_cb()
-  ath9k_hif_usb_rx_stream()
-   RX_STAT_INC()		<--- htc_handle->drv_priv access
-
-In order to not add fancy protection for drv_priv we can move
-htc_handle->drv_priv initialization at the end of the
-ath9k_htc_probe_device() and add helper macro to make
-all *_STAT_* macros NULL safe, since syzbot has reported related NULL
-deref in that macros [1]
-
-Link: https://syzkaller.appspot.com/bug?id=6ead44e37afb6866ac0c7dd121b4ce07cb665f60 [0]
-Link: https://syzkaller.appspot.com/bug?id=b8101ffcec107c0567a0cd8acbbacec91e9ee8de [1]
-Fixes: fb9987d0f748 ("ath9k_htc: Support for AR9271 chipset.")
-Reported-and-tested-by: syzbot+03110230a11411024147@syzkaller.appspotmail.com
-Reported-and-tested-by: syzbot+c6dde1f690b60e0b9fbe@syzkaller.appspotmail.com
-Signed-off-by: Pavel Skripkin <paskripkin@gmail.com>
-Acked-by: Toke Høiland-Jørgensen <toke@toke.dk>
-Signed-off-by: Kalle Valo <quic_kvalo@quicinc.com>
-Link: https://lore.kernel.org/r/d57bbedc857950659bfacac0ab48790c1eda00c8.1655145743.git.paskripkin@gmail.com
+Fixes: be663ab67077 ("iwlwifi: split the drivers for agn and legacy devices 3945/4965")
+Signed-off-by: Alexey Kodanev <aleksei.kodanev@bell-sw.com>
+Signed-off-by: Kalle Valo <kvalo@kernel.org>
+Link: https://lore.kernel.org/r/20220608171614.28891-1-aleksei.kodanev@bell-sw.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/wireless/ath/ath9k/htc.h          | 10 +++++-----
- drivers/net/wireless/ath/ath9k/htc_drv_init.c |  3 ++-
- 2 files changed, 7 insertions(+), 6 deletions(-)
+ drivers/net/wireless/intel/iwlegacy/4965-rs.c | 5 ++++-
+ 1 file changed, 4 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/net/wireless/ath/ath9k/htc.h b/drivers/net/wireless/ath/ath9k/htc.h
-index 9f64e32381f9..81107100e368 100644
---- a/drivers/net/wireless/ath/ath9k/htc.h
-+++ b/drivers/net/wireless/ath/ath9k/htc.h
-@@ -325,11 +325,11 @@ static inline struct ath9k_htc_tx_ctl *HTC_SKB_CB(struct sk_buff *skb)
- }
+diff --git a/drivers/net/wireless/intel/iwlegacy/4965-rs.c b/drivers/net/wireless/intel/iwlegacy/4965-rs.c
+index 54ff83829afb..f204e139e5f0 100644
+--- a/drivers/net/wireless/intel/iwlegacy/4965-rs.c
++++ b/drivers/net/wireless/intel/iwlegacy/4965-rs.c
+@@ -2422,7 +2422,7 @@ il4965_rs_fill_link_cmd(struct il_priv *il, struct il_lq_sta *lq_sta,
+ 		/* Repeat initial/next rate.
+ 		 * For legacy IL_NUMBER_TRY == 1, this loop will not execute.
+ 		 * For HT IL_HT_NUMBER_TRY == 3, this executes twice. */
+-		while (repeat_rate > 0 && idx < LINK_QUAL_MAX_RETRY_NUM) {
++		while (repeat_rate > 0) {
+ 			if (is_legacy(tbl_type.lq_type)) {
+ 				if (ant_toggle_cnt < NUM_TRY_BEFORE_ANT_TOGGLE)
+ 					ant_toggle_cnt++;
+@@ -2441,6 +2441,8 @@ il4965_rs_fill_link_cmd(struct il_priv *il, struct il_lq_sta *lq_sta,
+ 			    cpu_to_le32(new_rate);
+ 			repeat_rate--;
+ 			idx++;
++			if (idx >= LINK_QUAL_MAX_RETRY_NUM)
++				goto out;
+ 		}
  
- #ifdef CONFIG_ATH9K_HTC_DEBUGFS
--
--#define TX_STAT_INC(c) (hif_dev->htc_handle->drv_priv->debug.tx_stats.c++)
--#define TX_STAT_ADD(c, a) (hif_dev->htc_handle->drv_priv->debug.tx_stats.c += a)
--#define RX_STAT_INC(c) (hif_dev->htc_handle->drv_priv->debug.skbrx_stats.c++)
--#define RX_STAT_ADD(c, a) (hif_dev->htc_handle->drv_priv->debug.skbrx_stats.c += a)
-+#define __STAT_SAFE(expr) (hif_dev->htc_handle->drv_priv ? (expr) : 0)
-+#define TX_STAT_INC(c) __STAT_SAFE(hif_dev->htc_handle->drv_priv->debug.tx_stats.c++)
-+#define TX_STAT_ADD(c, a) __STAT_SAFE(hif_dev->htc_handle->drv_priv->debug.tx_stats.c += a)
-+#define RX_STAT_INC(c) __STAT_SAFE(hif_dev->htc_handle->drv_priv->debug.skbrx_stats.c++)
-+#define RX_STAT_ADD(c, a) __STAT_SAFE(hif_dev->htc_handle->drv_priv->debug.skbrx_stats.c += a)
- #define CAB_STAT_INC   priv->debug.tx_stats.cab_queued++
+ 		il4965_rs_get_tbl_info_from_mcs(new_rate, lq_sta->band,
+@@ -2485,6 +2487,7 @@ il4965_rs_fill_link_cmd(struct il_priv *il, struct il_lq_sta *lq_sta,
+ 		repeat_rate--;
+ 	}
  
- #define TX_QSTAT_INC(q) (priv->debug.tx_stats.queue_stats[q]++)
-diff --git a/drivers/net/wireless/ath/ath9k/htc_drv_init.c b/drivers/net/wireless/ath/ath9k/htc_drv_init.c
-index cb136d9d4621..49d587330990 100644
---- a/drivers/net/wireless/ath/ath9k/htc_drv_init.c
-+++ b/drivers/net/wireless/ath/ath9k/htc_drv_init.c
-@@ -946,7 +946,6 @@ int ath9k_htc_probe_device(struct htc_target *htc_handle, struct device *dev,
- 	priv->hw = hw;
- 	priv->htc = htc_handle;
- 	priv->dev = dev;
--	htc_handle->drv_priv = priv;
- 	SET_IEEE80211_DEV(hw, priv->dev);
++out:
+ 	lq_cmd->agg_params.agg_frame_cnt_limit = LINK_QUAL_AGG_FRAME_LIMIT_DEF;
+ 	lq_cmd->agg_params.agg_dis_start_th = LINK_QUAL_AGG_DISABLE_START_DEF;
  
- 	ret = ath9k_htc_wait_for_target(priv);
-@@ -967,6 +966,8 @@ int ath9k_htc_probe_device(struct htc_target *htc_handle, struct device *dev,
- 	if (ret)
- 		goto err_init;
- 
-+	htc_handle->drv_priv = priv;
-+
- 	return 0;
- 
- err_init:
 -- 
 2.35.1
 
