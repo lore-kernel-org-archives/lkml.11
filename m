@@ -2,46 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 122EAC32772
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 10:07:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 88687C32772
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 10:07:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352484AbiHWKHn (ORCPT
+        id S1352517AbiHWKHt (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 06:07:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59096 "EHLO
+        Tue, 23 Aug 2022 06:07:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44338 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352445AbiHWKBz (ORCPT
+        with ESMTP id S1352443AbiHWKBy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 06:01:55 -0400
+        Tue, 23 Aug 2022 06:01:54 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9209B7C1CD;
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 91E417C1A1;
         Tue, 23 Aug 2022 01:49:43 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id BA296B81C50;
-        Tue, 23 Aug 2022 08:33:44 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0F4EBC433C1;
-        Tue, 23 Aug 2022 08:33:42 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id A1639B81C67;
+        Tue, 23 Aug 2022 08:39:22 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D838CC433C1;
+        Tue, 23 Aug 2022 08:39:20 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661243623;
-        bh=/EAzLTw2LDeTTq+gH0iIZMFAkA3J3B3MG6b3v5PKd8Q=;
+        s=korg; t=1661243961;
+        bh=b5WWhPm4tN/qjLDw8OdQq86f6/et3lf3Vl+6V9cC7do=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=wXIW0YDMKyye69iUaMvGeD5I66tGKpPpxglAaYKQYrnp/Avt932a+4Sx+43FcCLiV
-         ZUNXc/SuhRw1ASiefOXu34Le3kgWz9nnnhjCzVlzE8f9l8pfhCYoIJt6ZZIyvD3LyX
-         JVQfsq3doNBQQq6SQXFqhxT/ZsWnTj7johk4ggRA=
+        b=wpUbZmK/86AM36yZQwWdagXFTMpxbRqHHYejbPFztj5rMAJSfijxk9KXgkjRpKulQ
+         2l6iNyImSvBCV8BeWvi8lPTPYeOfG44N242ew13zun77V+fRxTStNF2tEp/XgXonBf
+         Mvfxo0ILT+GLEvHqGVJ3lkwGGUgF3DM9wuNO+67Q=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Akhil R <akhilrajeev@nvidia.com>,
-        Jon Hunter <jonathanh@nvidia.com>,
-        Vinod Koul <vkoul@kernel.org>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.19 306/365] dmaengine: tegra: Add terminate() for Tegra234
-Date:   Tue, 23 Aug 2022 10:03:27 +0200
-Message-Id: <20220823080130.997084605@linuxfoundation.org>
+        stable@vger.kernel.org, Xu Wang <vulab@iscas.ac.cn>,
+        Wolfram Sang <wsa@kernel.org>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 4.14 062/229] i2c: Fix a potential use after free
+Date:   Tue, 23 Aug 2022 10:23:43 +0200
+Message-Id: <20220823080055.953083003@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220823080118.128342613@linuxfoundation.org>
-References: <20220823080118.128342613@linuxfoundation.org>
+In-Reply-To: <20220823080053.202747790@linuxfoundation.org>
+References: <20220823080053.202747790@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -50,89 +49,38 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Akhil R <akhilrajeev@nvidia.com>
+From: Xu Wang <vulab@iscas.ac.cn>
 
-[ Upstream commit 36834c67016794b8fa03d7672a5b7f2cc4529298 ]
+[ Upstream commit e4c72c06c367758a14f227c847f9d623f1994ecf ]
 
-In certain cases where the DMA client bus gets corrupted or if the
-end device ceases to send/receive data, DMA can wait indefinitely
-for the data to be received/sent. Attempting to terminate the transfer
-will put the DMA in pause flush mode and it remains there.
+Free the adap structure only after we are done using it.
+This patch just moves the put_device() down a bit to avoid the
+use after free.
 
-The channel is irrecoverable once this pause times out in Tegra194 and
-earlier chips. Whereas, from Tegra234, it can be recovered by disabling
-the channel and reprograming it.
-
-Hence add a new terminate() function that ignores the outcome of
-dma_pause() so that terminate_all() can proceed to disable the channel.
-
-Signed-off-by: Akhil R <akhilrajeev@nvidia.com>
-Reviewed-by: Jon Hunter <jonathanh@nvidia.com>
-Link: https://lore.kernel.org/r/20220720104045.16099-3-akhilrajeev@nvidia.com
-Signed-off-by: Vinod Koul <vkoul@kernel.org>
+Fixes: 611e12ea0f12 ("i2c: core: manage i2c bus device refcount in i2c_[get|put]_adapter")
+Signed-off-by: Xu Wang <vulab@iscas.ac.cn>
+[wsa: added comment to the code, added Fixes tag]
+Signed-off-by: Wolfram Sang <wsa@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/dma/tegra186-gpc-dma.c | 26 ++++++++++++++++++++++++--
- 1 file changed, 24 insertions(+), 2 deletions(-)
+ drivers/i2c/i2c-core-base.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/dma/tegra186-gpc-dma.c b/drivers/dma/tegra186-gpc-dma.c
-index 05cd451f541d..fa9bda4a2bc6 100644
---- a/drivers/dma/tegra186-gpc-dma.c
-+++ b/drivers/dma/tegra186-gpc-dma.c
-@@ -157,8 +157,8 @@
-  * If any burst is in flight and DMA paused then this is the time to complete
-  * on-flight burst and update DMA status register.
-  */
--#define TEGRA_GPCDMA_BURST_COMPLETE_TIME	20
--#define TEGRA_GPCDMA_BURST_COMPLETION_TIMEOUT	100
-+#define TEGRA_GPCDMA_BURST_COMPLETE_TIME	10
-+#define TEGRA_GPCDMA_BURST_COMPLETION_TIMEOUT	5000 /* 5 msec */
+diff --git a/drivers/i2c/i2c-core-base.c b/drivers/i2c/i2c-core-base.c
+index b7fe8075f2b8..c1fc49365189 100644
+--- a/drivers/i2c/i2c-core-base.c
++++ b/drivers/i2c/i2c-core-base.c
+@@ -2243,8 +2243,9 @@ void i2c_put_adapter(struct i2c_adapter *adap)
+ 	if (!adap)
+ 		return;
  
- /* Channel base address offset from GPCDMA base address */
- #define TEGRA_GPCDMA_CHANNEL_BASE_ADD_OFFSET	0x20000
-@@ -432,6 +432,17 @@ static int tegra_dma_device_resume(struct dma_chan *dc)
- 	return 0;
+-	put_device(&adap->dev);
+ 	module_put(adap->owner);
++	/* Should be last, otherwise we risk use-after-free with 'adap' */
++	put_device(&adap->dev);
  }
+ EXPORT_SYMBOL(i2c_put_adapter);
  
-+static inline int tegra_dma_pause_noerr(struct tegra_dma_channel *tdc)
-+{
-+	/* Return 0 irrespective of PAUSE status.
-+	 * This is useful to recover channels that can exit out of flush
-+	 * state when the channel is disabled.
-+	 */
-+
-+	tegra_dma_pause(tdc);
-+	return 0;
-+}
-+
- static void tegra_dma_disable(struct tegra_dma_channel *tdc)
- {
- 	u32 csr, status;
-@@ -1292,6 +1303,14 @@ static const struct tegra_dma_chip_data tegra194_dma_chip_data = {
- 	.terminate = tegra_dma_pause,
- };
- 
-+static const struct tegra_dma_chip_data tegra234_dma_chip_data = {
-+	.nr_channels = 31,
-+	.channel_reg_size = SZ_64K,
-+	.max_dma_count = SZ_1G,
-+	.hw_support_pause = true,
-+	.terminate = tegra_dma_pause_noerr,
-+};
-+
- static const struct of_device_id tegra_dma_of_match[] = {
- 	{
- 		.compatible = "nvidia,tegra186-gpcdma",
-@@ -1299,6 +1318,9 @@ static const struct of_device_id tegra_dma_of_match[] = {
- 	}, {
- 		.compatible = "nvidia,tegra194-gpcdma",
- 		.data = &tegra194_dma_chip_data,
-+	}, {
-+		.compatible = "nvidia,tegra234-gpcdma",
-+		.data = &tegra234_dma_chip_data,
- 	}, {
- 	},
- };
 -- 
 2.35.1
 
