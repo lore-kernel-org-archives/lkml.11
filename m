@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 88D78C32792
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 11:44:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B3201C32772
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 11:44:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350273AbiHWLoU (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 07:44:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59974 "EHLO
+        id S242925AbiHWLo1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 23 Aug 2022 07:44:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58980 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1358001AbiHWLkS (ORCPT
+        with ESMTP id S1358071AbiHWLkn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 07:40:18 -0400
+        Tue, 23 Aug 2022 07:40:43 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B421779632;
-        Tue, 23 Aug 2022 02:28:43 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1A6817969B;
+        Tue, 23 Aug 2022 02:28:45 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id B061F61174;
-        Tue, 23 Aug 2022 09:28:41 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A74ABC433D6;
-        Tue, 23 Aug 2022 09:28:40 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id DA95361330;
+        Tue, 23 Aug 2022 09:28:44 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CFC43C433D6;
+        Tue, 23 Aug 2022 09:28:43 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661246921;
-        bh=2gIMAlHBijR6NYq4wraQ4wNTunf1yxbOHYK0ZS1AzLE=;
+        s=korg; t=1661246924;
+        bh=YYKqtCLix3sh2n+eNYIcMsNafWZ6asrVCqB5FDnPqiQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=m1paBw7J5Jk+9Mh7aL7kSQXFf12i20hK8/yMs4ydGY8AyXvKlNhenojj0ZtXuVnqp
-         JfWXGjK47GNzHJLi417Mzq4M8jVZrytO02KM6CT7hyQHvOV4/TWcLfETMnmdFWBSBc
-         D3bnQ0BSGsdWb+9S4vDAal02mWoQkNkLW7prWUP4=
+        b=VtmLcAHANTQLU15+6N9ZMC70CZ+GKdRp0DHxSPhHCug8VKmlGXRoIKGyAMEB9fQLo
+         z/AbdxrMtWQUJjQgi99shiFq1svfd4aFp8j9LmaF2md0NWO1MPoJJSKfoyVm8qypDE
+         QkVYKzIv/lZt7RUa+InTsZf/TBQOV+x/YmRsBWH8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
-        Rustam Subkhankulov <subkhankulov@ispras.ru>,
-        Helge Deller <deller@gmx.de>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 231/389] video: fbdev: sis: fix typos in SiS_GetModeID()
-Date:   Tue, 23 Aug 2022 10:25:09 +0200
-Message-Id: <20220823080125.248033246@linuxfoundation.org>
+        Christophe Leroy <christophe.leroy@csgroup.eu>,
+        Michael Ellerman <mpe@ellerman.id.au>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.4 232/389] powerpc/32: Do not allow selection of e5500 or e6500 CPUs on PPC32
+Date:   Tue, 23 Aug 2022 10:25:10 +0200
+Message-Id: <20220823080125.281832481@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220823080115.331990024@linuxfoundation.org>
 References: <20220823080115.331990024@linuxfoundation.org>
@@ -50,45 +50,46 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Rustam Subkhankulov <subkhankulov@ispras.ru>
+From: Christophe Leroy <christophe.leroy@csgroup.eu>
 
-[ Upstream commit 3eb8fccc244bfb41a7961969e4db280d44911226 ]
+[ Upstream commit 9be013b2a9ecb29b5168e4b9db0e48ed53acf37c ]
 
-The second operand of a '&&' operator has no impact on expression
-result for cases 400 and 512 in SiS_GetModeID().
+Commit 0e00a8c9fd92 ("powerpc: Allow CPU selection also on PPC32")
+enlarged the CPU selection logic to PPC32 by removing depend to
+PPC64, and failed to restrict that depend to E5500_CPU and E6500_CPU.
+Fortunately that got unnoticed because -mcpu=8540 will override the
+-mcpu=e500mc64 or -mpcu=e6500 as they are ealier, but that's
+fragile and may no be right in the future.
 
-Judging by the logic and the names of the variables, in both cases a
-typo was made.
+Add back the depend PPC64 on E5500_CPU and E6500_CPU.
 
-Found by Linux Verification Center (linuxtesting.org) with SVACE.
-
-Signed-off-by: Rustam Subkhankulov <subkhankulov@ispras.ru>
-Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
-Signed-off-by: Helge Deller <deller@gmx.de>
+Fixes: 0e00a8c9fd92 ("powerpc: Allow CPU selection also on PPC32")
+Signed-off-by: Christophe Leroy <christophe.leroy@csgroup.eu>
+Signed-off-by: Michael Ellerman <mpe@ellerman.id.au>
+Link: https://lore.kernel.org/r/8abab4888da69ff78b73a56f64d9678a7bf684e9.1657549153.git.christophe.leroy@csgroup.eu
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/video/fbdev/sis/init.c | 4 ++--
+ arch/powerpc/platforms/Kconfig.cputype | 4 ++--
  1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/video/fbdev/sis/init.c b/drivers/video/fbdev/sis/init.c
-index fde27feae5d0..d6b2ce95a859 100644
---- a/drivers/video/fbdev/sis/init.c
-+++ b/drivers/video/fbdev/sis/init.c
-@@ -355,12 +355,12 @@ SiS_GetModeID(int VGAEngine, unsigned int VBFlags, int HDisplay, int VDisplay,
- 		}
- 		break;
- 	case 400:
--		if((!(VBFlags & CRT1_LCDA)) || ((LCDwidth >= 800) && (LCDwidth >= 600))) {
-+		if((!(VBFlags & CRT1_LCDA)) || ((LCDwidth >= 800) && (LCDheight >= 600))) {
- 			if(VDisplay == 300) ModeIndex = ModeIndex_400x300[Depth];
- 		}
- 		break;
- 	case 512:
--		if((!(VBFlags & CRT1_LCDA)) || ((LCDwidth >= 1024) && (LCDwidth >= 768))) {
-+		if((!(VBFlags & CRT1_LCDA)) || ((LCDwidth >= 1024) && (LCDheight >= 768))) {
- 			if(VDisplay == 384) ModeIndex = ModeIndex_512x384[Depth];
- 		}
- 		break;
+diff --git a/arch/powerpc/platforms/Kconfig.cputype b/arch/powerpc/platforms/Kconfig.cputype
+index f0330ce498d1..a9b20aa1dfd4 100644
+--- a/arch/powerpc/platforms/Kconfig.cputype
++++ b/arch/powerpc/platforms/Kconfig.cputype
+@@ -151,11 +151,11 @@ config POWER9_CPU
+ 
+ config E5500_CPU
+ 	bool "Freescale e5500"
+-	depends on E500
++	depends on PPC64 && E500
+ 
+ config E6500_CPU
+ 	bool "Freescale e6500"
+-	depends on E500
++	depends on PPC64 && E500
+ 
+ config 860_CPU
+ 	bool "8xx family"
 -- 
 2.35.1
 
