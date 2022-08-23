@@ -2,138 +2,109 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B0326C32774
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 07:49:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 79832C32774
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 07:49:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241220AbiHWHtO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 03:49:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58994 "EHLO
+        id S241229AbiHWHtt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 23 Aug 2022 03:49:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59504 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241211AbiHWHtK (ORCPT
+        with ESMTP id S240751AbiHWHtq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 03:49:10 -0400
-Received: from mail-yw1-x112b.google.com (mail-yw1-x112b.google.com [IPv6:2607:f8b0:4864:20::112b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 558765303B
-        for <linux-kernel@vger.kernel.org>; Tue, 23 Aug 2022 00:49:09 -0700 (PDT)
-Received: by mail-yw1-x112b.google.com with SMTP id 00721157ae682-3375488624aso328593447b3.3
-        for <linux-kernel@vger.kernel.org>; Tue, 23 Aug 2022 00:49:09 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc;
-        bh=gkTv/YGwhJTqg/p3oOyoM/xZAMhxT0emHgJFd/ZlWrw=;
-        b=J1mdr+Q5/cVen63OGc+HWdVQlrO7HB6b5Rrs7uP96aARfyhzvtCb+74Bessg5Zo3Vo
-         Z8lcKD6fXNdyVnFWMnoSeOPmvrgfPfM3C7ohVwZpUficL4acI8at9z5oQaUXc+pVjbgM
-         RU3fbcWFd/rHgv2Lm3/Iv7q5671HXpf1KhKzVObKD3Jxk8BvA8oSbkQ/0FcAK9/RTdkb
-         hJWAARIkpkpbUBvqeK+JkT348O6RsSX707uwtkm+nAWao/XOdI11MYnHDqriKFtLKv/w
-         r8caJaPKHKEDKJQi9JEEpk+0ug/iJ4k2ck9asxddo2RCaB00ASv/vwckYrG4UYBYhzpF
-         uPFQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc;
-        bh=gkTv/YGwhJTqg/p3oOyoM/xZAMhxT0emHgJFd/ZlWrw=;
-        b=54FoadXAVaU+agbIVL2oju0Ig04Jy+gv3MoiGrkDvceqe3IILX9DFyK7cJ3rhLjGvu
-         q6lhkfdinb1xZrjVcpeMtaa24YaiTxu7FIvGGKkHq5BHS8z1nJf+K5UCyLk4a/CgxNCj
-         HVNvP3q/1Zky4NBjtkRd/APerizK0qpsBlf+fw/1lQXYgLnM+pgpxj3E7X6c0uZni9vO
-         98OeEP7+7SY4POqfcAZNRE+aG23pAybEUaWcPRVDLeaUSNWmt7QbNG4BMt4TQvxGqYQ5
-         C3W9n6F4ulVdRY7425PrpY3HrVHelaJLpXoQaDAi03FvLyIrXjNDia5pfwsPW1/GkAI9
-         +uYg==
-X-Gm-Message-State: ACgBeo1JBC4ypA+N8DKvvzmYr9fMLQj/Nr4v9hsjLMe9nWk1prGQbpm7
-        aORKIN6vJZOMTZ5vtnrB6deu+eUA2jCUzlAsGvvFQQ==
-X-Google-Smtp-Source: AA6agR6DS/h4oR9B1CJsG8XWGAPHcBewErV/nGrsYtjvSaNyAdxVtePB65KE1ytP14DJEVKlkUX55ktRabrT6IZ8e7w=
-X-Received: by 2002:a05:6902:1105:b0:695:c284:a76b with SMTP id
- o5-20020a056902110500b00695c284a76bmr6697273ybu.300.1661240948491; Tue, 23
- Aug 2022 00:49:08 -0700 (PDT)
-MIME-Version: 1.0
-References: <20220818124805.601-1-zhouchengming@bytedance.com> <20220818124805.601-9-zhouchengming@bytedance.com>
-In-Reply-To: <20220818124805.601-9-zhouchengming@bytedance.com>
-From:   Vincent Guittot <vincent.guittot@linaro.org>
-Date:   Tue, 23 Aug 2022 09:48:56 +0200
-Message-ID: <CAKfTPtBV76BwzLiNbubOzzk94W=+7+7abKY18tmmxNaEvd192g@mail.gmail.com>
-Subject: Re: [PATCH v6 8/9] sched/fair: move task sched_avg attach to enqueue_task_fair()
-To:     Chengming Zhou <zhouchengming@bytedance.com>
-Cc:     dietmar.eggemann@arm.com, mingo@redhat.com, peterz@infradead.org,
-        rostedt@goodmis.org, bsegall@google.com, vschneid@redhat.com,
-        linux-kernel@vger.kernel.org, tj@kernel.org
+        Tue, 23 Aug 2022 03:49:46 -0400
+Received: from sipsolutions.net (s3.sipsolutions.net [IPv6:2a01:4f8:191:4433::2])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 379CD647FC;
+        Tue, 23 Aug 2022 00:49:44 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=sipsolutions.net; s=mail; h=MIME-Version:Content-Transfer-Encoding:
+        Content-Type:References:In-Reply-To:Date:Cc:To:From:Subject:Message-ID:Sender
+        :Reply-To:Content-ID:Content-Description:Resent-Date:Resent-From:Resent-To:
+        Resent-Cc:Resent-Message-ID; bh=lvhKkD2SiUkfZrNaCvWY8hjl/Esl8oJlHMjWqxYStSY=;
+        t=1661240985; x=1662450585; b=e3ajiB9UuWhwvUZf2oagZ3VDm0wG6qLP9k0LFyjW+SwHTaQ
+        ZKaK5B+YVYqDeuF4d9u52th/lisjf1F/Z29R7tzSbNv/YxVVHM72lakUfP/8kdK9S4OAmQT6P1iF+
+        y516VjUKpDAnzIwf2VSnIplPFtxY3WQ0HdlYlhzENt6HqI44Sn/f1E6ZbI+JJeTakgi+jO0jRo1oc
+        T3KkolcBihB10NPgBmGYMEnplQJ4JS1LRa/2Dqi/unEEZ3hr9B0+8DEI18HFgZz19jMcV99ISokOW
+        l8grC4YaPqSVgETaB+Sa0BqxwPfAQrYbWV21V2cdrU3uLPuA5rtiws/mhSV2PswQ==;
+Received: by sipsolutions.net with esmtpsa (TLS1.3:ECDHE_X25519__RSA_PSS_RSAE_SHA256__AES_256_GCM:256)
+        (Exim 4.96)
+        (envelope-from <johannes@sipsolutions.net>)
+        id 1oQOfF-00FIlL-17;
+        Tue, 23 Aug 2022 09:49:33 +0200
+Message-ID: <9e81fbb3b994b1228e6cfb1c550fe35e11508adb.camel@sipsolutions.net>
+Subject: Re: [syzbot] upstream boot error: stack segment fault in __alloc_skb
+From:   Johannes Berg <johannes@sipsolutions.net>
+To:     Jakub Kicinski <kuba@kernel.org>,
+        syzbot <syzbot+b8a1f71feb027c4e2f06@syzkaller.appspotmail.com>
+Cc:     davem@davemloft.net, edumazet@google.com,
+        linux-kernel@vger.kernel.org, llvm@lists.linux.dev,
+        netdev@vger.kernel.org, pabeni@redhat.com,
+        syzkaller-bugs@googlegroups.com, linux-wireless@vger.kernel.org
+Date:   Tue, 23 Aug 2022 09:49:32 +0200
+In-Reply-To: <20220822172703.4d96f5b5@kernel.org>
+References: <0000000000002282c605e6b6c0e1@google.com>
+         <20220822172703.4d96f5b5@kernel.org>
 Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+User-Agent: Evolution 3.44.4 (3.44.4-1.fc36) 
+MIME-Version: 1.0
+X-malware-bazaar: not-scanned
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, 18 Aug 2022 at 14:48, Chengming Zhou
-<zhouchengming@bytedance.com> wrote:
->
-> When wake_up_new_task(), we use post_init_entity_util_avg() to init
-> util_avg/runnable_avg based on cpu's util_avg at that time, and
-> attach task sched_avg to cfs_rq.
->
-> Since enqueue_task_fair() -> enqueue_entity() -> update_load_avg()
-> loop will do attach, we can move this work to update_load_avg().
->
-> wake_up_new_task(p)
->   post_init_entity_util_avg(p)
->     attach_entity_cfs_rq()  --> (1)
->   activate_task(rq, p)
->     enqueue_task() := enqueue_task_fair()
->       enqueue_entity() loop
->         update_load_avg(cfs_rq, se, UPDATE_TG | DO_ATTACH)
->           if (!se->avg.last_update_time && (flags & DO_ATTACH))
->             attach_entity_load_avg()  --> (2)
->
-> This patch move attach from (1) to (2), update related comments too.
->
-> Signed-off-by: Chengming Zhou <zhouchengming@bytedance.com>
+Hi,
 
-Reviewed-by: Vincent Guittot <vincent.guittot@linaro.org>
+> Does mac80211 hwsim size something in the family based on user input=20
+> or such?
 
-> ---
->  kernel/sched/fair.c | 11 +++--------
->  1 file changed, 3 insertions(+), 8 deletions(-)
->
-> diff --git a/kernel/sched/fair.c b/kernel/sched/fair.c
-> index c319b0bd2bc1..93d7c7b110dd 100644
-> --- a/kernel/sched/fair.c
-> +++ b/kernel/sched/fair.c
-> @@ -799,8 +799,6 @@ void init_entity_runnable_average(struct sched_entity *se)
->         /* when this task enqueue'ed, it will contribute to its cfs_rq's load_avg */
->  }
->
-> -static void attach_entity_cfs_rq(struct sched_entity *se);
-> -
->  /*
->   * With new tasks being created, their initial util_avgs are extrapolated
->   * based on the cfs_rq's current util_avg:
-> @@ -863,8 +861,6 @@ void post_init_entity_util_avg(struct task_struct *p)
->                 se->avg.last_update_time = cfs_rq_clock_pelt(cfs_rq);
->                 return;
->         }
-> -
-> -       attach_entity_cfs_rq(se);
->  }
->
->  #else /* !CONFIG_SMP */
-> @@ -4002,8 +3998,7 @@ static void migrate_se_pelt_lag(struct sched_entity *se) {}
->   * @cfs_rq: cfs_rq to update
->   *
->   * The cfs_rq avg is the direct sum of all its entities (blocked and runnable)
-> - * avg. The immediate corollary is that all (fair) tasks must be attached, see
-> - * post_init_entity_util_avg().
-> + * avg. The immediate corollary is that all (fair) tasks must be attached.
->   *
->   * cfs_rq->avg is used for task_h_load() and update_cfs_share() for example.
->   *
-> @@ -4236,8 +4231,8 @@ static void remove_entity_load_avg(struct sched_entity *se)
->
->         /*
->          * tasks cannot exit without having gone through wake_up_new_task() ->
-> -        * post_init_entity_util_avg() which will have added things to the
-> -        * cfs_rq, so we can remove unconditionally.
-> +        * enqueue_task_fair() which will have added things to the cfs_rq,
-> +        * so we can remove unconditionally.
->          */
->
->         sync_entity_load_avg(se);
-> --
-> 2.37.2
->
+Hmm, maybe, but certainly not in this path?
+
+> > mac80211_hwsim: initializing netlink
+> > stack segment: 0000 [#1] PREEMPT SMP KASAN
+> > CPU: 0 PID: 1 Comm: swapper/0 Not tainted 6.0.0-rc1-syzkaller-00017-g3c=
+c40a443a04 #0
+> > Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS=
+ Google 07/22/2022
+> > RIP: 0010:__kmalloc_node_track_caller+0x17a/0x3f0 mm/slub.c:4955
+> > Code: 00 48 c1 e8 3a 44 39 f0 0f 85 24 01 00 00 49 8b 3c 24 40 f6 c7 0f=
+ 0f 85 73 02 00 00 45 84 c0 0f 84 6c 02 00 00 41 8b 44 24 28 <48> 8b 5c 05 =
+00 48 8d 4a 08 48 89 e8 65 48 0f c7 0f 0f 94 c0 a8 01
+> > RSP: 0000:ffffc90000067858 EFLAGS: 00010202
+> > RAX: 0000000000000800 RBX: 0000000000082cc0 RCX: 0000000000000000
+> > RDX: 0000000000003088 RSI: 0000000000082cc0 RDI: 000000000003d960
+> > RBP: ffff000000000000 R08: dffffc0000000001 R09: fffffbfff1c4ade6
+> > R10: fffffbfff1c4ade6 R11: 1ffffffff1c4ade5 R12: ffff888012042140
+> > R13: 0000000000082cc0 R14: 00000000ffffffff R15: 0000000000001000
+> > FS:  0000000000000000(0000) GS:ffff8880b9a00000(0000) knlGS:00000000000=
+00000
+> > CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+> > CR2: ffff88823ffff000 CR3: 000000000ca8e000 CR4: 00000000003506f0
+> > DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+> > DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+> > Call Trace:
+> >  <TASK>
+> >  kmalloc_reserve net/core/skbuff.c:358 [inline]
+> >  __alloc_skb+0x11d/0x620 net/core/skbuff.c:430
+> >  alloc_skb include/linux/skbuff.h:1257 [inline]
+> >  nlmsg_new include/net/netlink.h:953 [inline]
+> >  ctrl_build_mcgrp_msg net/netlink/genetlink.c:997 [inline]
+> >  genl_ctrl_event+0x16f/0xc40 net/netlink/genetlink.c:1083
+> >  genl_register_family+0x10df/0x1390 net/netlink/genetlink.c:432
+> >  hwsim_init_netlink+0x21/0x9b drivers/net/wireless/mac80211_hwsim.c:497=
+2
+> >  init_mac80211_hwsim+0x185/0xa08 drivers/net/wireless/mac80211_hwsim.c:=
+5285
+
+It's just calling genl_register_family(), basically?
+
+init_mac80211_hwsim() shouldn't have much of a stack frame,
+neither does genl_register_family() nor any of the other functions here?
+
+Strange.
+
+But wait, this was reported against rc1, and we had a TON of syzbot
+failures on rc1 because of the virtio patches - I was previously told to
+mostly disregard them.
+
+johannes
+
