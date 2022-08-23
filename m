@@ -2,44 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BF266C32772
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 10:50:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6F0A0C32792
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 10:50:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355768AbiHWKuE (ORCPT
+        id S1356263AbiHWKuN (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 06:50:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52746 "EHLO
+        Tue, 23 Aug 2022 06:50:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46718 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356564AbiHWKmg (ORCPT
+        with ESMTP id S1356004AbiHWKlQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 06:42:36 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4EDAD868A2;
-        Tue, 23 Aug 2022 02:10:07 -0700 (PDT)
+        Tue, 23 Aug 2022 06:41:16 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 06CC2A74DF;
+        Tue, 23 Aug 2022 02:08:48 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 8E3A560E05;
-        Tue, 23 Aug 2022 09:10:06 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9A7CEC433C1;
-        Tue, 23 Aug 2022 09:10:05 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id B5B52CE1B5D;
+        Tue, 23 Aug 2022 09:08:46 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BED82C433C1;
+        Tue, 23 Aug 2022 09:08:44 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661245806;
-        bh=a0HKjpEqbKtygccy4gqMElgOqG3tzkUKbwYjJLAuB/E=;
+        s=korg; t=1661245725;
+        bh=2gIMAlHBijR6NYq4wraQ4wNTunf1yxbOHYK0ZS1AzLE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=xXP4HeoEG8dzPvu9Z9ECxFdC60N8HTi60mP1ise4e8ThZR5QLrAOp6WWEhQXoKEHh
-         cXpbkWXpxACPRIAFlxxS/0pL3RIfhz70kYkJZM3SdclEkwkFN3rg5KnqE6K9GAX1k/
-         EaBTuC+a9KppUKiixM3ROUup7sI1gjPdmTqCOs5E=
+        b=yuN1Al0JPYhYDt993eOuwr4FhauFqT/etv181SM35POKxSVtlFxxv9DoiexvArl09
+         Y1plXgCCDrn4G7lyUHincGAeF0ei57J+h8dOmXDpx43in/mFVcN2nr1Khcpi5x36cm
+         i/gow8dJIZUHdjkQFcguvSQJ9F51MxcaYK/YrBjg=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        stable <stable@kernel.org>,
-        Alexander Shishkin <alexander.shishkin@linux.intel.com>
-Subject: [PATCH 4.19 195/287] intel_th: pci: Add Raptor Lake-S PCH support
-Date:   Tue, 23 Aug 2022 10:26:04 +0200
-Message-Id: <20220823080107.409145866@linuxfoundation.org>
+        Rustam Subkhankulov <subkhankulov@ispras.ru>,
+        Helge Deller <deller@gmx.de>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 4.19 168/287] video: fbdev: sis: fix typos in SiS_GetModeID()
+Date:   Tue, 23 Aug 2022 10:25:37 +0200
+Message-Id: <20220823080106.415660211@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220823080100.268827165@linuxfoundation.org>
 References: <20220823080100.268827165@linuxfoundation.org>
@@ -51,34 +50,47 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Alexander Shishkin <alexander.shishkin@linux.intel.com>
+From: Rustam Subkhankulov <subkhankulov@ispras.ru>
 
-commit 23e2de5826e2fc4dd43e08bab3a2ea1a5338b063 upstream.
+[ Upstream commit 3eb8fccc244bfb41a7961969e4db280d44911226 ]
 
-Add support for the Trace Hub in Raptor Lake-S PCH.
+The second operand of a '&&' operator has no impact on expression
+result for cases 400 and 512 in SiS_GetModeID().
 
-Reviewed-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Cc: stable <stable@kernel.org>
-Signed-off-by: Alexander Shishkin <alexander.shishkin@linux.intel.com>
-Link: https://lore.kernel.org/r/20220705082637.59979-6-alexander.shishkin@linux.intel.com
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Judging by the logic and the names of the variables, in both cases a
+typo was made.
+
+Found by Linux Verification Center (linuxtesting.org) with SVACE.
+
+Signed-off-by: Rustam Subkhankulov <subkhankulov@ispras.ru>
+Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
+Signed-off-by: Helge Deller <deller@gmx.de>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/hwtracing/intel_th/pci.c |    5 +++++
- 1 file changed, 5 insertions(+)
+ drivers/video/fbdev/sis/init.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
---- a/drivers/hwtracing/intel_th/pci.c
-+++ b/drivers/hwtracing/intel_th/pci.c
-@@ -251,6 +251,11 @@ static const struct pci_device_id intel_
- 		.driver_data = (kernel_ulong_t)&intel_th_2x,
- 	},
- 	{
-+		/* Raptor Lake-S */
-+		PCI_DEVICE(PCI_VENDOR_ID_INTEL, 0x7a26),
-+		.driver_data = (kernel_ulong_t)&intel_th_2x,
-+	},
-+	{
- 		/* Rocket Lake CPU */
- 		PCI_DEVICE(PCI_VENDOR_ID_INTEL, 0x4c19),
- 		.driver_data = (kernel_ulong_t)&intel_th_2x,
+diff --git a/drivers/video/fbdev/sis/init.c b/drivers/video/fbdev/sis/init.c
+index fde27feae5d0..d6b2ce95a859 100644
+--- a/drivers/video/fbdev/sis/init.c
++++ b/drivers/video/fbdev/sis/init.c
+@@ -355,12 +355,12 @@ SiS_GetModeID(int VGAEngine, unsigned int VBFlags, int HDisplay, int VDisplay,
+ 		}
+ 		break;
+ 	case 400:
+-		if((!(VBFlags & CRT1_LCDA)) || ((LCDwidth >= 800) && (LCDwidth >= 600))) {
++		if((!(VBFlags & CRT1_LCDA)) || ((LCDwidth >= 800) && (LCDheight >= 600))) {
+ 			if(VDisplay == 300) ModeIndex = ModeIndex_400x300[Depth];
+ 		}
+ 		break;
+ 	case 512:
+-		if((!(VBFlags & CRT1_LCDA)) || ((LCDwidth >= 1024) && (LCDwidth >= 768))) {
++		if((!(VBFlags & CRT1_LCDA)) || ((LCDwidth >= 1024) && (LCDheight >= 768))) {
+ 			if(VDisplay == 384) ModeIndex = ModeIndex_512x384[Depth];
+ 		}
+ 		break;
+-- 
+2.35.1
+
 
 
