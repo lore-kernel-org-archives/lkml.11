@@ -2,81 +2,75 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F34D2C32774
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 17:43:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 52DCAC32774
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 17:43:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231847AbiHWRm7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 13:42:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39372 "EHLO
+        id S232547AbiHWRnY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 23 Aug 2022 13:43:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37918 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229547AbiHWRmf (ORCPT
+        with ESMTP id S229817AbiHWRmv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 13:42:35 -0400
-Received: from mail-ot1-x333.google.com (mail-ot1-x333.google.com [IPv6:2607:f8b0:4864:20::333])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1BBEA9C8EE
-        for <linux-kernel@vger.kernel.org>; Tue, 23 Aug 2022 08:37:17 -0700 (PDT)
-Received: by mail-ot1-x333.google.com with SMTP id m21-20020a9d6ad5000000b00638df677850so10032678otq.5
-        for <linux-kernel@vger.kernel.org>; Tue, 23 Aug 2022 08:37:17 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=cc:to:subject:message-id:date:user-agent:from:references
-         :in-reply-to:mime-version:from:to:cc;
-        bh=v31+jjDAe8b8bSeB3m7vjA69108ZFOl1IwaE1C9+p6g=;
-        b=ehS+dPduFec0TYms+eKA7qJx5obDw3y+LyCRyq+Ru6CDFRO9kkTL+5xanQd7oqRdiG
-         rfEPeHr4mHdBWzi7mplNImhxtTIhIoMKT4DZLWbu04u5YQ+HwsNb3VwbdbeceUIyK4SP
-         HwIxxp0MbVCJSlzH3nF5cNt8u5+NZ7V5aNiaw=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:user-agent:from:references
-         :in-reply-to:mime-version:x-gm-message-state:from:to:cc;
-        bh=v31+jjDAe8b8bSeB3m7vjA69108ZFOl1IwaE1C9+p6g=;
-        b=JP4C4h/7FN3WrEFzsXcVHJUp3HvZQ6iY8mRgkq79HQblwV6V8qc02gtjYSuh7nuHTi
-         6f7m6tFRfVSgpcJ4oJbcmTRa27C82Dy8Vq/IwK2s+2HQupWrcaCU0MXtohFDKktQaRjY
-         cvWye+QcHJxD4qMRdCOgbmgDY0vKN+DewxUj0Dwcq3nHhdeZ+E2Sgr5fJkMQ2Jp9v5Mw
-         qF09J7DuKJX2jI32FlEY5r/qERU9FOJeIYUSSTL8XSri6cEqpzIBftMnKkHsAdNvd1dH
-         QTsMwAHGZbYspUM/Ok3HNJzDLa0sKqm8WJpPnZiFlcvQRTKPUfD/uYgGg3cSaZd4LJxz
-         LUIA==
-X-Gm-Message-State: ACgBeo0nbQAqd8hR1mfApDUUoQMrwXO1djzQ2mE1/LHW8nAnLmWLpFWM
-        FQyY/aGrQ5Buy3DAXND/ft+zeLdkJdJxlUkE5eXWqw==
-X-Google-Smtp-Source: AA6agR7oXCZFuTC7Lzxlb4CwuONinxB3CRhuL08aLXINitOJmy/axmk0nwSsMf7iBwFXey4c13CPaDhDmRFCPlSAl6I=
-X-Received: by 2002:a9d:738c:0:b0:638:9962:8cb6 with SMTP id
- j12-20020a9d738c000000b0063899628cb6mr9407094otk.73.1661269036462; Tue, 23
- Aug 2022 08:37:16 -0700 (PDT)
-Received: from 753933720722 named unknown by gmailapi.google.com with
- HTTPREST; Tue, 23 Aug 2022 10:37:15 -0500
+        Tue, 23 Aug 2022 13:42:51 -0400
+Received: from mout.gmx.net (mout.gmx.net [212.227.15.19])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 06298BE09;
+        Tue, 23 Aug 2022 08:31:18 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gmx.net;
+        s=badeba3b8450; t=1661268677;
+        bh=6y871TwjlGWu4Hn5isuPKP7hEDPU3mcdk7uvzqUMGlc=;
+        h=X-UI-Sender-Class:Date:From:To:Cc:Subject;
+        b=dElczNUP7M43ZNpUb5kqCWNp15vxyrnsfHh1zMwiDbRDOXuGZcwAs6oQ19mQwQHRY
+         Q9wzGqOhtn8u+TF8mF+uD2zqPSFvKlxPXHXVELq51tpLoCrEch0imuesUmW9yhiyE+
+         dYhk/OKH4mJL/6FXL0XJOMSQm/SBXH30/HiqZU0Q=
+X-UI-Sender-Class: 01bb95c1-4bf8-414a-932a-4f6e2808ef9c
+Received: from [192.168.100.20] ([46.142.34.177]) by mail.gmx.net (mrgmx005
+ [212.227.17.190]) with ESMTPSA (Nemesis) id 1MbzuH-1p1VeN3gGV-00dV1S; Tue, 23
+ Aug 2022 17:31:16 +0200
+Message-ID: <41808495-4002-9dc9-8143-bdc6fb7f4394@gmx.de>
+Date:   Tue, 23 Aug 2022 17:31:16 +0200
 MIME-Version: 1.0
-In-Reply-To: <1661245527-5596-1-git-send-email-quic_c_skakit@quicinc.com>
-References: <1661245527-5596-1-git-send-email-quic_c_skakit@quicinc.com>
-From:   Stephen Boyd <swboyd@chromium.org>
-User-Agent: alot/0.10
-Date:   Tue, 23 Aug 2022 10:37:15 -0500
-Message-ID: <CAE-0n50g9UUH9Jyy1_CGKLbXd096waP_Y4kPJiFmfqBaKMhG5w@mail.gmail.com>
-Subject: Re: [PATCH] clk: qcom: lpass: Fix the invalid index errors seen at bootup
-To:     Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Satya Priya <quic_c_skakit@quicinc.com>
-Cc:     Douglas Anderson <dianders@chromium.org>,
-        Andy Gross <agross@kernel.org>, mka@chromium.org,
-        linux-arm-msm@vger.kernel.org, linux-kernel@vger.kernel.org,
-        quic_tdas@quicinc.com, linux-clk@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.12.0
+From:   Ronald Warsow <rwarsow@gmx.de>
+To:     linux-kernel@vger.kernel.org
+Cc:     stable@vger.kernel.org
+Content-Language: de-DE
+Subject: Re: [PATCH 5.19 000/365] 5.19.4-rc1 review
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Provags-ID: V03:K1:OToLyasaT6alezisQuuvDFUZbsCpq4mPTtNw9MmXeW0G+HRIgpO
+ vz9zt0i2PABQWZARfnQNqujE/2LYIS8DJUhsUQuQFjbz6njQoq5GPNi3EpX+mN2z50v8Rkb
+ jBftcioU/pqGATgAIQtjphGrlOfUcWc1NwywzPr4CmytgFHtKhc6WaFgxA9wNKbuWEgRPMJ
+ n8YeJHDAzrhse3LqKXEyA==
+X-UI-Out-Filterresults: notjunk:1;V03:K0:PjpAwpzMs2w=:iCr72FgZzSXb6wZ4MpggmI
+ qGe0NyxnoaP9faSdSGke6hhxnBZBP/LYvb4nAOWB1A1gq35TmT4UfaEctYQiRnUeeXPv+jodO
+ ySWVwkxwlar1JUA+ijeoSiRrMRVCUlmm6tlbvyhM35cIYop7nGsVBWnuYXUOSt6159uq4KzYf
+ EtLwG/TkVNvRHsSR6YhegzsLL3iWFb8/jzQkhlef+DnaQaewZrEeq8+B/gLiWbHAp++FshGAl
+ RzC04Oumpem1goy4sCtKfQLlyNS6rpuCaanUYbWfr3fik8FTi0lwZfqcfhK49W5YpbsDL0rC+
+ QZaedtNytL/s24v/Fmo7LFcBogU94zQr+M1m5TaKmB3FoAv5GLYGCtc1NbSXtWt5VLFag8ZdK
+ dygtKKlwKYdwJ+0U5M+tc9sS3+WiWbUCO+1Lh2nZs5f5YhhY+1XzV0S0CzQKGDyxaVIvrCNvI
+ u17JMAMQkVX71j9Notc+8+z29q9VB79fkekq1AjUfLxD4ZMoUmJ8RML+wN7s+9JThPfvoVI7J
+ DO1h5/k4kjDWaJwpqGzKCHJABVRYpb6aI/6BEoidDxkchaMxfu18+7zz/ElBfSFQqCYYaSzYi
+ RfPs0WYmmSEEQ2Tv0btkqPW8x5G+si0M8B00l2z38beRtRi4rO/dtIk7MupW66/yxfzQdZkU/
+ yc1HP8D5ok2qDMRjMcLh1yyu85rEcN6RdCTsbDLi+c4GFkvfisFVxrOXMqoc8Tn4kwgAVi7SK
+ U/u+B/7wxDxg9hWwzTpkdlUVjr9TfuE4PHpp6i/hZdwJOEABaBO+8a0YmpYTflFb0U7VxwjMh
+ MNm3AxeYxvLyGxBcwrSMdH7qDZ47J7GA/11r6on3U4k3nX0315T6A8yKarGlTNSDqUWadTFYo
+ Ma4CwXlggrPFBsOhYUqQoCpkRNYzx3w4Xknf5plME5xl1jmI9rXG5lFtU0AadLLdWLZBgGiJx
+ 5lAN7Ku28mPrzzF039VSjj0dDRPQdlZjdBF9OXDttXbGcLfXjiL8QiuN/ZhN0LdC0QrKS6VOi
+ ZcGSC+rEZ9hwsXrVzRooT32JM9s9J0jMxRgmSSupaD0NY0S3pNkHzIo+OXUtVn1S3St5Wbd14
+ Ar/+iyW4WmXH1UQoHBzyb4/pWxn6JfEwIn7uzzXFUNUkpEmPiNkqgip+w==
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Quoting Satya Priya (2022-08-23 02:05:27)
-> After support for resets is added, qcom_cc_really_probe()
-> would be called twice for the same cc which causes
-> invalid index errors in qcom_clk_hw_get().
->
-> qcom_cc_clk_hw_get: invalid index 5
-> qcom_cc_clk_hw_get: invalid index 6
-> qcom_cc_clk_hw_get: invalid index 7
->
-> Fixes: a9dd26639d05 ("clk: qcom: lpass: Add support for LPASS clock controller for SC7280")
-> Signed-off-by: Taniya Das <quic_tdas@quicinc.com>
-> Signed-off-by: Satya Priya <quic_c_skakit@quicinc.com>
-> ---
-> This patch depends on [1]
-> [1] https://patchwork.kernel.org/project/linux-arm-msm/list/?series=667984
+hallo Greg
 
-Why not resend the series and squash this patch into it?
+5.19.4-rc1
+
+compiles, boots and runs here on x86_64
+(Intel i5-11400, Fedora 36)
+
+Thanks
+
+Tested-by: Ronald Warsow <rwarsow@gmx.de>
+
