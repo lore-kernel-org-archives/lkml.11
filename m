@@ -2,45 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 59F29C32772
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 09:47:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DAE9FC32774
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 09:47:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241759AbiHWJr1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 05:47:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35106 "EHLO
+        id S242731AbiHWJre (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 23 Aug 2022 05:47:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42218 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238995AbiHWJnM (ORCPT
+        with ESMTP id S241550AbiHWJnT (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 05:43:12 -0400
+        Tue, 23 Aug 2022 05:43:19 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 796C29A98D;
-        Tue, 23 Aug 2022 01:42:48 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3DAE19A952;
+        Tue, 23 Aug 2022 01:42:37 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 5DB6F61544;
-        Tue, 23 Aug 2022 08:42:45 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5FB2DC433B5;
-        Tue, 23 Aug 2022 08:42:44 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 1F6BC614E9;
+        Tue, 23 Aug 2022 08:42:36 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 25345C43470;
+        Tue, 23 Aug 2022 08:42:34 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661244164;
-        bh=jB3YNJsFdpWo6NSXnr57ykLaI5aOJvdDCj4JEpWaiYM=;
+        s=korg; t=1661244155;
+        bh=gXJeB+CKeDu7TiKFHWZPHO1BsLZegk9X3IBL5reKvkk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=G3z/JtOEaQ+ic2kImswrVPV1dJBl2+M8GU0AlLn6plH4vda35QJn9Jj7jVF9FfKKP
-         GrYi+c6eDPTiQSuyFIyT+NOed1ACNWA52g1fSiD0JHW7b6tU+AIMBQdXo6uXghjkvU
-         XBgz7XQz39k0qTVtCgKxNAQ4y7X1OTV2LPkx+5/0=
+        b=Qwy3h5S2xz65uIXq1HogwKneRIQpuFjg0dLbT7Dbma3uj6DMFQ8aFBBh3Hsi+luqM
+         R9PScrulSBilUbQjc4URtYtC9JBcouhZc4z6ac/pMjOcxTGqmaep3W+6CGDv01Upio
+         vwe0M6XAtIriAzkX/smdI6kiiG7avFtyBe9Y2aJw=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Hou Tao <houtao1@huawei.com>,
-        Yonghong Song <yhs@fb.com>, Martin KaFai Lau <kafai@fb.com>,
-        Alexei Starovoitov <ast@kernel.org>
-Subject: [PATCH 5.15 046/244] bpf: Acquire map uref in .init_seq_private for sock local storage map iterator
-Date:   Tue, 23 Aug 2022 10:23:25 +0200
-Message-Id: <20220823080100.596719094@linuxfoundation.org>
+        stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Miquel Raynal <miquel.raynal@bootlin.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 4.14 094/229] mtd: maps: Fix refcount leak in of_flash_probe_versatile
+Date:   Tue, 23 Aug 2022 10:24:15 +0200
+Message-Id: <20220823080057.068334279@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220823080059.091088642@linuxfoundation.org>
-References: <20220823080059.091088642@linuxfoundation.org>
+In-Reply-To: <20220823080053.202747790@linuxfoundation.org>
+References: <20220823080053.202747790@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -49,59 +50,38 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Hou Tao <houtao1@huawei.com>
+From: Miaoqian Lin <linmq006@gmail.com>
 
-commit 3c5f6e698b5c538bbb23cd453b22e1e4922cffd8 upstream.
+[ Upstream commit 33ec82a6d2b119938f26e5c8040ed5d92378eb54 ]
 
-bpf_iter_attach_map() acquires a map uref, and the uref may be released
-before or in the middle of iterating map elements. For example, the uref
-could be released in bpf_iter_detach_map() as part of
-bpf_link_release(), or could be released in bpf_map_put_with_uref() as
-part of bpf_map_release().
+of_find_matching_node_and_match() returns a node pointer with refcount
+incremented, we should use of_node_put() on it when not need anymore.
+Add missing of_node_put() to avoid refcount leak.
 
-So acquiring an extra map uref in bpf_iter_init_sk_storage_map() and
-releasing it in bpf_iter_fini_sk_storage_map().
-
-Fixes: 5ce6e77c7edf ("bpf: Implement bpf iterator for sock local storage map")
-Signed-off-by: Hou Tao <houtao1@huawei.com>
-Acked-by: Yonghong Song <yhs@fb.com>
-Acked-by: Martin KaFai Lau <kafai@fb.com>
-Link: https://lore.kernel.org/r/20220810080538.1845898-4-houtao@huaweicloud.com
-Signed-off-by: Alexei Starovoitov <ast@kernel.org>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Fixes: b0afd44bc192 ("mtd: physmap_of: add a hook for Versatile write protection")
+Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
+Reviewed-by: Linus Walleij <linus.walleij@linaro.org>
+Signed-off-by: Miquel Raynal <miquel.raynal@bootlin.com>
+Link: https://lore.kernel.org/linux-mtd/20220523140205.48625-1-linmq006@gmail.com
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/core/bpf_sk_storage.c |   10 +++++++++-
- 1 file changed, 9 insertions(+), 1 deletion(-)
+ drivers/mtd/maps/physmap_of_versatile.c | 1 +
+ 1 file changed, 1 insertion(+)
 
---- a/net/core/bpf_sk_storage.c
-+++ b/net/core/bpf_sk_storage.c
-@@ -865,10 +865,18 @@ static int bpf_iter_init_sk_storage_map(
- {
- 	struct bpf_iter_seq_sk_storage_map_info *seq_info = priv_data;
+diff --git a/drivers/mtd/maps/physmap_of_versatile.c b/drivers/mtd/maps/physmap_of_versatile.c
+index 03f2b6e7bc7e..961704228dd2 100644
+--- a/drivers/mtd/maps/physmap_of_versatile.c
++++ b/drivers/mtd/maps/physmap_of_versatile.c
+@@ -221,6 +221,7 @@ int of_flash_probe_versatile(struct platform_device *pdev,
  
-+	bpf_map_inc_with_uref(aux->map);
- 	seq_info->map = aux->map;
- 	return 0;
- }
+ 		versatile_flashprot = (enum versatile_flashprot)devid->data;
+ 		rmap = syscon_node_to_regmap(sysnp);
++		of_node_put(sysnp);
+ 		if (IS_ERR(rmap))
+ 			return PTR_ERR(rmap);
  
-+static void bpf_iter_fini_sk_storage_map(void *priv_data)
-+{
-+	struct bpf_iter_seq_sk_storage_map_info *seq_info = priv_data;
-+
-+	bpf_map_put_with_uref(seq_info->map);
-+}
-+
- static int bpf_iter_attach_map(struct bpf_prog *prog,
- 			       union bpf_iter_link_info *linfo,
- 			       struct bpf_iter_aux_info *aux)
-@@ -914,7 +922,7 @@ static const struct seq_operations bpf_s
- static const struct bpf_iter_seq_info iter_seq_info = {
- 	.seq_ops		= &bpf_sk_storage_map_seq_ops,
- 	.init_seq_private	= bpf_iter_init_sk_storage_map,
--	.fini_seq_private	= NULL,
-+	.fini_seq_private	= bpf_iter_fini_sk_storage_map,
- 	.seq_priv_size		= sizeof(struct bpf_iter_seq_sk_storage_map_info),
- };
- 
+-- 
+2.35.1
+
 
 
