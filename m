@@ -2,46 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4C270C32772
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AB7F4C3F6B0
 	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 09:26:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349858AbiHWJYt (ORCPT
+        id S1349936AbiHWJY4 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 05:24:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37890 "EHLO
+        Tue, 23 Aug 2022 05:24:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35810 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229697AbiHWJWK (ORCPT
+        with ESMTP id S235543AbiHWJWP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 05:22:10 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DA1C08E0FB;
-        Tue, 23 Aug 2022 01:34:59 -0700 (PDT)
+        Tue, 23 Aug 2022 05:22:15 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DE4838E9A6;
+        Tue, 23 Aug 2022 01:35:15 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 47EE6B81C1C;
-        Tue, 23 Aug 2022 08:33:29 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 844B1C433D6;
-        Tue, 23 Aug 2022 08:33:27 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 3A6086148E;
+        Tue, 23 Aug 2022 08:34:14 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 425ACC433D7;
+        Tue, 23 Aug 2022 08:34:13 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661243608;
-        bh=TPy/KETqUmQZnZolpNzXaphI9rczF7IPRF6bkrILUNM=;
+        s=korg; t=1661243653;
+        bh=txqmN+YAfMMR2TvIi5EB/XRuqWPGhCXHEhadMv2AIf8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=dJj7kE49icp3SDmC4ZMcnu5r8Lj5UD3RVcnoPFVEvh4KZsXzPiGhh2Caeg7iz4Nh9
-         fMruXXdvuPfcjR8lYfwEfopIK+h3NQ/ndrHsckGAJ0Nacee+tpX99y4/lVXFjGVlay
-         ePFyQ0Qe7Bl9g3ewdc1NmQNpG5BxY2vDX2VIrH5s=
+        b=mDCllxJ+0uZO/rcCKfk6l0vTbXNl0WUnoxc5H3Wr2bxU8ws0VB6Y37u0m8vlkjdrI
+         0bMDWvALDiUMx3JVH6hAwa7tya3M6N4becFsCw5Z95wh//mIOzww99lDIiP5SzBwNT
+         9ALpxysI8xqQw+hx57RZbhVNo41w/4xYnQIxa+dU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Takeshi Saito <takeshi.saito.xv@renesas.com>,
-        Wolfram Sang <wsa+renesas@sang-engineering.com>,
-        Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>,
-        Ulf Hansson <ulf.hansson@linaro.org>,
+        stable@vger.kernel.org, Maxime Bizon <mbizon@freebox.fr>,
+        Christophe Leroy <christophe.leroy@csgroup.eu>,
+        Michael Ellerman <mpe@ellerman.id.au>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.19 301/365] mmc: renesas_sdhi: newer SoCs dont need manual tap correction
-Date:   Tue, 23 Aug 2022 10:03:22 +0200
-Message-Id: <20220823080130.777525058@linuxfoundation.org>
+Subject: [PATCH 5.19 346/365] powerpc/32: Set an IBAT covering up to _einittext during init
+Date:   Tue, 23 Aug 2022 10:04:07 +0200
+Message-Id: <20220823080132.723879155@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220823080118.128342613@linuxfoundation.org>
 References: <20220823080118.128342613@linuxfoundation.org>
@@ -53,106 +51,89 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Takeshi Saito <takeshi.saito.xv@renesas.com>
+From: Christophe Leroy <christophe.leroy@csgroup.eu>
 
-[ Upstream commit 00e8c11c137b2e4b2bf54dc9881cf32e3441ddb4 ]
+[ Upstream commit 2a0fb3c155c97c75176e557d61f8e66c1bd9b735 ]
 
-The newest Gen3 SoCs and Gen4 SoCs do not need manual tap correction
-with HS400 anymore. So, instead of checking the SDHI version, add a
-quirk flag and set manual tap correction only for affected SoCs.
+Always set an IBAT covering up to _einittext during init because when
+CONFIG_MODULES is not selected there is no reason to have an exception
+handler for kernel instruction TLB misses.
 
-Signed-off-by: Takeshi Saito <takeshi.saito.xv@renesas.com>
-[wsa: rebased, renamed the quirk variable, removed stale comment]
-Signed-off-by: Wolfram Sang <wsa+renesas@sang-engineering.com>
-Reviewed-by: Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
-Tested-by: Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
-Link: https://lore.kernel.org/r/20220720072901.1266-1-wsa+renesas@sang-engineering.com
-Signed-off-by: Ulf Hansson <ulf.hansson@linaro.org>
+It implies DBAT and IBAT are now totaly independent, IBATs are set
+by setibat() and DBAT by setbat().
+
+This allows to revert commit 9bb162fa26ed ("powerpc/603: Fix
+boot failure with DEBUG_PAGEALLOC and KFENCE")
+
+Reported-by: Maxime Bizon <mbizon@freebox.fr>
+Signed-off-by: Christophe Leroy <christophe.leroy@csgroup.eu>
+Signed-off-by: Michael Ellerman <mpe@ellerman.id.au>
+Link: https://lore.kernel.org/r/ce7f04a39593934d9b1ee68c69144ccd3d4da4a1.1655202804.git.christophe.leroy@csgroup.eu
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/mmc/host/renesas_sdhi.h               | 1 +
- drivers/mmc/host/renesas_sdhi_core.c          | 5 ++---
- drivers/mmc/host/renesas_sdhi_internal_dmac.c | 6 ++++++
- 3 files changed, 9 insertions(+), 3 deletions(-)
+ arch/powerpc/kernel/head_book3s_32.S |  4 ++--
+ arch/powerpc/mm/book3s32/mmu.c       | 10 ++++------
+ 2 files changed, 6 insertions(+), 8 deletions(-)
 
-diff --git a/drivers/mmc/host/renesas_sdhi.h b/drivers/mmc/host/renesas_sdhi.h
-index 1a1e3e020a8c..c4abfee1ebae 100644
---- a/drivers/mmc/host/renesas_sdhi.h
-+++ b/drivers/mmc/host/renesas_sdhi.h
-@@ -43,6 +43,7 @@ struct renesas_sdhi_quirks {
- 	bool hs400_4taps;
- 	bool fixed_addr_mode;
- 	bool dma_one_rx_only;
-+	bool manual_tap_correction;
- 	u32 hs400_bad_taps;
- 	const u8 (*hs400_calib_table)[SDHI_CALIB_TABLE_MAX];
- };
-diff --git a/drivers/mmc/host/renesas_sdhi_core.c b/drivers/mmc/host/renesas_sdhi_core.c
-index 55f7b27c3de7..6edbf5c161ab 100644
---- a/drivers/mmc/host/renesas_sdhi_core.c
-+++ b/drivers/mmc/host/renesas_sdhi_core.c
-@@ -380,8 +380,7 @@ static void renesas_sdhi_hs400_complete(struct mmc_host *mmc)
- 	sd_scc_write32(host, priv, SH_MOBILE_SDHI_SCC_DT2FF,
- 		       priv->scc_tappos_hs400);
+diff --git a/arch/powerpc/kernel/head_book3s_32.S b/arch/powerpc/kernel/head_book3s_32.S
+index 6c739beb938c..519b60695167 100644
+--- a/arch/powerpc/kernel/head_book3s_32.S
++++ b/arch/powerpc/kernel/head_book3s_32.S
+@@ -418,14 +418,14 @@ InstructionTLBMiss:
+  */
+ 	/* Get PTE (linux-style) and check access */
+ 	mfspr	r3,SPRN_IMISS
+-#if defined(CONFIG_MODULES) || defined(CONFIG_DEBUG_PAGEALLOC) || defined(CONFIG_KFENCE)
++#ifdef CONFIG_MODULES
+ 	lis	r1, TASK_SIZE@h		/* check if kernel address */
+ 	cmplw	0,r1,r3
+ #endif
+ 	mfspr	r2, SPRN_SDR1
+ 	li	r1,_PAGE_PRESENT | _PAGE_ACCESSED | _PAGE_EXEC | _PAGE_USER
+ 	rlwinm	r2, r2, 28, 0xfffff000
+-#if defined(CONFIG_MODULES) || defined(CONFIG_DEBUG_PAGEALLOC) || defined(CONFIG_KFENCE)
++#ifdef CONFIG_MODULES
+ 	bgt-	112f
+ 	lis	r2, (swapper_pg_dir - PAGE_OFFSET)@ha	/* if kernel address, use */
+ 	li	r1,_PAGE_PRESENT | _PAGE_ACCESSED | _PAGE_EXEC
+diff --git a/arch/powerpc/mm/book3s32/mmu.c b/arch/powerpc/mm/book3s32/mmu.c
+index 49a737fbbd18..40029280c320 100644
+--- a/arch/powerpc/mm/book3s32/mmu.c
++++ b/arch/powerpc/mm/book3s32/mmu.c
+@@ -159,7 +159,10 @@ unsigned long __init mmu_mapin_ram(unsigned long base, unsigned long top)
+ {
+ 	unsigned long done;
+ 	unsigned long border = (unsigned long)__init_begin - PAGE_OFFSET;
++	unsigned long size;
  
--	/* Gen3 can't do automatic tap correction with HS400, so disable it */
--	if (sd_ctrl_read16(host, CTL_VERSION) == SDHI_VER_GEN3_SDMMC)
-+	if (priv->quirks && priv->quirks->manual_tap_correction)
- 		sd_scc_write32(host, priv, SH_MOBILE_SDHI_SCC_RVSCNTL,
- 			       ~SH_MOBILE_SDHI_SCC_RVSCNTL_RVSEN &
- 			       sd_scc_read32(host, priv, SH_MOBILE_SDHI_SCC_RVSCNTL));
-@@ -718,7 +717,7 @@ static bool renesas_sdhi_manual_correction(struct tmio_mmc_host *host, bool use_
- 	sd_scc_write32(host, priv, SH_MOBILE_SDHI_SCC_RVSREQ, 0);
++	size = roundup_pow_of_two((unsigned long)_einittext - PAGE_OFFSET);
++	setibat(0, PAGE_OFFSET, 0, size, PAGE_KERNEL_X);
  
- 	/* Change TAP position according to correction status */
--	if (sd_ctrl_read16(host, CTL_VERSION) == SDHI_VER_GEN3_SDMMC &&
-+	if (priv->quirks && priv->quirks->manual_tap_correction &&
- 	    host->mmc->ios.timing == MMC_TIMING_MMC_HS400) {
- 		u32 bad_taps = priv->quirks ? priv->quirks->hs400_bad_taps : 0;
- 		/*
-diff --git a/drivers/mmc/host/renesas_sdhi_internal_dmac.c b/drivers/mmc/host/renesas_sdhi_internal_dmac.c
-index 3084b15ae2cb..52915404eb07 100644
---- a/drivers/mmc/host/renesas_sdhi_internal_dmac.c
-+++ b/drivers/mmc/host/renesas_sdhi_internal_dmac.c
-@@ -170,6 +170,7 @@ static const struct renesas_sdhi_quirks sdhi_quirks_4tap_nohs400_one_rx = {
- static const struct renesas_sdhi_quirks sdhi_quirks_4tap = {
- 	.hs400_4taps = true,
- 	.hs400_bad_taps = BIT(2) | BIT(3) | BIT(6) | BIT(7),
-+	.manual_tap_correction = true,
- };
- 
- static const struct renesas_sdhi_quirks sdhi_quirks_nohs400 = {
-@@ -182,25 +183,30 @@ static const struct renesas_sdhi_quirks sdhi_quirks_fixed_addr = {
- 
- static const struct renesas_sdhi_quirks sdhi_quirks_bad_taps1357 = {
- 	.hs400_bad_taps = BIT(1) | BIT(3) | BIT(5) | BIT(7),
-+	.manual_tap_correction = true,
- };
- 
- static const struct renesas_sdhi_quirks sdhi_quirks_bad_taps2367 = {
- 	.hs400_bad_taps = BIT(2) | BIT(3) | BIT(6) | BIT(7),
-+	.manual_tap_correction = true,
- };
- 
- static const struct renesas_sdhi_quirks sdhi_quirks_r8a7796_es13 = {
- 	.hs400_4taps = true,
- 	.hs400_bad_taps = BIT(2) | BIT(3) | BIT(6) | BIT(7),
- 	.hs400_calib_table = r8a7796_es13_calib_table,
-+	.manual_tap_correction = true,
- };
- 
- static const struct renesas_sdhi_quirks sdhi_quirks_r8a77965 = {
- 	.hs400_bad_taps = BIT(2) | BIT(3) | BIT(6) | BIT(7),
- 	.hs400_calib_table = r8a77965_calib_table,
-+	.manual_tap_correction = true,
- };
- 
- static const struct renesas_sdhi_quirks sdhi_quirks_r8a77990 = {
- 	.hs400_calib_table = r8a77990_calib_table,
-+	.manual_tap_correction = true,
- };
+ 	if (debug_pagealloc_enabled_or_kfence() || __map_without_bats) {
+ 		pr_debug_once("Read-Write memory mapped without BATs\n");
+@@ -245,10 +248,9 @@ void mmu_mark_rodata_ro(void)
+ }
  
  /*
+- * Set up one of the I/D BAT (block address translation) register pairs.
++ * Set up one of the D BAT (block address translation) register pairs.
+  * The parameters are not checked; in particular size must be a power
+  * of 2 between 128k and 256M.
+- * On 603+, only set IBAT when _PAGE_EXEC is set
+  */
+ void __init setbat(int index, unsigned long virt, phys_addr_t phys,
+ 		   unsigned int size, pgprot_t prot)
+@@ -284,10 +286,6 @@ void __init setbat(int index, unsigned long virt, phys_addr_t phys,
+ 		/* G bit must be zero in IBATs */
+ 		flags &= ~_PAGE_EXEC;
+ 	}
+-	if (flags & _PAGE_EXEC)
+-		bat[0] = bat[1];
+-	else
+-		bat[0].batu = bat[0].batl = 0;
+ 
+ 	bat_addrs[index].start = virt;
+ 	bat_addrs[index].limit = virt + ((bl + 1) << 17) - 1;
 -- 
 2.35.1
 
