@@ -2,46 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 68EEFC3814E
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 10:23:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 939A5C38159
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 10:23:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354432AbiHWKV3 (ORCPT
+        id S1354569AbiHWKVq (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 06:21:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54178 "EHLO
+        Tue, 23 Aug 2022 06:21:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58332 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352919AbiHWKJe (ORCPT
+        with ESMTP id S1352409AbiHWKJe (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 23 Aug 2022 06:09:34 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7D9477DF5D;
-        Tue, 23 Aug 2022 01:55:31 -0700 (PDT)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5D6267DF60;
+        Tue, 23 Aug 2022 01:55:40 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 19B126155E;
-        Tue, 23 Aug 2022 08:55:31 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2455BC433C1;
-        Tue, 23 Aug 2022 08:55:29 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id EE8DB6155E;
+        Tue, 23 Aug 2022 08:55:39 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 03619C433D6;
+        Tue, 23 Aug 2022 08:55:38 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661244930;
-        bh=yx3F4GWmfbblmgPgIsm34N4nZ3rzz+7Tif+D4H6tSck=;
+        s=korg; t=1661244939;
+        bh=9krYIMZkWByFYm0Z2MCMjTdo/cKY77hHZASSi3Elm3k=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=V9HygLq8Zg1xlIekN1N741nqHfKBoNC1KYZMbW8m+MzYQdQIlrfQV5N0dKJDtTgSl
-         1oK/YU6rljiTXvCYpdi7pIKuVGN/A7bWwGCUmudKDI7h0GPEdexXo4us4FcZ4qdLYt
-         8wrFqsfKI2Am2ak2dj4xC105G5WIGKoS5VC/Nnqk=
+        b=D/NJ5qw/4jaMtaLSXA4dotY5kXfoCsmtOEE/KY+7w6+CsO9WchRO7Tu5azfEbXzoI
+         0Tk6bglQGev9mkheWPCvWcNQu872+O+gM6g9Hpl40/Mdakn4Q8FqhfdquBpO7pDcwr
+         SGg7FEr8jY38BACMcqyQahActd0pPHEyfbtB2EAA=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Marc Zyngier <maz@kernel.org>,
-        Sai Prakash Ranjan <quic_saipraka@quicinc.com>,
-        Arnd Bergmann <arnd@arndb.de>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.14 213/229] irqchip/tegra: Fix overflow implicit truncation warnings
-Date:   Tue, 23 Aug 2022 10:26:14 +0200
-Message-Id: <20220823080101.247244113@linuxfoundation.org>
+        stable@vger.kernel.org, Liang He <windhl@126.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 175/244] usb: renesas: Fix refcount leak bug
+Date:   Tue, 23 Aug 2022 10:25:34 +0200
+Message-Id: <20220823080105.129109668@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220823080053.202747790@linuxfoundation.org>
-References: <20220823080053.202747790@linuxfoundation.org>
+In-Reply-To: <20220823080059.091088642@linuxfoundation.org>
+References: <20220823080059.091088642@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -50,71 +49,37 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Sai Prakash Ranjan <quic_saipraka@quicinc.com>
+From: Liang He <windhl@126.com>
 
-[ Upstream commit 443685992bda9bb4f8b17fc02c9f6c60e62b1461 ]
+[ Upstream commit 9d6d5303c39b8bc182475b22f45504106a07f086 ]
 
-Fix -Woverflow warnings for tegra irqchip driver which is a result
-of moving arm64 custom MMIO accessor macros to asm-generic function
-implementations giving a bonus type-checking now and uncovering these
-overflow warnings.
+In usbhs_rza1_hardware_init(), of_find_node_by_name() will return
+a node pointer with refcount incremented. We should use of_node_put()
+when it is not used anymore.
 
-drivers/irqchip/irq-tegra.c: In function ‘tegra_ictlr_suspend’:
-drivers/irqchip/irq-tegra.c:151:18: warning: large integer implicitly truncated to unsigned type [-Woverflow]
-   writel_relaxed(~0ul, ictlr + ICTLR_COP_IER_CLR);
-                  ^
-
-Suggested-by: Marc Zyngier <maz@kernel.org>
-Signed-off-by: Sai Prakash Ranjan <quic_saipraka@quicinc.com>
-Reviewed-by: Arnd Bergmann <arnd@arndb.de>
-Cc: Marc Zyngier <maz@kernel.org>
-Signed-off-by: Arnd Bergmann <arnd@arndb.de>
+Signed-off-by: Liang He <windhl@126.com>
+Link: https://lore.kernel.org/r/20220618023205.4056548-1-windhl@126.com
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/irqchip/irq-tegra.c | 10 +++++-----
- 1 file changed, 5 insertions(+), 5 deletions(-)
+ drivers/usb/renesas_usbhs/rza.c | 4 ++++
+ 1 file changed, 4 insertions(+)
 
-diff --git a/drivers/irqchip/irq-tegra.c b/drivers/irqchip/irq-tegra.c
-index 0abc0cd1c32e..1b3048ecb600 100644
---- a/drivers/irqchip/irq-tegra.c
-+++ b/drivers/irqchip/irq-tegra.c
-@@ -157,10 +157,10 @@ static int tegra_ictlr_suspend(void)
- 		lic->cop_iep[i] = readl_relaxed(ictlr + ICTLR_COP_IEP_CLASS);
- 
- 		/* Disable COP interrupts */
--		writel_relaxed(~0ul, ictlr + ICTLR_COP_IER_CLR);
-+		writel_relaxed(GENMASK(31, 0), ictlr + ICTLR_COP_IER_CLR);
- 
- 		/* Disable CPU interrupts */
--		writel_relaxed(~0ul, ictlr + ICTLR_CPU_IER_CLR);
-+		writel_relaxed(GENMASK(31, 0), ictlr + ICTLR_CPU_IER_CLR);
- 
- 		/* Enable the wakeup sources of ictlr */
- 		writel_relaxed(lic->ictlr_wake_mask[i], ictlr + ICTLR_CPU_IER_SET);
-@@ -181,12 +181,12 @@ static void tegra_ictlr_resume(void)
- 
- 		writel_relaxed(lic->cpu_iep[i],
- 			       ictlr + ICTLR_CPU_IEP_CLASS);
--		writel_relaxed(~0ul, ictlr + ICTLR_CPU_IER_CLR);
-+		writel_relaxed(GENMASK(31, 0), ictlr + ICTLR_CPU_IER_CLR);
- 		writel_relaxed(lic->cpu_ier[i],
- 			       ictlr + ICTLR_CPU_IER_SET);
- 		writel_relaxed(lic->cop_iep[i],
- 			       ictlr + ICTLR_COP_IEP_CLASS);
--		writel_relaxed(~0ul, ictlr + ICTLR_COP_IER_CLR);
-+		writel_relaxed(GENMASK(31, 0), ictlr + ICTLR_COP_IER_CLR);
- 		writel_relaxed(lic->cop_ier[i],
- 			       ictlr + ICTLR_COP_IER_SET);
- 	}
-@@ -321,7 +321,7 @@ static int __init tegra_ictlr_init(struct device_node *node,
- 		lic->base[i] = base;
- 
- 		/* Disable all interrupts */
--		writel_relaxed(~0UL, base + ICTLR_CPU_IER_CLR);
-+		writel_relaxed(GENMASK(31, 0), base + ICTLR_CPU_IER_CLR);
- 		/* All interrupts target IRQ */
- 		writel_relaxed(0, base + ICTLR_CPU_IEP_CLASS);
- 
+diff --git a/drivers/usb/renesas_usbhs/rza.c b/drivers/usb/renesas_usbhs/rza.c
+index 24de64edb674..2d77edefb4b3 100644
+--- a/drivers/usb/renesas_usbhs/rza.c
++++ b/drivers/usb/renesas_usbhs/rza.c
+@@ -23,6 +23,10 @@ static int usbhs_rza1_hardware_init(struct platform_device *pdev)
+ 	extal_clk = of_find_node_by_name(NULL, "extal");
+ 	of_property_read_u32(usb_x1_clk, "clock-frequency", &freq_usb);
+ 	of_property_read_u32(extal_clk, "clock-frequency", &freq_extal);
++
++	of_node_put(usb_x1_clk);
++	of_node_put(extal_clk);
++
+ 	if (freq_usb == 0) {
+ 		if (freq_extal == 12000000) {
+ 			/* Select 12MHz XTAL */
 -- 
 2.35.1
 
