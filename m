@@ -2,43 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 99FC9C32774
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 08:40:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BB8AFC32772
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 08:40:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345848AbiHWIkQ (ORCPT
+        id S1346178AbiHWIkU (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 04:40:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46538 "EHLO
+        Tue, 23 Aug 2022 04:40:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46582 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344741AbiHWIjn (ORCPT
+        with ESMTP id S1345873AbiHWIjo (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 04:39:43 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3999B1401D;
+        Tue, 23 Aug 2022 04:39:44 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3977F14016;
         Tue, 23 Aug 2022 01:18:31 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 3E830B81C4B;
-        Tue, 23 Aug 2022 08:18:31 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9717AC433D6;
-        Tue, 23 Aug 2022 08:18:29 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 46C40B81C48;
+        Tue, 23 Aug 2022 08:17:42 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 87CBFC4314D;
+        Tue, 23 Aug 2022 08:17:40 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661242710;
-        bh=Ifo1c328SdBt/vUETtDn0Qt+M/Wj0wNycavFs6K4Gsg=;
+        s=korg; t=1661242660;
+        bh=lzzDnu9ep7+cqxHP4yyCabn1tT37/GrAU7qmCUqISIc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=OZ6WmJ9mb5UBfWG52VubvB8BUJa1mWYplOre6htbpzUj5LomEnexdazW5q9pBrpgx
-         svuDw3H9E32aahlcRroL/0SSOIUlW3QQYyi0AuLG4wh2hFbgyQPvbcxMc0tFisqJfl
-         20AF0MN1c70USZE+ZCKR4VhA9PcoFyasv7V5GVQs=
+        b=f2LkzkHXrGXZxBXQb68qY4KuUBx5v04Ruih/UQyZL3bCysHYSw90++Apz97MWtBBn
+         nh1vmW7dyFKrkkTMRO3/v51JFZ/3EYH5CLbW9a/lD13IOWfAEWLEgdkh4BjCimOjV0
+         7XWsSrmBzq3vkOmo8hDhRFu/QtImWfrhscJVNShg=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Takashi Iwai <tiwai@suse.de>,
-        Cezary Rojewski <cezary.rojewski@intel.com>,
-        Mark Brown <broonie@kernel.org>
-Subject: [PATCH 5.19 176/365] ASoC: Intel: avs: Fix potential buffer overflow by snprintf()
-Date:   Tue, 23 Aug 2022 10:01:17 +0200
-Message-Id: <20220823080125.576859163@linuxfoundation.org>
+        stable@vger.kernel.org, Adrian Hunter <adrian.hunter@intel.com>,
+        Ian Rogers <irogers@google.com>,
+        Jin Yao <yao.jin@linux.intel.com>,
+        Jiri Olsa <jolsa@kernel.org>,
+        Namhyung Kim <namhyung@kernel.org>,
+        Arnaldo Carvalho de Melo <acme@redhat.com>
+Subject: [PATCH 5.19 157/365] perf parse-events: Fix segfault when event parser gets an error
+Date:   Tue, 23 Aug 2022 10:00:58 +0200
+Message-Id: <20220823080124.797045620@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220823080118.128342613@linuxfoundation.org>
 References: <20220823080118.128342613@linuxfoundation.org>
@@ -50,39 +53,57 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Takashi Iwai <tiwai@suse.de>
+From: Adrian Hunter <adrian.hunter@intel.com>
 
-commit ca3b7b9dc9bc1fa552f4697b7cccfa0258a44d00 upstream.
+commit 2e828582b81f5bc76a4fe8e7812df259ab208302 upstream.
 
-snprintf() returns the would-be-filled size when the string overflows
-the given buffer size, hence using this value may result in a buffer
-overflow (although it's unrealistic).
+parse_events() is often called with parse_events_error set to NULL.
+Make parse_events_error__handle() not segfault in that case.
 
-This patch replaces it with a safer version, scnprintf() for papering
-over such a potential issue.
+A subsequent patch changes to avoid passing NULL in the first place.
 
-Fixes: f1b3b320bd65 ("ASoC: Intel: avs: Generic soc component driver")
-Signed-off-by: Takashi Iwai <tiwai@suse.de>
-Acked-by: Cezary Rojewski <cezary.rojewski@intel.com>
-Link: https://lore.kernel.org/r/20220801165420.25978-2-tiwai@suse.de
-Signed-off-by: Mark Brown <broonie@kernel.org>
+Fixes: 43eb05d066795bdf ("perf tests: Support 'Track with sched_switch' test for hybrid")
+Signed-off-by: Adrian Hunter <adrian.hunter@intel.com>
+Cc: Ian Rogers <irogers@google.com>
+Cc: Jin Yao <yao.jin@linux.intel.com>
+Cc: Jiri Olsa <jolsa@kernel.org>
+Cc: Namhyung Kim <namhyung@kernel.org>
+Link: https://lore.kernel.org/r/20220809080702.6921-2-adrian.hunter@intel.com
+Signed-off-by: Arnaldo Carvalho de Melo <acme@redhat.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- sound/soc/intel/avs/pcm.c |    4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ tools/perf/util/parse-events.c |   14 +++++++++++---
+ 1 file changed, 11 insertions(+), 3 deletions(-)
 
---- a/sound/soc/intel/avs/pcm.c
-+++ b/sound/soc/intel/avs/pcm.c
-@@ -636,8 +636,8 @@ static ssize_t topology_name_read(struct
- 	char buf[64];
- 	size_t len;
- 
--	len = snprintf(buf, sizeof(buf), "%s/%s\n", component->driver->topology_name_prefix,
--		       mach->tplg_filename);
-+	len = scnprintf(buf, sizeof(buf), "%s/%s\n", component->driver->topology_name_prefix,
-+			mach->tplg_filename);
- 
- 	return simple_read_from_buffer(user_buf, count, ppos, buf, len);
+--- a/tools/perf/util/parse-events.c
++++ b/tools/perf/util/parse-events.c
+@@ -2391,9 +2391,12 @@ void parse_events_error__exit(struct par
+ void parse_events_error__handle(struct parse_events_error *err, int idx,
+ 				char *str, char *help)
+ {
+-	if (WARN(!str, "WARNING: failed to provide error string\n")) {
+-		free(help);
+-		return;
++	if (WARN(!str, "WARNING: failed to provide error string\n"))
++		goto out_free;
++	if (!err) {
++		/* Assume caller does not want message printed */
++		pr_debug("event syntax error: %s\n", str);
++		goto out_free;
+ 	}
+ 	switch (err->num_errors) {
+ 	case 0:
+@@ -2419,6 +2422,11 @@ void parse_events_error__handle(struct p
+ 		break;
+ 	}
+ 	err->num_errors++;
++	return;
++
++out_free:
++	free(str);
++	free(help);
  }
+ 
+ #define MAX_WIDTH 1000
 
 
