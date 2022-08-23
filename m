@@ -2,45 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 25BEFC32772
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 09:23:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9EF83C32772
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 09:23:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239218AbiHWJW7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 05:22:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35192 "EHLO
+        id S1349527AbiHWJXH (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 23 Aug 2022 05:23:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40132 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350315AbiHWJVl (ORCPT
+        with ESMTP id S1350121AbiHWJV3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 05:21:41 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4CFF88D3C5;
-        Tue, 23 Aug 2022 01:34:41 -0700 (PDT)
+        Tue, 23 Aug 2022 05:21:29 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 181D78B9B4;
+        Tue, 23 Aug 2022 01:34:23 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id F3B0F614C5;
-        Tue, 23 Aug 2022 08:33:12 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E395FC433C1;
-        Tue, 23 Aug 2022 08:33:11 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 0E6A0B81C1B;
+        Tue, 23 Aug 2022 08:33:04 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 31760C43141;
+        Tue, 23 Aug 2022 08:33:01 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661243592;
-        bh=KbyObKk7cSByvvXNFKtPxO7zqzi0cCyZ20ssVNoXFdQ=;
+        s=korg; t=1661243582;
+        bh=PF8SufQ7tmxL2pVFNfXHYqLarhxmKG0VFpQoYTmqd98=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=NVZo5BgAgalAZtFPUOhQMX8cUA1j4p7qbmgukDNareRa7mZ0AiNHL19NxQerqT06S
-         zbs8K3VquBzYmSogO+RT/Gfp+uunHiVvCeliEpkjaoY6yuEGzIvaSm55SK3FFFUgFC
-         yq7VKRb5p1EAibvdSiVBRduYEgK6V6lzBPBfKQi8=
+        b=LwFNWLryWGdMFSqfbk0o50/kCG+mIhL7QOUAEQUcHQda/mvJZfhIIoUjj3yk1NV9F
+         zyh3v4ie3yWdjbxOBDSDdbrW07Bg7dUCSDK2N/xG5wxg1xuMvQg2M65wpqTx8VjU+x
+         WLgGSB7H38s/sGLchSoa3K3FrFtCNHqCWTirz1JA=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        =?UTF-8?q?Amadeusz=20S=C5=82awi=C5=84ski?= 
-        <amadeuszx.slawinski@linux.intel.com>,
-        Cezary Rojewski <cezary.rojewski@intel.com>,
-        Mark Brown <broonie@kernel.org>,
+        stable@vger.kernel.org, Schspa Shi <schspa@gmail.com>,
+        Cornelia Huck <cohuck@redhat.com>,
+        Alex Williamson <alex.williamson@redhat.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.19 325/365] ASoC: Intel: avs: Set max DMA segment size
-Date:   Tue, 23 Aug 2022 10:03:46 +0200
-Message-Id: <20220823080131.771177793@linuxfoundation.org>
+Subject: [PATCH 5.19 322/365] vfio: Clear the caps->buf to NULL after free
+Date:   Tue, 23 Aug 2022 10:03:43 +0200
+Message-Id: <20220823080131.650582945@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220823080118.128342613@linuxfoundation.org>
 References: <20220823080118.128342613@linuxfoundation.org>
@@ -52,38 +51,36 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Amadeusz Sławiński <amadeuszx.slawinski@linux.intel.com>
+From: Schspa Shi <schspa@gmail.com>
 
-[ Upstream commit 8544eebc78c96f1834a46b26ade3e7ebe785d10c ]
+[ Upstream commit 6641085e8d7b3f061911517f79a2a15a0a21b97b ]
 
-Apparently it is possible for code to allocate large buffers which may
-cause warnings as reported in [1]. This was fixed for HDA, SOF and
-skylake in patchset [2], fix it also for avs driver.
+On buffer resize failure, vfio_info_cap_add() will free the buffer,
+report zero for the size, and return -ENOMEM.  As additional
+hardening, also clear the buffer pointer to prevent any chance of a
+double free.
 
-[1] https://github.com/thesofproject/linux/issues/3430
-[2] https://lore.kernel.org/all/20220215132756.31236-1-tiwai@suse.de/
-
-Signed-off-by: Amadeusz Sławiński <amadeuszx.slawinski@linux.intel.com>
-Signed-off-by: Cezary Rojewski <cezary.rojewski@intel.com>
-Link: https://lore.kernel.org/r/20220707124153.1858249-8-cezary.rojewski@intel.com
-Signed-off-by: Mark Brown <broonie@kernel.org>
+Signed-off-by: Schspa Shi <schspa@gmail.com>
+Reviewed-by: Cornelia Huck <cohuck@redhat.com>
+Link: https://lore.kernel.org/r/20220629022948.55608-1-schspa@gmail.com
+Signed-off-by: Alex Williamson <alex.williamson@redhat.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- sound/soc/intel/avs/core.c | 1 +
+ drivers/vfio/vfio.c | 1 +
  1 file changed, 1 insertion(+)
 
-diff --git a/sound/soc/intel/avs/core.c b/sound/soc/intel/avs/core.c
-index 3a0997c3af2b..cf373969bb69 100644
---- a/sound/soc/intel/avs/core.c
-+++ b/sound/soc/intel/avs/core.c
-@@ -445,6 +445,7 @@ static int avs_pci_probe(struct pci_dev *pci, const struct pci_device_id *id)
- 		dma_set_mask(dev, DMA_BIT_MASK(32));
- 		dma_set_coherent_mask(dev, DMA_BIT_MASK(32));
+diff --git a/drivers/vfio/vfio.c b/drivers/vfio/vfio.c
+index 18fc0916587e..277cd1152dd8 100644
+--- a/drivers/vfio/vfio.c
++++ b/drivers/vfio/vfio.c
+@@ -1814,6 +1814,7 @@ struct vfio_info_cap_header *vfio_info_cap_add(struct vfio_info_cap *caps,
+ 	buf = krealloc(caps->buf, caps->size + size, GFP_KERNEL);
+ 	if (!buf) {
+ 		kfree(caps->buf);
++		caps->buf = NULL;
+ 		caps->size = 0;
+ 		return ERR_PTR(-ENOMEM);
  	}
-+	dma_set_max_seg_size(dev, UINT_MAX);
- 
- 	ret = avs_hdac_bus_init_streams(bus);
- 	if (ret < 0) {
 -- 
 2.35.1
 
