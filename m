@@ -2,117 +2,164 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 48F92C32772
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 16:21:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7758FC32789
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 16:22:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243746AbiHWQVf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 12:21:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35424 "EHLO
+        id S243378AbiHWQWz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 23 Aug 2022 12:22:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38354 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244692AbiHWQVO (ORCPT
+        with ESMTP id S244396AbiHWQWf (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 12:21:14 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8DBA6109745;
-        Tue, 23 Aug 2022 05:41:21 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 89764B81D49;
-        Tue, 23 Aug 2022 12:41:19 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 09BBCC433C1;
-        Tue, 23 Aug 2022 12:41:18 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1661258478;
-        bh=naPVwxGYbOYYyYosNtCVBq58s8P4rzIXiMSSJRznwe4=;
-        h=From:To:Cc:Subject:Date:From;
-        b=R7FTOCr4h1JoaCkrMlZ9fqNUP3DfBay71sLq1XvZQ3NUewTcilIU/xqvj/Yr7/oXq
-         VqnpWWspTB5+3rgdeFPA5PzjcWn+8fLKxOgxJUbKJ3AQdupRTyqtjTHHgAjArTrPNH
-         UyKB3R9E27+q2I/FosGXGN5sNKneM7B/K7OmtXR15zefZ/oeUYQO5wtDf3B6Iy3FkM
-         oUiWyRYkYyuUw0wCnjLb0FMpUUjyETTsgSOCNvg/ZgDZJqz7MoWff2qApOzanQrCLI
-         4EKPiWZFdb0fSKL7dc5hm2YIezxSXaO+m/MjhrejYIV7iHgfoYgW+Zy6xBw4u1Cnqq
-         jG+LieKNP7o4w==
-Received: from johan by xi.lan with local (Exim 4.94.2)
-        (envelope-from <johan+linaro@kernel.org>)
-        id 1oQTDZ-0003ob-KH; Tue, 23 Aug 2022 14:41:18 +0200
-From:   Johan Hovold <johan+linaro@kernel.org>
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Felipe Balbi <balbi@kernel.org>
-Cc:     Matthias Kaehlcke <mka@chromium.org>,
-        Andy Gross <agross@kernel.org>,
-        Bjorn Andersson <andersson@kernel.org>,
-        Konrad Dybcio <konrad.dybcio@somainline.org>,
-        Krishna Kurapati <quic_kriskura@quicinc.com>,
-        Pavankumar Kondeti <quic_pkondeti@quicinc.com>,
-        linux-arm-msm@vger.kernel.org, linux-usb@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        Johan Hovold <johan+linaro@kernel.org>
-Subject: [PATCH] usb: dwc3: keep PHYs disabled during suspend
-Date:   Tue, 23 Aug 2022 14:40:47 +0200
-Message-Id: <20220823124047.14634-1-johan+linaro@kernel.org>
-X-Mailer: git-send-email 2.35.1
+        Tue, 23 Aug 2022 12:22:35 -0400
+Received: from mail-lj1-x22d.google.com (mail-lj1-x22d.google.com [IPv6:2a00:1450:4864:20::22d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7839014F6EB
+        for <linux-kernel@vger.kernel.org>; Tue, 23 Aug 2022 05:46:35 -0700 (PDT)
+Received: by mail-lj1-x22d.google.com with SMTP id q18so12383698ljg.12
+        for <linux-kernel@vger.kernel.org>; Tue, 23 Aug 2022 05:46:35 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc;
+        bh=7vkbXTvEIxbamOzsPAlGZ18SKerzAATRGx48coFp9Wg=;
+        b=l5rKdPLdrKNmWz0BuIx5srFeLQYtPJCncEBzmf732FKCQHG1Tc2h5SoAWxHbFwRWqw
+         V6gAvZKEe6vcz0E2JCvMSKBfJWQ56xD/lib/nApBuoYRpYtQqIHYrD2HHFbewsIKhgX2
+         ezOgZLmABxQd2gdesxFpeXIxq37TxapUObiaB4/R9AB0gtJ/iNoqSkof+JI84ihhiR6A
+         A+Cj3Y194a+cs9HBaY1VoGvLA0ls4wvHQFz+oECN3JZ8yx/fcsS8zi2Sv/FcsP8C1XSd
+         d/Hrgv16iUHPBapIlIJbjEvueUfb3BVYG1lQzNwHNNe11okQDh2ellT1XY73dHmlzr7h
+         g05g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc;
+        bh=7vkbXTvEIxbamOzsPAlGZ18SKerzAATRGx48coFp9Wg=;
+        b=O0lrF7iZSYGCyMJx5mATZJM8++blOloUfek+vr8wK5fHqYlRhLmG2TKBGzPpqEi+lS
+         ZpybGhnfLNjd7GZribh9FsmJsf/Epd5brPz3a8bMknXO3qqtzJpnNslHaQg8YO7Er3oH
+         G4IpSYOUm0Jnw1FHi6w2HVwaq6sKW/nAIdtyLtt9G2nM9DLFauxn+FLRXhZwKp2P71TO
+         LFTJiXCyp4zQ0qwWjnqNM3LTTB3aenhjclYhH4IIOp6iCZB3rtvpM0x7vhghfL6Id95K
+         zLqTRrUV1aXGZeBRz5bf98b6sK0+sk2jb3hsffmQeaQ/WYqpGbSMKh384kk0jpDXijlB
+         gkJg==
+X-Gm-Message-State: ACgBeo23znv2Jyfs0RMdJ2xHcu05bRG2xcy9cazD62sHw1xSzplD2PgY
+        M39NaDesmPTakBGye1lcBpzwAA==
+X-Google-Smtp-Source: AA6agR5SszPK3XHuOtFzT/k6vG6kVjVdUaiPFlhBDCHwPoFxRVvMVwXQz0HMrHgJlmvjrajPesHbTw==
+X-Received: by 2002:a2e:a552:0:b0:25e:6fa1:a6c4 with SMTP id e18-20020a2ea552000000b0025e6fa1a6c4mr6557211ljn.90.1661258793251;
+        Tue, 23 Aug 2022 05:46:33 -0700 (PDT)
+Received: from [192.168.0.11] (89-27-92-210.bb.dnainternet.fi. [89.27.92.210])
+        by smtp.gmail.com with ESMTPSA id h16-20020a2e5310000000b0025e5cd1620fsm2355736ljb.57.2022.08.23.05.46.32
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 23 Aug 2022 05:46:32 -0700 (PDT)
+Message-ID: <52fa28d6-4d48-bd0c-40e6-4f8855c4eac8@linaro.org>
+Date:   Tue, 23 Aug 2022 15:46:31 +0300
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.12.0
+Subject: Re: [PATCH v2 1/2] dt-bindings: edac: Add bindings for Xilinx ZynqMP
+ OCM
+Content-Language: en-US
+To:     Sai Krishna Potthuri <sai.krishna.potthuri@amd.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Michal Simek <michal.simek@xilinx.com>,
+        Borislav Petkov <bp@alien8.de>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Tony Luck <tony.luck@intel.com>,
+        James Morse <james.morse@arm.com>,
+        Robert Richter <rric@kernel.org>
+Cc:     devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-kernel@vger.kernel.org, linux-edac@vger.kernel.org,
+        saikrishna12468@gmail.com, git@amd.com,
+        Shubhrajyoti Datta <shubhrajyoti.datta@xilinx.com>
+References: <20220822115821.3907-1-sai.krishna.potthuri@amd.com>
+ <20220822115821.3907-2-sai.krishna.potthuri@amd.com>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+In-Reply-To: <20220822115821.3907-2-sai.krishna.potthuri@amd.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Commit 649f5c842ba3 ("usb: dwc3: core: Host wake up support from system
-suspend") started leaving the PHYs enabled during suspend for
-wakeup-capable controllers even though it turns out this had nothing to
-do with wakeup.
+On 22/08/2022 14:58, Sai Krishna Potthuri wrote:
+> From: Shubhrajyoti Datta <shubhrajyoti.datta@xilinx.com>
+> 
+> Add bindings for Xilinx ZynqMP OCM controller.
+> 
+> Signed-off-by: Shubhrajyoti Datta <shubhrajyoti.datta@xilinx.com>
+> Signed-off-by: Sai Krishna Potthuri <sai.krishna.potthuri@amd.com>
+> ---
+>  .../bindings/edac/xlnx,zynqmp-ocmc.yaml       | 45 +++++++++++++++++++
+>  1 file changed, 45 insertions(+)
+>  create mode 100644 Documentation/devicetree/bindings/edac/xlnx,zynqmp-ocmc.yaml
+> 
+> diff --git a/Documentation/devicetree/bindings/edac/xlnx,zynqmp-ocmc.yaml b/Documentation/devicetree/bindings/edac/xlnx,zynqmp-ocmc.yaml
+> new file mode 100644
+> index 000000000000..6389fcb7ed69
+> --- /dev/null
+> +++ b/Documentation/devicetree/bindings/edac/xlnx,zynqmp-ocmc.yaml
+> @@ -0,0 +1,45 @@
+> +# SPDX-License-Identifier: (GPL-2.0 OR BSD-2-Clause)
+> +%YAML 1.2
+> +---
+> +$id: http://devicetree.org/schemas/edac/xlnx,zynqmp-ocmc.yaml#
 
-Rather, the wakeup capability flag was (ab-)used as a proxy to configure
-the suspend behaviour in an attempt to reduce power leakage on some
-platforms.
+Filename should be based on compatible, so xlnx,zynqmp-ocmc-1.0.yaml
 
-Stop abusing the wakeup configuration and restore the 5.19 behaviour of
-keeping the PHYs powered off during suspend. If needed, a dedicated
-mechanism for configuring the PHY power state during suspend can be
-added later.
+> +$schema: http://devicetree.org/meta-schemas/core.yaml#
+> +
+> +title: Xilinx Zynqmp OCM(On-Chip Memory) Controller
 
-Fixes: 649f5c842ba3 ("usb: dwc3: core: Host wake up support from system suspend")
-Link: https://lore.kernel.org/r/Yuv7AM/5jtO/pgcm@google.com
-Signed-off-by: Johan Hovold <johan+linaro@kernel.org>
----
- drivers/usb/dwc3/core.c      | 4 ++--
- drivers/usb/dwc3/dwc3-qcom.c | 1 -
- 2 files changed, 2 insertions(+), 3 deletions(-)
+So this is a memory controller, then please put the bindings in the
+memory-controllers directory.
 
-diff --git a/drivers/usb/dwc3/core.c b/drivers/usb/dwc3/core.c
-index 8c8e32651473..0cdb6be720e1 100644
---- a/drivers/usb/dwc3/core.c
-+++ b/drivers/usb/dwc3/core.c
-@@ -1983,7 +1983,7 @@ static int dwc3_suspend_common(struct dwc3 *dwc, pm_message_t msg)
- 		dwc3_core_exit(dwc);
- 		break;
- 	case DWC3_GCTL_PRTCAP_HOST:
--		if (!PMSG_IS_AUTO(msg) && !device_may_wakeup(dwc->dev)) {
-+		if (!PMSG_IS_AUTO(msg)) {
- 			dwc3_core_exit(dwc);
- 			break;
- 		}
-@@ -2044,7 +2044,7 @@ static int dwc3_resume_common(struct dwc3 *dwc, pm_message_t msg)
- 		spin_unlock_irqrestore(&dwc->lock, flags);
- 		break;
- 	case DWC3_GCTL_PRTCAP_HOST:
--		if (!PMSG_IS_AUTO(msg) && !device_may_wakeup(dwc->dev)) {
-+		if (!PMSG_IS_AUTO(msg)) {
- 			ret = dwc3_core_init_for_resume(dwc);
- 			if (ret)
- 				return ret;
-diff --git a/drivers/usb/dwc3/dwc3-qcom.c b/drivers/usb/dwc3/dwc3-qcom.c
-index 9a94b1ab8f7a..9995395baa12 100644
---- a/drivers/usb/dwc3/dwc3-qcom.c
-+++ b/drivers/usb/dwc3/dwc3-qcom.c
-@@ -904,7 +904,6 @@ static int dwc3_qcom_probe(struct platform_device *pdev)
- 
- 	wakeup_source = of_property_read_bool(dev->of_node, "wakeup-source");
- 	device_init_wakeup(&pdev->dev, wakeup_source);
--	device_init_wakeup(&qcom->dwc3->dev, wakeup_source);
- 
- 	qcom->is_suspended = false;
- 	pm_runtime_set_active(dev);
--- 
-2.35.1
+> +
+> +maintainers:
+> +  - Shubhrajyoti Datta <shubhrajyoti.datta@amd.com>
+> +  - Sai Krishna Potthuri <sai.krishna.potthuri@amd.com>
+> +
+> +description: |
+> +  The OCM supports 64-bit wide ECC functionality to detect multi-bit errors
+> +  and recover from a single-bit memory fault.On a write, if all bytes are
+> +  being written, the ECC is generated and written into the ECC RAM along with
+> +  the write-data that is written into the data RAM. If one or more bytes are
+> +  not written, then the read operation results in an correctable error or
+> +  uncorrectable error.
+> +
+> +properties:
+> +  compatible:
+> +    const: xlnx,zynqmp-ocmc-1.0
+> +
+> +  reg:
+> +    maxItems: 1
+> +
+> +  interrupts:
+> +    maxItems: 1
+> +
+> +required:
+> +  - compatible
+> +  - reg
+> +  - interrupts
+> +
+> +unevaluatedProperties: false
 
+Instead this should be:
+additionalProperties: false
+
+> +
+> +examples:
+> +  - |
+> +    #include <dt-bindings/interrupt-controller/irq.h>
+> +    memory-controller@ff960000 {
+> +      compatible = "xlnx,zynqmp-ocmc-1.0";
+> +      reg = <0xff960000 0x1000>;
+> +      interrupts = <0 10 IRQ_TYPE_LEVEL_HIGH>;
+
+What does 0 stand for? I commented about it already.
+
+
+> +    };
+
+
+Best regards,
+Krzysztof
