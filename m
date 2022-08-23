@@ -2,46 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BC703C32793
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 08:36:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DA589C3F6B0
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 08:37:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345500AbiHWIfp (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 04:35:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59990 "EHLO
+        id S242041AbiHWIg5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 23 Aug 2022 04:36:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33054 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344319AbiHWIcY (ORCPT
+        with ESMTP id S243960AbiHWIdG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 04:32:24 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8C50167175;
-        Tue, 23 Aug 2022 01:16:33 -0700 (PDT)
+        Tue, 23 Aug 2022 04:33:06 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 285707549E;
+        Tue, 23 Aug 2022 01:16:38 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 7A26361228;
-        Tue, 23 Aug 2022 08:15:48 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 86DBEC433D6;
-        Tue, 23 Aug 2022 08:15:47 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id E56F1B81C35;
+        Tue, 23 Aug 2022 08:15:57 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 24A38C433C1;
+        Tue, 23 Aug 2022 08:15:55 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661242547;
-        bh=NoLqcpS0ng+Lbg3o1rbtMkbo2kGPL0fu1NrGMr0k/Mk=;
+        s=korg; t=1661242556;
+        bh=WmoV+L1N+fDk24WcvLpFK8jLFwah7J6ezwwEFkIDOR4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=OGSg/mWYz5OgZM1cBgjQF9rXh2JteRQrGUL9euce9MfVQcJ7TnKTMWWyCx5B5sqA3
-         dk5toUCpO/rjIkscaVTsDJEXCwC7F6RiYl20Lci3ofQPrUg1uleP8J1na1QQx1IGKC
-         +M3x7LyLCNHIl2KQa/tatee6HMNP23T+aFGoYHco=
+        b=xIrHQ1NhuIZzPdrbb3CPJ/U71bMMeLaE6bavDRutZEsXYnmqwvjSOSFzFRhG6YGbQ
+         XH/0WatCncPSG0MYd8MBPp5+OiShCcOIoBE5VDWgECITYo3aOL+nROdPrDLB1gTUg9
+         tNch3g37FHfUDLN02bdE88Y4DEhAVk4WHEsq8+lI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Bryan ODonoghue <bryan.odonoghue@linaro.org>,
-        Viresh Kumar <viresh.kumar@linaro.org>
-Subject: [PATCH 5.19 135/365] dt-bindings: opp: opp-v2-kryo-cpu: Fix example binding checks
-Date:   Tue, 23 Aug 2022 10:00:36 +0200
-Message-Id: <20220823080123.850327587@linuxfoundation.org>
+        stable@vger.kernel.org, Wentao_Liang <Wentao_Liang_g@163.com>,
+        Song Liu <song@kernel.org>, Jens Axboe <axboe@kernel.dk>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 4.9 091/101] drivers:md:fix a potential use-after-free bug
+Date:   Tue, 23 Aug 2022 10:04:04 +0200
+Message-Id: <20220823080038.031410756@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220823080118.128342613@linuxfoundation.org>
-References: <20220823080118.128342613@linuxfoundation.org>
+In-Reply-To: <20220823080034.579196046@linuxfoundation.org>
+References: <20220823080034.579196046@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -50,119 +49,44 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Bryan O'Donoghue <bryan.odonoghue@linaro.org>
+From: Wentao_Liang <Wentao_Liang_g@163.com>
 
-commit 3b4916a6e422394aa129fe9b204f4d489ae484a6 upstream.
+[ Upstream commit 104212471b1c1817b311771d817fb692af983173 ]
 
-Adding missing compat entries to the cpufreq node
-Documentation/devicetree/bindings/cpufreq/qcom-cpufreq-nvmem.yaml shows up
-a dt_binding_check in this file.
+In line 2884, "raid5_release_stripe(sh);" drops the reference to sh and
+may cause sh to be released. However, sh is subsequently used in lines
+2886 "if (sh->batch_head && sh != sh->batch_head)". This may result in an
+use-after-free bug.
 
-opp-v2-kryo-cpu.example.dtb: /: cpus:cpu@0: 'power-domains' is a required property
-opp-v2-kryo-cpu.example.dtb: /: cpus:cpu@0: 'power-domain-names' is a required property
-opp-v2-kryo-cpu.example.dtb: /: opp-table-0:opp-307200000: 'required-opps' is a required property
+It can be fixed by moving "raid5_release_stripe(sh);" to the bottom of
+the function.
 
-Fixes: ec24d1d55469 ("dt-bindings: opp: Convert qcom-nvmem-cpufreq to DT schema")
-Signed-off-by: Bryan O'Donoghue <bryan.odonoghue@linaro.org>
-Signed-off-by: Viresh Kumar <viresh.kumar@linaro.org>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Wentao_Liang <Wentao_Liang_g@163.com>
+Signed-off-by: Song Liu <song@kernel.org>
+Signed-off-by: Jens Axboe <axboe@kernel.dk>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- .../devicetree/bindings/opp/opp-v2-kryo-cpu.yaml  | 15 +++++++++++++++
- 1 file changed, 15 insertions(+)
+ drivers/md/raid5.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/Documentation/devicetree/bindings/opp/opp-v2-kryo-cpu.yaml b/Documentation/devicetree/bindings/opp/opp-v2-kryo-cpu.yaml
-index 30f7b596d609..59663e897dae 100644
---- a/Documentation/devicetree/bindings/opp/opp-v2-kryo-cpu.yaml
-+++ b/Documentation/devicetree/bindings/opp/opp-v2-kryo-cpu.yaml
-@@ -98,6 +98,8 @@ examples:
-                 capacity-dmips-mhz = <1024>;
-                 clocks = <&kryocc 0>;
-                 operating-points-v2 = <&cluster0_opp>;
-+                power-domains = <&cpr>;
-+                power-domain-names = "cpr";
-                 #cooling-cells = <2>;
-                 next-level-cache = <&L2_0>;
-                 L2_0: l2-cache {
-@@ -115,6 +117,8 @@ examples:
-                 capacity-dmips-mhz = <1024>;
-                 clocks = <&kryocc 0>;
-                 operating-points-v2 = <&cluster0_opp>;
-+                power-domains = <&cpr>;
-+                power-domain-names = "cpr";
-                 #cooling-cells = <2>;
-                 next-level-cache = <&L2_0>;
-             };
-@@ -128,6 +132,8 @@ examples:
-                 capacity-dmips-mhz = <1024>;
-                 clocks = <&kryocc 1>;
-                 operating-points-v2 = <&cluster1_opp>;
-+                power-domains = <&cpr>;
-+                power-domain-names = "cpr";
-                 #cooling-cells = <2>;
-                 next-level-cache = <&L2_1>;
-                 L2_1: l2-cache {
-@@ -145,6 +151,8 @@ examples:
-                 capacity-dmips-mhz = <1024>;
-                 clocks = <&kryocc 1>;
-                 operating-points-v2 = <&cluster1_opp>;
-+                power-domains = <&cpr>;
-+                power-domain-names = "cpr";
-                 #cooling-cells = <2>;
-                 next-level-cache = <&L2_1>;
-             };
-@@ -182,18 +190,21 @@ examples:
-                 opp-microvolt = <905000 905000 1140000>;
-                 opp-supported-hw = <0x7>;
-                 clock-latency-ns = <200000>;
-+                required-opps = <&cpr_opp1>;
-             };
-             opp-1401600000 {
-                 opp-hz = /bits/ 64 <1401600000>;
-                 opp-microvolt = <1140000 905000 1140000>;
-                 opp-supported-hw = <0x5>;
-                 clock-latency-ns = <200000>;
-+                required-opps = <&cpr_opp2>;
-             };
-             opp-1593600000 {
-                 opp-hz = /bits/ 64 <1593600000>;
-                 opp-microvolt = <1140000 905000 1140000>;
-                 opp-supported-hw = <0x1>;
-                 clock-latency-ns = <200000>;
-+                required-opps = <&cpr_opp3>;
-             };
-         };
+diff --git a/drivers/md/raid5.c b/drivers/md/raid5.c
+index b396e78b1b6d..bea171a5e663 100644
+--- a/drivers/md/raid5.c
++++ b/drivers/md/raid5.c
+@@ -2513,10 +2513,10 @@ static void raid5_end_write_request(struct bio *bi)
+ 	if (!test_and_clear_bit(R5_DOUBLE_LOCKED, &sh->dev[i].flags))
+ 		clear_bit(R5_LOCKED, &sh->dev[i].flags);
+ 	set_bit(STRIPE_HANDLE, &sh->state);
+-	raid5_release_stripe(sh);
  
-@@ -207,24 +218,28 @@ examples:
-                 opp-microvolt = <905000 905000 1140000>;
-                 opp-supported-hw = <0x7>;
-                 clock-latency-ns = <200000>;
-+                required-opps = <&cpr_opp1>;
-             };
-             opp-1804800000 {
-                 opp-hz = /bits/ 64 <1804800000>;
-                 opp-microvolt = <1140000 905000 1140000>;
-                 opp-supported-hw = <0x6>;
-                 clock-latency-ns = <200000>;
-+                required-opps = <&cpr_opp4>;
-             };
-             opp-1900800000 {
-                 opp-hz = /bits/ 64 <1900800000>;
-                 opp-microvolt = <1140000 905000 1140000>;
-                 opp-supported-hw = <0x4>;
-                 clock-latency-ns = <200000>;
-+                required-opps = <&cpr_opp5>;
-             };
-             opp-2150400000 {
-                 opp-hz = /bits/ 64 <2150400000>;
-                 opp-microvolt = <1140000 905000 1140000>;
-                 opp-supported-hw = <0x1>;
-                 clock-latency-ns = <200000>;
-+                required-opps = <&cpr_opp6>;
-             };
-         };
+ 	if (sh->batch_head && sh != sh->batch_head)
+ 		raid5_release_stripe(sh->batch_head);
++	raid5_release_stripe(sh);
+ }
  
+ static void raid5_build_block(struct stripe_head *sh, int i, int previous)
 -- 
-2.37.2
+2.35.1
 
 
 
