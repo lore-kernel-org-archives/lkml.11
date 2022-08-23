@@ -2,38 +2,38 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 924CDC32774
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 17:23:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 08FD0C32772
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 17:23:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233096AbiHWRXC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 13:23:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60864 "EHLO
+        id S231633AbiHWRXL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 23 Aug 2022 13:23:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56452 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236120AbiHWRUh (ORCPT
+        with ESMTP id S238264AbiHWRVM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 13:20:37 -0400
-Received: from bg5.exmail.qq.com (bg4.exmail.qq.com [43.155.67.158])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5A2D78B2CC
-        for <linux-kernel@vger.kernel.org>; Tue, 23 Aug 2022 06:44:45 -0700 (PDT)
-X-QQ-mid: bizesmtp74t1661262207t05al4g6
+        Tue, 23 Aug 2022 13:21:12 -0400
+Received: from bg5.exmail.qq.com (bg4.exmail.qq.com [43.154.221.58])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 21B22AD99B;
+        Tue, 23 Aug 2022 07:56:30 -0700 (PDT)
+X-QQ-mid: bizesmtp66t1661266537tlvpe98v
 Received: from localhost.localdomain ( [182.148.14.124])
         by bizesmtp.qq.com (ESMTP) with 
-        id ; Tue, 23 Aug 2022 21:43:26 +0800 (CST)
+        id ; Tue, 23 Aug 2022 22:55:36 +0800 (CST)
 X-QQ-SSF: 0100000000200040B000B00A0000000
-X-QQ-FEAT: 5q30pvLz2ic4M38+9R1mgjNrve/V9zAjkT+n8YcF+jgn9KwKuqxu1kmUgW3LG
-        qTEEqoSxhHP3sHfUqxoH6Iyo7FmAFwRFI4tZ49R/xVa8ZVoH6j091NvJbmZwkp+QE053FmH
-        XXAw9AmQDnjcAB/HfQNSp1Y1gN35as1S8N6Vuz4TcgmDhHU4UpD8KhzIE4i+wCLAdr+3nkg
-        vHSNbSW7HsGov0tSUdYKEDki1K3LZQ6PiNeUUhHxYUCG1KQSFbxLHPIdg7UWdv4cIt13Ju1
-        fqJRkCKPPebV8UPUcUWZVU8MsEamwEkEbtAndvEVrgvLGKqjnAzSF95ipyHstkRRylcB2lD
-        +6zO3sruaz6k2bUn+Jtvxec78+nEpyCeWHW8mSM
+X-QQ-FEAT: LE7C6P2vL8R/Zo2ENKZ0zsVDc2bofEJusFflVmegwTyou4m193p/QettrsKUa
+        3UurGNGX4+DZHSoRm9SpnZMmm6tDlI37qbUdL96ITLVKzkyDoqC9GpHNAso2AKLEwrO+b7Q
+        VOrLFb6mHWQp3l2cmK5qm3jJg4fkFg+rUEeq4ly7eXlkHav8dj7L9mhy3geHqYQMy/K99/5
+        m4AQfGEsbJMDLE++t8BB9S0AL5a5BAzApb1nSdEOl7WG6rJ7ANBBmuoZx4eTAHK6Xd3T7HO
+        7yz3HOe2tzt3r/1SzXKNAAMuDu2q0QInCPvNUYNeBkEc6PusjQoGubM/ftdrXyFfJ9fvZUW
+        QzQOireBRizuqlsh0nFVF1AThnmIWY5NK0zcc5TIhXBeBjL7dqUUXfXmdS87w==
 X-QQ-GoodBg: 0
 From:   wangjianli <wangjianli@cdjrlc.com>
-To:     jgross@suse.com, sstabellini@kernel.org,
-        oleksandr_tyshchenko@epam.com
-Cc:     linux-kernel@vger.kernel.org, wangjianli <wangjianli@cdjrlc.com>
-Subject: [PATCH] xen/xen-pciback: fix repeated words in comments
-Date:   Tue, 23 Aug 2022 21:43:18 +0800
-Message-Id: <20220823134318.58080-1-wangjianli@cdjrlc.com>
+To:     awalls@md.metrocast.net, mchehab@kernel.org
+Cc:     linux-media@vger.kernel.org, linux-kernel@vger.kernel.org,
+        wangjianli <wangjianli@cdjrlc.com>
+Subject: [PATCH] pci/ivtv: fix repeated words in comments
+Date:   Tue, 23 Aug 2022 22:55:30 +0800
+Message-Id: <20220823145530.45102-1-wangjianli@cdjrlc.com>
 X-Mailer: git-send-email 2.36.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
@@ -47,22 +47,22 @@ Delete the redundant word 'the'.
 
 Signed-off-by: wangjianli <wangjianli@cdjrlc.com>
 ---
- drivers/xen/xen-pciback/pciback_ops.c | 2 +-
+ drivers/media/pci/ivtv/ivtv-yuv.c | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/xen/xen-pciback/pciback_ops.c b/drivers/xen/xen-pciback/pciback_ops.c
-index 3fbc21466a93..84e014490950 100644
---- a/drivers/xen/xen-pciback/pciback_ops.c
-+++ b/drivers/xen/xen-pciback/pciback_ops.c
-@@ -159,7 +159,7 @@ int xen_pcibk_enable_msi(struct xen_pcibk_device *pdev,
- 		return XEN_PCI_ERR_op_failed;
- 	}
+diff --git a/drivers/media/pci/ivtv/ivtv-yuv.c b/drivers/media/pci/ivtv/ivtv-yuv.c
+index e79e8a5a744a..4ba10c34a16a 100644
+--- a/drivers/media/pci/ivtv/ivtv-yuv.c
++++ b/drivers/media/pci/ivtv/ivtv-yuv.c
+@@ -538,7 +538,7 @@ static void ivtv_yuv_handle_vertical(struct ivtv *itv, struct yuv_frame_info *f)
+ 	reg_2964 = (reg_2964 << 16) + reg_2964 + (reg_2964 * 46 / 94);
  
--	/* The value the guest needs is actually the IDT vector, not the
-+	/* The value the guest needs is actually the IDT vector, not
- 	 * the local domain's IRQ number. */
- 
- 	op->value = dev->irq ? xen_pirq_from_irq(dev->irq) : 0;
+ 	/* Okay, we've wasted time working out the correct value,
+-	   but if we use it, it fouls the the window alignment.
++	   but if we use it, it fouls the window alignment.
+ 	   Fudge it to what we want... */
+ 	reg_2964 = 0x00010001 + ((reg_2964 & 0x0000FFFF) - (reg_2964 >> 16));
+ 	reg_2968 = 0x00010001 + ((reg_2968 & 0x0000FFFF) - (reg_2968 >> 16));
 -- 
 2.36.1
 
