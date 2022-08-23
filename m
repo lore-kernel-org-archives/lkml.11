@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2512AC32792
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0420BC32772
 	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 10:47:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355911AbiHWKpi (ORCPT
+        id S1355892AbiHWKpa (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 06:45:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42652 "EHLO
+        Tue, 23 Aug 2022 06:45:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42574 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355197AbiHWKiF (ORCPT
+        with ESMTP id S1355158AbiHWKh6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 06:38:05 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8035D85FCF;
-        Tue, 23 Aug 2022 02:07:36 -0700 (PDT)
+        Tue, 23 Aug 2022 06:37:58 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A3B43A6C50;
+        Tue, 23 Aug 2022 02:07:33 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id E675EB81C85;
-        Tue, 23 Aug 2022 09:07:34 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3B583C433C1;
-        Tue, 23 Aug 2022 09:07:33 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id DB881B81C4E;
+        Tue, 23 Aug 2022 09:07:31 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2E27FC433C1;
+        Tue, 23 Aug 2022 09:07:29 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661245653;
-        bh=7gKvBrCgfjXar+M7RVKi01m33VmCzuS0lNw/8ARW1do=;
+        s=korg; t=1661245650;
+        bh=suZdBRjpDXFWDEa7jpSVWd8gmAmyH/rauzQmD1kwnvE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Ce0qTmfc7kECKhW29Ax3dsD6MuATph4C9AeWK6kCEEOPcVh5Edthlu6EtjeCEWjjL
-         gFva4q6Gh80XaN8yZevnJPkvEotM4pr10bn+kGdjDpjjRYUdU6FepbHr4TCXiUlfUH
-         Lt41RxvYN9iZFMccfXPJ8sM6lwQGtYRbhiFCj2vw=
+        b=JUbkabSoxxXdeArssyE7Ch5JJeBargAo44sCH6V5lyNH1aKX5hefwzC+6ljlOPWWl
+         MvtM5mUfCSWdzNtQjdX6dVA/MYU5u6h6f59f+u5O+3LkkdJBGoZrF5d+xftdTy2NL6
+         bk7GrKHm7CVXOBhlUfLGa2xlKj23M4wR9E7QENWU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
-        Mark Brown <broonie@kernel.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.19 147/287] ASoC: mt6797-mt6351: Fix refcount leak in mt6797_mt6351_dev_probe
-Date:   Tue, 23 Aug 2022 10:25:16 +0200
-Message-Id: <20220823080105.522496550@linuxfoundation.org>
+        stable@vger.kernel.org, Artem Borisov <dedsa2002@gmail.com>,
+        Jiri Kosina <jkosina@suse.cz>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 4.19 138/287] HID: alps: Declare U1_UNICORN_LEGACY support
+Date:   Tue, 23 Aug 2022 10:25:07 +0200
+Message-Id: <20220823080105.120210342@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220823080100.268827165@linuxfoundation.org>
 References: <20220823080100.268827165@linuxfoundation.org>
@@ -50,47 +49,34 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Miaoqian Lin <linmq006@gmail.com>
+From: Artem Borisov <dedsa2002@gmail.com>
 
-[ Upstream commit 7472eb8d7dd12b6b9b1a4f4527719cc9c7f5965f ]
+[ Upstream commit 1117d182c5d72abd7eb8b7d5e7b8c3373181c3ab ]
 
-of_parse_phandle() returns a node pointer with refcount
-incremented, we should use of_node_put() on it when not need anymore.
-Add missing of_node_put() to avoid refcount leak.
+U1_UNICORN_LEGACY id was added to the driver, but was not declared
+in the device id table, making it impossible to use.
 
-Fixes: f0ab0bf250da ("ASoC: add mt6797-mt6351 driver and config option")
-Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
-Link: https://lore.kernel.org/r/20220603083417.9011-1-linmq006@gmail.com
-Signed-off-by: Mark Brown <broonie@kernel.org>
+Fixes: 640e403 ("HID: alps: Add AUI1657 device ID")
+Signed-off-by: Artem Borisov <dedsa2002@gmail.com>
+Signed-off-by: Jiri Kosina <jkosina@suse.cz>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- sound/soc/mediatek/mt6797/mt6797-mt6351.c | 6 +++++-
- 1 file changed, 5 insertions(+), 1 deletion(-)
+ drivers/hid/hid-alps.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
-diff --git a/sound/soc/mediatek/mt6797/mt6797-mt6351.c b/sound/soc/mediatek/mt6797/mt6797-mt6351.c
-index b1558c57b9ca..0c49e1a9a897 100644
---- a/sound/soc/mediatek/mt6797/mt6797-mt6351.c
-+++ b/sound/soc/mediatek/mt6797/mt6797-mt6351.c
-@@ -179,7 +179,8 @@ static int mt6797_mt6351_dev_probe(struct platform_device *pdev)
- 	if (!codec_node) {
- 		dev_err(&pdev->dev,
- 			"Property 'audio-codec' missing or invalid\n");
--		return -EINVAL;
-+		ret = -EINVAL;
-+		goto put_platform_node;
- 	}
- 	for (i = 0; i < card->num_links; i++) {
- 		if (mt6797_mt6351_dai_links[i].codec_name)
-@@ -192,6 +193,9 @@ static int mt6797_mt6351_dev_probe(struct platform_device *pdev)
- 		dev_err(&pdev->dev, "%s snd_soc_register_card fail %d\n",
- 			__func__, ret);
- 
-+	of_node_put(codec_node);
-+put_platform_node:
-+	of_node_put(platform_node);
- 	return ret;
- }
- 
+diff --git a/drivers/hid/hid-alps.c b/drivers/hid/hid-alps.c
+index 3eddd8f73b57..116ece4be2c9 100644
+--- a/drivers/hid/hid-alps.c
++++ b/drivers/hid/hid-alps.c
+@@ -835,6 +835,8 @@ static const struct hid_device_id alps_id[] = {
+ 		USB_VENDOR_ID_ALPS_JP, HID_DEVICE_ID_ALPS_U1_DUAL) },
+ 	{ HID_DEVICE(HID_BUS_ANY, HID_GROUP_ANY,
+ 		USB_VENDOR_ID_ALPS_JP, HID_DEVICE_ID_ALPS_U1) },
++	{ HID_DEVICE(HID_BUS_ANY, HID_GROUP_ANY,
++		USB_VENDOR_ID_ALPS_JP, HID_DEVICE_ID_ALPS_U1_UNICORN_LEGACY) },
+ 	{ HID_DEVICE(HID_BUS_ANY, HID_GROUP_ANY,
+ 		USB_VENDOR_ID_ALPS_JP, HID_DEVICE_ID_ALPS_T4_BTNLESS) },
+ 	{ }
 -- 
 2.35.1
 
