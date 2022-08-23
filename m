@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C6882C32772
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 10:55:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B2B85C32774
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 10:55:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356815AbiHWKy7 (ORCPT
+        id S1356342AbiHWKzG (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 06:54:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42182 "EHLO
+        Tue, 23 Aug 2022 06:55:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40006 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355685AbiHWKr5 (ORCPT
+        with ESMTP id S1355902AbiHWKsU (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 06:47:57 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9269F86C18;
-        Tue, 23 Aug 2022 02:12:00 -0700 (PDT)
+        Tue, 23 Aug 2022 06:48:20 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7912F74DED;
+        Tue, 23 Aug 2022 02:12:05 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 2E31E60F85;
-        Tue, 23 Aug 2022 09:12:00 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2F9A7C433D6;
-        Tue, 23 Aug 2022 09:11:58 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 2E5BFB81C4E;
+        Tue, 23 Aug 2022 09:12:04 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5B51AC433C1;
+        Tue, 23 Aug 2022 09:12:02 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661245919;
-        bh=Q4K1n/gCWk4R0nhTBAqldyQaNxCFu9Nsl2oB7WC7y1k=;
+        s=korg; t=1661245922;
+        bh=qIoP2uuXfmMzLc+/YOuIVXKKJuiDH36N6oU21shCADY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ZOIAnN82wYLjoMcd4aUCezzxB1EvcMSgv9qAkTJ5dj3WoBi5Wf9vrPOcF9dw24BO+
-         TCT7orQYMetlCN/BwoxbyCT0ooL1pyTxLno/lLUsoYW75UHPLfzYqcFCwUfcLZT8WT
-         DOkhBrSbTiRwPys9eFywYt03EGGad7CR2ET3Xvro=
+        b=sT5v0bIqOn9fOusCY/ZgSOPTJ80/Hp2JrWBvz09d3+dTw0PlR6W95iFxnRFSCxBS+
+         380UbpwoN20/mTjMq4fMAPgOQOAxtcDTViWVgOx0Q1ev5UFHSlo5sFrLafengtoTAL
+         PHPh9x8YXLSTK2QC+JdYWJ89NnWGlAqehAwOva/I=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Zhang Xianwei <zhang.xianwei8@zte.com.cn>,
-        Yi Wang <wang.yi59@zte.com.cn>,
+        stable@vger.kernel.org,
         Trond Myklebust <trond.myklebust@hammerspace.com>
-Subject: [PATCH 4.19 231/287] NFSv4.1: RECLAIM_COMPLETE must handle EACCES
-Date:   Tue, 23 Aug 2022 10:26:40 +0200
-Message-Id: <20220823080108.814584086@linuxfoundation.org>
+Subject: [PATCH 4.19 232/287] NFSv4/pnfs: Fix a use-after-free bug in open
+Date:   Tue, 23 Aug 2022 10:26:41 +0200
+Message-Id: <20220823080108.853280173@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220823080100.268827165@linuxfoundation.org>
 References: <20220823080100.268827165@linuxfoundation.org>
@@ -50,38 +49,41 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Zhang Xianwei <zhang.xianwei8@zte.com.cn>
+From: Trond Myklebust <trond.myklebust@hammerspace.com>
 
-commit e35a5e782f67ed76a65ad0f23a484444a95f000f upstream.
+commit 2135e5d56278ffdb1c2e6d325dc6b87f669b9dac upstream.
 
-A client should be able to handle getting an EACCES error while doing
-a mount operation to reclaim state due to NFS4CLNT_RECLAIM_REBOOT
-being set. If the server returns RPC_AUTH_BADCRED because authentication
-failed when we execute "exportfs -au", then RECLAIM_COMPLETE will go a
-wrong way. After mount succeeds, all OPEN call will fail due to an
-NFS4ERR_GRACE error being returned. This patch is to fix it by resending
-a RPC request.
+If someone cancels the open RPC call, then we must not try to free
+either the open slot or the layoutget operation arguments, since they
+are likely still in use by the hung RPC call.
 
-Signed-off-by: Zhang Xianwei <zhang.xianwei8@zte.com.cn>
-Signed-off-by: Yi Wang <wang.yi59@zte.com.cn>
-Fixes: aa5190d0ed7d ("NFSv4: Kill nfs4_async_handle_error() abuses by NFSv4.1")
+Fixes: 6949493884fe ("NFSv4: Don't hold the layoutget locks across multiple RPC calls")
 Signed-off-by: Trond Myklebust <trond.myklebust@hammerspace.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- fs/nfs/nfs4proc.c |    3 +++
- 1 file changed, 3 insertions(+)
+ fs/nfs/nfs4proc.c |   11 ++++++-----
+ 1 file changed, 6 insertions(+), 5 deletions(-)
 
 --- a/fs/nfs/nfs4proc.c
 +++ b/fs/nfs/nfs4proc.c
-@@ -8701,6 +8701,9 @@ static int nfs41_reclaim_complete_handle
- 		rpc_delay(task, NFS4_POLL_RETRY_MAX);
- 		/* fall through */
- 	case -NFS4ERR_RETRY_UNCACHED_REP:
-+	case -EACCES:
-+		dprintk("%s: failed to reclaim complete error %d for server %s, retrying\n",
-+			__func__, task->tk_status, clp->cl_hostname);
- 		return -EAGAIN;
- 	case -NFS4ERR_BADSESSION:
- 	case -NFS4ERR_DEADSESSION:
+@@ -2920,12 +2920,13 @@ static int _nfs4_open_and_get_state(stru
+ 	}
+ 
+ out:
+-	if (opendata->lgp) {
+-		nfs4_lgopen_release(opendata->lgp);
+-		opendata->lgp = NULL;
+-	}
+-	if (!opendata->cancelled)
++	if (!opendata->cancelled) {
++		if (opendata->lgp) {
++			nfs4_lgopen_release(opendata->lgp);
++			opendata->lgp = NULL;
++		}
+ 		nfs4_sequence_free_slot(&opendata->o_res.seq_res);
++	}
+ 	return ret;
+ }
+ 
 
 
