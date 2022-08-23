@@ -2,44 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9C94AC32792
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 11:05:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CFEB6C32772
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 11:05:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356721AbiHWLFF (ORCPT
+        id S1357015AbiHWLFP (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 07:05:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39438 "EHLO
+        Tue, 23 Aug 2022 07:05:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36164 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357480AbiHWLC3 (ORCPT
+        with ESMTP id S1356617AbiHWLDN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 07:02:29 -0400
+        Tue, 23 Aug 2022 07:03:13 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A80C9B2758;
-        Tue, 23 Aug 2022 02:15:04 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A02E8B2858;
+        Tue, 23 Aug 2022 02:15:08 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 3D4D8B81C66;
-        Tue, 23 Aug 2022 09:15:02 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 74FD3C433D6;
-        Tue, 23 Aug 2022 09:15:00 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id D4DE7B81C94;
+        Tue, 23 Aug 2022 09:14:36 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0D32DC433D6;
+        Tue, 23 Aug 2022 09:14:34 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661246101;
-        bh=tJ4/GjcFTOYm1eHzzFoim4ZayD31016TtBq0nigveEE=;
+        s=korg; t=1661246075;
+        bh=BG1IryY/JpKplKDyYH7hpVvg67ZthQH8oyEbqAqfFfc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=sEJc8e3UNwILZbpGkJwonc/Z6Bp2t09SMtQBZEb3y+p2V/QeHvc9oEwdlnZed2fUQ
-         zU8V4LKgAL+gFn3aA7Y1To0S7eG4Y2GQdnSN6kjX4A+Xr0Rgl4zDvIa7aJSChqmtSF
-         pqF1Xx2jQN+q8dLdga9qmP6b96BwlHmAhgUwjQyM=
+        b=0eap0GPD81VtCDn2xfdgOo/qaVbBSIXLIZDD0cCJjHFiBFLUJwsRzP4AjAXTpDypL
+         Ut3iKkEU4G1T8i3eDXRnKXh89n0cKRcyW50L50EfTm00fyWytX7rRPhynZ83WA3t/W
+         5ieWYICvNBgwsA5MMEA+VFzVx+PvKT//cUtChhok=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Guo Ren <guoren@kernel.org>,
-        Xianting Tian <xianting.tian@linux.alibaba.com>,
-        Palmer Dabbelt <palmer@rivosinc.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.19 275/287] RISC-V: Add fast call path of crash_kexec()
-Date:   Tue, 23 Aug 2022 10:27:24 +0200
-Message-Id: <20220823080110.667293814@linuxfoundation.org>
+        stable@vger.kernel.org, Zheyu Ma <zheyuma97@gmail.com>,
+        Helge Deller <deller@gmx.de>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 4.19 282/287] video: fbdev: i740fb: Check the argument of i740_calc_vclk()
+Date:   Tue, 23 Aug 2022 10:27:31 +0200
+Message-Id: <20220823080110.984312492@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220823080100.268827165@linuxfoundation.org>
 References: <20220823080100.268827165@linuxfoundation.org>
@@ -51,71 +49,65 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Xianting Tian <xianting.tian@linux.alibaba.com>
+From: Zheyu Ma <zheyuma97@gmail.com>
 
-[ Upstream commit 3f1901110a89b0e2e13adb2ac8d1a7102879ea98 ]
+[ Upstream commit 40bf722f8064f50200b8c4f8946cd625b441dda9 ]
 
-Currently, almost all archs (x86, arm64, mips...) support fast call
-of crash_kexec() when "regs && kexec_should_crash()" is true. But
-RISC-V not, it can only enter crash system via panic(). However panic()
-doesn't pass the regs of the real accident scene to crash_kexec(),
-it caused we can't get accurate backtrace via gdb,
-	$ riscv64-linux-gnu-gdb vmlinux vmcore
-	Reading symbols from vmlinux...
-	[New LWP 95]
-	#0  console_unlock () at kernel/printk/printk.c:2557
-	2557                    if (do_cond_resched)
-	(gdb) bt
-	#0  console_unlock () at kernel/printk/printk.c:2557
-	#1  0x0000000000000000 in ?? ()
+Since the user can control the arguments of the ioctl() from the user
+space, under special arguments that may result in a divide-by-zero bug.
 
-With the patch we can get the accurate backtrace,
-	$ riscv64-linux-gnu-gdb vmlinux vmcore
-	Reading symbols from vmlinux...
-	[New LWP 95]
-	#0  0xffffffe00063a4e0 in test_thread (data=<optimized out>) at drivers/test_crash.c:81
-	81             *(int *)p = 0xdead;
-	(gdb)
-	(gdb) bt
-	#0  0xffffffe00064d5c0 in test_thread (data=<optimized out>) at drivers/test_crash.c:81
-	#1  0x0000000000000000 in ?? ()
+If the user provides an improper 'pixclock' value that makes the argumet
+of i740_calc_vclk() less than 'I740_RFREQ_FIX', it will cause a
+divide-by-zero bug in:
+    drivers/video/fbdev/i740fb.c:353 p_best = min(15, ilog2(I740_MAX_VCO_FREQ / (freq / I740_RFREQ_FIX)));
 
-Test code to produce NULL address dereference in test_crash.c,
-	void *p = NULL;
-	*(int *)p = 0xdead;
+The following log can reveal it:
 
-Reviewed-by: Guo Ren <guoren@kernel.org>
-Tested-by: Xianting Tian <xianting.tian@linux.alibaba.com>
-Signed-off-by: Xianting Tian <xianting.tian@linux.alibaba.com>
-Link: https://lore.kernel.org/r/20220606082308.2883458-1-xianting.tian@linux.alibaba.com
-Signed-off-by: Palmer Dabbelt <palmer@rivosinc.com>
+divide error: 0000 [#1] PREEMPT SMP KASAN PTI
+RIP: 0010:i740_calc_vclk drivers/video/fbdev/i740fb.c:353 [inline]
+RIP: 0010:i740fb_decode_var drivers/video/fbdev/i740fb.c:646 [inline]
+RIP: 0010:i740fb_set_par+0x163f/0x3b70 drivers/video/fbdev/i740fb.c:742
+Call Trace:
+ fb_set_var+0x604/0xeb0 drivers/video/fbdev/core/fbmem.c:1034
+ do_fb_ioctl+0x234/0x670 drivers/video/fbdev/core/fbmem.c:1110
+ fb_ioctl+0xdd/0x130 drivers/video/fbdev/core/fbmem.c:1189
+
+Fix this by checking the argument of i740_calc_vclk() first.
+
+Signed-off-by: Zheyu Ma <zheyuma97@gmail.com>
+Signed-off-by: Helge Deller <deller@gmx.de>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/riscv/kernel/traps.c | 4 ++++
- 1 file changed, 4 insertions(+)
+ drivers/video/fbdev/i740fb.c | 9 +++++++--
+ 1 file changed, 7 insertions(+), 2 deletions(-)
 
-diff --git a/arch/riscv/kernel/traps.c b/arch/riscv/kernel/traps.c
-index 24a9333dda2c..7c65750508f2 100644
---- a/arch/riscv/kernel/traps.c
-+++ b/arch/riscv/kernel/traps.c
-@@ -22,6 +22,7 @@
- #include <linux/mm.h>
- #include <linux/module.h>
- #include <linux/irq.h>
-+#include <linux/kexec.h>
+diff --git a/drivers/video/fbdev/i740fb.c b/drivers/video/fbdev/i740fb.c
+index f6d7b04d6dff..bdbafff4529f 100644
+--- a/drivers/video/fbdev/i740fb.c
++++ b/drivers/video/fbdev/i740fb.c
+@@ -399,7 +399,7 @@ static int i740fb_decode_var(const struct fb_var_screeninfo *var,
+ 	u32 xres, right, hslen, left, xtotal;
+ 	u32 yres, lower, vslen, upper, ytotal;
+ 	u32 vxres, xoffset, vyres, yoffset;
+-	u32 bpp, base, dacspeed24, mem;
++	u32 bpp, base, dacspeed24, mem, freq;
+ 	u8 r7;
+ 	int i;
  
- #include <asm/processor.h>
- #include <asm/ptrace.h>
-@@ -50,6 +51,9 @@ void die(struct pt_regs *regs, const char *str)
+@@ -642,7 +642,12 @@ static int i740fb_decode_var(const struct fb_var_screeninfo *var,
+ 	par->atc[VGA_ATC_OVERSCAN] = 0;
  
- 	ret = notify_die(DIE_OOPS, str, regs, 0, regs->scause, SIGSEGV);
+ 	/* Calculate VCLK that most closely matches the requested dot clock */
+-	i740_calc_vclk((((u32)1e9) / var->pixclock) * (u32)(1e3), par);
++	freq = (((u32)1e9) / var->pixclock) * (u32)(1e3);
++	if (freq < I740_RFREQ_FIX) {
++		fb_dbg(info, "invalid pixclock\n");
++		freq = I740_RFREQ_FIX;
++	}
++	i740_calc_vclk(freq, par);
  
-+	if (regs && kexec_should_crash(current))
-+		crash_kexec(regs);
-+
- 	bust_spinlocks(0);
- 	add_taint(TAINT_DIE, LOCKDEP_NOW_UNRELIABLE);
- 	spin_unlock_irq(&die_lock);
+ 	/* Since we program the clocks ourselves, always use VCLK2. */
+ 	par->misc |= 0x0C;
 -- 
 2.35.1
 
