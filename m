@@ -2,120 +2,115 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DC96EC32772
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 19:51:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 42AE1C32772
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 19:53:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232971AbiHWTvl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 15:51:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53140 "EHLO
+        id S233610AbiHWTxE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 23 Aug 2022 15:53:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35156 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232883AbiHWTvG (ORCPT
+        with ESMTP id S229945AbiHWTwm (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 15:51:06 -0400
-Received: from mail-qk1-x736.google.com (mail-qk1-x736.google.com [IPv6:2607:f8b0:4864:20::736])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 17C2940575
-        for <linux-kernel@vger.kernel.org>; Tue, 23 Aug 2022 11:55:07 -0700 (PDT)
-Received: by mail-qk1-x736.google.com with SMTP id g21so11017844qka.5
-        for <linux-kernel@vger.kernel.org>; Tue, 23 Aug 2022 11:55:07 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc;
-        bh=0og1NC2/HzAvVvbV76h98xTKlthNFgmiVfi+QQP1fKE=;
-        b=U0z64/twq5fRD8PYe86SWj5MOzpiyeXAojxyeZG0RaM1CXF41MQ7cPW/q9AnhX2dmh
-         K2Y6rdcknRckWMxeZtzuaO410aPqaOGK7MxxbKy3NKHXUAfIhIatbt9pe/+MkwZi9cIn
-         iavxD4ltIYascRH9D2WiBcTk4ZY1mW2Bd2Lio=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc;
-        bh=0og1NC2/HzAvVvbV76h98xTKlthNFgmiVfi+QQP1fKE=;
-        b=U0K6+Do15cusNOsc9R1qxV2oc32/nrOl82DxBETO71Wi+LoZdhkHEfp+tM9oX3DTSk
-         ItbmZxRmhvN9Fc21IGvMtLdNopDf98tXtSJQOjlyjAWZ0vFfaqOXwqZSfn10FZi6pgsZ
-         wRJfZbF0WFVt3cH4+hCBFLb36p+evJs1eGXqv9unMucFygxIdrohUScSPN9suaiX3A1z
-         6QmIr1Og537tuc5TvUF3mkM9D4eWia30A3CvxAQgDQsa4vYsU+4EmsqYJqUMYvhUTegF
-         DTIwVFEiJjCcz2sFw4D+VEygQDdyGsTsHWRK1x1QtKNk6h6Jy95qRLCE71ND0Z3ClBaq
-         Yl5A==
-X-Gm-Message-State: ACgBeo3LjbAqFCRasfLe3zRG8ywM5ZNzZB8W1tflLKS/9xbuaweSNdIb
-        juomultrdVWaxAmPcjHWE9l3ZtXtU3XklNoCYvq7xA==
-X-Google-Smtp-Source: AA6agR6NLbXWUWNv+sSduGg86IvYbjufKWNoFOftL8eY63TNbzBoCvYh91fB2EfAvaLFYG5z39FD6/3huPMVBknE62c=
-X-Received: by 2002:a05:620a:4553:b0:6bb:1dd0:e44c with SMTP id
- u19-20020a05620a455300b006bb1dd0e44cmr16944782qkp.543.1661280906190; Tue, 23
- Aug 2022 11:55:06 -0700 (PDT)
+        Tue, 23 Aug 2022 15:52:42 -0400
+Received: from bee.birch.relay.mailchannels.net (bee.birch.relay.mailchannels.net [23.83.209.14])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AC2DF79ED6
+        for <linux-kernel@vger.kernel.org>; Tue, 23 Aug 2022 11:57:45 -0700 (PDT)
+X-Sender-Id: dreamhost|x-authsender|dave@stgolabs.net
+Received: from relay.mailchannels.net (localhost [127.0.0.1])
+        by relay.mailchannels.net (Postfix) with ESMTP id C9265226A9;
+        Tue, 23 Aug 2022 18:57:44 +0000 (UTC)
+Received: from pdx1-sub0-mail-a212.dreamhost.com (unknown [127.0.0.6])
+        (Authenticated sender: dreamhost)
+        by relay.mailchannels.net (Postfix) with ESMTPA id 3453A21C18;
+        Tue, 23 Aug 2022 18:57:44 +0000 (UTC)
+ARC-Seal: i=1; s=arc-2022; d=mailchannels.net; t=1661281064; a=rsa-sha256;
+        cv=none;
+        b=uKzT+YRXK/dRjQaQh4N83Ow1hQo8dDNjn0rfDvBGDg+xHFYKukgx+QxEZxMo4rrbImy97G
+        Iu4oY996VZ4BdGJR212hNRkp+MtduzrGjOkJRt5ugJq9Tc7NjAgf906CsI5eVEX4KZUhbT
+        FfHUNwPEoFI8zKcia35KUceH61XQzRNaTCNxry7Y9wF0VhshC/ylL22+cYYmHE6DevCoWZ
+        ZZxhWSPVXxeSJJ+FUh3ZuYAWKMi6nHQiDdR7cr/OnrsFI246qd7T2FWUuHE9YNRQpw+JUP
+        vPFfltPvpwurue07D+Z5aTd4kWSSiS3S8gNyGmESyx538PA/SH3Vjm4ATpMKfA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=mailchannels.net;
+        s=arc-2022; t=1661281064;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references:dkim-signature;
+        bh=Tc3VDzBu61uAW3rO1cP+4NifjWG9bDMEkByxydyrgbE=;
+        b=AgnA58XldV7BHVJQ4mU/EyyxrmY32KrxIjXz1G1PugkdOIGMP51TJ8X0EwWsrSi1xePBQa
+        ZlmrtFsYErjQNt7R3dWwrzfT32S+3U7g0SGfwwy7gv/VKiCMowqDMeZ2U3jvWtFsqZUh5m
+        e62iLawKUCCx75U7MfNyhU0JUwUYF5agds6Vy7zePN//3KJRzyrFoMxSalqTI7IkNA8h0d
+        dZCLhF059EyFY+nog2Ic6kNkfm4BqD9vMI8aFaTkSuMKGYeKl0mNr8pRnxUAqb/HvuYnJR
+        +GT9ppMW6Vrf/+XRVUo3J7xGufiA6X/2cD/fLZFoLkcjP6EZj8TwED+JpkmQQA==
+ARC-Authentication-Results: i=1;
+        rspamd-647d8dd55-nplfz;
+        auth=pass smtp.auth=dreamhost smtp.mailfrom=dave@stgolabs.net
+X-Sender-Id: dreamhost|x-authsender|dave@stgolabs.net
+X-MC-Relay: Neutral
+X-MailChannels-SenderId: dreamhost|x-authsender|dave@stgolabs.net
+X-MailChannels-Auth-Id: dreamhost
+X-Lonely-Callous: 77d87d6b3812293c_1661281064688_3672234468
+X-MC-Loop-Signature: 1661281064688:1146447862
+X-MC-Ingress-Time: 1661281064688
+Received: from pdx1-sub0-mail-a212.dreamhost.com (pop.dreamhost.com
+ [64.90.62.162])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384)
+        by 100.124.238.95 (trex/6.7.1);
+        Tue, 23 Aug 2022 18:57:44 +0000
+Received: from offworld (unknown [104.36.31.106])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-256) server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        (No client certificate requested)
+        (Authenticated sender: dave@stgolabs.net)
+        by pdx1-sub0-mail-a212.dreamhost.com (Postfix) with ESMTPSA id 4MBz4l0c6Nz23;
+        Tue, 23 Aug 2022 11:57:43 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=stgolabs.net;
+        s=dreamhost; t=1661281063;
+        bh=Tc3VDzBu61uAW3rO1cP+4NifjWG9bDMEkByxydyrgbE=;
+        h=Date:From:To:Cc:Subject:Content-Type;
+        b=o+TtfmboYWA8xe4M6eBwPVA6txqwUnAfp/dlPE6tQ2QPZEwwQ6HiPKIVdwdRDWk/K
+         d/fLSvwkZKJNstMtEYzwol010UzMiDn89IC2Up0siDSXLCFQA3AcDUXipi8iJ1s1E2
+         PoRmUYPTmkuPJrMsDZrNoXNlttKEa1pHOY3kptizyv1ITZaExxfitnrjdBWeyVa3Zf
+         DauydQFBsqs1PjA9/BFE2dCxzG84umLF6PZ/cYxnlaOxX7L4b4aHlsklkxqbnJRGBj
+         /4gPh9vINBoxFG7LGUyzDKZySG55J9m0yeCQgBELXGieqI7mMoNi5YfLOo5oBhUzU1
+         oKY4imCpOGPXA==
+Date:   Tue, 23 Aug 2022 11:39:40 -0700
+From:   Davidlohr Bueso <dave@stgolabs.net>
+To:     Liam Howlett <liam.howlett@oracle.com>
+Cc:     "maple-tree@lists.infradead.org" <maple-tree@lists.infradead.org>,
+        "linux-mm@kvack.org" <linux-mm@kvack.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        "Matthew Wilcox (Oracle)" <willy@infradead.org>,
+        Vlastimil Babka <vbabka@suse.cz>
+Subject: Re: [PATCH v13 46/70] acct: use VMA iterator instead of linked list
+Message-ID: <20220823183940.oct42fjqptqever3@offworld>
+Mail-Followup-To: Liam Howlett <liam.howlett@oracle.com>,
+        "maple-tree@lists.infradead.org" <maple-tree@lists.infradead.org>,
+        "linux-mm@kvack.org" <linux-mm@kvack.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        "Matthew Wilcox (Oracle)" <willy@infradead.org>,
+        Vlastimil Babka <vbabka@suse.cz>
+References: <20220822150128.1562046-1-Liam.Howlett@oracle.com>
+ <20220822150128.1562046-47-Liam.Howlett@oracle.com>
 MIME-Version: 1.0
-References: <20220810204750.3672362-1-bjorn.andersson@linaro.org>
- <20220810204750.3672362-2-bjorn.andersson@linaro.org> <a13bce60-25b4-d075-d56a-d1283e91e3ba@linaro.org>
- <20220814210104.GA690892-robh@kernel.org> <Yv1y9Wjp16CstJvK@baldur>
- <CAE-0n53AjJ_G6yZoTALWpKvZUdF+8nFZ+TQh=Ch=8xgdMVqDkw@mail.gmail.com>
- <CACeCKadP-AZ8OU4A=7CrwAz7yuLvMvjvAcw7K-FORFmkMvx7cA@mail.gmail.com>
- <YwAIGf59H9iKUhXF@builder.lan> <CACeCKadt3aoz8MZvy+tGHCxiHOPty4cLcG7AGS+oMEVnREt4sw@mail.gmail.com>
- <YwBei45gx4oVqSql@builder.lan>
-In-Reply-To: <YwBei45gx4oVqSql@builder.lan>
-From:   Prashant Malani <pmalani@chromium.org>
-Date:   Tue, 23 Aug 2022 11:54:53 -0700
-Message-ID: <CACeCKaewr92JcouMgyiL5rKdHf_dDmoWoyoW-U2snCNBkNijQg@mail.gmail.com>
-Subject: Re: [PATCH 1/2] dt-bindings: usb: Introduce GPIO-based SBU mux
-To:     Bjorn Andersson <bjorn.andersson@linaro.org>
-Cc:     Stephen Boyd <swboyd@chromium.org>, Rob Herring <robh@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Heikki Krogerus <heikki.krogerus@linux.intel.com>,
-        linux-usb@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-arm-msm@vger.kernel.org,
-        Pin-yen Lin <treapking@chromium.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii; format=flowed
+Content-Disposition: inline
+In-Reply-To: <20220822150128.1562046-47-Liam.Howlett@oracle.com>
+User-Agent: NeoMutt/20220429
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Aug 19, 2022 at 9:09 PM Bjorn Andersson
-<bjorn.andersson@linaro.org> wrote:
->
->
-> We're talking about the static configuration here, where you describe
-> which component are connected together. We can not dynamically switch
-> the Devicetree representation around to match what the Type-C controller
-> negotiates.
+On Mon, 22 Aug 2022, Liam Howlett wrote:
 
-Yes, but we don't need to switch the device tree representation at all.
-The pin routing/connections from the connector (not the cable or the partner),
-to the muxing hardware (QMP phy or anx7625) remains fixed always
-The port driver tells what orientation the peripheral is connected with,
-and the muxing/orientation hardware routes the signals according to that.
-
+>From: "Matthew Wilcox (Oracle)" <willy@infradead.org>
 >
-> But why do you need to express the relationship between these 2
-> components with > 1 link in the graph?
+>The VMA iterator is faster than the linked list.
 >
-> > The graph is static, since the hardware line routing between components
-> > doesn't change (e.g SSTX1 from the Type-C port is always routed to Pin
-> > X1,X2 on the switch hardware), but that is what the switch is for.
-> > Note that in this case, the expectation is that
-> > the switch driver only registers 1 switch (it can figure out that all
-> > 4 endpoints
-> > go to the same Type-C port).
-> >
->
-> Why do we need to express this with 4 endpoints and then implement code
-> to discover that the 4 endpoints points to the same remote? Why not just
-> describe the logical relationship between the two components in one
-> endpoint reference?
+>Signed-off-by: Matthew Wilcox (Oracle) <willy@infradead.org>
+>Signed-off-by: Liam R. Howlett <Liam.Howlett@Oracle.com>
+>Acked-by: Vlastimil Babka <vbabka@suse.cz>
 
-The issue I see is with the "supplier" side of that graph relationship
-(i.e the DRM bridge side).
-Since the bridge can be directly connected to a DP panel, the
-endpoints can (technically)
-represent a single DP lane. So, using 4 end-points for the
-usb-c-connector port@1 gives
-us something which is compatible with the bridge side endpoints too
-(regardless of what
-the bridge is connected to on the "output" side).
-Reading the discussion, I agree 4 lanes is over-specifying, and 2
-endpoints is probably
-enough (especially if we can use data-lanes on the bridge side
-to define the number of lanes if needed for DP panel connections).
-
-BR,
-
--Prashant
+Reviewed-by: Davidlohr Bueso <dave@stgolabs.net>
