@@ -2,108 +2,108 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 465B1C32772
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 17:08:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id ACF33C32772
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 17:10:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343924AbiHWRIA (ORCPT
+        id S1343612AbiHWRJ6 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 13:08:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41220 "EHLO
+        Tue, 23 Aug 2022 13:09:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46858 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345997AbiHWRGm (ORCPT
+        with ESMTP id S245155AbiHWRJf (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 13:06:42 -0400
-Received: from smtp-out1.suse.de (smtp-out1.suse.de [IPv6:2001:67c:2178:6::1c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F1779D4F61
-        for <linux-kernel@vger.kernel.org>; Tue, 23 Aug 2022 07:04:52 -0700 (PDT)
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
-        (No client certificate requested)
-        by smtp-out1.suse.de (Postfix) with ESMTPS id E7152224A5;
-        Tue, 23 Aug 2022 14:04:50 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
-        t=1661263490; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=CD2l+I4MjMw0C0NBz+C57caAVjEFsSwQ3UTNjf+/spY=;
-        b=sKLpVxYTCFCzey+bXYirzI2nbMxT0IYTquNrqguhNiiE6MT21Ae+d+HsWWNZu6elEZkXd5
-        /75ZgG1c6s7Y3j1dOsPksjTdxygCq4oj0sEzepx6bEGbUA1yiURVubdNzeOvlGcViwiCFN
-        /ivpUxhpDntQFz2WfKrZfL1EfHMmM5Y=
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
-        s=susede2_ed25519; t=1661263490;
-        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=CD2l+I4MjMw0C0NBz+C57caAVjEFsSwQ3UTNjf+/spY=;
-        b=gp14rMbaORLZCoNIRXyN7Ael/iuuDMsMhhsT/RaYpp7/I4NIGO9V8QEXN3msc0rvONKwNG
-        yMyXbNMdZvY//gDg==
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
-        (No client certificate requested)
-        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id AB0BF13AB7;
-        Tue, 23 Aug 2022 14:04:50 +0000 (UTC)
-Received: from dovecot-director2.suse.de ([192.168.254.65])
-        by imap2.suse-dmz.suse.de with ESMTPSA
-        id Tl8tKILeBGPhdQAAMHmgww
-        (envelope-from <vbabka@suse.cz>); Tue, 23 Aug 2022 14:04:50 +0000
-Message-ID: <04adfdfd-8907-fd26-06cd-bb03f39eeed8@suse.cz>
-Date:   Tue, 23 Aug 2022 16:04:50 +0200
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.1.2
-Subject: Re: [PATCH linux-next] mm/slab_common: Remove the unneeded result
- variable
-Content-Language: en-US
-To:     cgel.zte@gmail.com, 42.hyeyoo@gmail.com
-Cc:     cl@linux.com, rientjes@google.com, iamjoonsoo.kim@lge.com,
-        roman.gushchin@linux.dev, linux-mm@kvack.org,
-        linux-kernel@vger.kernel.org, ye xingchen <ye.xingchen@zte.com.cn>,
+        Tue, 23 Aug 2022 13:09:35 -0400
+Received: from mail-pf1-x433.google.com (mail-pf1-x433.google.com [IPv6:2607:f8b0:4864:20::433])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2B3F78A1DD;
+        Tue, 23 Aug 2022 06:36:27 -0700 (PDT)
+Received: by mail-pf1-x433.google.com with SMTP id p9so12409992pfq.13;
+        Tue, 23 Aug 2022 06:36:27 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc;
+        bh=qkCUHHEjfjSKRNQH08mkmAjUm96MxGOjYlwpNmfHX0U=;
+        b=qLjD8RrkXfDmKSsc6uvFpxxaOKcjFrlX4Ed+uag+3Zcut/RvJBrmAPkRQzyN2ThJDp
+         HogTfLUISfd4IGGr7WwQ4FfKIWDNBiyTGKDGukrQvhEwF/fMh8SGC0Wsdt+L6rmQz94M
+         XMphEOULUrmPEQTUtIz7qzhZpSNdsUDAxW8yo2/XsIHk6YEr8Ps7k9FTThxVaQEMBSnU
+         Q+my5qp/br8t3pPgXgMN2AFRE73097pMSUkx/iq8c3xru2nAQPkku6i+4ku6hmjcQbzF
+         6uuI9nJssK/+iKLSpWBlZTodGnB9dClR8ltHX+fTLzY4ARGl9rmgPEWceOFzJAdd3o51
+         ty7A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc;
+        bh=qkCUHHEjfjSKRNQH08mkmAjUm96MxGOjYlwpNmfHX0U=;
+        b=j2dz7NUigDqfBmJ/raCF3JmWw8094BzWEWj07VlyidkIE0MX18ODfpQiXE3+LUYAkw
+         uI7lgYtcEonvUCONaln2gI3omk62J2EQ5FEU/Ot8hYZ7yTGGv7KXxI1wGRxoT1e/qB/b
+         ViRRj3KKQiw9/Q6PDxZ7Q5CNSYbE+8mwpjA3JJMTGjzK0QlleOQMdnuoHWd2QeOsuxyz
+         gIvgTAey65kgtqPO5S2RsRIlSR6hxr5qk/ClpN1BwvC2FJI1eU3q0mDTYLFQZJqP+c97
+         L64nWbxNaVk7k/ZuM5xUJdlVcqjqLq0C3OwaZSKwFQlFkScF5q6Yj8G2aG+GEVhP0vqD
+         Y+jA==
+X-Gm-Message-State: ACgBeo1U2XqDpG1txHUH3cqVE3Dnqigye2oEvZpXQ/Kosbzs2/M2AePf
+        Uk25D5iNI4sL13zZKLiKKW8=
+X-Google-Smtp-Source: AA6agR7efiQxwbLWixfzhjMKdtkgJvkshRWfVT7naWyUZWCL75aBLjGcDOpWiyrbZhAIN33BsfFWew==
+X-Received: by 2002:a05:6a00:b53:b0:537:7f7:63a7 with SMTP id p19-20020a056a000b5300b0053707f763a7mr2134388pfo.2.1661261786624;
+        Tue, 23 Aug 2022 06:36:26 -0700 (PDT)
+Received: from localhost.localdomain ([193.203.214.57])
+        by smtp.gmail.com with ESMTPSA id 203-20020a6215d4000000b005350ea966c7sm10812859pfv.154.2022.08.23.06.36.24
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 23 Aug 2022 06:36:26 -0700 (PDT)
+From:   cgel.zte@gmail.com
+X-Google-Original-From: cui.jinpeng2@zte.com.cn
+To:     krzysztof.kozlowski@linaro.org
+Cc:     agross@kernel.org, bjorn.andersson@linaro.org,
+        konrad.dybcio@somainline.org, linux-arm-msm@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        Jinpeng Cui <cui.jinpeng2@zte.com.cn>,
         Zeal Robot <zealci@zte.com.cn>
-References: <20220823075241.209009-1-ye.xingchen@zte.com.cn>
-From:   Vlastimil Babka <vbabka@suse.cz>
-In-Reply-To: <20220823075241.209009-1-ye.xingchen@zte.com.cn>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Subject: [PATCH linux-next] soc: qcom: icc-bwmon: remove redundant ret variable
+Date:   Tue, 23 Aug 2022 13:36:20 +0000
+Message-Id: <20220823133620.211902-1-cui.jinpeng2@zte.com.cn>
+X-Mailer: git-send-email 2.25.1
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 8/23/22 09:52, cgel.zte@gmail.com wrote:
-> From: ye xingchen <ye.xingchen@zte.com.cn>
-> 
-> Return the value from __kmem_cache_shrink() directly instead of storing it
->  in another redundant variable.
-> 
-> Reported-by: Zeal Robot <zealci@zte.com.cn>
-> Signed-off-by: ye xingchen <ye.xingchen@zte.com.cn>
+From: Jinpeng Cui <cui.jinpeng2@zte.com.cn>
 
-Thanks, added to slab.git for-6.1/trivial
+Return value from devm_regmap_field_bulk_alloc() directly
+instead of taking this in another redundant variable.
 
-> ---
->  mm/slab_common.c | 6 +-----
->  1 file changed, 1 insertion(+), 5 deletions(-)
-> 
-> diff --git a/mm/slab_common.c b/mm/slab_common.c
-> index 17996649cfe3..0dfa3cfb6be5 100644
-> --- a/mm/slab_common.c
-> +++ b/mm/slab_common.c
-> @@ -495,13 +495,9 @@ EXPORT_SYMBOL(kmem_cache_destroy);
->   */
->  int kmem_cache_shrink(struct kmem_cache *cachep)
->  {
-> -	int ret;
-> -
-> -
->  	kasan_cache_shrink(cachep);
-> -	ret = __kmem_cache_shrink(cachep);
->  
-> -	return ret;
-> +	return __kmem_cache_shrink(cachep);
->  }
->  EXPORT_SYMBOL(kmem_cache_shrink);
->  
+Reported-by: Zeal Robot <zealci@zte.com.cn>
+Signed-off-by: Jinpeng Cui <cui.jinpeng2@zte.com.cn>
+---
+ drivers/soc/qcom/icc-bwmon.c | 6 ++----
+ 1 file changed, 2 insertions(+), 4 deletions(-)
+
+diff --git a/drivers/soc/qcom/icc-bwmon.c b/drivers/soc/qcom/icc-bwmon.c
+index 47c2c3e7bb3f..9df47afb0d81 100644
+--- a/drivers/soc/qcom/icc-bwmon.c
++++ b/drivers/soc/qcom/icc-bwmon.c
+@@ -551,7 +551,6 @@ static int bwmon_init_regmap(struct platform_device *pdev,
+ 	struct device *dev = &pdev->dev;
+ 	void __iomem *base;
+ 	struct regmap *map;
+-	int ret;
+ 
+ 	base = devm_platform_ioremap_resource(pdev, 0);
+ 	if (IS_ERR(base))
+@@ -565,11 +564,10 @@ static int bwmon_init_regmap(struct platform_device *pdev,
+ 
+ 	BUILD_BUG_ON(ARRAY_SIZE(msm8998_bwmon_reg_fields) != F_NUM_FIELDS);
+ 	BUILD_BUG_ON(ARRAY_SIZE(sdm845_llcc_bwmon_reg_fields) != F_NUM_FIELDS);
+-	ret = devm_regmap_field_bulk_alloc(dev, map, bwmon->regs,
++
++	return devm_regmap_field_bulk_alloc(dev, map, bwmon->regs,
+ 					   bwmon->data->regmap_fields,
+ 					   F_NUM_FIELDS);
+-
+-	return ret;
+ }
+ 
+ static int bwmon_probe(struct platform_device *pdev)
+-- 
+2.25.1
 
