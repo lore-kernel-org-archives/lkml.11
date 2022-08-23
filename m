@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 52D6FC32772
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 08:34:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8D18EC32772
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 08:34:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245273AbiHWIeW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 04:34:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34358 "EHLO
+        id S245349AbiHWIe3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 23 Aug 2022 04:34:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60256 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346211AbiHWIbv (ORCPT
+        with ESMTP id S1346222AbiHWIbv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 23 Aug 2022 04:31:51 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 830B37539D;
-        Tue, 23 Aug 2022 01:16:17 -0700 (PDT)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4D19F6DAE6;
+        Tue, 23 Aug 2022 01:16:13 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 11D20B81C20;
-        Tue, 23 Aug 2022 08:15:28 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 56B19C433D6;
-        Tue, 23 Aug 2022 08:15:26 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 9F5156131B;
+        Tue, 23 Aug 2022 08:15:42 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9CF5CC433D7;
+        Tue, 23 Aug 2022 08:15:41 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661242526;
-        bh=1uZf0x+togNFly4eR+qOBeUyoGt1699gwYKKUkpYrlM=;
+        s=korg; t=1661242542;
+        bh=gZYsygsulZRaUQQNEd00HqGuo0mFJXCegFja3ncqvFY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=rzXPkm6k0Kb/dxsiaKSLZhTkcEEBuCbiKIP8qGaRj+DSG3hd6auRrOIvQFum8hrGu
-         C7gIS9cUneGaqtzVrJL1M31M07wkXxqxt4EPeTgdCTUbqHWC5G7xWTONJ9YQe9seZL
-         FS5i2K4+2hiFLvqA1jS3J+DCqYRzV26pKQ3cgAUE=
+        b=P/gk+O7OZnAaPfQkWaflVw2D19xkpj8RYMw+7VfzjYNF7OzenTFNsWhsnpd3vn1dq
+         W5PwTBxECRfZ00/k6eA53DQMTs5d/+R7hA+5rFcUXzfFAmcWgxsCx2LsVEFuA2DwDV
+         hHYcR140WsY1h0ap26qT8eTKUWkQLFl7UgzmFtQE=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jianhua Lu <lujianhua000@gmail.com>,
-        Konrad Dybcio <konrad.dybcio@somainline.org>,
-        Linus Walleij <linus.walleij@linaro.org>
-Subject: [PATCH 5.19 100/365] pinctrl: qcom: sm8250: Fix PDC map
-Date:   Tue, 23 Aug 2022 10:00:01 +0200
-Message-Id: <20220823080122.375616930@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+        Michal Simek <michal.simek@amd.com>,
+        Mark Brown <broonie@kernel.org>
+Subject: [PATCH 5.19 134/365] spi: dt-bindings: zynqmp-qspi: add missing required
+Date:   Tue, 23 Aug 2022 10:00:35 +0200
+Message-Id: <20220823080123.797522157@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220823080118.128342613@linuxfoundation.org>
 References: <20220823080118.128342613@linuxfoundation.org>
@@ -49,32 +50,37 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jianhua Lu <lujianhua000@gmail.com>
+From: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
 
-commit 4b759ca15a4914f96ea204ea9200ceeb01d70666 upstream.
+commit acfc34f008c3e66bbcb7b9162c80c8327b6e800f upstream.
 
-Fix the PDC mapping for SM8250, gpio39 is mapped to irq73(not irq37).
+During the conversion the bindings lost list of required properties.
 
-Fixes: b41efeed507a("pinctrl: qcom: sm8250: Specify PDC map.")
-Signed-off-by: Jianhua Lu <lujianhua000@gmail.com>
-Reviewed-by: Konrad Dybcio <konrad.dybcio@somainline.org>
-Link: https://lore.kernel.org/r/20220803015645.22388-1-lujianhua000@gmail.com
-Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
+Fixes: c58db2abb19f ("spi: convert Xilinx Zynq UltraScale+ MPSoC GQSPI bindings to YAML")
+Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Reviewed-by: Michal Simek <michal.simek@amd.com>
+Link: https://lore.kernel.org/r/20220704130618.199231-2-krzysztof.kozlowski@linaro.org
+Signed-off-by: Mark Brown <broonie@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/pinctrl/qcom/pinctrl-sm8250.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ Documentation/devicetree/bindings/spi/spi-zynqmp-qspi.yaml |    7 +++++++
+ 1 file changed, 7 insertions(+)
 
---- a/drivers/pinctrl/qcom/pinctrl-sm8250.c
-+++ b/drivers/pinctrl/qcom/pinctrl-sm8250.c
-@@ -1316,7 +1316,7 @@ static const struct msm_pingroup sm8250_
- static const struct msm_gpio_wakeirq_map sm8250_pdc_map[] = {
- 	{ 0, 79 }, { 1, 84 }, { 2, 80 }, { 3, 82 }, { 4, 107 }, { 7, 43 },
- 	{ 11, 42 }, { 14, 44 }, { 15, 52 }, { 19, 67 }, { 23, 68 }, { 24, 105 },
--	{ 27, 92 }, { 28, 106 }, { 31, 69 }, { 35, 70 }, { 39, 37 },
-+	{ 27, 92 }, { 28, 106 }, { 31, 69 }, { 35, 70 }, { 39, 73 },
- 	{ 40, 108 }, { 43, 71 }, { 45, 72 }, { 47, 83 }, { 51, 74 }, { 55, 77 },
- 	{ 59, 78 }, { 63, 75 }, { 64, 81 }, { 65, 87 }, { 66, 88 }, { 67, 89 },
- 	{ 68, 54 }, { 70, 85 }, { 77, 46 }, { 80, 90 }, { 81, 91 }, { 83, 97 },
+--- a/Documentation/devicetree/bindings/spi/spi-zynqmp-qspi.yaml
++++ b/Documentation/devicetree/bindings/spi/spi-zynqmp-qspi.yaml
+@@ -30,6 +30,13 @@ properties:
+   clocks:
+     maxItems: 2
+ 
++required:
++  - compatible
++  - reg
++  - interrupts
++  - clock-names
++  - clocks
++
+ unevaluatedProperties: false
+ 
+ examples:
 
 
