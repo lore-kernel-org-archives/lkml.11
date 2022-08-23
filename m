@@ -2,45 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4A65EC32772
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 09:07:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8ECF3C32792
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 09:07:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347951AbiHWJHG (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 05:07:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58114 "EHLO
+        id S241067AbiHWJHY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 23 Aug 2022 05:07:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58424 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348119AbiHWJFs (ORCPT
+        with ESMTP id S240664AbiHWJGB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 05:05:48 -0400
+        Tue, 23 Aug 2022 05:06:01 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AD819844EB;
-        Tue, 23 Aug 2022 01:29:21 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CCF6885F83;
+        Tue, 23 Aug 2022 01:29:42 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 30860B81C53;
-        Tue, 23 Aug 2022 08:28:16 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 630F8C433C1;
-        Tue, 23 Aug 2022 08:28:14 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id E5042B81C55;
+        Tue, 23 Aug 2022 08:28:49 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 52295C433D6;
+        Tue, 23 Aug 2022 08:28:48 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661243294;
-        bh=kBIJUnYoiF4hvWbezr8bvwVph0x8Ae5+cW9bccerPLw=;
+        s=korg; t=1661243328;
+        bh=K7ahQAN1O3DYTL9J9OrKOMX8MgIAfw6ui3rxdDEwoMA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=X6VVkbPBAyigqFonlavrZ+3lM60kb/gXzg6QDkAtd7+neTC7uEEpNrDw67CmLLxLu
-         mkGyxk1KWGMM4aMeGnf2im5r8gUFn/Z5Nk1nXsv8BgnQen0+sGftlXUlBRjXUFuyPJ
-         2/lFP7ZuWBAQBk2qVq9yuojNoMNOKt2BSvg4Qd4s=
+        b=qcNwR7KMhVgi9bQg89hKUo46GlDe9ZWAuhKlot2AgtZ5tnpwXYkkdDWO5EBvLMcjh
+         zXaWllFuq27xLiDgM2NwFf6ap3UROE1Pr+FN1avAFnACHwpgG/g95bcRNanKAxQbrx
+         cnM4Bnn4KGROI1yBgMpcq/Pqkugi7vkWAfwEhhvc=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Przemyslaw Patynowski <przemyslawx.patynowski@intel.com>,
-        Mateusz Palczewski <mateusz.palczewski@intel.com>,
-        Marek Szlosek <marek.szlosek@intel.com>,
-        Tony Nguyen <anthony.l.nguyen@intel.com>
-Subject: [PATCH 5.19 230/365] i40e: Fix tunnel checksum offload with fragmented traffic
-Date:   Tue, 23 Aug 2022 10:02:11 +0200
-Message-Id: <20220823080127.841289110@linuxfoundation.org>
+        stable@vger.kernel.org, Liang He <windhl@126.com>,
+        Martin Blumenstingl <martin.blumenstingl@googlemail.com>,
+        Neil Armstrong <narmstrong@baylibre.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.19 243/365] drm/meson: Fix refcount bugs in meson_vpu_has_available_connectors()
+Date:   Tue, 23 Aug 2022 10:02:24 +0200
+Message-Id: <20220823080128.399413304@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220823080118.128342613@linuxfoundation.org>
 References: <20220823080118.128342613@linuxfoundation.org>
@@ -52,59 +50,46 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Przemyslaw Patynowski <przemyslawx.patynowski@intel.com>
+From: Liang He <windhl@126.com>
 
-commit 2c6482091f01ba104cf8ee549aa5c717e80d43ea upstream.
+[ Upstream commit 91b3c8dbe898df158fd2a84675f3a284ff6666f7 ]
 
-Fix checksum offload on VXLAN tunnels.
-In case, when mpls protocol is not used, set l4 header to transport
-header of skb. This fixes case, when user tries to offload checksums
-of VXLAN tunneled traffic.
+In this function, there are two refcount leak bugs:
+(1) when breaking out of for_each_endpoint_of_node(), we need call
+the of_node_put() for the 'ep';
+(2) we should call of_node_put() for the reference returned by
+of_graph_get_remote_port() when it is not used anymore.
 
-Steps for reproduction (requires link partner with tunnels):
-ip l s enp130s0f0 up
-ip a f enp130s0f0
-ip a a 10.10.110.2/24 dev enp130s0f0
-ip l s enp130s0f0 mtu 1600
-ip link add vxlan12_sut type vxlan id 12 group 238.168.100.100 dev \
-enp130s0f0 dstport 4789
-ip l s vxlan12_sut up
-ip a a 20.10.110.2/24 dev vxlan12_sut
-iperf3 -c 20.10.110.1 #should connect
-
-Without this patch, TX descriptor was using wrong data, due to
-l4 header pointing wrong address. NIC would then drop those packets
-internally, due to incorrect TX descriptor data, which increased
-GLV_TEPC register.
-
-Fixes: b4fb2d33514a ("i40e: Add support for MPLS + TSO")
-Signed-off-by: Przemyslaw Patynowski <przemyslawx.patynowski@intel.com>
-Signed-off-by: Mateusz Palczewski <mateusz.palczewski@intel.com>
-Tested-by: Marek Szlosek <marek.szlosek@intel.com>
-Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Fixes: bbbe775ec5b5 ("drm: Add support for Amlogic Meson Graphic Controller")
+Signed-off-by: Liang He <windhl@126.com>
+Acked-by: Martin Blumenstingl <martin.blumenstingl@googlemail.com>
+Acked-by: Neil Armstrong <narmstrong@baylibre.com>
+Signed-off-by: Neil Armstrong <narmstrong@baylibre.com>
+Link: https://patchwork.freedesktop.org/patch/msgid/20220726010722.1319416-1-windhl@126.com
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/intel/i40e/i40e_txrx.c |    8 +++++---
- 1 file changed, 5 insertions(+), 3 deletions(-)
+ drivers/gpu/drm/meson/meson_drv.c | 5 ++++-
+ 1 file changed, 4 insertions(+), 1 deletion(-)
 
---- a/drivers/net/ethernet/intel/i40e/i40e_txrx.c
-+++ b/drivers/net/ethernet/intel/i40e/i40e_txrx.c
-@@ -3204,11 +3204,13 @@ static int i40e_tx_enable_csum(struct sk
+diff --git a/drivers/gpu/drm/meson/meson_drv.c b/drivers/gpu/drm/meson/meson_drv.c
+index 1b70938cfd2c..bd4ca11d3ff5 100644
+--- a/drivers/gpu/drm/meson/meson_drv.c
++++ b/drivers/gpu/drm/meson/meson_drv.c
+@@ -115,8 +115,11 @@ static bool meson_vpu_has_available_connectors(struct device *dev)
+ 	for_each_endpoint_of_node(dev->of_node, ep) {
+ 		/* If the endpoint node exists, consider it enabled */
+ 		remote = of_graph_get_remote_port(ep);
+-		if (remote)
++		if (remote) {
++			of_node_put(remote);
++			of_node_put(ep);
+ 			return true;
++		}
+ 	}
  
- 	protocol = vlan_get_protocol(skb);
- 
--	if (eth_p_mpls(protocol))
-+	if (eth_p_mpls(protocol)) {
- 		ip.hdr = skb_inner_network_header(skb);
--	else
-+		l4.hdr = skb_checksum_start(skb);
-+	} else {
- 		ip.hdr = skb_network_header(skb);
--	l4.hdr = skb_checksum_start(skb);
-+		l4.hdr = skb_transport_header(skb);
-+	}
- 
- 	/* set the tx_flags to indicate the IP protocol type. this is
- 	 * required so that checksum header computation below is accurate.
+ 	return false;
+-- 
+2.35.1
+
 
 
