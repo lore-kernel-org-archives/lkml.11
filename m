@@ -2,42 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EE847C32772
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 10:38:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DDFC4C32772
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 10:39:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355524AbiHWKi5 (ORCPT
+        id S1355530AbiHWKjE (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 06:38:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44020 "EHLO
+        Tue, 23 Aug 2022 06:39:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38044 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355249AbiHWKXW (ORCPT
+        with ESMTP id S1355259AbiHWKXX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 06:23:22 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 535929BB50;
-        Tue, 23 Aug 2022 02:04:20 -0700 (PDT)
+        Tue, 23 Aug 2022 06:23:23 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 91D7A9D65D;
+        Tue, 23 Aug 2022 02:04:22 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id B38A1B81C53;
-        Tue, 23 Aug 2022 09:04:18 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0E8FCC433D7;
-        Tue, 23 Aug 2022 09:04:16 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 956B26158F;
+        Tue, 23 Aug 2022 09:04:21 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 83854C433D7;
+        Tue, 23 Aug 2022 09:04:20 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661245457;
-        bh=C+xVUrKAbI48SofDpEDFTkF7+biqsKNrNaN/gh1hoQc=;
+        s=korg; t=1661245461;
+        bh=7sMFwzAeoSVLxHv+4dUE7fblld7ICcdQmAwLdu9zW2I=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=0HplqmVhL0t585CKXFkwjcN0Bs/zJ008zhfkiJATppZwZE5I8FhJJAcVjT538/e1e
-         rE5RrwtWds4xWr2GC/UNNfYF+veYgzA2X13wn9F7SEsi0Mpaj8lRMCPC3ACy3LkyMN
-         2LE0mxBAFmAwOY0eeCqgKgChmlJqoqZwPUob3jIk=
+        b=kW7B7Gx1vbGvWfX3eDoiLZQcYpwQOTf9L6II+pTK8xM56B6BcP7S6XR9akTBdoX3Y
+         M9Obtr7fSbsrDUQV/tlmneQZtktTTNMX0qW19hRYOrsOXbcMsd3o9+U7pFugokf1tL
+         2AxdDyLOWlMUkwpL2LnPVx8gYUf1BhZmx4yOH6R4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Liang He <windhl@126.com>,
-        Felix Fietkau <nbd@nbd.name>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.19 085/287] mediatek: mt76: mac80211: Fix missing of_node_put() in mt76_led_init()
-Date:   Tue, 23 Aug 2022 10:24:14 +0200
-Message-Id: <20220823080103.154616692@linuxfoundation.org>
+        stable@vger.kernel.org, Yonglong Li <liyonglong@chinatelecom.cn>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 4.19 086/287] tcp: make retransmitted SKB fit into the send window
+Date:   Tue, 23 Aug 2022 10:24:15 +0200
+Message-Id: <20220823080103.184375672@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220823080100.268827165@linuxfoundation.org>
 References: <20220823080100.268827165@linuxfoundation.org>
@@ -49,33 +51,110 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Liang He <windhl@126.com>
+From: Yonglong Li <liyonglong@chinatelecom.cn>
 
-[ Upstream commit 0a14c1d0113f121151edf34333cdf212dd209190 ]
+[ Upstream commit 536a6c8e05f95e3d1118c40ae8b3022ee2d05d52 ]
 
-We should use of_node_put() for the reference 'np' returned by
-of_get_child_by_name() which will increase the refcount.
+current code of __tcp_retransmit_skb only check TCP_SKB_CB(skb)->seq
+in send window, and TCP_SKB_CB(skb)->seq_end maybe out of send window.
+If receiver has shrunk his window, and skb is out of new window,  it
+should retransmit a smaller portion of the payload.
 
-Fixes: 17f1de56df05 ("mt76: add common code shared between multiple chipsets")
-Signed-off-by: Liang He <windhl@126.com>
-Signed-off-by: Felix Fietkau <nbd@nbd.name>
+test packetdrill script:
+    0 socket(..., SOCK_STREAM, IPPROTO_TCP) = 3
+   +0 fcntl(3, F_GETFL) = 0x2 (flags O_RDWR)
+   +0 fcntl(3, F_SETFL, O_RDWR|O_NONBLOCK) = 0
+
+   +0 connect(3, ..., ...) = -1 EINPROGRESS (Operation now in progress)
+   +0 > S 0:0(0)  win 65535 <mss 1460,sackOK,TS val 100 ecr 0,nop,wscale 8>
+ +.05 < S. 0:0(0) ack 1 win 6000 <mss 1000,nop,nop,sackOK>
+   +0 > . 1:1(0) ack 1
+
+   +0 write(3, ..., 10000) = 10000
+
+   +0 > . 1:2001(2000) ack 1 win 65535
+   +0 > . 2001:4001(2000) ack 1 win 65535
+   +0 > . 4001:6001(2000) ack 1 win 65535
+
+ +.05 < . 1:1(0) ack 4001 win 1001
+
+and tcpdump show:
+192.168.226.67.55 > 192.0.2.1.8080: Flags [.], seq 1:2001, ack 1, win 65535, length 2000
+192.168.226.67.55 > 192.0.2.1.8080: Flags [.], seq 2001:4001, ack 1, win 65535, length 2000
+192.168.226.67.55 > 192.0.2.1.8080: Flags [P.], seq 4001:5001, ack 1, win 65535, length 1000
+192.168.226.67.55 > 192.0.2.1.8080: Flags [.], seq 5001:6001, ack 1, win 65535, length 1000
+192.0.2.1.8080 > 192.168.226.67.55: Flags [.], ack 4001, win 1001, length 0
+192.168.226.67.55 > 192.0.2.1.8080: Flags [.], seq 5001:6001, ack 1, win 65535, length 1000
+192.168.226.67.55 > 192.0.2.1.8080: Flags [P.], seq 4001:5001, ack 1, win 65535, length 1000
+
+when cient retract window to 1001, send window is [4001,5002],
+but TLP send 5001-6001 packet which is out of send window.
+
+Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
+Signed-off-by: Yonglong Li <liyonglong@chinatelecom.cn>
+Signed-off-by: Eric Dumazet <edumazet@google.com>
+Link: https://lore.kernel.org/r/1657532838-20200-1-git-send-email-liyonglong@chinatelecom.cn
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/wireless/mediatek/mt76/mac80211.c | 1 +
- 1 file changed, 1 insertion(+)
+ net/ipv4/tcp_output.c | 23 ++++++++++++++++-------
+ 1 file changed, 16 insertions(+), 7 deletions(-)
 
-diff --git a/drivers/net/wireless/mediatek/mt76/mac80211.c b/drivers/net/wireless/mediatek/mt76/mac80211.c
-index 1b5abd4816ed..203b888f38d8 100644
---- a/drivers/net/wireless/mediatek/mt76/mac80211.c
-+++ b/drivers/net/wireless/mediatek/mt76/mac80211.c
-@@ -114,6 +114,7 @@ static int mt76_led_init(struct mt76_dev *dev)
- 		if (!of_property_read_u32(np, "led-sources", &led_pin))
- 			dev->led_pin = led_pin;
- 		dev->led_al = of_property_read_bool(np, "led-active-low");
-+		of_node_put(np);
+diff --git a/net/ipv4/tcp_output.c b/net/ipv4/tcp_output.c
+index 3090b61e4edd..995306dc458a 100644
+--- a/net/ipv4/tcp_output.c
++++ b/net/ipv4/tcp_output.c
+@@ -2856,7 +2856,7 @@ int __tcp_retransmit_skb(struct sock *sk, struct sk_buff *skb, int segs)
+ 	struct tcp_sock *tp = tcp_sk(sk);
+ 	unsigned int cur_mss;
+ 	int diff, len, err;
+-
++	int avail_wnd;
+ 
+ 	/* Inconclusive MTU probe */
+ 	if (icsk->icsk_mtup.probe_size)
+@@ -2886,17 +2886,25 @@ int __tcp_retransmit_skb(struct sock *sk, struct sk_buff *skb, int segs)
+ 		return -EHOSTUNREACH; /* Routing failure or similar. */
+ 
+ 	cur_mss = tcp_current_mss(sk);
++	avail_wnd = tcp_wnd_end(tp) - TCP_SKB_CB(skb)->seq;
+ 
+ 	/* If receiver has shrunk his window, and skb is out of
+ 	 * new window, do not retransmit it. The exception is the
+ 	 * case, when window is shrunk to zero. In this case
+-	 * our retransmit serves as a zero window probe.
++	 * our retransmit of one segment serves as a zero window probe.
+ 	 */
+-	if (!before(TCP_SKB_CB(skb)->seq, tcp_wnd_end(tp)) &&
+-	    TCP_SKB_CB(skb)->seq != tp->snd_una)
+-		return -EAGAIN;
++	if (avail_wnd <= 0) {
++		if (TCP_SKB_CB(skb)->seq != tp->snd_una)
++			return -EAGAIN;
++		avail_wnd = cur_mss;
++	}
+ 
+ 	len = cur_mss * segs;
++	if (len > avail_wnd) {
++		len = rounddown(avail_wnd, cur_mss);
++		if (!len)
++			len = avail_wnd;
++	}
+ 	if (skb->len > len) {
+ 		if (tcp_fragment(sk, TCP_FRAG_IN_RTX_QUEUE, skb, len,
+ 				 cur_mss, GFP_ATOMIC))
+@@ -2910,8 +2918,9 @@ int __tcp_retransmit_skb(struct sock *sk, struct sk_buff *skb, int segs)
+ 		diff -= tcp_skb_pcount(skb);
+ 		if (diff)
+ 			tcp_adjust_pcount(sk, skb, diff);
+-		if (skb->len < cur_mss)
+-			tcp_retrans_try_collapse(sk, skb, cur_mss);
++		avail_wnd = min_t(int, avail_wnd, cur_mss);
++		if (skb->len < avail_wnd)
++			tcp_retrans_try_collapse(sk, skb, avail_wnd);
  	}
  
- 	return devm_led_classdev_register(dev->dev, &dev->led_cdev);
+ 	/* RFC3168, section 6.1.1.1. ECN fallback */
 -- 
 2.35.1
 
