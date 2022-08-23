@@ -2,46 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B3D87C32772
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 10:13:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A3686C32772
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 10:14:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353130AbiHWKNp (ORCPT
+        id S1353336AbiHWKN6 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 06:13:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46596 "EHLO
+        Tue, 23 Aug 2022 06:13:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46214 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352745AbiHWKGN (ORCPT
+        with ESMTP id S1352759AbiHWKGP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 06:06:13 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 57FE37D1DF;
-        Tue, 23 Aug 2022 01:52:45 -0700 (PDT)
+        Tue, 23 Aug 2022 06:06:15 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 33DCCB1C4;
+        Tue, 23 Aug 2022 01:52:51 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id D59F1B81C3B;
-        Tue, 23 Aug 2022 08:52:43 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 37DB5C433C1;
-        Tue, 23 Aug 2022 08:52:42 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id B2E95B81C28;
+        Tue, 23 Aug 2022 08:52:49 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 06CBAC433C1;
+        Tue, 23 Aug 2022 08:52:47 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661244762;
-        bh=mTvSXMU+FqVYUEjrCpZyNd5/4xWQ8kzPmC4oXbY4SGQ=;
+        s=korg; t=1661244768;
+        bh=OQlvZM+K22KXk20z/y80Vu43gP5UH4g2hFg4EP4s7Wc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=AGJ+Ukm9luCKS1uMs/PnUY6PGIt27cY1BaMktiMYQYqLOd2SdLQr7iwb+qWczQMmp
-         QqbDt2OmX9mBAUO/9RbbJj5vTWAXaK/KAwIQOiqs50XVw8VlQ1MMDlsHceeZfySN1v
-         x/du1tquA4keQBo9YEC0ZmkvzvphhJQhejgYYMR0=
+        b=XVGVL3PilQvNhE0Tef1DKIM5ZEtOvW7dZm/fnQRYC58h+A4WDvNDIxA8gvXP7ZpA+
+         FG1MN/d9g3n+lwi719CH4gNz3d1ZRpiElhAY/2rh5Pyq2bavA2rziokC291BfbJ6pU
+         yrG6NFs2gMmH8/NqOH2DJM8zQZO09sljfON8+o5Y=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
-        =?UTF-8?q?Martin=20Povi=C5=A1er?= <povik+lin@cutebit.org>,
-        Mark Brown <broonie@kernel.org>
-Subject: [PATCH 5.15 118/244] ASoC: tas2770: Set correct FSYNC polarity
-Date:   Tue, 23 Aug 2022 10:24:37 +0200
-Message-Id: <20220823080102.960633658@linuxfoundation.org>
+        Trond Myklebust <trond.myklebust@hammerspace.com>
+Subject: [PATCH 4.14 187/229] SUNRPC: Reinitialise the backchannel request buffers before reuse
+Date:   Tue, 23 Aug 2022 10:25:48 +0200
+Message-Id: <20220823080100.290060127@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220823080059.091088642@linuxfoundation.org>
-References: <20220823080059.091088642@linuxfoundation.org>
+In-Reply-To: <20220823080053.202747790@linuxfoundation.org>
+References: <20220823080053.202747790@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -50,96 +49,50 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Martin Povišer <povik+lin@cutebit.org>
+From: Trond Myklebust <trond.myklebust@hammerspace.com>
 
-commit e9ac31f0a5d0e246b046c20348954519f91a297f upstream.
+commit 6622e3a73112fc336c1c2c582428fb5ef18e456a upstream.
 
-Fix setting of FSYNC polarity for DAI formats other than I2S. Also
-add support for polarity inversion.
+When we're reusing the backchannel requests instead of freeing them,
+then we should reinitialise any values of the send/receive xdr_bufs so
+that they reflect the available space.
 
-Fixes: 1a476abc723e ("tas2770: add tas2770 smart PA kernel driver")
-Signed-off-by: Martin Povišer <povik+lin@cutebit.org>
-Link: https://lore.kernel.org/r/20220808141246.5749-2-povik+lin@cutebit.org
-Signed-off-by: Mark Brown <broonie@kernel.org>
+Fixes: 0d2a970d0ae5 ("SUNRPC: Fix a backchannel race")
+Signed-off-by: Trond Myklebust <trond.myklebust@hammerspace.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- sound/soc/codecs/tas2770.c |   20 +++++++++++++++++++-
- sound/soc/codecs/tas2770.h |    3 +++
- 2 files changed, 22 insertions(+), 1 deletion(-)
+ net/sunrpc/backchannel_rqst.c |   14 ++++++++++++++
+ 1 file changed, 14 insertions(+)
 
---- a/sound/soc/codecs/tas2770.c
-+++ b/sound/soc/codecs/tas2770.c
-@@ -337,7 +337,7 @@ static int tas2770_set_fmt(struct snd_so
- 	struct snd_soc_component *component = dai->component;
- 	struct tas2770_priv *tas2770 =
- 			snd_soc_component_get_drvdata(component);
--	u8 tdm_rx_start_slot = 0, asi_cfg_1 = 0;
-+	u8 tdm_rx_start_slot = 0, invert_fpol = 0, fpol_preinv = 0, asi_cfg_1 = 0;
- 	int ret;
- 
- 	switch (fmt & SND_SOC_DAIFMT_MASTER_MASK) {
-@@ -349,9 +349,15 @@ static int tas2770_set_fmt(struct snd_so
- 	}
- 
- 	switch (fmt & SND_SOC_DAIFMT_INV_MASK) {
-+	case SND_SOC_DAIFMT_NB_IF:
-+		invert_fpol = 1;
-+		fallthrough;
- 	case SND_SOC_DAIFMT_NB_NF:
- 		asi_cfg_1 |= TAS2770_TDM_CFG_REG1_RX_RSING;
- 		break;
-+	case SND_SOC_DAIFMT_IB_IF:
-+		invert_fpol = 1;
-+		fallthrough;
- 	case SND_SOC_DAIFMT_IB_NF:
- 		asi_cfg_1 |= TAS2770_TDM_CFG_REG1_RX_FALING;
- 		break;
-@@ -369,15 +375,19 @@ static int tas2770_set_fmt(struct snd_so
- 	switch (fmt & SND_SOC_DAIFMT_FORMAT_MASK) {
- 	case SND_SOC_DAIFMT_I2S:
- 		tdm_rx_start_slot = 1;
-+		fpol_preinv = 0;
- 		break;
- 	case SND_SOC_DAIFMT_DSP_A:
- 		tdm_rx_start_slot = 0;
-+		fpol_preinv = 1;
- 		break;
- 	case SND_SOC_DAIFMT_DSP_B:
- 		tdm_rx_start_slot = 1;
-+		fpol_preinv = 1;
- 		break;
- 	case SND_SOC_DAIFMT_LEFT_J:
- 		tdm_rx_start_slot = 0;
-+		fpol_preinv = 1;
- 		break;
- 	default:
- 		dev_err(tas2770->dev,
-@@ -391,6 +401,14 @@ static int tas2770_set_fmt(struct snd_so
- 	if (ret < 0)
- 		return ret;
- 
-+	ret = snd_soc_component_update_bits(component, TAS2770_TDM_CFG_REG0,
-+					    TAS2770_TDM_CFG_REG0_FPOL_MASK,
-+					    (fpol_preinv ^ invert_fpol)
-+					     ? TAS2770_TDM_CFG_REG0_FPOL_RSING
-+					     : TAS2770_TDM_CFG_REG0_FPOL_FALING);
-+	if (ret < 0)
-+		return ret;
-+
- 	return 0;
+--- a/net/sunrpc/backchannel_rqst.c
++++ b/net/sunrpc/backchannel_rqst.c
+@@ -69,6 +69,17 @@ static void xprt_free_allocation(struct
+ 	kfree(req);
  }
  
---- a/sound/soc/codecs/tas2770.h
-+++ b/sound/soc/codecs/tas2770.h
-@@ -41,6 +41,9 @@
- #define TAS2770_TDM_CFG_REG0_31_44_1_48KHZ  0x6
- #define TAS2770_TDM_CFG_REG0_31_88_2_96KHZ  0x8
- #define TAS2770_TDM_CFG_REG0_31_176_4_192KHZ  0xa
-+#define TAS2770_TDM_CFG_REG0_FPOL_MASK  BIT(0)
-+#define TAS2770_TDM_CFG_REG0_FPOL_RSING  0
-+#define TAS2770_TDM_CFG_REG0_FPOL_FALING  1
-     /* TDM Configuration Reg1 */
- #define TAS2770_TDM_CFG_REG1  TAS2770_REG(0X0, 0x0B)
- #define TAS2770_TDM_CFG_REG1_MASK	GENMASK(5, 1)
++static void xprt_bc_reinit_xdr_buf(struct xdr_buf *buf)
++{
++	buf->head[0].iov_len = PAGE_SIZE;
++	buf->tail[0].iov_len = 0;
++	buf->pages = NULL;
++	buf->page_len = 0;
++	buf->flags = 0;
++	buf->len = 0;
++	buf->buflen = PAGE_SIZE;
++}
++
+ static int xprt_alloc_xdr_buf(struct xdr_buf *buf, gfp_t gfp_flags)
+ {
+ 	struct page *page;
+@@ -291,6 +302,9 @@ void xprt_free_bc_rqst(struct rpc_rqst *
+ 	 */
+ 	spin_lock_bh(&xprt->bc_pa_lock);
+ 	if (xprt_need_to_requeue(xprt)) {
++		xprt_bc_reinit_xdr_buf(&req->rq_snd_buf);
++		xprt_bc_reinit_xdr_buf(&req->rq_rcv_buf);
++		req->rq_rcv_buf.len = PAGE_SIZE;
+ 		list_add_tail(&req->rq_bc_pa_list, &xprt->bc_pa_list);
+ 		xprt->bc_alloc_count++;
+ 		req = NULL;
 
 
