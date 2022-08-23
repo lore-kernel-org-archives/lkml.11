@@ -2,45 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B7D23C32772
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 09:53:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1A0A2C32772
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 09:53:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241563AbiHWJxc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 05:53:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41944 "EHLO
+        id S238318AbiHWJxm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 23 Aug 2022 05:53:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42002 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352100AbiHWJvR (ORCPT
+        with ESMTP id S1352123AbiHWJvS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 05:51:17 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BF0BC9E2E9;
-        Tue, 23 Aug 2022 01:45:44 -0700 (PDT)
+        Tue, 23 Aug 2022 05:51:18 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7986F6AA15;
+        Tue, 23 Aug 2022 01:45:52 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 1665BB81C3E;
-        Tue, 23 Aug 2022 08:44:57 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4D995C433C1;
-        Tue, 23 Aug 2022 08:44:55 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id BCB96B8105C;
+        Tue, 23 Aug 2022 08:44:47 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 007E9C433C1;
+        Tue, 23 Aug 2022 08:44:45 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661244295;
-        bh=7Rn4cdXpRAM5OklFmWT4YS51CyztgZROwx8ZSo8Jkk8=;
+        s=korg; t=1661244286;
+        bh=sto1LCv4DQGYhbhbX/aWkxvRFogNADA9fty7b01kRcU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Tx36S5NiuVZvdZ/d0nqdZOzDm7z3gh1MuOjw+Kq60Jwb6mR9L61Hj7WvHTi1tupIr
-         B5dAM4Ck314pKZ4wZN1MetV4ww0oHfgqU0zmwi3kNz4adI03Dlc+yZ9yo4pP6X5RDP
-         zAAsYQPMzKjJKUINnjpOsA1H6u8z9h/nFdyfd3Ww=
+        b=grEEyB++9dHYQtXHBMksoC9DH1UAOm7EbQtRhqAa0ob85dxSiDmRvchXbSXtVNNyo
+         wW5jTMXyFx0dJyHZmjUxcYaMIyPJizwLaVh2V4Wql8e8rLme/dyKkEP+nxItoqnohB
+         U+Hc7/2CrQZx2DZkFfbS/1M6TSAhJZjQ/nim/ZvE=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        "Peter Zijlstra (Intel)" <peterz@infradead.org>,
-        Richard Weinberger <richard@nod.at>
-Subject: [PATCH 5.15 069/244] um: Add missing apply_returns()
-Date:   Tue, 23 Aug 2022 10:23:48 +0200
-Message-Id: <20220823080101.377073102@linuxfoundation.org>
+        stable@vger.kernel.org, Miaohe Lin <linmiaohe@huawei.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 4.14 114/229] mm/mmap.c: fix missing call to vm_unacct_memory in mmap_region
+Date:   Tue, 23 Aug 2022 10:24:35 +0200
+Message-Id: <20220823080057.754261520@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220823080059.091088642@linuxfoundation.org>
-References: <20220823080059.091088642@linuxfoundation.org>
+In-Reply-To: <20220823080053.202747790@linuxfoundation.org>
+References: <20220823080053.202747790@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -49,34 +49,40 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Peter Zijlstra <peterz@infradead.org>
+From: Miaohe Lin <linmiaohe@huawei.com>
 
-commit 637285e7f8d6da70a70c64e7895cb0672357a1f7 upstream.
+[ Upstream commit 7f82f922319ede486540e8746769865b9508d2c2 ]
 
-Implement apply_returns() stub for UM, just like all the other patching
-routines.
+Since the beginning, charged is set to 0 to avoid calling vm_unacct_memory
+twice because vm_unacct_memory will be called by above unmap_region.  But
+since commit 4f74d2c8e827 ("vm: remove 'nr_accounted' calculations from
+the unmap_vmas() interfaces"), unmap_region doesn't call vm_unacct_memory
+anymore.  So charged shouldn't be set to 0 now otherwise the calling to
+paired vm_unacct_memory will be missed and leads to imbalanced account.
 
-Fixes: 15e67227c49a ("x86: Undo return-thunk damage")
-Reported-by: Randy Dunlap <rdunlap@infradead.org)
-Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
-Signed-off-by: Richard Weinberger <richard@nod.at>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Link: https://lkml.kernel.org/r/20220618082027.43391-1-linmiaohe@huawei.com
+Fixes: 4f74d2c8e827 ("vm: remove 'nr_accounted' calculations from the unmap_vmas() interfaces")
+Signed-off-by: Miaohe Lin <linmiaohe@huawei.com>
+Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/um/kernel/um_arch.c |    4 ++++
- 1 file changed, 4 insertions(+)
+ mm/mmap.c | 1 -
+ 1 file changed, 1 deletion(-)
 
---- a/arch/um/kernel/um_arch.c
-+++ b/arch/um/kernel/um_arch.c
-@@ -437,6 +437,10 @@ void apply_returns(s32 *start, s32 *end)
- {
- }
+diff --git a/mm/mmap.c b/mm/mmap.c
+index 64d1d133af79..a29d5b1fa1a1 100644
+--- a/mm/mmap.c
++++ b/mm/mmap.c
+@@ -1778,7 +1778,6 @@ unsigned long mmap_region(struct file *file, unsigned long addr,
  
-+void apply_returns(s32 *start, s32 *end)
-+{
-+}
-+
- void apply_alternatives(struct alt_instr *start, struct alt_instr *end)
- {
- }
+ 	/* Undo any partial mapping done by a device driver. */
+ 	unmap_region(mm, vma, prev, vma->vm_start, vma->vm_end);
+-	charged = 0;
+ 	if (vm_flags & VM_SHARED)
+ 		mapping_unmap_writable(file->f_mapping);
+ allow_write_and_free_vma:
+-- 
+2.35.1
+
 
 
