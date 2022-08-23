@@ -2,44 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6B0B3C32774
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 10:42:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 14F8BC49EC2
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 10:42:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356150AbiHWKld (ORCPT
+        id S1356033AbiHWKlU (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 06:41:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44822 "EHLO
+        Tue, 23 Aug 2022 06:41:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53496 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354859AbiHWK0g (ORCPT
+        with ESMTP id S1354750AbiHWK0T (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 06:26:36 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 72D6183F2D;
-        Tue, 23 Aug 2022 02:05:51 -0700 (PDT)
+        Tue, 23 Aug 2022 06:26:19 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5CF9983BEA;
+        Tue, 23 Aug 2022 02:05:40 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 134D5B81C53;
-        Tue, 23 Aug 2022 09:05:50 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 70FBAC433C1;
-        Tue, 23 Aug 2022 09:05:48 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id F179A61580;
+        Tue, 23 Aug 2022 09:05:39 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id F0C52C433D6;
+        Tue, 23 Aug 2022 09:05:38 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661245548;
-        bh=gXJeB+CKeDu7TiKFHWZPHO1BsLZegk9X3IBL5reKvkk=;
+        s=korg; t=1661245539;
+        bh=64nKZ5znMBqSE8mOqK0YmZCrB6CaXZ+9XWMHssYQUJs=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ML0v913R0zmyW9YZ/KLVBqzMqdDKuC3EFnDwz37x/NVatVOVDZsi+tzEqDN048dYU
-         VdyAGgRdAjIwVJ2mGL91UfEqpDKpPQltAzcc0zhOFzGso8JE8Qz/eJIoq70fcHoeDB
-         45N/4d6OxylNo84njDuF6yAJKUv5P2KQzbjnAGko=
+        b=Yp5XFjU4BSvGN21Y+/hVsgbSMTjCN4SxzeILFRVRqtkeDFQSu2hIdP9tqAN7m6VXd
+         3Dks5mYQBhxy5knC2F6Z7T+z7c3YGSZFoxwuhOmzLNPARnSIaTn4v4NtFNeb8/b8M3
+         VH49430fkMF0GxISuPCoe7Fn5kZ13qXpN0eFEckc=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Miquel Raynal <miquel.raynal@bootlin.com>,
+        stable@vger.kernel.org, Nathan Chancellor <nathan@kernel.org>,
+        Vincent Mailhol <mailhol.vincent@wanadoo.fr>,
+        Marc Kleine-Budde <mkl@pengutronix.de>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.19 114/287] mtd: maps: Fix refcount leak in of_flash_probe_versatile
-Date:   Tue, 23 Aug 2022 10:24:43 +0200
-Message-Id: <20220823080104.218462230@linuxfoundation.org>
+Subject: [PATCH 4.19 103/287] can: pch_can: pch_can_error(): initialize errc before using it
+Date:   Tue, 23 Aug 2022 10:24:32 +0200
+Message-Id: <20220823080103.839876678@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220823080100.268827165@linuxfoundation.org>
 References: <20220823080100.268827165@linuxfoundation.org>
@@ -51,36 +51,56 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Miaoqian Lin <linmq006@gmail.com>
+From: Vincent Mailhol <mailhol.vincent@wanadoo.fr>
 
-[ Upstream commit 33ec82a6d2b119938f26e5c8040ed5d92378eb54 ]
+[ Upstream commit 9950f11211331180269867aef848c7cf56861742 ]
 
-of_find_matching_node_and_match() returns a node pointer with refcount
-incremented, we should use of_node_put() on it when not need anymore.
-Add missing of_node_put() to avoid refcount leak.
+After commit 3a5c7e4611dd, the variable errc is accessed before being
+initialized, c.f. below W=2 warning:
 
-Fixes: b0afd44bc192 ("mtd: physmap_of: add a hook for Versatile write protection")
-Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
-Reviewed-by: Linus Walleij <linus.walleij@linaro.org>
-Signed-off-by: Miquel Raynal <miquel.raynal@bootlin.com>
-Link: https://lore.kernel.org/linux-mtd/20220523140205.48625-1-linmq006@gmail.com
+| In function 'pch_can_error',
+|     inlined from 'pch_can_poll' at drivers/net/can/pch_can.c:739:4:
+| drivers/net/can/pch_can.c:501:29: warning: 'errc' may be used uninitialized [-Wmaybe-uninitialized]
+|   501 |                 cf->data[6] = errc & PCH_TEC;
+|       |                             ^
+| drivers/net/can/pch_can.c: In function 'pch_can_poll':
+| drivers/net/can/pch_can.c:484:13: note: 'errc' was declared here
+|   484 |         u32 errc, lec;
+|       |             ^~~~
+
+Moving errc initialization up solves this issue.
+
+Fixes: 3a5c7e4611dd ("can: pch_can: do not report txerr and rxerr during bus-off")
+Reported-by: Nathan Chancellor <nathan@kernel.org>
+Signed-off-by: Vincent Mailhol <mailhol.vincent@wanadoo.fr>
+Reviewed-by: Nathan Chancellor <nathan@kernel.org>
+Link: https://lore.kernel.org/all/20220721160032.9348-1-mailhol.vincent@wanadoo.fr
+Signed-off-by: Marc Kleine-Budde <mkl@pengutronix.de>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/mtd/maps/physmap_of_versatile.c | 1 +
- 1 file changed, 1 insertion(+)
+ drivers/net/can/pch_can.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/mtd/maps/physmap_of_versatile.c b/drivers/mtd/maps/physmap_of_versatile.c
-index 03f2b6e7bc7e..961704228dd2 100644
---- a/drivers/mtd/maps/physmap_of_versatile.c
-+++ b/drivers/mtd/maps/physmap_of_versatile.c
-@@ -221,6 +221,7 @@ int of_flash_probe_versatile(struct platform_device *pdev,
+diff --git a/drivers/net/can/pch_can.c b/drivers/net/can/pch_can.c
+index 3e1d71c70b0d..25def028a1dc 100644
+--- a/drivers/net/can/pch_can.c
++++ b/drivers/net/can/pch_can.c
+@@ -500,6 +500,7 @@ static void pch_can_error(struct net_device *ndev, u32 status)
+ 	if (!skb)
+ 		return;
  
- 		versatile_flashprot = (enum versatile_flashprot)devid->data;
- 		rmap = syscon_node_to_regmap(sysnp);
-+		of_node_put(sysnp);
- 		if (IS_ERR(rmap))
- 			return PTR_ERR(rmap);
++	errc = ioread32(&priv->regs->errc);
+ 	if (status & PCH_BUS_OFF) {
+ 		pch_can_set_tx_all(priv, 0);
+ 		pch_can_set_rx_all(priv, 0);
+@@ -512,7 +513,6 @@ static void pch_can_error(struct net_device *ndev, u32 status)
+ 		cf->data[7] = (errc & PCH_REC) >> 8;
+ 	}
  
+-	errc = ioread32(&priv->regs->errc);
+ 	/* Warning interrupt. */
+ 	if (status & PCH_EWARN) {
+ 		state = CAN_STATE_ERROR_WARNING;
 -- 
 2.35.1
 
