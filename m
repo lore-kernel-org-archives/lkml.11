@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 231E5C32772
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 12:07:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 39462C32772
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 12:07:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1359216AbiHWMHb (ORCPT
+        id S1352379AbiHWMHj (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 08:07:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48746 "EHLO
+        Tue, 23 Aug 2022 08:07:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52964 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1358941AbiHWMDI (ORCPT
+        with ESMTP id S1359212AbiHWMDX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 08:03:08 -0400
+        Tue, 23 Aug 2022 08:03:23 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 18BD8DC5E9;
-        Tue, 23 Aug 2022 02:37:00 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 44625DCFFC;
+        Tue, 23 Aug 2022 02:37:07 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id B8A08613CA;
-        Tue, 23 Aug 2022 09:37:00 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id AD2A2C433C1;
-        Tue, 23 Aug 2022 09:36:59 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id F0DF161460;
+        Tue, 23 Aug 2022 09:36:41 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id F2568C433D6;
+        Tue, 23 Aug 2022 09:36:40 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661247420;
-        bh=bzyo+BAZUaNzG/Esy2DXbEuHJ1wI5aKBPt+mEZCgAv8=;
+        s=korg; t=1661247401;
+        bh=+fiLNvK/jrxtzfqvF1MMl97JGRcM/wzb8f52HN2rxYg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=LI2qC+j0iYrHWOSSJjntxnQB9ZhQ3bVHrDfNnFqyHpBeXmKv3j8lEc+IxOFCaF9k+
-         LpxJA69+WaUN7rgYW2TSRvZGC4DGIixpfVbThWd+VWMO7MnSZ5QOLLFxEr5tI/WxCw
-         GIA/qtUVvgI+J5B875/8+0sAegpAoZ17T6P1MVuM=
+        b=zCgPRWwbhNAwQFMQfvzy5rCzstRe82qvMRxalZJR/muB/cLSqah0zGhjGcc2vQyKP
+         ym4twT5cDewSHGRfCOsVz4kQc7UcMRxzyWTTabUXRLl8biRaNo386Z1C8Cu+ps8j5k
+         HV1iI9+vXunC63s5/rbEbtB3gp9U1vcO+jUGPWAM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Hou Tao <houtao1@huawei.com>,
-        Yonghong Song <yhs@fb.com>, Alexei Starovoitov <ast@kernel.org>
-Subject: [PATCH 5.10 030/158] bpf: Acquire map uref in .init_seq_private for sock{map,hash} iterator
-Date:   Tue, 23 Aug 2022 10:26:02 +0200
-Message-Id: <20220823080047.305143400@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Trond Myklebust <trond.myklebust@hammerspace.com>
+Subject: [PATCH 5.10 024/158] NFSv4: Fix races in the legacy idmapper upcall
+Date:   Tue, 23 Aug 2022 10:25:56 +0200
+Message-Id: <20220823080047.065797322@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220823080046.056825146@linuxfoundation.org>
 References: <20220823080046.056825146@linuxfoundation.org>
@@ -49,82 +49,138 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Hou Tao <houtao1@huawei.com>
+From: Trond Myklebust <trond.myklebust@hammerspace.com>
 
-commit f0d2b2716d71778d0b0c8eaa433c073287d69d93 upstream.
+commit 51fd2eb52c0ca8275a906eed81878ef50ae94eb0 upstream.
 
-sock_map_iter_attach_target() acquires a map uref, and the uref may be
-released before or in the middle of iterating map elements. For example,
-the uref could be released in sock_map_iter_detach_target() as part of
-bpf_link_release(), or could be released in bpf_map_put_with_uref() as
-part of bpf_map_release().
+nfs_idmap_instantiate() will cause the process that is waiting in
+request_key_with_auxdata() to wake up and exit. If there is a second
+process waiting for the idmap->idmap_mutex, then it may wake up and
+start a new call to request_key_with_auxdata(). If the call to
+idmap_pipe_downcall() from the first process has not yet finished
+calling nfs_idmap_complete_pipe_upcall_locked(), then we may end up
+triggering the WARN_ON_ONCE() in nfs_idmap_prepare_pipe_upcall().
 
-Fixing it by acquiring an extra map uref in .init_seq_private and
-releasing it in .fini_seq_private.
+The fix is to ensure that we clear idmap->idmap_upcall_data before
+calling nfs_idmap_instantiate().
 
-Fixes: 0365351524d7 ("net: Allow iterating sockmap and sockhash")
-Signed-off-by: Hou Tao <houtao1@huawei.com>
-Acked-by: Yonghong Song <yhs@fb.com>
-Link: https://lore.kernel.org/r/20220810080538.1845898-5-houtao@huaweicloud.com
-Signed-off-by: Alexei Starovoitov <ast@kernel.org>
+Fixes: e9ab41b620e4 ("NFSv4: Clean up the legacy idmapper upcall")
+Signed-off-by: Trond Myklebust <trond.myklebust@hammerspace.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- net/core/sock_map.c |   20 +++++++++++++++++++-
- 1 file changed, 19 insertions(+), 1 deletion(-)
+ fs/nfs/nfs4idmap.c |   46 ++++++++++++++++++++++++----------------------
+ 1 file changed, 24 insertions(+), 22 deletions(-)
 
---- a/net/core/sock_map.c
-+++ b/net/core/sock_map.c
-@@ -815,13 +815,22 @@ static int sock_map_init_seq_private(voi
- {
- 	struct sock_map_seq_info *info = priv_data;
- 
-+	bpf_map_inc_with_uref(aux->map);
- 	info->map = aux->map;
- 	return 0;
+--- a/fs/nfs/nfs4idmap.c
++++ b/fs/nfs/nfs4idmap.c
+@@ -561,22 +561,20 @@ nfs_idmap_prepare_pipe_upcall(struct idm
+ 	return true;
  }
  
-+static void sock_map_fini_seq_private(void *priv_data)
-+{
-+	struct sock_map_seq_info *info = priv_data;
-+
-+	bpf_map_put_with_uref(info->map);
-+}
-+
- static const struct bpf_iter_seq_info sock_map_iter_seq_info = {
- 	.seq_ops		= &sock_map_seq_ops,
- 	.init_seq_private	= sock_map_init_seq_private,
-+	.fini_seq_private	= sock_map_fini_seq_private,
- 	.seq_priv_size		= sizeof(struct sock_map_seq_info),
- };
- 
-@@ -1422,18 +1431,27 @@ static const struct seq_operations sock_
- };
- 
- static int sock_hash_init_seq_private(void *priv_data,
--				     struct bpf_iter_aux_info *aux)
-+				      struct bpf_iter_aux_info *aux)
+-static void
+-nfs_idmap_complete_pipe_upcall_locked(struct idmap *idmap, int ret)
++static void nfs_idmap_complete_pipe_upcall(struct idmap_legacy_upcalldata *data,
++					   int ret)
  {
- 	struct sock_hash_seq_info *info = priv_data;
- 
-+	bpf_map_inc_with_uref(aux->map);
- 	info->map = aux->map;
- 	info->htab = container_of(aux->map, struct bpf_shtab, map);
- 	return 0;
+-	struct key *authkey = idmap->idmap_upcall_data->authkey;
+-
+-	kfree(idmap->idmap_upcall_data);
+-	idmap->idmap_upcall_data = NULL;
+-	complete_request_key(authkey, ret);
+-	key_put(authkey);
++	complete_request_key(data->authkey, ret);
++	key_put(data->authkey);
++	kfree(data);
  }
  
-+static void sock_hash_fini_seq_private(void *priv_data)
-+{
-+	struct sock_hash_seq_info *info = priv_data;
-+
-+	bpf_map_put_with_uref(info->map);
-+}
-+
- static const struct bpf_iter_seq_info sock_hash_iter_seq_info = {
- 	.seq_ops		= &sock_hash_seq_ops,
- 	.init_seq_private	= sock_hash_init_seq_private,
-+	.fini_seq_private	= sock_hash_fini_seq_private,
- 	.seq_priv_size		= sizeof(struct sock_hash_seq_info),
- };
+-static void
+-nfs_idmap_abort_pipe_upcall(struct idmap *idmap, int ret)
++static void nfs_idmap_abort_pipe_upcall(struct idmap *idmap,
++					struct idmap_legacy_upcalldata *data,
++					int ret)
+ {
+-	if (idmap->idmap_upcall_data != NULL)
+-		nfs_idmap_complete_pipe_upcall_locked(idmap, ret);
++	if (cmpxchg(&idmap->idmap_upcall_data, data, NULL) == data)
++		nfs_idmap_complete_pipe_upcall(data, ret);
+ }
  
+ static int nfs_idmap_legacy_upcall(struct key *authkey, void *aux)
+@@ -613,7 +611,7 @@ static int nfs_idmap_legacy_upcall(struc
+ 
+ 	ret = rpc_queue_upcall(idmap->idmap_pipe, msg);
+ 	if (ret < 0)
+-		nfs_idmap_abort_pipe_upcall(idmap, ret);
++		nfs_idmap_abort_pipe_upcall(idmap, data, ret);
+ 
+ 	return ret;
+ out2:
+@@ -669,6 +667,7 @@ idmap_pipe_downcall(struct file *filp, c
+ 	struct request_key_auth *rka;
+ 	struct rpc_inode *rpci = RPC_I(file_inode(filp));
+ 	struct idmap *idmap = (struct idmap *)rpci->private;
++	struct idmap_legacy_upcalldata *data;
+ 	struct key *authkey;
+ 	struct idmap_msg im;
+ 	size_t namelen_in;
+@@ -678,10 +677,11 @@ idmap_pipe_downcall(struct file *filp, c
+ 	 * will have been woken up and someone else may now have used
+ 	 * idmap_key_cons - so after this point we may no longer touch it.
+ 	 */
+-	if (idmap->idmap_upcall_data == NULL)
++	data = xchg(&idmap->idmap_upcall_data, NULL);
++	if (data == NULL)
+ 		goto out_noupcall;
+ 
+-	authkey = idmap->idmap_upcall_data->authkey;
++	authkey = data->authkey;
+ 	rka = get_request_key_auth(authkey);
+ 
+ 	if (mlen != sizeof(im)) {
+@@ -703,18 +703,17 @@ idmap_pipe_downcall(struct file *filp, c
+ 	if (namelen_in == 0 || namelen_in == IDMAP_NAMESZ) {
+ 		ret = -EINVAL;
+ 		goto out;
+-}
++	}
+ 
+-	ret = nfs_idmap_read_and_verify_message(&im,
+-			&idmap->idmap_upcall_data->idmap_msg,
+-			rka->target_key, authkey);
++	ret = nfs_idmap_read_and_verify_message(&im, &data->idmap_msg,
++						rka->target_key, authkey);
+ 	if (ret >= 0) {
+ 		key_set_timeout(rka->target_key, nfs_idmap_cache_timeout);
+ 		ret = mlen;
+ 	}
+ 
+ out:
+-	nfs_idmap_complete_pipe_upcall_locked(idmap, ret);
++	nfs_idmap_complete_pipe_upcall(data, ret);
+ out_noupcall:
+ 	return ret;
+ }
+@@ -728,7 +727,7 @@ idmap_pipe_destroy_msg(struct rpc_pipe_m
+ 	struct idmap *idmap = data->idmap;
+ 
+ 	if (msg->errno)
+-		nfs_idmap_abort_pipe_upcall(idmap, msg->errno);
++		nfs_idmap_abort_pipe_upcall(idmap, data, msg->errno);
+ }
+ 
+ static void
+@@ -736,8 +735,11 @@ idmap_release_pipe(struct inode *inode)
+ {
+ 	struct rpc_inode *rpci = RPC_I(inode);
+ 	struct idmap *idmap = (struct idmap *)rpci->private;
++	struct idmap_legacy_upcalldata *data;
+ 
+-	nfs_idmap_abort_pipe_upcall(idmap, -EPIPE);
++	data = xchg(&idmap->idmap_upcall_data, NULL);
++	if (data)
++		nfs_idmap_complete_pipe_upcall(data, -EPIPE);
+ }
+ 
+ int nfs_map_name_to_uid(const struct nfs_server *server, const char *name, size_t namelen, kuid_t *uid)
 
 
