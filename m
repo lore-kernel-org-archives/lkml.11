@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1C298C32774
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 09:35:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3EA42C32772
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 09:35:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351107AbiHWJfA (ORCPT
+        id S1351235AbiHWJfF (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 05:35:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41454 "EHLO
+        Tue, 23 Aug 2022 05:35:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44900 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350897AbiHWJeJ (ORCPT
+        with ESMTP id S1351101AbiHWJeR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 05:34:09 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3458C94EDA;
-        Tue, 23 Aug 2022 01:39:10 -0700 (PDT)
+        Tue, 23 Aug 2022 05:34:17 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 813A894ECE;
+        Tue, 23 Aug 2022 01:39:07 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id D9FF761446;
-        Tue, 23 Aug 2022 08:39:09 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DCE26C433D6;
-        Tue, 23 Aug 2022 08:39:08 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id D3675B81C3B;
+        Tue, 23 Aug 2022 08:38:08 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0CD66C433D6;
+        Tue, 23 Aug 2022 08:38:06 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661243949;
-        bh=4X2N5YLZivTElO/vwNdZbZrGvbTCeJ9ZbtX65VpGyDY=;
+        s=korg; t=1661243887;
+        bh=g6tcTm+ZXaW5n+EYtlo3JwpzKEML7hs46wOKet194ys=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=LTzHoro25J7UgTLDN4iWveIY2YJ7ov34+cykJJG/QighiwlIIuNjgrChLaBEilajh
-         kCFAmYCwq5GeeUq4BwjcOCnknppylWSybJ/1B3trgRGHoVe0A9zTEChnWeMw8FQIQW
-         waIhpyXMmndIi1IYIyAhFdUsTmJzmoA1Eazb1vhk=
+        b=JUFv40MF63nsxFRV3N/qJm5dLRGChB0kF0h6ZdMN+YH5l76zeHNfwO83XguW/t0x+
+         cn0RdeyPdABot0QY5D2W9yA4bWp/D7D/ZYGGDXM5OYBue+AyBwaAaYgooABjf9AbzL
+         /tu2RDk4SoFwx0C+hQlHonPidbOKn5xwmKZXye7s=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Huacai Chen <chenhuacai@loongson.cn>,
-        Thomas Bogendoerfer <tsbogend@alpha.franken.de>
-Subject: [PATCH 4.14 036/229] MIPS: cpuinfo: Fix a warning for CONFIG_CPUMASK_OFFSTACK
-Date:   Tue, 23 Aug 2022 10:23:17 +0200
-Message-Id: <20220823080054.849049647@linuxfoundation.org>
+        stable@vger.kernel.org, Johan Hovold <johan@kernel.org>,
+        Borislav Petkov <bp@suse.de>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 4.14 051/229] x86/pmem: Fix platform-device leak in error path
+Date:   Tue, 23 Aug 2022 10:23:32 +0200
+Message-Id: <20220823080055.531533153@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220823080053.202747790@linuxfoundation.org>
 References: <20220823080053.202747790@linuxfoundation.org>
@@ -49,63 +49,41 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Huacai Chen <chenhuacai@loongson.cn>
+From: Johan Hovold <johan@kernel.org>
 
-commit e1a534f5d074db45ae5cbac41d8912b98e96a006 upstream.
+[ Upstream commit 229e73d46994f15314f58b2d39bf952111d89193 ]
 
-When CONFIG_CPUMASK_OFFSTACK and CONFIG_DEBUG_PER_CPU_MAPS is selected,
-cpu_max_bits_warn() generates a runtime warning similar as below while
-we show /proc/cpuinfo. Fix this by using nr_cpu_ids (the runtime limit)
-instead of NR_CPUS to iterate CPUs.
+Make sure to free the platform device in the unlikely event that
+registration fails.
 
-[    3.052463] ------------[ cut here ]------------
-[    3.059679] WARNING: CPU: 3 PID: 1 at include/linux/cpumask.h:108 show_cpuinfo+0x5e8/0x5f0
-[    3.070072] Modules linked in: efivarfs autofs4
-[    3.076257] CPU: 0 PID: 1 Comm: systemd Not tainted 5.19-rc5+ #1052
-[    3.084034] Hardware name: Loongson Loongson-3A4000-7A1000-1w-V0.1-CRB/Loongson-LS3A4000-7A1000-1w-EVB-V1.21, BIOS Loongson-UDK2018-V2.0.04082-beta7 04/27
-[    3.099465] Stack : 9000000100157b08 9000000000f18530 9000000000cf846c 9000000100154000
-[    3.109127]         9000000100157a50 0000000000000000 9000000100157a58 9000000000ef7430
-[    3.118774]         90000001001578e8 0000000000000040 0000000000000020 ffffffffffffffff
-[    3.128412]         0000000000aaaaaa 1ab25f00eec96a37 900000010021de80 900000000101c890
-[    3.138056]         0000000000000000 0000000000000000 0000000000000000 0000000000aaaaaa
-[    3.147711]         ffff8000339dc220 0000000000000001 0000000006ab4000 0000000000000000
-[    3.157364]         900000000101c998 0000000000000004 9000000000ef7430 0000000000000000
-[    3.167012]         0000000000000009 000000000000006c 0000000000000000 0000000000000000
-[    3.176641]         9000000000d3de08 9000000001639390 90000000002086d8 00007ffff0080286
-[    3.186260]         00000000000000b0 0000000000000004 0000000000000000 0000000000071c1c
-[    3.195868]         ...
-[    3.199917] Call Trace:
-[    3.203941] [<98000000002086d8>] show_stack+0x38/0x14c
-[    3.210666] [<9800000000cf846c>] dump_stack_lvl+0x60/0x88
-[    3.217625] [<980000000023d268>] __warn+0xd0/0x100
-[    3.223958] [<9800000000cf3c90>] warn_slowpath_fmt+0x7c/0xcc
-[    3.231150] [<9800000000210220>] show_cpuinfo+0x5e8/0x5f0
-[    3.238080] [<98000000004f578c>] seq_read_iter+0x354/0x4b4
-[    3.245098] [<98000000004c2e90>] new_sync_read+0x17c/0x1c4
-[    3.252114] [<98000000004c5174>] vfs_read+0x138/0x1d0
-[    3.258694] [<98000000004c55f8>] ksys_read+0x70/0x100
-[    3.265265] [<9800000000cfde9c>] do_syscall+0x7c/0x94
-[    3.271820] [<9800000000202fe4>] handle_syscall+0xc4/0x160
-[    3.281824] ---[ end trace 8b484262b4b8c24c ]---
-
-Cc: stable@vger.kernel.org
-Signed-off-by: Huacai Chen <chenhuacai@loongson.cn>
-Signed-off-by: Thomas Bogendoerfer <tsbogend@alpha.franken.de>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Fixes: 7a67832c7e44 ("libnvdimm, e820: make CONFIG_X86_PMEM_LEGACY a tristate option")
+Signed-off-by: Johan Hovold <johan@kernel.org>
+Signed-off-by: Borislav Petkov <bp@suse.de>
+Link: https://lore.kernel.org/r/20220620140723.9810-1-johan@kernel.org
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/mips/kernel/proc.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ arch/x86/kernel/pmem.c | 7 ++++++-
+ 1 file changed, 6 insertions(+), 1 deletion(-)
 
---- a/arch/mips/kernel/proc.c
-+++ b/arch/mips/kernel/proc.c
-@@ -164,7 +164,7 @@ static void *c_start(struct seq_file *m,
- {
- 	unsigned long i = *pos;
- 
--	return i < NR_CPUS ? (void *) (i + 1) : NULL;
-+	return i < nr_cpu_ids ? (void *) (i + 1) : NULL;
+diff --git a/arch/x86/kernel/pmem.c b/arch/x86/kernel/pmem.c
+index 3fe690067802..ada7c077ec2f 100644
+--- a/arch/x86/kernel/pmem.c
++++ b/arch/x86/kernel/pmem.c
+@@ -27,6 +27,11 @@ static __init int register_e820_pmem(void)
+ 	 * simply here to trigger the module to load on demand.
+ 	 */
+ 	pdev = platform_device_alloc("e820_pmem", -1);
+-	return platform_device_add(pdev);
++
++	rc = platform_device_add(pdev);
++	if (rc)
++		platform_device_put(pdev);
++
++	return rc;
  }
- 
- static void *c_next(struct seq_file *m, void *v, loff_t *pos)
+ device_initcall(register_e820_pmem);
+-- 
+2.35.1
+
 
 
