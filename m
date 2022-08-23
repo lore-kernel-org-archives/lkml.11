@@ -2,50 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E4734C32772
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 09:31:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 56515C32774
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 09:31:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350490AbiHWJaS (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 05:30:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42516 "EHLO
+        id S235140AbiHWJbg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 23 Aug 2022 05:31:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53160 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350022AbiHWJ1x (ORCPT
+        with ESMTP id S1350215AbiHWJ2u (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 05:27:53 -0400
+        Tue, 23 Aug 2022 05:28:50 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D394491D16;
-        Tue, 23 Aug 2022 01:37:24 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4071077541;
+        Tue, 23 Aug 2022 01:37:29 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 9B9C361446;
-        Tue, 23 Aug 2022 08:35:30 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A8C8EC433C1;
-        Tue, 23 Aug 2022 08:35:29 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id E4D0A614F5;
+        Tue, 23 Aug 2022 08:36:47 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D5CF6C433D6;
+        Tue, 23 Aug 2022 08:36:46 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661243730;
-        bh=14BEbwuS/9GtFKmOQR6ugEwfl0StUNmna3JofOg1vEc=;
+        s=korg; t=1661243807;
+        bh=38z5+1E7HVbT6HeQjqkDPqJFtUVE6OakjVGr/qrHk+k=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=GObWW9G1aLMD9JW9XcGKZMpUQQco8IiIMg3gqksQ4n0F4pIDmedvbTm7tdnbQz+Ej
-         3hO62cSuBF06XI1hot6bKOoHxBYIzwnCgz4IEkFtaBsOADO1vCyrkgqHKbfncsZgNf
-         ovw+qj4nttJ1lYj7tK4bToC8ec+njFLEPkhqhjEs=
+        b=FHK0OQQInPAIudxUQ6fZtPJbDZgU/kicBVQIEu5GBp+m1W362TXaGjXjlZyvyPPlr
+         Jeq18MTVwvswR+mR/T4ZESbvjoBzSPF5VcRyw6F1soYnNf42rGMAFULDDEClJoMKGW
+         B+9U/HBhYVMz7q2M77EY1aZjwyG7jrSo1rDEc+vc=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Kai Vehmanen <kai.vehmanen@linux.intel.com>,
-        Peter Ujfalusi <peter.ujfalusi@linux.intel.com>,
-        Ranjani Sridharan <ranjani.sridharan@linux.intel.com>,
-        Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>,
-        Mark Brown <broonie@kernel.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.19 329/365] ASoC: SOF: Intel: hda-ipc: Do not process IPC reply before firmware boot
-Date:   Tue, 23 Aug 2022 10:03:50 +0200
-Message-Id: <20220823080131.971138228@linuxfoundation.org>
+        stable@vger.kernel.org, Timur Tabi <ttabi@nvidia.com>,
+        Karol Herbst <kherbst@redhat.com>,
+        Lyude Paul <lyude@redhat.com>
+Subject: [PATCH 4.14 027/229] drm/nouveau: fix another off-by-one in nvbios_addr
+Date:   Tue, 23 Aug 2022 10:23:08 +0200
+Message-Id: <20220823080054.440387469@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220823080118.128342613@linuxfoundation.org>
-References: <20220823080118.128342613@linuxfoundation.org>
+In-Reply-To: <20220823080053.202747790@linuxfoundation.org>
+References: <20220823080053.202747790@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -54,96 +49,35 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Peter Ujfalusi <peter.ujfalusi@linux.intel.com>
+From: Timur Tabi <ttabi@nvidia.com>
 
-[ Upstream commit 499cc881b09c8283ab5e75b0d6d21cb427722161 ]
+commit c441d28945fb113220d48d6c86ebc0b090a2b677 upstream.
 
-It is not yet clear, but it is possible to create a firmware so broken
-that it will send a reply message before a FW_READY message (it is not
-yet clear if FW_READY will arrive later).
-Since the reply_data is allocated only after the FW_READY message, this
-will lead to a NULL pointer dereference if not filtered out.
+This check determines whether a given address is part of
+image 0 or image 1.  Image 1 starts at offset image0_size,
+so that address should be included.
 
-The issue was reported with IPC4 firmware but the same condition is present
-for IPC3.
-
-Reported-by: Kai Vehmanen <kai.vehmanen@linux.intel.com>
-Signed-off-by: Peter Ujfalusi <peter.ujfalusi@linux.intel.com>
-Reviewed-by: Ranjani Sridharan <ranjani.sridharan@linux.intel.com>
-Reviewed-by: Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>
-Link: https://lore.kernel.org/r/20220712122357.31282-3-peter.ujfalusi@linux.intel.com
-Signed-off-by: Mark Brown <broonie@kernel.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Fixes: 4d4e9907ff572 ("drm/nouveau/bios: guard against out-of-bounds accesses to image")
+Cc: <stable@vger.kernel.org> # v4.8+
+Signed-off-by: Timur Tabi <ttabi@nvidia.com>
+Reviewed-by: Karol Herbst <kherbst@redhat.com>
+Signed-off-by: Lyude Paul <lyude@redhat.com>
+Link: https://patchwork.freedesktop.org/patch/msgid/20220511163716.3520591-1-ttabi@nvidia.com
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- sound/soc/sof/intel/hda-ipc.c | 39 ++++++++++++++++++++++-------------
- 1 file changed, 25 insertions(+), 14 deletions(-)
+ drivers/gpu/drm/nouveau/nvkm/subdev/bios/base.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/sound/soc/sof/intel/hda-ipc.c b/sound/soc/sof/intel/hda-ipc.c
-index f08011249955..65e688f749ea 100644
---- a/sound/soc/sof/intel/hda-ipc.c
-+++ b/sound/soc/sof/intel/hda-ipc.c
-@@ -148,17 +148,23 @@ irqreturn_t hda_dsp_ipc4_irq_thread(int irq, void *context)
+--- a/drivers/gpu/drm/nouveau/nvkm/subdev/bios/base.c
++++ b/drivers/gpu/drm/nouveau/nvkm/subdev/bios/base.c
+@@ -33,7 +33,7 @@ nvbios_addr(struct nvkm_bios *bios, u32
+ {
+ 	u32 p = *addr;
  
- 		if (primary & SOF_IPC4_MSG_DIR_MASK) {
- 			/* Reply received */
--			struct sof_ipc4_msg *data = sdev->ipc->msg.reply_data;
-+			if (likely(sdev->fw_state == SOF_FW_BOOT_COMPLETE)) {
-+				struct sof_ipc4_msg *data = sdev->ipc->msg.reply_data;
- 
--			data->primary = primary;
--			data->extension = extension;
-+				data->primary = primary;
-+				data->extension = extension;
- 
--			spin_lock_irq(&sdev->ipc_lock);
-+				spin_lock_irq(&sdev->ipc_lock);
- 
--			snd_sof_ipc_get_reply(sdev);
--			snd_sof_ipc_reply(sdev, data->primary);
-+				snd_sof_ipc_get_reply(sdev);
-+				snd_sof_ipc_reply(sdev, data->primary);
- 
--			spin_unlock_irq(&sdev->ipc_lock);
-+				spin_unlock_irq(&sdev->ipc_lock);
-+			} else {
-+				dev_dbg_ratelimited(sdev->dev,
-+						    "IPC reply before FW_READY: %#x|%#x\n",
-+						    primary, extension);
-+			}
- 		} else {
- 			/* Notification received */
- 
-@@ -225,16 +231,21 @@ irqreturn_t hda_dsp_ipc_irq_thread(int irq, void *context)
- 		 * place, the message might not yet be marked as expecting a
- 		 * reply.
- 		 */
--		spin_lock_irq(&sdev->ipc_lock);
-+		if (likely(sdev->fw_state == SOF_FW_BOOT_COMPLETE)) {
-+			spin_lock_irq(&sdev->ipc_lock);
- 
--		/* handle immediate reply from DSP core */
--		hda_dsp_ipc_get_reply(sdev);
--		snd_sof_ipc_reply(sdev, msg);
-+			/* handle immediate reply from DSP core */
-+			hda_dsp_ipc_get_reply(sdev);
-+			snd_sof_ipc_reply(sdev, msg);
- 
--		/* set the done bit */
--		hda_dsp_ipc_dsp_done(sdev);
-+			/* set the done bit */
-+			hda_dsp_ipc_dsp_done(sdev);
- 
--		spin_unlock_irq(&sdev->ipc_lock);
-+			spin_unlock_irq(&sdev->ipc_lock);
-+		} else {
-+			dev_dbg_ratelimited(sdev->dev, "IPC reply before FW_READY: %#x\n",
-+					    msg);
-+		}
- 
- 		ipc_irq = true;
+-	if (*addr > bios->image0_size && bios->imaged_addr) {
++	if (*addr >= bios->image0_size && bios->imaged_addr) {
+ 		*addr -= bios->image0_size;
+ 		*addr += bios->imaged_addr;
  	}
--- 
-2.35.1
-
 
 
