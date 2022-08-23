@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CDFE2C32772
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 11:58:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1BE29C32772
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 11:58:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352075AbiHWL6q (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 07:58:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41240 "EHLO
+        id S243992AbiHWL6x (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 23 Aug 2022 07:58:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41146 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1359165AbiHWL4T (ORCPT
+        with ESMTP id S1359161AbiHWL4S (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 07:56:19 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 75A517F137;
-        Tue, 23 Aug 2022 02:33:50 -0700 (PDT)
+        Tue, 23 Aug 2022 07:56:18 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3BA037F12C;
+        Tue, 23 Aug 2022 02:33:49 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 6ED10B81C96;
-        Tue, 23 Aug 2022 09:33:45 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 88DD6C433D6;
-        Tue, 23 Aug 2022 09:33:43 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id DF8BD61227;
+        Tue, 23 Aug 2022 09:33:47 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CCD50C433D6;
+        Tue, 23 Aug 2022 09:33:46 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661247224;
-        bh=+6ZVj8rS9bt8/c9w7zSAEorRgxhZ3R9z0vyvwcKjL+4=;
+        s=korg; t=1661247227;
+        bh=Q0+RYFlX6FLCup4LrrEbV8u1SV7/C1EaRiZ99wn4Ebk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=T+ufdu/qT693P3Z3CMK+8hEGQBg3RZ4tXS/LfDlQzEJqnkvi2FnYuo8wYZo97eLrc
-         HM/VE0B/7ZLTG7RG84jJTB0W1Zvc8zicjMj32U2L7pJSLUvgBELDQjJkFvbz5vX2PU
-         0m3b/hHIyqbwtUofcTeD+/Nrvd5KwGxY2wfAXKTk=
+        b=yUiD0yDRZIBTrLJq09UOLh0sg/eFaNp3dP7roYE2DskY1tdTcFExeOYjHKuqU/heZ
+         +AelPmcc7PuVlTNgmalHz4rtxI7uNoIQoOMuv9TGBYGDR6+vmTX4SntKlgFznhVdss
+         P/HGT2AI3Pvs9om+gVKbBexgvsJkZVjOqReDDng4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Hans de Goede <hdegoede@redhat.com>,
-        Pascal Terjan <pterjan@google.com>,
+        stable@vger.kernel.org, Robert Marko <robimarko@gmail.com>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 356/389] vboxguest: Do not use devm for irq
-Date:   Tue, 23 Aug 2022 10:27:14 +0200
-Message-Id: <20220823080130.426292881@linuxfoundation.org>
+Subject: [PATCH 5.4 357/389] clk: qcom: ipq8074: dont disable gcc_sleep_clk_src
+Date:   Tue, 23 Aug 2022 10:27:15 +0200
+Message-Id: <20220823080130.464883597@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220823080115.331990024@linuxfoundation.org>
 References: <20220823080115.331990024@linuxfoundation.org>
@@ -50,79 +49,83 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Pascal Terjan <pterjan@google.com>
+From: Robert Marko <robimarko@gmail.com>
 
-[ Upstream commit 6169525b76764acb81918aa387ac168fb9a55575 ]
+[ Upstream commit 1bf7305e79aab095196131bdc87a97796e0e3fac ]
 
-When relying on devm it doesn't get freed early enough which causes the
-following warning when unloading the module:
+Once the usb sleep clocks are disabled, clock framework is trying to
+disable the sleep clock source also.
 
-[249348.837181] remove_proc_entry: removing non-empty directory 'irq/20', leaking at least 'vboxguest'
-[249348.837219] WARNING: CPU: 0 PID: 6708 at fs/proc/generic.c:715 remove_proc_entry+0x119/0x140
+However, it seems that it cannot be disabled and trying to do so produces:
+[  245.436390] ------------[ cut here ]------------
+[  245.441233] gcc_sleep_clk_src status stuck at 'on'
+[  245.441254] WARNING: CPU: 2 PID: 223 at clk_branch_wait+0x130/0x140
+[  245.450435] Modules linked in: xhci_plat_hcd xhci_hcd dwc3 dwc3_qcom leds_gpio
+[  245.456601] CPU: 2 PID: 223 Comm: sh Not tainted 5.18.0-rc4 #215
+[  245.463889] Hardware name: Xiaomi AX9000 (DT)
+[  245.470050] pstate: 204000c5 (nzCv daIF +PAN -UAO -TCO -DIT -SSBS BTYPE=--)
+[  245.474307] pc : clk_branch_wait+0x130/0x140
+[  245.481073] lr : clk_branch_wait+0x130/0x140
+[  245.485588] sp : ffffffc009f2bad0
+[  245.489838] x29: ffffffc009f2bad0 x28: ffffff8003e6c800 x27: 0000000000000000
+[  245.493057] x26: 0000000000000000 x25: 0000000000000000 x24: ffffff800226ef20
+[  245.500175] x23: ffffffc0089ff550 x22: 0000000000000000 x21: ffffffc008476ad0
+[  245.507294] x20: 0000000000000000 x19: ffffffc00965ac70 x18: fffffffffffc51a7
+[  245.514413] x17: 68702e3030303837 x16: 3a6d726f6674616c x15: ffffffc089f2b777
+[  245.521531] x14: ffffffc0095c9d18 x13: 0000000000000129 x12: 0000000000000129
+[  245.528649] x11: 00000000ffffffea x10: ffffffc009621d18 x9 : 0000000000000001
+[  245.535767] x8 : 0000000000000001 x7 : 0000000000017fe8 x6 : 0000000000000001
+[  245.542885] x5 : ffffff803fdca6d8 x4 : 0000000000000000 x3 : 0000000000000027
+[  245.550002] x2 : 0000000000000027 x1 : 0000000000000023 x0 : 0000000000000026
+[  245.557122] Call trace:
+[  245.564229]  clk_branch_wait+0x130/0x140
+[  245.566490]  clk_branch2_disable+0x2c/0x40
+[  245.570656]  clk_core_disable+0x60/0xb0
+[  245.574561]  clk_core_disable+0x68/0xb0
+[  245.578293]  clk_disable+0x30/0x50
+[  245.582113]  dwc3_qcom_remove+0x60/0xc0 [dwc3_qcom]
+[  245.585588]  platform_remove+0x28/0x60
+[  245.590361]  device_remove+0x4c/0x80
+[  245.594179]  device_release_driver_internal+0x1dc/0x230
+[  245.597914]  device_driver_detach+0x18/0x30
+[  245.602861]  unbind_store+0xec/0x110
+[  245.607027]  drv_attr_store+0x24/0x40
+[  245.610847]  sysfs_kf_write+0x44/0x60
+[  245.614405]  kernfs_fop_write_iter+0x128/0x1c0
+[  245.618052]  new_sync_write+0xc0/0x130
+[  245.622391]  vfs_write+0x1d4/0x2a0
+[  245.626123]  ksys_write+0x58/0xe0
+[  245.629508]  __arm64_sys_write+0x1c/0x30
+[  245.632895]  invoke_syscall.constprop.0+0x5c/0x110
+[  245.636890]  do_el0_svc+0xa0/0x150
+[  245.641488]  el0_svc+0x18/0x60
+[  245.644872]  el0t_64_sync_handler+0xa4/0x130
+[  245.647914]  el0t_64_sync+0x174/0x178
+[  245.652340] ---[ end trace 0000000000000000 ]---
 
-[249348.837379] Call Trace:
-[249348.837385]  unregister_irq_proc+0xbd/0xe0
-[249348.837392]  free_desc+0x23/0x60
-[249348.837396]  irq_free_descs+0x4a/0x70
-[249348.837401]  irq_domain_free_irqs+0x160/0x1a0
-[249348.837452]  mp_unmap_irq+0x5c/0x60
-[249348.837458]  acpi_unregister_gsi_ioapic+0x29/0x40
-[249348.837463]  acpi_unregister_gsi+0x17/0x30
-[249348.837467]  acpi_pci_irq_disable+0xbf/0xe0
-[249348.837473]  pcibios_disable_device+0x20/0x30
-[249348.837478]  pci_disable_device+0xef/0x120
-[249348.837482]  vbg_pci_remove+0x6c/0x70 [vboxguest]
+So, add CLK_IS_CRITICAL flag to the clock so that the kernel won't try
+to disable the sleep clock.
 
-Reviewed-by: Hans de Goede <hdegoede@redhat.com>
-Signed-off-by: Pascal Terjan <pterjan@google.com>
-Link: https://lore.kernel.org/r/20220612133744.4030602-1-pterjan@google.com
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Robert Marko <robimarko@gmail.com>
+Signed-off-by: Bjorn Andersson <bjorn.andersson@linaro.org>
+Link: https://lore.kernel.org/r/20220515210048.483898-10-robimarko@gmail.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/virt/vboxguest/vboxguest_linux.c | 9 ++++++---
- 1 file changed, 6 insertions(+), 3 deletions(-)
+ drivers/clk/qcom/gcc-ipq8074.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/drivers/virt/vboxguest/vboxguest_linux.c b/drivers/virt/vboxguest/vboxguest_linux.c
-index 32c2c52f7e84..484c2f09f2ea 100644
---- a/drivers/virt/vboxguest/vboxguest_linux.c
-+++ b/drivers/virt/vboxguest/vboxguest_linux.c
-@@ -361,8 +361,8 @@ static int vbg_pci_probe(struct pci_dev *pci, const struct pci_device_id *id)
- 		goto err_vbg_core_exit;
- 	}
- 
--	ret = devm_request_irq(dev, pci->irq, vbg_core_isr, IRQF_SHARED,
--			       DEVICE_NAME, gdev);
-+	ret = request_irq(pci->irq, vbg_core_isr, IRQF_SHARED, DEVICE_NAME,
-+			  gdev);
- 	if (ret) {
- 		vbg_err("vboxguest: Error requesting irq: %d\n", ret);
- 		goto err_vbg_core_exit;
-@@ -372,7 +372,7 @@ static int vbg_pci_probe(struct pci_dev *pci, const struct pci_device_id *id)
- 	if (ret) {
- 		vbg_err("vboxguest: Error misc_register %s failed: %d\n",
- 			DEVICE_NAME, ret);
--		goto err_vbg_core_exit;
-+		goto err_free_irq;
- 	}
- 
- 	ret = misc_register(&gdev->misc_device_user);
-@@ -408,6 +408,8 @@ static int vbg_pci_probe(struct pci_dev *pci, const struct pci_device_id *id)
- 	misc_deregister(&gdev->misc_device_user);
- err_unregister_misc_device:
- 	misc_deregister(&gdev->misc_device);
-+err_free_irq:
-+	free_irq(pci->irq, gdev);
- err_vbg_core_exit:
- 	vbg_core_exit(gdev);
- err_disable_pcidev:
-@@ -424,6 +426,7 @@ static void vbg_pci_remove(struct pci_dev *pci)
- 	vbg_gdev = NULL;
- 	mutex_unlock(&vbg_gdev_mutex);
- 
-+	free_irq(pci->irq, gdev);
- 	device_remove_file(gdev->dev, &dev_attr_host_features);
- 	device_remove_file(gdev->dev, &dev_attr_host_version);
- 	misc_deregister(&gdev->misc_device_user);
+diff --git a/drivers/clk/qcom/gcc-ipq8074.c b/drivers/clk/qcom/gcc-ipq8074.c
+index 68fe80a0a92f..e9835db941d8 100644
+--- a/drivers/clk/qcom/gcc-ipq8074.c
++++ b/drivers/clk/qcom/gcc-ipq8074.c
+@@ -667,6 +667,7 @@ static struct clk_branch gcc_sleep_clk_src = {
+ 			},
+ 			.num_parents = 1,
+ 			.ops = &clk_branch2_ops,
++			.flags = CLK_IS_CRITICAL,
+ 		},
+ 	},
+ };
 -- 
 2.35.1
 
