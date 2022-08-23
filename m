@@ -2,102 +2,133 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 84C03C52D6C
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 09:27:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 312E3C52D79
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 09:27:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349701AbiHWJ1P (ORCPT
+        id S1349819AbiHWJ11 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 05:27:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38034 "EHLO
+        Tue, 23 Aug 2022 05:27:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47758 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349465AbiHWJYP (ORCPT
+        with ESMTP id S1349772AbiHWJY1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 05:24:15 -0400
-Received: from mail-wr1-x432.google.com (mail-wr1-x432.google.com [IPv6:2a00:1450:4864:20::432])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 01155901A0
-        for <linux-kernel@vger.kernel.org>; Tue, 23 Aug 2022 01:35:49 -0700 (PDT)
-Received: by mail-wr1-x432.google.com with SMTP id b5so11803943wrr.5
-        for <linux-kernel@vger.kernel.org>; Tue, 23 Aug 2022 01:35:49 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=content-disposition:mime-version:message-id:subject:cc:to:from:date
-         :from:to:cc;
-        bh=kCvkiarFiXJ9jD4jJ8Afsozfi7HxwB9THrkLcggctw4=;
-        b=AJwK8PvK7cqqRaWVCBGh4TIKUuauSmmPTOr3P5eR8YQjakHWqRgiSygCMNRjpeLNWD
-         zcv+csKSgVzWW1shfKi5tSLPpSKeFhviuKZJFawMVznW+xYeJ9EqeZ7IaBqfjNbwPYZK
-         1su/P5RC0CMJ2FatHA7E+qfliwabhOmq+TD6b7MtmvbBfQFXmjp2VBAwDvESEpK40v1G
-         FTHC1V8/3kJjR0p0vc71aKg6tCSka3DOK08d8gYhw3Teeu9M++3a8StGOm+We1s5CcVl
-         qJJJP9WeckPZ/+xczr9g/A+XbY3EYVL9HwTGf8KSo/0t3nMtKnDuAgW38PQnLf01yj27
-         9NwQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-disposition:mime-version:message-id:subject:cc:to:from:date
-         :x-gm-message-state:from:to:cc;
-        bh=kCvkiarFiXJ9jD4jJ8Afsozfi7HxwB9THrkLcggctw4=;
-        b=ywaLm7/H0s1aHwRsLrNuS2FvYBWm11Hs4SP6Ec67s81CnVA9GnLiUR5a934ANqvojc
-         sIu0djikAeaiL6rmN7PwnMDYvLAUYgQbsy/4BvB+9oDr9JMUeQGOVd4gxliK5uOuMcZ6
-         E6lKtempe3qfYGIRnIhxH34O4M9wizE2bcM8+eMq2zaA+208rfWjrk1HGVCHuAXU0P6+
-         vn8fMzTCcGhWXY/S67ROsjGC12F9ySTmHACrjWdcBmuq/X0tBaa2dWXtQWpUGW+GSrxn
-         5rHrG2kVUq4rfACxRcZCBPC14GP/z9ktiIOmU63q38XEFIckcI6+mciNLM57f39/3Km+
-         EQCw==
-X-Gm-Message-State: ACgBeo0FXKnV+tf8d9fDePt6qPg/r3ytPJdfTJGcO19pBRepH3ady8pP
-        5vrBfBqf8nNzjUnuW3lils8=
-X-Google-Smtp-Source: AA6agR6vwLwj+I7j2yf59mXO9TKSSxRcoAHHO+NJPd7nraHZKpg3XBjAEEjv6P756ndUX1js76Pnrg==
-X-Received: by 2002:a05:6000:716:b0:225:3f1a:a9a3 with SMTP id bs22-20020a056000071600b002253f1aa9a3mr9478491wrb.526.1661243673768;
-        Tue, 23 Aug 2022 01:34:33 -0700 (PDT)
-Received: from debian (host-78-150-37-98.as13285.net. [78.150.37.98])
-        by smtp.gmail.com with ESMTPSA id d7-20020a05600c3ac700b003a5ad7f6de2sm16355305wms.15.2022.08.23.01.34.33
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 23 Aug 2022 01:34:33 -0700 (PDT)
-Date:   Tue, 23 Aug 2022 09:34:31 +0100
-From:   "Sudip Mukherjee (Codethink)" <sudipm.mukherjee@gmail.com>
-To:     Nathan Chancellor <nathan@kernel.org>,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        Tom Rix <trix@redhat.com>, Huacai Chen <chenhuacai@kernel.org>,
-        WANG Xuerui <kernel@xen0n.name>
-Cc:     linux-kernel@vger.kernel.org, llvm@lists.linux.dev,
-        torvalds@linux-foundation.org, loongarch@lists.linux.dev
-Subject: mainline build failure for loongarch allmodconfig with gcc-12
-Message-ID: <YwSRFzQQKAXP2ncp@debian>
+        Tue, 23 Aug 2022 05:24:27 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 65F7E90194;
+        Tue, 23 Aug 2022 01:35:46 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 407F761485;
+        Tue, 23 Aug 2022 08:34:36 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2A09DC433D6;
+        Tue, 23 Aug 2022 08:34:34 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1661243675;
+        bh=dJICxAXUVqoAvRcs1iEYL7jr+zKhXIpbPrZJ96/wyv0=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=ZwMCqWcDGnd0eZTKPyV9YfSF0n2lJFSrYWLHsEaXxnPd3Qb1AvXBCrtuKxticN6q2
+         ncj/pEFzIz5X9DTzRfEgi/4CveheUZDUmjo10FTPwDt++F5+IHWzqwliqqAklNOZXN
+         xI/FH89eGyR3vJEFHbZP3Scsn92/1/VflLqecLTQ=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org,
+        syzbot+1ee0910eca9c94f71f25@syzkaller.appspotmail.com,
+        syzbot+49b10793b867871ee26f@syzkaller.appspotmail.com,
+        syzbot+8285e973a41b5aa68902@syzkaller.appspotmail.com,
+        Takashi Iwai <tiwai@suse.de>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.19 352/365] ALSA: timer: Use deferred fasync helper
+Date:   Tue, 23 Aug 2022 10:04:13 +0200
+Message-Id: <20220823080132.998740514@linuxfoundation.org>
+X-Mailer: git-send-email 2.37.2
+In-Reply-To: <20220823080118.128342613@linuxfoundation.org>
+References: <20220823080118.128342613@linuxfoundation.org>
+User-Agent: quilt/0.67
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi All,
+From: Takashi Iwai <tiwai@suse.de>
 
-I have been trying to build loongarch as part of my nightly builds, and
-I can build loongson3_defconfig without any error. But allmodconfig fails
-with the error:
+[ Upstream commit 95cc637c1afd83fb7dd3d7c8a53710488f4caf9c ]
 
-In function '__cmpxchg',
-    inlined from 'ssh_seq_next' at drivers/platform/surface/aggregator/controller.c:61:9,
-    inlined from 'ssam_request_write_data' at drivers/platform/surface/aggregator/controller.c:1483:8,
-    inlined from 'ssam_request_sync_with_buffer' at drivers/platform/surface/aggregator/controller.c:1761:8:
-././include/linux/compiler_types.h:354:45: error: call to '__compiletime_assert_9' declared with attribute error: BUILD_BUG failed
-  354 |         _compiletime_assert(condition, msg, __compiletime_assert_, __COUNTER__)
-      |                                             ^
-././include/linux/compiler_types.h:335:25: note: in definition of macro '__compiletime_assert'
-  335 |                         prefix ## suffix();                             \
-      |                         ^~~~~~
-././include/linux/compiler_types.h:354:9: note: in expansion of macro '_compiletime_assert'
-  354 |         _compiletime_assert(condition, msg, __compiletime_assert_, __COUNTER__)
-      |         ^~~~~~~~~~~~~~~~~~~
-./include/linux/build_bug.h:39:37: note: in expansion of macro 'compiletime_assert'
-   39 | #define BUILD_BUG_ON_MSG(cond, msg) compiletime_assert(!(cond), msg)
-      |                                     ^~~~~~~~~~~~~~~~~~
-./include/linux/build_bug.h:59:21: note: in expansion of macro 'BUILD_BUG_ON_MSG'
-   59 | #define BUILD_BUG() BUILD_BUG_ON_MSG(1, "BUILD_BUG failed")
-      |                     ^~~~~~~~~~~~~~~~
-./arch/loongarch/include/asm/cmpxchg.h:83:17: note: in expansion of macro 'BUILD_BUG'
-   83 |                 BUILD_BUG();
-      |                 ^~~~~~~~~
+For avoiding the potential deadlock via kill_fasync() call, use the
+new fasync helpers to defer the invocation from PCI API.  Note that
+it's merely a workaround.
 
-I will be happy to test any patch or provide any extra log if needed.
+Reported-by: syzbot+1ee0910eca9c94f71f25@syzkaller.appspotmail.com
+Reported-by: syzbot+49b10793b867871ee26f@syzkaller.appspotmail.com
+Reported-by: syzbot+8285e973a41b5aa68902@syzkaller.appspotmail.com
+Link: https://lore.kernel.org/r/20220728125945.29533-3-tiwai@suse.de
+Signed-off-by: Takashi Iwai <tiwai@suse.de>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ sound/core/timer.c | 11 ++++++-----
+ 1 file changed, 6 insertions(+), 5 deletions(-)
 
-
+diff --git a/sound/core/timer.c b/sound/core/timer.c
+index b3214baa8919..e08a37c23add 100644
+--- a/sound/core/timer.c
++++ b/sound/core/timer.c
+@@ -83,7 +83,7 @@ struct snd_timer_user {
+ 	unsigned int filter;
+ 	struct timespec64 tstamp;		/* trigger tstamp */
+ 	wait_queue_head_t qchange_sleep;
+-	struct fasync_struct *fasync;
++	struct snd_fasync *fasync;
+ 	struct mutex ioctl_lock;
+ };
+ 
+@@ -1345,7 +1345,7 @@ static void snd_timer_user_interrupt(struct snd_timer_instance *timeri,
+ 	}
+       __wake:
+ 	spin_unlock(&tu->qlock);
+-	kill_fasync(&tu->fasync, SIGIO, POLL_IN);
++	snd_kill_fasync(tu->fasync, SIGIO, POLL_IN);
+ 	wake_up(&tu->qchange_sleep);
+ }
+ 
+@@ -1383,7 +1383,7 @@ static void snd_timer_user_ccallback(struct snd_timer_instance *timeri,
+ 	spin_lock_irqsave(&tu->qlock, flags);
+ 	snd_timer_user_append_to_tqueue(tu, &r1);
+ 	spin_unlock_irqrestore(&tu->qlock, flags);
+-	kill_fasync(&tu->fasync, SIGIO, POLL_IN);
++	snd_kill_fasync(tu->fasync, SIGIO, POLL_IN);
+ 	wake_up(&tu->qchange_sleep);
+ }
+ 
+@@ -1453,7 +1453,7 @@ static void snd_timer_user_tinterrupt(struct snd_timer_instance *timeri,
+ 	spin_unlock(&tu->qlock);
+ 	if (append == 0)
+ 		return;
+-	kill_fasync(&tu->fasync, SIGIO, POLL_IN);
++	snd_kill_fasync(tu->fasync, SIGIO, POLL_IN);
+ 	wake_up(&tu->qchange_sleep);
+ }
+ 
+@@ -1521,6 +1521,7 @@ static int snd_timer_user_release(struct inode *inode, struct file *file)
+ 			snd_timer_instance_free(tu->timeri);
+ 		}
+ 		mutex_unlock(&tu->ioctl_lock);
++		snd_fasync_free(tu->fasync);
+ 		kfree(tu->queue);
+ 		kfree(tu->tqueue);
+ 		kfree(tu);
+@@ -2135,7 +2136,7 @@ static int snd_timer_user_fasync(int fd, struct file * file, int on)
+ 	struct snd_timer_user *tu;
+ 
+ 	tu = file->private_data;
+-	return fasync_helper(fd, file, on, &tu->fasync);
++	return snd_fasync_helper(fd, file, on, &tu->fasync);
+ }
+ 
+ static ssize_t snd_timer_user_read(struct file *file, char __user *buffer,
 -- 
-Regards
-Sudip
+2.35.1
+
+
+
