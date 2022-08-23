@@ -2,45 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 787D8C32792
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 08:29:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D2D8EC32772
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 08:29:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241399AbiHWI3D (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 04:29:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46636 "EHLO
+        id S243325AbiHWI3K (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 23 Aug 2022 04:29:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34140 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243556AbiHWIZg (ORCPT
+        with ESMTP id S243628AbiHWIZn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 04:25:36 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 087F85F12C;
-        Tue, 23 Aug 2022 01:13:39 -0700 (PDT)
+        Tue, 23 Aug 2022 04:25:43 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E7E426FA3E;
+        Tue, 23 Aug 2022 01:13:45 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 0A1FAB81C20;
-        Tue, 23 Aug 2022 08:13:38 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4A7E8C433D6;
-        Tue, 23 Aug 2022 08:13:35 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 5D0F56129A;
+        Tue, 23 Aug 2022 08:13:18 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E6FCCC433D7;
+        Tue, 23 Aug 2022 08:13:16 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661242416;
-        bh=HIut+ifAS/YY2VN6FjXSCaSRFQIQTRFcNbZeJN5myoE=;
+        s=korg; t=1661242397;
+        bh=mLBY6Fsf6WZ2u0NsCDFnW8EU6G375hSpNr7EVGFAr1o=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Sjs4s6S59270ruUYtkoVoD20TibODD27At/iAO1kb32JVPNO0UrlMQoD1O8J3hyBP
-         dYvgyoxpL1aQU8dqAsKy+Rs/+SapcnxV57d0MaLs8AWXLLUZxa4UFTDci0O+HRliG7
-         FtGUribHQUDa15ohKeOeMunRG2ukegcNt5b7MIjs=
+        b=Okg3i6g0mxpnReqEbzhLb2dmMg5iG+qw9kc+AqO+u1uk71gs5ZLILKX4TCJ8/ZU2f
+         /lF1jbm9r+ViLZA6vtHEuXAyC30JWn61ABWJhPL5yZ7JZRm/39MHeEM9yzZrXRj20A
+         GH8/bI+jwjXhOWd8CYKl5EWE+GEip6cpNpincS9M=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Damien Le Moal <damien.lemoal@opensource.wdc.com>,
-        Hannes Reinecke <hare@suse.de>
-Subject: [PATCH 4.9 068/101] ata: libata-eh: Add missing command name
-Date:   Tue, 23 Aug 2022 10:03:41 +0200
-Message-Id: <20220823080037.158674349@linuxfoundation.org>
+        stable@vger.kernel.org, Jeff LaBundy <jeff@labundy.com>,
+        Dmitry Torokhov <dmitry.torokhov@gmail.com>
+Subject: [PATCH 5.19 109/365] Input: iqs7222 - remove support for RF filter
+Date:   Tue, 23 Aug 2022 10:00:10 +0200
+Message-Id: <20220823080122.758836359@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220823080034.579196046@linuxfoundation.org>
-References: <20220823080034.579196046@linuxfoundation.org>
+In-Reply-To: <20220823080118.128342613@linuxfoundation.org>
+References: <20220823080118.128342613@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -49,31 +48,42 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Damien Le Moal <damien.lemoal@opensource.wdc.com>
+From: Jeff LaBundy <jeff@labundy.com>
 
-commit d3122bf9aa4c974f5e2c0112f799757b3a2779da upstream.
+commit 381932cf61d52bde656c8596c0cb8f46bed53dc0 upstream.
 
-Add the missing command name for ATA_CMD_NCQ_NON_DATA to
-ata_get_cmd_name().
+The vendor has marked the RF filter enable control as reserved in
+the datasheet; remove it from the driver.
 
-Fixes: 661ce1f0c4a6 ("libata/libsas: Define ATA_CMD_NCQ_NON_DATA")
-Cc: stable@vger.kernel.org
-Signed-off-by: Damien Le Moal <damien.lemoal@opensource.wdc.com>
-Reviewed-by: Hannes Reinecke <hare@suse.de>
+Fixes: e505edaedcb9 ("Input: add support for Azoteq IQS7222A/B/C")
+Signed-off-by: Jeff LaBundy <jeff@labundy.com>
+Link: https://lore.kernel.org/r/20220626072412.475211-7-jeff@labundy.com
+Signed-off-by: Dmitry Torokhov <dmitry.torokhov@gmail.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/ata/libata-eh.c |    1 +
- 1 file changed, 1 insertion(+)
+ drivers/input/misc/iqs7222.c | 7 -------
+ 1 file changed, 7 deletions(-)
 
---- a/drivers/ata/libata-eh.c
-+++ b/drivers/ata/libata-eh.c
-@@ -2439,6 +2439,7 @@ const char *ata_get_cmd_descript(u8 comm
- 		{ ATA_CMD_WRITE_QUEUED_FUA_EXT, "WRITE DMA QUEUED FUA EXT" },
- 		{ ATA_CMD_FPDMA_READ,		"READ FPDMA QUEUED" },
- 		{ ATA_CMD_FPDMA_WRITE,		"WRITE FPDMA QUEUED" },
-+		{ ATA_CMD_NCQ_NON_DATA,		"NCQ NON-DATA" },
- 		{ ATA_CMD_FPDMA_SEND,		"SEND FPDMA QUEUED" },
- 		{ ATA_CMD_FPDMA_RECV,		"RECEIVE FPDMA QUEUED" },
- 		{ ATA_CMD_PIO_READ,		"READ SECTOR(S)" },
+diff --git a/drivers/input/misc/iqs7222.c b/drivers/input/misc/iqs7222.c
+index e65260d290cc..b2e8097a2e6d 100644
+--- a/drivers/input/misc/iqs7222.c
++++ b/drivers/input/misc/iqs7222.c
+@@ -557,13 +557,6 @@ static const struct iqs7222_prop_desc iqs7222_props[] = {
+ 		.reg_width = 4,
+ 		.label = "current reference trim",
+ 	},
+-	{
+-		.name = "azoteq,rf-filt-enable",
+-		.reg_grp = IQS7222_REG_GRP_GLBL,
+-		.reg_offset = 0,
+-		.reg_shift = 15,
+-		.reg_width = 1,
+-	},
+ 	{
+ 		.name = "azoteq,max-counts",
+ 		.reg_grp = IQS7222_REG_GRP_GLBL,
+-- 
+2.37.2
+
 
 
