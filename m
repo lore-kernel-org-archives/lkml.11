@@ -2,46 +2,56 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 95C53C32774
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 12:08:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8B7F7C32772
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 12:09:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1359496AbiHWMIz (ORCPT
+        id S1359506AbiHWMI7 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 08:08:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56696 "EHLO
+        Tue, 23 Aug 2022 08:08:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59532 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1359739AbiHWMGf (ORCPT
+        with ESMTP id S1359252AbiHWMHW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 08:06:35 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 243EBDEB67;
-        Tue, 23 Aug 2022 02:38:01 -0700 (PDT)
+        Tue, 23 Aug 2022 08:07:22 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E30A565E3;
+        Tue, 23 Aug 2022 02:38:21 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 7EA9BB81C98;
-        Tue, 23 Aug 2022 09:37:35 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C4A90C433D6;
-        Tue, 23 Aug 2022 09:37:33 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 864BB61467;
+        Tue, 23 Aug 2022 09:38:21 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 57479C433C1;
+        Tue, 23 Aug 2022 09:38:20 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661247454;
-        bh=EKZDETK2wMS8ga13sw3/T56Jn7RQhNCk9lH3fLtohFk=;
+        s=korg; t=1661247500;
+        bh=69ovCRcumfGslh/oGLivZ4DIr8oJgQGwFuXGEqHGW5k=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=enC175gIAnNKQF/w2bP7ov5IkJ2XDJiOgLVBeSrEg3Op824Q54v9VQ/AALNnKhoyM
-         4/OrXe0BNmKmH4AeOSq7VU7c+3PGDVxIfNPdn3CAoix8xUOux7O+v6g/2HIz8ZV1zx
-         4nsVraFRK3o9S3uDcXiXEZ9jemBVxCK4qEGUkl+Q=
+        b=gsPa9kEgtLU+FR/qnzFc0olVYq3Wwx5OMjvEUyfS2fi8ntQoBSB/WUOIJjF74OSA6
+         DtQHMDmtfmu3/CEJu6COle5cF+6R5J3ZlnU5aIDwq/ML7Q54lQ4YQrfdtqQmDyxpr5
+         qwWPJY4KkJgi3R6/vNEKMHUFmbs8o8Z2MSLR/HHo=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Ingo Molnar <mingo@kernel.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Tzvetomir Stoyanov <tz.stoyanov@gmail.com>,
-        Tom Zanussi <zanussi@kernel.org>,
-        "Masami Hiramatsu (Google)" <mhiramat@kernel.org>,
-        "Steven Rostedt (Google)" <rostedt@goodmis.org>
-Subject: [PATCH 5.10 010/158] tracing: Have filter accept "common_cpu" to be consistent
-Date:   Tue, 23 Aug 2022 10:25:42 +0200
-Message-Id: <20220823080046.491607346@linuxfoundation.org>
+        stable@vger.kernel.org, Roberto Sassu <roberto.sassu@huawei.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Andrii Nakryiko <andrii@kernel.org>, bpf@vger.kernel.org,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Ingo Molnar <mingo@redhat.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>, llvm@lists.linux.dev,
+        Martin KaFai Lau <martin.lau@linux.dev>,
+        Nathan Chancellor <nathan@kernel.org>,
+        Nick Desaulniers <ndesaulniers@google.com>,
+        Nick Terrell <terrelln@fb.com>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Quentin Monnet <quentin@isovalent.com>,
+        Song Liu <song@kernel.org>,
+        Stanislav Fomichev <sdf@google.com>,
+        Arnaldo Carvalho de Melo <acme@redhat.com>
+Subject: [PATCH 5.10 056/158] tools build: Switch to new openssl API for test-libcrypto
+Date:   Tue, 23 Aug 2022 10:26:28 +0200
+Message-Id: <20220823080048.357389373@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220823080046.056825146@linuxfoundation.org>
 References: <20220823080046.056825146@linuxfoundation.org>
@@ -53,40 +63,70 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Steven Rostedt (Google) <rostedt@goodmis.org>
+From: Roberto Sassu <roberto.sassu@huawei.com>
 
-commit b2380577d4fe1c0ef3fa50417f1e441c016e4cbe upstream.
+commit 5b245985a6de5ac18b5088c37068816d413fb8ed upstream.
 
-Make filtering consistent with histograms. As "cpu" can be a field of an
-event, allow for "common_cpu" to keep it from being confused with the
-"cpu" field of the event.
+Switch to new EVP API for detecting libcrypto, as Fedora 36 returns an
+error when it encounters the deprecated function MD5_Init() and the others.
 
-Link: https://lkml.kernel.org/r/20220820134401.513062765@goodmis.org
-Link: https://lore.kernel.org/all/20220820220920.e42fa32b70505b1904f0a0ad@kernel.org/
+The error would be interpreted as missing libcrypto, while in reality it is
+not.
 
-Cc: stable@vger.kernel.org
-Cc: Ingo Molnar <mingo@kernel.org>
-Cc: Andrew Morton <akpm@linux-foundation.org>
-Cc: Tzvetomir Stoyanov <tz.stoyanov@gmail.com>
-Cc: Tom Zanussi <zanussi@kernel.org>
-Fixes: 1e3bac71c5053 ("tracing/histogram: Rename "cpu" to "common_cpu"")
-Suggested-by: Masami Hiramatsu (Google) <mhiramat@kernel.org>
-Acked-by: Masami Hiramatsu (Google) <mhiramat@kernel.org>
-Signed-off-by: Steven Rostedt (Google) <rostedt@goodmis.org>
+Fixes: 6e8ccb4f624a73c5 ("tools/bpf: properly account for libbfd variations")
+Signed-off-by: Roberto Sassu <roberto.sassu@huawei.com>
+Cc: Alexei Starovoitov <ast@kernel.org>
+Cc: Andrii Nakryiko <andrii@kernel.org>
+Cc: bpf@vger.kernel.org
+Cc: Daniel Borkmann <daniel@iogearbox.net>
+Cc: Ingo Molnar <mingo@redhat.com>
+Cc: John Fastabend <john.fastabend@gmail.com>
+Cc: KP Singh <kpsingh@kernel.org>
+Cc: llvm@lists.linux.dev
+Cc: Martin KaFai Lau <martin.lau@linux.dev>
+Cc: Nathan Chancellor <nathan@kernel.org>
+Cc: Nick Desaulniers <ndesaulniers@google.com>
+Cc: Nick Terrell <terrelln@fb.com>
+Cc: Peter Zijlstra <peterz@infradead.org>
+Cc: Quentin Monnet <quentin@isovalent.com>
+Cc: Song Liu <song@kernel.org>
+Cc: Stanislav Fomichev <sdf@google.com>
+Link: https://lore.kernel.org/r/20220719170555.2576993-4-roberto.sassu@huawei.com
+Signed-off-by: Arnaldo Carvalho de Melo <acme@redhat.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- kernel/trace/trace_events.c |    1 +
- 1 file changed, 1 insertion(+)
+ tools/build/feature/test-libcrypto.c |   15 +++++++++++----
+ 1 file changed, 11 insertions(+), 4 deletions(-)
 
---- a/kernel/trace/trace_events.c
-+++ b/kernel/trace/trace_events.c
-@@ -168,6 +168,7 @@ static int trace_define_generic_fields(v
+--- a/tools/build/feature/test-libcrypto.c
++++ b/tools/build/feature/test-libcrypto.c
+@@ -1,16 +1,23 @@
+ // SPDX-License-Identifier: GPL-2.0
++#include <openssl/evp.h>
+ #include <openssl/sha.h>
+ #include <openssl/md5.h>
  
- 	__generic_field(int, CPU, FILTER_CPU);
- 	__generic_field(int, cpu, FILTER_CPU);
-+	__generic_field(int, common_cpu, FILTER_CPU);
- 	__generic_field(char *, COMM, FILTER_COMM);
- 	__generic_field(char *, comm, FILTER_COMM);
+ int main(void)
+ {
+-	MD5_CTX context;
++	EVP_MD_CTX *mdctx;
+ 	unsigned char md[MD5_DIGEST_LENGTH + SHA_DIGEST_LENGTH];
+ 	unsigned char dat[] = "12345";
++	unsigned int digest_len;
+ 
+-	MD5_Init(&context);
+-	MD5_Update(&context, &dat[0], sizeof(dat));
+-	MD5_Final(&md[0], &context);
++	mdctx = EVP_MD_CTX_new();
++	if (!mdctx)
++		return 0;
++
++	EVP_DigestInit_ex(mdctx, EVP_md5(), NULL);
++	EVP_DigestUpdate(mdctx, &dat[0], sizeof(dat));
++	EVP_DigestFinal_ex(mdctx, &md[0], &digest_len);
++	EVP_MD_CTX_free(mdctx);
+ 
+ 	SHA1(&dat[0], sizeof(dat), &md[0]);
  
 
 
