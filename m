@@ -2,41 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9491DC32774
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 73F08C3F6B0
 	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 12:26:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244594AbiHWMZu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 08:25:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39222 "EHLO
+        id S244239AbiHWMZk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 23 Aug 2022 08:25:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38002 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356909AbiHWMVg (ORCPT
+        with ESMTP id S1352825AbiHWMUk (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 08:21:36 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5944174353;
-        Tue, 23 Aug 2022 02:43:35 -0700 (PDT)
+        Tue, 23 Aug 2022 08:20:40 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3E72B25E92;
+        Tue, 23 Aug 2022 02:43:00 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id CA931CE1B58;
-        Tue, 23 Aug 2022 09:42:45 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D0E31C433D7;
-        Tue, 23 Aug 2022 09:42:43 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 4C2C1B81C63;
+        Tue, 23 Aug 2022 09:37:32 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A8824C433C1;
+        Tue, 23 Aug 2022 09:37:30 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661247764;
-        bh=0LLFBfOKHFPod6bxQlh8610jSWOZ/Fs0Wgi1kYBiWWk=;
+        s=korg; t=1661247451;
+        bh=KSdGKfB20YcOQwyF+fFiOKWl2k86ympCcrjk2OM2IIo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=SFnzRLl66/ORGQVQwOz+hYp5PvxyanGIhywxccFmMB9ZAlvvtJbHIFBb7932GCWLp
-         Jm2nQSDAuqMGmpysBcbx0KLhdRN3mvGYOjZjBYFnZm3RfYZBKjfWhBB43p1Et4Iu9/
-         PWZMMf7ogd8voTMJx4uKRTqxthSNmFFYJrK4MtWo=
+        b=oTGSpd92og4S687DJVcaSgj4g71oANCEakea3JsE79RsQKDWw/R23ALjKpeb5KA/i
+         dLJQqyPLwx5nt85J+GGrH8Y1YLEK5kZUegWhnAR4ikKl24+1tIVE34wmNM4HN/96Uw
+         1APmjGJKuZSrMqGyvCR2UF+WRNwkGAs661ez/w0Y=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Alan Stern <stern@rowland.harvard.edu>,
-        Liang He <windhl@126.com>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 109/158] usb: host: ohci-ppc-of: Fix refcount leak bug
-Date:   Tue, 23 Aug 2022 10:27:21 +0200
-Message-Id: <20220823080050.366332656@linuxfoundation.org>
+        stable@vger.kernel.org, Filipe Manana <fdmanana@suse.com>,
+        David Sterba <dsterba@suse.com>
+Subject: [PATCH 5.10 009/158] btrfs: fix lost error handling when looking up extended ref on log replay
+Date:   Tue, 23 Aug 2022 10:25:41 +0200
+Message-Id: <20220823080046.440072974@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220823080046.056825146@linuxfoundation.org>
 References: <20220823080046.056825146@linuxfoundation.org>
@@ -48,37 +48,43 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Liang He <windhl@126.com>
+From: Filipe Manana <fdmanana@suse.com>
 
-[ Upstream commit 40a959d7042bb7711e404ad2318b30e9f92c6b9b ]
+commit 7a6b75b79902e47f46328b57733f2604774fa2d9 upstream.
 
-In ohci_hcd_ppc_of_probe(), of_find_compatible_node() will return
-a node pointer with refcount incremented. We should use of_node_put()
-when it is not used anymore.
+During log replay, when processing inode references, if we get an error
+when looking up for an extended reference at __add_inode_ref(), we ignore
+it and proceed, returning success (0) if no other error happens after the
+lookup. This is obviously wrong because in case an extended reference
+exists and it encodes some name not in the log, we need to unlink it,
+otherwise the filesystem state will not match the state it had after the
+last fsync.
 
-Acked-by: Alan Stern <stern@rowland.harvard.edu>
-Signed-off-by: Liang He <windhl@126.com>
-Link: https://lore.kernel.org/r/20220617034637.4003115-1-windhl@126.com
+So just make __add_inode_ref() return an error it gets from the extended
+reference lookup.
+
+Fixes: f186373fef005c ("btrfs: extended inode refs")
+CC: stable@vger.kernel.org # 4.9+
+Signed-off-by: Filipe Manana <fdmanana@suse.com>
+Reviewed-by: David Sterba <dsterba@suse.com>
+Signed-off-by: David Sterba <dsterba@suse.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/usb/host/ohci-ppc-of.c | 1 +
- 1 file changed, 1 insertion(+)
+ fs/btrfs/tree-log.c |    4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/usb/host/ohci-ppc-of.c b/drivers/usb/host/ohci-ppc-of.c
-index 45f7cceb6df3..98e46725999e 100644
---- a/drivers/usb/host/ohci-ppc-of.c
-+++ b/drivers/usb/host/ohci-ppc-of.c
-@@ -169,6 +169,7 @@ static int ohci_hcd_ppc_of_probe(struct platform_device *op)
- 				release_mem_region(res.start, 0x4);
- 		} else
- 			pr_debug("%s: cannot get ehci offset from fdt\n", __FILE__);
-+		of_node_put(np);
- 	}
- 
- 	irq_dispose_mapping(irq);
--- 
-2.35.1
-
+--- a/fs/btrfs/tree-log.c
++++ b/fs/btrfs/tree-log.c
+@@ -1075,7 +1075,9 @@ again:
+ 	extref = btrfs_lookup_inode_extref(NULL, root, path, name, namelen,
+ 					   inode_objectid, parent_objectid, 0,
+ 					   0);
+-	if (!IS_ERR_OR_NULL(extref)) {
++	if (IS_ERR(extref)) {
++		return PTR_ERR(extref);
++	} else if (extref) {
+ 		u32 item_size;
+ 		u32 cur_offset = 0;
+ 		unsigned long base;
 
 
