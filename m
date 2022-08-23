@@ -2,43 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CA7AEC32772
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 11:43:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2B942C32772
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 11:43:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358065AbiHWLnG (ORCPT
+        id S1358028AbiHWLnN (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 07:43:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59820 "EHLO
+        Tue, 23 Aug 2022 07:43:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59846 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357715AbiHWLiE (ORCPT
+        with ESMTP id S1357745AbiHWLiG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 07:38:04 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3F1C21054A;
+        Tue, 23 Aug 2022 07:38:06 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3F06F101CF;
         Tue, 23 Aug 2022 02:28:23 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 88A6CB81C85;
-        Tue, 23 Aug 2022 09:28:20 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D203CC433C1;
-        Tue, 23 Aug 2022 09:28:18 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id D4ACDB81C89;
+        Tue, 23 Aug 2022 09:28:07 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3C309C433C1;
+        Tue, 23 Aug 2022 09:28:06 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661246899;
-        bh=SQXOfBhhjusfyQ7h7S2cvioqr/p4Hpbw5vz6sQzz1Wk=;
+        s=korg; t=1661246886;
+        bh=V4LgSedpr3Mn3JFQSAmnZTgGzA5U6Wo8O3HklmKyLu4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=SkI16JYsi2c/l5fDN6rzH6CtbkpHXhOObXBf3CgXXIdfB0qLIUFQv6GmEm9gkQr+R
-         EjEpnQTCGEBjWxN8xv5Pwxhu0y8NG60YC0vxIeKgV2LdZ6acwRwZyX5I+raIEQPpb1
-         j1sX/UXGKgmM7KBxWjjF/DB4GFTXaDBfKxlITTM0=
+        b=J528pb1rmNSGQoSULv4WjCvR3z6mFamfFW9CISF1HfAQ8D7YbP5gadmCnbuLDmnzs
+         32WV0bhgkZnBwdga68GWET9jNMingunocPwlClH4YkHZwTHTPIGjgtprIMRHtA0R06
+         /0guiJzaynqreIxGprK01PiczaBN+pEpowjleiWk=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, WANG Xuerui <git@xen0n.name>,
-        Huacai Chen <chenhuacai@loongson.cn>,
-        Jarkko Sakkinen <jarkko@kernel.org>
-Subject: [PATCH 5.4 255/389] tpm: eventlog: Fix section mismatch for DEBUG_SECTION_MISMATCH
-Date:   Tue, 23 Aug 2022 10:25:33 +0200
-Message-Id: <20220823080126.253203932@linuxfoundation.org>
+        stable@vger.kernel.org, Naresh Bannoth <nbannoth@in.ibm.com>,
+        Kyle Mahlkuch <Kyle.Mahlkuch@ibm.com>,
+        Quinn Tran <qutran@marvell.com>,
+        Nilesh Javali <njavali@marvell.com>,
+        "Martin K. Petersen" <martin.petersen@oracle.com>
+Subject: [PATCH 5.4 251/389] scsi: qla2xxx: Fix erroneous mailbox timeout after PCI error injection
+Date:   Tue, 23 Aug 2022 10:25:29 +0200
+Message-Id: <20220823080126.074957854@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220823080115.331990024@linuxfoundation.org>
 References: <20220823080115.331990024@linuxfoundation.org>
@@ -50,42 +52,61 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Huacai Chen <chenhuacai@loongson.cn>
+From: Quinn Tran <qutran@marvell.com>
 
-commit bed4593645366ad7362a3aa7bc0d100d8d8236a8 upstream.
+commit f260694e6463b63ae550aad25ddefe94cb1904da upstream.
 
-If DEBUG_SECTION_MISMATCH enabled, __calc_tpm2_event_size() will not be
-inlined, this cause section mismatch like this:
+Clear wait for mailbox interrupt flag to prevent stale mailbox:
 
-WARNING: modpost: vmlinux.o(.text.unlikely+0xe30c): Section mismatch in reference from the variable L0 to the function .init.text:early_ioremap()
-The function L0() references
-the function __init early_memremap().
-This is often because L0 lacks a __init
-annotation or the annotation of early_ioremap is wrong.
+Feb 22 05:22:56 ltcden4-lp7 kernel: qla2xxx [0135:90:00.1]-500a:4: LOOP UP detected (16 Gbps).
+Feb 22 05:22:59 ltcden4-lp7 kernel: qla2xxx [0135:90:00.1]-d04c:4: MBX Command timeout for cmd 69, ...
 
-Fix it by using __always_inline instead of inline for the called-once
-function __calc_tpm2_event_size().
+To fix the issue, driver needs to clear the MBX_INTR_WAIT flag on purging
+the mailbox. When the stale mailbox completion does arrive, it will be
+dropped.
 
-Fixes: 44038bc514a2 ("tpm: Abstract crypto agile event size calculations")
-Cc: stable@vger.kernel.org # v5.3
-Reported-by: WANG Xuerui <git@xen0n.name>
-Signed-off-by: Huacai Chen <chenhuacai@loongson.cn>
-Signed-off-by: Jarkko Sakkinen <jarkko@kernel.org>
+Link: https://lore.kernel.org/r/20220616053508.27186-11-njavali@marvell.com
+Fixes: b6faaaf796d7 ("scsi: qla2xxx: Serialize mailbox request")
+Cc: Naresh Bannoth <nbannoth@in.ibm.com>
+Cc: Kyle Mahlkuch <Kyle.Mahlkuch@ibm.com>
+Cc: stable@vger.kernel.org
+Reported-by: Naresh Bannoth <nbannoth@in.ibm.com>
+Tested-by: Naresh Bannoth <nbannoth@in.ibm.com>
+Signed-off-by: Quinn Tran <qutran@marvell.com>
+Signed-off-by: Nilesh Javali <njavali@marvell.com>
+Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- include/linux/tpm_eventlog.h |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/scsi/qla2xxx/qla_mbx.c |   12 ++++++------
+ 1 file changed, 6 insertions(+), 6 deletions(-)
 
---- a/include/linux/tpm_eventlog.h
-+++ b/include/linux/tpm_eventlog.h
-@@ -157,7 +157,7 @@ struct tcg_algorithm_info {
-  * Return: size of the event on success, 0 on failure
-  */
- 
--static inline int __calc_tpm2_event_size(struct tcg_pcr_event2_head *event,
-+static __always_inline int __calc_tpm2_event_size(struct tcg_pcr_event2_head *event,
- 					 struct tcg_pcr_event *event_header,
- 					 bool do_mapping)
- {
+--- a/drivers/scsi/qla2xxx/qla_mbx.c
++++ b/drivers/scsi/qla2xxx/qla_mbx.c
+@@ -271,6 +271,12 @@ qla2x00_mailbox_command(scsi_qla_host_t
+ 		atomic_inc(&ha->num_pend_mbx_stage3);
+ 		if (!wait_for_completion_timeout(&ha->mbx_intr_comp,
+ 		    mcp->tov * HZ)) {
++			ql_dbg(ql_dbg_mbx, vha, 0x117a,
++			    "cmd=%x Timeout.\n", command);
++			spin_lock_irqsave(&ha->hardware_lock, flags);
++			clear_bit(MBX_INTR_WAIT, &ha->mbx_cmd_flags);
++			spin_unlock_irqrestore(&ha->hardware_lock, flags);
++
+ 			if (chip_reset != ha->chip_reset) {
+ 				spin_lock_irqsave(&ha->hardware_lock, flags);
+ 				ha->flags.mbox_busy = 0;
+@@ -281,12 +287,6 @@ qla2x00_mailbox_command(scsi_qla_host_t
+ 				rval = QLA_ABORTED;
+ 				goto premature_exit;
+ 			}
+-			ql_dbg(ql_dbg_mbx, vha, 0x117a,
+-			    "cmd=%x Timeout.\n", command);
+-			spin_lock_irqsave(&ha->hardware_lock, flags);
+-			clear_bit(MBX_INTR_WAIT, &ha->mbx_cmd_flags);
+-			spin_unlock_irqrestore(&ha->hardware_lock, flags);
+-
+ 		} else if (ha->flags.purge_mbox ||
+ 		    chip_reset != ha->chip_reset) {
+ 			spin_lock_irqsave(&ha->hardware_lock, flags);
 
 
