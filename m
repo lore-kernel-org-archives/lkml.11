@@ -2,42 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1BE29C32772
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 11:58:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9C43FC32772
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 11:59:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243992AbiHWL6x (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 07:58:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41146 "EHLO
+        id S1359064AbiHWL65 (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 23 Aug 2022 07:58:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35998 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1359161AbiHWL4S (ORCPT
+        with ESMTP id S1359203AbiHWL4Y (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 07:56:18 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3BA037F12C;
-        Tue, 23 Aug 2022 02:33:49 -0700 (PDT)
+        Tue, 23 Aug 2022 07:56:24 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0C40D83BF8;
+        Tue, 23 Aug 2022 02:34:02 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id DF8BD61227;
-        Tue, 23 Aug 2022 09:33:47 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CCD50C433D6;
-        Tue, 23 Aug 2022 09:33:46 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id A2635B81C97;
+        Tue, 23 Aug 2022 09:33:17 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CC240C433C1;
+        Tue, 23 Aug 2022 09:33:15 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661247227;
-        bh=Q0+RYFlX6FLCup4LrrEbV8u1SV7/C1EaRiZ99wn4Ebk=;
+        s=korg; t=1661247196;
+        bh=phNkAC8F+v3jZAAggXWf0wDDXqjfMWFljaMGZEJ/A6c=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=yUiD0yDRZIBTrLJq09UOLh0sg/eFaNp3dP7roYE2DskY1tdTcFExeOYjHKuqU/heZ
-         +AelPmcc7PuVlTNgmalHz4rtxI7uNoIQoOMuv9TGBYGDR6+vmTX4SntKlgFznhVdss
-         P/HGT2AI3Pvs9om+gVKbBexgvsJkZVjOqReDDng4=
+        b=qxwRIQYn9jVoPU5wY5wBZVXrYIdMbYclY4R2iB7HMEaFrN1ALDzOMyGYR7mFmrPlg
+         6nkMYWwp20pu5PR78YXmoDg9+y6Ktpf5Di0/p8llGN4yRJ0dIr4L6U/FzM4EyYPNu4
+         53cU6gK0R3MhGcV/D3a92GycWhZm190jffJ/OBac=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Robert Marko <robimarko@gmail.com>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        stable@vger.kernel.org, Liang He <windhl@126.com>,
+        Martin Blumenstingl <martin.blumenstingl@googlemail.com>,
+        Neil Armstrong <narmstrong@baylibre.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 357/389] clk: qcom: ipq8074: dont disable gcc_sleep_clk_src
-Date:   Tue, 23 Aug 2022 10:27:15 +0200
-Message-Id: <20220823080130.464883597@linuxfoundation.org>
+Subject: [PATCH 5.4 348/389] drm/meson: Fix refcount bugs in meson_vpu_has_available_connectors()
+Date:   Tue, 23 Aug 2022 10:27:06 +0200
+Message-Id: <20220823080130.081021228@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220823080115.331990024@linuxfoundation.org>
 References: <20220823080115.331990024@linuxfoundation.org>
@@ -49,83 +51,44 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Robert Marko <robimarko@gmail.com>
+From: Liang He <windhl@126.com>
 
-[ Upstream commit 1bf7305e79aab095196131bdc87a97796e0e3fac ]
+[ Upstream commit 91b3c8dbe898df158fd2a84675f3a284ff6666f7 ]
 
-Once the usb sleep clocks are disabled, clock framework is trying to
-disable the sleep clock source also.
+In this function, there are two refcount leak bugs:
+(1) when breaking out of for_each_endpoint_of_node(), we need call
+the of_node_put() for the 'ep';
+(2) we should call of_node_put() for the reference returned by
+of_graph_get_remote_port() when it is not used anymore.
 
-However, it seems that it cannot be disabled and trying to do so produces:
-[  245.436390] ------------[ cut here ]------------
-[  245.441233] gcc_sleep_clk_src status stuck at 'on'
-[  245.441254] WARNING: CPU: 2 PID: 223 at clk_branch_wait+0x130/0x140
-[  245.450435] Modules linked in: xhci_plat_hcd xhci_hcd dwc3 dwc3_qcom leds_gpio
-[  245.456601] CPU: 2 PID: 223 Comm: sh Not tainted 5.18.0-rc4 #215
-[  245.463889] Hardware name: Xiaomi AX9000 (DT)
-[  245.470050] pstate: 204000c5 (nzCv daIF +PAN -UAO -TCO -DIT -SSBS BTYPE=--)
-[  245.474307] pc : clk_branch_wait+0x130/0x140
-[  245.481073] lr : clk_branch_wait+0x130/0x140
-[  245.485588] sp : ffffffc009f2bad0
-[  245.489838] x29: ffffffc009f2bad0 x28: ffffff8003e6c800 x27: 0000000000000000
-[  245.493057] x26: 0000000000000000 x25: 0000000000000000 x24: ffffff800226ef20
-[  245.500175] x23: ffffffc0089ff550 x22: 0000000000000000 x21: ffffffc008476ad0
-[  245.507294] x20: 0000000000000000 x19: ffffffc00965ac70 x18: fffffffffffc51a7
-[  245.514413] x17: 68702e3030303837 x16: 3a6d726f6674616c x15: ffffffc089f2b777
-[  245.521531] x14: ffffffc0095c9d18 x13: 0000000000000129 x12: 0000000000000129
-[  245.528649] x11: 00000000ffffffea x10: ffffffc009621d18 x9 : 0000000000000001
-[  245.535767] x8 : 0000000000000001 x7 : 0000000000017fe8 x6 : 0000000000000001
-[  245.542885] x5 : ffffff803fdca6d8 x4 : 0000000000000000 x3 : 0000000000000027
-[  245.550002] x2 : 0000000000000027 x1 : 0000000000000023 x0 : 0000000000000026
-[  245.557122] Call trace:
-[  245.564229]  clk_branch_wait+0x130/0x140
-[  245.566490]  clk_branch2_disable+0x2c/0x40
-[  245.570656]  clk_core_disable+0x60/0xb0
-[  245.574561]  clk_core_disable+0x68/0xb0
-[  245.578293]  clk_disable+0x30/0x50
-[  245.582113]  dwc3_qcom_remove+0x60/0xc0 [dwc3_qcom]
-[  245.585588]  platform_remove+0x28/0x60
-[  245.590361]  device_remove+0x4c/0x80
-[  245.594179]  device_release_driver_internal+0x1dc/0x230
-[  245.597914]  device_driver_detach+0x18/0x30
-[  245.602861]  unbind_store+0xec/0x110
-[  245.607027]  drv_attr_store+0x24/0x40
-[  245.610847]  sysfs_kf_write+0x44/0x60
-[  245.614405]  kernfs_fop_write_iter+0x128/0x1c0
-[  245.618052]  new_sync_write+0xc0/0x130
-[  245.622391]  vfs_write+0x1d4/0x2a0
-[  245.626123]  ksys_write+0x58/0xe0
-[  245.629508]  __arm64_sys_write+0x1c/0x30
-[  245.632895]  invoke_syscall.constprop.0+0x5c/0x110
-[  245.636890]  do_el0_svc+0xa0/0x150
-[  245.641488]  el0_svc+0x18/0x60
-[  245.644872]  el0t_64_sync_handler+0xa4/0x130
-[  245.647914]  el0t_64_sync+0x174/0x178
-[  245.652340] ---[ end trace 0000000000000000 ]---
-
-So, add CLK_IS_CRITICAL flag to the clock so that the kernel won't try
-to disable the sleep clock.
-
-Signed-off-by: Robert Marko <robimarko@gmail.com>
-Signed-off-by: Bjorn Andersson <bjorn.andersson@linaro.org>
-Link: https://lore.kernel.org/r/20220515210048.483898-10-robimarko@gmail.com
+Fixes: bbbe775ec5b5 ("drm: Add support for Amlogic Meson Graphic Controller")
+Signed-off-by: Liang He <windhl@126.com>
+Acked-by: Martin Blumenstingl <martin.blumenstingl@googlemail.com>
+Acked-by: Neil Armstrong <narmstrong@baylibre.com>
+Signed-off-by: Neil Armstrong <narmstrong@baylibre.com>
+Link: https://patchwork.freedesktop.org/patch/msgid/20220726010722.1319416-1-windhl@126.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/clk/qcom/gcc-ipq8074.c | 1 +
- 1 file changed, 1 insertion(+)
+ drivers/gpu/drm/meson/meson_drv.c | 5 ++++-
+ 1 file changed, 4 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/clk/qcom/gcc-ipq8074.c b/drivers/clk/qcom/gcc-ipq8074.c
-index 68fe80a0a92f..e9835db941d8 100644
---- a/drivers/clk/qcom/gcc-ipq8074.c
-+++ b/drivers/clk/qcom/gcc-ipq8074.c
-@@ -667,6 +667,7 @@ static struct clk_branch gcc_sleep_clk_src = {
- 			},
- 			.num_parents = 1,
- 			.ops = &clk_branch2_ops,
-+			.flags = CLK_IS_CRITICAL,
- 		},
- 	},
- };
+diff --git a/drivers/gpu/drm/meson/meson_drv.c b/drivers/gpu/drm/meson/meson_drv.c
+index 61a6536e7e61..9a39afc3939b 100644
+--- a/drivers/gpu/drm/meson/meson_drv.c
++++ b/drivers/gpu/drm/meson/meson_drv.c
+@@ -124,8 +124,11 @@ static bool meson_vpu_has_available_connectors(struct device *dev)
+ 	for_each_endpoint_of_node(dev->of_node, ep) {
+ 		/* If the endpoint node exists, consider it enabled */
+ 		remote = of_graph_get_remote_port(ep);
+-		if (remote)
++		if (remote) {
++			of_node_put(remote);
++			of_node_put(ep);
+ 			return true;
++		}
+ 	}
+ 
+ 	return false;
 -- 
 2.35.1
 
