@@ -2,45 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 39537C3814E
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 84599C48BEA
 	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 10:23:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354164AbiHWKUj (ORCPT
+        id S1354877AbiHWKWV (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 06:20:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58068 "EHLO
+        Tue, 23 Aug 2022 06:22:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57848 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352865AbiHWKJX (ORCPT
+        with ESMTP id S1353016AbiHWKKB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 06:09:23 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 66AFB6B677;
-        Tue, 23 Aug 2022 01:55:11 -0700 (PDT)
+        Tue, 23 Aug 2022 06:10:01 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 45B407DF66;
+        Tue, 23 Aug 2022 01:56:07 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id EE778B81C28;
-        Tue, 23 Aug 2022 08:55:09 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 49BCFC433D6;
-        Tue, 23 Aug 2022 08:55:08 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id D8DCD614E7;
+        Tue, 23 Aug 2022 08:56:06 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E3C84C433D6;
+        Tue, 23 Aug 2022 08:56:05 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661244908;
-        bh=ssAWNueqDfuuf/S7Vyeylygry3pLHpNKG4ybc1WcwPQ=;
+        s=korg; t=1661244966;
+        bh=4795pISx+kSlxGuzyHTG8p7FjbWVo3ER/OO87Q8atT8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=o3ilnL7QG9fqWAKCMF5cOzkYwKTrvXeZXaVO2svyfoT20X5AvVWYtDMzPrbZAGl4+
-         AvnIIBwrWAqXDbrmHKNPYPRLzk3ian3RNwVXm6cs+o/ob/hrlNSq4DCT0UochqG+Na
-         U1N/I0Ztsvn0f0K1T2dP9/wVQ9y9bqAi+VwrffS4=
+        b=mh2PlTNQBnayC75xH/HJAMSkwH10OfOf9dbKi4ARSmfIY2FPjujGxsFmKZglR4Zq/
+         dpM+Zgyivvq9SWDVbxHYvoG6oErs7tKyJVfQtzlm2aM3l/O2VS5YKWHF+6NX6ryXSw
+         fFdpIle7OxKolupwSrbb0J9WC16PEFbTfX8NTMgc=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, David Sterba <dsterba@suse.com>,
-        Qu Wenruo <wqu@suse.com>
-Subject: [PATCH 4.14 210/229] btrfs: raid56: dont trust any cached sector in __raid56_parity_recover()
-Date:   Tue, 23 Aug 2022 10:26:11 +0200
-Message-Id: <20220823080101.141317930@linuxfoundation.org>
+        stable@vger.kernel.org, Yang Shen <shenyang39@huawei.com>,
+        Zhangfei Gao <zhangfei.gao@linaro.org>,
+        Jean-Philippe Brucker <jean-philippe@linaro.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 179/244] uacce: Handle parent device removal or parent driver module rmmod
+Date:   Tue, 23 Aug 2022 10:25:38 +0200
+Message-Id: <20220823080105.284726011@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220823080053.202747790@linuxfoundation.org>
-References: <20220823080053.202747790@linuxfoundation.org>
+In-Reply-To: <20220823080059.091088642@linuxfoundation.org>
+References: <20220823080059.091088642@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -49,204 +51,351 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Qu Wenruo <wqu@suse.com>
+From: Jean-Philippe Brucker <jean-philippe@linaro.org>
 
-commit f6065f8edeb25f4a9dfe0b446030ad995a84a088 upstream.
+[ Upstream commit 80fc671bcc0173836e9032b0c698ea74c13b9d7c ]
 
-[BUG]
-There is a small workload which will always fail with recent kernel:
-(A simplified version from btrfs/125 test case)
+The uacce driver must deal with a possible removal of the parent device
+or parent driver module rmmod at any time.
 
-  mkfs.btrfs -f -m raid5 -d raid5 -b 1G $dev1 $dev2 $dev3
-  mount $dev1 $mnt
-  xfs_io -f -c "pwrite -S 0xee 0 1M" $mnt/file1
-  sync
-  umount $mnt
-  btrfs dev scan -u $dev3
-  mount -o degraded $dev1 $mnt
-  xfs_io -f -c "pwrite -S 0xff 0 128M" $mnt/file2
-  umount $mnt
-  btrfs dev scan
-  mount $dev1 $mnt
-  btrfs balance start --full-balance $mnt
-  umount $mnt
+Although uacce_remove(), called on device removal and on driver unbind,
+prevents future use of the uacce fops by removing the cdev, fops that
+were called before that point may still be running.
 
-The failure is always failed to read some tree blocks:
+Serialize uacce_fops_open() and uacce_remove() with uacce->mutex.
+Serialize other fops against uacce_remove() with q->mutex.
+Since we need to protect uacce_fops_poll() which gets called on the fast
+path, replace uacce->queues_lock with q->mutex to improve scalability.
+The other fops are only used during setup.
 
-  BTRFS info (device dm-4): relocating block group 217710592 flags data|raid5
-  BTRFS error (device dm-4): parent transid verify failed on 38993920 wanted 9 found 7
-  BTRFS error (device dm-4): parent transid verify failed on 38993920 wanted 9 found 7
-  ...
+uacce_queue_is_valid(), checked under q->mutex or uacce->mutex, denotes
+whether uacce_remove() has disabled all queues. If that is the case,
+don't go any further since the parent device is being removed and
+uacce->ops should not be called anymore.
 
-[CAUSE]
-With the recently added debug output, we can see all RAID56 operations
-related to full stripe 38928384:
-
-  56.1183: raid56_read_partial: full_stripe=38928384 devid=2 type=DATA1 offset=0 opf=0x0 physical=9502720 len=65536
-  56.1185: raid56_read_partial: full_stripe=38928384 devid=3 type=DATA2 offset=16384 opf=0x0 physical=9519104 len=16384
-  56.1185: raid56_read_partial: full_stripe=38928384 devid=3 type=DATA2 offset=49152 opf=0x0 physical=9551872 len=16384
-  56.1187: raid56_write_stripe: full_stripe=38928384 devid=3 type=DATA2 offset=0 opf=0x1 physical=9502720 len=16384
-  56.1188: raid56_write_stripe: full_stripe=38928384 devid=3 type=DATA2 offset=32768 opf=0x1 physical=9535488 len=16384
-  56.1188: raid56_write_stripe: full_stripe=38928384 devid=1 type=PQ1 offset=0 opf=0x1 physical=30474240 len=16384
-  56.1189: raid56_write_stripe: full_stripe=38928384 devid=1 type=PQ1 offset=32768 opf=0x1 physical=30507008 len=16384
-  56.1218: raid56_write_stripe: full_stripe=38928384 devid=3 type=DATA2 offset=49152 opf=0x1 physical=9551872 len=16384
-  56.1219: raid56_write_stripe: full_stripe=38928384 devid=1 type=PQ1 offset=49152 opf=0x1 physical=30523392 len=16384
-  56.2721: raid56_parity_recover: full stripe=38928384 eb=39010304 mirror=2
-  56.2723: raid56_parity_recover: full stripe=38928384 eb=39010304 mirror=2
-  56.2724: raid56_parity_recover: full stripe=38928384 eb=39010304 mirror=2
-
-Before we enter raid56_parity_recover(), we have triggered some metadata
-write for the full stripe 38928384, this leads to us to read all the
-sectors from disk.
-
-Furthermore, btrfs raid56 write will cache its calculated P/Q sectors to
-avoid unnecessary read.
-
-This means, for that full stripe, after any partial write, we will have
-stale data, along with P/Q calculated using that stale data.
-
-Thankfully due to patch "btrfs: only write the sectors in the vertical stripe
-which has data stripes" we haven't submitted all the corrupted P/Q to disk.
-
-When we really need to recover certain range, aka in
-raid56_parity_recover(), we will use the cached rbio, along with its
-cached sectors (the full stripe is all cached).
-
-This explains why we have no event raid56_scrub_read_recover()
-triggered.
-
-Since we have the cached P/Q which is calculated using the stale data,
-the recovered one will just be stale.
-
-In our particular test case, it will always return the same incorrect
-metadata, thus causing the same error message "parent transid verify
-failed on 39010304 wanted 9 found 7" again and again.
-
-[BTRFS DESTRUCTIVE RMW PROBLEM]
-
-Test case btrfs/125 (and above workload) always has its trouble with
-the destructive read-modify-write (RMW) cycle:
-
-        0       32K     64K
-Data1:  | Good  | Good  |
-Data2:  | Bad   | Bad   |
-Parity: | Good  | Good  |
-
-In above case, if we trigger any write into Data1, we will use the bad
-data in Data2 to re-generate parity, killing the only chance to recovery
-Data2, thus Data2 is lost forever.
-
-This destructive RMW cycle is not specific to btrfs RAID56, but there
-are some btrfs specific behaviors making the case even worse:
-
-- Btrfs will cache sectors for unrelated vertical stripes.
-
-  In above example, if we're only writing into 0~32K range, btrfs will
-  still read data range (32K ~ 64K) of Data1, and (64K~128K) of Data2.
-  This behavior is to cache sectors for later update.
-
-  Incidentally commit d4e28d9b5f04 ("btrfs: raid56: make steal_rbio()
-  subpage compatible") has a bug which makes RAID56 to never trust the
-  cached sectors, thus slightly improve the situation for recovery.
-
-  Unfortunately, follow up fix "btrfs: update stripe_sectors::uptodate in
-  steal_rbio" will revert the behavior back to the old one.
-
-- Btrfs raid56 partial write will update all P/Q sectors and cache them
-
-  This means, even if data at (64K ~ 96K) of Data2 is free space, and
-  only (96K ~ 128K) of Data2 is really stale data.
-  And we write into that (96K ~ 128K), we will update all the parity
-  sectors for the full stripe.
-
-  This unnecessary behavior will completely kill the chance of recovery.
-
-  Thankfully, an unrelated optimization "btrfs: only write the sectors
-  in the vertical stripe which has data stripes" will prevent
-  submitting the write bio for untouched vertical sectors.
-
-  That optimization will keep the on-disk P/Q untouched for a chance for
-  later recovery.
-
-[FIX]
-Although we have no good way to completely fix the destructive RMW
-(unless we go full scrub for each partial write), we can still limit the
-damage.
-
-With patch "btrfs: only write the sectors in the vertical stripe which
-has data stripes" now we won't really submit the P/Q of unrelated
-vertical stripes, so the on-disk P/Q should still be fine.
-
-Now we really need to do is just drop all the cached sectors when doing
-recovery.
-
-By this, we have a chance to read the original P/Q from disk, and have a
-chance to recover the stale data, while still keep the cache to speed up
-regular write path.
-
-In fact, just dropping all the cache for recovery path is good enough to
-allow the test case btrfs/125 along with the small script to pass
-reliably.
-
-The lack of metadata write after the degraded mount, and forced metadata
-COW is saving us this time.
-
-So this patch will fix the behavior by not trust any cache in
-__raid56_parity_recover(), to solve the problem while still keep the
-cache useful.
-
-But please note that this test pass DOES NOT mean we have solved the
-destructive RMW problem, we just do better damage control a little
-better.
-
-Related patches:
-
-- btrfs: only write the sectors in the vertical stripe
-- d4e28d9b5f04 ("btrfs: raid56: make steal_rbio() subpage compatible")
-- btrfs: update stripe_sectors::uptodate in steal_rbio
-
-Acked-by: David Sterba <dsterba@suse.com>
-Signed-off-by: Qu Wenruo <wqu@suse.com>
-Signed-off-by: David Sterba <dsterba@suse.com>
+Reported-by: Yang Shen <shenyang39@huawei.com>
+Signed-off-by: Zhangfei Gao <zhangfei.gao@linaro.org>
+Signed-off-by: Jean-Philippe Brucker <jean-philippe@linaro.org>
+Link: https://lore.kernel.org/r/20220701034843.7502-1-zhangfei.gao@linaro.org
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- fs/btrfs/raid56.c |   19 ++++++-------------
- 1 file changed, 6 insertions(+), 13 deletions(-)
+ drivers/misc/uacce/uacce.c | 133 ++++++++++++++++++++++++-------------
+ include/linux/uacce.h      |   6 +-
+ 2 files changed, 91 insertions(+), 48 deletions(-)
 
---- a/fs/btrfs/raid56.c
-+++ b/fs/btrfs/raid56.c
-@@ -2096,9 +2096,12 @@ static int __raid56_parity_recover(struc
- 	atomic_set(&rbio->error, 0);
+diff --git a/drivers/misc/uacce/uacce.c b/drivers/misc/uacce/uacce.c
+index 488eeb2811ae..976d051071dc 100644
+--- a/drivers/misc/uacce/uacce.c
++++ b/drivers/misc/uacce/uacce.c
+@@ -9,43 +9,38 @@
  
- 	/*
--	 * read everything that hasn't failed.  Thanks to the
--	 * stripe cache, it is possible that some or all of these
--	 * pages are going to be uptodate.
-+	 * Read everything that hasn't failed. However this time we will
-+	 * not trust any cached sector.
-+	 * As we may read out some stale data but higher layer is not reading
-+	 * that stale part.
-+	 *
-+	 * So here we always re-read everything in recovery path.
- 	 */
- 	for (stripe = 0; stripe < rbio->real_stripes; stripe++) {
- 		if (rbio->faila == stripe || rbio->failb == stripe) {
-@@ -2107,16 +2110,6 @@ static int __raid56_parity_recover(struc
- 		}
+ static struct class *uacce_class;
+ static dev_t uacce_devt;
+-static DEFINE_MUTEX(uacce_mutex);
+ static DEFINE_XARRAY_ALLOC(uacce_xa);
  
- 		for (pagenr = 0; pagenr < rbio->stripe_npages; pagenr++) {
--			struct page *p;
+-static int uacce_start_queue(struct uacce_queue *q)
++/*
++ * If the parent driver or the device disappears, the queue state is invalid and
++ * ops are not usable anymore.
++ */
++static bool uacce_queue_is_valid(struct uacce_queue *q)
+ {
+-	int ret = 0;
++	return q->state == UACCE_Q_INIT || q->state == UACCE_Q_STARTED;
++}
+ 
+-	mutex_lock(&uacce_mutex);
++static int uacce_start_queue(struct uacce_queue *q)
++{
++	int ret;
+ 
+-	if (q->state != UACCE_Q_INIT) {
+-		ret = -EINVAL;
+-		goto out_with_lock;
+-	}
++	if (q->state != UACCE_Q_INIT)
++		return -EINVAL;
+ 
+ 	if (q->uacce->ops->start_queue) {
+ 		ret = q->uacce->ops->start_queue(q);
+ 		if (ret < 0)
+-			goto out_with_lock;
++			return ret;
+ 	}
+ 
+ 	q->state = UACCE_Q_STARTED;
 -
--			/*
--			 * the rmw code may have already read this
--			 * page in
--			 */
--			p = rbio_stripe_page(rbio, stripe, pagenr);
--			if (PageUptodate(p))
--				continue;
+-out_with_lock:
+-	mutex_unlock(&uacce_mutex);
 -
- 			ret = rbio_add_io_page(rbio, &bio_list,
- 				       rbio_stripe_page(rbio, stripe, pagenr),
- 				       stripe, pagenr, rbio->stripe_len);
+-	return ret;
++	return 0;
+ }
+ 
+ static int uacce_put_queue(struct uacce_queue *q)
+ {
+ 	struct uacce_device *uacce = q->uacce;
+ 
+-	mutex_lock(&uacce_mutex);
+-
+-	if (q->state == UACCE_Q_ZOMBIE)
+-		goto out;
+-
+ 	if ((q->state == UACCE_Q_STARTED) && uacce->ops->stop_queue)
+ 		uacce->ops->stop_queue(q);
+ 
+@@ -54,8 +49,6 @@ static int uacce_put_queue(struct uacce_queue *q)
+ 		uacce->ops->put_queue(q);
+ 
+ 	q->state = UACCE_Q_ZOMBIE;
+-out:
+-	mutex_unlock(&uacce_mutex);
+ 
+ 	return 0;
+ }
+@@ -65,20 +58,36 @@ static long uacce_fops_unl_ioctl(struct file *filep,
+ {
+ 	struct uacce_queue *q = filep->private_data;
+ 	struct uacce_device *uacce = q->uacce;
++	long ret = -ENXIO;
++
++	/*
++	 * uacce->ops->ioctl() may take the mmap_lock when copying arg to/from
++	 * user. Avoid a circular lock dependency with uacce_fops_mmap(), which
++	 * gets called with mmap_lock held, by taking uacce->mutex instead of
++	 * q->mutex. Doing this in uacce_fops_mmap() is not possible because
++	 * uacce_fops_open() calls iommu_sva_bind_device(), which takes
++	 * mmap_lock, while holding uacce->mutex.
++	 */
++	mutex_lock(&uacce->mutex);
++	if (!uacce_queue_is_valid(q))
++		goto out_unlock;
+ 
+ 	switch (cmd) {
+ 	case UACCE_CMD_START_Q:
+-		return uacce_start_queue(q);
+-
++		ret = uacce_start_queue(q);
++		break;
+ 	case UACCE_CMD_PUT_Q:
+-		return uacce_put_queue(q);
+-
++		ret = uacce_put_queue(q);
++		break;
+ 	default:
+-		if (!uacce->ops->ioctl)
+-			return -EINVAL;
+-
+-		return uacce->ops->ioctl(q, cmd, arg);
++		if (uacce->ops->ioctl)
++			ret = uacce->ops->ioctl(q, cmd, arg);
++		else
++			ret = -EINVAL;
+ 	}
++out_unlock:
++	mutex_unlock(&uacce->mutex);
++	return ret;
+ }
+ 
+ #ifdef CONFIG_COMPAT
+@@ -136,6 +145,13 @@ static int uacce_fops_open(struct inode *inode, struct file *filep)
+ 	if (!q)
+ 		return -ENOMEM;
+ 
++	mutex_lock(&uacce->mutex);
++
++	if (!uacce->parent) {
++		ret = -EINVAL;
++		goto out_with_mem;
++	}
++
+ 	ret = uacce_bind_queue(uacce, q);
+ 	if (ret)
+ 		goto out_with_mem;
+@@ -152,10 +168,9 @@ static int uacce_fops_open(struct inode *inode, struct file *filep)
+ 	filep->private_data = q;
+ 	uacce->inode = inode;
+ 	q->state = UACCE_Q_INIT;
+-
+-	mutex_lock(&uacce->queues_lock);
++	mutex_init(&q->mutex);
+ 	list_add(&q->list, &uacce->queues);
+-	mutex_unlock(&uacce->queues_lock);
++	mutex_unlock(&uacce->mutex);
+ 
+ 	return 0;
+ 
+@@ -163,18 +178,20 @@ static int uacce_fops_open(struct inode *inode, struct file *filep)
+ 	uacce_unbind_queue(q);
+ out_with_mem:
+ 	kfree(q);
++	mutex_unlock(&uacce->mutex);
+ 	return ret;
+ }
+ 
+ static int uacce_fops_release(struct inode *inode, struct file *filep)
+ {
+ 	struct uacce_queue *q = filep->private_data;
++	struct uacce_device *uacce = q->uacce;
+ 
+-	mutex_lock(&q->uacce->queues_lock);
+-	list_del(&q->list);
+-	mutex_unlock(&q->uacce->queues_lock);
++	mutex_lock(&uacce->mutex);
+ 	uacce_put_queue(q);
+ 	uacce_unbind_queue(q);
++	list_del(&q->list);
++	mutex_unlock(&uacce->mutex);
+ 	kfree(q);
+ 
+ 	return 0;
+@@ -217,10 +234,9 @@ static int uacce_fops_mmap(struct file *filep, struct vm_area_struct *vma)
+ 	vma->vm_private_data = q;
+ 	qfr->type = type;
+ 
+-	mutex_lock(&uacce_mutex);
+-
+-	if (q->state != UACCE_Q_INIT && q->state != UACCE_Q_STARTED) {
+-		ret = -EINVAL;
++	mutex_lock(&q->mutex);
++	if (!uacce_queue_is_valid(q)) {
++		ret = -ENXIO;
+ 		goto out_with_lock;
+ 	}
+ 
+@@ -248,12 +264,12 @@ static int uacce_fops_mmap(struct file *filep, struct vm_area_struct *vma)
+ 	}
+ 
+ 	q->qfrs[type] = qfr;
+-	mutex_unlock(&uacce_mutex);
++	mutex_unlock(&q->mutex);
+ 
+ 	return ret;
+ 
+ out_with_lock:
+-	mutex_unlock(&uacce_mutex);
++	mutex_unlock(&q->mutex);
+ 	kfree(qfr);
+ 	return ret;
+ }
+@@ -262,12 +278,20 @@ static __poll_t uacce_fops_poll(struct file *file, poll_table *wait)
+ {
+ 	struct uacce_queue *q = file->private_data;
+ 	struct uacce_device *uacce = q->uacce;
++	__poll_t ret = 0;
++
++	mutex_lock(&q->mutex);
++	if (!uacce_queue_is_valid(q))
++		goto out_unlock;
+ 
+ 	poll_wait(file, &q->wait, wait);
++
+ 	if (uacce->ops->is_q_updated && uacce->ops->is_q_updated(q))
+-		return EPOLLIN | EPOLLRDNORM;
++		ret = EPOLLIN | EPOLLRDNORM;
+ 
+-	return 0;
++out_unlock:
++	mutex_unlock(&q->mutex);
++	return ret;
+ }
+ 
+ static const struct file_operations uacce_fops = {
+@@ -450,7 +474,7 @@ struct uacce_device *uacce_alloc(struct device *parent,
+ 		goto err_with_uacce;
+ 
+ 	INIT_LIST_HEAD(&uacce->queues);
+-	mutex_init(&uacce->queues_lock);
++	mutex_init(&uacce->mutex);
+ 	device_initialize(&uacce->dev);
+ 	uacce->dev.devt = MKDEV(MAJOR(uacce_devt), uacce->dev_id);
+ 	uacce->dev.class = uacce_class;
+@@ -507,13 +531,23 @@ void uacce_remove(struct uacce_device *uacce)
+ 	if (uacce->inode)
+ 		unmap_mapping_range(uacce->inode->i_mapping, 0, 0, 1);
+ 
++	/*
++	 * uacce_fops_open() may be running concurrently, even after we remove
++	 * the cdev. Holding uacce->mutex ensures that open() does not obtain a
++	 * removed uacce device.
++	 */
++	mutex_lock(&uacce->mutex);
+ 	/* ensure no open queue remains */
+-	mutex_lock(&uacce->queues_lock);
+ 	list_for_each_entry_safe(q, next_q, &uacce->queues, list) {
++		/*
++		 * Taking q->mutex ensures that fops do not use the defunct
++		 * uacce->ops after the queue is disabled.
++		 */
++		mutex_lock(&q->mutex);
+ 		uacce_put_queue(q);
++		mutex_unlock(&q->mutex);
+ 		uacce_unbind_queue(q);
+ 	}
+-	mutex_unlock(&uacce->queues_lock);
+ 
+ 	/* disable sva now since no opened queues */
+ 	uacce_disable_sva(uacce);
+@@ -521,6 +555,13 @@ void uacce_remove(struct uacce_device *uacce)
+ 	if (uacce->cdev)
+ 		cdev_device_del(uacce->cdev, &uacce->dev);
+ 	xa_erase(&uacce_xa, uacce->dev_id);
++	/*
++	 * uacce exists as long as there are open fds, but ops will be freed
++	 * now. Ensure that bugs cause NULL deref rather than use-after-free.
++	 */
++	uacce->ops = NULL;
++	uacce->parent = NULL;
++	mutex_unlock(&uacce->mutex);
+ 	put_device(&uacce->dev);
+ }
+ EXPORT_SYMBOL_GPL(uacce_remove);
+diff --git a/include/linux/uacce.h b/include/linux/uacce.h
+index 48e319f40275..9ce88c28b0a8 100644
+--- a/include/linux/uacce.h
++++ b/include/linux/uacce.h
+@@ -70,6 +70,7 @@ enum uacce_q_state {
+  * @wait: wait queue head
+  * @list: index into uacce queues list
+  * @qfrs: pointer of qfr regions
++ * @mutex: protects queue state
+  * @state: queue state machine
+  * @pasid: pasid associated to the mm
+  * @handle: iommu_sva handle returned by iommu_sva_bind_device()
+@@ -80,6 +81,7 @@ struct uacce_queue {
+ 	wait_queue_head_t wait;
+ 	struct list_head list;
+ 	struct uacce_qfile_region *qfrs[UACCE_MAX_REGION];
++	struct mutex mutex;
+ 	enum uacce_q_state state;
+ 	u32 pasid;
+ 	struct iommu_sva *handle;
+@@ -97,9 +99,9 @@ struct uacce_queue {
+  * @dev_id: id of the uacce device
+  * @cdev: cdev of the uacce
+  * @dev: dev of the uacce
++ * @mutex: protects uacce operation
+  * @priv: private pointer of the uacce
+  * @queues: list of queues
+- * @queues_lock: lock for queues list
+  * @inode: core vfs
+  */
+ struct uacce_device {
+@@ -113,9 +115,9 @@ struct uacce_device {
+ 	u32 dev_id;
+ 	struct cdev *cdev;
+ 	struct device dev;
++	struct mutex mutex;
+ 	void *priv;
+ 	struct list_head queues;
+-	struct mutex queues_lock;
+ 	struct inode *inode;
+ };
+ 
+-- 
+2.35.1
+
 
 
