@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 48890C32772
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 09:43:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A7002C32772
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 09:43:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234683AbiHWJnG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 05:43:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53230 "EHLO
+        id S232043AbiHWJnQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 23 Aug 2022 05:43:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52264 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351818AbiHWJkd (ORCPT
+        with ESMTP id S1351922AbiHWJkl (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 05:40:33 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B600779686;
-        Tue, 23 Aug 2022 01:41:29 -0700 (PDT)
+        Tue, 23 Aug 2022 05:40:41 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EAF1479A48;
+        Tue, 23 Aug 2022 01:41:43 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 103E06152E;
-        Tue, 23 Aug 2022 08:40:42 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 14DD5C433C1;
-        Tue, 23 Aug 2022 08:40:40 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id BEE60B81C66;
+        Tue, 23 Aug 2022 08:41:09 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 17C65C433D6;
+        Tue, 23 Aug 2022 08:41:07 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661244041;
-        bh=UnsYK3CCZV3d4U2OT6f8xJcmMIqfdF3LWGKXGLp2kE4=;
+        s=korg; t=1661244068;
+        bh=k6l0jTys9X4jNwGOb/WlS1JIPlY5G2K38bc4mbzN3tQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=QeNYWMiPcAU7XSz8sblioW0AFHTwHleTTWA01yyccx8GKInLCtXC9H5uN3wkRx5Xw
-         4n9F1R3wd6f5V2P7dxqsVQYoB5kdQ0Xck0LCHXBmU+8OZnKt0BU7y8BbGfK/GKvlpt
-         8HPh5INeZwNKsXdzzI7+bN1gaMt8uus7Br+A9lgE=
+        b=C59lMywTMRk5BYqFRUy/SxZOBojurhVJeTj8pwlBUIHCpMNDP5+JXiBSn59pssYM/
+         RKhXPWej4wJNUyfTkMeswJQiojiOBpXZ1PGyXhgIcq3yJlMOEN3x2JRMITiglZl5Re
+         TTbedqXAv0PdEQ0qaC9AO2c9GVcMuQ7C0/3ZK9uY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
-        Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
-        Christian Lamparter <chunkeey@gmail.com>,
-        Kalle Valo <kvalo@kernel.org>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.14 077/229] wifi: p54: Fix an error handling path in p54spi_probe()
-Date:   Tue, 23 Aug 2022 10:23:58 +0200
-Message-Id: <20220823080056.464724503@linuxfoundation.org>
+        Vincent Mailhol <mailhol.vincent@wanadoo.fr>,
+        Marc Kleine-Budde <mkl@pengutronix.de>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 4.14 081/229] can: sja1000: do not report txerr and rxerr during bus-off
+Date:   Tue, 23 Aug 2022 10:24:02 +0200
+Message-Id: <20220823080056.613928207@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220823080053.202747790@linuxfoundation.org>
 References: <20220823080053.202747790@linuxfoundation.org>
@@ -50,50 +50,47 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+From: Vincent Mailhol <mailhol.vincent@wanadoo.fr>
 
-[ Upstream commit 83781f0162d080fec7dcb911afd1bc2f5ad04471 ]
+[ Upstream commit 164d7cb2d5a30f1b3a5ab4fab1a27731fb1494a8 ]
 
-If an error occurs after a successful call to p54spi_request_firmware(), it
-must be undone by a corresponding release_firmware() as already done in
-the error handling path of p54spi_request_firmware() and in the .remove()
-function.
+During bus off, the error count is greater than 255 and can not fit in
+a u8.
 
-Add the missing call in the error handling path and remove it from
-p54spi_request_firmware() now that it is the responsibility of the caller
-to release the firmware
-
-Fixes: cd8d3d321285 ("p54spi: p54spi driver")
-Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
-Acked-by: Christian Lamparter <chunkeey@gmail.com>
-Signed-off-by: Kalle Valo <kvalo@kernel.org>
-Link: https://lore.kernel.org/r/297d2547ff2ee627731662abceeab9dbdaf23231.1655068321.git.christophe.jaillet@wanadoo.fr
+Fixes: 215db1856e83 ("can: sja1000: Consolidate and unify state change handling")
+Link: https://lore.kernel.org/all/20220719143550.3681-4-mailhol.vincent@wanadoo.fr
+Signed-off-by: Vincent Mailhol <mailhol.vincent@wanadoo.fr>
+Signed-off-by: Marc Kleine-Budde <mkl@pengutronix.de>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/wireless/intersil/p54/p54spi.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ drivers/net/can/sja1000/sja1000.c | 7 ++++---
+ 1 file changed, 4 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/net/wireless/intersil/p54/p54spi.c b/drivers/net/wireless/intersil/p54/p54spi.c
-index e41bf042352e..3dcfad5b61ff 100644
---- a/drivers/net/wireless/intersil/p54/p54spi.c
-+++ b/drivers/net/wireless/intersil/p54/p54spi.c
-@@ -177,7 +177,7 @@ static int p54spi_request_firmware(struct ieee80211_hw *dev)
+diff --git a/drivers/net/can/sja1000/sja1000.c b/drivers/net/can/sja1000/sja1000.c
+index 9f107798f904..e7327ceabb76 100644
+--- a/drivers/net/can/sja1000/sja1000.c
++++ b/drivers/net/can/sja1000/sja1000.c
+@@ -405,9 +405,6 @@ static int sja1000_err(struct net_device *dev, uint8_t isrc, uint8_t status)
+ 	txerr = priv->read_reg(priv, SJA1000_TXERR);
+ 	rxerr = priv->read_reg(priv, SJA1000_RXERR);
  
- 	ret = p54_parse_firmware(dev, priv->firmware);
- 	if (ret) {
--		release_firmware(priv->firmware);
-+		/* the firmware is released by the caller */
- 		return ret;
+-	cf->data[6] = txerr;
+-	cf->data[7] = rxerr;
+-
+ 	if (isrc & IRQ_DOI) {
+ 		/* data overrun interrupt */
+ 		netdev_dbg(dev, "data overrun interrupt\n");
+@@ -429,6 +426,10 @@ static int sja1000_err(struct net_device *dev, uint8_t isrc, uint8_t status)
+ 		else
+ 			state = CAN_STATE_ERROR_ACTIVE;
  	}
- 
-@@ -672,6 +672,7 @@ static int p54spi_probe(struct spi_device *spi)
- 	return 0;
- 
- err_free_common:
-+	release_firmware(priv->firmware);
- 	free_irq(gpio_to_irq(p54spi_gpio_irq), spi);
- err_free_gpio_irq:
- 	gpio_free(p54spi_gpio_irq);
++	if (state != CAN_STATE_BUS_OFF) {
++		cf->data[6] = txerr;
++		cf->data[7] = rxerr;
++	}
+ 	if (isrc & IRQ_BEI) {
+ 		/* bus error interrupt */
+ 		priv->can.can_stats.bus_error++;
 -- 
 2.35.1
 
