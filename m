@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 34339C38147
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1481DC32796
 	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 11:21:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357603AbiHWLUh (ORCPT
+        id S1357580AbiHWLUe (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 07:20:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37280 "EHLO
+        Tue, 23 Aug 2022 07:20:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35116 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357879AbiHWLQw (ORCPT
+        with ESMTP id S1357819AbiHWLQn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 07:16:52 -0400
+        Tue, 23 Aug 2022 07:16:43 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8FF1CBD4D2;
-        Tue, 23 Aug 2022 02:20:29 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9E6F7BD1C4;
+        Tue, 23 Aug 2022 02:20:13 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id B238D6126A;
-        Tue, 23 Aug 2022 09:20:25 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id ADA77C433C1;
-        Tue, 23 Aug 2022 09:20:24 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 6797660959;
+        Tue, 23 Aug 2022 09:20:13 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 38DC1C433C1;
+        Tue, 23 Aug 2022 09:20:12 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661246425;
-        bh=M93vRmOVyS6v9wFeMmHiry5hSvGLm9sie6qznnUarbs=;
+        s=korg; t=1661246412;
+        bh=WcmIH+a533U14dlH39GJ7KubRDRkt0POYB71uaAxXzQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ASrraS4lSocDDKolwOIFQy1sujQCd4ZmiV4+oj/AHIqMMpBM1rB/boRPCFJhsG4Fm
-         vOGPli+WX1ORVtKB1WpzgtMg0obK5g/xZjunXKFreZFzAp4ep+44+TQG4snKQfg62S
-         BdEdnIe8V0Rfj0V0uR4EojVMG/W/LfopZn5jjg5E=
+        b=xlYKMPf9CSDtRdqD/Joc8bX4zxMMdMyz+NpQGav5XA1dUILHoP5ABS5jDmMzVMAOv
+         g+KhbQQJq3FiA2FHvj9JDn7ligJFsGi24nwakRRV1Cvm6TdVx1Fp9eLr2fIhBLIfdb
+         aN7lENxNKVnsmLI/Pi2yVFMZwDvdmnsofYbRaW54=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
-        Linus Walleij <linus.walleij@linaro.org>,
+        stable@vger.kernel.org,
+        Alexander Stein <alexander.stein@ew.tq-group.com>,
+        Shawn Guo <shawnguo@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 106/389] drm/mcde: Fix refcount leak in mcde_dsi_bind
-Date:   Tue, 23 Aug 2022 10:23:04 +0200
-Message-Id: <20220823080120.032800782@linuxfoundation.org>
+Subject: [PATCH 5.4 061/389] ARM: dts: imx6ul: fix lcdif node compatible
+Date:   Tue, 23 Aug 2022 10:22:19 +0200
+Message-Id: <20220823080118.150392609@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220823080115.331990024@linuxfoundation.org>
 References: <20220823080115.331990024@linuxfoundation.org>
@@ -50,36 +51,40 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Miaoqian Lin <linmq006@gmail.com>
+From: Alexander Stein <alexander.stein@ew.tq-group.com>
 
-[ Upstream commit 3a149169e4a2f9127022fec6ef5d71b4e804b3b9 ]
+[ Upstream commit 1a884d17ca324531634cce82e9f64c0302bdf7de ]
 
-Every iteration of for_each_available_child_of_node() decrements
-the reference counter of the previous node. There is no decrement
-when break out from the loop and results in refcount leak.
-Add missing of_node_put() to fix this.
+In yaml binding "fsl,imx6ul-lcdif" is listed as compatible to imx6sx-lcdif,
+but not imx28-lcdif. Change the list accordingly. Fixes the
+dt_binding_check warning:
+lcdif@21c8000: compatible: 'oneOf' conditional failed, one must be fixed:
+['fsl,imx6ul-lcdif', 'fsl,imx28-lcdif'] is too long
+Additional items are not allowed ('fsl,imx28-lcdif' was unexpected)
+'fsl,imx6ul-lcdif' is not one of ['fsl,imx23-lcdif', 'fsl,imx28-lcdif',
+'fsl,imx6sx-lcdif']
+'fsl,imx6sx-lcdif' was expected
 
-Fixes: 5fc537bfd000 ("drm/mcde: Add new driver for ST-Ericsson MCDE")
-Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
-Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
-Link: https://patchwork.freedesktop.org/patch/msgid/20220525115411.65455-1-linmq006@gmail.com
+Signed-off-by: Alexander Stein <alexander.stein@ew.tq-group.com>
+Signed-off-by: Shawn Guo <shawnguo@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/gpu/drm/mcde/mcde_dsi.c | 1 +
- 1 file changed, 1 insertion(+)
+ arch/arm/boot/dts/imx6ul.dtsi | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/gpu/drm/mcde/mcde_dsi.c b/drivers/gpu/drm/mcde/mcde_dsi.c
-index 8c8c92fc82e9..a580b9cadb0c 100644
---- a/drivers/gpu/drm/mcde/mcde_dsi.c
-+++ b/drivers/gpu/drm/mcde/mcde_dsi.c
-@@ -942,6 +942,7 @@ static int mcde_dsi_bind(struct device *dev, struct device *master,
- 			bridge = of_drm_find_bridge(child);
- 			if (!bridge) {
- 				dev_err(dev, "failed to find bridge\n");
-+				of_node_put(child);
- 				return -EINVAL;
- 			}
- 		}
+diff --git a/arch/arm/boot/dts/imx6ul.dtsi b/arch/arm/boot/dts/imx6ul.dtsi
+index 3fd02e10170a..58671c6e9f31 100644
+--- a/arch/arm/boot/dts/imx6ul.dtsi
++++ b/arch/arm/boot/dts/imx6ul.dtsi
+@@ -976,7 +976,7 @@ csi: csi@21c4000 {
+ 			};
+ 
+ 			lcdif: lcdif@21c8000 {
+-				compatible = "fsl,imx6ul-lcdif", "fsl,imx28-lcdif";
++				compatible = "fsl,imx6ul-lcdif", "fsl,imx6sx-lcdif";
+ 				reg = <0x021c8000 0x4000>;
+ 				interrupts = <GIC_SPI 5 IRQ_TYPE_LEVEL_HIGH>;
+ 				clocks = <&clks IMX6UL_CLK_LCDIF_PIX>,
 -- 
 2.35.1
 
