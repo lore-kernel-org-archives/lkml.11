@@ -2,196 +2,133 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9B77BC32772
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 09:19:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D1B9DC32772
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 09:19:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239374AbiHWJTI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 05:19:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49946 "EHLO
+        id S240353AbiHWJTO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 23 Aug 2022 05:19:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46740 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350139AbiHWJQl (ORCPT
+        with ESMTP id S1350222AbiHWJQp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 05:16:41 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B19D3753A1;
-        Tue, 23 Aug 2022 01:32:58 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 4ED9DCE1B43;
-        Tue, 23 Aug 2022 08:32:42 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 675F4C433C1;
-        Tue, 23 Aug 2022 08:32:40 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661243560;
-        bh=TT7tWc/244ggDbMGZAOtd6yfrQaNNX6DFkJuHIlf8kw=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=TlDQmDLqkR+lZjmkeoFYltR9OkmjEBgV+bS9tSr5CBEidmDKn1b6g6Tv/mU4gdpPo
-         X5ZVcnZmjhKzaZ1vwwQdAiueravcpIHIgQkzbPLm6WVcbIHqEZ1KT+VAtsju1V6kh5
-         OvEvUNHtvHG8/oV9KP+A38kf/u4KOqJUbfjR+pAY=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        syzbot+15cd994e273307bf5cfa@syzkaller.appspotmail.com,
-        Lukas Czerner <lczerner@redhat.com>,
-        Tadeusz Struk <tadeusz.struk@linaro.org>,
-        Theodore Tso <tytso@mit.edu>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.19 316/365] ext4: block range must be validated before use in ext4_mb_clear_bb()
-Date:   Tue, 23 Aug 2022 10:03:37 +0200
-Message-Id: <20220823080131.397839950@linuxfoundation.org>
-X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220823080118.128342613@linuxfoundation.org>
-References: <20220823080118.128342613@linuxfoundation.org>
-User-Agent: quilt/0.67
+        Tue, 23 Aug 2022 05:16:45 -0400
+Received: from mail-lj1-x22b.google.com (mail-lj1-x22b.google.com [IPv6:2a00:1450:4864:20::22b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 83A9F88DF9;
+        Tue, 23 Aug 2022 01:33:01 -0700 (PDT)
+Received: by mail-lj1-x22b.google.com with SMTP id l21so12832707ljj.2;
+        Tue, 23 Aug 2022 01:33:01 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc;
+        bh=ZoiEZ2owYFRd9VZ4KOglg27OSgrpz66JCF4aBuAtJKk=;
+        b=XOq1D3p40qntGScT26U+WRfQkKGoZxGas4gsBYkW/tlkirRYU1vMzrPsYNj7ApNwFg
+         yKcin3ahiyq3dt2/3VQVxsTKwFrRiK2Mq8FAQ45mWJZ7Jx9ZiOX1Wzv6TIhCBWC7dD0c
+         Acw/ckgnEivCfCEe8UU8ztCo5rzvuYzqRWvkLJb9dSHrc6+zg1mpuOo2DTl0e2tfJuzw
+         hoAtsafvBXIStxBM6F3Oir2LCvFUgHpBndT1DyWnc3nOGU5t7DzIaoss1Mvh0WLv4rDW
+         e3GwJfDPGN29b7m0OF0tm3kxv+gC08kZbAK4advmaoUk7b16JRuEMasHAp16vbfFZjvB
+         m8HQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc;
+        bh=ZoiEZ2owYFRd9VZ4KOglg27OSgrpz66JCF4aBuAtJKk=;
+        b=Y0ZzGZuVmPDmA2YKpghlPBjVMeZ6+WixUHyDjSkFW5/xGoLtY+w3byFOkluOV51uqU
+         oIiBiCWW/Na2O0xhvkf1NFAc4ghDEyQLVXiHWrGuo9qjV8ntnaS+KJU/71kIhm476xc5
+         ihF6QDMGEoEOtyftU6WbqTjHiev74KiDSE+ErDLEW8r2O2i/+8DtwyUZfXVuwg7cPxRE
+         3mgPe7CqgsIg7vm1sUdSFCRCvRFZqWAoPOsTATSQVNnEJcL0tGCERCKm5ACh3pYxjciI
+         XotuE1BTbgfeogsQW3f4MYPKmbgcDpYtbD8OvGVzfWGZnZbVnqAS4fkFq3DEP41t28Ig
+         K/4Q==
+X-Gm-Message-State: ACgBeo35aAdGCrlkX4s6ybSvTrm3HzH7ufEnLGDHTZj4kmAaU5sd+Afv
+        0g4x+VYAcZ040SlRz5+X8+E=
+X-Google-Smtp-Source: AA6agR5wYA3CsYSm/1lKwrkaVPJFswM19gUmuH7KYsJP6ehf6Jt3Cy2E6d4WejY2LgMSRG4PvC8y/A==
+X-Received: by 2002:a05:651c:158c:b0:250:a23d:2701 with SMTP id h12-20020a05651c158c00b00250a23d2701mr7259412ljq.475.1661243566343;
+        Tue, 23 Aug 2022 01:32:46 -0700 (PDT)
+Received: from mobilestation ([95.79.140.178])
+        by smtp.gmail.com with ESMTPSA id z20-20020a05651c11d400b0025dfd2f66d6sm1448143ljo.95.2022.08.23.01.32.44
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 23 Aug 2022 01:32:45 -0700 (PDT)
+Date:   Tue, 23 Aug 2022 11:32:43 +0300
+From:   Serge Semin <fancer.lancer@gmail.com>
+To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Cc:     Serge Semin <Sergey.Semin@baikalelectronics.ru>,
+        Rob Herring <robh@kernel.org>,
+        Michal Simek <michal.simek@xilinx.com>,
+        Borislav Petkov <bp@alien8.de>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Tony Luck <tony.luck@intel.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Manish Narani <manish.narani@xilinx.com>,
+        Alexey Malahov <Alexey.Malahov@baikalelectronics.ru>,
+        Michail Ivanov <Michail.Ivanov@baikalelectronics.ru>,
+        Pavel Parkhomenko <Pavel.Parkhomenko@baikalelectronics.ru>,
+        Punnaiah Choudary Kalluri 
+        <punnaiah.choudary.kalluri@xilinx.com>,
+        Dinh Nguyen <dinguyen@kernel.org>,
+        James Morse <james.morse@arm.com>,
+        Robert Richter <rric@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-edac@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 16/20] dt-bindings: memory: snps: Detach Zynq DDRC
+ controller support
+Message-ID: <20220823083243.aovlgu22j7uv73qv@mobilestation>
+References: <20220822190730.27277-1-Sergey.Semin@baikalelectronics.ru>
+ <20220822190730.27277-17-Sergey.Semin@baikalelectronics.ru>
+ <a5a15749-1047-74ea-831e-54d27a6d6cdf@linaro.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <a5a15749-1047-74ea-831e-54d27a6d6cdf@linaro.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Lukas Czerner <lczerner@redhat.com>
+On Tue, Aug 23, 2022 at 11:17:23AM +0300, Krzysztof Kozlowski wrote:
+> On 22/08/2022 22:07, Serge Semin wrote:
+> > The Zynq A05 DDRC controller has nothing in common with DW uMCTL2 DDRC:
+> > the CSRs layout is absolutely different and it doesn't has IRQ unlike DW
+> > uMCTL2 DDR controller of all versions (v1.x, v2.x and v3.x). Thus there is
+> > no any reason to have these controllers described by the same bindings.
+> > Thus let's split them up.
+> > 
+> > While at it rename the original Synopsys uMCTL2 DT-schema file to a more
+> > descriptive - snps,dw-umctl2-ddrc.yaml and add a more detailed title and
+> > description of the device bindings.
+> 
 
-[ Upstream commit 1e1c2b86ef86a8477fd9b9a4f48a6bfe235606f6 ]
+> Filename should be based on compatible, so if renaming then
+> snps,ddrc-3.80a.yaml or snps,ddrc.yaml... which leads to original
+> filename anyway. Therefore nack for rename.
 
-Block range to free is validated in ext4_free_blocks() using
-ext4_inode_block_valid() and then it's passed to ext4_mb_clear_bb().
-However in some situations on bigalloc file system the range might be
-adjusted after the validation in ext4_free_blocks() which can lead to
-troubles on corrupted file systems such as one found by syzkaller that
-resulted in the following BUG
+New requirement? I've submitted not a single patch to the DT-bindings
+sources and didn't get any comment from Rob about that. In addition
+There are DT bindings with names different from what is defined in the
+compatible name. Moreover there are tons of bindings with various
+compatible names. What name to choose then? Finally the current name
+is too generic to use for actual DW uMCTL2 DDRC controller.
 
-kernel BUG at fs/ext4/ext4.h:3319!
-PREEMPT SMP NOPTI
-CPU: 28 PID: 4243 Comm: repro Kdump: loaded Not tainted 5.19.0-rc6+ #1
-Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS 1.15.0-1.fc35 04/01/2014
-RIP: 0010:ext4_free_blocks+0x95e/0xa90
-Call Trace:
- <TASK>
- ? lock_timer_base+0x61/0x80
- ? __es_remove_extent+0x5a/0x760
- ? __mod_timer+0x256/0x380
- ? ext4_ind_truncate_ensure_credits+0x90/0x220
- ext4_clear_blocks+0x107/0x1b0
- ext4_free_data+0x15b/0x170
- ext4_ind_truncate+0x214/0x2c0
- ? _raw_spin_unlock+0x15/0x30
- ? ext4_discard_preallocations+0x15a/0x410
- ? ext4_journal_check_start+0xe/0x90
- ? __ext4_journal_start_sb+0x2f/0x110
- ext4_truncate+0x1b5/0x460
- ? __ext4_journal_start_sb+0x2f/0x110
- ext4_evict_inode+0x2b4/0x6f0
- evict+0xd0/0x1d0
- ext4_enable_quotas+0x11f/0x1f0
- ext4_orphan_cleanup+0x3de/0x430
- ? proc_create_seq_private+0x43/0x50
- ext4_fill_super+0x295f/0x3ae0
- ? snprintf+0x39/0x40
- ? sget_fc+0x19c/0x330
- ? ext4_reconfigure+0x850/0x850
- get_tree_bdev+0x16d/0x260
- vfs_get_tree+0x25/0xb0
- path_mount+0x431/0xa70
- __x64_sys_mount+0xe2/0x120
- do_syscall_64+0x5b/0x80
- ? do_user_addr_fault+0x1e2/0x670
- ? exc_page_fault+0x70/0x170
- entry_SYSCALL_64_after_hwframe+0x46/0xb0
-RIP: 0033:0x7fdf4e512ace
+-Sergey
 
-Fix it by making sure that the block range is properly validated before
-used every time it changes in ext4_free_blocks() or ext4_mb_clear_bb().
-
-Link: https://syzkaller.appspot.com/bug?id=5266d464285a03cee9dbfda7d2452a72c3c2ae7c
-Reported-by: syzbot+15cd994e273307bf5cfa@syzkaller.appspotmail.com
-Signed-off-by: Lukas Czerner <lczerner@redhat.com>
-Cc: Tadeusz Struk <tadeusz.struk@linaro.org>
-Tested-by: Tadeusz Struk <tadeusz.struk@linaro.org>
-Link: https://lore.kernel.org/r/20220714165903.58260-1-lczerner@redhat.com
-Signed-off-by: Theodore Ts'o <tytso@mit.edu>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- fs/ext4/mballoc.c | 21 ++++++++++++++++++++-
- 1 file changed, 20 insertions(+), 1 deletion(-)
-
-diff --git a/fs/ext4/mballoc.c b/fs/ext4/mballoc.c
-index 9e06334771a3..38e7dc2531b1 100644
---- a/fs/ext4/mballoc.c
-+++ b/fs/ext4/mballoc.c
-@@ -5928,6 +5928,15 @@ static void ext4_mb_clear_bb(handle_t *handle, struct inode *inode,
- 
- 	sbi = EXT4_SB(sb);
- 
-+	if (!(flags & EXT4_FREE_BLOCKS_VALIDATED) &&
-+	    !ext4_inode_block_valid(inode, block, count)) {
-+		ext4_error(sb, "Freeing blocks in system zone - "
-+			   "Block = %llu, count = %lu", block, count);
-+		/* err = 0. ext4_std_error should be a no op */
-+		goto error_return;
-+	}
-+	flags |= EXT4_FREE_BLOCKS_VALIDATED;
-+
- do_more:
- 	overflow = 0;
- 	ext4_get_group_no_and_offset(sb, block, &block_group, &bit);
-@@ -5944,6 +5953,8 @@ static void ext4_mb_clear_bb(handle_t *handle, struct inode *inode,
- 		overflow = EXT4_C2B(sbi, bit) + count -
- 			EXT4_BLOCKS_PER_GROUP(sb);
- 		count -= overflow;
-+		/* The range changed so it's no longer validated */
-+		flags &= ~EXT4_FREE_BLOCKS_VALIDATED;
- 	}
- 	count_clusters = EXT4_NUM_B2C(sbi, count);
- 	bitmap_bh = ext4_read_block_bitmap(sb, block_group);
-@@ -5958,7 +5969,8 @@ static void ext4_mb_clear_bb(handle_t *handle, struct inode *inode,
- 		goto error_return;
- 	}
- 
--	if (!ext4_inode_block_valid(inode, block, count)) {
-+	if (!(flags & EXT4_FREE_BLOCKS_VALIDATED) &&
-+	    !ext4_inode_block_valid(inode, block, count)) {
- 		ext4_error(sb, "Freeing blocks in system zone - "
- 			   "Block = %llu, count = %lu", block, count);
- 		/* err = 0. ext4_std_error should be a no op */
-@@ -6081,6 +6093,8 @@ static void ext4_mb_clear_bb(handle_t *handle, struct inode *inode,
- 		block += count;
- 		count = overflow;
- 		put_bh(bitmap_bh);
-+		/* The range changed so it's no longer validated */
-+		flags &= ~EXT4_FREE_BLOCKS_VALIDATED;
- 		goto do_more;
- 	}
- error_return:
-@@ -6127,6 +6141,7 @@ void ext4_free_blocks(handle_t *handle, struct inode *inode,
- 			   "block = %llu, count = %lu", block, count);
- 		return;
- 	}
-+	flags |= EXT4_FREE_BLOCKS_VALIDATED;
- 
- 	ext4_debug("freeing block %llu\n", block);
- 	trace_ext4_free_blocks(inode, block, count, flags);
-@@ -6158,6 +6173,8 @@ void ext4_free_blocks(handle_t *handle, struct inode *inode,
- 			block -= overflow;
- 			count += overflow;
- 		}
-+		/* The range changed so it's no longer validated */
-+		flags &= ~EXT4_FREE_BLOCKS_VALIDATED;
- 	}
- 	overflow = EXT4_LBLK_COFF(sbi, count);
- 	if (overflow) {
-@@ -6168,6 +6185,8 @@ void ext4_free_blocks(handle_t *handle, struct inode *inode,
- 				return;
- 		} else
- 			count += sbi->s_cluster_ratio - overflow;
-+		/* The range changed so it's no longer validated */
-+		flags &= ~EXT4_FREE_BLOCKS_VALIDATED;
- 	}
- 
- 	if (!bh && (flags & EXT4_FREE_BLOCKS_FORGET)) {
--- 
-2.35.1
-
-
-
+> 
+> BTW, if you perform renames, generate patches with proper -M/-C/-B
+> arguments so this is detected.
+> 
+> 
+> > 
+> > Signed-off-by: Serge Semin <Sergey.Semin@baikalelectronics.ru>
+> > --->  .../snps,dw-umctl2-ddrc.yaml                  | 51 +++++++++++++
+> 
+> This is a mess. I did not get any cover letters, any other patches any
+> description of relation between this and your other one.
+> 
+> It seems you make independent and conflicting changes to the same file,
+> so this has to be properly organized.
+> 
+> Send entire patchset with cover letter with description of all
+> dependencies to all maintainers.
+> 
+> This is unreviewable now, so a no.
+> 
+> Best regards,
+> Krzysztof
