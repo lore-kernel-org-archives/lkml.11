@@ -2,126 +2,108 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CA09BC3F6B0
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 08:27:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E76B5C32772
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 08:27:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243362AbiHWI1X (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 04:27:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33576 "EHLO
+        id S243396AbiHWI1c (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 23 Aug 2022 04:27:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33298 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243834AbiHWIVq (ORCPT
+        with ESMTP id S242890AbiHWIV6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 04:21:46 -0400
-Received: from mail-ej1-x633.google.com (mail-ej1-x633.google.com [IPv6:2a00:1450:4864:20::633])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E52C070E59
-        for <linux-kernel@vger.kernel.org>; Tue, 23 Aug 2022 01:13:01 -0700 (PDT)
-Received: by mail-ej1-x633.google.com with SMTP id gb36so25831022ejc.10
-        for <linux-kernel@vger.kernel.org>; Tue, 23 Aug 2022 01:13:00 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc;
-        bh=M2VC3T3i8SI6ISvyTjIYNrIDwSYB0SPwFcKC30GUfDM=;
-        b=YhnTBXKsX1sutRE3jqRO9H6Pjc1ZGKYwM6o16Q0HFOdstfdMOz52ZyhELuCQJXRG36
-         zhmsnRPt5OkaQBKmjswJIygbaUEYQfs5ITpnbmXlta8HzIMzCM5ofAonMP0eWDOuo/dS
-         +Rdh140kzsHwOpdzshLKhiTpaVIWcDxpncvtaY8fcWjxK/W+dbyvunc1qRpd+s0M3QME
-         n0Bmg63HsdKktJ6CvRLGxpiXhXz4I1s/EP64HmMismIM9r2zLw7T3nR4gq22B0+JIB/I
-         s9M/zgtKzwbvOY5obJkZjPkjN1v9+5tlUkl0QmaAFM0w1vSGg0xj1KyEZG4fpvS6Fda/
-         wlGA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc;
-        bh=M2VC3T3i8SI6ISvyTjIYNrIDwSYB0SPwFcKC30GUfDM=;
-        b=X64yS/W9vVCxg79IK2tLjIiA6bumiqn5abzLnxMDZVI+IiSJQ7KSJF1cx3io7HiVXE
-         4FKgS29JN5UL3KDs1fwPThPaIhh8fxIpbvdyChKRFsPqab9J+cuyKx0W+ylg8wPnu6YO
-         p5jdQeZNa88cilPb7JcaUKRVWFDoKi51qqegEWxKLtEyzLWIh/of+y9abfqRhoH0vFt5
-         LryazT2fWJEAC/nusNG7AE0R//KkiANyW9z2h7PwTl2ogXhZjev63Wjzqj501Q+q9geT
-         Ypn9xEBE03YIjAL/AGm2kfLoMPdDII7Q3BW2pZG0rSwUAXsMRV/+juMOFJQ95LYf+9N5
-         z5AQ==
-X-Gm-Message-State: ACgBeo1Aztp3hhxCoO4rWugj8xS/z37GjuKd/mEEhl0jVwidnRS0Jp7M
-        WK7Xd/qDK3Dvvq5PF1S6RfG84WpmwEXCOBqIJyggLw==
-X-Google-Smtp-Source: AA6agR6adncEGL6epJiFBvb7FvvzRHDp7dN9532v8AKMOIlxyCEYv+l415yM/3YSXIcselx7YV94occ/T/pXa7FdGTA=
-X-Received: by 2002:a17:907:2c48:b0:73c:931e:5175 with SMTP id
- hf8-20020a1709072c4800b0073c931e5175mr13431983ejc.44.1661242379105; Tue, 23
- Aug 2022 01:12:59 -0700 (PDT)
+        Tue, 23 Aug 2022 04:21:58 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7443E6B66F;
+        Tue, 23 Aug 2022 01:13:05 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id AAF22612DA;
+        Tue, 23 Aug 2022 08:12:38 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A8D98C43142;
+        Tue, 23 Aug 2022 08:12:37 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1661242358;
+        bh=70zht3iXI+nD4lhGJ7awU9z0EeMuRPW/A6oszaYsjeo=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=GTc+raHFE4y2rc97//cnIvmAw1TMnw7Ek3RRWMF1FfIDmdZT5P2HuFxYn1dfZcA9R
+         93JZE1+TMLRx1O2KF9ch0841FaexxTgOqIC0qJS1bilwZsRHStveoH239NW4E9TB4A
+         UAVH5UUnWQ8Go/TaNpl/ADW79OKl33qG6h8MocKI=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Fabien Parent <fparent@baylibre.com>,
+        Mattijs Korpershoek <mkorpershoek@baylibre.com>,
+        Dmitry Torokhov <dmitry.torokhov@gmail.com>
+Subject: [PATCH 5.19 103/365] Input: mt6779-keypad - match hardware matrix organization
+Date:   Tue, 23 Aug 2022 10:00:04 +0200
+Message-Id: <20220823080122.513731633@linuxfoundation.org>
+X-Mailer: git-send-email 2.37.2
+In-Reply-To: <20220823080118.128342613@linuxfoundation.org>
+References: <20220823080118.128342613@linuxfoundation.org>
+User-Agent: quilt/0.67
 MIME-Version: 1.0
-References: <CA+G9fYuecPu-n-ujLsv7vL8RjEJA-6rOZjc363+p1oo6v-FKKQ@mail.gmail.com>
- <CAGETcx_EpQx-QRtCbbcEDpLHSnNeYysNEnmTOQL4+vb4zzvk4Q@mail.gmail.com>
-In-Reply-To: <CAGETcx_EpQx-QRtCbbcEDpLHSnNeYysNEnmTOQL4+vb4zzvk4Q@mail.gmail.com>
-From:   Naresh Kamboju <naresh.kamboju@linaro.org>
-Date:   Tue, 23 Aug 2022 13:42:47 +0530
-Message-ID: <CA+G9fYvsqiMPqeo+Yqx4WQEEhXbWqKFbRdKTnP9a1FxQGRroUA@mail.gmail.com>
-Subject: Re: Unable to handle kernel NULL pointer dereference at virtual
- address 0000000000000008
-To:     Saravana Kannan <saravanak@google.com>
-Cc:     open list <linux-kernel@vger.kernel.org>,
-        lkft-triage@lists.linaro.org, regressions@lists.linux.dev,
-        Russell King <linux@armlinux.org.uk>,
-        "Russell King (Oracle)" <rmk+kernel@armlinux.org.uk>,
-        Wang Kefeng <wangkefeng.wang@huawei.com>,
-        Rob Herring <robh@kernel.org>, Jason Gunthorpe <jgg@ziepe.ca>,
-        Lu Baolu <baolu.lu@linux.intel.com>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Saravana,
+From: Mattijs Korpershoek <mkorpershoek@baylibre.com>
 
-On Tue, 23 Aug 2022 at 02:09, Saravana Kannan <saravanak@google.com> wrote:
->
-> On Mon, Aug 22, 2022 at 7:00 AM Naresh Kamboju
-> <naresh.kamboju@linaro.org> wrote:
-> >
-> > The arm64 Qualcomm db410c device boot failed intermittently on
-> > Linux next-20220822 and Linux mainline 6.0.0-rc1.
-> >
-> > Reported-by: Linux Kernel Functional Testing <lkft@linaro.org>
-> >
-> > [    0.000000] Linux version 6.0.0-rc1 (tuxmake@tuxmake)
-> > (aarch64-linux-gnu-gcc (Debian 11.3.0-3) 11.3.0, GNU ld (GNU Binutils
-> > for Debian) 2.38.90.20220713) #1 SMP PREEMPT @1661110347
-> > [    0.000000] Machine model: Qualcomm Technologies, Inc. APQ 8016 SBC
-> > <trim>
-> > [    3.609382] Loading compiled-in X.509 certificates
-> > [    3.702306] Unable to handle kernel NULL pointer dereference at
-> > virtual address 0000000000000008
-> > [    3.702380] Mem abort info:
+commit d6ed52583034f9d2e39dead7c18e03380fd4edf2 upstream.
 
-<trim>
+The MediaTek keypad has a set of bits representing keys,
+from KEY0 to KEY77, arranged in 5 chunks of 15 bits split into 5 32-bit
+registers.
 
-> > [    3.771199] pc : pl011_probe+0x30/0x154
-> > [    3.778480] l8: Bringing 0uV into 1750000-1750000uV
-> > [    3.783073] lr : amba_probe+0x11c/0x1b0
+In our implementation, we simply decided to use register number as row
+and offset in the register as column when encoding our "matrix".
 
-<trim>
+Because of this, we can have a 5x32 matrix which does not match the
+hardware at all, which is confusing.
 
->
-> Hi Naresh,
->
-> Thanks for the report!
->
-> These two patches together should fix the issue:
-> https://lore.kernel.org/lkml/20220818172852.3548-1-isaacmanjarres@google.com/
-> https://lore.kernel.org/lkml/20220817184026.3468620-1-isaacmanjarres@google.com/
+Change the row/column calculation to match the hardware.
 
-Reported-by and Tested-by: Naresh Kamboju <naresh.kamboju@linaro.org>
-Reported-by and Tested-by: Linux Kernel Functional Testing <lkft@linaro.org>
+Fixes: f28af984e771 ("Input: mt6779-keypad - add MediaTek keypad driver")
+Co-developed-by: Fabien Parent <fparent@baylibre.com>
+Signed-off-by: Fabien Parent <fparent@baylibre.com>
+Signed-off-by: Mattijs Korpershoek <mkorpershoek@baylibre.com>
+Link: https://lore.kernel.org/r/20220707075236.126631-2-mkorpershoek@baylibre.com
+Signed-off-by: Dmitry Torokhov <dmitry.torokhov@gmail.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+---
+ drivers/input/keyboard/mt6779-keypad.c | 8 +++++---
+ 1 file changed, 5 insertions(+), 3 deletions(-)
+
+diff --git a/drivers/input/keyboard/mt6779-keypad.c b/drivers/input/keyboard/mt6779-keypad.c
+index 2e7c9187c10f..bd86cb95bde3 100644
+--- a/drivers/input/keyboard/mt6779-keypad.c
++++ b/drivers/input/keyboard/mt6779-keypad.c
+@@ -42,7 +42,7 @@ static irqreturn_t mt6779_keypad_irq_handler(int irq, void *dev_id)
+ 	const unsigned short *keycode = keypad->input_dev->keycode;
+ 	DECLARE_BITMAP(new_state, MTK_KPD_NUM_BITS);
+ 	DECLARE_BITMAP(change, MTK_KPD_NUM_BITS);
+-	unsigned int bit_nr;
++	unsigned int bit_nr, key;
+ 	unsigned int row, col;
+ 	unsigned int scancode;
+ 	unsigned int row_shift = get_count_order(keypad->n_cols);
+@@ -61,8 +61,10 @@ static irqreturn_t mt6779_keypad_irq_handler(int irq, void *dev_id)
+ 		if (bit_nr % 32 >= 16)
+ 			continue;
+ 
+-		row = bit_nr / 32;
+-		col = bit_nr % 32;
++		key = bit_nr / 32 * 16 + bit_nr % 32;
++		row = key / 9;
++		col = key % 9;
++
+ 		scancode = MATRIX_SCAN_CODE(row, col, row_shift);
+ 		/* 1: not pressed, 0: pressed */
+ 		pressed = !test_bit(bit_nr, new_state);
+-- 
+2.37.2
 
 
-> Can you give them a shot please?
 
-I have applied the above two patches on Linus master branch and built
-and boot tested on db410c the boot is successful now [1].
-
-> Also, in general, it'd be nice if you could report issues in the
-> original thread of the patch causing issues. It would make it easier
-> to keep track of all the issues.
-
-When I bisect and confirm bad commits then I will reply to that thread.
-
-[1] https://lkft.validation.linaro.org/scheduler/job/5423144#L2005
-
-- Naresh
