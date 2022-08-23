@@ -2,44 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 41901C52D6C
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 227CAC49EC3
 	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 11:27:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357908AbiHWL05 (ORCPT
+        id S1357866AbiHWL0y (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 07:26:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52636 "EHLO
+        Tue, 23 Aug 2022 07:26:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55360 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357944AbiHWLVZ (ORCPT
+        with ESMTP id S1357896AbiHWLVW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 07:21:25 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 313BCBB0;
-        Tue, 23 Aug 2022 02:23:14 -0700 (PDT)
+        Tue, 23 Aug 2022 07:21:22 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A3CAA8E473;
+        Tue, 23 Aug 2022 02:23:11 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id C0DCB61220;
-        Tue, 23 Aug 2022 09:23:13 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C8C4DC433D6;
-        Tue, 23 Aug 2022 09:23:12 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id D89D861174;
+        Tue, 23 Aug 2022 09:23:10 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DD75AC4314B;
+        Tue, 23 Aug 2022 09:23:09 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661246593;
-        bh=P+lG6CN5waLla/kapSKuAqM+XEWgYrqToEclSTDxzz8=;
+        s=korg; t=1661246590;
+        bh=TOkOChexb3xBoqLim2uMn4EOROVQrWdPD/gVHuPVRlQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=lWmyBPEeV+w4smosQ7Eyz7Gt11SOsgFh/PZ/21AKwy45Ua9NTSaWIyY3C7i01YDuG
-         qRvJMQOJ3lC2GA3Bdx2v6oCxKqYNeyTO2i+GQx/Mr4/BbzXToaHED9MLJ+EXDVhJnc
-         FcZhG5PHoOPG13RKPLt29N/lYuZmXQ4ZYhc57raI=
+        b=W4WFBNHyB95kvjyWUhlea/KAJL2oLAaM3+aZTY8YwcMtIep3V+Ba5vhu3taB27/JC
+         9/aCP3G5gfILSBdywvjCMMnr+RxW1Fbcj286X3WoafxEN77eVhnuTwl1zLP21UY3pP
+         kuY9YzygvdmervKejuEVDVWmXJgKS4kr/yn3d/P0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
-        Vincent Mailhol <mailhol.vincent@wanadoo.fr>,
-        Marc Kleine-Budde <mkl@pengutronix.de>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 131/389] can: pch_can: do not report txerr and rxerr during bus-off
-Date:   Tue, 23 Aug 2022 10:23:29 +0200
-Message-Id: <20220823080121.101026688@linuxfoundation.org>
+        Harshit Mogalapalli <harshit.m.mogalapalli@oracle.com>,
+        Jiri Kosina <jkosina@suse.cz>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.4 157/389] HID: cp2112: prevent a buffer overflow in cp2112_xfer()
+Date:   Tue, 23 Aug 2022 10:23:55 +0200
+Message-Id: <20220823080122.160717191@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220823080115.331990024@linuxfoundation.org>
 References: <20220823080115.331990024@linuxfoundation.org>
@@ -51,46 +50,45 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Vincent Mailhol <mailhol.vincent@wanadoo.fr>
+From: Harshit Mogalapalli <harshit.m.mogalapalli@oracle.com>
 
-[ Upstream commit 3a5c7e4611ddcf0ef37a3a17296b964d986161a6 ]
+[ Upstream commit 381583845d19cb4bd21c8193449385f3fefa9caf ]
 
-During bus off, the error count is greater than 255 and can not fit in
-a u8.
+Smatch warnings:
+drivers/hid/hid-cp2112.c:793 cp2112_xfer() error: __memcpy()
+'data->block[1]' too small (33 vs 255)
+drivers/hid/hid-cp2112.c:793 cp2112_xfer() error: __memcpy() 'buf' too
+small (64 vs 255)
 
-Fixes: 0c78ab76a05c ("pch_can: Add setting TEC/REC statistics processing")
-Link: https://lore.kernel.org/all/20220719143550.3681-2-mailhol.vincent@wanadoo.fr
-Signed-off-by: Vincent Mailhol <mailhol.vincent@wanadoo.fr>
-Signed-off-by: Marc Kleine-Budde <mkl@pengutronix.de>
+The 'read_length' variable is provided by 'data->block[0]' which comes
+from user and it(read_length) can take a value between 0-255. Add an
+upper bound to 'read_length' variable to prevent a buffer overflow in
+memcpy().
+
+Fixes: 542134c0375b ("HID: cp2112: Fix I2C_BLOCK_DATA transactions")
+Signed-off-by: Harshit Mogalapalli <harshit.m.mogalapalli@oracle.com>
+Signed-off-by: Jiri Kosina <jkosina@suse.cz>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/can/pch_can.c | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+ drivers/hid/hid-cp2112.c | 5 +++++
+ 1 file changed, 5 insertions(+)
 
-diff --git a/drivers/net/can/pch_can.c b/drivers/net/can/pch_can.c
-index e90651f7b2ea..b148572e4a74 100644
---- a/drivers/net/can/pch_can.c
-+++ b/drivers/net/can/pch_can.c
-@@ -496,6 +496,9 @@ static void pch_can_error(struct net_device *ndev, u32 status)
- 		cf->can_id |= CAN_ERR_BUSOFF;
- 		priv->can.can_stats.bus_off++;
- 		can_bus_off(ndev);
-+	} else {
-+		cf->data[6] = errc & PCH_TEC;
-+		cf->data[7] = (errc & PCH_REC) >> 8;
- 	}
- 
- 	errc = ioread32(&priv->regs->errc);
-@@ -556,9 +559,6 @@ static void pch_can_error(struct net_device *ndev, u32 status)
+diff --git a/drivers/hid/hid-cp2112.c b/drivers/hid/hid-cp2112.c
+index db1b55df0d13..340408f8c8ab 100644
+--- a/drivers/hid/hid-cp2112.c
++++ b/drivers/hid/hid-cp2112.c
+@@ -787,6 +787,11 @@ static int cp2112_xfer(struct i2c_adapter *adap, u16 addr,
+ 		data->word = le16_to_cpup((__le16 *)buf);
  		break;
- 	}
- 
--	cf->data[6] = errc & PCH_TEC;
--	cf->data[7] = (errc & PCH_REC) >> 8;
--
- 	priv->can.state = state;
- 	netif_receive_skb(skb);
- 
+ 	case I2C_SMBUS_I2C_BLOCK_DATA:
++		if (read_length > I2C_SMBUS_BLOCK_MAX) {
++			ret = -EINVAL;
++			goto power_normal;
++		}
++
+ 		memcpy(data->block + 1, buf, read_length);
+ 		break;
+ 	case I2C_SMBUS_BLOCK_DATA:
 -- 
 2.35.1
 
