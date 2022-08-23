@@ -2,48 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BDE2DC32792
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A7B09C32772
 	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 10:23:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354209AbiHWKUr (ORCPT
+        id S1354142AbiHWKUe (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 06:20:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58122 "EHLO
+        Tue, 23 Aug 2022 06:20:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56938 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352875AbiHWKJY (ORCPT
+        with ESMTP id S1352818AbiHWKJE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 06:09:24 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7273C7D7BE;
-        Tue, 23 Aug 2022 01:55:12 -0700 (PDT)
+        Tue, 23 Aug 2022 06:09:04 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 26D5C6B8CD;
+        Tue, 23 Aug 2022 01:55:05 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 1210761555;
-        Tue, 23 Aug 2022 08:55:12 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1C3FFC433C1;
-        Tue, 23 Aug 2022 08:55:10 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id C95A4B81C39;
+        Tue, 23 Aug 2022 08:55:03 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1C903C433D6;
+        Tue, 23 Aug 2022 08:55:01 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661244911;
-        bh=YA7qGjAoZ0w68jbN59Y8bWwXYBlkSuhDhVnrXYHcvq8=;
+        s=korg; t=1661244902;
+        bh=03o8XUXP7UAjx6AQTbs0AGKRD8xZsQaZLgJmXYyTFSI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=nJRWiJvrw17Hc26phI9MaJyRzOwUs1omMVkrE77RFXTFsiJ09WGGdcFRDw/LkJpdr
-         HSLsQOqpTIcB0NvRZIGYOS80+gj3S+3NAKkOTn0Uh5qHF66elsWbPeuyggpTBkfngG
-         cyJLVqgJiwErWEk2iSILzNjctP1rB7wpFvJZ1erk=
+        b=o7Mu0WhFmdlnvzs0HH8iKLWi9QT/qzNUbQGO/IyzMpsBWjCEL46uQNbe14fjDipj6
+         NY3e0RFYUd+PJ1ATMRflrVKtFXCKisD3P1EgHxwaM0VuDz3krO+wXYyCbVGknief7v
+         7owAac0M9ieZ9c8sH3xuKtxs5UJcZSMtlpWOWoRg=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, kernel test robot <lkp@intel.com>,
-        Sai Prakash Ranjan <quic_saipraka@quicinc.com>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Neil Armstrong <narmstrong@baylibre.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 171/244] drm/meson: Fix overflow implicit truncation warnings
-Date:   Tue, 23 Aug 2022 10:25:30 +0200
-Message-Id: <20220823080104.975324224@linuxfoundation.org>
+        stable@vger.kernel.org, David Sterba <dsterba@suse.com>,
+        Qu Wenruo <wqu@suse.com>
+Subject: [PATCH 4.14 209/229] btrfs: only write the sectors in the vertical stripe which has data stripes
+Date:   Tue, 23 Aug 2022 10:26:10 +0200
+Message-Id: <20220823080101.111287001@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220823080059.091088642@linuxfoundation.org>
-References: <20220823080059.091088642@linuxfoundation.org>
+In-Reply-To: <20220823080053.202747790@linuxfoundation.org>
+References: <20220823080053.202747790@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -52,69 +49,163 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Sai Prakash Ranjan <quic_saipraka@quicinc.com>
+From: Qu Wenruo <wqu@suse.com>
 
-[ Upstream commit 98692f52c588225034cbff458622c2c06dfcb544 ]
+commit bd8f7e627703ca5707833d623efcd43f104c7b3f upstream.
 
-Fix -Woverflow warnings for drm/meson driver which is a result
-of moving arm64 custom MMIO accessor macros to asm-generic function
-implementations giving a bonus type-checking now and uncovering these
-overflow warnings.
+If we have only 8K partial write at the beginning of a full RAID56
+stripe, we will write the following contents:
 
-drivers/gpu/drm/meson/meson_viu.c: In function ‘meson_viu_init’:
-drivers/gpu/drm/meson/meson_registers.h:1826:48: error: large integer implicitly truncated to unsigned type [-Werror=overflow]
- #define  VIU_OSD_BLEND_REORDER(dest, src)      ((src) << (dest * 4))
-                                                ^
-drivers/gpu/drm/meson/meson_viu.c:472:18: note: in expansion of macro ‘VIU_OSD_BLEND_REORDER’
-   writel_relaxed(VIU_OSD_BLEND_REORDER(0, 1) |
-                  ^~~~~~~~~~~~~~~~~~~~~
+                    0  8K           32K             64K
+Disk 1	(data):     |XX|            |               |
+Disk 2  (data):     |               |               |
+Disk 3  (parity):   |XXXXXXXXXXXXXXX|XXXXXXXXXXXXXXX|
 
-Reported-by: kernel test robot <lkp@intel.com>
-Signed-off-by: Sai Prakash Ranjan <quic_saipraka@quicinc.com>
-Reviewed-by: Arnd Bergmann <arnd@arndb.de>
-Cc: Arnd Bergmann <arnd@arndb.de>
-Cc: Neil Armstrong <narmstrong@baylibre.com>
-Signed-off-by: Arnd Bergmann <arnd@arndb.de>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+|X| means the sector will be written back to disk.
+
+Note that, although we won't write any sectors from disk 2, but we will
+write the full 64KiB of parity to disk.
+
+This behavior is fine for now, but not for the future (especially for
+RAID56J, as we waste quite some space to journal the unused parity
+stripes).
+
+So here we will also utilize the btrfs_raid_bio::dbitmap, anytime we
+queue a higher level bio into an rbio, we will update rbio::dbitmap to
+indicate which vertical stripes we need to writeback.
+
+And at finish_rmw(), we also check dbitmap to see if we need to write
+any sector in the vertical stripe.
+
+So after the patch, above example will only lead to the following
+writeback pattern:
+
+                    0  8K           32K             64K
+Disk 1	(data):     |XX|            |               |
+Disk 2  (data):     |               |               |
+Disk 3  (parity):   |XX|            |               |
+
+Acked-by: David Sterba <dsterba@suse.com>
+Signed-off-by: Qu Wenruo <wqu@suse.com>
+Signed-off-by: David Sterba <dsterba@suse.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/gpu/drm/meson/meson_viu.c | 22 +++++++++++-----------
- 1 file changed, 11 insertions(+), 11 deletions(-)
+ fs/btrfs/raid56.c |   55 ++++++++++++++++++++++++++++++++++++++++++++++++++----
+ 1 file changed, 51 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/gpu/drm/meson/meson_viu.c b/drivers/gpu/drm/meson/meson_viu.c
-index 259f3e6bec90..bb7e109534de 100644
---- a/drivers/gpu/drm/meson/meson_viu.c
-+++ b/drivers/gpu/drm/meson/meson_viu.c
-@@ -469,17 +469,17 @@ void meson_viu_init(struct meson_drm *priv)
- 			priv->io_base + _REG(VD2_IF0_LUMA_FIFO_SIZE));
+--- a/fs/btrfs/raid56.c
++++ b/fs/btrfs/raid56.c
+@@ -334,6 +334,9 @@ static void merge_rbio(struct btrfs_raid
+ {
+ 	bio_list_merge(&dest->bio_list, &victim->bio_list);
+ 	dest->bio_list_bytes += victim->bio_list_bytes;
++	/* Also inherit the bitmaps from @victim. */
++	bitmap_or(dest->dbitmap, victim->dbitmap, dest->dbitmap,
++		  dest->stripe_npages);
+ 	dest->generic_bio_cnt += victim->generic_bio_cnt;
+ 	bio_list_init(&victim->bio_list);
+ }
+@@ -882,6 +885,12 @@ static void rbio_orig_end_io(struct btrf
  
- 	if (meson_vpu_is_compatible(priv, VPU_COMPATIBLE_G12A)) {
--		writel_relaxed(VIU_OSD_BLEND_REORDER(0, 1) |
--			       VIU_OSD_BLEND_REORDER(1, 0) |
--			       VIU_OSD_BLEND_REORDER(2, 0) |
--			       VIU_OSD_BLEND_REORDER(3, 0) |
--			       VIU_OSD_BLEND_DIN_EN(1) |
--			       VIU_OSD_BLEND1_DIN3_BYPASS_TO_DOUT1 |
--			       VIU_OSD_BLEND1_DOUT_BYPASS_TO_BLEND2 |
--			       VIU_OSD_BLEND_DIN0_BYPASS_TO_DOUT0 |
--			       VIU_OSD_BLEND_BLEN2_PREMULT_EN(1) |
--			       VIU_OSD_BLEND_HOLD_LINES(4),
--			       priv->io_base + _REG(VIU_OSD_BLEND_CTRL));
-+		u32 val = (u32)VIU_OSD_BLEND_REORDER(0, 1) |
-+			  (u32)VIU_OSD_BLEND_REORDER(1, 0) |
-+			  (u32)VIU_OSD_BLEND_REORDER(2, 0) |
-+			  (u32)VIU_OSD_BLEND_REORDER(3, 0) |
-+			  (u32)VIU_OSD_BLEND_DIN_EN(1) |
-+			  (u32)VIU_OSD_BLEND1_DIN3_BYPASS_TO_DOUT1 |
-+			  (u32)VIU_OSD_BLEND1_DOUT_BYPASS_TO_BLEND2 |
-+			  (u32)VIU_OSD_BLEND_DIN0_BYPASS_TO_DOUT0 |
-+			  (u32)VIU_OSD_BLEND_BLEN2_PREMULT_EN(1) |
-+			  (u32)VIU_OSD_BLEND_HOLD_LINES(4);
-+		writel_relaxed(val, priv->io_base + _REG(VIU_OSD_BLEND_CTRL));
+ 	if (rbio->generic_bio_cnt)
+ 		btrfs_bio_counter_sub(rbio->fs_info, rbio->generic_bio_cnt);
++	/*
++	 * Clear the data bitmap, as the rbio may be cached for later usage.
++	 * do this before before unlock_stripe() so there will be no new bio
++	 * for this bio.
++	 */
++	bitmap_clear(rbio->dbitmap, 0, rbio->stripe_npages);
  
- 		writel_relaxed(OSD_BLEND_PATH_SEL_ENABLE,
- 			       priv->io_base + _REG(OSD1_BLEND_SRC_CTRL));
--- 
-2.35.1
-
+ 	/*
+ 	 * At this moment, rbio->bio_list is empty, however since rbio does not
+@@ -1204,6 +1213,9 @@ static noinline void finish_rmw(struct b
+ 	else
+ 		BUG();
+ 
++	/* We should have at least one data sector. */
++	ASSERT(bitmap_weight(rbio->dbitmap, rbio->stripe_npages));
++
+ 	/* at this point we either have a full stripe,
+ 	 * or we've read the full stripe from the drive.
+ 	 * recalculate the parity and write the new results.
+@@ -1277,6 +1289,11 @@ static noinline void finish_rmw(struct b
+ 	for (stripe = 0; stripe < rbio->real_stripes; stripe++) {
+ 		for (pagenr = 0; pagenr < rbio->stripe_npages; pagenr++) {
+ 			struct page *page;
++
++			/* This vertical stripe has no data, skip it. */
++			if (!test_bit(pagenr, rbio->dbitmap))
++				continue;
++
+ 			if (stripe < rbio->nr_data) {
+ 				page = page_in_rbio(rbio, stripe, pagenr, 1);
+ 				if (!page)
+@@ -1301,6 +1318,11 @@ static noinline void finish_rmw(struct b
+ 
+ 		for (pagenr = 0; pagenr < rbio->stripe_npages; pagenr++) {
+ 			struct page *page;
++
++			/* This vertical stripe has no data, skip it. */
++			if (!test_bit(pagenr, rbio->dbitmap))
++				continue;
++
+ 			if (stripe < rbio->nr_data) {
+ 				page = page_in_rbio(rbio, stripe, pagenr, 1);
+ 				if (!page)
+@@ -1745,6 +1767,33 @@ static void btrfs_raid_unplug(struct blk
+ 	run_plug(plug);
+ }
+ 
++/* Add the original bio into rbio->bio_list, and update rbio::dbitmap. */
++static void rbio_add_bio(struct btrfs_raid_bio *rbio, struct bio *orig_bio)
++{
++	const struct btrfs_fs_info *fs_info = rbio->fs_info;
++	const u64 orig_logical = orig_bio->bi_iter.bi_sector << SECTOR_SHIFT;
++	const u64 full_stripe_start = rbio->bbio->raid_map[0];
++	const u32 orig_len = orig_bio->bi_iter.bi_size;
++	const u32 sectorsize = fs_info->sectorsize;
++	u64 cur_logical;
++
++	ASSERT(orig_logical >= full_stripe_start &&
++	       orig_logical + orig_len <= full_stripe_start +
++	       rbio->nr_data * rbio->stripe_len);
++
++	bio_list_add(&rbio->bio_list, orig_bio);
++	rbio->bio_list_bytes += orig_bio->bi_iter.bi_size;
++
++	/* Update the dbitmap. */
++	for (cur_logical = orig_logical; cur_logical < orig_logical + orig_len;
++	     cur_logical += sectorsize) {
++		int bit = ((u32)(cur_logical - full_stripe_start) >>
++			   PAGE_SHIFT) % rbio->stripe_npages;
++
++		set_bit(bit, rbio->dbitmap);
++	}
++}
++
+ /*
+  * our main entry point for writes from the rest of the FS.
+  */
+@@ -1761,9 +1810,8 @@ int raid56_parity_write(struct btrfs_fs_
+ 		btrfs_put_bbio(bbio);
+ 		return PTR_ERR(rbio);
+ 	}
+-	bio_list_add(&rbio->bio_list, bio);
+-	rbio->bio_list_bytes = bio->bi_iter.bi_size;
+ 	rbio->operation = BTRFS_RBIO_WRITE;
++	rbio_add_bio(rbio, bio);
+ 
+ 	btrfs_bio_counter_inc_noblocked(fs_info);
+ 	rbio->generic_bio_cnt = 1;
+@@ -2146,8 +2194,7 @@ int raid56_parity_recover(struct btrfs_f
+ 	}
+ 
+ 	rbio->operation = BTRFS_RBIO_READ_REBUILD;
+-	bio_list_add(&rbio->bio_list, bio);
+-	rbio->bio_list_bytes = bio->bi_iter.bi_size;
++	rbio_add_bio(rbio, bio);
+ 
+ 	rbio->faila = find_logical_bio_stripe(rbio, bio);
+ 	if (rbio->faila == -1) {
 
 
