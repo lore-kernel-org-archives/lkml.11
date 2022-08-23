@@ -2,109 +2,194 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 70433C32772
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 10:39:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E691CC32772
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 10:39:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353362AbiHWKjN (ORCPT
+        id S1355034AbiHWKjQ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 06:39:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39158 "EHLO
+        Tue, 23 Aug 2022 06:39:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42642 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244046AbiHWKX2 (ORCPT
+        with ESMTP id S1355314AbiHWKXa (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 06:23:28 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F223A832C1;
+        Tue, 23 Aug 2022 06:23:30 -0400
+Received: from mail-pl1-x62f.google.com (mail-pl1-x62f.google.com [IPv6:2607:f8b0:4864:20::62f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 188A1832C9;
         Tue, 23 Aug 2022 02:04:30 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id BE4EAB8105C;
-        Tue, 23 Aug 2022 09:04:28 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 19AE7C433C1;
-        Tue, 23 Aug 2022 09:04:26 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661245467;
-        bh=R9mVadXHaS5xspBheWQX2CP25D+fdWydUR/Iv+zRx6s=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=p/VXF0kI4x1jcFx8e0KXsjjWQBkhjHrv5A+DM3i3EqhqszPD0LHAeGzEb1OsXvbIg
-         eKnXzOP2mitVC9Jb7ZSOgeKWsssccLD0BQdV1olMRFtCBuMjYfbUFWWAz9dUHoQ8gg
-         i5H9nReEfHFO22VAtDCXzrNQnpxTSYFofhd0EMv0=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Alexey Kodanev <aleksei.kodanev@bell-sw.com>,
-        Alex Deucher <alexander.deucher@amd.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.19 070/287] drm/radeon: fix potential buffer overflow in ni_set_mc_special_registers()
-Date:   Tue, 23 Aug 2022 10:23:59 +0200
-Message-Id: <20220823080102.594220603@linuxfoundation.org>
-X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220823080100.268827165@linuxfoundation.org>
-References: <20220823080100.268827165@linuxfoundation.org>
-User-Agent: quilt/0.67
+Received: by mail-pl1-x62f.google.com with SMTP id 2so12279887pll.0;
+        Tue, 23 Aug 2022 02:04:30 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc;
+        bh=S5y4sNEy9Nr+OHl5m3Guqy3MOlBJRFQsA1XbacwSLwg=;
+        b=S49c4PSlq97BcWBHeWy5uWbt+gRhYay4N1krmq8YMJdzvSwoQbzPBSbhoHZhl3el1S
+         WdQWm44042GXzuOqLDCxhOTU1z32JvFe4shqFGVNY3S3kjdLP10ZHQ/pVBBSm7CyU7t2
+         3CEeex3jGkGqaDKy/34JEZ5grCXmnlQF5yL/SxqVTW9BnuFQ8EfUpTiv5tlB8nqW9Wxs
+         Bfe5B6w2DeGIgvuDR5FDRE28mpT1ly9XHlgjb2Vs+mpgG2SAEn4+Boq0GTjiEWX/Ifp6
+         vazFGs6QUZ0MOISfKF6bfFUbCmGQNcMY3o4SOTnUx6JflMPcw3ksMurT3r3lAPcR9glK
+         IvFg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc;
+        bh=S5y4sNEy9Nr+OHl5m3Guqy3MOlBJRFQsA1XbacwSLwg=;
+        b=GA39ImdapnahUGRzkbzaEgHm6TN8+EMHq8GZgSMTLEcGibCVNcj5uDpgO0fFpmHYbC
+         pr8HS7gvc3TG3D718lcyeJrqS76Dh5IwC9+78/XXSd6DpsrTMia0TmpqK2s4yft/kM6J
+         czmoZImlSS+YKIE19xbgcGOPe9RopFEZt2LPA0sV/+hen0FFzTaHLTkKzt9kySz85ulO
+         48QGEkeHYI9o1OHv43RokgCT4erX0YSsE2be560qw/NutTmz0W/ELBpvkK5cURXLbLK1
+         ic/ct4/KLbZfvwIuU+qctX5VxmBOvHlmiuzxgZZ+DMLMVzGsaqxYO4W1NFd7CnTb1JXk
+         dgYA==
+X-Gm-Message-State: ACgBeo1pKQks+qtNXgb3jCLrzErDmRjuYj5rcegHlQ5Fbt376W1nFhPu
+        8MaRQJq74F8yGCzFqsBqQtk=
+X-Google-Smtp-Source: AA6agR6ECy3AZFvXRS2pB2DuO2W3+cRCpU0SVOuedTf9jbHIl72AsJGAj6+AlKHRmMlIPgZ3RP3umA==
+X-Received: by 2002:a17:90a:e018:b0:1fa:c9c4:9e01 with SMTP id u24-20020a17090ae01800b001fac9c49e01mr2405819pjy.29.1661245469880;
+        Tue, 23 Aug 2022 02:04:29 -0700 (PDT)
+Received: from sw.. (220-128-98-63.hinet-ip.hinet.net. [220.128.98.63])
+        by smtp.gmail.com with ESMTPSA id d5-20020a170903230500b00172ccb3f4ebsm6709333plh.160.2022.08.23.02.04.27
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 23 Aug 2022 02:04:29 -0700 (PDT)
+From:   Szuying Chen <chensiying21@gmail.com>
+To:     gregkh@linuxfoundation.org, mario.limonciello@amd.com,
+        mika.westerberg@linux.intel.com, andreas.noever@gmail.com,
+        michael.jamet@intel.com, YehezkelShB@gmail.com,
+        linux-usb@vger.kernel.org, linux-kernel@vger.kernel.org
+Cc:     Yd_Tseng@asmedia.com.tw, Chloe_Chen@asmedia.com.tw,
+        Richard_Hsu@asmedia.com.tw
+Subject: [PATCH 2/2] thunderbolt: thunderbolt: add nvm specific operations for
+Date:   Tue, 23 Aug 2022 17:04:23 +0800
+Message-Id: <20220823090423.5249-1-chensiying21@gmail.com>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Alexey Kodanev <aleksei.kodanev@bell-sw.com>
+From: Szuying Chen <Chloe_Chen@asmedia.com.tw>
 
-[ Upstream commit 136f614931a2bb73616b292cf542da3a18daefd5 ]
+The patch depends on patch 1/2. Add nvm specific operations for ASMedia.
+And add tb_switch_nvm_upgradable() of enable firmware upgrade.
 
-The last case label can write two buffers 'mc_reg_address[j]' and
-'mc_data[j]' with 'j' offset equal to SMC_NISLANDS_MC_REGISTER_ARRAY_SIZE
-since there are no checks for this value in both case labels after the
-last 'j++'.
-
-Instead of changing '>' to '>=' there, add the bounds check at the start
-of the second 'case' (the first one already has it).
-
-Also, remove redundant last checks for 'j' index bigger than array size.
-The expression is always false. Moreover, before or after the patch
-'table->last' can be equal to SMC_NISLANDS_MC_REGISTER_ARRAY_SIZE and it
-seems it can be a valid value.
-
-Detected using the static analysis tool - Svace.
-Fixes: 69e0b57a91ad ("drm/radeon/kms: add dpm support for cayman (v5)")
-Signed-off-by: Alexey Kodanev <aleksei.kodanev@bell-sw.com>
-Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Signed-off-by: Szuying Chen <Chloe_Chen@asmedia.com.tw>
 ---
- drivers/gpu/drm/radeon/ni_dpm.c | 6 ++----
- 1 file changed, 2 insertions(+), 4 deletions(-)
+ drivers/thunderbolt/nvm.c    | 46 ++++++++++++++++++++++++++++++++++++
+ drivers/thunderbolt/switch.c |  3 +++
+ drivers/thunderbolt/tb.h     |  2 ++
+ 3 files changed, 51 insertions(+)
 
-diff --git a/drivers/gpu/drm/radeon/ni_dpm.c b/drivers/gpu/drm/radeon/ni_dpm.c
-index f86ca163dcf3..a7273c01de34 100644
---- a/drivers/gpu/drm/radeon/ni_dpm.c
-+++ b/drivers/gpu/drm/radeon/ni_dpm.c
-@@ -2738,10 +2738,10 @@ static int ni_set_mc_special_registers(struct radeon_device *rdev,
- 					table->mc_reg_table_entry[k].mc_data[j] |= 0x100;
- 			}
- 			j++;
--			if (j > SMC_NISLANDS_MC_REGISTER_ARRAY_SIZE)
--				return -EINVAL;
- 			break;
- 		case MC_SEQ_RESERVE_M >> 2:
-+			if (j >= SMC_NISLANDS_MC_REGISTER_ARRAY_SIZE)
-+				return -EINVAL;
- 			temp_reg = RREG32(MC_PMG_CMD_MRS1);
- 			table->mc_reg_address[j].s1 = MC_PMG_CMD_MRS1 >> 2;
- 			table->mc_reg_address[j].s0 = MC_SEQ_PMG_CMD_MRS1_LP >> 2;
-@@ -2750,8 +2750,6 @@ static int ni_set_mc_special_registers(struct radeon_device *rdev,
- 					(temp_reg & 0xffff0000) |
- 					(table->mc_reg_table_entry[k].mc_data[i] & 0x0000ffff);
- 			j++;
--			if (j > SMC_NISLANDS_MC_REGISTER_ARRAY_SIZE)
--				return -EINVAL;
- 			break;
- 		default:
- 			break;
--- 
-2.35.1
+diff --git a/drivers/thunderbolt/nvm.c b/drivers/thunderbolt/nvm.c
+index 5c7c2a284497..d2ef22f8b19b 100644
+--- a/drivers/thunderbolt/nvm.c
++++ b/drivers/thunderbolt/nvm.c
+@@ -15,6 +15,9 @@
+ /* Switch NVM support */
+ #define NVM_CSS		0x10
 
++/* ASMedia specific NVM offsets */
++#define ASMEDIA_NVM_VERSION	0x1c
++
+ static DEFINE_IDA(nvm_ida);
 
+ static inline int nvm_read(struct tb_switch *sw, unsigned int address,
+@@ -116,11 +119,39 @@ static int intel_nvm_validate(struct tb_switch *sw)
+ 	return image_size;
+ }
+
++static int asmedia_nvm_version(struct tb_switch *sw)
++{
++	struct tb_nvm *nvm = sw->nvm;
++	u64 val;
++	int ret;
++
++	ret = nvm_read(sw, ASMEDIA_NVM_VERSION, &val, sizeof(val));
++	if (ret)
++		return ret;
++
++	/* ASMedia NVM version show format include Firmware version and date xxxxxx.xxxxxx */
++	nvm->major = (((u8)val >> 0x18) << 0x10 | ((u8)(val >> 0x20)) << 0x8 | (u8)(val >> 0x28));
++	nvm->minor = (((u8)val) << 0x10 | ((u8)(val >> 0x8)) << 0x8 | (u8)(val >> 0x10));
++	nvm->nvm_size = SZ_512K;
++
++	return 0;
++}
++
++static void tb_switch_set_nvm_upgrade(struct tb_switch *sw)
++{
++	sw->no_nvm_upgrade = false;
++}
++
+ struct tb_nvm_vendor_ops intel_switch_nvm_ops = {
+ 	.version = intel_nvm_version,
+ 	.validate = intel_nvm_validate,
+ };
+
++struct tb_nvm_vendor_ops asmedia_switch_nvm_ops = {
++	.nvm_upgrade = tb_switch_set_nvm_upgrade,
++	.version = asmedia_nvm_version,
++};
++
+ struct switch_nvm_vendor {
+ 	u16 vendor;
+ 	const struct tb_nvm_vendor_ops *vops;
+@@ -129,8 +160,23 @@ struct switch_nvm_vendor {
+ static const struct switch_nvm_vendor switch_nvm_vendors[] = {
+ 	{ 0x8086, &intel_switch_nvm_ops },
+ 	{ 0x8087, &intel_switch_nvm_ops },
++	{ 0x174c, &asmedia_switch_nvm_ops },
+ };
+
++void tb_switch_nvm_upgradable(struct tb_switch *sw)
++{
++	int i;
++
++	for (i = 0; i < ARRAY_SIZE(switch_nvm_vendors); i++) {
++		const struct switch_nvm_vendor *v = &switch_nvm_vendors[i];
++
++		if (v->vendor == sw->config.vendor_id) {
++			if (v->vops->nvm_upgrade)
++				v->vops->nvm_upgrade(sw);
++		}
++	}
++}
++
+ /**
+  * tb_switch_nvm_alloc() - alloc nvm and set nvm->vops to point
+  * the vendor specific operations.
+diff --git a/drivers/thunderbolt/switch.c b/drivers/thunderbolt/switch.c
+index d257219cb66e..23df70290ca2 100644
+--- a/drivers/thunderbolt/switch.c
++++ b/drivers/thunderbolt/switch.c
+@@ -2829,6 +2829,9 @@ int tb_switch_add(struct tb_switch *sw)
+ 			return ret;
+ 	}
+
++	/* Enable the NVM firmware upgrade for specific vendors */
++	tb_switch_nvm_upgradable(sw);
++
+ 	ret = device_add(&sw->dev);
+ 	if (ret) {
+ 		dev_err(&sw->dev, "failed to add device: %d\n", ret);
+diff --git a/drivers/thunderbolt/tb.h b/drivers/thunderbolt/tb.h
+index 73ae2e093a92..8e2887e9c669 100644
+--- a/drivers/thunderbolt/tb.h
++++ b/drivers/thunderbolt/tb.h
+@@ -75,6 +75,7 @@ enum tb_nvm_write_ops {
+ struct tb_nvm_vendor_ops {
+ 	int (*version)(struct tb_switch *sw);
+ 	int (*validate)(struct tb_switch *sw);
++	void (*nvm_upgrade)(struct tb_switch *sw);
+ };
+
+ #define TB_SWITCH_KEY_SIZE		32
+@@ -748,6 +749,7 @@ static inline void tb_domain_put(struct tb *tb)
+ 	put_device(&tb->dev);
+ }
+
++void tb_switch_nvm_upgradable(struct tb_switch *sw);
+ struct tb_nvm *tb_switch_nvm_alloc(struct tb_switch *sw);
+ struct tb_nvm *tb_nvm_alloc(struct device *dev);
+ int tb_nvm_add_active(struct tb_nvm *nvm, size_t size, nvmem_reg_read_t reg_read);
+--
+2.34.1
 
