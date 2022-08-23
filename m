@@ -2,94 +2,141 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 97746C32772
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 08:25:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 69373C32772
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 08:25:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243426AbiHWIZM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 04:25:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59686 "EHLO
+        id S243249AbiHWIZV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 23 Aug 2022 04:25:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33990 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243493AbiHWIVP (ORCPT
+        with ESMTP id S243499AbiHWIVQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 04:21:15 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EE76D6F553;
-        Tue, 23 Aug 2022 01:12:36 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 7DF5DB81C36;
-        Tue, 23 Aug 2022 08:12:36 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BBAEDC43144;
-        Tue, 23 Aug 2022 08:12:34 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661242355;
-        bh=exLWc5wfuhzLstDPxiLLQ/227evYWkphKy8CKnPSkFA=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=TroV75M1an1zq5WHYxrk76CQgec1eeUUAJXmxvV5q7y2cZa6FjGoPmZccNTu+ZphW
-         Y7N4ZxupZKFsUSRqSHeBlk+59w3CLnET7HX+F/+MwdwQhaLBxxRLQQMYv1KrlUwUjq
-         5kj/AhubztSq9RhbLZ40Al7nPcmR1cKLyWC9jcvo=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Eric Dumazet <edumazet@google.com>,
-        Soheil Hassas Yeganeh <soheil@google.com>,
-        Shakeel Butt <shakeelb@google.com>,
-        Wei Wang <weiwan@google.com>,
-        "David S. Miller" <davem@davemloft.net>
-Subject: [PATCH 4.9 059/101] tcp: fix over estimation in sk_forced_mem_schedule()
-Date:   Tue, 23 Aug 2022 10:03:32 +0200
-Message-Id: <20220823080036.832741502@linuxfoundation.org>
-X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220823080034.579196046@linuxfoundation.org>
-References: <20220823080034.579196046@linuxfoundation.org>
-User-Agent: quilt/0.67
+        Tue, 23 Aug 2022 04:21:16 -0400
+Received: from mail-lf1-x12c.google.com (mail-lf1-x12c.google.com [IPv6:2a00:1450:4864:20::12c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0CBAC6F561
+        for <linux-kernel@vger.kernel.org>; Tue, 23 Aug 2022 01:12:38 -0700 (PDT)
+Received: by mail-lf1-x12c.google.com with SMTP id z25so18648902lfr.2
+        for <linux-kernel@vger.kernel.org>; Tue, 23 Aug 2022 01:12:37 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc;
+        bh=/vigK6qq/VSnMGZD3qvyiRFz8b38AOySEVAg6pDNhBA=;
+        b=RFBCAdoHZ9YMv6feZw2p+dKXHvS7VJyXLJAC37FpoFugc8t9U4xGQjxoxdGw/n84rT
+         4hsUDanlR9I/nNG7Ke+u3mNarDeMfo2pIjETOghqK4hSKlXeEw1YTlTTANT/8fvWKxXI
+         XdtzRBwuGqmKBim27k3bvhn8UzfuqHSwYl50LsPWvAK/PGPD7dV9vyXZLWB2v7nm2G85
+         bCsT7RdUS6YTsVi6EYz0exRDvsamvo7KQCBtYgUnsk/s72pxbjtSB6TsJzyhKk5AEGFG
+         TqeWtODrCPeiQfZXZfcpVljh2bp0DtlkzDtYGyQJvDgJoijDYO0lWMY+IizCnvd1xZY3
+         zApQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc;
+        bh=/vigK6qq/VSnMGZD3qvyiRFz8b38AOySEVAg6pDNhBA=;
+        b=BaGgRfMcUYNvzXvvLxhjKhesBFIeNfOd0pKgib0kMIebBgigTUjegeeRdwNlN/eI+/
+         SdaaGl+U0IbtgilT8D4iCWrmlGo56bsMjWaDlTsiDGDmWR96t5uaf49JUOP09/0mcKUB
+         NrcN6qte4gzy+kAkyJfF/kvOiEpSZiU7jGP1FzjSdvSC5QIPyDj0AwV38mr+RYoiL6Wn
+         GE61XVLrrtXFvkzh7KpkMH35M6BunHBXGtcJzv/BPqLM6v/3/HUvjyLhfyY/JvD1G/uR
+         3gfafcOeLsSDVYOxrZcoVh4MhGpI4s7LBgn7pRTFxXgLeX7g96Z2Cx8YZHOLkfK3vre5
+         K9tA==
+X-Gm-Message-State: ACgBeo1Od9Rxh7m8CVKU75YKEEWKcUXvvDHXXbNKGGSU/qVLMSluOhHJ
+        01M8b/E8Ieo4+qvojcULFrP51Q==
+X-Google-Smtp-Source: AA6agR79DsmlUZ/9xAycaPCXqchxKk4wNWA1oJ8FWND3kImoOKO9kguepVXP62pxY0gsiRfTp2LNoA==
+X-Received: by 2002:a05:6512:6c4:b0:491:c8f9:1994 with SMTP id u4-20020a05651206c400b00491c8f91994mr7719673lff.179.1661242350511;
+        Tue, 23 Aug 2022 01:12:30 -0700 (PDT)
+Received: from [192.168.0.11] (89-27-92-210.bb.dnainternet.fi. [89.27.92.210])
+        by smtp.gmail.com with ESMTPSA id g6-20020a2ea4a6000000b0025e5631194dsm2240520ljm.21.2022.08.23.01.12.29
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 23 Aug 2022 01:12:29 -0700 (PDT)
+Message-ID: <0bda4ff9-fc08-77f2-0e06-7469dcaec6d8@linaro.org>
+Date:   Tue, 23 Aug 2022 11:12:28 +0300
 MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.12.0
+Subject: Re: [PATCH 02/13] dt-bindings: memory: snps: Add Baikal-T1 DDRC
+ support
+Content-Language: en-US
+To:     Serge Semin <Sergey.Semin@baikalelectronics.ru>,
+        Michal Simek <michal.simek@xilinx.com>,
+        Borislav Petkov <bp@alien8.de>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Tony Luck <tony.luck@intel.com>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Manish Narani <manish.narani@xilinx.com>
+Cc:     Serge Semin <fancer.lancer@gmail.com>,
+        Alexey Malahov <Alexey.Malahov@baikalelectronics.ru>,
+        Michail Ivanov <Michail.Ivanov@baikalelectronics.ru>,
+        Pavel Parkhomenko <Pavel.Parkhomenko@baikalelectronics.ru>,
+        Punnaiah Choudary Kalluri 
+        <punnaiah.choudary.kalluri@xilinx.com>,
+        Dinh Nguyen <dinguyen@kernel.org>,
+        James Morse <james.morse@arm.com>,
+        Robert Richter <rric@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-edac@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <20220822191957.28546-1-Sergey.Semin@baikalelectronics.ru>
+ <20220822191957.28546-3-Sergey.Semin@baikalelectronics.ru>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+In-Reply-To: <20220822191957.28546-3-Sergey.Semin@baikalelectronics.ru>
 Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Eric Dumazet <edumazet@google.com>
+On 22/08/2022 22:19, Serge Semin wrote:
+> Baikal-T1 DDR controller is based on the DW uMCTL2 DDRC IP-core v2.51a
+> with up to DDR3 protocol capability and 32-bit data bus + 8-bit ECC. There
+> are individual IRQs for each ECC and DFI events.The dedicated scrubber
 
-commit c4ee118561a0f74442439b7b5b486db1ac1ddfeb upstream.
+Missing space before "The".
 
-sk_forced_mem_schedule() has a bug similar to ones fixed
-in commit 7c80b038d23e ("net: fix sk_wmem_schedule() and
-sk_rmem_schedule() errors")
+> clock source is absent since it's fully synchronous to the core clock.
 
-While this bug has little chance to trigger in old kernels,
-we need to fix it before the following patch.
+You need allOf:if-then restricting this per variant.
 
-Fixes: d83769a580f1 ("tcp: fix possible deadlock in tcp_send_fin()")
-Signed-off-by: Eric Dumazet <edumazet@google.com>
-Acked-by: Soheil Hassas Yeganeh <soheil@google.com>
-Reviewed-by: Shakeel Butt <shakeelb@google.com>
-Reviewed-by: Wei Wang <weiwan@google.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
----
- net/ipv4/tcp_output.c |    7 ++++---
- 1 file changed, 4 insertions(+), 3 deletions(-)
+> In addition to that the DFI-DDR PHY CSRs can be accessed via a separate
+> registers space.
+> 
+> Signed-off-by: Serge Semin <Sergey.Semin@baikalelectronics.ru>
+> ---
+>  .../memory-controllers/snps,dw-umctl2-ddrc.yaml        | 10 +++++++++-
+>  1 file changed, 9 insertions(+), 1 deletion(-)
+> 
+> diff --git a/Documentation/devicetree/bindings/memory-controllers/snps,dw-umctl2-ddrc.yaml b/Documentation/devicetree/bindings/memory-controllers/snps,dw-umctl2-ddrc.yaml
+> index 8db92210cfe1..899a6c5f9806 100644
+> --- a/Documentation/devicetree/bindings/memory-controllers/snps,dw-umctl2-ddrc.yaml
+> +++ b/Documentation/devicetree/bindings/memory-controllers/snps,dw-umctl2-ddrc.yaml
+> @@ -26,6 +26,7 @@ properties:
+>      enum:
+>        - snps,ddrc-3.80a
+>        - xlnx,zynqmp-ddrc-2.40a
+> +      - baikal,bt1-ddrc
 
---- a/net/ipv4/tcp_output.c
-+++ b/net/ipv4/tcp_output.c
-@@ -2986,11 +2986,12 @@ begin_fwd:
-  */
- void sk_forced_mem_schedule(struct sock *sk, int size)
- {
--	int amt;
-+	int delta, amt;
- 
--	if (size <= sk->sk_forward_alloc)
-+	delta = size - sk->sk_forward_alloc;
-+	if (delta <= 0)
- 		return;
--	amt = sk_mem_pages(size);
-+	amt = sk_mem_pages(delta);
- 	sk->sk_forward_alloc += amt * SK_MEM_QUANTUM;
- 	sk_memory_allocated_add(sk, amt);
- 
+Messed order. Don't add stuff at the end, but in alphabetical order.
 
+>  
+>    interrupts:
+>      description:
+> @@ -49,7 +50,14 @@ properties:
+>            enum: [ ecc_ce, ecc_ue, ecc_ap, ecc_sbr, dfi_e ]
+>  
+>    reg:
+> -    maxItems: 1
+> +    minItems: 1
+> +    maxItems: 2
+> +
+> +  reg-names:
+> +    minItems: 1
+> +    items:
+> +      - const: umctl2
+> +      - const: phy
 
+You need allOf:if-then restricting this per variant.
+
+Best regards,
+Krzysztof
