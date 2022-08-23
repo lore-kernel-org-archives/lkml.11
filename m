@@ -2,131 +2,157 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 50F6EC32796
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 63960C32792
 	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 11:42:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358482AbiHWLlz (ORCPT
+        id S1358508AbiHWLl6 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 07:41:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48910 "EHLO
+        Tue, 23 Aug 2022 07:41:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49152 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357900AbiHWLg3 (ORCPT
+        with ESMTP id S1358012AbiHWLgg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 07:36:29 -0400
-Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4B5BDC7B88;
-        Tue, 23 Aug 2022 02:27:39 -0700 (PDT)
-Date:   Tue, 23 Aug 2022 09:27:36 -0000
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1661246858;
-        h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
-         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
-         content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=1zjfTNaFn8VPa2Lkn3ZMfM122fEeU0I/FmGpR0qv5RI=;
-        b=IvcnGwcc2Xj2heUIQ8SEYTdFpQSIcBX5v7C3w+bqDH++L57ZWLdrsz+esWRLB1x9K4wIK6
-        G9eHvMFHY6YpzANWuwhYvLybmtpdBMP8mbMU55piOl462Z9hwdqfPLc0Q6KqAXAFQGNb0V
-        8kHg7w0oTbMcCkIBni5Uz1R7em87iugBhCvb5BhRTs8IwkfdX4aiaGejcjuG6Azvx3XyGB
-        QU6vexapqunKN86ipv5GWSm6ka5fVPYhkBq+v7121vtd7Hw8S0ZXXj+JbN5jXLLTUN9rzC
-        5Z2p1nZcsUw1xctMGBhnmA3L+ItJxRokFp9TdGPl+zKFxAVH1stSDoqEnJUctw==
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1661246858;
-        h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
-         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
-         content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=1zjfTNaFn8VPa2Lkn3ZMfM122fEeU0I/FmGpR0qv5RI=;
-        b=I9mAqVd8ECCjA3yol8K/JQg+Scsf1o02zfm0dDxv73bQ0qWVfGKmor7xuHhW0psKWHKoWp
-        oLDJ/XHyRoQ692Cg==
-From:   "tip-bot2 for Chengming Zhou" <tip-bot2@linutronix.de>
-Sender: tip-bot2@linutronix.de
-Reply-to: linux-kernel@vger.kernel.org
-To:     linux-tip-commits@vger.kernel.org
-Subject: [tip: sched/core] sched/fair: Maintain task se depth in set_task_rq()
-Cc:     Chengming Zhou <zhouchengming@bytedance.com>,
-        "Peter Zijlstra (Intel)" <peterz@infradead.org>,
-        Dietmar Eggemann <dietmar.eggemann@arm.com>,
-        Vincent Guittot <vincent.guittot@linaro.org>, x86@kernel.org,
-        linux-kernel@vger.kernel.org
-In-Reply-To: <20220818124805.601-2-zhouchengming@bytedance.com>
-References: <20220818124805.601-2-zhouchengming@bytedance.com>
+        Tue, 23 Aug 2022 07:36:36 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 95B6BC7F8A;
+        Tue, 23 Aug 2022 02:27:44 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 8DF63B81C89;
+        Tue, 23 Aug 2022 09:27:42 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id F0245C433B5;
+        Tue, 23 Aug 2022 09:27:40 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1661246861;
+        bh=xIKOzEbAHX9r+GH4VZhr1OOjANvkwjV7THn/VhsTL20=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=IcF3wwR1+GJ2tqeVzlCcCa+iBO7wXTZW7GfeG4CHNu81ZJEo6/8QgkXdueG1uriZy
+         k+2plz5VQpjdoHVuFTJGvYPv2fSzLqriejda8kZpuq9wEH2Y3lI1606+rkA+BpXlRI
+         V4GdH+dMUtYZRPhGIwLtPQIJabXDeDSrmrIjrUUc=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Florian Fainelli <f.fainelli@gmail.com>,
+        "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.4 244/389] tools/thermal: Fix possible path truncations
+Date:   Tue, 23 Aug 2022 10:25:22 +0200
+Message-Id: <20220823080125.757795136@linuxfoundation.org>
+X-Mailer: git-send-email 2.37.2
+In-Reply-To: <20220823080115.331990024@linuxfoundation.org>
+References: <20220823080115.331990024@linuxfoundation.org>
+User-Agent: quilt/0.67
 MIME-Version: 1.0
-Message-ID: <166124685689.401.4486657040685089131.tip-bot2@tip-bot2>
-Robot-ID: <tip-bot2@linutronix.de>
-Robot-Unsubscribe: Contact <mailto:tglx@linutronix.de> to get blacklisted from these emails
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The following commit has been merged into the sched/core branch of tip:
+From: Florian Fainelli <f.fainelli@gmail.com>
 
-Commit-ID:     78b6b15770618efb60d84e2d605f6b93dc94051b
-Gitweb:        https://git.kernel.org/tip/78b6b15770618efb60d84e2d605f6b93dc94051b
-Author:        Chengming Zhou <zhouchengming@bytedance.com>
-AuthorDate:    Thu, 18 Aug 2022 20:47:57 +08:00
-Committer:     Peter Zijlstra <peterz@infradead.org>
-CommitterDate: Tue, 23 Aug 2022 11:01:17 +02:00
+[ Upstream commit 6c58cf40e3a1d2f47c09d3489857e9476316788a ]
 
-sched/fair: Maintain task se depth in set_task_rq()
+A build with -D_FORTIFY_SOURCE=2 enabled will produce the following warnings:
 
-Previously we only maintain task se depth in task_move_group_fair(),
-if a !fair task change task group, its se depth will not be updated,
-so commit eb7a59b2c888 ("sched/fair: Reset se-depth when task switched to FAIR")
-fix the problem by updating se depth in switched_to_fair() too.
+sysfs.c:63:30: warning: '%s' directive output may be truncated writing up to 255 bytes into a region of size between 0 and 255 [-Wformat-truncation=]
+  snprintf(filepath, 256, "%s/%s", path, filename);
+                              ^~
+Bump up the buffer to PATH_MAX which is the limit and account for all of
+the possible NUL and separators that could lead to exceeding the
+allocated buffer sizes.
 
-Then commit daa59407b558 ("sched/fair: Unify switched_{from,to}_fair()
-and task_move_group_fair()") unified these two functions, moved se.depth
-setting to attach_task_cfs_rq(), which further into attach_entity_cfs_rq()
-with commit df217913e72e ("sched/fair: Factorize attach/detach entity").
-
-This patch move task se depth maintenance from attach_entity_cfs_rq()
-to set_task_rq(), which will be called when CPU/cgroup change, so its
-depth will always be correct.
-
-This patch is preparation for the next patch.
-
-Signed-off-by: Chengming Zhou <zhouchengming@bytedance.com>
-Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
-Reviewed-by: Dietmar Eggemann <dietmar.eggemann@arm.com>
-Reviewed-by: Vincent Guittot <vincent.guittot@linaro.org>
-Link: https://lore.kernel.org/r/20220818124805.601-2-zhouchengming@bytedance.com
+Fixes: 94f69966faf8 ("tools/thermal: Introduce tmon, a tool for thermal subsystem")
+Signed-off-by: Florian Fainelli <f.fainelli@gmail.com>
+Signed-off-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- kernel/sched/fair.c  | 8 --------
- kernel/sched/sched.h | 1 +
- 2 files changed, 1 insertion(+), 8 deletions(-)
+ tools/thermal/tmon/sysfs.c | 24 +++++++++++++-----------
+ 1 file changed, 13 insertions(+), 11 deletions(-)
 
-diff --git a/kernel/sched/fair.c b/kernel/sched/fair.c
-index da38865..a3b0f8b 100644
---- a/kernel/sched/fair.c
-+++ b/kernel/sched/fair.c
-@@ -11562,14 +11562,6 @@ static void attach_entity_cfs_rq(struct sched_entity *se)
+diff --git a/tools/thermal/tmon/sysfs.c b/tools/thermal/tmon/sysfs.c
+index b00b1bfd9d8e..cb1108bc9249 100644
+--- a/tools/thermal/tmon/sysfs.c
++++ b/tools/thermal/tmon/sysfs.c
+@@ -13,6 +13,7 @@
+ #include <stdint.h>
+ #include <dirent.h>
+ #include <libintl.h>
++#include <limits.h>
+ #include <ctype.h>
+ #include <time.h>
+ #include <syslog.h>
+@@ -33,9 +34,9 @@ int sysfs_set_ulong(char *path, char *filename, unsigned long val)
  {
- 	struct cfs_rq *cfs_rq = cfs_rq_of(se);
+ 	FILE *fd;
+ 	int ret = -1;
+-	char filepath[256];
++	char filepath[PATH_MAX + 2]; /* NUL and '/' */
  
--#ifdef CONFIG_FAIR_GROUP_SCHED
--	/*
--	 * Since the real-depth could have been changed (only FAIR
--	 * class maintain depth value), reset depth properly.
--	 */
--	se->depth = se->parent ? se->parent->depth + 1 : 0;
--#endif
--
- 	/* Synchronize entity with its cfs_rq */
- 	update_load_avg(cfs_rq, se, sched_feat(ATTACH_AGE_LOAD) ? 0 : SKIP_AGE_LOAD);
- 	attach_entity_load_avg(cfs_rq, se);
-diff --git a/kernel/sched/sched.h b/kernel/sched/sched.h
-index 3ccd35c..4c48221 100644
---- a/kernel/sched/sched.h
-+++ b/kernel/sched/sched.h
-@@ -1930,6 +1930,7 @@ static inline void set_task_rq(struct task_struct *p, unsigned int cpu)
- 	set_task_rq_fair(&p->se, p->se.cfs_rq, tg->cfs_rq[cpu]);
- 	p->se.cfs_rq = tg->cfs_rq[cpu];
- 	p->se.parent = tg->se[cpu];
-+	p->se.depth = tg->se[cpu] ? tg->se[cpu]->depth + 1 : 0;
- #endif
+-	snprintf(filepath, 256, "%s/%s", path, filename);
++	snprintf(filepath, sizeof(filepath), "%s/%s", path, filename);
  
- #ifdef CONFIG_RT_GROUP_SCHED
+ 	fd = fopen(filepath, "w");
+ 	if (!fd) {
+@@ -57,9 +58,9 @@ static int sysfs_get_ulong(char *path, char *filename, unsigned long *p_ulong)
+ {
+ 	FILE *fd;
+ 	int ret = -1;
+-	char filepath[256];
++	char filepath[PATH_MAX + 2]; /* NUL and '/' */
+ 
+-	snprintf(filepath, 256, "%s/%s", path, filename);
++	snprintf(filepath, sizeof(filepath), "%s/%s", path, filename);
+ 
+ 	fd = fopen(filepath, "r");
+ 	if (!fd) {
+@@ -76,9 +77,9 @@ static int sysfs_get_string(char *path, char *filename, char *str)
+ {
+ 	FILE *fd;
+ 	int ret = -1;
+-	char filepath[256];
++	char filepath[PATH_MAX + 2]; /* NUL and '/' */
+ 
+-	snprintf(filepath, 256, "%s/%s", path, filename);
++	snprintf(filepath, sizeof(filepath), "%s/%s", path, filename);
+ 
+ 	fd = fopen(filepath, "r");
+ 	if (!fd) {
+@@ -199,8 +200,8 @@ static int find_tzone_cdev(struct dirent *nl, char *tz_name,
+ {
+ 	unsigned long trip_instance = 0;
+ 	char cdev_name_linked[256];
+-	char cdev_name[256];
+-	char cdev_trip_name[256];
++	char cdev_name[PATH_MAX];
++	char cdev_trip_name[PATH_MAX];
+ 	int cdev_id;
+ 
+ 	if (nl->d_type == DT_LNK) {
+@@ -213,7 +214,8 @@ static int find_tzone_cdev(struct dirent *nl, char *tz_name,
+ 			return -EINVAL;
+ 		}
+ 		/* find the link to real cooling device record binding */
+-		snprintf(cdev_name, 256, "%s/%s", tz_name, nl->d_name);
++		snprintf(cdev_name, sizeof(cdev_name) - 2, "%s/%s",
++			 tz_name, nl->d_name);
+ 		memset(cdev_name_linked, 0, sizeof(cdev_name_linked));
+ 		if (readlink(cdev_name, cdev_name_linked,
+ 				sizeof(cdev_name_linked) - 1) != -1) {
+@@ -226,8 +228,8 @@ static int find_tzone_cdev(struct dirent *nl, char *tz_name,
+ 			/* find the trip point in which the cdev is binded to
+ 			 * in this tzone
+ 			 */
+-			snprintf(cdev_trip_name, 256, "%s%s", nl->d_name,
+-				"_trip_point");
++			snprintf(cdev_trip_name, sizeof(cdev_trip_name) - 1,
++				"%s%s", nl->d_name, "_trip_point");
+ 			sysfs_get_ulong(tz_name, cdev_trip_name,
+ 					&trip_instance);
+ 			/* validate trip point range, e.g. trip could return -1
+-- 
+2.35.1
+
+
+
