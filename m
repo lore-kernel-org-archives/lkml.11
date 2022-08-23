@@ -2,45 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5C18AC32772
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 09:38:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C10F9C32772
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 09:38:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347212AbiHWJiL (ORCPT
+        id S1348467AbiHWJiV (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 05:38:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43058 "EHLO
+        Tue, 23 Aug 2022 05:38:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44882 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352016AbiHWJgO (ORCPT
+        with ESMTP id S1350610AbiHWJgi (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 05:36:14 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B13E597528;
-        Tue, 23 Aug 2022 01:40:18 -0700 (PDT)
+        Tue, 23 Aug 2022 05:36:38 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A414E9858E;
+        Tue, 23 Aug 2022 01:40:40 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 1001E61446;
-        Tue, 23 Aug 2022 08:39:31 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 170D2C433D6;
-        Tue, 23 Aug 2022 08:39:29 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id D736CB81C20;
+        Tue, 23 Aug 2022 08:38:20 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 204A8C433D6;
+        Tue, 23 Aug 2022 08:38:18 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661243970;
-        bh=zF3lbwdRFjkPdQLRg6YZteuGFMB18IPyypAQdqBb32c=;
+        s=korg; t=1661243899;
+        bh=q0lwBwOpc6ybYAZdxR23GL4Xf+A9Fy0uKv6IPGQ9w8g=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ZWIrrD7iU7zL4JDs6CRfaAmlqUOcw2yTt/aVHdQXTaUb1PHJpqktc4nHLACZADfk0
-         1D/13DZN/HieIq8BDj7OvrXrCZ50NkoHMJe5luU1+XuxOvIWWqsbP/m8FwlCSvZHLw
-         hIVheyUaPYIVPYEeOfcEHNMkWxGF0miG33pDDgIc=
+        b=vi3jaAwotS6a8CFmkSGZHEXs4ohEKBDTUWyhgq8NO11eqrhYXJhcdmxoq0azqB81/
+         +FR8XJ5vsLddtL95mVkds2iR0PSMGGQgwweUJ4zVRTlWQK3XZHLFJBQNCE3ZEDDBcH
+         fiOFqzKidFhIyUxzYH/0B02DAzid4asCWx17/N7g=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Filipe Manana <fdmanana@suse.com>,
-        David Sterba <dsterba@suse.com>
-Subject: [PATCH 5.15 016/244] btrfs: fix lost error handling when looking up extended ref on log replay
-Date:   Tue, 23 Aug 2022 10:22:55 +0200
-Message-Id: <20220823080059.620568051@linuxfoundation.org>
+        stable@vger.kernel.org, Michael Walle <michael@walle.cc>,
+        Arnd Bergmann <arnd@arndb.de>, Shawn Guo <shawnguo@kernel.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 4.14 053/229] soc: fsl: guts: machine variable might be unset
+Date:   Tue, 23 Aug 2022 10:23:34 +0200
+Message-Id: <20220823080055.600279021@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220823080059.091088642@linuxfoundation.org>
-References: <20220823080059.091088642@linuxfoundation.org>
+In-Reply-To: <20220823080053.202747790@linuxfoundation.org>
+References: <20220823080053.202747790@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -49,43 +50,37 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Filipe Manana <fdmanana@suse.com>
+From: Michael Walle <michael@walle.cc>
 
-commit 7a6b75b79902e47f46328b57733f2604774fa2d9 upstream.
+[ Upstream commit ab3f045774f704c4e7b6a878102f4e9d4ae7bc74 ]
 
-During log replay, when processing inode references, if we get an error
-when looking up for an extended reference at __add_inode_ref(), we ignore
-it and proceed, returning success (0) if no other error happens after the
-lookup. This is obviously wrong because in case an extended reference
-exists and it encodes some name not in the log, we need to unlink it,
-otherwise the filesystem state will not match the state it had after the
-last fsync.
+If both the model and the compatible properties are missing, then
+machine will not be set. Initialize it with NULL.
 
-So just make __add_inode_ref() return an error it gets from the extended
-reference lookup.
-
-Fixes: f186373fef005c ("btrfs: extended inode refs")
-CC: stable@vger.kernel.org # 4.9+
-Signed-off-by: Filipe Manana <fdmanana@suse.com>
-Reviewed-by: David Sterba <dsterba@suse.com>
-Signed-off-by: David Sterba <dsterba@suse.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Fixes: 34c1c21e94ac ("soc: fsl: fix section mismatch build warnings")
+Signed-off-by: Michael Walle <michael@walle.cc>
+Acked-by: Arnd Bergmann <arnd@arndb.de>
+Signed-off-by: Shawn Guo <shawnguo@kernel.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- fs/btrfs/tree-log.c |    4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
+ drivers/soc/fsl/guts.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/fs/btrfs/tree-log.c
-+++ b/fs/btrfs/tree-log.c
-@@ -1119,7 +1119,9 @@ again:
- 	extref = btrfs_lookup_inode_extref(NULL, root, path, name, namelen,
- 					   inode_objectid, parent_objectid, 0,
- 					   0);
--	if (!IS_ERR_OR_NULL(extref)) {
-+	if (IS_ERR(extref)) {
-+		return PTR_ERR(extref);
-+	} else if (extref) {
- 		u32 item_size;
- 		u32 cur_offset = 0;
- 		unsigned long base;
+diff --git a/drivers/soc/fsl/guts.c b/drivers/soc/fsl/guts.c
+index 6af7a11f09a5..affc38a92166 100644
+--- a/drivers/soc/fsl/guts.c
++++ b/drivers/soc/fsl/guts.c
+@@ -136,7 +136,7 @@ static int fsl_guts_probe(struct platform_device *pdev)
+ 	struct device *dev = &pdev->dev;
+ 	struct resource *res;
+ 	const struct fsl_soc_die_attr *soc_die;
+-	const char *machine;
++	const char *machine = NULL;
+ 	u32 svr;
+ 
+ 	/* Initialize guts */
+-- 
+2.35.1
+
 
 
