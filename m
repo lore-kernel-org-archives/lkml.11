@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7DFF8C32774
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 09:11:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 97B13C32772
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 09:12:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348552AbiHWJKb (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 05:10:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33330 "EHLO
+        id S243295AbiHWJMa (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 23 Aug 2022 05:12:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33328 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348009AbiHWJJS (ORCPT
+        with ESMTP id S1348448AbiHWJKE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 05:09:18 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 83405868A1;
-        Tue, 23 Aug 2022 01:30:38 -0700 (PDT)
+        Tue, 23 Aug 2022 05:10:04 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 60DEF74DFA;
+        Tue, 23 Aug 2022 01:30:59 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 3A2F761338;
-        Tue, 23 Aug 2022 08:29:49 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 26467C433C1;
-        Tue, 23 Aug 2022 08:29:47 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 5A791B81C48;
+        Tue, 23 Aug 2022 08:29:37 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B5F18C433C1;
+        Tue, 23 Aug 2022 08:29:35 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661243388;
-        bh=bpP3v+DcvV2AxMnSmPB9/sNRdImi4ZKRLo9adOSSbiM=;
+        s=korg; t=1661243376;
+        bh=ebo6kPnfZ6o+Q1fsjAA8jeQY9HT8MUugEfOa0/b02xE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=YhvolnvbPIzW7ZlSt/ikqR6/PqDz1HLG+KSsvvDDo7AyIz0mLtPdiv++4am1+vngq
-         cHZW06OEj1FkyUC+8daB0bcPWC5Uo74Dox1TPYILxhC5dXz94a+nt8pkA0Ulo288EV
-         8L5Gg+KTJF2FOK+UhKHqf9/TUIftE16bJ+CPpY9c=
+        b=VkZaIoRMmjUMK/JN87Wl8jcjS2Jgx8Aqrb8Em0EM20fpK5I3xeIAdcCDzGP8Jkzm0
+         r3CPDaoG1yF+wYzkEtl+7Pn7+YguL8pQvWkBx5wijqRnp+ha+uUzsVJpyuc+CHY/0P
+         F92xqy9yRYZ5Ax4Vf5ciKu1Ub/1uPYT3EGmXLfB4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Ben Hutchings <benh@debian.org>,
-        Daniel Bristot de Oliveira <bristot@kernel.org>,
-        "Steven Rostedt (Google)" <rostedt@goodmis.org>
-Subject: [PATCH 5.19 234/365] tools/rtla: Fix command symlinks
-Date:   Tue, 23 Aug 2022 10:02:15 +0200
-Message-Id: <20220823080128.020429824@linuxfoundation.org>
+        stable@vger.kernel.org, Gil Fine <gil.fine@intel.com>,
+        Mika Westerberg <mika.westerberg@linux.intel.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.19 257/365] thunderbolt: Change downstream routers TMU rate in both TMU uni/bidir mode
+Date:   Tue, 23 Aug 2022 10:02:38 +0200
+Message-Id: <20220823080128.954306927@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220823080118.128342613@linuxfoundation.org>
 References: <20220823080118.128342613@linuxfoundation.org>
@@ -50,43 +49,53 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Ben Hutchings <benh@debian.org>
+From: Gil Fine <gil.fine@intel.com>
 
-commit ff5a55dcdb343e3db9b9fb08795b78544b032773 upstream.
+[ Upstream commit 5fd6b9a5cbe63fea4c490fee8af34144a139a266 ]
 
-"ln -s" stores the next argument directly as the symlink target, so
-it needs to be a relative path.  In this case, just "rtla".
+In case of uni-directional time sync, TMU handshake is
+initiated by upstream router. In case of bi-directional
+time sync, TMU handshake is initiated by downstream router.
+In order to handle correctly the case of uni-directional mode,
+we avoid changing the upstream router's rate to off,
+because it might have another downstream router plugged that is set to
+uni-directional mode (and we don't want to change its mode).
+Instead, we always change downstream router's rate.
 
-Link: https://lore.kernel.org/linux-trace-devel/YtLBXMI6Ui4HLIF1@decadent.org.uk
-
-Fixes: 0605bf009f18 ("rtla: Add osnoise tool")
-Fixes: a828cd18bc4a ("rtla: Add timerlat tool and timelart top mode")
-Signed-off-by: Ben Hutchings <benh@debian.org>
-Acked-by: Daniel Bristot de Oliveira <bristot@kernel.org>
-Signed-off-by: Steven Rostedt (Google) <rostedt@goodmis.org>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Gil Fine <gil.fine@intel.com>
+Signed-off-by: Mika Westerberg <mika.westerberg@linux.intel.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- tools/tracing/rtla/Makefile | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ drivers/thunderbolt/tmu.c | 13 +++++++------
+ 1 file changed, 7 insertions(+), 6 deletions(-)
 
-diff --git a/tools/tracing/rtla/Makefile b/tools/tracing/rtla/Makefile
-index 1bea2d16d4c1..b8fe10d941ce 100644
---- a/tools/tracing/rtla/Makefile
-+++ b/tools/tracing/rtla/Makefile
-@@ -108,9 +108,9 @@ install: doc_install
- 	$(INSTALL) rtla -m 755 $(DESTDIR)$(BINDIR)
- 	$(STRIP) $(DESTDIR)$(BINDIR)/rtla
- 	@test ! -f $(DESTDIR)$(BINDIR)/osnoise || rm $(DESTDIR)$(BINDIR)/osnoise
--	ln -s $(DESTDIR)$(BINDIR)/rtla $(DESTDIR)$(BINDIR)/osnoise
-+	ln -s rtla $(DESTDIR)$(BINDIR)/osnoise
- 	@test ! -f $(DESTDIR)$(BINDIR)/timerlat || rm $(DESTDIR)$(BINDIR)/timerlat
--	ln -s $(DESTDIR)$(BINDIR)/rtla $(DESTDIR)$(BINDIR)/timerlat
-+	ln -s rtla $(DESTDIR)$(BINDIR)/timerlat
+diff --git a/drivers/thunderbolt/tmu.c b/drivers/thunderbolt/tmu.c
+index e4a07a26f693..93ba1d00335b 100644
+--- a/drivers/thunderbolt/tmu.c
++++ b/drivers/thunderbolt/tmu.c
+@@ -359,13 +359,14 @@ int tb_switch_tmu_disable(struct tb_switch *sw)
+ 		 * In case of uni-directional time sync, TMU handshake is
+ 		 * initiated by upstream router. In case of bi-directional
+ 		 * time sync, TMU handshake is initiated by downstream router.
+-		 * Therefore, we change the rate to off in the respective
+-		 * router.
++		 * We change downstream router's rate to off for both uni/bidir
++		 * cases although it is needed only for the bi-directional mode.
++		 * We avoid changing upstream router's mode since it might
++		 * have another downstream router plugged, that is set to
++		 * uni-directional mode and we don't want to change it's TMU
++		 * mode.
+ 		 */
+-		if (unidirectional)
+-			tb_switch_tmu_rate_write(parent, TB_SWITCH_TMU_RATE_OFF);
+-		else
+-			tb_switch_tmu_rate_write(sw, TB_SWITCH_TMU_RATE_OFF);
++		tb_switch_tmu_rate_write(sw, TB_SWITCH_TMU_RATE_OFF);
  
- .PHONY: clean tarball
- clean: doc_clean
+ 		tb_port_tmu_time_sync_disable(up);
+ 		ret = tb_port_tmu_time_sync_disable(down);
 -- 
-2.37.2
+2.35.1
 
 
 
