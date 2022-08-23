@@ -2,219 +2,87 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2D9CAC32772
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 22:27:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5A7ACC32772
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 22:27:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234307AbiHWW1l (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 18:27:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53440 "EHLO
+        id S233398AbiHWW1s (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 23 Aug 2022 18:27:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52748 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233815AbiHWW0g (ORCPT
+        with ESMTP id S233491AbiHWW0k (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 18:26:36 -0400
-Received: from mail-pf1-x42a.google.com (mail-pf1-x42a.google.com [IPv6:2607:f8b0:4864:20::42a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5E8A0876A2
-        for <linux-kernel@vger.kernel.org>; Tue, 23 Aug 2022 15:26:25 -0700 (PDT)
-Received: by mail-pf1-x42a.google.com with SMTP id 1so7576857pfu.0
-        for <linux-kernel@vger.kernel.org>; Tue, 23 Aug 2022 15:26:25 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc;
-        bh=Tz3YQHlg7lPKnl8810X0eKouDRImUz/13B9zincHNWA=;
-        b=Wv5JaMMYwHBpWL278QUwYO9DY6IaHzIbnhZDnYZ96/QvRII8RcbPWBWjeBtmIne9le
-         qZjwLds3yzxRjEg6PMgQ3+ZKVDefOo/26u8/e5VZJ/cL5jfRNsSkaJDBND30BF5msNY5
-         4x+4rQX6ve4nrYaBemGNl9KU+6ZM8ZYnIVDGQ=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc;
-        bh=Tz3YQHlg7lPKnl8810X0eKouDRImUz/13B9zincHNWA=;
-        b=bxEooMIbdqOP+JcX47/LbRW7jZAXIW4trE/sFu/bR0v2CR7hlPC9BeVzxjkIn9fGfR
-         QPnMc8qTPS7JDsLC5qHxZA1DOl+RQcYR4vl330tWLbSWT0EhIUOF7f0DxM6NYnRZ/ojy
-         FcetrAdr6utPtF5/t8L1cDias/E+5R/cKa8KPG35sIvpdh8Tfs6tyczbWc1GMrPBCHdu
-         BuyljglrNzG0dwA0Pr7+J7+MOdLB/JdZI67ccdop3/tqkH2HJ6ZSTT+tjclWc1VwRUun
-         wiwD8588jU5OtzmvgnxXZuITNcYYT6dQfrTUH5cbsRUiupXqwSdV9v7PyCsxKgeAwjo2
-         QEmg==
-X-Gm-Message-State: ACgBeo01du/MwDZCiCKaXFGFdRGd1KHsgF6gbdOeeqTIPomjhmEJOwmK
-        nOYreiXCwUZwtqYnRDGAHYiQaLPJdBg6Uw==
-X-Google-Smtp-Source: AA6agR7FQ9WlKLJeWlN4z1N50CerpdT2pXOjpoZwpiqb82lHYslzyUvA7umGVzB89k5iWjoebs0Wdg==
-X-Received: by 2002:aa7:94a4:0:b0:536:4ec6:2de2 with SMTP id a4-20020aa794a4000000b005364ec62de2mr16717815pfl.33.1661293584432;
-        Tue, 23 Aug 2022 15:26:24 -0700 (PDT)
-Received: from evgreen-glaptop.lan ([98.45.66.167])
-        by smtp.gmail.com with ESMTPSA id f76-20020a62384f000000b0052f20d70845sm11256292pfa.150.2022.08.23.15.26.22
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 23 Aug 2022 15:26:24 -0700 (PDT)
-From:   Evan Green <evgreen@chromium.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     gwendal@chromium.org, Eric Biggers <ebiggers@kernel.org>,
-        Matthew Garrett <mgarrett@aurora.tech>, jarkko@kernel.org,
-        zohar@linux.ibm.com, linux-integrity@vger.kernel.org,
-        Pavel Machek <pavel@ucw.cz>, apronin@chromium.org,
-        dlunev@google.com, rjw@rjwysocki.net, linux-pm@vger.kernel.org,
-        corbet@lwn.net, jejb@linux.ibm.com,
-        Evan Green <evgreen@chromium.org>,
-        Len Brown <len.brown@intel.com>,
-        "Rafael J. Wysocki" <rafael@kernel.org>
-Subject: [PATCH v2 09/10] PM: hibernate: Verify the digest encryption key
-Date:   Tue, 23 Aug 2022 15:25:25 -0700
-Message-Id: <20220823152108.v2.9.I504d456c7a94ef1aaa7a2c63775ce9690c3ad7ab@changeid>
-X-Mailer: git-send-email 2.31.0
-In-Reply-To: <20220823222526.1524851-1-evgreen@chromium.org>
-References: <20220823222526.1524851-1-evgreen@chromium.org>
+        Tue, 23 Aug 2022 18:26:40 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C71A088DE2;
+        Tue, 23 Aug 2022 15:26:27 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 5B2AC616DA;
+        Tue, 23 Aug 2022 22:26:27 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 77486C433D6;
+        Tue, 23 Aug 2022 22:26:26 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1661293586;
+        bh=aWG79MFk02Dxky/hrQXH1us3auS0+9GXcsSIf2YTNLY=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=N5edXaO6NZ626HwZ0OSXLbJfoHLaBH29GodiFWqicsRi7gpCihc8jRk06wkgIMc3M
+         BeE77gNYAwzIJ5odnRwhorAX7NBNr2SFgIJgwoMNWaWcSbrb8abH/zeWFDMEGCwpwJ
+         WDmXRfzMT2DrBNNXOG6P6I26fEnBkkPQRcNgkjD5e6WCsck/CQlAE7XehmCxKOKNu3
+         nwSFLjoPuCybaBWX2vx9zv93Y1+wT3AiYItjcT5ePhdK6QmmbMM9aqORsEJSDclBUN
+         aQ2A25KFBi0BMrnrFbealdLPsET5wCR7HbF2HJTW+lWLBbETtOBK3Ej+vYxX57HOAK
+         BIz6kWnpNP0DQ==
+Date:   Tue, 23 Aug 2022 15:26:25 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Qingfang DENG <dqfext@gmail.com>
+Cc:     Russell King <linux@armlinux.org.uk>, Andrew Lunn <andrew@lunn.ch>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH net] net: phylink: allow RGMII/RTBI in-band status
+Message-ID: <20220823152625.7d0cbaae@kernel.org>
+In-Reply-To: <20220819092607.2628716-1-dqfext@gmail.com>
+References: <20220819092607.2628716-1-dqfext@gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-We want to ensure that the key used to encrypt the digest was created by
-the kernel during hibernation. To do this we request that the TPM
-include information about the value of PCR 23 at the time of key
-creation in the sealed blob. On resume, we can make sure that the PCR
-information in the creation data blob (already certified by the TPM to
-be accurate) corresponds to the expected value. Since only
-the kernel can touch PCR 23, if an attacker generates a key themselves
-the value of PCR 23 will have been different, allowing us to reject the
-key and boot normally instead of resuming.
+On Fri, 19 Aug 2022 17:26:06 +0800 Qingfang DENG wrote:
+> As per RGMII specification v2.0, section 3.4.1, RGMII/RTBI has an
+> optional in-band status feature where the PHY's link status, speed and
+> duplex mode can be passed to the MAC.
+> Allow RGMII/RTBI to use in-band status.
+> 
+> Fixes: 9525ae83959b ("phylink: add phylink infrastructure")
+> Signed-off-by: Qingfang DENG <dqfext@gmail.com>
 
-Sourced-from: Matthew Garrett <mjg59@google.com>
-Signed-off-by: Evan Green <evgreen@chromium.org>
+Russell, PHY folks, any judgment on this one?
 
----
-Matthew's original version of this patch is here:
-https://patchwork.kernel.org/project/linux-pm/patch/20210220013255.1083202-9-matthewgarrett@google.com/
+Qingfang is there a platform which require RGMII to be supported 
+in upstream LTS branches? If there isn't you should re-target 
+the patch at net-next and drop the Fixes tag. Not implementing
+the entire spec is not considered a bug. Please clarify this
+in the commit message.
 
-I moved the TPM2_CC_CERTIFYCREATION code into a separate change in the
-trusted key code because the blob_handle was being flushed and was no
-longer valid for use in CC_CERTIFYCREATION after the key was loaded. As
-an added benefit of moving the certification into the trusted keys code,
-we can drop the other patch from the original series that squirrelled
-the blob_handle away.
-
-Changes in v2:
- - Fixed some sparse warnings
- - Use CRYPTO_LIB_SHA256 to get rid of sha256_data() (Eric)
- - Adjusted offsets due to new ASN.1 format, and added a creation data
-   length check.
-
- kernel/power/snapenc.c | 67 ++++++++++++++++++++++++++++++++++++++++--
- 1 file changed, 65 insertions(+), 2 deletions(-)
-
-diff --git a/kernel/power/snapenc.c b/kernel/power/snapenc.c
-index e0b902d2dcf13a..1f08942450775a 100644
---- a/kernel/power/snapenc.c
-+++ b/kernel/power/snapenc.c
-@@ -22,6 +22,12 @@ static struct tpm_digest known_digest = { .alg_id = TPM_ALG_SHA256,
- 		   0xf1, 0x22, 0x38, 0x6c, 0x33, 0xb1, 0x14, 0xb7, 0xec, 0x05,
- 		   0x5f, 0x49}};
- 
-+/* sha256(sha256(empty_pcr | known_digest)) */
-+static const char expected_digest[] = {0x2f, 0x96, 0xf2, 0x1b, 0x70, 0xa9, 0xe8,
-+	0x42, 0x25, 0x8e, 0x66, 0x07, 0xbe, 0xbc, 0xe3, 0x1f, 0x2c, 0x84, 0x4a,
-+	0x3f, 0x85, 0x17, 0x31, 0x47, 0x9a, 0xa5, 0x53, 0xbb, 0x23, 0x0c, 0x32,
-+	0xf3};
-+
- /* Derive a key from the kernel and user keys for data encryption. */
- static int snapshot_use_user_key(struct snapshot_data *data)
- {
-@@ -486,7 +492,7 @@ static int snapshot_create_kernel_key(struct snapshot_data *data)
- 	struct key *key = NULL;
- 	int ret, i;
- 	/* Create a key sealed by the SRK. */
--	char *keyinfo = "new\t32\tkeyhandle=0x81000000";
-+	char *keyinfo = "new\t32\tkeyhandle=0x81000000\tcreationpcrs=0x00800000";
- 
- 	chip = tpm_default_chip();
- 	if (!chip)
-@@ -605,6 +611,7 @@ static int snapshot_load_kernel_key(struct snapshot_data *data,
- 	struct uswsusp_key_blob *blob)
- {
- 
-+	char certhash[SHA256_DIGEST_SIZE];
- 	const struct cred *cred = current_cred();
- 	char *keytemplate = "load\t%s\tkeyhandle=0x81000000";
- 	struct tpm_digest *digests = NULL;
-@@ -612,6 +619,7 @@ static int snapshot_load_kernel_key(struct snapshot_data *data,
- 	char *keyinfo = NULL;
- 	struct tpm_chip *chip;
- 	struct key *key = NULL;
-+	struct trusted_key_payload *payload;
- 	int i, ret;
- 
- 	chip = tpm_default_chip();
-@@ -629,8 +637,10 @@ static int snapshot_load_kernel_key(struct snapshot_data *data,
- 
- 	digests = kcalloc(chip->nr_allocated_banks, sizeof(struct tpm_digest),
- 			  GFP_KERNEL);
--	if (!digests)
-+	if (!digests) {
-+		ret = -ENOMEM;
- 		goto out;
-+	}
- 
- 	for (i = 0; i <= chip->nr_allocated_banks; i++) {
- 		digests[i].alg_id = chip->allocated_banks[i].alg_id;
-@@ -670,6 +680,59 @@ static int snapshot_load_kernel_key(struct snapshot_data *data,
- 	if (ret != 0)
- 		goto out;
- 
-+	/* Verify the creation hash matches the creation data. */
-+	payload = key->payload.data[0];
-+	if (!payload->creation || !payload->creation_hash ||
-+	    (payload->creation_len < 3) ||
-+	    (payload->creation_hash_len < SHA256_DIGEST_SIZE)) {
-+		ret = -EINVAL;
-+		goto out;
-+	}
-+
-+	sha256(payload->creation + 2, payload->creation_len - 2, certhash);
-+	if (memcmp(payload->creation_hash + 2, certhash, SHA256_DIGEST_SIZE) != 0) {
-+		ret = -EINVAL;
-+		goto out;
-+	}
-+
-+	/* We now know that the creation data is authentic - parse it */
-+
-+	/* TPML_PCR_SELECTION.count */
-+	if (be32_to_cpu(*(__be32 *)&payload->creation[2]) != 1) {
-+		ret = -EINVAL;
-+		goto out;
-+	}
-+
-+	if (be16_to_cpu(*(__be16 *)&payload->creation[6]) != TPM_ALG_SHA256) {
-+		ret = -EINVAL;
-+		goto out;
-+	}
-+
-+	if (*(char *)&payload->creation[8] != 3) {
-+		ret = -EINVAL;
-+		goto out;
-+	}
-+
-+	/* PCR 23 selected */
-+	if (be32_to_cpu(*(__be32 *)&payload->creation[8]) != 0x03000080) {
-+		ret = -EINVAL;
-+		goto out;
-+	}
-+
-+	if (be16_to_cpu(*(__be16 *)&payload->creation[12]) !=
-+	    SHA256_DIGEST_SIZE) {
-+		ret = -EINVAL;
-+		goto out;
-+	}
-+
-+	/* Verify PCR 23 contained the expected value when the key was created. */
-+	if (memcmp(&payload->creation[14], expected_digest,
-+		   SHA256_DIGEST_SIZE) != 0) {
-+
-+		ret = -EINVAL;
-+		goto out;
-+	}
-+
- 	data->key = key;
- 	key = NULL;
- 
--- 
-2.31.0
+> diff --git a/drivers/net/phy/phylink.c b/drivers/net/phy/phylink.c
+> index 9bd69328dc4d..57186d322835 100644
+> --- a/drivers/net/phy/phylink.c
+> +++ b/drivers/net/phy/phylink.c
+> @@ -632,6 +632,11 @@ static int phylink_parse_mode(struct phylink *pl, struct fwnode_handle *fwnode)
+>  		switch (pl->link_config.interface) {
+>  		case PHY_INTERFACE_MODE_SGMII:
+>  		case PHY_INTERFACE_MODE_QSGMII:
+> +		case PHY_INTERFACE_MODE_RGMII:
+> +		case PHY_INTERFACE_MODE_RGMII_ID:
+> +		case PHY_INTERFACE_MODE_RGMII_RXID:
+> +		case PHY_INTERFACE_MODE_RGMII_TXID:
+> +		case PHY_INTERFACE_MODE_RTBI:
+>  			phylink_set(pl->supported, 10baseT_Half);
+>  			phylink_set(pl->supported, 10baseT_Full);
+>  			phylink_set(pl->supported, 100baseT_Half);
 
