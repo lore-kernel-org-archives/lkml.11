@@ -2,180 +2,216 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 98C2AC32772
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 21:05:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 60F25C32772
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 21:05:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230487AbiHWVAT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 17:00:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47270 "EHLO
+        id S229955AbiHWVFc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 23 Aug 2022 17:05:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48002 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229943AbiHWVAM (ORCPT
+        with ESMTP id S231276AbiHWVAW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 17:00:12 -0400
-Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 143F4786C8
-        for <linux-kernel@vger.kernel.org>; Tue, 23 Aug 2022 14:00:10 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1661288411; x=1692824411;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=1kDaPDpjqfaqAC/Cxd3FbM87PretknuOEghd5qsQD50=;
-  b=oEiNXa0Y9hRRn/C0Z8VvB3trAkAAULQ2lk8ShxEq6Lleppth/WztfiTc
-   7awhimUMEAHV2kqWCw0zEYXJk1H/8WL0jc4NqgHM8jEPdXbRNZTBy+kdw
-   itL+LhaR0Pkx+p01EtfX2IXoPzz8HzI0AqqK6tZ511vLOk8+N+Xziipu2
-   ae6cBptVKGIi6cllNBdYAMqsdkqj0jqt0R+ZSc9oB+pNhMMS5XDIa1b7T
-   Zjum7V+ankCN7sKwJGWZyBHHxXDYMv6qqfzzzEnS/OliyCgqoL60NcCt7
-   ES/Sd3Az4imn4k1FzMWovaYGh/1OyyVdGoOiBxhN+lHP0OiuRffgnqrgU
-   A==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10448"; a="291357416"
-X-IronPort-AV: E=Sophos;i="5.93,258,1654585200"; 
-   d="scan'208";a="291357416"
-Received: from fmsmga004.fm.intel.com ([10.253.24.48])
-  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Aug 2022 14:00:09 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.93,258,1654585200"; 
-   d="scan'208";a="677769634"
-Received: from lkp-server02.sh.intel.com (HELO 9bbcefcddf9f) ([10.239.97.151])
-  by fmsmga004.fm.intel.com with ESMTP; 23 Aug 2022 14:00:04 -0700
-Received: from kbuild by 9bbcefcddf9f with local (Exim 4.96)
-        (envelope-from <lkp@intel.com>)
-        id 1oQb0F-0000Xl-1l;
-        Tue, 23 Aug 2022 21:00:03 +0000
-Date:   Wed, 24 Aug 2022 04:59:56 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Mikko Perttunen <mperttunen@nvidia.com>
-Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org,
-        Thierry Reding <treding@nvidia.com>
-Subject: drivers/gpu/host1x/context.c:65:23: error: too many arguments to
- function 'of_dma_configure_id'
-Message-ID: <202208240444.uTBVAbiI-lkp@intel.com>
+        Tue, 23 Aug 2022 17:00:22 -0400
+Received: from mail-pf1-x42d.google.com (mail-pf1-x42d.google.com [IPv6:2607:f8b0:4864:20::42d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3E4BA792F5;
+        Tue, 23 Aug 2022 14:00:21 -0700 (PDT)
+Received: by mail-pf1-x42d.google.com with SMTP id z187so14570671pfb.12;
+        Tue, 23 Aug 2022 14:00:21 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:sender:from:to:cc;
+        bh=llF/Z9RKGbAToint2Q3pYV/WcHsJ2EzQ2K+586Fwtzg=;
+        b=Z2b0XFlRKLzo0KPhUmL7G6a3nzRNVfIlMez11msmUgyTi4CY8yPLlpKq45M5aRZpmS
+         UVzAvEIOxw3EL9NJroTKO4rzuxNvreNxZ1GyAlGcDVh7+xrf+/ezeko5ghx7tucntbwF
+         hjL0ZVLwH5laEBW+YUThbBNfmJ7w+Fj6Cp94tJ/OYd4j7BJc9vmqBWANWMWGRi3ogDpK
+         OiUjWz8EwbSGUVM3fPEQ1N+9tfWbKu6ulSOiHytMc4PcW6ZlXkVkciPQj08YIPzBxdz0
+         HVAuSNN/CrlucWlB99lmu2W+S5vQs1MBny5xTSIRF9uk23HAFAxoDeie2nN04Px49y9s
+         QT4g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:sender:x-gm-message-state:from:to:cc;
+        bh=llF/Z9RKGbAToint2Q3pYV/WcHsJ2EzQ2K+586Fwtzg=;
+        b=STiiVsbQIBw0gUOlzGJVm4V0Xdlf5k32Kjp+buI0D4TzrnNCTO1gbYwxdL35PPPPbK
+         oehR0maj+T8Oyx2BTsTAVzbfd3dytCalLZcbRS2KEgj4UyM4dY8pwto/vB5AGH92feak
+         4J5Hx7Im5QHZZeVjKEaDe3APM7NsPnxISHkEun9su0QdEVsMUkfSELqMRVb9upUNrVqv
+         bYuFYFR9imqLr+cqLPGST4O6Z6oJs2oTmAeO34j2ZYgg1fUi5y0v4k2/jNbJF6qeXN20
+         T2gjcbzXEWWvq5P+cAedFn3hBPsMasWsxfCWL4nHS4eOmR1/K7mBfBKgOiHN+RQmjyEx
+         Y9DQ==
+X-Gm-Message-State: ACgBeo2n0e1FVUTXV41huWC+oRjkBrCLLE/eAesx3QBMgp6SETv+F9h7
+        re+Tt3Yr7u5ulE40ER30ox8=
+X-Google-Smtp-Source: AA6agR5znyIZN3Po17o+XN3W8ysSiZ3nrMIj9VUiPxfMtsbcTWAg1twpukar8m3YeaJVxQIGVG+p5Q==
+X-Received: by 2002:a63:8749:0:b0:41d:89d4:ce3d with SMTP id i70-20020a638749000000b0041d89d4ce3dmr20976837pge.344.1661288420750;
+        Tue, 23 Aug 2022 14:00:20 -0700 (PDT)
+Received: from server.roeck-us.net ([2600:1700:e321:62f0:329c:23ff:fee3:9d7c])
+        by smtp.gmail.com with ESMTPSA id k1-20020aa79721000000b0053675c0b773sm5826262pfg.88.2022.08.23.14.00.18
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 23 Aug 2022 14:00:19 -0700 (PDT)
+Sender: Guenter Roeck <groeck7@gmail.com>
+Date:   Tue, 23 Aug 2022 14:00:18 -0700
+From:   Guenter Roeck <linux@roeck-us.net>
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc:     linux-kernel@vger.kernel.org, stable@vger.kernel.org,
+        torvalds@linux-foundation.org, akpm@linux-foundation.org,
+        shuah@kernel.org, patches@kernelci.org,
+        lkft-triage@lists.linaro.org, pavel@denx.de, jonathanh@nvidia.com,
+        f.fainelli@gmail.com, sudipm.mukherjee@gmail.com,
+        slade@sladewatkins.com
+Subject: Re: [PATCH 4.9 000/101] 4.9.326-rc1 review
+Message-ID: <20220823210018.GA2371231@roeck-us.net>
+References: <20220823080034.579196046@linuxfoundation.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
+In-Reply-To: <20220823080034.579196046@linuxfoundation.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Mikko,
+On Tue, Aug 23, 2022 at 10:02:33AM +0200, Greg Kroah-Hartman wrote:
+> This is the start of the stable review cycle for the 4.9.326 release.
+> There are 101 patches in this series, all will be posted as a response
+> to this one.  If anyone has any issues with these being applied, please
+> let me know.
+> 
+> Responses should be made by Thu, 25 Aug 2022 08:00:15 +0000.
+> Anything received after that time might be too late.
+> 
+Build results:
+	total: 164 pass: 141 fail: 23
+Failed builds:
+	arm:allmodconfig
+	arm:imx_v6_v7_defconfig
+	arm:ixp4xx_defconfig
+	arm:u8500_defconfig
+	arm:multi_v5_defconfig
+	arm:omap1_defconfig
+	arm:footbridge_defconfig
+	arm:axm55xx_defconfig
+	arm:keystone_defconfig
+	arm:vexpress_defconfig
+	arm:at91_dt_defconfig
+	arm:shmobile_defconfig
+	arm:nhk8815_defconfig
+	arm:orion5x_defconfig
+	arm:exynos_defconfig
+	arm:cm_x2xx_defconfig
+	arm:integrator_defconfig
+	arm:pxa910_defconfig
+	ia64:defconfig
+	ia64:allnoconfig
+	ia64:tinyconfig
+	score:defconfig
+	um:defconfig
+Qemu test results:
+	total: 394 pass: 343 fail: 51
+Failed tests:
+	arm:versatilepb:versatile_defconfig:aeabi:pci:scsi:mem128:net,default:versatile-pb:rootfs
+	arm:versatilepb:versatile_defconfig:aeabi:pci:mem128:net,default:versatile-pb:initrd
+	arm:versatileab:versatile_defconfig:mem128:net,default:versatile-ab:initrd
+	arm:smdkc210:exynos_defconfig:cpuidle:nocrypto:mem128:exynos4210-smdkv310:initrd
+	arm:smdkc210:exynos_defconfig:cpuidle:nocrypto:sd2:mem128:exynos4210-smdkv310:rootfs
+	arm:realview-pb-a8:realview_defconfig:realview_pb:mem512:net,default:arm-realview-pba8:initrd
+	arm:realview-pbx-a9:realview_defconfig:realview_pb:net,default:arm-realview-pbx-a9:initrd
+	arm:realview-eb:realview_defconfig:realview_eb:mem512:net,default:arm-realview-eb:initrd
+	arm:realview-eb-mpcore:realview_defconfig:realview_eb:mem512:net,default:arm-realview-eb-11mp-ctrevb:initrd
+	arm:akita:pxa_defconfig:nodebug:nocd:nofs:nonvme:noscsi:notests:novirt:nofdt:initrd
+	arm:borzoi:pxa_defconfig:nodebug:nocd:nofs:nonvme:noscsi:notests:novirt:nofdt:net,usb:initrd
+	arm:borzoi:pxa_defconfig:nodebug:nocd:nofs:nonvme:noscsi:notests:novirt:nofdt:mmc:net,usb:rootfs
+	arm:borzoi:pxa_defconfig:nodebug:nocd:nofs:nonvme:noscsi:notests:novirt:nofdt:ata:net,usb:rootfs
+	arm:borzoi:pxa_defconfig:nodebug:nocd:nofs:nonvme:noscsi:notests:novirt:nofdt:usb:net,usb:rootfs
+	arm:spitz:pxa_defconfig:nodebug:nocd:nofs:nonvme:noscsi:notests:novirt:nofdt:net,usb:initrd
+	arm:spitz:pxa_defconfig:nodebug:nocd:nofs:nonvme:noscsi:notests:novirt:nofdt:mmc:net,usb:rootfs
+	arm:spitz:pxa_defconfig:nodebug:nocd:nofs:nonvme:noscsi:notests:novirt:nofdt:ata:net,usb:rootfs
+	arm:spitz:pxa_defconfig:nodebug:nocd:nofs:nonvme:noscsi:notests:novirt:nofdt:usb:net,usb:rootfs
+	arm:terrier:pxa_defconfig:nodebug:nocd:nofs:nonvme:noscsi:notests:novirt:nofdt:net,usb:initrd
+	arm:terrier:pxa_defconfig:nodebug:nocd:nofs:nonvme:noscsi:notests:novirt:nofdt:mmc:net,usb:rootfs
+	arm:terrier:pxa_defconfig:nodebug:nocd:nofs:nonvme:noscsi:notests:novirt:nofdt:ata:net,usb:rootfs
+	arm:terrier:pxa_defconfig:nodebug:nocd:nofs:nonvme:noscsi:notests:novirt:nofdt:usb:net,usb:rootfs
+	arm:integratorcp:integrator_defconfig:mem128:net,default:integratorcp:initrd
+	arm:integratorcp:integrator_defconfig:mem128:sd:net,default:integratorcp:rootfs
+	mips:malta_defconfig:nocd:smp:net,e1000:initrd
+	mips:malta_defconfig:nocd:smp:net,pcnet:flash,4,1,1:rootfs
+	mips:malta_defconfig:nocd:smp:net,pcnet:ide:rootfs
+	mips:malta_defconfig:nocd:smp:net,e1000:usb-xhci:rootfs
+	mips:malta_defconfig:nocd:smp:net,e1000-82545em:usb-uas-xhci:rootfs
+	mips:malta_defconfig:nocd:smp:net,i82801:usb-ehci:rootfs
+	mips:malta_defconfig:nocd:smp:net,ne2k_pci:sdhci:mmc:rootfs
+	mips:malta_defconfig:nocd:smp:net,pcnet:scsi[53C810]:rootfs
+	mips:malta_defconfig:nocd:smp:net,rtl8139:scsi[53C895A]:rootfs
+	mips:malta_defconfig:nocd:smp:net,tulip:scsi[DC395]:rootfs
+	mips:malta_defconfig:nocd:smp:net,virtio-net:scsi[AM53C974]:rootfs
+	mips:malta_defconfig:nocd:smp:net,i82550:scsi[MEGASAS]:rootfs
+	mips:malta_defconfig:nocd:smp:net,i82558a:scsi[MEGASAS2]:rootfs
+	mips:malta_defconfig:nocd:smp:net,i82562:scsi[FUSION]:rootfs
+	mips:malta_defconfig:nocd:nosmp:net,e1000:initrd
+	mips:malta_defconfig:nocd:nosmp:ide:net,pcnet:rootfs
+	mipsel:mips32r6-generic:malta_32r6_defconfig:nocd:smp:net,pcnet:ide:rootfs
+	sheb:rts7751r2dplus_defconfig:initrd
+	sheb:rts7751r2dplus_defconfig:ata:rootfs
+	xtensa:dc232b:lx60:generic_kc705_defconfig
+	xtensa:dc232b:lx200:generic_kc705_defconfig
+	xtensa:dc232b:kc705:generic_kc705_defconfig
+	xtensa:dc232b:kc705:generic_kc705_defconfig
+	xtensa:dc233c:ml605:generic_kc705_defconfig
+	xtensa:dc233c:kc705:generic_kc705_defconfig
+	xtensa:dc233c:kc705:generic_kc705_defconfig
+	xtensa:de212:kc705-nommu:nommu_kc705_defconfig
 
-FYI, the error/warning still remains.
+Some change must have caused problems with the old binutils / linker
+version used when building v4.9.y kernels in my test bed.
 
-tree:   https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git master
-head:   072e51356cd5a4a1c12c1020bc054c99b98333df
-commit: 8aa5bcb61612060429223d1fbb7a1c30a579fc1f gpu: host1x: Add context device management code
-date:   7 weeks ago
-config: arm-randconfig-r012-20220823 (https://download.01.org/0day-ci/archive/20220824/202208240444.uTBVAbiI-lkp@intel.com/config)
-compiler: arm-linux-gnueabi-gcc (GCC) 12.1.0
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=8aa5bcb61612060429223d1fbb7a1c30a579fc1f
-        git remote add linus https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git
-        git fetch --no-tags linus master
-        git checkout 8aa5bcb61612060429223d1fbb7a1c30a579fc1f
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-12.1.0 make.cross W=1 O=build_dir ARCH=arm SHELL=/bin/bash drivers/gpu/host1x/
+Guenter
 
-If you fix the issue, kindly add following tag where applicable
-Reported-by: kernel test robot <lkp@intel.com>
+---
 
-All errors (new ones prefixed by >>):
+Build errors:
 
-   drivers/gpu/host1x/context.c: In function 'host1x_memory_context_list_init':
->> drivers/gpu/host1x/context.c:65:23: error: too many arguments to function 'of_dma_configure_id'
-      65 |                 err = of_dma_configure_id(&ctx->dev, node, true, &i);
-         |                       ^~~~~~~~~~~~~~~~~~~
-   In file included from include/linux/of_platform.h:12,
-                    from drivers/gpu/host1x/context.c:9:
-   include/linux/of_device.h:103:19: note: declared here
-     103 | static inline int of_dma_configure_id(struct device *dev,
-         |                   ^~~~~~~~~~~~~~~~~~~
+arm:
 
+arm-linux-gnueabi-ld: error: source object drivers/net/ethernet/cirrus/built-in.o has EABI version 5, but target drivers/net/ethernet/built-in.o has EABI version 0
+arm-linux-gnueabi-ld: failed to merge target specific data of file drivers/net/ethernet/cirrus/built-in.o
+arm-linux-gnueabi-ld: error: source object drivers/net/ethernet/freescale/built-in.o has EABI version 5, but target drivers/net/ethernet/built-in.o has EABI version 0
+arm-linux-gnueabi-ld: failed to merge target specific data of file drivers/net/ethernet/freescale/built-in.o
+arm-linux-gnueabi-ld: error: source object drivers/net/ethernet/smsc/built-in.o has EABI version 5, but target drivers/net/ethernet/built-in.o has EABI version 0
+arm-linux-gnueabi-ld: failed to merge target specific data of file drivers/net/ethernet/smsc/built-in.o
+make[4]: *** [scripts/Makefile.build:460: drivers/net/ethernet/built-in.o] Error 1
+make[3]: *** [scripts/Makefile.build:558: drivers/net/ethernet] Error 2
 
-vim +/of_dma_configure_id +65 drivers/gpu/host1x/context.c
+This affects a variety of files depending on the configuration.
 
-    15	
-    16	int host1x_memory_context_list_init(struct host1x *host1x)
-    17	{
-    18		struct host1x_memory_context_list *cdl = &host1x->context_list;
-    19		struct device_node *node = host1x->dev->of_node;
-    20		struct host1x_memory_context *ctx;
-    21		unsigned int i;
-    22		int err;
-    23	
-    24		cdl->devs = NULL;
-    25		cdl->len = 0;
-    26		mutex_init(&cdl->lock);
-    27	
-    28		err = of_property_count_u32_elems(node, "iommu-map");
-    29		if (err < 0)
-    30			return 0;
-    31	
-    32		cdl->devs = kcalloc(err, sizeof(*cdl->devs), GFP_KERNEL);
-    33		if (!cdl->devs)
-    34			return -ENOMEM;
-    35		cdl->len = err / 4;
-    36	
-    37		for (i = 0; i < cdl->len; i++) {
-    38			struct iommu_fwspec *fwspec;
-    39	
-    40			ctx = &cdl->devs[i];
-    41	
-    42			ctx->host = host1x;
-    43	
-    44			device_initialize(&ctx->dev);
-    45	
-    46			/*
-    47			 * Due to an issue with T194 NVENC, only 38 bits can be used.
-    48			 * Anyway, 256GiB of IOVA ought to be enough for anyone.
-    49			 */
-    50			ctx->dma_mask = DMA_BIT_MASK(38);
-    51			ctx->dev.dma_mask = &ctx->dma_mask;
-    52			ctx->dev.coherent_dma_mask = ctx->dma_mask;
-    53			dev_set_name(&ctx->dev, "host1x-ctx.%d", i);
-    54			ctx->dev.bus = &host1x_context_device_bus_type;
-    55			ctx->dev.parent = host1x->dev;
-    56	
-    57			dma_set_max_seg_size(&ctx->dev, UINT_MAX);
-    58	
-    59			err = device_add(&ctx->dev);
-    60			if (err) {
-    61				dev_err(host1x->dev, "could not add context device %d: %d\n", i, err);
-    62				goto del_devices;
-    63			}
-    64	
-  > 65			err = of_dma_configure_id(&ctx->dev, node, true, &i);
-    66			if (err) {
-    67				dev_err(host1x->dev, "IOMMU configuration failed for context device %d: %d\n",
-    68					i, err);
-    69				device_del(&ctx->dev);
-    70				goto del_devices;
-    71			}
-    72	
-    73			fwspec = dev_iommu_fwspec_get(&ctx->dev);
-    74			if (!fwspec || !device_iommu_mapped(&ctx->dev)) {
-    75				dev_err(host1x->dev, "Context device %d has no IOMMU!\n", i);
-    76				device_del(&ctx->dev);
-    77				goto del_devices;
-    78			}
-    79	
-    80			ctx->stream_id = fwspec->ids[0] & 0xffff;
-    81		}
-    82	
-    83		return 0;
-    84	
-    85	del_devices:
-    86		while (i--)
-    87			device_del(&cdl->devs[i].dev);
-    88	
-    89		kfree(cdl->devs);
-    90		cdl->len = 0;
-    91	
-    92		return err;
-    93	}
-    94	
+ia64:
 
--- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+ia64-linux-ld: drivers/video/fbdev/omap2/built-in.o: linking constant-gp files with non-constant-gp files
+ia64-linux-ld: failed to merge target specific data of file drivers/video/fbdev/omap2/built-in.o
+
+ia64-linux-ld: drivers/gpu/vga/built-in.o: linking constant-gp files with non-constant-gp files
+ia64-linux-ld: failed to merge target specific data of file drivers/gpu/vga/built-in.o
+
+score:
+
+Persistent compiler (or linker) error, resulting in core dump (gcc 4.9.1)
+
+um:
+
+Linker error, resulting in core dumps (gcc 6.3.0)
+
+mips (qemu tests):
+
+Yet another linker crash.
+
+mips32r6-generic:
+
+Error log:
+mips-linux-ld: drivers/gpu/vga/built-in.o: linking mips:isa32r6 module with previous mips:3000 modules
+mips-linux-ld: drivers/gpu/vga/built-in.o: linking -mnan=2008 module with previous -mnan=legacy modules
+mips-linux-ld: failed to merge target specific data of file drivers/gpu/vga/built-in.o
+
+sheb:
+
+Another linker crash.
+
+xtensa:
+
+Again, linker crash
