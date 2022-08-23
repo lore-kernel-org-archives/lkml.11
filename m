@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 24330C32796
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 10:37:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BEB1EC32774
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 10:37:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355438AbiHWKgL (ORCPT
+        id S1355358AbiHWKft (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 06:36:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32816 "EHLO
+        Tue, 23 Aug 2022 06:35:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42616 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354333AbiHWKVP (ORCPT
+        with ESMTP id S1354309AbiHWKVN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 06:21:15 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9EF7A23A;
-        Tue, 23 Aug 2022 02:02:34 -0700 (PDT)
+        Tue, 23 Aug 2022 06:21:13 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9DB1981B00;
+        Tue, 23 Aug 2022 02:02:26 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 29B70B8105C;
-        Tue, 23 Aug 2022 09:02:33 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 75E9AC433D6;
-        Tue, 23 Aug 2022 09:02:31 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 353856156F;
+        Tue, 23 Aug 2022 09:02:26 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 209EEC433D6;
+        Tue, 23 Aug 2022 09:02:24 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661245352;
-        bh=FPDq19YmQbyACbhIMdsFfnd/zvD9KE4s0mLFIVXUVOE=;
+        s=korg; t=1661245345;
+        bh=RSDlD8Uga25bmtLYdSTBMn3lox5GFYwmoLKXqo5AMGo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=WiR88ePKSsfQW/ChXr7fI8P2fRAwwbDX3GzpLfa3liX3ISQ/1B4vcwKbOOBRPyOVo
-         zy6oaLEwoM9cmitHTm/55Rc8+sPuG4vOKxzQKbqfruBUfzQGc97fyzvaX/ZuFWdmeT
-         Qv24nk0QkH7IIksg8yMpG75iwwaHe8pjV4rjUdvw=
+        b=NSiFywW/FqypQkPIHnaKBhDxVWQ1KScgiPAoUGsYebFKDGQ0I1dzhu7M6Du8nXcFX
+         ldQojywgWN38Rz5khjxlc01M5JSaTYojASyGNGBN/YOW7eH2NZql4vQVcEsgHwYyPg
+         QSg4gHFZix9HhJrb/VFUySEbbXE9d0cl/P3tKcYc=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Xiu Jianfeng <xiujianfeng@huawei.com>,
-        Paul Moore <paul@paul-moore.com>,
+        stable@vger.kernel.org, Robert Marko <robimarko@gmail.com>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.19 052/287] selinux: Add boundary check in put_entry()
-Date:   Tue, 23 Aug 2022 10:23:41 +0200
-Message-Id: <20220823080101.995458514@linuxfoundation.org>
+Subject: [PATCH 4.19 050/287] arm64: dts: qcom: ipq8074: fix NAND node name
+Date:   Tue, 23 Aug 2022 10:23:39 +0200
+Message-Id: <20220823080101.928953404@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220823080100.268827165@linuxfoundation.org>
 References: <20220823080100.268827165@linuxfoundation.org>
@@ -50,33 +51,35 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Xiu Jianfeng <xiujianfeng@huawei.com>
+From: Robert Marko <robimarko@gmail.com>
 
-[ Upstream commit 15ec76fb29be31df2bccb30fc09875274cba2776 ]
+[ Upstream commit b39961659ffc3c3a9e3d0d43b0476547b5f35d49 ]
 
-Just like next_entry(), boundary check is necessary to prevent memory
-out-of-bound access.
+Per schema it should be nand-controller@79b0000 instead of nand@79b0000.
+Fix it to match nand-controller.yaml requirements.
 
-Signed-off-by: Xiu Jianfeng <xiujianfeng@huawei.com>
-Signed-off-by: Paul Moore <paul@paul-moore.com>
+Signed-off-by: Robert Marko <robimarko@gmail.com>
+Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Signed-off-by: Bjorn Andersson <bjorn.andersson@linaro.org>
+Link: https://lore.kernel.org/r/20220621120642.518575-1-robimarko@gmail.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- security/selinux/ss/policydb.h | 2 ++
- 1 file changed, 2 insertions(+)
+ arch/arm64/boot/dts/qcom/ipq8074.dtsi | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/security/selinux/ss/policydb.h b/security/selinux/ss/policydb.h
-index 215f8f30ac5a..2a479785ebd4 100644
---- a/security/selinux/ss/policydb.h
-+++ b/security/selinux/ss/policydb.h
-@@ -360,6 +360,8 @@ static inline int put_entry(const void *buf, size_t bytes, int num, struct polic
- {
- 	size_t len = bytes * num;
+diff --git a/arch/arm64/boot/dts/qcom/ipq8074.dtsi b/arch/arm64/boot/dts/qcom/ipq8074.dtsi
+index f48d14cd10a3..bdee07305ce5 100644
+--- a/arch/arm64/boot/dts/qcom/ipq8074.dtsi
++++ b/arch/arm64/boot/dts/qcom/ipq8074.dtsi
+@@ -261,7 +261,7 @@ qpic_bam: dma@7984000 {
+ 			status = "disabled";
+ 		};
  
-+	if (len > fp->len)
-+		return -EINVAL;
- 	memcpy(fp->data, buf, len);
- 	fp->data += len;
- 	fp->len -= len;
+-		qpic_nand: nand@79b0000 {
++		qpic_nand: nand-controller@79b0000 {
+ 			compatible = "qcom,ipq8074-nand";
+ 			reg = <0x79b0000 0x10000>;
+ 			#address-cells = <1>;
 -- 
 2.35.1
 
