@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 64C20C32792
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 12:19:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1C4D4C38147
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 12:19:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353791AbiHWMSL (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 08:18:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55402 "EHLO
+        id S244537AbiHWMSR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 23 Aug 2022 08:18:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55440 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353640AbiHWMP3 (ORCPT
+        with ESMTP id S1354348AbiHWMP3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 23 Aug 2022 08:15:29 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E01EB98CAD;
-        Tue, 23 Aug 2022 02:40:57 -0700 (PDT)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 379C7E9939;
+        Tue, 23 Aug 2022 02:40:58 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id BE614614CB;
-        Tue, 23 Aug 2022 09:40:13 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BD659C433D6;
-        Tue, 23 Aug 2022 09:40:12 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id C64B2614D1;
+        Tue, 23 Aug 2022 09:39:45 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C8F19C433D6;
+        Tue, 23 Aug 2022 09:39:44 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661247613;
-        bh=wfxCBtMasHoEFMn9oqLYg4hdLmiDL38+6fTcxBgzW1k=;
+        s=korg; t=1661247585;
+        bh=G4vUUcbTC3wk22PLjx9tPddjoJp2bdeLQwk8tm6Cz14=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Yw4Ky4wH6XmqPHNpC/+xyaQztEhUtxhwDeoanAgVPDwP97qoDJya1SaD3BVXP7WcA
-         lwSLofxTIlBIruMb2WlfWeXQdzOxXsDhFS9vHX475V/ipHp1SuStp+qvx21xzaaIPA
-         zJB2VftPKArfsVYXNHFeso9aDcMhc2Q/nhyuBGIM=
+        b=RqI7uecwimR1wRrSo7WgoSHjzMvzuM5XarbYHTtxH6SeOWiR7ddxXft8H3pVTUzRt
+         LdIU9/FJCNYtwW5FTRdIzEHeOz2pPBwLuSbIYe2P38DKuR4Tu3MmOOU70blvY7HIhp
+         CkxTbw5GSjs9v199vv+E+cN2DCy7OmhMtJCOIR7E=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
-        =?UTF-8?q?Cs=C3=B3k=C3=A1s=20Bence?= <csokas.bence@prolan.hu>,
+        Arun Ramadoss <arun.ramadoss@microchip.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
         Jakub Kicinski <kuba@kernel.org>
-Subject: [PATCH 5.10 090/158] fec: Fix timer capture timing in `fec_ptp_enable_pps()`
-Date:   Tue, 23 Aug 2022 10:27:02 +0200
-Message-Id: <20220823080049.680479943@linuxfoundation.org>
+Subject: [PATCH 5.10 082/158] net: dsa: microchip: ksz9477: fix fdb_dump last invalid entry
+Date:   Tue, 23 Aug 2022 10:26:54 +0200
+Message-Id: <20220823080049.363280513@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220823080046.056825146@linuxfoundation.org>
 References: <20220823080046.056825146@linuxfoundation.org>
@@ -50,36 +50,41 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Csókás Bence <csokas.bence@prolan.hu>
+From: Arun Ramadoss <arun.ramadoss@microchip.com>
 
-commit 61d5e2a251fb20c2c5e998c3f1d52ed6d5360319 upstream.
+commit 36c0d935015766bf20d621c18313f17691bda5e3 upstream.
 
-Code reimplements functionality already in `fec_ptp_read()`,
-but misses check for FEC_QUIRK_BUG_CAPTURE. Replace with function call.
+In the ksz9477_fdb_dump function it reads the ALU control register and
+exit from the timeout loop if there is valid entry or search is
+complete. After exiting the loop, it reads the alu entry and report to
+the user space irrespective of entry is valid. It works till the valid
+entry. If the loop exited when search is complete, it reads the alu
+table. The table returns all ones and it is reported to user space. So
+bridge fdb show gives ff:ff:ff:ff:ff:ff as last entry for every port.
+To fix it, after exiting the loop the entry is reported only if it is
+valid one.
 
-Fixes: 28b5f058cf1d ("net: fec: ptp: fix convergence issue to support LinuxPTP stack")
-Signed-off-by: Csókás Bence <csokas.bence@prolan.hu>
-Link: https://lore.kernel.org/r/20220811101348.13755-1-csokas.bence@prolan.hu
+Fixes: b987e98e50ab ("dsa: add DSA switch driver for Microchip KSZ9477")
+Signed-off-by: Arun Ramadoss <arun.ramadoss@microchip.com>
+Reviewed-by: Vladimir Oltean <olteanv@gmail.com>
+Link: https://lore.kernel.org/r/20220816105516.18350-1-arun.ramadoss@microchip.com
 Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/net/ethernet/freescale/fec_ptp.c |    6 +-----
- 1 file changed, 1 insertion(+), 5 deletions(-)
+ drivers/net/dsa/microchip/ksz9477.c |    3 +++
+ 1 file changed, 3 insertions(+)
 
---- a/drivers/net/ethernet/freescale/fec_ptp.c
-+++ b/drivers/net/ethernet/freescale/fec_ptp.c
-@@ -136,11 +136,7 @@ static int fec_ptp_enable_pps(struct fec
- 		 * NSEC_PER_SEC - ts.tv_nsec. Add the remaining nanoseconds
- 		 * to current timer would be next second.
- 		 */
--		tempval = readl(fep->hwp + FEC_ATIME_CTRL);
--		tempval |= FEC_T_CTRL_CAPTURE;
--		writel(tempval, fep->hwp + FEC_ATIME_CTRL);
--
--		tempval = readl(fep->hwp + FEC_ATIME);
-+		tempval = fep->cc.read(&fep->cc);
- 		/* Convert the ptp local counter to 1588 timestamp */
- 		ns = timecounter_cyc2time(&fep->tc, tempval);
- 		ts = ns_to_timespec64(ns);
+--- a/drivers/net/dsa/microchip/ksz9477.c
++++ b/drivers/net/dsa/microchip/ksz9477.c
+@@ -762,6 +762,9 @@ static int ksz9477_port_fdb_dump(struct
+ 			goto exit;
+ 		}
+ 
++		if (!(ksz_data & ALU_VALID))
++			continue;
++
+ 		/* read ALU table */
+ 		ksz9477_read_table(dev, alu_table);
+ 
 
 
