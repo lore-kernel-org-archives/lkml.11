@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2B967C32772
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 12:14:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 51040C32772
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 12:14:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349507AbiHWMOJ (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 08:14:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43970 "EHLO
+        id S242490AbiHWMON (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 23 Aug 2022 08:14:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40442 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352593AbiHWMMr (ORCPT
+        with ESMTP id S240963AbiHWMMu (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 08:12:47 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1A05BE68D3;
-        Tue, 23 Aug 2022 02:39:43 -0700 (PDT)
+        Tue, 23 Aug 2022 08:12:50 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9147F7170A;
+        Tue, 23 Aug 2022 02:39:47 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 59815B81CA3;
-        Tue, 23 Aug 2022 09:38:15 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A30C8C433D6;
-        Tue, 23 Aug 2022 09:38:13 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 9208161467;
+        Tue, 23 Aug 2022 09:38:38 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8B9D0C433D6;
+        Tue, 23 Aug 2022 09:38:37 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661247494;
-        bh=ziSxNLpuaSoFZ6LbYF99pbWxsXgOQs6DSpVe+EoqhEw=;
+        s=korg; t=1661247518;
+        bh=T4UVlykg/Vhq8l4HUOnnq5HvNS5LO+d2RyBZBPX+Mm0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=JwUDEAF7XdTtT5IpOE6guV0nVhnvirdGJ+B5m+ZwF/BS1YfQq7vS6apg3tIEPhC0T
-         6i2OeA5gVwL/qwa6qrtUynqsStUWeKBfi1cPhvS206/qkCtrxBpuwaVbWu/q8liNNB
-         7pYgJm3w/o0WciDiV7kInvda/UTrQ5bJHphXI1Lc=
+        b=vsjP8uPBY9WGXDHJ2tESNraWQkCma6VNGEcHhtup/6bctsHiRHJrfbdBbAE0hYKes
+         m7HTZdzHGAbrEJVsi1fbW67TJ6r/7MP0sSPa6x344jBe8UZpMiy4IAnO+uTpJNc+no
+         z8osbdfl+IDJR2HcAK6APCDp8RBb6ybpQPQzxLk0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Ido Schimmel <idosch@nvidia.com>,
-        Jiri Pirko <jiri@nvidia.com>,
-        "David S. Miller" <davem@davemloft.net>
-Subject: [PATCH 5.10 037/158] devlink: Fix use-after-free after a failed reload
-Date:   Tue, 23 Aug 2022 10:26:09 +0200
-Message-Id: <20220823080047.565226653@linuxfoundation.org>
+        stable@vger.kernel.org, Matthias May <matthias.may@westermo.com>,
+        Guillaume Nault <gnault@redhat.com>,
+        Jakub Kicinski <kuba@kernel.org>
+Subject: [PATCH 5.10 061/158] geneve: fix TOS inheriting for ipv4
+Date:   Tue, 23 Aug 2022 10:26:33 +0200
+Message-Id: <20220823080048.541363442@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220823080046.056825146@linuxfoundation.org>
 References: <20220823080046.056825146@linuxfoundation.org>
@@ -50,105 +49,85 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Ido Schimmel <idosch@nvidia.com>
+From: Matthias May <matthias.may@westermo.com>
 
-commit 6b4db2e528f650c7fb712961aac36455468d5902 upstream.
+commit b4ab94d6adaa5cf842b68bd28f4b50bc774496bd upstream.
 
-After a failed devlink reload, devlink parameters are still registered,
-which means user space can set and get their values. In the case of the
-mlxsw "acl_region_rehash_interval" parameter, these operations will
-trigger a use-after-free [1].
+The current code retrieves the TOS field after the lookup
+on the ipv4 routing table. The routing process currently
+only allows routing based on the original 3 TOS bits, and
+not on the full 6 DSCP bits.
+As a result the retrieved TOS is cut to the 3 bits.
+However for inheriting purposes the full 6 bits should be used.
 
-Fix this by rejecting set and get operations while in the failed state.
-Return the "-EOPNOTSUPP" error code which does not abort the parameters
-dump, but instead causes it to skip over the problematic parameter.
+Extract the full 6 bits before the route lookup and use
+that instead of the cut off 3 TOS bits.
 
-Another possible fix is to perform these checks in the mlxsw parameter
-callbacks, but other drivers might be affected by the same problem and I
-am not aware of scenarios where these stricter checks will cause a
-regression.
-
-[1]
-mlxsw_spectrum3 0000:00:10.0: Port 125: Failed to register netdev
-mlxsw_spectrum3 0000:00:10.0: Failed to create ports
-
-==================================================================
-BUG: KASAN: use-after-free in mlxsw_sp_acl_tcam_vregion_rehash_intrvl_get+0xbd/0xd0 drivers/net/ethernet/mellanox/mlxsw/spectrum_acl_tcam.c:904
-Read of size 4 at addr ffff8880099dcfd8 by task kworker/u4:4/777
-
-CPU: 1 PID: 777 Comm: kworker/u4:4 Not tainted 5.19.0-rc7-custom-126601-gfe26f28c586d #1
-Hardware name: QEMU MSN4700, BIOS rel-1.13.0-0-gf21b5a4aeb02-prebuilt.qemu.org 04/01/2014
-Workqueue: netns cleanup_net
-Call Trace:
- <TASK>
- __dump_stack lib/dump_stack.c:88 [inline]
- dump_stack_lvl+0x92/0xbd lib/dump_stack.c:106
- print_address_description mm/kasan/report.c:313 [inline]
- print_report.cold+0x5e/0x5cf mm/kasan/report.c:429
- kasan_report+0xb9/0xf0 mm/kasan/report.c:491
- __asan_report_load4_noabort+0x14/0x20 mm/kasan/report_generic.c:306
- mlxsw_sp_acl_tcam_vregion_rehash_intrvl_get+0xbd/0xd0 drivers/net/ethernet/mellanox/mlxsw/spectrum_acl_tcam.c:904
- mlxsw_sp_acl_region_rehash_intrvl_get+0x49/0x60 drivers/net/ethernet/mellanox/mlxsw/spectrum_acl.c:1106
- mlxsw_sp_params_acl_region_rehash_intrvl_get+0x33/0x80 drivers/net/ethernet/mellanox/mlxsw/spectrum.c:3854
- devlink_param_get net/core/devlink.c:4981 [inline]
- devlink_nl_param_fill+0x238/0x12d0 net/core/devlink.c:5089
- devlink_param_notify+0xe5/0x230 net/core/devlink.c:5168
- devlink_ns_change_notify net/core/devlink.c:4417 [inline]
- devlink_ns_change_notify net/core/devlink.c:4396 [inline]
- devlink_reload+0x15f/0x700 net/core/devlink.c:4507
- devlink_pernet_pre_exit+0x112/0x1d0 net/core/devlink.c:12272
- ops_pre_exit_list net/core/net_namespace.c:152 [inline]
- cleanup_net+0x494/0xc00 net/core/net_namespace.c:582
- process_one_work+0x9fc/0x1710 kernel/workqueue.c:2289
- worker_thread+0x675/0x10b0 kernel/workqueue.c:2436
- kthread+0x30c/0x3d0 kernel/kthread.c:376
- ret_from_fork+0x1f/0x30 arch/x86/entry/entry_64.S:306
- </TASK>
-
-The buggy address belongs to the physical page:
-page:ffffea0000267700 refcount:0 mapcount:0 mapping:0000000000000000 index:0x0 pfn:0x99dc
-flags: 0x100000000000000(node=0|zone=1)
-raw: 0100000000000000 0000000000000000 dead000000000122 0000000000000000
-raw: 0000000000000000 0000000000000000 00000000ffffffff 0000000000000000
-page dumped because: kasan: bad access detected
-
-Memory state around the buggy address:
- ffff8880099dce80: ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff
- ffff8880099dcf00: ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff
->ffff8880099dcf80: ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff
-                                                    ^
- ffff8880099dd000: ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff
- ffff8880099dd080: ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff
-==================================================================
-
-Fixes: 98bbf70c1c41 ("mlxsw: spectrum: add "acl_region_rehash_interval" devlink param")
-Signed-off-by: Ido Schimmel <idosch@nvidia.com>
-Reviewed-by: Jiri Pirko <jiri@nvidia.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+Fixes: e305ac6cf5a1 ("geneve: Add support to collect tunnel metadata.")
+Signed-off-by: Matthias May <matthias.may@westermo.com>
+Acked-by: Guillaume Nault <gnault@redhat.com>
+Link: https://lore.kernel.org/r/20220805190006.8078-1-matthias.may@westermo.com
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- net/core/devlink.c |    4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ drivers/net/geneve.c |   12 ++++++++----
+ 1 file changed, 8 insertions(+), 4 deletions(-)
 
---- a/net/core/devlink.c
-+++ b/net/core/devlink.c
-@@ -3620,7 +3620,7 @@ static int devlink_param_get(struct devl
- 			     const struct devlink_param *param,
- 			     struct devlink_param_gset_ctx *ctx)
+--- a/drivers/net/geneve.c
++++ b/drivers/net/geneve.c
+@@ -772,7 +772,8 @@ static struct rtable *geneve_get_v4_rt(s
+ 				       struct geneve_sock *gs4,
+ 				       struct flowi4 *fl4,
+ 				       const struct ip_tunnel_info *info,
+-				       __be16 dport, __be16 sport)
++				       __be16 dport, __be16 sport,
++				       __u8 *full_tos)
  {
--	if (!param->get)
-+	if (!param->get || devlink->reload_failed)
- 		return -EOPNOTSUPP;
- 	return param->get(devlink, param->id, ctx);
- }
-@@ -3629,7 +3629,7 @@ static int devlink_param_set(struct devl
- 			     const struct devlink_param *param,
- 			     struct devlink_param_gset_ctx *ctx)
- {
--	if (!param->set)
-+	if (!param->set || devlink->reload_failed)
- 		return -EOPNOTSUPP;
- 	return param->set(devlink, param->id, ctx);
- }
+ 	bool use_cache = ip_tunnel_dst_cache_usable(skb, info);
+ 	struct geneve_dev *geneve = netdev_priv(dev);
+@@ -797,6 +798,8 @@ static struct rtable *geneve_get_v4_rt(s
+ 		use_cache = false;
+ 	}
+ 	fl4->flowi4_tos = RT_TOS(tos);
++	if (full_tos)
++		*full_tos = tos;
+ 
+ 	dst_cache = (struct dst_cache *)&info->dst_cache;
+ 	if (use_cache) {
+@@ -884,6 +887,7 @@ static int geneve_xmit_skb(struct sk_buf
+ 	const struct ip_tunnel_key *key = &info->key;
+ 	struct rtable *rt;
+ 	struct flowi4 fl4;
++	__u8 full_tos;
+ 	__u8 tos, ttl;
+ 	__be16 df = 0;
+ 	__be16 sport;
+@@ -894,7 +898,7 @@ static int geneve_xmit_skb(struct sk_buf
+ 
+ 	sport = udp_flow_src_port(geneve->net, skb, 1, USHRT_MAX, true);
+ 	rt = geneve_get_v4_rt(skb, dev, gs4, &fl4, info,
+-			      geneve->cfg.info.key.tp_dst, sport);
++			      geneve->cfg.info.key.tp_dst, sport, &full_tos);
+ 	if (IS_ERR(rt))
+ 		return PTR_ERR(rt);
+ 
+@@ -938,7 +942,7 @@ static int geneve_xmit_skb(struct sk_buf
+ 
+ 		df = key->tun_flags & TUNNEL_DONT_FRAGMENT ? htons(IP_DF) : 0;
+ 	} else {
+-		tos = ip_tunnel_ecn_encap(fl4.flowi4_tos, ip_hdr(skb), skb);
++		tos = ip_tunnel_ecn_encap(full_tos, ip_hdr(skb), skb);
+ 		if (geneve->cfg.ttl_inherit)
+ 			ttl = ip_tunnel_get_ttl(ip_hdr(skb), skb);
+ 		else
+@@ -1120,7 +1124,7 @@ static int geneve_fill_metadata_dst(stru
+ 					  1, USHRT_MAX, true);
+ 
+ 		rt = geneve_get_v4_rt(skb, dev, gs4, &fl4, info,
+-				      geneve->cfg.info.key.tp_dst, sport);
++				      geneve->cfg.info.key.tp_dst, sport, NULL);
+ 		if (IS_ERR(rt))
+ 			return PTR_ERR(rt);
+ 
 
 
