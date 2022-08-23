@@ -2,31 +2,31 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A9558C3F6B0
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 08:03:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 406F8C32774
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 08:03:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241625AbiHWID1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 04:03:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48206 "EHLO
+        id S240027AbiHWIDe (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 23 Aug 2022 04:03:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48208 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241500AbiHWICx (ORCPT
+        with ESMTP id S241509AbiHWICy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 04:02:53 -0400
+        Tue, 23 Aug 2022 04:02:54 -0400
 Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 70B07659E2
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C0195659E8
         for <linux-kernel@vger.kernel.org>; Tue, 23 Aug 2022 01:02:52 -0700 (PDT)
 Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
         by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
         (Exim 4.92)
         (envelope-from <ore@pengutronix.de>)
-        id 1oQOrt-0002vt-Or; Tue, 23 Aug 2022 10:02:37 +0200
+        id 1oQOrt-0002w5-OU; Tue, 23 Aug 2022 10:02:37 +0200
 Received: from [2a0a:edc0:0:1101:1d::ac] (helo=dude04.red.stw.pengutronix.de)
         by drehscheibe.grey.stw.pengutronix.de with esmtp (Exim 4.94.2)
         (envelope-from <ore@pengutronix.de>)
-        id 1oQOrs-001SvO-0c; Tue, 23 Aug 2022 10:02:36 +0200
+        id 1oQOrs-001Svk-Gk; Tue, 23 Aug 2022 10:02:36 +0200
 Received: from ore by dude04.red.stw.pengutronix.de with local (Exim 4.94.2)
         (envelope-from <ore@pengutronix.de>)
-        id 1oQOrp-00ALYw-6Z; Tue, 23 Aug 2022 10:02:33 +0200
+        id 1oQOrp-00ALYn-63; Tue, 23 Aug 2022 10:02:33 +0200
 From:   Oleksij Rempel <o.rempel@pengutronix.de>
 To:     Woojung Huh <woojung.huh@microchip.com>,
         UNGLinuxDriver@microchip.com, Andrew Lunn <andrew@lunn.ch>,
@@ -39,9 +39,9 @@ To:     Woojung Huh <woojung.huh@microchip.com>,
         Paolo Abeni <pabeni@redhat.com>
 Cc:     Oleksij Rempel <o.rempel@pengutronix.de>, kernel@pengutronix.de,
         linux-kernel@vger.kernel.org, netdev@vger.kernel.org
-Subject: [PATCH net-next v3 09/17] net: dsa: microchip: add support for regmap_access_tables
-Date:   Tue, 23 Aug 2022 10:02:23 +0200
-Message-Id: <20220823080231.2466017-10-o.rempel@pengutronix.de>
+Subject: [PATCH net-next v3 08/17] net: dsa: microchip: KSZ9893: do not write to not supported Output Clock Control Register
+Date:   Tue, 23 Aug 2022 10:02:22 +0200
+Message-Id: <20220823080231.2466017-9-o.rempel@pengutronix.de>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20220823080231.2466017-1-o.rempel@pengutronix.de>
 References: <20220823080231.2466017-1-o.rempel@pengutronix.de>
@@ -55,131 +55,31 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This is complex driver with support for different chips with different
-layouts. To detect at least some bugs earlier, we should validate register
-accesses by using regmap_access_table support.
+This issue was detected after adding regmap register access validation.
+KSZ9893 compatible chips do not have "Output Clock Control Register 0x0103".
+So, avoid writing to it.
 
 Signed-off-by: Oleksij Rempel <o.rempel@pengutronix.de>
 ---
- drivers/net/dsa/microchip/ksz_common.h | 46 +++++++++++++++++++++++---
- drivers/net/dsa/microchip/ksz_spi.c    |  3 ++
- 2 files changed, 45 insertions(+), 4 deletions(-)
+ drivers/net/dsa/microchip/ksz9477.c | 5 +++++
+ 1 file changed, 5 insertions(+)
 
-diff --git a/drivers/net/dsa/microchip/ksz_common.h b/drivers/net/dsa/microchip/ksz_common.h
-index be0e5d6ef2bf0..769b3ec45a3b5 100644
---- a/drivers/net/dsa/microchip/ksz_common.h
-+++ b/drivers/net/dsa/microchip/ksz_common.h
-@@ -62,6 +62,8 @@ struct ksz_chip_data {
- 	bool supports_rgmii[KSZ_MAX_NUM_PORTS];
- 	bool internal_phy[KSZ_MAX_NUM_PORTS];
- 	bool gbit_capable[KSZ_MAX_NUM_PORTS];
-+	const struct regmap_access_table *wr_table;
-+	const struct regmap_access_table *rd_table;
- };
+diff --git a/drivers/net/dsa/microchip/ksz9477.c b/drivers/net/dsa/microchip/ksz9477.c
+index 313a17a989839..54514c9e6e003 100644
+--- a/drivers/net/dsa/microchip/ksz9477.c
++++ b/drivers/net/dsa/microchip/ksz9477.c
+@@ -193,6 +193,11 @@ int ksz9477_reset_switch(struct ksz_device *dev)
+ 	ksz_write32(dev, REG_SW_PORT_INT_MASK__4, 0x7F);
+ 	ksz_read32(dev, REG_SW_PORT_INT_STATUS__4, &data32);
  
- struct ksz_port {
-@@ -332,6 +334,10 @@ static inline int ksz_read8(struct ksz_device *dev, u32 reg, u8 *val)
- 	unsigned int value;
- 	int ret = regmap_read(dev->regmap[0], reg, &value);
- 
-+	if (ret)
-+		dev_err(dev->dev, "can't read 8bit reg: 0x%x %pe \n", reg,
-+			ERR_PTR(ret));
++	/* KSZ9893 compatible chips do not support refclk configuration */
++	if (dev->chip_id == KSZ9893_CHIP_ID ||
++	    dev->chip_id == KSZ8563_CHIP_ID)
++		return 0;
 +
- 	*val = value;
- 	return ret;
- }
-@@ -341,6 +347,10 @@ static inline int ksz_read16(struct ksz_device *dev, u32 reg, u16 *val)
- 	unsigned int value;
- 	int ret = regmap_read(dev->regmap[1], reg, &value);
- 
-+	if (ret)
-+		dev_err(dev->dev, "can't read 16bit reg: 0x%x %pe \n", reg,
-+			ERR_PTR(ret));
-+
- 	*val = value;
- 	return ret;
- }
-@@ -350,6 +360,10 @@ static inline int ksz_read32(struct ksz_device *dev, u32 reg, u32 *val)
- 	unsigned int value;
- 	int ret = regmap_read(dev->regmap[2], reg, &value);
- 
-+	if (ret)
-+		dev_err(dev->dev, "can't read 32bit reg: 0x%x %pe \n", reg,
-+			ERR_PTR(ret));
-+
- 	*val = value;
- 	return ret;
- }
-@@ -360,7 +374,10 @@ static inline int ksz_read64(struct ksz_device *dev, u32 reg, u64 *val)
- 	int ret;
- 
- 	ret = regmap_bulk_read(dev->regmap[2], reg, value, 2);
--	if (!ret)
-+	if (ret)
-+		dev_err(dev->dev, "can't read 64bit reg: 0x%x %pe \n", reg,
-+			ERR_PTR(ret));
-+	else
- 		*val = (u64)value[0] << 32 | value[1];
- 
- 	return ret;
-@@ -368,17 +385,38 @@ static inline int ksz_read64(struct ksz_device *dev, u32 reg, u64 *val)
- 
- static inline int ksz_write8(struct ksz_device *dev, u32 reg, u8 value)
- {
--	return regmap_write(dev->regmap[0], reg, value);
-+	int ret;
-+
-+	ret = regmap_write(dev->regmap[0], reg, value);
-+	if (ret)
-+		dev_err(dev->dev, "can't write 8bit reg: 0x%x %pe \n", reg,
-+			ERR_PTR(ret));
-+
-+	return ret;
- }
- 
- static inline int ksz_write16(struct ksz_device *dev, u32 reg, u16 value)
- {
--	return regmap_write(dev->regmap[1], reg, value);
-+	int ret;
-+
-+	ret = regmap_write(dev->regmap[1], reg, value);
-+	if (ret)
-+		dev_err(dev->dev, "can't write 16bit reg: 0x%x %pe \n", reg,
-+			ERR_PTR(ret));
-+
-+	return ret;
- }
- 
- static inline int ksz_write32(struct ksz_device *dev, u32 reg, u32 value)
- {
--	return regmap_write(dev->regmap[2], reg, value);
-+	int ret;
-+
-+	ret = regmap_write(dev->regmap[2], reg, value);
-+	if (ret)
-+		dev_err(dev->dev, "can't write 32bit reg: 0x%x %pe \n", reg,
-+			ERR_PTR(ret));
-+
-+	return ret;
- }
- 
- static inline int ksz_write64(struct ksz_device *dev, u32 reg, u64 value)
-diff --git a/drivers/net/dsa/microchip/ksz_spi.c b/drivers/net/dsa/microchip/ksz_spi.c
-index 746b725b09ec4..44c2d99124066 100644
---- a/drivers/net/dsa/microchip/ksz_spi.c
-+++ b/drivers/net/dsa/microchip/ksz_spi.c
-@@ -66,7 +66,10 @@ static int ksz_spi_probe(struct spi_device *spi)
- 	for (i = 0; i < ARRAY_SIZE(ksz8795_regmap_config); i++) {
- 		rc = regmap_config[i];
- 		rc.lock_arg = &dev->regmap_mutex;
-+		rc.wr_table = chip->wr_table;
-+		rc.rd_table = chip->rd_table;
- 		dev->regmap[i] = devm_regmap_init_spi(spi, &rc);
-+
- 		if (IS_ERR(dev->regmap[i])) {
- 			ret = PTR_ERR(dev->regmap[i]);
- 			dev_err(&spi->dev,
+ 	data8 = SW_ENABLE_REFCLKO;
+ 	if (dev->synclko_disable)
+ 		data8 = 0;
 -- 
 2.30.2
 
