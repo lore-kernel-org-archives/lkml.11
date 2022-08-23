@@ -2,49 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9FCB0C32772
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 10:43:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A9119C32772
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 10:43:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351022AbiHWKna (ORCPT
+        id S1355503AbiHWKnh (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 06:43:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57390 "EHLO
+        Tue, 23 Aug 2022 06:43:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57058 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353768AbiHWKcx (ORCPT
+        with ESMTP id S1353973AbiHWKcy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 06:32:53 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E5C04A59A4;
-        Tue, 23 Aug 2022 02:06:50 -0700 (PDT)
+        Tue, 23 Aug 2022 06:32:54 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 27B26A59B2;
+        Tue, 23 Aug 2022 02:06:51 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id EDD91CE1B55;
-        Tue, 23 Aug 2022 09:06:48 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A1AB9C433B5;
-        Tue, 23 Aug 2022 09:06:46 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id D63066155D;
+        Tue, 23 Aug 2022 09:06:50 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DB8B8C433D7;
+        Tue, 23 Aug 2022 09:06:49 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661245607;
-        bh=cJuu4ZZl0EdtOSaY9llk/P3EaNJAf4mMjEgnCGzH9V0=;
+        s=korg; t=1661245610;
+        bh=go/Haau0lthCUe3VavTCa+hFobbLbcMtiNUfAjzIzeU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=DDBGSm1megKgwGYpUdHVSTZriqaur8vVDdCkQuf8YgU6zxVzQxE1LGMoFHLOkgDgw
-         ghaacQa6KpyyKbg0VFMGnvf8NEaq7L2Pf3/PO0FAc2ezWuYTtNDYSyLclsOjU4+Kkf
-         O9ccLGVK+dIhtkEKTOdFpEToW34EzHT/LEMD/j5M=
+        b=aF+ImNbrw6DcEpkeDSSwKckfi/U1R6doISK72LlKEByJCabtcjoqkK8Ix9cAbEEbm
+         O5wOS5uE3A4XaqRZEYWkrdFHNqGZ+Kp8vhKZLX2qplFRL+KkdqzkJv+bwUbKZsYBsg
+         FWiUVr+EO0x7AtA4W9xkN3DJsAM6WwOvBPxmQK/s=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Stefan Roese <sr@denx.de>,
-        Bjorn Helgaas <bhelgaas@google.com>,
-        =?UTF-8?q?Pali=20Roh=C3=A1r?= <pali@kernel.org>,
-        "Rafael J. Wysocki" <rjw@rjwysocki.net>,
-        Bharat Kumar Gogada <bharat.kumar.gogada@xilinx.com>,
-        Michal Simek <michal.simek@xilinx.com>,
-        Yao Hongbo <yaohongbo@linux.alibaba.com>,
-        Naveen Naidu <naveennaidu479@gmail.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.19 131/287] PCI/portdrv: Dont disable AER reporting in get_port_device_capability()
-Date:   Tue, 23 Aug 2022 10:25:00 +0200
-Message-Id: <20220823080104.822064956@linuxfoundation.org>
+        stable@vger.kernel.org, Lars-Peter Clausen <lars@metafoo.de>,
+        Shubhrajyoti Datta <Shubhrajyoti.datta@amd.com>,
+        Wolfram Sang <wsa@kernel.org>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 4.19 105/287] i2c: cadence: Support PEC for SMBus block read
+Date:   Tue, 23 Aug 2022 10:24:34 +0200
+Message-Id: <20220823080103.911961465@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220823080100.268827165@linuxfoundation.org>
 References: <20220823080100.268827165@linuxfoundation.org>
@@ -56,100 +50,75 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Stefan Roese <sr@denx.de>
+From: Lars-Peter Clausen <lars@metafoo.de>
 
-[ Upstream commit 8795e182b02dc87e343c79e73af6b8b7f9c5e635 ]
+[ Upstream commit 9fdf6d97f03035ad5298e2d1635036c74c2090ed ]
 
-AER reporting is currently disabled in the DevCtl registers of all non Root
-Port PCIe devices on systems using pcie_ports_native || host->native_aer,
-disabling AER completely in such systems. This is because 2bd50dd800b5
-("PCI: PCIe: Disable PCIe port services during port initialization"), added
-a call to pci_disable_pcie_error_reporting() *after* the AER setup was
-completed for the PCIe device tree.
+SMBus packet error checking (PEC) is implemented by appending one
+additional byte of checksum data at the end of the message. This provides
+additional protection and allows to detect data corruption on the I2C bus.
 
-Here a longer analysis about the current status of AER enabling /
-disabling upon bootup provided by Bjorn:
+SMBus block reads support variable length reads. The first byte in the read
+message is the number of available data bytes.
 
-  pcie_portdrv_probe
-    pcie_port_device_register
-      get_port_device_capability
-        pci_disable_pcie_error_reporting
-          clear CERE NFERE FERE URRE               # <-- disable for RP USP DSP
-      pcie_device_init
-        device_register                            # new AER service device
-          aer_probe
-            aer_enable_rootport                    # RP only
-              set_downstream_devices_error_reporting
-                set_device_error_reporting         # self (RP)
-                  if (RP || USP || DSP)
-                    pci_enable_pcie_error_reporting
-                      set CERE NFERE FERE URRE     # <-- enable for RP
-                pci_walk_bus
-                  set_device_error_reporting
-                    if (RP || USP || DSP)
-                      pci_enable_pcie_error_reporting
-                        set CERE NFERE FERE URRE   # <-- enable for USP DSP
+The combination of PEC and block read is currently not supported by the
+Cadence I2C driver.
+ * When PEC is enabled the maximum transfer length for block reads
+   increases from 33 to 34 bytes.
+ * The I2C core smbus emulation layer relies on the driver updating the
+   `i2c_msg` `len` field with the number of received bytes. The updated
+   length is used when checking the PEC.
 
-In a typical Root Port -> Endpoint hierarchy, the above:
-  - Disables Error Reporting for the Root Port,
-  - Enables Error Reporting for the Root Port,
-  - Does NOT enable Error Reporting for the Endpoint because it is not a
-    Root Port or Switch Port.
+Add support to the Cadence I2C driver for handling SMBus block reads with
+PEC. To determine the maximum transfer length uses the initial `len` value
+of the `i2c_msg`. When PEC is enabled this will be 2, when it is disabled
+it will be 1.
 
-In a deeper Root Port -> Upstream Switch Port -> Downstream Switch
-Port -> Endpoint hierarchy:
-  - Disables Error Reporting for the Root Port,
-  - Enables Error Reporting for the Root Port,
-  - Enables Error Reporting for both Switch Ports,
-  - Does NOT enable Error Reporting for the Endpoint because it is not a
-    Root Port or Switch Port,
-  - Disables Error Reporting for the Switch Ports when pcie_portdrv_probe()
-    claims them.  AER does not re-enable it because these are not Root
-    Ports.
+Once a read transfer is done also increment the `len` field by the amount
+of received data bytes.
 
-Remove this call to pci_disable_pcie_error_reporting() from
-get_port_device_capability(), leaving the already enabled AER configuration
-intact. With this change, AER is enabled in the Root Port and the PCIe
-switch upstream and downstream ports. Only the PCIe Endpoints don't have
-AER enabled yet. A follow-up patch will take care of this Endpoint
-enabling.
+This change has been tested with a UCM90320 PMBus power monitor, which
+requires block reads to access certain data fields, but also has PEC
+enabled by default.
 
-Fixes: 2bd50dd800b5 ("PCI: PCIe: Disable PCIe port services during port initialization")
-Link: https://lore.kernel.org/r/20220125071820.2247260-3-sr@denx.de
-Signed-off-by: Stefan Roese <sr@denx.de>
-Signed-off-by: Bjorn Helgaas <bhelgaas@google.com>
-Reviewed-by: Pali Rohár <pali@kernel.org>
-Cc: Rafael J. Wysocki <rjw@rjwysocki.net>
-Cc: Bharat Kumar Gogada <bharat.kumar.gogada@xilinx.com>
-Cc: Michal Simek <michal.simek@xilinx.com>
-Cc: Yao Hongbo <yaohongbo@linux.alibaba.com>
-Cc: Naveen Naidu <naveennaidu479@gmail.com>
+Fixes: df8eb5691c48 ("i2c: Add driver for Cadence I2C controller")
+Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
+Tested-by: Shubhrajyoti Datta <Shubhrajyoti.datta@amd.com>
+Signed-off-by: Wolfram Sang <wsa@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/pci/pcie/portdrv_core.c | 9 +--------
- 1 file changed, 1 insertion(+), 8 deletions(-)
+ drivers/i2c/busses/i2c-cadence.c | 10 +++++++++-
+ 1 file changed, 9 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/pci/pcie/portdrv_core.c b/drivers/pci/pcie/portdrv_core.c
-index 7c37d815229e..216dd6e61624 100644
---- a/drivers/pci/pcie/portdrv_core.c
-+++ b/drivers/pci/pcie/portdrv_core.c
-@@ -218,15 +218,8 @@ static int get_port_device_capability(struct pci_dev *dev)
+diff --git a/drivers/i2c/busses/i2c-cadence.c b/drivers/i2c/busses/i2c-cadence.c
+index 512c61d31fe5..bce7bf93d62a 100644
+--- a/drivers/i2c/busses/i2c-cadence.c
++++ b/drivers/i2c/busses/i2c-cadence.c
+@@ -353,8 +353,13 @@ static void cdns_i2c_mrecv(struct cdns_i2c *id)
+ 	ctrl_reg = cdns_i2c_readreg(CDNS_I2C_CR_OFFSET);
+ 	ctrl_reg |= CDNS_I2C_CR_RW | CDNS_I2C_CR_CLR_FIFO;
  
- #ifdef CONFIG_PCIEAER
- 	if (dev->aer_cap && pci_aer_available() &&
--	    (pcie_ports_native || host->native_aer)) {
-+	    (pcie_ports_native || host->native_aer))
- 		services |= PCIE_PORT_SERVICE_AER;
--
--		/*
--		 * Disable AER on this port in case it's been enabled by the
--		 * BIOS (the AER service driver will enable it when necessary).
--		 */
--		pci_disable_pcie_error_reporting(dev);
--	}
- #endif
++	/*
++	 * Receive up to I2C_SMBUS_BLOCK_MAX data bytes, plus one message length
++	 * byte, plus one checksum byte if PEC is enabled. p_msg->len will be 2 if
++	 * PEC is enabled, otherwise 1.
++	 */
+ 	if (id->p_msg->flags & I2C_M_RECV_LEN)
+-		id->recv_count = I2C_SMBUS_BLOCK_MAX + 1;
++		id->recv_count = I2C_SMBUS_BLOCK_MAX + id->p_msg->len;
  
- 	/*
+ 	id->curr_recv_count = id->recv_count;
+ 
+@@ -540,6 +545,9 @@ static int cdns_i2c_process_msg(struct cdns_i2c *id, struct i2c_msg *msg,
+ 	if (id->err_status & CDNS_I2C_IXR_ARB_LOST)
+ 		return -EAGAIN;
+ 
++	if (msg->flags & I2C_M_RECV_LEN)
++		msg->len += min_t(unsigned int, msg->buf[0], I2C_SMBUS_BLOCK_MAX);
++
+ 	return 0;
+ }
+ 
 -- 
 2.35.1
 
