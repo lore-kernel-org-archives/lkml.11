@@ -2,43 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8A946C32774
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 09:31:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 343DAC32772
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 09:32:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350325AbiHWJb5 (ORCPT
+        id S1350351AbiHWJcA (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 05:31:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51038 "EHLO
+        Tue, 23 Aug 2022 05:32:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51022 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350539AbiHWJaZ (ORCPT
+        with ESMTP id S1350527AbiHWJaX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 05:30:25 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CDB10923E8;
-        Tue, 23 Aug 2022 01:37:40 -0700 (PDT)
+        Tue, 23 Aug 2022 05:30:23 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CEC37923F0;
+        Tue, 23 Aug 2022 01:37:54 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 6E11C614C5;
-        Tue, 23 Aug 2022 08:37:40 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7392DC433C1;
-        Tue, 23 Aug 2022 08:37:39 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 9EA39B81C35;
+        Tue, 23 Aug 2022 08:36:45 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 01561C433C1;
+        Tue, 23 Aug 2022 08:36:43 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661243859;
-        bh=Xa6s7LYbZMRUMtcixMwGFLO019BA0YLdj1CCuUTJ8O8=;
+        s=korg; t=1661243804;
+        bh=vWwA4f4O0Bfos50TDwGtYO/p5gav7IBXlJJI5sEDmao=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=VFkqVPFOgied8zG51bN4OOo7UTNthMpiwJD/s6whVkN2/t410tXM98hbx4T2jrL+y
-         d9ZLaUGDkawZ8J8kHXbIaZcOCs34Z31gKXESFngahJwPEoq3q6c3J9tNo05V2zhFIR
-         4WpykC1hpLfQKw1Dojn2UNC2Rb74NmXLFYYxilhM=
+        b=wWL4YHd35MhrYi0OnY8k53WozE7iVZ1XwCQV5fYF50Uu7zpsWho4QpAtPTqePXz/g
+         Thgdivg/y5qEY6yPjvbHPr0HchTlmeG9Xtq+kYcXclr0W8AxNgVEeeFWLofkFVpLej
+         uNS+komgNRVumxZ+EclChohyq4KdFLxoI+jSO+cg=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Manyi Li <limanyi@uniontech.com>,
-        "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.14 045/229] ACPI: PM: save NVS memory for Lenovo G40-45
-Date:   Tue, 23 Aug 2022 10:23:26 +0200
-Message-Id: <20220823080055.255044572@linuxfoundation.org>
+        stable@vger.kernel.org, Helge Deller <deller@gmx.de>
+Subject: [PATCH 4.14 026/229] parisc: Fix device names in /proc/iomem
+Date:   Tue, 23 Aug 2022 10:23:07 +0200
+Message-Id: <20220823080054.396142524@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220823080053.202747790@linuxfoundation.org>
 References: <20220823080053.202747790@linuxfoundation.org>
@@ -50,44 +48,45 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Manyi Li <limanyi@uniontech.com>
+From: Helge Deller <deller@gmx.de>
 
-[ Upstream commit 4b7ef7b05afcde44142225c184bf43a0cd9e2178 ]
+commit cab56b51ec0e69128909cef4650e1907248d821b upstream.
 
-[821d6f0359b0614792ab8e2fb93b503e25a65079] is to make machines
-produced from 2012 to now not saving NVS region to accelerate S3.
+Fix the output of /proc/iomem to show the real hardware device name
+including the pa_pathname, e.g. "Merlin 160 Core Centronics [8:16:0]".
+Up to now only the pa_pathname ("[8:16.0]") was shown.
 
-But, Lenovo G40-45, a platform released in 2015, still needs NVS memory
-saving during S3. A quirk is introduced for this platform.
-
-Signed-off-by: Manyi Li <limanyi@uniontech.com>
-Signed-off-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Signed-off-by: Helge Deller <deller@gmx.de>
+Cc: <stable@vger.kernel.org> # v4.9+
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/acpi/sleep.c | 8 ++++++++
- 1 file changed, 8 insertions(+)
+ arch/parisc/kernel/drivers.c |    9 ++++-----
+ 1 file changed, 4 insertions(+), 5 deletions(-)
 
-diff --git a/drivers/acpi/sleep.c b/drivers/acpi/sleep.c
-index 7a0af16f86f2..d341908cbd16 100644
---- a/drivers/acpi/sleep.c
-+++ b/drivers/acpi/sleep.c
-@@ -359,6 +359,14 @@ static const struct dmi_system_id acpisleep_dmi_table[] __initconst = {
- 		DMI_MATCH(DMI_PRODUCT_NAME, "80E3"),
- 		},
- 	},
-+	{
-+	.callback = init_nvs_save_s3,
-+	.ident = "Lenovo G40-45",
-+	.matches = {
-+		DMI_MATCH(DMI_SYS_VENDOR, "LENOVO"),
-+		DMI_MATCH(DMI_PRODUCT_NAME, "80E1"),
-+		},
-+	},
- 	/*
- 	 * https://bugzilla.kernel.org/show_bug.cgi?id=196907
- 	 * Some Dell XPS13 9360 cannot do suspend-to-idle using the Low Power
--- 
-2.35.1
-
+--- a/arch/parisc/kernel/drivers.c
++++ b/arch/parisc/kernel/drivers.c
+@@ -505,7 +505,6 @@ alloc_pa_dev(unsigned long hpa, struct h
+ 	dev->id.hversion_rev = iodc_data[1] & 0x0f;
+ 	dev->id.sversion = ((iodc_data[4] & 0x0f) << 16) |
+ 			(iodc_data[5] << 8) | iodc_data[6];
+-	dev->hpa.name = parisc_pathname(dev);
+ 	dev->hpa.start = hpa;
+ 	/* This is awkward.  The STI spec says that gfx devices may occupy
+ 	 * 32MB or 64MB.  Unfortunately, we don't know how to tell whether
+@@ -519,10 +518,10 @@ alloc_pa_dev(unsigned long hpa, struct h
+ 		dev->hpa.end = hpa + 0xfff;
+ 	}
+ 	dev->hpa.flags = IORESOURCE_MEM;
+-	name = parisc_hardware_description(&dev->id);
+-	if (name) {
+-		strlcpy(dev->name, name, sizeof(dev->name));
+-	}
++	dev->hpa.name = dev->name;
++	name = parisc_hardware_description(&dev->id) ? : "unknown";
++	snprintf(dev->name, sizeof(dev->name), "%s [%s]",
++		name, parisc_pathname(dev));
+ 
+ 	/* Silently fail things like mouse ports which are subsumed within
+ 	 * the keyboard controller
 
 
