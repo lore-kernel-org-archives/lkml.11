@@ -2,89 +2,82 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0280CC32772
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 19:09:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 52F83C32772
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 19:09:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231993AbiHWTJI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 15:09:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42676 "EHLO
+        id S230105AbiHWTJT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 23 Aug 2022 15:09:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40602 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229548AbiHWTIo (ORCPT
+        with ESMTP id S231919AbiHWTIv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 15:08:44 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6F7C986B73
-        for <linux-kernel@vger.kernel.org>; Tue, 23 Aug 2022 10:47:15 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1661276760;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=JIm3RX4Nk/jYsusHRm7mFXdphP+WYA1xee7+a/x5ngY=;
-        b=fJQ8R3pRpCuAtD4vwgWr1tuweqRWbTUcM9eCZSVFzX4pWlYpzCoyAA1FCrt5n3Jj68ChU0
-        1SP1/NOKyQMJ+U09XyNYemyb7HjIDUSCu+o5sF4Ed6hUem/og87oA2D0unxlGFnqJGqNlo
-        G5s1R9irHqtjPjlQhat7CVxR+nlNeJg=
-Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
- [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-66-J29G1h04O6yUNRekH19yWg-1; Tue, 23 Aug 2022 13:42:45 -0400
-X-MC-Unique: J29G1h04O6yUNRekH19yWg-1
-Received: from smtp.corp.redhat.com (int-mx07.intmail.prod.int.rdu2.redhat.com [10.11.54.7])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 45C9E29DD9A4;
-        Tue, 23 Aug 2022 17:42:45 +0000 (UTC)
-Received: from cmirabil.redhat.com (unknown [10.22.33.37])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id C13CF14152E0;
-        Tue, 23 Aug 2022 17:42:44 +0000 (UTC)
-From:   Charles Mirabile <cmirabil@redhat.com>
-To:     linux-kernel@vger.kernel.org
-Cc:     Charles Mirabile <cmirabil@redhat.com>,
-        Peter Robinson <pbrobinson@gmail.com>,
-        Serge Schneider <serge@raspberrypi.org>,
-        Stefan Wahren <stefan.wahren@i2se.com>,
-        Nicolas Saenz Julienne <nicolassaenzj@gmail.com>,
-        Mattias Brugger <mbrugger@suse.com>,
-        linux-rpi-kernel@lists.infradead.org,
-        linux-arm-kernel@lists.infradead.org, rh-kdlp@googlegroups.com,
-        Lee Jones <lee.jones@linaro.org>,
-        Joel Savitz <jsavitz@redhat.com>
-Subject: [PATCH 1/5] drivers/mfd: sensehat: Add Raspberry Pi Sense HAT to simple_mfd_i2c
-Date:   Tue, 23 Aug 2022 13:41:54 -0400
-Message-Id: <20220823174158.45579-2-cmirabil@redhat.com>
-In-Reply-To: <20220823174158.45579-1-cmirabil@redhat.com>
-References: <20220823174158.45579-1-cmirabil@redhat.com>
+        Tue, 23 Aug 2022 15:08:51 -0400
+Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 022D665D5
+        for <linux-kernel@vger.kernel.org>; Tue, 23 Aug 2022 10:47:25 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1661276848; x=1692812848;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=g3N8QaZ47KTjxRr1VmyrexxfaDyUTuIj7D/06GMA7EQ=;
+  b=R+PRJTZKLawuzOW9r3UW+c/kNIIzP/XsxOgZfkoTI2FqjdpiczW3wNBc
+   n+tTLDNkW17M0RTUS8j/hAqX94xBcs82G0RiVHwWpm+TZ1X6XmgibeuUh
+   Z2n4+5VYVDN4Wm4WaHCYqOiC8wac5t7JnrJ5mIzZJ5pGnMB5VV7eCiBko
+   RutXd269LGJ1U4q7KAII3s287vaMT+n7VfEhQ0UVnsB5U/X5i+QZH4mD3
+   3X5u0u3fj3kfROBJkFX750hnIBgALG4gW1Gd9s6sXbNzFanf4jlhMcSJ+
+   WufSm1jswTbwx98whceWyjDZKUJ+zL2/JTMpe0ZtiV6su31U7kiS7grrY
+   g==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10448"; a="319806585"
+X-IronPort-AV: E=Sophos;i="5.93,258,1654585200"; 
+   d="scan'208";a="319806585"
+Received: from orsmga001.jf.intel.com ([10.7.209.18])
+  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Aug 2022 10:45:43 -0700
+X-IronPort-AV: E=Sophos;i="5.93,258,1654585200"; 
+   d="scan'208";a="642530901"
+Received: from agluck-desk3.sc.intel.com ([172.25.222.78])
+  by orsmga001-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Aug 2022 10:45:43 -0700
+From:   Tony Luck <tony.luck@intel.com>
+To:     x86@kernel.org
+Cc:     linux-kernel@vger.kernel.org, patches@lists.linux.dev,
+        Tony Luck <tony.luck@intel.com>
+Subject: [PATCH] x86/cpu: Add yet another Raptorlake CPU model number
+Date:   Tue, 23 Aug 2022 10:45:30 -0700
+Message-Id: <20220823174530.223914-1-tony.luck@intel.com>
+X-Mailer: git-send-email 2.35.3
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-Scanned-By: MIMEDefang 2.85 on 10.11.54.7
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This patch adds the compatible string for the Sense HAT device to
-the list of compatible strings in the simple_mfd_i2c driver so that
-it can match against the device and load its children and their drivers
+There is a second model number used by Raptorlake client CPUs.
 
-Co-developed-by: Joel Savitz <jsavitz@redhat.com>
-Signed-off-by: Joel Savitz <jsavitz@redhat.com>
-Signed-off-by: Charles Mirabile <cmirabil@redhat.com>
+Signed-off-by: Tony Luck <tony.luck@intel.com>
 ---
- drivers/mfd/simple-mfd-i2c.c | 1 +
- 1 file changed, 1 insertion(+)
+ arch/x86/include/asm/intel-family.h | 2 ++
+ 1 file changed, 2 insertions(+)
 
-diff --git a/drivers/mfd/simple-mfd-i2c.c b/drivers/mfd/simple-mfd-i2c.c
-index f4c8fc3ee463..c47f36581f3f 100644
---- a/drivers/mfd/simple-mfd-i2c.c
-+++ b/drivers/mfd/simple-mfd-i2c.c
-@@ -75,6 +75,7 @@ static const struct simple_mfd_data silergy_sy7636a = {
- static const struct of_device_id simple_mfd_i2c_of_match[] = {
- 	{ .compatible = "kontron,sl28cpld" },
- 	{ .compatible = "silergy,sy7636a", .data = &silergy_sy7636a},
-+	{ .compatible = "raspberrypi,sensehat" },
- 	{}
- };
- MODULE_DEVICE_TABLE(of, simple_mfd_i2c_of_match);
+diff --git a/arch/x86/include/asm/intel-family.h b/arch/x86/include/asm/intel-family.h
+index def6ca121111..c4e316921dd5 100644
+--- a/arch/x86/include/asm/intel-family.h
++++ b/arch/x86/include/asm/intel-family.h
+@@ -22,6 +22,7 @@
+  *		Common OPTDIFFs:
+  *
+  *			- regular client parts
++ *		_S	- other client parts
+  *		_L	- regular mobile parts
+  *		_G	- parts with extra graphics on
+  *		_X	- regular server parts
+@@ -112,6 +113,7 @@
+ 
+ #define INTEL_FAM6_RAPTORLAKE		0xB7
+ #define INTEL_FAM6_RAPTORLAKE_P		0xBA
++#define INTEL_FAM6_RAPTORLAKE_S		0xBF
+ 
+ /* "Small Core" Processors (Atom) */
+ 
 -- 
-2.31.1
+2.35.3
 
