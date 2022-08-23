@@ -2,42 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6DD2CC32772
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 10:29:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8E9C5C32772
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 10:29:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354754AbiHWK3K (ORCPT
+        id S1354134AbiHWK3Q (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 06:29:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47092 "EHLO
+        Tue, 23 Aug 2022 06:29:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50890 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353224AbiHWKNM (ORCPT
+        with ESMTP id S1353263AbiHWKNP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 06:13:12 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6F237647F0;
-        Tue, 23 Aug 2022 01:59:10 -0700 (PDT)
+        Tue, 23 Aug 2022 06:13:15 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 980BC72842;
+        Tue, 23 Aug 2022 01:59:19 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 3003EB81C1C;
-        Tue, 23 Aug 2022 08:59:09 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 84537C433C1;
-        Tue, 23 Aug 2022 08:59:07 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 441EEB81C28;
+        Tue, 23 Aug 2022 08:59:18 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 94A3BC433D6;
+        Tue, 23 Aug 2022 08:59:16 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661245147;
-        bh=OojDaQ+Fj1kBMmiaCQt6cXVPGlHuy71ux3UaODHdAoY=;
+        s=korg; t=1661245157;
+        bh=ou72801z8mN71VTlq2a6SZCJ4zfndl7r4LyeKMh+suU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=nHAycYi7cqbJj1WyvQI5U3ZW6ZsqzoNt7rcoPPDBhdjVw4mzgePcSfarWTSzmGu2v
-         xgiYgpVdZncC5OjR99tev5oZOXVnbZveJJSVlriBwycZ7+9BK8RIdZ4DQJ//vELZ0N
-         X0efaPljh8Eh2jFihM8L9LGAsXZlpNC7vp02gCXk=
+        b=SmkyS7T3PQZjmrucbx+rGwUNxj2WcSYmvIrhGZzrz00hY/mxkQp8pIQeQd2Fg+bhy
+         D4QIB0eD1NWRUBKtsYGxk0lb3+5qHTX/ykcUYj0bdXRSQiljFfKCXgulpQqlvJXB1l
+         39ny+vrJwSpp9CjYyvNt7ymauEen2BgierlRkhsw=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Zheyu Ma <zheyuma97@gmail.com>,
-        Helge Deller <deller@gmx.de>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 232/244] video: fbdev: i740fb: Check the argument of i740_calc_vclk()
-Date:   Tue, 23 Aug 2022 10:26:31 +0200
-Message-Id: <20220823080107.304219698@linuxfoundation.org>
+        stable@vger.kernel.org, Fedor Pchelkin <pchelkin@ispras.ru>,
+        Alexey Khoroshilov <khoroshilov@ispras.ru>,
+        Oleksij Rempel <o.rempel@pengutronix.de>,
+        Marc Kleine-Budde <mkl@pengutronix.de>
+Subject: [PATCH 5.15 234/244] can: j1939: j1939_sk_queue_activate_next_locked(): replace WARN_ON_ONCE with netdev_warn_once()
+Date:   Tue, 23 Aug 2022 10:26:33 +0200
+Message-Id: <20220823080107.372740096@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220823080059.091088642@linuxfoundation.org>
 References: <20220823080059.091088642@linuxfoundation.org>
@@ -49,67 +51,43 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Zheyu Ma <zheyuma97@gmail.com>
+From: Fedor Pchelkin <pchelkin@ispras.ru>
 
-[ Upstream commit 40bf722f8064f50200b8c4f8946cd625b441dda9 ]
+commit 8ef49f7f8244424adcf4a546dba4cbbeb0b09c09 upstream.
 
-Since the user can control the arguments of the ioctl() from the user
-space, under special arguments that may result in a divide-by-zero bug.
+We should warn user-space that it is doing something wrong when trying
+to activate sessions with identical parameters but WARN_ON_ONCE macro
+can not be used here as it serves a different purpose.
 
-If the user provides an improper 'pixclock' value that makes the argumet
-of i740_calc_vclk() less than 'I740_RFREQ_FIX', it will cause a
-divide-by-zero bug in:
-    drivers/video/fbdev/i740fb.c:353 p_best = min(15, ilog2(I740_MAX_VCO_FREQ / (freq / I740_RFREQ_FIX)));
+So it would be good to replace it with netdev_warn_once() message.
 
-The following log can reveal it:
+Found by Linux Verification Center (linuxtesting.org) with Syzkaller.
 
-divide error: 0000 [#1] PREEMPT SMP KASAN PTI
-RIP: 0010:i740_calc_vclk drivers/video/fbdev/i740fb.c:353 [inline]
-RIP: 0010:i740fb_decode_var drivers/video/fbdev/i740fb.c:646 [inline]
-RIP: 0010:i740fb_set_par+0x163f/0x3b70 drivers/video/fbdev/i740fb.c:742
-Call Trace:
- fb_set_var+0x604/0xeb0 drivers/video/fbdev/core/fbmem.c:1034
- do_fb_ioctl+0x234/0x670 drivers/video/fbdev/core/fbmem.c:1110
- fb_ioctl+0xdd/0x130 drivers/video/fbdev/core/fbmem.c:1189
-
-Fix this by checking the argument of i740_calc_vclk() first.
-
-Signed-off-by: Zheyu Ma <zheyuma97@gmail.com>
-Signed-off-by: Helge Deller <deller@gmx.de>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Fixes: 9d71dd0c7009 ("can: add support of SAE J1939 protocol")
+Signed-off-by: Fedor Pchelkin <pchelkin@ispras.ru>
+Signed-off-by: Alexey Khoroshilov <khoroshilov@ispras.ru>
+Acked-by: Oleksij Rempel <o.rempel@pengutronix.de>
+Link: https://lore.kernel.org/all/20220729143655.1108297-1-pchelkin@ispras.ru
+[mkl: fix indention]
+Signed-off-by: Marc Kleine-Budde <mkl@pengutronix.de>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/video/fbdev/i740fb.c | 9 +++++++--
- 1 file changed, 7 insertions(+), 2 deletions(-)
+ net/can/j1939/socket.c |    5 ++++-
+ 1 file changed, 4 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/video/fbdev/i740fb.c b/drivers/video/fbdev/i740fb.c
-index 52cce0db8bd3..ad5ced4ef972 100644
---- a/drivers/video/fbdev/i740fb.c
-+++ b/drivers/video/fbdev/i740fb.c
-@@ -400,7 +400,7 @@ static int i740fb_decode_var(const struct fb_var_screeninfo *var,
- 	u32 xres, right, hslen, left, xtotal;
- 	u32 yres, lower, vslen, upper, ytotal;
- 	u32 vxres, xoffset, vyres, yoffset;
--	u32 bpp, base, dacspeed24, mem;
-+	u32 bpp, base, dacspeed24, mem, freq;
- 	u8 r7;
- 	int i;
+--- a/net/can/j1939/socket.c
++++ b/net/can/j1939/socket.c
+@@ -178,7 +178,10 @@ activate_next:
+ 	if (!first)
+ 		return;
  
-@@ -643,7 +643,12 @@ static int i740fb_decode_var(const struct fb_var_screeninfo *var,
- 	par->atc[VGA_ATC_OVERSCAN] = 0;
- 
- 	/* Calculate VCLK that most closely matches the requested dot clock */
--	i740_calc_vclk((((u32)1e9) / var->pixclock) * (u32)(1e3), par);
-+	freq = (((u32)1e9) / var->pixclock) * (u32)(1e3);
-+	if (freq < I740_RFREQ_FIX) {
-+		fb_dbg(info, "invalid pixclock\n");
-+		freq = I740_RFREQ_FIX;
-+	}
-+	i740_calc_vclk(freq, par);
- 
- 	/* Since we program the clocks ourselves, always use VCLK2. */
- 	par->misc |= 0x0C;
--- 
-2.35.1
-
+-	if (WARN_ON_ONCE(j1939_session_activate(first))) {
++	if (j1939_session_activate(first)) {
++		netdev_warn_once(first->priv->ndev,
++				 "%s: 0x%p: Identical session is already activated.\n",
++				 __func__, first);
+ 		first->err = -EBUSY;
+ 		goto activate_next;
+ 	} else {
 
 
