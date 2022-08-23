@@ -2,46 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9C797C32772
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 09:52:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 35A57C32772
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 09:52:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240602AbiHWJw2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 05:52:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55870 "EHLO
+        id S243202AbiHWJwf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 23 Aug 2022 05:52:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39342 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351651AbiHWJut (ORCPT
+        with ESMTP id S1351690AbiHWJuv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 05:50:49 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6E10C9DFBC;
-        Tue, 23 Aug 2022 01:45:19 -0700 (PDT)
+        Tue, 23 Aug 2022 05:50:51 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5F9AA6DF9A;
+        Tue, 23 Aug 2022 01:45:14 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 9C6D1B81C6A;
-        Tue, 23 Aug 2022 08:45:18 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E08B2C433C1;
-        Tue, 23 Aug 2022 08:45:16 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 0720761338;
+        Tue, 23 Aug 2022 08:44:35 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0B7FEC433D6;
+        Tue, 23 Aug 2022 08:44:33 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661244317;
-        bh=v72sCb1UKg/hUfqN4kpl6JgOnAKHwuo/rcMINgfYefU=;
+        s=korg; t=1661244274;
+        bh=aolZgR12PUzxTi1PxC82EDK5N5Y8ZmpIPPwJr1pSbSA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=UbH0oSPTbP7YkJUzn7jxkl/BhgJ8jyGGiyQXctU3OpnKtw+tGuupc07aT7OqYcCtq
-         1xYQd/gk3u+y7pwuXB82lmyeHLoXGd1qZ05qBdFlOGNz5MV7A5m9wt34hRAHVj+ZWT
-         fMlZ2qe8wYcKLqGjnVF3YnCvAt/q7Gj1RgBaSNsE=
+        b=rkmck8acNBP9tHM7vZbYO8TDsrh/QBB/azb9mhtrCNM5nr674F9JOgMaCBmAwrwaX
+         PfWvQTytkWIcd399g2QucmN5k53MeGeycGvV5xhIKFt+ZRKRY8Ayj3vLLKeDiUtsCJ
+         X1peLc0aSqRe2r9voQvRkvQNoPZy7aX3N9Ml2/t4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Harman Kalra <hkalra@marvell.com>,
-        Subbaraya Sundeep <sbhatta@marvell.com>,
-        Sunil Goutham <sgoutham@marvell.com>,
-        Jakub Kicinski <kuba@kernel.org>
-Subject: [PATCH 5.15 072/244] octeontx2-af: suppress external profile loading warning
-Date:   Tue, 23 Aug 2022 10:23:51 +0200
-Message-Id: <20220823080101.466987922@linuxfoundation.org>
+        stable@vger.kernel.org, Johan Hovold <johan@kernel.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 4.14 112/229] USB: serial: fix tty-port initialized comments
+Date:   Tue, 23 Aug 2022 10:24:33 +0200
+Message-Id: <20220823080057.677023084@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220823080059.091088642@linuxfoundation.org>
-References: <20220823080059.091088642@linuxfoundation.org>
+In-Reply-To: <20220823080053.202747790@linuxfoundation.org>
+References: <20220823080053.202747790@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -50,35 +48,66 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Harman Kalra <hkalra@marvell.com>
+From: Johan Hovold <johan@kernel.org>
 
-commit cf2437626502b5271d19686b03dea306efe17ea0 upstream.
+[ Upstream commit 688ee1d1785c1359f9040f615dd8e6054962bce2 ]
 
-The packet parser profile supplied as firmware may not
-be present all the time and default profile is used mostly.
-Hence suppress firmware loading warning from kernel due to
-absence of firmware in kernel image.
+Fix up the tty-port initialized comments which got truncated and
+obfuscated when replacing the old ASYNCB_INITIALIZED flag.
 
-Fixes: 3a7244152f9c ("octeontx2-af: add support for custom KPU entries")
-Signed-off-by: Harman Kalra <hkalra@marvell.com>
-Signed-off-by: Subbaraya Sundeep <sbhatta@marvell.com>
-Signed-off-by: Sunil Goutham <sgoutham@marvell.com>
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Fixes: d41861ca19c9 ("tty: Replace ASYNC_INITIALIZED bit and update atomically")
+Reviewed-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Johan Hovold <johan@kernel.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/marvell/octeontx2/af/rvu_npc.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/usb/serial/sierra.c     | 3 ++-
+ drivers/usb/serial/usb-serial.c | 2 +-
+ drivers/usb/serial/usb_wwan.c   | 3 ++-
+ 3 files changed, 5 insertions(+), 3 deletions(-)
 
---- a/drivers/net/ethernet/marvell/octeontx2/af/rvu_npc.c
-+++ b/drivers/net/ethernet/marvell/octeontx2/af/rvu_npc.c
-@@ -1650,7 +1650,7 @@ static void npc_load_kpu_profile(struct
- 	 * Firmware database method.
- 	 * Default KPU profile.
+diff --git a/drivers/usb/serial/sierra.c b/drivers/usb/serial/sierra.c
+index a9c5564b6b65..fcbe8a9d2650 100644
+--- a/drivers/usb/serial/sierra.c
++++ b/drivers/usb/serial/sierra.c
+@@ -759,7 +759,8 @@ static void sierra_close(struct usb_serial_port *port)
+ 
+ 	/*
+ 	 * Need to take susp_lock to make sure port is not already being
+-	 * resumed, but no need to hold it due to initialized
++	 * resumed, but no need to hold it due to the tty-port initialized
++	 * flag.
  	 */
--	if (!request_firmware(&fw, kpu_profile, rvu->dev)) {
-+	if (!request_firmware_direct(&fw, kpu_profile, rvu->dev)) {
- 		dev_info(rvu->dev, "Loading KPU profile from firmware: %s\n",
- 			 kpu_profile);
- 		rvu->kpu_fwdata = kzalloc(fw->size, GFP_KERNEL);
+ 	spin_lock_irq(&intfdata->susp_lock);
+ 	if (--intfdata->open_ports == 0)
+diff --git a/drivers/usb/serial/usb-serial.c b/drivers/usb/serial/usb-serial.c
+index 3dc3464626fb..731bae05d7e5 100644
+--- a/drivers/usb/serial/usb-serial.c
++++ b/drivers/usb/serial/usb-serial.c
+@@ -254,7 +254,7 @@ static int serial_open(struct tty_struct *tty, struct file *filp)
+  *
+  * Shut down a USB serial port. Serialized against activate by the
+  * tport mutex and kept to matching open/close pairs
+- * of calls by the initialized flag.
++ * of calls by the tty-port initialized flag.
+  *
+  * Not called if tty is console.
+  */
+diff --git a/drivers/usb/serial/usb_wwan.c b/drivers/usb/serial/usb_wwan.c
+index 4fab7ec9cd3f..bb05c9ea9190 100644
+--- a/drivers/usb/serial/usb_wwan.c
++++ b/drivers/usb/serial/usb_wwan.c
+@@ -465,7 +465,8 @@ void usb_wwan_close(struct usb_serial_port *port)
+ 
+ 	/*
+ 	 * Need to take susp_lock to make sure port is not already being
+-	 * resumed, but no need to hold it due to initialized
++	 * resumed, but no need to hold it due to the tty-port initialized
++	 * flag.
+ 	 */
+ 	spin_lock_irq(&intfdata->susp_lock);
+ 	if (--intfdata->open_ports == 0)
+-- 
+2.35.1
+
 
 
