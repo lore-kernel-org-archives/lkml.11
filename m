@@ -2,44 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id ACEB1C32774
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 08:24:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4C43FC32792
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 08:25:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243367AbiHWIYs (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 04:24:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33992 "EHLO
+        id S243321AbiHWIY6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 23 Aug 2022 04:24:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56768 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243321AbiHWIUz (ORCPT
+        with ESMTP id S243384AbiHWIVG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 04:20:55 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 720936E8AE;
-        Tue, 23 Aug 2022 01:12:23 -0700 (PDT)
+        Tue, 23 Aug 2022 04:21:06 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 283386E2F1;
+        Tue, 23 Aug 2022 01:12:28 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 31BC06122D;
-        Tue, 23 Aug 2022 08:12:08 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3A0B4C433C1;
-        Tue, 23 Aug 2022 08:12:07 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 07486B81C29;
+        Tue, 23 Aug 2022 08:12:21 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5101BC4314B;
+        Tue, 23 Aug 2022 08:12:19 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661242327;
-        bh=8CmxgCYmN7CuAnJkg+oksYBTsGEpAazn0mrXZaAWCg0=;
+        s=korg; t=1661242339;
+        bh=JUhaiOGWDcEAMF8DMihsqjmaImozx2hlqt1jiblz/7Y=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=usjwSNsMdcHJG3+KohAGgnleyo/YdaX4DPrmIcrwisM36UqlhrE1MDfHK1jRBmnYi
-         FMPDq3TXHBQtaW98VjemWP/Xu1GUsy9bNzaJqja4YzUSrRuxJacCXeFcTO7thOleMl
-         56m4MgOQ9/YwqJLTZafX62UVT1CyJmEuWB3ID02Q=
+        b=Vk2Z2EqlLRdXVnd5GGKGiszb6FpQlZ71baqGgV8zrSFtrlxAuXejPea6LGi7+roqM
+         FLtXtmVbje0ffFC6FxgrPeK+Ei2pSRxsKax8c1oG3CyUYB0U+rYQs0M52vpLeM54wh
+         i1I5wqbDbYWqgSZTcsZXFRYgHsuStFpsQGa7yqgU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Nikita Travkin <nikita@trvn.ru>,
-        Linus Walleij <linus.walleij@linaro.org>
-Subject: [PATCH 5.19 094/365] pinctrl: qcom: msm8916: Allow CAMSS GP clocks to be muxed
-Date:   Tue, 23 Aug 2022 09:59:55 +0200
-Message-Id: <20220823080122.133442346@linuxfoundation.org>
+        stable@vger.kernel.org, Zheyu Ma <zheyuma97@gmail.com>,
+        Takashi Iwai <tiwai@suse.de>
+Subject: [PATCH 4.9 027/101] ALSA: bcd2000: Fix a UAF bug on the error path of probing
+Date:   Tue, 23 Aug 2022 10:03:00 +0200
+Message-Id: <20220823080035.619883178@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220823080118.128342613@linuxfoundation.org>
-References: <20220823080118.128342613@linuxfoundation.org>
+In-Reply-To: <20220823080034.579196046@linuxfoundation.org>
+References: <20220823080034.579196046@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -48,37 +48,43 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Nikita Travkin <nikita@trvn.ru>
+From: Zheyu Ma <zheyuma97@gmail.com>
 
-commit 44339391c666e46cba522d19c65a6ad1071c68b7 upstream.
+commit ffb2759df7efbc00187bfd9d1072434a13a54139 upstream.
 
-GPIO 31, 32 can be muxed to GCC_CAMSS_GP(1,2)_CLK respectively but the
-function was never assigned to the pingroup (even though the function
-exists already).
+When the driver fails in snd_card_register() at probe time, it will free
+the 'bcd2k->midi_out_urb' before killing it, which may cause a UAF bug.
 
-Add this mode to the related pins.
+The following log can reveal it:
 
-Fixes: 5373a2c5abb6 ("pinctrl: qcom: Add msm8916 pinctrl driver")
-Signed-off-by: Nikita Travkin <nikita@trvn.ru>
-Link: https://lore.kernel.org/r/20220612145955.385787-4-nikita@trvn.ru
-Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
+[   50.727020] BUG: KASAN: use-after-free in bcd2000_input_complete+0x1f1/0x2e0 [snd_bcd2000]
+[   50.727623] Read of size 8 at addr ffff88810fab0e88 by task swapper/4/0
+[   50.729530] Call Trace:
+[   50.732899]  bcd2000_input_complete+0x1f1/0x2e0 [snd_bcd2000]
+
+Fix this by adding usb_kill_urb() before usb_free_urb().
+
+Fixes: b47a22290d58 ("ALSA: MIDI driver for Behringer BCD2000 USB device")
+Signed-off-by: Zheyu Ma <zheyuma97@gmail.com>
+Cc: <stable@vger.kernel.org>
+Link: https://lore.kernel.org/r/20220715010515.2087925-1-zheyuma97@gmail.com
+Signed-off-by: Takashi Iwai <tiwai@suse.de>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/pinctrl/qcom/pinctrl-msm8916.c |    4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ sound/usb/bcd2000/bcd2000.c |    3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
---- a/drivers/pinctrl/qcom/pinctrl-msm8916.c
-+++ b/drivers/pinctrl/qcom/pinctrl-msm8916.c
-@@ -844,8 +844,8 @@ static const struct msm_pingroup msm8916
- 	PINGROUP(28, pwr_modem_enabled_a, NA, NA, NA, NA, NA, qdss_tracedata_b, NA, atest_combodac),
- 	PINGROUP(29, cci_i2c, NA, NA, NA, NA, NA, qdss_tracedata_b, NA, atest_combodac),
- 	PINGROUP(30, cci_i2c, NA, NA, NA, NA, NA, NA, NA, qdss_tracedata_b),
--	PINGROUP(31, cci_timer0, NA, NA, NA, NA, NA, NA, NA, NA),
--	PINGROUP(32, cci_timer1, NA, NA, NA, NA, NA, NA, NA, NA),
-+	PINGROUP(31, cci_timer0, flash_strobe, NA, NA, NA, NA, NA, NA, NA),
-+	PINGROUP(32, cci_timer1, flash_strobe, NA, NA, NA, NA, NA, NA, NA),
- 	PINGROUP(33, cci_async, NA, NA, NA, NA, NA, NA, NA, qdss_tracedata_b),
- 	PINGROUP(34, pwr_nav_enabled_a, NA, NA, NA, NA, NA, NA, NA, qdss_tracedata_b),
- 	PINGROUP(35, pwr_crypto_enabled_a, NA, NA, NA, NA, NA, NA, NA, qdss_tracedata_b),
+--- a/sound/usb/bcd2000/bcd2000.c
++++ b/sound/usb/bcd2000/bcd2000.c
+@@ -350,7 +350,8 @@ static int bcd2000_init_midi(struct bcd2
+ static void bcd2000_free_usb_related_resources(struct bcd2000 *bcd2k,
+ 						struct usb_interface *interface)
+ {
+-	/* usb_kill_urb not necessary, urb is aborted automatically */
++	usb_kill_urb(bcd2k->midi_out_urb);
++	usb_kill_urb(bcd2k->midi_in_urb);
+ 
+ 	usb_free_urb(bcd2k->midi_out_urb);
+ 	usb_free_urb(bcd2k->midi_in_urb);
 
 
