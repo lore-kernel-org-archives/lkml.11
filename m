@@ -2,44 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 49646C32793
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 11:35:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 885EDC32772
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 11:37:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346435AbiHWLfU (ORCPT
+        id S1357456AbiHWLf3 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 07:35:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49006 "EHLO
+        Tue, 23 Aug 2022 07:35:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49050 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357551AbiHWLbm (ORCPT
+        with ESMTP id S1357592AbiHWLbn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 07:31:42 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2A84F8FD5C;
-        Tue, 23 Aug 2022 02:25:51 -0700 (PDT)
+        Tue, 23 Aug 2022 07:31:43 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 69D6FC6525;
+        Tue, 23 Aug 2022 02:25:46 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 25F076126A;
-        Tue, 23 Aug 2022 09:25:50 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 24C9CC433D6;
-        Tue, 23 Aug 2022 09:25:48 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 1393661174;
+        Tue, 23 Aug 2022 09:25:44 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0F626C433C1;
+        Tue, 23 Aug 2022 09:25:42 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661246749;
-        bh=oIHNe4ls1ycyTHniDu6tRrEp7j3f3NiMgFsGvubZ5HQ=;
+        s=korg; t=1661246743;
+        bh=d2B1m8MM4bVmRkRwklottmo9MO/y4rhCSkyjB7cHVMs=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=w3bLrSY573znZlyP3BV9ee9aEgnOD6pIC+y/3N8qOIqdwLqGPQU5Yh91k+qlIs0ED
-         KSzMWB/27s6pMtV9eTKmPn+bkZgD59vGzMIzlp2pNJ6ID9mcfPVhkZB6RvMFvINamo
-         PrugckaUzV87oiG1neMTu2gli8wAm5B9MoLEwQVg=
+        b=P+FJD7jam2jmAhWJ8J9QB0lwX75H2Yc0K0jT+rmZ62gIbu5rkfrSk/2Co1WFmxuqR
+         RXlT2EeNzx0UTlYLFFXOLWw4Va1zW7865v9YY/VuxzP11/VaS4UyhtwfGI4JPhKCYJ
+         mSkdwsNN5bai7KMjbhBO1XiyWS2q+RRd9BgSv7xA=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Srinivas Kandagatla <srinivas.kandagatla@linaro.org>,
+        stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
         Mark Brown <broonie@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 208/389] ASoC: codecs: msm8916-wcd-digital: move gains from SX_TLV to S8_TLV
-Date:   Tue, 23 Aug 2022 10:24:46 +0200
-Message-Id: <20220823080124.327507556@linuxfoundation.org>
+Subject: [PATCH 5.4 206/389] ASoC: mediatek: mt8173-rt5650: Fix refcount leak in mt8173_rt5650_dev_probe
+Date:   Tue, 23 Aug 2022 10:24:44 +0200
+Message-Id: <20220823080124.247317721@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220823080115.331990024@linuxfoundation.org>
 References: <20220823080115.331990024@linuxfoundation.org>
@@ -51,100 +50,64 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Srinivas Kandagatla <srinivas.kandagatla@linaro.org>
+From: Miaoqian Lin <linmq006@gmail.com>
 
-[ Upstream commit 5babb012c847beb6c8c7108fd78f650b7a2c6054 ]
+[ Upstream commit efe2178d1a32492f99e7f1f2568eea5c88a85729 ]
 
-move all the digital gains form using SX_TLV to S8_TLV, these gains are
-actually 8 bit gains with 7th signed bit and ranges from -84dB to +40dB
+of_parse_phandle() returns a node pointer with refcount
+incremented, we should use of_node_put() on it when not need anymore.
+Fix refcount leak in some error paths.
 
-rest of the Qualcomm wcd codecs uses these properly.
-
-Fixes: ef8a4757a6db ("ASoC: msm8916-wcd-digital: Add sidetone support")
-Fixes: 150db8c5afa1 ("ASoC: codecs: Add msm8916-wcd digital codec")
-Signed-off-by: Srinivas Kandagatla <srinivas.kandagatla@linaro.org>
-Link: https://lore.kernel.org/r/20220609111901.318047-2-srinivas.kandagatla@linaro.org
+Fixes: 0f83f9296d5c ("ASoC: mediatek: Add machine driver for ALC5650 codec")
+Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
+Link: https://lore.kernel.org/r/20220603124243.31358-1-linmq006@gmail.com
 Signed-off-by: Mark Brown <broonie@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- sound/soc/codecs/msm8916-wcd-digital.c | 46 +++++++++++++-------------
- 1 file changed, 23 insertions(+), 23 deletions(-)
+ sound/soc/mediatek/mt8173/mt8173-rt5650.c | 9 ++++++---
+ 1 file changed, 6 insertions(+), 3 deletions(-)
 
-diff --git a/sound/soc/codecs/msm8916-wcd-digital.c b/sound/soc/codecs/msm8916-wcd-digital.c
-index e4cde214b7b2..6e5bce4f5eb2 100644
---- a/sound/soc/codecs/msm8916-wcd-digital.c
-+++ b/sound/soc/codecs/msm8916-wcd-digital.c
-@@ -328,8 +328,8 @@ static const struct snd_kcontrol_new rx1_mix2_inp1_mux = SOC_DAPM_ENUM(
- static const struct snd_kcontrol_new rx2_mix2_inp1_mux = SOC_DAPM_ENUM(
- 				"RX2 MIX2 INP1 Mux", rx2_mix2_inp1_chain_enum);
+diff --git a/sound/soc/mediatek/mt8173/mt8173-rt5650.c b/sound/soc/mediatek/mt8173/mt8173-rt5650.c
+index 21e7d4d3ded5..cdfc697ad94e 100644
+--- a/sound/soc/mediatek/mt8173/mt8173-rt5650.c
++++ b/sound/soc/mediatek/mt8173/mt8173-rt5650.c
+@@ -266,7 +266,8 @@ static int mt8173_rt5650_dev_probe(struct platform_device *pdev)
+ 	if (!mt8173_rt5650_dais[DAI_LINK_CODEC_I2S].codecs[0].of_node) {
+ 		dev_err(&pdev->dev,
+ 			"Property 'audio-codec' missing or invalid\n");
+-		return -EINVAL;
++		ret = -EINVAL;
++		goto put_platform_node;
+ 	}
+ 	mt8173_rt5650_dais[DAI_LINK_CODEC_I2S].codecs[1].of_node =
+ 		mt8173_rt5650_dais[DAI_LINK_CODEC_I2S].codecs[0].of_node;
+@@ -279,7 +280,7 @@ static int mt8173_rt5650_dev_probe(struct platform_device *pdev)
+ 			dev_err(&pdev->dev,
+ 				"%s codec_capture_dai name fail %d\n",
+ 				__func__, ret);
+-			return ret;
++			goto put_platform_node;
+ 		}
+ 		mt8173_rt5650_dais[DAI_LINK_CODEC_I2S].codecs[1].dai_name =
+ 			codec_capture_dai;
+@@ -301,7 +302,8 @@ static int mt8173_rt5650_dev_probe(struct platform_device *pdev)
+ 	if (!mt8173_rt5650_dais[DAI_LINK_HDMI_I2S].codecs->of_node) {
+ 		dev_err(&pdev->dev,
+ 			"Property 'audio-codec' missing or invalid\n");
+-		return -EINVAL;
++		ret = -EINVAL;
++		goto put_platform_node;
+ 	}
+ 	card->dev = &pdev->dev;
  
--/* Digital Gain control -38.4 dB to +38.4 dB in 0.3 dB steps */
--static const DECLARE_TLV_DB_SCALE(digital_gain, -3840, 30, 0);
-+/* Digital Gain control -84 dB to +40 dB in 1 dB steps */
-+static const DECLARE_TLV_DB_SCALE(digital_gain, -8400, 100, -8400);
+@@ -310,6 +312,7 @@ static int mt8173_rt5650_dev_probe(struct platform_device *pdev)
+ 		dev_err(&pdev->dev, "%s snd_soc_register_card fail %d\n",
+ 			__func__, ret);
  
- /* Cutoff Freq for High Pass Filter at -3dB */
- static const char * const hpf_cutoff_text[] = {
-@@ -510,15 +510,15 @@ static int wcd_iir_filter_info(struct snd_kcontrol *kcontrol,
- 
- static const struct snd_kcontrol_new msm8916_wcd_digital_snd_controls[] = {
- 	SOC_SINGLE_S8_TLV("RX1 Digital Volume", LPASS_CDC_RX1_VOL_CTL_B2_CTL,
--			  -128, 127, digital_gain),
-+			-84, 40, digital_gain),
- 	SOC_SINGLE_S8_TLV("RX2 Digital Volume", LPASS_CDC_RX2_VOL_CTL_B2_CTL,
--			  -128, 127, digital_gain),
-+			-84, 40, digital_gain),
- 	SOC_SINGLE_S8_TLV("RX3 Digital Volume", LPASS_CDC_RX3_VOL_CTL_B2_CTL,
--			  -128, 127, digital_gain),
-+			-84, 40, digital_gain),
- 	SOC_SINGLE_S8_TLV("TX1 Digital Volume", LPASS_CDC_TX1_VOL_CTL_GAIN,
--			  -128, 127, digital_gain),
-+			-84, 40, digital_gain),
- 	SOC_SINGLE_S8_TLV("TX2 Digital Volume", LPASS_CDC_TX2_VOL_CTL_GAIN,
--			  -128, 127, digital_gain),
-+			-84, 40, digital_gain),
- 	SOC_ENUM("TX1 HPF Cutoff", tx1_hpf_cutoff_enum),
- 	SOC_ENUM("TX2 HPF Cutoff", tx2_hpf_cutoff_enum),
- 	SOC_SINGLE("TX1 HPF Switch", LPASS_CDC_TX1_MUX_CTL, 3, 1, 0),
-@@ -553,22 +553,22 @@ static const struct snd_kcontrol_new msm8916_wcd_digital_snd_controls[] = {
- 	WCD_IIR_FILTER_CTL("IIR2 Band3", IIR2, BAND3),
- 	WCD_IIR_FILTER_CTL("IIR2 Band4", IIR2, BAND4),
- 	WCD_IIR_FILTER_CTL("IIR2 Band5", IIR2, BAND5),
--	SOC_SINGLE_SX_TLV("IIR1 INP1 Volume", LPASS_CDC_IIR1_GAIN_B1_CTL,
--			0,  -84, 40, digital_gain),
--	SOC_SINGLE_SX_TLV("IIR1 INP2 Volume", LPASS_CDC_IIR1_GAIN_B2_CTL,
--			0,  -84, 40, digital_gain),
--	SOC_SINGLE_SX_TLV("IIR1 INP3 Volume", LPASS_CDC_IIR1_GAIN_B3_CTL,
--			0,  -84, 40, digital_gain),
--	SOC_SINGLE_SX_TLV("IIR1 INP4 Volume", LPASS_CDC_IIR1_GAIN_B4_CTL,
--			0,  -84,	40, digital_gain),
--	SOC_SINGLE_SX_TLV("IIR2 INP1 Volume", LPASS_CDC_IIR2_GAIN_B1_CTL,
--			0,  -84, 40, digital_gain),
--	SOC_SINGLE_SX_TLV("IIR2 INP2 Volume", LPASS_CDC_IIR2_GAIN_B2_CTL,
--			0,  -84, 40, digital_gain),
--	SOC_SINGLE_SX_TLV("IIR2 INP3 Volume", LPASS_CDC_IIR2_GAIN_B3_CTL,
--			0,  -84, 40, digital_gain),
--	SOC_SINGLE_SX_TLV("IIR2 INP4 Volume", LPASS_CDC_IIR2_GAIN_B4_CTL,
--			0,  -84, 40, digital_gain),
-+	SOC_SINGLE_S8_TLV("IIR1 INP1 Volume", LPASS_CDC_IIR1_GAIN_B1_CTL,
-+			-84, 40, digital_gain),
-+	SOC_SINGLE_S8_TLV("IIR1 INP2 Volume", LPASS_CDC_IIR1_GAIN_B2_CTL,
-+			-84, 40, digital_gain),
-+	SOC_SINGLE_S8_TLV("IIR1 INP3 Volume", LPASS_CDC_IIR1_GAIN_B3_CTL,
-+			-84, 40, digital_gain),
-+	SOC_SINGLE_S8_TLV("IIR1 INP4 Volume", LPASS_CDC_IIR1_GAIN_B4_CTL,
-+			-84, 40, digital_gain),
-+	SOC_SINGLE_S8_TLV("IIR2 INP1 Volume", LPASS_CDC_IIR2_GAIN_B1_CTL,
-+			-84, 40, digital_gain),
-+	SOC_SINGLE_S8_TLV("IIR2 INP2 Volume", LPASS_CDC_IIR2_GAIN_B2_CTL,
-+			-84, 40, digital_gain),
-+	SOC_SINGLE_S8_TLV("IIR2 INP3 Volume", LPASS_CDC_IIR2_GAIN_B3_CTL,
-+			-84, 40, digital_gain),
-+	SOC_SINGLE_S8_TLV("IIR2 INP4 Volume", LPASS_CDC_IIR2_GAIN_B4_CTL,
-+			-84, 40, digital_gain),
- 
- };
- 
++put_platform_node:
+ 	of_node_put(platform_node);
+ 	return ret;
+ }
 -- 
 2.35.1
 
