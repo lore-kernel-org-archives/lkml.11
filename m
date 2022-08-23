@@ -2,92 +2,95 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 97011C32792
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 09:18:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9B193C32772
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 09:18:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236009AbiHWJSW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 05:18:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49236 "EHLO
+        id S235132AbiHWJS2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 23 Aug 2022 05:18:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50214 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349551AbiHWJQF (ORCPT
+        with ESMTP id S1349601AbiHWJQH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 05:16:05 -0400
-Received: from mail-lf1-x130.google.com (mail-lf1-x130.google.com [IPv6:2a00:1450:4864:20::130])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7B7FD86FFE
-        for <linux-kernel@vger.kernel.org>; Tue, 23 Aug 2022 01:32:25 -0700 (PDT)
-Received: by mail-lf1-x130.google.com with SMTP id s1so15900800lfp.6
-        for <linux-kernel@vger.kernel.org>; Tue, 23 Aug 2022 01:32:24 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc;
-        bh=F+5yVrf2toWobmjjbMycRUMUYr1HibosAX8wZbYW6I8=;
-        b=ME5pga0xqukFaQ68m0vfi01ZcbRzB6yRE0fmlS7+txX0bQzWcwtEDRVyRioYOwi0MK
-         78InqOKpEzQjwwoKp2jLetMmVf+U5kGfjAGpCioYESzh0Nn7R6NnQEhEpy83phb2wUBE
-         vONvAXl1ssbqNdhWgsw2pgINK15PKwGEugYDYXQ0DvtuYmJnc+kHLoqrcq/t9TBGW18o
-         dZU7d/N5EaKR+aOL8epf9dLFNAFMKp9E+bD7gskVr4SPbXoi96eOAvH4hzX2GgWwnC3o
-         g1IWqumSlGK5va3jXsEv35nL23bMbFlCDl0w5NvXP0nYtKGxRoJwWq/DNhDBDzGG9reA
-         nMpg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc;
-        bh=F+5yVrf2toWobmjjbMycRUMUYr1HibosAX8wZbYW6I8=;
-        b=aPo9R3yFQEiaqcAe8SmgjLj3RRd43Mapnwm/LvSkUA2YYV/vn58NhFiSxdjj9F/dDr
-         K+4ya9GGM1r+jaJKRCTjdaMsQUJq2YvF6cqy1x0HcK7YZOIYmxBMmZzWeMPgijUaQzep
-         lE2v6EqecMsNukTiWwKcrpQrWinwgA5O2t7l4SXKfc0Wt8dVhWub+j2xIUGgZ7sH9lXX
-         ckS6m6CJxnr6nZx/iEOw1ckMTi8Kh4wOOZtbwE4tEur6+3WvbtIgUPdr7WULlQh/C4n9
-         rMZyUmljuAKdQEyeVK5B+tBaacnDAKKRDrvu9JLhPxoxD43bG+FARwFj2vN4P/n/d5au
-         /ehw==
-X-Gm-Message-State: ACgBeo0guUa2vf9vATiXV1krsRDeY5dZ0qzdIU6kvWEue2TjkX30p4iN
-        fgbvvgqfSNEFP47gPHrErZBDAg==
-X-Google-Smtp-Source: AA6agR5US57wd92jMkSXVjf68U7K8XzRGHmQSa/B4s1jL0IZJ4zZqecKAkNJuoKOArqf5pabIV5IRQ==
-X-Received: by 2002:a05:6512:3d08:b0:48b:123e:fcf3 with SMTP id d8-20020a0565123d0800b0048b123efcf3mr8057965lfv.418.1661243543099;
-        Tue, 23 Aug 2022 01:32:23 -0700 (PDT)
-Received: from [192.168.0.11] (89-27-92-210.bb.dnainternet.fi. [89.27.92.210])
-        by smtp.gmail.com with ESMTPSA id v20-20020a05651203b400b0048a83ab2d32sm1193907lfp.0.2022.08.23.01.32.22
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 23 Aug 2022 01:32:22 -0700 (PDT)
-Message-ID: <f621a841-593f-cfed-9560-64c011a00bdd@linaro.org>
-Date:   Tue, 23 Aug 2022 11:32:21 +0300
+        Tue, 23 Aug 2022 05:16:07 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 94A267539B;
+        Tue, 23 Aug 2022 01:32:29 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 25184614C2;
+        Tue, 23 Aug 2022 08:32:29 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1A5E6C43140;
+        Tue, 23 Aug 2022 08:32:27 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1661243548;
+        bh=gm4JWmFIYfwLgfO8bC1MN2J9LdWEiHeJg2NX56k84FU=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=XU4tSjREz96PFMwsO6RSfe5Dm2mcG5Z7QYGBf4s38+zzriYPlbW8eHUx3wiDDxaFV
+         t1FuK19dpj0nFC1AESNDe/78VBha6gx7yUVqkMnbiu36+NPOTj5kkjP7QyyPRh/wF4
+         FUPnjtq96XhmSAAXNcVCUpnwmKjaaS8pLn5yZEPc=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Logan Gunthorpe <logang@deltatee.com>,
+        Song Liu <song@kernel.org>, Jens Axboe <axboe@kernel.dk>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.19 312/365] md/raid5: Make logic blocking check consistent with logic that blocks
+Date:   Tue, 23 Aug 2022 10:03:33 +0200
+Message-Id: <20220823080131.232792593@linuxfoundation.org>
+X-Mailer: git-send-email 2.37.2
+In-Reply-To: <20220823080118.128342613@linuxfoundation.org>
+References: <20220823080118.128342613@linuxfoundation.org>
+User-Agent: quilt/0.67
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.12.0
-Subject: Re: [PATCH,2/2] pwm: mtk-disp: Fix the parameters calculated by the
- enabled flag of disp_pwm.
-Content-Language: en-US
-To:     xinlei.lee@mediatek.com, thierry.reding@gmail.com,
-        u.kleine-koenig@pengutronix.de, robh+dt@kernel.org,
-        krzysztof.kozlowski+dt@linaro.org, matthias.bgg@gmail.com
-Cc:     linux-pwm@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org,
-        Project_Global_Chrome_Upstream_Group@mediatek.com
-References: <1661239875-19841-1-git-send-email-xinlei.lee@mediatek.com>
- <1661239875-19841-3-git-send-email-xinlei.lee@mediatek.com>
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-In-Reply-To: <1661239875-19841-3-git-send-email-xinlei.lee@mediatek.com>
 Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 23/08/2022 10:31, xinlei.lee@mediatek.com wrote:
-> From: xinlei lee <xinlei.lee@mediatek.com>
-> 
-> In the original mtk_disp_pwm_get_state() function, the result of reading
-> con0 & BIT(0) is enabled as disp_pwm. 
-> In order to conform to the register table, we should use the disp_pwm 
-> base address as the enabled judgment.
-> 
-> Fixes: 3f2b16734914 ("pwm: mtk-disp: Implement atomic API .get_state()")
-> Signed-off-by: xinlei lee <xinlei.lee@mediatek.com>
+From: Logan Gunthorpe <logang@deltatee.com>
 
-This is a fix so not really related with the change adding new device.
-Send them separately in the future.
+[ Upstream commit 6e3f50d30af847bebce072182bd735e90a294c6a ]
 
-Best regards,
-Krzysztof
+The check in raid5_make_request differs very slightly from the logic
+that causes it to block lower down. This likely does not cause a bug
+as the check is fuzzy anyway (as reshape may move on between the first
+check and the subsequent check). However, make it consistent so it can
+be cleaned up in a subsequent patch.
+
+The condition which causes the schedule is:
+
+ !(mddev->reshape_backwards ? logical_sector < conf->reshape_progress :
+   logical_sector >= conf->reshape_progress) &&
+  (mddev->reshape_backwards ? logical_sector < conf->reshape_safe :
+   logical_sector >= conf->reshape_safe)
+
+The condition that causes the early bailout is made to match this.
+
+Signed-off-by: Logan Gunthorpe <logang@deltatee.com>
+Signed-off-by: Song Liu <song@kernel.org>
+Signed-off-by: Jens Axboe <axboe@kernel.dk>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ drivers/md/raid5.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/drivers/md/raid5.c b/drivers/md/raid5.c
+index c8539d0e12dd..45482cebacdb 100644
+--- a/drivers/md/raid5.c
++++ b/drivers/md/raid5.c
+@@ -5841,7 +5841,7 @@ static bool raid5_make_request(struct mddev *mddev, struct bio * bi)
+ 	if ((bi->bi_opf & REQ_NOWAIT) &&
+ 	    (conf->reshape_progress != MaxSector) &&
+ 	    (mddev->reshape_backwards
+-	    ? (logical_sector > conf->reshape_progress && logical_sector <= conf->reshape_safe)
++	    ? (logical_sector >= conf->reshape_progress && logical_sector < conf->reshape_safe)
+ 	    : (logical_sector >= conf->reshape_safe && logical_sector < conf->reshape_progress))) {
+ 		bio_wouldblock_error(bi);
+ 		if (rw == WRITE)
+-- 
+2.35.1
+
+
+
