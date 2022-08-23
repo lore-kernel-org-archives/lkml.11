@@ -2,41 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 10834C32774
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 12:18:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 54CD7C32772
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 12:18:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241147AbiHWMSm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 08:18:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45768 "EHLO
+        id S243685AbiHWMSy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 23 Aug 2022 08:18:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50858 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355155AbiHWMPf (ORCPT
+        with ESMTP id S1356004AbiHWMPk (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 08:15:35 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0796598D12;
-        Tue, 23 Aug 2022 02:41:09 -0700 (PDT)
+        Tue, 23 Aug 2022 08:15:40 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 774B079697;
+        Tue, 23 Aug 2022 02:41:02 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id BDF2961460;
-        Tue, 23 Aug 2022 09:40:07 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C1ECAC433C1;
-        Tue, 23 Aug 2022 09:40:06 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 49880CE1B58;
+        Tue, 23 Aug 2022 09:39:56 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 60F61C433C1;
+        Tue, 23 Aug 2022 09:39:54 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661247607;
-        bh=oyDLGCSu9zgousUVgIFHeW73Sm2SW2iFyiH40jFxiGs=;
+        s=korg; t=1661247594;
+        bh=jCgrNFOMkzIfQkvmFRUBShrSXcsnNAqOEKWnP3VWncU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Nthw3chWYzwpGgYnBOclz8KXuhZ5qI1s9XwFLtmea0dVw6cVJE8Umpkgd5M13Xqln
-         EfQ1HkDT3vPCTsdZUHV3Lw3oEEd0PdCzRdar9uf+oNq8Gr1tTiyT/Ps2kgUdY2dopS
-         8ENJL0T7ixfdHG4R2BWoEhl13IO2ARz2Prm94yEI=
+        b=JXcRUu1HicTvymdVdM7DRf9O0EpoUaWhuOeR0wcqFVehnsjPhKU1loFhNaf1c3l3K
+         ozoXUskWeQer3PrlIfCOj2o0GXuq4L4dgOvcImrAVqWtaXHZab5WzfGm9QBVe2ZMXJ
+         Fvu4q7f/GoONM6qX7ARnJ2n23l4g9ltzB/XspN5k=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Mark Brown <broonie@kernel.org>,
-        Frieder Schrempf <frieder.schrempf@kontron.de>
-Subject: [PATCH 5.10 088/158] regulator: pca9450: Remove restrictions for regulator-name
-Date:   Tue, 23 Aug 2022 10:27:00 +0200
-Message-Id: <20220823080049.607876277@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Rustam Subkhankulov <subkhankulov@ispras.ru>,
+        Jakub Kicinski <kuba@kernel.org>
+Subject: [PATCH 5.10 085/158] net: dsa: sja1105: fix buffer overflow in sja1105_setup_devlink_regions()
+Date:   Tue, 23 Aug 2022 10:26:57 +0200
+Message-Id: <20220823080049.491475845@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220823080046.056825146@linuxfoundation.org>
 References: <20220823080046.056825146@linuxfoundation.org>
@@ -48,53 +49,37 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Frieder Schrempf <frieder.schrempf@kontron.de>
+From: Rustam Subkhankulov <subkhankulov@ispras.ru>
 
-commit b0de7fa706506bf0591037908376351beda8c5d6 upstream.
+commit fd8e899cdb5ecaf8e8ee73854a99e10807eef1de upstream.
 
-The device bindings shouldn't put any constraints on the regulator-name
-property specified in the generic bindings. This allows using arbitrary
-and descriptive names for the regulators.
+If an error occurs in dsa_devlink_region_create(), then 'priv->regions'
+array will be accessed by negative index '-1'.
 
-Suggested-by: Mark Brown <broonie@kernel.org>
-Fixes: 7ae9e3a6bf3f ("dt-bindings: regulator: add pca9450 regulator yaml")
-Signed-off-by: Frieder Schrempf <frieder.schrempf@kontron.de>
-Link: https://lore.kernel.org/r/20220802064335.8481-1-frieder@fris.de
-Signed-off-by: Mark Brown <broonie@kernel.org>
+Found by Linux Verification Center (linuxtesting.org) with SVACE.
+
+Signed-off-by: Rustam Subkhankulov <subkhankulov@ispras.ru>
+Fixes: bf425b82059e ("net: dsa: sja1105: expose static config as devlink region")
+Link: https://lore.kernel.org/r/20220817003845.389644-1-subkhankulov@ispras.ru
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- .../bindings/regulator/nxp,pca9450-regulator.yaml     | 11 -----------
- 1 file changed, 11 deletions(-)
+ drivers/net/dsa/sja1105/sja1105_devlink.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/Documentation/devicetree/bindings/regulator/nxp,pca9450-regulator.yaml b/Documentation/devicetree/bindings/regulator/nxp,pca9450-regulator.yaml
-index b539781e39aa..835b53302db8 100644
---- a/Documentation/devicetree/bindings/regulator/nxp,pca9450-regulator.yaml
-+++ b/Documentation/devicetree/bindings/regulator/nxp,pca9450-regulator.yaml
-@@ -47,12 +47,6 @@ properties:
-         description:
-           Properties for single LDO regulator.
+diff --git a/drivers/net/dsa/sja1105/sja1105_devlink.c b/drivers/net/dsa/sja1105/sja1105_devlink.c
+index 0569ff066634..10c6fea1227f 100644
+--- a/drivers/net/dsa/sja1105/sja1105_devlink.c
++++ b/drivers/net/dsa/sja1105/sja1105_devlink.c
+@@ -93,7 +93,7 @@ static int sja1105_setup_devlink_regions(struct dsa_switch *ds)
  
--        properties:
--          regulator-name:
--            pattern: "^LDO[1-5]$"
--            description:
--              should be "LDO1", ..., "LDO5"
--
-         unevaluatedProperties: false
- 
-       "^BUCK[1-6]$":
-@@ -62,11 +56,6 @@ properties:
-           Properties for single BUCK regulator.
- 
-         properties:
--          regulator-name:
--            pattern: "^BUCK[1-6]$"
--            description:
--              should be "BUCK1", ..., "BUCK6"
--
-           nxp,dvs-run-voltage:
-             $ref: "/schemas/types.yaml#/definitions/uint32"
-             minimum: 600000
+ 		region = dsa_devlink_region_create(ds, ops, 1, size);
+ 		if (IS_ERR(region)) {
+-			while (i-- >= 0)
++			while (--i >= 0)
+ 				dsa_devlink_region_destroy(priv->regions[i]);
+ 			return PTR_ERR(region);
+ 		}
 -- 
 2.37.2
 
