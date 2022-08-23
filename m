@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 18AE2C3F6B0
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 69C3CC38147
 	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 10:26:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354503AbiHWKZs (ORCPT
+        id S1354613AbiHWKZ7 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 06:25:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47324 "EHLO
+        Tue, 23 Aug 2022 06:25:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33250 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353609AbiHWKLn (ORCPT
+        with ESMTP id S1353642AbiHWKLr (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 06:11:43 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CACD8B2;
-        Tue, 23 Aug 2022 01:57:46 -0700 (PDT)
+        Tue, 23 Aug 2022 06:11:47 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 16FF37F13A;
+        Tue, 23 Aug 2022 01:58:00 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 6741C6123D;
-        Tue, 23 Aug 2022 08:57:46 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6F9AEC433C1;
-        Tue, 23 Aug 2022 08:57:45 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 2FB8EB81C35;
+        Tue, 23 Aug 2022 08:57:59 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 78C14C433C1;
+        Tue, 23 Aug 2022 08:57:57 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661245065;
-        bh=aD74N/hsr51I4dViwIJ6uB1M3qdYNTympSCUrh97GdU=;
+        s=korg; t=1661245077;
+        bh=wL+I1X6OYqaa+s1yOlsuInujXPWsQqoekriR1F0yces=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=WKiyxVG+FJKu7P0DTkdQ96JBZc5QuKRSYXba2xUymlnLVDWGVrhQxKTKwyxcIAV7c
-         CKxgAu2se2lg5bwH3gsoCJ6ORmLbWuK3sQGhW7pKN7jw2dH5iS2t/hbwGFwM8XtCvW
-         z9EqhbQ3pNy+HQqglikEyG6FWT1S/9KCV5O12YSo=
+        b=0kkAjwIFef/4m4QCnn0k/VHQVm3jNLAo1I49ALpQhyFiGy5l82r6/NLIOAqq9VKdF
+         hxrw7pyBueKk1UGjzb3mVqvezg9wRu91cs3SfAvfqDUUHTuhyxOH4VplKSIHmGICxL
+         3VwU1KDKqrCKqAYi4r46gnXbv4RKxB/Uq8EcsaaA=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Wentao_Liang <Wentao_Liang_g@163.com>,
-        Song Liu <song@kernel.org>, Jens Axboe <axboe@kernel.dk>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 203/244] drivers:md:fix a potential use-after-free bug
-Date:   Tue, 23 Aug 2022 10:26:02 +0200
-Message-Id: <20220823080106.268223829@linuxfoundation.org>
+        stable@vger.kernel.org, Timur Tabi <timur@kernel.org>,
+        Liang He <windhl@126.com>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 207/244] tty: serial: Fix refcount leak bug in ucc_uart.c
+Date:   Tue, 23 Aug 2022 10:26:06 +0200
+Message-Id: <20220823080106.412901268@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220823080059.091088642@linuxfoundation.org>
 References: <20220823080059.091088642@linuxfoundation.org>
@@ -50,42 +49,36 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Wentao_Liang <Wentao_Liang_g@163.com>
+From: Liang He <windhl@126.com>
 
-[ Upstream commit 104212471b1c1817b311771d817fb692af983173 ]
+[ Upstream commit d24d7bb2cd947676f9b71fb944d045e09b8b282f ]
 
-In line 2884, "raid5_release_stripe(sh);" drops the reference to sh and
-may cause sh to be released. However, sh is subsequently used in lines
-2886 "if (sh->batch_head && sh != sh->batch_head)". This may result in an
-use-after-free bug.
+In soc_info(), of_find_node_by_type() will return a node pointer
+with refcount incremented. We should use of_node_put() when it is
+not used anymore.
 
-It can be fixed by moving "raid5_release_stripe(sh);" to the bottom of
-the function.
-
-Signed-off-by: Wentao_Liang <Wentao_Liang_g@163.com>
-Signed-off-by: Song Liu <song@kernel.org>
-Signed-off-by: Jens Axboe <axboe@kernel.dk>
+Acked-by: Timur Tabi <timur@kernel.org>
+Signed-off-by: Liang He <windhl@126.com>
+Link: https://lore.kernel.org/r/20220618060850.4058525-1-windhl@126.com
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/md/raid5.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/tty/serial/ucc_uart.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
-diff --git a/drivers/md/raid5.c b/drivers/md/raid5.c
-index b58984ddca13..19e497a7e747 100644
---- a/drivers/md/raid5.c
-+++ b/drivers/md/raid5.c
-@@ -2864,10 +2864,10 @@ static void raid5_end_write_request(struct bio *bi)
- 	if (!test_and_clear_bit(R5_DOUBLE_LOCKED, &sh->dev[i].flags))
- 		clear_bit(R5_LOCKED, &sh->dev[i].flags);
- 	set_bit(STRIPE_HANDLE, &sh->state);
--	raid5_release_stripe(sh);
+diff --git a/drivers/tty/serial/ucc_uart.c b/drivers/tty/serial/ucc_uart.c
+index 6000853973c1..3cc9ef08455c 100644
+--- a/drivers/tty/serial/ucc_uart.c
++++ b/drivers/tty/serial/ucc_uart.c
+@@ -1137,6 +1137,8 @@ static unsigned int soc_info(unsigned int *rev_h, unsigned int *rev_l)
+ 		/* No compatible property, so try the name. */
+ 		soc_string = np->name;
  
- 	if (sh->batch_head && sh != sh->batch_head)
- 		raid5_release_stripe(sh->batch_head);
-+	raid5_release_stripe(sh);
- }
- 
- static void raid5_error(struct mddev *mddev, struct md_rdev *rdev)
++	of_node_put(np);
++
+ 	/* Extract the SOC number from the "PowerPC," string */
+ 	if ((sscanf(soc_string, "PowerPC,%u", &soc) != 1) || !soc)
+ 		return 0;
 -- 
 2.35.1
 
