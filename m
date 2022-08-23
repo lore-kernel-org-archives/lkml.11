@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4A845C32772
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 11:28:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 351C0C32772
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 11:29:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241530AbiHWL2u (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 07:28:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52574 "EHLO
+        id S243767AbiHWL26 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 23 Aug 2022 07:28:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59292 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345467AbiHWLWk (ORCPT
+        with ESMTP id S241158AbiHWLXG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 07:22:40 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 154003F1DD;
-        Tue, 23 Aug 2022 02:23:31 -0700 (PDT)
+        Tue, 23 Aug 2022 07:23:06 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EBCBB5E64D;
+        Tue, 23 Aug 2022 02:23:37 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id BA788B81C63;
-        Tue, 23 Aug 2022 09:23:29 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0C292C433D7;
-        Tue, 23 Aug 2022 09:23:27 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 2E5EFB81C86;
+        Tue, 23 Aug 2022 09:23:36 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 607F7C433D6;
+        Tue, 23 Aug 2022 09:23:34 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661246608;
-        bh=k6l0jTys9X4jNwGOb/WlS1JIPlY5G2K38bc4mbzN3tQ=;
+        s=korg; t=1661246614;
+        bh=VunSmMk6ohgZxQawrwkQqpADKI+MC2Xf+apOUCRcVf8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ud9i4oMOOyvQuV+we60q+kcboF/GyrMgJ8c49C+Xd4VkQcoZzPiCAYC3DkDxZ3Bmd
-         Cey7IGjqz99tWEhREXW8X3vDAE8LZw1yEkkzzoxNi58VH5itxOFeLYnrwWcafiAg0n
-         PsS7BQDnutpuaP5ExzHoqt+ffBjE+WeKSUQVVOVA=
+        b=L2A2XD7VnWlp7U1p0VcQTwK67rVixzx4g1kZxASL8YpPtSxVKiLf/hLjE4fLzZrdB
+         gOPIbGPKidYiRfP7DqV/49dt5UVkBZAlVCfCncKfCPGV8mAT+jzFtlmaI8WGPfNSrO
+         O/Ra82BZzYAvy729lB9fUqkMWKjajnsl8semNfxw=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
+        stable@vger.kernel.org, Chen-Yu Tsai <wens@csie.org>,
         Vincent Mailhol <mailhol.vincent@wanadoo.fr>,
         Marc Kleine-Budde <mkl@pengutronix.de>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 133/389] can: sja1000: do not report txerr and rxerr during bus-off
-Date:   Tue, 23 Aug 2022 10:23:31 +0200
-Message-Id: <20220823080121.177102706@linuxfoundation.org>
+Subject: [PATCH 5.4 135/389] can: sun4i_can: do not report txerr and rxerr during bus-off
+Date:   Tue, 23 Aug 2022 10:23:33 +0200
+Message-Id: <20220823080121.255592651@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220823080115.331990024@linuxfoundation.org>
 References: <20220823080115.331990024@linuxfoundation.org>
@@ -52,45 +52,48 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Vincent Mailhol <mailhol.vincent@wanadoo.fr>
 
-[ Upstream commit 164d7cb2d5a30f1b3a5ab4fab1a27731fb1494a8 ]
+[ Upstream commit 0ac15a8f661b941519379831d09bfb12271b23ee ]
 
 During bus off, the error count is greater than 255 and can not fit in
 a u8.
 
-Fixes: 215db1856e83 ("can: sja1000: Consolidate and unify state change handling")
-Link: https://lore.kernel.org/all/20220719143550.3681-4-mailhol.vincent@wanadoo.fr
+Fixes: 0738eff14d81 ("can: Allwinner A10/A20 CAN Controller support - Kernel module")
+Link: https://lore.kernel.org/all/20220719143550.3681-7-mailhol.vincent@wanadoo.fr
+CC: Chen-Yu Tsai <wens@csie.org>
 Signed-off-by: Vincent Mailhol <mailhol.vincent@wanadoo.fr>
 Signed-off-by: Marc Kleine-Budde <mkl@pengutronix.de>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/can/sja1000/sja1000.c | 7 ++++---
- 1 file changed, 4 insertions(+), 3 deletions(-)
+ drivers/net/can/sun4i_can.c | 9 ++++-----
+ 1 file changed, 4 insertions(+), 5 deletions(-)
 
-diff --git a/drivers/net/can/sja1000/sja1000.c b/drivers/net/can/sja1000/sja1000.c
-index 9f107798f904..e7327ceabb76 100644
---- a/drivers/net/can/sja1000/sja1000.c
-+++ b/drivers/net/can/sja1000/sja1000.c
-@@ -405,9 +405,6 @@ static int sja1000_err(struct net_device *dev, uint8_t isrc, uint8_t status)
- 	txerr = priv->read_reg(priv, SJA1000_TXERR);
- 	rxerr = priv->read_reg(priv, SJA1000_RXERR);
+diff --git a/drivers/net/can/sun4i_can.c b/drivers/net/can/sun4i_can.c
+index f4cd88196404..c519b6f63b33 100644
+--- a/drivers/net/can/sun4i_can.c
++++ b/drivers/net/can/sun4i_can.c
+@@ -525,11 +525,6 @@ static int sun4i_can_err(struct net_device *dev, u8 isrc, u8 status)
+ 	rxerr = (errc >> 16) & 0xFF;
+ 	txerr = errc & 0xFF;
  
--	cf->data[6] = txerr;
--	cf->data[7] = rxerr;
+-	if (skb) {
+-		cf->data[6] = txerr;
+-		cf->data[7] = rxerr;
+-	}
 -
- 	if (isrc & IRQ_DOI) {
+ 	if (isrc & SUN4I_INT_DATA_OR) {
  		/* data overrun interrupt */
  		netdev_dbg(dev, "data overrun interrupt\n");
-@@ -429,6 +426,10 @@ static int sja1000_err(struct net_device *dev, uint8_t isrc, uint8_t status)
+@@ -560,6 +555,10 @@ static int sun4i_can_err(struct net_device *dev, u8 isrc, u8 status)
  		else
  			state = CAN_STATE_ERROR_ACTIVE;
  	}
-+	if (state != CAN_STATE_BUS_OFF) {
++	if (skb && state != CAN_STATE_BUS_OFF) {
 +		cf->data[6] = txerr;
 +		cf->data[7] = rxerr;
 +	}
- 	if (isrc & IRQ_BEI) {
+ 	if (isrc & SUN4I_INT_BUS_ERR) {
  		/* bus error interrupt */
- 		priv->can.can_stats.bus_error++;
+ 		netdev_dbg(dev, "bus error interrupt\n");
 -- 
 2.35.1
 
