@@ -2,43 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4DAB3C32774
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 08:20:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C5FCDC32793
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 08:20:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239496AbiHWIUA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 04:20:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44738 "EHLO
+        id S242960AbiHWIUE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 23 Aug 2022 04:20:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45224 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242746AbiHWIPx (ORCPT
+        with ESMTP id S242776AbiHWIP4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 04:15:53 -0400
+        Tue, 23 Aug 2022 04:15:56 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5DCFF6DAD8;
-        Tue, 23 Aug 2022 01:10:25 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CA908659E0;
+        Tue, 23 Aug 2022 01:10:28 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 1EF65B81C26;
+        by ams.source.kernel.org (Postfix) with ESMTPS id B422FB81C22;
+        Tue, 23 Aug 2022 08:10:26 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 28571C433C1;
         Tue, 23 Aug 2022 08:10:24 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 640A9C433D6;
-        Tue, 23 Aug 2022 08:10:22 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661242222;
-        bh=gl2ec1/9WIGA+Cbo3C9Q12gKyFZ9vUECTlF+qnQ3z+c=;
+        s=korg; t=1661242225;
+        bh=4qdvcd67QF/mJhsoNiRGkFq5X907E8Eoc35qTDH2SdU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=uU+ybIjSYGpI064SIikmBvCp+h+rrUIVYn/8hoRibGV5BJrEjLS8dhHvDGn770nHL
-         APn8N/w77wTousdPb5xjcEKblpEeNHhAyCVyyba3sXnZQyAlTGcHO+DZq/FQWUtV1Z
-         DzRFREs6Vziq3zJ6qKssCNzK2auPqgrcAuKxa2IY=
+        b=PV0efZQGtdFA9U85euEBOE3YsimN/z8zc86DsSUgyWc6n8ZggJP9B+4XvDkafAT8X
+         uSbRMdtUSsSPU2yTpF0HGgRdiSdHX36c/UuJRy7pPtvaU9uRB6u6Gr3al9JTkz2WcH
+         /ItTdDWdwYlZoaONO3sGWIGdywxx9IVHuzaq5Wj8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Miklos Szeredi <mszeredi@redhat.com>
-Subject: [PATCH 4.9 038/101] fuse: limit nsec
-Date:   Tue, 23 Aug 2022 10:03:11 +0200
-Message-Id: <20220823080036.019985254@linuxfoundation.org>
+        stable@vger.kernel.org, Xuan Zhuo <xuanzhuo@linux.alibaba.com>,
+        Jason Wang <jasowang@redhat.com>,
+        "David S. Miller" <davem@davemloft.net>
+Subject: [PATCH 5.19 079/365] virtio_net: fix memory leak inside XPD_TX with mergeable
+Date:   Tue, 23 Aug 2022 09:59:40 +0200
+Message-Id: <20220823080121.493871888@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220823080034.579196046@linuxfoundation.org>
-References: <20220823080034.579196046@linuxfoundation.org>
+In-Reply-To: <20220823080118.128342613@linuxfoundation.org>
+References: <20220823080118.128342613@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -47,34 +49,38 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Miklos Szeredi <mszeredi@redhat.com>
+From: Xuan Zhuo <xuanzhuo@linux.alibaba.com>
 
-commit 47912eaa061a6a81e4aa790591a1874c650733c0 upstream.
+commit 7a542bee27c6a57e45c33cbbdc963325fd6493af upstream.
 
-Limit nanoseconds to 0..999999999.
+When we call xdp_convert_buff_to_frame() to get xdpf, if it returns
+NULL, we should check if xdp_page was allocated by xdp_linearize_page().
+If it is newly allocated, it should be freed here alone. Just like any
+other "goto err_xdp".
 
-Fixes: d8a5ba45457e ("[PATCH] FUSE - core")
-Cc: <stable@vger.kernel.org>
-Signed-off-by: Miklos Szeredi <mszeredi@redhat.com>
+Fixes: 44fa2dbd4759 ("xdp: transition into using xdp_frame for ndo_xdp_xmit")
+Signed-off-by: Xuan Zhuo <xuanzhuo@linux.alibaba.com>
+Acked-by: Jason Wang <jasowang@redhat.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- fs/fuse/inode.c |    6 ++++++
- 1 file changed, 6 insertions(+)
+ drivers/net/virtio_net.c |    5 ++++-
+ 1 file changed, 4 insertions(+), 1 deletion(-)
 
---- a/fs/fuse/inode.c
-+++ b/fs/fuse/inode.c
-@@ -173,6 +173,12 @@ void fuse_change_attributes_common(struc
- 	inode->i_uid     = make_kuid(&init_user_ns, attr->uid);
- 	inode->i_gid     = make_kgid(&init_user_ns, attr->gid);
- 	inode->i_blocks  = attr->blocks;
-+
-+	/* Sanitize nsecs */
-+	attr->atimensec = min_t(u32, attr->atimensec, NSEC_PER_SEC - 1);
-+	attr->mtimensec = min_t(u32, attr->mtimensec, NSEC_PER_SEC - 1);
-+	attr->ctimensec = min_t(u32, attr->ctimensec, NSEC_PER_SEC - 1);
-+
- 	inode->i_atime.tv_sec   = attr->atime;
- 	inode->i_atime.tv_nsec  = attr->atimensec;
- 	/* mtime from server may be stale due to local buffered write */
+--- a/drivers/net/virtio_net.c
++++ b/drivers/net/virtio_net.c
+@@ -1057,8 +1057,11 @@ static struct sk_buff *receive_mergeable
+ 		case XDP_TX:
+ 			stats->xdp_tx++;
+ 			xdpf = xdp_convert_buff_to_frame(&xdp);
+-			if (unlikely(!xdpf))
++			if (unlikely(!xdpf)) {
++				if (unlikely(xdp_page != page))
++					put_page(xdp_page);
+ 				goto err_xdp;
++			}
+ 			err = virtnet_xdp_xmit(dev, 1, &xdpf, 0);
+ 			if (unlikely(!err)) {
+ 				xdp_return_frame_rx_napi(xdpf);
 
 
