@@ -2,112 +2,133 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7FB59C32772
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 19:32:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7A3D5C32772
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 19:32:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231783AbiHWTcV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 15:32:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48748 "EHLO
+        id S230021AbiHWTch (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 23 Aug 2022 15:32:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51778 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231276AbiHWTby (ORCPT
+        with ESMTP id S232328AbiHWTcC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 15:31:54 -0400
-Received: from out01.mta.xmission.com (out01.mta.xmission.com [166.70.13.231])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 817F9BF68;
-        Tue, 23 Aug 2022 11:23:23 -0700 (PDT)
-Received: from in01.mta.xmission.com ([166.70.13.51]:60738)
-        by out01.mta.xmission.com with esmtps  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.93)
-        (envelope-from <ebiederm@xmission.com>)
-        id 1oQYYb-0041Dr-Vo; Tue, 23 Aug 2022 12:23:22 -0600
-Received: from ip68-110-29-46.om.om.cox.net ([68.110.29.46]:37014 helo=email.froward.int.ebiederm.org.xmission.com)
-        by in01.mta.xmission.com with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.93)
-        (envelope-from <ebiederm@xmission.com>)
-        id 1oQYYa-00GUYx-1U; Tue, 23 Aug 2022 12:23:21 -0600
-From:   "Eric W. Biederman" <ebiederm@xmission.com>
-To:     Olivier Langlois <olivier@trillion01.com>
-Cc:     Jens Axboe <axboe@kernel.dk>,
-        Pavel Begunkov <asml.silence@gmail.com>,
-        linux-kernel@vger.kernel.org, linux-fsdevel@vger.kernel.org,
-        io-uring@vger.kernel.org, Alexander Viro <viro@zeniv.linux.org.uk>,
-        Oleg Nesterov <oleg@redhat.com>,
-        Linus Torvalds <torvalds@linux-foundation.org>
-References: <192c9697e379bf084636a8213108be6c3b948d0b.camel@trillion01.com>
-        <9692dbb420eef43a9775f425cb8f6f33c9ba2db9.camel@trillion01.com>
-        <87h7i694ij.fsf_-_@disp2133>
-        <1b519092-2ebf-3800-306d-c354c24a9ad1@gmail.com>
-        <b3e43e07c68696b83a5bf25664a3fa912ba747e2.camel@trillion01.com>
-        <13250a8d-1a59-4b7b-92e4-1231d73cbdda@gmail.com>
-        <878rw9u6fb.fsf@email.froward.int.ebiederm.org>
-        <303f7772-eb31-5beb-2bd0-4278566591b0@gmail.com>
-        <87ilsg13yz.fsf@email.froward.int.ebiederm.org>
-        <8218f1a245d054c940e25142fd00a5f17238d078.camel@trillion01.com>
-        <a29a1649-5e50-4221-9f44-66a35fbdff80@kernel.dk>
-        <87y1wnrap0.fsf_-_@email.froward.int.ebiederm.org>
-        <87mtd3rals.fsf_-_@email.froward.int.ebiederm.org>
-        <61abfb5a517e0ee253b0dc7ba9cd32ebd558bcb0.camel@trillion01.com>
-        <bb423622f97826f483100a1a7f20ce10a9090158.camel@trillion01.com>
-Date:   Tue, 23 Aug 2022 13:22:53 -0500
-In-Reply-To: <bb423622f97826f483100a1a7f20ce10a9090158.camel@trillion01.com>
-        (Olivier Langlois's message of "Mon, 22 Aug 2022 23:35:37 -0400")
-Message-ID: <875yiisttu.fsf@email.froward.int.ebiederm.org>
-User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/27.1 (gnu/linux)
+        Tue, 23 Aug 2022 15:32:02 -0400
+Received: from mail-pl1-x62c.google.com (mail-pl1-x62c.google.com [IPv6:2607:f8b0:4864:20::62c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0358AA59B4
+        for <linux-kernel@vger.kernel.org>; Tue, 23 Aug 2022 11:24:01 -0700 (PDT)
+Received: by mail-pl1-x62c.google.com with SMTP id c2so13555376plo.3
+        for <linux-kernel@vger.kernel.org>; Tue, 23 Aug 2022 11:24:01 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=baylibre-com.20210112.gappssmtp.com; s=20210112;
+        h=mime-version:message-id:date:references:in-reply-to:subject:cc:to
+         :from:from:to:cc;
+        bh=7XTGVkMBPLrwjtXxcaOx31Px0tvAGpLY3EuE7oCCnjI=;
+        b=QUiNSn917AVTIsrzbGnUa617Ladt8vDyJ8nDZLINOxnle2vQeENAUIXJWhCywURT0G
+         i1G8J5GPlHiqJcgXFXfdcXY9pCFt1G7Sxy5zR48Ta0uhJXvosmei+9D2NfxJYTTtHoWc
+         loVF8T5YXKtEapCIn0IWvUJikZ9qqCMJXMbUX7qj6jGbe35rdkghS9lJ+ML1sj2Yy5JP
+         rbkIWnVRIdFuRNiguifR+T4GXjiQWY/6DxPzSfsM+iW6BFnyfudXcg98xH+53Cbe3oQL
+         3wTI0zpyFmaqgOIt+WsThvYhaKwq3evPe+wEhcOPxL1zQ/i7Ehz9k07ljeYz3B7fKyA/
+         UOOw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=mime-version:message-id:date:references:in-reply-to:subject:cc:to
+         :from:x-gm-message-state:from:to:cc;
+        bh=7XTGVkMBPLrwjtXxcaOx31Px0tvAGpLY3EuE7oCCnjI=;
+        b=e/gWbszuSapV+c3vaX1SlUQcpAg19/2U2DTwxdLas6BxE7y9s1DyNo0dxd8/CdjbiD
+         nyCGCgPcanhkDGibt89Am5MQ+ayGisWP6LjA+FkCUVMQAJ2MgB/2izOBnL6AFhxNxPbV
+         mYFvPqWaTEHlg7pqvkDCJeipS40avxeV2con5HttH3vdPd0+Sy9L7kdF/0SzWy//YE6d
+         2pc7UAmeivPM+aZYEHH0rQSMYw05T9jn9KWa00fTlqWcsVHKFtKIZomLNiNFZDchcUuz
+         7YMP/9NGFrOSyK8fwDvYGi2Q+Xui2Uepuw+7ieiXdMOOfAFYzv4G3vRm6Mz6EdK7W1u1
+         twNw==
+X-Gm-Message-State: ACgBeo320SpmBzEWnZq3nVyUkcfeU0+hn0fCrFaek8lEby1vzD3EKfUo
+        CEqbl2/HdawWAk3dtHbdEj60Gg==
+X-Google-Smtp-Source: AA6agR5+pbDTRD51vIsgkYI58hWxVoEtGJ3K3IFa8qKR94EwPjqxMSHDIYNArBj1P94/Qu1HRRweYA==
+X-Received: by 2002:a17:902:e54f:b0:172:ef3e:f725 with SMTP id n15-20020a170902e54f00b00172ef3ef725mr9200223plf.66.1661279040572;
+        Tue, 23 Aug 2022 11:24:00 -0700 (PDT)
+Received: from localhost ([76.146.1.42])
+        by smtp.gmail.com with ESMTPSA id h17-20020a170902f55100b0016e808dbe55sm10952991plf.96.2022.08.23.11.23.59
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 23 Aug 2022 11:24:00 -0700 (PDT)
+From:   Kevin Hilman <khilman@baylibre.com>
+To:     Oded Gabbay <oded.gabbay@gmail.com>,
+        Dave Airlie <airlied@gmail.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Yuji Ishikawa <yuji2.ishikawa@toshiba.co.jp>,
+        Jiho Chu <jiho.chu@samsung.com>,
+        Alexandre Bailon <abailon@baylibre.com>
+Cc:     Jason Gunthorpe <jgg@nvidia.com>, Arnd Bergmann <arnd@arndb.de>,
+        dri-devel <dri-devel@lists.freedesktop.org>,
+        "Linux-Kernel@Vger. Kernel. Org" <linux-kernel@vger.kernel.org>
+Subject: Re: New subsystem for acceleration devices
+In-Reply-To: <CAFCwf13WU3ZEjurEaEnVC56zorwKr-uuQn-ec10r301Fh+XEtA@mail.gmail.com>
+References: <CAFCwf11=9qpNAepL7NL+YAV_QO=Wv6pnWPhKHKAepK3fNn+2Dg@mail.gmail.com>
+ <CAPM=9tzWuoWAOjHJdJYVDRjoRq-4wpg2KGiCHjLLd+OfWEh5AQ@mail.gmail.com>
+ <CAFCwf12N6DeJAQVjY7PFG50q2m405e=XCCFvHBn1RG65BGbT8w@mail.gmail.com>
+ <CAPM=9txSKv_xwZJ6SndtqsdQm6aK1KJVF91dB5Odhc_Xv6Qdrw@mail.gmail.com>
+ <CAFCwf10CsLgt+_qT7dT=8DVXsL0a=w=uXN6HC=CpP5EfitvLfQ@mail.gmail.com>
+ <CAPM=9txme2dQD9kyM6gnYyXL34hYP8wcGMbduOUcFsKe+4zTcQ@mail.gmail.com>
+ <CAFCwf11TPKTF_Ndi60FneWp5g3SoawJvfJoKVWJ-QjxjpawMmg@mail.gmail.com>
+ <CAFCwf13WU3ZEjurEaEnVC56zorwKr-uuQn-ec10r301Fh+XEtA@mail.gmail.com>
+Date:   Tue, 23 Aug 2022 11:23:59 -0700
+Message-ID: <7hk06ykedc.fsf@baylibre.com>
 MIME-Version: 1.0
 Content-Type: text/plain
-X-XM-SPF: eid=1oQYYa-00GUYx-1U;;;mid=<875yiisttu.fsf@email.froward.int.ebiederm.org>;;;hst=in01.mta.xmission.com;;;ip=68.110.29.46;;;frm=ebiederm@xmission.com;;;spf=softfail
-X-XM-AID: U2FsdGVkX1/GeEI4Y8IQexfRUNq3YWki9SJ3OxiLRg4=
-X-SA-Exim-Connect-IP: 68.110.29.46
-X-SA-Exim-Mail-From: ebiederm@xmission.com
-Subject: Re: [PATCH 2/2] coredump: Allow coredumps to pipes to work with
- io_uring
-X-SA-Exim-Version: 4.2.1 (built Sat, 08 Feb 2020 21:53:50 +0000)
-X-SA-Exim-Scanned: Yes (on in01.mta.xmission.com)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Olivier Langlois <olivier@trillion01.com> writes:
+Hi Obed,
 
-> On Mon, 2022-08-22 at 17:16 -0400, Olivier Langlois wrote:
->> 
->> What is stopping the task calling do_coredump() to be interrupted and
->> call task_work_add() from the interrupt context?
->> 
->> This is precisely what I was experiencing last summer when I did work
->> on this issue.
->> 
->> My understanding of how async I/O works with io_uring is that the
->> task
->> is added to a wait queue without being put to sleep and when the
->> io_uring callback is called from the interrupt context,
->> task_work_add()
->> is called so that the next time io_uring syscall is invoked, pending
->> work is processed to complete the I/O.
->> 
->> So if:
->> 
->> 1. io_uring request is initiated AND the task is in a wait queue
->> 2. do_coredump() is called before the I/O is completed
->> 
->> IMHO, this is how you end up having task_work_add() called while the
->> coredump is generated.
->> 
-> I forgot to add that I have experienced the issue with TCP/IP I/O.
->
-> I suspect that with a TCP socket, the race condition window is much
-> larger than if it was disk I/O and this might make it easier to
-> reproduce the issue this way...
+Oded Gabbay <oded.gabbay@gmail.com> writes:
 
-I was under the apparently mistaken impression that the io_uring
-task_work_add only comes from the io_uring userspace helper threads.
-Those are definitely suppressed by my change.
+[...]
 
-Do you have any idea in the code where io_uring code is being called in
-an interrupt context?  I would really like to trace that code path so I
-have a better grasp on what is happening.
+> I want to update that I'm currently in discussions with Dave to figure
+> out what's the best way to move forward. We are writing it down to do
+> a proper comparison between the two paths (new accel subsystem or
+> using drm). I guess it will take a week or so.
 
-If task_work_add is being called from interrupt context then something
-additional from what I have proposed certainly needs to be done.
+Any update on the discussions with Dave? and/or are there any plans to
+discuss this further at LPC/ksummit yet?
 
-Eric
+We (BayLibre) are upstreaming support for APUs on Mediatek SoCs, and are
+using the DRM-based approach.  I'll also be at LPC and happy to discuss
+in person.
+
+For some context on my/our interest: back in Sept 2020 we initially
+submitted an rpmesg based driver for kernel communication[1].  After
+review comments, we rewrote that based on DRM[2] and are now using it
+for some MTK SoCs[3] and supporting our MTK customers with it.
+
+Hopefully we will get the kernel interfaces sorted out soon, but next,
+there's the userspace side of things.  To that end, we're also working
+on libAPU, a common, open userspace stack.  Alex Bailon recently
+presented a proposal earlier this year at Embedded Recipes in Paris
+(video[4], slides[5].)
+
+libAPU would include abstractions of the kernel interfaces for DRM
+(using libdrm), remoteproc/rpmsg, virtio etc. but also goes farther and
+proposes an open firmware for the accelerator side using
+libMetal/OpenAMP + rpmsg for communication with (most likely closed
+source) vendor firmware.  Think of this like sound open firmware (SOF[6]),
+but for accelerators.
+
+We've been using this succesfully for Mediatek SoCs (which have a
+Cadence VP6 APU) and have submitted/published the code, including the
+OpenAMP[7] and libmetal[8] parts in addition to the kernel parts already
+mentioned.
+
+We're to the point where we're pretty happy with how this works for MTK
+SoCs, and wanting to collaborate with folks working on other platforms
+and to see what's needed to support other kinds of accelerators with a
+common userspace and open firmware infrastructure.
+
+Kevin
+
+[1] https://lore.kernel.org/r/20200930115350.5272-1-abailon@baylibre.com
+[2] https://lore.kernel.org/r/20210917125945.620097-1-abailon@baylibre.com
+[3] https://lore.kernel.org/r/20210819151340.741565-1-abailon@baylibre.com
+[4] https://www.youtube.com/watch?v=Uj1FZoF8MMw&t=18211s
+[5] https://embedded-recipes.org/2022/wp-content/uploads/2022/06/bailon.pdf
+[6] https://www.sofproject.org/
+[7] https://github.com/BayLibre/open-amp/tree/v2021.10-mtk 
+[8] https://github.com/BayLibre/libmetal/tree/v2021.10-mtk 
