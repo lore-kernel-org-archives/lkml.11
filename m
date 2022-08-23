@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3EA42C32772
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 09:35:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A44D4C32772
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 09:35:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351235AbiHWJfF (ORCPT
+        id S1350576AbiHWJfT (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 05:35:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44900 "EHLO
+        Tue, 23 Aug 2022 05:35:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38532 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351101AbiHWJeR (ORCPT
+        with ESMTP id S1351130AbiHWJeX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 05:34:17 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 813A894ECE;
+        Tue, 23 Aug 2022 05:34:23 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1C1FE48E83;
         Tue, 23 Aug 2022 01:39:07 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id D3675B81C3B;
-        Tue, 23 Aug 2022 08:38:08 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0CD66C433D6;
-        Tue, 23 Aug 2022 08:38:06 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id D8B7AB81C65;
+        Tue, 23 Aug 2022 08:38:02 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 18E0AC433D6;
+        Tue, 23 Aug 2022 08:38:00 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661243887;
-        bh=g6tcTm+ZXaW5n+EYtlo3JwpzKEML7hs46wOKet194ys=;
+        s=korg; t=1661243881;
+        bh=mB+QeLdtXDfUxawUS97f6jMYGaHxQ+B3Mh18ctmz3eM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=JUFv40MF63nsxFRV3N/qJm5dLRGChB0kF0h6ZdMN+YH5l76zeHNfwO83XguW/t0x+
-         cn0RdeyPdABot0QY5D2W9yA4bWp/D7D/ZYGGDXM5OYBue+AyBwaAaYgooABjf9AbzL
-         /tu2RDk4SoFwx0C+hQlHonPidbOKn5xwmKZXye7s=
+        b=MmAMBu6+Z9V+4EtCLixbsmCb90TKlhB/mQsyRE8xUNGNt3Z2ipzB69wLiLu10AKh+
+         3LVCKdNyKpraEYgRUWWmv6WdUys5as+pAOwYlc21yfBBi5UehlOS3BOoFoZzqHWK2c
+         fFMNlmqt4fzazThe+gis5PVtSiEM5NEJn4GPJy2Q=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Johan Hovold <johan@kernel.org>,
-        Borislav Petkov <bp@suse.de>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.14 051/229] x86/pmem: Fix platform-device leak in error path
-Date:   Tue, 23 Aug 2022 10:23:32 +0200
-Message-Id: <20220823080055.531533153@linuxfoundation.org>
+        stable@vger.kernel.org,
+        =?UTF-8?q?Pali=20Roh=C3=A1r?= <pali@kernel.org>,
+        Michael Ellerman <mpe@ellerman.id.au>
+Subject: [PATCH 4.14 034/229] powerpc/fsl-pci: Fix Class Code of PCIe Root Port
+Date:   Tue, 23 Aug 2022 10:23:15 +0200
+Message-Id: <20220823080054.759237296@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220823080053.202747790@linuxfoundation.org>
 References: <20220823080053.202747790@linuxfoundation.org>
@@ -49,41 +50,83 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Johan Hovold <johan@kernel.org>
+From: Pali Rohár <pali@kernel.org>
 
-[ Upstream commit 229e73d46994f15314f58b2d39bf952111d89193 ]
+commit 0c551abfa004ce154d487d91777bf221c808a64f upstream.
 
-Make sure to free the platform device in the unlikely event that
-registration fails.
+By default old pre-3.0 Freescale PCIe controllers reports invalid PCI Class
+Code 0x0b20 for PCIe Root Port. It can be seen by lspci -b output on P2020
+board which has this pre-3.0 controller:
 
-Fixes: 7a67832c7e44 ("libnvdimm, e820: make CONFIG_X86_PMEM_LEGACY a tristate option")
-Signed-off-by: Johan Hovold <johan@kernel.org>
-Signed-off-by: Borislav Petkov <bp@suse.de>
-Link: https://lore.kernel.org/r/20220620140723.9810-1-johan@kernel.org
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+  $ lspci -bvnn
+  00:00.0 Power PC [0b20]: Freescale Semiconductor Inc P2020E [1957:0070] (rev 21)
+          !!! Invalid class 0b20 for header type 01
+          Capabilities: [4c] Express Root Port (Slot-), MSI 00
+
+Fix this issue by programming correct PCI Class Code 0x0604 for PCIe Root
+Port to the Freescale specific PCIe register 0x474.
+
+With this change lspci -b output is:
+
+  $ lspci -bvnn
+  00:00.0 PCI bridge [0604]: Freescale Semiconductor Inc P2020E [1957:0070] (rev 21) (prog-if 00 [Normal decode])
+          Capabilities: [4c] Express Root Port (Slot-), MSI 00
+
+Without any "Invalid class" error. So class code was properly reflected
+into standard (read-only) PCI register 0x08.
+
+Same fix is already implemented in U-Boot pcie_fsl.c driver in commit:
+http://source.denx.de/u-boot/u-boot/-/commit/d18d06ac35229345a0af80977a408cfbe1d1015b
+
+Fix activated by U-Boot stay active also after booting Linux kernel.
+But boards which use older U-Boot version without that fix are affected and
+still require this fix.
+
+So implement this class code fix also in kernel fsl_pci.c driver.
+
+Cc: stable@vger.kernel.org
+Signed-off-by: Pali Rohár <pali@kernel.org>
+Signed-off-by: Michael Ellerman <mpe@ellerman.id.au>
+Link: https://lore.kernel.org/r/20220706101043.4867-1-pali@kernel.org
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/x86/kernel/pmem.c | 7 ++++++-
- 1 file changed, 6 insertions(+), 1 deletion(-)
+ arch/powerpc/sysdev/fsl_pci.c |    8 ++++++++
+ arch/powerpc/sysdev/fsl_pci.h |    1 +
+ 2 files changed, 9 insertions(+)
 
-diff --git a/arch/x86/kernel/pmem.c b/arch/x86/kernel/pmem.c
-index 3fe690067802..ada7c077ec2f 100644
---- a/arch/x86/kernel/pmem.c
-+++ b/arch/x86/kernel/pmem.c
-@@ -27,6 +27,11 @@ static __init int register_e820_pmem(void)
- 	 * simply here to trigger the module to load on demand.
- 	 */
- 	pdev = platform_device_alloc("e820_pmem", -1);
--	return platform_device_add(pdev);
-+
-+	rc = platform_device_add(pdev);
-+	if (rc)
-+		platform_device_put(pdev);
-+
-+	return rc;
- }
- device_initcall(register_e820_pmem);
--- 
-2.35.1
-
+--- a/arch/powerpc/sysdev/fsl_pci.c
++++ b/arch/powerpc/sysdev/fsl_pci.c
+@@ -523,6 +523,7 @@ int fsl_add_bridge(struct platform_devic
+ 	struct resource rsrc;
+ 	const int *bus_range;
+ 	u8 hdr_type, progif;
++	u32 class_code;
+ 	struct device_node *dev;
+ 	struct ccsr_pci __iomem *pci;
+ 	u16 temp;
+@@ -596,6 +597,13 @@ int fsl_add_bridge(struct platform_devic
+ 			PPC_INDIRECT_TYPE_SURPRESS_PRIMARY_BUS;
+ 		if (fsl_pcie_check_link(hose))
+ 			hose->indirect_type |= PPC_INDIRECT_TYPE_NO_PCIE_LINK;
++		/* Fix Class Code to PCI_CLASS_BRIDGE_PCI_NORMAL for pre-3.0 controller */
++		if (in_be32(&pci->block_rev1) < PCIE_IP_REV_3_0) {
++			early_read_config_dword(hose, 0, 0, PCIE_FSL_CSR_CLASSCODE, &class_code);
++			class_code &= 0xff;
++			class_code |= PCI_CLASS_BRIDGE_PCI_NORMAL << 8;
++			early_write_config_dword(hose, 0, 0, PCIE_FSL_CSR_CLASSCODE, class_code);
++		}
+ 	} else {
+ 		/*
+ 		 * Set PBFR(PCI Bus Function Register)[10] = 1 to
+--- a/arch/powerpc/sysdev/fsl_pci.h
++++ b/arch/powerpc/sysdev/fsl_pci.h
+@@ -23,6 +23,7 @@ struct platform_device;
+ 
+ #define PCIE_LTSSM	0x0404		/* PCIE Link Training and Status */
+ #define PCIE_LTSSM_L0	0x16		/* L0 state */
++#define PCIE_FSL_CSR_CLASSCODE	0x474	/* FSL GPEX CSR */
+ #define PCIE_IP_REV_2_2		0x02080202 /* PCIE IP block version Rev2.2 */
+ #define PCIE_IP_REV_3_0		0x02080300 /* PCIE IP block version Rev3.0 */
+ #define PIWAR_EN		0x80000000	/* Enable */
 
 
