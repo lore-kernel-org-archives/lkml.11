@@ -2,46 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F2131C3F6B0
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 12:22:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 318CBC32793
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 12:22:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352062AbiHWMUg (ORCPT
+        id S1353953AbiHWMUx (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 08:20:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47346 "EHLO
+        Tue, 23 Aug 2022 08:20:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55382 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1359593AbiHWMQB (ORCPT
+        with ESMTP id S1359615AbiHWMQE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 08:16:01 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A8B0BEA17F;
-        Tue, 23 Aug 2022 02:41:28 -0700 (PDT)
+        Tue, 23 Aug 2022 08:16:04 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ADB8F69F50;
+        Tue, 23 Aug 2022 02:41:31 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 2C683614CE;
-        Tue, 23 Aug 2022 09:40:32 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 203E3C433C1;
-        Tue, 23 Aug 2022 09:40:30 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id A4CC0B81C97;
+        Tue, 23 Aug 2022 09:41:21 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id F1745C433C1;
+        Tue, 23 Aug 2022 09:41:19 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661247631;
-        bh=DJczms3G8wxy3yEKcPN6IhuSXlztd2FJCuz7abn2IT8=;
+        s=korg; t=1661247680;
+        bh=0SRfYvpbI5vP3rsuSx3MCV1WVj9+zFGLzEe2YE+I6kY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=zoUOnTtdHuD3Q90UbBXeardPoaG7yN3UsIaKYbCDaz4xKR22urh5eMWVpHSCIVxEj
-         7HAl68bc/h4FPrbrZKCE6fiiodQp0pd73oU9/APkvBIciUHtf50+gsq9dYrwr1pZFC
-         phkXv76mZQCwdsagNETLNTin3GnBqw0Mu+ti5wL4=
+        b=IH2dE0EjyPK5RcdiZ6pFV5RhHrStWRulWV7Me1l/Wqg5Auj48Qjgw71p+viBFv16y
+         lYOi9AybumPEhUwG2J+/dPoSOSriOX5F2ddKMzgIOmr1ZP6BhjBVORZqv/6sp8+9ww
+         wDK6MAYdSgbJysqPf0Cg7ZIxawiw0JCGyXuTBYA8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Bard Liao <yung-chuan.liao@linux.intel.com>,
-        Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>,
-        Ranjani Sridharan <ranjani.sridharan@linux.intel.com>,
-        Mark Brown <broonie@kernel.org>,
+        stable@vger.kernel.org, Robert Marko <robimarko@gmail.com>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 096/158] ASoC: SOF: intel: move sof_intel_dsp_desc() forward
-Date:   Tue, 23 Aug 2022 10:27:08 +0200
-Message-Id: <20220823080049.927581254@linuxfoundation.org>
+Subject: [PATCH 5.10 113/158] clk: qcom: ipq8074: dont disable gcc_sleep_clk_src
+Date:   Tue, 23 Aug 2022 10:27:25 +0200
+Message-Id: <20220823080050.511996693@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220823080046.056825146@linuxfoundation.org>
 References: <20220823080046.056825146@linuxfoundation.org>
@@ -53,63 +50,83 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Bard Liao <yung-chuan.liao@linux.intel.com>
+From: Robert Marko <robimarko@gmail.com>
 
-[ Upstream commit 2f1315ae94b46bf0d5b4be29be15cc3641364404 ]
+[ Upstream commit 1bf7305e79aab095196131bdc87a97796e0e3fac ]
 
-sof_intel_dsp_desc() will be used by hda_dsp_check_sdw_irq() in the
-following commit.
+Once the usb sleep clocks are disabled, clock framework is trying to
+disable the sleep clock source also.
 
-Signed-off-by: Bard Liao <yung-chuan.liao@linux.intel.com>
-Reviewed-by: Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>
-Reviewed-by: Ranjani Sridharan <ranjani.sridharan@linux.intel.com>
-Link: https://lore.kernel.org/r/20210723115451.7245-5-yung-chuan.liao@linux.intel.com
-Signed-off-by: Mark Brown <broonie@kernel.org>
+However, it seems that it cannot be disabled and trying to do so produces:
+[  245.436390] ------------[ cut here ]------------
+[  245.441233] gcc_sleep_clk_src status stuck at 'on'
+[  245.441254] WARNING: CPU: 2 PID: 223 at clk_branch_wait+0x130/0x140
+[  245.450435] Modules linked in: xhci_plat_hcd xhci_hcd dwc3 dwc3_qcom leds_gpio
+[  245.456601] CPU: 2 PID: 223 Comm: sh Not tainted 5.18.0-rc4 #215
+[  245.463889] Hardware name: Xiaomi AX9000 (DT)
+[  245.470050] pstate: 204000c5 (nzCv daIF +PAN -UAO -TCO -DIT -SSBS BTYPE=--)
+[  245.474307] pc : clk_branch_wait+0x130/0x140
+[  245.481073] lr : clk_branch_wait+0x130/0x140
+[  245.485588] sp : ffffffc009f2bad0
+[  245.489838] x29: ffffffc009f2bad0 x28: ffffff8003e6c800 x27: 0000000000000000
+[  245.493057] x26: 0000000000000000 x25: 0000000000000000 x24: ffffff800226ef20
+[  245.500175] x23: ffffffc0089ff550 x22: 0000000000000000 x21: ffffffc008476ad0
+[  245.507294] x20: 0000000000000000 x19: ffffffc00965ac70 x18: fffffffffffc51a7
+[  245.514413] x17: 68702e3030303837 x16: 3a6d726f6674616c x15: ffffffc089f2b777
+[  245.521531] x14: ffffffc0095c9d18 x13: 0000000000000129 x12: 0000000000000129
+[  245.528649] x11: 00000000ffffffea x10: ffffffc009621d18 x9 : 0000000000000001
+[  245.535767] x8 : 0000000000000001 x7 : 0000000000017fe8 x6 : 0000000000000001
+[  245.542885] x5 : ffffff803fdca6d8 x4 : 0000000000000000 x3 : 0000000000000027
+[  245.550002] x2 : 0000000000000027 x1 : 0000000000000023 x0 : 0000000000000026
+[  245.557122] Call trace:
+[  245.564229]  clk_branch_wait+0x130/0x140
+[  245.566490]  clk_branch2_disable+0x2c/0x40
+[  245.570656]  clk_core_disable+0x60/0xb0
+[  245.574561]  clk_core_disable+0x68/0xb0
+[  245.578293]  clk_disable+0x30/0x50
+[  245.582113]  dwc3_qcom_remove+0x60/0xc0 [dwc3_qcom]
+[  245.585588]  platform_remove+0x28/0x60
+[  245.590361]  device_remove+0x4c/0x80
+[  245.594179]  device_release_driver_internal+0x1dc/0x230
+[  245.597914]  device_driver_detach+0x18/0x30
+[  245.602861]  unbind_store+0xec/0x110
+[  245.607027]  drv_attr_store+0x24/0x40
+[  245.610847]  sysfs_kf_write+0x44/0x60
+[  245.614405]  kernfs_fop_write_iter+0x128/0x1c0
+[  245.618052]  new_sync_write+0xc0/0x130
+[  245.622391]  vfs_write+0x1d4/0x2a0
+[  245.626123]  ksys_write+0x58/0xe0
+[  245.629508]  __arm64_sys_write+0x1c/0x30
+[  245.632895]  invoke_syscall.constprop.0+0x5c/0x110
+[  245.636890]  do_el0_svc+0xa0/0x150
+[  245.641488]  el0_svc+0x18/0x60
+[  245.644872]  el0t_64_sync_handler+0xa4/0x130
+[  245.647914]  el0t_64_sync+0x174/0x178
+[  245.652340] ---[ end trace 0000000000000000 ]---
+
+So, add CLK_IS_CRITICAL flag to the clock so that the kernel won't try
+to disable the sleep clock.
+
+Signed-off-by: Robert Marko <robimarko@gmail.com>
+Signed-off-by: Bjorn Andersson <bjorn.andersson@linaro.org>
+Link: https://lore.kernel.org/r/20220515210048.483898-10-robimarko@gmail.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- sound/soc/sof/intel/hda.c | 22 +++++++++++-----------
- 1 file changed, 11 insertions(+), 11 deletions(-)
+ drivers/clk/qcom/gcc-ipq8074.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/sound/soc/sof/intel/hda.c b/sound/soc/sof/intel/hda.c
-index b0faf050132d..b4cc72483137 100644
---- a/sound/soc/sof/intel/hda.c
-+++ b/sound/soc/sof/intel/hda.c
-@@ -39,6 +39,17 @@
- #define EXCEPT_MAX_HDR_SIZE	0x400
- #define HDA_EXT_ROM_STATUS_SIZE 8
- 
-+static const struct sof_intel_dsp_desc
-+	*get_chip_info(struct snd_sof_pdata *pdata)
-+{
-+	const struct sof_dev_desc *desc = pdata->desc;
-+	const struct sof_intel_dsp_desc *chip_info;
-+
-+	chip_info = desc->chip_info;
-+
-+	return chip_info;
-+}
-+
- #if IS_ENABLED(CONFIG_SND_SOC_SOF_INTEL_SOUNDWIRE)
- 
- /*
-@@ -674,17 +685,6 @@ static int hda_init_caps(struct snd_sof_dev *sdev)
- 	return 0;
- }
- 
--static const struct sof_intel_dsp_desc
--	*get_chip_info(struct snd_sof_pdata *pdata)
--{
--	const struct sof_dev_desc *desc = pdata->desc;
--	const struct sof_intel_dsp_desc *chip_info;
--
--	chip_info = desc->chip_info;
--
--	return chip_info;
--}
--
- static irqreturn_t hda_dsp_interrupt_handler(int irq, void *context)
- {
- 	struct snd_sof_dev *sdev = context;
+diff --git a/drivers/clk/qcom/gcc-ipq8074.c b/drivers/clk/qcom/gcc-ipq8074.c
+index 2c2ecfc5e61f..d6d5defb82c9 100644
+--- a/drivers/clk/qcom/gcc-ipq8074.c
++++ b/drivers/clk/qcom/gcc-ipq8074.c
+@@ -662,6 +662,7 @@ static struct clk_branch gcc_sleep_clk_src = {
+ 			},
+ 			.num_parents = 1,
+ 			.ops = &clk_branch2_ops,
++			.flags = CLK_IS_CRITICAL,
+ 		},
+ 	},
+ };
 -- 
 2.35.1
 
