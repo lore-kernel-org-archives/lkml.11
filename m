@@ -2,111 +2,83 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BA6F1C3F6B0
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DFAEDC32796
 	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 06:25:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240609AbiHWGZW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 02:25:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57938 "EHLO
+        id S240658AbiHWGZ3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 23 Aug 2022 02:25:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57956 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240579AbiHWGZM (ORCPT
+        with ESMTP id S238940AbiHWGZO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 02:25:12 -0400
-X-Greylist: delayed 62 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Mon, 22 Aug 2022 23:25:11 PDT
-Received: from mta-64-227.siemens.flowmailer.net (mta-64-227.siemens.flowmailer.net [185.136.64.227])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5AD5B3FA3A
-        for <linux-kernel@vger.kernel.org>; Mon, 22 Aug 2022 23:25:10 -0700 (PDT)
-Received: by mta-64-227.siemens.flowmailer.net with ESMTPSA id 20220823062406b54e45984d61da4f22
-        for <linux-kernel@vger.kernel.org>;
-        Tue, 23 Aug 2022 08:24:06 +0200
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; s=fm1;
- d=siemens.com; i=daniel.starke@siemens.com;
- h=Date:From:Subject:To:Message-ID:MIME-Version:Content-Type:Content-Transfer-Encoding:Cc:References:In-Reply-To;
- bh=vDd3wGlDs3aeYXrLe0ansdtXVqFEsVG+M2eKrlFWuL0=;
- b=p1qAA6nxjNwAkHuxf/AD/ZuN70Nt+RCvnX0b5EeZL3+zKptrt/DsgrGmIpY8dmJ8PHWNrY
- lfVojSc/FcgZ0A6EN8RNhzZhgxEQvC+E95LpGwkrBJh7uvsLbV7Q16v5Iglb5EKx8uTJ8DIH
- bEv52h6mqalbUetbdZnrJzSpEX9qs=;
-From:   "D. Starke" <daniel.starke@siemens.com>
-To:     linux-serial@vger.kernel.org, gregkh@linuxfoundation.org,
-        jirislaby@kernel.org
-Cc:     linux-kernel@vger.kernel.org,
-        Daniel Starke <daniel.starke@siemens.com>
-Subject: [PATCH v2 4/6] tty: n_gsm: introduce gsm_control_command() function
-Date:   Tue, 23 Aug 2022 08:22:57 +0200
-Message-Id: <20220823062259.4754-4-daniel.starke@siemens.com>
-In-Reply-To: <20220823062259.4754-1-daniel.starke@siemens.com>
-References: <20220823062259.4754-1-daniel.starke@siemens.com>
+        Tue, 23 Aug 2022 02:25:14 -0400
+Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 046062B252;
+        Mon, 22 Aug 2022 23:25:14 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1661235913; x=1692771913;
+  h=message-id:date:mime-version:cc:subject:to:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=5FdhoBKt2vIYyRD6ilpkOeWukzgkLGNhyzycjYZlBjc=;
+  b=VmnztkoF3QcVo5ba++curZ577L1D0ZR5oBae4k8K6mDGqZNm0k3Sznsv
+   iHzZShVKNUhJgHv7b5cBpQYJ0m+wKOC2cCg2HXyoyWrC9mJ/2Osi2DsIa
+   Dx/HlDAI/+nIK8D3kfnpSXThqxyPSuv0QiXLFgqru8TT4VKN03vI/PY1l
+   1zZJZjiSdnUPqjKYtIJPhQwCYsPhYTIVoojfRUPOgeb/XF/OCuqjhyX6E
+   n2yfAytot9XnrdsTzxtk7yiohlLYfEqm4UJzJQwTKmBXTeg12L/09dfRS
+   6ovqdIboZFefUXoF5OuNaTnGi72Bfofgjd2yDoLUj9p4XF28KxI4pxpTU
+   w==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10447"; a="319643830"
+X-IronPort-AV: E=Sophos;i="5.93,256,1654585200"; 
+   d="scan'208";a="319643830"
+Received: from orsmga001.jf.intel.com ([10.7.209.18])
+  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Aug 2022 23:25:13 -0700
+X-IronPort-AV: E=Sophos;i="5.93,256,1654585200"; 
+   d="scan'208";a="642324148"
+Received: from xujinlon-mobl.ccr.corp.intel.com (HELO [10.254.211.102]) ([10.254.211.102])
+  by orsmga001-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Aug 2022 23:25:11 -0700
+Message-ID: <8702c6eb-bfd6-49d1-f96e-e9ae08cd87b0@linux.intel.com>
+Date:   Tue, 23 Aug 2022 14:25:09 +0800
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Flowmailer-Platform: Siemens
-Feedback-ID: 519:519-314044:519-21489:flowmailer
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.11.0
+Cc:     baolu.lu@linux.intel.com, Joerg Roedel <joro@8bytes.org>,
+        Will Deacon <will@kernel.org>,
+        Robin Murphy <robin.murphy@arm.com>,
+        Kevin Tian <kevin.tian@intel.com>,
+        raghunathan.srinivasan@intel.com, yi.l.liu@intel.com,
+        linux-kernel@vger.kernel.org, stable@vger.kernel.org
+Subject: Re: [PATCH 1/1] iommu/vt-d: Correctly calculate sagaw value of IOMMU
+Content-Language: en-US
+To:     iommu@lists.linux.dev
+References: <20220817023558.3253263-1-baolu.lu@linux.intel.com>
+From:   Baolu Lu <baolu.lu@linux.intel.com>
+In-Reply-To: <20220817023558.3253263-1-baolu.lu@linux.intel.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Daniel Starke <daniel.starke@siemens.com>
+On 2022/8/17 10:35, Lu Baolu wrote:
+> The Intel IOMMU driver possibly selects between the first-level and the
+> second-level translation tables for DMA address translation. However,
+> the levels of page-table walks for the 4KB base page size are calculated
+> from the SAGAW field of the capability register, which is only valid for
+> the second-level page table. This causes the IOMMU driver to stop working
+> if the hardware (or the emulated IOMMU) advertises only first-level
+> translation capability and reports the SAGAW field as 0.
+> 
+> This solves the above problem by considering both the first level and the
+> second level when calculating the supported page table levels.
+> 
+> Fixes: b802d070a52a1 ("iommu/vt-d: Use iova over first level")
+> Cc:stable@vger.kernel.org
+> Signed-off-by: Lu Baolu<baolu.lu@linux.intel.com>
 
-Move the content of gsm_control_transmit() to a new function
-gsm_control_command() with a more generic signature and analog to
-gsm_control_reply(). Use this within gsm_control_transmit().
+This patch has been queued:
 
-This is needed to simplify upcoming functional additions.
+https://lore.kernel.org/linux-iommu/20220823061557.1631056-1-baolu.lu@linux.intel.com/
 
-Signed-off-by: Daniel Starke <daniel.starke@siemens.com>
----
- drivers/tty/n_gsm.c | 30 +++++++++++++++++++++++-------
- 1 file changed, 23 insertions(+), 7 deletions(-)
-
-No changes since v1.
-
-diff --git a/drivers/tty/n_gsm.c b/drivers/tty/n_gsm.c
-index 9535e84f3063..5a20561c0a5d 100644
---- a/drivers/tty/n_gsm.c
-+++ b/drivers/tty/n_gsm.c
-@@ -1316,6 +1316,28 @@ static void gsm_dlci_data_kick(struct gsm_dlci *dlci)
-  */
- 
- 
-+/**
-+ *	gsm_control_command	-	send a command frame to a control
-+ *	@gsm: gsm channel
-+ *	@cmd: the command to use
-+ *	@data: data to follow encoded info
-+ *	@dlen: length of data
-+ *
-+ *	Encode up and queue a UI/UIH frame containing our command.
-+ */
-+static int gsm_control_command(struct gsm_mux *gsm, int cmd, u8 *data, int dlen)
-+{
-+	struct gsm_msg *msg = gsm_data_alloc(gsm, 0, dlen + 2, gsm->ftype);
-+
-+	if (msg == NULL)
-+		return -ENOMEM;
-+	msg->data[0] = (cmd << 1) | CR | EA;	/* Set C/R */
-+	msg->data[1] = (dlen << 1) | EA;
-+	memcpy(msg->data + 2, data, dlen);
-+	gsm_data_queue(gsm->dlci[0], msg);
-+	return 0;
-+}
-+
- /**
-  *	gsm_control_reply	-	send a response frame to a control
-  *	@gsm: gsm channel
-@@ -1623,13 +1645,7 @@ static void gsm_control_response(struct gsm_mux *gsm, unsigned int command,
- 
- static void gsm_control_transmit(struct gsm_mux *gsm, struct gsm_control *ctrl)
- {
--	struct gsm_msg *msg = gsm_data_alloc(gsm, 0, ctrl->len + 2, gsm->ftype);
--	if (msg == NULL)
--		return;
--	msg->data[0] = (ctrl->cmd << 1) | CR | EA;	/* command */
--	msg->data[1] = (ctrl->len << 1) | EA;
--	memcpy(msg->data + 2, ctrl->data, ctrl->len);
--	gsm_data_queue(gsm->dlci[0], msg);
-+	gsm_control_command(gsm, ctrl->cmd, ctrl->data, ctrl->len);
- }
- 
- /**
--- 
-2.34.1
-
+Best regards,
+baolu
