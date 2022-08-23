@@ -2,85 +2,121 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 654C9C32789
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4438AC32774
 	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 07:10:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240894AbiHWHK3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 03:10:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43526 "EHLO
+        id S240877AbiHWHK0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 23 Aug 2022 03:10:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43552 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240870AbiHWHKU (ORCPT
+        with ESMTP id S240869AbiHWHKT (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 03:10:20 -0400
-Received: from mail-pj1-x1034.google.com (mail-pj1-x1034.google.com [IPv6:2607:f8b0:4864:20::1034])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D094E61D5C
-        for <linux-kernel@vger.kernel.org>; Tue, 23 Aug 2022 00:10:15 -0700 (PDT)
-Received: by mail-pj1-x1034.google.com with SMTP id pm13so4297172pjb.5
-        for <linux-kernel@vger.kernel.org>; Tue, 23 Aug 2022 00:10:15 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc;
-        bh=QzCqbZG5/Frug0ESLdm92AY28QUqZDqY0QVaHTbOZtQ=;
-        b=dqTtKlX9Bk71Vcu7wl74Q/5H+hxWuGaQWVO5Z2kZMA3WpjojO63MFnZsd5XNDPuYxT
-         lnmKomrPIyBzh2I+mqo0r3JaAevv7ffKy8RuHomiofBOO7qFVeK3hkT32OhreXSOKmt8
-         rWuw/msvbwq925b3I/XTIUxOd0cFM/PqBG3kbCBcwUqkqGemIh2bXe5NKx5jpMl82ENR
-         fjS3WpHlKufGUKeBmTTWQ5lOjvL0v77vnWD8oZUHOxfLhYGZpUeQ52xFBdK9nRiTxrBN
-         /EaS7Tw/Huh3NfJ4Xw+8+0fjTN7azMJLhEIeRPfug0mZa6PippyUoklxPAafncScCg3X
-         L2ow==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc;
-        bh=QzCqbZG5/Frug0ESLdm92AY28QUqZDqY0QVaHTbOZtQ=;
-        b=cXPmmzyPR2Y5oIM6z5PtaGjrBTRQJrxwszRKipP7NxfYG/yKssMF5IDEsjXtr7PsWg
-         /qm64Xe7jSXoukGimRRdPOgHxDl+ylPVeAtz2G5/5A9jgif6mslNKYCZETrjGddJra+M
-         naDoWQn++QT8y3B+q51D0e/fzgxG+Mfsxq9ZFuUsd8MErtbmj8Om7cDycG41EKj2JyAL
-         mk0+w8ZiUAmWI5VaYONUinNUCNsXLCZcl6ZWlgBkpC1jvGvE1TZq1Ep+kkGSJ1oZiUJK
-         h8OK0ThgmMHQ9Dku3t46GaEknPf2ZzV1i2JceMxT+UO6vHiyJsvcj2v4ilXySKQLqXzO
-         XWaA==
-X-Gm-Message-State: ACgBeo2ulfTqOKTJ5LlsxljHCIcLmQXssQkOlGnsrpGwmndxgzYf/HcZ
-        NwlJKhMeewht/bMyHkZPF8ksjtQwV4Q=
-X-Google-Smtp-Source: AA6agR5j5OGvOgcNbVR5eBq/O3FVF0PqZoicQf/VNzkojtGnPwx3FhQHE2kJuI8hSp+eslfnJlkM+g==
-X-Received: by 2002:a17:902:ea86:b0:173:5e9:9ef7 with SMTP id x6-20020a170902ea8600b0017305e99ef7mr886700plb.14.1661238614983;
-        Tue, 23 Aug 2022 00:10:14 -0700 (PDT)
-Received: from localhost.localdomain (121-200-9-125.79c809.mel.nbn.aussiebb.net. [121.200.9.125])
-        by smtp.gmail.com with ESMTPSA id 22-20020a630d56000000b0041c66a66d41sm8506773pgn.45.2022.08.23.00.10.12
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 23 Aug 2022 00:10:14 -0700 (PDT)
-From:   Daniel Tobias <dan.g.tob@gmail.com>
-To:     linux-kernel@vger.kernel.org
-Cc:     Daniel Tobias <dan.g.tob@gmail.com>, akpm@linux-foundation.org,
-        trivial@kernel.org
-Subject: [PATCH 3/3] spellings.txt: add entry for debugsfs -> debugfs
-Date:   Tue, 23 Aug 2022 17:08:39 +1000
-Message-Id: <20220823070839.533562-4-dan.g.tob@gmail.com>
-X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220823070839.533562-1-dan.g.tob@gmail.com>
-References: <20220823070839.533562-1-dan.g.tob@gmail.com>
+        Tue, 23 Aug 2022 03:10:19 -0400
+Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E4D7961D44;
+        Tue, 23 Aug 2022 00:10:13 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1661238613; x=1692774613;
+  h=message-id:date:mime-version:cc:subject:to:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=s3CaB7J/QzCxWJHKyGoSrb3mqar/OfGRLx0AuZA3drA=;
+  b=eic8Vc52VkulvsAwGWVaZ28U+cMIc0BXnJBNpGVPkFoNVOZ1Yp6hoIcV
+   DPiPn5e34QBQgSKxJQ/PmqtVFVhFqpZXg5jlHgrjCnOk4ERbkawzI+B7N
+   KBWhO5Ymb4bgmPPQu/odnyAU/922S48LknBKbcZPOf9x61iQ3+g8sYT4/
+   Dlbv822FELN1WaBkVIGTIXksJUuz61TsG8C7I5yD3EQLOegVU1KAeFJsE
+   gkZYdi7ylWFnnzs3V6aj2MtTNrTrmRVUHW9urEJ4qSKNZVG23wbzn0L3p
+   aNTbPtCI6UVawG/ghH68kPEv4cyoxkERTY2z24Iux4XYvEPkgYT2LxCwt
+   A==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10447"; a="292352744"
+X-IronPort-AV: E=Sophos;i="5.93,256,1654585200"; 
+   d="scan'208";a="292352744"
+Received: from orsmga001.jf.intel.com ([10.7.209.18])
+  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Aug 2022 00:10:13 -0700
+X-IronPort-AV: E=Sophos;i="5.93,256,1654585200"; 
+   d="scan'208";a="642337729"
+Received: from xujinlon-mobl.ccr.corp.intel.com (HELO [10.254.211.102]) ([10.254.211.102])
+  by orsmga001-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Aug 2022 00:10:02 -0700
+Message-ID: <2ac74c62-1e2a-3758-6da8-a59f452e7799@linux.intel.com>
+Date:   Tue, 23 Aug 2022 15:10:00 +0800
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.11.0
+Cc:     baolu.lu@linux.intel.com, Joerg Roedel <joro@8bytes.org>,
+        Christoph Hellwig <hch@infradead.org>,
+        Bjorn Helgaas <bhelgaas@google.com>,
+        Kevin Tian <kevin.tian@intel.com>,
+        Ashok Raj <ashok.raj@intel.com>, Will Deacon <will@kernel.org>,
+        Robin Murphy <robin.murphy@arm.com>,
+        Jean-Philippe Brucker <jean-philippe@linaro.com>,
+        Dave Jiang <dave.jiang@intel.com>,
+        Vinod Koul <vkoul@kernel.org>,
+        Eric Auger <eric.auger@redhat.com>,
+        Liu Yi L <yi.l.liu@intel.com>,
+        Jacob jun Pan <jacob.jun.pan@intel.com>,
+        Zhangfei Gao <zhangfei.gao@linaro.org>,
+        Zhu Tony <tony.zhu@intel.com>, iommu@lists.linux.dev,
+        linux-pci@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v11 04/13] PCI: Allow PASID only when ACS enforced on
+ upstreaming path
+Content-Language: en-US
+To:     Jason Gunthorpe <jgg@nvidia.com>
+References: <20220817012024.3251276-1-baolu.lu@linux.intel.com>
+ <20220817012024.3251276-5-baolu.lu@linux.intel.com>
+ <Yv440MU1UeD9u67g@nvidia.com>
+From:   Baolu Lu <baolu.lu@linux.intel.com>
+In-Reply-To: <Yv440MU1UeD9u67g@nvidia.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Signed-off-by: Daniel Tobias <dan.g.tob@gmail.com>
----
- scripts/spelling.txt | 1 +
- 1 file changed, 1 insertion(+)
+On 2022/8/18 21:04, Jason Gunthorpe wrote:
+> On Wed, Aug 17, 2022 at 09:20:15AM +0800, Lu Baolu wrote:
+>> Some configurations of the PCI fabric will route device originated TLP
+>> packets based on the memory addresses. These configurations are
+>> incompatible with PASID as the PASID packets form a distinct address
+>> space. For instance, any configuration where switches are present
+>> without ACS enabled is incompatible.
+>>
+>> This enhances the pci_enable_pasid() interface by requiring the ACS to
+>> support Source Validation, Request Redirection, Completer Redirection,
+>> and Upstream Forwarding. This effectively means that devices cannot
+>> spoof their requester ID, requests and completions cannot be redirected,
+>> and all transactions are forwarded upstream, even as it passes through a
+>> bridge where the target device is downstream.
+>>
+>> Suggested-by: Jason Gunthorpe<jgg@nvidia.com>
+>> Suggested-by: Kevin Tian<kevin.tian@intel.com>
+>> Signed-off-by: Lu Baolu<baolu.lu@linux.intel.com>
+>> ---
+>>   drivers/pci/ats.c | 5 +++++
+>>   1 file changed, 5 insertions(+)
+>>
+>> diff --git a/drivers/pci/ats.c b/drivers/pci/ats.c
+>> index c967ad6e2626..0715e48e7973 100644
+>> --- a/drivers/pci/ats.c
+>> +++ b/drivers/pci/ats.c
+>> @@ -382,6 +382,11 @@ int pci_enable_pasid(struct pci_dev *pdev, int features)
+>>   	if (!pasid)
+>>   		return -EINVAL;
+>>   
+>> +	if (!pci_acs_path_enabled(pdev, NULL,
+>> +				  PCI_ACS_SV | PCI_ACS_RR |
+>> +				  PCI_ACS_CR | PCI_ACS_UF))
+> I think we only need RR and UF here?
+> 
+> Source Validation causes the switch to validate the requestor RID in
+> each TLP which has nothing to do with address based routing
+> 
+> Completion Redirect changes how RID routing works, and has nothing to
+> do with address based routing.
+> 
+> Yes, both of those are usually set for virtualization scenarios but we
+> shouldn't check it here as a basic requirement to enable PASID.
 
-diff --git a/scripts/spelling.txt b/scripts/spelling.txt
-index 8435b99452b6..b1c111204abe 100644
---- a/scripts/spelling.txt
-+++ b/scripts/spelling.txt
-@@ -426,6 +426,7 @@ deactive||deactivate
- deafult||default
- deamon||daemon
- debouce||debounce
-+debugsfs||debugfs
- decendant||descendant
- decendants||descendants
- decompres||decompress
--- 
-2.37.2
+Yes. Here only requires RR and UF.
 
+Best regards,
+baolu
