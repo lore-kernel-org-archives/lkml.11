@@ -2,44 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2B341C32792
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5D2B0C32793
 	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 10:42:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355735AbiHWKkm (ORCPT
+        id S1355777AbiHWKkt (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 06:40:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48314 "EHLO
+        Tue, 23 Aug 2022 06:40:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48428 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354460AbiHWKZk (ORCPT
+        with ESMTP id S1354536AbiHWKZw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 06:25:40 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F144074CF5;
-        Tue, 23 Aug 2022 02:05:08 -0700 (PDT)
+        Tue, 23 Aug 2022 06:25:52 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5F27C8307D;
+        Tue, 23 Aug 2022 02:05:16 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 7CC5B61580;
-        Tue, 23 Aug 2022 09:05:08 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 83150C433D6;
-        Tue, 23 Aug 2022 09:05:07 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 10DB461538;
+        Tue, 23 Aug 2022 09:05:15 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 15016C4314B;
+        Tue, 23 Aug 2022 09:05:13 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661245507;
-        bh=yO/+0w+QZpL9FyWrE4hrpJ2hjLScgiQtI3GR94o+23I=;
+        s=korg; t=1661245514;
+        bh=6o7dFMo7ClTdnFjrVOtoQR+dS9HFFHcI3I/lUGs2dLs=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=dqTysVFS9GsNmb9fDFAQNz1xJ6toxRJv9B6sx4vYT+H1hmt1NXsg2eExK+gE/GBbY
-         UDxyNtJEzwMtZM04XgknCXc0csV0MvtBZRhYIJGwRHz8GNp9rYSi3KBoxkG8/WylBb
-         5+Y6+LtAbRaxw3aIBUlcoG1diHQIxjmkbKS+N/kY=
+        b=ZEPOJGR3XMrlCwDHqJDwaWJf9ausndDZ8NnZI/sL59DRCVja5aaG4tUuMtJuttL7K
+         J5HE0sGB6AOaXDMpwvZwix+JDK9z3Yy4+LuuaImtJ2R6b7Y5dtTD76h2scpAlc8tw6
+         8hfGUvCB5gtawuKCBU1NTar6btOkoFwH84UHMfEs=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jimmy Assarsson <extja@kvaser.com>,
+        stable@vger.kernel.org,
         Vincent Mailhol <mailhol.vincent@wanadoo.fr>,
         Marc Kleine-Budde <mkl@pengutronix.de>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.19 099/287] can: kvaser_usb_hydra: do not report txerr and rxerr during bus-off
-Date:   Tue, 23 Aug 2022 10:24:28 +0200
-Message-Id: <20220823080103.689257494@linuxfoundation.org>
+Subject: [PATCH 4.19 101/287] can: usb_8dev: do not report txerr and rxerr during bus-off
+Date:   Tue, 23 Aug 2022 10:24:30 +0200
+Message-Id: <20220823080103.767855881@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220823080100.268827165@linuxfoundation.org>
 References: <20220823080100.268827165@linuxfoundation.org>
@@ -53,51 +53,38 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Vincent Mailhol <mailhol.vincent@wanadoo.fr>
 
-[ Upstream commit 936e90595376e64b6247c72d3ea8b8b164b7ac96 ]
+[ Upstream commit aebe8a2433cd090ccdc222861f44bddb75eb01de ]
 
 During bus off, the error count is greater than 255 and can not fit in
 a u8.
 
-Fixes: aec5fb2268b7 ("can: kvaser_usb: Add support for Kvaser USB hydra family")
-Link: https://lore.kernel.org/all/20220719143550.3681-8-mailhol.vincent@wanadoo.fr
-CC: Jimmy Assarsson <extja@kvaser.com>
+Fixes: 0024d8ad1639 ("can: usb_8dev: Add support for USB2CAN interface from 8 devices")
+Link: https://lore.kernel.org/all/20220719143550.3681-10-mailhol.vincent@wanadoo.fr
 Signed-off-by: Vincent Mailhol <mailhol.vincent@wanadoo.fr>
 Signed-off-by: Marc Kleine-Budde <mkl@pengutronix.de>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/can/usb/kvaser_usb/kvaser_usb_hydra.c | 12 ++++++++----
- 1 file changed, 8 insertions(+), 4 deletions(-)
+ drivers/net/can/usb/usb_8dev.c | 7 ++++---
+ 1 file changed, 4 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/net/can/usb/kvaser_usb/kvaser_usb_hydra.c b/drivers/net/can/usb/kvaser_usb/kvaser_usb_hydra.c
-index a7c408acb0c0..01d4a731b579 100644
---- a/drivers/net/can/usb/kvaser_usb/kvaser_usb_hydra.c
-+++ b/drivers/net/can/usb/kvaser_usb/kvaser_usb_hydra.c
-@@ -890,8 +890,10 @@ static void kvaser_usb_hydra_update_state(struct kvaser_usb_net_priv *priv,
- 	    new_state < CAN_STATE_BUS_OFF)
- 		priv->can.can_stats.restarts++;
+diff --git a/drivers/net/can/usb/usb_8dev.c b/drivers/net/can/usb/usb_8dev.c
+index 232f45f722f0..5cb5be4dc941 100644
+--- a/drivers/net/can/usb/usb_8dev.c
++++ b/drivers/net/can/usb/usb_8dev.c
+@@ -453,9 +453,10 @@ static void usb_8dev_rx_err_msg(struct usb_8dev_priv *priv,
  
--	cf->data[6] = bec->txerr;
--	cf->data[7] = bec->rxerr;
-+	if (new_state != CAN_STATE_BUS_OFF) {
-+		cf->data[6] = bec->txerr;
-+		cf->data[7] = bec->rxerr;
+ 	if (rx_errors)
+ 		stats->rx_errors++;
+-
+-	cf->data[6] = txerr;
+-	cf->data[7] = rxerr;
++	if (priv->can.state != CAN_STATE_BUS_OFF) {
++		cf->data[6] = txerr;
++		cf->data[7] = rxerr;
 +	}
  
- 	stats = &netdev->stats;
- 	stats->rx_packets++;
-@@ -1045,8 +1047,10 @@ kvaser_usb_hydra_error_frame(struct kvaser_usb_net_priv *priv,
- 	shhwtstamps->hwtstamp = hwtstamp;
- 
- 	cf->can_id |= CAN_ERR_BUSERROR;
--	cf->data[6] = bec.txerr;
--	cf->data[7] = bec.rxerr;
-+	if (new_state != CAN_STATE_BUS_OFF) {
-+		cf->data[6] = bec.txerr;
-+		cf->data[7] = bec.rxerr;
-+	}
- 
- 	stats->rx_packets++;
- 	stats->rx_bytes += cf->can_dlc;
+ 	priv->bec.txerr = txerr;
+ 	priv->bec.rxerr = rxerr;
 -- 
 2.35.1
 
