@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1E9CDC32796
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2E1A9C38147
 	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 12:06:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1359448AbiHWMFw (ORCPT
+        id S1359480AbiHWMFz (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 08:05:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46126 "EHLO
+        Tue, 23 Aug 2022 08:05:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47526 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1359216AbiHWMAt (ORCPT
+        with ESMTP id S1359288AbiHWMBG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 08:00:49 -0400
+        Tue, 23 Aug 2022 08:01:06 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 16B1B94EC7;
-        Tue, 23 Aug 2022 02:35:18 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 94873D91FE;
+        Tue, 23 Aug 2022 02:35:20 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 8AFD561484;
-        Tue, 23 Aug 2022 09:34:58 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7EA0BC4314B;
-        Tue, 23 Aug 2022 09:34:57 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 077B861389;
+        Tue, 23 Aug 2022 09:35:05 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id EBCD7C433D7;
+        Tue, 23 Aug 2022 09:35:03 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661247298;
-        bh=Qz4ncXoPoM7vugOgfR+vbf/bthx4RLKEb397z+CrCds=;
+        s=korg; t=1661247304;
+        bh=xlbA8C8EV0hQrb0lukzff7ULNfkooqbvc/Mflof/Ul4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Fjn7JwY2itw5Ua+SiG/MWGONrHiqZi2k+IXSBlYeYXmKGkHEIYpA+VM5iRDNL26ym
-         EimwiKamehYKO7n28zvM6WuI72nejlh5w9qR4SN5f/J0PY/cEn/kcxTvWx/qQgNiIT
-         M3XpeOqPw+kXmewKOu4ZXO+p78U47l5DhQfWTuRU=
+        b=leo3dm6o5kqgLe/4EAH1HLaHh3mPR5uhmMRA4ZL8Cto8wpVodgTYNeg6w4mkAW8fV
+         NuTIchhIX2nS3PQN8bryLu01zs8RkjxXuAsVMRD1ExphWsKWjoNTEsM3g40QxqYbjZ
+         wHXAs0SZz61UQGeQd8tUFG0L5Lm461NuAI28sHXM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Dipanjan Das <mail.dipanjan.das@gmail.com>,
-        Chao Yu <chao.yu@oppo.com>, Jaegeuk Kim <jaegeuk@kernel.org>,
+        stable@vger.kernel.org, Michael Ellerman <mpe@ellerman.id.au>,
+        Zhouyi Zhou <zhouzhouyi@gmail.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 380/389] f2fs: fix to avoid use f2fs_bug_on() in f2fs_new_node_page()
-Date:   Tue, 23 Aug 2022 10:27:38 +0200
-Message-Id: <20220823080131.448844011@linuxfoundation.org>
+Subject: [PATCH 5.4 382/389] powerpc/64: Init jump labels before parse_early_param()
+Date:   Tue, 23 Aug 2022 10:27:40 +0200
+Message-Id: <20220823080131.532171835@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220823080115.331990024@linuxfoundation.org>
 References: <20220823080115.331990024@linuxfoundation.org>
@@ -50,61 +50,63 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Chao Yu <chao.yu@oppo.com>
+From: Zhouyi Zhou <zhouzhouyi@gmail.com>
 
-[ Upstream commit 141170b759e03958f296033bb7001be62d1d363b ]
+[ Upstream commit ca829e05d3d4f728810cc5e4b468d9ebc7745eb3 ]
 
-As Dipanjan Das <mail.dipanjan.das@gmail.com> reported, syzkaller
-found a f2fs bug as below:
+On 64-bit, calling jump_label_init() in setup_feature_keys() is too
+late because static keys may be used in subroutines of
+parse_early_param() which is again subroutine of early_init_devtree().
 
-RIP: 0010:f2fs_new_node_page+0x19ac/0x1fc0 fs/f2fs/node.c:1295
-Call Trace:
- write_all_xattrs fs/f2fs/xattr.c:487 [inline]
- __f2fs_setxattr+0xe76/0x2e10 fs/f2fs/xattr.c:743
- f2fs_setxattr+0x233/0xab0 fs/f2fs/xattr.c:790
- f2fs_xattr_generic_set+0x133/0x170 fs/f2fs/xattr.c:86
- __vfs_setxattr+0x115/0x180 fs/xattr.c:182
- __vfs_setxattr_noperm+0x125/0x5f0 fs/xattr.c:216
- __vfs_setxattr_locked+0x1cf/0x260 fs/xattr.c:277
- vfs_setxattr+0x13f/0x330 fs/xattr.c:303
- setxattr+0x146/0x160 fs/xattr.c:611
- path_setxattr+0x1a7/0x1d0 fs/xattr.c:630
- __do_sys_lsetxattr fs/xattr.c:653 [inline]
- __se_sys_lsetxattr fs/xattr.c:649 [inline]
- __x64_sys_lsetxattr+0xbd/0x150 fs/xattr.c:649
- do_syscall_x64 arch/x86/entry/common.c:50 [inline]
- do_syscall_64+0x35/0xb0 arch/x86/entry/common.c:80
- entry_SYSCALL_64_after_hwframe+0x46/0xb0
+For example booting with "threadirqs":
 
-NAT entry and nat bitmap can be inconsistent, e.g. one nid is free
-in nat bitmap, and blkaddr in its NAT entry is not NULL_ADDR, it
-may trigger BUG_ON() in f2fs_new_node_page(), fix it.
+  static_key_enable_cpuslocked(): static key '0xc000000002953260' used before call to jump_label_init()
+  WARNING: CPU: 0 PID: 0 at kernel/jump_label.c:166 static_key_enable_cpuslocked+0xfc/0x120
+  ...
+  NIP static_key_enable_cpuslocked+0xfc/0x120
+  LR  static_key_enable_cpuslocked+0xf8/0x120
+  Call Trace:
+    static_key_enable_cpuslocked+0xf8/0x120 (unreliable)
+    static_key_enable+0x30/0x50
+    setup_forced_irqthreads+0x28/0x40
+    do_early_param+0xa0/0x108
+    parse_args+0x290/0x4e0
+    parse_early_options+0x48/0x5c
+    parse_early_param+0x58/0x84
+    early_init_devtree+0xd4/0x518
+    early_setup+0xb4/0x214
 
-Reported-by: Dipanjan Das <mail.dipanjan.das@gmail.com>
-Signed-off-by: Chao Yu <chao.yu@oppo.com>
-Signed-off-by: Jaegeuk Kim <jaegeuk@kernel.org>
+So call jump_label_init() just before parse_early_param() in
+early_init_devtree().
+
+Suggested-by: Michael Ellerman <mpe@ellerman.id.au>
+Signed-off-by: Zhouyi Zhou <zhouzhouyi@gmail.com>
+[mpe: Add call trace to change log and minor wording edits.]
+Signed-off-by: Michael Ellerman <mpe@ellerman.id.au>
+Link: https://lore.kernel.org/r/20220726015747.11754-1-zhouzhouyi@gmail.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- fs/f2fs/node.c | 6 +++++-
- 1 file changed, 5 insertions(+), 1 deletion(-)
+ arch/powerpc/kernel/prom.c | 7 +++++++
+ 1 file changed, 7 insertions(+)
 
-diff --git a/fs/f2fs/node.c b/fs/f2fs/node.c
-index 3dc7cc3d6ac6..b080d5c58f6c 100644
---- a/fs/f2fs/node.c
-+++ b/fs/f2fs/node.c
-@@ -1240,7 +1240,11 @@ struct page *f2fs_new_node_page(struct dnode_of_data *dn, unsigned int ofs)
- 		dec_valid_node_count(sbi, dn->inode, !ofs);
- 		goto fail;
- 	}
--	f2fs_bug_on(sbi, new_ni.blk_addr != NULL_ADDR);
-+	if (unlikely(new_ni.blk_addr != NULL_ADDR)) {
-+		err = -EFSCORRUPTED;
-+		set_sbi_flag(sbi, SBI_NEED_FSCK);
-+		goto fail;
-+	}
- #endif
- 	new_ni.nid = dn->nid;
- 	new_ni.ino = dn->inode->i_ino;
+diff --git a/arch/powerpc/kernel/prom.c b/arch/powerpc/kernel/prom.c
+index 537142b877b8..d1ba17501343 100644
+--- a/arch/powerpc/kernel/prom.c
++++ b/arch/powerpc/kernel/prom.c
+@@ -740,6 +740,13 @@ void __init early_init_devtree(void *params)
+ 	of_scan_flat_dt(early_init_dt_scan_root, NULL);
+ 	of_scan_flat_dt(early_init_dt_scan_memory_ppc, NULL);
+ 
++	/*
++	 * As generic code authors expect to be able to use static keys
++	 * in early_param() handlers, we initialize the static keys just
++	 * before parsing early params (it's fine to call jump_label_init()
++	 * more than once).
++	 */
++	jump_label_init();
+ 	parse_early_param();
+ 
+ 	/* make sure we've parsed cmdline for mem= before this */
 -- 
 2.35.1
 
