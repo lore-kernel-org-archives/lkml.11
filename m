@@ -2,42 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0F74FC32772
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 10:37:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 84FFBC32772
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 10:37:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354935AbiHWKh1 (ORCPT
+        id S1355043AbiHWKhc (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 06:37:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44294 "EHLO
+        Tue, 23 Aug 2022 06:37:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44678 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354996AbiHWKWl (ORCPT
+        with ESMTP id S1355048AbiHWKWr (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 06:22:41 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 40C3832AB9;
-        Tue, 23 Aug 2022 02:03:52 -0700 (PDT)
+        Tue, 23 Aug 2022 06:22:47 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 052CA65654;
+        Tue, 23 Aug 2022 02:03:57 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 1CC8361585;
-        Tue, 23 Aug 2022 09:03:52 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 24EF8C433D6;
-        Tue, 23 Aug 2022 09:03:50 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id C86E6B81C53;
+        Tue, 23 Aug 2022 09:03:55 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2F92EC433C1;
+        Tue, 23 Aug 2022 09:03:54 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661245431;
-        bh=4vEaxxP8Fd1MS0u015Ui6vqxzwPC+gniPbtOiWv0y70=;
+        s=korg; t=1661245434;
+        bh=fKC6Eft23X6p5de7xmAaF7rYFnuHuI+SxHNNWdH0AfU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=gYdpRZ35Lpo8wYTIFKZo+Vt34Rqx9Y6nzwVM34SsSwxBVKj5iLy6jVoz5yRocignk
-         CWCNEQj0Y5TyXGO8ZXxl3SRLar1IWbWA5QcTG3kPoDpTJMLWcCjg8sxBnL/BKIArc8
-         fUpDhEZaVmF9oDzNnDcsj6OLIhiKyQ1Icw33LgV0=
+        b=pBffbx0FSteXiVu4l31wKHxABA66K2Js4UYPRPfr68Fu24S3RsEA3NpqkEmJaRCVO
+         /sVLpuehyNHa/ClWVxI2SbiWuoam6aTe5hivkulbFxwNSXARx+2+mofLH3qqXKb1UI
+         oH9AY1FPSGGsIb2oe8E06QOkKCYyRB6DOy37MKI0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Dan Carpenter <dan.carpenter@oracle.com>,
-        Kalle Valo <kvalo@kernel.org>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.19 069/287] wifi: rtlwifi: fix error codes in rtl_debugfs_set_write_h2c()
-Date:   Tue, 23 Aug 2022 10:23:58 +0200
-Message-Id: <20220823080102.558731356@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Dave Stevenson <dave.stevenson@raspberrypi.com>,
+        Maxime Ripard <maxime@cerno.tech>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 4.19 078/287] drm/vc4: dsi: Correct DSI divider calculations
+Date:   Tue, 23 Aug 2022 10:24:07 +0200
+Message-Id: <20220823080102.877281360@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220823080100.268827165@linuxfoundation.org>
 References: <20220823080100.268827165@linuxfoundation.org>
@@ -49,55 +51,49 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Dan Carpenter <dan.carpenter@oracle.com>
+From: Dave Stevenson <dave.stevenson@raspberrypi.com>
 
-[ Upstream commit b88d28146c30a8e14f0f012d56ebf19b68a348f4 ]
+[ Upstream commit 3b45eee87da171caa28f61240ddb5c21170cda53 ]
 
-If the copy_from_user() fails or the user gives invalid date then the
-correct thing to do is to return a negative error code.  (Currently it
-returns success).
+The divider calculations tried to find the divider just faster than the
+clock requested. However if it required a divider of 7 then the for loop
+aborted without handling the "error" case, and could end up with a clock
+lower than requested.
 
-I made a copy additional related cleanups:
-1) There is no need to check "buffer" for NULL.  That's handled by
-copy_from_user().
-2) The "h2c_len" variable cannot be negative because it is unsigned
-and because sscanf() does not return negative error codes.
+The integer divider from parent PLL to DSI clock is also capable of
+going up to /255, not just /7 that the driver was trying.  This allows
+for slower link frequencies on the DSI bus where the resolution permits.
 
-Fixes: 610247f46feb ("rtlwifi: Improve debugging by using debugfs")
-Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
-Signed-off-by: Kalle Valo <kvalo@kernel.org>
-Link: https://lore.kernel.org/r/YoOLnDkHgVltyXK7@kili
+Correct the loop so that we always have a clock greater than requested,
+and covering the whole range of dividers.
+
+Fixes: 86c1b9eff3f2 ("drm/vc4: Adjust modes in DSI to work around the integer PLL divider.")
+Signed-off-by: Dave Stevenson <dave.stevenson@raspberrypi.com>
+Link: https://lore.kernel.org/r/20220613144800.326124-13-maxime@cerno.tech
+Signed-off-by: Maxime Ripard <maxime@cerno.tech>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/wireless/realtek/rtlwifi/debug.c | 8 ++++----
- 1 file changed, 4 insertions(+), 4 deletions(-)
+ drivers/gpu/drm/vc4/vc4_dsi.c | 6 ++----
+ 1 file changed, 2 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/net/wireless/realtek/rtlwifi/debug.c b/drivers/net/wireless/realtek/rtlwifi/debug.c
-index 498994041bbc..474439fc2da1 100644
---- a/drivers/net/wireless/realtek/rtlwifi/debug.c
-+++ b/drivers/net/wireless/realtek/rtlwifi/debug.c
-@@ -370,8 +370,8 @@ static ssize_t rtl_debugfs_set_write_h2c(struct file *filp,
+diff --git a/drivers/gpu/drm/vc4/vc4_dsi.c b/drivers/gpu/drm/vc4/vc4_dsi.c
+index 0c607eb33d7e..77003ce666a4 100644
+--- a/drivers/gpu/drm/vc4/vc4_dsi.c
++++ b/drivers/gpu/drm/vc4/vc4_dsi.c
+@@ -853,11 +853,9 @@ static bool vc4_dsi_encoder_mode_fixup(struct drm_encoder *encoder,
+ 	/* Find what divider gets us a faster clock than the requested
+ 	 * pixel clock.
+ 	 */
+-	for (divider = 1; divider < 8; divider++) {
+-		if (parent_rate / divider < pll_clock) {
+-			divider--;
++	for (divider = 1; divider < 255; divider++) {
++		if (parent_rate / (divider + 1) < pll_clock)
+ 			break;
+-		}
+ 	}
  
- 	tmp_len = (count > sizeof(tmp) - 1 ? sizeof(tmp) - 1 : count);
- 
--	if (!buffer || copy_from_user(tmp, buffer, tmp_len))
--		return count;
-+	if (copy_from_user(tmp, buffer, tmp_len))
-+		return -EFAULT;
- 
- 	tmp[tmp_len] = '\0';
- 
-@@ -381,8 +381,8 @@ static ssize_t rtl_debugfs_set_write_h2c(struct file *filp,
- 			 &h2c_data[4], &h2c_data[5],
- 			 &h2c_data[6], &h2c_data[7]);
- 
--	if (h2c_len <= 0)
--		return count;
-+	if (h2c_len == 0)
-+		return -EINVAL;
- 
- 	for (i = 0; i < h2c_len; i++)
- 		h2c_data_packed[i] = (u8)h2c_data[i];
+ 	/* Now that we've picked a PLL divider, calculate back to its
 -- 
 2.35.1
 
