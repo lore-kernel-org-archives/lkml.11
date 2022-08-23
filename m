@@ -2,45 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 20FE9C32793
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 10:24:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6F1CCC32792
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 10:24:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354194AbiHWKYg (ORCPT
+        id S1354287AbiHWKYr (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 06:24:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47190 "EHLO
+        Tue, 23 Aug 2022 06:24:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47142 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353574AbiHWKLj (ORCPT
+        with ESMTP id S1353548AbiHWKLi (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 06:11:39 -0400
+        Tue, 23 Aug 2022 06:11:38 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BC269CDC;
-        Tue, 23 Aug 2022 01:57:22 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 18667BC;
+        Tue, 23 Aug 2022 01:57:19 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 58A646153F;
-        Tue, 23 Aug 2022 08:57:22 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 21E98C433D6;
-        Tue, 23 Aug 2022 08:57:20 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id A83306153F;
+        Tue, 23 Aug 2022 08:57:18 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A7142C433D6;
+        Tue, 23 Aug 2022 08:57:17 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661245041;
-        bh=lY8Vu6e1a86oTT8LLYHfgkFVDDyf4+IO166QYIoKdS4=;
+        s=korg; t=1661245038;
+        bh=mhYzhf2NtlHkk2TbX4QwhCx9pIGj1WFByfOUC1Lr1yc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Am/b8KOjI2gKTCsOy4hiqOBN3oYXCUAFZ/MSc6J68ejPL8mCWII3h3MVWbJhgwQM0
-         VdRt9wxepU5P2LG1riDiq6hToigPJv2gXT8Sn1hAlyRy1Wi1XZJV5QjdNmGbdv+yGz
-         tiPJ7B07oFFgP1NwLDStOR5srB0Dv4/jji7mJBrU=
+        b=tdJE8Z0tp5pFj32G74oukFXpBiucb4Xn/xG/YnvRIWL7WLbbxAcqPu7p/cpGeXFom
+         k7AKk1XBhN3Izh9Gzp6HKrxxnBdECxIFN7a72Pjb0Dee508IyezAO44EPiVHg54QuN
+         Hqemjkr7sawBwrgOUPrMiiBwtdB+gb3jnA5jA72I=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Chen Guokai <chenguokai17@mails.ucas.ac.cn>,
-        "Masami Hiramatsu (Google)" <mhiramat@kernel.org>,
-        Liao Chang <liaochang1@huawei.com>,
-        Guo Ren <guoren@kernel.org>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 196/244] csky/kprobe: reclaim insn_slot on kprobe unregistration
-Date:   Tue, 23 Aug 2022 10:25:55 +0200
-Message-Id: <20220823080105.970987809@linuxfoundation.org>
+        stable@vger.kernel.org, Bob Pearson <rpearsonhpe@gmail.com>,
+        Jason Gunthorpe <jgg@nvidia.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 195/244] RDMA/rxe: Limit the number of calls to each tasklet
+Date:   Tue, 23 Aug 2022 10:25:54 +0200
+Message-Id: <20220823080105.929524339@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220823080059.091088642@linuxfoundation.org>
 References: <20220823080059.091088642@linuxfoundation.org>
@@ -52,38 +50,86 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Liao Chang <liaochang1@huawei.com>
+From: Bob Pearson <rpearsonhpe@gmail.com>
 
-[ Upstream commit a2310c74d418deca0f1d749c45f1f43162510f51 ]
+[ Upstream commit eff6d998ca297cb0b2e53b032a56cf8e04dd8b17 ]
 
-On kprobe registration kernel allocate one insn_slot for new kprobe,
-but it forget to reclaim the insn_slot on unregistration, leading to a
-potential leakage.
+Limit the maximum number of calls to each tasklet from rxe_do_task()
+before yielding the cpu. When the limit is reached reschedule the tasklet
+and exit the calling loop. This patch prevents one tasklet from consuming
+100% of a cpu core and causing a deadlock or soft lockup.
 
-Reported-by: Chen Guokai <chenguokai17@mails.ucas.ac.cn>
-Reviewed-by: Masami Hiramatsu (Google) <mhiramat@kernel.org>
-Signed-off-by: Liao Chang <liaochang1@huawei.com>
-Signed-off-by: Guo Ren <guoren@kernel.org>
+Link: https://lore.kernel.org/r/20220630190425.2251-9-rpearsonhpe@gmail.com
+Signed-off-by: Bob Pearson <rpearsonhpe@gmail.com>
+Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/csky/kernel/probes/kprobes.c | 4 ++++
- 1 file changed, 4 insertions(+)
+ drivers/infiniband/sw/rxe/rxe_param.h |  6 ++++++
+ drivers/infiniband/sw/rxe/rxe_task.c  | 16 ++++++++++++----
+ 2 files changed, 18 insertions(+), 4 deletions(-)
 
-diff --git a/arch/csky/kernel/probes/kprobes.c b/arch/csky/kernel/probes/kprobes.c
-index 4045894d9280..584ed9f36290 100644
---- a/arch/csky/kernel/probes/kprobes.c
-+++ b/arch/csky/kernel/probes/kprobes.c
-@@ -124,6 +124,10 @@ void __kprobes arch_disarm_kprobe(struct kprobe *p)
+diff --git a/drivers/infiniband/sw/rxe/rxe_param.h b/drivers/infiniband/sw/rxe/rxe_param.h
+index b5a70cbe94aa..872389870106 100644
+--- a/drivers/infiniband/sw/rxe/rxe_param.h
++++ b/drivers/infiniband/sw/rxe/rxe_param.h
+@@ -103,6 +103,12 @@ enum rxe_device_param {
+ 	RXE_INFLIGHT_SKBS_PER_QP_HIGH	= 64,
+ 	RXE_INFLIGHT_SKBS_PER_QP_LOW	= 16,
  
- void __kprobes arch_remove_kprobe(struct kprobe *p)
- {
-+	if (p->ainsn.api.insn) {
-+		free_insn_slot(p->ainsn.api.insn, 0);
-+		p->ainsn.api.insn = NULL;
-+	}
- }
++	/* Max number of interations of each tasklet
++	 * before yielding the cpu to let other
++	 * work make progress
++	 */
++	RXE_MAX_ITERATIONS		= 1024,
++
+ 	/* Delay before calling arbiter timer */
+ 	RXE_NSEC_ARB_TIMER_DELAY	= 200,
  
- static void __kprobes save_previous_kprobe(struct kprobe_ctlblk *kcb)
+diff --git a/drivers/infiniband/sw/rxe/rxe_task.c b/drivers/infiniband/sw/rxe/rxe_task.c
+index 6951fdcb31bf..568cf56c236b 100644
+--- a/drivers/infiniband/sw/rxe/rxe_task.c
++++ b/drivers/infiniband/sw/rxe/rxe_task.c
+@@ -8,7 +8,7 @@
+ #include <linux/interrupt.h>
+ #include <linux/hardirq.h>
+ 
+-#include "rxe_task.h"
++#include "rxe.h"
+ 
+ int __rxe_do_task(struct rxe_task *task)
+ 
+@@ -34,6 +34,7 @@ void rxe_do_task(struct tasklet_struct *t)
+ 	int ret;
+ 	unsigned long flags;
+ 	struct rxe_task *task = from_tasklet(task, t, tasklet);
++	unsigned int iterations = RXE_MAX_ITERATIONS;
+ 
+ 	spin_lock_irqsave(&task->state_lock, flags);
+ 	switch (task->state) {
+@@ -62,13 +63,20 @@ void rxe_do_task(struct tasklet_struct *t)
+ 		spin_lock_irqsave(&task->state_lock, flags);
+ 		switch (task->state) {
+ 		case TASK_STATE_BUSY:
+-			if (ret)
++			if (ret) {
+ 				task->state = TASK_STATE_START;
+-			else
++			} else if (iterations--) {
+ 				cont = 1;
++			} else {
++				/* reschedule the tasklet and exit
++				 * the loop to give up the cpu
++				 */
++				tasklet_schedule(&task->tasklet);
++				task->state = TASK_STATE_START;
++			}
+ 			break;
+ 
+-		/* soneone tried to run the task since the last time we called
++		/* someone tried to run the task since the last time we called
+ 		 * func, so we will call one more time regardless of the
+ 		 * return value
+ 		 */
 -- 
 2.35.1
 
