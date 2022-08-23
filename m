@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C7147C32772
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 12:11:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 470D0C32772
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 12:11:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356027AbiHWMLm (ORCPT
+        id S1356464AbiHWMLq (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 08:11:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40442 "EHLO
+        Tue, 23 Aug 2022 08:11:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45738 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1359472AbiHWMIg (ORCPT
+        with ESMTP id S1359734AbiHWMLF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 08:08:36 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5AD0CEAB;
-        Tue, 23 Aug 2022 02:38:33 -0700 (PDT)
+        Tue, 23 Aug 2022 08:11:05 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6E80EBA9D4;
+        Tue, 23 Aug 2022 02:38:58 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 915A961389;
-        Tue, 23 Aug 2022 09:37:28 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9BC5DC433C1;
-        Tue, 23 Aug 2022 09:37:27 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 6DCD7B81C9B;
+        Tue, 23 Aug 2022 09:37:56 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BA49DC433D6;
+        Tue, 23 Aug 2022 09:37:54 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661247448;
-        bh=IofdAwIDyvUXY6X9Xr4M4jwUuXAIwWHoIICBfaLTqs0=;
+        s=korg; t=1661247475;
+        bh=HS7B2uIuWwLLSSyYuRoib1F7/Bkai00cbf34YWH7dlM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=VPuxVBNFdP0nAUa+Vk6h4CFDXtZn4koTD7bLxcvgNklniLrcW60uNuSG/rhDycRlJ
-         m46EeG1QQdGzAHvJPzpiKhCqm5mW9oAjupFKiLV64c7TXm3jCSbtaJFJWtJGXfhcyX
-         b6sXKG6bUSGRwD53srroh1OC6Xtsn2X52X54Im0Q=
+        b=GWRK72K3xk4sHB77efWQ/jrvqjSpz7dowu4QQUAoEkhRqt6MXo9OBDli71pMJQjAx
+         8t8fccqOeoLNcc79n2Z5Gb61pngKdn7g1fRMEqnAn7kv+LEVJnjKj9gyLazWTDB/gD
+         xSjKHao4CCZ3+wstZXhcAo8CUnUK+dCAQjdoDqNE=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
-        Ulf Hansson <ulf.hansson@linaro.org>
-Subject: [PATCH 5.10 008/158] mmc: meson-gx: Fix an error handling path in meson_mmc_probe()
-Date:   Tue, 23 Aug 2022 10:25:40 +0200
-Message-Id: <20220823080046.400346292@linuxfoundation.org>
+        stable@vger.kernel.org, Stefano Garzarella <sgarzare@redhat.com>,
+        Peilin Ye <peilin.ye@bytedance.com>,
+        "David S. Miller" <davem@davemloft.net>
+Subject: [PATCH 5.10 049/158] vsock: Set socket state back to SS_UNCONNECTED in vsock_connect_timeout()
+Date:   Tue, 23 Aug 2022 10:26:21 +0200
+Message-Id: <20220823080048.075103804@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220823080046.056825146@linuxfoundation.org>
 References: <20220823080046.056825146@linuxfoundation.org>
@@ -50,38 +50,41 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+From: Peilin Ye <peilin.ye@bytedance.com>
 
-commit b3e1cf31154136da855f3cb6117c17eb0b6bcfb4 upstream.
+commit a3e7b29e30854ed67be0d17687e744ad0c769c4b upstream.
 
-The commit in Fixes has introduced a new error handling which should goto
-the existing error handling path.
-Otherwise some resources leak.
+Imagine two non-blocking vsock_connect() requests on the same socket.
+The first request schedules @connect_work, and after it times out,
+vsock_connect_timeout() sets *sock* state back to TCP_CLOSE, but keeps
+*socket* state as SS_CONNECTING.
 
-Fixes: 19c6beaa064c ("mmc: meson-gx: add device reset")
-Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
-Cc: stable@vger.kernel.org
-Link: https://lore.kernel.org/r/be4b863bacf323521ba3a02efdc4fca9cdedd1a6.1659855351.git.christophe.jaillet@wanadoo.fr
-Signed-off-by: Ulf Hansson <ulf.hansson@linaro.org>
+Later, the second request returns -EALREADY, meaning the socket "already
+has a pending connection in progress", even though the first request has
+already timed out.
+
+As suggested by Stefano, fix it by setting *socket* state back to
+SS_UNCONNECTED, so that the second request will return -ETIMEDOUT.
+
+Suggested-by: Stefano Garzarella <sgarzare@redhat.com>
+Fixes: d021c344051a ("VSOCK: Introduce VM Sockets")
+Reviewed-by: Stefano Garzarella <sgarzare@redhat.com>
+Signed-off-by: Peilin Ye <peilin.ye@bytedance.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/mmc/host/meson-gx-mmc.c |    6 ++++--
- 1 file changed, 4 insertions(+), 2 deletions(-)
+ net/vmw_vsock/af_vsock.c |    1 +
+ 1 file changed, 1 insertion(+)
 
---- a/drivers/mmc/host/meson-gx-mmc.c
-+++ b/drivers/mmc/host/meson-gx-mmc.c
-@@ -1161,8 +1161,10 @@ static int meson_mmc_probe(struct platfo
- 	}
- 
- 	ret = device_reset_optional(&pdev->dev);
--	if (ret)
--		return dev_err_probe(&pdev->dev, ret, "device reset failed\n");
-+	if (ret) {
-+		dev_err_probe(&pdev->dev, ret, "device reset failed\n");
-+		goto free_host;
-+	}
- 
- 	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
- 	host->regs = devm_ioremap_resource(&pdev->dev, res);
+--- a/net/vmw_vsock/af_vsock.c
++++ b/net/vmw_vsock/af_vsock.c
+@@ -1242,6 +1242,7 @@ static void vsock_connect_timeout(struct
+ 	if (sk->sk_state == TCP_SYN_SENT &&
+ 	    (sk->sk_shutdown != SHUTDOWN_MASK)) {
+ 		sk->sk_state = TCP_CLOSE;
++		sk->sk_socket->state = SS_UNCONNECTED;
+ 		sk->sk_err = ETIMEDOUT;
+ 		sk->sk_error_report(sk);
+ 		vsock_transport_cancel_pkt(vsk);
 
 
