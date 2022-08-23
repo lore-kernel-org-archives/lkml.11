@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3782CC32772
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 09:34:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D14F6C32772
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 09:34:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351095AbiHWJeQ (ORCPT
+        id S1350524AbiHWJeT (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 05:34:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40356 "EHLO
+        Tue, 23 Aug 2022 05:34:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38908 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350747AbiHWJcp (ORCPT
+        with ESMTP id S1350825AbiHWJcs (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 05:32:45 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 096CC94100;
-        Tue, 23 Aug 2022 01:38:59 -0700 (PDT)
+        Tue, 23 Aug 2022 05:32:48 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 08DA07B1FE;
+        Tue, 23 Aug 2022 01:38:54 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id C7851614E7;
-        Tue, 23 Aug 2022 08:38:59 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D3458C433C1;
-        Tue, 23 Aug 2022 08:38:58 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id B21AE61446;
+        Tue, 23 Aug 2022 08:37:43 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 72825C433D7;
+        Tue, 23 Aug 2022 08:37:42 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661243939;
-        bh=jc8IbrhXt3pWx3O2jMG/Q2BCERjfFZ+f+AaSbKN/cBo=;
+        s=korg; t=1661243863;
+        bh=YtjYNrgY2aCbWqM67G8OxeniAR3dUoUmn0JshvL67Sg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=GFKlkNlY7Qe4QmFGU/vt8DIHg9YwyE61MElOAJYhq9W8QdnlkuFH7Srypw7m5j2Ue
-         tFbowQ+qDcx/6YCYRhsu+tXciG7nfbWxgj1NdZ/LypSpt+I2yUk5mVbS5Lic/8GW7Z
-         dMRkeBS52x8WC3ZlckzVZdwlNrsgkJVB/iMBoJcA=
+        b=b8VojThlw9yWwsOYXuZDvq6xkVIs5Pn5+1E/o8tlmzl1Oe2A1khmGJv8m0aW5RLb2
+         QDou+peHP52SenV3fkEBaZy12A9Jjhi86Ly5FTGZZHc1VmLjkwYyn2F0P4KEdXeK5w
+         4tjOugH24wWBuWxw8igAPfcarh5KkRPl/ACoz4qg=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Mike Snitzer <snitzer@kernel.org>,
+        stable@vger.kernel.org, huhai <huhai@kylinos.cn>,
+        "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.14 059/229] dm: return early from dm_pr_call() if DM device is suspended
-Date:   Tue, 23 Aug 2022 10:23:40 +0200
-Message-Id: <20220823080055.836359364@linuxfoundation.org>
+Subject: [PATCH 4.14 046/229] ACPI: LPSS: Fix missing check in register_device_clock()
+Date:   Tue, 23 Aug 2022 10:23:27 +0200
+Message-Id: <20220823080055.305291010@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220823080053.202747790@linuxfoundation.org>
 References: <20220823080053.202747790@linuxfoundation.org>
@@ -49,36 +50,34 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Mike Snitzer <snitzer@kernel.org>
+From: huhai <huhai@kylinos.cn>
 
-[ Upstream commit e120a5f1e78fab6223544e425015f393d90d6f0d ]
+[ Upstream commit b4f1f61ed5928b1128e60e38d0dffa16966f06dc ]
 
-Otherwise PR ops may be issued while the broader DM device is being
-reconfigured, etc.
+register_device_clock() misses a check for platform_device_register_simple().
+Add a check to fix it.
 
-Fixes: 9c72bad1f31a ("dm: call PR reserve/unreserve on each underlying device")
-Signed-off-by: Mike Snitzer <snitzer@kernel.org>
+Signed-off-by: huhai <huhai@kylinos.cn>
+Signed-off-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/md/dm.c | 5 +++++
- 1 file changed, 5 insertions(+)
+ drivers/acpi/acpi_lpss.c | 3 +++
+ 1 file changed, 3 insertions(+)
 
-diff --git a/drivers/md/dm.c b/drivers/md/dm.c
-index 94018613b43b..9e6689fd2273 100644
---- a/drivers/md/dm.c
-+++ b/drivers/md/dm.c
-@@ -2859,6 +2859,11 @@ static int dm_call_pr(struct block_device *bdev, iterate_devices_callout_fn fn,
- 		goto out;
- 	ti = dm_table_get_target(table, 0);
+diff --git a/drivers/acpi/acpi_lpss.c b/drivers/acpi/acpi_lpss.c
+index 84b1d30f699c..faa83ff03674 100644
+--- a/drivers/acpi/acpi_lpss.c
++++ b/drivers/acpi/acpi_lpss.c
+@@ -396,6 +396,9 @@ static int register_device_clock(struct acpi_device *adev,
+ 	if (!lpss_clk_dev)
+ 		lpt_register_clock_device();
  
-+	if (dm_suspended_md(md)) {
-+		ret = -EAGAIN;
-+		goto out;
-+	}
++	if (IS_ERR(lpss_clk_dev))
++		return PTR_ERR(lpss_clk_dev);
 +
- 	ret = -EINVAL;
- 	if (!ti->type->iterate_devices)
- 		goto out;
+ 	clk_data = platform_get_drvdata(lpss_clk_dev);
+ 	if (!clk_data)
+ 		return -ENODEV;
 -- 
 2.35.1
 
