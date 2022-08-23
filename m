@@ -2,45 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A6409C32772
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 09:07:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 58ED4C32792
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 09:07:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242352AbiHWJHf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 05:07:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51796 "EHLO
+        id S1347670AbiHWJHz (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 23 Aug 2022 05:07:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51846 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241613AbiHWJGa (ORCPT
+        with ESMTP id S1346279AbiHWJGf (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 05:06:30 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BACED85FB8;
-        Tue, 23 Aug 2022 01:29:50 -0700 (PDT)
+        Tue, 23 Aug 2022 05:06:35 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BC93185F9B;
+        Tue, 23 Aug 2022 01:29:46 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 088D161475;
-        Tue, 23 Aug 2022 08:28:31 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1059FC433C1;
-        Tue, 23 Aug 2022 08:28:29 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id D33BE614C2;
+        Tue, 23 Aug 2022 08:28:58 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D8C2CC433D6;
+        Tue, 23 Aug 2022 08:28:57 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661243310;
-        bh=RVt6G3W9mdbfkIy7nW8MAcnxPBPOKSh1h3YBa/FUnjU=;
+        s=korg; t=1661243338;
+        bh=P3egnqUA6ktWyvgwGA+OKZtXZmA0Wg8B7BsVUmsHoUw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=TuSHLBBDoAxUXEUGETPMTwTCEJrE9bn6lZlkPHRkqSbdAecO3sgGg2TMgXQ9u5N/g
-         RTOp50UXmeIMt2gCOD7pGdc2BeuOaoue6KqhzGNrvYYKGlY0+MFLc4peF7stMGn+Hw
-         +SNP4im8UJt/X37wrSqEeEcTK5OoFn2IxACiPYBQ=
+        b=0sqMs1IWECNXUVTNltDtq3Yq9aA0N75+Cis2sYghkAGYi3yVmGig3SNqpX58ux9f5
+         VcFk6nH1oQVf4iONanwANwM4SrHlhTCsKGKfKwsfBt9DMsnR9MJbcEk8g8wmGZ5EEe
+         8bSBADDFeyajfCHhXx8EUAAWDINUx6MU6MkEJUpg=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
+To:     linux-kernel@vger.kernel.org, dri-devel@lists.freedesktop.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Vivien Didelot <vivien.didelot@savoirfairelinux.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Sergei Antonov <saproj@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        Jakub Kicinski <kuba@kernel.org>
-Subject: [PATCH 5.19 206/365] net: dsa: mv88e6060: prevent crash on an unused port
-Date:   Tue, 23 Aug 2022 10:01:47 +0200
-Message-Id: <20220823080126.818158646@linuxfoundation.org>
+        stable@vger.kernel.org, Marek Vasut <marex@denx.de>,
+        Laurent Pinchart <laurent.pinchart@ideasonboard.com>,
+        Sam Ravnborg <sam@ravnborg.org>,
+        Neil Armstrong <narmstrong@baylibre.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.19 246/365] drm/bridge: lvds-codec: Fix error checking of drm_of_lvds_get_data_mapping()
+Date:   Tue, 23 Aug 2022 10:02:27 +0200
+Message-Id: <20220823080128.500334591@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220823080118.128342613@linuxfoundation.org>
 References: <20220823080118.128342613@linuxfoundation.org>
@@ -52,53 +52,42 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Sergei Antonov <saproj@gmail.com>
+From: Marek Vasut <marex@denx.de>
 
-commit 246bbf2f977ea36aaf41f5d24370fef433250728 upstream.
+[ Upstream commit 2bba782002c5dab6ca8d608b778b386fb912adff ]
 
-If the port isn't a CPU port nor a user port, 'cpu_dp'
-is a null pointer and a crash happened on dereferencing
-it in mv88e6060_setup_port():
+The drm_of_lvds_get_data_mapping() returns either negative value on
+error or MEDIA_BUS_FMT_* otherwise. The check for 'ret' would also
+catch the positive case of MEDIA_BUS_FMT_* and lead to probe failure
+every time 'data-mapping' DT property is specified.
 
-[    9.575872] Unable to handle kernel NULL pointer dereference at virtual address 00000014
-...
-[    9.942216]  mv88e6060_setup from dsa_register_switch+0x814/0xe84
-[    9.948616]  dsa_register_switch from mdio_probe+0x2c/0x54
-[    9.954433]  mdio_probe from really_probe.part.0+0x98/0x2a0
-[    9.960375]  really_probe.part.0 from driver_probe_device+0x30/0x10c
-[    9.967029]  driver_probe_device from __device_attach_driver+0xb8/0x13c
-[    9.973946]  __device_attach_driver from bus_for_each_drv+0x90/0xe0
-[    9.980509]  bus_for_each_drv from __device_attach+0x110/0x184
-[    9.986632]  __device_attach from bus_probe_device+0x8c/0x94
-[    9.992577]  bus_probe_device from deferred_probe_work_func+0x78/0xa8
-[    9.999311]  deferred_probe_work_func from process_one_work+0x290/0x73c
-[   10.006292]  process_one_work from worker_thread+0x30/0x4b8
-[   10.012155]  worker_thread from kthread+0xd4/0x10c
-[   10.017238]  kthread from ret_from_fork+0x14/0x3c
-
-Fixes: 0abfd494deef ("net: dsa: use dedicated CPU port")
-CC: Vivien Didelot <vivien.didelot@savoirfairelinux.com>
-CC: Florian Fainelli <f.fainelli@gmail.com>
-Signed-off-by: Sergei Antonov <saproj@gmail.com>
-Signed-off-by: Vladimir Oltean <olteanv@gmail.com>
-Link: https://lore.kernel.org/r/20220811070939.1717146-1-saproj@gmail.com
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Fixes: 7c4dd0a266527 ("drm: of: Add drm_of_lvds_get_data_mapping")
+Signed-off-by: Marek Vasut <marex@denx.de>
+Cc: Laurent Pinchart <laurent.pinchart@ideasonboard.com>
+Cc: Sam Ravnborg <sam@ravnborg.org>
+To: dri-devel@lists.freedesktop.org
+Reviewed-by: Neil Armstrong <narmstrong@baylibre.com>
+Link: https://patchwork.freedesktop.org/patch/msgid/20220801125419.167562-1-marex@denx.de
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/dsa/mv88e6060.c |    3 +++
- 1 file changed, 3 insertions(+)
+ drivers/gpu/drm/bridge/lvds-codec.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/drivers/net/dsa/mv88e6060.c
-+++ b/drivers/net/dsa/mv88e6060.c
-@@ -118,6 +118,9 @@ static int mv88e6060_setup_port(struct m
- 	int addr = REG_PORT(p);
- 	int ret;
- 
-+	if (dsa_is_unused_port(priv->ds, p))
-+		return 0;
-+
- 	/* Do not force flow control, disable Ingress and Egress
- 	 * Header tagging, disable VLAN tunneling, and set the port
- 	 * state to Forwarding.  Additionally, if this is the CPU
+diff --git a/drivers/gpu/drm/bridge/lvds-codec.c b/drivers/gpu/drm/bridge/lvds-codec.c
+index 702ea803a743..39e7004de720 100644
+--- a/drivers/gpu/drm/bridge/lvds-codec.c
++++ b/drivers/gpu/drm/bridge/lvds-codec.c
+@@ -180,7 +180,7 @@ static int lvds_codec_probe(struct platform_device *pdev)
+ 		of_node_put(bus_node);
+ 		if (ret == -ENODEV) {
+ 			dev_warn(dev, "missing 'data-mapping' DT property\n");
+-		} else if (ret) {
++		} else if (ret < 0) {
+ 			dev_err(dev, "invalid 'data-mapping' DT property\n");
+ 			return ret;
+ 		} else {
+-- 
+2.35.1
+
 
 
