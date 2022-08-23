@@ -2,44 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2793CC32772
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 11:39:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EBEE2C32772
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 11:39:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355936AbiHWLjn (ORCPT
+        id S1357592AbiHWLjr (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 07:39:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44878 "EHLO
+        Tue, 23 Aug 2022 07:39:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49384 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357951AbiHWLc2 (ORCPT
+        with ESMTP id S1357859AbiHWLc2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 23 Aug 2022 07:32:28 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1399290C6F;
-        Tue, 23 Aug 2022 02:26:52 -0700 (PDT)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2BF0DC6B68;
+        Tue, 23 Aug 2022 02:26:55 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 0BAF761330;
-        Tue, 23 Aug 2022 09:26:52 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 15346C433C1;
-        Tue, 23 Aug 2022 09:26:50 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id DA4C061328;
+        Tue, 23 Aug 2022 09:26:54 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E5176C433D6;
+        Tue, 23 Aug 2022 09:26:53 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661246811;
-        bh=+NeAf9h5pfFDUXnKms+x2U0x3UtSbInesnl7Zo/kjxU=;
+        s=korg; t=1661246814;
+        bh=x2NuveE8ONFScI78iZ8cTXF/d02hhkTjxBWlxNHqsnY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=xkCQiJi2UVeA8A2WBOuujoXM2SuMBjV4yPPSR9yxgQiD0S/XxO6aNuYR9CnT6uY0R
-         Boj5NZ9eoDA4XC5IokvB6tB3uXNn/UruXT9df+8gvPrg6rRm3WlVeApcqcsr5U/Uab
-         GWF1bd68nHRNFnDItmwwLo02mqNLQKoULAdHPF0I=
+        b=SBvXkbtM2cXH+ifrMPinw/YcA7Jg+ioPXM8kcpgv5cxnOm4w9X0PVpQ31uyDidb+9
+         6RPTSgvV30yLmFEnRWgASZhZNb/oJRAP2Jg4RKUKR75yQwWl8Phz5f3I84+ClM/Xr8
+         /UgGpDMsuqxRgL3tdE+c3FZbkznO1rLaild35QQ0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
-        Mark Brown <broonie@kernel.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 226/389] ASoC: qcom: q6dsp: Fix an off-by-one in q6adm_alloc_copp()
-Date:   Tue, 23 Aug 2022 10:25:04 +0200
-Message-Id: <20220823080125.041533349@linuxfoundation.org>
+        stable@vger.kernel.org, Dan Carpenter <dan.carpenter@oracle.com>,
+        Jens Axboe <axboe@kernel.dk>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.4 198/389] null_blk: fix ida error handling in null_add_dev()
+Date:   Tue, 23 Aug 2022 10:24:36 +0200
+Message-Id: <20220823080123.911913944@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220823080115.331990024@linuxfoundation.org>
 References: <20220823080115.331990024@linuxfoundation.org>
@@ -51,35 +49,60 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+From: Dan Carpenter <dan.carpenter@oracle.com>
 
-[ Upstream commit 673f58f62ca6fc98979d1cf3fe89c3ff33f29b2e ]
+[ Upstream commit ee452a8d984f94fa8e894f003a52e776e4572881 ]
 
-find_first_zero_bit() returns MAX_COPPS_PER_PORT at max here.
-So 'idx' should be tested with ">=" or the test can't match.
+There needs to be some error checking if ida_simple_get() fails.
+Also call ida_free() if there are errors later.
 
-Fixes: 7b20b2be51e1 ("ASoC: qdsp6: q6adm: Add q6adm driver")
-Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
-Link: https://lore.kernel.org/r/0fca3271649736053eb9649d87e1ca01b056be40.1658394124.git.christophe.jaillet@wanadoo.fr
-Signed-off-by: Mark Brown <broonie@kernel.org>
+Fixes: 94bc02e30fb8 ("nullb: use ida to manage index")
+Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
+Link: https://lore.kernel.org/r/YtEhXsr6vJeoiYhd@kili
+Signed-off-by: Jens Axboe <axboe@kernel.dk>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- sound/soc/qcom/qdsp6/q6adm.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/block/null_blk_main.c | 14 +++++++++++---
+ 1 file changed, 11 insertions(+), 3 deletions(-)
 
-diff --git a/sound/soc/qcom/qdsp6/q6adm.c b/sound/soc/qcom/qdsp6/q6adm.c
-index da242515e146..8e3539941fad 100644
---- a/sound/soc/qcom/qdsp6/q6adm.c
-+++ b/sound/soc/qcom/qdsp6/q6adm.c
-@@ -217,7 +217,7 @@ static struct q6copp *q6adm_alloc_copp(struct q6adm *adm, int port_idx)
- 	idx = find_first_zero_bit(&adm->copp_bitmap[port_idx],
- 				  MAX_COPPS_PER_PORT);
+diff --git a/drivers/block/null_blk_main.c b/drivers/block/null_blk_main.c
+index 13eae973eaea..6cbdd8a691d2 100644
+--- a/drivers/block/null_blk_main.c
++++ b/drivers/block/null_blk_main.c
+@@ -1711,8 +1711,13 @@ static int null_add_dev(struct nullb_device *dev)
+ 	blk_queue_flag_clear(QUEUE_FLAG_ADD_RANDOM, nullb->q);
  
--	if (idx > MAX_COPPS_PER_PORT)
-+	if (idx >= MAX_COPPS_PER_PORT)
- 		return ERR_PTR(-EBUSY);
+ 	mutex_lock(&lock);
+-	nullb->index = ida_simple_get(&nullb_indexes, 0, 0, GFP_KERNEL);
+-	dev->index = nullb->index;
++	rv = ida_simple_get(&nullb_indexes, 0, 0, GFP_KERNEL);
++	if (rv < 0) {
++		mutex_unlock(&lock);
++		goto out_cleanup_zone;
++	}
++	nullb->index = rv;
++	dev->index = rv;
+ 	mutex_unlock(&lock);
  
- 	c = kzalloc(sizeof(*c), GFP_ATOMIC);
+ 	blk_queue_logical_block_size(nullb->q, dev->blocksize);
+@@ -1724,13 +1729,16 @@ static int null_add_dev(struct nullb_device *dev)
+ 
+ 	rv = null_gendisk_register(nullb);
+ 	if (rv)
+-		goto out_cleanup_zone;
++		goto out_ida_free;
+ 
+ 	mutex_lock(&lock);
+ 	list_add_tail(&nullb->list, &nullb_list);
+ 	mutex_unlock(&lock);
+ 
+ 	return 0;
++
++out_ida_free:
++	ida_free(&nullb_indexes, nullb->index);
+ out_cleanup_zone:
+ 	if (dev->zoned)
+ 		null_zone_exit(dev);
 -- 
 2.35.1
 
