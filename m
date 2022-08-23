@@ -2,44 +2,48 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A2034C32772
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 10:10:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7F816C32772
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 10:10:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353030AbiHWKKJ (ORCPT
+        id S1353040AbiHWKKR (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 06:10:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44770 "EHLO
+        Tue, 23 Aug 2022 06:10:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46510 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352742AbiHWKC1 (ORCPT
+        with ESMTP id S1352749AbiHWKC1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 23 Aug 2022 06:02:27 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B39E17C1FA;
-        Tue, 23 Aug 2022 01:50:44 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 804907C748;
+        Tue, 23 Aug 2022 01:50:47 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id D91ABB81B90;
-        Tue, 23 Aug 2022 08:50:42 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 20478C433D6;
-        Tue, 23 Aug 2022 08:50:40 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id F05E8B8105C;
+        Tue, 23 Aug 2022 08:50:45 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5AB8AC433D6;
+        Tue, 23 Aug 2022 08:50:44 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661244641;
-        bh=CWth068DYf27Hhh4Is+eyfbC9ynjtu8WDAcxtajfpdo=;
+        s=korg; t=1661244644;
+        bh=MJ9PmoMD6d/lpjd/2z9GkI5gkqaZpktyZICEJxlwDDY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=l4GNbn7l3ww3S6+4RDiGlZu8P90ivYZ1C97xHKkRjmmYtNM7tz8r9AoyTlj/NcbzT
-         KbXEmMgke7CabvBq3OIjI2hmA7XCKLUo+IuArwjH0sBZbU7CY5+8LG6piPUXKal99v
-         u1oBY8Q4hbkxIjIHcaNCY6+BgJYWgmRgAKH7JNZk=
+        b=ImyXeCIhxzUKEjemGlRiPqOwF/W59dv9lJXIc+6wa5+9IX1/qy+gaa+L2jbLIXi5x
+         ydxRRxVRbonMN73+WRth9kSkmGvsNZIFq+B3UZELfR7G6x6NYHmBi9YOIf0CTHFIkf
+         PjFg08r5tTVt3M4oVDgeKgJv0jfmKs9/OFlZz01M=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Pablo Neira Ayuso <pablo@netfilter.org>
-Subject: [PATCH 5.15 127/244] netfilter: nf_tables: really skip inactive sets when allocating name
-Date:   Tue, 23 Aug 2022 10:24:46 +0200
-Message-Id: <20220823080103.320842901@linuxfoundation.org>
+        stable@vger.kernel.org, Eric Dumazet <edumazet@google.com>,
+        Soheil Hassas Yeganeh <soheil@google.com>,
+        Shakeel Butt <shakeelb@google.com>,
+        Wei Wang <weiwan@google.com>,
+        "David S. Miller" <davem@davemloft.net>
+Subject: [PATCH 4.14 169/229] tcp: fix over estimation in sk_forced_mem_schedule()
+Date:   Tue, 23 Aug 2022 10:25:30 +0200
+Message-Id: <20220823080059.684450676@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220823080059.091088642@linuxfoundation.org>
-References: <20220823080059.091088642@linuxfoundation.org>
+In-Reply-To: <20220823080053.202747790@linuxfoundation.org>
+References: <20220823080053.202747790@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -48,30 +52,45 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Pablo Neira Ayuso <pablo@netfilter.org>
+From: Eric Dumazet <edumazet@google.com>
 
-commit 271c5ca826e0c3c53e0eb4032f8eaedea1ee391c upstream.
+commit c4ee118561a0f74442439b7b5b486db1ac1ddfeb upstream.
 
-While looping to build the bitmap of used anonymous set names, check the
-current set in the iteration, instead of the one that is being created.
+sk_forced_mem_schedule() has a bug similar to ones fixed
+in commit 7c80b038d23e ("net: fix sk_wmem_schedule() and
+sk_rmem_schedule() errors")
 
-Fixes: 37a9cc525525 ("netfilter: nf_tables: add generation mask to sets")
-Signed-off-by: Pablo Neira Ayuso <pablo@netfilter.org>
+While this bug has little chance to trigger in old kernels,
+we need to fix it before the following patch.
+
+Fixes: d83769a580f1 ("tcp: fix possible deadlock in tcp_send_fin()")
+Signed-off-by: Eric Dumazet <edumazet@google.com>
+Acked-by: Soheil Hassas Yeganeh <soheil@google.com>
+Reviewed-by: Shakeel Butt <shakeelb@google.com>
+Reviewed-by: Wei Wang <weiwan@google.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- net/netfilter/nf_tables_api.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ net/ipv4/tcp_output.c |    7 ++++---
+ 1 file changed, 4 insertions(+), 3 deletions(-)
 
---- a/net/netfilter/nf_tables_api.c
-+++ b/net/netfilter/nf_tables_api.c
-@@ -3810,7 +3810,7 @@ cont:
- 		list_for_each_entry(i, &ctx->table->sets, list) {
- 			int tmp;
+--- a/net/ipv4/tcp_output.c
++++ b/net/ipv4/tcp_output.c
+@@ -3086,11 +3086,12 @@ void tcp_xmit_retransmit_queue(struct so
+  */
+ void sk_forced_mem_schedule(struct sock *sk, int size)
+ {
+-	int amt;
++	int delta, amt;
  
--			if (!nft_is_active_next(ctx->net, set))
-+			if (!nft_is_active_next(ctx->net, i))
- 				continue;
- 			if (!sscanf(i->name, name, &tmp))
- 				continue;
+-	if (size <= sk->sk_forward_alloc)
++	delta = size - sk->sk_forward_alloc;
++	if (delta <= 0)
+ 		return;
+-	amt = sk_mem_pages(size);
++	amt = sk_mem_pages(delta);
+ 	sk->sk_forward_alloc += amt * SK_MEM_QUANTUM;
+ 	sk_memory_allocated_add(sk, amt);
+ 
 
 
