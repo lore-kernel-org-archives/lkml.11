@@ -2,46 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C7BD5C48BE4
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 12:06:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4810BC49EC2
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 12:06:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1359645AbiHWMGW (ORCPT
+        id S1359733AbiHWMGf (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 08:06:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51772 "EHLO
+        Tue, 23 Aug 2022 08:06:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52976 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1358980AbiHWMAZ (ORCPT
+        with ESMTP id S1359474AbiHWMBn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 08:00:25 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 39773D91DF;
-        Tue, 23 Aug 2022 02:35:15 -0700 (PDT)
+        Tue, 23 Aug 2022 08:01:43 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5D341979C0;
+        Tue, 23 Aug 2022 02:36:00 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 9E5C0B81C97;
-        Tue, 23 Aug 2022 09:35:14 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id EF9EFC433D6;
-        Tue, 23 Aug 2022 09:35:12 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 07FEFCE1B58;
+        Tue, 23 Aug 2022 09:35:51 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1CD4EC433D7;
+        Tue, 23 Aug 2022 09:35:48 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661247313;
-        bh=A2eRBh8AG3rkoETG7aGwcgq5CIWQoyR/4YyJOxLnGZI=;
+        s=korg; t=1661247349;
+        bh=8Wq8TnX6A7t44+dksAy9+VlmKZqLfFoW9QkcGmVh7ps=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=0EsQFXZjKXtI7OuD3h/QsrLYAPNe3eCkiCJI8uyln3XFN+misjx+FqzUYxvEWRS5o
-         0Io2NwYrWcyf2zc/HehVpHPRGIOq38b3ow9z0yiiFC/n9ofxg04tE23z1Iru2UfxSG
-         EqS/rdboGnZlbU3gZ3Z/7ou5wjgfI9ep+dgrM6Hc=
+        b=QREnKP0Wg0VgSMCJggpIqforOOHSGgH0uwL9PQfmvcny5ot1ND1QlohkRDvjKHSPL
+         gfre4ktMUuMib9CabGo1lh/UkX4LfQY36o+7v3DFcw1unzbw0D+1riWqzLDPc5YpU9
+         Xy2FdLTELv8CykAzoBz7FQ91OMl4rx6lzolH2Gzo=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Ingo Molnar <mingo@kernel.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Tzvetomir Stoyanov <tz.stoyanov@gmail.com>,
-        Tom Zanussi <zanussi@kernel.org>,
-        "Masami Hiramatsu (Google)" <mhiramat@kernel.org>,
-        "Steven Rostedt (Google)" <rostedt@goodmis.org>
-Subject: [PATCH 5.4 385/389] tracing/probes: Have kprobes and uprobes use $COMM too
-Date:   Tue, 23 Aug 2022 10:27:43 +0200
-Message-Id: <20220823080131.650747404@linuxfoundation.org>
+        stable@vger.kernel.org, Jozef Martiniak <jomajm@gmail.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.4 359/389] gadgetfs: ep_io - wait until IRQ finishes
+Date:   Tue, 23 Aug 2022 10:27:17 +0200
+Message-Id: <20220823080130.546286463@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220823080115.331990024@linuxfoundation.org>
 References: <20220823080115.331990024@linuxfoundation.org>
@@ -53,53 +49,37 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Steven Rostedt (Google) <rostedt@goodmis.org>
+From: Jozef Martiniak <jomajm@gmail.com>
 
-commit ab8384442ee512fc0fc72deeb036110843d0e7ff upstream.
+[ Upstream commit 04cb742d4d8f30dc2e83b46ac317eec09191c68e ]
 
-Both $comm and $COMM can be used to get current->comm in eprobes and the
-filtering and histogram logic. Make kprobes and uprobes consistent in this
-regard and allow both $comm and $COMM as well. Currently kprobes and
-uprobes only handle $comm, which is inconsistent with the other utilities,
-and can be confusing to users.
+after usb_ep_queue() if wait_for_completion_interruptible() is
+interrupted we need to wait until IRQ gets finished.
 
-Link: https://lkml.kernel.org/r/20220820134401.317014913@goodmis.org
-Link: https://lore.kernel.org/all/20220820220442.776e1ddaf8836e82edb34d01@kernel.org/
+Otherwise complete() from epio_complete() can corrupt stack.
 
-Cc: stable@vger.kernel.org
-Cc: Ingo Molnar <mingo@kernel.org>
-Cc: Andrew Morton <akpm@linux-foundation.org>
-Cc: Tzvetomir Stoyanov <tz.stoyanov@gmail.com>
-Cc: Tom Zanussi <zanussi@kernel.org>
-Fixes: 533059281ee5 ("tracing: probeevent: Introduce new argument fetching code")
-Suggested-by: Masami Hiramatsu (Google) <mhiramat@kernel.org>
-Acked-by: Masami Hiramatsu (Google) <mhiramat@kernel.org>
-Signed-off-by: Steven Rostedt (Google) <rostedt@goodmis.org>
+Signed-off-by: Jozef Martiniak <jomajm@gmail.com>
+Link: https://lore.kernel.org/r/20220708070645.6130-1-jomajm@gmail.com
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- kernel/trace/trace_probe.c |    5 +++--
- 1 file changed, 3 insertions(+), 2 deletions(-)
+ drivers/usb/gadget/legacy/inode.c | 1 +
+ 1 file changed, 1 insertion(+)
 
---- a/kernel/trace/trace_probe.c
-+++ b/kernel/trace/trace_probe.c
-@@ -300,7 +300,7 @@ static int parse_probe_vars(char *arg, c
+diff --git a/drivers/usb/gadget/legacy/inode.c b/drivers/usb/gadget/legacy/inode.c
+index 9cd80ad075bd..97c73d610eeb 100644
+--- a/drivers/usb/gadget/legacy/inode.c
++++ b/drivers/usb/gadget/legacy/inode.c
+@@ -362,6 +362,7 @@ ep_io (struct ep_data *epdata, void *buf, unsigned len)
+ 				spin_unlock_irq (&epdata->dev->lock);
+ 
+ 				DBG (epdata->dev, "endpoint gone\n");
++				wait_for_completion(&done);
+ 				epdata->status = -ENODEV;
  			}
- 		} else
- 			goto inval_var;
--	} else if (strcmp(arg, "comm") == 0) {
-+	} else if (strcmp(arg, "comm") == 0 || strcmp(arg, "COMM") == 0) {
- 		code->op = FETCH_OP_COMM;
- #ifdef CONFIG_HAVE_FUNCTION_ARG_ACCESS_API
- 	} else if (((flags & TPARG_FL_MASK) ==
-@@ -595,7 +595,8 @@ static int traceprobe_parse_probe_arg_bo
- 	 * Since $comm and immediate string can not be dereferred,
- 	 * we can find those by strcmp.
- 	 */
--	if (strcmp(arg, "$comm") == 0 || strncmp(arg, "\\\"", 2) == 0) {
-+	if (strcmp(arg, "$comm") == 0 || strcmp(arg, "$COMM") == 0 ||
-+	    strncmp(arg, "\\\"", 2) == 0) {
- 		/* The type of $comm must be "string", and not an array. */
- 		if (parg->count || (t && strcmp(t, "string")))
- 			return -EINVAL;
+ 		}
+-- 
+2.35.1
+
 
 
