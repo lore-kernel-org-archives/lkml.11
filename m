@@ -2,44 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0198DC32792
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 08:27:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 285CDC32796
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 08:27:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243460AbiHWIZ2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 04:25:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59784 "EHLO
+        id S243499AbiHWIZc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 23 Aug 2022 04:25:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56766 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243496AbiHWIVQ (ORCPT
+        with ESMTP id S243564AbiHWIVW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 04:21:16 -0400
+        Tue, 23 Aug 2022 04:21:22 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DBEBC6F560;
-        Tue, 23 Aug 2022 01:12:37 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 576BB6FA07;
+        Tue, 23 Aug 2022 01:12:43 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 52C7EB81C4A;
-        Tue, 23 Aug 2022 08:12:30 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 74677C433C1;
-        Tue, 23 Aug 2022 08:12:28 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 64BC0B81C38;
+        Tue, 23 Aug 2022 08:12:33 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B77ECC433C1;
+        Tue, 23 Aug 2022 08:12:31 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661242348;
-        bh=rjjBHXoP7pxnv7fCJOqFLvOtZtIYyDWZRkjY5upDNlY=;
+        s=korg; t=1661242352;
+        bh=DR1snfRLybVmdH1tOb3/8khLmueGUFR93/TihdxZuYM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=TNdgDx/jeh48a8or45FzY8gqPHS4XBh7mDjAVKYZLMLln/bapHw/7z7XB7KhcUcFt
-         Qk8eNlvKgvHx6QVEZPsoEomBOuDhmjjT7swcwiSQnJ76JHwrXhrKs0qxJemW+kN4Fs
-         x0Hh+9FGjGUGX7sQA1F6cAyhaD+I0kqWqyxAW7Oo=
+        b=bXDTyLk/X/Tzzcr6NSYuOede184p2iFK4n3xMHHymw0WqoANCLM+XGKvpecDIC25v
+         Twr+UiPl31xW4/1TkGaH3ku272ESgkbycgWhlia+Ee2zt0aGik/pyh7XkyDkAc63v8
+         LlJ4J0cCEZwipuu+yYoOrtCAw5DdEEsRxuHoM4X4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Qu Wenruo <wqu@suse.com>,
-        David Sterba <dsterba@suse.com>
-Subject: [PATCH 4.9 058/101] btrfs: reject log replay if there is unsupported RO compat flag
-Date:   Tue, 23 Aug 2022 10:03:31 +0200
-Message-Id: <20220823080036.782860749@linuxfoundation.org>
+        stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
+        Dmitry Torokhov <dmitry.torokhov@gmail.com>
+Subject: [PATCH 5.19 102/365] Input: exc3000 - fix return value check of wait_for_completion_timeout
+Date:   Tue, 23 Aug 2022 10:00:03 +0200
+Message-Id: <20220823080122.468747566@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220823080034.579196046@linuxfoundation.org>
-References: <20220823080034.579196046@linuxfoundation.org>
+In-Reply-To: <20220823080118.128342613@linuxfoundation.org>
+References: <20220823080118.128342613@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -48,84 +48,46 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Qu Wenruo <wqu@suse.com>
+From: Miaoqian Lin <linmq006@gmail.com>
 
-commit dc4d31684974d140250f3ee612c3f0cab13b3146 upstream.
+commit 6bb7144c3fa16a5efb54a8e2aff1817b4168018e upstream.
 
-[BUG]
-If we have a btrfs image with dirty log, along with an unsupported RO
-compatible flag:
+wait_for_completion_timeout() returns unsigned long not int.
+It returns 0 if timed out, and positive if completed.
+The check for <= 0 is ambiguous and should be == 0 here
+indicating timeout which is the only error case.
 
-log_root		30474240
-...
-compat_flags		0x0
-compat_ro_flags		0x40000003
-			( FREE_SPACE_TREE |
-			  FREE_SPACE_TREE_VALID |
-			  unknown flag: 0x40000000 )
-
-Then even if we can only mount it RO, we will still cause metadata
-update for log replay:
-
-  BTRFS info (device dm-1): flagging fs with big metadata feature
-  BTRFS info (device dm-1): using free space tree
-  BTRFS info (device dm-1): has skinny extents
-  BTRFS info (device dm-1): start tree-log replay
-
-This is definitely against RO compact flag requirement.
-
-[CAUSE]
-RO compact flag only forces us to do RO mount, but we will still do log
-replay for plain RO mount.
-
-Thus this will result us to do log replay and update metadata.
-
-This can be very problematic for new RO compat flag, for example older
-kernel can not understand v2 cache, and if we allow metadata update on
-RO mount and invalidate/corrupt v2 cache.
-
-[FIX]
-Just reject the mount unless rescue=nologreplay is provided:
-
-  BTRFS error (device dm-1): cannot replay dirty log with unsupport optional features (0x40000000), try rescue=nologreplay instead
-
-We don't want to set rescue=nologreply directly, as this would make the
-end user to read the old data, and cause confusion.
-
-Since the such case is really rare, we're mostly fine to just reject the
-mount with an error message, which also includes the proper workaround.
-
-CC: stable@vger.kernel.org #4.9+
-Signed-off-by: Qu Wenruo <wqu@suse.com>
-Reviewed-by: David Sterba <dsterba@suse.com>
-Signed-off-by: David Sterba <dsterba@suse.com>
+Fixes: 102feb1ddfd0 ("Input: exc3000 - factor out vendor data request")
+Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
+Link: https://lore.kernel.org/r/20220411105828.22140-1-linmq006@gmail.com
+Signed-off-by: Dmitry Torokhov <dmitry.torokhov@gmail.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- fs/btrfs/disk-io.c |   14 ++++++++++++++
- 1 file changed, 14 insertions(+)
+ drivers/input/touchscreen/exc3000.c |    7 ++++---
+ 1 file changed, 4 insertions(+), 3 deletions(-)
 
---- a/fs/btrfs/disk-io.c
-+++ b/fs/btrfs/disk-io.c
-@@ -2774,6 +2774,20 @@ int open_ctree(struct super_block *sb,
- 		err = -EINVAL;
- 		goto fail_alloc;
- 	}
-+	/*
-+	 * We have unsupported RO compat features, although RO mounted, we
-+	 * should not cause any metadata write, including log replay.
-+	 * Or we could screw up whatever the new feature requires.
-+	 */
-+	if (unlikely(features && btrfs_super_log_root(disk_super) &&
-+		     !btrfs_test_opt(fs_info, NOLOGREPLAY))) {
-+		btrfs_err(fs_info,
-+"cannot replay dirty log with unsupported compat_ro features (0x%llx), try rescue=nologreplay",
-+			  features);
-+		err = -EINVAL;
-+		goto fail_alloc;
-+	}
-+
+--- a/drivers/input/touchscreen/exc3000.c
++++ b/drivers/input/touchscreen/exc3000.c
+@@ -220,6 +220,7 @@ static int exc3000_vendor_data_request(s
+ {
+ 	u8 buf[EXC3000_LEN_VENDOR_REQUEST] = { 0x67, 0x00, 0x42, 0x00, 0x03 };
+ 	int ret;
++	unsigned long time_left;
  
- 	max_active = fs_info->thread_pool_size;
+ 	mutex_lock(&data->query_lock);
  
+@@ -233,9 +234,9 @@ static int exc3000_vendor_data_request(s
+ 		goto out_unlock;
+ 
+ 	if (response) {
+-		ret = wait_for_completion_timeout(&data->wait_event,
+-						  timeout * HZ);
+-		if (ret <= 0) {
++		time_left = wait_for_completion_timeout(&data->wait_event,
++							timeout * HZ);
++		if (time_left == 0) {
+ 			ret = -ETIMEDOUT;
+ 			goto out_unlock;
+ 		}
 
 
