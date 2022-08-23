@@ -2,86 +2,78 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B250EC32772
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 14:35:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BA127C32772
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 14:37:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232689AbiHWOf5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 10:35:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38018 "EHLO
+        id S241241AbiHWOha (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 23 Aug 2022 10:37:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38698 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243058AbiHWOfi (ORCPT
+        with ESMTP id S242963AbiHWOga (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 10:35:38 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2B8451571C;
-        Tue, 23 Aug 2022 04:52:17 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 76DE6B81CD9;
-        Tue, 23 Aug 2022 11:51:20 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 29384C433D6;
-        Tue, 23 Aug 2022 11:51:18 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1661255479;
-        bh=CvA/C1GOxg3OMPQs+x/12zSbfpSbGgDdGEtoLNQ/5Ho=;
-        h=Subject:From:To:Cc:Date:In-Reply-To:References:From;
-        b=jK/VbkuSLJLv4yFEfP5UCoSf8zhBypyjLt8Y4KKwQTwZKSayR/ygClZaMxdViPrt2
-         9KhW+a0CGkPpFPj3omjieYzoObypsE3leGzE/ONP96z5qohhm7xfUsc9PmZOw2Yvwm
-         Ehum7+Et2qT5nkirirVTysyJBuJKjbt35gmrApeuwEKHd/bEze6b/NF3opd5r0emSL
-         ICqvcGosOH4E6Gc6i0B4UT8NmsqHg96IX2ea82l8SLzh8bi1uq6UHVPQqjA2Vjlrx3
-         DEajdTzsK299sXiHudI0SqtTUFy0t+TduWRWXPftCJFRK0M8u8qUtgzsAUDIgpV0yc
-         wmrkzKmAshQCQ==
-Message-ID: <df469d936b2e1c1a8c9c947896fa8a160f33b0e8.camel@kernel.org>
-Subject: Re: [PATCH] iversion: update comments with info about atime updates
-From:   Jeff Layton <jlayton@kernel.org>
-To:     NeilBrown <neilb@suse.de>
-Cc:     Dave Chinner <david@fromorbit.com>,
-        Mimi Zohar <zohar@linux.ibm.com>,
-        linux-fsdevel@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-integrity@vger.kernel.org, linux-nfs@vger.kernel.org,
-        linux-xfs@vger.kernel.org, linux-ext4@vger.kernel.org,
-        Trond Myklebust <trondmy@hammerspace.com>
-Date:   Tue, 23 Aug 2022 07:51:16 -0400
-In-Reply-To: <166125468756.23264.2859374883806269821@noble.neil.brown.name>
-References: <20220822133309.86005-1-jlayton@kernel.org>
-        , <ceb8f09a4cb2de67f40604d03ee0c475feb3130a.camel@linux.ibm.com>
-        , <f17b9d627703bee2a7b531a051461671648a9dbd.camel@kernel.org>
-        , <18827b350fbf6719733fda814255ec20d6dcf00f.camel@linux.ibm.com>
-        , <4cc84440d954c022d0235bf407a60da66a6ccc39.camel@kernel.org>
-        , <20220822233231.GJ3600936@dread.disaster.area>
-        , <6cbcb33d33613f50dd5e485ecbf6ce7e305f3d6f.camel@kernel.org>
-         <166125468756.23264.2859374883806269821@noble.neil.brown.name>
-Content-Type: text/plain; charset="ISO-8859-15"
-Content-Transfer-Encoding: quoted-printable
-User-Agent: Evolution 3.44.4 (3.44.4-1.fc36) 
+        Tue, 23 Aug 2022 10:36:30 -0400
+Received: from gnuweeb.org (gnuweeb.org [51.81.211.47])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 51D6A2BCECD;
+        Tue, 23 Aug 2022 04:53:50 -0700 (PDT)
+Received: from localhost.localdomain (unknown [125.160.110.187])
+        by gnuweeb.org (Postfix) with ESMTPSA id 5065B8061E;
+        Tue, 23 Aug 2022 11:52:49 +0000 (UTC)
+X-GW-Data: lPqxHiMPbJw1wb7CM9QUryAGzr0yq5atzVDdxTR0iA==
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gnuweeb.org;
+        s=default; t=1661255572;
+        bh=xeK/grg+kOqd4rx4Lqkzew3o9a07RqdooWZuXwMipMo=;
+        h=From:To:Cc:Subject:Date:From;
+        b=sLl8fFmTdpSfF2oGMjw7fHcKnmshSeADhQNA6AxK+Ju1bSVObTBz6KM7P3AJ8Yc1A
+         H9w7fHSmuzTJZP+k4vA9QAVsVdMLraRX2Wk0Rt3MkmBMJlgro9WX+CPukVqhEkxO1p
+         cGGhzQG9fw94ThpATIDCJzSu0YbyzCkhmggHwglvoZ/Q9xJ7ewMrSwkRYYcB3PBjgR
+         5nKfFSP0GShFlZ7PQANv8WmjSFu2dGo/xe4Af8pP5U4uuQjehzvC6dMKmnQ0rDhIER
+         cFP6toy1BHdA6atBfcgxgwFA33RVFnFiSpSHzKcRg+6MbkKWlekdSnER6OGDQQDkYz
+         K428mETEVs9LQ==
+From:   Ammar Faizi <ammarfaizi2@gnuweeb.org>
+To:     Jens Axboe <axboe@kernel.dk>
+Cc:     Ammar Faizi <ammarfaizi2@gnuweeb.org>,
+        io-uring Mailing List <io-uring@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        GNU/Weeb Mailing List <gwml@vger.gnuweeb.org>,
+        Bart Van Assche <bvanassche@acm.org>,
+        Dylan Yudaken <dylany@fb.com>,
+        Facebook Kernel Team <kernel-team@fb.com>,
+        Kanna Scarlet <knscarlet@gnuweeb.org>
+Subject: [PATCH liburing 0/2] liburing uapi and manpage update
+Date:   Tue, 23 Aug 2022 18:52:42 +0700
+Message-Id: <20220823114813.2865890-1-ammar.faizi@intel.com>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, 2022-08-23 at 21:38 +1000, NeilBrown wrote:
-> On Tue, 23 Aug 2022, Jeff Layton wrote:
-> > So, we can refer to that and simply say:
-> >=20
-> > "If the function updates the mtime or ctime on the inode, then the
-> > i_version should be incremented. If only the atime is being updated,
-> > then the i_version should not be incremented. The exception to this rul=
-e
-> > is explicit atime updates via utimes() or similar mechanism, which
-> > should result in the i_version being incremented."
->=20
-> Is that exception needed?  utimes() updates ctime.
->=20
-> https://man7.org/linux/man-pages/man2/utimes.2.html
->=20
-> doesn't say that, but
->=20
-> https://pubs.opengroup.org/onlinepubs/007904875/functions/utimes.html
->=20
-> does, as does the code.
->=20
+From: Ammar Faizi <ammarfaizi2@gnuweeb.org>
 
-Oh, good point! I think we can leave that out. Even better!
---=20
-Jeff Layton <jlayton@kernel.org>
+Hi Jens,
+
+There are two patches in this series.
+
+1) Sync the argument data type with `man 2 renameat`.
+
+2) On top of io_uring series I just sent, copy uapi io_uring.h to
+   liburing. Sync with the kernel.
+
+Signed-off-by: Ammar Faizi <ammarfaizi2@gnuweeb.org>
+---
+
+Ammar Faizi (2):
+  liburing: Change the type of `flags` in `io_uring_prep_renameat()` to `unsigned int`
+  io_uring: uapi: Sync with the kernel
+
+ man/io_uring_prep_renameat.3    |  4 +-
+ src/include/liburing.h          |  2 +-
+ src/include/liburing/io_uring.h | 66 ++++++++++++++++++++++++---------
+ 3 files changed, 51 insertions(+), 21 deletions(-)
+
+
+base-commit: bf3fedba890e66d644692910964fe1d8cbf4fb1b
+-- 
+Ammar Faizi
+
