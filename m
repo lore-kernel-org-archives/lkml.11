@@ -2,45 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5FD8DC32774
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 09:48:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 92DEEC32772
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 09:48:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243977AbiHWJsM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 05:48:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53678 "EHLO
+        id S242180AbiHWJsQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 23 Aug 2022 05:48:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53556 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352128AbiHWJp6 (ORCPT
+        with ESMTP id S1352120AbiHWJp5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 05:45:58 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 14C6343E71;
-        Tue, 23 Aug 2022 01:43:41 -0700 (PDT)
+        Tue, 23 Aug 2022 05:45:57 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B179F1183A;
+        Tue, 23 Aug 2022 01:43:27 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id D89466153A;
-        Tue, 23 Aug 2022 08:43:16 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DB05DC433C1;
-        Tue, 23 Aug 2022 08:43:15 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 4A971B81C55;
+        Tue, 23 Aug 2022 08:43:27 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7E102C433C1;
+        Tue, 23 Aug 2022 08:43:25 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661244196;
-        bh=nBECbFiTYqDWMZnWshLEHrVJOnspAGOnYPScHv5uORA=;
+        s=korg; t=1661244206;
+        bh=N33/0tyB2ogA33cfEjn1YFSkrKBa93ZvpLZceAjDIK0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=TDuL+OvOtzGIkc5IuOXl9p+1TsISBmgxdz75d499W9UerZjssb5Kj3rqZMLLCB/Kw
-         lZ9LdacHZMHu6kWhJdE71oD4Q+F0rz3DYUP2c/ZlVQpwu8wlvgk4QGqQye6GvdN10Z
-         PDEunl9F4x2uUCgyo2NhcJFF49zlh08eIE+7KUpQ=
+        b=Sr9tz+qURkG9hb7xT/xhgJTzfxslxPgwJHq4Ovsch+RuMxWX+2MJYFqxnwQpbAe+g
+         PUCzBJN9tBiCoy8fHZWzKo7niJZlUJ7LZr8W14T4wbS7aqzQHDG4pyCRRLdflnS4qv
+         7+cT487EAC4VcB0Lp0pP201dCfIcVRpRW4gGErxY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.14 101/229] misc: rtsx: Fix an error handling path in rtsx_pci_probe()
-Date:   Tue, 23 Aug 2022 10:24:22 +0200
-Message-Id: <20220823080057.306630618@linuxfoundation.org>
+        stable@vger.kernel.org, Xuan Zhuo <xuanzhuo@linux.alibaba.com>,
+        Jason Wang <jasowang@redhat.com>,
+        "David S. Miller" <davem@davemloft.net>
+Subject: [PATCH 5.15 056/244] virtio_net: fix memory leak inside XPD_TX with mergeable
+Date:   Tue, 23 Aug 2022 10:23:35 +0200
+Message-Id: <20220823080100.932689364@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220823080053.202747790@linuxfoundation.org>
-References: <20220823080053.202747790@linuxfoundation.org>
+In-Reply-To: <20220823080059.091088642@linuxfoundation.org>
+References: <20220823080059.091088642@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -49,51 +49,38 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+From: Xuan Zhuo <xuanzhuo@linux.alibaba.com>
 
-[ Upstream commit 44fd1917314e9d4f53dd95dd65df1c152f503d3a ]
+commit 7a542bee27c6a57e45c33cbbdc963325fd6493af upstream.
 
-If an error occurs after a successful idr_alloc() call, the corresponding
-resource must be released with idr_remove() as already done in the .remove
-function.
+When we call xdp_convert_buff_to_frame() to get xdpf, if it returns
+NULL, we should check if xdp_page was allocated by xdp_linearize_page().
+If it is newly allocated, it should be freed here alone. Just like any
+other "goto err_xdp".
 
-Update the error handling path to add the missing idr_remove() call.
-
-Fixes: ada8a8a13b13 ("mfd: Add realtek pcie card reader driver")
-Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
-Link: https://lore.kernel.org/r/e8dc41716cbf52fb37a12e70d8972848e69df6d6.1655271216.git.christophe.jaillet@wanadoo.fr
+Fixes: 44fa2dbd4759 ("xdp: transition into using xdp_frame for ndo_xdp_xmit")
+Signed-off-by: Xuan Zhuo <xuanzhuo@linux.alibaba.com>
+Acked-by: Jason Wang <jasowang@redhat.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/mfd/rtsx_pcr.c | 6 +++++-
- 1 file changed, 5 insertions(+), 1 deletion(-)
+ drivers/net/virtio_net.c |    5 ++++-
+ 1 file changed, 4 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/mfd/rtsx_pcr.c b/drivers/mfd/rtsx_pcr.c
-index c9e45b6befac..1c7afd9a14e3 100644
---- a/drivers/mfd/rtsx_pcr.c
-+++ b/drivers/mfd/rtsx_pcr.c
-@@ -1223,7 +1223,7 @@ static int rtsx_pci_probe(struct pci_dev *pcidev,
- 	pcr->remap_addr = ioremap_nocache(base, len);
- 	if (!pcr->remap_addr) {
- 		ret = -ENOMEM;
--		goto free_handle;
-+		goto free_idr;
- 	}
- 
- 	pcr->rtsx_resv_buf = dma_alloc_coherent(&(pcidev->dev),
-@@ -1285,6 +1285,10 @@ static int rtsx_pci_probe(struct pci_dev *pcidev,
- 			pcr->rtsx_resv_buf, pcr->rtsx_resv_buf_addr);
- unmap:
- 	iounmap(pcr->remap_addr);
-+free_idr:
-+	spin_lock(&rtsx_pci_lock);
-+	idr_remove(&rtsx_pci_idr, pcr->id);
-+	spin_unlock(&rtsx_pci_lock);
- free_handle:
- 	kfree(handle);
- free_pcr:
--- 
-2.35.1
-
+--- a/drivers/net/virtio_net.c
++++ b/drivers/net/virtio_net.c
+@@ -1017,8 +1017,11 @@ static struct sk_buff *receive_mergeable
+ 		case XDP_TX:
+ 			stats->xdp_tx++;
+ 			xdpf = xdp_convert_buff_to_frame(&xdp);
+-			if (unlikely(!xdpf))
++			if (unlikely(!xdpf)) {
++				if (unlikely(xdp_page != page))
++					put_page(xdp_page);
+ 				goto err_xdp;
++			}
+ 			err = virtnet_xdp_xmit(dev, 1, &xdpf, 0);
+ 			if (unlikely(!err)) {
+ 				xdp_return_frame_rx_napi(xdpf);
 
 
