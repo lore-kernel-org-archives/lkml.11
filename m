@@ -2,269 +2,138 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A2927C32772
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 17:27:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5A328C32789
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 17:27:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230174AbiHWR1X (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 13:27:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56460 "EHLO
+        id S230313AbiHWR13 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 23 Aug 2022 13:27:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58990 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235659AbiHWRZs (ORCPT
+        with ESMTP id S236191AbiHWRZ4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 13:25:48 -0400
-Received: from frasgout13.his.huawei.com (frasgout13.his.huawei.com [14.137.139.46])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7A13A57236;
-        Tue, 23 Aug 2022 08:03:23 -0700 (PDT)
-Received: from mail02.huawei.com (unknown [172.18.147.227])
-        by frasgout13.his.huawei.com (SkyGuard) with ESMTP id 4MBsmD3DtVz9v7H2;
-        Tue, 23 Aug 2022 22:58:04 +0800 (CST)
-Received: from huaweicloud.com (unknown [10.204.63.22])
-        by APP2 (Coremail) with SMTP id GxC2BwBnIhqd6wRjjU5GAA--.52413S11;
-        Tue, 23 Aug 2022 16:02:54 +0100 (CET)
-From:   Roberto Sassu <roberto.sassu@huaweicloud.com>
-To:     ast@kernel.org, daniel@iogearbox.net, andrii@kernel.org,
-        martin.lau@linux.dev, song@kernel.org, yhs@fb.com,
-        john.fastabend@gmail.com, kpsingh@kernel.org, sdf@google.com,
-        haoluo@google.com, jolsa@kernel.org, mykolal@fb.com,
-        corbet@lwn.net, dhowells@redhat.com, jarkko@kernel.org,
-        rostedt@goodmis.org, mingo@redhat.com, paul@paul-moore.com,
-        jmorris@namei.org, serge@hallyn.com, shuah@kernel.org
-Cc:     bpf@vger.kernel.org, linux-doc@vger.kernel.org,
-        keyrings@vger.kernel.org, linux-security-module@vger.kernel.org,
-        linux-kselftest@vger.kernel.org, linux-kernel@vger.kernel.org,
-        deso@posteo.net, Roberto Sassu <roberto.sassu@huawei.com>
-Subject: [PATCH v13 09/10] selftests/bpf: Add additional tests for bpf_lookup_*_key()
-Date:   Tue, 23 Aug 2022 17:00:34 +0200
-Message-Id: <20220823150035.711534-10-roberto.sassu@huaweicloud.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220823150035.711534-1-roberto.sassu@huaweicloud.com>
-References: <20220823150035.711534-1-roberto.sassu@huaweicloud.com>
+        Tue, 23 Aug 2022 13:25:56 -0400
+Received: from mout.gmx.net (mout.gmx.net [212.227.17.22])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 62A01BCCF3;
+        Tue, 23 Aug 2022 08:04:11 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gmx.net;
+        s=badeba3b8450; t=1661267042;
+        bh=7bJP14sFItK6YJZyN6IGs69JI9dSphEw3bIjj5uY7Js=;
+        h=X-UI-Sender-Class:Date:From:To:Subject;
+        b=EwsWS/sRoKg/7FY7tpMg5Ys1QxcY3SuUeoG0+Z+rZ32Hf0ErkPXZocs8Es7sgbpxc
+         LL6h1ZCFA+iit0Zbazh+iGSDw7AKLadw4PdSG5fWPTQD3qa4Xs0xz41JT6Q3m8OCFp
+         9Wec7KEBDg7Il4ge4X9yl1HkqhrXL2MT1JiSC7eM=
+X-UI-Sender-Class: 01bb95c1-4bf8-414a-932a-4f6e2808ef9c
+Received: from p100 ([92.116.140.137]) by mail.gmx.net (mrgmx105
+ [212.227.17.168]) with ESMTPSA (Nemesis) id 1Mr9G2-1pCCGK15NO-00oBkR; Tue, 23
+ Aug 2022 17:04:02 +0200
+Date:   Tue, 23 Aug 2022 17:03:59 +0200
+From:   Helge Deller <deller@gmx.de>
+To:     Linus Torvalds <torvalds@linux-foundation.org>,
+        linux-kernel@vger.kernel.org, linux-parisc@vger.kernel.org,
+        James Bottomley <James.Bottomley@hansenpartnership.com>,
+        John David Anglin <dave.anglin@bell.net>
+Subject: [GIT PULL] parisc architecture fixes and updates for v6.0-rc3
+Message-ID: <YwTsX8zR7x09qWP5@p100>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-CM-TRANSID: GxC2BwBnIhqd6wRjjU5GAA--.52413S11
-X-Coremail-Antispam: 1UD129KBjvJXoW3XF13Gr13Zr13KFyUJFWkWFg_yoWxJrW3pa
-        48Ga4YkryI9r1Uta93JrsrAF1rKF48ua1IywsrWr13uwn7AFyxGw4xKF4aqasxWrZ8uwn3
-        ua1Yga1Y9w4UZa7anT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
-        9KBjDU0xBIdaVrnRJUUUBvb4IE77IF4wAFF20E14v26rWj6s0DM7CY07I20VC2zVCF04k2
-        6cxKx2IYs7xG6r1F6r1fM7CIcVAFz4kK6r1j6r18M28IrcIa0xkI8VA2jI8067AKxVWUAV
-        Cq3wA2048vs2IY020Ec7CjxVAFwI0_Xr0E3s1l8cAvFVAK0II2c7xJM28CjxkF64kEwVA0
-        rcxSw2x7M28EF7xvwVC0I7IYx2IY67AKxVWUCVW8JwA2z4x0Y4vE2Ix0cI8IcVCY1x0267
-        AKxVW8Jr0_Cr1UM28EF7xvwVC2z280aVAFwI0_Gr0_Cr1l84ACjcxK6I8E87Iv6xkF7I0E
-        14v26r4UJVWxJr1le2I262IYc4CY6c8Ij28IcVAaY2xG8wAqx4xG64xvF2IEw4CE5I8CrV
-        C2j2WlYx0E2Ix0cI8IcVAFwI0_Jr0_Jr4lYx0Ex4A2jsIE14v26r1j6r4UMcvjeVCFs4IE
-        7xkEbVWUJVW8JwACjcxG0xvY0x0EwIxGrwACI402YVCY1x02628vn2kIc2xKxwCF04k20x
-        vY0x0EwIxGrwCFx2IqxVCFs4IE7xkEbVWUJVW8JwC20s026c02F40E14v26r1j6r18MI8I
-        3I0E7480Y4vE14v26r106r1rMI8E67AF67kF1VAFwI0_GFv_WrylIxkGc2Ij64vIr41lIx
-        AIcVC0I7IYx2IY67AKxVWUCVW8JwCI42IY6xIIjxv20xvEc7CjxVAFwI0_Gr1j6F4UJwCI
-        42IY6xAIw20EY4v20xvaj40_Jr0_JF4lIxAIcVC2z280aVAFwI0_Jr0_Gr1lIxAIcVC2z2
-        80aVCY1x0267AKxVW8Jr0_Cr1UYxBIdaVFxhVjvjDU0xZFpf9x07UZo7tUUUUU=
-X-CM-SenderInfo: purev21wro2thvvxqx5xdzvxpfor3voofrz/1tbiAgANBF1jj347nQAAsi
-X-CFilter-Loop: Reflected
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+X-Provags-ID: V03:K1:bFY2MFMKeDDjoBohbmha6DvTZHUNu3OimL202WcU5RYkE1Qisma
+ pseYFOi/y1NY5VFsaOLOqZZAzsWHXL3M0t0fSEXClucsjtAqV84jno7ckWSn/G9iilhUXJv
+ ijvQcVX2IXLThQlZGrmssL4KwfdenjXDHoQXX2vqcnrsBmHT0tX4IvZ0Qwj03L6EP5Fpcgx
+ +nmb8iGppC4rmaa8CArAg==
+X-UI-Out-Filterresults: notjunk:1;V03:K0:oe//FWAw0tc=:FHJeuJGPFgj/98+MgPtevy
+ 9lzKmzQePeuJm94DMf24zZz5iXcn5k99L5g2MAko6DHUZMg0RFU9h/eeyR6SAiLTXSVWsNaDY
+ UVfdejflIJCXWi5vQz4d4yo/XNKl4ZDKBhSRqQCLUzFBWOkF+UNdMw056rg8KXruD/HbO5/Ad
+ FWHGHZnbSBfv6WQl2vPytIIwTxpfuEOEqHrdqEpfnQJM2Ez0KEFbun+K/n9xsMEOHRofX/luH
+ tMmRVfGJL6LLRVte/b+u2Vf2Fsap7BUC+OFQ/FasRoyIGYRLMbGWkQ9l/n+8IDTOMEjd3Um50
+ NFP0LJJrkp7kOWBoVQ6L1F9gf//Sj/lvb8mZnZrRfirVOGn4fWoCCHkN+dKcH80rObJ5gFaMS
+ pTeZeHOr/cYtk312amHy1R1fKn+dLXW/ArMXPlu9xUqi3Mg0zqqeJH0XudWliR45zOiOehZv8
+ FfQtp9eBajZwaryNKk4vyn9AQA0YMJT+6EJBYEX1Wm/8HXwCoPkaSLeupzr8ce3HC63Z+Cf/q
+ vaPx4c9+QIITUWdzMgwbUbpekB6SafMcR/3ZnaDIkTdfYb3+UB6ZYbLtghL+usqCLz70jk0yy
+ JH4dabAFagz3SPn7bkkHFMkLwWBBCGZCfAKDJLTJ68yx3PfsolheZa7PXIptzVzHXzahp8u6U
+ aZxs/XqmZninue8hFqldydFDJT67dtkcSmhJ3o8F/+utdv0PS3szbqtz0UJzaMBxLs7Ma4j7K
+ kKejJQbz2l9AJI1yQSyNXesSkIfNFPm5FZF78J8qUCHApGunqJSDxxZ0vNSbXxaqP/VYdYzFq
+ lA0vPPj2tnNFKANGDf/V76ry5cILZBkQTRkbquk6dxce6veWCM0Zk19co1P21Z2/vA8Uf5Pi9
+ FmgADpJaOw9PG0VL92E+02k2RdL1tVyuBbsrlK+nh7f5Vw16rcbUQvScxB6HLJFS5A6tZy5TT
+ qwFsz5mXg/g7lgxAyLszNgC6AeX6WmBEjt+qdwRrypKAxp1+RxN7ONbF+89PI7a2DwyIoWy/G
+ aRMiTy84pZgdmD0ByRIujiiMNWB8qS9VrbEF/j6MKFQABCwhIiekwcD/vF/l6CYlcezV8vPgL
+ 6EKRQSQNt/6Y7dEcMU4s3yhGzsSWaYw0mF+zld8BIZkDd/HCMBEJHadLg==
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Roberto Sassu <roberto.sassu@huawei.com>
+Hi Linus,
 
-Add a test to ensure that bpf_lookup_user_key() creates a referenced
-special keyring when the KEY_LOOKUP_CREATE flag is passed to this function.
+please pull the next set of patches for the parisc architecture for 6.0-rc2.
 
-Ensure that the kfunc rejects invalid flags.
+Some interesting background to the current patchset:
 
-Ensure that a keyring can be obtained from bpf_lookup_system_key() when one
-of the pre-determined keyring IDs is provided.
+It turned out that the fldw instruction (which loads a 32-bit word from memory
+into one half of a FP register) failed on unaligned addresses and even trashed
+some other random FP register instead. It's a trivial one-liner fix in the
+exception handler but this failure dates back to the very beginnings of the
+parisc-port. It's strange that it was never noticed before.
 
-The test is currently blacklisted for s390x (JIT does not support calling
-kernel function).
+Another patch fixes an annoyance noticed by Randy Dunlap. Running "make
+ARCH=parisc64 randconfig" always returned a 32-bit config, although one would
+expect a 64-bit config.  Masahiro Yamada suggested to mimik sparc Kconfig code,
+which fixed the issue nicely. This allowed to drop some compiler build checks
+too.
 
-Signed-off-by: Roberto Sassu <roberto.sassu@huawei.com>
----
- tools/testing/selftests/bpf/DENYLIST.s390x    |   1 +
- .../selftests/bpf/prog_tests/lookup_key.c     | 112 ++++++++++++++++++
- .../selftests/bpf/progs/test_lookup_key.c     |  46 +++++++
- 3 files changed, 159 insertions(+)
- create mode 100644 tools/testing/selftests/bpf/prog_tests/lookup_key.c
- create mode 100644 tools/testing/selftests/bpf/progs/test_lookup_key.c
+Third, it's possible to build an optimized 32-bit kernel for PA8X00 (64-bit)
+CPUs, which then wouldn't start on 32-bit-only (PA1.x) machines. I've added a
+bootup check which prevents that and which prints a message to the console.
+This can be tested with qemu, which currently only supports 32-bit emulation.
 
-diff --git a/tools/testing/selftests/bpf/DENYLIST.s390x b/tools/testing/selftests/bpf/DENYLIST.s390x
-index a708c3dcc154..585ed5d43da8 100644
---- a/tools/testing/selftests/bpf/DENYLIST.s390x
-+++ b/tools/testing/selftests/bpf/DENYLIST.s390x
-@@ -66,3 +66,4 @@ select_reuseport                         # intermittently fails on new s390x set
- xdp_synproxy                             # JIT does not support calling kernel function                                (kfunc)
- unpriv_bpf_disabled                      # fentry
- setget_sockopt                           # attach unexpected error: -524                                               (trampoline)
-+lookup_key                               # JIT does not support calling kernel function                                (kfunc)
-diff --git a/tools/testing/selftests/bpf/prog_tests/lookup_key.c b/tools/testing/selftests/bpf/prog_tests/lookup_key.c
-new file mode 100644
-index 000000000000..2e0cde729dc7
---- /dev/null
-+++ b/tools/testing/selftests/bpf/prog_tests/lookup_key.c
-@@ -0,0 +1,112 @@
-+// SPDX-License-Identifier: GPL-2.0
-+
-+/*
-+ * Copyright (C) 2022 Huawei Technologies Duesseldorf GmbH
-+ *
-+ * Author: Roberto Sassu <roberto.sassu@huawei.com>
-+ */
-+
-+#include <linux/keyctl.h>
-+#include <test_progs.h>
-+
-+#include "test_lookup_key.skel.h"
-+
-+#define KEY_LOOKUP_CREATE	0x01
-+#define KEY_LOOKUP_PARTIAL	0x02
-+
-+static bool kfunc_not_supported;
-+
-+static int libbpf_print_cb(enum libbpf_print_level level, const char *fmt,
-+			   va_list args)
-+{
-+	char *func;
-+
-+	if (strcmp(fmt, "libbpf: extern (func ksym) '%s': not found in kernel or module BTFs\n"))
-+		return 0;
-+
-+	func = va_arg(args, char *);
-+
-+	if (strcmp(func, "bpf_lookup_user_key") && strcmp(func, "bpf_key_put") &&
-+	    strcmp(func, "bpf_lookup_system_key"))
-+		return 0;
-+
-+	kfunc_not_supported = true;
-+	return 0;
-+}
-+
-+void test_lookup_key(void)
-+{
-+	libbpf_print_fn_t old_print_cb;
-+	struct test_lookup_key *skel;
-+	u32 next_id;
-+	int ret;
-+
-+	skel = test_lookup_key__open();
-+	if (!ASSERT_OK_PTR(skel, "test_lookup_key__open"))
-+		return;
-+
-+	old_print_cb = libbpf_set_print(libbpf_print_cb);
-+	ret = test_lookup_key__load(skel);
-+	libbpf_set_print(old_print_cb);
-+
-+	if (ret < 0 && kfunc_not_supported) {
-+		printf("%s:SKIP:bpf_lookup_*_key(), bpf_key_put() kfuncs not supported\n",
-+		       __func__);
-+		test__skip();
-+		goto close_prog;
-+	}
-+
-+	if (!ASSERT_OK(ret, "test_lookup_key__load"))
-+		goto close_prog;
-+
-+	ret = test_lookup_key__attach(skel);
-+	if (!ASSERT_OK(ret, "test_lookup_key__attach"))
-+		goto close_prog;
-+
-+	skel->bss->monitored_pid = getpid();
-+	skel->bss->key_serial = KEY_SPEC_THREAD_KEYRING;
-+
-+	/* The thread-specific keyring does not exist, this test fails. */
-+	skel->bss->flags = 0;
-+
-+	ret = bpf_prog_get_next_id(0, &next_id);
-+	if (!ASSERT_LT(ret, 0, "bpf_prog_get_next_id"))
-+		goto close_prog;
-+
-+	/* Force creation of the thread-specific keyring, this test succeeds. */
-+	skel->bss->flags = KEY_LOOKUP_CREATE;
-+
-+	ret = bpf_prog_get_next_id(0, &next_id);
-+	if (!ASSERT_OK(ret, "bpf_prog_get_next_id"))
-+		goto close_prog;
-+
-+	/* Pass both lookup flags for parameter validation. */
-+	skel->bss->flags = KEY_LOOKUP_CREATE | KEY_LOOKUP_PARTIAL;
-+
-+	ret = bpf_prog_get_next_id(0, &next_id);
-+	if (!ASSERT_OK(ret, "bpf_prog_get_next_id"))
-+		goto close_prog;
-+
-+	/* Pass invalid flags. */
-+	skel->bss->flags = UINT64_MAX;
-+
-+	ret = bpf_prog_get_next_id(0, &next_id);
-+	if (!ASSERT_LT(ret, 0, "bpf_prog_get_next_id"))
-+		goto close_prog;
-+
-+	skel->bss->key_serial = 0;
-+	skel->bss->key_id = 1;
-+
-+	ret = bpf_prog_get_next_id(0, &next_id);
-+	if (!ASSERT_OK(ret, "bpf_prog_get_next_id"))
-+		goto close_prog;
-+
-+	skel->bss->key_id = UINT32_MAX;
-+
-+	ret = bpf_prog_get_next_id(0, &next_id);
-+	ASSERT_LT(ret, 0, "bpf_prog_get_next_id");
-+
-+close_prog:
-+	skel->bss->monitored_pid = 0;
-+	test_lookup_key__destroy(skel);
-+}
-diff --git a/tools/testing/selftests/bpf/progs/test_lookup_key.c b/tools/testing/selftests/bpf/progs/test_lookup_key.c
-new file mode 100644
-index 000000000000..c73776990ae3
---- /dev/null
-+++ b/tools/testing/selftests/bpf/progs/test_lookup_key.c
-@@ -0,0 +1,46 @@
-+// SPDX-License-Identifier: GPL-2.0
-+
-+/*
-+ * Copyright (C) 2022 Huawei Technologies Duesseldorf GmbH
-+ *
-+ * Author: Roberto Sassu <roberto.sassu@huawei.com>
-+ */
-+
-+#include "vmlinux.h"
-+#include <errno.h>
-+#include <bpf/bpf_helpers.h>
-+#include <bpf/bpf_tracing.h>
-+
-+char _license[] SEC("license") = "GPL";
-+
-+__u32 monitored_pid;
-+__u32 key_serial;
-+__u32 key_id;
-+__u64 flags;
-+
-+extern struct bpf_key *bpf_lookup_user_key(__u32 serial, __u64 flags) __ksym;
-+extern struct bpf_key *bpf_lookup_system_key(__u64 id) __ksym;
-+extern void bpf_key_put(struct bpf_key *key) __ksym;
-+
-+SEC("lsm.s/bpf")
-+int BPF_PROG(bpf, int cmd, union bpf_attr *attr, unsigned int size)
-+{
-+	struct bpf_key *bkey;
-+	__u32 pid;
-+
-+	pid = bpf_get_current_pid_tgid() >> 32;
-+	if (pid != monitored_pid)
-+		return 0;
-+
-+	if (key_serial)
-+		bkey = bpf_lookup_user_key(key_serial, flags);
-+	else
-+		bkey = bpf_lookup_system_key(key_id);
-+
-+	if (!bkey)
-+		return -ENOENT;
-+
-+	bpf_key_put(bkey);
-+
-+	return 0;
-+}
--- 
-2.25.1
+The other patches are usual clean-up stuff like added return value checks and
+typo fixes in comments.
 
+Thanks,
+Helge
+
+-----
+
+The following changes since commit 568035b01cfb107af8d2e4bd2fb9aea22cf5b868:
+
+  Linux 6.0-rc1 (2022-08-14 15:50:18 -0700)
+
+are available in the Git repository at:
+
+  git://git.kernel.org/pub/scm/linux/kernel/git/deller/parisc-linux.git tags/parisc-for-6.0-2
+
+for you to fetch changes up to 591d2108f3abc4db9f9073cae37cf3591fd250d6:
+
+  parisc: Add runtime check to prevent PA2.0 kernels on PA1.x machines (2022-08-22 11:09:17 +0200)
+
+----------------------------------------------------------------
+parisc architecture fixes and updates for kernel v6.0-rc3:
+
+* Fix emulation of fldw instruction on unaligned addresses
+* Fix "make ARCH=parisc64 randconfig" to return a 64-bit config
+* Prevent boot if trying to boot a 32-bit kernel compiled for PA8X00
+  CPUs on 32-bit only machines
+* ccio-dma: Handle kmalloc failure in ccio_init_resources()
+
+----------------------------------------------------------------
+Helge Deller (4):
+      parisc: Fix exception handler for fldw and fstw instructions
+      parisc: Make CONFIG_64BIT available for ARCH=parisc64 only
+      Revert "parisc: Show error if wrong 32/64-bit compiler is being used"
+      parisc: Add runtime check to prevent PA2.0 kernels on PA1.x machines
+
+Jason Wang (1):
+      parisc: ccio-dma: Fix typo in comment
+
+Li Qiong (1):
+      parisc: ccio-dma: Handle kmalloc failure in ccio_init_resources()
+
+Wolfram Sang (1):
+      parisc: led: Move from strlcpy with unused retval to strscpy
+
+ arch/parisc/Kconfig              | 21 ++++++--------------
+ arch/parisc/include/asm/bitops.h |  8 --------
+ arch/parisc/kernel/head.S        | 43 +++++++++++++++++++++++++++++++++++++++-
+ arch/parisc/kernel/unaligned.c   |  2 +-
+ drivers/parisc/ccio-dma.c        | 13 ++++++++----
+ drivers/parisc/led.c             |  2 +-
+ 6 files changed, 59 insertions(+), 30 deletions(-)
