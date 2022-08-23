@@ -2,44 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 02D00C32793
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 08:32:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 56DB9C32774
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 08:32:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242913AbiHWIcZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 04:32:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46328 "EHLO
+        id S243496AbiHWIca (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 23 Aug 2022 04:32:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46610 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243530AbiHWI2X (ORCPT
+        with ESMTP id S243649AbiHWI3D (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 04:28:23 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 048EE72FDB;
-        Tue, 23 Aug 2022 01:15:04 -0700 (PDT)
+        Tue, 23 Aug 2022 04:29:03 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9DB6274CD0;
+        Tue, 23 Aug 2022 01:15:10 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id CE40A612D8;
-        Tue, 23 Aug 2022 08:14:16 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C17CBC433D6;
-        Tue, 23 Aug 2022 08:14:15 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id CAAECB81C3B;
+        Tue, 23 Aug 2022 08:14:20 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CEAFBC433D6;
+        Tue, 23 Aug 2022 08:14:18 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661242456;
-        bh=fdew62UuZcMsFie8kfqEEAZhB9kWdQ/7hAK9yJC/+Ls=;
+        s=korg; t=1661242459;
+        bh=AOk+oevlxIEWe26QrP0aZwFVPDWgUz50rIsB56MoIl8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=GUJMwdOQPKhpmv+4MUGZFGF4ja269dYl7tyf1izAG8YKK3E0UtKgBgl3t7GY/ZWCO
-         kou9kOdc3jkQmFqJQeAXE+b71ln6azqxqWlFMzxKlR9QX52pV6ZIgMnnYZJLN6EuqY
-         z5YCNSv2LvVm0HUNlrLOFsR1vB/fw0Y2Rw27u6Rk=
+        b=JoVZBKugIZrh/ZPMuUOFX1eP3exfuXbmCqPjB47uZ4VBrgJrzL05xKlyijhXsij/9
+         315rr3tJqoaX3ZH5JAnkX3feOsx5OTC/2e1mu2AOFyMkxrsia/snF3U+9TYnSRCWQe
+         t1D4BE8yJkQoiothRZgkdt/HgYsuAHZA1p0eEquE=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Nikita Travkin <nikita@trvn.ru>,
-        Linus Walleij <linus.walleij@linaro.org>
-Subject: [PATCH 4.9 074/101] pinctrl: qcom: msm8916: Allow CAMSS GP clocks to be muxed
-Date:   Tue, 23 Aug 2022 10:03:47 +0200
-Message-Id: <20220823080037.392600095@linuxfoundation.org>
+        stable@vger.kernel.org, Subbaraya Sundeep <sbhatta@marvell.com>,
+        Sunil Goutham <sgoutham@marvell.com>,
+        Jakub Kicinski <kuba@kernel.org>
+Subject: [PATCH 5.19 118/365] octeontx2-af: Fix key checking for source mac
+Date:   Tue, 23 Aug 2022 10:00:19 +0200
+Message-Id: <20220823080123.141532991@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220823080034.579196046@linuxfoundation.org>
-References: <20220823080034.579196046@linuxfoundation.org>
+In-Reply-To: <20220823080118.128342613@linuxfoundation.org>
+References: <20220823080118.128342613@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -48,37 +49,36 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Nikita Travkin <nikita@trvn.ru>
+From: Subbaraya Sundeep <sbhatta@marvell.com>
 
-commit 44339391c666e46cba522d19c65a6ad1071c68b7 upstream.
+commit c3c290276927a3ae79342a4e17ec0500c138c63a upstream.
 
-GPIO 31, 32 can be muxed to GCC_CAMSS_GP(1,2)_CLK respectively but the
-function was never assigned to the pingroup (even though the function
-exists already).
+Given a field with its location/offset in input packet,
+the key checking logic verifies whether extracting the
+field can be supported or not based on the mkex profile
+loaded in hardware. This logic is wrong wrt source mac
+and this patch fixes that.
 
-Add this mode to the related pins.
-
-Fixes: 5373a2c5abb6 ("pinctrl: qcom: Add msm8916 pinctrl driver")
-Signed-off-by: Nikita Travkin <nikita@trvn.ru>
-Link: https://lore.kernel.org/r/20220612145955.385787-4-nikita@trvn.ru
-Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
+Fixes: 9b179a960a96 ("octeontx2-af: Generate key field bit mask from KEX profile")
+Signed-off-by: Subbaraya Sundeep <sbhatta@marvell.com>
+Signed-off-by: Sunil Goutham <sgoutham@marvell.com>
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/pinctrl/qcom/pinctrl-msm8916.c |    4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ drivers/net/ethernet/marvell/octeontx2/af/rvu_npc_fs.c |    3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
---- a/drivers/pinctrl/qcom/pinctrl-msm8916.c
-+++ b/drivers/pinctrl/qcom/pinctrl-msm8916.c
-@@ -852,8 +852,8 @@ static const struct msm_pingroup msm8916
- 	PINGROUP(28, pwr_modem_enabled_a, NA, NA, NA, NA, NA, qdss_tracedata_b, NA, atest_combodac),
- 	PINGROUP(29, cci_i2c, NA, NA, NA, NA, NA, qdss_tracedata_b, NA, atest_combodac),
- 	PINGROUP(30, cci_i2c, NA, NA, NA, NA, NA, NA, NA, qdss_tracedata_b),
--	PINGROUP(31, cci_timer0, NA, NA, NA, NA, NA, NA, NA, NA),
--	PINGROUP(32, cci_timer1, NA, NA, NA, NA, NA, NA, NA, NA),
-+	PINGROUP(31, cci_timer0, flash_strobe, NA, NA, NA, NA, NA, NA, NA),
-+	PINGROUP(32, cci_timer1, flash_strobe, NA, NA, NA, NA, NA, NA, NA),
- 	PINGROUP(33, cci_async, NA, NA, NA, NA, NA, NA, NA, qdss_tracedata_b),
- 	PINGROUP(34, pwr_nav_enabled_a, NA, NA, NA, NA, NA, NA, NA, qdss_tracedata_b),
- 	PINGROUP(35, pwr_crypto_enabled_a, NA, NA, NA, NA, NA, NA, NA, qdss_tracedata_b),
+--- a/drivers/net/ethernet/marvell/octeontx2/af/rvu_npc_fs.c
++++ b/drivers/net/ethernet/marvell/octeontx2/af/rvu_npc_fs.c
+@@ -445,7 +445,8 @@ do {									       \
+ 	NPC_SCAN_HDR(NPC_VLAN_TAG1, NPC_LID_LB, NPC_LT_LB_CTAG, 2, 2);
+ 	NPC_SCAN_HDR(NPC_VLAN_TAG2, NPC_LID_LB, NPC_LT_LB_STAG_QINQ, 2, 2);
+ 	NPC_SCAN_HDR(NPC_DMAC, NPC_LID_LA, la_ltype, la_start, 6);
+-	NPC_SCAN_HDR(NPC_SMAC, NPC_LID_LA, la_ltype, la_start, 6);
++	/* SMAC follows the DMAC(which is 6 bytes) */
++	NPC_SCAN_HDR(NPC_SMAC, NPC_LID_LA, la_ltype, la_start + 6, 6);
+ 	/* PF_FUNC is 2 bytes at 0th byte of NPC_LT_LA_IH_NIX_ETHER */
+ 	NPC_SCAN_HDR(NPC_PF_FUNC, NPC_LID_LA, NPC_LT_LA_IH_NIX_ETHER, 0, 2);
+ }
 
 
