@@ -2,46 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 57D10C52D7A
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 998A6C54796
 	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 10:12:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353957AbiHWKMV (ORCPT
+        id S1353403AbiHWKL1 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 06:12:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46528 "EHLO
+        Tue, 23 Aug 2022 06:11:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45178 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243465AbiHWKFU (ORCPT
+        with ESMTP id S1352123AbiHWKEe (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 06:05:20 -0400
+        Tue, 23 Aug 2022 06:04:34 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1F9E1A262D;
-        Tue, 23 Aug 2022 01:51:57 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9E9437CAB3;
+        Tue, 23 Aug 2022 01:51:26 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 754286123D;
-        Tue, 23 Aug 2022 08:51:56 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 749F7C433D6;
-        Tue, 23 Aug 2022 08:51:55 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 82C53611DD;
+        Tue, 23 Aug 2022 08:51:25 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6908BC433D6;
+        Tue, 23 Aug 2022 08:51:24 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661244715;
-        bh=j77QJl1TcNYkGHqZiSjCkKoxYzy27qIOtLmaK1Cnxb4=;
+        s=korg; t=1661244684;
+        bh=940HAywEM73UL70jDkF4U0wYf98SJc6UM4UQiogCvyg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=qWCKcINgZ+uizg6URZOvVOhbgAZKlpFWr3/EvbdJEMRYpxFpWQEAH0+D9kHL5wTBJ
-         rdNLliWJHKSGLR3UYd4iuLREs7tbg24yhirINbSRmpj51rHgWD9Sw5EslWgwwnI9vl
-         jgSXAFrugGWEQ+FFTpPAtDgcvTjSSbGwfeOONc0o=
+        b=R+5wkFIx6o0gmkcPMR9WGjcVB5WW9NPVr/E76sSq8D8J5ykdIBTZWxtcghhdgUtrN
+         79JZVvfne0L+c24sdiYJCcR4VSAS0G2h49KYNxGtnQHSn6AR4ihc8U3lUMqUZdc9ti
+         ZTm7VQYjaiVe6O196/kci8Zdr2sSzOAeKaZvHK5I=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Xin Xiong <xiongx18@fudan.edu.cn>,
-        Xin Tan <tanxin.ctf@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>
-Subject: [PATCH 5.15 138/244] net: fix potential refcount leak in ndisc_router_discovery()
-Date:   Tue, 23 Aug 2022 10:24:57 +0200
-Message-Id: <20220823080103.755618325@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Christophe Leroy <christophe.leroy@csgroup.eu>,
+        Michael Ellerman <mpe@ellerman.id.au>
+Subject: [PATCH 4.14 175/229] powerpc/ptdump: Fix display of RW pages on FSL_BOOK3E
+Date:   Tue, 23 Aug 2022 10:25:36 +0200
+Message-Id: <20220823080059.865938476@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220823080059.091088642@linuxfoundation.org>
-References: <20220823080059.091088642@linuxfoundation.org>
+In-Reply-To: <20220823080053.202747790@linuxfoundation.org>
+References: <20220823080053.202747790@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -50,40 +50,53 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Xin Xiong <xiongx18@fudan.edu.cn>
+From: Christophe Leroy <christophe.leroy@csgroup.eu>
 
-commit 7396ba87f1edf549284869451665c7c4e74ecd4f upstream.
+commit dd8de84b57b02ba9c1fe530a6d916c0853f136bd upstream.
 
-The issue happens on specific paths in the function. After both the
-object `rt` and `neigh` are grabbed successfully, when `lifetime` is
-nonzero but the metric needs change, the function just deletes the
-route and set `rt` to NULL. Then, it may try grabbing `rt` and `neigh`
-again if above conditions hold. The function simply overwrite `neigh`
-if succeeds or returns if fails, without decreasing the reference
-count of previous `neigh`. This may result in memory leaks.
+On FSL_BOOK3E, _PAGE_RW is defined with two bits, one for user and one
+for supervisor. As soon as one of the two bits is set, the page has
+to be display as RW. But the way it is implemented today requires both
+bits to be set in order to display it as RW.
 
-Fix it by decrementing the reference count of `neigh` in place.
+Instead of display RW when _PAGE_RW bits are set and R otherwise,
+reverse the logic and display R when _PAGE_RW bits are all 0 and
+RW otherwise.
 
-Fixes: 6b2e04bc240f ("net: allow user to set metric on default route learned via Router Advertisement")
-Signed-off-by: Xin Xiong <xiongx18@fudan.edu.cn>
-Signed-off-by: Xin Tan <tanxin.ctf@gmail.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+This change has no impact on other platforms as _PAGE_RW is a single
+bit on all of them.
+
+Fixes: 8eb07b187000 ("powerpc/mm: Dump linux pagetables")
+Cc: stable@vger.kernel.org
+Signed-off-by: Christophe Leroy <christophe.leroy@csgroup.eu>
+Signed-off-by: Michael Ellerman <mpe@ellerman.id.au>
+Link: https://lore.kernel.org/r/0c33b96317811edf691e81698aaee8fa45ec3449.1656427391.git.christophe.leroy@csgroup.eu
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- net/ipv6/ndisc.c |    3 +++
- 1 file changed, 3 insertions(+)
+ arch/powerpc/mm/dump_linuxpagetables.c |   13 ++++---------
+ 1 file changed, 4 insertions(+), 9 deletions(-)
 
---- a/net/ipv6/ndisc.c
-+++ b/net/ipv6/ndisc.c
-@@ -1317,6 +1317,9 @@ static void ndisc_router_discovery(struc
- 	if (!rt && lifetime) {
- 		ND_PRINTK(3, info, "RA: adding default router\n");
- 
-+		if (neigh)
-+			neigh_release(neigh);
-+
- 		rt = rt6_add_dflt_router(net, &ipv6_hdr(skb)->saddr,
- 					 skb->dev, pref, defrtr_usr_metric);
- 		if (!rt) {
+--- a/arch/powerpc/mm/dump_linuxpagetables.c
++++ b/arch/powerpc/mm/dump_linuxpagetables.c
+@@ -123,15 +123,10 @@ static const struct flag_info flag_array
+ 		.set	= "user",
+ 		.clear	= "    ",
+ 	}, {
+-#if _PAGE_RO == 0
+-		.mask	= _PAGE_RW,
+-		.val	= _PAGE_RW,
+-#else
+-		.mask	= _PAGE_RO,
+-		.val	= 0,
+-#endif
+-		.set	= "rw",
+-		.clear	= "ro",
++		.mask	= _PAGE_RW | _PAGE_RO,
++		.val	= _PAGE_RO,
++		.set	= "ro",
++		.clear	= "rw",
+ 	}, {
+ 		.mask	= _PAGE_EXEC,
+ 		.val	= _PAGE_EXEC,
 
 
