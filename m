@@ -2,44 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 42640C32772
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 12:00:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6A46FC32774
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 12:00:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358957AbiHWL77 (ORCPT
+        id S1358954AbiHWMAK (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 07:59:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34888 "EHLO
+        Tue, 23 Aug 2022 08:00:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34948 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1359404AbiHWL4u (ORCPT
+        with ESMTP id S1358465AbiHWL4x (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 07:56:50 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3C3E79413D;
-        Tue, 23 Aug 2022 02:34:36 -0700 (PDT)
+        Tue, 23 Aug 2022 07:56:53 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 517A4D7D0C;
+        Tue, 23 Aug 2022 02:34:35 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id EA15FCE1B5A;
-        Tue, 23 Aug 2022 09:33:51 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0E9EBC433C1;
-        Tue, 23 Aug 2022 09:33:49 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 776D16146C;
+        Tue, 23 Aug 2022 09:34:29 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 82960C433D6;
+        Tue, 23 Aug 2022 09:34:28 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661247230;
-        bh=vn8sRngeekKj5Hiwjb/2YEw2w2BCxvYLhU5ASInCkPg=;
+        s=korg; t=1661247268;
+        bh=Tk9LT+HrDnbOlJPHsnH1De79aKhn4cnXYFiHb95IRw8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=xHEhI34vpkQp799nP6gU4cqjZn0T5s5tMx7j/v8zeav6qSHL2yh0xhMmsm+36Ykak
-         h3Q1MwbILDbQtSt/MbIh30IxtJ0xyaqSSJXMK3VVoa2qqNtYPaWDsCRBvP0kx/yqe6
-         5gjTt41SKkyZOI/9x5+XQVk1jcpooxRRekp2/Ak8=
+        b=a7cDQlKqRWACspfavIG73hhw6827alKh2CMkLbqy9bk8unsWT2AXOBtx+/O4Cjst8
+         f9Gakt6B5PNgwhB2jUUhCvAjnWB/iWB3ZjGBzSHKNGwyJobRUsq6Gh6iEdVD3sn1uZ
+         e2NmUQ6+x636YenowMsUGMla6irhkbxBJ1sNG37o=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Justin Tee <justin.tee@broadcom.com>,
-        James Smart <jsmart2021@gmail.com>,
-        "Martin K. Petersen" <martin.petersen@oracle.com>,
+        stable@vger.kernel.org, Liang He <windhl@126.com>,
+        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 358/389] scsi: lpfc: Prevent buffer overflow crashes in debugfs with malformed user input
-Date:   Tue, 23 Aug 2022 10:27:16 +0200
-Message-Id: <20220823080130.507542548@linuxfoundation.org>
+Subject: [PATCH 5.4 372/389] mips: cavium-octeon: Fix missing of_node_put() in octeon2_usb_clocks_start
+Date:   Tue, 23 Aug 2022 10:27:30 +0200
+Message-Id: <20220823080131.078999168@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220823080115.331990024@linuxfoundation.org>
 References: <20220823080115.331990024@linuxfoundation.org>
@@ -51,83 +50,39 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: James Smart <jsmart2021@gmail.com>
+From: Liang He <windhl@126.com>
 
-[ Upstream commit f8191d40aa612981ce897e66cda6a88db8df17bb ]
+[ Upstream commit 7a9f743ceead60ed454c46fbc3085ee9a79cbebb ]
 
-Malformed user input to debugfs results in buffer overflow crashes.  Adapt
-input string lengths to fit within internal buffers, leaving space for NULL
-terminators.
+We should call of_node_put() for the reference 'uctl_node' returned by
+of_get_parent() which will increase the refcount. Otherwise, there will
+be a refcount leak bug.
 
-Link: https://lore.kernel.org/r/20220701211425.2708-3-jsmart2021@gmail.com
-Co-developed-by: Justin Tee <justin.tee@broadcom.com>
-Signed-off-by: Justin Tee <justin.tee@broadcom.com>
-Signed-off-by: James Smart <jsmart2021@gmail.com>
-Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
+Signed-off-by: Liang He <windhl@126.com>
+Signed-off-by: Thomas Bogendoerfer <tsbogend@alpha.franken.de>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/scsi/lpfc/lpfc_debugfs.c | 20 ++++++++++----------
- 1 file changed, 10 insertions(+), 10 deletions(-)
+ arch/mips/cavium-octeon/octeon-platform.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/scsi/lpfc/lpfc_debugfs.c b/drivers/scsi/lpfc/lpfc_debugfs.c
-index e15bb3dfe995..69551132f304 100644
---- a/drivers/scsi/lpfc/lpfc_debugfs.c
-+++ b/drivers/scsi/lpfc/lpfc_debugfs.c
-@@ -2402,8 +2402,8 @@ lpfc_debugfs_multixripools_write(struct file *file, const char __user *buf,
- 	struct lpfc_sli4_hdw_queue *qp;
- 	struct lpfc_multixri_pool *multixri_pool;
- 
--	if (nbytes > 64)
--		nbytes = 64;
-+	if (nbytes > sizeof(mybuf) - 1)
-+		nbytes = sizeof(mybuf) - 1;
- 
- 	/* Protect copy from user */
- 	if (!access_ok(buf, nbytes))
-@@ -2487,8 +2487,8 @@ lpfc_debugfs_nvmestat_write(struct file *file, const char __user *buf,
- 	if (!phba->targetport)
- 		return -ENXIO;
- 
--	if (nbytes > 64)
--		nbytes = 64;
-+	if (nbytes > sizeof(mybuf) - 1)
-+		nbytes = sizeof(mybuf) - 1;
- 
- 	memset(mybuf, 0, sizeof(mybuf));
- 
-@@ -2629,8 +2629,8 @@ lpfc_debugfs_nvmektime_write(struct file *file, const char __user *buf,
- 	char mybuf[64];
- 	char *pbuf;
- 
--	if (nbytes > 64)
--		nbytes = 64;
-+	if (nbytes > sizeof(mybuf) - 1)
-+		nbytes = sizeof(mybuf) - 1;
- 
- 	memset(mybuf, 0, sizeof(mybuf));
- 
-@@ -2757,8 +2757,8 @@ lpfc_debugfs_nvmeio_trc_write(struct file *file, const char __user *buf,
- 	char mybuf[64];
- 	char *pbuf;
- 
--	if (nbytes > 63)
--		nbytes = 63;
-+	if (nbytes > sizeof(mybuf) - 1)
-+		nbytes = sizeof(mybuf) - 1;
- 
- 	memset(mybuf, 0, sizeof(mybuf));
- 
-@@ -2863,8 +2863,8 @@ lpfc_debugfs_cpucheck_write(struct file *file, const char __user *buf,
- 	char *pbuf;
- 	int i, j;
- 
--	if (nbytes > 64)
--		nbytes = 64;
-+	if (nbytes > sizeof(mybuf) - 1)
-+		nbytes = sizeof(mybuf) - 1;
- 
- 	memset(mybuf, 0, sizeof(mybuf));
- 
+diff --git a/arch/mips/cavium-octeon/octeon-platform.c b/arch/mips/cavium-octeon/octeon-platform.c
+index c214fe4e678b..04bc34714727 100644
+--- a/arch/mips/cavium-octeon/octeon-platform.c
++++ b/arch/mips/cavium-octeon/octeon-platform.c
+@@ -86,11 +86,12 @@ static void octeon2_usb_clocks_start(struct device *dev)
+ 					 "refclk-frequency", &clock_rate);
+ 		if (i) {
+ 			dev_err(dev, "No UCTL \"refclk-frequency\"\n");
++			of_node_put(uctl_node);
+ 			goto exit;
+ 		}
+ 		i = of_property_read_string(uctl_node,
+ 					    "refclk-type", &clock_type);
+-
++		of_node_put(uctl_node);
+ 		if (!i && strcmp("crystal", clock_type) == 0)
+ 			is_crystal_clock = true;
+ 	}
 -- 
 2.35.1
 
