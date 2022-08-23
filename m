@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 33245C32774
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 09:25:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DEA50C32792
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 09:25:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349494AbiHWJZK (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 05:25:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34204 "EHLO
+        id S244531AbiHWJZO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 23 Aug 2022 05:25:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38056 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349503AbiHWJW5 (ORCPT
+        with ESMTP id S1349548AbiHWJXK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 05:22:57 -0400
+        Tue, 23 Aug 2022 05:23:10 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 71CDD75CD1;
-        Tue, 23 Aug 2022 01:35:36 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D17EC8F957;
+        Tue, 23 Aug 2022 01:35:21 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 22205B81C54;
-        Tue, 23 Aug 2022 08:34:27 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 61D17C433C1;
-        Tue, 23 Aug 2022 08:34:25 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id CEC8BB81C4D;
+        Tue, 23 Aug 2022 08:33:41 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1C094C433D6;
+        Tue, 23 Aug 2022 08:33:39 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661243665;
-        bh=nn64llpKQwSVbNBIKVAhqVnQyKZuwOGj7VhDj+fGt14=;
+        s=korg; t=1661243620;
+        bh=QueCjxHMA4r1uCGTLX+Zuc00mP9QzA7Dxm10f7BgXZw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Ch91C9fygbVTb6h9tn6hXt9xiT/HoHVLYuFzDaORqzhJEEABF/95VfSSrkwpyzo0V
-         QQfe18blI3aKOAsggLIMepo/YljJUxJJ3hryZZGRJlE89F/Hk7DLRBFOjzi9OQrCLQ
-         HRsxEWE7TzZZ8eQVCtmjyGgqfThitX8lubTTz2N8=
+        b=PqXSKpksgWG8R7v1zUdqXT8EDTGqslS7q/aTqOJl3pscTNFxzW3Yn4+K3dkluPZVP
+         oGg3MWY9GW/1EFcN7bbXX5Wnj/Z6ZbljPUCiYf/7ICAOkwEVDTOkrhyfoJN4mjKsAq
+         Z5xR3NJhbxo4+Z0FoXylhpoRUCpN27+jJcKl8dEQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Alois Wohlschlager <alois1@gmx-topmail.de>,
-        Miklos Szeredi <mszeredi@redhat.com>,
+        stable@vger.kernel.org,
+        "Steven Rostedt (Google)" <rostedt@goodmis.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.19 349/365] ovl: warn if trusted xattr creation fails
-Date:   Tue, 23 Aug 2022 10:04:10 +0200
-Message-Id: <20220823080132.857906640@linuxfoundation.org>
+Subject: [PATCH 5.19 305/365] selftests/kprobe: Do not test for GRP/ without event failures
+Date:   Tue, 23 Aug 2022 10:03:26 +0200
+Message-Id: <20220823080130.954139426@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220823080118.128342613@linuxfoundation.org>
 References: <20220823080118.128342613@linuxfoundation.org>
@@ -50,66 +49,48 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Miklos Szeredi <mszeredi@redhat.com>
+From: Steven Rostedt (Google) <rostedt@goodmis.org>
 
-[ Upstream commit b10b85fe5149ee8b39fbbf86095b303632dde2cd ]
+[ Upstream commit f5eab65ff2b76449286d18efc7fee3e0b72f7d9b ]
 
-When mounting overlayfs in an unprivileged user namespace, trusted xattr
-creation will fail.  This will lead to failures in some file operations,
-e.g. in the following situation:
+A new feature is added where kprobes (and other probes) do not need to
+explicitly state the event name when creating a probe. The event name will
+come from what is being attached.
 
-  mkdir lower upper work merged
-  mkdir lower/directory
-  mount -toverlay -olowerdir=lower,upperdir=upper,workdir=work none merged
-  rmdir merged/directory
-  mkdir merged/directory
+That is:
 
-The last mkdir will fail:
+  # echo 'p:foo/ vfs_read' > kprobe_events
 
-  mkdir: cannot create directory 'merged/directory': Input/output error
+Will no longer error, but instead create an event:
 
-The cause for these failures is currently extremely non-obvious and hard to
-debug.  Hence, warn the user and suggest using the userxattr mount option,
-if it is not already supplied and xattr creation fails during the
-self-check.
+  # cat kprobe_events
+ p:foo/p_vfs_read_0 vfs_read
 
-Reported-by: Alois Wohlschlager <alois1@gmx-topmail.de>
-Signed-off-by: Miklos Szeredi <mszeredi@redhat.com>
+This should not be tested as an error case anymore. Remove it from the
+selftest as now this feature "breaks" the selftest as it no longer fails
+as expected.
+
+Link: https://lore.kernel.org/all/1656296348-16111-1-git-send-email-quic_linyyuan@quicinc.com/
+Link: https://lkml.kernel.org/r/20220712161707.6dc08a14@gandalf.local.home
+
+Signed-off-by: Steven Rostedt (Google) <rostedt@goodmis.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- fs/overlayfs/super.c | 7 +++++--
- 1 file changed, 5 insertions(+), 2 deletions(-)
+ .../selftests/ftrace/test.d/kprobe/kprobe_syntax_errors.tc       | 1 -
+ 1 file changed, 1 deletion(-)
 
-diff --git a/fs/overlayfs/super.c b/fs/overlayfs/super.c
-index 1ce5c9698393..4c2096130209 100644
---- a/fs/overlayfs/super.c
-+++ b/fs/overlayfs/super.c
-@@ -1418,11 +1418,12 @@ static int ovl_make_workdir(struct super_block *sb, struct ovl_fs *ofs,
- 	 */
- 	err = ovl_setxattr(ofs, ofs->workdir, OVL_XATTR_OPAQUE, "0", 1);
- 	if (err) {
-+		pr_warn("failed to set xattr on upper\n");
- 		ofs->noxattr = true;
- 		if (ofs->config.index || ofs->config.metacopy) {
- 			ofs->config.index = false;
- 			ofs->config.metacopy = false;
--			pr_warn("upper fs does not support xattr, falling back to index=off,metacopy=off.\n");
-+			pr_warn("...falling back to index=off,metacopy=off.\n");
- 		}
- 		/*
- 		 * xattr support is required for persistent st_ino.
-@@ -1430,8 +1431,10 @@ static int ovl_make_workdir(struct super_block *sb, struct ovl_fs *ofs,
- 		 */
- 		if (ofs->config.xino == OVL_XINO_AUTO) {
- 			ofs->config.xino = OVL_XINO_OFF;
--			pr_warn("upper fs does not support xattr, falling back to xino=off.\n");
-+			pr_warn("...falling back to xino=off.\n");
- 		}
-+		if (err == -EPERM && !ofs->config.userxattr)
-+			pr_info("try mounting with 'userxattr' option\n");
- 		err = 0;
- 	} else {
- 		ovl_removexattr(ofs, ofs->workdir, OVL_XATTR_OPAQUE);
+diff --git a/tools/testing/selftests/ftrace/test.d/kprobe/kprobe_syntax_errors.tc b/tools/testing/selftests/ftrace/test.d/kprobe/kprobe_syntax_errors.tc
+index fa928b431555..7c02509c71d0 100644
+--- a/tools/testing/selftests/ftrace/test.d/kprobe/kprobe_syntax_errors.tc
++++ b/tools/testing/selftests/ftrace/test.d/kprobe/kprobe_syntax_errors.tc
+@@ -21,7 +21,6 @@ check_error 'p:^/bar vfs_read'		# NO_GROUP_NAME
+ check_error 'p:^12345678901234567890123456789012345678901234567890123456789012345/bar vfs_read'	# GROUP_TOO_LONG
+ 
+ check_error 'p:^foo.1/bar vfs_read'	# BAD_GROUP_NAME
+-check_error 'p:foo/^ vfs_read'		# NO_EVENT_NAME
+ check_error 'p:foo/^12345678901234567890123456789012345678901234567890123456789012345 vfs_read'	# EVENT_TOO_LONG
+ check_error 'p:foo/^bar.1 vfs_read'	# BAD_EVENT_NAME
+ 
 -- 
 2.35.1
 
