@@ -2,43 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 46611C32772
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5D4C4C32792
 	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 11:27:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350049AbiHWLZ3 (ORCPT
+        id S1350679AbiHWLZf (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 07:25:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43938 "EHLO
+        Tue, 23 Aug 2022 07:25:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52656 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357410AbiHWLTu (ORCPT
+        with ESMTP id S242406AbiHWLTu (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 23 Aug 2022 07:19:50 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 508738A1FB;
-        Tue, 23 Aug 2022 02:22:23 -0700 (PDT)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1B23C8A6C6;
+        Tue, 23 Aug 2022 02:22:24 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 01C9CB8105C;
-        Tue, 23 Aug 2022 09:22:22 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3F3DEC433C1;
-        Tue, 23 Aug 2022 09:22:20 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 403EF6121F;
+        Tue, 23 Aug 2022 09:22:24 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 499FDC433C1;
+        Tue, 23 Aug 2022 09:22:23 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661246540;
-        bh=idCiegonDk0H2RnGtNWkTYVbSqZO3DS9G9eAn+pbU3I=;
+        s=korg; t=1661246543;
+        bh=+nPkGFanAfSDWaysaUAfYog4CInB6zKcg6i3CLbjxLY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=LYpJMgSNeMOtQ8UpxPmhIz4mqmo6MImnrLH/NEc8QgSlqasPw0jwIT9FJ1WnfrT4C
-         mylChNFEf9I54ejOBHYxbE7lZNs5S7nKF0vNVI9Ah6CnK7k49gDeor7bMoPeRWEm10
-         uX7TPqX4oMDBZYUiAyk58+eFGYAUo+1cZFcFVy7o=
+        b=qoqtGIhV39ZDMyLYm+exrYg4IuIdxnDJDWz8Dm+SiyWP9FTDt7XcGF/dEG6ZGSTtf
+         joqhtpjcHJ+L9AIIXfH4gvIdwcCf4zOW1b73xP08T/NvqcYrP5k/m5ptLyI1reNjp9
+         ZD7GhFJeDJqeG2CYNtFMF8XY48jkJxKp+/mwm7UE=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Liang He <windhl@126.com>,
-        Peter Rosin <peda@axentia.se>, Wolfram Sang <wsa@kernel.org>,
+        stable@vger.kernel.org, Dan Carpenter <dan.carpenter@oracle.com>,
+        kernel test robot <lkp@intel.com>,
+        Ammar Faizi <ammarfaizi2@gnuweeb.org>,
+        Kalle Valo <quic_kvalo@quicinc.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 143/389] i2c: mux-gpmux: Add of_node_put() when breaking out of loop
-Date:   Tue, 23 Aug 2022 10:23:41 +0200
-Message-Id: <20220823080121.569468311@linuxfoundation.org>
+Subject: [PATCH 5.4 144/389] wifi: wil6210: debugfs: fix uninitialized variable use in `wil_write_file_wmi()`
+Date:   Tue, 23 Aug 2022 10:23:42 +0200
+Message-Id: <20220823080121.613489824@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220823080115.331990024@linuxfoundation.org>
 References: <20220823080115.331990024@linuxfoundation.org>
@@ -50,35 +52,56 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Liang He <windhl@126.com>
+From: Ammar Faizi <ammarfaizi2@gnuweeb.org>
 
-[ Upstream commit 6435319c34704994e19b0767f6a4e6f37439867b ]
+[ Upstream commit d578e0af3a003736f6c440188b156483d451b329 ]
 
-In i2c_mux_probe(), we should call of_node_put() when breaking out
-of for_each_child_of_node() which will automatically increase and
-decrease the refcount.
+Commit 7a4836560a61 changes simple_write_to_buffer() with memdup_user()
+but it forgets to change the value to be returned that came from
+simple_write_to_buffer() call. It results in the following warning:
 
-Fixes: ac8498f0ce53 ("i2c: i2c-mux-gpmux: new driver")
-Signed-off-by: Liang He <windhl@126.com>
-Acked-by: Peter Rosin <peda@axentia.se>
-Signed-off-by: Wolfram Sang <wsa@kernel.org>
+  warning: variable 'rc' is uninitialized when used here [-Wuninitialized]
+           return rc;
+                  ^~
+
+Remove rc variable and just return the passed in length if the
+memdup_user() succeeds.
+
+Cc: Dan Carpenter <dan.carpenter@oracle.com>
+Reported-by: kernel test robot <lkp@intel.com>
+Fixes: 7a4836560a6198d245d5732e26f94898b12eb760 ("wifi: wil6210: debugfs: fix info leak in wil_write_file_wmi()")
+Fixes: ff974e4083341383d3dd4079e52ed30f57f376f0 ("wil6210: debugfs interface to send raw WMI command")
+Signed-off-by: Ammar Faizi <ammarfaizi2@gnuweeb.org>
+Reviewed-by: Dan Carpenter <dan.carpenter@oracle.com>
+Signed-off-by: Kalle Valo <quic_kvalo@quicinc.com>
+Link: https://lore.kernel.org/r/20220724202452.61846-1-ammar.faizi@intel.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/i2c/muxes/i2c-mux-gpmux.c | 1 +
- 1 file changed, 1 insertion(+)
+ drivers/net/wireless/ath/wil6210/debugfs.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/i2c/muxes/i2c-mux-gpmux.c b/drivers/i2c/muxes/i2c-mux-gpmux.c
-index f830535cff12..480ec74e6134 100644
---- a/drivers/i2c/muxes/i2c-mux-gpmux.c
-+++ b/drivers/i2c/muxes/i2c-mux-gpmux.c
-@@ -138,6 +138,7 @@ static int i2c_mux_probe(struct platform_device *pdev)
- 	return 0;
+diff --git a/drivers/net/wireless/ath/wil6210/debugfs.c b/drivers/net/wireless/ath/wil6210/debugfs.c
+index b82af3a49912..1e38fdf92d1d 100644
+--- a/drivers/net/wireless/ath/wil6210/debugfs.c
++++ b/drivers/net/wireless/ath/wil6210/debugfs.c
+@@ -1021,7 +1021,7 @@ static ssize_t wil_write_file_wmi(struct file *file, const char __user *buf,
+ 	void *cmd;
+ 	int cmdlen = len - sizeof(struct wmi_cmd_hdr);
+ 	u16 cmdid;
+-	int rc, rc1;
++	int rc1;
  
- err_children:
-+	of_node_put(child);
- 	i2c_mux_del_adapters(muxc);
- err_parent:
- 	i2c_put_adapter(parent);
+ 	if (cmdlen < 0 || *ppos != 0)
+ 		return -EINVAL;
+@@ -1038,7 +1038,7 @@ static ssize_t wil_write_file_wmi(struct file *file, const char __user *buf,
+ 
+ 	wil_info(wil, "0x%04x[%d] -> %d\n", cmdid, cmdlen, rc1);
+ 
+-	return rc;
++	return len;
+ }
+ 
+ static const struct file_operations fops_wmi = {
 -- 
 2.35.1
 
