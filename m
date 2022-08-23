@@ -2,51 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 89BD1C32793
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 08:17:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DEB8AC32789
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 08:17:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242422AbiHWIRJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 04:17:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59214 "EHLO
+        id S242463AbiHWIRV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 23 Aug 2022 04:17:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60998 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242461AbiHWILU (ORCPT
+        with ESMTP id S242474AbiHWILV (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 04:11:20 -0400
+        Tue, 23 Aug 2022 04:11:21 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 148172CDFC;
-        Tue, 23 Aug 2022 01:08:25 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6D4E04DB23;
+        Tue, 23 Aug 2022 01:08:35 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id C81FCB81C25;
-        Tue, 23 Aug 2022 08:08:23 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DF4D4C433C1;
-        Tue, 23 Aug 2022 08:08:21 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 83940B81BF8;
+        Tue, 23 Aug 2022 08:08:33 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BB61EC433C1;
+        Tue, 23 Aug 2022 08:08:31 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661242102;
-        bh=lMQfg4bXnS5R49GvVs8vjfw+34XXX8JWBNWJFGQl7e8=;
+        s=korg; t=1661242112;
+        bh=/4kHocZ4fRwT5Rs9tihjUYOuPoQZ/ZAaNCXwJv/VS10=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=U2pSZ7pUDgjmaNNjrv+CH4q5KKFPiE1TFZCcnBAIBo00rHKyGdDP1Rzn07oNYkKDE
-         2OnGnPmbURHBBPlAeNrsazCzQ/IexLHy4lqrQJKhg2dzo3wvA+v1CEjKr3FTw5als/
-         CLsCNnfcMUlr7/IXJkUXG5u6gwhflmogd95uxj9k=
+        b=OCpeF4PUhlCq3a7yE3vlpxDH18MmlELAIcEyTwFRleXMHobSCzzcKDcGyM72GKn8H
+         UFAE0ztud2a8uPR8y5HpvVWwWOERrO13o138nl44p2R4KF9Bvvpd7pcNJSPwvXAuma
+         kDg014JzN0z+XAW+tSZru3uzeXPmz7WiL7hhk3KU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Laura Abbott <lauraa@codeaurora.org>,
-        Laura Abbott <labbott@redhat.com>,
-        Kees Cook <keescook@chromium.org>,
-        "Theodore Tso" <tytso@mit.edu>,
-        Daniel Micay <danielmicay@gmail.com>,
-        Nick Kralevich <nnk@google.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        Hans-Christian Noren Egtvedt <hegtvedt@cisco.com>
-Subject: [PATCH 4.9 019/101] init: move stack canary initialization after setup_arch
-Date:   Tue, 23 Aug 2022 10:02:52 +0200
-Message-Id: <20220823080035.308410843@linuxfoundation.org>
+        stable@vger.kernel.org, Xiumei Mu <xmu@redhat.com>,
+        Mat Martineau <mathew.j.martineau@linux.intel.com>,
+        Florian Westphal <fw@strlen.de>,
+        "David S. Miller" <davem@davemloft.net>
+Subject: [PATCH 5.19 060/365] selftests: mptcp: make sendfile selftest work
+Date:   Tue, 23 Aug 2022 09:59:21 +0200
+Message-Id: <20220823080120.704317819@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220823080034.579196046@linuxfoundation.org>
-References: <20220823080034.579196046@linuxfoundation.org>
+In-Reply-To: <20220823080118.128342613@linuxfoundation.org>
+References: <20220823080118.128342613@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -55,62 +50,87 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Laura Abbott <lauraa@codeaurora.org>
+From: Florian Westphal <fw@strlen.de>
 
-commit 121388a31362b0d3176dc1190ac8064b98a61b20 upstream.
+commit df9e03aec3b14970df05b72d54f8ac9da3ab29e1 upstream.
 
-Patch series "Command line randomness", v3.
+When the selftest got added, sendfile() on mptcp sockets returned
+-EOPNOTSUPP, so running 'mptcp_connect.sh -m sendfile' failed
+immediately.
 
-A series to add the kernel command line as a source of randomness.
+This is no longer the case, but the script fails anyway due to timeout.
+Let the receiver know once the sender has sent all data, just like
+with '-m mmap' mode.
 
-This patch (of 2):
+v2: need to respect cfg_wait too, as pm_userspace.sh relied
+on -m sendfile to keep the connection open (Mat Martineau)
 
-Stack canary intialization involves getting a random number.  Getting this
-random number may involve accessing caches or other architectural specific
-features which are not available until after the architecture is setup.
-Move the stack canary initialization later to accommodate this.
-
-Link: http://lkml.kernel.org/r/20170816231458.2299-2-labbott@redhat.com
-Signed-off-by: Laura Abbott <lauraa@codeaurora.org>
-Signed-off-by: Laura Abbott <labbott@redhat.com>
-Acked-by: Kees Cook <keescook@chromium.org>
-Cc: "Theodore Ts'o" <tytso@mit.edu>
-Cc: Daniel Micay <danielmicay@gmail.com>
-Cc: Nick Kralevich <nnk@google.com>
-Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
-Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
-Signed-off-by: Hans-Christian Noren Egtvedt <hegtvedt@cisco.com>
+Fixes: 048d19d444be ("mptcp: add basic kselftest for mptcp")
+Reported-by: Xiumei Mu <xmu@redhat.com>
+Reviewed-by: Mat Martineau <mathew.j.martineau@linux.intel.com>
+Signed-off-by: Florian Westphal <fw@strlen.de>
+Signed-off-by: Mat Martineau <mathew.j.martineau@linux.intel.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- init/main.c |   11 +++++------
- 1 file changed, 5 insertions(+), 6 deletions(-)
+ tools/testing/selftests/net/mptcp/mptcp_connect.c |   26 ++++++++++++++--------
+ 1 file changed, 17 insertions(+), 9 deletions(-)
 
---- a/init/main.c
-+++ b/init/main.c
-@@ -487,12 +487,6 @@ asmlinkage __visible void __init start_k
- 	smp_setup_processor_id();
- 	debug_objects_early_init();
+--- a/tools/testing/selftests/net/mptcp/mptcp_connect.c
++++ b/tools/testing/selftests/net/mptcp/mptcp_connect.c
+@@ -553,6 +553,18 @@ static void set_nonblock(int fd, bool no
+ 		fcntl(fd, F_SETFL, flags & ~O_NONBLOCK);
+ }
  
--	/*
--	 * Set up the initial canary ASAP:
--	 */
--	add_latent_entropy();
--	boot_init_stack_canary();
--
- 	cgroup_init_early();
- 
- 	local_irq_disable();
-@@ -506,6 +500,11 @@ asmlinkage __visible void __init start_k
- 	page_address_init();
- 	pr_notice("%s", linux_banner);
- 	setup_arch(&command_line);
-+	/*
-+	 * Set up the the initial canary and entropy after arch
++static void shut_wr(int fd)
++{
++	/* Close our write side, ev. give some time
++	 * for address notification and/or checking
++	 * the current status
 +	 */
-+	add_latent_entropy();
-+	boot_init_stack_canary();
- 	mm_init_cpumask(&init_mm);
- 	setup_command_line(command_line);
- 	setup_nr_cpu_ids();
++	if (cfg_wait)
++		usleep(cfg_wait);
++
++	shutdown(fd, SHUT_WR);
++}
++
+ static int copyfd_io_poll(int infd, int peerfd, int outfd, bool *in_closed_after_out)
+ {
+ 	struct pollfd fds = {
+@@ -630,14 +642,7 @@ static int copyfd_io_poll(int infd, int
+ 					/* ... and peer also closed already */
+ 					break;
+ 
+-				/* ... but we still receive.
+-				 * Close our write side, ev. give some time
+-				 * for address notification and/or checking
+-				 * the current status
+-				 */
+-				if (cfg_wait)
+-					usleep(cfg_wait);
+-				shutdown(peerfd, SHUT_WR);
++				shut_wr(peerfd);
+ 			} else {
+ 				if (errno == EINTR)
+ 					continue;
+@@ -767,7 +772,7 @@ static int copyfd_io_mmap(int infd, int
+ 		if (err)
+ 			return err;
+ 
+-		shutdown(peerfd, SHUT_WR);
++		shut_wr(peerfd);
+ 
+ 		err = do_recvfile(peerfd, outfd);
+ 		*in_closed_after_out = true;
+@@ -791,6 +796,9 @@ static int copyfd_io_sendfile(int infd,
+ 		err = do_sendfile(infd, peerfd, size);
+ 		if (err)
+ 			return err;
++
++		shut_wr(peerfd);
++
+ 		err = do_recvfile(peerfd, outfd);
+ 		*in_closed_after_out = true;
+ 	}
 
 
