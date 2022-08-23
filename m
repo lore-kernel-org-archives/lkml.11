@@ -2,44 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EC8EBC3F6B0
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 12:06:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1E9CDC32796
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 12:06:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1359358AbiHWMFl (ORCPT
+        id S1359448AbiHWMFw (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 08:05:41 -0400
+        Tue, 23 Aug 2022 08:05:52 -0400
 Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46126 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1359691AbiHWMCL (ORCPT
+        with ESMTP id S1359216AbiHWMAt (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 08:02:11 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1396D97D71;
-        Tue, 23 Aug 2022 02:36:17 -0700 (PDT)
+        Tue, 23 Aug 2022 08:00:49 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 16B1B94EC7;
+        Tue, 23 Aug 2022 02:35:18 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 9523361469;
-        Tue, 23 Aug 2022 09:35:19 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A0829C433D6;
-        Tue, 23 Aug 2022 09:35:18 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 8AFD561484;
+        Tue, 23 Aug 2022 09:34:58 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7EA0BC4314B;
+        Tue, 23 Aug 2022 09:34:57 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661247319;
-        bh=JBtUajIUUTvXn1dwEIei/vptr1iv5ncaSZumZ5qjilw=;
+        s=korg; t=1661247298;
+        bh=Qz4ncXoPoM7vugOgfR+vbf/bthx4RLKEb397z+CrCds=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=OUQTmBLW1lWTwQ6vzlAZlWaeEei7ohQkS+ju0vJpvdFhtseiljw5pKSg12n8IFOuH
-         O3iOJhxWf1cPPJbprSh+ERpyyYhX+QZKdfqhJLU8wFJUA7fO8RODtJ17UCt1Jlm2bh
-         4ZreNoFrVmLOQKoADmgLRPwUudpnBRheT6U+1xik=
+        b=Fjn7JwY2itw5Ua+SiG/MWGONrHiqZi2k+IXSBlYeYXmKGkHEIYpA+VM5iRDNL26ym
+         EimwiKamehYKO7n28zvM6WuI72nejlh5w9qR4SN5f/J0PY/cEn/kcxTvWx/qQgNiIT
+         M3XpeOqPw+kXmewKOu4ZXO+p78U47l5DhQfWTuRU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Oleksij Rempel <o.rempel@pengutronix.de>,
-        Fedor Pchelkin <pchelkin@ispras.ru>,
-        Alexey Khoroshilov <khoroshilov@ispras.ru>,
-        Marc Kleine-Budde <mkl@pengutronix.de>
-Subject: [PATCH 5.4 387/389] can: j1939: j1939_session_destroy(): fix memory leak of skbs
-Date:   Tue, 23 Aug 2022 10:27:45 +0200
-Message-Id: <20220823080131.742034120@linuxfoundation.org>
+        stable@vger.kernel.org, Dipanjan Das <mail.dipanjan.das@gmail.com>,
+        Chao Yu <chao.yu@oppo.com>, Jaegeuk Kim <jaegeuk@kernel.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.4 380/389] f2fs: fix to avoid use f2fs_bug_on() in f2fs_new_node_page()
+Date:   Tue, 23 Aug 2022 10:27:38 +0200
+Message-Id: <20220823080131.448844011@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220823080115.331990024@linuxfoundation.org>
 References: <20220823080115.331990024@linuxfoundation.org>
@@ -51,55 +50,63 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Fedor Pchelkin <pchelkin@ispras.ru>
+From: Chao Yu <chao.yu@oppo.com>
 
-commit 8c21c54a53ab21842f5050fa090f26b03c0313d6 upstream.
+[ Upstream commit 141170b759e03958f296033bb7001be62d1d363b ]
 
-We need to drop skb references taken in j1939_session_skb_queue() when
-destroying a session in j1939_session_destroy(). Otherwise those skbs
-would be lost.
+As Dipanjan Das <mail.dipanjan.das@gmail.com> reported, syzkaller
+found a f2fs bug as below:
 
-Link to Syzkaller info and repro: https://forge.ispras.ru/issues/11743.
+RIP: 0010:f2fs_new_node_page+0x19ac/0x1fc0 fs/f2fs/node.c:1295
+Call Trace:
+ write_all_xattrs fs/f2fs/xattr.c:487 [inline]
+ __f2fs_setxattr+0xe76/0x2e10 fs/f2fs/xattr.c:743
+ f2fs_setxattr+0x233/0xab0 fs/f2fs/xattr.c:790
+ f2fs_xattr_generic_set+0x133/0x170 fs/f2fs/xattr.c:86
+ __vfs_setxattr+0x115/0x180 fs/xattr.c:182
+ __vfs_setxattr_noperm+0x125/0x5f0 fs/xattr.c:216
+ __vfs_setxattr_locked+0x1cf/0x260 fs/xattr.c:277
+ vfs_setxattr+0x13f/0x330 fs/xattr.c:303
+ setxattr+0x146/0x160 fs/xattr.c:611
+ path_setxattr+0x1a7/0x1d0 fs/xattr.c:630
+ __do_sys_lsetxattr fs/xattr.c:653 [inline]
+ __se_sys_lsetxattr fs/xattr.c:649 [inline]
+ __x64_sys_lsetxattr+0xbd/0x150 fs/xattr.c:649
+ do_syscall_x64 arch/x86/entry/common.c:50 [inline]
+ do_syscall_64+0x35/0xb0 arch/x86/entry/common.c:80
+ entry_SYSCALL_64_after_hwframe+0x46/0xb0
 
-Found by Linux Verification Center (linuxtesting.org) with Syzkaller.
+NAT entry and nat bitmap can be inconsistent, e.g. one nid is free
+in nat bitmap, and blkaddr in its NAT entry is not NULL_ADDR, it
+may trigger BUG_ON() in f2fs_new_node_page(), fix it.
 
-V1: https://lore.kernel.org/all/20220708175949.539064-1-pchelkin@ispras.ru
-
-Fixes: 9d71dd0c7009 ("can: add support of SAE J1939 protocol")
-Suggested-by: Oleksij Rempel <o.rempel@pengutronix.de>
-Signed-off-by: Fedor Pchelkin <pchelkin@ispras.ru>
-Signed-off-by: Alexey Khoroshilov <khoroshilov@ispras.ru>
-Acked-by: Oleksij Rempel <o.rempel@pengutronix.de>
-Link: https://lore.kernel.org/all/20220805150216.66313-1-pchelkin@ispras.ru
-Signed-off-by: Marc Kleine-Budde <mkl@pengutronix.de>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Reported-by: Dipanjan Das <mail.dipanjan.das@gmail.com>
+Signed-off-by: Chao Yu <chao.yu@oppo.com>
+Signed-off-by: Jaegeuk Kim <jaegeuk@kernel.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/can/j1939/transport.c |    8 +++++++-
- 1 file changed, 7 insertions(+), 1 deletion(-)
+ fs/f2fs/node.c | 6 +++++-
+ 1 file changed, 5 insertions(+), 1 deletion(-)
 
---- a/net/can/j1939/transport.c
-+++ b/net/can/j1939/transport.c
-@@ -260,6 +260,8 @@ static void __j1939_session_drop(struct
- 
- static void j1939_session_destroy(struct j1939_session *session)
- {
-+	struct sk_buff *skb;
-+
- 	if (session->err)
- 		j1939_sk_errqueue(session, J1939_ERRQUEUE_ABORT);
- 	else
-@@ -270,7 +272,11 @@ static void j1939_session_destroy(struct
- 	WARN_ON_ONCE(!list_empty(&session->sk_session_queue_entry));
- 	WARN_ON_ONCE(!list_empty(&session->active_session_list_entry));
- 
--	skb_queue_purge(&session->skb_queue);
-+	while ((skb = skb_dequeue(&session->skb_queue)) != NULL) {
-+		/* drop ref taken in j1939_session_skb_queue() */
-+		skb_unref(skb);
-+		kfree_skb(skb);
+diff --git a/fs/f2fs/node.c b/fs/f2fs/node.c
+index 3dc7cc3d6ac6..b080d5c58f6c 100644
+--- a/fs/f2fs/node.c
++++ b/fs/f2fs/node.c
+@@ -1240,7 +1240,11 @@ struct page *f2fs_new_node_page(struct dnode_of_data *dn, unsigned int ofs)
+ 		dec_valid_node_count(sbi, dn->inode, !ofs);
+ 		goto fail;
+ 	}
+-	f2fs_bug_on(sbi, new_ni.blk_addr != NULL_ADDR);
++	if (unlikely(new_ni.blk_addr != NULL_ADDR)) {
++		err = -EFSCORRUPTED;
++		set_sbi_flag(sbi, SBI_NEED_FSCK);
++		goto fail;
 +	}
- 	__j1939_session_drop(session);
- 	j1939_priv_put(session->priv);
- 	kfree(session);
+ #endif
+ 	new_ni.nid = dn->nid;
+ 	new_ni.ino = dn->inode->i_ino;
+-- 
+2.35.1
+
 
 
