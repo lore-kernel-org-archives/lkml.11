@@ -2,45 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1601BC38147
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6AA3AC48BE4
 	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 11:32:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357561AbiHWLbn (ORCPT
+        id S1357689AbiHWLbu (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 07:31:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60078 "EHLO
+        Tue, 23 Aug 2022 07:31:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38278 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357884AbiHWL04 (ORCPT
+        with ESMTP id S1357957AbiHWL1A (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 07:26:56 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 27AB5C04DF;
-        Tue, 23 Aug 2022 02:24:40 -0700 (PDT)
+        Tue, 23 Aug 2022 07:27:00 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 845DEC12F3;
+        Tue, 23 Aug 2022 02:24:30 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 7FE44B81C96;
-        Tue, 23 Aug 2022 09:24:37 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B044BC433C1;
-        Tue, 23 Aug 2022 09:24:35 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 4EA88B81C65;
+        Tue, 23 Aug 2022 09:24:28 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 94ACFC433D6;
+        Tue, 23 Aug 2022 09:24:26 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661246676;
-        bh=bFP8WNIAi/xpN+RuABosBRmY0Hj9c/EwfxNDVdA0MPY=;
+        s=korg; t=1661246667;
+        bh=o4+svEQh+kCeH8x0IK+/Otv0tVlul1T6L2BE/rXdnyo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=umHRHl0TgrVf3sBGAi6Mz9dJrYgNodZwlE4PoaEwW4x3naG9m/rCd74HheRkj3YUn
-         uUz/0daA8D8vsh2dN5tXSuukeD/qTI0b+13+nQCYqfzLsqqnXFAjT5ELyNHn88jfip
-         LNNJaF4i5rbTlJ6f6ni534nprLpnzd3Ps1Q90ezs=
+        b=s/YmkLfcXdcS8Y/fuxCaJF/czSTegz5W08AAD3DM3UWUb6AdhqVLrtGrm2TIgtE5p
+         c69hohclig0drzRWxBRBlcLMsbiFXglMsNKACk+iE2cSVgnRpu+VgB8faUF/MAvfck
+         6O5TFHnQbp6iwwI3l6F/Tb8HBwbypztP/sRMylfs=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
-        Raviteja Garimella <raviteja.garimella@broadcom.com>,
-        Felipe Balbi <balbi@kernel.org>, linux-usb@vger.kernel.org,
-        Randy Dunlap <rdunlap@infradead.org>,
+        Eugen Hristev <eugen.hristev@microchip.com>,
+        Karl Olsen <karl@micro-technic.com>,
+        Adrian Hunter <adrian.hunter@intel.com>,
+        Ulf Hansson <ulf.hansson@linaro.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 184/389] usb: gadget: udc: amd5536 depends on HAS_DMA
-Date:   Tue, 23 Aug 2022 10:24:22 +0200
-Message-Id: <20220823080123.321428081@linuxfoundation.org>
+Subject: [PATCH 5.4 181/389] mmc: sdhci-of-at91: fix set_uhs_signaling rewriting of MC1R
+Date:   Tue, 23 Aug 2022 10:24:19 +0200
+Message-Id: <20220823080123.197119384@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220823080115.331990024@linuxfoundation.org>
 References: <20220823080115.331990024@linuxfoundation.org>
@@ -52,47 +53,46 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Randy Dunlap <rdunlap@infradead.org>
+From: Eugen Hristev <eugen.hristev@microchip.com>
 
-[ Upstream commit 8097cf2fb3b2205257f1c76f4808e3398d66b6d9 ]
+[ Upstream commit 5987e6ded29d52e42fc7b06aa575c60a25eee38e ]
 
-USB_AMD5536UDC should depend on HAS_DMA since it selects USB_SNP_CORE,
-which depends on HAS_DMA and since 'select' does not follow any
-dependency chains.
+In set_uhs_signaling, the DDR bit is being set by fully writing the MC1R
+register.
+This can lead to accidental erase of certain bits in this register.
+Avoid this by doing a read-modify-write operation.
 
-Fixes this kconfig warning:
-
-WARNING: unmet direct dependencies detected for USB_SNP_CORE
-  Depends on [n]: USB_SUPPORT [=y] && USB_GADGET [=y] && (USB_AMD5536UDC [=y] || USB_SNP_UDC_PLAT [=n]) && HAS_DMA [=n]
-  Selected by [y]:
-  - USB_AMD5536UDC [=y] && USB_SUPPORT [=y] && USB_GADGET [=y] && USB_PCI [=y]
-
-Fixes: 97b3ffa233b9 ("usb: gadget: udc: amd5536: split core and PCI layer")
-Cc: Raviteja Garimella <raviteja.garimella@broadcom.com>
-Cc: Felipe Balbi <balbi@kernel.org>
-Cc: linux-usb@vger.kernel.org
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Signed-off-by: Randy Dunlap <rdunlap@infradead.org>
-Link: https://lore.kernel.org/r/20220709013601.7536-1-rdunlap@infradead.org
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Fixes: d0918764c17b ("mmc: sdhci-of-at91: fix MMC_DDR_52 timing selection")
+Signed-off-by: Eugen Hristev <eugen.hristev@microchip.com>
+Tested-by: Karl Olsen <karl@micro-technic.com>
+Acked-by: Adrian Hunter <adrian.hunter@intel.com>
+Link: https://lore.kernel.org/r/20220630090926.15061-1-eugen.hristev@microchip.com
+Signed-off-by: Ulf Hansson <ulf.hansson@linaro.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/usb/gadget/udc/Kconfig | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/mmc/host/sdhci-of-at91.c | 9 +++++++--
+ 1 file changed, 7 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/usb/gadget/udc/Kconfig b/drivers/usb/gadget/udc/Kconfig
-index f985bb4a42db..ccf2c736d495 100644
---- a/drivers/usb/gadget/udc/Kconfig
-+++ b/drivers/usb/gadget/udc/Kconfig
-@@ -311,7 +311,7 @@ source "drivers/usb/gadget/udc/bdc/Kconfig"
+diff --git a/drivers/mmc/host/sdhci-of-at91.c b/drivers/mmc/host/sdhci-of-at91.c
+index 881f8138e7de..03698d78a402 100644
+--- a/drivers/mmc/host/sdhci-of-at91.c
++++ b/drivers/mmc/host/sdhci-of-at91.c
+@@ -109,8 +109,13 @@ static void sdhci_at91_set_power(struct sdhci_host *host, unsigned char mode,
+ static void sdhci_at91_set_uhs_signaling(struct sdhci_host *host,
+ 					 unsigned int timing)
+ {
+-	if (timing == MMC_TIMING_MMC_DDR52)
+-		sdhci_writeb(host, SDMMC_MC1R_DDR, SDMMC_MC1R);
++	u8 mc1r;
++
++	if (timing == MMC_TIMING_MMC_DDR52) {
++		mc1r = sdhci_readb(host, SDMMC_MC1R);
++		mc1r |= SDMMC_MC1R_DDR;
++		sdhci_writeb(host, mc1r, SDMMC_MC1R);
++	}
+ 	sdhci_set_uhs_signaling(host, timing);
+ }
  
- config USB_AMD5536UDC
- 	tristate "AMD5536 UDC"
--	depends on USB_PCI
-+	depends on USB_PCI && HAS_DMA
- 	select USB_SNP_CORE
- 	help
- 	   The AMD5536 UDC is part of the AMD Geode CS5536, an x86 southbridge.
 -- 
 2.35.1
 
