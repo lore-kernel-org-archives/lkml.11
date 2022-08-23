@@ -2,49 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 36982C38147
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 492ACC38145
 	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 10:17:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353743AbiHWKPu (ORCPT
+        id S1353780AbiHWKPy (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 06:15:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46390 "EHLO
+        Tue, 23 Aug 2022 06:15:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46510 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352884AbiHWKG0 (ORCPT
+        with ESMTP id S1352893AbiHWKG0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 23 Aug 2022 06:06:26 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 86D036565;
-        Tue, 23 Aug 2022 01:53:28 -0700 (PDT)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 37928A460;
+        Tue, 23 Aug 2022 01:53:30 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 718ACB8105C;
-        Tue, 23 Aug 2022 08:53:27 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C88E9C433D7;
-        Tue, 23 Aug 2022 08:53:25 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 93ACB611DD;
+        Tue, 23 Aug 2022 08:53:29 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9FCBCC433D6;
+        Tue, 23 Aug 2022 08:53:28 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661244806;
-        bh=ZJFE01siZK/UrXYJb26H6em5oEOiOk7q98WghNaIuhA=;
+        s=korg; t=1661244809;
+        bh=WZrmzVPJBdBpw6UfrkbPuq4sZK3uUvd+tAu+0nNF+wo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=QJxzjGTtSpMlNNkW+2E+7u5N8UMKfrCvdJg4Hn+ae9sUPOh+y7pmEovTy740VPctY
-         mCUDeiLwaUTLjxMmdDlIs/jcchPkBuT35H2AXSzxlL+DBWwvxPgIbtAFcTZR7let1d
-         Hzl4vGaBEZGMGXofFdRzXzlM3zTcUZFe9CaaRvGo=
+        b=TkjziN5ReaDaR45VxPUrCgobgl2VmDvTnjNNpj4KGTpJpPomhkDqjd1A3irXPMUXB
+         QWRTQiBO7giSMftLoX+TQcukGJea6TbV4LqAv62sTLamss4oIOT9ArsEUHe039mHmh
+         rkJxwv/9mtreEt48XlBzKW7W1vjBvnQWrKjRAsYM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Ranjani Sridharan <ranjani.sridharan@linux.intel.com>,
-        Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>,
-        =?UTF-8?q?P=C3=A9ter=20Ujfalusi?= <peter.ujfalusi@linux.intel.com>,
-        Mark Brown <broonie@kernel.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 155/244] ASoC: SOF: Intel: hda: Define rom_status_reg in sof_intel_dsp_desc
-Date:   Tue, 23 Aug 2022 10:25:14 +0200
-Message-Id: <20220823080104.370217616@linuxfoundation.org>
+        stable@vger.kernel.org, Dan Carpenter <dan.carpenter@oracle.com>,
+        Oleksandr Tyshchenko <oleksandr_tyshchenko@epam.com>,
+        Juergen Gross <jgross@suse.com>
+Subject: [PATCH 4.14 195/229] xen/xenbus: fix return type in xenbus_file_read()
+Date:   Tue, 23 Aug 2022 10:25:56 +0200
+Message-Id: <20220823080100.609879614@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220823080059.091088642@linuxfoundation.org>
-References: <20220823080059.091088642@linuxfoundation.org>
+In-Reply-To: <20220823080053.202747790@linuxfoundation.org>
+References: <20220823080053.202747790@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -53,213 +50,48 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Ranjani Sridharan <ranjani.sridharan@linux.intel.com>
+From: Dan Carpenter <dan.carpenter@oracle.com>
 
-[ Upstream commit 71778f7940f0b496aa1ca1134f3b70b425a59bab ]
+commit 32ad11127b95236dfc52375f3707853194a7f4b4 upstream.
 
-Add the rom_status_reg field to struct sof_intel_dsp_desc and define
-it for HDA platforms. This will be used to check the ROM status during
-FW boot.
+This code tries to store -EFAULT in an unsigned int.  The
+xenbus_file_read() function returns type ssize_t so the negative value
+is returned as a positive value to the user.
 
-Signed-off-by: Ranjani Sridharan <ranjani.sridharan@linux.intel.com>
-Signed-off-by: Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>
-Reviewed-by: Péter Ujfalusi <peter.ujfalusi@linux.intel.com>
-Link: https://lore.kernel.org/r/20220414184817.362215-14-pierre-louis.bossart@linux.intel.com
-Signed-off-by: Mark Brown <broonie@kernel.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+This change forces another change to the min() macro.  Originally, the
+min() macro used "unsigned" type which checkpatch complains about.  Also
+unsigned type would break if "len" were not capped at MAX_RW_COUNT.  Use
+size_t for the min().  (No effect on runtime for the min_t() change).
+
+Fixes: 2fb3683e7b16 ("xen: Add xenbus device driver")
+Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
+Reviewed-by: Oleksandr Tyshchenko <oleksandr_tyshchenko@epam.com>
+Link: https://lore.kernel.org/r/YutxJUaUYRG/VLVc@kili
+Signed-off-by: Juergen Gross <jgross@suse.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- sound/soc/sof/intel/apl.c        |  1 +
- sound/soc/sof/intel/cnl.c        |  2 ++
- sound/soc/sof/intel/hda-loader.c | 14 ++++++++------
- sound/soc/sof/intel/hda.c        |  8 ++++++--
- sound/soc/sof/intel/icl.c        |  1 +
- sound/soc/sof/intel/shim.h       |  1 +
- sound/soc/sof/intel/tgl.c        |  4 ++++
- 7 files changed, 23 insertions(+), 8 deletions(-)
+ drivers/xen/xenbus/xenbus_dev_frontend.c |    4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/sound/soc/sof/intel/apl.c b/sound/soc/sof/intel/apl.c
-index c7ed2b3d6abc..0a42034c4655 100644
---- a/sound/soc/sof/intel/apl.c
-+++ b/sound/soc/sof/intel/apl.c
-@@ -139,6 +139,7 @@ const struct sof_intel_dsp_desc apl_chip_info = {
- 	.ipc_ack = HDA_DSP_REG_HIPCIE,
- 	.ipc_ack_mask = HDA_DSP_REG_HIPCIE_DONE,
- 	.ipc_ctl = HDA_DSP_REG_HIPCCTL,
-+	.rom_status_reg = HDA_DSP_SRAM_REG_ROM_STATUS,
- 	.rom_init_timeout	= 150,
- 	.ssp_count = APL_SSP_COUNT,
- 	.ssp_base_offset = APL_SSP_BASE_OFFSET,
-diff --git a/sound/soc/sof/intel/cnl.c b/sound/soc/sof/intel/cnl.c
-index e115e12a856f..a63b235763ed 100644
---- a/sound/soc/sof/intel/cnl.c
-+++ b/sound/soc/sof/intel/cnl.c
-@@ -344,6 +344,7 @@ const struct sof_intel_dsp_desc cnl_chip_info = {
- 	.ipc_ack = CNL_DSP_REG_HIPCIDA,
- 	.ipc_ack_mask = CNL_DSP_REG_HIPCIDA_DONE,
- 	.ipc_ctl = CNL_DSP_REG_HIPCCTL,
-+	.rom_status_reg = HDA_DSP_SRAM_REG_ROM_STATUS,
- 	.rom_init_timeout	= 300,
- 	.ssp_count = CNL_SSP_COUNT,
- 	.ssp_base_offset = CNL_SSP_BASE_OFFSET,
-@@ -363,6 +364,7 @@ const struct sof_intel_dsp_desc jsl_chip_info = {
- 	.ipc_ack = CNL_DSP_REG_HIPCIDA,
- 	.ipc_ack_mask = CNL_DSP_REG_HIPCIDA_DONE,
- 	.ipc_ctl = CNL_DSP_REG_HIPCCTL,
-+	.rom_status_reg = HDA_DSP_SRAM_REG_ROM_STATUS,
- 	.rom_init_timeout	= 300,
- 	.ssp_count = ICL_SSP_COUNT,
- 	.ssp_base_offset = CNL_SSP_BASE_OFFSET,
-diff --git a/sound/soc/sof/intel/hda-loader.c b/sound/soc/sof/intel/hda-loader.c
-index ee09393d42cb..439cb33d2a71 100644
---- a/sound/soc/sof/intel/hda-loader.c
-+++ b/sound/soc/sof/intel/hda-loader.c
-@@ -163,7 +163,7 @@ static int cl_dsp_init(struct snd_sof_dev *sdev, int stream_tag)
- 
- 	/* step 7: wait for ROM init */
- 	ret = snd_sof_dsp_read_poll_timeout(sdev, HDA_DSP_BAR,
--					HDA_DSP_SRAM_REG_ROM_STATUS, status,
-+					chip->rom_status_reg, status,
- 					((status & HDA_DSP_ROM_STS_MASK)
- 						== HDA_DSP_ROM_INIT),
- 					HDA_DSP_REG_POLL_INTERVAL_US,
-@@ -174,8 +174,8 @@ static int cl_dsp_init(struct snd_sof_dev *sdev, int stream_tag)
- 
- 	if (hda->boot_iteration == HDA_FW_BOOT_ATTEMPTS)
- 		dev_err(sdev->dev,
--			"error: %s: timeout HDA_DSP_SRAM_REG_ROM_STATUS read\n",
--			__func__);
-+			"%s: timeout with rom_status_reg (%#x) read\n",
-+			__func__, chip->rom_status_reg);
- 
- err:
- 	flags = SOF_DBG_DUMP_REGS | SOF_DBG_DUMP_PCI | SOF_DBG_DUMP_MBOX;
-@@ -251,6 +251,8 @@ static int cl_cleanup(struct snd_sof_dev *sdev, struct snd_dma_buffer *dmab,
- 
- static int cl_copy_fw(struct snd_sof_dev *sdev, struct hdac_ext_stream *stream)
+--- a/drivers/xen/xenbus/xenbus_dev_frontend.c
++++ b/drivers/xen/xenbus/xenbus_dev_frontend.c
+@@ -125,7 +125,7 @@ static ssize_t xenbus_file_read(struct f
  {
-+	struct sof_intel_hda_dev *hda = sdev->pdata->hw_pdata;
-+	const struct sof_intel_dsp_desc *chip = hda->desc;
- 	unsigned int reg;
- 	int ret, status;
+ 	struct xenbus_file_priv *u = filp->private_data;
+ 	struct read_buffer *rb;
+-	unsigned i;
++	ssize_t i;
+ 	int ret;
  
-@@ -261,7 +263,7 @@ static int cl_copy_fw(struct snd_sof_dev *sdev, struct hdac_ext_stream *stream)
- 	}
+ 	mutex_lock(&u->reply_mutex);
+@@ -145,7 +145,7 @@ again:
+ 	rb = list_entry(u->read_buffers.next, struct read_buffer, list);
+ 	i = 0;
+ 	while (i < len) {
+-		unsigned sz = min((unsigned)len - i, rb->len - rb->cons);
++		size_t sz = min_t(size_t, len - i, rb->len - rb->cons);
  
- 	status = snd_sof_dsp_read_poll_timeout(sdev, HDA_DSP_BAR,
--					HDA_DSP_SRAM_REG_ROM_STATUS, reg,
-+					chip->rom_status_reg, reg,
- 					((reg & HDA_DSP_ROM_STS_MASK)
- 						== HDA_DSP_ROM_FW_ENTERED),
- 					HDA_DSP_REG_POLL_INTERVAL_US,
-@@ -274,8 +276,8 @@ static int cl_copy_fw(struct snd_sof_dev *sdev, struct hdac_ext_stream *stream)
+ 		ret = copy_to_user(ubuf + i, &rb->msg[rb->cons], sz);
  
- 	if (status < 0) {
- 		dev_err(sdev->dev,
--			"error: %s: timeout HDA_DSP_SRAM_REG_ROM_STATUS read\n",
--			__func__);
-+			"%s: timeout with rom_status_reg (%#x) read\n",
-+			__func__, chip->rom_status_reg);
- 	}
- 
- 	ret = cl_trigger(sdev, stream, SNDRV_PCM_TRIGGER_STOP);
-diff --git a/sound/soc/sof/intel/hda.c b/sound/soc/sof/intel/hda.c
-index ddf70902e53c..e733c401562f 100644
---- a/sound/soc/sof/intel/hda.c
-+++ b/sound/soc/sof/intel/hda.c
-@@ -353,11 +353,13 @@ static const struct hda_dsp_msg_code hda_dsp_rom_msg[] = {
- 
- static void hda_dsp_get_status(struct snd_sof_dev *sdev)
- {
-+	const struct sof_intel_dsp_desc *chip;
- 	u32 status;
- 	int i;
- 
-+	chip = get_chip_info(sdev->pdata);
- 	status = snd_sof_dsp_read(sdev, HDA_DSP_BAR,
--				  HDA_DSP_SRAM_REG_ROM_STATUS);
-+				  chip->rom_status_reg);
- 
- 	for (i = 0; i < ARRAY_SIZE(hda_dsp_rom_msg); i++) {
- 		if (status == hda_dsp_rom_msg[i].code) {
-@@ -402,13 +404,15 @@ static void hda_dsp_get_registers(struct snd_sof_dev *sdev,
- /* dump the first 8 dwords representing the extended ROM status */
- static void hda_dsp_dump_ext_rom_status(struct snd_sof_dev *sdev, u32 flags)
- {
-+	const struct sof_intel_dsp_desc *chip;
- 	char msg[128];
- 	int len = 0;
- 	u32 value;
- 	int i;
- 
-+	chip = get_chip_info(sdev->pdata);
- 	for (i = 0; i < HDA_EXT_ROM_STATUS_SIZE; i++) {
--		value = snd_sof_dsp_read(sdev, HDA_DSP_BAR, HDA_DSP_SRAM_REG_ROM_STATUS + i * 0x4);
-+		value = snd_sof_dsp_read(sdev, HDA_DSP_BAR, chip->rom_status_reg + i * 0x4);
- 		len += snprintf(msg + len, sizeof(msg) - len, " 0x%x", value);
- 	}
- 
-diff --git a/sound/soc/sof/intel/icl.c b/sound/soc/sof/intel/icl.c
-index ee095b8f2d01..4065c4d3912a 100644
---- a/sound/soc/sof/intel/icl.c
-+++ b/sound/soc/sof/intel/icl.c
-@@ -139,6 +139,7 @@ const struct sof_intel_dsp_desc icl_chip_info = {
- 	.ipc_ack = CNL_DSP_REG_HIPCIDA,
- 	.ipc_ack_mask = CNL_DSP_REG_HIPCIDA_DONE,
- 	.ipc_ctl = CNL_DSP_REG_HIPCCTL,
-+	.rom_status_reg = HDA_DSP_SRAM_REG_ROM_STATUS,
- 	.rom_init_timeout	= 300,
- 	.ssp_count = ICL_SSP_COUNT,
- 	.ssp_base_offset = CNL_SSP_BASE_OFFSET,
-diff --git a/sound/soc/sof/intel/shim.h b/sound/soc/sof/intel/shim.h
-index e9f7d4d7fcce..96707758ebc5 100644
---- a/sound/soc/sof/intel/shim.h
-+++ b/sound/soc/sof/intel/shim.h
-@@ -161,6 +161,7 @@ struct sof_intel_dsp_desc {
- 	int ipc_ack;
- 	int ipc_ack_mask;
- 	int ipc_ctl;
-+	int rom_status_reg;
- 	int rom_init_timeout;
- 	int ssp_count;			/* ssp count of the platform */
- 	int ssp_base_offset;		/* base address of the SSPs */
-diff --git a/sound/soc/sof/intel/tgl.c b/sound/soc/sof/intel/tgl.c
-index 199d41a7dc9b..aba52d8628aa 100644
---- a/sound/soc/sof/intel/tgl.c
-+++ b/sound/soc/sof/intel/tgl.c
-@@ -134,6 +134,7 @@ const struct sof_intel_dsp_desc tgl_chip_info = {
- 	.ipc_ack = CNL_DSP_REG_HIPCIDA,
- 	.ipc_ack_mask = CNL_DSP_REG_HIPCIDA_DONE,
- 	.ipc_ctl = CNL_DSP_REG_HIPCCTL,
-+	.rom_status_reg = HDA_DSP_SRAM_REG_ROM_STATUS,
- 	.rom_init_timeout	= 300,
- 	.ssp_count = ICL_SSP_COUNT,
- 	.ssp_base_offset = CNL_SSP_BASE_OFFSET,
-@@ -153,6 +154,7 @@ const struct sof_intel_dsp_desc tglh_chip_info = {
- 	.ipc_ack = CNL_DSP_REG_HIPCIDA,
- 	.ipc_ack_mask = CNL_DSP_REG_HIPCIDA_DONE,
- 	.ipc_ctl = CNL_DSP_REG_HIPCCTL,
-+	.rom_status_reg = HDA_DSP_SRAM_REG_ROM_STATUS,
- 	.rom_init_timeout	= 300,
- 	.ssp_count = ICL_SSP_COUNT,
- 	.ssp_base_offset = CNL_SSP_BASE_OFFSET,
-@@ -172,6 +174,7 @@ const struct sof_intel_dsp_desc ehl_chip_info = {
- 	.ipc_ack = CNL_DSP_REG_HIPCIDA,
- 	.ipc_ack_mask = CNL_DSP_REG_HIPCIDA_DONE,
- 	.ipc_ctl = CNL_DSP_REG_HIPCCTL,
-+	.rom_status_reg = HDA_DSP_SRAM_REG_ROM_STATUS,
- 	.rom_init_timeout	= 300,
- 	.ssp_count = ICL_SSP_COUNT,
- 	.ssp_base_offset = CNL_SSP_BASE_OFFSET,
-@@ -191,6 +194,7 @@ const struct sof_intel_dsp_desc adls_chip_info = {
- 	.ipc_ack = CNL_DSP_REG_HIPCIDA,
- 	.ipc_ack_mask = CNL_DSP_REG_HIPCIDA_DONE,
- 	.ipc_ctl = CNL_DSP_REG_HIPCCTL,
-+	.rom_status_reg = HDA_DSP_SRAM_REG_ROM_STATUS,
- 	.rom_init_timeout	= 300,
- 	.ssp_count = ICL_SSP_COUNT,
- 	.ssp_base_offset = CNL_SSP_BASE_OFFSET,
--- 
-2.35.1
-
 
 
