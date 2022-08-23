@@ -2,82 +2,105 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 00B72C32772
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 10:09:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 69CE9C32792
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 10:09:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352861AbiHWKJW (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 06:09:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46722 "EHLO
+        id S243912AbiHWKHc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 23 Aug 2022 06:07:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59018 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352627AbiHWKCO (ORCPT
+        with ESMTP id S1352410AbiHWKBw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 06:02:14 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C6AB0A2612;
-        Tue, 23 Aug 2022 01:50:17 -0700 (PDT)
+        Tue, 23 Aug 2022 06:01:52 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 91BE77C197;
+        Tue, 23 Aug 2022 01:49:40 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 8596A61555;
-        Tue, 23 Aug 2022 08:50:16 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id E1B53C43470;
-        Tue, 23 Aug 2022 08:50:15 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1661244615;
-        bh=Lpc9iSu9482doUb6kGnjPZcPkACwQKAB2dLj5+TpHX4=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=rgudO6bC2vPOgAMYe2wN0YSjHxJNlrrTfUwaviS5jbrhTcgicec2wBKjfoVwV1+Al
-         ExSKPohH3XnzxejXWPsASl0XRUZpzK21ptEwv91zSqlQPNa6tmfEHhVkAd2Fb1DFiI
-         P1DDEAk1LdZcYDwBhtFn7CdYr3ZVReaezUBsOk3t+1kW/bpTqsSOBcU3QanCsV6GsM
-         /GTHSxW55+h5Eqv5F/VKNLaS5didnuU873Fulahf7Td5WqC96ULDd7tugKnZh+/Hdz
-         /nV7bcNya4MwBaUSpY+T3TU5le2i/uIGwIKOZf7Ksf9/RlFpkctV4biiVmt6m3u3nj
-         3zzP5b+TwtedQ==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id BC642C0C3EC;
-        Tue, 23 Aug 2022 08:50:15 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        by ams.source.kernel.org (Postfix) with ESMTPS id 42A45B8105C;
+        Tue, 23 Aug 2022 08:49:39 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9563EC433C1;
+        Tue, 23 Aug 2022 08:49:37 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1661244578;
+        bh=/8UyoVEL/6prq7euy3iXui/QYxwtGVXrnVvgQbV3Lk0=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=RxB/875abvlubRq1mqJHzHupD3Zl97qrD4fH61ZpqEp5JmKKDCzlkzh4jo2dUVm7Q
+         ZHoesvKl2Cixyt8eX7dlcVAbX70MlFZG64ESecnCHE7x1BzQ9xcu7G/U95reeKhcGW
+         n2DMmjTn6dDvkew8iY2ZnudDFBqQTSbThOWVKS6U=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org,
+        Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>
+Subject: [PATCH 5.15 086/244] dt-bindings: clock: qcom,gcc-msm8996: add more GCC clock sources
+Date:   Tue, 23 Aug 2022 10:24:05 +0200
+Message-Id: <20220823080101.904782940@linuxfoundation.org>
+X-Mailer: git-send-email 2.37.2
+In-Reply-To: <20220823080059.091088642@linuxfoundation.org>
+References: <20220823080059.091088642@linuxfoundation.org>
+User-Agent: quilt/0.67
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net-next,v2] net: sched: remove duplicate check of user rights
- in qdisc
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <166124461576.6596.11359882765801739049.git-patchwork-notify@kernel.org>
-Date:   Tue, 23 Aug 2022 08:50:15 +0000
-References: <20220819041854.83372-1-shaozhengchao@huawei.com>
-In-Reply-To: <20220819041854.83372-1-shaozhengchao@huawei.com>
-To:     Zhengchao Shao <shaozhengchao@huawei.com>
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        jhs@mojatatu.com, xiyou.wangcong@gmail.com, jiri@resnulli.us,
-        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        pabeni@redhat.com, weiyongjun1@huawei.com, yuehaibing@huawei.com
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hello:
+From: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
 
-This patch was applied to netdev/net-next.git (master)
-by Paolo Abeni <pabeni@redhat.com>:
+commit 2b4e75a7a7c8d3531a40ebb103b92f88ff693f79 upstream.
 
-On Fri, 19 Aug 2022 12:18:54 +0800 you wrote:
-> In rtnetlink_rcv_msg function, the permission for all user operations
-> is checked except the GET operation, which is the same as the checking
-> in qdisc. Therefore, remove the user rights check in qdisc.
-> 
-> Signed-off-by: Zhengchao Shao <shaozhengchao@huawei.com>
-> ---
-> v1: incorrectly delete checking right in action
-> 
-> [...]
+Add additional GCC clock sources. This includes PCIe and USB PIPE and
+UFS symbol clocks.
 
-Here is the summary with links:
-  - [net-next,v2] net: sched: remove duplicate check of user rights in qdisc
-    https://git.kernel.org/netdev/net-next/c/ab4850819176
+Fixes: 2a8aa18c1131 ("dt-bindings: clk: qcom: Fix self-validation, split, and clean cruft")
+Signed-off-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
+Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Signed-off-by: Bjorn Andersson <bjorn.andersson@linaro.org>
+Link: https://lore.kernel.org/r/20220620071936.1558906-2-dmitry.baryshkov@linaro.org
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+---
+ Documentation/devicetree/bindings/clock/qcom,gcc-msm8996.yaml |   16 ++++++++++
+ 1 file changed, 16 insertions(+)
 
-You are awesome, thank you!
--- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
+--- a/Documentation/devicetree/bindings/clock/qcom,gcc-msm8996.yaml
++++ b/Documentation/devicetree/bindings/clock/qcom,gcc-msm8996.yaml
+@@ -22,16 +22,32 @@ properties:
+     const: qcom,gcc-msm8996
+ 
+   clocks:
++    minItems: 3
+     items:
+       - description: XO source
+       - description: Second XO source
+       - description: Sleep clock source
++      - description: PCIe 0 PIPE clock (optional)
++      - description: PCIe 1 PIPE clock (optional)
++      - description: PCIe 2 PIPE clock (optional)
++      - description: USB3 PIPE clock (optional)
++      - description: UFS RX symbol 0 clock (optional)
++      - description: UFS RX symbol 1 clock (optional)
++      - description: UFS TX symbol 0 clock (optional)
+ 
+   clock-names:
++    minItems: 3
+     items:
+       - const: cxo
+       - const: cxo2
+       - const: sleep_clk
++      - const: pcie_0_pipe_clk_src
++      - const: pcie_1_pipe_clk_src
++      - const: pcie_2_pipe_clk_src
++      - const: usb3_phy_pipe_clk_src
++      - const: ufs_rx_symbol_0_clk_src
++      - const: ufs_rx_symbol_1_clk_src
++      - const: ufs_tx_symbol_0_clk_src
+ 
+   '#clock-cells':
+     const: 1
 
 
