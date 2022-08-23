@@ -2,86 +2,95 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8AA59C32772
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 19:13:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CC810C32772
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 19:14:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229795AbiHWTNE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 15:13:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44188 "EHLO
+        id S231970AbiHWTOR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 23 Aug 2022 15:14:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53708 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232411AbiHWTMp (ORCPT
+        with ESMTP id S232460AbiHWTN4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 15:12:45 -0400
-Received: from mail.skyhub.de (mail.skyhub.de [5.9.137.197])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 35FCF89919
-        for <linux-kernel@vger.kernel.org>; Tue, 23 Aug 2022 10:50:20 -0700 (PDT)
-Received: from zn.tnic (p200300ea971b9893329c23fffea6a903.dip0.t-ipconnect.de [IPv6:2003:ea:971b:9893:329c:23ff:fea6:a903])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.skyhub.de (SuperMail on ZX Spectrum 128k) with ESMTPSA id BC37D1EC063A;
-        Tue, 23 Aug 2022 19:44:03 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=alien8.de; s=dkim;
-        t=1661276643;
+        Tue, 23 Aug 2022 15:13:56 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C42EC122BD5
+        for <linux-kernel@vger.kernel.org>; Tue, 23 Aug 2022 10:51:23 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1661277006;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:in-reply-to:in-reply-to:  references:references;
-        bh=bJ92OKZPqF5z/8Ots4W3Sw8SoBp1QDbQQUg4ZfVRBcA=;
-        b=pUDxgrvJQC51177dBRmleFtC88cWc5cNTsL9lbwZWh0/c5mnyiEb5EYiicetPTBfnhG2nz
-        5EZHbtPV+0NYttToIlXVzmdCUvA8PNkF72GDT7ij3jZJitwUmHHsZuSxbpVNL/RBRxJldz
-        d8bcRxsjSBCCKg12oOaNY7DQHAVXspo=
-Date:   Tue, 23 Aug 2022 19:43:59 +0200
-From:   Borislav Petkov <bp@alien8.de>
-To:     Nick Desaulniers <ndesaulniers@google.com>
-Cc:     Vincent Mailhol <mailhol.vincent@wanadoo.fr>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>, x86@kernel.org,
-        Peter Zijlstra <peterz@infradead.org>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        "H . Peter Anvin" <hpa@zytor.com>,
-        Nathan Chancellor <nathan@kernel.org>,
-        Tom Rix <trix@redhat.com>, linux-kernel@vger.kernel.org,
-        llvm@lists.linux.dev, David Howells <dhowells@redhat.com>,
-        Jan Beulich <JBeulich@suse.com>,
-        Christophe Jaillet <christophe.jaillet@wanadoo.fr>,
-        Joe Perches <joe@perches.com>,
-        Josh Poimboeuf <jpoimboe@kernel.org>
-Subject: Re: [PATCH v5 2/2] x86/asm/bitops: __ffs,ffz: use __builtin_ctzl to
- evaluate constant expressions
-Message-ID: <YwUR35I7+5JbLvMM@zn.tnic>
-References: <20220511160319.1045812-1-mailhol.vincent@wanadoo.fr>
- <20220812114438.1574-1-mailhol.vincent@wanadoo.fr>
- <20220812114438.1574-3-mailhol.vincent@wanadoo.fr>
- <YwT+5GGCOKoTjfQZ@zn.tnic>
- <CAKwvOdnc-Js8x4sv0j23crtYP73sRkNexom5ydm=r=8rYgc_5Q@mail.gmail.com>
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=CVE4380sDAsovAGhR6AZYNuZ8oLCxAJEqDFiZxuOg2E=;
+        b=E8ehTqZt4vQtsTnIq2s/VyNMvx7JAQzA4VS/ikBMGOXMf9Bb0guFa2FEDDECldvDxmKW4H
+        AbJfbEMpFiwrihN/4LsTXOVZhtqO9sxr3FDz+Hdby+fYMEatvwIpj9/MbXFhZ7Fb4QQVSo
+        K2QATkcOAyXGyADverqGcMGFwMJExLI=
+Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
+ [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-9-Zfk5GIb7MMiRaz01Ckvxkw-1; Tue, 23 Aug 2022 13:42:55 -0400
+X-MC-Unique: Zfk5GIb7MMiRaz01Ckvxkw-1
+Received: from smtp.corp.redhat.com (int-mx07.intmail.prod.int.rdu2.redhat.com [10.11.54.7])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id C1845101E985;
+        Tue, 23 Aug 2022 17:42:54 +0000 (UTC)
+Received: from cmirabil.redhat.com (unknown [10.22.33.37])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 5368214152E0;
+        Tue, 23 Aug 2022 17:42:54 +0000 (UTC)
+From:   Charles Mirabile <cmirabil@redhat.com>
+To:     linux-kernel@vger.kernel.org
+Cc:     Charles Mirabile <cmirabil@redhat.com>,
+        Peter Robinson <pbrobinson@gmail.com>,
+        Serge Schneider <serge@raspberrypi.org>,
+        Stefan Wahren <stefan.wahren@i2se.com>,
+        Nicolas Saenz Julienne <nicolassaenzj@gmail.com>,
+        Mattias Brugger <mbrugger@suse.com>,
+        linux-rpi-kernel@lists.infradead.org,
+        linux-arm-kernel@lists.infradead.org, rh-kdlp@googlegroups.com,
+        Joel Savitz <jsavitz@redhat.com>
+Subject: [PATCH 4/5] MAINTAINERS: Add sensehat driver authors to MAINTAINERS
+Date:   Tue, 23 Aug 2022 13:41:57 -0400
+Message-Id: <20220823174158.45579-5-cmirabil@redhat.com>
+In-Reply-To: <20220823174158.45579-1-cmirabil@redhat.com>
+References: <20220823174158.45579-1-cmirabil@redhat.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <CAKwvOdnc-Js8x4sv0j23crtYP73sRkNexom5ydm=r=8rYgc_5Q@mail.gmail.com>
+Content-Transfer-Encoding: 8bit
+X-Scanned-By: MIMEDefang 2.85 on 10.11.54.7
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Aug 23, 2022 at 10:12:17AM -0700, Nick Desaulniers wrote:
-> Callers of these need to guard against zero input, as the pre-existing
-> comment notes:
-> 
-> >> Undefined if no bit exists, so code should check against 0 first.
+This patch adds the driver authors to MAINAINERS.
 
-This is just silly.
+Co-developed-by: Joel Savitz <jsavitz@redhat.com>
+Signed-off-by: Joel Savitz <jsavitz@redhat.com>
+Signed-off-by: Charles Mirabile <cmirabil@redhat.com>
+---
+ MAINTAINERS | 10 ++++++++++
+ 1 file changed, 10 insertions(+)
 
-And then there's
-
- * ffs(value) returns 0 if value is 0 or the position of the first
- * set bit if value is nonzero. The first (least significant) bit
- * is at position 1.
- */
-static __always_inline int ffs(int x)
-
-Can we unify the two and move the guard against 0 inside the function
-or, like ffs() does, have it return 0 if value is 0?
-
+diff --git a/MAINTAINERS b/MAINTAINERS
+index 96f47a7865d6..3af3238a1535 100644
+--- a/MAINTAINERS
++++ b/MAINTAINERS
+@@ -18344,6 +18344,16 @@ F:	Documentation/ABI/testing/sysfs-bus-iio-chemical-sunrise-co2
+ F:	Documentation/devicetree/bindings/iio/chemical/senseair,sunrise.yaml
+ F:	drivers/iio/chemical/sunrise_co2.c
+ 
++SENSEHAT DRIVER
++M:	Charles Mirabile <cmirabil@redhat.com>
++M:	Joel Savitz <jsavitz@redhat.com>
++S:	Maintained
++F:	Documentation/devicetree/bindings/auxdisplay/raspberrypi,sensehat-display.yaml
++F:	Documentation/devicetree/bindings/input/raspberrypi,sensehat-joystick.yaml
++F:	Documentation/devicetree/bindings/mfd/raspberrypi,sensehat.yaml
++F:	drivers/auxdisplay/sensehat-display.c
++F:	drivers/input/joystick/sensehat-joystick.c
++
+ SENSIRION SCD30 CARBON DIOXIDE SENSOR DRIVER
+ M:	Tomasz Duszynski <tomasz.duszynski@octakon.com>
+ S:	Maintained
 -- 
-Regards/Gruss,
-    Boris.
+2.31.1
 
-https://people.kernel.org/tglx/notes-about-netiquette
