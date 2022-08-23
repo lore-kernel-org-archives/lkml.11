@@ -2,48 +2,50 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DD650C32772
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 09:30:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E4734C32772
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 09:31:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350214AbiHWJaM (ORCPT
+        id S1350490AbiHWJaS (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 05:30:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42514 "EHLO
+        Tue, 23 Aug 2022 05:30:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42516 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350011AbiHWJ1w (ORCPT
+        with ESMTP id S1350022AbiHWJ1x (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 05:27:52 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4E85B77E82;
-        Tue, 23 Aug 2022 01:37:23 -0700 (PDT)
+        Tue, 23 Aug 2022 05:27:53 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D394491D16;
+        Tue, 23 Aug 2022 01:37:24 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 52009CE1B49;
-        Tue, 23 Aug 2022 08:35:59 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4BD8EC433D6;
-        Tue, 23 Aug 2022 08:35:57 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 9B9C361446;
+        Tue, 23 Aug 2022 08:35:30 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A8C8EC433C1;
+        Tue, 23 Aug 2022 08:35:29 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661243757;
-        bh=e+Sqdz09GdVHe1dlbhbcgQasCVxSYIYnh6jIqbIAANo=;
+        s=korg; t=1661243730;
+        bh=14BEbwuS/9GtFKmOQR6ugEwfl0StUNmna3JofOg1vEc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=2XgeoDqUJveMEJTaJ0FeDmNaU6dIf0j1LZGFzlQsROO9CRR2rcFNQ2u0suRK8yu3H
-         t7n7mvuQN6jdZpMMMubax4VGymgs3FYpDvNxzq6hWq0I3rNvIVISo+OZg7+wdU0XNs
-         QQqTz6yngUwlgzzcKhUtaH8BzvTtQEQn6noEAtKE=
+        b=GObWW9G1aLMD9JW9XcGKZMpUQQco8IiIMg3gqksQ4n0F4pIDmedvbTm7tdnbQz+Ej
+         3hO62cSuBF06XI1hot6bKOoHxBYIzwnCgz4IEkFtaBsOADO1vCyrkgqHKbfncsZgNf
+         ovw+qj4nttJ1lYj7tK4bToC8ec+njFLEPkhqhjEs=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, stable <stable@kernel.org>,
-        Ning Qiang <sohu0106@126.com>,
-        Kees Cook <keescook@chromium.org>,
-        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
-        Michael Ellerman <mpe@ellerman.id.au>
-Subject: [PATCH 4.14 012/229] macintosh/adb: fix oob read in do_adb_query() function
-Date:   Tue, 23 Aug 2022 10:22:53 +0200
-Message-Id: <20220823080053.828036841@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Kai Vehmanen <kai.vehmanen@linux.intel.com>,
+        Peter Ujfalusi <peter.ujfalusi@linux.intel.com>,
+        Ranjani Sridharan <ranjani.sridharan@linux.intel.com>,
+        Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>,
+        Mark Brown <broonie@kernel.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.19 329/365] ASoC: SOF: Intel: hda-ipc: Do not process IPC reply before firmware boot
+Date:   Tue, 23 Aug 2022 10:03:50 +0200
+Message-Id: <20220823080131.971138228@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220823080053.202747790@linuxfoundation.org>
-References: <20220823080053.202747790@linuxfoundation.org>
+In-Reply-To: <20220823080118.128342613@linuxfoundation.org>
+References: <20220823080118.128342613@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -52,37 +54,96 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Ning Qiang <sohu0106@126.com>
+From: Peter Ujfalusi <peter.ujfalusi@linux.intel.com>
 
-commit fd97e4ad6d3b0c9fce3bca8ea8e6969d9ce7423b upstream.
+[ Upstream commit 499cc881b09c8283ab5e75b0d6d21cb427722161 ]
 
-In do_adb_query() function of drivers/macintosh/adb.c, req->data is copied
-form userland. The parameter "req->data[2]" is missing check, the array
-size of adb_handler[] is 16, so adb_handler[req->data[2]].original_address and
-adb_handler[req->data[2]].handler_id will lead to oob read.
+It is not yet clear, but it is possible to create a firmware so broken
+that it will send a reply message before a FW_READY message (it is not
+yet clear if FW_READY will arrive later).
+Since the reply_data is allocated only after the FW_READY message, this
+will lead to a NULL pointer dereference if not filtered out.
 
-Cc: stable <stable@kernel.org>
-Signed-off-by: Ning Qiang <sohu0106@126.com>
-Reviewed-by: Kees Cook <keescook@chromium.org>
-Reviewed-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Acked-by: Benjamin Herrenschmidt <benh@kernel.crashing.org>
-Signed-off-by: Michael Ellerman <mpe@ellerman.id.au>
-Link: https://lore.kernel.org/r/20220713153734.2248-1-sohu0106@126.com
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+The issue was reported with IPC4 firmware but the same condition is present
+for IPC3.
+
+Reported-by: Kai Vehmanen <kai.vehmanen@linux.intel.com>
+Signed-off-by: Peter Ujfalusi <peter.ujfalusi@linux.intel.com>
+Reviewed-by: Ranjani Sridharan <ranjani.sridharan@linux.intel.com>
+Reviewed-by: Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>
+Link: https://lore.kernel.org/r/20220712122357.31282-3-peter.ujfalusi@linux.intel.com
+Signed-off-by: Mark Brown <broonie@kernel.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/macintosh/adb.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ sound/soc/sof/intel/hda-ipc.c | 39 ++++++++++++++++++++++-------------
+ 1 file changed, 25 insertions(+), 14 deletions(-)
 
---- a/drivers/macintosh/adb.c
-+++ b/drivers/macintosh/adb.c
-@@ -647,7 +647,7 @@ do_adb_query(struct adb_request *req)
+diff --git a/sound/soc/sof/intel/hda-ipc.c b/sound/soc/sof/intel/hda-ipc.c
+index f08011249955..65e688f749ea 100644
+--- a/sound/soc/sof/intel/hda-ipc.c
++++ b/sound/soc/sof/intel/hda-ipc.c
+@@ -148,17 +148,23 @@ irqreturn_t hda_dsp_ipc4_irq_thread(int irq, void *context)
  
- 	switch(req->data[1]) {
- 	case ADB_QUERY_GETDEVINFO:
--		if (req->nbytes < 3)
-+		if (req->nbytes < 3 || req->data[2] >= 16)
- 			break;
- 		mutex_lock(&adb_handler_mutex);
- 		req->reply[0] = adb_handler[req->data[2]].original_address;
+ 		if (primary & SOF_IPC4_MSG_DIR_MASK) {
+ 			/* Reply received */
+-			struct sof_ipc4_msg *data = sdev->ipc->msg.reply_data;
++			if (likely(sdev->fw_state == SOF_FW_BOOT_COMPLETE)) {
++				struct sof_ipc4_msg *data = sdev->ipc->msg.reply_data;
+ 
+-			data->primary = primary;
+-			data->extension = extension;
++				data->primary = primary;
++				data->extension = extension;
+ 
+-			spin_lock_irq(&sdev->ipc_lock);
++				spin_lock_irq(&sdev->ipc_lock);
+ 
+-			snd_sof_ipc_get_reply(sdev);
+-			snd_sof_ipc_reply(sdev, data->primary);
++				snd_sof_ipc_get_reply(sdev);
++				snd_sof_ipc_reply(sdev, data->primary);
+ 
+-			spin_unlock_irq(&sdev->ipc_lock);
++				spin_unlock_irq(&sdev->ipc_lock);
++			} else {
++				dev_dbg_ratelimited(sdev->dev,
++						    "IPC reply before FW_READY: %#x|%#x\n",
++						    primary, extension);
++			}
+ 		} else {
+ 			/* Notification received */
+ 
+@@ -225,16 +231,21 @@ irqreturn_t hda_dsp_ipc_irq_thread(int irq, void *context)
+ 		 * place, the message might not yet be marked as expecting a
+ 		 * reply.
+ 		 */
+-		spin_lock_irq(&sdev->ipc_lock);
++		if (likely(sdev->fw_state == SOF_FW_BOOT_COMPLETE)) {
++			spin_lock_irq(&sdev->ipc_lock);
+ 
+-		/* handle immediate reply from DSP core */
+-		hda_dsp_ipc_get_reply(sdev);
+-		snd_sof_ipc_reply(sdev, msg);
++			/* handle immediate reply from DSP core */
++			hda_dsp_ipc_get_reply(sdev);
++			snd_sof_ipc_reply(sdev, msg);
+ 
+-		/* set the done bit */
+-		hda_dsp_ipc_dsp_done(sdev);
++			/* set the done bit */
++			hda_dsp_ipc_dsp_done(sdev);
+ 
+-		spin_unlock_irq(&sdev->ipc_lock);
++			spin_unlock_irq(&sdev->ipc_lock);
++		} else {
++			dev_dbg_ratelimited(sdev->dev, "IPC reply before FW_READY: %#x\n",
++					    msg);
++		}
+ 
+ 		ipc_irq = true;
+ 	}
+-- 
+2.35.1
+
 
 
