@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 717A6C32793
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 11:53:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A1C44C32772
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 11:53:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358695AbiHWLxG (ORCPT
+        id S1358717AbiHWLxM (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 07:53:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55638 "EHLO
+        Tue, 23 Aug 2022 07:53:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56124 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1358630AbiHWLu3 (ORCPT
+        with ESMTP id S1358638AbiHWLua (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 07:50:29 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 09FE677EAD;
-        Tue, 23 Aug 2022 02:31:22 -0700 (PDT)
+        Tue, 23 Aug 2022 07:50:30 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 62C0693;
+        Tue, 23 Aug 2022 02:31:29 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 9B98A61381;
-        Tue, 23 Aug 2022 09:31:21 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5EC7EC433D7;
-        Tue, 23 Aug 2022 09:31:20 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 0F5AAB81B1F;
+        Tue, 23 Aug 2022 09:31:28 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6CE5EC433C1;
+        Tue, 23 Aug 2022 09:31:26 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661247081;
-        bh=GP7gmRHQuHjUHcEaZL42Q5Iqqab1OgWQDLMASb+3ke8=;
+        s=korg; t=1661247086;
+        bh=8CmxgCYmN7CuAnJkg+oksYBTsGEpAazn0mrXZaAWCg0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=h2Ul+q91qWn+FYBPifcCOsgNtg1TOL2muoue2MY1bZ0LMguFJrkxESZeSZASw8j2/
-         AtUJh4ys5RfGTiuvPQ3JTllIaCPuqW/wrvjVsLbtIMm1N/idanwcPYq+FsEtysKcPH
-         o64yaz0yaFivWr1Iq2lxRj9gIT7F76PgasHV4CV0=
+        b=Y0JIpqpyezFahZoZ6Rsl0YpzAMUGDz2QIF48ixflPcLqPTAdq3whHLbGSzGMRdVRE
+         bZY0s1jPsPpvwpa57+c6RXLsIN43I9mfbEFcXaLi6Iuh4R+bJSO0DjPPfDWOrUkiih
+         w1kNyYqOYet2iesU5uc8h7IfoWkaOodhbILKwlS4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
+        stable@vger.kernel.org, Nikita Travkin <nikita@trvn.ru>,
         Linus Walleij <linus.walleij@linaro.org>
-Subject: [PATCH 5.4 312/389] pinctrl: nomadik: Fix refcount leak in nmk_pinctrl_dt_subnode_to_map
-Date:   Tue, 23 Aug 2022 10:26:30 +0200
-Message-Id: <20220823080128.603567365@linuxfoundation.org>
+Subject: [PATCH 5.4 313/389] pinctrl: qcom: msm8916: Allow CAMSS GP clocks to be muxed
+Date:   Tue, 23 Aug 2022 10:26:31 +0200
+Message-Id: <20220823080128.638595652@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220823080115.331990024@linuxfoundation.org>
 References: <20220823080115.331990024@linuxfoundation.org>
@@ -49,36 +49,37 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Miaoqian Lin <linmq006@gmail.com>
+From: Nikita Travkin <nikita@trvn.ru>
 
-commit 4b32e054335ea0ce50967f63a7bfd4db058b14b9 upstream.
+commit 44339391c666e46cba522d19c65a6ad1071c68b7 upstream.
 
-of_parse_phandle() returns a node pointer with refcount
-incremented, we should use of_node_put() on it when not need anymore.
-Add missing of_node_put() to avoid refcount leak."
+GPIO 31, 32 can be muxed to GCC_CAMSS_GP(1,2)_CLK respectively but the
+function was never assigned to the pingroup (even though the function
+exists already).
 
-Fixes: c2f6d059abfc ("pinctrl: nomadik: refactor DT parser to take two paths")
-Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
-Link: https://lore.kernel.org/r/20220607111602.57355-1-linmq006@gmail.com
+Add this mode to the related pins.
+
+Fixes: 5373a2c5abb6 ("pinctrl: qcom: Add msm8916 pinctrl driver")
+Signed-off-by: Nikita Travkin <nikita@trvn.ru>
+Link: https://lore.kernel.org/r/20220612145955.385787-4-nikita@trvn.ru
 Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/pinctrl/nomadik/pinctrl-nomadik.c |    4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
+ drivers/pinctrl/qcom/pinctrl-msm8916.c |    4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
---- a/drivers/pinctrl/nomadik/pinctrl-nomadik.c
-+++ b/drivers/pinctrl/nomadik/pinctrl-nomadik.c
-@@ -1461,8 +1461,10 @@ static int nmk_pinctrl_dt_subnode_to_map
- 
- 	has_config = nmk_pinctrl_dt_get_config(np, &configs);
- 	np_config = of_parse_phandle(np, "ste,config", 0);
--	if (np_config)
-+	if (np_config) {
- 		has_config |= nmk_pinctrl_dt_get_config(np_config, &configs);
-+		of_node_put(np_config);
-+	}
- 	if (has_config) {
- 		const char *gpio_name;
- 		const char *pin;
+--- a/drivers/pinctrl/qcom/pinctrl-msm8916.c
++++ b/drivers/pinctrl/qcom/pinctrl-msm8916.c
+@@ -844,8 +844,8 @@ static const struct msm_pingroup msm8916
+ 	PINGROUP(28, pwr_modem_enabled_a, NA, NA, NA, NA, NA, qdss_tracedata_b, NA, atest_combodac),
+ 	PINGROUP(29, cci_i2c, NA, NA, NA, NA, NA, qdss_tracedata_b, NA, atest_combodac),
+ 	PINGROUP(30, cci_i2c, NA, NA, NA, NA, NA, NA, NA, qdss_tracedata_b),
+-	PINGROUP(31, cci_timer0, NA, NA, NA, NA, NA, NA, NA, NA),
+-	PINGROUP(32, cci_timer1, NA, NA, NA, NA, NA, NA, NA, NA),
++	PINGROUP(31, cci_timer0, flash_strobe, NA, NA, NA, NA, NA, NA, NA),
++	PINGROUP(32, cci_timer1, flash_strobe, NA, NA, NA, NA, NA, NA, NA),
+ 	PINGROUP(33, cci_async, NA, NA, NA, NA, NA, NA, NA, qdss_tracedata_b),
+ 	PINGROUP(34, pwr_nav_enabled_a, NA, NA, NA, NA, NA, NA, NA, qdss_tracedata_b),
+ 	PINGROUP(35, pwr_crypto_enabled_a, NA, NA, NA, NA, NA, NA, NA, qdss_tracedata_b),
 
 
