@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B1348C32796
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D5847C38147
 	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 11:11:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357329AbiHWLKl (ORCPT
+        id S1357411AbiHWLKt (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 07:10:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57720 "EHLO
+        Tue, 23 Aug 2022 07:10:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58210 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356928AbiHWLJ3 (ORCPT
+        with ESMTP id S1357181AbiHWLJo (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 07:09:29 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 104A8B600F;
-        Tue, 23 Aug 2022 02:16:35 -0700 (PDT)
+        Tue, 23 Aug 2022 07:09:44 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A3CB5876B5;
+        Tue, 23 Aug 2022 02:16:46 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 18E916122D;
-        Tue, 23 Aug 2022 09:16:35 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1F48FC433C1;
-        Tue, 23 Aug 2022 09:16:33 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 01878B81C4E;
+        Tue, 23 Aug 2022 09:16:45 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3A4D3C433C1;
+        Tue, 23 Aug 2022 09:16:43 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661246194;
-        bh=G88VyuaJY6zu5QACzDNnVCsG0jKFiacsIaEoFMegvaA=;
+        s=korg; t=1661246203;
+        bh=5kiUs4sPPJU/Wj5M37mT4DSsBeG8+nlzUmmHSuqPbYE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=LpsUsg56RVBkZzONc3qN4mvI2WlWFQ3GhaDKsIs3HNLDtSW64u+ohzpbX/TXzrQEQ
-         3DZM25W+9Qvs029lxgs0oUv+qdXmfydj6aujiokD5I/OOIoweZI24z2wXVI2iHIvUf
-         vGTU+99EefoobMLMAjdIYUbMylt5ugQlgIWLdLRQ=
+        b=nf0OxOvIwQT1uwoK18yKEZckycGQEMfPfNxs0BqvREDy8lP5zT1aP0Xk+vmtN1+3Y
+         OAW1l7ftHOczjkEcsKcN8l81ERqvGN04c98BAoqJDxjNNiAElwE7SZ1jh+tA8CqDZo
+         V6DlcFyKy6BfoGZgDE4I+uzx4bKaWF263uAjxK4k=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, kernel test robot <lkp@intel.com>,
-        Johannes Berg <johannes.berg@intel.com>,
-        Jeongik Cha <jeongik@google.com>
-Subject: [PATCH 5.4 007/389] wifi: mac80211_hwsim: add back erroneously removed cast
-Date:   Tue, 23 Aug 2022 10:21:25 +0200
-Message-Id: <20220823080115.958517669@linuxfoundation.org>
+        stable@vger.kernel.org, Ping Cheng <ping.cheng@wacom.com>,
+        Jason Gerecke <jason.gerecke@wacom.com>,
+        Jiri Kosina <jkosina@suse.cz>
+Subject: [PATCH 5.4 010/389] HID: wacom: Only report rotation for art pen
+Date:   Tue, 23 Aug 2022 10:21:28 +0200
+Message-Id: <20220823080116.091956543@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220823080115.331990024@linuxfoundation.org>
 References: <20220823080115.331990024@linuxfoundation.org>
@@ -50,33 +50,88 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Johannes Berg <johannes.berg@intel.com>
+From: Ping Cheng <pinglinux@gmail.com>
 
-commit 58b6259d820d63c2adf1c7541b54cce5a2ae6073 upstream.
+commit 7ccced33a0ba39b0103ae1dfbf7f1dffdc0a1bc2 upstream.
 
-The robots report that we're now casting to a differently
-sized integer, which is correct, and the previous patch
-had erroneously removed it.
+The generic routine, wacom_wac_pen_event, turns rotation value 90
+degree anti-clockwise before posting the events. This non-zero
+event trggers a non-zero ABS_Z event for non art pen tools. However,
+HID_DG_TWIST is only supported by art pen.
 
-Reported-by: kernel test robot <lkp@intel.com>
-Fixes: 4ee186fa7e40 ("wifi: mac80211_hwsim: fix race condition in pending packet")
-Signed-off-by: Johannes Berg <johannes.berg@intel.com>
-Cc: Jeongik Cha <jeongik@google.com>
+[jkosina@suse.cz: fix build: add missing brace]
+Cc: stable@vger.kernel.org
+Signed-off-by: Ping Cheng <ping.cheng@wacom.com>
+Reviewed-by: Jason Gerecke <jason.gerecke@wacom.com>
+Signed-off-by: Jiri Kosina <jkosina@suse.cz>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/net/wireless/mac80211_hwsim.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/hid/wacom_wac.c |   29 +++++++++++++++++++++--------
+ 1 file changed, 21 insertions(+), 8 deletions(-)
 
---- a/drivers/net/wireless/mac80211_hwsim.c
-+++ b/drivers/net/wireless/mac80211_hwsim.c
-@@ -3289,7 +3289,7 @@ static int hwsim_tx_info_frame_received_
- 		u64 skb_cookie;
+--- a/drivers/hid/wacom_wac.c
++++ b/drivers/hid/wacom_wac.c
+@@ -638,9 +638,26 @@ static int wacom_intuos_id_mangle(int to
+ 	return (tool_id & ~0xFFF) << 4 | (tool_id & 0xFFF);
+ }
  
- 		txi = IEEE80211_SKB_CB(skb);
--		skb_cookie = (u64)txi->rate_driver_data[0];
-+		skb_cookie = (u64)(uintptr_t)txi->rate_driver_data[0];
++static bool wacom_is_art_pen(int tool_id)
++{
++	bool is_art_pen = false;
++
++	switch (tool_id) {
++	case 0x885:	/* Intuos3 Marker Pen */
++	case 0x804:	/* Intuos4/5 13HD/24HD Marker Pen */
++	case 0x10804:	/* Intuos4/5 13HD/24HD Art Pen */
++		is_art_pen = true;
++		break;
++	}
++	return is_art_pen;
++}
++
+ static int wacom_intuos_get_tool_type(int tool_id)
+ {
+-	int tool_type;
++	int tool_type = BTN_TOOL_PEN;
++
++	if (wacom_is_art_pen(tool_id))
++		return tool_type;
  
- 		if (skb_cookie == ret_skb_cookie) {
- 			__skb_unlink(skb, &data2->pending);
+ 	switch (tool_id) {
+ 	case 0x812: /* Inking pen */
+@@ -655,12 +672,9 @@ static int wacom_intuos_get_tool_type(in
+ 	case 0x852:
+ 	case 0x823: /* Intuos3 Grip Pen */
+ 	case 0x813: /* Intuos3 Classic Pen */
+-	case 0x885: /* Intuos3 Marker Pen */
+ 	case 0x802: /* Intuos4/5 13HD/24HD General Pen */
+-	case 0x804: /* Intuos4/5 13HD/24HD Marker Pen */
+ 	case 0x8e2: /* IntuosHT2 pen */
+ 	case 0x022:
+-	case 0x10804: /* Intuos4/5 13HD/24HD Art Pen */
+ 	case 0x10842: /* MobileStudio Pro Pro Pen slim */
+ 	case 0x14802: /* Intuos4/5 13HD/24HD Classic Pen */
+ 	case 0x16802: /* Cintiq 13HD Pro Pen */
+@@ -718,10 +732,6 @@ static int wacom_intuos_get_tool_type(in
+ 	case 0x10902: /* Intuos4/5 13HD/24HD Airbrush */
+ 		tool_type = BTN_TOOL_AIRBRUSH;
+ 		break;
+-
+-	default: /* Unknown tool */
+-		tool_type = BTN_TOOL_PEN;
+-		break;
+ 	}
+ 	return tool_type;
+ }
+@@ -2312,6 +2322,9 @@ static void wacom_wac_pen_event(struct h
+ 		}
+ 		return;
+ 	case HID_DG_TWIST:
++		/* don't modify the value if the pen doesn't support the feature */
++		if (!wacom_is_art_pen(wacom_wac->id[0])) return;
++
+ 		/*
+ 		 * Userspace expects pen twist to have its zero point when
+ 		 * the buttons/finger is on the tablet's left. HID values
 
 
