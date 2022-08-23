@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2F6A5C32793
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 08:42:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 98F72C32792
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 08:42:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346824AbiHWIml (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 04:42:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46848 "EHLO
+        id S241960AbiHWImq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 23 Aug 2022 04:42:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45368 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346666AbiHWIk3 (ORCPT
+        with ESMTP id S243935AbiHWIkL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 04:40:29 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BCE555F9B0;
-        Tue, 23 Aug 2022 01:18:49 -0700 (PDT)
+        Tue, 23 Aug 2022 04:40:11 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6526B42AEA;
+        Tue, 23 Aug 2022 01:18:42 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 35087B81C35;
-        Tue, 23 Aug 2022 08:18:49 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 81493C433C1;
-        Tue, 23 Aug 2022 08:18:47 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 9A45F611DD;
+        Tue, 23 Aug 2022 08:18:42 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A2B8EC433C1;
+        Tue, 23 Aug 2022 08:18:41 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661242727;
-        bh=kKw0EQi2ulodqozznFOd8OGQqbXzsUcSA+YuSD2WhII=;
+        s=korg; t=1661242722;
+        bh=mTvSXMU+FqVYUEjrCpZyNd5/4xWQ8kzPmC4oXbY4SGQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=bC/JhT1/C3VVC8ZoWknpxpDgJpbei8XwIDpGfCxl2+ktuxb1X0haKxgzmHSe4/gwT
-         thODX4uBai2yZNnPSFbbRGXzkziYEgpo+saesRKsBvuEOQ/Mn54z+jRDqrG8qt2KKj
-         Sbv4gQ9cB0GgFLBqpONR3SFxfCcCvGp95WVQPujQ=
+        b=gpcYe5nKb/jDeJl4ECx/IejBEemH1z90kBvfAbdqUPFV8hBxlRWWyMZtyifQ86MZJ
+         9aRdWapK066XwEK7ELPG1JY0GScLE5b39eadjQhLYDAWacG69BsvgLRnTNPIQo5mnh
+         IatMGEB6ZqfzVk07rUGVStrnBxmNBIpdP/zsT3UI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
-        Konstantin Komarov <almaz.alexandrovich@paragon-software.com>
-Subject: [PATCH 5.19 164/365] fs/ntfs3: Do not change mode if ntfs_set_ea failed
-Date:   Tue, 23 Aug 2022 10:01:05 +0200
-Message-Id: <20220823080125.075969620@linuxfoundation.org>
+        =?UTF-8?q?Martin=20Povi=C5=A1er?= <povik+lin@cutebit.org>,
+        Mark Brown <broonie@kernel.org>
+Subject: [PATCH 5.19 180/365] ASoC: tas2770: Set correct FSYNC polarity
+Date:   Tue, 23 Aug 2022 10:01:21 +0200
+Message-Id: <20220823080125.757707186@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220823080118.128342613@linuxfoundation.org>
 References: <20220823080118.128342613@linuxfoundation.org>
@@ -49,70 +49,96 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Konstantin Komarov <almaz.alexandrovich@paragon-software.com>
+From: Martin Povišer <povik+lin@cutebit.org>
 
-commit 460bbf2990b3fdc597601c2cf669a3371c069242 upstream.
+commit e9ac31f0a5d0e246b046c20348954519f91a297f upstream.
 
-ntfs_set_ea can fail with NOSPC, so we don't need to
-change mode in this situation.
-Fixes xfstest generic/449
-Fixes: be71b5cba2e6 ("fs/ntfs3: Add attrib operations")
+Fix setting of FSYNC polarity for DAI formats other than I2S. Also
+add support for polarity inversion.
 
-Signed-off-by: Konstantin Komarov <almaz.alexandrovich@paragon-software.com>
+Fixes: 1a476abc723e ("tas2770: add tas2770 smart PA kernel driver")
+Signed-off-by: Martin Povišer <povik+lin@cutebit.org>
+Link: https://lore.kernel.org/r/20220808141246.5749-2-povik+lin@cutebit.org
+Signed-off-by: Mark Brown <broonie@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- fs/ntfs3/xattr.c |   20 ++++++++++----------
- 1 file changed, 10 insertions(+), 10 deletions(-)
+ sound/soc/codecs/tas2770.c |   20 +++++++++++++++++++-
+ sound/soc/codecs/tas2770.h |    3 +++
+ 2 files changed, 22 insertions(+), 1 deletion(-)
 
---- a/fs/ntfs3/xattr.c
-+++ b/fs/ntfs3/xattr.c
-@@ -547,28 +547,23 @@ static noinline int ntfs_set_acl_ex(stru
- {
- 	const char *name;
- 	size_t size, name_len;
--	void *value = NULL;
--	int err = 0;
-+	void *value;
-+	int err;
- 	int flags;
-+	umode_t mode;
+--- a/sound/soc/codecs/tas2770.c
++++ b/sound/soc/codecs/tas2770.c
+@@ -337,7 +337,7 @@ static int tas2770_set_fmt(struct snd_so
+ 	struct snd_soc_component *component = dai->component;
+ 	struct tas2770_priv *tas2770 =
+ 			snd_soc_component_get_drvdata(component);
+-	u8 tdm_rx_start_slot = 0, asi_cfg_1 = 0;
++	u8 tdm_rx_start_slot = 0, invert_fpol = 0, fpol_preinv = 0, asi_cfg_1 = 0;
+ 	int ret;
  
- 	if (S_ISLNK(inode->i_mode))
- 		return -EOPNOTSUPP;
+ 	switch (fmt & SND_SOC_DAIFMT_MASTER_MASK) {
+@@ -349,9 +349,15 @@ static int tas2770_set_fmt(struct snd_so
+ 	}
  
-+	mode = inode->i_mode;
- 	switch (type) {
- 	case ACL_TYPE_ACCESS:
- 		/* Do not change i_mode if we are in init_acl */
- 		if (acl && !init_acl) {
--			umode_t mode;
--
- 			err = posix_acl_update_mode(mnt_userns, inode, &mode,
- 						    &acl);
- 			if (err)
- 				goto out;
--
--			if (inode->i_mode != mode) {
--				inode->i_mode = mode;
--				mark_inode_dirty(inode);
--			}
- 		}
- 		name = XATTR_NAME_POSIX_ACL_ACCESS;
- 		name_len = sizeof(XATTR_NAME_POSIX_ACL_ACCESS) - 1;
-@@ -604,8 +599,13 @@ static noinline int ntfs_set_acl_ex(stru
- 	err = ntfs_set_ea(inode, name, name_len, value, size, flags, 0);
- 	if (err == -ENODATA && !size)
- 		err = 0; /* Removing non existed xattr. */
--	if (!err)
-+	if (!err) {
- 		set_cached_acl(inode, type, acl);
-+		if (inode->i_mode != mode) {
-+			inode->i_mode = mode;
-+			mark_inode_dirty(inode);
-+		}
-+	}
+ 	switch (fmt & SND_SOC_DAIFMT_INV_MASK) {
++	case SND_SOC_DAIFMT_NB_IF:
++		invert_fpol = 1;
++		fallthrough;
+ 	case SND_SOC_DAIFMT_NB_NF:
+ 		asi_cfg_1 |= TAS2770_TDM_CFG_REG1_RX_RSING;
+ 		break;
++	case SND_SOC_DAIFMT_IB_IF:
++		invert_fpol = 1;
++		fallthrough;
+ 	case SND_SOC_DAIFMT_IB_NF:
+ 		asi_cfg_1 |= TAS2770_TDM_CFG_REG1_RX_FALING;
+ 		break;
+@@ -369,15 +375,19 @@ static int tas2770_set_fmt(struct snd_so
+ 	switch (fmt & SND_SOC_DAIFMT_FORMAT_MASK) {
+ 	case SND_SOC_DAIFMT_I2S:
+ 		tdm_rx_start_slot = 1;
++		fpol_preinv = 0;
+ 		break;
+ 	case SND_SOC_DAIFMT_DSP_A:
+ 		tdm_rx_start_slot = 0;
++		fpol_preinv = 1;
+ 		break;
+ 	case SND_SOC_DAIFMT_DSP_B:
+ 		tdm_rx_start_slot = 1;
++		fpol_preinv = 1;
+ 		break;
+ 	case SND_SOC_DAIFMT_LEFT_J:
+ 		tdm_rx_start_slot = 0;
++		fpol_preinv = 1;
+ 		break;
+ 	default:
+ 		dev_err(tas2770->dev,
+@@ -391,6 +401,14 @@ static int tas2770_set_fmt(struct snd_so
+ 	if (ret < 0)
+ 		return ret;
  
- out:
- 	kfree(value);
++	ret = snd_soc_component_update_bits(component, TAS2770_TDM_CFG_REG0,
++					    TAS2770_TDM_CFG_REG0_FPOL_MASK,
++					    (fpol_preinv ^ invert_fpol)
++					     ? TAS2770_TDM_CFG_REG0_FPOL_RSING
++					     : TAS2770_TDM_CFG_REG0_FPOL_FALING);
++	if (ret < 0)
++		return ret;
++
+ 	return 0;
+ }
+ 
+--- a/sound/soc/codecs/tas2770.h
++++ b/sound/soc/codecs/tas2770.h
+@@ -41,6 +41,9 @@
+ #define TAS2770_TDM_CFG_REG0_31_44_1_48KHZ  0x6
+ #define TAS2770_TDM_CFG_REG0_31_88_2_96KHZ  0x8
+ #define TAS2770_TDM_CFG_REG0_31_176_4_192KHZ  0xa
++#define TAS2770_TDM_CFG_REG0_FPOL_MASK  BIT(0)
++#define TAS2770_TDM_CFG_REG0_FPOL_RSING  0
++#define TAS2770_TDM_CFG_REG0_FPOL_FALING  1
+     /* TDM Configuration Reg1 */
+ #define TAS2770_TDM_CFG_REG1  TAS2770_REG(0X0, 0x0B)
+ #define TAS2770_TDM_CFG_REG1_MASK	GENMASK(5, 1)
 
 
