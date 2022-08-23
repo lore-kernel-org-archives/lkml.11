@@ -2,46 +2,48 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 574E7C32772
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 09:39:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EFA40C32772
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 09:39:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241936AbiHWJjp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 05:39:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52568 "EHLO
+        id S243891AbiHWJjt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 23 Aug 2022 05:39:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58626 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351689AbiHWJim (ORCPT
+        with ESMTP id S238703AbiHWJjE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 05:38:42 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AB43225EB1;
-        Tue, 23 Aug 2022 01:41:06 -0700 (PDT)
+        Tue, 23 Aug 2022 05:39:04 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7173F71719;
+        Tue, 23 Aug 2022 01:41:02 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id D11D16153C;
-        Tue, 23 Aug 2022 08:39:59 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B084AC433D6;
-        Tue, 23 Aug 2022 08:39:58 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 30D3061555;
+        Tue, 23 Aug 2022 08:40:15 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 329A1C433C1;
+        Tue, 23 Aug 2022 08:40:14 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661243999;
-        bh=3nNFgxHraRJWA0ShV22x8RUpKDKlePeNDiV/IlDMamg=;
+        s=korg; t=1661244014;
+        bh=yXT7p9wh4HXbnK7OLAUNhB3dmPOuBMTo6K5JG9vx2iU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=XQmJUufWNUijtmn5P/GDwEbN+d+WfmB9xU8INGKmbJ4rffpVfEXLB85N8Wa2cHWSM
-         liD/nOlxM1VIZD1QKqQYnLiJ30FPXVS6D9T75s7/2EPmiLsJZPTbGXBkwgDc3F0Dkz
-         jyaRVG12Ign2O+Kf7djQ0ifEklCM+gU+28q3BY+s=
+        b=maxa2Fz9UJIUiDMYXC87Ou1qna6n4ViNIGkYDg1qw8S0lZJ2c7nvIP5XsPBt8HaRH
+         2C1Vqesnne+tqmNykHUNP9gWX/EYslbGwLHOUZd7IjhJdl+Eov2Bi1SCa14zah8CnA
+         IuW8imjCHgo+gC+TmmwWCcOdTtHzLUy97/MgF+fA=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Niels Dossche <dossche.niels@gmail.com>,
-        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.14 066/229] media: hdpvr: fix error value returns in hdpvr_read
-Date:   Tue, 23 Aug 2022 10:23:47 +0200
-Message-Id: <20220823080056.079825043@linuxfoundation.org>
+        stable@vger.kernel.org, Ingo Molnar <mingo@kernel.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Tzvetomir Stoyanov <tz.stoyanov@gmail.com>,
+        Tom Zanussi <zanussi@kernel.org>,
+        "Masami Hiramatsu (Google)" <mhiramat@kernel.org>,
+        "Steven Rostedt (Google)" <rostedt@goodmis.org>
+Subject: [PATCH 5.15 024/244] tracing: Have filter accept "common_cpu" to be consistent
+Date:   Tue, 23 Aug 2022 10:23:03 +0200
+Message-Id: <20220823080059.865776107@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220823080053.202747790@linuxfoundation.org>
-References: <20220823080053.202747790@linuxfoundation.org>
+In-Reply-To: <20220823080059.091088642@linuxfoundation.org>
+References: <20220823080059.091088642@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -50,44 +52,40 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Niels Dossche <dossche.niels@gmail.com>
+From: Steven Rostedt (Google) <rostedt@goodmis.org>
 
-[ Upstream commit 359c27c6ddbde404f44a9c0d3ec88ccd1e2042f2 ]
+commit b2380577d4fe1c0ef3fa50417f1e441c016e4cbe upstream.
 
-Error return values are supposed to be negative in hdpvr_read. Most
-error returns are currently handled via an unsigned integer "ret". When
-setting a negative error value to "ret", the value actually becomes a
-large positive value, because "ret" is unsigned. Later on, the "ret"
-value is returned. But as ssize_t is a 64-bit signed number, the error
-return value stays a large positive integer instead of a negative
-integer. This can cause an error value to be interpreted as the read
-size, which can cause a buffer overread for applications relying on the
-returned size.
+Make filtering consistent with histograms. As "cpu" can be a field of an
+event, allow for "common_cpu" to keep it from being confused with the
+"cpu" field of the event.
 
-Fixes: 9aba42efe85b ("V4L/DVB (11096): V4L2 Driver for the Hauppauge HD PVR usb capture device")
-Signed-off-by: Niels Dossche <dossche.niels@gmail.com>
-Signed-off-by: Hans Verkuil <hverkuil-cisco@xs4all.nl>
-Signed-off-by: Mauro Carvalho Chehab <mchehab@kernel.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Link: https://lkml.kernel.org/r/20220820134401.513062765@goodmis.org
+Link: https://lore.kernel.org/all/20220820220920.e42fa32b70505b1904f0a0ad@kernel.org/
+
+Cc: stable@vger.kernel.org
+Cc: Ingo Molnar <mingo@kernel.org>
+Cc: Andrew Morton <akpm@linux-foundation.org>
+Cc: Tzvetomir Stoyanov <tz.stoyanov@gmail.com>
+Cc: Tom Zanussi <zanussi@kernel.org>
+Fixes: 1e3bac71c5053 ("tracing/histogram: Rename "cpu" to "common_cpu"")
+Suggested-by: Masami Hiramatsu (Google) <mhiramat@kernel.org>
+Acked-by: Masami Hiramatsu (Google) <mhiramat@kernel.org>
+Signed-off-by: Steven Rostedt (Google) <rostedt@goodmis.org>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/media/usb/hdpvr/hdpvr-video.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ kernel/trace/trace_events.c |    1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/drivers/media/usb/hdpvr/hdpvr-video.c b/drivers/media/usb/hdpvr/hdpvr-video.c
-index 1cecb37e16d2..59bd44736fae 100644
---- a/drivers/media/usb/hdpvr/hdpvr-video.c
-+++ b/drivers/media/usb/hdpvr/hdpvr-video.c
-@@ -413,7 +413,7 @@ static ssize_t hdpvr_read(struct file *file, char __user *buffer, size_t count,
- 	struct hdpvr_device *dev = video_drvdata(file);
- 	struct hdpvr_buffer *buf = NULL;
- 	struct urb *urb;
--	unsigned int ret = 0;
-+	int ret = 0;
- 	int rem, cnt;
+--- a/kernel/trace/trace_events.c
++++ b/kernel/trace/trace_events.c
+@@ -176,6 +176,7 @@ static int trace_define_generic_fields(v
  
- 	if (*pos)
--- 
-2.35.1
-
+ 	__generic_field(int, CPU, FILTER_CPU);
+ 	__generic_field(int, cpu, FILTER_CPU);
++	__generic_field(int, common_cpu, FILTER_CPU);
+ 	__generic_field(char *, COMM, FILTER_COMM);
+ 	__generic_field(char *, comm, FILTER_COMM);
+ 
 
 
