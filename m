@@ -2,46 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CC7B0C32774
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 10:02:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 35EF1C32774
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 10:03:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243967AbiHWKCx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 06:02:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59018 "EHLO
+        id S1347128AbiHWKC6 (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 23 Aug 2022 06:02:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58424 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352462AbiHWJ47 (ORCPT
+        with ESMTP id S1352529AbiHWJ5E (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 05:56:59 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 46053A1A64;
-        Tue, 23 Aug 2022 01:47:40 -0700 (PDT)
+        Tue, 23 Aug 2022 05:57:04 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C52B5A1A4A;
+        Tue, 23 Aug 2022 01:47:43 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 132AFB81C28;
-        Tue, 23 Aug 2022 08:47:38 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 61054C433D6;
-        Tue, 23 Aug 2022 08:47:36 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 7FBE661485;
+        Tue, 23 Aug 2022 08:47:43 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 80278C433C1;
+        Tue, 23 Aug 2022 08:47:42 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661244456;
-        bh=5W9S8KSf9oP4xZJYWjinORLtbpUFU6U4C0Ne61cmBMQ=;
+        s=korg; t=1661244462;
+        bh=DsVmaptLfGCsQ/cJXoqcuHsaqqRmiKwEQQuGkw90wIM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=L4ffls+5gTUPk2XaC0IX1idj3OjcHTA7lPhWqdf9fo28hX6y3xUDBChMQEduzSUhm
-         skAGxn/4tMoxoiD+ixz/0DUnlAtZOXgEKqD0mxJffn5z9DSVyeLvJxFHhzItggIhT9
-         9gHkTpnq4Tyw/NwGpR2B45zJgBY4zO2IXjSnbbZM=
+        b=TOefoa2ngIuPEsywkD8Npfcmw09eyLCfgR1niNsSwYjeEN9GRfGd2ij/LvWZRpQCE
+         OGhb4ymjTmDkt8VvWKtVQJmUlhhEFINzt2Ml5stnec78ln62idDkRUbC/XGnj56r7H
+         J5vupMah+rCD3PbsUFzMHDHNmHvujqhPk3A+kTHA=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Chen Zhongjin <chenzhongjin@huawei.com>,
-        Ingo Molnar <mingo@kernel.org>,
-        "Masami Hiramatsu (Google)" <mhiramat@kernel.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.14 140/229] kprobes: Forbid probing on trampoline and BPF code areas
-Date:   Tue, 23 Aug 2022 10:25:01 +0200
-Message-Id: <20220823080058.685732796@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+        Rob Herring <robh@kernel.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>
+Subject: [PATCH 5.15 084/244] dt-bindings: arm: qcom: fix MSM8916 MTP compatibles
+Date:   Tue, 23 Aug 2022 10:24:03 +0200
+Message-Id: <20220823080101.844362583@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220823080053.202747790@linuxfoundation.org>
-References: <20220823080053.202747790@linuxfoundation.org>
+In-Reply-To: <20220823080059.091088642@linuxfoundation.org>
+References: <20220823080059.091088642@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -50,52 +51,36 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Chen Zhongjin <chenzhongjin@huawei.com>
+From: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
 
-[ Upstream commit 28f6c37a2910f565b4f5960df52b2eccae28c891 ]
+commit bb35fe1efbae4114bd288fae0f56070f563adcfc upstream.
 
-kernel_text_address() treats ftrace_trampoline, kprobe_insn_slot
-and bpf_text_address as valid kprobe addresses - which is not ideal.
+The order of compatibles for MSM8916 MTP board is different:
 
-These text areas are removable and changeable without any notification
-to kprobes, and probing on them can trigger unexpected behavior:
+  msm8916-mtp.dtb: /: compatible: 'oneOf' conditional failed, one must be fixed:
+    ['qcom,msm8916-mtp', 'qcom,msm8916-mtp/1', 'qcom,msm8916'] is too long
 
-  https://lkml.org/lkml/2022/7/26/1148
-
-Considering that jump_label and static_call text are already
-forbiden to probe, kernel_text_address() should be replaced with
-core_kernel_text() and is_module_text_address() to check other text
-areas which are unsafe to kprobe.
-
-[ mingo: Rewrote the changelog. ]
-
-Fixes: 5b485629ba0d ("kprobes, extable: Identify kprobes trampolines as kernel text area")
-Fixes: 74451e66d516 ("bpf: make jited programs visible in traces")
-Signed-off-by: Chen Zhongjin <chenzhongjin@huawei.com>
-Signed-off-by: Ingo Molnar <mingo@kernel.org>
-Acked-by: Masami Hiramatsu (Google) <mhiramat@kernel.org>
-Link: https://lore.kernel.org/r/20220801033719.228248-1-chenzhongjin@huawei.com
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Fixes: 9d3ef77fe568 ("dt-bindings: arm: Convert QCom board/soc bindings to json-schema")
+Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Acked-by: Rob Herring <robh@kernel.org>
+Link: https://lore.kernel.org/r/20220520123252.365762-3-krzysztof.kozlowski@linaro.org
+Signed-off-by: Bjorn Andersson <bjorn.andersson@linaro.org>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- kernel/kprobes.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ Documentation/devicetree/bindings/arm/qcom.yaml |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/kernel/kprobes.c b/kernel/kprobes.c
-index 4f918dd28fb7..b8e14aa6d496 100644
---- a/kernel/kprobes.c
-+++ b/kernel/kprobes.c
-@@ -1551,7 +1551,8 @@ static int check_kprobe_address_safe(struct kprobe *p,
- 	preempt_disable();
+--- a/Documentation/devicetree/bindings/arm/qcom.yaml
++++ b/Documentation/devicetree/bindings/arm/qcom.yaml
+@@ -135,8 +135,8 @@ properties:
+           - const: qcom,msm8974
  
- 	/* Ensure it is not in reserved area nor out of text */
--	if (!kernel_text_address((unsigned long) p->addr) ||
-+	if (!(core_kernel_text((unsigned long) p->addr) ||
-+	    is_module_text_address((unsigned long) p->addr)) ||
- 	    within_kprobe_blacklist((unsigned long) p->addr) ||
- 	    jump_label_text_reserved(p->addr, p->addr) ||
- 	    find_bug((unsigned long)p->addr)) {
--- 
-2.35.1
-
+       - items:
+-          - const: qcom,msm8916-mtp/1
+           - const: qcom,msm8916-mtp
++          - const: qcom,msm8916-mtp/1
+           - const: qcom,msm8916
+ 
+       - items:
 
 
