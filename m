@@ -2,44 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7ED86C32772
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 09:17:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 23FB8C32774
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 09:18:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348356AbiHWJRx (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 05:17:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51534 "EHLO
+        id S243853AbiHWJSD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 23 Aug 2022 05:18:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40812 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347542AbiHWJPc (ORCPT
+        with ESMTP id S1347922AbiHWJPc (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 23 Aug 2022 05:15:32 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 437646DAE1;
-        Tue, 23 Aug 2022 01:32:11 -0700 (PDT)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C0F986DADC;
+        Tue, 23 Aug 2022 01:32:14 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 79B4CB81C4D;
-        Tue, 23 Aug 2022 08:32:09 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B204CC433C1;
-        Tue, 23 Aug 2022 08:32:07 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id F285B61257;
+        Tue, 23 Aug 2022 08:32:13 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0FD87C433C1;
+        Tue, 23 Aug 2022 08:32:12 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661243528;
-        bh=lNsKvYULFuuzdlBwjeh6X66QvKsJxp5dxnGGth5+T8E=;
+        s=korg; t=1661243533;
+        bh=CGcBH5rQ3CR51QKmCPkYsyRGCuTCXCRNzB1PPUJkLT4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=DhYs0J5YdFDA1qT2WLL/asf73ma/wDOmYHoPNv55wDFj+iBFz1vJVI2E92eQpGidg
-         YhS3D8W1WVSvkRe+ce7qrpBWSlzwc4KTL5XI0ZI176B32kXNbLjxrqedRQgbGSY5hi
-         Bocct2XlUHUyo9gYn3oCEFPlDJvgz+DoKkO17KpY=
+        b=DxIlpNJpuP1fxKNsFobfTKfaOKkKRtFQdlFSpmHVeEqnPtdJPPXhJw4ghXlABbKkc
+         cTdnDWG8Q/dMha6aL7XakjnJXmGscNBHZr8Rj3N/DpHahFeiXCZAMRBxM2omgrWfqD
+         zAB4Fd0ZCni5jtR7oPsNbzQc20hKxSNKKEuQS1go=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
-        Geert Uytterhoeven <geert+renesas@glider.be>,
-        Frank Rowand <frank.rowand@sony.com>,
-        Rob Herring <robh@kernel.org>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.19 298/365] of: overlay: Move devicetree_corrupt() check up
-Date:   Tue, 23 Aug 2022 10:03:19 +0200
-Message-Id: <20220823080130.638816561@linuxfoundation.org>
+        =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
+        <u.kleine-koenig@pengutronix.de>,
+        Baolin Wang <baolin.wang7@gmail.com>,
+        Vinod Koul <vkoul@kernel.org>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.19 307/365] dmaengine: sprd: Cleanup in .remove() after pm_runtime_get_sync() failed
+Date:   Tue, 23 Aug 2022 10:03:28 +0200
+Message-Id: <20220823080131.028457465@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220823080118.128342613@linuxfoundation.org>
 References: <20220823080118.128342613@linuxfoundation.org>
@@ -51,56 +51,45 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Geert Uytterhoeven <geert+renesas@glider.be>
+From: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
 
-[ Upstream commit e385b0ba6a137f34953e746d70d543660c2de1a0 ]
+[ Upstream commit 1e42f82cbec7b2cc4873751e7791e6611901c5fc ]
 
-There is no point in doing several preparatory steps in
-of_overlay_fdt_apply(), only to see of_overlay_apply() return early
-because of a corrupt device tree.
+It's not allowed to quit remove early without cleaning up completely.
+Otherwise this results in resource leaks that probably yield graver
+problems later. Here for example some tasklets might survive the lifetime
+of the sprd-dma device and access sdev which is freed after .remove()
+returns.
 
-Move the check for a corrupt device tree from of_overlay_apply() to
-of_overlay_fdt_apply(), to check for this as early as possible.
+As none of the device freeing requires an active device, just ignore the
+return value of pm_runtime_get_sync().
 
-Signed-off-by: Geert Uytterhoeven <geert+renesas@glider.be>
-Reviewed-by: Frank Rowand <frank.rowand@sony.com>
-Tested-by: Frank Rowand <frank.rowand@sony.com>
-Signed-off-by: Rob Herring <robh@kernel.org>
-Link: https://lore.kernel.org/r/c91ce7112eb5167ea46a43d8a980e76b920010ba.1657893306.git.geert+renesas@glider.be
+Signed-off-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
+Reviewed-by: Baolin Wang <baolin.wang7@gmail.com>
+Link: https://lore.kernel.org/r/20220721204054.323602-1-u.kleine-koenig@pengutronix.de
+Signed-off-by: Vinod Koul <vkoul@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/of/overlay.c | 11 +++++------
- 1 file changed, 5 insertions(+), 6 deletions(-)
+ drivers/dma/sprd-dma.c | 5 +----
+ 1 file changed, 1 insertion(+), 4 deletions(-)
 
-diff --git a/drivers/of/overlay.c b/drivers/of/overlay.c
-index 4044ddcb02c6..84a8d402009c 100644
---- a/drivers/of/overlay.c
-+++ b/drivers/of/overlay.c
-@@ -903,12 +903,6 @@ static int of_overlay_apply(struct overlay_changeset *ovcs)
+diff --git a/drivers/dma/sprd-dma.c b/drivers/dma/sprd-dma.c
+index 2138b80435ab..474d3ba8ec9f 100644
+--- a/drivers/dma/sprd-dma.c
++++ b/drivers/dma/sprd-dma.c
+@@ -1237,11 +1237,8 @@ static int sprd_dma_remove(struct platform_device *pdev)
  {
- 	int ret = 0, ret_revert, ret_tmp;
+ 	struct sprd_dma_dev *sdev = platform_get_drvdata(pdev);
+ 	struct sprd_dma_chn *c, *cn;
+-	int ret;
  
--	if (devicetree_corrupt()) {
--		pr_err("devicetree state suspect, refuse to apply overlay\n");
--		ret = -EBUSY;
--		goto out;
--	}
--
- 	ret = of_resolve_phandles(ovcs->overlay_root);
- 	if (ret)
- 		goto out;
-@@ -983,6 +977,11 @@ int of_overlay_fdt_apply(const void *overlay_fdt, u32 overlay_fdt_size,
+-	ret = pm_runtime_get_sync(&pdev->dev);
+-	if (ret < 0)
+-		return ret;
++	pm_runtime_get_sync(&pdev->dev);
  
- 	*ret_ovcs_id = 0;
- 
-+	if (devicetree_corrupt()) {
-+		pr_err("devicetree state suspect, refuse to apply overlay\n");
-+		return -EBUSY;
-+	}
-+
- 	if (overlay_fdt_size < sizeof(struct fdt_header) ||
- 	    fdt_check_header(overlay_fdt)) {
- 		pr_err("Invalid overlay_fdt header\n");
+ 	/* explicitly free the irq */
+ 	if (sdev->irq > 0)
 -- 
 2.35.1
 
