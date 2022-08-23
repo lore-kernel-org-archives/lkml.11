@@ -2,46 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E7A20C32774
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 09:14:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 390D4C32772
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 09:15:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243828AbiHWJOj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 05:14:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34114 "EHLO
+        id S1348790AbiHWJOn (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 23 Aug 2022 05:14:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34152 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243728AbiHWJLs (ORCPT
+        with ESMTP id S243264AbiHWJLs (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 23 Aug 2022 05:11:48 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9A4F36D57B;
-        Tue, 23 Aug 2022 01:31:38 -0700 (PDT)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B00646D546;
+        Tue, 23 Aug 2022 01:31:32 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 02427B81C35;
-        Tue, 23 Aug 2022 08:31:36 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 677D2C433D6;
-        Tue, 23 Aug 2022 08:31:34 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 69F1C61446;
+        Tue, 23 Aug 2022 08:31:32 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 73115C433D7;
+        Tue, 23 Aug 2022 08:31:31 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661243494;
-        bh=xXQAFQ/1p0AoaeHh21LVzZFWzJxzwfUL99cZqTHOlzM=;
+        s=korg; t=1661243491;
+        bh=5GyLM1CyVv10Ove+YIIf3oMlmnKfA55OKySxx0jDfxA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=BRPyqgJeAHdsgxBxKhk9TnteKODs6XGsJhH0c7uKlznJuiffLJNYKPUa5XakhkYv+
-         ZeYYrKxUrN8v2npefdkmCSEVXm+dc+F+Zd5d2IdyyUbSL2ePGvafwL+O2hsT6KmrKS
-         QouRhycdAPTk7/iqfuhKmrrfRzCUY+EQ3rlS6VrE=
+        b=2e5dBniPRzaeLNIQZWm4IECGo5A6fHMoL6FniSrwqIN8V6lrDJwxcDChr9zjWV6sz
+         3HHtHUSFrZfX9/WEjWO82lY/ZDuWoRWGpeBpmTTXMdGJRzukcnKYMpBEu/BOoiziPV
+         8Jxhkgss2QpRcdkEqJ71Wv+/BJQ8xGYV6e0JWFWU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
-        Henning Schild <henning.schild@siemens.com>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Hans de Goede <hdegoede@redhat.com>,
-        Mika Westerberg <mika.westerberg@linux.intel.com>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Lee Jones <lee@kernel.org>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.19 294/365] pinctrl: intel: Check against matching data instead of ACPI companion
-Date:   Tue, 23 Aug 2022 10:03:15 +0200
-Message-Id: <20220823080130.502152431@linuxfoundation.org>
+        =?UTF-8?q?Pali=20Roh=C3=A1r?= <pali@kernel.org>,
+        =?UTF-8?q?Marek=20Beh=C3=BAn?= <kabel@kernel.org>,
+        Bjorn Helgaas <bhelgaas@google.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.19 267/365] PCI: aardvark: Fix reporting Slot capabilities on emulated bridge
+Date:   Tue, 23 Aug 2022 10:02:48 +0200
+Message-Id: <20220823080129.356964313@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220823080118.128342613@linuxfoundation.org>
 References: <20220823080118.128342613@linuxfoundation.org>
@@ -53,65 +52,97 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+From: Pali Rohár <pali@kernel.org>
 
-[ Upstream commit c551bd81d198bf1dcd4398d5454acdc0309dbe77 ]
+[ Upstream commit bcdb6fd4f3e9ac1097698c8d8f56b70853b49873 ]
 
-In some cases we may get a platform device that has ACPI companion
-which is different to the pin control described in the ACPI tables.
-This is primarily happens when device is instantiated by board file.
+Slot capabilities are currently not reported because emulated bridge does
+not report the PCI_EXP_FLAGS_SLOT flag.
 
-In order to allow this device being enumerated, refactor
-intel_pinctrl_get_soc_data() to check the matching data instead of
-ACPI companion.
+Set PCI_EXP_FLAGS_SLOT to let the kernel know that PCI_EXP_SLT* registers
+are supported.
 
-Reported-by: Henning Schild <henning.schild@siemens.com>
-Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Tested-by: Henning Schild <henning.schild@siemens.com>
-Acked-by: Hans de Goede <hdegoede@redhat.com>
-Acked-by: Mika Westerberg <mika.westerberg@linux.intel.com>
-Acked-by: Linus Walleij <linus.walleij@linaro.org>
-Signed-off-by: Lee Jones <lee@kernel.org>
+Move setting of PCI_EXP_SLTCTL register from "dynamic" pcie_conf_read
+function to static buffer as it is only statically filled the
+PCI_EXP_SLTSTA_PDS flag and dynamic read callback is not needed for this
+register.
+
+Set Presence State Bit to 1 since there is no support for unplugging the
+card and there is currently no platform able to detect presence of a card -
+in such a case the bit needs to be set to 1.
+
+Finally correctly set Physical Slot Number to 1 since there is only one
+port and zero value is reserved for ports within the same silicon as Root
+Port which is not our case for Aardvark HW.
+
+Link: https://lore.kernel.org/r/20220524132827.8837-3-kabel@kernel.org
+Signed-off-by: Pali Rohár <pali@kernel.org>
+Signed-off-by: Marek Behún <kabel@kernel.org>
+Signed-off-by: Bjorn Helgaas <bhelgaas@google.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/pinctrl/intel/pinctrl-intel.c | 14 ++++++--------
- 1 file changed, 6 insertions(+), 8 deletions(-)
+ drivers/pci/controller/pci-aardvark.c | 33 +++++++++++++++++++--------
+ 1 file changed, 24 insertions(+), 9 deletions(-)
 
-diff --git a/drivers/pinctrl/intel/pinctrl-intel.c b/drivers/pinctrl/intel/pinctrl-intel.c
-index ffc045f7bf00..fd093e36c3a8 100644
---- a/drivers/pinctrl/intel/pinctrl-intel.c
-+++ b/drivers/pinctrl/intel/pinctrl-intel.c
-@@ -1641,16 +1641,14 @@ EXPORT_SYMBOL_GPL(intel_pinctrl_probe_by_uid);
+diff --git a/drivers/pci/controller/pci-aardvark.c b/drivers/pci/controller/pci-aardvark.c
+index ffec82c8a523..62db476a8651 100644
+--- a/drivers/pci/controller/pci-aardvark.c
++++ b/drivers/pci/controller/pci-aardvark.c
+@@ -8,6 +8,7 @@
+  * Author: Hezi Shahmoon <hezi.shahmoon@marvell.com>
+  */
  
- const struct intel_pinctrl_soc_data *intel_pinctrl_get_soc_data(struct platform_device *pdev)
- {
-+	const struct intel_pinctrl_soc_data * const *table;
- 	const struct intel_pinctrl_soc_data *data = NULL;
--	const struct intel_pinctrl_soc_data **table;
--	struct acpi_device *adev;
--	unsigned int i;
++#include <linux/bitfield.h>
+ #include <linux/delay.h>
+ #include <linux/gpio/consumer.h>
+ #include <linux/interrupt.h>
+@@ -857,14 +858,11 @@ advk_pci_bridge_emul_pcie_conf_read(struct pci_bridge_emul *bridge,
  
--	adev = ACPI_COMPANION(&pdev->dev);
--	if (adev) {
--		const void *match = device_get_match_data(&pdev->dev);
-+	table = device_get_match_data(&pdev->dev);
-+	if (table) {
-+		struct acpi_device *adev = ACPI_COMPANION(&pdev->dev);
-+		unsigned int i;
  
--		table = (const struct intel_pinctrl_soc_data **)match;
- 		for (i = 0; table[i]; i++) {
- 			if (!strcmp(adev->pnp.unique_id, table[i]->uid)) {
- 				data = table[i];
-@@ -1664,7 +1662,7 @@ const struct intel_pinctrl_soc_data *intel_pinctrl_get_soc_data(struct platform_
- 		if (!id)
- 			return ERR_PTR(-ENODEV);
+ 	switch (reg) {
+-	case PCI_EXP_SLTCTL:
+-		*value = PCI_EXP_SLTSTA_PDS << 16;
+-		return PCI_BRIDGE_EMUL_HANDLED;
+-
+ 	/*
+-	 * PCI_EXP_RTCTL and PCI_EXP_RTSTA are also supported, but do not need
+-	 * to be handled here, because their values are stored in emulated
+-	 * config space buffer, and we read them from there when needed.
++	 * PCI_EXP_SLTCAP, PCI_EXP_SLTCTL, PCI_EXP_RTCTL and PCI_EXP_RTSTA are
++	 * also supported, but do not need to be handled here, because their
++	 * values are stored in emulated config space buffer, and we read them
++	 * from there when needed.
+ 	 */
  
--		table = (const struct intel_pinctrl_soc_data **)id->driver_data;
-+		table = (const struct intel_pinctrl_soc_data * const *)id->driver_data;
- 		data = table[pdev->id];
- 	}
+ 	case PCI_EXP_LNKCAP: {
+@@ -977,8 +975,25 @@ static int advk_sw_pci_bridge_init(struct advk_pcie *pcie)
+ 	/* Support interrupt A for MSI feature */
+ 	bridge->conf.intpin = PCI_INTERRUPT_INTA;
  
+-	/* Aardvark HW provides PCIe Capability structure in version 2 */
+-	bridge->pcie_conf.cap = cpu_to_le16(2);
++	/*
++	 * Aardvark HW provides PCIe Capability structure in version 2 and
++	 * indicate slot support, which is emulated.
++	 */
++	bridge->pcie_conf.cap = cpu_to_le16(2 | PCI_EXP_FLAGS_SLOT);
++
++	/*
++	 * Set Presence Detect State bit permanently since there is no support
++	 * for unplugging the card nor detecting whether it is plugged. (If a
++	 * platform exists in the future that supports it, via a GPIO for
++	 * example, it should be implemented via this bit.)
++	 *
++	 * Set physical slot number to 1 since there is only one port and zero
++	 * value is reserved for ports within the same silicon as Root Port
++	 * which is not our case.
++	 */
++	bridge->pcie_conf.slotcap = cpu_to_le32(FIELD_PREP(PCI_EXP_SLTCAP_PSN,
++							   1));
++	bridge->pcie_conf.slotsta = cpu_to_le16(PCI_EXP_SLTSTA_PDS);
+ 
+ 	/* Indicates supports for Completion Retry Status */
+ 	bridge->pcie_conf.rootcap = cpu_to_le16(PCI_EXP_RTCAP_CRSVIS);
 -- 
 2.35.1
 
