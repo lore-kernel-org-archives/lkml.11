@@ -2,123 +2,101 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D0D34C49EC1
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 11:21:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3C60CC3F6B0
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 11:21:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357812AbiHWLVL (ORCPT
+        id S1357995AbiHWLVa (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 07:21:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38546 "EHLO
+        Tue, 23 Aug 2022 07:21:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36704 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350461AbiHWLRO (ORCPT
+        with ESMTP id S1357463AbiHWLRg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 07:17:14 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 83173BD4F6
-        for <linux-kernel@vger.kernel.org>; Tue, 23 Aug 2022 02:20:32 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1661246405;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=RK7XtREpFLhbfzxnimWw3D/7SMk9co/GteGqXfWisLY=;
-        b=HTaQIHQkbtv4MdLYbkrzG8WXezxFEpZPKvd8+wZZ+rl6PZEPQbqo3mi+xzVnoCSyTv6tJ+
-        7+65s3at5Hbjfp5aqnffq8zPLRdlO/6czvqIbI7ErIngV09FbKJU92wxAPWrVwwvldy129
-        I3VaS90APFUrC2pNd2A/qctZpVZ87zs=
-Received: from mail-qv1-f69.google.com (mail-qv1-f69.google.com
- [209.85.219.69]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
- us-mta-332-1sN_Stb6OFCMLPtEtgu3yA-1; Tue, 23 Aug 2022 05:20:04 -0400
-X-MC-Unique: 1sN_Stb6OFCMLPtEtgu3yA-1
-Received: by mail-qv1-f69.google.com with SMTP id f11-20020a056214164b00b00496a9423091so7103911qvw.14
-        for <linux-kernel@vger.kernel.org>; Tue, 23 Aug 2022 02:20:04 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:user-agent:date:cc:to:from
-         :subject:message-id:x-gm-message-state:from:to:cc;
-        bh=RK7XtREpFLhbfzxnimWw3D/7SMk9co/GteGqXfWisLY=;
-        b=gvB0Mbb+ClO0vSOniGkwCCpNLRWsZOhfRSceZCx8pmMLqSsM517u30xY5Pyl1DY+zU
-         pHWMGEtSGdD1Q1ooweBy7qCHVRV4B4icN2yYf5j6wVBjz/zkUmqeSrK3NDfEuKwKUYw/
-         bS0rTNGW16ekVRVt49FxycCyrDQCkTi7q54f4GfG4eQZLoT+9FphXiljwjfaY8cN621p
-         9f9Cec3RhpHK/+59g+Z1M6iIvjsFqteL3XiM/+xnDWo6SC4Du9249czXdQCGR6UE/pkV
-         BXD02t2EqADifuP+9ADku91NhHFqljc85b8iZ1u6vwH5R+XwXucD9vww22Yzh8Ctc+Px
-         XVDA==
-X-Gm-Message-State: ACgBeo1SjX6ChTkTfPz3kkuwdCd++CYAAkADEKzl3qZxdPcfFFQbrrg+
-        odwLVm+s8Xn9C5FNlciRmQ9RPgjD+2RwH2k7nte1i5RRvYGsJfgIZs2C/hgTEckRLxC9S1+J3um
-        fk8LShliTv1W4IfR6YWUBUlm0
-X-Received: by 2002:a05:620a:1990:b0:6bb:61c3:8970 with SMTP id bm16-20020a05620a199000b006bb61c38970mr15401562qkb.394.1661246403623;
-        Tue, 23 Aug 2022 02:20:03 -0700 (PDT)
-X-Google-Smtp-Source: AA6agR4scwdvU3X5bSXYFjzLfBWQF4j11vAlCrZyx7tLKMNMOtVgqKg9TOrjDWVBkK33M3QbDk49fg==
-X-Received: by 2002:a05:620a:1990:b0:6bb:61c3:8970 with SMTP id bm16-20020a05620a199000b006bb61c38970mr15401551qkb.394.1661246403407;
-        Tue, 23 Aug 2022 02:20:03 -0700 (PDT)
-Received: from [10.35.4.238] (bzq-82-81-161-50.red.bezeqint.net. [82.81.161.50])
-        by smtp.gmail.com with ESMTPSA id j10-20020ac8664a000000b0033fc75c3469sm9976682qtp.27.2022.08.23.02.20.02
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 23 Aug 2022 02:20:03 -0700 (PDT)
-Message-ID: <3745745afedb2eff890277041896356149a8f2bf.camel@redhat.com>
-Subject: Commit 'r8152: fix a WOL issue' makes Ethernet port on Lenovo
- Thunderbolt 3 dock go crazy
-From:   Maxim Levitsky <mlevitsk@redhat.com>
-To:     netdev@vger.kernel.org
-Cc:     linux-kernel@vger.kernel.org, linux-usb@vger.kernel.org,
-        Hayes Wang <hayeswang@realtek.com>
-Date:   Tue, 23 Aug 2022 12:20:00 +0300
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.40.4 (3.40.4-5.fc34) 
+        Tue, 23 Aug 2022 07:17:36 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 599477FE79;
+        Tue, 23 Aug 2022 02:20:59 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id D5E57608D5;
+        Tue, 23 Aug 2022 09:20:58 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C4E93C433D7;
+        Tue, 23 Aug 2022 09:20:57 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1661246458;
+        bh=xhWZwq/HUtoLagsr8FhoEe1WFz99DlirWBij+9n3rrw=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=EExflo9u+7BXW/Lha0FaP05UuW1XnYcsVYG4cwk87ocZ/idxBnQqU9SqTovayZNSb
+         B5xEX8WeAVyNeexNKJzh+ZBiuzhHOaIWKOdYPJNWEM8Dd6N/nk+b0SDlWdVwJM+cY5
+         Htqap8d0vBb24LUcJCJpbh/yE7j1N7/jK7Z11chY=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Hangyu Hua <hbh25y@gmail.com>,
+        Andrzej Hajda <andrzej.hajda@intel.com>,
+        Robert Foss <robert.foss@linaro.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.4 116/389] drm: bridge: sii8620: fix possible off-by-one
+Date:   Tue, 23 Aug 2022 10:23:14 +0200
+Message-Id: <20220823080120.461751167@linuxfoundation.org>
+X-Mailer: git-send-email 2.37.2
+In-Reply-To: <20220823080115.331990024@linuxfoundation.org>
+References: <20220823080115.331990024@linuxfoundation.org>
+User-Agent: quilt/0.67
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+From: Hangyu Hua <hbh25y@gmail.com>
 
-I recently bisected an issue on my Lenovo P1 gen3, which is connected to the Lenovo Thunderbolt 3 dock.
+[ Upstream commit 21779cc21c732c5eff8ea1624be6590450baa30f ]
 
-After I suspend the laptop to ram, the ethernet port led on the dock starts to blink like crazy,
-its peer port on my ethernet switch blinks as well, and eventually the switch stops forwarding packets,
-bringing all my network down.
+The next call to sii8620_burst_get_tx_buf will result in off-by-one
+When ctx->burst.tx_count + size == ARRAY_SIZE(ctx->burst.tx_buf). The same
+thing happens in sii8620_burst_get_rx_buf.
 
-Likely the ethernet card in the dock sends some kind of a garbage over the wire.
+This patch also change tx_count and tx_buf to rx_count and rx_buf in
+sii8620_burst_get_rx_buf. It is unreasonable to check tx_buf's size and
+use rx_buf.
 
-Resuming the laptop, "fixes" the issue (leds stops blinking, and the network starts working again
-after a minute or so).
+Fixes: e19e9c692f81 ("drm/bridge/sii8620: add support for burst eMSC transmissions")
+Signed-off-by: Hangyu Hua <hbh25y@gmail.com>
+Reviewed-by: Andrzej Hajda <andrzej.hajda@intel.com>
+Signed-off-by: Robert Foss <robert.foss@linaro.org>
+Link: https://patchwork.freedesktop.org/patch/msgid/20220518065856.18936-1-hbh25y@gmail.com
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ drivers/gpu/drm/bridge/sil-sii8620.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-I also tried to connect the dock directly to my main desktop over a dedicated usb network card
-and try to capture the packets that are sent, but no packets were captured. I will soon retry
-this test with another network card. I did use promicious mode.
+diff --git a/drivers/gpu/drm/bridge/sil-sii8620.c b/drivers/gpu/drm/bridge/sil-sii8620.c
+index fb0b64c965b7..970bc00d2aaf 100644
+--- a/drivers/gpu/drm/bridge/sil-sii8620.c
++++ b/drivers/gpu/drm/bridge/sil-sii8620.c
+@@ -604,7 +604,7 @@ static void *sii8620_burst_get_tx_buf(struct sii8620 *ctx, int len)
+ 	u8 *buf = &ctx->burst.tx_buf[ctx->burst.tx_count];
+ 	int size = len + 2;
+ 
+-	if (ctx->burst.tx_count + size > ARRAY_SIZE(ctx->burst.tx_buf)) {
++	if (ctx->burst.tx_count + size >= ARRAY_SIZE(ctx->burst.tx_buf)) {
+ 		dev_err(ctx->dev, "TX-BLK buffer exhausted\n");
+ 		ctx->error = -EINVAL;
+ 		return NULL;
+@@ -621,7 +621,7 @@ static u8 *sii8620_burst_get_rx_buf(struct sii8620 *ctx, int len)
+ 	u8 *buf = &ctx->burst.rx_buf[ctx->burst.rx_count];
+ 	int size = len + 1;
+ 
+-	if (ctx->burst.tx_count + size > ARRAY_SIZE(ctx->burst.tx_buf)) {
++	if (ctx->burst.rx_count + size >= ARRAY_SIZE(ctx->burst.rx_buf)) {
+ 		dev_err(ctx->dev, "RX-BLK buffer exhausted\n");
+ 		ctx->error = -EINVAL;
+ 		return NULL;
+-- 
+2.35.1
 
 
-This is the offending commit, and reverting it helps:
-
-commit cdf0b86b250fd3c1c3e120c86583ea510c52e4ce
-Author: Hayes Wang <hayeswang@realtek.com>
-Date:   Mon Jul 18 16:21:20 2022 +0800
-
-    r8152: fix a WOL issue
-    
-    This fixes that the platform is waked by an unexpected packet. The
-    size and range of FIFO is different when the device enters S3 state,
-    so it is necessary to correct some settings when suspending.
-    
-    Regardless of jumbo frame, set RMS to 1522 and MTPS to MTPS_DEFAULT.
-    Besides, enable MCU_BORW_EN to update the method of calculating the
-    pointer of data. Then, the hardware could get the correct data.
-    
-    Fixes: 195aae321c82 ("r8152: support new chips")
-    Signed-off-by: Hayes Wang <hayeswang@realtek.com>
-    Link: https://lore.kernel.org/r/20220718082120.10957-391-nic_swsd@realtek.com
-    Signed-off-by: Jakub Kicinski <kuba@kernel.org>
-
-
-WOL from dock was enabled in BIOS, but I tested with it disabled as well, and
-no change in behavier.
-
-Any help is welcome. I can test patches if needed, the laptop currently runs 6.0-rc2
-with this commit reverted.
-
-When I find some time I can also narrow the change down by reverting only parts
-of the patch.
-
-Best regards,
-	Maxim Levitsky
 
