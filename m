@@ -2,174 +2,123 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3FA89C32774
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 02:07:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E530EC28D13
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 02:08:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239500AbiHWCHa (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 22 Aug 2022 22:07:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35958 "EHLO
+        id S239505AbiHWCIx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 22 Aug 2022 22:08:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37846 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239468AbiHWCH2 (ORCPT
+        with ESMTP id S232437AbiHWCIn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 22 Aug 2022 22:07:28 -0400
-Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9031811C10;
-        Mon, 22 Aug 2022 19:07:27 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1661220447; x=1692756447;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=4cmZW6Vu98JaUut+RBH8civw9HwCH7BhKgrjabJJBRo=;
-  b=L8UpMC4VqWZA4FSBImjHRXH3ychD4rNc4f1CWqZQ0q0igLuG6lcnV6ag
-   PmHQzEIfrju+6edMQXORTECgHXJFYnWI/3JSaiWDwNC9CtES5jf+spEQx
-   0JfRnKTNHgXhed8OL3uEQqg8a2FhV+fZochFKg5zawKjnvgRfi3mX0ERp
-   rn+7BlLmGYqZrVH3tYfbqyJH8Qepn+jx8R9thrCS5R1qAgmeY5nLLdrPI
-   A9ECU7bNn92htWQ/7VAxtVDzidVAiBBFs0PwR+btLd4I2QDQMslRiZ8Cd
-   dOmSeA2+dqw8c5/hOJAvr2U8B47lV+lGlluEHVD0jMG/0F4vavavDErJJ
-   A==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10447"; a="379858758"
-X-IronPort-AV: E=Sophos;i="5.93,256,1654585200"; 
-   d="scan'208";a="379858758"
-Received: from fmsmga003.fm.intel.com ([10.253.24.29])
-  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Aug 2022 19:07:27 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.93,256,1654585200"; 
-   d="scan'208";a="698506673"
-Received: from lkp-server01.sh.intel.com (HELO dd9b29378baa) ([10.239.97.150])
-  by FMSMGA003.fm.intel.com with ESMTP; 22 Aug 2022 19:07:23 -0700
-Received: from kbuild by dd9b29378baa with local (Exim 4.96)
-        (envelope-from <lkp@intel.com>)
-        id 1oQJK6-00012F-2y;
-        Tue, 23 Aug 2022 02:07:22 +0000
-Date:   Tue, 23 Aug 2022 10:07:19 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Serge Semin <Sergey.Semin@baikalelectronics.ru>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzk@kernel.org>,
-        Bjorn Helgaas <helgaas@kernel.org>,
-        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
-        Jingoo Han <jingoohan1@gmail.com>,
-        Gustavo Pimentel <gustavo.pimentel@synopsys.com>,
-        Krzysztof =?utf-8?Q?Wilczy=C5=84ski?= <kw@linux.com>
-Cc:     kbuild-all@lists.01.org,
-        Serge Semin <Sergey.Semin@baikalelectronics.ru>,
-        Alexey Malahov <Alexey.Malahov@baikalelectronics.ru>,
-        Pavel Parkhomenko <Pavel.Parkhomenko@baikalelectronics.ru>,
-        Frank Li <Frank.Li@nxp.com>,
-        Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>,
-        linux-pci@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v5 17/20] PCI: dwc: Introduce generic resources getter
-Message-ID: <202208230934.dgkY2hhH-lkp@intel.com>
-References: <20220822184701.25246-18-Sergey.Semin@baikalelectronics.ru>
+        Mon, 22 Aug 2022 22:08:43 -0400
+X-Greylist: delayed 1871 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Mon, 22 Aug 2022 19:08:40 PDT
+Received: from m15113.mail.126.com (m15113.mail.126.com [220.181.15.113])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 69D3F33A10;
+        Mon, 22 Aug 2022 19:08:40 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=126.com;
+        s=s110527; h=From:Subject:Date:Message-Id:MIME-Version; bh=VcjBr
+        x5NcRDcCtos/TPNCVqfav4qyE7ow6dAU7IPv8M=; b=a4S5z2YVX3o9E+XpAyh6Y
+        68/5o/XbgsAlg7PsdMjogmE2/RqIQTsHiUC2kinOmuesKZDbPToW86DQ4hzVpC5y
+        KVGUtfATz0iJJrhAbhSq6aAS/r5VD3uRoUksaY0SBTe+hIQt7MetuN+t3akDk1no
+        wi7w+fVS7sxC+5tzjNw1Gs=
+Received: from fedora.. (unknown [123.52.27.102])
+        by smtp3 (Coremail) with SMTP id DcmowAC33o49LwRj8lDqAQ--.42709S2;
+        Tue, 23 Aug 2022 09:37:02 +0800 (CST)
+From:   zhaomzhao@126.com
+To:     djwong@kernel.org, corbet@lwn.net
+Cc:     linux-xfs@vger.kernel.org, linux-doc@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        Zhao Mengmeng <zhaomengmeng@kylinos.cn>
+Subject: [PATCH v1] Documentation: filesystems: xfs: update pseudocode and typo fixes
+Date:   Mon, 22 Aug 2022 21:36:53 -0400
+Message-Id: <20220823013653.203469-1-zhaomzhao@126.com>
+X-Mailer: git-send-email 2.37.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220822184701.25246-18-Sergey.Semin@baikalelectronics.ru>
+Content-Transfer-Encoding: 8bit
+X-CM-TRANSID: DcmowAC33o49LwRj8lDqAQ--.42709S2
+X-Coremail-Antispam: 1Uf129KBjvJXoWxXF18WrW3CryrCFWDWr48Zwb_yoWrAw1Upr
+        Za9r1rJw1kJry8Ars2qw45XryF9anYqrWUGrWqy3s3Zws8K3Zayr13tr1Y9F1kXr4ru3WY
+        vr1j9rn8Za47Ca7anT9S1TB71UUUUUDqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
+        9KBjDUYxBIdaVFxhVjvjDU0xZFpf9x07jplk3UUUUU=
+X-Originating-IP: [123.52.27.102]
+X-CM-SenderInfo: 52kd0zp2kd0qqrswhudrp/1tbijB9md1pEJE5iSwAAsf
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Serge,
+From: Zhao Mengmeng <zhaomengmeng@kylinos.cn>
 
-I love your patch! Yet something to improve:
+According to the implementation of xfs_trans_roll(), it calls
+xfs_trans_reserve(), which reserves not only log space, but also
+free disk blocks. In short, the "transaction stuff". So change
+xfs_log_reserve() to xfs_trans_reserve().
 
-[auto build test ERROR on helgaas-pci/next]
-[also build test ERROR on robh/for-next linus/master v6.0-rc2 next-20220822]
-[cannot apply to krzk-dt/for-next]
-[If your patch is applied to the wrong git tree, kindly drop us a note.
-And when submitting patch, we suggest to use '--base' as documented in
-https://git-scm.com/docs/git-format-patch#_base_tree_information]
+Besides, fix several typo issues.
 
-url:    https://github.com/intel-lab-lkp/linux/commits/Serge-Semin/PCI-dwc-Add-generic-resources-and-Baikal-T1-support/20220823-025041
-base:   https://git.kernel.org/pub/scm/linux/kernel/git/helgaas/pci.git next
-config: openrisc-randconfig-r001-20220821 (https://download.01.org/0day-ci/archive/20220823/202208230934.dgkY2hhH-lkp@intel.com/config)
-compiler: or1k-linux-gcc (GCC) 12.1.0
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://github.com/intel-lab-lkp/linux/commit/224f55689ef22eddaeb641cf793de934a60e1be9
-        git remote add linux-review https://github.com/intel-lab-lkp/linux
-        git fetch --no-tags linux-review Serge-Semin/PCI-dwc-Add-generic-resources-and-Baikal-T1-support/20220823-025041
-        git checkout 224f55689ef22eddaeb641cf793de934a60e1be9
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-12.1.0 make.cross W=1 O=build_dir ARCH=openrisc SHELL=/bin/bash drivers/pci/controller/dwc/
+Signed-off-by: Zhao Mengmeng <zhaomengmeng@kylinos.cn>
+---
+ .../filesystems/xfs-delayed-logging-design.rst       | 12 ++++++------
+ 1 file changed, 6 insertions(+), 6 deletions(-)
 
-If you fix the issue, kindly add following tag where applicable
-Reported-by: kernel test robot <lkp@intel.com>
-
-All errors (new ones prefixed by >>):
-
-   drivers/pci/controller/dwc/pcie-designware-ep.c: In function 'dw_pcie_ep_init':
->> drivers/pci/controller/dwc/pcie-designware-ep.c:734:35: error: 'np' undeclared (first use in this function); did you mean 'ep'?
-     734 |         ret = of_property_read_u8(np, "max-functions", &epc->max_functions);
-         |                                   ^~
-         |                                   ep
-   drivers/pci/controller/dwc/pcie-designware-ep.c:734:35: note: each undeclared identifier is reported only once for each function it appears in
-
-
-vim +734 drivers/pci/controller/dwc/pcie-designware-ep.c
-
-e966f7390da935e drivers/pci/controller/dwc/pcie-designware-ep.c Vidya Sagar            2020-02-17  678  
-e966f7390da935e drivers/pci/controller/dwc/pcie-designware-ep.c Vidya Sagar            2020-02-17  679  int dw_pcie_ep_init(struct dw_pcie_ep *ep)
-e966f7390da935e drivers/pci/controller/dwc/pcie-designware-ep.c Vidya Sagar            2020-02-17  680  {
-f8aed6ec624fb43 drivers/pci/dwc/pcie-designware-ep.c            Kishon Vijay Abraham I 2017-03-27  681  	int ret;
-f8aed6ec624fb43 drivers/pci/dwc/pcie-designware-ep.c            Kishon Vijay Abraham I 2017-03-27  682  	void *addr;
-47a062609a30d82 drivers/pci/controller/dwc/pcie-designware-ep.c Xiaowei Bao            2020-09-18  683  	u8 func_no;
-a0fd361db8e508b drivers/pci/controller/dwc/pcie-designware-ep.c Rob Herring            2020-11-05  684  	struct resource *res;
-f8aed6ec624fb43 drivers/pci/dwc/pcie-designware-ep.c            Kishon Vijay Abraham I 2017-03-27  685  	struct pci_epc *epc;
-f8aed6ec624fb43 drivers/pci/dwc/pcie-designware-ep.c            Kishon Vijay Abraham I 2017-03-27  686  	struct dw_pcie *pci = to_dw_pcie_from_ep(ep);
-f8aed6ec624fb43 drivers/pci/dwc/pcie-designware-ep.c            Kishon Vijay Abraham I 2017-03-27  687  	struct device *dev = pci->dev;
-a0fd361db8e508b drivers/pci/controller/dwc/pcie-designware-ep.c Rob Herring            2020-11-05  688  	struct platform_device *pdev = to_platform_device(dev);
-e966f7390da935e drivers/pci/controller/dwc/pcie-designware-ep.c Vidya Sagar            2020-02-17  689  	const struct pci_epc_features *epc_features;
-47a062609a30d82 drivers/pci/controller/dwc/pcie-designware-ep.c Xiaowei Bao            2020-09-18  690  	struct dw_pcie_ep_func *ep_func;
-47a062609a30d82 drivers/pci/controller/dwc/pcie-designware-ep.c Xiaowei Bao            2020-09-18  691  
-47a062609a30d82 drivers/pci/controller/dwc/pcie-designware-ep.c Xiaowei Bao            2020-09-18  692  	INIT_LIST_HEAD(&ep->func_list);
-f8aed6ec624fb43 drivers/pci/dwc/pcie-designware-ep.c            Kishon Vijay Abraham I 2017-03-27  693  
-224f55689ef22ed drivers/pci/controller/dwc/pcie-designware-ep.c Serge Semin            2022-08-22  694  	ret = dw_pcie_get_resources(pci);
-224f55689ef22ed drivers/pci/controller/dwc/pcie-designware-ep.c Serge Semin            2022-08-22  695  	if (ret)
-224f55689ef22ed drivers/pci/controller/dwc/pcie-designware-ep.c Serge Semin            2022-08-22  696  		return ret;
-f8aed6ec624fb43 drivers/pci/dwc/pcie-designware-ep.c            Kishon Vijay Abraham I 2017-03-27  697  
-a0fd361db8e508b drivers/pci/controller/dwc/pcie-designware-ep.c Rob Herring            2020-11-05  698  	res = platform_get_resource_byname(pdev, IORESOURCE_MEM, "addr_space");
-a0fd361db8e508b drivers/pci/controller/dwc/pcie-designware-ep.c Rob Herring            2020-11-05  699  	if (!res)
-a0fd361db8e508b drivers/pci/controller/dwc/pcie-designware-ep.c Rob Herring            2020-11-05  700  		return -EINVAL;
-a0fd361db8e508b drivers/pci/controller/dwc/pcie-designware-ep.c Rob Herring            2020-11-05  701  
-a0fd361db8e508b drivers/pci/controller/dwc/pcie-designware-ep.c Rob Herring            2020-11-05  702  	ep->phys_base = res->start;
-a0fd361db8e508b drivers/pci/controller/dwc/pcie-designware-ep.c Rob Herring            2020-11-05  703  	ep->addr_size = resource_size(res);
-a0fd361db8e508b drivers/pci/controller/dwc/pcie-designware-ep.c Rob Herring            2020-11-05  704  
-13e9d3900c20247 drivers/pci/controller/dwc/pcie-designware-ep.c Serge Semin            2022-06-24  705  	dw_pcie_version_detect(pci);
-13e9d3900c20247 drivers/pci/controller/dwc/pcie-designware-ep.c Serge Semin            2022-06-24  706  
-e3dc79adfac96d7 drivers/pci/controller/dwc/pcie-designware-ep.c Serge Semin            2022-06-24  707  	dw_pcie_iatu_detect(pci);
-e3dc79adfac96d7 drivers/pci/controller/dwc/pcie-designware-ep.c Serge Semin            2022-06-24  708  
-6be6f8529bd7f3e drivers/pci/controller/dwc/pcie-designware-ep.c Christophe JAILLET     2022-07-09  709  	ep->ib_window_map = devm_bitmap_zalloc(dev, pci->num_ib_windows,
-ad4a5becc689c3f drivers/pci/dwc/pcie-designware-ep.c            Niklas Cassel          2017-12-14  710  					       GFP_KERNEL);
-ad4a5becc689c3f drivers/pci/dwc/pcie-designware-ep.c            Niklas Cassel          2017-12-14  711  	if (!ep->ib_window_map)
-ad4a5becc689c3f drivers/pci/dwc/pcie-designware-ep.c            Niklas Cassel          2017-12-14  712  		return -ENOMEM;
-ad4a5becc689c3f drivers/pci/dwc/pcie-designware-ep.c            Niklas Cassel          2017-12-14  713  
-6be6f8529bd7f3e drivers/pci/controller/dwc/pcie-designware-ep.c Christophe JAILLET     2022-07-09  714  	ep->ob_window_map = devm_bitmap_zalloc(dev, pci->num_ob_windows,
-ad4a5becc689c3f drivers/pci/dwc/pcie-designware-ep.c            Niklas Cassel          2017-12-14  715  					       GFP_KERNEL);
-ad4a5becc689c3f drivers/pci/dwc/pcie-designware-ep.c            Niklas Cassel          2017-12-14  716  	if (!ep->ob_window_map)
-ad4a5becc689c3f drivers/pci/dwc/pcie-designware-ep.c            Niklas Cassel          2017-12-14  717  		return -ENOMEM;
-f8aed6ec624fb43 drivers/pci/dwc/pcie-designware-ep.c            Kishon Vijay Abraham I 2017-03-27  718  
-9ca17af552bcd28 drivers/pci/controller/dwc/pcie-designware-ep.c Rob Herring            2020-11-05  719  	addr = devm_kcalloc(dev, pci->num_ob_windows, sizeof(phys_addr_t),
-f8aed6ec624fb43 drivers/pci/dwc/pcie-designware-ep.c            Kishon Vijay Abraham I 2017-03-27  720  			    GFP_KERNEL);
-f8aed6ec624fb43 drivers/pci/dwc/pcie-designware-ep.c            Kishon Vijay Abraham I 2017-03-27  721  	if (!addr)
-f8aed6ec624fb43 drivers/pci/dwc/pcie-designware-ep.c            Kishon Vijay Abraham I 2017-03-27  722  		return -ENOMEM;
-f8aed6ec624fb43 drivers/pci/dwc/pcie-designware-ep.c            Kishon Vijay Abraham I 2017-03-27  723  	ep->outbound_addr = addr;
-f8aed6ec624fb43 drivers/pci/dwc/pcie-designware-ep.c            Kishon Vijay Abraham I 2017-03-27  724  
-f8aed6ec624fb43 drivers/pci/dwc/pcie-designware-ep.c            Kishon Vijay Abraham I 2017-03-27  725  	epc = devm_pci_epc_create(dev, &epc_ops);
-f8aed6ec624fb43 drivers/pci/dwc/pcie-designware-ep.c            Kishon Vijay Abraham I 2017-03-27  726  	if (IS_ERR(epc)) {
-b4a8a51caf7de47 drivers/pci/dwc/pcie-designware-ep.c            Gustavo Pimentel       2018-05-14  727  		dev_err(dev, "Failed to create epc device\n");
-f8aed6ec624fb43 drivers/pci/dwc/pcie-designware-ep.c            Kishon Vijay Abraham I 2017-03-27  728  		return PTR_ERR(epc);
-f8aed6ec624fb43 drivers/pci/dwc/pcie-designware-ep.c            Kishon Vijay Abraham I 2017-03-27  729  	}
-f8aed6ec624fb43 drivers/pci/dwc/pcie-designware-ep.c            Kishon Vijay Abraham I 2017-03-27  730  
-4e965ede1856ed6 drivers/pci/controller/dwc/pcie-designware-ep.c Gustavo Pimentel       2018-07-19  731  	ep->epc = epc;
-4e965ede1856ed6 drivers/pci/controller/dwc/pcie-designware-ep.c Gustavo Pimentel       2018-07-19  732  	epc_set_drvdata(epc, ep);
-4e965ede1856ed6 drivers/pci/controller/dwc/pcie-designware-ep.c Gustavo Pimentel       2018-07-19  733  
-f8aed6ec624fb43 drivers/pci/dwc/pcie-designware-ep.c            Kishon Vijay Abraham I 2017-03-27 @734  	ret = of_property_read_u8(np, "max-functions", &epc->max_functions);
-
+diff --git a/Documentation/filesystems/xfs-delayed-logging-design.rst b/Documentation/filesystems/xfs-delayed-logging-design.rst
+index 4ef419f54663..02b32030bab3 100644
+--- a/Documentation/filesystems/xfs-delayed-logging-design.rst
++++ b/Documentation/filesystems/xfs-delayed-logging-design.rst
+@@ -100,7 +100,7 @@ transactions together::
+ 
+ 	ntp = xfs_trans_dup(tp);
+ 	xfs_trans_commit(tp);
+-	xfs_log_reserve(ntp);
++	xfs_trans_reserve(ntp);
+ 
+ This results in a series of "rolling transactions" where the inode is locked
+ across the entire chain of transactions.  Hence while this series of rolling
+@@ -191,7 +191,7 @@ transaction rolling mechanism to re-reserve space on every transaction roll. We
+ know from the implementation of the permanent transactions how many transaction
+ rolls are likely for the common modifications that need to be made.
+ 
+-For example, and inode allocation is typically two transactions - one to
++For example, an inode allocation is typically two transactions - one to
+ physically allocate a free inode chunk on disk, and another to allocate an inode
+ from an inode chunk that has free inodes in it.  Hence for an inode allocation
+ transaction, we might set the reservation log count to a value of 2 to indicate
+@@ -200,7 +200,7 @@ chain. Each time a permanent transaction rolls, it consumes an entire unit
+ reservation.
+ 
+ Hence when the permanent transaction is first allocated, the log space
+-reservation is increases from a single unit reservation to multiple unit
++reservation is increased from a single unit reservation to multiple unit
+ reservations. That multiple is defined by the reservation log count, and this
+ means we can roll the transaction multiple times before we have to re-reserve
+ log space when we roll the transaction. This ensures that the common
+@@ -259,7 +259,7 @@ the next transaction in the sequeunce, but we have none remaining. We cannot
+ sleep during the transaction commit process waiting for new log space to become
+ available, as we may end up on the end of the FIFO queue and the items we have
+ locked while we sleep could end up pinning the tail of the log before there is
+-enough free space in the log to fulfil all of the pending reservations and
++enough free space in the log to fulfill all of the pending reservations and
+ then wake up transaction commit in progress.
+ 
+ To take a new reservation without sleeping requires us to be able to take a
+@@ -615,7 +615,7 @@ those changes into the current checkpoint context. We then initialise a new
+ context and attach that to the CIL for aggregation of new transactions.
+ 
+ This allows us to unlock the CIL immediately after transfer of all the
+-committed items and effectively allow new transactions to be issued while we
++committed items and effectively allows new transactions to be issued while we
+ are formatting the checkpoint into the log. It also allows concurrent
+ checkpoints to be written into the log buffers in the case of log force heavy
+ workloads, just like the existing transaction commit code does. This, however,
+@@ -886,7 +886,7 @@ can be multiple outstanding checkpoint contexts, we can still see elevated pin
+ counts, but as each checkpoint completes the pin count will retain the correct
+ value according to it's context.
+ 
+-Just to make matters more slightly more complex, this checkpoint level context
++Just to make matters slightly more complex, this checkpoint level context
+ for the pin count means that the pinning of an item must take place under the
+ CIL commit/flush lock. If we pin the object outside this lock, we cannot
+ guarantee which context the pin count is associated with. This is because of
 -- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+2.37.1
+
