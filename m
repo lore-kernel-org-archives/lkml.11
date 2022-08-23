@@ -2,108 +2,151 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E6C1BC32793
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 07:11:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B0D55C32789
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 07:11:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240900AbiHWHLU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 03:11:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43648 "EHLO
+        id S240915AbiHWHL2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 23 Aug 2022 03:11:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44040 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240901AbiHWHKa (ORCPT
+        with ESMTP id S240880AbiHWHLT (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 03:10:30 -0400
-Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C5AE161D4D
-        for <linux-kernel@vger.kernel.org>; Tue, 23 Aug 2022 00:10:29 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=casper.20170209; h=In-Reply-To:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description;
-        bh=C2pTduGyZThsWDZ7oC5CKV3xWc+y+875pkYxXtFqY94=; b=kTxXVzajFLNaE21Oh0oBb5svei
-        YALwqCin7NrV0NgtCaQEf12Ay6WPdvFTlr/x69cbTnb1czPMSYO8AQdC4y4ov19zADapzu9zmPCZb
-        YrohODibAGyH5IlYQ2H7hc7bN+aOYjrZAA99PUuuxkhjyLfcejpsMA+AvwQ18T+CzpP6TOgjcB26K
-        +nc8vzpmXnEpi/sgYhrLxWkmjzDPTZQjybmkjE9YVG0n4ncKdexBn47psr8FZiHVh8Giw198epFeM
-        MKaSx4QBZlEJ4JIlc5o9tuRG2RLXS9D23q4u04cnvQHqkF12w4gMQnjquAfMW4rGCpcAx+dWPBeQ6
-        UTbYeGzA==;
-Received: from j130084.upc-j.chello.nl ([24.132.130.84] helo=worktop.programming.kicks-ass.net)
-        by casper.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1oQO32-00F2yZ-GR; Tue, 23 Aug 2022 07:10:04 +0000
-Received: by worktop.programming.kicks-ass.net (Postfix, from userid 1000)
-        id 64F12980403; Tue, 23 Aug 2022 09:10:02 +0200 (CEST)
-Date:   Tue, 23 Aug 2022 09:10:02 +0200
-From:   Peter Zijlstra <peterz@infradead.org>
-To:     Ravi Bangoria <ravi.bangoria@amd.com>
-Cc:     acme@kernel.org, alexander.shishkin@linux.intel.com,
-        jolsa@redhat.com, namhyung@kernel.org, songliubraving@fb.com,
-        eranian@google.com, alexey.budankov@linux.intel.com,
-        ak@linux.intel.com, mark.rutland@arm.com, megha.dey@intel.com,
-        frederic@kernel.org, maddy@linux.ibm.com, irogers@google.com,
-        kim.phillips@amd.com, linux-kernel@vger.kernel.org,
-        santosh.shukla@amd.com
-Subject: Re: [RFC v2] perf: Rewrite core context handling
-Message-ID: <YwR9ShCHDBgrvT9s@worktop.programming.kicks-ass.net>
-References: <20220113134743.1292-1-ravi.bangoria@amd.com>
- <2acacbcb-2bdb-30d6-3300-8d125b06a0f3@amd.com>
+        Tue, 23 Aug 2022 03:11:19 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0862361D59;
+        Tue, 23 Aug 2022 00:11:18 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 9F627B801C0;
+        Tue, 23 Aug 2022 07:11:16 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id AEA25C433D6;
+        Tue, 23 Aug 2022 07:11:14 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1661238675;
+        bh=vMiL6tXO64IX78O0F1aZDGjmvXqzBiRZfMNOvY56/yc=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=sAXFQaKxAKlCaC7NX2XtYskIX7HQAcGV2PhFFxMovv9H01hIZnB8HG2j3roNk9mn9
+         0Qh1nhXLd9lFMfUaEw+6kXC3Q3qdnWkXtkBOMxILre+GO8H2gJsMsCEylYnxdg7BNT
+         aW0K0lA5C0AzHIztQaBAlSxyc88eSbIQthX8qP7Y=
+Date:   Tue, 23 Aug 2022 09:11:12 +0200
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     Dominique Martinet <dominique.martinet@atmark-techno.com>
+Cc:     linux-kernel@vger.kernel.org, stable@vger.kernel.org,
+        Sean V Kelley <sean.v.kelley@intel.com>,
+        Bjorn Helgaas <bhelgaas@google.com>,
+        Sasha Levin <sashal@kernel.org>,
+        Jonathan Cameron <Jonathan.Cameron@huawei.com>,
+        linux-pci@vger.kernel.org, Keith Busch <kbusch@kernel.org>,
+        Hinko Kocevar <hinko.kocevar@ess.eu>,
+        Dan Williams <dan.j.williams@intel.com>,
+        "Kuppuswamy, Sathyanarayanan" <sathyanarayanan.kuppuswamy@intel.com>
+Subject: Re: [PATCH 5.10 480/545] PCI/ERR: Add pci_walk_bridge() to
+ pcie_do_recovery()
+Message-ID: <YwR9kFH3UqhkV4d0@kroah.com>
+References: <20220819153850.911668266@linuxfoundation.org>
+ <YwL/brvUP1aiwo93@atmark-techno.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <2acacbcb-2bdb-30d6-3300-8d125b06a0f3@amd.com>
+In-Reply-To: <YwL/brvUP1aiwo93@atmark-techno.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Aug 02, 2022 at 11:43:03AM +0530, Ravi Bangoria wrote:
-> [...]
+On Mon, Aug 22, 2022 at 01:00:46PM +0900, Dominique Martinet wrote:
+> Greg Kroah-Hartman wrote on Fri, Aug 19, 2022 at 05:44:10PM +0200:
+> > From: Sean V Kelley <sean.v.kelley@intel.com>
+> > 
+> > [ Upstream commit 05e9ae19ab83881a0f33025bd1288e41e552a34b ]
+> > 
+> > Consolidate subordinate bus checks with pci_walk_bus() into
+> > pci_walk_bridge() for walking below potentially AER affected bridges.
+> > 
+> > Link: https://lore.kernel.org/r/20201121001036.8560-10-sean.v.kelley@intel.com
+> > Tested-by: Jonathan Cameron <Jonathan.Cameron@huawei.com> # non-native/no RCEC
+> > Signed-off-by: Sean V Kelley <sean.v.kelley@intel.com>
+> > Signed-off-by: Bjorn Helgaas <bhelgaas@google.com>
+> > Signed-off-by: Sasha Levin <sashal@kernel.org>
+> > ---
+> >  drivers/pci/pcie/err.c | 30 +++++++++++++++++++++++-------
+> >  1 file changed, 23 insertions(+), 7 deletions(-)
+> > 
+> > diff --git a/drivers/pci/pcie/err.c b/drivers/pci/pcie/err.c
+> > index 931e75f2549d..8b53aecdb43d 100644
+> > --- a/drivers/pci/pcie/err.c
+> > +++ b/drivers/pci/pcie/err.c
+> > [...]
+> > @@ -165,23 +182,22 @@ pci_ers_result_t pcie_do_recovery(struct pci_dev *dev,
+> >  	else
+> >  		bridge = pci_upstream_bridge(dev);
+> >  
+> > -	bus = bridge->subordinate;
+> >  	pci_dbg(bridge, "broadcast error_detected message\n");
+> >  	if (state == pci_channel_io_frozen) {
+> > -		pci_walk_bus(bus, report_frozen_detected, &status);
+> > +		pci_walk_bridge(bridge, report_frozen_detected, &status);
+> >  		status = reset_subordinates(bridge);
+> >  		if (status != PCI_ERS_RESULT_RECOVERED) {
+> >  			pci_warn(bridge, "subordinate device reset failed\n");
+> >  			goto failed;
+> >  		}
 > 
-> >  /*
-> > @@ -2718,7 +2706,6 @@ static void ctx_resched(struct perf_cpu_context *cpuctx,
-> >  			struct perf_event_context *task_ctx,
-> >  			enum event_type_t event_type)
-> >  {
-> > -	enum event_type_t ctx_event_type;
-> >  	bool cpu_event = !!(event_type & EVENT_CPU);
-> >  
-> >  	/*
-> > @@ -2728,11 +2715,13 @@ static void ctx_resched(struct perf_cpu_context *cpuctx,
-> >  	if (event_type & EVENT_PINNED)
-> >  		event_type |= EVENT_FLEXIBLE;
-> >  
-> > -	ctx_event_type = event_type & EVENT_ALL;
-> > +	event_type &= EVENT_ALL;
-> >  
-> > -	perf_pmu_disable(cpuctx->ctx.pmu);
-> > -	if (task_ctx)
-> > -		task_ctx_sched_out(cpuctx, task_ctx, event_type);
-> > +	perf_ctx_disable(&cpuctx->ctx);
-> > +	if (task_ctx) {
-> > +		perf_ctx_disable(task_ctx);
-> > +		task_ctx_sched_out(task_ctx, event_type);
-> > +	}
-> >  
-> >  	/*
-> >  	 * Decide which cpu ctx groups to schedule out based on the types
-> > @@ -2742,17 +2731,20 @@ static void ctx_resched(struct perf_cpu_context *cpuctx,
-> >  	 *  - otherwise, do nothing more.
-> >  	 */
-> >  	if (cpu_event)
-> > -		cpu_ctx_sched_out(cpuctx, ctx_event_type);
-> > -	else if (ctx_event_type & EVENT_PINNED)
-> > -		cpu_ctx_sched_out(cpuctx, EVENT_FLEXIBLE);
-> > +		ctx_sched_out(&cpuctx->ctx, event_type);
-> > +	else if (event_type & EVENT_PINNED)
-> > +		ctx_sched_out(&cpuctx->ctx, EVENT_FLEXIBLE);
-> >  
-> >  	perf_event_sched_in(cpuctx, task_ctx, current);
-> > -	perf_pmu_enable(cpuctx->ctx.pmu);
-> > +
-> > +	perf_ctx_enable(&cpuctx->ctx);
-> > +	if (task_ctx)
-> > +		perf_ctx_enable(task_ctx);
-> >  }
+> A local conflict merging this made me notice a later commit:
+> -----
+> commit 387c72cdd7fb6bef650fb078d0f6ae9682abf631
+> Author: Keith Busch <kbusch@kernel.org>
+> Date:   Mon Jan 4 15:02:58 2021 -0800
 > 
-> ctx_resched() reschedule entire perf_event_context while adding new event
-> to the context or enabling existing event in the context. We can probably
-> optimize it by rescheduling only affected pmu_ctx.
+> PCI/ERR: Retain status from error notification
+> 
+> Overwriting the frozen detected status with the result of the link reset
+> loses the NEED_RESET result that drivers are depending on for error
+> handling to report the .slot_reset() callback. Retain this status so
+> that subsequent error handling has the correct flow.
+> 
+> Link: https://lore.kernel.org/r/20210104230300.1277180-4-kbusch@kernel.org
+> Reported-by: Hinko Kocevar <hinko.kocevar@ess.eu>
+> Tested-by: Hedi Berriche <hedi.berriche@hpe.com>
+> Signed-off-by: Keith Busch <kbusch@kernel.org>
+> Signed-off-by: Bjorn Helgaas <bhelgaas@google.com>
+> Acked-by: Sean V Kelley <sean.v.kelley@intel.com>
+> Acked-by: Hedi Berriche <hedi.berriche@hpe.com>
+> 
+> diff --git a/drivers/pci/pcie/err.c b/drivers/pci/pcie/err.c
+> index a84f0bf4c1e2..b576aa890c76 100644
+> --- a/drivers/pci/pcie/err.c
+> +++ b/drivers/pci/pcie/err.c
+> @@ -198,8 +198,7 @@ pci_ers_result_t pcie_do_recovery(struct pci_dev *dev,
+>  	pci_dbg(bridge, "broadcast error_detected message\n");
+>  	if (state == pci_channel_io_frozen) {
+>  		pci_walk_bridge(bridge, report_frozen_detected, &status);
+> -		status = reset_subordinates(bridge);
+> -		if (status != PCI_ERS_RESULT_RECOVERED) {
+> +		if (reset_subordinates(bridge) != PCI_ERS_RESULT_RECOVERED) {
+>  			pci_warn(bridge, "subordinate device reset failed\n");
+>  			goto failed;
+>  		}
+> -----
+> 
+> Since this (commit I reply to) has been picked up, I think it'd make
+> sense to also include this (commit I just listed) in a later 5.10 tag.
+> It cherry-picks without error but would you like me to resend?
+> (I have added in Cc all involved people to this mail)
+> 
+> Digging through the mails the patch came with seem to imply approval for
+> stable merges; but it didn't make sense until pci_walk_bridge() had been
+> added just now. Now it's here we probably want both:
+> https://lore.kernel.org/all/d9ee4151-b28d-a52a-b5be-190a75e0e49b@intel.com/
+> 
+> 
+> (I noticed because the NXP kernel we are provided includes a different
+> "fix" for what I believe to be the same issue, previously discussed here:
+> https://lore.kernel.org/linux-pci/12115.1588207324@famine/
+> 
+> I haven't actually encountered any of the problems discribed, so this is
+> purely theorical for me; it just looks a bit weird.)
 
-Yes, it would probably make sense to add a pmu argument there and limit
-the rescheduling where possible.
+I've queued up the commit you referenced above now, thanks!
+
+greg k-h
