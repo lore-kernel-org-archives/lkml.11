@@ -2,119 +2,91 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 76017C3814E
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 09:17:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 870FDC32774
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 09:17:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344835AbiHWJRH (ORCPT
+        id S1348646AbiHWJRO (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 05:17:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38784 "EHLO
+        Tue, 23 Aug 2022 05:17:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37548 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348949AbiHWJNh (ORCPT
+        with ESMTP id S1349072AbiHWJOH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 05:13:37 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3B8E56D574;
+        Tue, 23 Aug 2022 05:14:07 -0400
+Received: from mail-lf1-x133.google.com (mail-lf1-x133.google.com [IPv6:2a00:1450:4864:20::133])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7754074E2B
+        for <linux-kernel@vger.kernel.org>; Tue, 23 Aug 2022 01:32:01 -0700 (PDT)
+Received: by mail-lf1-x133.google.com with SMTP id z25so18707429lfr.2
+        for <linux-kernel@vger.kernel.org>; Tue, 23 Aug 2022 01:32:01 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc;
+        bh=XvC1kycGZUq7/xp82owivjaLx63VVI1e7MB1fTwqes4=;
+        b=tRRDfaCQb1mENGjxM705CgplM7USLUwT0ZYlO01ujs7tE2GjS9WX5DWJy6dbIHYrWb
+         EwOlH6OfSrUB6FUZe7+v9LyBryuYpQL2XogLPvTZlIjYYI1YuXsa/QZ4isRkVqYJNPwg
+         Rz8lKFVsCzNvUtOu+z5+qjmD0nnfo81avth65SF91g3mEXVxF4VhoYMJ+TwteW4iC2Bk
+         bESzTdhgAf6cf726g87KbXUqR3WqEpCRNxbrWhYI2ODDq1lUtZgF65gdbkSl2ib5UjbD
+         hnQYfUWqg+/rcpjki3HQfr/LUSSnh0o4CQoHbSS7aiIVvYaydktPrizG3kbEjQsfWV5G
+         XU2A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc;
+        bh=XvC1kycGZUq7/xp82owivjaLx63VVI1e7MB1fTwqes4=;
+        b=c6XXyl/rfdkhdkUHaSjZI/QWZY5IoyjR8HXBfCWWnt9jYvjcz88p1R6F3JdsXNooxI
+         h2/dtgIpXocgz4yRlKGGaxcfXvxKVY5qNSy8WbmZDIJJ0s6k+Mtj0jIXKlR36i5CPpBa
+         ec2Gt7pD7GBeEi0rdjjY/n0AqWkXv4fMUR+84wRepg2GfJHqMmcb2Pk02v+r7JhRKW9L
+         w7Z9LAP7pV0uevgkpxu+qolLCpNpZ54urw0vFFK9El2XzHzIV8mEgk5Cbs9D2asXSQp4
+         bDDErfnMIK2pHts091UAZyIDOVC5BG/7Yz1XZwXIZ3dHkOUPAcfBD3ngBU1qs3jAzoMf
+         /SZg==
+X-Gm-Message-State: ACgBeo0q+fcpW4EJb1V8sM7hW9os9HNpnz9NkCCoQYNnP9XN8W1tymF9
+        p2rqOplL+7S9zynBG2ujWDaW1w==
+X-Google-Smtp-Source: AA6agR7aKl5wOZ3sSS/kNZcVIPkQYUN+thp3PfMhDVdyL3iVlU/KkhDk6u/PjJ7GFgmARdIS89q4oQ==
+X-Received: by 2002:a05:6512:1045:b0:491:f371:ad5d with SMTP id c5-20020a056512104500b00491f371ad5dmr7760918lfb.425.1661243516070;
+        Tue, 23 Aug 2022 01:31:56 -0700 (PDT)
+Received: from [192.168.0.11] (89-27-92-210.bb.dnainternet.fi. [89.27.92.210])
+        by smtp.gmail.com with ESMTPSA id t1-20020a056512208100b0048b28acab8csm2396695lfr.64.2022.08.23.01.31.55
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
         Tue, 23 Aug 2022 01:31:55 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id DC81B61360;
-        Tue, 23 Aug 2022 08:31:54 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E3EA9C433D6;
-        Tue, 23 Aug 2022 08:31:53 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661243514;
-        bh=YA7qGjAoZ0w68jbN59Y8bWwXYBlkSuhDhVnrXYHcvq8=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=YnHrqg8jfIThdZ8EQOpb+IlCuFJ5p5/mBxIhHrYAZGI6g7QknJ/CvXNr2MY59zo49
-         hX47iiTadTe7SNPIQpsXoZJiO4FJtG3fQwx1bhP/aEoar9CFEK1JZgieC47lv/E5u2
-         j4NnZ19eOIzO4NRenTRlgKDHPwLDshPcOOwp2pEM=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, kernel test robot <lkp@intel.com>,
-        Sai Prakash Ranjan <quic_saipraka@quicinc.com>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Neil Armstrong <narmstrong@baylibre.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.19 271/365] drm/meson: Fix overflow implicit truncation warnings
-Date:   Tue, 23 Aug 2022 10:02:52 +0200
-Message-Id: <20220823080129.509616916@linuxfoundation.org>
-X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220823080118.128342613@linuxfoundation.org>
-References: <20220823080118.128342613@linuxfoundation.org>
-User-Agent: quilt/0.67
+Message-ID: <fd93efd4-30cf-f498-efe7-8db5b76167db@linaro.org>
+Date:   Tue, 23 Aug 2022 11:31:54 +0300
 MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.12.0
+Subject: Re: [PATCH,1/2] dt-bindings: pwm: Add compatible for Mediatek MT8188
+Content-Language: en-US
+To:     xinlei.lee@mediatek.com, thierry.reding@gmail.com,
+        u.kleine-koenig@pengutronix.de, robh+dt@kernel.org,
+        krzysztof.kozlowski+dt@linaro.org, matthias.bgg@gmail.com
+Cc:     linux-pwm@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org,
+        Project_Global_Chrome_Upstream_Group@mediatek.com
+References: <1661239875-19841-1-git-send-email-xinlei.lee@mediatek.com>
+ <1661239875-19841-2-git-send-email-xinlei.lee@mediatek.com>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+In-Reply-To: <1661239875-19841-2-git-send-email-xinlei.lee@mediatek.com>
 Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Sai Prakash Ranjan <quic_saipraka@quicinc.com>
-
-[ Upstream commit 98692f52c588225034cbff458622c2c06dfcb544 ]
-
-Fix -Woverflow warnings for drm/meson driver which is a result
-of moving arm64 custom MMIO accessor macros to asm-generic function
-implementations giving a bonus type-checking now and uncovering these
-overflow warnings.
-
-drivers/gpu/drm/meson/meson_viu.c: In function ‘meson_viu_init’:
-drivers/gpu/drm/meson/meson_registers.h:1826:48: error: large integer implicitly truncated to unsigned type [-Werror=overflow]
- #define  VIU_OSD_BLEND_REORDER(dest, src)      ((src) << (dest * 4))
-                                                ^
-drivers/gpu/drm/meson/meson_viu.c:472:18: note: in expansion of macro ‘VIU_OSD_BLEND_REORDER’
-   writel_relaxed(VIU_OSD_BLEND_REORDER(0, 1) |
-                  ^~~~~~~~~~~~~~~~~~~~~
-
-Reported-by: kernel test robot <lkp@intel.com>
-Signed-off-by: Sai Prakash Ranjan <quic_saipraka@quicinc.com>
-Reviewed-by: Arnd Bergmann <arnd@arndb.de>
-Cc: Arnd Bergmann <arnd@arndb.de>
-Cc: Neil Armstrong <narmstrong@baylibre.com>
-Signed-off-by: Arnd Bergmann <arnd@arndb.de>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- drivers/gpu/drm/meson/meson_viu.c | 22 +++++++++++-----------
- 1 file changed, 11 insertions(+), 11 deletions(-)
-
-diff --git a/drivers/gpu/drm/meson/meson_viu.c b/drivers/gpu/drm/meson/meson_viu.c
-index 259f3e6bec90..bb7e109534de 100644
---- a/drivers/gpu/drm/meson/meson_viu.c
-+++ b/drivers/gpu/drm/meson/meson_viu.c
-@@ -469,17 +469,17 @@ void meson_viu_init(struct meson_drm *priv)
- 			priv->io_base + _REG(VD2_IF0_LUMA_FIFO_SIZE));
- 
- 	if (meson_vpu_is_compatible(priv, VPU_COMPATIBLE_G12A)) {
--		writel_relaxed(VIU_OSD_BLEND_REORDER(0, 1) |
--			       VIU_OSD_BLEND_REORDER(1, 0) |
--			       VIU_OSD_BLEND_REORDER(2, 0) |
--			       VIU_OSD_BLEND_REORDER(3, 0) |
--			       VIU_OSD_BLEND_DIN_EN(1) |
--			       VIU_OSD_BLEND1_DIN3_BYPASS_TO_DOUT1 |
--			       VIU_OSD_BLEND1_DOUT_BYPASS_TO_BLEND2 |
--			       VIU_OSD_BLEND_DIN0_BYPASS_TO_DOUT0 |
--			       VIU_OSD_BLEND_BLEN2_PREMULT_EN(1) |
--			       VIU_OSD_BLEND_HOLD_LINES(4),
--			       priv->io_base + _REG(VIU_OSD_BLEND_CTRL));
-+		u32 val = (u32)VIU_OSD_BLEND_REORDER(0, 1) |
-+			  (u32)VIU_OSD_BLEND_REORDER(1, 0) |
-+			  (u32)VIU_OSD_BLEND_REORDER(2, 0) |
-+			  (u32)VIU_OSD_BLEND_REORDER(3, 0) |
-+			  (u32)VIU_OSD_BLEND_DIN_EN(1) |
-+			  (u32)VIU_OSD_BLEND1_DIN3_BYPASS_TO_DOUT1 |
-+			  (u32)VIU_OSD_BLEND1_DOUT_BYPASS_TO_BLEND2 |
-+			  (u32)VIU_OSD_BLEND_DIN0_BYPASS_TO_DOUT0 |
-+			  (u32)VIU_OSD_BLEND_BLEN2_PREMULT_EN(1) |
-+			  (u32)VIU_OSD_BLEND_HOLD_LINES(4);
-+		writel_relaxed(val, priv->io_base + _REG(VIU_OSD_BLEND_CTRL));
- 
- 		writel_relaxed(OSD_BLEND_PATH_SEL_ENABLE,
- 			       priv->io_base + _REG(OSD1_BLEND_SRC_CTRL));
--- 
-2.35.1
+On 23/08/2022 10:31, xinlei.lee@mediatek.com wrote:
+> From: xinlei lee <xinlei.lee@mediatek.com>
+> 
+> Add dt-binding documentation of pwm for MediaTek MT8188 SoC.
+> 
+> Signed-off-by: xinlei lee <xinlei.lee@mediatek.com>
+> ---
+>  Documentation/devicetree/bindings/pwm/mediatek,pwm-disp.yaml | 1 +
 
 
+Acked-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
 
+
+Best regards,
+Krzysztof
