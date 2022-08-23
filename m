@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 864D0C32792
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 11:53:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 717A6C32793
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 11:53:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358392AbiHWLw7 (ORCPT
+        id S1358695AbiHWLxG (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 07:52:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52480 "EHLO
+        Tue, 23 Aug 2022 07:53:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55638 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1358613AbiHWLuX (ORCPT
+        with ESMTP id S1358630AbiHWLu3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 07:50:23 -0400
+        Tue, 23 Aug 2022 07:50:29 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 622123054A;
-        Tue, 23 Aug 2022 02:31:18 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 09FE677EAD;
+        Tue, 23 Aug 2022 02:31:22 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id DAA20612D6;
-        Tue, 23 Aug 2022 09:31:17 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 86831C433D6;
-        Tue, 23 Aug 2022 09:31:15 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 9B98A61381;
+        Tue, 23 Aug 2022 09:31:21 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5EC7EC433D7;
+        Tue, 23 Aug 2022 09:31:20 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661247077;
-        bh=4sQN/0zSM+pHzCCQE4OBLsSW/RpKp6j1u35q3KcAPyc=;
+        s=korg; t=1661247081;
+        bh=GP7gmRHQuHjUHcEaZL42Q5Iqqab1OgWQDLMASb+3ke8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=b4R79DSZhlM6/P1LRSdjxzKYdNsz4LkIDYGs8TSQh/i5xLJIwxgVfftEgWRovwWfl
-         TK5SoZxr2Phz19ezw4xUzz25kpNHboFWK0jS2CfcqnFu+QlsxZFKBO2oILw/jEyXJP
-         6iO9H/QchLSwjl6bCFE15SeuLyQ0Jzk+6UJUqyKY=
+        b=h2Ul+q91qWn+FYBPifcCOsgNtg1TOL2muoue2MY1bZ0LMguFJrkxESZeSZASw8j2/
+         AtUJh4ys5RfGTiuvPQ3JTllIaCPuqW/wrvjVsLbtIMm1N/idanwcPYq+FsEtysKcPH
+         o64yaz0yaFivWr1Iq2lxRj9gIT7F76PgasHV4CV0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Sandor Bodo-Merle <sbodomerle@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Jakub Kicinski <kuba@kernel.org>
-Subject: [PATCH 5.4 311/389] net: bgmac: Fix a BUG triggered by wrong bytes_compl
-Date:   Tue, 23 Aug 2022 10:26:29 +0200
-Message-Id: <20220823080128.560391647@linuxfoundation.org>
+        stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
+        Linus Walleij <linus.walleij@linaro.org>
+Subject: [PATCH 5.4 312/389] pinctrl: nomadik: Fix refcount leak in nmk_pinctrl_dt_subnode_to_map
+Date:   Tue, 23 Aug 2022 10:26:30 +0200
+Message-Id: <20220823080128.603567365@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220823080115.331990024@linuxfoundation.org>
 References: <20220823080115.331990024@linuxfoundation.org>
@@ -50,91 +49,36 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Sandor Bodo-Merle <sbodomerle@gmail.com>
+From: Miaoqian Lin <linmq006@gmail.com>
 
-commit 1b7680c6c1f6de9904f1d9b05c952f0c64a03350 upstream.
+commit 4b32e054335ea0ce50967f63a7bfd4db058b14b9 upstream.
 
-On one of our machines we got:
+of_parse_phandle() returns a node pointer with refcount
+incremented, we should use of_node_put() on it when not need anymore.
+Add missing of_node_put() to avoid refcount leak."
 
-kernel BUG at lib/dynamic_queue_limits.c:27!
-Internal error: Oops - BUG: 0 [#1] PREEMPT SMP ARM
-CPU: 0 PID: 1166 Comm: irq/41-bgmac Tainted: G        W  O    4.14.275-rt132 #1
-Hardware name: BRCM XGS iProc
-task: ee3415c0 task.stack: ee32a000
-PC is at dql_completed+0x168/0x178
-LR is at bgmac_poll+0x18c/0x6d8
-pc : [<c03b9430>]    lr : [<c04b5a18>]    psr: 800a0313
-sp : ee32be14  ip : 000005ea  fp : 00000bd4
-r10: ee558500  r9 : c0116298  r8 : 00000002
-r7 : 00000000  r6 : ef128810  r5 : 01993267  r4 : 01993851
-r3 : ee558000  r2 : 000070e1  r1 : 00000bd4  r0 : ee52c180
-Flags: Nzcv  IRQs on  FIQs on  Mode SVC_32  ISA ARM  Segment none
-Control: 12c5387d  Table: 8e88c04a  DAC: 00000051
-Process irq/41-bgmac (pid: 1166, stack limit = 0xee32a210)
-Stack: (0xee32be14 to 0xee32c000)
-be00:                                              ee558520 ee52c100 ef128810
-be20: 00000000 00000002 c0116298 c04b5a18 00000000 c0a0c8c4 c0951780 00000040
-be40: c0701780 ee558500 ee55d520 ef05b340 ef6f9780 ee558520 00000001 00000040
-be60: ffffe000 c0a56878 ef6fa040 c0952040 0000012c c0528744 ef6f97b0 fffcfb6a
-be80: c0a04104 2eda8000 c0a0c4ec c0a0d368 ee32bf44 c0153534 ee32be98 ee32be98
-bea0: ee32bea0 ee32bea0 ee32bea8 ee32bea8 00000000 c01462e4 ffffe000 ef6f22a8
-bec0: ffffe000 00000008 ee32bee4 c0147430 ffffe000 c094a2a8 00000003 ffffe000
-bee0: c0a54528 00208040 0000000c c0a0c8c4 c0a65980 c0124d3c 00000008 ee558520
-bf00: c094a23c c0a02080 00000000 c07a9910 ef136970 ef136970 ee30a440 ef136900
-bf20: ee30a440 00000001 ef136900 ee30a440 c016d990 00000000 c0108db0 c012500c
-bf40: ef136900 c016da14 ee30a464 ffffe000 00000001 c016dd14 00000000 c016db28
-bf60: ffffe000 ee21a080 ee30a400 00000000 ee32a000 ee30a440 c016dbfc ee25fd70
-bf80: ee21a09c c013edcc ee32a000 ee30a400 c013ec7c 00000000 00000000 00000000
-bfa0: 00000000 00000000 00000000 c0108470 00000000 00000000 00000000 00000000
-bfc0: 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000
-bfe0: 00000000 00000000 00000000 00000000 00000013 00000000 00000000 00000000
-[<c03b9430>] (dql_completed) from [<c04b5a18>] (bgmac_poll+0x18c/0x6d8)
-[<c04b5a18>] (bgmac_poll) from [<c0528744>] (net_rx_action+0x1c4/0x494)
-[<c0528744>] (net_rx_action) from [<c0124d3c>] (do_current_softirqs+0x1ec/0x43c)
-[<c0124d3c>] (do_current_softirqs) from [<c012500c>] (__local_bh_enable+0x80/0x98)
-[<c012500c>] (__local_bh_enable) from [<c016da14>] (irq_forced_thread_fn+0x84/0x98)
-[<c016da14>] (irq_forced_thread_fn) from [<c016dd14>] (irq_thread+0x118/0x1c0)
-[<c016dd14>] (irq_thread) from [<c013edcc>] (kthread+0x150/0x158)
-[<c013edcc>] (kthread) from [<c0108470>] (ret_from_fork+0x14/0x24)
-Code: a83f15e0 0200001a 0630a0e1 c3ffffea (f201f0e7)
-
-The issue seems similar to commit 90b3b339364c ("net: hisilicon: Fix a BUG
-trigered by wrong bytes_compl") and potentially introduced by commit
-b38c83dd0866 ("bgmac: simplify tx ring index handling").
-
-If there is an RX interrupt between setting ring->end
-and netdev_sent_queue() we can hit the BUG_ON as bgmac_dma_tx_free()
-can miscalculate the queue size while called from bgmac_poll().
-
-The machine which triggered the BUG runs a v4.14 RT kernel - but the issue
-seems present in mainline too.
-
-Fixes: b38c83dd0866 ("bgmac: simplify tx ring index handling")
-Signed-off-by: Sandor Bodo-Merle <sbodomerle@gmail.com>
-Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
-Link: https://lore.kernel.org/r/20220808173939.193804-1-sbodomerle@gmail.com
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Fixes: c2f6d059abfc ("pinctrl: nomadik: refactor DT parser to take two paths")
+Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
+Link: https://lore.kernel.org/r/20220607111602.57355-1-linmq006@gmail.com
+Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/net/ethernet/broadcom/bgmac.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/pinctrl/nomadik/pinctrl-nomadik.c |    4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/net/ethernet/broadcom/bgmac.c b/drivers/net/ethernet/broadcom/bgmac.c
-index 2dfc1e32bbb3..93580484a3f4 100644
---- a/drivers/net/ethernet/broadcom/bgmac.c
-+++ b/drivers/net/ethernet/broadcom/bgmac.c
-@@ -189,8 +189,8 @@ static netdev_tx_t bgmac_dma_tx_add(struct bgmac *bgmac,
- 	}
+--- a/drivers/pinctrl/nomadik/pinctrl-nomadik.c
++++ b/drivers/pinctrl/nomadik/pinctrl-nomadik.c
+@@ -1461,8 +1461,10 @@ static int nmk_pinctrl_dt_subnode_to_map
  
- 	slot->skb = skb;
--	ring->end += nr_frags + 1;
- 	netdev_sent_queue(net_dev, skb->len);
-+	ring->end += nr_frags + 1;
- 
- 	wmb();
- 
--- 
-2.37.2
-
+ 	has_config = nmk_pinctrl_dt_get_config(np, &configs);
+ 	np_config = of_parse_phandle(np, "ste,config", 0);
+-	if (np_config)
++	if (np_config) {
+ 		has_config |= nmk_pinctrl_dt_get_config(np_config, &configs);
++		of_node_put(np_config);
++	}
+ 	if (has_config) {
+ 		const char *gpio_name;
+ 		const char *pin;
 
 
