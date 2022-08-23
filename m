@@ -2,42 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A5AB5C32772
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 11:43:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 34D21C32772
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 11:44:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358155AbiHWLnv (ORCPT
+        id S1358162AbiHWLn7 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 07:43:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59558 "EHLO
+        Tue, 23 Aug 2022 07:43:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59582 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357927AbiHWLjd (ORCPT
+        with ESMTP id S1357912AbiHWLjd (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 23 Aug 2022 07:39:33 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 95FE567462;
-        Tue, 23 Aug 2022 02:28:30 -0700 (PDT)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 923D8785BF;
+        Tue, 23 Aug 2022 02:28:36 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id BC84BCE1B40;
-        Tue, 23 Aug 2022 09:28:27 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D74A7C433C1;
-        Tue, 23 Aug 2022 09:28:25 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 639ED612B5;
+        Tue, 23 Aug 2022 09:28:35 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 70427C433C1;
+        Tue, 23 Aug 2022 09:28:34 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661246906;
-        bh=XIyPzMQLBgtYoio64LREgctipDK0aA5owJ2+ONDYE6k=;
+        s=korg; t=1661246914;
+        bh=qO4j3AsmeVoKiJYQ3Ug9g5nOvWot0X0HDMxaeW3t0vA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=qTDXuCrL9Sr/qT9p/5AnrjNqM6HMSTHsHdYOGCpDS2hAXNCfJpFA7NPjKAWe9LZ21
-         WhpyqiRgxH78LwpdJL+5U/BrOAwqDRgNv1c5vU+PzdLgQXzCg66jByQ5hPTGQ5d+j+
-         PxKHHFM6wmdGkg6YHZ5gF6GEr71WskLSwJd99TwY=
+        b=ColkXGPPsgECZQP1GeC0m2rap72TDT+rVBx2QFLxKVO2wV05YNYljtXAMbK+M7B0t
+         2hmFfY9n70doowIHe3TKnQg8hOZTRC+tltoYkVCQuisBcA6VEr85MNhSTXmvYHCjqg
+         26mWeHKgXPMMbEPTIQsnqGFJiFo3iQD4WdXRc384=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Liang He <windhl@126.com>,
-        Helge Deller <deller@gmx.de>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 230/389] video: fbdev: amba-clcd: Fix refcount leak bugs
-Date:   Tue, 23 Aug 2022 10:25:08 +0200
-Message-Id: <20220823080125.204491240@linuxfoundation.org>
+        stable@vger.kernel.org, stable@kernel.org,
+        Lukas Czerner <lczerner@redhat.com>,
+        Andreas Dilger <adilger@dilger.ca>,
+        Theodore Tso <tytso@mit.edu>
+Subject: [PATCH 5.4 258/389] ext4: make sure ext4_append() always allocates new block
+Date:   Tue, 23 Aug 2022 10:25:36 +0200
+Message-Id: <20220823080126.370739360@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220823080115.331990024@linuxfoundation.org>
 References: <20220823080115.331990024@linuxfoundation.org>
@@ -49,78 +51,58 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Liang He <windhl@126.com>
+From: Lukas Czerner <lczerner@redhat.com>
 
-[ Upstream commit 26c2b7d9fac42eb8317f3ceefa4c1a9a9170ca69 ]
+commit b8a04fe77ef1360fbf73c80fddbdfeaa9407ed1b upstream.
 
-In clcdfb_of_init_display(), we should call of_node_put() for the
-references returned by of_graph_get_next_endpoint() and
-of_graph_get_remote_port_parent() which have increased the refcount.
+ext4_append() must always allocate a new block, otherwise we run the
+risk of overwriting existing directory block corrupting the directory
+tree in the process resulting in all manner of problems later on.
 
-Besides, we should call of_node_put() both in fail path or when
-the references are not used anymore.
+Add a sanity check to see if the logical block is already allocated and
+error out if it is.
 
-Fixes: d10715be03bd ("video: ARM CLCD: Add DT support")
-Signed-off-by: Liang He <windhl@126.com>
-Signed-off-by: Helge Deller <deller@gmx.de>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Cc: stable@kernel.org
+Signed-off-by: Lukas Czerner <lczerner@redhat.com>
+Reviewed-by: Andreas Dilger <adilger@dilger.ca>
+Link: https://lore.kernel.org/r/20220704142721.157985-2-lczerner@redhat.com
+Signed-off-by: Theodore Ts'o <tytso@mit.edu>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/video/fbdev/amba-clcd.c | 24 ++++++++++++++++++------
- 1 file changed, 18 insertions(+), 6 deletions(-)
+ fs/ext4/namei.c |   16 ++++++++++++++++
+ 1 file changed, 16 insertions(+)
 
-diff --git a/drivers/video/fbdev/amba-clcd.c b/drivers/video/fbdev/amba-clcd.c
-index 3b7a7c74bf0a..09774ada36fb 100644
---- a/drivers/video/fbdev/amba-clcd.c
-+++ b/drivers/video/fbdev/amba-clcd.c
-@@ -714,16 +714,18 @@ static int clcdfb_of_init_display(struct clcd_fb *fb)
- 		return -ENODEV;
+--- a/fs/ext4/namei.c
++++ b/fs/ext4/namei.c
+@@ -54,6 +54,7 @@ static struct buffer_head *ext4_append(h
+ 					struct inode *inode,
+ 					ext4_lblk_t *block)
+ {
++	struct ext4_map_blocks map;
+ 	struct buffer_head *bh;
+ 	int err;
  
- 	panel = of_graph_get_remote_port_parent(endpoint);
--	if (!panel)
--		return -ENODEV;
-+	if (!panel) {
-+		err = -ENODEV;
-+		goto out_endpoint_put;
-+	}
+@@ -63,6 +64,21 @@ static struct buffer_head *ext4_append(h
+ 		return ERR_PTR(-ENOSPC);
  
- 	err = clcdfb_of_get_backlight(panel, fb->panel);
- 	if (err)
--		return err;
-+		goto out_panel_put;
- 
- 	err = clcdfb_of_get_mode(&fb->dev->dev, panel, fb->panel);
- 	if (err)
--		return err;
-+		goto out_panel_put;
- 
- 	err = of_property_read_u32(fb->dev->dev.of_node, "max-memory-bandwidth",
- 			&max_bandwidth);
-@@ -752,11 +754,21 @@ static int clcdfb_of_init_display(struct clcd_fb *fb)
- 
- 	if (of_property_read_u32_array(endpoint,
- 			"arm,pl11x,tft-r0g0b0-pads",
--			tft_r0b0g0, ARRAY_SIZE(tft_r0b0g0)) != 0)
--		return -ENOENT;
-+			tft_r0b0g0, ARRAY_SIZE(tft_r0b0g0)) != 0) {
-+		err = -ENOENT;
-+		goto out_panel_put;
-+	}
+ 	*block = inode->i_size >> inode->i_sb->s_blocksize_bits;
++	map.m_lblk = *block;
++	map.m_len = 1;
 +
-+	of_node_put(panel);
-+	of_node_put(endpoint);
++	/*
++	 * We're appending new directory block. Make sure the block is not
++	 * allocated yet, otherwise we will end up corrupting the
++	 * directory.
++	 */
++	err = ext4_map_blocks(NULL, inode, &map, 0);
++	if (err < 0)
++		return ERR_PTR(err);
++	if (err) {
++		EXT4_ERROR_INODE(inode, "Logical block already allocated");
++		return ERR_PTR(-EFSCORRUPTED);
++	}
  
- 	return clcdfb_of_init_tft_panel(fb, tft_r0b0g0[0],
- 					tft_r0b0g0[1],  tft_r0b0g0[2]);
-+out_panel_put:
-+	of_node_put(panel);
-+out_endpoint_put:
-+	of_node_put(endpoint);
-+	return err;
- }
- 
- static int clcdfb_of_vram_setup(struct clcd_fb *fb)
--- 
-2.35.1
-
+ 	bh = ext4_bread(handle, inode, *block, EXT4_GET_BLOCKS_CREATE);
+ 	if (IS_ERR(bh))
 
 
