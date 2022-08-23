@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 58051C32772
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 09:57:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A3D25C38145
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 09:57:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243149AbiHWJ5k (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 05:57:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41962 "EHLO
+        id S243439AbiHWJ5r (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 23 Aug 2022 05:57:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37310 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243182AbiHWJw0 (ORCPT
+        with ESMTP id S243219AbiHWJwj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 05:52:26 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5B28F6E2CE;
-        Tue, 23 Aug 2022 01:46:00 -0700 (PDT)
+        Tue, 23 Aug 2022 05:52:39 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F04C37B78A;
+        Tue, 23 Aug 2022 01:46:19 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id B577D6155E;
-        Tue, 23 Aug 2022 08:46:00 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B8BF0C433C1;
-        Tue, 23 Aug 2022 08:45:59 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 8282CB81C53;
+        Tue, 23 Aug 2022 08:45:15 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E690AC433C1;
+        Tue, 23 Aug 2022 08:45:13 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661244360;
-        bh=sU7kMdmw1T09diqjB56YXbqQYh3v9L7FstmGIRDNvRE=;
+        s=korg; t=1661244314;
+        bh=OIFz9Puy2x0e9AK+d1L7NJn2m8YPZnlzGVGHvm1SSgI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=zMw3wJRGH1XfcLV7tRs/DVnqA/5DPZ/Ag2xcrhp3fGyQLRnBDmXfRsAMWN+GM7Agj
-         OVwOjv1vsojLK3UIOMXrg9z6Lo81RCOuezB8eXaHhLTxfgS+rRBzQxM1bxPxj+xh+n
-         +nrjq64riDSAAqniImMFFEGprHsqtDUvNsHaL6AI=
+        b=mtK2VeYkMUPGo7bihZHvYN48T03TepmRCSYPYZRsDiKKpypI1P/dEKVAsUV/1rWN+
+         TOviHoiExTcQv7OUe6crxPABS9510xdvw6EkrmJz0oUWiddmIHcAsxqPajj5ABAE0j
+         /Eo4a09bV1uF+QFr/8Vfi5BVRcP3DXyUSD1qksLE=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Sireesh Kodali <sireeshkodali1@gmail.com>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
+        Mark Brown <broonie@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.14 125/229] remoteproc: qcom: wcnss: Fix handling of IRQs
-Date:   Tue, 23 Aug 2022 10:24:46 +0200
-Message-Id: <20220823080058.188394524@linuxfoundation.org>
+Subject: [PATCH 4.14 118/229] ASoC: mediatek: mt8173: Fix refcount leak in mt8173_rt5650_rt5676_dev_probe
+Date:   Tue, 23 Aug 2022 10:24:39 +0200
+Message-Id: <20220823080057.908983731@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220823080053.202747790@linuxfoundation.org>
 References: <20220823080053.202747790@linuxfoundation.org>
@@ -49,58 +49,64 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Sireesh Kodali <sireeshkodali1@gmail.com>
+From: Miaoqian Lin <linmq006@gmail.com>
 
-[ Upstream commit bed0adac1ded4cb486ba19a3a7e730fbd9a1c9c6 ]
+[ Upstream commit ae4f11c1ed2d67192fdf3d89db719ee439827c11 ]
 
-The wcnss_get_irq function is expected to return a value > 0 in the
-event that an IRQ is succssfully obtained, but it instead returns 0.
-This causes the stop and ready IRQs to never actually be used despite
-being defined in the device-tree. This patch fixes that.
+of_parse_phandle() returns a node pointer with refcount
+incremented, we should use of_node_put() on it when not need anymore.
+Fix missing of_node_put() in error paths.
 
-Fixes: aed361adca9f ("remoteproc: qcom: Introduce WCNSS peripheral image loader")
-Signed-off-by: Sireesh Kodali <sireeshkodali1@gmail.com>
-Signed-off-by: Bjorn Andersson <bjorn.andersson@linaro.org>
-Link: https://lore.kernel.org/r/20220526141740.15834-2-sireeshkodali1@gmail.com
+Fixes: 94319ba10eca ("ASoC: mediatek: Use platform_of_node for machine drivers")
+Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
+Link: https://lore.kernel.org/r/20220602034144.60159-1-linmq006@gmail.com
+Signed-off-by: Mark Brown <broonie@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/remoteproc/qcom_wcnss.c | 10 ++++++++--
- 1 file changed, 8 insertions(+), 2 deletions(-)
+ sound/soc/mediatek/mt8173/mt8173-rt5650-rt5676.c | 10 +++++++---
+ 1 file changed, 7 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/remoteproc/qcom_wcnss.c b/drivers/remoteproc/qcom_wcnss.c
-index bc399fb29592..bb11419ff151 100644
---- a/drivers/remoteproc/qcom_wcnss.c
-+++ b/drivers/remoteproc/qcom_wcnss.c
-@@ -418,6 +418,7 @@ static int wcnss_request_irq(struct qcom_wcnss *wcnss,
- 			     irq_handler_t thread_fn)
- {
- 	int ret;
-+	int irq_number;
- 
- 	ret = platform_get_irq_byname(pdev, name);
- 	if (ret < 0 && optional) {
-@@ -428,14 +429,19 @@ static int wcnss_request_irq(struct qcom_wcnss *wcnss,
- 		return ret;
+diff --git a/sound/soc/mediatek/mt8173/mt8173-rt5650-rt5676.c b/sound/soc/mediatek/mt8173/mt8173-rt5650-rt5676.c
+index 61b0d8f8678e..90606b177eaf 100644
+--- a/sound/soc/mediatek/mt8173/mt8173-rt5650-rt5676.c
++++ b/sound/soc/mediatek/mt8173/mt8173-rt5650-rt5676.c
+@@ -255,14 +255,16 @@ static int mt8173_rt5650_rt5676_dev_probe(struct platform_device *pdev)
+ 	if (!mt8173_rt5650_rt5676_codecs[0].of_node) {
+ 		dev_err(&pdev->dev,
+ 			"Property 'audio-codec' missing or invalid\n");
+-		return -EINVAL;
++		ret = -EINVAL;
++		goto put_node;
+ 	}
+ 	mt8173_rt5650_rt5676_codecs[1].of_node =
+ 		of_parse_phandle(pdev->dev.of_node, "mediatek,audio-codec", 1);
+ 	if (!mt8173_rt5650_rt5676_codecs[1].of_node) {
+ 		dev_err(&pdev->dev,
+ 			"Property 'audio-codec' missing or invalid\n");
+-		return -EINVAL;
++		ret = -EINVAL;
++		goto put_node;
+ 	}
+ 	mt8173_rt5650_rt5676_codec_conf[0].of_node =
+ 		mt8173_rt5650_rt5676_codecs[1].of_node;
+@@ -275,7 +277,8 @@ static int mt8173_rt5650_rt5676_dev_probe(struct platform_device *pdev)
+ 	if (!mt8173_rt5650_rt5676_dais[DAI_LINK_HDMI_I2S].codec_of_node) {
+ 		dev_err(&pdev->dev,
+ 			"Property 'audio-codec' missing or invalid\n");
+-		return -EINVAL;
++		ret = -EINVAL;
++		goto put_node;
  	}
  
-+	irq_number = ret;
-+
- 	ret = devm_request_threaded_irq(&pdev->dev, ret,
- 					NULL, thread_fn,
- 					IRQF_TRIGGER_RISING | IRQF_ONESHOT,
- 					"wcnss", wcnss);
--	if (ret)
-+	if (ret) {
- 		dev_err(&pdev->dev, "request %s IRQ failed\n", name);
-+		return ret;
-+	}
+ 	card->dev = &pdev->dev;
+@@ -285,6 +288,7 @@ static int mt8173_rt5650_rt5676_dev_probe(struct platform_device *pdev)
+ 		dev_err(&pdev->dev, "%s snd_soc_register_card fail %d\n",
+ 			__func__, ret);
  
--	return ret;
-+	/* Return the IRQ number if the IRQ was successfully acquired */
-+	return irq_number;
++put_node:
+ 	of_node_put(platform_node);
+ 	return ret;
  }
- 
- static int wcnss_alloc_memory_region(struct qcom_wcnss *wcnss)
 -- 
 2.35.1
 
