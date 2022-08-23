@@ -2,41 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 28A6FC32774
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 08:35:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3D92AC32772
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 08:35:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343970AbiHWIfI (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 04:35:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33054 "EHLO
+        id S243995AbiHWIfQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 23 Aug 2022 04:35:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35244 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345145AbiHWIbi (ORCPT
+        with ESMTP id S1346666AbiHWIcB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 04:31:38 -0400
+        Tue, 23 Aug 2022 04:32:01 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9E96E6DAC8;
-        Tue, 23 Aug 2022 01:16:01 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 871F06D9DF;
+        Tue, 23 Aug 2022 01:16:10 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 334C161242;
-        Tue, 23 Aug 2022 08:15:24 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 41B26C433D6;
-        Tue, 23 Aug 2022 08:15:23 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 321F661242;
+        Tue, 23 Aug 2022 08:16:10 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 24786C433C1;
+        Tue, 23 Aug 2022 08:16:08 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661242523;
-        bh=myMdnGVdYAOwkYIWpgpdgy4cNjrQGpV3r6l/uJbrmlQ=;
+        s=korg; t=1661242569;
+        bh=YKgSrZytelvA7qH/EzilkzPS+8jp+NvQH+QwQtyN6Zk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=1C8A6gCOrnAVZD3rpz50A0LojhX/3mDMzg1UNM0o/9mKyIt8WLVbp+CVS2sElfKVz
-         gT426LTo3AR4T8JhmlO4KDNVk9gv3b4MHQO80lxV+YzvlCwYVmtVCTE/A8NVqNeYBR
-         zxRcIheFjI0uxqJKxdDFjiKITiJMOdlBh+k2L0Jw=
+        b=cVfvlp5StC1WZmwopAWQMI3XUFKcAR2zLwZWIOiEUGqezlWZFMCO1pFBqiwshSMlP
+         IP4QhN53PoUApJqvNOh7TpmtMCLMOazk2HaChm82XHNk9y8VbsHtyNThW0+xhzcPcC
+         t3XcCgEaGwxmpQtK61D90NzvOEGSH3F48hymrmFA=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Pablo Neira Ayuso <pablo@netfilter.org>
-Subject: [PATCH 4.9 084/101] netfilter: nf_tables: really skip inactive sets when allocating name
-Date:   Tue, 23 Aug 2022 10:03:57 +0200
-Message-Id: <20220823080037.763250725@linuxfoundation.org>
+        stable@vger.kernel.org, Oleg Kiselev <okiselev@amazon.com>,
+        Theodore Tso <tytso@mit.edu>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 4.9 093/101] ext4: avoid resizing to a partial cluster size
+Date:   Tue, 23 Aug 2022 10:04:06 +0200
+Message-Id: <20220823080038.112097785@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220823080034.579196046@linuxfoundation.org>
 References: <20220823080034.579196046@linuxfoundation.org>
@@ -48,30 +48,47 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Pablo Neira Ayuso <pablo@netfilter.org>
+From: Kiselev, Oleg <okiselev@amazon.com>
 
-commit 271c5ca826e0c3c53e0eb4032f8eaedea1ee391c upstream.
+[ Upstream commit 69cb8e9d8cd97cdf5e293b26d70a9dee3e35e6bd ]
 
-While looping to build the bitmap of used anonymous set names, check the
-current set in the iteration, instead of the one that is being created.
+This patch avoids an attempt to resize the filesystem to an
+unaligned cluster boundary.  An online resize to a size that is not
+integral to cluster size results in the last iteration attempting to
+grow the fs by a negative amount, which trips a BUG_ON and leaves the fs
+with a corrupted in-memory superblock.
 
-Fixes: 37a9cc525525 ("netfilter: nf_tables: add generation mask to sets")
-Signed-off-by: Pablo Neira Ayuso <pablo@netfilter.org>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Oleg Kiselev <okiselev@amazon.com>
+Link: https://lore.kernel.org/r/0E92A0AB-4F16-4F1A-94B7-702CC6504FDE@amazon.com
+Signed-off-by: Theodore Ts'o <tytso@mit.edu>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/netfilter/nf_tables_api.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ fs/ext4/resize.c | 10 ++++++++++
+ 1 file changed, 10 insertions(+)
 
---- a/net/netfilter/nf_tables_api.c
-+++ b/net/netfilter/nf_tables_api.c
-@@ -2515,7 +2515,7 @@ cont:
- 		list_for_each_entry(i, &ctx->table->sets, list) {
- 			int tmp;
+diff --git a/fs/ext4/resize.c b/fs/ext4/resize.c
+index 60984bc54d55..e4f02572f69d 100644
+--- a/fs/ext4/resize.c
++++ b/fs/ext4/resize.c
+@@ -1941,6 +1941,16 @@ int ext4_resize_fs(struct super_block *sb, ext4_fsblk_t n_blocks_count)
+ 	}
+ 	brelse(bh);
  
--			if (!nft_is_active_next(ctx->net, set))
-+			if (!nft_is_active_next(ctx->net, i))
- 				continue;
- 			if (!sscanf(i->name, name, &tmp))
- 				continue;
++	/*
++	 * For bigalloc, trim the requested size to the nearest cluster
++	 * boundary to avoid creating an unusable filesystem. We do this
++	 * silently, instead of returning an error, to avoid breaking
++	 * callers that blindly resize the filesystem to the full size of
++	 * the underlying block device.
++	 */
++	if (ext4_has_feature_bigalloc(sb))
++		n_blocks_count &= ~((1 << EXT4_CLUSTER_BITS(sb)) - 1);
++
+ retry:
+ 	o_blocks_count = ext4_blocks_count(es);
+ 
+-- 
+2.35.1
+
 
 
