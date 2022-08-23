@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0420BC32772
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3B4A4C3F6B0
 	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 10:47:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355892AbiHWKpa (ORCPT
+        id S1355929AbiHWKpw (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 06:45:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42574 "EHLO
+        Tue, 23 Aug 2022 06:45:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43154 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355158AbiHWKh6 (ORCPT
+        with ESMTP id S1355308AbiHWKiJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 06:37:58 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A3B43A6C50;
-        Tue, 23 Aug 2022 02:07:33 -0700 (PDT)
+        Tue, 23 Aug 2022 06:38:09 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A4FA0A6C7D;
+        Tue, 23 Aug 2022 02:07:39 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id DB881B81C4E;
-        Tue, 23 Aug 2022 09:07:31 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2E27FC433C1;
-        Tue, 23 Aug 2022 09:07:29 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 37852B81C85;
+        Tue, 23 Aug 2022 09:07:38 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8313BC433D6;
+        Tue, 23 Aug 2022 09:07:36 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661245650;
-        bh=suZdBRjpDXFWDEa7jpSVWd8gmAmyH/rauzQmD1kwnvE=;
+        s=korg; t=1661245657;
+        bh=gAP38tcAj7LlaKrsijqfJ1GSUGU8jMf8tiBpQP4uIZ0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=JUbkabSoxxXdeArssyE7Ch5JJeBargAo44sCH6V5lyNH1aKX5hefwzC+6ljlOPWWl
-         MvtM5mUfCSWdzNtQjdX6dVA/MYU5u6h6f59f+u5O+3LkkdJBGoZrF5d+xftdTy2NL6
-         bk7GrKHm7CVXOBhlUfLGa2xlKj23M4wR9E7QENWU=
+        b=j0uWNVLBLjlAAzwZ1tXynTuWQv0ih2b3HQPEzpY9jX75pT6d+cSeoYu9ns8sLngL1
+         NuK+B+TXs5fJjJ81BF5ftM0l24hKjR9FvFD53G3lq4JOwfdk/vOwO5OlEQNtEpbQ4C
+         Swng1G3HwUoB2MXtNgv3v9hSl5lQhtns5ob0aiPQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Artem Borisov <dedsa2002@gmail.com>,
-        Jiri Kosina <jkosina@suse.cz>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.19 138/287] HID: alps: Declare U1_UNICORN_LEGACY support
-Date:   Tue, 23 Aug 2022 10:25:07 +0200
-Message-Id: <20220823080105.120210342@linuxfoundation.org>
+        stable@vger.kernel.org, Jiasheng Jiang <jiasheng@iscas.ac.cn>,
+        Mark Brown <broonie@kernel.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 4.19 148/287] ASoC: codecs: da7210: add check for i2c_add_driver
+Date:   Tue, 23 Aug 2022 10:25:17 +0200
+Message-Id: <20220823080105.554865945@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220823080100.268827165@linuxfoundation.org>
 References: <20220823080100.268827165@linuxfoundation.org>
@@ -49,34 +50,39 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Artem Borisov <dedsa2002@gmail.com>
+From: Jiasheng Jiang <jiasheng@iscas.ac.cn>
 
-[ Upstream commit 1117d182c5d72abd7eb8b7d5e7b8c3373181c3ab ]
+[ Upstream commit 82fa8f581a954ddeec1602bed9f8b4a09d100e6e ]
 
-U1_UNICORN_LEGACY id was added to the driver, but was not declared
-in the device id table, making it impossible to use.
+As i2c_add_driver could return error if fails, it should be
+better to check the return value.
+However, if the CONFIG_I2C and CONFIG_SPI_MASTER are both true,
+the return value of i2c_add_driver will be covered by
+spi_register_driver.
+Therefore, it is necessary to add check and return error if fails.
 
-Fixes: 640e403 ("HID: alps: Add AUI1657 device ID")
-Signed-off-by: Artem Borisov <dedsa2002@gmail.com>
-Signed-off-by: Jiri Kosina <jkosina@suse.cz>
+Fixes: aa0e25caafb7 ("ASoC: da7210: Add support for spi regmap")
+Signed-off-by: Jiasheng Jiang <jiasheng@iscas.ac.cn>
+Link: https://lore.kernel.org/r/20220531094712.2376759-1-jiasheng@iscas.ac.cn
+Signed-off-by: Mark Brown <broonie@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/hid/hid-alps.c | 2 ++
+ sound/soc/codecs/da7210.c | 2 ++
  1 file changed, 2 insertions(+)
 
-diff --git a/drivers/hid/hid-alps.c b/drivers/hid/hid-alps.c
-index 3eddd8f73b57..116ece4be2c9 100644
---- a/drivers/hid/hid-alps.c
-+++ b/drivers/hid/hid-alps.c
-@@ -835,6 +835,8 @@ static const struct hid_device_id alps_id[] = {
- 		USB_VENDOR_ID_ALPS_JP, HID_DEVICE_ID_ALPS_U1_DUAL) },
- 	{ HID_DEVICE(HID_BUS_ANY, HID_GROUP_ANY,
- 		USB_VENDOR_ID_ALPS_JP, HID_DEVICE_ID_ALPS_U1) },
-+	{ HID_DEVICE(HID_BUS_ANY, HID_GROUP_ANY,
-+		USB_VENDOR_ID_ALPS_JP, HID_DEVICE_ID_ALPS_U1_UNICORN_LEGACY) },
- 	{ HID_DEVICE(HID_BUS_ANY, HID_GROUP_ANY,
- 		USB_VENDOR_ID_ALPS_JP, HID_DEVICE_ID_ALPS_T4_BTNLESS) },
- 	{ }
+diff --git a/sound/soc/codecs/da7210.c b/sound/soc/codecs/da7210.c
+index e172913d04a4..efc5049c0796 100644
+--- a/sound/soc/codecs/da7210.c
++++ b/sound/soc/codecs/da7210.c
+@@ -1333,6 +1333,8 @@ static int __init da7210_modinit(void)
+ 	int ret = 0;
+ #if IS_ENABLED(CONFIG_I2C)
+ 	ret = i2c_add_driver(&da7210_i2c_driver);
++	if (ret)
++		return ret;
+ #endif
+ #if defined(CONFIG_SPI_MASTER)
+ 	ret = spi_register_driver(&da7210_spi_driver);
 -- 
 2.35.1
 
