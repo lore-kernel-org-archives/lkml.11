@@ -2,45 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D73D0C32772
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 10:20:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 61121C32772
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 10:23:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353831AbiHWKUY (ORCPT
+        id S1354126AbiHWKU3 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 06:20:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57976 "EHLO
+        Tue, 23 Aug 2022 06:20:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60626 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352816AbiHWKJE (ORCPT
+        with ESMTP id S1352831AbiHWKJK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 06:09:04 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 75E627D7BC;
-        Tue, 23 Aug 2022 01:55:00 -0700 (PDT)
+        Tue, 23 Aug 2022 06:09:10 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 269157D7AD;
+        Tue, 23 Aug 2022 01:55:08 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 11D0B61555;
-        Tue, 23 Aug 2022 08:55:00 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id EB4D7C433C1;
-        Tue, 23 Aug 2022 08:54:58 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id CD05DB81C35;
+        Tue, 23 Aug 2022 08:55:06 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 18838C433C1;
+        Tue, 23 Aug 2022 08:55:04 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661244899;
-        bh=uRM/VlwTBzxaVs7zAY2kE58AHdWWZRLRNwR7riI/cTk=;
+        s=korg; t=1661244905;
+        bh=hRPBfczdm15C8/gZO/F3YClMCpGorCXgOhAyyTX1B+M=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=oHziVeowzPNROPgTboQf4FsolZJVvUBwpv1PzruL8DSDsfuZ2txXljaUn4plXjQF7
-         NPDB3T0nDC2HV+XPz1GMW7QBMO1Zr9YhWy7/L7EYTPqPkGTzBf3tvKSAH4FtwU1WbX
-         3C76YwtD5NbEbpJKSryYpvpTE32vsVqugbua/ae0=
+        b=eO2Y2ehyYdbKfDXadZdTZ5ixjlGBFxE6qw+PumG4Pr2cN75gB+O60Cq0I2jS2J39X
+         eYKYL7uQVCynUeW0Ly3p30cTYCSzDRBvCXu7CmGwNWMygduWJZTbrkNnUMoazqNgUO
+         fmZdND0bjKHZHSQXm33ISb6G+eAAMT4f5RfNhG8s=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        =?UTF-8?q?Pali=20Roh=C3=A1r?= <pali@kernel.org>,
-        =?UTF-8?q?Marek=20Beh=C3=BAn?= <kabel@kernel.org>,
-        Bjorn Helgaas <bhelgaas@google.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 169/244] PCI: aardvark: Fix reporting Slot capabilities on emulated bridge
-Date:   Tue, 23 Aug 2022 10:25:28 +0200
-Message-Id: <20220823080104.893917934@linuxfoundation.org>
+        stable@vger.kernel.org, Marc Zyngier <maz@kernel.org>,
+        Sai Prakash Ranjan <quic_saipraka@quicinc.com>,
+        Arnd Bergmann <arnd@arndb.de>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 170/244] irqchip/tegra: Fix overflow implicit truncation warnings
+Date:   Tue, 23 Aug 2022 10:25:29 +0200
+Message-Id: <20220823080104.933936603@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220823080059.091088642@linuxfoundation.org>
 References: <20220823080059.091088642@linuxfoundation.org>
@@ -52,97 +50,71 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Pali Rohár <pali@kernel.org>
+From: Sai Prakash Ranjan <quic_saipraka@quicinc.com>
 
-[ Upstream commit bcdb6fd4f3e9ac1097698c8d8f56b70853b49873 ]
+[ Upstream commit 443685992bda9bb4f8b17fc02c9f6c60e62b1461 ]
 
-Slot capabilities are currently not reported because emulated bridge does
-not report the PCI_EXP_FLAGS_SLOT flag.
+Fix -Woverflow warnings for tegra irqchip driver which is a result
+of moving arm64 custom MMIO accessor macros to asm-generic function
+implementations giving a bonus type-checking now and uncovering these
+overflow warnings.
 
-Set PCI_EXP_FLAGS_SLOT to let the kernel know that PCI_EXP_SLT* registers
-are supported.
+drivers/irqchip/irq-tegra.c: In function ‘tegra_ictlr_suspend’:
+drivers/irqchip/irq-tegra.c:151:18: warning: large integer implicitly truncated to unsigned type [-Woverflow]
+   writel_relaxed(~0ul, ictlr + ICTLR_COP_IER_CLR);
+                  ^
 
-Move setting of PCI_EXP_SLTCTL register from "dynamic" pcie_conf_read
-function to static buffer as it is only statically filled the
-PCI_EXP_SLTSTA_PDS flag and dynamic read callback is not needed for this
-register.
-
-Set Presence State Bit to 1 since there is no support for unplugging the
-card and there is currently no platform able to detect presence of a card -
-in such a case the bit needs to be set to 1.
-
-Finally correctly set Physical Slot Number to 1 since there is only one
-port and zero value is reserved for ports within the same silicon as Root
-Port which is not our case for Aardvark HW.
-
-Link: https://lore.kernel.org/r/20220524132827.8837-3-kabel@kernel.org
-Signed-off-by: Pali Rohár <pali@kernel.org>
-Signed-off-by: Marek Behún <kabel@kernel.org>
-Signed-off-by: Bjorn Helgaas <bhelgaas@google.com>
+Suggested-by: Marc Zyngier <maz@kernel.org>
+Signed-off-by: Sai Prakash Ranjan <quic_saipraka@quicinc.com>
+Reviewed-by: Arnd Bergmann <arnd@arndb.de>
+Cc: Marc Zyngier <maz@kernel.org>
+Signed-off-by: Arnd Bergmann <arnd@arndb.de>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/pci/controller/pci-aardvark.c | 33 +++++++++++++++++++--------
- 1 file changed, 24 insertions(+), 9 deletions(-)
+ drivers/irqchip/irq-tegra.c | 10 +++++-----
+ 1 file changed, 5 insertions(+), 5 deletions(-)
 
-diff --git a/drivers/pci/controller/pci-aardvark.c b/drivers/pci/controller/pci-aardvark.c
-index 7cc2c54daad0..215f7510de9a 100644
---- a/drivers/pci/controller/pci-aardvark.c
-+++ b/drivers/pci/controller/pci-aardvark.c
-@@ -8,6 +8,7 @@
-  * Author: Hezi Shahmoon <hezi.shahmoon@marvell.com>
-  */
+diff --git a/drivers/irqchip/irq-tegra.c b/drivers/irqchip/irq-tegra.c
+index e1f771c72fc4..ad3e2c1b3c87 100644
+--- a/drivers/irqchip/irq-tegra.c
++++ b/drivers/irqchip/irq-tegra.c
+@@ -148,10 +148,10 @@ static int tegra_ictlr_suspend(void)
+ 		lic->cop_iep[i] = readl_relaxed(ictlr + ICTLR_COP_IEP_CLASS);
  
-+#include <linux/bitfield.h>
- #include <linux/delay.h>
- #include <linux/gpio/consumer.h>
- #include <linux/interrupt.h>
-@@ -857,14 +858,11 @@ advk_pci_bridge_emul_pcie_conf_read(struct pci_bridge_emul *bridge,
+ 		/* Disable COP interrupts */
+-		writel_relaxed(~0ul, ictlr + ICTLR_COP_IER_CLR);
++		writel_relaxed(GENMASK(31, 0), ictlr + ICTLR_COP_IER_CLR);
  
+ 		/* Disable CPU interrupts */
+-		writel_relaxed(~0ul, ictlr + ICTLR_CPU_IER_CLR);
++		writel_relaxed(GENMASK(31, 0), ictlr + ICTLR_CPU_IER_CLR);
  
- 	switch (reg) {
--	case PCI_EXP_SLTCTL:
--		*value = PCI_EXP_SLTSTA_PDS << 16;
--		return PCI_BRIDGE_EMUL_HANDLED;
--
- 	/*
--	 * PCI_EXP_RTCTL and PCI_EXP_RTSTA are also supported, but do not need
--	 * to be handled here, because their values are stored in emulated
--	 * config space buffer, and we read them from there when needed.
-+	 * PCI_EXP_SLTCAP, PCI_EXP_SLTCTL, PCI_EXP_RTCTL and PCI_EXP_RTSTA are
-+	 * also supported, but do not need to be handled here, because their
-+	 * values are stored in emulated config space buffer, and we read them
-+	 * from there when needed.
- 	 */
+ 		/* Enable the wakeup sources of ictlr */
+ 		writel_relaxed(lic->ictlr_wake_mask[i], ictlr + ICTLR_CPU_IER_SET);
+@@ -172,12 +172,12 @@ static void tegra_ictlr_resume(void)
  
- 	case PCI_EXP_LNKCAP: {
-@@ -977,8 +975,25 @@ static int advk_sw_pci_bridge_init(struct advk_pcie *pcie)
- 	/* Support interrupt A for MSI feature */
- 	bridge->conf.intpin = PCI_INTERRUPT_INTA;
+ 		writel_relaxed(lic->cpu_iep[i],
+ 			       ictlr + ICTLR_CPU_IEP_CLASS);
+-		writel_relaxed(~0ul, ictlr + ICTLR_CPU_IER_CLR);
++		writel_relaxed(GENMASK(31, 0), ictlr + ICTLR_CPU_IER_CLR);
+ 		writel_relaxed(lic->cpu_ier[i],
+ 			       ictlr + ICTLR_CPU_IER_SET);
+ 		writel_relaxed(lic->cop_iep[i],
+ 			       ictlr + ICTLR_COP_IEP_CLASS);
+-		writel_relaxed(~0ul, ictlr + ICTLR_COP_IER_CLR);
++		writel_relaxed(GENMASK(31, 0), ictlr + ICTLR_COP_IER_CLR);
+ 		writel_relaxed(lic->cop_ier[i],
+ 			       ictlr + ICTLR_COP_IER_SET);
+ 	}
+@@ -312,7 +312,7 @@ static int __init tegra_ictlr_init(struct device_node *node,
+ 		lic->base[i] = base;
  
--	/* Aardvark HW provides PCIe Capability structure in version 2 */
--	bridge->pcie_conf.cap = cpu_to_le16(2);
-+	/*
-+	 * Aardvark HW provides PCIe Capability structure in version 2 and
-+	 * indicate slot support, which is emulated.
-+	 */
-+	bridge->pcie_conf.cap = cpu_to_le16(2 | PCI_EXP_FLAGS_SLOT);
-+
-+	/*
-+	 * Set Presence Detect State bit permanently since there is no support
-+	 * for unplugging the card nor detecting whether it is plugged. (If a
-+	 * platform exists in the future that supports it, via a GPIO for
-+	 * example, it should be implemented via this bit.)
-+	 *
-+	 * Set physical slot number to 1 since there is only one port and zero
-+	 * value is reserved for ports within the same silicon as Root Port
-+	 * which is not our case.
-+	 */
-+	bridge->pcie_conf.slotcap = cpu_to_le32(FIELD_PREP(PCI_EXP_SLTCAP_PSN,
-+							   1));
-+	bridge->pcie_conf.slotsta = cpu_to_le16(PCI_EXP_SLTSTA_PDS);
+ 		/* Disable all interrupts */
+-		writel_relaxed(~0UL, base + ICTLR_CPU_IER_CLR);
++		writel_relaxed(GENMASK(31, 0), base + ICTLR_CPU_IER_CLR);
+ 		/* All interrupts target IRQ */
+ 		writel_relaxed(0, base + ICTLR_CPU_IEP_CLASS);
  
- 	/* Indicates supports for Completion Retry Status */
- 	bridge->pcie_conf.rootcap = cpu_to_le16(PCI_EXP_RTCAP_CRSVIS);
 -- 
 2.35.1
 
