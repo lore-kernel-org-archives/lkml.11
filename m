@@ -2,49 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4FDE2C32772
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 09:37:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 22C1CC3F6B0
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 09:37:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351425AbiHWJhb (ORCPT
+        id S1351453AbiHWJhj (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 05:37:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49412 "EHLO
+        Tue, 23 Aug 2022 05:37:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43254 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351767AbiHWJf6 (ORCPT
+        with ESMTP id S1351829AbiHWJgC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 05:35:58 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F257E97529;
-        Tue, 23 Aug 2022 01:40:06 -0700 (PDT)
+        Tue, 23 Aug 2022 05:36:02 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 29931979EC;
+        Tue, 23 Aug 2022 01:40:12 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 98B5BB81C3E;
-        Tue, 23 Aug 2022 08:33:56 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E11C0C433C1;
-        Tue, 23 Aug 2022 08:33:54 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id BED03611DD;
+        Tue, 23 Aug 2022 08:39:18 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C6707C433D6;
+        Tue, 23 Aug 2022 08:39:17 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661243635;
-        bh=+bJaLNnj4pmy29dsPfdJ3cwRoJe/UpZzGD3F4vtamfM=;
+        s=korg; t=1661243958;
+        bh=vVIE8jLVJxP6CJmflVD1oLU9ouDnYVctK1YS8qIz2no=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=NJJ659DbvWJb7G2MOeVZ/elNdeDWjsaLc3i3tZkAtFyXtz9qAq6tSnaJslkzBLzjF
-         OGVskaCUrD03MGhyOwj71KLpP66j12wdI8UsmTp2GhaMVOAsS6a3ff4rFx9oOJyX+/
-         CCl8/DtIy0xIu+k+HmADCNX1wVWI9Xwfsv2njHRA=
+        b=16lm036aElAtjJ2Y2mY8xuN6yaHtzzxiiWlVv0exU7vIB4AGg8TMWy/ogmMySeWHg
+         XQXAQQQS4ua8YyiJp84ydW9T88VtQOE6Lr7SZ9oRm5WD3P1w1XA7AmltW3x8+ESGID
+         NXm/oZ+7t4//YnkafkIN7ZJO6j1J9jwHqPODVO9w=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Andrey Turkin <andrey.turkin@gmail.com>,
-        Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>,
-        Mark Brown <broonie@kernel.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.19 340/365] ASoC: Intel: sof_es8336: Fix GPIO quirks set via module option
-Date:   Tue, 23 Aug 2022 10:04:01 +0200
-Message-Id: <20220823080132.439592982@linuxfoundation.org>
+        stable@vger.kernel.org, TOTE Robot <oslab@tsinghua.edu.cn>,
+        Sweet Tea Dorminy <sweettea-kernel@dorminy.me>,
+        Nikolay Borisov <nborisov@suse.com>,
+        Zixuan Fu <r33s3n6@gmail.com>, David Sterba <dsterba@suse.com>
+Subject: [PATCH 5.15 014/244] btrfs: unset reloc control if transaction commit fails in prepare_to_relocate()
+Date:   Tue, 23 Aug 2022 10:22:53 +0200
+Message-Id: <20220823080059.553744861@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220823080118.128342613@linuxfoundation.org>
-References: <20220823080118.128342613@linuxfoundation.org>
+In-Reply-To: <20220823080059.091088642@linuxfoundation.org>
+References: <20220823080059.091088642@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -53,81 +51,102 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Andrey Turkin <andrey.turkin@gmail.com>
+From: Zixuan Fu <r33s3n6@gmail.com>
 
-[ Upstream commit 5e60f1cfb830342304200437121f440b72b54f54 ]
+commit 85f02d6c856b9f3a0acf5219de6e32f58b9778eb upstream.
 
-The two GPIO quirk bits only affected actual GPIO selection
-when set by the quirks table. They were reported as being
-in effect when set via module options but actually did nothing.
+In btrfs_relocate_block_group(), the rc is allocated.  Then
+btrfs_relocate_block_group() calls
 
-Reviewed-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Signed-off-by: Andrey Turkin <andrey.turkin@gmail.com>
-Signed-off-by: Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>
-Link: https://lore.kernel.org/r/20220725194909.145418-4-pierre-louis.bossart@linux.intel.com
-Signed-off-by: Mark Brown <broonie@kernel.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+relocate_block_group()
+  prepare_to_relocate()
+    set_reloc_control()
+
+that assigns rc to the variable fs_info->reloc_ctl. When
+prepare_to_relocate() returns, it calls
+
+btrfs_commit_transaction()
+  btrfs_start_dirty_block_groups()
+    btrfs_alloc_path()
+      kmem_cache_zalloc()
+
+which may fail for example (or other errors could happen). When the
+failure occurs, btrfs_relocate_block_group() detects the error and frees
+rc and doesn't set fs_info->reloc_ctl to NULL. After that, in
+btrfs_init_reloc_root(), rc is retrieved from fs_info->reloc_ctl and
+then used, which may cause a use-after-free bug.
+
+This possible bug can be triggered by calling btrfs_ioctl_balance()
+before calling btrfs_ioctl_defrag().
+
+To fix this possible bug, in prepare_to_relocate(), check if
+btrfs_commit_transaction() fails. If the failure occurs,
+unset_reloc_control() is called to set fs_info->reloc_ctl to NULL.
+
+The error log in our fault-injection testing is shown as follows:
+
+  [   58.751070] BUG: KASAN: use-after-free in btrfs_init_reloc_root+0x7ca/0x920 [btrfs]
+  ...
+  [   58.753577] Call Trace:
+  ...
+  [   58.755800]  kasan_report+0x45/0x60
+  [   58.756066]  btrfs_init_reloc_root+0x7ca/0x920 [btrfs]
+  [   58.757304]  record_root_in_trans+0x792/0xa10 [btrfs]
+  [   58.757748]  btrfs_record_root_in_trans+0x463/0x4f0 [btrfs]
+  [   58.758231]  start_transaction+0x896/0x2950 [btrfs]
+  [   58.758661]  btrfs_defrag_root+0x250/0xc00 [btrfs]
+  [   58.759083]  btrfs_ioctl_defrag+0x467/0xa00 [btrfs]
+  [   58.759513]  btrfs_ioctl+0x3c95/0x114e0 [btrfs]
+  ...
+  [   58.768510] Allocated by task 23683:
+  [   58.768777]  ____kasan_kmalloc+0xb5/0xf0
+  [   58.769069]  __kmalloc+0x227/0x3d0
+  [   58.769325]  alloc_reloc_control+0x10a/0x3d0 [btrfs]
+  [   58.769755]  btrfs_relocate_block_group+0x7aa/0x1e20 [btrfs]
+  [   58.770228]  btrfs_relocate_chunk+0xf1/0x760 [btrfs]
+  [   58.770655]  __btrfs_balance+0x1326/0x1f10 [btrfs]
+  [   58.771071]  btrfs_balance+0x3150/0x3d30 [btrfs]
+  [   58.771472]  btrfs_ioctl_balance+0xd84/0x1410 [btrfs]
+  [   58.771902]  btrfs_ioctl+0x4caa/0x114e0 [btrfs]
+  ...
+  [   58.773337] Freed by task 23683:
+  ...
+  [   58.774815]  kfree+0xda/0x2b0
+  [   58.775038]  free_reloc_control+0x1d6/0x220 [btrfs]
+  [   58.775465]  btrfs_relocate_block_group+0x115c/0x1e20 [btrfs]
+  [   58.775944]  btrfs_relocate_chunk+0xf1/0x760 [btrfs]
+  [   58.776369]  __btrfs_balance+0x1326/0x1f10 [btrfs]
+  [   58.776784]  btrfs_balance+0x3150/0x3d30 [btrfs]
+  [   58.777185]  btrfs_ioctl_balance+0xd84/0x1410 [btrfs]
+  [   58.777621]  btrfs_ioctl+0x4caa/0x114e0 [btrfs]
+  ...
+
+Reported-by: TOTE Robot <oslab@tsinghua.edu.cn>
+CC: stable@vger.kernel.org # 5.15+
+Reviewed-by: Sweet Tea Dorminy <sweettea-kernel@dorminy.me>
+Reviewed-by: Nikolay Borisov <nborisov@suse.com>
+Signed-off-by: Zixuan Fu <r33s3n6@gmail.com>
+Signed-off-by: David Sterba <dsterba@suse.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- sound/soc/intel/boards/sof_es8336.c | 23 ++++++++++++-----------
- 1 file changed, 12 insertions(+), 11 deletions(-)
+ fs/btrfs/relocation.c |    7 ++++++-
+ 1 file changed, 6 insertions(+), 1 deletion(-)
 
-diff --git a/sound/soc/intel/boards/sof_es8336.c b/sound/soc/intel/boards/sof_es8336.c
-index 23d03e0f7759..4d0c361fc277 100644
---- a/sound/soc/intel/boards/sof_es8336.c
-+++ b/sound/soc/intel/boards/sof_es8336.c
-@@ -77,8 +77,6 @@ static const struct acpi_gpio_mapping acpi_enable_both_gpios_rev_order[] = {
- 	{ }
- };
- 
--static const struct acpi_gpio_mapping *gpio_mapping = acpi_speakers_enable_gpio0;
--
- static void log_quirks(struct device *dev)
- {
- 	dev_info(dev, "quirk mask %#lx\n", quirk);
-@@ -272,15 +270,6 @@ static int sof_es8336_quirk_cb(const struct dmi_system_id *id)
- {
- 	quirk = (unsigned long)id->driver_data;
- 
--	if (quirk & SOF_ES8336_HEADPHONE_GPIO) {
--		if (quirk & SOF_ES8336_SPEAKERS_EN_GPIO1_QUIRK)
--			gpio_mapping = acpi_enable_both_gpios;
--		else
--			gpio_mapping = acpi_enable_both_gpios_rev_order;
--	} else if (quirk & SOF_ES8336_SPEAKERS_EN_GPIO1_QUIRK) {
--		gpio_mapping = acpi_speakers_enable_gpio1;
--	}
--
- 	return 1;
+--- a/fs/btrfs/relocation.c
++++ b/fs/btrfs/relocation.c
+@@ -3576,7 +3576,12 @@ int prepare_to_relocate(struct reloc_con
+ 		 */
+ 		return PTR_ERR(trans);
+ 	}
+-	return btrfs_commit_transaction(trans);
++
++	ret = btrfs_commit_transaction(trans);
++	if (ret)
++		unset_reloc_control(rc);
++
++	return ret;
  }
  
-@@ -529,6 +518,7 @@ static int sof_es8336_probe(struct platform_device *pdev)
- 	struct acpi_device *adev;
- 	struct snd_soc_dai_link *dai_links;
- 	struct device *codec_dev;
-+	const struct acpi_gpio_mapping *gpio_mapping;
- 	unsigned int cnt = 0;
- 	int dmic_be_num = 0;
- 	int hdmi_num = 3;
-@@ -635,6 +625,17 @@ static int sof_es8336_probe(struct platform_device *pdev)
- 	}
- 
- 	/* get speaker enable GPIO */
-+	if (quirk & SOF_ES8336_HEADPHONE_GPIO) {
-+		if (quirk & SOF_ES8336_SPEAKERS_EN_GPIO1_QUIRK)
-+			gpio_mapping = acpi_enable_both_gpios;
-+		else
-+			gpio_mapping = acpi_enable_both_gpios_rev_order;
-+	} else if (quirk & SOF_ES8336_SPEAKERS_EN_GPIO1_QUIRK) {
-+		gpio_mapping = acpi_speakers_enable_gpio1;
-+	} else {
-+		gpio_mapping = acpi_speakers_enable_gpio0;
-+	}
-+
- 	ret = devm_acpi_dev_add_driver_gpios(codec_dev, gpio_mapping);
- 	if (ret)
- 		dev_warn(codec_dev, "unable to add GPIO mapping table\n");
--- 
-2.35.1
-
+ static noinline_for_stack int relocate_block_group(struct reloc_control *rc)
 
 
