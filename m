@@ -2,147 +2,283 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 24665C32789
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 22:26:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9539BC32789
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 22:26:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233684AbiHWW0S (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 18:26:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52752 "EHLO
+        id S233853AbiHWW0f (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 23 Aug 2022 18:26:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52708 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233635AbiHWWZv (ORCPT
+        with ESMTP id S233815AbiHWW0F (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 18:25:51 -0400
-Received: from mail-wr1-x42b.google.com (mail-wr1-x42b.google.com [IPv6:2a00:1450:4864:20::42b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7E3E17D78C;
-        Tue, 23 Aug 2022 15:25:47 -0700 (PDT)
-Received: by mail-wr1-x42b.google.com with SMTP id b5so14327742wrr.5;
-        Tue, 23 Aug 2022 15:25:47 -0700 (PDT)
+        Tue, 23 Aug 2022 18:26:05 -0400
+Received: from mail-pl1-x629.google.com (mail-pl1-x629.google.com [IPv6:2607:f8b0:4864:20::629])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CA685876B0
+        for <linux-kernel@vger.kernel.org>; Tue, 23 Aug 2022 15:25:55 -0700 (PDT)
+Received: by mail-pl1-x629.google.com with SMTP id u22so14043025plq.12
+        for <linux-kernel@vger.kernel.org>; Tue, 23 Aug 2022 15:25:55 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc;
-        bh=0KiyNC174zzIjrp1GQzwkUvnQfE9zdtStKGjmTOoAis=;
-        b=ISOAaZjBLHcybcp4uPVGbXkobnssTpHtkw01HnsIkvCOXnpw0/0LwaIbeXccRKCQ0M
-         JKTK29tVl3uxvOrLEEfvBYrHm+cjw8F1x0eBXsQjDQKqE5di3ZMDFVqaQ7i6oS3xeTOy
-         McKs03C2T5MNpFnSZw7g/0fM4sFGLp8WtHnfMXFFK1hN7wABEa1w6M8g0mgCbDt7weSS
-         41xaeJvRF1ZAyjpxLi0/3Qh88jiIgM64CTkN5KVXoLNt5qtZDStaC9hJrrsNLuGvrWzK
-         akMDScEddIA2fx0iToXHjyt//hg4dUKZ1sF2TBFvOtWQB+zblWRHviWhK5d7jeKuIryJ
-         7O3Q==
+        d=chromium.org; s=google;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:from:to:cc;
+        bh=xSQKGWLEW/kUQwiNWyncH9Xp5s+ASlV194q1jpJPOQw=;
+        b=dMFSA6x1duIowrTxa5xI9MFep/heDTq8cj9utyAUvGpwtN0PBwCrEwYkBYtpfIA0XB
+         u0o1PWf/neWzT73SL0XPQT95t6CsWbbKgg/5XtzZz8XrTQrio/0TBlopjgwfugE9iCeB
+         J2ssMqpQ2fOEV3iLudF+Nrna/KhoEqJ+yPC7w=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-message-state:from:to:cc;
-        bh=0KiyNC174zzIjrp1GQzwkUvnQfE9zdtStKGjmTOoAis=;
-        b=tvIDlvs314LcGwFxy0ulf1rhFdyznY7USDQL1R1tbX8rxA9an4mED+nBaTrSPBtmaB
-         fYxNB3FkEXylHYWRJHcArzz2xLInsxOv1cg92oBTGaVj3Y3rTnf4GEF7jCv++mMqkWZR
-         1l62zP4cjQJRW4Awixv/1qI5SS1+xS1HWRnHa9AkekJkxF2t0tLpTJSDOdj9vI3Vvcy0
-         BIzxsoNRjTXwvVDB9CXg6kUDy11vAXGJ9HgSCf7VoSs0464cy9cmdwGZLslaWJD/wiTL
-         6wxCgEB6WbRp7OEJqMWrJf10pTtL+3Utwc5zM8ThiIb/pnWacIfj+XlfZ1HQtmci+eSI
-         LqvQ==
-X-Gm-Message-State: ACgBeo3BBBSDnOne+uUZuh6myhpOVIt/a8uwSSLKySq1C4+aerhxPTbU
-        CqOjaV7DID9xYp+OAgfem48=
-X-Google-Smtp-Source: AA6agR4y17yGEPfUjNos3CS9FizMNvtc29TAVoyBBkCY/cph1Sh1OwBFkf27OS+J6CbR5P851Ny8bw==
-X-Received: by 2002:a5d:594a:0:b0:225:3606:da33 with SMTP id e10-20020a5d594a000000b002253606da33mr12411231wri.60.1661293545431;
-        Tue, 23 Aug 2022 15:25:45 -0700 (PDT)
-Received: from localhost.localdomain ([84.255.184.228])
-        by smtp.gmail.com with ESMTPSA id g11-20020a05600c4ecb00b003a4c6e67f01sm26522607wmq.6.2022.08.23.15.25.41
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc;
+        bh=xSQKGWLEW/kUQwiNWyncH9Xp5s+ASlV194q1jpJPOQw=;
+        b=ns0Z+O9Q7d0sMF3r3Tx74elBulPfoYD/6+4j9sRsDB+km0bNudEuP1b0cGtWjUkqAC
+         qScUDXiLElt/HnKpIO7soeCo0e9hrQXhrBWhXl8v/7Z7R8YknLcMmTn6XQ91dPKB47vb
+         8GcCvByQDKu9XGp7W1QYX1XKx86TiBjO8MkI66x/QXn+2KPdiLYQBlTmenq0oeT6Abe1
+         W90Sbd8acvzO0ienAwGfEuMEdGtFzq7ChBRhjzsKRTHgarHjSqt+qkzCjaVwXNz37Rkn
+         xle7YrIgj5hKSGy4VsJTgHvr+eTSRkD5+M2D5M8UjJuhJgdm2s99z+w6ipVdnAekziEA
+         g66g==
+X-Gm-Message-State: ACgBeo012+BOzZW7q5Jfk0mUX4tK3uQKSLzCKJcDntxoGJKhGB+6yYGm
+        DDWcBSjO1ypE4JQttNNVYBkDFiSdWeZ1yw==
+X-Google-Smtp-Source: AA6agR4EAufBpEOyvq0nP8MHgnnultni3r6jafYIEsU16dhG8QKjr+jH/gZgzBUiOrv2Hg5PMg0j8g==
+X-Received: by 2002:a17:90a:bf0a:b0:1fa:b53c:3f3a with SMTP id c10-20020a17090abf0a00b001fab53c3f3amr5247240pjs.126.1661293555045;
+        Tue, 23 Aug 2022 15:25:55 -0700 (PDT)
+Received: from evgreen-glaptop.lan ([98.45.66.167])
+        by smtp.gmail.com with ESMTPSA id f76-20020a62384f000000b0052f20d70845sm11256292pfa.150.2022.08.23.15.25.53
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 23 Aug 2022 15:25:44 -0700 (PDT)
-From:   Mazin Al Haddad <mazinalhaddad05@gmail.com>
-To:     pontus.fuchs@gmail.com
-Cc:     kvalo@kernel.org, davem@davemloft.net, edumazet@google.com,
-        kuba@kernel.org, pabeni@redhat.com, linux-wireless@vger.kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-kernel-mentees@lists.linuxfoundation.org,
-        skhan@linuxfoundation.org, paskripkin@gmail.com,
-        Mazin Al Haddad <mazinalhaddad05@gmail.com>,
-        syzbot+1bc2c2afd44f820a669f@syzkaller.appspotmail.com
-Subject: [PATCH] ar5523: check endpoints type and direction in probe()
-Date:   Wed, 24 Aug 2022 01:24:38 +0300
-Message-Id: <20220823222436.514204-1-mazinalhaddad05@gmail.com>
-X-Mailer: git-send-email 2.37.2
+        Tue, 23 Aug 2022 15:25:54 -0700 (PDT)
+From:   Evan Green <evgreen@chromium.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     gwendal@chromium.org, Eric Biggers <ebiggers@kernel.org>,
+        Matthew Garrett <mgarrett@aurora.tech>, jarkko@kernel.org,
+        zohar@linux.ibm.com, linux-integrity@vger.kernel.org,
+        Pavel Machek <pavel@ucw.cz>, apronin@chromium.org,
+        dlunev@google.com, rjw@rjwysocki.net, linux-pm@vger.kernel.org,
+        corbet@lwn.net, jejb@linux.ibm.com,
+        Matthew Garrett <matthewgarrett@google.com>,
+        Matthew Garrett <mjg59@google.com>,
+        Evan Green <evgreen@chromium.org>, Hao Wu <hao.wu@rubrik.com>,
+        Jason Gunthorpe <jgg@ziepe.ca>,
+        Peter Huewe <peterhuewe@gmx.de>, axelj <axelj@axis.com>
+Subject: [PATCH v2 01/10] tpm: Add support for in-kernel resetting of PCRs
+Date:   Tue, 23 Aug 2022 15:25:17 -0700
+Message-Id: <20220823152108.v2.1.I776854f47e3340cc2913ed4d8ecdd328048b73c3@changeid>
+X-Mailer: git-send-email 2.31.0
+In-Reply-To: <20220823222526.1524851-1-evgreen@chromium.org>
+References: <20220823222526.1524851-1-evgreen@chromium.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Fixes a bug reported by syzbot, where a warning occurs in usb_submit_urb()
-due to the wrong endpoint type. There is no check for both the number
-of endpoints and the type which causes an error as the code tries to
-send a URB to the wrong endpoint.
+From: Matthew Garrett <matthewgarrett@google.com>
 
-Fix it by adding a check for the number of endpoints and the
-direction/type of the endpoints. If the endpoints do not match the 
-expected configuration -ENODEV is returned.
+Add an internal command for resetting a PCR. This will be used by the
+encrypted hibernation code to set PCR23 to a known value. The
+hibernation code will seal the hibernation key with a policy specifying
+PCR23 be set to this known value as a mechanism to ensure that the
+hibernation key is genuine. But to do this repeatedly, resetting the PCR
+is necessary as well.
 
-Syzkaller report:
+From: Matthew Garrett <mjg59@google.com>
+Signed-off-by: Matthew Garrett <mjg59@google.com>
 
-usb 1-1: BOGUS urb xfer, pipe 3 != type 1
-WARNING: CPU: 1 PID: 71 at drivers/usb/core/urb.c:502 usb_submit_urb+0xed2/0x18a0 drivers/usb/core/urb.c:502
-Modules linked in:
-CPU: 1 PID: 71 Comm: kworker/1:2 Not tainted 5.19.0-rc7-syzkaller-00150-g32f02a211b0a #0
-Hardware name: Google Compute Engine/Google Compute Engine, BIOS Google 06/29/2022
-Workqueue: usb_hub_wq hub_event
-Call Trace:
- <TASK>
- ar5523_cmd+0x420/0x790 drivers/net/wireless/ath/ar5523/ar5523.c:275
- ar5523_cmd_read drivers/net/wireless/ath/ar5523/ar5523.c:302 [inline]
- ar5523_host_available drivers/net/wireless/ath/ar5523/ar5523.c:1376 [inline]
- ar5523_probe+0xc66/0x1da0 drivers/net/wireless/ath/ar5523/ar5523.c:1655
-
-
-Link: https://syzkaller.appspot.com/bug?extid=1bc2c2afd44f820a669f
-Reported-and-tested-by: syzbot+1bc2c2afd44f820a669f@syzkaller.appspotmail.com
-Signed-off-by: Mazin Al Haddad <mazinalhaddad05@gmail.com>
+Signed-off-by: Evan Green <evgreen@chromium.org>
 ---
- drivers/net/wireless/ath/ar5523/ar5523.c | 31 ++++++++++++++++++++++++
- 1 file changed, 31 insertions(+)
+Matthew's original version of this patch was at:
+https://patchwork.kernel.org/patch/12096487/
 
-diff --git a/drivers/net/wireless/ath/ar5523/ar5523.c b/drivers/net/wireless/ath/ar5523/ar5523.c
-index 6f937d2cc126..5451bf9ab9fb 100644
---- a/drivers/net/wireless/ath/ar5523/ar5523.c
-+++ b/drivers/net/wireless/ath/ar5523/ar5523.c
-@@ -1581,8 +1581,39 @@ static int ar5523_probe(struct usb_interface *intf,
- 	struct usb_device *dev = interface_to_usbdev(intf);
- 	struct ieee80211_hw *hw;
- 	struct ar5523 *ar;
-+	struct usb_host_interface *host = intf->cur_altsetting;
- 	int error = -ENOMEM;
+(no changes since v1)
+
+ drivers/char/tpm/tpm-interface.c | 28 +++++++++++++++++++++++++
+ drivers/char/tpm/tpm.h           |  2 ++
+ drivers/char/tpm/tpm1-cmd.c      | 34 ++++++++++++++++++++++++++++++
+ drivers/char/tpm/tpm2-cmd.c      | 36 ++++++++++++++++++++++++++++++++
+ include/linux/tpm.h              |  7 +++++++
+ 5 files changed, 107 insertions(+)
+
+diff --git a/drivers/char/tpm/tpm-interface.c b/drivers/char/tpm/tpm-interface.c
+index 1621ce8187052c..17b8643ee109c2 100644
+--- a/drivers/char/tpm/tpm-interface.c
++++ b/drivers/char/tpm/tpm-interface.c
+@@ -342,6 +342,34 @@ int tpm_pcr_extend(struct tpm_chip *chip, u32 pcr_idx,
+ }
+ EXPORT_SYMBOL_GPL(tpm_pcr_extend);
  
-+	if (host->desc.bNumEndpoints != 4) {
-+		dev_err(&dev->dev, "Wrong number of endpoints\n");
++/**
++ * tpm_pcr_reset - reset the specified PCR
++ * @chip:	a &struct tpm_chip instance, %NULL for the default chip
++ * @pcr_idx:	the PCR to be reset
++ *
++ * Return: same as with tpm_transmit_cmd()
++ */
++int tpm_pcr_reset(struct tpm_chip *chip, u32 pcr_idx)
++{
++	int rc;
++
++	chip = tpm_find_get_ops(chip);
++	if (!chip)
 +		return -ENODEV;
++
++	if (chip->flags & TPM_CHIP_FLAG_TPM2) {
++		rc = tpm2_pcr_reset(chip, pcr_idx);
++		goto out;
 +	}
 +
-+	for (int i = 0; i < host->desc.bNumEndpoints; ++i) {
-+		struct usb_endpoint_descriptor *ep = &host->endpoint[i].desc;
-+		// Check for type of endpoint and direction.
-+		switch (i) {
-+		case 0:
-+		case 1:
-+			if ((ep->bEndpointAddress & USB_DIR_OUT) &&
-+			    ((ep->bmAttributes & USB_ENDPOINT_XFERTYPE_MASK)
-+			     == USB_ENDPOINT_XFER_BULK)){
-+				dev_err(&dev->dev, "Wrong type of endpoints\n");
-+				return -ENODEV;
-+			}
-+			break;
-+		case 2:
-+		case 3:
-+			if ((ep->bEndpointAddress & USB_DIR_IN) &&
-+			    ((ep->bmAttributes & USB_ENDPOINT_XFERTYPE_MASK)
-+			     == USB_ENDPOINT_XFER_BULK)){
-+				dev_err(&dev->dev, "Wrong type of endpoints\n");
-+				return -ENODEV;
-+			}
-+			break;
++	rc = tpm1_pcr_reset(chip, pcr_idx, "attempting to reset a PCR");
++
++out:
++	tpm_put_ops(chip);
++	return rc;
++}
++EXPORT_SYMBOL_GPL(tpm_pcr_reset);
++
+ /**
+  * tpm_send - send a TPM command
+  * @chip:	a &struct tpm_chip instance, %NULL for the default chip
+diff --git a/drivers/char/tpm/tpm.h b/drivers/char/tpm/tpm.h
+index 24ee4e1cc452a0..a80b341d38eb8c 100644
+--- a/drivers/char/tpm/tpm.h
++++ b/drivers/char/tpm/tpm.h
+@@ -175,6 +175,7 @@ int tpm1_get_timeouts(struct tpm_chip *chip);
+ unsigned long tpm1_calc_ordinal_duration(struct tpm_chip *chip, u32 ordinal);
+ int tpm1_pcr_extend(struct tpm_chip *chip, u32 pcr_idx, const u8 *hash,
+ 		    const char *log_msg);
++int tpm1_pcr_reset(struct tpm_chip *chip, u32 pcr_idx, const char *log_msg);
+ int tpm1_pcr_read(struct tpm_chip *chip, u32 pcr_idx, u8 *res_buf);
+ ssize_t tpm1_getcap(struct tpm_chip *chip, u32 subcap_id, cap_t *cap,
+ 		    const char *desc, size_t min_cap_length);
+@@ -217,6 +218,7 @@ int tpm2_pcr_read(struct tpm_chip *chip, u32 pcr_idx,
+ 		  struct tpm_digest *digest, u16 *digest_size_ptr);
+ int tpm2_pcr_extend(struct tpm_chip *chip, u32 pcr_idx,
+ 		    struct tpm_digest *digests);
++int tpm2_pcr_reset(struct tpm_chip *chip, u32 pcr_idx);
+ int tpm2_get_random(struct tpm_chip *chip, u8 *dest, size_t max);
+ ssize_t tpm2_get_tpm_pt(struct tpm_chip *chip, u32 property_id,
+ 			u32 *value, const char *desc);
+diff --git a/drivers/char/tpm/tpm1-cmd.c b/drivers/char/tpm/tpm1-cmd.c
+index cf64c738510529..8ec743dec26544 100644
+--- a/drivers/char/tpm/tpm1-cmd.c
++++ b/drivers/char/tpm/tpm1-cmd.c
+@@ -478,6 +478,40 @@ int tpm1_pcr_extend(struct tpm_chip *chip, u32 pcr_idx, const u8 *hash,
+ 	return rc;
+ }
+ 
++struct tpm_pcr_selection {
++	u16 size_of_select;
++	u8  pcr_select[3];
++} __packed;
++
++#define TPM_ORD_PCR_RESET 200
++int tpm1_pcr_reset(struct tpm_chip *chip, u32 pcr_idx, const char *log_msg)
++{
++	struct tpm_pcr_selection selection;
++	struct tpm_buf buf;
++	int i, rc;
++	char tmp;
++
++	rc = tpm_buf_init(&buf, TPM_TAG_RQU_COMMAND, TPM_ORD_PCR_RESET);
++	if (rc)
++		return rc;
++
++	selection.size_of_select = 3;
++
++	for (i = 0; i < selection.size_of_select; i++) {
++		tmp = 0;
++		if (pcr_idx / 3 == i) {
++			pcr_idx -= i * 8;
++			tmp |= 1 << pcr_idx;
 +		}
++		selection.pcr_select[i] = tmp;
 +	}
++	tpm_buf_append(&buf, (u8 *)&selection, sizeof(selection));
 +
- 	/*
- 	 * Load firmware if the device requires it.  This will return
- 	 * -ENXIO on success and we'll get called back afer the usb
++	rc = tpm_transmit_cmd(chip, &buf, sizeof(selection), log_msg);
++	tpm_buf_destroy(&buf);
++	return rc;
++}
++
+ #define TPM_ORD_GET_CAP 101
+ ssize_t tpm1_getcap(struct tpm_chip *chip, u32 subcap_id, cap_t *cap,
+ 		    const char *desc, size_t min_cap_length)
+diff --git a/drivers/char/tpm/tpm2-cmd.c b/drivers/char/tpm/tpm2-cmd.c
+index 65d03867e114c5..69126a6770386e 100644
+--- a/drivers/char/tpm/tpm2-cmd.c
++++ b/drivers/char/tpm/tpm2-cmd.c
+@@ -269,6 +269,42 @@ int tpm2_pcr_extend(struct tpm_chip *chip, u32 pcr_idx,
+ 	return rc;
+ }
+ 
++/**
++ * tpm2_pcr_reset() - reset a PCR
++ *
++ * @chip:	TPM chip to use.
++ * @pcr_idx:	index of the PCR.
++ *
++ * Return: Same as with tpm_transmit_cmd.
++ */
++int tpm2_pcr_reset(struct tpm_chip *chip, u32 pcr_idx)
++{
++	struct tpm_buf buf;
++	struct tpm2_null_auth_area auth_area;
++	int rc;
++
++	rc = tpm_buf_init(&buf, TPM2_ST_SESSIONS, TPM2_CC_PCR_RESET);
++	if (rc)
++		return rc;
++
++	tpm_buf_append_u32(&buf, pcr_idx);
++
++	auth_area.handle = cpu_to_be32(TPM2_RS_PW);
++	auth_area.nonce_size = 0;
++	auth_area.attributes = 0;
++	auth_area.auth_size = 0;
++
++	tpm_buf_append_u32(&buf, sizeof(struct tpm2_null_auth_area));
++	tpm_buf_append(&buf, (const unsigned char *)&auth_area,
++		       sizeof(auth_area));
++
++	rc = tpm_transmit_cmd(chip, &buf, 0, "attempting to reset a PCR");
++
++	tpm_buf_destroy(&buf);
++
++	return rc;
++}
++
+ struct tpm2_get_random_out {
+ 	__be16 size;
+ 	u8 buffer[TPM_MAX_RNG_DATA];
+diff --git a/include/linux/tpm.h b/include/linux/tpm.h
+index dfeb25a0362dee..8320cbac6f4009 100644
+--- a/include/linux/tpm.h
++++ b/include/linux/tpm.h
+@@ -219,6 +219,7 @@ enum tpm2_command_codes {
+ 	TPM2_CC_HIERARCHY_CONTROL       = 0x0121,
+ 	TPM2_CC_HIERARCHY_CHANGE_AUTH   = 0x0129,
+ 	TPM2_CC_CREATE_PRIMARY          = 0x0131,
++	TPM2_CC_PCR_RESET		= 0x013D,
+ 	TPM2_CC_SEQUENCE_COMPLETE       = 0x013E,
+ 	TPM2_CC_SELF_TEST	        = 0x0143,
+ 	TPM2_CC_STARTUP		        = 0x0144,
+@@ -423,6 +424,7 @@ extern ssize_t tpm_transmit_cmd(struct tpm_chip *chip, struct tpm_buf *buf,
+ 				size_t min_rsp_body_length, const char *desc);
+ extern int tpm_pcr_read(struct tpm_chip *chip, u32 pcr_idx,
+ 			struct tpm_digest *digest);
++extern int tpm_pcr_reset(struct tpm_chip *chip, u32 pcr_idx);
+ extern int tpm_pcr_extend(struct tpm_chip *chip, u32 pcr_idx,
+ 			  struct tpm_digest *digests);
+ extern int tpm_send(struct tpm_chip *chip, void *cmd, size_t buflen);
+@@ -440,6 +442,11 @@ static inline int tpm_pcr_read(struct tpm_chip *chip, int pcr_idx,
+ 	return -ENODEV;
+ }
+ 
++static inline int tpm_pcr_reset(struct tpm_chip *chip, int pcr_idx)
++{
++	return -ENODEV;
++}
++
+ static inline int tpm_pcr_extend(struct tpm_chip *chip, u32 pcr_idx,
+ 				 struct tpm_digest *digests)
+ {
 -- 
-2.37.2
+2.31.0
 
