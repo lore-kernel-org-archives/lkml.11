@@ -2,73 +2,81 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C86E5C32793
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 22:23:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 23E91C32772
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 22:25:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229925AbiHWWX6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 18:23:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49588 "EHLO
+        id S233070AbiHWWZU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 23 Aug 2022 18:25:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51898 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230033AbiHWWXz (ORCPT
+        with ESMTP id S232965AbiHWWZS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 18:23:55 -0400
-Received: from mx1.molgen.mpg.de (mx3.molgen.mpg.de [141.14.17.11])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3FC9211A18;
-        Tue, 23 Aug 2022 15:23:54 -0700 (PDT)
-Received: from [192.168.0.2] (ip5f5aec8f.dynamic.kabel-deutschland.de [95.90.236.143])
-        (using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
-         key-exchange X25519 server-signature RSA-PSS (2048 bits))
+        Tue, 23 Aug 2022 18:25:18 -0400
+Received: from sonata.ens-lyon.org (sonata.ens-lyon.org [140.77.166.138])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AC73C6B8E2
+        for <linux-kernel@vger.kernel.org>; Tue, 23 Aug 2022 15:25:17 -0700 (PDT)
+Received: from localhost (localhost [127.0.0.1])
+        by sonata.ens-lyon.org (Postfix) with ESMTP id B863820134;
+        Wed, 24 Aug 2022 00:25:15 +0200 (CEST)
+Received: from sonata.ens-lyon.org ([127.0.0.1])
+        by localhost (sonata.ens-lyon.org [127.0.0.1]) (amavisd-new, port 10024)
+        with ESMTP id 5Q1gtM_Rm0JG; Wed, 24 Aug 2022 00:25:15 +0200 (CEST)
+Received: from begin.home (lfbn-bor-1-376-208.w109-215.abo.wanadoo.fr [109.215.91.208])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
         (No client certificate requested)
-        (Authenticated sender: pmenzel)
-        by mx.molgen.mpg.de (Postfix) with ESMTPSA id 0472961EA192D;
-        Wed, 24 Aug 2022 00:23:51 +0200 (CEST)
-Message-ID: <b0f17259-680c-7bc0-b941-26dc54214b86@molgen.mpg.de>
-Date:   Wed, 24 Aug 2022 00:23:51 +0200
+        by sonata.ens-lyon.org (Postfix) with ESMTPSA id A63912011A;
+        Wed, 24 Aug 2022 00:25:15 +0200 (CEST)
+Received: from samy by begin.home with local (Exim 4.96)
+        (envelope-from <samuel.thibault@ens-lyon.org>)
+        id 1oQcKh-00GY2a-17;
+        Wed, 24 Aug 2022 00:25:15 +0200
+Message-ID: <20220823222514.929670068@ens-lyon.org>
+User-Agent: quilt/0.66
+Date:   Wed, 24 Aug 2022 00:25:02 +0200
+From:   Samuel Thibault <samuel.thibault@ens-lyon.org>
+To:     gregkh@linuxfoundation.org
+Cc:     linux-kernel@vger.kernel.org, speakup@linux-speakup.org,
+        Samuel Thibault <samuel.thibault@ens-lyon.org>
+Subject: [patch 1/2] speakup-dummy: Add support for PUNCT variable
+References: <20220823222501.483597563@ens-lyon.org>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.1.2
-Subject: Re: [Intel-wired-lan] [PATCH v1] drivers/net/ethernet: check return
- value of e1e_rphy()
-Content-Language: en-US
-To:     Li Zhong <floridsleeves@gmail.com>
-Cc:     edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
-        davem@davemloft.net, intel-wired-lan@lists.osuosl.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-References: <20220823060200.1452663-1-floridsleeves@gmail.com>
-From:   Paul Menzel <pmenzel@molgen.mpg.de>
-In-Reply-To: <20220823060200.1452663-1-floridsleeves@gmail.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=UTF-8
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Dear Li,
+This allows to debug the update of the punctuation level.
 
+Signed-off-by: Samuel Thibault <samuel.thibault@ens-lyon.org>
 
-Thank you for your patch.
+Index: linux/drivers/accessibility/speakup/speakup_dummy.c
+===================================================================
+--- linux.orig/drivers/accessibility/speakup/speakup_dummy.c
++++ linux/drivers/accessibility/speakup/speakup_dummy.c
+@@ -27,6 +27,7 @@ static struct var_t vars[] = {
+ 	{ INFLECTION, .u.n = {"INFLECTION %d\n", 8, 0, 16, 0, 0, NULL } },
+ 	{ VOL, .u.n = {"VOL %d\n", 8, 0, 16, 0, 0, NULL } },
+ 	{ TONE, .u.n = {"TONE %d\n", 8, 0, 16, 0, 0, NULL } },
++	{ PUNCT, .u.n = {"PUNCT %d\n", 0, 0, 3, 0, 0, NULL } },
+ 	{ DIRECT, .u.n = {NULL, 0, 0, 1, 0, 0, NULL } },
+ 	V_LAST_VAR
+ };
+@@ -42,6 +43,8 @@ static struct kobj_attribute pitch_attri
+ 	__ATTR(pitch, 0644, spk_var_show, spk_var_store);
+ static struct kobj_attribute inflection_attribute =
+ 	__ATTR(inflection, 0644, spk_var_show, spk_var_store);
++static struct kobj_attribute punct_attribute =
++	__ATTR(punct, 0644, spk_var_show, spk_var_store);
+ static struct kobj_attribute rate_attribute =
+ 	__ATTR(rate, 0644, spk_var_show, spk_var_store);
+ static struct kobj_attribute tone_attribute =
+@@ -69,6 +72,7 @@ static struct attribute *synth_attrs[] =
+ 	&caps_stop_attribute.attr,
+ 	&pitch_attribute.attr,
+ 	&inflection_attribute.attr,
++	&punct_attribute.attr,
+ 	&rate_attribute.attr,
+ 	&tone_attribute.attr,
+ 	&vol_attribute.attr,
 
-Am 23.08.22 um 08:02 schrieb lily:
-> e1e_rphy() could return error value, which need to be checked.
-
-need*s*
-
-> 
-> Signed-off-by: Li Zhong <floridsleeves@gmail.com>
-
-The From header field does not match the Signed-off-by line. Could you 
-configure git with your user name?
-
-     $ git config --global user.name "Li Zhong"
-     $ git commit --amend --author="Li Zhong <floridsleeves@gmail.com>"
-
-> ---
->   drivers/net/ethernet/intel/e1000e/phy.c | 14 +++++++++++---
->   1 file changed, 11 insertions(+), 3 deletions(-)
-
-[…]
-
-
-Kind regards,
-
-Paul
