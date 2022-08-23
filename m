@@ -2,94 +2,92 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 29240C32772
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 15:34:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 50AB3C32772
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 15:36:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241449AbiHWPep (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 11:34:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57300 "EHLO
+        id S242920AbiHWPgG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 23 Aug 2022 11:36:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59908 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240930AbiHWPeN (ORCPT
+        with ESMTP id S242672AbiHWPfq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 11:34:13 -0400
-Received: from mail-pf1-x436.google.com (mail-pf1-x436.google.com [IPv6:2607:f8b0:4864:20::436])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A64A533431;
-        Tue, 23 Aug 2022 04:17:37 -0700 (PDT)
-Received: by mail-pf1-x436.google.com with SMTP id z187so13135882pfb.12;
-        Tue, 23 Aug 2022 04:17:37 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc;
-        bh=0pU5iLLC3ceGYBrxwsq4Hg09zSm+DaoRJ02xrrcMouU=;
-        b=L/J2Gt5Jqlon8zl8L69XswAVdKmyHBBm+yg7CgJKoru26DL5+vPXnh3QzqLEUhRGff
-         eB7V8HK+J+/69FBQK4AtprGRYQb63wj7Cn37DjIJGxDuVFHEdMzjqHLbihoRXECgclKd
-         kNgxhZpvERwxyXaMDYsI29h60D5nGijBM/nG7gKBipWakO9b9J5S63RO8fRxpccnszBM
-         9TszvU+cjbUy8TbV6+DFIhNNAtIABTxykXqE/Z0MotEf8GmCQ1pjqova5D+XRhG6EEOI
-         uwPzdSOpBktFUHk82Fkc2+l1jnYSP1DAh/xGhpdLoobgMN8K6+mXuLtB/zBbjyMh1qFN
-         Ep9Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-message-state:from:to:cc;
-        bh=0pU5iLLC3ceGYBrxwsq4Hg09zSm+DaoRJ02xrrcMouU=;
-        b=jz+dBq8S3RKdnV/aQUD3aCYxvrSY4szuawxlqtfh59p6bxFpeCWSfqFx37Q51oizMb
-         WuoMl+ehfUXJEnsKIuGCyrhTHpwv8xFb648clgYDABj3PwUKsSV3q+zW2C+DBc/DNq9p
-         Xn/GcDHAS3G4c04eQ9+KwobdIizUXQJvhGYJAgXxWR2pdBkSjjcxsJWWEWyDSk/1SuhX
-         5KKiHp9Aesfb1f4AcyoDAcMe+rwmqctiyPYmiUKO4UnV5V1nOPk0iVeS9bxSfNlnY1NG
-         Dl7sFNlZlXVAYPdaldMIMBO/jsGhzNrdfo24iefj7+uq0MtBrpOdj7LdXrrGD2/RzVvX
-         ZdSA==
-X-Gm-Message-State: ACgBeo3i+BTOa3XExj6rE54l6NFmizCp9FrKU75/MAOSO1mNWEjRYuYQ
-        /U1zUS+sgc1/1dEQIJklEQ78M4Mcpo0atw==
-X-Google-Smtp-Source: AA6agR5rs3KV4MIEfAj6rMx6hvhj3C3GIa4ja16PB9v5wE1J9n3s2pDW3NoG4n64a5u3F4JL8JJRTg==
-X-Received: by 2002:a05:6a00:1952:b0:537:1bb2:8451 with SMTP id s18-20020a056a00195200b005371bb28451mr369530pfk.77.1661253454738;
-        Tue, 23 Aug 2022 04:17:34 -0700 (PDT)
-Received: from kelvin-ThinkPad-L14-Gen-1.. ([136.175.179.175])
-        by smtp.gmail.com with ESMTPSA id z11-20020a17090a8b8b00b001f51903e03fsm9572023pjn.32.2022.08.23.04.17.32
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 23 Aug 2022 04:17:34 -0700 (PDT)
-From:   Keguang Zhang <keguang.zhang@gmail.com>
-To:     linux-mips@vger.kernel.org, linux-kernel@vger.kernel.org
-Cc:     Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
-        Yang Ling <gnaygnil@gmail.com>,
-        Keguang Zhang <keguang.zhang@gmail.com>
-Subject: [PATCH] MIPS: loongson32: ls1c: Fix hang during startup
-Date:   Tue, 23 Aug 2022 19:17:25 +0800
-Message-Id: <20220823111725.3134377-1-keguang.zhang@gmail.com>
-X-Mailer: git-send-email 2.34.1
+        Tue, 23 Aug 2022 11:35:46 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B3F1C2618CB;
+        Tue, 23 Aug 2022 04:23:27 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id BC907611AF;
+        Tue, 23 Aug 2022 11:22:55 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id ABD80C433C1;
+        Tue, 23 Aug 2022 11:22:54 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1661253775;
+        bh=yXjNO8BangCgzGfaP7LghR/B+0ut5KnX0KE1NB1SYrc=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=hk2JIGVfyixbpc27gniWTxaVS04S+4oO3450gkQ/ghRfSP0bbsUCuUKKva5+y6tHO
+         KUsX+g//7SRxeAKX6qfxPRf/7Y23b4K46pxRxmhVC9R3wnq/Dp1teZ4VgNkgyCIA/p
+         QY5L5WsJns0vkVtsR8hV1aYZClK7xAN6VG0x2AuU=
+Date:   Tue, 23 Aug 2022 13:22:52 +0200
+From:   Greg KH <gregkh@linuxfoundation.org>
+To:     Kumaravel Thiagarajan <kumaravel.thiagarajan@microchip.com>
+Cc:     linux-gpio@vger.kernel.org, linux-kernel@vger.kernel.org,
+        UNGLinuxDriver@microchip.com, arnd@arndb.de,
+        dragan.cvetic@xilinx.com, derek.kiernan@xilinx.com
+Subject: Re: [PATCH RFC char-misc-next 1/5] misc: microchip: pci1xxxx: load
+ auxiliary bus driver for the PIO function in the multi-function endpoint of
+ pci1xxxx device.
+Message-ID: <YwS4jBd5uVvMaTSz@kroah.com>
+References: <20220804163219.921640-1-kumaravel.thiagarajan@microchip.com>
+ <20220804163219.921640-2-kumaravel.thiagarajan@microchip.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220804163219.921640-2-kumaravel.thiagarajan@microchip.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Yang Ling <gnaygnil@gmail.com>
+On Thu, Aug 04, 2022 at 10:02:15PM +0530, Kumaravel Thiagarajan wrote:
+> pci1xxxx is a PCIe switch with a multi-function endpoint on one of its
+> downstream ports. PIO function is one of the functions in the
+> multi-function endpoint. PIO function combines a GPIO controller and also
+> an interface to program pci1xxxx's OTP & EEPROM. This auxiliary bus driver
+> is loaded for the PIO function and separate child devices are enumerated
+> for GPIO controller and OTP/EEPROM interface.
+> 
+> Signed-off-by: Kumaravel Thiagarajan <kumaravel.thiagarajan@microchip.com>
+> ---
+>  MAINTAINERS                                   |   8 +
+>  drivers/misc/Kconfig                          |   1 +
+>  drivers/misc/Makefile                         |   3 +-
+>  drivers/misc/mchp_pci1xxxx/Kconfig            |  10 ++
+>  drivers/misc/mchp_pci1xxxx/Makefile           |   1 +
+>  drivers/misc/mchp_pci1xxxx/mchp_pci1xxxx_gp.c | 167 ++++++++++++++++++
+>  drivers/misc/mchp_pci1xxxx/mchp_pci1xxxx_gp.h |  28 +++
+>  7 files changed, 217 insertions(+), 1 deletion(-)
+>  create mode 100644 drivers/misc/mchp_pci1xxxx/Kconfig
+>  create mode 100644 drivers/misc/mchp_pci1xxxx/Makefile
+>  create mode 100644 drivers/misc/mchp_pci1xxxx/mchp_pci1xxxx_gp.c
+>  create mode 100644 drivers/misc/mchp_pci1xxxx/mchp_pci1xxxx_gp.h
+> 
+> diff --git a/MAINTAINERS b/MAINTAINERS
+> index 285ffe0df5cf..ba491e4fc35f 100644
+> --- a/MAINTAINERS
+> +++ b/MAINTAINERS
+> @@ -13244,6 +13244,14 @@ S:	Supported
+>  F:	Documentation/devicetree/bindings/mtd/atmel-nand.txt
+>  F:	drivers/mtd/nand/raw/atmel/*
+>  
+> +MICROCHIP PCI1XXXX GP DRIVER
+> +M:	Kumaravel Thiagarajan <kumaravel.thiagarajan@microchip.com>
+> +M:	UNGLinuxDriver@microchip.com
 
-The RTCCTRL reg of LS1C is obselete.
-Writing this reg will cause system hang.
+Please do not add random email aliases to the MAINTAINERS file, use
+people's names and email addresses, otherwise there is no sense of
+ownership.
 
-Fixes: 60219c563c9b6 ("MIPS: Add RTC support for Loongson1C board")
-Signed-off-by: Yang Ling <gnaygnil@gmail.com>
-Tested-by: Keguang Zhang <keguang.zhang@gmail.com>
-Acked-by: Keguang Zhang <keguang.zhang@gmail.com>
----
- arch/mips/loongson32/ls1c/board.c | 1 -
- 1 file changed, 1 deletion(-)
+thanks,
 
-diff --git a/arch/mips/loongson32/ls1c/board.c b/arch/mips/loongson32/ls1c/board.c
-index e9de6da0ce51..9dcfe9de55b0 100644
---- a/arch/mips/loongson32/ls1c/board.c
-+++ b/arch/mips/loongson32/ls1c/board.c
-@@ -15,7 +15,6 @@ static struct platform_device *ls1c_platform_devices[] __initdata = {
- static int __init ls1c_platform_init(void)
- {
- 	ls1x_serial_set_uartclk(&ls1x_uart_pdev);
--	ls1x_rtc_set_extclk(&ls1x_rtc_pdev);
- 
- 	return platform_add_devices(ls1c_platform_devices,
- 				   ARRAY_SIZE(ls1c_platform_devices));
-
-base-commit: 568035b01cfb107af8d2e4bd2fb9aea22cf5b868
--- 
-2.34.1
-
+greg k-h
