@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 41338C32772
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 10:59:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C0B1FC32772
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 10:59:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356665AbiHWK6P (ORCPT
+        id S1356826AbiHWK7w (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 06:58:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51392 "EHLO
+        Tue, 23 Aug 2022 06:59:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52728 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356256AbiHWKyS (ORCPT
+        with ESMTP id S1356528AbiHWK5s (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 06:54:18 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 064D01055D;
-        Tue, 23 Aug 2022 02:13:20 -0700 (PDT)
+        Tue, 23 Aug 2022 06:57:48 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5754BA6C65;
+        Tue, 23 Aug 2022 02:13:49 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 00CCD60F85;
-        Tue, 23 Aug 2022 09:13:18 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E2FF7C433C1;
-        Tue, 23 Aug 2022 09:13:16 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 457C8B81C66;
+        Tue, 23 Aug 2022 09:13:47 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 90A16C433D7;
+        Tue, 23 Aug 2022 09:13:45 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661245997;
-        bh=YyS6kzcP5LnTRVkg6JjJD2bti6S4kghdoWLmjpu6yHw=;
+        s=korg; t=1661246026;
+        bh=BvpZ9+z3PwhwVDxWUyHfXYsBLSq0+ghAeah0uQ9gcoE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=tIeWJIYznO+8kUst9WtnwSD967agzczbochFyZj8q7vamtDtOq9vEEGR99fMMkZ6D
-         7Cz60dmG3rGL9dUclm35b6hKxuVNm0GBAbP1q3kRTY0ll7+eKpFMymqzKrPZdS6uHm
-         iXlEcsC7+/+brFN1b5px7VMVPT0lPYRcf5SPWc6Q=
+        b=pmFguL58w9BCNjf18EqulnNY2ZK1RpyXBU7576/7Dk1iWU3R19BKuYf9crdHgr9zi
+         DFk2ouU4ofTGjenM4j3psiMPwFELY/siTqClScgo6c3o2Lbs9Vg5fsnwh+ao5SemHo
+         6Uy7Mfk/KNPTE+FgKutd0FW8XnbDqQBFHLb26MdU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Stefano Garzarella <sgarzare@redhat.com>,
-        Peilin Ye <peilin.ye@bytedance.com>,
-        "David S. Miller" <davem@davemloft.net>
-Subject: [PATCH 4.19 239/287] vsock: Set socket state back to SS_UNCONNECTED in vsock_connect_timeout()
-Date:   Tue, 23 Aug 2022 10:26:48 +0200
-Message-Id: <20220823080109.124885855@linuxfoundation.org>
+        stable@vger.kernel.org, Andrew Donnellan <ajd@linux.ibm.com>,
+        Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 4.19 265/287] cxl: Fix a memory leak in an error handling path
+Date:   Tue, 23 Aug 2022 10:27:14 +0200
+Message-Id: <20220823080110.260697876@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220823080100.268827165@linuxfoundation.org>
 References: <20220823080100.268827165@linuxfoundation.org>
@@ -50,41 +50,36 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Peilin Ye <peilin.ye@bytedance.com>
+From: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
 
-commit a3e7b29e30854ed67be0d17687e744ad0c769c4b upstream.
+[ Upstream commit 3a15b45b5454da862376b5d69a4967f5c6fa1368 ]
 
-Imagine two non-blocking vsock_connect() requests on the same socket.
-The first request schedules @connect_work, and after it times out,
-vsock_connect_timeout() sets *sock* state back to TCP_CLOSE, but keeps
-*socket* state as SS_CONNECTING.
+A bitmap_zalloc() must be balanced by a corresponding bitmap_free() in the
+error handling path of afu_allocate_irqs().
 
-Later, the second request returns -EALREADY, meaning the socket "already
-has a pending connection in progress", even though the first request has
-already timed out.
-
-As suggested by Stefano, fix it by setting *socket* state back to
-SS_UNCONNECTED, so that the second request will return -ETIMEDOUT.
-
-Suggested-by: Stefano Garzarella <sgarzare@redhat.com>
-Fixes: d021c344051a ("VSOCK: Introduce VM Sockets")
-Reviewed-by: Stefano Garzarella <sgarzare@redhat.com>
-Signed-off-by: Peilin Ye <peilin.ye@bytedance.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+Acked-by: Andrew Donnellan <ajd@linux.ibm.com>
+Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+Link: https://lore.kernel.org/r/ce5869418f5838187946eb6b11a52715a93ece3d.1657566849.git.christophe.jaillet@wanadoo.fr
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/vmw_vsock/af_vsock.c |    1 +
+ drivers/misc/cxl/irq.c | 1 +
  1 file changed, 1 insertion(+)
 
---- a/net/vmw_vsock/af_vsock.c
-+++ b/net/vmw_vsock/af_vsock.c
-@@ -1118,6 +1118,7 @@ static void vsock_connect_timeout(struct
- 	if (sk->sk_state == TCP_SYN_SENT &&
- 	    (sk->sk_shutdown != SHUTDOWN_MASK)) {
- 		sk->sk_state = TCP_CLOSE;
-+		sk->sk_socket->state = SS_UNCONNECTED;
- 		sk->sk_err = ETIMEDOUT;
- 		sk->sk_error_report(sk);
- 		vsock_transport_cancel_pkt(vsk);
+diff --git a/drivers/misc/cxl/irq.c b/drivers/misc/cxl/irq.c
+index ce08a9f22308..0dbe78383f8f 100644
+--- a/drivers/misc/cxl/irq.c
++++ b/drivers/misc/cxl/irq.c
+@@ -353,6 +353,7 @@ int afu_allocate_irqs(struct cxl_context *ctx, u32 count)
+ 
+ out:
+ 	cxl_ops->release_irq_ranges(&ctx->irqs, ctx->afu->adapter);
++	bitmap_free(ctx->irq_bitmap);
+ 	afu_irq_name_free(ctx);
+ 	return -ENOMEM;
+ }
+-- 
+2.35.1
+
 
 
