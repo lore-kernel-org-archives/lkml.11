@@ -2,46 +2,48 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 24172C32774
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 08:18:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 99EB6C32774
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 08:18:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242771AbiHWISq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 04:18:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42170 "EHLO
+        id S242780AbiHWISu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 23 Aug 2022 04:18:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33314 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242134AbiHWINv (ORCPT
+        with ESMTP id S242162AbiHWIOD (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 04:13:51 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 24E456C770;
-        Tue, 23 Aug 2022 01:09:27 -0700 (PDT)
+        Tue, 23 Aug 2022 04:14:03 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 497276C74B;
+        Tue, 23 Aug 2022 01:09:28 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 8506DCE1B34;
-        Tue, 23 Aug 2022 08:09:25 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 84FE8C433C1;
-        Tue, 23 Aug 2022 08:09:23 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id C0187611DD;
+        Tue, 23 Aug 2022 08:09:27 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id AF6E9C433D6;
+        Tue, 23 Aug 2022 08:09:26 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661242164;
-        bh=6RUbOO660W57gg9vcDPO2ChUAqzUiVW0WI9kwpLZkTU=;
+        s=korg; t=1661242167;
+        bh=6aPiWU1DmthuuDEU+s0sTpbF8usqvd3MVqimuy22VTM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=uDWVEAqp25v+VSPfuFTr//4hUzicjdHSqWpSrG/iNF0flAiZJceTDJel+vvyGUtGI
-         aT7j0FRHyR+weJJMNJE/dsnqkD6kGaSyW7uFJ4tGONfxYe/jzYFfsRQ691wBOaKil3
-         HzSjHPxgTv/4/MlnXwyTzMDJEYMamjOp6+7lAQvk=
+        b=zUPCawR5rtI4Ut8XaSjIHgnB7o9iNrQ5xA3LA35iqau8D6sFTstADG63pjfvi8LHu
+         Mqo/AivpFpgd8aEoEhJkpHh8s187lfryv881l/K8IJr/2YaQ8f4C4j8FHWyBoRiOsZ
+         4UMcutgsJAvRYeIFw/shi1773p6BGmcPKVV43hT0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Oleksij Rempel <o.rempel@pengutronix.de>,
-        Fedor Pchelkin <pchelkin@ispras.ru>,
-        Alexey Khoroshilov <khoroshilov@ispras.ru>,
-        Marc Kleine-Budde <mkl@pengutronix.de>
-Subject: [PATCH 5.19 070/365] can: j1939: j1939_session_destroy(): fix memory leak of skbs
-Date:   Tue, 23 Aug 2022 09:59:31 +0200
-Message-Id: <20220823080121.115741318@linuxfoundation.org>
+        stable@vger.kernel.org,
+        syzbot+760a73552f47a8cd0fd9@syzkaller.appspotmail.com,
+        Tetsuo Handa <penguin-kernel@i-love.sakura.ne.jp>,
+        Hou Wenlong <houwenlong.hwl@antgroup.com>,
+        Sean Christopherson <seanjc@google.com>,
+        Maxim Levitsky <mlevitsk@redhat.com>
+Subject: [PATCH 4.9 030/101] KVM: x86: Mark TSS busy during LTR emulation _after_ all fault checks
+Date:   Tue, 23 Aug 2022 10:03:03 +0200
+Message-Id: <20220823080035.739214317@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220823080118.128342613@linuxfoundation.org>
-References: <20220823080118.128342613@linuxfoundation.org>
+In-Reply-To: <20220823080034.579196046@linuxfoundation.org>
+References: <20220823080034.579196046@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -50,55 +52,66 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Fedor Pchelkin <pchelkin@ispras.ru>
+From: Sean Christopherson <seanjc@google.com>
 
-commit 8c21c54a53ab21842f5050fa090f26b03c0313d6 upstream.
+commit ec6e4d863258d4bfb36d48d5e3ef68140234d688 upstream.
 
-We need to drop skb references taken in j1939_session_skb_queue() when
-destroying a session in j1939_session_destroy(). Otherwise those skbs
-would be lost.
+Wait to mark the TSS as busy during LTR emulation until after all fault
+checks for the LTR have passed.  Specifically, don't mark the TSS busy if
+the new TSS base is non-canonical.
 
-Link to Syzkaller info and repro: https://forge.ispras.ru/issues/11743.
+Opportunistically drop the one-off !seg_desc.PRESENT check for TR as the
+only reason for the early check was to avoid marking a !PRESENT TSS as
+busy, i.e. the common !PRESENT is now done before setting the busy bit.
 
-Found by Linux Verification Center (linuxtesting.org) with Syzkaller.
-
-V1: https://lore.kernel.org/all/20220708175949.539064-1-pchelkin@ispras.ru
-
-Fixes: 9d71dd0c7009 ("can: add support of SAE J1939 protocol")
-Suggested-by: Oleksij Rempel <o.rempel@pengutronix.de>
-Signed-off-by: Fedor Pchelkin <pchelkin@ispras.ru>
-Signed-off-by: Alexey Khoroshilov <khoroshilov@ispras.ru>
-Acked-by: Oleksij Rempel <o.rempel@pengutronix.de>
-Link: https://lore.kernel.org/all/20220805150216.66313-1-pchelkin@ispras.ru
-Signed-off-by: Marc Kleine-Budde <mkl@pengutronix.de>
+Fixes: e37a75a13cda ("KVM: x86: Emulator ignores LDTR/TR extended base on LLDT/LTR")
+Reported-by: syzbot+760a73552f47a8cd0fd9@syzkaller.appspotmail.com
+Cc: stable@vger.kernel.org
+Cc: Tetsuo Handa <penguin-kernel@i-love.sakura.ne.jp>
+Cc: Hou Wenlong <houwenlong.hwl@antgroup.com>
+Signed-off-by: Sean Christopherson <seanjc@google.com>
+Reviewed-by: Maxim Levitsky <mlevitsk@redhat.com>
+Link: https://lore.kernel.org/r/20220711232750.1092012-2-seanjc@google.com
+Signed-off-by: Sean Christopherson <seanjc@google.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- net/can/j1939/transport.c |    8 +++++++-
- 1 file changed, 7 insertions(+), 1 deletion(-)
+ arch/x86/kvm/emulate.c |   19 +++++++++----------
+ 1 file changed, 9 insertions(+), 10 deletions(-)
 
---- a/net/can/j1939/transport.c
-+++ b/net/can/j1939/transport.c
-@@ -260,6 +260,8 @@ static void __j1939_session_drop(struct
- 
- static void j1939_session_destroy(struct j1939_session *session)
- {
-+	struct sk_buff *skb;
+--- a/arch/x86/kvm/emulate.c
++++ b/arch/x86/kvm/emulate.c
+@@ -1713,16 +1713,6 @@ static int __load_segment_descriptor(str
+ 	case VCPU_SREG_TR:
+ 		if (seg_desc.s || (seg_desc.type != 1 && seg_desc.type != 9))
+ 			goto exception;
+-		if (!seg_desc.p) {
+-			err_vec = NP_VECTOR;
+-			goto exception;
+-		}
+-		old_desc = seg_desc;
+-		seg_desc.type |= 2; /* busy */
+-		ret = ctxt->ops->cmpxchg_emulated(ctxt, desc_addr, &old_desc, &seg_desc,
+-						  sizeof(seg_desc), &ctxt->exception);
+-		if (ret != X86EMUL_CONTINUE)
+-			return ret;
+ 		break;
+ 	case VCPU_SREG_LDTR:
+ 		if (seg_desc.s || seg_desc.type != 2)
+@@ -1763,6 +1753,15 @@ static int __load_segment_descriptor(str
+ 					     ((u64)base3 << 32)))
+ 			return emulate_gp(ctxt, 0);
+ 	}
 +
- 	if (session->transmission) {
- 		if (session->err)
- 			j1939_sk_errqueue(session, J1939_ERRQUEUE_TX_ABORT);
-@@ -274,7 +276,11 @@ static void j1939_session_destroy(struct
- 	WARN_ON_ONCE(!list_empty(&session->sk_session_queue_entry));
- 	WARN_ON_ONCE(!list_empty(&session->active_session_list_entry));
- 
--	skb_queue_purge(&session->skb_queue);
-+	while ((skb = skb_dequeue(&session->skb_queue)) != NULL) {
-+		/* drop ref taken in j1939_session_skb_queue() */
-+		skb_unref(skb);
-+		kfree_skb(skb);
++	if (seg == VCPU_SREG_TR) {
++		old_desc = seg_desc;
++		seg_desc.type |= 2; /* busy */
++		ret = ctxt->ops->cmpxchg_emulated(ctxt, desc_addr, &old_desc, &seg_desc,
++						  sizeof(seg_desc), &ctxt->exception);
++		if (ret != X86EMUL_CONTINUE)
++			return ret;
 +	}
- 	__j1939_session_drop(session);
- 	j1939_priv_put(session->priv);
- 	kfree(session);
+ load:
+ 	ctxt->ops->set_segment(ctxt, selector, &seg_desc, base3, seg);
+ 	if (desc)
 
 
