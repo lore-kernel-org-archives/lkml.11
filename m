@@ -2,45 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5AD1FC32793
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6BEA6C3F6B0
 	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 09:13:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348437AbiHWJMG (ORCPT
+        id S1348539AbiHWJMR (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 05:12:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33220 "EHLO
+        Tue, 23 Aug 2022 05:12:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33280 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348267AbiHWJKC (ORCPT
+        with ESMTP id S1348263AbiHWJKD (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 05:10:02 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7AC7D6CF44;
-        Tue, 23 Aug 2022 01:30:56 -0700 (PDT)
+        Tue, 23 Aug 2022 05:10:03 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F016674E0C;
+        Tue, 23 Aug 2022 01:31:02 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id D358F614D3;
-        Tue, 23 Aug 2022 08:29:33 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D5BFBC433D7;
-        Tue, 23 Aug 2022 08:29:32 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 47597B81C3E;
+        Tue, 23 Aug 2022 08:18:58 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8E1BEC433B5;
+        Tue, 23 Aug 2022 08:18:56 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661243373;
-        bh=g/+coOW5lUeirePAEayAtHU5SKrm1HBE7FI5NENdJmY=;
+        s=korg; t=1661242737;
+        bh=v5/YKtomldikhe/i3h6gjddah5wV/t0Qwoy5NR3BAPQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=bZF5FqSXLCedANdPfH/PPxNcspqY3s4+xYRiUAOHx48f+Ip04H5UrPs01FmcntBNy
-         WPznE1aUKmLGygBgAtiW0C4qoGiRqOzt/xkj0pu7ewcFkVvFHzn4u0kxkTWOtXhSqB
-         OeRGaWYZ0n9Clw1lpkxKwYf0UHdJwNSCC5m3y2Cg=
+        b=qj3HGkjwGSyeVQ0S2U3jJuo01kGAvwwwyJpuRx+Xm/gT2bD1P1GSH6yBeY3fZsFSF
+         Fc+zhCZyDWnFTed93V0lKYrskH7XTn+vOqRjpr6YSSGILDsWAFz6t625NpsZkH9cep
+         pX9TIw4fJmM+gvfN/Qs0KoQtwl2z6CvF8A9Fg+vc=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Pengfei Xu <pengfei.xu@intel.com>,
-        Josh Poimboeuf <jpoimboe@kernel.org>,
-        Paolo Bonzini <pbonzini@redhat.com>,
-        Sasha Levin <sashal@kernel.org>,
-        Peter Zijlstra <peterz@infradead.org>
-Subject: [PATCH 5.19 256/365] x86/kvm: Fix "missing ENDBR" BUG for fastop functions
-Date:   Tue, 23 Aug 2022 10:02:37 +0200
-Message-Id: <20220823080128.907850538@linuxfoundation.org>
+        stable@vger.kernel.org, Philipp Zabel <p.zabel@pengutronix.de>,
+        Mark Brown <broonie@kernel.org>
+Subject: [PATCH 5.19 184/365] ASoC: codec: tlv320aic32x4: fix mono playback via I2S
+Date:   Tue, 23 Aug 2022 10:01:25 +0200
+Message-Id: <20220823080125.922323509@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220823080118.128342613@linuxfoundation.org>
 References: <20220823080118.128342613@linuxfoundation.org>
@@ -52,70 +49,62 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Josh Poimboeuf <jpoimboe@kernel.org>
+From: Philipp Zabel <p.zabel@pengutronix.de>
 
-[ Upstream commit 3d9606b0e0f3aed4dfb61d0853ebf432fead7bba ]
+commit b4b5f29a076e52181f63e45a2ad1bc88593072e3 upstream.
 
-The following BUG was reported:
+The two commits referenced below break mono playback via I2S DAI because
+they set BCLK to half the required speed. For PCM transport over I2S, the
+number of transmitted channels is always 2, even for mono playback.
 
-  traps: Missing ENDBR: andw_ax_dx+0x0/0x10 [kvm]
-  ------------[ cut here ]------------
-  kernel BUG at arch/x86/kernel/traps.c:253!
-  invalid opcode: 0000 [#1] PREEMPT SMP NOPTI
-   <TASK>
-   asm_exc_control_protection+0x2b/0x30
-  RIP: 0010:andw_ax_dx+0x0/0x10 [kvm]
-  Code: c3 cc cc cc cc 0f 1f 44 00 00 66 0f 1f 00 48 19 d0 c3 cc cc cc
-        cc 0f 1f 40 00 f3 0f 1e fa 20 d0 c3 cc cc cc cc 0f 1f 44 00 00
-        <66> 0f 1f 00 66 21 d0 c3 cc cc cc cc 0f 1f 40 00 66 0f 1f 00 21
-        d0
-
-   ? andb_al_dl+0x10/0x10 [kvm]
-   ? fastop+0x5d/0xa0 [kvm]
-   x86_emulate_insn+0x822/0x1060 [kvm]
-   x86_emulate_instruction+0x46f/0x750 [kvm]
-   complete_emulated_mmio+0x216/0x2c0 [kvm]
-   kvm_arch_vcpu_ioctl_run+0x604/0x650 [kvm]
-   kvm_vcpu_ioctl+0x2f4/0x6b0 [kvm]
-   ? wake_up_q+0xa0/0xa0
-
-The BUG occurred because the ENDBR in the andw_ax_dx() fastop function
-had been incorrectly "sealed" (converted to a NOP) by apply_ibt_endbr().
-
-Objtool marked it to be sealed because KVM has no compile-time
-references to the function.  Instead KVM calculates its address at
-runtime.
-
-Prevent objtool from annotating fastop functions as sealable by creating
-throwaway dummy compile-time references to the functions.
-
-Fixes: 6649fa876da4 ("x86/ibt,kvm: Add ENDBR to fastops")
-Reported-by: Pengfei Xu <pengfei.xu@intel.com>
-Debugged-by: Peter Zijlstra <peterz@infradead.org>
-Signed-off-by: Josh Poimboeuf <jpoimboe@kernel.org>
-Message-Id: <0d4116f90e9d0c1b754bb90c585e6f0415a1c508.1660837839.git.jpoimboe@kernel.org>
-Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Fixes: dcd79364bff3 ("ASoC: codec: tlv3204: Enable 24 bit audio support")
+Fixes: 40b37136287b ("ASoC: tlv320aic32x4: Fix bdiv clock rate derivation")
+Signed-off-by: Philipp Zabel <p.zabel@pengutronix.de>
+Link: https://lore.kernel.org/r/20220810104156.665452-1-p.zabel@pengutronix.de
+Signed-off-by: Mark Brown <broonie@kernel.org>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/x86/kvm/emulate.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ sound/soc/codecs/tlv320aic32x4.c |    9 +++++++++
+ 1 file changed, 9 insertions(+)
 
-diff --git a/arch/x86/kvm/emulate.c b/arch/x86/kvm/emulate.c
-index aa907cec0918..09fa8a94807b 100644
---- a/arch/x86/kvm/emulate.c
-+++ b/arch/x86/kvm/emulate.c
-@@ -316,7 +316,8 @@ static int fastop(struct x86_emulate_ctxt *ctxt, fastop_t fop);
- 	".align " __stringify(FASTOP_SIZE) " \n\t" \
- 	".type " name ", @function \n\t" \
- 	name ":\n\t" \
--	ASM_ENDBR
-+	ASM_ENDBR \
-+	IBT_NOSEAL(name)
+--- a/sound/soc/codecs/tlv320aic32x4.c
++++ b/sound/soc/codecs/tlv320aic32x4.c
+@@ -49,6 +49,8 @@ struct aic32x4_priv {
+ 	struct aic32x4_setup_data *setup;
+ 	struct device *dev;
+ 	enum aic32x4_type type;
++
++	unsigned int fmt;
+ };
  
- #define FOP_FUNC(name) \
- 	__FOP_FUNC(#name)
--- 
-2.35.1
-
+ static int aic32x4_reset_adc(struct snd_soc_dapm_widget *w,
+@@ -611,6 +613,7 @@ static int aic32x4_set_dai_sysclk(struct
+ static int aic32x4_set_dai_fmt(struct snd_soc_dai *codec_dai, unsigned int fmt)
+ {
+ 	struct snd_soc_component *component = codec_dai->component;
++	struct aic32x4_priv *aic32x4 = snd_soc_component_get_drvdata(component);
+ 	u8 iface_reg_1 = 0;
+ 	u8 iface_reg_2 = 0;
+ 	u8 iface_reg_3 = 0;
+@@ -654,6 +657,8 @@ static int aic32x4_set_dai_fmt(struct sn
+ 		return -EINVAL;
+ 	}
+ 
++	aic32x4->fmt = fmt;
++
+ 	snd_soc_component_update_bits(component, AIC32X4_IFACE1,
+ 				AIC32X4_IFACE1_DATATYPE_MASK |
+ 				AIC32X4_IFACE1_MASTER_MASK, iface_reg_1);
+@@ -758,6 +763,10 @@ static int aic32x4_setup_clocks(struct s
+ 		return -EINVAL;
+ 	}
+ 
++	/* PCM over I2S is always 2-channel */
++	if ((aic32x4->fmt & SND_SOC_DAIFMT_FORMAT_MASK) == SND_SOC_DAIFMT_I2S)
++		channels = 2;
++
+ 	madc = DIV_ROUND_UP((32 * adc_resource_class), aosr);
+ 	max_dosr = (AIC32X4_MAX_DOSR_FREQ / sample_rate / dosr_increment) *
+ 			dosr_increment;
 
 
