@@ -2,44 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id ED9ADC32772
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 11:18:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 597E6C32774
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 11:18:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357399AbiHWLST (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 07:18:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39194 "EHLO
+        id S243142AbiHWLSZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 23 Aug 2022 07:18:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43672 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357559AbiHWLQF (ORCPT
+        with ESMTP id S1357560AbiHWLQF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 23 Aug 2022 07:16:05 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 83D20BC103;
-        Tue, 23 Aug 2022 02:19:49 -0700 (PDT)
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B9E81BD0B3;
+        Tue, 23 Aug 2022 02:19:47 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 48BE7B81B1F;
-        Tue, 23 Aug 2022 09:19:34 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6056DC433C1;
-        Tue, 23 Aug 2022 09:19:32 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id C128BB81C96;
+        Tue, 23 Aug 2022 09:18:49 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2C923C433C1;
+        Tue, 23 Aug 2022 09:18:47 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661246373;
-        bh=irCBK8LTpH4tpbspjJOVgrGRJVi9IEJ+agochWcRKhg=;
+        s=korg; t=1661246328;
+        bh=YhgF2yt0u3VyqWuFgGE9+OCvXB5d0Chiy9PsctpcyxA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=kBhrxFNz8IoJxVTjt0ZWtwNvXBp9IZ9RyWY6DDC3VhiuLgcUqK4/KIekl6yvw8ayR
-         7smH5a76Wg/jfRh3qRCfKCPwyS/cA57HlC59iuZP5VtrtB/IBRznEHhzRENAubGeKw
-         vRBKY1nzYqyD47nv+EV4uOhylGjyYGg4BqM1srNE=
+        b=m8D4HeErsJAIK4xY1Vn0C46EncqiUhLtCBB0BheT7gphcJUI7T5/tr6M0j5k5xFS0
+         9rqb+ne5GQ4BX66m9yOT/YHh+1RmF8vryeuCPoOJ9DoHh2inn9H7TxiKBYfMK7HH3A
+         w4SEipka7uRCsvOdS7Bkd5VVmNkTsPibTh17KMQg=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, INAGAKI Hiroshi <musashino.open@gmail.com>,
-        Nick Hainke <vincent@systemli.org>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
+        stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
+        Martin Blumenstingl <martin.blumenstingl@googlemail.com>,
+        Neil Armstrong <narmstrong@baylibre.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 088/389] arm64: dts: mt7622: fix BPI-R64 WPS button
-Date:   Tue, 23 Aug 2022 10:22:46 +0200
-Message-Id: <20220823080119.301096629@linuxfoundation.org>
+Subject: [PATCH 5.4 075/389] meson-mx-socinfo: Fix refcount leak in meson_mx_socinfo_init
+Date:   Tue, 23 Aug 2022 10:22:33 +0200
+Message-Id: <20220823080118.782693335@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220823080115.331990024@linuxfoundation.org>
 References: <20220823080115.331990024@linuxfoundation.org>
@@ -51,49 +50,35 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Nick Hainke <vincent@systemli.org>
+From: Miaoqian Lin <linmq006@gmail.com>
 
-[ Upstream commit c98e6e683632386a3bd284acda4342e68aec4c41 ]
+[ Upstream commit a2106f38077e78afcb4bf98fdda3e162118cfb3d ]
 
-The bananapi R64 (BPI-R64) experiences wrong WPS button signals.
-In OpenWrt pushing the WPS button while powering on the device will set
-it to recovery mode. Currently, this also happens without any user
-interaction. In particular, the wrong signals appear while booting the
-device or restarting it, e.g. after doing a system upgrade. If the
-device is in recovery mode the user needs to manually power cycle or
-restart it.
+of_find_matching_node() returns a node pointer with refcount
+incremented, we should use of_node_put() on it when not need anymore.
+Add missing of_node_put() to avoid refcount leak.
 
-The official BPI-R64 sources set the WPS button to GPIO_ACTIVE_LOW in
-the device tree. This setting seems to suppress the unwanted WPS button
-press signals. So this commit changes the button from GPIO_ACTIVE_HIGH to
-GPIO_ACTIVE_LOW.
-
-The official BPI-R64 sources can be found on
-https://github.com/BPI-SINOVOIP/BPI-R64-openwrt
-
-Fixes: 0b6286dd96c0 ("arm64: dts: mt7622: add bananapi BPI-R64 board")
-
-Suggested-by: INAGAKI Hiroshi <musashino.open@gmail.com>
-Signed-off-by: Nick Hainke <vincent@systemli.org>
-Link: https://lore.kernel.org/r/20220630111746.4098-1-vincent@systemli.org
-Signed-off-by: Matthias Brugger <matthias.bgg@gmail.com>
+Fixes: 5e68c0fc8df8 ("soc: amlogic: Add Meson6/Meson8/Meson8b/Meson8m2 SoC Information driver")
+Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
+Reviewed-by: Martin Blumenstingl <martin.blumenstingl@googlemail.com>
+Signed-off-by: Neil Armstrong <narmstrong@baylibre.com>
+Link: https://lore.kernel.org/r/20220524065729.33689-1-linmq006@gmail.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/arm64/boot/dts/mediatek/mt7622-bananapi-bpi-r64.dts | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/soc/amlogic/meson-mx-socinfo.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/arch/arm64/boot/dts/mediatek/mt7622-bananapi-bpi-r64.dts b/arch/arm64/boot/dts/mediatek/mt7622-bananapi-bpi-r64.dts
-index 83e10591e0e5..81215cc3759a 100644
---- a/arch/arm64/boot/dts/mediatek/mt7622-bananapi-bpi-r64.dts
-+++ b/arch/arm64/boot/dts/mediatek/mt7622-bananapi-bpi-r64.dts
-@@ -49,7 +49,7 @@ factory {
- 		wps {
- 			label = "wps";
- 			linux,code = <KEY_WPS_BUTTON>;
--			gpios = <&pio 102 GPIO_ACTIVE_HIGH>;
-+			gpios = <&pio 102 GPIO_ACTIVE_LOW>;
- 		};
- 	};
+diff --git a/drivers/soc/amlogic/meson-mx-socinfo.c b/drivers/soc/amlogic/meson-mx-socinfo.c
+index 78f0f1aeca57..92125dd65f33 100644
+--- a/drivers/soc/amlogic/meson-mx-socinfo.c
++++ b/drivers/soc/amlogic/meson-mx-socinfo.c
+@@ -126,6 +126,7 @@ static int __init meson_mx_socinfo_init(void)
+ 	np = of_find_matching_node(NULL, meson_mx_socinfo_analog_top_ids);
+ 	if (np) {
+ 		analog_top_regmap = syscon_node_to_regmap(np);
++		of_node_put(np);
+ 		if (IS_ERR(analog_top_regmap))
+ 			return PTR_ERR(analog_top_regmap);
  
 -- 
 2.35.1
