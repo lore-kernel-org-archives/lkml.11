@@ -2,209 +2,69 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 71C42C38142
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 17:01:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 14DEEC3814E
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 17:01:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343667AbiHWRBg (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 13:01:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35690 "EHLO
+        id S245646AbiHWRBm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 23 Aug 2022 13:01:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60104 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343957AbiHWRAk (ORCPT
+        with ESMTP id S245328AbiHWQ66 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 13:00:40 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 35EA2A2A8F
-        for <linux-kernel@vger.kernel.org>; Tue, 23 Aug 2022 07:12:23 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1661263942;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=XXAzfA+fOYtv11LNMO9ob47ffQq5WUBN0kv6KdmFv7Q=;
-        b=Hr5fVFN87TtsCqQoC0uBAq6OYYOWzyLDbuMh3FjCF0TdcCrP8RUhT3uHI8Wh2VzIE3bQGp
-        tZh84Fti4LEWtS9IhRcM3Y9gQA74KBWU01G44DCP9zZCvsiRcPex8blg74LqE/VHFPq+t0
-        mcmXlPdFmHmRe39vhV3vp0LGZFI62Rs=
-Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
- [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-91-O7HXFN1wPZO0QXKkMJ5rJA-1; Tue, 23 Aug 2022 10:12:17 -0400
-X-MC-Unique: O7HXFN1wPZO0QXKkMJ5rJA-1
-Received: from smtp.corp.redhat.com (int-mx03.intmail.prod.int.rdu2.redhat.com [10.11.54.3])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id CDF08101A56D;
-        Tue, 23 Aug 2022 14:12:15 +0000 (UTC)
-Received: from warthog.procyon.org.uk (unknown [10.33.36.72])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id ACA2D1121315;
-        Tue, 23 Aug 2022 14:12:14 +0000 (UTC)
-Organization: Red Hat UK Ltd. Registered Address: Red Hat UK Ltd, Amberley
-        Place, 107-111 Peascod Street, Windsor, Berkshire, SI4 1TE, United
-        Kingdom.
-        Registered in England and Wales under Company Registration No. 3798903
-Subject: [PATCH 1/7] iov_iter: Add a function to extract an iter's buffers to
- a bvec iter
-From:   David Howells <dhowells@redhat.com>
-To:     Steve French <smfrench@gmail.com>,
-        Al Viro <viro@zeniv.linux.org.uk>
-Cc:     dhowells@redhat.com, Shyam Prasad N <nspmangalore@gmail.com>,
-        Rohith Surabattula <rohiths.msft@gmail.com>,
-        Jeff Layton <jlayton@kernel.org>, linux-cifs@vger.kernel.org,
-        linux-fsdevel@vger.kernel.org, linux-kernel@vger.kernel.org
-Date:   Tue, 23 Aug 2022 15:12:14 +0100
-Message-ID: <166126393409.708021.16165278011941496946.stgit@warthog.procyon.org.uk>
-In-Reply-To: <166126392703.708021.14465850073772688008.stgit@warthog.procyon.org.uk>
-References: <166126392703.708021.14465850073772688008.stgit@warthog.procyon.org.uk>
-User-Agent: StGit/1.5
+        Tue, 23 Aug 2022 12:58:58 -0400
+Received: from bg5.exmail.qq.com (bg4.exmail.qq.com [43.154.221.58])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 939919E0E5
+        for <linux-kernel@vger.kernel.org>; Tue, 23 Aug 2022 07:15:00 -0700 (PDT)
+X-QQ-mid: bizesmtp71t1661264077t2rkxezi
+Received: from localhost.localdomain ( [182.148.14.124])
+        by bizesmtp.qq.com (ESMTP) with 
+        id ; Tue, 23 Aug 2022 22:14:36 +0800 (CST)
+X-QQ-SSF: 0100000000200040B000B00A0000000
+X-QQ-FEAT: ILHsT53NKPjxA3QUZ9443L6fJYtCysqDGp9BXbgtj0Cl63dZj5uG64ljGVgft
+        RZfQip6bWFR2Gfo+tVqZEOs5H0zRPwdaJHYD5qzETmgwU9/jS5RVikRPKhqQbeEvmgDZJUd
+        Y4+otmSNh8zyccLJl2ACciZrnj+x0HfwgevgVe5r9BQu0PU8xbJZA21gfeg7Uhs1fvrOk2x
+        WXhpF9bpaq3dfFWkEmj2lI+01KvbDA3XDBkF86b/+gpN+FLavewBSmoNc+yfIBeH/e6/Q3P
+        rPagfR1D4AAu3I0hjeBr1uI9bsFu1KPVEtH2tjCpz+wJjrcC7oRVeYOgJzwELcTRLyvJ3RZ
+        YxeQPsqbmnuMkULJp6FV51kolBHeAZGMze1D3k+g+PfH4At/AVwNEOKJEvzZw==
+X-QQ-GoodBg: 0
+From:   wangjianli <wangjianli@cdjrlc.com>
+To:     jani.nikula@linux.intel.com, joonas.lahtinen@linux.intel.com,
+        rodrigo.vivi@intel.com, tvrtko.ursulin@linux.intel.com,
+        airlied@linux.ie, daniel@ffwll.ch
+Cc:     intel-gfx@lists.freedesktop.org, dri-devel@lists.freedesktop.org,
+        linux-kernel@vger.kernel.org, wangjianli <wangjianli@cdjrlc.com>
+Subject: [PATCH] i915/display: fix repeated words in comments
+Date:   Tue, 23 Aug 2022 22:14:29 +0800
+Message-Id: <20220823141429.11598-1-wangjianli@cdjrlc.com>
+X-Mailer: git-send-email 2.36.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
-X-Scanned-By: MIMEDefang 2.78 on 10.11.54.3
+Content-Transfer-Encoding: 8bit
+X-QQ-SENDSIZE: 520
+Feedback-ID: bizesmtp:cdjrlc.com:qybglogicsvr:qybglogicsvr7
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Copy cifs's setup_aio_ctx_iter() and to lib/iov_iter.c and generalise it as
-extract_iter_to_iter().  This allocates and sets up an array of bio_vecs
-for all the page fragments in an I/O iterator and sets a second supplied
-iterator to bvec-type pointing to the array.
+ Delete the redundant word 'the'.
 
-This is can be used when setting up for a direct I/O or an asynchronous I/O
-to set up a record of the page fragments that are going to contribute to
-the buffer, paging them all in to prevent DIO->mmap loops and allowing the
-original iterator to be deallocated (it may be on the stack of the caller).
-
-Note that extract_iter_to_iter() doesn't actually need to make a separate
-allocation for the page array.  It can place the page array at the end of
-the bvec array storage, provided it traverses both arrays from the 0th
-element forwards.
-
-Signed-off-by: David Howells <dhowells@redhat.com>
+Signed-off-by: wangjianli <wangjianli@cdjrlc.com>
 ---
+ drivers/gpu/drm/i915/display/intel_crt.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
- include/linux/uio.h |    4 ++
- lib/iov_iter.c      |   93 +++++++++++++++++++++++++++++++++++++++++++++++++++
- 2 files changed, 97 insertions(+)
-
-diff --git a/include/linux/uio.h b/include/linux/uio.h
-index 5896af36199c..88fd93508710 100644
---- a/include/linux/uio.h
-+++ b/include/linux/uio.h
-@@ -251,6 +251,10 @@ ssize_t iov_iter_get_pages2(struct iov_iter *i, struct page **pages,
- 			size_t maxsize, unsigned maxpages, size_t *start);
- ssize_t iov_iter_get_pages_alloc2(struct iov_iter *i, struct page ***pages,
- 			size_t maxsize, size_t *start);
-+ssize_t extract_iter_to_iter(struct iov_iter *orig,
-+			     size_t orig_len,
-+			     struct iov_iter *new,
-+			     struct bio_vec **_bv);
- int iov_iter_npages(const struct iov_iter *i, int maxpages);
- void iov_iter_restore(struct iov_iter *i, struct iov_iter_state *state);
+diff --git a/drivers/gpu/drm/i915/display/intel_crt.c b/drivers/gpu/drm/i915/display/intel_crt.c
+index 6a3893c8ff22..fead011c87b5 100644
+--- a/drivers/gpu/drm/i915/display/intel_crt.c
++++ b/drivers/gpu/drm/i915/display/intel_crt.c
+@@ -1102,7 +1102,7 @@ void intel_crt_init(struct drm_i915_private *dev_priv)
+ 	drm_connector_helper_add(connector, &intel_crt_connector_helper_funcs);
  
-diff --git a/lib/iov_iter.c b/lib/iov_iter.c
-index 4b7fce72e3e5..c07bf978b935 100644
---- a/lib/iov_iter.c
-+++ b/lib/iov_iter.c
-@@ -1518,6 +1518,99 @@ ssize_t iov_iter_get_pages_alloc2(struct iov_iter *i,
- }
- EXPORT_SYMBOL(iov_iter_get_pages_alloc2);
- 
-+/**
-+ * extract_iter_to_iter - Extract the pages from one iterator into another
-+ * @orig: The original iterator
-+ * @orig_len: The amount of iterator to copy
-+ * @new: The iterator to be set up
-+ * @_bv: Where to store the allocated bvec table pointer, if allocated
-+ *
-+ * Extract the page fragments from the given amount of the source iterator and
-+ * build up a second iterator that refers to all of those bits.  This allows
-+ * the original iterator to disposed of.
-+ *
-+ * If a bvec array is created, the number of pages in the array is returned and
-+ * a pointer to the array is saved into *@_bv;
-+ */
-+ssize_t extract_iter_to_iter(struct iov_iter *orig,
-+			     size_t orig_len,
-+			     struct iov_iter *new,
-+			     struct bio_vec **_bv)
-+{
-+	struct bio_vec *bv = NULL;
-+	struct page **pages;
-+	unsigned int cur_npages;
-+	unsigned int max_pages = iov_iter_npages(orig, INT_MAX);
-+	unsigned int npages = 0;
-+	unsigned int i;
-+	size_t count = orig_len;
-+	ssize_t ret;
-+	size_t bv_size, pg_size;
-+	size_t start;
-+	size_t len;
-+
-+	*_bv = NULL;
-+
-+	if (iov_iter_is_kvec(orig) || iov_iter_is_discard(orig)) {
-+		*new = *orig;
-+		iov_iter_advance(orig, count);
-+		return 0;
-+	}
-+
-+	bv_size = array_size(max_pages, sizeof(*bv));
-+	bv = kvmalloc(bv_size, GFP_KERNEL);
-+	if (!bv)
-+		return -ENOMEM;
-+
-+	/* Put the page list at the end of the bvec list storage.  bvec
-+	 * elements are larger than page pointers, so as long as we work
-+	 * 0->last, we should be fine.
-+	 */
-+	pg_size = array_size(max_pages, sizeof(*pages));
-+	pages = (void *)bv + bv_size - pg_size;
-+
-+	while (count && npages < max_pages) {
-+		ret = iov_iter_get_pages2(orig, pages, count, max_pages - npages,
-+					  &start);
-+		if (ret < 0) {
-+			pr_err("Couldn't get user pages (rc=%zd)\n", ret);
-+			break;
-+		}
-+
-+		if (ret > count) {
-+			pr_err("get_pages rc=%zd more than %zu\n", ret, count);
-+			break;
-+		}
-+
-+		iov_iter_advance(orig, ret);
-+		count -= ret;
-+		ret += start;
-+		cur_npages = DIV_ROUND_UP(ret, PAGE_SIZE);
-+
-+		if (npages + cur_npages > max_pages) {
-+			pr_err("Out of bvec array capacity (%u vs %u)\n",
-+			       npages + cur_npages, max_pages);
-+			break;
-+		}
-+
-+		for (i = 0; i < cur_npages; i++) {
-+			len = ret > PAGE_SIZE ? PAGE_SIZE : ret;
-+			bv[npages + i].bv_page	 = *pages++;
-+			bv[npages + i].bv_offset = start;
-+			bv[npages + i].bv_len	 = len - start;
-+			ret -= len;
-+			start = 0;
-+		}
-+
-+		npages += cur_npages;
-+	}
-+
-+	*_bv = bv;
-+	iov_iter_bvec(new, iov_iter_rw(orig), bv, npages, orig_len - count);
-+	return npages;
-+}
-+EXPORT_SYMBOL(extract_iter_to_iter);
-+
- size_t csum_and_copy_from_iter(void *addr, size_t bytes, __wsum *csum,
- 			       struct iov_iter *i)
- {
-
+ 	/*
+-	 * TODO: find a proper way to discover whether we need to set the the
++	 * TODO: find a proper way to discover whether we need to set the
+ 	 * polarity and link reversal bits or not, instead of relying on the
+ 	 * BIOS.
+ 	 */
+-- 
+2.36.1
 
