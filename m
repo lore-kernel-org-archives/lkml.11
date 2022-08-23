@@ -2,43 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F1F78C32796
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 08:09:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AD129C32774
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 08:09:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241751AbiHWIJd (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 04:09:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51360 "EHLO
+        id S241861AbiHWIJh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 23 Aug 2022 04:09:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49700 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241741AbiHWIIa (ORCPT
+        with ESMTP id S239247AbiHWIIb (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 04:08:30 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8CE6615FD5;
-        Tue, 23 Aug 2022 01:05:37 -0700 (PDT)
+        Tue, 23 Aug 2022 04:08:31 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 58B22B865;
+        Tue, 23 Aug 2022 01:05:39 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 627C9CE1B29;
-        Tue, 23 Aug 2022 08:05:16 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6367AC433C1;
-        Tue, 23 Aug 2022 08:05:14 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id C08016125A;
+        Tue, 23 Aug 2022 08:05:24 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id AF212C433D6;
+        Tue, 23 Aug 2022 08:05:23 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661241914;
-        bh=p5L1RJmEecqNIfPyT3QRQLYh4wl0EhjOa21pZM+hFrE=;
+        s=korg; t=1661241924;
+        bh=w5L1OlnmPe1yAacwsnbfg9eGSD3IF23INkkqT0m3Q7Q=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=blmD1hZBE3AzsX/24YuZpnPjGCa7S0BkkMIppyf/hCHTmxO23PLQvs4XaYfRxj1Jw
-         JcxkiVxuGmVGssiL5FiI2MMXCvy90kFmOT9xMzjdSx7GQJDkAZr4nRPCpgY2OO6cZP
-         UMaktVlOOLDoMfIWdrj+43ECCxVb39zNdZ0MDNcI=
+        b=CK+x471BwzUaqPg5zU/oBCbPBKSozL1/ngCppUgiNaAGIPABNfTY/QczbpxggzZTL
+         okuSlvsgX6Dow/nnQu4NKTZWeIU/PKgzPvo1GbvY8uug2OG6D2pLru3XxDtqK9VF6k
+         HFeYoaq2de5AvT9SIyBF+/4cCoIDEEj9Vrey8TSU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, TOTE Robot <oslab@tsinghua.edu.cn>,
-        Sweet Tea Dorminy <sweettea-kernel@dorminy.me>,
-        Nikolay Borisov <nborisov@suse.com>,
-        Zixuan Fu <r33s3n6@gmail.com>, David Sterba <dsterba@suse.com>
-Subject: [PATCH 5.19 018/365] btrfs: unset reloc control if transaction commit fails in prepare_to_relocate()
-Date:   Tue, 23 Aug 2022 09:58:39 +0200
-Message-Id: <20220823080118.950572230@linuxfoundation.org>
+        stable@vger.kernel.org, Filipe Manana <fdmanana@suse.com>,
+        David Sterba <dsterba@suse.com>
+Subject: [PATCH 5.19 021/365] btrfs: fix warning during log replay when bumping inode link count
+Date:   Tue, 23 Aug 2022 09:58:42 +0200
+Message-Id: <20220823080119.096900465@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220823080118.128342613@linuxfoundation.org>
 References: <20220823080118.128342613@linuxfoundation.org>
@@ -50,102 +48,94 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Zixuan Fu <r33s3n6@gmail.com>
+From: Filipe Manana <fdmanana@suse.com>
 
-commit 85f02d6c856b9f3a0acf5219de6e32f58b9778eb upstream.
+commit 769030e11847c5412270c0726ff21d3a1f0a3131 upstream.
 
-In btrfs_relocate_block_group(), the rc is allocated.  Then
-btrfs_relocate_block_group() calls
+During log replay, at add_link(), we may increment the link count of
+another inode that has a reference that conflicts with a new reference
+for the inode currently being processed.
 
-relocate_block_group()
-  prepare_to_relocate()
-    set_reloc_control()
+During log replay, at add_link(), we may drop (unlink) a reference from
+some inode in the subvolume tree if that reference conflicts with a new
+reference found in the log for the inode we are currently processing.
 
-that assigns rc to the variable fs_info->reloc_ctl. When
-prepare_to_relocate() returns, it calls
+After the unlink, If the link count has decreased from 1 to 0, then we
+increment the link count to prevent the inode from being deleted if it's
+evicted by an iput() call, because we may have references to add to that
+inode later on (and we will fixup its link count later during log replay).
 
-btrfs_commit_transaction()
-  btrfs_start_dirty_block_groups()
-    btrfs_alloc_path()
-      kmem_cache_zalloc()
+However incrementing the link count from 0 to 1 triggers a warning:
 
-which may fail for example (or other errors could happen). When the
-failure occurs, btrfs_relocate_block_group() detects the error and frees
-rc and doesn't set fs_info->reloc_ctl to NULL. After that, in
-btrfs_init_reloc_root(), rc is retrieved from fs_info->reloc_ctl and
-then used, which may cause a use-after-free bug.
+  $ cat fs/inode.c
+  (...)
+  void inc_nlink(struct inode *inode)
+  {
+        if (unlikely(inode->i_nlink == 0)) {
+                 WARN_ON(!(inode->i_state & I_LINKABLE));
+                 atomic_long_dec(&inode->i_sb->s_remove_count);
+        }
+  (...)
 
-This possible bug can be triggered by calling btrfs_ioctl_balance()
-before calling btrfs_ioctl_defrag().
+The I_LINKABLE flag is only set when creating an O_TMPFILE file, so it's
+never set during log replay.
 
-To fix this possible bug, in prepare_to_relocate(), check if
-btrfs_commit_transaction() fails. If the failure occurs,
-unset_reloc_control() is called to set fs_info->reloc_ctl to NULL.
+Most of the time, the warning isn't triggered even if we dropped the last
+reference of the conflicting inode, and this is because:
 
-The error log in our fault-injection testing is shown as follows:
+1) The conflicting inode was previously marked for fixup, through a call
+   to link_to_fixup_dir(), which increments the inode's link count;
 
-  [   58.751070] BUG: KASAN: use-after-free in btrfs_init_reloc_root+0x7ca/0x920 [btrfs]
-  ...
-  [   58.753577] Call Trace:
-  ...
-  [   58.755800]  kasan_report+0x45/0x60
-  [   58.756066]  btrfs_init_reloc_root+0x7ca/0x920 [btrfs]
-  [   58.757304]  record_root_in_trans+0x792/0xa10 [btrfs]
-  [   58.757748]  btrfs_record_root_in_trans+0x463/0x4f0 [btrfs]
-  [   58.758231]  start_transaction+0x896/0x2950 [btrfs]
-  [   58.758661]  btrfs_defrag_root+0x250/0xc00 [btrfs]
-  [   58.759083]  btrfs_ioctl_defrag+0x467/0xa00 [btrfs]
-  [   58.759513]  btrfs_ioctl+0x3c95/0x114e0 [btrfs]
-  ...
-  [   58.768510] Allocated by task 23683:
-  [   58.768777]  ____kasan_kmalloc+0xb5/0xf0
-  [   58.769069]  __kmalloc+0x227/0x3d0
-  [   58.769325]  alloc_reloc_control+0x10a/0x3d0 [btrfs]
-  [   58.769755]  btrfs_relocate_block_group+0x7aa/0x1e20 [btrfs]
-  [   58.770228]  btrfs_relocate_chunk+0xf1/0x760 [btrfs]
-  [   58.770655]  __btrfs_balance+0x1326/0x1f10 [btrfs]
-  [   58.771071]  btrfs_balance+0x3150/0x3d30 [btrfs]
-  [   58.771472]  btrfs_ioctl_balance+0xd84/0x1410 [btrfs]
-  [   58.771902]  btrfs_ioctl+0x4caa/0x114e0 [btrfs]
-  ...
-  [   58.773337] Freed by task 23683:
-  ...
-  [   58.774815]  kfree+0xda/0x2b0
-  [   58.775038]  free_reloc_control+0x1d6/0x220 [btrfs]
-  [   58.775465]  btrfs_relocate_block_group+0x115c/0x1e20 [btrfs]
-  [   58.775944]  btrfs_relocate_chunk+0xf1/0x760 [btrfs]
-  [   58.776369]  __btrfs_balance+0x1326/0x1f10 [btrfs]
-  [   58.776784]  btrfs_balance+0x3150/0x3d30 [btrfs]
-  [   58.777185]  btrfs_ioctl_balance+0xd84/0x1410 [btrfs]
-  [   58.777621]  btrfs_ioctl+0x4caa/0x114e0 [btrfs]
-  ...
+2) And the last iput() on the inode has not triggered eviction of the
+   inode, nor was eviction triggered after the iput(). So at add_link(),
+   even if we unlink the last reference of the inode, its link count ends
+   up being 1 and not 0.
 
-Reported-by: TOTE Robot <oslab@tsinghua.edu.cn>
-CC: stable@vger.kernel.org # 5.15+
-Reviewed-by: Sweet Tea Dorminy <sweettea-kernel@dorminy.me>
-Reviewed-by: Nikolay Borisov <nborisov@suse.com>
-Signed-off-by: Zixuan Fu <r33s3n6@gmail.com>
+So this means that if eviction is triggered after link_to_fixup_dir() is
+called, at add_link() we will read the inode back from the subvolume tree
+and have it with a correct link count, matching the number of references
+it has on the subvolume tree. So if when we are at add_link() the inode
+has exactly one reference only, its link count is 1, and after the unlink
+its link count becomes 0.
+
+So fix this by using set_nlink() instead of inc_nlink(), as the former
+accepts a transition from 0 to 1 and it's what we use in other similar
+contexts (like at link_to_fixup_dir().
+
+Also make add_inode_ref() use set_nlink() instead of inc_nlink() to
+bump the link count from 0 to 1.
+
+The warning is actually harmless, but it may scare users. Josef also ran
+into it recently.
+
+CC: stable@vger.kernel.org # 5.1+
+Signed-off-by: Filipe Manana <fdmanana@suse.com>
+Reviewed-by: David Sterba <dsterba@suse.com>
 Signed-off-by: David Sterba <dsterba@suse.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- fs/btrfs/relocation.c |    7 ++++++-
- 1 file changed, 6 insertions(+), 1 deletion(-)
+ fs/btrfs/tree-log.c |    4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
---- a/fs/btrfs/relocation.c
-+++ b/fs/btrfs/relocation.c
-@@ -3573,7 +3573,12 @@ int prepare_to_relocate(struct reloc_con
- 		 */
- 		return PTR_ERR(trans);
- 	}
--	return btrfs_commit_transaction(trans);
-+
-+	ret = btrfs_commit_transaction(trans);
-+	if (ret)
-+		unset_reloc_control(rc);
-+
-+	return ret;
- }
- 
- static noinline_for_stack int relocate_block_group(struct reloc_control *rc)
+--- a/fs/btrfs/tree-log.c
++++ b/fs/btrfs/tree-log.c
+@@ -1459,7 +1459,7 @@ static int add_link(struct btrfs_trans_h
+ 	 * on the inode will not free it. We will fixup the link count later.
+ 	 */
+ 	if (other_inode->i_nlink == 0)
+-		inc_nlink(other_inode);
++		set_nlink(other_inode, 1);
+ add_link:
+ 	ret = btrfs_add_link(trans, BTRFS_I(dir), BTRFS_I(inode),
+ 			     name, namelen, 0, ref_index);
+@@ -1602,7 +1602,7 @@ static noinline int add_inode_ref(struct
+ 				 * free it. We will fixup the link count later.
+ 				 */
+ 				if (!ret && inode->i_nlink == 0)
+-					inc_nlink(inode);
++					set_nlink(inode, 1);
+ 			}
+ 			if (ret < 0)
+ 				goto out;
 
 
