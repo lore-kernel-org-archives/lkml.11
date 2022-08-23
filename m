@@ -2,44 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E8084C32774
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C0DDEC32792
 	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 11:21:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357547AbiHWLUc (ORCPT
+        id S1357494AbiHWLUY (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 07:20:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43378 "EHLO
+        Tue, 23 Aug 2022 07:20:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42138 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357866AbiHWLQu (ORCPT
+        with ESMTP id S1357850AbiHWLQr (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 07:16:50 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1CEADBD2BF;
-        Tue, 23 Aug 2022 02:20:27 -0700 (PDT)
+        Tue, 23 Aug 2022 07:16:47 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ADAABBD2A8;
+        Tue, 23 Aug 2022 02:20:24 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 6601061298;
-        Tue, 23 Aug 2022 09:20:04 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5ABA0C433C1;
-        Tue, 23 Aug 2022 09:20:03 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 9E33260F85;
+        Tue, 23 Aug 2022 09:20:22 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9110CC433C1;
+        Tue, 23 Aug 2022 09:20:21 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661246403;
-        bh=FutRVyWlE0IVP1TJoNBQC//wfoF54yZEDO2MEGYYXVg=;
+        s=korg; t=1661246422;
+        bh=pwWQpP2tkUmlkVpJtmOg53R333roKlKsvhhSHR4JUz4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=DsJn9Ku/M6QxDfLofJCz/ntrAgkEuOArWmeOMIASJql1afrq4xjX9WJIk+dMVrLQB
-         c807NXrDDvb4DOxugapjDc6EmjGfso8wNIOnpQjFUrXTJnDqUkt3v4Ml98AKT+9nww
-         plAWHbVlFofArVjm4w+lFnPo4RwCLOOI4BPA9yEQ=
+        b=ZwIRRwisYiiBOQVSG+8/BusCxKvQqx7yMbF7W+fmGR2Nl8cwI1CPo8wWe2T/xqdbt
+         mKRbOYcKPEiNeSgd1oFWcdEAFVZS2+jC8MiJrSCYRAOnVYFruMN8w7aSydCFydv53T
+         jIvNlTauoqbW2oYD4lHLCM6ayhoGfg2NaeBmpay8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Robert Marko <robimarko@gmail.com>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        stable@vger.kernel.org, Jiasheng Jiang <jiasheng@iscas.ac.cn>,
+        Laurent Pinchart <laurent.pinchart@ideasonboard.com>,
+        Sam Ravnborg <sam@ravnborg.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 068/389] arm64: dts: qcom: ipq8074: fix NAND node name
-Date:   Tue, 23 Aug 2022 10:22:26 +0200
-Message-Id: <20220823080118.452625311@linuxfoundation.org>
+Subject: [PATCH 5.4 105/389] drm: bridge: adv7511: Add check for mipi_dsi_driver_register
+Date:   Tue, 23 Aug 2022 10:23:03 +0200
+Message-Id: <20220823080120.001652411@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220823080115.331990024@linuxfoundation.org>
 References: <20220823080115.331990024@linuxfoundation.org>
@@ -51,35 +51,55 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Robert Marko <robimarko@gmail.com>
+From: Jiasheng Jiang <jiasheng@iscas.ac.cn>
 
-[ Upstream commit b39961659ffc3c3a9e3d0d43b0476547b5f35d49 ]
+[ Upstream commit 831463667b5f4f1e5bce9c3b94e9e794d2bc8923 ]
 
-Per schema it should be nand-controller@79b0000 instead of nand@79b0000.
-Fix it to match nand-controller.yaml requirements.
+As mipi_dsi_driver_register could return error if fails,
+it should be better to check the return value and return error
+if fails.
+Moreover, if i2c_add_driver fails,  mipi_dsi_driver_register
+should be reverted.
 
-Signed-off-by: Robert Marko <robimarko@gmail.com>
-Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Signed-off-by: Bjorn Andersson <bjorn.andersson@linaro.org>
-Link: https://lore.kernel.org/r/20220621120642.518575-1-robimarko@gmail.com
+Fixes: 1e4d58cd7f88 ("drm/bridge: adv7533: Create a MIPI DSI device")
+Signed-off-by: Jiasheng Jiang <jiasheng@iscas.ac.cn>
+Reviewed-by: Laurent Pinchart <laurent.pinchart@ideasonboard.com>
+Signed-off-by: Sam Ravnborg <sam@ravnborg.org>
+Link: https://patchwork.freedesktop.org/patch/msgid/20220602103401.2980938-1-jiasheng@iscas.ac.cn
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/arm64/boot/dts/qcom/ipq8074.dtsi | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/gpu/drm/bridge/adv7511/adv7511_drv.c | 17 ++++++++++++++---
+ 1 file changed, 14 insertions(+), 3 deletions(-)
 
-diff --git a/arch/arm64/boot/dts/qcom/ipq8074.dtsi b/arch/arm64/boot/dts/qcom/ipq8074.dtsi
-index 7822592664ff..1e9fa049c550 100644
---- a/arch/arm64/boot/dts/qcom/ipq8074.dtsi
-+++ b/arch/arm64/boot/dts/qcom/ipq8074.dtsi
-@@ -253,7 +253,7 @@ qpic_bam: dma@7984000 {
- 			status = "disabled";
- 		};
+diff --git a/drivers/gpu/drm/bridge/adv7511/adv7511_drv.c b/drivers/gpu/drm/bridge/adv7511/adv7511_drv.c
+index e2f84e2d5d3c..62ef603627b7 100644
+--- a/drivers/gpu/drm/bridge/adv7511/adv7511_drv.c
++++ b/drivers/gpu/drm/bridge/adv7511/adv7511_drv.c
+@@ -1302,10 +1302,21 @@ static struct i2c_driver adv7511_driver = {
  
--		qpic_nand: nand@79b0000 {
-+		qpic_nand: nand-controller@79b0000 {
- 			compatible = "qcom,ipq8074-nand";
- 			reg = <0x79b0000 0x10000>;
- 			#address-cells = <1>;
+ static int __init adv7511_init(void)
+ {
+-	if (IS_ENABLED(CONFIG_DRM_MIPI_DSI))
+-		mipi_dsi_driver_register(&adv7533_dsi_driver);
++	int ret;
++
++	if (IS_ENABLED(CONFIG_DRM_MIPI_DSI)) {
++		ret = mipi_dsi_driver_register(&adv7533_dsi_driver);
++		if (ret)
++			return ret;
++	}
+ 
+-	return i2c_add_driver(&adv7511_driver);
++	ret = i2c_add_driver(&adv7511_driver);
++	if (ret) {
++		if (IS_ENABLED(CONFIG_DRM_MIPI_DSI))
++			mipi_dsi_driver_unregister(&adv7533_dsi_driver);
++	}
++
++	return ret;
+ }
+ module_init(adv7511_init);
+ 
 -- 
 2.35.1
 
