@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D5521C32774
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 10:49:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8DC34C32772
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 10:49:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356167AbiHWKtm (ORCPT
+        id S1356180AbiHWKtr (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 06:49:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56670 "EHLO
+        Tue, 23 Aug 2022 06:49:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52620 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356499AbiHWKm0 (ORCPT
+        with ESMTP id S1356535AbiHWKma (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 06:42:26 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 078D8AA3D0;
-        Tue, 23 Aug 2022 02:09:55 -0700 (PDT)
+        Tue, 23 Aug 2022 06:42:30 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DA4E18607C;
+        Tue, 23 Aug 2022 02:09:59 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 55BD160112;
-        Tue, 23 Aug 2022 09:09:54 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 426DAC433C1;
-        Tue, 23 Aug 2022 09:09:53 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 3BBD9CE1B40;
+        Tue, 23 Aug 2022 09:09:58 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 54B32C433C1;
+        Tue, 23 Aug 2022 09:09:56 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661245793;
-        bh=DnpzbKthLavNueaPHkVIQtqpVn8Kryaf8GGCHKbV0DM=;
+        s=korg; t=1661245796;
+        bh=F2zdgkDF/XedTRQAuWZeDhYcXnbH11Mv0smvHCoCLAY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=2SvVshs2oMYms6RiPhbG79zhm5XJDSjgMD4WayqFur+seuybfJUd5Aq3mCme3Zqif
-         N97E/bWa55nTIyI1aFxeTEap01CKXxEw3q8yYLmm3G23PU/iCBLcMj6vZNpt0dNtVA
-         VVRJ3sKi8QMmsSXWGU+JNLGpudkOdA8V/TZakqQQ=
+        b=oYdd6q0xCs7ooStLdbCmZFcqbVAxygmzOmO0Fr1T8fRbFc8M51RD2dg5aNB3/FIx0
+         xOANMTkNeRekYT24n0Jr2IwoUXeN5y1O3V9n+fESOpezvAloaV5EoR05zk/crJAZsa
+         3OPO9egKnqtoLpDlKQkf4rowklJ1rygKv8WFj+9o=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org, stable@kernel.org,
-        Ye Bin <yebin10@huawei.com>, Eric Whitney <enwlinux@gmail.com>,
-        Theodore Tso <tytso@mit.edu>
-Subject: [PATCH 4.19 191/287] ext4: fix extent status tree race in writeback error recovery path
-Date:   Tue, 23 Aug 2022 10:26:00 +0200
-Message-Id: <20220823080107.251245068@linuxfoundation.org>
+        Baokun Li <libaokun1@huawei.com>,
+        "Ritesh Harjani (IBM)" <ritesh.list@gmail.com>,
+        Jan Kara <jack@suse.cz>, Theodore Tso <tytso@mit.edu>
+Subject: [PATCH 4.19 192/287] ext4: correct max_inline_xattr_value_size computing
+Date:   Tue, 23 Aug 2022 10:26:01 +0200
+Message-Id: <20220823080107.290379462@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220823080100.268827165@linuxfoundation.org>
 References: <20220823080100.268827165@linuxfoundation.org>
@@ -50,52 +51,36 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Eric Whitney <enwlinux@gmail.com>
+From: Baokun Li <libaokun1@huawei.com>
 
-commit 7f0d8e1d607c1a4fa9a27362a108921d82230874 upstream.
+commit c9fd167d57133c5b748d16913c4eabc55e531c73 upstream.
 
-A race can occur in the unlikely event ext4 is unable to allocate a
-physical cluster for a delayed allocation in a bigalloc file system
-during writeback.  Failure to allocate a cluster forces error recovery
-that includes a call to mpage_release_unused_pages().  That function
-removes any corresponding delayed allocated blocks from the extent
-status tree.  If a new delayed write is in progress on the same cluster
-simultaneously, resulting in the addition of an new extent containing
-one or more blocks in that cluster to the extent status tree, delayed
-block accounting can be thrown off if that delayed write then encounters
-a similar cluster allocation failure during future writeback.
-
-Write lock the i_data_sem in mpage_release_unused_pages() to fix this
-problem.  Ext4's block/cluster accounting code for bigalloc relies on
-i_data_sem for mutual exclusion, as is found in the delayed write path,
-and the locking in mpage_release_unused_pages() is missing.
+If the ext4 inode does not have xattr space, 0 is returned in the
+get_max_inline_xattr_value_size function. Otherwise, the function returns
+a negative value when the inode does not contain EXT4_STATE_XATTR.
 
 Cc: stable@kernel.org
-Reported-by: Ye Bin <yebin10@huawei.com>
-Signed-off-by: Eric Whitney <enwlinux@gmail.com>
-Link: https://lore.kernel.org/r/20220615160530.1928801-1-enwlinux@gmail.com
+Signed-off-by: Baokun Li <libaokun1@huawei.com>
+Reviewed-by: Ritesh Harjani (IBM) <ritesh.list@gmail.com>
+Reviewed-by: Jan Kara <jack@suse.cz>
+Link: https://lore.kernel.org/r/20220616021358.2504451-4-libaokun1@huawei.com
 Signed-off-by: Theodore Ts'o <tytso@mit.edu>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- fs/ext4/inode.c |    7 +++++++
- 1 file changed, 7 insertions(+)
+ fs/ext4/inline.c |    3 +++
+ 1 file changed, 3 insertions(+)
 
---- a/fs/ext4/inode.c
-+++ b/fs/ext4/inode.c
-@@ -1755,7 +1755,14 @@ static void mpage_release_unused_pages(s
- 		ext4_lblk_t start, last;
- 		start = index << (PAGE_SHIFT - inode->i_blkbits);
- 		last = end << (PAGE_SHIFT - inode->i_blkbits);
-+
-+		/*
-+		 * avoid racing with extent status tree scans made by
-+		 * ext4_insert_delayed_block()
-+		 */
-+		down_write(&EXT4_I(inode)->i_data_sem);
- 		ext4_es_remove_extent(inode, start, last - start + 1);
-+		up_write(&EXT4_I(inode)->i_data_sem);
- 	}
+--- a/fs/ext4/inline.c
++++ b/fs/ext4/inline.c
+@@ -34,6 +34,9 @@ static int get_max_inline_xattr_value_si
+ 	struct ext4_inode *raw_inode;
+ 	int free, min_offs;
  
- 	pagevec_init(&pvec);
++	if (!EXT4_INODE_HAS_XATTR_SPACE(inode))
++		return 0;
++
+ 	min_offs = EXT4_SB(inode->i_sb)->s_inode_size -
+ 			EXT4_GOOD_OLD_INODE_SIZE -
+ 			EXT4_I(inode)->i_extra_isize -
 
 
