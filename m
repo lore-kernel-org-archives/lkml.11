@@ -2,45 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 08B43C32792
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 10:19:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 42C23C32774
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 10:19:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353908AbiHWKTT (ORCPT
+        id S1353971AbiHWKT0 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 06:19:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35636 "EHLO
+        Tue, 23 Aug 2022 06:19:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57806 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352668AbiHWKIZ (ORCPT
+        with ESMTP id S1352697AbiHWKIc (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 06:08:25 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D65CD58DF8;
-        Tue, 23 Aug 2022 01:54:40 -0700 (PDT)
+        Tue, 23 Aug 2022 06:08:32 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D0A396CD14;
+        Tue, 23 Aug 2022 01:54:42 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 83585B81C3B;
-        Tue, 23 Aug 2022 08:54:39 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D4ADAC433C1;
-        Tue, 23 Aug 2022 08:54:37 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id E1D916150F;
+        Tue, 23 Aug 2022 08:54:41 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E7D7EC433C1;
+        Tue, 23 Aug 2022 08:54:40 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661244878;
-        bh=SAvOhlafPdoVmoH3guJYuNfZGMfWY3Q8a+8odAousBE=;
+        s=korg; t=1661244881;
+        bh=wzYSU7PSI22ZxSnt8HJeG089qUc1YXYvyYmqR9gjY2Y=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=OAxw3v96oHkBNpr+Km3tCPQ+WoO0MOZtn6JvNAEPCKSousg1IKl1+orLEF5JyMr65
-         WQOT6xH5dD8S1lqQvdWodZe8cgNz+3LANe/xN7QO2Sun8lE4kD0ERGcUyoKti3FRIv
-         XJ1DgExJh/hh4qjecCjCX8bJa3+f23spuSZYkWnk=
+        b=0G8ftpogScWYLBsQ65gS1XJLwqB4hVrS5IC0Tu7P4jSOnAT7iFb1Jxfe+IRKC83g1
+         8BYf+fVIYowtZymn7YjR3JuDwYeR19+NPToYqt8w7Wtt8yDkh4ZLgSPMsZuLy0H+KK
+         5n2XiGRfQKmmbeGlxwkHo/lpIKltXD3CX1HkMHf0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Frank Li <Frank.Li@nxp.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 166/244] usb: cdns3: fix random warning message when driver load
-Date:   Tue, 23 Aug 2022 10:25:25 +0200
-Message-Id: <20220823080104.757719724@linuxfoundation.org>
+        stable@vger.kernel.org,
+        =?UTF-8?q?Cs=C3=B3k=C3=A1s=20Bence?= <csokas.bence@prolan.hu>,
+        Jakub Kicinski <kuba@kernel.org>
+Subject: [PATCH 4.14 206/229] fec: Fix timer capture timing in `fec_ptp_enable_pps()`
+Date:   Tue, 23 Aug 2022 10:26:07 +0200
+Message-Id: <20220823080101.012155497@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220823080059.091088642@linuxfoundation.org>
-References: <20220823080059.091088642@linuxfoundation.org>
+In-Reply-To: <20220823080053.202747790@linuxfoundation.org>
+References: <20220823080053.202747790@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -49,67 +50,36 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Frank Li <Frank.Li@nxp.com>
+From: Csókás Bence <csokas.bence@prolan.hu>
 
-[ Upstream commit 8659ab3d936fcf0084676f98b75b317017aa8f82 ]
+commit 61d5e2a251fb20c2c5e998c3f1d52ed6d5360319 upstream.
 
-Warning log:
-[    4.141392] Unexpected gfp: 0x4 (GFP_DMA32). Fixing up to gfp: 0xa20 (GFP_ATOMIC). Fix your code!
-[    4.150340] CPU: 1 PID: 175 Comm: 1-0050 Not tainted 5.15.5-00039-g2fd9ae1b568c #20
-[    4.158010] Hardware name: Freescale i.MX8QXP MEK (DT)
-[    4.163155] Call trace:
-[    4.165600]  dump_backtrace+0x0/0x1b0
-[    4.169286]  show_stack+0x18/0x68
-[    4.172611]  dump_stack_lvl+0x68/0x84
-[    4.176286]  dump_stack+0x18/0x34
-[    4.179613]  kmalloc_fix_flags+0x60/0x88
-[    4.183550]  new_slab+0x334/0x370
-[    4.186878]  ___slab_alloc.part.108+0x4d4/0x748
-[    4.191419]  __slab_alloc.isra.109+0x30/0x78
-[    4.195702]  kmem_cache_alloc+0x40c/0x420
-[    4.199725]  dma_pool_alloc+0xac/0x1f8
-[    4.203486]  cdns3_allocate_trb_pool+0xb4/0xd0
+Code reimplements functionality already in `fec_ptp_read()`,
+but misses check for FEC_QUIRK_BUG_CAPTURE. Replace with function call.
 
-pool_alloc_page(struct dma_pool *pool, gfp_t mem_flags)
-{
-	...
-	page = kmalloc(sizeof(*page), mem_flags);
-	page->vaddr = dma_alloc_coherent(pool->dev, pool->allocation,
-					 &page->dma, mem_flags);
-	...
-}
-
-kmalloc was called with mem_flags, which is passed down in
-cdns3_allocate_trb_pool() and have GFP_DMA32 flags.
-kmall_fix_flags() report warning.
-
-GFP_DMA32 is not useful at all. dma_alloc_coherent() will handle
-DMA memory region correctly by pool->dev. GFP_DMA32 can be removed
-safely.
-
-Signed-off-by: Frank Li <Frank.Li@nxp.com>
-Link: https://lore.kernel.org/r/20220609154456.2871672-1-Frank.Li@nxp.com
+Fixes: 28b5f058cf1d ("net: fec: ptp: fix convergence issue to support LinuxPTP stack")
+Signed-off-by: Csókás Bence <csokas.bence@prolan.hu>
+Link: https://lore.kernel.org/r/20220811101348.13755-1-csokas.bence@prolan.hu
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/usb/cdns3/cdns3-gadget.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/net/ethernet/freescale/fec_ptp.c |    6 +-----
+ 1 file changed, 1 insertion(+), 5 deletions(-)
 
-diff --git a/drivers/usb/cdns3/cdns3-gadget.c b/drivers/usb/cdns3/cdns3-gadget.c
-index 4bcaed787c0f..3f1ce8911077 100644
---- a/drivers/usb/cdns3/cdns3-gadget.c
-+++ b/drivers/usb/cdns3/cdns3-gadget.c
-@@ -220,7 +220,7 @@ int cdns3_allocate_trb_pool(struct cdns3_endpoint *priv_ep)
- 
- 	if (!priv_ep->trb_pool) {
- 		priv_ep->trb_pool = dma_pool_alloc(priv_dev->eps_dma_pool,
--						   GFP_DMA32 | GFP_ATOMIC,
-+						   GFP_ATOMIC,
- 						   &priv_ep->trb_pool_dma);
- 
- 		if (!priv_ep->trb_pool)
--- 
-2.35.1
-
+--- a/drivers/net/ethernet/freescale/fec_ptp.c
++++ b/drivers/net/ethernet/freescale/fec_ptp.c
+@@ -155,11 +155,7 @@ static int fec_ptp_enable_pps(struct fec
+ 		 * NSEC_PER_SEC - ts.tv_nsec. Add the remaining nanoseconds
+ 		 * to current timer would be next second.
+ 		 */
+-		tempval = readl(fep->hwp + FEC_ATIME_CTRL);
+-		tempval |= FEC_T_CTRL_CAPTURE;
+-		writel(tempval, fep->hwp + FEC_ATIME_CTRL);
+-
+-		tempval = readl(fep->hwp + FEC_ATIME);
++		tempval = fep->cc.read(&fep->cc);
+ 		/* Convert the ptp local counter to 1588 timestamp */
+ 		ns = timecounter_cyc2time(&fep->tc, tempval);
+ 		ts = ns_to_timespec64(ns);
 
 
