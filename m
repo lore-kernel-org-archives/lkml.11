@@ -2,114 +2,129 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1EC99C32772
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 16:36:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 13BDAC32772
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 16:36:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244886AbiHWQgN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 12:36:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53382 "EHLO
+        id S244904AbiHWQgR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 23 Aug 2022 12:36:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51876 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244991AbiHWQf3 (ORCPT
+        with ESMTP id S245289AbiHWQfq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 12:35:29 -0400
-Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9461D6F25D;
-        Tue, 23 Aug 2022 07:47:46 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1661266066; x=1692802066;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=/OQEUPblx8ZWr1PbZjofhsyr29E34e1HQ6mir9IbSOk=;
-  b=PULi/HT3akw28FknFLQ1n/mtWUkLbon/s3OICb/bBG/296MwXgbWLKVQ
-   RH4LCqEZLp2HMMma8c6qP06AmgJGRRIISU0AWLcms0gAnmlXvBgiFz3mz
-   xVAg28z+nHRzwzxN9D9FMosUC/M13xPQBPiCYnVDRpSlqgYVpexfFBPO/
-   yYD4PRWmnXkLxJKm47ojy698TailU5WkaJo80wIaK3ulsgzWoMERpfXCi
-   E0UyijNxBuh82ZBpXaz5brgLN0JMBRE/tH8HzOL1EY73tuf2Goi5HN1lg
-   CkUgna+n1GzrmIWO86dZl5wtCiPgMnwZ9bbohRKK/kpltafx+AezNTnAh
-   g==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10448"; a="294494394"
-X-IronPort-AV: E=Sophos;i="5.93,257,1654585200"; 
-   d="scan'208";a="294494394"
-Received: from fmsmga001.fm.intel.com ([10.253.24.23])
-  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Aug 2022 07:47:45 -0700
-X-IronPort-AV: E=Sophos;i="5.93,257,1654585200"; 
-   d="scan'208";a="751707348"
-Received: from smile.fi.intel.com ([10.237.72.54])
-  by fmsmga001-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Aug 2022 07:47:42 -0700
-Received: from andy by smile.fi.intel.com with local (Exim 4.96)
-        (envelope-from <andriy.shevchenko@linux.intel.com>)
-        id 1oQVBq-002TwM-2I;
-        Tue, 23 Aug 2022 17:47:38 +0300
-Date:   Tue, 23 Aug 2022 17:47:38 +0300
-From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To:     Henning Schild <henning.schild@siemens.com>
-Cc:     Linus Walleij <linus.walleij@linaro.org>,
-        Bartosz Golaszewski <brgl@bgdev.pl>,
-        Pavel Machek <pavel@ucw.cz>,
-        Hans de Goede <hdegoede@redhat.com>,
-        Mark Gross <markgross@kernel.org>, Lee Jones <lee@kernel.org>,
-        linux-gpio@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-leds@vger.kernel.org, platform-driver-x86@vger.kernel.org,
-        Sheng-Yuan Huang <syhuang3@nuvoton.com>,
-        Tasanakorn Phaipool <tasanakorn@gmail.com>,
-        simon.guinot@sequanux.org
-Subject: Re: [PATCH v4 1/5] gpio-f7188x: Add GPIO support for Nuvoton NCT6116
-Message-ID: <YwToilxquEZGqzQD@smile.fi.intel.com>
-References: <20220823102344.17624-1-henning.schild@siemens.com>
- <20220823102344.17624-2-henning.schild@siemens.com>
+        Tue, 23 Aug 2022 12:35:46 -0400
+Received: from szxga03-in.huawei.com (szxga03-in.huawei.com [45.249.212.189])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B2519D41A0
+        for <linux-kernel@vger.kernel.org>; Tue, 23 Aug 2022 06:06:17 -0700 (PDT)
+Received: from canpemm500009.china.huawei.com (unknown [172.30.72.56])
+        by szxga03-in.huawei.com (SkyGuard) with ESMTP id 4MBqDn22Y4zGplg;
+        Tue, 23 Aug 2022 21:04:09 +0800 (CST)
+Received: from [10.67.102.169] (10.67.102.169) by
+ canpemm500009.china.huawei.com (7.192.105.203) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Tue, 23 Aug 2022 21:05:48 +0800
+CC:     <yangyicong@hisilicon.com>, <sudeep.holla@arm.com>,
+        <vincent.guittot@linaro.org>, <linux-kernel@vger.kernel.org>,
+        <gregkh@linuxfoundation.org>, <rafael@kernel.org>,
+        <21cnbao@gmail.com>, <jonathan.cameron@huawei.com>,
+        <linuxarm@huawei.com>, <prime.zeng@huawei.com>
+Subject: Re: [PATCH] arch_topology: Make cluster topology span at least SMT
+ CPUs
+To:     Ionela Voinescu <ionela.voinescu@arm.com>
+References: <20220823073044.58697-1-yangyicong@huawei.com>
+ <YwSKnGii2zdd7Fig@arm.com>
+From:   Yicong Yang <yangyicong@huawei.com>
+Message-ID: <d0bc04af-5481-5df2-ff75-9072b4b047c1@huawei.com>
+Date:   Tue, 23 Aug 2022 21:05:47 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
+ Thunderbird/78.5.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220823102344.17624-2-henning.schild@siemens.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
+In-Reply-To: <YwSKnGii2zdd7Fig@arm.com>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.67.102.169]
+X-ClientProxiedBy: dggems701-chm.china.huawei.com (10.3.19.178) To
+ canpemm500009.china.huawei.com (7.192.105.203)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Aug 23, 2022 at 12:23:40PM +0200, Henning Schild wrote:
-> Add GPIO support for Nuvoton NCT6116 chip. Nuvoton SuperIO chips are
-> very similar to the ones from Fintek. In other subsystems they also
-> share drivers and are called a family of drivers.
+On 2022/8/23 16:06, Ionela Voinescu wrote:
+> Hi Yicong,
 > 
-> For the GPIO subsystem the only difference is that the direction bit is
-> reversed and that there is only one data bit per pin. On the SuperIO
-> level the logical device is another one.
+> On Tuesday 23 Aug 2022 at 15:30:44 (+0800), Yicong Yang wrote:
+>> From: Yicong Yang <yangyicong@hisilicon.com>
+>>
+>> Currently cpu_clustergroup_mask() will return CPU mask if cluster span
+>> more or the same CPUs as cpu_coregroup_mask(). This will result topology
+>> borken on non-Cluster SMT machines.
 > 
-> On a chip level we do not have a manufacturer ID to check and also no
-> revision.
+> Might be worth adding here:.. "when building with CONFIG_SCHED_CLUSTER=y"
+> 
 
-...
+will add this qualifier. thanks.
 
-> - * GPIO driver for Fintek Super-I/O F71869, F71869A, F71882, F71889 and F81866
-> + * GPIO driver for Fintek and Nuvoton Super-I/O chips
+>>
+> 
+> I thought I had covered this case, but I think I had considered LLC
+> spanning more than one core (tested on TX2 as well).
+> 
+> So you'd only hit this if LLC and cluster level span the same cores (a
+> single core in this case, for non-cluster), in the presence of SMT.
+> 
 
-I'm not sure it's good idea to drop it from here. It means reader has to get
-this info in a hard way.
+Not sure I understand it correctly but in the below case I think the LLC may span
+the same core with socket?
 
-...
-
-> +#define gpio_dir_invert(type)	((type) == nct6116d)
-> +#define gpio_data_single(type)	((type) == nct6116d)
-
-What's prevents us to add a proper prefix to these? I don't like the idea of
-them having "gpio" prefix.
-
-...
-
-> +		pr_info(DRVNAME ": Unsupported device 0x%04x\n", devid);
-> +			pr_debug(DRVNAME ": Not a Fintek device at 0x%08x\n", addr);
-> +	pr_info(DRVNAME ": Found %s at %#x\n",
-> +		pr_info(DRVNAME ":   revision %d\n",
-
-Can we, please, utilize pr_fmt()?
-
-> +			(int)superio_inb(addr, SIO_FINTEK_DEVREV));
-
-Explicit casting in printf() means wrong specifier in 99% of cases.
-
--- 
-With Best Regards,
-Andy Shevchenko
-
-
+> Reviewed-by: Ionela Voinescu <ionela.voinescu@arm.com>
+> 
+> Many thanks,
+> Ionela.
+> 
+>> Test with:
+>> qemu-system-aarch64 -enable-kvm -machine virt \
+>>  -net none \
+>>  -cpu host \
+>>  -bios ./QEMU_EFI.fd \
+>>  -m 2G \
+>>  -smp 48,sockets=2,cores=12,threads=2 \
+>>  -kernel $Image \
+>>  -initrd $Rootfs \
+>>  -nographic
+>>  -append "rdinit=init console=ttyAMA0 sched_verbose loglevel=8"
+>>
+>> We'll get below error:
+>> [    3.084568] BUG: arch topology borken
+>> [    3.084570]      the SMT domain not a subset of the CLS domain
+>>
+>> Since cluster is a level higher than SMT, fix this by making cluster
+>> spans at least SMT CPUs.
+>>
+>> Cc: Sudeep Holla <sudeep.holla@arm.com>
+>> Cc: Vincent Guittot <vincent.guittot@linaro.org>
+>> Cc: Ionela Voinescu <ionela.voinescu@arm.com>
+>> Fixes: bfcc4397435d ("arch_topology: Limit span of cpu_clustergroup_mask()")
+>> Signed-off-by: Yicong Yang <yangyicong@hisilicon.com>
+>> ---
+>>  drivers/base/arch_topology.c | 2 +-
+>>  1 file changed, 1 insertion(+), 1 deletion(-)
+>>
+>> diff --git a/drivers/base/arch_topology.c b/drivers/base/arch_topology.c
+>> index 0424b59b695e..0056a1273275 100644
+>> --- a/drivers/base/arch_topology.c
+>> +++ b/drivers/base/arch_topology.c
+>> @@ -724,7 +724,7 @@ const struct cpumask *cpu_clustergroup_mask(int cpu)
+>>  	 */
+>>  	if (cpumask_subset(cpu_coregroup_mask(cpu),
+>>  			   &cpu_topology[cpu].cluster_sibling))
+>> -		return get_cpu_mask(cpu);
+>> +		return cpu_smt_mask(cpu);
+>>  
+>>  	return &cpu_topology[cpu].cluster_sibling;
+>>  }
+>> -- 
+>> 2.24.0
+>>
+> 
+> .
+> 
