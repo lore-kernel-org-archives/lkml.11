@@ -2,42 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 668DBC32793
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 10:24:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 20FE9C32793
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 10:24:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354111AbiHWKY0 (ORCPT
+        id S1354194AbiHWKYg (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 06:24:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36374 "EHLO
+        Tue, 23 Aug 2022 06:24:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47190 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353542AbiHWKLi (ORCPT
+        with ESMTP id S1353574AbiHWKLj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 06:11:38 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3403AC3C;
-        Tue, 23 Aug 2022 01:57:16 -0700 (PDT)
+        Tue, 23 Aug 2022 06:11:39 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BC269CDC;
+        Tue, 23 Aug 2022 01:57:22 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id C78FF61524;
-        Tue, 23 Aug 2022 08:57:15 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BA856C433D7;
-        Tue, 23 Aug 2022 08:57:14 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 58A646153F;
+        Tue, 23 Aug 2022 08:57:22 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 21E98C433D6;
+        Tue, 23 Aug 2022 08:57:20 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661245035;
-        bh=L2kbwHsu7mISqjTwShhCSkl2t+nfdjFXCjhkhiPZprA=;
+        s=korg; t=1661245041;
+        bh=lY8Vu6e1a86oTT8LLYHfgkFVDDyf4+IO166QYIoKdS4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=g/xvVOSjOCbUBkOM11VdICgKkXOHBM22KKVfcSlvYnHXTiRJFpZKlIaec0ou9BV6g
-         ks5Ple0hZ89ZgkCqXLiVoMopR8SPc0hSLafnrt+F8vyRhsNFTAdrNs8FuiWcvXi+5n
-         5LbQBPiWUXMm9WV3WYuM9KT5ngZJzy/aO+gGd6dY=
+        b=Am/b8KOjI2gKTCsOy4hiqOBN3oYXCUAFZ/MSc6J68ejPL8mCWII3h3MVWbJhgwQM0
+         VdRt9wxepU5P2LG1riDiq6hToigPJv2gXT8Sn1hAlyRy1Wi1XZJV5QjdNmGbdv+yGz
+         tiPJ7B07oFFgP1NwLDStOR5srB0Dv4/jji7mJBrU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Ben Dooks <ben.dooks@sifive.com>,
-        Vinod Koul <vkoul@kernel.org>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 194/244] dmaengine: dw-axi-dmac: ignore interrupt if no descriptor
-Date:   Tue, 23 Aug 2022 10:25:53 +0200
-Message-Id: <20220823080105.889179972@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Chen Guokai <chenguokai17@mails.ucas.ac.cn>,
+        "Masami Hiramatsu (Google)" <mhiramat@kernel.org>,
+        Liao Chang <liaochang1@huawei.com>,
+        Guo Ren <guoren@kernel.org>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 196/244] csky/kprobe: reclaim insn_slot on kprobe unregistration
+Date:   Tue, 23 Aug 2022 10:25:55 +0200
+Message-Id: <20220823080105.970987809@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220823080059.091088642@linuxfoundation.org>
 References: <20220823080059.091088642@linuxfoundation.org>
@@ -49,46 +52,38 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Ben Dooks <ben.dooks@sifive.com>
+From: Liao Chang <liaochang1@huawei.com>
 
-[ Upstream commit 820f5ce999d2f99961e88c16d65cd26764df0590 ]
+[ Upstream commit a2310c74d418deca0f1d749c45f1f43162510f51 ]
 
-If the channel has no descriptor and the interrupt is raised then the
-kernel will OOPS. Check the result of vchan_next_desc() in the handler
-axi_chan_block_xfer_complete() to avoid the error happening.
+On kprobe registration kernel allocate one insn_slot for new kprobe,
+but it forget to reclaim the insn_slot on unregistration, leading to a
+potential leakage.
 
-Signed-off-by: Ben Dooks <ben.dooks@sifive.com>
-Link: https://lore.kernel.org/r/20220708170153.269991-4-ben.dooks@sifive.com
-Signed-off-by: Vinod Koul <vkoul@kernel.org>
+Reported-by: Chen Guokai <chenguokai17@mails.ucas.ac.cn>
+Reviewed-by: Masami Hiramatsu (Google) <mhiramat@kernel.org>
+Signed-off-by: Liao Chang <liaochang1@huawei.com>
+Signed-off-by: Guo Ren <guoren@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/dma/dw-axi-dmac/dw-axi-dmac-platform.c | 6 ++++++
- 1 file changed, 6 insertions(+)
+ arch/csky/kernel/probes/kprobes.c | 4 ++++
+ 1 file changed, 4 insertions(+)
 
-diff --git a/drivers/dma/dw-axi-dmac/dw-axi-dmac-platform.c b/drivers/dma/dw-axi-dmac/dw-axi-dmac-platform.c
-index 8f765e2d7c72..48de8d2b32f2 100644
---- a/drivers/dma/dw-axi-dmac/dw-axi-dmac-platform.c
-+++ b/drivers/dma/dw-axi-dmac/dw-axi-dmac-platform.c
-@@ -1016,6 +1016,11 @@ static void axi_chan_block_xfer_complete(struct axi_dma_chan *chan)
+diff --git a/arch/csky/kernel/probes/kprobes.c b/arch/csky/kernel/probes/kprobes.c
+index 4045894d9280..584ed9f36290 100644
+--- a/arch/csky/kernel/probes/kprobes.c
++++ b/arch/csky/kernel/probes/kprobes.c
+@@ -124,6 +124,10 @@ void __kprobes arch_disarm_kprobe(struct kprobe *p)
  
- 	/* The completed descriptor currently is in the head of vc list */
- 	vd = vchan_next_desc(&chan->vc);
-+	if (!vd) {
-+		dev_err(chan2dev(chan), "BUG: %s, IRQ with no descriptors\n",
-+			axi_chan_name(chan));
-+		goto out;
+ void __kprobes arch_remove_kprobe(struct kprobe *p)
+ {
++	if (p->ainsn.api.insn) {
++		free_insn_slot(p->ainsn.api.insn, 0);
++		p->ainsn.api.insn = NULL;
 +	}
- 
- 	if (chan->cyclic) {
- 		desc = vd_to_axi_desc(vd);
-@@ -1045,6 +1050,7 @@ static void axi_chan_block_xfer_complete(struct axi_dma_chan *chan)
- 		axi_chan_start_first_queued(chan);
- 	}
- 
-+out:
- 	spin_unlock_irqrestore(&chan->vc.lock, flags);
  }
  
+ static void __kprobes save_previous_kprobe(struct kprobe_ctlblk *kcb)
 -- 
 2.35.1
 
