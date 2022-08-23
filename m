@@ -2,46 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0FDF7C32772
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 10:13:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 641B1C32792
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 10:13:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353013AbiHWKM4 (ORCPT
+        id S1353185AbiHWKNE (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 06:12:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45818 "EHLO
+        Tue, 23 Aug 2022 06:13:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45806 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352699AbiHWKGH (ORCPT
+        with ESMTP id S1352684AbiHWKGG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 06:06:07 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B70CEA3466;
-        Tue, 23 Aug 2022 01:52:26 -0700 (PDT)
+        Tue, 23 Aug 2022 06:06:06 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5213EA346D;
+        Tue, 23 Aug 2022 01:52:24 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 53177B81C35;
-        Tue, 23 Aug 2022 08:52:25 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9AF00C433D6;
-        Tue, 23 Aug 2022 08:52:23 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 8A162CE1B4A;
+        Tue, 23 Aug 2022 08:52:22 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 87FEFC433B5;
+        Tue, 23 Aug 2022 08:52:20 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661244744;
-        bh=8FgyVo3x1/fTtKYfDm5v9sXbRI0V0BPvK2V8hKQPRrw=;
+        s=korg; t=1661244741;
+        bh=CjtXXraJnpmkjJ5WxA/lShwJHkaI3lD9zw4GIsjBwAY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=LwqUB8RQuPbB8gc5/yK7mJxvl31pg3l8ojeCxlUX4yR9bvv2YhgPF6z51h+9h3XoE
-         pL+rqcUJmvm5vRjxGebHYC/ZkWC2VifTAqBs9FebYN7agZ4TcS/iduZBp79ilOTDIq
-         kcruk/5IulhS3HEl+3f+N+DgW/M9mpLZ7fywZAJ4=
+        b=r1iT6+oGoukfsN6aHKCqhM5tWP+YiAGxsbpmpR5OoytroDJs9qR0SdXnpqnJPEPUn
+         n67X54ZUfY5lOzBRQM7K7/eOIhkKSJnXyZB8fTNbL9HkNWkyCiVAoj6LDOIdS1WTDH
+         hGvXGuLNdEUh4GU5AnCqFFdpO5U6GrXRAWrQksA0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Sergei Antonov <saproj@gmail.com>,
-        Vladimir Oltean <vladimir.oltean@nxp.com>,
-        Jakub Kicinski <kuba@kernel.org>
-Subject: [PATCH 5.15 142/244] net: dsa: dont warn in dsa_port_set_state_now() when driver doesnt support it
-Date:   Tue, 23 Aug 2022 10:25:01 +0200
-Message-Id: <20220823080103.908855403@linuxfoundation.org>
+        stable@vger.kernel.org, Tom Rix <trix@redhat.com>,
+        John Johansen <john.johansen@canonical.com>
+Subject: [PATCH 4.14 183/229] apparmor: fix aa_label_asxprint return check
+Date:   Tue, 23 Aug 2022 10:25:44 +0200
+Message-Id: <20220823080100.146601150@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220823080059.091088642@linuxfoundation.org>
-References: <20220823080059.091088642@linuxfoundation.org>
+In-Reply-To: <20220823080053.202747790@linuxfoundation.org>
+References: <20220823080053.202747790@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -50,48 +49,56 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Vladimir Oltean <vladimir.oltean@nxp.com>
+From: Tom Rix <trix@redhat.com>
 
-commit 211987f3ac734000ea1548784b2a4539a974fbc8 upstream.
+commit 3e2a3a0830a2090e766d0d887d52c67de2a6f323 upstream.
 
-ds->ops->port_stp_state_set() is, like most DSA methods, optional, and
-if absent, the port is supposed to remain in the forwarding state (as
-standalone). Such is the case with the mv88e6060 driver, which does not
-offload the bridge layer. DSA warns that the STP state can't be changed
-to FORWARDING as part of dsa_port_enable_rt(), when in fact it should not.
+Clang static analysis reports this issue
+label.c:1802:3: warning: 2nd function call argument
+  is an uninitialized value
+  pr_info("%s", str);
+  ^~~~~~~~~~~~~~~~~~
 
-The error message is also not up to modern standards, so take the
-opportunity to make it more descriptive.
+str is set from a successful call to aa_label_asxprint(&str, ...)
+On failure a negative value is returned, not a -1.  So change
+the check.
 
-Fixes: fd3645413197 ("net: dsa: change scope of STP state setter")
-Reported-by: Sergei Antonov <saproj@gmail.com>
-Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
-Reviewed-by: Sergei Antonov <saproj@gmail.com>
-Link: https://lore.kernel.org/r/20220816201445.1809483-1-vladimir.oltean@nxp.com
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Fixes: f1bd904175e8 ("apparmor: add the base fns() for domain labels")
+Signed-off-by: Tom Rix <trix@redhat.com>
+Signed-off-by: John Johansen <john.johansen@canonical.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- net/dsa/port.c |    7 +++++--
- 1 file changed, 5 insertions(+), 2 deletions(-)
+ security/apparmor/label.c |    6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
---- a/net/dsa/port.c
-+++ b/net/dsa/port.c
-@@ -111,11 +111,14 @@ int dsa_port_set_state(struct dsa_port *
- static void dsa_port_set_state_now(struct dsa_port *dp, u8 state,
- 				   bool do_fast_age)
- {
-+	struct dsa_switch *ds = dp->ds;
- 	int err;
+--- a/security/apparmor/label.c
++++ b/security/apparmor/label.c
+@@ -1722,7 +1722,7 @@ void aa_label_xaudit(struct audit_buffer
+ 	if (!use_label_hname(ns, label, flags) ||
+ 	    display_mode(ns, label, flags)) {
+ 		len  = aa_label_asxprint(&name, ns, label, flags, gfp);
+-		if (len == -1) {
++		if (len < 0) {
+ 			AA_DEBUG("label print error");
+ 			return;
+ 		}
+@@ -1750,7 +1750,7 @@ void aa_label_seq_xprint(struct seq_file
+ 		int len;
  
- 	err = dsa_port_set_state(dp, state, do_fast_age);
--	if (err)
--		pr_err("DSA: failed to set STP state %u (%d)\n", state, err);
-+	if (err && err != -EOPNOTSUPP) {
-+		dev_err(ds->dev, "port %d failed to set STP state %u: %pe\n",
-+			dp->index, state, ERR_PTR(err));
-+	}
- }
+ 		len = aa_label_asxprint(&str, ns, label, flags, gfp);
+-		if (len == -1) {
++		if (len < 0) {
+ 			AA_DEBUG("label print error");
+ 			return;
+ 		}
+@@ -1773,7 +1773,7 @@ void aa_label_xprintk(struct aa_ns *ns,
+ 		int len;
  
- int dsa_port_enable_rt(struct dsa_port *dp, struct phy_device *phy)
+ 		len = aa_label_asxprint(&str, ns, label, flags, gfp);
+-		if (len == -1) {
++		if (len < 0) {
+ 			AA_DEBUG("label print error");
+ 			return;
+ 		}
 
 
