@@ -2,42 +2,40 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 835A7C32772
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 10:54:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 53417C32772
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 10:54:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351432AbiHWKy0 (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 06:54:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40206 "EHLO
+        id S244169AbiHWKyj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 23 Aug 2022 06:54:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40340 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356323AbiHWKrA (ORCPT
+        with ESMTP id S1356346AbiHWKrD (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 06:47:00 -0400
+        Tue, 23 Aug 2022 06:47:03 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D63DF86B5E;
-        Tue, 23 Aug 2022 02:11:44 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B573586B59;
+        Tue, 23 Aug 2022 02:11:47 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 2895A6069D;
-        Tue, 23 Aug 2022 09:11:44 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3085AC433D6;
-        Tue, 23 Aug 2022 09:11:43 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 40EEF60F50;
+        Tue, 23 Aug 2022 09:11:47 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4D115C433D6;
+        Tue, 23 Aug 2022 09:11:46 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661245903;
-        bh=kuOlyjvKQ6KHa4wQ0SyRN3sq7R1g+3Nxs+r/BrFouDc=;
+        s=korg; t=1661245906;
+        bh=J1OQH30u8/si5yEbyQ4z0MiHnttBlN//30HHIi/nk44=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=G8+Tma1qEP8DkkizUT6yFTxag1SE9zRDI3nCK23whr9KQWJM6BzkNj2wU3b5t163/
-         gZIJb4sT85jT+jF3w7l/cQDXhSMD48Ss0y19vf1565Z3d7u54O31jIqwh/woX2IUT2
-         KfXMHtxotpRY2y59bW0Pp9pp1pxeiqf8MdDQdTO8=
+        b=FDbeEpxLkeWmCqIgXdsTp2QH7sDiFmRyumSPTU0vyOhwl2Bs90u3Eqz4RH5Pb/vI4
+         T1ozImuRKw5XFmiFeQFzjLioWY8QMdalgbpUA/vhgiTP6sdKu14F1oSHMGHfPigjz6
+         E6rHqPnfBefVAYau43wwL7QYkPlCA7dtFSHm1aXM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Tom Rix <trix@redhat.com>,
-        John Johansen <john.johansen@canonical.com>
-Subject: [PATCH 4.19 226/287] apparmor: fix aa_label_asxprint return check
-Date:   Tue, 23 Aug 2022 10:26:35 +0200
-Message-Id: <20220823080108.608341219@linuxfoundation.org>
+        stable@vger.kernel.org, John Johansen <john.johansen@canonical.com>
+Subject: [PATCH 4.19 227/287] apparmor: fix overlapping attachment computation
+Date:   Tue, 23 Aug 2022 10:26:36 +0200
+Message-Id: <20220823080108.649059844@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220823080100.268827165@linuxfoundation.org>
 References: <20220823080100.268827165@linuxfoundation.org>
@@ -49,56 +47,46 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Tom Rix <trix@redhat.com>
+From: John Johansen <john.johansen@canonical.com>
 
-commit 3e2a3a0830a2090e766d0d887d52c67de2a6f323 upstream.
+commit 2504db207146543736e877241f3b3de005cbe056 upstream.
 
-Clang static analysis reports this issue
-label.c:1802:3: warning: 2nd function call argument
-  is an uninitialized value
-  pr_info("%s", str);
-  ^~~~~~~~~~~~~~~~~~
+When finding the profile via patterned attachments, the longest left
+match is being set to the static compile time value and not using the
+runtime computed value.
 
-str is set from a successful call to aa_label_asxprint(&str, ...)
-On failure a negative value is returned, not a -1.  So change
-the check.
+Fix this by setting the candidate value to the greater of the
+precomputed value or runtime computed value.
 
-Fixes: f1bd904175e8 ("apparmor: add the base fns() for domain labels")
-Signed-off-by: Tom Rix <trix@redhat.com>
+Fixes: 21f606610502 ("apparmor: improve overlapping domain attachment resolution")
 Signed-off-by: John Johansen <john.johansen@canonical.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- security/apparmor/label.c |    6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+ security/apparmor/domain.c         |    2 +-
+ security/apparmor/include/policy.h |    2 +-
+ 2 files changed, 2 insertions(+), 2 deletions(-)
 
---- a/security/apparmor/label.c
-+++ b/security/apparmor/label.c
-@@ -1754,7 +1754,7 @@ void aa_label_xaudit(struct audit_buffer
- 	if (!use_label_hname(ns, label, flags) ||
- 	    display_mode(ns, label, flags)) {
- 		len  = aa_label_asxprint(&name, ns, label, flags, gfp);
--		if (len == -1) {
-+		if (len < 0) {
- 			AA_DEBUG("label print error");
- 			return;
- 		}
-@@ -1782,7 +1782,7 @@ void aa_label_seq_xprint(struct seq_file
- 		int len;
+--- a/security/apparmor/domain.c
++++ b/security/apparmor/domain.c
+@@ -464,7 +464,7 @@ restart:
+ 				 * xattrs, or a longer match
+ 				 */
+ 				candidate = profile;
+-				candidate_len = profile->xmatch_len;
++				candidate_len = max(count, profile->xmatch_len);
+ 				candidate_xattrs = ret;
+ 				conflict = false;
+ 			}
+--- a/security/apparmor/include/policy.h
++++ b/security/apparmor/include/policy.h
+@@ -139,7 +139,7 @@ struct aa_profile {
  
- 		len = aa_label_asxprint(&str, ns, label, flags, gfp);
--		if (len == -1) {
-+		if (len < 0) {
- 			AA_DEBUG("label print error");
- 			return;
- 		}
-@@ -1805,7 +1805,7 @@ void aa_label_xprintk(struct aa_ns *ns,
- 		int len;
- 
- 		len = aa_label_asxprint(&str, ns, label, flags, gfp);
--		if (len == -1) {
-+		if (len < 0) {
- 			AA_DEBUG("label print error");
- 			return;
- 		}
+ 	const char *attach;
+ 	struct aa_dfa *xmatch;
+-	int xmatch_len;
++	unsigned int xmatch_len;
+ 	enum audit_mode audit;
+ 	long mode;
+ 	u32 path_flags;
 
 
