@@ -2,41 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8F74FC48BE4
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 12:03:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1A600C49EC5
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 12:03:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244378AbiHWMD1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 08:03:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53026 "EHLO
+        id S244555AbiHWMDf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 23 Aug 2022 08:03:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51764 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1359273AbiHWMBD (ORCPT
+        with ESMTP id S1359654AbiHWMCG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 08:01:03 -0400
+        Tue, 23 Aug 2022 08:02:06 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B0A6529C;
-        Tue, 23 Aug 2022 02:35:25 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3A17597D61;
+        Tue, 23 Aug 2022 02:36:19 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id F225D61227;
-        Tue, 23 Aug 2022 09:35:07 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 04D46C433D6;
-        Tue, 23 Aug 2022 09:35:06 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 1C32B61460;
+        Tue, 23 Aug 2022 09:35:47 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0D962C433C1;
+        Tue, 23 Aug 2022 09:35:45 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661247307;
-        bh=PGzSWjYepCpq+4nr7YIb1oGV1nh2VAWJd9Gcn+Xe0iY=;
+        s=korg; t=1661247346;
+        bh=ZfhN6gBPas6paF0r6SYHnlPxLeobyhbICE7aQpwDZpg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=j9c02yYWM1RQjIP7Drrr1ueFKdSoq08VymcVLEf42ISwORKA31mxl84V3XQBwTWed
-         cs8NUovFh2D01f5OLkNNF0qYyblwWuPlgBBJX1YWW70Nl1qHOvab1k6SIwMzlfLNoA
-         +MG/5qzQTC6wUK/bVp0X0n9edeGnNUPYGGOCWLYI=
+        b=PtCqT7DkzmTUcJ9ZAKZRmjI0WGpRMN6Phi/BUDrVFYDyLcyl23J3nkRKfBVWvcjnk
+         ZJhn/CtJDthJrHW/xB267/ofs+W9EjJB7TuaUo5l1tB7eA3oE3e2/i/vwhuQHwED4l
+         LNVmf0DW6FCQW7tkfkenPWRaRwO11CdyRzGPegto=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Zheyu Ma <zheyuma97@gmail.com>,
-        Helge Deller <deller@gmx.de>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 383/389] video: fbdev: i740fb: Check the argument of i740_calc_vclk()
-Date:   Tue, 23 Aug 2022 10:27:41 +0200
-Message-Id: <20220823080131.578800952@linuxfoundation.org>
+        stable@vger.kernel.org, Oleg Kiselev <okiselev@amazon.com>,
+        Theodore Tso <tytso@mit.edu>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.4 368/389] ext4: avoid resizing to a partial cluster size
+Date:   Tue, 23 Aug 2022 10:27:26 +0200
+Message-Id: <20220823080130.902458340@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220823080115.331990024@linuxfoundation.org>
 References: <20220823080115.331990024@linuxfoundation.org>
@@ -48,65 +48,45 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Zheyu Ma <zheyuma97@gmail.com>
+From: Kiselev, Oleg <okiselev@amazon.com>
 
-[ Upstream commit 40bf722f8064f50200b8c4f8946cd625b441dda9 ]
+[ Upstream commit 69cb8e9d8cd97cdf5e293b26d70a9dee3e35e6bd ]
 
-Since the user can control the arguments of the ioctl() from the user
-space, under special arguments that may result in a divide-by-zero bug.
+This patch avoids an attempt to resize the filesystem to an
+unaligned cluster boundary.  An online resize to a size that is not
+integral to cluster size results in the last iteration attempting to
+grow the fs by a negative amount, which trips a BUG_ON and leaves the fs
+with a corrupted in-memory superblock.
 
-If the user provides an improper 'pixclock' value that makes the argumet
-of i740_calc_vclk() less than 'I740_RFREQ_FIX', it will cause a
-divide-by-zero bug in:
-    drivers/video/fbdev/i740fb.c:353 p_best = min(15, ilog2(I740_MAX_VCO_FREQ / (freq / I740_RFREQ_FIX)));
-
-The following log can reveal it:
-
-divide error: 0000 [#1] PREEMPT SMP KASAN PTI
-RIP: 0010:i740_calc_vclk drivers/video/fbdev/i740fb.c:353 [inline]
-RIP: 0010:i740fb_decode_var drivers/video/fbdev/i740fb.c:646 [inline]
-RIP: 0010:i740fb_set_par+0x163f/0x3b70 drivers/video/fbdev/i740fb.c:742
-Call Trace:
- fb_set_var+0x604/0xeb0 drivers/video/fbdev/core/fbmem.c:1034
- do_fb_ioctl+0x234/0x670 drivers/video/fbdev/core/fbmem.c:1110
- fb_ioctl+0xdd/0x130 drivers/video/fbdev/core/fbmem.c:1189
-
-Fix this by checking the argument of i740_calc_vclk() first.
-
-Signed-off-by: Zheyu Ma <zheyuma97@gmail.com>
-Signed-off-by: Helge Deller <deller@gmx.de>
+Signed-off-by: Oleg Kiselev <okiselev@amazon.com>
+Link: https://lore.kernel.org/r/0E92A0AB-4F16-4F1A-94B7-702CC6504FDE@amazon.com
+Signed-off-by: Theodore Ts'o <tytso@mit.edu>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/video/fbdev/i740fb.c | 9 +++++++--
- 1 file changed, 7 insertions(+), 2 deletions(-)
+ fs/ext4/resize.c | 10 ++++++++++
+ 1 file changed, 10 insertions(+)
 
-diff --git a/drivers/video/fbdev/i740fb.c b/drivers/video/fbdev/i740fb.c
-index 347cf8babc3e..1434eb0220e7 100644
---- a/drivers/video/fbdev/i740fb.c
-+++ b/drivers/video/fbdev/i740fb.c
-@@ -400,7 +400,7 @@ static int i740fb_decode_var(const struct fb_var_screeninfo *var,
- 	u32 xres, right, hslen, left, xtotal;
- 	u32 yres, lower, vslen, upper, ytotal;
- 	u32 vxres, xoffset, vyres, yoffset;
--	u32 bpp, base, dacspeed24, mem;
-+	u32 bpp, base, dacspeed24, mem, freq;
- 	u8 r7;
- 	int i;
+diff --git a/fs/ext4/resize.c b/fs/ext4/resize.c
+index 306003e29c4c..f0fc7fc579e6 100644
+--- a/fs/ext4/resize.c
++++ b/fs/ext4/resize.c
+@@ -1979,6 +1979,16 @@ int ext4_resize_fs(struct super_block *sb, ext4_fsblk_t n_blocks_count)
+ 	}
+ 	brelse(bh);
  
-@@ -643,7 +643,12 @@ static int i740fb_decode_var(const struct fb_var_screeninfo *var,
- 	par->atc[VGA_ATC_OVERSCAN] = 0;
++	/*
++	 * For bigalloc, trim the requested size to the nearest cluster
++	 * boundary to avoid creating an unusable filesystem. We do this
++	 * silently, instead of returning an error, to avoid breaking
++	 * callers that blindly resize the filesystem to the full size of
++	 * the underlying block device.
++	 */
++	if (ext4_has_feature_bigalloc(sb))
++		n_blocks_count &= ~((1 << EXT4_CLUSTER_BITS(sb)) - 1);
++
+ retry:
+ 	o_blocks_count = ext4_blocks_count(es);
  
- 	/* Calculate VCLK that most closely matches the requested dot clock */
--	i740_calc_vclk((((u32)1e9) / var->pixclock) * (u32)(1e3), par);
-+	freq = (((u32)1e9) / var->pixclock) * (u32)(1e3);
-+	if (freq < I740_RFREQ_FIX) {
-+		fb_dbg(info, "invalid pixclock\n");
-+		freq = I740_RFREQ_FIX;
-+	}
-+	i740_calc_vclk(freq, par);
- 
- 	/* Since we program the clocks ourselves, always use VCLK2. */
- 	par->misc |= 0x0C;
 -- 
 2.35.1
 
