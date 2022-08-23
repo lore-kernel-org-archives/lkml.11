@@ -2,44 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E7704C32772
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 10:18:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0EE64C32774
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 10:18:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353704AbiHWKSb (ORCPT
+        id S1353680AbiHWKSt (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 06:18:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33934 "EHLO
+        Tue, 23 Aug 2022 06:18:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34076 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352558AbiHWKIE (ORCPT
+        with ESMTP id S1352571AbiHWKIG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 06:08:04 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5E1C45A2E8;
-        Tue, 23 Aug 2022 01:54:24 -0700 (PDT)
+        Tue, 23 Aug 2022 06:08:06 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DAA625AC6D;
+        Tue, 23 Aug 2022 01:54:28 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id C1A036150F;
-        Tue, 23 Aug 2022 08:54:23 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C3474C433D6;
-        Tue, 23 Aug 2022 08:54:22 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 975B7B81C28;
+        Tue, 23 Aug 2022 08:54:27 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DC9EDC433C1;
+        Tue, 23 Aug 2022 08:54:25 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661244863;
-        bh=GEkDlFdYejgeBRE8yTQaw/+MTKzDAMTi3p29YjlsrMw=;
+        s=korg; t=1661244866;
+        bh=dS3oUX565XXqWz6LAky5wfcvCoNURNos/Hxa/WUf87o=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=nh9XG+JhwsHb/LfruR06+fRs8aT7Bl7L79CyK4hTg/N/UUVsNo8qS0WgMXLljRNTF
-         Glm+uDjU13XzMIICMfO7cczdnZ0GSexPTRZCl/e8NpzuhV/HL4nxJEMPruWwFc0bqx
-         I1yApGaja+HfKjcKVAMmSGv66+L7EwDHl9qu5rvM=
+        b=NDEONu/NZp5fFAYTP4rRYIRqcMS39hAvwopWdg78v2yc64s7X13vNCjq1bwajL+pa
+         Nn3nriLvFhOpOjb0m0bHxNVou1FvpcLybxk5HnYtGNDvTme+XqEIaCnu+ShiFBFWdX
+         THlMHPolGpSwlc5wTMaRyNBYgxhOW0P0Gq4yPawU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Pablo Neira Ayuso <pablo@netfilter.org>
-Subject: [PATCH 4.14 203/229] netfilter: nf_tables: really skip inactive sets when allocating name
-Date:   Tue, 23 Aug 2022 10:26:04 +0200
-Message-Id: <20220823080100.902840174@linuxfoundation.org>
+        stable@vger.kernel.org, Guenter Roeck <groeck@chromium.org>,
+        Tzung-Bi Shih <tzungbi@kernel.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 164/244] platform/chrome: cros_ec_proto: dont show MKBP version if unsupported
+Date:   Tue, 23 Aug 2022 10:25:23 +0200
+Message-Id: <20220823080104.692056989@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220823080053.202747790@linuxfoundation.org>
-References: <20220823080053.202747790@linuxfoundation.org>
+In-Reply-To: <20220823080059.091088642@linuxfoundation.org>
+References: <20220823080059.091088642@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -48,30 +50,47 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Pablo Neira Ayuso <pablo@netfilter.org>
+From: Tzung-Bi Shih <tzungbi@kernel.org>
 
-commit 271c5ca826e0c3c53e0eb4032f8eaedea1ee391c upstream.
+[ Upstream commit b36f0643ff14a2fb281b105418e4e73c9d7c11d0 ]
 
-While looping to build the bitmap of used anonymous set names, check the
-current set in the iteration, instead of the one that is being created.
+It wrongly showed the following message when it doesn't support MKBP:
+"MKBP support version 4294967295".
 
-Fixes: 37a9cc525525 ("netfilter: nf_tables: add generation mask to sets")
-Signed-off-by: Pablo Neira Ayuso <pablo@netfilter.org>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Fix it.
+
+Reviewed-by: Guenter Roeck <groeck@chromium.org>
+Signed-off-by: Tzung-Bi Shih <tzungbi@kernel.org>
+Link: https://lore.kernel.org/r/20220609084957.3684698-14-tzungbi@kernel.org
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/netfilter/nf_tables_api.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/platform/chrome/cros_ec_proto.c | 8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
 
---- a/net/netfilter/nf_tables_api.c
-+++ b/net/netfilter/nf_tables_api.c
-@@ -2797,7 +2797,7 @@ cont:
- 		list_for_each_entry(i, &ctx->table->sets, list) {
- 			int tmp;
+diff --git a/drivers/platform/chrome/cros_ec_proto.c b/drivers/platform/chrome/cros_ec_proto.c
+index ed2b4807328d..1575d603d3ff 100644
+--- a/drivers/platform/chrome/cros_ec_proto.c
++++ b/drivers/platform/chrome/cros_ec_proto.c
+@@ -507,13 +507,13 @@ int cros_ec_query_all(struct cros_ec_device *ec_dev)
+ 	ret = cros_ec_get_host_command_version_mask(ec_dev,
+ 						    EC_CMD_GET_NEXT_EVENT,
+ 						    &ver_mask);
+-	if (ret < 0 || ver_mask == 0)
++	if (ret < 0 || ver_mask == 0) {
+ 		ec_dev->mkbp_event_supported = 0;
+-	else
++	} else {
+ 		ec_dev->mkbp_event_supported = fls(ver_mask);
  
--			if (!nft_is_active_next(ctx->net, set))
-+			if (!nft_is_active_next(ctx->net, i))
- 				continue;
- 			if (!sscanf(i->name, name, &tmp))
- 				continue;
+-	dev_dbg(ec_dev->dev, "MKBP support version %u\n",
+-		ec_dev->mkbp_event_supported - 1);
++		dev_dbg(ec_dev->dev, "MKBP support version %u\n", ec_dev->mkbp_event_supported - 1);
++	}
+ 
+ 	/* Probe if host sleep v1 is supported for S0ix failure detection. */
+ 	ret = cros_ec_get_host_command_version_mask(ec_dev,
+-- 
+2.35.1
+
 
 
