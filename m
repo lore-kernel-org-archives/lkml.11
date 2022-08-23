@@ -2,84 +2,94 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CACDCC32793
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 06:25:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DC848C32774
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 06:26:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240636AbiHWGZZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 02:25:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57950 "EHLO
+        id S240614AbiHWG01 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 23 Aug 2022 02:26:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58702 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240584AbiHWGZN (ORCPT
+        with ESMTP id S240579AbiHWG0Z (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 02:25:13 -0400
-X-Greylist: delayed 62 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Mon, 22 Aug 2022 23:25:12 PDT
-Received: from mta-64-225.siemens.flowmailer.net (mta-64-225.siemens.flowmailer.net [185.136.64.225])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C765060524
-        for <linux-kernel@vger.kernel.org>; Mon, 22 Aug 2022 23:25:12 -0700 (PDT)
-Received: by mta-64-225.siemens.flowmailer.net with ESMTPSA id 202208230624079cde02a96a41454f16
-        for <linux-kernel@vger.kernel.org>;
-        Tue, 23 Aug 2022 08:24:07 +0200
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; s=fm1;
- d=siemens.com; i=daniel.starke@siemens.com;
- h=Date:From:Subject:To:Message-ID:MIME-Version:Content-Type:Content-Transfer-Encoding:Cc:References:In-Reply-To;
- bh=yrhprMDTlGL4plZ3xVQSKewwsGW84oYrlZ/o+UkYd40=;
- b=T66vzWwTQYCS/dpWOxW1+UKUvi2PHm9vChyFSVHBhw8LKY76bcJ2zRaRSmLVQUGiiNFpVN
- xX0ipuwSOIhDZC2CjXRfVwhVzO33WOVlWlBKM+nt9+taN5K6vuzUBdPRiO/JCFlK0nwHCs5E
- iiBuWZ7CsaI6mt4zLIPg65OCWES0c=;
-From:   "D. Starke" <daniel.starke@siemens.com>
-To:     linux-serial@vger.kernel.org, gregkh@linuxfoundation.org,
-        jirislaby@kernel.org
-Cc:     linux-kernel@vger.kernel.org,
-        Daniel Starke <daniel.starke@siemens.com>
-Subject: [PATCH v2 6/6] tty: n_gsm: add debug bit for user payload
-Date:   Tue, 23 Aug 2022 08:22:59 +0200
-Message-Id: <20220823062259.4754-6-daniel.starke@siemens.com>
-In-Reply-To: <20220823062259.4754-1-daniel.starke@siemens.com>
-References: <20220823062259.4754-1-daniel.starke@siemens.com>
+        Tue, 23 Aug 2022 02:26:25 -0400
+Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D949C60690
+        for <linux-kernel@vger.kernel.org>; Mon, 22 Aug 2022 23:26:24 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1661235984; x=1692771984;
+  h=message-id:date:mime-version:cc:subject:to:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=mFPEXWqVfNGpmhdTzE8CaxKEhae+4dG8ZW90cX5pwwk=;
+  b=XSNbStbyEsOQdhw2hqwumuhkbOX9HW9Npl1brffJjrRSBArm4f88eEj/
+   fHjqesX9hVTfANQFC4ClMwmsmSlM0VNwEZXDh6luTO5GCI8VRHjRttEZb
+   +S54OmUFfGXIDfE45TJo+obsvvWfu2QccnluVHyXsKfcogf8Yhrx/RQe7
+   7+PgiCK0cpyEksENN3Kwv1JTuzvwep+X6hgHUlIq8Z1SbVp3GAs+zUj5/
+   N9ZRFDuTraNGbJ3JZNhpH+LSMdfGlDxxhK5uQiunlk3bHD9P/tFGvYZ/Y
+   9QTL7u/mmcsOK59D/0tCgA/YwvIY6ErCEWWimv7FNZFQC5rOqRI6F9TYn
+   A==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10447"; a="293602748"
+X-IronPort-AV: E=Sophos;i="5.93,256,1654585200"; 
+   d="scan'208";a="293602748"
+Received: from orsmga001.jf.intel.com ([10.7.209.18])
+  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Aug 2022 23:26:24 -0700
+X-IronPort-AV: E=Sophos;i="5.93,256,1654585200"; 
+   d="scan'208";a="642324549"
+Received: from xujinlon-mobl.ccr.corp.intel.com (HELO [10.254.211.102]) ([10.254.211.102])
+  by orsmga001-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Aug 2022 23:26:22 -0700
+Message-ID: <c69320f8-c906-549f-0fbd-ef4c9b665f25@linux.intel.com>
+Date:   Tue, 23 Aug 2022 14:26:19 +0800
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Flowmailer-Platform: Siemens
-Feedback-ID: 519:519-314044:519-21489:flowmailer
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.11.0
+Cc:     baolu.lu@linux.intel.com, Joerg Roedel <joro@8bytes.org>,
+        Will Deacon <will@kernel.org>,
+        Robin Murphy <robin.murphy@arm.com>,
+        Kevin Tian <kevin.tian@intel.com>, yi.l.liu@intel.com,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 1/1] iommu/vt-d: Fix possible recursive lock in
+ iommu_flush_dev_iotlb()
+Content-Language: en-US
+To:     iommu@lists.linux.dev
+References: <20220817025650.3253959-1-baolu.lu@linux.intel.com>
+From:   Baolu Lu <baolu.lu@linux.intel.com>
+In-Reply-To: <20220817025650.3253959-1-baolu.lu@linux.intel.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Daniel Starke <daniel.starke@siemens.com>
+On 2022/8/17 10:56, Lu Baolu wrote:
+> The per domain spinlock is acquired in iommu_flush_dev_iotlb(), which
+> is possbile to be called in the interrupt context. For instance,
+> 
+>    <IRQ>
+>    iommu_flush_dev_iotlb
+>    iommu_flush_iotlb_psi
+>    intel_iommu_tlb_sync
+>    iommu_iotlb_sync
+>    __iommu_dma_unmap
+>    ? nvme_unmap_data
+>    nvme_unmap_data
+>    nvme_pci_complete_rq
+>    nvme_irq
+>    __handle_irq_event_percpu
+>    handle_irq_event_percpu
+>    handle_irq_event
+>    handle_edge_irq
+>    __common_interrupt
+>    common_interrupt
+> 
+> This coverts the spin_lock/unlock() into the irq save/restore varieties
+> to avoid the possible recursive locking issues.
+> 
+> Fixes: ffd5869d93530 ("iommu/vt-d: Replace spin_lock_irqsave() with spin_lock()")
+> Signed-off-by: Lu Baolu<baolu.lu@linux.intel.com>
 
-A debug bit to output a complete transmission dump exists. Sometimes only
-the user frames are relevant. Add an additional bit which limits the
-transmission dump output to user data frames if set.
+This patch has been queued:
 
-Signed-off-by: Daniel Starke <daniel.starke@siemens.com>
----
- drivers/tty/n_gsm.c | 5 +++++
- 1 file changed, 5 insertions(+)
+https://lore.kernel.org/linux-iommu/20220823061557.1631056-1-baolu.lu@linux.intel.com/
 
-No changes since v1.
-
-diff --git a/drivers/tty/n_gsm.c b/drivers/tty/n_gsm.c
-index fcf2d52d5095..f3f0668f0a73 100644
---- a/drivers/tty/n_gsm.c
-+++ b/drivers/tty/n_gsm.c
-@@ -69,6 +69,7 @@ module_param(debug, int, 0600);
- #define DBG_DATA	(1 << 2) /* Data transmission details. */
- #define DBG_ERRORS	(1 << 3) /* Details for fail conditions. */
- #define DBG_TTY		(1 << 4) /* Transmission statistics for DLCI TTYs. */
-+#define DBG_PAYLOAD	(1 << 5) /* Limits DBG_DUMP to payload frames. */
- 
- /* Defaults: these are from the specification */
- 
-@@ -598,6 +599,10 @@ static void gsm_print_packet(const char *hdr, int addr, int cr,
- {
- 	if (!(debug & DBG_DUMP))
- 		return;
-+	/* Only show user payload frames if debug & DBG_PAYLOAD */
-+	if (!(debug & DBG_PAYLOAD) && addr != 0)
-+		if ((control & ~PF) == UI || (control & ~PF) == UIH)
-+			return;
- 
- 	pr_info("%s %d) %c: ", hdr, addr, "RC"[cr]);
- 
--- 
-2.34.1
-
+Best regards,
+baolu
