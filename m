@@ -2,364 +2,261 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4EFDAC28D13
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 02:30:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DBDD7C32774
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 02:31:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239653AbiHWCaF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 22 Aug 2022 22:30:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55932 "EHLO
+        id S239688AbiHWCbS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 22 Aug 2022 22:31:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57112 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239647AbiHWC35 (ORCPT
+        with ESMTP id S238684AbiHWCbR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 22 Aug 2022 22:29:57 -0400
-Received: from mail-io1-xd44.google.com (mail-io1-xd44.google.com [IPv6:2607:f8b0:4864:20::d44])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B62B55B78C;
-        Mon, 22 Aug 2022 19:29:55 -0700 (PDT)
-Received: by mail-io1-xd44.google.com with SMTP id i77so9878107ioa.7;
-        Mon, 22 Aug 2022 19:29:55 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc;
-        bh=ZcLCHUAHqBvhE+BPVKCIdN13/BM8vZJT4A+cUjlXw4E=;
-        b=ZsrnJoSj2cpPX6B10V/BkhfeaHk9dK40cMk2Tovo2lHKm3FOgJG8biQhE42p8fplsM
-         i8I1c0u1EuBkd3G67MreW/3nSYUQKK68IgYN0v5ar0Gfm5GFQjagcoGbcQ+o0j874W9z
-         vZq3j6ne5/itjXYD80XIIL3wPl0VkU0qj5/lOvwqsi4QTKbQjc1bDr1/hCzDX6bb4AZg
-         nwiC4uH3dwL/kfdo1DDOjuTOMCrDs7mc1GhGk1GGyiYJBx68CK2zOI5wTpgp4ILoO23n
-         bO5monBC/JtnWcXEJOJQBLfD+qXNNNzIffw2xS17sJnQEawHVuFI9Lq/s/KL71rkHmgE
-         bHLQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc;
-        bh=ZcLCHUAHqBvhE+BPVKCIdN13/BM8vZJT4A+cUjlXw4E=;
-        b=ZJMjuGO/hwdixnxQzmxQrPtd128iZZg/gDC9Uby+YTHuClZKPZ+KUIiqTB21O8+dcR
-         DgVLVnEejSKb5iaX3UcIxWmvDKNjXwY5utg/i+PRoY0o5g9agV9Ya5qNstQ1XmSDC38J
-         4d5vjXz37vh1Y8AKCwumuva3/ckFqwypbvGIWa0Ckguz+G8HJBml7MpsELbQVqjzPZyH
-         Xiek+O9jFOR22a6KQUBSkrX8B5obzJ91MuIRkk/SLrp/0vV63J9zf3/qAzzWDU2FwYgY
-         PTYr+mZiUCRQiusT8bOsxRFH7hRpYZJfGPZIEsCHxNwOMX3ydl94UBjcubS5C4XAsyja
-         MBHQ==
-X-Gm-Message-State: ACgBeo1EAc6nCapb8adkK5+GWYKIeimVZ733oFI20jy1Pu38qeX0qyOp
-        Duv1cBYYUuj5KegM1NrzxcdxjRn5gRHGQYIJfKaVIAsyzrg=
-X-Google-Smtp-Source: AA6agR6CoFAvfIy5sfCheMoJRuj2lfp4KfHBRFUmAnECwZgCfv0LkmTc5eHMzQyVLgn+msrC07DL3vlB6tc8nvKNqB0=
-X-Received: by 2002:a02:3f63:0:b0:349:cef9:d8c2 with SMTP id
- c35-20020a023f63000000b00349cef9d8c2mr5004462jaf.231.1661221794987; Mon, 22
- Aug 2022 19:29:54 -0700 (PDT)
+        Mon, 22 Aug 2022 22:31:17 -0400
+Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8C6945B79D;
+        Mon, 22 Aug 2022 19:31:15 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1661221875; x=1692757875;
+  h=message-id:date:subject:to:cc:references:from:
+   in-reply-to:content-transfer-encoding:mime-version;
+  bh=4XN8dqd4YawNXX84KmBJD1tl+U1vacAdNS2p7QIzb/8=;
+  b=IjMTbmOIfPqF86QebL6Xal6KmxSIlsSdjAcau5jaZClzNDG4ESc1bl8C
+   yAG5nJLHBQAb17Mz21TBCjHj4HTLF6V/T33+fQhoG3yRAIuRbvfSma/mx
+   KwiI0VT8vuwc0OnII93YVoLwWDQslCz43IdpcN1dV6bPc+PYO/nT7nrwD
+   0M3RP196EMQOCCXyVXTYon+v35d1oj2i2RpYAvz1GzV53NE9rmBAGjwkk
+   25SoxRqXgRkOS3gJu64/f2lqHaZghSfqi0s2VZwCC8gSbsLNB3ldkQ+s4
+   OJmjyd9XXwxWG6PCbVYxt0ReZ26xbzSTd0NEWYhFMEXcXcvUJ/d+z6c2g
+   g==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10447"; a="280545341"
+X-IronPort-AV: E=Sophos;i="5.93,256,1654585200"; 
+   d="scan'208";a="280545341"
+Received: from orsmga003.jf.intel.com ([10.7.209.27])
+  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Aug 2022 19:31:15 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.93,256,1654585200"; 
+   d="scan'208";a="559989582"
+Received: from fmsmsx602.amr.corp.intel.com ([10.18.126.82])
+  by orsmga003.jf.intel.com with ESMTP; 22 Aug 2022 19:31:14 -0700
+Received: from fmsmsx608.amr.corp.intel.com (10.18.126.88) by
+ fmsmsx602.amr.corp.intel.com (10.18.126.82) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.31; Mon, 22 Aug 2022 19:31:12 -0700
+Received: from fmsedg602.ED.cps.intel.com (10.1.192.136) by
+ fmsmsx608.amr.corp.intel.com (10.18.126.88) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.31 via Frontend Transport; Mon, 22 Aug 2022 19:31:12 -0700
+Received: from NAM12-BN8-obe.outbound.protection.outlook.com (104.47.55.172)
+ by edgegateway.intel.com (192.55.55.71) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.1.2375.31; Mon, 22 Aug 2022 19:31:12 -0700
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=FjMbJKBb4UtzM1IRrbrPH0N9g7a9FIDnzBWFgYUgYd8dOdgGEPb36SGryTmIfTdW1rN8hpJFtCanQNlntHgDxB7k58KlfyuZnoF+zlw66fbG7uswB8J4dEyyqflBZFuKFIW6NRQZh9FnkShQi4Jb8w/D0Cl0kVkMW+1PcxrNmKFxdS9RkxubyHNWD0pIFunjjrTEJi6RG9c25vHCUzsykLRzUU+tRqnmsDZlBCO38VgEV0OEmHKfo2TU6R1ZePfApWJY5GCJxGCSQs8xfRfGFQflgjm+T3xrjE4qdCEQbw3badqywYMgo5p5TTICVU5F6ugSARrDHegGQhuW5buBpg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=gVm5lECUkqw4zy13FRMlK8eIXRYwbeygmpinV+qKS1g=;
+ b=R2nTP3QGIRNcWZemQpOgs7rUX3wmLrXvVO0BVaw9VpVdZQ50/QbBW65w2AUuSAvuLjTsJBLzUqO7E/QRcWszQ0SH+Ju+1y2EH+hp4Dyq9MyjYyUHZSzQhbGnKUXXnkltQmu6YA/erEwljxdl5rGk8T6sC/fYYfu1JpnGv2ZW7ivgYxUNVb1cEPBoN+I24CK0u/O7JICwhmTksWj340uqou0prpL+56la8pylc3Kl6Mr9zoRqXS9e1ayjalrvpfunJJhzhEtcFkDwj/nWQuhreqNFugWVzb6Tr/JyfkLBqZfdJPhvsrzZV4emKjbGRSLX7wowedgdXv6RZMbc5BjgQQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
+ dkim=pass header.d=intel.com; arc=none
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=intel.com;
+Received: from CH0PR11MB5409.namprd11.prod.outlook.com (2603:10b6:610:d0::7)
+ by SN6PR11MB2944.namprd11.prod.outlook.com (2603:10b6:805:cd::15) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5546.21; Tue, 23 Aug
+ 2022 02:31:09 +0000
+Received: from CH0PR11MB5409.namprd11.prod.outlook.com
+ ([fe80::70e4:76ca:fc65:df73]) by CH0PR11MB5409.namprd11.prod.outlook.com
+ ([fe80::70e4:76ca:fc65:df73%3]) with mapi id 15.20.5546.024; Tue, 23 Aug 2022
+ 02:31:09 +0000
+Message-ID: <9c9d4c86-d77c-adc0-5dc0-d1821a6a3723@intel.com>
+Date:   Tue, 23 Aug 2022 11:30:54 +0900
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.12.0
+Subject: Re: [PATCH v7 1/8] overflow: Move and add few utility macros into
+ overflow
+Content-Language: en-US
+To:     Kees Cook <keescook@chromium.org>
+CC:     Andrzej Hajda <andrzej.hajda@intel.com>,
+        Andi Shyti <andi.shyti@linux.intel.com>,
+        <thomas.hellstrom@linux.intel.com>, <jani.nikula@intel.com>,
+        <intel-gfx@lists.freedesktop.org>, <linux-kernel@vger.kernel.org>,
+        <dri-devel@lists.freedesktop.org>, <chris@chris-wilson.co.uk>,
+        <airlied@linux.ie>, <linux-hardening@vger.kernel.org>,
+        <matthew.auld@intel.com>, <mchehab@kernel.org>,
+        <nirmoy.das@intel.com>,
+        Mauro Carvalho Chehab <mauro.chehab@linux.intel.com>
+References: <20220816093525.184940-1-gwan-gyeong.mun@intel.com>
+ <20220816093525.184940-2-gwan-gyeong.mun@intel.com>
+ <Yv10sQADwdZrIV42@alfio.lan> <202208171657.63AE7AC@keescook>
+ <f3370fb1-5318-c662-294b-2c7fe693efd6@intel.com>
+ <52c09fde-f788-4c2b-efdc-d1783dbc0f6c@intel.com>
+ <202208221301.366A33DACA@keescook>
+From:   Gwan-gyeong Mun <gwan-gyeong.mun@intel.com>
+In-Reply-To: <202208221301.366A33DACA@keescook>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Transfer-Encoding: 8bit
+X-ClientProxiedBy: SJ0PR13CA0003.namprd13.prod.outlook.com
+ (2603:10b6:a03:2c0::8) To CH0PR11MB5409.namprd11.prod.outlook.com
+ (2603:10b6:610:d0::7)
 MIME-Version: 1.0
-References: <cover.1661192455.git.dxu@dxuuu.xyz> <073173502d762faf87bde0ca23e609c84848dd7e.1661192455.git.dxu@dxuuu.xyz>
- <CAP01T74XK_6wMi+tzReTkBqmZkKbUqCmV6pVwcbCMrHrv0X0SA@mail.gmail.com> <20220823021923.vmhp5r76dvgwvh2j@kashmir.localdomain>
-In-Reply-To: <20220823021923.vmhp5r76dvgwvh2j@kashmir.localdomain>
-From:   Kumar Kartikeya Dwivedi <memxor@gmail.com>
-Date:   Tue, 23 Aug 2022 04:29:17 +0200
-Message-ID: <CAP01T77mwS=_sW803CaBgpFtuwMEd4fS81uTvVKYLdGyg5hv1A@mail.gmail.com>
-Subject: Re: [PATCH bpf-next v4 4/5] bpf: Add support for writing to nf_conn:mark
-To:     Daniel Xu <dxu@dxuuu.xyz>
-Cc:     bpf@vger.kernel.org, ast@kernel.org, daniel@iogearbox.net,
-        andrii@kernel.org, pablo@netfilter.org, fw@strlen.de,
-        toke@kernel.org, martin.lau@linux.dev,
-        netfilter-devel@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 4e503878-d83c-4f7e-363d-08da84af89bb
+X-MS-TrafficTypeDiagnostic: SN6PR11MB2944:EE_
+X-LD-Processed: 46c98d88-e344-4ed4-8496-4ed7712e255d,ExtAddr
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: iYGSXtbsIepsOOSIdduUk7G/k1q6ruKKggJcvxswYIwL2piVog8BMkjsfI52EWKxwuvZmEDoXiWpOePIHts60T+uXlPP3lYa+PjZowwFVsKzOQPCgBr5lc9vTqbrdo7K7sl9IxS0WM6+85NDuLZ1Jy/7+frzQlZPiDX6cDYjPDxdOHJPT6PrdWcW31gsDUkSBkGKRg5YKrYDbb4R6+JFoKy1mM5rFxdoST0t4/Uhk+lLrybenMGkL9A2O0tbvDn3XPvXici5MILX4aLC9ccJ0VE09IbBlDAwGSCmUwAILcueTSYxld5rRZjtqH+Pydt6StLkMYuvMI+RFUR5RUvu4Cu42RmUJMIhu5nT5gCXVqcuHeAWA19Ewh3RErWKz3Hd+0u30cBuZEj4S9foGw52UypWsZuE4hOae7PE61lbMIpEVjp28kNXbvcBH9Ifr9NpDJtpYgu1vGocICKrKtXXBuAtI3Yht9mY4ZGw1/KFL6x3hC119Bk8wuRKYhA/WzrciaXwMylWPu/z+9DlgHLvpV+H2w16uUjLFxg8QGEXr0oC8pOGIBFcR/uggPF7S92Oxi1zf4TaMeNG1IYXi12CTpeQo2S7lix4H1oeXCNUA0n6tLb6yMdi0qPbQYh+tkvIt8j4++dqIiEgqVB8Ho29l1l8Z7QhuzmNXxlGECgSS4i1Qrehgc93KJJlKGfKxtjgZHQKwRt7ACcGdLnwnOeGbx4ixZwdvvjvG+ywNggGUDaL3KWTNuO0F3WUrXycOjH/ZFM4eE929kKADFNZjV/l3JuSsdn3UkpkgrcSOCwS4VU=
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:CH0PR11MB5409.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(376002)(136003)(366004)(396003)(346002)(39860400002)(36756003)(8936002)(7416002)(66946007)(316002)(2906002)(8676002)(66556008)(66476007)(6916009)(54906003)(31686004)(53546011)(6666004)(26005)(5660300002)(41300700001)(6512007)(6486002)(4326008)(478600001)(2616005)(82960400001)(6506007)(186003)(38100700002)(86362001)(83380400001)(31696002)(43740500002)(45980500001);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?MitOSGpTaUVZSHpJSU5uN293SzJvUjJWQ0hLT05zN205Z2lWZjRhUnZCWndK?=
+ =?utf-8?B?cGJBaGR6S21wdXFDem91US9DWk9oa3cyMnR0ZEsyRWpMTTA2QytmYS96dS93?=
+ =?utf-8?B?YlNDRkFlYldFVlB5dlMyZ0xEbTJJZXhKeTIxS25EUmxud0cvcDl3VTRHczh0?=
+ =?utf-8?B?L2ZUcCtsMXZhdlhLZWJOZW9CSS8weDJkTlMzWWxXdXpyWG5zQkNoclVSUWVx?=
+ =?utf-8?B?OWlaKzNxeFlWS0h1VWJoZzY5b3hxWCt0MmJIOTJOdHBTZjNOczlKM0RzVHd2?=
+ =?utf-8?B?VDBycGJEb2ZUTmZGNUVXODlIa01SN1BkTjdTUVBJMVV3RElCWktzTDQwbDNL?=
+ =?utf-8?B?WGdZRWQ5M2o4YUJjWkRjSzhKOUN6ZTFIeW9SalVaUDEzbkhTa2NBVnpvcVpp?=
+ =?utf-8?B?N1d5QnZEc1R6WGxldVk0djB1b0FPVDFnWDl3K2JwdWZWRkM0VitjN2QwZEdF?=
+ =?utf-8?B?byttaUVtQURPRzJ3VWVlbTlzMms1enNNZnJKdCs2cUMwOUZzaHZBWFFUVm1I?=
+ =?utf-8?B?STU5ckI1ZjdHdG85RlpNTy8wdmhGYzlLcnhLSm44UGRuQk92U0pPT2Vjbzh5?=
+ =?utf-8?B?SC8wejk5NHVXMUlMclFPRTlrREVpd2U0L3pqR1Q3MkU4b0hkdEQ4WW96eWlu?=
+ =?utf-8?B?c01DNWRLbnFRYjIzbEl6R3ZBcngxbFZWY214OTRWZHJnRktlODNxekgwdEZV?=
+ =?utf-8?B?TWNIejdQRkROUVcwb2U0VXRySjhnTWoybitrUWNaS1RIZnBrMThBaHRtRC8z?=
+ =?utf-8?B?cFdER3Q5NGVTSzNqV3ZWdEMrMC9YdkkvTGxXeExUTmgwOTE4VTJIRjhxVzRN?=
+ =?utf-8?B?dmV2eXEyaXI5MmVxTkFoZ1BDSTE1QmVGcVVMOHNralpDUEQ0MEZ3RFFPMmxS?=
+ =?utf-8?B?Z0VXYkl6M2tHeUxTOWQxZDNOOS9XVFI2MVJ3MGl6ZDN0a3VkZWtNRzdJb0ht?=
+ =?utf-8?B?dU5NejUvU1BMYWlpMFd5OHhWbnFDQ01ETUJNZWlVdXNIeThUaDFWaDk3NjQv?=
+ =?utf-8?B?MDNOTEhiN2pEZzR6UFlVSzhDR2VjUFVWWG5jNzNLdVRCM2hhckVMRENKTjd1?=
+ =?utf-8?B?NzZkMHpsWnkzZjBxQUQ1TEFvenVKdnhPTTlYNXh6NmthdDI2R3pyRkpaSzZD?=
+ =?utf-8?B?ZTBzY2ZtOTRwZHpHbkM2SFI4QjY2ZThrYjhKOFhmbGxpRTZaejNVUEFpeUpE?=
+ =?utf-8?B?Q3pmMmErczY5N0NYR0NnLytxY2hONUcvSVcvbkZVSXNRdlNianJlVVRtOW52?=
+ =?utf-8?B?blkvZ25YN3BaZFlRZTRWbUtuSW5rUjZXdWJOMHRLOVplTHVmQVhDQ3d1Nks4?=
+ =?utf-8?B?ckV1NmVRWktTdVVkdkZjQm1pTlNWd0V2YmNBUm9SdXVCd1JRNjBmSlVWSVN4?=
+ =?utf-8?B?SlBBM3ZCUG03MTU0V2NoVnJzTk8wQmhIWFpzTXAxUjlhR3RBVWVrWmpNZnNC?=
+ =?utf-8?B?cWE3ZVJLL2pjTFNJWEkwZ2tmZHh5bi9FSzBTVVRZbWJ3TWpHSkV1blZiL1dI?=
+ =?utf-8?B?b3dSSytqS3UyQjY4dXc5LzRCTmRFTXlBMmtIQzdBcVpYRXg0T3lsOFFYMndB?=
+ =?utf-8?B?VGNITWprRUlHUGlSbGNObFEvaWxDek1UYkNKUVlmYXJnb1d1bEs2UjVyb3hs?=
+ =?utf-8?B?TlBXNm15RE45OHltdG5ZSmRDVElYTkplVTFESjFUazNkZ3c4YmRockdBTWFD?=
+ =?utf-8?B?SUZuV1p3c3NLZFhsenc3S05ndlAzRFJTWDRiRUtrZjR2T1cxdWVJTGViUGlM?=
+ =?utf-8?B?TDZXQzMxS1FKVnZYWU8raEpNUFZMb25ySzZoQ0VUYUJDN0dMUlQ4aEFOc3o5?=
+ =?utf-8?B?R21HeU5sMENBR3VRTzkzSWVEOEt3a1gwOHM2cU8xb25xRjgwUU1BYWQ3VUlo?=
+ =?utf-8?B?WkJWOTZXTUowVWtyWGRDZjRKVndhTmRaZ1R6VFRFcUVjSHRpWmtnMm91TkZj?=
+ =?utf-8?B?V2lvQlh5Ukl1UVBLTDJ2bWhsNnJETGlFN2ljaGFXRzdUQzZmTlQyWXlPRWg2?=
+ =?utf-8?B?c2k5SndMQVA1Q1lHZmxQMkppeHdkcGJxb3pMOXNJdUw2ZTVSOWk1cWowV0l3?=
+ =?utf-8?B?OERIdXcrZFZTZ3NjLzkrS3NVa21tb0ZkaWRobmU0SlNvREkvbi9RUGp0L3F1?=
+ =?utf-8?B?bzNzYmhTUHdDb0F1WUdMYzRVSWkwR3prNkR2YjBQdWNLTlFDQ1ZGU2liYmJH?=
+ =?utf-8?B?a0E9PQ==?=
+X-MS-Exchange-CrossTenant-Network-Message-Id: 4e503878-d83c-4f7e-363d-08da84af89bb
+X-MS-Exchange-CrossTenant-AuthSource: CH0PR11MB5409.namprd11.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 23 Aug 2022 02:31:09.4674
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 46c98d88-e344-4ed4-8496-4ed7712e255d
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: XpW48n6Qva8vdys66lB9iS6A6pU7Tt1R4+TKUWvgEHsKHebr3r0mWxigappW3WyMiFUsfGanGYIGzryVXFtSWiEGPMLQRPHxy7HruNNElmc=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SN6PR11MB2944
+X-OriginatorOrg: intel.com
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, 23 Aug 2022 at 04:19, Daniel Xu <dxu@dxuuu.xyz> wrote:
->
-> On Tue, Aug 23, 2022 at 02:16:42AM +0200, Kumar Kartikeya Dwivedi wrote:
-> > On Mon, 22 Aug 2022 at 20:26, Daniel Xu <dxu@dxuuu.xyz> wrote:
-> > >
-> > > Support direct writes to nf_conn:mark from TC and XDP prog types. This
-> > > is useful when applications want to store per-connection metadata. This
-> > > is also particularly useful for applications that run both bpf and
-> > > iptables/nftables because the latter can trivially access this metadata.
-> > >
-> > > One example use case would be if a bpf prog is responsible for advanced
-> > > packet classification and iptables/nftables is later used for routing
-> > > due to pre-existing/legacy code.
-> > >
-> > > Signed-off-by: Daniel Xu <dxu@dxuuu.xyz>
-> > > ---
-> > >  include/net/netfilter/nf_conntrack_bpf.h | 22 ++++++
-> > >  net/core/filter.c                        | 34 +++++++++
-> > >  net/netfilter/nf_conntrack_bpf.c         | 91 +++++++++++++++++++++++-
-> > >  net/netfilter/nf_conntrack_core.c        |  1 +
-> > >  4 files changed, 147 insertions(+), 1 deletion(-)
-> > >
-> > > diff --git a/include/net/netfilter/nf_conntrack_bpf.h b/include/net/netfilter/nf_conntrack_bpf.h
-> > > index a473b56842c5..6fc03066846b 100644
-> > > --- a/include/net/netfilter/nf_conntrack_bpf.h
-> > > +++ b/include/net/netfilter/nf_conntrack_bpf.h
-> > > @@ -3,6 +3,7 @@
-> > >  #ifndef _NF_CONNTRACK_BPF_H
-> > >  #define _NF_CONNTRACK_BPF_H
-> > >
-> > > +#include <linux/bpf.h>
-> > >  #include <linux/btf.h>
-> > >  #include <linux/kconfig.h>
-> > >
-> > > @@ -10,6 +11,13 @@
-> > >      (IS_MODULE(CONFIG_NF_CONNTRACK) && IS_ENABLED(CONFIG_DEBUG_INFO_BTF_MODULES))
-> > >
-> > >  extern int register_nf_conntrack_bpf(void);
-> > > +extern void cleanup_nf_conntrack_bpf(void);
-> > > +extern int nf_conntrack_btf_struct_access(struct bpf_verifier_log *log,
-> > > +                                         const struct btf *btf,
-> > > +                                         const struct btf_type *t, int off,
-> > > +                                         int size, enum bpf_access_type atype,
-> > > +                                         u32 *next_btf_id,
-> > > +                                         enum bpf_type_flag *flag);
-> > >
-> > >  #else
-> > >
-> > > @@ -18,6 +26,20 @@ static inline int register_nf_conntrack_bpf(void)
-> > >         return 0;
-> > >  }
-> > >
-> > > +static inline void cleanup_nf_conntrack_bpf(void)
-> > > +{
-> > > +}
-> > > +
-> > > +static inline int nf_conntrack_btf_struct_access(struct bpf_verifier_log *log,
-> > > +                                                const struct btf *btf,
-> > > +                                                const struct btf_type *t, int off,
-> > > +                                                int size, enum bpf_access_type atype,
-> > > +                                                u32 *next_btf_id,
-> > > +                                                enum bpf_type_flag *flag)
-> > > +{
-> > > +       return -EACCES;
-> > > +}
-> > > +
-> > >  #endif
-> > >
-> > >  #endif /* _NF_CONNTRACK_BPF_H */
-> > > diff --git a/net/core/filter.c b/net/core/filter.c
-> > > index 1acfaffeaf32..25bdbf6dc76b 100644
-> > > --- a/net/core/filter.c
-> > > +++ b/net/core/filter.c
-> > > @@ -18,6 +18,7 @@
-> > >   */
-> > >
-> > >  #include <linux/atomic.h>
-> > > +#include <linux/bpf_verifier.h>
-> > >  #include <linux/module.h>
-> > >  #include <linux/types.h>
-> > >  #include <linux/mm.h>
-> > > @@ -55,6 +56,7 @@
-> > >  #include <net/sock_reuseport.h>
-> > >  #include <net/busy_poll.h>
-> > >  #include <net/tcp.h>
-> > > +#include <net/netfilter/nf_conntrack_bpf.h>
-> > >  #include <net/xfrm.h>
-> > >  #include <net/udp.h>
-> > >  #include <linux/bpf_trace.h>
-> > > @@ -8628,6 +8630,21 @@ static bool tc_cls_act_is_valid_access(int off, int size,
-> > >         return bpf_skb_is_valid_access(off, size, type, prog, info);
-> > >  }
-> > >
-> > > +static int tc_cls_act_btf_struct_access(struct bpf_verifier_log *log,
-> > > +                                       const struct btf *btf,
-> > > +                                       const struct btf_type *t, int off,
-> > > +                                       int size, enum bpf_access_type atype,
-> > > +                                       u32 *next_btf_id,
-> > > +                                       enum bpf_type_flag *flag)
-> > > +{
-> > > +       if (atype == BPF_READ)
-> > > +               return btf_struct_access(log, btf, t, off, size, atype, next_btf_id,
-> > > +                                        flag);
-> > > +
-> > > +       return nf_conntrack_btf_struct_access(log, btf, t, off, size, atype,
-> > > +                                             next_btf_id, flag);
-> > > +}
-> > > +
-> > >  static bool __is_valid_xdp_access(int off, int size)
-> > >  {
-> > >         if (off < 0 || off >= sizeof(struct xdp_md))
-> > > @@ -8687,6 +8704,21 @@ void bpf_warn_invalid_xdp_action(struct net_device *dev, struct bpf_prog *prog,
-> > >  }
-> > >  EXPORT_SYMBOL_GPL(bpf_warn_invalid_xdp_action);
-> > >
-> > > +static int xdp_btf_struct_access(struct bpf_verifier_log *log,
-> > > +                                const struct btf *btf,
-> > > +                                const struct btf_type *t, int off,
-> > > +                                int size, enum bpf_access_type atype,
-> > > +                                u32 *next_btf_id,
-> > > +                                enum bpf_type_flag *flag)
-> > > +{
-> > > +       if (atype == BPF_READ)
-> > > +               return btf_struct_access(log, btf, t, off, size, atype, next_btf_id,
-> > > +                                        flag);
-> > > +
-> > > +       return nf_conntrack_btf_struct_access(log, btf, t, off, size, atype,
-> > > +                                             next_btf_id, flag);
-> > > +}
-> > > +
-> > >  static bool sock_addr_is_valid_access(int off, int size,
-> > >                                       enum bpf_access_type type,
-> > >                                       const struct bpf_prog *prog,
-> > > @@ -10581,6 +10613,7 @@ const struct bpf_verifier_ops tc_cls_act_verifier_ops = {
-> > >         .convert_ctx_access     = tc_cls_act_convert_ctx_access,
-> > >         .gen_prologue           = tc_cls_act_prologue,
-> > >         .gen_ld_abs             = bpf_gen_ld_abs,
-> > > +       .btf_struct_access      = tc_cls_act_btf_struct_access,
-> > >  };
-> > >
-> > >  const struct bpf_prog_ops tc_cls_act_prog_ops = {
-> > > @@ -10592,6 +10625,7 @@ const struct bpf_verifier_ops xdp_verifier_ops = {
-> > >         .is_valid_access        = xdp_is_valid_access,
-> > >         .convert_ctx_access     = xdp_convert_ctx_access,
-> > >         .gen_prologue           = bpf_noop_prologue,
-> > > +       .btf_struct_access      = xdp_btf_struct_access,
-> > >  };
-> > >
-> > >  const struct bpf_prog_ops xdp_prog_ops = {
-> > > diff --git a/net/netfilter/nf_conntrack_bpf.c b/net/netfilter/nf_conntrack_bpf.c
-> > > index 1cd87b28c9b0..da54355927d4 100644
-> > > --- a/net/netfilter/nf_conntrack_bpf.c
-> > > +++ b/net/netfilter/nf_conntrack_bpf.c
-> > > @@ -6,8 +6,10 @@
-> > >   * are exposed through to BPF programs is explicitly unstable.
-> > >   */
-> > >
-> > > +#include <linux/bpf_verifier.h>
-> > >  #include <linux/bpf.h>
-> > >  #include <linux/btf.h>
-> > > +#include <linux/mutex.h>
-> > >  #include <linux/types.h>
-> > >  #include <linux/btf_ids.h>
-> > >  #include <linux/net_namespace.h>
-> > > @@ -184,6 +186,79 @@ static struct nf_conn *__bpf_nf_ct_lookup(struct net *net,
-> > >         return ct;
-> > >  }
-> > >
-> > > +BTF_ID_LIST(btf_nf_conn_ids)
-> > > +BTF_ID(struct, nf_conn)
-> > > +BTF_ID(struct, nf_conn___init)
-> > > +
-> > > +static DEFINE_MUTEX(btf_access_lock);
-> > > +static int (*nfct_bsa)(struct bpf_verifier_log *log,
-> > > +                      const struct btf *btf,
-> > > +                      const struct btf_type *t, int off,
-> > > +                      int size, enum bpf_access_type atype,
-> > > +                      u32 *next_btf_id,
-> > > +                      enum bpf_type_flag *flag);
-> > > +
-> > > +/* Check writes into `struct nf_conn` */
-> > > +static int _nf_conntrack_btf_struct_access(struct bpf_verifier_log *log,
-> > > +                                          const struct btf *btf,
-> > > +                                          const struct btf_type *t, int off,
-> > > +                                          int size, enum bpf_access_type atype,
-> > > +                                          u32 *next_btf_id,
-> > > +                                          enum bpf_type_flag *flag)
-> > > +{
-> > > +       const struct btf_type *ncit;
-> > > +       const struct btf_type *nct;
-> > > +       size_t end;
-> > > +
-> > > +       ncit = btf_type_by_id(btf, btf_nf_conn_ids[1]);
-> > > +       nct = btf_type_by_id(btf, btf_nf_conn_ids[0]);
-> > > +
-> > > +       if (t != nct && t != ncit) {
-> > > +               bpf_log(log, "only read is supported\n");
-> > > +               return -EACCES;
-> > > +       }
-> > > +
-> > > +       /* `struct nf_conn` and `struct nf_conn___init` have the same layout
-> > > +        * so we are safe to simply merge offset checks here
-> > > +        */
-> > > +       switch (off) {
-> > > +#if defined(CONFIG_NF_CONNTRACK_MARK)
-> > > +       case offsetof(struct nf_conn, mark):
-> > > +               end = offsetofend(struct nf_conn, mark);
-> > > +               break;
-> > > +#endif
-> > > +       default:
-> > > +               bpf_log(log, "no write support to nf_conn at off %d\n", off);
-> > > +               return -EACCES;
-> > > +       }
-> > > +
-> > > +       if (off + size > end) {
-> > > +               bpf_log(log,
-> > > +                       "write access at off %d with size %d beyond the member of nf_conn ended at %zu\n",
-> > > +                       off, size, end);
-> > > +               return -EACCES;
-> > > +       }
-> > > +
-> > > +       return 0;
-> > > +}
-> > > +
-> > > +int nf_conntrack_btf_struct_access(struct bpf_verifier_log *log,
-> > > +                                  const struct btf *btf,
-> > > +                                  const struct btf_type *t, int off,
-> > > +                                  int size, enum bpf_access_type atype,
-> > > +                                  u32 *next_btf_id,
-> > > +                                  enum bpf_type_flag *flag)
-> > > +{
-> > > +       int ret = -EACCES;
-> > > +
-> > > +       mutex_lock(&btf_access_lock);
-> > > +       if (nfct_bsa)
-> > > +               ret = nfct_bsa(log, btf, t, off, size, atype, next_btf_id, flag);
-> > > +       mutex_unlock(&btf_access_lock);
-> > > +
-> > > +       return ret;
-> > > +}
-> >
-> > Did you test this for CONFIG_NF_CONNTRACK=m? For me it isn't building :P.
-> >
-> > It won't work like this. When nf_conntrack is a module, the vmlinux.o
-> > of the kernel isn't linked to the object file nf_conntrack_bpf.o.
-> > Hence it would be an undefined reference error. You don't see it in
-> > BPF CI as we set CONFIG_NF_CONNTRACK=y (to simplify testing).
->
-> Sorry about that. Will make sure to test that config setting.
->
 
-No worries. We should probably think about being able to test it
-automatically in CI, but not sure how that would be possible...
 
-> > So you need to have code that locks and checks the cb pointer when
-> > calling it outside the module, which means the global lock variable
-> > and global cb pointer also need to be in the kernel. The module then
-> > takes the same lock and sets cb pointer when loading. During unload,
-> > it takes the same lock and sets it back to NULL.
-> >
-> > You can have global variables in vmlinux that you reference from
-> > modules. The compiler will emit a relocation for the module object
-> > file which will be handled by the kernel during module load.
->
-> Sure, I'll take a look. I was trying to keep conntrack symbols out of
-> the core object files as much as possible but looks like that won't be
-> possible.
+On 8/23/22 5:12 AM, Kees Cook wrote:
+> On Tue, Aug 23, 2022 at 04:32:10AM +0900, Gwan-gyeong Mun wrote:
+>> On 8/22/22 11:05 PM, Andrzej Hajda wrote:
+>>> On 18.08.2022 02:12, Kees Cook wrote:
+>>>> On Thu, Aug 18, 2022 at 01:07:29AM +0200, Andi Shyti wrote:
+>>>>> [...]
+>>>>>> +#define safe_conversion(ptr, value) ({ \
+>>>>>> +    typeof(value) __v = (value); \
+>>>>>> +    typeof(ptr) __ptr = (ptr); \
+>>>>>> +    overflows_type(__v, *__ptr) ? 0 : ((*__ptr =
+>>>>>> (typeof(*__ptr))__v), 1); \
+>>>>>> +})
+>>>>
+>>>> I try to avoid "safe" as an adjective for interface names, since it
+>>>> doesn't really answer "safe from what?" This looks more like "assign, but
+>>>> zero when out of bounds". And it can be built from existing macros here:
+>>>>
+>>>>      if (check_add_overflow(0, value, ptr))
+>>>>          *ptr = 0;
+>>>>
+>>>> I actually want to push back on this a bit, because there can still be
+>>>> logic bugs built around this kind of primitive. Shouldn't out-of-bounds
+>>>> assignments be seen as a direct failure? I would think this would be
+>>>> sufficient:
+>>>>
+>>>> #define check_assign(value, ptr)    check_add_overflow(0, value, ptr)
+>>>>
+>>>> And callers would do:
+>>>>
+>>>>      if (check_assign(value, &var))
+>>>>          return -EINVAL;
+>>>>
+>> Yes, I also like check_assign() you suggested more than safe_conversion.
+>> As shown below, it would be more readable to return true when assign
+>> succeeds and false when it fails. What do you think?
+> 
+> No, this inverts the style of all the other check_*() functions, so it
+> should remain "non-zero is failure".
+> 
+Hi Kees,
+Yes, I will not invert this part as you commented.
+>> /**
+>>   * check_assign - perform a type conversion (cast) of an source value into
+>>   * a new variable, checking that the destination is large enough to hold the
+>>   * source value.
+>>   *
+>>   * @value: Source value
+>>   * @ptr: Destination pointer address, If the pointer type is not used, a
+>> warning message is output during build.
+>>   *
+>>   * Returns:
+>>   * If the value would overflow the destination, it returns false. If not
+>> return true.
+>>   */
+>> #define check_assign(value, ptr) __must_check_overflow(({	\
+>> 	typecheck_pointer(ptr); 		\
+>> 	!__builtin_add_overflow(0, value, ptr);	\
+>> }))
+> 
+> Please don't use the __builtin*s, instead stick to the check_* family,
+> as they correctly wrap the builtins and perform type checking, etc. As
+> mentioned, check_assign() should just be:
+> 
+> #define check_assign(value, ptr)    check_add_overflow(0, value, ptr)
+> 
+> I don't think any of the other code is needed? What's the use-case for
+> the other stuff? i.e. Why does anything need overflows_type()?
+> 
+And, the reason for using the __builtin_add_overflow() built-in function 
+directly instead of using the check_add_overflow() function is ,
 
-Yeah, for now hardcoding is ok I figure, later when we have more
-modules doing this we can generalize it.
+#define check_add_overflow(a, b, d) __must_check_overflow(({	\
+	typeof(a) __a = (a);			\
+	typeof(b) __b = (b);			\
+	typeof(d) __d = (d);			\
+	(void) (&__a == &__b);			\
+	(void) (&__a == __d);			\
+	__builtin_add_overflow(__a, __b, __d);	\
+}))
 
->
-> However, I think to keep the globals symbols in vmlinux we'll need to
-> EXPORT_SYMBOL_GPL() some symbols. Hopefully that is OK.
->
+In this part of the implementation of check_add_overflow()
+	(void) (&__a == &__b);
+	(void) (&__a == __d);
 
-Yes, that should be ok.
 
-> There's also some other issues I'm uncovering with duplicate BTF IDs for
-> nf_conn. Might have to do a lookup by name instead of the BTF_ID_LIST().
->
+When comparing the pointer types of a, b, and d, if the pointer types of 
+source and ptr in check_assign() are different, a warning may occur when 
+building, I used the __builtin_add_overflow() built-in function directly.
 
-I think I also hit this problem back when I was working on these
-patches, is it similar to this?
-https://lore.kernel.org/bpf/20211028014428.rsuq6rkfvqzq23tg@apollo.localdomain
+Br,
 
-I think this might be a bug in the BTF generation, since there should
-only be one BTF ID for a type, either in vmlinux or the module BTF.
-Maybe Andrii would be able to confirm.
-
-> > So please test it once with nf_conntrack built as a module before
-> > sending the next revision. The only thing you need to do before
-> > running ./test_progs -t bpf_nf is loading the module nf_conntrack.ko
-> > (and its dependencies, nf_defrag_ipv{4,6}.ko).
->
-> Will do.
->
-> Thanks again for the reviews,
-> Daniel
+G.G.
+> -Kees
+> 
