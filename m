@@ -2,91 +2,64 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C3DB0C32772
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A5F9DC52D6C
 	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 10:23:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354997AbiHWKWl (ORCPT
+        id S1354962AbiHWKWf (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 06:22:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35388 "EHLO
+        Tue, 23 Aug 2022 06:22:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35350 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353275AbiHWKLL (ORCPT
+        with ESMTP id S1353260AbiHWKLI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 06:11:11 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AF26E7E837;
-        Tue, 23 Aug 2022 01:56:20 -0700 (PDT)
+        Tue, 23 Aug 2022 06:11:08 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8D8E87E829;
+        Tue, 23 Aug 2022 01:56:17 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 68380B81C3B;
-        Tue, 23 Aug 2022 08:56:19 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A21CCC433D6;
-        Tue, 23 Aug 2022 08:56:17 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661244978;
-        bh=6JiylxBtWlmdCkRFM3rD+4knp9Wk7t4RBOSPjliPdRg=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=rhGAqT7tk7LRdY6TS7xwFbxaO7dGqZ9FoT6sQjNfzIFcdVYWuPxFzGwxGC2B7WJgq
-         KNpKAobp466MH+MNXgVzPw/2JJA2Gj4mgPtkpnfi0FSiAuLs7O3o5PLAFnk065lZdo
-         RE4Rjz3hooIWHuexYh2AAT8MtH8BmNO6jS2nbF80=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Alan Brady <alan.brady@intel.com>,
-        Mateusz Palczewski <mateusz.palczewski@intel.com>,
-        Tony Nguyen <anthony.l.nguyen@intel.com>,
-        Gurucharan <gurucharanx.g@intel.com>
-Subject: [PATCH 5.15 147/244] i40e: Fix to stop tx_timeout recovery if GLOBR fails
-Date:   Tue, 23 Aug 2022 10:25:06 +0200
-Message-Id: <20220823080104.080986957@linuxfoundation.org>
-X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220823080059.091088642@linuxfoundation.org>
-References: <20220823080059.091088642@linuxfoundation.org>
-User-Agent: quilt/0.67
+        by ams.source.kernel.org (Postfix) with ESMTPS id B0507B81C28;
+        Tue, 23 Aug 2022 08:56:15 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D8700C433D7;
+        Tue, 23 Aug 2022 08:56:12 +0000 (UTC)
+Date:   Tue, 23 Aug 2022 09:56:12 +0100
+From:   Catalin Marinas <catalin.marinas@arm.com>
+To:     Linus Torvalds <torvalds@linux-foundation.org>
+Cc:     Steve French <smfrench@gmail.com>,
+        CIFS <linux-cifs@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        linux-arch <linux-arch@vger.kernel.org>
+Subject: Re: strlcpy() notes (was Re: [GIT PULL] smb3 client fixes)
+Message-ID: <YwSWLH4Wp6yDMeKf@arm.com>
+References: <CAH2r5mtDFpaAWeGCtrfm_WPM6j-Gkt_O80=nKfp6y39aXaBr6w@mail.gmail.com>
+ <CAHk-=wi+xbVq++uqW9YgWpHjyBHNB8a-xad+Xp23-B+eodLCEA@mail.gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAHk-=wi+xbVq++uqW9YgWpHjyBHNB8a-xad+Xp23-B+eodLCEA@mail.gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Alan Brady <alan.brady@intel.com>
+On Sun, Aug 21, 2022 at 11:13:28AM -0700, Linus Torvalds wrote:
+> It's also worth pointing out that the kernel implementation of
+> 'strscpy()' will not do the chunk-sized accesses across an unaligned
+> page boundary. So it won't actually take a page fault past the
+> terminating NUL character, but if you pass it an 'N' that is bigger
+> than the source buffer, and you have sub-page faults in the kernel, we
+> might need to do some further work in this are. Catalin?
 
-commit 57c942bc3bef0970f0b21f8e0998e76a900ea80d upstream.
+We can probably hit sub-page faults if the function reads past the end
+of a string. Strange that we haven't hit any so far (well, it needs
+KASAN_HW_TAGS enabled, it doesn't get as much coverage).
 
-When a tx_timeout fires, the PF attempts to recover by incrementally
-resetting.  First we try a PFR, then CORER and finally a GLOBR.  If the
-GLOBR fails, then we keep hitting the tx_timeout and incrementing the
-recovery level and issuing dmesgs, which is both annoying to the user
-and accomplishes nothing.
+With load_unaligned_zeropad(), the arm64 implementation disables tag
+checking temporarily. We could do the same with read_word_at_a_time()
+(there is a kasan_check_read() in this function but it wrongly uses a
+size of 1).
 
-If the GLOBR fails, then we're pretty much totally hosed, and there's
-not much else we can do to recover, so this makes it such that we just
-kill the VSI and stop hitting the tx_timeout in such a case.
+I'll send a patch but most likely next week (I'm still on holiday).
 
-Fixes: 41c445ff0f48 ("i40e: main driver core")
-Signed-off-by: Alan Brady <alan.brady@intel.com>
-Signed-off-by: Mateusz Palczewski <mateusz.palczewski@intel.com>
-Tested-by: Gurucharan <gurucharanx.g@intel.com> (A Contingent worker at Intel)
-Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
----
- drivers/net/ethernet/intel/i40e/i40e_main.c |    4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
-
---- a/drivers/net/ethernet/intel/i40e/i40e_main.c
-+++ b/drivers/net/ethernet/intel/i40e/i40e_main.c
-@@ -383,7 +383,9 @@ static void i40e_tx_timeout(struct net_d
- 		set_bit(__I40E_GLOBAL_RESET_REQUESTED, pf->state);
- 		break;
- 	default:
--		netdev_err(netdev, "tx_timeout recovery unsuccessful\n");
-+		netdev_err(netdev, "tx_timeout recovery unsuccessful, device is in non-recoverable state.\n");
-+		set_bit(__I40E_DOWN_REQUESTED, pf->state);
-+		set_bit(__I40E_VSI_DOWN_REQUESTED, vsi->state);
- 		break;
- 	}
- 
-
-
+-- 
+Catalin
