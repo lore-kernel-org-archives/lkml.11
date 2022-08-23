@@ -2,106 +2,168 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7D64FC49EC0
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 59A7CC32772
 	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 11:42:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358361AbiHWLlg (ORCPT
+        id S1358307AbiHWLl1 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 07:41:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58492 "EHLO
+        Tue, 23 Aug 2022 07:41:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49050 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357843AbiHWLgZ (ORCPT
+        with ESMTP id S1357507AbiHWLfi (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 07:36:25 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 269CFC7BB2;
-        Tue, 23 Aug 2022 02:27:41 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id C28CECE1B40;
-        Tue, 23 Aug 2022 09:27:39 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C5B43C43470;
-        Tue, 23 Aug 2022 09:27:37 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661246858;
-        bh=2ABQeTaiivDcrlC5faO0wA2XSbDIrWekcbpo1kVetIY=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=YVrEE+4GarfEg8areo5IytIFFsdY5btVTzxaGmZIMQfF6B/P405NGm8B4a7qr93MM
-         nojxGqRx1G7lmRk3VBnW2Pe7ue5Hg71edavzn2k8V+4M1J0FSwOrdf9CUdNIChx0fn
-         LWO08Ilcb+ZLJ8PWLSMS8Pr8pzheuhR70jHtpceQ=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Zheyu Ma <zheyuma97@gmail.com>,
-        Helge Deller <deller@gmx.de>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 243/389] video: fbdev: arkfb: Fix a divide-by-zero bug in ark_set_pixclock()
-Date:   Tue, 23 Aug 2022 10:25:21 +0200
-Message-Id: <20220823080125.716606426@linuxfoundation.org>
-X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220823080115.331990024@linuxfoundation.org>
-References: <20220823080115.331990024@linuxfoundation.org>
-User-Agent: quilt/0.67
+        Tue, 23 Aug 2022 07:35:38 -0400
+Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 93033C6FCA;
+        Tue, 23 Aug 2022 02:27:34 -0700 (PDT)
+Date:   Tue, 23 Aug 2022 09:27:30 -0000
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020; t=1661246852;
+        h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
+         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
+         content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=cyzG3mvyM6Gd6hVw30kZRtU1uzuuX6J/DlDIkwhgKaA=;
+        b=cK43PRmwtVlAjsz8WPg13QwW0AnVJei88dFb5W3tfqA2Jo6jeS/CUAO++gv5EXkcZ/7Ohg
+        z3IlBKc1M1/v6nB++WmHCQb21a6Ok9ZZrnOkcGr1fdIu+8asE+1lBDopFFPR6NINuuNOkq
+        BGJsB98EnqZXPWYlATOlTFlygKzcPpbu36Cs717J35S9Vz8VRf1DsVDOaC6zXZ5ds+8fGS
+        25Guzk/wwF0mxReGJO1I20uFBoolAxFLiJCvOCUepXu/Okar26kZIdQx3iS6lkxn+8ejH5
+        wkVrJ90zeR+6F7jISqClUUEhYtaFsyxeJJH5Qvz+Pbe0nNTnvdV4HiHCk1/XzA==
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020e; t=1661246852;
+        h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
+         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
+         content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=cyzG3mvyM6Gd6hVw30kZRtU1uzuuX6J/DlDIkwhgKaA=;
+        b=mmtvnGxNbiewSFBAwW4Rf6GWovRXU8JBbossi6NiKKlgPT6+FLflLZC9La2f5F4EtmpyJi
+        ayQmeXo90XUE6mCQ==
+From:   "tip-bot2 for Chengming Zhou" <tip-bot2@linutronix.de>
+Sender: tip-bot2@linutronix.de
+Reply-to: linux-kernel@vger.kernel.org
+To:     linux-tip-commits@vger.kernel.org
+Subject: [tip: sched/core] sched/fair: Allow changing cgroup of new forked task
+Cc:     Chengming Zhou <zhouchengming@bytedance.com>,
+        "Peter Zijlstra (Intel)" <peterz@infradead.org>,
+        Vincent Guittot <vincent.guittot@linaro.org>, x86@kernel.org,
+        linux-kernel@vger.kernel.org
+In-Reply-To: <20220818124805.601-8-zhouchengming@bytedance.com>
+References: <20220818124805.601-8-zhouchengming@bytedance.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Message-ID: <166124685097.401.5171298774176649405.tip-bot2@tip-bot2>
+Robot-ID: <tip-bot2@linutronix.de>
+Robot-Unsubscribe: Contact <mailto:tglx@linutronix.de> to get blacklisted from these emails
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Zheyu Ma <zheyuma97@gmail.com>
+The following commit has been merged into the sched/core branch of tip:
 
-[ Upstream commit 2f1c4523f7a3aaabe7e53d3ebd378292947e95c8 ]
+Commit-ID:     df16b71c686cb096774e30153c9ce6756450796c
+Gitweb:        https://git.kernel.org/tip/df16b71c686cb096774e30153c9ce6756450796c
+Author:        Chengming Zhou <zhouchengming@bytedance.com>
+AuthorDate:    Thu, 18 Aug 2022 20:48:03 +08:00
+Committer:     Peter Zijlstra <peterz@infradead.org>
+CommitterDate: Tue, 23 Aug 2022 11:01:19 +02:00
 
-Since the user can control the arguments of the ioctl() from the user
-space, under special arguments that may result in a divide-by-zero bug
-in:
-  drivers/video/fbdev/arkfb.c:784: ark_set_pixclock(info, (hdiv * info->var.pixclock) / hmul);
-with hdiv=1, pixclock=1 and hmul=2 you end up with (1*1)/2 = (int) 0.
-and then in:
-  drivers/video/fbdev/arkfb.c:504: rv = dac_set_freq(par->dac, 0, 1000000000 / pixclock);
-we'll get a division-by-zero.
+sched/fair: Allow changing cgroup of new forked task
 
-The following log can reveal it:
+commit 7dc603c9028e ("sched/fair: Fix PELT integrity for new tasks")
+introduce a TASK_NEW state and an unnessary limitation that would fail
+when changing cgroup of new forked task.
 
-divide error: 0000 [#1] PREEMPT SMP KASAN PTI
-RIP: 0010:ark_set_pixclock drivers/video/fbdev/arkfb.c:504 [inline]
-RIP: 0010:arkfb_set_par+0x10fc/0x24c0 drivers/video/fbdev/arkfb.c:784
-Call Trace:
- fb_set_var+0x604/0xeb0 drivers/video/fbdev/core/fbmem.c:1034
- do_fb_ioctl+0x234/0x670 drivers/video/fbdev/core/fbmem.c:1110
- fb_ioctl+0xdd/0x130 drivers/video/fbdev/core/fbmem.c:1189
+Because at that time, we can't handle task_change_group_fair() for new
+forked fair task which hasn't been woken up by wake_up_new_task(),
+which will cause detach on an unattached task sched_avg problem.
 
-Fix this by checking the argument of ark_set_pixclock() first.
+This patch delete this unnessary limitation by adding check before do
+detach or attach in task_change_group_fair().
 
-Fixes: 681e14730c73 ("arkfb: new framebuffer driver for ARK Logic cards")
-Signed-off-by: Zheyu Ma <zheyuma97@gmail.com>
-Signed-off-by: Helge Deller <deller@gmx.de>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+So cpu_cgrp_subsys.can_attach() has nothing to do for fair tasks,
+only define it in #ifdef CONFIG_RT_GROUP_SCHED.
+
+Signed-off-by: Chengming Zhou <zhouchengming@bytedance.com>
+Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
+Reviewed-by: Vincent Guittot <vincent.guittot@linaro.org>
+Link: https://lore.kernel.org/r/20220818124805.601-8-zhouchengming@bytedance.com
 ---
- drivers/video/fbdev/arkfb.c | 7 ++++++-
- 1 file changed, 6 insertions(+), 1 deletion(-)
+ kernel/sched/core.c | 25 +++++--------------------
+ kernel/sched/fair.c |  7 +++++++
+ 2 files changed, 12 insertions(+), 20 deletions(-)
 
-diff --git a/drivers/video/fbdev/arkfb.c b/drivers/video/fbdev/arkfb.c
-index f940e8b66b85..311f7ea57625 100644
---- a/drivers/video/fbdev/arkfb.c
-+++ b/drivers/video/fbdev/arkfb.c
-@@ -778,7 +778,12 @@ static int arkfb_set_par(struct fb_info *info)
- 		return -EINVAL;
- 	}
+diff --git a/kernel/sched/core.c b/kernel/sched/core.c
+index e74e79f..603a80e 100644
+--- a/kernel/sched/core.c
++++ b/kernel/sched/core.c
+@@ -10238,36 +10238,19 @@ static void cpu_cgroup_css_free(struct cgroup_subsys_state *css)
+ 	sched_unregister_group(tg);
+ }
  
--	ark_set_pixclock(info, (hdiv * info->var.pixclock) / hmul);
-+	value = (hdiv * info->var.pixclock) / hmul;
-+	if (!value) {
-+		fb_dbg(info, "invalid pixclock\n");
-+		value = 1;
-+	}
-+	ark_set_pixclock(info, value);
- 	svga_set_timings(par->state.vgabase, &ark_timing_regs, &(info->var), hmul, hdiv,
- 			 (info->var.vmode & FB_VMODE_DOUBLE)     ? 2 : 1,
- 			 (info->var.vmode & FB_VMODE_INTERLACED) ? 2 : 1,
--- 
-2.35.1
-
-
-
++#ifdef CONFIG_RT_GROUP_SCHED
+ static int cpu_cgroup_can_attach(struct cgroup_taskset *tset)
+ {
+ 	struct task_struct *task;
+ 	struct cgroup_subsys_state *css;
+-	int ret = 0;
+ 
+ 	cgroup_taskset_for_each(task, css, tset) {
+-#ifdef CONFIG_RT_GROUP_SCHED
+ 		if (!sched_rt_can_attach(css_tg(css), task))
+ 			return -EINVAL;
+-#endif
+-		/*
+-		 * Serialize against wake_up_new_task() such that if it's
+-		 * running, we're sure to observe its full state.
+-		 */
+-		raw_spin_lock_irq(&task->pi_lock);
+-		/*
+-		 * Avoid calling sched_move_task() before wake_up_new_task()
+-		 * has happened. This would lead to problems with PELT, due to
+-		 * move wanting to detach+attach while we're not attached yet.
+-		 */
+-		if (READ_ONCE(task->__state) == TASK_NEW)
+-			ret = -EINVAL;
+-		raw_spin_unlock_irq(&task->pi_lock);
+-
+-		if (ret)
+-			break;
+ 	}
+-	return ret;
++	return 0;
+ }
++#endif
+ 
+ static void cpu_cgroup_attach(struct cgroup_taskset *tset)
+ {
+@@ -11103,7 +11086,9 @@ struct cgroup_subsys cpu_cgrp_subsys = {
+ 	.css_released	= cpu_cgroup_css_released,
+ 	.css_free	= cpu_cgroup_css_free,
+ 	.css_extra_stat_show = cpu_extra_stat_show,
++#ifdef CONFIG_RT_GROUP_SCHED
+ 	.can_attach	= cpu_cgroup_can_attach,
++#endif
+ 	.attach		= cpu_cgroup_attach,
+ 	.legacy_cftypes	= cpu_legacy_files,
+ 	.dfl_cftypes	= cpu_files,
+diff --git a/kernel/sched/fair.c b/kernel/sched/fair.c
+index e92bc05..fd1aa4c 100644
+--- a/kernel/sched/fair.c
++++ b/kernel/sched/fair.c
+@@ -11676,6 +11676,13 @@ void init_cfs_rq(struct cfs_rq *cfs_rq)
+ #ifdef CONFIG_FAIR_GROUP_SCHED
+ static void task_change_group_fair(struct task_struct *p)
+ {
++	/*
++	 * We couldn't detach or attach a forked task which
++	 * hasn't been woken up by wake_up_new_task().
++	 */
++	if (READ_ONCE(p->__state) == TASK_NEW)
++		return;
++
+ 	detach_task_cfs_rq(p);
+ 
+ #ifdef CONFIG_SMP
