@@ -2,86 +2,142 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DC67FC32772
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 13:10:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8BA69C32772
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 13:11:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239930AbiHWNK4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 09:10:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50770 "EHLO
+        id S241656AbiHWNLj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 23 Aug 2022 09:11:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49162 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240927AbiHWNKF (ORCPT
+        with ESMTP id S238680AbiHWNLI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 09:10:05 -0400
-Received: from mail-lj1-x22e.google.com (mail-lj1-x22e.google.com [IPv6:2a00:1450:4864:20::22e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E1B1A7EFED
-        for <linux-kernel@vger.kernel.org>; Tue, 23 Aug 2022 03:11:39 -0700 (PDT)
-Received: by mail-lj1-x22e.google.com with SMTP id bx38so13017136ljb.10
-        for <linux-kernel@vger.kernel.org>; Tue, 23 Aug 2022 03:11:39 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc;
-        bh=hw2j/4pLlHBNSTZTWWhfb4AnPh8ql3cI9ASIz+WVLdI=;
-        b=SlaGgjcTZDU2Cv3G8yUnbFhPsB+iAh7kLOsVOlXs1XdVHwg4pKiXl1darE9glMkP3S
-         TymTkKXsm6xoYFxYzLqhSEmo7KD6uX5R7T1Hf7uKpvOLJCTDyQ/xiSTqiqSufGwZGjcF
-         x3cPaLYQHWAKbK8xZ7jCsqIpLI95vKvzopXtTAV1TOrUK6IoKbkSeB4DSQwwVFk+ouc7
-         Du/TwAbTL9EtOD5kykQD1gWL1u/sx8es8OX34qYOTIQo8r6gmDTplLwPJ5MXRDYzBXd1
-         wgSWPz1P48eE+KjtdGiNYLONgkjUfsnc8tjoZi6Kht8a8dENhziM3zsnXavrqsutY3vO
-         p6Pg==
+        Tue, 23 Aug 2022 09:11:08 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4D356134219
+        for <linux-kernel@vger.kernel.org>; Tue, 23 Aug 2022 03:11:51 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1661249461;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=k4DDfGD38WyRMUhL0albSNaRv3lQW2wKYEOnaNdTLlA=;
+        b=c9NMoBmWnZX8eJoEMyTxYtUVgh2CJDJpY+xJtq7gKPIJhnFANeF33i1foZpQPrci95FurT
+        ux1SumiGKPU9yTXPYXL5kyqq1e00zSFnbuSGkT8Siu5W9MVba0t7+erJnqtEpU97lauVHH
+        zLDyYoPu0Twr5QuRZuj4QcKrtpnH/K4=
+Received: from mail-wm1-f71.google.com (mail-wm1-f71.google.com
+ [209.85.128.71]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
+ us-mta-332-UDb1Xf3FNg6XC55QYse4Rw-1; Tue, 23 Aug 2022 06:07:07 -0400
+X-MC-Unique: UDb1Xf3FNg6XC55QYse4Rw-1
+Received: by mail-wm1-f71.google.com with SMTP id j22-20020a05600c485600b003a5e4420552so10018475wmo.8
+        for <linux-kernel@vger.kernel.org>; Tue, 23 Aug 2022 03:07:06 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-message-state:from:to:cc;
-        bh=hw2j/4pLlHBNSTZTWWhfb4AnPh8ql3cI9ASIz+WVLdI=;
-        b=uMig0NHHMgwgSxEH1pA9QNOX7UKQzObSy3vYP5J5zBT+B7mfaa4kT7xPiUN0tWMgz6
-         JhfHDdfMXfDnXCz2qaOgexGsff+jlFBnazlWQebEF/Skh5+afKHiP6W/qs8Ukk5yRpVN
-         2um1avqgn912ecMrtuI21U1WQkDOx2JpM4I/voHSQ2F1oF/zI8wqqSpHxGhA8WIne8Kr
-         vdh08ooBfNbbC6Eo+psSA5OLygipfuZwpdCxIdT4QZ+8HxB+01FhbLqNzvVAqeSUjw6j
-         e4XYMVl437b/jRYsTcdoj6E2u0Iij/kxTbOBsPul+hlMt/s8SiD6Bp2NAJNHfA4LDGOh
-         RZ2w==
-X-Gm-Message-State: ACgBeo0iagiLpnlXDJqV9iKDi/XrI950uAbfsVl18aLHm6GsCqwZY2EM
-        WRUu2BNLAFOEr4uOZWSyHHqo5w==
-X-Google-Smtp-Source: AA6agR4jYO3jxv/cP+R0PcOjMe1ISfIavZaIP2e0W7K1bX4G+0TdlXOY+kSP2zMaY0pGfvFCyTurLQ==
-X-Received: by 2002:a2e:a887:0:b0:25e:3174:fb67 with SMTP id m7-20020a2ea887000000b0025e3174fb67mr6392657ljq.337.1661249424724;
-        Tue, 23 Aug 2022 03:10:24 -0700 (PDT)
-Received: from krzk-bin.. (89-27-92-210.bb.dnainternet.fi. [89.27.92.210])
-        by smtp.gmail.com with ESMTPSA id n27-20020a05651203fb00b0048af2fe78c4sm1513034lfq.3.2022.08.23.03.10.23
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 23 Aug 2022 03:10:24 -0700 (PDT)
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-To:     Lee Jones <lee@kernel.org>, Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
-Cc:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Subject: [PATCH] dt-bindings: mfd: syscon: drop ref from reg-io-width
-Date:   Tue, 23 Aug 2022 13:10:21 +0300
-Message-Id: <20220823101021.387034-1-krzysztof.kozlowski@linaro.org>
-X-Mailer: git-send-email 2.34.1
+        h=content-transfer-encoding:in-reply-to:organization:from:references
+         :cc:to:content-language:subject:user-agent:mime-version:date
+         :message-id:x-gm-message-state:from:to:cc;
+        bh=k4DDfGD38WyRMUhL0albSNaRv3lQW2wKYEOnaNdTLlA=;
+        b=GEZG3PQ7tTxlSXBCKw8PYE0r1BvtstMo3jkeLT/wcEEtb0Kd9bawS/cu8E7fZWmvy3
+         QRgq93jgm31EeY52QdwyzBKwDavCYliXC4miffcx2/TXkukfnDIa5A4EU/PrcdFca4Lh
+         1gcvvQsgo9LLj80fO1LbPMm7MZLu5hkekjimw1a7YYcW8iUXBZNrzcj9KIQ2/fMPMTgM
+         YMF2DBx+ZOUXYlJ1hVAA99ICBSYQGw0usVSMa3PUfARzKd9+DxN+Z/U4di5iclIP2LUh
+         eCqqjD8l1gknS29QFRK8GtQ17E1d5LIqnF3YbA1R1hWLwPWV6JWVzXowxoimS3fczNGn
+         YMPA==
+X-Gm-Message-State: ACgBeo0mCb9GdQTsZRQpzbLAiYLf/F1ua5cYu1St7/EvV+YZU8NMLHoa
+        n2IF5lOSMyQNsu41TcUdAA5dOG8NjZ4uoEWP7NMi0toZYy0heKPs0Tt5MvtnjZysA+ClmTNKyZM
+        1PRHRAlhHyp9vDgvlmCG5SmUb
+X-Received: by 2002:a5d:6d04:0:b0:225:5a6e:7607 with SMTP id e4-20020a5d6d04000000b002255a6e7607mr4838249wrq.336.1661249226029;
+        Tue, 23 Aug 2022 03:07:06 -0700 (PDT)
+X-Google-Smtp-Source: AA6agR5QgVeo9aZdJeSZeBsNU1jnzRMWXtJejk8Sr/CiqW3Vo9vVh/mkrE/ytXRvpg0xCMGSkVRjEw==
+X-Received: by 2002:a5d:6d04:0:b0:225:5a6e:7607 with SMTP id e4-20020a5d6d04000000b002255a6e7607mr4838230wrq.336.1661249225685;
+        Tue, 23 Aug 2022 03:07:05 -0700 (PDT)
+Received: from ?IPV6:2003:cb:c70b:1600:c48b:1fab:a330:5182? (p200300cbc70b1600c48b1faba3305182.dip0.t-ipconnect.de. [2003:cb:c70b:1600:c48b:1fab:a330:5182])
+        by smtp.gmail.com with ESMTPSA id v8-20020a05600c214800b003a5c244fc13sm21831085wml.2.2022.08.23.03.07.04
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 23 Aug 2022 03:07:05 -0700 (PDT)
+Message-ID: <36925544-8127-fe0c-76e5-49138dff45ae@redhat.com>
+Date:   Tue, 23 Aug 2022 12:07:04 +0200
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.11.0
+Subject: Re: [PATCH v6 2/2] mm: fix the handling Non-LRU pages returned by
+ follow_page
+Content-Language: en-US
+To:     Miaohe Lin <linmiaohe@huawei.com>,
+        Haiyue Wang <haiyue.wang@intel.com>, linux-mm@kvack.org,
+        linux-kernel@vger.kernel.org
+Cc:     akpm@linux-foundation.org, apopple@nvidia.com,
+        ying.huang@intel.com, songmuchun@bytedance.com,
+        naoya.horiguchi@linux.dev, alex.sierra@amd.com,
+        Felix Kuehling <Felix.Kuehling@amd.com>
+References: <20220812084921.409142-1-haiyue.wang@intel.com>
+ <20220816022102.582865-1-haiyue.wang@intel.com>
+ <20220816022102.582865-3-haiyue.wang@intel.com>
+ <f9bb1faf-3e09-2db4-5210-4cea09654452@huawei.com>
+From:   David Hildenbrand <david@redhat.com>
+Organization: Red Hat
+In-Reply-To: <f9bb1faf-3e09-2db4-5210-4cea09654452@huawei.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-reg-io-width is a standard property, so no need for defining its type
+On 17.08.22 04:34, Miaohe Lin wrote:
+> On 2022/8/16 10:21, Haiyue Wang wrote:
+>> The handling Non-LRU pages returned by follow_page() jumps directly, it
+>> doesn't call put_page() to handle the reference count, since 'FOLL_GET'
+>> flag for follow_page() has get_page() called. Fix the zone device page
+>> check by handling the page reference count correctly before returning.
+>>
+>> And as David reviewed, "device pages are never PageKsm pages". Drop this
+>> zone device page check for break_ksm().
+>>
+>> Fixes: 3218f8712d6b ("mm: handling Non-LRU pages returned by vm_normal_pages")
+>> Signed-off-by: Haiyue Wang <haiyue.wang@intel.com>
+>> Reviewed-by: "Huang, Ying" <ying.huang@intel.com>
+>> Reviewed-by: Felix Kuehling <Felix.Kuehling@amd.com>
+> 
+> Thanks for your fixing. LGTM with one nit below. But I have no strong opinion on it.
+> So with or without fixing below nit:
+> 
+> Reviewed-by: Miaohe Lin <linmiaohe@huawei.com>
+> 
+>> ---
+>>  mm/huge_memory.c |  4 ++--
+>>  mm/ksm.c         | 12 +++++++++---
+>>  mm/migrate.c     | 19 ++++++++++++-------
+>>  3 files changed, 23 insertions(+), 12 deletions(-)
+>>
+>> diff --git a/mm/huge_memory.c b/mm/huge_memory.c
+>> index 8a7c1b344abe..b2ba17c3dcd7 100644
+>> --- a/mm/huge_memory.c
+>> +++ b/mm/huge_memory.c
+>> @@ -2963,10 +2963,10 @@ static int split_huge_pages_pid(int pid, unsigned long vaddr_start,
+>>  		/* FOLL_DUMP to ignore special (like zero) pages */
+>>  		page = follow_page(vma, addr, FOLL_GET | FOLL_DUMP);
+>>  
+>> -		if (IS_ERR_OR_NULL(page) || is_zone_device_page(page))
+>> +		if (IS_ERR_OR_NULL(page))
+>>  			continue;
+>>  
+>> -		if (!is_transparent_hugepage(page))
+>> +		if (is_zone_device_page(page) || !is_transparent_hugepage(page))
+> 
+> !is_transparent_hugepage should already do the work here? IIRC, zone_device_page can't be
+> a transhuge page anyway. And only transparent_hugepage is cared here.
 
-Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
----
- Documentation/devicetree/bindings/mfd/syscon.yaml | 1 -
- 1 file changed, 1 deletion(-)
+I agree.
 
-diff --git a/Documentation/devicetree/bindings/mfd/syscon.yaml b/Documentation/devicetree/bindings/mfd/syscon.yaml
-index c958086a5fc3..9c75daff6ec1 100644
---- a/Documentation/devicetree/bindings/mfd/syscon.yaml
-+++ b/Documentation/devicetree/bindings/mfd/syscon.yaml
-@@ -81,7 +81,6 @@ properties:
-     description: |
-       The size (in bytes) of the IO accesses that should be performed
-       on the device.
--    $ref: /schemas/types.yaml#/definitions/uint32
-     enum: [1, 2, 4, 8]
- 
-   hwlocks:
+Can we avoid sending a new version of a patch series as reply to another
+patch series (previous version)?
+
+
+Acked-by: David Hildenbrand <david@redhat.com>
+
 -- 
-2.34.1
+Thanks,
+
+David / dhildenb
 
