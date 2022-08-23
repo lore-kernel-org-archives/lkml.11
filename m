@@ -2,170 +2,209 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 97D9AC32774
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 18:42:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B515DC32774
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 18:42:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232519AbiHWSmb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 14:42:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60282 "EHLO
+        id S232153AbiHWSm4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 23 Aug 2022 14:42:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40098 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232254AbiHWSmL (ORCPT
+        with ESMTP id S231972AbiHWSm2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 14:42:11 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9C73E9083E
-        for <linux-kernel@vger.kernel.org>; Tue, 23 Aug 2022 10:05:15 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1661274314;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=B8p2uyAKXgw2ytHTuc+5AiV01x8sZyv3wGpjT1yNESQ=;
-        b=Rkabmo6NajtdlhKrv2j0JG0E6gcXO4Z+I0ajpHyinLaCynNi0UrD03mGOdGaF/oLhK+Cp1
-        qktMEfeWolYGIRKi/Z942NHZbrixBcFxZJAZrQ9EL3+SE7MCz4rArHjZlY1mabR/kIAx48
-        viYdyDCeSw7L7CEWzoUiJMEj0opg0y8=
-Received: from mail-qk1-f200.google.com (mail-qk1-f200.google.com
- [209.85.222.200]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
- us-mta-470-Ad_T190RPoyPi65f5El6DA-1; Tue, 23 Aug 2022 13:05:13 -0400
-X-MC-Unique: Ad_T190RPoyPi65f5El6DA-1
-Received: by mail-qk1-f200.google.com with SMTP id de4-20020a05620a370400b006a9711bd9f8so12500215qkb.9
-        for <linux-kernel@vger.kernel.org>; Tue, 23 Aug 2022 10:05:13 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:user-agent:organization
-         :references:in-reply-to:date:cc:to:from:subject:message-id
-         :x-gm-message-state:from:to:cc;
-        bh=B8p2uyAKXgw2ytHTuc+5AiV01x8sZyv3wGpjT1yNESQ=;
-        b=hmCtP4kovVpEF4NrCoVDhgyprzgTssOJvpERhN53wZlpAaWTlogyASjr4wCD+1nVTG
-         S486ZcBfMJJUNTzsVD8fP/a0hWjI6RYFogWyB9/DatgIJJFF6znfN4kRdCsdQpJUB9Gm
-         oVuXqede2HLbr9UtrDtxEC5agiLPwpxTxh8AhSiNrL8ZrrCehUyzygraAgb8fr7/sMgp
-         zkwlXiY0batUrJQH/btE6Y80Essm8Xt372JbBwF+LFmemwEW4C5+vLmCmYzadx43txhH
-         sgVg+/y/wekz0cQYbvA9gDl/SpaWy5ZcHR8PAY+oGNljZr4NfOBnZbzIiULf/x51WkaH
-         hXeA==
-X-Gm-Message-State: ACgBeo0KdE879JXb68FaUeTOVDKQnveARmIBb9UbVKummqwUqrCEX8c4
-        AOl7WFO8Mx6Wa4AcWjE4smnXYhiaxtzyKZfJAs/wU3/giZ8FX3Lz5pTFYIvWYCVogi8M0UMucu6
-        ASvaOTnpEK9gH0vUx0hLifjD9
-X-Received: by 2002:a05:620a:258a:b0:6b6:641c:9e8b with SMTP id x10-20020a05620a258a00b006b6641c9e8bmr16600837qko.82.1661274312957;
-        Tue, 23 Aug 2022 10:05:12 -0700 (PDT)
-X-Google-Smtp-Source: AA6agR5VzbZNjrVAgx+HYzqS7GNBWoc3UPU2Kb8TYsavXfFP9Ffx8P2stAafh7ymp52PM9Yl4vhjCw==
-X-Received: by 2002:a05:620a:258a:b0:6b6:641c:9e8b with SMTP id x10-20020a05620a258a00b006b6641c9e8bmr16600803qko.82.1661274312625;
-        Tue, 23 Aug 2022 10:05:12 -0700 (PDT)
-Received: from [192.168.8.139] (pool-100-0-245-4.bstnma.fios.verizon.net. [100.0.245.4])
-        by smtp.gmail.com with ESMTPSA id fb24-20020a05622a481800b003434d1a7a14sm11086541qtb.62.2022.08.23.10.05.11
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 23 Aug 2022 10:05:11 -0700 (PDT)
-Message-ID: <54f3e05187c4e923b3a746beff3be4071ed0f2e1.camel@redhat.com>
-Subject: Re: [RFC 0/2] Stop the abuse of Linux-* _OSI strings
-From:   Lyude Paul <lyude@redhat.com>
-To:     Kai-Heng Feng <kai.heng.feng@canonical.com>
-Cc:     Karol Herbst <kherbst@redhat.com>,
-        Mario Limonciello <mario.limonciello@amd.com>,
-        linux-kernel@vger.kernel.org, linux-acpi@vger.kernel.org,
-        rafael@kernel.org, Len Brown <lenb@kernel.org>,
-        nouveau@lists.freedesktop.org, hdegoede@redhat.com,
-        ddadap@nvidia.com, Dell.Client.Kernel@dell.com,
-        Aaron Ma <aaron.ma@canonical.com>
-Date:   Tue, 23 Aug 2022 13:05:10 -0400
-In-Reply-To: <CAAd53p6dTdWzkiyH6Sz=YubhdibvGa4hZ+EPN7mZA4aYSPd_6g@mail.gmail.com>
-References: <20220819142519.5684-1-mario.limonciello@amd.com>
-         <CACO55tuw_2QWFMr0t6-JfUiQ4M7V3ZMKC7jHYTyERypaU3TekQ@mail.gmail.com>
-         <c10b243a7be185ba119bdfce9a46e609db3bdd3b.camel@redhat.com>
-         <CAAd53p6dTdWzkiyH6Sz=YubhdibvGa4hZ+EPN7mZA4aYSPd_6g@mail.gmail.com>
-Organization: Red Hat Inc.
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.42.4 (3.42.4-2.fc35) 
+        Tue, 23 Aug 2022 14:42:28 -0400
+Received: from mx0b-0031df01.pphosted.com (mx0b-0031df01.pphosted.com [205.220.180.131])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0E18989CD8
+        for <linux-kernel@vger.kernel.org>; Tue, 23 Aug 2022 10:06:06 -0700 (PDT)
+Received: from pps.filterd (m0279872.ppops.net [127.0.0.1])
+        by mx0a-0031df01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 27NGjIc4001176;
+        Tue, 23 Aug 2022 17:05:43 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=quicinc.com; h=message-id : date :
+ mime-version : subject : to : cc : references : from : in-reply-to :
+ content-type : content-transfer-encoding; s=qcppdkim1;
+ bh=HV8WM+dW2+H51o3dKFpF7a72MrER+U6gm98D/qYGaq4=;
+ b=jlsdZXe7BXVQwwimGAo+4mLAi7DcPAc8yzhT2L/Qd4m3WwsLaKvg8uJhrbQt/ITQOhkr
+ FhfQQhxYUFfmEUie3BRD+ATx9XnBruAvtUSJ2URHGsATp/CMHnSfUJnN6j2OyamO4zdi
+ lDfJjk3spSGjmvSibVmjhfWUsjC+qgU9hkvYjeHtpeGKVhKGp0sP7GNFVKmNRc1kTstu
+ 5AlH7GWaIYBkvnUyhG1OJPKROEa8grqNaj6iA2Yuiu+eTLf0z/e8+xxYpgL/qDu+Bp9A
+ WGmuhBuL82KvLQDgkH2Bbzcy3uw++mwPqp6EmTv05eyFUi7BAudIEe5Gyqj9JbPS+esH 9Q== 
+Received: from nalasppmta04.qualcomm.com (Global_NAT1.qualcomm.com [129.46.96.20])
+        by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 3j52pkr2uk-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Tue, 23 Aug 2022 17:05:42 +0000
+Received: from pps.filterd (NALASPPMTA04.qualcomm.com [127.0.0.1])
+        by NALASPPMTA04.qualcomm.com (8.17.1.5/8.17.1.5) with ESMTP id 27NH33oH021285;
+        Tue, 23 Aug 2022 17:05:41 GMT
+Received: from pps.reinject (localhost [127.0.0.1])
+        by NALASPPMTA04.qualcomm.com (PPS) with ESMTPS id 3j2rpkuhjj-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Tue, 23 Aug 2022 17:05:41 +0000
+Received: from NALASPPMTA04.qualcomm.com (NALASPPMTA04.qualcomm.com [127.0.0.1])
+        by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 27NH5f7f023964;
+        Tue, 23 Aug 2022 17:05:41 GMT
+Received: from nalasex01a.na.qualcomm.com (nalasex01a.na.qualcomm.com [10.47.209.196])
+        by NALASPPMTA04.qualcomm.com (PPS) with ESMTPS id 27NH5fR3023961
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Tue, 23 Aug 2022 17:05:41 +0000
+Received: from [10.216.3.81] (10.80.80.8) by nalasex01a.na.qualcomm.com
+ (10.47.209.196) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.29; Tue, 23 Aug
+ 2022 10:05:36 -0700
+Message-ID: <113fd59f-e4c0-4ee1-4196-6c926677947c@quicinc.com>
+Date:   Tue, 23 Aug 2022 22:35:32 +0530
 MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.9.1
+Subject: Re: [PATCH V4] mm: fix use-after free of page_ext after race with
+ memory-offline
+Content-Language: en-US
+To:     David Hildenbrand <david@redhat.com>, <akpm@linux-foundation.org>,
+        <mhocko@suse.com>, <vbabka@suse.cz>, <pasha.tatashin@soleen.com>,
+        <shakeelb@google.com>, <sieberf@amazon.com>, <sjpark@amazon.de>,
+        <william.kucharski@oracle.com>, <willy@infradead.org>,
+        <quic_pkondeti@quicinc.com>, <minchan@google.com>
+CC:     <linux-kernel@vger.kernel.org>, <linux-mm@kvack.org>
+References: <1660830600-9068-1-git-send-email-quic_charante@quicinc.com>
+ <01fd2b11-513d-eb91-5ce6-fcaa198f8d28@redhat.com>
+From:   Charan Teja Kalla <quic_charante@quicinc.com>
+In-Reply-To: <01fd2b11-513d-eb91-5ce6-fcaa198f8d28@redhat.com>
+Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.80.80.8]
+X-ClientProxiedBy: nasanex01b.na.qualcomm.com (10.46.141.250) To
+ nalasex01a.na.qualcomm.com (10.47.209.196)
+X-QCInternal: smtphost
+X-QCInternal: smtphost
+X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=5800 signatures=585085
+X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=5800 signatures=585085
+X-Proofpoint-ORIG-GUID: 1VDEDJLSafmEw3XUW1tNNcSghKR3NYNs
+X-Proofpoint-GUID: 1VDEDJLSafmEw3XUW1tNNcSghKR3NYNs
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.895,Hydra:6.0.517,FMLib:17.11.122.1
+ definitions=2022-08-23_07,2022-08-22_02,2022-06-22_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 clxscore=1015 mlxscore=0
+ adultscore=0 mlxlogscore=749 phishscore=0 spamscore=0 suspectscore=0
+ impostorscore=0 malwarescore=0 priorityscore=1501 bulkscore=0
+ lowpriorityscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2207270000 definitions=main-2208230068
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, 2022-08-23 at 11:47 +0800, Kai-Heng Feng wrote:
-> [+Cc Aaron]
-> 
-> On Tue, Aug 23, 2022 at 5:18 AM Lyude Paul <lyude@redhat.com> wrote:
-> > 
-> > On Fri, 2022-08-19 at 17:44 +0200, Karol Herbst wrote:
-> > > On Fri, Aug 19, 2022 at 4:25 PM Mario Limonciello
-> > > <mario.limonciello@amd.com> wrote:
-> > > > 
-> > > > 3 _OSI strings were introduced in recent years that were intended
-> > > > to workaround very specific problems found on specific systems.
-> > > > 
-> > > > The idea was supposed to be that these quirks were only used on
-> > > > those systems, but this proved to be a bad assumption.  I've found
-> > > > at least one system in the wild where the vendor using the _OSI
-> > > > string doesn't match the _OSI string and the neither does the use.
-> > > > 
-> > > > So this brings a good time to review keeping those strings in the kernel.
-> > > > There are 3 strings that were introduced:
-> > > > 
-> > > > Linux-Dell-Video
-> > > > -> Intended for systems with NVIDIA cards that didn't support RTD3
-> > > > Linux-Lenovo-NV-HDMI-Audio
-> > > > -> Intended for powering on NVIDIA HDMI device
-> > > > Linux-HPI-Hybrid-Graphics
-> > > > -> Intended for changing dGPU output
-> > > > 
-> > > > AFAIK the first string is no longer relevant as nouveau now supports
-> > > > RTD3.  If that's wrong, this can be changed for the series.
-> > > > 
-> > > 
-> > > Nouveau always supported RTD3, because that's mainly a kernel feature.
-> > > When those were introduced we simply had a bug only hit on a few
-> > > systems. And instead of helping us to debug this, this workaround was
-> > > added :( We were not even asked about this.
-> > > 
-> > > I am a bit curious about the other two though as I am not even sure
-> > > they are needed at all as we put other work arounds in place. @Lyude
-> > > Paul might know more about these.
-> > 
-> > Some of the _OSI strings are totally fine. From my recollection:
-> > 
-> > [    0.242993] ACPI: Added _OSI(Linux-Lenovo-NV-HDMI-Audio)
-> > ^ this one is needed to do a couple of ACPI tricks at startup to get the PCIe
-> > device for audio on nvidia's GPU to be detected properly
-> 
-> This should be fixed by commit b516ea586d71 ("PCI: Enable NVIDIA HDA
-> controllers").
-> Aaron worked on more Lenovo systems than me, so he may be more sure of it.
-> 
-> > 
-> > [    0.242993] ACPI: Added _OSI(Linux-HPI-Hybrid-Graphics)
-> > 
-> > I don't actually know how necessary this is, but I'm hesistant to call this
-> > one bad as it may be related to the funny mux configurations that I'm learning
-> > may exist on HP machines.
-> 
-> Should be fixed by commit 8e55f99c510f ("drm/i915: Invoke another _DSM
-> to enable MUX on HP Workstation laptops").
-> 
-> And for "Linux-Dell-Video", it should be fixed by 5775b843a619 ("PCI:
-> Restore config space on runtime resume despite being unbound").
-> 
-> So actually I am in favor of removing them all.
+Thanks David for the inputs.
 
-Woo! Thank you for the help with this :3. Since this all seems to be in order:
+On 8/23/2022 6:39 PM, David Hildenbrand wrote:
+>>  static ssize_t
+>> @@ -508,6 +527,14 @@ read_page_owner(struct file *file, char __user *buf, size_t count, loff_t *ppos)
+>>  	/* Find an allocated page */
+>>  	for (; pfn < max_pfn; pfn++) {
+>>  		/*
+>> +		 * This temporary page_owner is required so
+>> +		 * that we can avoid the context switches while holding
+>> +		 * the rcu lock and copying the page owner information to
+>> +		 * user through copy_to_user() or GFP_KERNEL allocations.
+>> +		 */
+>> +		struct page_owner page_owner_tmp;
+>> +
+>> +		/*
+>>  		 * If the new page is in a new MAX_ORDER_NR_PAGES area,
+>>  		 * validate the area as existing, skip it if not
+>>  		 */
+>> @@ -525,7 +552,7 @@ read_page_owner(struct file *file, char __user *buf, size_t count, loff_t *ppos)
+>>  			continue;
+>>  		}
+>>  
+>> -		page_ext = lookup_page_ext(page);
+>> +		page_ext = page_ext_get(page);
+>>  		if (unlikely(!page_ext))
+>>  			continue;
+>>  
+>> @@ -534,14 +561,14 @@ read_page_owner(struct file *file, char __user *buf, size_t count, loff_t *ppos)
+>>  		 * because we don't hold the zone lock.
+>>  		 */
+>>  		if (!test_bit(PAGE_EXT_OWNER, &page_ext->flags))
+>> -			continue;
+>> +			goto loop;
+>>  
+>>  		/*
+>>  		 * Although we do have the info about past allocation of free
+>>  		 * pages, it's not relevant for current memory usage.
+>>  		 */
+>>  		if (!test_bit(PAGE_EXT_OWNER_ALLOCATED, &page_ext->flags))
+>> -			continue;
+>> +			goto loop;
+>>  
+>>  		page_owner = get_page_owner(page_ext);
+>>  
+>> @@ -550,7 +577,7 @@ read_page_owner(struct file *file, char __user *buf, size_t count, loff_t *ppos)
+>>  		 * would inflate the stats.
+>>  		 */
+>>  		if (!IS_ALIGNED(pfn, 1 << page_owner->order))
+>> -			continue;
+>> +			goto loop;
+>>  
+>>  		/*
+>>  		 * Access to page_ext->handle isn't synchronous so we should
+>> @@ -558,13 +585,17 @@ read_page_owner(struct file *file, char __user *buf, size_t count, loff_t *ppos)
+>>  		 */
+>>  		handle = READ_ONCE(page_owner->handle);
+>>  		if (!handle)
+>> -			continue;
+>> +			goto loop;
+>>  
+>>  		/* Record the next PFN to read in the file offset */
+>>  		*ppos = (pfn - min_low_pfn) + 1;
+>>  
+>> +		page_owner_tmp = *page_owner;
+>> +		page_ext_put(page_ext);
+>>  		return print_page_owner(buf, count, pfn, page,
+>> -				page_owner, handle);
+>> +				&page_owner_tmp, handle);
+>> +loop:
+>> +		page_ext_put(page_ext);
+>>  	}
+>>  
+>>  	return 0;
+>> @@ -617,18 +648,20 @@ static void init_pages_in_zone(pg_data_t *pgdat, struct zone *zone)
+>>  			if (PageReserved(page))
+>>  				continue;
+>>  
+>> -			page_ext = lookup_page_ext(page);
+>> +			page_ext = page_ext_get(page);
+>>  			if (unlikely(!page_ext))
+>>  				continue;
+>>  
+>>  			/* Maybe overlapping zone */
+>>  			if (test_bit(PAGE_EXT_OWNER, &page_ext->flags))
+>> -				continue;
+>> +				goto loop;
+>>  
+>>  			/* Found early allocated page */
+>>  			__set_page_owner_handle(page_ext, early_handle,
+>>  						0, 0);
+>>  			count++;
+>> +loop:
+>> +			page_ext_put(page_ext);
+>>  		}
+> I kind-of dislike the "loop" labels. Can we come up with a more
+> expressive name?
+> 
+> "put_continue"
+> 
+> or something?
+> 
+> 
+> One alternative would be to add to the beginning of the loop, and after
+> the loop sth like
+> 
+> if (page_ext) {
+> 	page_ext_put(page_ext);
+> 	page_ext = NULL;
+> }
 
-Reviewed-by: Lyude Paul <lyude@redhat.com>
+I think, moving this to beginning of the loop looks cleaner than the
+goto statement.  Will spin V5.
+
 
 > 
-> Kai-Heng
-> 
-> > 
-> > > 
-> > 
-> > --
-> > Cheers,
-> >  Lyude Paul (she/her)
-> >  Software Engineer at Red Hat
-> > 
-> 
-
--- 
-Cheers,
- Lyude Paul (she/her)
- Software Engineer at Red Hat
-
+> One could wrap that in a function, but not sure if that improves the
+> situation.
