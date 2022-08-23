@@ -2,134 +2,241 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 74942C32772
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 18:18:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 17160C32789
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 18:20:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233896AbiHWSSP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 14:18:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51224 "EHLO
+        id S233852AbiHWSUJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 23 Aug 2022 14:20:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38858 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232174AbiHWSRx (ORCPT
+        with ESMTP id S232509AbiHWSTs (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 14:17:53 -0400
-Received: from mail-vs1-xe33.google.com (mail-vs1-xe33.google.com [IPv6:2607:f8b0:4864:20::e33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 269D8B28
-        for <linux-kernel@vger.kernel.org>; Tue, 23 Aug 2022 09:33:30 -0700 (PDT)
-Received: by mail-vs1-xe33.google.com with SMTP id n125so14967523vsc.5
-        for <linux-kernel@vger.kernel.org>; Tue, 23 Aug 2022 09:33:30 -0700 (PDT)
+        Tue, 23 Aug 2022 14:19:48 -0400
+Received: from mail-pf1-x435.google.com (mail-pf1-x435.google.com [IPv6:2607:f8b0:4864:20::435])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 79BBB6F256;
+        Tue, 23 Aug 2022 09:36:38 -0700 (PDT)
+Received: by mail-pf1-x435.google.com with SMTP id x15so13078832pfp.4;
+        Tue, 23 Aug 2022 09:36:38 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc;
-        bh=6UUggVno3NtXg6nTTBbURjdR2+xiDv89pi+m1jdDxQk=;
-        b=XgpmVDbM+FApMFcUpkmb5yfvAY28J8ColrFltFSufxLYxszEwh808ROwBr1eTKW1QA
-         K3EKc2qo/jsWRGwxlhrnZkETmQzsPOw/8rw6nJ93aEIGHqwygbo5dwLUly4+eEFMs6Wu
-         jKcShrQJAnAA5rv0dobxKEOzTs7Juci4O6OUBRbV0EIXvdn012/tCC+il9JubxKtFrNh
-         gqm8zYIcqXLJggfws/eXKgmEFKh1GLX0fagmdVJK9EA3DuKSST9pVZoN3XQppYtwokbQ
-         iJs+aU3MQKxv8V5StQQD8b2APjQgeMK5EMDem1k50yRbTS3Ha1wXQF4wxzc6UV2yfXi5
-         ShKQ==
+        d=gmail.com; s=20210112;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc;
+        bh=sHsd8UJitkSZ/06E7cs7tNROVB1mkQZCDyvY2Jg+ha4=;
+        b=aDMSJsZdOLMIfhq9hMqJAJGsCd2NG9uT7Y87j/3NTRbwig6fxwUaQVn+X/Yz0CDKJB
+         bEueKTMN8ePgcFtiE0TkJ3RgNGIKPrPNUb/hriBZapkE9Qg09s9eMAJG3ACX5r08v6ux
+         yXassIf7+70ZKOzp0auTd4ckd6uiq9UGCl+Hb/iN016WIBvS8/kQLv7ruJlQBlDXyIam
+         ejoInBmZl1XEMRYKva0VPunKa0CJNeOXmsSU6PczsHjHydTEPwIjEise5QJqj1IAxEhw
+         LHLCrFQE/U8eax8b2ZXQOuEKtW/vJRzPQvsj4AjvQivb9aLhbjwEJk7kJ9O73+zNERIz
+         AzUw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc;
-        bh=6UUggVno3NtXg6nTTBbURjdR2+xiDv89pi+m1jdDxQk=;
-        b=KqJxtdhNiqczmnGwxKkx0pUvbb98740j6gW+SrGVSwQKCHeqdtSzCDy+fA5nfEpHM3
-         GaQFAhB8tpvM9ExKly245XD8Jy10SmXcti7lJPM1On2HLUTGUjLIGmb4NP15Yw8abk2v
-         N7XA+ORLONbnFvLI44yb+4UTY2LbVM7Iknqmh9EzMnspnzsveIRZ2nmWxZKU+ZclJbNf
-         5pFyy4OJQYwqfSphT2LG21l2ebVCbrJF9dYkIwS6QuBOaS5ZWpgEFjNYzVyz4wHXg5fF
-         PHl3ZNOTN6AyosnMTQocrycP5FGaJ4Ki/XMRQ+jSmVi0g6urbMOdKqDxfhMMPbCsuX5d
-         6ZyA==
-X-Gm-Message-State: ACgBeo2fRX1XvLvxir8JdBV+IEJO7CEnVXNcM81Lc0NKHl+PIub1EXDV
-        7EC8177e4fTW/OeU5jcfyC74tAu8A3+jytX3zLnlkA==
-X-Google-Smtp-Source: AA6agR45Wg2d3I7bbK0Yi/m4bUEcxSx2Ew4HCRi44gF3avGYxWzrpivLcQCdHaAJDk1xqqDdkv41URxbwXwRJuxSmTA=
-X-Received: by 2002:a05:6102:ec7:b0:388:d2a2:41c5 with SMTP id
- m7-20020a0561020ec700b00388d2a241c5mr9212782vst.41.1661272408710; Tue, 23 Aug
- 2022 09:33:28 -0700 (PDT)
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc;
+        bh=sHsd8UJitkSZ/06E7cs7tNROVB1mkQZCDyvY2Jg+ha4=;
+        b=qrSE9RGk9wS/9HIuSbtMNqRRXk/vtRoMaRGb1YMbUIDDZG+yM0PfE35JXNpJv2SMOJ
+         0WaypZT88mjZ5bwIqOFhGIJqCo7kK4wFwija/esdnH4BIpnpYoztlJyTUp/VQih2G6JC
+         +ZAE9sIoyVuP9nCxGzSJhQf9HrcqMM7YpxyhXxNWbp58dqRR4RwxT4438CPHrxgyAVCf
+         LvkSdGHh+EvbrAfZjKho/aQCZ0CHTYgw763QxiF13ry9v8quxz28jaSRGQwl+JuQRVaW
+         iDqNj5N9KSaLRdGRkirss9MAggRYnj6gOy4h9qTzk4eM3VwBd+AXsas2DTJSIuGR4MYq
+         9+tw==
+X-Gm-Message-State: ACgBeo2SJ0ukDNMx4PwhzZqAcbGZ3QQkWASTwiuYm6tNyMR13KS0I0ES
+        XT02cKqt4FdnsQdloQYN1Ns=
+X-Google-Smtp-Source: AA6agR7qTRzNhhRnEQPc//A/W8Gaflk+Qm332922fuNeVJHFKAc+LSxR8+zjVo5aYzlLh8KUGiX4kg==
+X-Received: by 2002:a63:69c7:0:b0:41c:590a:62dc with SMTP id e190-20020a6369c7000000b0041c590a62dcmr20512812pgc.388.1661272597844;
+        Tue, 23 Aug 2022 09:36:37 -0700 (PDT)
+Received: from localhost ([2a00:79e1:abd:4a00:2703:3c72:eb1a:cffd])
+        by smtp.gmail.com with ESMTPSA id d9-20020a170902cec900b00172973d3cd9sm10853077plg.55.2022.08.23.09.36.36
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 23 Aug 2022 09:36:37 -0700 (PDT)
+From:   Rob Clark <robdclark@gmail.com>
+To:     dri-devel@lists.freedesktop.org
+Cc:     linux-arm-msm@vger.kernel.org, freedreno@lists.freedesktop.org,
+        Sai Prakash Ranjan <quic_saipraka@quicinc.com>,
+        Rob Clark <robdclark@chromium.org>,
+        Rob Clark <robdclark@gmail.com>,
+        Abhinav Kumar <quic_abhinavk@quicinc.com>,
+        Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
+        Sean Paul <sean@poorly.run>, David Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        linux-kernel@vger.kernel.org (open list)
+Subject: [PATCH v2] drm/msm/iommu: optimize map/unmap
+Date:   Tue, 23 Aug 2022 09:37:19 -0700
+Message-Id: <20220823163719.90399-1-robdclark@gmail.com>
+X-Mailer: git-send-email 2.37.2
 MIME-Version: 1.0
-References: <20220822213352.75721-1-irogers@google.com> <YwTXXhVHeYAcXWmO@kernel.org>
-In-Reply-To: <YwTXXhVHeYAcXWmO@kernel.org>
-From:   Ian Rogers <irogers@google.com>
-Date:   Tue, 23 Aug 2022 09:33:18 -0700
-Message-ID: <CAP-5=fVk0JjSFm=tmJA+nqySCvBi9CzrbxrzpFdyzeLXZdHd7Q@mail.gmail.com>
-Subject: Re: [PATCH v1 1/2] perf stat: Clear reset_group for each stat run
-To:     Arnaldo Carvalho de Melo <acme@kernel.org>
-Cc:     Peter Zijlstra <peterz@infradead.org>,
-        Ingo Molnar <mingo@redhat.com>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
-        Jiri Olsa <jolsa@kernel.org>,
-        Namhyung Kim <namhyung@kernel.org>,
-        Kan Liang <kan.liang@linux.intel.com>,
-        Andi Kleen <ak@linux.intel.com>,
-        linux-perf-users@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Stephane Eranian <eranian@google.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Aug 23, 2022 at 6:34 AM Arnaldo Carvalho de Melo
-<acme@kernel.org> wrote:
->
-> Em Mon, Aug 22, 2022 at 02:33:51PM -0700, Ian Rogers escreveu:
-> > If a weak group is broken then the reset_group flag remains set for
-> > the next run. Having reset_group set means the counter isn't created
-> > and ultimately a segfault.
-> >
-> > A simple reproduction of this is:
-> > perf stat -r2 -e '{cycles,cycles,cycles,cycles,cycles,cycles,cycles,cycles,cycles,cycles}:W
-> > which will be added as a test in the next patch.
->
-> So doing this on that existing BPF related loop may solve the problem,
-> but for someone looking just at the source code, without any comment,
-> may be cryptic, no?
->
-> And then the fixes tags talks about affinity, adding a bit more
-> confusion, albeit being the part that does the weak logic :-\
->
-> Can we have a comment just before:
->
-> +             counter->reset_group = false;
->
-> Stating that this is needed only when using -r?
+From: Rob Clark <robdclark@chromium.org>
 
-It is possible to add a comment but thinking about it, it would have
-said pretty much what the code was doing and so I skipped it. I'm wary
-of comments that capture too much of the implementation as they are
-prone to becoming stale. Logically this function is just iterating
-over the evlist creating counters, but on top of that we have the
-affinity optimization. The BPF code didn't need that and so has its
-own evlist iteration. We could add another loop just to clear
-reset_group, that didn't seem to make sense. It's unfortunate how that
-relates to the fixes tag but I don't think we should optimize for that
-case.
+Using map_pages/unmap_pages cuts down on the # of pgtable walks needed
+in the process of finding where to insert/remove an entry.  The end
+result is ~5-10x faster than mapping a single page at a time.
 
-Thanks,
-Ian
+v2: Rename iommu_pgsize(), drop obsolete comments, fix error handling
+    in msm_iommu_pagetable_map()
 
-> - Arnaldo
->
-> > Fixes: 4804e0111662 ("perf stat: Use affinity for opening events")
-> > Signed-off-by: Ian Rogers <irogers@google.com>
-> > ---
-> >  tools/perf/builtin-stat.c | 1 +
-> >  1 file changed, 1 insertion(+)
-> >
-> > diff --git a/tools/perf/builtin-stat.c b/tools/perf/builtin-stat.c
-> > index 7fb81a44672d..54cd29d07ca8 100644
-> > --- a/tools/perf/builtin-stat.c
-> > +++ b/tools/perf/builtin-stat.c
-> > @@ -826,6 +826,7 @@ static int __run_perf_stat(int argc, const char **argv, int run_idx)
-> >       }
-> >
-> >       evlist__for_each_entry(evsel_list, counter) {
-> > +             counter->reset_group = false;
-> >               if (bpf_counter__load(counter, &target))
-> >                       return -1;
-> >               if (!evsel__is_bpf(counter))
-> > --
-> > 2.37.2.609.g9ff673ca1a-goog
->
-> --
->
-> - Arnaldo
+Signed-off-by: Rob Clark <robdclark@chromium.org>
+---
+ drivers/gpu/drm/msm/msm_iommu.c | 101 +++++++++++++++++++++++++++-----
+ 1 file changed, 86 insertions(+), 15 deletions(-)
+
+diff --git a/drivers/gpu/drm/msm/msm_iommu.c b/drivers/gpu/drm/msm/msm_iommu.c
+index a54ed354578b..5577cea7c009 100644
+--- a/drivers/gpu/drm/msm/msm_iommu.c
++++ b/drivers/gpu/drm/msm/msm_iommu.c
+@@ -21,6 +21,7 @@ struct msm_iommu_pagetable {
+ 	struct msm_mmu base;
+ 	struct msm_mmu *parent;
+ 	struct io_pgtable_ops *pgtbl_ops;
++	unsigned long pgsize_bitmap;	/* Bitmap of page sizes in use */
+ 	phys_addr_t ttbr;
+ 	u32 asid;
+ };
+@@ -29,23 +30,84 @@ static struct msm_iommu_pagetable *to_pagetable(struct msm_mmu *mmu)
+ 	return container_of(mmu, struct msm_iommu_pagetable, base);
+ }
+ 
++/* based on iommu_pgsize() in iommu.c: */
++static size_t calc_pgsize(struct msm_iommu_pagetable *pagetable,
++			   unsigned long iova, phys_addr_t paddr,
++			   size_t size, size_t *count)
++{
++	unsigned int pgsize_idx, pgsize_idx_next;
++	unsigned long pgsizes;
++	size_t offset, pgsize, pgsize_next;
++	unsigned long addr_merge = paddr | iova;
++
++	/* Page sizes supported by the hardware and small enough for @size */
++	pgsizes = pagetable->pgsize_bitmap & GENMASK(__fls(size), 0);
++
++	/* Constrain the page sizes further based on the maximum alignment */
++	if (likely(addr_merge))
++		pgsizes &= GENMASK(__ffs(addr_merge), 0);
++
++	/* Make sure we have at least one suitable page size */
++	BUG_ON(!pgsizes);
++
++	/* Pick the biggest page size remaining */
++	pgsize_idx = __fls(pgsizes);
++	pgsize = BIT(pgsize_idx);
++	if (!count)
++		return pgsize;
++
++	/* Find the next biggest support page size, if it exists */
++	pgsizes = pagetable->pgsize_bitmap & ~GENMASK(pgsize_idx, 0);
++	if (!pgsizes)
++		goto out_set_count;
++
++	pgsize_idx_next = __ffs(pgsizes);
++	pgsize_next = BIT(pgsize_idx_next);
++
++	/*
++	 * There's no point trying a bigger page size unless the virtual
++	 * and physical addresses are similarly offset within the larger page.
++	 */
++	if ((iova ^ paddr) & (pgsize_next - 1))
++		goto out_set_count;
++
++	/* Calculate the offset to the next page size alignment boundary */
++	offset = pgsize_next - (addr_merge & (pgsize_next - 1));
++
++	/*
++	 * If size is big enough to accommodate the larger page, reduce
++	 * the number of smaller pages.
++	 */
++	if (offset + pgsize_next <= size)
++		size = offset;
++
++out_set_count:
++	*count = size >> pgsize_idx;
++	return pgsize;
++}
++
+ static int msm_iommu_pagetable_unmap(struct msm_mmu *mmu, u64 iova,
+ 		size_t size)
+ {
+ 	struct msm_iommu_pagetable *pagetable = to_pagetable(mmu);
+ 	struct io_pgtable_ops *ops = pagetable->pgtbl_ops;
+-	size_t unmapped = 0;
+ 
+-	/* Unmap the block one page at a time */
+ 	while (size) {
+-		unmapped += ops->unmap(ops, iova, 4096, NULL);
+-		iova += 4096;
+-		size -= 4096;
++		size_t unmapped, pgsize, count;
++
++		pgsize = calc_pgsize(pagetable, iova, iova, size, &count);
++
++		unmapped = ops->unmap_pages(ops, iova, pgsize, count, NULL);
++		if (!unmapped)
++			break;
++
++		iova += unmapped;
++		size -= unmapped;
+ 	}
+ 
+ 	iommu_flush_iotlb_all(to_msm_iommu(pagetable->parent)->domain);
+ 
+-	return (unmapped == size) ? 0 : -EINVAL;
++	return (size == 0) ? 0 : -EINVAL;
+ }
+ 
+ static int msm_iommu_pagetable_map(struct msm_mmu *mmu, u64 iova,
+@@ -54,7 +116,6 @@ static int msm_iommu_pagetable_map(struct msm_mmu *mmu, u64 iova,
+ 	struct msm_iommu_pagetable *pagetable = to_pagetable(mmu);
+ 	struct io_pgtable_ops *ops = pagetable->pgtbl_ops;
+ 	struct scatterlist *sg;
+-	size_t mapped = 0;
+ 	u64 addr = iova;
+ 	unsigned int i;
+ 
+@@ -62,17 +123,26 @@ static int msm_iommu_pagetable_map(struct msm_mmu *mmu, u64 iova,
+ 		size_t size = sg->length;
+ 		phys_addr_t phys = sg_phys(sg);
+ 
+-		/* Map the block one page at a time */
+ 		while (size) {
+-			if (ops->map(ops, addr, phys, 4096, prot, GFP_KERNEL)) {
+-				msm_iommu_pagetable_unmap(mmu, iova, mapped);
++			size_t pgsize, count, mapped = 0;
++			int ret;
++
++			pgsize = calc_pgsize(pagetable, addr, phys, size, &count);
++
++			ret = ops->map_pages(ops, addr, phys, pgsize, count,
++					     prot, GFP_KERNEL, &mapped);
++
++			/* map_pages could fail after mapping some of the pages,
++			 * so update the counters before error handling.
++			 */
++			phys += mapped;
++			addr += mapped;
++			size -= mapped;
++
++			if (ret) {
++				msm_iommu_pagetable_unmap(mmu, iova, addr - iova);
+ 				return -EINVAL;
+ 			}
+-
+-			phys += 4096;
+-			addr += 4096;
+-			size -= 4096;
+-			mapped += 4096;
+ 		}
+ 	}
+ 
+@@ -207,6 +277,7 @@ struct msm_mmu *msm_iommu_pagetable_create(struct msm_mmu *parent)
+ 
+ 	/* Needed later for TLB flush */
+ 	pagetable->parent = parent;
++	pagetable->pgsize_bitmap = ttbr0_cfg.pgsize_bitmap;
+ 	pagetable->ttbr = ttbr0_cfg.arm_lpae_s1_cfg.ttbr;
+ 
+ 	/*
+-- 
+2.37.2
+
