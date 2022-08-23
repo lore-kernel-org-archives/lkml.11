@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 25DF0C32772
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 09:12:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 90852C32772
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 09:13:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243882AbiHWJMv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 05:12:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33824 "EHLO
+        id S1348548AbiHWJNA (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 23 Aug 2022 05:13:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33858 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348501AbiHWJK2 (ORCPT
+        with ESMTP id S1348541AbiHWJKb (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 05:10:28 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E4D2574DEE;
-        Tue, 23 Aug 2022 01:31:03 -0700 (PDT)
+        Tue, 23 Aug 2022 05:10:31 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3322A86B50;
+        Tue, 23 Aug 2022 01:31:10 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 89870614BC;
-        Tue, 23 Aug 2022 08:31:03 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 795DFC433D6;
-        Tue, 23 Aug 2022 08:31:02 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id D5A2461360;
+        Tue, 23 Aug 2022 08:29:30 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CA772C433D6;
+        Tue, 23 Aug 2022 08:29:29 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661243463;
-        bh=tOAIb5zAvN93JR+nNiVB/+65aJaN03Crd3NKqy/DKvo=;
+        s=korg; t=1661243370;
+        bh=1BYEHRjVREcdMBhA1wsIgbziwPW+7xcj9xwgN5GfgxI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=i0ArgVrC6F7ZwBNeCjSt2fbg2Sew6RhiBLH8ZnzZ7saWG9DN4NCbTc/2tia6IS1t1
-         JHEZp+IBFGXafZ8UqQr6aGizXmePXQZeDXZ4dOMGAL6vblfOyxuNN/qwn5evOCdKoM
-         GGRV3LEe3hF1l1ziF2q/80ztfTGLapEVvNiupEUg=
+        b=Yh2VrytR7Rzph++QiFko1yOytd48rk6zxHoA2xATrelJZ4qg/ARrFsXEHSPym9PVX
+         tcVdBd5UUH8G57DPRpYgvMTAKWoePrxBuFlbBkoDNZ92EFA/IMrSE2oUj6AEtsINKD
+         yOCAxjcLdSsJhBr/Hgv2YcJbJeSrpfk3mJlnjEP8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Justin Tee <justin.tee@broadcom.com>,
-        James Smart <jsmart2021@gmail.com>,
-        "Martin K. Petersen" <martin.petersen@oracle.com>,
+        stable@vger.kernel.org, Josh Poimboeuf <jpoimboe@kernel.org>,
+        Paolo Bonzini <pbonzini@redhat.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.19 285/365] scsi: lpfc: Fix possible memory leak when failing to issue CMF WQE
-Date:   Tue, 23 Aug 2022 10:03:06 +0200
-Message-Id: <20220823080130.108694170@linuxfoundation.org>
+Subject: [PATCH 5.19 255/365] x86/ibt, objtool: Add IBT_NOSEAL()
+Date:   Tue, 23 Aug 2022 10:02:36 +0200
+Message-Id: <20220823080128.867380224@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220823080118.128342613@linuxfoundation.org>
 References: <20220823080118.128342613@linuxfoundation.org>
@@ -50,43 +50,65 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: James Smart <jsmart2021@gmail.com>
+From: Josh Poimboeuf <jpoimboe@kernel.org>
 
-[ Upstream commit 2f67dc7970bce3529edce93a0a14234d88b3fcd5 ]
+[ Upstream commit e27e5bea956ce4d3eb15112de5fa5a3b77c2f488 ]
 
-There is no corresponding free routine if lpfc_sli4_issue_wqe fails to
-issue the CMF WQE in lpfc_issue_cmf_sync_wqe.
+Add a macro which prevents a function from getting sealed if there are
+no compile-time references to it.
 
-If ret_val is non-zero, then free the iocbq request structure.
-
-Link: https://lore.kernel.org/r/20220701211425.2708-6-jsmart2021@gmail.com
-Co-developed-by: Justin Tee <justin.tee@broadcom.com>
-Signed-off-by: Justin Tee <justin.tee@broadcom.com>
-Signed-off-by: James Smart <jsmart2021@gmail.com>
-Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
+Signed-off-by: Josh Poimboeuf <jpoimboe@kernel.org>
+Message-Id: <20220818213927.e44fmxkoq4yj6ybn@treble>
+Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/scsi/lpfc/lpfc_sli.c | 4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
+ arch/x86/include/asm/ibt.h | 11 +++++++++++
+ tools/objtool/check.c      |  3 ++-
+ 2 files changed, 13 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/scsi/lpfc/lpfc_sli.c b/drivers/scsi/lpfc/lpfc_sli.c
-index 80ac3a051c19..e2127e85ff32 100644
---- a/drivers/scsi/lpfc/lpfc_sli.c
-+++ b/drivers/scsi/lpfc/lpfc_sli.c
-@@ -2003,10 +2003,12 @@ lpfc_issue_cmf_sync_wqe(struct lpfc_hba *phba, u32 ms, u64 total)
+diff --git a/arch/x86/include/asm/ibt.h b/arch/x86/include/asm/ibt.h
+index 689880eca9ba..9b08082a5d9f 100644
+--- a/arch/x86/include/asm/ibt.h
++++ b/arch/x86/include/asm/ibt.h
+@@ -31,6 +31,16 @@
  
- 	sync_buf->cmd_flag |= LPFC_IO_CMF;
- 	ret_val = lpfc_sli4_issue_wqe(phba, &phba->sli4_hba.hdwq[0], sync_buf);
--	if (ret_val)
-+	if (ret_val) {
- 		lpfc_printf_log(phba, KERN_INFO, LOG_CGN_MGMT,
- 				"6214 Cannot issue CMF_SYNC_WQE: x%x\n",
- 				ret_val);
-+		__lpfc_sli_release_iocbq(phba, sync_buf);
-+	}
- out_unlock:
- 	spin_unlock_irqrestore(&phba->hbalock, iflags);
- 	return ret_val;
+ #define __noendbr	__attribute__((nocf_check))
+ 
++/*
++ * Create a dummy function pointer reference to prevent objtool from marking
++ * the function as needing to be "sealed" (i.e. ENDBR converted to NOP by
++ * apply_ibt_endbr()).
++ */
++#define IBT_NOSEAL(fname)				\
++	".pushsection .discard.ibt_endbr_noseal\n\t"	\
++	_ASM_PTR fname "\n\t"				\
++	".popsection\n\t"
++
+ static inline __attribute_const__ u32 gen_endbr(void)
+ {
+ 	u32 endbr;
+@@ -84,6 +94,7 @@ extern __noendbr void ibt_restore(u64 save);
+ #ifndef __ASSEMBLY__
+ 
+ #define ASM_ENDBR
++#define IBT_NOSEAL(name)
+ 
+ #define __noendbr
+ 
+diff --git a/tools/objtool/check.c b/tools/objtool/check.c
+index b341f8a8c7c5..31c719f99f66 100644
+--- a/tools/objtool/check.c
++++ b/tools/objtool/check.c
+@@ -4096,7 +4096,8 @@ static int validate_ibt(struct objtool_file *file)
+ 		 * These sections can reference text addresses, but not with
+ 		 * the intent to indirect branch to them.
+ 		 */
+-		if (!strncmp(sec->name, ".discard", 8)			||
++		if ((!strncmp(sec->name, ".discard", 8) &&
++		     strcmp(sec->name, ".discard.ibt_endbr_noseal"))	||
+ 		    !strncmp(sec->name, ".debug", 6)			||
+ 		    !strcmp(sec->name, ".altinstructions")		||
+ 		    !strcmp(sec->name, ".ibt_endbr_seal")		||
 -- 
 2.35.1
 
