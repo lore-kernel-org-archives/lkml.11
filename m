@@ -2,130 +2,99 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 96D4EC32772
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 15:27:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7525FC32774
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 15:29:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241796AbiHWP10 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 11:27:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52636 "EHLO
+        id S243281AbiHWP3G (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 23 Aug 2022 11:29:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53734 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244130AbiHWPZd (ORCPT
+        with ESMTP id S242984AbiHWP2r (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 11:25:33 -0400
-Received: from mail-ej1-x633.google.com (mail-ej1-x633.google.com [IPv6:2a00:1450:4864:20::633])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5CBA8135B3A
-        for <linux-kernel@vger.kernel.org>; Tue, 23 Aug 2022 04:02:18 -0700 (PDT)
-Received: by mail-ej1-x633.google.com with SMTP id h22so16394334ejk.4
-        for <linux-kernel@vger.kernel.org>; Tue, 23 Aug 2022 04:02:17 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc;
-        bh=NPkz8CIReFRkXXNi+9wXJA08oHYjzaiWMjPixEXkoww=;
-        b=iigcejhnAnjVrYq+8ynJNXJJa0Vfsj8KP5tp65+xPF/AC9cPRgUrB26NE3gtauWUwx
-         qQD9jaFSKTuo5y6taEgj4zT5WglBx2XFrToeNbs7P2yVO/qXm550HoYgwANo/8U3l2X/
-         qD6uIGFVGhfDTFVBzn0eLuBTuJDoRlIwZQ+IIvjVqLH3q805BXxLnwm4kY/v8HsVVfbb
-         a8o8/TZEs0PF91gyok9kM1GOBPuEXGkN/kg9f0C7mM/4R2yBD7QZXsKgCsCNKc0P0EIV
-         jbxzrxOeX0LPVaXkLwbTQ/iqDPUtOab3XBE2USm0iPAzVuHlVxBxdzZJjjqrjHU3TtnO
-         r1pQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc;
-        bh=NPkz8CIReFRkXXNi+9wXJA08oHYjzaiWMjPixEXkoww=;
-        b=wRdNn6PTdBEsB169i2aHUH4Gzy6q7lfm4Mfb67KFodihQ9XsdvAsH05np2pplO0aAP
-         DgRqXzrnDMTTaLfSwQbPW0w53qrhDwBvtmi1uZkSIUvq8c+XpTD6Hj92WtufzB4HAU0n
-         EEBvzEmX/yI9RxnuNdTNBI3cWbjlP0hhWvmObaZjzDJC3aIwDFloPNqE8iVsPs0M8v+j
-         fCIlT5+Iq6i4SanAY3VCStTxX0Th/gIUchDDCoOryjuZeNXbIcFMdlP35yfffmmeUmhQ
-         9EXselym2goQQH5dBOR3ghZNDXMO4PxxMhxoG4gPgeLIdsMXY+AsXwoe8Ao8I4yRzWbr
-         hwtw==
-X-Gm-Message-State: ACgBeo3zuw69uCiZWMrd3cIcfKySkVpwkyNgEFY8LGBmkE9WV1SLQQA1
-        8hhj7O6eK87Vz7XxlNNX0rLkg4ZcpyVzZFPx
-X-Google-Smtp-Source: AA6agR7u26JTojsyB4JuWJX8y8BItLKRip4aR1+/399iD/iKWu9l7BTdi42s42J+uuQrVDAiJBBmGQ==
-X-Received: by 2002:a05:6512:c10:b0:492:d263:f918 with SMTP id z16-20020a0565120c1000b00492d263f918mr5533940lfu.501.1661251676796;
-        Tue, 23 Aug 2022 03:47:56 -0700 (PDT)
-Received: from [192.168.0.11] (89-27-92-210.bb.dnainternet.fi. [89.27.92.210])
-        by smtp.gmail.com with ESMTPSA id x16-20020a056512131000b00489e812f05asm2441697lfu.21.2022.08.23.03.47.55
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 23 Aug 2022 03:47:56 -0700 (PDT)
-Message-ID: <c24da513-e015-8bc6-8874-ba63c22be5d6@linaro.org>
-Date:   Tue, 23 Aug 2022 13:47:54 +0300
+        Tue, 23 Aug 2022 11:28:47 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ED683B6D4E;
+        Tue, 23 Aug 2022 04:10:48 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id EA515B81CD7;
+        Tue, 23 Aug 2022 11:09:35 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9E3EDC433D6;
+        Tue, 23 Aug 2022 11:09:34 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1661252974;
+        bh=UpEoL/7Dt4dHrMZYSGjJSXKxqA1hFx3KNHDWHtgrliQ=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=XTjGj4vRbWLLEGxGZ03VClIdP7C+R35uKFwlMeibUAhMbp54Ni0IRvL+5Zo1DGnWS
+         mDaCSiVKu+U6Ao4kE1ILd95fJr9hQkpnqg5Y71XJLja/6SHl0BAD+d00V6uA56OGYr
+         RHfZqHEMInlMJNHnxmtsILKLaiz8uDCqhGDO4O2MLJxHCBMykVEzXj8xgDf7r+XBOF
+         xESw7EcE3aoNa08cQNgVmYIvg1ih5Z6wST+HbY4aICW0nDtdoOOYY8s+kUJL+bFFnE
+         pyoAjiafC4n4ndQwL+AJr6MZfyrIp+rzSk6BDLThCoQW8+xncTcnN1UZlvQstj4alp
+         BpZI8nQaCkhpw==
+Received: from johan by xi.lan with local (Exim 4.94.2)
+        (envelope-from <johan@kernel.org>)
+        id 1oQRmn-0002G1-Rh; Tue, 23 Aug 2022 13:09:34 +0200
+Date:   Tue, 23 Aug 2022 13:09:33 +0200
+From:   Johan Hovold <johan@kernel.org>
+To:     Stephen Boyd <sboyd@kernel.org>
+Cc:     Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Johan Hovold <johan+linaro@kernel.org>,
+        Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>,
+        Andy Gross <agross@kernel.org>,
+        Konrad Dybcio <konrad.dybcio@somainline.org>,
+        Michael Turquette <mturquette@baylibre.com>,
+        linux-arm-msm@vger.kernel.org, linux-clk@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 0/2] clk: gcc-sc8280xp: fix broken suspend
+Message-ID: <YwS1bWufBYE6buSy@hovoldconsulting.com>
+References: <20220805121250.10347-1-johan+linaro@kernel.org>
+ <20220823021528.7291FC433D6@smtp.kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.12.0
-Subject: Re: [PATCH v4 4/6] dt-bindings: net: dsa: mediatek,mt7530: define
- port binding per switch
-Content-Language: en-US
-To:     =?UTF-8?B?QXLEsW7DpyDDnE5BTA==?= <arinc.unal@arinc9.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        Sean Wang <sean.wang@mediatek.com>,
-        Landen Chao <Landen.Chao@mediatek.com>,
-        DENG Qingfang <dqfext@gmail.com>,
-        Frank Wunderlich <frank-w@public-files.de>,
-        Luiz Angelo Daros de Luca <luizluca@gmail.com>,
-        Sander Vanheule <sander@svanheule.net>,
-        =?UTF-8?Q?Ren=c3=a9_van_Dorst?= <opensource@vdorst.com>,
-        Daniel Golle <daniel@makrotopia.org>, erkin.bozoglu@xeront.com,
-        Sergio Paracuellos <sergio.paracuellos@gmail.com>
-Cc:     netdev@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org
-References: <20220820080758.9829-1-arinc.unal@arinc9.com>
- <20220820080758.9829-5-arinc.unal@arinc9.com>
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-In-Reply-To: <20220820080758.9829-5-arinc.unal@arinc9.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220823021528.7291FC433D6@smtp.kernel.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 20/08/2022 11:07, Arınç ÜNAL wrote:
-> Define DSA port binding per switch model as each switch model requires
-> different values for certain properties.
+On Mon, Aug 22, 2022 at 07:15:25PM -0700, Stephen Boyd wrote:
+> Quoting Johan Hovold (2022-08-05 05:12:48)
+> > The Qualcomm PCIe driver currently does not implement suspend at all so
+> > we need to mark the GDSCs as always-on to prevent genpd from disabling
+> > them.
+> > 
+> > Similarly, the Qualcomm dwc3 USB suspend implementation is also
+> > incomplete and the controller doesn't currently survive a suspend cycle
+> > unless the GDSC is kept on. Note that this has nothing to with whether
+> > wakeup is enabled or not (cf. [1]).
+> > 
+> > With these two workarounds, we have somewhat functional suspend on the
+> > SC8280XP reference design and Lenovo Thinkpad X13s until the missing
+> > driver support is in place (even USB remote wakeup works with [2]
+> > applied).
 > 
-> Define reg property on $defs as it's the same for all switch models.
-> 
-> Remove unnecessary lines as they are already included from the referred
-> dsa.yaml.
-> 
-> Signed-off-by: Arınç ÜNAL <arinc.unal@arinc9.com>
-> ---
->  .../bindings/net/dsa/mediatek,mt7530.yaml     | 56 +++++++++++--------
->  1 file changed, 34 insertions(+), 22 deletions(-)
-> 
-> diff --git a/Documentation/devicetree/bindings/net/dsa/mediatek,mt7530.yaml b/Documentation/devicetree/bindings/net/dsa/mediatek,mt7530.yaml
-> index 657e162a1c01..7c4374e16f96 100644
-> --- a/Documentation/devicetree/bindings/net/dsa/mediatek,mt7530.yaml
-> +++ b/Documentation/devicetree/bindings/net/dsa/mediatek,mt7530.yaml
-> @@ -130,38 +130,47 @@ properties:
->        ethsys.
->      maxItems: 1
->  
-> -patternProperties:
-> -  "^(ethernet-)?ports$":
-> -    type: object
-> -
-> -    patternProperties:
-> -      "^(ethernet-)?port@[0-9]+$":
-> -        type: object
-> -        description: Ethernet switch ports
+> Are these urgently needed for this release or does suspend not really
+> work yet on sc8280xp? I'm trying to understand if we need to apply
+> these to the fixes tree (in which case why isn't there a Fixes tag
+> targetting whatever commit broke suspend) or if they can wait for the
+> next release and come through clk-next.
 
-Again, I don't understand why do you remove definitions of these nodes
-from top-level properties. I explained what I expect in previous
-discussion and I am confused to hear "this cannot be done".
+They are urgently needed as sc8280xp does not survive a suspend cycle
+without them (e.g. crashes on resume) and this is not something that
+users expect when closing the lid of their laptops.
 
-Best regards,
-Krzysztof
+This is not a regression, but I guess I could have pointed to the commit
+adding the sc8280xp clock driver and GDSC power-domain definitions:
+
+Fixes: d65d005f9a6c ("clk: qcom: add sc8280xp GCC driver")
+
+As several Qualcomm drivers simply ignore system PM and, for example,
+leave clocks enabled during suspend, we also need to keep the
+power-domains enabled.
+
+I noticed that Bjorn applied these for 6.1, but I believe this is 6.0
+material (or at the least the USB one is as PCI support for sc8280xp is
+being added in 6.1).
+
+Johan
