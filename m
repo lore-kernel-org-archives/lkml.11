@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4B26DC32772
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 08:34:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AA517C32772
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 08:34:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245651AbiHWIes (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 04:34:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60702 "EHLO
+        id S243869AbiHWIev (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 23 Aug 2022 04:34:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33980 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346658AbiHWIcB (ORCPT
+        with ESMTP id S1346772AbiHWIcD (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 04:32:01 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 880CE75395;
-        Tue, 23 Aug 2022 01:16:15 -0700 (PDT)
+        Tue, 23 Aug 2022 04:32:03 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 114DF753A2;
+        Tue, 23 Aug 2022 01:16:17 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 2551AB81C36;
-        Tue, 23 Aug 2022 08:15:37 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 57937C433D6;
-        Tue, 23 Aug 2022 08:15:35 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id ECDE2B81C3B;
+        Tue, 23 Aug 2022 08:16:00 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4D5EFC433C1;
+        Tue, 23 Aug 2022 08:15:59 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661242535;
-        bh=ltKp9QJbSrWAxxaLf+/4NsJM5vY9Mmh2DjSF4VsNcB4=;
+        s=korg; t=1661242559;
+        bh=yqioFLrizC8M8c2foLHq0k3WOiVIEJzln4BUfFhPahY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=KqbRGNx55mCNq/kKequVC0Iw/fowoaXZ+a57fn+RWEryeCnNb4FtPsMzHOimUn5SW
-         w88LdBqlbmtUrXnzo44vMNBHYQH+okPK/kn3Kx+O/tbjaLE70zEp07Q4qA5Q+raPaI
-         mugVHXkbd6ZLWI5ZM9o4ruzr159YQ/EMBjMo2ybg=
+        b=x0BAJAEN/vFXHCuKhgKIZhRfYABcsW0ur5fCO06TY6LA5xPZZguTgKzYuLX//OHTY
+         4YsnAO7FmHFIqGjG0QEHuO01iGH2Z1tG9sQcMh2EU5B0zpRr0GCBJlWBqivumkioKM
+         xBqkjBv9LZpjDEkYXMHsBPdlaFjhieeDTxr2fEj0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
-        Mario Limonciello <mario.limonciello@amd.com>,
-        Basavaraj Natikar <Basavaraj.Natikar@amd.com>,
-        Linus Walleij <linus.walleij@linaro.org>
-Subject: [PATCH 5.19 095/365] pinctrl: amd: Dont save/restore interrupt status and wake status bits
-Date:   Tue, 23 Aug 2022 09:59:56 +0200
-Message-Id: <20220823080122.183742602@linuxfoundation.org>
+        =?UTF-8?q?Lu=C3=ADs=20Henriques?= <lhenriques@suse.de>,
+        Jeff Layton <jlayton@kernel.org>, Xiubo Li <xiubli@redhat.com>,
+        Ilya Dryomov <idryomov@gmail.com>
+Subject: [PATCH 5.19 137/365] ceph: use correct index when encoding client supported features
+Date:   Tue, 23 Aug 2022 10:00:38 +0200
+Message-Id: <20220823080123.937414439@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220823080118.128342613@linuxfoundation.org>
 References: <20220823080118.128342613@linuxfoundation.org>
@@ -50,64 +50,71 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Basavaraj Natikar <Basavaraj.Natikar@amd.com>
+From: Luís Henriques <lhenriques@suse.de>
 
-commit b8c824a869f220c6b46df724f85794349bafbf23 upstream.
+commit fea013e020e6ecc7be75bea0d61697b7e916b44d upstream.
 
-Saving/restoring interrupt and wake status bits across suspend can
-cause the suspend to fail if an IRQ is serviced across the
-suspend cycle.
+Feature bits have to be encoded into the correct locations.  This hasn't
+been an issue so far because the only hole in the feature bits was in bit
+10 (CEPHFS_FEATURE_RECLAIM_CLIENT), which is located in the 2nd byte.  When
+adding more bits that go beyond the this 2nd byte, the bug will show up.
 
-Signed-off-by: Mario Limonciello <mario.limonciello@amd.com>
-Signed-off-by: Basavaraj Natikar <Basavaraj.Natikar@amd.com>
-Fixes: 79d2c8bede2c ("pinctrl/amd: save pin registers over suspend/resume")
-Link: https://lore.kernel.org/r/20220613064127.220416-3-Basavaraj.Natikar@amd.com
-Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
+[xiubli: remove incorrect comment for CEPHFS_FEATURES_CLIENT_SUPPORTED]
+
+Fixes: 9ba1e224538a ("ceph: allocate the correct amount of extra bytes for the session features")
+Signed-off-by: Luís Henriques <lhenriques@suse.de>
+Reviewed-by: Jeff Layton <jlayton@kernel.org>
+Signed-off-by: Xiubo Li <xiubli@redhat.com>
+Signed-off-by: Ilya Dryomov <idryomov@gmail.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/pinctrl/pinctrl-amd.c |   11 +++++++++--
- 1 file changed, 9 insertions(+), 2 deletions(-)
+ fs/ceph/mds_client.c |    7 +++++--
+ fs/ceph/mds_client.h |    6 ------
+ 2 files changed, 5 insertions(+), 8 deletions(-)
 
---- a/drivers/pinctrl/pinctrl-amd.c
-+++ b/drivers/pinctrl/pinctrl-amd.c
-@@ -917,6 +917,7 @@ static int amd_gpio_suspend(struct devic
- {
- 	struct amd_gpio *gpio_dev = dev_get_drvdata(dev);
- 	struct pinctrl_desc *desc = gpio_dev->pctrl->desc;
-+	unsigned long flags;
- 	int i;
+--- a/fs/ceph/mds_client.c
++++ b/fs/ceph/mds_client.c
+@@ -1220,14 +1220,17 @@ static int encode_supported_features(voi
+ 	if (count > 0) {
+ 		size_t i;
+ 		size_t size = FEATURE_BYTES(count);
++		unsigned long bit;
  
- 	for (i = 0; i < desc->npins; i++) {
-@@ -925,7 +926,9 @@ static int amd_gpio_suspend(struct devic
- 		if (!amd_gpio_should_save(gpio_dev, pin))
- 			continue;
+ 		if (WARN_ON_ONCE(*p + 4 + size > end))
+ 			return -ERANGE;
  
--		gpio_dev->saved_regs[i] = readl(gpio_dev->base + pin*4);
-+		raw_spin_lock_irqsave(&gpio_dev->lock, flags);
-+		gpio_dev->saved_regs[i] = readl(gpio_dev->base + pin * 4) & ~PIN_IRQ_PENDING;
-+		raw_spin_unlock_irqrestore(&gpio_dev->lock, flags);
- 	}
+ 		ceph_encode_32(p, size);
+ 		memset(*p, 0, size);
+-		for (i = 0; i < count; i++)
+-			((unsigned char*)(*p))[i / 8] |= BIT(feature_bits[i] % 8);
++		for (i = 0; i < count; i++) {
++			bit = feature_bits[i];
++			((unsigned char *)(*p))[bit / 8] |= BIT(bit % 8);
++		}
+ 		*p += size;
+ 	} else {
+ 		if (WARN_ON_ONCE(*p + 4 > end))
+--- a/fs/ceph/mds_client.h
++++ b/fs/ceph/mds_client.h
+@@ -33,10 +33,6 @@ enum ceph_feature_type {
+ 	CEPHFS_FEATURE_MAX = CEPHFS_FEATURE_METRIC_COLLECT,
+ };
  
- 	return 0;
-@@ -935,6 +938,7 @@ static int amd_gpio_resume(struct device
- {
- 	struct amd_gpio *gpio_dev = dev_get_drvdata(dev);
- 	struct pinctrl_desc *desc = gpio_dev->pctrl->desc;
-+	unsigned long flags;
- 	int i;
+-/*
+- * This will always have the highest feature bit value
+- * as the last element of the array.
+- */
+ #define CEPHFS_FEATURES_CLIENT_SUPPORTED {	\
+ 	0, 1, 2, 3, 4, 5, 6, 7,			\
+ 	CEPHFS_FEATURE_MIMIC,			\
+@@ -45,8 +41,6 @@ enum ceph_feature_type {
+ 	CEPHFS_FEATURE_MULTI_RECONNECT,		\
+ 	CEPHFS_FEATURE_DELEG_INO,		\
+ 	CEPHFS_FEATURE_METRIC_COLLECT,		\
+-						\
+-	CEPHFS_FEATURE_MAX,			\
+ }
+ #define CEPHFS_FEATURES_CLIENT_REQUIRED {}
  
- 	for (i = 0; i < desc->npins; i++) {
-@@ -943,7 +947,10 @@ static int amd_gpio_resume(struct device
- 		if (!amd_gpio_should_save(gpio_dev, pin))
- 			continue;
- 
--		writel(gpio_dev->saved_regs[i], gpio_dev->base + pin*4);
-+		raw_spin_lock_irqsave(&gpio_dev->lock, flags);
-+		gpio_dev->saved_regs[i] |= readl(gpio_dev->base + pin * 4) & PIN_IRQ_PENDING;
-+		writel(gpio_dev->saved_regs[i], gpio_dev->base + pin * 4);
-+		raw_spin_unlock_irqrestore(&gpio_dev->lock, flags);
- 	}
- 
- 	return 0;
 
 
