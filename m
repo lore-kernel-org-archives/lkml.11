@@ -2,44 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D9A92C32772
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 10:54:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8B28FC32772
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 10:54:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356241AbiHWKx5 (ORCPT
+        id S1356326AbiHWKyG (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 06:53:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56670 "EHLO
+        Tue, 23 Aug 2022 06:54:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57704 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355946AbiHWKp5 (ORCPT
+        with ESMTP id S1355971AbiHWKqE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 06:45:57 -0400
+        Tue, 23 Aug 2022 06:46:04 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7DB126CF51;
-        Tue, 23 Aug 2022 02:11:28 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2D82374CFE;
+        Tue, 23 Aug 2022 02:11:32 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 177326069D;
-        Tue, 23 Aug 2022 09:11:28 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0A0FBC433D6;
-        Tue, 23 Aug 2022 09:11:26 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 5A5D86069D;
+        Tue, 23 Aug 2022 09:11:31 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4E584C433D6;
+        Tue, 23 Aug 2022 09:11:30 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661245887;
-        bh=xbUiAn6roGKlOVmttkOBenGDG4+k4twIaoCVAlzAAPA=;
+        s=korg; t=1661245890;
+        bh=9nPrtpR65w8b56LwHzABe1G5wYv2w6YiwZOjMphzI00=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=b8cD+AjInpX6PsiVFHXP3OP2WPxfwWYGoZ6QFuVxp765nF5tt9Le1qBtgFT1gB6YP
-         3CWSlPh00yQoYGR5Suz7CHhEWd+HGxgZHp0eQeLwJLy9CD9mKO3jJzrBdKgqiHhrX7
-         kRtD+svXAwarEMBlM91xm50I2vxiTJfe7JlKBVCc=
+        b=XiY8tuiyZDvt+3eQafZzh1rEa4gCV7BG5hOnleA8Y0ZeZp2Ic3HZP+KADFWDq2J7V
+         ByrTK758H0hR7rFQKrIu+IBw5r+TUdxZbrE8I+1JQvN9rAMQU9KNXVDMKmyZdH8Fz8
+         kFIxpbEbjEyQi11phyXYvnygHeUH/seI8cvz8kN8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
+To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Gerhard Uttenthaler <uttenthaler@ems-wuensche.com>,
-        Sebastian Haas <haas@ems-wuensche.com>,
-        Marc Kleine-Budde <mkl@pengutronix.de>
-Subject: [PATCH 4.19 222/287] can: ems_usb: fix clangs -Wunaligned-access warning
-Date:   Tue, 23 Aug 2022 10:26:31 +0200
-Message-Id: <20220823080108.467764856@linuxfoundation.org>
+        Vitaly Kuznetsov <vkuznets@redhat.com>,
+        Paolo Bonzini <pbonzini@redhat.com>,
+        Stefan Ghinea <stefan.ghinea@windriver.com>
+Subject: [PATCH 4.19 205/287] KVM: x86: Avoid theoretical NULL pointer dereference in kvm_irq_delivery_to_apic_fast()
+Date:   Tue, 23 Aug 2022 10:26:14 +0200
+Message-Id: <20220823080107.801921160@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220823080100.268827165@linuxfoundation.org>
 References: <20220823080100.268827165@linuxfoundation.org>
@@ -51,65 +50,36 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Marc Kleine-Budde <mkl@pengutronix.de>
+From: Vitaly Kuznetsov <vkuznets@redhat.com>
 
-commit a4cb6e62ea4d36e53fb3c0f18ea4503d7b76674f upstream.
+commit 00b5f37189d24ac3ed46cb7f11742094778c46ce upstream
 
-clang emits a -Wunaligned-access warning on struct __packed
-ems_cpc_msg.
+When kvm_irq_delivery_to_apic_fast() is called with APIC_DEST_SELF
+shorthand, 'src' must not be NULL. Crash the VM with KVM_BUG_ON()
+instead of crashing the host.
 
-The reason is that the anonymous union msg (not declared as packed) is
-being packed right after some non naturally aligned variables (3*8
-bits + 2*32) inside a packed struct:
-
-| struct __packed ems_cpc_msg {
-| 	u8 type;	/* type of message */
-| 	u8 length;	/* length of data within union 'msg' */
-| 	u8 msgid;	/* confirmation handle */
-| 	__le32 ts_sec;	/* timestamp in seconds */
-| 	__le32 ts_nsec;	/* timestamp in nano seconds */
-|	/* ^ not naturally aligned */
-|
-| 	union {
-| 	/* ^ not declared as packed */
-| 		u8 generic[64];
-| 		struct cpc_can_msg can_msg;
-| 		struct cpc_can_params can_params;
-| 		struct cpc_confirm confirmation;
-| 		struct cpc_overrun overrun;
-| 		struct cpc_can_error error;
-| 		struct cpc_can_err_counter err_counter;
-| 		u8 can_state;
-| 	} msg;
-| };
-
-Starting from LLVM 14, having an unpacked struct nested in a packed
-struct triggers a warning. c.f. [1].
-
-Fix the warning by marking the anonymous union as packed.
-
-[1] https://github.com/llvm/llvm-project/issues/55520
-
-Fixes: 702171adeed3 ("ems_usb: Added support for EMS CPC-USB/ARM7 CAN/USB interface")
-Link: https://lore.kernel.org/all/20220802094021.959858-1-mkl@pengutronix.de
-Cc: Gerhard Uttenthaler <uttenthaler@ems-wuensche.com>
-Cc: Sebastian Haas <haas@ems-wuensche.com>
-Signed-off-by: Marc Kleine-Budde <mkl@pengutronix.de>
+Signed-off-by: Vitaly Kuznetsov <vkuznets@redhat.com>
+Message-Id: <20220325132140.25650-3-vkuznets@redhat.com>
+Cc: stable@vger.kernel.org
+Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
+Signed-off-by: Stefan Ghinea <stefan.ghinea@windriver.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/net/can/usb/ems_usb.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ arch/x86/kvm/lapic.c |    4 ++++
+ 1 file changed, 4 insertions(+)
 
---- a/drivers/net/can/usb/ems_usb.c
-+++ b/drivers/net/can/usb/ems_usb.c
-@@ -206,7 +206,7 @@ struct __packed ems_cpc_msg {
- 	__le32 ts_sec;	/* timestamp in seconds */
- 	__le32 ts_nsec;	/* timestamp in nano seconds */
+--- a/arch/x86/kvm/lapic.c
++++ b/arch/x86/kvm/lapic.c
+@@ -961,6 +961,10 @@ bool kvm_irq_delivery_to_apic_fast(struc
+ 	*r = -1;
  
--	union {
-+	union __packed {
- 		u8 generic[64];
- 		struct cpc_can_msg can_msg;
- 		struct cpc_can_params can_params;
+ 	if (irq->shorthand == APIC_DEST_SELF) {
++		if (KVM_BUG_ON(!src, kvm)) {
++			*r = 0;
++			return true;
++		}
+ 		*r = kvm_apic_set_irq(src->vcpu, irq, dest_map);
+ 		return true;
+ 	}
 
 
