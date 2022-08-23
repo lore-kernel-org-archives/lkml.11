@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6641EC32792
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4ECEAC32772
 	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 11:47:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358273AbiHWLrf (ORCPT
+        id S1358243AbiHWLrX (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 07:47:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59896 "EHLO
+        Tue, 23 Aug 2022 07:47:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42222 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1358529AbiHWLmA (ORCPT
+        with ESMTP id S1358505AbiHWLl6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 07:42:00 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9E336CE32C;
-        Tue, 23 Aug 2022 02:29:35 -0700 (PDT)
+        Tue, 23 Aug 2022 07:41:58 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9E7D6CD522;
+        Tue, 23 Aug 2022 02:29:29 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id C3D3BB81C8B;
-        Tue, 23 Aug 2022 09:29:33 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 30D8AC433D6;
-        Tue, 23 Aug 2022 09:29:32 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id B4D78B81C89;
+        Tue, 23 Aug 2022 09:29:27 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 102BCC433D7;
+        Tue, 23 Aug 2022 09:29:25 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661246972;
-        bh=UzHrVfXis4IWjX5ArX2hRghplCJ80F/NMD75HVyyG8w=;
+        s=korg; t=1661246966;
+        bh=B3zGsGDfwsKUCKjNNbNoQ75m+V5P0+MQ8gQ4lFU8/9U=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=fsOUmgTGJAkraYb2OjSNTzDiXXkZwRx1034q3MzRi6Ng8RUpL08/dFBOVFVLpgUIQ
-         hGSfdnUrBLAIaMbraO619BQxHGjzQuR4o7eB2ZnrmjjD3LZfI8+e3j840Ym9zyyYc6
-         SG5jHgzC/lCvOE1DxwXsn9om6WVLgH8+BKd2BsSY=
+        b=xyUnKTOiHC0nvrRgGcT3nrbCm9iqQnCBtYa8YTuJ+0d2apczRLt76l10JvrzjKyI6
+         42o23cd/hnrDZytYlzkLQ32SQSy6aiZQ0MPv59ltTl/S6FFjjIbtXQykrQ6YzBhFCn
+         gRezXLitmTEiKRnIdPIGL3FqNULdc0pSuiW1u9lU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
+To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Vitaly Kuznetsov <vkuznets@redhat.com>,
-        Paolo Bonzini <pbonzini@redhat.com>,
-        Stefan Ghinea <stefan.ghinea@windriver.com>
-Subject: [PATCH 5.4 278/389] KVM: x86: Check lapic_in_kernel() before attempting to set a SynIC irq
-Date:   Tue, 23 Aug 2022 10:25:56 +0200
-Message-Id: <20220823080127.144141719@linuxfoundation.org>
+        stable@vger.kernel.org, Qu Wenruo <wqu@suse.com>,
+        David Sterba <dsterba@suse.com>
+Subject: [PATCH 5.4 276/389] btrfs: reject log replay if there is unsupported RO compat flag
+Date:   Tue, 23 Aug 2022 10:25:54 +0200
+Message-Id: <20220823080127.064820431@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220823080115.331990024@linuxfoundation.org>
 References: <20220823080115.331990024@linuxfoundation.org>
@@ -50,40 +49,84 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Vitaly Kuznetsov <vkuznets@redhat.com>
+From: Qu Wenruo <wqu@suse.com>
 
-commit 7ec37d1cbe17d8189d9562178d8b29167fe1c31a upstream
+commit dc4d31684974d140250f3ee612c3f0cab13b3146 upstream.
 
-When KVM_CAP_HYPERV_SYNIC{,2} is activated, KVM already checks for
-irqchip_in_kernel() so normally SynIC irqs should never be set. It is,
-however,  possible for a misbehaving VMM to write to SYNIC/STIMER MSRs
-causing erroneous behavior.
+[BUG]
+If we have a btrfs image with dirty log, along with an unsupported RO
+compatible flag:
 
-The immediate issue being fixed is that kvm_irq_delivery_to_apic()
-(kvm_irq_delivery_to_apic_fast()) crashes when called with
-'irq.shorthand = APIC_DEST_SELF' and 'src == NULL'.
+log_root		30474240
+...
+compat_flags		0x0
+compat_ro_flags		0x40000003
+			( FREE_SPACE_TREE |
+			  FREE_SPACE_TREE_VALID |
+			  unknown flag: 0x40000000 )
 
-Signed-off-by: Vitaly Kuznetsov <vkuznets@redhat.com>
-Message-Id: <20220325132140.25650-2-vkuznets@redhat.com>
-Cc: stable@vger.kernel.org
-Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
-Signed-off-by: Stefan Ghinea <stefan.ghinea@windriver.com>
+Then even if we can only mount it RO, we will still cause metadata
+update for log replay:
+
+  BTRFS info (device dm-1): flagging fs with big metadata feature
+  BTRFS info (device dm-1): using free space tree
+  BTRFS info (device dm-1): has skinny extents
+  BTRFS info (device dm-1): start tree-log replay
+
+This is definitely against RO compact flag requirement.
+
+[CAUSE]
+RO compact flag only forces us to do RO mount, but we will still do log
+replay for plain RO mount.
+
+Thus this will result us to do log replay and update metadata.
+
+This can be very problematic for new RO compat flag, for example older
+kernel can not understand v2 cache, and if we allow metadata update on
+RO mount and invalidate/corrupt v2 cache.
+
+[FIX]
+Just reject the mount unless rescue=nologreplay is provided:
+
+  BTRFS error (device dm-1): cannot replay dirty log with unsupport optional features (0x40000000), try rescue=nologreplay instead
+
+We don't want to set rescue=nologreply directly, as this would make the
+end user to read the old data, and cause confusion.
+
+Since the such case is really rare, we're mostly fine to just reject the
+mount with an error message, which also includes the proper workaround.
+
+CC: stable@vger.kernel.org #4.9+
+Signed-off-by: Qu Wenruo <wqu@suse.com>
+Reviewed-by: David Sterba <dsterba@suse.com>
+Signed-off-by: David Sterba <dsterba@suse.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/x86/kvm/hyperv.c |    3 +++
- 1 file changed, 3 insertions(+)
+ fs/btrfs/disk-io.c |   14 ++++++++++++++
+ 1 file changed, 14 insertions(+)
 
---- a/arch/x86/kvm/hyperv.c
-+++ b/arch/x86/kvm/hyperv.c
-@@ -309,6 +309,9 @@ static int synic_set_irq(struct kvm_vcpu
- 	struct kvm_lapic_irq irq;
- 	int ret, vector;
- 
-+	if (KVM_BUG_ON(!lapic_in_kernel(vcpu), vcpu->kvm))
-+		return -EINVAL;
+--- a/fs/btrfs/disk-io.c
++++ b/fs/btrfs/disk-io.c
+@@ -2970,6 +2970,20 @@ int open_ctree(struct super_block *sb,
+ 		err = -EINVAL;
+ 		goto fail_csum;
+ 	}
++	/*
++	 * We have unsupported RO compat features, although RO mounted, we
++	 * should not cause any metadata write, including log replay.
++	 * Or we could screw up whatever the new feature requires.
++	 */
++	if (unlikely(features && btrfs_super_log_root(disk_super) &&
++		     !btrfs_test_opt(fs_info, NOLOGREPLAY))) {
++		btrfs_err(fs_info,
++"cannot replay dirty log with unsupported compat_ro features (0x%llx), try rescue=nologreplay",
++			  features);
++		err = -EINVAL;
++		goto fail_alloc;
++	}
 +
- 	if (sint >= ARRAY_SIZE(synic->sint))
- 		return -EINVAL;
  
+ 	ret = btrfs_init_workqueues(fs_info, fs_devices);
+ 	if (ret) {
 
 
