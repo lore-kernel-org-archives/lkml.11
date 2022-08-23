@@ -2,41 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 468BAC32774
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 08:18:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 097D6C32774
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 08:18:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242630AbiHWISU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 04:18:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40002 "EHLO
+        id S242651AbiHWIS3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 23 Aug 2022 04:18:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41468 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242229AbiHWINJ (ORCPT
+        with ESMTP id S242059AbiHWINh (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 04:13:09 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 29B2E6C13E;
-        Tue, 23 Aug 2022 01:09:12 -0700 (PDT)
+        Tue, 23 Aug 2022 04:13:37 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 20F4E6C76B;
+        Tue, 23 Aug 2022 01:09:20 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id AAFEB6123D;
-        Tue, 23 Aug 2022 08:09:11 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 65144C433D6;
-        Tue, 23 Aug 2022 08:09:09 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id CFF48B81C21;
+        Tue, 23 Aug 2022 08:09:18 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2FE9BC433D7;
+        Tue, 23 Aug 2022 08:09:17 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661242151;
-        bh=gyk0DIlacszwxhUgLMZ0yJZSzHV8SnJZoaqZaniVh88=;
+        s=korg; t=1661242157;
+        bh=9PtLNoj5lxQyc/Pnr6PffGlLMufsvKsor8UnqpQN13M=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Oc72Y6XsoRwU1v/sVhCT2QSY9BVv83xHt69dDSmuslfqXcAjF1ZDaMNtSnjpNNiqi
-         /lU1v3+RJBiCXN8yeDB4eRx/TJLFTd77BvNeL6J5ac/DJCTl6rbVY8PHvzmj+moFJR
-         Wbrf/vFKBl3O5AVdiHrQFrEGQGUtp+0YAvrY0T7Y=
+        b=qNMMqXBsZighwVjgeNMj18Gqh5jUEqFXyHGrjRX6NFTAYE/0NNUnRghSYJapB8gTM
+         EpMJ+c0+HRC7ApfK1UU7TmftVpGQAcmOMqDCNRCbi2hvga0zxF54tNUQSvsg0yQ3Y3
+         qiadXnP87qT/xSl3TmynGQX5UhNDCdcSwPQKZlMs=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Hou Tao <houtao1@huawei.com>,
-        Yonghong Song <yhs@fb.com>, Alexei Starovoitov <ast@kernel.org>
-Subject: [PATCH 5.19 064/365] bpf: Acquire map uref in .init_seq_private for array map iterator
-Date:   Tue, 23 Aug 2022 09:59:25 +0200
-Message-Id: <20220823080120.882381491@linuxfoundation.org>
+        stable@vger.kernel.org,
+        =?UTF-8?q?Sebastian=20W=C3=BCrl?= <sebastian.wuerl@ororatech.com>,
+        Marc Kleine-Budde <mkl@pengutronix.de>
+Subject: [PATCH 5.19 069/365] can: mcp251x: Fix race condition on receive interrupt
+Date:   Tue, 23 Aug 2022 09:59:30 +0200
+Message-Id: <20220823080121.086548355@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220823080118.128342613@linuxfoundation.org>
 References: <20220823080118.128342613@linuxfoundation.org>
@@ -48,54 +49,85 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Hou Tao <houtao1@huawei.com>
+From: Sebastian Würl <sebastian.wuerl@ororatech.com>
 
-commit f76fa6b338055054f80c72b29c97fb95c1becadc upstream.
+commit d80d60b0db6ff3dd2e29247cc2a5166d7e9ae37e upstream.
 
-bpf_iter_attach_map() acquires a map uref, and the uref may be released
-before or in the middle of iterating map elements. For example, the uref
-could be released in bpf_iter_detach_map() as part of
-bpf_link_release(), or could be released in bpf_map_put_with_uref() as
-part of bpf_map_release().
+The mcp251x driver uses both receiving mailboxes of the CAN controller
+chips. For retrieving the CAN frames from the controller via SPI, it checks
+once per interrupt which mailboxes have been filled and will retrieve the
+messages accordingly.
 
-Alternative fix is acquiring an extra bpf_link reference just like
-a pinned map iterator does, but it introduces unnecessary dependency
-on bpf_link instead of bpf_map.
+This introduces a race condition, as another CAN frame can enter mailbox 1
+while mailbox 0 is emptied. If now another CAN frame enters mailbox 0 until
+the interrupt handler is called next, mailbox 0 is emptied before
+mailbox 1, leading to out-of-order CAN frames in the network device.
 
-So choose another fix: acquiring an extra map uref in .init_seq_private
-for array map iterator.
+This is fixed by checking the interrupt flags once again after freeing
+mailbox 0, to correctly also empty mailbox 1 before leaving the handler.
 
-Fixes: d3cc2ab546ad ("bpf: Implement bpf iterator for array maps")
-Signed-off-by: Hou Tao <houtao1@huawei.com>
-Acked-by: Yonghong Song <yhs@fb.com>
-Link: https://lore.kernel.org/r/20220810080538.1845898-2-houtao@huaweicloud.com
-Signed-off-by: Alexei Starovoitov <ast@kernel.org>
+For reproducing the bug I created the following setup:
+ - Two CAN devices, one Raspberry Pi with MCP2515, the other can be any.
+ - Setup CAN to 1 MHz
+ - Spam bursts of 5 CAN-messages with increasing CAN-ids
+ - Continue sending the bursts while sleeping a second between the bursts
+ - Check on the RPi whether the received messages have increasing CAN-ids
+ - Without this patch, every burst of messages will contain a flipped pair
+
+v3: https://lore.kernel.org/all/20220804075914.67569-1-sebastian.wuerl@ororatech.com
+v2: https://lore.kernel.org/all/20220804064803.63157-1-sebastian.wuerl@ororatech.com
+v1: https://lore.kernel.org/all/20220803153300.58732-1-sebastian.wuerl@ororatech.com
+
+Fixes: bf66f3736a94 ("can: mcp251x: Move to threaded interrupts instead of workqueues.")
+Signed-off-by: Sebastian Würl <sebastian.wuerl@ororatech.com>
+Link: https://lore.kernel.org/all/20220804081411.68567-1-sebastian.wuerl@ororatech.com
+[mkl: reduce scope of intf1, eflag1]
+Signed-off-by: Marc Kleine-Budde <mkl@pengutronix.de>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- kernel/bpf/arraymap.c |    6 ++++++
- 1 file changed, 6 insertions(+)
+ drivers/net/can/spi/mcp251x.c |   18 +++++++++++++++---
+ 1 file changed, 15 insertions(+), 3 deletions(-)
 
---- a/kernel/bpf/arraymap.c
-+++ b/kernel/bpf/arraymap.c
-@@ -649,6 +649,11 @@ static int bpf_iter_init_array_map(void
- 		seq_info->percpu_value_buf = value_buf;
- 	}
+--- a/drivers/net/can/spi/mcp251x.c
++++ b/drivers/net/can/spi/mcp251x.c
+@@ -1069,9 +1069,6 @@ static irqreturn_t mcp251x_can_ist(int i
  
-+	/* bpf_iter_attach_map() acquires a map uref, and the uref may be
-+	 * released before or in the middle of iterating map elements, so
-+	 * acquire an extra map uref for iterator.
-+	 */
-+	bpf_map_inc_with_uref(map);
- 	seq_info->map = map;
- 	return 0;
- }
-@@ -657,6 +662,7 @@ static void bpf_iter_fini_array_map(void
- {
- 	struct bpf_iter_seq_array_map_info *seq_info = priv_data;
+ 		mcp251x_read_2regs(spi, CANINTF, &intf, &eflag);
  
-+	bpf_map_put_with_uref(seq_info->map);
- 	kfree(seq_info->percpu_value_buf);
- }
+-		/* mask out flags we don't care about */
+-		intf &= CANINTF_RX | CANINTF_TX | CANINTF_ERR;
+-
+ 		/* receive buffer 0 */
+ 		if (intf & CANINTF_RX0IF) {
+ 			mcp251x_hw_rx(spi, 0);
+@@ -1081,6 +1078,18 @@ static irqreturn_t mcp251x_can_ist(int i
+ 			if (mcp251x_is_2510(spi))
+ 				mcp251x_write_bits(spi, CANINTF,
+ 						   CANINTF_RX0IF, 0x00);
++
++			/* check if buffer 1 is already known to be full, no need to re-read */
++			if (!(intf & CANINTF_RX1IF)) {
++				u8 intf1, eflag1;
++
++				/* intf needs to be read again to avoid a race condition */
++				mcp251x_read_2regs(spi, CANINTF, &intf1, &eflag1);
++
++				/* combine flags from both operations for error handling */
++				intf |= intf1;
++				eflag |= eflag1;
++			}
+ 		}
  
+ 		/* receive buffer 1 */
+@@ -1091,6 +1100,9 @@ static irqreturn_t mcp251x_can_ist(int i
+ 				clear_intf |= CANINTF_RX1IF;
+ 		}
+ 
++		/* mask out flags we don't care about */
++		intf &= CANINTF_RX | CANINTF_TX | CANINTF_ERR;
++
+ 		/* any error or tx interrupt we need to clear? */
+ 		if (intf & (CANINTF_ERR | CANINTF_TX))
+ 			clear_intf |= intf & (CANINTF_ERR | CANINTF_TX);
 
 
