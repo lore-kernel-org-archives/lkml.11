@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 664BCC32772
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 09:55:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7F372C32792
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 09:55:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243713AbiHWJzR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 05:55:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39318 "EHLO
+        id S244028AbiHWJzX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 23 Aug 2022 05:55:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39846 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352418AbiHWJvn (ORCPT
+        with ESMTP id S242564AbiHWJxx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 05:51:43 -0400
+        Tue, 23 Aug 2022 05:53:53 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EDB039F1B0;
-        Tue, 23 Aug 2022 01:46:11 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8E36F6E8A2;
+        Tue, 23 Aug 2022 01:46:23 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id C4B08611DD;
-        Tue, 23 Aug 2022 08:45:26 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BF40AC433D6;
-        Tue, 23 Aug 2022 08:45:25 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 4322B61499;
+        Tue, 23 Aug 2022 08:45:36 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2D07CC433C1;
+        Tue, 23 Aug 2022 08:45:34 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661244326;
-        bh=8/wzdDxwian4GlLzRjVYAvBdcciAwFSp2Nmo8aCwUQs=;
+        s=korg; t=1661244335;
+        bh=/+eRUPMPZDWrhSIl0FMK0dBhrrqdcIZx5ZENoVmu4KY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=TKb+ZfCI4W3Uj/EjpdyiME8rb/cWxYkgioCY4VDmjKyGylDxSuJesPZmazyQRIoSn
-         c77R54zs0Thc3iQtJQTYuofDm96bMXc/XMcdJZWjoFZ/b59E/72xIGZBoxqb6+E48M
-         K/QE3aEc/zqKQUUdcBFTFkeOC5xJuxjEE0viooD0=
+        b=JNE0I+humPVzjic7nZQqey3n0yMA+iqgJJhvqSp8KHJWbI/M2gguelXuFJceP1o1n
+         8BP4eTWQEa4WSXIVKCwjdju68Lt+QLP7Cw28Nd+zRdiQi2mfSChwUFgPYG/uY6VHiV
+         R7/hosLko1swpAX36KznlY6ebusL5kapMXUJ10Xk=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
-        Mark Brown <broonie@kernel.org>,
+        stable@vger.kernel.org, Chen Zhongjin <chenzhongjin@huawei.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.14 120/229] ASoC: mediatek: mt8173-rt5650: Fix refcount leak in mt8173_rt5650_dev_probe
-Date:   Tue, 23 Aug 2022 10:24:41 +0200
-Message-Id: <20220823080057.990190594@linuxfoundation.org>
+Subject: [PATCH 4.14 121/229] profiling: fix shift too large makes kernel panic
+Date:   Tue, 23 Aug 2022 10:24:42 +0200
+Message-Id: <20220823080058.031432587@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220823080053.202747790@linuxfoundation.org>
 References: <20220823080053.202747790@linuxfoundation.org>
@@ -49,64 +49,89 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Miaoqian Lin <linmq006@gmail.com>
+From: Chen Zhongjin <chenzhongjin@huawei.com>
 
-[ Upstream commit efe2178d1a32492f99e7f1f2568eea5c88a85729 ]
+[ Upstream commit 0fe6ee8f123a4dfb529a5aff07536bb481f34043 ]
 
-of_parse_phandle() returns a node pointer with refcount
-incremented, we should use of_node_put() on it when not need anymore.
-Fix refcount leak in some error paths.
+2d186afd04d6 ("profiling: fix shift-out-of-bounds bugs") limits shift
+value by [0, BITS_PER_LONG -1], which means [0, 63].
 
-Fixes: 0f83f9296d5c ("ASoC: mediatek: Add machine driver for ALC5650 codec")
-Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
-Link: https://lore.kernel.org/r/20220603124243.31358-1-linmq006@gmail.com
-Signed-off-by: Mark Brown <broonie@kernel.org>
+However, syzbot found that the max shift value should be the bit number of
+(_etext - _stext).  If shift is outside of this, the "buffer_bytes" will
+be zero and will cause kzalloc(0).  Then the kernel panics due to
+dereferencing the returned pointer 16.
+
+This can be easily reproduced by passing a large number like 60 to enable
+profiling and then run readprofile.
+
+LOGS:
+ BUG: kernel NULL pointer dereference, address: 0000000000000010
+ #PF: supervisor write access in kernel mode
+ #PF: error_code(0x0002) - not-present page
+ PGD 6148067 P4D 6148067 PUD 6142067 PMD 0
+ PREEMPT SMP
+ CPU: 4 PID: 184 Comm: readprofile Not tainted 5.18.0+ #162
+ Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS rel-1.15.0-0-g2dd4b9b3f840-prebuilt.qemu.org 04/01/2014
+ RIP: 0010:read_profile+0x104/0x220
+ RSP: 0018:ffffc900006fbe80 EFLAGS: 00000202
+ RAX: 0000000000000000 RBX: 0000000000000000 RCX: 0000000000000000
+ RDX: ffff888006150000 RSI: 0000000000000001 RDI: ffffffff82aba4a0
+ RBP: 000000000188bb60 R08: 0000000000000010 R09: ffff888006151000
+ R10: 0000000000000000 R11: 0000000000000000 R12: ffffffff82aba4a0
+ R13: 0000000000000000 R14: ffffc900006fbf08 R15: 0000000000020c30
+ FS:  000000000188a8c0(0000) GS:ffff88803ed00000(0000) knlGS:0000000000000000
+ CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+ CR2: 0000000000000010 CR3: 0000000006144000 CR4: 00000000000006e0
+ Call Trace:
+  <TASK>
+  proc_reg_read+0x56/0x70
+  vfs_read+0x9a/0x1b0
+  ksys_read+0xa1/0xe0
+  ? fpregs_assert_state_consistent+0x1e/0x40
+  do_syscall_64+0x3a/0x80
+  entry_SYSCALL_64_after_hwframe+0x46/0xb0
+ RIP: 0033:0x4d4b4e
+ RSP: 002b:00007ffebb668d58 EFLAGS: 00000246 ORIG_RAX: 0000000000000000
+ RAX: ffffffffffffffda RBX: 000000000188a8a0 RCX: 00000000004d4b4e
+ RDX: 0000000000000400 RSI: 000000000188bb60 RDI: 0000000000000003
+ RBP: 0000000000000003 R08: 000000000000006e R09: 0000000000000000
+ R10: 0000000000000041 R11: 0000000000000246 R12: 000000000188bb60
+ R13: 0000000000000400 R14: 0000000000000000 R15: 000000000188bb60
+  </TASK>
+ Modules linked in:
+ CR2: 0000000000000010
+Killed
+ ---[ end trace 0000000000000000 ]---
+
+Check prof_len in profile_init() to prevent it be zero.
+
+Link: https://lkml.kernel.org/r/20220531012854.229439-1-chenzhongjin@huawei.com
+Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
+Signed-off-by: Chen Zhongjin <chenzhongjin@huawei.com>
+Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- sound/soc/mediatek/mt8173/mt8173-rt5650.c | 9 ++++++---
- 1 file changed, 6 insertions(+), 3 deletions(-)
+ kernel/profile.c | 7 +++++++
+ 1 file changed, 7 insertions(+)
 
-diff --git a/sound/soc/mediatek/mt8173/mt8173-rt5650.c b/sound/soc/mediatek/mt8173/mt8173-rt5650.c
-index 3492c02f72c1..0d01b0f945d1 100644
---- a/sound/soc/mediatek/mt8173/mt8173-rt5650.c
-+++ b/sound/soc/mediatek/mt8173/mt8173-rt5650.c
-@@ -270,7 +270,8 @@ static int mt8173_rt5650_dev_probe(struct platform_device *pdev)
- 	if (!mt8173_rt5650_codecs[0].of_node) {
- 		dev_err(&pdev->dev,
- 			"Property 'audio-codec' missing or invalid\n");
--		return -EINVAL;
-+		ret = -EINVAL;
-+		goto put_platform_node;
- 	}
- 	mt8173_rt5650_codecs[1].of_node = mt8173_rt5650_codecs[0].of_node;
+diff --git a/kernel/profile.c b/kernel/profile.c
+index efa58f63dc1b..7fc621404230 100644
+--- a/kernel/profile.c
++++ b/kernel/profile.c
+@@ -108,6 +108,13 @@ int __ref profile_init(void)
  
-@@ -287,7 +288,7 @@ static int mt8173_rt5650_dev_probe(struct platform_device *pdev)
- 			dev_err(&pdev->dev,
- 				"%s codec_capture_dai name fail %d\n",
- 				__func__, ret);
--			return ret;
-+			goto put_platform_node;
- 		}
- 		mt8173_rt5650_codecs[1].dai_name = codec_capture_dai;
- 	}
-@@ -308,7 +309,8 @@ static int mt8173_rt5650_dev_probe(struct platform_device *pdev)
- 	if (!mt8173_rt5650_dais[DAI_LINK_HDMI_I2S].codec_of_node) {
- 		dev_err(&pdev->dev,
- 			"Property 'audio-codec' missing or invalid\n");
--		return -EINVAL;
-+		ret = -EINVAL;
-+		goto put_platform_node;
- 	}
- 	card->dev = &pdev->dev;
+ 	/* only text is profiled */
+ 	prof_len = (_etext - _stext) >> prof_shift;
++
++	if (!prof_len) {
++		pr_warn("profiling shift: %u too large\n", prof_shift);
++		prof_on = 0;
++		return -EINVAL;
++	}
++
+ 	buffer_bytes = prof_len*sizeof(atomic_t);
  
-@@ -317,6 +319,7 @@ static int mt8173_rt5650_dev_probe(struct platform_device *pdev)
- 		dev_err(&pdev->dev, "%s snd_soc_register_card fail %d\n",
- 			__func__, ret);
- 
-+put_platform_node:
- 	of_node_put(platform_node);
- 	return ret;
- }
+ 	if (!alloc_cpumask_var(&prof_cpu_mask, GFP_KERNEL))
 -- 
 2.35.1
 
