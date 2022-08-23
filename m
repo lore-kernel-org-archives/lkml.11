@@ -2,81 +2,112 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9DBECC32772
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 08:38:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C8681C32772
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 08:38:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241459AbiHWIiL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 04:38:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33980 "EHLO
+        id S1345964AbiHWIiP (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 23 Aug 2022 04:38:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35126 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347102AbiHWIgT (ORCPT
+        with ESMTP id S1347504AbiHWIga (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 04:36:19 -0400
-Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1F86C76753
-        for <linux-kernel@vger.kernel.org>; Tue, 23 Aug 2022 01:17:16 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1661242636; x=1692778636;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=FFUrJBNMDk4t826TIAG649CcdossiWD3s3+Wk/wmhH4=;
-  b=PRMh7gJkry/Afvp1QLjCsrbIh/DPNl+OA/nwRPuxD5Qegn0jV0GohQ6v
-   PTvzSPciN5D8WlWg1txrQXIvrEtMAaSxWh39dDtSYBBjtaYV0JTuwUyrQ
-   zFMfYJ8jtia9IkiPtFm7/MsJ4kjNeF3ckdeqTGdwUXp8/rIq4z9qjJFTX
-   odOkMBJHhO1vph2v8HitrbDIXG2YB0GK18jMnNaO3pymYMHC4S65VlM0h
-   9rg/BAGvQaDYWv1JItqFFeuKtqfY5R/UPa2l3WJiG7HEvUxtYj0M1G6MY
-   ES5E+cb7DiVRdaXJhzHALyedCz/23IfekpYtf1zqLRDXBXZqUE/sR6wd/
-   g==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10447"; a="291183216"
-X-IronPort-AV: E=Sophos;i="5.93,257,1654585200"; 
-   d="scan'208";a="291183216"
-Received: from fmsmga001.fm.intel.com ([10.253.24.23])
-  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Aug 2022 01:17:15 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.93,257,1654585200"; 
-   d="scan'208";a="751606026"
-Received: from kuha.fi.intel.com ([10.237.72.185])
-  by fmsmga001.fm.intel.com with SMTP; 23 Aug 2022 01:17:12 -0700
-Received: by kuha.fi.intel.com (sSMTP sendmail emulation); Tue, 23 Aug 2022 11:17:12 +0300
-Date:   Tue, 23 Aug 2022 11:17:12 +0300
-From:   Heikki Krogerus <heikki.krogerus@linux.intel.com>
-To:     Tzung-Bi Shih <tzungbi@kernel.org>
-Cc:     Prashant Malani <pmalani@chromium.org>,
-        linux-kernel@vger.kernel.org, chrome-platform@lists.linux.dev,
-        bleung@chromium.org,
-        Enric Balletbo i Serra <enric.balletbo@collabora.com>,
-        Guenter Roeck <groeck@chromium.org>
-Subject: Re: [PATCH 3/4] platform/chrome: cros_ec_typec: Stash port driver
- info
-Message-ID: <YwSNCFt48Q9Eo02I@kuha.fi.intel.com>
-References: <20220819190807.1275937-1-pmalani@chromium.org>
- <20220819190807.1275937-4-pmalani@chromium.org>
- <YwRa/QxA/RRtxU3P@google.com>
+        Tue, 23 Aug 2022 04:36:30 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E50C977543;
+        Tue, 23 Aug 2022 01:17:32 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id A8952B81BF8;
+        Tue, 23 Aug 2022 08:17:17 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0441EC433D6;
+        Tue, 23 Aug 2022 08:17:15 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1661242636;
+        bh=5fy4IkzWjl1hfPLwkmTOIHwX1kHx3B1rb3uQ4pKYwEc=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=TlmPiX+M3fiMMfcs8P2CwxPtvb1WNYqLiLBj9oxm8r7gEhNGNmMOZxdsg5AFKHVSI
+         foPUfSip99r8sU+EsYbnVgWBG5r2a4EhaiCKZaF4r8V+Ltge6ulvE/RyHpNGREP6YP
+         hcHPnlWDvIveYxy79FEVUUKpH3mWEARMgkQmHBbk=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org,
+        Gerhard Engleder <gerhard@engleder-embedded.com>,
+        Jakub Kicinski <kuba@kernel.org>
+Subject: [PATCH 5.19 150/365] tsnep: Fix tsnep_tx_unmap() error path usage
+Date:   Tue, 23 Aug 2022 10:00:51 +0200
+Message-Id: <20220823080124.506387071@linuxfoundation.org>
+X-Mailer: git-send-email 2.37.2
+In-Reply-To: <20220823080118.128342613@linuxfoundation.org>
+References: <20220823080118.128342613@linuxfoundation.org>
+User-Agent: quilt/0.67
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <YwRa/QxA/RRtxU3P@google.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Aug 23, 2022 at 04:43:41AM +0000, Tzung-Bi Shih wrote:
-> On Fri, Aug 19, 2022 at 07:08:04PM +0000, Prashant Malani wrote:
-> > Stash port number and a pointer to the driver-specific struct in the
-> > local Type-C port struct.
-> > 
-> > These can be useful to the port driver to figure out how to communicate
-> > with the ChromeOS EC when an altmode driver related callback is invoked
-> > from the Type-C class code.
-> 
-> The patch looks good to me.  But I would suggest to send it in later series
-> that uses the driver-specific struct (e.g. in altmode driver related callbacks)
-> to make the usage clear.
+From: Gerhard Engleder <gerhard@engleder-embedded.com>
 
-I agree.
+commit b3bb8628bf64440065976c71e4ab09186c393597 upstream.
 
-thanks,
+If tsnep_tx_map() fails, then tsnep_tx_unmap() shall start at the write
+index like tsnep_tx_map(). This is different to the normal operation.
+Thus, add an additional parameter to tsnep_tx_unmap() to enable start at
+different positions for successful TX and failed TX.
 
+Fixes: 403f69bbdbad ("tsnep: Add TSN endpoint Ethernet MAC driver")
+Signed-off-by: Gerhard Engleder <gerhard@engleder-embedded.com>
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+---
+ drivers/net/ethernet/engleder/tsnep_main.c | 8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
+
+diff --git a/drivers/net/ethernet/engleder/tsnep_main.c b/drivers/net/ethernet/engleder/tsnep_main.c
+index d98199f3414b..a5f7152a1716 100644
+--- a/drivers/net/ethernet/engleder/tsnep_main.c
++++ b/drivers/net/ethernet/engleder/tsnep_main.c
+@@ -340,14 +340,14 @@ static int tsnep_tx_map(struct sk_buff *skb, struct tsnep_tx *tx, int count)
+ 	return 0;
+ }
+ 
+-static void tsnep_tx_unmap(struct tsnep_tx *tx, int count)
++static void tsnep_tx_unmap(struct tsnep_tx *tx, int index, int count)
+ {
+ 	struct device *dmadev = tx->adapter->dmadev;
+ 	struct tsnep_tx_entry *entry;
+ 	int i;
+ 
+ 	for (i = 0; i < count; i++) {
+-		entry = &tx->entry[(tx->read + i) % TSNEP_RING_SIZE];
++		entry = &tx->entry[(index + i) % TSNEP_RING_SIZE];
+ 
+ 		if (entry->len) {
+ 			if (i == 0)
+@@ -395,7 +395,7 @@ static netdev_tx_t tsnep_xmit_frame_ring(struct sk_buff *skb,
+ 
+ 	retval = tsnep_tx_map(skb, tx, count);
+ 	if (retval != 0) {
+-		tsnep_tx_unmap(tx, count);
++		tsnep_tx_unmap(tx, tx->write, count);
+ 		dev_kfree_skb_any(entry->skb);
+ 		entry->skb = NULL;
+ 
+@@ -464,7 +464,7 @@ static bool tsnep_tx_poll(struct tsnep_tx *tx, int napi_budget)
+ 		if (skb_shinfo(entry->skb)->nr_frags > 0)
+ 			count += skb_shinfo(entry->skb)->nr_frags;
+ 
+-		tsnep_tx_unmap(tx, count);
++		tsnep_tx_unmap(tx, tx->read, count);
+ 
+ 		if ((skb_shinfo(entry->skb)->tx_flags & SKBTX_IN_PROGRESS) &&
+ 		    (__le32_to_cpu(entry->desc_wb->properties) &
 -- 
-heikki
+2.37.2
+
+
+
