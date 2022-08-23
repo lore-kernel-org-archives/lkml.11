@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7F41EC32774
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 09:13:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DF7ADC38145
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 09:13:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347335AbiHWJL4 (ORCPT
+        id S1348895AbiHWJN2 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 05:11:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39192 "EHLO
+        Tue, 23 Aug 2022 05:13:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33068 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348206AbiHWJJ5 (ORCPT
+        with ESMTP id S1348818AbiHWJKy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 05:09:57 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1DC8B74DD6;
-        Tue, 23 Aug 2022 01:30:52 -0700 (PDT)
+        Tue, 23 Aug 2022 05:10:54 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 455AC86B6F;
+        Tue, 23 Aug 2022 01:31:15 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id AC5D8614CA;
-        Tue, 23 Aug 2022 08:29:27 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B60ADC433B5;
-        Tue, 23 Aug 2022 08:29:26 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 1BC0F61446;
+        Tue, 23 Aug 2022 08:19:58 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 24EE7C433C1;
+        Tue, 23 Aug 2022 08:19:56 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661243367;
-        bh=TwqLt3hNn9yFWoN1IQ77dG1SLU8ADuZswLmHKbLb61w=;
+        s=korg; t=1661242797;
+        bh=P8ClimO+H2U7s8xsr2RV/hjyQfg0HAP3IMy45wBgbco=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=gVKNRmVHoQYeCVWeHwmWYI9CPl2hVG9TcfCrBrmtIQJ/RziwEY26enWN4Zgs3uzpd
-         dsKKh077qRDRiqR+hdvMrs7etBY07XMQLbmGFlR60Kn5m7nzY3GdDCH74jsrUt7dbx
-         C7kcBra7r2jKDBfAXepoRFa/DUWenHti/mK3t5C4=
+        b=Kgl/0oItTYINb5LezDrpt+wP1Rf+Fg+/Cwax7JlJan72J7Uv9py0m8R/65zsGP2wc
+         HYwx+ZNAE3Np/Dhfhxj7A6MK2dfOZJHT2rJ+5iEU6MachknOxmQxKmm2/FQ3DNy0nA
+         JWDEUCPi2CYNqv/caqRbwFj+LbrHiSiiZGwBCu8s=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Vladimir Oltean <vladimir.oltean@nxp.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.19 254/365] net: mscc: ocelot: report ndo_get_stats64 from the wraparound-resistant ocelot->stats
-Date:   Tue, 23 Aug 2022 10:02:35 +0200
-Message-Id: <20220823080128.824469865@linuxfoundation.org>
+        stable@vger.kernel.org, Al Viro <viro@zeniv.linux.org.uk>,
+        Dinh Nguyen <dinguyen@kernel.org>
+Subject: [PATCH 5.19 170/365] nios2: restarts apply only to the first sigframe we build...
+Date:   Tue, 23 Aug 2022 10:01:11 +0200
+Message-Id: <20220823080125.334084245@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220823080118.128342613@linuxfoundation.org>
 References: <20220823080118.128342613@linuxfoundation.org>
@@ -50,110 +49,27 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Vladimir Oltean <vladimir.oltean@nxp.com>
+From: Al Viro <viro@zeniv.linux.org.uk>
 
-[ Upstream commit e780e3193e889fd8358b862f7cd18ec5a4901caf ]
+commit 411a76b7219555c55867466c82d70ce928d6c9e1 upstream.
 
-Rather than reading the stats64 counters directly from the 32-bit
-hardware, it's better to rely on the output produced by the periodic
-ocelot_port_update_stats().
-
-It would be even better to call ocelot_port_update_stats() right from
-ocelot_get_stats64() to make sure we report the current values rather
-than the ones from 2 seconds ago. But we need to export
-ocelot_port_update_stats() from the switch lib towards the switchdev
-driver for that, and future work will largely undo that.
-
-There are more ocelot-based drivers waiting to be introduced, an example
-of which is the SPI-controlled VSC7512. In that driver's case, it will
-be impossible to call ocelot_port_update_stats() from ndo_get_stats64
-context, since the latter is atomic, and reading the stats over SPI is
-sleepable. So the compromise taken here, which will also hold going
-forward, is to report 64-bit counters to stats64, which are not 100% up
-to date.
-
-Fixes: a556c76adc05 ("net: mscc: Add initial Ocelot switch support")
-Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Fixes: b53e906d255d ("nios2: Signal handling support")
+Signed-off-by: Al Viro <viro@zeniv.linux.org.uk>
+Signed-off-by: Dinh Nguyen <dinguyen@kernel.org>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/net/ethernet/mscc/ocelot_net.c | 53 +++++++++++++-------------
- 1 file changed, 26 insertions(+), 27 deletions(-)
+ arch/nios2/kernel/signal.c |    1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/drivers/net/ethernet/mscc/ocelot_net.c b/drivers/net/ethernet/mscc/ocelot_net.c
-index 6b9d37138844..330d30841cdc 100644
---- a/drivers/net/ethernet/mscc/ocelot_net.c
-+++ b/drivers/net/ethernet/mscc/ocelot_net.c
-@@ -725,41 +725,40 @@ static void ocelot_get_stats64(struct net_device *dev,
- 	struct ocelot_port_private *priv = netdev_priv(dev);
- 	struct ocelot *ocelot = priv->port.ocelot;
- 	int port = priv->port.index;
-+	u64 *s;
+--- a/arch/nios2/kernel/signal.c
++++ b/arch/nios2/kernel/signal.c
+@@ -264,6 +264,7 @@ static int do_signal(struct pt_regs *reg
+ 			regs->ea = restart_addr;
+ 			break;
+ 		}
++		regs->orig_r2 = -1;
+ 	}
  
- 	spin_lock(&ocelot->stats_lock);
- 
--	/* Configure the port to read the stats from */
--	ocelot_write(ocelot, SYS_STAT_CFG_STAT_VIEW(port),
--		     SYS_STAT_CFG);
-+	s = &ocelot->stats[port * OCELOT_NUM_STATS];
- 
- 	/* Get Rx stats */
--	stats->rx_bytes = ocelot_read(ocelot, SYS_COUNT_RX_OCTETS);
--	stats->rx_packets = ocelot_read(ocelot, SYS_COUNT_RX_SHORTS) +
--			    ocelot_read(ocelot, SYS_COUNT_RX_FRAGMENTS) +
--			    ocelot_read(ocelot, SYS_COUNT_RX_JABBERS) +
--			    ocelot_read(ocelot, SYS_COUNT_RX_LONGS) +
--			    ocelot_read(ocelot, SYS_COUNT_RX_64) +
--			    ocelot_read(ocelot, SYS_COUNT_RX_65_127) +
--			    ocelot_read(ocelot, SYS_COUNT_RX_128_255) +
--			    ocelot_read(ocelot, SYS_COUNT_RX_256_511) +
--			    ocelot_read(ocelot, SYS_COUNT_RX_512_1023) +
--			    ocelot_read(ocelot, SYS_COUNT_RX_1024_1526) +
--			    ocelot_read(ocelot, SYS_COUNT_RX_1527_MAX);
--	stats->multicast = ocelot_read(ocelot, SYS_COUNT_RX_MULTICAST);
-+	stats->rx_bytes = s[OCELOT_STAT_RX_OCTETS];
-+	stats->rx_packets = s[OCELOT_STAT_RX_SHORTS] +
-+			    s[OCELOT_STAT_RX_FRAGMENTS] +
-+			    s[OCELOT_STAT_RX_JABBERS] +
-+			    s[OCELOT_STAT_RX_LONGS] +
-+			    s[OCELOT_STAT_RX_64] +
-+			    s[OCELOT_STAT_RX_65_127] +
-+			    s[OCELOT_STAT_RX_128_255] +
-+			    s[OCELOT_STAT_RX_256_511] +
-+			    s[OCELOT_STAT_RX_512_1023] +
-+			    s[OCELOT_STAT_RX_1024_1526] +
-+			    s[OCELOT_STAT_RX_1527_MAX];
-+	stats->multicast = s[OCELOT_STAT_RX_MULTICAST];
- 	stats->rx_dropped = dev->stats.rx_dropped;
- 
- 	/* Get Tx stats */
--	stats->tx_bytes = ocelot_read(ocelot, SYS_COUNT_TX_OCTETS);
--	stats->tx_packets = ocelot_read(ocelot, SYS_COUNT_TX_64) +
--			    ocelot_read(ocelot, SYS_COUNT_TX_65_127) +
--			    ocelot_read(ocelot, SYS_COUNT_TX_128_255) +
--			    ocelot_read(ocelot, SYS_COUNT_TX_256_511) +
--			    ocelot_read(ocelot, SYS_COUNT_TX_512_1023) +
--			    ocelot_read(ocelot, SYS_COUNT_TX_1024_1526) +
--			    ocelot_read(ocelot, SYS_COUNT_TX_1527_MAX);
--	stats->tx_dropped = ocelot_read(ocelot, SYS_COUNT_TX_DROPS) +
--			    ocelot_read(ocelot, SYS_COUNT_TX_AGING);
--	stats->collisions = ocelot_read(ocelot, SYS_COUNT_TX_COLLISION);
-+	stats->tx_bytes = s[OCELOT_STAT_TX_OCTETS];
-+	stats->tx_packets = s[OCELOT_STAT_TX_64] +
-+			    s[OCELOT_STAT_TX_65_127] +
-+			    s[OCELOT_STAT_TX_128_255] +
-+			    s[OCELOT_STAT_TX_256_511] +
-+			    s[OCELOT_STAT_TX_512_1023] +
-+			    s[OCELOT_STAT_TX_1024_1526] +
-+			    s[OCELOT_STAT_TX_1527_MAX];
-+	stats->tx_dropped = s[OCELOT_STAT_TX_DROPS] +
-+			    s[OCELOT_STAT_TX_AGED];
-+	stats->collisions = s[OCELOT_STAT_TX_COLLISION];
- 
- 	spin_unlock(&ocelot->stats_lock);
- }
--- 
-2.35.1
-
+ 	if (get_signal(&ksig)) {
 
 
