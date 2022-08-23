@@ -2,47 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 65EABC3F6B0
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 09:55:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 89FCCC32772
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 09:55:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242893AbiHWJzB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 05:55:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39320 "EHLO
+        id S243055AbiHWJzJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 23 Aug 2022 05:55:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42312 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352421AbiHWJvn (ORCPT
+        with ESMTP id S241181AbiHWJvp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 05:51:43 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A8E7E7AC3B;
-        Tue, 23 Aug 2022 01:46:05 -0700 (PDT)
+        Tue, 23 Aug 2022 05:51:45 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D21DE9F1A4;
+        Tue, 23 Aug 2022 01:46:12 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 06643B81BF8;
-        Tue, 23 Aug 2022 08:44:54 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 37933C433D7;
-        Tue, 23 Aug 2022 08:44:52 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id D55F2614E9;
+        Tue, 23 Aug 2022 08:45:29 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CAB3BC433C1;
+        Tue, 23 Aug 2022 08:45:28 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661244292;
-        bh=W3VFKsovqPE52cx//52StwJtQgVcG17ZcO2tXb6pBBg=;
+        s=korg; t=1661244329;
+        bh=AOk+oevlxIEWe26QrP0aZwFVPDWgUz50rIsB56MoIl8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Nvprk2L9qmHu0A8Hldvc+jeIflgJYqg4CnvqFHZOCQ9I/Jfm/A6pBuao8Npu4EVZW
-         iaJnSTzHLMh1I5fAn8n4zHw1Cx01uz/6EGfTCi9TtD2oAMZ2y3w+HDZ8eqYEofi149
-         mNIhxlZ/NSHavdr/z83A43xjDS4Chkf8kwE5LRwo=
+        b=kP0TJXniWO+nAodBRPqbOs070VEu0Y11MsqFDSPlXEsXwV0z4ueSi0lHaLbGgOJD9
+         54ijxR6t6zhXhs5l/qiGUqES2dr13H3nOucxjoUIQHuFrAat2FQQJm30goUole71r1
+         nwGoWwD9B5rvbLBTnYEosU/d4H6ylOKXyAJ3WDy8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        syzbot+833061116fa28df97f3b@syzkaller.appspotmail.com,
-        Zhu Yanjun <yanjun.zhu@linux.dev>,
-        Jason Gunthorpe <jgg@nvidia.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.14 115/229] RDMA/rxe: Fix error unwind in rxe_create_qp()
-Date:   Tue, 23 Aug 2022 10:24:36 +0200
-Message-Id: <20220823080057.796238049@linuxfoundation.org>
+        stable@vger.kernel.org, Subbaraya Sundeep <sbhatta@marvell.com>,
+        Sunil Goutham <sgoutham@marvell.com>,
+        Jakub Kicinski <kuba@kernel.org>
+Subject: [PATCH 5.15 074/244] octeontx2-af: Fix key checking for source mac
+Date:   Tue, 23 Aug 2022 10:23:53 +0200
+Message-Id: <20220823080101.530596409@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220823080053.202747790@linuxfoundation.org>
-References: <20220823080053.202747790@linuxfoundation.org>
+In-Reply-To: <20220823080059.091088642@linuxfoundation.org>
+References: <20220823080059.091088642@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -51,69 +49,36 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Zhu Yanjun <yanjun.zhu@linux.dev>
+From: Subbaraya Sundeep <sbhatta@marvell.com>
 
-[ Upstream commit fd5382c5805c4bcb50fd25b7246247d3f7114733 ]
+commit c3c290276927a3ae79342a4e17ec0500c138c63a upstream.
 
-In the function rxe_create_qp(), rxe_qp_from_init() is called to
-initialize qp, internally things like the spin locks are not setup until
-rxe_qp_init_req().
+Given a field with its location/offset in input packet,
+the key checking logic verifies whether extracting the
+field can be supported or not based on the mkex profile
+loaded in hardware. This logic is wrong wrt source mac
+and this patch fixes that.
 
-If an error occures before this point then the unwind will call
-rxe_cleanup() and eventually to rxe_qp_do_cleanup()/rxe_cleanup_task()
-which will oops when trying to access the uninitialized spinlock.
-
-Move the spinlock initializations earlier before any failures.
-
-Fixes: 8700e3e7c485 ("Soft RoCE driver")
-Link: https://lore.kernel.org/r/20220731063621.298405-1-yanjun.zhu@linux.dev
-Reported-by: syzbot+833061116fa28df97f3b@syzkaller.appspotmail.com
-Signed-off-by: Zhu Yanjun <yanjun.zhu@linux.dev>
-Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Fixes: 9b179a960a96 ("octeontx2-af: Generate key field bit mask from KEX profile")
+Signed-off-by: Subbaraya Sundeep <sbhatta@marvell.com>
+Signed-off-by: Sunil Goutham <sgoutham@marvell.com>
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/infiniband/sw/rxe/rxe_qp.c | 12 ++++++++----
- 1 file changed, 8 insertions(+), 4 deletions(-)
+ drivers/net/ethernet/marvell/octeontx2/af/rvu_npc_fs.c |    3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/infiniband/sw/rxe/rxe_qp.c b/drivers/infiniband/sw/rxe/rxe_qp.c
-index 28c7b91531b6..6964e843bbae 100644
---- a/drivers/infiniband/sw/rxe/rxe_qp.c
-+++ b/drivers/infiniband/sw/rxe/rxe_qp.c
-@@ -220,6 +220,14 @@ static void rxe_qp_init_misc(struct rxe_dev *rxe, struct rxe_qp *qp,
- 	spin_lock_init(&qp->grp_lock);
- 	spin_lock_init(&qp->state_lock);
- 
-+	spin_lock_init(&qp->req.task.state_lock);
-+	spin_lock_init(&qp->resp.task.state_lock);
-+	spin_lock_init(&qp->comp.task.state_lock);
-+
-+	spin_lock_init(&qp->sq.sq_lock);
-+	spin_lock_init(&qp->rq.producer_lock);
-+	spin_lock_init(&qp->rq.consumer_lock);
-+
- 	atomic_set(&qp->ssn, 0);
- 	atomic_set(&qp->skb_out, 0);
+--- a/drivers/net/ethernet/marvell/octeontx2/af/rvu_npc_fs.c
++++ b/drivers/net/ethernet/marvell/octeontx2/af/rvu_npc_fs.c
+@@ -445,7 +445,8 @@ do {									       \
+ 	NPC_SCAN_HDR(NPC_VLAN_TAG1, NPC_LID_LB, NPC_LT_LB_CTAG, 2, 2);
+ 	NPC_SCAN_HDR(NPC_VLAN_TAG2, NPC_LID_LB, NPC_LT_LB_STAG_QINQ, 2, 2);
+ 	NPC_SCAN_HDR(NPC_DMAC, NPC_LID_LA, la_ltype, la_start, 6);
+-	NPC_SCAN_HDR(NPC_SMAC, NPC_LID_LA, la_ltype, la_start, 6);
++	/* SMAC follows the DMAC(which is 6 bytes) */
++	NPC_SCAN_HDR(NPC_SMAC, NPC_LID_LA, la_ltype, la_start + 6, 6);
+ 	/* PF_FUNC is 2 bytes at 0th byte of NPC_LT_LA_IH_NIX_ETHER */
+ 	NPC_SCAN_HDR(NPC_PF_FUNC, NPC_LID_LA, NPC_LT_LA_IH_NIX_ETHER, 0, 2);
  }
-@@ -267,7 +275,6 @@ static int rxe_qp_init_req(struct rxe_dev *rxe, struct rxe_qp *qp,
- 	qp->req.opcode		= -1;
- 	qp->comp.opcode		= -1;
- 
--	spin_lock_init(&qp->sq.sq_lock);
- 	skb_queue_head_init(&qp->req_pkts);
- 
- 	rxe_init_task(rxe, &qp->req.task, qp,
-@@ -317,9 +324,6 @@ static int rxe_qp_init_resp(struct rxe_dev *rxe, struct rxe_qp *qp,
- 		}
- 	}
- 
--	spin_lock_init(&qp->rq.producer_lock);
--	spin_lock_init(&qp->rq.consumer_lock);
--
- 	skb_queue_head_init(&qp->resp_pkts);
- 
- 	rxe_init_task(rxe, &qp->resp.task, qp,
--- 
-2.35.1
-
 
 
