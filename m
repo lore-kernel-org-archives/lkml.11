@@ -2,44 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4E433C32772
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 10:10:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AFA70C32793
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 10:10:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353004AbiHWKJ7 (ORCPT
+        id S1353020AbiHWKKE (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 06:09:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46356 "EHLO
+        Tue, 23 Aug 2022 06:10:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44750 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352728AbiHWKCZ (ORCPT
+        with ESMTP id S1352733AbiHWKC0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 06:02:25 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 622677C527;
-        Tue, 23 Aug 2022 01:50:36 -0700 (PDT)
+        Tue, 23 Aug 2022 06:02:26 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 716CF7C52E;
+        Tue, 23 Aug 2022 01:50:41 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id EC92461377;
-        Tue, 23 Aug 2022 08:50:35 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id F3D50C433C1;
-        Tue, 23 Aug 2022 08:50:34 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id C6C34B8105C;
+        Tue, 23 Aug 2022 08:50:39 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0C41CC433D6;
+        Tue, 23 Aug 2022 08:50:37 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661244635;
-        bh=z1UAbFAEBCVO/+MvUTbYWvY6QVA8Oi88OBcKimNBt8I=;
+        s=korg; t=1661244638;
+        bh=hEUNJb7IAicBZVfgahbqM6ydvks3bcoQGC/znlVEVbs=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=2mAsYmkv3DokyukLm/jC84fXeTWh8We4mkk3W8IDQXojaWNzQVECfO4ucMuy2UDsJ
-         4NdelBXU0wovNUbDEJGLP6hDJuOH7kRqD+jordOagHVKlOAFjhNmHajIaK+MgvgocT
-         KA1cBaf/yFXy0JpRqHMZc18RBtHL5PvAihthMwyo=
+        b=blqU+WJEeTRoc+wRKaC3rGKTfq243USOROI3zycNs5NcT0eFL7yMIu6rz+dCrbXeX
+         KtA+ZUdrojxer0kNvG+vKB4L47S16h8PbqxH5p30mDlQU03Ca3ay+wyV8EjFNfxLcn
+         q2/4+Bv9pD+TxRR+bOzWCp+Z0cV0YAq3FWFGwEhg=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
+To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Pablo Neira Ayuso <pablo@netfilter.org>
-Subject: [PATCH 5.15 126/244] netfilter: nf_tables: possible module reference underflow in error path
-Date:   Tue, 23 Aug 2022 10:24:45 +0200
-Message-Id: <20220823080103.290641883@linuxfoundation.org>
+        Vitaly Kuznetsov <vkuznets@redhat.com>,
+        Paolo Bonzini <pbonzini@redhat.com>,
+        Stefan Ghinea <stefan.ghinea@windriver.com>
+Subject: [PATCH 4.14 168/229] KVM: x86: Avoid theoretical NULL pointer dereference in kvm_irq_delivery_to_apic_fast()
+Date:   Tue, 23 Aug 2022 10:25:29 +0200
+Message-Id: <20220823080059.653148604@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220823080059.091088642@linuxfoundation.org>
-References: <20220823080059.091088642@linuxfoundation.org>
+In-Reply-To: <20220823080053.202747790@linuxfoundation.org>
+References: <20220823080053.202747790@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -48,31 +50,36 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Pablo Neira Ayuso <pablo@netfilter.org>
+From: Vitaly Kuznetsov <vkuznets@redhat.com>
 
-commit c485c35ff6783ccd12c160fcac6a0e504e83e0bf upstream.
+commit 00b5f37189d24ac3ed46cb7f11742094778c46ce upstream
 
-dst->ops is set on when nft_expr_clone() fails, but module refcount has
-not been bumped yet, therefore nft_expr_destroy() leads to module
-reference underflow.
+When kvm_irq_delivery_to_apic_fast() is called with APIC_DEST_SELF
+shorthand, 'src' must not be NULL. Crash the VM with KVM_BUG_ON()
+instead of crashing the host.
 
-Fixes: 8cfd9b0f8515 ("netfilter: nftables: generalize set expressions support")
-Signed-off-by: Pablo Neira Ayuso <pablo@netfilter.org>
+Signed-off-by: Vitaly Kuznetsov <vkuznets@redhat.com>
+Message-Id: <20220325132140.25650-3-vkuznets@redhat.com>
+Cc: stable@vger.kernel.org
+Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
+Signed-off-by: Stefan Ghinea <stefan.ghinea@windriver.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- net/netfilter/nf_tables_api.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ arch/x86/kvm/lapic.c |    4 ++++
+ 1 file changed, 4 insertions(+)
 
---- a/net/netfilter/nf_tables_api.c
-+++ b/net/netfilter/nf_tables_api.c
-@@ -5479,7 +5479,7 @@ int nft_set_elem_expr_clone(const struct
+--- a/arch/x86/kvm/lapic.c
++++ b/arch/x86/kvm/lapic.c
+@@ -894,6 +894,10 @@ bool kvm_irq_delivery_to_apic_fast(struc
+ 	*r = -1;
  
- 		err = nft_expr_clone(expr, set->exprs[i]);
- 		if (err < 0) {
--			nft_expr_destroy(ctx, expr);
-+			kfree(expr);
- 			goto err_expr;
- 		}
- 		expr_array[i] = expr;
+ 	if (irq->shorthand == APIC_DEST_SELF) {
++		if (KVM_BUG_ON(!src, kvm)) {
++			*r = 0;
++			return true;
++		}
+ 		*r = kvm_apic_set_irq(src->vcpu, irq, dest_map);
+ 		return true;
+ 	}
 
 
