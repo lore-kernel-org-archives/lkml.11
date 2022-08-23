@@ -2,46 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D14F6C32772
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 09:34:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A8D6BC32772
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 09:34:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350524AbiHWJeT (ORCPT
+        id S1351122AbiHWJeW (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 05:34:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38908 "EHLO
+        Tue, 23 Aug 2022 05:34:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44884 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350825AbiHWJcs (ORCPT
+        with ESMTP id S1350418AbiHWJdW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 05:32:48 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 08DA07B1FE;
-        Tue, 23 Aug 2022 01:38:54 -0700 (PDT)
+        Tue, 23 Aug 2022 05:33:22 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A96D378212;
+        Tue, 23 Aug 2022 01:38:58 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id B21AE61446;
-        Tue, 23 Aug 2022 08:37:43 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 72825C433D7;
-        Tue, 23 Aug 2022 08:37:42 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 0891B6153D;
+        Tue, 23 Aug 2022 08:37:56 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id ED823C433C1;
+        Tue, 23 Aug 2022 08:37:54 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661243863;
-        bh=YtjYNrgY2aCbWqM67G8OxeniAR3dUoUmn0JshvL67Sg=;
+        s=korg; t=1661243875;
+        bh=ZstIGx19tNrgBwXE19tyyN/2RX+LrXWnx6pfJ4E83Bs=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=b8VojThlw9yWwsOYXuZDvq6xkVIs5Pn5+1E/o8tlmzl1Oe2A1khmGJv8m0aW5RLb2
-         QDou+peHP52SenV3fkEBaZy12A9Jjhi86Ly5FTGZZHc1VmLjkwYyn2F0P4KEdXeK5w
-         4tjOugH24wWBuWxw8igAPfcarh5KkRPl/ACoz4qg=
+        b=MJde5XRcWL+GHXWwoLcoW0sinVu3pEQgbZR/q2qGOkp1rz3KdjU8lpJ44ojpuF+gj
+         ujCH/9aeXsf9U3ucC6hlt+3YJfaJigbI+avUo0FpqTHbqID8nlnySU9ecisV8lxz0E
+         HMfi+s54KjXeU0e8vAx6MzkWFgkdTHGAgHO1jiFM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, huhai <huhai@kylinos.cn>,
-        "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.14 046/229] ACPI: LPSS: Fix missing check in register_device_clock()
-Date:   Tue, 23 Aug 2022 10:23:27 +0200
-Message-Id: <20220823080055.305291010@linuxfoundation.org>
+        stable@vger.kernel.org, Christoffer Sandberg <cs@tuxedo.de>,
+        Werner Sembach <wse@tuxedocomputers.com>,
+        Takashi Iwai <tiwai@suse.de>
+Subject: [PATCH 5.15 002/244] ALSA: hda/realtek: Add quirk for Clevo NS50PU, NS70PU
+Date:   Tue, 23 Aug 2022 10:22:41 +0200
+Message-Id: <20220823080059.174792579@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220823080053.202747790@linuxfoundation.org>
-References: <20220823080053.202747790@linuxfoundation.org>
+In-Reply-To: <20220823080059.091088642@linuxfoundation.org>
+References: <20220823080059.091088642@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -50,36 +50,31 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: huhai <huhai@kylinos.cn>
+From: Christoffer Sandberg <cs@tuxedo.de>
 
-[ Upstream commit b4f1f61ed5928b1128e60e38d0dffa16966f06dc ]
+commit 90d74fdbd8059bf041ac797092c9b1d461555280 upstream.
 
-register_device_clock() misses a check for platform_device_register_simple().
-Add a check to fix it.
+Fixes headset microphone detection on Clevo NS50PU and NS70PU.
 
-Signed-off-by: huhai <huhai@kylinos.cn>
-Signed-off-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Signed-off-by: Christoffer Sandberg <cs@tuxedo.de>
+Signed-off-by: Werner Sembach <wse@tuxedocomputers.com>
+Cc: <stable@vger.kernel.org>
+Link: https://lore.kernel.org/r/20220817135144.34103-1-wse@tuxedocomputers.com
+Signed-off-by: Takashi Iwai <tiwai@suse.de>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/acpi/acpi_lpss.c | 3 +++
- 1 file changed, 3 insertions(+)
+ sound/pci/hda/patch_realtek.c |    1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/drivers/acpi/acpi_lpss.c b/drivers/acpi/acpi_lpss.c
-index 84b1d30f699c..faa83ff03674 100644
---- a/drivers/acpi/acpi_lpss.c
-+++ b/drivers/acpi/acpi_lpss.c
-@@ -396,6 +396,9 @@ static int register_device_clock(struct acpi_device *adev,
- 	if (!lpss_clk_dev)
- 		lpt_register_clock_device();
- 
-+	if (IS_ERR(lpss_clk_dev))
-+		return PTR_ERR(lpss_clk_dev);
-+
- 	clk_data = platform_get_drvdata(lpss_clk_dev);
- 	if (!clk_data)
- 		return -ENODEV;
--- 
-2.35.1
-
+--- a/sound/pci/hda/patch_realtek.c
++++ b/sound/pci/hda/patch_realtek.c
+@@ -9034,6 +9034,7 @@ static const struct snd_pci_quirk alc269
+ 	SND_PCI_QUIRK(0x1558, 0x70f4, "Clevo NH77EPY", ALC293_FIXUP_SYSTEM76_MIC_NO_PRESENCE),
+ 	SND_PCI_QUIRK(0x1558, 0x70f6, "Clevo NH77DPQ-Y", ALC293_FIXUP_SYSTEM76_MIC_NO_PRESENCE),
+ 	SND_PCI_QUIRK(0x1558, 0x7716, "Clevo NS50PU", ALC256_FIXUP_SYSTEM76_MIC_NO_PRESENCE),
++	SND_PCI_QUIRK(0x1558, 0x7717, "Clevo NS70PU", ALC256_FIXUP_SYSTEM76_MIC_NO_PRESENCE),
+ 	SND_PCI_QUIRK(0x1558, 0x7718, "Clevo L140PU", ALC256_FIXUP_SYSTEM76_MIC_NO_PRESENCE),
+ 	SND_PCI_QUIRK(0x1558, 0x8228, "Clevo NR40BU", ALC293_FIXUP_SYSTEM76_MIC_NO_PRESENCE),
+ 	SND_PCI_QUIRK(0x1558, 0x8520, "Clevo NH50D[CD]", ALC293_FIXUP_SYSTEM76_MIC_NO_PRESENCE),
 
 
