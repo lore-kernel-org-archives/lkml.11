@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 644B6C38147
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 11:37:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4BF66C32793
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 11:38:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354292AbiHWLhp (ORCPT
+        id S1357726AbiHWLiE (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 07:37:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49044 "EHLO
+        Tue, 23 Aug 2022 07:38:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47840 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357831AbiHWLcA (ORCPT
+        with ESMTP id S1357895AbiHWLcD (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 07:32:00 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0EFF375FCE;
-        Tue, 23 Aug 2022 02:26:10 -0700 (PDT)
+        Tue, 23 Aug 2022 07:32:03 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9BB2E76771;
+        Tue, 23 Aug 2022 02:26:15 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 0F198B81C65;
-        Tue, 23 Aug 2022 09:26:09 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5EDEAC433C1;
-        Tue, 23 Aug 2022 09:26:07 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 5EA8A61298;
+        Tue, 23 Aug 2022 09:26:14 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5B0EDC433D6;
+        Tue, 23 Aug 2022 09:26:13 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661246767;
-        bh=NkX0qgk5tZRIxs43a3xj1BCoIDnP/FbY0Ka00fh+t3A=;
+        s=korg; t=1661246773;
+        bh=LU+i9Y3DeEs3gaPeB5c6U4A88crF1X1avfsT7OZrnsQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=MHVpOi/+e9acOyBGg3FMncpgwTp1ae02yA36e89viUwabJodinhhYabC5yXMgKCsR
-         h68WKt6MX0M7dxOdBXZbo4mcx8y/mDZVUp5ewcsttxga/DC2b4VseW+IqT4sAGmQ/h
-         Mh3/aOQ+oReuGYdljvKlzoO+HqQcmqHjOKLQfIAE=
+        b=YAA0WrxPL5BMkvogV4aPDK2SEWXiZSiLBOUQVucsaj+dm6p3Wrz6SnhOFO8DjJGbt
+         /US0H4TUikcFMR4Iym+UcNmiDDRRIo0Hb6yGF9ZUKKFAH7BZl0+L1iD9T9Tbo4XzJV
+         Ldiofa3DjhRI6rrJitDFQgEq41Dr+Lt+iNamTOgw=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Miaohe Lin <linmiaohe@huawei.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
+        stable@vger.kernel.org, Eric Farman <farman@linux.ibm.com>,
+        Matthew Rosato <mjrosato@linux.ibm.com>,
+        Alex Williamson <alex.williamson@redhat.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 196/389] mm/mmap.c: fix missing call to vm_unacct_memory in mmap_region
-Date:   Tue, 23 Aug 2022 10:24:34 +0200
-Message-Id: <20220823080123.833921106@linuxfoundation.org>
+Subject: [PATCH 5.4 215/389] vfio/ccw: Do not change FSM state in subchannel event
+Date:   Tue, 23 Aug 2022 10:24:53 +0200
+Message-Id: <20220823080124.579714107@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220823080115.331990024@linuxfoundation.org>
 References: <20220823080115.331990024@linuxfoundation.org>
@@ -50,38 +51,59 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Miaohe Lin <linmiaohe@huawei.com>
+From: Eric Farman <farman@linux.ibm.com>
 
-[ Upstream commit 7f82f922319ede486540e8746769865b9508d2c2 ]
+[ Upstream commit cffcc109fd682075dee79bade3d60a07152a8fd1 ]
 
-Since the beginning, charged is set to 0 to avoid calling vm_unacct_memory
-twice because vm_unacct_memory will be called by above unmap_region.  But
-since commit 4f74d2c8e827 ("vm: remove 'nr_accounted' calculations from
-the unmap_vmas() interfaces"), unmap_region doesn't call vm_unacct_memory
-anymore.  So charged shouldn't be set to 0 now otherwise the calling to
-paired vm_unacct_memory will be missed and leads to imbalanced account.
+The routine vfio_ccw_sch_event() is tasked with handling subchannel events,
+specifically machine checks, on behalf of vfio-ccw. It correctly calls
+cio_update_schib(), and if that fails (meaning the subchannel is gone)
+it makes an FSM event call to mark the subchannel Not Operational.
 
-Link: https://lkml.kernel.org/r/20220618082027.43391-1-linmiaohe@huawei.com
-Fixes: 4f74d2c8e827 ("vm: remove 'nr_accounted' calculations from the unmap_vmas() interfaces")
-Signed-off-by: Miaohe Lin <linmiaohe@huawei.com>
-Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
+If that worked, however, then it decides that if the FSM state was already
+Not Operational (implying the subchannel just came back), then it should
+simply change the FSM to partially- or fully-open.
+
+Remove this trickery, since a subchannel returning will require more
+probing than simply "oh all is well again" to ensure it works correctly.
+
+Fixes: bbe37e4cb8970 ("vfio: ccw: introduce a finite state machine")
+Signed-off-by: Eric Farman <farman@linux.ibm.com>
+Reviewed-by: Matthew Rosato <mjrosato@linux.ibm.com>
+Link: https://lore.kernel.org/r/20220707135737.720765-4-farman@linux.ibm.com
+Signed-off-by: Alex Williamson <alex.williamson@redhat.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- mm/mmap.c | 1 -
- 1 file changed, 1 deletion(-)
+ drivers/s390/cio/vfio_ccw_drv.c | 14 +++-----------
+ 1 file changed, 3 insertions(+), 11 deletions(-)
 
-diff --git a/mm/mmap.c b/mm/mmap.c
-index 88e686367776..8873ef114d28 100644
---- a/mm/mmap.c
-+++ b/mm/mmap.c
-@@ -1860,7 +1860,6 @@ unsigned long mmap_region(struct file *file, unsigned long addr,
+diff --git a/drivers/s390/cio/vfio_ccw_drv.c b/drivers/s390/cio/vfio_ccw_drv.c
+index fd590d1cffc1..d42e5a307437 100644
+--- a/drivers/s390/cio/vfio_ccw_drv.c
++++ b/drivers/s390/cio/vfio_ccw_drv.c
+@@ -247,19 +247,11 @@ static int vfio_ccw_sch_event(struct subchannel *sch, int process)
+ 	if (work_pending(&sch->todo_work))
+ 		goto out_unlock;
  
- 	/* Undo any partial mapping done by a device driver. */
- 	unmap_region(mm, vma, prev, vma->vm_start, vma->vm_end);
--	charged = 0;
- 	if (vm_flags & VM_SHARED)
- 		mapping_unmap_writable(file->f_mapping);
- allow_write_and_free_vma:
+-	if (cio_update_schib(sch)) {
+-		vfio_ccw_fsm_event(private, VFIO_CCW_EVENT_NOT_OPER);
+-		rc = 0;
+-		goto out_unlock;
+-	}
+-
+-	private = dev_get_drvdata(&sch->dev);
+-	if (private->state == VFIO_CCW_STATE_NOT_OPER) {
+-		private->state = private->mdev ? VFIO_CCW_STATE_IDLE :
+-				 VFIO_CCW_STATE_STANDBY;
+-	}
+ 	rc = 0;
+ 
++	if (cio_update_schib(sch))
++		vfio_ccw_fsm_event(private, VFIO_CCW_EVENT_NOT_OPER);
++
+ out_unlock:
+ 	spin_unlock_irqrestore(sch->lock, flags);
+ 
 -- 
 2.35.1
 
