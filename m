@@ -2,142 +2,97 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 563ABC32772
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 17:58:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7C5E9C32772
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 17:58:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230200AbiHWR6Z (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 13:58:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48928 "EHLO
+        id S232981AbiHWR6v (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 23 Aug 2022 13:58:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55120 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233018AbiHWR6G (ORCPT
+        with ESMTP id S232918AbiHWR6U (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 13:58:06 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9B127C88B7;
-        Tue, 23 Aug 2022 09:03:48 -0700 (PDT)
+        Tue, 23 Aug 2022 13:58:20 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9C08E8284F
+        for <linux-kernel@vger.kernel.org>; Tue, 23 Aug 2022 09:04:06 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id A69FEB81E4A;
-        Tue, 23 Aug 2022 16:03:47 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 68E3AC433C1;
-        Tue, 23 Aug 2022 16:03:46 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 8B34861639
+        for <linux-kernel@vger.kernel.org>; Tue, 23 Aug 2022 16:04:05 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 641F5C433C1;
+        Tue, 23 Aug 2022 16:04:02 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1661270626;
-        bh=DcQguS3xcqvdUwJBYUKZFjMYJ1eAQt2jFuBShofNZFM=;
+        s=k20201202; t=1661270644;
+        bh=fYdMfktNKHFq24X7NJ8h8EJKjeWjNqBelu68P9jBtBY=;
         h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=lym0j6r1LtkcJ42JLxWeB7eOzui/CeL8GpRtf2Bf6zpWMwq3sl1gNI+bpnNtQ3RF5
-         heF/j9XzObSiiTYJprQpOWl/D30OIekk+ZiCvxb6Nc5SXUqhspkfkCrgQ6oU/07DNb
-         u/3nK2TFUZnn+esL4oNgY4lIYkmVtLPDsyqOcquw416NlqcyK/VtNkKkP+Hi531nGO
-         DAxj4R9Ve3kAsx0swBwdRIOZPAu10Vr/CLPfRrf6/QzbZoUwAb59mRv2WkA57SVe+i
-         vpRnMnwciUk6UHFRVrByeXatrwp1EWU4dyoPGw93se1xEQ3yM9VweGiaVas87S1uO/
-         Tfp530/wFr3Sw==
-Date:   Tue, 23 Aug 2022 09:03:45 -0700
-From:   "Darrick J. Wong" <djwong@kernel.org>
-To:     Lalith Rajendran <lalithkraj@google.com>
-Cc:     tytso@mit.edu, dilger.kernel@dilger.ca, linux-ext4@vger.kernel.org,
-        linux-kernel@vger.kernel.org, xfs <linux-xfs@vger.kernel.org>
-Subject: Re: [PATCH] ext4: Make ext4_lazyinit_thread freezable.
-Message-ID: <YwT6YelUyY+fjkT4@magnolia>
-References: <20220818214049.1519544-1-lalithkraj@google.com>
- <Yv7UYfFBmRTKXNc7@magnolia>
- <CANscXK018_PSLPSeTyne7D+KWHa74kyHmdJ8Bxfxyf=5YMPSfw@mail.gmail.com>
+        b=BAW4lBiCfcbfYLEylH3hcpXAnmDCtoBdyBanrOxql8kD4MtOvJ1E1HFFsyQbkrw8m
+         vZwB+UMExBUJ6L9YKSaiIZTNl13g2LQS13aNsBVKw22iHh9tFpgsLwhGZ3vdH39ekm
+         svEvl/cH0iZV/Qni1KD765BMuDN4qdXCzFG2+9ou8s6o7Ap6vCKhcwy0d4LsB0u8yU
+         DEEOoUSULNex09GO3DoskZaoGwpPPyK4fL0KqLKqTRQUIDcYL2SZVdUEjx64y89QSW
+         v5GXwt1lj0qduhAy43VsgvuRxvkuQyZUz4Mnx4nHZoBYYjp+6nJr/qahmgrNINyInX
+         jfm4j/9pkNAoQ==
+Date:   Tue, 23 Aug 2022 17:03:58 +0100
+From:   Mark Brown <broonie@kernel.org>
+To:     Nathan Chancellor <nathan@kernel.org>
+Cc:     Codrin Ciubotariu <codrin.ciubotariu@microchip.com>,
+        Liam Girdwood <lgirdwood@gmail.com>,
+        Claudiu Beznea <claudiu.beznea@microchip.com>,
+        alsa-devel@alsa-project.org, linux-arm-kernel@lists.infradead.org,
+        linux-kernel@vger.kernel.org,
+        Nicolas Ferre <nicolas.ferre@microchip.com>,
+        llvm@lists.linux.dev,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        Nick Desaulniers <ndesaulniers@google.com>,
+        Tom Rix <trix@redhat.com>
+Subject: Re: [PATCH] ASoC: mchp-spdiftx: Fix clang
+ -Wbitfield-constant-conversion
+Message-ID: <YwT6bmqeBeoYcRi7@sirena.org.uk>
+References: <20220810010809.2024482-1-nathan@kernel.org>
+ <166058059542.769843.4941839393289864947.b4-ty@kernel.org>
+ <YwT0oUjo/lzBDRdH@dev-arch.thelio-3990X>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="bRD/piUAUlQcMCKB"
 Content-Disposition: inline
-In-Reply-To: <CANscXK018_PSLPSeTyne7D+KWHa74kyHmdJ8Bxfxyf=5YMPSfw@mail.gmail.com>
+In-Reply-To: <YwT0oUjo/lzBDRdH@dev-arch.thelio-3990X>
+X-Cookie: You can't take damsel here now.
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Aug 23, 2022 at 08:37:43AM -0700, Lalith Rajendran wrote:
-> Thank you for the comment.
-> Can you provide more details on how
-> https://lore.kernel.org/linux-fsdevel/20210417001026.23858-1-mcgrof@kernel.org/
-> is
-> related to your comment to freeze all filesystems in order?
 
-This all got started a long time ago[0] when I noticed that suspend often
-fails on my laptop because the kthread freezer will shut down some of
-XFS' low level background kernel threads before higher level background
-threads have been put to sleep.  In this case, suspend kills the buffer
-IO completion thread before the XFS log worker, which means the log
-worker stalls trying to write the log contents back to disk:
+--bRD/piUAUlQcMCKB
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 
-[0] https://lore.kernel.org/linux-xfs/20170203010401.GR9134@birch.djwong.org/
+On Tue, Aug 23, 2022 at 08:39:13AM -0700, Nathan Chancellor wrote:
 
-So I then proposed a patch[1] to mark the buffer completion workqueue as
-non-freezeable, which was rejected because while that will bandaid the
-suspend problem, it'll create bigger problems with hibernation because
-the log and buffer workers can keep running while hibernate tries to
-write the state of those threads out to disk:
+> I noticed that this was applied to for-6.1. I know you do not rebase or
+> change your trees so this request might be rejected based on that alone
+> but would it be possible to cherry-pick this to for-6.0 so that it can
+> be applied to Linus's tree quicker? We have had to apply this change to
+> our CI to keep our builds green in mainline, -tip, and 5.19/5.15 stable
+> with clang-16 due to -Werror. If not, no worries, I should have made it
+> clearer that is what I was looking for with the subject prefix.
 
-[1] https://lore.kernel.org/linux-xfs/20170327204611.GA4864@birch.djwong.org/
+Hrm, OK - it's a bit surprising that this didn't get fixed in -next
+before the clang change made it to mainline TBH, it looked like
+something that had just hit -next.
 
-That came with a suggestion that the power management code should freeze
-the filesystems before trying to put kthreads to sleep.  User programs
-will go to sleep trying to get write access, and all fs background
-threads will already be idle.
+--bRD/piUAUlQcMCKB
+Content-Type: application/pgp-signature; name="signature.asc"
 
-Luis Chamberlain offered to pick up that work[2] back in 2017 to figure
-out how to freeze filesystems prior to suspend.  His first attempt
-simply walked the supers list in reverse order, and drew quite a few
-comments.  The second version[3] improved on that.
+-----BEGIN PGP SIGNATURE-----
 
-[2] https://lore.kernel.org/all/20171003185313.1017-1-mcgrof@kernel.org/T/#u
-[3] https://lore.kernel.org/all/20171129232356.28296-1-mcgrof@kernel.org/T/#u
+iQEzBAABCgAdFiEEreZoqmdXGLWf4p/qJNaLcl1Uh9AFAmME+m4ACgkQJNaLcl1U
+h9DGGAf9FQ1B6+3Dfsp8LkqcAvNpYaPcgLbadzxOSiNhCz3nKbqjHeLn7qgXzCSi
+ZsLpU8FfqcWvIzvDuDUt/lAFh2GEDS04od0HLNJ81imVRVaywR9qlc96Mpm+Ist2
+Cz4yEkb9Ydw0kZCXXehsIPlCFtNVu5AKKHJJpgn6YFFjem/IMkeKrftmsIsMoQ6F
+bfS+p2h7dJVYPOpEWSm3wAr2zrknfATV9SlDJcHqGd1E5GiKi3s3flgUpip2qHaX
+g62kCwtHXs14FD+lbhUmIw3YxQyRrfQYXMosmDoNlvl7SahsauyoeRxgh3bCR0vk
+GGUbcahF77/1Pzn+McWxNTRucJ2ueg==
+=Xfht
+-----END PGP SIGNATURE-----
 
-Four years went by (I don't blame Luis; I've not had time to get back to
-this either) and his most recent posting[4] I think tried to restart the
-discussion.
-
-[4] https://lore.kernel.org/linux-fsdevel/20210417001026.23858-1-mcgrof@kernel.org/
-
-So that's where things stand now.  I've idly wondered if a better
-approach would be to hook filesystems into the device model so that
-filesystems could watch for suspend notifications propagating down the
-device tree and turn that into a fsfreeze, but as I mentioned, I've had
-no time to figure out how that would really work since I'm not that
-familiar with how power management works in the kernel.  I don't have a
-clue where you'd attach a network filesystem.
-
---D
-
-> Thanks,
-> Lalith
-> 
-> On Thu, Aug 18, 2022 at 5:08 PM Darrick J. Wong <djwong@kernel.org> wrote:
-> 
-> > On Thu, Aug 18, 2022 at 09:40:49PM +0000, Lalith Rajendran wrote:
-> > > ext4_lazyinit_thread is not set freezable. Hence when the thread calls
-> > > try_to_freeze it doesn't freeze during suspend and continues to send
-> > > requests to the storage during suspend, resulting in suspend failures.
-> >
-> > Maybe we should just make suspend freeze all the filesystems in order?
-> >
-> >
-> > https://lore.kernel.org/linux-fsdevel/20210417001026.23858-1-mcgrof@kernel.org/
-> >
-> > --D
-> >
-> > > Signed-off-by: Lalith Rajendran <lalithkraj@google.com>
-> > > ---
-> > >  fs/ext4/super.c | 1 +
-> > >  1 file changed, 1 insertion(+)
-> > >
-> > > diff --git a/fs/ext4/super.c b/fs/ext4/super.c
-> > > index 9a66abcca1a85..d77e0904a1327 100644
-> > > --- a/fs/ext4/super.c
-> > > +++ b/fs/ext4/super.c
-> > > @@ -3767,6 +3767,7 @@ static int ext4_lazyinit_thread(void *arg)
-> > >       unsigned long next_wakeup, cur;
-> > >
-> > >       BUG_ON(NULL == eli);
-> > > +     set_freezable();
-> > >
-> > >  cont_thread:
-> > >       while (true) {
-> > > --
-> > > 2.31.0
-> > >
-> >
+--bRD/piUAUlQcMCKB--
