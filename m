@@ -2,44 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2AC60C32772
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 11:03:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EEE52C32772
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 11:03:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238339AbiHWLDV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 07:03:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35910 "EHLO
+        id S1356647AbiHWLDb (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 23 Aug 2022 07:03:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42938 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356773AbiHWK7A (ORCPT
+        with ESMTP id S1357388AbiHWLCO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 06:59:00 -0400
+        Tue, 23 Aug 2022 07:02:14 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E6823ADCFE;
-        Tue, 23 Aug 2022 02:13:58 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BE76C66A65;
+        Tue, 23 Aug 2022 02:14:42 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id B2AE660F54;
-        Tue, 23 Aug 2022 09:13:49 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BB036C433D6;
-        Tue, 23 Aug 2022 09:13:48 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 6EFF660F54;
+        Tue, 23 Aug 2022 09:14:42 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 47165C433C1;
+        Tue, 23 Aug 2022 09:14:41 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661246029;
-        bh=zCjPwheLub6dsDGmASzjdfqqFdiCv1VVXqIVLu32/tE=;
+        s=korg; t=1661246081;
+        bh=/oMobxsHDcQ6CFIW6sFoMoFbRFb9fNLZWxhjzCQjgwg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=dP9EnbgQMl1cZOQEiIgZCqEmzH3P9etlcG7qAemoNBlnT7lx1aQemYEQy1ZCaJ/p5
-         zpjPW9HV53J3Dh+gymd3L3cdFB4SX3xAo3QqIgWEv054hQo4BTMGHeQTuDYC2vNId8
-         EgU4PxNHXFnKpmH8s2CFtIorTv6STINB+m+Kx0W4=
+        b=xoUs7O1Ih6W1Q7hFRVHjDB3cwKDSzxWtMQGaJOpSeU8Oik5RkiriUBBGt2y9Cjhg/
+         vJdzI2mbcVFgGuVB89qU6HjSpG1ubXtrR+NVeqXd3zLtV/9YG9k1fWBdPEAsLY7aI7
+         93YI+q5Awk4/wzewajwa3G7+iyD6XD/ljmYJB9GI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
-        <u.kleine-koenig@pengutronix.de>,
-        Baolin Wang <baolin.wang7@gmail.com>,
-        Vinod Koul <vkoul@kernel.org>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.19 266/287] dmaengine: sprd: Cleanup in .remove() after pm_runtime_get_sync() failed
-Date:   Tue, 23 Aug 2022 10:27:15 +0200
-Message-Id: <20220823080110.305326297@linuxfoundation.org>
+        stable@vger.kernel.org, Nimish Mishra <neelam.nimish@gmail.com>,
+        Anirban Chakraborty <ch.anirban00727@gmail.com>,
+        Debdeep Mukhopadhyay <debdeep.mukhopadhyay@gmail.com>,
+        Jerome Forissier <jerome.forissier@linaro.org>,
+        Jens Wiklander <jens.wiklander@linaro.org>,
+        Linus Torvalds <torvalds@linux-foundation.org>
+Subject: [PATCH 4.19 284/287] tee: add overflow check in register_shm_helper()
+Date:   Tue, 23 Aug 2022 10:27:33 +0200
+Message-Id: <20220823080111.068435965@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220823080100.268827165@linuxfoundation.org>
 References: <20220823080100.268827165@linuxfoundation.org>
@@ -51,47 +53,62 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
+From: Jens Wiklander <jens.wiklander@linaro.org>
 
-[ Upstream commit 1e42f82cbec7b2cc4873751e7791e6611901c5fc ]
+commit 573ae4f13f630d6660008f1974c0a8a29c30e18a upstream.
 
-It's not allowed to quit remove early without cleaning up completely.
-Otherwise this results in resource leaks that probably yield graver
-problems later. Here for example some tasklets might survive the lifetime
-of the sprd-dma device and access sdev which is freed after .remove()
-returns.
+With special lengths supplied by user space, register_shm_helper() has
+an integer overflow when calculating the number of pages covered by a
+supplied user space memory region.
 
-As none of the device freeing requires an active device, just ignore the
-return value of pm_runtime_get_sync().
+This causes internal_get_user_pages_fast() a helper function of
+pin_user_pages_fast() to do a NULL pointer dereference:
 
-Signed-off-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
-Reviewed-by: Baolin Wang <baolin.wang7@gmail.com>
-Link: https://lore.kernel.org/r/20220721204054.323602-1-u.kleine-koenig@pengutronix.de
-Signed-off-by: Vinod Koul <vkoul@kernel.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+  Unable to handle kernel NULL pointer dereference at virtual address 0000000000000010
+  Modules linked in:
+  CPU: 1 PID: 173 Comm: optee_example_a Not tainted 5.19.0 #11
+  Hardware name: QEMU QEMU Virtual Machine, BIOS 0.0.0 02/06/2015
+  pc : internal_get_user_pages_fast+0x474/0xa80
+  Call trace:
+   internal_get_user_pages_fast+0x474/0xa80
+   pin_user_pages_fast+0x24/0x4c
+   register_shm_helper+0x194/0x330
+   tee_shm_register_user_buf+0x78/0x120
+   tee_ioctl+0xd0/0x11a0
+   __arm64_sys_ioctl+0xa8/0xec
+   invoke_syscall+0x48/0x114
+
+Fix this by adding an an explicit call to access_ok() in
+tee_shm_register_user_buf() to catch an invalid user space address
+early.
+
+Fixes: 033ddf12bcf5 ("tee: add register user memory")
+Cc: stable@vger.kernel.org
+Reported-by: Nimish Mishra <neelam.nimish@gmail.com>
+Reported-by: Anirban Chakraborty <ch.anirban00727@gmail.com>
+Reported-by: Debdeep Mukhopadhyay <debdeep.mukhopadhyay@gmail.com>
+Suggested-by: Jerome Forissier <jerome.forissier@linaro.org>
+Signed-off-by: Jens Wiklander <jens.wiklander@linaro.org>
+Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
+[JW: backport to stable-4.19 + update commit message]
+Signed-off-by: Jens Wiklander <jens.wiklander@linaro.org>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/dma/sprd-dma.c | 5 +----
- 1 file changed, 1 insertion(+), 4 deletions(-)
+ drivers/tee/tee_core.c |    4 ++++
+ 1 file changed, 4 insertions(+)
 
-diff --git a/drivers/dma/sprd-dma.c b/drivers/dma/sprd-dma.c
-index 0fadf6a08494..4ec9a924a338 100644
---- a/drivers/dma/sprd-dma.c
-+++ b/drivers/dma/sprd-dma.c
-@@ -987,11 +987,8 @@ static int sprd_dma_remove(struct platform_device *pdev)
- {
- 	struct sprd_dma_dev *sdev = platform_get_drvdata(pdev);
- 	struct sprd_dma_chn *c, *cn;
--	int ret;
+--- a/drivers/tee/tee_core.c
++++ b/drivers/tee/tee_core.c
+@@ -175,6 +175,10 @@ tee_ioctl_shm_register(struct tee_contex
+ 	if (data.flags)
+ 		return -EINVAL;
  
--	ret = pm_runtime_get_sync(&pdev->dev);
--	if (ret < 0)
--		return ret;
-+	pm_runtime_get_sync(&pdev->dev);
- 
- 	/* explicitly free the irq */
- 	if (sdev->irq > 0)
--- 
-2.35.1
-
++	if (!access_ok(VERIFY_WRITE, (void __user *)(unsigned long)data.addr,
++		       data.length))
++		return -EFAULT;
++
+ 	shm = tee_shm_register(ctx, data.addr, data.length,
+ 			       TEE_SHM_DMA_BUF | TEE_SHM_USER_MAPPED);
+ 	if (IS_ERR(shm))
 
 
