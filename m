@@ -2,34 +2,34 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E2BCAC32774
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 10:27:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 86CFFC32772
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 10:27:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354058AbiHWK1M (ORCPT
+        id S1354181AbiHWK1Q (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 06:27:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35704 "EHLO
+        Tue, 23 Aug 2022 06:27:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47072 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353865AbiHWKMO (ORCPT
+        with ESMTP id S1353875AbiHWKMP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 06:12:14 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1BB7327CC6;
-        Tue, 23 Aug 2022 01:58:32 -0700 (PDT)
+        Tue, 23 Aug 2022 06:12:15 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8F0141CB0C;
+        Tue, 23 Aug 2022 01:58:28 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 5213961524;
-        Tue, 23 Aug 2022 08:58:32 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5A64AC433D6;
-        Tue, 23 Aug 2022 08:58:31 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 68A52CE1B44;
+        Tue, 23 Aug 2022 08:58:27 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 787F8C433D6;
+        Tue, 23 Aug 2022 08:58:25 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661245111;
-        bh=Ugp6EmnpxCW/jUonBrd4q610od/cbBfW+Rlicj6AB3g=;
+        s=korg; t=1661245105;
+        bh=CiXBaTcZl+tFw6/d7qenwdQyFhRZj8CcEMPAYDJrwYE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=R2oIuUYz4HimquRkVyliOTiWMk7gSJ9bOXSNt9c/GOScq3KM2aiQq9LE01j/Iw8wC
-         Zehx/ucu35EKy1ekiRiIppSvEcIeIAb5BAFCQBS5poBOGU3r9/dkMtfPoorh6198Ad
-         loB1iU/I4Zn2VSIABo/GfAGwwU5PlP4umJWHXdIM=
+        b=sFjKn3zBlIjMbaCObcbkM6bDKmzlJrhsTQ16CTGRmnya5QEvYBJD6FZMPAIdjFJS6
+         ezofw9I9zHC8ivmHM5FKxJCQVrH3sNjgjIEQocmVG2Ap30EuEW22dOY+pDz48kXmDn
+         ZMZUsdozySRkRQ3M6pOc2qdzILKaLwLOllUy6KE4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
@@ -37,9 +37,9 @@ Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         James Smart <jsmart2021@gmail.com>,
         "Martin K. Petersen" <martin.petersen@oracle.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 183/244] scsi: lpfc: Fix possible memory leak when failing to issue CMF WQE
-Date:   Tue, 23 Aug 2022 10:25:42 +0200
-Message-Id: <20220823080105.446445858@linuxfoundation.org>
+Subject: [PATCH 5.15 182/244] scsi: lpfc: Prevent buffer overflow crashes in debugfs with malformed user input
+Date:   Tue, 23 Aug 2022 10:25:41 +0200
+Message-Id: <20220823080105.407004155@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220823080059.091088642@linuxfoundation.org>
 References: <20220823080059.091088642@linuxfoundation.org>
@@ -53,41 +53,81 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: James Smart <jsmart2021@gmail.com>
 
-[ Upstream commit 2f67dc7970bce3529edce93a0a14234d88b3fcd5 ]
+[ Upstream commit f8191d40aa612981ce897e66cda6a88db8df17bb ]
 
-There is no corresponding free routine if lpfc_sli4_issue_wqe fails to
-issue the CMF WQE in lpfc_issue_cmf_sync_wqe.
+Malformed user input to debugfs results in buffer overflow crashes.  Adapt
+input string lengths to fit within internal buffers, leaving space for NULL
+terminators.
 
-If ret_val is non-zero, then free the iocbq request structure.
-
-Link: https://lore.kernel.org/r/20220701211425.2708-6-jsmart2021@gmail.com
+Link: https://lore.kernel.org/r/20220701211425.2708-3-jsmart2021@gmail.com
 Co-developed-by: Justin Tee <justin.tee@broadcom.com>
 Signed-off-by: Justin Tee <justin.tee@broadcom.com>
 Signed-off-by: James Smart <jsmart2021@gmail.com>
 Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/scsi/lpfc/lpfc_sli.c | 4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
+ drivers/scsi/lpfc/lpfc_debugfs.c | 20 ++++++++++----------
+ 1 file changed, 10 insertions(+), 10 deletions(-)
 
-diff --git a/drivers/scsi/lpfc/lpfc_sli.c b/drivers/scsi/lpfc/lpfc_sli.c
-index fb69416c9623..f594a006d04c 100644
---- a/drivers/scsi/lpfc/lpfc_sli.c
-+++ b/drivers/scsi/lpfc/lpfc_sli.c
-@@ -2012,10 +2012,12 @@ lpfc_issue_cmf_sync_wqe(struct lpfc_hba *phba, u32 ms, u64 total)
+diff --git a/drivers/scsi/lpfc/lpfc_debugfs.c b/drivers/scsi/lpfc/lpfc_debugfs.c
+index 08b2e85dcd7d..79bc86ba59b3 100644
+--- a/drivers/scsi/lpfc/lpfc_debugfs.c
++++ b/drivers/scsi/lpfc/lpfc_debugfs.c
+@@ -2607,8 +2607,8 @@ lpfc_debugfs_multixripools_write(struct file *file, const char __user *buf,
+ 	struct lpfc_sli4_hdw_queue *qp;
+ 	struct lpfc_multixri_pool *multixri_pool;
  
- 	sync_buf->cmd_flag |= LPFC_IO_CMF;
- 	ret_val = lpfc_sli4_issue_wqe(phba, &phba->sli4_hba.hdwq[0], sync_buf);
--	if (ret_val)
-+	if (ret_val) {
- 		lpfc_printf_log(phba, KERN_INFO, LOG_CGN_MGMT,
- 				"6214 Cannot issue CMF_SYNC_WQE: x%x\n",
- 				ret_val);
-+		__lpfc_sli_release_iocbq(phba, sync_buf);
-+	}
- out_unlock:
- 	spin_unlock_irqrestore(&phba->hbalock, iflags);
- 	return ret_val;
+-	if (nbytes > 64)
+-		nbytes = 64;
++	if (nbytes > sizeof(mybuf) - 1)
++		nbytes = sizeof(mybuf) - 1;
+ 
+ 	memset(mybuf, 0, sizeof(mybuf));
+ 
+@@ -2688,8 +2688,8 @@ lpfc_debugfs_nvmestat_write(struct file *file, const char __user *buf,
+ 	if (!phba->targetport)
+ 		return -ENXIO;
+ 
+-	if (nbytes > 64)
+-		nbytes = 64;
++	if (nbytes > sizeof(mybuf) - 1)
++		nbytes = sizeof(mybuf) - 1;
+ 
+ 	memset(mybuf, 0, sizeof(mybuf));
+ 
+@@ -2826,8 +2826,8 @@ lpfc_debugfs_ioktime_write(struct file *file, const char __user *buf,
+ 	char mybuf[64];
+ 	char *pbuf;
+ 
+-	if (nbytes > 64)
+-		nbytes = 64;
++	if (nbytes > sizeof(mybuf) - 1)
++		nbytes = sizeof(mybuf) - 1;
+ 
+ 	memset(mybuf, 0, sizeof(mybuf));
+ 
+@@ -2954,8 +2954,8 @@ lpfc_debugfs_nvmeio_trc_write(struct file *file, const char __user *buf,
+ 	char mybuf[64];
+ 	char *pbuf;
+ 
+-	if (nbytes > 63)
+-		nbytes = 63;
++	if (nbytes > sizeof(mybuf) - 1)
++		nbytes = sizeof(mybuf) - 1;
+ 
+ 	memset(mybuf, 0, sizeof(mybuf));
+ 
+@@ -3060,8 +3060,8 @@ lpfc_debugfs_hdwqstat_write(struct file *file, const char __user *buf,
+ 	char *pbuf;
+ 	int i;
+ 
+-	if (nbytes > 64)
+-		nbytes = 64;
++	if (nbytes > sizeof(mybuf) - 1)
++		nbytes = sizeof(mybuf) - 1;
+ 
+ 	memset(mybuf, 0, sizeof(mybuf));
+ 
 -- 
 2.35.1
 
