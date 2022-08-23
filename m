@@ -2,69 +2,87 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E415AC32772
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 17:02:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D2581C32789
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 17:02:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343789AbiHWRCW (ORCPT
+        id S1343808AbiHWRC2 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 13:02:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58426 "EHLO
+        Tue, 23 Aug 2022 13:02:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59736 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344353AbiHWRBM (ORCPT
+        with ESMTP id S1344373AbiHWRBQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 13:01:12 -0400
-Received: from bg5.exmail.qq.com (bg4.exmail.qq.com [43.154.221.58])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 51B658C002
-        for <linux-kernel@vger.kernel.org>; Tue, 23 Aug 2022 07:10:52 -0700 (PDT)
-X-QQ-mid: bizesmtp80t1661263838ta9jzgkz
-Received: from localhost.localdomain ( [182.148.14.124])
-        by bizesmtp.qq.com (ESMTP) with 
-        id ; Tue, 23 Aug 2022 22:10:37 +0800 (CST)
-X-QQ-SSF: 0100000000200040B000B00A0000000
-X-QQ-FEAT: znfcQSa1hKb69ljbhEMCIyJVqJcyVDLGX2/wMAZJUY1itMbUtF3rvuqdmNYTv
-        dH2/ZQcgOvUGUQ7+ffjWegXeRgahSEt5NOMaSUu/aYxKiH86qIeHHEKCMHSara3mHa3VWo1
-        AmclRh24J4xbRqdasWerfW4sPvDCnvjBT+5v8qYmJTbgmS3UQ86EnDPFs6SamykoJU0Scfh
-        SDiRAOEsN/np2wJqk1C3cFL51HfQPUU5FdHf8H1fszzHuoTn6b23Q3347h/lvEvKcSqoYOO
-        yrFMclAcPxF0n+Kshj6NDeixVHmC/wjwYyQst7DhKCimsf25tA0yjnYGYdTr3D2e8WT6ZQn
-        Pp4y4jLFcRHCiGTpBMOt3ftcvmEz2Zkz/hw0sUzkMJpZH6Qu8dZgnPxHUepCQ==
-X-QQ-GoodBg: 0
-From:   wangjianli <wangjianli@cdjrlc.com>
-To:     zackr@vmware.com, linux-graphics-maintainer@vmware.com,
-        airlied@linux.ie, daniel@ffwll.ch
-Cc:     dri-devel@lists.freedesktop.org, linux-kernel@vger.kernel.org,
-        wangjianli <wangjianli@cdjrlc.com>
-Subject: [PATCH] drm/vmwgfx: fix repeated words in comments
-Date:   Tue, 23 Aug 2022 22:10:30 +0800
-Message-Id: <20220823141030.9078-1-wangjianli@cdjrlc.com>
-X-Mailer: git-send-email 2.36.1
+        Tue, 23 Aug 2022 13:01:16 -0400
+Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B926F14E28B;
+        Tue, 23 Aug 2022 06:32:20 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1661261540; x=1692797540;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:content-transfer-encoding:in-reply-to;
+  bh=1aOsMh80PzrLjsTarZiUZuyjeuDjpjzALcnTmx6xWUY=;
+  b=BjdHkLywf+7BUoBr+1n2o0goTRFna2l8wGUavK1bLmgO13FL9qHYQ/W2
+   aO8iTdt/9LPngGVzsljY13ogmVSzUfJeSa3GzlluMRQX4Dm982jI6MU6d
+   Lcq45g6mGuhotMzC2vOD99ZFaVx6D5K0uFi+CA9ircc9e+S4O0KglZS7M
+   gOJtcPOyx3AjVW1h16+/ZYWZHv2azvL9IKFtC5Rf4oEWuePmI6/LRqSob
+   ybljlmczHQA8LhG+zDwzlXkj9uSXUsonP8JRojevP2DEUj6mKw7gsuz7U
+   LAcHQdUY54zUaMuGzIhtuAAeF2+N/7DFE6kACZ87+cJ5Kn1OWzWdFDbLR
+   w==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10448"; a="291247735"
+X-IronPort-AV: E=Sophos;i="5.93,257,1654585200"; 
+   d="scan'208";a="291247735"
+Received: from orsmga006.jf.intel.com ([10.7.209.51])
+  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Aug 2022 06:32:20 -0700
+X-IronPort-AV: E=Sophos;i="5.93,257,1654585200"; 
+   d="scan'208";a="585975010"
+Received: from smile.fi.intel.com ([10.237.72.54])
+  by orsmga006-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Aug 2022 06:32:17 -0700
+Received: from andy by smile.fi.intel.com with local (Exim 4.96)
+        (envelope-from <andriy.shevchenko@linux.intel.com>)
+        id 1oQU0s-002SBu-2U;
+        Tue, 23 Aug 2022 16:32:14 +0300
+Date:   Tue, 23 Aug 2022 16:32:14 +0300
+From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To:     Linus Walleij <linus.walleij@linaro.org>
+Cc:     =?iso-8859-1?Q?=C1lvaro_Fern=E1ndez?= Rojas <noltari@gmail.com>,
+        Jonas Gorski <jonas.gorski@gmail.com>,
+        linux-gpio@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Broadcom internal kernel review list 
+        <bcm-kernel-feedback-list@broadcom.com>
+Subject: Re: [PATCH v1 1/1] pinctrl: bcm: Convert drivers to use struct
+ pingroup and PINCTRL_PINGROUP()
+Message-ID: <YwTW3g4WkJlRbBnO@smile.fi.intel.com>
+References: <20220620165053.74170-1-andriy.shevchenko@linux.intel.com>
+ <CACRpkdZrCd9vAMg+MOTduAhmZ+uRq9q89Ts6o6RagdTkrrpogA@mail.gmail.com>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-X-QQ-SENDSIZE: 520
-Feedback-ID: bizesmtp:cdjrlc.com:qybglogicsvr:qybglogicsvr7
+In-Reply-To: <CACRpkdZrCd9vAMg+MOTduAhmZ+uRq9q89Ts6o6RagdTkrrpogA@mail.gmail.com>
+Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
- Delete the redundant word 'to'.
+On Tue, Jun 28, 2022 at 02:39:00PM +0200, Linus Walleij wrote:
+> On Mon, Jun 20, 2022 at 6:50 PM Andy Shevchenko
+> <andriy.shevchenko@linux.intel.com> wrote:
+> 
+> > The pin control header provides struct pingroup and PINCTRL_PINGROUP() macro.
+> > Utilize them instead of open coded variants in the driver.
+> >
+> > Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+> 
+> This looks very tasty. Can we get a test or ACK from one of the BCM
+> people? (Álvaro/Jonas)
 
-Signed-off-by: wangjianli <wangjianli@cdjrlc.com>
----
- drivers/gpu/drm/vmwgfx/vmwgfx_execbuf.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+Any news?
 
-diff --git a/drivers/gpu/drm/vmwgfx/vmwgfx_execbuf.c b/drivers/gpu/drm/vmwgfx/vmwgfx_execbuf.c
-index d49de4905efa..23e773222019 100644
---- a/drivers/gpu/drm/vmwgfx/vmwgfx_execbuf.c
-+++ b/drivers/gpu/drm/vmwgfx/vmwgfx_execbuf.c
-@@ -381,7 +381,7 @@ static int vmw_execbuf_res_noctx_val_add(struct vmw_sw_context *sw_context,
- }
- 
- /**
-- * vmw_view_res_val_add - Add a view and the surface it's pointing to to the
-+ * vmw_view_res_val_add - Add a view and the surface it's pointing to the
-  * validation list
-  *
-  * @sw_context: The software context holding the validation list.
 -- 
-2.36.1
+With Best Regards,
+Andy Shevchenko
+
 
