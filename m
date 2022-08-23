@@ -2,107 +2,104 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 05FB8C32772
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 11:55:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B5614C32792
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 11:55:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358866AbiHWLzK (ORCPT
+        id S1358647AbiHWLzR (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 07:55:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52878 "EHLO
+        Tue, 23 Aug 2022 07:55:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56862 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1359221AbiHWLwG (ORCPT
+        with ESMTP id S1359243AbiHWLwQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 07:52:06 -0400
-Received: from mail-pg1-x52c.google.com (mail-pg1-x52c.google.com [IPv6:2607:f8b0:4864:20::52c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5DEFCD51C2;
-        Tue, 23 Aug 2022 02:32:44 -0700 (PDT)
-Received: by mail-pg1-x52c.google.com with SMTP id c24so11765635pgg.11;
-        Tue, 23 Aug 2022 02:32:43 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc;
-        bh=lB8NoAFXZ2ojNqB5NHqtJca8PZPv13Mxr0Sf4o4zAgs=;
-        b=Hfd9KdXbIhbkSlfQznWZaJb5TmMaqJiAfLkPMefN5SZTy9aTY3UGQ0KqPwkS1grIfm
-         vCy4hKurr4Zs2tkcBQYtzP2/kOR8gtY6xNJicOakdqoWNH4JZUqypeyNPn6UI5TAkyEl
-         oXBA7V9t0O+vKQXWgvZyZxday/87L0JM+pZQesVwchkSur42u/MwJZF2wbdiI4rO7f+S
-         nrqKU0UfZgLtpQGsQOElfdFXi74uyCuU3j1227SwSEGFh4YFChEkn/Ly9aOsLpoBUJTP
-         B4ogg406gufB0GKJj1WS6teWqnCG7WAKU6WNm7FuHngPjaYPU1B+zHGakDngAcG0GI9S
-         MQWA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-message-state:from:to:cc;
-        bh=lB8NoAFXZ2ojNqB5NHqtJca8PZPv13Mxr0Sf4o4zAgs=;
-        b=soj6Rdi0hQjyBEbRxgPHNkj2cfKca6yLPf2ZJNqJpd2rE+NL8rpXGuvRAJ8lrim77X
-         HK8m2B7QacXt2rL4sBBYsdC7gi90PAklXD8ff3kwuEQuJ3VY4xoJ70XbQDbBjhRzJ2H/
-         uoqCn+wGVgyGIUAz+yWzRBG9s22jrrqf+B8ONKAsWQTxkhPn4xP6ihqSAyG5mkEsVrhV
-         whUTwjiXJk/Xhw7X5NlcUYngfUdFb+W3+NWs42m3xijTbKUKaM9kLL7/wKS6D2FQDpQg
-         Cy2siFHNFEMh9JDhm3thlMB6m1kWpKo2rsun1n/zl8f7hQms7CiK0+nitReVQYXk9G2b
-         0V6Q==
-X-Gm-Message-State: ACgBeo3paDW/Gci605Q8aSETfj7jX7VxbvvBKRtBCF7ItJXtGbtsefJG
-        NcqpChPxYjZDcy26Q3pstOADVIbKjFw=
-X-Google-Smtp-Source: AA6agR7pIIeHPiBQ2/MIHoqFUmi90hSjVnWTFT92xDq3NVbeeCVMhyFqRRdHiLpUtrCXa+Qeg9x14w==
-X-Received: by 2002:a05:6a00:f8d:b0:536:c6c9:a2d with SMTP id ct13-20020a056a000f8d00b00536c6c90a2dmr6436699pfb.52.1661247162167;
-        Tue, 23 Aug 2022 02:32:42 -0700 (PDT)
-Received: from localhost.localdomain ([103.7.29.32])
-        by smtp.gmail.com with ESMTPSA id 13-20020a170902c24d00b0017297a6b39dsm10057212plg.265.2022.08.23.02.32.39
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 23 Aug 2022 02:32:41 -0700 (PDT)
-From:   Like Xu <like.xu.linux@gmail.com>
-X-Google-Original-From: Like Xu <likexu@tencent.com>
-To:     Sean Christopherson <seanjc@google.com>,
-        Paolo Bonzini <pbonzini@redhat.com>
-Cc:     Jim Mattson <jmattson@google.com>, linux-kernel@vger.kernel.org,
-        kvm@vger.kernel.org
-Subject: [PATCH RESEND v2 0/8] x86/pmu: Corner cases fixes and optimization
-Date:   Tue, 23 Aug 2022 17:32:13 +0800
-Message-Id: <20220823093221.38075-1-likexu@tencent.com>
+        Tue, 23 Aug 2022 07:52:16 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F3D752CCBF;
+        Tue, 23 Aug 2022 02:32:47 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id B2DD5B81C50;
+        Tue, 23 Aug 2022 09:32:45 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 272E6C433D6;
+        Tue, 23 Aug 2022 09:32:43 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1661247164;
+        bh=Eo7wBNqteKhPhzdsWBcbvvGzJRFw5CORrIOTRgPMyE4=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=rFDdAEiFSU+lA4GfVLdrM1c8VrVbqHtx/5Ch5FHuYHeOvGDe3RKLu1uoTR70U14/k
+         WynQOLOQBjYsji8A4snA6s1VXcQV+MNOCmupY/TDfOo35erOycWiLeyGYNRFYN8HTq
+         hzmJ6nsTekGDgr5kRwaWY3j7jxGnfPF9KcBAqO78=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org,
+        Vivien Didelot <vivien.didelot@savoirfairelinux.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Sergei Antonov <saproj@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        Jakub Kicinski <kuba@kernel.org>
+Subject: [PATCH 5.4 339/389] net: dsa: mv88e6060: prevent crash on an unused port
+Date:   Tue, 23 Aug 2022 10:26:57 +0200
+Message-Id: <20220823080129.685813087@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
+In-Reply-To: <20220823080115.331990024@linuxfoundation.org>
+References: <20220823080115.331990024@linuxfoundation.org>
+User-Agent: quilt/0.67
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Good well-designed tests can help us find more bugs, especially when
-the test steps differ from the Linux kernel behaviour in terms of the
-timing of access to virtualized hw resources.
+From: Sergei Antonov <saproj@gmail.com>
 
-In this patch series, there are three small optimization (006/007/008),
-one hardware surprise (001), and most of these fixes have stepped
-on my little toes.
+commit 246bbf2f977ea36aaf41f5d24370fef433250728 upstream.
 
-Please feel free to run tests, add more or share comments.
+If the port isn't a CPU port nor a user port, 'cpu_dp'
+is a null pointer and a crash happened on dereferencing
+it in mv88e6060_setup_port():
 
-Previous:
-https://lore.kernel.org/kvm/20220721103549.49543-1-likexu@tencent.com/
-https://lore.kernel.org/kvm/20220803130124.72340-1-likexu@tencent.com/
+[    9.575872] Unable to handle kernel NULL pointer dereference at virtual address 00000014
+...
+[    9.942216]  mv88e6060_setup from dsa_register_switch+0x814/0xe84
+[    9.948616]  dsa_register_switch from mdio_probe+0x2c/0x54
+[    9.954433]  mdio_probe from really_probe.part.0+0x98/0x2a0
+[    9.960375]  really_probe.part.0 from driver_probe_device+0x30/0x10c
+[    9.967029]  driver_probe_device from __device_attach_driver+0xb8/0x13c
+[    9.973946]  __device_attach_driver from bus_for_each_drv+0x90/0xe0
+[    9.980509]  bus_for_each_drv from __device_attach+0x110/0x184
+[    9.986632]  __device_attach from bus_probe_device+0x8c/0x94
+[    9.992577]  bus_probe_device from deferred_probe_work_func+0x78/0xa8
+[    9.999311]  deferred_probe_work_func from process_one_work+0x290/0x73c
+[   10.006292]  process_one_work from worker_thread+0x30/0x4b8
+[   10.012155]  worker_thread from kthread+0xd4/0x10c
+[   10.017238]  kthread from ret_from_fork+0x14/0x3c
 
-V2 -> V2 RESEND Changelog:
-- The "pebs_capable" fix has been merged into tip/perf/tree tree;
-- Move the other two AMD vPMU optimization here;
+Fixes: 0abfd494deef ("net: dsa: use dedicated CPU port")
+CC: Vivien Didelot <vivien.didelot@savoirfairelinux.com>
+CC: Florian Fainelli <f.fainelli@gmail.com>
+Signed-off-by: Sergei Antonov <saproj@gmail.com>
+Signed-off-by: Vladimir Oltean <olteanv@gmail.com>
+Link: https://lore.kernel.org/r/20220811070939.1717146-1-saproj@gmail.com
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+---
+ drivers/net/dsa/mv88e6060.c |    3 +++
+ 1 file changed, 3 insertions(+)
 
-Like Xu (8):
-  perf/x86/core: Completely disable guest PEBS via guest's global_ctrl
-  KVM: x86/pmu: Avoid setting BIT_ULL(-1) to pmu->host_cross_mapped_mask
-  KVM: x86/pmu: Don't generate PEBS records for emulated instructions
-  KVM: x86/pmu: Avoid using PEBS perf_events for normal counters
-  KVM: x86/pmu: Defer reprogram_counter() to kvm_pmu_handle_event()
-  KVM: x86/pmu: Defer counter emulated overflow via pmc->stale_counter
-  KVM: x86/svm/pmu: Direct access pmu->gp_counter[] to implement
-    amd_*_to_pmc()
-  KVM: x86/svm/pmu: Rewrite get_gp_pmc_amd() for more counters
-    scalability
+--- a/drivers/net/dsa/mv88e6060.c
++++ b/drivers/net/dsa/mv88e6060.c
+@@ -117,6 +117,9 @@ static int mv88e6060_setup_port(struct m
+ 	int addr = REG_PORT(p);
+ 	int ret;
+ 
++	if (dsa_is_unused_port(priv->ds, p))
++		return 0;
++
+ 	/* Do not force flow control, disable Ingress and Egress
+ 	 * Header tagging, disable VLAN tunneling, and set the port
+ 	 * state to Forwarding.  Additionally, if this is the CPU
 
- arch/x86/events/intel/core.c    |   3 +-
- arch/x86/include/asm/kvm_host.h |   6 +-
- arch/x86/kvm/pmu.c              |  47 ++++++++-----
- arch/x86/kvm/pmu.h              |   6 +-
- arch/x86/kvm/svm/pmu.c          | 116 +++++---------------------------
- arch/x86/kvm/vmx/pmu_intel.c    |  30 ++++-----
- 6 files changed, 73 insertions(+), 135 deletions(-)
-
--- 
-2.37.2
 
