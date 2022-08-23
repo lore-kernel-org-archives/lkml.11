@@ -2,51 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5E862C32774
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 08:19:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 169FCC32774
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 08:19:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242827AbiHWITL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 04:19:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44492 "EHLO
+        id S242847AbiHWITQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 23 Aug 2022 04:19:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44736 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242376AbiHWIOh (ORCPT
+        with ESMTP id S242395AbiHWIOn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 04:14:37 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F1F796CF41;
-        Tue, 23 Aug 2022 01:09:50 -0700 (PDT)
+        Tue, 23 Aug 2022 04:14:43 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D84AD6CF64;
+        Tue, 23 Aug 2022 01:09:55 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id F1E716126A;
-        Tue, 23 Aug 2022 08:09:49 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B5CADC433C1;
-        Tue, 23 Aug 2022 08:09:48 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id AE7D8B81C23;
+        Tue, 23 Aug 2022 08:09:53 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 11A63C433D6;
+        Tue, 23 Aug 2022 08:09:51 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661242189;
-        bh=6U83wbLARbMC175D+M8iSXUKvFzWTq2N2fBB1jY3bHg=;
+        s=korg; t=1661242192;
+        bh=POaUdY32srVyb9CUvSK2Zuip7368nevwRVmjMokMMmo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=GSI32Wiu1I+I1dfF3UIqeb4vnbH+nYbn+9NZXksouwF2k2HqvxWVmQ/1FDKqmIWWy
-         r3ROVN0hqmbrgjxXKbJibeKoj3KnUUlxpCO1lNWP159k+ficS+p6RJ7ZJ2MdKvQ/2V
-         JDv7GKBniyP2emvJZ+TSHmE1loedETMLEUmUHSPY=
+        b=Xtbl1vRz8vT/BxHJQv3MppLbKnH79JgHBaw1rD+ijQ/JBnbTzrEkxeQcN+984/LlZ
+         EWXHZhM/F4iaVvP9uT9C2xFKGVcbb+MD9FMqG978utDn//hafxT9YPumHaunMeUEAS
+         zKkm+chBGpMVYk4joCf/VRr2hoOoLfzlaoeQRGw0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, David Howells <dhowells@redhat.com>,
-        Jeff Layton <jlayton@kernel.org>,
-        Namjae Jeon <linkinjeon@kernel.org>, stable@kernel.org,
-        Alexander Viro <viro@zeniv.linux.org.uk>,
-        Steve French <sfrench@samba.org>,
-        Hyunchul Lee <hyc.lee@gmail.com>,
-        Chuck Lever <chuck.lever@oracle.com>,
-        Dave Wysochanski <dwysocha@redhat.com>,
-        Linus Torvalds <torvalds@linux-foundation.org>
-Subject: [PATCH 4.9 033/101] vfs: Check the truncate maximum size in inode_newsize_ok()
-Date:   Tue, 23 Aug 2022 10:03:06 +0200
-Message-Id: <20220823080035.847056784@linuxfoundation.org>
+        stable@vger.kernel.org, Chuck Lever <chuck.lever@oracle.com>,
+        Jeff Layton <jlayton@kernel.org>
+Subject: [PATCH 5.19 074/365] SUNRPC: Fix xdr_encode_bool()
+Date:   Tue, 23 Aug 2022 09:59:35 +0200
+Message-Id: <20220823080121.269533997@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220823080034.579196046@linuxfoundation.org>
-References: <20220823080034.579196046@linuxfoundation.org>
+In-Reply-To: <20220823080118.128342613@linuxfoundation.org>
+References: <20220823080118.128342613@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -55,68 +48,38 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: David Howells <dhowells@redhat.com>
+From: Chuck Lever <chuck.lever@oracle.com>
 
-commit e2ebff9c57fe4eb104ce4768f6ebcccf76bef849 upstream.
+commit c770f31d8f580ed4b965c64f924ec1cc50e41734 upstream.
 
-If something manages to set the maximum file size to MAX_OFFSET+1, this
-can cause the xfs and ext4 filesystems at least to become corrupt.
+I discovered that xdr_encode_bool() was returning the same address
+that was passed in the @p parameter. The documenting comment states
+that the intent is to return the address of the next buffer
+location, just like the other "xdr_encode_*" helpers.
 
-Ordinarily, the kernel protects against userspace trying this by
-checking the value early in the truncate() and ftruncate() system calls
-calls - but there are at least two places that this check is bypassed:
+The result was the encoded results of NFSv3 PATHCONF operations were
+not formed correctly.
 
- (1) Cachefiles will round up the EOF of the backing file to DIO block
-     size so as to allow DIO on the final block - but this might push
-     the offset negative. It then calls notify_change(), but this
-     inadvertently bypasses the checking. This can be triggered if
-     someone puts an 8EiB-1 file on a server for someone else to try and
-     access by, say, nfs.
-
- (2) ksmbd doesn't check the value it is given in set_end_of_file_info()
-     and then calls vfs_truncate() directly - which also bypasses the
-     check.
-
-In both cases, it is potentially possible for a network filesystem to
-cause a disk filesystem to be corrupted: cachefiles in the client's
-cache filesystem; ksmbd in the server's filesystem.
-
-nfsd is okay as it checks the value, but we can then remove this check
-too.
-
-Fix this by adding a check to inode_newsize_ok(), as called from
-setattr_prepare(), thereby catching the issue as filesystems set up to
-perform the truncate with minimal opportunity for bypassing the new
-check.
-
-Fixes: 1f08c925e7a3 ("cachefiles: Implement backing file wrangling")
-Fixes: f44158485826 ("cifsd: add file operations")
-Signed-off-by: David Howells <dhowells@redhat.com>
-Reported-by: Jeff Layton <jlayton@kernel.org>
-Tested-by: Jeff Layton <jlayton@kernel.org>
-Reviewed-by: Namjae Jeon <linkinjeon@kernel.org>
-Cc: stable@kernel.org
-Acked-by: Alexander Viro <viro@zeniv.linux.org.uk>
-cc: Steve French <sfrench@samba.org>
-cc: Hyunchul Lee <hyc.lee@gmail.com>
-cc: Chuck Lever <chuck.lever@oracle.com>
-cc: Dave Wysochanski <dwysocha@redhat.com>
-Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
+Fixes: ded04a587f6c ("NFSD: Update the NFSv3 PATHCONF3res encoder to use struct xdr_stream")
+Signed-off-by: Chuck Lever <chuck.lever@oracle.com>
+Reviewed-by: Jeff Layton <jlayton@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- fs/attr.c |    2 ++
- 1 file changed, 2 insertions(+)
+ include/linux/sunrpc/xdr.h |    4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
---- a/fs/attr.c
-+++ b/fs/attr.c
-@@ -111,6 +111,8 @@ EXPORT_SYMBOL(setattr_prepare);
+--- a/include/linux/sunrpc/xdr.h
++++ b/include/linux/sunrpc/xdr.h
+@@ -419,8 +419,8 @@ static inline int xdr_stream_encode_item
   */
- int inode_newsize_ok(const struct inode *inode, loff_t offset)
+ static inline __be32 *xdr_encode_bool(__be32 *p, u32 n)
  {
-+	if (offset < 0)
-+		return -EINVAL;
- 	if (inode->i_size < offset) {
- 		unsigned long limit;
+-	*p = n ? xdr_one : xdr_zero;
+-	return p++;
++	*p++ = n ? xdr_one : xdr_zero;
++	return p;
+ }
  
+ /**
 
 
