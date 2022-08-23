@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F2874C32772
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 11:47:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 063A4C32772
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 11:48:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358343AbiHWLr5 (ORCPT
+        id S1358399AbiHWLsD (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 07:47:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40834 "EHLO
+        Tue, 23 Aug 2022 07:48:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40934 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1358604AbiHWLmK (ORCPT
+        with ESMTP id S1357800AbiHWLme (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 07:42:10 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 266F8D0210;
-        Tue, 23 Aug 2022 02:29:46 -0700 (PDT)
+        Tue, 23 Aug 2022 07:42:34 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7A172CE4B5;
+        Tue, 23 Aug 2022 02:29:42 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id B378161174;
-        Tue, 23 Aug 2022 09:29:45 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BE70DC433D6;
-        Tue, 23 Aug 2022 09:29:44 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 65881B81C89;
+        Tue, 23 Aug 2022 09:29:40 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A5AF5C433D7;
+        Tue, 23 Aug 2022 09:29:38 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661246985;
-        bh=BPjRKYlZVVLcttuktKVhBBeZgURIhOTGAyf0WJJ+PiY=;
+        s=korg; t=1661246979;
+        bh=F2zdgkDF/XedTRQAuWZeDhYcXnbH11Mv0smvHCoCLAY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ZJfWnMaBHPmXLm9PEjhmpXV4B+5miqytblPjerM1wABrG6zmnmK5H0igneoyX4t+K
-         kMFLZBbxGwKurOlH6P/34ntmBUmf/wL4xFPu88DYvYN5F5QhzqhgC5tHuxz4VnGVLi
-         6KrW2XbunLHgP2E2AxDLUxHoRy3+WsVf9EJ0UfNg=
+        b=No0cN/cikvieO+dttZhaF7azM01KkNhlZdvDo4rNGRSEg6Vnp9quxQ6Wu/i5700yc
+         6V6jq0VFB33rDvo8xaEVDi/TR/n1VzOgBsne/AhVF/jDOMK8iY+Y9gD2HPRlc6o/xw
+         Dd9rFW9LZxWFl1mydNDDmj8sb1DYGNffr9WfyS9k=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Douglas Gilbert <dgilbert@interlog.com>,
-        Tony Battersby <tonyb@cybernetics.com>,
-        "Martin K. Petersen" <martin.petersen@oracle.com>
-Subject: [PATCH 5.4 281/389] scsi: sg: Allow waiting for commands to complete on removed device
-Date:   Tue, 23 Aug 2022 10:25:59 +0200
-Message-Id: <20220823080127.282757799@linuxfoundation.org>
+        stable@vger.kernel.org, stable@kernel.org,
+        Baokun Li <libaokun1@huawei.com>,
+        "Ritesh Harjani (IBM)" <ritesh.list@gmail.com>,
+        Jan Kara <jack@suse.cz>, Theodore Tso <tytso@mit.edu>
+Subject: [PATCH 5.4 262/389] ext4: correct max_inline_xattr_value_size computing
+Date:   Tue, 23 Aug 2022 10:25:40 +0200
+Message-Id: <20220823080126.525732860@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220823080115.331990024@linuxfoundation.org>
 References: <20220823080115.331990024@linuxfoundation.org>
@@ -50,148 +51,36 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Tony Battersby <tonyb@cybernetics.com>
+From: Baokun Li <libaokun1@huawei.com>
 
-commit 3455607fd7be10b449f5135c00dc306b85dc0d21 upstream.
+commit c9fd167d57133c5b748d16913c4eabc55e531c73 upstream.
 
-When a SCSI device is removed while in active use, currently sg will
-immediately return -ENODEV on any attempt to wait for active commands that
-were sent before the removal.  This is problematic for commands that use
-SG_FLAG_DIRECT_IO since the data buffer may still be in use by the kernel
-when userspace frees or reuses it after getting ENODEV, leading to
-corrupted userspace memory (in the case of READ-type commands) or corrupted
-data being sent to the device (in the case of WRITE-type commands).  This
-has been seen in practice when logging out of a iscsi_tcp session, where
-the iSCSI driver may still be processing commands after the device has been
-marked for removal.
+If the ext4 inode does not have xattr space, 0 is returned in the
+get_max_inline_xattr_value_size function. Otherwise, the function returns
+a negative value when the inode does not contain EXT4_STATE_XATTR.
 
-Change the policy to allow userspace to wait for active sg commands even
-when the device is being removed.  Return -ENODEV only when there are no
-more responses to read.
-
-Link: https://lore.kernel.org/r/5ebea46f-fe83-2d0b-233d-d0dcb362dd0a@cybernetics.com
-Cc: <stable@vger.kernel.org>
-Acked-by: Douglas Gilbert <dgilbert@interlog.com>
-Signed-off-by: Tony Battersby <tonyb@cybernetics.com>
-Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
+Cc: stable@kernel.org
+Signed-off-by: Baokun Li <libaokun1@huawei.com>
+Reviewed-by: Ritesh Harjani (IBM) <ritesh.list@gmail.com>
+Reviewed-by: Jan Kara <jack@suse.cz>
+Link: https://lore.kernel.org/r/20220616021358.2504451-4-libaokun1@huawei.com
+Signed-off-by: Theodore Ts'o <tytso@mit.edu>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/scsi/sg.c |   57 ++++++++++++++++++++++++++++++++----------------------
- 1 file changed, 34 insertions(+), 23 deletions(-)
+ fs/ext4/inline.c |    3 +++
+ 1 file changed, 3 insertions(+)
 
---- a/drivers/scsi/sg.c
-+++ b/drivers/scsi/sg.c
-@@ -190,7 +190,7 @@ static void sg_link_reserve(Sg_fd * sfp,
- static void sg_unlink_reserve(Sg_fd * sfp, Sg_request * srp);
- static Sg_fd *sg_add_sfp(Sg_device * sdp);
- static void sg_remove_sfp(struct kref *);
--static Sg_request *sg_get_rq_mark(Sg_fd * sfp, int pack_id);
-+static Sg_request *sg_get_rq_mark(Sg_fd * sfp, int pack_id, bool *busy);
- static Sg_request *sg_add_request(Sg_fd * sfp);
- static int sg_remove_request(Sg_fd * sfp, Sg_request * srp);
- static Sg_device *sg_get_dev(int dev);
-@@ -412,6 +412,7 @@ sg_read(struct file *filp, char __user *
- 	Sg_fd *sfp;
- 	Sg_request *srp;
- 	int req_pack_id = -1;
-+	bool busy;
- 	sg_io_hdr_t *hp;
- 	struct sg_header *old_hdr = NULL;
- 	int retval = 0;
-@@ -459,25 +460,19 @@ sg_read(struct file *filp, char __user *
- 		} else
- 			req_pack_id = old_hdr->pack_id;
- 	}
--	srp = sg_get_rq_mark(sfp, req_pack_id);
-+	srp = sg_get_rq_mark(sfp, req_pack_id, &busy);
- 	if (!srp) {		/* now wait on packet to arrive */
--		if (atomic_read(&sdp->detaching)) {
--			retval = -ENODEV;
--			goto free_old_hdr;
--		}
- 		if (filp->f_flags & O_NONBLOCK) {
- 			retval = -EAGAIN;
- 			goto free_old_hdr;
- 		}
- 		retval = wait_event_interruptible(sfp->read_wait,
--			(atomic_read(&sdp->detaching) ||
--			(srp = sg_get_rq_mark(sfp, req_pack_id))));
--		if (atomic_read(&sdp->detaching)) {
--			retval = -ENODEV;
--			goto free_old_hdr;
--		}
--		if (retval) {
--			/* -ERESTARTSYS as signal hit process */
-+			((srp = sg_get_rq_mark(sfp, req_pack_id, &busy)) ||
-+			(!busy && atomic_read(&sdp->detaching))));
-+		if (!srp) {
-+			/* signal or detaching */
-+			if (!retval)
-+				retval = -ENODEV;
- 			goto free_old_hdr;
- 		}
- 	}
-@@ -928,9 +923,7 @@ sg_ioctl(struct file *filp, unsigned int
- 		if (result < 0)
- 			return result;
- 		result = wait_event_interruptible(sfp->read_wait,
--			(srp_done(sfp, srp) || atomic_read(&sdp->detaching)));
--		if (atomic_read(&sdp->detaching))
--			return -ENODEV;
-+			srp_done(sfp, srp));
- 		write_lock_irq(&sfp->rq_list_lock);
- 		if (srp->done) {
- 			srp->done = 2;
-@@ -2074,19 +2067,28 @@ sg_unlink_reserve(Sg_fd * sfp, Sg_reques
- }
+--- a/fs/ext4/inline.c
++++ b/fs/ext4/inline.c
+@@ -34,6 +34,9 @@ static int get_max_inline_xattr_value_si
+ 	struct ext4_inode *raw_inode;
+ 	int free, min_offs;
  
- static Sg_request *
--sg_get_rq_mark(Sg_fd * sfp, int pack_id)
-+sg_get_rq_mark(Sg_fd * sfp, int pack_id, bool *busy)
- {
- 	Sg_request *resp;
- 	unsigned long iflags;
- 
-+	*busy = false;
- 	write_lock_irqsave(&sfp->rq_list_lock, iflags);
- 	list_for_each_entry(resp, &sfp->rq_list, entry) {
--		/* look for requests that are ready + not SG_IO owned */
--		if ((1 == resp->done) && (!resp->sg_io_owned) &&
-+		/* look for requests that are not SG_IO owned */
-+		if ((!resp->sg_io_owned) &&
- 		    ((-1 == pack_id) || (resp->header.pack_id == pack_id))) {
--			resp->done = 2;	/* guard against other readers */
--			write_unlock_irqrestore(&sfp->rq_list_lock, iflags);
--			return resp;
-+			switch (resp->done) {
-+			case 0: /* request active */
-+				*busy = true;
-+				break;
-+			case 1: /* request done; response ready to return */
-+				resp->done = 2;	/* guard against other readers */
-+				write_unlock_irqrestore(&sfp->rq_list_lock, iflags);
-+				return resp;
-+			case 2: /* response already being returned */
-+				break;
-+			}
- 		}
- 	}
- 	write_unlock_irqrestore(&sfp->rq_list_lock, iflags);
-@@ -2140,6 +2142,15 @@ sg_remove_request(Sg_fd * sfp, Sg_reques
- 		res = 1;
- 	}
- 	write_unlock_irqrestore(&sfp->rq_list_lock, iflags);
++	if (!EXT4_INODE_HAS_XATTR_SPACE(inode))
++		return 0;
 +
-+	/*
-+	 * If the device is detaching, wakeup any readers in case we just
-+	 * removed the last response, which would leave nothing for them to
-+	 * return other than -ENODEV.
-+	 */
-+	if (unlikely(atomic_read(&sfp->parentdp->detaching)))
-+		wake_up_interruptible_all(&sfp->read_wait);
-+
- 	return res;
- }
- 
+ 	min_offs = EXT4_SB(inode->i_sb)->s_inode_size -
+ 			EXT4_GOOD_OLD_INODE_SIZE -
+ 			EXT4_I(inode)->i_extra_isize -
 
 
