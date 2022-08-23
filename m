@@ -2,152 +2,168 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 75EF9C28D13
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 01:51:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 722F1C32792
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 01:53:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239395AbiHWBvI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 22 Aug 2022 21:51:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48798 "EHLO
+        id S239393AbiHWBxy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 22 Aug 2022 21:53:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51658 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239381AbiHWBvG (ORCPT
+        with ESMTP id S235691AbiHWBxw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 22 Aug 2022 21:51:06 -0400
-Received: from mail-pj1-x1034.google.com (mail-pj1-x1034.google.com [IPv6:2607:f8b0:4864:20::1034])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EE72D5A88C;
-        Mon, 22 Aug 2022 18:51:04 -0700 (PDT)
-Received: by mail-pj1-x1034.google.com with SMTP id pm13so3778306pjb.5;
-        Mon, 22 Aug 2022 18:51:04 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc;
-        bh=xRLqqAddV6ec5UBrYobxapckZ++aOG4IqWHgzXgYmDA=;
-        b=ddFQIxJnCbPvSloECjr5AI1aW5WXxjrgGBEhWQpywPPSCAGAA7Q5+G1ANyNPJMBHsN
-         UYKWT8tHhGbOXEpqBwCEH3pLwk/bihUWYxixJvNzyApkqbLec3z5OBc8SuIRul8rDwFy
-         z8mPyBWX7Z2e1BfNkkxyCFifCUv4rDV4lUceT/z269YoSaQVXvA1OJ1K/qVFYFIDfw/M
-         PRZ+zJ5PwfRJ6QKwH+9ZWFN7e+hS/aCqYETaGUkwZ7FoYnOG4UUA7gqwqY4WzSlk0iOq
-         ku7CQKDw+1m6hfLw/lfc/8/4UTuJ1avUzYrqCwby3MV87/qBLdUFuanUVu72aGgrjLSU
-         tiIQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc;
-        bh=xRLqqAddV6ec5UBrYobxapckZ++aOG4IqWHgzXgYmDA=;
-        b=NEsSWiqlsqzfOzQ3XV3Sr58eogNc4RPGIZSNXkw6JsI+c51BcXz+uayIQXzVuNdord
-         wI45hSdmFSxBROPpAoZrLlB/WtteK/i4L+WMJL0oERFiTwGs7bFjJCo4DcWvLmdbjtIR
-         DI8wPj3CO39E+l3aaEQv5vGHvUEsZuFCDNFFu15Z9QduRpHGd0rdsIMH2nvYgnDHERJl
-         rgxKNmNOVNpAhssFTGkkishitxyntEB0sULwajwgbwk/t6rM4/KoqU99Ky1XnwrnG51m
-         9c+5I/+MfXBVuYB8TN34oXpseC0Au+Y/K9MIR+tn21722XDpcR8Kz8c1nmVoCftrSjbA
-         c+2g==
-X-Gm-Message-State: ACgBeo05od/NvblxQxgmzuBmhuEHJhjrPgr7YZtjZjlZBlUwsM7ZNDz0
-        /i+BoIFtgU/27LXows7CAA==
-X-Google-Smtp-Source: AA6agR5CNIokLQJhXl1jkrJxL5Kago8LD+Gheiv++i4KuBcludW/Ep920nkYaZmyX17iW8LUXLUsag==
-X-Received: by 2002:a17:90b:4012:b0:1fa:df52:16ad with SMTP id ie18-20020a17090b401200b001fadf5216admr1067088pjb.198.1661219464428;
-        Mon, 22 Aug 2022 18:51:04 -0700 (PDT)
-Received: from piliu.users.ipa.redhat.com ([209.132.188.80])
-        by smtp.gmail.com with ESMTPSA id t2-20020a170902d14200b0016dbe37cebdsm8979703plt.246.2022.08.22.18.50.58
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 22 Aug 2022 18:51:03 -0700 (PDT)
-Date:   Tue, 23 Aug 2022 09:50:56 +0800
-From:   Pingfan Liu <kernelfans@gmail.com>
-To:     "Paul E. McKenney" <paulmck@kernel.org>
-Cc:     linux-kernel@vger.kernel.org, rcu@vger.kernel.org,
-        Frederic Weisbecker <frederic@kernel.org>,
-        Neeraj Upadhyay <quic_neeraju@quicinc.com>,
-        Josh Triplett <josh@joshtriplett.org>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Mathieu Desnoyers <mathieu.desnoyers@efficios.com>,
-        Lai Jiangshan <jiangshanlai@gmail.com>,
-        Joel Fernandes <joel@joelfernandes.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Steven Price <steven.price@arm.com>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Kuppuswamy Sathyanarayanan 
-        <sathyanarayanan.kuppuswamy@linux.intel.com>,
-        "Jason A. Donenfeld" <Jason@zx2c4.com>, boqun.feng@gmail.com
-Subject: Re: [RFC 06/10] rcu/hotplug: Make rcutree_dead_cpu() parallel
-Message-ID: <YwQygLBtzqwxuMIJ@piliu.users.ipa.redhat.com>
-References: <20220822021520.6996-1-kernelfans@gmail.com>
- <20220822021520.6996-7-kernelfans@gmail.com>
- <20220822024528.GC6159@paulmck-ThinkPad-P17-Gen-1>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220822024528.GC6159@paulmck-ThinkPad-P17-Gen-1>
+        Mon, 22 Aug 2022 21:53:52 -0400
+Received: from inva021.nxp.com (inva021.nxp.com [92.121.34.21])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A8B903C160
+        for <linux-kernel@vger.kernel.org>; Mon, 22 Aug 2022 18:53:48 -0700 (PDT)
+Received: from inva021.nxp.com (localhost [127.0.0.1])
+        by inva021.eu-rdc02.nxp.com (Postfix) with ESMTP id 98BB9200424;
+        Tue, 23 Aug 2022 03:53:47 +0200 (CEST)
+Received: from aprdc01srsp001v.ap-rdc01.nxp.com (aprdc01srsp001v.ap-rdc01.nxp.com [165.114.16.16])
+        by inva021.eu-rdc02.nxp.com (Postfix) with ESMTP id 2D18A20043E;
+        Tue, 23 Aug 2022 03:53:47 +0200 (CEST)
+Received: from localhost.localdomain (shlinux2.ap.freescale.net [10.192.224.44])
+        by aprdc01srsp001v.ap-rdc01.nxp.com (Postfix) with ESMTP id AEBA2180031C;
+        Tue, 23 Aug 2022 09:53:45 +0800 (+08)
+From:   Shengjiu Wang <shengjiu.wang@nxp.com>
+To:     nicoleotsuka@gmail.com, Xiubo.Lee@gmail.com, festevam@gmail.com,
+        shengjiu.wang@gmail.com, lgirdwood@gmail.com, broonie@kernel.org,
+        perex@perex.cz, tiwai@suse.com, alsa-devel@alsa-project.org
+Cc:     linuxppc-dev@lists.ozlabs.org, linux-kernel@vger.kernel.org
+Subject: [RESEND PATCH] ASoC: fsl_sai: Add support multi fifo sdma script
+Date:   Tue, 23 Aug 2022 09:36:13 +0800
+Message-Id: <1661218573-2154-1-git-send-email-shengjiu.wang@nxp.com>
+X-Mailer: git-send-email 2.7.4
+X-Virus-Scanned: ClamAV using ClamSMTP
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sun, Aug 21, 2022 at 07:45:28PM -0700, Paul E. McKenney wrote:
-> On Mon, Aug 22, 2022 at 10:15:16AM +0800, Pingfan Liu wrote:
-> > In order to support parallel, rcu_state.n_online_cpus should be
-> > atomic_dec()
-> > 
-> > Signed-off-by: Pingfan Liu <kernelfans@gmail.com>
-> 
-> I have to ask...  What testing have you subjected this patch to?
-> 
+With disabling combine mode, the multiple successive
+FIFO registers or non successive FIFO registers of SAI module
+can work with the sdma multi fifo script.
 
-This patch subjects to [1]. The series aims to enable kexec-reboot in
-parallel on all cpu. As a result, the involved RCU part is expected to
-support parallel.
+This patch is to configure the necessary information to
+the SDMA engine driver for support multi fifo script.
 
-[1]: https://lore.kernel.org/linux-arm-kernel/20220822021520.6996-3-kernelfans@gmail.com/T/#mf62352138d7b040fdb583ba66f8cd0ed1e145feb
+'words_per_fifo' is the channels for each dataline
+'n_fifos_src' and 'n_fifos_dst' are the fifo number
+'stride_fifos_src' and 'stride_fifos_dst' are the stride
+between enable FIFOs
+'maxburst' is the multiply of datalines
 
-Thanks,
+Signed-off-by: Shengjiu Wang <shengjiu.wang@nxp.com>
+---
+changes in resend:
+- rebase to latest for-6.1
 
-	Pingfan
+ sound/soc/fsl/fsl_sai.c | 37 ++++++++++++++++++++++++++++++++++++-
+ sound/soc/fsl/fsl_sai.h |  3 +++
+ 2 files changed, 39 insertions(+), 1 deletion(-)
 
+diff --git a/sound/soc/fsl/fsl_sai.c b/sound/soc/fsl/fsl_sai.c
+index a7fa6f0bf83d..0f92906d7a29 100644
+--- a/sound/soc/fsl/fsl_sai.c
++++ b/sound/soc/fsl/fsl_sai.c
+@@ -527,6 +527,7 @@ static int fsl_sai_hw_params(struct snd_pcm_substream *substream,
+ 	u32 slot_width = word_width;
+ 	int adir = tx ? RX : TX;
+ 	u32 pins, bclk;
++	u32 watermark;
+ 	int ret, i;
+ 
+ 	if (sai->slots)
+@@ -619,7 +620,15 @@ static int fsl_sai_hw_params(struct snd_pcm_substream *substream,
+ 				   FSL_SAI_CR5_FBT_MASK, val_cr5);
+ 	}
+ 
+-	if (hweight8(dl_cfg[dl_cfg_idx].mask[tx]) <= 1)
++	/*
++	 * Combine mode has limation:
++	 * - Can't used for singel dataline/FIFO case except the FIFO0
++	 * - Can't used for multi dataline/FIFO case except the enabled FIFOs
++	 *   are successive and start from FIFO0
++	 *
++	 * So for common usage, all multi fifo case disable the combine mode.
++	 */
++	if (hweight8(dl_cfg[dl_cfg_idx].mask[tx]) <= 1 || sai->is_multi_fifo_dma)
+ 		regmap_update_bits(sai->regmap, FSL_SAI_xCR4(tx, ofs),
+ 				   FSL_SAI_CR4_FCOMB_MASK, 0);
+ 	else
+@@ -630,6 +639,26 @@ static int fsl_sai_hw_params(struct snd_pcm_substream *substream,
+ 	dma_params->addr = sai->res->start + FSL_SAI_xDR0(tx) +
+ 			   dl_cfg[dl_cfg_idx].start_off[tx] * 0x4;
+ 
++	if (sai->is_multi_fifo_dma) {
++		sai->audio_config[tx].words_per_fifo = min(slots, channels);
++		if (tx) {
++			sai->audio_config[tx].n_fifos_dst = pins;
++			sai->audio_config[tx].stride_fifos_dst = dl_cfg[dl_cfg_idx].next_off[tx];
++		} else {
++			sai->audio_config[tx].n_fifos_src = pins;
++			sai->audio_config[tx].stride_fifos_src = dl_cfg[dl_cfg_idx].next_off[tx];
++		}
++		dma_params->maxburst = sai->audio_config[tx].words_per_fifo * pins;
++		dma_params->peripheral_config = &sai->audio_config[tx];
++		dma_params->peripheral_size = sizeof(sai->audio_config[tx]);
++
++		watermark = tx ? (sai->soc_data->fifo_depth - dma_params->maxburst) :
++				 (dma_params->maxburst - 1);
++		regmap_update_bits(sai->regmap, FSL_SAI_xCR1(tx, ofs),
++				   FSL_SAI_CR1_RFW_MASK(sai->soc_data->fifo_depth),
++				   watermark);
++	}
++
+ 	/* Find a proper tcre setting */
+ 	for (i = 0; i < sai->soc_data->pins; i++) {
+ 		trce_mask = (1 << (i + 1)) - 1;
+@@ -1257,6 +1286,7 @@ static int fsl_sai_probe(struct platform_device *pdev)
+ 	char tmp[8];
+ 	int irq, ret, i;
+ 	int index;
++	u32 dmas[4];
+ 
+ 	sai = devm_kzalloc(dev, sizeof(*sai), GFP_KERNEL);
+ 	if (!sai)
+@@ -1313,6 +1343,11 @@ static int fsl_sai_probe(struct platform_device *pdev)
+ 	fsl_asoc_get_pll_clocks(&pdev->dev, &sai->pll8k_clk,
+ 				&sai->pll11k_clk);
+ 
++	/* Use Multi FIFO mode depending on the support from SDMA script */
++	ret = of_property_read_u32_array(np, "dmas", dmas, 4);
++	if (!sai->soc_data->use_edma && !ret && dmas[2] == IMX_DMATYPE_MULTI_SAI)
++		sai->is_multi_fifo_dma = true;
++
+ 	/* read dataline mask for rx and tx*/
+ 	ret = fsl_sai_read_dlcfg(sai);
+ 	if (ret < 0) {
+diff --git a/sound/soc/fsl/fsl_sai.h b/sound/soc/fsl/fsl_sai.h
+index 17956b5731dc..697f6690068c 100644
+--- a/sound/soc/fsl/fsl_sai.h
++++ b/sound/soc/fsl/fsl_sai.h
+@@ -6,6 +6,7 @@
+ #ifndef __FSL_SAI_H
+ #define __FSL_SAI_H
+ 
++#include <linux/dma/imx-dma.h>
+ #include <sound/dmaengine_pcm.h>
+ 
+ #define FSL_SAI_FORMATS (SNDRV_PCM_FMTBIT_S16_LE |\
+@@ -281,6 +282,7 @@ struct fsl_sai {
+ 	bool is_lsb_first;
+ 	bool is_dsp_mode;
+ 	bool is_pdm_mode;
++	bool is_multi_fifo_dma;
+ 	bool synchronous[2];
+ 	struct fsl_sai_dl_cfg *dl_cfg;
+ 	unsigned int dl_cfg_cnt;
+@@ -300,6 +302,7 @@ struct fsl_sai {
+ 	struct pm_qos_request pm_qos_req;
+ 	struct pinctrl *pinctrl;
+ 	struct pinctrl_state *pins_state;
++	struct sdma_peripheral_config audio_config[2];
+ };
+ 
+ #define TX 1
+-- 
+2.34.1
 
-> 							Thanx, Paul
-> 
-> > Cc: "Paul E. McKenney" <paulmck@kernel.org>
-> > Cc: Frederic Weisbecker <frederic@kernel.org>
-> > Cc: Neeraj Upadhyay <quic_neeraju@quicinc.com>
-> > Cc: Josh Triplett <josh@joshtriplett.org>
-> > Cc: Steven Rostedt <rostedt@goodmis.org>
-> > Cc: Mathieu Desnoyers <mathieu.desnoyers@efficios.com>
-> > Cc: Lai Jiangshan <jiangshanlai@gmail.com>
-> > Cc: Joel Fernandes <joel@joelfernandes.org>
-> > Cc: Thomas Gleixner <tglx@linutronix.de>
-> > Cc: Steven Price <steven.price@arm.com>
-> > Cc: "Peter Zijlstra
-> > Cc: Mark Rutland <mark.rutland@arm.com>
-> > Cc: Kuppuswamy Sathyanarayanan <sathyanarayanan.kuppuswamy@linux.intel.com>
-> > Cc: "Jason A. Donenfeld" <Jason@zx2c4.com>
-> > To: linux-kernel@vger.kernel.org
-> > To: rcu@vger.kernel.org
-> > ---
-> >  kernel/cpu.c      | 1 +
-> >  kernel/rcu/tree.c | 3 ++-
-> >  2 files changed, 3 insertions(+), 1 deletion(-)
-> > 
-> > diff --git a/kernel/cpu.c b/kernel/cpu.c
-> > index 1261c3f3be51..90debbe28e85 100644
-> > --- a/kernel/cpu.c
-> > +++ b/kernel/cpu.c
-> > @@ -1872,6 +1872,7 @@ static struct cpuhp_step cpuhp_hp_states[] = {
-> >  		.name			= "RCU/tree:prepare",
-> >  		.startup.single		= rcutree_prepare_cpu,
-> >  		.teardown.single	= rcutree_dead_cpu,
-> > +		.support_kexec_parallel	= true,
-> >  	},
-> >  	/*
-> >  	 * On the tear-down path, timers_dead_cpu() must be invoked
-> > diff --git a/kernel/rcu/tree.c b/kernel/rcu/tree.c
-> > index 79aea7df4345..07d31e16c65e 100644
-> > --- a/kernel/rcu/tree.c
-> > +++ b/kernel/rcu/tree.c
-> > @@ -2168,7 +2168,8 @@ int rcutree_dead_cpu(unsigned int cpu)
-> >  	if (!IS_ENABLED(CONFIG_HOTPLUG_CPU))
-> >  		return 0;
-> >  
-> > -	WRITE_ONCE(rcu_state.n_online_cpus, rcu_state.n_online_cpus - 1);
-> > +	/* Hot remove path allows parallel, while Hot add races against remove on lock */
-> > +	atomic_dec((atomic_t *)&rcu_state.n_online_cpus);
-> >  	/* Adjust any no-longer-needed kthreads. */
-> >  	rcu_boost_kthread_setaffinity(rnp, -1);
-> >  	// Stop-machine done, so allow nohz_full to disable tick.
-> > -- 
-> > 2.31.1
-> > 
