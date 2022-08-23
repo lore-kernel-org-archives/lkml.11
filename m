@@ -2,45 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C9FADC38145
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B2A29C32793
 	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 11:27:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357505AbiHWL0N (ORCPT
+        id S1357459AbiHWL0H (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 07:26:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43656 "EHLO
+        Tue, 23 Aug 2022 07:26:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51842 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357614AbiHWLUi (ORCPT
+        with ESMTP id S1357598AbiHWLUh (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 07:20:38 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 44E588C018;
-        Tue, 23 Aug 2022 02:22:41 -0700 (PDT)
+        Tue, 23 Aug 2022 07:20:37 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A07888A7EA;
+        Tue, 23 Aug 2022 02:22:38 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 297F36122D;
-        Tue, 23 Aug 2022 09:22:40 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 316C6C433C1;
-        Tue, 23 Aug 2022 09:22:38 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 13E7460F91;
+        Tue, 23 Aug 2022 09:22:37 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1A127C433D6;
+        Tue, 23 Aug 2022 09:22:35 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661246559;
-        bh=/DeAmAkZLsLUJ1rMm66Za+XJ3MYFeZHDpaX7It3ToiI=;
+        s=korg; t=1661246556;
+        bh=HjDiRdLsmkxdk+6DMHCfnH7hzFf5FMbx2Yo3Ti6EXPw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=dPsy7KseuqVFp9lSZsvUsFzgdWmZ9iSaQc7TxDpJ/l6XPE17f8IMPTOItScEkNUgy
-         baXka1ITKuUuZFRreQEBklwIw4DHSB5ehOtSCD+narLf6OdJHS5N38xPE2IEe2txRF
-         a3MeuoO85H+KuWp7EQdcp0wGKm1RF9LK11rcIic0=
+        b=ILRRpBCQhpYdM0xJdTsXDKzksngRX7LavdfxD+eHsFw3zJPkQRwpBYSIyEDpUc+UU
+         YSwBpPHT/Z3n9uSQcSX68KmLC0xHH+Gm9PVJiYpE9Bs7jShHcvP3yQfXrxVBfVC6iL
+         zk08HhEmdDeAHmHdEFhz3zLHVyQa1CFtYDu6Tgs0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        =?UTF-8?q?Pali=20Roh=C3=A1r?= <pali@kernel.org>,
-        =?UTF-8?q?Marek=20Beh=C3=BAn?= <kabel@kernel.org>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
+        stable@vger.kernel.org, Dan Carpenter <dan.carpenter@oracle.com>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Alexei Starovoitov <ast@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 148/389] crypto: inside-secure - Add missing MODULE_DEVICE_TABLE for of
-Date:   Tue, 23 Aug 2022 10:23:46 +0200
-Message-Id: <20220823080121.786293719@linuxfoundation.org>
+Subject: [PATCH 5.4 130/389] selftests/bpf: fix a test for snprintf() overflow
+Date:   Tue, 23 Aug 2022 10:23:28 +0200
+Message-Id: <20220823080121.055266754@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220823080115.331990024@linuxfoundation.org>
 References: <20220823080115.331990024@linuxfoundation.org>
@@ -52,36 +51,37 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Pali Rohár <pali@kernel.org>
+From: Dan Carpenter <dan.carpenter@oracle.com>
 
-[ Upstream commit fa4d57b85786ec0e16565c75a51c208834b0c24d ]
+[ Upstream commit c5d22f4cfe8dfb93f1db0a1e7e2e7ebc41395d98 ]
 
-Without MODULE_DEVICE_TABLE, crypto_safexcel.ko module is not automatically
-loaded on platforms where inside-secure crypto HW is specified in device
-tree (e.g. Armada 3720). So add missing MODULE_DEVICE_TABLE for of.
+The snprintf() function returns the number of bytes which *would*
+have been copied if there were space.  In other words, it can be
+> sizeof(pin_path).
 
-Fixes: 1b44c5a60c13 ("crypto: inside-secure - add SafeXcel EIP197 crypto engine driver")
-Signed-off-by: Pali Rohár <pali@kernel.org>
-Acked-by: Marek Behún <kabel@kernel.org>
-Signed-off-by: Herbert Xu <herbert@gondor.apana.org.au>
+Fixes: c0fa1b6c3efc ("bpf: btf: Add BTF tests")
+Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
+Acked-by: Martin KaFai Lau <kafai@fb.com>
+Link: https://lore.kernel.org/r/YtZ+aD/tZMkgOUw+@kili
+Signed-off-by: Alexei Starovoitov <ast@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/crypto/inside-secure/safexcel.c | 2 ++
- 1 file changed, 2 insertions(+)
+ tools/testing/selftests/bpf/test_btf.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/crypto/inside-secure/safexcel.c b/drivers/crypto/inside-secure/safexcel.c
-index 4d9d97c59ee3..9534f52210af 100644
---- a/drivers/crypto/inside-secure/safexcel.c
-+++ b/drivers/crypto/inside-secure/safexcel.c
-@@ -1658,6 +1658,8 @@ static const struct of_device_id safexcel_of_match_table[] = {
- 	{},
- };
+diff --git a/tools/testing/selftests/bpf/test_btf.c b/tools/testing/selftests/bpf/test_btf.c
+index 3d617e806054..996eca57bc97 100644
+--- a/tools/testing/selftests/bpf/test_btf.c
++++ b/tools/testing/selftests/bpf/test_btf.c
+@@ -4808,7 +4808,7 @@ static int do_test_pprint(int test_num)
+ 	ret = snprintf(pin_path, sizeof(pin_path), "%s/%s",
+ 		       "/sys/fs/bpf", test->map_name);
  
-+MODULE_DEVICE_TABLE(of, safexcel_of_match_table);
-+
- static struct platform_driver  crypto_safexcel = {
- 	.probe		= safexcel_probe,
- 	.remove		= safexcel_remove,
+-	if (CHECK(ret == sizeof(pin_path), "pin_path %s/%s is too long",
++	if (CHECK(ret >= sizeof(pin_path), "pin_path %s/%s is too long",
+ 		  "/sys/fs/bpf", test->map_name)) {
+ 		err = -1;
+ 		goto done;
 -- 
 2.35.1
 
