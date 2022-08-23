@@ -2,45 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1DDA4C32772
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 08:33:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A41B5C32772
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 08:33:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244685AbiHWIdt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 04:33:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60664 "EHLO
+        id S236907AbiHWIdy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 23 Aug 2022 04:33:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60258 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343753AbiHWIbR (ORCPT
+        with ESMTP id S1344685AbiHWIbf (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 04:31:17 -0400
+        Tue, 23 Aug 2022 04:31:35 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2817074E2F;
-        Tue, 23 Aug 2022 01:15:45 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7CEF766128;
+        Tue, 23 Aug 2022 01:15:59 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 01B9F6129A;
-        Tue, 23 Aug 2022 08:14:54 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0070CC433C1;
-        Tue, 23 Aug 2022 08:14:52 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 3F7E461321;
+        Tue, 23 Aug 2022 08:15:15 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 47543C433C1;
+        Tue, 23 Aug 2022 08:15:14 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661242493;
-        bh=Rfq4sGxkv7PUq84xlx59lHyoBQyqRqYH7SkfBniubrg=;
+        s=korg; t=1661242514;
+        bh=CWO5cFi5S/7DCwalQ4rsgZB2IdcrAI+RfNDTo4EngAY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=u7uVWiKy3VeDe/1qpGMsUob6025P/vx3FEJ97U6u9uElFnHjrXdoItC7K5Slkvwgc
-         rsCrqopN5YYosjq1hP20fPDhPWVnlwEAVJuYHcvkor1EEveIrTxnKpOZcIQtiNALoB
-         WOJ9IEWMAwK8Ftp+9QhSTlNxsvoLxOmN3/8jyzkE=
+        b=1BIw3SK5GAXj+jXrVSwOggdpypn9s/J1tNCZssupVYwL2tEo7moYWnKTZxYOTWEyx
+         duILYV6C/rIiVXKHaoMj+IilcymbLmDZCwhA4rVLdOEtWmDDN/lbtTnGkCIysucjwQ
+         uy2z3c7/UH05Tx3YClMe1V2rxAExaRiSNJFH30sk=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Guillaume Nault <gnault@redhat.com>,
-        Matthias May <matthias.may@westermo.com>,
-        Jakub Kicinski <kuba@kernel.org>
-Subject: [PATCH 5.19 123/365] ipv6: do not use RT_TOS for IPv6 flowlabel
-Date:   Tue, 23 Aug 2022 10:00:24 +0200
-Message-Id: <20220823080123.340298617@linuxfoundation.org>
+        stable@vger.kernel.org, Mikulas Patocka <mpatocka@redhat.com>,
+        Mike Snitzer <snitzer@kernel.org>
+Subject: [PATCH 4.9 056/101] dm raid: fix address sanitizer warning in raid_status
+Date:   Tue, 23 Aug 2022 10:03:29 +0200
+Message-Id: <20220823080036.696134505@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220823080118.128342613@linuxfoundation.org>
-References: <20220823080118.128342613@linuxfoundation.org>
+In-Reply-To: <20220823080034.579196046@linuxfoundation.org>
+References: <20220823080034.579196046@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -49,42 +48,63 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Matthias May <matthias.may@westermo.com>
+From: Mikulas Patocka <mpatocka@redhat.com>
 
-commit ab7e2e0dfa5d37540ab1dc5376e9a2cb9188925d upstream.
+commit 1fbeea217d8f297fe0e0956a1516d14ba97d0396 upstream.
 
-According to Guillaume Nault RT_TOS should never be used for IPv6.
+There is this warning when using a kernel with the address sanitizer
+and running this testsuite:
+https://gitlab.com/cki-project/kernel-tests/-/tree/main/storage/swraid/scsi_raid
 
-Quote:
-RT_TOS() is an old macro used to interprete IPv4 TOS as described in
-the obsolete RFC 1349. It's conceptually wrong to use it even in IPv4
-code, although, given the current state of the code, most of the
-existing calls have no consequence.
+==================================================================
+BUG: KASAN: slab-out-of-bounds in raid_status+0x1747/0x2820 [dm_raid]
+Read of size 4 at addr ffff888079d2c7e8 by task lvcreate/13319
+CPU: 0 PID: 13319 Comm: lvcreate Not tainted 5.18.0-0.rc3.<snip> #1
+Hardware name: Red Hat KVM, BIOS 0.5.1 01/01/2011
+Call Trace:
+ <TASK>
+ dump_stack_lvl+0x6a/0x9c
+ print_address_description.constprop.0+0x1f/0x1e0
+ print_report.cold+0x55/0x244
+ kasan_report+0xc9/0x100
+ raid_status+0x1747/0x2820 [dm_raid]
+ dm_ima_measure_on_table_load+0x4b8/0xca0 [dm_mod]
+ table_load+0x35c/0x630 [dm_mod]
+ ctl_ioctl+0x411/0x630 [dm_mod]
+ dm_ctl_ioctl+0xa/0x10 [dm_mod]
+ __x64_sys_ioctl+0x12a/0x1a0
+ do_syscall_64+0x5b/0x80
 
-But using RT_TOS() in IPv6 code is always a bug: IPv6 never had a "TOS"
-field to be interpreted the RFC 1349 way. There's no historical
-compatibility to worry about.
+The warning is caused by reading conf->max_nr_stripes in raid_status. The
+code in raid_status reads mddev->private, casts it to struct r5conf and
+reads the entry max_nr_stripes.
 
-Fixes: 571912c69f0e ("net: UDP tunnel encapsulation module for tunnelling different protocols like MPLS, IP, NSH etc.")
-Acked-by: Guillaume Nault <gnault@redhat.com>
-Signed-off-by: Matthias May <matthias.may@westermo.com>
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+However, if we have different raid type than 4/5/6, mddev->private
+doesn't point to struct r5conf; it may point to struct r0conf, struct
+r1conf, struct r10conf or struct mpconf. If we cast a pointer to one
+of these structs to struct r5conf, we will be reading invalid memory
+and KASAN warns about it.
+
+Fix this bug by reading struct r5conf only if raid type is 4, 5 or 6.
+
+Cc: stable@vger.kernel.org
+Signed-off-by: Mikulas Patocka <mpatocka@redhat.com>
+Signed-off-by: Mike Snitzer <snitzer@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- net/ipv6/ip6_output.c |    3 +--
- 1 file changed, 1 insertion(+), 2 deletions(-)
+ drivers/md/dm-raid.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/net/ipv6/ip6_output.c
-+++ b/net/ipv6/ip6_output.c
-@@ -1311,8 +1311,7 @@ struct dst_entry *ip6_dst_lookup_tunnel(
- 	fl6.daddr = info->key.u.ipv6.dst;
- 	fl6.saddr = info->key.u.ipv6.src;
- 	prio = info->key.tos;
--	fl6.flowlabel = ip6_make_flowinfo(RT_TOS(prio),
--					  info->key.label);
-+	fl6.flowlabel = ip6_make_flowinfo(prio, info->key.label);
- 
- 	dst = ipv6_stub->ipv6_dst_lookup_flow(net, sock->sk, &fl6,
- 					      NULL);
+--- a/drivers/md/dm-raid.c
++++ b/drivers/md/dm-raid.c
+@@ -3173,7 +3173,7 @@ static void raid_status(struct dm_target
+ {
+ 	struct raid_set *rs = ti->private;
+ 	struct mddev *mddev = &rs->md;
+-	struct r5conf *conf = mddev->private;
++	struct r5conf *conf = rs_is_raid456(rs) ? mddev->private : NULL;
+ 	int i, max_nr_stripes = conf ? conf->max_nr_stripes : 0;
+ 	bool array_in_sync;
+ 	unsigned int raid_param_cnt = 1; /* at least 1 for chunksize */
 
 
