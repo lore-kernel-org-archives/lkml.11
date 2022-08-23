@@ -2,45 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EC3F5C32772
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 11:47:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6641EC32792
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 11:47:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358195AbiHWLrR (ORCPT
+        id S1358273AbiHWLrf (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 07:47:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60232 "EHLO
+        Tue, 23 Aug 2022 07:47:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59896 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1358467AbiHWLly (ORCPT
+        with ESMTP id S1358529AbiHWLmA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 07:41:54 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8305FCD538;
-        Tue, 23 Aug 2022 02:29:25 -0700 (PDT)
+        Tue, 23 Aug 2022 07:42:00 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9E336CE32C;
+        Tue, 23 Aug 2022 02:29:35 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 3474561388;
-        Tue, 23 Aug 2022 09:29:24 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3C91DC433D6;
-        Tue, 23 Aug 2022 09:29:23 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id C3D3BB81C8B;
+        Tue, 23 Aug 2022 09:29:33 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 30D8AC433D6;
+        Tue, 23 Aug 2022 09:29:32 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661246963;
-        bh=ScgBIY3HQMCcOzB+zPgCsLe9LaGbzeQNrwHYt+biqjc=;
+        s=korg; t=1661246972;
+        bh=UzHrVfXis4IWjX5ArX2hRghplCJ80F/NMD75HVyyG8w=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=cicRRGvk4mK2syW+JaD3JPQnwGfIPmKEYfj71SbBgOi+x4Jh4kNK6dIk5Gf5S5eZ6
-         IZ8zYUb/cuie/kQohSfz+aZV5OMnzK4qg6oHEX76a8+rvaaiK8Stv3MyzHXqWI4N8G
-         nK8mN1HcokqPbUJb1X7+vEJpKqBL1g4SrDuMy1A8=
+        b=fsOUmgTGJAkraYb2OjSNTzDiXXkZwRx1034q3MzRi6Ng8RUpL08/dFBOVFVLpgUIQ
+         hGSfdnUrBLAIaMbraO619BQxHGjzQuR4o7eB2ZnrmjjD3LZfI8+e3j840Ym9zyyYc6
+         SG5jHgzC/lCvOE1DxwXsn9om6WVLgH8+BKd2BsSY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
+To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Zhenpeng Lin <zplin@u.northwestern.edu>,
-        Thadeu Lima de Souza Cascardo <cascardo@canonical.com>,
-        Kamal Mostafa <kamal@canonical.com>,
-        Jamal Hadi Salim <jhs@mojatatu.com>,
-        Jakub Kicinski <kuba@kernel.org>
-Subject: [PATCH 5.4 275/389] net_sched: cls_route: remove from list when handle is 0
-Date:   Tue, 23 Aug 2022 10:25:53 +0200
-Message-Id: <20220823080127.033009643@linuxfoundation.org>
+        Vitaly Kuznetsov <vkuznets@redhat.com>,
+        Paolo Bonzini <pbonzini@redhat.com>,
+        Stefan Ghinea <stefan.ghinea@windriver.com>
+Subject: [PATCH 5.4 278/389] KVM: x86: Check lapic_in_kernel() before attempting to set a SynIC irq
+Date:   Tue, 23 Aug 2022 10:25:56 +0200
+Message-Id: <20220823080127.144141719@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220823080115.331990024@linuxfoundation.org>
 References: <20220823080115.331990024@linuxfoundation.org>
@@ -52,45 +50,40 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Thadeu Lima de Souza Cascardo <cascardo@canonical.com>
+From: Vitaly Kuznetsov <vkuznets@redhat.com>
 
-commit 9ad36309e2719a884f946678e0296be10f0bb4c1 upstream.
+commit 7ec37d1cbe17d8189d9562178d8b29167fe1c31a upstream
 
-When a route filter is replaced and the old filter has a 0 handle, the old
-one won't be removed from the hashtable, while it will still be freed.
+When KVM_CAP_HYPERV_SYNIC{,2} is activated, KVM already checks for
+irqchip_in_kernel() so normally SynIC irqs should never be set. It is,
+however,  possible for a misbehaving VMM to write to SYNIC/STIMER MSRs
+causing erroneous behavior.
 
-The test was there since before commit 1109c00547fc ("net: sched: RCU
-cls_route"), when a new filter was not allocated when there was an old one.
-The old filter was reused and the reinserting would only be necessary if an
-old filter was replaced. That was still wrong for the same case where the
-old handle was 0.
+The immediate issue being fixed is that kvm_irq_delivery_to_apic()
+(kvm_irq_delivery_to_apic_fast()) crashes when called with
+'irq.shorthand = APIC_DEST_SELF' and 'src == NULL'.
 
-Remove the old filter from the list independently from its handle value.
-
-This fixes CVE-2022-2588, also reported as ZDI-CAN-17440.
-
-Reported-by: Zhenpeng Lin <zplin@u.northwestern.edu>
-Signed-off-by: Thadeu Lima de Souza Cascardo <cascardo@canonical.com>
-Reviewed-by: Kamal Mostafa <kamal@canonical.com>
-Cc: <stable@vger.kernel.org>
-Acked-by: Jamal Hadi Salim <jhs@mojatatu.com>
-Link: https://lore.kernel.org/r/20220809170518.164662-1-cascardo@canonical.com
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Signed-off-by: Vitaly Kuznetsov <vkuznets@redhat.com>
+Message-Id: <20220325132140.25650-2-vkuznets@redhat.com>
+Cc: stable@vger.kernel.org
+Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
+Signed-off-by: Stefan Ghinea <stefan.ghinea@windriver.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- net/sched/cls_route.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ arch/x86/kvm/hyperv.c |    3 +++
+ 1 file changed, 3 insertions(+)
 
---- a/net/sched/cls_route.c
-+++ b/net/sched/cls_route.c
-@@ -526,7 +526,7 @@ static int route4_change(struct net *net
- 	rcu_assign_pointer(f->next, f1);
- 	rcu_assign_pointer(*fp, f);
+--- a/arch/x86/kvm/hyperv.c
++++ b/arch/x86/kvm/hyperv.c
+@@ -309,6 +309,9 @@ static int synic_set_irq(struct kvm_vcpu
+ 	struct kvm_lapic_irq irq;
+ 	int ret, vector;
  
--	if (fold && fold->handle && f->handle != fold->handle) {
-+	if (fold) {
- 		th = to_hash(fold->handle);
- 		h = from_hash(fold->handle >> 16);
- 		b = rtnl_dereference(head->table[th]);
++	if (KVM_BUG_ON(!lapic_in_kernel(vcpu), vcpu->kvm))
++		return -EINVAL;
++
+ 	if (sint >= ARRAY_SIZE(synic->sint))
+ 		return -EINVAL;
+ 
 
 
