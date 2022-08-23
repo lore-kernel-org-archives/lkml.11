@@ -2,103 +2,100 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B5892C32772
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 12:24:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8CF64C32772
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 12:24:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243872AbiHWMYG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 08:24:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58440 "EHLO
+        id S244064AbiHWMYN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 23 Aug 2022 08:24:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58508 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243684AbiHWMUI (ORCPT
+        with ESMTP id S1345057AbiHWMUK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 08:20:08 -0400
-Received: from smtp-out1.suse.de (smtp-out1.suse.de [IPv6:2001:67c:2178:6::1c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 14213EF9D8;
+        Tue, 23 Aug 2022 08:20:10 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4CF8BEF9E7;
         Tue, 23 Aug 2022 02:42:52 -0700 (PDT)
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by smtp-out1.suse.de (Postfix) with ESMTPS id 5202D34299;
-        Tue, 23 Aug 2022 09:42:28 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
-        t=1661247748; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=a5e+aBtB4V09GgYckhU7qkp/jydUu2L/ktWuXDsvUUg=;
-        b=OKRFeR44shGwU0EljaE1Yk98KkScecHFvhrQ5yejUOssX5zl4uJX8SMi15/0k+AdOOx/Il
-        1MMu5RDHls3J7toCCAhfVHlseTgH3LpppxNutvATRuchyb5zxA1BYToFrVbXH0DgMKUqVQ
-        G28kJ+yPjCDh98TnptwlS13a3X6saZw=
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
-        (No client certificate requested)
-        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id 3FA8313AB7;
-        Tue, 23 Aug 2022 09:42:28 +0000 (UTC)
-Received: from dovecot-director2.suse.de ([192.168.254.65])
-        by imap2.suse-dmz.suse.de with ESMTPSA
-        id x1afDgShBGP9eQAAMHmgww
-        (envelope-from <mhocko@suse.com>); Tue, 23 Aug 2022 09:42:28 +0000
-Date:   Tue, 23 Aug 2022 11:42:27 +0200
-From:   Michal Hocko <mhocko@suse.com>
-To:     Shakeel Butt <shakeelb@google.com>
-Cc:     Johannes Weiner <hannes@cmpxchg.org>,
-        Roman Gushchin <roman.gushchin@linux.dev>,
-        Muchun Song <songmuchun@bytedance.com>,
-        Michal =?iso-8859-1?Q?Koutn=FD?= <mkoutny@suse.com>,
-        Eric Dumazet <edumazet@google.com>,
-        Soheil Hassas Yeganeh <soheil@google.com>,
-        Feng Tang <feng.tang@intel.com>,
-        Oliver Sang <oliver.sang@intel.com>,
-        Andrew Morton <akpm@linux-foundation.org>, lkp@lists.01.org,
-        Cgroups <cgroups@vger.kernel.org>, Linux MM <linux-mm@kvack.org>,
-        netdev <netdev@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH 1/3] mm: page_counter: remove unneeded atomic ops for
- low/min
-Message-ID: <YwShA6npuK0ZsjPI@dhcp22.suse.cz>
-References: <20220822001737.4120417-1-shakeelb@google.com>
- <20220822001737.4120417-2-shakeelb@google.com>
- <YwNSlZFPMgclrSCz@dhcp22.suse.cz>
- <YwNX+vq9svMynVgW@dhcp22.suse.cz>
- <CALvZod720nwfP68OM2QtyyWJpOV5aO8xF6iuN0U2hpX9Pzj8PA@mail.gmail.com>
- <YwOeocdkF/lacpKn@dhcp22.suse.cz>
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 18E3161460;
+        Tue, 23 Aug 2022 09:42:29 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 11710C4314F;
+        Tue, 23 Aug 2022 09:42:27 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1661247748;
+        bh=/Q5pUORS8PperCMlDsARse1qnrG1sQL5K88clcjPeiU=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=Pg8LXWRmqpn1ZDGdbGCO3iY1fatruHAF824O+YMny6/UJvpmwWMYwDsUnNQoD2tcL
+         9P2ngIWjW6MjCjXXwBvAUrbcfDfEWdP3EkPOJmvnNF0EPUArNkFHC7/067S/0oH0ku
+         rTZ7INWeDMleRqQfWBRlT1O14abKnKlscMH48JZM=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Frank Li <Frank.Li@nxp.com>,
+        Faqiang Zhu <faqiang.zhu@nxp.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.10 104/158] usb: cdns3 fix use-after-free at workaround 2
+Date:   Tue, 23 Aug 2022 10:27:16 +0200
+Message-Id: <20220823080050.214993643@linuxfoundation.org>
+X-Mailer: git-send-email 2.37.2
+In-Reply-To: <20220823080046.056825146@linuxfoundation.org>
+References: <20220823080046.056825146@linuxfoundation.org>
+User-Agent: quilt/0.67
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <YwOeocdkF/lacpKn@dhcp22.suse.cz>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon 22-08-22 17:20:02, Michal Hocko wrote:
-> On Mon 22-08-22 07:55:58, Shakeel Butt wrote:
-> > On Mon, Aug 22, 2022 at 3:18 AM Michal Hocko <mhocko@suse.com> wrote:
-[...]
-> > > Unless I have missed anything this shouldn't break the correctness but I
-> > > still have to think about the proportional distribution of the
-> > > protection because that adds to the complexity here.
-> > 
-> > The patch is not changing any semantics. It is just removing an
-> > unnecessary atomic xchg() for a specific scenario (min > 0 && min <
-> > usage). I don't think there will be any change related to proportional
-> > distribution of the protection.
-> 
-> Yes, I suspect you are right. I just remembered previous fixes
-> like 503970e42325 ("mm: memcontrol: fix memory.low proportional
-> distribution") which just made me nervous that this is a tricky area.
-> 
-> I will have another look tomorrow with a fresh brain and send an ack.
+From: Frank Li <Frank.Li@nxp.com>
 
-I cannot spot any problem. But I guess it would be good to have a little
-comment to explain that races on the min_usage update (mentioned by Roman)
-are acceptable and savings from atomic update are preferred.
+[ Upstream commit 7d602f30149a117eea260208b1661bc404c21dfd ]
 
-The worst case I can imagine would be something like uncharge 4kB racing
-with charge 2MB. The first reduces the protection (min_usage) while the other one
-misses that update and doesn't increase it. But even then the effect
-shouldn't be really large. At least I have hard time imagine this would
-throw things off too much.
+BUG: KFENCE: use-after-free read in __list_del_entry_valid+0x10/0xac
+
+cdns3_wa2_remove_old_request()
+{
+	...
+	kfree(priv_req->request.buf);
+	cdns3_gadget_ep_free_request(&priv_ep->endpoint, &priv_req->request);
+	list_del_init(&priv_req->list);
+	^^^ use after free
+	...
+}
+
+cdns3_gadget_ep_free_request() free the space pointed by priv_req,
+but priv_req is used in the following list_del_init().
+
+This patch move list_del_init() before cdns3_gadget_ep_free_request().
+
+Signed-off-by: Frank Li <Frank.Li@nxp.com>
+Signed-off-by: Faqiang Zhu <faqiang.zhu@nxp.com>
+Link: https://lore.kernel.org/r/20220608190430.2814358-1-Frank.Li@nxp.com
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ drivers/usb/cdns3/gadget.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/drivers/usb/cdns3/gadget.c b/drivers/usb/cdns3/gadget.c
+index f120da442d43..a37ea946459c 100644
+--- a/drivers/usb/cdns3/gadget.c
++++ b/drivers/usb/cdns3/gadget.c
+@@ -655,9 +655,9 @@ static void cdns3_wa2_remove_old_request(struct cdns3_endpoint *priv_ep)
+ 		trace_cdns3_wa2(priv_ep, "removes eldest request");
+ 
+ 		kfree(priv_req->request.buf);
++		list_del_init(&priv_req->list);
+ 		cdns3_gadget_ep_free_request(&priv_ep->endpoint,
+ 					     &priv_req->request);
+-		list_del_init(&priv_req->list);
+ 		--priv_ep->wa2_counter;
+ 
+ 		if (!chain)
 -- 
-Michal Hocko
-SUSE Labs
+2.35.1
+
+
+
