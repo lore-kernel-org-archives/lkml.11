@@ -2,42 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CFEB6C32772
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 11:05:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 90DB5C32772
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 11:05:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357015AbiHWLFP (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 07:05:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36164 "EHLO
+        id S240396AbiHWLFY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 23 Aug 2022 07:05:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41642 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356617AbiHWLDN (ORCPT
+        with ESMTP id S1356662AbiHWLDe (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 07:03:13 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A02E8B2858;
-        Tue, 23 Aug 2022 02:15:08 -0700 (PDT)
+        Tue, 23 Aug 2022 07:03:34 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4D6B0B2866;
+        Tue, 23 Aug 2022 02:15:10 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id D4DE7B81C94;
-        Tue, 23 Aug 2022 09:14:36 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0D32DC433D6;
-        Tue, 23 Aug 2022 09:14:34 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 2CA6F61183;
+        Tue, 23 Aug 2022 09:14:39 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3A9D4C433C1;
+        Tue, 23 Aug 2022 09:14:38 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661246075;
-        bh=BG1IryY/JpKplKDyYH7hpVvg67ZthQH8oyEbqAqfFfc=;
+        s=korg; t=1661246078;
+        bh=0nBwYGTh2d6brre8QZyzFCu/z0haKKRiLE6m6lOqEck=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=0eap0GPD81VtCDn2xfdgOo/qaVbBSIXLIZDD0cCJjHFiBFLUJwsRzP4AjAXTpDypL
-         Ut3iKkEU4G1T8i3eDXRnKXh89n0cKRcyW50L50EfTm00fyWytX7rRPhynZ83WA3t/W
-         5ieWYICvNBgwsA5MMEA+VFzVx+PvKT//cUtChhok=
+        b=vJxOTUM+DXX7lXuNG/l59faCl13Ch52o3qNlgFm1p18nnju4DUfA4kdouUAVAOqz7
+         MyNqX3YQ8Z0fvyZZyM3Sp8pN6aJrUv9uR2x/bZG7nQHLO43+fGbUa7PNuCtkyhPOE1
+         F5OJcCdXYbBP+qga0GdCBTMFRe/R/ZCAswIvjeC0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Zheyu Ma <zheyuma97@gmail.com>,
-        Helge Deller <deller@gmx.de>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.19 282/287] video: fbdev: i740fb: Check the argument of i740_calc_vclk()
-Date:   Tue, 23 Aug 2022 10:27:31 +0200
-Message-Id: <20220823080110.984312492@linuxfoundation.org>
+        stable@vger.kernel.org,
+        "Sudip Mukherjee (Codethink)" <sudipm.mukherjee@gmail.com>,
+        Nathan Chancellor <nathan@kernel.org>,
+        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 4.19 283/287] MIPS: tlbex: Explicitly compare _PAGE_NO_EXEC against 0
+Date:   Tue, 23 Aug 2022 10:27:32 +0200
+Message-Id: <20220823080111.024459620@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220823080100.268827165@linuxfoundation.org>
 References: <20220823080100.268827165@linuxfoundation.org>
@@ -49,65 +51,68 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Zheyu Ma <zheyuma97@gmail.com>
+From: Nathan Chancellor <nathan@kernel.org>
 
-[ Upstream commit 40bf722f8064f50200b8c4f8946cd625b441dda9 ]
+[ Upstream commit 74de14fe05dd6b151d73cb0c73c8ec874cbdcde6 ]
 
-Since the user can control the arguments of the ioctl() from the user
-space, under special arguments that may result in a divide-by-zero bug.
+When CONFIG_XPA is enabled, Clang warns:
 
-If the user provides an improper 'pixclock' value that makes the argumet
-of i740_calc_vclk() less than 'I740_RFREQ_FIX', it will cause a
-divide-by-zero bug in:
-    drivers/video/fbdev/i740fb.c:353 p_best = min(15, ilog2(I740_MAX_VCO_FREQ / (freq / I740_RFREQ_FIX)));
+  arch/mips/mm/tlbex.c:629:24: error: converting the result of '<<' to a boolean; did you mean '(1 << _PAGE_NO_EXEC_SHIFT) != 0'? [-Werror,-Wint-in-bool-context]
+          if (cpu_has_rixi && !!_PAGE_NO_EXEC) {
+                              ^
+  arch/mips/include/asm/pgtable-bits.h:174:28: note: expanded from macro '_PAGE_NO_EXEC'
+  # define _PAGE_NO_EXEC          (1 << _PAGE_NO_EXEC_SHIFT)
+                                     ^
+  arch/mips/mm/tlbex.c:2568:24: error: converting the result of '<<' to a boolean; did you mean '(1 << _PAGE_NO_EXEC_SHIFT) != 0'? [-Werror,-Wint-in-bool-context]
+          if (!cpu_has_rixi || !_PAGE_NO_EXEC) {
+                                ^
+  arch/mips/include/asm/pgtable-bits.h:174:28: note: expanded from macro '_PAGE_NO_EXEC'
+  # define _PAGE_NO_EXEC          (1 << _PAGE_NO_EXEC_SHIFT)
+                                     ^
+  2 errors generated.
 
-The following log can reveal it:
+_PAGE_NO_EXEC can be '0' or '1 << _PAGE_NO_EXEC_SHIFT' depending on the
+build and runtime configuration, which is what the negation operators
+are trying to convey. To silence the warning, explicitly compare against
+0 so the result of the '<<' operator is not implicitly converted to a
+boolean.
 
-divide error: 0000 [#1] PREEMPT SMP KASAN PTI
-RIP: 0010:i740_calc_vclk drivers/video/fbdev/i740fb.c:353 [inline]
-RIP: 0010:i740fb_decode_var drivers/video/fbdev/i740fb.c:646 [inline]
-RIP: 0010:i740fb_set_par+0x163f/0x3b70 drivers/video/fbdev/i740fb.c:742
-Call Trace:
- fb_set_var+0x604/0xeb0 drivers/video/fbdev/core/fbmem.c:1034
- do_fb_ioctl+0x234/0x670 drivers/video/fbdev/core/fbmem.c:1110
- fb_ioctl+0xdd/0x130 drivers/video/fbdev/core/fbmem.c:1189
+According to its documentation, GCC enables -Wint-in-bool-context with
+-Wall but this warning is not visible when building the same
+configuration with GCC. It appears GCC only warns when compiling C++,
+not C, although the documentation makes no note of this:
+https://godbolt.org/z/x39q3brxf
 
-Fix this by checking the argument of i740_calc_vclk() first.
-
-Signed-off-by: Zheyu Ma <zheyuma97@gmail.com>
-Signed-off-by: Helge Deller <deller@gmx.de>
+Reported-by: Sudip Mukherjee (Codethink) <sudipm.mukherjee@gmail.com>
+Signed-off-by: Nathan Chancellor <nathan@kernel.org>
+Signed-off-by: Thomas Bogendoerfer <tsbogend@alpha.franken.de>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/video/fbdev/i740fb.c | 9 +++++++--
- 1 file changed, 7 insertions(+), 2 deletions(-)
+ arch/mips/mm/tlbex.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/video/fbdev/i740fb.c b/drivers/video/fbdev/i740fb.c
-index f6d7b04d6dff..bdbafff4529f 100644
---- a/drivers/video/fbdev/i740fb.c
-+++ b/drivers/video/fbdev/i740fb.c
-@@ -399,7 +399,7 @@ static int i740fb_decode_var(const struct fb_var_screeninfo *var,
- 	u32 xres, right, hslen, left, xtotal;
- 	u32 yres, lower, vslen, upper, ytotal;
- 	u32 vxres, xoffset, vyres, yoffset;
--	u32 bpp, base, dacspeed24, mem;
-+	u32 bpp, base, dacspeed24, mem, freq;
- 	u8 r7;
- 	int i;
+diff --git a/arch/mips/mm/tlbex.c b/arch/mips/mm/tlbex.c
+index 620abc968624..a97b3e5a1c00 100644
+--- a/arch/mips/mm/tlbex.c
++++ b/arch/mips/mm/tlbex.c
+@@ -630,7 +630,7 @@ static __maybe_unused void build_convert_pte_to_entrylo(u32 **p,
+ 		return;
+ 	}
  
-@@ -642,7 +642,12 @@ static int i740fb_decode_var(const struct fb_var_screeninfo *var,
- 	par->atc[VGA_ATC_OVERSCAN] = 0;
+-	if (cpu_has_rixi && !!_PAGE_NO_EXEC) {
++	if (cpu_has_rixi && _PAGE_NO_EXEC != 0) {
+ 		if (fill_includes_sw_bits) {
+ 			UASM_i_ROTR(p, reg, reg, ilog2(_PAGE_GLOBAL));
+ 		} else {
+@@ -2559,7 +2559,7 @@ static void check_pabits(void)
+ 	unsigned long entry;
+ 	unsigned pabits, fillbits;
  
- 	/* Calculate VCLK that most closely matches the requested dot clock */
--	i740_calc_vclk((((u32)1e9) / var->pixclock) * (u32)(1e3), par);
-+	freq = (((u32)1e9) / var->pixclock) * (u32)(1e3);
-+	if (freq < I740_RFREQ_FIX) {
-+		fb_dbg(info, "invalid pixclock\n");
-+		freq = I740_RFREQ_FIX;
-+	}
-+	i740_calc_vclk(freq, par);
- 
- 	/* Since we program the clocks ourselves, always use VCLK2. */
- 	par->misc |= 0x0C;
+-	if (!cpu_has_rixi || !_PAGE_NO_EXEC) {
++	if (!cpu_has_rixi || _PAGE_NO_EXEC == 0) {
+ 		/*
+ 		 * We'll only be making use of the fact that we can rotate bits
+ 		 * into the fill if the CPU supports RIXI, so don't bother
 -- 
 2.35.1
 
