@@ -2,95 +2,247 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C4170C32772
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 09:23:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 18D49C32772
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 09:23:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349626AbiHWJXt (ORCPT
+        id S1349645AbiHWJXx (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 05:23:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37934 "EHLO
+        Tue, 23 Aug 2022 05:23:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35190 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349727AbiHWJU6 (ORCPT
+        with ESMTP id S1349514AbiHWJUr (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 05:20:58 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F0D1D8A1E9;
-        Tue, 23 Aug 2022 01:34:10 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id D721DB81BF8;
-        Tue, 23 Aug 2022 08:33:19 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 442FFC433D6;
-        Tue, 23 Aug 2022 08:33:18 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661243598;
-        bh=Hz4IDQ1JODRnQj2XRHBXSjJFvRrsRauABgljRV7KOqM=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=t9HnqP0Hh5QUSJWsKFjVhqkgVZe95VhiBMzixt0Q6vYTsyogARRs+ffphbsa+lk3B
-         ktkzaZpscqlRCF87H7EJ79OpjlbOPd7LlYqr8TMoHa5uOo6B+ZvF5JLdgwoMqrHYwT
-         u2MZYBmtuB/dxKlUpbmB/NHiHL51EHv0GJElzZak=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Ben Dooks <ben.dooks@sifive.com>,
-        Vinod Koul <vkoul@kernel.org>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.19 300/365] dmaengine: dw-axi-dmac: ignore interrupt if no descriptor
-Date:   Tue, 23 Aug 2022 10:03:21 +0200
-Message-Id: <20220823080130.725787493@linuxfoundation.org>
-X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220823080118.128342613@linuxfoundation.org>
-References: <20220823080118.128342613@linuxfoundation.org>
-User-Agent: quilt/0.67
+        Tue, 23 Aug 2022 05:20:47 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 81E6E89902
+        for <linux-kernel@vger.kernel.org>; Tue, 23 Aug 2022 01:34:01 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1661243580;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=0M7MKXuIOUn+65HKb9s0vuBPYqXY5iZeLpoXphpzO/Q=;
+        b=XS2UxXNvYc1ESWEgLc4P0cicRIVmGTpW2ZscoAbhllrLDOy1nOiPrx4rX3KMgT479pZIkr
+        BVzM18xwjnn49MX+eaTY0uQXIBl0vylynG8I+6pOJMwlcAbotUe9K/scCQfYI8vZGD6le4
+        eM4MS2xMGPVfEj4VqYHjkQk6D6ftLbU=
+Received: from mail-wr1-f71.google.com (mail-wr1-f71.google.com
+ [209.85.221.71]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
+ us-mta-674-YpfAct1cMymU-dAu3QnnZQ-1; Tue, 23 Aug 2022 04:29:08 -0400
+X-MC-Unique: YpfAct1cMymU-dAu3QnnZQ-1
+Received: by mail-wr1-f71.google.com with SMTP id i24-20020adfaad8000000b002251cb5e812so2081886wrc.14
+        for <linux-kernel@vger.kernel.org>; Tue, 23 Aug 2022 01:29:08 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:in-reply-to:subject:organization:from
+         :references:cc:to:content-language:user-agent:mime-version:date
+         :message-id:x-gm-message-state:from:to:cc;
+        bh=0M7MKXuIOUn+65HKb9s0vuBPYqXY5iZeLpoXphpzO/Q=;
+        b=D9DZ9oSiDiOI4e+/SiXK96/NE006atX9JKrFzMmbD2IjV7mCzagbFY8/XeijMlWLuI
+         qTdZjBZJwlTWZmVClpNmy8xfxrA9aIKW2FrwkBAELuUG/3uSWS00Ni7+8KCydnnA8ma1
+         kVrEIiN/McagcrM4+ujCcNt98ldgJdCaP6gvLaLdeDsX7eSQ9Uv7zsbE7v9ETpKuygGY
+         gPItQpF3mCgrJDPEkDEpo6KrggZlSaZgQb4jrO9XQm80L2eND0qow0fivpyS+gB/QLVQ
+         xIbOO0jlBHvDMAVpeo84uHf+6mCoY9DO4VAaxTFhs8YBJFrN3zMTDA85uoVREWqSevHo
+         89/A==
+X-Gm-Message-State: ACgBeo0cA5Q0e//ZJPeRgNpUaFprVOJc+uTmRl9JHWT2/rM/lyqlmlnq
+        xF1H1LpFk27OFPAy4HhngGv7zxiV9msiAqHb7N0TQhkECMH+ffLmxas4kbxbw8Bx6vfmbGhZSm/
+        pVfDWg7sZaAmaBKE9UnwLloj+
+X-Received: by 2002:a5d:51c8:0:b0:225:3a78:217f with SMTP id n8-20020a5d51c8000000b002253a78217fmr10214984wrv.592.1661243347279;
+        Tue, 23 Aug 2022 01:29:07 -0700 (PDT)
+X-Google-Smtp-Source: AA6agR7VvdMi/xvXogR4Z17pNGIVYldfQOJelfE5tffAABZFc/ifwnwcFRJkpm4v99ogtcJuAQnJ0w==
+X-Received: by 2002:a5d:51c8:0:b0:225:3a78:217f with SMTP id n8-20020a5d51c8000000b002253a78217fmr10214965wrv.592.1661243346996;
+        Tue, 23 Aug 2022 01:29:06 -0700 (PDT)
+Received: from ?IPV6:2003:cb:c70b:1600:c48b:1fab:a330:5182? (p200300cbc70b1600c48b1faba3305182.dip0.t-ipconnect.de. [2003:cb:c70b:1600:c48b:1fab:a330:5182])
+        by smtp.gmail.com with ESMTPSA id h13-20020a5d4fcd000000b0022533c4fa48sm12238050wrw.55.2022.08.23.01.29.06
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 23 Aug 2022 01:29:06 -0700 (PDT)
+Message-ID: <4c24b891-04ce-2608-79d2-a75dc236533f@redhat.com>
+Date:   Tue, 23 Aug 2022 10:29:05 +0200
 MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.11.0
+Content-Language: en-US
+To:     Baolin Wang <baolin.wang@linux.alibaba.com>,
+        akpm@linux-foundation.org, songmuchun@bytedance.com,
+        mike.kravetz@oracle.com
+Cc:     linux-mm@kvack.org, linux-kernel@vger.kernel.org
+References: <cover.1661240170.git.baolin.wang@linux.alibaba.com>
+ <0e5d92da043d147a867f634b17acbcc97a7f0e64.1661240170.git.baolin.wang@linux.alibaba.com>
+From:   David Hildenbrand <david@redhat.com>
+Organization: Red Hat
+Subject: Re: [PATCH v2 1/5] mm/hugetlb: fix races when looking up a CONT-PTE
+ size hugetlb page
+In-Reply-To: <0e5d92da043d147a867f634b17acbcc97a7f0e64.1661240170.git.baolin.wang@linux.alibaba.com>
 Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Ben Dooks <ben.dooks@sifive.com>
+On 23.08.22 09:50, Baolin Wang wrote:
+> On some architectures (like ARM64), it can support CONT-PTE/PMD size
+> hugetlb, which means it can support not only PMD/PUD size hugetlb
+> (2M and 1G), but also CONT-PTE/PMD size(64K and 32M) if a 4K page size
+> specified.
+> 
+> So when looking up a CONT-PTE size hugetlb page by follow_page(), it
+> will use pte_offset_map_lock() to get the pte entry lock for the CONT-PTE
+> size hugetlb in follow_page_pte(). However this pte entry lock is incorrect
+> for the CONT-PTE size hugetlb, since we should use huge_pte_lock() to
+> get the correct lock, which is mm->page_table_lock.
+> 
+> That means the pte entry of the CONT-PTE size hugetlb under current
+> pte lock is unstable in follow_page_pte(), we can continue to migrate
+> or poison the pte entry of the CONT-PTE size hugetlb, which can cause
+> some potential race issues, and following pte_xxx() validation is also
+> unstable in follow_page_pte(), even though they are under the 'pte lock'.
+> 
+> Moreover we should use huge_ptep_get() to get the pte entry value of
+> the CONT-PTE size hugetlb, which already takes into account the subpages'
+> dirty or young bits in case we missed the dirty or young state of the
+> CONT-PTE size hugetlb.
+> 
+> To fix above issues, introducing a new helper follow_huge_pte() to look
+> up a CONT-PTE size hugetlb page, which uses huge_pte_lock() to get the
+> correct pte entry lock to make the pte entry stable, as well as
+> supporting non-present pte handling.
+> 
+> Signed-off-by: Baolin Wang <baolin.wang@linux.alibaba.com>
+> ---
+>  include/linux/hugetlb.h |  8 ++++++++
+>  mm/gup.c                | 11 ++++++++++
+>  mm/hugetlb.c            | 53 +++++++++++++++++++++++++++++++++++++++++++++++++
+>  3 files changed, 72 insertions(+)
+> 
+> diff --git a/include/linux/hugetlb.h b/include/linux/hugetlb.h
+> index 3ec981a..d491138 100644
+> --- a/include/linux/hugetlb.h
+> +++ b/include/linux/hugetlb.h
+> @@ -207,6 +207,8 @@ struct page *follow_huge_addr(struct mm_struct *mm, unsigned long address,
+>  struct page *follow_huge_pd(struct vm_area_struct *vma,
+>  			    unsigned long address, hugepd_t hpd,
+>  			    int flags, int pdshift);
+> +struct page *follow_huge_pte(struct vm_area_struct *vma, unsigned long address,
+> +			     pmd_t *pmd, int flags);
+>  struct page *follow_huge_pmd(struct mm_struct *mm, unsigned long address,
+>  				pmd_t *pmd, int flags);
+>  struct page *follow_huge_pud(struct mm_struct *mm, unsigned long address,
+> @@ -312,6 +314,12 @@ static inline struct page *follow_huge_pd(struct vm_area_struct *vma,
+>  	return NULL;
+>  }
+>  
+> +static inline struct page *follow_huge_pte(struct vm_area_struct *vma,
+> +				unsigned long address, pmd_t *pmd, int flags)
+> +{
+> +	return NULL;
+> +}
+> +
+>  static inline struct page *follow_huge_pmd(struct mm_struct *mm,
+>  				unsigned long address, pmd_t *pmd, int flags)
+>  {
+> diff --git a/mm/gup.c b/mm/gup.c
+> index 3b656b7..87a94f5 100644
+> --- a/mm/gup.c
+> +++ b/mm/gup.c
+> @@ -534,6 +534,17 @@ static struct page *follow_page_pte(struct vm_area_struct *vma,
+>  	if (unlikely(pmd_bad(*pmd)))
+>  		return no_page_table(vma, flags);
+>  
+> +	/*
+> +	 * Considering PTE level hugetlb, like continuous-PTE hugetlb on
+> +	 * ARM64 architecture.
+> +	 */
+> +	if (is_vm_hugetlb_page(vma)) {
+> +		page = follow_huge_pte(vma, address, pmd, flags);
+> +		if (page)
+> +			return page;
+> +		return no_page_table(vma, flags);
+> +	}
+> +
+>  	ptep = pte_offset_map_lock(mm, pmd, address, &ptl);
+>  	pte = *ptep;
+>  	if (!pte_present(pte)) {
+> diff --git a/mm/hugetlb.c b/mm/hugetlb.c
+> index 6c00ba1..cf742d1 100644
+> --- a/mm/hugetlb.c
+> +++ b/mm/hugetlb.c
+> @@ -6981,6 +6981,59 @@ struct page * __weak
+>  	return NULL;
+>  }
+>  
+> +/* Support looking up a CONT-PTE size hugetlb page. */
+> +struct page * __weak
+> +follow_huge_pte(struct vm_area_struct *vma, unsigned long address,
+> +		pmd_t *pmd, int flags)
+> +{
+> +	struct mm_struct *mm = vma->vm_mm;
+> +	struct hstate *hstate = hstate_vma(vma);
+> +	unsigned long size = huge_page_size(hstate);
+> +	struct page *page = NULL;
+> +	spinlock_t *ptl;
+> +	pte_t *ptep, pte;
+> +
+> +	/*
+> +	 * FOLL_PIN is not supported for follow_page(). Ordinary GUP goes via
+> +	 * follow_hugetlb_page().
+> +	 */
+> +	if (WARN_ON_ONCE(flags & FOLL_PIN))
+> +		return NULL;
+> +
+> +	ptep = huge_pte_offset(mm, address, size);
+> +	if (!ptep)
+> +		return NULL;
+> +
+> +retry:
+> +	ptl = huge_pte_lock(hstate, mm, ptep);
+> +	pte = huge_ptep_get(ptep);
+> +	if (pte_present(pte)) {
+> +		page = pte_page(pte);
+> +		if (WARN_ON_ONCE(!try_grab_page(page, flags))) {
+> +			page = NULL;
+> +			goto out;
+> +		}
+> +	} else {
+> +		if (!(flags & FOLL_MIGRATION)) {
+> +			page = NULL;
+> +			goto out;
+> +		}
+> +
+> +		if (is_hugetlb_entry_migration(pte)) {
+> +			spin_unlock(ptl);
+> +			__migration_entry_wait_huge(ptep, ptl);
+> +			goto retry;
+> +		}
+> +		/*
+> +		 * hwpoisoned entry is treated as no_page_table in
+> +		 * follow_page_mask().
+> +		 */
+> +	}
+> +out:
+> +	spin_unlock(ptl);
+> +	return page;
+> +}
+> +
+>  struct page * __weak
+>  follow_huge_pmd(struct mm_struct *mm, unsigned long address,
+>  		pmd_t *pmd, int flags)
 
-[ Upstream commit 820f5ce999d2f99961e88c16d65cd26764df0590 ]
 
-If the channel has no descriptor and the interrupt is raised then the
-kernel will OOPS. Check the result of vchan_next_desc() in the handler
-axi_chan_block_xfer_complete() to avoid the error happening.
+Can someone explain why:
+* follow_page() goes via follow_page_mask() for hugetlb
+* __get_user_pages() goes via follow_hugetlb_page() and never via
+  follow_page_mask() for hugetlb?
 
-Signed-off-by: Ben Dooks <ben.dooks@sifive.com>
-Link: https://lore.kernel.org/r/20220708170153.269991-4-ben.dooks@sifive.com
-Signed-off-by: Vinod Koul <vkoul@kernel.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- drivers/dma/dw-axi-dmac/dw-axi-dmac-platform.c | 6 ++++++
- 1 file changed, 6 insertions(+)
+IOW, why can't we make follow_page_mask() just not handle hugetlb and
+route everything via follow_hugetlb_page() -- we primarily only have to
+teach it to not trigger faults.
 
-diff --git a/drivers/dma/dw-axi-dmac/dw-axi-dmac-platform.c b/drivers/dma/dw-axi-dmac/dw-axi-dmac-platform.c
-index 41583f01a360..a183d93bd7e2 100644
---- a/drivers/dma/dw-axi-dmac/dw-axi-dmac-platform.c
-+++ b/drivers/dma/dw-axi-dmac/dw-axi-dmac-platform.c
-@@ -1054,6 +1054,11 @@ static void axi_chan_block_xfer_complete(struct axi_dma_chan *chan)
- 
- 	/* The completed descriptor currently is in the head of vc list */
- 	vd = vchan_next_desc(&chan->vc);
-+	if (!vd) {
-+		dev_err(chan2dev(chan), "BUG: %s, IRQ with no descriptors\n",
-+			axi_chan_name(chan));
-+		goto out;
-+	}
- 
- 	if (chan->cyclic) {
- 		desc = vd_to_axi_desc(vd);
-@@ -1083,6 +1088,7 @@ static void axi_chan_block_xfer_complete(struct axi_dma_chan *chan)
- 		axi_chan_start_first_queued(chan);
- 	}
- 
-+out:
- 	spin_unlock_irqrestore(&chan->vc.lock, flags);
- }
- 
+
+What's the reason that this hugetlb code has to be overly complicated?
+
 -- 
-2.35.1
+Thanks,
 
-
+David / dhildenb
 
