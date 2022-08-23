@@ -2,44 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E59BEC32772
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 09:58:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 584DEC32772
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 09:58:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346279AbiHWJ6u (ORCPT
+        id S1346383AbiHWJ64 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 05:58:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42474 "EHLO
+        Tue, 23 Aug 2022 05:58:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53130 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242278AbiHWJyZ (ORCPT
+        with ESMTP id S241531AbiHWJye (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 05:54:25 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 80D5F6E8AF;
-        Tue, 23 Aug 2022 01:46:34 -0700 (PDT)
+        Tue, 23 Aug 2022 05:54:34 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 20ADC9FA8E;
+        Tue, 23 Aug 2022 01:46:30 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id D9CB3B81C28;
-        Tue, 23 Aug 2022 08:46:33 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DA33BC433D6;
-        Tue, 23 Aug 2022 08:46:31 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id BC87E61485;
+        Tue, 23 Aug 2022 08:46:29 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id AF6CFC433C1;
+        Tue, 23 Aug 2022 08:46:28 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661244392;
-        bh=Lk/EXHs1Brib0yccLyg9YlZB8T5oBa6kIQL19U+DNds=;
+        s=korg; t=1661244389;
+        bh=gOe0zsjTFaGKaX1+mWyZEMX/nJdtJ2M8NjiPmFYYEEI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=iwSoppF7NTUZKo1wZpUuOEB0riZTqAekgHIRrLUOvrutZklkwXX6VjtDa9nlW2Ysr
-         2Dl4JZeWK7xFcgI4dGXozwH854cvGkl6grb+BZzjgwabok13xZlUYHdEwldT1haMMU
-         Yv0k7xNWhFKv/N/vCJe2PCw8hYTEXiz4A9E5CV50=
+        b=y0CA77cjIkKGVTR+0x7a5Nhd59Vohcthm3ZbFAuczU0JWvjkwsTIYbUrHFhCTagwf
+         gr+bN1UpT5+0ghlKPd7iUMTW963CRfIf/9MuTCE1Ly5Amb1KChspkDdOCDaNR87ihS
+         THlbR5IWuc4LDiwaPdWZzAy3bfQpPo4xugHo9rKA=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Michal Simek <michal.simek@xilinx.com>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Rob Herring <robh@kernel.org>,
-        Michal Simek <michal.simek@amd.com>
-Subject: [PATCH 5.15 082/244] dt-bindings: gpio: zynq: Add missing compatible strings
-Date:   Tue, 23 Aug 2022 10:24:01 +0200
-Message-Id: <20220823080101.784043325@linuxfoundation.org>
+        stable@vger.kernel.org, Hou Tao <houtao1@huawei.com>,
+        Yonghong Song <yhs@fb.com>, Martin KaFai Lau <kafai@fb.com>,
+        Alexei Starovoitov <ast@kernel.org>
+Subject: [PATCH 5.15 048/244] bpf: Check the validity of max_rdwr_access for sock local storage map iterator
+Date:   Tue, 23 Aug 2022 10:23:27 +0200
+Message-Id: <20220823080100.671938641@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220823080059.091088642@linuxfoundation.org>
 References: <20220823080059.091088642@linuxfoundation.org>
@@ -51,44 +50,34 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Michal Simek <michal.simek@xilinx.com>
+From: Hou Tao <houtao1@huawei.com>
 
-commit 7668048e5c697a9493ffc0e6001c322b2efe90ae upstream.
+commit 52bd05eb7c88e1ad8541a48873188ccebca9da26 upstream.
 
-"xlnx,zynqmp-gpio-1.0", "xlnx,versal-gpio-1.0" and "xlnx,pmc-gpio-1.0"
-compatible strings were not moved to yaml format. But they were in origin
-text file.
+The value of sock local storage map is writable in map iterator, so check
+max_rdwr_access instead of max_rdonly_access.
 
-Fixes: 45ca16072b70 ("dt-bindings: gpio: zynq: convert bindings to YAML")
-Signed-off-by: Michal Simek <michal.simek@xilinx.com>
-Reviewed-by: Linus Walleij <linus.walleij@linaro.org>
-Acked-by: Rob Herring <robh@kernel.org>
-Link: https://lore.kernel.org/r/72c973da5670b5ae81d050c582948894ee4174f8.1634206453.git.michal.simek@xilinx.com
-Signed-off-by: Michal Simek <michal.simek@amd.com>
+Fixes: 5ce6e77c7edf ("bpf: Implement bpf iterator for sock local storage map")
+Signed-off-by: Hou Tao <houtao1@huawei.com>
+Acked-by: Yonghong Song <yhs@fb.com>
+Acked-by: Martin KaFai Lau <kafai@fb.com>
+Link: https://lore.kernel.org/r/20220810080538.1845898-6-houtao@huaweicloud.com
+Signed-off-by: Alexei Starovoitov <ast@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- Documentation/devicetree/bindings/gpio/gpio-zynq.yaml | 6 +++++-
- 1 file changed, 5 insertions(+), 1 deletion(-)
+ net/core/bpf_sk_storage.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/Documentation/devicetree/bindings/gpio/gpio-zynq.yaml b/Documentation/devicetree/bindings/gpio/gpio-zynq.yaml
-index 378da2649e66..980f92ad9eba 100644
---- a/Documentation/devicetree/bindings/gpio/gpio-zynq.yaml
-+++ b/Documentation/devicetree/bindings/gpio/gpio-zynq.yaml
-@@ -11,7 +11,11 @@ maintainers:
+--- a/net/core/bpf_sk_storage.c
++++ b/net/core/bpf_sk_storage.c
+@@ -894,7 +894,7 @@ static int bpf_iter_attach_map(struct bp
+ 	if (map->map_type != BPF_MAP_TYPE_SK_STORAGE)
+ 		goto put_map;
  
- properties:
-   compatible:
--    const: xlnx,zynq-gpio-1.0
-+    enum:
-+      - xlnx,zynq-gpio-1.0
-+      - xlnx,zynqmp-gpio-1.0
-+      - xlnx,versal-gpio-1.0
-+      - xlnx,pmc-gpio-1.0
- 
-   reg:
-     maxItems: 1
--- 
-2.37.2
-
+-	if (prog->aux->max_rdonly_access > map->value_size) {
++	if (prog->aux->max_rdwr_access > map->value_size) {
+ 		err = -EACCES;
+ 		goto put_map;
+ 	}
 
 
