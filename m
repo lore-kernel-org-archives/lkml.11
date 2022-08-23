@@ -2,44 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 68151C32772
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 09:29:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C4E0AC32772
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 09:29:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350101AbiHWJ3u (ORCPT
+        id S1350454AbiHWJ3z (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 05:29:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51208 "EHLO
+        Tue, 23 Aug 2022 05:29:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53444 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349876AbiHWJ1U (ORCPT
+        with ESMTP id S1348812AbiHWJ1e (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 05:27:20 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A449790C4A;
-        Tue, 23 Aug 2022 01:37:07 -0700 (PDT)
+        Tue, 23 Aug 2022 05:27:34 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 017BF915F7;
+        Tue, 23 Aug 2022 01:37:19 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 00018B81C3B;
-        Tue, 23 Aug 2022 08:36:01 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5F7C3C433D7;
-        Tue, 23 Aug 2022 08:36:00 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id A558BB81C4F;
+        Tue, 23 Aug 2022 08:36:23 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D6C44C433C1;
+        Tue, 23 Aug 2022 08:36:21 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661243760;
-        bh=9tYH85BTIVEd2kbDCWr6tvmS9gkPziL43vV4QunDigI=;
+        s=korg; t=1661243782;
+        bh=B3zwTcB/xhXEugosPjzJlf0j/Duf78YLQt3ExNWz/Co=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=vA/IEmUjbZEG/cof3a0iayRyU7sAiuGGhjKQnU24wHYLcge7Qy7eRW4Jla66wFRb6
-         TV59RrGAj5lT9JN6W5e7fk/MqjVvx0K5WAmsZwz/eJrkAqjB8BCdgSvQB/jISsKZV6
-         vTuo7cOusQXbGXckew+4kc+f5z3s+j6dRIuVt7jc=
+        b=coJ2cnWm016p45/vdQMGvPwK7rkcS/KcBB7njdKEC81/R6fzWlZqZia6ujE0Awh2m
+         KB4ICjG3alO+S/56NdDVD2P5mb1phD/pcWOAxZvXTl9B6lu38UTY5umONGi3NX7jhh
+         7wDgU0TYwyHCPcYlnccKUS+zv6C5LoPUirDuUeQU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Fangrui Song <maskray@google.com>,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        Jens Axboe <axboe@kernel.dk>
-Subject: [PATCH 4.14 013/229] Makefile: link with -z noexecstack --no-warn-rwx-segments
-Date:   Tue, 23 Aug 2022 10:22:54 +0200
-Message-Id: <20220823080053.873421249@linuxfoundation.org>
+        stable@vger.kernel.org, Sean Christopherson <seanjc@google.com>,
+        Maxim Levitsky <mlevitsk@redhat.com>
+Subject: [PATCH 4.14 020/229] KVM: x86: Set error code to segment selector on LLDT/LTR non-canonical #GP
+Date:   Tue, 23 Aug 2022 10:23:01 +0200
+Message-Id: <20220823080054.161410421@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220823080053.202747790@linuxfoundation.org>
 References: <20220823080053.202747790@linuxfoundation.org>
@@ -51,57 +49,41 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Nick Desaulniers <ndesaulniers@google.com>
+From: Sean Christopherson <seanjc@google.com>
 
-commit 0d362be5b14200b77ecc2127936a5ff82fbffe41 upstream.
+commit 2626206963ace9e8bf92b6eea5ff78dd674c555c upstream.
 
-Users of GNU ld (BFD) from binutils 2.39+ will observe multiple
-instances of a new warning when linking kernels in the form:
+When injecting a #GP on LLDT/LTR due to a non-canonical LDT/TSS base, set
+the error code to the selector.  Intel SDM's says nothing about the #GP,
+but AMD's APM explicitly states that both LLDT and LTR set the error code
+to the selector, not zero.
 
-  ld: warning: vmlinux: missing .note.GNU-stack section implies executable stack
-  ld: NOTE: This behaviour is deprecated and will be removed in a future version of the linker
-  ld: warning: vmlinux has a LOAD segment with RWX permissions
+Note, a non-canonical memory operand on LLDT/LTR does generate a #GP(0),
+but the KVM code in question is specific to the base from the descriptor.
 
-Generally, we would like to avoid the stack being executable.  Because
-there could be a need for the stack to be executable, assembler sources
-have to opt-in to this security feature via explicit creation of the
-.note.GNU-stack feature (which compilers create by default) or command
-line flag --noexecstack.  Or we can simply tell the linker the
-production of such sections is irrelevant and to link the stack as
---noexecstack.
-
-LLVM's LLD linker defaults to -z noexecstack, so this flag isn't
-strictly necessary when linking with LLD, only BFD, but it doesn't hurt
-to be explicit here for all linkers IMO.  --no-warn-rwx-segments is
-currently BFD specific and only available in the current latest release,
-so it's wrapped in an ld-option check.
-
-While the kernel makes extensive usage of ELF sections, it doesn't use
-permissions from ELF segments.
-
-Link: https://lore.kernel.org/linux-block/3af4127a-f453-4cf7-f133-a181cce06f73@kernel.dk/
-Link: https://sourceware.org/git/?p=binutils-gdb.git;a=commit;h=ba951afb99912da01a6e8434126b8fac7aa75107
-Link: https://github.com/llvm/llvm-project/issues/57009
-Reported-and-tested-by: Jens Axboe <axboe@kernel.dk>
-Suggested-by: Fangrui Song <maskray@google.com>
-Signed-off-by: Nick Desaulniers <ndesaulniers@google.com>
-Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
+Fixes: e37a75a13cda ("KVM: x86: Emulator ignores LDTR/TR extended base on LLDT/LTR")
+Cc: stable@vger.kernel.org
+Signed-off-by: Sean Christopherson <seanjc@google.com>
+Reviewed-by: Maxim Levitsky <mlevitsk@redhat.com>
+Link: https://lore.kernel.org/r/20220711232750.1092012-3-seanjc@google.com
+Signed-off-by: Sean Christopherson <seanjc@google.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- Makefile |    3 +++
- 1 file changed, 3 insertions(+)
+ arch/x86/kvm/emulate.c |    4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
---- a/Makefile
-+++ b/Makefile
-@@ -873,6 +873,9 @@ ifdef CONFIG_LD_DEAD_CODE_DATA_ELIMINATI
- LDFLAGS_vmlinux	+= $(call ld-option, --gc-sections,)
- endif
+--- a/arch/x86/kvm/emulate.c
++++ b/arch/x86/kvm/emulate.c
+@@ -1758,8 +1758,8 @@ static int __load_segment_descriptor(str
+ 		if (ret != X86EMUL_CONTINUE)
+ 			return ret;
+ 		if (emul_is_noncanonical_address(get_desc_base(&seg_desc) |
+-				((u64)base3 << 32), ctxt))
+-			return emulate_gp(ctxt, 0);
++						 ((u64)base3 << 32), ctxt))
++			return emulate_gp(ctxt, err_code);
+ 	}
  
-+LDFLAGS	+= -z noexecstack
-+LDFLAGS	+= $(call ld-option,--no-warn-rwx-segments)
-+
- ifeq ($(CONFIG_STRIP_ASM_SYMS),y)
- LDFLAGS_vmlinux	+= $(call ld-option, -X,)
- endif
+ 	if (seg == VCPU_SREG_TR) {
 
 
