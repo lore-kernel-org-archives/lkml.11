@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 26D6BC32772
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 12:08:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A1724C32772
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 12:08:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1359455AbiHWMI1 (ORCPT
+        id S1359464AbiHWMIb (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 08:08:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56712 "EHLO
+        Tue, 23 Aug 2022 08:08:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59334 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1359441AbiHWMFv (ORCPT
+        with ESMTP id S1359515AbiHWMGH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 08:05:51 -0400
+        Tue, 23 Aug 2022 08:06:07 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A4BC5DF081;
-        Tue, 23 Aug 2022 02:37:34 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8AAB7DF4D8;
+        Tue, 23 Aug 2022 02:37:44 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 33FD960F50;
-        Tue, 23 Aug 2022 09:37:19 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4019EC433D6;
-        Tue, 23 Aug 2022 09:37:18 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 8BE236149B;
+        Tue, 23 Aug 2022 09:37:25 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8FC2DC433D6;
+        Tue, 23 Aug 2022 09:37:24 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661247438;
-        bh=ttTgAKLVKDFniNHKzR7eFovG7oiAWr4Wxjn4pETPQ1w=;
+        s=korg; t=1661247445;
+        bh=XXnsT8YnvLr5n07bfMayojz6yEaBHQq9iwO02OlXMVs=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=OXes2KRMA44Vb0fenvOngIKpifyXU9/MR0a+SEuYrOVXivbQoVS8Ttw8HYWndctzY
-         haAevLNXjl2Q2ZLvRXNhGYVJvsdWe0920Zk+XZ51dOwMJv9AKEc6a63zIppc0+JJ4Q
-         UxQEeogoS1NXJCtiqrUhXG5JMlkqikKHQjtVqk0U=
+        b=S8cc5pQgl3sotyCE+y5+5XbdmnM4gCkS3UOGqQqM2EoT1OLUZ1ZXpgP1iNGSPFeUM
+         YODD5bV3bLKXMiw16BStTE1/+ZZe35oGpUdSXDtEG2+rO1nkgVPH7TFGv5NfFj87Ks
+         f2k1OlQazbPH/YloT3Gx/EvW30z4j5TKDxM46pHY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
-        Damien Le Moal <damien.lemoal@opensource.wdc.com>,
-        Hannes Reinecke <hare@suse.de>
-Subject: [PATCH 5.10 005/158] ata: libata-eh: Add missing command name
-Date:   Tue, 23 Aug 2022 10:25:37 +0200
-Message-Id: <20220823080046.273602730@linuxfoundation.org>
+        Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
+        Ulf Hansson <ulf.hansson@linaro.org>
+Subject: [PATCH 5.10 007/158] mmc: pxamci: Fix an error handling path in pxamci_probe()
+Date:   Tue, 23 Aug 2022 10:25:39 +0200
+Message-Id: <20220823080046.359281137@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220823080046.056825146@linuxfoundation.org>
 References: <20220823080046.056825146@linuxfoundation.org>
@@ -50,31 +50,35 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Damien Le Moal <damien.lemoal@opensource.wdc.com>
+From: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
 
-commit d3122bf9aa4c974f5e2c0112f799757b3a2779da upstream.
+commit 98d7c5e5792b8ce3e1352196dac7f404bb1b46ec upstream.
 
-Add the missing command name for ATA_CMD_NCQ_NON_DATA to
-ata_get_cmd_name().
+The commit in Fixes: has moved some code around without updating gotos to
+the error handling path.
 
-Fixes: 661ce1f0c4a6 ("libata/libsas: Define ATA_CMD_NCQ_NON_DATA")
+Update it now and release some resources if pxamci_of_init() fails.
+
+Fixes: fa3a5115469c ("mmc: pxamci: call mmc_of_parse()")
+Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
 Cc: stable@vger.kernel.org
-Signed-off-by: Damien Le Moal <damien.lemoal@opensource.wdc.com>
-Reviewed-by: Hannes Reinecke <hare@suse.de>
+Link: https://lore.kernel.org/r/6d75855ad4e2470e9ed99e0df21bc30f0c925a29.1658862932.git.christophe.jaillet@wanadoo.fr
+Signed-off-by: Ulf Hansson <ulf.hansson@linaro.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/ata/libata-eh.c |    1 +
- 1 file changed, 1 insertion(+)
+ drivers/mmc/host/pxamci.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/drivers/ata/libata-eh.c
-+++ b/drivers/ata/libata-eh.c
-@@ -2131,6 +2131,7 @@ const char *ata_get_cmd_descript(u8 comm
- 		{ ATA_CMD_WRITE_QUEUED_FUA_EXT, "WRITE DMA QUEUED FUA EXT" },
- 		{ ATA_CMD_FPDMA_READ,		"READ FPDMA QUEUED" },
- 		{ ATA_CMD_FPDMA_WRITE,		"WRITE FPDMA QUEUED" },
-+		{ ATA_CMD_NCQ_NON_DATA,		"NCQ NON-DATA" },
- 		{ ATA_CMD_FPDMA_SEND,		"SEND FPDMA QUEUED" },
- 		{ ATA_CMD_FPDMA_RECV,		"RECEIVE FPDMA QUEUED" },
- 		{ ATA_CMD_PIO_READ,		"READ SECTOR(S)" },
+--- a/drivers/mmc/host/pxamci.c
++++ b/drivers/mmc/host/pxamci.c
+@@ -648,7 +648,7 @@ static int pxamci_probe(struct platform_
+ 
+ 	ret = pxamci_of_init(pdev, mmc);
+ 	if (ret)
+-		return ret;
++		goto out;
+ 
+ 	host = mmc_priv(mmc);
+ 	host->mmc = mmc;
 
 
