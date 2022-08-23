@@ -2,41 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 90A87C32772
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 11:38:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 44D50C32792
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 11:38:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241196AbiHWLiS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 07:38:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45062 "EHLO
+        id S1357656AbiHWLi0 (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 23 Aug 2022 07:38:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48580 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357977AbiHWLcH (ORCPT
+        with ESMTP id S1357975AbiHWLcH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 23 Aug 2022 07:32:07 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7CFD876450;
-        Tue, 23 Aug 2022 02:26:24 -0700 (PDT)
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4666E760F1;
+        Tue, 23 Aug 2022 02:26:23 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id C7B1B6126A;
-        Tue, 23 Aug 2022 09:26:23 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CF13AC433C1;
-        Tue, 23 Aug 2022 09:26:22 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 9131EB81B1F;
+        Tue, 23 Aug 2022 09:26:21 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D16D4C433C1;
+        Tue, 23 Aug 2022 09:26:19 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661246783;
-        bh=nHlFGRFBEBR8BkanaCDXU262XORHbAUyNAP7kfInUbQ=;
+        s=korg; t=1661246780;
+        bh=veCuL6KWz3iIbpQCswj2sNXfQMLL9Tn2IcLRHQlPaPw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=BbuDSBwsi4PFiz3i7jgkyJgKEGUgBbnnEAyh3qDSBr5gnWjeVfiJpAwaQSOlcJ6vW
-         FcOpdRFzin6ZCMCyg95wVxvXWNXf/Pwp6VLk3jZ4ya9VJDj5Rpb4hWFr07XxSPu31Z
-         IpdzqQdUv8J+GuwRliKPtefk0LJDZzwYit2Z27s4=
+        b=IYxvg7iIKIXB/LGeo+t9dsJXhrqsQxD0qOW4WE9EIXoJOjFtL86+MWt4KSatJkH1W
+         zUcH1e/M+HO4cH0UFnfEd3c+YRINQYNLXJdkea1v1EfXbL1d5p7pxqgCqnjH57P2XQ
+         wkdQhYLimEwPc1GzOfcQKcsh8eia2CbutbcW7/ns=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org, Daniel Starke <daniel.starke@siemens.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 218/389] tty: n_gsm: fix missing corner cases in gsmld_poll()
-Date:   Tue, 23 Aug 2022 10:24:56 +0200
-Message-Id: <20220823080124.696767318@linuxfoundation.org>
+Subject: [PATCH 5.4 217/389] tty: n_gsm: fix DM command
+Date:   Tue, 23 Aug 2022 10:24:55 +0200
+Message-Id: <20220823080124.663725708@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220823080115.331990024@linuxfoundation.org>
 References: <20220823080115.331990024@linuxfoundation.org>
@@ -50,45 +51,38 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Daniel Starke <daniel.starke@siemens.com>
 
-[ Upstream commit 7e5b4322cde067e1d0f1bf8f490e93f664a7c843 ]
+[ Upstream commit 18a948c7d90995d127785e308fa7b701df4c499f ]
 
-gsmld_poll() currently fails to handle the following corner cases correctly:
-- remote party closed the associated tty
-
-Add the missing checks and map those to EPOLLHUP.
-Reorder the checks to group them by their reaction.
+n_gsm is based on the 3GPP 07.010 and its newer version is the 3GPP 27.010.
+See https://portal.3gpp.org/desktopmodules/Specifications/SpecificationDetails.aspx?specificationId=1516
+The changes from 07.010 to 27.010 are non-functional. Therefore, I refer to
+the newer 27.010 here. Chapter 5.3.3 defines the DM response. There exists
+no DM command. However, the current implementation incorrectly sends DM as
+command in case of unexpected UIH frames in gsm_queue().
+Correct this behavior by always sending DM as response.
 
 Fixes: e1eaea46bb40 ("tty: n_gsm line discipline")
 Signed-off-by: Daniel Starke <daniel.starke@siemens.com>
-Link: https://lore.kernel.org/r/20220707113223.3685-4-daniel.starke@siemens.com
+Link: https://lore.kernel.org/r/20220707113223.3685-2-daniel.starke@siemens.com
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/tty/n_gsm.c | 7 +++++--
- 1 file changed, 5 insertions(+), 2 deletions(-)
+ drivers/tty/n_gsm.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
 diff --git a/drivers/tty/n_gsm.c b/drivers/tty/n_gsm.c
-index 39b6bcdc2c55..22da64453054 100644
+index f4b5ac840222..39b6bcdc2c55 100644
 --- a/drivers/tty/n_gsm.c
 +++ b/drivers/tty/n_gsm.c
-@@ -2693,12 +2693,15 @@ static __poll_t gsmld_poll(struct tty_struct *tty, struct file *file,
- 
- 	poll_wait(file, &tty->read_wait, wait);
- 	poll_wait(file, &tty->write_wait, wait);
-+
-+	if (gsm->dead)
-+		mask |= EPOLLHUP;
- 	if (tty_hung_up_p(file))
- 		mask |= EPOLLHUP;
-+	if (test_bit(TTY_OTHER_CLOSED, &tty->flags))
-+		mask |= EPOLLHUP;
- 	if (!tty_is_writelocked(tty) && tty_write_room(tty) > 0)
- 		mask |= EPOLLOUT | EPOLLWRNORM;
--	if (gsm->dead)
--		mask |= EPOLLHUP;
- 	return mask;
- }
- 
+@@ -1894,7 +1894,7 @@ static void gsm_queue(struct gsm_mux *gsm)
+ 			goto invalid;
+ #endif
+ 		if (dlci == NULL || dlci->state != DLCI_OPEN) {
+-			gsm_command(gsm, address, DM|PF);
++			gsm_response(gsm, address, DM|PF);
+ 			return;
+ 		}
+ 		dlci->data(dlci, gsm->buf, gsm->len);
 -- 
 2.35.1
 
