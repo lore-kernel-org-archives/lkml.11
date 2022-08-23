@@ -2,45 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 651C5C32772
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 12:03:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D3999C3F6B0
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 12:03:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1359160AbiHWMDP (ORCPT
+        id S1359189AbiHWMDV (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 08:03:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45546 "EHLO
+        Tue, 23 Aug 2022 08:03:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52572 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1359563AbiHWMBz (ORCPT
+        with ESMTP id S1359689AbiHWMCK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 08:01:55 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0E31678591;
-        Tue, 23 Aug 2022 02:36:10 -0700 (PDT)
+        Tue, 23 Aug 2022 08:02:10 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A074DE09D;
+        Tue, 23 Aug 2022 02:36:16 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id B007AB81C63;
-        Tue, 23 Aug 2022 09:36:08 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1104EC433C1;
-        Tue, 23 Aug 2022 09:36:06 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 9606861471;
+        Tue, 23 Aug 2022 09:35:25 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 99111C433C1;
+        Tue, 23 Aug 2022 09:35:24 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661247367;
-        bh=QQ3eWDx/UzEsjdEWteiakKgZ4UiJlFvdIgg8vViaTng=;
+        s=korg; t=1661247325;
+        bh=aAHCeysXN6GB7GpAXYTkk61ModqjTGqTR+jPzgcCcBo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=LhqUufxuA7fMjWcOBErhSmnoukzafkOpfxEmnfsfJN/Pd6nzIAJjxlCNqtLKv7e7w
-         0xfVJf8FouLmxpKybZHgXpA4UwZ3T1lovP8l3Vv1vClLN06UYE6UqUwRtgNChrnQhl
-         dh+Nn4HGd9xZi5xtc7+NL6ehyUukKxruiMM67F1Y=
+        b=NmjhBli9F0k6stP08T5Ip26hPCtX6Y0jkL7JGu48Vft5dTSzBtViQqINBBqU3jn6I
+         SpygGHFknUGZdjiCs/8MdfxJA77wk2LQDxFQQTSFd+qBipMGhnBK3dvVJtrZoomSJr
+         WHFZ4V46g78fmaMRI9obVP4jRbjd2YZhu08IhVT8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Casey Schaufler <casey@schaufler-ca.com>,
-        John Johansen <john.johansen@canonical.com>
-Subject: [PATCH 5.10 014/158] apparmor: fix absroot causing audited secids to begin with =
-Date:   Tue, 23 Aug 2022 10:25:46 +0200
-Message-Id: <20220823080046.648897715@linuxfoundation.org>
+        stable@vger.kernel.org, "Jason A. Donenfeld" <Jason@zx2c4.com>,
+        Richard Weinberger <richard@nod.at>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.4 362/389] um: add "noreboot" command line option for PANIC_TIMEOUT=-1 setups
+Date:   Tue, 23 Aug 2022 10:27:20 +0200
+Message-Id: <20220823080130.675124640@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220823080046.056825146@linuxfoundation.org>
-References: <20220823080046.056825146@linuxfoundation.org>
+In-Reply-To: <20220823080115.331990024@linuxfoundation.org>
+References: <20220823080115.331990024@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -49,76 +50,63 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: John Johansen <john.johansen@canonical.com>
+From: Jason A. Donenfeld <Jason@zx2c4.com>
 
-commit 511f7b5b835726e844a5fc7444c18e4b8672edfd upstream.
+[ Upstream commit dda520d07b95072a0b63f6c52a8eb566d08ea897 ]
 
-AppArmor is prefixing secids that are converted to secctx with the =
-to indicate the secctx should only be parsed from an absolute root
-POV. This allows catching errors where secctx are reparsed back into
-internal labels.
+QEMU has a -no-reboot option, which halts instead of reboots when the
+guest asks to reboot. This is invaluable when used with
+CONFIG_PANIC_TIMEOUT=-1 (and panic_on_warn), because it allows panics
+and warnings to be caught immediately in CI. Implement this in UML too,
+by way of a basic setup param.
 
-Unfortunately because audit is using secid to secctx conversion this
-means that subject and object labels can result in a very unfortunate
-== that can break audit parsing.
-
-eg. the subj==unconfined term in the below audit message
-
-type=USER_LOGIN msg=audit(1639443365.233:160): pid=1633 uid=0 auid=1000
-ses=3 subj==unconfined msg='op=login id=1000 exe="/usr/sbin/sshd"
-hostname=192.168.122.1 addr=192.168.122.1 terminal=/dev/pts/1 res=success'
-
-Fix this by switch the prepending of = to a _. This still works as a
-special character to flag this case without breaking audit. Also move
-this check behind debug as it should not be needed during normal
-operqation.
-
-Fixes: 26b7899510ae ("apparmor: add support for absolute root view based labels")
-Reported-by: Casey Schaufler <casey@schaufler-ca.com>
-Signed-off-by: John Johansen <john.johansen@canonical.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
+Signed-off-by: Richard Weinberger <richard@nod.at>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- security/apparmor/include/lib.h |    5 +++++
- security/apparmor/label.c       |    7 ++++---
- 2 files changed, 9 insertions(+), 3 deletions(-)
+ arch/um/os-Linux/skas/process.c | 17 ++++++++++++++++-
+ 1 file changed, 16 insertions(+), 1 deletion(-)
 
---- a/security/apparmor/include/lib.h
-+++ b/security/apparmor/include/lib.h
-@@ -22,6 +22,11 @@
+diff --git a/arch/um/os-Linux/skas/process.c b/arch/um/os-Linux/skas/process.c
+index 4fb877b99dde..0571cc0a30fc 100644
+--- a/arch/um/os-Linux/skas/process.c
++++ b/arch/um/os-Linux/skas/process.c
+@@ -5,6 +5,7 @@
   */
  
- #define DEBUG_ON (aa_g_debug)
-+/*
-+ * split individual debug cases out in preparation for finer grained
-+ * debug controls in the future.
-+ */
-+#define AA_DEBUG_LABEL DEBUG_ON
- #define dbg_printk(__fmt, __args...) pr_debug(__fmt, ##__args)
- #define AA_DEBUG(fmt, args...)						\
- 	do {								\
---- a/security/apparmor/label.c
-+++ b/security/apparmor/label.c
-@@ -1632,9 +1632,9 @@ int aa_label_snxprint(char *str, size_t
- 	AA_BUG(!str && size != 0);
- 	AA_BUG(!label);
+ #include <stdlib.h>
++#include <stdbool.h>
+ #include <unistd.h>
+ #include <sched.h>
+ #include <errno.h>
+@@ -641,10 +642,24 @@ void halt_skas(void)
+ 	UML_LONGJMP(&initial_jmpbuf, INIT_JMP_HALT);
+ }
  
--	if (flags & FLAG_ABS_ROOT) {
-+	if (AA_DEBUG_LABEL && (flags & FLAG_ABS_ROOT)) {
- 		ns = root_ns;
--		len = snprintf(str, size, "=");
-+		len = snprintf(str, size, "_");
- 		update_for_len(total, len, size, str);
- 	} else if (!ns) {
- 		ns = labels_ns(label);
-@@ -1896,7 +1896,8 @@ struct aa_label *aa_label_strn_parse(str
- 	AA_BUG(!str);
++static bool noreboot;
++
++static int __init noreboot_cmd_param(char *str, int *add)
++{
++	noreboot = true;
++	return 0;
++}
++
++__uml_setup("noreboot", noreboot_cmd_param,
++"noreboot\n"
++"    Rather than rebooting, exit always, akin to QEMU's -no-reboot option.\n"
++"    This is useful if you're using CONFIG_PANIC_TIMEOUT in order to catch\n"
++"    crashes in CI\n");
++
+ void reboot_skas(void)
+ {
+ 	block_signals_trace();
+-	UML_LONGJMP(&initial_jmpbuf, INIT_JMP_REBOOT);
++	UML_LONGJMP(&initial_jmpbuf, noreboot ? INIT_JMP_HALT : INIT_JMP_REBOOT);
+ }
  
- 	str = skipn_spaces(str, n);
--	if (str == NULL || (*str == '=' && base != &root_ns->unconfined->label))
-+	if (str == NULL || (AA_DEBUG_LABEL && *str == '_' &&
-+			    base != &root_ns->unconfined->label))
- 		return ERR_PTR(-EINVAL);
- 
- 	len = label_count_strn_entries(str, end - str);
+ void __switch_mm(struct mm_id *mm_idp)
+-- 
+2.35.1
+
 
 
