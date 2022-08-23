@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1F77DC32772
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 09:39:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 14890C32772
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 09:39:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351718AbiHWJi7 (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 05:38:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53222 "EHLO
+        id S241263AbiHWJjM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 23 Aug 2022 05:39:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52832 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351645AbiHWJiR (ORCPT
+        with ESMTP id S1351276AbiHWJiW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 05:38:17 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BC36A98591;
-        Tue, 23 Aug 2022 01:40:48 -0700 (PDT)
+        Tue, 23 Aug 2022 05:38:22 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C1B6469F48;
+        Tue, 23 Aug 2022 01:40:59 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 04DE56153A;
-        Tue, 23 Aug 2022 08:39:34 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0BF13C433C1;
-        Tue, 23 Aug 2022 08:39:32 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 6CF8EB81C62;
+        Tue, 23 Aug 2022 08:39:41 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B1D1CC433D6;
+        Tue, 23 Aug 2022 08:39:39 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661243973;
-        bh=S91jLsmDc1tZj5ujADBa85XorHb6hMV7HBp03U4iFcc=;
+        s=korg; t=1661243980;
+        bh=ZUgivN8zhNC9/Vowk6oVJLvlCbVPWbn1Iq8fxa3fI6I=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=cmTWEp1rfc3tPPHERK1278DiVcwn2dl06BWt9ut5wFKfJ5XQGhlEX+Uj4z5p5lJwU
-         K5kDetjUnxvKUWSUUyBPnB5MwiwjHsFYMNKBNAWOhrysJHdT/HkcIgxtCen6wneQFq
-         Gl+R/tJYeiYrJt3vM4RVnEykXtNxrMLVRKoCA+Zc=
+        b=JMviMhyCdG+yCk0OS6r9kUhpFOBX47cgs9daJMRptZwJYZGMUK1f1sfKhoLd04VTX
+         ZIN3AM8H3Wy00rLQEOLC2o/rwjHEaQnEhC9HSvfFaJckDncTFlPMg2KeMBPK6DRh21
+         JUqtWAEFC482h4QQttgEN3mg/T6xBnZivYEAnvH8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Alexey Kodanev <aleksei.kodanev@bell-sw.com>,
-        Kalle Valo <kvalo@kernel.org>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.14 064/229] wifi: iwlegacy: 4965: fix potential off-by-one overflow in il4965_rs_fill_link_cmd()
-Date:   Tue, 23 Aug 2022 10:23:45 +0200
-Message-Id: <20220823080056.017384397@linuxfoundation.org>
+        stable@vger.kernel.org, stable <stable@kernel.org>,
+        Alan Stern <stern@rowland.harvard.edu>,
+        Weitao Wang <WeitaoWang-oc@zhaoxin.com>
+Subject: [PATCH 4.14 037/229] USB: HCD: Fix URB giveback issue in tasklet function
+Date:   Tue, 23 Aug 2022 10:23:18 +0200
+Message-Id: <20220823080054.902065549@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220823080053.202747790@linuxfoundation.org>
 References: <20220823080053.202747790@linuxfoundation.org>
@@ -50,63 +49,124 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Alexey Kodanev <aleksei.kodanev@bell-sw.com>
+From: Weitao Wang <WeitaoWang-oc@zhaoxin.com>
 
-[ Upstream commit a8eb8e6f7159c7c20c0ddac428bde3d110890aa7 ]
+commit 26c6c2f8a907c9e3a2f24990552a4d77235791e6 upstream.
 
-As a result of the execution of the inner while loop, the value
-of 'idx' can be equal to LINK_QUAL_MAX_RETRY_NUM. However, this
-is not checked after the loop and 'idx' is used to write the
-LINK_QUAL_MAX_RETRY_NUM size array 'lq_cmd->rs_table[idx]' below
-in the outer loop.
+Usb core introduce the mechanism of giveback of URB in tasklet context to
+reduce hardware interrupt handling time. On some test situation(such as
+FIO with 4KB block size), when tasklet callback function called to
+giveback URB, interrupt handler add URB node to the bh->head list also.
+If check bh->head list again after finish all URB giveback of local_list,
+then it may introduce a "dynamic balance" between giveback URB and add URB
+to bh->head list. This tasklet callback function may not exit for a long
+time, which will cause other tasklet function calls to be delayed. Some
+real-time applications(such as KB and Mouse) will see noticeable lag.
 
-The fix is to check the new value of 'idx' inside the nested loop,
-and break both loops if index equals the size. Checking it at the
-start is now pointless, so let's remove it.
+In order to prevent the tasklet function from occupying the cpu for a long
+time at a time, new URBS will not be added to the local_list even though
+the bh->head list is not empty. But also need to ensure the left URB
+giveback to be processed in time, so add a member high_prio for structure
+giveback_urb_bh to prioritize tasklet and schelule this tasklet again if
+bh->head list is not empty.
 
-Detected using the static analysis tool - Svace.
+At the same time, we are able to prioritize tasklet through structure
+member high_prio. So, replace the local high_prio_bh variable with this
+structure member in usb_hcd_giveback_urb.
 
-Fixes: be663ab67077 ("iwlwifi: split the drivers for agn and legacy devices 3945/4965")
-Signed-off-by: Alexey Kodanev <aleksei.kodanev@bell-sw.com>
-Signed-off-by: Kalle Valo <kvalo@kernel.org>
-Link: https://lore.kernel.org/r/20220608171614.28891-1-aleksei.kodanev@bell-sw.com
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Fixes: 94dfd7edfd5c ("USB: HCD: support giveback of URB in tasklet context")
+Cc: stable <stable@kernel.org>
+Reviewed-by: Alan Stern <stern@rowland.harvard.edu>
+Signed-off-by: Weitao Wang <WeitaoWang-oc@zhaoxin.com>
+Link: https://lore.kernel.org/r/20220726074918.5114-1-WeitaoWang-oc@zhaoxin.com
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/net/wireless/intel/iwlegacy/4965-rs.c | 5 ++++-
- 1 file changed, 4 insertions(+), 1 deletion(-)
+ drivers/usb/core/hcd.c  |   26 +++++++++++++++-----------
+ include/linux/usb/hcd.h |    1 +
+ 2 files changed, 16 insertions(+), 11 deletions(-)
 
-diff --git a/drivers/net/wireless/intel/iwlegacy/4965-rs.c b/drivers/net/wireless/intel/iwlegacy/4965-rs.c
-index c055f6da11c6..623ee20b2c19 100644
---- a/drivers/net/wireless/intel/iwlegacy/4965-rs.c
-+++ b/drivers/net/wireless/intel/iwlegacy/4965-rs.c
-@@ -2424,7 +2424,7 @@ il4965_rs_fill_link_cmd(struct il_priv *il, struct il_lq_sta *lq_sta,
- 		/* Repeat initial/next rate.
- 		 * For legacy IL_NUMBER_TRY == 1, this loop will not execute.
- 		 * For HT IL_HT_NUMBER_TRY == 3, this executes twice. */
--		while (repeat_rate > 0 && idx < LINK_QUAL_MAX_RETRY_NUM) {
-+		while (repeat_rate > 0) {
- 			if (is_legacy(tbl_type.lq_type)) {
- 				if (ant_toggle_cnt < NUM_TRY_BEFORE_ANT_TOGGLE)
- 					ant_toggle_cnt++;
-@@ -2443,6 +2443,8 @@ il4965_rs_fill_link_cmd(struct il_priv *il, struct il_lq_sta *lq_sta,
- 			    cpu_to_le32(new_rate);
- 			repeat_rate--;
- 			idx++;
-+			if (idx >= LINK_QUAL_MAX_RETRY_NUM)
-+				goto out;
- 		}
+--- a/drivers/usb/core/hcd.c
++++ b/drivers/usb/core/hcd.c
+@@ -1814,7 +1814,6 @@ static void usb_giveback_urb_bh(unsigned
  
- 		il4965_rs_get_tbl_info_from_mcs(new_rate, lq_sta->band,
-@@ -2487,6 +2489,7 @@ il4965_rs_fill_link_cmd(struct il_priv *il, struct il_lq_sta *lq_sta,
- 		repeat_rate--;
+ 	spin_lock_irq(&bh->lock);
+ 	bh->running = true;
+- restart:
+ 	list_replace_init(&bh->head, &local_list);
+ 	spin_unlock_irq(&bh->lock);
+ 
+@@ -1828,10 +1827,17 @@ static void usb_giveback_urb_bh(unsigned
+ 		bh->completing_ep = NULL;
  	}
  
-+out:
- 	lq_cmd->agg_params.agg_frame_cnt_limit = LINK_QUAL_AGG_FRAME_LIMIT_DEF;
- 	lq_cmd->agg_params.agg_dis_start_th = LINK_QUAL_AGG_DISABLE_START_DEF;
+-	/* check if there are new URBs to giveback */
++	/*
++	 * giveback new URBs next time to prevent this function
++	 * from not exiting for a long time.
++	 */
+ 	spin_lock_irq(&bh->lock);
+-	if (!list_empty(&bh->head))
+-		goto restart;
++	if (!list_empty(&bh->head)) {
++		if (bh->high_prio)
++			tasklet_hi_schedule(&bh->bh);
++		else
++			tasklet_schedule(&bh->bh);
++	}
+ 	bh->running = false;
+ 	spin_unlock_irq(&bh->lock);
+ }
+@@ -1856,7 +1862,7 @@ static void usb_giveback_urb_bh(unsigned
+ void usb_hcd_giveback_urb(struct usb_hcd *hcd, struct urb *urb, int status)
+ {
+ 	struct giveback_urb_bh *bh;
+-	bool running, high_prio_bh;
++	bool running;
  
--- 
-2.35.1
-
+ 	/* pass status to tasklet via unlinked */
+ 	if (likely(!urb->unlinked))
+@@ -1867,13 +1873,10 @@ void usb_hcd_giveback_urb(struct usb_hcd
+ 		return;
+ 	}
+ 
+-	if (usb_pipeisoc(urb->pipe) || usb_pipeint(urb->pipe)) {
++	if (usb_pipeisoc(urb->pipe) || usb_pipeint(urb->pipe))
+ 		bh = &hcd->high_prio_bh;
+-		high_prio_bh = true;
+-	} else {
++	else
+ 		bh = &hcd->low_prio_bh;
+-		high_prio_bh = false;
+-	}
+ 
+ 	spin_lock(&bh->lock);
+ 	list_add_tail(&urb->urb_list, &bh->head);
+@@ -1882,7 +1885,7 @@ void usb_hcd_giveback_urb(struct usb_hcd
+ 
+ 	if (running)
+ 		;
+-	else if (high_prio_bh)
++	else if (bh->high_prio)
+ 		tasklet_hi_schedule(&bh->bh);
+ 	else
+ 		tasklet_schedule(&bh->bh);
+@@ -2900,6 +2903,7 @@ int usb_add_hcd(struct usb_hcd *hcd,
+ 
+ 	/* initialize tasklets */
+ 	init_giveback_urb_bh(&hcd->high_prio_bh);
++	hcd->high_prio_bh.high_prio = true;
+ 	init_giveback_urb_bh(&hcd->low_prio_bh);
+ 
+ 	/* enable irqs just before we start the controller,
+--- a/include/linux/usb/hcd.h
++++ b/include/linux/usb/hcd.h
+@@ -65,6 +65,7 @@
+ 
+ struct giveback_urb_bh {
+ 	bool running;
++	bool high_prio;
+ 	spinlock_t lock;
+ 	struct list_head  head;
+ 	struct tasklet_struct bh;
 
 
