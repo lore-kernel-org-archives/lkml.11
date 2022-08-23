@@ -2,108 +2,101 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E437CC32789
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 17:12:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C0A9AC32772
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 17:12:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344218AbiHWRMY (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 13:12:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46386 "EHLO
+        id S243507AbiHWRM2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 23 Aug 2022 13:12:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44818 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344850AbiHWRLT (ORCPT
+        with ESMTP id S1344245AbiHWRKj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 13:11:19 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F2D5F15CE0F;
-        Tue, 23 Aug 2022 06:38:32 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        Tue, 23 Aug 2022 13:10:39 -0400
+Received: from madras.collabora.co.uk (madras.collabora.co.uk [IPv6:2a00:1098:0:82:1000:25:2eeb:e5ab])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E0A2E753A2;
+        Tue, 23 Aug 2022 07:01:47 -0700 (PDT)
+Received: from pan.home (unknown [IPv6:2a00:23c6:c311:3401:60d6:460b:e0dc:41ba])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 9D4BCB81B79;
-        Tue, 23 Aug 2022 13:38:31 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id EEFBCC433D6;
-        Tue, 23 Aug 2022 13:38:29 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1661261910;
-        bh=gNcuBVbZTH11tEmptRdziv6KZ2nBwZGGtxerR4UZk/g=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=lBQychxuVnBlnwSnKFGZWdNCjgjLWOAryCTjnRu4zWVeSrahmp7Wc8utuIPFoIcEP
-         wvFhJ6MhioFh/5SUZNfTBLF9mdcClxrVs5kt07KMbMMyON8DOaw2Omgml9SR34NBbJ
-         /DK80a6BsDsuHV/fIO6F2SgQsC2NLJIj1EY0PzC1gnM0GkSBWLrqsf7Lz6q5SwsRr0
-         qN8hJM8r5RG5Wzr0HkUPAoNOXpDr+hVGkbNI0pEOHHtzGQW85b89sJ/9tftvDd3+Ig
-         K5CUuedm5DLqUN7w2Vxt+4Qlll8YZGWhLIfN5x7NJcSpxZ4CHKZ4rH0Hol12uJGXfx
-         Mfb/pxzHV3DSA==
-Received: by quaco.ghostprotocols.net (Postfix, from userid 1000)
-        id 11832404A1; Tue, 23 Aug 2022 10:38:27 -0300 (-03)
-Date:   Tue, 23 Aug 2022 10:38:27 -0300
-From:   Arnaldo Carvalho de Melo <acme@kernel.org>
-To:     Heiko Carstens <hca@linux.ibm.com>
-Cc:     Thomas Richter <tmricht@linux.ibm.com>,
-        linux-kernel@vger.kernel.org, linux-perf-users@vger.kernel.org,
-        svens@linux.ibm.com, gor@linux.ibm.com, sumanthk@linux.ibm.com
-Subject: Re: [PATCH v2] perf list: Add PMU pai_crypto event description for
- IBM z16
-Message-ID: <YwTYU+xXZJr0kH5u@kernel.org>
-References: <20220804075221.1132849-1-tmricht@linux.ibm.com>
- <YvOq3B02x8GqkVPA@kernel.org>
- <YwSdWUt02SFzrMUm@osiris>
+        (Authenticated sender: martyn)
+        by madras.collabora.co.uk (Postfix) with ESMTPSA id 74C2C6601DD8;
+        Tue, 23 Aug 2022 15:01:46 +0100 (BST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
+        s=mail; t=1661263306;
+        bh=U+314oct9Zu4v5I9Z6fQHhGgVdlqQID9qINoCymOG0M=;
+        h=From:To:Cc:Subject:Date:From;
+        b=KEI3ObSfikbPPBkGQYCr5s/5lOkKmCmaxjj23ydmdZPlPwTLqbG7dVtgbBhkjbQDD
+         UiCBq/F8LGpY0IKeWUsKVhC0pGGv26nhnJnr8cP9sa1bEhJrfIB05/vBLPVFLxiLEL
+         s+Tc6rWA65OFDt6oxEHqpONlDZT567Ka9hyu7Y4w6ZYDwkYjjUN6pGVwAmurlF+0xj
+         qzuBDnrhS180VCqyMjNgCJ8C8fGpWV5svGZ2cnYpQPEcZk4Vhxj3at75j/fiLoEF/U
+         bNKkyY4GM47RHpXEdJZiR1DRQEu0yT72/t1N2Or7JzkY2GRFXlH6Lwmsyv9Q0K+GuP
+         9RQ4qg6YW5+Lw==
+From:   Martyn Welch <martyn.welch@collabora.com>
+To:     Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Shawn Guo <shawnguo@kernel.org>, Li Yang <leoyang.li@nxp.com>
+Cc:     kernel@collabora.com, Martyn Welch <martyn.welch@collabora.com>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH v7 1/2] dt-bindings: arm: fsl: Add MSC SM2S-IMX8PLUS SoM and SM2-MB-EP1 Carrier
+Date:   Tue, 23 Aug 2022 15:01:21 +0100
+Message-Id: <20220823140124.1469989-1-martyn.welch@collabora.com>
+X-Mailer: git-send-email 2.35.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <YwSdWUt02SFzrMUm@osiris>
-X-Url:  http://acmel.wordpress.com
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Em Tue, Aug 23, 2022 at 11:26:49AM +0200, Heiko Carstens escreveu:
-> On Wed, Aug 10, 2022 at 09:55:56AM -0300, Arnaldo Carvalho de Melo wrote:
-> > Em Thu, Aug 04, 2022 at 09:52:21AM +0200, Thomas Richter escreveu:
-> > > Add the event description for the IBM z16 pai_crypto PMU released with
-> > > commit 1bf54f32f525 ("s390/pai: Add support for cryptography counters")
-> > 
-> > What tree is this? I tried on torvalds/master:
-> > 
-> > ⬢[acme@toolbox perf]$ git remote update torvalds
-> > Fetching torvalds
-> > ⬢[acme@toolbox perf]$ git log --oneline -1 torvalds/master
-> > d4252071b97d2027 (torvalds/master) add barriers to buffer_uptodate and set_buffer_uptodate
-> > ⬢[acme@toolbox perf]$ git show torvalds/master d4252071b97d2027 | head -5
-> > commit d4252071b97d2027d246f6a82cbee4d52f618b47
-> > Author: Mikulas Patocka <mpatocka@redhat.com>
-> > Date:   Tue Aug 9 14:32:13 2022 -0400
-> > 
-> >     add barriers to buffer_uptodate and set_buffer_uptodate
-> > ⬢[acme@toolbox perf]$ git show torvalds/master 1bf54f32f525 | head -5
-> > fatal: ambiguous argument '1bf54f32f525': unknown revision or path not in the working tree.
-> > Use '--' to separate paths from revisions, like this:
-> > 'git <command> [<revision>...] -- [<file>...]'
-> > ⬢[acme@toolbox perf]$ git log --oneline torvalds/master | grep "pai: Add support for cryptography counters"
-> > ⬢[acme@toolbox perf]$
-> > ⬢[acme@toolbox perf]$ git show torvalds/master d4252071b97d2027 | head -4
-> > commit d4252071b97d2027d246f6a82cbee4d52f618b47
-> > Author: Mikulas Patocka <mpatocka@redhat.com>
-> > Date:   Tue Aug 9 14:32:13 2022 -0400
-> > 
-> > I'm applying it locally so that it gets included in testing, but please
-> > clarify where is that 1bf54f32f525 cset.
-> 
-> Thomas mixed up our non public development tree and Linus' tree.
-> Correct commit id + subject are:
-> 
-> 39d62336f5c1 ("s390/pai: add support for cryptography counters")
+Add DT compatible strings for a combination of the 14N0600E variant of
+the Avnet (MSC branded) SM2S-IMX8PLUS SoM on it's own and in combination
+with the SM2-MB-EP1 carrier board.
 
-Ok, this is already upstream, with this note:
+Signed-off-by: Martyn Welch <martyn.welch@collabora.com>
+Acked-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+---
 
-----
-    Committer notes:
+Changes in v2:
+  - New addition
 
-    Couldn't find 1bf54f32f525 ("s390/pai: Add support for cryptography
-    counters") in torvalds/master, in what tree is that cset?
-----
+Changes in v3:
+  - Switch to avnet vendor
+  - Shortened descriptive comment
 
-Not a biggie, the description was added, which is what really matters,
-right? :)
+Changes in v4:
+  - No changes
 
-- Arnaldo
+Changes in v5:
+  - No changes
+
+Changes in v6:
+  - No changes
+
+Changes in v7:
+  - No changes
+
+ Documentation/devicetree/bindings/arm/fsl.yaml | 7 +++++++
+ 1 file changed, 7 insertions(+)
+
+diff --git a/Documentation/devicetree/bindings/arm/fsl.yaml b/Documentation/devicetree/bindings/arm/fsl.yaml
+index 7431579ab0e8..81d90dc83385 100644
+--- a/Documentation/devicetree/bindings/arm/fsl.yaml
++++ b/Documentation/devicetree/bindings/arm/fsl.yaml
+@@ -936,6 +936,13 @@ properties:
+               - toradex,verdin-imx8mp-wifi  # Verdin iMX8M Plus Wi-Fi / BT Modules
+           - const: fsl,imx8mp
+ 
++      - description: Avnet (MSC Branded) Boards with SM2S i.MX8M Plus Modules
++        items:
++          - const: avnet,sm2s-imx8mp-14N0600E-ep1 # SM2S-IMX8PLUS-14N0600E on SM2-MB-EP1 Carrier Board
++          - const: avnet,sm2s-imx8mp-14N0600E     # 14N0600E variant of SM2S-IMX8PLUS SoM
++          - const: avnet,sm2s-imx8mp              # SM2S-IMX8PLUS SoM
++          - const: fsl,imx8mp
++
+       - description: Engicam i.Core MX8M Plus SoM based boards
+         items:
+           - enum:
+-- 
+2.35.1
+
