@@ -2,70 +2,127 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B870BC32772
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 17:13:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 77F6AC32772
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 17:13:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344119AbiHWRNT (ORCPT
+        id S1344095AbiHWRMO (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 13:13:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46470 "EHLO
+        Tue, 23 Aug 2022 13:12:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52728 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344110AbiHWRMQ (ORCPT
+        with ESMTP id S1344383AbiHWRKu (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 13:12:16 -0400
-X-Greylist: delayed 88 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Tue, 23 Aug 2022 06:56:20 PDT
-Received: from bg5.exmail.qq.com (bg4.exmail.qq.com [43.154.221.58])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DE078F3260;
-        Tue, 23 Aug 2022 06:56:20 -0700 (PDT)
-X-QQ-mid: bizesmtp64t1661262936th5h1wr5
-Received: from localhost.localdomain ( [182.148.14.124])
-        by bizesmtp.qq.com (ESMTP) with 
-        id ; Tue, 23 Aug 2022 21:55:35 +0800 (CST)
-X-QQ-SSF: 0100000000200040B000B00A0000000
-X-QQ-FEAT: QityeSR92A0zxGAD6HzWS0l8NZauE8FK1yox1IMlCkjktcn3X4S52GscfSTE7
-        QJSA/HNF39vcc9ks3/y3dhyDCS/xakVh4CU6NoZ1fY1f6jU0Ome4otAAk+TcGioFaejfbLa
-        BSKG8YpLvLQaUrm7uCGojHKM5N4GugdKJY7itR+e7O/J7vXo7SjPgllweeoO2a2eef0RIW9
-        Af7PQp9vaO7OfIw0Yhm/WiHxnj+d00rI7oWASXrluZaEEqTts5OQ+NJ0oel1KalR5T/vixV
-        0bfsfvHu8bWl07JD5U3g4b6MibbBeOlMUf+SbQAJmMIZZW42SOcSlZiU0JUhYfyttPRLOw/
-        TCWcT51kg9MKDahCugTMpJL/HbPYDAyirMoIEh3R9sO/93KtBndyuY+sSlBPA==
-X-QQ-GoodBg: 0
-From:   wangjianli <wangjianli@cdjrlc.com>
-To:     gcherian@marvell.com, herbert@gondor.apana.org.au,
-        davem@davemloft.net
-Cc:     linux-crypto@vger.kernel.org, linux-kernel@vger.kernel.org,
-        wangjianli <wangjianli@cdjrlc.com>
-Subject: [PATCH] cavium/cpt: fix repeated words in comments
-Date:   Tue, 23 Aug 2022 21:55:28 +0800
-Message-Id: <20220823135528.64693-1-wangjianli@cdjrlc.com>
-X-Mailer: git-send-email 2.36.1
+        Tue, 23 Aug 2022 13:10:50 -0400
+Received: from smtp-out2.suse.de (smtp-out2.suse.de [IPv6:2001:67c:2178:6::1d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4132D11ECF6
+        for <linux-kernel@vger.kernel.org>; Tue, 23 Aug 2022 06:37:54 -0700 (PDT)
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by smtp-out2.suse.de (Postfix) with ESMTPS id 6EDA11FA9A;
+        Tue, 23 Aug 2022 13:37:53 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
+        t=1661261873; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=bhjaqTIa02gbjHj3dH3vOefI9qGPqvEV2QWZ9Mh/sjs=;
+        b=duPLv1XkgQcD6lfKvrfqU0p2OHZvlUpiQNuuWjuitpbV7oc6QTN0XBn7I3HjgyxmYmM+DP
+        eFR10fKwtQRo3owkbpSxYfP/3Cu4HWF5HRP0aE+8fGt5UL+cDIF6FOG0FPk3F0rEcIIZCL
+        NKbqyoESziFyjsAXhJN/I2EDAq4NzVg=
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id 5DB9513A89;
+        Tue, 23 Aug 2022 13:37:53 +0000 (UTC)
+Received: from dovecot-director2.suse.de ([192.168.254.65])
+        by imap2.suse-dmz.suse.de with ESMTPSA
+        id lXrwFTHYBGPraAAAMHmgww
+        (envelope-from <mhocko@suse.com>); Tue, 23 Aug 2022 13:37:53 +0000
+Date:   Tue, 23 Aug 2022 15:37:52 +0200
+From:   Michal Hocko <mhocko@suse.com>
+To:     Liu Shixin <liushixin2@huawei.com>
+Cc:     Andrew Morton <akpm@linux-foundation.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        huang ying <huang.ying.caritas@gmail.com>,
+        Aaron Lu <aaron.lu@intel.com>,
+        Dave Hansen <dave.hansen@intel.com>,
+        Jesper Dangaard Brouer <brouer@redhat.com>,
+        Vlastimil Babka <vbabka@suse.cz>,
+        Kemi Wang <kemi.wang@intel.com>,
+        Kefeng Wang <wangkefeng.wang@huawei.com>,
+        linux-kernel@vger.kernel.org, linux-mm@kvack.org
+Subject: Re: [PATCH -next v2] mm, proc: collect percpu free pages into the
+ free pages
+Message-ID: <YwTYMGtcS4/F/xQO@dhcp22.suse.cz>
+References: <20220822023311.909316-1-liushixin2@huawei.com>
+ <20220822033354.952849-1-liushixin2@huawei.com>
+ <20220822141207.24ff7252913a62f80ea55e90@linux-foundation.org>
+ <YwSGqtEICW5AlhWr@dhcp22.suse.cz>
+ <6b2977fc-1e4a-f3d4-db24-7c4699e0773f@huawei.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-QQ-SENDSIZE: 520
-Feedback-ID: bizesmtp:cdjrlc.com:qybglogicsvr:qybglogicsvr7
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <6b2977fc-1e4a-f3d4-db24-7c4699e0773f@huawei.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Delete the redundant word 'the'.
+On Tue 23-08-22 20:46:43, Liu Shixin wrote:
+> On 2022/8/23 15:50, Michal Hocko wrote:
+> > On Mon 22-08-22 14:12:07, Andrew Morton wrote:
+> >> On Mon, 22 Aug 2022 11:33:54 +0800 Liu Shixin <liushixin2@huawei.com> wrote:
+> >>
+> >>> The page on pcplist could be used, but not counted into memory free or
+> >>> avaliable, and pcp_free is only showed by show_mem() for now. Since commit
+> >>> d8a759b57035 ("mm, page_alloc: double zone's batchsize"), there is a
+> >>> significant decrease in the display of free memory, with a large number
+> >>> of cpus and zones, the number of pages in the percpu list can be very
+> >>> large, so it is better to let user to know the pcp count.
+> >>>
+> >>> On a machine with 3 zones and 72 CPUs. Before commit d8a759b57035, the
+> >>> maximum amount of pages in the pcp lists was theoretically 162MB(3*72*768KB).
+> >>> After the patch, the lists can hold 324MB. It has been observed to be 114MB
+> >>> in the idle state after system startup in practice(increased 80 MB).
+> >>>
+> >> Seems reasonable.
+> > I have asked in the previous incarnation of the patch but haven't really
+> > received any answer[1]. Is this a _real_ problem? The absolute amount of
+> > memory could be perceived as a lot but is this really noticeable wrt
+> > overall memory on those systems?
+>
+> This may not obvious when the memory is sufficient. However, as products monitor the
+> memory to plan it. The change has caused warning.
 
-Signed-off-by: wangjianli <wangjianli@cdjrlc.com>
----
- drivers/crypto/cavium/cpt/cpt_hw_types.h | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+Is it possible that the said monitor is over sensitive and looking at
+wrong numbers? Overall free memory doesn't really tell much TBH.
+MemAvailable is a very rough estimation as well.
 
-diff --git a/drivers/crypto/cavium/cpt/cpt_hw_types.h b/drivers/crypto/cavium/cpt/cpt_hw_types.h
-index 96bc963bb804..64c3dfd214bf 100644
---- a/drivers/crypto/cavium/cpt/cpt_hw_types.h
-+++ b/drivers/crypto/cavium/cpt/cpt_hw_types.h
-@@ -396,7 +396,7 @@ union cptx_vqx_misc_ena_w1s {
-  * Word0
-  *  reserved_20_63:44 [63:20] Reserved.
-  *  dbell_cnt:20 [19:0](R/W/H) Number of instruction queue 64-bit words to add
-- *	to the CPT instruction doorbell count. Readback value is the the
-+ *	to the CPT instruction doorbell count. Readback value is the
-  *	current number of pending doorbell requests. If counter overflows
-  *	CPT()_VQ()_MISC_INT[DBELL_DOVF] is set. To reset the count back to
-  *	zero, write one to clear CPT()_VQ()_MISC_INT_ENA_W1C[DBELL_DOVF],
+In reality what really matters much more is whether the memory is
+readily available when it is required and none of MemFree/MemAvailable
+gives you that information in general case.
+
+> We have also considered using /proc/zoneinfo to calculate the total
+> number of pcplists. However, we think it is more appropriate to add
+> the total number of pcplists to free and available pages. After all,
+> this part is also free pages.
+
+Those free pages are not generally available as exaplained. They are
+available to a specific CPU, drained under memory pressure and other
+events but still there is no guarantee a specific process can harvest
+that memory because the pcp caches are replenished all the time.
+So in a sense it is a semi-hidden memory.
+
+That being said, I am still not convinced this is actually going to help
+all that much. You will see a slightly different numbers which do not
+tell much one way or another and if the sole reason for tweaking these
+numbers is that some monitor is complaining because X became X-epsilon
+then this sounds like a weak justification to me. That epsilon happens
+all the time because there are quite some hidden caches that are
+released under memory pressure. I am not sure it is maintainable to
+consider each one of them and pretend that MemFree/MemAvailable is
+somehow precise. It has never been and likely never will be.
 -- 
-2.36.1
-
+Michal Hocko
+SUSE Labs
