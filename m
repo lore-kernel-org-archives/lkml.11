@@ -2,46 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3B42BC32774
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 10:08:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C8E87C32792
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 10:08:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352568AbiHWKIG (ORCPT
+        id S1352597AbiHWKIN (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 06:08:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46244 "EHLO
+        Tue, 23 Aug 2022 06:08:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44496 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352434AbiHWKBy (ORCPT
+        with ESMTP id S1352466AbiHWKB4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 06:01:54 -0400
+        Tue, 23 Aug 2022 06:01:56 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7D87163F25;
-        Tue, 23 Aug 2022 01:49:43 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 25BA97C302;
+        Tue, 23 Aug 2022 01:49:46 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 7C732B81C5F;
-        Tue, 23 Aug 2022 08:34:49 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 80EC7C433D6;
-        Tue, 23 Aug 2022 08:34:47 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 8D823B81B90;
+        Tue, 23 Aug 2022 08:49:45 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BF0A2C433C1;
+        Tue, 23 Aug 2022 08:49:43 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661243688;
-        bh=nIcfzrungjtKw7y6HO2FvmCrIPM7rRA9aRlAm5poON0=;
+        s=korg; t=1661244584;
+        bh=JqeXyUSafTDR1CCZmv9/KUNztoOdz6JdHP9rzp7oSk8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=SNRn40+u9fx9QCdCNQEp5e+euBg4J3urz8M4GIsI0qmyxw3Qs6ZEueI3am0t4QG/T
-         88BsSyDgmRjpuCqj1Kp4XoY9LznOUZyaqpvfU6/CY1UF8+4rmtk2Cksdb59t847vf9
-         KuChM+FAJ/sleNJhL2F8BZQfE6ZxufnfqE23/nvc=
+        b=nXUGWO9Y/fqU7N6Lm60+bwUu++8xTausspGNcsdqraUOP6M8L1/NOvbM2pZEc0wj5
+         5+KiFOKqAqyKUEGdIv1RmyFMiwfAnf0r6Q2zl3ZOu8ZlPdEZ36NVLJHGUW5nEgEJgV
+         Iy+CRsJYfiP7+FsnkzMsm/YsOssWIsW5MzvI3qFI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Wenqing Liu <wenqingliu0120@gmail.com>,
-        Chao Yu <chao.yu@oppo.com>, Jaegeuk Kim <jaegeuk@kernel.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.19 356/365] f2fs: fix to do sanity check on segment type in build_sit_entries()
-Date:   Tue, 23 Aug 2022 10:04:17 +0200
-Message-Id: <20220823080133.179539706@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+        Michal Simek <michal.simek@amd.com>,
+        Mark Brown <broonie@kernel.org>
+Subject: [PATCH 5.15 087/244] spi: dt-bindings: cadence: add missing required
+Date:   Tue, 23 Aug 2022 10:24:06 +0200
+Message-Id: <20220823080101.934302261@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220823080118.128342613@linuxfoundation.org>
-References: <20220823080118.128342613@linuxfoundation.org>
+In-Reply-To: <20220823080059.091088642@linuxfoundation.org>
+References: <20220823080059.091088642@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -50,78 +51,42 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Chao Yu <chao.yu@oppo.com>
+From: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
 
-[ Upstream commit 09beadf289d6e300553e60d6e76f13c0427ecab3 ]
+commit 6eee27c598fde65988723b785a9c9192d5ffb93a upstream.
 
-As Wenqing Liu <wenqingliu0120@gmail.com> reported in bugzilla:
+During the conversion the bindings lost list of required properties.
 
-https://bugzilla.kernel.org/show_bug.cgi?id=216285
-
-RIP: 0010:memcpy_erms+0x6/0x10
- f2fs_update_meta_page+0x84/0x570 [f2fs]
- change_curseg.constprop.0+0x159/0xbd0 [f2fs]
- f2fs_do_replace_block+0x5c7/0x18a0 [f2fs]
- f2fs_replace_block+0xeb/0x180 [f2fs]
- recover_data+0x1abd/0x6f50 [f2fs]
- f2fs_recover_fsync_data+0x12ce/0x3250 [f2fs]
- f2fs_fill_super+0x4459/0x6190 [f2fs]
- mount_bdev+0x2cf/0x3b0
- legacy_get_tree+0xed/0x1d0
- vfs_get_tree+0x81/0x2b0
- path_mount+0x47e/0x19d0
- do_mount+0xce/0xf0
- __x64_sys_mount+0x12c/0x1a0
- do_syscall_64+0x38/0x90
- entry_SYSCALL_64_after_hwframe+0x63/0xcd
-
-The root cause is segment type is invalid, so in f2fs_do_replace_block(),
-f2fs accesses f2fs_sm_info::curseg_array with out-of-range segment type,
-result in accessing invalid curseg->sum_blk during memcpy in
-f2fs_update_meta_page(). Fix this by adding sanity check on segment type
-in build_sit_entries().
-
-Reported-by: Wenqing Liu <wenqingliu0120@gmail.com>
-Signed-off-by: Chao Yu <chao.yu@oppo.com>
-Signed-off-by: Jaegeuk Kim <jaegeuk@kernel.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Fixes: aa7968682a2b ("spi: convert Cadence SPI bindings to YAML")
+Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Reviewed-by: Michal Simek <michal.simek@amd.com>
+Link: https://lore.kernel.org/r/20220704130618.199231-1-krzysztof.kozlowski@linaro.org
+Signed-off-by: Mark Brown <broonie@kernel.org>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- fs/f2fs/segment.c | 13 +++++++++++++
- 1 file changed, 13 insertions(+)
+ Documentation/devicetree/bindings/spi/spi-cadence.yaml | 7 +++++++
+ 1 file changed, 7 insertions(+)
 
-diff --git a/fs/f2fs/segment.c b/fs/f2fs/segment.c
-index 874c1b9c41a2..ac890c9fa8a1 100644
---- a/fs/f2fs/segment.c
-+++ b/fs/f2fs/segment.c
-@@ -4362,6 +4362,12 @@ static int build_sit_entries(struct f2fs_sb_info *sbi)
- 				return err;
- 			seg_info_from_raw_sit(se, &sit);
+diff --git a/Documentation/devicetree/bindings/spi/spi-cadence.yaml b/Documentation/devicetree/bindings/spi/spi-cadence.yaml
+index 9787be21318e..82d0ca5c00f3 100644
+--- a/Documentation/devicetree/bindings/spi/spi-cadence.yaml
++++ b/Documentation/devicetree/bindings/spi/spi-cadence.yaml
+@@ -49,6 +49,13 @@ properties:
+     enum: [ 0, 1 ]
+     default: 0
  
-+			if (se->type >= NR_PERSISTENT_LOG) {
-+				f2fs_err(sbi, "Invalid segment type: %u, segno: %u",
-+							se->type, start);
-+				return -EFSCORRUPTED;
-+			}
++required:
++  - compatible
++  - reg
++  - interrupts
++  - clock-names
++  - clocks
 +
- 			sit_valid_blocks[SE_PAGETYPE(se)] += se->valid_blocks;
+ unevaluatedProperties: false
  
- 			if (f2fs_block_unit_discard(sbi)) {
-@@ -4410,6 +4416,13 @@ static int build_sit_entries(struct f2fs_sb_info *sbi)
- 			break;
- 		seg_info_from_raw_sit(se, &sit);
- 
-+		if (se->type >= NR_PERSISTENT_LOG) {
-+			f2fs_err(sbi, "Invalid segment type: %u, segno: %u",
-+							se->type, start);
-+			err = -EFSCORRUPTED;
-+			break;
-+		}
-+
- 		sit_valid_blocks[SE_PAGETYPE(se)] += se->valid_blocks;
- 
- 		if (f2fs_block_unit_discard(sbi)) {
+ examples:
 -- 
-2.35.1
+2.37.2
 
 
 
