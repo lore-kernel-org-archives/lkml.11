@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1B0BFC32772
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 09:01:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9702EC32772
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 09:02:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241537AbiHWJBs (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 05:01:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42196 "EHLO
+        id S1347334AbiHWJCR (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 23 Aug 2022 05:02:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42214 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241104AbiHWJBH (ORCPT
+        with ESMTP id S240444AbiHWJBn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 05:01:07 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E4F3E82876;
-        Tue, 23 Aug 2022 01:27:50 -0700 (PDT)
+        Tue, 23 Aug 2022 05:01:43 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AA8D383054;
+        Tue, 23 Aug 2022 01:28:07 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 0A5CBB81C48;
-        Tue, 23 Aug 2022 08:27:05 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 422EFC433D6;
-        Tue, 23 Aug 2022 08:27:03 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 2C2F361494;
+        Tue, 23 Aug 2022 08:27:14 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DF6D1C433C1;
+        Tue, 23 Aug 2022 08:27:12 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661243223;
-        bh=XqrLsuMQD7WWEuspC3uWOb0vRFo3OKEJ+OYxw17qHtc=;
+        s=korg; t=1661243233;
+        bh=PTSYZ9FApOOBJKtWbi9ijKt7DTtB+H8+ux8d997unJk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=oEwUN44leMxMTSHFRzJSeWYjtTyG3798at4nFKsKFszNZxsKgyl5Fg0+KLwVAqUy0
-         vgk0GHr/BIDGj+WgJbNzYPVs1tpK+5NCniOmVotYrMcm4CcIfqMv+fsckrW4SbiGBd
-         GPPFZ+N51RHE0SiTaoC9jHntF954tfK0RxybIgfM=
+        b=LMVgb3pmmyU449SVqw4vMLqnBwy4N8fzyfacpxoJPVkPKUpcnT9Cyu2m14SIDFWz4
+         m5l99GuDD9guNRVUDXaY8wIJaDQgDUBPF5HmELwyHfW8LxPmzvV9bqGjNGhdPtmMaM
+         KWEqewzTNkVClF4vAywVomBdDS2fAf8n84F7JfpE=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Amit Cohen <amcohen@nvidia.com>,
-        Ido Schimmel <idosch@nvidia.com>,
-        Petr Machata <petrm@nvidia.com>,
-        "David S. Miller" <davem@davemloft.net>
-Subject: [PATCH 5.19 209/365] mlxsw: spectrum: Clear PTP configuration after unregistering the netdevice
-Date:   Tue, 23 Aug 2022 10:01:50 +0200
-Message-Id: <20220823080126.937910740@linuxfoundation.org>
+        stable@vger.kernel.org, Zhengchao Shao <shaozhengchao@huawei.com>,
+        Nikolay Aleksandrov <razor@blackwall.org>,
+        Jakub Kicinski <kuba@kernel.org>
+Subject: [PATCH 5.19 212/365] net: rtnetlink: fix module reference count leak issue in rtnetlink_rcv_msg
+Date:   Tue, 23 Aug 2022 10:01:53 +0200
+Message-Id: <20220823080127.075499596@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220823080118.128342613@linuxfoundation.org>
 References: <20220823080118.128342613@linuxfoundation.org>
@@ -50,41 +50,38 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Amit Cohen <amcohen@nvidia.com>
+From: Zhengchao Shao <shaozhengchao@huawei.com>
 
-commit a159e986ad26d3f35c0157ac92760ba5e44e6785 upstream.
+commit 5b22f62724a0a09e00d301abf5b57b0c12be8a16 upstream.
 
-Currently as part of removing port, PTP API is called to clear the
-existing configuration and set the 'rx_filter' and 'tx_type' to zero.
-The clearing is done before unregistering the netdevice, which means that
-there is a window of time in which the user can reconfigure PTP in the
-port, and this configuration will not be cleared.
+When bulk delete command is received in the rtnetlink_rcv_msg function,
+if bulk delete is not supported, module_put is not called to release
+the reference counting. As a result, module reference count is leaked.
 
-Reorder the operations, clear PTP configuration after unregistering the
-netdevice.
-
-Fixes: 8748642751ede ("mlxsw: spectrum: PTP: Support SIOCGHWTSTAMP, SIOCSHWTSTAMP ioctls")
-Signed-off-by: Amit Cohen <amcohen@nvidia.com>
-Signed-off-by: Ido Schimmel <idosch@nvidia.com>
-Signed-off-by: Petr Machata <petrm@nvidia.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+Fixes: a6cec0bcd342 ("net: rtnetlink: add bulk delete support flag")
+Signed-off-by: Zhengchao Shao <shaozhengchao@huawei.com>
+Acked-by: Nikolay Aleksandrov <razor@blackwall.org>
+Link: https://lore.kernel.org/r/20220815024629.240367-1-shaozhengchao@huawei.com
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/net/ethernet/mellanox/mlxsw/spectrum.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ net/core/rtnetlink.c | 1 +
+ 1 file changed, 1 insertion(+)
 
---- a/drivers/net/ethernet/mellanox/mlxsw/spectrum.c
-+++ b/drivers/net/ethernet/mellanox/mlxsw/spectrum.c
-@@ -1822,9 +1822,9 @@ static void mlxsw_sp_port_remove(struct
+diff --git a/net/core/rtnetlink.c b/net/core/rtnetlink.c
+index ac45328607f7..4b5b15c684ed 100644
+--- a/net/core/rtnetlink.c
++++ b/net/core/rtnetlink.c
+@@ -6070,6 +6070,7 @@ static int rtnetlink_rcv_msg(struct sk_buff *skb, struct nlmsghdr *nlh,
+ 	if (kind == RTNL_KIND_DEL && (nlh->nlmsg_flags & NLM_F_BULK) &&
+ 	    !(flags & RTNL_FLAG_BULK_DEL_SUPPORTED)) {
+ 		NL_SET_ERR_MSG(extack, "Bulk delete is not supported");
++		module_put(owner);
+ 		goto err_unlock;
+ 	}
  
- 	cancel_delayed_work_sync(&mlxsw_sp_port->periodic_hw_stats.update_dw);
- 	cancel_delayed_work_sync(&mlxsw_sp_port->ptp.shaper_dw);
--	mlxsw_sp_port_ptp_clear(mlxsw_sp_port);
- 	mlxsw_core_port_clear(mlxsw_sp->core, local_port, mlxsw_sp);
- 	unregister_netdev(mlxsw_sp_port->dev); /* This calls ndo_stop */
-+	mlxsw_sp_port_ptp_clear(mlxsw_sp_port);
- 	mlxsw_sp_port_vlan_classification_set(mlxsw_sp_port, true, true);
- 	mlxsw_sp->ports[local_port] = NULL;
- 	mlxsw_sp_port_vlan_flush(mlxsw_sp_port, true);
+-- 
+2.37.2
+
 
 
