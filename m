@@ -2,48 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id ED05FC32792
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 11:07:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 03D45C3F6B0
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 11:07:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350314AbiHWLHE (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 07:07:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44258 "EHLO
+        id S242951AbiHWLHc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 23 Aug 2022 07:07:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48436 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356972AbiHWLEi (ORCPT
+        with ESMTP id S1357178AbiHWLGQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 07:04:38 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BE0BCB2769;
-        Tue, 23 Aug 2022 02:15:18 -0700 (PDT)
+        Tue, 23 Aug 2022 07:06:16 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6BFE16D574;
+        Tue, 23 Aug 2022 02:15:41 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 4BBF9B81C4E;
-        Tue, 23 Aug 2022 09:15:11 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 96E85C433D7;
-        Tue, 23 Aug 2022 09:15:09 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 9941360F91;
+        Tue, 23 Aug 2022 09:15:27 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A7906C433D7;
+        Tue, 23 Aug 2022 09:15:26 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661246110;
-        bh=fkS0yNqWNFUiOtkYMouC7Nw4WkF0NzDt3nXIozKSnWU=;
+        s=korg; t=1661246127;
+        bh=hdpMQvdAF2wL4zJ/GVlh8T8RjdT1twmnVpSSCst+jbc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=gjeN6iwcsiFlCyPI94xWydayo04FueqO4hScsfM+1pe3dB1WQ+DIBxiznaOXDpj/z
-         JxmwHZLefVQzCRdKMzdoXfoDey1V28wqeE9ePyR6hLtrtC5zOXMdrfQr+dQCGg05Eh
-         J2EH4CCyiwjTLskqsES+hqQ32On9No7jF7kv9Yjc=
+        b=dSYEQON5ggecdd9UHcYv8Wi49+u6650qkNViXZN/DjwYOMskEUOhvMQISE3TX5BIM
+         VOhX+w8pUwTuInmPY0bSUCizOW2/vZznygVts7sd8woGGfU8uKzSHB128sJbCj07d+
+         66rl3+v1w4ygdlN/GDNVtiSy/QbrgxLpmULPxxJc=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        syzbot+1ee0910eca9c94f71f25@syzkaller.appspotmail.com,
-        syzbot+49b10793b867871ee26f@syzkaller.appspotmail.com,
-        syzbot+8285e973a41b5aa68902@syzkaller.appspotmail.com,
-        Takashi Iwai <tiwai@suse.de>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.19 278/287] ALSA: timer: Use deferred fasync helper
-Date:   Tue, 23 Aug 2022 10:27:27 +0200
-Message-Id: <20220823080110.795772629@linuxfoundation.org>
+        stable@vger.kernel.org, Fangrui Song <maskray@google.com>,
+        Nick Desaulniers <ndesaulniers@google.com>,
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        Jens Axboe <axboe@kernel.dk>
+Subject: [PATCH 5.4 002/389] x86: link vdso and boot with -z noexecstack --no-warn-rwx-segments
+Date:   Tue, 23 Aug 2022 10:21:20 +0200
+Message-Id: <20220823080115.716625600@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220823080100.268827165@linuxfoundation.org>
-References: <20220823080100.268827165@linuxfoundation.org>
+In-Reply-To: <20220823080115.331990024@linuxfoundation.org>
+References: <20220823080115.331990024@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -52,83 +50,82 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Takashi Iwai <tiwai@suse.de>
+From: Nick Desaulniers <ndesaulniers@google.com>
 
-[ Upstream commit 95cc637c1afd83fb7dd3d7c8a53710488f4caf9c ]
+commit ffcf9c5700e49c0aee42dcba9a12ba21338e8136 upstream.
 
-For avoiding the potential deadlock via kill_fasync() call, use the
-new fasync helpers to defer the invocation from PCI API.  Note that
-it's merely a workaround.
+Users of GNU ld (BFD) from binutils 2.39+ will observe multiple
+instances of a new warning when linking kernels in the form:
 
-Reported-by: syzbot+1ee0910eca9c94f71f25@syzkaller.appspotmail.com
-Reported-by: syzbot+49b10793b867871ee26f@syzkaller.appspotmail.com
-Reported-by: syzbot+8285e973a41b5aa68902@syzkaller.appspotmail.com
-Link: https://lore.kernel.org/r/20220728125945.29533-3-tiwai@suse.de
-Signed-off-by: Takashi Iwai <tiwai@suse.de>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+  ld: warning: arch/x86/boot/pmjump.o: missing .note.GNU-stack section implies executable stack
+  ld: NOTE: This behaviour is deprecated and will be removed in a future version of the linker
+  ld: warning: arch/x86/boot/compressed/vmlinux has a LOAD segment with RWX permissions
+
+Generally, we would like to avoid the stack being executable.  Because
+there could be a need for the stack to be executable, assembler sources
+have to opt-in to this security feature via explicit creation of the
+.note.GNU-stack feature (which compilers create by default) or command
+line flag --noexecstack.  Or we can simply tell the linker the
+production of such sections is irrelevant and to link the stack as
+--noexecstack.
+
+LLVM's LLD linker defaults to -z noexecstack, so this flag isn't
+strictly necessary when linking with LLD, only BFD, but it doesn't hurt
+to be explicit here for all linkers IMO.  --no-warn-rwx-segments is
+currently BFD specific and only available in the current latest release,
+so it's wrapped in an ld-option check.
+
+While the kernel makes extensive usage of ELF sections, it doesn't use
+permissions from ELF segments.
+
+Link: https://lore.kernel.org/linux-block/3af4127a-f453-4cf7-f133-a181cce06f73@kernel.dk/
+Link: https://sourceware.org/git/?p=binutils-gdb.git;a=commit;h=ba951afb99912da01a6e8434126b8fac7aa75107
+Link: https://github.com/llvm/llvm-project/issues/57009
+Reported-and-tested-by: Jens Axboe <axboe@kernel.dk>
+Suggested-by: Fangrui Song <maskray@google.com>
+Signed-off-by: Nick Desaulniers <ndesaulniers@google.com>
+Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- sound/core/timer.c | 11 ++++++-----
- 1 file changed, 6 insertions(+), 5 deletions(-)
+ arch/x86/boot/Makefile            |    2 +-
+ arch/x86/boot/compressed/Makefile |    4 ++++
+ arch/x86/entry/vdso/Makefile      |    2 +-
+ 3 files changed, 6 insertions(+), 2 deletions(-)
 
-diff --git a/sound/core/timer.c b/sound/core/timer.c
-index 4920ec4f4594..f0e8b98f346e 100644
---- a/sound/core/timer.c
-+++ b/sound/core/timer.c
-@@ -75,7 +75,7 @@ struct snd_timer_user {
- 	unsigned int filter;
- 	struct timespec tstamp;		/* trigger tstamp */
- 	wait_queue_head_t qchange_sleep;
--	struct fasync_struct *fasync;
-+	struct snd_fasync *fasync;
- 	struct mutex ioctl_lock;
- };
+--- a/arch/x86/boot/Makefile
++++ b/arch/x86/boot/Makefile
+@@ -100,7 +100,7 @@ $(obj)/zoffset.h: $(obj)/compressed/vmli
+ AFLAGS_header.o += -I$(objtree)/$(obj)
+ $(obj)/header.o: $(obj)/zoffset.h
  
-@@ -1306,7 +1306,7 @@ static void snd_timer_user_interrupt(struct snd_timer_instance *timeri,
- 	}
-       __wake:
- 	spin_unlock(&tu->qlock);
--	kill_fasync(&tu->fasync, SIGIO, POLL_IN);
-+	snd_kill_fasync(tu->fasync, SIGIO, POLL_IN);
- 	wake_up(&tu->qchange_sleep);
- }
+-LDFLAGS_setup.elf	:= -m elf_i386 -T
++LDFLAGS_setup.elf	:= -m elf_i386 -z noexecstack -T
+ $(obj)/setup.elf: $(src)/setup.ld $(SETUP_OBJS) FORCE
+ 	$(call if_changed,ld)
  
-@@ -1343,7 +1343,7 @@ static void snd_timer_user_ccallback(struct snd_timer_instance *timeri,
- 	spin_lock_irqsave(&tu->qlock, flags);
- 	snd_timer_user_append_to_tqueue(tu, &r1);
- 	spin_unlock_irqrestore(&tu->qlock, flags);
--	kill_fasync(&tu->fasync, SIGIO, POLL_IN);
-+	snd_kill_fasync(tu->fasync, SIGIO, POLL_IN);
- 	wake_up(&tu->qchange_sleep);
- }
+--- a/arch/x86/boot/compressed/Makefile
++++ b/arch/x86/boot/compressed/Makefile
+@@ -57,6 +57,10 @@ else
+ KBUILD_LDFLAGS += $(shell $(LD) --help 2>&1 | grep -q "\-z noreloc-overflow" \
+ 	&& echo "-z noreloc-overflow -pie --no-dynamic-linker")
+ endif
++
++KBUILD_LDFLAGS += -z noexecstack
++KBUILD_LDFLAGS += $(call ld-option,--no-warn-rwx-segments)
++
+ LDFLAGS_vmlinux := -T
  
-@@ -1410,7 +1410,7 @@ static void snd_timer_user_tinterrupt(struct snd_timer_instance *timeri,
- 	spin_unlock(&tu->qlock);
- 	if (append == 0)
- 		return;
--	kill_fasync(&tu->fasync, SIGIO, POLL_IN);
-+	snd_kill_fasync(tu->fasync, SIGIO, POLL_IN);
- 	wake_up(&tu->qchange_sleep);
- }
+ hostprogs-y	:= mkpiggy
+--- a/arch/x86/entry/vdso/Makefile
++++ b/arch/x86/entry/vdso/Makefile
+@@ -178,7 +178,7 @@ quiet_cmd_vdso = VDSO    $@
+ 		 sh $(srctree)/$(src)/checkundef.sh '$(NM)' '$@'
  
-@@ -1476,6 +1476,7 @@ static int snd_timer_user_release(struct inode *inode, struct file *file)
- 		if (tu->timeri)
- 			snd_timer_close(tu->timeri);
- 		mutex_unlock(&tu->ioctl_lock);
-+		snd_fasync_free(tu->fasync);
- 		kfree(tu->queue);
- 		kfree(tu->tqueue);
- 		kfree(tu);
-@@ -2027,7 +2028,7 @@ static int snd_timer_user_fasync(int fd, struct file * file, int on)
- 	struct snd_timer_user *tu;
+ VDSO_LDFLAGS = -shared --hash-style=both --build-id \
+-	$(call ld-option, --eh-frame-hdr) -Bsymbolic
++	$(call ld-option, --eh-frame-hdr) -Bsymbolic -z noexecstack
+ GCOV_PROFILE := n
  
- 	tu = file->private_data;
--	return fasync_helper(fd, file, on, &tu->fasync);
-+	return snd_fasync_helper(fd, file, on, &tu->fasync);
- }
- 
- static ssize_t snd_timer_user_read(struct file *file, char __user *buffer,
--- 
-2.35.1
-
+ quiet_cmd_vdso_and_check = VDSO    $@
 
 
