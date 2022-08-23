@@ -2,46 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9219FC32774
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A713EC3F6B0
 	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 08:36:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344566AbiHWIfb (ORCPT
+        id S1345124AbiHWIfe (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 04:35:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33500 "EHLO
+        Tue, 23 Aug 2022 04:35:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60876 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237737AbiHWIcV (ORCPT
+        with ESMTP id S243485AbiHWIcX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 04:32:21 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 55E8FF72;
-        Tue, 23 Aug 2022 01:16:37 -0700 (PDT)
+        Tue, 23 Aug 2022 04:32:23 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ADD1C67459;
+        Tue, 23 Aug 2022 01:16:32 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 1A76A6129A;
-        Tue, 23 Aug 2022 08:16:07 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 133C9C433D6;
-        Tue, 23 Aug 2022 08:16:05 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 94FD4612DA;
+        Tue, 23 Aug 2022 08:16:31 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 86D34C433C1;
+        Tue, 23 Aug 2022 08:16:30 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661242566;
-        bh=/eYVGXAuKL4bcGDnI5yMXcniIu7V/yBLApdzeAGaCAE=;
+        s=korg; t=1661242591;
+        bh=/tKUeDNsWC4TjtU5BAtVdURhSCpADm0fbCBQrx2Hg4k=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=GYUH1k+PRQuQrclGFKKk0XJUzIusvtJ5HmND0l/tNxF8P6y21dQsEvr7g9WIU8PtP
-         GL4ZcAdgOQUOHSAGWM2LO1JOi+nCKnZ4kVb951G6VGtXEN8iQ/WGbjvvukHgUDcMuo
-         d6psQmtofzdoFNPS273Idg+EYP2vuS8De3HjUmGQ=
+        b=Qn3Zip0bbzXZZ5wOcZwAzIFmjUmLpBhOX4XwcHM0qRsQzJcMgZb7cbfSslXxGz+3Q
+         51EobrpSBfuNloYlLlPxlSiavfvSsUgKGPapjkiwYXNTJAVProgQq83tE94AFe5lyT
+         ZJrXYURE+i4FahViqRXCRW7v5LIWVhfeU5K6npjk=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Jonathan Cameron <Jonathan.Cameron@huawei.com>,
-        Dan Williams <dan.j.williams@intel.com>
-Subject: [PATCH 5.19 138/365] tools/testing/cxl: Fix decoder default state
-Date:   Tue, 23 Aug 2022 10:00:39 +0200
-Message-Id: <20220823080123.987647295@linuxfoundation.org>
+        stable@vger.kernel.org, Liang He <windhl@126.com>,
+        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 4.9 096/101] mips: cavium-octeon: Fix missing of_node_put() in octeon2_usb_clocks_start
+Date:   Tue, 23 Aug 2022 10:04:09 +0200
+Message-Id: <20220823080038.235159132@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220823080118.128342613@linuxfoundation.org>
-References: <20220823080118.128342613@linuxfoundation.org>
+In-Reply-To: <20220823080034.579196046@linuxfoundation.org>
+References: <20220823080034.579196046@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -50,36 +50,41 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Dan Williams <dan.j.williams@intel.com>
+From: Liang He <windhl@126.com>
 
-commit 08f8d040a11d539481b9aee7b482430561281a28 upstream.
+[ Upstream commit 7a9f743ceead60ed454c46fbc3085ee9a79cbebb ]
 
-The 'enabled' state is reserved for committed decoders. By default,
-cxl_test decoders are uncommitted at init time.
+We should call of_node_put() for the reference 'uctl_node' returned by
+of_get_parent() which will increase the refcount. Otherwise, there will
+be a refcount leak bug.
 
-Fixes: 7c7d68db0254 ("tools/testing/cxl: Enumerate mock decoders")
-Reviewed-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
-Link: https://lore.kernel.org/r/165603888091.551046.6312322707378021172.stgit@dwillia2-xfh
-Signed-off-by: Dan Williams <dan.j.williams@intel.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Liang He <windhl@126.com>
+Signed-off-by: Thomas Bogendoerfer <tsbogend@alpha.franken.de>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- tools/testing/cxl/test/cxl.c | 1 -
- 1 file changed, 1 deletion(-)
+ arch/mips/cavium-octeon/octeon-platform.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-diff --git a/tools/testing/cxl/test/cxl.c b/tools/testing/cxl/test/cxl.c
-index 91444279f9a2..6e086fbc5c5b 100644
---- a/tools/testing/cxl/test/cxl.c
-+++ b/tools/testing/cxl/test/cxl.c
-@@ -466,7 +466,6 @@ static int mock_cxl_enumerate_decoders(struct cxl_hdm *cxlhdm)
- 			.end = -1,
- 		};
- 
--		cxld->flags = CXL_DECODER_F_ENABLE;
- 		cxld->interleave_ways = min_not_zero(target_count, 1);
- 		cxld->interleave_granularity = SZ_4K;
- 		cxld->target_type = CXL_DECODER_EXPANDER;
+diff --git a/arch/mips/cavium-octeon/octeon-platform.c b/arch/mips/cavium-octeon/octeon-platform.c
+index 2ecc8d1b0539..f295be876390 100644
+--- a/arch/mips/cavium-octeon/octeon-platform.c
++++ b/arch/mips/cavium-octeon/octeon-platform.c
+@@ -130,11 +130,12 @@ static void octeon2_usb_clocks_start(struct device *dev)
+ 					 "refclk-frequency", &clock_rate);
+ 		if (i) {
+ 			dev_err(dev, "No UCTL \"refclk-frequency\"\n");
++			of_node_put(uctl_node);
+ 			goto exit;
+ 		}
+ 		i = of_property_read_string(uctl_node,
+ 					    "refclk-type", &clock_type);
+-
++		of_node_put(uctl_node);
+ 		if (!i && strcmp("crystal", clock_type) == 0)
+ 			is_crystal_clock = true;
+ 	}
 -- 
-2.37.2
+2.35.1
 
 
 
