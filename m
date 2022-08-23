@@ -2,114 +2,59 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 419C2C32774
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 19:21:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 03D63C32789
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 19:22:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232066AbiHWTVH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 15:21:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37722 "EHLO
+        id S231153AbiHWTWI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 23 Aug 2022 15:22:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35102 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234303AbiHWTUk (ORCPT
+        with ESMTP id S233048AbiHWTVq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 15:20:40 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C42935A14D;
-        Tue, 23 Aug 2022 10:59:46 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 0C57461683;
-        Tue, 23 Aug 2022 17:59:46 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 68132C433C1;
-        Tue, 23 Aug 2022 17:59:45 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1661277585;
-        bh=RIY5fu0Ccv8YyiNMD6vYWY/HtMeFS+5JWc27tNQtnlM=;
-        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=qbqZ/L3vXIHP4Gddr5RSmGm4FUfTbNm+JJ+OeSQJs4xQwzy/n2R0Hug9huUw1HQOI
-         MIoC0Q7Qy1nYY4czNRPpcCJLrq3AsvKnm2esp2ZtITTgJxwkQDYT808S+j5TNIcXTw
-         yJpTp5Dq3cwY/i3rOqN11QsNa0924KynDX0KMdC4m/UfVTN3WKTzaCRgaOUGc4/qwm
-         ruP4rAPIEWvjHLYRRnpK7DE72uG3JVQCt+xsIgMS64AfDfFO+MZ/7aADpjY7kBvQzk
-         ykt4cRVRzvmXI8FI9UjIiA777x56fc4xHWUq45Yw850RI2HeGxdRrlMZn5PltyiHGz
-         VHZ78y2gXkE/g==
-Received: by mail-yw1-f179.google.com with SMTP id 00721157ae682-3246910dac3so399434117b3.12;
-        Tue, 23 Aug 2022 10:59:45 -0700 (PDT)
-X-Gm-Message-State: ACgBeo1jPFdPbYPnkcyPG8WQXx3TkqzNcu/3LFWybOysq8+fZM3Qk6Wa
-        sd77Q8T/DXpwVLq/Pq+Pe+8HNWA1NhI4B6eW6/Y=
-X-Google-Smtp-Source: AA6agR5UEK7XZYEggA4k/pHG8nif74dsCS4nPFu6i2sptT8o7hzEBmPIm4r/Iz8JJIishkf4u9k0DulvOer5/uVTSHA=
-X-Received: by 2002:a81:6143:0:b0:335:3076:168e with SMTP id
- v64-20020a816143000000b003353076168emr25966534ywb.460.1661277584419; Tue, 23
- Aug 2022 10:59:44 -0700 (PDT)
+        Tue, 23 Aug 2022 15:21:46 -0400
+Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BB0B5B8F08;
+        Tue, 23 Aug 2022 11:02:06 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=casper.20170209; h=In-Reply-To:Content-Type:MIME-Version:
+        References:Message-ID:Subject:To:From:Date:Sender:Reply-To:Cc:
+        Content-Transfer-Encoding:Content-ID:Content-Description;
+        bh=F7agJyyQPBoKNSgYn2p8RhiVuoRJhF3uXfjMiiS+Xls=; b=Wkq47664wvidT/E01+KEhjp+FD
+        R/XHD8tSjJ7wbSR/mUYAeZLcN9Qztr4HbAaptjmHf13Xvc/HhezApMdO9elvyO4yJky2geT4qJGiw
+        ETVjqHkgyGMdGpfM/33Fu3FbWJdqyfvE7Gomlu8XUsphUa3UHMz1vW6QuUX6itShiWHOgh4mGnADK
+        YLDxjyt+6hcWU3rUXSjXdG6cQBEL2pNTZFjh++GgJJwfdeTjQ2/EajCeR3hrpA1nrARg48VXIBoRv
+        OY5Z8UvCwBhsFnazcFBsKtMiFMSi83zfhtHu4mnNppp6ZoBJ+FcwKhqsvBLgMFWMPweTwDT8k1nEh
+        EeOcNoqQ==;
+Received: from willy by casper.infradead.org with local (Exim 4.94.2 #2 (Red Hat Linux))
+        id 1oQYDz-00FUl4-TM; Tue, 23 Aug 2022 18:02:03 +0000
+Date:   Tue, 23 Aug 2022 19:02:03 +0100
+From:   Matthew Wilcox <willy@infradead.org>
+To:     dsterba@suse.cz, "Vishal Moola (Oracle)" <vishal.moola@gmail.com>,
+        linux-fsdevel@vger.kernel.org, linux-btrfs@vger.kernel.org,
+        linux-nilfs@vger.kernel.org, linux-mm@kvack.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2 0/7] Convert to filemap_get_folios_contig()
+Message-ID: <YwUWG73OkS+3Eelr@casper.infradead.org>
+References: <20220816175246.42401-1-vishal.moola@gmail.com>
+ <20220823172642.GJ13489@twin.jikos.cz>
 MIME-Version: 1.0
-References: <20220704012328.6507-1-jiaming@nfschina.com> <20220705022617.12555-1-jiaming@nfschina.com>
-In-Reply-To: <20220705022617.12555-1-jiaming@nfschina.com>
-From:   Song Liu <song@kernel.org>
-Date:   Tue, 23 Aug 2022 10:59:33 -0700
-X-Gmail-Original-Message-ID: <CAPhsuW6H6Gyazn4o23UeYhfWtTFqcvw9dqS=Aqjpjf1o1qdMrg@mail.gmail.com>
-Message-ID: <CAPhsuW6H6Gyazn4o23UeYhfWtTFqcvw9dqS=Aqjpjf1o1qdMrg@mail.gmail.com>
-Subject: Re: [PATCH v2] block: Fix spelling mistakes in comments
-To:     Zhang Jiaming <jiaming@nfschina.com>
-Cc:     linux-raid <linux-raid@vger.kernel.org>,
-        open list <linux-kernel@vger.kernel.org>, d@ja.vu,
-        liqiong@nfschina.com, renyu@nfschina.com,
-        Paul Menzel <pmenzel@molgen.mpg.de>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220823172642.GJ13489@twin.jikos.cz>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Jul 4, 2022 at 7:26 PM Zhang Jiaming <jiaming@nfschina.com> wrote:
->
-> Fix spelling of dones't and waitting in comments.
-> Fix tense mistakes of hold and finsh in comments.
-> Use underline to connecting reconfig and mutex.
->
-> Signed-off-by: Zhang Jiaming <jiaming@nfschina.com>
-> Reviewed-by: Paul Menzel <pmenzel@molgen.mpg.de>
+On Tue, Aug 23, 2022 at 07:26:42PM +0200, David Sterba wrote:
+> I've tested the whole branch in my fstest setup, no issues found and
+> did a light review of the code changes, looks ok as well.
 
-Sorry for getting on this late.
+Thanks!
 
-AFAICT, this one doesn't apply any more (conflict with some of your
-other fixes). Could you please resend?
+> How do you want get the patches merged? As it's an API conversion I can
+> ack it and let it go via the mm tree. So far there are no conflicts with
+> our btrfs development patches, I assume it'll be a clean merge in the
+> future too.
 
-Thanks,
-Song
-
-> ---
->  drivers/md/raid5-cache.c | 12 ++++++------
->  1 file changed, 6 insertions(+), 6 deletions(-)
->
-> diff --git a/drivers/md/raid5-cache.c b/drivers/md/raid5-cache.c
-> index 83c184eddbda..8d5154d94f86 100644
-> --- a/drivers/md/raid5-cache.c
-> +++ b/drivers/md/raid5-cache.c
-> @@ -125,7 +125,7 @@ struct r5l_log {
->                                          * reclaimed.  if it's 0, reclaim spaces
->                                          * used by io_units which are in
->                                          * IO_UNIT_STRIPE_END state (eg, reclaim
-> -                                        * dones't wait for specific io_unit
-> +                                        * doesn't wait for specific io_unit
->                                          * switching to IO_UNIT_STRIPE_END
->                                          * state) */
->         wait_queue_head_t iounit_wait;
-> @@ -1326,12 +1326,12 @@ static void r5l_write_super_and_discard_space(struct r5l_log *log,
->          * Discard could zero data, so before discard we must make sure
->          * superblock is updated to new log tail. Updating superblock (either
->          * directly call md_update_sb() or depend on md thread) must hold
-> -        * reconfig mutex. On the other hand, raid5_quiesce is called with
-> -        * reconfig_mutex hold. The first step of raid5_quiesce() is waitting
-> -        * for all IO finish, hence waitting for reclaim thread, while reclaim
-> -        * thread is calling this function and waitting for reconfig mutex. So
-> +        * reconfig_mutex. On the other hand, raid5_quiesce is called with
-> +        * reconfig_mutex held. The first step of raid5_quiesce() is waiting
-> +        * for all IO to finish, hence waiting for reclaim thread, while reclaim
-> +        * thread is calling this function and waiting for reconfig_mutex. So
->          * there is a deadlock. We workaround this issue with a trylock.
-> -        * FIXME: we could miss discard if we can't take reconfig mutex
-> +        * FIXME: we could miss discard if we can't take reconfig_mutex
->          */
->         set_mask_bits(&mddev->sb_flags, 0,
->                 BIT(MD_SB_CHANGE_DEVS) | BIT(MD_SB_CHANGE_PENDING));
-> --
-> 2.34.1
->
+I was planning on taking this patch series through the pagecache tree;
+it's in -next, so any problems will show up as conflicts there.
