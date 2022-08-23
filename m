@@ -2,57 +2,59 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 59A7CC32772
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8C732C49EC1
 	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 11:42:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358307AbiHWLl1 (ORCPT
+        id S1358386AbiHWLlo (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 07:41:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49050 "EHLO
+        Tue, 23 Aug 2022 07:41:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48780 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357507AbiHWLfi (ORCPT
+        with ESMTP id S1357871AbiHWLg1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 07:35:38 -0400
+        Tue, 23 Aug 2022 07:36:27 -0400
 Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 93033C6FCA;
-        Tue, 23 Aug 2022 02:27:34 -0700 (PDT)
-Date:   Tue, 23 Aug 2022 09:27:30 -0000
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 74D00C742F;
+        Tue, 23 Aug 2022 02:27:38 -0700 (PDT)
+Date:   Tue, 23 Aug 2022 09:27:34 -0000
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1661246852;
+        s=2020; t=1661246856;
         h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
          message-id:message-id:to:to:cc:cc:mime-version:mime-version:
          content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=cyzG3mvyM6Gd6hVw30kZRtU1uzuuX6J/DlDIkwhgKaA=;
-        b=cK43PRmwtVlAjsz8WPg13QwW0AnVJei88dFb5W3tfqA2Jo6jeS/CUAO++gv5EXkcZ/7Ohg
-        z3IlBKc1M1/v6nB++WmHCQb21a6Ok9ZZrnOkcGr1fdIu+8asE+1lBDopFFPR6NINuuNOkq
-        BGJsB98EnqZXPWYlATOlTFlygKzcPpbu36Cs717J35S9Vz8VRf1DsVDOaC6zXZ5ds+8fGS
-        25Guzk/wwF0mxReGJO1I20uFBoolAxFLiJCvOCUepXu/Okar26kZIdQx3iS6lkxn+8ejH5
-        wkVrJ90zeR+6F7jISqClUUEhYtaFsyxeJJH5Qvz+Pbe0nNTnvdV4HiHCk1/XzA==
+        bh=YQ/RMFf66nGK+xpI1jPIaUGANrAZSESSdwAr5o207UQ=;
+        b=jq2XkPT7RCJBAOtUygmDvQ/bMuQLyACb6azHOkm3U/JfNB8SyhkyENQO7dpJJO4ZFjyF23
+        Grq8S9H8/QwjJbRvpDaktHOQlJRv2R3zGqkkDbg5azXqHXpA9BVRT7rxGJn3eqqbJPHch6
+        oDkFNP3snERopWw+X6EkwecrAbBZDsE9/p85zwehXXGrNyMrt/dfWgrTpCud16UuYAmfRA
+        qa+5/7y49C8GievSQb1rhUbFGYdd2AR2e6aSNy4TwPzTywzE/XACzJwZIKGTqNlaqLV+MP
+        PIXKyOOutfFmsjkb93p95UhGtWAVIBSUPx7aHRBGtyuEuXf480ZNoPF0c7xdtw==
 DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1661246852;
+        s=2020e; t=1661246856;
         h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
          message-id:message-id:to:to:cc:cc:mime-version:mime-version:
          content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=cyzG3mvyM6Gd6hVw30kZRtU1uzuuX6J/DlDIkwhgKaA=;
-        b=mmtvnGxNbiewSFBAwW4Rf6GWovRXU8JBbossi6NiKKlgPT6+FLflLZC9La2f5F4EtmpyJi
-        ayQmeXo90XUE6mCQ==
+        bh=YQ/RMFf66nGK+xpI1jPIaUGANrAZSESSdwAr5o207UQ=;
+        b=l12mMzJbGXDjwEq+HmRw2WbdcTPVXgJO8/vloDb8bP8nJb6g+Nkmi25KJ+OZRrwVlC3Efo
+        cxAcm9gigKPS95AA==
 From:   "tip-bot2 for Chengming Zhou" <tip-bot2@linutronix.de>
 Sender: tip-bot2@linutronix.de
 Reply-to: linux-kernel@vger.kernel.org
 To:     linux-tip-commits@vger.kernel.org
-Subject: [tip: sched/core] sched/fair: Allow changing cgroup of new forked task
+Subject: [tip: sched/core] sched/fair: Reset sched_avg last_update_time before
+ set_task_rq()
 Cc:     Chengming Zhou <zhouchengming@bytedance.com>,
         "Peter Zijlstra (Intel)" <peterz@infradead.org>,
+        Dietmar Eggemann <dietmar.eggemann@arm.com>,
         Vincent Guittot <vincent.guittot@linaro.org>, x86@kernel.org,
         linux-kernel@vger.kernel.org
-In-Reply-To: <20220818124805.601-8-zhouchengming@bytedance.com>
-References: <20220818124805.601-8-zhouchengming@bytedance.com>
+In-Reply-To: <20220818124805.601-4-zhouchengming@bytedance.com>
+References: <20220818124805.601-4-zhouchengming@bytedance.com>
 MIME-Version: 1.0
-Message-ID: <166124685097.401.5171298774176649405.tip-bot2@tip-bot2>
+Message-ID: <166124685490.401.14854192796120212335.tip-bot2@tip-bot2>
 Robot-ID: <tip-bot2@linutronix.de>
 Robot-Unsubscribe: Contact <mailto:tglx@linutronix.de> to get blacklisted from these emails
 Content-Type: text/plain; charset="utf-8"
@@ -63,107 +65,46 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 The following commit has been merged into the sched/core branch of tip:
 
-Commit-ID:     df16b71c686cb096774e30153c9ce6756450796c
-Gitweb:        https://git.kernel.org/tip/df16b71c686cb096774e30153c9ce6756450796c
+Commit-ID:     5d6da83c44af70ede7bfd0fd6d1ef8a3b3e0402c
+Gitweb:        https://git.kernel.org/tip/5d6da83c44af70ede7bfd0fd6d1ef8a3b3e0402c
 Author:        Chengming Zhou <zhouchengming@bytedance.com>
-AuthorDate:    Thu, 18 Aug 2022 20:48:03 +08:00
+AuthorDate:    Thu, 18 Aug 2022 20:47:59 +08:00
 Committer:     Peter Zijlstra <peterz@infradead.org>
-CommitterDate: Tue, 23 Aug 2022 11:01:19 +02:00
+CommitterDate: Tue, 23 Aug 2022 11:01:18 +02:00
 
-sched/fair: Allow changing cgroup of new forked task
+sched/fair: Reset sched_avg last_update_time before set_task_rq()
 
-commit 7dc603c9028e ("sched/fair: Fix PELT integrity for new tasks")
-introduce a TASK_NEW state and an unnessary limitation that would fail
-when changing cgroup of new forked task.
+set_task_rq() -> set_task_rq_fair() will try to synchronize the blocked
+task's sched_avg when migrate, which is not needed for already detached
+task.
 
-Because at that time, we can't handle task_change_group_fair() for new
-forked fair task which hasn't been woken up by wake_up_new_task(),
-which will cause detach on an unattached task sched_avg problem.
-
-This patch delete this unnessary limitation by adding check before do
-detach or attach in task_change_group_fair().
-
-So cpu_cgrp_subsys.can_attach() has nothing to do for fair tasks,
-only define it in #ifdef CONFIG_RT_GROUP_SCHED.
+task_change_group_fair() will detached the task sched_avg from prev cfs_rq
+first, so reset sched_avg last_update_time before set_task_rq() to avoid that.
 
 Signed-off-by: Chengming Zhou <zhouchengming@bytedance.com>
 Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
+Reviewed-by: Dietmar Eggemann <dietmar.eggemann@arm.com>
 Reviewed-by: Vincent Guittot <vincent.guittot@linaro.org>
-Link: https://lore.kernel.org/r/20220818124805.601-8-zhouchengming@bytedance.com
+Link: https://lore.kernel.org/r/20220818124805.601-4-zhouchengming@bytedance.com
 ---
- kernel/sched/core.c | 25 +++++--------------------
- kernel/sched/fair.c |  7 +++++++
- 2 files changed, 12 insertions(+), 20 deletions(-)
+ kernel/sched/fair.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/kernel/sched/core.c b/kernel/sched/core.c
-index e74e79f..603a80e 100644
---- a/kernel/sched/core.c
-+++ b/kernel/sched/core.c
-@@ -10238,36 +10238,19 @@ static void cpu_cgroup_css_free(struct cgroup_subsys_state *css)
- 	sched_unregister_group(tg);
- }
- 
-+#ifdef CONFIG_RT_GROUP_SCHED
- static int cpu_cgroup_can_attach(struct cgroup_taskset *tset)
- {
- 	struct task_struct *task;
- 	struct cgroup_subsys_state *css;
--	int ret = 0;
- 
- 	cgroup_taskset_for_each(task, css, tset) {
--#ifdef CONFIG_RT_GROUP_SCHED
- 		if (!sched_rt_can_attach(css_tg(css), task))
- 			return -EINVAL;
--#endif
--		/*
--		 * Serialize against wake_up_new_task() such that if it's
--		 * running, we're sure to observe its full state.
--		 */
--		raw_spin_lock_irq(&task->pi_lock);
--		/*
--		 * Avoid calling sched_move_task() before wake_up_new_task()
--		 * has happened. This would lead to problems with PELT, due to
--		 * move wanting to detach+attach while we're not attached yet.
--		 */
--		if (READ_ONCE(task->__state) == TASK_NEW)
--			ret = -EINVAL;
--		raw_spin_unlock_irq(&task->pi_lock);
--
--		if (ret)
--			break;
- 	}
--	return ret;
-+	return 0;
- }
-+#endif
- 
- static void cpu_cgroup_attach(struct cgroup_taskset *tset)
- {
-@@ -11103,7 +11086,9 @@ struct cgroup_subsys cpu_cgrp_subsys = {
- 	.css_released	= cpu_cgroup_css_released,
- 	.css_free	= cpu_cgroup_css_free,
- 	.css_extra_stat_show = cpu_extra_stat_show,
-+#ifdef CONFIG_RT_GROUP_SCHED
- 	.can_attach	= cpu_cgroup_can_attach,
-+#endif
- 	.attach		= cpu_cgroup_attach,
- 	.legacy_cftypes	= cpu_legacy_files,
- 	.dfl_cftypes	= cpu_files,
 diff --git a/kernel/sched/fair.c b/kernel/sched/fair.c
-index e92bc05..fd1aa4c 100644
+index 2c0eb2a..e4c0929 100644
 --- a/kernel/sched/fair.c
 +++ b/kernel/sched/fair.c
-@@ -11676,6 +11676,13 @@ void init_cfs_rq(struct cfs_rq *cfs_rq)
- #ifdef CONFIG_FAIR_GROUP_SCHED
+@@ -11660,12 +11660,12 @@ void init_cfs_rq(struct cfs_rq *cfs_rq)
  static void task_change_group_fair(struct task_struct *p)
  {
-+	/*
-+	 * We couldn't detach or attach a forked task which
-+	 * hasn't been woken up by wake_up_new_task().
-+	 */
-+	if (READ_ONCE(p->__state) == TASK_NEW)
-+		return;
-+
  	detach_task_cfs_rq(p);
+-	set_task_rq(p, task_cpu(p));
  
  #ifdef CONFIG_SMP
+ 	/* Tell se's cfs_rq has been changed -- migrated */
+ 	p->se.avg.last_update_time = 0;
+ #endif
++	set_task_rq(p, task_cpu(p));
+ 	attach_task_cfs_rq(p);
+ }
+ 
