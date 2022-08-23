@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3C090C32772
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 11:18:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3425AC32772
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 11:18:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357425AbiHWLSb (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 07:18:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39252 "EHLO
+        id S242392AbiHWLSp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 23 Aug 2022 07:18:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38052 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357565AbiHWLQG (ORCPT
+        with ESMTP id S1357603AbiHWLQL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 07:16:06 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9EE80BD104;
-        Tue, 23 Aug 2022 02:19:49 -0700 (PDT)
+        Tue, 23 Aug 2022 07:16:11 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 60010BD102;
+        Tue, 23 Aug 2022 02:20:00 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 7A7A361228;
-        Tue, 23 Aug 2022 09:19:36 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7ED9CC433C1;
-        Tue, 23 Aug 2022 09:19:35 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id A96DDB81C65;
+        Tue, 23 Aug 2022 09:19:08 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 06CA9C433D6;
+        Tue, 23 Aug 2022 09:19:06 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661246375;
-        bh=NhE0F3P1YJzIxv1DXafKxFY9WtmZk3vNc9SJfc+eUL8=;
+        s=korg; t=1661246347;
+        bh=Dmx4oOnZlzw9wzNSiNks7f7+LAxIbZSjqe1MP8P4Bjw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=xtxqn3UXquMVbW5SrXiZMepkVLnjJ/bf6L3F707T1aRz9gWasLjVSayZTE++RpQFa
-         mJ6sxbS7hFkeVEZtmGqLQnRQdRp/3h2Sihz+4zXFLkR5Kr5T1CkMlh+K8NiuZzXbme
-         rDi8XPm2H2vZL+ytWlfT58qVBWg+ruJmrc6bZO58=
+        b=UPeoOCwfbykJFxR0EIUt1XkMO3TFICLZ2iO7wLXwsqewUQiPk/y+QXXEVLOtxFnbL
+         xfDVsKOqNA8Gqgnbs75/13mRuopWaMya758FYja+lh68h4yaE+whuC3YRxYs2I+C/E
+         1u6P8tObZkd0yV2ilTFZcliItECFEk2DqqnMSRHU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Liu Jinbao <liujinbao1@xiaomi.com>,
-        Gao Xiang <hsiangkao@linux.alibaba.com>,
+        stable@vger.kernel.org, Hulk Robot <hulkci@huawei.com>,
+        Guo Mengqi <guomengqi3@huawei.com>,
+        Mark Brown <broonie@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 089/389] erofs: avoid consecutive detection for Highmem memory
-Date:   Tue, 23 Aug 2022 10:22:47 +0200
-Message-Id: <20220823080119.341036548@linuxfoundation.org>
+Subject: [PATCH 5.4 063/389] spi: synquacer: Add missing clk_disable_unprepare()
+Date:   Tue, 23 Aug 2022 10:22:21 +0200
+Message-Id: <20220823080118.241880247@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220823080115.331990024@linuxfoundation.org>
 References: <20220823080115.331990024@linuxfoundation.org>
@@ -50,57 +50,33 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Gao Xiang <hsiangkao@linux.alibaba.com>
+From: Guo Mengqi <guomengqi3@huawei.com>
 
-[ Upstream commit 448b5a1548d87c246c3d0c3df8480d3c6eb6c11a ]
+[ Upstream commit 917e43de2a56d9b82576f1cc94748261f1988458 ]
 
-Currently, vmap()s are avoided if physical addresses are
-consecutive for decompressed buffers.
+Add missing clk_disable_unprepare() in synquacer_spi_resume().
 
-I observed that is very common for 4KiB pclusters since the
-numbers of decompressed pages are almost 2 or 3.
-
-However, such detection doesn't work for Highmem pages on
-32-bit machines, let's fix it now.
-
-Reported-by: Liu Jinbao <liujinbao1@xiaomi.com>
-Fixes: 7fc45dbc938a ("staging: erofs: introduce generic decompression backend")
-Link: https://lore.kernel.org/r/20220708101001.21242-1-hsiangkao@linux.alibaba.com
-Signed-off-by: Gao Xiang <hsiangkao@linux.alibaba.com>
+Reported-by: Hulk Robot <hulkci@huawei.com>
+Signed-off-by: Guo Mengqi <guomengqi3@huawei.com>
+Link: https://lore.kernel.org/r/20220624005614.49434-1-guomengqi3@huawei.com
+Signed-off-by: Mark Brown <broonie@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- fs/erofs/decompressor.c | 16 ++++++++++------
- 1 file changed, 10 insertions(+), 6 deletions(-)
+ drivers/spi/spi-synquacer.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/fs/erofs/decompressor.c b/fs/erofs/decompressor.c
-index 23b74b8e8f96..38eeec5e3032 100644
---- a/fs/erofs/decompressor.c
-+++ b/fs/erofs/decompressor.c
-@@ -56,14 +56,18 @@ static int z_erofs_lz4_prepare_destpages(struct z_erofs_decompress_req *rq,
+diff --git a/drivers/spi/spi-synquacer.c b/drivers/spi/spi-synquacer.c
+index 785e7c445123..1e10af6e10a9 100644
+--- a/drivers/spi/spi-synquacer.c
++++ b/drivers/spi/spi-synquacer.c
+@@ -784,6 +784,7 @@ static int __maybe_unused synquacer_spi_resume(struct device *dev)
  
- 		if (page) {
- 			__clear_bit(j, bounced);
--			if (kaddr) {
--				if (kaddr + PAGE_SIZE == page_address(page))
-+			if (!PageHighMem(page)) {
-+				if (!i) {
-+					kaddr = page_address(page);
-+					continue;
-+				}
-+				if (kaddr &&
-+				    kaddr + PAGE_SIZE == page_address(page)) {
- 					kaddr += PAGE_SIZE;
--				else
--					kaddr = NULL;
--			} else if (!i) {
--				kaddr = page_address(page);
-+					continue;
-+				}
- 			}
-+			kaddr = NULL;
- 			continue;
+ 		ret = synquacer_spi_enable(master);
+ 		if (ret) {
++			clk_disable_unprepare(sspi->clk);
+ 			dev_err(dev, "failed to enable spi (%d)\n", ret);
+ 			return ret;
  		}
- 		kaddr = NULL;
 -- 
 2.35.1
 
