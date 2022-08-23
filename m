@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6D1CCC32772
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 12:07:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EB45DC32772
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 12:07:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1359810AbiHWMGq (ORCPT
+        id S1359244AbiHWMHS (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 08:06:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57140 "EHLO
+        Tue, 23 Aug 2022 08:07:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48218 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1359857AbiHWMCo (ORCPT
+        with ESMTP id S241742AbiHWMDF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 08:02:44 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1CB5EDC083;
-        Tue, 23 Aug 2022 02:36:50 -0700 (PDT)
+        Tue, 23 Aug 2022 08:03:05 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D2197DC5C5;
+        Tue, 23 Aug 2022 02:36:57 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id AA908B81C96;
-        Tue, 23 Aug 2022 09:36:33 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 07035C433D6;
-        Tue, 23 Aug 2022 09:36:31 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 7D74561389;
+        Tue, 23 Aug 2022 09:36:57 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 43A0CC433D7;
+        Tue, 23 Aug 2022 09:36:56 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661247392;
-        bh=wAb9caDwUzbk7UBhI7cFlk+Z8maI1Aajsuhg8IEI720=;
+        s=korg; t=1661247416;
+        bh=3pYrimhcGr0K85s/IZAnpNsiTmUnQgIr+fgbMTw5icc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=SvtnU8dDkL6IkfoD7/uAtQ0C8Qtd/H0RD+c7BEDTUS0HwtD8rSYscJ9gAzu48uozQ
-         qXD2XCFzY+L5mjLTLm2wcCHwayW8q4xUEAv8xJj/ywSeV/qPOoMqiDwtSyVCDTmrvJ
-         ZTwdghWsX0bRyaXOG/NvdDMOiLCsQ/ibF201a9Fw=
+        b=SPPKMb3Sl8ztf/7hsjIpvB+tmWeSWl2W+bzHD1aIJgnKCt2ZPpk69oW7R5B+jFHav
+         sRMJN92G+8AIid2iezBxCmjF9Ixp/qHOaMk2oW2Cc1PMEiVrEDgCkPumJUbX3L+Chz
+         ToXHa8h3pric/iPm1p7Rl96EIefAZU2S2TPDFnM8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Qifu Zhang <zhangqifu@bytedance.com>,
-        Tony Luck <tony.luck@intel.com>,
-        "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>
-Subject: [PATCH 5.10 021/158] Documentation: ACPI: EINJ: Fix obsolete example
-Date:   Tue, 23 Aug 2022 10:25:53 +0200
-Message-Id: <20220823080046.936596544@linuxfoundation.org>
+        stable@vger.kernel.org, Hou Tao <houtao1@huawei.com>,
+        Yonghong Song <yhs@fb.com>, Martin KaFai Lau <kafai@fb.com>,
+        Alexei Starovoitov <ast@kernel.org>
+Subject: [PATCH 5.10 029/158] bpf: Acquire map uref in .init_seq_private for sock local storage map iterator
+Date:   Tue, 23 Aug 2022 10:26:01 +0200
+Message-Id: <20220823080047.265635596@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220823080046.056825146@linuxfoundation.org>
 References: <20220823080046.056825146@linuxfoundation.org>
@@ -50,33 +50,59 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Qifu Zhang <zhangqifu@bytedance.com>
+From: Hou Tao <houtao1@huawei.com>
 
-commit 9066e151c37950af92c3be6a7270daa8e8063db9 upstream.
+commit 3c5f6e698b5c538bbb23cd453b22e1e4922cffd8 upstream.
 
-Since commit 488dac0c9237 ("libfs: fix error cast of negative value in
-simple_attr_write()"), the EINJ debugfs interface no longer accepts
-negative values as input. Attempt to do so will result in EINVAL.
+bpf_iter_attach_map() acquires a map uref, and the uref may be released
+before or in the middle of iterating map elements. For example, the uref
+could be released in bpf_iter_detach_map() as part of
+bpf_link_release(), or could be released in bpf_map_put_with_uref() as
+part of bpf_map_release().
 
-Fixes: 488dac0c9237 ("libfs: fix error cast of negative value in simple_attr_write()")
-Signed-off-by: Qifu Zhang <zhangqifu@bytedance.com>
-Reviewed-by: Tony Luck <tony.luck@intel.com>
-Signed-off-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
+So acquiring an extra map uref in bpf_iter_init_sk_storage_map() and
+releasing it in bpf_iter_fini_sk_storage_map().
+
+Fixes: 5ce6e77c7edf ("bpf: Implement bpf iterator for sock local storage map")
+Signed-off-by: Hou Tao <houtao1@huawei.com>
+Acked-by: Yonghong Song <yhs@fb.com>
+Acked-by: Martin KaFai Lau <kafai@fb.com>
+Link: https://lore.kernel.org/r/20220810080538.1845898-4-houtao@huaweicloud.com
+Signed-off-by: Alexei Starovoitov <ast@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- Documentation/firmware-guide/acpi/apei/einj.rst |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ net/core/bpf_sk_storage.c |   10 +++++++++-
+ 1 file changed, 9 insertions(+), 1 deletion(-)
 
---- a/Documentation/firmware-guide/acpi/apei/einj.rst
-+++ b/Documentation/firmware-guide/acpi/apei/einj.rst
-@@ -168,7 +168,7 @@ An error injection example::
-   0x00000008	Memory Correctable
-   0x00000010	Memory Uncorrectable non-fatal
-   # echo 0x12345000 > param1		# Set memory address for injection
--  # echo $((-1 << 12)) > param2		# Mask 0xfffffffffffff000 - anywhere in this page
-+  # echo 0xfffffffffffff000 > param2		# Mask - anywhere in this page
-   # echo 0x8 > error_type			# Choose correctable memory error
-   # echo 1 > error_inject			# Inject now
+--- a/net/core/bpf_sk_storage.c
++++ b/net/core/bpf_sk_storage.c
+@@ -794,10 +794,18 @@ static int bpf_iter_init_sk_storage_map(
+ {
+ 	struct bpf_iter_seq_sk_storage_map_info *seq_info = priv_data;
+ 
++	bpf_map_inc_with_uref(aux->map);
+ 	seq_info->map = aux->map;
+ 	return 0;
+ }
+ 
++static void bpf_iter_fini_sk_storage_map(void *priv_data)
++{
++	struct bpf_iter_seq_sk_storage_map_info *seq_info = priv_data;
++
++	bpf_map_put_with_uref(seq_info->map);
++}
++
+ static int bpf_iter_attach_map(struct bpf_prog *prog,
+ 			       union bpf_iter_link_info *linfo,
+ 			       struct bpf_iter_aux_info *aux)
+@@ -843,7 +851,7 @@ static const struct seq_operations bpf_s
+ static const struct bpf_iter_seq_info iter_seq_info = {
+ 	.seq_ops		= &bpf_sk_storage_map_seq_ops,
+ 	.init_seq_private	= bpf_iter_init_sk_storage_map,
+-	.fini_seq_private	= NULL,
++	.fini_seq_private	= bpf_iter_fini_sk_storage_map,
+ 	.seq_priv_size		= sizeof(struct bpf_iter_seq_sk_storage_map_info),
+ };
  
 
 
