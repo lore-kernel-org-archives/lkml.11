@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 68429C32772
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 09:29:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0EE42C32772
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 09:29:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235917AbiHWJ25 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 05:28:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40114 "EHLO
+        id S1350227AbiHWJ3D (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 23 Aug 2022 05:29:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40116 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350464AbiHWJZu (ORCPT
+        with ESMTP id S1350467AbiHWJZu (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 23 Aug 2022 05:25:50 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1804E90830;
-        Tue, 23 Aug 2022 01:36:28 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 67096760FC;
+        Tue, 23 Aug 2022 01:36:21 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 829B6614F5;
-        Tue, 23 Aug 2022 08:35:18 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8A867C433C1;
-        Tue, 23 Aug 2022 08:35:17 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 2896D61519;
+        Tue, 23 Aug 2022 08:34:33 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1AD4AC4314B;
+        Tue, 23 Aug 2022 08:34:31 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661243717;
-        bh=YPFGWF+SZ3nfFejBqr/SAmSzFD052TPPo811pYAyxFQ=;
+        s=korg; t=1661243672;
+        bh=ShuwgENlE/EI+6Nzcu62eOBuU19hQbRvJ9/8rsU0Q8s=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=mJCsBt15vXH0R7p/F2hgD6OLcsoL0Q1hCK3SYz1FpkccsAIHtgNU7LYH4PTsq45ZF
-         QWYRtgvcRrafUetZIo/glmWm7Mk4/wtzt35v4jXgKksD8R3bmiKjpG3ERC+ExgCZzI
-         4okWyzlaZf/L7RuJKxg2nu2xZaE1P0sv41lY7VLU=
+        b=ZQpJ2IWP+YoSQZ0Mt0JvIQDYGzM4aF4R+PSwSYkJnWJeC79Jx+dzGebPRSMB81vVC
+         zDGApo1vhmKkuJCLyd1PP1h9RjDcyVq0/UtHYAbe7aKXnwmKkW0pB1UhssrivrTq//
+         aYTTRJnmPVpO1rmXYkDkgxOeudlZuvxfCBy69vhI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Zheyu Ma <zheyuma97@gmail.com>,
-        Mark Brown <broonie@kernel.org>,
+        stable@vger.kernel.org, Takashi Iwai <tiwai@suse.de>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.19 335/365] ASoC: nau8821: Dont unconditionally free interrupt
-Date:   Tue, 23 Aug 2022 10:03:56 +0200
-Message-Id: <20220823080132.229436719@linuxfoundation.org>
+Subject: [PATCH 5.19 351/365] ALSA: core: Add async signal helpers
+Date:   Tue, 23 Aug 2022 10:04:12 +0200
+Message-Id: <20220823080132.955556547@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220823080118.128342613@linuxfoundation.org>
 References: <20220823080118.128342613@linuxfoundation.org>
@@ -49,54 +49,156 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Mark Brown <broonie@kernel.org>
+From: Takashi Iwai <tiwai@suse.de>
 
-[ Upstream commit 2d86cef353b8f3d20b16f8c5615742fd6938c801 ]
+[ Upstream commit ef34a0ae7a2654bc9e58675e36898217fb2799d8 ]
 
-The remove() operation unconditionally frees the interrupt for the device
-but we may not actually have an interrupt so there might be nothing to
-free. Since the interrupt is requested after all other resources we don't
-need the explicit free anyway, unwinding is guaranteed to be safe, so just
-delete the remove() function and let devm take care of things.
+Currently the call of kill_fasync() from an interrupt handler might
+lead to potential spin deadlocks, as spotted by syzkaller.
+Unfortunately, it's not so trivial to fix this lock chain as it's
+involved with the tasklist_lock that is touched in allover places.
 
-Reported-by: Zheyu Ma <zheyuma97@gmail.com>
-Signed-off-by: Mark Brown <broonie@kernel.org>
-Tested-by: Zheyu Ma <zheyuma97@gmail.com>
-Link: https://lore.kernel.org/r/20220718140405.57233-1-broonie@kernel.org
-Signed-off-by: Mark Brown <broonie@kernel.org>
+As a temporary workaround, this patch provides the way to defer the
+async signal notification in a work.  The new helper functions,
+snd_fasync_helper() and snd_kill_faync() are replacements for
+fasync_helper() and kill_fasync(), respectively.  In addition,
+snd_fasync_free() needs to be called at the destructor of the relevant
+file object.
+
+Link: https://lore.kernel.org/r/20220728125945.29533-2-tiwai@suse.de
+Signed-off-by: Takashi Iwai <tiwai@suse.de>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- sound/soc/codecs/nau8821.c | 10 ----------
- 1 file changed, 10 deletions(-)
+ include/sound/core.h |  8 ++++
+ sound/core/misc.c    | 94 ++++++++++++++++++++++++++++++++++++++++++++
+ 2 files changed, 102 insertions(+)
 
-diff --git a/sound/soc/codecs/nau8821.c b/sound/soc/codecs/nau8821.c
-index ce4e7f46bb06..e078d2ffb3f6 100644
---- a/sound/soc/codecs/nau8821.c
-+++ b/sound/soc/codecs/nau8821.c
-@@ -1665,15 +1665,6 @@ static int nau8821_i2c_probe(struct i2c_client *i2c)
- 	return ret;
+diff --git a/include/sound/core.h b/include/sound/core.h
+index 6d4cc49584c6..39cee40ac22e 100644
+--- a/include/sound/core.h
++++ b/include/sound/core.h
+@@ -501,4 +501,12 @@ snd_pci_quirk_lookup_id(u16 vendor, u16 device,
  }
+ #endif
  
--static int nau8821_i2c_remove(struct i2c_client *i2c_client)
--{
--	struct nau8821 *nau8821 = i2c_get_clientdata(i2c_client);
--
--	devm_free_irq(nau8821->dev, nau8821->irq, nau8821);
--
--	return 0;
--}
--
- static const struct i2c_device_id nau8821_i2c_ids[] = {
- 	{ "nau8821", 0 },
- 	{ }
-@@ -1703,7 +1694,6 @@ static struct i2c_driver nau8821_driver = {
- 		.acpi_match_table = ACPI_PTR(nau8821_acpi_match),
- 	},
- 	.probe_new = nau8821_i2c_probe,
--	.remove = nau8821_i2c_remove,
- 	.id_table = nau8821_i2c_ids,
- };
- module_i2c_driver(nau8821_driver);
++/* async signal helpers */
++struct snd_fasync;
++
++int snd_fasync_helper(int fd, struct file *file, int on,
++		      struct snd_fasync **fasyncp);
++void snd_kill_fasync(struct snd_fasync *fasync, int signal, int poll);
++void snd_fasync_free(struct snd_fasync *fasync);
++
+ #endif /* __SOUND_CORE_H */
+diff --git a/sound/core/misc.c b/sound/core/misc.c
+index 50e4aaa6270d..d32a19976a2b 100644
+--- a/sound/core/misc.c
++++ b/sound/core/misc.c
+@@ -10,6 +10,7 @@
+ #include <linux/time.h>
+ #include <linux/slab.h>
+ #include <linux/ioport.h>
++#include <linux/fs.h>
+ #include <sound/core.h>
+ 
+ #ifdef CONFIG_SND_DEBUG
+@@ -145,3 +146,96 @@ snd_pci_quirk_lookup(struct pci_dev *pci, const struct snd_pci_quirk *list)
+ }
+ EXPORT_SYMBOL(snd_pci_quirk_lookup);
+ #endif
++
++/*
++ * Deferred async signal helpers
++ *
++ * Below are a few helper functions to wrap the async signal handling
++ * in the deferred work.  The main purpose is to avoid the messy deadlock
++ * around tasklist_lock and co at the kill_fasync() invocation.
++ * fasync_helper() and kill_fasync() are replaced with snd_fasync_helper()
++ * and snd_kill_fasync(), respectively.  In addition, snd_fasync_free() has
++ * to be called at releasing the relevant file object.
++ */
++struct snd_fasync {
++	struct fasync_struct *fasync;
++	int signal;
++	int poll;
++	int on;
++	struct list_head list;
++};
++
++static DEFINE_SPINLOCK(snd_fasync_lock);
++static LIST_HEAD(snd_fasync_list);
++
++static void snd_fasync_work_fn(struct work_struct *work)
++{
++	struct snd_fasync *fasync;
++
++	spin_lock_irq(&snd_fasync_lock);
++	while (!list_empty(&snd_fasync_list)) {
++		fasync = list_first_entry(&snd_fasync_list, struct snd_fasync, list);
++		list_del_init(&fasync->list);
++		spin_unlock_irq(&snd_fasync_lock);
++		if (fasync->on)
++			kill_fasync(&fasync->fasync, fasync->signal, fasync->poll);
++		spin_lock_irq(&snd_fasync_lock);
++	}
++	spin_unlock_irq(&snd_fasync_lock);
++}
++
++static DECLARE_WORK(snd_fasync_work, snd_fasync_work_fn);
++
++int snd_fasync_helper(int fd, struct file *file, int on,
++		      struct snd_fasync **fasyncp)
++{
++	struct snd_fasync *fasync = NULL;
++
++	if (on) {
++		fasync = kzalloc(sizeof(*fasync), GFP_KERNEL);
++		if (!fasync)
++			return -ENOMEM;
++		INIT_LIST_HEAD(&fasync->list);
++	}
++
++	spin_lock_irq(&snd_fasync_lock);
++	if (*fasyncp) {
++		kfree(fasync);
++		fasync = *fasyncp;
++	} else {
++		if (!fasync) {
++			spin_unlock_irq(&snd_fasync_lock);
++			return 0;
++		}
++		*fasyncp = fasync;
++	}
++	fasync->on = on;
++	spin_unlock_irq(&snd_fasync_lock);
++	return fasync_helper(fd, file, on, &fasync->fasync);
++}
++EXPORT_SYMBOL_GPL(snd_fasync_helper);
++
++void snd_kill_fasync(struct snd_fasync *fasync, int signal, int poll)
++{
++	unsigned long flags;
++
++	if (!fasync || !fasync->on)
++		return;
++	spin_lock_irqsave(&snd_fasync_lock, flags);
++	fasync->signal = signal;
++	fasync->poll = poll;
++	list_move(&fasync->list, &snd_fasync_list);
++	schedule_work(&snd_fasync_work);
++	spin_unlock_irqrestore(&snd_fasync_lock, flags);
++}
++EXPORT_SYMBOL_GPL(snd_kill_fasync);
++
++void snd_fasync_free(struct snd_fasync *fasync)
++{
++	if (!fasync)
++		return;
++	fasync->on = 0;
++	flush_work(&snd_fasync_work);
++	kfree(fasync);
++}
++EXPORT_SYMBOL_GPL(snd_fasync_free);
 -- 
 2.35.1
 
