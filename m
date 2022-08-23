@@ -2,46 +2,49 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B2E69C49EC1
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E1F53C49EC2
 	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 10:12:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353612AbiHWKLn (ORCPT
+        id S1353720AbiHWKL4 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 06:11:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44498 "EHLO
+        Tue, 23 Aug 2022 06:11:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44488 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352161AbiHWKEh (ORCPT
+        with ESMTP id S1348269AbiHWKEj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 06:04:37 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4119671724;
-        Tue, 23 Aug 2022 01:51:32 -0700 (PDT)
+        Tue, 23 Aug 2022 06:04:39 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 08E687CA8A;
+        Tue, 23 Aug 2022 01:51:39 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id A0A086150F;
-        Tue, 23 Aug 2022 08:51:31 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A8494C433D6;
-        Tue, 23 Aug 2022 08:51:30 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 80661B8105C;
+        Tue, 23 Aug 2022 08:51:38 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D2FC0C433D6;
+        Tue, 23 Aug 2022 08:51:36 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661244691;
-        bh=IKMkzTsYh/OjMKBcBRBsOD5re4x3laIipvrW/22RXUE=;
+        s=korg; t=1661244697;
+        bh=RVt6G3W9mdbfkIy7nW8MAcnxPBPOKSh1h3YBa/FUnjU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=rivc/sPXU4ei2BrY2oMC7jqOgq8fvjvCR23NaPQPnie+yy5nP5Ogx8E/U8TNLV1b8
-         xBUOa4tUe+B2SqBlB8J0B/9PKlPCbqjPls0DRYskrQLusJdHpZS9FTRm8kJ7b4S+GT
-         mKQALecrGHSQ7zn5Lx6AM9Q0LZiVANdtmY1tC9AQ=
+        b=uaSvOLeShmLywXMXdQhtgdaBc+zTsOSQB/9OdvYyDjASLM3H7yJ0yP5uO/SKJ/ida
+         Z4xuGkSZZE/Yf6GFBDxBWGNQEoAtW/R6OpBUT7m1MwZuLZu3/UCOO1vxnN8pG7W8uC
+         RzvKnHn4PvTYW8WssOr5D29gSK9Dy7dE5SnLYe4I=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
-        =?UTF-8?q?Amadeusz=20S=C5=82awi=C5=84ski?= 
-        <amadeuszx.slawinski@linux.intel.com>, Takashi Iwai <tiwai@suse.de>
-Subject: [PATCH 4.14 176/229] ALSA: info: Fix llseek return value when using callback
-Date:   Tue, 23 Aug 2022 10:25:37 +0200
-Message-Id: <20220823080059.901302464@linuxfoundation.org>
+        Vivien Didelot <vivien.didelot@savoirfairelinux.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Sergei Antonov <saproj@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        Jakub Kicinski <kuba@kernel.org>
+Subject: [PATCH 5.15 135/244] net: dsa: mv88e6060: prevent crash on an unused port
+Date:   Tue, 23 Aug 2022 10:24:54 +0200
+Message-Id: <20220823080103.644982901@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220823080053.202747790@linuxfoundation.org>
-References: <20220823080053.202747790@linuxfoundation.org>
+In-Reply-To: <20220823080059.091088642@linuxfoundation.org>
+References: <20220823080059.091088642@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -50,51 +53,53 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Amadeusz Sławiński <amadeuszx.slawinski@linux.intel.com>
+From: Sergei Antonov <saproj@gmail.com>
 
-commit 9be080edcca330be4af06b19916c35227891e8bc upstream.
+commit 246bbf2f977ea36aaf41f5d24370fef433250728 upstream.
 
-When using callback there was a flow of
+If the port isn't a CPU port nor a user port, 'cpu_dp'
+is a null pointer and a crash happened on dereferencing
+it in mv88e6060_setup_port():
 
-	ret = -EINVAL
-	if (callback) {
-		offset = callback();
-		goto out;
-	}
-	...
-	offset = some other value in case of no callback;
-	ret = offset;
-out:
-	return ret;
+[    9.575872] Unable to handle kernel NULL pointer dereference at virtual address 00000014
+...
+[    9.942216]  mv88e6060_setup from dsa_register_switch+0x814/0xe84
+[    9.948616]  dsa_register_switch from mdio_probe+0x2c/0x54
+[    9.954433]  mdio_probe from really_probe.part.0+0x98/0x2a0
+[    9.960375]  really_probe.part.0 from driver_probe_device+0x30/0x10c
+[    9.967029]  driver_probe_device from __device_attach_driver+0xb8/0x13c
+[    9.973946]  __device_attach_driver from bus_for_each_drv+0x90/0xe0
+[    9.980509]  bus_for_each_drv from __device_attach+0x110/0x184
+[    9.986632]  __device_attach from bus_probe_device+0x8c/0x94
+[    9.992577]  bus_probe_device from deferred_probe_work_func+0x78/0xa8
+[    9.999311]  deferred_probe_work_func from process_one_work+0x290/0x73c
+[   10.006292]  process_one_work from worker_thread+0x30/0x4b8
+[   10.012155]  worker_thread from kthread+0xd4/0x10c
+[   10.017238]  kthread from ret_from_fork+0x14/0x3c
 
-which causes the snd_info_entry_llseek() to return -EINVAL when there is
-callback handler. Fix this by setting "ret" directly to callback return
-value before jumping to "out".
-
-Fixes: 73029e0ff18d ("ALSA: info - Implement common llseek for binary mode")
-Signed-off-by: Amadeusz Sławiński <amadeuszx.slawinski@linux.intel.com>
-Cc: <stable@vger.kernel.org>
-Link: https://lore.kernel.org/r/20220817124924.3974577-1-amadeuszx.slawinski@linux.intel.com
-Signed-off-by: Takashi Iwai <tiwai@suse.de>
+Fixes: 0abfd494deef ("net: dsa: use dedicated CPU port")
+CC: Vivien Didelot <vivien.didelot@savoirfairelinux.com>
+CC: Florian Fainelli <f.fainelli@gmail.com>
+Signed-off-by: Sergei Antonov <saproj@gmail.com>
+Signed-off-by: Vladimir Oltean <olteanv@gmail.com>
+Link: https://lore.kernel.org/r/20220811070939.1717146-1-saproj@gmail.com
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- sound/core/info.c |    6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+ drivers/net/dsa/mv88e6060.c |    3 +++
+ 1 file changed, 3 insertions(+)
 
---- a/sound/core/info.c
-+++ b/sound/core/info.c
-@@ -127,9 +127,9 @@ static loff_t snd_info_entry_llseek(stru
- 	entry = data->entry;
- 	mutex_lock(&entry->access);
- 	if (entry->c.ops->llseek) {
--		offset = entry->c.ops->llseek(entry,
--					      data->file_private_data,
--					      file, offset, orig);
-+		ret = entry->c.ops->llseek(entry,
-+					   data->file_private_data,
-+					   file, offset, orig);
- 		goto out;
- 	}
+--- a/drivers/net/dsa/mv88e6060.c
++++ b/drivers/net/dsa/mv88e6060.c
+@@ -118,6 +118,9 @@ static int mv88e6060_setup_port(struct m
+ 	int addr = REG_PORT(p);
+ 	int ret;
  
++	if (dsa_is_unused_port(priv->ds, p))
++		return 0;
++
+ 	/* Do not force flow control, disable Ingress and Egress
+ 	 * Header tagging, disable VLAN tunneling, and set the port
+ 	 * state to Forwarding.  Additionally, if this is the CPU
 
 
