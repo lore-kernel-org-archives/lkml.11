@@ -2,42 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A7B09C32772
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EA6AEC32774
 	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 10:23:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354142AbiHWKUe (ORCPT
+        id S1354261AbiHWKVD (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 06:20:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56938 "EHLO
+        Tue, 23 Aug 2022 06:21:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60680 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352818AbiHWKJE (ORCPT
+        with ESMTP id S1352885AbiHWKJ2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 06:09:04 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 26D5C6B8CD;
-        Tue, 23 Aug 2022 01:55:05 -0700 (PDT)
+        Tue, 23 Aug 2022 06:09:28 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 041547D7A0;
+        Tue, 23 Aug 2022 01:55:17 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id C95A4B81C39;
-        Tue, 23 Aug 2022 08:55:03 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1C903C433D6;
-        Tue, 23 Aug 2022 08:55:01 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 82CF6B81C35;
+        Tue, 23 Aug 2022 08:55:15 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E1856C433C1;
+        Tue, 23 Aug 2022 08:55:13 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661244902;
-        bh=03o8XUXP7UAjx6AQTbs0AGKRD8xZsQaZLgJmXYyTFSI=;
+        s=korg; t=1661244914;
+        bh=bN3EKTlsIxDcvLIM4ArOYD58V+iKRrzDHbCvOFH9Ogw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=o7Mu0WhFmdlnvzs0HH8iKLWi9QT/qzNUbQGO/IyzMpsBWjCEL46uQNbe14fjDipj6
-         NY3e0RFYUd+PJ1ATMRflrVKtFXCKisD3P1EgHxwaM0VuDz3krO+wXYyCbVGknief7v
-         7owAac0M9ieZ9c8sH3xuKtxs5UJcZSMtlpWOWoRg=
+        b=j0vdfaWXkCSzGDH9fcwtxgJQqF+PqtR7W+gn0yVUYt/ydqx6RMeJElwq+Ra7uFteE
+         o9ntCAB2zl/LbUi0pHe3HgskvVkBS/R4fyHX+dOTFb1Gi3AsFMYReQGebn1tDmAty1
+         FwGyKDb6rHfBaDELUsC+4UEre5NK9qAklzAe/RT8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, David Sterba <dsterba@suse.com>,
-        Qu Wenruo <wqu@suse.com>
-Subject: [PATCH 4.14 209/229] btrfs: only write the sectors in the vertical stripe which has data stripes
-Date:   Tue, 23 Aug 2022 10:26:10 +0200
-Message-Id: <20220823080101.111287001@linuxfoundation.org>
+        stable@vger.kernel.org, Liang He <windhl@126.com>,
+        Martin Blumenstingl <martin.blumenstingl@googlemail.com>,
+        Neil Armstrong <narmstrong@baylibre.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 4.14 211/229] drm/meson: Fix refcount bugs in meson_vpu_has_available_connectors()
+Date:   Tue, 23 Aug 2022 10:26:12 +0200
+Message-Id: <20220823080101.180969502@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220823080053.202747790@linuxfoundation.org>
 References: <20220823080053.202747790@linuxfoundation.org>
@@ -49,163 +51,46 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Qu Wenruo <wqu@suse.com>
+From: Liang He <windhl@126.com>
 
-commit bd8f7e627703ca5707833d623efcd43f104c7b3f upstream.
+[ Upstream commit 91b3c8dbe898df158fd2a84675f3a284ff6666f7 ]
 
-If we have only 8K partial write at the beginning of a full RAID56
-stripe, we will write the following contents:
+In this function, there are two refcount leak bugs:
+(1) when breaking out of for_each_endpoint_of_node(), we need call
+the of_node_put() for the 'ep';
+(2) we should call of_node_put() for the reference returned by
+of_graph_get_remote_port() when it is not used anymore.
 
-                    0  8K           32K             64K
-Disk 1	(data):     |XX|            |               |
-Disk 2  (data):     |               |               |
-Disk 3  (parity):   |XXXXXXXXXXXXXXX|XXXXXXXXXXXXXXX|
-
-|X| means the sector will be written back to disk.
-
-Note that, although we won't write any sectors from disk 2, but we will
-write the full 64KiB of parity to disk.
-
-This behavior is fine for now, but not for the future (especially for
-RAID56J, as we waste quite some space to journal the unused parity
-stripes).
-
-So here we will also utilize the btrfs_raid_bio::dbitmap, anytime we
-queue a higher level bio into an rbio, we will update rbio::dbitmap to
-indicate which vertical stripes we need to writeback.
-
-And at finish_rmw(), we also check dbitmap to see if we need to write
-any sector in the vertical stripe.
-
-So after the patch, above example will only lead to the following
-writeback pattern:
-
-                    0  8K           32K             64K
-Disk 1	(data):     |XX|            |               |
-Disk 2  (data):     |               |               |
-Disk 3  (parity):   |XX|            |               |
-
-Acked-by: David Sterba <dsterba@suse.com>
-Signed-off-by: Qu Wenruo <wqu@suse.com>
-Signed-off-by: David Sterba <dsterba@suse.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Fixes: bbbe775ec5b5 ("drm: Add support for Amlogic Meson Graphic Controller")
+Signed-off-by: Liang He <windhl@126.com>
+Acked-by: Martin Blumenstingl <martin.blumenstingl@googlemail.com>
+Acked-by: Neil Armstrong <narmstrong@baylibre.com>
+Signed-off-by: Neil Armstrong <narmstrong@baylibre.com>
+Link: https://patchwork.freedesktop.org/patch/msgid/20220726010722.1319416-1-windhl@126.com
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- fs/btrfs/raid56.c |   55 ++++++++++++++++++++++++++++++++++++++++++++++++++----
- 1 file changed, 51 insertions(+), 4 deletions(-)
+ drivers/gpu/drm/meson/meson_drv.c | 5 ++++-
+ 1 file changed, 4 insertions(+), 1 deletion(-)
 
---- a/fs/btrfs/raid56.c
-+++ b/fs/btrfs/raid56.c
-@@ -334,6 +334,9 @@ static void merge_rbio(struct btrfs_raid
- {
- 	bio_list_merge(&dest->bio_list, &victim->bio_list);
- 	dest->bio_list_bytes += victim->bio_list_bytes;
-+	/* Also inherit the bitmaps from @victim. */
-+	bitmap_or(dest->dbitmap, victim->dbitmap, dest->dbitmap,
-+		  dest->stripe_npages);
- 	dest->generic_bio_cnt += victim->generic_bio_cnt;
- 	bio_list_init(&victim->bio_list);
- }
-@@ -882,6 +885,12 @@ static void rbio_orig_end_io(struct btrf
- 
- 	if (rbio->generic_bio_cnt)
- 		btrfs_bio_counter_sub(rbio->fs_info, rbio->generic_bio_cnt);
-+	/*
-+	 * Clear the data bitmap, as the rbio may be cached for later usage.
-+	 * do this before before unlock_stripe() so there will be no new bio
-+	 * for this bio.
-+	 */
-+	bitmap_clear(rbio->dbitmap, 0, rbio->stripe_npages);
- 
- 	/*
- 	 * At this moment, rbio->bio_list is empty, however since rbio does not
-@@ -1204,6 +1213,9 @@ static noinline void finish_rmw(struct b
- 	else
- 		BUG();
- 
-+	/* We should have at least one data sector. */
-+	ASSERT(bitmap_weight(rbio->dbitmap, rbio->stripe_npages));
-+
- 	/* at this point we either have a full stripe,
- 	 * or we've read the full stripe from the drive.
- 	 * recalculate the parity and write the new results.
-@@ -1277,6 +1289,11 @@ static noinline void finish_rmw(struct b
- 	for (stripe = 0; stripe < rbio->real_stripes; stripe++) {
- 		for (pagenr = 0; pagenr < rbio->stripe_npages; pagenr++) {
- 			struct page *page;
-+
-+			/* This vertical stripe has no data, skip it. */
-+			if (!test_bit(pagenr, rbio->dbitmap))
-+				continue;
-+
- 			if (stripe < rbio->nr_data) {
- 				page = page_in_rbio(rbio, stripe, pagenr, 1);
- 				if (!page)
-@@ -1301,6 +1318,11 @@ static noinline void finish_rmw(struct b
- 
- 		for (pagenr = 0; pagenr < rbio->stripe_npages; pagenr++) {
- 			struct page *page;
-+
-+			/* This vertical stripe has no data, skip it. */
-+			if (!test_bit(pagenr, rbio->dbitmap))
-+				continue;
-+
- 			if (stripe < rbio->nr_data) {
- 				page = page_in_rbio(rbio, stripe, pagenr, 1);
- 				if (!page)
-@@ -1745,6 +1767,33 @@ static void btrfs_raid_unplug(struct blk
- 	run_plug(plug);
- }
- 
-+/* Add the original bio into rbio->bio_list, and update rbio::dbitmap. */
-+static void rbio_add_bio(struct btrfs_raid_bio *rbio, struct bio *orig_bio)
-+{
-+	const struct btrfs_fs_info *fs_info = rbio->fs_info;
-+	const u64 orig_logical = orig_bio->bi_iter.bi_sector << SECTOR_SHIFT;
-+	const u64 full_stripe_start = rbio->bbio->raid_map[0];
-+	const u32 orig_len = orig_bio->bi_iter.bi_size;
-+	const u32 sectorsize = fs_info->sectorsize;
-+	u64 cur_logical;
-+
-+	ASSERT(orig_logical >= full_stripe_start &&
-+	       orig_logical + orig_len <= full_stripe_start +
-+	       rbio->nr_data * rbio->stripe_len);
-+
-+	bio_list_add(&rbio->bio_list, orig_bio);
-+	rbio->bio_list_bytes += orig_bio->bi_iter.bi_size;
-+
-+	/* Update the dbitmap. */
-+	for (cur_logical = orig_logical; cur_logical < orig_logical + orig_len;
-+	     cur_logical += sectorsize) {
-+		int bit = ((u32)(cur_logical - full_stripe_start) >>
-+			   PAGE_SHIFT) % rbio->stripe_npages;
-+
-+		set_bit(bit, rbio->dbitmap);
-+	}
-+}
-+
- /*
-  * our main entry point for writes from the rest of the FS.
-  */
-@@ -1761,9 +1810,8 @@ int raid56_parity_write(struct btrfs_fs_
- 		btrfs_put_bbio(bbio);
- 		return PTR_ERR(rbio);
- 	}
--	bio_list_add(&rbio->bio_list, bio);
--	rbio->bio_list_bytes = bio->bi_iter.bi_size;
- 	rbio->operation = BTRFS_RBIO_WRITE;
-+	rbio_add_bio(rbio, bio);
- 
- 	btrfs_bio_counter_inc_noblocked(fs_info);
- 	rbio->generic_bio_cnt = 1;
-@@ -2146,8 +2194,7 @@ int raid56_parity_recover(struct btrfs_f
+diff --git a/drivers/gpu/drm/meson/meson_drv.c b/drivers/gpu/drm/meson/meson_drv.c
+index 2d5f2ed3b0b2..0da33f7af654 100644
+--- a/drivers/gpu/drm/meson/meson_drv.c
++++ b/drivers/gpu/drm/meson/meson_drv.c
+@@ -136,8 +136,11 @@ static bool meson_vpu_has_available_connectors(struct device *dev)
+ 	for_each_endpoint_of_node(dev->of_node, ep) {
+ 		/* If the endpoint node exists, consider it enabled */
+ 		remote = of_graph_get_remote_port(ep);
+-		if (remote)
++		if (remote) {
++			of_node_put(remote);
++			of_node_put(ep);
+ 			return true;
++		}
  	}
  
- 	rbio->operation = BTRFS_RBIO_READ_REBUILD;
--	bio_list_add(&rbio->bio_list, bio);
--	rbio->bio_list_bytes = bio->bi_iter.bi_size;
-+	rbio_add_bio(rbio, bio);
- 
- 	rbio->faila = find_logical_bio_stripe(rbio, bio);
- 	if (rbio->faila == -1) {
+ 	return false;
+-- 
+2.35.1
+
 
 
