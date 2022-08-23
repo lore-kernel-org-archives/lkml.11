@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2AFC8C32774
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 10:24:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3180BC32792
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 10:25:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354169AbiHWKYz (ORCPT
+        id S1354275AbiHWKZE (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 06:24:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36504 "EHLO
+        Tue, 23 Aug 2022 06:25:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46440 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353577AbiHWKLj (ORCPT
+        with ESMTP id S1353593AbiHWKLl (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 06:11:39 -0400
+        Tue, 23 Aug 2022 06:11:41 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E44C626CC;
-        Tue, 23 Aug 2022 01:57:25 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D89CE65F7;
+        Tue, 23 Aug 2022 01:57:34 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 80B036123D;
-        Tue, 23 Aug 2022 08:57:25 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 786EAC433D6;
-        Tue, 23 Aug 2022 08:57:24 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 74B686153F;
+        Tue, 23 Aug 2022 08:57:34 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 76235C433C1;
+        Tue, 23 Aug 2022 08:57:33 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661245044;
-        bh=QueCjxHMA4r1uCGTLX+Zuc00mP9QzA7Dxm10f7BgXZw=;
+        s=korg; t=1661245053;
+        bh=TmwB1yyIO7hlQxEEZ3YP1Hse/khGDr1TusJ9UJG8jgQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Z6tcSlBrBf5Jo9qJl+nmOTqVhoXoi8Xf914llepQBd9eNAggwtUu1tykXbFwf5PvE
-         BhhZvF7Yoyj4TSDqk+3mg2NZ6TL1OhXoXmZxldDV85+6Lgr1rfK9cdSYNl5Kjw4sqt
-         ZcsdkCc4ym7oBPqT7stFOBdAlPxKb5OkGlf7X+FU=
+        b=KTMf51iGUJCU2bvIojCIpMLr1HpwOlO7+27QxqAjlgkoBUPmD/mjvEatK0h8RGqRm
+         uKGwdSzsuuKDYjH5XiOXJqDYrj2GmT9YPlSud8FsYUS1oiqKIvafTKc5AHFVkJP1Wg
+         8SXSF2qysVr68t3c3GN88zj47S8J3w369lvXZBDA=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        "Steven Rostedt (Google)" <rostedt@goodmis.org>,
+        stable@vger.kernel.org, Guenter Roeck <linux@roeck-us.net>,
+        Stafford Horne <shorne@gmail.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 197/244] selftests/kprobe: Do not test for GRP/ without event failures
-Date:   Tue, 23 Aug 2022 10:25:56 +0200
-Message-Id: <20220823080106.013656702@linuxfoundation.org>
+Subject: [PATCH 5.15 199/244] openrisc: io: Define iounmap argument as volatile
+Date:   Tue, 23 Aug 2022 10:25:58 +0200
+Message-Id: <20220823080106.112053769@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220823080059.091088642@linuxfoundation.org>
 References: <20220823080059.091088642@linuxfoundation.org>
@@ -50,48 +50,65 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Steven Rostedt (Google) <rostedt@goodmis.org>
+From: Stafford Horne <shorne@gmail.com>
 
-[ Upstream commit f5eab65ff2b76449286d18efc7fee3e0b72f7d9b ]
+[ Upstream commit 52e0ea900202d23843daee8f7089817e81dd3dd7 ]
 
-A new feature is added where kprobes (and other probes) do not need to
-explicitly state the event name when creating a probe. The event name will
-come from what is being attached.
+When OpenRISC enables PCI it allows for more drivers to be compiled
+resulting in exposing the following with -Werror.
 
-That is:
+    drivers/video/fbdev/riva/fbdev.c: In function 'rivafb_probe':
+    drivers/video/fbdev/riva/fbdev.c:2062:42: error:
+	    passing argument 1 of 'iounmap' discards 'volatile' qualifier from pointer target type
 
-  # echo 'p:foo/ vfs_read' > kprobe_events
+    drivers/video/fbdev/nvidia/nvidia.c: In function 'nvidiafb_probe':
+    drivers/video/fbdev/nvidia/nvidia.c:1414:20: error:
+	    passing argument 1 of 'iounmap' discards 'volatile' qualifier from pointer target type
 
-Will no longer error, but instead create an event:
+    drivers/scsi/aic7xxx/aic7xxx_osm.c: In function 'ahc_platform_free':
+    drivers/scsi/aic7xxx/aic7xxx_osm.c:1231:41: error:
+	    passing argument 1 of 'iounmap' discards 'volatile' qualifier from pointer target type
 
-  # cat kprobe_events
- p:foo/p_vfs_read_0 vfs_read
+Most architectures define the iounmap argument to be volatile.  To fix this
+issue we do the same for OpenRISC.  This patch must go before PCI is enabled on
+OpenRISC to avoid any compile failures.
 
-This should not be tested as an error case anymore. Remove it from the
-selftest as now this feature "breaks" the selftest as it no longer fails
-as expected.
-
-Link: https://lore.kernel.org/all/1656296348-16111-1-git-send-email-quic_linyyuan@quicinc.com/
-Link: https://lkml.kernel.org/r/20220712161707.6dc08a14@gandalf.local.home
-
-Signed-off-by: Steven Rostedt (Google) <rostedt@goodmis.org>
+Link: https://lore.kernel.org/lkml/20220729033728.GA2195022@roeck-us.net/
+Reported-by: Guenter Roeck <linux@roeck-us.net>
+Tested-by: Guenter Roeck <linux@roeck-us.net>
+Signed-off-by: Stafford Horne <shorne@gmail.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- .../selftests/ftrace/test.d/kprobe/kprobe_syntax_errors.tc       | 1 -
- 1 file changed, 1 deletion(-)
+ arch/openrisc/include/asm/io.h | 2 +-
+ arch/openrisc/mm/ioremap.c     | 2 +-
+ 2 files changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/tools/testing/selftests/ftrace/test.d/kprobe/kprobe_syntax_errors.tc b/tools/testing/selftests/ftrace/test.d/kprobe/kprobe_syntax_errors.tc
-index fa928b431555..7c02509c71d0 100644
---- a/tools/testing/selftests/ftrace/test.d/kprobe/kprobe_syntax_errors.tc
-+++ b/tools/testing/selftests/ftrace/test.d/kprobe/kprobe_syntax_errors.tc
-@@ -21,7 +21,6 @@ check_error 'p:^/bar vfs_read'		# NO_GROUP_NAME
- check_error 'p:^12345678901234567890123456789012345678901234567890123456789012345/bar vfs_read'	# GROUP_TOO_LONG
+diff --git a/arch/openrisc/include/asm/io.h b/arch/openrisc/include/asm/io.h
+index c298061c70a7..8aa3e78181e9 100644
+--- a/arch/openrisc/include/asm/io.h
++++ b/arch/openrisc/include/asm/io.h
+@@ -31,7 +31,7 @@
+ void __iomem *ioremap(phys_addr_t offset, unsigned long size);
  
- check_error 'p:^foo.1/bar vfs_read'	# BAD_GROUP_NAME
--check_error 'p:foo/^ vfs_read'		# NO_EVENT_NAME
- check_error 'p:foo/^12345678901234567890123456789012345678901234567890123456789012345 vfs_read'	# EVENT_TOO_LONG
- check_error 'p:foo/^bar.1 vfs_read'	# BAD_EVENT_NAME
+ #define iounmap iounmap
+-extern void iounmap(void __iomem *addr);
++extern void iounmap(volatile void __iomem *addr);
  
+ #include <asm-generic/io.h>
+ 
+diff --git a/arch/openrisc/mm/ioremap.c b/arch/openrisc/mm/ioremap.c
+index daae13a76743..8ec0dafecf25 100644
+--- a/arch/openrisc/mm/ioremap.c
++++ b/arch/openrisc/mm/ioremap.c
+@@ -77,7 +77,7 @@ void __iomem *__ref ioremap(phys_addr_t addr, unsigned long size)
+ }
+ EXPORT_SYMBOL(ioremap);
+ 
+-void iounmap(void __iomem *addr)
++void iounmap(volatile void __iomem *addr)
+ {
+ 	/* If the page is from the fixmap pool then we just clear out
+ 	 * the fixmap mapping.
 -- 
 2.35.1
 
