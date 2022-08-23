@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D0862C32772
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 12:08:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A25FFC32772
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 12:08:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1359403AbiHWMIC (ORCPT
+        id S1359415AbiHWMIM (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 08:08:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57138 "EHLO
+        Tue, 23 Aug 2022 08:08:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48756 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1359331AbiHWMDl (ORCPT
+        with ESMTP id S1359373AbiHWMDq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 08:03:41 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4431BDCFFA;
-        Tue, 23 Aug 2022 02:37:07 -0700 (PDT)
+        Tue, 23 Aug 2022 08:03:46 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2D37BDCFFB;
+        Tue, 23 Aug 2022 02:37:17 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id D840161467;
-        Tue, 23 Aug 2022 09:37:06 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D9B71C433D7;
-        Tue, 23 Aug 2022 09:37:05 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 528626146C;
+        Tue, 23 Aug 2022 09:36:54 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 57E3FC433D7;
+        Tue, 23 Aug 2022 09:36:53 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661247426;
-        bh=SZ+/sgtHqCsEHpNeUbek1EZlYk4KcpR5xLQujRwlQ7g=;
+        s=korg; t=1661247413;
+        bh=MCxlSMJOR6HhiMSpgL2jvCmdzjbKMba/TcDZg6n5OjI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=0B3Dp8DhHRTMG96pa+poYz+aID5Gr6v6dfwV6TL3ERfLr7POyDpDUlJv2ZPuUZRvg
-         WJ5De3W2Hn3NzPIvRaK6kRu3Dwtt58S3yWx16LfsM+Hgmknq4lIa8bV76C3Z1PivEu
-         Ym2hwU8kzYN1nhx4McQ8DSGYk7YHO6AFTqrc4XpE=
+        b=Jf3VxXpt83uxwO49PMx2q635FGo+kuin2dEmr9sqjj2fWNKrIkRc4OvnLSEG3DqUz
+         31xkn/TaeyNpo9RXgleJ/p2W0IEVm/L4HynVPIfUv6i9LtZjvZd0rFvheegHTDKrKI
+         GK+uKXyAQycyIL60INYQTySBe897099ziJ1Qo2ak=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org, Hou Tao <houtao1@huawei.com>,
-        Yonghong Song <yhs@fb.com>, Martin KaFai Lau <kafai@fb.com>,
-        Alexei Starovoitov <ast@kernel.org>
-Subject: [PATCH 5.10 031/158] bpf: Check the validity of max_rdwr_access for sock local storage map iterator
-Date:   Tue, 23 Aug 2022 10:26:03 +0200
-Message-Id: <20220823080047.340687367@linuxfoundation.org>
+        Yonghong Song <yhs@fb.com>, Alexei Starovoitov <ast@kernel.org>
+Subject: [PATCH 5.10 028/158] bpf: Acquire map uref in .init_seq_private for hash map iterator
+Date:   Tue, 23 Aug 2022 10:26:00 +0200
+Message-Id: <20220823080047.230320318@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220823080046.056825146@linuxfoundation.org>
 References: <20220823080046.056825146@linuxfoundation.org>
@@ -52,32 +51,44 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Hou Tao <houtao1@huawei.com>
 
-commit 52bd05eb7c88e1ad8541a48873188ccebca9da26 upstream.
+commit ef1e93d2eeb58a1f08c37b22a2314b94bc045f15 upstream.
 
-The value of sock local storage map is writable in map iterator, so check
-max_rdwr_access instead of max_rdonly_access.
+bpf_iter_attach_map() acquires a map uref, and the uref may be released
+before or in the middle of iterating map elements. For example, the uref
+could be released in bpf_iter_detach_map() as part of
+bpf_link_release(), or could be released in bpf_map_put_with_uref() as
+part of bpf_map_release().
 
-Fixes: 5ce6e77c7edf ("bpf: Implement bpf iterator for sock local storage map")
+So acquiring an extra map uref in bpf_iter_init_hash_map() and
+releasing it in bpf_iter_fini_hash_map().
+
+Fixes: d6c4503cc296 ("bpf: Implement bpf iterator for hash maps")
 Signed-off-by: Hou Tao <houtao1@huawei.com>
 Acked-by: Yonghong Song <yhs@fb.com>
-Acked-by: Martin KaFai Lau <kafai@fb.com>
-Link: https://lore.kernel.org/r/20220810080538.1845898-6-houtao@huaweicloud.com
+Link: https://lore.kernel.org/r/20220810080538.1845898-3-houtao@huaweicloud.com
 Signed-off-by: Alexei Starovoitov <ast@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- net/core/bpf_sk_storage.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ kernel/bpf/hashtab.c |    2 ++
+ 1 file changed, 2 insertions(+)
 
---- a/net/core/bpf_sk_storage.c
-+++ b/net/core/bpf_sk_storage.c
-@@ -823,7 +823,7 @@ static int bpf_iter_attach_map(struct bp
- 	if (map->map_type != BPF_MAP_TYPE_SK_STORAGE)
- 		goto put_map;
- 
--	if (prog->aux->max_rdonly_access > map->value_size) {
-+	if (prog->aux->max_rdwr_access > map->value_size) {
- 		err = -EACCES;
- 		goto put_map;
+--- a/kernel/bpf/hashtab.c
++++ b/kernel/bpf/hashtab.c
+@@ -1801,6 +1801,7 @@ static int bpf_iter_init_hash_map(void *
+ 		seq_info->percpu_value_buf = value_buf;
  	}
+ 
++	bpf_map_inc_with_uref(map);
+ 	seq_info->map = map;
+ 	seq_info->htab = container_of(map, struct bpf_htab, map);
+ 	return 0;
+@@ -1810,6 +1811,7 @@ static void bpf_iter_fini_hash_map(void
+ {
+ 	struct bpf_iter_seq_hash_map_info *seq_info = priv_data;
+ 
++	bpf_map_put_with_uref(seq_info->map);
+ 	kfree(seq_info->percpu_value_buf);
+ }
+ 
 
 
