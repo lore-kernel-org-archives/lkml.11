@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 18EB8C32772
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 11:48:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BD4B7C32772
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 11:48:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358431AbiHWLsm (ORCPT
+        id S1358449AbiHWLst (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 07:48:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42010 "EHLO
+        Tue, 23 Aug 2022 07:48:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46274 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1358213AbiHWLoL (ORCPT
+        with ESMTP id S1358142AbiHWLpN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 07:44:11 -0400
+        Tue, 23 Aug 2022 07:45:13 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A4161D11EA;
-        Tue, 23 Aug 2022 02:29:58 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6B995D1272;
+        Tue, 23 Aug 2022 02:30:05 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id C68A661227;
-        Tue, 23 Aug 2022 09:29:57 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BA883C433D6;
-        Tue, 23 Aug 2022 09:29:56 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id A451861381;
+        Tue, 23 Aug 2022 09:30:03 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id AEDD8C433C1;
+        Tue, 23 Aug 2022 09:30:02 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661246997;
-        bh=QXKbbD2rBMM2SVJ7jtAh4BSriiVTIwVcRFRHymGJ04g=;
+        s=korg; t=1661247003;
+        bh=UCYycxyPUwO1hHOBKfBA1QUnk84cOVlOhcqdGlDU2ck=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Z0CmEd7+xlJ7bczPYlGUzSTqlBduqG2wFA9QnPv2aN8CGPeby1a/+ljBcracTvU5M
-         zewdCB36ATFAIPyZKi5aMbJCMcRVt2CcBWyIXJDFBcE4uQVhnhDSxQFHoh2RnMbYd6
-         cjnkWUaTCu5X1Mc9QJEyRsdunjUVESLTdvt786sU=
+        b=xdCrBhG6aHoUALTksWzXhKOFwtaO6C1T0EFpvQ3Qk3niTB7SozxD71sNvMPvrR/ON
+         fL0D7mXi7pgf+/RNiK8ijP7rIdWrCArzLOQRcdHLMnNzn8DpMDzQpyaaruxZNbX13i
+         7U0irKUeLKcT4xJGEqU7U5WuetvLKhV4a7Ug9vAk=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jamal Hadi Salim <jhs@mojatatu.com>,
-        Stephen Hemminger <stephen@networkplumber.org>,
+        stable@vger.kernel.org, Mikulas Patocka <mpatocka@redhat.com>,
         "David S. Miller" <davem@davemloft.net>
-Subject: [PATCH 5.4 285/389] net_sched: cls_route: disallow handle of 0
-Date:   Tue, 23 Aug 2022 10:26:03 +0200
-Message-Id: <20220823080127.462084731@linuxfoundation.org>
+Subject: [PATCH 5.4 287/389] rds: add missing barrier to release_refill
+Date:   Tue, 23 Aug 2022 10:26:05 +0200
+Message-Id: <20220823080127.533786856@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220823080115.331990024@linuxfoundation.org>
 References: <20220823080115.331990024@linuxfoundation.org>
@@ -50,87 +49,33 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jamal Hadi Salim <jhs@mojatatu.com>
+From: Mikulas Patocka <mpatocka@redhat.com>
 
-commit 02799571714dc5dd6948824b9d080b44a295f695 upstream.
+commit 9f414eb409daf4f778f011cf8266d36896bb930b upstream.
 
-Follows up on:
-https://lore.kernel.org/all/20220809170518.164662-1-cascardo@canonical.com/
+The functions clear_bit and set_bit do not imply a memory barrier, thus it
+may be possible that the waitqueue_active function (which does not take
+any locks) is moved before clear_bit and it could miss a wakeup event.
 
-handle of 0 implies from/to of universe realm which is not very
-sensible.
+Fix this bug by adding a memory barrier after clear_bit.
 
-Lets see what this patch will do:
-$sudo tc qdisc add dev $DEV root handle 1:0 prio
-
-//lets manufacture a way to insert handle of 0
-$sudo tc filter add dev $DEV parent 1:0 protocol ip prio 100 \
-route to 0 from 0 classid 1:10 action ok
-
-//gets rejected...
-Error: handle of 0 is not valid.
-We have an error talking to the kernel, -1
-
-//lets create a legit entry..
-sudo tc filter add dev $DEV parent 1:0 protocol ip prio 100 route from 10 \
-classid 1:10 action ok
-
-//what did the kernel insert?
-$sudo tc filter ls dev $DEV parent 1:0
-filter protocol ip pref 100 route chain 0
-filter protocol ip pref 100 route chain 0 fh 0x000a8000 flowid 1:10 from 10
-	action order 1: gact action pass
-	 random type none pass val 0
-	 index 1 ref 1 bind 1
-
-//Lets try to replace that legit entry with a handle of 0
-$ sudo tc filter replace dev $DEV parent 1:0 protocol ip prio 100 \
-handle 0x000a8000 route to 0 from 0 classid 1:10 action drop
-
-Error: Replacing with handle of 0 is invalid.
-We have an error talking to the kernel, -1
-
-And last, lets run Cascardo's POC:
-$ ./poc
-0
-0
--22
--22
--22
-
-Signed-off-by: Jamal Hadi Salim <jhs@mojatatu.com>
-Acked-by: Stephen Hemminger <stephen@networkplumber.org>
+Signed-off-by: Mikulas Patocka <mpatocka@redhat.com>
+Cc: stable@vger.kernel.org
 Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- net/sched/cls_route.c |   10 ++++++++++
- 1 file changed, 10 insertions(+)
+ net/rds/ib_recv.c |    1 +
+ 1 file changed, 1 insertion(+)
 
---- a/net/sched/cls_route.c
-+++ b/net/sched/cls_route.c
-@@ -424,6 +424,11 @@ static int route4_set_parms(struct net *
- 			return -EINVAL;
- 	}
+--- a/net/rds/ib_recv.c
++++ b/net/rds/ib_recv.c
+@@ -363,6 +363,7 @@ static int acquire_refill(struct rds_con
+ static void release_refill(struct rds_connection *conn)
+ {
+ 	clear_bit(RDS_RECV_REFILL, &conn->c_flags);
++	smp_mb__after_atomic();
  
-+	if (!nhandle) {
-+		NL_SET_ERR_MSG(extack, "Replacing with handle of 0 is invalid");
-+		return -EINVAL;
-+	}
-+
- 	h1 = to_hash(nhandle);
- 	b = rtnl_dereference(head->table[h1]);
- 	if (!b) {
-@@ -477,6 +482,11 @@ static int route4_change(struct net *net
- 	int err;
- 	bool new = true;
- 
-+	if (!handle) {
-+		NL_SET_ERR_MSG(extack, "Creating with handle of 0 is invalid");
-+		return -EINVAL;
-+	}
-+
- 	if (opt == NULL)
- 		return handle ? -EINVAL : 0;
- 
+ 	/* We don't use wait_on_bit()/wake_up_bit() because our waking is in a
+ 	 * hot path and finding waiters is very rare.  We don't want to walk
 
 
