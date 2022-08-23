@@ -2,45 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AFF65C32793
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 08:27:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A75AEC32772
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 08:27:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243488AbiHWI1i (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 04:27:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33472 "EHLO
+        id S243503AbiHWI1p (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 23 Aug 2022 04:27:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33710 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242889AbiHWIWX (ORCPT
+        with ESMTP id S243076AbiHWIWz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 04:22:23 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0C6D26B8CA;
-        Tue, 23 Aug 2022 01:13:14 -0700 (PDT)
+        Tue, 23 Aug 2022 04:22:55 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0C03A719AD;
+        Tue, 23 Aug 2022 01:13:12 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 47294B81C28;
-        Tue, 23 Aug 2022 08:12:48 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 88665C433C1;
-        Tue, 23 Aug 2022 08:12:46 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id AFC7B61238;
+        Tue, 23 Aug 2022 08:13:11 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BB957C433D6;
+        Tue, 23 Aug 2022 08:13:10 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661242367;
-        bh=OaRJyxx/1ocTQP4heOmBoJQJynAMAxskczaYHFrbYc8=;
+        s=korg; t=1661242391;
+        bh=38S++nijNcpJ8tbAFDQxNdFyX10pEPM5Z89mcFblEh0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=1lnzzLj8sj5YtdkzR0+JPXYf04yx1F/91Qz4IRCn3Mo+57VI+ELpMCcL5f/PR7mTJ
-         M2Q23jBsfDAB98AKH5FaIYV4eVSPP7Swyiv8ng4Z2ZEEEtgAyZnZ/CbGgHA5FQ79ec
-         8lbsvzhY8va1uZiuhQ95Llw9e5ZU7QFOVxR0D5Jg=
+        b=MAn59yQ/hnCRQdKBQCvgKPiIwVmjItI9aAHca88nix4/nZ/DHCeR4oJTg6f4TCsBh
+         c3/XMhYQNfwxa3d6AaITM8xpeaX1ARDqodXlhhysH3tLLKqScNUGDERVSsdzOUYyYl
+         to99PEXL3gCDdw11k514dtTBuxKf5jEJzS0g1e3k=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Ronald Wahl <ronald.wahl@raritan.com>,
-        Jose Alonso <joalonsof@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>
-Subject: [PATCH 4.9 061/101] Revert "net: usb: ax88179_178a needs FLAG_SEND_ZLP"
-Date:   Tue, 23 Aug 2022 10:03:34 +0200
-Message-Id: <20220823080036.917269178@linuxfoundation.org>
+        stable@vger.kernel.org, Jeff LaBundy <jeff@labundy.com>,
+        Dmitry Torokhov <dmitry.torokhov@gmail.com>
+Subject: [PATCH 5.19 108/365] Input: iqs7222 - handle reset during ATI
+Date:   Tue, 23 Aug 2022 10:00:09 +0200
+Message-Id: <20220823080122.709568867@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220823080034.579196046@linuxfoundation.org>
-References: <20220823080034.579196046@linuxfoundation.org>
+In-Reply-To: <20220823080118.128342613@linuxfoundation.org>
+References: <20220823080118.128342613@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -49,96 +48,65 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jose Alonso <joalonsof@gmail.com>
+From: Jeff LaBundy <jeff@labundy.com>
 
-commit 6fd2c17fb6e02a8c0ab51df1cfec82ce96b8e83d upstream.
+commit 8635c68891c6d786d644747d599c41bdf512fbbf upstream.
 
-This reverts commit 36a15e1cb134c0395261ba1940762703f778438c.
+If the device suffers a spurious reset during ATI, there is no point
+in enduring any further retries. Instead, simply return successfully
+from the polling loop.
 
-The usage of FLAG_SEND_ZLP causes problems to other firmware/hardware
-versions that have no issues.
+In this case, the interrupt handler will intervene and recognize the
+device has been reset. It then proceeds to initialize the device and
+trigger ATI once more.
 
-The FLAG_SEND_ZLP is not safe to use in this context.
-See:
-https://patchwork.ozlabs.org/project/netdev/patch/1270599787.8900.8.camel@Linuxdev4-laptop/#118378
-The original problem needs another way to solve.
+As part of this change, swap the order of status field evaluation to
+match that of the interrupt handler, and correct a nearby off-by-one
+error that causes an error message to suggest the final attempt will
+be retried.
 
-Fixes: 36a15e1cb134 ("net: usb: ax88179_178a needs FLAG_SEND_ZLP")
-Cc: stable@vger.kernel.org
-Reported-by: Ronald Wahl <ronald.wahl@raritan.com>
-Link: https://bugzilla.kernel.org/show_bug.cgi?id=216327
-Link: https://bugs.archlinux.org/task/75491
-Signed-off-by: Jose Alonso <joalonsof@gmail.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+Fixes: e505edaedcb9 ("Input: add support for Azoteq IQS7222A/B/C")
+Signed-off-by: Jeff LaBundy <jeff@labundy.com>
+Link: https://lore.kernel.org/r/20220626072412.475211-6-jeff@labundy.com
+Signed-off-by: Dmitry Torokhov <dmitry.torokhov@gmail.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/net/usb/ax88179_178a.c |   14 +++++++-------
- 1 file changed, 7 insertions(+), 7 deletions(-)
+ drivers/input/misc/iqs7222.c | 9 ++++++---
+ 1 file changed, 6 insertions(+), 3 deletions(-)
 
---- a/drivers/net/usb/ax88179_178a.c
-+++ b/drivers/net/usb/ax88179_178a.c
-@@ -1703,7 +1703,7 @@ static const struct driver_info ax88179_
- 	.link_reset = ax88179_link_reset,
- 	.reset = ax88179_reset,
- 	.stop = ax88179_stop,
--	.flags = FLAG_ETHER | FLAG_FRAMING_AX | FLAG_SEND_ZLP,
-+	.flags = FLAG_ETHER | FLAG_FRAMING_AX,
- 	.rx_fixup = ax88179_rx_fixup,
- 	.tx_fixup = ax88179_tx_fixup,
- };
-@@ -1716,7 +1716,7 @@ static const struct driver_info ax88178a
- 	.link_reset = ax88179_link_reset,
- 	.reset = ax88179_reset,
- 	.stop = ax88179_stop,
--	.flags = FLAG_ETHER | FLAG_FRAMING_AX | FLAG_SEND_ZLP,
-+	.flags = FLAG_ETHER | FLAG_FRAMING_AX,
- 	.rx_fixup = ax88179_rx_fixup,
- 	.tx_fixup = ax88179_tx_fixup,
- };
-@@ -1729,7 +1729,7 @@ static const struct driver_info cypress_
- 	.link_reset = ax88179_link_reset,
- 	.reset = ax88179_reset,
- 	.stop = ax88179_stop,
--	.flags = FLAG_ETHER | FLAG_FRAMING_AX | FLAG_SEND_ZLP,
-+	.flags = FLAG_ETHER | FLAG_FRAMING_AX,
- 	.rx_fixup = ax88179_rx_fixup,
- 	.tx_fixup = ax88179_tx_fixup,
- };
-@@ -1742,7 +1742,7 @@ static const struct driver_info dlink_du
- 	.link_reset = ax88179_link_reset,
- 	.reset = ax88179_reset,
- 	.stop = ax88179_stop,
--	.flags = FLAG_ETHER | FLAG_FRAMING_AX | FLAG_SEND_ZLP,
-+	.flags = FLAG_ETHER | FLAG_FRAMING_AX,
- 	.rx_fixup = ax88179_rx_fixup,
- 	.tx_fixup = ax88179_tx_fixup,
- };
-@@ -1755,7 +1755,7 @@ static const struct driver_info sitecom_
- 	.link_reset = ax88179_link_reset,
- 	.reset = ax88179_reset,
- 	.stop = ax88179_stop,
--	.flags = FLAG_ETHER | FLAG_FRAMING_AX | FLAG_SEND_ZLP,
-+	.flags = FLAG_ETHER | FLAG_FRAMING_AX,
- 	.rx_fixup = ax88179_rx_fixup,
- 	.tx_fixup = ax88179_tx_fixup,
- };
-@@ -1768,7 +1768,7 @@ static const struct driver_info samsung_
- 	.link_reset = ax88179_link_reset,
- 	.reset = ax88179_reset,
- 	.stop = ax88179_stop,
--	.flags = FLAG_ETHER | FLAG_FRAMING_AX | FLAG_SEND_ZLP,
-+	.flags = FLAG_ETHER | FLAG_FRAMING_AX,
- 	.rx_fixup = ax88179_rx_fixup,
- 	.tx_fixup = ax88179_tx_fixup,
- };
-@@ -1781,7 +1781,7 @@ static const struct driver_info lenovo_i
- 	.link_reset = ax88179_link_reset,
- 	.reset = ax88179_reset,
- 	.stop = ax88179_stop,
--	.flags = FLAG_ETHER | FLAG_FRAMING_AX | FLAG_SEND_ZLP,
-+	.flags = FLAG_ETHER | FLAG_FRAMING_AX,
- 	.rx_fixup = ax88179_rx_fixup,
- 	.tx_fixup = ax88179_tx_fixup,
- };
+diff --git a/drivers/input/misc/iqs7222.c b/drivers/input/misc/iqs7222.c
+index aa46f2cd4d34..e65260d290cc 100644
+--- a/drivers/input/misc/iqs7222.c
++++ b/drivers/input/misc/iqs7222.c
+@@ -1314,12 +1314,15 @@ static int iqs7222_ati_trigger(struct iqs7222_private *iqs7222)
+ 			if (error)
+ 				return error;
+ 
+-			if (sys_status & IQS7222_SYS_STATUS_ATI_ACTIVE)
+-				continue;
++			if (sys_status & IQS7222_SYS_STATUS_RESET)
++				return 0;
+ 
+ 			if (sys_status & IQS7222_SYS_STATUS_ATI_ERROR)
+ 				break;
+ 
++			if (sys_status & IQS7222_SYS_STATUS_ATI_ACTIVE)
++				continue;
++
+ 			/*
+ 			 * Use stream-in-touch mode if either slider reports
+ 			 * absolute position.
+@@ -1336,7 +1339,7 @@ static int iqs7222_ati_trigger(struct iqs7222_private *iqs7222)
+ 		dev_err(&client->dev,
+ 			"ATI attempt %d of %d failed with status 0x%02X, %s\n",
+ 			i + 1, IQS7222_NUM_RETRIES, (u8)sys_status,
+-			i < IQS7222_NUM_RETRIES ? "retrying..." : "stopping");
++			i + 1 < IQS7222_NUM_RETRIES ? "retrying" : "stopping");
+ 	}
+ 
+ 	return -ETIMEDOUT;
+-- 
+2.37.2
+
 
 
