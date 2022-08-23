@@ -2,183 +2,207 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C0024C32789
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 17:26:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0BB33C32772
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 17:27:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229973AbiHWR0z (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 13:26:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56102 "EHLO
+        id S233930AbiHWR1D (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 23 Aug 2022 13:27:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56490 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234945AbiHWRZl (ORCPT
+        with ESMTP id S234260AbiHWRZ0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 13:25:41 -0400
-Received: from frasgout12.his.huawei.com (frasgout12.his.huawei.com [14.137.139.154])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0D6C39E6B0;
-        Tue, 23 Aug 2022 08:01:54 -0700 (PDT)
-Received: from mail02.huawei.com (unknown [172.18.147.229])
-        by frasgout12.his.huawei.com (SkyGuard) with ESMTP id 4MBsmL2vkVz9v7JM;
-        Tue, 23 Aug 2022 22:58:10 +0800 (CST)
-Received: from huaweicloud.com (unknown [10.204.63.22])
-        by APP2 (Coremail) with SMTP id GxC2BwBnIhqd6wRjjU5GAA--.52413S4;
-        Tue, 23 Aug 2022 16:01:25 +0100 (CET)
-From:   Roberto Sassu <roberto.sassu@huaweicloud.com>
-To:     ast@kernel.org, daniel@iogearbox.net, andrii@kernel.org,
-        martin.lau@linux.dev, song@kernel.org, yhs@fb.com,
-        john.fastabend@gmail.com, kpsingh@kernel.org, sdf@google.com,
-        haoluo@google.com, jolsa@kernel.org, mykolal@fb.com,
-        corbet@lwn.net, dhowells@redhat.com, jarkko@kernel.org,
-        rostedt@goodmis.org, mingo@redhat.com, paul@paul-moore.com,
-        jmorris@namei.org, serge@hallyn.com, shuah@kernel.org
-Cc:     bpf@vger.kernel.org, linux-doc@vger.kernel.org,
-        keyrings@vger.kernel.org, linux-security-module@vger.kernel.org,
-        linux-kselftest@vger.kernel.org, linux-kernel@vger.kernel.org,
-        deso@posteo.net, Roberto Sassu <roberto.sassu@huawei.com>,
-        Joanne Koong <joannelkoong@gmail.com>
-Subject: [PATCH v13 02/10] btf: Handle dynamic pointer parameter in kfuncs
-Date:   Tue, 23 Aug 2022 17:00:27 +0200
-Message-Id: <20220823150035.711534-3-roberto.sassu@huaweicloud.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220823150035.711534-1-roberto.sassu@huaweicloud.com>
-References: <20220823150035.711534-1-roberto.sassu@huaweicloud.com>
+        Tue, 23 Aug 2022 13:25:26 -0400
+Received: from mail-pj1-x1034.google.com (mail-pj1-x1034.google.com [IPv6:2607:f8b0:4864:20::1034])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4110112AAD
+        for <linux-kernel@vger.kernel.org>; Tue, 23 Aug 2022 08:00:43 -0700 (PDT)
+Received: by mail-pj1-x1034.google.com with SMTP id s36-20020a17090a69a700b001faad0a7a34so17473699pjj.4
+        for <linux-kernel@vger.kernel.org>; Tue, 23 Aug 2022 08:00:43 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc;
+        bh=404w8Q0GUcT0rENXKmDpJVSnK0XAgs8EeeVxYBtVK5w=;
+        b=pjbU1DNRuzFKfM3bVCR72fNfK18CmfQeaWWhEwLlagZBGIHQGgc78z2GLBcYfzFnh5
+         MLQtZ+EQwCpEc7mDqUeE+dWT1U2aXtQnxj+yBm1OYUg1inzODwqqpwfFiDZUfA7lWck1
+         6Lg0N8zzE5QykCaFRB52HWPN/6bl8eojsnmKAzwzmcEll6nm6S2NCjKVGfIAKIoZbZOp
+         4WzSNA154aebcQ/mLz3+o6z6Joxvum4461Zo8+HMpV3T8MaxpJFZd0zikDl0sy7s8xV9
+         rLH/bVTVdZ3+JzbWWPhJUw+y54cAw14w5gXKbwsP7AGHkbzH+igVo1KQqc+O+jB5mx3H
+         XMcw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc;
+        bh=404w8Q0GUcT0rENXKmDpJVSnK0XAgs8EeeVxYBtVK5w=;
+        b=1RQjRjeLmmHnmzAwGeSeDxNZULvJze+XXuENGD6xkFGFNaFEb221J/42FCjhQaTpya
+         n+U+Fft0zDMEhdtAl1DVPaq6JFP0oL95yPpr5mqmcljONWnkq9ywR6Vy760CWnInpdpt
+         c+e/wdFZlKGTcPijMm5snXhbUlZX0GqjBzNbmkz1YuckxeoE6zXesa/zs0l8K+UyQbjG
+         24YvzQpL05WqlFdoYD9SRHWBvWqQ6JIn2ryEisO1QKP5Cs8k46bVMCtLdXVkBXOFb/uw
+         EbZ2SsVI9aOPdkgjfk39sF7ChzK3iGku5RP7M62TASUi7P3hHlcQ1rs+lv2Trn1e21/E
+         V/iw==
+X-Gm-Message-State: ACgBeo1UO2d9LHqmtpA/3oFwfTqLxjg0mnU9wBXYdBD4fZ0k+5LgPpV/
+        gExf6UJAcNTmcmEbiI06h9LB0g==
+X-Google-Smtp-Source: AA6agR4d3595DOI6WKObS0WNK+FlELwpg2j3CyYVfMT6yezKGffMJE55R9o1Ho9Ha/5/M0ik5usocg==
+X-Received: by 2002:a17:90b:1a85:b0:1fb:1f0b:dd43 with SMTP id ng5-20020a17090b1a8500b001fb1f0bdd43mr3697750pjb.213.1661266842529;
+        Tue, 23 Aug 2022 08:00:42 -0700 (PDT)
+Received: from google.com (7.104.168.34.bc.googleusercontent.com. [34.168.104.7])
+        by smtp.gmail.com with ESMTPSA id x124-20020a623182000000b00534cb3872edsm10864022pfx.166.2022.08.23.08.00.42
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 23 Aug 2022 08:00:42 -0700 (PDT)
+Date:   Tue, 23 Aug 2022 15:00:38 +0000
+From:   Sean Christopherson <seanjc@google.com>
+To:     Vitaly Kuznetsov <vkuznets@redhat.com>
+Cc:     kvm@vger.kernel.org, Paolo Bonzini <pbonzini@redhat.com>,
+        Anirudh Rayabharam <anrayabh@linux.microsoft.com>,
+        Wanpeng Li <wanpengli@tencent.com>,
+        Jim Mattson <jmattson@google.com>,
+        Maxim Levitsky <mlevitsk@redhat.com>,
+        Nathan Chancellor <nathan@kernel.org>,
+        Michael Kelley <mikelley@microsoft.com>,
+        linux-hyperv@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v5 03/26] x86/hyperv: Update 'struct hv_enlightened_vmcs'
+ definition
+Message-ID: <YwTrlgeqoAqyH0KF@google.com>
+References: <Yv5ZFgztDHzzIQJ+@google.com>
+ <875yiptvsc.fsf@redhat.com>
+ <Yv59dZwP6rNUtsrn@google.com>
+ <87czcsskkj.fsf@redhat.com>
+ <YwOm7Ph54vIYAllm@google.com>
+ <87edx8xn8h.fsf@redhat.com>
+ <YwO2fSCGXnE/9mc2@google.com>
+ <878rngxjb7.fsf@redhat.com>
+ <YwPLt2e7CuqMzjt1@google.com>
+ <87wnazwh1r.fsf@redhat.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-CM-TRANSID: GxC2BwBnIhqd6wRjjU5GAA--.52413S4
-X-Coremail-Antispam: 1UD129KBjvJXoWxWryfCFW5Kr48Wr17Jw4fXwb_yoWrCFWxpF
-        n3Cas7Zr4vyr4xuw17AF4UArW5K3W0qw12kFWrC34FkF17Xr1DXF1DKryrA3sYkrWkCw1x
-        Ar1jgrW5ua48CrJanT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
-        9KBjDU0xBIdaVrnRJUUUBFb4IE77IF4wAFF20E14v26rWj6s0DM7CY07I20VC2zVCF04k2
-        6cxKx2IYs7xG6r1F6r1fM7CIcVAFz4kK6r1j6r18M28IrcIa0xkI8VA2jI8067AKxVWUXw
-        A2048vs2IY020Ec7CjxVAFwI0_Xr0E3s1l8cAvFVAK0II2c7xJM28CjxkF64kEwVA0rcxS
-        w2x7M28EF7xvwVC0I7IYx2IY67AKxVWUJVWUCwA2z4x0Y4vE2Ix0cI8IcVCY1x0267AKxV
-        WxJVW8Jr1l84ACjcxK6I8E87Iv67AKxVW8JVWxJwA2z4x0Y4vEx4A2jsIEc7CjxVAFwI0_
-        Gr1j6F4UJwAS0I0E0xvYzxvE52x082IY62kv0487Mc02F40EFcxC0VAKzVAqx4xG6I80ew
-        Av7VC0I7IYx2IY67AKxVWUJVWUGwAv7VC2z280aVAFwI0_Jr0_Gr1lOx8S6xCaFVCjc4AY
-        6r1j6r4UM4x0Y48IcxkI7VAKI48JM4IIrI8v6xkF7I0E8cxan2IY04v7MxAIw28IcxkI7V
-        AKI48JMxC20s026xCaFVCjc4AY6r1j6r4UMI8I3I0E5I8CrVAFwI0_Jr0_Jr4lx2IqxVCj
-        r7xvwVAFwI0_JrI_JrWlx4CE17CEb7AF67AKxVW8ZVWrXwCIc40Y0x0EwIxGrwCI42IY6x
-        IIjxv20xvE14v26r1j6r1xMIIF0xvE2Ix0cI8IcVCY1x0267AKxVWxJVW8Jr1lIxAIcVCF
-        04k26cxKx2IYs7xG6r1j6r1xMIIF0xvEx4A2jsIE14v26r1j6r4UMIIF0xvEx4A2jsIEc7
-        CjxVAFwI0_Gr0_Gr1UYxBIdaVFxhVjvjDU0xZFpf9x07UC9aPUUUUU=
-X-CM-SenderInfo: purev21wro2thvvxqx5xdzvxpfor3voofrz/1tbiAQANBF1jj4I6SAAAsJ
-X-CFilter-Loop: Reflected
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <87wnazwh1r.fsf@redhat.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Roberto Sassu <roberto.sassu@huawei.com>
+On Tue, Aug 23, 2022, Vitaly Kuznetsov wrote:
+> Sean Christopherson <seanjc@google.com> writes:
+> 
+> > On Mon, Aug 22, 2022, Vitaly Kuznetsov wrote:
+> >> QEMU's migration depends on the assumption that identical QEMU's command
+> >> lines create identical (from guest PoV) configurations. Assume we have
+> >> (simplified)
+> >> 
+> >> "-cpu CascadeLake-Sever,hv-evmcs"
+> >> 
+> >> on both source and destination but source host is newer, i.e. its KVM
+> >> knows about TSC Scaling in eVMCS and destination host has no idea about
+> >> it. If we just apply filtering upon vCPU creation, guest visible MSR
+> >> values are going to be different, right? Ok, assuming QEMU also migrates
+> >> VMX feature MSRs (TODO: check if that's true), we will be able to fail
+> >> mirgration late (which is already much worse than not being able to
+> >> create the desired configuration on destination, 'fail early') if we use
+> >> in-KVM filtering to throw an error to userspace. But if we blindly
+> >> filter control MSRs on the destination, 'TscScaling' will just disapper
+> >> undreneath the guest. This is unlikely to work.
+> >
+> > But all of that holds true irrespetive of eVMCS.  If QEMU attempts to migrate a
+> > nested guest from a KVM that supports TSC_SCALING to a KVM that doesn't support
+> > TSC_SCALING, then TSC_SCALING is going to disappear and VM-Entry on the dest will
+> > fail.  I.e. QEMU _must_ be able to detect the incompatibility and not attempt
+> > the migration.  And with that code in place, QEMU doesn't need to do anything new
+> > for eVMCS, it Just Works.
+> 
+> I'm obviously missing something. "-cpu CascadeLake-Sever" presumes
+> cetain features, including VMX features (e.g. TSC_SCALING), an attempt
+> to create such vCPU on a CPU which doesn't support it will lead to
+> immediate failure. So two VMs created on different hosts with
+> 
+> -cpu CascadeLake-Sever
+> 
+> are guaranteed to look exactly the same from guest PoV. This is not true
+> for '-cpu CascadeLake-Sever,hv-evmcs' (if we do it the way you suggest)
+> as 'hv-evmcs' will be a *different* filter on each host (which is going
+> to depend on KVM version, not even on the host's hardware).
 
-Allow the bpf_dynptr_kern parameter to be specified in kfuncs. Also, ensure
-that the dynamic pointer is valid and initialized.
+We're talking about nested VMX, i.e. exposing TSC_SCALING to L1.  QEMU's CLX
+definition doesn't include TSC_SCALING.  In fact, none of QEMU's predefined CPU
+models supports TSC_SCALING, precisely because KVM didn't support exposing the
+feature to L1 until relatively recently.
 
-To properly detect whether a parameter is of the desired type, introduce
-the stringify_struct() macro to compare the returned structure name with
-the desired name. In addition, protect against structure renames, by
-halting the build with BUILD_BUG_ON(), so that developers have to revisit
-the code.
+$ git grep VMX_SECONDARY_EXEC_TSC_SCALING
+target/i386/cpu.h:#define VMX_SECONDARY_EXEC_TSC_SCALING              0x02000000
+target/i386/kvm/kvm.c:    if (f[FEAT_VMX_SECONDARY_CTLS] & VMX_SECONDARY_EXEC_TSC_SCALING) {
 
-Cc: Joanne Koong <joannelkoong@gmail.com>
-Signed-off-by: Roberto Sassu <roberto.sassu@huawei.com>
----
- include/linux/bpf_verifier.h |  3 +++
- include/linux/btf.h          |  9 +++++++++
- kernel/bpf/btf.c             | 18 ++++++++++++++++++
- kernel/bpf/verifier.c        |  4 ++--
- 4 files changed, 32 insertions(+), 2 deletions(-)
+> >> In any case, what we need, is an option for VMM (read: QEMU) to create
+> >> the configuration with 'TscScaling' filtered out even KVM supports the
+> >> bit in eVMCS. This way the guest will be able to migrate backwards to an
+> >> older KVM which doesn't support it, i.e.
+> >> 
+> >> '-cpu CascadeLake-Sever,hv-evmcs'
+> >>  creates the 'origin' eVMCS configuration, no TscScaling
+> >> 
+> >> '-cpu CascadeLake-Sever,hv-evmcs,hv-evmcs-2022' creates the updated one.
 
-diff --git a/include/linux/bpf_verifier.h b/include/linux/bpf_verifier.h
-index 2e3bad8640dc..55876fbdbae2 100644
---- a/include/linux/bpf_verifier.h
-+++ b/include/linux/bpf_verifier.h
-@@ -560,6 +560,9 @@ int check_kfunc_mem_size_reg(struct bpf_verifier_env *env, struct bpf_reg_state
- 			     u32 regno);
- int check_mem_reg(struct bpf_verifier_env *env, struct bpf_reg_state *reg,
- 		   u32 regno, u32 mem_size);
-+bool is_dynptr_reg_valid_init(struct bpf_verifier_env *env,
-+			      struct bpf_reg_state *reg,
-+			      enum bpf_arg_type arg_type);
- 
- /* this lives here instead of in bpf.h because it needs to dereference tgt_prog */
- static inline u64 bpf_trampoline_compute_key(const struct bpf_prog *tgt_prog,
-diff --git a/include/linux/btf.h b/include/linux/btf.h
-index ad93c2d9cc1c..f546d368ac5d 100644
---- a/include/linux/btf.h
-+++ b/include/linux/btf.h
-@@ -52,6 +52,15 @@
- #define KF_SLEEPABLE    (1 << 5) /* kfunc may sleep */
- #define KF_DESTRUCTIVE  (1 << 6) /* kfunc performs destructive actions */
- 
-+/*
-+ * Return the name of the passed struct, if exists, or halt the build if for
-+ * example the structure gets renamed. In this way, developers have to revisit
-+ * the code using that structure name, and update it accordingly.
-+ */
-+#define stringify_struct(x)			\
-+	({ BUILD_BUG_ON(sizeof(struct x) < 0);	\
-+	   __stringify(x); })
-+
- struct btf;
- struct btf_member;
- struct btf_type;
-diff --git a/kernel/bpf/btf.c b/kernel/bpf/btf.c
-index e49b3b6d48ad..26cb548420af 100644
---- a/kernel/bpf/btf.c
-+++ b/kernel/bpf/btf.c
-@@ -6362,15 +6362,20 @@ static int btf_check_func_arg_match(struct bpf_verifier_env *env,
- 
- 			if (is_kfunc) {
- 				bool arg_mem_size = i + 1 < nargs && is_kfunc_arg_mem_size(btf, &args[i + 1], &regs[regno + 1]);
-+				bool arg_dynptr = btf_type_is_struct(ref_t) &&
-+						  !strcmp(ref_tname,
-+							  stringify_struct(bpf_dynptr_kern));
- 
- 				/* Permit pointer to mem, but only when argument
- 				 * type is pointer to scalar, or struct composed
- 				 * (recursively) of scalars.
- 				 * When arg_mem_size is true, the pointer can be
- 				 * void *.
-+				 * Also permit initialized dynamic pointers.
- 				 */
- 				if (!btf_type_is_scalar(ref_t) &&
- 				    !__btf_type_is_scalar_struct(log, btf, ref_t, 0) &&
-+				    !arg_dynptr &&
- 				    (arg_mem_size ? !btf_type_is_void(ref_t) : 1)) {
- 					bpf_log(log,
- 						"arg#%d pointer type %s %s must point to %sscalar, or struct with scalar\n",
-@@ -6378,6 +6383,19 @@ static int btf_check_func_arg_match(struct bpf_verifier_env *env,
- 					return -EINVAL;
- 				}
- 
-+				if (arg_dynptr) {
-+					if (!is_dynptr_reg_valid_init(env, reg,
-+							ARG_PTR_TO_DYNPTR)) {
-+						bpf_log(log,
-+							"arg#%d pointer type %s %s must be initialized\n",
-+							i, btf_type_str(ref_t),
-+							ref_tname);
-+						return -EINVAL;
-+					}
-+
-+					continue;
-+				}
-+
- 				/* Check for mem, len pair */
- 				if (arg_mem_size) {
- 					if (check_kfunc_mem_size_reg(env, &regs[regno + 1], regno + 1)) {
-diff --git a/kernel/bpf/verifier.c b/kernel/bpf/verifier.c
-index 2c1f8069f7b7..aa834e7bb296 100644
---- a/kernel/bpf/verifier.c
-+++ b/kernel/bpf/verifier.c
-@@ -779,8 +779,8 @@ static bool is_dynptr_reg_valid_uninit(struct bpf_verifier_env *env, struct bpf_
- 	return true;
- }
- 
--static bool is_dynptr_reg_valid_init(struct bpf_verifier_env *env, struct bpf_reg_state *reg,
--				     enum bpf_arg_type arg_type)
-+bool is_dynptr_reg_valid_init(struct bpf_verifier_env *env, struct bpf_reg_state *reg,
-+			      enum bpf_arg_type arg_type)
- {
- 	struct bpf_func_state *state = func(env, reg);
- 	int spi = get_spi(reg->off);
--- 
-2.25.1
+Ah, I see what you're worried about.  Your concern is that QEMU will add a VMX
+feature to a predefined CPU model, but only later gain eVMCS support, and so
+"CascadeLake-Server,hv-evmcs" will do different things depending on the KVM
+version.
 
+But again, that's already reality.  Run "-cpu CascadeLake-Server" against a KVM
+from before commits:
+
+  28c1c9fabf48 ("KVM/VMX: Emulate MSR_IA32_ARCH_CAPABILITIES")
+  1eaafe91a0df ("kvm: x86: IA32_ARCH_CAPABILITIES is always supported")
+
+and it will fail.  There are undoubtedly many other features that are similarly
+affected, just go back far enough in KVM time.
+
+Or simply run "-cpu CascadeLake-Server" on pre-CLX hardware.  Anything that KVM
+doesn't fully emulate will not be present.
+
+> > Again, this conundrum exists irrespective of eVMCS.  Properly solve the problem
+> > for regular nVMX and eVMCS should naturally work.
+> 
+> I don't think we have this problem for VMX features as named CPU models
+> in QEMU encode all of them explicitly, they *must* be present whenever
+> such vCPU is created.
+
+Yes, and if KVM doesn't support features that CascadeLake-Server requires, spawning
+the VM will fail on the destination, as it should.  My point is that this behavior
+is not unique to eVMCS.
+
+QEMU/Libvirt must also be prepared for rejection, because it is flat out impossible
+to ensure that KVM+hardware supports a specific feature.
+
+> >> KVM_CAP_HYPERV_ENLIGHTENED_VMCS is bad as it only takes 'eVMCS' version
+> >> as a parameter (as we assumed it will always change when new fields are
+> >> added, but that turned out to be false). That's why I suggested
+> >> KVM_CAP_HYPERV_ENLIGHTENED_VMCS2.
+> >
+> > Enumerating features via versions is such a bad API though, e.g. if there's a
+> > bug with nested TSC_SCALING, userspace can't disable just nested TSC_SCALING
+> > without everything else under the inscrutable "hv-evmcs-2022" being collateral
+> > damage.
+> 
+> Why? Something like 
+> 
+> "-cpu CascadeLake-Sever,hv-evmcs,hv-evmcs-2022,-vmx-tsc-scaling" 
+> 
+> should work well, no? 'hv-evmcs*' are just filters, if the VMX feature
+> is not there -- it's not there.
+
+Because it's completely unnecessary, adds non-trivial maintenance burden to KVM,
+and requires explicit documentation to explain to userspace what "hv-evmcs-2022"
+means.
+
+It's unnecessary because if the user is concerned about eVMCS features showing up
+in the future, then they should do:
+
+  -cpu CascadeLake-Server,hv-evmcs,-vmx-tsc-scaling,-<any other VMX features not eVMCS-friendly>
+
+If QEMU wants to make that more user friendly, then define CascadeLake-Server-eVMCS
+or whatever so that the features that are unlikely be supported for eVMCS are off by
+default.  This is no different than QEMU not including nested TSC_SCALING in any of
+the predefined models; the developers _know_ KVM doesn't widely support TSC_SCALING,
+so it was omitted, even though a real CLX CPU is guaranteed to support TSC_SCALING.
+
+It's non-trivial maintenance for KVM because it would require defining new versions
+every time an eVMCS field is added, allowing userspace to specify and restrict
+features based on arbitrary versions, and do all of that without conflicting with
+whatever PV enumeration Microsoft adds.
