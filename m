@@ -2,44 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9BAF8C32772
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 09:14:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 91B9DC32772
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 09:14:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348616AbiHWJOX (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 05:14:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60990 "EHLO
+        id S243370AbiHWJO2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 23 Aug 2022 05:14:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33810 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349098AbiHWJLL (ORCPT
+        with ESMTP id S1349332AbiHWJLa (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 05:11:11 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 40B17286D5;
-        Tue, 23 Aug 2022 01:31:30 -0700 (PDT)
+        Tue, 23 Aug 2022 05:11:30 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0835386C37;
+        Tue, 23 Aug 2022 01:31:36 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 7E4EC6132D;
-        Tue, 23 Aug 2022 08:31:00 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8281FC433D6;
-        Tue, 23 Aug 2022 08:30:59 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 09485CE1B34;
+        Tue, 23 Aug 2022 08:31:14 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 06D13C433C1;
+        Tue, 23 Aug 2022 08:31:11 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661243459;
-        bh=cFQps2UgGzKfxxucgJAhHcyTCzeTMbAGguhyK1OacKw=;
+        s=korg; t=1661243472;
+        bh=skXDE7HoEs1CM7r5+jZrhjl8BpmwHHmVvjU7vqHj44E=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=CWF1Z9nhrRlE6ZAXegC8VGI0H8NWto1hBTRZV/TIZMNltDrWskq9wuxAGEgMg+Mcn
-         w/wNCxJaVBdcv+6CkmIlD+p151jLkIbtxBdB/CyQ6GyBlCGop3dhq6I5w+r2rHbZyr
-         ELljfYUD62v/s/MbEumOMBiTvipS6XLKLI7pE77M=
+        b=GewB7pae6xuQCN6bM2E6RBHQfMhyuvQjVaRlbFJyaAc9ZOvV9GU8vxkfLsGdgS6QR
+         O1/NKMXPda+7o6aa/sCofl5b0U3cyPp5J3L83DoUYxF3WsRD2ti71oTe5ZJSIOtpWt
+         N5W2qydmL8P8eiJM00IPSo/bfFWTpXAU05rei7i8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Justin Tee <justin.tee@broadcom.com>,
-        James Smart <jsmart2021@gmail.com>,
-        "Martin K. Petersen" <martin.petersen@oracle.com>,
+        stable@vger.kernel.org, Dafna Hirschfeld <dhirschfeld@habana.ai>,
+        Oded Gabbay <ogabbay@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.19 284/365] scsi: lpfc: Prevent buffer overflow crashes in debugfs with malformed user input
-Date:   Tue, 23 Aug 2022 10:03:05 +0200
-Message-Id: <20220823080130.060142264@linuxfoundation.org>
+Subject: [PATCH 5.19 288/365] habanalabs: add terminating NULL to attrs arrays
+Date:   Tue, 23 Aug 2022 10:03:09 +0200
+Message-Id: <20220823080130.259653833@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220823080118.128342613@linuxfoundation.org>
 References: <20220823080118.128342613@linuxfoundation.org>
@@ -51,83 +49,76 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: James Smart <jsmart2021@gmail.com>
+From: Dafna Hirschfeld <dhirschfeld@habana.ai>
 
-[ Upstream commit f8191d40aa612981ce897e66cda6a88db8df17bb ]
+[ Upstream commit 78d503087be190eab36290644ccec050135e7c70 ]
 
-Malformed user input to debugfs results in buffer overflow crashes.  Adapt
-input string lengths to fit within internal buffers, leaving space for NULL
-terminators.
+Arrays of struct attribute are expected to be NULL terminated.
+This is required by API methods such as device_add_groups.
+This fixes a crash when loading the driver for Goya device.
 
-Link: https://lore.kernel.org/r/20220701211425.2708-3-jsmart2021@gmail.com
-Co-developed-by: Justin Tee <justin.tee@broadcom.com>
-Signed-off-by: Justin Tee <justin.tee@broadcom.com>
-Signed-off-by: James Smart <jsmart2021@gmail.com>
-Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
+Signed-off-by: Dafna Hirschfeld <dhirschfeld@habana.ai>
+Reviewed-by: Oded Gabbay <ogabbay@kernel.org>
+Signed-off-by: Oded Gabbay <ogabbay@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/scsi/lpfc/lpfc_debugfs.c | 20 ++++++++++----------
- 1 file changed, 10 insertions(+), 10 deletions(-)
+ drivers/misc/habanalabs/common/sysfs.c    | 2 ++
+ drivers/misc/habanalabs/gaudi/gaudi.c     | 1 +
+ drivers/misc/habanalabs/goya/goya_hwmgr.c | 2 ++
+ 3 files changed, 5 insertions(+)
 
-diff --git a/drivers/scsi/lpfc/lpfc_debugfs.c b/drivers/scsi/lpfc/lpfc_debugfs.c
-index 7b24c932e812..25deacc92b02 100644
---- a/drivers/scsi/lpfc/lpfc_debugfs.c
-+++ b/drivers/scsi/lpfc/lpfc_debugfs.c
-@@ -2607,8 +2607,8 @@ lpfc_debugfs_multixripools_write(struct file *file, const char __user *buf,
- 	struct lpfc_sli4_hdw_queue *qp;
- 	struct lpfc_multixri_pool *multixri_pool;
+diff --git a/drivers/misc/habanalabs/common/sysfs.c b/drivers/misc/habanalabs/common/sysfs.c
+index 9ebeb18ab85e..da8181068895 100644
+--- a/drivers/misc/habanalabs/common/sysfs.c
++++ b/drivers/misc/habanalabs/common/sysfs.c
+@@ -73,6 +73,7 @@ static DEVICE_ATTR_RO(clk_cur_freq_mhz);
+ static struct attribute *hl_dev_clk_attrs[] = {
+ 	&dev_attr_clk_max_freq_mhz.attr,
+ 	&dev_attr_clk_cur_freq_mhz.attr,
++	NULL,
+ };
  
--	if (nbytes > 64)
--		nbytes = 64;
-+	if (nbytes > sizeof(mybuf) - 1)
-+		nbytes = sizeof(mybuf) - 1;
+ static ssize_t vrm_ver_show(struct device *dev, struct device_attribute *attr, char *buf)
+@@ -93,6 +94,7 @@ static DEVICE_ATTR_RO(vrm_ver);
  
- 	memset(mybuf, 0, sizeof(mybuf));
+ static struct attribute *hl_dev_vrm_attrs[] = {
+ 	&dev_attr_vrm_ver.attr,
++	NULL,
+ };
  
-@@ -2688,8 +2688,8 @@ lpfc_debugfs_nvmestat_write(struct file *file, const char __user *buf,
- 	if (!phba->targetport)
- 		return -ENXIO;
+ static ssize_t uboot_ver_show(struct device *dev, struct device_attribute *attr,
+diff --git a/drivers/misc/habanalabs/gaudi/gaudi.c b/drivers/misc/habanalabs/gaudi/gaudi.c
+index fba322241096..25d735aee6a3 100644
+--- a/drivers/misc/habanalabs/gaudi/gaudi.c
++++ b/drivers/misc/habanalabs/gaudi/gaudi.c
+@@ -9187,6 +9187,7 @@ static DEVICE_ATTR_RO(infineon_ver);
  
--	if (nbytes > 64)
--		nbytes = 64;
-+	if (nbytes > sizeof(mybuf) - 1)
-+		nbytes = sizeof(mybuf) - 1;
+ static struct attribute *gaudi_vrm_dev_attrs[] = {
+ 	&dev_attr_infineon_ver.attr,
++	NULL,
+ };
  
- 	memset(mybuf, 0, sizeof(mybuf));
+ static void gaudi_add_device_attr(struct hl_device *hdev, struct attribute_group *dev_clk_attr_grp,
+diff --git a/drivers/misc/habanalabs/goya/goya_hwmgr.c b/drivers/misc/habanalabs/goya/goya_hwmgr.c
+index 6580fc6a486a..b595721751c1 100644
+--- a/drivers/misc/habanalabs/goya/goya_hwmgr.c
++++ b/drivers/misc/habanalabs/goya/goya_hwmgr.c
+@@ -359,6 +359,7 @@ static struct attribute *goya_clk_dev_attrs[] = {
+ 	&dev_attr_pm_mng_profile.attr,
+ 	&dev_attr_tpc_clk.attr,
+ 	&dev_attr_tpc_clk_curr.attr,
++	NULL,
+ };
  
-@@ -2826,8 +2826,8 @@ lpfc_debugfs_ioktime_write(struct file *file, const char __user *buf,
- 	char mybuf[64];
- 	char *pbuf;
+ static ssize_t infineon_ver_show(struct device *dev, struct device_attribute *attr, char *buf)
+@@ -375,6 +376,7 @@ static DEVICE_ATTR_RO(infineon_ver);
  
--	if (nbytes > 64)
--		nbytes = 64;
-+	if (nbytes > sizeof(mybuf) - 1)
-+		nbytes = sizeof(mybuf) - 1;
+ static struct attribute *goya_vrm_dev_attrs[] = {
+ 	&dev_attr_infineon_ver.attr,
++	NULL,
+ };
  
- 	memset(mybuf, 0, sizeof(mybuf));
- 
-@@ -2954,8 +2954,8 @@ lpfc_debugfs_nvmeio_trc_write(struct file *file, const char __user *buf,
- 	char mybuf[64];
- 	char *pbuf;
- 
--	if (nbytes > 63)
--		nbytes = 63;
-+	if (nbytes > sizeof(mybuf) - 1)
-+		nbytes = sizeof(mybuf) - 1;
- 
- 	memset(mybuf, 0, sizeof(mybuf));
- 
-@@ -3060,8 +3060,8 @@ lpfc_debugfs_hdwqstat_write(struct file *file, const char __user *buf,
- 	char *pbuf;
- 	int i;
- 
--	if (nbytes > 64)
--		nbytes = 64;
-+	if (nbytes > sizeof(mybuf) - 1)
-+		nbytes = sizeof(mybuf) - 1;
- 
- 	memset(mybuf, 0, sizeof(mybuf));
- 
+ void goya_add_device_attr(struct hl_device *hdev, struct attribute_group *dev_clk_attr_grp,
 -- 
 2.35.1
 
