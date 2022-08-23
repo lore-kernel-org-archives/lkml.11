@@ -2,114 +2,115 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A6532C3F6B0
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DC1A1C38147
 	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 11:56:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358917AbiHWLzc (ORCPT
+        id S1359005AbiHWLz6 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 07:55:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56378 "EHLO
+        Tue, 23 Aug 2022 07:55:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34834 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243992AbiHWLwH (ORCPT
+        with ESMTP id S1358567AbiHWLw0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 07:52:07 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7242BD39B7;
-        Tue, 23 Aug 2022 02:32:39 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 8F85161335;
-        Tue, 23 Aug 2022 09:32:29 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 88D38C433C1;
-        Tue, 23 Aug 2022 09:32:28 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661247149;
-        bh=t5e8m7zUSZLlKDZ0aO+vYJnddTUtFWDaqH96W3GXM0M=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=iD2PErDZXnNuDmrjtEVuvgKM6GnxT8noi6Jfn02dnyMF33631JsEkntEwqjh7eEGi
-         /DXRhKQzlHuVe4lCxgxk64qhVIIbhJ+wA6f+V4rOnE8hiQFS2+DLqe2NentXQUDIqb
-         PFdV+OEN6EIhLqwdy3FoTOfD0mbz83xmsxYGeQKo=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Gerhard Uttenthaler <uttenthaler@ems-wuensche.com>,
-        Sebastian Haas <haas@ems-wuensche.com>,
-        Marc Kleine-Budde <mkl@pengutronix.de>
-Subject: [PATCH 5.4 293/389] can: ems_usb: fix clangs -Wunaligned-access warning
-Date:   Tue, 23 Aug 2022 10:26:11 +0200
-Message-Id: <20220823080127.791496032@linuxfoundation.org>
+        Tue, 23 Aug 2022 07:52:26 -0400
+Received: from mail-pf1-x42b.google.com (mail-pf1-x42b.google.com [IPv6:2607:f8b0:4864:20::42b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C00A4D4BF8;
+        Tue, 23 Aug 2022 02:32:48 -0700 (PDT)
+Received: by mail-pf1-x42b.google.com with SMTP id 1so5739064pfu.0;
+        Tue, 23 Aug 2022 02:32:48 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:from:to:cc;
+        bh=nsftH5dD52AwRoWk2NYBNp/4StwHh8764Sbyy9peaj4=;
+        b=IEoQCpQziqDUsVDWLwDtk0AUe7uob+W+yrwymTEwEBsqTF8eQ7jbzjaQLrPDYPT2B4
+         ZabGkAEqnzfOzwpF8C5sSoSsLhCuU3vzY42wDTkIKMFuZ5xDHYuq7n2ALcdSE2UFGHRH
+         rd8o5fRFZXg8lQogm91SmrkOh8QgQm4umYz7bOarUIVjfEbz9DEDpxlQVYXvfDZ5WpP0
+         a8IJRqGxzddXOvkConpS8bHshUU4kZpXfDz/dvKJecpb4/cOwc9gh2trOPz0toQRgphW
+         IQCJrCS2tHrPxGmDuyuw1gxeL0XTyeCYZZ2eZRZwQXds+2tvkV9ecK+sDEUkUPrIfiVn
+         XP/Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc;
+        bh=nsftH5dD52AwRoWk2NYBNp/4StwHh8764Sbyy9peaj4=;
+        b=UODJVLbSaXWjx+usw6x2Ji/+xMBHWj+3Tf+Q+sVMtuNybN8k6Pu9go5A1IFe59/Wl3
+         GGLETLVrxoT4OkArNtSgRH/DAJuClp8xHSgSroDkWsoCgdNxnHXpgwyaru9nj1H128mV
+         tpMRPE+IxbT36JQCht4uv1fW/i4MsF41EthcDe4QjMhEkkUcTDUd1jA8mPPGtiWeoHEn
+         AKXzZHSd5kPr4tGyZ70O5b0JZyy5noryj7gVLn4rv750Fw/ZIj25Il2Uxlj9nBFVYUZd
+         VlrLzqIfP2q29YFNBlncVGgKRamhZJwL/08d2Pmmjd/jfMpmLX69L7AwbBoap4lGRBQa
+         ZZyw==
+X-Gm-Message-State: ACgBeo2FoOLPqpM1b4i3CuW5rDOpktdsJtwnJmIEfG0IdRQfRYFXd3b1
+        53iPxIXaDzObjySj6M/MRto=
+X-Google-Smtp-Source: AA6agR402iDPUq9rKI/l4S5qq+JgdB5XAVxduUDaKxvzj/vf7rHt3thUYW+JbMJb5BZYTaAcNk4Naw==
+X-Received: by 2002:a05:6a00:1501:b0:52f:2556:9b7f with SMTP id q1-20020a056a00150100b0052f25569b7fmr23979938pfu.27.1661247167044;
+        Tue, 23 Aug 2022 02:32:47 -0700 (PDT)
+Received: from localhost.localdomain ([103.7.29.32])
+        by smtp.gmail.com with ESMTPSA id 13-20020a170902c24d00b0017297a6b39dsm10057212plg.265.2022.08.23.02.32.44
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 23 Aug 2022 02:32:46 -0700 (PDT)
+From:   Like Xu <like.xu.linux@gmail.com>
+X-Google-Original-From: Like Xu <likexu@tencent.com>
+To:     Sean Christopherson <seanjc@google.com>,
+        Paolo Bonzini <pbonzini@redhat.com>
+Cc:     Jim Mattson <jmattson@google.com>, linux-kernel@vger.kernel.org,
+        kvm@vger.kernel.org
+Subject: [PATCH RESEND v2 2/8] KVM: x86/pmu: Avoid setting BIT_ULL(-1) to pmu->host_cross_mapped_mask
+Date:   Tue, 23 Aug 2022 17:32:15 +0800
+Message-Id: <20220823093221.38075-3-likexu@tencent.com>
 X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220823080115.331990024@linuxfoundation.org>
-References: <20220823080115.331990024@linuxfoundation.org>
-User-Agent: quilt/0.67
+In-Reply-To: <20220823093221.38075-1-likexu@tencent.com>
+References: <20220823093221.38075-1-likexu@tencent.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Marc Kleine-Budde <mkl@pengutronix.de>
+From: Like Xu <likexu@tencent.com>
 
-commit a4cb6e62ea4d36e53fb3c0f18ea4503d7b76674f upstream.
+In the extreme case of host counters multiplexing and contention, the
+perf_event requested by the guest's pebs counter is not allocated to any
+actual physical counter, in which case hw.idx is bookkept as -1,
+resulting in an out-of-bounds access to host_cross_mapped_mask.
 
-clang emits a -Wunaligned-access warning on struct __packed
-ems_cpc_msg.
-
-The reason is that the anonymous union msg (not declared as packed) is
-being packed right after some non naturally aligned variables (3*8
-bits + 2*32) inside a packed struct:
-
-| struct __packed ems_cpc_msg {
-| 	u8 type;	/* type of message */
-| 	u8 length;	/* length of data within union 'msg' */
-| 	u8 msgid;	/* confirmation handle */
-| 	__le32 ts_sec;	/* timestamp in seconds */
-| 	__le32 ts_nsec;	/* timestamp in nano seconds */
-|	/* ^ not naturally aligned */
-|
-| 	union {
-| 	/* ^ not declared as packed */
-| 		u8 generic[64];
-| 		struct cpc_can_msg can_msg;
-| 		struct cpc_can_params can_params;
-| 		struct cpc_confirm confirmation;
-| 		struct cpc_overrun overrun;
-| 		struct cpc_can_error error;
-| 		struct cpc_can_err_counter err_counter;
-| 		u8 can_state;
-| 	} msg;
-| };
-
-Starting from LLVM 14, having an unpacked struct nested in a packed
-struct triggers a warning. c.f. [1].
-
-Fix the warning by marking the anonymous union as packed.
-
-[1] https://github.com/llvm/llvm-project/issues/55520
-
-Fixes: 702171adeed3 ("ems_usb: Added support for EMS CPC-USB/ARM7 CAN/USB interface")
-Link: https://lore.kernel.org/all/20220802094021.959858-1-mkl@pengutronix.de
-Cc: Gerhard Uttenthaler <uttenthaler@ems-wuensche.com>
-Cc: Sebastian Haas <haas@ems-wuensche.com>
-Signed-off-by: Marc Kleine-Budde <mkl@pengutronix.de>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Fixes: 854250329c02 ("KVM: x86/pmu: Disable guest PEBS temporarily in two rare situations")
+Signed-off-by: Like Xu <likexu@tencent.com>
 ---
- drivers/net/can/usb/ems_usb.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ arch/x86/kvm/vmx/pmu_intel.c | 12 ++++++------
+ 1 file changed, 6 insertions(+), 6 deletions(-)
 
---- a/drivers/net/can/usb/ems_usb.c
-+++ b/drivers/net/can/usb/ems_usb.c
-@@ -194,7 +194,7 @@ struct __packed ems_cpc_msg {
- 	__le32 ts_sec;	/* timestamp in seconds */
- 	__le32 ts_nsec;	/* timestamp in nano seconds */
+diff --git a/arch/x86/kvm/vmx/pmu_intel.c b/arch/x86/kvm/vmx/pmu_intel.c
+index c399637a3a79..d595ff33d32d 100644
+--- a/arch/x86/kvm/vmx/pmu_intel.c
++++ b/arch/x86/kvm/vmx/pmu_intel.c
+@@ -776,20 +776,20 @@ static void intel_pmu_cleanup(struct kvm_vcpu *vcpu)
+ void intel_pmu_cross_mapped_check(struct kvm_pmu *pmu)
+ {
+ 	struct kvm_pmc *pmc = NULL;
+-	int bit;
++	int bit, hw_idx;
  
--	union {
-+	union __packed {
- 		u8 generic[64];
- 		struct cpc_can_msg can_msg;
- 		struct cpc_can_params can_params;
-
+ 	for_each_set_bit(bit, (unsigned long *)&pmu->global_ctrl,
+ 			 X86_PMC_IDX_MAX) {
+ 		pmc = intel_pmc_idx_to_pmc(pmu, bit);
+ 
+ 		if (!pmc || !pmc_speculative_in_use(pmc) ||
+-		    !intel_pmc_is_enabled(pmc))
++		    !intel_pmc_is_enabled(pmc) || !pmc->perf_event)
+ 			continue;
+ 
+-		if (pmc->perf_event && pmc->idx != pmc->perf_event->hw.idx) {
+-			pmu->host_cross_mapped_mask |=
+-				BIT_ULL(pmc->perf_event->hw.idx);
+-		}
++		hw_idx = pmc->perf_event->hw.idx;
++		/* make it a little less dependent on perf's exact behavior */
++		if (hw_idx != pmc->idx && hw_idx > -1)
++			pmu->host_cross_mapped_mask |= BIT_ULL(hw_idx);
+ 	}
+ }
+ 
+-- 
+2.37.2
 
