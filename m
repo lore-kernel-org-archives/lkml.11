@@ -2,44 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 42F4DC32772
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 11:08:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AAA7BC32772
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 11:08:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242738AbiHWLIl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 07:08:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51178 "EHLO
+        id S1351307AbiHWLIs (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 23 Aug 2022 07:08:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49328 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357286AbiHWLGa (ORCPT
+        with ESMTP id S1357321AbiHWLGj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 07:06:30 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8D8C8B515D;
-        Tue, 23 Aug 2022 02:16:04 -0700 (PDT)
+        Tue, 23 Aug 2022 07:06:39 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 08161B5E46;
+        Tue, 23 Aug 2022 02:15:58 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id ADB1FCE1B5D;
-        Tue, 23 Aug 2022 09:15:21 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C27ADC433C1;
-        Tue, 23 Aug 2022 09:15:19 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 4CE0ACE1B55;
+        Tue, 23 Aug 2022 09:15:56 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 582C7C433C1;
+        Tue, 23 Aug 2022 09:15:54 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661246120;
-        bh=SjU1n1ytovhL3UgKE8PCRmwFhJUvTy4uztS1wVLyviQ=;
+        s=korg; t=1661246154;
+        bh=BQZqsEK+IuTaL6aTUyF1GPzWqI8PBXmHt2fxiJ1G1Fw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=TOqscjuYHs7HJAtwsb1zK9xBcOhsFVlLD8LxV8grjvdF+agy6c9LDyiZmX2dvImmO
-         L44dN0O2EEaLr75TkUSW1eUBKdrdabdMTVtQJstCcFAurJf5b4691R94HSkyLhUPxm
-         MWo8bXUBsvTSPpPT/4q6Yb1VoVBoYKkjbiA75MAI=
+        b=Itefs9jfrjowU/Hw3xmq8L+482AeJbyggwB4njuxhm0rhakFqMg35ZEekOCr5zLdn
+         fZlr930onwFN1QkTmvmxMKsM/Vio/D/kU8Wzb+N88BKqgHkvumfGsnuJpMa8rOQre9
+         lkfBgKJT+1orcyFlZ6T5uHKYFrD+I4XVRIIyZCts=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Timur Tabi <timur@kernel.org>,
-        Liang He <windhl@126.com>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.19 271/287] tty: serial: Fix refcount leak bug in ucc_uart.c
-Date:   Tue, 23 Aug 2022 10:27:20 +0200
-Message-Id: <20220823080110.501223816@linuxfoundation.org>
+        stable@vger.kernel.org, Meng Tang <tangmeng@uniontech.com>,
+        Takashi Iwai <tiwai@suse.de>
+Subject: [PATCH 5.4 019/389] ALSA: hda/conexant: Add quirk for LENOVO 20149 Notebook model
+Date:   Tue, 23 Aug 2022 10:21:37 +0200
+Message-Id: <20220823080116.511155589@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220823080100.268827165@linuxfoundation.org>
-References: <20220823080100.268827165@linuxfoundation.org>
+In-Reply-To: <20220823080115.331990024@linuxfoundation.org>
+References: <20220823080115.331990024@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -48,38 +49,57 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Liang He <windhl@126.com>
+From: Meng Tang <tangmeng@uniontech.com>
 
-[ Upstream commit d24d7bb2cd947676f9b71fb944d045e09b8b282f ]
+commit f83bb2592482fe94c6eea07a8121763c80f36ce5 upstream.
 
-In soc_info(), of_find_node_by_type() will return a node pointer
-with refcount incremented. We should use of_node_put() when it is
-not used anymore.
+There is another LENOVO 20149 (Type1Sku0) Notebook model with
+CX20590, the device PCI SSID is 17aa:3977, which headphones are
+not responding, that requires the quirk CXT_PINCFG_LENOVO_NOTEBOOK.
+Add the corresponding entry to the quirk table.
 
-Acked-by: Timur Tabi <timur@kernel.org>
-Signed-off-by: Liang He <windhl@126.com>
-Link: https://lore.kernel.org/r/20220618060850.4058525-1-windhl@126.com
+Signed-off-by: Meng Tang <tangmeng@uniontech.com>
+Cc: <stable@vger.kernel.org>
+Link: https://lore.kernel.org/r/20220808073406.19460-1-tangmeng@uniontech.com
+Signed-off-by: Takashi Iwai <tiwai@suse.de>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/tty/serial/ucc_uart.c | 2 ++
- 1 file changed, 2 insertions(+)
+ sound/pci/hda/patch_conexant.c |   11 ++++++++++-
+ 1 file changed, 10 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/tty/serial/ucc_uart.c b/drivers/tty/serial/ucc_uart.c
-index 2b6376e6e5ad..eb0d3f55235a 100644
---- a/drivers/tty/serial/ucc_uart.c
-+++ b/drivers/tty/serial/ucc_uart.c
-@@ -1141,6 +1141,8 @@ static unsigned int soc_info(unsigned int *rev_h, unsigned int *rev_l)
- 		/* No compatible property, so try the name. */
- 		soc_string = np->name;
- 
-+	of_node_put(np);
-+
- 	/* Extract the SOC number from the "PowerPC," string */
- 	if ((sscanf(soc_string, "PowerPC,%u", &soc) != 1) || !soc)
- 		return 0;
--- 
-2.35.1
-
+--- a/sound/pci/hda/patch_conexant.c
++++ b/sound/pci/hda/patch_conexant.c
+@@ -197,6 +197,7 @@ enum {
+ 	CXT_PINCFG_LEMOTE_A1205,
+ 	CXT_PINCFG_COMPAQ_CQ60,
+ 	CXT_FIXUP_STEREO_DMIC,
++	CXT_PINCFG_LENOVO_NOTEBOOK,
+ 	CXT_FIXUP_INC_MIC_BOOST,
+ 	CXT_FIXUP_HEADPHONE_MIC_PIN,
+ 	CXT_FIXUP_HEADPHONE_MIC,
+@@ -737,6 +738,14 @@ static const struct hda_fixup cxt_fixups
+ 		.type = HDA_FIXUP_FUNC,
+ 		.v.func = cxt_fixup_stereo_dmic,
+ 	},
++	[CXT_PINCFG_LENOVO_NOTEBOOK] = {
++		.type = HDA_FIXUP_PINS,
++		.v.pins = (const struct hda_pintbl[]) {
++			{ 0x1a, 0x05d71030 },
++			{ }
++		},
++		.chain_id = CXT_FIXUP_STEREO_DMIC,
++	},
+ 	[CXT_FIXUP_INC_MIC_BOOST] = {
+ 		.type = HDA_FIXUP_FUNC,
+ 		.v.func = cxt5066_increase_mic_boost,
+@@ -930,7 +939,7 @@ static const struct snd_pci_quirk cxt506
+ 	SND_PCI_QUIRK(0x17aa, 0x3905, "Lenovo G50-30", CXT_FIXUP_STEREO_DMIC),
+ 	SND_PCI_QUIRK(0x17aa, 0x390b, "Lenovo G50-80", CXT_FIXUP_STEREO_DMIC),
+ 	SND_PCI_QUIRK(0x17aa, 0x3975, "Lenovo U300s", CXT_FIXUP_STEREO_DMIC),
+-	SND_PCI_QUIRK(0x17aa, 0x3977, "Lenovo IdeaPad U310", CXT_FIXUP_STEREO_DMIC),
++	SND_PCI_QUIRK(0x17aa, 0x3977, "Lenovo IdeaPad U310", CXT_PINCFG_LENOVO_NOTEBOOK),
+ 	SND_PCI_QUIRK(0x17aa, 0x3978, "Lenovo G50-70", CXT_FIXUP_STEREO_DMIC),
+ 	SND_PCI_QUIRK(0x17aa, 0x397b, "Lenovo S205", CXT_FIXUP_STEREO_DMIC),
+ 	SND_PCI_QUIRK_VENDOR(0x17aa, "Thinkpad", CXT_FIXUP_THINKPAD_ACPI),
 
 
