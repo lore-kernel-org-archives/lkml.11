@@ -2,46 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 87AC4C32772
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 09:32:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9A2A8C32772
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 09:32:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350653AbiHWJc3 (ORCPT
+        id S1350683AbiHWJce (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 05:32:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39434 "EHLO
+        Tue, 23 Aug 2022 05:32:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53302 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350895AbiHWJbA (ORCPT
+        with ESMTP id S1350932AbiHWJbC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 05:31:00 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 795CB9351C;
+        Tue, 23 Aug 2022 05:31:02 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7A443923FB;
         Tue, 23 Aug 2022 01:38:06 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id B00D6B81C4F;
-        Tue, 23 Aug 2022 08:38:05 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1CBC0C433D6;
-        Tue, 23 Aug 2022 08:38:03 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 06727614E9;
+        Tue, 23 Aug 2022 08:36:51 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0B3FDC433C1;
+        Tue, 23 Aug 2022 08:36:49 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661243884;
-        bh=k9b5P2NSOt0eSgmb2JZLT4BwEs5zgGyKoQCUOSXJb3A=;
+        s=korg; t=1661243810;
+        bh=sAdOeYBAPi9CerLXn7XWAIKEmLZgLjt+4p7AzfjIoMk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=h6lQ5HXElcF//7AEg4WQEgG7tL/VS5aKGB+cw1DmT2xH0ydiEG0aEO9KXx+kt4NUn
-         r2DCT3YjREqkgJP7ymN8sLwdTknASx6mSMM/GOYxx5vJgpQylLw4+dibCQzxC5fJa3
-         6dTjwh80UANjcmPDLzcTWsTBFhBEdntJ9HYy/bqo=
+        b=Q5dUJ/SwQCcvuDq0GWdJohR461JN/SvMld572MgP4VKfct5aapXYXLTWl9nQHYJtI
+         ks6BxHynsSNILUzLxSV1CJ0fFSQcKOCBvJZ8hRlDcxJvpwCQWTEtEyGvY3XCr7/Bhn
+         5tkkOCtdKHclG4wR1SS4RdSjKbqXsp3DDJ114VUI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, David Matlack <dmatlack@google.com>,
-        Sean Christopherson <seanjc@google.com>,
-        Paolo Bonzini <pbonzini@redhat.com>
-Subject: [PATCH 5.15 003/244] KVM: Unconditionally get a ref to /dev/kvm module when creating a VM
-Date:   Tue, 23 Aug 2022 10:22:42 +0200
-Message-Id: <20220823080059.206064280@linuxfoundation.org>
+        stable@vger.kernel.org, Leo Li <sunpeng.li@amd.com>,
+        Alex Deucher <alexander.deucher@amd.com>,
+        =?UTF-8?q?Christian=20K=C3=B6nig?= <christian.koenig@amd.com>
+Subject: [PATCH 4.14 028/229] drm/amdgpu: Check BOs requested pinning domains against its preferred_domains
+Date:   Tue, 23 Aug 2022 10:23:09 +0200
+Message-Id: <20220823080054.483979397@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220823080059.091088642@linuxfoundation.org>
-References: <20220823080059.091088642@linuxfoundation.org>
+In-Reply-To: <20220823080053.202747790@linuxfoundation.org>
+References: <20220823080053.202747790@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -50,90 +50,46 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Sean Christopherson <seanjc@google.com>
+From: Leo Li <sunpeng.li@amd.com>
 
-commit 405294f29faee5de8c10cb9d4a90e229c2835279 upstream.
+commit f5ba14043621f4afdf3ad5f92ee2d8dbebbe4340 upstream.
 
-Unconditionally get a reference to the /dev/kvm module when creating a VM
-instead of using try_get_module(), which will fail if the module is in
-the process of being forcefully unloaded.  The error handling when
-try_get_module() fails doesn't properly unwind all that has been done,
-e.g. doesn't call kvm_arch_pre_destroy_vm() and doesn't remove the VM
-from the global list.  Not removing VMs from the global list tends to be
-fatal, e.g. leads to use-after-free explosions.
+When pinning a buffer, we should check to see if there are any
+additional restrictions imposed by bo->preferred_domains. This will
+prevent the BO from being moved to an invalid domain when pinning.
 
-The obvious alternative would be to add proper unwinding, but the
-justification for using try_get_module(), "rmmod --wait", is completely
-bogus as support for "rmmod --wait", i.e. delete_module() without
-O_NONBLOCK, was removed by commit 3f2b9c9cdf38 ("module: remove rmmod
---wait option.") nearly a decade ago.
+For example, this can happen if the user requests to create a BO in GTT
+domain for display scanout. amdgpu_dm will allow pinning to either VRAM
+or GTT domains, since DCN can scanout from either or. However, in
+amdgpu_bo_pin_restricted(), pinning to VRAM is preferred if there is
+adequate carveout. This can lead to pinning to VRAM despite the user
+requesting GTT placement for the BO.
 
-It's still possible for try_get_module() to fail due to the module dying
-(more like being killed), as the module will be tagged MODULE_STATE_GOING
-by "rmmod --force", i.e. delete_module(..., O_TRUNC), but playing nice
-with forced unloading is an exercise in futility and gives a falsea sense
-of security.  Using try_get_module() only prevents acquiring _new_
-references, it doesn't magically put the references held by other VMs,
-and forced unloading doesn't wait, i.e. "rmmod --force" on KVM is all but
-guaranteed to cause spectacular fireworks; the window where KVM will fail
-try_get_module() is tiny compared to the window where KVM is building and
-running the VM with an elevated module refcount.
+v2: Allow the kernel to override the domain, which can happen when
+    exporting a BO to a V4L camera (for example).
 
-Addressing KVM's inability to play nice with "rmmod --force" is firmly
-out-of-scope.  Forcefully unloading any module taints kernel (for obvious
-reasons)  _and_ requires the kernel to be built with
-CONFIG_MODULE_FORCE_UNLOAD=y, which is off by default and comes with the
-amusing disclaimer that it's "mainly for kernel developers and desperate
-users".  In other words, KVM is free to scoff at bug reports due to using
-"rmmod --force" while VMs may be running.
-
-Fixes: 5f6de5cbebee ("KVM: Prevent module exit until all VMs are freed")
+Signed-off-by: Leo Li <sunpeng.li@amd.com>
+Reviewed-by: Alex Deucher <alexander.deucher@amd.com>
+Reviewed-by: Christian König <christian.koenig@amd.com>
+Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
 Cc: stable@vger.kernel.org
-Cc: David Matlack <dmatlack@google.com>
-Signed-off-by: Sean Christopherson <seanjc@google.com>
-Message-Id: <20220816053937.2477106-3-seanjc@google.com>
-Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- virt/kvm/kvm_main.c |   14 ++++----------
- 1 file changed, 4 insertions(+), 10 deletions(-)
+ drivers/gpu/drm/amd/amdgpu/amdgpu_object.c |    4 ++++
+ 1 file changed, 4 insertions(+)
 
---- a/virt/kvm/kvm_main.c
-+++ b/virt/kvm/kvm_main.c
-@@ -1034,6 +1034,9 @@ static struct kvm *kvm_create_vm(unsigne
- 	if (!kvm)
- 		return ERR_PTR(-ENOMEM);
+--- a/drivers/gpu/drm/amd/amdgpu/amdgpu_object.c
++++ b/drivers/gpu/drm/amd/amdgpu/amdgpu_object.c
+@@ -682,6 +682,10 @@ int amdgpu_bo_pin_restricted(struct amdg
+ 	if (WARN_ON_ONCE(min_offset > max_offset))
+ 		return -EINVAL;
  
-+	/* KVM is pinned via open("/dev/kvm"), the fd passed to this ioctl(). */
-+	__module_get(kvm_chardev_ops.owner);
++	/* Check domain to be pinned to against preferred domains */
++	if (bo->preferred_domains & domain)
++		domain = bo->preferred_domains & domain;
 +
- 	KVM_MMU_LOCK_INIT(kvm);
- 	mmgrab(current->mm);
- 	kvm->mm = current->mm;
-@@ -1107,16 +1110,6 @@ static struct kvm *kvm_create_vm(unsigne
- 	preempt_notifier_inc();
- 	kvm_init_pm_notifier(kvm);
- 
--	/*
--	 * When the fd passed to this ioctl() is opened it pins the module,
--	 * but try_module_get() also prevents getting a reference if the module
--	 * is in MODULE_STATE_GOING (e.g. if someone ran "rmmod --wait").
--	 */
--	if (!try_module_get(kvm_chardev_ops.owner)) {
--		r = -ENODEV;
--		goto out_err;
--	}
--
- 	return kvm;
- 
- out_err:
-@@ -1140,6 +1133,7 @@ out_err_no_irq_srcu:
- out_err_no_srcu:
- 	kvm_arch_free_vm(kvm);
- 	mmdrop(current->mm);
-+	module_put(kvm_chardev_ops.owner);
- 	return ERR_PTR(r);
- }
- 
+ 	/* A shared bo cannot be migrated to VRAM */
+ 	if (bo->prime_shared_count) {
+ 		if (domain & AMDGPU_GEM_DOMAIN_GTT)
 
 
