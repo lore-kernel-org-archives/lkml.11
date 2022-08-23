@@ -2,172 +2,123 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 44EACC28D13
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 01:22:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 12E88C28D13
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 01:25:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232371AbiHWBWB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 22 Aug 2022 21:22:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50612 "EHLO
+        id S239054AbiHWBZu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 22 Aug 2022 21:25:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54892 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239274AbiHWBVt (ORCPT
+        with ESMTP id S233491AbiHWBZq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 22 Aug 2022 21:21:49 -0400
-Received: from NAM04-BN8-obe.outbound.protection.outlook.com (mail-bn8nam04on2045.outbound.protection.outlook.com [40.107.100.45])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6ECC25A160
-        for <linux-kernel@vger.kernel.org>; Mon, 22 Aug 2022 18:21:44 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=VM0dT3QvHJLceiKFVn2Ks/RyKwZLrbc5/t2OucIaAMG7NmnQwdoZncPTDhOLD7n+ct8KsQ7s0V1Q6SrrL9pR+IeaCZ34rAPRsq0AAbXdyA6QPVsUfJgQMvzx+TOMNSSTdcwadfUgoulJ0/+ozymMCp8hpsLQ7yWeYEgfrVgmTk+o+mB4oBS/4EjAxK8Pzwtt9wk66n5U88sl4ExXxLZwm80r8X/K6B5hVz5z1pwWhdfg+ZlTH89eTXWNLBmVS43gzSIDVzzARq5PSFMW8gOornIyjHJYjVYAIG32RfGykbusTyGYsNZ/es7/F0OsCKC6/g0s3wRgTKFLHJZZH4FAiA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=XaD2zujuCSeYasIBxOf4U8cK3jHIv+PwP3wRNkw00As=;
- b=JRUycvpPwDrBLW4oWmTxNMtTVcwnL4ohxeGOaqTafuZFUwl1ye4McDyD9mJ7G8WiRh1V1KXVdkR7B4eNTChzx7+wOBJN890suoOdoeqig0kwl9KZrg2DeO+HZN5aVCEz5KRLMsSPJSTpgD5Ib6/kYZux7xA+sQPMDiDGxTuQrjHWbpvd+lloNCySnxz3ASl6k8TEpCl2W603kZ/bt7/HZVmoLZCsfwM+4CEcgsxDSjp+05mivSEf5kZDH2xeIWA4oLk1RMEZu0zYpUgWpQX6akWHeYFRKVDoIRTwCzvWq8B8PgebcGPkgfOKifvzRPqtHacm9JSEDKZ2q2r6d9BlTQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
- dkim=pass header.d=nvidia.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=XaD2zujuCSeYasIBxOf4U8cK3jHIv+PwP3wRNkw00As=;
- b=PLioIzOcZmlzWm6OYtgW1WC3nVopB+Bc/c+jXf3xe2MdR9gTQwqRLcE+o7lsCel8hi9pKnYyPIFcH1UufcDQYaMGkOF/gBgOCz9nDEWXNmDcyq5YDVkoMF/rM1QV6zF5g+8edZs7uW5v2L1F8od+V2ocLdG+iwiaJIFiqDpkiwL2fGVYnIl8x8cZofS1aGoin/VgYUzPomPxZxEJ1QTTdkakuFghI0GleOMy2/le2J+sUcAMoLtGlPiKT+0gPn7LE1IerwUpWz1t7PKMkzR6uge+2OkEvZwgolcfuvHybhUdPDs+091Jw+48P0oc31pOedNwCdoyBeE4KbQoox5onw==
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nvidia.com;
-Received: from BYAPR12MB3176.namprd12.prod.outlook.com (2603:10b6:a03:134::26)
- by DM4PR12MB6400.namprd12.prod.outlook.com (2603:10b6:8:b9::8) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.5546.22; Tue, 23 Aug 2022 01:21:42 +0000
-Received: from BYAPR12MB3176.namprd12.prod.outlook.com
- ([fe80::7432:2749:aa27:722c]) by BYAPR12MB3176.namprd12.prod.outlook.com
- ([fe80::7432:2749:aa27:722c%7]) with mapi id 15.20.5546.022; Tue, 23 Aug 2022
- 01:21:42 +0000
-References: <20220822153713.962904-1-syoshida@redhat.com>
-User-agent: mu4e 1.6.9; emacs 27.1
-From:   Alistair Popple <apopple@nvidia.com>
-To:     Shigeru Yoshida <syoshida@redhat.com>
-Cc:     akpm@linux-foundation.org, linux-mm@kvack.org,
-        linux-kernel@vger.kernel.org,
-        syzbot+616ff0452fec30f4dcfd@syzkaller.appspotmail.com,
-        John Hubbard <jhubbard@nvidia.com>
-Subject: Re: [PATCH v2] mm/gup.c: Fix return value for __gup_longterm_locked()
-Date:   Tue, 23 Aug 2022 11:15:29 +1000
-In-reply-to: <20220822153713.962904-1-syoshida@redhat.com>
-Message-ID: <8735dnu53w.fsf@nvdebian.thelocal>
-Content-Type: text/plain
-X-ClientProxiedBy: SJ0PR03CA0342.namprd03.prod.outlook.com
- (2603:10b6:a03:39c::17) To BYAPR12MB3176.namprd12.prod.outlook.com
- (2603:10b6:a03:134::26)
+        Mon, 22 Aug 2022 21:25:46 -0400
+Received: from mail-pj1-x102f.google.com (mail-pj1-x102f.google.com [IPv6:2607:f8b0:4864:20::102f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8938857E12;
+        Mon, 22 Aug 2022 18:25:44 -0700 (PDT)
+Received: by mail-pj1-x102f.google.com with SMTP id o5-20020a17090a3d4500b001ef76490983so13126902pjf.2;
+        Mon, 22 Aug 2022 18:25:44 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc;
+        bh=zUw74NM1PF7THinMe6GlF9fUaFjzhhz/u/PvpW+nALE=;
+        b=Q64HD9FubVrlP5FmJOhxKQUOt96oa1y4u811xQjDNizh82sETFqtDd7YBhlyq7Fdxb
+         rLbPDmVH9HGNC5K/UDeLYv14kfMyzYjVa50MOJ3QGeHCfs4+qrFqcTtzZArm4uraIU/C
+         Nvrv9grRvmRE9oXrd0tzcZWKDezpB1lWXwmfxeu/1emkEXRpVPM/7arbKBomI1miyiS1
+         hy+2xHiijPE8GCpoe5wjF/dscpP7+aowXMXjkAsfFbEH43jZ108/WVH0r9AZlzcMQqx9
+         hVVjlHJU7iqLQKQKcheYNF9PR/qe1ORY2lIlJGzxRCAvGY1+/1jjiSLaSTUkLSyqVi90
+         uW+g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc;
+        bh=zUw74NM1PF7THinMe6GlF9fUaFjzhhz/u/PvpW+nALE=;
+        b=Xwicifs0XYamrE5uEXARQ0O+rvs9DfdwfuznrzftFxPvmxE5c/sZtC6SWIC4P5D+x+
+         t2wugjjIguIzAB6qkyx0d/kX5Nv7s/bv9ZhBLWh0WL+FaWLZsd9TKMkSkKCfJXjqILUC
+         mES1anJuno4CTHQhwiQJqmm8uxQ34OxeJL1i2jTU+5dIIf3HawhI878QJavcM8OCmHCo
+         Txo8Xctnf9uOZdKrN+UYfjwtQStLPwnCL+rr8hvm04NVEcbH8XzmS8seICuhOJfCwSWz
+         aT+gqayCn5EXzpfe3YBB8Ca/etcqI6byfylLm/D5twU9Ma/nbLMt6RvnA+XCLMRdcqvL
+         15KA==
+X-Gm-Message-State: ACgBeo0yAtxRa+c7WmLpG4AdzoOIzDG3JvRHY98EM1KoJSK8FBAZofZb
+        Zerx4sPtVH/dAjJx2zhbyyg=
+X-Google-Smtp-Source: AA6agR6cK3+6tkV4eQf/7WDt9r9QaUp4zK5IzLni0B+GqaZ9vscYfOKokN6RflRUU0B5j2K2m/fZsQ==
+X-Received: by 2002:a17:902:9886:b0:172:bb36:70f1 with SMTP id s6-20020a170902988600b00172bb3670f1mr21126201plp.139.1661217943863;
+        Mon, 22 Aug 2022 18:25:43 -0700 (PDT)
+Received: from localhost ([192.55.55.51])
+        by smtp.gmail.com with ESMTPSA id d10-20020a17090ab30a00b001fb53587166sm1055886pjr.28.2022.08.22.18.25.43
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 22 Aug 2022 18:25:43 -0700 (PDT)
+Date:   Mon, 22 Aug 2022 18:25:41 -0700
+From:   Isaku Yamahata <isaku.yamahata@gmail.com>
+To:     Michael Roth <michael.roth@amd.com>
+Cc:     Sean Christopherson <seanjc@google.com>,
+        "Gupta, Pankaj" <pankaj.gupta@amd.com>,
+        "Kirill A . Shutemov" <kirill.shutemov@linux.intel.com>,
+        Chao Peng <chao.p.peng@linux.intel.com>,
+        "Nikunj A. Dadhania" <nikunj@amd.com>,
+        Paolo Bonzini <pbonzini@redhat.com>,
+        Jonathan Corbet <corbet@lwn.net>,
+        Vitaly Kuznetsov <vkuznets@redhat.com>,
+        Wanpeng Li <wanpengli@tencent.com>,
+        Jim Mattson <jmattson@google.com>,
+        Joerg Roedel <joro@8bytes.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+        x86@kernel.org, "H . Peter Anvin" <hpa@zytor.com>,
+        Hugh Dickins <hughd@google.com>,
+        Jeff Layton <jlayton@kernel.org>,
+        "J . Bruce Fields" <bfields@fieldses.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Shuah Khan <shuah@kernel.org>, Mike Rapoport <rppt@kernel.org>,
+        Steven Price <steven.price@arm.com>,
+        "Maciej S . Szmigiero" <mail@maciej.szmigiero.name>,
+        Vlastimil Babka <vbabka@suse.cz>,
+        Vishal Annapurve <vannapurve@google.com>,
+        Yu Zhang <yu.c.zhang@linux.intel.com>, luto@kernel.org,
+        jun.nakajima@intel.com, dave.hansen@intel.com, ak@linux.intel.com,
+        david@redhat.com, aarcange@redhat.com, ddutile@redhat.com,
+        dhildenb@redhat.com, Quentin Perret <qperret@google.com>,
+        mhocko@suse.com, Muchun Song <songmuchun@bytedance.com>,
+        bharata@amd.com, kvm@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-mm@kvack.org, linux-kselftest@vger.kernel.org,
+        linux-api@vger.kernel.org, linux-doc@vger.kernel.org,
+        qemu-devel@nongnu.org, linux-fsdevel@vger.kernel.org,
+        isaku.yamahata@gmail.com
+Subject: Re: [PATCH v7 00/14] KVM: mm: fd-based approach for supporting KVM
+ guest private memory
+Message-ID: <20220823012541.GA2147148@ls.amr.corp.intel.com>
+References: <422b9f97-fdf5-54bf-6c56-3c45eff5e174@amd.com>
+ <1407c70c-0c0b-6955-10bb-d44c5928f2d9@amd.com>
+ <1136925c-2e37-6af4-acac-be8bed9f6ed5@amd.com>
+ <1b02db9d-f2f1-94dd-6f37-59481525abff@amd.com>
+ <20220815130411.GA1073443@chaop.bj.intel.com>
+ <f0094f31-9669-47b5-eb52-6754a13ce757@amd.com>
+ <20220816122457.2fjyd4uz5hp5cani@box.shutemov.name>
+ <f95f35af-4824-2a2a-7cd0-71d1fda6867a@amd.com>
+ <Yvu54I7Y+/ybVyec@google.com>
+ <20220817152719.g7pgu34syekzkha5@amd.com>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: be4314d7-2374-428b-6fce-08da84a5d608
-X-MS-TrafficTypeDiagnostic: DM4PR12MB6400:EE_
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: W5l0msSiyIy4MKpU5QXVAKBjGRYHlcJ04m1hKkCjcysXv99FRIuLHK3hR/RuLWbqygwjUufGx64YyI8KrM8ojpGwiyYdiftsE6Ife0x/Erk2OahOz08mYPwAdKUsrPXvFZkyF1Bj8pT1M76fOCwPGaVdu7rPUh+tKwkV1pN2QYPqC7T/nfr4a5JxtszphAB/tB0gAnkoP4IJqvDvexW/y7Ey4zLoeMkTTaSRXYqDXBl8EKnR4NUxeAU4PEl64eJviUEXWsnvmsN0fwcYS39FDBNddqSrl4rJ8Mw3UHZa6s0vNJNhF/ECfS4BSYE+mUjk0kcxwA0OdWNwdwMhb4TYwp3GFO4yRYAE4a6CXRDQlHVoqyG03dPXPUMEA07z1HBaaJPYue5ZM+NEcubKDK5TP6ckgGUzx7Tj8ed4IiG+BnhRL8ViHL0CaiHHjqh73i+HAe5N/jLdbMRcTC0QFl7kYLIdYb7BrF9cQYEd9VtixgCHxETUUT+eTx71qzfvn/LQm4oDcbkI/FlRiZulZcXUfQuZ+6dbxOzmv+AQMJ1NqkAz+pUTlHn/MHe2AJ30MQdtWwN+r1Mdy3ELQsUUE/KX0Dv8NUWmWO8QL7sTuL4SS8rWkDFpfEZLJyQ7kGxmiDj6TBuM72OdwnvrwugbZnUOg1VOKJkIH54aUL80cSddL+ObIh9rFr4veBQLQ1zsJTLikQWGbTwt47KtqEkuGz+LqA==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BYAPR12MB3176.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(4636009)(39860400002)(366004)(396003)(346002)(136003)(376002)(107886003)(6486002)(41300700001)(6666004)(478600001)(186003)(83380400001)(6512007)(26005)(9686003)(8936002)(2906002)(6506007)(5660300002)(316002)(6916009)(38100700002)(4326008)(66946007)(8676002)(66476007)(66556008)(86362001);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?UXioCg+O3DteWVDIhfFCzCQCWHDH82Uh8Ihb0LPqd1kSY0npAz21jYX2F2/S?=
- =?us-ascii?Q?irqclsat81IP5q6crxKdNg1NxdkZ0DG+WX7gMw6mRJFdO36w2zPb8GqSNbNv?=
- =?us-ascii?Q?jTYhuiS0MVoqrz1qjRYrNicd3XLnI8YTafXCNkOefdl3vbNij5zoHp4Gz/gr?=
- =?us-ascii?Q?VkrroDnxz025PQx1A9r3f2CKugUENd7Nqwb5KAADMfVDH1c3iBaCfAf6+OHE?=
- =?us-ascii?Q?Khvmdr/4lvfiwLJaZS43deg91LTAVrqPzdoCiSe+bdnIpdrKvjik6CA5hdOk?=
- =?us-ascii?Q?YC7wqlXB6wa3m5isOFTGaPx5hg3q7PAyDLyRQS+zX/VEn/d+5F/DlZ5nwSqz?=
- =?us-ascii?Q?TnPR5oEvSA5hS05lZFk4oLTtg8wf3vztoXS3HznzyL3q6OfKa6/oONHP7P98?=
- =?us-ascii?Q?t60PuykMpg9LsOH5CI1Jk7uV3LnKL2GBFPHXcLYj8pwzImY+MGIw8hDu8jSK?=
- =?us-ascii?Q?qodVUz0Oorsq4gIKVcYNbHaJoskGIQ2FhPwsNsG38AX/vT36OftBkwSACuP8?=
- =?us-ascii?Q?K/CFF2rdL/fIXScmrJxv8dgVEsJu4aCjwvxPUthrrUsngepQIv++v1dh83+0?=
- =?us-ascii?Q?GPyM1HaTxxardudZ0UqREDmd01Xj1jq+hP1BR/C7gNuV487wpRIWknxl/a0/?=
- =?us-ascii?Q?mstITckWIdXMVfJfc0o5b39A1ueMNMEor61IPjmrsBH/ERs3bTT2KGBSTrDr?=
- =?us-ascii?Q?dWrR6Yq2Hpr+nxdzksRdpMgw0f8MHw5qX2D3grFC7ilA28LjEX5yOGU/lZHf?=
- =?us-ascii?Q?r/iRQybG+dtWTywSm/cGrcB85TDc+sTF/LKMiS55gK6wJcjqHBPnPSYLRiu1?=
- =?us-ascii?Q?gvhRxQpGlu/VpnJBf4lesEAwaquWEqjuQ10r8M4zWcFyQoBZo8a/Y4X+6Txf?=
- =?us-ascii?Q?CnVxd+h0nRizcsOgE7rbEn0+crjsH2t8y+S8msimjTmkGAJ4PlhnU+omqfa/?=
- =?us-ascii?Q?q54Yfm4rXivdkfxn0uwUDaT1Q8EikGm7LD9Hc560RFHuTFk/u1rjEhVOe0Ef?=
- =?us-ascii?Q?Btoj5vcbZ/CI4HT/iQUAbhlZWtJGAkY4w9iTKvpEleTnMnQeFRWifrZfXDvV?=
- =?us-ascii?Q?sCDNcUe+kN78OEUIW6p34LAnej9yIoZK0sswS/CKJfXWrcg7eZ5qA9kRmBq4?=
- =?us-ascii?Q?KVu+YT1mrtB8wWOjBGckdVuBtZv7acHQ3YAyicZoBEhAqGf750rFbdW8t4Uw?=
- =?us-ascii?Q?VshSKShrWH9NaXvMrYf3harWLCQePtoy83YUxopizQT7viHLF6VcxsnSYkWG?=
- =?us-ascii?Q?b/0msTbW1qAW13yxNHVQTGTs6jqZCPm+cUQx4kAwmhczXqt75FBIrFtF+JYl?=
- =?us-ascii?Q?J5feAJFBfCGD/Qr9mqswd8a6DbseQdMWSkby5IPXxN/2RK9pjcq9nu9u10Wx?=
- =?us-ascii?Q?OU/ALoLFXFpYivDzUe9R7+wJelin3eI40f4Z6vCz1GODR9bZgN20fRE5GuWb?=
- =?us-ascii?Q?JgK3cpdyw8Cf7xkf8gbZ2bAvVWvBy6ZyK7gtPfLwRq7t9TO8XaRDNkIqAcJg?=
- =?us-ascii?Q?R6e5+PLVE2aU5/tVBd5Eof026sJOukFx6XoDWian6+pTmlK3m2AFfHFaQivH?=
- =?us-ascii?Q?k0nJyFFQ8A2D1qVxWtdYAbAqDFM0zaWcCiE1eIk7?=
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: be4314d7-2374-428b-6fce-08da84a5d608
-X-MS-Exchange-CrossTenant-AuthSource: BYAPR12MB3176.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 23 Aug 2022 01:21:42.2787
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: Disx+eI21tIZchhm//xyxY4Ea2LGhxr0xNeJ+8vYUX8Krf+/Lk6U9Hlf61KvZSiVlcrEFg6/6/tGXekZLOzxpA==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM4PR12MB6400
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <20220817152719.g7pgu34syekzkha5@amd.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+On Wed, Aug 17, 2022 at 10:27:19AM -0500,
+Michael Roth <michael.roth@amd.com> wrote:
 
-Shigeru Yoshida <syoshida@redhat.com> writes:
+> > I think the best approach is to turn KVM_TDX_INIT_MEM_REGION into a generic
+> > vCPU-scoped ioctl() that allows userspace to pre-map guest memory.  Supporting
+> > initializing guest private memory with a source page can be implemented via a
+> > flag.  That also gives KVM line of sight to in-place "conversion", e.g. another
+> > flag could be added to say that the dest is also the source.
+> 
+> So is this proposed ioctl only intended to handle the initial encrypted
+> payload, and the KVM_MEMORY_ENCRYPT_{REG,UNREG}_REGION ioctls would
+> still be used for conversions post-boot?
 
-> __get_user_pages_locked() may return the number of pages less than
-> nr_pages.  So __gup_longterm_locked() have to return the number of
-> pages __get_user_pages_locked() returns if it succeeded, not nr_pages
-> requested.
-
-Thanks for fixing this, I've been out the last few days so just catching
-up. I think I missed that 'rc' was passed as nr_pages into
-check_and_migrate_movable_pages(). Will double check that I don't make
-the same mistake in my latest series.
-
-> Fixes: 61c63c2076d9 (mm/gup.c: simplify and fix check_and_migrate_movable_pages() return codes)
-
-I couldn't find that SHA1, I'm guessing due to rebasing, etc. of
-mm-unstable? Not sure how that is dealt with, but feel free to also add:
-
-Reviewed-by: Alistair Popple <apopple@nvidia.com>
-
-> CC: Alistair Popple <apopple@nvidia.com>
-> Reported-by: syzbot+616ff0452fec30f4dcfd@syzkaller.appspotmail.com
-> Reviewed-by: John Hubbard <jhubbard@nvidia.com>
-> Signed-off-by: Shigeru Yoshida <syoshida@redhat.com>
-> ---
->  mm/gup.c | 14 ++++++++------
->  1 file changed, 8 insertions(+), 6 deletions(-)
->
-> diff --git a/mm/gup.c b/mm/gup.c
-> index 5aa7531a703b..66582203220a 100644
-> --- a/mm/gup.c
-> +++ b/mm/gup.c
-> @@ -2068,22 +2068,24 @@ static long __gup_longterm_locked(struct mm_struct *mm,
->  				  unsigned int gup_flags)
->  {
->  	unsigned int flags;
-> -	long rc;
-> +	long rc, nr_pinned_pages;
->
->  	if (!(gup_flags & FOLL_LONGTERM))
->  		return __get_user_pages_locked(mm, start, nr_pages, pages, vmas,
->  					       NULL, gup_flags);
->  	flags = memalloc_pin_save();
->  	do {
-> -		rc = __get_user_pages_locked(mm, start, nr_pages, pages, vmas,
-> -					     NULL, gup_flags);
-> -		if (rc <= 0)
-> +		nr_pinned_pages =
-> +			__get_user_pages_locked(mm, start, nr_pages, pages,
-> +						vmas, NULL, gup_flags);
-> +		if (nr_pinned_pages <= 0)
->  			break;
-> -		rc = check_and_migrate_movable_pages(rc, pages, gup_flags);
-> +		rc = check_and_migrate_movable_pages(nr_pinned_pages, pages,
-> +						     gup_flags);
->  	} while (rc == -EAGAIN);
->  	memalloc_pin_restore(flags);
->
-> -	return rc ? rc : nr_pages;
-> +	return rc ? rc : nr_pinned_pages;
->  }
->
->  static bool is_valid_gup_flags(unsigned int gup_flags)
+Yes.  It is called before running any vcpu.  At run time (after running vcpus),
+KVM_MEMORY_ENCRYPT_{REG,UNREG}_REGION is used.
+-- 
+Isaku Yamahata <isaku.yamahata@gmail.com>
