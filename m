@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 06F91C38145
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 26D1BC38147
 	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 10:57:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356781AbiHWKzl (ORCPT
+        id S1356875AbiHWKzv (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 06:55:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40326 "EHLO
+        Tue, 23 Aug 2022 06:55:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36952 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356055AbiHWKs7 (ORCPT
+        with ESMTP id S1356089AbiHWKtC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 06:48:59 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8C0ED4A110;
-        Tue, 23 Aug 2022 02:12:22 -0700 (PDT)
+        Tue, 23 Aug 2022 06:49:02 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 54C24AB077;
+        Tue, 23 Aug 2022 02:12:29 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 274A560F4B;
-        Tue, 23 Aug 2022 09:12:22 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2DC44C433C1;
-        Tue, 23 Aug 2022 09:12:21 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 7ED6B60F4B;
+        Tue, 23 Aug 2022 09:12:28 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6D9EDC433C1;
+        Tue, 23 Aug 2022 09:12:27 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661245941;
-        bh=a0CD5oQrDsDeyWdleog8ZhAM+ybJlFPzIrfsjbZRTzU=;
+        s=korg; t=1661245947;
+        bh=t9EAyhTB6WaOrs6vp1R5UqNAeAWhZro/XkIxBgAHZao=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=PYneETmbsNxvs22X88zsugbixtysgz5sUh+hHMnZhFVUMmREIndXXugtFY6KUfFrY
-         NQpalV0CI95TR5P5tq8ZTYafaIuNkeYlAQLCj7zXX+TsdZycf4XVb+88psHbh7BCy4
-         96J+svh37GUIDpbYLMO20Qog3magKQbXRMzBzg1M=
+        b=Xg6FmpnZvrQJ2MFLt2C+cIXJJPXS5yMbL2v5u/OsrR6gZ/Nr3xeLE81LucYD7yCaC
+         jhogKzJOYStbhkrYa6c3tMTuRLpRShTfFJ95ME141/8JOIlwH4oI8kZa3sbA1CkehV
+         7i3XHQu4zsVLpwegH7khkmRk3k8pPTFSTldrRdAE=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Douglas Gilbert <dgilbert@interlog.com>,
-        Tony Battersby <tonyb@cybernetics.com>,
-        "Martin K. Petersen" <martin.petersen@oracle.com>
-Subject: [PATCH 4.19 207/287] scsi: sg: Allow waiting for commands to complete on removed device
-Date:   Tue, 23 Aug 2022 10:26:16 +0200
-Message-Id: <20220823080107.883027721@linuxfoundation.org>
+        stable@vger.kernel.org, Dan Carpenter <dan.carpenter@oracle.com>,
+        Luiz Augusto von Dentz <luiz.von.dentz@intel.com>
+Subject: [PATCH 4.19 209/287] Bluetooth: L2CAP: Fix l2cap_global_chan_by_psm regression
+Date:   Tue, 23 Aug 2022 10:26:18 +0200
+Message-Id: <20220823080107.964795748@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220823080100.268827165@linuxfoundation.org>
 References: <20220823080100.268827165@linuxfoundation.org>
@@ -50,148 +49,56 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Tony Battersby <tonyb@cybernetics.com>
+From: Luiz Augusto von Dentz <luiz.von.dentz@intel.com>
 
-commit 3455607fd7be10b449f5135c00dc306b85dc0d21 upstream.
+commit 332f1795ca202489c665a75e62e18ff6284de077 upstream.
 
-When a SCSI device is removed while in active use, currently sg will
-immediately return -ENODEV on any attempt to wait for active commands that
-were sent before the removal.  This is problematic for commands that use
-SG_FLAG_DIRECT_IO since the data buffer may still be in use by the kernel
-when userspace frees or reuses it after getting ENODEV, leading to
-corrupted userspace memory (in the case of READ-type commands) or corrupted
-data being sent to the device (in the case of WRITE-type commands).  This
-has been seen in practice when logging out of a iscsi_tcp session, where
-the iSCSI driver may still be processing commands after the device has been
-marked for removal.
+The patch d0be8347c623: "Bluetooth: L2CAP: Fix use-after-free caused
+by l2cap_chan_put" from Jul 21, 2022, leads to the following Smatch
+static checker warning:
 
-Change the policy to allow userspace to wait for active sg commands even
-when the device is being removed.  Return -ENODEV only when there are no
-more responses to read.
+        net/bluetooth/l2cap_core.c:1977 l2cap_global_chan_by_psm()
+        error: we previously assumed 'c' could be null (see line 1996)
 
-Link: https://lore.kernel.org/r/5ebea46f-fe83-2d0b-233d-d0dcb362dd0a@cybernetics.com
-Cc: <stable@vger.kernel.org>
-Acked-by: Douglas Gilbert <dgilbert@interlog.com>
-Signed-off-by: Tony Battersby <tonyb@cybernetics.com>
-Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
+Fixes: d0be8347c623 ("Bluetooth: L2CAP: Fix use-after-free caused by l2cap_chan_put")
+Reported-by: Dan Carpenter <dan.carpenter@oracle.com>
+Signed-off-by: Luiz Augusto von Dentz <luiz.von.dentz@intel.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/scsi/sg.c |   57 ++++++++++++++++++++++++++++++++----------------------
- 1 file changed, 34 insertions(+), 23 deletions(-)
+ net/bluetooth/l2cap_core.c |   13 ++++++-------
+ 1 file changed, 6 insertions(+), 7 deletions(-)
 
---- a/drivers/scsi/sg.c
-+++ b/drivers/scsi/sg.c
-@@ -195,7 +195,7 @@ static void sg_link_reserve(Sg_fd * sfp,
- static void sg_unlink_reserve(Sg_fd * sfp, Sg_request * srp);
- static Sg_fd *sg_add_sfp(Sg_device * sdp);
- static void sg_remove_sfp(struct kref *);
--static Sg_request *sg_get_rq_mark(Sg_fd * sfp, int pack_id);
-+static Sg_request *sg_get_rq_mark(Sg_fd * sfp, int pack_id, bool *busy);
- static Sg_request *sg_add_request(Sg_fd * sfp);
- static int sg_remove_request(Sg_fd * sfp, Sg_request * srp);
- static Sg_device *sg_get_dev(int dev);
-@@ -417,6 +417,7 @@ sg_read(struct file *filp, char __user *
- 	Sg_fd *sfp;
- 	Sg_request *srp;
- 	int req_pack_id = -1;
-+	bool busy;
- 	sg_io_hdr_t *hp;
- 	struct sg_header *old_hdr = NULL;
- 	int retval = 0;
-@@ -464,25 +465,19 @@ sg_read(struct file *filp, char __user *
- 		} else
- 			req_pack_id = old_hdr->pack_id;
- 	}
--	srp = sg_get_rq_mark(sfp, req_pack_id);
-+	srp = sg_get_rq_mark(sfp, req_pack_id, &busy);
- 	if (!srp) {		/* now wait on packet to arrive */
--		if (atomic_read(&sdp->detaching)) {
--			retval = -ENODEV;
--			goto free_old_hdr;
--		}
- 		if (filp->f_flags & O_NONBLOCK) {
- 			retval = -EAGAIN;
- 			goto free_old_hdr;
- 		}
- 		retval = wait_event_interruptible(sfp->read_wait,
--			(atomic_read(&sdp->detaching) ||
--			(srp = sg_get_rq_mark(sfp, req_pack_id))));
--		if (atomic_read(&sdp->detaching)) {
--			retval = -ENODEV;
--			goto free_old_hdr;
--		}
--		if (retval) {
--			/* -ERESTARTSYS as signal hit process */
-+			((srp = sg_get_rq_mark(sfp, req_pack_id, &busy)) ||
-+			(!busy && atomic_read(&sdp->detaching))));
-+		if (!srp) {
-+			/* signal or detaching */
-+			if (!retval)
-+				retval = -ENODEV;
- 			goto free_old_hdr;
- 		}
- 	}
-@@ -933,9 +928,7 @@ sg_ioctl(struct file *filp, unsigned int
- 		if (result < 0)
- 			return result;
- 		result = wait_event_interruptible(sfp->read_wait,
--			(srp_done(sfp, srp) || atomic_read(&sdp->detaching)));
--		if (atomic_read(&sdp->detaching))
--			return -ENODEV;
-+			srp_done(sfp, srp));
- 		write_lock_irq(&sfp->rq_list_lock);
- 		if (srp->done) {
- 			srp->done = 2;
-@@ -2079,19 +2072,28 @@ sg_unlink_reserve(Sg_fd * sfp, Sg_reques
- }
- 
- static Sg_request *
--sg_get_rq_mark(Sg_fd * sfp, int pack_id)
-+sg_get_rq_mark(Sg_fd * sfp, int pack_id, bool *busy)
+--- a/net/bluetooth/l2cap_core.c
++++ b/net/bluetooth/l2cap_core.c
+@@ -1804,11 +1804,11 @@ static struct l2cap_chan *l2cap_global_c
+ 						   bdaddr_t *dst,
+ 						   u8 link_type)
  {
- 	Sg_request *resp;
- 	unsigned long iflags;
+-	struct l2cap_chan *c, *c1 = NULL;
++	struct l2cap_chan *c, *tmp, *c1 = NULL;
  
-+	*busy = false;
- 	write_lock_irqsave(&sfp->rq_list_lock, iflags);
- 	list_for_each_entry(resp, &sfp->rq_list, entry) {
--		/* look for requests that are ready + not SG_IO owned */
--		if ((1 == resp->done) && (!resp->sg_io_owned) &&
-+		/* look for requests that are not SG_IO owned */
-+		if ((!resp->sg_io_owned) &&
- 		    ((-1 == pack_id) || (resp->header.pack_id == pack_id))) {
--			resp->done = 2;	/* guard against other readers */
--			write_unlock_irqrestore(&sfp->rq_list_lock, iflags);
--			return resp;
-+			switch (resp->done) {
-+			case 0: /* request active */
-+				*busy = true;
-+				break;
-+			case 1: /* request done; response ready to return */
-+				resp->done = 2;	/* guard against other readers */
-+				write_unlock_irqrestore(&sfp->rq_list_lock, iflags);
-+				return resp;
-+			case 2: /* response already being returned */
-+				break;
-+			}
- 		}
- 	}
- 	write_unlock_irqrestore(&sfp->rq_list_lock, iflags);
-@@ -2145,6 +2147,15 @@ sg_remove_request(Sg_fd * sfp, Sg_reques
- 		res = 1;
- 	}
- 	write_unlock_irqrestore(&sfp->rq_list_lock, iflags);
-+
-+	/*
-+	 * If the device is detaching, wakeup any readers in case we just
-+	 * removed the last response, which would leave nothing for them to
-+	 * return other than -ENODEV.
-+	 */
-+	if (unlikely(atomic_read(&sfp->parentdp->detaching)))
-+		wake_up_interruptible_all(&sfp->read_wait);
-+
- 	return res;
- }
+ 	read_lock(&chan_list_lock);
  
+-	list_for_each_entry(c, &chan_list, global_l) {
++	list_for_each_entry_safe(c, tmp, &chan_list, global_l) {
+ 		if (state && c->state != state)
+ 			continue;
+ 
+@@ -1827,11 +1827,10 @@ static struct l2cap_chan *l2cap_global_c
+ 			dst_match = !bacmp(&c->dst, dst);
+ 			if (src_match && dst_match) {
+ 				c = l2cap_chan_hold_unless_zero(c);
+-				if (!c)
+-					continue;
+-
+-				read_unlock(&chan_list_lock);
+-				return c;
++				if (c) {
++					read_unlock(&chan_list_lock);
++					return c;
++				}
+ 			}
+ 
+ 			/* Closest match */
 
 
