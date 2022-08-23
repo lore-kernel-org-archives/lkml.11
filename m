@@ -2,42 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BB2DEC32772
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 10:53:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D9A92C32772
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 10:54:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356200AbiHWKxu (ORCPT
+        id S1356241AbiHWKx5 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 06:53:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56650 "EHLO
+        Tue, 23 Aug 2022 06:53:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56670 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355908AbiHWKpi (ORCPT
+        with ESMTP id S1355946AbiHWKp5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 06:45:38 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 914AF1E3DB;
-        Tue, 23 Aug 2022 02:11:23 -0700 (PDT)
+        Tue, 23 Aug 2022 06:45:57 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7DB126CF51;
+        Tue, 23 Aug 2022 02:11:28 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 440EAB81C35;
-        Tue, 23 Aug 2022 09:11:22 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8FD88C433B5;
-        Tue, 23 Aug 2022 09:11:20 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 177326069D;
+        Tue, 23 Aug 2022 09:11:28 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0A0FBC433D6;
+        Tue, 23 Aug 2022 09:11:26 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661245881;
-        bh=paIeGS5QXg8sqdMFoRFWME5DnnZlu2zOk2+29oEExnA=;
+        s=korg; t=1661245887;
+        bh=xbUiAn6roGKlOVmttkOBenGDG4+k4twIaoCVAlzAAPA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=fvIwfQvZESIXaaveCGhAo+xuL59K5kOx5C9jksvxRVvVyc1f9mV59Qr5Nsdf09JUG
-         5Hng79kzwR0NKP357dz29x1HuQ2gujiZwF0BS42qVkGDgkdGpX0RyqoQTsmOMBJn9M
-         B/xAn9TjVzDfcPWoF8vV87RkeiGYw9+Lc2RA3G/E=
+        b=b8cD+AjInpX6PsiVFHXP3OP2WPxfwWYGoZ6QFuVxp765nF5tt9Le1qBtgFT1gB6YP
+         3CWSlPh00yQoYGR5Suz7CHhEWd+HGxgZHp0eQeLwJLy9CD9mKO3jJzrBdKgqiHhrX7
+         kRtD+svXAwarEMBlM91xm50I2vxiTJfe7JlKBVCc=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Filipe Manana <fdmanana@suse.com>,
-        David Sterba <dsterba@suse.com>
-Subject: [PATCH 4.19 220/287] btrfs: fix lost error handling when looking up extended ref on log replay
-Date:   Tue, 23 Aug 2022 10:26:29 +0200
-Message-Id: <20220823080108.376730075@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Gerhard Uttenthaler <uttenthaler@ems-wuensche.com>,
+        Sebastian Haas <haas@ems-wuensche.com>,
+        Marc Kleine-Budde <mkl@pengutronix.de>
+Subject: [PATCH 4.19 222/287] can: ems_usb: fix clangs -Wunaligned-access warning
+Date:   Tue, 23 Aug 2022 10:26:31 +0200
+Message-Id: <20220823080108.467764856@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220823080100.268827165@linuxfoundation.org>
 References: <20220823080100.268827165@linuxfoundation.org>
@@ -49,43 +51,65 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Filipe Manana <fdmanana@suse.com>
+From: Marc Kleine-Budde <mkl@pengutronix.de>
 
-commit 7a6b75b79902e47f46328b57733f2604774fa2d9 upstream.
+commit a4cb6e62ea4d36e53fb3c0f18ea4503d7b76674f upstream.
 
-During log replay, when processing inode references, if we get an error
-when looking up for an extended reference at __add_inode_ref(), we ignore
-it and proceed, returning success (0) if no other error happens after the
-lookup. This is obviously wrong because in case an extended reference
-exists and it encodes some name not in the log, we need to unlink it,
-otherwise the filesystem state will not match the state it had after the
-last fsync.
+clang emits a -Wunaligned-access warning on struct __packed
+ems_cpc_msg.
 
-So just make __add_inode_ref() return an error it gets from the extended
-reference lookup.
+The reason is that the anonymous union msg (not declared as packed) is
+being packed right after some non naturally aligned variables (3*8
+bits + 2*32) inside a packed struct:
 
-Fixes: f186373fef005c ("btrfs: extended inode refs")
-CC: stable@vger.kernel.org # 4.9+
-Signed-off-by: Filipe Manana <fdmanana@suse.com>
-Reviewed-by: David Sterba <dsterba@suse.com>
-Signed-off-by: David Sterba <dsterba@suse.com>
+| struct __packed ems_cpc_msg {
+| 	u8 type;	/* type of message */
+| 	u8 length;	/* length of data within union 'msg' */
+| 	u8 msgid;	/* confirmation handle */
+| 	__le32 ts_sec;	/* timestamp in seconds */
+| 	__le32 ts_nsec;	/* timestamp in nano seconds */
+|	/* ^ not naturally aligned */
+|
+| 	union {
+| 	/* ^ not declared as packed */
+| 		u8 generic[64];
+| 		struct cpc_can_msg can_msg;
+| 		struct cpc_can_params can_params;
+| 		struct cpc_confirm confirmation;
+| 		struct cpc_overrun overrun;
+| 		struct cpc_can_error error;
+| 		struct cpc_can_err_counter err_counter;
+| 		u8 can_state;
+| 	} msg;
+| };
+
+Starting from LLVM 14, having an unpacked struct nested in a packed
+struct triggers a warning. c.f. [1].
+
+Fix the warning by marking the anonymous union as packed.
+
+[1] https://github.com/llvm/llvm-project/issues/55520
+
+Fixes: 702171adeed3 ("ems_usb: Added support for EMS CPC-USB/ARM7 CAN/USB interface")
+Link: https://lore.kernel.org/all/20220802094021.959858-1-mkl@pengutronix.de
+Cc: Gerhard Uttenthaler <uttenthaler@ems-wuensche.com>
+Cc: Sebastian Haas <haas@ems-wuensche.com>
+Signed-off-by: Marc Kleine-Budde <mkl@pengutronix.de>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- fs/btrfs/tree-log.c |    4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
+ drivers/net/can/usb/ems_usb.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/fs/btrfs/tree-log.c
-+++ b/fs/btrfs/tree-log.c
-@@ -1081,7 +1081,9 @@ again:
- 	extref = btrfs_lookup_inode_extref(NULL, root, path, name, namelen,
- 					   inode_objectid, parent_objectid, 0,
- 					   0);
--	if (!IS_ERR_OR_NULL(extref)) {
-+	if (IS_ERR(extref)) {
-+		return PTR_ERR(extref);
-+	} else if (extref) {
- 		u32 item_size;
- 		u32 cur_offset = 0;
- 		unsigned long base;
+--- a/drivers/net/can/usb/ems_usb.c
++++ b/drivers/net/can/usb/ems_usb.c
+@@ -206,7 +206,7 @@ struct __packed ems_cpc_msg {
+ 	__le32 ts_sec;	/* timestamp in seconds */
+ 	__le32 ts_nsec;	/* timestamp in nano seconds */
+ 
+-	union {
++	union __packed {
+ 		u8 generic[64];
+ 		struct cpc_can_msg can_msg;
+ 		struct cpc_can_params can_params;
 
 
