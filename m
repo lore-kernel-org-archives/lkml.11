@@ -2,44 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BFCBAC32772
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 10:08:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3B42BC32774
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 10:08:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352531AbiHWKH7 (ORCPT
+        id S1352568AbiHWKIG (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 06:07:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46246 "EHLO
+        Tue, 23 Aug 2022 06:08:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46244 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352435AbiHWKBy (ORCPT
+        with ESMTP id S1352434AbiHWKBy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 23 Aug 2022 06:01:54 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7D9786B640;
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7D87163F25;
         Tue, 23 Aug 2022 01:49:43 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 5DE4FB81C1C;
-        Tue, 23 Aug 2022 08:35:28 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C1DDFC433D7;
-        Tue, 23 Aug 2022 08:35:26 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 7C732B81C5F;
+        Tue, 23 Aug 2022 08:34:49 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 80EC7C433D6;
+        Tue, 23 Aug 2022 08:34:47 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661243727;
-        bh=feQFNZ1S7BhDIdTLYLh+/Cpkv2mdA7IxHtZ5KdwUEPg=;
+        s=korg; t=1661243688;
+        bh=nIcfzrungjtKw7y6HO2FvmCrIPM7rRA9aRlAm5poON0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=FwF//Reg6Tc+JIlUe/l7o7kNtaA9i8I7v09dyiStBEhSkr//TfIqe9OsXBq2a9skO
-         FDlT4EkIHt1ZL/dKcm34Sq3kNVzDaOCvuphK2UY+V81nnVloZjnclQjDq6GYNXxo7z
-         nRSzrAU0qUN/fwgkpJ89FtZOfGHWm+isZoHz+a3A=
+        b=SNRn40+u9fx9QCdCNQEp5e+euBg4J3urz8M4GIsI0qmyxw3Qs6ZEueI3am0t4QG/T
+         88BsSyDgmRjpuCqj1Kp4XoY9LznOUZyaqpvfU6/CY1UF8+4rmtk2Cksdb59t847vf9
+         KuChM+FAJ/sleNJhL2F8BZQfE6ZxufnfqE23/nvc=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Kai-Heng Feng <kai.heng.feng@canonical.com>,
-        Lucas Tanure <tanureal@opensource.cirrus.com>,
-        Takashi Iwai <tiwai@suse.de>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.19 338/365] ALSA: hda/realtek: Enable speaker and mute LEDs for HP laptops
-Date:   Tue, 23 Aug 2022 10:03:59 +0200
-Message-Id: <20220823080132.356410307@linuxfoundation.org>
+        stable@vger.kernel.org, Wenqing Liu <wenqingliu0120@gmail.com>,
+        Chao Yu <chao.yu@oppo.com>, Jaegeuk Kim <jaegeuk@kernel.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.19 356/365] f2fs: fix to do sanity check on segment type in build_sit_entries()
+Date:   Tue, 23 Aug 2022 10:04:17 +0200
+Message-Id: <20220823080133.179539706@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220823080118.128342613@linuxfoundation.org>
 References: <20220823080118.128342613@linuxfoundation.org>
@@ -51,39 +50,76 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Kai-Heng Feng <kai.heng.feng@canonical.com>
+From: Chao Yu <chao.yu@oppo.com>
 
-[ Upstream commit c578d5da10dc429c6676ab09f3fec0b79b31633a ]
+[ Upstream commit 09beadf289d6e300553e60d6e76f13c0427ecab3 ]
 
-Two more HP laptops that use cs35l41 AMP for speaker and GPIO for mute
-LEDs.
+As Wenqing Liu <wenqingliu0120@gmail.com> reported in bugzilla:
 
-So use the existing quirk to enable them accordingly.
+https://bugzilla.kernel.org/show_bug.cgi?id=216285
 
-[ Sort the entries at the SSID order by tiwai ]
+RIP: 0010:memcpy_erms+0x6/0x10
+ f2fs_update_meta_page+0x84/0x570 [f2fs]
+ change_curseg.constprop.0+0x159/0xbd0 [f2fs]
+ f2fs_do_replace_block+0x5c7/0x18a0 [f2fs]
+ f2fs_replace_block+0xeb/0x180 [f2fs]
+ recover_data+0x1abd/0x6f50 [f2fs]
+ f2fs_recover_fsync_data+0x12ce/0x3250 [f2fs]
+ f2fs_fill_super+0x4459/0x6190 [f2fs]
+ mount_bdev+0x2cf/0x3b0
+ legacy_get_tree+0xed/0x1d0
+ vfs_get_tree+0x81/0x2b0
+ path_mount+0x47e/0x19d0
+ do_mount+0xce/0xf0
+ __x64_sys_mount+0x12c/0x1a0
+ do_syscall_64+0x38/0x90
+ entry_SYSCALL_64_after_hwframe+0x63/0xcd
 
-Signed-off-by: Kai-Heng Feng <kai.heng.feng@canonical.com>
-Reviewed-by: Lucas Tanure <tanureal@opensource.cirrus.com>
-Link: https://lore.kernel.org/r/20220719142015.244426-1-kai.heng.feng@canonical.com
-Signed-off-by: Takashi Iwai <tiwai@suse.de>
+The root cause is segment type is invalid, so in f2fs_do_replace_block(),
+f2fs accesses f2fs_sm_info::curseg_array with out-of-range segment type,
+result in accessing invalid curseg->sum_blk during memcpy in
+f2fs_update_meta_page(). Fix this by adding sanity check on segment type
+in build_sit_entries().
+
+Reported-by: Wenqing Liu <wenqingliu0120@gmail.com>
+Signed-off-by: Chao Yu <chao.yu@oppo.com>
+Signed-off-by: Jaegeuk Kim <jaegeuk@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- sound/pci/hda/patch_realtek.c | 2 ++
- 1 file changed, 2 insertions(+)
+ fs/f2fs/segment.c | 13 +++++++++++++
+ 1 file changed, 13 insertions(+)
 
-diff --git a/sound/pci/hda/patch_realtek.c b/sound/pci/hda/patch_realtek.c
-index 09d97a8afdda..1ae9674fa8a3 100644
---- a/sound/pci/hda/patch_realtek.c
-+++ b/sound/pci/hda/patch_realtek.c
-@@ -9234,6 +9234,8 @@ static const struct snd_pci_quirk alc269_fixup_tbl[] = {
- 	SND_PCI_QUIRK(0x103c, 0x8aa3, "HP ProBook 450 G9 (MB 8AA1)", ALC236_FIXUP_HP_GPIO_LED),
- 	SND_PCI_QUIRK(0x103c, 0x8aa8, "HP EliteBook 640 G9 (MB 8AA6)", ALC236_FIXUP_HP_GPIO_LED),
- 	SND_PCI_QUIRK(0x103c, 0x8aab, "HP EliteBook 650 G9 (MB 8AA9)", ALC236_FIXUP_HP_GPIO_LED),
-+	SND_PCI_QUIRK(0x103c, 0x8ad1, "HP EliteBook 840 14 inch G9 Notebook PC", ALC245_FIXUP_CS35L41_SPI_2_HP_GPIO_LED),
-+	SND_PCI_QUIRK(0x103c, 0x8ad2, "HP EliteBook 860 16 inch G9 Notebook PC", ALC245_FIXUP_CS35L41_SPI_2_HP_GPIO_LED),
- 	SND_PCI_QUIRK(0x1043, 0x103e, "ASUS X540SA", ALC256_FIXUP_ASUS_MIC),
- 	SND_PCI_QUIRK(0x1043, 0x103f, "ASUS TX300", ALC282_FIXUP_ASUS_TX300),
- 	SND_PCI_QUIRK(0x1043, 0x106d, "Asus K53BE", ALC269_FIXUP_LIMIT_INT_MIC_BOOST),
+diff --git a/fs/f2fs/segment.c b/fs/f2fs/segment.c
+index 874c1b9c41a2..ac890c9fa8a1 100644
+--- a/fs/f2fs/segment.c
++++ b/fs/f2fs/segment.c
+@@ -4362,6 +4362,12 @@ static int build_sit_entries(struct f2fs_sb_info *sbi)
+ 				return err;
+ 			seg_info_from_raw_sit(se, &sit);
+ 
++			if (se->type >= NR_PERSISTENT_LOG) {
++				f2fs_err(sbi, "Invalid segment type: %u, segno: %u",
++							se->type, start);
++				return -EFSCORRUPTED;
++			}
++
+ 			sit_valid_blocks[SE_PAGETYPE(se)] += se->valid_blocks;
+ 
+ 			if (f2fs_block_unit_discard(sbi)) {
+@@ -4410,6 +4416,13 @@ static int build_sit_entries(struct f2fs_sb_info *sbi)
+ 			break;
+ 		seg_info_from_raw_sit(se, &sit);
+ 
++		if (se->type >= NR_PERSISTENT_LOG) {
++			f2fs_err(sbi, "Invalid segment type: %u, segno: %u",
++							se->type, start);
++			err = -EFSCORRUPTED;
++			break;
++		}
++
+ 		sit_valid_blocks[SE_PAGETYPE(se)] += se->valid_blocks;
+ 
+ 		if (f2fs_block_unit_discard(sbi)) {
 -- 
 2.35.1
 
