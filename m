@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C1587C32793
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 08:09:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B19DAC32774
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 08:09:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241883AbiHWIJw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 04:09:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51768 "EHLO
+        id S241891AbiHWIJz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 23 Aug 2022 04:09:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50234 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240303AbiHWIIk (ORCPT
+        with ESMTP id S241762AbiHWIIo (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 04:08:40 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CDC116C756;
-        Tue, 23 Aug 2022 01:05:42 -0700 (PDT)
+        Tue, 23 Aug 2022 04:08:44 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1BCFD6CD1B;
+        Tue, 23 Aug 2022 01:05:45 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 4FC16B81C22;
-        Tue, 23 Aug 2022 08:05:31 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B44AAC433C1;
-        Tue, 23 Aug 2022 08:05:29 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id C078C6125B;
+        Tue, 23 Aug 2022 08:05:45 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C702CC433D6;
+        Tue, 23 Aug 2022 08:05:44 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661241930;
-        bh=l1eN8wcRrSyg38twlZ0Z+rSeqA/tyusE2PZXXuhhE18=;
+        s=korg; t=1661241945;
+        bh=vPttWHwZ7d8rvMxwJVsMNnxWY2g5BGdw+mCCof3zh+k=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ThijvhZ8xvPyKoQWA5vrACLBeTwotd9GwcKbpVjR5dWm5LjkCUvKpSWwr1EqWQOgw
-         6tS7ymsqOpz8IJiq7O2gEqcS5Vc+pYpWNWohC6QWnjyoxzXd0L8KOmcDSKjgCxxYQn
-         Gi+EGFVroUgGoGZkIXtN5rwwAVzJ9IGCZplLsu4I=
+        b=cJ00gEk+7Vk77pi+lVxxpRd7QwUkBX6I/tpmIa6z+O0MS8NB8Yeexv8idBleGPlci
+         tozLP7T24QECVVsot+S8FM3N0bdBkda3+AdXIEdcFxJCJDGBUzdZkLoLnI+Sl/F9ax
+         YtIBMnSn+WQnVMUwX84rqLhFibYx6ovagTykLH2g=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Likun Gao <Likun.Gao@amd.com>,
-        Hawking Zhang <Hawking.Zhang@amd.com>,
-        Alex Deucher <alexander.deucher@amd.com>
-Subject: [PATCH 5.19 022/365] drm/amdgpu: change vram width algorithm for vram_info v3_0
-Date:   Tue, 23 Aug 2022 09:58:43 +0200
-Message-Id: <20220823080119.139942824@linuxfoundation.org>
+        stable@vger.kernel.org, Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Andi Shyti <andi.shyti@linux.intel.com>,
+        Rodrigo Vivi <rodrigo.vivi@intel.com>
+Subject: [PATCH 5.19 027/365] drm/i915: pass a pointer for tlb seqno at vma_invalidate_tlb()
+Date:   Tue, 23 Aug 2022 09:58:48 +0200
+Message-Id: <20220823080119.367414148@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220823080118.128342613@linuxfoundation.org>
 References: <20220823080118.128342613@linuxfoundation.org>
@@ -49,37 +49,79 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Likun Gao <Likun.Gao@amd.com>
+From: Mauro Carvalho Chehab <mchehab@kernel.org>
 
-commit 4a0a2cf4c03ba49a4c2596c49c7daa719917d509 upstream.
+commit 9d50bff40e3e366886ec37299fc317edf84be0c9 upstream.
 
-Update the vram width algorithm for vram_info v3_0 to align with the
-changes of latest IFWI.
+WRITE_ONCE() should happen at the original var, not on a local
+copy of it.
 
-Signed-off-by: Likun Gao <Likun.Gao@amd.com>
-Reviewed-by: Hawking Zhang <Hawking.Zhang@amd.com>
-Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
-Cc: stable@vger.kernel.org # 5.19.x
+Cc: stable@vger.kernel.org
+Fixes: 59eda6ce824e ("drm/i915/gt: Batch TLB invalidations")
+Signed-off-by: Mauro Carvalho Chehab <mchehab@kernel.org>
+Reviewed-by: Andi Shyti <andi.shyti@linux.intel.com>
+Signed-off-by: Rodrigo Vivi <rodrigo.vivi@intel.com>
+[added cc-stable while merging it]
+Link: https://patchwork.freedesktop.org/patch/msgid/f9550e6bacea10131ff40dd8981b69eb9251cdcd.1659598090.git.mchehab@kernel.org
+(cherry picked from commit 3d037d99e61a1e7a3ae3d214146d88db349dd19f)
+Signed-off-by: Rodrigo Vivi <rodrigo.vivi@intel.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/gpu/drm/amd/amdgpu/amdgpu_atomfirmware.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/gpu/drm/i915/gt/intel_ppgtt.c |    2 +-
+ drivers/gpu/drm/i915/i915_vma.c       |    6 +++---
+ drivers/gpu/drm/i915/i915_vma.h       |    2 +-
+ 3 files changed, 5 insertions(+), 5 deletions(-)
 
-diff --git a/drivers/gpu/drm/amd/amdgpu/amdgpu_atomfirmware.c b/drivers/gpu/drm/amd/amdgpu/amdgpu_atomfirmware.c
-index fd8f3731758e..b81b77a9efa6 100644
---- a/drivers/gpu/drm/amd/amdgpu/amdgpu_atomfirmware.c
-+++ b/drivers/gpu/drm/amd/amdgpu/amdgpu_atomfirmware.c
-@@ -314,7 +314,7 @@ amdgpu_atomfirmware_get_vram_info(struct amdgpu_device *adev,
- 					mem_channel_number = vram_info->v30.channel_num;
- 					mem_channel_width = vram_info->v30.channel_width;
- 					if (vram_width)
--						*vram_width = mem_channel_number * mem_channel_width;
-+						*vram_width = mem_channel_number * (1 << mem_channel_width);
- 					break;
- 				default:
- 					return -EINVAL;
--- 
-2.37.2
-
+--- a/drivers/gpu/drm/i915/gt/intel_ppgtt.c
++++ b/drivers/gpu/drm/i915/gt/intel_ppgtt.c
+@@ -211,7 +211,7 @@ void ppgtt_unbind_vma(struct i915_addres
+ 
+ 	vm->clear_range(vm, vma_res->start, vma_res->vma_size);
+ 	if (vma_res->tlb)
+-		vma_invalidate_tlb(vm, *vma_res->tlb);
++		vma_invalidate_tlb(vm, vma_res->tlb);
+ }
+ 
+ static unsigned long pd_count(u64 size, int shift)
+--- a/drivers/gpu/drm/i915/i915_vma.c
++++ b/drivers/gpu/drm/i915/i915_vma.c
+@@ -1299,7 +1299,7 @@ err_unpin:
+ 	return err;
+ }
+ 
+-void vma_invalidate_tlb(struct i915_address_space *vm, u32 tlb)
++void vma_invalidate_tlb(struct i915_address_space *vm, u32 *tlb)
+ {
+ 	/*
+ 	 * Before we release the pages that were bound by this vma, we
+@@ -1309,7 +1309,7 @@ void vma_invalidate_tlb(struct i915_addr
+ 	 * the most recent TLB invalidation seqno, and if we have not yet
+ 	 * flushed the TLBs upon release, perform a full invalidation.
+ 	 */
+-	WRITE_ONCE(tlb, intel_gt_next_invalidate_tlb_full(vm->gt));
++	WRITE_ONCE(*tlb, intel_gt_next_invalidate_tlb_full(vm->gt));
+ }
+ 
+ static void __vma_put_pages(struct i915_vma *vma, unsigned int count)
+@@ -1957,7 +1957,7 @@ struct dma_fence *__i915_vma_evict(struc
+ 			dma_fence_put(unbind_fence);
+ 			unbind_fence = NULL;
+ 		}
+-		vma_invalidate_tlb(vma->vm, vma->obj->mm.tlb);
++		vma_invalidate_tlb(vma->vm, &vma->obj->mm.tlb);
+ 	}
+ 
+ 	/*
+--- a/drivers/gpu/drm/i915/i915_vma.h
++++ b/drivers/gpu/drm/i915/i915_vma.h
+@@ -213,7 +213,7 @@ bool i915_vma_misplaced(const struct i91
+ 			u64 size, u64 alignment, u64 flags);
+ void __i915_vma_set_map_and_fenceable(struct i915_vma *vma);
+ void i915_vma_revoke_mmap(struct i915_vma *vma);
+-void vma_invalidate_tlb(struct i915_address_space *vm, u32 tlb);
++void vma_invalidate_tlb(struct i915_address_space *vm, u32 *tlb);
+ struct dma_fence *__i915_vma_evict(struct i915_vma *vma, bool async);
+ int __i915_vma_unbind(struct i915_vma *vma);
+ int __must_check i915_vma_unbind(struct i915_vma *vma);
 
 
