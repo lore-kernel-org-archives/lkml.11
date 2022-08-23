@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4B539C3814E
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 644B6C38147
 	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 11:37:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350135AbiHWLhg (ORCPT
+        id S1354292AbiHWLhp (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 07:37:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49068 "EHLO
+        Tue, 23 Aug 2022 07:37:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49044 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357835AbiHWLcA (ORCPT
+        with ESMTP id S1357831AbiHWLcA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 23 Aug 2022 07:32:00 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4A90CC6526;
-        Tue, 23 Aug 2022 02:26:12 -0700 (PDT)
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0EFF375FCE;
+        Tue, 23 Aug 2022 02:26:10 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 5EF6C6130E;
-        Tue, 23 Aug 2022 09:26:11 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 64B8DC433D6;
-        Tue, 23 Aug 2022 09:26:10 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 0F198B81C65;
+        Tue, 23 Aug 2022 09:26:09 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5EDEAC433C1;
+        Tue, 23 Aug 2022 09:26:07 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661246770;
-        bh=L3a5xqoa8lB+oi1iHwZ4UEGWPJcdi3pVtyy6z8oMcGo=;
+        s=korg; t=1661246767;
+        bh=NkX0qgk5tZRIxs43a3xj1BCoIDnP/FbY0Ka00fh+t3A=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Gjk6mPUiy9sCzxcbjcVk+xEmLnbkqEJ7VqxiF+4Gl5tu2IFARlF9kOL0orXYv0doz
-         vcMQ8rs/YuKoA5SMKwq4mD/HUPZICUf3TTipsFkOMKyJNCl2bWegGAAmFShCtiekmG
-         pj0zzjSeAFeyKGMpX1Ojda1ogv4GxALyZSRFSv0A=
+        b=MHVpOi/+e9acOyBGg3FMncpgwTp1ae02yA36e89viUwabJodinhhYabC5yXMgKCsR
+         h68WKt6MX0M7dxOdBXZbo4mcx8y/mDZVUp5ewcsttxga/DC2b4VseW+IqT4sAGmQ/h
+         Mh3/aOQ+oReuGYdljvKlzoO+HqQcmqHjOKLQfIAE=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Sireesh Kodali <sireeshkodali1@gmail.com>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        stable@vger.kernel.org, Miaohe Lin <linmiaohe@huawei.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 214/389] remoteproc: qcom: wcnss: Fix handling of IRQs
-Date:   Tue, 23 Aug 2022 10:24:52 +0200
-Message-Id: <20220823080124.550253516@linuxfoundation.org>
+Subject: [PATCH 5.4 196/389] mm/mmap.c: fix missing call to vm_unacct_memory in mmap_region
+Date:   Tue, 23 Aug 2022 10:24:34 +0200
+Message-Id: <20220823080123.833921106@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220823080115.331990024@linuxfoundation.org>
 References: <20220823080115.331990024@linuxfoundation.org>
@@ -50,58 +50,38 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Sireesh Kodali <sireeshkodali1@gmail.com>
+From: Miaohe Lin <linmiaohe@huawei.com>
 
-[ Upstream commit bed0adac1ded4cb486ba19a3a7e730fbd9a1c9c6 ]
+[ Upstream commit 7f82f922319ede486540e8746769865b9508d2c2 ]
 
-The wcnss_get_irq function is expected to return a value > 0 in the
-event that an IRQ is succssfully obtained, but it instead returns 0.
-This causes the stop and ready IRQs to never actually be used despite
-being defined in the device-tree. This patch fixes that.
+Since the beginning, charged is set to 0 to avoid calling vm_unacct_memory
+twice because vm_unacct_memory will be called by above unmap_region.  But
+since commit 4f74d2c8e827 ("vm: remove 'nr_accounted' calculations from
+the unmap_vmas() interfaces"), unmap_region doesn't call vm_unacct_memory
+anymore.  So charged shouldn't be set to 0 now otherwise the calling to
+paired vm_unacct_memory will be missed and leads to imbalanced account.
 
-Fixes: aed361adca9f ("remoteproc: qcom: Introduce WCNSS peripheral image loader")
-Signed-off-by: Sireesh Kodali <sireeshkodali1@gmail.com>
-Signed-off-by: Bjorn Andersson <bjorn.andersson@linaro.org>
-Link: https://lore.kernel.org/r/20220526141740.15834-2-sireeshkodali1@gmail.com
+Link: https://lkml.kernel.org/r/20220618082027.43391-1-linmiaohe@huawei.com
+Fixes: 4f74d2c8e827 ("vm: remove 'nr_accounted' calculations from the unmap_vmas() interfaces")
+Signed-off-by: Miaohe Lin <linmiaohe@huawei.com>
+Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/remoteproc/qcom_wcnss.c | 10 ++++++++--
- 1 file changed, 8 insertions(+), 2 deletions(-)
+ mm/mmap.c | 1 -
+ 1 file changed, 1 deletion(-)
 
-diff --git a/drivers/remoteproc/qcom_wcnss.c b/drivers/remoteproc/qcom_wcnss.c
-index c72f1b3b6085..18431ac09822 100644
---- a/drivers/remoteproc/qcom_wcnss.c
-+++ b/drivers/remoteproc/qcom_wcnss.c
-@@ -407,6 +407,7 @@ static int wcnss_request_irq(struct qcom_wcnss *wcnss,
- 			     irq_handler_t thread_fn)
- {
- 	int ret;
-+	int irq_number;
+diff --git a/mm/mmap.c b/mm/mmap.c
+index 88e686367776..8873ef114d28 100644
+--- a/mm/mmap.c
++++ b/mm/mmap.c
+@@ -1860,7 +1860,6 @@ unsigned long mmap_region(struct file *file, unsigned long addr,
  
- 	ret = platform_get_irq_byname(pdev, name);
- 	if (ret < 0 && optional) {
-@@ -417,14 +418,19 @@ static int wcnss_request_irq(struct qcom_wcnss *wcnss,
- 		return ret;
- 	}
- 
-+	irq_number = ret;
-+
- 	ret = devm_request_threaded_irq(&pdev->dev, ret,
- 					NULL, thread_fn,
- 					IRQF_TRIGGER_RISING | IRQF_ONESHOT,
- 					"wcnss", wcnss);
--	if (ret)
-+	if (ret) {
- 		dev_err(&pdev->dev, "request %s IRQ failed\n", name);
-+		return ret;
-+	}
- 
--	return ret;
-+	/* Return the IRQ number if the IRQ was successfully acquired */
-+	return irq_number;
- }
- 
- static int wcnss_alloc_memory_region(struct qcom_wcnss *wcnss)
+ 	/* Undo any partial mapping done by a device driver. */
+ 	unmap_region(mm, vma, prev, vma->vm_start, vma->vm_end);
+-	charged = 0;
+ 	if (vm_flags & VM_SHARED)
+ 		mapping_unmap_writable(file->f_mapping);
+ allow_write_and_free_vma:
 -- 
 2.35.1
 
