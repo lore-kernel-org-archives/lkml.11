@@ -2,96 +2,142 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9946DC38147
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 09:13:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A1BF2C32792
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 09:13:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349460AbiHWJMZ (ORCPT
+        id S1348952AbiHWJNi (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 05:12:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33734 "EHLO
+        Tue, 23 Aug 2022 05:13:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58886 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348451AbiHWJKF (ORCPT
+        with ESMTP id S1348804AbiHWJKx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 05:10:05 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CE92027CD3;
-        Tue, 23 Aug 2022 01:30:59 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id A4F4DB81C59;
-        Tue, 23 Aug 2022 08:30:08 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 13D17C433D7;
-        Tue, 23 Aug 2022 08:30:06 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661243407;
-        bh=Ivg1RtIfWpntWqpOEmsfcxyH9dZBFGT8p91JPEwm8JI=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=AJFrLPCEN4RTCkHHHHEAIn2vBino/fV9pjD+aGM3go1zjZx8hM5WKO9jn+/PsFUhc
-         0X1SSU/EncmTgXuiMyZKS0leQmJqvO4kqzMAM2HwA7fbpcSSHHMfo6xImjq3vfxpX6
-         4jHpLy3XcuBd6QamJAO1KDuz0pdMcIskbrsRC+70=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Jakub Kicinski <kuba@kernel.org>
-Subject: [PATCH 5.19 237/365] stmmac: intel: Add a missing clk_disable_unprepare() call in intel_eth_pci_remove()
-Date:   Tue, 23 Aug 2022 10:02:18 +0200
-Message-Id: <20220823080128.152003986@linuxfoundation.org>
-X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220823080118.128342613@linuxfoundation.org>
-References: <20220823080118.128342613@linuxfoundation.org>
-User-Agent: quilt/0.67
+        Tue, 23 Aug 2022 05:10:53 -0400
+Received: from mail-lf1-x135.google.com (mail-lf1-x135.google.com [IPv6:2a00:1450:4864:20::135])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0111986B68
+        for <linux-kernel@vger.kernel.org>; Tue, 23 Aug 2022 01:31:13 -0700 (PDT)
+Received: by mail-lf1-x135.google.com with SMTP id m5so8014838lfj.4
+        for <linux-kernel@vger.kernel.org>; Tue, 23 Aug 2022 01:31:13 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc;
+        bh=jI4L08/oOi3vA6hn+7winSookomnCC3p3C6fWDFU1ZQ=;
+        b=sKEa4J+60AjbFouLxhTZ7FFrLc6wToA+E8YHmbFvZKo4SNSLs+EiU9GJmHLCt4QR0c
+         HBtnq/hax4zB6jlmw27N1BmPMQ6LtYwySctUfJGJzMamv9dvZMbLNe+31qlsAxJ4ROXE
+         vNMgTwPwEIua5mq8CI+tEUOZI8z81IHQ3zaoy4nCw6k3Hvxc8PZk9dwV8FZBX8N6VNM5
+         VOoaMV9eTmyN8POtmN/8p1ar6EH5oVaR0ZmL7scKHq2m6MYW+r3L0i7zSrLvuC21jzqm
+         AAwwAE0RhlVqTcG/Qy3CW/jMd5n/C7ZC3nX6mjfOvYXFQG/W9fiEHDrCITIDqWkreEB9
+         GCiQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc;
+        bh=jI4L08/oOi3vA6hn+7winSookomnCC3p3C6fWDFU1ZQ=;
+        b=eFUxEw/33pt6cUX0C/me0NFAtrGWLMtDAJoBj3KOCakC09e+sXRbHOpSgkWly/jBjF
+         dq2nI8YQPnEu54wDYM9t9Ojmbn3amxTbNof6k0QbDLi9yG6HRfgiGC6pUkh//h+OOInu
+         uG6oC3Zs9Zj+eOEg4QcpecyVuLYtonbffyuBjKtKZJPPiY/NObzg++P7nIrQDOFVBXte
+         z47zW/H6T5GFfSLyqe1v3i00SAMcK97rV0WQUfPf4DpApBfEV7FoqBydHaKe6566sqY8
+         A3EG+NNkW1i+PD7Y4M5zx8GvADOHNX43WuHz6Im6+jAobZIL3vHps5mNLC4KuLUsZ9k/
+         9ofw==
+X-Gm-Message-State: ACgBeo0f9ncpzecxtaB54EPmSofvG3O2Gw4vIdxQMrI1pe/825k1GCsD
+        5Tr71MrMB9GJ9PoU+3vl2aZ1yg==
+X-Google-Smtp-Source: AA6agR4c69hJpYe3G1HTqpbA3I/nOr5UehBAs7HWoQA/fd2Rt83G8RXxKWKGkcJln0g0NwpVQx+QSg==
+X-Received: by 2002:a05:6512:b87:b0:492:d829:36bf with SMTP id b7-20020a0565120b8700b00492d82936bfmr5558125lfv.193.1661243424994;
+        Tue, 23 Aug 2022 01:30:24 -0700 (PDT)
+Received: from [192.168.0.11] (89-27-92-210.bb.dnainternet.fi. [89.27.92.210])
+        by smtp.gmail.com with ESMTPSA id v20-20020a056512349400b0047f6b4f82d1sm2387521lfr.250.2022.08.23.01.30.23
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 23 Aug 2022 01:30:24 -0700 (PDT)
+Message-ID: <afc181cd-46b7-4c69-d27a-d2005904f48a@linaro.org>
+Date:   Tue, 23 Aug 2022 11:30:22 +0300
 MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.12.0
+Subject: Re: [PATCH 16/20] dt-bindings: memory: snps: Detach Zynq DDRC
+ controller support
+Content-Language: en-US
+To:     Serge Semin <fancer.lancer@gmail.com>
+Cc:     Serge Semin <Sergey.Semin@baikalelectronics.ru>,
+        Rob Herring <robh@kernel.org>,
+        Michal Simek <michal.simek@xilinx.com>,
+        Borislav Petkov <bp@alien8.de>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Tony Luck <tony.luck@intel.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Manish Narani <manish.narani@xilinx.com>,
+        Alexey Malahov <Alexey.Malahov@baikalelectronics.ru>,
+        Michail Ivanov <Michail.Ivanov@baikalelectronics.ru>,
+        Pavel Parkhomenko <Pavel.Parkhomenko@baikalelectronics.ru>,
+        Punnaiah Choudary Kalluri 
+        <punnaiah.choudary.kalluri@xilinx.com>,
+        Dinh Nguyen <dinguyen@kernel.org>,
+        James Morse <james.morse@arm.com>,
+        Robert Richter <rric@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-edac@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <20220822190730.27277-1-Sergey.Semin@baikalelectronics.ru>
+ <20220822190730.27277-17-Sergey.Semin@baikalelectronics.ru>
+ <a5a15749-1047-74ea-831e-54d27a6d6cdf@linaro.org>
+ <835938e3-e4f5-5029-9373-5dd59bc3b625@linaro.org>
+ <20220823082748.td6pwkzj5grfno77@mobilestation>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+In-Reply-To: <20220823082748.td6pwkzj5grfno77@mobilestation>
 Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+On 23/08/2022 11:27, Serge Semin wrote:
+> On Tue, Aug 23, 2022 at 11:22:08AM +0300, Krzysztof Kozlowski wrote:
+>> On 23/08/2022 11:17, Krzysztof Kozlowski wrote:
+>>> On 22/08/2022 22:07, Serge Semin wrote:
+>>>> The Zynq A05 DDRC controller has nothing in common with DW uMCTL2 DDRC:
+>>>> the CSRs layout is absolutely different and it doesn't has IRQ unlike DW
+>>>> uMCTL2 DDR controller of all versions (v1.x, v2.x and v3.x). Thus there is
+>>>> no any reason to have these controllers described by the same bindings.
+>>>> Thus let's split them up.
+>>>>
+>>>> While at it rename the original Synopsys uMCTL2 DT-schema file to a more
+>>>> descriptive - snps,dw-umctl2-ddrc.yaml and add a more detailed title and
+>>>> description of the device bindings.
+>>>
+>>> Filename should be based on compatible, so if renaming then
+>>> snps,ddrc-3.80a.yaml or snps,ddrc.yaml... which leads to original
+>>> filename anyway. Therefore nack for rename.
+>>>
+>>> BTW, if you perform renames, generate patches with proper -M/-C/-B
+>>> arguments so this is detected.
+>>>
+>>>
+>>>>
+>>>> Signed-off-by: Serge Semin <Sergey.Semin@baikalelectronics.ru>
+>>>> --->  .../snps,dw-umctl2-ddrc.yaml                  | 51 +++++++++++++
+>>>
+>>> This is a mess. I did not get any cover letters, any other patches any
+>>> description of relation between this and your other one.
+>>>
+>>> It seems you make independent and conflicting changes to the same file,
+>>> so this has to be properly organized.
+>>>
+>>> Send entire patchset with cover letter with description of all
+>>> dependencies to all maintainers.
+>>>
+>>> This is unreviewable now, so a no.
+>>
+> 
+>> And also untestable by Rob's bot, so will have to wait.
+> 
+> For what reason it's untestable? The patch has no dependencies from
+> any other patchset.
 
-commit 5c23d6b717e4e956376f3852b90f58e262946b50 upstream.
+This one is testable, but the next one is not, because it depends on
+something. I don't see the reason to split the bindings between
+different patchsets.
 
-Commit 09f012e64e4b ("stmmac: intel: Fix clock handling on error and remove
-paths") removed this clk_disable_unprepare()
-
-This was partly revert by commit ac322f86b56c ("net: stmmac: Fix clock
-handling on remove path") which removed this clk_disable_unprepare()
-because:
-"
-   While unloading the dwmac-intel driver, clk_disable_unprepare() is
-   being called twice in stmmac_dvr_remove() and
-   intel_eth_pci_remove(). This causes kernel panic on the second call.
-"
-
-However later on, commit 5ec55823438e8 ("net: stmmac: add clocks management
-for gmac driver") has updated stmmac_dvr_remove() which do not call
-clk_disable_unprepare() anymore.
-
-So this call should now be called from intel_eth_pci_remove().
-
-Fixes: 5ec55823438e8 ("net: stmmac: add clocks management for gmac driver")
-Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
-Reviewed-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Link: https://lore.kernel.org/r/d7c8c1dadf40df3a7c9e643f76ffadd0ccc1ad1b.1660659689.git.christophe.jaillet@wanadoo.fr
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
----
- drivers/net/ethernet/stmicro/stmmac/dwmac-intel.c |    1 +
- 1 file changed, 1 insertion(+)
-
---- a/drivers/net/ethernet/stmicro/stmmac/dwmac-intel.c
-+++ b/drivers/net/ethernet/stmicro/stmmac/dwmac-intel.c
-@@ -1104,6 +1104,7 @@ static void intel_eth_pci_remove(struct
- 
- 	stmmac_dvr_remove(&pdev->dev);
- 
-+	clk_disable_unprepare(priv->plat->stmmac_clk);
- 	clk_unregister_fixed_rate(priv->plat->stmmac_clk);
- 
- 	pcim_iounmap_regions(pdev, BIT(0));
-
-
+Best regards,
+Krzysztof
