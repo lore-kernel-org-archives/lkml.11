@@ -2,80 +2,177 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4B10BC32772
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 21:02:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 83D6BC32772
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 21:02:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230526AbiHWVCH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 17:02:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53540 "EHLO
+        id S231288AbiHWVCW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 23 Aug 2022 17:02:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54430 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231147AbiHWVBw (ORCPT
+        with ESMTP id S229870AbiHWVCQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 17:01:52 -0400
-Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B20F47E838
-        for <linux-kernel@vger.kernel.org>; Tue, 23 Aug 2022 14:01:51 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1661288511; x=1692824511;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=wqzz300j2KV+gbb3JSVLKBX28Fwj6Wd6JIiihPMctuc=;
-  b=bfCpwovtj7abwoOo1YWoNePm7JmTtYfp1Kc8CV7dSGygOwFFFwT6npf9
-   gYFrW9+m7k6I584Sd+J+dJwoVw+oTXo9yNeZUU+Kw3mGgm/16YLqACs2O
-   urfkiQaf2W5CqJfIDdk1AthzyM6VDUvGK4KYvupJ/FZI2vbAM86qFo/so
-   0w0XYkgcm7g/d78cux2qS8mh/tseQkxLdsuSGOrAy/c318JnpodgjFoNq
-   6r6YDPCgBR2pEvlbYM7bLZQRofXiwRvjc/h4xI1eMkO5LB4Y7sd5fCf3J
-   bJWUyLXPivt0UFBp05GmEaESm7XxVrY27Te6b8aLLayhDEsFfMwhgX3fl
-   A==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10448"; a="357769303"
-X-IronPort-AV: E=Sophos;i="5.93,258,1654585200"; 
-   d="scan'208";a="357769303"
-Received: from fmsmga003.fm.intel.com ([10.253.24.29])
-  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Aug 2022 14:01:49 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.93,258,1654585200"; 
-   d="scan'208";a="698812591"
-Received: from kanliang-dev.jf.intel.com ([10.165.154.102])
-  by FMSMGA003.fm.intel.com with ESMTP; 23 Aug 2022 14:01:49 -0700
-From:   kan.liang@linux.intel.com
-To:     peterz@infradead.org, mingo@redhat.com,
-        linux-kernel@vger.kernel.org
-Cc:     Kan Liang <kan.liang@linux.intel.com>
-Subject: [PATCH 4/4] perf/x86/uncore: Add new Raptor Lake S support
-Date:   Tue, 23 Aug 2022 14:01:29 -0700
-Message-Id: <20220823210129.979394-4-kan.liang@linux.intel.com>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220823210129.979394-1-kan.liang@linux.intel.com>
-References: <20220823210129.979394-1-kan.liang@linux.intel.com>
+        Tue, 23 Aug 2022 17:02:16 -0400
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 3F46C7F0A3
+        for <linux-kernel@vger.kernel.org>; Tue, 23 Aug 2022 14:02:04 -0700 (PDT)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 67B94113E;
+        Tue, 23 Aug 2022 14:02:08 -0700 (PDT)
+Received: from [10.57.15.101] (unknown [10.57.15.101])
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 2D8BA3F67D;
+        Tue, 23 Aug 2022 14:02:03 -0700 (PDT)
+Message-ID: <478c4aba-897f-7e08-1df7-4e296538db9c@arm.com>
+Date:   Tue, 23 Aug 2022 22:01:57 +0100
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:102.0) Gecko/20100101
+ Thunderbird/102.1.2
+Subject: Re: [REGRESSION 5.19.x] AMD HD-audio devices missing on 5.19
+Content-Language: en-GB
+To:     Jason Gunthorpe <jgg@nvidia.com>, Takashi Iwai <tiwai@suse.de>
+Cc:     Lu Baolu <baolu.lu@linux.intel.com>,
+        Joerg Roedel <jroedel@suse.de>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Bjorn Helgaas <bhelgaas@google.com>,
+        Eric Auger <eric.auger@redhat.com>,
+        regressions@lists.linux.dev, linux-kernel@vger.kernel.org
+References: <874jy4cqok.wl-tiwai@suse.de> <20220823010021.GA5967@nvidia.com>
+ <87h723sdde.wl-tiwai@suse.de> <87ilmjqj1f.wl-tiwai@suse.de>
+ <20220823202824.GA4516@nvidia.com>
+From:   Robin Murphy <robin.murphy@arm.com>
+In-Reply-To: <20220823202824.GA4516@nvidia.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Kan Liang <kan.liang@linux.intel.com>
+On 2022-08-23 21:28, Jason Gunthorpe wrote:
+> On Tue, Aug 23, 2022 at 01:46:36PM +0200, Takashi Iwai wrote:
+>> It was tested now and confirmed that the call path is via AMDGPU, as
+>> expected:
+>>    amdgpu_pci_probe ->
+>>    amdgpu_driver_load_kms ->
+>>    amdgpu_device_init ->
+>>    amdgpu_amdkfd_device_init ->
+>>    kgd2kfd_device_init ->
+>>    kgd2kfd_resume_iommu ->
+>>    kfd_iommu_resume ->
+>>    amd_iommu_init_device ->
+>>    iommu_attach_group ->
+>>    __iommu_attach_group
+> 
+> Oh, when you said sound intel I thought this was an Intel CPU..
+> 
+> Yes, there is this hacky private path from the amdgpu to
+> the amd iommu driver that makes a mess of it here. We discussed it in
+> this thread:
+> 
+> https://lore.kernel.org/linux-iommu/YgtuJQhY8SNlv9%2F6@8bytes.org/
+> 
+> But nobody put it together that it would be a problem with this.
+> 
+> Something like this, perhaps, but I didn't check if overriding the
+> type would cause other problems.
+> 
+> diff --git a/drivers/iommu/amd/iommu_v2.c b/drivers/iommu/amd/iommu_v2.c
+> index 696d5555be5794..6a1f02c62dffcc 100644
+> --- a/drivers/iommu/amd/iommu_v2.c
+> +++ b/drivers/iommu/amd/iommu_v2.c
+> @@ -777,6 +777,8 @@ int amd_iommu_init_device(struct pci_dev *pdev, int pasids)
+>   	if (dev_state->domain == NULL)
+>   		goto out_free_states;
+>   
+> +	/* See iommu_is_default_domain() */
+> +	dev_state->domain->type = IOMMU_DOMAIN_IDENTITY;
+>   	amd_iommu_domain_direct_map(dev_state->domain);
 
-From the perspective of the uncore PMU, the new Raptor Lake S is the
-same as the other {ALDER,RAPTOP}LAKE.
+Same question as 6 months ago, apparently: allocating an unmanaged 
+domain with a pagetable then sucking out the pagetable is silly enough, 
+but if we're going to then also call it a proper identity domain, we 
+should really just allocate an identity domain directly; but then why 
+not just enable_v2 on the identity domain that we know is already there 
+courtesy of def_domain_type?
 
-Signed-off-by: Kan Liang <kan.liang@linux.intel.com>
----
- arch/x86/events/intel/uncore.c | 1 +
- 1 file changed, 1 insertion(+)
+Robin.
 
-diff --git a/arch/x86/events/intel/uncore.c b/arch/x86/events/intel/uncore.c
-index db6c31bca809..6f1ccc57a692 100644
---- a/arch/x86/events/intel/uncore.c
-+++ b/arch/x86/events/intel/uncore.c
-@@ -1831,6 +1831,7 @@ static const struct x86_cpu_id intel_uncore_match[] __initconst = {
- 	X86_MATCH_INTEL_FAM6_MODEL(ALDERLAKE_N,		&adl_uncore_init),
- 	X86_MATCH_INTEL_FAM6_MODEL(RAPTORLAKE,		&adl_uncore_init),
- 	X86_MATCH_INTEL_FAM6_MODEL(RAPTORLAKE_P,	&adl_uncore_init),
-+	X86_MATCH_INTEL_FAM6_MODEL(RAPTORLAKE_S,	&adl_uncore_init),
- 	X86_MATCH_INTEL_FAM6_MODEL(SAPPHIRERAPIDS_X,	&spr_uncore_init),
- 	X86_MATCH_INTEL_FAM6_MODEL(ATOM_TREMONT_D,	&snr_uncore_init),
- 	{},
--- 
-2.35.1
+
+Intentional whitespace-damaged patch based on wrong kernel version to 
+stress how much it is for illustration purposes only:
+----->8-----
+diff --git a/drivers/iommu/amd/iommu_v2.c b/drivers/iommu/amd/iommu_v2.c
+index fb61bdca4c2c..2925103cd71a 100644
+--- a/drivers/iommu/amd/iommu_v2.c
++++ b/drivers/iommu/amd/iommu_v2.c
+@@ -135,9 +135,6 @@ static void free_device_state(struct device_state 
+*dev_state)
+
+         iommu_group_put(group);
+
+-       /* Everything is down now, free the IOMMUv2 domain */
+-       iommu_domain_free(dev_state->domain);
+-
+         /* Finally get rid of the device-state */
+         kfree(dev_state);
+  }
+@@ -730,7 +727,6 @@ EXPORT_SYMBOL(amd_iommu_unbind_pasid);
+  int amd_iommu_init_device(struct pci_dev *pdev, int pasids)
+  {
+         struct device_state *dev_state;
+-       struct iommu_group *group;
+         unsigned long flags;
+         int ret, tmp;
+         u16 devid;
+@@ -773,34 +769,20 @@ int amd_iommu_init_device(struct pci_dev *pdev, 
+int pasids)
+         if (dev_state->states == NULL)
+                 goto out_free_dev_state;
+
+-       dev_state->domain = iommu_domain_alloc(&pci_bus_type);
+-       if (dev_state->domain == NULL)
++       dev_state->domain = iommu_get_domain_for_dev(&pdev->dev);
++       if (dev_state->domain->type != IOMMU_DOMAIN_IDENTITY)
+                 goto out_free_states;
+
+-       amd_iommu_domain_direct_map(dev_state->domain);
+-
+         ret = amd_iommu_domain_enable_v2(dev_state->domain, pasids);
+         if (ret)
+-               goto out_free_domain;
+-
+-       group = iommu_group_get(&pdev->dev);
+-       if (!group) {
+-               ret = -EINVAL;
+-               goto out_free_domain;
+-       }
+-
+-       ret = iommu_attach_group(dev_state->domain, group);
+-       if (ret != 0)
+-               goto out_drop_group;
+-
+-       iommu_group_put(group);
++               goto out_free_states;
+
+         spin_lock_irqsave(&state_lock, flags);
+
+         if (__get_device_state(devid) != NULL) {
+                 spin_unlock_irqrestore(&state_lock, flags);
+                 ret = -EBUSY;
+-               goto out_free_domain;
++               goto out_free_states;
+         }
+
+         list_add_tail(&dev_state->list, &state_list);
+@@ -809,12 +791,6 @@ int amd_iommu_init_device(struct pci_dev *pdev, int 
+pasids)
+
+         return 0;
+
+-out_drop_group:
+-       iommu_group_put(group);
+-
+-out_free_domain:
+-       iommu_domain_free(dev_state->domain);
+-
+  out_free_states:
+         free_page((unsigned long)dev_state->states);
 
