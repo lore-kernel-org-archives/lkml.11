@@ -2,93 +2,217 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 80B5CC32793
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 06:24:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 050D8C32774
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 06:25:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240574AbiHWGYK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 02:24:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56918 "EHLO
+        id S240588AbiHWGZQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 23 Aug 2022 02:25:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57932 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239292AbiHWGYH (ORCPT
+        with ESMTP id S240578AbiHWGZM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 02:24:07 -0400
-Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8071F3F1CF;
-        Mon, 22 Aug 2022 23:24:05 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1661235845; x=1692771845;
-  h=message-id:date:mime-version:cc:subject:to:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=So4u55pm93jKnWf9wayBaxQcyua1SoUZ3g3nOT8rlsI=;
-  b=HCuaJouIDbUM6qTh9+n17EMYXX7N74jfjbWUtIwcOAhMlhCPJqK6y3No
-   q8VWrGXPj1W2N5ek53iaxyeIeG+drRZ1NSCZJzlLbFNaSsHMJ1QGU3flJ
-   woc2cM6Qrr6bsR/QpmaGqaIZfRMvlR9UEks1ej5VQRVMyJ3N5gahwnCoI
-   ffPd5x5Zs8z01npkYJ5VXUWOdOkfOBzSVx4sp5v73QijjBpiGMuCq1CNn
-   5wqwBqtXjTw3A3+YXQgT8NyVk1GqElvcjRbSptdhMWcdOAmLLhMEpDRmX
-   kASO/CNw57vD0ZKHruDeJ1pmHnvfBtg6U4de2en7SSZr9UKtO1MFbbfad
-   A==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10447"; a="379893254"
-X-IronPort-AV: E=Sophos;i="5.93,256,1654585200"; 
-   d="scan'208";a="379893254"
-Received: from orsmga001.jf.intel.com ([10.7.209.18])
-  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Aug 2022 23:24:05 -0700
-X-IronPort-AV: E=Sophos;i="5.93,256,1654585200"; 
-   d="scan'208";a="642323745"
-Received: from xujinlon-mobl.ccr.corp.intel.com (HELO [10.254.211.102]) ([10.254.211.102])
-  by orsmga001-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Aug 2022 23:24:01 -0700
-Message-ID: <8f1c7e64-efdc-eff5-8dea-470f4ada5f73@linux.intel.com>
-Date:   Tue, 23 Aug 2022 14:23:58 +0800
+        Tue, 23 Aug 2022 02:25:12 -0400
+X-Greylist: delayed 63 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Mon, 22 Aug 2022 23:25:10 PDT
+Received: from mta-64-227.siemens.flowmailer.net (mta-64-227.siemens.flowmailer.net [185.136.64.227])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4A7C82B252
+        for <linux-kernel@vger.kernel.org>; Mon, 22 Aug 2022 23:25:10 -0700 (PDT)
+Received: by mta-64-227.siemens.flowmailer.net with ESMTPSA id 202208230624059ee53a1b485672b4cd
+        for <linux-kernel@vger.kernel.org>;
+        Tue, 23 Aug 2022 08:24:05 +0200
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; s=fm1;
+ d=siemens.com; i=daniel.starke@siemens.com;
+ h=Date:From:Subject:To:Message-ID:MIME-Version:Content-Type:Content-Transfer-Encoding:Cc:References:In-Reply-To;
+ bh=uMc0cjMZvmQNktk2K16WJyyZXa3z5nE2bVBa+DHfPGM=;
+ b=AJgN3Bt+vn1xGLPrTRHREipJPGLkbPZIs3if1j1W7kBsNBxjt93r9MOFVfmvXEyuI2IACI
+ bkJijDV4h9KfKoctVh0Jyh4mjKnP/JtNwTK6YYTL7d0WvTjD4RVhpdQ1b9ML+SUmcXDWjpeJ
+ Nk9CPJ0tBOac6xOYEuFPTKmxup74Q=;
+From:   "D. Starke" <daniel.starke@siemens.com>
+To:     linux-serial@vger.kernel.org, gregkh@linuxfoundation.org,
+        jirislaby@kernel.org
+Cc:     linux-kernel@vger.kernel.org,
+        Daniel Starke <daniel.starke@siemens.com>,
+        kernel test robot <lkp@intel.com>
+Subject: [PATCH v2 3/6] tty: n_gsm: replace use of gsm_read_ea() with gsm_read_ea_val()
+Date:   Tue, 23 Aug 2022 08:22:56 +0200
+Message-Id: <20220823062259.4754-3-daniel.starke@siemens.com>
+In-Reply-To: <20220823062259.4754-1-daniel.starke@siemens.com>
+References: <20220823062259.4754-1-daniel.starke@siemens.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.11.0
-Cc:     baolu.lu@linux.intel.com, Joerg Roedel <joro@8bytes.org>,
-        Will Deacon <will@kernel.org>,
-        Robin Murphy <robin.murphy@arm.com>,
-        Kevin Tian <kevin.tian@intel.com>,
-        Jerry Snitselaar <jsnitsel@redhat.com>,
-        Wen Jin <wen.jin@intel.com>, linux-kernel@vger.kernel.org,
-        stable@vger.kernel.org
-Subject: Re: [PATCH v2 1/1] iommu/vt-d: Fix kdump kernels boot failure with
- scalable mode
-Content-Language: en-US
-To:     iommu@lists.linux.dev
-References: <20220817011035.3250131-1-baolu.lu@linux.intel.com>
-From:   Baolu Lu <baolu.lu@linux.intel.com>
-In-Reply-To: <20220817011035.3250131-1-baolu.lu@linux.intel.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
+X-Flowmailer-Platform: Siemens
+Feedback-ID: 519:519-314044:519-21489:flowmailer
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 2022/8/17 09:10, Lu Baolu wrote:
-> The translation table copying code for kdump kernels is currently based
-> on the extended root/context entry formats of ECS mode defined in older
-> VT-d v2.5, and doesn't handle the scalable mode formats. This causes
-> the kexec capture kernel boot failure with DMAR faults if the IOMMU was
-> enabled in scalable mode by the previous kernel.
-> 
-> The ECS mode has already been deprecated by the VT-d spec since v3.0 and
-> Intel IOMMU driver doesn't support this mode as there's no real hardware
-> implementation. Hence this converts ECS checking in copying table code
-> into scalable mode.
-> 
-> The existing copying code consumes a bit in the context entry as a mark
-> of copied entry. This marker needs to work for the old format as well as
-> for extended context entries. It's hard to find such a bit for both
-> legacy and scalable mode context entries. This replaces it with a per-
-> IOMMU bitmap.
-> 
-> Fixes: 7373a8cc38197 ("iommu/vt-d: Setup context and enable RID2PASID support")
-> Cc:stable@vger.kernel.org
-> Reported-by: Jerry Snitselaar<jsnitsel@redhat.com>
-> Tested-by: Wen Jin<wen.jin@intel.com>
-> Signed-off-by: Lu Baolu<baolu.lu@linux.intel.com>
+From: Daniel Starke <daniel.starke@siemens.com>
 
-This patch has been queued:
+Replace the use of gsm_read_ea() with gsm_read_ea_val() where applicable to
+improve code readability and avoid errors like in the past.
 
-https://lore.kernel.org/linux-iommu/20220823061557.1631056-1-baolu.lu@linux.intel.com/
+Reported-by: kernel test robot <lkp@intel.com>
+Signed-off-by: Daniel Starke <daniel.starke@siemens.com>
+---
+ drivers/tty/n_gsm.c | 99 +++++++++++++++++++++++----------------------
+ 1 file changed, 51 insertions(+), 48 deletions(-)
 
-Best regards,
-baolu
+Changes since v1:
+Fixed use of wrong variable in debug output within gsm_dlci_data().
+
+Link: https://lore.kernel.org/all/202208222147.WfFRmf1r-lkp@intel.com/
+
+diff --git a/drivers/tty/n_gsm.c b/drivers/tty/n_gsm.c
+index ed399d57b197..9535e84f3063 100644
+--- a/drivers/tty/n_gsm.c
++++ b/drivers/tty/n_gsm.c
+@@ -1418,18 +1418,13 @@ static void gsm_control_modem(struct gsm_mux *gsm, const u8 *data, int clen)
+ 	unsigned int modem = 0;
+ 	struct gsm_dlci *dlci;
+ 	int len = clen;
+-	int slen;
++	int cl = clen;
+ 	const u8 *dp = data;
+ 	struct tty_struct *tty;
+ 
+-	while (gsm_read_ea(&addr, *dp++) == 0) {
+-		len--;
+-		if (len == 0)
+-			return;
+-	}
+-	/* Must be at least one byte following the EA */
+-	len--;
+-	if (len <= 0)
++	len = gsm_read_ea_val(&addr, data, cl);
++
++	if (len < 1)
+ 		return;
+ 
+ 	addr >>= 1;
+@@ -1438,15 +1433,21 @@ static void gsm_control_modem(struct gsm_mux *gsm, const u8 *data, int clen)
+ 		return;
+ 	dlci = gsm->dlci[addr];
+ 
+-	slen = len;
+-	while (gsm_read_ea(&modem, *dp++) == 0) {
+-		len--;
+-		if (len == 0)
+-			return;
+-	}
+-	len--;
++	/* Must be at least one byte following the EA */
++	if ((cl - len) < 1)
++		return;
++
++	dp += len;
++	cl -= len;
++
++	/* get the modem status */
++	len = gsm_read_ea_val(&modem, dp, cl);
++
++	if (len < 1)
++		return;
++
+ 	tty = tty_port_tty_get(&dlci->port);
+-	gsm_process_modem(tty, dlci, modem, slen - len);
++	gsm_process_modem(tty, dlci, modem, cl);
+ 	if (tty) {
+ 		tty_wakeup(tty);
+ 		tty_kref_put(tty);
+@@ -1921,11 +1922,10 @@ static void gsm_dlci_data(struct gsm_dlci *dlci, const u8 *data, int clen)
+ 	struct tty_port *port = &dlci->port;
+ 	struct tty_struct *tty;
+ 	unsigned int modem = 0;
+-	int len = clen;
+-	int slen = 0;
++	int len;
+ 
+ 	if (debug & 16)
+-		pr_debug("%d bytes for tty\n", len);
++		pr_debug("%d bytes for tty\n", clen);
+ 	switch (dlci->adaption)  {
+ 	/* Unsupported types */
+ 	case 4:		/* Packetised interruptible data */
+@@ -1933,24 +1933,22 @@ static void gsm_dlci_data(struct gsm_dlci *dlci, const u8 *data, int clen)
+ 	case 3:		/* Packetised uininterruptible voice/data */
+ 		break;
+ 	case 2:		/* Asynchronous serial with line state in each frame */
+-		while (gsm_read_ea(&modem, *data++) == 0) {
+-			len--;
+-			slen++;
+-			if (len == 0)
+-				return;
+-		}
+-		len--;
+-		slen++;
++		len = gsm_read_ea_val(&modem, data, clen);
++		if (len < 1)
++			return;
+ 		tty = tty_port_tty_get(port);
+ 		if (tty) {
+-			gsm_process_modem(tty, dlci, modem, slen);
++			gsm_process_modem(tty, dlci, modem, len);
+ 			tty_wakeup(tty);
+ 			tty_kref_put(tty);
+ 		}
++		/* Skip processed modem data */
++		data += len;
++		clen -= len;
+ 		fallthrough;
+ 	case 1:		/* Line state will go via DLCI 0 controls only */
+ 	default:
+-		tty_insert_flip_string(port, data, len);
++		tty_insert_flip_string(port, data, clen);
+ 		tty_flip_buffer_push(port);
+ 	}
+ }
+@@ -1971,24 +1969,29 @@ static void gsm_dlci_command(struct gsm_dlci *dlci, const u8 *data, int len)
+ {
+ 	/* See what command is involved */
+ 	unsigned int command = 0;
+-	while (len-- > 0) {
+-		if (gsm_read_ea(&command, *data++) == 1) {
+-			int clen = *data++;
+-			len--;
+-			/* FIXME: this is properly an EA */
+-			clen >>= 1;
+-			/* Malformed command ? */
+-			if (clen > len)
+-				return;
+-			if (command & 1)
+-				gsm_control_message(dlci->gsm, command,
+-								data, clen);
+-			else
+-				gsm_control_response(dlci->gsm, command,
+-								data, clen);
+-			return;
+-		}
+-	}
++	const u8 *dp = data;
++	int clen = 0;
++	int dlen;
++
++	/* read the command */
++	dlen = gsm_read_ea_val(&command, dp, len);
++	len -= dlen;
++	dp += dlen;
++
++	/* read any control data */
++	dlen = gsm_read_ea_val(&clen, dp, len);
++	len -= dlen;
++	dp += dlen;
++
++	/* Malformed command? */
++	if (clen > len)
++		return;
++
++	if (command & 1)
++		gsm_control_message(dlci->gsm, command, dp, clen);
++	else
++		gsm_control_response(dlci->gsm, command, dp, clen);
++	return;
+ }
+ 
+ /**
+-- 
+2.34.1
+
