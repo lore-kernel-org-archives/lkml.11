@@ -2,43 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E1292C32792
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 12:27:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F1DEEC32772
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 12:27:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241840AbiHWM1X (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 08:27:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39294 "EHLO
+        id S239685AbiHWM1g (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 23 Aug 2022 08:27:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40472 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243483AbiHWMYD (ORCPT
+        with ESMTP id S244115AbiHWMYN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 08:24:03 -0400
+        Tue, 23 Aug 2022 08:24:13 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9ADC8D86D6;
-        Tue, 23 Aug 2022 02:43:52 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 586E9F2CA8;
+        Tue, 23 Aug 2022 02:43:57 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 846AEB81C9B;
-        Tue, 23 Aug 2022 09:43:23 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E53CCC433D6;
-        Tue, 23 Aug 2022 09:43:21 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 6D0DEB81C97;
+        Tue, 23 Aug 2022 09:42:57 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D15D0C433D6;
+        Tue, 23 Aug 2022 09:42:55 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661247802;
-        bh=a51phjWIfwW2YreCMWUbWI9Pi+BxAfY/35+0vzi9uNU=;
+        s=korg; t=1661247776;
+        bh=utwjySDW4EArzun52oLQorI+1cEBJiW/BBG0M5KHHJ0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=EwZPreRAsPIGKcf9n0ng3Xr7mJ+EOQ3zm4qsyTkjFBKtpNLPx0/6IHHnCMywiQTam
-         fSsjbEGjb33wds7jze/SCeDtdObAWBGev8H5Fjn3IwUNuDSGBJm6ImjwumVONLvfZ2
-         lKlYOQF/zC5mnWv929MA9QB0D5jwFUwVWn8BTuiw=
+        b=NVcfmLj9sb3V6C7FBBrJi1zgEyXUVX/TUq211AWj3LZSpKzxKve2mIPpbG/bC4fcV
+         a/U16Yx/fDMgwbNrF0bO8mzs3+4RZ1ufhW9LReze/acv70l+7PxJkERWim6YRm4K9D
+         KZKpnxgKn+2XUT1DF38u+ZLN1Gkmm7+1EUM+e4Ys=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, syzbot <syzkaller@googlegroups.com>,
-        kernel test robot <lkp@intel.com>,
-        Dongliang Mu <mudongliangabcd@gmail.com>,
-        Pablo Neira Ayuso <pablo@netfilter.org>
-Subject: [PATCH 5.10 152/158] netfilter: nf_tables: fix audit memory leak in nf_tables_commit
-Date:   Tue, 23 Aug 2022 10:28:04 +0200
-Message-Id: <20220823080051.934545112@linuxfoundation.org>
+        stable@vger.kernel.org, Takashi Iwai <tiwai@suse.de>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.10 144/158] ALSA: control: Use deferred fasync helper
+Date:   Tue, 23 Aug 2022 10:27:56 +0200
+Message-Id: <20220823080051.634033002@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220823080046.056825146@linuxfoundation.org>
 References: <20220823080046.056825146@linuxfoundation.org>
@@ -50,74 +48,81 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Dongliang Mu <mudongliangabcd@gmail.com>
+From: Takashi Iwai <tiwai@suse.de>
 
-commit cfbe3650dd3ef2ea9a4420ca89d9a4df98af3fb6 upstream.
+[ Upstream commit 4a971e84a7ae10a38d875cd2d4e487c8d1682ca3 ]
 
-In nf_tables_commit, if nf_tables_commit_audit_alloc fails, it does not
-free the adp variable.
+For avoiding the potential deadlock via kill_fasync() call, use the
+new fasync helpers to defer the invocation from the control API.  Note
+that it's merely a workaround.
 
-Fix this by adding nf_tables_commit_audit_free which frees
-the linked list with the head node adl.
+Another note: although we haven't received reports about the deadlock
+with the control API, the deadlock is still potentially possible, and
+it's better to align the behavior with other core APIs (PCM and
+timer); so let's move altogether.
 
-backtrace:
-  kmalloc include/linux/slab.h:591 [inline]
-  kzalloc include/linux/slab.h:721 [inline]
-  nf_tables_commit_audit_alloc net/netfilter/nf_tables_api.c:8439 [inline]
-  nf_tables_commit+0x16e/0x1760 net/netfilter/nf_tables_api.c:8508
-  nfnetlink_rcv_batch+0x512/0xa80 net/netfilter/nfnetlink.c:562
-  nfnetlink_rcv_skb_batch net/netfilter/nfnetlink.c:634 [inline]
-  nfnetlink_rcv+0x1fa/0x220 net/netfilter/nfnetlink.c:652
-  netlink_unicast_kernel net/netlink/af_netlink.c:1314 [inline]
-  netlink_unicast+0x2c7/0x3e0 net/netlink/af_netlink.c:1340
-  netlink_sendmsg+0x36b/0x6b0 net/netlink/af_netlink.c:1929
-  sock_sendmsg_nosec net/socket.c:702 [inline]
-  sock_sendmsg+0x56/0x80 net/socket.c:722
-
-Reported-by: syzbot <syzkaller@googlegroups.com>
-Reported-by: kernel test robot <lkp@intel.com>
-Fixes: c520292f29b8 ("audit: log nftables configuration change events once per table")
-Signed-off-by: Dongliang Mu <mudongliangabcd@gmail.com>
-Signed-off-by: Pablo Neira Ayuso <pablo@netfilter.org>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Link: https://lore.kernel.org/r/20220728125945.29533-5-tiwai@suse.de
+Signed-off-by: Takashi Iwai <tiwai@suse.de>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/netfilter/nf_tables_api.c |   12 ++++++++++++
- 1 file changed, 12 insertions(+)
+ include/sound/control.h | 2 +-
+ sound/core/control.c    | 7 ++++---
+ 2 files changed, 5 insertions(+), 4 deletions(-)
 
---- a/net/netfilter/nf_tables_api.c
-+++ b/net/netfilter/nf_tables_api.c
-@@ -7819,6 +7819,16 @@ static int nf_tables_commit_audit_alloc(
- 	return 0;
+diff --git a/include/sound/control.h b/include/sound/control.h
+index 77d9fa10812d..41bd72ffd232 100644
+--- a/include/sound/control.h
++++ b/include/sound/control.h
+@@ -103,7 +103,7 @@ struct snd_ctl_file {
+ 	int preferred_subdevice[SND_CTL_SUBDEV_ITEMS];
+ 	wait_queue_head_t change_sleep;
+ 	spinlock_t read_lock;
+-	struct fasync_struct *fasync;
++	struct snd_fasync *fasync;
+ 	int subscribed;			/* read interface is activated */
+ 	struct list_head events;	/* waiting events for read */
+ };
+diff --git a/sound/core/control.c b/sound/core/control.c
+index 3b44378b9dec..732eb515d2f5 100644
+--- a/sound/core/control.c
++++ b/sound/core/control.c
+@@ -121,6 +121,7 @@ static int snd_ctl_release(struct inode *inode, struct file *file)
+ 			if (control->vd[idx].owner == ctl)
+ 				control->vd[idx].owner = NULL;
+ 	up_write(&card->controls_rwsem);
++	snd_fasync_free(ctl->fasync);
+ 	snd_ctl_empty_read_queue(ctl);
+ 	put_pid(ctl->pid);
+ 	kfree(ctl);
+@@ -175,7 +176,7 @@ void snd_ctl_notify(struct snd_card *card, unsigned int mask,
+ 	_found:
+ 		wake_up(&ctl->change_sleep);
+ 		spin_unlock(&ctl->read_lock);
+-		kill_fasync(&ctl->fasync, SIGIO, POLL_IN);
++		snd_kill_fasync(ctl->fasync, SIGIO, POLL_IN);
+ 	}
+ 	read_unlock_irqrestore(&card->ctl_files_rwlock, flags);
+ }
+@@ -1941,7 +1942,7 @@ static int snd_ctl_fasync(int fd, struct file * file, int on)
+ 	struct snd_ctl_file *ctl;
+ 
+ 	ctl = file->private_data;
+-	return fasync_helper(fd, file, on, &ctl->fasync);
++	return snd_fasync_helper(fd, file, on, &ctl->fasync);
  }
  
-+static void nf_tables_commit_audit_free(struct list_head *adl)
-+{
-+	struct nft_audit_data *adp, *adn;
-+
-+	list_for_each_entry_safe(adp, adn, adl, list) {
-+		list_del(&adp->list);
-+		kfree(adp);
-+	}
-+}
-+
- static void nf_tables_commit_audit_collect(struct list_head *adl,
- 					   struct nft_table *table, u32 op)
- {
-@@ -7882,6 +7892,7 @@ static int nf_tables_commit(struct net *
- 		ret = nf_tables_commit_audit_alloc(&adl, trans->ctx.table);
- 		if (ret) {
- 			nf_tables_commit_chain_prepare_cancel(net);
-+			nf_tables_commit_audit_free(&adl);
- 			return ret;
- 		}
- 		if (trans->msg_type == NFT_MSG_NEWRULE ||
-@@ -7891,6 +7902,7 @@ static int nf_tables_commit(struct net *
- 			ret = nf_tables_commit_chain_prepare(net, chain);
- 			if (ret < 0) {
- 				nf_tables_commit_chain_prepare_cancel(net);
-+				nf_tables_commit_audit_free(&adl);
- 				return ret;
- 			}
- 		}
+ /* return the preferred subdevice number if already assigned;
+@@ -2015,7 +2016,7 @@ static int snd_ctl_dev_disconnect(struct snd_device *device)
+ 	read_lock_irqsave(&card->ctl_files_rwlock, flags);
+ 	list_for_each_entry(ctl, &card->ctl_files, list) {
+ 		wake_up(&ctl->change_sleep);
+-		kill_fasync(&ctl->fasync, SIGIO, POLL_ERR);
++		snd_kill_fasync(ctl->fasync, SIGIO, POLL_ERR);
+ 	}
+ 	read_unlock_irqrestore(&card->ctl_files_rwlock, flags);
+ 
+-- 
+2.35.1
+
 
 
