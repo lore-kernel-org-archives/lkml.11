@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9702EC32772
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 09:02:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 77CD2C32774
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 09:02:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347334AbiHWJCR (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 05:02:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42214 "EHLO
+        id S241104AbiHWJCU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 23 Aug 2022 05:02:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42216 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240444AbiHWJBn (ORCPT
+        with ESMTP id S1347260AbiHWJBo (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 05:01:43 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AA8D383054;
-        Tue, 23 Aug 2022 01:28:07 -0700 (PDT)
+        Tue, 23 Aug 2022 05:01:44 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B393865D5;
+        Tue, 23 Aug 2022 01:28:14 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 2C2F361494;
-        Tue, 23 Aug 2022 08:27:14 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DF6D1C433C1;
-        Tue, 23 Aug 2022 08:27:12 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 91242B81C50;
+        Tue, 23 Aug 2022 08:27:45 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 00DA8C433D6;
+        Tue, 23 Aug 2022 08:27:43 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661243233;
-        bh=PTSYZ9FApOOBJKtWbi9ijKt7DTtB+H8+ux8d997unJk=;
+        s=korg; t=1661243264;
+        bh=eva9J/HnGNK4Hs9Yy6N/uH0vPgm9Li4iFFPXZNd2K3c=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=LMVgb3pmmyU449SVqw4vMLqnBwy4N8fzyfacpxoJPVkPKUpcnT9Cyu2m14SIDFWz4
-         m5l99GuDD9guNRVUDXaY8wIJaDQgDUBPF5HmELwyHfW8LxPmzvV9bqGjNGhdPtmMaM
-         KWEqewzTNkVClF4vAywVomBdDS2fAf8n84F7JfpE=
+        b=nxkypWfcISAjEuJ8j+HQmQ515vKXvdwTCuMThdRs/jON7hIo7cH7J8hqAdE+Opd6S
+         Eq9kCB6MUmy3abWgPywD37kvDadrYVTAgRlHpY3lSKAC9Q/pB5RmmttQNUQogHiSF6
+         WYFl0jaioAr/l+FHpCaxiTSpb31V1J6nWzjQgyIM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Zhengchao Shao <shaozhengchao@huawei.com>,
-        Nikolay Aleksandrov <razor@blackwall.org>,
-        Jakub Kicinski <kuba@kernel.org>
-Subject: [PATCH 5.19 212/365] net: rtnetlink: fix module reference count leak issue in rtnetlink_rcv_msg
-Date:   Tue, 23 Aug 2022 10:01:53 +0200
-Message-Id: <20220823080127.075499596@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Benjamin Mikailenko <benjamin.mikailenko@intel.com>,
+        Marek Szlosek <marek.szlosek@intel.com>,
+        Tony Nguyen <anthony.l.nguyen@intel.com>
+Subject: [PATCH 5.19 221/365] ice: Fix VSI rebuild WARN_ON check for VF
+Date:   Tue, 23 Aug 2022 10:02:02 +0200
+Message-Id: <20220823080127.431744065@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220823080118.128342613@linuxfoundation.org>
 References: <20220823080118.128342613@linuxfoundation.org>
@@ -50,38 +50,36 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Zhengchao Shao <shaozhengchao@huawei.com>
+From: Benjamin Mikailenko <benjamin.mikailenko@intel.com>
 
-commit 5b22f62724a0a09e00d301abf5b57b0c12be8a16 upstream.
+commit 7fe05e125d5f730bd2d0fc53985bee77b6c762f0 upstream.
 
-When bulk delete command is received in the rtnetlink_rcv_msg function,
-if bulk delete is not supported, module_put is not called to release
-the reference counting. As a result, module reference count is leaked.
+In commit b03d519d3460 ("ice: store VF pointer instead of VF ID")
+WARN_ON checks were added to validate the vsi->vf pointer and
+catch programming errors. However, one check to vsi->vf was missed.
+This caused a call trace when resetting VFs.
 
-Fixes: a6cec0bcd342 ("net: rtnetlink: add bulk delete support flag")
-Signed-off-by: Zhengchao Shao <shaozhengchao@huawei.com>
-Acked-by: Nikolay Aleksandrov <razor@blackwall.org>
-Link: https://lore.kernel.org/r/20220815024629.240367-1-shaozhengchao@huawei.com
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Fix ice_vsi_rebuild by encompassing VF pointer in WARN_ON check.
+
+Fixes: b03d519d3460 ("ice: store VF pointer instead of VF ID")
+Signed-off-by: Benjamin Mikailenko <benjamin.mikailenko@intel.com>
+Tested-by: Marek Szlosek <marek.szlosek@intel.com>
+Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- net/core/rtnetlink.c | 1 +
- 1 file changed, 1 insertion(+)
+ drivers/net/ethernet/intel/ice/ice_lib.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/net/core/rtnetlink.c b/net/core/rtnetlink.c
-index ac45328607f7..4b5b15c684ed 100644
---- a/net/core/rtnetlink.c
-+++ b/net/core/rtnetlink.c
-@@ -6070,6 +6070,7 @@ static int rtnetlink_rcv_msg(struct sk_buff *skb, struct nlmsghdr *nlh,
- 	if (kind == RTNL_KIND_DEL && (nlh->nlmsg_flags & NLM_F_BULK) &&
- 	    !(flags & RTNL_FLAG_BULK_DEL_SUPPORTED)) {
- 		NL_SET_ERR_MSG(extack, "Bulk delete is not supported");
-+		module_put(owner);
- 		goto err_unlock;
- 	}
+--- a/drivers/net/ethernet/intel/ice/ice_lib.c
++++ b/drivers/net/ethernet/intel/ice/ice_lib.c
+@@ -3178,7 +3178,7 @@ int ice_vsi_rebuild(struct ice_vsi *vsi,
  
--- 
-2.37.2
-
+ 	pf = vsi->back;
+ 	vtype = vsi->type;
+-	if (WARN_ON(vtype == ICE_VSI_VF) && !vsi->vf)
++	if (WARN_ON(vtype == ICE_VSI_VF && !vsi->vf))
+ 		return -EINVAL;
+ 
+ 	ice_vsi_init_vlan_ops(vsi);
 
 
