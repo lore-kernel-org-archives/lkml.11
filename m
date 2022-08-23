@@ -2,33 +2,33 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BB09BC28D13
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 03:24:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 58CABC28D13
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 03:24:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240077AbiHWDYp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 22 Aug 2022 23:24:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51920 "EHLO
+        id S240084AbiHWDYs (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 22 Aug 2022 23:24:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51924 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239405AbiHWDYX (ORCPT
+        with ESMTP id S239502AbiHWDYY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 22 Aug 2022 23:24:23 -0400
-Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E0A6F52FEE
-        for <linux-kernel@vger.kernel.org>; Mon, 22 Aug 2022 20:24:22 -0700 (PDT)
-Received: from canpemm500002.china.huawei.com (unknown [172.30.72.53])
-        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4MBZGq6CvdzXf27;
-        Tue, 23 Aug 2022 11:20:03 +0800 (CST)
+        Mon, 22 Aug 2022 23:24:24 -0400
+Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 807AE51A2F
+        for <linux-kernel@vger.kernel.org>; Mon, 22 Aug 2022 20:24:23 -0700 (PDT)
+Received: from canpemm500002.china.huawei.com (unknown [172.30.72.55])
+        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4MBZHn2SrszgYpq;
+        Tue, 23 Aug 2022 11:20:53 +0800 (CST)
 Received: from huawei.com (10.175.124.27) by canpemm500002.china.huawei.com
  (7.192.104.244) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Tue, 23 Aug
- 2022 11:24:20 +0800
+ 2022 11:24:21 +0800
 From:   Miaohe Lin <linmiaohe@huawei.com>
 To:     <akpm@linux-foundation.org>, <naoya.horiguchi@nec.com>
 CC:     <linux-mm@kvack.org>, <linux-kernel@vger.kernel.org>,
         <linmiaohe@huawei.com>
-Subject: [PATCH v2 3/6] mm, hwpoison: fix extra put_page() in soft_offline_page()
-Date:   Tue, 23 Aug 2022 11:23:43 +0800
-Message-ID: <20220823032346.4260-4-linmiaohe@huawei.com>
+Subject: [PATCH v2 6/6] mm, hwpoison: avoid trying to unpoison reserved page
+Date:   Tue, 23 Aug 2022 11:23:46 +0800
+Message-ID: <20220823032346.4260-7-linmiaohe@huawei.com>
 X-Mailer: git-send-email 2.23.0
 In-Reply-To: <20220823032346.4260-1-linmiaohe@huawei.com>
 References: <20220823032346.4260-1-linmiaohe@huawei.com>
@@ -43,31 +43,39 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-When hwpoison_filter() refuses to soft offline a page, the page refcnt
-incremented previously by MF_COUNT_INCREASED would have been consumed
-via get_hwpoison_page() if ret <= 0. So the put_ref_page() here will
-put the extra one. Remove it to fix the issue.
+For reserved pages, HWPoison flag will be set without increasing the page
+refcnt. So we shouldn't even try to unpoison these pages and thus decrease
+the page refcnt unexpectly. Add a PageReserved() check to filter this case
+out and remove the below unneeded zero page (zero page is reserved) check.
 
-Fixes: 9113eaf331bf ("mm/memory-failure.c: add hwpoison_filter for soft offline")
 Signed-off-by: Miaohe Lin <linmiaohe@huawei.com>
 Acked-by: Naoya Horiguchi <naoya.horiguchi@nec.com>
 ---
- mm/memory-failure.c | 2 --
- 1 file changed, 2 deletions(-)
+ mm/memory-failure.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
 diff --git a/mm/memory-failure.c b/mm/memory-failure.c
-index ecd42d717c6f..1d79e693f1b9 100644
+index c2910f9af1d4..f3ff2515ccc6 100644
 --- a/mm/memory-failure.c
 +++ b/mm/memory-failure.c
-@@ -2575,8 +2575,6 @@ int soft_offline_page(unsigned long pfn, int flags)
- 	if (hwpoison_filter(page)) {
- 		if (ret > 0)
- 			put_page(page);
--		else
--			put_ref_page(ref_page);
+@@ -2351,7 +2351,7 @@ int unpoison_memory(unsigned long pfn)
+ 		goto unlock_mutex;
+ 	}
  
- 		mutex_unlock(&mf_mutex);
- 		return -EOPNOTSUPP;
+-	if (PageSlab(page) || PageTable(page))
++	if (PageSlab(page) || PageTable(page) || PageReserved(page))
+ 		goto unlock_mutex;
+ 
+ 	ret = get_hwpoison_page(p, MF_UNPOISON);
+@@ -2382,7 +2382,7 @@ int unpoison_memory(unsigned long pfn)
+ 		freeit = !!TestClearPageHWPoison(p);
+ 
+ 		put_page(page);
+-		if (freeit && !(pfn == my_zero_pfn(0) && page_count(p) == 1)) {
++		if (freeit) {
+ 			put_page(page);
+ 			ret = 0;
+ 		}
 -- 
 2.23.0
 
