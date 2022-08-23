@@ -2,160 +2,114 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D1639C32772
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 09:39:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0EB21C32772
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 09:39:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242398AbiHWJjf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 05:39:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52272 "EHLO
+        id S241424AbiHWJjn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 23 Aug 2022 05:39:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51516 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351388AbiHWJig (ORCPT
+        with ESMTP id S1351505AbiHWJik (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 05:38:36 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9DDE06FA35;
-        Tue, 23 Aug 2022 01:41:03 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 0BEDE61544;
-        Tue, 23 Aug 2022 08:40:12 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id EA9C0C433D6;
-        Tue, 23 Aug 2022 08:40:10 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661244011;
-        bh=MkRRZKl2vWURxdILIjwG6l67FVd+EXKjiW0BFFOjmH0=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=nIzNMtq5TxVt3vby/zDKkjT9B7VMdUS46RECKAzMV1iGU11VwOQpJlHvYC9EiVlsM
-         QYcYzYMYKjrBJ4GbH60xUJ2OZhZbwfjRRT4UCztyxucaaLkjpG8soFeQZJup5WXB4/
-         PpDeZ4yODH8cHyRCEpnasrJ+ZQF/D/T8cnRkm+6M=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Yonglong Li <liyonglong@chinatelecom.cn>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.14 072/229] tcp: make retransmitted SKB fit into the send window
-Date:   Tue, 23 Aug 2022 10:23:53 +0200
-Message-Id: <20220823080056.295762077@linuxfoundation.org>
-X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220823080053.202747790@linuxfoundation.org>
-References: <20220823080053.202747790@linuxfoundation.org>
-User-Agent: quilt/0.67
+        Tue, 23 Aug 2022 05:38:40 -0400
+Received: from mail-pj1-x102d.google.com (mail-pj1-x102d.google.com [IPv6:2607:f8b0:4864:20::102d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4F30C5F9BC;
+        Tue, 23 Aug 2022 01:40:52 -0700 (PDT)
+Received: by mail-pj1-x102d.google.com with SMTP id e19so12193157pju.1;
+        Tue, 23 Aug 2022 01:40:52 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc;
+        bh=BjyTp1rYXZbh0tG3MYfP1QG1fJZgUbfQ/sbIoo651Uo=;
+        b=HfohDmdWLWKSq9YTwl/9HcIjQ9n+PpwN9SG+tgxAKvwcdnDOaUmbnpsPXomnO8pDbQ
+         jvvh+MxiSNkiupFmYdS8P9u7hLDB9h2j4CKJm0hlx6k9K1NUogQ5S5mElTOIA21veSN4
+         NIZ/7iWsMluW2jJm3UX/BtK4T8TYEYuAxwUNU8gxdjn+6RUrrMb4A7RM1mxTV/q4AK61
+         6tM2NUbuYhq/NnMbl6h6cugoCGeoE65SorFq+eDb7tDlXlcHcVn5RKnEkgVPFV6dkGl9
+         X9z8ZDtWhiZfPatTbCtCA8VYuMDrEnLjn6koUJVw56JaWnT7Cq44tygpTZ6NuS0OFtOH
+         U1wQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc;
+        bh=BjyTp1rYXZbh0tG3MYfP1QG1fJZgUbfQ/sbIoo651Uo=;
+        b=cGvR/1B5X5VdP9M3LNlQ6p26EuNaNwk5DU/C1drqstxWm08AI7EvfttDNQvgEmB1/t
+         JhF/3E082mCcZ99uZRhcHweZsnLKZ2dkExKSfNQjguo1LD8Hw9p/attkIcxAjSwFTIcK
+         yaGO5DKnCVKi6ctpA24xmxbn7yP0QSD3XJ9/c8PdpaxyJ38OFOdrSNGexhCPRTlSUI0l
+         8GqLvW5OKDcTqtlhm4biDguJjmPYfFUkyGH/QUaVERJLZbbrRIRvpKjKYwE3Qcxd9Dzh
+         XmYeFO/+T2wpGGBh2X3NkAc45S/0UNP9/9jC65MaCWv5s2f7MPrkS9aPeE6YYrKn2WFP
+         zIIQ==
+X-Gm-Message-State: ACgBeo0dnBl3+NfMlsYq/c6YFPfK7qLOTD5TD/m1rTcgDa5TKEDqSbWC
+        +Y311LOAmPXVM6vJI2DRp4I=
+X-Google-Smtp-Source: AA6agR7bqHHDTFsoQJM3fNgJxY16Za603VCMAuEoJ2sYDxB9TB6siix6ySC1b7udrSjQA7v1iONuDw==
+X-Received: by 2002:a17:90b:1bd1:b0:1fb:5640:ffa4 with SMTP id oa17-20020a17090b1bd100b001fb5640ffa4mr2212440pjb.220.1661244005306;
+        Tue, 23 Aug 2022 01:40:05 -0700 (PDT)
+Received: from localhost ([192.55.55.51])
+        by smtp.gmail.com with ESMTPSA id k17-20020a170902c41100b001709b9d292esm10001850plk.268.2022.08.23.01.40.04
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 23 Aug 2022 01:40:04 -0700 (PDT)
+Date:   Tue, 23 Aug 2022 01:40:03 -0700
+From:   Isaku Yamahata <isaku.yamahata@gmail.com>
+To:     Chao Gao <chao.gao@intel.com>
+Cc:     isaku.yamahata@intel.com, kvm@vger.kernel.org,
+        linux-kernel@vger.kernel.org, isaku.yamahata@gmail.com,
+        Paolo Bonzini <pbonzini@redhat.com>,
+        Sean Christopherson <seanjc@google.com>,
+        Kai Huang <kai.huang@intel.com>, Will Deacon <will@kernel.org>
+Subject: Re: [RFC PATCH 03/18] KVM: Drop kvm_count_lock and instead protect
+ kvm_usage_count with kvm_lock
+Message-ID: <20220823084003.GF2147148@ls.amr.corp.intel.com>
+References: <cover.1660974106.git.isaku.yamahata@intel.com>
+ <6b07c02dd361f834fea442eb8dae53f23618f983.1660974106.git.isaku.yamahata@intel.com>
+ <YwQ6wTmbja4h2TYZ@gao-cwp>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <YwQ6wTmbja4h2TYZ@gao-cwp>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Yonglong Li <liyonglong@chinatelecom.cn>
+On Tue, Aug 23, 2022 at 10:26:09AM +0800,
+Chao Gao <chao.gao@intel.com> wrote:
 
-[ Upstream commit 536a6c8e05f95e3d1118c40ae8b3022ee2d05d52 ]
+> On Fri, Aug 19, 2022 at 11:00:09PM -0700, isaku.yamahata@intel.com wrote:
+> >From: Isaku Yamahata <isaku.yamahata@intel.com>
+> >
+> >Because kvm_count_lock unnecessarily complicates the KVM locking convention
+> >Drop kvm_count_lock and instead protect kvm_usage_count with kvm_lock for
+> >simplicity.
+> >
+> >Opportunistically add some comments on locking.
+> >
+> >Suggested-by: Sean Christopherson <seanjc@google.com>
+> >Signed-off-by: Isaku Yamahata <isaku.yamahata@intel.com>
+> >---
+> > static cpumask_var_t cpus_hardware_enabled;
+> >@@ -4999,6 +4998,8 @@ static void hardware_enable_nolock(void *junk)
+> > 	int cpu = raw_smp_processor_id();
+> > 	int r;
+> > 
+> >+	WARN_ON_ONCE(preemptible());
+> >+
+> > 	if (cpumask_test_cpu(cpu, cpus_hardware_enabled))
+> > 		return;
+> > 
+> >@@ -5015,10 +5016,10 @@ static void hardware_enable_nolock(void *junk)
+> > 
+> > static int kvm_starting_cpu(unsigned int cpu)
+> > {
+> >-	raw_spin_lock(&kvm_count_lock);
+> >+	mutex_lock(&kvm_lock);
+> 
+> kvm_starting_cpu() is called with interrupt disabled. So we cannot use
+> sleeping locks (e.g., mutex) here.
 
-current code of __tcp_retransmit_skb only check TCP_SKB_CB(skb)->seq
-in send window, and TCP_SKB_CB(skb)->seq_end maybe out of send window.
-If receiver has shrunk his window, and skb is out of new window,  it
-should retransmit a smaller portion of the payload.
 
-test packetdrill script:
-    0 socket(..., SOCK_STREAM, IPPROTO_TCP) = 3
-   +0 fcntl(3, F_GETFL) = 0x2 (flags O_RDWR)
-   +0 fcntl(3, F_SETFL, O_RDWR|O_NONBLOCK) = 0
+So your patch to move it to online section [1] is needed.
+I thought I can pullin only some of your patches.  But whole your patches are
+needed.
 
-   +0 connect(3, ..., ...) = -1 EINPROGRESS (Operation now in progress)
-   +0 > S 0:0(0)  win 65535 <mss 1460,sackOK,TS val 100 ecr 0,nop,wscale 8>
- +.05 < S. 0:0(0) ack 1 win 6000 <mss 1000,nop,nop,sackOK>
-   +0 > . 1:1(0) ack 1
-
-   +0 write(3, ..., 10000) = 10000
-
-   +0 > . 1:2001(2000) ack 1 win 65535
-   +0 > . 2001:4001(2000) ack 1 win 65535
-   +0 > . 4001:6001(2000) ack 1 win 65535
-
- +.05 < . 1:1(0) ack 4001 win 1001
-
-and tcpdump show:
-192.168.226.67.55 > 192.0.2.1.8080: Flags [.], seq 1:2001, ack 1, win 65535, length 2000
-192.168.226.67.55 > 192.0.2.1.8080: Flags [.], seq 2001:4001, ack 1, win 65535, length 2000
-192.168.226.67.55 > 192.0.2.1.8080: Flags [P.], seq 4001:5001, ack 1, win 65535, length 1000
-192.168.226.67.55 > 192.0.2.1.8080: Flags [.], seq 5001:6001, ack 1, win 65535, length 1000
-192.0.2.1.8080 > 192.168.226.67.55: Flags [.], ack 4001, win 1001, length 0
-192.168.226.67.55 > 192.0.2.1.8080: Flags [.], seq 5001:6001, ack 1, win 65535, length 1000
-192.168.226.67.55 > 192.0.2.1.8080: Flags [P.], seq 4001:5001, ack 1, win 65535, length 1000
-
-when cient retract window to 1001, send window is [4001,5002],
-but TLP send 5001-6001 packet which is out of send window.
-
-Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
-Signed-off-by: Yonglong Li <liyonglong@chinatelecom.cn>
-Signed-off-by: Eric Dumazet <edumazet@google.com>
-Link: https://lore.kernel.org/r/1657532838-20200-1-git-send-email-liyonglong@chinatelecom.cn
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- net/ipv4/tcp_output.c | 23 ++++++++++++++++-------
- 1 file changed, 16 insertions(+), 7 deletions(-)
-
-diff --git a/net/ipv4/tcp_output.c b/net/ipv4/tcp_output.c
-index 5e9b7dfd9d2d..c6548155df83 100644
---- a/net/ipv4/tcp_output.c
-+++ b/net/ipv4/tcp_output.c
-@@ -2861,7 +2861,7 @@ int __tcp_retransmit_skb(struct sock *sk, struct sk_buff *skb, int segs)
- 	struct tcp_sock *tp = tcp_sk(sk);
- 	unsigned int cur_mss;
- 	int diff, len, err;
--
-+	int avail_wnd;
- 
- 	/* Inconclusive MTU probe */
- 	if (icsk->icsk_mtup.probe_size)
-@@ -2891,17 +2891,25 @@ int __tcp_retransmit_skb(struct sock *sk, struct sk_buff *skb, int segs)
- 		return -EHOSTUNREACH; /* Routing failure or similar. */
- 
- 	cur_mss = tcp_current_mss(sk);
-+	avail_wnd = tcp_wnd_end(tp) - TCP_SKB_CB(skb)->seq;
- 
- 	/* If receiver has shrunk his window, and skb is out of
- 	 * new window, do not retransmit it. The exception is the
- 	 * case, when window is shrunk to zero. In this case
--	 * our retransmit serves as a zero window probe.
-+	 * our retransmit of one segment serves as a zero window probe.
- 	 */
--	if (!before(TCP_SKB_CB(skb)->seq, tcp_wnd_end(tp)) &&
--	    TCP_SKB_CB(skb)->seq != tp->snd_una)
--		return -EAGAIN;
-+	if (avail_wnd <= 0) {
-+		if (TCP_SKB_CB(skb)->seq != tp->snd_una)
-+			return -EAGAIN;
-+		avail_wnd = cur_mss;
-+	}
- 
- 	len = cur_mss * segs;
-+	if (len > avail_wnd) {
-+		len = rounddown(avail_wnd, cur_mss);
-+		if (!len)
-+			len = avail_wnd;
-+	}
- 	if (skb->len > len) {
- 		if (tcp_fragment(sk, skb, len, cur_mss, GFP_ATOMIC))
- 			return -ENOMEM; /* We'll try again later. */
-@@ -2914,8 +2922,9 @@ int __tcp_retransmit_skb(struct sock *sk, struct sk_buff *skb, int segs)
- 		diff -= tcp_skb_pcount(skb);
- 		if (diff)
- 			tcp_adjust_pcount(sk, skb, diff);
--		if (skb->len < cur_mss)
--			tcp_retrans_try_collapse(sk, skb, cur_mss);
-+		avail_wnd = min_t(int, avail_wnd, cur_mss);
-+		if (skb->len < avail_wnd)
-+			tcp_retrans_try_collapse(sk, skb, avail_wnd);
- 	}
- 
- 	/* RFC3168, section 6.1.1.1. ECN fallback */
+[1] https://lore.kernel.org/lkml/20220317091539.GA7257@gao-cwp/T/#mcc0fd81e7a19601e7c3ce451582c516d38f977f6
 -- 
-2.35.1
-
-
-
+Isaku Yamahata <isaku.yamahata@gmail.com>
