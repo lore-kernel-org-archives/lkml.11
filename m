@@ -2,41 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8D856C32772
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 08:44:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7AF6BC32774
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 08:44:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231167AbiHWIoF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 04:44:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50786 "EHLO
+        id S1345463AbiHWIoK (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 23 Aug 2022 04:44:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48746 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346705AbiHWIk3 (ORCPT
+        with ESMTP id S1347385AbiHWIky (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 04:40:29 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5E1785F23F;
-        Tue, 23 Aug 2022 01:18:49 -0700 (PDT)
+        Tue, 23 Aug 2022 04:40:54 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B2CE24AD4B;
+        Tue, 23 Aug 2022 01:18:55 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 2F22161321;
-        Tue, 23 Aug 2022 08:17:26 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1ABFCC433C1;
-        Tue, 23 Aug 2022 08:17:24 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 24B02B81C4E;
+        Tue, 23 Aug 2022 08:18:55 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 896EFC433C1;
+        Tue, 23 Aug 2022 08:18:53 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661242645;
-        bh=GOO6yS8sqZfWknrUvzaIwJRwSqyMq+57shxE+fO7O2Y=;
+        s=korg; t=1661242733;
+        bh=4jrCeDH5htUTAKRPY4r395KdKhET1ApCrWau5EWtYyM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=mHs0RuaFD73IhUymSU4FpXwCBmPlN8B4ESMLOPvyLlais20CycC2UrVqA4XN3AZvL
-         dJd8h/J+GxanPbPe0KFFwt/GPe4KDKYKzaH74w71xEpV8ulkUrf793SIE/OVbdA90K
-         OBcP8s4E6a0kYdTs7P5su//a4jytK+tmrvtO21Kw=
+        b=UCKQ13PlR9/DsTvyZMdgmQbLQXlyWD47kAuj5Lxgf6kaN8ZM+3cmzMdj56ltFCZN5
+         zQj2kTVA1wKAAYCxKoQIQTRFB6UhWaASf/0zniEZ8oL69V0dCQepP83hXCBnNdjVYt
+         IZ/sLfcH9sImkgqjS6Mkr2h6SSOZUz02QQqXXCQc=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, David Howells <dhowells@redhat.com>,
-        Jeff Layton <jlayton@kernel.org>
-Subject: [PATCH 5.19 152/365] fscache: dont leak cookie access refs if invalidation is in progress or failed
-Date:   Tue, 23 Aug 2022 10:00:53 +0200
-Message-Id: <20220823080124.585754011@linuxfoundation.org>
+        stable@vger.kernel.org,
+        =?UTF-8?q?Martin=20Povi=C5=A1er?= <povik+lin@cutebit.org>,
+        Mark Brown <broonie@kernel.org>
+Subject: [PATCH 5.19 183/365] ASoC: tas2770: Fix handling of mute/unmute
+Date:   Tue, 23 Aug 2022 10:01:24 +0200
+Message-Id: <20220823080125.881354758@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220823080118.128342613@linuxfoundation.org>
 References: <20220823080118.128342613@linuxfoundation.org>
@@ -48,55 +50,132 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jeff Layton <jlayton@kernel.org>
+From: Martin Povišer <povik+lin@cutebit.org>
 
-commit fb24771faf72a2fd62b3b6287af3c610c3ec9cf1 upstream.
+commit 1e5907bcb3a3b569be0a03ebe668bba2ed320a50 upstream.
 
-It's possible for a request to invalidate a fscache_cookie will come in
-while we're already processing an invalidation. If that happens we
-currently take an extra access reference that will leak. Only call
-__fscache_begin_cookie_access if the FSCACHE_COOKIE_DO_INVALIDATE bit
-was previously clear.
+Because the PWR_CTRL field is modeled as the power state of the DAC
+widget, and at the same time it is used to implement mute/unmute, we
+need some additional book-keeping to have the right end result no matter
+the sequence of calls. Without this fix, one can mute an ongoing stream
+by toggling a speaker pin control.
 
-Also, ensure that we attempt to clear the bit when the cookie is
-"FAILED" and put the reference to avoid an access leak.
-
-Fixes: 85e4ea1049c7 ("fscache: Fix invalidation/lookup race")
-Suggested-by: David Howells <dhowells@redhat.com>
-Signed-off-by: Jeff Layton <jlayton@kernel.org>
-Signed-off-by: David Howells <dhowells@redhat.com>
+Fixes: 1a476abc723e ("tas2770: add tas2770 smart PA kernel driver")
+Signed-off-by: Martin Povišer <povik+lin@cutebit.org>
+Link: https://lore.kernel.org/r/20220808141246.5749-5-povik+lin@cutebit.org
+Signed-off-by: Mark Brown <broonie@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- fs/fscache/cookie.c | 7 +++++--
- 1 file changed, 5 insertions(+), 2 deletions(-)
+ sound/soc/codecs/tas2770.c |   57 +++++++++++++++++++++++----------------------
+ sound/soc/codecs/tas2770.h |    2 +
+ 2 files changed, 32 insertions(+), 27 deletions(-)
 
-diff --git a/fs/fscache/cookie.c b/fs/fscache/cookie.c
-index 74920826d8f6..26a6d395737a 100644
---- a/fs/fscache/cookie.c
-+++ b/fs/fscache/cookie.c
-@@ -739,6 +739,9 @@ static void fscache_cookie_state_machine(struct fscache_cookie *cookie)
- 		fallthrough;
+--- a/sound/soc/codecs/tas2770.c
++++ b/sound/soc/codecs/tas2770.c
+@@ -46,6 +46,26 @@ static void tas2770_reset(struct tas2770
+ 	usleep_range(1000, 2000);
+ }
  
- 	case FSCACHE_COOKIE_STATE_FAILED:
-+		if (test_and_clear_bit(FSCACHE_COOKIE_DO_INVALIDATE, &cookie->flags))
-+			fscache_end_cookie_access(cookie, fscache_access_invalidate_cookie_end);
++static int tas2770_update_pwr_ctrl(struct tas2770_priv *tas2770)
++{
++	struct snd_soc_component *component = tas2770->component;
++	unsigned int val;
++	int ret;
 +
- 		if (atomic_read(&cookie->n_accesses) != 0)
- 			break;
- 		if (test_bit(FSCACHE_COOKIE_DO_RELINQUISH, &cookie->flags)) {
-@@ -1063,8 +1066,8 @@ void __fscache_invalidate(struct fscache_cookie *cookie,
- 		return;
++	if (tas2770->dac_powered)
++		val = tas2770->unmuted ?
++			TAS2770_PWR_CTRL_ACTIVE : TAS2770_PWR_CTRL_MUTE;
++	else
++		val = TAS2770_PWR_CTRL_SHUTDOWN;
++
++	ret = snd_soc_component_update_bits(component, TAS2770_PWR_CTRL,
++					    TAS2770_PWR_CTRL_MASK, val);
++	if (ret < 0)
++		return ret;
++
++	return 0;
++}
++
+ #ifdef CONFIG_PM
+ static int tas2770_codec_suspend(struct snd_soc_component *component)
+ {
+@@ -82,9 +102,7 @@ static int tas2770_codec_resume(struct s
+ 		gpiod_set_value_cansleep(tas2770->sdz_gpio, 1);
+ 		usleep_range(1000, 2000);
+ 	} else {
+-		ret = snd_soc_component_update_bits(component, TAS2770_PWR_CTRL,
+-						    TAS2770_PWR_CTRL_MASK,
+-						    TAS2770_PWR_CTRL_ACTIVE);
++		ret = tas2770_update_pwr_ctrl(tas2770);
+ 		if (ret < 0)
+ 			return ret;
+ 	}
+@@ -120,24 +138,19 @@ static int tas2770_dac_event(struct snd_
  
- 	case FSCACHE_COOKIE_STATE_LOOKING_UP:
--		__fscache_begin_cookie_access(cookie, fscache_access_invalidate_cookie);
--		set_bit(FSCACHE_COOKIE_DO_INVALIDATE, &cookie->flags);
-+		if (!test_and_set_bit(FSCACHE_COOKIE_DO_INVALIDATE, &cookie->flags))
-+			__fscache_begin_cookie_access(cookie, fscache_access_invalidate_cookie);
- 		fallthrough;
- 	case FSCACHE_COOKIE_STATE_CREATING:
- 		spin_unlock(&cookie->lock);
--- 
-2.37.2
-
+ 	switch (event) {
+ 	case SND_SOC_DAPM_POST_PMU:
+-		ret = snd_soc_component_update_bits(component, TAS2770_PWR_CTRL,
+-						    TAS2770_PWR_CTRL_MASK,
+-						    TAS2770_PWR_CTRL_MUTE);
++		tas2770->dac_powered = 1;
++		ret = tas2770_update_pwr_ctrl(tas2770);
+ 		break;
+ 	case SND_SOC_DAPM_PRE_PMD:
+-		ret = snd_soc_component_update_bits(component, TAS2770_PWR_CTRL,
+-						    TAS2770_PWR_CTRL_MASK,
+-						    TAS2770_PWR_CTRL_SHUTDOWN);
++		tas2770->dac_powered = 0;
++		ret = tas2770_update_pwr_ctrl(tas2770);
+ 		break;
+ 	default:
+ 		dev_err(tas2770->dev, "Not supported evevt\n");
+ 		return -EINVAL;
+ 	}
+ 
+-	if (ret < 0)
+-		return ret;
+-
+-	return 0;
++	return ret;
+ }
+ 
+ static const struct snd_kcontrol_new isense_switch =
+@@ -171,21 +184,11 @@ static const struct snd_soc_dapm_route t
+ static int tas2770_mute(struct snd_soc_dai *dai, int mute, int direction)
+ {
+ 	struct snd_soc_component *component = dai->component;
+-	int ret;
+-
+-	if (mute)
+-		ret = snd_soc_component_update_bits(component, TAS2770_PWR_CTRL,
+-						    TAS2770_PWR_CTRL_MASK,
+-						    TAS2770_PWR_CTRL_MUTE);
+-	else
+-		ret = snd_soc_component_update_bits(component, TAS2770_PWR_CTRL,
+-						    TAS2770_PWR_CTRL_MASK,
+-						    TAS2770_PWR_CTRL_ACTIVE);
+-
+-	if (ret < 0)
+-		return ret;
++	struct tas2770_priv *tas2770 =
++			snd_soc_component_get_drvdata(component);
+ 
+-	return 0;
++	tas2770->unmuted = !mute;
++	return tas2770_update_pwr_ctrl(tas2770);
+ }
+ 
+ static int tas2770_set_bitwidth(struct tas2770_priv *tas2770, int bitwidth)
+--- a/sound/soc/codecs/tas2770.h
++++ b/sound/soc/codecs/tas2770.h
+@@ -138,6 +138,8 @@ struct tas2770_priv {
+ 	struct device *dev;
+ 	int v_sense_slot;
+ 	int i_sense_slot;
++	bool dac_powered;
++	bool unmuted;
+ };
+ 
+ #endif /* __TAS2770__ */
 
 
