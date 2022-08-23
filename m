@@ -2,80 +2,112 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E5DEDC32772
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 14:34:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C3160C32789
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 14:35:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241833AbiHWOeK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 10:34:10 -0400
+        id S238680AbiHWOfu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 23 Aug 2022 10:35:50 -0400
 Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37802 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241359AbiHWOdx (ORCPT
+        with ESMTP id S242911AbiHWOfb (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 10:33:53 -0400
-Received: from gloria.sntech.de (gloria.sntech.de [185.11.138.130])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0092CA2D9C
-        for <linux-kernel@vger.kernel.org>; Tue, 23 Aug 2022 04:49:44 -0700 (PDT)
-Received: from ip5b412258.dynamic.kabel-deutschland.de ([91.65.34.88] helo=diego.localnet)
-        by gloria.sntech.de with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.94.2)
-        (envelope-from <heiko@sntech.de>)
-        id 1oQS2z-0004K1-CB; Tue, 23 Aug 2022 13:26:17 +0200
-From:   Heiko =?ISO-8859-1?Q?St=FCbner?= <heiko@sntech.de>
-To:     Kishon Vijay Abraham I <kishon@ti.com>,
-        Vinod Koul <vkoul@kernel.org>,
-        Samuel Holland <samuel@sholland.org>,
-        Peter Geis <pgwipeout@gmail.com>,
-        Peter Geis <pgwipeout@gmail.com>
-Cc:     Markus Reichl <m.reichl@fivetechno.de>,
-        Michael Riesch <michael.riesch@wolfvision.net>,
-        linux-phy@lists.infradead.org,
-        linux-arm-kernel@lists.infradead.org,
-        linux-rockchip@lists.infradead.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] phy: rockchip-inno-usb2: Return zero after otg sync
-Date:   Tue, 23 Aug 2022 13:26:16 +0200
-Message-ID: <6544199.MhkbZ0Pkbq@diego>
-In-Reply-To: <20220822103219.3985075-1-pgwipeout@gmail.com>
-References: <20220822103219.3985075-1-pgwipeout@gmail.com>
-MIME-Version: 1.0
-Content-Transfer-Encoding: 7Bit
-Content-Type: text/plain; charset="us-ascii"
+        Tue, 23 Aug 2022 10:35:31 -0400
+Received: from hutie.ust.cz (unknown [IPv6:2a03:3b40:fe:f0::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2A2F1D4189;
+        Tue, 23 Aug 2022 04:52:25 -0700 (PDT)
+Content-Type: text/plain;
+        charset=utf-8
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=cutebit.org; s=mail;
+        t=1661255496; bh=1rsZJQ1VmiWE9kL+OMOZlmNFGDJshxOgSVa2Lkgjnz4=;
+        h=Subject:From:In-Reply-To:Date:Cc:References:To;
+        b=NUvbhkSTvH3mMPFYSiLTyp6jyjipuiXIbU0oMA5LLBkVIjI5tW2WKpNojLQhpr9sE
+         dgXuK6qHhmBhET3WTml+SYlaFcxGwKWOoJPs8VqNvXSIftLn3iUYE/AZ7dLgZTBGan
+         I6zz0Nf5FfC4k2c8Ury2q+89W/hqQJ1HpBLMMsQk=
+Mime-Version: 1.0 (Mac OS X Mail 16.0 \(3696.80.82.1.1\))
+Subject: Re: [PATCH v2 3/4] ASoC: apple: mca: Start new platform driver
+From:   =?utf-8?Q?Martin_Povi=C5=A1er?= <povik+lin@cutebit.org>
+In-Reply-To: <YwS6lHeGH0BZKHeB@sirena.org.uk>
+Date:   Tue, 23 Aug 2022 13:51:35 +0200
+Cc:     Liam Girdwood <lgirdwood@gmail.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Hector Martin <marcan@marcan.st>,
+        Sven Peter <sven@svenpeter.dev>,
+        Philipp Zabel <p.zabel@pengutronix.de>,
+        Alyssa Rosenzweig <alyssa@rosenzweig.io>,
+        asahi@lists.linux.dev, alsa-devel@alsa-project.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
+Content-Transfer-Encoding: quoted-printable
+Message-Id: <6C89CA60-D0E2-4869-B21C-17AD4AA1974C@cutebit.org>
+References: <20220819125430.4920-1-povik+lin@cutebit.org>
+ <20220819125430.4920-4-povik+lin@cutebit.org>
+ <YwO/aqs7eqZx07kS@sirena.org.uk>
+ <24C0ABFA-BF71-4492-8A6A-E9BE1462B403@cutebit.org>
+ <YwS6lHeGH0BZKHeB@sirena.org.uk>
+To:     Mark Brown <broonie@kernel.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Am Montag, 22. August 2022, 12:32:18 CEST schrieb Peter Geis:
-> The otg sync state patch reuses the ret variable, but fails to set it to
-> zero after use. This leads to a situation when the otg port is in
-> peripheral mode where the otg phy aborts halfway through setup. Fix this
-> by setting ret to zero after use.
-> 
-> Fixes: 8dc60f8da22f ("phy: rockchip-inno-usb2: Sync initial otg state")
-> 
-> Reported-by: Markus Reichl <m.reichl@fivetechno.de>
-> Reported-by: Michael Riesch <michael.riesch@wolfvision.net>
-> Signed-off-by: Peter Geis <pgwipeout@gmail.com>
-> Tested-by: Michael Riesch <michael.riesch@wolfvision.net>
-> Tested-by: Markus Reichl <m.reichl@fivetechno.de>
-> ---
->  drivers/phy/rockchip/phy-rockchip-inno-usb2.c | 1 +
->  1 file changed, 1 insertion(+)
-> 
-> diff --git a/drivers/phy/rockchip/phy-rockchip-inno-usb2.c b/drivers/phy/rockchip/phy-rockchip-inno-usb2.c
-> index 0b1e9337ee8e..5fc7c374a6b4 100644
-> --- a/drivers/phy/rockchip/phy-rockchip-inno-usb2.c
-> +++ b/drivers/phy/rockchip/phy-rockchip-inno-usb2.c
-> @@ -1169,6 +1169,7 @@ static int rockchip_usb2phy_otg_port_init(struct rockchip_usb2phy *rphy,
->  			/* do initial sync of usb state */
->  			ret = property_enabled(rphy->grf, &rport->port_cfg->utmi_id);
->  			extcon_set_state_sync(rphy->edev, EXTCON_USB_HOST, !ret);
-> +			ret = 0;
->  		}
->  	}
-
-I also ran into that issue just now :-) .
-So am looking forward to v2.
-
-Thanks
-Heiko
 
 
+> On 23. 8. 2022, at 13:31, Mark Brown <broonie@kernel.org> wrote:
+>=20
+> On Tue, Aug 23, 2022 at 09:33:36AM +0200, Martin Povi=C5=A1er wrote:
+>>> On 22. 8. 2022, at 19:39, Mark Brown <broonie@kernel.org> wrote:
+>>> On Fri, Aug 19, 2022 at 02:54:29PM +0200, Martin Povi=C5=A1er wrote:
+
+>>>> +	/*
+>>>> +	 * We can't power up the device earlier than this because
+>>>> +	 * the power state driver would error out on seeing the device
+>>>> +	 * as clock-gated.
+>>>> +	 */
+>>>> +	cl->pd_link =3D device_link_add(mca->dev, cl->pd_dev,
+>>>> +				      DL_FLAG_STATELESS | =
+DL_FLAG_PM_RUNTIME |
+>>>> +					      DL_FLAG_RPM_ACTIVE);
+>=20
+>>> I'm not clear on this dynamically adding and removing device links =
+stuff
+>>> - it looks like the main (only?) purpose is to take a runtime PM
+>>> reference to the target device which is fine but it's not clear why
+>>> device links are involved given that the links are created and =
+destroyed
+>>> every time the DAI is used, AFAICT always in the same fixed
+>>> relationship.  It's not a problem, it's just unclear.
+>=20
+>> Indeed the only purpose is powering up the cluster=E2=80=99s power =
+domain (there=E2=80=99s
+>> one domain for each cluster). Adding the links is the only way I know =
+to
+>> do it. They need to be added dynamically (as opposed to statically =
+linking,
+>> say, the DAI=E2=80=99s ->dev to the cluster=E2=80=99s ->pd_dev, which =
+I guess may do
+>> something similar), because we need to sequence the =
+power-up/power-down
+>> with the enablement of the clocks.
+>=20
+> You could also just do the underlying runtime power management
+> operations directly couldn't you?  It's not clear what the device link
+> stuff is adding.
+
+This seems to be the way to do it. Quoting from documentation of
+dev_pm_domain_attach_by_id, by which we obtain the mca->dev and =
+cl->pd_dev
+the link is between:
+
+ * This function should typically be invoked by a driver during the =
+probe phase,
+ * in case its device requires power management through multiple PM =
+domains. The
+ * driver may benefit from using the received device, to configure =
+device-links
+ * towards its original device. Depending on the use-case and if needed, =
+the
+ * links may be dynamically changed by the driver, which allows it to =
+control
+ * the power to the PM domains independently from each other.
+
+--
+Martin=
