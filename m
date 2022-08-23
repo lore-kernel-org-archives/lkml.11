@@ -2,215 +2,175 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 41CFDC48BE4
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 11:56:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E93D4C3F6B0
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 11:56:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1359214AbiHWL4Z (ORCPT
+        id S1358642AbiHWL4z (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 07:56:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34416 "EHLO
+        Tue, 23 Aug 2022 07:56:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34948 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1358690AbiHWLw5 (ORCPT
+        with ESMTP id S1358742AbiHWLxj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 07:52:57 -0400
-Received: from mail-pf1-x429.google.com (mail-pf1-x429.google.com [IPv6:2607:f8b0:4864:20::429])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8C160D477C;
-        Tue, 23 Aug 2022 02:33:03 -0700 (PDT)
-Received: by mail-pf1-x429.google.com with SMTP id z187so12908188pfb.12;
-        Tue, 23 Aug 2022 02:33:03 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc;
-        bh=G7if3ijpIc8TnQSHWXh0LcgIPH6U4JE/8vWFIIr8OLI=;
-        b=ATgMOrzq/UEEdAS5zLeMKcguyeiRDtrEpY6t6fu0f1aQVYBfeAK9KVeBR5vRRiNNu1
-         3v6Yi9RvBCPhN7v2L0AfLEmE3WxAB6jOJvI92ZXaMXsMreZ+mQYaXC/wPVPI85rKkdJw
-         07iIdK/otGFLxLmdCfPFVm+r+O0We7GqGBfMOH43piVN1KMSx90572wB335lezFCMGGv
-         QeR6P+3aNs/MpcmvV2j6meKl7GHZhXndKjTQtHcgANEkSi17q3B4bmh61c6Mf09x2uhQ
-         ajnbBJ2+3SHA9Qh8HqMfFFb4OiepwdPmRSVVm12Bv6coNJYgI2fGvUdVMU1qILvtO6nx
-         dzOA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc;
-        bh=G7if3ijpIc8TnQSHWXh0LcgIPH6U4JE/8vWFIIr8OLI=;
-        b=Kmg2dmXUcpqL7pbYkjLVbpb2dSyWHhT/ftqi5qg5Hg1A28o418xdA790fkxpMj9tIa
-         UKLRgJtRHX1MSVsOtlCL/XjbvX5OOXSPmL0GL9cJQz01pHd25q97ubXf6tyQ0CvrKhBy
-         rsYadUZPHsI1PB/+IgexR4R7gDHEXsyc+MaaaTTIql+7ZQiwdjEh8xjjjgGKcOBMmGNI
-         z06eprlx0vYAFy3GkYEfyNrWvm0WXTM10cjshGxv81E+LGOwob9X+xuSnG7vf6EcGqMa
-         5vP1RSJ+eJMY6AlopCSjWSMztt7HnUKH/ITtHKZTNqlgdIBLIMJ+H00zyxh/GP+blLwA
-         8r3g==
-X-Gm-Message-State: ACgBeo0Samz1qD+FcDKwUAfQ/6TF8Y+Vpc+wEbdNhrNgA0ehzAY3FYKK
-        YhI4pSQOsGLt3UI0SxX0JqA=
-X-Google-Smtp-Source: AA6agR6aBUzNMOzQ/JKSPbAlZJui3XnUYekBLY/m5yG3qo12sPCWaxxOnwapLcT+jzSsHoR+BigRUw==
-X-Received: by 2002:a63:fb4a:0:b0:429:8605:6ebf with SMTP id w10-20020a63fb4a000000b0042986056ebfmr19798586pgj.225.1661247175818;
-        Tue, 23 Aug 2022 02:32:55 -0700 (PDT)
-Received: from localhost.localdomain ([103.7.29.32])
-        by smtp.gmail.com with ESMTPSA id 13-20020a170902c24d00b0017297a6b39dsm10057212plg.265.2022.08.23.02.32.53
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 23 Aug 2022 02:32:55 -0700 (PDT)
-From:   Like Xu <like.xu.linux@gmail.com>
-X-Google-Original-From: Like Xu <likexu@tencent.com>
-To:     Sean Christopherson <seanjc@google.com>,
-        Paolo Bonzini <pbonzini@redhat.com>
-Cc:     Jim Mattson <jmattson@google.com>, linux-kernel@vger.kernel.org,
-        kvm@vger.kernel.org, Wanpeng Li <wanpengli@tencent.com>
-Subject: [PATCH RESEND v2 6/8] KVM: x86/pmu: Defer counter emulated overflow via pmc->stale_counter
-Date:   Tue, 23 Aug 2022 17:32:19 +0800
-Message-Id: <20220823093221.38075-7-likexu@tencent.com>
+        Tue, 23 Aug 2022 07:53:39 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1BCF4D5DE1;
+        Tue, 23 Aug 2022 02:33:11 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id F17EA61389;
+        Tue, 23 Aug 2022 09:33:03 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C1511C433C1;
+        Tue, 23 Aug 2022 09:33:02 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1661247183;
+        bh=xK2M1WLYf7vV6q0FqCGPn4zL+UX/2Lz0cBFiFLJGSRE=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=Z/icwRpH/bgkAQsLxF979bMnRGoutjvlfBi95nzZp8BbptpilqDjsoq7mThNpgQE2
+         0eYMT6YQHBkw6lr6rTA4g+YhkowZos6sbGjjW6QjTNanF8OYQn42Gz3T8KoIuISY7M
+         vBjPxw1+CYDkcnM7ezMQwDcrK9zXfCjPtQdZCM9I=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Lin Ma <linma@zju.edu.cn>,
+        Konrad Jankowski <konrad0.jankowski@intel.com>,
+        Tony Nguyen <anthony.l.nguyen@intel.com>,
+        Jakub Kicinski <kuba@kernel.org>
+Subject: [PATCH 5.4 345/389] igb: Add lock to avoid data race
+Date:   Tue, 23 Aug 2022 10:27:03 +0200
+Message-Id: <20220823080129.945215032@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220823093221.38075-1-likexu@tencent.com>
-References: <20220823093221.38075-1-likexu@tencent.com>
+In-Reply-To: <20220823080115.331990024@linuxfoundation.org>
+References: <20220823080115.331990024@linuxfoundation.org>
+User-Agent: quilt/0.67
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Like Xu <likexu@tencent.com>
+From: Lin Ma <linma@zju.edu.cn>
 
-There are contextual restrictions on the functions that can be called
-in the *_exit_handlers_fastpath path, for example calling
-pmc_reprogram_counter() brings up a host complaint like:
+commit 6faee3d4ee8be0f0367d0c3d826afb3571b7a5e0 upstream.
 
- [*] BUG: sleeping function called from invalid context at kernel/locking/mutex.c:580
- [*] in_atomic(): 1, irqs_disabled(): 1, non_block: 0, pid: 2981888, name: CPU 15/KVM
- [*] preempt_count: 1, expected: 0
- [*] RCU nest depth: 0, expected: 0
- [*] INFO: lockdep is turned off.
- [*] irq event stamp: 0
- [*] hardirqs last  enabled at (0): [<0000000000000000>] 0x0
- [*] hardirqs last disabled at (0): [<ffffffff8121222a>] copy_process+0x146a/0x62d0
- [*] softirqs last  enabled at (0): [<ffffffff81212269>] copy_process+0x14a9/0x62d0
- [*] softirqs last disabled at (0): [<0000000000000000>] 0x0
- [*] Preemption disabled at:
- [*] [<ffffffffc2063fc1>] vcpu_enter_guest+0x1001/0x3dc0 [kvm]
- [*] CPU: 17 PID: 2981888 Comm: CPU 15/KVM Kdump: 5.19.0-rc1-g239111db364c-dirty #2
- [*] Call Trace:
- [*]  <TASK>
- [*]  dump_stack_lvl+0x6c/0x9b
- [*]  __might_resched.cold+0x22e/0x297
- [*]  __mutex_lock+0xc0/0x23b0
- [*]  perf_event_ctx_lock_nested+0x18f/0x340
- [*]  perf_event_pause+0x1a/0x110
- [*]  reprogram_counter+0x2af/0x1490 [kvm]
- [*]  kvm_pmu_trigger_event+0x429/0x950 [kvm]
- [*]  kvm_skip_emulated_instruction+0x48/0x90 [kvm]
- [*]  handle_fastpath_set_msr_irqoff+0x349/0x3b0 [kvm]
- [*]  vmx_vcpu_run+0x268e/0x3b80 [kvm_intel]
- [*]  vcpu_enter_guest+0x1d22/0x3dc0 [kvm]
+The commit c23d92b80e0b ("igb: Teardown SR-IOV before
+unregister_netdev()") places the unregister_netdev() call after the
+igb_disable_sriov() call to avoid functionality issue.
 
-A new stale_counter field is introduced to keep this part of the semantics
-invariant. It records the current counter value and it's used to determine
-whether to inject an emulated overflow interrupt in the later
-kvm_pmu_handle_event(), given that the internal count value from its
-perf_event has not been added to pmc->counter in time, or the guest
-will update the value of a running counter directly.
+However, it introduces several race conditions when detaching a device.
+For example, when .remove() is called, the below interleaving leads to
+use-after-free.
 
-Opportunistically shrink sizeof(struct kvm_pmc) a bit.
+ (FREE from device detaching)      |   (USE from netdev core)
+igb_remove                         |  igb_ndo_get_vf_config
+ igb_disable_sriov                 |  vf >= adapter->vfs_allocated_count?
+  kfree(adapter->vf_data)          |
+  adapter->vfs_allocated_count = 0 |
+                                   |    memcpy(... adapter->vf_data[vf]
 
-Suggested-by: Wanpeng Li <wanpengli@tencent.com>
-Fixes: 9cd803d496e7 ("KVM: x86: Update vPMCs when retiring instructions")
-Signed-off-by: Like Xu <likexu@tencent.com>
+Moreover, the igb_disable_sriov() also suffers from data race with the
+requests from VF driver.
+
+ (FREE from device detaching)      |   (USE from requests)
+igb_remove                         |  igb_msix_other
+ igb_disable_sriov                 |   igb_msg_task
+  kfree(adapter->vf_data)          |    vf < adapter->vfs_allocated_count
+  adapter->vfs_allocated_count = 0 |
+
+To this end, this commit first eliminates the data races from netdev
+core by using rtnl_lock (similar to commit 719479230893 ("dpaa2-eth: add
+MAC/PHY support through phylink")). And then adds a spinlock to
+eliminate races from driver requests. (similar to commit 1e53834ce541
+("ixgbe: Add locking to prevent panic when setting sriov_numvfs to zero")
+
+Fixes: c23d92b80e0b ("igb: Teardown SR-IOV before unregister_netdev()")
+Signed-off-by: Lin Ma <linma@zju.edu.cn>
+Tested-by: Konrad Jankowski <konrad0.jankowski@intel.com>
+Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
+Link: https://lore.kernel.org/r/20220817184921.735244-1-anthony.l.nguyen@intel.com
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/x86/include/asm/kvm_host.h |  5 +++--
- arch/x86/kvm/pmu.c              | 15 ++++++++-------
- arch/x86/kvm/svm/pmu.c          |  2 +-
- arch/x86/kvm/vmx/pmu_intel.c    |  4 ++--
- 4 files changed, 14 insertions(+), 12 deletions(-)
+ drivers/net/ethernet/intel/igb/igb.h      |    2 ++
+ drivers/net/ethernet/intel/igb/igb_main.c |   12 +++++++++++-
+ 2 files changed, 13 insertions(+), 1 deletion(-)
 
-diff --git a/arch/x86/include/asm/kvm_host.h b/arch/x86/include/asm/kvm_host.h
-index 4e568a7ef464..ffd982bf015d 100644
---- a/arch/x86/include/asm/kvm_host.h
-+++ b/arch/x86/include/asm/kvm_host.h
-@@ -488,7 +488,10 @@ enum pmc_type {
- struct kvm_pmc {
- 	enum pmc_type type;
- 	u8 idx;
-+	bool is_paused;
-+	bool intr;
- 	u64 counter;
-+	u64 stale_counter;
- 	u64 eventsel;
- 	struct perf_event *perf_event;
- 	struct kvm_vcpu *vcpu;
-@@ -498,8 +501,6 @@ struct kvm_pmc {
- 	 * ctrl value for fixed counters.
- 	 */
- 	u64 current_config;
--	bool is_paused;
--	bool intr;
+--- a/drivers/net/ethernet/intel/igb/igb.h
++++ b/drivers/net/ethernet/intel/igb/igb.h
+@@ -594,6 +594,8 @@ struct igb_adapter {
+ 	struct igb_mac_addr *mac_table;
+ 	struct vf_mac_filter vf_macs;
+ 	struct vf_mac_filter *vf_mac_list;
++	/* lock for VF resources */
++	spinlock_t vfs_lock;
  };
  
- #define KVM_PMC_MAX_FIXED	3
-diff --git a/arch/x86/kvm/pmu.c b/arch/x86/kvm/pmu.c
-index 6940cbeee54d..45d062cb1dd5 100644
---- a/arch/x86/kvm/pmu.c
-+++ b/arch/x86/kvm/pmu.c
-@@ -350,6 +350,12 @@ void kvm_pmu_handle_event(struct kvm_vcpu *vcpu)
+ /* flags controlling PTP/1588 function */
+--- a/drivers/net/ethernet/intel/igb/igb_main.c
++++ b/drivers/net/ethernet/intel/igb/igb_main.c
+@@ -3491,6 +3491,7 @@ static int igb_disable_sriov(struct pci_
+ 	struct net_device *netdev = pci_get_drvdata(pdev);
+ 	struct igb_adapter *adapter = netdev_priv(netdev);
+ 	struct e1000_hw *hw = &adapter->hw;
++	unsigned long flags;
+ 
+ 	/* reclaim resources allocated to VFs */
+ 	if (adapter->vf_data) {
+@@ -3503,12 +3504,13 @@ static int igb_disable_sriov(struct pci_
+ 			pci_disable_sriov(pdev);
+ 			msleep(500);
  		}
+-
++		spin_lock_irqsave(&adapter->vfs_lock, flags);
+ 		kfree(adapter->vf_mac_list);
+ 		adapter->vf_mac_list = NULL;
+ 		kfree(adapter->vf_data);
+ 		adapter->vf_data = NULL;
+ 		adapter->vfs_allocated_count = 0;
++		spin_unlock_irqrestore(&adapter->vfs_lock, flags);
+ 		wr32(E1000_IOVCTL, E1000_IOVCTL_REUSE_VFQ);
+ 		wrfl();
+ 		msleep(100);
+@@ -3668,7 +3670,9 @@ static void igb_remove(struct pci_dev *p
+ 	igb_release_hw_control(adapter);
  
- 		__reprogram_counter(pmc);
+ #ifdef CONFIG_PCI_IOV
++	rtnl_lock();
+ 	igb_disable_sriov(pdev);
++	rtnl_unlock();
+ #endif
+ 
+ 	unregister_netdev(netdev);
+@@ -3829,6 +3833,9 @@ static int igb_sw_init(struct igb_adapte
+ 
+ 	spin_lock_init(&adapter->nfc_lock);
+ 	spin_lock_init(&adapter->stats64_lock);
 +
-+		if (pmc->stale_counter) {
-+			if (pmc->counter < pmc->stale_counter)
-+				__kvm_perf_overflow(pmc, false);
-+			pmc->stale_counter = 0;
-+		}
- 	}
- 
- 	/*
-@@ -522,14 +528,9 @@ void kvm_pmu_destroy(struct kvm_vcpu *vcpu)
- 
- static void kvm_pmu_incr_counter(struct kvm_pmc *pmc)
++	/* init spinlock to avoid concurrency of VF resources */
++	spin_lock_init(&adapter->vfs_lock);
+ #ifdef CONFIG_PCI_IOV
+ 	switch (hw->mac.type) {
+ 	case e1000_82576:
+@@ -7569,8 +7576,10 @@ unlock:
+ static void igb_msg_task(struct igb_adapter *adapter)
  {
--	u64 prev_count;
--
--	prev_count = pmc->counter;
-+	pmc->stale_counter = pmc->counter;
- 	pmc->counter = (pmc->counter + 1) & pmc_bitmask(pmc);
--
--	__reprogram_counter(pmc);
--	if (pmc->counter < prev_count)
--		__kvm_perf_overflow(pmc, false);
-+	reprogram_counter(pmc);
+ 	struct e1000_hw *hw = &adapter->hw;
++	unsigned long flags;
+ 	u32 vf;
+ 
++	spin_lock_irqsave(&adapter->vfs_lock, flags);
+ 	for (vf = 0; vf < adapter->vfs_allocated_count; vf++) {
+ 		/* process any reset requests */
+ 		if (!igb_check_for_rst(hw, vf))
+@@ -7584,6 +7593,7 @@ static void igb_msg_task(struct igb_adap
+ 		if (!igb_check_for_ack(hw, vf))
+ 			igb_rcv_ack_from_vf(adapter, vf);
+ 	}
++	spin_unlock_irqrestore(&adapter->vfs_lock, flags);
  }
  
- static inline bool eventsel_match_perf_hw_id(struct kvm_pmc *pmc,
-diff --git a/arch/x86/kvm/svm/pmu.c b/arch/x86/kvm/svm/pmu.c
-index f24613a108c5..e9c66dd659a6 100644
---- a/arch/x86/kvm/svm/pmu.c
-+++ b/arch/x86/kvm/svm/pmu.c
-@@ -290,7 +290,7 @@ static void amd_pmu_reset(struct kvm_vcpu *vcpu)
- 		struct kvm_pmc *pmc = &pmu->gp_counters[i];
- 
- 		pmc_stop_counter(pmc);
--		pmc->counter = pmc->eventsel = 0;
-+		pmc->counter = pmc->stale_counter = pmc->eventsel = 0;
- 	}
- }
- 
-diff --git a/arch/x86/kvm/vmx/pmu_intel.c b/arch/x86/kvm/vmx/pmu_intel.c
-index 6242b0b81116..42b591755010 100644
---- a/arch/x86/kvm/vmx/pmu_intel.c
-+++ b/arch/x86/kvm/vmx/pmu_intel.c
-@@ -647,14 +647,14 @@ static void intel_pmu_reset(struct kvm_vcpu *vcpu)
- 		pmc = &pmu->gp_counters[i];
- 
- 		pmc_stop_counter(pmc);
--		pmc->counter = pmc->eventsel = 0;
-+		pmc->counter = pmc->stale_counter = pmc->eventsel = 0;
- 	}
- 
- 	for (i = 0; i < KVM_PMC_MAX_FIXED; i++) {
- 		pmc = &pmu->fixed_counters[i];
- 
- 		pmc_stop_counter(pmc);
--		pmc->counter = 0;
-+		pmc->counter = pmc->stale_counter = 0;
- 	}
- 
- 	pmu->fixed_ctr_ctrl = pmu->global_ctrl = pmu->global_status = 0;
--- 
-2.37.2
+ /**
+
 
