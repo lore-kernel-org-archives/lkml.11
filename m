@@ -2,56 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8B7F7C32772
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 12:09:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 003DCC32792
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 12:09:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1359506AbiHWMI7 (ORCPT
+        id S1359515AbiHWMJE (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 08:08:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59532 "EHLO
+        Tue, 23 Aug 2022 08:09:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34346 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1359252AbiHWMHW (ORCPT
+        with ESMTP id S1359295AbiHWMHk (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 08:07:22 -0400
+        Tue, 23 Aug 2022 08:07:40 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E30A565E3;
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7D126647F;
         Tue, 23 Aug 2022 02:38:21 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 864BB61467;
-        Tue, 23 Aug 2022 09:38:21 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 57479C433C1;
-        Tue, 23 Aug 2022 09:38:20 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id A3A236138B;
+        Tue, 23 Aug 2022 09:37:49 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id AEF2AC433C1;
+        Tue, 23 Aug 2022 09:37:48 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661247500;
-        bh=69ovCRcumfGslh/oGLivZ4DIr8oJgQGwFuXGEqHGW5k=;
+        s=korg; t=1661247469;
+        bh=FCtL1a3iorZK6PRbgbZ2Lj1dgI9Q4zlRLjuHCMNyOZQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=gsPa9kEgtLU+FR/qnzFc0olVYq3Wwx5OMjvEUyfS2fi8ntQoBSB/WUOIJjF74OSA6
-         DtQHMDmtfmu3/CEJu6COle5cF+6R5J3ZlnU5aIDwq/ML7Q54lQ4YQrfdtqQmDyxpr5
-         qwWPJY4KkJgi3R6/vNEKMHUFmbs8o8Z2MSLR/HHo=
+        b=QkRvsVRYAGIfKiQYsYxbng6wXVvRPFNjjXcgx/iI6c7BxpDe8UF1LBAhjFxn4Dbo8
+         LU+N4bAXRnMDVqBhTJ04ETa5feevODQBpiZalYrwEZf/YTv5VumEpndsxRSyuEbuWg
+         f5HNi+VOXHy1foP+Gd1QjwTPoxCM0q7oXgLJwRGI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Roberto Sassu <roberto.sassu@huawei.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Andrii Nakryiko <andrii@kernel.org>, bpf@vger.kernel.org,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Ingo Molnar <mingo@redhat.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>, llvm@lists.linux.dev,
-        Martin KaFai Lau <martin.lau@linux.dev>,
-        Nathan Chancellor <nathan@kernel.org>,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        Nick Terrell <terrelln@fb.com>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Quentin Monnet <quentin@isovalent.com>,
-        Song Liu <song@kernel.org>,
-        Stanislav Fomichev <sdf@google.com>,
-        Arnaldo Carvalho de Melo <acme@redhat.com>
-Subject: [PATCH 5.10 056/158] tools build: Switch to new openssl API for test-libcrypto
-Date:   Tue, 23 Aug 2022 10:26:28 +0200
-Message-Id: <20220823080048.357389373@linuxfoundation.org>
+        stable@vger.kernel.org, kernel test robot <oliver.sang@intel.com>,
+        Florian Westphal <fw@strlen.de>,
+        Jakub Kicinski <kuba@kernel.org>
+Subject: [PATCH 5.10 047/158] plip: avoid rcu debug splat
+Date:   Tue, 23 Aug 2022 10:26:19 +0200
+Message-Id: <20220823080047.993408142@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220823080046.056825146@linuxfoundation.org>
 References: <20220823080046.056825146@linuxfoundation.org>
@@ -63,70 +50,36 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Roberto Sassu <roberto.sassu@huawei.com>
+From: Florian Westphal <fw@strlen.de>
 
-commit 5b245985a6de5ac18b5088c37068816d413fb8ed upstream.
+commit bc3c8fe3c79bcdae4d90e3726054fac5cca8ac32 upstream.
 
-Switch to new EVP API for detecting libcrypto, as Fedora 36 returns an
-error when it encounters the deprecated function MD5_Init() and the others.
+WARNING: suspicious RCU usage
+5.2.0-rc2-00605-g2638eb8b50cfc #1 Not tainted
+drivers/net/plip/plip.c:1110 suspicious rcu_dereference_check() usage!
 
-The error would be interpreted as missing libcrypto, while in reality it is
-not.
+plip_open is called with RTNL held, switch to the correct helper.
 
-Fixes: 6e8ccb4f624a73c5 ("tools/bpf: properly account for libbfd variations")
-Signed-off-by: Roberto Sassu <roberto.sassu@huawei.com>
-Cc: Alexei Starovoitov <ast@kernel.org>
-Cc: Andrii Nakryiko <andrii@kernel.org>
-Cc: bpf@vger.kernel.org
-Cc: Daniel Borkmann <daniel@iogearbox.net>
-Cc: Ingo Molnar <mingo@redhat.com>
-Cc: John Fastabend <john.fastabend@gmail.com>
-Cc: KP Singh <kpsingh@kernel.org>
-Cc: llvm@lists.linux.dev
-Cc: Martin KaFai Lau <martin.lau@linux.dev>
-Cc: Nathan Chancellor <nathan@kernel.org>
-Cc: Nick Desaulniers <ndesaulniers@google.com>
-Cc: Nick Terrell <terrelln@fb.com>
-Cc: Peter Zijlstra <peterz@infradead.org>
-Cc: Quentin Monnet <quentin@isovalent.com>
-Cc: Song Liu <song@kernel.org>
-Cc: Stanislav Fomichev <sdf@google.com>
-Link: https://lore.kernel.org/r/20220719170555.2576993-4-roberto.sassu@huawei.com
-Signed-off-by: Arnaldo Carvalho de Melo <acme@redhat.com>
+Fixes: 2638eb8b50cf ("net: ipv4: provide __rcu annotation for ifa_list")
+Reported-by: kernel test robot <oliver.sang@intel.com>
+Signed-off-by: Florian Westphal <fw@strlen.de>
+Link: https://lore.kernel.org/r/20220807115304.13257-1-fw@strlen.de
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- tools/build/feature/test-libcrypto.c |   15 +++++++++++----
- 1 file changed, 11 insertions(+), 4 deletions(-)
+ drivers/net/plip/plip.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/tools/build/feature/test-libcrypto.c
-+++ b/tools/build/feature/test-libcrypto.c
-@@ -1,16 +1,23 @@
- // SPDX-License-Identifier: GPL-2.0
-+#include <openssl/evp.h>
- #include <openssl/sha.h>
- #include <openssl/md5.h>
- 
- int main(void)
- {
--	MD5_CTX context;
-+	EVP_MD_CTX *mdctx;
- 	unsigned char md[MD5_DIGEST_LENGTH + SHA_DIGEST_LENGTH];
- 	unsigned char dat[] = "12345";
-+	unsigned int digest_len;
- 
--	MD5_Init(&context);
--	MD5_Update(&context, &dat[0], sizeof(dat));
--	MD5_Final(&md[0], &context);
-+	mdctx = EVP_MD_CTX_new();
-+	if (!mdctx)
-+		return 0;
-+
-+	EVP_DigestInit_ex(mdctx, EVP_md5(), NULL);
-+	EVP_DigestUpdate(mdctx, &dat[0], sizeof(dat));
-+	EVP_DigestFinal_ex(mdctx, &md[0], &digest_len);
-+	EVP_MD_CTX_free(mdctx);
- 
- 	SHA1(&dat[0], sizeof(dat), &md[0]);
- 
+--- a/drivers/net/plip/plip.c
++++ b/drivers/net/plip/plip.c
+@@ -1103,7 +1103,7 @@ plip_open(struct net_device *dev)
+ 		/* Any address will do - we take the first. We already
+ 		   have the first two bytes filled with 0xfc, from
+ 		   plip_init_dev(). */
+-		const struct in_ifaddr *ifa = rcu_dereference(in_dev->ifa_list);
++		const struct in_ifaddr *ifa = rtnl_dereference(in_dev->ifa_list);
+ 		if (ifa != NULL) {
+ 			memcpy(dev->dev_addr+2, &ifa->ifa_local, 4);
+ 		}
 
 
