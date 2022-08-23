@@ -2,45 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6AEFFC3F6B0
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 08:17:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 80E53C32793
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 08:17:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242482AbiHWIRZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 04:17:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58754 "EHLO
+        id S242355AbiHWIRb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 23 Aug 2022 04:17:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59870 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242542AbiHWILb (ORCPT
+        with ESMTP id S242560AbiHWILd (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 04:11:31 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B71AA4C603;
-        Tue, 23 Aug 2022 01:08:46 -0700 (PDT)
+        Tue, 23 Aug 2022 04:11:33 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1C2AE6B152;
+        Tue, 23 Aug 2022 01:08:49 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 95726B81BF8;
-        Tue, 23 Aug 2022 08:08:46 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E61F8C433D7;
-        Tue, 23 Aug 2022 08:08:44 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 145A96123D;
+        Tue, 23 Aug 2022 08:08:49 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1CB33C433D6;
+        Tue, 23 Aug 2022 08:08:47 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661242125;
-        bh=vLgp0CHZ1YqZI9BsiEypEmU+NLd3HoKiXZv/xrBOgBU=;
+        s=korg; t=1661242128;
+        bh=rhyB6i+Er1SWoPwFIMMk0wov/QnS/fbCmU1KUM1Bc58=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=NCxEMAmQUjXaMoc3he7Gl9Xu6850DC9vcjiRH/UhCSQzolKjvVZgbmMU9CRHx2Mcf
-         f00fgWH86GBuyprPChv5MbQuqQgcnTRDtEvwYYo6tDe+dxe5KmFxkdjceXPetobGjP
-         dJt0RVdh3E9R/gxFMyBnBDwxYvjJ8LB7JSnWD5kU=
+        b=ROtxdsLKadMENzUphZRo7gTZ1fsgFbV/Wq3hBNZuADosxmeTCx0Gloc1DtEpH4T/f
+         1D01zIgg8s3aqenmU4Z1HJPuYqZY/XGwyXH8LrAAh8w9mhrnMOcLokcoTN7ghG5ZZV
+         J0ihVU5Er/cQht+mL6KmiqvhR5ftwD9sHT8zIAHA=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Werner Sembach <wse@tuxedocomputers.com>,
-        Hans de Goede <hdegoede@redhat.com>,
-        "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>
-Subject: [PATCH 4.9 022/101] ACPI: video: Shortening quirk list by identifying Clevo by board_name only
-Date:   Tue, 23 Aug 2022 10:02:55 +0200
-Message-Id: <20220823080035.413929654@linuxfoundation.org>
+        stable@vger.kernel.org, YiFei Zhu <zhuyifei@google.com>,
+        Alexei Starovoitov <ast@kernel.org>
+Subject: [PATCH 5.19 062/365] bpf: Disallow bpf programs call prog_run command.
+Date:   Tue, 23 Aug 2022 09:59:23 +0200
+Message-Id: <20220823080120.784563663@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220823080034.579196046@linuxfoundation.org>
-References: <20220823080034.579196046@linuxfoundation.org>
+In-Reply-To: <20220823080118.128342613@linuxfoundation.org>
+References: <20220823080118.128342613@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -49,75 +48,87 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Werner Sembach <wse@tuxedocomputers.com>
+From: Alexei Starovoitov <ast@kernel.org>
 
-commit f0341e67b3782603737f7788e71bd3530012a4f4 upstream.
+commit 86f44fcec22ce2979507742bc53db8400e454f46 upstream.
 
-Taking a recent change in the i8042 quirklist to this one: Clevo
-board_names are somewhat unique, and if not: The generic Board_-/Sys_Vendor
-string "Notebook" doesn't help much anyway. So identifying the devices just
-by the board_name helps keeping the list significantly shorter and might
-even hit more devices requiring the fix.
+The verifier cannot perform sufficient validation of bpf_attr->test.ctx_in
+pointer, therefore bpf programs should not be allowed to call BPF_PROG_RUN
+command from within the program.
+To fix this issue split bpf_sys_bpf() bpf helper into normal kern_sys_bpf()
+kernel function that can only be used by the kernel light skeleton directly.
 
-Signed-off-by: Werner Sembach <wse@tuxedocomputers.com>
-Fixes: c844d22fe0c0 ("ACPI: video: Force backlight native for Clevo NL5xRU and NL5xNU")
-Cc: All applicable <stable@vger.kernel.org>
-Reviewed-by: Hans de Goede <hdegoede@redhat.com>
-Signed-off-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
+Reported-by: YiFei Zhu <zhuyifei@google.com>
+Fixes: b1d18a7574d0 ("bpf: Extend sys_bpf commands for bpf_syscall programs.")
+Signed-off-by: Alexei Starovoitov <ast@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/acpi/video_detect.c |   34 ----------------------------------
- 1 file changed, 34 deletions(-)
+ kernel/bpf/syscall.c          |   20 ++++++++++++++------
+ tools/lib/bpf/skel_internal.h |    4 ++--
+ 2 files changed, 16 insertions(+), 8 deletions(-)
 
---- a/drivers/acpi/video_detect.c
-+++ b/drivers/acpi/video_detect.c
-@@ -150,23 +150,6 @@ static const struct dmi_system_id video_
- 	.callback = video_detect_force_native,
- 	.ident = "Clevo NL5xRU",
- 	.matches = {
--		DMI_MATCH(DMI_SYS_VENDOR, "TUXEDO"),
--		DMI_MATCH(DMI_BOARD_NAME, "NL5xRU"),
--		},
--	},
--	{
--	.callback = video_detect_force_native,
--	.ident = "Clevo NL5xRU",
--	.matches = {
--		DMI_MATCH(DMI_SYS_VENDOR, "SchenkerTechnologiesGmbH"),
--		DMI_MATCH(DMI_BOARD_NAME, "NL5xRU"),
--		},
--	},
--	{
--	.callback = video_detect_force_native,
--	.ident = "Clevo NL5xRU",
--	.matches = {
--		DMI_MATCH(DMI_SYS_VENDOR, "Notebook"),
- 		DMI_MATCH(DMI_BOARD_NAME, "NL5xRU"),
- 		},
- 	},
-@@ -190,23 +173,6 @@ static const struct dmi_system_id video_
- 	.callback = video_detect_force_native,
- 	.ident = "Clevo NL5xNU",
- 	.matches = {
--		DMI_MATCH(DMI_SYS_VENDOR, "TUXEDO"),
--		DMI_MATCH(DMI_BOARD_NAME, "NL5xNU"),
--		},
--	},
--	{
--	.callback = video_detect_force_native,
--	.ident = "Clevo NL5xNU",
--	.matches = {
--		DMI_MATCH(DMI_SYS_VENDOR, "SchenkerTechnologiesGmbH"),
--		DMI_MATCH(DMI_BOARD_NAME, "NL5xNU"),
--		},
--	},
--	{
--	.callback = video_detect_force_native,
--	.ident = "Clevo NL5xNU",
--	.matches = {
--		DMI_MATCH(DMI_SYS_VENDOR, "Notebook"),
- 		DMI_MATCH(DMI_BOARD_NAME, "NL5xNU"),
- 		},
- 	},
+--- a/kernel/bpf/syscall.c
++++ b/kernel/bpf/syscall.c
+@@ -5035,9 +5035,6 @@ static bool syscall_prog_is_valid_access
+ 
+ BPF_CALL_3(bpf_sys_bpf, int, cmd, union bpf_attr *, attr, u32, attr_size)
+ {
+-	struct bpf_prog * __maybe_unused prog;
+-	struct bpf_tramp_run_ctx __maybe_unused run_ctx;
+-
+ 	switch (cmd) {
+ 	case BPF_MAP_CREATE:
+ 	case BPF_MAP_UPDATE_ELEM:
+@@ -5047,6 +5044,18 @@ BPF_CALL_3(bpf_sys_bpf, int, cmd, union
+ 	case BPF_LINK_CREATE:
+ 	case BPF_RAW_TRACEPOINT_OPEN:
+ 		break;
++	default:
++		return -EINVAL;
++	}
++	return __sys_bpf(cmd, KERNEL_BPFPTR(attr), attr_size);
++}
++
++int kern_sys_bpf(int cmd, union bpf_attr *attr, unsigned int size)
++{
++	struct bpf_prog * __maybe_unused prog;
++	struct bpf_tramp_run_ctx __maybe_unused run_ctx;
++
++	switch (cmd) {
+ #ifdef CONFIG_BPF_JIT /* __bpf_prog_enter_sleepable used by trampoline and JIT */
+ 	case BPF_PROG_TEST_RUN:
+ 		if (attr->test.data_in || attr->test.data_out ||
+@@ -5077,11 +5086,10 @@ BPF_CALL_3(bpf_sys_bpf, int, cmd, union
+ 		return 0;
+ #endif
+ 	default:
+-		return -EINVAL;
++		return ____bpf_sys_bpf(cmd, attr, size);
+ 	}
+-	return __sys_bpf(cmd, KERNEL_BPFPTR(attr), attr_size);
+ }
+-EXPORT_SYMBOL(bpf_sys_bpf);
++EXPORT_SYMBOL(kern_sys_bpf);
+ 
+ static const struct bpf_func_proto bpf_sys_bpf_proto = {
+ 	.func		= bpf_sys_bpf,
+--- a/tools/lib/bpf/skel_internal.h
++++ b/tools/lib/bpf/skel_internal.h
+@@ -66,13 +66,13 @@ struct bpf_load_and_run_opts {
+ 	const char *errstr;
+ };
+ 
+-long bpf_sys_bpf(__u32 cmd, void *attr, __u32 attr_size);
++long kern_sys_bpf(__u32 cmd, void *attr, __u32 attr_size);
+ 
+ static inline int skel_sys_bpf(enum bpf_cmd cmd, union bpf_attr *attr,
+ 			  unsigned int size)
+ {
+ #ifdef __KERNEL__
+-	return bpf_sys_bpf(cmd, attr, size);
++	return kern_sys_bpf(cmd, attr, size);
+ #else
+ 	return syscall(__NR_bpf, cmd, attr, size);
+ #endif
 
 
