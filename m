@@ -2,212 +2,140 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C485BC32774
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 07:29:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 629A0C32796
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 07:30:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240944AbiHWH3b (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 03:29:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60858 "EHLO
+        id S240982AbiHWHaR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 23 Aug 2022 03:30:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37608 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240747AbiHWH3L (ORCPT
+        with ESMTP id S240956AbiHWHaO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 03:29:11 -0400
-Received: from mail-pj1-x102b.google.com (mail-pj1-x102b.google.com [IPv6:2607:f8b0:4864:20::102b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 630DBF7F
-        for <linux-kernel@vger.kernel.org>; Tue, 23 Aug 2022 00:29:10 -0700 (PDT)
-Received: by mail-pj1-x102b.google.com with SMTP id o14-20020a17090a0a0e00b001fabfd3369cso13751883pjo.5
-        for <linux-kernel@vger.kernel.org>; Tue, 23 Aug 2022 00:29:10 -0700 (PDT)
+        Tue, 23 Aug 2022 03:30:14 -0400
+Received: from mail-lj1-x234.google.com (mail-lj1-x234.google.com [IPv6:2a00:1450:4864:20::234])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B647562A93
+        for <linux-kernel@vger.kernel.org>; Tue, 23 Aug 2022 00:30:12 -0700 (PDT)
+Received: by mail-lj1-x234.google.com with SMTP id x10so12709602ljq.4
+        for <linux-kernel@vger.kernel.org>; Tue, 23 Aug 2022 00:30:12 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc;
-        bh=6rjKjGvWfH7qaw/ThpAgdUKhPt+rDOn01TCeIlQWtMc=;
-        b=igzpi2isTqn0rnLieyXZehZ9y9gWabYQpEXz/VME7rt6M9Upzet8DvOxHa+/y3tN1Q
-         VtbtWpC02+1jMXLZwsEThVobeCOo+nH+jFW6xlyVm6AUgiEqCcB/FQ2JZwiuEPXhNYIK
-         6m13CW79f7kYvP7gZMLIJOegwKvu93/97B4ZQ26ZR4afr18/a183hYFCmtsupE8InmUX
-         IscICRzaDAYREWw18jTlvShCQXN7iSc1eJcd6DCcqU4SGt4yOmYwZ2MdEWhWI1mHXB4r
-         r9j+Hu//FFIhRBdypWnY8XB2vNkmw1ZYj56tBgNA8iCaOrSiLlLBr4wTKTv1hDItpMBQ
-         3WNg==
+        d=linaro.org; s=google;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc;
+        bh=31EpOHbl+nrYiysahic+51blRSoZd90XSQRkgmuZH8Q=;
+        b=L3txLJbzNASJ23txY0RNdj71aCCiDk/ZgPs0vd6IuBr9Jv6qjFsL+DguB2evwx37e7
+         qo4/+MYuYGWPNLgSL57Rm2eeWZ0HZ679AAcpgNEiFasaUq9yWOO1vzzYHiv66AA+BpOR
+         q3iJj0TRj0U6/9X3QnNeitZxTTQebAAcJncBbhkUsEraYO3eM+aSY59qlihVBwx5nzOk
+         94AX7APlauoQ9znqABTxQg9Mzq4dUkgFtJPUmGf9CWyI/yxlEgcUxsz7IB/MJMoz6HFj
+         /mKsPjjmnBKxWQr7rHvftyc/piBxizSgIumInoNChwp9dy3mD42mvjbK8o5G6lpeATl2
+         UL7A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc;
-        bh=6rjKjGvWfH7qaw/ThpAgdUKhPt+rDOn01TCeIlQWtMc=;
-        b=DQgI9CYgTAmxaKKPCvu4ieTN4FOiuXe2L4KyK7bbj9/HYQC7h6sFiErzBQH5BPVu/t
-         ae0ORbH+IMlemgllpgJcMGhaP0NqJUHln7uRoNM/zpAcD2oc+8+3ibNc3SV9B+uZrD4Y
-         XBpNORjyEmzEzFvEZh+fan2KxYSh2uDZc6z3Fb9q8CW0vM51cdCm3A1XUVCRo0qdaqN/
-         SXAb27szs7Auxw5nLixm4jF69m6WbEILVUzdOSMT+165/pa5oc6FFn8stBONo5UxsA6z
-         hLuFmXLdBKx4UlBnQXQ8bgk4agH6auiL/LYs8sF9HWRzs/guYIay/kHe9Cbu/8A/vXIF
-         Ki4A==
-X-Gm-Message-State: ACgBeo1N75rILSy+KvW+RU++0QGrUx69oiFIkHY//gzBrPI5o57rP13i
-        FRQKjrd8jG2Rqmwtr6xIeyJ0bn+DNA==
-X-Google-Smtp-Source: AA6agR6sZGbcyq2RGcimTyVnDjXZPFOs//AbCSv0fe5nKjuBhCK9Q7MfHhtJfYI8o6wz19AjBO+Ltw==
-X-Received: by 2002:a17:902:c40e:b0:172:dee4:882e with SMTP id k14-20020a170902c40e00b00172dee4882emr10868781plk.11.1661239749861;
-        Tue, 23 Aug 2022 00:29:09 -0700 (PDT)
-Received: from piliu.users.ipa.redhat.com ([209.132.188.80])
-        by smtp.gmail.com with ESMTPSA id x15-20020a170902ec8f00b0016be527753bsm1728502plg.264.2022.08.23.00.29.04
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc;
+        bh=31EpOHbl+nrYiysahic+51blRSoZd90XSQRkgmuZH8Q=;
+        b=jko+iADFkDNyVla2CuqrumCQjDaf2sxTPxsKgIddW0GXUOu+p3/mozcCIqjlYbsjBg
+         wuB94/B1JQkBLANcxK2pqPc3R6dCvE/zofYQAgZ3BRx1SDIgQwFJWc07O3uh0ECNiXLE
+         ls1bRzoRhAGvcqhzjrvYMBVI6Y1mQu4OXOmJyC/Qr+4KG9Qvk04aRF+UY92jToPJTkjV
+         qgVV37RPJuzf7f+3EEXyOXX3UjOP0QDn7lCdxwofqDPZBTxMI1ophxogv5hi90nhVh0j
+         Gb/lCPZRKDbF0DTE8baoywSlUKl8fKSR77+IdmdhKicNtT9GCo2H/9heNDKh8xG1wuoz
+         7TbQ==
+X-Gm-Message-State: ACgBeo3v5CNknklaloBkRO5saiYPXZdbtfQC3+PIV9TXXpRr2jwylG9p
+        mn29WZs39YZWXiBfMSOkz95Ijw==
+X-Google-Smtp-Source: AA6agR7UsstB+zMX2Ji4pK97oKYfHBo72sTQaY6/pQpWOeEaDcMW0YiVsuF5zXcBH40oxBMg2GQp0A==
+X-Received: by 2002:a2e:a593:0:b0:25f:e6ac:c28e with SMTP id m19-20020a2ea593000000b0025fe6acc28emr7003949ljp.485.1661239811099;
+        Tue, 23 Aug 2022 00:30:11 -0700 (PDT)
+Received: from krzk-bin.. (89-27-92-210.bb.dnainternet.fi. [89.27.92.210])
+        by smtp.gmail.com with ESMTPSA id u19-20020a05651220d300b0048a7ef09b22sm2361230lfr.274.2022.08.23.00.30.10
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 23 Aug 2022 00:29:09 -0700 (PDT)
-Date:   Tue, 23 Aug 2022 15:29:01 +0800
-From:   Pingfan Liu <kernelfans@gmail.com>
-To:     Yury Norov <yury.norov@gmail.com>
-Cc:     linux-kernel@vger.kernel.org,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Rasmus Villemoes <linux@rasmusvillemoes.dk>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Steven Price <steven.price@arm.com>,
-        Mark Rutland <mark.rutland@arm.com>,
-        "Jason A. Donenfeld" <Jason@zx2c4.com>,
-        Kuppuswamy Sathyanarayanan 
-        <sathyanarayanan.kuppuswamy@linux.intel.com>
-Subject: Re: [RFC 07/10] lib/cpumask: Introduce cpumask_not_dying_but()
-Message-ID: <YwSBvQtxjy8I7bp9@piliu.users.ipa.redhat.com>
-References: <20220822021520.6996-1-kernelfans@gmail.com>
- <20220822021520.6996-8-kernelfans@gmail.com>
- <YwOPkc1cpoD/hs2D@yury-laptop>
+        Tue, 23 Aug 2022 00:30:10 -0700 (PDT)
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+To:     Sylwester Nawrocki <s.nawrocki@samsung.com>,
+        Tomasz Figa <tomasz.figa@gmail.com>,
+        Chanwoo Choi <cw00.choi@samsung.com>,
+        Alim Akhtar <alim.akhtar@samsung.com>,
+        Michael Turquette <mturquette@baylibre.com>,
+        Stephen Boyd <sboyd@kernel.org>,
+        linux-samsung-soc@vger.kernel.org, linux-clk@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Cc:     Sam Protsenko <semen.protsenko@linaro.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Subject: [PATCH] arm64: dts: exynos: Add SysMMU nodes for Exynos850
+Date:   Tue, 23 Aug 2022 10:30:06 +0300
+Message-Id: <20220823073006.358764-1-krzysztof.kozlowski@linaro.org>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <YwOPkc1cpoD/hs2D@yury-laptop>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Aug 22, 2022 at 07:15:45AM -0700, Yury Norov wrote:
-> On Mon, Aug 22, 2022 at 10:15:17AM +0800, Pingfan Liu wrote:
-> > During cpu hot-removing, the dying cpus are still in cpu_online_mask.
-> > On the other hand, A subsystem will migrate its broker from the dying
-> > cpu to a online cpu in its teardown cpuhp_step.
-> > 
-> > After enabling the teardown of cpus in parallel, cpu_online_mask can not
-> > tell those dying from the real online.
-> > 
-> > Introducing a function cpumask_not_dying_but() to pick a real online
-> > cpu.
-> > 
-> > Signed-off-by: Pingfan Liu <kernelfans@gmail.com>
-> > Cc: Yury Norov <yury.norov@gmail.com>
-> > Cc: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-> > Cc: Rasmus Villemoes <linux@rasmusvillemoes.dk>
-> > Cc: Thomas Gleixner <tglx@linutronix.de>
-> > Cc: Steven Price <steven.price@arm.com>
-> > Cc: Mark Rutland <mark.rutland@arm.com>
-> > Cc: "Jason A. Donenfeld" <Jason@zx2c4.com>
-> > Cc: Kuppuswamy Sathyanarayanan <sathyanarayanan.kuppuswamy@linux.intel.com>
-> > To: linux-kernel@vger.kernel.org
-> > ---
-> >  include/linux/cpumask.h |  3 +++
-> >  kernel/cpu.c            |  3 +++
-> >  lib/cpumask.c           | 18 ++++++++++++++++++
-> >  3 files changed, 24 insertions(+)
-> > 
-> > diff --git a/include/linux/cpumask.h b/include/linux/cpumask.h
-> > index 0d435d0edbcb..d2033a239a07 100644
-> > --- a/include/linux/cpumask.h
-> > +++ b/include/linux/cpumask.h
-> > @@ -317,6 +317,9 @@ unsigned int cpumask_any_but(const struct cpumask *mask, unsigned int cpu)
-> >  	return i;
-> >  }
-> >  
-> > +/* for parallel kexec reboot */
-> > +int cpumask_not_dying_but(const struct cpumask *mask, unsigned int cpu);
-> > +
-> >  #define CPU_BITS_NONE						\
-> >  {								\
-> >  	[0 ... BITS_TO_LONGS(NR_CPUS)-1] = 0UL			\
-> > diff --git a/kernel/cpu.c b/kernel/cpu.c
-> > index 90debbe28e85..771e344f8ff9 100644
-> > --- a/kernel/cpu.c
-> > +++ b/kernel/cpu.c
-> > @@ -1282,6 +1282,9 @@ static void cpus_down_no_rollback(struct cpumask *cpus)
-> >  	struct cpuhp_cpu_state *st;
-> >  	unsigned int cpu;
-> >  
-> > +	for_each_cpu(cpu, cpus)
-> > +		set_cpu_dying(cpu, true);
-> > +
-> >  	/* launch ap work one by one, but not wait for completion */
-> >  	for_each_cpu(cpu, cpus) {
-> >  		st = per_cpu_ptr(&cpuhp_state, cpu);
-> > diff --git a/lib/cpumask.c b/lib/cpumask.c
-> > index 8baeb37e23d3..6474f07ed87a 100644
-> > --- a/lib/cpumask.c
-> > +++ b/lib/cpumask.c
-> > @@ -7,6 +7,24 @@
-> >  #include <linux/memblock.h>
-> >  #include <linux/numa.h>
-> >  
-> > +/* Used in parallel kexec-reboot cpuhp callbacks */
-> > +int cpumask_not_dying_but(const struct cpumask *mask,
-> > +					   unsigned int cpu)
-> > +{
-> > +	unsigned int i;
-> > +
-> > +	if (CONFIG_SHUTDOWN_NONBOOT_CPUS) {
-> 
-> Hmm... Would it even work? Anyways, the documentation says:
-> Within code, where possible, use the IS_ENABLED macro to convert a Kconfig
-> symbol into a C boolean expression, and use it in a normal C conditional:
-> 
-> .. code-block:: c
-> 
->         if (IS_ENABLED(CONFIG_SOMETHING)) {
->                 ...
->         }
-> 
+From: Sam Protsenko <semen.protsenko@linaro.org>
 
-Yes, it shall be like you pointed out.
+Add all SysMMU nodes to Exynos850 SoC device tree.
 
-I changed the code from "#ifdef" style to "if (IS_ENABLED()" style just
-before sending out the series. Sorry for the haste without compiling
-check again.
+Signed-off-by: Sam Protsenko <semen.protsenko@linaro.org>
+Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Link: https://lore.kernel.org/r/20220809113323.29965-10-semen.protsenko@linaro.org
+---
+ arch/arm64/boot/dts/exynos/exynos850.dtsi | 45 +++++++++++++++++++++++
+ 1 file changed, 45 insertions(+)
 
-> 
-> > +		cpumask_check(cpu);
-> > +		for_each_cpu(i, mask)
-> > +			if (i != cpu && !cpumask_test_cpu(i, cpu_dying_mask))
-> > +				break;
-> > +		return i;
-> > +	} else {
-> > +		return cpumask_any_but(mask, cpu);
-> > +	}
-> > +}
-> > +EXPORT_SYMBOL(cpumask_not_dying_but);
-> 
-> I don't like how you create a dedicated function for a random
-> mask. Dying mask is nothing special, right? What you really
+diff --git a/arch/arm64/boot/dts/exynos/exynos850.dtsi b/arch/arm64/boot/dts/exynos/exynos850.dtsi
+index 8e78b50416d8..c61441f3a89a 100644
+--- a/arch/arm64/boot/dts/exynos/exynos850.dtsi
++++ b/arch/arm64/boot/dts/exynos/exynos850.dtsi
+@@ -503,6 +503,51 @@ i2c_6: i2c@13890000 {
+ 			status = "disabled";
+ 		};
+ 
++		sysmmu_mfcmscl: sysmmu@12c50000 {
++			compatible = "samsung,exynos-sysmmu";
++			reg = <0x12c50000 0x9000>;
++			interrupts = <GIC_SPI 174 IRQ_TYPE_LEVEL_HIGH>;
++			clock-names = "sysmmu";
++			clocks = <&cmu_mfcmscl CLK_GOUT_MFCMSCL_SYSMMU_CLK>;
++			#iommu-cells = <0>;
++		};
++
++		sysmmu_dpu: sysmmu@130c0000 {
++			compatible = "samsung,exynos-sysmmu";
++			reg = <0x130c0000 0x9000>;
++			interrupts = <GIC_SPI 122 IRQ_TYPE_LEVEL_HIGH>;
++			clock-names = "sysmmu";
++			clocks = <&cmu_dpu CLK_GOUT_DPU_SMMU_CLK>;
++			#iommu-cells = <0>;
++		};
++
++		sysmmu_is0: sysmmu@14550000 {
++			compatible = "samsung,exynos-sysmmu";
++			reg = <0x14550000 0x9000>;
++			interrupts = <GIC_SPI 164 IRQ_TYPE_LEVEL_HIGH>;
++			clock-names = "sysmmu";
++			clocks = <&cmu_is CLK_GOUT_IS_SYSMMU_IS0_CLK>;
++			#iommu-cells = <0>;
++		};
++
++		sysmmu_is1: sysmmu@14570000 {
++			compatible = "samsung,exynos-sysmmu";
++			reg = <0x14570000 0x9000>;
++			interrupts = <GIC_SPI 166 IRQ_TYPE_LEVEL_HIGH>;
++			clock-names = "sysmmu";
++			clocks = <&cmu_is CLK_GOUT_IS_SYSMMU_IS1_CLK>;
++			#iommu-cells = <0>;
++		};
++
++		sysmmu_aud: sysmmu@14850000 {
++			compatible = "samsung,exynos-sysmmu";
++			reg = <0x14850000 0x9000>;
++			interrupts = <GIC_SPI 66 IRQ_TYPE_LEVEL_HIGH>;
++			clock-names = "sysmmu";
++			clocks = <&cmu_aud CLK_GOUT_AUD_SYSMMU_CLK>;
++			#iommu-cells = <0>;
++		};
++
+ 		sysreg_peri: syscon@10020000 {
+ 			compatible = "samsung,exynos850-sysreg", "syscon";
+ 			reg = <0x10020000 0x10000>;
+-- 
+2.34.1
 
-Yes, I agree.
-
-> need is probably this:
->         cpumask_andnot_any_but(mask, cpu_dying_mask, cpu);
-> 
-
-That is it.
-
-> Now, if you still think it's worth that, you can add a trivial wrapper
-> for cpu_dying_mask. (But please pick some other name, because
-> 'not dying but' sounds like a hangover description. :) )
-> 
-
-I think that since even if !IS_ENABLED(CONFIG_SHUTDOWN_NONBOOT_CPUS),
-cpumask_andnot_any_but(mask, cpu_dying_mask, cpu) can work properly,
-so replacing the callsite with "cpumask_andnot() + cpumask_any_but()"
-will be a choice.
-
-Appreciate for your help.
-
-
-Thanks,
-
-	Pingfan
-
-> Thanks,
-> Yury
-> 
-> > +
-> >  /**
-> >   * cpumask_next_wrap - helper to implement for_each_cpu_wrap
-> >   * @n: the cpu prior to the place to search
-> > -- 
-> > 2.31.1
