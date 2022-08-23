@@ -2,42 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D6946C32772
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 10:38:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BD295C32774
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 10:38:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355433AbiHWKiq (ORCPT
+        id S1355509AbiHWKiv (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 06:38:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42560 "EHLO
+        Tue, 23 Aug 2022 06:38:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44822 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354710AbiHWKWF (ORCPT
+        with ESMTP id S1355068AbiHWKWs (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 06:22:05 -0400
+        Tue, 23 Aug 2022 06:22:48 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 20BF56440;
-        Tue, 23 Aug 2022 02:03:26 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 044856557C;
+        Tue, 23 Aug 2022 02:03:59 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 1895561499;
-        Tue, 23 Aug 2022 09:03:26 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 232D8C433C1;
-        Tue, 23 Aug 2022 09:03:24 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id EA54D61580;
+        Tue, 23 Aug 2022 09:03:58 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 56D44C433C1;
+        Tue, 23 Aug 2022 09:03:57 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661245405;
-        bh=EeBB5HggqEsJGqx0uHZ8rWSlljvoPfmqgZe5hO3GUs4=;
+        s=korg; t=1661245438;
+        bh=6/MHLeXqUauKyeVG4fRouCvaERxk+khbFOYsTzPj+qg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=jp9YTX2U8bPrgbMdnSNQP16OJUyWmQVX3PsakaECt2QJwHiacrtT1pPL3zU+FaaK4
-         +04Y4TDLCr/U37gQOAcEz2Ag2lIOcufcT0R5kb2ljtvxWlQbtxs8jD/ebovhiF966y
-         U5Q/NFibQLP6D7m4vRr77wlLOmXlnZNOLnTKYtV4=
+        b=aPMaNvA8R3s8m/+OkBKTzzQBEor40CKWvNGYXvWE/381uRcc8Yl2yv7VrrJ1vCgNs
+         ze5X9eeVc9XY5bOgbTphf2cpTrv/6qvpw0/mWmJYVGPVYyRZgzN390xZSPDlSFUkhs
+         gXqyUZvbgWtg7Y8T9lR7WDyodJDAp+NzBmEzX2u4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Mike Snitzer <snitzer@kernel.org>,
+        stable@vger.kernel.org, Brian Norris <briannorris@chromium.org>,
+        Sean Paul <seanpaul@chromium.org>,
+        Douglas Anderson <dianders@chromium.org>,
+        Heiko Stuebner <heiko@sntech.de>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.19 067/287] dm: return early from dm_pr_call() if DM device is suspended
-Date:   Tue, 23 Aug 2022 10:23:56 +0200
-Message-Id: <20220823080102.485958853@linuxfoundation.org>
+Subject: [PATCH 4.19 079/287] drm/rockchip: vop: Dont crash for invalid duplicate_state()
+Date:   Tue, 23 Aug 2022 10:24:08 +0200
+Message-Id: <20220823080102.922291150@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220823080100.268827165@linuxfoundation.org>
 References: <20220823080100.268827165@linuxfoundation.org>
@@ -49,36 +52,40 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Mike Snitzer <snitzer@kernel.org>
+From: Brian Norris <briannorris@chromium.org>
 
-[ Upstream commit e120a5f1e78fab6223544e425015f393d90d6f0d ]
+[ Upstream commit 1449110b0dade8b638d2c17ab7c5b0ff696bfccb ]
 
-Otherwise PR ops may be issued while the broader DM device is being
-reconfigured, etc.
+It's possible for users to try to duplicate the CRTC state even when the
+state doesn't exist. drm_atomic_helper_crtc_duplicate_state() (and other
+users of __drm_atomic_helper_crtc_duplicate_state()) already guard this
+with a WARN_ON() instead of crashing, so let's do that here too.
 
-Fixes: 9c72bad1f31a ("dm: call PR reserve/unreserve on each underlying device")
-Signed-off-by: Mike Snitzer <snitzer@kernel.org>
+Fixes: 4e257d9eee23 ("drm/rockchip: get rid of rockchip_drm_crtc_mode_config")
+Signed-off-by: Brian Norris <briannorris@chromium.org>
+Reviewed-by: Sean Paul <seanpaul@chromium.org>
+Reviewed-by: Douglas Anderson <dianders@chromium.org>
+Signed-off-by: Heiko Stuebner <heiko@sntech.de>
+Link: https://patchwork.freedesktop.org/patch/msgid/20220617172623.1.I62db228170b1559ada60b8d3e1637e1688424926@changeid
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/md/dm.c | 5 +++++
- 1 file changed, 5 insertions(+)
+ drivers/gpu/drm/rockchip/rockchip_drm_vop.c | 3 +++
+ 1 file changed, 3 insertions(+)
 
-diff --git a/drivers/md/dm.c b/drivers/md/dm.c
-index d2ee97cd7d14..324d1dd58e2b 100644
---- a/drivers/md/dm.c
-+++ b/drivers/md/dm.c
-@@ -3122,6 +3122,11 @@ static int dm_call_pr(struct block_device *bdev, iterate_devices_callout_fn fn,
- 		goto out;
- 	ti = dm_table_get_target(table, 0);
+diff --git a/drivers/gpu/drm/rockchip/rockchip_drm_vop.c b/drivers/gpu/drm/rockchip/rockchip_drm_vop.c
+index c0b647435974..69eb0de9973f 100644
+--- a/drivers/gpu/drm/rockchip/rockchip_drm_vop.c
++++ b/drivers/gpu/drm/rockchip/rockchip_drm_vop.c
+@@ -1088,6 +1088,9 @@ static struct drm_crtc_state *vop_crtc_duplicate_state(struct drm_crtc *crtc)
+ {
+ 	struct rockchip_crtc_state *rockchip_state;
  
-+	if (dm_suspended_md(md)) {
-+		ret = -EAGAIN;
-+		goto out;
-+	}
++	if (WARN_ON(!crtc->state))
++		return NULL;
 +
- 	ret = -EINVAL;
- 	if (!ti->type->iterate_devices)
- 		goto out;
+ 	rockchip_state = kzalloc(sizeof(*rockchip_state), GFP_KERNEL);
+ 	if (!rockchip_state)
+ 		return NULL;
 -- 
 2.35.1
 
