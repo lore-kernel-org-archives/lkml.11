@@ -2,41 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 34FEEC32792
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 11:17:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 21D2AC32793
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 11:17:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357545AbiHWLRn (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 07:17:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43614 "EHLO
+        id S244125AbiHWLRs (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 23 Aug 2022 07:17:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39106 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357442AbiHWLPo (ORCPT
+        with ESMTP id S1357434AbiHWLPn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 07:15:44 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6EA4EBCC11;
-        Tue, 23 Aug 2022 02:19:28 -0700 (PDT)
+        Tue, 23 Aug 2022 07:15:43 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 86CA5BB909;
+        Tue, 23 Aug 2022 02:19:30 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 241E561220;
-        Tue, 23 Aug 2022 09:18:21 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3190FC433C1;
-        Tue, 23 Aug 2022 09:18:20 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 0520DB81C89;
+        Tue, 23 Aug 2022 09:19:18 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3420DC433D6;
+        Tue, 23 Aug 2022 09:19:16 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661246300;
-        bh=c84agSOYBMlLZ/VpaWh6X5ZnVSl2b4aRge5inlbnrI0=;
+        s=korg; t=1661246356;
+        bh=omZ20BVuFxL1W05Lz9Iqe5y6+N9MFAhSKFKp3+JoWnQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=n8Mb0lerz8X8Il0+JzuHc1MOn/gDb7xV8YMzsw3+KY4ymraKPxEI4+5X7oM1gyXK7
-         0Qg8da9loqL+u0b0tgyS6YmErdXu6GMJq9B2uyA1ROL8zJvwFKvdx2BUkgYXJjX0zl
-         0Du1KfSXQsY7g1NIz1ELI4Msn7qIO66IM73e+OTg=
+        b=LbJBD5afaqfmbhShgu6r5QNE6/2QeKGfd1oxeHOeXUu67UEoxgSFIHurSOsZg9Y2u
+         NJthRKtT72zoIOGvxCh22KQgclwXRp9qEC/yFG121nnenh3X8hcgGnZ2jgjMD3wRF9
+         Sj9yqQvVYuLrDeXTmw/vMFoQx4TopwR7reKelDIU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Miklos Szeredi <mszeredi@redhat.com>
-Subject: [PATCH 5.4 035/389] fuse: limit nsec
-Date:   Tue, 23 Aug 2022 10:21:53 +0200
-Message-Id: <20220823080117.130211487@linuxfoundation.org>
+        stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
+        Tony Lindgren <tony@atomide.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.4 083/389] ARM: OMAP2+: Fix refcount leak in omap3xxx_prm_late_init
+Date:   Tue, 23 Aug 2022 10:22:41 +0200
+Message-Id: <20220823080119.098744504@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220823080115.331990024@linuxfoundation.org>
 References: <20220823080115.331990024@linuxfoundation.org>
@@ -48,34 +49,37 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Miklos Szeredi <mszeredi@redhat.com>
+From: Miaoqian Lin <linmq006@gmail.com>
 
-commit 47912eaa061a6a81e4aa790591a1874c650733c0 upstream.
+[ Upstream commit 942228fbf5d4901112178b93d41225be7c0dd9de ]
 
-Limit nanoseconds to 0..999999999.
+of_find_matching_node() returns a node pointer with refcount
+incremented, we should use of_node_put() on it when not need anymore.
+Add missing of_node_put() to avoid refcount leak.
 
-Fixes: d8a5ba45457e ("[PATCH] FUSE - core")
-Cc: <stable@vger.kernel.org>
-Signed-off-by: Miklos Szeredi <mszeredi@redhat.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Fixes: 1e037794f7f0 ("ARM: OMAP3+: PRM: register interrupt information from DT")
+Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
+Message-Id: <20220526073724.21169-1-linmq006@gmail.com>
+Signed-off-by: Tony Lindgren <tony@atomide.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- fs/fuse/inode.c |    6 ++++++
- 1 file changed, 6 insertions(+)
+ arch/arm/mach-omap2/prm3xxx.c | 1 +
+ 1 file changed, 1 insertion(+)
 
---- a/fs/fuse/inode.c
-+++ b/fs/fuse/inode.c
-@@ -162,6 +162,12 @@ void fuse_change_attributes_common(struc
- 	inode->i_uid     = make_kuid(fc->user_ns, attr->uid);
- 	inode->i_gid     = make_kgid(fc->user_ns, attr->gid);
- 	inode->i_blocks  = attr->blocks;
-+
-+	/* Sanitize nsecs */
-+	attr->atimensec = min_t(u32, attr->atimensec, NSEC_PER_SEC - 1);
-+	attr->mtimensec = min_t(u32, attr->mtimensec, NSEC_PER_SEC - 1);
-+	attr->ctimensec = min_t(u32, attr->ctimensec, NSEC_PER_SEC - 1);
-+
- 	inode->i_atime.tv_sec   = attr->atime;
- 	inode->i_atime.tv_nsec  = attr->atimensec;
- 	/* mtime from server may be stale due to local buffered write */
+diff --git a/arch/arm/mach-omap2/prm3xxx.c b/arch/arm/mach-omap2/prm3xxx.c
+index 1b442b128569..63e73e9b82bc 100644
+--- a/arch/arm/mach-omap2/prm3xxx.c
++++ b/arch/arm/mach-omap2/prm3xxx.c
+@@ -708,6 +708,7 @@ static int omap3xxx_prm_late_init(void)
+ 	}
+ 
+ 	irq_num = of_irq_get(np, 0);
++	of_node_put(np);
+ 	if (irq_num == -EPROBE_DEFER)
+ 		return irq_num;
+ 
+-- 
+2.35.1
+
 
 
