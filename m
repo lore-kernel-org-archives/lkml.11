@@ -2,44 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F3974C49EC0
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CA053C48BEA
 	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 10:42:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356005AbiHWKlQ (ORCPT
+        id S1355945AbiHWKlI (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 06:41:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42616 "EHLO
+        Tue, 23 Aug 2022 06:41:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42580 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354706AbiHWK0L (ORCPT
+        with ESMTP id S1354675AbiHWK0F (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 06:26:11 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1443074CE9;
-        Tue, 23 Aug 2022 02:05:36 -0700 (PDT)
+        Tue, 23 Aug 2022 06:26:05 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 695B1832FA;
+        Tue, 23 Aug 2022 02:05:31 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id BFFE1B81C66;
-        Tue, 23 Aug 2022 09:05:34 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0CAF2C433C1;
-        Tue, 23 Aug 2022 09:05:32 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id CDDC261538;
+        Tue, 23 Aug 2022 09:05:30 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BC6BAC433D6;
+        Tue, 23 Aug 2022 09:05:29 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661245533;
-        bh=EQPwvuYJOs0V7yD6Lmh7EPf+O5KCLFrmcfzQApKHzAQ=;
+        s=korg; t=1661245530;
+        bh=yjK7E2JHDEEFAQaDYaa/6s+uB1qBQJQsozbnDf7eW/U=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=x5iZYdaB7ELYS//QvLisalM0F9qKTdqun50VTu7RoAd5i17FmfZ5o5sLBgN4NPloQ
-         aZ5wQooidcvC3+TYGLVaeoYiV6NPhmoQNMAIrQsohxSRxrRDPK//BkH5kjW3dLLTmH
-         jR47aKItPDYcrHQ0y9kgyJQW04jAYx4tEvsMD+y4=
+        b=Fy+r33wbT4NEXDw+Xx6hmTgp3zwtQ5ef2DuUovy98ecJJZa1+yh3k6mU248gkybBm
+         d6LyP1li13Uhjm41upNuoPfaE8oBsfYJC+G6koVYkW5g2R9CrP2obfKlIvNRaWt+4+
+         BXmzy0seVMhRAVprXYBckmCAuBScZBsIDJy8Jovc=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Niels Dossche <dossche.niels@gmail.com>,
-        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        stable@vger.kernel.org, Jiasheng Jiang <jiasheng@iscas.ac.cn>,
+        Laurent Pinchart <laurent.pinchart@ideasonboard.com>,
+        Sam Ravnborg <sam@ravnborg.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.19 077/287] media: hdpvr: fix error value returns in hdpvr_read
-Date:   Tue, 23 Aug 2022 10:24:06 +0200
-Message-Id: <20220823080102.838414734@linuxfoundation.org>
+Subject: [PATCH 4.19 076/287] drm: bridge: adv7511: Add check for mipi_dsi_driver_register
+Date:   Tue, 23 Aug 2022 10:24:05 +0200
+Message-Id: <20220823080102.793431805@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220823080100.268827165@linuxfoundation.org>
 References: <20220823080100.268827165@linuxfoundation.org>
@@ -51,42 +51,55 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Niels Dossche <dossche.niels@gmail.com>
+From: Jiasheng Jiang <jiasheng@iscas.ac.cn>
 
-[ Upstream commit 359c27c6ddbde404f44a9c0d3ec88ccd1e2042f2 ]
+[ Upstream commit 831463667b5f4f1e5bce9c3b94e9e794d2bc8923 ]
 
-Error return values are supposed to be negative in hdpvr_read. Most
-error returns are currently handled via an unsigned integer "ret". When
-setting a negative error value to "ret", the value actually becomes a
-large positive value, because "ret" is unsigned. Later on, the "ret"
-value is returned. But as ssize_t is a 64-bit signed number, the error
-return value stays a large positive integer instead of a negative
-integer. This can cause an error value to be interpreted as the read
-size, which can cause a buffer overread for applications relying on the
-returned size.
+As mipi_dsi_driver_register could return error if fails,
+it should be better to check the return value and return error
+if fails.
+Moreover, if i2c_add_driver fails,  mipi_dsi_driver_register
+should be reverted.
 
-Fixes: 9aba42efe85b ("V4L/DVB (11096): V4L2 Driver for the Hauppauge HD PVR usb capture device")
-Signed-off-by: Niels Dossche <dossche.niels@gmail.com>
-Signed-off-by: Hans Verkuil <hverkuil-cisco@xs4all.nl>
-Signed-off-by: Mauro Carvalho Chehab <mchehab@kernel.org>
+Fixes: 1e4d58cd7f88 ("drm/bridge: adv7533: Create a MIPI DSI device")
+Signed-off-by: Jiasheng Jiang <jiasheng@iscas.ac.cn>
+Reviewed-by: Laurent Pinchart <laurent.pinchart@ideasonboard.com>
+Signed-off-by: Sam Ravnborg <sam@ravnborg.org>
+Link: https://patchwork.freedesktop.org/patch/msgid/20220602103401.2980938-1-jiasheng@iscas.ac.cn
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/media/usb/hdpvr/hdpvr-video.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/gpu/drm/bridge/adv7511/adv7511_drv.c | 17 ++++++++++++++---
+ 1 file changed, 14 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/media/usb/hdpvr/hdpvr-video.c b/drivers/media/usb/hdpvr/hdpvr-video.c
-index ce46f8721470..1fb2cdd9c4b2 100644
---- a/drivers/media/usb/hdpvr/hdpvr-video.c
-+++ b/drivers/media/usb/hdpvr/hdpvr-video.c
-@@ -413,7 +413,7 @@ static ssize_t hdpvr_read(struct file *file, char __user *buffer, size_t count,
- 	struct hdpvr_device *dev = video_drvdata(file);
- 	struct hdpvr_buffer *buf = NULL;
- 	struct urb *urb;
--	unsigned int ret = 0;
-+	int ret = 0;
- 	int rem, cnt;
+diff --git a/drivers/gpu/drm/bridge/adv7511/adv7511_drv.c b/drivers/gpu/drm/bridge/adv7511/adv7511_drv.c
+index b6e7cc9082ca..31b75d3ca6e9 100644
+--- a/drivers/gpu/drm/bridge/adv7511/adv7511_drv.c
++++ b/drivers/gpu/drm/bridge/adv7511/adv7511_drv.c
+@@ -1301,10 +1301,21 @@ static struct i2c_driver adv7511_driver = {
  
- 	if (*pos)
+ static int __init adv7511_init(void)
+ {
+-	if (IS_ENABLED(CONFIG_DRM_MIPI_DSI))
+-		mipi_dsi_driver_register(&adv7533_dsi_driver);
++	int ret;
++
++	if (IS_ENABLED(CONFIG_DRM_MIPI_DSI)) {
++		ret = mipi_dsi_driver_register(&adv7533_dsi_driver);
++		if (ret)
++			return ret;
++	}
+ 
+-	return i2c_add_driver(&adv7511_driver);
++	ret = i2c_add_driver(&adv7511_driver);
++	if (ret) {
++		if (IS_ENABLED(CONFIG_DRM_MIPI_DSI))
++			mipi_dsi_driver_unregister(&adv7533_dsi_driver);
++	}
++
++	return ret;
+ }
+ module_init(adv7511_init);
+ 
 -- 
 2.35.1
 
