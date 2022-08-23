@@ -2,109 +2,130 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 28E1AC32772
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 08:37:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EC102C32772
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 08:37:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240795AbiHWIhy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 04:37:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46362 "EHLO
+        id S244432AbiHWIh5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 23 Aug 2022 04:37:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35246 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346182AbiHWIgA (ORCPT
+        with ESMTP id S1346206AbiHWIgA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 23 Aug 2022 04:36:00 -0400
-Received: from mail-lj1-x232.google.com (mail-lj1-x232.google.com [IPv6:2a00:1450:4864:20::232])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AF891760FE
-        for <linux-kernel@vger.kernel.org>; Tue, 23 Aug 2022 01:17:05 -0700 (PDT)
-Received: by mail-lj1-x232.google.com with SMTP id l19so9645874ljg.8
-        for <linux-kernel@vger.kernel.org>; Tue, 23 Aug 2022 01:17:04 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=openvz-org.20210112.gappssmtp.com; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc;
-        bh=dsUb3JwxKrpGEtwaM0xXt8nmsJshMrpryqMcaqMUxgw=;
-        b=HVGb4rTve0Fn0XJnLuQnerqws3m5Uhfk3U25WThW/5EA2sh13xN47kcg6Kb0M0oDOd
-         9uV1jUMBYfese4AM4viw6rZp9A7dtiq+5cYAc8rkGxkcuECk2C04awFUvG7TcWNfpl5H
-         vYBBxcx8pcmw7RkgdzctvGuCdMGJeyTT23ZCaJ9m/iA4/MLiL8J4ohtX7iQByuNsULCg
-         GlTdQYgiScAhgclk132QhLpCCJJnI+2bWqFQSjPTVBQgIS9UxJ+6JEMIQdLw/yrlUMt5
-         LfRW+2FL9L/3LbTujvlPjCxbQ7t6VvdDZ5YDayNVICak4OiAHEewMAL7QAkAlcINZiw2
-         /h8w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc;
-        bh=dsUb3JwxKrpGEtwaM0xXt8nmsJshMrpryqMcaqMUxgw=;
-        b=uIahdYlrnIB/Fp2Vb61nWf9qihr3jpisKCGEalFZFFziS90oSsdb10Zpv2bTqlae+b
-         L75kYsZLc5pS3cPFttXNGoGhi0IZITHl0nLyyrJ5jdoUPrjs/WQUKIBmZQBzQbHCtURr
-         zDopL+5H9XQvKz8HdWtW6f1g3HNCrqR+AuVNhI+Mg3gmIsoj0zotBUVbDOWH4Ei/5Kg4
-         HLqNrPERRtmAtOYy7Z+ML8h9Uy8TUH8wiUAYcTXQSjteiCi9YgInQNqQHQ+DYyFkSkN/
-         uYlyjg+776tEs3KY7/1rj/oweWPsGvx/8ogNM5VcOXx74BDx08dkX4qz0bQbVDmDGVkx
-         uSzg==
-X-Gm-Message-State: ACgBeo0uuOvlaDGHt4yLwdk+++E9/4gtNDgHFqlKgcBZXS4yGwaMuQlJ
-        RyzUP/8oOjlSDbCq6vp3FRO+0g==
-X-Google-Smtp-Source: AA6agR79ZeQOdFEdVULVnemohBGH9LmWT7OumoXb1UHf8vB7YnOku6VNElwDzXeWV5YXEmxTiLfvhw==
-X-Received: by 2002:a2e:a7d6:0:b0:261:caab:a952 with SMTP id x22-20020a2ea7d6000000b00261caaba952mr2985133ljp.425.1661242622922;
-        Tue, 23 Aug 2022 01:17:02 -0700 (PDT)
-Received: from [192.168.1.65] ([46.188.121.143])
-        by smtp.gmail.com with ESMTPSA id s10-20020a056512314a00b00492e36cb723sm1057328lfi.179.2022.08.23.01.17.01
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 23 Aug 2022 01:17:02 -0700 (PDT)
-Message-ID: <fba5dccb-2549-30fe-5d65-8668aebd3811@openvz.org>
-Date:   Tue, 23 Aug 2022 11:17:01 +0300
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 395DB760EE;
+        Tue, 23 Aug 2022 01:17:03 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id C6C4961377;
+        Tue, 23 Aug 2022 08:17:01 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7BF52C433C1;
+        Tue, 23 Aug 2022 08:17:00 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1661242621;
+        bh=69ovCRcumfGslh/oGLivZ4DIr8oJgQGwFuXGEqHGW5k=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=1lmfjeY/1AZ4u1HjGhSbikYr0nxZa869OIglx555miOeaIEiXk95EbOhe0Qt+tkA6
+         Z2pv2Qy5uSVbPuj84DP3SZbAmJn9VY9b7BBux8hxotUzGuURNcQ/c9HHqfZP0D9jqy
+         j9ovD0QVIkg/o8/fb0tjth2HvNQtl0grvqjk4ucU=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Roberto Sassu <roberto.sassu@huawei.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Andrii Nakryiko <andrii@kernel.org>, bpf@vger.kernel.org,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Ingo Molnar <mingo@redhat.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>, llvm@lists.linux.dev,
+        Martin KaFai Lau <martin.lau@linux.dev>,
+        Nathan Chancellor <nathan@kernel.org>,
+        Nick Desaulniers <ndesaulniers@google.com>,
+        Nick Terrell <terrelln@fb.com>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Quentin Monnet <quentin@isovalent.com>,
+        Song Liu <song@kernel.org>,
+        Stanislav Fomichev <sdf@google.com>,
+        Arnaldo Carvalho de Melo <acme@redhat.com>
+Subject: [PATCH 5.19 146/365] tools build: Switch to new openssl API for test-libcrypto
+Date:   Tue, 23 Aug 2022 10:00:47 +0200
+Message-Id: <20220823080124.334423074@linuxfoundation.org>
+X-Mailer: git-send-email 2.37.2
+In-Reply-To: <20220823080118.128342613@linuxfoundation.org>
+References: <20220823080118.128342613@linuxfoundation.org>
+User-Agent: quilt/0.67
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.11.0
-Subject: Re: [RFC PATCH] memcg: adjust memcg used to charge for new
- simple_xattrs objects
-Content-Language: en-US
-To:     =?UTF-8?Q?Michal_Koutn=c3=bd?= <mkoutny@suse.com>
-Cc:     Roman Gushchin <roman.gushchin@linux.dev>, tj@kernel.org,
-        gregkh@linuxfoundation.org, hannes@cmpxchg.org, kernel@openvz.org,
-        linux-kernel@vger.kernel.org, mhocko@suse.com, shakeelb@google.com,
-        songmuchun@bytedance.com, viro@zeniv.linux.org.uk,
-        Christian Brauner <brauner@kernel.org>
-References: <62188f37-f816-08e9-cdd5-8df23131746d@openvz.org>
- <f58bd7c8-0053-316c-db06-ced13ffcf867@openvz.org>
- <20220818122743.GB19175@blackbody.suse.cz>
-From:   Vasily Averin <vvs@openvz.org>
-In-Reply-To: <20220818122743.GB19175@blackbody.suse.cz>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 8/18/22 15:27, Michal Koutný wrote:
-> On Thu, Aug 18, 2022 at 12:10:45PM +0300, Vasily Averin <vvs@openvz.org> wrote:
->> sys_set[f]xattr uses simple_xattr infrastructure to create a new
->> extended attribute for in-memory file systems like sysfs and tmpfs.
->> Number and size of allocated objects are controlled by user space,
->> they are always living in memory and its lifetime is indefinitely long.
->> Therefore this memory should be properly accounted.
->>
->> By default new memory is accounted to memcg of creator process.
-> 
-> despite objects aren't bound to this process lifetime.
-> 
-> (I think this was the main argument for this approach and should be in
-> the commit message then.)
+From: Roberto Sassu <roberto.sassu@huawei.com>
 
-Thank you for the remark, I'll update patch description in the next version
+commit 5b245985a6de5ac18b5088c37068816d413fb8ed upstream.
 
->> As a result, neighboring xattrs of the same inode can be charged to
->> different memcgs. This looks unexpected and makes hard the
->> investigation of the memcg accounting issues.
->>
->> This patch adjust memcg used for such allocations. For kernfs
->> it gives memcg from kernfs node, for shmem -- from shmem_info.
->> This allows to cahrge all inode-sepcific objects to the same
->> memory cgroup.
-> 
-> IIUC you intend to inherit association from shmem_inode_info (i.e.
-> whoever created the inode). shmem_inode_cachep has SLAB_ACCOUNT, so it's valid.
+Switch to new EVP API for detecting libcrypto, as Fedora 36 returns an
+error when it encounters the deprecated function MD5_Init() and the others.
 
-Yes, you are right, I'll clarify this in next patch version.
+The error would be interpreted as missing libcrypto, while in reality it is
+not.
 
-Thank you,
-	Vasily Averin
+Fixes: 6e8ccb4f624a73c5 ("tools/bpf: properly account for libbfd variations")
+Signed-off-by: Roberto Sassu <roberto.sassu@huawei.com>
+Cc: Alexei Starovoitov <ast@kernel.org>
+Cc: Andrii Nakryiko <andrii@kernel.org>
+Cc: bpf@vger.kernel.org
+Cc: Daniel Borkmann <daniel@iogearbox.net>
+Cc: Ingo Molnar <mingo@redhat.com>
+Cc: John Fastabend <john.fastabend@gmail.com>
+Cc: KP Singh <kpsingh@kernel.org>
+Cc: llvm@lists.linux.dev
+Cc: Martin KaFai Lau <martin.lau@linux.dev>
+Cc: Nathan Chancellor <nathan@kernel.org>
+Cc: Nick Desaulniers <ndesaulniers@google.com>
+Cc: Nick Terrell <terrelln@fb.com>
+Cc: Peter Zijlstra <peterz@infradead.org>
+Cc: Quentin Monnet <quentin@isovalent.com>
+Cc: Song Liu <song@kernel.org>
+Cc: Stanislav Fomichev <sdf@google.com>
+Link: https://lore.kernel.org/r/20220719170555.2576993-4-roberto.sassu@huawei.com
+Signed-off-by: Arnaldo Carvalho de Melo <acme@redhat.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+---
+ tools/build/feature/test-libcrypto.c |   15 +++++++++++----
+ 1 file changed, 11 insertions(+), 4 deletions(-)
+
+--- a/tools/build/feature/test-libcrypto.c
++++ b/tools/build/feature/test-libcrypto.c
+@@ -1,16 +1,23 @@
+ // SPDX-License-Identifier: GPL-2.0
++#include <openssl/evp.h>
+ #include <openssl/sha.h>
+ #include <openssl/md5.h>
+ 
+ int main(void)
+ {
+-	MD5_CTX context;
++	EVP_MD_CTX *mdctx;
+ 	unsigned char md[MD5_DIGEST_LENGTH + SHA_DIGEST_LENGTH];
+ 	unsigned char dat[] = "12345";
++	unsigned int digest_len;
+ 
+-	MD5_Init(&context);
+-	MD5_Update(&context, &dat[0], sizeof(dat));
+-	MD5_Final(&md[0], &context);
++	mdctx = EVP_MD_CTX_new();
++	if (!mdctx)
++		return 0;
++
++	EVP_DigestInit_ex(mdctx, EVP_md5(), NULL);
++	EVP_DigestUpdate(mdctx, &dat[0], sizeof(dat));
++	EVP_DigestFinal_ex(mdctx, &md[0], &digest_len);
++	EVP_MD_CTX_free(mdctx);
+ 
+ 	SHA1(&dat[0], sizeof(dat), &md[0]);
+ 
+
+
