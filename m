@@ -2,52 +2,65 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EF671C32772
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 17:24:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7CD85C32772
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 17:24:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234195AbiHWRY0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 13:24:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56082 "EHLO
+        id S230415AbiHWRYh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 23 Aug 2022 13:24:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42678 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243788AbiHWRVq (ORCPT
+        with ESMTP id S243776AbiHWRVq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 23 Aug 2022 13:21:46 -0400
-Received: from mail-ot1-f42.google.com (mail-ot1-f42.google.com [209.85.210.42])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7A1EF237F8;
-        Tue, 23 Aug 2022 07:57:43 -0700 (PDT)
-Received: by mail-ot1-f42.google.com with SMTP id q39-20020a056830442700b0063889adc0ddso9970477otv.1;
-        Tue, 23 Aug 2022 07:57:43 -0700 (PDT)
+Received: from mail-oo1-f50.google.com (mail-oo1-f50.google.com [209.85.161.50])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2C1D3AC256;
+        Tue, 23 Aug 2022 07:57:40 -0700 (PDT)
+Received: by mail-oo1-f50.google.com with SMTP id a1-20020a4ab101000000b0044acf001f83so2467329ooo.10;
+        Tue, 23 Aug 2022 07:57:40 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=content-transfer-encoding:mime-version:message-id:date:subject:cc
          :to:from:x-gm-message-state:from:to:cc;
-        bh=xXlClLOBLqfBa2Nm9PNs15DRgZ9VUL5nc8REUjtlTJo=;
-        b=Jn9jtJ4XHWrqlIV2NiVCiSxumXOxHTge6pBUZtMw3raFlDsSTcACOzKZo7FaI+cIiK
-         p6MXMXNrVzP5rqVj0pAaCLvvHINVGtTu111G1jxZwYhznfELYytvE9tkflCZi/eiiNJW
-         OaA7Y0xs/WIClLuSx7d6462FaJ5uLT+mDW6YvnQCcbo7tdjnNnvv4O54oPjzR7UNWHOY
-         LUbX2sdW+dDMeW8UJ3BDLxEEY9XMtdnEUASigY+t66CNSTQyz7WVgA0Fc0Dq77uyh8Rx
-         K1JVHlo2e7HJxp4sYnVWkzYaVf7T7T+HWcFL54pYmwBtouq0hWaNu3YXHhmv3oipCuy8
-         F+0A==
-X-Gm-Message-State: ACgBeo0qwf7RsF+xJAl3yB5h1f2dECHo+8WTrPzwC/E5zS3mMVBEer/B
-        iM/24zaYFqMZe7S71c1x+Q==
-X-Google-Smtp-Source: AA6agR5M8KPfP6Ja+OU+O5Ju+w3SnKym3mCHnwpgwKy9HL8bYAteZbk4AfULp1ObktfogdNOKzTmgw==
-X-Received: by 2002:a05:6830:1bfa:b0:637:1491:2ac7 with SMTP id k26-20020a0568301bfa00b0063714912ac7mr9416645otb.9.1661266662630;
-        Tue, 23 Aug 2022 07:57:42 -0700 (PDT)
+        bh=ooqlkbw3TE2NJhyebQ5cGozeHzUv+AJJEgZF4B67gIY=;
+        b=TNOXgnEyh2aDs7Wv8jIyawSY1lITrOYbPAjxbGVdcmLzs/acYuV3HJ1XQsic6Fcl7a
+         wf9i1aHddoJNqdAe9KqILI1cF724fyY2dvDzXGEfQKnZp/XswGNe3VRs8ZIsHj7UHQU1
+         6OA+/b1DrvDJhBHjEzsmzDlg9vFehbAyV391QbFkU1xuUQE+4nEFpN1/kqWFyvbZSSpF
+         d+6PmbmznA1GG/+Iu9DXAgj6F6CGCq80emXxtpyqd0YnEBO+HZ1RL7N/hW3ZlmOkX9eH
+         d5TB5erjJUlwlo9wV4NntTRyDGNjEec+mxHr7KhJRcoovd5geiUQWboPB8pk1hFaFrEv
+         9GsQ==
+X-Gm-Message-State: ACgBeo0kJ8vs4V5JKbQbio0nO3ZENmXdOeJ+j+oU06zJx0bHJnFn20te
+        b/p32inUeAy4YyRs4rQICA==
+X-Google-Smtp-Source: AA6agR5+a7sOjSPzaSgig28307qEt+b/EO4MrhzoXJrDqx7W1/FQV0jwLw+HKQCyDk3RmgEqKpT4Hw==
+X-Received: by 2002:a4a:e411:0:b0:442:c893:86b7 with SMTP id t17-20020a4ae411000000b00442c89386b7mr8088683oov.22.1661266659387;
+        Tue, 23 Aug 2022 07:57:39 -0700 (PDT)
 Received: from xps15.. (66-90-144-107.dyn.grandenetworks.net. [66.90.144.107])
-        by smtp.googlemail.com with ESMTPSA id t1-20020a056870600100b0011c65559b04sm3840637oaa.34.2022.08.23.07.57.41
+        by smtp.googlemail.com with ESMTPSA id t1-20020a056870600100b0011c65559b04sm3840637oaa.34.2022.08.23.07.57.38
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 23 Aug 2022 07:57:42 -0700 (PDT)
+        Tue, 23 Aug 2022 07:57:38 -0700 (PDT)
 From:   Rob Herring <robh@kernel.org>
-To:     Daniel Lezcano <daniel.lezcano@linaro.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
+To:     Kishon Vijay Abraham I <kishon@ti.com>,
+        Vinod Koul <vkoul@kernel.org>,
         Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Marc Zyngier <maz@kernel.org>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Paul Cercueil <paul@crapouillou.net>
-Cc:     linux-kernel@vger.kernel.org, devicetree@vger.kernel.org
-Subject: [PATCH] dt-bindings: timer: Add missing (unevaluated|additional)Properties on child nodes
-Date:   Tue, 23 Aug 2022 09:56:47 -0500
-Message-Id: <20220823145649.3118479-16-robh@kernel.org>
+        Ray Jui <rjui@broadcom.com>,
+        Scott Branden <sbranden@broadcom.com>,
+        Broadcom internal kernel review list 
+        <bcm-kernel-feedback-list@broadcom.com>,
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+        Alexandre Torgue <alexandre.torgue@foss.st.com>,
+        Andy Gross <agross@kernel.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Konrad Dybcio <konrad.dybcio@somainline.org>,
+        Amelie Delaunay <amelie.delaunay@foss.st.com>,
+        Wesley Cheng <quic_wcheng@quicinc.com>
+Cc:     Ray Jui <ray.jui@broadcom.com>,
+        Scott Branden <scott.branden@broadcom.com>,
+        linux-phy@lists.infradead.org, devicetree@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        linux-stm32@st-md-mailman.stormreply.com,
+        linux-arm-msm@vger.kernel.org
+Subject: [PATCH] dt-bindings: phy: Add missing (unevaluated|additional)Properties on child nodes
+Date:   Tue, 23 Aug 2022 09:56:45 -0500
+Message-Id: <20220823145649.3118479-14-robh@kernel.org>
 X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
@@ -61,44 +74,85 @@ must have unevaluatedProperties or additionalProperties set to false
 
 Signed-off-by: Rob Herring <robh@kernel.org>
 ---
- .../devicetree/bindings/timer/arm,arch_timer_mmio.yaml        | 1 +
- Documentation/devicetree/bindings/timer/ingenic,tcu.yaml      | 4 ++++
- 2 files changed, 5 insertions(+)
+ .../devicetree/bindings/phy/brcm,cygnus-pcie-phy.yaml          | 1 +
+ Documentation/devicetree/bindings/phy/phy-stm32-usbphyc.yaml   | 2 ++
+ .../devicetree/bindings/phy/qcom,qmp-usb3-dp-phy.yaml          | 2 ++
+ Documentation/devicetree/bindings/phy/ti,phy-j721e-wiz.yaml    | 3 +++
+ 4 files changed, 8 insertions(+)
 
-diff --git a/Documentation/devicetree/bindings/timer/arm,arch_timer_mmio.yaml b/Documentation/devicetree/bindings/timer/arm,arch_timer_mmio.yaml
-index cd2176cad53a..f6efa48c4256 100644
---- a/Documentation/devicetree/bindings/timer/arm,arch_timer_mmio.yaml
-+++ b/Documentation/devicetree/bindings/timer/arm,arch_timer_mmio.yaml
-@@ -62,6 +62,7 @@ properties:
+diff --git a/Documentation/devicetree/bindings/phy/brcm,cygnus-pcie-phy.yaml b/Documentation/devicetree/bindings/phy/brcm,cygnus-pcie-phy.yaml
+index 045699c65779..808e90b2465d 100644
+--- a/Documentation/devicetree/bindings/phy/brcm,cygnus-pcie-phy.yaml
++++ b/Documentation/devicetree/bindings/phy/brcm,cygnus-pcie-phy.yaml
+@@ -32,6 +32,7 @@ properties:
  patternProperties:
-   '^frame@[0-9a-z]*$':
+   "^pcie-phy@[0-9]+$":
      type: object
 +    additionalProperties: false
-     description: A timer node has up to 8 frame sub-nodes, each with the following properties.
-     properties:
-       frame-number:
-diff --git a/Documentation/devicetree/bindings/timer/ingenic,tcu.yaml b/Documentation/devicetree/bindings/timer/ingenic,tcu.yaml
-index 0a01e4f5eddb..a84fef0fe628 100644
---- a/Documentation/devicetree/bindings/timer/ingenic,tcu.yaml
-+++ b/Documentation/devicetree/bindings/timer/ingenic,tcu.yaml
-@@ -114,6 +114,8 @@ patternProperties:
-   "^watchdog@[a-f0-9]+$":
-     type: object
-     $ref: /schemas/watchdog/watchdog.yaml#
-+    unevaluatedProperties: false
+     description: >
+       PCIe PHY child nodes
+ 
+diff --git a/Documentation/devicetree/bindings/phy/phy-stm32-usbphyc.yaml b/Documentation/devicetree/bindings/phy/phy-stm32-usbphyc.yaml
+index dc287d428e49..801993813b18 100644
+--- a/Documentation/devicetree/bindings/phy/phy-stm32-usbphyc.yaml
++++ b/Documentation/devicetree/bindings/phy/phy-stm32-usbphyc.yaml
+@@ -77,6 +77,8 @@ patternProperties:
+       connector:
+         type: object
+         $ref: /schemas/connector/usb-connector.yaml
++        unevaluatedProperties: false
 +
-     properties:
-       compatible:
-         oneOf:
-@@ -146,6 +148,8 @@ patternProperties:
-   "^pwm@[a-f0-9]+$":
+         properties:
+           vbus-supply: true
+ 
+diff --git a/Documentation/devicetree/bindings/phy/qcom,qmp-usb3-dp-phy.yaml b/Documentation/devicetree/bindings/phy/qcom,qmp-usb3-dp-phy.yaml
+index b078009ed509..563e85c48c6a 100644
+--- a/Documentation/devicetree/bindings/phy/qcom,qmp-usb3-dp-phy.yaml
++++ b/Documentation/devicetree/bindings/phy/qcom,qmp-usb3-dp-phy.yaml
+@@ -81,6 +81,7 @@ properties:
+ patternProperties:
+   "^usb3-phy@[0-9a-f]+$":
      type: object
-     $ref: /schemas/pwm/pwm.yaml#
-+    unevaluatedProperties: false
-+
-     properties:
-       compatible:
-         oneOf:
++    additionalProperties: false
+     description:
+       The USB3 PHY.
+ 
+@@ -121,6 +122,7 @@ patternProperties:
+ 
+   "^dp-phy@[0-9a-f]+$":
+     type: object
++    additionalProperties: false
+     description:
+       The DP PHY.
+ 
+diff --git a/Documentation/devicetree/bindings/phy/ti,phy-j721e-wiz.yaml b/Documentation/devicetree/bindings/phy/ti,phy-j721e-wiz.yaml
+index dcd63908aeae..7c7c3e3e6346 100644
+--- a/Documentation/devicetree/bindings/phy/ti,phy-j721e-wiz.yaml
++++ b/Documentation/devicetree/bindings/phy/ti,phy-j721e-wiz.yaml
+@@ -79,6 +79,7 @@ properties:
+ 
+   refclk-dig:
+     type: object
++    additionalProperties: false
+     description: |
+       WIZ node should have subnode for refclk_dig to select the reference
+       clock source for the reference clock used in the PHY and PMA digital
+@@ -108,6 +109,7 @@ properties:
+ patternProperties:
+   "^pll[0|1]-refclk$":
+     type: object
++    additionalProperties: false
+     description: |
+       WIZ node should have subnodes for each of the PLLs present in
+       the SERDES.
+@@ -133,6 +135,7 @@ patternProperties:
+ 
+   "^cmn-refclk1?-dig-div$":
+     type: object
++    additionalProperties: false
+     description:
+       WIZ node should have subnodes for each of the PMA common refclock
+       provided by the SERDES.
 -- 
 2.34.1
 
