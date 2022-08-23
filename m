@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 70AE3C32772
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 09:54:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1345AC32772
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 09:54:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242778AbiHWJy2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 05:54:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40994 "EHLO
+        id S241997AbiHWJye (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 23 Aug 2022 05:54:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42428 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352279AbiHWJv2 (ORCPT
+        with ESMTP id S1352284AbiHWJv3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 05:51:28 -0400
+        Tue, 23 Aug 2022 05:51:29 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D399B9F0E9;
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EBEE89F0EA;
         Tue, 23 Aug 2022 01:45:53 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 91445B81C63;
-        Tue, 23 Aug 2022 08:35:25 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D52C6C433D7;
-        Tue, 23 Aug 2022 08:35:23 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 224AEB81C39;
+        Tue, 23 Aug 2022 08:17:33 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 75668C433C1;
+        Tue, 23 Aug 2022 08:17:31 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661243724;
-        bh=4qKoqDDrujEnaXSp0+r96irpj98a/vp4++7pVeIYz/A=;
+        s=korg; t=1661242651;
+        bh=VjhgaeQuIzUr58TJv2AShtXaQvD2k3yhALj3E6r+uoM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=TTDUNKHGPo2N6u3IsP/HyxQ8Bg3mfjEicekAL0vW2Z5ErG6RqLwvCYCBeBOKQijS8
-         Dz2KmnZdLbs9ULaTUCM51kyTsvrGLuWyrBbtzuF8HTdxJLEQmEnyK81oJvHNqgvfT9
-         C47KXKYUXd/+6cS+d6ilnHukfWSrQ+KkNLThBN0I=
+        b=Y0UiCzsoCUYkF+2JN9VOaXzDq6zsdvFS/Ivwt9iUvaef/Wfci57YRDAVabn1obLOP
+         s2Ae/eWPJNXbTb7z71J6eLtTkNjYtz8LwMgSQtUPANmiG8pJKbqAwm/g3I41lz++UK
+         G2wC14ZHKnx2vCwU2q/3HAAJKNufa6g5hknrOOdg=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Guo Ren <guoren@kernel.org>,
-        Xianting Tian <xianting.tian@linux.alibaba.com>,
-        Palmer Dabbelt <palmer@rivosinc.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.19 337/365] RISC-V: Add fast call path of crash_kexec()
-Date:   Tue, 23 Aug 2022 10:03:58 +0200
-Message-Id: <20220823080132.317191626@linuxfoundation.org>
+        stable@vger.kernel.org, Christoph Hellwig <hch@lst.de>,
+        Chaitanya Kulkarni <kch@nvidia.com>,
+        "Ewan D. Milne" <emilne@redhat.com>,
+        James Smart <jsmart2021@gmail.com>,
+        Muneendra Kumar M <muneendra.kumar@broadcom.com>
+Subject: [PATCH 5.19 154/365] nvme-fc: fix the fc_appid_store return value
+Date:   Tue, 23 Aug 2022 10:00:55 +0200
+Message-Id: <20220823080124.671691940@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220823080118.128342613@linuxfoundation.org>
 References: <20220823080118.128342613@linuxfoundation.org>
@@ -50,73 +51,51 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Xianting Tian <xianting.tian@linux.alibaba.com>
+From: Christoph Hellwig <hch@lst.de>
 
-[ Upstream commit 3f1901110a89b0e2e13adb2ac8d1a7102879ea98 ]
+commit 9317d0014499182c77a03cd095e83bcfb0f53750 upstream.
 
-Currently, almost all archs (x86, arm64, mips...) support fast call
-of crash_kexec() when "regs && kexec_should_crash()" is true. But
-RISC-V not, it can only enter crash system via panic(). However panic()
-doesn't pass the regs of the real accident scene to crash_kexec(),
-it caused we can't get accurate backtrace via gdb,
-	$ riscv64-linux-gnu-gdb vmlinux vmcore
-	Reading symbols from vmlinux...
-	[New LWP 95]
-	#0  console_unlock () at kernel/printk/printk.c:2557
-	2557                    if (do_cond_resched)
-	(gdb) bt
-	#0  console_unlock () at kernel/printk/printk.c:2557
-	#1  0x0000000000000000 in ?? ()
+"nvme-fc: fold t fc_update_appid into fc_appid_store" accidentally
+changed the userspace interface for the appid attribute, because the code
+that decrements "count" to remove a trailing '\n' in the parsing results
+in the decremented value being incorrectly be returned from the sysfs
+write.  Fix this by keeping an orig_count variable for the full length
+of the write.
 
-With the patch we can get the accurate backtrace,
-	$ riscv64-linux-gnu-gdb vmlinux vmcore
-	Reading symbols from vmlinux...
-	[New LWP 95]
-	#0  0xffffffe00063a4e0 in test_thread (data=<optimized out>) at drivers/test_crash.c:81
-	81             *(int *)p = 0xdead;
-	(gdb)
-	(gdb) bt
-	#0  0xffffffe00064d5c0 in test_thread (data=<optimized out>) at drivers/test_crash.c:81
-	#1  0x0000000000000000 in ?? ()
-
-Test code to produce NULL address dereference in test_crash.c,
-	void *p = NULL;
-	*(int *)p = 0xdead;
-
-Reviewed-by: Guo Ren <guoren@kernel.org>
-Tested-by: Xianting Tian <xianting.tian@linux.alibaba.com>
-Signed-off-by: Xianting Tian <xianting.tian@linux.alibaba.com>
-Link: https://lore.kernel.org/r/20220606082308.2883458-1-xianting.tian@linux.alibaba.com
-Signed-off-by: Palmer Dabbelt <palmer@rivosinc.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Fixes: c814153c83a8 ("nvme-fc: fold t fc_update_appid into fc_appid_store")
+Signed-off-by: Christoph Hellwig <hch@lst.de>
+Reviewed-by: Chaitanya Kulkarni <kch@nvidia.com>
+Reviewed-by: Ewan D. Milne <emilne@redhat.com>
+Reviewed-by: James Smart <jsmart2021@gmail.com>
+Tested-by:  Muneendra Kumar M <muneendra.kumar@broadcom.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/riscv/kernel/traps.c | 4 ++++
- 1 file changed, 4 insertions(+)
+ drivers/nvme/host/fc.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-diff --git a/arch/riscv/kernel/traps.c b/arch/riscv/kernel/traps.c
-index b40426509244..39d0f8bba4b4 100644
---- a/arch/riscv/kernel/traps.c
-+++ b/arch/riscv/kernel/traps.c
-@@ -16,6 +16,7 @@
- #include <linux/mm.h>
- #include <linux/module.h>
- #include <linux/irq.h>
-+#include <linux/kexec.h>
- 
- #include <asm/asm-prototypes.h>
- #include <asm/bug.h>
-@@ -44,6 +45,9 @@ void die(struct pt_regs *regs, const char *str)
- 
- 	ret = notify_die(DIE_OOPS, str, regs, 0, regs->cause, SIGSEGV);
- 
-+	if (regs && kexec_should_crash(current))
-+		crash_kexec(regs);
-+
- 	bust_spinlocks(0);
- 	add_taint(TAINT_DIE, LOCKDEP_NOW_UNRELIABLE);
- 	spin_unlock_irq(&die_lock);
+diff --git a/drivers/nvme/host/fc.c b/drivers/nvme/host/fc.c
+index 8d14df8eeab8..127abaf9ba5d 100644
+--- a/drivers/nvme/host/fc.c
++++ b/drivers/nvme/host/fc.c
+@@ -3880,6 +3880,7 @@ static int fc_parse_cgrpid(const char *buf, u64 *id)
+ static ssize_t fc_appid_store(struct device *dev,
+ 		struct device_attribute *attr, const char *buf, size_t count)
+ {
++	size_t orig_count = count;
+ 	u64 cgrp_id;
+ 	int appid_len = 0;
+ 	int cgrpid_len = 0;
+@@ -3904,7 +3905,7 @@ static ssize_t fc_appid_store(struct device *dev,
+ 	ret = blkcg_set_fc_appid(app_id, cgrp_id, sizeof(app_id));
+ 	if (ret < 0)
+ 		return ret;
+-	return count;
++	return orig_count;
+ }
+ static DEVICE_ATTR(appid_store, 0200, NULL, fc_appid_store);
+ #endif /* CONFIG_BLK_CGROUP_FC_APPID */
 -- 
-2.35.1
+2.37.2
 
 
 
