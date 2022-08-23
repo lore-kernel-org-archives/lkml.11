@@ -2,107 +2,82 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CD706C32796
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 847E2C32774
 	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 11:56:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358984AbiHWLzv (ORCPT
+        id S1358901AbiHWLz0 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 07:55:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35622 "EHLO
+        Tue, 23 Aug 2022 07:55:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56904 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1358545AbiHWLwY (ORCPT
+        with ESMTP id S1359246AbiHWLwR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 07:52:24 -0400
-Received: from mail-pf1-x435.google.com (mail-pf1-x435.google.com [IPv6:2607:f8b0:4864:20::435])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A1501D51C7;
-        Tue, 23 Aug 2022 02:32:45 -0700 (PDT)
-Received: by mail-pf1-x435.google.com with SMTP id 1so5738958pfu.0;
-        Tue, 23 Aug 2022 02:32:45 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc;
-        bh=4phw6l5mgqEwcOD/rVR9pFicMsLaOxr6psvCJQqo8lE=;
-        b=foZPvnATL0PWGTTfZeKbiLnnHznuv0OFDeaiOO1r2Sp4MnALv6bT26zsJaBpwqIjTM
-         nvp9ITmlnjpc1xVO4TUw6Hx11a9EWy+eghMF24cHJ3ankqqNLvZyWbfnayFbVHtUv+W9
-         MRwuG1KOd7xIoRtW3hvc/3S91QvV8HydPw7wLWgV8HDrxI6sSRxKTpi1nruFHe3MKtvH
-         tEr2yUFnsG52eTwh+fF/JV4R+sZ9v0f0gXHtLeiTV0uqp6rp9JU9CTdXdyvqqkXezM1/
-         bsrGGwqMuYy3SrLQeFy3oB8fKTpSNhI+hDLE4GFtPAtYHN3Rz4EirOx5TnykMIAd70Be
-         AXhg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc;
-        bh=4phw6l5mgqEwcOD/rVR9pFicMsLaOxr6psvCJQqo8lE=;
-        b=EEaBdVy51Kzo9KQSPxFxq7hgiBrF51CETQIK1LNnakpWy+FYPcYnMiNkcF5JOR/Ao+
-         7t4YWKP/oO5p08oN89knW1uAEmTiR8DAflST5cNpTmrX0a7uWsELCn70hHKpxLM0WPE0
-         O3KWWIhQctQmOoHcu5qcZl3kiN6kgvJn6nlogm6hmZD3Lui6/8ZIHj0D/7YE4o6WPDd0
-         wvsRQ+34VZwcwyBybRGEQbulIlioOhkUM6Qm1L1DaI+VBiinZv79/LwD5eLV3OE46CYC
-         41MvFfQ0i595ISQqqW16jE0Yf8bZPepIUXdcgSrGvUQxGYlKKcY73ffDQgWONcIBXRQi
-         qZvw==
-X-Gm-Message-State: ACgBeo3B2rqu1C10bOr3LXCE7U23SkoL94zhwbZ4xW5NaoQGjmtMcW7k
-        XsGhtwc5PUlo2z1fe6SvrHI=
-X-Google-Smtp-Source: AA6agR7IXtimM8dnxDTdAkgMHDcvJcIiqdkbaUB3wJWRkUW39tkD/2LhybfQJOfqQpo85flgQoGYig==
-X-Received: by 2002:a62:cdc2:0:b0:536:5c11:c342 with SMTP id o185-20020a62cdc2000000b005365c11c342mr13453688pfg.42.1661247164457;
-        Tue, 23 Aug 2022 02:32:44 -0700 (PDT)
-Received: from localhost.localdomain ([103.7.29.32])
-        by smtp.gmail.com with ESMTPSA id 13-20020a170902c24d00b0017297a6b39dsm10057212plg.265.2022.08.23.02.32.42
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 23 Aug 2022 02:32:44 -0700 (PDT)
-From:   Like Xu <like.xu.linux@gmail.com>
-X-Google-Original-From: Like Xu <likexu@tencent.com>
-To:     Sean Christopherson <seanjc@google.com>,
-        Paolo Bonzini <pbonzini@redhat.com>
-Cc:     Jim Mattson <jmattson@google.com>, linux-kernel@vger.kernel.org,
-        kvm@vger.kernel.org
-Subject: [PATCH RESEND v2 1/8] perf/x86/core: Completely disable guest PEBS via guest's global_ctrl
-Date:   Tue, 23 Aug 2022 17:32:14 +0800
-Message-Id: <20220823093221.38075-2-likexu@tencent.com>
+        Tue, 23 Aug 2022 07:52:17 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1C41BD51D4;
+        Tue, 23 Aug 2022 02:32:47 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id D5AFE612D6;
+        Tue, 23 Aug 2022 09:32:32 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A940CC4314C;
+        Tue, 23 Aug 2022 09:32:31 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1661247152;
+        bh=N6Hrsh66fIpJqgREzVXpH3vUpho0BglNX6qFgtggWPg=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=ku3aHorX/Yjwfwlk+4DR79/3Za8ZgtrWuA2vhJYJuuU31CQwP4OJ+CQEu3PwHGDG9
+         tpdjngrPJ/ZUZcscnQnzZTVk1h34uuNar+FjfEYt8v5s71LoVY/BA7eS1xSVkpkWAv
+         Z48DolEI8cFg/amydj0qUUTbOwiB415n8n/GWNjI=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Chen Lin <chen.lin5@zte.com.cn>,
+        Ioana Ciornei <ioana.ciornei@nxp.com>,
+        Jakub Kicinski <kuba@kernel.org>
+Subject: [PATCH 5.4 327/389] dpaa2-eth: trace the allocated address instead of page struct
+Date:   Tue, 23 Aug 2022 10:26:45 +0200
+Message-Id: <20220823080129.174178043@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220823093221.38075-1-likexu@tencent.com>
-References: <20220823093221.38075-1-likexu@tencent.com>
+In-Reply-To: <20220823080115.331990024@linuxfoundation.org>
+References: <20220823080115.331990024@linuxfoundation.org>
+User-Agent: quilt/0.67
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Like Xu <likexu@tencent.com>
+From: Chen Lin <chen45464546@163.com>
 
-When a guest PEBS counter is cross-mapped by a host counter, software
-will remove the corresponding bit in the arr[global_ctrl].guest and
-expect hardware to perform a change of state "from enable to disable"
-via the msr_slot[] switch during the vmx transaction.
+commit e34f49348f8b7a53205b6f77707a3a6a40cf420b upstream.
 
-The real world is that if user adjust the counter overflow value small
-enough, it still opens a tiny race window for the previously PEBS-enabled
-counter to write cross-mapped PEBS records into the guest's PEBS buffer,
-when arr[global_ctrl].guest has been prioritised (switch_msr_special stuff)
-to switch into the enabled state, while the arr[pebs_enable].guest has not.
+We should trace the allocated address instead of page struct.
 
-Close this window by clearing invalid bits in the arr[global_ctrl].guest.
-
-Fixes: 854250329c02 ("KVM: x86/pmu: Disable guest PEBS temporarily in two rare situations")
-Signed-off-by: Like Xu <likexu@tencent.com>
+Fixes: 27c874867c4e ("dpaa2-eth: Use a single page per Rx buffer")
+Signed-off-by: Chen Lin <chen.lin5@zte.com.cn>
+Reviewed-by: Ioana Ciornei <ioana.ciornei@nxp.com>
+Link: https://lore.kernel.org/r/20220811151651.3327-1-chen45464546@163.com
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/x86/events/intel/core.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.c |    4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/arch/x86/events/intel/core.c b/arch/x86/events/intel/core.c
-index 2db93498ff71..75cdd11ab014 100644
---- a/arch/x86/events/intel/core.c
-+++ b/arch/x86/events/intel/core.c
-@@ -4052,8 +4052,9 @@ static struct perf_guest_switch_msr *intel_guest_get_msrs(int *nr, void *data)
- 		/* Disable guest PEBS if host PEBS is enabled. */
- 		arr[pebs_enable].guest = 0;
- 	} else {
--		/* Disable guest PEBS for cross-mapped PEBS counters. */
-+		/* Disable guest PEBS thoroughly for cross-mapped PEBS counters. */
- 		arr[pebs_enable].guest &= ~kvm_pmu->host_cross_mapped_mask;
-+		arr[global_ctrl].guest &= ~kvm_pmu->host_cross_mapped_mask;
- 		/* Set hw GLOBAL_CTRL bits for PEBS counter when it runs for guest */
- 		arr[global_ctrl].guest |= arr[pebs_enable].guest;
+--- a/drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.c
++++ b/drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.c
+@@ -971,8 +971,8 @@ static int add_bufs(struct dpaa2_eth_pri
+ 		buf_array[i] = addr;
+ 
+ 		/* tracing point */
+-		trace_dpaa2_eth_buf_seed(priv->net_dev,
+-					 page, DPAA2_ETH_RX_BUF_RAW_SIZE,
++		trace_dpaa2_eth_buf_seed(priv->net_dev, page_address(page),
++					 DPAA2_ETH_RX_BUF_RAW_SIZE,
+ 					 addr, priv->rx_buf_size,
+ 					 bpid);
  	}
--- 
-2.37.2
+
 
