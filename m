@@ -2,70 +2,88 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4775EC32772
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 14:23:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 057FEC32789
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 14:26:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242101AbiHWOX1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 10:23:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32856 "EHLO
+        id S242453AbiHWO0F (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 23 Aug 2022 10:26:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33150 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241881AbiHWOXE (ORCPT
+        with ESMTP id S240664AbiHWOZu (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 10:23:04 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CE54E161F05;
-        Tue, 23 Aug 2022 04:36:10 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id C0F45B81CDE;
-        Tue, 23 Aug 2022 11:34:38 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CCF2FC43141;
-        Tue, 23 Aug 2022 11:34:35 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1661254477;
-        bh=dbVWDldCY4YzubCVafQgz4jun7QPRpofSS5e63+/k1M=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=q6ASJqWDkzWRgVDFV55SAHo9P7Ljs0Aj91OH+zpkBXNJXhHLrMar0t3vffGzH7Frz
-         knpC+6vpSk9eGxbnG3vXwvh19w+giIxPbRA7+l6CHNRniF/+OW3dfLKYvb23ecPnZG
-         h3ckewL4yWOijMwbZmCW6Vek25DIt+qmDjmfYBtqYepMOQrq2sx3JR+oxeDR6TdOID
-         OhjDIOMHOIixsriuwViWnq2WmC/sDi2f1bs5eogpNC2kygK1Xwooy6uf3kQFyCvFRq
-         vvQjhWUx8/Q2g0qstpDywkcDo46ZgzYsrLkd7vDqpYwe2MmGwaodupTJ8YxhbI0T6f
-         xfOzn4DP/UvZQ==
-From:   Will Deacon <will@kernel.org>
-To:     linux-kernel@vger.kernel.org, linux-doc@vger.kernel.org,
-        =?UTF-8?q?Martin=20Li=C5=A1ka?= <mliska@suse.cz>
-Cc:     catalin.marinas@arm.com, kernel-team@android.com,
-        Will Deacon <will@kernel.org>, corbet@lwn.net,
-        linux-arm-kernel@lists.infradead.org, broonie@kernel.org
-Subject: Re: [PATCH v3] docs/arm64: elf_hwcaps: unify newlines in HWCAP lists
-Date:   Tue, 23 Aug 2022 12:34:21 +0100
-Message-Id: <166124752070.3122203.12566494356867876740.b4-ty@kernel.org>
-X-Mailer: git-send-email 2.20.1
-In-Reply-To: <84e3d6cc-75cf-d6f3-9bb8-be02075aaf6d@suse.cz>
-References: <Yv50RxlDf0qpK9v8@sirena.org.uk> <84e3d6cc-75cf-d6f3-9bb8-be02075aaf6d@suse.cz>
+        Tue, 23 Aug 2022 10:25:50 -0400
+Received: from jabberwock.ucw.cz (jabberwock.ucw.cz [46.255.230.98])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8CB852956C0;
+        Tue, 23 Aug 2022 04:40:01 -0700 (PDT)
+Received: by jabberwock.ucw.cz (Postfix, from userid 1017)
+        id D265A1C0005; Tue, 23 Aug 2022 12:09:41 +0200 (CEST)
+Date:   Tue, 23 Aug 2022 12:09:41 +0200
+From:   Pavel Machek <pavel@denx.de>
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc:     linux-kernel@vger.kernel.org, stable@vger.kernel.org,
+        torvalds@linux-foundation.org, akpm@linux-foundation.org,
+        linux@roeck-us.net, shuah@kernel.org, patches@kernelci.org,
+        lkft-triage@lists.linaro.org, pavel@denx.de, jonathanh@nvidia.com,
+        f.fainelli@gmail.com, sudipm.mukherjee@gmail.com,
+        slade@sladewatkins.com
+Subject: Re: [PATCH 4.19 000/287] 4.19.256-rc1 review
+Message-ID: <20220823100941.GB10005@duo.ucw.cz>
+References: <20220823080100.268827165@linuxfoundation.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
+Content-Type: multipart/signed; micalg=pgp-sha1;
+        protocol="application/pgp-signature"; boundary="TRYliJ5NKNqkz5bu"
+Content-Disposition: inline
+In-Reply-To: <20220823080100.268827165@linuxfoundation.org>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, 18 Aug 2022 22:31:57 +0200, Martin Liška wrote:
-> Unify horizontal spacing (remove extra newlines) which
-> are sensitive to visual presentation by Sphinx.
-> 
-> 
 
-Applied to arm64 (for-next/fixes), thanks!
+--TRYliJ5NKNqkz5bu
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-[1/1] docs/arm64: elf_hwcaps: unify newlines in HWCAP lists
-      https://git.kernel.org/arm64/c/0b52f76351bf
+Hi!
 
-Cheers,
--- 
-Will
+> This is the start of the stable review cycle for the 4.19.256 release.
+> There are 287 patches in this series, all will be posted as a response
+> to this one.  If anyone has any issues with these being applied, please
+> let me know.
+>=20
+> Responses should be made by Thu, 25 Aug 2022 08:00:15 +0000.
+> Anything received after that time might be too late.
+>=20
+> The whole patch series can be found in one patch at:
+> 	https://www.kernel.org/pub/linux/kernel/v4.x/stable-review/patch-4.19.25=
+6-rc1.gz
+> or in the git tree and branch at:
+> 	git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git=
+ linux-4.19.y
+> and the diffstat can be found below.
 
-https://fixes.arm64.dev
-https://next.arm64.dev
-https://will.arm64.dev
+CIP testing did not find any problems here:
+
+https://gitlab.com/cip-project/cip-testing/linux-stable-rc-ci/-/tree/linux-=
+4.19.y
+
+Tested-by: Pavel Machek (CIP) <pavel@denx.de>
+
+Best regards,
+                                                                Pavel
+--=20
+DENX Software Engineering GmbH,      Managing Director: Wolfgang Denk
+HRB 165235 Munich, Office: Kirchenstr.5, D-82194 Groebenzell, Germany
+
+--TRYliJ5NKNqkz5bu
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iF0EABECAB0WIQRPfPO7r0eAhk010v0w5/Bqldv68gUCYwSnZQAKCRAw5/Bqldv6
+8ttOAJ9/kGjiLtmwHK7CpW2h2nwdxvTCNACfd8Le9RQQ1rwDnk0ux7USQHAjADI=
+=XjZx
+-----END PGP SIGNATURE-----
+
+--TRYliJ5NKNqkz5bu--
