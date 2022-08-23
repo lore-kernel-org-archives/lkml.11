@@ -2,44 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D53B8C32772
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 10:47:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2512AC32792
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 10:47:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355416AbiHWKp0 (ORCPT
+        id S1355911AbiHWKpi (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 06:45:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38384 "EHLO
+        Tue, 23 Aug 2022 06:45:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42652 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355765AbiHWKhC (ORCPT
+        with ESMTP id S1355197AbiHWKiF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 06:37:02 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 24484A6C4C;
-        Tue, 23 Aug 2022 02:07:30 -0700 (PDT)
+        Tue, 23 Aug 2022 06:38:05 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8035D85FCF;
+        Tue, 23 Aug 2022 02:07:36 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id B32D7B81C97;
-        Tue, 23 Aug 2022 09:07:28 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 038C1C433D6;
-        Tue, 23 Aug 2022 09:07:26 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id E675EB81C85;
+        Tue, 23 Aug 2022 09:07:34 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3B583C433C1;
+        Tue, 23 Aug 2022 09:07:33 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661245647;
-        bh=xmnsuXtUw8sGw9bxdWq+/4tnHuPDrOAAJeRf/dZAQZ8=;
+        s=korg; t=1661245653;
+        bh=7gKvBrCgfjXar+M7RVKi01m33VmCzuS0lNw/8ARW1do=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=0qWz3f9UN/TVtF9x5zp5L0DVZtem/DK8PcypKugo7eo4mUaTEwBki0xkcANUUJCUs
-         tdfdbE0QNLi6XjMuDzA8Oftm4Wj72svErfURuf0B7sIb6Ix2TmBfY1I+igFqrv1uJj
-         k+WwYCgyLrkfr2pIHNXKn1sNg0qpbuyk86mp7O+U=
+        b=Ce0qTmfc7kECKhW29Ax3dsD6MuATph4C9AeWK6kCEEOPcVh5Edthlu6EtjeCEWjjL
+         gFva4q6Gh80XaN8yZevnJPkvEotM4pr10bn+kGdjDpjjRYUdU6FepbHr4TCXiUlfUH
+         Lt41RxvYN9iZFMccfXPJ8sM6lwQGtYRbhiFCj2vw=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Vincent Mailhol <mailhol.vincent@wanadoo.fr>,
-        Marc Kleine-Budde <mkl@pengutronix.de>,
+        stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
+        Mark Brown <broonie@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.19 102/287] can: error: specify the values of data[5..7] of CAN error frames
-Date:   Tue, 23 Aug 2022 10:24:31 +0200
-Message-Id: <20220823080103.799245643@linuxfoundation.org>
+Subject: [PATCH 4.19 147/287] ASoC: mt6797-mt6351: Fix refcount leak in mt6797_mt6351_dev_probe
+Date:   Tue, 23 Aug 2022 10:25:16 +0200
+Message-Id: <20220823080105.522496550@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220823080100.268827165@linuxfoundation.org>
 References: <20220823080100.268827165@linuxfoundation.org>
@@ -51,47 +50,47 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Vincent Mailhol <mailhol.vincent@wanadoo.fr>
+From: Miaoqian Lin <linmq006@gmail.com>
 
-[ Upstream commit e70a3263a7eed768d5f947b8f2aff8d2a79c9d97 ]
+[ Upstream commit 7472eb8d7dd12b6b9b1a4f4527719cc9c7f5965f ]
 
-Currently, data[5..7] of struct can_frame, when used as a CAN error
-frame, are defined as being "controller specific". Device specific
-behaviours are problematic because it prevents someone from writing
-code which is portable between devices.
+of_parse_phandle() returns a node pointer with refcount
+incremented, we should use of_node_put() on it when not need anymore.
+Add missing of_node_put() to avoid refcount leak.
 
-As a matter of fact, data[5] is never used, data[6] is always used to
-report TX error counter and data[7] is always used to report RX error
-counter. can-utils also relies on this.
-
-This patch updates the comment in the uapi header to specify that
-data[5] is reserved (and thus should not be used) and that data[6..7]
-are used for error counters.
-
-Fixes: 0d66548a10cb ("[CAN]: Add PF_CAN core module")
-Link: https://lore.kernel.org/all/20220719143550.3681-11-mailhol.vincent@wanadoo.fr
-Signed-off-by: Vincent Mailhol <mailhol.vincent@wanadoo.fr>
-Signed-off-by: Marc Kleine-Budde <mkl@pengutronix.de>
+Fixes: f0ab0bf250da ("ASoC: add mt6797-mt6351 driver and config option")
+Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
+Link: https://lore.kernel.org/r/20220603083417.9011-1-linmq006@gmail.com
+Signed-off-by: Mark Brown <broonie@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- include/uapi/linux/can/error.h | 5 ++++-
- 1 file changed, 4 insertions(+), 1 deletion(-)
+ sound/soc/mediatek/mt6797/mt6797-mt6351.c | 6 +++++-
+ 1 file changed, 5 insertions(+), 1 deletion(-)
 
-diff --git a/include/uapi/linux/can/error.h b/include/uapi/linux/can/error.h
-index bfc4b5d22a5e..383f3d508a53 100644
---- a/include/uapi/linux/can/error.h
-+++ b/include/uapi/linux/can/error.h
-@@ -120,6 +120,9 @@
- #define CAN_ERR_TRX_CANL_SHORT_TO_GND  0x70 /* 0111 0000 */
- #define CAN_ERR_TRX_CANL_SHORT_TO_CANH 0x80 /* 1000 0000 */
+diff --git a/sound/soc/mediatek/mt6797/mt6797-mt6351.c b/sound/soc/mediatek/mt6797/mt6797-mt6351.c
+index b1558c57b9ca..0c49e1a9a897 100644
+--- a/sound/soc/mediatek/mt6797/mt6797-mt6351.c
++++ b/sound/soc/mediatek/mt6797/mt6797-mt6351.c
+@@ -179,7 +179,8 @@ static int mt6797_mt6351_dev_probe(struct platform_device *pdev)
+ 	if (!codec_node) {
+ 		dev_err(&pdev->dev,
+ 			"Property 'audio-codec' missing or invalid\n");
+-		return -EINVAL;
++		ret = -EINVAL;
++		goto put_platform_node;
+ 	}
+ 	for (i = 0; i < card->num_links; i++) {
+ 		if (mt6797_mt6351_dai_links[i].codec_name)
+@@ -192,6 +193,9 @@ static int mt6797_mt6351_dev_probe(struct platform_device *pdev)
+ 		dev_err(&pdev->dev, "%s snd_soc_register_card fail %d\n",
+ 			__func__, ret);
  
--/* controller specific additional information / data[5..7] */
-+/* data[5] is reserved (do not use) */
-+
-+/* TX error counter / data[6] */
-+/* RX error counter / data[7] */
++	of_node_put(codec_node);
++put_platform_node:
++	of_node_put(platform_node);
+ 	return ret;
+ }
  
- #endif /* _UAPI_CAN_ERROR_H */
 -- 
 2.35.1
 
