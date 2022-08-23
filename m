@@ -2,134 +2,85 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AAD6CC32772
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 17:37:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id ADF04C32772
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 17:37:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229612AbiHWRhq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 13:37:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46376 "EHLO
+        id S231600AbiHWRhv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 23 Aug 2022 13:37:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60460 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231373AbiHWRhD (ORCPT
+        with ESMTP id S231935AbiHWRhL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 13:37:03 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DED8483BD6
-        for <linux-kernel@vger.kernel.org>; Tue, 23 Aug 2022 08:21:24 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 799B4615D2
-        for <linux-kernel@vger.kernel.org>; Tue, 23 Aug 2022 15:21:24 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 352D5C433D6;
-        Tue, 23 Aug 2022 15:21:23 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1661268083;
-        bh=d9e8tVoifQ7GaeXefRpR3cOVTXLtya7HeNbAsuHXZEM=;
-        h=From:To:Cc:Subject:Date:From;
-        b=Ufjf5RMzDjXQxSoiSj0waZ14yrHv3F1SyHQq5i6E3xBrhcUfCg2Nk8ZoA1P7evjbn
-         8AA3yhgGjGrhhLyiwV1qMESJA/SjAkg3GAn2lmh0FY+8xfYwEpYrBnhy+WvsImQowr
-         cP2+wzU0UK0V0wChQtCtLlWwhxXcQ9IybZ+LP5NFdRqKCew/Cb2X0Mf/s1bNsaNOeA
-         qmDyDxSqXbrU6O/h25ErMzoLpSfGQJ12gqh3QvZaGVwRHLteJLyrIpqIEP90WJpJ6X
-         kEl8aQZfWCKpBnudiznNQ/h+s+uOyN38giitazXl1t7LLZDrqKKo98mrnpv/6M6yud
-         8P0M8EOU56/5g==
-From:   Nathan Chancellor <nathan@kernel.org>
-To:     Liam Girdwood <lgirdwood@gmail.com>,
-        Mark Brown <broonie@kernel.org>,
-        Matt Flax <flatmax@flatmax.com>
-Cc:     Nick Desaulniers <ndesaulniers@google.com>,
-        Tom Rix <trix@redhat.com>, alsa-devel@alsa-project.org,
-        linux-kernel@vger.kernel.org, llvm@lists.linux.dev,
-        patches@lists.linux.dev, Nathan Chancellor <nathan@kernel.org>,
-        kernel test robot <lkp@intel.com>,
-        "Sudip Mukherjee (Codethink)" <sudipm.mukherjee@gmail.com>
-Subject: [PATCH v2] ASoC: codes: src4xxx: Avoid clang -Wsometimes-uninitialized in src4xxx_hw_params()
-Date:   Tue, 23 Aug 2022 08:19:40 -0700
-Message-Id: <20220823151939.2493697-1-nathan@kernel.org>
-X-Mailer: git-send-email 2.37.2
+        Tue, 23 Aug 2022 13:37:11 -0400
+Received: from sender-of-o50.zoho.in (sender-of-o50.zoho.in [103.117.158.50])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 83E6C844DA;
+        Tue, 23 Aug 2022 08:21:47 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; t=1661268069; cv=none; 
+        d=zohomail.in; s=zohoarc; 
+        b=A8R8WP4pX54ShsjmNzGakU44eL/5AJc9TPNKzOiMEVAnU3l9xngOjxB4jdeZvShYmcZ/g/PCyMI9mjFFJaulybsx6frGRyastXKZMkyWcv4BppV/aXlpxe8Xq/ntH4RAhTaGamPJ4CLMhUjrQzuI+6ob4XkHl7tFNcUqN9LzeXk=
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=zohomail.in; s=zohoarc; 
+        t=1661268069; h=Content-Type:Content-Transfer-Encoding:Cc:Date:From:In-Reply-To:MIME-Version:Message-ID:References:Subject:To; 
+        bh=dDz9V3Znq8yZ15TOlRARYvw+VZde7mrsNRQSC5a6arE=; 
+        b=TyrWcohKxMEsCxq2x395JALlX8+ubeLUlMXVbZ3lrWH2eTjl1hvridLouQZzuRLNo87xO1yyfVSQozPJE+CKLWbDQuIAb/Vbk5twbISQWFNvBHNkrAMiEHHxMA5FYILQaUfIuJbeCIcqfhrj5/Kw4i2qimNtMT+DNmdwJo2QinU=
+ARC-Authentication-Results: i=1; mx.zohomail.in;
+        dkim=pass  header.i=siddh.me;
+        spf=pass  smtp.mailfrom=code@siddh.me;
+        dmarc=pass header.from=<code@siddh.me>
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; t=1661268069;
+        s=zmail; d=siddh.me; i=code@siddh.me;
+        h=From:From:To:To:Cc:Cc:Message-ID:Subject:Subject:Date:Date:In-Reply-To:References:MIME-Version:Content-Transfer-Encoding:Content-Type:Message-Id:Reply-To;
+        bh=dDz9V3Znq8yZ15TOlRARYvw+VZde7mrsNRQSC5a6arE=;
+        b=OwGrEVfSBRHeToglwMkvZuq9ze9Cid6OCQKcqaorKTt3zP4y9ICKnWWRhmJHxUEN
+        IsQ0Gbp+L63Se8YfpcPrG9c0A7qJt60yYHtqxXztzHb4T+QzN2StURUL0jN9slXQ3BL
+        IEWBzERqgGJrKuPq1qD6gjsR8suM4oCrFntM7dAg=
+Received: from localhost.localdomain (103.249.234.81 [103.249.234.81]) by mx.zoho.in
+        with SMTPS id 1661268067258201.55463256934252; Tue, 23 Aug 2022 20:51:07 +0530 (IST)
+From:   Siddh Raman Pant <code@siddh.me>
+To:     code@siddh.me
+Cc:     david@fromorbit.com, djwong@kernel.org, fgheet255t@gmail.com,
+        hch@infradead.org, linux-ext4@vger.kernel.org,
+        linux-fsdevel@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-xfs@vger.kernel.org, riteshh@linux.ibm.com,
+        syzbot+a8e049cd3abd342936b6@syzkaller.appspotmail.com,
+        syzkaller-bugs@googlegroups.com, willy@infradead.org
+Message-ID: <20220823152101.165538-1-code@siddh.me>
+Subject: Re: [syzbot] WARNING in iomap_iter
+Date:   Tue, 23 Aug 2022 20:51:01 +0530
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <182c6137693.20a934d213186.5712495322312393662@siddh.me>
+References: <182c6137693.20a934d213186.5712495322312393662@siddh.me>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: quoted-printable
+X-ZohoMailClient: External
+Content-Type: text/plain; charset=utf8
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Clang warns:
+#syz test https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.gi=
+t master
 
-  sound/soc/codecs/src4xxx.c:280:3: error: variable 'd' is used uninitialized whenever switch default is taken [-Werror,-Wsometimes-uninitialized]
-                  default:
-                  ^~~~~~~
-  sound/soc/codecs/src4xxx.c:298:59: note: uninitialized use occurs here
-                  ret = regmap_write(src4xxx->regmap, SRC4XXX_RCV_PLL_11, d);
-                                                                          ^
-  sound/soc/codecs/src4xxx.c:223:20: note: initialize the variable 'd' to silence this warning
-          int val, pj, jd, d;
-                            ^
-                            = 0
-  sound/soc/codecs/src4xxx.c:280:3: error: variable 'jd' is used uninitialized whenever switch default is taken [-Werror,-Wsometimes-uninitialized]
-                  default:
-                  ^~~~~~~
-  sound/soc/codecs/src4xxx.c:293:59: note: uninitialized use occurs here
-                  ret = regmap_write(src4xxx->regmap, SRC4XXX_RCV_PLL_10, jd);
-                                                                          ^~
-  sound/soc/codecs/src4xxx.c:223:17: note: initialize the variable 'jd' to silence this warning
-          int val, pj, jd, d;
-                        ^
-                          = 0
-  sound/soc/codecs/src4xxx.c:280:3: error: variable 'pj' is used uninitialized whenever switch default is taken [-Werror,-Wsometimes-uninitialized]
-                  default:
-                  ^~~~~~~
-  sound/soc/codecs/src4xxx.c:288:59: note: uninitialized use occurs here
-                  ret = regmap_write(src4xxx->regmap, SRC4XXX_RCV_PLL_0F, pj);
-                                                                          ^~
-  sound/soc/codecs/src4xxx.c:223:13: note: initialize the variable 'pj' to silence this warning
-          int val, pj, jd, d;
-                    ^
-                      = 0
-  3 errors generated.
-
-The datasheet does not have any default values for these regmap values
-so pick some arbitrary values and print to the user that this is the
-case to silence the warnings.
-
-Link: https://github.com/ClangBuiltLinux/linux/issues/1691
-Reported-by: kernel test robot <lkp@intel.com>
-Reported-by: "Sudip Mukherjee (Codethink)" <sudipm.mukherjee@gmail.com>
-Suggested-by: Matt Flax <flatmax@flatmax.com>
-Signed-off-by: Nathan Chancellor <nathan@kernel.org>
 ---
+ drivers/block/loop.c | 5 +++++
+ 1 file changed, 5 insertions(+)
 
-v1 -> v2: https://lore.kernel.org/20220822183101.1115095-1-nathan@kernel.org/
+diff --git a/drivers/block/loop.c b/drivers/block/loop.c
+index e3c0ba93c1a3..e1fe8eda020f 100644
+--- a/drivers/block/loop.c
++++ b/drivers/block/loop.c
+@@ -979,6 +979,11 @@ loop_set_status_from_info(struct loop_device *lo,
+=20
+ =09lo->lo_offset =3D info->lo_offset;
+ =09lo->lo_sizelimit =3D info->lo_sizelimit;
++
++=09/* loff_t vars have been assigned __u64 */
++=09if (lo->lo_offset < 0 || lo->lo_sizelimit < 0 || lo->lo_flags < 0)
++=09=09return -EOVERFLOW;
++
+ =09memcpy(lo->lo_file_name, info->lo_file_name, LO_NAME_SIZE);
+ =09lo->lo_file_name[LO_NAME_SIZE-1] =3D 0;
+ =09lo->lo_flags =3D info->lo_flags;
+--=20
+2.35.1
 
-* Don't return early, just initialize the values to some arbitrary
-  numbers and try to hobble along, as other parts of the chip may be
-  functional.
-
-* Add message and comment to describe this situation.
-
- sound/soc/codecs/src4xxx.c | 7 ++++++-
- 1 file changed, 6 insertions(+), 1 deletion(-)
-
-diff --git a/sound/soc/codecs/src4xxx.c b/sound/soc/codecs/src4xxx.c
-index a8f143057b41..db4e280dd055 100644
---- a/sound/soc/codecs/src4xxx.c
-+++ b/sound/soc/codecs/src4xxx.c
-@@ -280,9 +280,14 @@ static int src4xxx_hw_params(struct snd_pcm_substream *substream,
- 		default:
- 			/* don't error out here,
- 			 * other parts of the chip are still functional
-+			 * Dummy initialize variables to avoid
-+			 * -Wsometimes-uninitialized from clang.
- 			 */
- 			dev_info(component->dev,
--				"Couldn't set the RCV PLL as this master clock rate is unknown\n");
-+				"Couldn't set the RCV PLL as this master clock rate is unknown. Chosen regmap values may not match real world values.\n");
-+			pj = 0x0;
-+			jd = 0xff;
-+			d = 0xff;
- 			break;
- 		}
- 		ret = regmap_write(src4xxx->regmap, SRC4XXX_RCV_PLL_0F, pj);
-
-base-commit: 94f072748337424c9cf92cd018532a34db3a5516
--- 
-2.37.2
 
