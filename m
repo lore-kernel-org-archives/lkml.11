@@ -2,42 +2,49 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CF7ACC48BE4
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BEDBBC48BEA
 	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 10:32:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355254AbiHWKbc (ORCPT
+        id S1355227AbiHWKb1 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 06:31:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53436 "EHLO
+        Tue, 23 Aug 2022 06:31:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47382 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353632AbiHWKP0 (ORCPT
+        with ESMTP id S1353205AbiHWKPP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 06:15:26 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CAB497F258;
-        Tue, 23 Aug 2022 02:00:48 -0700 (PDT)
+        Tue, 23 Aug 2022 06:15:15 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2767C74348;
+        Tue, 23 Aug 2022 02:00:39 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 49997CE1B44;
-        Tue, 23 Aug 2022 09:00:47 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5B775C433D6;
-        Tue, 23 Aug 2022 09:00:45 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id D7AA0B81C3A;
+        Tue, 23 Aug 2022 09:00:37 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 11416C433C1;
+        Tue, 23 Aug 2022 09:00:36 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661245245;
-        bh=YnIuqChPj6bKBvxhJENAKsQXlxMUH9ekhkPP69V7ilY=;
+        s=korg; t=1661245236;
+        bh=IGDBEkHT1pZ8hKcwC2DsQNonTbxCMoyXiydF2Q3tDkM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=p7ri4lAONOkhvvWlDJBp5j1f0fpi+DAIki00n1WAVGjqLlNYN3feVZrUPspuw7Um3
-         g+kdQBYfi1C4TfZJytwe09HE0wePqtNrYCbl4Cx8xHIE1WQtfb55J/YL/up1BbR+M/
-         a6qh3/uWNiPi76tL7R1phOqfBASzhixROtTdnLjA=
+        b=ziU1jtNn+f6ZaeGART+6b6BAtdmPztUnR80WSlyDR62AgF7WCL66OUaqN1SOF29Z0
+         CN7E0gFsbLr/uc/H0B2u14YgquOkf0yHE3IzSFJ+Sj+vuoYV4by6rBJAW3SPNsA1cE
+         ByobVMECg4NfOIXknc/1q6mIKUfqwcFe88UOkZZg=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Daniel Vetter <daniel.vetter@ffwll.ch>,
-        Helge Deller <deller@gmx.de>
-Subject: [PATCH 4.19 018/287] fbcon: Fix boundary checks for fbcon=vc:n1-n2 parameters
-Date:   Tue, 23 Aug 2022 10:23:07 +0200
-Message-Id: <20220823080100.891574261@linuxfoundation.org>
+        stable@vger.kernel.org, David Howells <dhowells@redhat.com>,
+        Jeff Layton <jlayton@kernel.org>,
+        Namjae Jeon <linkinjeon@kernel.org>, stable@kernel.org,
+        Alexander Viro <viro@zeniv.linux.org.uk>,
+        Steve French <sfrench@samba.org>,
+        Hyunchul Lee <hyc.lee@gmail.com>,
+        Chuck Lever <chuck.lever@oracle.com>,
+        Dave Wysochanski <dwysocha@redhat.com>,
+        Linus Torvalds <torvalds@linux-foundation.org>
+Subject: [PATCH 4.19 015/287] vfs: Check the truncate maximum size in inode_newsize_ok()
+Date:   Tue, 23 Aug 2022 10:23:04 +0200
+Message-Id: <20220823080100.798358252@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220823080100.268827165@linuxfoundation.org>
 References: <20220823080100.268827165@linuxfoundation.org>
@@ -49,54 +56,68 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Helge Deller <deller@gmx.de>
+From: David Howells <dhowells@redhat.com>
 
-commit cad564ca557f8d3bb3b1fa965d9a2b3f6490ec69 upstream.
+commit e2ebff9c57fe4eb104ce4768f6ebcccf76bef849 upstream.
 
-The user may use the fbcon=vc:<n1>-<n2> option to tell fbcon to take
-over the given range (n1...n2) of consoles. The value for n1 and n2
-needs to be a positive number and up to (MAX_NR_CONSOLES - 1).
-The given values were not fully checked against those boundaries yet.
+If something manages to set the maximum file size to MAX_OFFSET+1, this
+can cause the xfs and ext4 filesystems at least to become corrupt.
 
-To fix the issue, convert first_fb_vc and last_fb_vc to unsigned
-integers and check them against the upper boundary, and make sure that
-first_fb_vc is smaller than last_fb_vc.
+Ordinarily, the kernel protects against userspace trying this by
+checking the value early in the truncate() and ftruncate() system calls
+calls - but there are at least two places that this check is bypassed:
 
-Cc: stable@vger.kernel.org # v4.19+
-Reviewed-by: Daniel Vetter <daniel.vetter@ffwll.ch>
-Signed-off-by: Helge Deller <deller@gmx.de>
-Link: https://patchwork.freedesktop.org/patch/msgid/YpkYRMojilrtZIgM@p100
+ (1) Cachefiles will round up the EOF of the backing file to DIO block
+     size so as to allow DIO on the final block - but this might push
+     the offset negative. It then calls notify_change(), but this
+     inadvertently bypasses the checking. This can be triggered if
+     someone puts an 8EiB-1 file on a server for someone else to try and
+     access by, say, nfs.
+
+ (2) ksmbd doesn't check the value it is given in set_end_of_file_info()
+     and then calls vfs_truncate() directly - which also bypasses the
+     check.
+
+In both cases, it is potentially possible for a network filesystem to
+cause a disk filesystem to be corrupted: cachefiles in the client's
+cache filesystem; ksmbd in the server's filesystem.
+
+nfsd is okay as it checks the value, but we can then remove this check
+too.
+
+Fix this by adding a check to inode_newsize_ok(), as called from
+setattr_prepare(), thereby catching the issue as filesystems set up to
+perform the truncate with minimal opportunity for bypassing the new
+check.
+
+Fixes: 1f08c925e7a3 ("cachefiles: Implement backing file wrangling")
+Fixes: f44158485826 ("cifsd: add file operations")
+Signed-off-by: David Howells <dhowells@redhat.com>
+Reported-by: Jeff Layton <jlayton@kernel.org>
+Tested-by: Jeff Layton <jlayton@kernel.org>
+Reviewed-by: Namjae Jeon <linkinjeon@kernel.org>
+Cc: stable@kernel.org
+Acked-by: Alexander Viro <viro@zeniv.linux.org.uk>
+cc: Steve French <sfrench@samba.org>
+cc: Hyunchul Lee <hyc.lee@gmail.com>
+cc: Chuck Lever <chuck.lever@oracle.com>
+cc: Dave Wysochanski <dwysocha@redhat.com>
+Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/video/fbdev/core/fbcon.c |    8 +++++---
- 1 file changed, 5 insertions(+), 3 deletions(-)
+ fs/attr.c |    2 ++
+ 1 file changed, 2 insertions(+)
 
---- a/drivers/video/fbdev/core/fbcon.c
-+++ b/drivers/video/fbdev/core/fbcon.c
-@@ -103,8 +103,8 @@ static int logo_lines;
-    enums.  */
- static int logo_shown = FBCON_LOGO_CANSHOW;
- /* console mappings */
--static int first_fb_vc;
--static int last_fb_vc = MAX_NR_CONSOLES - 1;
-+static unsigned int first_fb_vc;
-+static unsigned int last_fb_vc = MAX_NR_CONSOLES - 1;
- static int fbcon_is_default = 1; 
- static int fbcon_has_exited;
- static int primary_device = -1;
-@@ -456,10 +456,12 @@ static int __init fb_console_setup(char
- 			options += 3;
- 			if (*options)
- 				first_fb_vc = simple_strtoul(options, &options, 10) - 1;
--			if (first_fb_vc < 0)
-+			if (first_fb_vc >= MAX_NR_CONSOLES)
- 				first_fb_vc = 0;
- 			if (*options++ == '-')
- 				last_fb_vc = simple_strtoul(options, &options, 10) - 1;
-+			if (last_fb_vc < first_fb_vc || last_fb_vc >= MAX_NR_CONSOLES)
-+				last_fb_vc = MAX_NR_CONSOLES - 1;
- 			fbcon_is_default = 0; 
- 			continue;
- 		}
+--- a/fs/attr.c
++++ b/fs/attr.c
+@@ -134,6 +134,8 @@ EXPORT_SYMBOL(setattr_prepare);
+  */
+ int inode_newsize_ok(const struct inode *inode, loff_t offset)
+ {
++	if (offset < 0)
++		return -EINVAL;
+ 	if (inode->i_size < offset) {
+ 		unsigned long limit;
+ 
 
 
