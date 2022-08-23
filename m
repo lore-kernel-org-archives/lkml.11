@@ -2,37 +2,36 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 09896C32772
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 16:16:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0E2F7C32772
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 16:16:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244551AbiHWQQ0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 12:16:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34462 "EHLO
+        id S244276AbiHWQQb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 23 Aug 2022 12:16:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33694 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244686AbiHWQPs (ORCPT
+        with ESMTP id S244684AbiHWQPs (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 23 Aug 2022 12:15:48 -0400
 Received: from gloria.sntech.de (gloria.sntech.de [185.11.138.130])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4517C16BBA0;
-        Tue, 23 Aug 2022 05:37:07 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 26D7E9C230;
+        Tue, 23 Aug 2022 05:37:06 -0700 (PDT)
 Received: from ip5b412258.dynamic.kabel-deutschland.de ([91.65.34.88] helo=phil.lan)
         by gloria.sntech.de with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
         (Exim 4.94.2)
         (envelope-from <heiko@sntech.de>)
-        id 1oQT9Q-0004gV-EY; Tue, 23 Aug 2022 14:37:00 +0200
+        id 1oQT9P-0004gV-Or; Tue, 23 Aug 2022 14:36:59 +0200
 From:   Heiko Stuebner <heiko@sntech.de>
-To:     Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Nicolas Frattaroli <frattaroli.nicolas@gmail.com>,
-        Rob Herring <robh+dt@kernel.org>
-Cc:     Heiko Stuebner <heiko@sntech.de>, devicetree@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
+To:     Brian Norris <briannorris@chromium.org>
+Cc:     Heiko Stuebner <heiko@sntech.de>,
+        Douglas Anderson <dianders@chromium.org>,
+        linux-arm-kernel@lists.infradead.org, devicetree@vger.kernel.org,
         linux-rockchip@lists.infradead.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2] arm64: dts: rockchip: Add analog audio output on quartz64-b
-Date:   Tue, 23 Aug 2022 14:36:56 +0200
-Message-Id: <166125820548.1301371.13535238054179966253.b4-ty@sntech.de>
+Subject: Re: [PATCH] arm64: dts: rockchip: Pull up wlan wake# on Gru-Bob
+Date:   Tue, 23 Aug 2022 14:36:54 +0200
+Message-Id: <166125820547.1301371.1322298142251886023.b4-ty@sntech.de>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220721083301.3711-1-frattaroli.nicolas@gmail.com>
-References: <20220721083301.3711-1-frattaroli.nicolas@gmail.com>
+In-Reply-To: <20220822164453.1.I75c57b48b0873766ec993bdfb7bc1e63da5a1637@changeid>
+References: <20220822164453.1.I75c57b48b0873766ec993bdfb7bc1e63da5a1637@changeid>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
@@ -40,20 +39,21 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, 21 Jul 2022 10:33:00 +0200, Nicolas Frattaroli wrote:
-> This adds the necessary device tree changes to enable analog
-> audio output on the PINE64 Quartz64 Model B with its RK809
-> codec.
+On Mon, 22 Aug 2022 16:45:04 -0700, Brian Norris wrote:
+> The Gru-Bob board does not have a pull-up resistor on its
+> WLAN_HOST_WAKE# pin, but Kevin does. The production/vendor kernel
+> specified the pin configuration correctly as a pull-up, but this didn't
+> get ported correctly to upstream.
 > 
-> The headphone detection pin is left out for now because I couldn't
-> get it to work and am not sure if it even matters, but for future
-> reference: It's pin GPIO4 RK_PC4, named HP_DET_L_GPIO4_C4 in the
-> schematic.
+> This means Bob's WLAN_HOST_WAKE# pin is floating, causing inconsistent
+> wakeup behavior.
+> 
+> [...]
 
 Applied, thanks!
 
-[1/1] arm64: dts: rockchip: Add analog audio output on quartz64-b
-      commit: db7ad41538439a3dcfebd738959c7526b4e7d528
+[1/1] arm64: dts: rockchip: Pull up wlan wake# on Gru-Bob
+      commit: e5467359a725de90b6b8d0dd865500f6373828ca
 
 Best regards,
 -- 
