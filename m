@@ -2,83 +2,83 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 47D62C32772
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 17:46:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EDCA6C32772
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 17:47:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230352AbiHWRqT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 13:46:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57776 "EHLO
+        id S232042AbiHWRrQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 23 Aug 2022 13:47:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41104 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233480AbiHWRps (ORCPT
+        with ESMTP id S232563AbiHWRql (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 13:45:48 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 147EF14027;
-        Tue, 23 Aug 2022 08:33:30 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id A9D5BB81CED;
-        Tue, 23 Aug 2022 15:33:28 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1698AC433C1;
-        Tue, 23 Aug 2022 15:33:25 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1661268807;
-        bh=RLIZ5nsGECRzprxLzsi6eCjr40Iz5URFLSPHCIA3EPk=;
-        h=From:To:Cc:Subject:Date:From;
-        b=Q+gn197Qelf7q2bTUQNPI/pER0LE01SfpdrNo9Q/a+NKy0SjCgKNHw0usrHCoB2dx
-         usr2Fc2IqSNzElikpE7z7fWaXYQwTN5kqJIQVl91jriVZROeDol1avgfumM5vnq/Vc
-         5p5hpf2S+s1FmDg3AT+dHN3hF4Fmq7VqWkZprh3H6UvDWKJR9KSjePGi1YDhdyaU4l
-         kYYWAX1TWSO2zottMhM5NIeHwChs8Xs27d6keKLBwKyvKUt27j/1aE7mtf8FqSDyK0
-         1kCSqvmujSn/1YKngsHog+NYpEWbCXrcmDPj535Cni37tY1BCs/b505332iseI3nV7
-         sRsw6hKBIgaRg==
-From:   Daniel Bristot de Oliveira <bristot@kernel.org>
-To:     Steven Rostedt <rostedt@goodmis.org>
-Cc:     linux-kernel@vger.kernel.org, linux-trace-devel@vger.kernel.org,
-        Daniel Bristot de Oliveira <bristot@kernel.org>,
-        Joe Perches <joe@perches.com>
-Subject: [PATCH] MAINTAINERS: Add Runtime Verification (RV) entry
-Date:   Tue, 23 Aug 2022 17:33:16 +0200
-Message-Id: <b24c13553b6947a8da16d884ca464e4233eb8fb7.1661268579.git.bristot@kernel.org>
-X-Mailer: git-send-email 2.35.1
+        Tue, 23 Aug 2022 13:46:41 -0400
+Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5ED2AAD9BE;
+        Tue, 23 Aug 2022 08:42:21 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=casper.20170209; h=In-Reply-To:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description;
+        bh=3KC+y7shGXfeXR6lfiy6v4DMA4hsK0wDHXXQ2rqtmzE=; b=RgjB6Fu6K+t8NIO2AEpqYam85Q
+        y0FUgg0QZg9krQv1A24ct2FhPIXLHILmDAHektLa+qxQEWNuPyOU6HubTTzk07YXry1hsk5y1myrV
+        Xqw+ND2XRUsA8izEoKizya6ZlmBl4nuRaRhCjhG+OAaRpocWvhxr3zNH8NooQS/DjreVhGsfuxKFP
+        FOAho2rqgrSWmT3Q0w0FsH2hrbGe6hPI7GdePrYk7KU8B+vdkEt2uSBOkbHzZ/iFCrUchmzcunsWF
+        uJKC87/w4IUKGS5ixkly/7EkD2REGVNKiJw59uKXM3Criso4Yhzd1BSP5myede87xAdRuMcpXeRfE
+        Syrjdeow==;
+Received: from willy by casper.infradead.org with local (Exim 4.94.2 #2 (Red Hat Linux))
+        id 1oQW2d-00FP8U-Rf; Tue, 23 Aug 2022 15:42:11 +0000
+Date:   Tue, 23 Aug 2022 16:42:11 +0100
+From:   Matthew Wilcox <willy@infradead.org>
+To:     Siddh Raman Pant <code@siddh.me>
+Cc:     david@fromorbit.com, djwong@kernel.org, fgheet255t@gmail.com,
+        hch@infradead.org, linux-ext4@vger.kernel.org,
+        linux-fsdevel@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-xfs@vger.kernel.org, riteshh@linux.ibm.com,
+        syzbot+a8e049cd3abd342936b6@syzkaller.appspotmail.com,
+        syzkaller-bugs@googlegroups.com
+Subject: Re: [syzbot] WARNING in iomap_iter
+Message-ID: <YwT1U18DuzmEaLAL@casper.infradead.org>
+References: <YwTyO0yZmUT1MVZW@casper.infradead.org>
+ <20220823153542.177799-1-code@siddh.me>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220823153542.177799-1-code@siddh.me>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add a Runtime Verification (RV) entry in the MAINTAINERS file
-with Steven Rostedt and myself as maintainers.
+On Tue, Aug 23, 2022 at 09:05:42PM +0530, Siddh Raman Pant wrote:
+> Oof, I didn't mean it to be there. That would actually be wrong anyways.
+> 
+> Extremely sorry for the avoidable oversight,
+> Siddh
+> 
+> #syz test https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git master
 
-Cc: Steven Rostedt <rostedt@goodmis.org>
-Cc: Joe Perches <joe@perches.com>
-Signed-off-by: Daniel Bristot de Oliveira <bristot@kernel.org>
----
- MAINTAINERS | 11 +++++++++++
- 1 file changed, 11 insertions(+)
+Reviewed-by: Matthew Wilcox (Oracle) <willy@infradead.org>
 
-diff --git a/MAINTAINERS b/MAINTAINERS
-index 96f47a7865d6..7baa8e643cff 100644
---- a/MAINTAINERS
-+++ b/MAINTAINERS
-@@ -17731,6 +17731,17 @@ L:	linux-rdma@vger.kernel.org
- S:	Maintained
- F:	drivers/infiniband/ulp/rtrs/
- 
-+RUNTIME VERIFICATION (RV)
-+M:	Daniel Bristot de Oliveira <bristot@kernel.org>
-+M:	Steven Rostedt <rostedt@goodmis.org>
-+L:	linux-trace-devel@vger.kernel.org
-+S:	Maintained
-+F:	Documentation/trace/rv/
-+F:	include/linux/rv.h
-+F:	include/rv/
-+F:	kernel/trace/rv/
-+F:	tools/verification/
-+
- RXRPC SOCKETS (AF_RXRPC)
- M:	David Howells <dhowells@redhat.com>
- M:	Marc Dionne <marc.dionne@auristor.com>
--- 
-2.35.1
-
+> ---
+>  drivers/block/loop.c | 5 +++++
+>  1 file changed, 5 insertions(+)
+> 
+> diff --git a/drivers/block/loop.c b/drivers/block/loop.c
+> index e3c0ba93c1a3..e1fe8eda020f 100644
+> --- a/drivers/block/loop.c
+> +++ b/drivers/block/loop.c
+> @@ -979,6 +979,11 @@ loop_set_status_from_info(struct loop_device *lo,
+>  
+>  	lo->lo_offset = info->lo_offset;
+>  	lo->lo_sizelimit = info->lo_sizelimit;
+> +
+> +	/* loff_t vars have been assigned __u64 */
+> +	if (lo->lo_offset < 0 || lo->lo_sizelimit < 0)
+> +		return -EOVERFLOW;
+> +
+>  	memcpy(lo->lo_file_name, info->lo_file_name, LO_NAME_SIZE);
+>  	lo->lo_file_name[LO_NAME_SIZE-1] = 0;
+>  	lo->lo_flags = info->lo_flags;
+> -- 
+> 2.35.1
+> 
+> 
