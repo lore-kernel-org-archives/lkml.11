@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3425AC32772
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 11:18:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8F7BFC32774
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 11:18:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242392AbiHWLSp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 07:18:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38052 "EHLO
+        id S243966AbiHWLSy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 23 Aug 2022 07:18:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38546 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357603AbiHWLQL (ORCPT
+        with ESMTP id S1357617AbiHWLQN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 07:16:11 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 60010BD102;
-        Tue, 23 Aug 2022 02:20:00 -0700 (PDT)
+        Tue, 23 Aug 2022 07:16:13 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5EDA4BD145;
+        Tue, 23 Aug 2022 02:19:56 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id A96DDB81C65;
-        Tue, 23 Aug 2022 09:19:08 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 06CA9C433D6;
-        Tue, 23 Aug 2022 09:19:06 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 11CCD60959;
+        Tue, 23 Aug 2022 09:19:05 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1414DC433D6;
+        Tue, 23 Aug 2022 09:19:03 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661246347;
-        bh=Dmx4oOnZlzw9wzNSiNks7f7+LAxIbZSjqe1MP8P4Bjw=;
+        s=korg; t=1661246344;
+        bh=lHnIupp40rqyQiN/ArecfXHw+uvRP+Mh3Sq98N0D9mI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=UPeoOCwfbykJFxR0EIUt1XkMO3TFICLZ2iO7wLXwsqewUQiPk/y+QXXEVLOtxFnbL
-         xfDVsKOqNA8Gqgnbs75/13mRuopWaMya758FYja+lh68h4yaE+whuC3YRxYs2I+C/E
-         1u6P8tObZkd0yV2ilTFZcliItECFEk2DqqnMSRHU=
+        b=jrLamUNPsgfPIc9RQInbRmHv2OH7XE1weCo/M0GdK3ADyBzBIi9u8YmNIO8SNpYKf
+         7qQ12Hujpba5PFG5nKey0JCJjxqhO2F/nTGkfoeaNbZWzpBWVOUJOGCM0LsVrPywdk
+         LC2edkwqXUYoI8KrJRto0QHWjhvz9h5HrkZJ36rk=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Hulk Robot <hulkci@huawei.com>,
-        Guo Mengqi <guomengqi3@huawei.com>,
-        Mark Brown <broonie@kernel.org>,
+        stable@vger.kernel.org, Michael Walle <michael@walle.cc>,
+        Arnd Bergmann <arnd@arndb.de>, Shawn Guo <shawnguo@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 063/389] spi: synquacer: Add missing clk_disable_unprepare()
-Date:   Tue, 23 Aug 2022 10:22:21 +0200
-Message-Id: <20220823080118.241880247@linuxfoundation.org>
+Subject: [PATCH 5.4 080/389] soc: fsl: guts: machine variable might be unset
+Date:   Tue, 23 Aug 2022 10:22:38 +0200
+Message-Id: <20220823080118.988064123@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220823080115.331990024@linuxfoundation.org>
 References: <20220823080115.331990024@linuxfoundation.org>
@@ -50,33 +49,35 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Guo Mengqi <guomengqi3@huawei.com>
+From: Michael Walle <michael@walle.cc>
 
-[ Upstream commit 917e43de2a56d9b82576f1cc94748261f1988458 ]
+[ Upstream commit ab3f045774f704c4e7b6a878102f4e9d4ae7bc74 ]
 
-Add missing clk_disable_unprepare() in synquacer_spi_resume().
+If both the model and the compatible properties are missing, then
+machine will not be set. Initialize it with NULL.
 
-Reported-by: Hulk Robot <hulkci@huawei.com>
-Signed-off-by: Guo Mengqi <guomengqi3@huawei.com>
-Link: https://lore.kernel.org/r/20220624005614.49434-1-guomengqi3@huawei.com
-Signed-off-by: Mark Brown <broonie@kernel.org>
+Fixes: 34c1c21e94ac ("soc: fsl: fix section mismatch build warnings")
+Signed-off-by: Michael Walle <michael@walle.cc>
+Acked-by: Arnd Bergmann <arnd@arndb.de>
+Signed-off-by: Shawn Guo <shawnguo@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/spi/spi-synquacer.c | 1 +
- 1 file changed, 1 insertion(+)
+ drivers/soc/fsl/guts.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/spi/spi-synquacer.c b/drivers/spi/spi-synquacer.c
-index 785e7c445123..1e10af6e10a9 100644
---- a/drivers/spi/spi-synquacer.c
-+++ b/drivers/spi/spi-synquacer.c
-@@ -784,6 +784,7 @@ static int __maybe_unused synquacer_spi_resume(struct device *dev)
+diff --git a/drivers/soc/fsl/guts.c b/drivers/soc/fsl/guts.c
+index 34810f9bb2ee..2b7fb7a8805c 100644
+--- a/drivers/soc/fsl/guts.c
++++ b/drivers/soc/fsl/guts.c
+@@ -142,7 +142,7 @@ static int fsl_guts_probe(struct platform_device *pdev)
+ 	struct device *dev = &pdev->dev;
+ 	struct resource *res;
+ 	const struct fsl_soc_die_attr *soc_die;
+-	const char *machine;
++	const char *machine = NULL;
+ 	u32 svr;
  
- 		ret = synquacer_spi_enable(master);
- 		if (ret) {
-+			clk_disable_unprepare(sspi->clk);
- 			dev_err(dev, "failed to enable spi (%d)\n", ret);
- 			return ret;
- 		}
+ 	/* Initialize guts */
 -- 
 2.35.1
 
