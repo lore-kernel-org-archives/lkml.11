@@ -2,43 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 158A3C32774
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 08:13:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9F4D0C32774
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 08:13:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241986AbiHWINE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 04:13:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33260 "EHLO
+        id S241846AbiHWINO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 23 Aug 2022 04:13:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59896 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241984AbiHWIKY (ORCPT
+        with ESMTP id S241997AbiHWIK1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 04:10:24 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 30F95E0F5;
-        Tue, 23 Aug 2022 01:06:52 -0700 (PDT)
+        Tue, 23 Aug 2022 04:10:27 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 522FF66A4C;
+        Tue, 23 Aug 2022 01:06:55 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id DC207B81C18;
-        Tue, 23 Aug 2022 08:06:50 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 47D88C43470;
-        Tue, 23 Aug 2022 08:06:49 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id ED5EBB81C20;
+        Tue, 23 Aug 2022 08:06:53 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 46C48C433D6;
+        Tue, 23 Aug 2022 08:06:52 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661242009;
-        bh=BynSNA2pLc0++aOd/nVe1u0EbpDodCq+xxgBLeUp6rg=;
+        s=korg; t=1661242012;
+        bh=oVWkrboSkv9Bnu5R4qvw2tZvMFAhnopG10Deyehvyss=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=pP86Il+04/myRUji9LglaWvEqDY0jlK7pfHGUFMIyeEcgc807pxf/Ehfg06ofHoQq
-         Cl7OEMfwoSN1moJon9fvA1WPl3I4WumPSveda/nwTC9alzh6Bakq0HZh8YWFxyro14
-         i5IBwuIPJDCenehJorXRLj2h3sRC5iz25PSAzvSw=
+        b=tGalO4DRbtG+fp27SwhzI5kz7QvXz6At3RvoOPAgvJvn4uysBWULP9SackP5nF0bT
+         f+4qDKxPhjM54Uum7Lif1WAkOBIv7y+jubYS2/qGUPlfLVSkGufBNIR2I6/rb8dixK
+         Dzy4rIBUZSEdx2QNMFeIpI8gHEinBvoGEXCyFur8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, John Johansen <john.johansen@canonical.com>
-Subject: [PATCH 5.19 045/365] apparmor: fix setting unconfined mode on a loaded profile
-Date:   Tue, 23 Aug 2022 09:59:06 +0200
-Message-Id: <20220823080120.059478611@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Domingo Dirutigliano <pwnzer0tt1@proton.me>,
+        Florian Westphal <fw@strlen.de>,
+        Pablo Neira Ayuso <pablo@netfilter.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 4.9 006/101] netfilter: nf_queue: do not allow packet truncation below transport header offset
+Date:   Tue, 23 Aug 2022 10:02:39 +0200
+Message-Id: <20220823080034.838634482@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220823080118.128342613@linuxfoundation.org>
-References: <20220823080118.128342613@linuxfoundation.org>
+In-Reply-To: <20220823080034.579196046@linuxfoundation.org>
+References: <20220823080034.579196046@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -47,46 +51,52 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: John Johansen <john.johansen@canonical.com>
+From: Florian Westphal <fw@strlen.de>
 
-commit 3bbb7b2e9bbcd22e539e23034da753898fe3b4dc upstream.
+[ Upstream commit 99a63d36cb3ed5ca3aa6fcb64cffbeaf3b0fb164 ]
 
-When loading a profile that is set to unconfined mode, that label
-flag is not set when it should be. Ensure it is set so that when
-used in a label the unconfined check will be applied correctly.
+Domingo Dirutigliano and Nicola Guerrera report kernel panic when
+sending nf_queue verdict with 1-byte nfta_payload attribute.
 
-Fixes: 038165070aa5 ("apparmor: allow setting any profile into the unconfined state")
-Signed-off-by: John Johansen <john.johansen@canonical.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+The IP/IPv6 stack pulls the IP(v6) header from the packet after the
+input hook.
+
+If user truncates the packet below the header size, this skb_pull() will
+result in a malformed skb (skb->len < 0).
+
+Fixes: 7af4cc3fa158 ("[NETFILTER]: Add "nfnetlink_queue" netfilter queue handler over nfnetlink")
+Reported-by: Domingo Dirutigliano <pwnzer0tt1@proton.me>
+Signed-off-by: Florian Westphal <fw@strlen.de>
+Reviewed-by: Pablo Neira Ayuso <pablo@netfilter.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- security/apparmor/policy_unpack.c |   12 +++++++-----
- 1 file changed, 7 insertions(+), 5 deletions(-)
+ net/netfilter/nfnetlink_queue.c | 7 ++++++-
+ 1 file changed, 6 insertions(+), 1 deletion(-)
 
---- a/security/apparmor/policy_unpack.c
-+++ b/security/apparmor/policy_unpack.c
-@@ -746,16 +746,18 @@ static struct aa_profile *unpack_profile
- 		profile->label.flags |= FLAG_HAT;
- 	if (!unpack_u32(e, &tmp, NULL))
- 		goto fail;
--	if (tmp == PACKED_MODE_COMPLAIN || (e->version & FORCE_COMPLAIN_FLAG))
-+	if (tmp == PACKED_MODE_COMPLAIN || (e->version & FORCE_COMPLAIN_FLAG)) {
- 		profile->mode = APPARMOR_COMPLAIN;
--	else if (tmp == PACKED_MODE_ENFORCE)
-+	} else if (tmp == PACKED_MODE_ENFORCE) {
- 		profile->mode = APPARMOR_ENFORCE;
--	else if (tmp == PACKED_MODE_KILL)
-+	} else if (tmp == PACKED_MODE_KILL) {
- 		profile->mode = APPARMOR_KILL;
--	else if (tmp == PACKED_MODE_UNCONFINED)
-+	} else if (tmp == PACKED_MODE_UNCONFINED) {
- 		profile->mode = APPARMOR_UNCONFINED;
--	else
-+		profile->label.flags |= FLAG_UNCONFINED;
-+	} else {
- 		goto fail;
-+	}
- 	if (!unpack_u32(e, &tmp, NULL))
- 		goto fail;
- 	if (tmp)
+diff --git a/net/netfilter/nfnetlink_queue.c b/net/netfilter/nfnetlink_queue.c
+index 66814a9d030c..80715b495d7c 100644
+--- a/net/netfilter/nfnetlink_queue.c
++++ b/net/netfilter/nfnetlink_queue.c
+@@ -807,11 +807,16 @@ nfqnl_enqueue_packet(struct nf_queue_entry *entry, unsigned int queuenum)
+ }
+ 
+ static int
+-nfqnl_mangle(void *data, int data_len, struct nf_queue_entry *e, int diff)
++nfqnl_mangle(void *data, unsigned int data_len, struct nf_queue_entry *e, int diff)
+ {
+ 	struct sk_buff *nskb;
+ 
+ 	if (diff < 0) {
++		unsigned int min_len = skb_transport_offset(e->skb);
++
++		if (data_len < min_len)
++			return -EINVAL;
++
+ 		if (pskb_trim(e->skb, data_len))
+ 			return -ENOMEM;
+ 	} else if (diff > 0) {
+-- 
+2.35.1
+
 
 
