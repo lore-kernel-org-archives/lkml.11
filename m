@@ -2,92 +2,132 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 517DCC32792
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 08:50:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3EBC0C32772
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 08:50:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347241AbiHWIuE (ORCPT
+        id S1347324AbiHWIuI (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 04:50:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42434 "EHLO
+        Tue, 23 Aug 2022 04:50:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42446 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347018AbiHWIt3 (ORCPT
+        with ESMTP id S1347212AbiHWIta (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 04:49:29 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C6BA77C337;
-        Tue, 23 Aug 2022 01:22:19 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id EFD16CE1B39;
-        Tue, 23 Aug 2022 08:17:11 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id EDAE4C433D6;
-        Tue, 23 Aug 2022 08:17:09 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661242630;
-        bh=yp8FAvLDJNDsj4jRUbxa7J/2sW+6J1jRQ0jGvMPpTno=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=zKdKLBI90eZrOqESnpUPSfiIBJeyJ1vy1Wy2iLrkoMky+dcjPrem5EW5PUynR1h+L
-         W4+gDSBB3jJS+WRAUang61rf21L70F3bfy5z6ZwebbGvB035v6AjdJ863IxHyGNYnr
-         G1wX2oTJoOo4Y6tc/Cxt3A3N57NQup/x1zh8sSxw=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Louis Peens <louis.peens@corigine.com>,
-        Yu Xiao <yu.xiao@corigine.com>,
-        Simon Horman <simon.horman@corigine.com>,
-        Jakub Kicinski <kuba@kernel.org>
-Subject: [PATCH 5.19 148/365] nfp: ethtool: fix the display error of `ethtool -m DEVNAME`
-Date:   Tue, 23 Aug 2022 10:00:49 +0200
-Message-Id: <20220823080124.407732769@linuxfoundation.org>
-X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220823080118.128342613@linuxfoundation.org>
-References: <20220823080118.128342613@linuxfoundation.org>
-User-Agent: quilt/0.67
+        Tue, 23 Aug 2022 04:49:30 -0400
+Received: from mail-lj1-x230.google.com (mail-lj1-x230.google.com [IPv6:2a00:1450:4864:20::230])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C5DC37C32B
+        for <linux-kernel@vger.kernel.org>; Tue, 23 Aug 2022 01:22:18 -0700 (PDT)
+Received: by mail-lj1-x230.google.com with SMTP id l23so1762143lji.1
+        for <linux-kernel@vger.kernel.org>; Tue, 23 Aug 2022 01:22:18 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc;
+        bh=7OeB8Tp+OOwxfVzGDUyLeilyGzUattAzk5IIpdva6ZY=;
+        b=si2Y9iR4wS0U+CTbpxGEWgAJE2CrTZaT6v+mk0E4Iah0XzOxpiPEnhb0sIo1bQAlpp
+         1PBunFRZ0tjTAaZYVf+EyjqweOqXSWLr86qSdvbUz35BYt7cN5A51lgECAgSvLWdEPah
+         5xNmmioWpNQ1hx8Y6RWF3JNx5jd5KHP28NXEWCvs/eIQN+uR4bpWq2oqcgakSkypwewF
+         UrOOfFNiedgslFjlPx+RSnpRhqIydL6gQl1gJSsxTvl7xT/+iWik/4kSuXeyEgub6LwY
+         ALmtcBsiYCFnlISYXo6ATDjk1sEQ2Ho26/KBWruk8544WYxlUr/TaRbUPfYIkeMrYXPR
+         O5vA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc;
+        bh=7OeB8Tp+OOwxfVzGDUyLeilyGzUattAzk5IIpdva6ZY=;
+        b=tf2AJljGTJsFuV3HLJsF2ssDFionAnXrQvh+yLL6xvmARbIw2Fog+12XsSI1af7kAr
+         M4fOfAFcuHaVClSUc6gEEfB1RF8qrD6b5UaZV0o7EIbElxz903jMIvE9Owvs5zhaJRRs
+         6oatBHkPsSjqbWcC+xadyixbh24/beiKG5WQ6oI6Ng1v5hMk5oBBRkF7tMBnQwqDjr3l
+         D2xGGdECiu5Xr8Yv3PejuoCR7l15oY/nGnq6XbbgmUkjNYOWBqNF8hFoTE+zwWemNxfk
+         1/2uu7U0BxLlKeVvTTWM3n/hLEOMn7L1g+nPfFX3qWiDTUb+CGYB4H/4sBVIAk7wwBWm
+         zlyA==
+X-Gm-Message-State: ACgBeo3vep1SmrUemk9J7+WZJKpqBIWr66rJ7Ab0jLRNYHmayEIWgypv
+        HmzuspoMOhNCom6iHrDqVSj8sA==
+X-Google-Smtp-Source: AA6agR514Jg4jXCHaxroFgOoHvEij+oqXEDgwNZ5KuUhk8nI3kUOCKgtXiPrrHbAkfgemPuZOemASg==
+X-Received: by 2002:a05:651c:154b:b0:261:d6f3:5550 with SMTP id y11-20020a05651c154b00b00261d6f35550mr423701ljp.528.1661242930625;
+        Tue, 23 Aug 2022 01:22:10 -0700 (PDT)
+Received: from [192.168.0.11] (89-27-92-210.bb.dnainternet.fi. [89.27.92.210])
+        by smtp.gmail.com with ESMTPSA id k14-20020a0565123d8e00b0048cf0fef301sm1887405lfv.301.2022.08.23.01.22.09
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 23 Aug 2022 01:22:09 -0700 (PDT)
+Message-ID: <835938e3-e4f5-5029-9373-5dd59bc3b625@linaro.org>
+Date:   Tue, 23 Aug 2022 11:22:08 +0300
 MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.12.0
+Subject: Re: [PATCH 16/20] dt-bindings: memory: snps: Detach Zynq DDRC
+ controller support
+Content-Language: en-US
+To:     Serge Semin <Sergey.Semin@baikalelectronics.ru>,
+        Rob Herring <robh@kernel.org>,
+        Michal Simek <michal.simek@xilinx.com>,
+        Borislav Petkov <bp@alien8.de>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Tony Luck <tony.luck@intel.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Manish Narani <manish.narani@xilinx.com>
+Cc:     Serge Semin <fancer.lancer@gmail.com>,
+        Alexey Malahov <Alexey.Malahov@baikalelectronics.ru>,
+        Michail Ivanov <Michail.Ivanov@baikalelectronics.ru>,
+        Pavel Parkhomenko <Pavel.Parkhomenko@baikalelectronics.ru>,
+        Punnaiah Choudary Kalluri 
+        <punnaiah.choudary.kalluri@xilinx.com>,
+        Dinh Nguyen <dinguyen@kernel.org>,
+        James Morse <james.morse@arm.com>,
+        Robert Richter <rric@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-edac@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <20220822190730.27277-1-Sergey.Semin@baikalelectronics.ru>
+ <20220822190730.27277-17-Sergey.Semin@baikalelectronics.ru>
+ <a5a15749-1047-74ea-831e-54d27a6d6cdf@linaro.org>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+In-Reply-To: <a5a15749-1047-74ea-831e-54d27a6d6cdf@linaro.org>
 Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Yu Xiao <yu.xiao@corigine.com>
+On 23/08/2022 11:17, Krzysztof Kozlowski wrote:
+> On 22/08/2022 22:07, Serge Semin wrote:
+>> The Zynq A05 DDRC controller has nothing in common with DW uMCTL2 DDRC:
+>> the CSRs layout is absolutely different and it doesn't has IRQ unlike DW
+>> uMCTL2 DDR controller of all versions (v1.x, v2.x and v3.x). Thus there is
+>> no any reason to have these controllers described by the same bindings.
+>> Thus let's split them up.
+>>
+>> While at it rename the original Synopsys uMCTL2 DT-schema file to a more
+>> descriptive - snps,dw-umctl2-ddrc.yaml and add a more detailed title and
+>> description of the device bindings.
+> 
+> Filename should be based on compatible, so if renaming then
+> snps,ddrc-3.80a.yaml or snps,ddrc.yaml... which leads to original
+> filename anyway. Therefore nack for rename.
+> 
+> BTW, if you perform renames, generate patches with proper -M/-C/-B
+> arguments so this is detected.
+> 
+> 
+>>
+>> Signed-off-by: Serge Semin <Sergey.Semin@baikalelectronics.ru>
+>> --->  .../snps,dw-umctl2-ddrc.yaml                  | 51 +++++++++++++
+> 
+> This is a mess. I did not get any cover letters, any other patches any
+> description of relation between this and your other one.
+> 
+> It seems you make independent and conflicting changes to the same file,
+> so this has to be properly organized.
+> 
+> Send entire patchset with cover letter with description of all
+> dependencies to all maintainers.
+> 
+> This is unreviewable now, so a no.
 
-commit 4ae97cae07e15d41e5c0ebabba64c6eefdeb0bbe upstream.
+And also untestable by Rob's bot, so will have to wait.
 
-The port flag isn't set to `NFP_PORT_CHANGED` when using
-`ethtool -m DEVNAME` before, so the port state (e.g. interface)
-cannot be updated. Therefore, it caused that `ethtool -m DEVNAME`
-sometimes cannot read the correct information.
+I found the cover letters, somehow they got buried in inbox.
 
-E.g. `ethtool -m DEVNAME` cannot work when load driver before plug
-in optical module, as the port interface is still NONE without port
-update.
-
-Now update the port state before sending info to NIC to ensure that
-port interface is correct (latest state).
-
-Fixes: 61f7c6f44870 ("nfp: implement ethtool get module EEPROM")
-Reviewed-by: Louis Peens <louis.peens@corigine.com>
-Signed-off-by: Yu Xiao <yu.xiao@corigine.com>
-Signed-off-by: Simon Horman <simon.horman@corigine.com>
-Link: https://lore.kernel.org/r/20220802093355.69065-1-simon.horman@corigine.com
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
----
- drivers/net/ethernet/netronome/nfp/nfp_net_ethtool.c |    2 ++
- 1 file changed, 2 insertions(+)
-
---- a/drivers/net/ethernet/netronome/nfp/nfp_net_ethtool.c
-+++ b/drivers/net/ethernet/netronome/nfp/nfp_net_ethtool.c
-@@ -1230,6 +1230,8 @@ nfp_port_get_module_info(struct net_devi
- 	u8 data;
- 
- 	port = nfp_port_from_netdev(netdev);
-+	/* update port state to get latest interface */
-+	set_bit(NFP_PORT_CHANGED, &port->flags);
- 	eth_port = nfp_port_get_eth_port(port);
- 	if (!eth_port)
- 		return -EOPNOTSUPP;
-
-
+Best regards,
+Krzysztof
