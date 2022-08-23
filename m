@@ -2,116 +2,139 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 380CDC32772
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 20:08:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E494FC32772
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 20:09:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232009AbiHWUI4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 16:08:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43040 "EHLO
+        id S234069AbiHWUJH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 23 Aug 2022 16:09:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48200 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234127AbiHWUIh (ORCPT
+        with ESMTP id S232882AbiHWUIr (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 16:08:37 -0400
-Received: from beige.elm.relay.mailchannels.net (beige.elm.relay.mailchannels.net [23.83.212.16])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 73BB7B72A2
-        for <linux-kernel@vger.kernel.org>; Tue, 23 Aug 2022 12:26:07 -0700 (PDT)
-X-Sender-Id: dreamhost|x-authsender|dave@stgolabs.net
-Received: from relay.mailchannels.net (localhost [127.0.0.1])
-        by relay.mailchannels.net (Postfix) with ESMTP id B73C9760992;
-        Tue, 23 Aug 2022 19:26:05 +0000 (UTC)
-Received: from pdx1-sub0-mail-a212.dreamhost.com (unknown [127.0.0.6])
-        (Authenticated sender: dreamhost)
-        by relay.mailchannels.net (Postfix) with ESMTPA id F34E7760990;
-        Tue, 23 Aug 2022 19:26:04 +0000 (UTC)
-ARC-Seal: i=1; s=arc-2022; d=mailchannels.net; t=1661282765; a=rsa-sha256;
-        cv=none;
-        b=v3SjIk+7BTTK2x3QunsdQKweLzerC1rkGrPcX0rqe/MX9R9FJZP00DsurjiEtLLtkKZ5la
-        um5KXmP4OtzQbDHwaraHhO5M8d5LG1+vPkxz6qHqsCbSmzfpUMopIWeoZLNeDXd27r3ngj
-        xOS2WN+7auj/fRGA9FxTbo7VLadndBwyP89RLLBaLVphP34kPH4+DDMw6Y5hlgVAl2yh1K
-        U1936FBB4P06SQ/ytpNut0bgLx/dGms0FXRSU9IaYMT+qsf3A8MnXT5oazQl6ghJHaRN+P
-        rTG7jbUPHZro0DMF1E1U15l8Qpt5dTXbffX5N5n3nV2FJCi8bFj0rNszTZ2hyA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed;
- d=mailchannels.net;
-        s=arc-2022; t=1661282765;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references:dkim-signature;
-        bh=KA64pA0DH1EGqcQRpI8y0V/oDzrbveA11q1ujgABL90=;
-        b=8JeJc8grHC834yW2AbLXazj12OKKw00onhq0pcvUgJu237Nx3GlNtFyBtjJbbgfo8ixgs9
-        KK8lTZxU/TKggG7xh0Wji31yTqT4kPTu/68ey6vqp7A32Tb8HUZlxCPaJ9ejsxLLd5vumn
-        eENwao6SCOL7hfaG+Bqs8ondVAuav6yEvw00Y8YFPSu1XBE/pqgvHWmwMptm7qfTch7F1X
-        +JNHGpaR14bFghziFuXcStfRESyqdBbNyz9uJu96O+Y+6kYFyf9Udf8QLRJGBqb0+/ANaN
-        ugU+Yl4waypCrEybJX1dy1oJSCwmjO3QKu8LIsIyoHaNbZMSm/uMPlJjDHOmhg==
-ARC-Authentication-Results: i=1;
-        rspamd-5bc49f8989-45qtk;
-        auth=pass smtp.auth=dreamhost smtp.mailfrom=dave@stgolabs.net
-X-Sender-Id: dreamhost|x-authsender|dave@stgolabs.net
-X-MC-Relay: Neutral
-X-MailChannels-SenderId: dreamhost|x-authsender|dave@stgolabs.net
-X-MailChannels-Auth-Id: dreamhost
-X-Arch-Continue: 4a69d02274ba9850_1661282765505_3289755232
-X-MC-Loop-Signature: 1661282765505:4250622656
-X-MC-Ingress-Time: 1661282765505
-Received: from pdx1-sub0-mail-a212.dreamhost.com (pop.dreamhost.com
- [64.90.62.162])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384)
-        by 100.127.95.100 (trex/6.7.1);
-        Tue, 23 Aug 2022 19:26:05 +0000
-Received: from offworld (unknown [104.36.31.106])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-256) server-signature RSA-PSS (2048 bits) server-digest SHA256)
-        (No client certificate requested)
-        (Authenticated sender: dave@stgolabs.net)
-        by pdx1-sub0-mail-a212.dreamhost.com (Postfix) with ESMTPSA id 4MBzjH4Z8mz1Pg;
-        Tue, 23 Aug 2022 12:25:55 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=stgolabs.net;
-        s=dreamhost; t=1661282756;
-        bh=KA64pA0DH1EGqcQRpI8y0V/oDzrbveA11q1ujgABL90=;
-        h=Date:From:To:Cc:Subject:Content-Type;
-        b=AFjXoczX7kZdNXlNM2j+L8htj9RGOINSq/bAHXkiM8/1aBOh44OF7LdMzpUFg5AHG
-         /l6ckv1u2gM9UGz5CxUL7gf/q8dScr3o8c4EkVAXgPFFSXtqR3njqUj3v5FjDS5UEL
-         tB++k4KcHj25wc1JiHaPHHGKfmXOQ1tQRyHpbU8HdPifjab4/xE/aR7iG3VLk04Pzf
-         gWbYwyJkK9VlVaqQENsRXuPRGZStuSmenw48X3LBmtmbUpo3bomdcch6N4gG6oqLdy
-         KjOPe7i2/GbI325eApKuJ8IERngrajrhZz8zW1NWhJV5in4owSUPbE6iAJDEir4vnE
-         REQVt2z/tRuHQ==
-Date:   Tue, 23 Aug 2022 12:07:51 -0700
-From:   Davidlohr Bueso <dave@stgolabs.net>
-To:     Liam Howlett <liam.howlett@oracle.com>
-Cc:     "maple-tree@lists.infradead.org" <maple-tree@lists.infradead.org>,
-        "linux-mm@kvack.org" <linux-mm@kvack.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        "Matthew Wilcox (Oracle)" <willy@infradead.org>,
-        Vlastimil Babka <vbabka@suse.cz>
-Subject: Re: [PATCH v13 32/70] parisc: remove mmap linked list from cache
- handling
-Message-ID: <20220823190751.aafh755d7stfvlb6@offworld>
-Mail-Followup-To: Liam Howlett <liam.howlett@oracle.com>,
-        "maple-tree@lists.infradead.org" <maple-tree@lists.infradead.org>,
-        "linux-mm@kvack.org" <linux-mm@kvack.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        "Matthew Wilcox (Oracle)" <willy@infradead.org>,
-        Vlastimil Babka <vbabka@suse.cz>
-References: <20220822150128.1562046-1-Liam.Howlett@oracle.com>
- <20220822150128.1562046-33-Liam.Howlett@oracle.com>
+        Tue, 23 Aug 2022 16:08:47 -0400
+Received: from mail-pj1-x1029.google.com (mail-pj1-x1029.google.com [IPv6:2607:f8b0:4864:20::1029])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BDB01B9436
+        for <linux-kernel@vger.kernel.org>; Tue, 23 Aug 2022 12:26:21 -0700 (PDT)
+Received: by mail-pj1-x1029.google.com with SMTP id s3-20020a17090a2f0300b001facfc6fdbcso15026160pjd.1
+        for <linux-kernel@vger.kernel.org>; Tue, 23 Aug 2022 12:26:21 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc;
+        bh=if3Wu5vCv14WPiE5YYFtKJ7NmPwOHQ61EcTR2rYW06Q=;
+        b=gb99UBL+xqsO8C3uNt4C/qEgvqPAQNlqzT/mWH210kTh9QHQ9ChDiWKKjXVf5cQQ1z
+         ybGH5VLhxUwAS0RLDFB195OxggA9SoMB7b71QplPASrCl84Isek9hCRRxtYHPmWXgYUn
+         rA9DplBf48Zdv4VtSCIy+tN1UyKLiPGtAFBrnJc9QG9MCffjTZBklegv8AiFxp6Wz8Sz
+         cAXK8KFUQPA7821QnSh7ILC/6jY/EqQ5LC0Bd/puBNegQ5VzOnsCwiM91s2b3ouvI0Mz
+         /TyyS+X4ftn/aHzEErRANMAfYmcl2GvJNxSSg1ac/znz36RWYAUwFlAtYER99XR18AaK
+         e08g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc;
+        bh=if3Wu5vCv14WPiE5YYFtKJ7NmPwOHQ61EcTR2rYW06Q=;
+        b=FCWpkYJHUja9nGkZpe6U//5ugQ4gYJq+70XY45Rj0a0za1ULqx5QbEFGS+w4COKKtl
+         XR0h0Kzw3u2WDHiWgdjJmSyG8OOBuXLXtzWFmV15Wf6LmY5t2ecsoBnIMAlxh58i1hQr
+         T7iN9H9NsTKzYN2c0SPVqv05dlOFau21Jz93/Zk3s0LdM5p6R0DMGYb37ADr8gd/Hwr8
+         DNw6MdYDoVa+8apmY3zpmWjc62p/xEtcy5eLbuk09wUrQ2y8mcMiDm1RtYhiKPh9jIUr
+         BJgCgmk567i20nZSWtsJ1fp9cYZOYz3aZRL+F8w4mY5AxxsGsMMElskWO6H/bJdulKYo
+         FvRA==
+X-Gm-Message-State: ACgBeo1KYvhVdISZwSK7IBK0NnIX4l6C3y23g1jRwBpGB1hdb9zoQq6w
+        Wt9fA4bhCF5Nd48Rpb9NbnlBnw==
+X-Google-Smtp-Source: AA6agR6TKsIjgsl0w9cS4g5nPdI3TS9Zk7RRQuZWRYCfJ3lfV3usrWgaQ4Uki3BtWS7V8s0tFxAxzA==
+X-Received: by 2002:a17:902:b410:b0:172:c9d1:7501 with SMTP id x16-20020a170902b41000b00172c9d17501mr18889146plr.106.1661282781182;
+        Tue, 23 Aug 2022 12:26:21 -0700 (PDT)
+Received: from p14s (S0106889e681aac74.cg.shawcable.net. [68.147.0.187])
+        by smtp.gmail.com with ESMTPSA id j6-20020a170902758600b00172a2a41064sm10732401pll.298.2022.08.23.12.26.19
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 23 Aug 2022 12:26:20 -0700 (PDT)
+Date:   Tue, 23 Aug 2022 13:26:18 -0600
+From:   Mathieu Poirier <mathieu.poirier@linaro.org>
+To:     Kefeng Wang <wangkefeng.wang@huawei.com>
+Cc:     Julien Massot <julien.massot@iot.bzh>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        linux-remoteproc@vger.kernel.org,
+        Geert Uytterhoeven <geert+renesas@glider.be>,
+        linux-kernel@vger.kernel.org, rmk+kernel@armlinux.org.uk,
+        kernel test robot <lkp@intel.com>
+Subject: Re: [PATCH] remoteproc: rcar_rproc: silince address space sparse
+ warning
+Message-ID: <20220823192618.GB1781852@p14s>
+References: <20220808011610.188119-1-wangkefeng.wang@huawei.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii; format=flowed
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220822150128.1562046-33-Liam.Howlett@oracle.com>
-User-Agent: NeoMutt/20220429
+In-Reply-To: <20220808011610.188119-1-wangkefeng.wang@huawei.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, 22 Aug 2022, Liam Howlett wrote:
+On Mon, Aug 08, 2022 at 09:16:09AM +0800, Kefeng Wang wrote:
+> Fix sparse warnings,
+>    drivers/remoteproc/st_remoteproc.c:98:12: sparse: sparse: incorrect type in assignment (different address spaces) @@
+> 	   expected void *va @@     got void [noderef] __iomem * @@
+>    drivers/remoteproc/st_remoteproc.c:98:12: sparse:     expected void *va
+>    drivers/remoteproc/st_remoteproc.c:98:12: sparse:     got void [noderef] __iomem *
+>    ...
+>    drivers/remoteproc/st_remoteproc.c:114:20: sparse:     expected void volatile [noderef] __iomem *io_addr
+>    drivers/remoteproc/st_remoteproc.c:114:20: sparse:     got void *va
+> 
+> Add __iomem to io address space 'va' to fix it.
+> 
+> Reported-by: kernel test robot <lkp@intel.com>
+> Signed-off-by: Kefeng Wang <wangkefeng.wang@huawei.com>
+> ---
+> note: the commit d803336abdbc "(ARM: mm: kill unused runtime hook arch_iounmap())"
+> won't introduce the warning, but lkp report issue to me many times,
+> let's fix it.
+> 
+>  drivers/remoteproc/rcar_rproc.c | 2 +-
+>  include/linux/remoteproc.h      | 2 +-
+>  2 files changed, 2 insertions(+), 2 deletions(-)
+> 
 
->From: "Matthew Wilcox (Oracle)" <willy@infradead.org>
->
->Use the VMA iterator instead.
->
->Signed-off-by: Matthew Wilcox (Oracle) <willy@infradead.org>
->Signed-off-by: Liam R. Howlett <Liam.Howlett@Oracle.com>
->Acked-by: Vlastimil Babka <vbabka@suse.cz>
+$ ./scripts/checkpatch.pl _PATCH_remoteproc_rcar_rproc_silince_address_space_sparse_warning.patch 
+WARNING: A patch subject line should describe the change not the tool that found it
+#9: 
+Subject: [PATCH] remoteproc: rcar_rproc: silince address space sparse warning
 
-Reviewed-by: Davidlohr Bueso <dave@stgolabs.net>
+total: 0 errors, 1 warnings, 16 lines checked
+
+NOTE: For some of the reported defects, checkpatch may be able to
+      mechanically convert to the typical style using --fix or --fix-inplace.
+
+_PATCH_remoteproc_rcar_rproc_silince_address_space_sparse_warning.patch has style problems, please review.
+
+NOTE: If any of the errors are false positives, please report
+      them to the maintainer, see CHECKPATCH in MAINTAINERS.
+
+
+> diff --git a/drivers/remoteproc/rcar_rproc.c b/drivers/remoteproc/rcar_rproc.c
+> index aa86154109c7..e3363a4cde0a 100644
+> --- a/drivers/remoteproc/rcar_rproc.c
+> +++ b/drivers/remoteproc/rcar_rproc.c
+> @@ -22,7 +22,7 @@ static int rcar_rproc_mem_alloc(struct rproc *rproc,
+>  				 struct rproc_mem_entry *mem)
+>  {
+>  	struct device *dev = &rproc->dev;
+> -	void *va;
+> +	void __iomem *va;
+>  
+>  	dev_dbg(dev, "map memory: %pa+%zx\n", &mem->dma, mem->len);
+>  	va = ioremap_wc(mem->dma, mem->len);
+> diff --git a/include/linux/remoteproc.h b/include/linux/remoteproc.h
+> index 7c943f0a2fc4..c0c950cf7d72 100644
+> --- a/include/linux/remoteproc.h
+> +++ b/include/linux/remoteproc.h
+> @@ -330,7 +330,7 @@ struct rproc;
+>   * @alloc: specific memory allocator function
+>   */
+>  struct rproc_mem_entry {
+> -	void *va;
+> +	void __iomem *va;
+>  	bool is_iomem;
+>  	dma_addr_t dma;
+>  	size_t len;
+> -- 
+> 2.35.3
+> 
