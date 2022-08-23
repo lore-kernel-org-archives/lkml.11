@@ -2,123 +2,126 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 89175C32772
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 08:27:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CA09BC3F6B0
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 08:27:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243540AbiHWIZf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 04:25:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59672 "EHLO
+        id S243362AbiHWI1X (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 23 Aug 2022 04:27:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33576 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243651AbiHWIVa (ORCPT
+        with ESMTP id S243834AbiHWIVq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 04:21:30 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 98DD570E44;
-        Tue, 23 Aug 2022 01:12:48 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 11AA8B81C3A;
-        Tue, 23 Aug 2022 08:12:27 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7B63BC43153;
-        Tue, 23 Aug 2022 08:12:25 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661242345;
-        bh=1bcfY/F8tx9w3nXmNGlKoSMN7ZhIswwyXnG8I1zgTGM=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=x64Y1xYC1JKeTXfF0Z6Opn22+v7mgb0ySx4B2YdVFS8j6viRUuGGNsxfpOqY4zh5S
-         7vv7c8qsUAUD6DNPJyzfB2ZUyvknNSTEkZ2FvmK7/b7hxoma9L3222RDxcDQxgsS5A
-         2u19XaNbGcvUlP2Q8xBVgCTwuxOowE4gzGVhuw94=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@collabora.com>,
-        "=?UTF-8?q?N=C3=ADcolas=20F . =20R . =20A . =20Prado?=" 
-        <nfraprado@collabora.com>, Rob Herring <robh@kernel.org>,
-        Linus Walleij <linus.walleij@linaro.org>
-Subject: [PATCH 5.19 096/365] dt-bindings: pinctrl: mt8195: Fix name for mediatek,rsel-resistance-in-si-unit
-Date:   Tue, 23 Aug 2022 09:59:57 +0200
-Message-Id: <20220823080122.223668540@linuxfoundation.org>
-X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220823080118.128342613@linuxfoundation.org>
-References: <20220823080118.128342613@linuxfoundation.org>
-User-Agent: quilt/0.67
+        Tue, 23 Aug 2022 04:21:46 -0400
+Received: from mail-ej1-x633.google.com (mail-ej1-x633.google.com [IPv6:2a00:1450:4864:20::633])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E52C070E59
+        for <linux-kernel@vger.kernel.org>; Tue, 23 Aug 2022 01:13:01 -0700 (PDT)
+Received: by mail-ej1-x633.google.com with SMTP id gb36so25831022ejc.10
+        for <linux-kernel@vger.kernel.org>; Tue, 23 Aug 2022 01:13:00 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc;
+        bh=M2VC3T3i8SI6ISvyTjIYNrIDwSYB0SPwFcKC30GUfDM=;
+        b=YhnTBXKsX1sutRE3jqRO9H6Pjc1ZGKYwM6o16Q0HFOdstfdMOz52ZyhELuCQJXRG36
+         zhmsnRPt5OkaQBKmjswJIygbaUEYQfs5ITpnbmXlta8HzIMzCM5ofAonMP0eWDOuo/dS
+         +Rdh140kzsHwOpdzshLKhiTpaVIWcDxpncvtaY8fcWjxK/W+dbyvunc1qRpd+s0M3QME
+         n0Bmg63HsdKktJ6CvRLGxpiXhXz4I1s/EP64HmMismIM9r2zLw7T3nR4gq22B0+JIB/I
+         s9M/zgtKzwbvOY5obJkZjPkjN1v9+5tlUkl0QmaAFM0w1vSGg0xj1KyEZG4fpvS6Fda/
+         wlGA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc;
+        bh=M2VC3T3i8SI6ISvyTjIYNrIDwSYB0SPwFcKC30GUfDM=;
+        b=X64yS/W9vVCxg79IK2tLjIiA6bumiqn5abzLnxMDZVI+IiSJQ7KSJF1cx3io7HiVXE
+         4FKgS29JN5UL3KDs1fwPThPaIhh8fxIpbvdyChKRFsPqab9J+cuyKx0W+ylg8wPnu6YO
+         p5jdQeZNa88cilPb7JcaUKRVWFDoKi51qqegEWxKLtEyzLWIh/of+y9abfqRhoH0vFt5
+         LryazT2fWJEAC/nusNG7AE0R//KkiANyW9z2h7PwTl2ogXhZjev63Wjzqj501Q+q9geT
+         Ypn9xEBE03YIjAL/AGm2kfLoMPdDII7Q3BW2pZG0rSwUAXsMRV/+juMOFJQ95LYf+9N5
+         z5AQ==
+X-Gm-Message-State: ACgBeo1Aztp3hhxCoO4rWugj8xS/z37GjuKd/mEEhl0jVwidnRS0Jp7M
+        WK7Xd/qDK3Dvvq5PF1S6RfG84WpmwEXCOBqIJyggLw==
+X-Google-Smtp-Source: AA6agR6adncEGL6epJiFBvb7FvvzRHDp7dN9532v8AKMOIlxyCEYv+l415yM/3YSXIcselx7YV94occ/T/pXa7FdGTA=
+X-Received: by 2002:a17:907:2c48:b0:73c:931e:5175 with SMTP id
+ hf8-20020a1709072c4800b0073c931e5175mr13431983ejc.44.1661242379105; Tue, 23
+ Aug 2022 01:12:59 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+References: <CA+G9fYuecPu-n-ujLsv7vL8RjEJA-6rOZjc363+p1oo6v-FKKQ@mail.gmail.com>
+ <CAGETcx_EpQx-QRtCbbcEDpLHSnNeYysNEnmTOQL4+vb4zzvk4Q@mail.gmail.com>
+In-Reply-To: <CAGETcx_EpQx-QRtCbbcEDpLHSnNeYysNEnmTOQL4+vb4zzvk4Q@mail.gmail.com>
+From:   Naresh Kamboju <naresh.kamboju@linaro.org>
+Date:   Tue, 23 Aug 2022 13:42:47 +0530
+Message-ID: <CA+G9fYvsqiMPqeo+Yqx4WQEEhXbWqKFbRdKTnP9a1FxQGRroUA@mail.gmail.com>
+Subject: Re: Unable to handle kernel NULL pointer dereference at virtual
+ address 0000000000000008
+To:     Saravana Kannan <saravanak@google.com>
+Cc:     open list <linux-kernel@vger.kernel.org>,
+        lkft-triage@lists.linaro.org, regressions@lists.linux.dev,
+        Russell King <linux@armlinux.org.uk>,
+        "Russell King (Oracle)" <rmk+kernel@armlinux.org.uk>,
+        Wang Kefeng <wangkefeng.wang@huawei.com>,
+        Rob Herring <robh@kernel.org>, Jason Gunthorpe <jgg@ziepe.ca>,
+        Lu Baolu <baolu.lu@linux.intel.com>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
+Hi Saravana,
 
-commit 11bd0ffd165fce7aff1a2ed15c04c088239f3d42 upstream.
+On Tue, 23 Aug 2022 at 02:09, Saravana Kannan <saravanak@google.com> wrote:
+>
+> On Mon, Aug 22, 2022 at 7:00 AM Naresh Kamboju
+> <naresh.kamboju@linaro.org> wrote:
+> >
+> > The arm64 Qualcomm db410c device boot failed intermittently on
+> > Linux next-20220822 and Linux mainline 6.0.0-rc1.
+> >
+> > Reported-by: Linux Kernel Functional Testing <lkft@linaro.org>
+> >
+> > [    0.000000] Linux version 6.0.0-rc1 (tuxmake@tuxmake)
+> > (aarch64-linux-gnu-gcc (Debian 11.3.0-3) 11.3.0, GNU ld (GNU Binutils
+> > for Debian) 2.38.90.20220713) #1 SMP PREEMPT @1661110347
+> > [    0.000000] Machine model: Qualcomm Technologies, Inc. APQ 8016 SBC
+> > <trim>
+> > [    3.609382] Loading compiled-in X.509 certificates
+> > [    3.702306] Unable to handle kernel NULL pointer dereference at
+> > virtual address 0000000000000008
+> > [    3.702380] Mem abort info:
 
-When this property was introduced, it contained underscores, but
-the actual code wants dashes.
+<trim>
 
-Change it from mediatek,rsel_resistance_in_si_unit to
-mediatek,rsel-resistance-in-si-unit.
+> > [    3.771199] pc : pl011_probe+0x30/0x154
+> > [    3.778480] l8: Bringing 0uV into 1750000-1750000uV
+> > [    3.783073] lr : amba_probe+0x11c/0x1b0
 
-Fixes: 91e7edceda96 ("dt-bindings: pinctrl: mt8195: change pull up/down description")
-Signed-off-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
-Reviewed-by: Nícolas F. R. A. Prado <nfraprado@collabora.com>
-Reviewed-by: Rob Herring <robh@kernel.org>
-Link: https://lore.kernel.org/r/20220630122334.216903-1-angelogioacchino.delregno@collabora.com
-Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
----
- Documentation/devicetree/bindings/pinctrl/pinctrl-mt8195.yaml |   10 +++++-----
- 1 file changed, 5 insertions(+), 5 deletions(-)
+<trim>
 
---- a/Documentation/devicetree/bindings/pinctrl/pinctrl-mt8195.yaml
-+++ b/Documentation/devicetree/bindings/pinctrl/pinctrl-mt8195.yaml
-@@ -49,7 +49,7 @@ properties:
-     description: The interrupt outputs to sysirq.
-     maxItems: 1
- 
--  mediatek,rsel_resistance_in_si_unit:
-+  mediatek,rsel-resistance-in-si-unit:
-     type: boolean
-     description: |
-       Identifying i2c pins pull up/down type which is RSEL. It can support
-@@ -142,7 +142,7 @@ patternProperties:
-               "MTK_PUPD_SET_R1R0_11" define in mt8195.
-               For pull down type is RSEL, it can add RSEL define & resistance
-               value(ohm) to set different resistance by identifying property
--              "mediatek,rsel_resistance_in_si_unit".
-+              "mediatek,rsel-resistance-in-si-unit".
-               It can support "MTK_PULL_SET_RSEL_000" & "MTK_PULL_SET_RSEL_001"
-               & "MTK_PULL_SET_RSEL_010" & "MTK_PULL_SET_RSEL_011"
-               & "MTK_PULL_SET_RSEL_100" & "MTK_PULL_SET_RSEL_101"
-@@ -161,7 +161,7 @@ patternProperties:
-               };
-               An example of using si unit resistance value(ohm):
-               &pio {
--                mediatek,rsel_resistance_in_si_unit;
-+                mediatek,rsel-resistance-in-si-unit;
-               }
-               pincontroller {
-                 i2c0_pin {
-@@ -190,7 +190,7 @@ patternProperties:
-               "MTK_PUPD_SET_R1R0_11" define in mt8195.
-               For pull up type is RSEL, it can add RSEL define & resistance
-               value(ohm) to set different resistance by identifying property
--              "mediatek,rsel_resistance_in_si_unit".
-+              "mediatek,rsel-resistance-in-si-unit".
-               It can support "MTK_PULL_SET_RSEL_000" & "MTK_PULL_SET_RSEL_001"
-               & "MTK_PULL_SET_RSEL_010" & "MTK_PULL_SET_RSEL_011"
-               & "MTK_PULL_SET_RSEL_100" & "MTK_PULL_SET_RSEL_101"
-@@ -209,7 +209,7 @@ patternProperties:
-               };
-               An example of using si unit resistance value(ohm):
-               &pio {
--                mediatek,rsel_resistance_in_si_unit;
-+                mediatek,rsel-resistance-in-si-unit;
-               }
-               pincontroller {
-                 i2c0-pins {
+>
+> Hi Naresh,
+>
+> Thanks for the report!
+>
+> These two patches together should fix the issue:
+> https://lore.kernel.org/lkml/20220818172852.3548-1-isaacmanjarres@google.com/
+> https://lore.kernel.org/lkml/20220817184026.3468620-1-isaacmanjarres@google.com/
+
+Reported-by and Tested-by: Naresh Kamboju <naresh.kamboju@linaro.org>
+Reported-by and Tested-by: Linux Kernel Functional Testing <lkft@linaro.org>
 
 
+> Can you give them a shot please?
+
+I have applied the above two patches on Linus master branch and built
+and boot tested on db410c the boot is successful now [1].
+
+> Also, in general, it'd be nice if you could report issues in the
+> original thread of the patch causing issues. It would make it easier
+> to keep track of all the issues.
+
+When I bisect and confirm bad commits then I will reply to that thread.
+
+[1] https://lkft.validation.linaro.org/scheduler/job/5423144#L2005
+
+- Naresh
