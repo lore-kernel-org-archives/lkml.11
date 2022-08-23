@@ -2,46 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D2CBBC32772
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 08:40:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B7628C32774
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 08:42:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346591AbiHWIkX (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 04:40:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46580 "EHLO
+        id S235429AbiHWImV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 23 Aug 2022 04:42:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47918 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345931AbiHWIjp (ORCPT
+        with ESMTP id S1346862AbiHWIke (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 04:39:45 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 396921400C;
-        Tue, 23 Aug 2022 01:18:31 -0700 (PDT)
+        Tue, 23 Aug 2022 04:40:34 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5D17162F2;
+        Tue, 23 Aug 2022 01:19:00 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id A9ECD61242;
-        Tue, 23 Aug 2022 08:17:44 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A2DDBC433D6;
-        Tue, 23 Aug 2022 08:17:43 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id AAC28B81C3B;
+        Tue, 23 Aug 2022 08:18:00 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1F699C433C1;
+        Tue, 23 Aug 2022 08:17:58 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661242664;
-        bh=/vddohBAtiuE49XccEW6KW7TVaa7sg2giPocq9caIVQ=;
+        s=korg; t=1661242679;
+        bh=kW2S8xCrLDEx2d8pxNykwfLvUvyQbrQDVm4ZPgPweHY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=VuQWzv5rMu99LLg4icHEnYTNtB6L+FVqlJ8lJTzMF/OScso4MR6+IF20Ko4Js9BjA
-         yogGVxK+W4GnJFqVDOG44jGxWam19hJYSc+NFWTrg39tvTobeujNCuEChJhgeluY8/
-         U9jp09eurCKzdbu25+ouXWX0IAw7L+dtiN6vGKZA=
+        b=Yc+gwZdt2srALXZxD513z3JOpNi5ETG5/YBlLpcZ0uvIypCb+CzXEAtPPfbZE1o2N
+         QfJytlR+GVj9Tp1F+dPN2lVaLHyNUoSu855O8KxwBtE5yG7819hvF6NcOVEXmdYR7A
+         tIjjMXUeoL5/yjoQQMg0Pp4uMu2TymdnfEaIarww=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Adrian Hunter <adrian.hunter@intel.com>,
-        Ian Rogers <irogers@google.com>,
-        Jin Yao <yao.jin@linux.intel.com>,
-        Jiri Olsa <jolsa@kernel.org>,
-        Namhyung Kim <namhyung@kernel.org>,
-        Arnaldo Carvalho de Melo <acme@redhat.com>
-Subject: [PATCH 5.19 158/365] perf tests: Fix Track with sched_switch test for hybrid case
-Date:   Tue, 23 Aug 2022 10:00:59 +0200
-Message-Id: <20220823080124.840728405@linuxfoundation.org>
+        stable@vger.kernel.org, Johan Hovold <johan+linaro@kernel.org>,
+        Bjorn Helgaas <bhelgaas@google.com>,
+        Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>,
+        Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Subject: [PATCH 5.19 132/365] dt-bindings: PCI: qcom: Fix reset conditional
+Date:   Tue, 23 Aug 2022 10:00:33 +0200
+Message-Id: <20220823080123.717948488@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220823080118.128342613@linuxfoundation.org>
 References: <20220823080118.128342613@linuxfoundation.org>
@@ -53,60 +51,40 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Adrian Hunter <adrian.hunter@intel.com>
+From: Johan Hovold <johan+linaro@kernel.org>
 
-commit 1da1d60774014137d776d0400fdf2f1779d8d4d5 upstream.
+commit 839fbdee4c080eb95567cbcf6366072a56d3a3cc upstream.
 
-If cpu_core PMU event fails to parse, try also cpu_atom PMU event when
-parsing cycles event.
+Fix the reset conditional which always evaluated to true due to a
+misspelled property name ("compatibles" in plural).
 
-Fixes: 43eb05d066795bdf ("perf tests: Support 'Track with sched_switch' test for hybrid")
-Signed-off-by: Adrian Hunter <adrian.hunter@intel.com>
-Cc: Ian Rogers <irogers@google.com>
-Cc: Jin Yao <yao.jin@linux.intel.com>
-Cc: Jiri Olsa <jolsa@kernel.org>
-Cc: Namhyung Kim <namhyung@kernel.org>
-Link: https://lore.kernel.org/r/20220809080702.6921-3-adrian.hunter@intel.com
-Signed-off-by: Arnaldo Carvalho de Melo <acme@redhat.com>
+Fixes: 6700a9b00f0a ("dt-bindings: PCI: qcom: Do not require resets on msm8996 platforms")
+Link: https://lore.kernel.org/r/20220629141000.18111-2-johan+linaro@kernel.org
+Signed-off-by: Johan Hovold <johan+linaro@kernel.org>
+Signed-off-by: Bjorn Helgaas <bhelgaas@google.com>
+Reviewed-by: Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
+Reviewed-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
+Acked-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- tools/perf/tests/switch-tracking.c |   18 +++++++++++++-----
- 1 file changed, 13 insertions(+), 5 deletions(-)
+ Documentation/devicetree/bindings/pci/qcom,pcie.yaml | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/tools/perf/tests/switch-tracking.c
-+++ b/tools/perf/tests/switch-tracking.c
-@@ -324,6 +324,7 @@ out_free_nodes:
- static int test__switch_tracking(struct test_suite *test __maybe_unused, int subtest __maybe_unused)
- {
- 	const char *sched_switch = "sched:sched_switch";
-+	const char *cycles = "cycles:u";
- 	struct switch_tracking switch_tracking = { .tids = NULL, };
- 	struct record_opts opts = {
- 		.mmap_pages	     = UINT_MAX,
-@@ -372,12 +373,19 @@ static int test__switch_tracking(struct
- 	cpu_clocks_evsel = evlist__last(evlist);
- 
- 	/* Second event */
--	if (perf_pmu__has_hybrid())
--		err = parse_events(evlist, "cpu_core/cycles/u", NULL);
--	else
--		err = parse_events(evlist, "cycles:u", NULL);
-+	if (perf_pmu__has_hybrid()) {
-+		cycles = "cpu_core/cycles/u";
-+		err = parse_events(evlist, cycles, NULL);
-+		if (err) {
-+			cycles = "cpu_atom/cycles/u";
-+			pr_debug("Trying %s\n", cycles);
-+			err = parse_events(evlist, cycles, NULL);
-+		}
-+	} else {
-+		err = parse_events(evlist, cycles, NULL);
-+	}
- 	if (err) {
--		pr_debug("Failed to parse event cycles:u\n");
-+		pr_debug("Failed to parse event %s\n", cycles);
- 		goto out_err;
- 	}
- 
+diff --git a/Documentation/devicetree/bindings/pci/qcom,pcie.yaml b/Documentation/devicetree/bindings/pci/qcom,pcie.yaml
+index c40ba753707c..92402f1d3fda 100644
+--- a/Documentation/devicetree/bindings/pci/qcom,pcie.yaml
++++ b/Documentation/devicetree/bindings/pci/qcom,pcie.yaml
+@@ -614,7 +614,7 @@ allOf:
+   - if:
+       not:
+         properties:
+-          compatibles:
++          compatible:
+             contains:
+               enum:
+                 - qcom,pcie-msm8996
+-- 
+2.37.2
+
 
 
