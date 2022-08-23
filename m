@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2AC1AC32772
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 12:24:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id ED0F1C32772
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 12:24:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241612AbiHWMYn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 08:24:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56376 "EHLO
+        id S240873AbiHWMYq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 23 Aug 2022 08:24:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35868 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352772AbiHWMUk (ORCPT
+        with ESMTP id S1355560AbiHWMVN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 08:20:40 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2356BF14D8;
-        Tue, 23 Aug 2022 02:43:02 -0700 (PDT)
+        Tue, 23 Aug 2022 08:21:13 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D759B1116;
+        Tue, 23 Aug 2022 02:43:16 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 1DBE5CE1B66;
-        Tue, 23 Aug 2022 09:42:36 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1EA0CC433B5;
-        Tue, 23 Aug 2022 09:42:33 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 8B1F1B81B1F;
+        Tue, 23 Aug 2022 09:42:51 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id EC712C433D7;
+        Tue, 23 Aug 2022 09:42:49 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661247754;
-        bh=hRPBfczdm15C8/gZO/F3YClMCpGorCXgOhAyyTX1B+M=;
+        s=korg; t=1661247770;
+        bh=2Zsb1hqE25E9V2rnBZ4mNC6XuYeWpu5H7ltzpA7QFUU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=nF0s6h4Ejmot+hnpUNQOK+nwvZGutvd965Xb+JJLHxQhuBKIr4+o2TmWndpcg2FLp
-         gOJtxe23f07pLCvNyK0jcHSsMnxfYGR0Xdw29GSl4ErOUKl0TVaXASlPmGMvWnqp0D
-         kvsRhGh+oUQVgz9M8ZVn5Kozdw7QVg/D9D0s60W8=
+        b=edNAz0PYxvjT53/IZesEBQ9bUzWt5VuCjPvAOyLgdIim3ZiA9mJ8brVG/gARRh0he
+         KfovU9Mh4889gYUMZ+/X/MpZ+Q9PlNxF70kJUIF3v7srSmDAnG1cDRQSrDbzLSygYh
+         WkRcyWplQYn5gTLuXzk5nqqJeNKwYfbMnitMhv2Y=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Marc Zyngier <maz@kernel.org>,
-        Sai Prakash Ranjan <quic_saipraka@quicinc.com>,
-        Arnd Bergmann <arnd@arndb.de>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 106/158] irqchip/tegra: Fix overflow implicit truncation warnings
-Date:   Tue, 23 Aug 2022 10:27:18 +0200
-Message-Id: <20220823080050.275607429@linuxfoundation.org>
+        stable@vger.kernel.org, Schspa Shi <schspa@gmail.com>,
+        Cornelia Huck <cohuck@redhat.com>,
+        Alex Williamson <alex.williamson@redhat.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.10 134/158] vfio: Clear the caps->buf to NULL after free
+Date:   Tue, 23 Aug 2022 10:27:46 +0200
+Message-Id: <20220823080051.258431613@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220823080046.056825146@linuxfoundation.org>
 References: <20220823080046.056825146@linuxfoundation.org>
@@ -49,71 +50,36 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Sai Prakash Ranjan <quic_saipraka@quicinc.com>
+From: Schspa Shi <schspa@gmail.com>
 
-[ Upstream commit 443685992bda9bb4f8b17fc02c9f6c60e62b1461 ]
+[ Upstream commit 6641085e8d7b3f061911517f79a2a15a0a21b97b ]
 
-Fix -Woverflow warnings for tegra irqchip driver which is a result
-of moving arm64 custom MMIO accessor macros to asm-generic function
-implementations giving a bonus type-checking now and uncovering these
-overflow warnings.
+On buffer resize failure, vfio_info_cap_add() will free the buffer,
+report zero for the size, and return -ENOMEM.  As additional
+hardening, also clear the buffer pointer to prevent any chance of a
+double free.
 
-drivers/irqchip/irq-tegra.c: In function ‘tegra_ictlr_suspend’:
-drivers/irqchip/irq-tegra.c:151:18: warning: large integer implicitly truncated to unsigned type [-Woverflow]
-   writel_relaxed(~0ul, ictlr + ICTLR_COP_IER_CLR);
-                  ^
-
-Suggested-by: Marc Zyngier <maz@kernel.org>
-Signed-off-by: Sai Prakash Ranjan <quic_saipraka@quicinc.com>
-Reviewed-by: Arnd Bergmann <arnd@arndb.de>
-Cc: Marc Zyngier <maz@kernel.org>
-Signed-off-by: Arnd Bergmann <arnd@arndb.de>
+Signed-off-by: Schspa Shi <schspa@gmail.com>
+Reviewed-by: Cornelia Huck <cohuck@redhat.com>
+Link: https://lore.kernel.org/r/20220629022948.55608-1-schspa@gmail.com
+Signed-off-by: Alex Williamson <alex.williamson@redhat.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/irqchip/irq-tegra.c | 10 +++++-----
- 1 file changed, 5 insertions(+), 5 deletions(-)
+ drivers/vfio/vfio.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/drivers/irqchip/irq-tegra.c b/drivers/irqchip/irq-tegra.c
-index e1f771c72fc4..ad3e2c1b3c87 100644
---- a/drivers/irqchip/irq-tegra.c
-+++ b/drivers/irqchip/irq-tegra.c
-@@ -148,10 +148,10 @@ static int tegra_ictlr_suspend(void)
- 		lic->cop_iep[i] = readl_relaxed(ictlr + ICTLR_COP_IEP_CLASS);
- 
- 		/* Disable COP interrupts */
--		writel_relaxed(~0ul, ictlr + ICTLR_COP_IER_CLR);
-+		writel_relaxed(GENMASK(31, 0), ictlr + ICTLR_COP_IER_CLR);
- 
- 		/* Disable CPU interrupts */
--		writel_relaxed(~0ul, ictlr + ICTLR_CPU_IER_CLR);
-+		writel_relaxed(GENMASK(31, 0), ictlr + ICTLR_CPU_IER_CLR);
- 
- 		/* Enable the wakeup sources of ictlr */
- 		writel_relaxed(lic->ictlr_wake_mask[i], ictlr + ICTLR_CPU_IER_SET);
-@@ -172,12 +172,12 @@ static void tegra_ictlr_resume(void)
- 
- 		writel_relaxed(lic->cpu_iep[i],
- 			       ictlr + ICTLR_CPU_IEP_CLASS);
--		writel_relaxed(~0ul, ictlr + ICTLR_CPU_IER_CLR);
-+		writel_relaxed(GENMASK(31, 0), ictlr + ICTLR_CPU_IER_CLR);
- 		writel_relaxed(lic->cpu_ier[i],
- 			       ictlr + ICTLR_CPU_IER_SET);
- 		writel_relaxed(lic->cop_iep[i],
- 			       ictlr + ICTLR_COP_IEP_CLASS);
--		writel_relaxed(~0ul, ictlr + ICTLR_COP_IER_CLR);
-+		writel_relaxed(GENMASK(31, 0), ictlr + ICTLR_COP_IER_CLR);
- 		writel_relaxed(lic->cop_ier[i],
- 			       ictlr + ICTLR_COP_IER_SET);
+diff --git a/drivers/vfio/vfio.c b/drivers/vfio/vfio.c
+index f886f2db8153..90db9d66867c 100644
+--- a/drivers/vfio/vfio.c
++++ b/drivers/vfio/vfio.c
+@@ -1783,6 +1783,7 @@ struct vfio_info_cap_header *vfio_info_cap_add(struct vfio_info_cap *caps,
+ 	buf = krealloc(caps->buf, caps->size + size, GFP_KERNEL);
+ 	if (!buf) {
+ 		kfree(caps->buf);
++		caps->buf = NULL;
+ 		caps->size = 0;
+ 		return ERR_PTR(-ENOMEM);
  	}
-@@ -312,7 +312,7 @@ static int __init tegra_ictlr_init(struct device_node *node,
- 		lic->base[i] = base;
- 
- 		/* Disable all interrupts */
--		writel_relaxed(~0UL, base + ICTLR_CPU_IER_CLR);
-+		writel_relaxed(GENMASK(31, 0), base + ICTLR_CPU_IER_CLR);
- 		/* All interrupts target IRQ */
- 		writel_relaxed(0, base + ICTLR_CPU_IEP_CLASS);
- 
 -- 
 2.35.1
 
