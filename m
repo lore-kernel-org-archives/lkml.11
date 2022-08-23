@@ -2,42 +2,40 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 14488C32789
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 16:41:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 663A9C32772
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 16:41:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245107AbiHWQlP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 12:41:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59942 "EHLO
+        id S245375AbiHWQlG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 23 Aug 2022 12:41:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34210 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245382AbiHWQka (ORCPT
+        with ESMTP id S245169AbiHWQjz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 12:40:30 -0400
+        Tue, 23 Aug 2022 12:39:55 -0400
 Received: from bg5.exmail.qq.com (bg4.exmail.qq.com [43.155.67.158])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4060DC67
-        for <linux-kernel@vger.kernel.org>; Tue, 23 Aug 2022 07:38:39 -0700 (PDT)
-X-QQ-mid: bizesmtp72t1661265512tv4qnbxg
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D6E6B115C;
+        Tue, 23 Aug 2022 07:41:25 -0700 (PDT)
+X-QQ-mid: bizesmtp63t1661265681tj79in0v
 Received: from localhost.localdomain ( [182.148.14.124])
         by bizesmtp.qq.com (ESMTP) with 
-        id ; Tue, 23 Aug 2022 22:38:31 +0800 (CST)
+        id ; Tue, 23 Aug 2022 22:41:20 +0800 (CST)
 X-QQ-SSF: 0100000000200040B000B00A0000000
-X-QQ-FEAT: WKaXkSLX6oPvwq+MKc5hCiMwcC3Ep1DE4kY/h+ZI0DwfQSr3WMyYXentQeUXx
-        uE8b+A/x8R2sPArPaBqr2/rRgbRhHZuTnmvjQTR+rhfKuy5GNo6tb0Hs/NnOxX4hPeyPFa2
-        ZBkqiHTONJJxSbhfldbxo3Oe/McKwZAGlBXDcTjws+m37/O/iBNbgXKOOYxjpDDnHO6Z9i1
-        Xxhe+h9T0OUGdg7+gETJCGpNTG41KH77n8URzoqQXCIQCw+iHGuOjpoDMOPH3k4tFhXx1y9
-        0X2DkAXD3qsUGhY4SAT7uSci2Oii+dgwuDVV7aHGNbFuwpBero310WCmEnxFq8o0bU5rBkl
-        9rrjiIpjJaNBVv/R+T4BOLgZQ0dGHgPNf9PJVnh5JoEUIJSxhFw+4i0sROk5z30nHEhanDh
+X-QQ-FEAT: jbaoaN/hLKLzyiwpz6X66a4WYpeCEb0/P3xe+DnxWmKGfGVhb2h8juu2G3MWL
+        YjIxC9Ran96iqgPGKmS5EKWv425WOAd0ruXMi22wOqKnxBIn1RTbD4Vy84MQczrlaZZI9CQ
+        zsWzdcpvR1lxnWW2yDEJgL+P0p2xxuXEiwS7zeyV84ZIrNkVraNY0sVgWJbXC1/m2J9Co7g
+        c9VXHHNjbHr4IEQaJLeT85d6mzdPt3KcqOZFfQDCGiIxFdyhwBvEdXrdMmZkMxeMa22IRRh
+        XHJetB4GhfRea9bF/X+pGYk0oGicEs3D95a+x0KVPzVtyYtg4P2ZJd4UqexxoFsTF+1FvpZ
+        9Mx7FswRxpg1vcJt8qWS0KAQdMSWpPs7P+XUwQoiH7FXlre9QYme1QmECL1CA==
 X-QQ-GoodBg: 0
 From:   wangjianli <wangjianli@cdjrlc.com>
-To:     yong.deng@magewell.com, mchehab@kernel.org, wens@csie.org,
-        jernej.skrabec@gmail.com, samuel@sholland.org
-Cc:     linux-sunxi@lists.linux.dev, linux-kernel@vger.kernel.org,
+To:     prabhakar.csengg@gmail.com, mchehab@kernel.org
+Cc:     linux-media@vger.kernel.org, linux-kernel@vger.kernel.org,
         wangjianli <wangjianli@cdjrlc.com>
-Subject: [PATCH] sunxi/sun6i-csi: fix repeated words in comments
-Date:   Tue, 23 Aug 2022 22:38:20 +0800
-Message-Id: <20220823143820.29860-1-wangjianli@cdjrlc.com>
+Subject: [PATCH] ti/davinci: fix repeated words in comments
+Date:   Tue, 23 Aug 2022 22:41:03 +0800
+Message-Id: <20220823144103.31566-1-wangjianli@cdjrlc.com>
 X-Mailer: git-send-email 2.36.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 X-QQ-SENDSIZE: 520
 Feedback-ID: bizesmtp:cdjrlc.com:qybglogicsvr:qybglogicsvr7
@@ -49,22 +47,22 @@ Delete the redundant word 'the'.
 
 Signed-off-by: wangjianli <wangjianli@cdjrlc.com>
 ---
- drivers/media/platform/sunxi/sun6i-csi/sun6i_video.c | 2 +-
+ drivers/media/platform/ti/davinci/vpbe.c | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/media/platform/sunxi/sun6i-csi/sun6i_video.c b/drivers/media/platform/sunxi/sun6i-csi/sun6i_video.c
-index 682c26536034..fac004389b6b 100644
---- a/drivers/media/platform/sunxi/sun6i-csi/sun6i_video.c
-+++ b/drivers/media/platform/sunxi/sun6i-csi/sun6i_video.c
-@@ -177,7 +177,7 @@ static int sun6i_video_start_streaming(struct vb2_queue *vq, unsigned int count)
- 
- 	/*
- 	 * CSI will lookup the next dma buffer for next frame before the
--	 * the current frame done IRQ triggered. This is not documented
-+	 * current frame done IRQ triggered. This is not documented
- 	 * but reported by Ondřej Jirman.
- 	 * The BSP code has workaround for this too. It skip to mark the
- 	 * first buffer as frame done for VB2 and pass the second buffer
+diff --git a/drivers/media/platform/ti/davinci/vpbe.c b/drivers/media/platform/ti/davinci/vpbe.c
+index 5f0aeb744e81..509ecc84624e 100644
+--- a/drivers/media/platform/ti/davinci/vpbe.c
++++ b/drivers/media/platform/ti/davinci/vpbe.c
+@@ -280,7 +280,7 @@ static int vpbe_set_default_output(struct vpbe_device *vpbe_dev)
+  * vpbe_get_output - Get output
+  * @vpbe_dev: vpbe device ptr
+  *
+- * return current vpbe output to the the index
++ * return current vpbe output to the index
+  */
+ static unsigned int vpbe_get_output(struct vpbe_device *vpbe_dev)
+ {
 -- 
 2.36.1
 
