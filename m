@@ -2,46 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 26BFBC32792
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 11:07:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 89BD4C32772
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 11:07:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351036AbiHWLHO (ORCPT
+        id S1356895AbiHWLHS (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 07:07:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42856 "EHLO
+        Tue, 23 Aug 2022 07:07:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43950 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356864AbiHWLFZ (ORCPT
+        with ESMTP id S1357155AbiHWLGK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 07:05:25 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1D5EBB4412;
-        Tue, 23 Aug 2022 02:15:29 -0700 (PDT)
+        Tue, 23 Aug 2022 07:06:10 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D58DCB4E81;
+        Tue, 23 Aug 2022 02:15:43 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 0A8CE60DB4;
-        Tue, 23 Aug 2022 09:14:33 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0CC3BC433D6;
-        Tue, 23 Aug 2022 09:14:31 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id C067360F50;
+        Tue, 23 Aug 2022 09:15:30 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B44DAC433D6;
+        Tue, 23 Aug 2022 09:15:29 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661246072;
-        bh=ukjfHyx+sVMLnQs4BZHpN4Y/SYXUdACjDDbNw43YMF8=;
+        s=korg; t=1661246130;
+        bh=trgjy+Na5DTYKV6NiBojc66CHNnmnSeCvfnVIRkX0z4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=yYdMNnayc1ABZVegXRwDAs/8Mu96Qe7nUDsxY0QSsuxaxcNwHxCv9HMqOBzpCDVUx
-         3pn/87uDJkQcmzG/fzgQr7AsQ9SnA3OMTs3VzVh0Nl9OTHxHvsp9/zbjOkeGSErCN6
-         L6u4OWIv4PU6kc0vhiqYxvYLGhsQJz53ez28YKx0=
+        b=O2OSew9Jcr7G1FfU+WN/k1oA7W9RCmX32BQ32r9p4knQcBL0fGiDLgUs/X8m4cmWO
+         dPPc23H/JYINX64sKZLoX3dvGKfRCBVRofGzRESxzn1afj2vZD3uzxamiCZm1FaaXv
+         hRUVPtnpPuM9eoFO6HvBveEC014qPrvaSKLo7/Z8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Michael Ellerman <mpe@ellerman.id.au>,
-        Zhouyi Zhou <zhouzhouyi@gmail.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.19 281/287] powerpc/64: Init jump labels before parse_early_param()
-Date:   Tue, 23 Aug 2022 10:27:30 +0200
-Message-Id: <20220823080110.944511402@linuxfoundation.org>
+        stable@vger.kernel.org, Ping Cheng <ping.cheng@wacom.com>,
+        Jason Gerecke <jason.gerecke@wacom.com>,
+        Jiri Kosina <jkosina@suse.cz>
+Subject: [PATCH 5.4 011/389] HID: wacom: Dont register pad_input for touch switch
+Date:   Tue, 23 Aug 2022 10:21:29 +0200
+Message-Id: <20220823080116.141972541@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220823080100.268827165@linuxfoundation.org>
-References: <20220823080100.268827165@linuxfoundation.org>
+In-Reply-To: <20220823080115.331990024@linuxfoundation.org>
+References: <20220823080115.331990024@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -50,65 +50,107 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Zhouyi Zhou <zhouzhouyi@gmail.com>
+From: Ping Cheng <pinglinux@gmail.com>
 
-[ Upstream commit ca829e05d3d4f728810cc5e4b468d9ebc7745eb3 ]
+commit d6b675687a4ab4dba684716d97c8c6f81bf10905 upstream.
 
-On 64-bit, calling jump_label_init() in setup_feature_keys() is too
-late because static keys may be used in subroutines of
-parse_early_param() which is again subroutine of early_init_devtree().
+Touch switch state is received through WACOM_PAD_FIELD. However, it
+is reported by touch_input. Don't register pad_input if no other pad
+events require the interface.
 
-For example booting with "threadirqs":
-
-  static_key_enable_cpuslocked(): static key '0xc000000002953260' used before call to jump_label_init()
-  WARNING: CPU: 0 PID: 0 at kernel/jump_label.c:166 static_key_enable_cpuslocked+0xfc/0x120
-  ...
-  NIP static_key_enable_cpuslocked+0xfc/0x120
-  LR  static_key_enable_cpuslocked+0xf8/0x120
-  Call Trace:
-    static_key_enable_cpuslocked+0xf8/0x120 (unreliable)
-    static_key_enable+0x30/0x50
-    setup_forced_irqthreads+0x28/0x40
-    do_early_param+0xa0/0x108
-    parse_args+0x290/0x4e0
-    parse_early_options+0x48/0x5c
-    parse_early_param+0x58/0x84
-    early_init_devtree+0xd4/0x518
-    early_setup+0xb4/0x214
-
-So call jump_label_init() just before parse_early_param() in
-early_init_devtree().
-
-Suggested-by: Michael Ellerman <mpe@ellerman.id.au>
-Signed-off-by: Zhouyi Zhou <zhouzhouyi@gmail.com>
-[mpe: Add call trace to change log and minor wording edits.]
-Signed-off-by: Michael Ellerman <mpe@ellerman.id.au>
-Link: https://lore.kernel.org/r/20220726015747.11754-1-zhouzhouyi@gmail.com
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Cc: stable@vger.kernel.org
+Signed-off-by: Ping Cheng <ping.cheng@wacom.com>
+Reviewed-by: Jason Gerecke <jason.gerecke@wacom.com>
+Signed-off-by: Jiri Kosina <jkosina@suse.cz>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/powerpc/kernel/prom.c | 7 +++++++
- 1 file changed, 7 insertions(+)
+ drivers/hid/wacom_sys.c |    2 +-
+ drivers/hid/wacom_wac.c |   43 +++++++++++++++++++++++++------------------
+ 2 files changed, 26 insertions(+), 19 deletions(-)
 
-diff --git a/arch/powerpc/kernel/prom.c b/arch/powerpc/kernel/prom.c
-index f8c49e5d4bd3..c57aeb9f031c 100644
---- a/arch/powerpc/kernel/prom.c
-+++ b/arch/powerpc/kernel/prom.c
-@@ -737,6 +737,13 @@ void __init early_init_devtree(void *params)
- 	of_scan_flat_dt(early_init_dt_scan_root, NULL);
- 	of_scan_flat_dt(early_init_dt_scan_memory_ppc, NULL);
+--- a/drivers/hid/wacom_sys.c
++++ b/drivers/hid/wacom_sys.c
+@@ -2124,7 +2124,7 @@ static int wacom_register_inputs(struct
  
-+	/*
-+	 * As generic code authors expect to be able to use static keys
-+	 * in early_param() handlers, we initialize the static keys just
-+	 * before parsing early params (it's fine to call jump_label_init()
-+	 * more than once).
+ 	error = wacom_setup_pad_input_capabilities(pad_input_dev, wacom_wac);
+ 	if (error) {
+-		/* no pad in use on this interface */
++		/* no pad events using this interface */
+ 		input_free_device(pad_input_dev);
+ 		wacom_wac->pad_input = NULL;
+ 		pad_input_dev = NULL;
+--- a/drivers/hid/wacom_wac.c
++++ b/drivers/hid/wacom_wac.c
+@@ -2016,7 +2016,6 @@ static void wacom_wac_pad_usage_mapping(
+ 		wacom_wac->has_mute_touch_switch = true;
+ 		usage->type = EV_SW;
+ 		usage->code = SW_MUTE_DEVICE;
+-		features->device_type |= WACOM_DEVICETYPE_PAD;
+ 		break;
+ 	case WACOM_HID_WD_TOUCHSTRIP:
+ 		wacom_map_usage(input, usage, field, EV_ABS, ABS_RX, 0);
+@@ -2096,6 +2095,30 @@ static void wacom_wac_pad_event(struct h
+ 			wacom_wac->hid_data.inrange_state |= value;
+ 	}
+ 
++	/* Process touch switch state first since it is reported through touch interface,
++	 * which is indepentent of pad interface. In the case when there are no other pad
++	 * events, the pad interface will not even be created.
 +	 */
-+	jump_label_init();
- 	parse_early_param();
++	if ((equivalent_usage == WACOM_HID_WD_MUTE_DEVICE) ||
++	   (equivalent_usage == WACOM_HID_WD_TOUCHONOFF)) {
++		if (wacom_wac->shared->touch_input) {
++			bool *is_touch_on = &wacom_wac->shared->is_touch_on;
++
++			if (equivalent_usage == WACOM_HID_WD_MUTE_DEVICE && value)
++				*is_touch_on = !(*is_touch_on);
++			else if (equivalent_usage == WACOM_HID_WD_TOUCHONOFF)
++				*is_touch_on = value;
++
++			input_report_switch(wacom_wac->shared->touch_input,
++					    SW_MUTE_DEVICE, !(*is_touch_on));
++			input_sync(wacom_wac->shared->touch_input);
++		}
++		return;
++	}
++
++	if (!input)
++		return;
++
+ 	switch (equivalent_usage) {
+ 	case WACOM_HID_WD_TOUCHRING:
+ 		/*
+@@ -2131,22 +2154,6 @@ static void wacom_wac_pad_event(struct h
+ 			input_event(input, usage->type, usage->code, 0);
+ 		break;
  
- 	/* make sure we've parsed cmdline for mem= before this */
--- 
-2.35.1
-
+-	case WACOM_HID_WD_MUTE_DEVICE:
+-	case WACOM_HID_WD_TOUCHONOFF:
+-		if (wacom_wac->shared->touch_input) {
+-			bool *is_touch_on = &wacom_wac->shared->is_touch_on;
+-
+-			if (equivalent_usage == WACOM_HID_WD_MUTE_DEVICE && value)
+-				*is_touch_on = !(*is_touch_on);
+-			else if (equivalent_usage == WACOM_HID_WD_TOUCHONOFF)
+-				*is_touch_on = value;
+-
+-			input_report_switch(wacom_wac->shared->touch_input,
+-					    SW_MUTE_DEVICE, !(*is_touch_on));
+-			input_sync(wacom_wac->shared->touch_input);
+-		}
+-		break;
+-
+ 	case WACOM_HID_WD_MODE_CHANGE:
+ 		if (wacom_wac->is_direct_mode != value) {
+ 			wacom_wac->is_direct_mode = value;
+@@ -2776,7 +2783,7 @@ void wacom_wac_event(struct hid_device *
+ 	/* usage tests must precede field tests */
+ 	if (WACOM_BATTERY_USAGE(usage))
+ 		wacom_wac_battery_event(hdev, field, usage, value);
+-	else if (WACOM_PAD_FIELD(field) && wacom->wacom_wac.pad_input)
++	else if (WACOM_PAD_FIELD(field))
+ 		wacom_wac_pad_event(hdev, field, usage, value);
+ 	else if (WACOM_PEN_FIELD(field) && wacom->wacom_wac.pen_input)
+ 		wacom_wac_pen_event(hdev, field, usage, value);
 
 
