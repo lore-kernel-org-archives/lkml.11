@@ -2,41 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 96C30C32772
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 12:12:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7E115C32792
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 12:12:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243390AbiHWMMG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 08:12:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44000 "EHLO
+        id S1353603AbiHWMMT (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 23 Aug 2022 08:12:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45760 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1359844AbiHWMLS (ORCPT
+        with ESMTP id S1352567AbiHWMLW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 08:11:18 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 975C3E2C5A;
-        Tue, 23 Aug 2022 02:39:15 -0700 (PDT)
+        Tue, 23 Aug 2022 08:11:22 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9F8A3E1AB1;
+        Tue, 23 Aug 2022 02:39:14 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 3C7D16148E;
-        Tue, 23 Aug 2022 09:38:18 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2FDD2C433D6;
-        Tue, 23 Aug 2022 09:38:16 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id BF094B81C97;
+        Tue, 23 Aug 2022 09:39:13 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2534DC433D6;
+        Tue, 23 Aug 2022 09:39:11 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661247497;
-        bh=JqwqA8K/Bi/JlYaxPGlyPEUe8HAVD/tfbTEB5pz8NI4=;
+        s=korg; t=1661247552;
+        bh=KVV9LSKv94xjVZyS3EhPLIwl0hPqOnV0rioQJ+Wgwmk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=kvVTtg0s6OyjH7QHREFlS5+ag8/5mpZCoH/wm+aXp9kTyJ2PCOvjmpuFjasXdAysB
-         Qx43LdsInjBBK4MggClG/+5Xc9svm7m2rp2r1ANZ7H33xc2AsFroJ4xYOCCO3+PPf/
-         AOUdLIP+Od5bn4+9na7M7tjFjjgHjR/NV1h5FkEA=
+        b=tNsWeLWyx9QQX+yZ5SwF7jkZ7wzMklSZ09dL6Dt+OM/eNZuuL9afSkmvpO/D7hvEz
+         kTmHfVRa6/YWoXLQOD0JvwLGnlOxN+rGgA30+IfZfmxR89/1jchaywS0FOvbgRrHS6
+         f0H1LwGmkfV9e0Z5Rn65nFJCUkw+PzaVqz3A9zos=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Ondrej Mosnacek <omosnace@redhat.com>,
-        Masahiro Yamada <masahiroy@kernel.org>
-Subject: [PATCH 5.10 055/158] kbuild: dummy-tools: avoid tmpdir leak in dummy gcc
-Date:   Tue, 23 Aug 2022 10:26:27 +0200
-Message-Id: <20220823080048.307327393@linuxfoundation.org>
+        stable@vger.kernel.org,
+        "Peter Zijlstra (Intel)" <peterz@infradead.org>,
+        Richard Weinberger <richard@nod.at>
+Subject: [PATCH 5.10 043/158] um: Add missing apply_returns()
+Date:   Tue, 23 Aug 2022 10:26:15 +0200
+Message-Id: <20220823080047.810865424@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220823080046.056825146@linuxfoundation.org>
 References: <20220823080046.056825146@linuxfoundation.org>
@@ -48,40 +50,34 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Ondrej Mosnacek <omosnace@redhat.com>
+From: Peter Zijlstra <peterz@infradead.org>
 
-commit aac289653fa5adf9e9985e4912c1d24a3e8cbab2 upstream.
+commit 637285e7f8d6da70a70c64e7895cb0672357a1f7 upstream.
 
-When passed -print-file-name=plugin, the dummy gcc script creates a
-temporary directory that is never cleaned up. To avoid cluttering
-$TMPDIR, instead use a static directory included in the source tree.
+Implement apply_returns() stub for UM, just like all the other patching
+routines.
 
-Fixes: 76426e238834 ("kbuild: add dummy toolchains to enable all cc-option etc. in Kconfig")
-Signed-off-by: Ondrej Mosnacek <omosnace@redhat.com>
-Signed-off-by: Masahiro Yamada <masahiroy@kernel.org>
+Fixes: 15e67227c49a ("x86: Undo return-thunk damage")
+Reported-by: Randy Dunlap <rdunlap@infradead.org)
+Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
+Signed-off-by: Richard Weinberger <richard@nod.at>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- .../dummy-tools/dummy-plugin-dir/include/plugin-version.h | 0
- scripts/dummy-tools/gcc |    8 ++------
- 1 file changed, 2 insertions(+), 6 deletions(-)
- create mode 100644 scripts/dummy-tools/dummy-plugin-dir/include/plugin-version.h
+ arch/um/kernel/um_arch.c |    4 ++++
+ 1 file changed, 4 insertions(+)
 
---- a/scripts/dummy-tools/gcc
-+++ b/scripts/dummy-tools/gcc
-@@ -77,12 +77,8 @@ fi
+--- a/arch/um/kernel/um_arch.c
++++ b/arch/um/kernel/um_arch.c
+@@ -367,6 +367,10 @@ void apply_returns(s32 *start, s32 *end)
+ {
+ }
  
- # To set GCC_PLUGINS
- if arg_contain -print-file-name=plugin "$@"; then
--	plugin_dir=$(mktemp -d)
--
--	mkdir -p $plugin_dir/include
--	touch $plugin_dir/include/plugin-version.h
--
--	echo $plugin_dir
-+	# Use $0 to find the in-tree dummy directory
-+	echo "$(dirname "$(readlink -f "$0")")/dummy-plugin-dir"
- 	exit 0
- fi
- 
++void apply_returns(s32 *start, s32 *end)
++{
++}
++
+ void apply_alternatives(struct alt_instr *start, struct alt_instr *end)
+ {
+ }
 
 
