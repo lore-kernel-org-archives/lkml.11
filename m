@@ -2,121 +2,172 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A6BF3C32772
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 19:18:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C58FDC32772
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 19:21:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233496AbiHWTSQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 15:18:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57636 "EHLO
+        id S231493AbiHWTVC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 23 Aug 2022 15:21:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35360 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233417AbiHWTR5 (ORCPT
+        with ESMTP id S234151AbiHWTUd (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 15:17:57 -0400
-Received: from beige.elm.relay.mailchannels.net (beige.elm.relay.mailchannels.net [23.83.212.16])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 59A3661B02
-        for <linux-kernel@vger.kernel.org>; Tue, 23 Aug 2022 10:55:11 -0700 (PDT)
-X-Sender-Id: dreamhost|x-authsender|dave@stgolabs.net
-Received: from relay.mailchannels.net (localhost [127.0.0.1])
-        by relay.mailchannels.net (Postfix) with ESMTP id 3A3306C2493;
-        Tue, 23 Aug 2022 17:23:17 +0000 (UTC)
-Received: from pdx1-sub0-mail-a303.dreamhost.com (unknown [127.0.0.6])
-        (Authenticated sender: dreamhost)
-        by relay.mailchannels.net (Postfix) with ESMTPA id 893F96C2697;
-        Tue, 23 Aug 2022 17:23:15 +0000 (UTC)
-ARC-Seal: i=1; s=arc-2022; d=mailchannels.net; t=1661275395; a=rsa-sha256;
-        cv=none;
-        b=mpsS8KvqU0nQfBJoyP0g2umtbt+nXHT9l68sysUdR99PI2YkonkTgUqv9kAYxq/+RPZO5O
-        fEge4iGZ6PbzbW/mzXLwowUPgbDlKnCjSdvn5OrL7931Mo06PL47k2LR/1Dm/IGgglxFxf
-        GFBKwRfUS7N8/I7XvqwHCk+T3WiWIklHky3yc7CrVv5i62SsssQ9iDVJi3o1QIXVlYZsXE
-        4oWUH8MC8cBJa4s5qYCu28ZpluEO+AkwSMSMwmVb0YDP5XMyUVUVxRJMZcH/gZokLWpb7n
-        1q+tn1baBthbv6tMrvSPj4SqalKcDydwS1Qt5wCabunEsd52dNtu/8Wm0OW1aA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed;
- d=mailchannels.net;
-        s=arc-2022; t=1661275395;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references:dkim-signature;
-        bh=F5nzL9HfH568Np4uVuhylp3hUXCFOrFrBrP6TfqMYZo=;
-        b=AUDzN3mn1Huz3AJL0xbR6ov/IUG466jbrVQpjtFfZKujn4p5nGZDULyFEsiE1IDCYJ+Ocn
-        p3OalnkQE10RMkUhjla2Og7zsyvwRPiog1kcBejkSrxTdrQMjA9AxckHDe00AvU6A01ikc
-        aDDf/+YNWvq9XmA6oRlCA1yeO8dsDmEcFdHp8xSIkxcGnYSyq520BDWWM0ClWDaIluEybU
-        8n2wRXsz/5hHOhscsfFhZgaSMwchrfFB5fJ0sAf++ZxJCjZ34sxwogFoBzDM/3MitkYogk
-        sUbh4voRWUYAZ77btcV5kdunJFb4PaYrSs6xI1Im8NFAjwdzQR+4KGV2NGMNxg==
-ARC-Authentication-Results: i=1;
-        rspamd-79945fd77c-b4gsd;
-        auth=pass smtp.auth=dreamhost smtp.mailfrom=dave@stgolabs.net
-X-Sender-Id: dreamhost|x-authsender|dave@stgolabs.net
-X-MC-Relay: Neutral
-X-MailChannels-SenderId: dreamhost|x-authsender|dave@stgolabs.net
-X-MailChannels-Auth-Id: dreamhost
-X-Trouble-Abortive: 2d0ee27f58a1717d_1661275396794_967258746
-X-MC-Loop-Signature: 1661275396794:3782772838
-X-MC-Ingress-Time: 1661275396793
-Received: from pdx1-sub0-mail-a303.dreamhost.com (pop.dreamhost.com
- [64.90.62.162])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384)
-        by 100.110.28.247 (trex/6.7.1);
-        Tue, 23 Aug 2022 17:23:16 +0000
-Received: from offworld (unknown [104.36.31.106])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-256) server-signature RSA-PSS (2048 bits) server-digest SHA256)
-        (No client certificate requested)
-        (Authenticated sender: dave@stgolabs.net)
-        by pdx1-sub0-mail-a303.dreamhost.com (Postfix) with ESMTPSA id 4MBwzk10Lwz1X7;
-        Tue, 23 Aug 2022 10:23:14 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=stgolabs.net;
-        s=dreamhost; t=1661275394;
-        bh=F5nzL9HfH568Np4uVuhylp3hUXCFOrFrBrP6TfqMYZo=;
-        h=Date:From:To:Cc:Subject:Content-Type;
-        b=CMx/rfJRs4gbDbItd9+fPdQ8IYhAMBbWg5Dle1ABlQhbBOqSEYGl20erhJckC1xzV
-         ZBWc9sU612LHlbg7ivtnqxvJ8eIZcH58GTitskLeSaKO0oECtEE6sqY1WdtckYJou9
-         ZQCTAwtXNTF6f/HdmFofMLi1hnRXUNoLWIfXdPLJtmZqRA65fHfCr0zhr597x+QM0i
-         FazP0+952qwG+bpgKE1X8R98Pm/RxvFev9jgAqGFzVByZLBMMCve5BYkAVAyBLjyc+
-         GSkKbKkuNcdfpoQzEOJPoQym2T7fwrOn5GJ9FIQ26nHKJwC9SBE45mXWlpj8QGAXyc
-         l/jL5vedkrTpQ==
-Date:   Tue, 23 Aug 2022 10:05:10 -0700
-From:   Davidlohr Bueso <dave@stgolabs.net>
-To:     Liam Howlett <liam.howlett@oracle.com>
-Cc:     "maple-tree@lists.infradead.org" <maple-tree@lists.infradead.org>,
-        "linux-mm@kvack.org" <linux-mm@kvack.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        "Matthew Wilcox (Oracle)" <willy@infradead.org>,
-        Vlastimil Babka <vbabka@suse.cz>,
-        David Hildenbrand <david@redhat.com>
-Subject: Re: [PATCH v13 9/70] mm: add VMA iterator
-Message-ID: <20220823170510.iurgltzinbw4ta33@offworld>
-Mail-Followup-To: Liam Howlett <liam.howlett@oracle.com>,
-        "maple-tree@lists.infradead.org" <maple-tree@lists.infradead.org>,
-        "linux-mm@kvack.org" <linux-mm@kvack.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        "Matthew Wilcox (Oracle)" <willy@infradead.org>,
-        Vlastimil Babka <vbabka@suse.cz>,
-        David Hildenbrand <david@redhat.com>
-References: <20220822150128.1562046-1-Liam.Howlett@oracle.com>
- <20220822150128.1562046-10-Liam.Howlett@oracle.com>
+        Tue, 23 Aug 2022 15:20:33 -0400
+Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 35621CD784;
+        Tue, 23 Aug 2022 10:59:16 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
+        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
+        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
+        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+        bh=IU6VaLqWRQa8AsfWC7mdNjG+QFTd5ie930XuTDlDza0=; b=GHpdEGELeLBX4zYUJzZm1W+kmn
+        vJJvoEm6YqLYeAV9CmEShp9eLqTlA3c5/98R81ZMfPwKsYfksAQQE/2+g8HZZCjPUmbuplSOusXX6
+        5kuMbZBTBCglAqbnd1uxEAZpvGhSY8ivckFwS/OpAA1RJUurVjZTK6jULtXzLMQbKTQSF+Ght8ten
+        nvINrmbzZlE8lE1mIGuFx0YaZEOpFop6GyTTWYrYXOQbVZtL4tO3c1jZLZNVoqGgg+4dLBtwJ/3B/
+        OHPgz+Vklh6rVJm8VHrnu+iYHQwk6dPzyj+yi/yfr3A2TvUi4Ti/ZqPOLo0k77NXnnGf4qVI7L7F9
+        ofRchHkg==;
+Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:33898)
+        by pandora.armlinux.org.uk with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.94.2)
+        (envelope-from <linux@armlinux.org.uk>)
+        id 1oQYBA-0003Sa-56; Tue, 23 Aug 2022 18:59:08 +0100
+Received: from linux by shell.armlinux.org.uk with local (Exim 4.94.2)
+        (envelope-from <linux@shell.armlinux.org.uk>)
+        id 1oQYB7-0003Km-Oh; Tue, 23 Aug 2022 18:59:05 +0100
+Date:   Tue, 23 Aug 2022 18:59:05 +0100
+From:   "Russell King (Oracle)" <linux@armlinux.org.uk>
+To:     Maxime Chevallier <maxime.chevallier@bootlin.com>
+Cc:     davem@davemloft.net, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, thomas.petazzoni@bootlin.com,
+        Andrew Lunn <andrew@lunn.ch>, Jakub Kicinski <kuba@kernel.org>,
+        Eric Dumazet <edumazet@google.com>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        linux-arm-kernel@lists.infradead.org
+Subject: Re: [PATCH net-next 2/2] net: altera: tse: convert to phylink
+Message-ID: <YwUVabmOJNDgf/JK@shell.armlinux.org.uk>
+References: <20220823140517.3091239-1-maxime.chevallier@bootlin.com>
+ <20220823140517.3091239-3-maxime.chevallier@bootlin.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii; format=flowed
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220822150128.1562046-10-Liam.Howlett@oracle.com>
-User-Agent: NeoMutt/20220429
+In-Reply-To: <20220823140517.3091239-3-maxime.chevallier@bootlin.com>
+Sender: Russell King (Oracle) <linux@armlinux.org.uk>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, 22 Aug 2022, Liam Howlett wrote:
+On Tue, Aug 23, 2022 at 04:05:17PM +0200, Maxime Chevallier wrote:
+> This commit converts the Altera Triple Speed Ethernet Controller to
+> phylink. This controller supports MII, GMII and RGMII with its MAC, and
+> SGMII + 1000BaseX through a small embedded PCS.
+> 
+> The PCS itself has a register set very similar to what is found in a
+> typical 802.3 ethernet PHY, but this register set memory-mapped instead
+> of lying on an mdio bus.
+> 
+> Signed-off-by: Maxime Chevallier <maxime.chevallier@bootlin.com>
 
->From: "Matthew Wilcox (Oracle)" <willy@infradead.org>
->
->This thin layer of abstraction over the maple tree state is for iterating
->over VMAs.  You can go forwards, go backwards or ask where the iterator
->is.  Rename the existing vma_next() to __vma_next() -- it will be removed
->by the end of this series.
->
->Signed-off-by: Matthew Wilcox (Oracle) <willy@infradead.org>
->Signed-off-by: Liam R. Howlett <Liam.Howlett@Oracle.com>
->Acked-by: Vlastimil Babka <vbabka@suse.cz>
->Reviewed-by: David Hildenbrand <david@redhat.com>
+This needs some work.
 
-Reviewed-by: Davidlohr Bueso <dave@stgolabs.net>
+> +static void alt_tse_mac_link_state(struct phylink_config *config,
+> +				   struct phylink_link_state *state)
+> +{
+> +	struct net_device *ndev = to_net_dev(config->dev);
+> +	struct altera_tse_private *priv = netdev_priv(ndev);
+> +
+> +	u16 bmsr, lpa;
+> +
+> +	bmsr = sgmii_pcs_read(priv, MII_BMSR);
+> +	lpa = sgmii_pcs_read(priv, MII_LPA);
+> +
+> +	phylink_mii_c22_pcs_decode_state(state, bmsr, lpa);
+> +}
+> +
+> +static void alt_tse_mac_an_restart(struct phylink_config *config)
+> +{
+> +	struct net_device *ndev = to_net_dev(config->dev);
+> +	struct altera_tse_private *priv = netdev_priv(ndev);
+> +	u16 bmcr;
+> +
+> +	bmcr = sgmii_pcs_read(priv, MII_BMCR);
+> +	bmcr |= BMCR_ANRESTART;
+> +	sgmii_pcs_write(priv, MII_BMCR, bmcr);
+> +}
+> +
+> +static void alt_tse_pcs_config(struct net_device *ndev,
+> +			       const struct phylink_link_state *state)
+> +{
+> +	struct altera_tse_private *priv = netdev_priv(ndev);
+> +	u32 ctrl, if_mode;
+> +
+> +	if (state->interface != PHY_INTERFACE_MODE_SGMII &&
+> +	    state->interface != PHY_INTERFACE_MODE_1000BASEX)
+> +		return;
+> +
+> +	ctrl = sgmii_pcs_read(priv, MII_BMCR);
+> +	if_mode = sgmii_pcs_read(priv, SGMII_PCS_IF_MODE);
+> +
+> +	/* Set link timer to 1.6ms, as per the MegaCore Function User Guide */
+> +	sgmii_pcs_write(priv, SGMII_PCS_LINK_TIMER_0, 0x0D40);
+> +	sgmii_pcs_write(priv, SGMII_PCS_LINK_TIMER_1, 0x03);
+> +
+> +	if (state->interface == PHY_INTERFACE_MODE_SGMII) {
+> +		if_mode |= PCS_IF_MODE_USE_SGMII_AN | PCS_IF_MODE_SGMII_ENA;
+> +	} else if (state->interface == PHY_INTERFACE_MODE_1000BASEX) {
+> +		if_mode &= ~(PCS_IF_MODE_USE_SGMII_AN | PCS_IF_MODE_SGMII_ENA);
+> +		if_mode |= PCS_IF_MODE_SGMI_SPEED_1000;
+> +	}
+> +
+> +	ctrl |= (BMCR_SPEED1000 | BMCR_FULLDPLX | BMCR_ANENABLE);
+> +
+> +	sgmii_pcs_write(priv, MII_BMCR, ctrl);
+> +	sgmii_pcs_write(priv, SGMII_PCS_IF_MODE, if_mode);
+> +
+> +	sgmii_pcs_reset(priv);
+> +}
+
+These look like they can be plugged directly into the phylink_pcs
+support - please use that in preference to bolting it ino the MAC
+ops - as every other ethernet driver (with the exception of
+mtk_eth_soc) does today.
+
+> +
+> +static void alt_tse_mac_config(struct phylink_config *config, unsigned int mode,
+> +			       const struct phylink_link_state *state)
+> +{
+> +	struct net_device *ndev = to_net_dev(config->dev);
+> +	struct altera_tse_private *priv = netdev_priv(ndev);
+> +	u32 ctrl;
+> +
+> +	ctrl = csrrd32(priv->mac_dev, tse_csroffs(command_config));
+> +	ctrl &= ~(MAC_CMDCFG_ENA_10 | MAC_CMDCFG_ETH_SPEED | MAC_CMDCFG_HD_ENA);
+> +
+> +	if (state->duplex == DUPLEX_HALF)
+> +		ctrl |= MAC_CMDCFG_HD_ENA;
+
+Using state->duplex in mac_config has always been a problem, it's not
+well defined, and there are paths through phylink where state->duplex
+does not reflect the state of the link when this function is called.
+This is why it's always been clearly documented that this shall not be
+used in mac_config.
+
+> +
+> +	if (state->speed == SPEED_1000)
+> +		ctrl |= MAC_CMDCFG_ETH_SPEED;
+> +	else if (state->speed == SPEED_10)
+> +		ctrl |= MAC_CMDCFG_ENA_10;
+
+Using state->speed brings with it the same problems as state->duplex.
+
+Please instead use mac_link_up() (and pcs_link_up()) - which are the
+only callbacks from phylink that you can be sure give you the
+speed, duplex and pause settings for the link.
+
+Thanks.
+
+-- 
+RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
+FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
