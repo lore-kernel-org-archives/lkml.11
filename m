@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AAA7BC32772
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 11:08:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8557AC32792
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 11:08:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351307AbiHWLIs (ORCPT
+        id S1357160AbiHWLIu (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 07:08:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49328 "EHLO
+        Tue, 23 Aug 2022 07:08:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48378 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357321AbiHWLGj (ORCPT
+        with ESMTP id S1357399AbiHWLGu (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 07:06:39 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 08161B5E46;
-        Tue, 23 Aug 2022 02:15:58 -0700 (PDT)
+        Tue, 23 Aug 2022 07:06:50 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1366F87093;
+        Tue, 23 Aug 2022 02:16:04 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 4CE0ACE1B55;
-        Tue, 23 Aug 2022 09:15:56 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 582C7C433C1;
-        Tue, 23 Aug 2022 09:15:54 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id AFCB1B81B1F;
+        Tue, 23 Aug 2022 09:15:37 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D48F2C433D6;
+        Tue, 23 Aug 2022 09:15:35 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661246154;
-        bh=BQZqsEK+IuTaL6aTUyF1GPzWqI8PBXmHt2fxiJ1G1Fw=;
+        s=korg; t=1661246136;
+        bh=hu5TMgyBsQA+JM/nI10zy36YytDpLDwYhOtqzJPDFNE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Itefs9jfrjowU/Hw3xmq8L+482AeJbyggwB4njuxhm0rhakFqMg35ZEekOCr5zLdn
-         fZlr930onwFN1QkTmvmxMKsM/Vio/D/kU8Wzb+N88BKqgHkvumfGsnuJpMa8rOQre9
-         lkfBgKJT+1orcyFlZ6T5uHKYFrD+I4XVRIIyZCts=
+        b=VTbXdj/oWFCl/SKX+NOkTq77QJb/f/he1XjP3vPYKzWy5NzpZuSOee0NTG09OCRj5
+         Lq5rV2CeVBRtNSdbaZ8bfvQwdx2Ff62Ul7WXsGqbrRw0QlqOUsA4ZA3Yc2TMiNOQOK
+         TGUoWfHBx3ZYoqRz7j4mEfZLuHJJBxmZI0igQqJU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Meng Tang <tangmeng@uniontech.com>,
-        Takashi Iwai <tiwai@suse.de>
-Subject: [PATCH 5.4 019/389] ALSA: hda/conexant: Add quirk for LENOVO 20149 Notebook model
-Date:   Tue, 23 Aug 2022 10:21:37 +0200
-Message-Id: <20220823080116.511155589@linuxfoundation.org>
+        stable@vger.kernel.org, Sean Christopherson <seanjc@google.com>,
+        Paolo Bonzini <pbonzini@redhat.com>
+Subject: [PATCH 5.4 013/389] KVM: nVMX: Snapshot pre-VM-Enter DEBUGCTL for !nested_run_pending case
+Date:   Tue, 23 Aug 2022 10:21:31 +0200
+Message-Id: <20220823080116.238840165@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220823080115.331990024@linuxfoundation.org>
 References: <20220823080115.331990024@linuxfoundation.org>
@@ -49,57 +49,53 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Meng Tang <tangmeng@uniontech.com>
+From: Sean Christopherson <seanjc@google.com>
 
-commit f83bb2592482fe94c6eea07a8121763c80f36ce5 upstream.
+commit 764643a6be07445308e492a528197044c801b3ba upstream.
 
-There is another LENOVO 20149 (Type1Sku0) Notebook model with
-CX20590, the device PCI SSID is 17aa:3977, which headphones are
-not responding, that requires the quirk CXT_PINCFG_LENOVO_NOTEBOOK.
-Add the corresponding entry to the quirk table.
+If a nested run isn't pending, snapshot vmcs01.GUEST_IA32_DEBUGCTL
+irrespective of whether or not VM_ENTRY_LOAD_DEBUG_CONTROLS is set in
+vmcs12.  When restoring nested state, e.g. after migration, without a
+nested run pending, prepare_vmcs02() will propagate
+nested.vmcs01_debugctl to vmcs02, i.e. will load garbage/zeros into
+vmcs02.GUEST_IA32_DEBUGCTL.
 
-Signed-off-by: Meng Tang <tangmeng@uniontech.com>
-Cc: <stable@vger.kernel.org>
-Link: https://lore.kernel.org/r/20220808073406.19460-1-tangmeng@uniontech.com
-Signed-off-by: Takashi Iwai <tiwai@suse.de>
+If userspace restores nested state before MSRs, then loading garbage is a
+non-issue as loading DEBUGCTL will also update vmcs02.  But if usersepace
+restores MSRs first, then KVM is responsible for propagating L2's value,
+which is actually thrown into vmcs01, into vmcs02.
+
+Restoring L2 MSRs into vmcs01, i.e. loading all MSRs before nested state
+is all kinds of bizarre and ideally would not be supported.  Sadly, some
+VMMs do exactly that and rely on KVM to make things work.
+
+Note, there's still a lurking SMM bug, as propagating vmcs01's DEBUGCTL
+to vmcs02 across RSM may corrupt L2's DEBUGCTL.  But KVM's entire VMX+SMM
+emulation is flawed as SMI+RSM should not toouch _any_ VMCS when use the
+"default treatment of SMIs", i.e. when not using an SMI Transfer Monitor.
+
+Link: https://lore.kernel.org/all/Yobt1XwOfb5M6Dfa@google.com
+Fixes: 8fcc4b5923af ("kvm: nVMX: Introduce KVM_CAP_NESTED_STATE")
+Cc: stable@vger.kernel.org
+Signed-off-by: Sean Christopherson <seanjc@google.com>
+Message-Id: <20220614215831.3762138-3-seanjc@google.com>
+Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- sound/pci/hda/patch_conexant.c |   11 ++++++++++-
- 1 file changed, 10 insertions(+), 1 deletion(-)
+ arch/x86/kvm/vmx/nested.c |    3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
---- a/sound/pci/hda/patch_conexant.c
-+++ b/sound/pci/hda/patch_conexant.c
-@@ -197,6 +197,7 @@ enum {
- 	CXT_PINCFG_LEMOTE_A1205,
- 	CXT_PINCFG_COMPAQ_CQ60,
- 	CXT_FIXUP_STEREO_DMIC,
-+	CXT_PINCFG_LENOVO_NOTEBOOK,
- 	CXT_FIXUP_INC_MIC_BOOST,
- 	CXT_FIXUP_HEADPHONE_MIC_PIN,
- 	CXT_FIXUP_HEADPHONE_MIC,
-@@ -737,6 +738,14 @@ static const struct hda_fixup cxt_fixups
- 		.type = HDA_FIXUP_FUNC,
- 		.v.func = cxt_fixup_stereo_dmic,
- 	},
-+	[CXT_PINCFG_LENOVO_NOTEBOOK] = {
-+		.type = HDA_FIXUP_PINS,
-+		.v.pins = (const struct hda_pintbl[]) {
-+			{ 0x1a, 0x05d71030 },
-+			{ }
-+		},
-+		.chain_id = CXT_FIXUP_STEREO_DMIC,
-+	},
- 	[CXT_FIXUP_INC_MIC_BOOST] = {
- 		.type = HDA_FIXUP_FUNC,
- 		.v.func = cxt5066_increase_mic_boost,
-@@ -930,7 +939,7 @@ static const struct snd_pci_quirk cxt506
- 	SND_PCI_QUIRK(0x17aa, 0x3905, "Lenovo G50-30", CXT_FIXUP_STEREO_DMIC),
- 	SND_PCI_QUIRK(0x17aa, 0x390b, "Lenovo G50-80", CXT_FIXUP_STEREO_DMIC),
- 	SND_PCI_QUIRK(0x17aa, 0x3975, "Lenovo U300s", CXT_FIXUP_STEREO_DMIC),
--	SND_PCI_QUIRK(0x17aa, 0x3977, "Lenovo IdeaPad U310", CXT_FIXUP_STEREO_DMIC),
-+	SND_PCI_QUIRK(0x17aa, 0x3977, "Lenovo IdeaPad U310", CXT_PINCFG_LENOVO_NOTEBOOK),
- 	SND_PCI_QUIRK(0x17aa, 0x3978, "Lenovo G50-70", CXT_FIXUP_STEREO_DMIC),
- 	SND_PCI_QUIRK(0x17aa, 0x397b, "Lenovo S205", CXT_FIXUP_STEREO_DMIC),
- 	SND_PCI_QUIRK_VENDOR(0x17aa, "Thinkpad", CXT_FIXUP_THINKPAD_ACPI),
+--- a/arch/x86/kvm/vmx/nested.c
++++ b/arch/x86/kvm/vmx/nested.c
+@@ -3065,7 +3065,8 @@ enum nvmx_vmentry_status nested_vmx_ente
+ 	if (likely(!evaluate_pending_interrupts) && kvm_vcpu_apicv_active(vcpu))
+ 		evaluate_pending_interrupts |= vmx_has_apicv_interrupt(vcpu);
+ 
+-	if (!(vmcs12->vm_entry_controls & VM_ENTRY_LOAD_DEBUG_CONTROLS))
++	if (!vmx->nested.nested_run_pending ||
++	    !(vmcs12->vm_entry_controls & VM_ENTRY_LOAD_DEBUG_CONTROLS))
+ 		vmx->nested.vmcs01_debugctl = vmcs_read64(GUEST_IA32_DEBUGCTL);
+ 	if (kvm_mpx_supported() &&
+ 	    (!vmx->nested.nested_run_pending ||
 
 
