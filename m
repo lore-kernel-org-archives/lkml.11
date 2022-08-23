@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C1755C32772
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 10:37:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2CBC2C32772
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 10:37:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354363AbiHWKhP (ORCPT
+        id S1354541AbiHWKhT (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 06:37:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42616 "EHLO
+        Tue, 23 Aug 2022 06:37:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41038 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354899AbiHWKWX (ORCPT
+        with ESMTP id S1354965AbiHWKWf (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 06:22:23 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 106C513F2D;
-        Tue, 23 Aug 2022 02:03:38 -0700 (PDT)
+        Tue, 23 Aug 2022 06:22:35 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8313D1CFD9;
+        Tue, 23 Aug 2022 02:03:42 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id CB69CB81C53;
-        Tue, 23 Aug 2022 09:03:36 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3F10EC433C1;
-        Tue, 23 Aug 2022 09:03:35 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 5D81761580;
+        Tue, 23 Aug 2022 09:03:42 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4E8E6C433D6;
+        Tue, 23 Aug 2022 09:03:41 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661245415;
-        bh=2VWKfxtQ5ExyRo+X1gZyywgtIu3OQS7nZSsQWwD9TLw=;
+        s=korg; t=1661245421;
+        bh=ofx1+SfbZoigJIb+TofH18nVcCA0VxaUkZCIg6dRLao=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Ho3Wk9ndJF+OqHrntSJxRqe3+dbxODMK+Py8dzndkQJQVTKBkTnx7p0ZaB2T+fk7i
-         kwk1cwBJxqnBT42SIyNgnmEr/7iRiIwFfGZTCHAol89P3jAACmIuUCPM/uvot3yrY8
-         IZxZBZeXE95PBoc01tSF52XfvcvxlMI48rE3941A=
+        b=Bu1KEkU5Fyyndb3tT74fOE7vP/O9CpGARKt02gGBn+Ij8xFRLMFK5eRfiodZM6tNU
+         ucYv+PVM4NFbLbSXO0ekf1v1CUbKEB6lz4t2Y96yD7XFxnrnJFH2Jiaox9rmlPZlOY
+         w1WGXqflvMRAqtMio1MmY1cuAK0c/rDgdZnMDJl4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
-        syzbot+d273f7d7f58afd93be48@syzkaller.appspotmail.com,
-        Jan Kara <jack@suse.cz>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.19 041/287] ext2: Add more validity checks for inode counts
-Date:   Tue, 23 Aug 2022 10:23:30 +0200
-Message-Id: <20220823080101.649109026@linuxfoundation.org>
+        Alexander Stein <alexander.stein@ew.tq-group.com>,
+        Shawn Guo <shawnguo@kernel.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 4.19 043/287] ARM: dts: imx6ul: change operating-points to uint32-matrix
+Date:   Tue, 23 Aug 2022 10:23:32 +0200
+Message-Id: <20220823080101.712639495@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220823080100.268827165@linuxfoundation.org>
 References: <20220823080100.268827165@linuxfoundation.org>
@@ -50,53 +51,61 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jan Kara <jack@suse.cz>
+From: Alexander Stein <alexander.stein@ew.tq-group.com>
 
-[ Upstream commit fa78f336937240d1bc598db817d638086060e7e9 ]
+[ Upstream commit edb67843983bbdf61b4c8c3c50618003d38bb4ae ]
 
-Add checks verifying number of inodes stored in the superblock matches
-the number computed from number of inodes per group. Also verify we have
-at least one block worth of inodes per group. This prevents crashes on
-corrupted filesystems.
+operating-points is a uint32-matrix as per opp-v1.yaml. Change it
+accordingly. While at it, change fsl,soc-operating-points as well,
+although there is no bindings file (yet). But they should have the same
+format. Fixes the dt_binding_check warning:
+cpu@0: operating-points:0: [696000, 1275000, 528000, 1175000, 396000,
+1025000, 198000, 950000] is too long
+cpu@0: operating-points:0: Additional items are not allowed (528000,
+1175000, 396000, 1025000, 198000, 950000 were unexpected)
 
-Reported-by: syzbot+d273f7d7f58afd93be48@syzkaller.appspotmail.com
-Signed-off-by: Jan Kara <jack@suse.cz>
+Signed-off-by: Alexander Stein <alexander.stein@ew.tq-group.com>
+Signed-off-by: Shawn Guo <shawnguo@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- fs/ext2/super.c | 12 ++++++++++--
- 1 file changed, 10 insertions(+), 2 deletions(-)
+ arch/arm/boot/dts/imx6ul.dtsi | 22 ++++++++++------------
+ 1 file changed, 10 insertions(+), 12 deletions(-)
 
-diff --git a/fs/ext2/super.c b/fs/ext2/super.c
-index ad9fd08f66ba..44a1f356aca2 100644
---- a/fs/ext2/super.c
-+++ b/fs/ext2/super.c
-@@ -1088,9 +1088,10 @@ static int ext2_fill_super(struct super_block *sb, void *data, int silent)
- 			sbi->s_frags_per_group);
- 		goto failed_mount;
- 	}
--	if (sbi->s_inodes_per_group > sb->s_blocksize * 8) {
-+	if (sbi->s_inodes_per_group < sbi->s_inodes_per_block ||
-+	    sbi->s_inodes_per_group > sb->s_blocksize * 8) {
- 		ext2_msg(sb, KERN_ERR,
--			"error: #inodes per group too big: %lu",
-+			"error: invalid #inodes per group: %lu",
- 			sbi->s_inodes_per_group);
- 		goto failed_mount;
- 	}
-@@ -1100,6 +1101,13 @@ static int ext2_fill_super(struct super_block *sb, void *data, int silent)
- 	sbi->s_groups_count = ((le32_to_cpu(es->s_blocks_count) -
- 				le32_to_cpu(es->s_first_data_block) - 1)
- 					/ EXT2_BLOCKS_PER_GROUP(sb)) + 1;
-+	if ((u64)sbi->s_groups_count * sbi->s_inodes_per_group !=
-+	    le32_to_cpu(es->s_inodes_count)) {
-+		ext2_msg(sb, KERN_ERR, "error: invalid #inodes: %u vs computed %llu",
-+			 le32_to_cpu(es->s_inodes_count),
-+			 (u64)sbi->s_groups_count * sbi->s_inodes_per_group);
-+		goto failed_mount;
-+	}
- 	db_count = (sbi->s_groups_count + EXT2_DESC_PER_BLOCK(sb) - 1) /
- 		   EXT2_DESC_PER_BLOCK(sb);
- 	sbi->s_group_desc = kmalloc_array (db_count,
+diff --git a/arch/arm/boot/dts/imx6ul.dtsi b/arch/arm/boot/dts/imx6ul.dtsi
+index 07850587ee0a..605792fa67b2 100644
+--- a/arch/arm/boot/dts/imx6ul.dtsi
++++ b/arch/arm/boot/dts/imx6ul.dtsi
+@@ -61,20 +61,18 @@ cpu0: cpu@0 {
+ 			reg = <0>;
+ 			clock-latency = <61036>; /* two CLK32 periods */
+ 			#cooling-cells = <2>;
+-			operating-points = <
++			operating-points =
+ 				/* kHz	uV */
+-				696000	1275000
+-				528000	1175000
+-				396000	1025000
+-				198000	950000
+-			>;
+-			fsl,soc-operating-points = <
++				<696000	1275000>,
++				<528000	1175000>,
++				<396000	1025000>,
++				<198000	950000>;
++			fsl,soc-operating-points =
+ 				/* KHz	uV */
+-				696000	1275000
+-				528000	1175000
+-				396000	1175000
+-				198000	1175000
+-			>;
++				<696000	1275000>,
++				<528000	1175000>,
++				<396000	1175000>,
++				<198000	1175000>;
+ 			clocks = <&clks IMX6UL_CLK_ARM>,
+ 				 <&clks IMX6UL_CLK_PLL2_BUS>,
+ 				 <&clks IMX6UL_CLK_PLL2_PFD2>,
 -- 
 2.35.1
 
