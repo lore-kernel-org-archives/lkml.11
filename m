@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CA323C32774
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 11:58:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 54F6CC32772
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 11:58:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358968AbiHWL6N (ORCPT
+        id S1358985AbiHWL6R (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 07:58:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41932 "EHLO
+        Tue, 23 Aug 2022 07:58:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41964 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1359064AbiHWL4H (ORCPT
+        with ESMTP id S1359072AbiHWL4I (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 07:56:07 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9BB7F7284D;
-        Tue, 23 Aug 2022 02:33:38 -0700 (PDT)
+        Tue, 23 Aug 2022 07:56:08 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 38E107E31E;
+        Tue, 23 Aug 2022 02:33:46 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 10F31B81C98;
-        Tue, 23 Aug 2022 09:33:30 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6890DC43148;
-        Tue, 23 Aug 2022 09:33:28 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 8DE5761388;
+        Tue, 23 Aug 2022 09:33:41 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7BF16C433D6;
+        Tue, 23 Aug 2022 09:33:40 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661247208;
-        bh=hRPBfczdm15C8/gZO/F3YClMCpGorCXgOhAyyTX1B+M=;
+        s=korg; t=1661247221;
+        bh=FiKJFq3p3hNMNAz/G+j1Jr63XmO/Uxj1ECLA2jSv+YM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=XhBG/zMLXdsbhwhAMnWZLYn+439Tmu3/icWTnyA7HoRBSurAPNMyVtqKzSPeEQ44A
-         jKmNd822l3lHvspFvnQWSfa/vOLwFgO224fC93Cz1aQepwcbX35ANRdACy0XX55QLQ
-         82rHkIwgWA3GbFcLoPr17848lY6duHsLCN7l4a8Q=
+        b=pW1ptSztex2Kxfxc8af8wHM1cfbKdlM7bTBnORtqXfp3YqN3ODXMY7Ww0obEqTp1Z
+         dWoZtZmKOom7sP8rjKgciA3C/s+OqG0JZ55sTUBfHvGtH19iJqfaSSxDPVtplFsBhY
+         5UG3DJeua7LmcZWTmzliLQjnzjJ1lmG1IzxwgZLI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Marc Zyngier <maz@kernel.org>,
-        Sai Prakash Ranjan <quic_saipraka@quicinc.com>,
-        Arnd Bergmann <arnd@arndb.de>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 352/389] irqchip/tegra: Fix overflow implicit truncation warnings
-Date:   Tue, 23 Aug 2022 10:27:10 +0200
-Message-Id: <20220823080130.252693175@linuxfoundation.org>
+        stable@vger.kernel.org, Al Viro <viro@zeniv.linux.org.uk>,
+        Dinh Nguyen <dinguyen@kernel.org>
+Subject: [PATCH 5.4 329/389] nios2: page fault et.al. are *not* restartable syscalls...
+Date:   Tue, 23 Aug 2022 10:26:47 +0200
+Message-Id: <20220823080129.260618707@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220823080115.331990024@linuxfoundation.org>
 References: <20220823080115.331990024@linuxfoundation.org>
@@ -50,73 +49,53 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Sai Prakash Ranjan <quic_saipraka@quicinc.com>
+From: Al Viro <viro@zeniv.linux.org.uk>
 
-[ Upstream commit 443685992bda9bb4f8b17fc02c9f6c60e62b1461 ]
+commit 8535c239ac674f7ead0f2652932d35c52c4123b2 upstream.
 
-Fix -Woverflow warnings for tegra irqchip driver which is a result
-of moving arm64 custom MMIO accessor macros to asm-generic function
-implementations giving a bonus type-checking now and uncovering these
-overflow warnings.
+make sure that ->orig_r2 is negative for everything except
+the syscalls.
 
-drivers/irqchip/irq-tegra.c: In function ‘tegra_ictlr_suspend’:
-drivers/irqchip/irq-tegra.c:151:18: warning: large integer implicitly truncated to unsigned type [-Woverflow]
-   writel_relaxed(~0ul, ictlr + ICTLR_COP_IER_CLR);
-                  ^
-
-Suggested-by: Marc Zyngier <maz@kernel.org>
-Signed-off-by: Sai Prakash Ranjan <quic_saipraka@quicinc.com>
-Reviewed-by: Arnd Bergmann <arnd@arndb.de>
-Cc: Marc Zyngier <maz@kernel.org>
-Signed-off-by: Arnd Bergmann <arnd@arndb.de>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Fixes: 82ed08dd1b0e ("nios2: Exception handling")
+Signed-off-by: Al Viro <viro@zeniv.linux.org.uk>
+Signed-off-by: Dinh Nguyen <dinguyen@kernel.org>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/irqchip/irq-tegra.c | 10 +++++-----
- 1 file changed, 5 insertions(+), 5 deletions(-)
+ arch/nios2/include/asm/entry.h |    3 ++-
+ arch/nios2/kernel/entry.S      |    4 +---
+ 2 files changed, 3 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/irqchip/irq-tegra.c b/drivers/irqchip/irq-tegra.c
-index e1f771c72fc4..ad3e2c1b3c87 100644
---- a/drivers/irqchip/irq-tegra.c
-+++ b/drivers/irqchip/irq-tegra.c
-@@ -148,10 +148,10 @@ static int tegra_ictlr_suspend(void)
- 		lic->cop_iep[i] = readl_relaxed(ictlr + ICTLR_COP_IEP_CLASS);
+--- a/arch/nios2/include/asm/entry.h
++++ b/arch/nios2/include/asm/entry.h
+@@ -50,7 +50,8 @@
+ 	stw	r13, PT_R13(sp)
+ 	stw	r14, PT_R14(sp)
+ 	stw	r15, PT_R15(sp)
+-	stw	r2, PT_ORIG_R2(sp)
++	movi	r24, -1
++	stw	r24, PT_ORIG_R2(sp)
+ 	stw	r7, PT_ORIG_R7(sp)
  
- 		/* Disable COP interrupts */
--		writel_relaxed(~0ul, ictlr + ICTLR_COP_IER_CLR);
-+		writel_relaxed(GENMASK(31, 0), ictlr + ICTLR_COP_IER_CLR);
+ 	stw	ra, PT_RA(sp)
+--- a/arch/nios2/kernel/entry.S
++++ b/arch/nios2/kernel/entry.S
+@@ -185,6 +185,7 @@ ENTRY(handle_system_call)
+ 	ldw	r5, PT_R5(sp)
  
- 		/* Disable CPU interrupts */
--		writel_relaxed(~0ul, ictlr + ICTLR_CPU_IER_CLR);
-+		writel_relaxed(GENMASK(31, 0), ictlr + ICTLR_CPU_IER_CLR);
+ local_restart:
++	stw	r2, PT_ORIG_R2(sp)
+ 	/* Check that the requested system call is within limits */
+ 	movui	r1, __NR_syscalls
+ 	bgeu	r2, r1, ret_invsyscall
+@@ -336,9 +337,6 @@ external_interrupt:
+ 	/* skip if no interrupt is pending */
+ 	beq	r12, r0, ret_from_interrupt
  
- 		/* Enable the wakeup sources of ictlr */
- 		writel_relaxed(lic->ictlr_wake_mask[i], ictlr + ICTLR_CPU_IER_SET);
-@@ -172,12 +172,12 @@ static void tegra_ictlr_resume(void)
- 
- 		writel_relaxed(lic->cpu_iep[i],
- 			       ictlr + ICTLR_CPU_IEP_CLASS);
--		writel_relaxed(~0ul, ictlr + ICTLR_CPU_IER_CLR);
-+		writel_relaxed(GENMASK(31, 0), ictlr + ICTLR_CPU_IER_CLR);
- 		writel_relaxed(lic->cpu_ier[i],
- 			       ictlr + ICTLR_CPU_IER_SET);
- 		writel_relaxed(lic->cop_iep[i],
- 			       ictlr + ICTLR_COP_IEP_CLASS);
--		writel_relaxed(~0ul, ictlr + ICTLR_COP_IER_CLR);
-+		writel_relaxed(GENMASK(31, 0), ictlr + ICTLR_COP_IER_CLR);
- 		writel_relaxed(lic->cop_ier[i],
- 			       ictlr + ICTLR_COP_IER_SET);
- 	}
-@@ -312,7 +312,7 @@ static int __init tegra_ictlr_init(struct device_node *node,
- 		lic->base[i] = base;
- 
- 		/* Disable all interrupts */
--		writel_relaxed(~0UL, base + ICTLR_CPU_IER_CLR);
-+		writel_relaxed(GENMASK(31, 0), base + ICTLR_CPU_IER_CLR);
- 		/* All interrupts target IRQ */
- 		writel_relaxed(0, base + ICTLR_CPU_IEP_CLASS);
- 
--- 
-2.35.1
-
+-	movi	r24, -1
+-	stw	r24, PT_ORIG_R2(sp)
+-
+ 	/*
+ 	 * Process an external hardware interrupt.
+ 	 */
 
 
