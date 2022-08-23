@@ -2,47 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 20F85C49EC2
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 74E5FC49EC3
 	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 10:26:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354849AbiHWK0f (ORCPT
+        id S1354923AbiHWK0u (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 06:26:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60644 "EHLO
+        Tue, 23 Aug 2022 06:26:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60868 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353611AbiHWKLn (ORCPT
+        with ESMTP id S1353790AbiHWKMH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 06:11:43 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EE49413E0D;
-        Tue, 23 Aug 2022 01:57:43 -0700 (PDT)
+        Tue, 23 Aug 2022 06:12:07 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8391CAE43;
+        Tue, 23 Aug 2022 01:58:25 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 8A51361555;
-        Tue, 23 Aug 2022 08:57:43 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 85A70C433D6;
-        Tue, 23 Aug 2022 08:57:42 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 0FDFAB81C39;
+        Tue, 23 Aug 2022 08:58:24 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4DECEC433D6;
+        Tue, 23 Aug 2022 08:58:22 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661245063;
-        bh=okJOAwiVkcqXe9Psl92GGX87dAbkBAg+7UOYMgzJ/PA=;
+        s=korg; t=1661245102;
+        bh=EDm+cXKravyMKJOtAFbZaSk7wAygPsVXHZEc10Upyg8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=QTW3+AgfZXiw0/AtayonQoqMq7AGTJ/P7wFhi+FaEbtTIxSklqGdsDPmnn4S1DD6E
-         T07hyRhgM5zEAKjeVYy8wasZz1eMKU+JqN8PvL1Qd62zMjGfN4E3tnV+FJqn5UJts4
-         QzXYiohpCUgWPq6WEtrjUTAQ6l/os+c4NsYJTh7I=
+        b=z5fJS9XQWaWnNrTgVUaGlP/Hm6J9TV69ActYBvJtS4BWd2dQfe+UAyjcYThX04rWL
+         X6nLqh4fOpFjiY8n5P/XqHbyp9ItnzlRHW+YL5+4F7PGs/Jd7VIAjHybwYOKjmzS37
+         nlGahhpaPwDFN2nxTFuxlXKVVNUIB08yQ8GvDfhw=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Yi Zhang <yi.zhang@redhat.com>,
-        Sagi Grimberg <sagi@grimberg.me>,
-        Christoph Hellwig <hch@lst.de>, Jens Axboe <axboe@kernel.dk>,
+        stable@vger.kernel.org, Liang He <windhl@126.com>,
+        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 202/244] nvmet-tcp: fix lockdep complaint on nvmet_tcp_wq flush during queue teardown
-Date:   Tue, 23 Aug 2022 10:26:01 +0200
-Message-Id: <20220823080106.233438629@linuxfoundation.org>
+Subject: [PATCH 4.14 223/229] mips: cavium-octeon: Fix missing of_node_put() in octeon2_usb_clocks_start
+Date:   Tue, 23 Aug 2022 10:26:24 +0200
+Message-Id: <20220823080101.605361180@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220823080059.091088642@linuxfoundation.org>
-References: <20220823080059.091088642@linuxfoundation.org>
+In-Reply-To: <20220823080053.202747790@linuxfoundation.org>
+References: <20220823080053.202747790@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -51,43 +50,39 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Sagi Grimberg <sagi@grimberg.me>
+From: Liang He <windhl@126.com>
 
-[ Upstream commit 533d2e8b4d5e4c89772a0adce913525fb86cbbee ]
+[ Upstream commit 7a9f743ceead60ed454c46fbc3085ee9a79cbebb ]
 
-We probably need nvmet_tcp_wq to have MEM_RECLAIM as we are
-sending/receiving for the socket from works on this workqueue.
-Also this eliminates lockdep complaints:
---
-[ 6174.010200] workqueue: WQ_MEM_RECLAIM
-nvmet-wq:nvmet_tcp_release_queue_work [nvmet_tcp] is flushing
-!WQ_MEM_RECLAIM nvmet_tcp_wq:nvmet_tcp_io_work [nvmet_tcp]
-[ 6174.010216] WARNING: CPU: 20 PID: 14456 at kernel/workqueue.c:2628
-check_flush_dependency+0x110/0x14c
+We should call of_node_put() for the reference 'uctl_node' returned by
+of_get_parent() which will increase the refcount. Otherwise, there will
+be a refcount leak bug.
 
-Reported-by: Yi Zhang <yi.zhang@redhat.com>
-Signed-off-by: Sagi Grimberg <sagi@grimberg.me>
-Signed-off-by: Christoph Hellwig <hch@lst.de>
-Signed-off-by: Jens Axboe <axboe@kernel.dk>
+Signed-off-by: Liang He <windhl@126.com>
+Signed-off-by: Thomas Bogendoerfer <tsbogend@alpha.franken.de>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/nvme/target/tcp.c | 3 ++-
+ arch/mips/cavium-octeon/octeon-platform.c | 3 ++-
  1 file changed, 2 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/nvme/target/tcp.c b/drivers/nvme/target/tcp.c
-index f592e5f7f5f3..889c5433c94d 100644
---- a/drivers/nvme/target/tcp.c
-+++ b/drivers/nvme/target/tcp.c
-@@ -1834,7 +1834,8 @@ static int __init nvmet_tcp_init(void)
- {
- 	int ret;
- 
--	nvmet_tcp_wq = alloc_workqueue("nvmet_tcp_wq", WQ_HIGHPRI, 0);
-+	nvmet_tcp_wq = alloc_workqueue("nvmet_tcp_wq",
-+				WQ_MEM_RECLAIM | WQ_HIGHPRI, 0);
- 	if (!nvmet_tcp_wq)
- 		return -ENOMEM;
- 
+diff --git a/arch/mips/cavium-octeon/octeon-platform.c b/arch/mips/cavium-octeon/octeon-platform.c
+index ed42fc27033c..f2a1c316608a 100644
+--- a/arch/mips/cavium-octeon/octeon-platform.c
++++ b/arch/mips/cavium-octeon/octeon-platform.c
+@@ -86,11 +86,12 @@ static void octeon2_usb_clocks_start(struct device *dev)
+ 					 "refclk-frequency", &clock_rate);
+ 		if (i) {
+ 			dev_err(dev, "No UCTL \"refclk-frequency\"\n");
++			of_node_put(uctl_node);
+ 			goto exit;
+ 		}
+ 		i = of_property_read_string(uctl_node,
+ 					    "refclk-type", &clock_type);
+-
++		of_node_put(uctl_node);
+ 		if (!i && strcmp("crystal", clock_type) == 0)
+ 			is_crystal_clock = true;
+ 	}
 -- 
 2.35.1
 
