@@ -2,96 +2,85 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2C7C5C32772
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 13:10:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6F6FCC32772
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 13:10:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240940AbiHWNKF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 09:10:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50286 "EHLO
+        id S241255AbiHWNKX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 23 Aug 2022 09:10:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48608 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241958AbiHWNJf (ORCPT
+        with ESMTP id S238281AbiHWNJr (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 09:09:35 -0400
-Received: from mail-lf1-x12d.google.com (mail-lf1-x12d.google.com [IPv6:2a00:1450:4864:20::12d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2E908133B9B
-        for <linux-kernel@vger.kernel.org>; Tue, 23 Aug 2022 03:11:24 -0700 (PDT)
-Received: by mail-lf1-x12d.google.com with SMTP id bq23so9956182lfb.7
-        for <linux-kernel@vger.kernel.org>; Tue, 23 Aug 2022 03:11:23 -0700 (PDT)
+        Tue, 23 Aug 2022 09:09:47 -0400
+Received: from mail-pf1-f178.google.com (mail-pf1-f178.google.com [209.85.210.178])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A02457E026;
+        Tue, 23 Aug 2022 03:11:14 -0700 (PDT)
+Received: by mail-pf1-f178.google.com with SMTP id f17so6860729pfk.11;
+        Tue, 23 Aug 2022 03:11:14 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc;
-        bh=ZQTlzZhSz/F6Dyvy8ent1rccjYe8xNJQ3KifGL8COg8=;
-        b=xdzD51NB6krEq2oSamBwJSqBmPConyxmXnOPIM2tI2HBKOxUv7620iJReAQX4+6ggD
-         BjzkooN73GabBqwLc+zUjIWz2djjaLSR5UB5D0cBZofADRLsDJnMS4C99xqVHKGF7Rdi
-         Bu8n5tx/Skd2MItQwGQcStTFSXtU+33U3vOxaLqdEzgiWQKCl+waW4MwyIo4lWeHpVz+
-         cirMi9NxZWWm8QbJcRJjbffzrSwpf71cqxPl+MOzKhggBImETjovYgL0GUiwP9N5O7hy
-         FStxMNxqnSzQIhg00KU0PdZU/lSNsw4Du4CkazOCKfkl8fT59Oi1obPyTMPVhNnvjnc7
-         /eug==
+        d=gmail.com; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc;
+        bh=6cz2LwXnYJOLYd61Se+LQLyoxLetDJDlLmQ9IRtJXFk=;
+        b=UboNgpxV1kT5Bjd+Fj9yjcjx4kDl4eEJq2D6RzW0KFtgfpVh6GC4db5qsznaJOn1uc
+         +IJJDBDpRAx3nGK2Okd/6uRPmByiDsWbwBaNlHDHBEF7HCSd9YDqxexZmvZzQwTyRvM1
+         InBKEhfsRHcX+V0tve0R3qPvETYns7RmZG5V9/V/CiG3xfOgo8TXvrLIr730S/pxv8RO
+         iFB2SxGEKVQEji8JfVou9Dopqf0Rc0RQY7HgasVGWPJeHoEOe9eJ3RcLdMil4GM/ucTm
+         vzqzJ1qtli8gZXxuhUREomOLJC8uEJjHYDsEs7LOuX4EsOnZyZK3882zGwnqnnvt/Liw
+         pIBQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-message-state:from:to:cc;
-        bh=ZQTlzZhSz/F6Dyvy8ent1rccjYe8xNJQ3KifGL8COg8=;
-        b=pN2XxzHNOQV2/TEUXO21nDMZLSiK1k2AKflxhHmcBHRMD5IYYFZQgLJYxHKwljWWCU
-         G8CxVQBsCnu4oyVh5Ic399gExx0AY1ol1261Z3JVsQP8EeKjQt7wnAfvkqzl44DBPcr8
-         /gTyKNbYJLflhZtBe1y8Fp9kXngFHnO11E46tueaCp9JushXNeTURPTsXMxWXh4osvIa
-         S58/GZZwHO68t/CzFJvX854kSazyshok13E5ZHvrfPIsiqz0+2PcSfiydMmJTQqedjIr
-         UuoRiRHTot9Olof6gkLqgqdcmnEDJfJRI8c7yeupVyjakSShGu+rD0ZHwAerQbDNexIa
-         4gew==
-X-Gm-Message-State: ACgBeo3w9eGHInKpFMakV37pv3ejAuG3owqASG7FsYbobCRDJSQP0n8D
-        ZQCDqx/aXqz35cQ2+GrAleImcw==
-X-Google-Smtp-Source: AA6agR5fDnH2XcXgR+T6xdK3Nc9HZ8ROsCJIQuD4B0AHH6qkWJfXdbFgMHgnduR4NDjt9ZBTuBdLkQ==
-X-Received: by 2002:a05:6512:aca:b0:492:7db6:95f1 with SMTP id n10-20020a0565120aca00b004927db695f1mr8993150lfu.433.1661249435995;
-        Tue, 23 Aug 2022 03:10:35 -0700 (PDT)
-Received: from krzk-bin.. (89-27-92-210.bb.dnainternet.fi. [89.27.92.210])
-        by smtp.gmail.com with ESMTPSA id z15-20020a056512370f00b0048af39ff3edsm2426771lfr.122.2022.08.23.03.10.34
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc;
+        bh=6cz2LwXnYJOLYd61Se+LQLyoxLetDJDlLmQ9IRtJXFk=;
+        b=HmClqmUr4yrMgNgRavry2RgI4BbZm6PzOe/9ZUF4YcjrGPE7R1zDK0TL+1eQQ0MCSE
+         PKEhImpmQUhDDvOAKIiB91mknzoxD/WOojZXCGQdPi69J6hcp5V0pty9nu9kxM/WzCfn
+         hjsyVTmafTC41u6cJFlmEzy+Jz8wnwRxBEiqBpV3+pWM829vp3ilh7Q3tpXQdZgKU0c9
+         fFAPcNSStn6tKV6+LKmhf4/GA+cWSH25d1z4p1HvqEV4knVMouDwYKxmKZkB+aUkuzEd
+         yfJDD5h9NxRtlWEFmO9U7S+38HhXF9GgR0cMU3h5h0FD6MXZ1xC02YVQ7/vjROJdOtRF
+         yjdQ==
+X-Gm-Message-State: ACgBeo2ktldLX5sVXqFjW1Lu+DjWRIS9/yrKV1xiVfrDXNb1s3WCLKVS
+        6pqKT1t+xR7vokXjoOdZ44I=
+X-Google-Smtp-Source: AA6agR6+gV64bMCZkfhFjFnwJCwoGqtEemCF5u67XouDXNb70rab8m97StWON1OgwRX6hcY/+SBL1g==
+X-Received: by 2002:a63:c5:0:b0:40d:d290:24ef with SMTP id 188-20020a6300c5000000b0040dd29024efmr20172457pga.141.1661249317084;
+        Tue, 23 Aug 2022 03:08:37 -0700 (PDT)
+Received: from debian.me (subs32-116-206-28-56.three.co.id. [116.206.28.56])
+        by smtp.gmail.com with ESMTPSA id n15-20020a170902d2cf00b0016c2cdea409sm3578195plc.280.2022.08.23.03.08.36
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 23 Aug 2022 03:10:35 -0700 (PDT)
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-To:     Andrzej Hajda <andrzej.hajda@intel.com>,
-        Neil Armstrong <narmstrong@baylibre.com>,
-        Robert Foss <robert.foss@linaro.org>,
-        Laurent Pinchart <Laurent.pinchart@ideasonboard.com>,
-        Jonas Karlman <jonas@kwiboo.se>,
-        Jernej Skrabec <jernej.skrabec@gmail.com>,
-        David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        dri-devel@lists.freedesktop.org, devicetree@vger.kernel.org,
+        Tue, 23 Aug 2022 03:08:36 -0700 (PDT)
+Received: by debian.me (Postfix, from userid 1000)
+        id 9CBA710113A; Tue, 23 Aug 2022 17:08:33 +0700 (WIB)
+Date:   Tue, 23 Aug 2022 17:08:33 +0700
+From:   Bagas Sanjaya <bagasdotme@gmail.com>
+To:     Greg KH <gregkh@linuxfoundation.org>
+Cc:     Jilin Yuan <yuanjilin@cdjrlc.com>, jirislaby@kernel.org,
+        colin.king@intel.com, linux-serial@vger.kernel.org,
         linux-kernel@vger.kernel.org
-Cc:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Subject: [PATCH] dt-bindings: display: synopsys,dw-hdmi: drop ref from reg-io-width
-Date:   Tue, 23 Aug 2022 13:10:31 +0300
-Message-Id: <20220823101031.387082-1-krzysztof.kozlowski@linaro.org>
-X-Mailer: git-send-email 2.34.1
+Subject: Re: [PATCH] serial/jsm: fix repeated words in comments
+Message-ID: <YwSnIYalaRCGggTA@debian.me>
+References: <20220822121457.21004-1-yuanjilin@cdjrlc.com>
+ <YwN09jVOF4WKw4yZ@kroah.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <YwN09jVOF4WKw4yZ@kroah.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-reg-io-width is a standard property, so no need for defining its type
-with $ref.
+On Mon, Aug 22, 2022 at 02:22:14PM +0200, Greg KH wrote:
+> On Mon, Aug 22, 2022 at 08:14:57PM +0800, Jilin Yuan wrote:
+> >  Delete the redundant word 'way'.
+> 
+> Again, not redundant.
 
-Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
----
- .../devicetree/bindings/display/bridge/synopsys,dw-hdmi.yaml     | 1 -
- 1 file changed, 1 deletion(-)
+Hi Greg,
 
-diff --git a/Documentation/devicetree/bindings/display/bridge/synopsys,dw-hdmi.yaml b/Documentation/devicetree/bindings/display/bridge/synopsys,dw-hdmi.yaml
-index b00246faea57..4b7e54a8f037 100644
---- a/Documentation/devicetree/bindings/display/bridge/synopsys,dw-hdmi.yaml
-+++ b/Documentation/devicetree/bindings/display/bridge/synopsys,dw-hdmi.yaml
-@@ -26,7 +26,6 @@ properties:
-   reg-io-width:
-     description:
-       Width (in bytes) of the registers specified by the reg property.
--    $ref: /schemas/types.yaml#/definitions/uint32
-     enum: [1, 4]
-     default: 1
- 
+The original comment means "The assumption is that the flow control
+should have stopped the way things are flowed, before the flow got into
+the state that some data have to be dropped.".
+
+Thanks.
+
 -- 
-2.34.1
-
+An old man doll... just what I always wanted! - Clara
