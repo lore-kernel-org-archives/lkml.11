@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AA56BC32774
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 11:48:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 18EB8C32772
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 11:48:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358443AbiHWLsp (ORCPT
+        id S1358431AbiHWLsm (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 07:48:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42196 "EHLO
+        Tue, 23 Aug 2022 07:48:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42010 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1358246AbiHWLog (ORCPT
+        with ESMTP id S1358213AbiHWLoL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 07:44:36 -0400
+        Tue, 23 Aug 2022 07:44:11 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2A51DD11FE;
-        Tue, 23 Aug 2022 02:30:01 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A4161D11EA;
+        Tue, 23 Aug 2022 02:29:58 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id C83BE6139D;
-        Tue, 23 Aug 2022 09:30:00 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D123FC433D6;
-        Tue, 23 Aug 2022 09:29:59 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id C68A661227;
+        Tue, 23 Aug 2022 09:29:57 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BA883C433D6;
+        Tue, 23 Aug 2022 09:29:56 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661247000;
-        bh=ypEv1n++CtxAilts2e0nw7v+ULA4+1lQCQ2OdLMVVwA=;
+        s=korg; t=1661246997;
+        bh=QXKbbD2rBMM2SVJ7jtAh4BSriiVTIwVcRFRHymGJ04g=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=wKoI6ilHeDLmIg3wVdm2+BZORR0UpCKYXyANPDC7676ZSIFLxAy4IIEd8/S9Zdfyv
-         D17xb+q51kpXnM8L3Pceo+c4zguUWgxpZwEUbzfXeNO+8WnQIpRIHLpE92NNzlXIhY
-         vyf0D6EB4wuTpR1wzW52sOifDHoibXGe4bXh1HWk=
+        b=Z0CmEd7+xlJ7bczPYlGUzSTqlBduqG2wFA9QnPv2aN8CGPeby1a/+ljBcracTvU5M
+         zewdCB36ATFAIPyZKi5aMbJCMcRVt2CcBWyIXJDFBcE4uQVhnhDSxQFHoh2RnMbYd6
+         cjnkWUaTCu5X1Mc9QJEyRsdunjUVESLTdvt786sU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        =?UTF-8?q?Amadeusz=20S=C5=82awi=C5=84ski?= 
-        <amadeuszx.slawinski@linux.intel.com>, Takashi Iwai <tiwai@suse.de>
-Subject: [PATCH 5.4 286/389] ALSA: info: Fix llseek return value when using callback
-Date:   Tue, 23 Aug 2022 10:26:04 +0200
-Message-Id: <20220823080127.501170663@linuxfoundation.org>
+        stable@vger.kernel.org, Jamal Hadi Salim <jhs@mojatatu.com>,
+        Stephen Hemminger <stephen@networkplumber.org>,
+        "David S. Miller" <davem@davemloft.net>
+Subject: [PATCH 5.4 285/389] net_sched: cls_route: disallow handle of 0
+Date:   Tue, 23 Aug 2022 10:26:03 +0200
+Message-Id: <20220823080127.462084731@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220823080115.331990024@linuxfoundation.org>
 References: <20220823080115.331990024@linuxfoundation.org>
@@ -50,51 +50,87 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Amadeusz Sławiński <amadeuszx.slawinski@linux.intel.com>
+From: Jamal Hadi Salim <jhs@mojatatu.com>
 
-commit 9be080edcca330be4af06b19916c35227891e8bc upstream.
+commit 02799571714dc5dd6948824b9d080b44a295f695 upstream.
 
-When using callback there was a flow of
+Follows up on:
+https://lore.kernel.org/all/20220809170518.164662-1-cascardo@canonical.com/
 
-	ret = -EINVAL
-	if (callback) {
-		offset = callback();
-		goto out;
-	}
-	...
-	offset = some other value in case of no callback;
-	ret = offset;
-out:
-	return ret;
+handle of 0 implies from/to of universe realm which is not very
+sensible.
 
-which causes the snd_info_entry_llseek() to return -EINVAL when there is
-callback handler. Fix this by setting "ret" directly to callback return
-value before jumping to "out".
+Lets see what this patch will do:
+$sudo tc qdisc add dev $DEV root handle 1:0 prio
 
-Fixes: 73029e0ff18d ("ALSA: info - Implement common llseek for binary mode")
-Signed-off-by: Amadeusz Sławiński <amadeuszx.slawinski@linux.intel.com>
-Cc: <stable@vger.kernel.org>
-Link: https://lore.kernel.org/r/20220817124924.3974577-1-amadeuszx.slawinski@linux.intel.com
-Signed-off-by: Takashi Iwai <tiwai@suse.de>
+//lets manufacture a way to insert handle of 0
+$sudo tc filter add dev $DEV parent 1:0 protocol ip prio 100 \
+route to 0 from 0 classid 1:10 action ok
+
+//gets rejected...
+Error: handle of 0 is not valid.
+We have an error talking to the kernel, -1
+
+//lets create a legit entry..
+sudo tc filter add dev $DEV parent 1:0 protocol ip prio 100 route from 10 \
+classid 1:10 action ok
+
+//what did the kernel insert?
+$sudo tc filter ls dev $DEV parent 1:0
+filter protocol ip pref 100 route chain 0
+filter protocol ip pref 100 route chain 0 fh 0x000a8000 flowid 1:10 from 10
+	action order 1: gact action pass
+	 random type none pass val 0
+	 index 1 ref 1 bind 1
+
+//Lets try to replace that legit entry with a handle of 0
+$ sudo tc filter replace dev $DEV parent 1:0 protocol ip prio 100 \
+handle 0x000a8000 route to 0 from 0 classid 1:10 action drop
+
+Error: Replacing with handle of 0 is invalid.
+We have an error talking to the kernel, -1
+
+And last, lets run Cascardo's POC:
+$ ./poc
+0
+0
+-22
+-22
+-22
+
+Signed-off-by: Jamal Hadi Salim <jhs@mojatatu.com>
+Acked-by: Stephen Hemminger <stephen@networkplumber.org>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- sound/core/info.c |    6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+ net/sched/cls_route.c |   10 ++++++++++
+ 1 file changed, 10 insertions(+)
 
---- a/sound/core/info.c
-+++ b/sound/core/info.c
-@@ -112,9 +112,9 @@ static loff_t snd_info_entry_llseek(stru
- 	entry = data->entry;
- 	mutex_lock(&entry->access);
- 	if (entry->c.ops->llseek) {
--		offset = entry->c.ops->llseek(entry,
--					      data->file_private_data,
--					      file, offset, orig);
-+		ret = entry->c.ops->llseek(entry,
-+					   data->file_private_data,
-+					   file, offset, orig);
- 		goto out;
+--- a/net/sched/cls_route.c
++++ b/net/sched/cls_route.c
+@@ -424,6 +424,11 @@ static int route4_set_parms(struct net *
+ 			return -EINVAL;
  	}
+ 
++	if (!nhandle) {
++		NL_SET_ERR_MSG(extack, "Replacing with handle of 0 is invalid");
++		return -EINVAL;
++	}
++
+ 	h1 = to_hash(nhandle);
+ 	b = rtnl_dereference(head->table[h1]);
+ 	if (!b) {
+@@ -477,6 +482,11 @@ static int route4_change(struct net *net
+ 	int err;
+ 	bool new = true;
+ 
++	if (!handle) {
++		NL_SET_ERR_MSG(extack, "Creating with handle of 0 is invalid");
++		return -EINVAL;
++	}
++
+ 	if (opt == NULL)
+ 		return handle ? -EINVAL : 0;
  
 
 
