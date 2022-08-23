@@ -2,44 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 92EEFC32774
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A286BC3F6B0
 	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 10:12:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353190AbiHWKLB (ORCPT
+        id S1353225AbiHWKLF (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 06:11:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46238 "EHLO
+        Tue, 23 Aug 2022 06:11:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44498 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241398AbiHWKCf (ORCPT
+        with ESMTP id S1352320AbiHWKCh (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 06:02:35 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7016BA2632;
-        Tue, 23 Aug 2022 01:51:06 -0700 (PDT)
+        Tue, 23 Aug 2022 06:02:37 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EC7CFA2630;
+        Tue, 23 Aug 2022 01:51:07 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 379C9CE1B44;
-        Tue, 23 Aug 2022 08:51:04 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4D5A6C433C1;
-        Tue, 23 Aug 2022 08:51:02 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id C5D256150F;
+        Tue, 23 Aug 2022 08:51:06 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A2674C433C1;
+        Tue, 23 Aug 2022 08:51:05 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661244662;
-        bh=7DhdAqgYCZW1Mrz80uj77CEkRyAps9tk3J+/ZPNDaSs=;
+        s=korg; t=1661244666;
+        bh=t9EAyhTB6WaOrs6vp1R5UqNAeAWhZro/XkIxBgAHZao=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=aUjrgtgrPoYDwepJMjqQMHyfIshIERGqg3kxSKbyREy4JCP8+R4GfwDitiU2wFDK/
-         ApU3kbB/qjp2ekBbtxAclmYU7cLJfAhu4/Bgl25g8NCaxZOlUc9T//a9tM29cWrowr
-         6lWG/RYeQINUripeV0J5kBC5R++tRvNyxb6nU2kc=
+        b=cfANHe7ae8ki5YsgBBeVvRiXmM/xOgZ/CR4W1WYJUAUEl/Yv1qaKjauTYFU42m9VP
+         FAjzgsbXqwLKh+EiQsR2R/1Uq8zStnG8dEWt5OUv0qyEG8SXMkFYb267XwRKyRXqDL
+         hT3N/Uakmq8Xbi9Zyl1aCg6CUfN3o+jS+B+ogI0s=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Pablo Neira Ayuso <pablo@netfilter.org>
-Subject: [PATCH 5.15 130/244] netfilter: nf_tables: disallow NFT_SET_ELEM_CATCHALL and NFT_SET_ELEM_INTERVAL_END
-Date:   Tue, 23 Aug 2022 10:24:49 +0200
-Message-Id: <20220823080103.446569574@linuxfoundation.org>
+        stable@vger.kernel.org, Dan Carpenter <dan.carpenter@oracle.com>,
+        Luiz Augusto von Dentz <luiz.von.dentz@intel.com>
+Subject: [PATCH 4.14 172/229] Bluetooth: L2CAP: Fix l2cap_global_chan_by_psm regression
+Date:   Tue, 23 Aug 2022 10:25:33 +0200
+Message-Id: <20220823080059.774255146@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220823080059.091088642@linuxfoundation.org>
-References: <20220823080059.091088642@linuxfoundation.org>
+In-Reply-To: <20220823080053.202747790@linuxfoundation.org>
+References: <20220823080053.202747790@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -48,30 +49,56 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Pablo Neira Ayuso <pablo@netfilter.org>
+From: Luiz Augusto von Dentz <luiz.von.dentz@intel.com>
 
-commit fc0ae524b5fd2938c94d56da3f749f11eb3273d5 upstream.
+commit 332f1795ca202489c665a75e62e18ff6284de077 upstream.
 
-These flags are mutually exclusive, report EINVAL in this case.
+The patch d0be8347c623: "Bluetooth: L2CAP: Fix use-after-free caused
+by l2cap_chan_put" from Jul 21, 2022, leads to the following Smatch
+static checker warning:
 
-Fixes: aaa31047a6d2 ("netfilter: nftables: add catch-all set element support")
-Signed-off-by: Pablo Neira Ayuso <pablo@netfilter.org>
+        net/bluetooth/l2cap_core.c:1977 l2cap_global_chan_by_psm()
+        error: we previously assumed 'c' could be null (see line 1996)
+
+Fixes: d0be8347c623 ("Bluetooth: L2CAP: Fix use-after-free caused by l2cap_chan_put")
+Reported-by: Dan Carpenter <dan.carpenter@oracle.com>
+Signed-off-by: Luiz Augusto von Dentz <luiz.von.dentz@intel.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- net/netfilter/nf_tables_api.c |    3 +++
- 1 file changed, 3 insertions(+)
+ net/bluetooth/l2cap_core.c |   13 ++++++-------
+ 1 file changed, 6 insertions(+), 7 deletions(-)
 
---- a/net/netfilter/nf_tables_api.c
-+++ b/net/netfilter/nf_tables_api.c
-@@ -5101,6 +5101,9 @@ static int nft_setelem_parse_flags(const
- 	if (!(set->flags & NFT_SET_INTERVAL) &&
- 	    *flags & NFT_SET_ELEM_INTERVAL_END)
- 		return -EINVAL;
-+	if ((*flags & (NFT_SET_ELEM_INTERVAL_END | NFT_SET_ELEM_CATCHALL)) ==
-+	    (NFT_SET_ELEM_INTERVAL_END | NFT_SET_ELEM_CATCHALL))
-+		return -EINVAL;
+--- a/net/bluetooth/l2cap_core.c
++++ b/net/bluetooth/l2cap_core.c
+@@ -1804,11 +1804,11 @@ static struct l2cap_chan *l2cap_global_c
+ 						   bdaddr_t *dst,
+ 						   u8 link_type)
+ {
+-	struct l2cap_chan *c, *c1 = NULL;
++	struct l2cap_chan *c, *tmp, *c1 = NULL;
  
- 	return 0;
- }
+ 	read_lock(&chan_list_lock);
+ 
+-	list_for_each_entry(c, &chan_list, global_l) {
++	list_for_each_entry_safe(c, tmp, &chan_list, global_l) {
+ 		if (state && c->state != state)
+ 			continue;
+ 
+@@ -1827,11 +1827,10 @@ static struct l2cap_chan *l2cap_global_c
+ 			dst_match = !bacmp(&c->dst, dst);
+ 			if (src_match && dst_match) {
+ 				c = l2cap_chan_hold_unless_zero(c);
+-				if (!c)
+-					continue;
+-
+-				read_unlock(&chan_list_lock);
+-				return c;
++				if (c) {
++					read_unlock(&chan_list_lock);
++					return c;
++				}
+ 			}
+ 
+ 			/* Closest match */
 
 
