@@ -2,50 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EB382C32793
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 12:11:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C1ADFC32772
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 12:11:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1359341AbiHWML0 (ORCPT
+        id S1351810AbiHWML3 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 08:11:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40278 "EHLO
+        Tue, 23 Aug 2022 08:11:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44002 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1359550AbiHWMKb (ORCPT
+        with ESMTP id S1359683AbiHWMK4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 08:10:31 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 702EF4D4ED;
-        Tue, 23 Aug 2022 02:38:41 -0700 (PDT)
+        Tue, 23 Aug 2022 08:10:56 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3FFBE97D72;
+        Tue, 23 Aug 2022 02:38:55 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id ABB366146C;
-        Tue, 23 Aug 2022 09:38:41 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 86649C433D6;
-        Tue, 23 Aug 2022 09:38:40 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 07B32B81C99;
+        Tue, 23 Aug 2022 09:37:47 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 642F5C433C1;
+        Tue, 23 Aug 2022 09:37:45 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661247521;
-        bh=XGHTd82AAZ1RrJx/a/IRBgTOgLN+rnCHxw5CMHRf92s=;
+        s=korg; t=1661247465;
+        bh=7cWkeorKSFWK24I8Raya6UXlPgQC7wmOkrCqH3whksE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=G4HB4MN8RBE3YDKEeT/O9NBMq7uNt6dHeq+Sp5uBnDRE+H/4X+E4eYyVrsuq9reec
-         9W3mg6X+XBhCrBm0k7e+PDtHmvzHpURJl3hMwGQKfTB4sYknVD/4sb3MZsqClXtrU8
-         2zq/z8TWUt9N1Tsl/S0xrELCk+6ag5baU/DeKyc8=
+        b=GWClgherkUU0+vjuBtvqdsN/f7D5kMv4hIWQKcEGmaSUrTeLN6mBmQvfj3lG86K3q
+         5jfJXnkiF77QS1bYHTTFreuq8d4SXCTMXGbh/WjUfVfXzZbTTVJ5PEZHK7xKcplXUc
+         jhnqphoS3OP9yhdfkY9wtVrqWhVd9h7hwb475aNs=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
-        Masami Hiramatsu <mhiramat@kernel.org>,
-        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
-        Ingo Molnar <mingo@redhat.com>, Jiri Olsa <jolsa@kernel.org>,
-        kernel-janitors@vger.kernel.org,
-        Mark Rutland <mark.rutland@arm.com>,
-        Namhyung Kim <namhyung@kernel.org>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Arnaldo Carvalho de Melo <acme@redhat.com>
-Subject: [PATCH 5.10 062/158] perf probe: Fix an error handling path in parse_perf_probe_command()
-Date:   Tue, 23 Aug 2022 10:26:34 +0200
-Message-Id: <20220823080048.576950280@linuxfoundation.org>
+        stable@vger.kernel.org, Guillaume Nault <gnault@redhat.com>,
+        Matthias May <matthias.may@westermo.com>,
+        Jakub Kicinski <kuba@kernel.org>
+Subject: [PATCH 5.10 046/158] ipv6: do not use RT_TOS for IPv6 flowlabel
+Date:   Tue, 23 Aug 2022 10:26:18 +0200
+Message-Id: <20220823080047.954366915@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220823080046.056825146@linuxfoundation.org>
 References: <20220823080046.056825146@linuxfoundation.org>
@@ -57,44 +50,42 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+From: Matthias May <matthias.may@westermo.com>
 
-commit 4bf6dcaa93bcd083a13c278a91418fe10e6d23a0 upstream.
+commit ab7e2e0dfa5d37540ab1dc5376e9a2cb9188925d upstream.
 
-If a memory allocation fail, we should branch to the error handling path
-in order to free some resources allocated a few lines above.
+According to Guillaume Nault RT_TOS should never be used for IPv6.
 
-Fixes: 15354d54698648e2 ("perf probe: Generate event name with line number")
-Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
-Acked-by: Masami Hiramatsu <mhiramat@kernel.org>
-Cc: Alexander Shishkin <alexander.shishkin@linux.intel.com>
-Cc: Ingo Molnar <mingo@redhat.com>
-Cc: Jiri Olsa <jolsa@kernel.org>
-Cc: kernel-janitors@vger.kernel.org
-Cc: Mark Rutland <mark.rutland@arm.com>
-Cc: Namhyung Kim <namhyung@kernel.org>
-Cc: Peter Zijlstra <peterz@infradead.org>
-Link: https://lore.kernel.org/r/b71bcb01fa0c7b9778647235c3ab490f699ba278.1659797452.git.christophe.jaillet@wanadoo.fr
-Signed-off-by: Arnaldo Carvalho de Melo <acme@redhat.com>
+Quote:
+RT_TOS() is an old macro used to interprete IPv4 TOS as described in
+the obsolete RFC 1349. It's conceptually wrong to use it even in IPv4
+code, although, given the current state of the code, most of the
+existing calls have no consequence.
+
+But using RT_TOS() in IPv6 code is always a bug: IPv6 never had a "TOS"
+field to be interpreted the RFC 1349 way. There's no historical
+compatibility to worry about.
+
+Fixes: 571912c69f0e ("net: UDP tunnel encapsulation module for tunnelling different protocols like MPLS, IP, NSH etc.")
+Acked-by: Guillaume Nault <gnault@redhat.com>
+Signed-off-by: Matthias May <matthias.may@westermo.com>
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- tools/perf/util/probe-event.c |    6 ++++--
- 1 file changed, 4 insertions(+), 2 deletions(-)
+ net/ipv6/ip6_output.c |    3 +--
+ 1 file changed, 1 insertion(+), 2 deletions(-)
 
---- a/tools/perf/util/probe-event.c
-+++ b/tools/perf/util/probe-event.c
-@@ -1760,8 +1760,10 @@ int parse_perf_probe_command(const char
- 	if (!pev->event && pev->point.function && pev->point.line
- 			&& !pev->point.lazy_line && !pev->point.offset) {
- 		if (asprintf(&pev->event, "%s_L%d", pev->point.function,
--			pev->point.line) < 0)
--			return -ENOMEM;
-+			pev->point.line) < 0) {
-+			ret = -ENOMEM;
-+			goto out;
-+		}
- 	}
+--- a/net/ipv6/ip6_output.c
++++ b/net/ipv6/ip6_output.c
+@@ -1313,8 +1313,7 @@ struct dst_entry *ip6_dst_lookup_tunnel(
+ 	fl6.daddr = info->key.u.ipv6.dst;
+ 	fl6.saddr = info->key.u.ipv6.src;
+ 	prio = info->key.tos;
+-	fl6.flowlabel = ip6_make_flowinfo(RT_TOS(prio),
+-					  info->key.label);
++	fl6.flowlabel = ip6_make_flowinfo(prio, info->key.label);
  
- 	/* Copy arguments and ensure return probe has no C argument */
+ 	dst = ipv6_stub->ipv6_dst_lookup_flow(net, sock->sk, &fl6,
+ 					      NULL);
 
 
