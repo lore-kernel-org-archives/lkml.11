@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3F818C32772
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 11:29:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D7247C32772
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 11:29:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241491AbiHWL3g (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 07:29:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51806 "EHLO
+        id S235876AbiHWL3k (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 23 Aug 2022 07:29:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55210 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347826AbiHWLXx (ORCPT
+        with ESMTP id S242737AbiHWLXw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 07:23:53 -0400
+        Tue, 23 Aug 2022 07:23:52 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C8496726B3;
-        Tue, 23 Aug 2022 02:23:48 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8387B71BC2;
+        Tue, 23 Aug 2022 02:23:45 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 128DD61224;
-        Tue, 23 Aug 2022 09:23:48 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 16A7AC433C1;
-        Tue, 23 Aug 2022 09:23:46 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id D59F26098A;
+        Tue, 23 Aug 2022 09:23:44 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C282EC433C1;
+        Tue, 23 Aug 2022 09:23:43 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661246627;
-        bh=0e2tt6DrrV1ZWC1oY7l9p4t3b8AMy0FXCj2qQ2cAlz0=;
+        s=korg; t=1661246624;
+        bh=NOfUXmPqSk1PmDgPrBf/kn0GN7etkIuaEtAbPGOg2Ns=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=D0S8SVaQQzpo9d/Z6osiUXQsQIE7NB6YHHKZFbbkA2h7Su8iuTBTwY5r9SCUiWGB5
-         LFWu27mt09LzOBSpdD6GIJgUEKCAxy/bbMd/MJ2RoNqVdKjgWCjmYWj/68DgDHN5QK
-         z7/5U5Sgd1YWEqQehj74Bkeh/zuO6sKj9+rQHu8w=
+        b=DaEYlyhEF4gIS/DMoCwQHTmumzIsUrUWC9U6Zis/KgqfKsyNyJN3tklybzduh5czA
+         NT4flHWro19vaXIbyE1SnZlwEjWUSZVTSDe/GmfG02Npdky1gHjdndGOjDMkd8csy/
+         CgcOlmkCx7sqJMC02+M60QZTTVgyeE9LZqpPAKdc=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Alan Stern <stern@rowland.harvard.edu>,
-        Miaoqian Lin <linmq006@gmail.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 162/389] usb: host: Fix refcount leak in ehci_hcd_ppc_of_probe
-Date:   Tue, 23 Aug 2022 10:24:00 +0200
-Message-Id: <20220823080122.386827512@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
+        Christian Lamparter <chunkeey@gmail.com>,
+        Kalle Valo <kvalo@kernel.org>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.4 128/389] wifi: p54: Fix an error handling path in p54spi_probe()
+Date:   Tue, 23 Aug 2022 10:23:26 +0200
+Message-Id: <20220823080120.975379508@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220823080115.331990024@linuxfoundation.org>
 References: <20220823080115.331990024@linuxfoundation.org>
@@ -49,36 +50,50 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Miaoqian Lin <linmq006@gmail.com>
+From: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
 
-[ Upstream commit b5c5b13cb45e2c88181308186b0001992cb41954 ]
+[ Upstream commit 83781f0162d080fec7dcb911afd1bc2f5ad04471 ]
 
-of_find_compatible_node() returns a node pointer with refcount
-incremented, we should use of_node_put() on it when done.
-Add missing of_node_put() to avoid refcount leak.
+If an error occurs after a successful call to p54spi_request_firmware(), it
+must be undone by a corresponding release_firmware() as already done in
+the error handling path of p54spi_request_firmware() and in the .remove()
+function.
 
-Fixes: 796bcae7361c ("USB: powerpc: Workaround for the PPC440EPX USBH_23 errata [take 3]")
-Acked-by: Alan Stern <stern@rowland.harvard.edu>
-Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
-Link: https://lore.kernel.org/r/20220602110849.58549-1-linmq006@gmail.com
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Add the missing call in the error handling path and remove it from
+p54spi_request_firmware() now that it is the responsibility of the caller
+to release the firmware
+
+Fixes: cd8d3d321285 ("p54spi: p54spi driver")
+Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+Acked-by: Christian Lamparter <chunkeey@gmail.com>
+Signed-off-by: Kalle Valo <kvalo@kernel.org>
+Link: https://lore.kernel.org/r/297d2547ff2ee627731662abceeab9dbdaf23231.1655068321.git.christophe.jaillet@wanadoo.fr
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/usb/host/ehci-ppc-of.c | 1 +
- 1 file changed, 1 insertion(+)
+ drivers/net/wireless/intersil/p54/p54spi.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/usb/host/ehci-ppc-of.c b/drivers/usb/host/ehci-ppc-of.c
-index 6bbaee74f7e7..28a19693c19f 100644
---- a/drivers/usb/host/ehci-ppc-of.c
-+++ b/drivers/usb/host/ehci-ppc-of.c
-@@ -148,6 +148,7 @@ static int ehci_hcd_ppc_of_probe(struct platform_device *op)
- 		} else {
- 			ehci->has_amcc_usb23 = 1;
- 		}
-+		of_node_put(np);
+diff --git a/drivers/net/wireless/intersil/p54/p54spi.c b/drivers/net/wireless/intersil/p54/p54spi.c
+index ab0fe8565851..cdb57819684a 100644
+--- a/drivers/net/wireless/intersil/p54/p54spi.c
++++ b/drivers/net/wireless/intersil/p54/p54spi.c
+@@ -164,7 +164,7 @@ static int p54spi_request_firmware(struct ieee80211_hw *dev)
+ 
+ 	ret = p54_parse_firmware(dev, priv->firmware);
+ 	if (ret) {
+-		release_firmware(priv->firmware);
++		/* the firmware is released by the caller */
+ 		return ret;
  	}
  
- 	if (of_get_property(dn, "big-endian", NULL)) {
+@@ -659,6 +659,7 @@ static int p54spi_probe(struct spi_device *spi)
+ 	return 0;
+ 
+ err_free_common:
++	release_firmware(priv->firmware);
+ 	free_irq(gpio_to_irq(p54spi_gpio_irq), spi);
+ err_free_gpio_irq:
+ 	gpio_free(p54spi_gpio_irq);
 -- 
 2.35.1
 
