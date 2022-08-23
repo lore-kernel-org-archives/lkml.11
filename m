@@ -2,135 +2,147 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0EB5DC32772
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 09:31:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 25E2DC32793
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 09:31:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350567AbiHWJa3 (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 05:30:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51024 "EHLO
+        id S235543AbiHWJbk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 23 Aug 2022 05:31:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51216 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350213AbiHWJ2u (ORCPT
+        with ESMTP id S1350351AbiHWJ3W (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 05:28:50 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 05B2791D34;
-        Tue, 23 Aug 2022 01:37:27 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id BFAA761338;
-        Tue, 23 Aug 2022 08:36:41 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 661C7C433D6;
-        Tue, 23 Aug 2022 08:36:40 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661243801;
-        bh=gqbaW8/ikRdd6TxRUOKi9A3Jc4QfMJtxgR9AO8Z7Cpk=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=bRdk4QkV7IG5Xzioet0b92s9A5eKaeSpXgRKw4rRQZ3FdSoHLtKqpU5Apyvml1v+8
-         pmjk5ySuXyTe8FKZz/OfjwatNWoSyZnLGJfUMTs47Gmt0/PmpvmSAYhUH5WE1wCl+m
-         3Ens0CFAFoMppyMDPWMNQlL7ACYKEppBHaP3Hfes=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jann Horn <jannh@google.com>,
-        Oleksij Rempel <o.rempel@pengutronix.de>,
-        Lukas Wunner <lukas@wunner.de>,
-        Oliver Neukum <oneukum@suse.com>,
-        Jakub Kicinski <kuba@kernel.org>
-Subject: [PATCH 4.14 025/229] usbnet: Fix linkwatch use-after-free on disconnect
-Date:   Tue, 23 Aug 2022 10:23:06 +0200
-Message-Id: <20220823080054.355292979@linuxfoundation.org>
-X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220823080053.202747790@linuxfoundation.org>
-References: <20220823080053.202747790@linuxfoundation.org>
-User-Agent: quilt/0.67
+        Tue, 23 Aug 2022 05:29:22 -0400
+Received: from mail-lf1-x12b.google.com (mail-lf1-x12b.google.com [IPv6:2a00:1450:4864:20::12b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0826C923CA;
+        Tue, 23 Aug 2022 01:37:31 -0700 (PDT)
+Received: by mail-lf1-x12b.google.com with SMTP id bt10so5716539lfb.1;
+        Tue, 23 Aug 2022 01:37:31 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc;
+        bh=vop6fItyvbYtkrV6IP5UVBH+x7wzffEHNhLEh8TzmD8=;
+        b=PdX27RnPGKwVCyCypErvS8EGx+jQCxJQjsN3GR6KThiHAzdSrVqpzi6+4lJ0R2Z2ZN
+         J8c+VhkgdNh7L1QWqN1bD0xhl2Zvr8pmNeW/HmfGFV7Hz51OxwuRfKtNNwThdHVBPk0j
+         bvYUq4kk6NDVLPuk0qo7kCA/XHYCuEmYnKA/cVrgVYn4aCrXWyvjDKGyAij6wY0Zkn4L
+         G8Czw9HygPAE3OyoUSWKNw3+EtS92m61SuRkgwjsYNNtrTn3aYAvowO87ZJBqAvbvqT/
+         i1JEI0YVotddMgzWYR/8Bqbbu8j4sBbyAsh2KpC3196CGZdEeWXD67uDgRwaGzg89yc0
+         cjkg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc;
+        bh=vop6fItyvbYtkrV6IP5UVBH+x7wzffEHNhLEh8TzmD8=;
+        b=FOScH8dl/SzvDNQQfGWRhmEdtsXBDuIRugqaeSt+EN1aPksGKjX46cEjeY860DLJrB
+         q3CwBPZ+50XDeR9ExSKBf+YCuVif8WLNyUY+3Fer/T6fxnWHE2e82InKOzpl0SDylCHc
+         7Ldqpeje7xT6gVJIr86lwgT38bEXC9UrShCDRv8h6CmATLV4oTfX/Slj6ELgOQgkCNo4
+         GgyII5Fw37KeJfDN2XVkeiFTrVCDr3V3fis+WGIGLjtfmMfU35zDYhdvmXIzzcb+S5oX
+         VcOPdri9tUGWc6BCCqI/2VuASnMj/LvwnAuhL3MLYsgUnS7KX5wJuj0ldRnHPpJTGKIj
+         GzLQ==
+X-Gm-Message-State: ACgBeo0f+Hg5nbgidpyvSSTvP4s8+aWVMpiYRW+HGqsdf9zmcOmpmPFE
+        3LkIVBuKXcN9gwnkYQkSigc=
+X-Google-Smtp-Source: AA6agR5sCJFUy6q6BK/+a0nDOxzWJIe8zJFPRjdjmjK/QZnURboZ9UHk7Aq9/NiHjnaBrmGzTmHdqA==
+X-Received: by 2002:a05:6512:13a1:b0:48d:f14:9059 with SMTP id p33-20020a05651213a100b0048d0f149059mr8993313lfa.110.1661243811321;
+        Tue, 23 Aug 2022 01:36:51 -0700 (PDT)
+Received: from mobilestation ([95.79.140.178])
+        by smtp.gmail.com with ESMTPSA id bf40-20020a2eaa28000000b0025e59f125fbsm2259108ljb.53.2022.08.23.01.36.49
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 23 Aug 2022 01:36:50 -0700 (PDT)
+Date:   Tue, 23 Aug 2022 11:36:48 +0300
+From:   Serge Semin <fancer.lancer@gmail.com>
+To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Cc:     Serge Semin <Sergey.Semin@baikalelectronics.ru>,
+        Rob Herring <robh@kernel.org>,
+        Michal Simek <michal.simek@xilinx.com>,
+        Borislav Petkov <bp@alien8.de>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Tony Luck <tony.luck@intel.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Manish Narani <manish.narani@xilinx.com>,
+        Alexey Malahov <Alexey.Malahov@baikalelectronics.ru>,
+        Michail Ivanov <Michail.Ivanov@baikalelectronics.ru>,
+        Pavel Parkhomenko <Pavel.Parkhomenko@baikalelectronics.ru>,
+        Punnaiah Choudary Kalluri 
+        <punnaiah.choudary.kalluri@xilinx.com>,
+        Dinh Nguyen <dinguyen@kernel.org>,
+        James Morse <james.morse@arm.com>,
+        Robert Richter <rric@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-edac@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 16/20] dt-bindings: memory: snps: Detach Zynq DDRC
+ controller support
+Message-ID: <20220823083648.j7hmyt4py5xqnzde@mobilestation>
+References: <20220822190730.27277-1-Sergey.Semin@baikalelectronics.ru>
+ <20220822190730.27277-17-Sergey.Semin@baikalelectronics.ru>
+ <a5a15749-1047-74ea-831e-54d27a6d6cdf@linaro.org>
+ <835938e3-e4f5-5029-9373-5dd59bc3b625@linaro.org>
+ <20220823082748.td6pwkzj5grfno77@mobilestation>
+ <afc181cd-46b7-4c69-d27a-d2005904f48a@linaro.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <afc181cd-46b7-4c69-d27a-d2005904f48a@linaro.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Lukas Wunner <lukas@wunner.de>
+On Tue, Aug 23, 2022 at 11:30:22AM +0300, Krzysztof Kozlowski wrote:
+> On 23/08/2022 11:27, Serge Semin wrote:
+> > On Tue, Aug 23, 2022 at 11:22:08AM +0300, Krzysztof Kozlowski wrote:
+> >> On 23/08/2022 11:17, Krzysztof Kozlowski wrote:
+> >>> On 22/08/2022 22:07, Serge Semin wrote:
+> >>>> The Zynq A05 DDRC controller has nothing in common with DW uMCTL2 DDRC:
+> >>>> the CSRs layout is absolutely different and it doesn't has IRQ unlike DW
+> >>>> uMCTL2 DDR controller of all versions (v1.x, v2.x and v3.x). Thus there is
+> >>>> no any reason to have these controllers described by the same bindings.
+> >>>> Thus let's split them up.
+> >>>>
+> >>>> While at it rename the original Synopsys uMCTL2 DT-schema file to a more
+> >>>> descriptive - snps,dw-umctl2-ddrc.yaml and add a more detailed title and
+> >>>> description of the device bindings.
+> >>>
+> >>> Filename should be based on compatible, so if renaming then
+> >>> snps,ddrc-3.80a.yaml or snps,ddrc.yaml... which leads to original
+> >>> filename anyway. Therefore nack for rename.
+> >>>
+> >>> BTW, if you perform renames, generate patches with proper -M/-C/-B
+> >>> arguments so this is detected.
+> >>>
+> >>>
+> >>>>
+> >>>> Signed-off-by: Serge Semin <Sergey.Semin@baikalelectronics.ru>
+> >>>> --->  .../snps,dw-umctl2-ddrc.yaml                  | 51 +++++++++++++
+> >>>
+> >>> This is a mess. I did not get any cover letters, any other patches any
+> >>> description of relation between this and your other one.
+> >>>
+> >>> It seems you make independent and conflicting changes to the same file,
+> >>> so this has to be properly organized.
+> >>>
+> >>> Send entire patchset with cover letter with description of all
+> >>> dependencies to all maintainers.
+> >>>
+> >>> This is unreviewable now, so a no.
+> >>
+> > 
+> >> And also untestable by Rob's bot, so will have to wait.
+> > 
+> > For what reason it's untestable? The patch has no dependencies from
+> > any other patchset.
+> 
 
-commit a69e617e533edddf3fa3123149900f36e0a6dc74 upstream.
+> This one is testable, but the next one is not, because it depends on
+> something. I don't see the reason to split the bindings between
+> different patchsets.
 
-usbnet uses the work usbnet_deferred_kevent() to perform tasks which may
-sleep.  On disconnect, completion of the work was originally awaited in
-->ndo_stop().  But in 2003, that was moved to ->disconnect() by historic
-commit "[PATCH] USB: usbnet, prevent exotic rtnl deadlock":
+Really, do you want me to collect all 55 patches in a single patchset?
 
-  https://git.kernel.org/tglx/history/c/0f138bbfd83c
+Please read the cover letter more carefully. And please don't hurry
+with your judgement before nacking here and there.
 
-The change was made because back then, the kernel's workqueue
-implementation did not allow waiting for a single work.  One had to wait
-for completion of *all* work by calling flush_scheduled_work(), and that
-could deadlock when waiting for usbnet_deferred_kevent() with rtnl_mutex
-held in ->ndo_stop().
+-Sergey
 
-The commit solved one problem but created another:  It causes a
-use-after-free in USB Ethernet drivers aqc111.c, asix_devices.c,
-ax88179_178a.c, ch9200.c and smsc75xx.c:
-
-* If the drivers receive a link change interrupt immediately before
-  disconnect, they raise EVENT_LINK_RESET in their (non-sleepable)
-  ->status() callback and schedule usbnet_deferred_kevent().
-* usbnet_deferred_kevent() invokes the driver's ->link_reset() callback,
-  which calls netif_carrier_{on,off}().
-* That in turn schedules the work linkwatch_event().
-
-Because usbnet_deferred_kevent() is awaited after unregister_netdev(),
-netif_carrier_{on,off}() may operate on an unregistered netdev and
-linkwatch_event() may run after free_netdev(), causing a use-after-free.
-
-In 2010, usbnet was changed to only wait for a single instance of
-usbnet_deferred_kevent() instead of *all* work by commit 23f333a2bfaf
-("drivers/net: don't use flush_scheduled_work()").
-
-Unfortunately the commit neglected to move the wait back to
-->ndo_stop().  Rectify that omission at long last.
-
-Reported-by: Jann Horn <jannh@google.com>
-Link: https://lore.kernel.org/netdev/CAG48ez0MHBbENX5gCdHAUXZ7h7s20LnepBF-pa5M=7Bi-jZrEA@mail.gmail.com/
-Reported-by: Oleksij Rempel <o.rempel@pengutronix.de>
-Link: https://lore.kernel.org/netdev/20220315113841.GA22337@pengutronix.de/
-Signed-off-by: Lukas Wunner <lukas@wunner.de>
-Cc: stable@vger.kernel.org
-Acked-by: Oliver Neukum <oneukum@suse.com>
-Link: https://lore.kernel.org/r/d1c87ebe9fc502bffcd1576e238d685ad08321e4.1655987888.git.lukas@wunner.de
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
----
- drivers/net/usb/usbnet.c |    8 ++------
- 1 file changed, 2 insertions(+), 6 deletions(-)
-
---- a/drivers/net/usb/usbnet.c
-+++ b/drivers/net/usb/usbnet.c
-@@ -847,13 +847,11 @@ int usbnet_stop (struct net_device *net)
- 
- 	mpn = !test_and_clear_bit(EVENT_NO_RUNTIME_PM, &dev->flags);
- 
--	/* deferred work (task, timer, softirq) must also stop.
--	 * can't flush_scheduled_work() until we drop rtnl (later),
--	 * else workers could deadlock; so make workers a NOP.
--	 */
-+	/* deferred work (timer, softirq, task) must also stop */
- 	dev->flags = 0;
- 	del_timer_sync (&dev->delay);
- 	tasklet_kill (&dev->bh);
-+	cancel_work_sync(&dev->kevent);
- 	if (!pm)
- 		usb_autopm_put_interface(dev->intf);
- 
-@@ -1616,8 +1614,6 @@ void usbnet_disconnect (struct usb_inter
- 	net = dev->net;
- 	unregister_netdev (net);
- 
--	cancel_work_sync(&dev->kevent);
--
- 	usb_scuttle_anchored_urbs(&dev->deferred);
- 
- 	if (dev->driver_info->unbind)
-
-
+> 
+> Best regards,
+> Krzysztof
