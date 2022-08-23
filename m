@@ -2,45 +2,48 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9EAC0C32772
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 10:08:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1E963C32772
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 10:09:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352781AbiHWKIw (ORCPT
+        id S1352799AbiHWKI5 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 06:08:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43774 "EHLO
+        Tue, 23 Aug 2022 06:08:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45054 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352584AbiHWKCK (ORCPT
+        with ESMTP id S1352608AbiHWKCM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 06:02:10 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 87E2D7C329;
-        Tue, 23 Aug 2022 01:50:09 -0700 (PDT)
+        Tue, 23 Aug 2022 06:02:12 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DD3A8481E5;
+        Tue, 23 Aug 2022 01:50:12 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id C7468B81C1C;
-        Tue, 23 Aug 2022 08:50:07 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1EEFDC433C1;
-        Tue, 23 Aug 2022 08:50:05 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 3892DB81BF8;
+        Tue, 23 Aug 2022 08:50:11 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6E49CC433C1;
+        Tue, 23 Aug 2022 08:50:09 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661244606;
-        bh=v5/YKtomldikhe/i3h6gjddah5wV/t0Qwoy5NR3BAPQ=;
+        s=korg; t=1661244609;
+        bh=aBpW8P6JAzg18R0ex/FMrFPmZRwmlbCx0SvikDrfELc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=GAzXUwRupk6uElk0tOdB83kTX7dJpzZccYvDRXVMLRGuINwQJ1bzG3Z164d0vKhwx
-         ujSRn4y6GncUehSLS6nZJGPYokrbQPMufwSD57tyPHkzXf7Jt/+Y+x8G+HKwbujMvA
-         5r6i9QlsCwZNBtpISWF0TRlOttjbUwH73fQLDRRU=
+        b=pSuosgHa4tngWMaHWBjNnp/QMZ92ygjD/r8O+PSB25eWEjDZK75lxthvd0ibOF1VM
+         MTSmFQSao6MJyoVY23ZEew4wDZHNWMXGWLcmLJVhHlQbagf5PrIlVqi6YqKZtQamD8
+         etq5DxsS+EXU77ElmbIgH/ZnPVRJu+7bN+2OnKmM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Philipp Zabel <p.zabel@pengutronix.de>,
-        Mark Brown <broonie@kernel.org>
-Subject: [PATCH 5.15 122/244] ASoC: codec: tlv320aic32x4: fix mono playback via I2S
-Date:   Tue, 23 Aug 2022 10:24:41 +0200
-Message-Id: <20220823080103.132900132@linuxfoundation.org>
+        stable@vger.kernel.org, Zhenpeng Lin <zplin@u.northwestern.edu>,
+        Thadeu Lima de Souza Cascardo <cascardo@canonical.com>,
+        Kamal Mostafa <kamal@canonical.com>,
+        Jamal Hadi Salim <jhs@mojatatu.com>,
+        Jakub Kicinski <kuba@kernel.org>
+Subject: [PATCH 4.14 164/229] net_sched: cls_route: remove from list when handle is 0
+Date:   Tue, 23 Aug 2022 10:25:25 +0200
+Message-Id: <20220823080059.527782547@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220823080059.091088642@linuxfoundation.org>
-References: <20220823080059.091088642@linuxfoundation.org>
+In-Reply-To: <20220823080053.202747790@linuxfoundation.org>
+References: <20220823080053.202747790@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -49,62 +52,45 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Philipp Zabel <p.zabel@pengutronix.de>
+From: Thadeu Lima de Souza Cascardo <cascardo@canonical.com>
 
-commit b4b5f29a076e52181f63e45a2ad1bc88593072e3 upstream.
+commit 9ad36309e2719a884f946678e0296be10f0bb4c1 upstream.
 
-The two commits referenced below break mono playback via I2S DAI because
-they set BCLK to half the required speed. For PCM transport over I2S, the
-number of transmitted channels is always 2, even for mono playback.
+When a route filter is replaced and the old filter has a 0 handle, the old
+one won't be removed from the hashtable, while it will still be freed.
 
-Fixes: dcd79364bff3 ("ASoC: codec: tlv3204: Enable 24 bit audio support")
-Fixes: 40b37136287b ("ASoC: tlv320aic32x4: Fix bdiv clock rate derivation")
-Signed-off-by: Philipp Zabel <p.zabel@pengutronix.de>
-Link: https://lore.kernel.org/r/20220810104156.665452-1-p.zabel@pengutronix.de
-Signed-off-by: Mark Brown <broonie@kernel.org>
+The test was there since before commit 1109c00547fc ("net: sched: RCU
+cls_route"), when a new filter was not allocated when there was an old one.
+The old filter was reused and the reinserting would only be necessary if an
+old filter was replaced. That was still wrong for the same case where the
+old handle was 0.
+
+Remove the old filter from the list independently from its handle value.
+
+This fixes CVE-2022-2588, also reported as ZDI-CAN-17440.
+
+Reported-by: Zhenpeng Lin <zplin@u.northwestern.edu>
+Signed-off-by: Thadeu Lima de Souza Cascardo <cascardo@canonical.com>
+Reviewed-by: Kamal Mostafa <kamal@canonical.com>
+Cc: <stable@vger.kernel.org>
+Acked-by: Jamal Hadi Salim <jhs@mojatatu.com>
+Link: https://lore.kernel.org/r/20220809170518.164662-1-cascardo@canonical.com
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- sound/soc/codecs/tlv320aic32x4.c |    9 +++++++++
- 1 file changed, 9 insertions(+)
+ net/sched/cls_route.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/sound/soc/codecs/tlv320aic32x4.c
-+++ b/sound/soc/codecs/tlv320aic32x4.c
-@@ -49,6 +49,8 @@ struct aic32x4_priv {
- 	struct aic32x4_setup_data *setup;
- 	struct device *dev;
- 	enum aic32x4_type type;
-+
-+	unsigned int fmt;
- };
+--- a/net/sched/cls_route.c
++++ b/net/sched/cls_route.c
+@@ -531,7 +531,7 @@ static int route4_change(struct net *net
+ 	rcu_assign_pointer(f->next, f1);
+ 	rcu_assign_pointer(*fp, f);
  
- static int aic32x4_reset_adc(struct snd_soc_dapm_widget *w,
-@@ -611,6 +613,7 @@ static int aic32x4_set_dai_sysclk(struct
- static int aic32x4_set_dai_fmt(struct snd_soc_dai *codec_dai, unsigned int fmt)
- {
- 	struct snd_soc_component *component = codec_dai->component;
-+	struct aic32x4_priv *aic32x4 = snd_soc_component_get_drvdata(component);
- 	u8 iface_reg_1 = 0;
- 	u8 iface_reg_2 = 0;
- 	u8 iface_reg_3 = 0;
-@@ -654,6 +657,8 @@ static int aic32x4_set_dai_fmt(struct sn
- 		return -EINVAL;
- 	}
- 
-+	aic32x4->fmt = fmt;
-+
- 	snd_soc_component_update_bits(component, AIC32X4_IFACE1,
- 				AIC32X4_IFACE1_DATATYPE_MASK |
- 				AIC32X4_IFACE1_MASTER_MASK, iface_reg_1);
-@@ -758,6 +763,10 @@ static int aic32x4_setup_clocks(struct s
- 		return -EINVAL;
- 	}
- 
-+	/* PCM over I2S is always 2-channel */
-+	if ((aic32x4->fmt & SND_SOC_DAIFMT_FORMAT_MASK) == SND_SOC_DAIFMT_I2S)
-+		channels = 2;
-+
- 	madc = DIV_ROUND_UP((32 * adc_resource_class), aosr);
- 	max_dosr = (AIC32X4_MAX_DOSR_FREQ / sample_rate / dosr_increment) *
- 			dosr_increment;
+-	if (fold && fold->handle && f->handle != fold->handle) {
++	if (fold) {
+ 		th = to_hash(fold->handle);
+ 		h = from_hash(fold->handle >> 16);
+ 		b = rtnl_dereference(head->table[th]);
 
 
