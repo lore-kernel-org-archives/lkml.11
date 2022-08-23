@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 75981C48BE4
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CF4FAC49EC0
 	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 11:19:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357454AbiHWLRf (ORCPT
+        id S1357497AbiHWLRi (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 07:17:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38060 "EHLO
+        Tue, 23 Aug 2022 07:17:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43440 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357383AbiHWLPg (ORCPT
+        with ESMTP id S1357420AbiHWLPk (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 07:15:36 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9BDBF895C7;
-        Tue, 23 Aug 2022 02:19:04 -0700 (PDT)
+        Tue, 23 Aug 2022 07:15:40 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E8B08BA9D5;
+        Tue, 23 Aug 2022 02:19:05 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 323D8B81B1F;
-        Tue, 23 Aug 2022 09:18:59 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 48BC4C433C1;
-        Tue, 23 Aug 2022 09:18:57 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id C1F1661298;
+        Tue, 23 Aug 2022 09:18:33 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B01E7C433C1;
+        Tue, 23 Aug 2022 09:18:32 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661246338;
-        bh=g91W5mz5BRTbd0lUhWyh+K8LxGD3EE/EMHscZ3BA4vE=;
+        s=korg; t=1661246313;
+        bh=dC24PONPXJI+F/BPqCWosKhiOcyMNYHehVSeuBh/PS4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=sYVpYQia/0WuPocml7qbERb0GOKbuR9YVdUtH0C2x6nnRbkuCjxC8b4p+EpY0TFTf
-         18fyuAXGEJvsAaFz74NtkU2yx6Jx7zcy0clK9I/W1XpdqcxbK1WpGYrsNrUCdOxMT9
-         MNOAcGkMUsIcC/pq4whshNAeDlcYfn1hzdSjyvOk=
+        b=hmtM/XGvwa2G+QYAh6/tg0eahjSQj3nYix3H+mdxZW5WMThkDDpINiHW+Q9nrmOkl
+         UZ69uBN/t64BzgP3AsHUXXXZB1A6EuN5vY/2CFmk8yPFi70VBb3LNc922HME4deQg7
+         xsVeNxmnHjGciaNBw1ZAoT2pr4NwRDG8Ike25AMk=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
-        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+        Alexander Stein <alexander.stein@ew.tq-group.com>,
+        Shawn Guo <shawnguo@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 078/389] ARM: dts: ast2500-evb: fix board compatible
-Date:   Tue, 23 Aug 2022 10:22:36 +0200
-Message-Id: <20220823080118.918302365@linuxfoundation.org>
+Subject: [PATCH 5.4 062/389] ARM: dts: imx6ul: fix qspi node compatible
+Date:   Tue, 23 Aug 2022 10:22:20 +0200
+Message-Id: <20220823080118.192537665@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220823080115.331990024@linuxfoundation.org>
 References: <20220823080115.331990024@linuxfoundation.org>
@@ -50,33 +51,40 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+From: Alexander Stein <alexander.stein@ew.tq-group.com>
 
-[ Upstream commit 30b276fca5c0644f3cb17bceb1bd6a626c670184 ]
+[ Upstream commit 0c6cf86e1ab433b2d421880fdd9c6e954f404948 ]
 
-The AST2500 EVB board should have dedicated compatible.
+imx6ul is not compatible to imx6sx, both have different erratas.
+Fixes the dt_binding_check warning:
+spi@21e0000: compatible: 'oneOf' conditional failed, one must be fixed:
+['fsl,imx6ul-qspi', 'fsl,imx6sx-qspi'] is too long
+Additional items are not allowed ('fsl,imx6sx-qspi' was unexpected)
+'fsl,imx6ul-qspi' is not one of ['fsl,ls1043a-qspi']
+'fsl,imx6ul-qspi' is not one of ['fsl,imx8mq-qspi']
+'fsl,ls1021a-qspi' was expected
+'fsl,imx7d-qspi' was expected
 
-Fixes: 02440622656d ("arm/dst: Add Aspeed ast2500 device tree")
-Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Link: https://lore.kernel.org/r/20220529104928.79636-4-krzysztof.kozlowski@linaro.org
+Signed-off-by: Alexander Stein <alexander.stein@ew.tq-group.com>
+Signed-off-by: Shawn Guo <shawnguo@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/arm/boot/dts/aspeed-ast2500-evb.dts | 2 +-
+ arch/arm/boot/dts/imx6ul.dtsi | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/arch/arm/boot/dts/aspeed-ast2500-evb.dts b/arch/arm/boot/dts/aspeed-ast2500-evb.dts
-index c9d88c90135e..9db4d42d0deb 100644
---- a/arch/arm/boot/dts/aspeed-ast2500-evb.dts
-+++ b/arch/arm/boot/dts/aspeed-ast2500-evb.dts
-@@ -5,7 +5,7 @@
- 
- / {
- 	model = "AST2500 EVB";
--	compatible = "aspeed,ast2500";
-+	compatible = "aspeed,ast2500-evb", "aspeed,ast2500";
- 
- 	aliases {
- 		serial4 = &uart5;
+diff --git a/arch/arm/boot/dts/imx6ul.dtsi b/arch/arm/boot/dts/imx6ul.dtsi
+index 58671c6e9f31..ae0722b93b9d 100644
+--- a/arch/arm/boot/dts/imx6ul.dtsi
++++ b/arch/arm/boot/dts/imx6ul.dtsi
+@@ -997,7 +997,7 @@ pxp: pxp@21cc000 {
+ 			qspi: spi@21e0000 {
+ 				#address-cells = <1>;
+ 				#size-cells = <0>;
+-				compatible = "fsl,imx6ul-qspi", "fsl,imx6sx-qspi";
++				compatible = "fsl,imx6ul-qspi";
+ 				reg = <0x021e0000 0x4000>, <0x60000000 0x10000000>;
+ 				reg-names = "QuadSPI", "QuadSPI-memory";
+ 				interrupts = <GIC_SPI 107 IRQ_TYPE_LEVEL_HIGH>;
 -- 
 2.35.1
 
