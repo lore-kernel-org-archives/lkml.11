@@ -2,101 +2,83 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5A27DC32772
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 09:34:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EB2B6C32772
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 09:34:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351145AbiHWJej (ORCPT
+        id S1350800AbiHWJer (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 05:34:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38702 "EHLO
+        Tue, 23 Aug 2022 05:34:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38690 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350666AbiHWJd5 (ORCPT
+        with ESMTP id S1350660AbiHWJd5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 23 Aug 2022 05:33:57 -0400
-Received: from mail-yw1-x112b.google.com (mail-yw1-x112b.google.com [IPv6:2607:f8b0:4864:20::112b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6E72B9413C
-        for <linux-kernel@vger.kernel.org>; Tue, 23 Aug 2022 01:39:05 -0700 (PDT)
-Received: by mail-yw1-x112b.google.com with SMTP id 00721157ae682-33387bf0c4aso359963137b3.11
-        for <linux-kernel@vger.kernel.org>; Tue, 23 Aug 2022 01:39:05 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc;
-        bh=y2+gfSM2pVPpDUIFDptSeizvM7Y4XC7yjqvLtiCZN3I=;
-        b=IHlPVquiuZ906a77Ewu9nBq5xEoT22M9O+IkdFA/5OREtwtoXe/FJVKv9yNBqjKrcF
-         06DqztKqt0GY1oqa0NmpJpf13Lk36/LWlK3kt5OSrEfhUp7z1povhqQmlbr4fEvNhXwS
-         QeJO/bNa4TCrVQy4VbzMMOtLVOXpsJz25LfzBe5V6JG0oY/mTEzkD1qcykJCtjcVtBP3
-         wyxgVQLDl/BhPn2UA0Hu3t+eP/pSWHouLIm4kfJxOHLysWKgrqpK1oZ8cCOq3U04czCN
-         pVV0H8KvkALznMgqxvqab5t9uDV+wWBUnn+q+JLkKMTC7EaII35I4PdaTBKIFkdaTxqV
-         7OHQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc;
-        bh=y2+gfSM2pVPpDUIFDptSeizvM7Y4XC7yjqvLtiCZN3I=;
-        b=Auu1w7m8DPTqxDjBcC2y3GNZ42Iw1MwNUNgj1j3QMCNUV+LFK4KXEcbV+ggPMsHVDs
-         qxCZONoiFsOQzKobeqgA5au4Q7RsgjH9tU4NZSKKFD79DGgqhvGI2FjQ/CDoKnPLadmW
-         /kst51TyuG1bxmpyHIRxiKKLeg44DMxfUhqWFKCPL4jt4Tr1Y2U5sZIQ0N+MuaP98jmB
-         aycl8x1IfggzYdCyWwtz2/gRwvxSO/syj/goVHZLY2daTBBnsXB9B5vM+LM02ae1AVhM
-         Rq0NyRjPxRiy2cwgiUhMf2D9I+1n9PQre7Yc1eIWVa1JP0ju3xw9LzJYKQJKl4ey9o/P
-         p3JA==
-X-Gm-Message-State: ACgBeo3dRJWjpEYwykbfs7soc8E6tFBu0qwtqWbd8vclDm34xIe1HGoc
-        Xy0keux6IlMOSL4Tm5AoQkeS6LUoY/C3VIClCGRkTuD6
-X-Google-Smtp-Source: AA6agR5kGbjVmGG2C7E8Qj7w6pmadVoVwDHdD9GogfriKvIyHwsz0ilIgqyAykJHqtKT30QMomIeQCvN01/XrXc1ipk=
-X-Received: by 2002:a81:7c2:0:b0:335:90cb:1962 with SMTP id
- 185-20020a8107c2000000b0033590cb1962mr24531628ywh.173.1661243882670; Tue, 23
- Aug 2022 01:38:02 -0700 (PDT)
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8667E93524;
+        Tue, 23 Aug 2022 01:39:04 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 9A75EB81C54;
+        Tue, 23 Aug 2022 08:37:50 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E2640C433C1;
+        Tue, 23 Aug 2022 08:37:48 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1661243869;
+        bh=FPDq19YmQbyACbhIMdsFfnd/zvD9KE4s0mLFIVXUVOE=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=kh/+88KRUrgXQtAsSqmJv33ZeCxkvvp/Hp2A5DJpQHZAeZwufw28Ys5e6ve209NrN
+         pH/Cn+mIckMLbL0RidQtUcHVMxuteMINWEn+5SkdBZwrT9u7BbKlFEwDVN7CSrWz/h
+         UofzknpcnJIb5JsA/EEIFnmHaV2N3cPfa7BfAjEI=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Xiu Jianfeng <xiujianfeng@huawei.com>,
+        Paul Moore <paul@paul-moore.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 4.14 048/229] selinux: Add boundary check in put_entry()
+Date:   Tue, 23 Aug 2022 10:23:29 +0200
+Message-Id: <20220823080055.382672506@linuxfoundation.org>
+X-Mailer: git-send-email 2.37.2
+In-Reply-To: <20220823080053.202747790@linuxfoundation.org>
+References: <20220823080053.202747790@linuxfoundation.org>
+User-Agent: quilt/0.67
 MIME-Version: 1.0
-References: <20220823075241.209009-1-ye.xingchen@zte.com.cn>
-In-Reply-To: <20220823075241.209009-1-ye.xingchen@zte.com.cn>
-From:   Hyeonggon Yoo <42.hyeyoo@gmail.com>
-Date:   Tue, 23 Aug 2022 17:37:50 +0900
-Message-ID: <CAB=+i9RQ_x8JO2s=3mOK3T75k0DNm1ShUZsctsXgLP0v=X4gFQ@mail.gmail.com>
-Subject: Re: [PATCH linux-next] mm/slab_common: Remove the unneeded result variable
-To:     cgel.zte@gmail.com
-Cc:     cl@linux.com, rientjes@google.com, iamjoonsoo.kim@lge.com,
-        vbabka@suse.cz, roman.gushchin@linux.dev, linux-mm@kvack.org,
-        linux-kernel@vger.kernel.org, ye xingchen <ye.xingchen@zte.com.cn>,
-        Zeal Robot <zealci@zte.com.cn>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Aug 23, 2022 at 4:52 PM <cgel.zte@gmail.com> wrote:
->
-> From: ye xingchen <ye.xingchen@zte.com.cn>
->
-> Return the value from __kmem_cache_shrink() directly instead of storing it
->  in another redundant variable.
->
-> Reported-by: Zeal Robot <zealci@zte.com.cn>
-> Signed-off-by: ye xingchen <ye.xingchen@zte.com.cn>
-> ---
->  mm/slab_common.c | 6 +-----
->  1 file changed, 1 insertion(+), 5 deletions(-)
->
-> diff --git a/mm/slab_common.c b/mm/slab_common.c
-> index 17996649cfe3..0dfa3cfb6be5 100644
-> --- a/mm/slab_common.c
-> +++ b/mm/slab_common.c
-> @@ -495,13 +495,9 @@ EXPORT_SYMBOL(kmem_cache_destroy);
->   */
->  int kmem_cache_shrink(struct kmem_cache *cachep)
->  {
-> -       int ret;
-> -
-> -
->         kasan_cache_shrink(cachep);
-> -       ret = __kmem_cache_shrink(cachep);
->
-> -       return ret;
-> +       return __kmem_cache_shrink(cachep);
->  }
->  EXPORT_SYMBOL(kmem_cache_shrink);
->
+From: Xiu Jianfeng <xiujianfeng@huawei.com>
 
-Acked-by: Hyeonggon Yoo <42.hyeyoo@gmail.com>
+[ Upstream commit 15ec76fb29be31df2bccb30fc09875274cba2776 ]
 
-> --
-> 2.25.1
+Just like next_entry(), boundary check is necessary to prevent memory
+out-of-bound access.
+
+Signed-off-by: Xiu Jianfeng <xiujianfeng@huawei.com>
+Signed-off-by: Paul Moore <paul@paul-moore.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ security/selinux/ss/policydb.h | 2 ++
+ 1 file changed, 2 insertions(+)
+
+diff --git a/security/selinux/ss/policydb.h b/security/selinux/ss/policydb.h
+index 215f8f30ac5a..2a479785ebd4 100644
+--- a/security/selinux/ss/policydb.h
++++ b/security/selinux/ss/policydb.h
+@@ -360,6 +360,8 @@ static inline int put_entry(const void *buf, size_t bytes, int num, struct polic
+ {
+ 	size_t len = bytes * num;
+ 
++	if (len > fp->len)
++		return -EINVAL;
+ 	memcpy(fp->data, buf, len);
+ 	fp->data += len;
+ 	fp->len -= len;
+-- 
+2.35.1
+
+
+
