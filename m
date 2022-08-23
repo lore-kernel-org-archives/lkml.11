@@ -2,41 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A40B0C32772
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 08:44:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 93CD1C32772
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 08:44:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241448AbiHWIor (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 04:44:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60764 "EHLO
+        id S1346879AbiHWIou (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 23 Aug 2022 04:44:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60814 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348940AbiHWImG (ORCPT
+        with ESMTP id S237106AbiHWImI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 04:42:06 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8651279A56;
-        Tue, 23 Aug 2022 01:20:17 -0700 (PDT)
+        Tue, 23 Aug 2022 04:42:08 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 491ED7AC37;
+        Tue, 23 Aug 2022 01:20:11 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 80480CE1B3B;
-        Tue, 23 Aug 2022 08:19:04 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8CE45C433C1;
-        Tue, 23 Aug 2022 08:19:02 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id A6572B81C29;
+        Tue, 23 Aug 2022 08:19:16 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1B110C43146;
+        Tue, 23 Aug 2022 08:19:14 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661242743;
-        bh=7wVN8IvfazuS84SzkZjlK5R+FeYjsoVJzWDg/BbbF1M=;
+        s=korg; t=1661242755;
+        bh=h1N/HoQ8SFj1jwD/J82TZXKjDUAy/w3HkBlEkMlSijw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=i/OEkvk8NObS7kCq0txdgr5pq/cCmFYFCStWggwRmQqCVY+poK6qFGmMLWCdlADHj
-         jrhxxlE6vIpJolyNE8TUTTC2AETbH4xCQou2yZfHQTBGKITIGF3UT/F6leY3xy3H+E
-         DS8BRXYT1SEySzRl+WnXJH+u5VA2at0Z8x6eRRbg=
+        b=YadK4ieeImcfB2mpp6851h7QvvqZCfCNg2MgJoIwWVG/AEKWkTtMpjaUsHElg9KUT
+         UBUYYqMl2B2sEoOdMtKqyxvOXfBTw6Y5ExSzy/fZIH3VaFDtbV8bv6/24hHDmFeoC8
+         eo6bSRSRAT4+GNR+SoCOho7l0dcJfBWrJRnhAeRg=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Mark Bloch <mbloch@nvidia.com>,
-        Leon Romanovsky <leon@kernel.org>
-Subject: [PATCH 5.19 186/365] RDMA/mlx5: Use the proper number of ports
-Date:   Tue, 23 Aug 2022 10:01:27 +0200
-Message-Id: <20220823080126.002460213@linuxfoundation.org>
+        stable@vger.kernel.org, Dan Carpenter <dan.carpenter@oracle.com>,
+        Konstantin Komarov <almaz.alexandrovich@paragon-software.com>
+Subject: [PATCH 5.19 190/365] fs/ntfs3: uninitialized variable in ntfs_set_acl_ex()
+Date:   Tue, 23 Aug 2022 10:01:31 +0200
+Message-Id: <20220823080126.174240101@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220823080118.128342613@linuxfoundation.org>
 References: <20220823080118.128342613@linuxfoundation.org>
@@ -48,72 +49,31 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Mark Bloch <mbloch@nvidia.com>
+From: Dan Carpenter <dan.carpenter@oracle.com>
 
-commit 4b83c3caf289b80acecc539c79f10a6937cc42dd upstream.
+commit d4073595d0c61463ec3a87411b19e2a90f76d3f8 upstream.
 
-The cited commit allowed the driver to operate over HCAs that have
-4 physical ports. Use the number of ports of the RDMA device in the for
-loop instead of using the struct size.
+The goto out calls kfree(value) on an uninitialized pointer.  Just
+return directly as the other error paths do.
 
-Fixes: 4cd14d44b11d ("net/mlx5: Support devices with more than 2 ports")
-Link: https://lore.kernel.org/r/a54a56c2ede16044a29d119209b35189c662ac72.1659944855.git.leonro@nvidia.com
-Signed-off-by: Mark Bloch <mbloch@nvidia.com>
-Signed-off-by: Leon Romanovsky <leon@kernel.org>
+Fixes: 460bbf2990b3 ("fs/ntfs3: Do not change mode if ntfs_set_ea failed")
+Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
+Signed-off-by: Konstantin Komarov <almaz.alexandrovich@paragon-software.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/infiniband/hw/mlx5/main.c | 34 +++++++++++++++----------------
- 1 file changed, 16 insertions(+), 18 deletions(-)
+ fs/ntfs3/xattr.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/infiniband/hw/mlx5/main.c b/drivers/infiniband/hw/mlx5/main.c
-index a174a0eee8dc..fc94a1b25485 100644
---- a/drivers/infiniband/hw/mlx5/main.c
-+++ b/drivers/infiniband/hw/mlx5/main.c
-@@ -2738,26 +2738,24 @@ static int set_has_smi_cap(struct mlx5_ib_dev *dev)
- 	int err;
- 	int port;
- 
--	for (port = 1; port <= ARRAY_SIZE(dev->port_caps); port++) {
--		dev->port_caps[port - 1].has_smi = false;
--		if (MLX5_CAP_GEN(dev->mdev, port_type) ==
--		    MLX5_CAP_PORT_TYPE_IB) {
--			if (MLX5_CAP_GEN(dev->mdev, ib_virt)) {
--				err = mlx5_query_hca_vport_context(dev->mdev, 0,
--								   port, 0,
--								   &vport_ctx);
--				if (err) {
--					mlx5_ib_err(dev, "query_hca_vport_context for port=%d failed %d\n",
--						    port, err);
--					return err;
--				}
--				dev->port_caps[port - 1].has_smi =
--					vport_ctx.has_smi;
--			} else {
--				dev->port_caps[port - 1].has_smi = true;
--			}
-+	if (MLX5_CAP_GEN(dev->mdev, port_type) != MLX5_CAP_PORT_TYPE_IB)
-+		return 0;
-+
-+	for (port = 1; port <= dev->num_ports; port++) {
-+		if (!MLX5_CAP_GEN(dev->mdev, ib_virt)) {
-+			dev->port_caps[port - 1].has_smi = true;
-+			continue;
+--- a/fs/ntfs3/xattr.c
++++ b/fs/ntfs3/xattr.c
+@@ -563,7 +563,7 @@ static noinline int ntfs_set_acl_ex(stru
+ 			err = posix_acl_update_mode(mnt_userns, inode, &mode,
+ 						    &acl);
+ 			if (err)
+-				goto out;
++				return err;
  		}
-+		err = mlx5_query_hca_vport_context(dev->mdev, 0, port, 0,
-+						   &vport_ctx);
-+		if (err) {
-+			mlx5_ib_err(dev, "query_hca_vport_context for port=%d failed %d\n",
-+				    port, err);
-+			return err;
-+		}
-+		dev->port_caps[port - 1].has_smi = vport_ctx.has_smi;
- 	}
-+
- 	return 0;
- }
- 
--- 
-2.37.2
-
+ 		name = XATTR_NAME_POSIX_ACL_ACCESS;
+ 		name_len = sizeof(XATTR_NAME_POSIX_ACL_ACCESS) - 1;
 
 
