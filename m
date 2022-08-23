@@ -2,47 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 88D54C38159
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 74E38C48BE4
 	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 10:17:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353879AbiHWKQJ (ORCPT
+        id S1353836AbiHWKQD (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 06:16:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45918 "EHLO
+        Tue, 23 Aug 2022 06:16:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45832 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352938AbiHWKGa (ORCPT
+        with ESMTP id S1352917AbiHWKG2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 06:06:30 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BB91511177;
-        Tue, 23 Aug 2022 01:53:40 -0700 (PDT)
+        Tue, 23 Aug 2022 06:06:28 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DF11311A04;
+        Tue, 23 Aug 2022 01:53:35 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 54D4CB81C28;
-        Tue, 23 Aug 2022 08:53:39 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8B9C9C433D6;
-        Tue, 23 Aug 2022 08:53:37 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 7C4566150F;
+        Tue, 23 Aug 2022 08:53:35 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7F700C433D6;
+        Tue, 23 Aug 2022 08:53:34 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661244818;
-        bh=a/tR0wRoyr4JuYKwTcIB1bxG4Gavs+wVKA4M6lxPakE=;
+        s=korg; t=1661244814;
+        bh=J7X6JkqhBQZ4uPFVbB5ZJDafAFxRbMj5SQrCvRAb4HU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=hAez04SDu9ICXZugcXse63g5lwsda5/ZKDRtMqOhmZvfRnwn52efAu1Wzc7MsFcpi
-         BqVdKWj94STythVjZc+017i8jJAxUypIJiUHilfcirRE8yRYkXMaq/lBnG+atkrrQc
-         cZy9067jGMqJFP/pbBAlSgsb3APbi2jlFuDuf+1g=
+        b=Dc6sGkZLsXhu1mSS7T2FACrqFnyYiK7osKLjsBtHLhXDvCfP41fRv8/0K0I9HrU/T
+         MmHmjvpaqCS8Z5LUAik1tsst+e2He2iViww9qLtKpqxNISBYO8wzGZKrGMhV+eFypL
+         P2Yk3W9ng8b/icLKS7ZgOo0H9vqAn93ezM3K5/as=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Liang He <windhl@126.com>,
-        Martin Blumenstingl <martin.blumenstingl@googlemail.com>,
-        Neil Armstrong <narmstrong@baylibre.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 157/244] drm/meson: Fix refcount bugs in meson_vpu_has_available_connectors()
-Date:   Tue, 23 Aug 2022 10:25:16 +0200
-Message-Id: <20220823080104.437021684@linuxfoundation.org>
+        stable@vger.kernel.org, Duoming Zhou <duoming@zju.edu.cn>,
+        Jakub Kicinski <kuba@kernel.org>
+Subject: [PATCH 4.14 196/229] atm: idt77252: fix use-after-free bugs caused by tst_timer
+Date:   Tue, 23 Aug 2022 10:25:57 +0200
+Message-Id: <20220823080100.644156508@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220823080059.091088642@linuxfoundation.org>
-References: <20220823080059.091088642@linuxfoundation.org>
+In-Reply-To: <20220823080053.202747790@linuxfoundation.org>
+References: <20220823080053.202747790@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -51,46 +49,51 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Liang He <windhl@126.com>
+From: Duoming Zhou <duoming@zju.edu.cn>
 
-[ Upstream commit 91b3c8dbe898df158fd2a84675f3a284ff6666f7 ]
+commit 3f4093e2bf4673f218c0bf17d8362337c400e77b upstream.
 
-In this function, there are two refcount leak bugs:
-(1) when breaking out of for_each_endpoint_of_node(), we need call
-the of_node_put() for the 'ep';
-(2) we should call of_node_put() for the reference returned by
-of_graph_get_remote_port() when it is not used anymore.
+There are use-after-free bugs caused by tst_timer. The root cause
+is that there are no functions to stop tst_timer in idt77252_exit().
+One of the possible race conditions is shown below:
 
-Fixes: bbbe775ec5b5 ("drm: Add support for Amlogic Meson Graphic Controller")
-Signed-off-by: Liang He <windhl@126.com>
-Acked-by: Martin Blumenstingl <martin.blumenstingl@googlemail.com>
-Acked-by: Neil Armstrong <narmstrong@baylibre.com>
-Signed-off-by: Neil Armstrong <narmstrong@baylibre.com>
-Link: https://patchwork.freedesktop.org/patch/msgid/20220726010722.1319416-1-windhl@126.com
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+    (thread 1)          |        (thread 2)
+                        |  idt77252_init_one
+                        |    init_card
+                        |      fill_tst
+                        |        mod_timer(&card->tst_timer, ...)
+idt77252_exit           |  (wait a time)
+                        |  tst_timer
+                        |
+                        |    ...
+  kfree(card) // FREE   |
+                        |    card->soft_tst[e] // USE
+
+The idt77252_dev is deallocated in idt77252_exit() and used in
+timer handler.
+
+This patch adds del_timer_sync() in idt77252_exit() in order that
+the timer handler could be stopped before the idt77252_dev is
+deallocated.
+
+Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
+Signed-off-by: Duoming Zhou <duoming@zju.edu.cn>
+Link: https://lore.kernel.org/r/20220805070008.18007-1-duoming@zju.edu.cn
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/gpu/drm/meson/meson_drv.c | 5 ++++-
- 1 file changed, 4 insertions(+), 1 deletion(-)
+ drivers/atm/idt77252.c |    1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/drivers/gpu/drm/meson/meson_drv.c b/drivers/gpu/drm/meson/meson_drv.c
-index c98525d60df5..a56607501d36 100644
---- a/drivers/gpu/drm/meson/meson_drv.c
-+++ b/drivers/gpu/drm/meson/meson_drv.c
-@@ -114,8 +114,11 @@ static bool meson_vpu_has_available_connectors(struct device *dev)
- 	for_each_endpoint_of_node(dev->of_node, ep) {
- 		/* If the endpoint node exists, consider it enabled */
- 		remote = of_graph_get_remote_port(ep);
--		if (remote)
-+		if (remote) {
-+			of_node_put(remote);
-+			of_node_put(ep);
- 			return true;
-+		}
- 	}
+--- a/drivers/atm/idt77252.c
++++ b/drivers/atm/idt77252.c
+@@ -3768,6 +3768,7 @@ static void __exit idt77252_exit(void)
+ 		card = idt77252_chain;
+ 		dev = card->atmdev;
+ 		idt77252_chain = card->next;
++		del_timer_sync(&card->tst_timer);
  
- 	return false;
--- 
-2.35.1
-
+ 		if (dev->phy->stop)
+ 			dev->phy->stop(dev);
 
 
