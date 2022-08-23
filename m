@@ -2,46 +2,48 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 54197C32772
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CACB5C48BE4
 	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 10:02:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352070AbiHWKBL (ORCPT
+        id S1352838AbiHWKCk (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 06:01:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55800 "EHLO
+        Tue, 23 Aug 2022 06:02:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53472 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352382AbiHWJ4v (ORCPT
+        with ESMTP id S1351975AbiHWJ4L (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 05:56:51 -0400
+        Tue, 23 Aug 2022 05:56:11 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A689BA1A59;
-        Tue, 23 Aug 2022 01:47:33 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 95A92A0259;
+        Tue, 23 Aug 2022 01:47:08 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 21C376155E;
-        Tue, 23 Aug 2022 08:47:31 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 213C5C433C1;
-        Tue, 23 Aug 2022 08:47:29 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 90D3C61499;
+        Tue, 23 Aug 2022 08:47:07 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9332AC433C1;
+        Tue, 23 Aug 2022 08:47:06 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661244450;
-        bh=PYhSPsobpJ6kkl+Qsx5f0HgJelQ0xIq3RmooO9CvX2I=;
+        s=korg; t=1661244427;
+        bh=WK+iLOfAkg4qoR51CflwzR1X5RRiADyEICS3AZD9u4s=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=jUJym/ModyYir2k1KqEWiEY4UP2fdakpTc2z5dyHj8qqjNWoqeHUfkhj40blHyto/
-         8FPH0lltya8FV3cUyuMuR5K7DH3ByHtj/V4uZBTctp+M2t/qBTwCAaH4MHZgXprQvZ
-         RRQQZIWz2RP1AXAV1qIywL4PJx7N/b2Dmu07JzB8=
+        b=H9RfKtw9As3/wVpeHRhrNoBvdhzldtWe2yTKzsVOoUXmfk/KLXtFTmjj1JlMxqFgQ
+         G+pFwKzi68XU3JgtuKs6qVFBSMkiqjpquzDn8RmY8+7+iWXl0i+ZJg5e8bbKlObgTc
+         AtMHUqO3Fyj3DWx0gShvqOnnBYkCT9P5ySrNPMxk=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
-        Michael Ellerman <mpe@ellerman.id.au>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.14 139/229] powerpc/cell/axon_msi: Fix refcount leak in setup_msi_msg_address
-Date:   Tue, 23 Aug 2022 10:25:00 +0200
-Message-Id: <20220823080058.655478858@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+        Rob Herring <robh@kernel.org>,
+        Stephan Gerhold <stephan@gerhold.net>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>
+Subject: [PATCH 5.15 083/244] dt-bindings: arm: qcom: fix Longcheer L8150 compatibles
+Date:   Tue, 23 Aug 2022 10:24:02 +0200
+Message-Id: <20220823080101.814727880@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220823080053.202747790@linuxfoundation.org>
-References: <20220823080053.202747790@linuxfoundation.org>
+In-Reply-To: <20220823080059.091088642@linuxfoundation.org>
+References: <20220823080059.091088642@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -50,37 +52,45 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Miaoqian Lin <linmq006@gmail.com>
+From: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
 
-[ Upstream commit df5d4b616ee76abc97e5bd348e22659c2b095b1c ]
+commit 25d203d0751ca191301bc578ba5d59fa401f1fbf upstream.
 
-of_get_next_parent() returns a node pointer with refcount incremented,
-we should use of_node_put() on it when not need anymore.
-Add missing of_node_put() in the error path to avoid refcount leak.
+The MSM8916 Longcheer L8150 uses a fallback in compatible:
 
-Fixes: ce21b3c9648a ("[CELL] add support for MSI on Axon-based Cell systems")
-Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
-Signed-off-by: Michael Ellerman <mpe@ellerman.id.au>
-Link: https://lore.kernel.org/r/20220605065129.63906-1-linmq006@gmail.com
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+  msm8916-longcheer-l8150.dtb: /: compatible: 'oneOf' conditional failed, one must be fixed:
+    ['longcheer,l8150', 'qcom,msm8916-v1-qrd/9-v1', 'qcom,msm8916'] is too long
+
+Fixes: b72160fa886d ("dt-bindings: qcom: Document bindings for new MSM8916 devices")
+Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Acked-by: Rob Herring <robh@kernel.org>
+Reviewed-by: Stephan Gerhold <stephan@gerhold.net>
+Link: https://lore.kernel.org/r/20220520123252.365762-2-krzysztof.kozlowski@linaro.org
+Signed-off-by: Bjorn Andersson <bjorn.andersson@linaro.org>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/powerpc/platforms/cell/axon_msi.c | 1 +
- 1 file changed, 1 insertion(+)
+ Documentation/devicetree/bindings/arm/qcom.yaml |    6 +++++-
+ 1 file changed, 5 insertions(+), 1 deletion(-)
 
-diff --git a/arch/powerpc/platforms/cell/axon_msi.c b/arch/powerpc/platforms/cell/axon_msi.c
-index 6ea3f248b155..e98b61c06a81 100644
---- a/arch/powerpc/platforms/cell/axon_msi.c
-+++ b/arch/powerpc/platforms/cell/axon_msi.c
-@@ -230,6 +230,7 @@ static int setup_msi_msg_address(struct pci_dev *dev, struct msi_msg *msg)
- 	if (!prop) {
- 		dev_dbg(&dev->dev,
- 			"axon_msi: no msi-address-(32|64) properties found\n");
-+		of_node_put(dn);
- 		return -ENOENT;
- 	}
+--- a/Documentation/devicetree/bindings/arm/qcom.yaml
++++ b/Documentation/devicetree/bindings/arm/qcom.yaml
+@@ -142,12 +142,16 @@ properties:
+       - items:
+           - enum:
+               - alcatel,idol347
+-              - longcheer,l8150
+               - samsung,a3u-eur
+               - samsung,a5u-eur
+           - const: qcom,msm8916
  
--- 
-2.35.1
-
+       - items:
++          - const: longcheer,l8150
++          - const: qcom,msm8916-v1-qrd/9-v1
++          - const: qcom,msm8916
++
++      - items:
+           - enum:
+               - sony,karin_windy
+               - sony,karin-row
 
 
