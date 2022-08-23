@@ -2,83 +2,107 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 04CC6C32772
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 11:55:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 05FB8C32772
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 11:55:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358860AbiHWLzC (ORCPT
+        id S1358866AbiHWLzK (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 07:55:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57052 "EHLO
+        Tue, 23 Aug 2022 07:55:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52878 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1359138AbiHWLvu (ORCPT
+        with ESMTP id S1359221AbiHWLwG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 07:51:50 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CCD6214038;
-        Tue, 23 Aug 2022 02:32:29 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 840CC612D8;
-        Tue, 23 Aug 2022 09:32:26 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6C14DC433C1;
-        Tue, 23 Aug 2022 09:32:25 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661247145;
-        bh=bf3ZD9frY4GoYPiarVVKdEvqceAeI8cdWcW5itv8Yk8=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=0w1XZyU2spaK/IznFBJLvCBwL6H6iPMZTWkSvvwNVqtaXspird7/4qo2McnX0fMmi
-         KldT0PDAwxUKO56fCihl6bPrduXe0vUfKnvJ2BRwlZw2w3FlBNuEydJn4sdYG668sq
-         QIUQWmSrkBA9EoIAeK7mDcqYa49vjiLfP5pJ0xnk=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Trond Myklebust <trond.myklebust@hammerspace.com>
-Subject: [PATCH 5.4 302/389] NFSv4.1: Dont decrease the value of seq_nr_highest_sent
-Date:   Tue, 23 Aug 2022 10:26:20 +0200
-Message-Id: <20220823080128.188093466@linuxfoundation.org>
+        Tue, 23 Aug 2022 07:52:06 -0400
+Received: from mail-pg1-x52c.google.com (mail-pg1-x52c.google.com [IPv6:2607:f8b0:4864:20::52c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5DEFCD51C2;
+        Tue, 23 Aug 2022 02:32:44 -0700 (PDT)
+Received: by mail-pg1-x52c.google.com with SMTP id c24so11765635pgg.11;
+        Tue, 23 Aug 2022 02:32:43 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc;
+        bh=lB8NoAFXZ2ojNqB5NHqtJca8PZPv13Mxr0Sf4o4zAgs=;
+        b=Hfd9KdXbIhbkSlfQznWZaJb5TmMaqJiAfLkPMefN5SZTy9aTY3UGQ0KqPwkS1grIfm
+         vCy4hKurr4Zs2tkcBQYtzP2/kOR8gtY6xNJicOakdqoWNH4JZUqypeyNPn6UI5TAkyEl
+         oXBA7V9t0O+vKQXWgvZyZxday/87L0JM+pZQesVwchkSur42u/MwJZF2wbdiI4rO7f+S
+         nrqKU0UfZgLtpQGsQOElfdFXi74uyCuU3j1227SwSEGFh4YFChEkn/Ly9aOsLpoBUJTP
+         B4ogg406gufB0GKJj1WS6teWqnCG7WAKU6WNm7FuHngPjaYPU1B+zHGakDngAcG0GI9S
+         MQWA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc;
+        bh=lB8NoAFXZ2ojNqB5NHqtJca8PZPv13Mxr0Sf4o4zAgs=;
+        b=soj6Rdi0hQjyBEbRxgPHNkj2cfKca6yLPf2ZJNqJpd2rE+NL8rpXGuvRAJ8lrim77X
+         HK8m2B7QacXt2rL4sBBYsdC7gi90PAklXD8ff3kwuEQuJ3VY4xoJ70XbQDbBjhRzJ2H/
+         uoqCn+wGVgyGIUAz+yWzRBG9s22jrrqf+B8ONKAsWQTxkhPn4xP6ihqSAyG5mkEsVrhV
+         whUTwjiXJk/Xhw7X5NlcUYngfUdFb+W3+NWs42m3xijTbKUKaM9kLL7/wKS6D2FQDpQg
+         Cy2siFHNFEMh9JDhm3thlMB6m1kWpKo2rsun1n/zl8f7hQms7CiK0+nitReVQYXk9G2b
+         0V6Q==
+X-Gm-Message-State: ACgBeo3paDW/Gci605Q8aSETfj7jX7VxbvvBKRtBCF7ItJXtGbtsefJG
+        NcqpChPxYjZDcy26Q3pstOADVIbKjFw=
+X-Google-Smtp-Source: AA6agR7pIIeHPiBQ2/MIHoqFUmi90hSjVnWTFT92xDq3NVbeeCVMhyFqRRdHiLpUtrCXa+Qeg9x14w==
+X-Received: by 2002:a05:6a00:f8d:b0:536:c6c9:a2d with SMTP id ct13-20020a056a000f8d00b00536c6c90a2dmr6436699pfb.52.1661247162167;
+        Tue, 23 Aug 2022 02:32:42 -0700 (PDT)
+Received: from localhost.localdomain ([103.7.29.32])
+        by smtp.gmail.com with ESMTPSA id 13-20020a170902c24d00b0017297a6b39dsm10057212plg.265.2022.08.23.02.32.39
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 23 Aug 2022 02:32:41 -0700 (PDT)
+From:   Like Xu <like.xu.linux@gmail.com>
+X-Google-Original-From: Like Xu <likexu@tencent.com>
+To:     Sean Christopherson <seanjc@google.com>,
+        Paolo Bonzini <pbonzini@redhat.com>
+Cc:     Jim Mattson <jmattson@google.com>, linux-kernel@vger.kernel.org,
+        kvm@vger.kernel.org
+Subject: [PATCH RESEND v2 0/8] x86/pmu: Corner cases fixes and optimization
+Date:   Tue, 23 Aug 2022 17:32:13 +0800
+Message-Id: <20220823093221.38075-1-likexu@tencent.com>
 X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220823080115.331990024@linuxfoundation.org>
-References: <20220823080115.331990024@linuxfoundation.org>
-User-Agent: quilt/0.67
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Trond Myklebust <trond.myklebust@hammerspace.com>
+Good well-designed tests can help us find more bugs, especially when
+the test steps differ from the Linux kernel behaviour in terms of the
+timing of access to virtualized hw resources.
 
-commit f07a5d2427fc113dc50c5c818eba8929bc27b8ca upstream.
+In this patch series, there are three small optimization (006/007/008),
+one hardware surprise (001), and most of these fixes have stepped
+on my little toes.
 
-When we're trying to figure out what the server may or may not have seen
-in terms of request numbers, do not assume that requests with a larger
-number were missed, just because we saw a reply to a request with a
-smaller number.
+Please feel free to run tests, add more or share comments.
 
-Fixes: 3453d5708b33 ("NFSv4.1: Avoid false retries when RPC calls are interrupted")
-Signed-off-by: Trond Myklebust <trond.myklebust@hammerspace.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
----
- fs/nfs/nfs4proc.c |    5 ++---
- 1 file changed, 2 insertions(+), 3 deletions(-)
+Previous:
+https://lore.kernel.org/kvm/20220721103549.49543-1-likexu@tencent.com/
+https://lore.kernel.org/kvm/20220803130124.72340-1-likexu@tencent.com/
 
---- a/fs/nfs/nfs4proc.c
-+++ b/fs/nfs/nfs4proc.c
-@@ -779,10 +779,9 @@ static void nfs4_slot_sequence_record_se
- 	if ((s32)(seqnr - slot->seq_nr_highest_sent) > 0)
- 		slot->seq_nr_highest_sent = seqnr;
- }
--static void nfs4_slot_sequence_acked(struct nfs4_slot *slot,
--		u32 seqnr)
-+static void nfs4_slot_sequence_acked(struct nfs4_slot *slot, u32 seqnr)
- {
--	slot->seq_nr_highest_sent = seqnr;
-+	nfs4_slot_sequence_record_sent(slot, seqnr);
- 	slot->seq_nr_last_acked = seqnr;
- }
- 
+V2 -> V2 RESEND Changelog:
+- The "pebs_capable" fix has been merged into tip/perf/tree tree;
+- Move the other two AMD vPMU optimization here;
 
+Like Xu (8):
+  perf/x86/core: Completely disable guest PEBS via guest's global_ctrl
+  KVM: x86/pmu: Avoid setting BIT_ULL(-1) to pmu->host_cross_mapped_mask
+  KVM: x86/pmu: Don't generate PEBS records for emulated instructions
+  KVM: x86/pmu: Avoid using PEBS perf_events for normal counters
+  KVM: x86/pmu: Defer reprogram_counter() to kvm_pmu_handle_event()
+  KVM: x86/pmu: Defer counter emulated overflow via pmc->stale_counter
+  KVM: x86/svm/pmu: Direct access pmu->gp_counter[] to implement
+    amd_*_to_pmc()
+  KVM: x86/svm/pmu: Rewrite get_gp_pmc_amd() for more counters
+    scalability
+
+ arch/x86/events/intel/core.c    |   3 +-
+ arch/x86/include/asm/kvm_host.h |   6 +-
+ arch/x86/kvm/pmu.c              |  47 ++++++++-----
+ arch/x86/kvm/pmu.h              |   6 +-
+ arch/x86/kvm/svm/pmu.c          | 116 +++++---------------------------
+ arch/x86/kvm/vmx/pmu_intel.c    |  30 ++++-----
+ 6 files changed, 73 insertions(+), 135 deletions(-)
+
+-- 
+2.37.2
 
