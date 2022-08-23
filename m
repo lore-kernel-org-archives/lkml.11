@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A7098C32772
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 10:48:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EB245C32792
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 10:48:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356008AbiHWKsx (ORCPT
+        id S1356032AbiHWKs5 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 06:48:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54444 "EHLO
+        Tue, 23 Aug 2022 06:48:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58132 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356407AbiHWKmK (ORCPT
+        with ESMTP id S1356422AbiHWKmO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 06:42:10 -0400
+        Tue, 23 Aug 2022 06:42:14 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 02BBCA98FB;
-        Tue, 23 Aug 2022 02:09:34 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EA4C5A99CD;
+        Tue, 23 Aug 2022 02:09:37 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 0947BB81C53;
-        Tue, 23 Aug 2022 09:09:27 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 42C91C433D6;
-        Tue, 23 Aug 2022 09:09:25 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 4CBC5B81C63;
+        Tue, 23 Aug 2022 09:09:36 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id ACBFCC433D7;
+        Tue, 23 Aug 2022 09:09:34 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661245765;
-        bh=HW8oSDo9+AP0Lh/FOT/cK/fI51j5qkfr5A+LITh7TqM=;
+        s=korg; t=1661245775;
+        bh=SmZYZEpOelWUIJG7oTgTHs2s9xh0YRCxcCr5ctiy6do=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=CXpeMFbnsBOdyf1oxkCWIHukAUf6iYJ8PzwZwFqexteWWTgolMPO5R1pVvLQPmgOt
-         qvssKMvgvgo28L20QGnd7rwXXkNWzKHO/F273Eq5oIHOQaV8xm9oKWQkhzvKu28EyL
-         7p7H8807tBzdWiroLqfp386AsyNMtYH/nkKLAwM8=
+        b=C9vmHENx3wkdFT6LXskgPb92VVleBUJDpuH13y6skJQULMhn+kGJjflDDOR0Vk9KV
+         ru/aYPmm1p8fcYtZFwuuzd7QDj4XN4ZIK2VgttxpWuXa2dvg54x5HvZ2/Df5lSkFB5
+         NB3SmLE78sfSxQzljytFIPb/u3weg5d2ExmW2wg4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Zheyu Ma <zheyuma97@gmail.com>,
-        Helge Deller <deller@gmx.de>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.19 183/287] video: fbdev: s3fb: Check the size of screen before memset_io()
-Date:   Tue, 23 Aug 2022 10:25:52 +0200
-Message-Id: <20220823080106.959200057@linuxfoundation.org>
+        stable@vger.kernel.org, Stephen Boyd <sboyd@kernel.org>,
+        "Steven Rostedt (Google)" <rostedt@goodmis.org>,
+        David Collins <quic_collinsd@quicinc.com>
+Subject: [PATCH 4.19 186/287] spmi: trace: fix stack-out-of-bound access in SPMI tracing functions
+Date:   Tue, 23 Aug 2022 10:25:55 +0200
+Message-Id: <20220823080107.071229833@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220823080100.268827165@linuxfoundation.org>
 References: <20220823080100.268827165@linuxfoundation.org>
@@ -49,49 +50,110 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Zheyu Ma <zheyuma97@gmail.com>
+From: David Collins <quic_collinsd@quicinc.com>
 
-[ Upstream commit 6ba592fa014f21f35a8ee8da4ca7b95a018f13e8 ]
+commit 2af28b241eea816e6f7668d1954f15894b45d7e3 upstream.
 
-In the function s3fb_set_par(), the value of 'screen_size' is
-calculated by the user input. If the user provides the improper value,
-the value of 'screen_size' may larger than 'info->screen_size', which
-may cause the following bug:
+trace_spmi_write_begin() and trace_spmi_read_end() both call
+memcpy() with a length of "len + 1".  This leads to one extra
+byte being read beyond the end of the specified buffer.  Fix
+this out-of-bound memory access by using a length of "len"
+instead.
 
-[   54.083733] BUG: unable to handle page fault for address: ffffc90003000000
-[   54.083742] #PF: supervisor write access in kernel mode
-[   54.083744] #PF: error_code(0x0002) - not-present page
-[   54.083760] RIP: 0010:memset_orig+0x33/0xb0
-[   54.083782] Call Trace:
-[   54.083788]  s3fb_set_par+0x1ec6/0x4040
-[   54.083806]  fb_set_var+0x604/0xeb0
-[   54.083836]  do_fb_ioctl+0x234/0x670
+Here is a KASAN log showing the issue:
 
-Fix the this by checking the value of 'screen_size' before memset_io().
+BUG: KASAN: stack-out-of-bounds in trace_event_raw_event_spmi_read_end+0x1d0/0x234
+Read of size 2 at addr ffffffc0265b7540 by task thermal@2.0-ser/1314
+...
+Call trace:
+ dump_backtrace+0x0/0x3e8
+ show_stack+0x2c/0x3c
+ dump_stack_lvl+0xdc/0x11c
+ print_address_description+0x74/0x384
+ kasan_report+0x188/0x268
+ kasan_check_range+0x270/0x2b0
+ memcpy+0x90/0xe8
+ trace_event_raw_event_spmi_read_end+0x1d0/0x234
+ spmi_read_cmd+0x294/0x3ac
+ spmi_ext_register_readl+0x84/0x9c
+ regmap_spmi_ext_read+0x144/0x1b0 [regmap_spmi]
+ _regmap_raw_read+0x40c/0x754
+ regmap_raw_read+0x3a0/0x514
+ regmap_bulk_read+0x418/0x494
+ adc5_gen3_poll_wait_hs+0xe8/0x1e0 [qcom_spmi_adc5_gen3]
+ ...
+ __arm64_sys_read+0x4c/0x60
+ invoke_syscall+0x80/0x218
+ el0_svc_common+0xec/0x1c8
+ ...
 
-Fixes: a268422de8bf ("fbdev driver for S3 Trio/Virge")
-Signed-off-by: Zheyu Ma <zheyuma97@gmail.com>
-Signed-off-by: Helge Deller <deller@gmx.de>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+addr ffffffc0265b7540 is located in stack of task thermal@2.0-ser/1314 at offset 32 in frame:
+ adc5_gen3_poll_wait_hs+0x0/0x1e0 [qcom_spmi_adc5_gen3]
+
+this frame has 1 object:
+ [32, 33) 'status'
+
+Memory state around the buggy address:
+ ffffffc0265b7400: 00 00 00 00 00 00 00 00 00 00 00 00 f1 f1 f1 f1
+ ffffffc0265b7480: 04 f3 f3 f3 00 00 00 00 00 00 00 00 00 00 00 00
+>ffffffc0265b7500: 00 00 00 00 f1 f1 f1 f1 01 f3 f3 f3 00 00 00 00
+                                           ^
+ ffffffc0265b7580: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+ ffffffc0265b7600: f1 f1 f1 f1 01 f2 07 f2 f2 f2 01 f3 00 00 00 00
+==================================================================
+
+Fixes: a9fce374815d ("spmi: add command tracepoints for SPMI")
+Cc: stable@vger.kernel.org
+Reviewed-by: Stephen Boyd <sboyd@kernel.org>
+Acked-by: Steven Rostedt (Google) <rostedt@goodmis.org>
+Signed-off-by: David Collins <quic_collinsd@quicinc.com>
+Link: https://lore.kernel.org/r/20220627235512.2272783-1-quic_collinsd@quicinc.com
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/video/fbdev/s3fb.c | 2 ++
- 1 file changed, 2 insertions(+)
+ include/trace/events/spmi.h |   12 ++++++------
+ 1 file changed, 6 insertions(+), 6 deletions(-)
 
-diff --git a/drivers/video/fbdev/s3fb.c b/drivers/video/fbdev/s3fb.c
-index d63f23e26f7d..b17b806b4187 100644
---- a/drivers/video/fbdev/s3fb.c
-+++ b/drivers/video/fbdev/s3fb.c
-@@ -902,6 +902,8 @@ static int s3fb_set_par(struct fb_info *info)
- 	value = clamp((htotal + hsstart + 1) / 2 + 2, hsstart + 4, htotal + 1);
- 	svga_wcrt_multi(par->state.vgabase, s3_dtpc_regs, value);
+--- a/include/trace/events/spmi.h
++++ b/include/trace/events/spmi.h
+@@ -21,15 +21,15 @@ TRACE_EVENT(spmi_write_begin,
+ 		__field		( u8,         sid       )
+ 		__field		( u16,        addr      )
+ 		__field		( u8,         len       )
+-		__dynamic_array	( u8,   buf,  len + 1   )
++		__dynamic_array	( u8,   buf,  len       )
+ 	),
  
-+	if (screen_size > info->screen_size)
-+		screen_size = info->screen_size;
- 	memset_io(info->screen_base, 0x00, screen_size);
- 	/* Device and screen back on */
- 	svga_wcrt_mask(par->state.vgabase, 0x17, 0x80, 0x80);
--- 
-2.35.1
-
+ 	TP_fast_assign(
+ 		__entry->opcode = opcode;
+ 		__entry->sid    = sid;
+ 		__entry->addr   = addr;
+-		__entry->len    = len + 1;
+-		memcpy(__get_dynamic_array(buf), buf, len + 1);
++		__entry->len    = len;
++		memcpy(__get_dynamic_array(buf), buf, len);
+ 	),
+ 
+ 	TP_printk("opc=%d sid=%02d addr=0x%04x len=%d buf=0x[%*phD]",
+@@ -92,7 +92,7 @@ TRACE_EVENT(spmi_read_end,
+ 		__field		( u16,        addr      )
+ 		__field		( int,        ret       )
+ 		__field		( u8,         len       )
+-		__dynamic_array	( u8,   buf,  len + 1   )
++		__dynamic_array	( u8,   buf,  len       )
+ 	),
+ 
+ 	TP_fast_assign(
+@@ -100,8 +100,8 @@ TRACE_EVENT(spmi_read_end,
+ 		__entry->sid    = sid;
+ 		__entry->addr   = addr;
+ 		__entry->ret    = ret;
+-		__entry->len    = len + 1;
+-		memcpy(__get_dynamic_array(buf), buf, len + 1);
++		__entry->len    = len;
++		memcpy(__get_dynamic_array(buf), buf, len);
+ 	),
+ 
+ 	TP_printk("opc=%d sid=%02d addr=0x%04x ret=%d len=%02d buf=0x[%*phD]",
 
 
