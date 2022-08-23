@@ -2,41 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8CF42C32796
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 09:47:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 93A28C3F6B0
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 09:47:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242031AbiHWJrI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 05:47:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42470 "EHLO
+        id S240446AbiHWJq7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 23 Aug 2022 05:46:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59274 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352623AbiHWJlk (ORCPT
+        with ESMTP id S1352581AbiHWJlf (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 05:41:40 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1BCBA7A52F;
-        Tue, 23 Aug 2022 01:42:18 -0700 (PDT)
+        Tue, 23 Aug 2022 05:41:35 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5137B7A77C;
+        Tue, 23 Aug 2022 01:42:24 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 86FB8B81C20;
-        Tue, 23 Aug 2022 08:42:18 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CF509C433D6;
-        Tue, 23 Aug 2022 08:42:16 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id DE7FC61257;
+        Tue, 23 Aug 2022 08:42:23 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DEF50C433B5;
+        Tue, 23 Aug 2022 08:42:22 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661244137;
-        bh=tczueR9QBrw1L/jEpqXkCntMM2hD+Z9tSAUmw/5z380=;
+        s=korg; t=1661244143;
+        bh=CmsG51oJ8EzkSt1t67kltCCBkqFOsG2kjKAsW1x6eOU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=sXmT0FnKtAtFel77Td0/pHjK1QCUPIm18rEFhL0/6DNYIWp+dfcrqxoHWnRrzMP2S
-         7JqwNg6HaQaN52W4q+7T9XVL8B7+Igxwl1T9DFD1nnfBXI+k5IBg1WK3qZ3U506fB1
-         lodt+JTTgSuWxKJuRU8+/zx00iB0N+mOwZQJ0Hns=
+        b=sKts0qEuJLGyv7UIJL5tsTlQwpL5ZphB1hRqPF/a1pJb3W+T85iC63jyFUrrc9F7x
+         GeNgB+/kyq3YYJpMaCCW4BZmUjqc19oi/idVOaEVqwxDYsfa0xIK3NKVD4oXiwFXeO
+         r4SVtxKJo4FWfA4DPvJ+388DNaJvGmBFnG4lsucE=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Hangyu Hua <hbh25y@gmail.com>,
-        Kalle Valo <kvalo@kernel.org>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.14 091/229] wifi: libertas: Fix possible refcount leak in if_usb_probe()
-Date:   Tue, 23 Aug 2022 10:24:12 +0200
-Message-Id: <20220823080056.960820374@linuxfoundation.org>
+        stable@vger.kernel.org, Bernard Pidoux <f6bvp@free.fr>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 4.14 092/229] net: rose: fix netdev reference changes
+Date:   Tue, 23 Aug 2022 10:24:13 +0200
+Message-Id: <20220823080057.006498481@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220823080053.202747790@linuxfoundation.org>
 References: <20220823080053.202747790@linuxfoundation.org>
@@ -48,35 +50,108 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Hangyu Hua <hbh25y@gmail.com>
+From: Eric Dumazet <edumazet@google.com>
 
-[ Upstream commit 6fd57e1d120bf13d4dc6c200a7cf914e6347a316 ]
+[ Upstream commit 931027820e4dafabc78aff82af59f8c1c4bd3128 ]
 
-usb_get_dev will be called before lbs_get_firmware_async which means that
-usb_put_dev need to be called when lbs_get_firmware_async fails.
+Bernard reported that trying to unload rose module would lead
+to infamous messages:
 
-Fixes: ce84bb69f50e ("libertas USB: convert to asynchronous firmware loading")
-Signed-off-by: Hangyu Hua <hbh25y@gmail.com>
-Signed-off-by: Kalle Valo <kvalo@kernel.org>
-Link: https://lore.kernel.org/r/20220620092350.39960-1-hbh25y@gmail.com
-Link: https://lore.kernel.org/r/20220622113402.16969-1-colin.i.king@gmail.com
+unregistered_netdevice: waiting for rose0 to become free. Usage count = xx
+
+This patch solves the issue, by making sure each socket referring to
+a netdevice holds a reference count on it, and properly releases it
+in rose_release().
+
+rose_dev_first() is also fixed to take a device reference
+before leaving the rcu_read_locked section.
+
+Following patch will add ref_tracker annotations to ease
+future bug hunting.
+
+Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
+Reported-by: Bernard Pidoux <f6bvp@free.fr>
+Signed-off-by: Eric Dumazet <edumazet@google.com>
+Tested-by: Bernard Pidoux <f6bvp@free.fr>
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/wireless/marvell/libertas/if_usb.c | 1 +
- 1 file changed, 1 insertion(+)
+ net/rose/af_rose.c    | 11 +++++++++--
+ net/rose/rose_route.c |  2 ++
+ 2 files changed, 11 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/net/wireless/marvell/libertas/if_usb.c b/drivers/net/wireless/marvell/libertas/if_usb.c
-index bbfc89d9d65a..40a8003220bb 100644
---- a/drivers/net/wireless/marvell/libertas/if_usb.c
-+++ b/drivers/net/wireless/marvell/libertas/if_usb.c
-@@ -283,6 +283,7 @@ static int if_usb_probe(struct usb_interface *intf,
- 	return 0;
+diff --git a/net/rose/af_rose.c b/net/rose/af_rose.c
+index 6a5c4992cf61..b53468edf35a 100644
+--- a/net/rose/af_rose.c
++++ b/net/rose/af_rose.c
+@@ -194,6 +194,7 @@ static void rose_kill_by_device(struct net_device *dev)
+ 			rose_disconnect(s, ENETUNREACH, ROSE_OUT_OF_ORDER, 0);
+ 			if (rose->neighbour)
+ 				rose->neighbour->use--;
++			dev_put(rose->device);
+ 			rose->device = NULL;
+ 		}
+ 	}
+@@ -594,6 +595,8 @@ static struct sock *rose_make_new(struct sock *osk)
+ 	rose->idle	= orose->idle;
+ 	rose->defer	= orose->defer;
+ 	rose->device	= orose->device;
++	if (rose->device)
++		dev_hold(rose->device);
+ 	rose->qbitincl	= orose->qbitincl;
  
- err_get_fw:
-+	usb_put_dev(udev);
- 	lbs_remove_card(priv);
- err_add_card:
- 	if_usb_reset_device(cardp);
+ 	return sk;
+@@ -647,6 +650,7 @@ static int rose_release(struct socket *sock)
+ 		break;
+ 	}
+ 
++	dev_put(rose->device);
+ 	sock->sk = NULL;
+ 	release_sock(sk);
+ 	sock_put(sk);
+@@ -721,7 +725,6 @@ static int rose_connect(struct socket *sock, struct sockaddr *uaddr, int addr_le
+ 	struct rose_sock *rose = rose_sk(sk);
+ 	struct sockaddr_rose *addr = (struct sockaddr_rose *)uaddr;
+ 	unsigned char cause, diagnostic;
+-	struct net_device *dev;
+ 	ax25_uid_assoc *user;
+ 	int n, err = 0;
+ 
+@@ -778,9 +781,12 @@ static int rose_connect(struct socket *sock, struct sockaddr *uaddr, int addr_le
+ 	}
+ 
+ 	if (sock_flag(sk, SOCK_ZAPPED)) {	/* Must bind first - autobinding in this may or may not work */
++		struct net_device *dev;
++
+ 		sock_reset_flag(sk, SOCK_ZAPPED);
+ 
+-		if ((dev = rose_dev_first()) == NULL) {
++		dev = rose_dev_first();
++		if (!dev) {
+ 			err = -ENETUNREACH;
+ 			goto out_release;
+ 		}
+@@ -788,6 +794,7 @@ static int rose_connect(struct socket *sock, struct sockaddr *uaddr, int addr_le
+ 		user = ax25_findbyuid(current_euid());
+ 		if (!user) {
+ 			err = -EINVAL;
++			dev_put(dev);
+ 			goto out_release;
+ 		}
+ 
+diff --git a/net/rose/rose_route.c b/net/rose/rose_route.c
+index 1027f52a45ab..25c6d1fa22f3 100644
+--- a/net/rose/rose_route.c
++++ b/net/rose/rose_route.c
+@@ -614,6 +614,8 @@ struct net_device *rose_dev_first(void)
+ 			if (first == NULL || strncmp(dev->name, first->name, 3) < 0)
+ 				first = dev;
+ 	}
++	if (first)
++		dev_hold(first);
+ 	rcu_read_unlock();
+ 
+ 	return first;
 -- 
 2.35.1
 
