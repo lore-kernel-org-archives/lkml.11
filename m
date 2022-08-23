@@ -2,44 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CA3C4C32772
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E0400C32792
 	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 12:22:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349727AbiHWMUZ (ORCPT
+        id S1350721AbiHWMUc (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 08:20:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46676 "EHLO
+        Tue, 23 Aug 2022 08:20:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46788 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1359543AbiHWMPx (ORCPT
+        with ESMTP id S1359560AbiHWMP6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 08:15:53 -0400
+        Tue, 23 Aug 2022 08:15:58 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2E35F7A759;
-        Tue, 23 Aug 2022 02:41:25 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8C7A7EA14C;
+        Tue, 23 Aug 2022 02:41:26 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id CDD836148E;
-        Tue, 23 Aug 2022 09:40:16 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CDE27C433C1;
-        Tue, 23 Aug 2022 09:40:15 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id DE38B61389;
+        Tue, 23 Aug 2022 09:40:28 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E5ECAC433C1;
+        Tue, 23 Aug 2022 09:40:27 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661247616;
-        bh=RlS+b8Vyy/m/NXrnEpfLUDK64uMIFP9NpLwnxs/c8NM=;
+        s=korg; t=1661247628;
+        bh=+cQueMhG49MjrWyekbaH7KLGxxmn10UFrF2aTy84y2Y=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=KMhFxp6K6VJ6XMCCOQER2GEhS9AjVF22Nt4HnIkDDyqNrRcGG3+AubI1sgx/vmxN5
-         Q20afCXFNkgsxrviXcqGM5swguqi7df1LbWdIK3914kHfZX89gPBE/0EDA29HuVlgx
-         J74hwZFwg9+d4NFNjS9ZLX2USM0yOuSe7opRbe0c=
+        b=nryMyqOED5RZh8CZZyqqNMFn4kFjptRRJU1MNda7mNTxtwvSER+bStx+hHWW895yN
+         ozLJkEJAuXrqkRMo0oo9TaC9TOcxJ/58yUZz/s98LEIWlldKtGoA5oldpHOvpiC1Ho
+         8Pav4RGy6QJkwDiRtYo09oCsr1czJQLnYF1DhuqU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
-        Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Jakub Kicinski <kuba@kernel.org>
-Subject: [PATCH 5.10 091/158] stmmac: intel: Add a missing clk_disable_unprepare() call in intel_eth_pci_remove()
-Date:   Tue, 23 Aug 2022 10:27:03 +0200
-Message-Id: <20220823080049.712401502@linuxfoundation.org>
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        Hector Martin <marcan@marcan.st>,
+        Will Deacon <will@kernel.org>, Arnd Bergmann <arnd@arndb.de>
+Subject: [PATCH 5.10 095/158] locking/atomic: Make test_and_*_bit() ordered on failure
+Date:   Tue, 23 Aug 2022 10:27:07 +0200
+Message-Id: <20220823080049.888024871@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220823080046.056825146@linuxfoundation.org>
 References: <20220823080046.056825146@linuxfoundation.org>
@@ -51,47 +51,75 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+From: Hector Martin <marcan@marcan.st>
 
-commit 5c23d6b717e4e956376f3852b90f58e262946b50 upstream.
+commit 415d832497098030241605c52ea83d4e2cfa7879 upstream.
 
-Commit 09f012e64e4b ("stmmac: intel: Fix clock handling on error and remove
-paths") removed this clk_disable_unprepare()
+These operations are documented as always ordered in
+include/asm-generic/bitops/instrumented-atomic.h, and producer-consumer
+type use cases where one side needs to ensure a flag is left pending
+after some shared data was updated rely on this ordering, even in the
+failure case.
 
-This was partly revert by commit ac322f86b56c ("net: stmmac: Fix clock
-handling on remove path") which removed this clk_disable_unprepare()
-because:
-"
-   While unloading the dwmac-intel driver, clk_disable_unprepare() is
-   being called twice in stmmac_dvr_remove() and
-   intel_eth_pci_remove(). This causes kernel panic on the second call.
-"
+This is the case with the workqueue code, which currently suffers from a
+reproducible ordering violation on Apple M1 platforms (which are
+notoriously out-of-order) that ends up causing the TTY layer to fail to
+deliver data to userspace properly under the right conditions.  This
+change fixes that bug.
 
-However later on, commit 5ec55823438e8 ("net: stmmac: add clocks management
-for gmac driver") has updated stmmac_dvr_remove() which do not call
-clk_disable_unprepare() anymore.
+Change the documentation to restrict the "no order on failure" story to
+the _lock() variant (for which it makes sense), and remove the
+early-exit from the generic implementation, which is what causes the
+missing barrier semantics in that case.  Without this, the remaining
+atomic op is fully ordered (including on ARM64 LSE, as of recent
+versions of the architecture spec).
 
-So this call should now be called from intel_eth_pci_remove().
-
-Fixes: 5ec55823438e8 ("net: stmmac: add clocks management for gmac driver")
-Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
-Reviewed-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Link: https://lore.kernel.org/r/d7c8c1dadf40df3a7c9e643f76ffadd0ccc1ad1b.1660659689.git.christophe.jaillet@wanadoo.fr
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Suggested-by: Linus Torvalds <torvalds@linux-foundation.org>
+Cc: stable@vger.kernel.org
+Fixes: e986a0d6cb36 ("locking/atomics, asm-generic/bitops/atomic.h: Rewrite using atomic_*() APIs")
+Fixes: 61e02392d3c7 ("locking/atomic/bitops: Document and clarify ordering semantics for failed test_and_{}_bit()")
+Signed-off-by: Hector Martin <marcan@marcan.st>
+Acked-by: Will Deacon <will@kernel.org>
+Reviewed-by: Arnd Bergmann <arnd@arndb.de>
+Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/net/ethernet/stmicro/stmmac/dwmac-intel.c |    1 +
- 1 file changed, 1 insertion(+)
+ Documentation/atomic_bitops.txt     |    2 +-
+ include/asm-generic/bitops/atomic.h |    6 ------
+ 2 files changed, 1 insertion(+), 7 deletions(-)
 
---- a/drivers/net/ethernet/stmicro/stmmac/dwmac-intel.c
-+++ b/drivers/net/ethernet/stmicro/stmmac/dwmac-intel.c
-@@ -669,6 +669,7 @@ static void intel_eth_pci_remove(struct
+--- a/Documentation/atomic_bitops.txt
++++ b/Documentation/atomic_bitops.txt
+@@ -59,7 +59,7 @@ Like with atomic_t, the rule of thumb is
+  - RMW operations that have a return value are fully ordered.
  
- 	pci_free_irq_vectors(pdev);
+  - RMW operations that are conditional are unordered on FAILURE,
+-   otherwise the above rules apply. In the case of test_and_{}_bit() operations,
++   otherwise the above rules apply. In the case of test_and_set_bit_lock(),
+    if the bit in memory is unchanged by the operation then it is deemed to have
+    failed.
  
-+	clk_disable_unprepare(priv->plat->stmmac_clk);
- 	clk_unregister_fixed_rate(priv->plat->stmmac_clk);
+--- a/include/asm-generic/bitops/atomic.h
++++ b/include/asm-generic/bitops/atomic.h
+@@ -35,9 +35,6 @@ static inline int test_and_set_bit(unsig
+ 	unsigned long mask = BIT_MASK(nr);
  
- 	pcim_iounmap_regions(pdev, BIT(0));
+ 	p += BIT_WORD(nr);
+-	if (READ_ONCE(*p) & mask)
+-		return 1;
+-
+ 	old = atomic_long_fetch_or(mask, (atomic_long_t *)p);
+ 	return !!(old & mask);
+ }
+@@ -48,9 +45,6 @@ static inline int test_and_clear_bit(uns
+ 	unsigned long mask = BIT_MASK(nr);
+ 
+ 	p += BIT_WORD(nr);
+-	if (!(READ_ONCE(*p) & mask))
+-		return 0;
+-
+ 	old = atomic_long_fetch_andnot(mask, (atomic_long_t *)p);
+ 	return !!(old & mask);
+ }
 
 
