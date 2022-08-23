@@ -2,41 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 75293C32792
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 11:54:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0692DC32772
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 11:54:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358381AbiHWLyU (ORCPT
+        id S1358812AbiHWLyb (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 07:54:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57062 "EHLO
+        Tue, 23 Aug 2022 07:54:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57840 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1358913AbiHWLvQ (ORCPT
+        with ESMTP id S1358953AbiHWLvX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 07:51:16 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 23829D34EE;
-        Tue, 23 Aug 2022 02:32:05 -0700 (PDT)
+        Tue, 23 Aug 2022 07:51:23 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 36747D3997;
+        Tue, 23 Aug 2022 02:32:09 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id C9405B81C85;
-        Tue, 23 Aug 2022 09:31:59 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0A656C433B5;
-        Tue, 23 Aug 2022 09:31:57 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 65520613EF;
+        Tue, 23 Aug 2022 09:32:05 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 55514C433D6;
+        Tue, 23 Aug 2022 09:32:04 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661247118;
-        bh=pq5jl0liAQqHiKcuVEOGf6QiN0IET6PLiMh34kv50FY=;
+        s=korg; t=1661247124;
+        bh=Y+qlWdUnCH0Y1VPWF46YVC7tY1kSdFucqEmRWPIB3ck=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=rZmSovFUNT9xQdWMycF0Vk8EOW3J4trYqICTfIzWSVLV9E45f63EDoazIrEoV0nCA
-         WA5HmbpuP1xWJU4eJfDdsrE4jy/qPM0/oonJ0ZIanChQ7gGIDgCwcSdhklJ/IVTGxs
-         8PLXfPl6rKleamRYcBAZZnRbngTU7HmuLkHK2xZM=
+        b=iV2uKrEsawv0hZ1iNI9/2KSETpoyuQe8RpLkIykGHWLX0LnRbdQyaiKVc4F2N35a3
+         rg+e8rxw+bIN31etQ/fPx3JZyQFyh6ShQ2CAgJCvqtzoeP2JByUj0NMBEd91Vwy2jV
+         IiXx6DVYCGL1mGsPNvAK2vUnjVkB5P3cdeqjPUeU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, John Johansen <john.johansen@canonical.com>
-Subject: [PATCH 5.4 296/389] apparmor: Fix failed mount permission check error message
-Date:   Tue, 23 Aug 2022 10:26:14 +0200
-Message-Id: <20220823080127.922632657@linuxfoundation.org>
+        stable@vger.kernel.org, Louis Peens <louis.peens@corigine.com>,
+        Yu Xiao <yu.xiao@corigine.com>,
+        Simon Horman <simon.horman@corigine.com>,
+        Jakub Kicinski <kuba@kernel.org>
+Subject: [PATCH 5.4 324/389] nfp: ethtool: fix the display error of `ethtool -m DEVNAME`
+Date:   Tue, 23 Aug 2022 10:26:42 +0200
+Message-Id: <20220823080129.056893794@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220823080115.331990024@linuxfoundation.org>
 References: <20220823080115.331990024@linuxfoundation.org>
@@ -48,45 +51,43 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: John Johansen <john.johansen@canonical.com>
+From: Yu Xiao <yu.xiao@corigine.com>
 
-commit ec240b5905bbb09a03dccffee03062cf39e38dc2 upstream.
+commit 4ae97cae07e15d41e5c0ebabba64c6eefdeb0bbe upstream.
 
-When the mount check fails due to a permission check failure instead
-of explicitly at one of the subcomponent checks, AppArmor is reporting
-a failure in the flags match. However this is not true and AppArmor
-can not attribute the error at this point to any particular component,
-and should only indicate the mount failed due to missing permissions.
+The port flag isn't set to `NFP_PORT_CHANGED` when using
+`ethtool -m DEVNAME` before, so the port state (e.g. interface)
+cannot be updated. Therefore, it caused that `ethtool -m DEVNAME`
+sometimes cannot read the correct information.
 
-Fixes: 2ea3ffb7782a ("apparmor: add mount mediation")
-Signed-off-by: John Johansen <john.johansen@canonical.com>
+E.g. `ethtool -m DEVNAME` cannot work when load driver before plug
+in optical module, as the port interface is still NONE without port
+update.
+
+Now update the port state before sending info to NIC to ensure that
+port interface is correct (latest state).
+
+Fixes: 61f7c6f44870 ("nfp: implement ethtool get module EEPROM")
+Reviewed-by: Louis Peens <louis.peens@corigine.com>
+Signed-off-by: Yu Xiao <yu.xiao@corigine.com>
+Signed-off-by: Simon Horman <simon.horman@corigine.com>
+Link: https://lore.kernel.org/r/20220802093355.69065-1-simon.horman@corigine.com
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- security/apparmor/mount.c |    7 ++++---
- 1 file changed, 4 insertions(+), 3 deletions(-)
+ drivers/net/ethernet/netronome/nfp/nfp_net_ethtool.c |    2 ++
+ 1 file changed, 2 insertions(+)
 
---- a/security/apparmor/mount.c
-+++ b/security/apparmor/mount.c
-@@ -229,7 +229,8 @@ static const char * const mnt_info_table
- 	"failed srcname match",
- 	"failed type match",
- 	"failed flags match",
--	"failed data match"
-+	"failed data match",
-+	"failed perms check"
- };
+--- a/drivers/net/ethernet/netronome/nfp/nfp_net_ethtool.c
++++ b/drivers/net/ethernet/netronome/nfp/nfp_net_ethtool.c
+@@ -1127,6 +1127,8 @@ nfp_port_get_module_info(struct net_devi
+ 	u8 data;
  
- /*
-@@ -284,8 +285,8 @@ static int do_match_mnt(struct aa_dfa *d
- 			return 0;
- 	}
- 
--	/* failed at end of flags match */
--	return 4;
-+	/* failed at perms check, don't confuse with flags match */
-+	return 6;
- }
- 
- 
+ 	port = nfp_port_from_netdev(netdev);
++	/* update port state to get latest interface */
++	set_bit(NFP_PORT_CHANGED, &port->flags);
+ 	eth_port = nfp_port_get_eth_port(port);
+ 	if (!eth_port)
+ 		return -EOPNOTSUPP;
 
 
