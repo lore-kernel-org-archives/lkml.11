@@ -2,113 +2,67 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 18594C32772
-	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 16:38:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 323F9C32774
+	for <linux-kernel@archiver.kernel.org>; Tue, 23 Aug 2022 16:38:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245100AbiHWQiA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 12:38:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53518 "EHLO
+        id S245017AbiHWQiE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 23 Aug 2022 12:38:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57536 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245016AbiHWQhY (ORCPT
+        with ESMTP id S245013AbiHWQhY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 23 Aug 2022 12:37:24 -0400
-Received: from out1.migadu.com (out1.migadu.com [IPv6:2001:41d0:2:863f::])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 98C7D6D54D;
-        Tue, 23 Aug 2022 07:44:51 -0700 (PDT)
-Date:   Tue, 23 Aug 2022 09:44:42 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.dev; s=key1;
-        t=1661265889;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=wYTxuO09xQHamH8HB9DanmNLqgTyS7iN+66gFB/iGcs=;
-        b=KzS2iPpdIzfHDC3yepdSeojEKRrJeBGV61JZxpWQCWAB5NKd2i2D94pZKSuDM3G2eJ+izs
-        YH21AVjrNOZyMSuuQy6w0ir/+3q7zjahK2l6toOyZkSk/VUDgyVAMtk9rvwdQk0szY003u
-        jUrrEx4Pa3dRbNvCt5aPDinF0ofcJvA=
-X-Report-Abuse: Please report any abuse attempt to abuse@migadu.com and include these headers.
-From:   Oliver Upton <oliver.upton@linux.dev>
-To:     Marc Zyngier <maz@kernel.org>
-Cc:     Gavin Shan <gshan@redhat.com>, kvmarm@lists.cs.columbia.edu,
-        linux-arm-kernel@lists.infradead.org, kvm@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-doc@vger.kernel.org,
-        linux-kselftest@vger.kernel.org, peterx@redhat.com,
-        pbonzini@redhat.com, corbet@lwn.net, james.morse@arm.com,
-        alexandru.elisei@arm.com, suzuki.poulose@arm.com,
-        catalin.marinas@arm.com, will@kernel.org, shuah@kernel.org,
-        seanjc@google.com, drjones@redhat.com, dmatlack@google.com,
-        bgardon@google.com, ricarkol@google.com, zhenyzha@redhat.com,
-        shan.gavin@gmail.com
-Subject: Re: [PATCH v1 1/5] KVM: arm64: Enable ring-based dirty memory
- tracking
-Message-ID: <YwTn2r6FLCx9mAU7@google.com>
-References: <20220819005601.198436-1-gshan@redhat.com>
- <20220819005601.198436-2-gshan@redhat.com>
- <87lerkwtm5.wl-maz@kernel.org>
- <41fb5a1f-29a9-e6bb-9fab-4c83a2a8fce5@redhat.com>
- <87fshovtu0.wl-maz@kernel.org>
+Received: from bg5.exmail.qq.com (bg4.exmail.qq.com [43.154.221.58])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3DD337FE57;
+        Tue, 23 Aug 2022 07:44:38 -0700 (PDT)
+X-QQ-mid: bizesmtp91t1661265874to4mmkkx
+Received: from localhost.localdomain ( [182.148.14.124])
+        by bizesmtp.qq.com (ESMTP) with 
+        id ; Tue, 23 Aug 2022 22:44:33 +0800 (CST)
+X-QQ-SSF: 0100000000200040B000B00A0000000
+X-QQ-FEAT: 4rCmCcmdMHfKEpw7yFlENQd58M2UxApIy42DuiqmFWQ+q38XgX2UaChPLm5kR
+        P9Rj6XX5BLOPQmZT2DA51sHiiidTzvMW2+FSzDRKatK7U5WcOlNSChWlZRTo9Vz1plpq7GZ
+        qnZ4ga7pk4CsMj2nd4Nje9GGZoEg93VllTuRi8yja8cYBsxwOw0nVFdVnbVcfUc1OpWUp6F
+        iUnEGchp2YYqqaBX8dlFXzmvVuwb8eF3s1FbtFupJFG6/BA55KRyrO7ph/Uh4CP5AWKnqwn
+        Eylnc8oEFGxZp8b3jzFusFvGRLTDcKPl23nY5QUOmMKNJCUxAeTOlxtRIkKfoGZXDUCKIiW
+        j09D9FDuIQopp3ZFhGqMnHjHB/XaPdWf0+m7ScKZv2lFrvUYP217NeDsb6bZjm84WcOzcb2
+X-QQ-GoodBg: 0
+From:   wangjianli <wangjianli@cdjrlc.com>
+To:     mchehab@kernel.org
+Cc:     linux-media@vger.kernel.org, linux-kernel@vger.kernel.org,
+        wangjianli <wangjianli@cdjrlc.com>
+Subject: [PATCH] media/dvb-frontends: fix repeated words in comments
+Date:   Tue, 23 Aug 2022 22:44:27 +0800
+Message-Id: <20220823144427.33846-1-wangjianli@cdjrlc.com>
+X-Mailer: git-send-email 2.36.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <87fshovtu0.wl-maz@kernel.org>
-X-Migadu-Flow: FLOW_OUT
-X-Migadu-Auth-User: linux.dev
+Content-Transfer-Encoding: 8bit
+X-QQ-SENDSIZE: 520
+Feedback-ID: bizesmtp:cdjrlc.com:qybglogicsvr:qybglogicsvr7
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Aug 22, 2022 at 10:42:15PM +0100, Marc Zyngier wrote:
-> Hi Gavin,
-> 
-> On Mon, 22 Aug 2022 02:58:20 +0100,
-> Gavin Shan <gshan@redhat.com> wrote:
-> > 
-> > Hi Marc,
-> > 
-> > On 8/19/22 6:00 PM, Marc Zyngier wrote:
-> > > On Fri, 19 Aug 2022 01:55:57 +0100,
-> > > Gavin Shan <gshan@redhat.com> wrote:
-> > >> 
-> > >> The ring-based dirty memory tracking has been available and enabled
-> > >> on x86 for a while. The feature is beneficial when the number of
-> > >> dirty pages is small in a checkpointing system or live migration
-> > >> scenario. More details can be found from fb04a1eddb1a ("KVM: X86:
-> > >> Implement ring-based dirty memory tracking").
-> > >> 
-> > >> This enables the ring-based dirty memory tracking on ARM64. It's
-> > >> notable that no extra reserved ring entries are needed on ARM64
-> > >> because the huge pages are always split into base pages when page
-> > >> dirty tracking is enabled.
-> > > 
-> > > Can you please elaborate on this? Adding a per-CPU ring of course
-> > > results in extra memory allocation, so there must be a subtle
-> > > x86-specific detail that I'm not aware of...
-> > > 
-> > 
-> > Sure. I guess it's helpful to explain how it works in next revision.
-> > Something like below:
-> > 
-> > This enables the ring-based dirty memory tracking on ARM64. The feature
-> > is enabled by CONFIG_HAVE_KVM_DIRTY_RING, detected and enabled by
-> > CONFIG_HAVE_KVM_DIRTY_RING. A ring buffer is created on every vcpu and
-> > each entry is described by 'struct kvm_dirty_gfn'. The ring buffer is
-> > pushed by host when page becomes dirty and pulled by userspace. A vcpu
-> > exit is forced when the ring buffer becomes full. The ring buffers on
-> > all vcpus can be reset by ioctl command KVM_RESET_DIRTY_RINGS.
-> > 
-> > Yes, I think so. Adding a per-CPU ring results in extra memory allocation.
-> > However, it's avoiding synchronization among multiple vcpus when dirty
-> > pages happen on multiple vcpus. More discussion can be found from [1]
-> 
-> Oh, I totally buy the relaxation of the synchronisation (though I
-> doubt this will have any visible effect until we have something like
-> Oliver's patches to allow parallel faulting).
-> 
+Delete the redundant word 'the'.
 
-Heh, yeah I need to get that out the door. I'll also note that Gavin's
-changes are still relevant without that series, as we do write unprotect
-in parallel at PTE granularity after commit f783ef1c0e82 ("KVM: arm64:
-Add fast path to handle permission relaxation during dirty logging").
+Signed-off-by: wangjianli <wangjianli@cdjrlc.com>
+---
+ drivers/media/dvb-frontends/tda1002x.h | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
---
-Thanks,
-Oliver
+diff --git a/drivers/media/dvb-frontends/tda1002x.h b/drivers/media/dvb-frontends/tda1002x.h
+index 60a0952c1bca..00491bea9975 100644
+--- a/drivers/media/dvb-frontends/tda1002x.h
++++ b/drivers/media/dvb-frontends/tda1002x.h
+@@ -1,7 +1,7 @@
+ /* SPDX-License-Identifier: GPL-2.0-or-later */
+ /*
+     TDA10021/TDA10023  - Single Chip Cable Channel Receiver driver module
+-			 used on the the Siemens DVB-C cards
++			 used on the Siemens DVB-C cards
+ 
+     Copyright (C) 1999 Convergence Integrated Media GmbH <ralph@convergence.de>
+     Copyright (C) 2004 Markus Schulz <msc@antzsystem.de>
+-- 
+2.36.1
+
