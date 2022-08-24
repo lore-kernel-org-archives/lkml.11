@@ -2,105 +2,103 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 750ACC00140
-	for <linux-kernel@archiver.kernel.org>; Wed, 24 Aug 2022 17:44:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D70AAC00140
+	for <linux-kernel@archiver.kernel.org>; Wed, 24 Aug 2022 17:45:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239521AbiHXRo3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 24 Aug 2022 13:44:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49226 "EHLO
+        id S239690AbiHXRph (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 24 Aug 2022 13:45:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50868 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229542AbiHXRo2 (ORCPT
+        with ESMTP id S240245AbiHXRpX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 24 Aug 2022 13:44:28 -0400
-Received: from gloria.sntech.de (gloria.sntech.de [185.11.138.130])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DF70E7FFA2;
-        Wed, 24 Aug 2022 10:44:26 -0700 (PDT)
-Received: from ip5b412258.dynamic.kabel-deutschland.de ([91.65.34.88] helo=diego.localnet)
-        by gloria.sntech.de with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.94.2)
-        (envelope-from <heiko@sntech.de>)
-        id 1oQuQN-0004jX-Da; Wed, 24 Aug 2022 19:44:19 +0200
-From:   Heiko =?ISO-8859-1?Q?St=FCbner?= <heiko@sntech.de>
-To:     Thomas Gleixner <tglx@linutronix.de>,
-        Marc Zyngier <maz@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Palmer Dabbelt <palmer@dabbelt.com>,
-        Paul Walmsley <paul.walmsley@sifive.com>,
-        Albert Ou <aou@eecs.berkeley.edu>,
-        linux-riscv@lists.infradead.org
-Cc:     Daniel Lezcano <daniel.lezcano@linaro.org>,
-        Anup Patel <anup@brainfault.org>,
-        Conor Dooley <conor.dooley@microchip.com>,
-        Guo Ren <guoren@kernel.org>,
-        Sagar Kadam <sagar.kadam@sifive.com>,
-        Jessica Clarke <jrtc27@jrtc27.com>,
-        Andrew Jones <ajones@ventanamicro.com>,
-        linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-riscv@lists.infradead.org, qemu-riscv@nongnu.org,
-        Rob Herring <robh@kernel.org>, Conor Dooley <mail@conchuod.ie>
-Subject: Re: [PATCH v4 2/4] dt-bindings: interrupt-controller: sifive,plic: add legacy riscv compatible
-Date:   Wed, 24 Aug 2022 19:44:18 +0200
-Message-ID: <3948407.AJdgDx1Vlc@diego>
-In-Reply-To: <20220823183319.3314940-3-mail@conchuod.ie>
-References: <20220823183319.3314940-1-mail@conchuod.ie> <20220823183319.3314940-3-mail@conchuod.ie>
+        Wed, 24 Aug 2022 13:45:23 -0400
+Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 655B380EA8;
+        Wed, 24 Aug 2022 10:45:22 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1661363122; x=1692899122;
+  h=message-id:date:mime-version:subject:to:cc:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=j9Y4RfhJhiqAcJQ1n06sQz7TM6Rj//b03WX4pHgBo98=;
+  b=j9ue4aL8JWrCWfSzhJ2ZmSrfAzm5/vQ0I3qkAAhrGtcGpBYWd+5dFkr3
+   +j3LwZJcXrx5E7nmW9u5oMPw/EVw3hUAClXE/4DsKoz+eit4sJHt9lF9x
+   9itO5XjzsxtaP7nGcOIr2FWROkmhdrJkEg1qDJncwBv/Pwbp7hT52XWwc
+   TMps9Y12YOhjSTqWWLsIhLeDykIXLr5+6zOIJ4YIe/m0yjV7M/RAZ/DV4
+   fdoufI/FcpqoOkpnd1EzqkZnP6NKHgzSAIfHxTkKb4T2WayCc5SMyRzUq
+   NVHo79Ymi2sdgxUbiuN3GZXiJeHpGHzCnW1bC10BwX55sB5vHbdghrbSr
+   A==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10449"; a="274422898"
+X-IronPort-AV: E=Sophos;i="5.93,261,1654585200"; 
+   d="scan'208";a="274422898"
+Received: from fmsmga004.fm.intel.com ([10.253.24.48])
+  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Aug 2022 10:45:22 -0700
+X-IronPort-AV: E=Sophos;i="5.93,261,1654585200"; 
+   d="scan'208";a="678135941"
+Received: from djiang5-mobl1.amr.corp.intel.com (HELO [10.213.178.56]) ([10.213.178.56])
+  by fmsmga004-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Aug 2022 10:45:21 -0700
+Message-ID: <223e5a43-95a5-da54-0ff7-c2e088a072e3@intel.com>
+Date:   Wed, 24 Aug 2022 10:45:21 -0700
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7Bit
-Content-Type: text/plain; charset="us-ascii"
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Firefox/91.0 Thunderbird/91.12.0
+Subject: Re: [PATCH v2] dmaengine: idxd: avoid deadlock in
+ process_misc_interrupts()
+Content-Language: en-US
+To:     Jerry Snitselaar <jsnitsel@redhat.com>
+Cc:     linux-kernel@vger.kernel.org, Fenghua Yu <fenghua.yu@intel.com>,
+        Vinod Koul <vkoul@kernel.org>, dmaengine@vger.kernel.org
+References: <20220823162435.2099389-1-jsnitsel@redhat.com>
+ <20220823163709.2102468-1-jsnitsel@redhat.com>
+ <905d3feb-f75b-e91c-f3de-b69718aa5c69@intel.com>
+ <20220824005435.jyexxvjxj3z7tc2f@cantor>
+From:   Dave Jiang <dave.jiang@intel.com>
+In-Reply-To: <20220824005435.jyexxvjxj3z7tc2f@cantor>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Am Dienstag, 23. August 2022, 20:33:18 CEST schrieb Conor Dooley:
-> From: Conor Dooley <conor.dooley@microchip.com>
-> 
-> While "real" hardware might not use the compatible string "riscv,plic0"
-> it is present in the driver & QEMU uses it for automatically generated
-> virt machine dtbs. To avoid dt-validate problems with QEMU produced
-> dtbs, such as the following, add it to the binding.
-> 
-> riscv-virt.dtb: plic@c000000: compatible: 'oneOf' conditional failed, one must be fixed:
->         'sifive,plic-1.0.0' is not one of ['sifive,fu540-c000-plic', 'starfive,jh7100-plic', 'canaan,k210-plic']
->         'sifive,plic-1.0.0' is not one of ['allwinner,sun20i-d1-plic']
->         'sifive,plic-1.0.0' was expected
->         'thead,c900-plic' was expected
-> riscv-virt.dtb: plic@c000000: '#address-cells' is a required property
-> 
-> Reported-by: Rob Herring <robh@kernel.org>
-> Link: https://lore.kernel.org/linux-riscv/20220803170552.GA2250266-robh@kernel.org/
-> Reviewed-by: Rob Herring <robh@kernel.org>
-> Signed-off-by: Conor Dooley <conor.dooley@microchip.com>
-> ---
->  .../bindings/interrupt-controller/sifive,plic-1.0.0.yaml     | 5 +++++
->  1 file changed, 5 insertions(+)
-> 
-> diff --git a/Documentation/devicetree/bindings/interrupt-controller/sifive,plic-1.0.0.yaml b/Documentation/devicetree/bindings/interrupt-controller/sifive,plic-1.0.0.yaml
-> index 92e0f8c3eff2..99e01f4d0a69 100644
-> --- a/Documentation/devicetree/bindings/interrupt-controller/sifive,plic-1.0.0.yaml
-> +++ b/Documentation/devicetree/bindings/interrupt-controller/sifive,plic-1.0.0.yaml
-> @@ -66,6 +66,11 @@ properties:
->            - enum:
->                - allwinner,sun20i-d1-plic
->            - const: thead,c900-plic
-> +      - items:
-> +          - const: sifive,plic-1.0.0
-> +          - const: riscv,plic0
-> +        deprecated: true
 
-hmm, when setting this to deprecated, does this mean qemu was changed
-to not use that compatible anymore?
+On 8/23/2022 5:54 PM, Jerry Snitselaar wrote:
+> On Tue, Aug 23, 2022 at 09:46:19AM -0700, Dave Jiang wrote:
+>> On 8/23/2022 9:37 AM, Jerry Snitselaar wrote:
+>>> idxd_device_clear_state() now grabs the idxd->dev_lock
+>>> itself, so don't grab the lock prior to calling it.
+>>>
+>>> This was seen in testing after dmar fault occurred on system,
+>>> resulting in lockup stack traces.
+>>>
+>>> Cc: Fenghua Yu <fenghua.yu@intel.com>
+>>> Cc: Dave Jiang <dave.jiang@intel.com>
+>>> Cc: Vinod Koul <vkoul@kernel.org>
+>>> Cc: dmaengine@vger.kernel.org
+>>> Fixes: cf4ac3fef338 ("dmaengine: idxd: fix lockdep warning on device driver removal")
+>>> Signed-off-by: Jerry Snitselaar <jsnitsel@redhat.com>
+>> Thanks Jerry!
+>>
+>> Reviewed-by: Dave Jiang <dave.jiang@intel.com>
+>>
+> I noticed another problem while looking at this. When the device ends
+> up in the halted state, and needs an flr or system reset, it calls
+> idxd_wqs_unmap_portal(). Then if you do a modprobe -r idxd, you hit
+> the WARN_ON in devm_iounmap(), because the remove code path calls
+> idxd_wq_portal_unmap(), and wq->portal is null. I'm not sure if it
+> just needs a simple sanity check in drv_disable_wq() to avoid the call
+> in the case that it has already been unmapped, or if more cleanup
+> needs to be done, and possibly a state to differentiate between
+> halted + soft reset possible, versus halted + flr or system reset
+> needed.  You get multiple "Device is HALTED" messages during the
+> removal as well.
 
-I.e. reading deprecated I'd assume that this is kept around for old qemu builds?
+Thanks!
+
+Fenghua, can you please take a look at this when you have a chance? 
+Thank you!
 
 
-Heiko
-
-> +        description: For the QEMU virt machine only
->  
->    reg:
->      maxItems: 1
-> 
-
-
-
-
+>
+> Regards,
+> Jerry
+>
