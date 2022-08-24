@@ -2,106 +2,146 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 168B0C00140
-	for <linux-kernel@archiver.kernel.org>; Wed, 24 Aug 2022 17:22:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 50E12C00140
+	for <linux-kernel@archiver.kernel.org>; Wed, 24 Aug 2022 17:26:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240075AbiHXRWv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 24 Aug 2022 13:22:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60086 "EHLO
+        id S239237AbiHXR0M (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 24 Aug 2022 13:26:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34540 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231400AbiHXRWs (ORCPT
+        with ESMTP id S238645AbiHXR0K (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 24 Aug 2022 13:22:48 -0400
-Received: from mx0b-0031df01.pphosted.com (mx0b-0031df01.pphosted.com [205.220.180.131])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BF7777C1B1;
-        Wed, 24 Aug 2022 10:22:47 -0700 (PDT)
-Received: from pps.filterd (m0279873.ppops.net [127.0.0.1])
-        by mx0a-0031df01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 27O97PtM006553;
-        Wed, 24 Aug 2022 17:22:41 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=quicinc.com; h=from : to : cc :
- subject : date : message-id : mime-version : content-type; s=qcppdkim1;
- bh=MzU273TktHXkRwWIb+2Y9uuq8kbCxOhMtE+FhhNuK9Y=;
- b=fX14MrY4+U7ygtT7rWbSLybKZClDZYFi0r4LeEKn52yOdEskK+TM8zw3v2fELz5IHH1g
- 2Fkx/5RgNQp8P0rvZa+jF3Il5IK0Jozyd/WR47jFVYRy+7wpymtIksKOLMYzWChppiyJ
- kKsB7tJ2qarxwYIKfgqBLIYdpbpOwOntrbGpPYZbGtJ2yjmQFy+a0rRIhoOTumdtST5A
- VS5vUzpJYtjP0ZfjcJ8iVe0oIALrDgwSX0HBt0uoLd5TyiGdURx2+Zy1nf4hvd6APSSp
- 3F9Tyur03j5uprJx3cmN9PN1n0KWagGWXYvD5xfnew4n1QVmEgJhngMeZI96KbLGvGut +g== 
-Received: from nalasppmta02.qualcomm.com (Global_NAT1.qualcomm.com [129.46.96.20])
-        by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 3j52pnc3a7-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Wed, 24 Aug 2022 17:22:40 +0000
-Received: from nalasex01a.na.qualcomm.com (nalasex01a.na.qualcomm.com [10.47.209.196])
-        by NALASPPMTA02.qualcomm.com (8.17.1.5/8.17.1.5) with ESMTPS id 27OHMdS5004742
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Wed, 24 Aug 2022 17:22:39 GMT
-Received: from khsieh-linux1.qualcomm.com (10.80.80.8) by
- nalasex01a.na.qualcomm.com (10.47.209.196) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.29; Wed, 24 Aug 2022 10:22:38 -0700
-From:   Kuogee Hsieh <quic_khsieh@quicinc.com>
-To:     <robdclark@gmail.com>, <sean@poorly.run>, <swboyd@chromium.org>,
-        <dianders@chromium.org>, <vkoul@kernel.org>, <daniel@ffwll.ch>,
-        <airlied@linux.ie>, <agross@kernel.org>,
-        <dmitry.baryshkov@linaro.org>, <bjorn.andersson@linaro.org>
-CC:     <quic_abhinavk@quicinc.com>, <quic_khsieh@quicinc.com>,
-        <quic_sbillaka@quicinc.com>, <freedreno@lists.freedesktop.org>,
-        <dri-devel@lists.freedesktop.org>, <linux-arm-msm@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>
-Subject: [PATCH v2] drm/msm/dp: correct 1.62G link rate at dp_catalog_ctrl_config_msa()
-Date:   Wed, 24 Aug 2022 10:22:31 -0700
-Message-ID: <1661361751-2173-1-git-send-email-quic_khsieh@quicinc.com>
-X-Mailer: git-send-email 2.7.4
+        Wed, 24 Aug 2022 13:26:10 -0400
+Received: from mail-qv1-xf2d.google.com (mail-qv1-xf2d.google.com [IPv6:2607:f8b0:4864:20::f2d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 93E9E7CA84
+        for <linux-kernel@vger.kernel.org>; Wed, 24 Aug 2022 10:26:04 -0700 (PDT)
+Received: by mail-qv1-xf2d.google.com with SMTP id u6so8801812qvp.5
+        for <linux-kernel@vger.kernel.org>; Wed, 24 Aug 2022 10:26:04 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=joelfernandes.org; s=google;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc;
+        bh=VWySvkZldTY+fvD6JpQoqkZjKQJbcVSs+XSbi2x9CeM=;
+        b=Gwke+cwl23d5sJHvqeLcSUzK1lDSjhvcUPp5qj69DeIEqipqxJF6hSPQXDhArE3vKX
+         8sSAsyVlfZQqvpdE7Vj+GmNvMf1N0G90PXUweTDzfO2wq/28xRbTj6oIk+W/Iwnhg9Zk
+         Z1Y90XVivd4K004BNZK2tIhVZARIxhLRN4Zpg=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc;
+        bh=VWySvkZldTY+fvD6JpQoqkZjKQJbcVSs+XSbi2x9CeM=;
+        b=qsg6vdqFyjRXrKOezoctvzPcRdqfD4U8ANb8kSL3U01C2IIwtdM9xKZGs7iRLpNB5A
+         h2yG1cBg+rOYjIA+sQJVrIsgfhRNkD7HLxU2UQf4KhevnTo8OSXZt4A+8c9WkK/Mjoya
+         X046YVPLQnJokhJlKemfJlopl87oC3K097M10eQTg9gMRvIEvH35llVBzlQ9aLRNbgxB
+         zPRACqIjliFblA3BiCTmy5VA64W8rO31tRt3xKfoVqEDvulyqYq8FWhx1kD9l0Vh0wmK
+         qwQSR+ZndqZeUxy5CxAQE6ErHkb2d/Xo4TjMbsOPZkswEcWV5xfup8L4fqtir2xSUVOh
+         D9iw==
+X-Gm-Message-State: ACgBeo1lv0P3Vqa5yyyUt8DftNc2/Vm4PzNpkrd9AphNzsxUpEI/wc1E
+        +KX9M5R/UzcB35GO/NsYr5x5zwY70Nav+w==
+X-Google-Smtp-Source: AA6agR5T/7K/Z9HpMieKWdq1haL0G1C7Ezku0CdFoFSGiaFu8raCZzf9WiAJ83e/057DCALmC2JxXA==
+X-Received: by 2002:a05:6214:1941:b0:496:ca94:98aa with SMTP id q1-20020a056214194100b00496ca9498aamr142885qvk.8.1661361963720;
+        Wed, 24 Aug 2022 10:26:03 -0700 (PDT)
+Received: from [10.0.0.40] (c-73-148-104-166.hsd1.va.comcast.net. [73.148.104.166])
+        by smtp.gmail.com with ESMTPSA id ge8-20020a05622a5c8800b003437a694049sm13326278qtb.96.2022.08.24.10.26.02
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 24 Aug 2022 10:26:03 -0700 (PDT)
+Message-ID: <de70b840-df04-5a52-c36f-9eaed839aa7c@joelfernandes.org>
+Date:   Wed, 24 Aug 2022 13:26:01 -0400
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.80.80.8]
-X-ClientProxiedBy: nasanex01a.na.qualcomm.com (10.52.223.231) To
- nalasex01a.na.qualcomm.com (10.47.209.196)
-X-QCInternal: smtphost
-X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=5800 signatures=585085
-X-Proofpoint-GUID: 09WZY72ZBAmNfTUXIlwYFAx3dFXwhEbQ
-X-Proofpoint-ORIG-GUID: 09WZY72ZBAmNfTUXIlwYFAx3dFXwhEbQ
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.895,Hydra:6.0.517,FMLib:17.11.122.1
- definitions=2022-08-24_09,2022-08-22_02,2022-06-22_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 lowpriorityscore=0
- adultscore=0 mlxlogscore=999 clxscore=1015 malwarescore=0 phishscore=0
- impostorscore=0 suspectscore=0 bulkscore=0 priorityscore=1501 mlxscore=0
- spamscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2207270000 definitions=main-2208240064
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
+ Thunderbird/102.1.2
+Subject: Re: [RFC 06/10] rcu/hotplug: Make rcutree_dead_cpu() parallel
+Content-Language: en-US
+To:     paulmck@kernel.org, Pingfan Liu <kernelfans@gmail.com>
+Cc:     LKML <linux-kernel@vger.kernel.org>, rcu <rcu@vger.kernel.org>,
+        Frederic Weisbecker <frederic@kernel.org>,
+        Neeraj Upadhyay <quic_neeraju@quicinc.com>,
+        Josh Triplett <josh@joshtriplett.org>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Mathieu Desnoyers <mathieu.desnoyers@efficios.com>,
+        Lai Jiangshan <jiangshanlai@gmail.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Steven Price <steven.price@arm.com>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Kuppuswamy Sathyanarayanan 
+        <sathyanarayanan.kuppuswamy@linux.intel.com>,
+        "Jason A. Donenfeld" <Jason@zx2c4.com>, boqun.feng@gmail.com
+References: <20220822021520.6996-1-kernelfans@gmail.com>
+ <20220822021520.6996-7-kernelfans@gmail.com>
+ <20220822024528.GC6159@paulmck-ThinkPad-P17-Gen-1>
+ <YwQygLBtzqwxuMIJ@piliu.users.ipa.redhat.com>
+ <20220823030125.GJ6159@paulmck-ThinkPad-P17-Gen-1>
+ <CAFgQCTup0uTqnKi79Tu+5Q0POYVdcE4UkGes8KfHXBd6VR552A@mail.gmail.com>
+ <20220824162050.GA6159@paulmck-ThinkPad-P17-Gen-1>
+From:   Joel Fernandes <joel@joelfernandes.org>
+In-Reply-To: <20220824162050.GA6159@paulmck-ThinkPad-P17-Gen-1>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-At current implementation there is an extra 0 at 1.62G link rate which cause
-no correct pixel_div selected for 1.62G link rate to calculate mvid and nvid.
-This patch delete the extra 0 to have mvid and nvid be calculated correctly.
 
-Changes in v2:
--- fix Fixes tag's text
 
-Fixes: 937f941ca06f  ("drm/msm/dp: Use qmp phy for DP PLL and PHY")
-Signed-off-by: Kuogee Hsieh <quic_khsieh@quicinc.com>
+On 8/24/2022 12:20 PM, Paul E. McKenney wrote:
+> On Wed, Aug 24, 2022 at 09:53:11PM +0800, Pingfan Liu wrote:
+>> On Tue, Aug 23, 2022 at 11:01 AM Paul E. McKenney <paulmck@kernel.org> wrote:
+>>>
+>>> On Tue, Aug 23, 2022 at 09:50:56AM +0800, Pingfan Liu wrote:
+>>>> On Sun, Aug 21, 2022 at 07:45:28PM -0700, Paul E. McKenney wrote:
+>>>>> On Mon, Aug 22, 2022 at 10:15:16AM +0800, Pingfan Liu wrote:
+>>>>>> In order to support parallel, rcu_state.n_online_cpus should be
+>>>>>> atomic_dec()
+>>>>>>
+>>>>>> Signed-off-by: Pingfan Liu <kernelfans@gmail.com>
+>>>>>
+>>>>> I have to ask...  What testing have you subjected this patch to?
+>>>>>
+>>>>
+>>>> This patch subjects to [1]. The series aims to enable kexec-reboot in
+>>>> parallel on all cpu. As a result, the involved RCU part is expected to
+>>>> support parallel.
+>>>
+>>> I understand (and even sympathize with) the expectation.  But results
+>>> sometimes diverge from expectations.  There have been implicit assumptions
+>>> in RCU about only one CPU going offline at a time, and I am not sure
+>>> that all of them have been addressed.  Concurrent CPU onlining has
+>>> been looked at recently here:
+>>>
+>>> https://docs.google.com/document/d/1jymsaCPQ1PUDcfjIKm0UIbVdrJAaGX-6cXrmcfm0PRU/edit?usp=sharing
+>>>
+>>> You did us atomic_dec() to make rcu_state.n_online_cpus decrementing be
+>>> atomic, which is good.  Did you look through the rest of RCU's CPU-offline
+>>> code paths and related code paths?
+>>
+>> I went through those codes at a shallow level, especially at each
+>> cpuhp_step hook in the RCU system.
+> 
+> And that is fine, at least as a first step.
+> 
+>> But as you pointed out, there are implicit assumptions about only one
+>> CPU going offline at a time, I will chew the google doc which you
+>> share.  Then I can come to a final result.
+> 
+> Boqun Feng, Neeraj Upadhyay, Uladzislau Rezki, and I took a quick look,
+> and rcu_boost_kthread_setaffinity() seems to need some help.  As it
+> stands, it appears that concurrent invocations of this function from the
+> CPU-offline path will cause all but the last outgoing CPU's bit to be
+> (incorrectly) set in the cpumask_var_t passed to set_cpus_allowed_ptr().
+> 
+> This should not be difficult to fix, for example, by maintaining a
+> separate per-leaf-rcu_node-structure bitmask of the concurrently outgoing
+> CPUs for that rcu_node structure.  (Similar in structure to the
+> ->qsmask field.)
+> 
+> There are probably more where that one came from.  ;-)
 
-Reviewed-by: Stephen Boyd <swboyd@chromium.org>
-eviewed-by: Abhinav Kumar <quic_abhinavk@quicinc.com>
----
- drivers/gpu/drm/msm/dp/dp_catalog.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+Should rcutree_dying_cpu() access to rnp->qsmask have a READ_ONCE() ? I was
+thinking grace period initialization or qs reporting paths racing with that. Its
+just tracing, still :)
 
-diff --git a/drivers/gpu/drm/msm/dp/dp_catalog.c b/drivers/gpu/drm/msm/dp/dp_catalog.c
-index 7257515..676279d 100644
---- a/drivers/gpu/drm/msm/dp/dp_catalog.c
-+++ b/drivers/gpu/drm/msm/dp/dp_catalog.c
-@@ -431,7 +431,7 @@ void dp_catalog_ctrl_config_msa(struct dp_catalog *dp_catalog,
- 
- 	if (rate == link_rate_hbr3)
- 		pixel_div = 6;
--	else if (rate == 1620000 || rate == 270000)
-+	else if (rate == 162000 || rate == 270000)
- 		pixel_div = 2;
- 	else if (rate == link_rate_hbr2)
- 		pixel_div = 4;
--- 
-The Qualcomm Innovation Center, Inc. is a member of the Code Aurora Forum,
-a Linux Foundation Collaborative Project
+Thanks,
 
+- Joel
