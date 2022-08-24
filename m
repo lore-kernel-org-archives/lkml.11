@@ -2,135 +2,142 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4F9EBC00140
-	for <linux-kernel@archiver.kernel.org>; Wed, 24 Aug 2022 15:42:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 197D6C00140
+	for <linux-kernel@archiver.kernel.org>; Wed, 24 Aug 2022 15:42:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239796AbiHXPm0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 24 Aug 2022 11:42:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52586 "EHLO
+        id S239896AbiHXPmt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 24 Aug 2022 11:42:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51142 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239723AbiHXPlj (ORCPT
+        with ESMTP id S239706AbiHXPmO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 24 Aug 2022 11:41:39 -0400
-Received: from mail-yw1-x114a.google.com (mail-yw1-x114a.google.com [IPv6:2607:f8b0:4864:20::114a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A790999259
-        for <linux-kernel@vger.kernel.org>; Wed, 24 Aug 2022 08:41:22 -0700 (PDT)
-Received: by mail-yw1-x114a.google.com with SMTP id 00721157ae682-33931a5c133so211753347b3.17
-        for <linux-kernel@vger.kernel.org>; Wed, 24 Aug 2022 08:41:22 -0700 (PDT)
+        Wed, 24 Aug 2022 11:42:14 -0400
+Received: from mail-wr1-x42e.google.com (mail-wr1-x42e.google.com [IPv6:2a00:1450:4864:20::42e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 933775B7BF
+        for <linux-kernel@vger.kernel.org>; Wed, 24 Aug 2022 08:41:41 -0700 (PDT)
+Received: by mail-wr1-x42e.google.com with SMTP id bs25so21274473wrb.2
+        for <linux-kernel@vger.kernel.org>; Wed, 24 Aug 2022 08:41:41 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=google.com; s=20210112;
-        h=cc:to:from:subject:references:mime-version:message-id:in-reply-to
-         :date:from:to:cc;
-        bh=GrPou0VZKgNlblC435aJ0/uQRkx4htFwsCEj3e4SObU=;
-        b=N1o6OUXGC/iH2ijb+lNFnDPHgqw3EE+YVt/w/YNG5LZUfFDtYUy7DPSHSoCRfmQwJS
-         GEW628oNDtiSEG+TR9DYt4rWnaj3cDMsOXnilUJ370jMbMm2KfNgR9m9Ztnive72kTrg
-         OaXWIVL0131N9ESH7zWki2HFxKiH1rI35QiprRkAJ13BoDEnL+LlSMy/HEWT438XtiMf
-         WGYAyjrFhnpcRX1qI2eaj3Tz+LyLgSHEugk/D/oOKrB0J9WujNMqEsCeVjZOH7UIoT9C
-         YQYpw/2SUA7LK6rmLDDGa50cJB04mKuYyUDqd0YphGCt9YPiv0IJMleBR3DizoZje5+w
-         Sv/A==
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc;
+        bh=L830z2TNERTcGl4tbqgzwrwOvLMbfJvhxS0C+/JtFw8=;
+        b=qQu/PQN7dwLKePtNOVTsvHiRu+6r+2c66s3MpriN8xtWEuDfqq6nr64X0IeiJlfS0p
+         c6CKXA2VSkdeLHlwuD6XFfKR7Fa3+gEjy+npCoz93rC5bTjIzCvpkkQuA8VMaDHS8khD
+         w9M7xv2e5lM/XGDq/B/y9jNXB29sgJZJ93ixQVdPVe2hQkkVVam2/LtX/e0iz8Zp3yPK
+         lVnoqsnSZVsyD8yIAozMnlSH50IYqfAHvCrUY9RpFxYPeeQv/7sB+WcpMcJjfh2OK089
+         GDYpfSGGBrkkpE1FGiDXmy5sP8FH6g0kCGTO5fPCNjXI52Sq5AoGMTnzSOKK38HvWZ0V
+         zevg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=cc:to:from:subject:references:mime-version:message-id:in-reply-to
-         :date:x-gm-message-state:from:to:cc;
-        bh=GrPou0VZKgNlblC435aJ0/uQRkx4htFwsCEj3e4SObU=;
-        b=aY46QS0VsVKNHaV8BhXKVpv9wm5yblmQUMQyUbbJ5zdhUYNTwG4rCtUvL9zeJBWA2t
-         9BenNiQ0EfYQ0JP/miAJROwnr69C7JtKE9PEDmocAuXOE0f7FUKlGjvt7YDXNJpHpNee
-         NmIy/I4E6JM0d2Crnt3ZNA400VS2T6DeVMHZNAA5t1is75Fv0hsD2AJBzWsLeADZozKI
-         2Q47ywji6QN5SZXGfG2Lpj3T9d3RKllIp9iOVQ1awMH91ft1eLDTRqB0KzffmvoAf8XP
-         xpOFhBKp/f++dNMuhp9OH6ues+1OZmsQGVZlO4OLYa4Xam8LCfugpHZxX+M3+DjCcELr
-         nMAg==
-X-Gm-Message-State: ACgBeo0P+a1Aih4Z+/8f4CJZ0rb6v7pijYQNSbFPSxwWFZ3NtFyzEK0v
-        YkNXSSRvzVrVRm09j+Nty8cuPDWhuFM5
-X-Google-Smtp-Source: AA6agR50UpqAJXTKM7Aszo8uGw/kXlrIkRrRMT0M2mPuVHtgbj+KdyX05ZLo/uA1kRbmgsROvLG/mEAHf0b2
-X-Received: from irogers.svl.corp.google.com ([2620:15c:2d4:203:ab82:a348:500d:1fc4])
- (user=irogers job=sendgmr) by 2002:a25:b3c4:0:b0:68d:d900:837e with SMTP id
- x4-20020a25b3c4000000b0068dd900837emr28057015ybf.501.1661355681725; Wed, 24
- Aug 2022 08:41:21 -0700 (PDT)
-Date:   Wed, 24 Aug 2022 08:39:01 -0700
-In-Reply-To: <20220824153901.488576-1-irogers@google.com>
-Message-Id: <20220824153901.488576-19-irogers@google.com>
-Mime-Version: 1.0
-References: <20220824153901.488576-1-irogers@google.com>
-X-Mailer: git-send-email 2.37.2.609.g9ff673ca1a-goog
-Subject: [PATCH v3 18/18] perf build: Enable -Wthread-safety with clang
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc;
+        bh=L830z2TNERTcGl4tbqgzwrwOvLMbfJvhxS0C+/JtFw8=;
+        b=QjU0cF6flKfeS5braJOY+YAUF98S5hk8bvgWYtal1t9AU52V+07Cb52PquPZsZwSh1
+         xPDxsr6IhidHKeX3h3QQxM++CyiC/NXo93U4puJaL3k5NEyHUnBU1WWOZc3jhOrC7wMG
+         hOA207alzdZbSsNmPxRhnyjXRecrQnxg0H86d5hO04fodNJySAY6eVAIwZsPGcxp70PR
+         8JOtpijrZmFW8v8pJQ4HlaiiLIVZa+FnJXVUuWozB3Pp/e5vA6/3nqv/Wy1GWfdzWkVr
+         lAPKexvf43BHZes6cIKuh1MVd/rLEuAuw9D09gmeKPLilhryTFyBsajOUK6kiNHR21Nk
+         TNAw==
+X-Gm-Message-State: ACgBeo0kqH6sMzRhSrKiNh6GkcUVXtWXXqUp0WSs+jjuPIeXe//QMbxm
+        13gLvYwJqeBhvRoHjbdHzOPFmP3IuqVSu3rmyl+NCQ==
+X-Google-Smtp-Source: AA6agR4KaYIx6iGPiHJjUkYV9BYSPQa3moZGZB/PuohjsgwIQH/dSC/nh0UbXrb/pakBiHrMXVdkZby/E7+907u0XgA=
+X-Received: by 2002:a05:6000:1008:b0:225:58e0:223f with SMTP id
+ a8-20020a056000100800b0022558e0223fmr8820928wrx.375.1661355699767; Wed, 24
+ Aug 2022 08:41:39 -0700 (PDT)
+MIME-Version: 1.0
+References: <20220824072814.16422-1-adrian.hunter@intel.com> <20220824072814.16422-3-adrian.hunter@intel.com>
+In-Reply-To: <20220824072814.16422-3-adrian.hunter@intel.com>
 From:   Ian Rogers <irogers@google.com>
-To:     Peter Zijlstra <peterz@infradead.org>,
-        Ingo Molnar <mingo@redhat.com>,
-        Arnaldo Carvalho de Melo <acme@kernel.org>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
-        Jiri Olsa <jolsa@kernel.org>,
+Date:   Wed, 24 Aug 2022 08:41:27 -0700
+Message-ID: <CAP-5=fUTzXr_60dtXr1_C7sZZz8gOJT2vFFpSXb5yhXDrqO5Yw@mail.gmail.com>
+Subject: Re: [PATCH 2/5] perf record: Fix done_fd wakeup event
+To:     Adrian Hunter <adrian.hunter@intel.com>
+Cc:     Arnaldo Carvalho de Melo <acme@kernel.org>,
+        Jiri Olsa <jolsa@redhat.com>,
         Namhyung Kim <namhyung@kernel.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Darren Hart <dvhart@infradead.org>,
-        Davidlohr Bueso <dave@stgolabs.net>,
-        "=?UTF-8?q?Andr=C3=A9=20Almeida?=" <andrealmeid@igalia.com>,
-        Nathan Chancellor <nathan@kernel.org>,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        Tom Rix <trix@redhat.com>, Weiguo Li <liwg06@foxmail.com>,
-        Athira Rajeev <atrajeev@linux.vnet.ibm.com>,
-        Thomas Richter <tmricht@linux.ibm.com>,
-        Ravi Bangoria <ravi.bangoria@amd.com>,
-        Dario Petrillo <dario.pk1@gmail.com>,
-        Hewenliang <hewenliang4@huawei.com>,
-        yaowenbin <yaowenbin1@huawei.com>,
-        Wenyu Liu <liuwenyu7@huawei.com>,
-        Song Liu <songliubraving@fb.com>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Dave Marchevsky <davemarchevsky@fb.com>,
-        Leo Yan <leo.yan@linaro.org>,
-        Kim Phillips <kim.phillips@amd.com>,
-        Pavithra Gurushankar <gpavithrasha@gmail.com>,
-        Alexandre Truong <alexandre.truong@arm.com>,
-        Quentin Monnet <quentin@isovalent.com>,
-        William Cohen <wcohen@redhat.com>,
-        Andres Freund <andres@anarazel.de>,
-        Adrian Hunter <adrian.hunter@intel.com>,
-        "=?UTF-8?q?Martin=20Li=C5=A1ka?=" <mliska@suse.cz>,
-        Colin Ian King <colin.king@intel.com>,
-        James Clark <james.clark@arm.com>,
-        Fangrui Song <maskray@google.com>,
-        Stephane Eranian <eranian@google.com>,
-        Kajol Jain <kjain@linux.ibm.com>,
-        Alexey Bayduraev <alexey.v.bayduraev@linux.intel.com>,
-        Riccardo Mancini <rickyman7@gmail.com>,
         Andi Kleen <ak@linux.intel.com>,
-        Masami Hiramatsu <mhiramat@kernel.org>,
-        Zechuan Chen <chenzechuan1@huawei.com>,
-        Jason Wang <wangborong@cdjrlc.com>,
-        Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
-        Remi Bernon <rbernon@codeweavers.com>,
-        linux-kernel@vger.kernel.org, linux-perf-users@vger.kernel.org,
-        bpf@vger.kernel.org, llvm@lists.linux.dev
-Cc:     Ian Rogers <irogers@google.com>
+        Alexey Bayduraev <alexey.v.bayduraev@linux.intel.com>,
+        linux-kernel@vger.kernel.org
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-If building with clang then enable -Wthread-safety warnings.
+On Wed, Aug 24, 2022 at 12:28 AM Adrian Hunter <adrian.hunter@intel.com> wrote:
+>
+> evlist__add_wakeup_eventfd() calls perf_evlist__add_pollfd() to add a
+> non-perf-event to the evlist pollfds. Since commit 415ccb58f68a
+> ("perf record: Introduce thread specific data array") that doesn't work
+> because evlist pollfs is not polled and done_fd is not duplicated into
+> thread-data.
+>
+> Patch "perf record: Fix way of handling non-perf-event pollfds" added a new
+> approach that ensures file descriptors like done_fd are handled correctly
+> by flagging them as fdarray_flag__non_perf_event.
+>
+> Fix by flagging done_fd as fdarray_flag__non_perf_event.
+>
+> Example:
+>
+>  Before:
+>
+>   $ sleep 3 & perf record -vv -p $!
+>   ...
+>   thread_data[0x55f44bd34140]: pollfd[0] <- event_fd=5
+>   thread_data[0x55f44bd34140]: pollfd[1] <- event_fd=6
+>   thread_data[0x55f44bd34140]: pollfd[2] <- event_fd=7
+>   thread_data[0x55f44bd34140]: pollfd[3] <- event_fd=8
+>   thread_data[0x55f44bd34140]: pollfd[4] <- event_fd=9
+>   thread_data[0x55f44bd34140]: pollfd[5] <- event_fd=10
+>   thread_data[0x55f44bd34140]: pollfd[6] <- event_fd=11
+>   thread_data[0x55f44bd34140]: pollfd[7] <- event_fd=12
+>   ...
+>
+>  After:
+>
+>   $ sleep 3 & perf record -vv -p $!
+>   ...
+>   thread_data[0x55a8ded89140]: pollfd[0] <- event_fd=5
+>   thread_data[0x55a8ded89140]: pollfd[1] <- event_fd=6
+>   thread_data[0x55a8ded89140]: pollfd[2] <- event_fd=7
+>   thread_data[0x55a8ded89140]: pollfd[3] <- event_fd=8
+>   thread_data[0x55a8ded89140]: pollfd[4] <- event_fd=9
+>   thread_data[0x55a8ded89140]: pollfd[5] <- event_fd=10
+>   thread_data[0x55a8ded89140]: pollfd[6] <- event_fd=11
+>   thread_data[0x55a8ded89140]: pollfd[7] <- event_fd=12
+>   thread_data[0x55a8ded89140]: pollfd[8] <- non_perf_event fd=4
+>   ...
+>
+> This patch depends on "perf record: Fix way of handling non-perf-event
+> pollfds".
+>
+> Fixes: 415ccb58f68a ("perf record: Introduce thread specific data array")
+> Signed-off-by: Adrian Hunter <adrian.hunter@intel.com>
 
-Signed-off-by: Ian Rogers <irogers@google.com>
----
- tools/perf/Makefile.config | 5 +++++
- 1 file changed, 5 insertions(+)
+Acked-by: Ian Rogers <irogers@google.com>
 
-diff --git a/tools/perf/Makefile.config b/tools/perf/Makefile.config
-index c41a090c0652..72dadafdbad9 100644
---- a/tools/perf/Makefile.config
-+++ b/tools/perf/Makefile.config
-@@ -19,6 +19,11 @@ detected_var = $(shell echo "$(1)=$($(1))" >> $(OUTPUT).config-detected)
- CFLAGS := $(EXTRA_CFLAGS) $(filter-out -Wnested-externs,$(EXTRA_WARNINGS))
- HOSTCFLAGS := $(filter-out -Wnested-externs,$(EXTRA_WARNINGS))
- 
-+# Enabled Wthread-safety analysis for clang builds.
-+ifeq ($(CC_NO_CLANG), 0)
-+  CFLAGS += -Wthread-safety
-+endif
-+
- include $(srctree)/tools/scripts/Makefile.arch
- 
- $(call detected_var,SRCARCH)
--- 
-2.37.2.609.g9ff673ca1a-goog
+Thanks,
+Ian
 
+> ---
+>  tools/perf/util/evlist.c | 3 ++-
+>  1 file changed, 2 insertions(+), 1 deletion(-)
+>
+> diff --git a/tools/perf/util/evlist.c b/tools/perf/util/evlist.c
+> index 48167f3941a6..0b2222d05577 100644
+> --- a/tools/perf/util/evlist.c
+> +++ b/tools/perf/util/evlist.c
+> @@ -608,7 +608,8 @@ int evlist__filter_pollfd(struct evlist *evlist, short revents_and_mask)
+>  int evlist__add_wakeup_eventfd(struct evlist *evlist, int fd)
+>  {
+>         return perf_evlist__add_pollfd(&evlist->core, fd, NULL, POLLIN,
+> -                                      fdarray_flag__nonfilterable);
+> +                                      fdarray_flag__nonfilterable |
+> +                                      fdarray_flag__non_perf_event);
+>  }
+>  #endif
+>
+> --
+> 2.25.1
+>
