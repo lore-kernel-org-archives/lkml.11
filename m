@@ -2,90 +2,68 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AA034C32792
-	for <linux-kernel@archiver.kernel.org>; Wed, 24 Aug 2022 19:24:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BB19DC00140
+	for <linux-kernel@archiver.kernel.org>; Wed, 24 Aug 2022 19:24:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239834AbiHXTY1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 24 Aug 2022 15:24:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44342 "EHLO
+        id S239932AbiHXTY5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 24 Aug 2022 15:24:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45140 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239605AbiHXTYW (ORCPT
+        with ESMTP id S239909AbiHXTYu (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 24 Aug 2022 15:24:22 -0400
-Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.154.123])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EA4496CF40;
-        Wed, 24 Aug 2022 12:24:17 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1661369057; x=1692905057;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=lGwWmzJrwJTpaXz+zD0EomUCGqQi3iai0u1JFi8zc3Q=;
-  b=pV97T3HG/y+TD7WO+ULR6cowlA/6C188U/WV2j/t5O1s5EQJLwmjFYHr
-   wR8dfDQQ+GSqK45aLbVX3dkYXdQ/k6DPEogccavYMjjqiKwMijMloZrj/
-   OkeW9KHpUsVvnbcD3Pxdl4grnlmTEnt09c84Xp7CBS+b/kCqrFpLaqxI3
-   edu+f2xOHNofmpytadx0GVViR77kx9ki1akxl31UeD0OCV/Mcye/fa8/g
-   fag4D/KKnF43RVudrBPI4whsCFHlNFIMJpE22hr7N587SqWnmkeoDQ4V/
-   410DSjm2KaLeISzcjMSih7sJU3AI+ZYXvERjwUKENYYOjqvXl0tIiv93U
-   A==;
-X-IronPort-AV: E=Sophos;i="5.93,261,1654585200"; 
-   d="scan'208";a="173994307"
-Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
-  by esa2.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 24 Aug 2022 12:24:16 -0700
-Received: from chn-vm-ex01.mchp-main.com (10.10.85.143) by
- chn-vm-ex02.mchp-main.com (10.10.85.144) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.12; Wed, 24 Aug 2022 12:24:16 -0700
-Received: from soft-dev3-1.microsemi.net (10.10.115.15) by
- chn-vm-ex01.mchp-main.com (10.10.85.143) with Microsoft SMTP Server id
- 15.1.2507.12 via Frontend Transport; Wed, 24 Aug 2022 12:24:14 -0700
-From:   Horatiu Vultur <horatiu.vultur@microchip.com>
-To:     <andrew@lunn.ch>
-CC:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <hkallweit1@gmail.com>, <linux@armlinux.org.uk>,
-        <davem@davemloft.net>, <edumazet@google.com>, <kuba@kernel.org>,
-        <pabeni@redhat.com>, <michael@walle.cc>,
-        <UNGLinuxDriver@microchip.com>, <maxime.chevallier@bootlin.com>,
-        Horatiu Vultur <horatiu.vultur@microchip.com>
-Subject: [PATCH net] net: phy: micrel: Make the GPIO to be non-exclusive
-Date:   Wed, 24 Aug 2022 21:28:27 +0200
-Message-ID: <20220824192827.437095-1-horatiu.vultur@microchip.com>
-X-Mailer: git-send-email 2.33.0
+        Wed, 24 Aug 2022 15:24:50 -0400
+Received: from netrider.rowland.org (netrider.rowland.org [192.131.102.5])
+        by lindbergh.monkeyblade.net (Postfix) with SMTP id B063E60C5
+        for <linux-kernel@vger.kernel.org>; Wed, 24 Aug 2022 12:24:47 -0700 (PDT)
+Received: (qmail 390799 invoked by uid 1000); 24 Aug 2022 15:24:46 -0400
+Date:   Wed, 24 Aug 2022 15:24:46 -0400
+From:   Alan Stern <stern@rowland.harvard.edu>
+To:     Khalid Masum <khalid.masum.92@gmail.com>
+Cc:     linux-usb@vger.kernel.org,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Kishon Vijay Abraham I <kishon@ti.com>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Matthias Kaehlcke <mka@chromium.org>,
+        Alexey Sheplyakov <asheplyakov@basealt.ru>,
+        Weitao Wang <WeitaoWang-oc@zhaoxin.com>,
+        linux-kernel-mentees 
+        <linux-kernel-mentees@lists.linuxfoundation.org>
+Subject: Re: [PATCH] usb: host: Use helper function to get endpoint
+Message-ID: <YwZ6/qkEAk8867qh@rowland.harvard.edu>
+References: <20220824130702.10912-1-khalid.masum.92@gmail.com>
+ <YwY4cVdB3tVVMIqJ@rowland.harvard.edu>
+ <CAABMjtFEfgQtcGKLkd=whFN=WHUywTg=fDAxRQ+zKLiqOFhvQg@mail.gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAABMjtFEfgQtcGKLkd=whFN=WHUywTg=fDAxRQ+zKLiqOFhvQg@mail.gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The same GPIO line can be shared by multiple phys for the coma mode pin.
-If that is the case then, all the other phys that share the same line
-will failed to be probed because the access to the gpio line is not
-non-exclusive.
-Fix this by making access to the gpio line to be nonexclusive using flag
-GPIOD_FLAGS_BIT_NONEXCLUSIVE. This allows all the other PHYs to be
-probed.
+On Wed, Aug 24, 2022 at 11:57:25PM +0600, Khalid Masum wrote:
+> On Wed, Aug 24, 2022 at 8:40 PM Alan Stern <stern@rowland.harvard.edu> wrote:
+> >
+> >
+> > Even this is awkward.  It's silly to look up the endpoint in a table
+> > when you already know that it is endpoint 0.  Just do:
+> >
+> >         ep = &udev->ep0;
+> >
+> > with no need to check for NULL.
+> 
+> After further checking, I realized that  usb_device udev is created by
+> ehset_single_step_set_feature and depends on usb_hcd and port. So I do
+> not get why the endpoint is at udev->ep0. Can you help me with this?
 
-Fixes: 738871b09250ee ("net: phy: micrel: add coma mode GPIO")
-Signed-off-by: Horatiu Vultur <horatiu.vultur@microchip.com>
----
- drivers/net/phy/micrel.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+udev is not a usb_device structure; it is a _pointer_ to a usb_device 
+structure.  The pointer is created when ehset_single_step_set_feature() 
+calls usb_hub_find_child(), but the structure itself gets created long 
+before that, when the USB device is first detected and initialized.
 
-diff --git a/drivers/net/phy/micrel.c b/drivers/net/phy/micrel.c
-index e78d0bf69bc3..ea72ff64ad33 100644
---- a/drivers/net/phy/micrel.c
-+++ b/drivers/net/phy/micrel.c
-@@ -2878,7 +2878,8 @@ static int lan8814_release_coma_mode(struct phy_device *phydev)
- 	struct gpio_desc *gpiod;
- 
- 	gpiod = devm_gpiod_get_optional(&phydev->mdio.dev, "coma-mode",
--					GPIOD_OUT_HIGH_OPEN_DRAIN);
-+					GPIOD_OUT_HIGH_OPEN_DRAIN |
-+					GPIOD_FLAGS_BIT_NONEXCLUSIVE);
- 	if (IS_ERR(gpiod))
- 		return PTR_ERR(gpiod);
- 
--- 
-2.33.0
+You can see this happening where hub_port_connect() calls 
+usb_alloc_dev().  The ep0 field is filled in by hub_port_init() and the 
+routines it calls.
 
+Alan Stern
