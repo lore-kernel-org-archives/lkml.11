@@ -2,157 +2,120 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2627CC00140
-	for <linux-kernel@archiver.kernel.org>; Wed, 24 Aug 2022 15:49:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 175F2C00140
+	for <linux-kernel@archiver.kernel.org>; Wed, 24 Aug 2022 15:49:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238508AbiHXPtj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 24 Aug 2022 11:49:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43328 "EHLO
+        id S238891AbiHXPto (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 24 Aug 2022 11:49:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43306 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236868AbiHXPtg (ORCPT
+        with ESMTP id S237332AbiHXPth (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 24 Aug 2022 11:49:36 -0400
-Received: from madras.collabora.co.uk (madras.collabora.co.uk [46.235.227.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 247D061717;
-        Wed, 24 Aug 2022 08:49:35 -0700 (PDT)
-Received: from [192.168.2.145] (109-252-119-13.nat.spd-mgts.ru [109.252.119.13])
-        (using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
-         key-exchange X25519 server-signature RSA-PSS (4096 bits))
+        Wed, 24 Aug 2022 11:49:37 -0400
+Received: from crane.ash.relay.mailchannels.net (crane.ash.relay.mailchannels.net [23.83.222.43])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BC830AE4C;
+        Wed, 24 Aug 2022 08:49:33 -0700 (PDT)
+X-Sender-Id: dreamhost|x-authsender|dave@stgolabs.net
+Received: from relay.mailchannels.net (localhost [127.0.0.1])
+        by relay.mailchannels.net (Postfix) with ESMTP id 46BCC3C1537;
+        Wed, 24 Aug 2022 15:49:30 +0000 (UTC)
+Received: from pdx1-sub0-mail-a272 (unknown [127.0.0.6])
+        (Authenticated sender: dreamhost)
+        by relay.mailchannels.net (Postfix) with ESMTPA id A8E253C0446;
+        Wed, 24 Aug 2022 15:49:29 +0000 (UTC)
+ARC-Seal: i=1; s=arc-2022; d=mailchannels.net; t=1661356169; a=rsa-sha256;
+        cv=none;
+        b=cu+o5/F1M8oKJJd3Cb1g5dj0+jtfKIbltlxaohXPKX70qy/US83bzr4rjx126amUdBi8n/
+        0FyHDETA3K7ylQna1mq9ej2UDDhZizPSj8pXPVLC13CaPWPv6iR3jINiOSicT9Zdq8PHx7
+        aryG06pXKtcpPj4V8CHz0OpZ/ZtL4VSWJwPSbPnI1CqQgyirUZ55uYFgjNFGV9+PtDg/Hc
+        DkXHvcVtalzK3WqS+zl2t6wgYjCTe9/BR/taWx1yQWF++Mr95ZHF84YH2cB49rlYlwj+vc
+        hIQulx3PRREWLN5dz0zM7Csb/njLi3uycTf8UpGLChl04CPA6vfs+rRU6lsIxQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=mailchannels.net;
+        s=arc-2022; t=1661356169;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references:dkim-signature;
+        bh=f8zvgpAQ/vOOCAA6BsteItnQintQryatUs+B9WSkV00=;
+        b=jTUPY3ohRb5pC/6MgkVbIUiJltXIQmi/q2jcDJF189xLhTlcwddDN6Qh8jqTJ5FSaZOZ1K
+        Ukz72PHrGELo4ciuaLk/vA9/x5Hr0v/IqvoHMQgw4NjDbUZrJ8R0nz4CSzeCanJ5bC2GNO
+        kI5PLgjoBYeJPOwZtxvy+oETZGh+LyfuHhWLjZv3PuXSzrARH7ezylqgWdm1ue6vzNJu8Y
+        a88zCjt9rDFDBVbNKmvzGPnPWR5V0BsLGLweZa2Gtn+eAy9KqOEYxPdnCc6v7FKuQy56XZ
+        tX6X/cla/ho0HOuRN8uC+5PF/rQ7GT8G1ooGfjZgKFF3UvqrRhnY4VEhTMJM7Q==
+ARC-Authentication-Results: i=1;
+        rspamd-5cbff9fff7-55tb6;
+        auth=pass smtp.auth=dreamhost smtp.mailfrom=dave@stgolabs.net
+X-Sender-Id: dreamhost|x-authsender|dave@stgolabs.net
+X-MC-Relay: Neutral
+X-MailChannels-SenderId: dreamhost|x-authsender|dave@stgolabs.net
+X-MailChannels-Auth-Id: dreamhost
+X-Bottle-Average: 1edba8120ba38851_1661356170002_2449178677
+X-MC-Loop-Signature: 1661356170002:1405177085
+X-MC-Ingress-Time: 1661356170002
+Received: from pdx1-sub0-mail-a272 (pop.dreamhost.com [64.90.62.162])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384)
+        by 100.109.219.74 (trex/6.7.1);
+        Wed, 24 Aug 2022 15:49:29 +0000
+Received: from offworld (unknown [104.36.31.106])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-256) server-signature RSA-PSS (2048 bits) server-digest SHA256)
         (No client certificate requested)
-        (Authenticated sender: dmitry.osipenko)
-        by madras.collabora.co.uk (Postfix) with ESMTPSA id 003536601DAD;
-        Wed, 24 Aug 2022 16:49:30 +0100 (BST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
-        s=mail; t=1661356173;
-        bh=vOJMhTQ7HzZBp0ZZo9K4hrXQVabXIso7oNLwG6hsKLo=;
-        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-        b=c6s4L7HIzhqXHIRjPO78mUx2njs0FTSDwh/if1G8GrYUXKIesr5TSuVpzCCXzCFaC
-         RQwFs9mzKIF/SoKOeW/iFsEtF2HNDrH0QYgFH8Bjb0EODV2gEnzbMJNa3D7Euz+aq1
-         ttSiIgN9lBknJRw6hrDsumfPw8z1mfE/u3dAN4OYGFY1SnY5ytLPSVBmnTh6lKyQde
-         YOUN/UNH4qT1TRrXxpbCLStfVkyl6+y4obXi9sfi44ZsbJWXBmSFG438Hbbw7Cm9FD
-         zamHCbpRiEHeEJEqGHwgMIgiFMUhzX7OjakAgX0Hfj9WgvOsPDRnfMMAi2GCcW6bPu
-         eS/kqb6U0BR1g==
-Message-ID: <25d6b7e7-bbcc-7613-42d1-13c2b9ab2937@collabora.com>
-Date:   Wed, 24 Aug 2022 18:49:28 +0300
+        (Authenticated sender: dave@stgolabs.net)
+        by pdx1-sub0-mail-a272 (Postfix) with ESMTPSA id 4MCVs473t5zCv;
+        Wed, 24 Aug 2022 08:49:28 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=stgolabs.net;
+        s=dreamhost; t=1661356169;
+        bh=f8zvgpAQ/vOOCAA6BsteItnQintQryatUs+B9WSkV00=;
+        h=Date:From:To:Cc:Subject:Content-Type;
+        b=KZk2ksKNEUDT32Rd3tpDfFxsY0TRFy+bGHBa4znHeeVbLOWCqdV2FNTTu9B8eezou
+         HPkEHlIKLekVraT3q9sdv32aLYNFlF49NA5VJeo4vKinBlI7PvoEaLEOkN50lyMWMJ
+         tuvbbr0rgqpXK1ajE99YjWn2MNX82Nw8oycR+U7Q2klt93JM0OXACYDrGPCaUEu9L+
+         Ih6q6jvT65kzrmGWQ0Jen51ed2az3IDA1MeIViF6V6y3ctT6u3XDzdjDyymZfzyLZ8
+         Do8l9+xJ0QGtEA5Yx7+KAZaLQYplKZEfPICn7Slz4MD+zhWQNcYeFm3U77Y0o/7WaN
+         Z9MXfwmcsdLDg==
+Date:   Wed, 24 Aug 2022 08:31:22 -0700
+From:   Davidlohr Bueso <dave@stgolabs.net>
+To:     Jonathan Cameron <Jonathan.Cameron@huawei.com>
+Cc:     Adam Manzanares <a.manzanares@samsung.com>,
+        "alison.schofield@intel.com" <alison.schofield@intel.com>,
+        "vishal.l.verma@intel.com" <vishal.l.verma@intel.com>,
+        "ira.weiny@intel.com" <ira.weiny@intel.com>,
+        "widawsk@kernel.org" <widawsk@kernel.org>,
+        "dan.j.williams@intel.com" <dan.j.williams@intel.com>,
+        "linux-cxl@vger.kernel.org" <linux-cxl@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH] cxl: Replace HDM decoder granularity magic numbers
+Message-ID: <20220824153122.2bgths6lnsxlolos@offworld>
+References: <CGME20220822170552uscas1p1b1ee530bf38a14806010d65d1b593ab0@uscas1p1.samsung.com>
+ <20220822170510.125082-1-a.manzanares@samsung.com>
+ <20220822171703.sfizbmn6retpxggi@offworld>
+ <20220824104401.00005cd4@huawei.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.12.0
-Subject: Re: [Linaro-mm-sig] [PATCH v3 6/9] dma-buf: Move dma-buf attachment
- to dynamic locking specification
-Content-Language: en-US
-To:     =?UTF-8?Q?Christian_K=c3=b6nig?= <ckoenig.leichtzumerken@gmail.com>,
-        David Airlie <airlied@linux.ie>,
-        Gerd Hoffmann <kraxel@redhat.com>,
-        Gurchetan Singh <gurchetansingh@chromium.org>,
-        Chia-I Wu <olvaffe@gmail.com>, Daniel Vetter <daniel@ffwll.ch>,
-        Daniel Almeida <daniel.almeida@collabora.com>,
-        Gert Wollny <gert.wollny@collabora.com>,
-        Gustavo Padovan <gustavo.padovan@collabora.com>,
-        Daniel Stone <daniel@fooishbar.org>,
-        Tomeu Vizoso <tomeu.vizoso@collabora.com>,
-        Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
-        Maxime Ripard <mripard@kernel.org>,
-        Thomas Zimmermann <tzimmermann@suse.de>,
-        Rob Clark <robdclark@gmail.com>,
-        Sumit Semwal <sumit.semwal@linaro.org>,
-        =?UTF-8?Q?Christian_K=c3=b6nig?= <christian.koenig@amd.com>,
-        "Pan, Xinhui" <Xinhui.Pan@amd.com>,
-        Thierry Reding <thierry.reding@gmail.com>,
-        Tomasz Figa <tfiga@chromium.org>,
-        Marek Szyprowski <m.szyprowski@samsung.com>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
-        Alex Deucher <alexander.deucher@amd.com>,
-        Jani Nikula <jani.nikula@linux.intel.com>,
-        Joonas Lahtinen <joonas.lahtinen@linux.intel.com>,
-        Rodrigo Vivi <rodrigo.vivi@intel.com>,
-        Tvrtko Ursulin <tvrtko.ursulin@linux.intel.com>,
-        =?UTF-8?Q?Thomas_Hellstr=c3=b6m?= <thomas_os@shipmail.org>,
-        Qiang Yu <yuq825@gmail.com>
-Cc:     dri-devel@lists.freedesktop.org, linux-kernel@vger.kernel.org,
-        Dmitry Osipenko <digetx@gmail.com>,
-        linux-media@vger.kernel.org, linaro-mm-sig@lists.linaro.org,
-        amd-gfx@lists.freedesktop.org, intel-gfx@lists.freedesktop.org,
-        kernel@collabora.com, virtualization@lists.linux-foundation.org,
-        linux-rdma@vger.kernel.org, linux-arm-msm@vger.kernel.org,
-        lima@lists.freedesktop.org
-References: <20220824102248.91964-1-dmitry.osipenko@collabora.com>
- <20220824102248.91964-7-dmitry.osipenko@collabora.com>
- <055c3c05-ac4c-430e-f2b9-08f000acf435@gmail.com>
-From:   Dmitry Osipenko <dmitry.osipenko@collabora.com>
-In-Reply-To: <055c3c05-ac4c-430e-f2b9-08f000acf435@gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii; format=flowed
+Content-Disposition: inline
+In-Reply-To: <20220824104401.00005cd4@huawei.com>
+User-Agent: NeoMutt/20220429
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 8/24/22 18:24, Christian König wrote:
-> Am 24.08.22 um 12:22 schrieb Dmitry Osipenko:
->> Move dma-buf attachment API functions to the dynamic locking
->> specification.
->> The strict locking convention prevents deadlock situations for dma-buf
->> importers and exporters.
->>
->> Previously, the "unlocked" versions of the attachment API functions
->> weren't taking the reservation lock and this patch makes them to take
->> the lock.
->>
->> Intel and AMD GPU drivers already were mapping the attached dma-bufs
->> under
->> the held lock during attachment, hence these drivers are updated to use
->> the locked functions.
->>
->> Signed-off-by: Dmitry Osipenko <dmitry.osipenko@collabora.com>
->> ---
->>   drivers/dma-buf/dma-buf.c                  | 115 ++++++++++++++-------
->>   drivers/gpu/drm/amd/amdgpu/amdgpu_ttm.c    |   4 +-
->>   drivers/gpu/drm/i915/gem/i915_gem_dmabuf.c |   8 +-
->>   drivers/gpu/drm/i915/gem/i915_gem_object.c |  12 +++
->>   include/linux/dma-buf.h                    |  20 ++--
->>   5 files changed, 110 insertions(+), 49 deletions(-)
->>
->> diff --git a/drivers/dma-buf/dma-buf.c b/drivers/dma-buf/dma-buf.c
->> index 4556a12bd741..f2a5a122da4a 100644
->> --- a/drivers/dma-buf/dma-buf.c
->> +++ b/drivers/dma-buf/dma-buf.c
->> @@ -559,7 +559,7 @@ static struct file *dma_buf_getfile(struct dma_buf
->> *dmabuf, int flags)
->>    * 2. Userspace passes this file-descriptors to all drivers it wants
->> this buffer
->>    *    to share with: First the file descriptor is converted to a
->> &dma_buf using
->>    *    dma_buf_get(). Then the buffer is attached to the device using
->> - *    dma_buf_attach().
->> + *    dma_buf_attach_unlocked().
-> 
-> Now I get why this is confusing me so much.
-> 
-> The _unlocked postfix implies that there is another function which
-> should be called with the locks already held, but this is not the case
-> for attach/detach (because they always need to grab the lock themselves).
+On Wed, 24 Aug 2022, Jonathan Cameron wrote:
 
-That's correct. The attach/detach ops of exporter can take the lock
-(like i915 exporter does it), hence importer must not grab the lock
-around dma_buf_attach() invocation.
+>On Mon, 22 Aug 2022 10:17:03 -0700
+>Davidlohr Bueso <dave@stgolabs.net> wrote:
 
-> So I suggest to drop the _unlocked postfix for the attach/detach
-> functions. Another step would then be to unify attach/detach with
-> dynamic_attach/dynamic_detach when both have the same locking convention
-> anyway.
+>> Actually the whole drivers/cxl/* could use updating the comments for 3.0.
+>
+>Interesting point.  What do we want to do on this?  Most similar
+>cases I've been involved on rely on referring to 'oldest' compatible spec.
+>(this is true for ACPI stuff for example).
 
-It's not a problem to change the name, but it's unclear to me why we
-should do it. The _unlocked postfix tells importer that reservation must
-be unlocked and it must be unlocked in case of dma_buf_attach().
+I find it incredibly annoying to reference table or section numbers from old
+specs mention in the code. Unless dealing with specific version things, why
+use old specs at all?
 
-Dropping the postfix will make dma_buf_attach() inconsistent with the
-rest of the _unlocked functions(?). Are you sure we need to rename it?
+The main drawback to this is obviously the constant need to update everything,
+so...
 
-> Sorry that this is going so much back and forth, it's really complicated
-> to keep all the stuff in my head at the moment :)
-
-Not a problem at all, I expected that it will take some time for this
-patchset to settle down.
-
--- 
-Best regards,
-Dmitry
+Thanks,
+Davidlohr
