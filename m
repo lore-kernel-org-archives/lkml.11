@@ -2,38 +2,39 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 58E52C00140
-	for <linux-kernel@archiver.kernel.org>; Wed, 24 Aug 2022 15:55:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 22AF7C00140
+	for <linux-kernel@archiver.kernel.org>; Wed, 24 Aug 2022 15:56:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238914AbiHXPzg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 24 Aug 2022 11:55:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60704 "EHLO
+        id S237421AbiHXP4Y (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 24 Aug 2022 11:56:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36006 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237392AbiHXPzQ (ORCPT
+        with ESMTP id S238135AbiHXP4S (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 24 Aug 2022 11:55:16 -0400
-Received: from mail.skyhub.de (mail.skyhub.de [5.9.137.197])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8E5025F214
-        for <linux-kernel@vger.kernel.org>; Wed, 24 Aug 2022 08:55:13 -0700 (PDT)
+        Wed, 24 Aug 2022 11:56:18 -0400
+Received: from mail.skyhub.de (mail.skyhub.de [IPv6:2a01:4f8:190:11c2::b:1457])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8F53E79EEB
+        for <linux-kernel@vger.kernel.org>; Wed, 24 Aug 2022 08:56:17 -0700 (PDT)
 Received: from zn.tnic (p200300ea971b9859329c23fffea6a903.dip0.t-ipconnect.de [IPv6:2003:ea:971b:9859:329c:23ff:fea6:a903])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.skyhub.de (SuperMail on ZX Spectrum 128k) with ESMTPSA id 335641EC056A;
-        Wed, 24 Aug 2022 17:55:08 +0200 (CEST)
+        by mail.skyhub.de (SuperMail on ZX Spectrum 128k) with ESMTPSA id D758F1EC056A;
+        Wed, 24 Aug 2022 17:56:11 +0200 (CEST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=alien8.de; s=dkim;
-        t=1661356508;
+        t=1661356571;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          content-transfer-encoding:in-reply-to:in-reply-to:  references:references;
-        bh=FwQUi4dAp845Zd5RUWtjKFuLCwxIp02ZFGB49oZzfCQ=;
-        b=DxozawXWXxCJzoXKJjOk/15zCoTDRv0kazS3Xi0xdHiCKdJqu4jhU5UeGNz5EOl2ZEAQwg
-        fLg278POT2YIHMORXoNXCAgzDeTVJdvzaycPm/tHqyljMSs3N0ov4hmsJj1dmoHMIIyWv4
-        PVSwLio6gb5fN/S6vh8Sq0GHlTeJFkA=
-Date:   Wed, 24 Aug 2022 17:55:07 +0200
+        bh=597nyabWH/euYfInu4TMyRneXI4eRxz/mWO4MBAwbZ8=;
+        b=fE79Ej2xuWRrdBwqklqQS5kNxmPtqQgtbTrRQLfv5+kxBWWYRidPpdEGY2YnmAiC68DQ+2
+        ya/Qvw3mPXX1ha8+f6y6knjGI3pV19lmrdLauNA6NiZftztNnNfDp8+3A2NYy6gygyY+JP
+        KWpTdAjoeZ2ystCgn+CQ8QkDCqiZSwo=
+Date:   Wed, 24 Aug 2022 17:56:11 +0200
 From:   Borislav Petkov <bp@alien8.de>
 To:     Sathyanarayanan Kuppuswamy 
         <sathyanarayanan.kuppuswamy@linux.intel.com>
-Cc:     Thomas Gleixner <tglx@linutronix.de>,
+Cc:     Dave Hansen <dave.hansen@intel.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
         Ingo Molnar <mingo@redhat.com>,
         Dave Hansen <dave.hansen@linux.intel.com>, x86@kernel.org,
         "H . Peter Anvin" <hpa@zytor.com>,
@@ -48,26 +49,32 @@ Cc:     Thomas Gleixner <tglx@linutronix.de>,
         linux-kernel@vger.kernel.org
 Subject: Re: [PATCH v9 1/6] x86/tdx: Add TDX Guest attestation interface
  driver
-Message-ID: <YwZJ22gOWG0OyZB2@zn.tnic>
+Message-ID: <YwZKGzXloHWeFV/k@zn.tnic>
 References: <20220728034420.648314-1-sathyanarayanan.kuppuswamy@linux.intel.com>
  <20220728034420.648314-2-sathyanarayanan.kuppuswamy@linux.intel.com>
  <Yv5KNyX992ddvVtD@zn.tnic>
- <c8262af7-1552-98e0-fb35-4cf17228b039@linux.intel.com>
+ <20abfa00-b70c-f151-9ee4-5668f09f4ace@intel.com>
+ <YwP27a6/9Yq8LBM3@zn.tnic>
+ <be080a46-e6c2-995b-9064-a8506c38bef8@intel.com>
+ <08c5b818-a030-4c97-80f7-52ee42dc1f79@linux.intel.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <c8262af7-1552-98e0-fb35-4cf17228b039@linux.intel.com>
+In-Reply-To: <08c5b818-a030-4c97-80f7-52ee42dc1f79@linux.intel.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Aug 23, 2022 at 12:36:43PM -0700, Sathyanarayanan Kuppuswamy wrote:
-> Do you want to me to leave it to Kirill to handle the cleanup, or
-> submit a new patch here?
+On Mon, Aug 22, 2022 at 03:41:00PM -0700, Sathyanarayanan Kuppuswamy wrote:
+> In addition to above, I think there is a possibility to add IOCTL to get
+> storage keys from the ACPI SVKL table. Storage Volume Key Table (SVKL) is
+> used by the VBIOS to share keys required to access encrypted drives. Although
+> we don't have a clear requirement, I suspect that we might add IOCTL for it.
 
-Yeah, leave it to him - the less confusion the better.
+So this all sounds like a single tdx-guest driver to me which services a
+bunch of ioctls... not separate drivers.
 
-Thx.
+Hmm?
 
 -- 
 Regards/Gruss,
