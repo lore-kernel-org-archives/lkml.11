@@ -2,84 +2,97 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E03EBC32792
-	for <linux-kernel@archiver.kernel.org>; Wed, 24 Aug 2022 17:12:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4DFCEC00140
+	for <linux-kernel@archiver.kernel.org>; Wed, 24 Aug 2022 17:14:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239920AbiHXRM1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 24 Aug 2022 13:12:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45216 "EHLO
+        id S238155AbiHXRN7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 24 Aug 2022 13:13:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46548 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239907AbiHXRMY (ORCPT
+        with ESMTP id S238177AbiHXRN4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 24 Aug 2022 13:12:24 -0400
-Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5B6CF74DD1
-        for <linux-kernel@vger.kernel.org>; Wed, 24 Aug 2022 10:12:23 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1661361143; x=1692897143;
-  h=message-id:date:mime-version:subject:to:cc:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=yVFJHZdE6+1EK/qE+Hrire2plRz2ksviX3nXtB9EMQI=;
-  b=dw13loqkCys42oG5riTaJi4T+IwLrUsTfjtMRoki7A23KdDWu9Dj7tLG
-   AgcUpe1GdaTCB0W+NL71RbecMRuIeR+VxMj/QOwpaICI9JyMqCRcNe74r
-   frFGENdl5nOKHaVcgeglioZ5/1bTg/ZTZK+GpPqu7N5G0bozOrlRi6052
-   L3mqCcr4oOYjpL1Xg+9VQz4MRO+EotlPraACp9MgnmaLUNbJjD+MNxk8W
-   vhYcVJOtzCTonzVZzG1TZh4wCgsdsulAmtpjcoyngJWvyM9XXPwHp3Qlb
-   j5DUEVsAxA74dG11XOA3sYC02+rpBA5vJ9mvd80kifNDjfNJ54lG2Vivk
-   g==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10449"; a="294807325"
-X-IronPort-AV: E=Sophos;i="5.93,261,1654585200"; 
-   d="scan'208";a="294807325"
-Received: from fmsmga005.fm.intel.com ([10.253.24.32])
-  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Aug 2022 10:12:23 -0700
-X-IronPort-AV: E=Sophos;i="5.93,261,1654585200"; 
-   d="scan'208";a="937992497"
-Received: from skeshri-mobl.ger.corp.intel.com (HELO [10.212.154.182]) ([10.212.154.182])
-  by fmsmga005-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Aug 2022 10:12:21 -0700
-Message-ID: <bb006b7a-525a-3f1b-0fc4-1620bb5bd3ba@intel.com>
-Date:   Wed, 24 Aug 2022 10:12:21 -0700
+        Wed, 24 Aug 2022 13:13:56 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9981463B9
+        for <linux-kernel@vger.kernel.org>; Wed, 24 Aug 2022 10:13:55 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1661361234;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=tuZk/Krq6hGyifX8HCw3lyKxmaIHFfb7r24yMdOL1tk=;
+        b=W24eMIdpF1RWOQFKJLReNX4kw1r/Ywwn9Mx0Vq9E8S8/SYblZZ6IjW2MSatMPFgUColZV/
+        sfCYtoHB+Y2LvrRmJTcJ1QrYoAwgOvL6HKKGH6aj6t7F8BnLCHyyaKFAveLq4qq6i8z1wY
+        8vS51wTZiP8pzGRiGu7OXA/1Lmw8v24=
+Received: from mail-wm1-f70.google.com (mail-wm1-f70.google.com
+ [209.85.128.70]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
+ us-mta-380-jiOGwxquP52x8z70SnSCmA-1; Wed, 24 Aug 2022 13:13:53 -0400
+X-MC-Unique: jiOGwxquP52x8z70SnSCmA-1
+Received: by mail-wm1-f70.google.com with SMTP id q10-20020a1ce90a000000b003a60123678aso576543wmc.6
+        for <linux-kernel@vger.kernel.org>; Wed, 24 Aug 2022 10:13:53 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc;
+        bh=tuZk/Krq6hGyifX8HCw3lyKxmaIHFfb7r24yMdOL1tk=;
+        b=t4/u5U0NzhrzbkdcnHB1F0Iz5MEAL4pIAjWwcicJfZpYVIAeZFAkFawUR7i/n7vAHq
+         tBkODebPqj9w3JQr6NQ3mP3mclLCa6CcWpdcBMfzOKwBOCKE0/brffOcUu/so9gfqbHX
+         a8ZeOijnZGdNjDVY/dt3DM2ydJD+E3ICap3Ckcvkauk+TRVrz1wgoe8JPkUkD5GMEaJY
+         xI6pk2ZdsMIJt5a2u0qFOEQIfPRrBM06BZiTxeyrZCrElUd560s8TGpWeBoMBYmlHKMq
+         PtlJQbeLJ94HAwPVfJajQ4PUOaOCxH19PK3MfCf4hyIhdKHC4MStkGkGbNtOZT9v53qC
+         52pg==
+X-Gm-Message-State: ACgBeo1x42Dk1S4Kakce37lWH9M0i7gSroplmaYVF9+pBgH8r50IT1CK
+        9dJnxMYAVI3vHdLJuMDoMpKo+wOJLRFj2fwY82z8dkckvVJngx0vlCLoL6T9JhOiJcliPSZys9s
+        gCEwEcQtak71OOiDOmwLaVqhd
+X-Received: by 2002:a5d:4e41:0:b0:225:5b3d:3942 with SMTP id r1-20020a5d4e41000000b002255b3d3942mr138109wrt.78.1661361232118;
+        Wed, 24 Aug 2022 10:13:52 -0700 (PDT)
+X-Google-Smtp-Source: AA6agR4eo7NGgzFigzRHD+53MEwLFsw5/KpvzidbxVsbzsXvf2VZZxMIi7HBZI00mo0WNMsBZHT4EQ==
+X-Received: by 2002:a5d:4e41:0:b0:225:5b3d:3942 with SMTP id r1-20020a5d4e41000000b002255b3d3942mr138076wrt.78.1661361231827;
+        Wed, 24 Aug 2022 10:13:51 -0700 (PDT)
+Received: from ?IPV6:2001:b07:6468:f312:9af8:e5f5:7516:fa89? ([2001:b07:6468:f312:9af8:e5f5:7516:fa89])
+        by smtp.googlemail.com with ESMTPSA id p7-20020a05600c1d8700b003a5bd5ea215sm2602518wms.37.2022.08.24.10.13.50
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 24 Aug 2022 10:13:51 -0700 (PDT)
+Message-ID: <e3718025-682d-469c-eac9-b4995e91dc11@redhat.com>
+Date:   Wed, 24 Aug 2022 19:13:50 +0200
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.11.0
-Subject: Re: [PATCH v9 0/6] Add TDX Guest Attestation support
+ Thunderbird/91.12.0
+Subject: Re: [PATCH] KVM: x86: Expose Predictive Store Forwarding Disable
 Content-Language: en-US
-To:     Kuppuswamy Sathyanarayanan 
-        <sathyanarayanan.kuppuswamy@linux.intel.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
-        Dave Hansen <dave.hansen@linux.intel.com>, x86@kernel.org
-Cc:     "H . Peter Anvin" <hpa@zytor.com>,
-        "Kirill A . Shutemov" <kirill.shutemov@linux.intel.com>,
-        Tony Luck <tony.luck@intel.com>,
-        Andi Kleen <ak@linux.intel.com>,
-        Kai Huang <kai.huang@intel.com>,
-        Wander Lairson Costa <wander@redhat.com>,
-        Isaku Yamahata <isaku.yamahata@gmail.com>,
-        marcelo.cerri@canonical.com, tim.gardner@canonical.com,
-        khalid.elmously@canonical.com, philip.cox@canonical.com,
-        linux-kernel@vger.kernel.org
-References: <20220728034420.648314-1-sathyanarayanan.kuppuswamy@linux.intel.com>
-From:   Dave Hansen <dave.hansen@intel.com>
-In-Reply-To: <20220728034420.648314-1-sathyanarayanan.kuppuswamy@linux.intel.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+To:     Jim Mattson <jmattson@google.com>, Babu Moger <babu.moger@amd.com>
+Cc:     tglx@linutronix.de, mingo@redhat.com, bp@alien8.de, x86@kernel.org,
+        hpa@zytor.com, seanjc@google.com, vkuznets@redhat.com,
+        wanpengli@tencent.com, joro@8bytes.org, tony.luck@intel.com,
+        peterz@infradead.org, kyung.min.park@intel.com, wei.huang2@amd.com,
+        jgross@suse.com, andrew.cooper3@citrix.com,
+        linux-kernel@vger.kernel.org, kvm@vger.kernel.org
+References: <163244601049.30292.5855870305350227855.stgit@bmoger-ubuntu>
+ <CALMp9eSKcwChbc=cgYpdrTCtt49S1uuRdYoe83yph3tXGN6a2Q@mail.gmail.com>
+From:   Paolo Bonzini <pbonzini@redhat.com>
+In-Reply-To: <CALMp9eSKcwChbc=cgYpdrTCtt49S1uuRdYoe83yph3tXGN6a2Q@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 7/27/22 20:44, Kuppuswamy Sathyanarayanan wrote:
-> An Intel SGX Quoting Enclave (QE), written specifically to support
-> quoting Intel TDX TDs, uses EVERIFYREPORT2, to help check the integrity
-> of the TDG.MR.REPORT. If it passes, the QE can use a certified quote
-> signing key to sign a quote containing the guest TD’s measurements and
-> the additional data being quoted.
+On 8/23/22 23:26, Jim Mattson wrote:
+> For consistency, should this feature be renamed AMD_PSFD, now that
+> Intel is enumerating PSFD with CPUID.(EAX=7,ECX=2):EDX.PSFD[bit 0]?
+> Seehttps://www.intel.com/content/www/us/en/developer/articles/technical/software-security-guidance/technical-documentation/cpuid-enumeration-and-architectural-msrs.html.
+> 
+> And, Paolo, why are we carrying X86_FEATURE_PSFD as a private #define
+> in KVM rather than putting it where it belongs in cpufeatures.h?
+> 
 
-(maintainer hat firmly in place, not speaking as an Intel person here...)
+Borislav asked to not show psfd in /proc/cpuinfo, because Linux had
+decided not to control PSF separately; instead it just piggybacked
+on SSBD which should disable PSF as well.  Honestly I disagree but
+it's not my area of maintenance.
 
-Let's say Intel tires of SGX and zaps it from server CPUs just like it
-did clients.  Or, that Intel decides that TDX is really cool and wants
-it on SGX-free clients in addition to servers.
+Paolo
 
-Can the guest ABI which is introduced here work for a future attestation
-architecture that does not involve SGX?
