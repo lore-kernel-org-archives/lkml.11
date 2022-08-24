@@ -2,388 +2,244 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2F14BC32796
-	for <linux-kernel@archiver.kernel.org>; Wed, 24 Aug 2022 11:41:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BDA55C00140
+	for <linux-kernel@archiver.kernel.org>; Wed, 24 Aug 2022 11:45:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235080AbiHXLlU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 24 Aug 2022 07:41:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33510 "EHLO
+        id S233546AbiHXLpH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 24 Aug 2022 07:45:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35552 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235737AbiHXLlS (ORCPT
+        with ESMTP id S234103AbiHXLpC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 24 Aug 2022 07:41:18 -0400
-Received: from mail-wm1-x331.google.com (mail-wm1-x331.google.com [IPv6:2a00:1450:4864:20::331])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 612F08306F;
-        Wed, 24 Aug 2022 04:41:17 -0700 (PDT)
-Received: by mail-wm1-x331.google.com with SMTP id r83-20020a1c4456000000b003a5cb389944so751368wma.4;
-        Wed, 24 Aug 2022 04:41:17 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc;
-        bh=iRd1JuCUsRDstQ4XnepFMXgh3KSENhu5rGylzjVtscw=;
-        b=fbFyIyGRBd1TbKvcIv6v1FsjGJ2wjibvgSzJG6K1k1Bm7S38z4wCVF4hZxlmWHl5/b
-         fU/dKju0dIcg91N4KMyF0EKx0F2NwNa3szfNglU0u28Alnoke1Csdl2xCimMmVsumlak
-         WII3ZniIifAbpLASSbzkFUrjFr042tmOyDqAEu5hydqVPoGHPR4vE5PCfaQPelEWHDnr
-         2bEsZKu1PD++Gn7PXqlY/Z72rV9Wns/0QG/m1icgDWM0P4NjmG0CAXEumS3vSZ01oP89
-         j6QoKrjWZR0E7AySBWUPZcQCctR9sUJ46+r1YYTnAJXovSwJOk5+W7RHfQP9q3kkSeug
-         ZSIA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc;
-        bh=iRd1JuCUsRDstQ4XnepFMXgh3KSENhu5rGylzjVtscw=;
-        b=YtuxUsIi/U659lHwLAY3Df3FyPDVb6gwYeVFGdOdb1A/M35yR6FJcamuCw9Jeap4pS
-         FGrS98Hiy9Kaebf6l1zm9cwC2L6yklEYShQtt7I0Z0tbiQlB4g620lasOHdZ0t6S+ehN
-         pXVluVO6wt3xVzCSlWqYAXMUP8ZSgSvUr444iHQF+fXVGbLMl9qqMex+wtoRUDzvV0Ss
-         3N1wc3df3fqXTaBWdVzaKY1QUc5IvsQn6EF5tFWn945CIJPkthg7YH3gnQ8YjX1nxq9t
-         SZ8NZpqTN3jNPuiZpi0pNGKbtMFLCZkU6cSar8kV8JouN4LikSPXXPSPfLgYTsw6JVQY
-         6U8w==
-X-Gm-Message-State: ACgBeo1d46epWqSsBpFBlIgHZHeA2I0Q3pYyknTRvQSaPVc9Kqye8X8u
-        MRx67EhXohfsIHvIzuoGfDA=
-X-Google-Smtp-Source: AA6agR5Hk4GDz/jmGGQn2rMBOj9Jqo+Vp8cc07NMZwHew1fytMh4PkKeUfXK6xMdYlVuT6cqYhYf1A==
-X-Received: by 2002:a05:600c:3509:b0:3a6:1888:a4bd with SMTP id h9-20020a05600c350900b003a61888a4bdmr5083036wmq.191.1661341275790;
-        Wed, 24 Aug 2022 04:41:15 -0700 (PDT)
-Received: from [192.168.2.177] ([207.188.167.132])
-        by smtp.gmail.com with ESMTPSA id p18-20020adfce12000000b002253f18d87fsm13444017wrn.96.2022.08.24.04.41.13
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 24 Aug 2022 04:41:14 -0700 (PDT)
-Message-ID: <db271721-163f-e5ec-25d8-e90357104b6c@gmail.com>
-Date:   Wed, 24 Aug 2022 13:41:12 +0200
+        Wed, 24 Aug 2022 07:45:02 -0400
+Received: from smtp-42ab.mail.infomaniak.ch (smtp-42ab.mail.infomaniak.ch [IPv6:2001:1600:3:17::42ab])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 77BCC5A83D
+        for <linux-kernel@vger.kernel.org>; Wed, 24 Aug 2022 04:44:59 -0700 (PDT)
+Received: from smtp-3-0001.mail.infomaniak.ch (unknown [10.4.36.108])
+        by smtp-2-3000.mail.infomaniak.ch (Postfix) with ESMTPS id 4MCPQv52G4zMqBfr;
+        Wed, 24 Aug 2022 13:44:55 +0200 (CEST)
+Received: from ns3096276.ip-94-23-54.eu (unknown [23.97.221.149])
+        by smtp-3-0001.mail.infomaniak.ch (Postfix) with ESMTPA id 4MCPQt0Xxwzlh8TD;
+        Wed, 24 Aug 2022 13:44:53 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=digikod.net;
+        s=20191114; t=1661341495;
+        bh=1A9w6LBApFmHy8AyI91NBSquKjP8ISZPMKdkvU7c3qU=;
+        h=Date:To:Cc:References:From:Subject:In-Reply-To:From;
+        b=ELdnmWIYHEW0cpvK8yP+KBxoP+OZ3AsDLeVhLwbdZOuSJRUGKAh8nALszvrZcHiBI
+         y+IEb4AcfPcXHE3tmXwOTcBgbcwEqswwR581B1vKVoyvBlpRDEtnw+yenjdP8yC5Eu
+         EptJG+SP34k9or7OMx1YGjN5TzIKbeB090t+hNYs=
+Message-ID: <8cb3b7df-fb2f-3e3f-7805-4b14cf1bdf90@digikod.net>
+Date:   Wed, 24 Aug 2022 13:44:52 +0200
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.1.2
-Subject: Re: [PATCH v26 07/10] soc: mediatek: mmsys: add mmsys for support 64
- reset bits
+User-Agent: 
 Content-Language: en-US
-To:     "Nancy.Lin" <nancy.lin@mediatek.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Chun-Kuang Hu <chunkuang.hu@kernel.org>,
-        Philipp Zabel <p.zabel@pengutronix.de>, wim@linux-watchdog.org,
-        AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@collabora.com>, linux@roeck-us.net,
-        nfraprado@collabora.com
-Cc:     David Airlie <airlied@linux.ie>, Daniel Vetter <daniel@ffwll.ch>,
-        Nathan Chancellor <nathan@kernel.org>,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        "jason-jh . lin" <jason-jh.lin@mediatek.com>,
-        Yongqiang Niu <yongqiang.niu@mediatek.com>,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org,
-        dri-devel@lists.freedesktop.org, llvm@lists.linux.dev,
-        singo.chang@mediatek.com,
-        Project_Global_Chrome_Upstream_Group@mediatek.com
-References: <20220819061011.7672-1-nancy.lin@mediatek.com>
- <20220819061011.7672-8-nancy.lin@mediatek.com>
- <44c86ad9-8158-0a8a-ce31-a995c8d10e0b@gmail.com>
- <140b3cd10317a5db781df180ce4efb697cdd641b.camel@mediatek.com>
- <c7c4e73f-dd03-4c88-f434-2aa3bd681e39@gmail.com>
- <7c59d86501c39fa6e0e182f4a537de814320426e.camel@mediatek.com>
-From:   Matthias Brugger <matthias.bgg@gmail.com>
-In-Reply-To: <7c59d86501c39fa6e0e182f4a537de814320426e.camel@mediatek.com>
+To:     xiujianfeng <xiujianfeng@huawei.com>,
+        =?UTF-8?Q?G=c3=bcnther_Noack?= <gnoack3000@gmail.com>
+Cc:     paul@paul-moore.com, jmorris@namei.org, serge@hallyn.com,
+        shuah@kernel.org, corbet@lwn.net,
+        linux-security-module@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-kselftest@vger.kernel.org,
+        linux-doc@vger.kernel.org
+References: <20220822114701.26975-1-xiujianfeng@huawei.com>
+ <20220822114701.26975-3-xiujianfeng@huawei.com> <YwPKG3G9PlStYPkz@nuc>
+ <5873455f-fff9-618c-25b1-8b6a4ec94368@digikod.net>
+ <6d6edd60-5ed7-0f5d-d641-75e006c0e60e@huawei.com>
+From:   =?UTF-8?Q?Micka=c3=abl_Sala=c3=bcn?= <mic@digikod.net>
+Subject: Re: [PATCH -next 2/5] landlock: add chmod and chown support
+In-Reply-To: <6d6edd60-5ed7-0f5d-d641-75e006c0e60e@huawei.com>
 Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
 
-
-On 24/08/2022 04:44, Nancy.Lin wrote:
-> Hi Matthias,
+On 23/08/2022 14:50, xiujianfeng wrote:
 > 
-> Thanks for your comment.
 > 
-> On Tue, 2022-08-23 at 14:08 +0200, Matthias Brugger wrote:
+> 在 2022/8/23 5:07, Mickaël Salaün 写道:
 >>
->> On 23/08/2022 13:30, Nancy.Lin wrote:
->>> Hi Matthias,
+>> On 22/08/2022 20:25, Günther Noack wrote:
+>>> Hi!
 >>>
->>> Thanks for the review.
+>>> Thanks for sending this patch set! :)
 >>>
->>> On Tue, 2022-08-23 at 12:20 +0200, Matthias Brugger wrote:
+>>> On Mon, Aug 22, 2022 at 07:46:58PM +0800, Xiu Jianfeng wrote:
+>>>> Add two flags LANDLOCK_ACCESS_FS_CHMOD and LANDLOCK_ACCESS_FS_CHOWN to
+>>>> support restriction to chmod(2) and chown(2) with landlock.
 >>>>
->>>> On 19/08/2022 08:10, Nancy.Lin wrote:
->>>>> Add mmsys for support 64 reset bits. It is a preparation for
->>>>> MT8195
->>>>> vdosys1 HW reset. MT8195 vdosys1 has more than 32 reset bits.
->>>>>
->>>>> 1. Add the number of reset bits in mmsys private data
->>>>> 2. move the whole "reset register code section" behind the
->>>>> "get mmsys->data" code section for getting the num_resets in
->>>>> mmsys-
->>>>>> data.
->>>>>
->>>>> Signed-off-by: Nancy.Lin <nancy.lin@mediatek.com>
->>>>> Reviewed-by: AngeloGioacchino Del Regno <
->>>>> angelogioacchino.delregno@collabora.com>
->>>>> Reviewed-by: CK Hu <ck.hu@mediatek.com>
->>>>> Tested-by: Bo-Chen Chen <rex-bc.chen@mediatek.com>
->>>>> ---
->>>>>     drivers/soc/mediatek/mtk-mmsys.c | 40 +++++++++++++++++++++-
->>>>> ---
->>>>> -------
->>>>>     drivers/soc/mediatek/mtk-mmsys.h |  1 +
->>>>>     2 files changed, 27 insertions(+), 14 deletions(-)
->>>>>
->>>>> diff --git a/drivers/soc/mediatek/mtk-mmsys.c
->>>>> b/drivers/soc/mediatek/mtk-mmsys.c
->>>>> index 999be064103b..20ae751ad8a7 100644
->>>>> --- a/drivers/soc/mediatek/mtk-mmsys.c
->>>>> +++ b/drivers/soc/mediatek/mtk-mmsys.c
->>>>> @@ -20,6 +20,8 @@
->>>>>     #include "mt8195-mmsys.h"
->>>>>     #include "mt8365-mmsys.h"
->>>>>     
->>>>> +#define MMSYS_SW_RESET_PER_REG 32
->>>>> +
->>>>>     static const struct mtk_mmsys_driver_data
->>>>> mt2701_mmsys_driver_data = {
->>>>>     	.clk_driver = "clk-mt2701-mm",
->>>>>     	.routes = mmsys_default_routing_table,
->>>>> @@ -86,6 +88,7 @@ static const struct mtk_mmsys_driver_data
->>>>> mt8173_mmsys_driver_data = {
->>>>>     	.routes = mmsys_default_routing_table,
->>>>>     	.num_routes = ARRAY_SIZE(mmsys_default_routing_table),
->>>>>     	.sw0_rst_offset = MT8183_MMSYS_SW0_RST_B,
->>>>> +	.num_resets = 32,
->>>>>     };
->>>>>     
->>>>>     static const struct mtk_mmsys_match_data
->>>>> mt8173_mmsys_match_data
->>>>> = {
->>>>> @@ -100,6 +103,7 @@ static const struct mtk_mmsys_driver_data
->>>>> mt8183_mmsys_driver_data = {
->>>>>     	.routes = mmsys_mt8183_routing_table,
->>>>>     	.num_routes = ARRAY_SIZE(mmsys_mt8183_routing_table),
->>>>>     	.sw0_rst_offset = MT8183_MMSYS_SW0_RST_B,
->>>>> +	.num_resets = 32,
->>>>>     };
->>>>>     
->>>>>     static const struct mtk_mmsys_match_data
->>>>> mt8183_mmsys_match_data
->>>>> = {
->>>>> @@ -114,6 +118,7 @@ static const struct mtk_mmsys_driver_data
->>>>> mt8186_mmsys_driver_data = {
->>>>>     	.routes = mmsys_mt8186_routing_table,
->>>>>     	.num_routes = ARRAY_SIZE(mmsys_mt8186_routing_table),
->>>>>     	.sw0_rst_offset = MT8186_MMSYS_SW0_RST_B,
->>>>> +	.num_resets = 32,
->>>>>     };
->>>>>     
->>>>>     static const struct mtk_mmsys_match_data
->>>>> mt8186_mmsys_match_data
->>>>> = {
->>>>> @@ -128,6 +133,7 @@ static const struct mtk_mmsys_driver_data
->>>>> mt8192_mmsys_driver_data = {
->>>>>     	.routes = mmsys_mt8192_routing_table,
->>>>>     	.num_routes = ARRAY_SIZE(mmsys_mt8192_routing_table),
->>>>>     	.sw0_rst_offset = MT8186_MMSYS_SW0_RST_B,
->>>>> +	.num_resets = 32,
+>>>> Also change the landlock ABI version from 3 to 4.
 >>>>
->>>> You didn't reply to Nicolas regarding the reset numbers. I
->>>> actually
->>>> agree with
->>>> him that we will need the num_resets declared for all devices.
->>>> Why do
->>>> you think
->>>> this is not the case?
+>>>> Signed-off-by: Xiu Jianfeng <xiujianfeng@huawei.com>
+>>>> ---
+>>>>    include/uapi/linux/landlock.h                |  8 ++++++--
+>>>>    security/landlock/fs.c                       | 16 +++++++++++++++-
+>>>>    security/landlock/limits.h                   |  2 +-
+>>>>    security/landlock/syscalls.c                 |  2 +-
+>>>>    tools/testing/selftests/landlock/base_test.c |  2 +-
+>>>>    tools/testing/selftests/landlock/fs_test.c   |  6 ++++--
+>>>>    6 files changed, 28 insertions(+), 8 deletions(-)
 >>>>
->>>> Regards,
->>>> Matthias
->>>>
->>>
->>> Sorry, I lost Nicolas's email.
->>>
->>> I checked with the mmsys git log with reset controller function.
->>>
->>> 1. Enric add mmsys reset controller function in [1]/[2].
->>>      => in mtk_mmsys_reset_update(), all mmsys reset offset is
->>> MMSYS_SW0_RST_B (0x140).
->>>
->>> 2. After Enric's patch, Rex add sw0_rst_offset in mmsys driver data
->>> in
->>> [3].
->>>
->>> So, I think sw0_rst_offset is not zero. Instead of only add
->>> num_resets
->>> but also need to add sw0_rst_offset for all mmsys. What do you
->>> think ?
->>>
+>>>> diff --git a/include/uapi/linux/landlock.h
+>>>> b/include/uapi/linux/landlock.h
+>>>> index 735b1fe8326e..5ce633c92722 100644
+>>>> --- a/include/uapi/linux/landlock.h
+>>>> +++ b/include/uapi/linux/landlock.h
+>>>> @@ -141,13 +141,15 @@ struct landlock_path_beneath_attr {
+>>>>     *   directory) parent.  Otherwise, such actions are denied with
+>>>> errno set to
+>>>>     *   EACCES.  The EACCES errno prevails over EXDEV to let user space
+>>>>     *   efficiently deal with an unrecoverable error.
+>>>> + * - %LANDLOCK_ACCESS_FS_CHMOD: Change the file mode bits of a file.
+>>>> + * - %LANDLOCK_ACCESS_FS_CHOWN: Change the owner and/or group of a
+>>>> file.
 >>
->> Good point. It seems we have a bug in the driver. Either all SoCs
->> have the
->> reset, but it's broken since
->> 62dc30150c06 ("soc: mediatek: mmsys: add sw0_rst_offset in mmsys
->> driver data")
->> or we are adding a reset controller independently if the silicon has
->> one, which
->> would be an error in:
->> f27ef2856343 ("soc: mediatek: mmsys: Add reset controller support")
+>> This section talk about "access rights that only apply to the content of
+>> a directory, not the directory itself", which is not correct (see
+>> LANDLOCK_ACCESS_FS_READ_DIR). I'd like these access rights to remain
+>> here but this kernel patch and the related tests need some changes.
 >>
->> We have to find that out.
+>> What about a LANDLOCK_ACCESS_FS_CHGRP? I'm not sure if we need to
+>> differentiate these actions or not, but we need arguments to choose.
 >>
->> Regards,
->> Matthias
-> 
-> 
-> In [2], I think the first revision of Enric's reset controller is added
-> for 8173 and 8183, not for all mmsys device.
->      =>[v3,4/7] arm64: dts: mt8173: Add the mmsys reset bit to reset the
-> dsi0
->      =>[v3,5/7] arm64: dts: mt8183: Add the mmsys reset bit to reset the
-> dsi0
-> 
-> In [3], Rex only add sw0_rst_offset in 8173 and 8183 mmsys driver data.
 >>
-> 
-> For other SoCs, like mt2701,mt2712..., these SoCs even don't define
-> mmsys hw reset bit[4]. So I think only set the num_resets to 32 or 64
-> to those mmsys devices who really need the reset control, others set to
-> 0(same as my v26 patch).
-> 
-
-Thanks for looking into this, please see my comment further below.
-
-
-> 
-> [4]mt2701-resets.h
-> https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/tree/include/dt-bindings/reset/mt2701-resets.h?id=62dc30150c06774a8122c52aedd0eddaceaf5940
-> 
-> Regards,
-> Nancy
-> 
-> 
->>> [1]
+>>>>     *
+>>>>     * .. warning::
+>>>>     *
+>>>>     *   It is currently not possible to restrict some file-related
+>>>> actions
+>>>>     *   accessible through these syscall families: :manpage:`chdir(2)`,
+>>>> - *   :manpage:`stat(2)`, :manpage:`flock(2)`, :manpage:`chmod(2)`,
+>>>> - *   :manpage:`chown(2)`, :manpage:`setxattr(2)`, :manpage:`utime(2)`,
+>>>> + *   :manpage:`stat(2)`, :manpage:`flock(2)`,
+>>>> + *   :manpage:`setxattr(2)`, :manpage:`utime(2)`,
 >>>
-> https://urldefense.com/v3/__https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/drivers/soc/mediatek/mtk-mmsys.c?id=f27ef2856343e2ddc392975d7b15120442e4d7b7__;!!CTRNKA9wMg0ARbw!3cWAYlD1mrWRmNZy0zoJs8MNiD3s7K9PteJI9cGEvu_qp3VShfqxsBTb_fKynszs$
->>>   
->>> [2]
+>>> *formatting nit*
+>>> We could fill up the full line width here
 >>>
->>>
-> https://urldefense.com/v3/__https://patchwork.kernel.org/project/linux-mediatek/cover/20210825102632.601614-1-enric.balletbo@collabora.com/__;!!CTRNKA9wMg0ARbw!3cWAYlD1mrWRmNZy0zoJs8MNiD3s7K9PteJI9cGEvu_qp3VShfqxsBTb_cH-3nM8$
->>>   
->>> [3]
->>>
->>>
-> https://urldefense.com/v3/__https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/drivers/soc/mediatek/mtk-mmsys.c?id=62dc30150c06774a8122c52aedd0eddaceaf5940__;!!CTRNKA9wMg0ARbw!3cWAYlD1mrWRmNZy0zoJs8MNiD3s7K9PteJI9cGEvu_qp3VShfqxsBTb_VXEsbNa$
->>>   
->>>
->>> Regards,
->>> Nancy
+>>>>     *   :manpage:`ioctl(2)`, :manpage:`fcntl(2)`, :manpage:`access(2)`.
+>>>>     *   Future Landlock evolutions will enable to restrict them.
+>>>>     */
+>>>> @@ -167,6 +169,8 @@ struct landlock_path_beneath_attr {
+>>>>    #define LANDLOCK_ACCESS_FS_MAKE_SYM            (1ULL << 12)
+>>>>    #define LANDLOCK_ACCESS_FS_REFER            (1ULL << 13)
+>>>>    #define LANDLOCK_ACCESS_FS_TRUNCATE            (1ULL << 14)
+>>>> +#define LANDLOCK_ACCESS_FS_CHMOD            (1ULL << 15)
+>>>> +#define LANDLOCK_ACCESS_FS_CHOWN            (1ULL << 16)
+>>>>    /* clang-format on */
 >>>>
->>>>>     };
->>>>>     
->>>>>     static const struct mtk_mmsys_match_data
->>>>> mt8192_mmsys_match_data
->>>>> = {
->>>>> @@ -288,13 +294,19 @@ static int mtk_mmsys_reset_update(struct
->>>>> reset_controller_dev *rcdev, unsigned l
->>>>>     {
->>>>>     	struct mtk_mmsys *mmsys = container_of(rcdev, struct
->>>>> mtk_mmsys,
->>>>> rcdev);
->>>>>     	unsigned long flags;
->>>>> +	u32 offset;
->>>>> +	u32 reg;
->>>>> +
->>>>> +	offset = (id / MMSYS_SW_RESET_PER_REG) * sizeof(u32);
->>>>> +	id = id % MMSYS_SW_RESET_PER_REG;
->>>>> +	reg = mmsys->data->sw0_rst_offset + offset;
->>>>>     
->>>>>     	spin_lock_irqsave(&mmsys->lock, flags);
->>>>>     
->>>>>     	if (assert)
->>>>> -		mtk_mmsys_update_bits(mmsys, mmsys->data-
->>>>>> sw0_rst_offset, BIT(id), 0, NULL);
->>>>>
->>>>> +		mtk_mmsys_update_bits(mmsys, reg, BIT(id), 0,
->>>>> NULL);
->>>>>     	else
->>>>> -		mtk_mmsys_update_bits(mmsys, mmsys->data-
->>>>>> sw0_rst_offset, BIT(id), BIT(id), NULL);
->>>>>
->>>>> +		mtk_mmsys_update_bits(mmsys, reg, BIT(id),
->>>>> BIT(id),
->>>>> NULL);
->>>>>     
->>>>>     	spin_unlock_irqrestore(&mmsys->lock, flags);
->>>>>     
->>>>> @@ -351,18 +363,6 @@ static int mtk_mmsys_probe(struct
->>>>> platform_device *pdev)
->>>>>     		return ret;
->>>>>     	}
->>>>>     
->>>>> -	spin_lock_init(&mmsys->lock);
->>>>> -
->>>>> -	mmsys->rcdev.owner = THIS_MODULE;
->>>>> -	mmsys->rcdev.nr_resets = 32;
->>>>> -	mmsys->rcdev.ops = &mtk_mmsys_reset_ops;
->>>>> -	mmsys->rcdev.of_node = pdev->dev.of_node;
->>>>> -	ret = devm_reset_controller_register(&pdev->dev,
->>>>> &mmsys-
->>>>>> rcdev);
->>>>>
->>>>> -	if (ret) {
->>>>> -		dev_err(&pdev->dev, "Couldn't register mmsys
->>>>> reset
->>>>> controller: %d\n", ret);
->>>>> -		return ret;
->>>>> -	}
->>>>> -
->>>>>     	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
->>>>>     	if (!res) {
->>>>>     		dev_err(dev, "Couldn't get mmsys resource\n");
->>>>> @@ -384,6 +384,18 @@ static int mtk_mmsys_probe(struct
->>>>> platform_device *pdev)
->>>>>     		mmsys->data = match_data->drv_data[0];
->>>>>     	}
->>>>>     
->>>>> +	spin_lock_init(&mmsys->lock);
->>>>> +
->>>>> +	mmsys->rcdev.owner = THIS_MODULE;
->>>>> +	mmsys->rcdev.nr_resets = mmsys->data->num_resets;
->>>>> +	mmsys->rcdev.ops = &mtk_mmsys_reset_ops;
->>>>> +	mmsys->rcdev.of_node = pdev->dev.of_node;
->>>>> +	ret = devm_reset_controller_register(&pdev->dev,
->>>>> &mmsys-
->>>>>> rcdev);
->>>>>
->>>>> +	if (ret) {
->>>>> +		dev_err(&pdev->dev, "Couldn't register mmsys
->>>>> reset
->>>>> controller: %d\n", ret);
->>>>> +		return ret;
->>>>> +	}
->>>>> +
-
-
-This code is only relevant if mmsys->data->num_resets > 0. Let's check for that 
-before setting up and registering an interrupt controller. What do you think?
-
-Regards,
-Matthias
-
->>>>>     #if IS_REACHABLE(CONFIG_MTK_CMDQ)
->>>>>     	ret = cmdq_dev_get_client_reg(dev, &mmsys->cmdq_base,
->>>>> 0);
->>>>>     	if (ret)
->>>>> diff --git a/drivers/soc/mediatek/mtk-mmsys.h
->>>>> b/drivers/soc/mediatek/mtk-mmsys.h
->>>>> index f01ba206481d..20a271b80b3b 100644
->>>>> --- a/drivers/soc/mediatek/mtk-mmsys.h
->>>>> +++ b/drivers/soc/mediatek/mtk-mmsys.h
->>>>> @@ -92,6 +92,7 @@ struct mtk_mmsys_driver_data {
->>>>>     	const struct mtk_mmsys_routes *routes;
->>>>>     	const unsigned int num_routes;
->>>>>     	const u16 sw0_rst_offset;
->>>>> +	const u32 num_resets;
->>>>>     };
->>>>>     
->>>>>     struct mtk_mmsys_match_data {
+>>>>    #endif /* _UAPI_LINUX_LANDLOCK_H */
+>>>> diff --git a/security/landlock/fs.c b/security/landlock/fs.c
+>>>> index c57f581a9cd5..c25d5f89c8be 100644
+>>>> --- a/security/landlock/fs.c
+>>>> +++ b/security/landlock/fs.c
+>>>> @@ -147,7 +147,9 @@ static struct landlock_object
+>>>> *get_inode_object(struct inode *const inode)
+>>>>        LANDLOCK_ACCESS_FS_EXECUTE | \
+>>>>        LANDLOCK_ACCESS_FS_WRITE_FILE | \
+>>>>        LANDLOCK_ACCESS_FS_READ_FILE | \
+>>>> -    LANDLOCK_ACCESS_FS_TRUNCATE)
+>>>> +    LANDLOCK_ACCESS_FS_TRUNCATE | \
+>>>> +    LANDLOCK_ACCESS_FS_CHMOD | \
+>>>> +    LANDLOCK_ACCESS_FS_CHOWN)
+>>>>    /* clang-format on */
 >>>>
+>>>>    /*
+>>>> @@ -1146,6 +1148,16 @@ static int hook_path_truncate(const struct
+>>>> path *const path)
+>>>>        return current_check_access_path(path,
+>>>> LANDLOCK_ACCESS_FS_TRUNCATE);
+>>>>    }
 >>>>
+>>>> +static int hook_path_chmod(const struct path *const dir, umode_t mode)
+>>
+>> This is not a "dir" but a "path".
+>>
+>>
+>>>> +{
+>>>> +    return current_check_access_path(dir, LANDLOCK_ACCESS_FS_CHMOD);
+>>>> +}
+>>>> +
+>>>> +static int hook_path_chown(const struct path *const dir, kuid_t uid,
+>>>> kgid_t gid)
+>>
+>> Same here.
+>>
+>>
+>>>> +{
+>>>> +    return current_check_access_path(dir, LANDLOCK_ACCESS_FS_CHOWN);
+>>>> +}
+>>>
+>>> One implication of this approach is that the chown+chmod right on a
+>>> directory's contents are always going together with the same rights on
+>>> the directory itself.
+>>>
+>>> For example, if you grant chmod+chown access rights for "datadir/",
+>>> the command "chmod 0600 datadir/file1" will work, but so will the
+>>> command "chmod 0600 datadir". But the approach of checking just the
+>>> parent directory's rights is also inflexible if you think through the
+>>> kinds of rights you can grant with it. (It would also not be possible
+>>> to grant chmod+chown on individual files.)
+>>
+>> Good point. For an initial chmod/chown/chgrp access right, I'd prefer to
+>> be able to set these access rights on a directory but only for its
+>> content, not the directory itself. I think it is much safer and should
+>> be enough for the majority of use cases, but let me know if I'm missing
+>> something. I'm not sure being able to change the root directory access
+>> rights may be a good idea anyway (even for containers). ;)
+>>
+>> A path_beneath rule enables to identify a file hierarchy (i.e. the
+>> content of a directory), not to make modifications visible outside of
+>> the directory identifying the hierarchy (hence the "parent_fd" field),
+>> which would be the case with the current chmod/chown access rights.
+>>
+>>
+>>>
+>>> Do you have any thoughts on how to resolve this if this flexibility
+>>> might be needed?
+>>>
+>>> I wonder whether the right way to resolve this would be to give users
+>>> a way to make that distinction at the level of landlock_add_rule(),
+>>> with an API like this (note the additional flag):
+>>>
+>>>     err = landlock_add_rule(ruleset_fd, LANDLOCK_RULE_PATH_BENEATH,
+>>>                             &path_beneath, LANDLOCK_STRICTLY_BENEATH);
+>>>                                            ^^^^^^^^^^^^^^^^^^^^^^^^^
+>>>
+>>> Multiple calls of landlock_add_rule() on the same file are already
+>>> today joining the requested access rights, so it would be possible to
+>>> mix-and-match "strict beneath" with "beneath" rights on the same
+>>> directory, and it would work in the same way for other access rights
+>>> as well.
+>>
+>> This kind of option is interesting. For now, some access rights are kind
+>> of "doubled" to enable to differentiate between a file and a directory
+>> (i.e. READ_DIR/READ_FILE, REMOVE_DIR/REMOVE_FILE, WRITE_FILE/MAKE_*)
+>> when it may be useful, but this is different.
+>>
+>> I think this "strictly beneath" behavior should be the default, which is
+>> currently the case.
+>>
+>>
+>>>
+>>> To be clear: I'm proposing this approach not because I think it should
+>>> be part of this patch set, but because it would be good to have a way
+>>> forward if that kind of flexibility is needed in the future.
+>>>
+>>> Does that seem reasonable?
+>>
+>> This is the kind of questions that made such access rights not
+>> appropriate for the initial version of Landlock. But we should talk
+>> about that now.
 > 
+> Hi Günther and Mickaël,
+> 
+> Thanks for your comments, so I think the conclusion here is that we have
+> to make sure that in this patchset chown/chmod access rights can be set
+> on a directory only for its content, not the directory itself, right?
+> any good idea about how to implement this? :)
+
+In such hook code, you need to get the parent directory of the path 
+argument. This require to use and refactor the 
+check_access_path_dual/jump_up part in a dedicated helper (and take care 
+of all the corner cases).
