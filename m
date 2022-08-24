@@ -2,96 +2,134 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6CCB8C00140
-	for <linux-kernel@archiver.kernel.org>; Wed, 24 Aug 2022 07:32:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6DF8FC32793
+	for <linux-kernel@archiver.kernel.org>; Wed, 24 Aug 2022 07:44:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235664AbiHXHb6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 24 Aug 2022 03:31:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55064 "EHLO
+        id S235367AbiHXHou (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 24 Aug 2022 03:44:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54194 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235545AbiHXHbm (ORCPT
+        with ESMTP id S233356AbiHXHot (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 24 Aug 2022 03:31:42 -0400
-Received: from mail-qt1-f169.google.com (mail-qt1-f169.google.com [209.85.160.169])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DA8726DAFC;
-        Wed, 24 Aug 2022 00:31:27 -0700 (PDT)
-Received: by mail-qt1-f169.google.com with SMTP id g14so2569013qto.11;
-        Wed, 24 Aug 2022 00:31:27 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc;
-        bh=82WQkDOdERyND7bY3iF+8AcDaMfTG/LJhOwz2xG4mtY=;
-        b=nwC2idr7DAFJGlnNplknxJAQ2EomFfv0BiDBozR+O+pfeeJt+drQBD0quQ7FtoYprP
-         jPxUxClpbiRL3NK/EaL4sL+hHgj8AoAfMKCUylLigg6bC5rfgY5RhEMSDhEVI/Ts4RLD
-         2b2SoIZQfgUlaS2FoSKUm4KAdMNiw8WuWmlN2KGJYYJGhREzAS/Zq8ByiaQqsXHvJhTc
-         qkG5gvBnoAUI3diWcWx/01fkmCcmoMeYfmax/JEAiPB6Y2Eey93f8lRfOw3DXoPNduIv
-         1RkxT35RWn8XLD6lujHOazfCx3nYq1zWjf+Jeo1ovBKW7iY+kOa0GS1NHp0Xtv5WtIo7
-         FLHQ==
-X-Gm-Message-State: ACgBeo3RkHOZCKyzQed38Q/ElfXic01trc/PPtvpwX/4YAOjPF/A+96c
-        77eZvnM0EmlzK3CXF3REJ+T8NewZuLPYHw==
-X-Google-Smtp-Source: AA6agR6Bn5LJwMR6U7+Q60fowE/jUAE7zd+qkzKHzsRfvNs6VFlGtVTcUt6YawUu6fSDn2opudN1mw==
-X-Received: by 2002:a05:622a:195:b0:344:5630:dcc with SMTP id s21-20020a05622a019500b0034456300dccmr22628147qtw.598.1661326286269;
-        Wed, 24 Aug 2022 00:31:26 -0700 (PDT)
-Received: from mail-yw1-f169.google.com (mail-yw1-f169.google.com. [209.85.128.169])
-        by smtp.gmail.com with ESMTPSA id t39-20020a05622a182700b00342f7beccd0sm12896450qtc.45.2022.08.24.00.31.25
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 24 Aug 2022 00:31:25 -0700 (PDT)
-Received: by mail-yw1-f169.google.com with SMTP id 00721157ae682-3246910dac3so438119857b3.12;
-        Wed, 24 Aug 2022 00:31:25 -0700 (PDT)
-X-Received: by 2002:a81:658:0:b0:334:a23e:6caa with SMTP id
- 85-20020a810658000000b00334a23e6caamr28318780ywg.283.1661326285004; Wed, 24
- Aug 2022 00:31:25 -0700 (PDT)
+        Wed, 24 Aug 2022 03:44:49 -0400
+Received: from smtp-out1.suse.de (smtp-out1.suse.de [IPv6:2001:67c:2178:6::1c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E45783B5;
+        Wed, 24 Aug 2022 00:44:45 -0700 (PDT)
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by smtp-out1.suse.de (Postfix) with ESMTPS id D443922534;
+        Wed, 24 Aug 2022 07:44:43 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
+        t=1661327083; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=9CVLEu5X5W558Mdwud6PEFNhZNUWDtayqH7r9TTDZuA=;
+        b=Lz/ACUxILC+R3yz2Ui0SJh6CaW4tttXbYGqKExsC2hkoEsZCegFXYFc22ajQzGRvdjEryQ
+        3CotfVecb7dxD8/WETOSvYRosDVKGJM3RkXu2/Cz96AiSW7ON9ujL0feO/uL9jEDd7Zl+h
+        Ba3bmdinRxLW6ofOfbyC0I3KWkqj9FE=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
+        s=susede2_ed25519; t=1661327083;
+        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=9CVLEu5X5W558Mdwud6PEFNhZNUWDtayqH7r9TTDZuA=;
+        b=tl3Xm9YZ2vhlGUbXJNfule+zMvT2R4ylbRHH+Q3QSBJF/vfQm60/mcW6ZWE/UtUCRMNmGt
+        ZBO5wTmc8lAY3PBg==
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id B707713AC0;
+        Wed, 24 Aug 2022 07:44:43 +0000 (UTC)
+Received: from dovecot-director2.suse.de ([192.168.254.65])
+        by imap2.suse-dmz.suse.de with ESMTPSA
+        id elupLOvWBWPhUgAAMHmgww
+        (envelope-from <iivanov@suse.de>); Wed, 24 Aug 2022 07:44:43 +0000
+Date:   Wed, 24 Aug 2022 10:44:43 +0300
+From:   "Ivan T. Ivanov" <iivanov@suse.de>
+To:     Stephen Boyd <sboyd@kernel.org>
+Cc:     Albert Ou <aou@eecs.berkeley.edu>,
+        Broadcom internal kernel review list 
+        <bcm-kernel-feedback-list@broadcom.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Michael Turquette <mturquette@baylibre.com>,
+        Nicolas Saenz Julienne <nsaenz@kernel.org>,
+        Palmer Dabbelt <palmer@dabbelt.com>,
+        Paul Walmsley <paul.walmsley@sifive.com>,
+        Ray Jui <rjui@broadcom.com>,
+        Scott Branden <sbranden@broadcom.com>,
+        Stefan Wahren <stefan.wahren@i2se.com>,
+        Phil Elwell <phil@raspberrypi.org>,
+        kernel test robot <lkp@intel.com>, linux-clk@vger.kernel.org,
+        linux-rpi-kernel@lists.infradead.org,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        linux-riscv@lists.infradead.org
+Subject: Re: [PATCH v3] clk: bcm2835: Round UART input clock up
+Message-ID: <20220824074443.nvrnqhpvqrtn72p4@suse>
+References: <20220527102900.144894-1-iivanov@suse.de>
+ <20220823230842.AB8BAC433C1@smtp.kernel.org>
 MIME-Version: 1.0
-References: <20220816130713.28597-1-yuanjilin@cdjrlc.com>
-In-Reply-To: <20220816130713.28597-1-yuanjilin@cdjrlc.com>
-From:   Geert Uytterhoeven <geert@linux-m68k.org>
-Date:   Wed, 24 Aug 2022 09:31:13 +0200
-X-Gmail-Original-Message-ID: <CAMuHMdV8iVoNKMKz1A12+P3hbvsJ8xgwKX8-LNTs+85dn2YDEw@mail.gmail.com>
-Message-ID: <CAMuHMdV8iVoNKMKz1A12+P3hbvsJ8xgwKX8-LNTs+85dn2YDEw@mail.gmail.com>
-Subject: Re: [PATCH] video/fbdev: fix repeated words in comments
-To:     Jilin Yuan <yuanjilin@cdjrlc.com>
-Cc:     Helge Deller <deller@gmx.de>,
-        Linux Fbdev development list <linux-fbdev@vger.kernel.org>,
-        DRI Development <dri-devel@lists.freedesktop.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220823230842.AB8BAC433C1@smtp.kernel.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Jilin,
+On 08-23 16:08, Stephen Boyd wrote:
+> Date: Tue, 23 Aug 2022 16:08:40 -0700
+> From: Stephen Boyd <sboyd@kernel.org>
+> To: Albert Ou <aou@eecs.berkeley.edu>, Broadcom internal kernel review list
+>  <bcm-kernel-feedback-list@broadcom.com>, Florian Fainelli
+>  <f.fainelli@gmail.com>, "Ivan T. Ivanov" <iivanov@suse.de>, Michael
+>  Turquette <mturquette@baylibre.com>, Nicolas Saenz Julienne
+>  <nsaenz@kernel.org>, Palmer Dabbelt <palmer@dabbelt.com>, Paul Walmsley
+>  <paul.walmsley@sifive.com>, Ray Jui <rjui@broadcom.com>, Scott Branden
+>  <sbranden@broadcom.com>, Stefan Wahren <stefan.wahren@i2se.com>
+> Cc: "Ivan T. Ivanov" <iivanov@suse.de>, Phil Elwell <phil@raspberrypi.org>,
+>  kernel test robot <lkp@intel.com>, linux-clk@vger.kernel.org,
+>  linux-rpi-kernel@lists.infradead.org,
+>  linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+>  linux-riscv@lists.infradead.org
+> Subject: Re: [PATCH v3] clk: bcm2835: Round UART input clock up
+> Message-Id: <20220823230842.AB8BAC433C1@smtp.kernel.org>
+> 
+> Quoting Ivan T. Ivanov (2022-05-27 03:29:00)
+> > It was reported that RPi3[1] and RPi Zero 2W boards have issues with
+> > the Bluetooth. It turns out that when switching from initial to
+> > operation speed host and device no longer can talk each other because
+> > host uses incorrect UART baud rate.
+> > 
+> > The UART driver used in this case is amba-pl011. Original fix, see
+> > below Github link[2], was inside pl011 module, but somehow it didn't
+> > look as the right place to fix. Beside that this original rounding
+> > function is not exactly perfect for all possible clock values. So I
+> > deiced to move the hack to the platform which actually need it.
+> > 
+> > The UART clock is initialised to be as close to the requested
+> > frequency as possible without exceeding it. Now that there is a
+> > clock manager that returns the actual frequencies, an expected
+> > 48MHz clock is reported as 47999625. If the requested baud rate
+> > == requested clock/16, there is no headroom and the slight
+> > reduction in actual clock rate results in failure.
+> > 
+> > If increasing a clock by less than 0.1% changes it from ..999..
+> > to ..000.., round it up.
+> > 
+> > [1] https://bugzilla.suse.com/show_bug.cgi?id=1188238
+> > [2] https://github.com/raspberrypi/linux/commit/ab3f1b39537f6d3825b8873006fbe2fc5ff057b7
+> > 
+> > Cc: Phil Elwell <phil@raspberrypi.org>
+> > Signed-off-by: Ivan T. Ivanov <iivanov@suse.de>
+> > ---
+> 
+> This is waiting for someone like Stefan to review. It's customary to
+> include previous reviewers on new versions of patches.
 
-On Tue, Aug 16, 2022 at 3:08 PM Jilin Yuan <yuanjilin@cdjrlc.com> wrote:
->  Delete the redundant word 'set'.
->
-> Signed-off-by: Jilin Yuan <yuanjilin@cdjrlc.com>
+Thanks for fixing me mistake.
 
-Thanks for your patch, which is now commit 253cabc01468d6b5 ("fbdev:
-ssd1307fb: Fix repeated words in comments") in fbdev/for-next
+Regards,
+Ivan
 
-> --- a/drivers/video/fbdev/ssd1307fb.c
-> +++ b/drivers/video/fbdev/ssd1307fb.c
-> @@ -450,7 +450,7 @@ static int ssd1307fb_init(struct ssd1307fb_par *par)
->         if (ret < 0)
->                 return ret;
->
-> -       /* Set Set Area Color Mode ON/OFF & Low Power Display Mode */
-> +       /* Set Area Color Mode ON/OFF & Low Power Display Mode */
->         if (par->area_color_enable || par->low_power) {
->                 u32 mode;
-
-Given the register being written below is called
-SSD1307FB_SET_AREA_COLOR_MODE, I think the original was correct
-(hint: the "S" in "Set" was capitalized).
-
-Gr{oetje,eeting}s,
-
-                        Geert
-
---
-Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
-
-In personal conversations with technical people, I call myself a hacker. But
-when I'm talking to journalists I just say "programmer" or something like that.
-                                -- Linus Torvalds
