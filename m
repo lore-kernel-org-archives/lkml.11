@@ -2,107 +2,164 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D803FC32792
-	for <linux-kernel@archiver.kernel.org>; Wed, 24 Aug 2022 08:18:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A2892C00140
+	for <linux-kernel@archiver.kernel.org>; Wed, 24 Aug 2022 08:19:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235627AbiHXISk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 24 Aug 2022 04:18:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55954 "EHLO
+        id S235641AbiHXITo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 24 Aug 2022 04:19:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56616 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234996AbiHXISd (ORCPT
+        with ESMTP id S234045AbiHXITl (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 24 Aug 2022 04:18:33 -0400
-Received: from smtp.smtpout.orange.fr (smtp05.smtpout.orange.fr [80.12.242.127])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4495D861D8
-        for <linux-kernel@vger.kernel.org>; Wed, 24 Aug 2022 01:18:31 -0700 (PDT)
-Received: from pop-os.home ([90.11.190.129])
-        by smtp.orange.fr with ESMTPA
-        id QlamoIOe1ez1rQlamoU0BV; Wed, 24 Aug 2022 10:18:29 +0200
-X-ME-Helo: pop-os.home
-X-ME-Auth: Y2hyaXN0b3BoZS5qYWlsbGV0QHdhbmFkb28uZnI=
-X-ME-Date: Wed, 24 Aug 2022 10:18:29 +0200
-X-ME-IP: 90.11.190.129
-From:   Christophe JAILLET <christophe.jaillet@wanadoo.fr>
-To:     Conor Dooley <conor.dooley@microchip.com>,
-        Daire McNamara <daire.mcnamara@microchip.com>,
-        Alessandro Zummo <a.zummo@towertech.it>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>
-Cc:     linux-kernel@vger.kernel.org, kernel-janitors@vger.kernel.org,
-        Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
-        linux-riscv@lists.infradead.org, linux-rtc@vger.kernel.org
-Subject: [PATCH] rtc: mpfs: Use devm_clk_get_enabled() helper
-Date:   Wed, 24 Aug 2022 10:18:25 +0200
-Message-Id: <e55c959f2821a2c367a4c5de529a638b1cc6b8cd.1661329086.git.christophe.jaillet@wanadoo.fr>
-X-Mailer: git-send-email 2.34.1
+        Wed, 24 Aug 2022 04:19:41 -0400
+Received: from mail-pj1-x1030.google.com (mail-pj1-x1030.google.com [IPv6:2607:f8b0:4864:20::1030])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E5B598A1E2
+        for <linux-kernel@vger.kernel.org>; Wed, 24 Aug 2022 01:19:39 -0700 (PDT)
+Received: by mail-pj1-x1030.google.com with SMTP id s3-20020a17090a2f0300b001facfc6fdbcso791786pjd.1
+        for <linux-kernel@vger.kernel.org>; Wed, 24 Aug 2022 01:19:39 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=bytedance-com.20210112.gappssmtp.com; s=20210112;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc;
+        bh=sIwNmqerjqaiTdP/9SuVUBFcXcyvJnbToq4VHqojaB8=;
+        b=Om+ippFq5VDjfampfj8skRptXpd8NK2EmMp93WkO1WFM2P+9cmvM50W9OIQ8PYKZ3Z
+         V7YaOExX88F5cnsKw+Yx6nnJ1spX+YL2qWPVeXJyCeECldNQm/Yy9dajP8ZBfunV0mZT
+         VKAK8TXVEQs6Bso6BAxV40s72baz1S0t1fRI77xf4iTajYadAHra4Z6LEo6mexc/KEVH
+         TZ7EcwSaIQtHsiCvDWxTC6jHbBxc8LbvGRrhqGsgCDqPIHrTyUhZpFm2DX48W6DSAFxL
+         NsRG6zAsn4cyfoRZjvWKOHogMQwNFHla7+6OrD+EXHdzhEuSDeoOqq+igUU8PuC2KTTV
+         SmgA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc;
+        bh=sIwNmqerjqaiTdP/9SuVUBFcXcyvJnbToq4VHqojaB8=;
+        b=g9v6sHudThk1Yv3F1d6CqGplJDAyPlizFsiID9JXvjaVpc1Z4zboft/ZM7o7FhAQUq
+         2jt/E1jDtzXHcxDOeyK3dFsmtShllCW2QOQ3zwlkJ0eXF6ntEAXgqUpIsekWizBRi0eU
+         plYyJYt73DJYc6g5xAa7XStC43F49LDE5eiqp40qWQni1DbU0mXA580WCwRlhOB0ctIS
+         6Za/lET4ow4cs/Mb8/x8FVRe4JaQ9pH1w3kMKoSnodIycKU6hD7qLDfSxQmSo58TwueP
+         UQgNOnNN/WhY9lHwpmNgYMiVADBCeRZiqz1b4eVQ2coswGcnWn0wjGyh2GhyR4GILqz1
+         41cw==
+X-Gm-Message-State: ACgBeo3Q1M+0byhOfwvv5NkXS747QmFSOHc5AiEoa6dvDV+/6teXRh6w
+        URvgK+ImOpdNiVjUN/wxpueIhg==
+X-Google-Smtp-Source: AA6agR4NpnRl7tswuvOVEEShny7ZGZFjiBpQFwhiy6DYHpH87TljkmO6cvTMvAAr/laPHWUTA38cbA==
+X-Received: by 2002:a17:90a:e7ce:b0:1fb:3f8b:95ee with SMTP id kb14-20020a17090ae7ce00b001fb3f8b95eemr7301543pjb.110.1661329179179;
+        Wed, 24 Aug 2022 01:19:39 -0700 (PDT)
+Received: from C02CV1DAMD6P.bytedance.net ([139.177.225.244])
+        by smtp.gmail.com with ESMTPSA id q31-20020a635c1f000000b00421841943dfsm10486587pgb.12.2022.08.24.01.19.33
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 24 Aug 2022 01:19:38 -0700 (PDT)
+From:   Chengming Zhou <zhouchengming@bytedance.com>
+To:     tj@kernel.org, hannes@cmpxchg.org, mkoutny@suse.com,
+        surenb@google.com
+Cc:     gregkh@linuxfoundation.org, corbet@lwn.net, mingo@redhat.com,
+        peterz@infradead.org, songmuchun@bytedance.com,
+        cgroups@vger.kernel.org, linux-doc@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        Chengming Zhou <zhouchengming@bytedance.com>
+Subject: [PATCH v3 00/10] sched/psi: some optimization and extension
+Date:   Wed, 24 Aug 2022 16:18:19 +0800
+Message-Id: <20220824081829.33748-1-zhouchengming@bytedance.com>
+X-Mailer: git-send-email 2.35.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The devm_clk_get_enabled() helper:
-   - calls devm_clk_get()
-   - calls clk_prepare_enable() and registers what is needed in order to
-     call clk_disable_unprepare() when needed, as a managed resource.
+Hi all,
 
-This simplifies the code, the error handling paths and avoid the need of
-a dedicated function used with devm_add_action_or_reset().
+This patch series are some optimizations and extensions for PSI.
 
-That said, mpfs_rtc_init_clk() is the same as devm_clk_get_enabled(), so
-use this function directly instead.
+patch 1/10 fix periodic aggregation shut off problem introduced by earlier
+commit 4117cebf1a9f ("psi: Optimize task switch inside shared cgroups").
 
-This also fixes an (unlikely) unchecked devm_add_action_or_reset() error.
+patch 2-4 are some misc optimizations, so put them in front of this series.
 
-Based on my test with allyesconfig, this reduces the .o size from:
-   text	   data	    bss	    dec	    hex	filename
-   5330	   2208	      0	   7538	   1d72	drivers/rtc/rtc-mpfs.o
-down to:
-   5074	   2208	      0	   7282	   1c72	drivers/rtc/rtc-mpfs.o
+patch 5/10 optimize task switch inside shared cgroups when in_memstall status
+of prev task and next task are different.
 
-Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
----
-devm_clk_get_enabled() is new and is part of 6.0-rc1
----
- drivers/rtc/rtc-mpfs.c | 19 +------------------
- 1 file changed, 1 insertion(+), 18 deletions(-)
+patch 6/10 remove NR_ONCPU task accounting to save 4 bytes in the first
+cacheline to be used by the following patch 7/10, which introduce new
+PSI resource PSI_IRQ to track IRQ/SOFTIRQ pressure stall information.
 
-diff --git a/drivers/rtc/rtc-mpfs.c b/drivers/rtc/rtc-mpfs.c
-index 944ad1036516..2a479d44f198 100644
---- a/drivers/rtc/rtc-mpfs.c
-+++ b/drivers/rtc/rtc-mpfs.c
-@@ -193,23 +193,6 @@ static int mpfs_rtc_alarm_irq_enable(struct device *dev, unsigned int enabled)
- 	return 0;
- }
- 
--static inline struct clk *mpfs_rtc_init_clk(struct device *dev)
--{
--	struct clk *clk;
--	int ret;
--
--	clk = devm_clk_get(dev, "rtc");
--	if (IS_ERR(clk))
--		return clk;
--
--	ret = clk_prepare_enable(clk);
--	if (ret)
--		return ERR_PTR(ret);
--
--	devm_add_action_or_reset(dev, (void (*) (void *))clk_disable_unprepare, clk);
--	return clk;
--}
--
- static irqreturn_t mpfs_rtc_wakeup_irq_handler(int irq, void *dev)
- {
- 	struct mpfs_rtc_dev *rtcdev = dev;
-@@ -251,7 +234,7 @@ static int mpfs_rtc_probe(struct platform_device *pdev)
- 	/* range is capped by alarm max, lower reg is 31:0 & upper is 10:0 */
- 	rtcdev->rtc->range_max = GENMASK_ULL(42, 0);
- 
--	clk = mpfs_rtc_init_clk(&pdev->dev);
-+	clk = devm_clk_get_enabled(&pdev->dev, "rtc");
- 	if (IS_ERR(clk))
- 		return PTR_ERR(clk);
- 
+patch 8-9 cache parent psi_group in struct psi_group to speed up
+the hot iteration path.
+
+patch 10/10 introduce a per-cgroup interface "cgroup.pressure" to disable
+or re-enable PSI in the cgroup level, and we implement hiding and unhiding
+the pressure files per Tejun's suggestion[1], which depends on his work[2].
+
+[1] https://lore.kernel.org/all/YvqjhqJQi2J8RG3X@slm.duckdns.org/
+[2] https://lore.kernel.org/all/20220820000550.367085-1-tj@kernel.org/
+
+Performance test using mmtests/config-scheduler-perfpipe in /user.slice/user-0.slice/session-4.scope
+
+                                 next                patched       patched/only-leaf
+Min       Time        8.82 (   0.00%)        8.49 (   3.74%)        8.00 (   9.32%)
+1st-qrtle Time        8.90 (   0.00%)        8.58 (   3.63%)        8.05 (   9.58%)
+2nd-qrtle Time        8.94 (   0.00%)        8.61 (   3.65%)        8.09 (   9.50%)
+3rd-qrtle Time        8.99 (   0.00%)        8.65 (   3.75%)        8.15 (   9.35%)
+Max-1     Time        8.82 (   0.00%)        8.49 (   3.74%)        8.00 (   9.32%)
+Max-5     Time        8.82 (   0.00%)        8.49 (   3.74%)        8.00 (   9.32%)
+Max-10    Time        8.84 (   0.00%)        8.55 (   3.20%)        8.04 (   9.05%)
+Max-90    Time        9.04 (   0.00%)        8.67 (   4.10%)        8.18 (   9.51%)
+Max-95    Time        9.04 (   0.00%)        8.68 (   4.03%)        8.20 (   9.26%)
+Max-99    Time        9.07 (   0.00%)        8.73 (   3.82%)        8.25 (   9.11%)
+Max       Time        9.12 (   0.00%)        8.89 (   2.54%)        8.27 (   9.29%)
+Amean     Time        8.95 (   0.00%)        8.62 *   3.67%*        8.11 *   9.43%*
+
+Thanks!
+
+Changes in v3:
+ - Rebase on linux-next and reorder patches to put misc optimizations
+   patches in the front of this series.
+ - Drop patch "sched/psi: don't change task psi_flags when migrate CPU/group"
+   since it caused a little performance regression and it's just
+   code refactoring, so drop it.
+ - Don't define PSI_IRQ and PSI_IRQ_FULL when !CONFIG_IRQ_TIME_ACCOUNTING,
+   in which case they are not used.
+ - Add patch 8/10 "sched/psi: consolidate cgroup_psi()" make cgroup_psi()
+   can handle all cgroups including root cgroup, make patch 9/10 simpler.
+ - Rename interface to "cgroup.pressure" and add some explanation
+   per Michal's suggestion.
+ - Hide and unhide pressure files when disable/re-enable cgroup PSI,
+   depends on Tejun's work.
+
+Changes in v2:
+ - Add Acked-by tags from Johannes Weiner. Thanks for review!
+ - Fix periodic aggregation wakeup for common ancestors in
+   psi_task_switch().
+ - Add patch 7/10 from Johannes Weiner, which remove NR_ONCPU
+   task accounting to save 4 bytes in the first cacheline.
+ - Remove "psi_irq=" kernel cmdline parameter in last version.
+ - Add per-cgroup interface "cgroup.psi" to disable/re-enable
+   PSI stats accounting in the cgroup level.
+
+Chengming Zhou (9):
+  sched/psi: fix periodic aggregation shut off
+  sched/psi: don't create cgroup PSI files when psi_disabled
+  sched/psi: save percpu memory when !psi_cgroups_enabled
+  sched/psi: move private helpers to sched/stats.h
+  sched/psi: optimize task switch inside shared cgroups again
+  sched/psi: add PSI_IRQ to track IRQ/SOFTIRQ pressure
+  sched/psi: consolidate cgroup_psi()
+  sched/psi: cache parent psi_group to speed up groups iterate
+  sched/psi: per-cgroup PSI accounting disable/re-enable interface
+
+Johannes Weiner (1):
+  sched/psi: remove NR_ONCPU task accounting
+
+ Documentation/admin-guide/cgroup-v2.rst |  23 +++
+ include/linux/cgroup-defs.h             |   3 +
+ include/linux/cgroup.h                  |   5 -
+ include/linux/psi.h                     |  12 +-
+ include/linux/psi_types.h               |  29 ++-
+ kernel/cgroup/cgroup.c                  |  94 ++++++++-
+ kernel/sched/core.c                     |   1 +
+ kernel/sched/psi.c                      | 256 +++++++++++++++++-------
+ kernel/sched/stats.h                    |   6 +
+ 9 files changed, 338 insertions(+), 91 deletions(-)
+
 -- 
-2.34.1
+2.37.2
 
