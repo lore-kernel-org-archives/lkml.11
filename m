@@ -2,92 +2,108 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E85E8C00140
-	for <linux-kernel@archiver.kernel.org>; Wed, 24 Aug 2022 05:51:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1EF78C00140
+	for <linux-kernel@archiver.kernel.org>; Wed, 24 Aug 2022 05:51:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234854AbiHXFvA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 24 Aug 2022 01:51:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47218 "EHLO
+        id S233072AbiHXFv2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 24 Aug 2022 01:51:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46704 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234844AbiHXFuh (ORCPT
+        with ESMTP id S234884AbiHXFvK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 24 Aug 2022 01:50:37 -0400
-Received: from out30-130.freemail.mail.aliyun.com (out30-130.freemail.mail.aliyun.com [115.124.30.130])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 08600915FA;
-        Tue, 23 Aug 2022 22:50:15 -0700 (PDT)
-X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R121e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=ay29a033018045170;MF=ziyangzhang@linux.alibaba.com;NM=1;PH=DS;RN=7;SR=0;TI=SMTPD_---0VN5zTec_1661320134;
-Received: from localhost.localdomain(mailfrom:ZiyangZhang@linux.alibaba.com fp:SMTPD_---0VN5zTec_1661320134)
-          by smtp.aliyun-inc.com;
-          Wed, 24 Aug 2022 13:48:54 +0800
-From:   ZiyangZhang <ZiyangZhang@linux.alibaba.com>
-To:     ming.lei@redhat.com, axboe@kernel.dk
-Cc:     xiaoguang.wang@linux.alibaba.com, linux-block@vger.kernel.org,
-        linux-kernel@vger.kernel.org, joseph.qi@linux.alibaba.com,
-        ZiyangZhang <ZiyangZhang@linux.alibaba.com>
-Subject: [RFC PATCH 5/9] ublk_drv: refactor ublk_stop_dev()
-Date:   Wed, 24 Aug 2022 13:47:40 +0800
-Message-Id: <20220824054744.77812-6-ZiyangZhang@linux.alibaba.com>
-X-Mailer: git-send-email 2.27.0
-In-Reply-To: <20220824054744.77812-1-ZiyangZhang@linux.alibaba.com>
-References: <20220824054744.77812-1-ZiyangZhang@linux.alibaba.com>
+        Wed, 24 Aug 2022 01:51:10 -0400
+Received: from mail-io1-xd34.google.com (mail-io1-xd34.google.com [IPv6:2607:f8b0:4864:20::d34])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B8E6089814
+        for <linux-kernel@vger.kernel.org>; Tue, 23 Aug 2022 22:50:45 -0700 (PDT)
+Received: by mail-io1-xd34.google.com with SMTP id q81so4999971iod.9
+        for <linux-kernel@vger.kernel.org>; Tue, 23 Aug 2022 22:50:45 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc;
+        bh=AC7zCaF3e8Y+iHmuxARbY9jPts0EPE4BM5zbxUNhoek=;
+        b=dDGkvgzoflDmqWDoHb48wLOOAS1PQAqS5JRc+aY/3J/NRzkRHugIWZ67703oSCDJAP
+         MU89etvAPwtSuig/F6UsnBBPEyRODvTmo/qfxb4HtLucIbtlqNCo6w3r25lkDOpSb/u9
+         iBSOYvHDhbSaGDeFrimVXcyYU2g7OhhpSbmcnB7NB7HVPh4Qw1kp0EMfkFchF+1pBco2
+         aX6+pZ+tfwaGVXAQ5Qcu4suv3M31YH6dot3T4NKx1bGtN1Xi1D1qT+/cX86Rd0tfsieU
+         eZNXZnT702X6vv6mLwEoYb3uhzyIJ9n1SgaumaXKWtI35yjaPq7kvi+aDE8QwFne2tcw
+         dKwQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc;
+        bh=AC7zCaF3e8Y+iHmuxARbY9jPts0EPE4BM5zbxUNhoek=;
+        b=osjKWa6HH2bbjo5YOhAUpr/n4663/FyvJ+1ripilOhYbZYGy0k0eh06z11AiUkk2z0
+         aTg1nOd3xfMgr6dhPRrPSPTXfYnUbUCxgVsYAH+qYiCnO5kKJgo5T6A0qNmOH4KTCZLX
+         2t+cLrac+inRJK/S/rSF3W/NbADFEB91M6WeatXiOfwzyiafIQWWHm43lkYqSSBa+oiO
+         9cs+nHYMPZ6PZqUVhSgUdEtBjgbfMpAsr1vamsQW37N+Vn5kdFxA+brUasUzKRVDbYaa
+         +aEuArYdvm0rE8zPqB9PNabuN3IIahrf46AS501E7J49Z53NVXc1+cWwxJXW3yc/Tcj6
+         lmwA==
+X-Gm-Message-State: ACgBeo3aDt1fcRVnTjYYRPgZC/uoBmdzdLFHq2whV09GDFT/i51OPHhP
+        yWHP5peidUsijQy/McJQCKhY1PX7dxWQQIb7b0wi4g==
+X-Google-Smtp-Source: AA6agR72tjvf/Lk7mASJIUYOIujsj/pk0L0uiHQFWZ0A0yMSn6X8gEoBJezHh/k+tO0XnGTlYUyXQ3YRs1IZ3jdKcho=
+X-Received: by 2002:a5d:8988:0:b0:67c:625:ee3 with SMTP id m8-20020a5d8988000000b0067c06250ee3mr12484340iol.150.1661320244042;
+ Tue, 23 Aug 2022 22:50:44 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20220823211958.2519055-1-adelg@google.com> <YwWx07EbaB90jDUN@kroah.com>
+In-Reply-To: <YwWx07EbaB90jDUN@kroah.com>
+From:   Andrew Delgadillo <adelg@google.com>
+Date:   Tue, 23 Aug 2022 22:50:33 -0700
+Message-ID: <CAEHm+vHHRLW1c2fhrgCx0Nh63udxMLCSwone-JTm22o2Q37abA@mail.gmail.com>
+Subject: Re: [PATCH] selftests: Add a taint selftest
+To:     Greg KH <gregkh@linuxfoundation.org>
+Cc:     Shuah Khan <shuah@kernel.org>, LKML <linux-kernel@vger.kernel.org>,
+        "open list:KERNEL SELFTEST FRAMEWORK" 
+        <linux-kselftest@vger.kernel.org>,
+        Dylan Hatch <dylanbhatch@google.com>,
+        Sasha Levin <sashalevin@google.com>,
+        Greg Thelen <gthelen@google.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Since we rely on rq's status to end(abort) it in monitor_work, calling
-del_gendisk() too early can result in UAF. So add blk_mq_freeze_queue()
-to end all inflight rqs. del_gendisk() can be then safely called with a
-frozen queue.
+On Tue, Aug 23, 2022 at 10:06 PM Greg KH <gregkh@linuxfoundation.org> wrote:
+>
+> On Tue, Aug 23, 2022 at 09:19:58PM +0000, Andrew Delgadilo wrote:
+> > From: Andrew Delgadillo <adelg@google.com>
+> >
+> > When testing a kernel, one of the earliest signals one can get is if a
+> > kernel has become tainted. For example, an organization might be
+> > interested in mass testing commits on their hardware. An obvious first
+> > step would be to make sure every commit boots, and a next step would be
+> > to make sure there are no warnings/crashes/lockups, hence the utility of
+> > a taint test.
+>
+> What's wrong with the tools/debugging/kernel-chktaint script?
+>
+> Why do we need another "get what the taint status is" program?
 
-Note: blk_mq_freeze_queue() hangs until:
-(1) all rqs are aborted and ioucmds are copmleted(freed) on a dying ubq
-    by monitor_work scheduled.
-(2) all rqs are ended on other ubqs.
+The main functionality that this selftests has that kernel-chktaint
+does not is that it exits with a non-zero status code if the kernel is
+tainted. kernel-chktaint outputs information to stdout based on the
+taint status, but will always exit 0.
 
-We cancel monitor_work before del_gendisk() because monitor_work also
-touches rq's status. Monitor_work is guaranteed to be canceled because
-we mark ub's state as UBLK_S_DEV_DEAD.
+The issue with this is that it cannot be plugged into a test runner
+that checks the exit code of a test script. In other words, if I
+wanted to plug it into git bisect, I would have to wrap
+kernel-chktaint in a command that transformed the output to an exit
+code. Sure that is doable, but it is not as simple as it could be.
 
-Signed-off-by: ZiyangZhang <ZiyangZhang@linux.alibaba.com>
----
- drivers/block/ublk_drv.c | 15 ++++++++++-----
- 1 file changed, 10 insertions(+), 5 deletions(-)
+More concretely, I am setting kselftest runs against kernel commits
+(with a harness that logs kselftest runs into some other
+infrastructure), and such a test that is missing is a kselftest that
+checks the kernel's taint status. One could argue that one should just
+create a kselftest target that calls into kernel-chktaint and parse
+the output there to determine what the exit status is, but that seems
+fragile as a change in the underlying script could break it. For
+example, if I want to test for taint #18, and I am grepping for the
+string " * an in-kernel test has been run (#18)", I will actually get
+a false positive because the underlying script does not check for
+taint #18. Contrived example yes, but I think it shows that textual
+grepping for errors is error prone (as an aside, I'll send a patch to
+update the script to check for the new taint bit).
 
-diff --git a/drivers/block/ublk_drv.c b/drivers/block/ublk_drv.c
-index 1b1c0190bba4..df8751ea3711 100644
---- a/drivers/block/ublk_drv.c
-+++ b/drivers/block/ublk_drv.c
-@@ -1018,18 +1018,23 @@ static void ublk_cancel_dev(struct ublk_device *ub)
- static void ublk_stop_dev(struct ublk_device *ub)
- {
- 	mutex_lock(&ub->mutex);
--	if (ub->dev_info.state != UBLK_S_DEV_LIVE)
--		goto unlock;
-+	/* No gendisk is live. ubq may be ready or not */
-+	if (ub->dev_info.state == UBLK_S_DEV_DEAD)
-+		goto out_cancel_dev;
- 
--	del_gendisk(ub->ub_disk);
-+	mod_delayed_work(system_wq, &ub->monitor_work, 0);
-+	pr_devel("%s: Wait for all requests ended...\n", __func__);
-+	blk_mq_freeze_queue(ub->ub_disk->queue);
- 	ub->dev_info.state = UBLK_S_DEV_DEAD;
-+	cancel_delayed_work_sync(&ub->monitor_work);
-+	pr_devel("%s: All requests are ended.\n", __func__);
-+	del_gendisk(ub->ub_disk);
- 	ub->dev_info.ublksrv_pid = -1;
- 	put_disk(ub->ub_disk);
- 	ub->ub_disk = NULL;
-- unlock:
-+ out_cancel_dev:
- 	ublk_cancel_dev(ub);
- 	mutex_unlock(&ub->mutex);
--	cancel_delayed_work_sync(&ub->monitor_work);
- }
- 
- /* device can only be started after all IOs are ready */
--- 
-2.27.0
-
+> thanks,
+>
+> greg k-h
