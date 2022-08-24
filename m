@@ -2,165 +2,369 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0A8F5C00140
-	for <linux-kernel@archiver.kernel.org>; Wed, 24 Aug 2022 19:22:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A5039C32792
+	for <linux-kernel@archiver.kernel.org>; Wed, 24 Aug 2022 19:23:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239728AbiHXTWY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 24 Aug 2022 15:22:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41366 "EHLO
+        id S239633AbiHXTXr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 24 Aug 2022 15:23:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43876 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238935AbiHXTWL (ORCPT
+        with ESMTP id S229597AbiHXTXo (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 24 Aug 2022 15:22:11 -0400
-Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C432E6C744
-        for <linux-kernel@vger.kernel.org>; Wed, 24 Aug 2022 12:22:10 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1661368930; x=1692904930;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references;
-  bh=XncP+nrvyhgTRiyny7cU6Vc8pykwMAuPxozXvq+GSDw=;
-  b=O2/i/7ba7+/J34eTlogH3naME42ok0dVbBxrH/962n/LXqxKxFa8LpjM
-   QxBdMhb4aB5SXukh4tnRUjGANKnZ7avaNATu1htWZmn6qkoXPmXLfia2J
-   Bw6IM/fSmZdoNvxEinUL6v9fiW2u8/LH2XGDAWCJkx/Nz9wZr3CoH7c5O
-   xaaMpGJys2XE744aXMRzHkxaND6AXwqQ3uBnPTF9tOQzWTqLsALpsFqJp
-   z9mN5Vtq8j8rCP45WrnD4vv0OY0hHWJOsbsXoStg/3PZyn4RkygbXBs9o
-   nWfIrWvUDUOrZHLC5uYRvff2smghYS95tgwL7uk48v6pCBEE6FTaYnNrN
-   Q==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10449"; a="292801040"
-X-IronPort-AV: E=Sophos;i="5.93,261,1654585200"; 
-   d="scan'208";a="292801040"
-Received: from orsmga007.jf.intel.com ([10.7.209.58])
-  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Aug 2022 12:22:08 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.93,261,1654585200"; 
-   d="scan'208";a="606140562"
-Received: from chang-linux-3.sc.intel.com ([172.25.66.173])
-  by orsmga007.jf.intel.com with ESMTP; 24 Aug 2022 12:22:08 -0700
-From:   "Chang S. Bae" <chang.seok.bae@intel.com>
+        Wed, 24 Aug 2022 15:23:44 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BC1E86CD31
+        for <linux-kernel@vger.kernel.org>; Wed, 24 Aug 2022 12:23:42 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1661369022;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=UKFxxgqM+hdKn0qfi1wk5p78nvboH54nB3BoRTaw6o0=;
+        b=NDAzUqcrqoJvTM8HjUPEczfIrjzr9Fx5sOIzKmtw+dfQGKHcYszFdULRaX8HR9rP5cbdmV
+        llZ2oN2STgCBY1TIpox+o10+qPLBSFAH+fK1bGk09PTjFTR/e3FqhJO/EQ87V7k8VHx09F
+        T2qCOAJ5Uh67FatHwTOL/MFq82yzwIY=
+Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
+ [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-34-UnvEm3s5NzSTVuIL-nR3uw-1; Wed, 24 Aug 2022 15:23:38 -0400
+X-MC-Unique: UnvEm3s5NzSTVuIL-nR3uw-1
+Received: from smtp.corp.redhat.com (int-mx07.intmail.prod.int.rdu2.redhat.com [10.11.54.7])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id DDCA4101E98A;
+        Wed, 24 Aug 2022 19:23:37 +0000 (UTC)
+Received: from t480s.redhat.com (unknown [10.39.193.5])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 4A43B141510F;
+        Wed, 24 Aug 2022 19:23:34 +0000 (UTC)
+From:   David Hildenbrand <david@redhat.com>
 To:     linux-kernel@vger.kernel.org
-Cc:     x86@kernel.org, chang.seok.bae@intel.com
-Subject: [PATCH 3/3] x86/fpu: Exclude dynamic states from init_fpstate
-Date:   Wed, 24 Aug 2022 12:12:23 -0700
-Message-Id: <20220824191223.1248-4-chang.seok.bae@intel.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20220824191223.1248-1-chang.seok.bae@intel.com>
-References: <20220824191223.1248-1-chang.seok.bae@intel.com>
+Cc:     linux-mm@kvack.org, David Hildenbrand <david@redhat.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Axel Rasmussen <axelrasmussen@google.com>,
+        Nadav Amit <nadav.amit@gmail.com>,
+        Peter Xu <peterx@redhat.com>, Hugh Dickins <hughd@google.com>,
+        Andrea Arcangeli <aarcange@redhat.com>,
+        Matthew Wilcox <willy@infradead.org>,
+        Vlastimil Babka <vbabka@suse.cz>,
+        John Hubbard <jhubbard@nvidia.com>,
+        Jason Gunthorpe <jgg@nvidia.com>,
+        David Laight <David.Laight@ACULAB.COM>, stable@vger.kernel.org
+Subject: [PATCH 5.19-stable] mm/gup: fix FOLL_FORCE COW security issue and remove FOLL_COW
+Date:   Wed, 24 Aug 2022 21:23:33 +0200
+Message-Id: <20220824192333.287405-1-david@redhat.com>
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
+X-Scanned-By: MIMEDefang 2.85 on 10.11.54.7
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-== Background ==
+commit 5535be3099717646781ce1540cf725965d680e7b upstream.
 
-The XSTATE init code initializes all enabled and supported components.
-Then, the init states are saved in the init_fpstate buffer that is
-statically allocated in about one page.
+Ever since the Dirty COW (CVE-2016-5195) security issue happened, we know
+that FOLL_FORCE can be possibly dangerous, especially if there are races
+that can be exploited by user space.
 
-The AMX TILE_DATA state is large (8KB) but its init state is zero. And the
-feature comes only with the compacted format with these established
-dependencies: AMX->XFD->XSAVES. So this state is excludable from
-init_fpstate.
+Right now, it would be sufficient to have some code that sets a PTE of a
+R/O-mapped shared page dirty, in order for it to erroneously become
+writable by FOLL_FORCE.  The implications of setting a write-protected PTE
+dirty might not be immediately obvious to everyone.
 
-== Problem ==
+And in fact ever since commit 9ae0f87d009c ("mm/shmem: unconditionally set
+pte dirty in mfill_atomic_install_pte"), we can use UFFDIO_CONTINUE to map
+a shmem page R/O while marking the pte dirty.  This can be used by
+unprivileged user space to modify tmpfs/shmem file content even if the
+user does not have write permissions to the file, and to bypass memfd
+write sealing -- Dirty COW restricted to tmpfs/shmem (CVE-2022-2590).
 
-But the buffer is formatted to include that large state. Then, this can be
-the cause of a noisy splat like the below.
+To fix such security issues for good, the insight is that we really only
+need that fancy retry logic (FOLL_COW) for COW mappings that are not
+writable (!VM_WRITE).  And in a COW mapping, we really only broke COW if
+we have an exclusive anonymous page mapped.  If we have something else
+mapped, or the mapped anonymous page might be shared (!PageAnonExclusive),
+we have to trigger a write fault to break COW.  If we don't find an
+exclusive anonymous page when we retry, we have to trigger COW breaking
+once again because something intervened.
 
-This came from XRSTORS for the task with init_fpstate in its XSAVE buffer.
-It is reproducible on AMX systems when the running kernel is built with
-CONFIG_DEBUG_PAGEALLOC=y and CONFIG_DEBUG_PAGEALLOC_ENABLE_DEFAULT=y:
+Let's move away from this mandatory-retry + dirty handling and rely on our
+PageAnonExclusive() flag for making a similar decision, to use the same
+COW logic as in other kernel parts here as well.  In case we stumble over
+a PTE in a COW mapping that does not map an exclusive anonymous page, COW
+was not properly broken and we have to trigger a fake write-fault to break
+COW.
 
-[   30.583122] ------------[ cut here ]------------
-[   30.586625] Bad FPU state detected at restore_fpregs_from_fpstate+0x57/0xd0, reinitializing FPU registers.
-[   30.586676] WARNING: CPU: 130 PID: 1689 at arch/x86/mm/extable.c:74 fixup_exception+0x2c1/0x2f0
-[   30.602091] CPU: 130 PID: 1689 Comm: probe-bcache Not tainted 5.19.0-various+ #1077
-[   30.610381] Hardware name: Intel Corporation D50DNP/D50DNP, BIOS SE5C6301.86B.7314.D09.2202231344 02/23/2022
-[   30.618850] RIP: 0010:fixup_exception+0x2c1/0x2f0
-[   30.618859] Code: bd fe ff ff e9 1c ff ff ff 0f 0b 48 c7 c2 90 05 8c 92 e9 32 ff ff ff 48 c7 c7 20 a7 fe 91 c6 05 4a dc 99 01 01 e8 4f de 01 00 <0f> 0b eb ab 0f 0b 48 c7 c2 90 05 8c 92 e9 16 fe ff ff 31 f6 4c 89
-[   30.636326] RSP: 0018:ff36ae41e4af7ca8 EFLAGS: 00010082
-[   30.636331] RAX: 0000000000000000 RBX: ffffffff921c6138 RCX: 0000000000000001
-[   30.636334] RDX: 0000000080000001 RSI: 00000000ffff7fff RDI: 00000000ffffffff
-[   30.636337] RBP: ff36ae41e4af7cc8 R08: 0000000000000000 R09: c0000000ffff7fff
-[   30.636339] R10: 0000000000000000 R11: ff36ae41e4af7af8 R12: ff36ae41e4af7dc8
-[   30.636342] R13: 000000000000000e R14: 0000000000000000 R15: 0000000000000001
-[   30.636344] FS:  0000000000000000(0000) GS:ff19681e5fd80000(0000) knlGS:0000000000000000
-[   30.636348] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-[   30.645197] CR2: ff196816897300bf CR3: 0000001083388006 CR4: 0000000000771ee0
-[   30.645201] DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-[   30.689689] DR3: 0000000000000000 DR6: 00000000fffe07f0 DR7: 0000000000000400
-[   30.694040] PKRU: 55555554
-[   30.698347] Call Trace:
-[   30.702615]  <TASK>
-[   30.706829]  kernelmode_fixup_or_oops+0x49/0x120
-[   30.711098]  __bad_area_nosemaphore+0x15a/0x200
-[   30.715346]  bad_area_nosemaphore+0x16/0x20
-[   30.719610]  do_kern_addr_fault+0x43/0xa0
-[   30.723810]  exc_page_fault+0xdd/0x180
-[   30.727968]  asm_exc_page_fault+0x27/0x30
-[   30.732088] RIP: 0010:restore_fpregs_from_fpstate+0x57/0xd0
-[   30.736240] Code: 4c 48 23 1d 43 7d 61 01 4c 89 e7 ba 01 00 00 00 48 89 de e8 0b 34 00 00 48 89 da 49 8d 7c 24 40 89 d8 48 c1 ea 20 48 0f c7 1f <48> 83 c4 08 5b 41 5c 5d c3 cc cc cc cc 48 8b 45 e8 48 0f ae 48 40
-[   30.744890] RSP: 0018:ff36ae41e4af7e78 EFLAGS: 00010046
-[   30.749209] RAX: 00000000000604e7 RBX: 00000000000604e7 RCX: 0000000000040000
-[   30.753572] RDX: 0000000000000000 RSI: ffffffff920d70ad RDI: ff1968168972d6c0
-[   30.757937] RBP: ff36ae41e4af7e90 R08: ff196816861bdd80 R09: 0000000000020009
-[   30.762350] R10: 8080808080808080 R11: fefefefefefefeff R12: ff1968168972d680
-[   30.766717] R13: 0000000000000082 R14: 0000000000000000 R15: 0000000000000000
-[   30.771026]  ? restore_fpregs_from_fpstate+0x45/0xd0
-[   30.775318]  switch_fpu_return+0x4e/0xe0
-[   30.779599]  exit_to_user_mode_prepare+0x17b/0x1b0
-[   30.783892]  syscall_exit_to_user_mode+0x29/0x40
-[   30.788170]  do_syscall_64+0x67/0x80
-[   30.792354]  ? do_syscall_64+0x67/0x80
-[   30.796451]  ? exc_page_fault+0x86/0x180
-[   30.800428]  entry_SYSCALL_64_after_hwframe+0x63/0xcd
-[   30.804317] RIP: 0033:0x7fdce1d9a2b0
-[   30.808108] Code: Unable to access opcode bytes at RIP 0x7fdce1d9a286.
-[   30.811926] RSP: 002b:00007ffe7368b950 EFLAGS: 00000200 ORIG_RAX: 000000000000003b
-[   30.811931] RAX: 0000000000000000 RBX: 0000000000000000 RCX: 0000000000000000
-[   30.811932] RDX: 0000000000000000 RSI: 0000000000000000 RDI: 0000000000000000
-[   30.811934] RBP: 0000000000000000 R08: 0000000000000000 R09: 0000000000000000
-[   30.811936] R10: 0000000000000000 R11: 0000000000000000 R12: 0000000000000000
-[   30.819620] R13: 0000000000000000 R14: 0000000000000000 R15: 0000000000000000
-[   30.819625]  </TASK>
-[   30.819627] ---[ end trace 0000000000000000 ]---
+Just like we do in can_change_pte_writable() added via commit 64fe24a3e05e
+("mm/mprotect: try avoiding write faults for exclusive anonymous pages
+when changing protection") and commit 76aefad628aa ("mm/mprotect: fix
+soft-dirty check in can_change_pte_writable()"), take care of softdirty
+and uffd-wp manually.
 
-== Solution ==
+For example, a write() via /proc/self/mem to a uffd-wp-protected range has
+to fail instead of silently granting write access and bypassing the
+userspace fault handler.  Note that FOLL_FORCE is not only used for debug
+access, but also triggered by applications without debug intentions, for
+example, when pinning pages via RDMA.
 
-Adjust init_fpstate to exclude dynamic states. XRSTORS from init_fpstate
-can still initialize those states when their bits are set in the
-requested-feature bitmap.
+This fixes CVE-2022-2590. Note that only x86_64 and aarch64 are
+affected, because only those support CONFIG_HAVE_ARCH_USERFAULTFD_MINOR.
 
-Reported-by: Lin X Wang <lin.x.wang@intel.com>
-Fixes: 2308ee57d93d ("x86/fpu/amx: Enable the AMX feature in 64-bit mode")
-Tested-by: Lin X Wang <lin.x.wang@intel.com>
-Signed-off-by: Chang S. Bae <chang.seok.bae@intel.com>
-Cc: x86@kernel.org
-Cc: linux-kernel@vger.kernel.org
+Fortunately, FOLL_COW is no longer required to handle FOLL_FORCE. So
+let's just get rid of it.
+
+Thanks to Nadav Amit for pointing out that the pte_dirty() check in
+FOLL_FORCE code is problematic and might be exploitable.
+
+Note 1: We don't check for the PTE being dirty because it doesn't matter
+	for making a "was COWed" decision anymore, and whoever modifies the
+	page has to set the page dirty either way.
+
+Note 2: Kernels before extended uffd-wp support and before
+	PageAnonExclusive (< 5.19) can simply revert the problematic
+	commit instead and be safe regarding UFFDIO_CONTINUE. A backport to
+	v5.19 requires minor adjustments due to lack of
+	vma_soft_dirty_enabled().
+
+Link: https://lkml.kernel.org/r/20220809205640.70916-1-david@redhat.com
+Fixes: 9ae0f87d009c ("mm/shmem: unconditionally set pte dirty in mfill_atomic_install_pte")
+Signed-off-by: David Hildenbrand <david@redhat.com>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: Axel Rasmussen <axelrasmussen@google.com>
+Cc: Nadav Amit <nadav.amit@gmail.com>
+Cc: Peter Xu <peterx@redhat.com>
+Cc: Hugh Dickins <hughd@google.com>
+Cc: Andrea Arcangeli <aarcange@redhat.com>
+Cc: Matthew Wilcox <willy@infradead.org>
+Cc: Vlastimil Babka <vbabka@suse.cz>
+Cc: John Hubbard <jhubbard@nvidia.com>
+Cc: Jason Gunthorpe <jgg@nvidia.com>
+Cc: David Laight <David.Laight@ACULAB.COM>
+Cc: <stable@vger.kernel.org>	[5.16]
+Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
+Signed-off-by: David Hildenbrand <david@redhat.com>
 ---
- arch/x86/kernel/fpu/xstate.c | 9 ++++++---
- 1 file changed, 6 insertions(+), 3 deletions(-)
+ include/linux/mm.h |  1 -
+ mm/gup.c           | 69 +++++++++++++++++++++++++++++++---------------
+ mm/huge_memory.c   | 65 +++++++++++++++++++++++++++++--------------
+ 3 files changed, 91 insertions(+), 44 deletions(-)
 
-diff --git a/arch/x86/kernel/fpu/xstate.c b/arch/x86/kernel/fpu/xstate.c
-index f5ef78633b4c..e77cabfa802f 100644
---- a/arch/x86/kernel/fpu/xstate.c
-+++ b/arch/x86/kernel/fpu/xstate.c
-@@ -857,9 +857,12 @@ void __init fpu__init_system_xstate(unsigned int legacy_size)
- 	update_regset_xstate_info(fpu_user_cfg.max_size,
- 				  fpu_user_cfg.max_features);
+diff --git a/include/linux/mm.h b/include/linux/mm.h
+index 7898e29bcfb5..25b8860f47cc 100644
+--- a/include/linux/mm.h
++++ b/include/linux/mm.h
+@@ -2939,7 +2939,6 @@ struct page *follow_page(struct vm_area_struct *vma, unsigned long address,
+ #define FOLL_MIGRATION	0x400	/* wait for page to replace migration entry */
+ #define FOLL_TRIED	0x800	/* a retry, previous pass started an IO */
+ #define FOLL_REMOTE	0x2000	/* we are working on non-current tsk/mm */
+-#define FOLL_COW	0x4000	/* internal GUP flag */
+ #define FOLL_ANON	0x8000	/* don't do file mappings */
+ #define FOLL_LONGTERM	0x10000	/* mapping lifetime is indefinite: see below */
+ #define FOLL_SPLIT_PMD	0x20000	/* split huge pmd before returning */
+diff --git a/mm/gup.c b/mm/gup.c
+index e2a39e30756d..d2fd46b50102 100644
+--- a/mm/gup.c
++++ b/mm/gup.c
+@@ -478,14 +478,43 @@ static int follow_pfn_pte(struct vm_area_struct *vma, unsigned long address,
+ 	return -EEXIST;
+ }
  
--	/* Bring init_fpstate size and features up to date */
--	init_fpstate.size		= fpu_kernel_cfg.max_size;
--	init_fpstate.xfeatures		= fpu_kernel_cfg.max_features;
+-/*
+- * FOLL_FORCE can write to even unwritable pte's, but only
+- * after we've gone through a COW cycle and they are dirty.
+- */
+-static inline bool can_follow_write_pte(pte_t pte, unsigned int flags)
++/* FOLL_FORCE can write to even unwritable PTEs in COW mappings. */
++static inline bool can_follow_write_pte(pte_t pte, struct page *page,
++					struct vm_area_struct *vma,
++					unsigned int flags)
+ {
+-	return pte_write(pte) ||
+-		((flags & FOLL_FORCE) && (flags & FOLL_COW) && pte_dirty(pte));
++	/* If the pte is writable, we can write to the page. */
++	if (pte_write(pte))
++		return true;
++
++	/* Maybe FOLL_FORCE is set to override it? */
++	if (!(flags & FOLL_FORCE))
++		return false;
++
++	/* But FOLL_FORCE has no effect on shared mappings */
++	if (vma->vm_flags & (VM_MAYSHARE | VM_SHARED))
++		return false;
++
++	/* ... or read-only private ones */
++	if (!(vma->vm_flags & VM_MAYWRITE))
++		return false;
++
++	/* ... or already writable ones that just need to take a write fault */
++	if (vma->vm_flags & VM_WRITE)
++		return false;
++
 +	/*
-+	 * init_fpstate excludes dynamic states as they are large but init
-+	 * state is zero.
++	 * See can_change_pte_writable(): we broke COW and could map the page
++	 * writable if we have an exclusive anonymous page ...
 +	 */
-+	init_fpstate.size		= fpu_kernel_cfg.default_size;
-+	init_fpstate.xfeatures		= fpu_kernel_cfg.default_features;
++	if (!page || !PageAnon(page) || !PageAnonExclusive(page))
++		return false;
++
++	/* ... and a write-fault isn't required for other reasons. */
++	if (IS_ENABLED(CONFIG_MEM_SOFT_DIRTY) &&
++	    !(vma->vm_flags & VM_SOFTDIRTY) && !pte_soft_dirty(pte))
++		return false;
++	return !userfaultfd_pte_wp(vma, pte);
+ }
  
- 	if (init_fpstate.size > sizeof(init_fpstate.regs)) {
- 		pr_warn("x86/fpu: init_fpstate buffer too small (%zu < %d), disabling XSAVE\n",
+ static struct page *follow_page_pte(struct vm_area_struct *vma,
+@@ -528,12 +557,19 @@ static struct page *follow_page_pte(struct vm_area_struct *vma,
+ 	}
+ 	if ((flags & FOLL_NUMA) && pte_protnone(pte))
+ 		goto no_page;
+-	if ((flags & FOLL_WRITE) && !can_follow_write_pte(pte, flags)) {
+-		pte_unmap_unlock(ptep, ptl);
+-		return NULL;
+-	}
+ 
+ 	page = vm_normal_page(vma, address, pte);
++
++	/*
++	 * We only care about anon pages in can_follow_write_pte() and don't
++	 * have to worry about pte_devmap() because they are never anon.
++	 */
++	if ((flags & FOLL_WRITE) &&
++	    !can_follow_write_pte(pte, page, vma, flags)) {
++		page = NULL;
++		goto out;
++	}
++
+ 	if (!page && pte_devmap(pte) && (flags & (FOLL_GET | FOLL_PIN))) {
+ 		/*
+ 		 * Only return device mapping pages in the FOLL_GET or FOLL_PIN
+@@ -967,17 +1003,6 @@ static int faultin_page(struct vm_area_struct *vma,
+ 		return -EBUSY;
+ 	}
+ 
+-	/*
+-	 * The VM_FAULT_WRITE bit tells us that do_wp_page has broken COW when
+-	 * necessary, even if maybe_mkwrite decided not to set pte_write. We
+-	 * can thus safely do subsequent page lookups as if they were reads.
+-	 * But only do so when looping for pte_write is futile: in some cases
+-	 * userspace may also be wanting to write to the gotten user page,
+-	 * which a read fault here might prevent (a readonly page might get
+-	 * reCOWed by userspace write).
+-	 */
+-	if ((ret & VM_FAULT_WRITE) && !(vma->vm_flags & VM_WRITE))
+-		*flags |= FOLL_COW;
+ 	return 0;
+ }
+ 
+diff --git a/mm/huge_memory.c b/mm/huge_memory.c
+index 834f288b3769..164d13b62079 100644
+--- a/mm/huge_memory.c
++++ b/mm/huge_memory.c
+@@ -977,12 +977,6 @@ struct page *follow_devmap_pmd(struct vm_area_struct *vma, unsigned long addr,
+ 
+ 	assert_spin_locked(pmd_lockptr(mm, pmd));
+ 
+-	/*
+-	 * When we COW a devmap PMD entry, we split it into PTEs, so we should
+-	 * not be in this function with `flags & FOLL_COW` set.
+-	 */
+-	WARN_ONCE(flags & FOLL_COW, "mm: In follow_devmap_pmd with FOLL_COW set");
+-
+ 	/* FOLL_GET and FOLL_PIN are mutually exclusive. */
+ 	if (WARN_ON_ONCE((flags & (FOLL_PIN | FOLL_GET)) ==
+ 			 (FOLL_PIN | FOLL_GET)))
+@@ -1348,14 +1342,43 @@ vm_fault_t do_huge_pmd_wp_page(struct vm_fault *vmf)
+ 	return VM_FAULT_FALLBACK;
+ }
+ 
+-/*
+- * FOLL_FORCE can write to even unwritable pmd's, but only
+- * after we've gone through a COW cycle and they are dirty.
+- */
+-static inline bool can_follow_write_pmd(pmd_t pmd, unsigned int flags)
++/* FOLL_FORCE can write to even unwritable PMDs in COW mappings. */
++static inline bool can_follow_write_pmd(pmd_t pmd, struct page *page,
++					struct vm_area_struct *vma,
++					unsigned int flags)
+ {
+-	return pmd_write(pmd) ||
+-	       ((flags & FOLL_FORCE) && (flags & FOLL_COW) && pmd_dirty(pmd));
++	/* If the pmd is writable, we can write to the page. */
++	if (pmd_write(pmd))
++		return true;
++
++	/* Maybe FOLL_FORCE is set to override it? */
++	if (!(flags & FOLL_FORCE))
++		return false;
++
++	/* But FOLL_FORCE has no effect on shared mappings */
++	if (vma->vm_flags & (VM_MAYSHARE | VM_SHARED))
++		return false;
++
++	/* ... or read-only private ones */
++	if (!(vma->vm_flags & VM_MAYWRITE))
++		return false;
++
++	/* ... or already writable ones that just need to take a write fault */
++	if (vma->vm_flags & VM_WRITE)
++		return false;
++
++	/*
++	 * See can_change_pte_writable(): we broke COW and could map the page
++	 * writable if we have an exclusive anonymous page ...
++	 */
++	if (!page || !PageAnon(page) || !PageAnonExclusive(page))
++		return false;
++
++	/* ... and a write-fault isn't required for other reasons. */
++	if (IS_ENABLED(CONFIG_MEM_SOFT_DIRTY) &&
++	    !(vma->vm_flags & VM_SOFTDIRTY) && !pmd_soft_dirty(pmd))
++		return false;
++	return !userfaultfd_huge_pmd_wp(vma, pmd);
+ }
+ 
+ struct page *follow_trans_huge_pmd(struct vm_area_struct *vma,
+@@ -1364,12 +1387,16 @@ struct page *follow_trans_huge_pmd(struct vm_area_struct *vma,
+ 				   unsigned int flags)
+ {
+ 	struct mm_struct *mm = vma->vm_mm;
+-	struct page *page = NULL;
++	struct page *page;
+ 
+ 	assert_spin_locked(pmd_lockptr(mm, pmd));
+ 
+-	if (flags & FOLL_WRITE && !can_follow_write_pmd(*pmd, flags))
+-		goto out;
++	page = pmd_page(*pmd);
++	VM_BUG_ON_PAGE(!PageHead(page) && !is_zone_device_page(page), page);
++
++	if ((flags & FOLL_WRITE) &&
++	    !can_follow_write_pmd(*pmd, page, vma, flags))
++		return NULL;
+ 
+ 	/* Avoid dumping huge zero page */
+ 	if ((flags & FOLL_DUMP) && is_huge_zero_pmd(*pmd))
+@@ -1377,10 +1404,7 @@ struct page *follow_trans_huge_pmd(struct vm_area_struct *vma,
+ 
+ 	/* Full NUMA hinting faults to serialise migration in fault paths */
+ 	if ((flags & FOLL_NUMA) && pmd_protnone(*pmd))
+-		goto out;
+-
+-	page = pmd_page(*pmd);
+-	VM_BUG_ON_PAGE(!PageHead(page) && !is_zone_device_page(page), page);
++		return NULL;
+ 
+ 	if (!pmd_write(*pmd) && gup_must_unshare(flags, page))
+ 		return ERR_PTR(-EMLINK);
+@@ -1397,7 +1421,6 @@ struct page *follow_trans_huge_pmd(struct vm_area_struct *vma,
+ 	page += (addr & ~HPAGE_PMD_MASK) >> PAGE_SHIFT;
+ 	VM_BUG_ON_PAGE(!PageCompound(page) && !is_zone_device_page(page), page);
+ 
+-out:
+ 	return page;
+ }
+ 
 -- 
-2.17.1
+2.37.1
 
