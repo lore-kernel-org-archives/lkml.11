@@ -2,39 +2,39 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6E56BC00140
-	for <linux-kernel@archiver.kernel.org>; Wed, 24 Aug 2022 10:44:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 57223C00140
+	for <linux-kernel@archiver.kernel.org>; Wed, 24 Aug 2022 10:44:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236897AbiHXKoU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 24 Aug 2022 06:44:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59732 "EHLO
+        id S236448AbiHXKoe (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 24 Aug 2022 06:44:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59992 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236448AbiHXKoF (ORCPT
+        with ESMTP id S236840AbiHXKoT (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 24 Aug 2022 06:44:05 -0400
+        Wed, 24 Aug 2022 06:44:19 -0400
 Received: from sender4-op-o14.zoho.com (sender4-op-o14.zoho.com [136.143.188.14])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1C19582D03;
-        Wed, 24 Aug 2022 03:44:04 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; t=1661337815; cv=none; 
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 923A68287C;
+        Wed, 24 Aug 2022 03:44:17 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; t=1661337829; cv=none; 
         d=zohomail.com; s=zohoarc; 
-        b=C2CrcDGvGGlbmQM8noVex9DxH+AHfpv0U2g32Yq87be/wEudGSLwOXW4mP5BpbA/rRdq7AkSY74V2EXninZ164StQTplJQiPBlx19TjkfjilBoZgxVzzJ5d/g23j4D9yUGNF9iB62X9d1h10YwQYND86IiTpoO3v7u4zfhk0Fu4=
+        b=iR51oLPt+GlmEdRfsJmc4+kzTTF8HpS/s9K3rlpCkzl9MBAOeg2Sbu7X1/IM1/1241p+bNlVoVemU+a2ddJnyilNeVI5cns9QzYwT8oJ3DbVEiSNznYSVozXccFXn4rOgrJZhMR9ah5JuZbT796sHPVmHDsjFEhmn5908iWEO9E=
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=zohomail.com; s=zohoarc; 
-        t=1661337815; h=Content-Type:Content-Transfer-Encoding:Cc:Date:From:In-Reply-To:MIME-Version:Message-ID:References:Subject:To; 
-        bh=4a6yR0j8dGKM4ne0vdVBY0NNjAAWFNbYDluSL0Atn+M=; 
-        b=GUc6zWurw6HN7sx50nE4MmGN5w3EjEXqj+PYk2RfhyZ/oHWWQwaAhqEE9lc4stGIk96/8GAouwX+hSPg5unCvhQwQRNMzhWudx9fhHkPoTRQgu81XYQDAVX4sZRj9NF7F9fMAySmp30K61Zn0PTX+ai4/s8Gww35D2stRVuEMk8=
+        t=1661337829; h=Content-Type:Content-Transfer-Encoding:Cc:Date:From:In-Reply-To:MIME-Version:Message-ID:References:Subject:To; 
+        bh=PqDAR68ha3p7OFhv0uUyatEsf2p9t1Rodd58LZPmYK0=; 
+        b=YRB4s6GICaG8jRH/FDHM8nm0Bn2YJYbnOOBRblm671pzmJJvf2PgChYcMC+C/0oXuTPNQl7KzQvBxZdHa5mZ/hsreRkBHD0rWaN4bxHu8dAW1r78rL2lz+KdWvmvms8RhRxQlst2ypoiuXot8MahKP98r+pw93ojv3n81ef3slk=
 ARC-Authentication-Results: i=1; mx.zohomail.com;
         dkim=pass  header.i=arinc9.com;
         spf=pass  smtp.mailfrom=arinc.unal@arinc9.com;
         dmarc=pass header.from=<arinc.unal@arinc9.com>
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; t=1661337815;
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; t=1661337829;
         s=zmail; d=arinc9.com; i=arinc.unal@arinc9.com;
         h=From:From:To:To:Cc:Cc:Subject:Subject:Date:Date:Message-Id:Message-Id:In-Reply-To:References:MIME-Version:Content-Type:Content-Transfer-Encoding:Reply-To;
-        bh=4a6yR0j8dGKM4ne0vdVBY0NNjAAWFNbYDluSL0Atn+M=;
-        b=XHhowVbg9tMtLL2IW7VlCHk3tFN20Z+mDiZlDXUD4Dq3m7iauGzwnNIrSEyGfQog
-        5UVpR1bUWjrCEtgF4ytPle80zAK/cC+AjfJQP0P5qLz6uGnxbgkSzhJdOUuXY+3WNil
-        RpSczgsb77AnHN3F7RZLGVuCRBaDhYGWUI+ZUUII=
+        bh=PqDAR68ha3p7OFhv0uUyatEsf2p9t1Rodd58LZPmYK0=;
+        b=dLJ9r2Yd7D0e9nZnwDDOx7L0xQ7SYm8JhICoKU7rBqbkyLgaHpKXQ1UpEuYESRz2
+        AEgnn4W16v9pjN4lAGhd2ywXkVwI0zCq9japmyf3iDbHhOBUSCBTWmvmI4fUmZh7up/
+        IDiMv6sHPjo7O/5Ht8c8U7dVUXSBimTwvkEI5bhA=
 Received: from arinc9-PC.lan (37.120.152.236 [37.120.152.236]) by mx.zohomail.com
-        with SMTPS id 1661337813774297.5497052009075; Wed, 24 Aug 2022 03:43:33 -0700 (PDT)
+        with SMTPS id 1661337827365608.7276053298348; Wed, 24 Aug 2022 03:43:47 -0700 (PDT)
 From:   =?UTF-8?q?Ar=C4=B1n=C3=A7=20=C3=9CNAL?= <arinc.unal@arinc9.com>
 To:     Andrew Lunn <andrew@lunn.ch>,
         Vivien Didelot <vivien.didelot@gmail.com>,
@@ -59,9 +59,9 @@ Cc:     netdev@vger.kernel.org, devicetree@vger.kernel.org,
         linux-arm-kernel@lists.infradead.org,
         linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org,
         =?UTF-8?q?Ar=C4=B1n=C3=A7=20=C3=9CNAL?= <arinc.unal@arinc9.com>
-Subject: [PATCH v5 3/7] dt-bindings: net: dsa: mediatek,mt7530: fix reset lines
-Date:   Wed, 24 Aug 2022 13:40:36 +0300
-Message-Id: <20220824104040.17527-4-arinc.unal@arinc9.com>
+Subject: [PATCH v5 5/7] dt-bindings: net: dsa: mediatek,mt7530: define port binding per switch
+Date:   Wed, 24 Aug 2022 13:40:38 +0300
+Message-Id: <20220824104040.17527-6-arinc.unal@arinc9.com>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220824104040.17527-1-arinc.unal@arinc9.com>
 References: <20220824104040.17527-1-arinc.unal@arinc9.com>
@@ -73,68 +73,115 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-- Add description for reset-gpios.
-- Invalidate reset-gpios if mediatek,mcm is used. We cannot use multiple
-reset lines at the same time.
-- Invalidate mediatek,mcm if the compatible device is mediatek,mt7531.
-There is no multi-chip module version of mediatek,mt7531.
-- Require mediatek,mcm for mediatek,mt7621 as the compatible string is only
-used for the multi-chip module version of MT7530.
+Define DSA port binding per switch model as each switch model requires
+different values for certain properties.
+
+Define reg property on $defs as it's the same for all switch models.
+
+Remove unnecessary lines as they are already included from the referred
+dsa.yaml.
 
 Signed-off-by: Arınç ÜNAL <arinc.unal@arinc9.com>
 ---
- .../bindings/net/dsa/mediatek,mt7530.yaml     | 24 +++++++++++++++++++
- 1 file changed, 24 insertions(+)
+ .../bindings/net/dsa/mediatek,mt7530.yaml     | 55 +++++++++++--------
+ 1 file changed, 33 insertions(+), 22 deletions(-)
 
 diff --git a/Documentation/devicetree/bindings/net/dsa/mediatek,mt7530.yaml b/Documentation/devicetree/bindings/net/dsa/mediatek,mt7530.yaml
-index d5f167e6c990..13f54d402e06 100644
+index 8dfc307e6e1b..a6003db87113 100644
 --- a/Documentation/devicetree/bindings/net/dsa/mediatek,mt7530.yaml
 +++ b/Documentation/devicetree/bindings/net/dsa/mediatek,mt7530.yaml
-@@ -111,6 +111,11 @@ properties:
-       switch is a part of the multi-chip module.
- 
-   reset-gpios:
-+    description:
-+      GPIO to reset the switch. Use this if mediatek,mcm is not used.
-+      This property is optional because some boards share the reset line with
-+      other components which makes it impossible to probe the switch if the
-+      reset line is used.
+@@ -127,37 +127,45 @@ properties:
+       ethsys.
      maxItems: 1
  
-   reset-names:
-@@ -160,6 +165,9 @@ allOf:
-       required:
-         - mediatek,mcm
+-patternProperties:
+-  "^(ethernet-)?ports$":
+-    type: object
+-
+-    patternProperties:
+-      "^(ethernet-)?port@[0-9]+$":
+-        type: object
+-        description: Ethernet switch ports
+-
+-        unevaluatedProperties: false
++required:
++  - compatible
++  - reg
+ 
+-        properties:
+-          reg:
+-            description:
+-              Port address described must be 5 or 6 for CPU port and from 0
+-              to 5 for user ports.
++$defs:
++  dsa-port-reg:
++    properties:
++      reg:
++        description:
++          Port address described must be 5 or 6 for CPU port and from 0 to 5 for
++          user ports.
+ 
+-        allOf:
+-          - $ref: dsa-port.yaml#
+-          - if:
++  mt7530-dsa-port:
++    patternProperties:
++      "^(ethernet-)?ports$":
++        patternProperties:
++          "^(ethernet-)?port@[0-9]+$":
++            $ref: "#/$defs/dsa-port-reg"
++            if:
+               properties:
+                 label:
+                   const: cpu
+             then:
+               required:
+-                - reg
+                 - phy-mode
+ 
+-required:
+-  - compatible
+-  - reg
++  mt7531-dsa-port:
++    patternProperties:
++      "^(ethernet-)?ports$":
++        patternProperties:
++          "^(ethernet-)?port@[0-9]+$":
++            $ref: "#/$defs/dsa-port-reg"
++            if:
++              properties:
++                label:
++                  const: cpu
++            then:
++              required:
++                - phy-mode
+ 
+ allOf:
+   - $ref: dsa.yaml#
+@@ -180,6 +188,7 @@ allOf:
+         compatible:
+           const: mediatek,mt7530
      then:
-+      properties:
-+        reset-gpios: false
-+
++      $ref: "#/$defs/mt7530-dsa-port"
        required:
-         - resets
-         - reset-names
-@@ -176,6 +184,22 @@ allOf:
          - core-supply
          - io-supply
+@@ -189,6 +198,7 @@ allOf:
+         compatible:
+           const: mediatek,mt7531
+     then:
++      $ref: "#/$defs/mt7531-dsa-port"
+       properties:
+         mediatek,mcm: false
  
-+  - if:
-+      properties:
-+        compatible:
-+          const: mediatek,mt7531
-+    then:
-+      properties:
-+        mediatek,mcm: false
-+
-+  - if:
-+      properties:
-+        compatible:
-+          const: mediatek,mt7621
-+    then:
-+      required:
-+        - mediatek,mcm
-+
- unevaluatedProperties: false
+@@ -197,6 +207,7 @@ allOf:
+         compatible:
+           const: mediatek,mt7621
+     then:
++      $ref: "#/$defs/mt7530-dsa-port"
+       required:
+         - mediatek,mcm
  
- examples:
 -- 
 2.34.1
 
