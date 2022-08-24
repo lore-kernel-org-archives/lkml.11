@@ -2,151 +2,73 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D1F0FC00140
-	for <linux-kernel@archiver.kernel.org>; Wed, 24 Aug 2022 14:58:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7045BC00140
+	for <linux-kernel@archiver.kernel.org>; Wed, 24 Aug 2022 14:58:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239058AbiHXO6R (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 24 Aug 2022 10:58:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53538 "EHLO
+        id S239359AbiHXO6W (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 24 Aug 2022 10:58:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53518 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239393AbiHXO6I (ORCPT
+        with ESMTP id S238759AbiHXO6K (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 24 Aug 2022 10:58:08 -0400
-Received: from mail-il1-x12c.google.com (mail-il1-x12c.google.com [IPv6:2607:f8b0:4864:20::12c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E044090809
-        for <linux-kernel@vger.kernel.org>; Wed, 24 Aug 2022 07:58:00 -0700 (PDT)
-Received: by mail-il1-x12c.google.com with SMTP id o3so9184668ilf.7
-        for <linux-kernel@vger.kernel.org>; Wed, 24 Aug 2022 07:58:00 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc;
-        bh=yF4Z8Wba5KOhLWJ2hFirrTICWXMXcXiCQAsAVYho6bs=;
-        b=SDns1Nk4QoTPheeQ1bpwTTyzwsCPkpnhEUdDJ1mLOtNBX5aaBxoN/Pd1JSweF1nXog
-         DJd0OqK+z9SN3tXaoigWDHgRkIkvbEq+bygb3E91A/dOfk49qRSp1wuS3phar/YBrnz8
-         3SWwE/rsMfEFGfKz5ysQW9BzcVYkjdOGYHTV4=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc;
-        bh=yF4Z8Wba5KOhLWJ2hFirrTICWXMXcXiCQAsAVYho6bs=;
-        b=Rf2Oe92Di9YYOYSzVem68+voVf1DKl3uBHroFpO2zk7TTusSUZ2j2+a/qSnD4pTZ8/
-         IpyG98reOFSpOmA2TK1+4I0aHKR8rfICqzEh42XTXa5A4AnhWLjwjDgyzJ6vqw9zTpcj
-         kk1ep1eDsw5gY9ydwx8olt3MDif11vXiCzKRQBiML75vIxCTQ5hRxAcfv3dTAKmLhKuZ
-         KnSbdbG3yGsvqSkCQLpexmmu73reA9uYFYje8txOrrZuMgLiiaZHIOiAnBd19YsL3CJf
-         UaCLxbdyiPxylKxg1PmHuiaJIynALqt5F7keVjViKfU1OqQG/lVlB54BmlbTGfiPrWVK
-         Iebw==
-X-Gm-Message-State: ACgBeo2N26wmkHGvNsn6/bBZpRapzbcfA/TGR3htJKB8VMw5J/W6wsVq
-        ulZl1b9t4yKQqk6wLA2juekjqo+7ZYATTi6+ciI=
-X-Google-Smtp-Source: AA6agR5ucGBCO17tx1QbkeqrS2CS9EJSFrq3m3N1IMRK6dvMIWiohARjDG7+jFYqMPCjBIVoTZAwaQ==
-X-Received: by 2002:a05:6e02:b27:b0:2df:abc0:8a20 with SMTP id e7-20020a056e020b2700b002dfabc08a20mr2363132ilu.291.1661353079919;
-        Wed, 24 Aug 2022 07:57:59 -0700 (PDT)
-Received: from mail-il1-f175.google.com (mail-il1-f175.google.com. [209.85.166.175])
-        by smtp.gmail.com with ESMTPSA id g20-20020a02c554000000b00344c3583535sm3913115jaj.94.2022.08.24.07.57.58
-        for <linux-kernel@vger.kernel.org>
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 24 Aug 2022 07:57:58 -0700 (PDT)
-Received: by mail-il1-f175.google.com with SMTP id q3so6056722ilc.6
-        for <linux-kernel@vger.kernel.org>; Wed, 24 Aug 2022 07:57:58 -0700 (PDT)
-X-Received: by 2002:a92:60e:0:b0:2e8:f08b:de04 with SMTP id
- x14-20020a92060e000000b002e8f08bde04mr2131199ilg.177.1661353077650; Wed, 24
- Aug 2022 07:57:57 -0700 (PDT)
+        Wed, 24 Aug 2022 10:58:10 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 12CA38B995;
+        Wed, 24 Aug 2022 07:58:04 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 7F4A16186D;
+        Wed, 24 Aug 2022 14:58:04 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1818FC433D7;
+        Wed, 24 Aug 2022 14:58:02 +0000 (UTC)
+Message-ID: <c7d0fcdf-7eb0-f543-d1e4-a8895955d570@xs4all.nl>
+Date:   Wed, 24 Aug 2022 16:58:01 +0200
 MIME-Version: 1.0
-References: <20220822074139.3810-1-jensenhuang@friendlyarm.com>
- <23552842.6Emhk5qWAg@diego> <CAD=FV=W-ajJDfYcP3P8Jyk_KgsUAbdTtmwiNXqJ=Ab2ojgrUGw@mail.gmail.com>
- <CAMpZ1qEe7xFr+XaXsS_hWDLnGGA8PfzQiToOjY1N_1ctyQ+KxA@mail.gmail.com>
-In-Reply-To: <CAMpZ1qEe7xFr+XaXsS_hWDLnGGA8PfzQiToOjY1N_1ctyQ+KxA@mail.gmail.com>
-From:   Doug Anderson <dianders@chromium.org>
-Date:   Wed, 24 Aug 2022 07:57:44 -0700
-X-Gmail-Original-Message-ID: <CAD=FV=U-=2GpQTb0N1p3Qe2TAb=JhyZJw2V8T-qbLs5TYhW7qA@mail.gmail.com>
-Message-ID: <CAD=FV=U-=2GpQTb0N1p3Qe2TAb=JhyZJw2V8T-qbLs5TYhW7qA@mail.gmail.com>
-Subject: Re: [PATCH] arm64: dts: rockchip: add enable-strobe-pulldown to emmc
- phy on rk3399
-To:     Jensen Huang <jensenhuang@friendlyarm.com>
-Cc:     =?UTF-8?Q?Heiko_St=C3=BCbner?= <heiko@sntech.de>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Vinod Koul <vkoul@kernel.org>,
-        Chris Ruehl <chris.ruehl@gtsys.com.hk>,
-        Brian Norris <briannorris@chromium.org>,
-        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
-        <devicetree@vger.kernel.org>,
-        Linux ARM <linux-arm-kernel@lists.infradead.org>,
-        "open list:ARM/Rockchip SoC..." <linux-rockchip@lists.infradead.org>,
-        LKML <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.10.0
+Subject: Re: [PATCH] media/i2c: fix repeated words in comments
+Content-Language: en-US
+To:     Jilin Yuan <yuanjilin@cdjrlc.com>, mchehab@kernel.org
+Cc:     linux-media@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <20220824131803.55374-1-yuanjilin@cdjrlc.com>
+From:   Hans Verkuil <hverkuil@xs4all.nl>
+In-Reply-To: <20220824131803.55374-1-yuanjilin@cdjrlc.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi,
+For some of these patches you correctly mention the driver it applies
+to, and for others (like this one) you do not.
 
-On Tue, Aug 23, 2022 at 8:11 PM Jensen Huang
-<jensenhuang@friendlyarm.com> wrote:
->
-> Hi,
->
-> Sorry for sending an email in HTML format.
->
-> I realized that only some devices may be affected, so I considered
-> modifying rk3399-nanopi4.dtsi only,
-> but other boards without external pull-down should still need this patch.
+A media/i2c prefix suggests a media/i2c-wide patch, which this isn't.
 
-I guess the other alternative would be to change how the dt property
-works. You could say:
+Please repost with a proper prefix.
 
-1. If `enable-strobe-pulldown` is set then enable the strobe pulldown.
+Regards,
 
-2. If `enable-strobe-pulldown` is not set then don't touch the pin in
-the kernel.
+	Hans
 
-3. If someone later needs to explicitly disable the strobe pulldown
-they could add a new property like `disable-strobe-pulldown`.
-
-
-Obviously there are tradeoffs between that and what you've done and
-I'm happy to let others make the call of which they'd prefer.
-
-
-> BR,
-> Jensen
->
-> On Tue, Aug 23, 2022 at 10:13 PM Doug Anderson <dianders@chromium.org> wr=
-ote:
-> >
-> > Hi,
-> >
-> > On Tue, Aug 23, 2022 at 4:53 AM Heiko St=C3=BCbner <heiko@sntech.de> wr=
-ote:
-> > >
-> > > Am Montag, 22. August 2022, 09:41:39 CEST schrieb Jensen Huang:
-> > > > Internal pull-down for strobe line (GRF_EMMCPHY_CON2[9]) was disabl=
-ed
-> > > > by commit 8b5c2b45b8f0, which causes I/O error in HS400 mode.
-> > > >
-> > > > Tested on NanoPC-T4.
-> > > >
-> > > > Fixes: 8b5c2b45b8f0 ("phy: rockchip: set pulldown for strobe line i=
-n dts")
-> > > > Signed-off-by: Jensen Huang <jensenhuang@friendlyarm.com>
-> > >
-> > > ok, so this looks like it restores previous functionality.
-> > >
-> > > I'm just wondering as the "offending" patch is from 2020, why this
-> > > only turns up now. Any ideas?
-> >
-> > Ah, I see. So before the offending patch we used to just leave the
-> > pull state at whatever the default was when the kernel was booted.
-> > After the offending patch we chose a default.
-> >
-> > On kevin I see an external pull down on this line. Enabling both the
-> > internal and external is probably not a huge deal, it'll just affect
-> > the strength of the pull.
-> >
-> > On bob I _think_ the external pull down is also stuffed.
-> >
-> > ...so I guess that would explain why it didn't cause a problem for at
-> > least those two boards?
-> >
-> > -Doug
+On 24/08/2022 15:18, Jilin Yuan wrote:
+>  Delete the redundant word 'in'.
+> 
+> Signed-off-by: Jilin Yuan <yuanjilin@cdjrlc.com>
+> ---
+>  drivers/media/i2c/adv7175.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+> 
+> diff --git a/drivers/media/i2c/adv7175.c b/drivers/media/i2c/adv7175.c
+> index 1813f67f0fe1..945068c12763 100644
+> --- a/drivers/media/i2c/adv7175.c
+> +++ b/drivers/media/i2c/adv7175.c
+> @@ -209,7 +209,7 @@ static int adv7175_s_std_output(struct v4l2_subdev *sd, v4l2_std_id std)
+>  		/* This is an attempt to convert
+>  		 * SECAM->PAL (typically it does not work
+>  		 * due to genlock: when decoder is in SECAM
+> -		 * and encoder in in PAL the subcarrier can
+> +		 * and encoder in PAL the subcarrier can
+>  		 * not be synchronized with horizontal
+>  		 * quency) */
+>  		adv7175_write_block(sd, init_pal, sizeof(init_pal));
