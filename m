@@ -2,86 +2,157 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BA549C32793
-	for <linux-kernel@archiver.kernel.org>; Wed, 24 Aug 2022 01:31:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 96DADC32793
+	for <linux-kernel@archiver.kernel.org>; Wed, 24 Aug 2022 01:31:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231902AbiHXBbQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 21:31:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51272 "EHLO
+        id S232741AbiHXBbd (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 23 Aug 2022 21:31:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52030 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231588AbiHXBbO (ORCPT
+        with ESMTP id S232341AbiHXBb2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 21:31:14 -0400
-Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4307146DB2;
-        Tue, 23 Aug 2022 18:31:12 -0700 (PDT)
-Received: from dggpemm500021.china.huawei.com (unknown [172.30.72.56])
-        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4MC7m35KtHznTfM;
-        Wed, 24 Aug 2022 09:28:51 +0800 (CST)
-Received: from dggpemm500007.china.huawei.com (7.185.36.183) by
- dggpemm500021.china.huawei.com (7.185.36.109) with Microsoft SMTP Server
+        Tue, 23 Aug 2022 21:31:28 -0400
+Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D81F548CB3
+        for <linux-kernel@vger.kernel.org>; Tue, 23 Aug 2022 18:31:26 -0700 (PDT)
+Received: from canpemm500009.china.huawei.com (unknown [172.30.72.53])
+        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4MC7k272n1zXdvC;
+        Wed, 24 Aug 2022 09:27:06 +0800 (CST)
+Received: from [10.67.102.169] (10.67.102.169) by
+ canpemm500009.china.huawei.com (7.192.105.203) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Wed, 24 Aug 2022 09:31:10 +0800
-Received: from huawei.com (10.175.103.91) by dggpemm500007.china.huawei.com
- (7.185.36.183) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Wed, 24 Aug
- 2022 09:31:09 +0800
-From:   Yang Yingliang <yangyingliang@huawei.com>
-To:     <linux-kernel@vger.kernel.org>, <linux-kselftest@vger.kernel.org>,
-        <bpf@vger.kernel.org>
-CC:     <sdf@google.com>, <kafai@fb.com>, <ast@kernel.org>,
-        <andrii@kernel.org>, <mykolal@fb.com>
-Subject: [PATCH -next] selftests/bpf: fix wrong size passed to bpf_setsockopt()
-Date:   Wed, 24 Aug 2022 09:39:07 +0800
-Message-ID: <20220824013907.380448-1-yangyingliang@huawei.com>
-X-Mailer: git-send-email 2.25.1
+ 15.1.2375.24; Wed, 24 Aug 2022 09:31:24 +0800
+CC:     <yangyicong@hisilicon.com>, <sudeep.holla@arm.com>,
+        <vincent.guittot@linaro.org>, <linux-kernel@vger.kernel.org>,
+        <gregkh@linuxfoundation.org>, <rafael@kernel.org>,
+        <21cnbao@gmail.com>, <jonathan.cameron@huawei.com>,
+        <linuxarm@huawei.com>, <prime.zeng@huawei.com>
+Subject: Re: [PATCH] arch_topology: Make cluster topology span at least SMT
+ CPUs
+To:     Ionela Voinescu <ionela.voinescu@arm.com>
+References: <20220823073044.58697-1-yangyicong@huawei.com>
+ <YwSKnGii2zdd7Fig@arm.com> <d0bc04af-5481-5df2-ff75-9072b4b047c1@huawei.com>
+ <YwUUEzULS1ha1rqY@arm.com>
+From:   Yicong Yang <yangyicong@huawei.com>
+Message-ID: <5246777a-4175-e252-1815-fb92ce6d3716@huawei.com>
+Date:   Wed, 24 Aug 2022 09:31:24 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
+ Thunderbird/78.5.1
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.175.103.91]
-X-ClientProxiedBy: dggems706-chm.china.huawei.com (10.3.19.183) To
- dggpemm500007.china.huawei.com (7.185.36.183)
+In-Reply-To: <YwUUEzULS1ha1rqY@arm.com>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.67.102.169]
+X-ClientProxiedBy: dggems705-chm.china.huawei.com (10.3.19.182) To
+ canpemm500009.china.huawei.com (7.192.105.203)
 X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-sizeof(new_cc) is not real memory size that new_cc point to, introduce
-new_cc_len to store size then pass it to bpf_setsockopt().
+On 2022/8/24 1:53, Ionela Voinescu wrote:
+> Hi,
+> 
+> On Tuesday 23 Aug 2022 at 21:05:47 (+0800), Yicong Yang wrote:
+>> On 2022/8/23 16:06, Ionela Voinescu wrote:
+>>> Hi Yicong,
+>>>
+>>> On Tuesday 23 Aug 2022 at 15:30:44 (+0800), Yicong Yang wrote:
+>>>> From: Yicong Yang <yangyicong@hisilicon.com>
+>>>>
+>>>> Currently cpu_clustergroup_mask() will return CPU mask if cluster span
+>>>> more or the same CPUs as cpu_coregroup_mask(). This will result topology
+>>>> borken on non-Cluster SMT machines.
+>>>
+>>> Might be worth adding here:.. "when building with CONFIG_SCHED_CLUSTER=y"
+>>>
+>>
+>> will add this qualifier. thanks.
+>>
+>>>>
+>>>
+>>> I thought I had covered this case, but I think I had considered LLC
+>>> spanning more than one core (tested on TX2 as well).
+>>>
+>>> So you'd only hit this if LLC and cluster level span the same cores (a
+>>> single core in this case, for non-cluster), in the presence of SMT.
+>>>
+>>
+>> Not sure I understand it correctly but in the below case I think the LLC may span
+>> the same core with socket?
+> 
+> Ah, I've jumped to conclusions based on the "non-cluster" mention. Does
+> "non-cluster" just mean that there's no intermediary "cluster" grouping of
+> CPUs between core and LLC? How does the PPTT table look like, by the
+> way?
+> 
 
-Fixes: 31123c0360e0 ("selftests/bpf: bpf_setsockopt tests")
-Signed-off-by: Yang Yingliang <yangyingliang@huawei.com>
----
- tools/testing/selftests/bpf/progs/setget_sockopt.c | 10 +++++++---
- 1 file changed, 7 insertions(+), 3 deletions(-)
+yes non-cluster means machine has no cluster topology. The PPTT is generated by the
+qemu according to the cmdline so I didn't really check it. See the demo provided in
+the commit.
 
-diff --git a/tools/testing/selftests/bpf/progs/setget_sockopt.c b/tools/testing/selftests/bpf/progs/setget_sockopt.c
-index 4a4cb44a4a15..40606ef47a38 100644
---- a/tools/testing/selftests/bpf/progs/setget_sockopt.c
-+++ b/tools/testing/selftests/bpf/progs/setget_sockopt.c
-@@ -305,15 +305,19 @@ static int bpf_test_tcp_sockopt(__u32 i, struct loop_ctx *lc)
- 	if (t->opt == TCP_CONGESTION) {
- 		char old_cc[16], tmp_cc[16];
- 		const char *new_cc;
-+		int new_cc_len;
- 
- 		if (bpf_getsockopt(ctx, IPPROTO_TCP, TCP_CONGESTION, old_cc, sizeof(old_cc)))
- 			return 1;
--		if (!bpf_strncmp(old_cc, sizeof(old_cc), cubic_cc))
-+		if (!bpf_strncmp(old_cc, sizeof(old_cc), cubic_cc)) {
- 			new_cc = reno_cc;
--		else
-+			new_cc_len = sizeof(reno_cc);
-+		} else {
- 			new_cc = cubic_cc;
-+			new_cc_len = sizeof(cubic_cc);
-+		}
- 		if (bpf_setsockopt(ctx, IPPROTO_TCP, TCP_CONGESTION, (void *)new_cc,
--				   sizeof(new_cc)))
-+				   new_cc_len))
- 			return 1;
- 		if (bpf_getsockopt(ctx, IPPROTO_TCP, TCP_CONGESTION, tmp_cc, sizeof(tmp_cc)))
- 			return 1;
--- 
-2.25.1
+'-smp 48,sockets=2,cores=12,threads=2' builds a mahine with 2 sockets, one socket has
+12 cores and each core has 2 threads. If we want to have a cluster machine we build it
+with '-smp 48,sockets=2,clusters=6,cores=2,threads=2', then we'll have 6 clusters in
+one socket and 2 cores in each cluster, 2 threads for each core.
 
+Thanks.
+
+> Thanks,
+> Ionela.
+> 
+>>
+>>> Reviewed-by: Ionela Voinescu <ionela.voinescu@arm.com>
+>>>
+>>> Many thanks,
+>>> Ionela.
+>>>
+>>>> Test with:
+>>>> qemu-system-aarch64 -enable-kvm -machine virt \
+>>>>  -net none \
+>>>>  -cpu host \
+>>>>  -bios ./QEMU_EFI.fd \
+>>>>  -m 2G \
+>>>>  -smp 48,sockets=2,cores=12,threads=2 \
+>>>>  -kernel $Image \
+>>>>  -initrd $Rootfs \
+>>>>  -nographic
+>>>>  -append "rdinit=init console=ttyAMA0 sched_verbose loglevel=8"
+>>>>
+>>>> We'll get below error:
+>>>> [    3.084568] BUG: arch topology borken
+>>>> [    3.084570]      the SMT domain not a subset of the CLS domain
+>>>>
+>>>> Since cluster is a level higher than SMT, fix this by making cluster
+>>>> spans at least SMT CPUs.
+>>>>
+>>>> Cc: Sudeep Holla <sudeep.holla@arm.com>
+>>>> Cc: Vincent Guittot <vincent.guittot@linaro.org>
+>>>> Cc: Ionela Voinescu <ionela.voinescu@arm.com>
+>>>> Fixes: bfcc4397435d ("arch_topology: Limit span of cpu_clustergroup_mask()")
+>>>> Signed-off-by: Yicong Yang <yangyicong@hisilicon.com>
+>>>> ---
+>>>>  drivers/base/arch_topology.c | 2 +-
+>>>>  1 file changed, 1 insertion(+), 1 deletion(-)
+>>>>
+>>>> diff --git a/drivers/base/arch_topology.c b/drivers/base/arch_topology.c
+>>>> index 0424b59b695e..0056a1273275 100644
+>>>> --- a/drivers/base/arch_topology.c
+>>>> +++ b/drivers/base/arch_topology.c
+>>>> @@ -724,7 +724,7 @@ const struct cpumask *cpu_clustergroup_mask(int cpu)
+>>>>  	 */
+>>>>  	if (cpumask_subset(cpu_coregroup_mask(cpu),
+>>>>  			   &cpu_topology[cpu].cluster_sibling))
+>>>> -		return get_cpu_mask(cpu);
+>>>> +		return cpu_smt_mask(cpu);
+>>>>  
+>>>>  	return &cpu_topology[cpu].cluster_sibling;
+>>>>  }
+>>>> -- 
+>>>> 2.24.0
+>>>>
+>>>
+>>> .
+>>>
+> .
+> 
