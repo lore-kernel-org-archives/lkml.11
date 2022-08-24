@@ -2,116 +2,91 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 02970C00140
-	for <linux-kernel@archiver.kernel.org>; Wed, 24 Aug 2022 08:04:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 42893C32793
+	for <linux-kernel@archiver.kernel.org>; Wed, 24 Aug 2022 08:05:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235588AbiHXIEC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 24 Aug 2022 04:04:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43876 "EHLO
+        id S235597AbiHXIFS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 24 Aug 2022 04:05:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46162 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235563AbiHXID6 (ORCPT
+        with ESMTP id S234332AbiHXIFP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 24 Aug 2022 04:03:58 -0400
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C9F4986054
-        for <linux-kernel@vger.kernel.org>; Wed, 24 Aug 2022 01:03:57 -0700 (PDT)
-Received: from ptx.hi.pengutronix.de ([2001:67c:670:100:1d::c0])
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <mfe@pengutronix.de>)
-        id 1oQlMR-0008Gu-Vj; Wed, 24 Aug 2022 10:03:39 +0200
-Received: from mfe by ptx.hi.pengutronix.de with local (Exim 4.92)
-        (envelope-from <mfe@pengutronix.de>)
-        id 1oQlMQ-0002AW-S9; Wed, 24 Aug 2022 10:03:38 +0200
-Date:   Wed, 24 Aug 2022 10:03:38 +0200
-From:   Marco Felsch <m.felsch@pengutronix.de>
-To:     "Alice Guo (OSS)" <alice.guo@oss.nxp.com>
-Cc:     Guenter Roeck <linux@roeck-us.net>,
-        "wim@linux-watchdog.org" <wim@linux-watchdog.org>,
-        "shawnguo@kernel.org" <shawnguo@kernel.org>,
-        "s.hauer@pengutronix.de" <s.hauer@pengutronix.de>,
-        "festevam@gmail.com" <festevam@gmail.com>,
-        "linux-arm-kernel@lists.infradead.org" 
-        <linux-arm-kernel@lists.infradead.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        dl-linux-imx <linux-imx@nxp.com>,
-        "kernel@pengutronix.de" <kernel@pengutronix.de>,
-        "linux-watchdog@vger.kernel.org" <linux-watchdog@vger.kernel.org>
-Subject: Re: [PATCH 2/7] watchdog: imx7ulp: Add explict memory barrier for
- unlock sequence
-Message-ID: <20220824080338.humjny4fabhmx3z7@pengutronix.de>
-References: <20220816043643.26569-1-alice.guo@oss.nxp.com>
- <20220816043643.26569-3-alice.guo@oss.nxp.com>
- <20220816062330.z2fvurteg337krw2@pengutronix.de>
- <AM6PR04MB60537292F559EC012F0EB510E2719@AM6PR04MB6053.eurprd04.prod.outlook.com>
- <20220822080010.ecdphpm3i26cco5f@pengutronix.de>
- <20220822140347.GA4087281@roeck-us.net>
- <AM6PR04MB6053E26CB59410EBCC2C93AEE2709@AM6PR04MB6053.eurprd04.prod.outlook.com>
- <20220823091027.ezyxkn64asajvjom@pengutronix.de>
- <20220823120219.GA203169@roeck-us.net>
- <AM6PR04MB60535EC5B774004AF996BDA5E2739@AM6PR04MB6053.eurprd04.prod.outlook.com>
+        Wed, 24 Aug 2022 04:05:15 -0400
+Received: from mail-pf1-x429.google.com (mail-pf1-x429.google.com [IPv6:2607:f8b0:4864:20::429])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2A7A13CBF8;
+        Wed, 24 Aug 2022 01:05:08 -0700 (PDT)
+Received: by mail-pf1-x429.google.com with SMTP id x19so12982068pfq.1;
+        Wed, 24 Aug 2022 01:05:08 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc;
+        bh=1vKgNm6BRFVeZ7Pdv+a4C7Ti+m9SsZu4s1UQ5Y46htk=;
+        b=Yy0w9y1//Bgd7r4+OGNU18as32pSRUhuzqra+9fP202lb5VUPLhHjmi85mLeMqvqD5
+         6AfpAmcpypr+g5tZlGenfK1E0NcwNmUyqQtqiVvAQtj1kMZ4Cf8kD33HMpqnkTgShndT
+         IYWP1dlWBSyzQ1QuNstaqCnLvOvmt0vHco24o78ea7LuH1yHNvJeP2YfYSY1QtZB2Hg7
+         kcTAK1SGx78Jv/xej8Oe4vgNU5sMlRYtUpo7j2/9ujKvzFkWKF/2En5py9OF1JLs323E
+         wBFAJ0TSfgmpLx3Xc8as+V1HhP4VOUYCqS5rnWZCCbDqMTd6s63Tma4Ub3rvuJ4552ED
+         AE+A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc;
+        bh=1vKgNm6BRFVeZ7Pdv+a4C7Ti+m9SsZu4s1UQ5Y46htk=;
+        b=raX5xDQH1jGDiVPTOtCgJ1qIQgr99GN3FNCf7HjztT4VzpBZWQkhsorMLoCtW/Pjgz
+         LZlIR05uilU4URYmEr2gu00+xqt8KCfpNGHQ9L0Rm6KFmmqFqdSJ/sjEsAw/IS8SmbRw
+         x8KlvbAunp00MWK9bRSmrE+Gcx0BvpbAyGJnsC/cwwiOZjHnmIz/8+5bxyOCqfnrfz08
+         ZJVK+a+uo3TYGoXhs6Z22oRIdE9hUdEpa5TF2Z8CDeyrRgp6/5I/M6EV+4dayoAhPYqN
+         eyZ4jAk9WJOVk2F7V8ViMNPRgLOuBESvs5GaEi3rWqscA2jzancXJcg5wU6+Xt4qF0Rc
+         PUmA==
+X-Gm-Message-State: ACgBeo1omITjRD7G2bTrXoeiL32IELWCFojtb0sigBkES7NzH6BmwgBK
+        mGXXtrdZiqyumyGNSzJvyqM=
+X-Google-Smtp-Source: AA6agR6CvOkBYkfHfOXB2ElEMv6qNkwhEwpCMxenFuZOFA0G8mbhD4yWFJ1to9fLn7fROybZOJ5Rrg==
+X-Received: by 2002:a63:da13:0:b0:42a:7f03:a00e with SMTP id c19-20020a63da13000000b0042a7f03a00emr14362124pgh.332.1661328307440;
+        Wed, 24 Aug 2022 01:05:07 -0700 (PDT)
+Received: from localhost.localdomain ([193.203.214.57])
+        by smtp.gmail.com with ESMTPSA id p7-20020a170902ebc700b00172b27404a2sm8028805plg.120.2022.08.24.01.05.05
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 24 Aug 2022 01:05:07 -0700 (PDT)
+From:   cgel.zte@gmail.com
+X-Google-Original-From: chi.minghao@zte.com.cn
+To:     dennis.dalessandro@cornelisnetworks.com
+Cc:     jgg@ziepe.ca, leon@kernel.org, linux-rdma@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Minghao Chi <chi.minghao@zte.com.cn>,
+        Zeal Robot <zealci@zte.com.cn>
+Subject: [PATCH] infiniband: remove unnecessary null check
+Date:   Wed, 24 Aug 2022 08:05:03 +0000
+Message-Id: <20220824080503.221680-1-chi.minghao@zte.com.cn>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <AM6PR04MB60535EC5B774004AF996BDA5E2739@AM6PR04MB6053.eurprd04.prod.outlook.com>
-User-Agent: NeoMutt/20180716
-X-SA-Exim-Connect-IP: 2001:67c:670:100:1d::c0
-X-SA-Exim-Mail-From: mfe@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: linux-kernel@vger.kernel.org
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Alice,
+From: Minghao Chi <chi.minghao@zte.com.cn>
 
-On 22-08-24, Alice Guo (OSS) wrote:
+container_of is never null, so this null check is
+unnecessary.
 
-...
+Reported-by: Zeal Robot <zealci@zte.com.cn>
+Signed-off-by: Minghao Chi <chi.minghao@zte.com.cn>
+---
+ drivers/infiniband/sw/rdmavt/vt.c | 2 --
+ 1 file changed, 2 deletions(-)
 
-> > > > Hi Guenter and Marco,
-> > > >
-> > > > 1. did you see any issues?
-> > > > This WDOG Timer first appeared in i.MX7ULP, no one report issues
-> > > > probably because few people use i.MX7ULP. This issue was found when
-> > > > we did a stress test on it. When we reconfigure the WDOG Timer,
-> > > > there is a certain probability that it reset. The reason for the
-> > > > error is that when WDOG_CS[CMD32EN] is 0, the unlock sequence is two
-> > > > 16-bit writes (0xC520, 0xD928) to the CNT register within 16 bus
-> > > > clocks, and improper unlock sequence causes the WDOG to reset.
-> > > > Adding mb() is to guarantee that two 16-bit writes are finished within 16
-> > bus clocks.
-> > >
-> > > After this explanation the whole imx7ulp_wdt_init() seems a bit buggy
-> > > because writel_relaxed() as well as writel() are 32bit access functions.
-> > > So the very first thing to do is to enable the 32-bit mode.
-> > >
-> > Agreed. This is much better than having extra code to deal with both 16-bit
-> > and 32-bit access.
-> > 
-> > > Also this is a explanation worth to be added to the commit message ;)
-> > >
-> > 
-> > Definitely. Also, the use of mb(), if it should indeed be needed, would have to
-> > be explained in a code comment.
-> > 
-> > Thanks,
-> > Guenter
-> 
-> Hi Marco and Guenter,
-> 
-> Thank you for your comments. I plan to enable support for 32-bit
-> unlock command write words in bootloader. In this way, there is no
-> need to distinguish whether the unlock command is a 32-bit command or
-> a 16-bit command in driver.
-
-Please don't move this into the bootloader, enabling it within the init
-seq. is just fine. If you move it into the bootloader then you can't
-ensure that the bit is set since there are plenty of bootloaders out
-there.
-
-As I said, just drop the "16bit" unlock sequence from the init function
-because the unlock is handled just fine in all the watchdog_ops.
-
-Regards,
-  Marco
+diff --git a/drivers/infiniband/sw/rdmavt/vt.c b/drivers/infiniband/sw/rdmavt/vt.c
+index 59481ae39505..b2d83b4958fc 100644
+--- a/drivers/infiniband/sw/rdmavt/vt.c
++++ b/drivers/infiniband/sw/rdmavt/vt.c
+@@ -50,8 +50,6 @@ struct rvt_dev_info *rvt_alloc_device(size_t size, int nports)
+ 	struct rvt_dev_info *rdi;
+ 
+ 	rdi = container_of(_ib_alloc_device(size), struct rvt_dev_info, ibdev);
+-	if (!rdi)
+-		return rdi;
+ 
+ 	rdi->ports = kcalloc(nports, sizeof(*rdi->ports), GFP_KERNEL);
+ 	if (!rdi->ports)
+-- 
+2.25.1
