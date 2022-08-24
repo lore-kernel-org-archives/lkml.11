@@ -2,77 +2,109 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 72781C00140
-	for <linux-kernel@archiver.kernel.org>; Wed, 24 Aug 2022 06:04:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 928CFC00140
+	for <linux-kernel@archiver.kernel.org>; Wed, 24 Aug 2022 06:04:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234261AbiHXGEU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 24 Aug 2022 02:04:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34044 "EHLO
+        id S234603AbiHXGEn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 24 Aug 2022 02:04:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34344 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229884AbiHXGES (ORCPT
+        with ESMTP id S234275AbiHXGEl (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 24 Aug 2022 02:04:18 -0400
-Received: from mail-wm1-x329.google.com (mail-wm1-x329.google.com [IPv6:2a00:1450:4864:20::329])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 478C591D35
-        for <linux-kernel@vger.kernel.org>; Tue, 23 Aug 2022 23:04:17 -0700 (PDT)
-Received: by mail-wm1-x329.google.com with SMTP id m17-20020a7bce11000000b003a5bedec07bso288868wmc.0
-        for <linux-kernel@vger.kernel.org>; Tue, 23 Aug 2022 23:04:17 -0700 (PDT)
+        Wed, 24 Aug 2022 02:04:41 -0400
+Received: from mail-pg1-x533.google.com (mail-pg1-x533.google.com [IPv6:2607:f8b0:4864:20::533])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3FBE8923FD
+        for <linux-kernel@vger.kernel.org>; Tue, 23 Aug 2022 23:04:40 -0700 (PDT)
+Received: by mail-pg1-x533.google.com with SMTP id q9so5097394pgq.6
+        for <linux-kernel@vger.kernel.org>; Tue, 23 Aug 2022 23:04:40 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc;
-        bh=lsuk7uZDIF33aCvdAlHfM9T/aKm08zp1jKT0JyGS+SI=;
-        b=VzrgHJZNFCfHZQ9fDt9SbYSikK8Y0QeLsMWnTDaa3Ix8v93UQNvX51iK8Aoq3a9kXs
-         SWCp2DAPymGn6PGxdEAwS0akx6eUrCJAFPzpVwMx4YK9aTBOJA1AJ6wYp9FTo5CVtRBN
-         ApdUT3nd+A64YDwcE8f4kG5hUou6P5Bi1WiSDJYckr0lsQWZBIkh/2nxKjLrIv1tboNk
-         ZObFnZpbGDuQaPveoTACNVm1OPssUHaFZtwiS4GYFgP9ljHr8loiRerP4X6tdJ7G+G1g
-         yLzvLSLd8ttipDNaOFq67D7kQ5EghWyuOytfWd+X3keyBTdAE+2fqV2DAJ00SlPgkpbN
-         8wzQ==
+        d=linaro.org; s=google;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc;
+        bh=Dk8XzDm9D48Wg0yOKNV6jG+OQwP/124WGzj8tislXC0=;
+        b=GV2EUQSbNojALXv87dCRbopnxuVC/rIx0y82s6hI/GqE8tRc7A12byQ3c2V4h8ispa
+         8xxLUnrIuLPQF4Ne8XNC+OKGJpXHk62Ct75oDChoBcKh4GQCIPh/xW3vm5oAPb760/85
+         oqnHDsBgg1UGtSQjBhtq717O86m0WqW2uiqIg8ukV0ysFZ2Cc5a6ufebPpw0MGwJ062M
+         pVO7zQUGtvzGgJdbQMeCYIOFDdZek0T0F7MYm5zRPnGk+Qi1WxuzlLhFJZt13PU+/7pC
+         uqCtRNXXQRPGG7dGqj6pq/+ZFxcd7xbvZZZz8/AVdCWsxaoKcBlpc8uzoDBPYtZvd25t
+         RZEw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc;
-        bh=lsuk7uZDIF33aCvdAlHfM9T/aKm08zp1jKT0JyGS+SI=;
-        b=QYpn7gEZcvM+gQl0qhv9QPKJGLKdzA5mA7j8st5444tvxTsbMgdfsNZbOn8G49eY85
-         jjUXDgFcxbdZb3zuKGaAIjwicBx2yO2biOpbdhFZiIAxrOnWezJCxOZoOCULJB5gOgRu
-         DWyj0oj/OLU84rhREhCjLBX49yCtp3ugRCbn9oybjyXvR3LUjeuQxlvVrt6FNm+giPKb
-         npo2tTGPkixRV/r0mjZg57GbMZilMIxkPJ4xTvlUDYyNaZuuUCNISXCiESnYCxBfu9nn
-         mwlIJEyE2rqQ+hhmx3JiPt4xLkFFdM6jNbevR/am8zjYYXrktRnmKOJL77YRGamfCcrD
-         fSFA==
-X-Gm-Message-State: ACgBeo3ELW1N+mefXp1ZeeqrYImefPwhFwamWeVRCKvOXHTASKh/2zvV
-        LrgEjpt3Slf87a/s1d+IaXsqAwnO4aromzAcwDg=
-X-Google-Smtp-Source: AA6agR6gLcnIAF65A5WR/1TeCNW+l0dGibWgolm9qc0u3hhP8UVQrooTgJ8GPtXmbgrFA6kqilJCT9yamyoPLmuWfvY=
-X-Received: by 2002:a05:600c:3d05:b0:3a5:dd21:e201 with SMTP id
- bh5-20020a05600c3d0500b003a5dd21e201mr4068777wmb.132.1661321055864; Tue, 23
- Aug 2022 23:04:15 -0700 (PDT)
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc;
+        bh=Dk8XzDm9D48Wg0yOKNV6jG+OQwP/124WGzj8tislXC0=;
+        b=L7oaFZSf453Qal4jxxd4CYZ47Mn1nO/QSMAW7zLMAXSkVEtGGi1H8PPOzgb4mMs1qi
+         SaIBFbZ9nnnIYH32qr9km03vqNz0c/C2CRQ8/6sKaAkv3NkBv3I+Zn8j0EVxD0fBSUt9
+         sXpFd6wkCqhRs8b7+o0WkengEJF46DLZpcVwVBEc3HfbsNzpHo9SA65ssgT1A+zIYIpF
+         bwC8uFlwZZULynK8kwyz2XTE3CEgBT1Hr56yfiQTzaJq8IuXI70tBisAwfRDce9HDJzP
+         XV6rUk7BDUNQBu2chKcmtZLvXHRBxJDLWFffuZVf72O5U2CVu+XRT4mUkS62J46OnIUB
+         F4xg==
+X-Gm-Message-State: ACgBeo37d5SAZiJ1pkCbOqNsB3q8Ff4jh4xVKDScRMqKE0ndPzYvOoqQ
+        jR2jvMOy4ckhhBBevGea1hX0EA==
+X-Google-Smtp-Source: AA6agR42Mf+/DePJe3KKIFqhmxuPv3YBRiHOFkeDdcXPFc6xg94SgVGRNpLAt2WM0u7q3E2/nzEtRw==
+X-Received: by 2002:a05:6a00:88f:b0:530:dec:81fd with SMTP id q15-20020a056a00088f00b005300dec81fdmr28642736pfj.64.1661321079747;
+        Tue, 23 Aug 2022 23:04:39 -0700 (PDT)
+Received: from localhost ([122.171.18.80])
+        by smtp.gmail.com with ESMTPSA id x63-20020a623142000000b0052d24402e52sm11805350pfx.79.2022.08.23.23.04.38
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 23 Aug 2022 23:04:38 -0700 (PDT)
+Date:   Wed, 24 Aug 2022 11:34:36 +0530
+From:   Viresh Kumar <viresh.kumar@linaro.org>
+To:     Rob Herring <robh@kernel.org>
+Cc:     Ilia Lin <ilia.lin@kernel.org>, Viresh Kumar <vireshk@kernel.org>,
+        Nishanth Menon <nm@ti.com>, Stephen Boyd <sboyd@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Niklas Cassel <nks@flawful.org>, linux-pm@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] dt-bindings: opp: Add missing
+ (unevaluated|additional)Properties on child nodes
+Message-ID: <20220824060436.in2weji5hpyabtsl@vireshk-i7>
+References: <20220823145649.3118479-17-robh@kernel.org>
 MIME-Version: 1.0
-References: <20220713134823.95141-1-schspa@gmail.com>
-In-Reply-To: <20220713134823.95141-1-schspa@gmail.com>
-From:   Schspa Shi <schspa@gmail.com>
-Date:   Wed, 24 Aug 2022 14:04:03 +0800
-Message-ID: <CAMA88TrptsGYJqf_hTgE-UVC+dfuHJ1hcOZdJEE1yuKFw_A-8A@mail.gmail.com>
-Subject: Re: [PATCH v7 1/2] sched/rt: fix bad task migration for rt tasks
-To:     mingo@redhat.com, peterz@infradead.org, juri.lelli@redhat.com,
-        vincent.guittot@linaro.org, dietmar.eggemann@arm.com,
-        rostedt@goodmis.org, bsegall@google.com, mgorman@suse.de,
-        bristot@redhat.com, vschneid@redhat.com
-Cc:     linux-kernel@vger.kernel.org, zhaohui.shi@horizon.ai,
-        Schspa Shi <schspa@gmail.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220823145649.3118479-17-robh@kernel.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Valentin, Steven, Dietmar:
+On 23-08-22, 09:56, Rob Herring wrote:
+> In order to ensure only documented properties are present, node schemas
+> must have unevaluatedProperties or additionalProperties set to false
+> (typically).
+> 
+> Signed-off-by: Rob Herring <robh@kernel.org>
+> ---
+>  Documentation/devicetree/bindings/opp/opp-v2-kryo-cpu.yaml   | 1 +
+>  Documentation/devicetree/bindings/opp/opp-v2-qcom-level.yaml | 1 +
+>  2 files changed, 2 insertions(+)
+> 
+> diff --git a/Documentation/devicetree/bindings/opp/opp-v2-kryo-cpu.yaml b/Documentation/devicetree/bindings/opp/opp-v2-kryo-cpu.yaml
+> index 59663e897dae..a202b6c6561d 100644
+> --- a/Documentation/devicetree/bindings/opp/opp-v2-kryo-cpu.yaml
+> +++ b/Documentation/devicetree/bindings/opp/opp-v2-kryo-cpu.yaml
+> @@ -40,6 +40,7 @@ properties:
+>  patternProperties:
+>    '^opp-?[0-9]+$':
+>      type: object
+> +    additionalProperties: false
+>  
+>      properties:
+>        opp-hz: true
+> diff --git a/Documentation/devicetree/bindings/opp/opp-v2-qcom-level.yaml b/Documentation/devicetree/bindings/opp/opp-v2-qcom-level.yaml
+> index 14a7a689ad6d..df8442fb11f0 100644
+> --- a/Documentation/devicetree/bindings/opp/opp-v2-qcom-level.yaml
+> +++ b/Documentation/devicetree/bindings/opp/opp-v2-qcom-level.yaml
+> @@ -19,6 +19,7 @@ properties:
+>  patternProperties:
+>    '^opp-?[0-9]+$':
+>      type: object
+> +    additionalProperties: false
+>  
+>      properties:
+>        opp-level: true
 
-Could you help to review this V7 patch again ?
+Applied. Thanks.
 
-I have been testing on our platform for more than a month, and it
-seems that the system has no adverse reactions.
-
-Thank you very much.
-
-
---
-BRs
-Schspa Shi
+-- 
+viresh
