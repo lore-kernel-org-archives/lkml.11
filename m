@@ -2,52 +2,52 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 45107C32793
-	for <linux-kernel@archiver.kernel.org>; Wed, 24 Aug 2022 01:26:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 978D6C32793
+	for <linux-kernel@archiver.kernel.org>; Wed, 24 Aug 2022 01:26:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233419AbiHXB0h (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 21:26:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41080 "EHLO
+        id S233581AbiHXB0m (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 23 Aug 2022 21:26:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41100 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231307AbiHXB0a (ORCPT
+        with ESMTP id S233435AbiHXB0c (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 21:26:30 -0400
-Received: from mail-qk1-x736.google.com (mail-qk1-x736.google.com [IPv6:2607:f8b0:4864:20::736])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B05C783BEF
-        for <linux-kernel@vger.kernel.org>; Tue, 23 Aug 2022 18:26:27 -0700 (PDT)
-Received: by mail-qk1-x736.google.com with SMTP id n21so11666099qkk.3
-        for <linux-kernel@vger.kernel.org>; Tue, 23 Aug 2022 18:26:27 -0700 (PDT)
+        Tue, 23 Aug 2022 21:26:32 -0400
+Received: from mail-qt1-x834.google.com (mail-qt1-x834.google.com [IPv6:2607:f8b0:4864:20::834])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BCC0449B7A
+        for <linux-kernel@vger.kernel.org>; Tue, 23 Aug 2022 18:26:29 -0700 (PDT)
+Received: by mail-qt1-x834.google.com with SMTP id r6so2672129qtx.6
+        for <linux-kernel@vger.kernel.org>; Tue, 23 Aug 2022 18:26:29 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc;
-        bh=WSyI27urdzmwf9tUOgfmrDnxqX6zE0JEBEtl4DHjE1s=;
-        b=BpHByFU8/H8TQoKF8x5gFZYmxMraso/cZxYbqIq9+p9rCRKrW6M6eChIXbLLzxF60F
-         ht6ltF5L2sVipASa4yS8SGOMpalaIo9Qvzi3O3bQPVFXBbMPuj+5fj3ie/tb4i7EqLT1
-         5I0mHz5X5cbzZkvsVOvxJACmIc1zuQ6s4i0wsOC+XsTQaKZDX1LMV9V5m0R35jYO877q
-         QjMYurcpnilBnmM0M69Vz1UY3nhhGqUtt6nKITNOBdIDjMRTxYoci+RfNRpLT8V006RN
-         W5fjK/Kn6MFtLtnMa44v8vxPaa7A0lYx6QHN0CPnDQYEZeiclVRsBIhYxRDqQpM6nzew
-         mw7g==
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:from:to:cc;
+        bh=8TpItKaNGiv+p/ZpPVKOso+teMlIgl0VnPlpR/Jug0c=;
+        b=g+y1a/5LicaFiP/CjdOi/SNaNDf0Q6cQnqKfZHVtfqMyjiXa9OdRYvwjIbwqJkcCQn
+         DtEjlJ+a/Y9eWClsxIDJUHJjR3vSFbE2MyhAh2mgdvVdupBXV4Kc23tCPRzqpgy9E+EN
+         GvmjBc67vvS2ztE13aMdc+S7G4ChMJNIWGF+eF9nTTJirl2f7zPPcdcSjevZKy7Zqou0
+         U2xqMigXI24QvB9Tte8so/3a4QiyQ8do5ErwPx7coZwc1GqnsRpt1tjH0ctY0jtdHKWD
+         lY11VJSg2of2uuu1YrQjGVEcBV1yzeQkOKQztq6x1s+LDdsMDilC5G9owcz12FhHctDQ
+         cxFA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-message-state:from:to:cc;
-        bh=WSyI27urdzmwf9tUOgfmrDnxqX6zE0JEBEtl4DHjE1s=;
-        b=2EBlVP77tSEQiP4g7x9bdNKfhfqTUG69t0oL2gZezBGnJobPwInEw3T7XwSFevSnOZ
-         6nxXQx3ERQ2bY19muoMQS/g75Z0KTXS6QwXp7UVof95DtE+T48dvTipPRDB5DuK2qblP
-         mYAh9iRuYMkSkA9H93GcfsCmRhYWgMgJJtqJhGDgjsHqwCK1znwPCSx/GExXIez6zxKB
-         sRoPbnHc0iShYBOQuXnaG5qLiB2NhsTEv+1d1xl7NrqyarzGU3wv+qMpSCM9IVEHMEp9
-         r2IhJYJ0OcXNzmrZbZvGmDHgxeKJx9ij0PF2JFTyQ/ite7s25esvLZqi7x47aow2vGqx
-         g5Uw==
-X-Gm-Message-State: ACgBeo1O/dLV6EV5E4b3gaY+DnXhO5UhPQnuTiT+DCS6I8B0Sv5N0XHk
-        O9Oc+Rd6lfrY7cmlWutm50c=
-X-Google-Smtp-Source: AA6agR4Xg/pZtN2U59AhEJUjQdoX9ikiFpQKQ249+PLQntnFuil7UbJQVH7yQSqO536/N/CJhT44Yw==
-X-Received: by 2002:a05:620a:2947:b0:6bb:5ff8:bb77 with SMTP id n7-20020a05620a294700b006bb5ff8bb77mr17322558qkp.537.1661304386738;
-        Tue, 23 Aug 2022 18:26:26 -0700 (PDT)
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc;
+        bh=8TpItKaNGiv+p/ZpPVKOso+teMlIgl0VnPlpR/Jug0c=;
+        b=pUXndbd+qN2UEjos7AJRLrZN5ZpAKnW2185kSk3Y2P1TDZSN/ciCyRNLO/7BNS5Cl6
+         Z3RlMTm6AREVb7wY4DAZkt9SGXiZsRd20ZFZm90aMsQk4/44CfhRXIBs+Oc1UQrd5Rkh
+         XQW0/qle5K5J6BlYtwkZBYX2NnM72zevV9AXBK9M2Up9wdbVa1svSiEI6Hy/k5JXbx4v
+         u+kHj1gCOJVmTKg/1lfQpS9DE+Pb9k5by7GC4mwyq+SJ9WOWLGqkrCVb61Psse+uekFT
+         hj7m4P503z/yfddWvFEIlpkzrT3eRFnwwH+wBKL4uY/+yyOyp3WT1RsVZ0qeMUEuY2hI
+         i48A==
+X-Gm-Message-State: ACgBeo0SIgllE18utlwKH3HNF3QsLCGAwmNkjilSN1VDGXpS0WIHarB4
+        kMxkVPzyyJXfZXhBzdqH79wuNok2Wv0=
+X-Google-Smtp-Source: AA6agR7+7pItw8JEFNNFa/PvA7NliockfohTBIgKRKhWL3ybYgV2POlyLU47rY/X6rAW/WZu2oB0pA==
+X-Received: by 2002:a05:622a:e:b0:344:9c6a:3616 with SMTP id x14-20020a05622a000e00b003449c6a3616mr18897335qtw.362.1661304388833;
+        Tue, 23 Aug 2022 18:26:28 -0700 (PDT)
 Received: from localhost ([2601:4c1:c100:2270:9de8:f9bd:9f64:5017])
-        by smtp.gmail.com with ESMTPSA id ez14-20020a05622a4c8e00b00342eff84177sm12327814qtb.29.2022.08.23.18.26.25
+        by smtp.gmail.com with ESMTPSA id cj20-20020a05622a259400b0034035e73be0sm12020291qtb.4.2022.08.23.18.26.28
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 23 Aug 2022 18:26:26 -0700 (PDT)
+        Tue, 23 Aug 2022 18:26:28 -0700 (PDT)
 From:   Yury Norov <yury.norov@gmail.com>
 To:     Linus Torvalds <torvalds@linux-foundation.org>,
         linux-kernel@vger.kernel.org
@@ -61,66 +61,140 @@ Cc:     Yury Norov <yury.norov@gmail.com>,
         Alexey Klimov <aklimov@redhat.com>,
         Kees Cook <keescook@chromium.org>,
         Andy Whitcroft <apw@canonical.com>
-Subject: [PATCH v2 0/4] lib: optimize find_bit() functions
-Date:   Tue, 23 Aug 2022 18:26:21 -0700
-Message-Id: <20220824012624.2826445-1-yury.norov@gmail.com>
+Subject: [PATCH v2 2/3] lib/find_bit: create find_first_zero_bit_le()
+Date:   Tue, 23 Aug 2022 18:26:23 -0700
+Message-Id: <20220824012624.2826445-3-yury.norov@gmail.com>
 X-Mailer: git-send-email 2.34.1
+In-Reply-To: <20220824012624.2826445-1-yury.norov@gmail.com>
+References: <20220824012624.2826445-1-yury.norov@gmail.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-In the recent discussion, it was noticed that find_next_bit() functions may
-be improved by adding wrappers around common __find_next_bit() in .c file.
+find_first_zero_bit_le() is an alias to find_next_zero_bit_le(),
+despite that 'next' is known to be slower than the 'first' version.
 
-As suggested by Linus, I tried the meta-programming trick with the
-EXPRESSION macro, which is passed from wrapper into find_bit()
-helpers:
+Now that we have a common FIND_FIRST_BIT() macro helper, it's trivial
+to implement find_first_zero_bit_le() as a real function.
 
-  #define BIT_FIND_BODY(addr, size, start, EXPRESSION)		\
-  	BIT_FIND_SETUP(addr, size, start)			\
-  	BIT_FIND_FIRST_WORD(addr, size, start, EXPRESSION)	\
-  	BIT_WORD_LOOP(addr, size, idx, val, EXPRESSION)		\
-  	return size;						\
-  found:	BIT_WORD_SWAB(val);				\
-  	return min((idx)*BITS_PER_LONG + __ffs(val), size)
-  
-  unsigned long _find_next_and_bit(const unsigned long *addr1,
-  				 const unsigned long *addr2,
-  				 unsigned long size,
-  				 unsigned long start)
-  { BIT_FIND_BODY(addr, size, start, addr1[idx] & addr2[idx]); }
+Moving find_*_le() to a separate file helps to fit the FIND_FIRST_BIT()
+to the _le needs by wiring word_op to swab.
 
-I appreciated the potential of how the EXPRESSION works, but I don't like
-that the resulting macro is constructed from pieces because it makes it
-harder to understand what happens behind the ifdefery. Checkpatch isn't
-happy as well because the final macro contains 'return' statement; and I
-would agree that it's better to avoid it.
+Signed-off-by: Yury Norov <yury.norov@gmail.com>
+---
+Like other find_*_le() functions, the new one takes void *addr, instead
+of unsigned long *. This should be fixed for all in a separate series.
 
-I spined the idea one more time, trying to make FIND helper a more or
-less standard looking macros.
-
-This new approach saves 10-11K of Image size, and is 15% faster in the
-performance benchmark. See the last patch for some statistics.
-
-v1: https://lore.kernel.org/all/20220728161208.865420-2-yury.norov@gmail.com/T/
-
-Yury Norov (3):
-  lib/find_bit: introduce FIND_FIRST_BIT() macro
-  lib/find_bit: create find_first_zero_bit_le()
-  lib/find_bit: optimize find_next_bit() functions
-
- MAINTAINERS          |   2 +
- include/linux/find.h |  46 +++++++++++++------
- lib/Makefile         |   1 +
- lib/find_bit.c       | 104 ++++++++++++-------------------------------
- lib/find_bit.h       |  45 +++++++++++++++++++
- lib/find_bit_be.c    |  42 +++++++++++++++++
- 6 files changed, 152 insertions(+), 88 deletions(-)
- create mode 100644 lib/find_bit.h
+ MAINTAINERS          |  1 +
+ include/linux/find.h | 23 ++++++++++++++++++-----
+ lib/Makefile         |  1 +
+ lib/find_bit_be.c    | 23 +++++++++++++++++++++++
+ 4 files changed, 43 insertions(+), 5 deletions(-)
  create mode 100644 lib/find_bit_be.c
 
+diff --git a/MAINTAINERS b/MAINTAINERS
+index 02e11f2dbafe..fd1d1625b053 100644
+--- a/MAINTAINERS
++++ b/MAINTAINERS
+@@ -3614,6 +3614,7 @@ F:	lib/bitmap.c
+ F:	lib/cpumask.c
+ F:	lib/find_bit.h
+ F:	lib/find_bit.c
++F:	lib/find_bit_le.c
+ F:	lib/find_bit_benchmark.c
+ F:	lib/test_bitmap.c
+ F:	tools/include/linux/bitmap.h
+diff --git a/include/linux/find.h b/include/linux/find.h
+index 424ef67d4a42..2464bff5de04 100644
+--- a/include/linux/find.h
++++ b/include/linux/find.h
+@@ -17,6 +17,10 @@ extern unsigned long _find_first_and_bit(const unsigned long *addr1,
+ extern unsigned long _find_first_zero_bit(const unsigned long *addr, unsigned long size);
+ extern unsigned long _find_last_bit(const unsigned long *addr, unsigned long size);
+ 
++#ifdef __BIG_ENDIAN
++unsigned long _find_first_zero_bit_le(const unsigned long *addr, unsigned long size);
++#endif
++
+ #ifndef find_next_bit
+ /**
+  * find_next_bit - find the next set bit in a memory region
+@@ -251,6 +255,20 @@ unsigned long find_next_zero_bit_le(const void *addr, unsigned
+ }
+ #endif
+ 
++#ifndef find_first_zero_bit_le
++static inline
++unsigned long find_first_zero_bit_le(const void *addr, unsigned long size)
++{
++	if (small_const_nbits(size)) {
++		unsigned long val = swab(*(const unsigned long *)addr) | ~GENMASK(size - 1, 0);
++
++		return val == ~0UL ? size : ffz(val);
++	}
++
++	return _find_first_zero_bit_le(addr, size);
++}
++#endif
++
+ #ifndef find_next_bit_le
+ static inline
+ unsigned long find_next_bit_le(const void *addr, unsigned
+@@ -270,11 +288,6 @@ unsigned long find_next_bit_le(const void *addr, unsigned
+ }
+ #endif
+ 
+-#ifndef find_first_zero_bit_le
+-#define find_first_zero_bit_le(addr, size) \
+-	find_next_zero_bit_le((addr), (size), 0)
+-#endif
+-
+ #else
+ #error "Please fix <asm/byteorder.h>"
+ #endif
+diff --git a/lib/Makefile b/lib/Makefile
+index 5927d7fa0806..0f41b76a277e 100644
+--- a/lib/Makefile
++++ b/lib/Makefile
+@@ -49,6 +49,7 @@ obj-y += bcd.o sort.o parser.o debug_locks.o random32.o \
+ 	 percpu-refcount.o rhashtable.o base64.o \
+ 	 once.o refcount.o usercopy.o errseq.o bucket_locks.o \
+ 	 generic-radix-tree.o
++obj-$(CONFIG_CPU_BIG_ENDIAN) += find_bit_be.o
+ obj-$(CONFIG_STRING_SELFTEST) += test_string.o
+ obj-y += string_helpers.o
+ obj-$(CONFIG_TEST_STRING_HELPERS) += test-string_helpers.o
+diff --git a/lib/find_bit_be.c b/lib/find_bit_be.c
+new file mode 100644
+index 000000000000..36173cb7e012
+--- /dev/null
++++ b/lib/find_bit_be.c
+@@ -0,0 +1,23 @@
++// SPDX-License-Identifier: GPL-2.0-or-later
++/* Big-endian routines for bit search */
++
++#include <linux/bitops.h>
++#include <linux/bitmap.h>
++#include <linux/export.h>
++#include <linux/math.h>
++#include <linux/minmax.h>
++#include <linux/swab.h>
++
++#define word_op swab
++#include "find_bit.h"
++
++#ifndef find_first_zero_bit_le
++/*
++ * Find the first cleared bit in an LE memory region.
++ */
++unsigned long _find_first_zero_bit_le(const unsigned long *addr, unsigned long size)
++{
++	return FIND_FIRST_BIT(~addr[idx], size);
++}
++EXPORT_SYMBOL(_find_first_zero_bit_le);
++#endif
 -- 
 2.34.1
 
