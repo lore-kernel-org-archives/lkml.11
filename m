@@ -2,113 +2,139 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id ACE8AC00140
-	for <linux-kernel@archiver.kernel.org>; Wed, 24 Aug 2022 10:27:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4E79AC00140
+	for <linux-kernel@archiver.kernel.org>; Wed, 24 Aug 2022 10:27:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235157AbiHXK1A (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 24 Aug 2022 06:27:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38780 "EHLO
+        id S236692AbiHXK1J (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 24 Aug 2022 06:27:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40096 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236971AbiHXK0h (ORCPT
+        with ESMTP id S234222AbiHXK0q (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 24 Aug 2022 06:26:37 -0400
-Received: from smtp.smtpout.orange.fr (smtp01.smtpout.orange.fr [80.12.242.123])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CDD8A82D17
-        for <linux-kernel@vger.kernel.org>; Wed, 24 Aug 2022 03:25:19 -0700 (PDT)
-Received: from pop-os.home ([90.11.190.129])
-        by smtp.orange.fr with ESMTPA
-        id QnZToXm7hBDYDQnZUoinzN; Wed, 24 Aug 2022 12:25:17 +0200
-X-ME-Helo: pop-os.home
-X-ME-Auth: Y2hyaXN0b3BoZS5qYWlsbGV0QHdhbmFkb28uZnI=
-X-ME-Date: Wed, 24 Aug 2022 12:25:17 +0200
-X-ME-IP: 90.11.190.129
-From:   Christophe JAILLET <christophe.jaillet@wanadoo.fr>
-To:     Jean Delvare <jdelvare@suse.com>,
-        Guenter Roeck <linux@roeck-us.net>,
-        Lars Povlsen <lars.povlsen@microchip.com>,
-        Steen Hegelund <Steen.Hegelund@microchip.com>,
-        UNGLinuxDriver@microchip.com
-Cc:     linux-kernel@vger.kernel.org, kernel-janitors@vger.kernel.org,
-        Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
-        linux-hwmon@vger.kernel.org, linux-arm-kernel@lists.infradead.org
-Subject: [PATCH] hwmon: (sparx5) Use devm_clk_get_enabled() helper
-Date:   Wed, 24 Aug 2022 12:25:13 +0200
-Message-Id: <cfe4c965074b5ecbe03830b05e038b4594c7b970.1661336689.git.christophe.jaillet@wanadoo.fr>
-X-Mailer: git-send-email 2.34.1
+        Wed, 24 Aug 2022 06:26:46 -0400
+Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 513575C364;
+        Wed, 24 Aug 2022 03:25:51 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1661336751; x=1692872751;
+  h=date:from:to:cc:subject:message-id:reply-to:references:
+   mime-version:in-reply-to;
+  bh=ov6LWOeGKE0o/d22MV9D8SJ+ovEHwDZEA5oKgTfWHCI=;
+  b=ZZmaNVrL9o9DOsJ/T0nrahhlnw7jwtvBqZ/dWgvgwBbUarP2ggwysxKg
+   le+275l4+d4mmoGocG31k5ZYGTsEKeO1kgi3Jr6RfMx4VyZVe4jxQ9qzY
+   OICxHmWpHLrcEB9hpDsR3dzGmovtDuKahiwUI5sWGZVbU0KgWcXZF1gam
+   cd3tB08jYfSPKZldcmsUIgRIS1PSRlqi5qbdK/bcwFIMTdKjpdqY2D/V9
+   CBDVnIn+0le6QUBk56pZSRimPklw9Ja+yxKn9Rui0cmFvCiS4dgFR3R5Y
+   x8xqAw83d4zwzwzmkpsgIt+I0qffxiqqjSSRKSqWtnOgZvLD5B016QoCC
+   Q==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10448"; a="294714894"
+X-IronPort-AV: E=Sophos;i="5.93,260,1654585200"; 
+   d="scan'208";a="294714894"
+Received: from orsmga007.jf.intel.com ([10.7.209.58])
+  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Aug 2022 03:25:50 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.93,260,1654585200"; 
+   d="scan'208";a="605986064"
+Received: from chaop.bj.intel.com (HELO localhost) ([10.240.193.75])
+  by orsmga007.jf.intel.com with ESMTP; 24 Aug 2022 03:25:39 -0700
+Date:   Wed, 24 Aug 2022 18:20:56 +0800
+From:   Chao Peng <chao.p.peng@linux.intel.com>
+To:     David Hildenbrand <david@redhat.com>
+Cc:     "Kirill A. Shutemov" <kirill@shutemov.name>,
+        Paolo Bonzini <pbonzini@redhat.com>, kvm@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-mm@kvack.org,
+        linux-fsdevel@vger.kernel.org, linux-api@vger.kernel.org,
+        linux-doc@vger.kernel.org, qemu-devel@nongnu.org,
+        linux-kselftest@vger.kernel.org, Jonathan Corbet <corbet@lwn.net>,
+        Sean Christopherson <seanjc@google.com>,
+        Vitaly Kuznetsov <vkuznets@redhat.com>,
+        Wanpeng Li <wanpengli@tencent.com>,
+        Jim Mattson <jmattson@google.com>,
+        Joerg Roedel <joro@8bytes.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+        x86@kernel.org, "H . Peter Anvin" <hpa@zytor.com>,
+        Hugh Dickins <hughd@google.com>,
+        Jeff Layton <jlayton@kernel.org>,
+        "J . Bruce Fields" <bfields@fieldses.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Shuah Khan <shuah@kernel.org>, Mike Rapoport <rppt@kernel.org>,
+        Steven Price <steven.price@arm.com>,
+        "Maciej S . Szmigiero" <mail@maciej.szmigiero.name>,
+        Vlastimil Babka <vbabka@suse.cz>,
+        Vishal Annapurve <vannapurve@google.com>,
+        Yu Zhang <yu.c.zhang@linux.intel.com>,
+        "Kirill A . Shutemov" <kirill.shutemov@linux.intel.com>,
+        luto@kernel.org, jun.nakajima@intel.com, dave.hansen@intel.com,
+        ak@linux.intel.com, aarcange@redhat.com, ddutile@redhat.com,
+        dhildenb@redhat.com, Quentin Perret <qperret@google.com>,
+        Michael Roth <michael.roth@amd.com>, mhocko@suse.com,
+        Muchun Song <songmuchun@bytedance.com>
+Subject: Re: [PATCH v7 01/14] mm: Add F_SEAL_AUTO_ALLOCATE seal to memfd
+Message-ID: <20220824102056.GA1385482@chaop.bj.intel.com>
+Reply-To: Chao Peng <chao.p.peng@linux.intel.com>
+References: <20220706082016.2603916-1-chao.p.peng@linux.intel.com>
+ <20220706082016.2603916-2-chao.p.peng@linux.intel.com>
+ <f39c4f63-a511-4beb-b3a4-66589ddb5475@redhat.com>
+ <472207cf-ff71-563b-7b66-0c7bea9ea8ad@redhat.com>
+ <20220817234120.mw2j3cgshmuyo2vw@box.shutemov.name>
+ <8f6f428b-85e6-a188-7f32-512b6aae0abf@redhat.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <8f6f428b-85e6-a188-7f32-512b6aae0abf@redhat.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The devm_clk_get_enabled() helper:
-   - calls devm_clk_get()
-   - calls clk_prepare_enable() and registers what is needed in order to
-     call clk_disable_unprepare() when needed, as a managed resource.
+On Tue, Aug 23, 2022 at 09:36:57AM +0200, David Hildenbrand wrote:
+> On 18.08.22 01:41, Kirill A. Shutemov wrote:
+> > On Fri, Aug 05, 2022 at 07:55:38PM +0200, Paolo Bonzini wrote:
+> >> On 7/21/22 11:44, David Hildenbrand wrote:
+> >>>
+> >>> Also, I*think*  you can place pages via userfaultfd into shmem. Not
+> >>> sure if that would count "auto alloc", but it would certainly bypass
+> >>> fallocate().
+> >>
+> >> Yeah, userfaultfd_register would probably have to forbid this for
+> >> F_SEAL_AUTO_ALLOCATE vmas.  Maybe the memfile_node can be reused for this,
+> >> adding a new MEMFILE_F_NO_AUTO_ALLOCATE flags?  Then userfault_register
+> >> would do something like memfile_node_get_flags(vma->vm_file) and check the
+> >> result.
+> > 
+> > I donno, memory allocation with userfaultfd looks pretty intentional to
+> > me. Why would F_SEAL_AUTO_ALLOCATE prevent it?
+> > 
+> 
+> Can't we say the same about a write()?
+> 
+> > Maybe we would need it in the future for post-copy migration or something?
+> > 
+> > Or existing practises around userfaultfd touch memory randomly and
+> > therefore incompatible with F_SEAL_AUTO_ALLOCATE intent?
+> > 
+> > Note, that userfaultfd is only relevant for shared memory as it requires
+> > VMA which we don't have for MFD_INACCESSIBLE.
+> 
+> This feature (F_SEAL_AUTO_ALLOCATE) is independent of all the lovely
+> encrypted VM stuff, so it doesn't matter how it relates to MFD_INACCESSIBLE.
 
-This simplifies the code, the error handling paths and avoid the need of
-a dedicated function used with devm_add_action_or_reset().
+Right, this patch is for normal user accssible fd. In KVM this flag is
+expected to be set on the shared part of the memslot, while all other
+patches in this series are for private part of the memslot.
 
-Based on my test with allyesconfig, this reduces the .o size from:
-   text	   data	    bss	    dec	    hex	filename
-   2419	   1472	      0	   3891	    f33	drivers/hwmon/sparx5-temp.o
-down to:
-   2155	   1472	      0	   3627	    e2b	drivers/hwmon/sparx5-temp.o
+Private memory doesn't have this need because it's totally inaccissible
+from userspace so no chance for userspace to write to the fd and cause
+allocation by accident. While for shared memory, malicious/buggy guest
+OS may cause userspace to write to any range of the shared fd and cause
+memory allocation, even that range should the private memory not the
+shared memory be visible to guest OS.
 
-Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
----
-devm_clk_get_enabled() is new and is part of 6.0-rc1
----
- drivers/hwmon/sparx5-temp.c | 19 +------------------
- 1 file changed, 1 insertion(+), 18 deletions(-)
-
-diff --git a/drivers/hwmon/sparx5-temp.c b/drivers/hwmon/sparx5-temp.c
-index 98be48e3a22a..04fd8505e5d6 100644
---- a/drivers/hwmon/sparx5-temp.c
-+++ b/drivers/hwmon/sparx5-temp.c
-@@ -26,13 +26,6 @@ struct s5_hwmon {
- 	struct clk *clk;
- };
- 
--static void s5_temp_clk_disable(void *data)
--{
--	struct clk *clk = data;
--
--	clk_disable_unprepare(clk);
--}
--
- static void s5_temp_enable(struct s5_hwmon *hwmon)
- {
- 	u32 val = readl(hwmon->base + TEMP_CFG);
-@@ -113,7 +106,6 @@ static int s5_temp_probe(struct platform_device *pdev)
- {
- 	struct device *hwmon_dev;
- 	struct s5_hwmon *hwmon;
--	int ret;
- 
- 	hwmon = devm_kzalloc(&pdev->dev, sizeof(*hwmon), GFP_KERNEL);
- 	if (!hwmon)
-@@ -123,19 +115,10 @@ static int s5_temp_probe(struct platform_device *pdev)
- 	if (IS_ERR(hwmon->base))
- 		return PTR_ERR(hwmon->base);
- 
--	hwmon->clk = devm_clk_get(&pdev->dev, NULL);
-+	hwmon->clk = devm_clk_get_enabled(&pdev->dev, NULL);
- 	if (IS_ERR(hwmon->clk))
- 		return PTR_ERR(hwmon->clk);
- 
--	ret = clk_prepare_enable(hwmon->clk);
--	if (ret)
--		return ret;
--
--	ret = devm_add_action_or_reset(&pdev->dev, s5_temp_clk_disable,
--				       hwmon->clk);
--	if (ret)
--		return ret;
--
- 	s5_temp_enable(hwmon);
- 
- 	hwmon_dev = devm_hwmon_device_register_with_info(&pdev->dev,
--- 
-2.34.1
-
+Chao
+> 
+> -- 
+> Thanks,
+> 
+> David / dhildenb
+> 
