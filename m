@@ -2,67 +2,169 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 76F3DC04AA5
-	for <linux-kernel@archiver.kernel.org>; Wed, 24 Aug 2022 21:25:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 47280C3F6B0
+	for <linux-kernel@archiver.kernel.org>; Wed, 24 Aug 2022 21:27:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240784AbiHXVZB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 24 Aug 2022 17:25:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60914 "EHLO
+        id S239786AbiHXV1d (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 24 Aug 2022 17:27:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37298 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238348AbiHXVYz (ORCPT
+        with ESMTP id S238348AbiHXV13 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 24 Aug 2022 17:24:55 -0400
-X-Greylist: delayed 110 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Wed, 24 Aug 2022 14:24:52 PDT
-Received: from smtp.polymtl.ca (smtp.polymtl.ca [132.207.4.11])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 39F8F25C2
-        for <linux-kernel@vger.kernel.org>; Wed, 24 Aug 2022 14:24:51 -0700 (PDT)
-Received: from localhost (modemcable094.169-200-24.mc.videotron.ca [24.200.169.94])
-        by smtp.polymtl.ca (8.14.7/8.14.7) with ESMTP id 27OLMsGN013478;
-        Wed, 24 Aug 2022 17:22:58 -0400
-DKIM-Filter: OpenDKIM Filter v2.11.0 smtp.polymtl.ca 27OLMsGN013478
-From:   Olivier Dion <olivier.dion@polymtl.ca>
-To:     linux-kernel@vger.kernel.org
-Subject: ptrace() - Tracing the wrong thread after TID recycling
-CC:     Oleg Nesterov <oleg@redhat.com>
-Date:   Wed, 24 Aug 2022 17:22:54 -0400
-Message-ID: <87czcpjpzl.fsf@laura>
+        Wed, 24 Aug 2022 17:27:29 -0400
+Received: from mail-qt1-x831.google.com (mail-qt1-x831.google.com [IPv6:2607:f8b0:4864:20::831])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 34A627C76A
+        for <linux-kernel@vger.kernel.org>; Wed, 24 Aug 2022 14:27:28 -0700 (PDT)
+Received: by mail-qt1-x831.google.com with SMTP id l5so13812100qtv.4
+        for <linux-kernel@vger.kernel.org>; Wed, 24 Aug 2022 14:27:28 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc;
+        bh=NrHh48Gf19GlQMqAuAe/NxXBbY/CiWw/bN0ZZpZssVk=;
+        b=Hn+k/ujBweFlPuihiZhFdJsivHBvjwnCG0HCpC4oENGJoEFa0bCxazOwVm5o5IRsTv
+         usIGaWcI0y1qatxjb7sQVOOENpdPO2pxTSf8VW4hrcPmWo8qBA5aHCyKCO3LIuQ3jy3R
+         GAfUD9ZlLtWLS4aYw+tuzZArUx3FGSakUD3bJ8LrlXt0nsRAaqQdQGAowHbn+uu/IqZL
+         Qe0iUTJVyQTZINW0S4TbDaQxNR/lfjDk/uj/INvsgkTfotxDGPf9uVlFfQXM1nX3LHnV
+         Dt+pwqcQHZNl0z5Wz0CIs54oqU7fZDdaXRs/Iuzh7yRhV6M/QmEv16vuIcNhXXcQPCld
+         AzfQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc;
+        bh=NrHh48Gf19GlQMqAuAe/NxXBbY/CiWw/bN0ZZpZssVk=;
+        b=b48EyeRKRtXp8nCkvu5bclLy1iwYG3odEFpvPZLY7GJQBhgaIaSbsy4xDVvlKq6RcY
+         4Lh6qJHmvHzHJofz5NsuZYXAp/bOWQw0LuOch3QInEWmXZ2nFSyEtQAscJ1n7c8PBiTd
+         1De8WQVSa2KPbl7aLaLnH0lM5mFH4h1u9Jocwj+xkSa+/mwNdTYQGbBTAwQBZkGsdgnV
+         LHPbcxgk9+aEOq7OsGUtMmjnzhvXIyZ+NT8EhmF7bsm04zU2RUs0pZrN7a39lfg3+Yhf
+         hAwECayoJcH04YHiBPRbpXRfT9niPGk5PhpMQhw85jtBjeJnNMX2Z0fxbPB8DAFHYSzA
+         HJHg==
+X-Gm-Message-State: ACgBeo2gDdEvRmGQ2pjyf4l2AWcD+nS2zfpUlxJOFrmFM8aO/+tDzDqm
+        5weBTaK1b+nz+oY9QUCdeqk=
+X-Google-Smtp-Source: AA6agR5Hd0O/42pHYfqMUlwgpkfZvsFI6xVGd2lr90dapcRYklrPnpIOIDi6u2zbfsJXx9lk3qcgww==
+X-Received: by 2002:ac8:7dc4:0:b0:343:622d:5fda with SMTP id c4-20020ac87dc4000000b00343622d5fdamr1115818qte.197.1661376447268;
+        Wed, 24 Aug 2022 14:27:27 -0700 (PDT)
+Received: from localhost ([2601:4c1:c100:2270:5a54:d9d9:c2a4:527e])
+        by smtp.gmail.com with ESMTPSA id r17-20020ac85e91000000b00344c29bc045sm6078438qtx.25.2022.08.24.14.27.26
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 24 Aug 2022 14:27:26 -0700 (PDT)
+Date:   Wed, 24 Aug 2022 14:27:26 -0700
+From:   Yury Norov <yury.norov@gmail.com>
+To:     Andy Shevchenko <andy.shevchenko@gmail.com>
+Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Guenter Roeck <linux@roeck-us.net>,
+        Dennis Zhou <dennis@kernel.org>,
+        Russell King <linux@armlinux.org.uk>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Rasmus Villemoes <linux@rasmusvillemoes.dk>,
+        Alexey Klimov <aklimov@redhat.com>,
+        Kees Cook <keescook@chromium.org>,
+        Andy Whitcroft <apw@canonical.com>
+Subject: Re: [PATCH v2 3/3] lib/find_bit: optimize find_next_bit() functions
+Message-ID: <YwaXvphVpy5A7fSs@yury-laptop>
+References: <20220824012624.2826445-1-yury.norov@gmail.com>
+ <20220824012624.2826445-4-yury.norov@gmail.com>
+ <CAHp75Ve4QTSs_mSB7uMqOK4q+A-z-O1tc2k5=2qaRHTdAC3yog@mail.gmail.com>
+ <YwYtQ7t+3grPF16n@yury-laptop>
+ <CAHp75VfeZVjv_3r4e1uib0BOfxaKTr6Sx59xiUZr=oQ+z_2Fig@mail.gmail.com>
+ <CAHp75Vcbkt09J1_reRJFeYAkjoTF1abfvHi1LWc4JyWPpLD=YQ@mail.gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Poly-FromMTA: (modemcable094.169-200-24.mc.videotron.ca [24.200.169.94]) at Wed, 24 Aug 2022 21:22:54 +0000
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAHp75Vcbkt09J1_reRJFeYAkjoTF1abfvHi1LWc4JyWPpLD=YQ@mail.gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi,
+On Wed, Aug 24, 2022 at 08:56:02PM +0300, Andy Shevchenko wrote:
+> On Wed, Aug 24, 2022 at 8:54 PM Andy Shevchenko
+> <andy.shevchenko@gmail.com> wrote:
+> > On Wed, Aug 24, 2022 at 4:53 PM Yury Norov <yury.norov@gmail.com> wrote:
+> > > On Wed, Aug 24, 2022 at 12:19:05PM +0300, Andy Shevchenko wrote:
+> > > > On Wed, Aug 24, 2022 at 4:56 AM Yury Norov <yury.norov@gmail.com> wrote:
+> 
+> ...
+> 
+> > > > > +#define FIND_NEXT_BIT(EXPRESSION, size, start)                                 \
+> > > > > +({                                                                             \
+> > > > > +       unsigned long mask, idx, tmp, sz = (size), __start = (start);           \
+> > > > > +                                                                               \
+> > > > > +       if (unlikely(__start >= sz))                                            \
+> > > > > +               goto out;                                                       \
+> > > > > +                                                                               \
+> > > > > +       mask = word_op(BITMAP_FIRST_WORD_MASK(__start));                        \
+> > > > > +       idx = __start / BITS_PER_LONG;                                          \
+> > > > > +                                                                               \
+> > > > > +       for (tmp = (EXPRESSION) & mask; !tmp; tmp = (EXPRESSION)) {             \
+> > > >
+> > > > for (unsigned long tmp ...;
+> > > > But hey, why not loop over idx (which probably should be named as
+> > > > offset)
+> > >
+> > > Offset in structure, index in array, isn't?
+> > >
+> > > > as I proposed in the first patch? You will drop a lot of
+> > > > divisions / multiplications, no?
+> > >
+> > > Those divisions and multiplications are optimized away, and
+> > > what you suggested blows up the EXPRESSION.
+> > >
+> > > I tried like this:
+> > >    mask = word_op(BITMAP_FIRST_WORD_MASK(__start));
+> > >    idx = __start / BITS_PER_LONG;
+> > >    tmp = (EXPRESSION);
+> > >
+> > >    while (1) {
+> > >         if (tmp) {
+> > >                sz = min(idx * BITS_PER_LONG + __ffs(word_op(tmp)), sz);
+> > >                break;
+> > >         }
+> > >
+> > >         if (++idx > sz)
+> > >                 break;
+> > >
+> > >         tmp = (EXPRESSION);
+> > >    }
+> > >
+> > > And it generated the same code, but looks less expressive to me.
+> > > If you have some elegant approach in mind - can you please share
+> > > it, and how the generated code looks?
+> >
+> > for (unsigned long idx = 0; idx < sz; idx++) {
+> 
+> Of source 0 should be changed to whatever start you have there.
+> 
+> >   unsigned long tmp;
+> >
+> >   tmp = (EXPRESSION);
+> >   if (tmp) {
+> >     ...
+> >   }
+> > }
+> >
+> > No?
 
-There's some cases where it is not currently possible to ensure that the
-ptrace commands sent to a thread is the correct target because of TID
-recycling.  Usually this is not a problem if the tracer is the direct
-parent of the tracee with the help of PTRACE_O_TRACECLONE.
+No. For the first iteration, the tmp can't be calculated inside the loop
+(my example above is wrong) because we need to clear first bits:
 
-However, in the cases of tracing sibling threads, one has to fork
-another process and now the roles have exchanged.  If the tracer wants
-to attach to already running sibling threads of its parent, it has to
-scan `/proc/[ppid]/task` to get the tids.  However, it's possible for
-these tids to be reuse by another process by the time the tracer attach
-itself.  Resulting in tracing the wrong threads.  The obvious solution
-would be to pass the thread group id to ptrace() like tgkill() has.
+   mask = BITMAP_FIRST_WORD_MASK(__start);
+   idx = __start / BITS_PER_LONG;
+   tmp = (EXPRESSION) & mask;   // First fetch is here
 
-This RFC <https://lkml.org/lkml/2020/4/26/253> seems to address this
-issue.  Although IIRC pidfd only applies to PID and not to TID.  So the
-problem remains.
+   while (1) {
+        if (tmp) {              // Evaluate here
+               sz = min(idx * BITS_PER_LONG + __ffs(tmp), sz);
+               break;
+        }
 
-An ad-hoc solution I've come up with is to `open(/proc/[self]/task)' in
-the tracee before forking the tracer.  Then, the tracer will
-ptrace(PTRACE_ATTACH) itself to the desired threads found in the
-directory by scanning it.  Assuming that the attach worked, the tracer
-will then do a openat(O_PATH) on the same directory with the thread id
-as the pathname.  If the call failed, it means that thread is not a
-sibling of our parent and the tracer can detach itself.
+        if (++idx > sz)         // Increment here
+                break;
 
-Thought?
+        tmp = (EXPRESSION);     // Other fetches here
+   }
 
--- 
-Olivier Dion
-oldiob.dev
-
+Trying to move iterator increment inside the for-loop, like you suggested
+would break the sequence - common-case word fetch will happen before the
+idx++.
