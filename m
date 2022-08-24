@@ -2,23 +2,23 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 05009C00140
-	for <linux-kernel@archiver.kernel.org>; Wed, 24 Aug 2022 09:30:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0C322C00140
+	for <linux-kernel@archiver.kernel.org>; Wed, 24 Aug 2022 09:30:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236337AbiHXJaC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 24 Aug 2022 05:30:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49282 "EHLO
+        id S235202AbiHXJaG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 24 Aug 2022 05:30:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49286 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236200AbiHXJ3e (ORCPT
+        with ESMTP id S236242AbiHXJ3e (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Wed, 24 Aug 2022 05:29:34 -0400
-Received: from out0-154.mail.aliyun.com (out0-154.mail.aliyun.com [140.205.0.154])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 045A484EEA;
+Received: from out0-135.mail.aliyun.com (out0-135.mail.aliyun.com [140.205.0.135])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 24DF585AA0;
         Wed, 24 Aug 2022 02:29:32 -0700 (PDT)
-X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R251e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=ay29a033018047198;MF=houwenlong.hwl@antgroup.com;NM=1;PH=DS;RN=12;SR=0;TI=SMTPD_---.P-jvWu2_1661333367;
-Received: from localhost(mailfrom:houwenlong.hwl@antgroup.com fp:SMTPD_---.P-jvWu2_1661333367)
+X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R501e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=ay29a033018047201;MF=houwenlong.hwl@antgroup.com;NM=1;PH=DS;RN=11;SR=0;TI=SMTPD_---.P-jvWvL_1661333369;
+Received: from localhost(mailfrom:houwenlong.hwl@antgroup.com fp:SMTPD_---.P-jvWvL_1661333369)
           by smtp.aliyun-inc.com;
-          Wed, 24 Aug 2022 17:29:27 +0800
+          Wed, 24 Aug 2022 17:29:29 +0800
 From:   "Hou Wenlong" <houwenlong.hwl@antgroup.com>
 To:     kvm@vger.kernel.org
 Cc:     David Matlack <dmatlack@google.com>,
@@ -27,12 +27,10 @@ Cc:     David Matlack <dmatlack@google.com>,
         Thomas Gleixner <tglx@linutronix.de>,
         Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
         Dave Hansen <dave.hansen@linux.intel.com>, x86@kernel.org,
-        "H. Peter Anvin" <hpa@zytor.com>,
-        Lan Tianyu <Tianyu.Lan@microsoft.com>,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH v2 4/6] KVM: x86/mmu: Fix wrong start gfn of tlb flushing with range
-Date:   Wed, 24 Aug 2022 17:29:21 +0800
-Message-Id: <888399c78eab9d965657c5983f8096c707664c30.1661331396.git.houwenlong.hwl@antgroup.com>
+        "H. Peter Anvin" <hpa@zytor.com>, linux-kernel@vger.kernel.org
+Subject: [PATCH v2 6/6] KVM: x86/mmu: Use 1 as the size of gfn range for tlb flushing in FNAME(invlpg)()
+Date:   Wed, 24 Aug 2022 17:29:23 +0800
+Message-Id: <8baa40dad8496abb2adb1096e0cf50dcc5f66802.1661331396.git.houwenlong.hwl@antgroup.com>
 X-Mailer: git-send-email 2.31.1
 In-Reply-To: <cover.1661331396.git.houwenlong.hwl@antgroup.com>
 References: <cover.1661331396.git.houwenlong.hwl@antgroup.com>
@@ -42,84 +40,25 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-When a spte is dropped, the start gfn of tlb flushing should
-be the gfn of spte not the base gfn of SP which contains the
-spte. Also introduce a helper function to do range-based
-flushing when a spte is dropped, which would help prevent
-future buggy use of kvm_flush_remote_tlbs_with_address() in
-such case.
+Only SP with PG_LEVLE_4K level could be unsync, so the size of gfn range
+must be 1.
 
-Fixes: c3134ce240eed ("KVM: Replace old tlb flush function with new one to flush a specified range.")
-Suggested-by: David Matlack <dmatlack@google.com>
 Signed-off-by: Hou Wenlong <houwenlong.hwl@antgroup.com>
 ---
- arch/x86/kvm/mmu/mmu.c         | 20 +++++++++++++++-----
- arch/x86/kvm/mmu/paging_tmpl.h |  3 +--
- 2 files changed, 16 insertions(+), 7 deletions(-)
+ arch/x86/kvm/mmu/paging_tmpl.h | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-diff --git a/arch/x86/kvm/mmu/mmu.c b/arch/x86/kvm/mmu/mmu.c
-index 3bcff56df109..e0b9432b9491 100644
---- a/arch/x86/kvm/mmu/mmu.c
-+++ b/arch/x86/kvm/mmu/mmu.c
-@@ -260,6 +260,18 @@ void kvm_flush_remote_tlbs_with_address(struct kvm *kvm,
- 	kvm_flush_remote_tlbs_with_range(kvm, &range);
- }
- 
-+static gfn_t kvm_mmu_page_get_gfn(struct kvm_mmu_page *sp, int index);
-+
-+/* Flush the range of guest memory mapped by the given SPTE. */
-+static void kvm_flush_remote_tlbs_sptep(struct kvm *kvm, u64 *sptep)
-+{
-+	struct kvm_mmu_page *sp = sptep_to_sp(sptep);
-+	gfn_t gfn = kvm_mmu_page_get_gfn(sp, spte_index(sptep));
-+
-+	kvm_flush_remote_tlbs_with_address(kvm, gfn,
-+					   KVM_PAGES_PER_HPAGE(sp->role.level));
-+}
-+
- /* Flush all memory mapped by the given direct SP. */
- static void kvm_flush_remote_tlbs_direct_sp(struct kvm *kvm, struct kvm_mmu_page *sp)
- {
-@@ -1156,8 +1168,7 @@ static void drop_large_spte(struct kvm *kvm, u64 *sptep, bool flush)
- 	drop_spte(kvm, sptep);
- 
- 	if (flush)
--		kvm_flush_remote_tlbs_with_address(kvm, sp->gfn,
--			KVM_PAGES_PER_HPAGE(sp->role.level));
-+		kvm_flush_remote_tlbs_sptep(kvm, sptep);
- }
- 
- /*
-@@ -1608,7 +1619,7 @@ static void __rmap_add(struct kvm *kvm,
- 	if (rmap_count > RMAP_RECYCLE_THRESHOLD) {
- 		kvm_zap_all_rmap_sptes(kvm, rmap_head);
- 		kvm_flush_remote_tlbs_with_address(
--				kvm, sp->gfn, KVM_PAGES_PER_HPAGE(sp->role.level));
-+				kvm, gfn, KVM_PAGES_PER_HPAGE(sp->role.level));
- 	}
- }
- 
-@@ -6402,8 +6413,7 @@ static bool kvm_mmu_zap_collapsible_spte(struct kvm *kvm,
- 			kvm_zap_one_rmap_spte(kvm, rmap_head, sptep);
- 
- 			if (kvm_available_flush_tlb_with_range())
--				kvm_flush_remote_tlbs_with_address(kvm, sp->gfn,
--					KVM_PAGES_PER_HPAGE(sp->role.level));
-+				kvm_flush_remote_tlbs_sptep(kvm, sptep);
- 			else
- 				need_tlb_flush = 1;
- 
 diff --git a/arch/x86/kvm/mmu/paging_tmpl.h b/arch/x86/kvm/mmu/paging_tmpl.h
-index 39e0205e7300..04149c704d5b 100644
+index 04149c704d5b..486a3163b1e4 100644
 --- a/arch/x86/kvm/mmu/paging_tmpl.h
 +++ b/arch/x86/kvm/mmu/paging_tmpl.h
-@@ -937,8 +937,7 @@ static void FNAME(invlpg)(struct kvm_vcpu *vcpu, gva_t gva, hpa_t root_hpa)
+@@ -937,7 +937,8 @@ static void FNAME(invlpg)(struct kvm_vcpu *vcpu, gva_t gva, hpa_t root_hpa)
  
  			mmu_page_zap_pte(vcpu->kvm, sp, sptep, NULL);
  			if (is_shadow_present_pte(old_spte))
--				kvm_flush_remote_tlbs_with_address(vcpu->kvm,
--					sp->gfn, KVM_PAGES_PER_HPAGE(sp->role.level));
-+				kvm_flush_remote_tlbs_sptep(vcpu->kvm, sptep);
+-				kvm_flush_remote_tlbs_sptep(vcpu->kvm, sptep);
++				kvm_flush_remote_tlbs_gfn(vcpu->kvm,
++					kvm_mmu_page_get_gfn(sp, sptep - sp->spt), 1);
  
  			if (!rmap_can_add(vcpu))
  				break;
