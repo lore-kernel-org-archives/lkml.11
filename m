@@ -2,90 +2,185 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2F1FBC00140
-	for <linux-kernel@archiver.kernel.org>; Wed, 24 Aug 2022 09:01:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C6A31C32793
+	for <linux-kernel@archiver.kernel.org>; Wed, 24 Aug 2022 09:06:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235833AbiHXJB1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 24 Aug 2022 05:01:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54830 "EHLO
+        id S234198AbiHXJGk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 24 Aug 2022 05:06:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59388 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235277AbiHXJAV (ORCPT
+        with ESMTP id S231207AbiHXJGi (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 24 Aug 2022 05:00:21 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 136974D4DB;
-        Wed, 24 Aug 2022 02:00:20 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id C28C7B8239A;
-        Wed, 24 Aug 2022 09:00:18 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 887A4C4347C;
-        Wed, 24 Aug 2022 09:00:17 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1661331617;
-        bh=DIyDXRMGPEwMbEMkwbMgHVnFxapb2eO9DrJc5leDcUM=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=t7qQWvkcqBjNwyJLO9ZbCCY5EFkUK8DTaB8aVq4wdKV+7awaXmNot3YLnTqlTFREb
-         szz7oFZit93UFTi/ppqoix+UqbgedHuyeRpaoktmCJSc72fqqachnxiX2MqSNwRUSJ
-         u4Qms2/PtF+OAqu2rhNezoP/sByBm3GS4P/X2t5ZhLxxf4DQYdWjbhpU8nPFPROQYj
-         QSXNzD0GsjGROkeDs2j6vI0R8C1xu53nGn7pFmxPhM8wc3U6KWqTZZqspIjAIZDChB
-         t9QUYAPrJ1VucjY3ZsN/Es+ndzvv409+qreA75dHdo+HcN76YUhwdZEtom++4E9FX4
-         t0L4xQdaT8qfQ==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 71C81C0C3EC;
-        Wed, 24 Aug 2022 09:00:17 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        Wed, 24 Aug 2022 05:06:38 -0400
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1BE547696D
+        for <linux-kernel@vger.kernel.org>; Wed, 24 Aug 2022 02:06:36 -0700 (PDT)
+Received: from ptx.hi.pengutronix.de ([2001:67c:670:100:1d::c0])
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <mfe@pengutronix.de>)
+        id 1oQmL9-0008D3-CN; Wed, 24 Aug 2022 11:06:23 +0200
+Received: from mfe by ptx.hi.pengutronix.de with local (Exim 4.92)
+        (envelope-from <mfe@pengutronix.de>)
+        id 1oQmL8-0006ex-Qx; Wed, 24 Aug 2022 11:06:22 +0200
+Date:   Wed, 24 Aug 2022 11:06:22 +0200
+From:   Marco Felsch <m.felsch@pengutronix.de>
+To:     "Alice Guo (OSS)" <alice.guo@oss.nxp.com>
+Cc:     Guenter Roeck <linux@roeck-us.net>,
+        "wim@linux-watchdog.org" <wim@linux-watchdog.org>,
+        "shawnguo@kernel.org" <shawnguo@kernel.org>,
+        "s.hauer@pengutronix.de" <s.hauer@pengutronix.de>,
+        "festevam@gmail.com" <festevam@gmail.com>,
+        "linux-arm-kernel@lists.infradead.org" 
+        <linux-arm-kernel@lists.infradead.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        dl-linux-imx <linux-imx@nxp.com>,
+        "kernel@pengutronix.de" <kernel@pengutronix.de>,
+        "linux-watchdog@vger.kernel.org" <linux-watchdog@vger.kernel.org>
+Subject: Re: [PATCH 2/7] watchdog: imx7ulp: Add explict memory barrier for
+ unlock sequence
+Message-ID: <20220824090622.ubbuf4doyul7d42r@pengutronix.de>
+References: <20220816062330.z2fvurteg337krw2@pengutronix.de>
+ <AM6PR04MB60537292F559EC012F0EB510E2719@AM6PR04MB6053.eurprd04.prod.outlook.com>
+ <20220822080010.ecdphpm3i26cco5f@pengutronix.de>
+ <20220822140347.GA4087281@roeck-us.net>
+ <AM6PR04MB6053E26CB59410EBCC2C93AEE2709@AM6PR04MB6053.eurprd04.prod.outlook.com>
+ <20220823091027.ezyxkn64asajvjom@pengutronix.de>
+ <20220823120219.GA203169@roeck-us.net>
+ <AM6PR04MB60535EC5B774004AF996BDA5E2739@AM6PR04MB6053.eurprd04.prod.outlook.com>
+ <20220824080338.humjny4fabhmx3z7@pengutronix.de>
+ <AM6PR04MB6053D8E0A9AD24757095BFB5E2739@AM6PR04MB6053.eurprd04.prod.outlook.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH v5 0/3] J7200: CPSW5G: Add support for QSGMII mode to
- am65-cpsw driver
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <166133161746.23661.7556984594416171977.git-patchwork-notify@kernel.org>
-Date:   Wed, 24 Aug 2022 09:00:17 +0000
-References: <20220822070125.28236-1-s-vadapalli@ti.com>
-In-Reply-To: <20220822070125.28236-1-s-vadapalli@ti.com>
-To:     Siddharth Vadapalli <s-vadapalli@ti.com>
-Cc:     davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        pabeni@redhat.com, robh+dt@kernel.org,
-        krzysztof.kozlowski@linaro.org, krzysztof.kozlowski+dt@linaro.org,
-        linux@armlinux.org.uk, vladimir.oltean@nxp.com,
-        grygorii.strashko@ti.com, vigneshr@ti.com, nsekhar@ti.com,
-        netdev@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, kishon@ti.com
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <AM6PR04MB6053D8E0A9AD24757095BFB5E2739@AM6PR04MB6053.eurprd04.prod.outlook.com>
+User-Agent: NeoMutt/20180716
+X-SA-Exim-Connect-IP: 2001:67c:670:100:1d::c0
+X-SA-Exim-Mail-From: mfe@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: linux-kernel@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hello:
+Hi Alice,
 
-This series was applied to netdev/net-next.git (master)
-by David S. Miller <davem@davemloft.net>:
-
-On Mon, 22 Aug 2022 12:31:22 +0530 you wrote:
-> Add support for QSGMII mode to am65-cpsw driver.
+On 22-08-24, Alice Guo (OSS) wrote:
+> > -----Original Message-----
+> > From: Marco Felsch <m.felsch@pengutronix.de>
+> > Sent: Wednesday, August 24, 2022 4:04 PM
+> > To: Alice Guo (OSS) <alice.guo@oss.nxp.com>
+> > Cc: Guenter Roeck <linux@roeck-us.net>; wim@linux-watchdog.org;
+> > shawnguo@kernel.org; s.hauer@pengutronix.de; festevam@gmail.com;
+> > linux-arm-kernel@lists.infradead.org; linux-kernel@vger.kernel.org;
+> > dl-linux-imx <linux-imx@nxp.com>; kernel@pengutronix.de;
+> > linux-watchdog@vger.kernel.org
+> > Subject: Re: [PATCH 2/7] watchdog: imx7ulp: Add explict memory barrier for
+> > unlock sequence
+> > 
+> > Hi Alice,
+> > 
+> > On 22-08-24, Alice Guo (OSS) wrote:
+> > 
+> > ...
+> > 
+> > > > > > Hi Guenter and Marco,
+> > > > > >
+> > > > > > 1. did you see any issues?
+> > > > > > This WDOG Timer first appeared in i.MX7ULP, no one report issues
+> > > > > > probably because few people use i.MX7ULP. This issue was found
+> > > > > > when we did a stress test on it. When we reconfigure the WDOG
+> > > > > > Timer, there is a certain probability that it reset. The reason
+> > > > > > for the error is that when WDOG_CS[CMD32EN] is 0, the unlock
+> > > > > > sequence is two 16-bit writes (0xC520, 0xD928) to the CNT
+> > > > > > register within 16 bus clocks, and improper unlock sequence causes the
+> > WDOG to reset.
+> > > > > > Adding mb() is to guarantee that two 16-bit writes are finished
+> > > > > > within 16
+> > > > bus clocks.
+> > > > >
+> > > > > After this explanation the whole imx7ulp_wdt_init() seems a bit
+> > > > > buggy because writel_relaxed() as well as writel() are 32bit access
+> > functions.
+> > > > > So the very first thing to do is to enable the 32-bit mode.
+> > > > >
+> > > > Agreed. This is much better than having extra code to deal with both
+> > > > 16-bit and 32-bit access.
+> > > >
+> > > > > Also this is a explanation worth to be added to the commit message
+> > > > > ;)
+> > > > >
+> > > >
+> > > > Definitely. Also, the use of mb(), if it should indeed be needed,
+> > > > would have to be explained in a code comment.
+> > > >
+> > > > Thanks,
+> > > > Guenter
+> > >
+> > > Hi Marco and Guenter,
+> > >
+> > > Thank you for your comments. I plan to enable support for 32-bit
+> > > unlock command write words in bootloader. In this way, there is no
+> > > need to distinguish whether the unlock command is a 32-bit command or
+> > > a 16-bit command in driver.
+> > 
+> > Please don't move this into the bootloader, enabling it within the init seq. is
+> > just fine. If you move it into the bootloader then you can't ensure that the bit is
+> > set since there are plenty of bootloaders out there.
+> > 
+> > As I said, just drop the "16bit" unlock sequence from the init function because
+> > the unlock is handled just fine in all the watchdog_ops.
+> > 
+> > Regards,
+> >   Marco
 > 
-> Change log:
+> Hi Marco,
 > 
-> v4-> v5:
-> 1. Move ti,j7200-cpswxg-nuss compatible to the line above the
->    ti,j721e-cpsw-nuss compatible.
-> 2. Add allOf and move if-then statements within it to allow future if-then
->    statements to be added easily.
+> Sorry, I did not tell you that all watchdog control bits, timeout
+> value, and window value cannot be set until the watchdog is unlocked.
+
+You don't have to according the RM:
+8<----------------------------------------------------------------------
+59.5.2 Disable Watchdog after Reset
+
+All of watchdog registers are unlocked by reset. Therefore, unlock
+sequence is unnecessary, but it needs to write all of watchdog registers
+to make the new configuration take effect. The code snippet below shows
+an example of disabling watchdog after reset.
+8<----------------------------------------------------------------------
+
+also the RM tells us:
+8<----------------------------------------------------------------------
+59.4.3.1 Configuring the Watchdog Once
+
+The new configuration takes effect only after all registers except CNT
+are written after reset. Otherwise, the WDOG uses the reset values by
+default. If window mode is not used (CS[WIN] is 0), writing to WIN is
+not required to make the new configuration take effect.
+8<----------------------------------------------------------------------
+
+> Support for 32-bit unlock command write words in enabled in
+> imx7ulp_wdt_init now.
+
+So.. after reading the IMX7ULP RM, which was not my intention, I found
+out that most of the WDOG_CS regiter bits are write-once bits. This
+means if you didn't set it within the bootloader you still in case
+"59.4.3.1".
+
+So the imx7ulp_wdt_init() function just needs to check if the
+WDOG_CS_UPDATE bit was set. If it is not the case, then you need to
+write the WDOG_CS register as currently done. If the bit is set, than
+you need know that the bootloader did the job for you and you can exit
+imx7ulp_wdt_init() early. In both cases the unlock is not required.
+
+Can you please check/test if this is working for you?
+
+Regards,
+  Marco
+
+> Best Regards,
+> Alice Guo
 > 
-> [...]
-
-Here is the summary with links:
-  - [v5,1/3] dt-bindings: net: ti: k3-am654-cpsw-nuss: Update bindings for J7200 CPSW5G
-    https://git.kernel.org/netdev/net-next/c/d98495169d9f
-  - [v5,2/3] net: ethernet: ti: am65-cpsw: Add support for J7200 CPSW5G
-    https://git.kernel.org/netdev/net-next/c/37184fc1120e
-  - [v5,3/3] net: ethernet: ti: am65-cpsw: Move phy_set_mode_ext() to correct location
-    https://git.kernel.org/netdev/net-next/c/763015a794e1
-
-You are awesome, thank you!
--- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
-
+> 
+> 
+> 
