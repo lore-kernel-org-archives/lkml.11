@@ -2,139 +2,119 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D0096C00140
-	for <linux-kernel@archiver.kernel.org>; Wed, 24 Aug 2022 15:31:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 62833C00140
+	for <linux-kernel@archiver.kernel.org>; Wed, 24 Aug 2022 15:32:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238840AbiHXPbM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 24 Aug 2022 11:31:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59688 "EHLO
+        id S238495AbiHXPcT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 24 Aug 2022 11:32:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33198 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239577AbiHXPa5 (ORCPT
+        with ESMTP id S237212AbiHXPcN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 24 Aug 2022 11:30:57 -0400
-Received: from wout2-smtp.messagingengine.com (wout2-smtp.messagingengine.com [64.147.123.25])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0B75A1901E
-        for <linux-kernel@vger.kernel.org>; Wed, 24 Aug 2022 08:30:56 -0700 (PDT)
-Received: from compute2.internal (compute2.nyi.internal [10.202.2.46])
-        by mailout.west.internal (Postfix) with ESMTP id AAA2732009A3;
-        Wed, 24 Aug 2022 11:30:54 -0400 (EDT)
-Received: from mailfrontend2 ([10.202.2.163])
-  by compute2.internal (MEProxy); Wed, 24 Aug 2022 11:30:55 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=cerno.tech; h=cc
-        :cc:content-type:date:date:from:from:in-reply-to:in-reply-to
-        :message-id:mime-version:references:reply-to:sender:subject
-        :subject:to:to; s=fm3; t=1661355054; x=1661441454; bh=UWEjBSdwLo
-        HCpeWHAdeX0Lnymfed3xOveR1DLx5HrYc=; b=ULHgHtn5NHKNfL2UkspRLKeOkb
-        C3ZbnLl18NGByg2tqztaYDv0YsHYf9LV49igzKNItHRPBx+jJ3NejeWJK1Xe8JVb
-        v2CAg6cL1qaKWTcKxIIqxralQgJq4BiaVoNH/gDZdlNSM0c7pcvGrXDOJsfKbsCF
-        ivdwC24HfLpeAr5NKeywdXln+yGNOcwwOjs9n1rVpsgNS7IP9clUSwhU8br5tjxx
-        uX/MGYhiel+05y9K9zuuEs4ad8DvUBpx+lovA2ix82IqLziS81vBworp/6RgTDFd
-        p272BCeB63+q0x1/hTVG8u4TARUHy5lmNmkZWZBryTkc2N9YvO30HtdFQTJA==
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        messagingengine.com; h=cc:cc:content-type:date:date:feedback-id
-        :feedback-id:from:from:in-reply-to:in-reply-to:message-id
-        :mime-version:references:reply-to:sender:subject:subject:to:to
-        :x-me-proxy:x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=
-        fm1; t=1661355054; x=1661441454; bh=UWEjBSdwLoHCpeWHAdeX0Lnymfed
-        3xOveR1DLx5HrYc=; b=VWzW6GMlx8eKa5TW1KStIfs0N4R5dOJlE/nh4T2hoFHI
-        4QFQ23yX5ojZmgXtjuLBRfrilDTz6UuRW8eTOeMxwwswdYslzWcWnzBD7Ho2yhv1
-        dM/pZEUQKLktdPVTj+s3SfhEo1NZuIs80seMCqTpjSOVVzkQJ69KW5i7UDwnyb2Q
-        +z3As3q6RIVzAorbIYPsJ6bra+cIWPTAnqaCQYi/2N1hCIDN2jrQgJNEIxGae9MP
-        K/XSI9dgKBAnJlPXONkU4ZJ42bT5NloSQ6yDEBRm1gcvQJj7yUiSFD8YgN20diQS
-        dOppc/bQ/joy197h44yiip91Xjtxsr14w4Vvlts5rw==
-X-ME-Sender: <xms:LUQGY_MRs5cssNyB3ytj7-9tMKpuf_8SbM_h8LrpWG7lyYIBZzwotg>
-    <xme:LUQGY58SWQfFOlX3ipsFg9GfAwn7-bOhBE9AxTyu37qdeSQS_o4N1luTxXImUasYE
-    fDmlJZ_jQYQTvq3nns>
-X-ME-Received: <xmr:LUQGY-QfnCur25s8h30J1lIKR3V_o-OqJBpaf1N7Siizmfkc0WbygoOLg8Gx>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvfedrvdejuddgleduucetufdoteggodetrfdotf
-    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
-    uceurghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmne
-    cujfgurhepfffhvfevuffkfhggtggujgesghdtreertddtudenucfhrhhomhepofgrgihi
-    mhgvucftihhprghrugcuoehmrgigihhmvgestggvrhhnohdrthgvtghhqeenucggtffrrg
-    htthgvrhhnpeejveefheefkeeiffegveelveetgffffeektdefuefhtedtgeejhefggedu
-    ffffudenucevlhhushhtvghrufhiiigvpedtnecurfgrrhgrmhepmhgrihhlfhhrohhmpe
-    hmrgigihhmvgestggvrhhnohdrthgvtghh
-X-ME-Proxy: <xmx:LUQGYzvYMzkv_wS3yvHVWv1_-LYHb0DZw1X41OwCeo2-1VE9sgHTUQ>
-    <xmx:LUQGY3fX_6vLZg88v5LOWATwzGv8FYsPwgKHCfFQu7dQC8K1FcwWPg>
-    <xmx:LUQGY_1DHmwst_u3iws3Zogo69eAWG-0lJv7Q5Dsz7tPNopLU6VRJQ>
-    <xmx:LkQGY_1PcZ04syCJj8_5KZEpzwFGg-8JMX6VaESkmxIkD8dlMJpTFg>
-Feedback-ID: i8771445c:Fastmail
-Received: by mail.messagingengine.com (Postfix) with ESMTPA; Wed,
- 24 Aug 2022 11:30:53 -0400 (EDT)
-Date:   Wed, 24 Aug 2022 17:30:51 +0200
-From:   Maxime Ripard <maxime@cerno.tech>
-To:     Charles Mirabile <cmirabil@redhat.com>
-Cc:     Stefan Wahren <stefan.wahren@i2se.com>,
-        linux-kernel <linux-kernel@vger.kernel.org>,
-        Peter Robinson <pbrobinson@gmail.com>,
-        Serge Schneider <serge@raspberrypi.org>,
-        Nicolas Saenz Julienne <nicolassaenzj@gmail.com>,
-        Mattias Brugger <mbrugger@suse.com>,
-        linux-rpi-kernel@lists.infradead.org,
-        Linux ARM <linux-arm-kernel@lists.infradead.org>,
-        rh-kdlp@googlegroups.com, Joel Slebodnick <jslebodn@redhat.com>,
-        Joel Savitz <jsavitz@redhat.com>,
-        Noralf =?utf-8?Q?Tr=C3=B8nnes?= <noralf@tronnes.org>
-Subject: Re: [PATCH v10 0/6] Raspberry Pi Sense HAT driver
-Message-ID: <20220824153051.bx6kfcih76kh3exc@houat>
-References: <20220823174158.45579-1-cmirabil@redhat.com>
- <fc54a7a3-c67b-79ab-5e87-d468695e5553@i2se.com>
- <CABe3_aFJ0gkLDFB9k5FEn1SmupbLEKxAn8y=WTt-Rc0xUEK4Dw@mail.gmail.com>
+        Wed, 24 Aug 2022 11:32:13 -0400
+Received: from mail-pg1-x529.google.com (mail-pg1-x529.google.com [IPv6:2607:f8b0:4864:20::529])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 407751FCDD
+        for <linux-kernel@vger.kernel.org>; Wed, 24 Aug 2022 08:32:12 -0700 (PDT)
+Received: by mail-pg1-x529.google.com with SMTP id r69so15346798pgr.2
+        for <linux-kernel@vger.kernel.org>; Wed, 24 Aug 2022 08:32:12 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc;
+        bh=UZnSHBhLdMOKtTsvoHUMcnhpm7mRfzt47Yx1rwe6TYo=;
+        b=ZLLZ1sQgjDCQZCR6iPbiV+dqJNVFlqF98MJZe+fMBspnKcQ1UNH5o3QOOx9DF7zBKA
+         4NTZQU8BcU6LZoqrr74W5W2rChziUMwFRSTTGrC513hiwIJ39DS6AjzTbmueQdO2STE0
+         t09KkGjDmYbiMqWw8kicU5n4mAAvwqsvfR4L8kRTE4YxLV1mXG0u1f2lpXeh4xy6gdFe
+         Wv/tpw2JwZvjKVZthEj5z4x1vSTS+evVhLMdntp8ICLZ2wM3nwRTCYJP9MatbCfSirsX
+         fcVMxPNOyrjAZQmeXvPefg+H+k8Jj7MzekfI//odudIng7UsH3Qp7cbIUqf69180zIUj
+         AbYg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc;
+        bh=UZnSHBhLdMOKtTsvoHUMcnhpm7mRfzt47Yx1rwe6TYo=;
+        b=x4r487PTMzAMikP6llbdsbrEijXEigFe+5Fz+pqX5v6E8Ti/H5/9E0rW9JaTUsO6d3
+         Don0p+hW3xVbcbHpg6Otqs3m1LgpbVAgsQnW1lFvpDz7UzPQF30X/PtrwmWR7v8pwPby
+         OQ7NGpi9mUyoJUbuk72zDworbrLuTeX5+L93Xr5Nf2zFF8D5Ye4TzO6xB1JPCUCH9tsx
+         xx1SYBNVZ9pHyn2wkASB6pNexkNZ+chRKGn/V1Z9+1BCUYFOeCHRSuZmiiAJlC4ls4Ol
+         cg5cLlxREQsBkc/0ZBfANca01Bydvg3U1QoSz0oatKBnQqpzMBcdZnx5A4Lnypsq1swe
+         qiYg==
+X-Gm-Message-State: ACgBeo0D1EsN2GoQhxFkfRcUzacbJJvbBoh9xRtKB2SWV50Xm1cHmQDc
+        0pcpojyTrBI+lO5beS04Ct5hPQ==
+X-Google-Smtp-Source: AA6agR5QWDXsHQ6VWlCNVAAXtH2sA1tM24WXPqXY0c9+lwwnmRBfulv0M4b7+RjikXl1y2MhtN3W7Q==
+X-Received: by 2002:a63:8343:0:b0:42b:3b1a:89f6 with SMTP id h64-20020a638343000000b0042b3b1a89f6mr859171pge.26.1661355131607;
+        Wed, 24 Aug 2022 08:32:11 -0700 (PDT)
+Received: from google.com (7.104.168.34.bc.googleusercontent.com. [34.168.104.7])
+        by smtp.gmail.com with ESMTPSA id d5-20020a17090ad3c500b001f53705ee92sm1567101pjw.6.2022.08.24.08.32.11
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 24 Aug 2022 08:32:11 -0700 (PDT)
+Date:   Wed, 24 Aug 2022 15:32:07 +0000
+From:   Sean Christopherson <seanjc@google.com>
+To:     Oliver Upton <oliver.upton@linux.dev>
+Cc:     Paolo Bonzini <pbonzini@redhat.com>, Marc Zyngier <maz@kernel.org>,
+        Anup Patel <anup@brainfault.org>,
+        Paul Walmsley <paul.walmsley@sifive.com>,
+        Palmer Dabbelt <palmer@dabbelt.com>,
+        Albert Ou <aou@eecs.berkeley.edu>,
+        Christian Borntraeger <borntraeger@linux.ibm.com>,
+        Janosch Frank <frankja@linux.ibm.com>,
+        Claudio Imbrenda <imbrenda@linux.ibm.com>,
+        Nathan Chancellor <nathan@kernel.org>,
+        Nick Desaulniers <ndesaulniers@google.com>,
+        James Morse <james.morse@arm.com>,
+        Alexandru Elisei <alexandru.elisei@arm.com>,
+        Suzuki K Poulose <suzuki.poulose@arm.com>,
+        Atish Patra <atishp@atishpatra.org>,
+        David Hildenbrand <david@redhat.com>,
+        Tom Rix <trix@redhat.com>, kvm@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, kvmarm@lists.cs.columbia.edu,
+        kvm-riscv@lists.infradead.org, linux-riscv@lists.infradead.org,
+        llvm@lists.linux.dev, linux-kernel@vger.kernel.org,
+        Colton Lewis <coltonlewis@google.com>,
+        Peter Gonda <pgonda@google.com>,
+        Andrew Jones <andrew.jones@linux.dev>
+Subject: Re: [PATCH v4 5/6] KVM: selftests: Make arm64's MMIO ucall multi-VM
+ friendly
+Message-ID: <YwZEdzHtWEfCpr7B@google.com>
+References: <20220824032115.3563686-1-seanjc@google.com>
+ <20220824032115.3563686-6-seanjc@google.com>
+ <YwY9BYDUeiT87/Vs@google.com>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="qnkn4bktoy4h2gpu"
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <CABe3_aFJ0gkLDFB9k5FEn1SmupbLEKxAn8y=WTt-Rc0xUEK4Dw@mail.gmail.com>
+In-Reply-To: <YwY9BYDUeiT87/Vs@google.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+On Wed, Aug 24, 2022, Oliver Upton wrote:
+> Hi Sean,
+> 
+> On Wed, Aug 24, 2022 at 03:21:14AM +0000, Sean Christopherson wrote:
+> > +/*
+> > + * Sync a global pointer to the guest that has a per-VM value, in which case
+> > + * writes to the host copy of the "global" must be serialized (in case a test
+> > + * is being truly crazy and spawning multiple VMs concurrently).
+> > + */
+> 
+> Do we even care about writes to the host's copy of the global pointer?
+> I don't see how the host pointer is used beyond serializing writes into
+> a guest.
+> 
+> IOW, it looks as though we could skip the whole global illusion
+> altogether and write straight into guest memory.
 
---qnkn4bktoy4h2gpu
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+*sigh*
 
-On Wed, Aug 24, 2022 at 08:06:59AM -0400, Charles Mirabile wrote:
-> On Tue, Aug 23, 2022 at 5:30 PM Stefan Wahren <stefan.wahren@i2se.com> wr=
-ote:
-> > >    drivers/auxdisplay: sensehat: Raspberry Pi Sense HAT display driver
-> > We don't have an Ack for this display driver. Maybe we should ask Maxime
-> > Ripard and Noralf Tr=F8nnes especially Pavel Machek had concerns about =
-the
-> > right subsystem?
->
-> I just looked back at the comments from Pavel on v9. I had meant to
-> reply to him, and I actually drafted something but it got lost in the
-> shuffle and I never sent it (also my bad).
->
-> The driver is an fbdev in the raspberry pi tree, and that is where we
-> started when upstreaming, but right from the outset we were told that
-> it couldn't be an fbdev since that subsystem is being deprecated
-> the replacement is the DRM subsystem
+This exact thought crossed my mind when I first looked at this code, but somehow
+I couldn't come up with the obvious solution of using a temporary on-stack variable
+to hold the desired value.
 
-Indeed
+Something like this should work.
 
-> but (as Matthias Brugger suggests) that is probably overkill for an
-> 8x8 display. Does that settle the subsystem question?
-
-If you were aiming for an fbdev driver, a KMS driver these days would be
-notably simpler.
-
-We've added simpler and simpler devices, such as the SSD1306 recently,
-so I can't see anything wrong with using KMS either.
-
-Maxime
-
---qnkn4bktoy4h2gpu
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iHUEABYKAB0WIQRcEzekXsqa64kGDp7j7w1vZxhRxQUCYwZEKwAKCRDj7w1vZxhR
-xeP5AP49OPG5mL6W0tELzpbzif+x+BpthcKKwThVhaPXEL3JcwD+PBhrC2xNONxU
-yrmVGBo/7cUtnUmAjR/2f1Ih0jR0Kws=
-=QqBo
------END PGP SIGNATURE-----
-
---qnkn4bktoy4h2gpu--
+#define write_guest_global(vm, g, val) ({			\
+	typeof(g) *_p = addr_gva2hva(vm, (vm_vaddr_t)&(g));	\
+	typeof(g) _val = val;					\
+								\
+	memcpy(_p, &(_val), sizeof(g));				\
+})
