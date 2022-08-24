@@ -2,77 +2,115 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 63E39C00140
-	for <linux-kernel@archiver.kernel.org>; Wed, 24 Aug 2022 08:50:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 90D39C00140
+	for <linux-kernel@archiver.kernel.org>; Wed, 24 Aug 2022 08:50:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236080AbiHXIt7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 24 Aug 2022 04:49:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35558 "EHLO
+        id S232480AbiHXIuP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 24 Aug 2022 04:50:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35226 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236226AbiHXIt2 (ORCPT
+        with ESMTP id S236023AbiHXItr (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 24 Aug 2022 04:49:28 -0400
-Received: from jabberwock.ucw.cz (jabberwock.ucw.cz [46.255.230.98])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6852F7822D;
-        Wed, 24 Aug 2022 01:49:08 -0700 (PDT)
-Received: by jabberwock.ucw.cz (Postfix, from userid 1017)
-        id F1B551C000B; Wed, 24 Aug 2022 10:49:06 +0200 (CEST)
-Date:   Wed, 24 Aug 2022 10:49:06 +0200
-From:   Pavel Machek <pavel@denx.de>
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc:     linux-kernel@vger.kernel.org, stable@vger.kernel.org,
-        torvalds@linux-foundation.org, akpm@linux-foundation.org,
-        linux@roeck-us.net, shuah@kernel.org, patches@kernelci.org,
-        lkft-triage@lists.linaro.org, pavel@denx.de, jonathanh@nvidia.com,
-        f.fainelli@gmail.com, sudipm.mukherjee@gmail.com,
-        slade@sladewatkins.com
-Subject: Re: [PATCH 4.9 00/98] 4.9.326-rc2 review
-Message-ID: <20220824084906.GA31669@duo.ucw.cz>
-References: <20220824072526.750357674@linuxfoundation.org>
+        Wed, 24 Aug 2022 04:49:47 -0400
+Received: from esa4.hgst.iphmx.com (esa4.hgst.iphmx.com [216.71.154.42])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 46A028A1E2
+        for <linux-kernel@vger.kernel.org>; Wed, 24 Aug 2022 01:49:41 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
+  d=wdc.com; i=@wdc.com; q=dns/txt; s=dkim.wdc.com;
+  t=1661330982; x=1692866982;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=4kZqvFG4tMiUnKB0w/rq1VrH8DwwrNQlje7Rk/MmMEQ=;
+  b=ZuhcXayYC0xOYzdcpbiiObQxW+ta6+5H3uOUjvtU2JGD+V4rN3I+3TDu
+   grwlu3SHZLI74udAfByYQcOh/3JvGdGV9YD5Dc8+JSNVI4xt4wjcD/p4v
+   TgH9YfyVlPXrlkJH/vKLdCDF3S3RxMzKF3j9Ljf/Tv31e5PRO9MjHESzq
+   0LMVDrNkvjdWuZawbg2oux8I4qiY6X4C4DnaNxy7YnX6DzjnR82fCrL8K
+   tEAd5XBIBjHWaKlBYjgoe0wnnaSIgQb4WUxXsqJUv0mGynaHtSyADnJiA
+   7wK2wGX3YHHaNC+M+5k/UxYpMn2+QjyqD++BUDepeknRDb3JT+8lkP8+v
+   Q==;
+X-IronPort-AV: E=Sophos;i="5.93,260,1654531200"; 
+   d="scan'208";a="207973719"
+Received: from uls-op-cesaip01.wdc.com (HELO uls-op-cesaep01.wdc.com) ([199.255.45.14])
+  by ob1.hgst.iphmx.com with ESMTP; 24 Aug 2022 16:49:40 +0800
+IronPort-SDR: bA2WFiaiXE2bPlpWnmrqAVV3vj2MAImSEz2m/xbuqoB1wFHFNZf9zURqRAOd3Rxm8EBsFvBY5y
+ /HSZ0fvmsgLW771aNS1VpueRrzFEGpEgojTN+apAKtXoDZnzUHFENnFcf1ownkECelRxum8m0H
+ tbIPDhf4QdN4a+7MnTRqFb5Xb0nY/Fv51WbHqLBBaKQ39OcSQ0u06m13yR3ASkO3SmIaToi4xu
+ udwp508b9NopLSJRnfIYtZZf9LyBVDaOiDRMoHtXiKFXG7zzIyzlyPkJ6ZM/0WubxvkCuAD/ll
+ gAM3eISBnkEgyHcz/HDGd7yi
+Received: from uls-op-cesaip01.wdc.com ([10.248.3.36])
+  by uls-op-cesaep01.wdc.com with ESMTP/TLS/ECDHE-RSA-AES128-GCM-SHA256; 24 Aug 2022 01:10:18 -0700
+IronPort-SDR: aYy2ngGZRuaX5ZfUaVy9yvWD6gCrfGdmzX0SPZuoL8pJkiUMnuvy4EgHMN6Lc9MNN3IxeS834n
+ mYPhxj5L67mTOCYOzq1s7Ll23K91bcy67c1imwcelZ79fzjufyor3NguFArPAV3FCH8hQBwXf7
+ qUC6KnkHFJMI0KYBl9BFQk+0zZbTuZ7NrgSjbSjKhKTWu3risa3NNgyfeWdY9eE9oks5ZGMRZ9
+ xIb1xOLPu3SS2eDJE4ByQc/JM85yGuU1kl9C0P7RAn/+jvvvQc6OPIsXNFrVN3DgHRIxkRUSph
+ pYQ=
+WDCIronportException: Internal
+Received: from bsq92j3.ad.shared (HELO naota-xeon.wdc.com) ([10.225.50.4])
+  by uls-op-cesaip01.wdc.com with ESMTP; 24 Aug 2022 01:49:38 -0700
+From:   Naohiro Aota <naohiro.aota@wdc.com>
+To:     linux-mm@kvack.org, akpm@linux-foundation.org, x86@kernel.org
+Cc:     linux-kernel@vger.kernel.org, Thomas Gleixner <tglx@linutronix.de>,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        Andy Lutomirski <luto@kernel.org>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+        "H. Peter Anvin" <hpa@zytor.com>,
+        Naohiro Aota <naohiro.aota@wdc.com>,
+        Anshuman Khandual <anshuman.khandual@arm.com>
+Subject: [PATCH] x86/mm: disable instrumentations of mm/pgprot.c
+Date:   Wed, 24 Aug 2022 17:47:26 +0900
+Message-Id: <20220824084726.2174758-1-naohiro.aota@wdc.com>
+X-Mailer: git-send-email 2.37.2
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
-        protocol="application/pgp-signature"; boundary="wRRV7LY7NUeQGEoC"
-Content-Disposition: inline
-In-Reply-To: <20220824072526.750357674@linuxfoundation.org>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+The commit 4867fbbdd6b3 ("x86/mm: move protection_map[] inside the
+platform") moved accesses to protection_map[] from mem_encrypt_amd.c to
+pgprot.c. As a result, the accesses are now targets of KASAN (and other
+instrumentations), leading to the crash during the boot process.
 
---wRRV7LY7NUeQGEoC
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+Disable the instrumentations for pgprot.c like commit 67bb8e999e0a
+("x86/mm: Disable various instrumentations of mm/mem_encrypt.c and
+mm/tlb.c").
 
-Hi!
+Before this patch, my AMD machine cannot boot since v6.0-rc1 with KASAN
+enabled, without anything printed. After the change, it successfully boots
+up.
 
-> This is the start of the stable review cycle for the 4.9.326 release.
-> There are 98 patches in this series, all will be posted as a response
-> to this one.  If anyone has any issues with these being applied, please
-> let me know.
+Cc: Anshuman Khandual <anshuman.khandual@arm.com>
+Signed-off-by: Naohiro Aota <naohiro.aota@wdc.com>
+---
+ arch/x86/mm/Makefile | 3 +++
+ 1 file changed, 3 insertions(+)
 
-CIP testing did not find any problems here:
+diff --git a/arch/x86/mm/Makefile b/arch/x86/mm/Makefile
+index f8220fd2c169..829c1409ffbd 100644
+--- a/arch/x86/mm/Makefile
++++ b/arch/x86/mm/Makefile
+@@ -4,10 +4,12 @@ KCOV_INSTRUMENT_tlb.o			:= n
+ KCOV_INSTRUMENT_mem_encrypt.o		:= n
+ KCOV_INSTRUMENT_mem_encrypt_amd.o	:= n
+ KCOV_INSTRUMENT_mem_encrypt_identity.o	:= n
++KCOV_INSTRUMENT_pgprot.o		:= n
+ 
+ KASAN_SANITIZE_mem_encrypt.o		:= n
+ KASAN_SANITIZE_mem_encrypt_amd.o	:= n
+ KASAN_SANITIZE_mem_encrypt_identity.o	:= n
++KASAN_SANITIZE_pgprot.o		:= n
+ 
+ # Disable KCSAN entirely, because otherwise we get warnings that some functions
+ # reference __initdata sections.
+@@ -17,6 +19,7 @@ ifdef CONFIG_FUNCTION_TRACER
+ CFLAGS_REMOVE_mem_encrypt.o		= -pg
+ CFLAGS_REMOVE_mem_encrypt_amd.o		= -pg
+ CFLAGS_REMOVE_mem_encrypt_identity.o	= -pg
++CFLAGS_REMOVE_pgprot.o			= -pg
+ endif
+ 
+ obj-y				:=  init.o init_$(BITS).o fault.o ioremap.o extable.o mmap.o \
+-- 
+2.37.2
 
-https://gitlab.com/cip-project/cip-testing/linux-stable-rc-ci/-/tree/linux-=
-4.9.y
-
-Tested-by: Pavel Machek (CIP) <pavel@denx.de>
-
-Best regards,
-                                                                Pavel
---=20
-DENX Software Engineering GmbH,      Managing Director: Wolfgang Denk
-HRB 165235 Munich, Office: Kirchenstr.5, D-82194 Groebenzell, Germany
-
---wRRV7LY7NUeQGEoC
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iF0EABECAB0WIQRPfPO7r0eAhk010v0w5/Bqldv68gUCYwXmAgAKCRAw5/Bqldv6
-8orYAJ9cSHQXF1s6CyDTOWn9yxSCC3k3KACfbRiHkgmXlleC+qycjv0obQyNPbQ=
-=wjLW
------END PGP SIGNATURE-----
-
---wRRV7LY7NUeQGEoC--
