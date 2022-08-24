@@ -2,146 +2,125 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A35B2C3814E
-	for <linux-kernel@archiver.kernel.org>; Wed, 24 Aug 2022 10:42:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CCA4AC32796
+	for <linux-kernel@archiver.kernel.org>; Wed, 24 Aug 2022 10:44:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234260AbiHXKmf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 24 Aug 2022 06:42:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58692 "EHLO
+        id S236422AbiHXKoD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 24 Aug 2022 06:44:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59666 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235425AbiHXKmc (ORCPT
+        with ESMTP id S235468AbiHXKn6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 24 Aug 2022 06:42:32 -0400
-Received: from mga06.intel.com (mga06b.intel.com [134.134.136.31])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CBB0381B24;
-        Wed, 24 Aug 2022 03:42:31 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1661337751; x=1692873751;
-  h=date:from:to:cc:subject:message-id:reply-to:references:
-   mime-version:in-reply-to;
-  bh=lnG4/IetgJJiCFvYl2XSmHM42xhaifZaMgp7nfdirTE=;
-  b=eNZsqDl4c8MZlLJ2p0h20eTzbb5c754AMOUHjTxenfjCe6a5zRuA3vdB
-   JpIIgiJbkGJ2YxTocSYwyLXKU6TW1aEZ4/DimabkqBATW7lS47yBDKJWT
-   RBM3hvH78/yAmYocq20gokL8cRZ2w3XaKOQXMvJIhutN5YJoQC5mZNZYC
-   8kVpnUIzYIHzIGP0nfhPOTzp6JfZn/5ThXoMNwF7ujFQBZXf0OSUERmgK
-   4f9sVKh6c2AkR24KPiw6ew1FgLJwQTrCkqctXLWqcXVrJeYyZbMbbUuYP
-   834PtJ9Jbyia4YGVAeNOAOwcomG+ME3BZ9d6+Y3dbrXZA+7s/Q1o6HNGe
-   g==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10448"; a="355660053"
-X-IronPort-AV: E=Sophos;i="5.93,260,1654585200"; 
-   d="scan'208";a="355660053"
-Received: from orsmga007.jf.intel.com ([10.7.209.58])
-  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Aug 2022 03:42:31 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.93,260,1654585200"; 
-   d="scan'208";a="605989312"
-Received: from chaop.bj.intel.com (HELO localhost) ([10.240.193.75])
-  by orsmga007.jf.intel.com with ESMTP; 24 Aug 2022 03:42:21 -0700
-Date:   Wed, 24 Aug 2022 18:37:38 +0800
-From:   Chao Peng <chao.p.peng@linux.intel.com>
-To:     Vishal Annapurve <vannapurve@google.com>
-Cc:     kvm list <kvm@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>, linux-mm@kvack.org,
-        linux-fsdevel@vger.kernel.org, linux-api@vger.kernel.org,
-        linux-doc@vger.kernel.org, qemu-devel@nongnu.org,
-        linux-kselftest@vger.kernel.org,
-        Paolo Bonzini <pbonzini@redhat.com>,
-        Jonathan Corbet <corbet@lwn.net>,
-        Sean Christopherson <seanjc@google.com>,
-        Vitaly Kuznetsov <vkuznets@redhat.com>,
-        Wanpeng Li <wanpengli@tencent.com>,
-        Jim Mattson <jmattson@google.com>,
-        Joerg Roedel <joro@8bytes.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
-        x86 <x86@kernel.org>, "H . Peter Anvin" <hpa@zytor.com>,
-        Hugh Dickins <hughd@google.com>,
-        Jeff Layton <jlayton@kernel.org>,
-        "J . Bruce Fields" <bfields@fieldses.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Shuah Khan <shuah@kernel.org>, Mike Rapoport <rppt@kernel.org>,
-        Steven Price <steven.price@arm.com>,
-        "Maciej S . Szmigiero" <mail@maciej.szmigiero.name>,
-        Vlastimil Babka <vbabka@suse.cz>,
-        Yu Zhang <yu.c.zhang@linux.intel.com>,
-        "Kirill A . Shutemov" <kirill.shutemov@linux.intel.com>,
-        Andy Lutomirski <luto@kernel.org>,
-        Jun Nakajima <jun.nakajima@intel.com>,
-        Dave Hansen <dave.hansen@intel.com>,
-        Andi Kleen <ak@linux.intel.com>,
-        David Hildenbrand <david@redhat.com>, aarcange@redhat.com,
-        ddutile@redhat.com, dhildenb@redhat.com,
-        Quentin Perret <qperret@google.com>,
-        Michael Roth <michael.roth@amd.com>, mhocko@suse.com,
-        Muchun Song <songmuchun@bytedance.com>
-Subject: Re: [PATCH v7 11/14] KVM: Register/unregister the guest private
- memory regions
-Message-ID: <20220824103738.GA1386620@chaop.bj.intel.com>
-Reply-To: Chao Peng <chao.p.peng@linux.intel.com>
-References: <20220706082016.2603916-1-chao.p.peng@linux.intel.com>
- <20220706082016.2603916-12-chao.p.peng@linux.intel.com>
- <CAGtprH9xyw6bt4=RBWF6-v2CSpabOCpKq5rPz+e-9co7EisoVQ@mail.gmail.com>
+        Wed, 24 Aug 2022 06:43:58 -0400
+Received: from sender4-op-o14.zoho.com (sender4-op-o14.zoho.com [136.143.188.14])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D2FA382D3D;
+        Wed, 24 Aug 2022 03:43:56 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; t=1661337795; cv=none; 
+        d=zohomail.com; s=zohoarc; 
+        b=V8wuVU/hNynQg7qL5KKj79KU2uvTdKcQEHSN+Sw2nob+vVldqgwoNBtvaB3oWO5uaaT3sPBE90bZS5qNYadE1IJTTWCkVDIUmlu9kcXFVkKI5IYf4QverM7yzEwPtC8uQok0qjgaILJ9Kz7E64KxhdnfNV5/fl/aZIqKwqBkSjw=
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=zohomail.com; s=zohoarc; 
+        t=1661337795; h=Content-Type:Content-Transfer-Encoding:Cc:Date:From:MIME-Version:Message-ID:Subject:To; 
+        bh=WMCxlPsl40flIpJ321yhlNA4xMKLAO8BUfBREIrIJvU=; 
+        b=JJMpF9HrC4TrKi3sKrgQnaYtXmo2TFH42drXwkfpzJKwWC60HIk9gBk/JCLJA5/IUEeqckWBDKrquB1en9F1/fyTtyFlIGaH3vW3v1N8oLDEh2MJdFCNXskmMz+DZZVep6LVp9gop+x4DxXAq3s0fh1dvVsecEHFyXDQ8p/3hpE=
+ARC-Authentication-Results: i=1; mx.zohomail.com;
+        dkim=pass  header.i=arinc9.com;
+        spf=pass  smtp.mailfrom=arinc.unal@arinc9.com;
+        dmarc=pass header.from=<arinc.unal@arinc9.com>
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; t=1661337795;
+        s=zmail; d=arinc9.com; i=arinc.unal@arinc9.com;
+        h=From:From:To:To:Cc:Cc:Subject:Subject:Date:Date:Message-Id:Message-Id:MIME-Version:Content-Type:Content-Transfer-Encoding:Reply-To;
+        bh=WMCxlPsl40flIpJ321yhlNA4xMKLAO8BUfBREIrIJvU=;
+        b=K3agrN48Emhnpyu77XElWQgWTnJtB3/KCD9j9iytvc6TX5R7afSVmPh8/jyNeWAI
+        Em0tzS93qxC8nK9Zftxzzk388+610Ut9F6dpO4zdDAvUfN6y/Ff9c7QJy+fx0+ByfFB
+        VZLAu56L0sqXVSRplPq2sllJ2urLNvOuaclDD7HY=
+Received: from arinc9-PC.lan (37.120.152.236 [37.120.152.236]) by mx.zohomail.com
+        with SMTPS id 1661337793893739.3704277913475; Wed, 24 Aug 2022 03:43:13 -0700 (PDT)
+From:   =?UTF-8?q?Ar=C4=B1n=C3=A7=20=C3=9CNAL?= <arinc.unal@arinc9.com>
+To:     Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        Sean Wang <sean.wang@mediatek.com>,
+        Landen Chao <Landen.Chao@mediatek.com>,
+        DENG Qingfang <dqfext@gmail.com>,
+        Frank Wunderlich <frank-w@public-files.de>,
+        Luiz Angelo Daros de Luca <luizluca@gmail.com>,
+        Sander Vanheule <sander@svanheule.net>,
+        Daniel Golle <daniel@makrotopia.org>, erkin.bozoglu@xeront.com,
+        Sergio Paracuellos <sergio.paracuellos@gmail.com>
+Cc:     netdev@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org,
+        =?UTF-8?q?Ar=C4=B1n=C3=A7=20=C3=9CNAL?= <arinc.unal@arinc9.com>
+Subject: [PATCH v5 0/7] completely rework mediatek,mt7530 binding
+Date:   Wed, 24 Aug 2022 13:40:33 +0300
+Message-Id: <20220824104040.17527-1-arinc.unal@arinc9.com>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAGtprH9xyw6bt4=RBWF6-v2CSpabOCpKq5rPz+e-9co7EisoVQ@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+X-ZohoMailClient: External
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Aug 19, 2022 at 12:37:42PM -0700, Vishal Annapurve wrote:
-> > ...
-> > diff --git a/virt/kvm/kvm_main.c b/virt/kvm/kvm_main.c
-> > index 230c8ff9659c..bb714c2a4b06 100644
-> > --- a/virt/kvm/kvm_main.c
-> > +++ b/virt/kvm/kvm_main.c
-> > @@ -914,6 +914,35 @@ static int kvm_init_mmu_notifier(struct kvm *kvm)
-> >
-> >  #endif /* CONFIG_MMU_NOTIFIER && KVM_ARCH_WANT_MMU_NOTIFIER */
-> >
-> > +#ifdef CONFIG_HAVE_KVM_PRIVATE_MEM
-> > +#define KVM_MEM_ATTR_PRIVATE   0x0001
-> > +static int kvm_vm_ioctl_set_encrypted_region(struct kvm *kvm, unsigned int ioctl,
-> > +                                            struct kvm_enc_region *region)
-> > +{
-> > +       unsigned long start, end;
-> > +       void *entry;
-> > +       int r;
-> > +
-> > +       if (region->size == 0 || region->addr + region->size < region->addr)
-> > +               return -EINVAL;
-> > +       if (region->addr & (PAGE_SIZE - 1) || region->size & (PAGE_SIZE - 1))
-> > +               return -EINVAL;
-> > +
-> > +       start = region->addr >> PAGE_SHIFT;
-> > +       end = (region->addr + region->size - 1) >> PAGE_SHIFT;
-> > +
-> > +       entry = ioctl == KVM_MEMORY_ENCRYPT_REG_REGION ?
-> > +                               xa_mk_value(KVM_MEM_ATTR_PRIVATE) : NULL;
-> > +
-> > +       r = xa_err(xa_store_range(&kvm->mem_attr_array, start, end,
-> > +                                       entry, GFP_KERNEL_ACCOUNT));
-> 
-> xa_store_range seems to create multi-index entries by default.
-> Subsequent xa_store_range call changes all the entries stored
-> previously.
+Hello.
 
-By using xa_store_range and storing them as multi-index entries I
-expected to save some memory for continuous pages originally.
+This patch series brings complete rework of the mediatek,mt7530 binding.
 
-But sounds like the current multi-index store behaviour isn't quite
-ready for our usage.
+The binding is checked with "make dt_binding_check
+DT_SCHEMA_FILES=mediatek,mt7530.yaml".
 
-Chao
-> xa_store needs to be used here instead of xa_store_range to achieve
-> the intended behavior.
-> 
-> > +
-> > +       kvm_zap_gfn_range(kvm, start, end + 1);
-> > +
-> > +       return r;
-> > +}
-> > +#endif /* CONFIG_HAVE_KVM_PRIVATE_MEM */
-> > +
-> > ...
+If anyone knows the GIC bit for interrupt for multi-chip module MT7530 in
+MT7623AI SoC, let me know. I'll add it to the examples.
+
+If anyone got a Unielec U7623 or another MT7623AI board, please reach out.
+
+v5:
+- Remove lists for single items.
+- Split fix reset lines patch, add new patch to fix mediatek,mcm property.
+- Remove Rob's Reviewed-by: from first patch because of new changes.
+- Add Krzysztof's Reviewed-by: and Acked-by: to where they're given.
+
+v4:
+- Define reg property on $defs as it's the same for all switch models.
+
+v3:
+- Add Rob's Reviewed-by: to first patch.
+- Explain why to invalidating reset-gpios and mediatek,mcm.
+- Do not change ethernet-ports to ports on examples.
+- Remove platform and, when possible, ethernet nodes from examples.
+- Remove pinctrl binding from examples.
+- Combine removing unnecesary lines patch with relocating port binding.
+- Define $defs of mt7530 and mt7531 port binding and refer to them in each
+compatible device.
+- Remove allOf: for cases where there's only a single if:.
+- Use else: for cpu port 6 which simplifies the binding.
+- State clearly that the DSA driver does not support the MT7530 switch in
+MT7620 SoCs.
+
+v2:
+- Change the way of adding descriptions for each compatible string.
+- Split the patch for updating the json-schema.
+- Make slight changes on the patch for the binding description.
+
+Arınç ÜNAL (7):
+  dt-bindings: net: dsa: mediatek,mt7530: make trivial changes
+  dt-bindings: net: dsa: mediatek,mt7530: fix description of mediatek,mcm
+  dt-bindings: net: dsa: mediatek,mt7530: fix reset lines
+  dt-bindings: net: dsa: mediatek,mt7530: update examples
+  dt-bindings: net: dsa: mediatek,mt7530: define port binding per switch
+  dt-bindings: net: dsa: mediatek,mt7530: define phy-mode for switch models
+  dt-bindings: net: dsa: mediatek,mt7530: update binding description
+
+ .../bindings/net/dsa/mediatek,mt7530.yaml       | 677 +++++++++++++++----
+ 1 file changed, 538 insertions(+), 139 deletions(-)
+
+
