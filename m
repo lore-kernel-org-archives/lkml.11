@@ -2,86 +2,74 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4DE9BC00140
-	for <linux-kernel@archiver.kernel.org>; Wed, 24 Aug 2022 07:27:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D635FC00140
+	for <linux-kernel@archiver.kernel.org>; Wed, 24 Aug 2022 07:27:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234660AbiHXH1l (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 24 Aug 2022 03:27:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42250 "EHLO
+        id S235505AbiHXH1v (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 24 Aug 2022 03:27:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42444 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235175AbiHXH1d (ORCPT
+        with ESMTP id S235506AbiHXH1f (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 24 Aug 2022 03:27:33 -0400
-Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1A9F86717A;
-        Wed, 24 Aug 2022 00:27:22 -0700 (PDT)
-Received: from dggpemm500024.china.huawei.com (unknown [172.30.72.53])
-        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4MCHdf2qRVzkWf9;
-        Wed, 24 Aug 2022 15:23:50 +0800 (CST)
-Received: from dggpemm500014.china.huawei.com (7.185.36.153) by
- dggpemm500024.china.huawei.com (7.185.36.203) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Wed, 24 Aug 2022 15:27:17 +0800
-Received: from [10.174.178.120] (10.174.178.120) by
- dggpemm500014.china.huawei.com (7.185.36.153) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Wed, 24 Aug 2022 15:27:16 +0800
-Message-ID: <3953e198-e9e5-22cc-f196-5d5aca3d7ac1@huawei.com>
-Date:   Wed, 24 Aug 2022 15:27:16 +0800
+        Wed, 24 Aug 2022 03:27:35 -0400
+Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1CF4669F4D
+        for <linux-kernel@vger.kernel.org>; Wed, 24 Aug 2022 00:27:31 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=casper.20170209; h=In-Reply-To:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description;
+        bh=dLscxFkI37Iy2zsCWkiigExtiRT/8vYmPbsCuER+yws=; b=lWJi5kISStz8pom5XpN7Y99kQf
+        xjZ3BIuJNHYDwQhNzT7Nzg5/J9ee1QK6lvhOurYFr0AY2HErOL/4ZfFint4K2zxGhWpw8SttXbzN3
+        G3Rr9a1hwkk7yzEzheuczdn4vtdlfvXGkLzFk4ftrPqSF0Uhk3R8qn/oXoTFCVwmHztOHLJsVxOh7
+        iDQb0dORUKJ4orGHAatefZRrP6TSh7wUNZDZrYol1lERAZnMmAMHbq1j76NYQOAC+vViNiI8kYieg
+        Wna7g1YDY6VA3w/tTbUodJwF6iPzfBwtvdcc+mW50GTawuAd2XysdcbR1cs3yVYQPmHOpFb5VSSJM
+        pcmq8GIA==;
+Received: from j130084.upc-j.chello.nl ([24.132.130.84] helo=worktop.programming.kicks-ass.net)
+        by casper.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
+        id 1oQkn4-00G6xD-KH; Wed, 24 Aug 2022 07:27:06 +0000
+Received: by worktop.programming.kicks-ass.net (Postfix, from userid 1000)
+        id 1F822980403; Wed, 24 Aug 2022 09:27:05 +0200 (CEST)
+Date:   Wed, 24 Aug 2022 09:27:05 +0200
+From:   Peter Zijlstra <peterz@infradead.org>
+To:     Ravi Bangoria <ravi.bangoria@amd.com>
+Cc:     acme@kernel.org, alexander.shishkin@linux.intel.com,
+        jolsa@redhat.com, namhyung@kernel.org, songliubraving@fb.com,
+        eranian@google.com, alexey.budankov@linux.intel.com,
+        ak@linux.intel.com, mark.rutland@arm.com, megha.dey@intel.com,
+        frederic@kernel.org, maddy@linux.ibm.com, irogers@google.com,
+        kim.phillips@amd.com, linux-kernel@vger.kernel.org,
+        santosh.shukla@amd.com
+Subject: Re: [RFC v2] perf: Rewrite core context handling
+Message-ID: <YwXSyWE9BqTwi5aL@worktop.programming.kicks-ass.net>
+References: <20220113134743.1292-1-ravi.bangoria@amd.com>
+ <YqdLH+ZU/sf4n0pa@hirez.programming.kicks-ass.net>
+ <YqdNKJllCVMci3ov@hirez.programming.kicks-ass.net>
+ <aab04cfb-2dd5-89dc-213d-7fa253615864@amd.com>
+ <YwSWhXW+BUA3WkIE@worktop.programming.kicks-ass.net>
+ <cf2cdf28-8678-8e61-9992-a460e61d3ce2@amd.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
- Thunderbird/102.1.2
-CC:     <mawupeng1@huawei.com>, <corbet@lwn.net>, <mcgrof@kernel.org>,
-        <keescook@chromium.org>, <yzaikin@google.com>,
-        <songmuchun@bytedance.com>, <mike.kravetz@oracle.com>,
-        <osalvador@suse.de>, <rppt@kernel.org>, <surenb@google.com>,
-        <jsavitz@redhat.com>, <linux-doc@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>, <linux-mm@kvack.org>,
-        <linux-fsdevel@vger.kernel.org>, <wangkefeng.wang@huawei.com>
-Subject: Re: [PATCH v2 0/2] watermark related improvement on zone movable
-To:     <akpm@linux-foundation.org>
-References: <20220819093025.105403-1-mawupeng1@huawei.com>
-Content-Language: en-US
-From:   mawupeng <mawupeng1@huawei.com>
-In-Reply-To: <20220819093025.105403-1-mawupeng1@huawei.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.174.178.120]
-X-ClientProxiedBy: dggems706-chm.china.huawei.com (10.3.19.183) To
- dggpemm500014.china.huawei.com (7.185.36.153)
-X-CFilter-Loop: Reflected
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <cf2cdf28-8678-8e61-9992-a460e61d3ce2@amd.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi, maintainers, kindly ping...
+On Wed, Aug 24, 2022 at 10:37:36AM +0530, Ravi Bangoria wrote:
 
-Thanks.
-Ma.
+> > Now, I suppose making that:
+> > 
+> >   {-1, NULL, NULL}, {cpu, NULL, NULL}
+> > 
+> > could work, but wouldn't iterating the the tree be more expensive than
+> > just finding the sub-trees as we do now?
+> 
+> pmu=NULL can be used while scheduling entire context. We can just traverse
+> through all pmu events of both cpu subtrees.
 
-On 2022/8/19 17:30, Wupeng Ma wrote:
-> From: Ma Wupeng <mawupeng1@huawei.com>
-> 
-> The first patch cap zone movable's min watermark to small value since no
-> one can use it.
-> 
-> The second patch introduce a per zone watermark to replace the vanilla
-> watermark_scale_factor to bring flexibility to tune each zone's
-> watermark separately and lead to more efficient kswapd.
-> 
-> Each patch's detail information can be seen is its own changelog.
-> 
-> changelog since v1:
-> - fix compile error if CONFIG_SYSCTL is not enabled
-> - remove useless function comment
-> 
-> Ma Wupeng (2):
->   mm: Cap zone movable's min wmark to small value
->   mm: sysctl: Introduce per zone watermark_scale_factor
-> 
->  Documentation/admin-guide/sysctl/vm.rst |  6 ++++
->  include/linux/mm.h                      |  2 +-
->  kernel/sysctl.c                         |  2 --
->  mm/page_alloc.c                         | 41 +++++++++++++++++++------
->  4 files changed, 39 insertions(+), 12 deletions(-)
-> 
+But imagine the case where we have 50 event for a PMU that can only
+schedule 8. Then we have to iterate 42 events for naught instead of
+directly jumping to the next PMU.
+
+
