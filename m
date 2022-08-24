@@ -2,79 +2,79 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 942ECC00140
-	for <linux-kernel@archiver.kernel.org>; Wed, 24 Aug 2022 10:19:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 098EFC00140
+	for <linux-kernel@archiver.kernel.org>; Wed, 24 Aug 2022 10:20:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236776AbiHXKTi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 24 Aug 2022 06:19:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34038 "EHLO
+        id S236698AbiHXKUB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 24 Aug 2022 06:20:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34888 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231846AbiHXKT3 (ORCPT
+        with ESMTP id S236796AbiHXKTv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 24 Aug 2022 06:19:29 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 769A775FD4
-        for <linux-kernel@vger.kernel.org>; Wed, 24 Aug 2022 03:19:28 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1661336367;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=VPCYtTaUZWpL796MsnlJYTznsS4pYxjYV+Pv2KRlCtI=;
-        b=EyeY3UukD9gOBM9bHAPCCHTjyPMvB82s1huRZAUS6ROrR3pCRrL3W87ZMpQ6A6cssLqi3C
-        i/rHkEHz2YVKS6V0PI9VyfOvB0kvXCRb5BbS4pQEl4t68wyWV0cJu68S/PY3ymeEvozPWW
-        gBnASNeCj6kxYc39bNHHMB4Gr48J2yU=
-Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
- [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-363-5WK-AnyhMUS1qtFcUUl9XA-1; Wed, 24 Aug 2022 06:19:25 -0400
-X-MC-Unique: 5WK-AnyhMUS1qtFcUUl9XA-1
-Received: from smtp.corp.redhat.com (int-mx05.intmail.prod.int.rdu2.redhat.com [10.11.54.5])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id E95E185A599;
-        Wed, 24 Aug 2022 10:19:24 +0000 (UTC)
-Received: from warthog.procyon.org.uk (unknown [10.33.36.72])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id D2D8418ECC;
-        Wed, 24 Aug 2022 10:19:23 +0000 (UTC)
-Organization: Red Hat UK Ltd. Registered Address: Red Hat UK Ltd, Amberley
-        Place, 107-111 Peascod Street, Windsor, Berkshire, SI4 1TE, United
-        Kingdom.
-        Registered in England and Wales under Company Registration No. 3798903
-From:   David Howells <dhowells@redhat.com>
-In-Reply-To: <20220818125038.2247720-1-sunke32@huawei.com>
-References: <20220818125038.2247720-1-sunke32@huawei.com>
-To:     Sun Ke <sunke32@huawei.com>
-Cc:     dhowells@redhat.com, linux-cachefs@redhat.com,
-        linux-kernel@vger.kernel.org, kernel-janitors@vger.kernel.org,
-        linux-fsdevel@vger.kernel.org, jefflexu@linux.alibaba.com
-Subject: Re: [PATCH v3] cachefiles: fix error return code in cachefiles_ondemand_copen()
+        Wed, 24 Aug 2022 06:19:51 -0400
+Received: from mail-ed1-x52d.google.com (mail-ed1-x52d.google.com [IPv6:2a00:1450:4864:20::52d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6B476BC28
+        for <linux-kernel@vger.kernel.org>; Wed, 24 Aug 2022 03:19:49 -0700 (PDT)
+Received: by mail-ed1-x52d.google.com with SMTP id z2so21434856edc.1
+        for <linux-kernel@vger.kernel.org>; Wed, 24 Aug 2022 03:19:49 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=cmpxchg-org.20210112.gappssmtp.com; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc;
+        bh=s0j2FSbwvmjKdvN+169nQdScgb7ALVuRcy3EIVLP7So=;
+        b=DNYaMoJZfqTl1zDi6NfKZZNWYwlrnOiVUiJmcwR/S17jsY9fY/Ngvx8ghbhYAQYLBZ
+         iosJQQDlAc2g+gT/jZ08h5QB8fcv4B7NVl0dzILk2YtT5fwGcE742npl8exZOAzm+0nu
+         Gwl5Vid27xtbN7GAblRedWuh/ys90QXaZZvu+xQG6IAGfMTgGMhEc560XEWHesJI/Rn7
+         crl2l5Bcu1/NXTW+J9mMKFiWXjfZGppPM3A0EvsLASxxnw3/XvZ1IZs2+glf+3Xczq1v
+         7O/VRL7UEObRyKjXpOjb8Zi01VJ7UFfV02Bc6L/TKGpYLA8hihsJUgMZTgRx340ziDDD
+         2Apg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc;
+        bh=s0j2FSbwvmjKdvN+169nQdScgb7ALVuRcy3EIVLP7So=;
+        b=PFrFPevDj2rt42/r20nMNzEbIVd4Zi++nAPoWDGdxjGuefP7KVreirjBOuKYJ6SF17
+         DmsKSQLSvXIblvVYhfFDUtDgRnhAta/qzW+TpG/GjjlWuHS2TAOE3OsPZvwOymDAm5iX
+         +zALtUrgHWSymUlsZ2btmx49OQu9Z7Jt/ssxOPGd04Uspf7gnaVdstux8mobCP9z8uRP
+         W1J9wlq/OLhCbth65GhcM4hPkwX2oEFP+J9dwE/IRCqUfFN6JFbYMyFk/PA/tNSfo0UA
+         KfhUqrx5ZXQ82pkpFGhQ5AO4y0sO0GP7XOA30L1xgT1cjPrnB7632wEGe1iV6JIN6i7c
+         1aLg==
+X-Gm-Message-State: ACgBeo31253hz5uewUfFPXOn6XHCH40b/6enLcg77+BAMxGLJTpHAXRH
+        dG8TxQ5YrxpyjIx4HW3YFE5AxQ==
+X-Google-Smtp-Source: AA6agR7qxhD95wx9Ex9KCuhMEFSKKxiH5pnOMNEntNXYgYlefJndvgHpOhNVzvJet7AGNK5e/+mN3A==
+X-Received: by 2002:a05:6402:27c6:b0:446:71e1:7399 with SMTP id c6-20020a05640227c600b0044671e17399mr6988640ede.357.1661336387791;
+        Wed, 24 Aug 2022 03:19:47 -0700 (PDT)
+Received: from localhost ([2a02:8070:6389:a4c0:2ca9:6d59:782b:fff3])
+        by smtp.gmail.com with ESMTPSA id d6-20020a50fb06000000b0043a5bcf80a2sm2794293edq.60.2022.08.24.03.19.47
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 24 Aug 2022 03:19:47 -0700 (PDT)
+Date:   Wed, 24 Aug 2022 06:19:46 -0400
+From:   Johannes Weiner <hannes@cmpxchg.org>
+To:     Chengming Zhou <zhouchengming@bytedance.com>
+Cc:     tj@kernel.org, mkoutny@suse.com, surenb@google.com,
+        gregkh@linuxfoundation.org, corbet@lwn.net, mingo@redhat.com,
+        peterz@infradead.org, songmuchun@bytedance.com,
+        cgroups@vger.kernel.org, linux-doc@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v3 08/10] sched/psi: consolidate cgroup_psi()
+Message-ID: <YwX7QvIpmPpxEHgI@cmpxchg.org>
+References: <20220824081829.33748-1-zhouchengming@bytedance.com>
+ <20220824081829.33748-9-zhouchengming@bytedance.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-ID: <3700078.1661336363.1@warthog.procyon.org.uk>
-Date:   Wed, 24 Aug 2022 11:19:23 +0100
-Message-ID: <3700079.1661336363@warthog.procyon.org.uk>
-X-Scanned-By: MIMEDefang 2.79 on 10.11.54.5
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220824081829.33748-9-zhouchengming@bytedance.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-	/* fail OPEN request if copen format is invalid */
-	ret = kstrtol(psize, 0, &size);
-	if (ret) {
-		req->error = ret;
-		goto out;
-	}
+On Wed, Aug 24, 2022 at 04:18:27PM +0800, Chengming Zhou wrote:
+> cgroup_psi() can't return psi_group for root cgroup, so we have many
+> open code "psi = cgroup_ino(cgrp) == 1 ? &psi_system : cgrp->psi".
+> 
+> This patch move cgroup_psi() definition to <linux/psi.h>, in which
+> we can return psi_system for root cgroup, so can handle all cgroups.
+> 
+> Signed-off-by: Chengming Zhou <zhouchengming@bytedance.com>
 
-	/* fail OPEN request if daemon reports an error */
-	if (size < 0) {
-		if (!IS_ERR_VALUE(size))
-			ret = size = -EINVAL;
-		req->error = size;
-		goto out;
-	}
-
-Should ret get set to the error in size?
-
-David
-
+Acked-by: Johannes Weiner <hannes@cmpxchg.org>
