@@ -2,184 +2,107 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2E091C00140
-	for <linux-kernel@archiver.kernel.org>; Wed, 24 Aug 2022 17:14:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 53908C00140
+	for <linux-kernel@archiver.kernel.org>; Wed, 24 Aug 2022 17:14:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239941AbiHXROD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 24 Aug 2022 13:14:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46576 "EHLO
+        id S238730AbiHXROS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 24 Aug 2022 13:14:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46988 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238837AbiHXRN5 (ORCPT
+        with ESMTP id S239940AbiHXROP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 24 Aug 2022 13:13:57 -0400
-Received: from mail-yw1-x112b.google.com (mail-yw1-x112b.google.com [IPv6:2607:f8b0:4864:20::112b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 643847B798
-        for <linux-kernel@vger.kernel.org>; Wed, 24 Aug 2022 10:13:56 -0700 (PDT)
-Received: by mail-yw1-x112b.google.com with SMTP id 00721157ae682-335624d1e26so478260527b3.4
-        for <linux-kernel@vger.kernel.org>; Wed, 24 Aug 2022 10:13:56 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc;
-        bh=nALw85bqOF3gyi0IhYuUBAdShMU6pleGfRDPmIPW20o=;
-        b=TvMpTzzprKB3QQsEsxpI6k6LbDetrJ6rCT+0LkjJ52Y8ACXF2oZ2UiUTjQmUzRTHNX
-         ZSMC/uHhXMTLWadDIylZQbtLSbYb+o+RDxb83Jx4hsLdQy/2adQOWzB1Acr5QssUCVYO
-         805SbwHsXmGqRmqOfdfws/s238Ow1e4LD7pEodwsewLLMGUr+QGT/MOt5E7Cf2tbYTeB
-         uhkJdGeATjYm09x6D8CjbfhkvTp/g4/hD9nmZDHKqWcHHkMPGJBYuqexJ7gcRqWRdow2
-         e/IcQ89lTNCSTEjLWvozENuPJxmKTyR693FGsrIPFAHBSG+9WyuU1UBA329tTD8DquTx
-         YlbQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc;
-        bh=nALw85bqOF3gyi0IhYuUBAdShMU6pleGfRDPmIPW20o=;
-        b=6vVG2q9I8l3czDnhWLtf+kP0cGAw+r1cUyfZm5QgcTRRov+uECZ41plseWNuCOqUV1
-         KZhWY8FmeApfK5N/xf08xSwwV/MzJl/Jdeknwes3QSlHQTLa2bUqgNgqKnGtNS8Mfghc
-         BDjxxmlpEi0l0A6m74AL4SA21JqoalVIqkkh6kAZ9tx3Mww/HhEaq0ho7u6pNhrEoiz6
-         ldx7XFScq8KlDbjEISOHmtvg+K74wFob25qvp8glInS2FrPFZkbRlJMMKCVC9H5OLSgS
-         fM2TUhBc5ip6cWAuK1dW+/3807NmIRxbKHRR1zB3+E7rvPd3TSKPwBOb83hVj7ujyJCH
-         9MdQ==
-X-Gm-Message-State: ACgBeo2rUMEB4cd+SVNeSpfGYsayKmsmPYWHsCTZP5FKeUiTSD9+Y4MC
-        LeFd9cDpdg61y6KYLATxmurTyo9JfxkhRZVfrTBrnA==
-X-Google-Smtp-Source: AA6agR7oh5nrTtsT+80x3yH8l2RgSJcUu3fhQDQjzDhEM/14YIsmLoZIMM6IbM3PPFJTSrJ1He0LnaKMDuPg1Mq3Iug=
-X-Received: by 2002:a25:9885:0:b0:67b:e79b:ded1 with SMTP id
- l5-20020a259885000000b0067be79bded1mr81717ybo.441.1661361235394; Wed, 24 Aug
- 2022 10:13:55 -0700 (PDT)
+        Wed, 24 Aug 2022 13:14:15 -0400
+Received: from mx0a-0031df01.pphosted.com (mx0a-0031df01.pphosted.com [205.220.168.131])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 66AD07B799;
+        Wed, 24 Aug 2022 10:14:14 -0700 (PDT)
+Received: from pps.filterd (m0279865.ppops.net [127.0.0.1])
+        by mx0a-0031df01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 27OC4xEN020367;
+        Wed, 24 Aug 2022 17:14:06 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=quicinc.com; h=message-id : date :
+ mime-version : subject : to : cc : references : from : in-reply-to :
+ content-type : content-transfer-encoding; s=qcppdkim1;
+ bh=/1oeoHt41EynB8BHQokkhb1v7el98LAR1YxIKNlCPwU=;
+ b=cTR/URJSAZXhzzVauu2vcLDUFjzeLMTvuw+KT1RZdUkREyMj+9yY26js4lm5/E2VvZnp
+ wObjynhvHmQW5g+ClpYILwvY3WfcCuAYMdxRyCQgq3nQIKKq2K6P1UQ7cJ/TqAJIN2lA
+ 7v1/CKZJI0XKEzpsN3ItpCiBeXoA9C6WMIc1at0ktdzFJGN4COxkbL3SaT9PaSUTVPp2
+ 24KypCZb8FZGLsLUUFEpfDyBn/OwPGbbePKn9H5Fgi1U5iemG/oZ1q9OgsRDKliPElpq
+ rLwuL83YGEpsJc4Q3cVlm1l1fnRbZhm3k9DdzaaC1M9P93CbSZ8gs5qNg5FNlFg3Z7VF kg== 
+Received: from nalasppmta02.qualcomm.com (Global_NAT1.qualcomm.com [129.46.96.20])
+        by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 3j52pj426u-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Wed, 24 Aug 2022 17:14:06 +0000
+Received: from nalasex01a.na.qualcomm.com (nalasex01a.na.qualcomm.com [10.47.209.196])
+        by NALASPPMTA02.qualcomm.com (8.17.1.5/8.17.1.5) with ESMTPS id 27OHE5w9027749
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Wed, 24 Aug 2022 17:14:05 GMT
+Received: from [10.111.161.24] (10.80.80.8) by nalasex01a.na.qualcomm.com
+ (10.47.209.196) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.29; Wed, 24 Aug
+ 2022 10:14:01 -0700
+Message-ID: <bcae28fb-2adc-335b-9c12-badbcde77d90@quicinc.com>
+Date:   Wed, 24 Aug 2022 10:13:59 -0700
 MIME-Version: 1.0
-References: <CALvZod7QdLSMdBoD2WztL72qS8kJe7F79JuCH6t19rRcw6Pn1w@mail.gmail.com>
- <Yv/EArPDTcCrGqJh@slm.duckdns.org> <YwNpI1ydy0yDnBH0@dhcp22.suse.cz>
- <CAGWkznEB+R0YBaBFBL7dPqs8R=qKC6+ixTWEGCYy2PaczXkaPA@mail.gmail.com>
- <YwRjyx6wFLk8WTDe@dhcp22.suse.cz> <CAGWkznGaYTv4u4kOo-rupfyWzDNJXNKTchwP6dbUK-=UXWm47w@mail.gmail.com>
- <YwSQ4APOu/H7lYGL@dhcp22.suse.cz> <CAGWkznGd6mgareABseMKY5p0f1=5dkfVkj=NS7_B6OkXBYSwyw@mail.gmail.com>
- <YwS/S9Sd1OWnT81Q@dhcp22.suse.cz> <CAJuCfpH+T9+eOVYDfOv9yNSfAvq=pJtMp4ZaoYaM7iMY9XkaUw@mail.gmail.com>
- <YwXaXHRhy51xH4rk@dhcp22.suse.cz>
-In-Reply-To: <YwXaXHRhy51xH4rk@dhcp22.suse.cz>
-From:   Suren Baghdasaryan <surenb@google.com>
-Date:   Wed, 24 Aug 2022 10:13:43 -0700
-Message-ID: <CAJuCfpF3oH5nPKG5qVwORKJw8x_LPgF-7aZTY8qwKQhJ1s9ssg@mail.gmail.com>
-Subject: Re: [RFC PATCH] memcg: use root_mem_cgroup when css is inherited
-To:     Michal Hocko <mhocko@suse.com>
-Cc:     Zhaoyang Huang <huangzhaoyang@gmail.com>,
-        Tejun Heo <tj@kernel.org>, Shakeel Butt <shakeelb@google.com>,
-        "zhaoyang.huang" <zhaoyang.huang@unisoc.com>,
-        Johannes Weiner <hannes@cmpxchg.org>,
-        Linux MM <linux-mm@kvack.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Cgroups <cgroups@vger.kernel.org>, Ke Wang <ke.wang@unisoc.com>,
-        Zefan Li <lizefan.x@bytedance.com>,
-        Roman Gushchin <roman.gushchin@linux.dev>,
-        Muchun Song <songmuchun@bytedance.com>
-Content-Type: text/plain; charset="UTF-8"
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.6.2
+Subject: Re: [PATCH] drm/msm/dp: correct 1.62G link rate at
+ dp_catalog_ctrl_config_msa()
+Content-Language: en-US
+To:     Kuogee Hsieh <quic_khsieh@quicinc.com>, <robdclark@gmail.com>,
+        <sean@poorly.run>, <swboyd@chromium.org>, <dianders@chromium.org>,
+        <vkoul@kernel.org>, <daniel@ffwll.ch>, <airlied@linux.ie>,
+        <agross@kernel.org>, <dmitry.baryshkov@linaro.org>,
+        <bjorn.andersson@linaro.org>
+CC:     <quic_sbillaka@quicinc.com>, <freedreno@lists.freedesktop.org>,
+        <dri-devel@lists.freedesktop.org>, <linux-arm-msm@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>
+References: <1661360356-21948-1-git-send-email-quic_khsieh@quicinc.com>
+From:   Abhinav Kumar <quic_abhinavk@quicinc.com>
+In-Reply-To: <1661360356-21948-1-git-send-email-quic_khsieh@quicinc.com>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.80.80.8]
+X-ClientProxiedBy: nasanex01a.na.qualcomm.com (10.52.223.231) To
+ nalasex01a.na.qualcomm.com (10.47.209.196)
+X-QCInternal: smtphost
+X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=5800 signatures=585085
+X-Proofpoint-GUID: Be4xJA0nqawVM2Cn8c6dTYcV5rF8rM2S
+X-Proofpoint-ORIG-GUID: Be4xJA0nqawVM2Cn8c6dTYcV5rF8rM2S
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.895,Hydra:6.0.517,FMLib:17.11.122.1
+ definitions=2022-08-24_10,2022-08-22_02,2022-06-22_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 priorityscore=1501 mlxscore=0
+ bulkscore=0 lowpriorityscore=0 clxscore=1015 impostorscore=0
+ malwarescore=0 phishscore=0 mlxlogscore=999 spamscore=0 adultscore=0
+ suspectscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2207270000 definitions=main-2208240064
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Aug 24, 2022 at 12:59 AM Michal Hocko <mhocko@suse.com> wrote:
->
-> On Tue 23-08-22 09:21:16, Suren Baghdasaryan wrote:
-> > On Tue, Aug 23, 2022 at 4:51 AM Michal Hocko <mhocko@suse.com> wrote:
-> > >
-> > > On Tue 23-08-22 17:20:59, Zhaoyang Huang wrote:
-> > > > On Tue, Aug 23, 2022 at 4:33 PM Michal Hocko <mhocko@suse.com> wrote:
-> > > > >
-> > > > > On Tue 23-08-22 14:03:04, Zhaoyang Huang wrote:
-> > > > > > On Tue, Aug 23, 2022 at 1:21 PM Michal Hocko <mhocko@suse.com> wrote:
-> > > > > > >
-> > > > > > > On Tue 23-08-22 10:31:57, Zhaoyang Huang wrote:
-> > > > > [...]
-> > > > > > > > I would like to quote the comments from google side for more details
-> > > > > > > > which can also be observed from different vendors.
-> > > > > > > > "Also be advised that when you enable memcg v2 you will be using
-> > > > > > > > per-app memcg configuration which implies noticeable overhead because
-> > > > > > > > every app will have its own group. For example pagefault path will
-> > > > > > > > regress by about 15%. And obviously there will be some memory overhead
-> > > > > > > > as well. That's the reason we don't enable them in Android by
-> > > > > > > > default."
-> > > > > > >
-> > > > > > > This should be reported and investigated. Because per-application memcg
-> > > > > > > vs. memcg in general shouldn't make much of a difference from the
-> > > > > > > performance side. I can see a potential performance impact for no-memcg
-> > > > > > > vs. memcg case but even then 15% is quite a lot.
-> > > > > > Less efficiency on memory reclaim caused by multi-LRU should be one of
-> > > > > > the reason, which has been proved by comparing per-app memcg on/off.
-> > > > > > Besides, theoretically workingset could also broken as LRU is too
-> > > > > > short to compose workingset.
-> > > > >
-> > > > > Do you have any data to back these claims? Is this something that could
-> > > > > be handled on the configuration level? E.g. by applying low limit
-> > > > > protection to keep the workingset in the memory?
-> > > > I don't think so. IMO, workingset works when there are pages evicted
-> > > > from LRU and then refault which provide refault distance for pages.
-> > > > Applying memcg's protection will have all LRU out of evicted which
-> > > > make the mechanism fail.
-> > >
-> > > It is really hard to help you out without any actual data. The idea was
-> > > though to use the low limit protection to adaptively configure
-> > > respective memcgs to reduce refaults. You already have data about
-> > > refaults ready so increasing the limit for often refaulting memcgs would
-> > > reduce the trashing.
-> >
-> > Sorry for joining late.
-> > A couple years ago I tested root-memcg vs per-app memcg configurations
-> > on an Android phone. Here is a snapshot from my findings:
-> >
-> > Problem
-> > =======
-> > We see tangible increase in major faults and workingset refaults when
-> > transitioning from root-only memory cgroup to per-application cgroups
-> > on Android.
-> >
-> > Test results
-> > ============
-> > Results while running memory-demanding workload:
-> > root memcg     per-app memcg     delta
-> > workingset_refault 1771228 3874281 +118.73%
-> > workingset_nodereclaim 4543 13928 +206.58%
-> > pgpgin 13319208 20618944 +54.81%
-> > pgpgout 1739552 3080664 +77.1%
-> > pgpgoutclean 2616571 4805755 +83.67%
-> > pswpin 359211 3918716 +990.92%
-> > pswpout 1082238 5697463 +426.45%
-> > pgfree 28978393 32531010 +12.26%
-> > pgactivate 2586562 8731113 +237.56%
-> > pgdeactivate 3811074 11670051 +206.21%
-> > pgfault 38692510 46096963 +19.14%
-> > pgmajfault 441288 4100020 +829.1%
-> > pgrefill 4590451 12768165 +178.15%
-> >
-> > Results while running application cycle test (20 apps, 20 cycles):
-> > root memcg     per-app memcg     delta
-> > workingset_refault 10634691 11429223 +7.47%
-> > workingset_nodereclaim 37477 59033 +57.52%
-> > pgpgin 70662840 69569516 -1.55%
-> > pgpgout 2605968 2695596 +3.44%
-> > pgpgoutclean 13514955 14980610 +10.84%
-> > pswpin 1489851 3780868 +153.77%
-> > pswpout 4125547 8050819 +95.15%
-> > pgfree 99823083 105104637 +5.29%
-> > pgactivate 7685275 11647913 +51.56%
-> > pgdeactivate 14193660 21459784 +51.19%
-> > pgfault 89173166 100598528 +12.81%
-> > pgmajfault 1856172 4227190 +127.74%
-> > pgrefill 16643554 23203927 +39.42%
->
-> Thanks! It would be interesting to see per memcg stats as well. Are
-> there any outliers? Are there any signs of over-reclaim (more pages
-> scanned & reclaimed by both kswapd and direct reclaim?
 
-I don't have all the details from that study but will capture them
-when I rerun the tests on newer kernels.
 
->
-> > Tests were conducted on an Android phone with 4GB RAM.
-> > Similar regression was reported a couple years ago here:
-> > https://www.spinics.net/lists/linux-mm/msg121665.html
-> >
-> > I plan on checking the difference again on newer kernels (likely 5.15)
-> > after LPC this September.
->
-> Thanks, that would be useful!
->
-> --
-> Michal Hocko
-> SUSE Labs
+On 8/24/2022 9:59 AM, Kuogee Hsieh wrote:
+> At current implementation there is an extra 0 at 1.62G link rate which cause
+> no correct pixel_div selected for 1.62G link rate to calculate mvid and nvid.
+> This patch delete the extra 0 to have mvid and nvid be calculated correctly.
+> 
+> Fixes: 937f941ca06f  "drm/msm/dp: Use qmp phy for DP PLL and PHY"
+> Signed-off-by: Kuogee Hsieh <quic_khsieh@quicinc.com>
+Reviewed-by: Abhinav Kumar <quic_abhinavk@quicinc.com>
+> ---
+>   drivers/gpu/drm/msm/dp/dp_catalog.c | 2 +-
+>   1 file changed, 1 insertion(+), 1 deletion(-)
+> 
+> diff --git a/drivers/gpu/drm/msm/dp/dp_catalog.c b/drivers/gpu/drm/msm/dp/dp_catalog.c
+> index 7257515..676279d 100644
+> --- a/drivers/gpu/drm/msm/dp/dp_catalog.c
+> +++ b/drivers/gpu/drm/msm/dp/dp_catalog.c
+> @@ -431,7 +431,7 @@ void dp_catalog_ctrl_config_msa(struct dp_catalog *dp_catalog,
+>   
+>   	if (rate == link_rate_hbr3)
+>   		pixel_div = 6;
+> -	else if (rate == 1620000 || rate == 270000)
+> +	else if (rate == 162000 || rate == 270000)
+>   		pixel_div = 2;
+>   	else if (rate == link_rate_hbr2)
+>   		pixel_div = 4;
