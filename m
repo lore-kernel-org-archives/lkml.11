@@ -2,170 +2,239 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2E3A2C00140
-	for <linux-kernel@archiver.kernel.org>; Wed, 24 Aug 2022 06:44:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A3BBEC00140
+	for <linux-kernel@archiver.kernel.org>; Wed, 24 Aug 2022 06:44:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235207AbiHXGoZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 24 Aug 2022 02:44:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49858 "EHLO
+        id S235286AbiHXGoc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 24 Aug 2022 02:44:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49886 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235204AbiHXGoR (ORCPT
+        with ESMTP id S235208AbiHXGoT (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 24 Aug 2022 02:44:17 -0400
-Received: from mailgw01.mediatek.com (unknown [60.244.123.138])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DA8D886055
-        for <linux-kernel@vger.kernel.org>; Tue, 23 Aug 2022 23:44:15 -0700 (PDT)
-X-UUID: 36e6bd7e16d440afb6d574e1f50dfa30-20220824
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=mediatek.com; s=dk;
-        h=Content-Type:MIME-Version:References:In-Reply-To:Message-ID:Date:Subject:CC:To:From; bh=5lwqlHiauGYRIVT5qVChvSGt58pXRA8aEXxMTgoP3+s=;
-        b=EyLFKzFY66LqKMxY2QHjA5VIXINYRrv4TfhqnEg7lOVKp0nTHKyum4d/oR+uaPrvofdvn04mskF+s9xn/V5n5a7VVqEsWRDlVYWNobCepGNizJp/8q3Zcc2fcys6+UV8rdXv+ySThJCVpkHcbixiT4ld222leL+VGQcAo2bGX/Y=;
-X-CID-P-RULE: Release_Ham
-X-CID-O-INFO: VERSION:1.1.10,REQID:f4ed213a-2780-421e-b10a-3cd15e38eccf,OB:0,L
-        OB:0,IP:0,URL:0,TC:0,Content:0,EDM:0,RT:0,SF:0,FILE:0,BULK:0,RULE:Release_
-        Ham,ACTION:release,TS:0
-X-CID-META: VersionHash:84eae18,CLOUDID:cb1a72cf-20bd-4e5e-ace8-00692b7ab380,C
-        OID:IGNORED,Recheck:0,SF:nil,TC:nil,Content:0,EDM:-3,IP:nil,URL:0,File:nil
-        ,Bulk:nil,QS:nil,BEC:nil,COL:0
-X-UUID: 36e6bd7e16d440afb6d574e1f50dfa30-20220824
-Received: from mtkmbs10n2.mediatek.inc [(172.21.101.183)] by mailgw01.mediatek.com
-        (envelope-from <yong.wu@mediatek.com>)
-        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-GCM-SHA384 256/256)
-        with ESMTP id 1882199171; Wed, 24 Aug 2022 14:44:09 +0800
-Received: from mtkmbs11n2.mediatek.inc (172.21.101.187) by
- mtkmbs11n2.mediatek.inc (172.21.101.187) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.792.15; Wed, 24 Aug 2022 14:44:08 +0800
-Received: from localhost.localdomain (10.17.3.154) by mtkmbs11n2.mediatek.inc
- (172.21.101.73) with Microsoft SMTP Server id 15.2.792.15 via Frontend
- Transport; Wed, 24 Aug 2022 14:44:07 +0800
-From:   Yong Wu <yong.wu@mediatek.com>
-To:     Joerg Roedel <joro@8bytes.org>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        Will Deacon <will@kernel.org>
-CC:     Robin Murphy <robin.murphy@arm.com>, <iommu@lists.linux.dev>,
-        <iommu@lists.linux-foundation.org>,
-        <linux-mediatek@lists.infradead.org>,
+        Wed, 24 Aug 2022 02:44:19 -0400
+Received: from EUR05-DB8-obe.outbound.protection.outlook.com (mail-db8eur05on2085.outbound.protection.outlook.com [40.107.20.85])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E514685FEA;
+        Tue, 23 Aug 2022 23:44:16 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=knAJN//Va/XBZuWk47ubm8r7/jaOSuAPAWOCGJi9eDdEOZXtjVJ4AGlImUXvHJLbI5QDRrQIvFFMc8ASleN7lS7WvddXAuW6gKqjs3bCGPcqjEBTC+ICtqR4+DE5+GdeKrlMZxbFQtuk+mLVHEFirOhKp1X1jToo3Mtayt6muyTJ42h6jZoAUZhqGrqfoEkVPrTKfYI1GepXc0TdFCuDkkyWdC16gSJE+U+ka2QEsrLv3BuBbUwXs2ayI47cqq46fum6ce/loRDtH89nX1AXEmdM+SNSJgUSaq2dGKTvrP45MzOeUzLe7KyDDYpjJDyN4SRpnqcekRy6ABZoO3vhzw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=QM9BlDQ67Aqw7MNcAUHb2hLKUAGmCOTSFCc9sh29C7k=;
+ b=GOJoWLtozTmtrOm24VaxdgG+Vylhfk9er7L/rIMYDMVbHme5YQH+DrbvXAierqeeakj65+F8q9SNuxP1fTJE4r120dKtBxWLrF/YUD8qlLUSktJX/n/0gNW5vl5iahmy1USzs9NucGqH/LBAADnLTR810hmfcrRe4vVqca1lPgjvg8Hhsc4Tm7xHgPzWU3IZuabYFGEDQnIZZrRXe5GvEyuOYavTrAPAf30Z3XOARLDJRwY40sf03J/pTaiH9z/MYP0M3CNkc+Nv9X5TxSQwdVpaI0GjoddBYq+1ceZ7BoJ2ywWK67D86lfT5B60qOaU3zrfBnNOGFIVZ32NkJxa2w==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=oss.nxp.com; dmarc=pass action=none header.from=oss.nxp.com;
+ dkim=pass header.d=oss.nxp.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=NXP1.onmicrosoft.com;
+ s=selector2-NXP1-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=QM9BlDQ67Aqw7MNcAUHb2hLKUAGmCOTSFCc9sh29C7k=;
+ b=PBL6f544S6lkny9tCmxkTUT9Ae0aLs3VQC1PsCeleo0hmjHl5i8dxlYZaLsso/C+eoUO8roaV2yXgBQ2RpYhe8lxzMHNNT1H/j6JUY2Kfd6gglQPzneLB44JxeSUMinVbRdBjo7XoOGRxvoOyns+9a155ktBnzUNIci9qB9IbXw=
+Received: from AM6PR04MB6053.eurprd04.prod.outlook.com (2603:10a6:20b:b9::10)
+ by VI1PR0402MB3373.eurprd04.prod.outlook.com (2603:10a6:803:a::17) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5546.19; Wed, 24 Aug
+ 2022 06:44:12 +0000
+Received: from AM6PR04MB6053.eurprd04.prod.outlook.com
+ ([fe80::6cd5:f11c:4e5c:d79c]) by AM6PR04MB6053.eurprd04.prod.outlook.com
+ ([fe80::6cd5:f11c:4e5c:d79c%3]) with mapi id 15.20.5546.022; Wed, 24 Aug 2022
+ 06:44:11 +0000
+From:   "Alice Guo (OSS)" <alice.guo@oss.nxp.com>
+To:     Guenter Roeck <linux@roeck-us.net>,
+        "Alice Guo (OSS)" <alice.guo@oss.nxp.com>
+CC:     "wim@linux-watchdog.org" <wim@linux-watchdog.org>,
+        "shawnguo@kernel.org" <shawnguo@kernel.org>,
+        "s.hauer@pengutronix.de" <s.hauer@pengutronix.de>,
+        "festevam@gmail.com" <festevam@gmail.com>,
+        "kernel@pengutronix.de" <kernel@pengutronix.de>,
+        dl-linux-imx <linux-imx@nxp.com>,
+        "linux-watchdog@vger.kernel.org" <linux-watchdog@vger.kernel.org>,
+        "linux-arm-kernel@lists.infradead.org" 
         <linux-arm-kernel@lists.infradead.org>,
-        <linux-kernel@vger.kernel.org>, Yong Wu <yong.wu@mediatek.com>,
-        AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@collabora.com>,
-        <mingyuan.ma@mediatek.com>, <yf.wang@mediatek.com>,
-        <libo.kang@mediatek.com>, <chengci.xu@mediatek.com>,
-        <youlin.pei@mediatek.com>, <anan.sun@mediatek.com>,
-        <xueqi.zhang@mediatek.com>, Guenter Roeck <groeck@chromium.org>,
-        Dan Carpenter <dan.carpenter@oracle.com>
-Subject: [PATCH v4 5/6] iommu/mediatek: Improve safety for mediatek,smi property in larb nodes
-Date:   Wed, 24 Aug 2022 14:43:05 +0800
-Message-ID: <20220824064306.21495-6-yong.wu@mediatek.com>
-X-Mailer: git-send-email 2.18.0
-In-Reply-To: <20220824064306.21495-1-yong.wu@mediatek.com>
-References: <20220824064306.21495-1-yong.wu@mediatek.com>
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Subject: RE: [PATCH 4/7] watchdog: imx7ulp_wdt: Fix RCS timeout issue
+Thread-Topic: [PATCH 4/7] watchdog: imx7ulp_wdt: Fix RCS timeout issue
+Thread-Index: AQHYsSoHMXeYIWNJpEGBMS17guc0sa26/1YAgAEJRICAAGa/AIABMvYw
+Date:   Wed, 24 Aug 2022 06:44:11 +0000
+Message-ID: <AM6PR04MB6053113B803E27D11892C5A1E2739@AM6PR04MB6053.eurprd04.prod.outlook.com>
+References: <20220816043643.26569-1-alice.guo@oss.nxp.com>
+ <20220816043643.26569-5-alice.guo@oss.nxp.com>
+ <20220822140946.GC4087281@roeck-us.net>
+ <AM6PR04MB60533A1ABDFA1DEDE59BB847E2709@AM6PR04MB6053.eurprd04.prod.outlook.com>
+ <20220823120656.GC203169@roeck-us.net>
+In-Reply-To: <20220823120656.GC203169@roeck-us.net>
+Accept-Language: zh-CN, en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+authentication-results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=oss.nxp.com;
+x-ms-exchange-messagesentrepresentingtype: 1
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: 2ed83bea-7b95-4b61-b093-08da859c0dd0
+x-ms-traffictypediagnostic: VI1PR0402MB3373:EE_
+x-ms-exchange-sharedmailbox-routingagent-processed: True
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: KExSTw65grRf7eZyoWUrSYtaoAigtVDBt8nNWlVTfL4Rhp5jkXoMP3/bkfQ3UKZZudMnWJshWJIgO9auBMiJi3r8oWv7zfSnrrq6o35nS7vcTdbNO1fgOs3ggG2V9ZsTcYuSi3gCQuAvDcAYRYNGR9cxs2zAyS83hY2uRVXxqyN+ZSoZ2E7Dw+rmGsfLXZOV212KuL3qddWuA5ZtR75oMl2dIK321zy6v7yQIi28PSX1z3aui4TKgoiBhpB9fBBmdSbaPvWLsCGxFSvw4UFNp30+WBgGM88dw73rWsxFApKsb+7IvhhTmvE5c04kFG+6gmqvRHj96R+JNDTwEoJN0u8OstTYK5/EqE+gaDlgFDzei7QJmQetFDcOaSb4qb79l8nhp4t9cdD7SaXLgIn+JHLxPMqtKopSH0MEe0BF97hb48e7oGPOO9yaDcr5Z0LPHHd8SJzkgQsBqE5HJQSI9lHYNbfXZh9Zzi1F0GOWjxXMDKrAMet/355n7YfE4DhcnL9SNIelTpQJCc0yWbLYveB7+sFFFUwFN9Kv/Oz6xnEl8zOUfmwjmyfysKnbNk4YgT7jvZB/qGG8pI414cGOxWooLXJEgZZBB+uxR0eXPDcNJauXl7u8274FismblZnK8qXPx8dn/WrIo9X3W/QFYTVjQzZo27qXqSt6jhDSseJAL7zmv2n6phz3wZ/zMoP9H7pFw1smUc4tggpV1rp2K9RZ5dII3DWVZiBUpyDwDE3JN12aprU6YGDQ2VBi76pnOMNKahMDJpH8Xqo3WxUznw==
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AM6PR04MB6053.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(4636009)(346002)(396003)(136003)(366004)(376002)(39860400002)(186003)(66446008)(66476007)(64756008)(5660300002)(41300700001)(8676002)(86362001)(66556008)(71200400001)(66946007)(76116006)(2906002)(26005)(7696005)(9686003)(6506007)(54906003)(478600001)(52536014)(4326008)(8936002)(33656002)(53546011)(122000001)(55016003)(38070700005)(110136005)(316002)(83380400001)(38100700002);DIR:OUT;SFP:1101;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?hIal5Q9pw6NO/7N7uiydQf9GKNCznUYQTQEDr7aldYUpqVyCT8LFOoFlNOhf?=
+ =?us-ascii?Q?3KgmC79+RiRvNML/1L/S1v742RTMoZyLVCWLcldTcpW2uMPPQQoH4wGeMfwI?=
+ =?us-ascii?Q?XyLSakD/IraVNSoiRKzW5rIZ5kv3HKIXLzBpf/dS5BTFOxznIcepYDPz+kw4?=
+ =?us-ascii?Q?fST138po2aLM77lEbzuZz113KiSFuN/75EHEwQcjgjWjZfca7NeTXlHjicPy?=
+ =?us-ascii?Q?aOPls8YWggQhXNwrMkKAUpRlHc1JBLEVEUknvW8csuzwTM3YwOc9ODItlTZ3?=
+ =?us-ascii?Q?rPE1g0jTkXthZWS8u1SSO4aOSnu8QTBl9oCoF6g5kH68NlJ1digRd27wUZ5w?=
+ =?us-ascii?Q?XVYKDmL2wNMCY1m0WWYBC4besXAEnzJrTHPpUtVUVgjcraajXl8Vsywh0KyS?=
+ =?us-ascii?Q?3fOK37VcbZTga0fYK2aI1peNCGaOt/yBKneWFZO92JbyR6dJiWJ5siM5ZJD/?=
+ =?us-ascii?Q?OgKiyK9Zl06FzzdAO90tVx4wO8vpp1ZdtXBsEDgeMeMjIUaA6+z1uT/A2dMQ?=
+ =?us-ascii?Q?i+QJZ13zzKeNwUSpuR+UN5AJxQrv1DzJ6zKv/L0NqmQWwB7y8YgoL4EPMyLL?=
+ =?us-ascii?Q?PFcgVeJqAK5/s6wmy0CyfTKzzGsle7WnHtQsx6sW8zzDuytTYzIS6SU0N30z?=
+ =?us-ascii?Q?Tfumxm8XTS0dX4zkIKtMqhZ4E67WGLHFhasgNLKvdIQ+bZjmJ4fSfwFST7MW?=
+ =?us-ascii?Q?4+YfueGEwKzT6Xz+CXysoO4FDQA/8J+1egMaty82crNnU0hOXccd/mxCxM9E?=
+ =?us-ascii?Q?bqV3CioQjqxS6qpfkL99wQQXSzvHnOaM1tGVGHkk9aBU3d5FJBDKiipSJqIX?=
+ =?us-ascii?Q?JHDtH6Hltdd5Lil6G8vMvxMslw0orVGFbFc3YGwGKylCawbSmE3MRvJb1F//?=
+ =?us-ascii?Q?NtBvIwCUDxQl2qfD2QO10iYS639gSpOqZRfkaY2UdrVsr2fwWeSN4peI6Lmf?=
+ =?us-ascii?Q?OpC656uWTo68fPDLVPNWxs4R8B1vLAFEHi8LkcOvEZa4qnHVVhxBXcFHnpOx?=
+ =?us-ascii?Q?K3JqsoHDp5RNsJbaWVLgIZeIW4rzbC3uxilYv3eERacT8tefV4AQ4hdOUIx+?=
+ =?us-ascii?Q?yldKqyh4Lhl414v8y/3a/7yCvtGDlhP7vRM/qeGzBQbpDCJuX2nhd5jpxS++?=
+ =?us-ascii?Q?dD2tHIILrVjppIYAPoD8mQ0vz4rA4wPYPQFI+T+q8l9wqdYChzST3fEE2oEJ?=
+ =?us-ascii?Q?tYzW6iVkp0vpe4FVJNS3OGqsELiVZUGhdeBrh2lUe1d8Ii//u0LdKp4bGINT?=
+ =?us-ascii?Q?kqd/9Etaod73q5nNMvYeKYuXO3URuS+L/XAbLDU1qn3nkNCU+j+ahwbJk1E6?=
+ =?us-ascii?Q?AZcTZGkmfVuvJ5Ts6zbuuWUCC4Z9F2UDe4uBh83zG72g9a0MtvdIn/1PGADO?=
+ =?us-ascii?Q?rXlgVLNym2GSuEKjlM+0XUgy3mk8uCLywpvfaBodwGxS9IcusEoNzRsgQuCm?=
+ =?us-ascii?Q?db8PelcQX4jh6s+qNl14p1jJb4KK1GGqx1ORsaKUfYrXX7BWcbbdcgrWvOno?=
+ =?us-ascii?Q?D7/PYZ4++mXgLb+HNC8dnriS/M0UKBXzoRqh3PLooTDN7VuEDJTsCpwK+Fyo?=
+ =?us-ascii?Q?xvOvX5y3w2riSQhiRenytr+3gyuOOWafoqMW8hvz?=
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-Content-Type: text/plain
-X-MTK:  N
+X-OriginatorOrg: oss.nxp.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: AM6PR04MB6053.eurprd04.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 2ed83bea-7b95-4b61-b093-08da859c0dd0
+X-MS-Exchange-CrossTenant-originalarrivaltime: 24 Aug 2022 06:44:11.9206
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: qfJc6bRRYgBQHP9jinGTbf1fzqt0YhAjJ89PN1sW463TqNx6IbV6UbMfHnBEydprFVtuTrEOZAB0HTUPBCrYFA==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR0402MB3373
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-No functional change. Just improve safety from dts.
+> -----Original Message-----
+> From: Guenter Roeck <groeck7@gmail.com> On Behalf Of Guenter Roeck
+> Sent: Tuesday, August 23, 2022 8:07 PM
+> To: Alice Guo (OSS) <alice.guo@oss.nxp.com>
+> Cc: wim@linux-watchdog.org; shawnguo@kernel.org;
+> s.hauer@pengutronix.de; festevam@gmail.com; kernel@pengutronix.de;
+> dl-linux-imx <linux-imx@nxp.com>; linux-watchdog@vger.kernel.org;
+> linux-arm-kernel@lists.infradead.org; linux-kernel@vger.kernel.org
+> Subject: Re: [PATCH 4/7] watchdog: imx7ulp_wdt: Fix RCS timeout issue
+>=20
+> On Tue, Aug 23, 2022 at 05:59:11AM +0000, Alice Guo (OSS) wrote:
+> >
+> >
+> > > -----Original Message-----
+> > > From: Guenter Roeck <groeck7@gmail.com> On Behalf Of Guenter Roeck
+> > > Sent: Monday, August 22, 2022 10:10 PM
+> > > To: Alice Guo (OSS) <alice.guo@oss.nxp.com>
+> > > Cc: wim@linux-watchdog.org; shawnguo@kernel.org;
+> > > s.hauer@pengutronix.de; festevam@gmail.com; kernel@pengutronix.de;
+> > > dl-linux-imx <linux-imx@nxp.com>; linux-watchdog@vger.kernel.org;
+> > > linux-arm-kernel@lists.infradead.org; linux-kernel@vger.kernel.org
+> > > Subject: Re: [PATCH 4/7] watchdog: imx7ulp_wdt: Fix RCS timeout
+> > > issue
+> > >
+> > > On Tue, Aug 16, 2022 at 12:36:40PM +0800, Alice Guo (OSS) wrote:
+> > > > From: Ye Li <ye.li@nxp.com>
+> > > >
+> > > > According to measure on i.MX7ULP and i.MX8ULP, the RCS done needs
+> > > > about 3400us and 6700us respectively. So current 20us timeout is
+> > > > not enough. When reconfiguring is on-going, unlock and configure
+> > > > CS will lead to unknown result.
+> > > >
+> > > > Increase the wait timeout value to 10ms and check the return value
+> > > > of RCS wait to fix the issue
+> > > >
+> > >
+> > > You'll have to find a better solution. An active (non-sleep) wait of
+> > > 10 ms is unacceptable.
+> > >
+> > > Guenter
+> >
+> > Hi Guenter,
+> >
+> > Sorry. I think this patch should be merged with " watchdog: imx7ulp_wdt=
+:
+> Handle wdog reconfigure failure", but I didn't merge them. I will send v2=
+.
+> >
+>=20
+> That doesn't change the fact that a 10 ms hot wait is unacceptable.
+>=20
+> Thanks,
+> Guenter
 
-All the larbs that connect to one IOMMU must connect with the same
-smi-common. This patch checks all the mediatek,smi property for each
-larb, If their mediatek,smi are different, it will return fails.
-Also avoid there is no available smi-larb nodes.
+Hi Guenter,
 
-Suggested-by: Guenter Roeck <groeck@chromium.org>
-Signed-off-by: Yong Wu <yong.wu@mediatek.com>
----
- drivers/iommu/mtk_iommu.c | 53 +++++++++++++++++++++++++++------------
- 1 file changed, 37 insertions(+), 16 deletions(-)
+I plan to use readl_poll_timeout to wait for RCS(Reconfiguration Success). =
+I think the sleep_us of readl_poll_timeout can be used to avoid a 10 ms hot=
+ wait.
 
-diff --git a/drivers/iommu/mtk_iommu.c b/drivers/iommu/mtk_iommu.c
-index 21195ac060f1..ea387c762509 100644
---- a/drivers/iommu/mtk_iommu.c
-+++ b/drivers/iommu/mtk_iommu.c
-@@ -1040,7 +1040,7 @@ static const struct component_master_ops mtk_iommu_com_ops = {
- static int mtk_iommu_mm_dts_parse(struct device *dev, struct component_match **match,
- 				  struct mtk_iommu_data *data)
- {
--	struct device_node *larbnode, *smicomm_node, *smi_subcomm_node;
-+	struct device_node *larbnode, *frst_avail_smicomm_node = NULL;
- 	struct platform_device *plarbdev, *pcommdev;
- 	struct device_link *link;
- 	int i, larb_nr, ret;
-@@ -1052,6 +1052,7 @@ static int mtk_iommu_mm_dts_parse(struct device *dev, struct component_match **m
- 		return -EINVAL;
- 
- 	for (i = 0; i < larb_nr; i++) {
-+		struct device_node *smicomm_node, *smi_subcomm_node;
- 		u32 id;
- 
- 		larbnode = of_parse_phandle(dev->of_node, "mediatek,larbs", i);
-@@ -1092,29 +1093,49 @@ static int mtk_iommu_mm_dts_parse(struct device *dev, struct component_match **m
- 			goto err_larbdev_put;
- 		}
- 
-+		/* Get smi-(sub)-common dev from the last larb. */
-+		smi_subcomm_node = of_parse_phandle(larbnode, "mediatek,smi", 0);
-+		if (!smi_subcomm_node) {
-+			ret = -EINVAL;
-+			goto err_larbdev_put;
-+		}
-+
-+		/*
-+		 * It may have two level smi-common. the node is smi-sub-common if it
-+		 * has a new mediatek,smi property. otherwise it is smi-commmon.
-+		 */
-+		smicomm_node = of_parse_phandle(smi_subcomm_node, "mediatek,smi", 0);
-+		if (smicomm_node)
-+			of_node_put(smi_subcomm_node);
-+		else
-+			smicomm_node = smi_subcomm_node;
-+
-+		/*
-+		 * All the larbs that connect to one IOMMU must connect with the same
-+		 * smi-common.
-+		 */
-+		if (!frst_avail_smicomm_node) {
-+			frst_avail_smicomm_node = smicomm_node;
-+		} else if (frst_avail_smicomm_node != smicomm_node) {
-+			dev_err(dev, "mediatek,smi property is not right @larb%d.", id);
-+			of_node_put(smicomm_node);
-+			ret = -EINVAL;
-+			goto err_larbdev_put;
-+		} else {
-+			of_node_put(smicomm_node);
-+		}
-+
- 		component_match_add(dev, match, component_compare_dev, &plarbdev->dev);
- 		platform_device_put(plarbdev);
- 	}
- 
--	/* Get smi-(sub)-common dev from the last larb. */
--	smi_subcomm_node = of_parse_phandle(larbnode, "mediatek,smi", 0);
--	if (!smi_subcomm_node) {
-+	if (!frst_avail_smicomm_node) {
- 		ret = -EINVAL;
- 		goto err_larbdev_put;
- 	}
- 
--	/*
--	 * It may have two level smi-common. the node is smi-sub-common if it
--	 * has a new mediatek,smi property. otherwise it is smi-commmon.
--	 */
--	smicomm_node = of_parse_phandle(smi_subcomm_node, "mediatek,smi", 0);
--	if (smicomm_node)
--		of_node_put(smi_subcomm_node);
--	else
--		smicomm_node = smi_subcomm_node;
--
--	pcommdev = of_find_device_by_node(smicomm_node);
--	of_node_put(smicomm_node);
-+	pcommdev = of_find_device_by_node(frst_avail_smicomm_node);
-+	of_node_put(frst_avail_smicomm_node);
- 	if (!pcommdev) {
- 		ret = -EINVAL;
- 		goto err_larbdev_put;
--- 
-2.18.0
+Best Regards,
+Alice Guo
 
+> > Best Regards,
+> > Alice Guo
+> >
+> > > > Signed-off-by: Ye Li <ye.li@nxp.com>
+> > > > Signed-off-by: Alice Guo <alice.guo@nxp.com>
+> > > > Reviewed-by: Jacky Bai <ping.bai@nxp.com>
+> > > > Acked-by: Jason Liu <jason.hui.liu@nxp.com>
+> > > > ---
+> > > >  drivers/watchdog/imx7ulp_wdt.c | 8 +++++---
+> > > >  1 file changed, 5 insertions(+), 3 deletions(-)
+> > > >
+> > > > diff --git a/drivers/watchdog/imx7ulp_wdt.c
+> > > > b/drivers/watchdog/imx7ulp_wdt.c index a0f6b8cea78f..12715c248688
+> > > > 100644
+> > > > --- a/drivers/watchdog/imx7ulp_wdt.c
+> > > > +++ b/drivers/watchdog/imx7ulp_wdt.c
+> > > > @@ -39,7 +39,7 @@
+> > > >  #define DEFAULT_TIMEOUT	60
+> > > >  #define MAX_TIMEOUT	128
+> > > >  #define WDOG_CLOCK_RATE	1000
+> > > > -#define WDOG_WAIT_TIMEOUT	20
+> > > > +#define WDOG_WAIT_TIMEOUT	10000
+> > > >
+> > > >  static bool nowayout =3D WATCHDOG_NOWAYOUT;
+> > > module_param(nowayout,
+> > > > bool, 0000); @@ -80,7 +80,7 @@ static int
+> > > > imx7ulp_wdt_enable(struct watchdog_device *wdog, bool enable)
+> > > >  		writel(val | WDOG_CS_EN, wdt->base + WDOG_CS);
+> > > >  	else
+> > > >  		writel(val & ~WDOG_CS_EN, wdt->base + WDOG_CS);
+> > > > -	imx7ulp_wdt_wait(wdt->base, WDOG_CS_RCS);
+> > > > +	ret =3D imx7ulp_wdt_wait(wdt->base, WDOG_CS_RCS);
+> > > >
+> > > >  enable_out:
+> > > >  	local_irq_enable();
+> > > > @@ -127,7 +127,9 @@ static int imx7ulp_wdt_set_timeout(struct
+> > > watchdog_device *wdog,
+> > > >  	if (ret)
+> > > >  		goto timeout_out;
+> > > >  	writel(val, wdt->base + WDOG_TOVAL);
+> > > > -	imx7ulp_wdt_wait(wdt->base, WDOG_CS_RCS);
+> > > > +	ret =3D imx7ulp_wdt_wait(wdt->base, WDOG_CS_RCS);
+> > > > +	if (ret)
+> > > > +		goto timeout_out;
+> > > >
+> > > >  	wdog->timeout =3D timeout;
+> > > >
+> > > > --
+> > > > 2.17.1
+> > > >
