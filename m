@@ -2,117 +2,111 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2B98BC00140
-	for <linux-kernel@archiver.kernel.org>; Wed, 24 Aug 2022 08:48:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E9D60C00140
+	for <linux-kernel@archiver.kernel.org>; Wed, 24 Aug 2022 08:48:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236117AbiHXIr7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 24 Aug 2022 04:47:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56472 "EHLO
+        id S236119AbiHXIsi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 24 Aug 2022 04:48:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34598 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236126AbiHXIp6 (ORCPT
+        with ESMTP id S236163AbiHXIsP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 24 Aug 2022 04:45:58 -0400
-Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CA82772FE9
-        for <linux-kernel@vger.kernel.org>; Wed, 24 Aug 2022 01:45:55 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1661330755; x=1692866755;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=rIBijWYDCuJCpKPJprGFsO7FPm8DX5/N35/ZVITEqGo=;
-  b=iy911PyXMISMCafGEqr2Op9uXaOpb7ohrL6EDLhA6Ssq5YCiPQkXOZGy
-   cgtC09XYIRmltQpLuTUrwFFFKIErdss+zppdKCc3VUKPEpsSUwKSRWz5g
-   hUVz7m9MF2Sp8krPb2GnhsA4PazUZAW4uuXQaVDIEL/A6h6xmYoJG3wmg
-   /zS4xJOsM+fQGy4PDDbW+LDwv3JoAF1A93c72yyLj/WBFxKYWqZnjcDZR
-   bgPG4NBJwHobvwmBpq+TWH9iCO+SAX2h4FvtvEwr3voSWoNhpKIioXPCJ
-   km9St1ZlepWi3w+RmKnobcaA0RemHJpn/7tSkiVHJPwRtEg/ejddEjKqu
-   Q==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10448"; a="357882564"
-X-IronPort-AV: E=Sophos;i="5.93,260,1654585200"; 
-   d="scan'208";a="357882564"
-Received: from orsmga005.jf.intel.com ([10.7.209.41])
-  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Aug 2022 01:45:55 -0700
-X-IronPort-AV: E=Sophos;i="5.93,260,1654585200"; 
-   d="scan'208";a="785554080"
-Received: from yuhsuanc-mobl.gar.corp.intel.com (HELO paris.amr.corp.intel.com) ([10.254.38.238])
-  by orsmga005-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Aug 2022 01:45:52 -0700
-From:   Gwan-gyeong Mun <gwan-gyeong.mun@intel.com>
-To:     intel-gfx@lists.freedesktop.org
-Cc:     linux-kernel@vger.kernel.org, dri-devel@lists.freedesktop.org,
-        mchehab@kernel.org, chris@chris-wilson.co.uk,
-        matthew.auld@intel.com, thomas.hellstrom@linux.intel.com,
-        jani.nikula@intel.com, nirmoy.das@intel.com, airlied@linux.ie,
-        daniel@ffwll.ch, andi.shyti@linux.intel.com,
-        andrzej.hajda@intel.com, keescook@chromium.org,
-        mauro.chehab@linux.intel.com,
-        intel-gfx-trybot@lists.freedesktop.org
-Subject: [PATCH v9 8/8] drm/i915: Remove truncation warning for large objects
-Date:   Wed, 24 Aug 2022 17:45:14 +0900
-Message-Id: <20220824084514.2261614-9-gwan-gyeong.mun@intel.com>
-X-Mailer: git-send-email 2.37.1
-In-Reply-To: <20220824084514.2261614-1-gwan-gyeong.mun@intel.com>
-References: <20220824084514.2261614-1-gwan-gyeong.mun@intel.com>
+        Wed, 24 Aug 2022 04:48:15 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0ABEA7AC00;
+        Wed, 24 Aug 2022 01:47:43 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 25F12617AE;
+        Wed, 24 Aug 2022 08:47:43 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 78FF0C433D6;
+        Wed, 24 Aug 2022 08:47:42 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1661330862;
+        bh=KsYrz7x6IcbX0pgtIwi510gAC8itg404yw0MYtsog74=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=Y1M0khDi+IP4HCcNiZ09RpeBhBSSog68O8ucahvlGBkZvemyAPXzntTYDV4/LPl3l
+         ZkOPnxhflT6SNwsh/b5C6qsFvpoh0Z2tFNBesdyWWdJnVR2s3O1OcwSUAxBIKlLhxD
+         kGmpQOD427tZJwa3JpjmaGD8L45/ttt9tMNwK7W9aR0dL89OcNh1r08tiKzw94fGO3
+         1xCGDta2tFX+SyenXianEog0Zam0s3gJPjGvYVbiOD4/i7bhD+juUjv2BL4+SSX/L8
+         SEYJFX1yY4FMpyjyhF/gUbI8L5KLHg+SGb0QPLrNqBm1kMEGdv3nH6rI2SNDj3R4JS
+         dwJbRsEWOk5lg==
+Received: from johan by xi.lan with local (Exim 4.94.2)
+        (envelope-from <johan@kernel.org>)
+        id 1oQm36-0004ZD-Cb; Wed, 24 Aug 2022 10:47:45 +0200
+Date:   Wed, 24 Aug 2022 10:47:44 +0200
+From:   Johan Hovold <johan@kernel.org>
+To:     Matthias Kaehlcke <mka@chromium.org>
+Cc:     Andy Gross <agross@kernel.org>,
+        Bjorn Andersson <andersson@kernel.org>,
+        Konrad Dybcio <konrad.dybcio@somainline.org>,
+        Michael Turquette <mturquette@baylibre.com>,
+        Stephen Boyd <sboyd@kernel.org>, linux-arm-msm@vger.kernel.org,
+        Johan Hovold <johan+linaro@kernel.org>,
+        Douglas Anderson <dianders@chromium.org>,
+        Krishna Kurapati <quic_kriskura@quicinc.com>,
+        linux-kernel@vger.kernel.org, linux-clk@vger.kernel.org,
+        Bjorn Andersson <bjorn.andersson@linaro.org>
+Subject: Re: [PATCH 2/2] clk: qcom: gcc-sc7280: Keep USB GDSC power domains
+ on when USB wakeup is enabled
+Message-ID: <YwXlsK3pjK/q1xwO@hovoldconsulting.com>
+References: <20220822115246.1.I45235b7c40997bc2abf813e4722b4dcdd6aecf6b@changeid>
+ <20220822115246.2.If09027f73daa6e1ed95f5eab02326b543c67132e@changeid>
+ <YwS3FCOqIeajMEgz@hovoldconsulting.com>
+ <YwUDjaG6n95Ddij2@google.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <YwUDjaG6n95Ddij2@google.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Chris Wilson <chris@chris-wilson.co.uk>
+On Tue, Aug 23, 2022 at 09:42:53AM -0700, Matthias Kaehlcke wrote:
+> On Tue, Aug 23, 2022 at 01:16:36PM +0200, Johan Hovold wrote:
+> > On Mon, Aug 22, 2022 at 11:53:11AM -0700, Matthias Kaehlcke wrote:
+> > > Set GENPD_FLAG_ACTIVE_WAKEUP for the USB GDSC power domains of SC7280.
+> > > 
+> > > Suggested-by: Johan Hovold <johan+linaro@kernel.org>
+> > > Signed-off-by: Matthias Kaehlcke <mka@chromium.org>
+> > > ---
+> > > 
+> > >  drivers/clk/qcom/gcc-sc7280.c | 2 ++
+> > >  1 file changed, 2 insertions(+)
+> > > 
+> > > diff --git a/drivers/clk/qcom/gcc-sc7280.c b/drivers/clk/qcom/gcc-sc7280.c
+> > > index 7ff64d4d5920..4ff855269467 100644
+> > > --- a/drivers/clk/qcom/gcc-sc7280.c
+> > > +++ b/drivers/clk/qcom/gcc-sc7280.c
+> > > @@ -3125,6 +3125,7 @@ static struct gdsc gcc_usb30_prim_gdsc = {
+> > >  	.gdscr = 0xf004,
+> > >  	.pd = {
+> > >  		.name = "gcc_usb30_prim_gdsc",
+> > > +		.flags = GENPD_FLAG_ACTIVE_WAKEUP,
+> > 
+> > Have you verified that the power-domain doesn't need to remain on also
+> > when USB isn't used for wakeup?
+> 
+> So far I haven't observed issues with this on sc7180 and sc7280 when USB
+> wakeup is disabled.
 
-Having addressed the issues surrounding incorrect types for local
-variables and potential integer truncation in using the scatterlist API,
-we have closed all the loop holes we had previously identified with
-dangerously large object creation. As such, we can eliminate the warning
-put in place to remind us to complete the review.
+Ok, good.
 
-Signed-off-by: Chris Wilson <chris@chris-wilson.co.uk>
-Signed-off-by: Gwan-gyeong Mun <gwan-gyeong.mun@intel.com>
-Cc: Tvrtko Ursulin <tvrtko.ursulin@intel.com>
-Cc: Brian Welty <brian.welty@intel.com>
-Cc: Matthew Auld <matthew.auld@intel.com>
-Cc: Thomas Hellström <thomas.hellstrom@linux.intel.com>
-Testcase: igt@gem_create@create-massive
-Closes: https://gitlab.freedesktop.org/drm/intel/-/issues/4991
-Reviewed-by: Nirmoy Das <nirmoy.das@intel.com>
-Reviewed-by: Mauro Carvalho Chehab <mchehab@kernel.org>
-Reviewed-by: Andrzej Hajda <andrzej.hajda@intel.com>
----
- drivers/gpu/drm/i915/gem/i915_gem_object.h | 15 ---------------
- 1 file changed, 15 deletions(-)
+I would have assumed that it needed to stay always-on before the
+s/device_can_wakeup/device_may_wakeup/ change as before that the PHYs
+would be left on regardless of the (sysfs) wakeup setting.
 
-diff --git a/drivers/gpu/drm/i915/gem/i915_gem_object.h b/drivers/gpu/drm/i915/gem/i915_gem_object.h
-index 0cf31adbfd41..dd2762da332f 100644
---- a/drivers/gpu/drm/i915/gem/i915_gem_object.h
-+++ b/drivers/gpu/drm/i915/gem/i915_gem_object.h
-@@ -20,25 +20,10 @@
- 
- enum intel_region_id;
- 
--/*
-- * XXX: There is a prevalence of the assumption that we fit the
-- * object's page count inside a 32bit _signed_ variable. Let's document
-- * this and catch if we ever need to fix it. In the meantime, if you do
-- * spot such a local variable, please consider fixing!
-- *
-- * We can check for invalidly typed locals with typecheck(), see for example
-- * i915_gem_object_get_sg().
-- */
--#define GEM_CHECK_SIZE_OVERFLOW(sz) \
--	GEM_WARN_ON((sz) >> PAGE_SHIFT > INT_MAX)
--
- static inline bool i915_gem_object_size_2big(u64 size)
- {
- 	struct drm_i915_gem_object *obj;
- 
--	if (GEM_CHECK_SIZE_OVERFLOW(size))
--		return true;
--
- 	if (overflows_type(size, obj->base.size))
- 		return true;
- 
--- 
-2.37.1
+> > This is the case for sc8280xp and indicates that there are further
+> > missing pieces here (at least for that platform).
+> 
+> What are you observing on sc8280xp when wakeup is disabled?
 
+The wakeup setting doesn't seem to have anything to do with the genpd
+issues on sc8280xp and the controller doesn't resume properly regardless
+of whether the PHYs have been disabled or not during suspend unless the
+PD is left on.
+
+Wakeup itself notably works either way.
+
+Johan
