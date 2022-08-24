@@ -2,189 +2,263 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3FCC6C38142
-	for <linux-kernel@archiver.kernel.org>; Wed, 24 Aug 2022 01:56:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 40D47C38142
+	for <linux-kernel@archiver.kernel.org>; Wed, 24 Aug 2022 02:06:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233206AbiHXB4h (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 21:56:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53080 "EHLO
+        id S232974AbiHXCG3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 23 Aug 2022 22:06:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56812 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229899AbiHXB4e (ORCPT
+        with ESMTP id S229700AbiHXCG0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 21:56:34 -0400
-Received: from APC01-PSA-obe.outbound.protection.outlook.com (mail-psaapc01on2097.outbound.protection.outlook.com [40.107.255.97])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9145E6566C;
-        Tue, 23 Aug 2022 18:56:29 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=ZTtT4ZLsMzwub+rsO4GJTdefySXS6tF/1Lse0bJYaCTxz37zLyA8NW7YNlUV1E0mIddJSXA5KdLxQgqHmX5mW2Z3CG9mbGdDlC7qAFoFPL1nQ1/IXag1NiRTsX1FdPOqZTQ/vxFzvC8NnVTh6AQfyMjVcqIJJiCWJ541WagLzIxpn0kWMD9DDdy4hAuSr3QZ5qtYGupma4LuseOyXmtW8JdegTfqm7VdvunaQs1fDqyqfoXSjZnVtEXySx7donkF6LQRhVoh3ViYi14eWl/VrVEI17NomTsdqkzOt0JDSGRwLzwNpJL5eXEtbDYDE6XBfzR1NqWOz00vdnZ7kRYPNg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=kYLsUqAq+c2J2dbl57tkaK/tCRP/H755lFR6EGXsFsc=;
- b=NyDsfX5dDKyr00tZ6uE3vLjKwendkGHG/BRD91wlok1eH3cr8Efdq2S6joui5wLpyhFzQ6GK5TPJK2Nl6MWVxa7C61/uLghKohRY8jnqaHb2qT6UnDo0kIeqCvbQ8OXi6LAIVe5zx/X/DStFVkqRYNcFl2dyerD+AsmX3uPCN4bVoyBgPjAR7bbzthdM4/xxMJcC1DMS/kO6D7rMIq/COTZ3qdS667/+QwXamayGdJe0F2lVqShF+MvQejE7hJAtWZ0z1/gPXFCApYTQnVUa+plgwDzXN+90/fwE8x5d+z+ds0USiBXLCcXHr2A7SVxTey/ECDBiNBOuEklrmUK77w==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=aspeedtech.com; dmarc=pass action=none
- header.from=aspeedtech.com; dkim=pass header.d=aspeedtech.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=aspeedtech.com;
- s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=kYLsUqAq+c2J2dbl57tkaK/tCRP/H755lFR6EGXsFsc=;
- b=u3cuV9xG8pGsnBmtNuF6ClmiYzIj6t8Up08XaBfWbMi9fsL+uP5AmJibFEdYkxcBsA1BD+cxbMnTfPhtG2qZycc+X+04Rzf8zBJ+RqCLO6mQeWZd7wv9SByUtTmCj1xKyE8pmFcDrULXFbo/9dktVlRN3diE+13VBu2vhbUHk/cucI8zS+fvfizRi1V6P8BVLPauc+0uNRJTPVi7oPzh8Cdl7lYtA0Ef8BKQS5icyLoKmQQGbfmdj51s7jM07h+w5wcy8PJgzuAw0Uc0Smqe16iJ2SorFcUl2+d41D73R6yFculjQCQlUem9EKh2ys4YFQBq3i/Qje4K7OZE1k5IbA==
-Received: from HK0PR06MB2786.apcprd06.prod.outlook.com (2603:1096:203:5b::22)
- by TY2PR06MB3230.apcprd06.prod.outlook.com (2603:1096:404:9a::22) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5546.19; Wed, 24 Aug
- 2022 01:56:24 +0000
-Received: from HK0PR06MB2786.apcprd06.prod.outlook.com
- ([fe80::ce1:d9ac:e036:3e5a]) by HK0PR06MB2786.apcprd06.prod.outlook.com
- ([fe80::ce1:d9ac:e036:3e5a%4]) with mapi id 15.20.5546.024; Wed, 24 Aug 2022
- 01:56:24 +0000
-From:   Chin-Ting Kuo <chin-ting_kuo@aspeedtech.com>
-To:     Joel Stanley <joel@jms.id.au>
-CC:     "wim@linux-watchdog.org" <wim@linux-watchdog.org>,
-        "linux@roeck-us.net" <linux@roeck-us.net>,
-        "andrew@aj.id.au" <andrew@aj.id.au>,
-        BMC-SW <BMC-SW@aspeedtech.com>,
-        "linux-watchdog@vger.kernel.org" <linux-watchdog@vger.kernel.org>,
-        "linux-aspeed@lists.ozlabs.org" <linux-aspeed@lists.ozlabs.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "openbmc@lists.ozlabs.org" <openbmc@lists.ozlabs.org>,
-        "Bonnie_Lo@wiwynn.com" <Bonnie_Lo@wiwynn.com>
-Subject: RE: [PATCH] watchdog: aspeed_wdt: Reorder output signal register
- configuration
-Thread-Topic: [PATCH] watchdog: aspeed_wdt: Reorder output signal register
- configuration
-Thread-Index: AQHYs7Dzzu8nHfKi6kCIg7p/4YhId629Pm+AgAASFzA=
-Date:   Wed, 24 Aug 2022 01:56:24 +0000
-Message-ID: <HK0PR06MB2786179F8469AFB8C0337009B2739@HK0PR06MB2786.apcprd06.prod.outlook.com>
-References: <20220819094905.1962513-1-chin-ting_kuo@aspeedtech.com>
- <CACPK8XfeocBz6phbYyuHHMmZhisw5kGr3QpkdWv3LocvAN=WsA@mail.gmail.com>
-In-Reply-To: <CACPK8XfeocBz6phbYyuHHMmZhisw5kGr3QpkdWv3LocvAN=WsA@mail.gmail.com>
-Accept-Language: zh-TW, en-US
-Content-Language: zh-TW
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-authentication-results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=aspeedtech.com;
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: fcfda9c2-38ec-4bf0-a9c8-08da8573d960
-x-ms-traffictypediagnostic: TY2PR06MB3230:EE_
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: BS1Nwoh7QU+RhSri6lN203AIA+JusWYThHW76A9mH55+Lpp4zxf7v0uyKqzrkMr4uA3WQHe0emJzUwzQIN7WYFe7vkykRvNBsf4IwO/URfdr0kTLtAn4BAbwp0V9P5dGnEVddY+2glzq454Cxl25N4nQpSf/81jraEV9mUZDmotH76o9Nv332pBvieoNqa9oxor1jPY6IXLYQWcNw11eB93OtP/TRGzFWqw4Na3IjtaKouaT2QS8hWsf9+0gWoG14ynxFjUMgkINSxLbFNx6IrITXuV9d43X9irC6MsvTUuRY7PjxpfKqZ2Vwb0bIXA6pKdzwyfSLDwHI9gOCGNtFW6a6WqaRMJtq1Ieyq+uyP5MXjS6SHCTih2KFlt+H6eODjVrZ5oUHxQj1FTBgO8RA5xzeyLiPCFGuHL4pH3OVfodkjXBiqwtMiWv1t6HjVL8CY0ltRu1fOICz7NaltkryKhhkG1HGI3onRILOTwD8+fafp4R1qxtWRViiCneQEEdN7DG2sENX3IaeLWlfeMJhqoTJPbQvWxnns8YH3/rqaNiB+uQE8PUh6/XgoMXiAFmIA3X0I6KV1ed9l2Zv0iYzA+0IOmkwqGq6aKYGB/6QxT0rHQH4FrFsJThpblsv6adUY6caKIwST+ekmY5Ays7YfsO+F/mHPu/Yp4d7cWqJh0Gw3QUjpnkTVj7nF+7p59CNv2X/0ljOTGfUJYr46xdzarA9J6BasQTuAXnCFDiOMpvy5/VePUIkETbDr4fybYoKI1Qzm9j0o09Trvyk+HFZA==
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:HK0PR06MB2786.apcprd06.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(39840400004)(376002)(136003)(366004)(396003)(346002)(8936002)(66476007)(316002)(54906003)(52536014)(2906002)(66446008)(4326008)(76116006)(66556008)(66946007)(64756008)(6916009)(55016003)(9686003)(26005)(41300700001)(53546011)(33656002)(5660300002)(7696005)(8676002)(478600001)(71200400001)(6506007)(122000001)(38100700002)(38070700005)(83380400001)(186003)(86362001);DIR:OUT;SFP:1102;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?utf-8?B?c2tyUlJEUGxsa0NMV1B0RUc0TFRSRGRKQS92MkZzN2JPeFNxSDZkOUJGbm53?=
- =?utf-8?B?WVZJbjJPQ3lwcC83aWpxQk9CRkpKbmxvUndVMVY4R3RTUHFVZ0xFdURGUDdJ?=
- =?utf-8?B?cm5ObVRKdlRDNDRFTU9heEEvalRXQVV6RUcvQVdIMnZNanVlQUVwRTUxcnVn?=
- =?utf-8?B?OWN1RUh2bTFSMWxaeEVDbGswU0wzTUw1SFhzNW8xR2pRNklTN0FVNlIrSm5j?=
- =?utf-8?B?UDlGTnExVDRKY3J1SytVaVJVL00yazJxUHNPQ3Rzc0pvdTRqa2dJWXZZWVdh?=
- =?utf-8?B?VGtNYnlGSjhvS1BWOVBhY3hpb1NVTlRvTGZQUzdOTk52MEpiYnR3bGk1OC9X?=
- =?utf-8?B?UXlkSFk1eVpndGRXT0oyR1pPaExMSDZ1ZDZhVkVKNVBvT0VnTjF2cGJ3R0Qy?=
- =?utf-8?B?b21KVHBOR1RCMWtKQ2Nscm9wRDFKeXdyWDJKazBCYmE0Y3F6NlM0RFhTU2sy?=
- =?utf-8?B?dVRaOUxTdE5NMEt5a1RQMVJmZEF2SW15QTJJaWFxM2c5VXgrbjNpRWNMQjM4?=
- =?utf-8?B?ZEp5bzRxaFAwbmVlcno1WWxLNGJZaW9LTDA3Y213NkJxOSt4Q2E2Q1ZWWlZN?=
- =?utf-8?B?b3FJK3dDQ2ZubVF6TnpkSTIvc2orN1RzS1BwcWNmMFczZ3UzS1lKdi9IREVn?=
- =?utf-8?B?c1JraCttajN1VndjM2xRVnYyQVBUVW5oalpGSTFSemlQUkF5OHgwM1dIa2Zj?=
- =?utf-8?B?eTBpbGRoaG1OQ1lEQW03TG5UeWxTSXNnZXhPalQzQTR4NlZDV3BsMkRCVTg2?=
- =?utf-8?B?Z0V4WnRDdjNNeUM0aDZtUStseHFYMHNOajNTaXVyQUxyZnhXSGlhMzRLbzhY?=
- =?utf-8?B?eWoxNFQ0WkpDdTd4YWRVUngwRjE1Q3IzMWc1WTVtTnFDS2ZPeDhZa0F6c3Ru?=
- =?utf-8?B?MU01MWxtVGEvV2dLRmZIRXF2UjdTRXJhZEtmL2lIRHAxR1RneEVXa3BXY3Rq?=
- =?utf-8?B?MFJQVjg5ZHdCY05Qc2hmMWkrQnNtSkNHWVJyOUpOZlpkb1hOU2k5WUZ2R2Mx?=
- =?utf-8?B?TjF0b0JXMnhENHpnVE1wNEZMWXZtdHFqVDVxZHBzdUFsdWNVSHNnUDZUZ3Vt?=
- =?utf-8?B?SHZqTVVTL3hrdDUwS2NTMjZKU2dpUGtmeHN6M1ZVTjI4MWxUZElhR1ROQWtt?=
- =?utf-8?B?b3g3WGUzaGlKL0RaOGUwWVN1N05rZG9NSStNUDcvSmxPS09tekJldHd4ZjMr?=
- =?utf-8?B?ZWVDeS9USW1SekZNbUZrQXg1L1RKVFFKQ0pHenlxTDBNLzVnQkRPeTJ2WXZI?=
- =?utf-8?B?T3h0V0RYdW8ya1hVbVlZbVAyeS96Q05meFdkc2NINzd2UmYvQ3VobXhFVUdW?=
- =?utf-8?B?RURqQlkycTc0QzJnUHZNVng2ZGNjYUI1L2VXbXlwbHlWN2wxQ095VWhyZkt4?=
- =?utf-8?B?ZWpCK2lUU2FyU0MzT0ZYTi9OYmlsZjlNRGpSZzcybm1Hbmc3ZmJodlI4M2tP?=
- =?utf-8?B?WllWWHhzR1BGR0pSTlZTUFM0THRUWFl2YWIxdHRtTE8xN0xxalhxRW8zS1B2?=
- =?utf-8?B?ZTkwaHVUVUVZaG5WM3NXYzQwK09KQmNsNEJtcEhYWHRvZGM5TzVTaEtKc2Zt?=
- =?utf-8?B?cFEwMDZYcmxSRDdoSmswd1dFcDBHbW5xdGdKY0lGVU5SRnREL0dQS0U1Vkt1?=
- =?utf-8?B?ZXBLb2JJb3NTYnNQNDR2Mld0akxNVHZMU3FNNW9Mczd1MURjeHNza1d2Wi9o?=
- =?utf-8?B?b05qNHFDRjBhN2lMaDlKcVNrTm9ML0EweWgxUld6dkNSMVhKeUc1UENFMU5m?=
- =?utf-8?B?L2hlZmxHUWp1ZTVXTHdyNUp0L3FCaTlTOHZ2bWFhNThhNmVtWTRDeThHM1I5?=
- =?utf-8?B?QTlrbWhySG9mazlTa1FPTXVoa0w5QlFHaDl0eSsyc2pFeGxQQ0YyZStXMzN5?=
- =?utf-8?B?aXhrNVBOS1JRRlFVazNmVXFZUW5ZS0VQSEpiY002cmR2ZXNaUnp6OHBrTEc0?=
- =?utf-8?B?WVZYV1RUWGMvY2R0N2pFclAzL1g5b0hrWDBmeXBVbDFsQWVRUTMvV05MNy95?=
- =?utf-8?B?U0dPSXAyRmgyNE11VDNhaTNXM0FhdVhxRzN0OEpsY2J4NVMyYzJLS05rYXJ4?=
- =?utf-8?B?LzNKN1ZnMlE0TlBCY3FKU2dkQUkwd2cwRHNtL0pidi9iVUNCTVFFZ2phRXpI?=
- =?utf-8?B?UkJ1N3RwUGg1aU5UM1lLeFpYUjU4VmNnTXViaWlSakJDOXhGT1ZvVlUwTGw4?=
- =?utf-8?B?UFE9PQ==?=
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+        Tue, 23 Aug 2022 22:06:26 -0400
+Received: from out30-42.freemail.mail.aliyun.com (out30-42.freemail.mail.aliyun.com [115.124.30.42])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 07E876DF90
+        for <linux-kernel@vger.kernel.org>; Tue, 23 Aug 2022 19:06:24 -0700 (PDT)
+X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R191e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=ay29a033018046056;MF=baolin.wang@linux.alibaba.com;NM=1;PH=DS;RN=6;SR=0;TI=SMTPD_---0VN57Dgm_1661306781;
+Received: from 30.97.48.45(mailfrom:baolin.wang@linux.alibaba.com fp:SMTPD_---0VN57Dgm_1661306781)
+          by smtp.aliyun-inc.com;
+          Wed, 24 Aug 2022 10:06:21 +0800
+Message-ID: <64669c0a-4a6e-f034-a15b-c4a8deea9e5d@linux.alibaba.com>
+Date:   Wed, 24 Aug 2022 10:06:32 +0800
 MIME-Version: 1.0
-X-OriginatorOrg: aspeedtech.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: HK0PR06MB2786.apcprd06.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: fcfda9c2-38ec-4bf0-a9c8-08da8573d960
-X-MS-Exchange-CrossTenant-originalarrivaltime: 24 Aug 2022 01:56:24.0914
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 43d4aa98-e35b-4575-8939-080e90d5a249
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: +/qnyt4jJfcTyk2FVXeHMTx7elDuMvYQ8py+6X1gm4c4B0pAEw3SK5NBSDHCI+sxowt9N8o86XF6t8d19a5QX/OObxdmwX4FREGp3RBxqkc=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: TY2PR06MB3230
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.12.0
+Subject: Re: [PATCH v2 1/5] mm/hugetlb: fix races when looking up a CONT-PTE
+ size hugetlb page
+To:     Mike Kravetz <mike.kravetz@oracle.com>,
+        David Hildenbrand <david@redhat.com>
+Cc:     akpm@linux-foundation.org, songmuchun@bytedance.com,
+        linux-mm@kvack.org, linux-kernel@vger.kernel.org
+References: <cover.1661240170.git.baolin.wang@linux.alibaba.com>
+ <0e5d92da043d147a867f634b17acbcc97a7f0e64.1661240170.git.baolin.wang@linux.alibaba.com>
+ <4c24b891-04ce-2608-79d2-a75dc236533f@redhat.com>
+ <376d2e0a-d28a-984b-903c-1f6451b04a15@linux.alibaba.com>
+ <7d4e7f47-30a5-3cc6-dc9f-aa89120847d8@redhat.com> <YwVo7xSO+VebkIfQ@monkey>
+From:   Baolin Wang <baolin.wang@linux.alibaba.com>
+In-Reply-To: <YwVo7xSO+VebkIfQ@monkey>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-SGkgSm9lbCwNCg0KVGhhbmtzIGZvciB0aGUgcmV2aWV3Lg0KDQo+IC0tLS0tT3JpZ2luYWwgTWVz
-c2FnZS0tLS0tDQo+IEZyb206IEpvZWwgU3RhbmxleSA8am9lbEBqbXMuaWQuYXU+DQo+IFNlbnQ6
-IFdlZG5lc2RheSwgQXVndXN0IDI0LCAyMDIyIDg6NDYgQU0NCj4gVG86IENoaW4tVGluZyBLdW8g
-PGNoaW4tdGluZ19rdW9AYXNwZWVkdGVjaC5jb20+DQo+IFN1YmplY3Q6IFJlOiBbUEFUQ0hdIHdh
-dGNoZG9nOiBhc3BlZWRfd2R0OiBSZW9yZGVyIG91dHB1dCBzaWduYWwgcmVnaXN0ZXINCj4gY29u
-ZmlndXJhdGlvbg0KPiANCj4gT24gRnJpLCAxOSBBdWcgMjAyMiBhdCAwOTo0OSwgQ2hpbi1UaW5n
-IEt1byA8Y2hpbi10aW5nX2t1b0Bhc3BlZWR0ZWNoLmNvbT4NCj4gd3JvdGU6DQo+ID4NCj4gPiBJ
-ZiB0aGUgb3V0cHV0IGRyaXZpbmcgdHlwZSBpcyBwdXNoLXB1bGwgbW9kZSwgdGhlIG91dHB1dCBw
-b2xhcml0eQ0KPiA+IHNob3VsZCBiZSBzZWxlY3RlZCBpbiBhZHZhbmNlLiBPdGhlcndpc2UsIGFu
-IHVuZXhwZWN0ZWQgdmFsdWUgd2lsbCBiZQ0KPiA+IG91dHB1dCBhdCB0aGUgbW9tZW50IG9mIGNo
-YW5naW5nIHRvIHB1c2gtcHVsbCBtb2RlLg0KPiA+IFRodXMsIG91dHB1dCBwb2xhcml0eSwgV0RU
-MThbMzFdLCBtdXN0IGJlIGNvbmZpZ3VyZWQgYmVmb3JlIGNoYW5naW5nDQo+ID4gZHJpdmluZyB0
-eXBlLCBXRFQxOFszMF0uDQo+ID4NCj4gPiBTaWduZWQtb2ZmLWJ5OiBDaGluLVRpbmcgS3VvIDxj
-aGluLXRpbmdfa3VvQGFzcGVlZHRlY2guY29tPg0KPiANCj4gVGhhbmtzIENoaW4tVGluZy4NCj4g
-DQo+IEZpeGVzOiAwMTJjMDQ2MDFmOWQgKCJ3YXRjaGRvZzogYXNwZWVkOiBTdXBwb3J0IGNvbmZp
-Z3VyYXRpb24gb2YgZXh0ZXJuYWwNCj4gc2lnbmFsIHByb3BlcnRpZXMiKQ0KPiBSZXZpZXdlZC1i
-eTogSm9lbCBTdGFubGV5IDxqb2VsQGptcy5pZC5hdT4NCj4gDQo+IEkgd29uZGVyIGlmIGFueSBv
-ZiB0aGVzZSBtYWNoaW5lcyBoaXQgdGhlIGJ1ZzoNCj4NCg0KVW5leHBlY3RlZCBvdXRwdXQgcGlu
-IHZhbHVlIG1heSBub3QgYWx3YXlzIGFwcGVhciBhdCB0aGUgbW9tZW50IG9mIGNoYW5naW5nIGRy
-aXZpbmcgdHlwZS4NCkl0IGRlcGVuZHMgb24gdGhlIG91dHB1dCBzdGF0dXMgb2YgdGhhdCBwaW4g
-YXQgdGhhdCB0aW1lLg0KQnV0LCB3aXRoIHRoaXMgcGF0Y2gsIHRoZSBvdXRwdXQgcGluIHZhbHVl
-IGNhbiBiZSBjb25maXJtZWQuDQoNCg0KQ2hpbi1UaW5nDQoNCj4gJCBnaXQgZ3JlcCAtbCBhc3Bl
-ZWQsZXh0LXB1c2gtcHVsbCBhcmNoL2FybS9ib290L2R0cy8NCj4gYXJjaC9hcm0vYm9vdC9kdHMv
-YXNwZWVkLWJtYy1pYm0tZXZlcmVzdC5kdHMNCj4gYXJjaC9hcm0vYm9vdC9kdHMvYXNwZWVkLWJt
-Yy1pYm0tcmFpbmllci5kdHMNCj4gYXJjaC9hcm0vYm9vdC9kdHMvYXNwZWVkLWJtYy1pbnNwdXIt
-ZnA1MjgwZzIuZHRzDQo+IGFyY2gvYXJtL2Jvb3QvZHRzL2FzcGVlZC1ibWMtb3BwLW1paGF3ay5k
-dHMNCj4gYXJjaC9hcm0vYm9vdC9kdHMvYXNwZWVkLWJtYy1vcHAtbW93Z2xpLmR0cw0KPiBhcmNo
-L2FybS9ib290L2R0cy9hc3BlZWQtYm1jLW9wcC1zd2lmdC5kdHMNCj4gYXJjaC9hcm0vYm9vdC9k
-dHMvYXNwZWVkLWJtYy1vcHAtdGFjb21hLmR0cw0KPiBhcmNoL2FybS9ib290L2R0cy9hc3BlZWQt
-Ym1jLW9wcC13aXRoZXJzcG9vbi5kdHMNCj4gDQo+IA0KPiA+IC0tLQ0KPiA+ICBkcml2ZXJzL3dh
-dGNoZG9nL2FzcGVlZF93ZHQuYyB8IDEyICsrKysrKy0tLS0tLQ0KPiA+ICAxIGZpbGUgY2hhbmdl
-ZCwgNiBpbnNlcnRpb25zKCspLCA2IGRlbGV0aW9ucygtKQ0KPiA+DQo+ID4gZGlmZiAtLWdpdCBh
-L2RyaXZlcnMvd2F0Y2hkb2cvYXNwZWVkX3dkdC5jDQo+ID4gYi9kcml2ZXJzL3dhdGNoZG9nL2Fz
-cGVlZF93ZHQuYyBpbmRleCA0MzY1NzFiNmZjNzkuLmEwM2U0ZmY4MTJhMg0KPiA+IDEwMDY0NA0K
-PiA+IC0tLSBhL2RyaXZlcnMvd2F0Y2hkb2cvYXNwZWVkX3dkdC5jDQo+ID4gKysrIGIvZHJpdmVy
-cy93YXRjaGRvZy9hc3BlZWRfd2R0LmMNCj4gPiBAQCAtMzI1LDE4ICszMjUsMTggQEAgc3RhdGlj
-IGludCBhc3BlZWRfd2R0X3Byb2JlKHN0cnVjdA0KPiBwbGF0Zm9ybV9kZXZpY2UgKnBkZXYpDQo+
-ID4gICAgICAgICAgICAgICAgIHUzMiByZWcgPSByZWFkbCh3ZHQtPmJhc2UgKyBXRFRfUkVTRVRf
-V0lEVEgpOw0KPiA+DQo+ID4gICAgICAgICAgICAgICAgIHJlZyAmPSBjb25maWctPmV4dF9wdWxz
-ZV93aWR0aF9tYXNrOw0KPiA+IC0gICAgICAgICAgICAgICBpZiAob2ZfcHJvcGVydHlfcmVhZF9i
-b29sKG5wLCAiYXNwZWVkLGV4dC1wdXNoLXB1bGwiKSkNCj4gPiAtICAgICAgICAgICAgICAgICAg
-ICAgICByZWcgfD0gV0RUX1BVU0hfUFVMTF9NQUdJQzsNCj4gPiArICAgICAgICAgICAgICAgaWYg
-KG9mX3Byb3BlcnR5X3JlYWRfYm9vbChucCwgImFzcGVlZCxleHQtYWN0aXZlLWhpZ2giKSkNCj4g
-PiArICAgICAgICAgICAgICAgICAgICAgICByZWcgfD0gV0RUX0FDVElWRV9ISUdIX01BR0lDOw0K
-PiA+ICAgICAgICAgICAgICAgICBlbHNlDQo+ID4gLSAgICAgICAgICAgICAgICAgICAgICAgcmVn
-IHw9IFdEVF9PUEVOX0RSQUlOX01BR0lDOw0KPiA+ICsgICAgICAgICAgICAgICAgICAgICAgIHJl
-ZyB8PSBXRFRfQUNUSVZFX0xPV19NQUdJQzsNCj4gPg0KPiA+ICAgICAgICAgICAgICAgICB3cml0
-ZWwocmVnLCB3ZHQtPmJhc2UgKyBXRFRfUkVTRVRfV0lEVEgpOw0KPiA+DQo+ID4gICAgICAgICAg
-ICAgICAgIHJlZyAmPSBjb25maWctPmV4dF9wdWxzZV93aWR0aF9tYXNrOw0KPiA+IC0gICAgICAg
-ICAgICAgICBpZiAob2ZfcHJvcGVydHlfcmVhZF9ib29sKG5wLCAiYXNwZWVkLGV4dC1hY3RpdmUt
-aGlnaCIpKQ0KPiA+IC0gICAgICAgICAgICAgICAgICAgICAgIHJlZyB8PSBXRFRfQUNUSVZFX0hJ
-R0hfTUFHSUM7DQo+ID4gKyAgICAgICAgICAgICAgIGlmIChvZl9wcm9wZXJ0eV9yZWFkX2Jvb2wo
-bnAsICJhc3BlZWQsZXh0LXB1c2gtcHVsbCIpKQ0KPiA+ICsgICAgICAgICAgICAgICAgICAgICAg
-IHJlZyB8PSBXRFRfUFVTSF9QVUxMX01BR0lDOw0KPiA+ICAgICAgICAgICAgICAgICBlbHNlDQo+
-ID4gLSAgICAgICAgICAgICAgICAgICAgICAgcmVnIHw9IFdEVF9BQ1RJVkVfTE9XX01BR0lDOw0K
-PiA+ICsgICAgICAgICAgICAgICAgICAgICAgIHJlZyB8PSBXRFRfT1BFTl9EUkFJTl9NQUdJQzsN
-Cj4gPg0KPiA+ICAgICAgICAgICAgICAgICB3cml0ZWwocmVnLCB3ZHQtPmJhc2UgKyBXRFRfUkVT
-RVRfV0lEVEgpOw0KPiA+ICAgICAgICAgfQ0KPiA+IC0tDQo+ID4gMi4yNS4xDQo+ID4NCg==
+
+
+On 8/24/2022 7:55 AM, Mike Kravetz wrote:
+> On 08/23/22 12:23, David Hildenbrand wrote:
+>> On 23.08.22 12:02, Baolin Wang wrote:
+>>>
+>>>
+>>> On 8/23/2022 4:29 PM, David Hildenbrand wrote:
+>>>> On 23.08.22 09:50, Baolin Wang wrote:
+>>>>> On some architectures (like ARM64), it can support CONT-PTE/PMD size
+>>>>> hugetlb, which means it can support not only PMD/PUD size hugetlb
+>>>>> (2M and 1G), but also CONT-PTE/PMD size(64K and 32M) if a 4K page size
+>>>>> specified.
+>>>>>
+>>>>> So when looking up a CONT-PTE size hugetlb page by follow_page(), it
+>>>>> will use pte_offset_map_lock() to get the pte entry lock for the CONT-PTE
+>>>>> size hugetlb in follow_page_pte(). However this pte entry lock is incorrect
+>>>>> for the CONT-PTE size hugetlb, since we should use huge_pte_lock() to
+>>>>> get the correct lock, which is mm->page_table_lock.
+>>>>>
+>>>>> That means the pte entry of the CONT-PTE size hugetlb under current
+>>>>> pte lock is unstable in follow_page_pte(), we can continue to migrate
+>>>>> or poison the pte entry of the CONT-PTE size hugetlb, which can cause
+>>>>> some potential race issues, and following pte_xxx() validation is also
+>>>>> unstable in follow_page_pte(), even though they are under the 'pte lock'.
+>>>>>
+>>>>> Moreover we should use huge_ptep_get() to get the pte entry value of
+>>>>> the CONT-PTE size hugetlb, which already takes into account the subpages'
+>>>>> dirty or young bits in case we missed the dirty or young state of the
+>>>>> CONT-PTE size hugetlb.
+>>>>>
+>>>>> To fix above issues, introducing a new helper follow_huge_pte() to look
+>>>>> up a CONT-PTE size hugetlb page, which uses huge_pte_lock() to get the
+>>>>> correct pte entry lock to make the pte entry stable, as well as
+>>>>> supporting non-present pte handling.
+>>>>>
+>>>>> Signed-off-by: Baolin Wang <baolin.wang@linux.alibaba.com>
+>>>>> ---
+>>>>>    include/linux/hugetlb.h |  8 ++++++++
+>>>>>    mm/gup.c                | 11 ++++++++++
+>>>>>    mm/hugetlb.c            | 53 +++++++++++++++++++++++++++++++++++++++++++++++++
+>>>>>    3 files changed, 72 insertions(+)
+>>>>>
+>>>>> diff --git a/include/linux/hugetlb.h b/include/linux/hugetlb.h
+>>>>> index 3ec981a..d491138 100644
+>>>>> --- a/include/linux/hugetlb.h
+>>>>> +++ b/include/linux/hugetlb.h
+>>>>> @@ -207,6 +207,8 @@ struct page *follow_huge_addr(struct mm_struct *mm, unsigned long address,
+>>>>>    struct page *follow_huge_pd(struct vm_area_struct *vma,
+>>>>>    			    unsigned long address, hugepd_t hpd,
+>>>>>    			    int flags, int pdshift);
+>>>>> +struct page *follow_huge_pte(struct vm_area_struct *vma, unsigned long address,
+>>>>> +			     pmd_t *pmd, int flags);
+>>>>>    struct page *follow_huge_pmd(struct mm_struct *mm, unsigned long address,
+>>>>>    				pmd_t *pmd, int flags);
+>>>>>    struct page *follow_huge_pud(struct mm_struct *mm, unsigned long address,
+>>>>> @@ -312,6 +314,12 @@ static inline struct page *follow_huge_pd(struct vm_area_struct *vma,
+>>>>>    	return NULL;
+>>>>>    }
+>>>>>    
+>>>>> +static inline struct page *follow_huge_pte(struct vm_area_struct *vma,
+>>>>> +				unsigned long address, pmd_t *pmd, int flags)
+>>>>> +{
+>>>>> +	return NULL;
+>>>>> +}
+>>>>> +
+>>>>>    static inline struct page *follow_huge_pmd(struct mm_struct *mm,
+>>>>>    				unsigned long address, pmd_t *pmd, int flags)
+>>>>>    {
+>>>>> diff --git a/mm/gup.c b/mm/gup.c
+>>>>> index 3b656b7..87a94f5 100644
+>>>>> --- a/mm/gup.c
+>>>>> +++ b/mm/gup.c
+>>>>> @@ -534,6 +534,17 @@ static struct page *follow_page_pte(struct vm_area_struct *vma,
+>>>>>    	if (unlikely(pmd_bad(*pmd)))
+>>>>>    		return no_page_table(vma, flags);
+>>>>>    
+>>>>> +	/*
+>>>>> +	 * Considering PTE level hugetlb, like continuous-PTE hugetlb on
+>>>>> +	 * ARM64 architecture.
+>>>>> +	 */
+>>>>> +	if (is_vm_hugetlb_page(vma)) {
+>>>>> +		page = follow_huge_pte(vma, address, pmd, flags);
+>>>>> +		if (page)
+>>>>> +			return page;
+>>>>> +		return no_page_table(vma, flags);
+>>>>> +	}
+>>>>> +
+>>>>>    	ptep = pte_offset_map_lock(mm, pmd, address, &ptl);
+>>>>>    	pte = *ptep;
+>>>>>    	if (!pte_present(pte)) {
+>>>>> diff --git a/mm/hugetlb.c b/mm/hugetlb.c
+>>>>> index 6c00ba1..cf742d1 100644
+>>>>> --- a/mm/hugetlb.c
+>>>>> +++ b/mm/hugetlb.c
+>>>>> @@ -6981,6 +6981,59 @@ struct page * __weak
+>>>>>    	return NULL;
+>>>>>    }
+>>>>>    
+>>>>> +/* Support looking up a CONT-PTE size hugetlb page. */
+>>>>> +struct page * __weak
+>>>>> +follow_huge_pte(struct vm_area_struct *vma, unsigned long address,
+>>>>> +		pmd_t *pmd, int flags)
+>>>>> +{
+>>>>> +	struct mm_struct *mm = vma->vm_mm;
+>>>>> +	struct hstate *hstate = hstate_vma(vma);
+>>>>> +	unsigned long size = huge_page_size(hstate);
+>>>>> +	struct page *page = NULL;
+>>>>> +	spinlock_t *ptl;
+>>>>> +	pte_t *ptep, pte;
+>>>>> +
+>>>>> +	/*
+>>>>> +	 * FOLL_PIN is not supported for follow_page(). Ordinary GUP goes via
+>>>>> +	 * follow_hugetlb_page().
+>>>>> +	 */
+>>>>> +	if (WARN_ON_ONCE(flags & FOLL_PIN))
+>>>>> +		return NULL;
+>>>>> +
+>>>>> +	ptep = huge_pte_offset(mm, address, size);
+>>>>> +	if (!ptep)
+>>>>> +		return NULL;
+>>>>> +
+>>>>> +retry:
+>>>>> +	ptl = huge_pte_lock(hstate, mm, ptep);
+>>>>> +	pte = huge_ptep_get(ptep);
+>>>>> +	if (pte_present(pte)) {
+>>>>> +		page = pte_page(pte);
+>>>>> +		if (WARN_ON_ONCE(!try_grab_page(page, flags))) {
+>>>>> +			page = NULL;
+>>>>> +			goto out;
+>>>>> +		}
+>>>>> +	} else {
+>>>>> +		if (!(flags & FOLL_MIGRATION)) {
+>>>>> +			page = NULL;
+>>>>> +			goto out;
+>>>>> +		}
+>>>>> +
+>>>>> +		if (is_hugetlb_entry_migration(pte)) {
+>>>>> +			spin_unlock(ptl);
+>>>>> +			__migration_entry_wait_huge(ptep, ptl);
+>>>>> +			goto retry;
+>>>>> +		}
+>>>>> +		/*
+>>>>> +		 * hwpoisoned entry is treated as no_page_table in
+>>>>> +		 * follow_page_mask().
+>>>>> +		 */
+>>>>> +	}
+>>>>> +out:
+>>>>> +	spin_unlock(ptl);
+>>>>> +	return page;
+>>>>> +}
+>>>>> +
+>>>>>    struct page * __weak
+>>>>>    follow_huge_pmd(struct mm_struct *mm, unsigned long address,
+>>>>>    		pmd_t *pmd, int flags)
+>>>>
+>>>>
+>>>> Can someone explain why:
+>>>> * follow_page() goes via follow_page_mask() for hugetlb
+>>>> * __get_user_pages() goes via follow_hugetlb_page() and never via
+>>>>     follow_page_mask() for hugetlb?
+>>>>
+>>>> IOW, why can't we make follow_page_mask() just not handle hugetlb and
+>>>> route everything via follow_hugetlb_page() -- we primarily only have to
+>>>> teach it to not trigger faults.
+> 
+> I have no idea how we got into this situation, and do agree that it
+> makes little sense for both follow_page_mask and follow_hugetlb_page to
+> do page table walking differently for hugetlb pages.
+> 
+> I think I have noted elsewhere that all those follow_huge_p*d rotines
+> will look the same.  It seems they were just added as needed when the
+> follow_page_mask page table walking code was fleshed out.  This also
+> needs a cleanup.  If we eliminate hugetlb handling from follow_page_mask,
+> perhaps we can get rid of all these?
+> 
+>>>
+>>> IMHO, these follow_huge_xxx() functions are arch-specified at first and
+>>> were moved into the common hugetlb.c by commit 9e5fc74c3025 ("mm:
+>>> hugetlb: Copy general hugetlb code from x86 to mm"), and now there are
+>>> still some arch-specified follow_huge_xxx() definition, for example:
+>>> ia64: follow_huge_addr
+>>> powerpc: follow_huge_pd
+>>> s390: follow_huge_pud
+>>>
+>>> What I mean is that follow_hugetlb_page() is a common and
+>>> not-arch-specified function, is it suitable to change it to be
+>>> arch-specified?
+>>> And thinking more, can we rename follow_hugetlb_page() as
+>>> hugetlb_page_faultin() and simplify it to only handle the page faults of
+>>> hugetlb like the faultin_page() for normal page? That means we can make
+>>> sure only follow_page_mask() can handle hugetlb.
+>>>
+> 
+> Something like that might work, but you still have two page table walkers
+> for hugetlb.  I like David's idea (if I understand it correctly) of
+
+What I mean is we may change the hugetlb handling like normal page:
+1) use follow_page_mask() to look up a hugetlb firstly.
+2) if can not get the hugetlb, then try to page fault by 
+hugetlb_page_faultin().
+3) if page fault successed, then retry to find hugetlb by 
+follow_page_mask().
+
+Just a rough thought, and I need more investigation for my idea and 
+David's idea.
+
+> using follow_hugetlb_page for both cases.  As noted, it will need to be
+> taught how to not trigger faults in the follow_page_mask case.
+
+Anyway, I also agree we need some cleanup, and firstly I think we should 
+cleanup these arch-specified follow_huge_xxx() on some architectures 
+which are similar with the common ones. I will look into these.
+
+However, considering cleanup may need more investigation and 
+refactoring, now I prefer to make these bug-fix patches of this patchset 
+into mainline firstly, which are suitable to backport to old version to 
+fix potential race issues. Mike and David, how do you think? Could you 
+help to review these patches? Thanks.
