@@ -2,167 +2,99 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 59D25C32793
-	for <linux-kernel@archiver.kernel.org>; Wed, 24 Aug 2022 06:44:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0C894C00140
+	for <linux-kernel@archiver.kernel.org>; Wed, 24 Aug 2022 06:45:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235091AbiHXGoj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 24 Aug 2022 02:44:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50070 "EHLO
+        id S235428AbiHXGpA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 24 Aug 2022 02:45:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49960 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235219AbiHXGoU (ORCPT
+        with ESMTP id S235141AbiHXGol (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 24 Aug 2022 02:44:20 -0400
-Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 13A2F85FED
-        for <linux-kernel@vger.kernel.org>; Tue, 23 Aug 2022 23:44:18 -0700 (PDT)
-Received: from dggemv703-chm.china.huawei.com (unknown [172.30.72.56])
-        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4MCGg16b93zXdVC;
-        Wed, 24 Aug 2022 14:39:57 +0800 (CST)
-Received: from kwepemm600017.china.huawei.com (7.193.23.234) by
- dggemv703-chm.china.huawei.com (10.3.19.46) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Wed, 24 Aug 2022 14:44:11 +0800
-Received: from [10.174.179.234] (10.174.179.234) by
- kwepemm600017.china.huawei.com (7.193.23.234) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Wed, 24 Aug 2022 14:44:09 +0800
-Message-ID: <98f73fd6-1fe7-0760-167b-fd958154c91f@huawei.com>
-Date:   Wed, 24 Aug 2022 14:44:09 +0800
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.8.0
-Subject: Re: [PATCH -next v7 0/4]arm64: add machine check safe support
-To:     Mark Rutland <mark.rutland@arm.com>,
-        James Morse <james.morse@arm.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
-        Robin Murphy <robin.murphy@arm.com>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Will Deacon <will@kernel.org>,
-        Alexander Viro <viro@zeniv.linux.org.uk>,
-        Michael Ellerman <mpe@ellerman.id.au>,
-        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
-        Paul Mackerras <paulus@samba.org>, <x86@kernel.org>,
-        "H . Peter Anvin" <hpa@zytor.com>
-CC:     <linuxppc-dev@lists.ozlabs.org>,
+        Wed, 24 Aug 2022 02:44:41 -0400
+Received: from mailgw02.mediatek.com (unknown [210.61.82.184])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7BDBC8709D
+        for <linux-kernel@vger.kernel.org>; Tue, 23 Aug 2022 23:44:23 -0700 (PDT)
+X-UUID: 058f42029e6149e2b9448f1d97a76747-20220824
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=mediatek.com; s=dk;
+        h=Content-Type:MIME-Version:References:In-Reply-To:Message-ID:Date:Subject:CC:To:From; bh=LZvZ8iPWoZkm+xc954suJyRAUJdDP7KS8lq07kPBt44=;
+        b=esS0GsiKL0Dm5Vk+6l2+ijLv2qARiS2a+hAQcc5Kux64hFxCAz/crEpMzbujigtzi+BWf3CFuwZies7WfE0u/vrp+ixuyxaWoI8P2VOTpu4EKxWoUpcQQU/MKtTyoAmR0ckTCLiBS6wWVcaqT79eurHQ2VaPDn4c6j1SaPYUBAs=;
+X-CID-UNFAMILIAR: 1
+X-CID-P-RULE: Release_Ham
+X-CID-O-INFO: VERSION:1.1.10,REQID:4d34e18b-8d81-44ec-9d89-d6a5f8ce6d8c,OB:0,L
+        OB:0,IP:0,URL:0,TC:0,Content:0,EDM:0,RT:0,SF:100,FILE:0,BULK:0,RULE:Releas
+        e_Ham,ACTION:release,TS:100
+X-CID-INFO: VERSION:1.1.10,REQID:4d34e18b-8d81-44ec-9d89-d6a5f8ce6d8c,OB:0,LOB
+        :0,IP:0,URL:0,TC:0,Content:0,EDM:0,RT:0,SF:100,FILE:0,BULK:0,RULE:Spam_GS9
+        81B3D,ACTION:quarantine,TS:100
+X-CID-META: VersionHash:84eae18,CLOUDID:974fa1c9-6b09-4f60-bf82-12f039f5d530,C
+        OID:fce975495dff,Recheck:0,SF:28|16|19|48,TC:nil,Content:0,EDM:-3,IP:nil,U
+        RL:0,File:nil,Bulk:nil,QS:nil,BEC:nil,COL:0
+X-UUID: 058f42029e6149e2b9448f1d97a76747-20220824
+Received: from mtkcas11.mediatek.inc [(172.21.101.40)] by mailgw02.mediatek.com
+        (envelope-from <yong.wu@mediatek.com>)
+        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
+        with ESMTP id 2104203020; Wed, 24 Aug 2022 14:44:17 +0800
+Received: from mtkmbs11n2.mediatek.inc (172.21.101.187) by
+ mtkmbs10n2.mediatek.inc (172.21.101.183) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.792.3;
+ Wed, 24 Aug 2022 14:44:15 +0800
+Received: from localhost.localdomain (10.17.3.154) by mtkmbs11n2.mediatek.inc
+ (172.21.101.73) with Microsoft SMTP Server id 15.2.792.15 via Frontend
+ Transport; Wed, 24 Aug 2022 14:44:14 +0800
+From:   Yong Wu <yong.wu@mediatek.com>
+To:     Joerg Roedel <joro@8bytes.org>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        Will Deacon <will@kernel.org>
+CC:     Robin Murphy <robin.murphy@arm.com>, <iommu@lists.linux.dev>,
+        <iommu@lists.linux-foundation.org>,
+        <linux-mediatek@lists.infradead.org>,
         <linux-arm-kernel@lists.infradead.org>,
-        <linux-kernel@vger.kernel.org>, <linux-mm@kvack.org>,
-        Kefeng Wang <wangkefeng.wang@huawei.com>,
-        Xie XiuQi <xiexiuqi@huawei.com>,
-        Guohanjun <guohanjun@huawei.com>
-References: <20220812070557.1028499-1-tongtiangen@huawei.com>
-From:   Tong Tiangen <tongtiangen@huawei.com>
-In-Reply-To: <20220812070557.1028499-1-tongtiangen@huawei.com>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
-Content-Transfer-Encoding: 8bit
-X-Originating-IP: [10.174.179.234]
-X-ClientProxiedBy: dggems703-chm.china.huawei.com (10.3.19.180) To
- kwepemm600017.china.huawei.com (7.193.23.234)
-X-CFilter-Loop: Reflected
+        <linux-kernel@vger.kernel.org>, "Yong Wu" <yong.wu@mediatek.com>,
+        AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>,
+        <mingyuan.ma@mediatek.com>, <yf.wang@mediatek.com>,
+        <libo.kang@mediatek.com>, <chengci.xu@mediatek.com>,
+        <youlin.pei@mediatek.com>, <anan.sun@mediatek.com>,
+        <xueqi.zhang@mediatek.com>, Guenter Roeck <groeck@chromium.org>,
+        "Dan Carpenter" <dan.carpenter@oracle.com>
+Subject: [PATCH v4 6/6] iommu/mediatek: Remove unused "mapping" member from mtk_iommu_data
+Date:   Wed, 24 Aug 2022 14:43:06 +0800
+Message-ID: <20220824064306.21495-7-yong.wu@mediatek.com>
+X-Mailer: git-send-email 2.18.0
+In-Reply-To: <20220824064306.21495-1-yong.wu@mediatek.com>
+References: <20220824064306.21495-1-yong.wu@mediatek.com>
+MIME-Version: 1.0
+Content-Type: text/plain
+X-MTK:  N
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Mark & Catalin & Will:
-	Kindly ping...
+Just remove a unused variable that only is for mtk_iommu_v1.
 
-Thanks,
-Tong.
+Signed-off-by: Yong Wu <yong.wu@mediatek.com>
+Reviewed-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
+Reviewed-by: Matthias Brugger <matthias.bgg@gmail.com>
+---
+ drivers/iommu/mtk_iommu.c | 3 ---
+ 1 file changed, 3 deletions(-)
 
-在 2022/8/12 15:05, Tong Tiangen 写道:
-> With the increase of memory capacity and density, the probability of
-> memory error increases. The increasing size and density of server RAM
-> in the data center and cloud have shown increased uncorrectable memory
-> errors.
-> 
-> Currently, the kernel has a mechanism to recover from hardware memory
-> errors. This patchset provides an new recovery mechanism.
-> 
-> For arm64, the hardware memory error handling is do_sea() which divided
-> into two cases:
->   1. The user state consumed the memory errors, the solution is kill the
->      user process and isolate the error page.
->   2. The kernel state consumed the memory errors, the solution is panic.
-> 
-> For case 2, Undifferentiated panic maybe not the optimal choice, it can be
-> handled better, in some scenarios, we can avoid panic, such as uaccess, if the
-> uaccess fails due to memory error, only the user process will be affected,
-> kill the user process and isolate the user page with hardware memory errors
-> is a better choice.
-> 
-> Since V6:
->   Resend patches that are not merged into the mainline in V6.
-> 
-> Since V5:
->   1. Add patch2/3 to add uaccess assembly helpers.
->   2. Optimize the implementation logic of arm64_do_kernel_sea() in patch8.
->   3. Remove kernel access fixup in patch9.
->   All suggestion are from Mark.
-> 
-> Since V4:
->   1. According Michael's suggestion, add patch5.
->   2. According Mark's suggestiog, do some restructuring to arm64
->   extable, then a new adaptation of machine check safe support is made based
->   on this.
->   3. According Mark's suggestion, support machine check safe in do_mte() in
->   cow scene.
->   4. In V4, two patches have been merged into -next, so V5 not send these
->   two patches.
-> 
-> Since V3:
->   1. According to Robin's suggestion, direct modify user_ldst and
->   user_ldp in asm-uaccess.h and modify mte.S.
->   2. Add new macro USER_MC in asm-uaccess.h, used in copy_from_user.S
->   and copy_to_user.S.
->   3. According to Robin's suggestion, using micro in copy_page_mc.S to
->   simplify code.
->   4. According to KeFeng's suggestion, modify powerpc code in patch1.
->   5. According to KeFeng's suggestion, modify mm/extable.c and some code
->   optimization.
-> 
-> Since V2:
->   1. According to Mark's suggestion, all uaccess can be recovered due to
->      memory error.
->   2. Scenario pagecache reading is also supported as part of uaccess
->      (copy_to_user()) and duplication code problem is also solved.
->      Thanks for Robin's suggestion.
->   3. According Mark's suggestion, update commit message of patch 2/5.
->   4. According Borisllav's suggestion, update commit message of patch 1/5.
-> 
-> Since V1:
->   1.Consistent with PPC/x86, Using CONFIG_ARCH_HAS_COPY_MC instead of
->     ARM64_UCE_KERNEL_RECOVERY.
->   2.Add two new scenes, cow and pagecache reading.
->   3.Fix two small bug(the first two patch).
-> 
-> V1 in here:
-> https://lore.kernel.org/lkml/20220323033705.3966643-1-tongtiangen@huawei.com/
-> 
-> Tong Tiangen (4):
->    uaccess: add generic fallback version of copy_mc_to_user()
->    arm64: add support for machine check error safe
->    arm64: add uaccess to machine check safe
->    arm64: add cow to machine check safe
-> 
->   arch/arm64/Kconfig                   |  1 +
->   arch/arm64/include/asm/asm-extable.h |  5 ++
->   arch/arm64/include/asm/assembler.h   |  4 ++
->   arch/arm64/include/asm/extable.h     |  1 +
->   arch/arm64/include/asm/mte.h         |  4 ++
->   arch/arm64/include/asm/page.h        | 10 ++++
->   arch/arm64/lib/Makefile              |  2 +
->   arch/arm64/lib/copy_page_mc.S        | 82 ++++++++++++++++++++++++++++
->   arch/arm64/lib/mte.S                 | 19 +++++++
->   arch/arm64/mm/copypage.c             | 37 +++++++++++--
->   arch/arm64/mm/extable.c              | 25 +++++++++
->   arch/arm64/mm/fault.c                | 29 +++++++++-
->   arch/powerpc/include/asm/uaccess.h   |  1 +
->   arch/x86/include/asm/uaccess.h       |  1 +
->   include/linux/highmem.h              |  8 +++
->   include/linux/uaccess.h              |  9 +++
->   mm/memory.c                          |  2 +-
->   17 files changed, 233 insertions(+), 7 deletions(-)
->   create mode 100644 arch/arm64/lib/copy_page_mc.S
-> 
+diff --git a/drivers/iommu/mtk_iommu.c b/drivers/iommu/mtk_iommu.c
+index ea387c762509..b06c91f5a9b2 100644
+--- a/drivers/iommu/mtk_iommu.c
++++ b/drivers/iommu/mtk_iommu.c
+@@ -221,10 +221,7 @@ struct mtk_iommu_data {
+ 	struct device			*smicomm_dev;
+ 
+ 	struct mtk_iommu_bank_data	*bank;
+-
+-	struct dma_iommu_mapping	*mapping; /* For mtk_iommu_v1.c */
+ 	struct regmap			*pericfg;
+-
+ 	struct mutex			mutex; /* Protect m4u_group/m4u_dom above */
+ 
+ 	/*
+-- 
+2.18.0
+
