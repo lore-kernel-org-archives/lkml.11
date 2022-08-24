@@ -2,95 +2,148 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2CFD9C00140
-	for <linux-kernel@archiver.kernel.org>; Wed, 24 Aug 2022 19:28:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 61CA7C3F6B0
+	for <linux-kernel@archiver.kernel.org>; Wed, 24 Aug 2022 19:29:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239874AbiHXT2L (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 24 Aug 2022 15:28:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53338 "EHLO
+        id S238958AbiHXT3F (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 24 Aug 2022 15:29:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53664 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236263AbiHXT2G (ORCPT
+        with ESMTP id S236263AbiHXT3C (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 24 Aug 2022 15:28:06 -0400
-Received: from mail.skyhub.de (mail.skyhub.de [IPv6:2a01:4f8:190:11c2::b:1457])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E7C60641C
-        for <linux-kernel@vger.kernel.org>; Wed, 24 Aug 2022 12:28:05 -0700 (PDT)
-Received: from zn.tnic (p200300ea971b9859329c23fffea6a903.dip0.t-ipconnect.de [IPv6:2003:ea:971b:9859:329c:23ff:fea6:a903])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.skyhub.de (SuperMail on ZX Spectrum 128k) with ESMTPSA id 4A9F71EC0409;
-        Wed, 24 Aug 2022 21:28:00 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=alien8.de; s=dkim;
-        t=1661369280;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:in-reply-to:in-reply-to:  references:references;
-        bh=dm3Hsyqhu+/OJtBwmhJVKQwWetTjCukNAgy1fehtnus=;
-        b=AkBdvDqrjowua+GfOIr2z2+syDHmJV4rVQmZWs1GX1wtzBQvsGxnmd85KcHxlwsuh1t2qI
-        Inwz7of6DV9zz13asJPg6DodotS6WRXjf6pWL3EHLzMY8zJIOzfKJGy1bvJHl/iOFTm0f6
-        jaPDG0xFvGV64zOK9OLYpIZYcg3ReAw=
-Date:   Wed, 24 Aug 2022 21:27:55 +0200
-From:   Borislav Petkov <bp@alien8.de>
-To:     Ashok Raj <ashok.raj@intel.com>
-Cc:     Thomas Gleixner <tglx@linutronix.de>,
-        Tony Luck <tony.luck@intel.com>,
-        Dave Hansen <dave.hansen@intel.com>,
-        LKML Mailing List <linux-kernel@vger.kernel.org>,
-        X86-kernel <x86@kernel.org>,
-        Andy Lutomirski <luto@amacapital.net>,
-        Tom Lendacky <thomas.lendacky@amd.com>,
-        Jacon Jun Pan <jacob.jun.pan@intel.com>
-Subject: Re: [PATCH v3 1/5] x86/microcode/intel: Check against CPU signature
- before saving microcode
-Message-ID: <YwZ7u0ljd+AW1P9d@zn.tnic>
-References: <20220817051127.3323755-1-ashok.raj@intel.com>
- <20220817051127.3323755-2-ashok.raj@intel.com>
- <Yv9k6fqRANu4ojK6@zn.tnic>
- <YwS2SXBN2J5FQflG@araj-dh-work>
+        Wed, 24 Aug 2022 15:29:02 -0400
+Received: from mail-lj1-x22e.google.com (mail-lj1-x22e.google.com [IPv6:2a00:1450:4864:20::22e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ADA0E78BC5
+        for <linux-kernel@vger.kernel.org>; Wed, 24 Aug 2022 12:29:00 -0700 (PDT)
+Received: by mail-lj1-x22e.google.com with SMTP id k22so2678966ljg.2
+        for <linux-kernel@vger.kernel.org>; Wed, 24 Aug 2022 12:29:00 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc;
+        bh=ud6LSmJPhrEe1O3tH9bfACVlWJ+Fj1pwj346rUu8aFw=;
+        b=Z2jM1L6bkJVPjP2DKAJljcsyrOOrVaGqJLAqzlKrZ639M1ou4W+gt6VEnZfM9GIMCF
+         SeUBSTwTEy/ugCEIoJSMg5gpQiXV/YW8/zFDEiaz/lWm7DXElQFdhc17HKi9O+Y2CZkL
+         LhgOKoPXstdnGWEeMhiyY+aOF3HfM663rHuZK+6w6NIL9v3qCSiPAEZX+aiF0FQg3jWf
+         pv7cfJk+q0TMm2WecwsV5HTEjCEihc3UL8NuZ65x8xj93UAjZQQwIdmU3F/yvrkvP4aa
+         azCkdsSTY4R3TVzoCkUDFq7dX8KwGtjjKyO7z02ZdXK1aG1zPFzRiwWJpd0Ss4+9b9BD
+         INIw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc;
+        bh=ud6LSmJPhrEe1O3tH9bfACVlWJ+Fj1pwj346rUu8aFw=;
+        b=ZOKHGRwoo4ATllpmWZ/mSnDS8SX5ektzHJDprq6c8D5gArPb/pkxwIsIw4QYf9kNB4
+         aSvWMcVzsm4e2LmOZBBXBCwjUO2JS5wxFwa0/p+RervxormO3x3GumpoYZ2lZntDlMg3
+         12r+Zlkb07a/r9SE1BvEBnkatGnTwm0La9YOgIOSdrmdS5mdhJEbRXpHjBzM1JfpMxN/
+         7ZaSChmcDTn+xp0pWY6DdkidFrUtuDTS9PN05dBCqphasMa4a+JlqqAJx9PKuS9W5LaX
+         g+2SbhZaFEQcsW/FsUXP+lfBdT5sOaM5axwIdS/GQCRvFNw9MH/e7WIT+u9ZlZhD3f3/
+         psaQ==
+X-Gm-Message-State: ACgBeo1XGvHtoMe3huKUZmk1TnJOe6ggwnm4CC2uuS14+YXXYMltkK3j
+        fVViP3JZ3kClVWy2plWw0QYKAj+62UAOpYxIY44TLA==
+X-Google-Smtp-Source: AA6agR6qzB+SDh82GOibU+ibPmxm9norlNaWBI74hZciCbfvsiOsZDachVztTY0d9cfRDTTu6O2cHU/LynXQAo0SUJw=
+X-Received: by 2002:a2e:9ad2:0:b0:261:cbdd:1746 with SMTP id
+ p18-20020a2e9ad2000000b00261cbdd1746mr181526ljj.486.1661369338801; Wed, 24
+ Aug 2022 12:28:58 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <YwS2SXBN2J5FQflG@araj-dh-work>
+References: <20220307213356.2797205-1-brijesh.singh@amd.com>
+ <20220307213356.2797205-44-brijesh.singh@amd.com> <CAAH4kHYm1BhjJXUMH12kzR0Xun=fUTj-3Hy6At0XR_09Bf0Ccw@mail.gmail.com>
+In-Reply-To: <CAAH4kHYm1BhjJXUMH12kzR0Xun=fUTj-3Hy6At0XR_09Bf0Ccw@mail.gmail.com>
+From:   Peter Gonda <pgonda@google.com>
+Date:   Wed, 24 Aug 2022 13:28:47 -0600
+Message-ID: <CAMkAt6oKQ3CnmNdrJLMWreExkN56t9vs=B883_JD+HtiNYw9HA@mail.gmail.com>
+Subject: Re: [PATCH v12 43/46] virt: Add SEV-SNP guest driver
+To:     Dionna Amalie Glaze <dionnaglaze@google.com>
+Cc:     Brijesh Singh <brijesh.singh@amd.com>,
+        "the arch/x86 maintainers" <x86@kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        "open list:X86 KVM CPUs" <kvm@vger.kernel.org>,
+        linux-efi <linux-efi@vger.kernel.org>,
+        platform-driver-x86@vger.kernel.org, linux-coco@lists.linux.dev,
+        Linux Memory Management List <linux-mm@kvack.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>, Joerg Roedel <jroedel@suse.de>,
+        Tom Lendacky <thomas.lendacky@amd.com>,
+        "H. Peter Anvin" <hpa@zytor.com>, Ard Biesheuvel <ardb@kernel.org>,
+        Paolo Bonzini <pbonzini@redhat.com>,
+        Sean Christopherson <seanjc@google.com>,
+        Vitaly Kuznetsov <vkuznets@redhat.com>,
+        Jim Mattson <jmattson@google.com>,
+        Andy Lutomirski <luto@kernel.org>,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        Sergio Lopez <slp@redhat.com>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>,
+        David Rientjes <rientjes@google.com>,
+        Dov Murik <dovmurik@linux.ibm.com>,
+        Tobin Feldman-Fitzthum <tobin@ibm.com>,
+        Borislav Petkov <bp@alien8.de>,
+        Michael Roth <michael.roth@amd.com>,
+        Vlastimil Babka <vbabka@suse.cz>,
+        "Kirill A . Shutemov" <kirill.shutemov@linux.intel.com>,
+        Andi Kleen <ak@linux.intel.com>,
+        "Dr . David Alan Gilbert" <dgilbert@redhat.com>,
+        brijesh.ksingh@gmail.com, Tony Luck <tony.luck@intel.com>,
+        Marc Orr <marcorr@google.com>,
+        Kuppuswamy Sathyanarayanan 
+        <sathyanarayanan.kuppuswamy@linux.intel.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Aug 23, 2022 at 11:13:13AM +0000, Ashok Raj wrote:
-> > > patch1:
-> > > fms3 <--- header FMS
-> > > ...
-> > > ext_sig:
-> > > fms1
-> > > fms2
-> > > 
-> > > patch2: new
-> > > fms2 <--- header FMS
-> > > 
-> > > Current code takes only fms3 and checks with patch2 fms2.
-> > 
-> > So, find_matching_signature() does all the signatures matching and
-> > scanning already. If anything, that function should tell its callers
-> > whether the patch it is looking at - the fms2 one - should replace the
-> > current one or not.
-> > 
-> > I.e., all the logic to say how strong a patch match is, should be
-> > concentrated there. And then the caller will do the according action.
-> 
-> I updated the commit log accordingly. Basically find_matching_signature()
-> is only intended to find a CPU's sig/pf against a microcode image and not
-> intended to compare between two different images. 
+On Wed, Aug 24, 2022 at 12:01 PM Dionna Amalie Glaze
+<dionnaglaze@google.com> wrote:
+>
+> Apologies for the necropost, but I noticed strange behavior testing my
+> own Golang-based wrapper around the /dev/sev-guest driver.
+>
+> > +
+> > +static int handle_guest_request(struct snp_guest_dev *snp_dev, u64 exit_code, int msg_ver,
+> > +                               u8 type, void *req_buf, size_t req_sz, void *resp_buf,
+> > +                               u32 resp_sz, __u64 *fw_err)
+> > +{
+> > +       unsigned long err;
+> > +       u64 seqno;
+> > +       int rc;
+> > +
+> > +       /* Get message sequence and verify that its a non-zero */
+> > +       seqno = snp_get_msg_seqno(snp_dev);
+> > +       if (!seqno)
+> > +               return -EIO;
+> > +
+> > +       memset(snp_dev->response, 0, sizeof(struct snp_guest_msg));
+> > +
+> > +       /* Encrypt the userspace provided payload */
+> > +       rc = enc_payload(snp_dev, seqno, msg_ver, type, req_buf, req_sz);
+> > +       if (rc)
+> > +               return rc;
+> > +
+> > +       /* Call firmware to process the request */
+> > +       rc = snp_issue_guest_request(exit_code, &snp_dev->input, &err);
+> > +       if (fw_err)
+> > +               *fw_err = err;
+> > +
+> > +       if (rc)
+> > +               return rc;
+> > +
+>
+> The fw_err is written back regardless of rc, so since err is
+> uninitialized, you can end up with garbage written back. I've worked
+> around this by only caring about fw_err when the result is -EIO, but
+> thought that I should bring this up.
 
-Err, what?
+I also noticed that we use a u64 in snp_guest_request_ioctl.fw_err and
+u32 in sev_issue_cmd.error when these should be errors from the
+sev_ret_code enum IIUC.
 
-find_matching_signature() looks at fmt3 - your example above - and then
-goes and looks at ext_sig. Also your example above.
+We can fix snp_issue_guest_request() to set |fw_err| to zero when it
+returns 0 but what should we return to userspace if we encounter an
+error that prevents the FW from even being called? In ` crypto: ccp -
+Ensure psp_ret is always init'd in __sev_platform_init_locked()` we
+set the return to -1 so we could continue that convection here and
+better codify it in the sev_ret_code enum.
 
-So you can teach that function to say with a *separate* return value
-"replace current patch with this new patch because this new patch is a
-better fit."
-
--- 
-Regards/Gruss,
-    Boris.
-
-https://people.kernel.org/tglx/notes-about-netiquette
+>
+> --
+> -Dionna Glaze, PhD (she/her)
