@@ -2,143 +2,166 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C49D1C00140
-	for <linux-kernel@archiver.kernel.org>; Wed, 24 Aug 2022 19:00:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EA7DBC32796
+	for <linux-kernel@archiver.kernel.org>; Wed, 24 Aug 2022 19:02:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239348AbiHXTAe (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 24 Aug 2022 15:00:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33682 "EHLO
+        id S239659AbiHXTB7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 24 Aug 2022 15:01:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35288 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239246AbiHXTAU (ORCPT
+        with ESMTP id S238384AbiHXTB5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 24 Aug 2022 15:00:20 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 50317658B
-        for <linux-kernel@vger.kernel.org>; Wed, 24 Aug 2022 12:00:17 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1661367616;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=FIiUmby88Yb55/rny3f+ooD+63bbUsdXMXTOH9q/LhQ=;
-        b=Zh9x3VQKu+PcrbaZVglpHgKNzHfn7bKy9642fh9qZTIXxG0DwE6QJzSUaj6hr9p+5wJZxO
-        4cu6OjZ8K8asNRzf6UKO9CzixC/QZ/rzpuy6eHQALjmjMUOgqCz+SQpzzo2wkVJrciIzkL
-        oDJsD6LcrSf5Xk1Z97vxBMd3Kar4Lyk=
-Received: from mail-wm1-f69.google.com (mail-wm1-f69.google.com
- [209.85.128.69]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
- us-mta-654-9UUhO1CBMcGlNpOjZg-itQ-1; Wed, 24 Aug 2022 15:00:15 -0400
-X-MC-Unique: 9UUhO1CBMcGlNpOjZg-itQ-1
-Received: by mail-wm1-f69.google.com with SMTP id ay21-20020a05600c1e1500b003a6271a9718so9512753wmb.0
-        for <linux-kernel@vger.kernel.org>; Wed, 24 Aug 2022 12:00:15 -0700 (PDT)
+        Wed, 24 Aug 2022 15:01:57 -0400
+Received: from mail-oa1-x2d.google.com (mail-oa1-x2d.google.com [IPv6:2001:4860:4864:20::2d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 94E92186C6;
+        Wed, 24 Aug 2022 12:01:56 -0700 (PDT)
+Received: by mail-oa1-x2d.google.com with SMTP id 586e51a60fabf-11ba6e79dd1so21992486fac.12;
+        Wed, 24 Aug 2022 12:01:56 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc;
+        bh=BmUDAkEKs1QpgVs64aZzzQ45Z2VQd8OBs9xag8teZ5A=;
+        b=hq301drIRDNXKLDjux5Dw7HOGWufL2ta4/DKG0n/S8UDdcDf8G6vX0gNBwWL4kfU4D
+         l8aaI7AW8dcuYM77/3T9t/84xiLojrORAiIsE8vMyAe5brccsxj/rokbVEIROAMvx5Uc
+         aaDqYj7esjRU9Yc6PA6fGDJ8V/qWKw/Umb9shFdTiap4MDV8s/BF3KqOJzKqR5sPRyh9
+         /ZdCDk2yuadBFZqTh0lKHt6Q7K1IJ9I3NDH4MVLxIrSH9JPgTrCBqNr4nhIQqSbCGxrb
+         BoRgPi11+3jOZPJU4Cmmg4ilmc19AAN/seMUEkemwVpvhg24ZxXAER5nPLrsDe6gtG49
+         KF2w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:organization:from:references
-         :cc:to:content-language:subject:user-agent:mime-version:date
-         :message-id:x-gm-message-state:from:to:cc;
-        bh=FIiUmby88Yb55/rny3f+ooD+63bbUsdXMXTOH9q/LhQ=;
-        b=uMfvLtSyWuHFwGWl66cwtqGdx4V5eUD4lPnTmDrS1A8NmL+45qqldKy+cIPey/lPnQ
-         SC6MuYeIeENsD1F+a24cPhseoLrHsaB2abMTRB9qW6ARlnDDrwE+cLdsNzXxtP4DPjlD
-         myrMC/vNuF2RtCbWYuhSuVo1QI5kilY9txuDD11Gm/r8veWn+1ySUoV9jdUHJjhjrI7P
-         miyZGn7NKW9fDAh0drt35Ey994UkyHous+tht2QAHMBCRV59LhSjDsv9FRnw5fHthoWr
-         r75HbnFEiHQOqM2LGv02IoVkx130w0yRg0Nkhcn4CA5e+RDFvKTTl7GxMLDGEqamXiCL
-         LsFg==
-X-Gm-Message-State: ACgBeo2uhDRrvQ84r2emuEQQR3hqLlK+dFFGrmBSPQl4pnBrkUR/cLFS
-        dh88zoqmk7h7VSQO71xk4AaIUuuzt4Xf7xiPxquPD6eo/uhOLLChIeqeD50vFRhKoIYiRSoBa8y
-        LcQoTbj+SqmMatxbWu/hrZfOC
-X-Received: by 2002:a7b:c451:0:b0:3a6:829a:6102 with SMTP id l17-20020a7bc451000000b003a6829a6102mr5173687wmi.12.1661367614257;
-        Wed, 24 Aug 2022 12:00:14 -0700 (PDT)
-X-Google-Smtp-Source: AA6agR5ZOVK4qpWVvOkODaq4ZLUaZhRYxNGGEB2PU/jsgu2M5tKioth0d58LkEi9N7bWMamVaYBo2w==
-X-Received: by 2002:a7b:c451:0:b0:3a6:829a:6102 with SMTP id l17-20020a7bc451000000b003a6829a6102mr5173682wmi.12.1661367614025;
-        Wed, 24 Aug 2022 12:00:14 -0700 (PDT)
-Received: from ?IPV6:2003:cb:c707:c500:5445:cf40:2e32:6e73? (p200300cbc707c5005445cf402e326e73.dip0.t-ipconnect.de. [2003:cb:c707:c500:5445:cf40:2e32:6e73])
-        by smtp.gmail.com with ESMTPSA id w5-20020a5d5445000000b0021e571a99d5sm17290174wrv.17.2022.08.24.12.00.12
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 24 Aug 2022 12:00:13 -0700 (PDT)
-Message-ID: <693dc564-349b-7174-b096-53d2107f27a8@redhat.com>
-Date:   Wed, 24 Aug 2022 21:00:11 +0200
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc;
+        bh=BmUDAkEKs1QpgVs64aZzzQ45Z2VQd8OBs9xag8teZ5A=;
+        b=xybV3UaOd8FU1FJadLt3lgToNdUq8BPZnQbRllIyyHY+c1+24cbdZw9buLVNH09JpL
+         bEolyhfBdhr5rRxSfwT96HmGMxf3i5mXD1ac+pWwL/xqYaybrjePVJmw4VD8dqwfHYdt
+         4dcfgdEk+3BeGdRLqybyHuMYg0Y70i1QJQubW3+CYsRE23NqfSHkiPuclkcw4r6OnjQW
+         j9PzIW6kJ7uVlD/oBgBjyZm/HhhII2QsXAyMQWtHf9H5mxF4mtobz5ocpqBbkGvLUJMZ
+         lk2QzFH8mEJaYrzMIxzbAuRkf2aQllcJgN5p2s10SEolSCT6o+LLCXUQV+ctWRfKGPQY
+         tZVg==
+X-Gm-Message-State: ACgBeo3NiFvKSwb4NXfNkMnn0DHSlLdzyc+/cmKJc16qqJ1FToVNs2k3
+        iZInD0yfDDcZYFobo1IrW3WbYKZczEZD+vsRJfU=
+X-Google-Smtp-Source: AA6agR6utCAbb8FEE7KJ6XCRZJyWK6tahQl9cT49ap8xyT6ONQ04pMG8osXSVOG0kx+xHxkNzrDvp9mZYPzrJKAplBg=
+X-Received: by 2002:a05:6870:b692:b0:11d:482f:3642 with SMTP id
+ cy18-20020a056870b69200b0011d482f3642mr264476oab.38.1661367714607; Wed, 24
+ Aug 2022 12:01:54 -0700 (PDT)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.12.0
-Subject: Re: [PATCH RFC 2/2] checkpatch: warn on usage of VM_BUG_ON() and
- friends
-Content-Language: en-US
-To:     Joe Perches <joe@perches.com>, linux-kernel@vger.kernel.org
-Cc:     linux-mm@kvack.org, linux-doc@vger.kernel.org,
-        kexec@lists.infradead.org,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Ingo Molnar <mingo@kernel.org>,
-        David Laight <David.Laight@ACULAB.COM>,
-        Jonathan Corbet <corbet@lwn.net>,
-        Andy Whitcroft <apw@canonical.com>,
-        Dwaipayan Ray <dwaipayanray1@gmail.com>,
-        Lukas Bulwahn <lukas.bulwahn@gmail.com>,
-        Baoquan He <bhe@redhat.com>, Vivek Goyal <vgoyal@redhat.com>,
-        Dave Young <dyoung@redhat.com>
-References: <20220824163100.224449-1-david@redhat.com>
- <20220824163100.224449-3-david@redhat.com>
- <3c250aa26020b2f336fd575a58d06ba26faf1f14.camel@perches.com>
-From:   David Hildenbrand <david@redhat.com>
-Organization: Red Hat
-In-Reply-To: <3c250aa26020b2f336fd575a58d06ba26faf1f14.camel@perches.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+References: <20220821181917.1188021-1-robdclark@gmail.com> <20220821181917.1188021-6-robdclark@gmail.com>
+ <93ff00db-b5d0-350c-b192-e58b781bb1cf@quicinc.com>
+In-Reply-To: <93ff00db-b5d0-350c-b192-e58b781bb1cf@quicinc.com>
+From:   Rob Clark <robdclark@gmail.com>
+Date:   Wed, 24 Aug 2022 12:02:28 -0700
+Message-ID: <CAF6AEGtBw5pgdpaF6F5sBJvn6Kief2jHnSbKXFJGZ_GeGVjafQ@mail.gmail.com>
+Subject: Re: [PATCH 5/5] drm/msm: Skip tlbinv on unmap from non-current pgtables
+To:     Akhil P Oommen <quic_akhilpo@quicinc.com>
+Cc:     dri-devel@lists.freedesktop.org, linux-arm-msm@vger.kernel.org,
+        freedreno@lists.freedesktop.org,
+        Rob Clark <robdclark@chromium.org>,
+        Abhinav Kumar <quic_abhinavk@quicinc.com>,
+        Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
+        Sean Paul <sean@poorly.run>, David Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        Konrad Dybcio <konrad.dybcio@somainline.org>,
+        Chia-I Wu <olvaffe@gmail.com>,
+        Douglas Anderson <dianders@chromium.org>,
+        open list <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 24.08.22 18:52, Joe Perches wrote:
-> On Wed, 2022-08-24 at 18:31 +0200, David Hildenbrand wrote:
->> checkpatch does not point out that VM_BUG_ON() and friends should be
->> avoided, however, Linus notes:
->>
->>     VM_BUG_ON() has the exact same semantics as BUG_ON. It is literally
->>     no different, the only difference is "we can make the code smaller
->>     because these are less important". [1]
->>
->> So let's warn on VM_BUG_ON() and friends as well. While at it, make it
->> clearer that the kernel really shouldn't be crashed.
->>
->> Note that there are some other *_BUG_ON flavors, but they are not all
->> bad: for example, KVM_BUG_ON() only triggers a WARN_ON_ONCE and then
->> flags KVM as being buggy, so we'll not care about them for now here.
-> []
->> diff --git a/scripts/checkpatch.pl b/scripts/checkpatch.pl
-> []
->> @@ -4695,12 +4695,12 @@ sub process {
->>  			}
->>  		}
->>  
->> -# avoid BUG() or BUG_ON()
->> -		if ($line =~ /\b(?:BUG|BUG_ON)\b/) {
->> +# do not use BUG(), BUG_ON(), VM_BUG_ON() and friends.
->> +		if ($line =~ /\b(?:BUG|BUG_ON|VM_BUG_ON|VM_BUG_ON_[A-Z]+)\b/) {
-> 
-> Perhaps better as something like the below to pick up more variants
-> 
-> 		if ($line =~ /\b(?!KVM_|BUILD_)(?:[A-Z_]*_)?BUG(?:_ON)?(?:_[A-Z_]+)?\s*\(/
+On Wed, Aug 24, 2022 at 10:46 AM Akhil P Oommen
+<quic_akhilpo@quicinc.com> wrote:
+>
+> On 8/21/2022 11:49 PM, Rob Clark wrote:
+> > From: Rob Clark <robdclark@chromium.org>
+> >
+> > We can rely on the tlbinv done by CP_SMMU_TABLE_UPDATE in this case.
+> >
+> > Signed-off-by: Rob Clark <robdclark@chromium.org>
+> > ---
+> >   drivers/gpu/drm/msm/adreno/a6xx_gpu.c |  6 ++++++
+> >   drivers/gpu/drm/msm/msm_iommu.c       | 29 +++++++++++++++++++++++++++
+> >   2 files changed, 35 insertions(+)
+> >
+> > diff --git a/drivers/gpu/drm/msm/adreno/a6xx_gpu.c b/drivers/gpu/drm/msm/adreno/a6xx_gpu.c
+> > index c8ad8aeca777..1ba0ed629549 100644
+> > --- a/drivers/gpu/drm/msm/adreno/a6xx_gpu.c
+> > +++ b/drivers/gpu/drm/msm/adreno/a6xx_gpu.c
+> > @@ -1180,6 +1180,12 @@ static int hw_init(struct msm_gpu *gpu)
+> >       /* Always come up on rb 0 */
+> >       a6xx_gpu->cur_ring = gpu->rb[0];
+> >
+> > +     /*
+> > +      * Note, we cannot assume anything about the state of the SMMU when
+> > +      * coming back from power collapse, so force a CP_SMMU_TABLE_UPDATE
+> > +      * on the first submit.  Also, msm_iommu_pagetable_unmap() relies on
+> > +      * this behavior.
+> > +      */
+> >       gpu->cur_ctx_seqno = 0;
+> >
+> >       /* Enable the SQE_to start the CP engine */
+> > diff --git a/drivers/gpu/drm/msm/msm_iommu.c b/drivers/gpu/drm/msm/msm_iommu.c
+> > index 94c8c09980d1..218074a58081 100644
+> > --- a/drivers/gpu/drm/msm/msm_iommu.c
+> > +++ b/drivers/gpu/drm/msm/msm_iommu.c
+> > @@ -45,8 +45,37 @@ static int msm_iommu_pagetable_unmap(struct msm_mmu *mmu, u64 iova,
+> >               size -= 4096;
+> >       }
+> >
+> > +     /*
+> > +      * A CP_SMMU_TABLE_UPDATE is always sent for the first
+> > +      * submit after resume, and that does a TLB invalidate.
+> > +      * So we can skip that if the device is not currently
+> > +      * powered.
+> > +      */
+> > +     if (!pm_runtime_get_if_in_use(pagetable->parent->dev))
+> > +             goto out;
+> > +
+> > +     /*
+> > +      * If we are not the current pgtables, we can rely on the
+> > +      * TLB invalidate done by CP_SMMU_TABLE_UPDATE.
+> > +      *
+> > +      * We'll always be racing with the GPU updating ttbr0,
+> > +      * but there are only two cases:
+> > +      *
+> > +      *  + either we are not the the current pgtables and there
+> > +      *    will be a tlbinv done by the GPU before we are again
+> > +      *
+> > +      *  + or we are.. there might have already been a tblinv
+> > +      *    if we raced with the GPU, but we have to assume the
+> > +      *    worse and do the tlbinv
+> > +      */
+> > +     if (adreno_smmu->get_ttbr0(adreno_smmu->cookie) != pagetable->ttbr)
+> > +             goto out_put;
+> > +
+> >       adreno_smmu->tlb_inv_by_id(adreno_smmu->cookie, pagetable->asid);
+> >
+> > +out_put:
+> > +     pm_runtime_put(pagetable->parent->dev);
+> > +out:
+> >       return (unmapped == size) ? 0 : -EINVAL;
+> >   }
+> >
+> Asking because it is a *security issue* if we get this wrong:
+> 1. Is there any measure benefit with this patch? I believe tlb
+> invalidation doesn't contribute much to the unmap latency.
 
-... then I'll have to scan the other cases if they do something similar
-as KVM. ... well, okay, I'll do it. :)
+It turned out to not make a huge difference.. although I expect the
+part about skipping the inv when runtime suspended is still useful
+from a power standpoint (but don't have a great setup to measure that)
 
-> 
->>  			my $msg_level = \&WARN;
->>  			$msg_level = \&CHK if ($file);
->>  			&{$msg_level}("AVOID_BUG",
->> -				      "Avoid crashing the kernel - try using WARN_ON & recovery code rather than BUG() or BUG_ON()\n" . $herecurr);
-> 
-> and maybe:
-> 
-> 				      "Do not crash the kernel unless it is unavoidable - use WARN_ON_ONCE & recovery code (if reasonable) rather than BUG() or variants\n" . $herecurr);
-> 
-> 
+BR,
+-R
 
-Yes, thanks!
-
--- 
-Thanks,
-
-David / dhildenb
-
+> 2. We at least should insert a full memory barrier before reading the
+> ttbr0 register to ensure that everything we did prior to that is visible
+> to smmu. But then I guess the cost of the full barrier would be similar
+> to the tlb invalidation.
+>
+> Because it could lead to security issues or other very hard to debug
+> issues, I would prefer this optimization only if there is a significant
+> measurable gain.
+>
+> -Akhil.
+>
