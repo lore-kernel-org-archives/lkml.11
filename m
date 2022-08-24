@@ -2,92 +2,116 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C9A5AC00140
-	for <linux-kernel@archiver.kernel.org>; Wed, 24 Aug 2022 12:38:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 58784C32793
+	for <linux-kernel@archiver.kernel.org>; Wed, 24 Aug 2022 12:39:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236840AbiHXMij (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 24 Aug 2022 08:38:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37534 "EHLO
+        id S237037AbiHXMjA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 24 Aug 2022 08:39:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37966 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236609AbiHXMig (ORCPT
+        with ESMTP id S236554AbiHXMi5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 24 Aug 2022 08:38:36 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9A64A8E998
-        for <linux-kernel@vger.kernel.org>; Wed, 24 Aug 2022 05:38:35 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1661344714;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=9jr+amK0uWEEWGvSLDxuMVCNNDt0iE/dvefpOk4UgzQ=;
-        b=cTr+YYyzy/Ic98M1akm8TFGRHJungRY0NJyZeLoCDtv4nNdOVAy7iwwjurYG8m/aW7Z9jM
-        P3yoR00CThcxDiWzUdWubvsbsqlkmKQtqOj3qjH8w2LdsUAXmyTK0EQc7oDwpabWgKEprY
-        T9NPCE3/f3kR8XAHq6FG/L381LlvwBM=
-Received: from mail-qv1-f70.google.com (mail-qv1-f70.google.com
- [209.85.219.70]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
- us-mta-227-u_GTDEfSPQq5hjOKkUhgYg-1; Wed, 24 Aug 2022 08:38:33 -0400
-X-MC-Unique: u_GTDEfSPQq5hjOKkUhgYg-1
-Received: by mail-qv1-f70.google.com with SMTP id o16-20020a0cecd0000000b0049656c32564so9489006qvq.19
-        for <linux-kernel@vger.kernel.org>; Wed, 24 Aug 2022 05:38:33 -0700 (PDT)
+        Wed, 24 Aug 2022 08:38:57 -0400
+Received: from mail-lj1-x230.google.com (mail-lj1-x230.google.com [IPv6:2a00:1450:4864:20::230])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ABC3F901A7
+        for <linux-kernel@vger.kernel.org>; Wed, 24 Aug 2022 05:38:55 -0700 (PDT)
+Received: by mail-lj1-x230.google.com with SMTP id v10so16289028ljh.9
+        for <linux-kernel@vger.kernel.org>; Wed, 24 Aug 2022 05:38:55 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc;
+        bh=1JURZKRSXiPsq1aQoArSPrF7VbYfsdAOZBVEhHgf0qg=;
+        b=lIuQSPRYFpK3xeF/YO5ZxQ7B6w7t+DhHc3Hfgca06zyLBLitokytTZj8pnmYlOoq8V
+         qf/bFMuZA945cWHO6RCl33i697zEda6PHMHZU0pXne0e86Vh2XC6fKY1uTvj6xV2NBfT
+         kzPMocEYTZlbyQY5QVyk2mKpT9MUFbTvDlTGDu648HxCjAfuKPwkgZb6L9/Lfa8Kmd8J
+         f/MEr2C4ZFa/1CMB/Bjp+Hy/KyYnpmmM17e5NTG7x63DEN0lUK9N8Fs+1LnvikDXcjga
+         YU9tBjJEo58PCQ7i5Y1f+VHDXiPjkYdA9vvKcjn4mtZXNWsEqn8G6FYdvUa1rCGz0Cz6
+         T8yw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc;
-        bh=9jr+amK0uWEEWGvSLDxuMVCNNDt0iE/dvefpOk4UgzQ=;
-        b=UsoUmV/F0OgiT6siYWr3amTSS0s+fPXrPrJpqim2jSvj0cStNr/hY9Xh1QG2SHmVTt
-         Gawt+erZ1DIeIk729FumtXldvLrWMzM6vEVWbAfMkvhmvE7kydaU7vDqmzKAM7Xl35C+
-         Zayq2k9apkCb+ml/Nh8daUdNZuOFc9lFqUFL2eg5lkCdbFpBjFB1pnUc66Rl5T3JHWP/
-         f0DiPcFt1BxRKVD62fT2v9pFFjcyDZboq3iegg4LAckeF5xLhTr9jEaFPYuuOzdIA5EC
-         YN1Kk6uwqvn8EGQt+0BZ0cY3UczlU317xlXKFsTNaZlRuNnp76oo7TCs3v4kTcIiZAFK
-         yc5A==
-X-Gm-Message-State: ACgBeo1zjcuVJZJRN+1z/jthRmd7cH3EKxp1mvvWTRq+Ot+be2oy7RvZ
-        K07wptT0A/7sp4eq4EKHqYKOBUY+QoQ5v9kNxpPatfNGCoh06RrYoNTEIGznhG+N9tMzP4oW8WY
-        F58ntfY9Rtl8VhbNYMzpqUYdPweSXpmrw8xHzLtjD
-X-Received: by 2002:ad4:5d6f:0:b0:496:5ad5:fa40 with SMTP id fn15-20020ad45d6f000000b004965ad5fa40mr24705004qvb.59.1661344713149;
-        Wed, 24 Aug 2022 05:38:33 -0700 (PDT)
-X-Google-Smtp-Source: AA6agR5JSXq91N8s0XEtfCISGeusZI4avtWP9oNK+/vGFim1UEwZ9lqifEh6HdmO1keP9tUUF/WsRoUMcvpA/Bit5i4=
-X-Received: by 2002:ad4:5d6f:0:b0:496:5ad5:fa40 with SMTP id
- fn15-20020ad45d6f000000b004965ad5fa40mr24704987qvb.59.1661344712950; Wed, 24
- Aug 2022 05:38:32 -0700 (PDT)
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc;
+        bh=1JURZKRSXiPsq1aQoArSPrF7VbYfsdAOZBVEhHgf0qg=;
+        b=clExb+RegjpQ7V3OV3C/Q5qHB6IB5CAC2DVsQ9BoaYtzs59YFZFu+4M41tnIvbd6Lz
+         mYnzHQ49hXmzYzPJtanzimi1iGt1yDUgM+M0PpCSpqcYia5dBcBfXS4FpBQH2/Tf2XDN
+         RLKQ/gLGZNy7+B7F8S1zrTwaB13vloY73hwfag21oDiPwFPK4FAWfSCCC+wSVNUehSqT
+         OwmSc6ASDABunbeqwyXWSGXR5LjeZNEheEI+lYTHAiTMrSS2x8qwIhcPvNeT6/yCuAf2
+         UdebY4YVVQV2QmZ9aTUzlftsZC2ytb1tcrMjeaLqTjysRQIrKLkQZdbiY7LFqHIa597b
+         eJUA==
+X-Gm-Message-State: ACgBeo3NdbWUczpks7FaecXf0QhsmD/Ohx5bqlmlMlAQnJDFo0zjDKL3
+        vVslsXbjVSHltBX/Edjc0Qe//Q==
+X-Google-Smtp-Source: AA6agR6DDILkYCrPbHxwgs8HO8yo8QJR93m3lMZtF97e5asxsLHLBfNejtRFxVymf6v5djRy2mE5/w==
+X-Received: by 2002:a2e:a914:0:b0:25d:f74a:54c0 with SMTP id j20-20020a2ea914000000b0025df74a54c0mr8789721ljq.290.1661344734001;
+        Wed, 24 Aug 2022 05:38:54 -0700 (PDT)
+Received: from [10.243.4.185] ([194.157.23.230])
+        by smtp.gmail.com with ESMTPSA id m7-20020a056512114700b00492e5d31201sm1490440lfg.7.2022.08.24.05.38.52
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 24 Aug 2022 05:38:53 -0700 (PDT)
+Message-ID: <3237265e-9f1f-d5cf-c37c-ee39bce2eabf@linaro.org>
+Date:   Wed, 24 Aug 2022 15:35:07 +0300
 MIME-Version: 1.0
-References: <20220822071902.3419042-1-tcs_kernel@tencent.com>
- <f7e87879-1ac6-65e5-5162-c251204f07d4@datenfreihafen.org> <CAK-6q+hf27dY9d-FyAh2GtA_zG5J4kkHEX2Qj38Rac_PH63bQg@mail.gmail.com>
- <CAB2z9exhnzte0rpT9t6=VpFCm9x+zZdmr01UHFxqvYy8y9ifag@mail.gmail.com>
-In-Reply-To: <CAB2z9exhnzte0rpT9t6=VpFCm9x+zZdmr01UHFxqvYy8y9ifag@mail.gmail.com>
-From:   Alexander Aring <aahringo@redhat.com>
-Date:   Wed, 24 Aug 2022 08:38:22 -0400
-Message-ID: <CAK-6q+g-L-6kKW69DYxgXvLdfChF+oQsmi-Y4cvBK2ji2m4WZA@mail.gmail.com>
-Subject: Re: [PATCH] net/ieee802154: fix uninit value bug in dgram_sendmsg
-To:     zhang haiming <tcs.kernel@gmail.com>
-Cc:     linux-wpan - ML <linux-wpan@vger.kernel.org>,
-        Network Development <netdev@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.12.0
+Subject: Re: [PATCH V2 1/2] bindings: fsl-imx-sdma: Document 'HDMI Audio'
+ transfer
+Content-Language: en-US
+To:     Joy Zou <joy.zou@nxp.com>, "vkoul@kernel.org" <vkoul@kernel.org>
+Cc:     "S.J. Wang" <shengjiu.wang@nxp.com>,
+        "robh+dt@kernel.org" <robh+dt@kernel.org>,
+        "krzysztof.kozlowski+dt@linaro.org" 
+        <krzysztof.kozlowski+dt@linaro.org>,
+        "shawnguo@kernel.org" <shawnguo@kernel.org>,
+        "s.hauer@pengutronix.de" <s.hauer@pengutronix.de>,
+        "kernel@pengutronix.de" <kernel@pengutronix.de>,
+        "festevam@gmail.com" <festevam@gmail.com>,
+        dl-linux-imx <linux-imx@nxp.com>,
+        "dmaengine@vger.kernel.org" <dmaengine@vger.kernel.org>,
+        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
+        "linux-arm-kernel@lists.infradead.org" 
+        <linux-arm-kernel@lists.infradead.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+References: <20220524080337.1322240-1-joy.zou@nxp.com>
+ <AM6PR04MB592501ABD3A369F913137E1FE19D9@AM6PR04MB5925.eurprd04.prod.outlook.com>
+ <AM6PR04MB5925CFC53026A11F57115D1FE1739@AM6PR04MB5925.eurprd04.prod.outlook.com>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+In-Reply-To: <AM6PR04MB5925CFC53026A11F57115D1FE1739@AM6PR04MB5925.eurprd04.prod.outlook.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi,
+On 24/08/2022 13:31, Joy Zou wrote:
+> Gentle ping...
+> 
 
-cc mailing lists again.
+You pinged again instead of implementing the review... Second ping
+instead of doing what we asked you to do. You also did not respond to
+our comments on your first ping.
 
-On Wed, Aug 24, 2022 at 7:55 AM zhang haiming <tcs.kernel@gmail.com> wrote:
->
-> If msg_namelen is too small like 1, the addr_type field will be
-> unexpected. Meanwhile, check msg_namelen < sizeof(*daddr) is
+This is not how you collaborate over email.
 
-Then check if space for addr_type is available, if not -EINVAL. If
-addr_type available, evaluate it, if it's unknown -EINVAL, the minimum
-length differs here if it's known.
+> BR
+> Joy Zou
+>> -----Original Message-----
+>> From: Joy Zou
+>> Sent: 2022年8月2日 11:58
+>> To: vkoul@kernel.org
+>> Cc: S.J. Wang <shengjiu.wang@nxp.com>; robh+dt@kernel.org;
+>> krzysztof.kozlowski+dt@linaro.org; shawnguo@kernel.org;
+>> s.hauer@pengutronix.de; kernel@pengutronix.de; festevam@gmail.com;
+>> dl-linux-imx <linux-imx@nxp.com>; dmaengine@vger.kernel.org;
+>> devicetree@vger.kernel.org; linux-arm-kernel@lists.infradead.org;
+>> linux-kernel@vger.kernel.org
+>> Subject: FW: [PATCH V2 1/2] bindings: fsl-imx-sdma: Document 'HDMI Audio'
+>> transfer
+>>
+>> Gentle ping...
+>>
 
-> necessary and enough as dgram_bind and dgram_connect did.
->
 
-you probably found similar issues.
-
-It is a nitpick and I see that the current behaviour is not correct here.
-
-- Alex
-
+Best regards,
+Krzysztof
