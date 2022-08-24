@@ -2,121 +2,135 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9DD4BC6498F
-	for <linux-kernel@archiver.kernel.org>; Wed, 24 Aug 2022 22:40:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3976FC04AA5
+	for <linux-kernel@archiver.kernel.org>; Wed, 24 Aug 2022 22:42:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229935AbiHXWkb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 24 Aug 2022 18:40:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37842 "EHLO
+        id S229566AbiHXWmr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 24 Aug 2022 18:42:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40828 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229798AbiHXWkS (ORCPT
+        with ESMTP id S230050AbiHXWmo (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 24 Aug 2022 18:40:18 -0400
-Received: from mail-ed1-x52b.google.com (mail-ed1-x52b.google.com [IPv6:2a00:1450:4864:20::52b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4D9782E9E4;
-        Wed, 24 Aug 2022 15:40:17 -0700 (PDT)
-Received: by mail-ed1-x52b.google.com with SMTP id q2so21750203edb.6;
-        Wed, 24 Aug 2022 15:40:17 -0700 (PDT)
+        Wed, 24 Aug 2022 18:42:44 -0400
+Received: from mail-pf1-x431.google.com (mail-pf1-x431.google.com [IPv6:2607:f8b0:4864:20::431])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 31D2F7FF9E
+        for <linux-kernel@vger.kernel.org>; Wed, 24 Aug 2022 15:42:44 -0700 (PDT)
+Received: by mail-pf1-x431.google.com with SMTP id 67so9705568pfv.2
+        for <linux-kernel@vger.kernel.org>; Wed, 24 Aug 2022 15:42:44 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc;
-        bh=W+SwShFa3i3wQlIqmrJCmsnCbHpnmw83ukjZXzLki18=;
-        b=Eb4hBAIjsW5NUkq4D9ve+Pz1LiMvwyaGeh0ULrOicTxhMu2Z4dXARXpNRx/f33omxV
-         /ZLiFVPFl5A1DWIPcyeQB6kCMLo8rNB+5+5RvTIWLxdzqnEIdqb7iJXa8+npGXGWVyGI
-         NCTOnkyKjFPLYdXStu1aioIgzIGEwxSMzmPzF4ZCGCO8sOUQlxPIfZC8kvnsKxMprURJ
-         n+qWoosNhh1hclsPBO9hnPeUbfZQC7nsYVPZIbyPDWYM4VN5cMEaAO8We8L0OFQoJIlp
-         QBiI0y7B0DcUx6SmzI4Du5rxp21waW57bLp2IOGoUww4ixmSm5jnzfylj9zWfhdl9Kw2
-         /2Qw==
+        d=google.com; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc;
+        bh=qUzHVbVr2MZ+fXii+ezCtPP4i7g/WAnNmigYKg+BHJU=;
+        b=rBtBR6Nk9gwa4/Is7ZiDycoR7zbtgYjUx7LvKf4LEY/bFyg+MsMaBTmK/BRM6CH89d
+         VLTmhGScLHw+GkTV/kW5rrMdk19ejQuosW6urBu3zM7AAj7Q4+qzKKPaWBvPfVYt8uId
+         LfVvz5nL/DqmBvCF1bH5uKrj1d6Xe4AkbF/j4IXYTFxGOoGTsibFEuCei/XgbiP5ggo6
+         VlrdIQowTN6XRUd9ItIq7WGxW/5So/vMsGquE6LjNnMFLNLkjIBO9iwGCKjyTIjcUXmL
+         G1/6Q/j+Ac7HE8Zzeg2oASg3MeF2+CtgcFLiR2oGqnIcJIL6L+luZTJX6X1iAmf4A83G
+         qP8w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc;
-        bh=W+SwShFa3i3wQlIqmrJCmsnCbHpnmw83ukjZXzLki18=;
-        b=jHPONRSFjaAay2oXENZGoVTXCYHCdUnUauKJGKT4kDlma1S8H/cd+cdTn1SJQP4Qfy
-         y/mQDsdyT2GcqmTUjaqCPlKFTfsm0Htrvl2uYMnY47k01p5AtuA8275ZAXOkL/IHmIGP
-         imaOIRoznqIEvVw/w+MbNg4HbaVkboRfK46CgcLCASfEizvEmmcU5SEVUtaobuw/C4bB
-         fM8UNco/9hUXoZ5udezTqKetvMikUnvH/OA9YoSpwPUJrSzoRHcbkpbyod7ybMPbbab+
-         Oa3zG8bFUcFJgmK/2UgekNP3HhPIW0MyDsLU5Xu/uiytLdQGlhPfrDfSg6pvoJrTFfrB
-         9THg==
-X-Gm-Message-State: ACgBeo0WK9cX1WtDsNSiUj1N4QyPdUXjcLNRRzfa0XabWglZxRvTS5Dq
-        EC05ScjwUvonnuERQ/MhcTI9/Bqku9pa/G+JnYk=
-X-Google-Smtp-Source: AA6agR4FKu0eVIUn8G7XVv/tG0JhfwVi8NKI+LilIiBIFeoG2vrIvge5MX77xF20StzHp9O4/mepkyPBSeZ5xTzvr4Y=
-X-Received: by 2002:a05:6402:28cb:b0:43b:c6d7:ef92 with SMTP id
- ef11-20020a05640228cb00b0043bc6d7ef92mr898662edb.333.1661380815411; Wed, 24
- Aug 2022 15:40:15 -0700 (PDT)
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc;
+        bh=qUzHVbVr2MZ+fXii+ezCtPP4i7g/WAnNmigYKg+BHJU=;
+        b=2zyMNGA73Xm0IP9ttOW/pXQ4u5nxJRTjRPOsVRSvXGrbwIKN87jjf9Pbc3538E+xc0
+         FyTlKxFxFQ5SMExmUS1S0bsNyuBTKEdEu0vH9RzIO8s2eRf/ZJ4BgTFDFab5H7pfTs5i
+         9K9iWM8VUVTX1veOcdto5Eq5n7jk+Qh+zMLy+5dtwUJt76InQ0jYQ6Oot7hdxA27caHi
+         bRJKNiwAAP7wQoXnJzHkUWZm+A2QisZS283+b6NPsoM+zmkKwvWhPlicBlocFev5U3LV
+         l3TF9EsbNEhhkf7DE+YoRoJ59q7IEhEgq6xVMBCS/gOplRKwvj6woIR6VyiWZt0ijhwS
+         yCbg==
+X-Gm-Message-State: ACgBeo17mqmMzXunRxzrr/Ks+1oBn3tDRo3Tv9a+P9kKKuUTZ1ztGaA2
+        VRJUaKHDa7RvKTRiBbSQ+uV0nQ==
+X-Google-Smtp-Source: AA6agR4qlDyk9utv1/W1ih12a2ghsZID1CeoBMUWOHrW8N/mljBy83ej70E+DAfNxHbP4Whglk5KHw==
+X-Received: by 2002:a63:2a02:0:b0:42b:3b16:5759 with SMTP id q2-20020a632a02000000b0042b3b165759mr829605pgq.564.1661380963491;
+        Wed, 24 Aug 2022 15:42:43 -0700 (PDT)
+Received: from google.com (7.104.168.34.bc.googleusercontent.com. [34.168.104.7])
+        by smtp.gmail.com with ESMTPSA id i17-20020a17090332d100b00172ff99d0afsm4459981plr.140.2022.08.24.15.42.42
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 24 Aug 2022 15:42:42 -0700 (PDT)
+Date:   Wed, 24 Aug 2022 22:42:39 +0000
+From:   Sean Christopherson <seanjc@google.com>
+To:     Maxim Levitsky <mlevitsk@redhat.com>
+Cc:     kvm@vger.kernel.org, Borislav Petkov <bp@alien8.de>,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        linux-kernel@vger.kernel.org, Wanpeng Li <wanpengli@tencent.com>,
+        Ingo Molnar <mingo@redhat.com>, x86@kernel.org,
+        Jim Mattson <jmattson@google.com>,
+        Kees Cook <keescook@chromium.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        "H. Peter Anvin" <hpa@zytor.com>, Joerg Roedel <joro@8bytes.org>,
+        Vitaly Kuznetsov <vkuznets@redhat.com>,
+        Paolo Bonzini <pbonzini@redhat.com>
+Subject: Re: [PATCH v3 11/13] KVM: x86: SVM: use smram structs
+Message-ID: <YwapX2HFpUGbxBZJ@google.com>
+References: <20220803155011.43721-1-mlevitsk@redhat.com>
+ <20220803155011.43721-12-mlevitsk@redhat.com>
 MIME-Version: 1.0
-References: <20210423230609.13519-1-alx.manpages@gmail.com> <20220824185505.56382-1-alx.manpages@gmail.com>
-In-Reply-To: <20220824185505.56382-1-alx.manpages@gmail.com>
-From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Date:   Wed, 24 Aug 2022 15:40:04 -0700
-Message-ID: <CAADnVQKiEVL9zRtN4WY2+cTD2b3b3buV8BQb83yQw13pWq4OGQ@mail.gmail.com>
-Subject: Re: [PATCH v3] Many pages: Document fixed-width types with ISO C naming
-To:     Alejandro Colomar <alx.manpages@gmail.com>
-Cc:     linux-man <linux-man@vger.kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Zack Weinberg <zackw@panix.com>,
-        LKML <linux-kernel@vger.kernel.org>,
-        glibc <libc-alpha@sourceware.org>, GCC <gcc-patches@gcc.gnu.org>,
-        bpf <bpf@vger.kernel.org>, LTP List <ltp@lists.linux.it>,
-        Linux API <linux-api@vger.kernel.org>,
-        linux-arch <linux-arch@vger.kernel.org>,
-        David Laight <David.Laight@aculab.com>,
-        Joseph Myers <joseph@codesourcery.com>,
-        Florian Weimer <fweimer@redhat.com>,
-        Cyril Hrubis <chrubis@suse.cz>,
-        David Howells <dhowells@redhat.com>,
-        Arnd Bergmann <arnd@arndb.de>, Rich Felker <dalias@libc.org>,
-        Adhemerval Zanella <adhemerval.zanella@linaro.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220803155011.43721-12-mlevitsk@redhat.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Aug 24, 2022 at 12:04 PM Alejandro Colomar
-<alx.manpages@gmail.com> wrote:
->
-> diff --git a/man2/bpf.2 b/man2/bpf.2
-> index d05b73ec2..84d1b62e5 100644
-> --- a/man2/bpf.2
-> +++ b/man2/bpf.2
-> @@ -169,34 +169,34 @@ commands:
->  .EX
->  union bpf_attr {
->      struct {    /* Used by BPF_MAP_CREATE */
-> -        __u32         map_type;
-> -        __u32         key_size;    /* size of key in bytes */
-> -        __u32         value_size;  /* size of value in bytes */
-> -        __u32         max_entries; /* maximum number of entries
-> +        uint32_t      map_type;
-> +        uint32_t      key_size;    /* size of key in bytes */
-> +        uint32_t      value_size;  /* size of value in bytes */
-> +        uint32_t      max_entries; /* maximum number of entries
->                                        in a map */
->      };
->
->      struct {    /* Used by BPF_MAP_*_ELEM and BPF_MAP_GET_NEXT_KEY
->                     commands */
-> -        __u32         map_fd;
-> +        uint32_t      map_fd;
->          __aligned_u64 key;
->          union {
->              __aligned_u64 value;
->              __aligned_u64 next_key;
->          };
-> -        __u64         flags;
-> +        uint64_t      flags;
->      };
->
->      struct {    /* Used by BPF_PROG_LOAD */
-> -        __u32         prog_type;
-> -        __u32         insn_cnt;
-> +        uint32_t      prog_type;
-> +        uint32_t      insn_cnt;
+On Wed, Aug 03, 2022, Maxim Levitsky wrote:
+> @@ -4486,28 +4482,23 @@ static int svm_leave_smm(struct kvm_vcpu *vcpu, const union kvm_smram *smram)
+>  {
+>  	struct vcpu_svm *svm = to_svm(vcpu);
+>  	struct kvm_host_map map, map_save;
+> -	u64 saved_efer, vmcb12_gpa;
+>  	struct vmcb *vmcb12;
+>  	int ret;
+>  
+> -	const char *smstate = (const char *)smram;
 
-For the N-th time:
-Nacked-by: Alexei Starovoitov <ast@kernel.org>
+To shorten line lengths, what about grabbing smram64 here?
 
-Please stop sending this patch.
+	const kvm_smram_state_64 *smram64 = &smram->smram64;
+
+IMO, makes things a little easier to read too.
+
+> -
+>  	if (!guest_cpuid_has(vcpu, X86_FEATURE_LM))
+>  		return 0;
+>  
+>  	/* Non-zero if SMI arrived while vCPU was in guest mode. */
+> -	if (!GET_SMSTATE(u64, smstate, 0x7ed8))
+> +	if (!smram->smram64.svm_guest_flag)
+>  		return 0;
+>  
+>  	if (!guest_cpuid_has(vcpu, X86_FEATURE_SVM))
+>  		return 1;
+>  
+> -	saved_efer = GET_SMSTATE(u64, smstate, 0x7ed0);
+> -	if (!(saved_efer & EFER_SVME))
+> +	if (!(smram->smram64.efer & EFER_SVME))
+>  		return 1;
+>  
+> -	vmcb12_gpa = GET_SMSTATE(u64, smstate, 0x7ee0);
+> -	if (kvm_vcpu_map(vcpu, gpa_to_gfn(vmcb12_gpa), &map) == -EINVAL)
+> +	if (kvm_vcpu_map(vcpu, gpa_to_gfn(smram->smram64.svm_guest_vmcb_gpa), &map) == -EINVAL)
+
+Eww, this is horrifically wrong.  KVM will explode if kvm_vcpu_map() returns
+-EFAULT, e.g. if guest memory is not backed by struct page and memremap() fails.
+Not to mention that it's comically fragile too.
+
+Can you add a patch to this series to drop the "== -EINVAL"?
+
+And there's another one lurking just out of sight in this diff.
+
+>  		return 1;
+>  
+>  	ret = 1;
+> @@ -4533,7 +4524,7 @@ static int svm_leave_smm(struct kvm_vcpu *vcpu, const union kvm_smram *smram)
+>  	vmcb12 = map.hva;
+>  	nested_copy_vmcb_control_to_cache(svm, &vmcb12->control);
+>  	nested_copy_vmcb_save_to_cache(svm, &vmcb12->save);
+> -	ret = enter_svm_guest_mode(vcpu, vmcb12_gpa, vmcb12, false);
+> +	ret = enter_svm_guest_mode(vcpu, smram->smram64.svm_guest_vmcb_gpa, vmcb12, false);
+>  
+>  	if (ret)
+>  		goto unmap_save;
+> -- 
+> 2.26.3
+> 
