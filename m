@@ -2,141 +2,172 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BEB87C00140
-	for <linux-kernel@archiver.kernel.org>; Wed, 24 Aug 2022 12:54:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E8038C00140
+	for <linux-kernel@archiver.kernel.org>; Wed, 24 Aug 2022 12:55:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237605AbiHXMyC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 24 Aug 2022 08:54:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53720 "EHLO
+        id S237629AbiHXMzN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 24 Aug 2022 08:55:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56194 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237558AbiHXMx6 (ORCPT
+        with ESMTP id S237404AbiHXMzE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 24 Aug 2022 08:53:58 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 64B7995E4F;
-        Wed, 24 Aug 2022 05:53:57 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 828B16138B;
-        Wed, 24 Aug 2022 12:53:56 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id EF8C2C433D6;
-        Wed, 24 Aug 2022 12:53:54 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1661345635;
-        bh=9qKTFfSvvv3odyymWozZ3aH/e3Es4L33cC41zZfYrDE=;
-        h=Subject:From:To:Cc:Date:In-Reply-To:References:From;
-        b=Hk1K3btiYElGBvohLpvnxQA2OisfrjMc8S/kg7OoZJF85mm9jLVcvTTAZ2Lw3evSf
-         +sk8cPvrEnDfRUlkNaDMbeNAim0UmwOmrY2pIWcRft2vYW4uPpmhpNvFOWSEFl9mf3
-         QLay6v3wIZsAU5jfFCs7L1BJGnXS/W03OFJ0YDMp4gY37+neRradBW1qYmAIK/3vXZ
-         rH0cBEQjhvbko4l7YDHO4ZvHkKsW6ii/iQNe7zRcOO0XiedDIeQ1GB55rvhtyCgtDT
-         MTwkOUMyoB8htAc5+QUeCwDFg2s1hrRx+bU8zr99viJWCFLcJrbgo2GNfUpBcdOvDe
-         UEdrfsdXKJDGw==
-Message-ID: <5f248d934ec5d2345986fd75d7d12bcd9e2f32b9.camel@kernel.org>
-Subject: Re: [PATCH] iversion: update comments with info about atime updates
-From:   Jeff Layton <jlayton@kernel.org>
-To:     NeilBrown <neilb@suse.de>
-Cc:     Dave Chinner <david@fromorbit.com>,
-        Mimi Zohar <zohar@linux.ibm.com>,
-        linux-fsdevel@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-integrity@vger.kernel.org, linux-nfs@vger.kernel.org,
-        linux-xfs@vger.kernel.org, linux-ext4@vger.kernel.org,
-        Trond Myklebust <trondmy@hammerspace.com>
-Date:   Wed, 24 Aug 2022 08:53:53 -0400
-In-Reply-To: <166129348704.23264.10381335282721356873@noble.neil.brown.name>
-References: <20220822133309.86005-1-jlayton@kernel.org>
-        , <ceb8f09a4cb2de67f40604d03ee0c475feb3130a.camel@linux.ibm.com>
-        , <f17b9d627703bee2a7b531a051461671648a9dbd.camel@kernel.org>
-        , <18827b350fbf6719733fda814255ec20d6dcf00f.camel@linux.ibm.com>
-        , <4cc84440d954c022d0235bf407a60da66a6ccc39.camel@kernel.org>
-        , <20220822233231.GJ3600936@dread.disaster.area>
-        , <6cbcb33d33613f50dd5e485ecbf6ce7e305f3d6f.camel@kernel.org>
-        , <166125468756.23264.2859374883806269821@noble.neil.brown.name>
-        , <df469d936b2e1c1a8c9c947896fa8a160f33b0e8.camel@kernel.org>
-         <166129348704.23264.10381335282721356873@noble.neil.brown.name>
-Content-Type: text/plain; charset="ISO-8859-15"
-Content-Transfer-Encoding: quoted-printable
-User-Agent: Evolution 3.44.4 (3.44.4-1.fc36) 
+        Wed, 24 Aug 2022 08:55:04 -0400
+Received: from mx0a-00128a01.pphosted.com (mx0a-00128a01.pphosted.com [148.163.135.77])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BA8616DF96;
+        Wed, 24 Aug 2022 05:55:02 -0700 (PDT)
+Received: from pps.filterd (m0167089.ppops.net [127.0.0.1])
+        by mx0a-00128a01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 27OCiL9m012738;
+        Wed, 24 Aug 2022 08:54:54 -0400
+Received: from nwd2mta3.analog.com ([137.71.173.56])
+        by mx0a-00128a01.pphosted.com (PPS) with ESMTPS id 3j5ad43vxx-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Wed, 24 Aug 2022 08:54:54 -0400
+Received: from ASHBMBX9.ad.analog.com (ASHBMBX9.ad.analog.com [10.64.17.10])
+        by nwd2mta3.analog.com (8.14.7/8.14.7) with ESMTP id 27OCsrNj040110
+        (version=TLSv1/SSLv3 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL);
+        Wed, 24 Aug 2022 08:54:53 -0400
+Received: from ASHBCASHYB5.ad.analog.com (10.64.17.133) by
+ ASHBMBX9.ad.analog.com (10.64.17.10) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.986.14; Wed, 24 Aug 2022 08:54:52 -0400
+Received: from ASHBMBX8.ad.analog.com (10.64.17.5) by
+ ASHBCASHYB5.ad.analog.com (10.64.17.133) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.986.14; Wed, 24 Aug 2022 08:54:52 -0400
+Received: from zeus.spd.analog.com (10.66.68.11) by ashbmbx8.ad.analog.com
+ (10.64.17.5) with Microsoft SMTP Server id 15.2.986.14 via Frontend
+ Transport; Wed, 24 Aug 2022 08:54:52 -0400
+Received: from rbolboac.ad.analog.com ([10.48.65.109])
+        by zeus.spd.analog.com (8.15.1/8.15.1) with ESMTP id 27OCseSU004251;
+        Wed, 24 Aug 2022 08:54:46 -0400
+From:   Ramona Bolboaca <ramona.bolboaca@analog.com>
+To:     <jic23@kernel.org>, <robh+dt@kernel.org>,
+        <krzysztof.kozlowski+dt@linaro.org>, <linux-iio@vger.kernel.org>,
+        <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>
+CC:     Ramona Bolboaca <ramona.bolboaca@analog.com>
+Subject: [PATCH 1/2] bindings: iio: adc: Add max11205 documentation file
+Date:   Wed, 24 Aug 2022 15:52:02 +0300
+Message-ID: <20220824125203.685287-2-ramona.bolboaca@analog.com>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20220824125203.685287-1-ramona.bolboaca@analog.com>
+References: <20220824125203.685287-1-ramona.bolboaca@analog.com>
 MIME-Version: 1.0
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-ADIRuleOP-NewSCL: Rule Triggered
+X-Proofpoint-GUID: tKnM75TFC_3XaUtwuX_csVXNPbs2PN51
+X-Proofpoint-ORIG-GUID: tKnM75TFC_3XaUtwuX_csVXNPbs2PN51
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.895,Hydra:6.0.517,FMLib:17.11.122.1
+ definitions=2022-08-24_07,2022-08-22_02,2022-06-22_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 phishscore=0
+ priorityscore=1501 malwarescore=0 lowpriorityscore=0 suspectscore=0
+ mlxlogscore=999 spamscore=0 clxscore=1011 mlxscore=0 adultscore=0
+ bulkscore=0 impostorscore=0 classifier=spam adjust=0 reason=mlx
+ scancount=1 engine=8.12.0-2207270000 definitions=main-2208240049
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, 2022-08-24 at 08:24 +1000, NeilBrown wrote:
-> On Tue, 23 Aug 2022, Jeff Layton wrote:
-> > On Tue, 2022-08-23 at 21:38 +1000, NeilBrown wrote:
-> > > On Tue, 23 Aug 2022, Jeff Layton wrote:
-> > > > So, we can refer to that and simply say:
-> > > >=20
-> > > > "If the function updates the mtime or ctime on the inode, then the
-> > > > i_version should be incremented. If only the atime is being updated=
-,
-> > > > then the i_version should not be incremented. The exception to this=
- rule
-> > > > is explicit atime updates via utimes() or similar mechanism, which
-> > > > should result in the i_version being incremented."
-> > >=20
-> > > Is that exception needed? utimes() updates ctime.
-> > >=20
-> > > https://man7.org/linux/man-pages/man2/utimes.2.html
-> > >=20
-> > > doesn't say that, but
-> > >=20
-> > > https://pubs.opengroup.org/onlinepubs/007904875/functions/utimes.html
-> > >=20
-> > > does, as does the code.
-> > >=20
-> >=20
-> > Oh, good point! I think we can leave that out. Even better!
->=20
-> Further, implicit mtime updates (file_update_time()) also update ctime.
-> So all you need is
->  If the function updates the ctime, then i_version should be
->  incremented.
->=20
-> and I have to ask - why not just use the ctime? Why have another number
-> that is parallel?
->=20
-> Timestamps are updated at HZ (ktime_get_course) which is at most every
-> millisecond.
-> xfs stores nanosecond resolution, so about 20 bits are currently wasted.
-> We could put a counter like i_version in there that only increments
-> after it is viewed, then we can get all the precision we need but with
-> exactly ctime semantics.
->=20
-> The 64 change-id could comprise
->  35 bits of seconds (nearly a millenium)
->  16 bits of sub-seconds (just in case a higher precision time was wanted
->  one day)
->  13 bits of counter. - 8192 changes per tick
+Add bindings documentation file and MAINTAINERS entry for MAX11205.
 
-We'd need a "seen" flag too, so maybe only 4096 changes per tick...
+Signed-off-by: Ramona Bolboaca <ramona.bolboaca@analog.com>
+---
+ .../bindings/iio/adc/maxim,max11205.yaml      | 65 +++++++++++++++++++
+ MAINTAINERS                                   |  8 +++
+ 2 files changed, 73 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/iio/adc/maxim,max11205.yaml
 
->=20
-> The value exposed in i_ctime would hide the counter and just show the
-> timestamp portion of what the filesystem stores. This would ensure we
-> never get changes on different files that happen in one order leaving
-> timestamps with the reversed order (the timestamps could be the same,
-> but that is expected).
->=20
-> This scheme could be made to handle a sustained update rate of 1
-> increment every 8 nanoseconds (if the counter were allowed to overflow
-> into unused bits of the sub-second field). This is one ever 24 CPU
-> cycles. Incrementing a counter and making it visible to all CPUs can
-> probably be done in 24 cycles. Accessing it and setting the "seen" flag
-> as well might just fit with faster memory. Getting any other useful
-> work done while maintaining that rate on a single file seems unlikely.
+diff --git a/Documentation/devicetree/bindings/iio/adc/maxim,max11205.yaml b/Documentation/devicetree/bindings/iio/adc/maxim,max11205.yaml
+new file mode 100644
+index 000000000000..bddd18a44969
+--- /dev/null
++++ b/Documentation/devicetree/bindings/iio/adc/maxim,max11205.yaml
+@@ -0,0 +1,65 @@
++# SPDX-License-Identifier: (GPL-2.0 OR BSD-2-Clause)
++%YAML 1.2
++---
++$id: http://devicetree.org/schemas/iio/adc/maxim,max11205.yaml#
++$schema: http://devicetree.org/meta-schemas/core.yaml#
++
++title: Maxim MAX11205 ADC
++
++maintainers:
++  - Ramona Bolboaca <ramona.bolboaca@analog.com>
++
++description: |
++  The MAX11205 is an ultra-low-power (< 300FA max
++  active current), high-resolution, serial-output ADC.
++
++  https://datasheets.maximintegrated.com/en/ds/MAX11205.pdf
++
++properties:
++  compatible:
++    enum:
++      - maxim,max11205a
++      - maxim,max11205b
++
++  reg:
++    maxItems: 1
++
++  interrupts:
++    maxItems: 1
++
++  spi-max-frequency:
++    maximum: 5000000
++
++  spi-cpha: true
++
++  vref-supply:
++    description:
++      The regulator supply for the ADC reference voltage.
++
++required:
++  - compatible
++  - reg
++  - spi-max-frequency
++  - spi-cpha
++  - interrupts
++  - vref-supply
++
++additionalProperties: false
++
++examples:
++  - |
++    #include <dt-bindings/interrupt-controller/irq.h>
++    spi {
++        #address-cells = <1>;
++        #size-cells = <0>;
++        max11205@0 {
++                      compatible = "maxim,max11205a";
++                      reg = <0>;
++                      spi-max-frequency = <5000000>;
++                      spi-cpha;
++                      interrupt-parent = <&gpio>;
++                      interrupts = <19 IRQ_TYPE_EDGE_FALLING>;
++                      vref-supply = <&max11205_vref>;
++        };
++    };
++...
+diff --git a/MAINTAINERS b/MAINTAINERS
+index 96f47a7865d6..db1b5dc03988 100644
+--- a/MAINTAINERS
++++ b/MAINTAINERS
+@@ -12341,6 +12341,14 @@ S:	Maintained
+ F:	Documentation/devicetree/bindings/iio/proximity/maxbotix,mb1232.yaml
+ F:	drivers/iio/proximity/mb1232.c
+ 
++MAXIM MAX11205 DRIVER
++M:	Ramona Bolboaca <ramona.bolboaca@analog.com>
++L:	linux-iio@vger.kernel.org
++S:	Supported
++W:	https://ez.analog.com/linux-software-drivers
++F:	Documentation/devicetree/bindings/iio/adc/maxim,max11205.yaml
++F:	drivers/iio/adc/max11205.c
++
+ MAXIM MAX17040 FAMILY FUEL GAUGE DRIVERS
+ R:	Iskren Chernev <iskren.chernev@gmail.com>
+ R:	Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+-- 
+2.25.1
 
-This is an interesting idea.
-
-So, for NFSv4 you'd just mask off the counter bits (and "seen" flag) to
-get the ctime, and for the change attribute we'd just mask off the
-"seen" flag and put it all in there.
-
- * Implementing that for all filesystems would be a huge project though.
-   If we were implementing the i_version counter from scratch, I'd
-   probably do something along these lines. Given that we already have
-   an existing i_version counter, would there be any real benefit to
-   pursuing this avenue instead?
---=20
-Jeff Layton <jlayton@kernel.org>
