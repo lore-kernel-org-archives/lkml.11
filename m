@@ -2,313 +2,179 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2CD32C04AA5
-	for <linux-kernel@archiver.kernel.org>; Wed, 24 Aug 2022 21:16:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 488C8C48BE4
+	for <linux-kernel@archiver.kernel.org>; Wed, 24 Aug 2022 21:16:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240707AbiHXVQE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 24 Aug 2022 17:16:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52206 "EHLO
+        id S240672AbiHXVQf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 24 Aug 2022 17:16:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52560 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240675AbiHXVQA (ORCPT
+        with ESMTP id S238348AbiHXVQb (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 24 Aug 2022 17:16:00 -0400
-Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CEA8F792FC;
-        Wed, 24 Aug 2022 14:15:59 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1661375759; x=1692911759;
-  h=message-id:date:subject:to:cc:references:from:
-   in-reply-to:content-transfer-encoding:mime-version;
-  bh=PmtEicw/x35n/7PLFMISH+pDq8wtuYIBtHIP2RuyURM=;
-  b=kzdD/PiJCOKPX57eiziVNn8W6Ngah8gEDf4/juQCaSGCBQhH/fa0s9vl
-   tj7Wu4f2PpN0MZwEvcKTmFiItGBh1iz3qeZxeN7fHRRQ/k79U/Ru/xpYo
-   fkMYsN9pg95FWNEpcEtcx2smMBNbGHF/dGb+Ln6ivhMWJNdVoJVxOUDse
-   rE3cyrFQFkMAeYrv1dyJFJL0dqwaCYOxYIToasLZeuCtV6bZ49VjWig3Y
-   E1fy81noAel8Z+89SRvYjwREv6Yo/YgBV251WoAzblZiDBRYaxj6ozRuO
-   st/0GuYuvyrCwlwazSH03lApuhTugcDCHfAlFV4v5uP8utX5IyQoWDHsv
-   g==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10449"; a="277100296"
-X-IronPort-AV: E=Sophos;i="5.93,261,1654585200"; 
-   d="scan'208";a="277100296"
-Received: from fmsmga002.fm.intel.com ([10.253.24.26])
-  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Aug 2022 14:15:59 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.93,261,1654585200"; 
-   d="scan'208";a="713208587"
-Received: from fmsmsx601.amr.corp.intel.com ([10.18.126.81])
-  by fmsmga002.fm.intel.com with ESMTP; 24 Aug 2022 14:15:59 -0700
-Received: from fmsmsx602.amr.corp.intel.com (10.18.126.82) by
- fmsmsx601.amr.corp.intel.com (10.18.126.81) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.31; Wed, 24 Aug 2022 14:15:58 -0700
-Received: from fmsedg602.ED.cps.intel.com (10.1.192.136) by
- fmsmsx602.amr.corp.intel.com (10.18.126.82) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.31 via Frontend Transport; Wed, 24 Aug 2022 14:15:58 -0700
-Received: from NAM12-MW2-obe.outbound.protection.outlook.com (104.47.66.41) by
- edgegateway.intel.com (192.55.55.71) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.1.2375.31; Wed, 24 Aug 2022 14:15:58 -0700
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=kfCbXrsNutUB8aWm//nUxcEw/yRX1hcuUdnYfB71vzuK6KU+Al6i8WTrV7lHlbZ4/wIQ+9F0jParm0oSaA0hLG9bg6EumrVeVVu5mLWDeLYNpbmygPnceyuBtZFIp0qHY+j5y+LxbOQNTC3q4dvSMDV1ZS3cOQWQ7R4ULID8k9l3VAdO3Z+I+2WVt0bMvAJ3pmAJQMqDFMB0yRWoVwycMA1vOGu730UdNb1M3TEQQK62axhUY2En73gVPNixpZt0FUMSP5NmiJ5HHt4Zd1UJvHxuKz6p6HJuU1sRGmA3m9Hzh+bydcMplIstfZ2GqLxi2d9z9MZNOh/mmQ0R1xbxsw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=igVONFCEcAqEU4JzqVEg2pZjha7IDD2E9anvNm24Qnc=;
- b=arELKHr1RC+iJQQk6mI6d6VRx28YLrvUSCw4D9nmvRSWE/H6zBV4mg78x67pdgV0JU6BmpkQLjc0TX9RuelWBjYFVmLRQ9eNWhz3CVDPwo5UBLlApgp15mj+KkXOMxfdtBzpMtwCmDEXW73b5sXODCrAwTJsZaVNHG5Nn6z8DOLmpKyrbjpaUxWDG6MqrWbFv3jGaloveR+4G7OkMyvX7zconiN6TEux1Gej5IUiFJixft5aI0lsSVZCae3DC5zsP93mFPABt0OCWTtEE4UUCdtfnDMzq7nLACGw0PbLi6p2C45McnNN7dq9UrFMzb7SLY3fx01J3quH2Rtg+8jA/A==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
- dkim=pass header.d=intel.com; arc=none
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=intel.com;
-Received: from CY4PR11MB1862.namprd11.prod.outlook.com (2603:10b6:903:124::18)
- by DM6PR11MB2713.namprd11.prod.outlook.com (2603:10b6:5:c4::23) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5546.18; Wed, 24 Aug
- 2022 21:15:55 +0000
-Received: from CY4PR11MB1862.namprd11.prod.outlook.com
- ([fe80::54b2:2db9:12fb:c006]) by CY4PR11MB1862.namprd11.prod.outlook.com
- ([fe80::54b2:2db9:12fb:c006%3]) with mapi id 15.20.5546.024; Wed, 24 Aug 2022
- 21:15:55 +0000
-Message-ID: <c5777707-746e-edab-2ce2-3405ff55be56@intel.com>
-Date:   Wed, 24 Aug 2022 14:15:53 -0700
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Firefox/91.0 Thunderbird/91.12.0
-Subject: Re: [PATCH v3 07/10] x86/resctrl: Add sysfs interface files to
- read/write event configuration
-Content-Language: en-US
-To:     Babu Moger <babu.moger@amd.com>, <fenghua.yu@intel.com>,
-        <tglx@linutronix.de>, <mingo@redhat.com>, <bp@alien8.de>
-CC:     <eranian@google.com>, <dave.hansen@linux.intel.com>,
-        <x86@kernel.org>, <hpa@zytor.com>, <corbet@lwn.net>,
-        <linux-kernel@vger.kernel.org>, <linux-doc@vger.kernel.org>,
-        <bagasdotme@gmail.com>
-References: <166117559756.6695.16047463526634290701.stgit@bmoger-ubuntu>
- <166117583337.6695.3477964609702763678.stgit@bmoger-ubuntu>
-From:   Reinette Chatre <reinette.chatre@intel.com>
-In-Reply-To: <166117583337.6695.3477964609702763678.stgit@bmoger-ubuntu>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: BYAPR01CA0009.prod.exchangelabs.com (2603:10b6:a02:80::22)
- To CY4PR11MB1862.namprd11.prod.outlook.com (2603:10b6:903:124::18)
+        Wed, 24 Aug 2022 17:16:31 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 17EEA7CA81
+        for <linux-kernel@vger.kernel.org>; Wed, 24 Aug 2022 14:16:29 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1661375788;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=bcpFLCMYxGIt3iRk0HaBGWWHYdpJpPCMV+cfqoFaZl0=;
+        b=Asu1O1M/rYobR2dMpwjLDJlSOP2diUfo1fF+vgPyIHAIzQAnxyBUUcsZcJEnF/7BS/voXC
+        bQYn2eIygdPrE0LE89WINrhhrlQUKOlziZYVFmGcRt4xCJDWN4aEf4+ZjqUDmCWh7wX7e1
+        bhzUBxuSoE2I8HUsEPPml2JPxta+g4U=
+Received: from mail-qt1-f199.google.com (mail-qt1-f199.google.com
+ [209.85.160.199]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
+ us-mta-526-Q4m_vTy1OL6blvJoxfn7Ow-1; Wed, 24 Aug 2022 17:16:27 -0400
+X-MC-Unique: Q4m_vTy1OL6blvJoxfn7Ow-1
+Received: by mail-qt1-f199.google.com with SMTP id k9-20020ac80749000000b0034302b53c6cso13936265qth.22
+        for <linux-kernel@vger.kernel.org>; Wed, 24 Aug 2022 14:16:27 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc;
+        bh=bcpFLCMYxGIt3iRk0HaBGWWHYdpJpPCMV+cfqoFaZl0=;
+        b=2XlHql8+Ta5aqY/gv2+DfUJI3DVecXRCmodqMncYOSl51lGK3A/gX4baUiPuaKFeaC
+         x+lUT4TOMH621575vT6CkyLQPmwwqvx4Py60Y24w0egXh2AvojZ/p7rvNuhs6DKFONrg
+         3q3kCHM/OyHc1K0sTB11Hs0v9rM3SyUP8M6XHe/I45dIJpqALFqRvZ2MnmZZz3M6lK5H
+         5dpxuLVgEEPixv+MBWaRKVzOc6QJs7PSVgM3QAWUYxRCHYdwYqzBlmAQ9Ih3dlqyDph3
+         SmgcnPd6MkYsSy35wIN7HZOb3d/08lRMAj31S3/fVcEJeCQZArBReNB7/EerxRzoeMnS
+         At/Q==
+X-Gm-Message-State: ACgBeo20vjIK0CrRqSscFMAdCVA+KvGLjC+QosXb3vFk5sgrIBpZn35t
+        K9y6/ayEY4rFAMUDbnSf/UheycCGjNwqmQQnNizNfCh301ZFK9IDghHOqVAQ4SV5dj9hT+UTyL8
+        XFinxLk6t4wMAThkGERTYu/N4
+X-Received: by 2002:a05:622a:552:b0:342:f82f:c389 with SMTP id m18-20020a05622a055200b00342f82fc389mr1084234qtx.646.1661375787097;
+        Wed, 24 Aug 2022 14:16:27 -0700 (PDT)
+X-Google-Smtp-Source: AA6agR47fhpmPIvpUXIxGTEBSikRZShccfuyNjiZZBz7xLjIU3J2Fa26+Ik9OapkF++B6m3qG3UKzg==
+X-Received: by 2002:a05:622a:552:b0:342:f82f:c389 with SMTP id m18-20020a05622a055200b00342f82fc389mr1084218qtx.646.1661375786886;
+        Wed, 24 Aug 2022 14:16:26 -0700 (PDT)
+Received: from localhost (ip98-179-76-75.ph.ph.cox.net. [98.179.76.75])
+        by smtp.gmail.com with ESMTPSA id bj21-20020a05620a191500b006bbfc742511sm10713557qkb.12.2022.08.24.14.16.26
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 24 Aug 2022 14:16:26 -0700 (PDT)
+Date:   Wed, 24 Aug 2022 14:16:25 -0700
+From:   Jerry Snitselaar <jsnitsel@redhat.com>
+To:     Dave Jiang <dave.jiang@intel.com>
+Cc:     linux-kernel@vger.kernel.org, Fenghua Yu <fenghua.yu@intel.com>,
+        Vinod Koul <vkoul@kernel.org>, dmaengine@vger.kernel.org
+Subject: Re: [PATCH] dmaengine: idxd: Set workqueue state to disabled before
+ trying to re-enable
+Message-ID: <20220824211625.mfcyefi5yvasdt4r@cantor>
+References: <20220824192913.2425634-1-jsnitsel@redhat.com>
+ <1417f4ce-2573-5c88-6c92-fda5c57ebceb@intel.com>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 43807c61-3297-4e30-73e1-08da8615d53a
-X-MS-TrafficTypeDiagnostic: DM6PR11MB2713:EE_
-X-LD-Processed: 46c98d88-e344-4ed4-8496-4ed7712e255d,ExtAddr
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: HCh3ORhNkU/dWq4gV/Tgl/7PvECZfKhkIXaYwK6u5wEHoxv/l7lxUuUrxhsbcqFgKz+WYoA+0/DCjMvalWnJdP2FcVUk9BpRsLQMPI4IWtRiTnZ9M9x6C5ofx7ttqN1sJ99dVFwTgnEbsOZ26yAGsNstMd371+B6bdZSdPFRqmzyQV5C5KfsuwB4NLzxTd3AY1A7Hoevc66+oHZvQExegUW9BLv5rN9lbqJdrgTLmwhQe3Pp94X95+N/AJTC/0QF22Pt9lKjbg68qjz3sow+pFGk9gTnYmoH578G5wLMDq0nPby1K+RAcmaGAtLXCZUJprg8UxXMbe+J+QnN6iLfEUm6IkF4ktL12IGQTYn6YzYOQ+4fK7sHMXGrILQkjS+wO70AOlMrFaruJ5UPAlJZu8nGzjgeSYLRtuBWeOfCvsIhEtb0MzPbbR370rEOrSJ1Ix7v66cRNgLZaF+ch8HIpk/TGanVJikXI/ZCi+D38Ow5eh+oL0LpBCPQ3aPUi8tUXTclswXfPAzTcp3i52Fu2IlnW/ZPUmHx9cshbjTAPGvsJODIDHMCRc1brbeVuST1uFVGK4o6NH4O5ZfMlRHgcOQQogElAdtvMoEfr4YNLv/xM/WyJW1nyJZZBmqbA4OuXCk6Oj64yfj9wdYJYOhlOvTjl/wWPXgSr3lExqyXtij9oZwTfvJ1CTv4lyWsWBysrl7ZVCs4DGX/REK6NXIFlQGKkfr+of73VIog+/3R7fVq8CcOEXY9AbBS/mXEJMR2Mj1wZLKojK8eVgy5/FiR/Z0TL39PCP0QXTYtWRIol9Q=
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:CY4PR11MB1862.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(376002)(366004)(136003)(346002)(396003)(39860400002)(8676002)(66556008)(66946007)(4326008)(36756003)(66476007)(86362001)(38100700002)(82960400001)(31686004)(31696002)(8936002)(2616005)(6512007)(186003)(26005)(478600001)(6486002)(7416002)(316002)(6506007)(2906002)(44832011)(5660300002)(53546011)(41300700001)(45980500001)(43740500002);DIR:OUT;SFP:1102;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?cnJjaERNNjRwdURhYzJlaHR4Q3VCNFJIUkY2QUNOR1Z5L3RRSGJTQW9XREtU?=
- =?utf-8?B?bVhZeE9jNUNDZjRBajFQZVZUR2wySzc1MWVreWFqMWIveEpoeUd0S2JVMFZU?=
- =?utf-8?B?YzRUM1AzOHA2OVF6NnQxc3dEQlZ6TmswaEVLV0hHWFJjd1FRcGsvNmxlbCty?=
- =?utf-8?B?dUpSWEd3bzA5dkhBZ1ozNGZtNy8xdWYyWXdpNndNcmJGcnp0SW5YdHBkQXlY?=
- =?utf-8?B?YWNwOWYrcTJ3bWcxMUJrdEQrU21CeXNSY0tzZEhwa0lySitBN2NSTXFaS2pV?=
- =?utf-8?B?V21xVjZuUFluNkZrSFNZSi9LUStvWGdlMVA0TDkrLzZoNjVLQldUWU9PMHBY?=
- =?utf-8?B?WFphSFVBZ2F5bjhiZlNtUWxtbTZLOEZOanZNL3pydHN4bU0xRk9MWWdWUXlw?=
- =?utf-8?B?OE0rTzdyNkdJdnppT1JjT2ttVlcxUzdkUEh2d2tOc2hwOTRZbHVwTHR3WUJp?=
- =?utf-8?B?aGZRd05wa29ZR1lYcEFuZ2pXZEtiQ1JRWUNnMXloNWJIb3VIM1grOThpeXh6?=
- =?utf-8?B?Sm9VR3haNm9iMk0rQjloMks5bmFqNXJFM0ZGSldyS1pGRWo4aytHQldPTUQy?=
- =?utf-8?B?M2NEcjZMSVExM2xIbXA1aW9zMS9KMko2SFlodEM0UXQyTjFSbTVld0s4Tnov?=
- =?utf-8?B?STVWUEo1RkNMOGlQbEF5bzdHcmFWeXFRMDI1Wi9Tem9TWHkvUHlleDFKNzd1?=
- =?utf-8?B?UXNUZWFhSHFDNmU3ckJwZmhDaHVZcWFHeS8yTDNrMk1JVm84VE5CemRXeHBL?=
- =?utf-8?B?S2J4RWpkenNqVlpsVFFUMTEzTjh1cHRJdTNmZ2thbkZ4QWNLQnphMGFoSnhk?=
- =?utf-8?B?UVdBSTd2cmV6c2VhN3FzaXRCRkpWcFFJbHVOSnl6UlNNQng2NEhJbnhjV3RJ?=
- =?utf-8?B?cVB5Q2QyajhnZWhRRW5kTDk5MURWeGg4WGtvK2hkM29pYThPZG12R0g5M2l2?=
- =?utf-8?B?M29LTmJoeXZLM1ExMFBzNUNOQWFON1lyaFFrelpYVC9CZXlsQWtJamFueldm?=
- =?utf-8?B?SW1lNURoT0dHVDFjcDFoVFFiYld0cThnbCtKNGlWcDZyWnl3ZmlibHVkNHdN?=
- =?utf-8?B?NFR4K0JFd3dJdWwvUlFBREFGVk16WmhkWks4aForVHNsWHVGUkE5OEh3elRr?=
- =?utf-8?B?WFFHVWJmT3pOMGNwQmhSMFY3cGZOdTFFUENYUHFqU1J3T3ZlRWtaSVdmYTRq?=
- =?utf-8?B?b2JMa1JuTitVaTlLSXNBd1RPOXBJUVcybGg1bWx2aTZFZDh4V1JQMjNiMElS?=
- =?utf-8?B?VEw2NllQcGszNEFhcTU3MzJ4SVVXZjN5TW1PdjdyTG1vU2lBcTFwa2NDOEZU?=
- =?utf-8?B?UXpWaW9EL041MnYzbzZuQU9FV3B3WnNMbDhNWldCa2dJYlpWdFlRM0laVWpm?=
- =?utf-8?B?aTJpZ3NSeDJDUXdXL1pMdkx0dTQyelhNYkxiRGI1U2w4NUxOdlZMVmFrRVpa?=
- =?utf-8?B?M3hUZkFwRVRrRFdZVStrUVByKzlQaGxmWmhteElJNVhmcloyN3RiY1lSUzdM?=
- =?utf-8?B?ek5xN1dQLzVLcmpjNHRldjJ2UnR3OWlDNTNXTHJtQ25hVEpma3Fhb09zQkY0?=
- =?utf-8?B?UGl5YnRDWHFsQlphRG5kOWgyc0lRZG5Wd3RLSFpndmNQQVk4cTlHSHZCd08v?=
- =?utf-8?B?UDkzNTdKenJwZ0o5UElMbmhaQ0pKUTFXTGJnODZNYktIdFpRRnZaOERwbTU4?=
- =?utf-8?B?bTQzU2xiTGRGcU4yNXEwUitlRTlMSHRSekhCb2x5aTFwQ1FSMDNmaWxIUUVZ?=
- =?utf-8?B?aVR0U090SGErOUY5UldOY0NMUkZacElGNGJvY0t4NEd3UnRpb05xOHp2NmtV?=
- =?utf-8?B?TWI3NEZZS1lnTDV1M1R5dTVjckFkR1JjaloyQ3VCbkwvdzFTYUgrTjNiV2RH?=
- =?utf-8?B?RFE0Q0RUR3dKWVpRc0tvUmxwZXV0L1pWOHd5bktveGhWcWFJNS9IcXlBRWFE?=
- =?utf-8?B?TWFWUW5GYnFENUxyODloTHZ0UDZKVFhNS3NKT21QZE9NUTJIUmtYWUMxcnRB?=
- =?utf-8?B?cXYwN01DSUFHL2trOHhaaWFjNllZUmd6QXZ0NkUrWGlycG9RaEVQUG1La0di?=
- =?utf-8?B?VzdSRGRWejZna3ExbjJhQTcwdm5mTG9RQUtxV1NHeHpOcUFtVGVma1hHei9W?=
- =?utf-8?B?bTZZRCsyNG5tZHFQUkxKVWlvWXYzM2Urbk9yTVN2cGx2QU9SM3NoM3dtb0pG?=
- =?utf-8?B?NUE9PQ==?=
-X-MS-Exchange-CrossTenant-Network-Message-Id: 43807c61-3297-4e30-73e1-08da8615d53a
-X-MS-Exchange-CrossTenant-AuthSource: CY4PR11MB1862.namprd11.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 24 Aug 2022 21:15:55.7565
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 46c98d88-e344-4ed4-8496-4ed7712e255d
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: ImwZhSXXkn2sL99Ibq5RY6wuvB+LbEUDIpebzPBq4Pq0wyMctsCWkeeoQhGf40lo2JeMwQahGPB338mtr3/vJPrJ+Fu7CWXWs1LUioyaD6U=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM6PR11MB2713
-X-OriginatorOrg: intel.com
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <1417f4ce-2573-5c88-6c92-fda5c57ebceb@intel.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Babu,
-
-On 8/22/2022 6:43 AM, Babu Moger wrote:
-> Add two new sysfs files to read/write the event configuration if
-> the feature Bandwidth Monitoring Event Configuration (BMEC) is
-> supported. The file mbm_local_config is for the configuration
-> of the event mbm_local_bytes and the file mbm_total_config is
-> for the configuration of mbm_total_bytes.
+On Wed, Aug 24, 2022 at 01:29:03PM -0700, Dave Jiang wrote:
 > 
-> $ls /sys/fs/resctrl/mon_data/mon_L3_00/mbm_local*
-> /sys/fs/resctrl/mon_data/mon_L3_00/mbm_local_bytes
-> /sys/fs/resctrl/mon_data/mon_L3_00/mbm_local_config
-> 
-> $ls /sys/fs/resctrl/mon_data/mon_L3_00/mbm_total*
-> /sys/fs/resctrl/mon_data/mon_L3_00/mbm_total_bytes
-> /sys/fs/resctrl/mon_data/mon_L3_00/mbm_total_config
-> 
-> Signed-off-by: Babu Moger <babu.moger@amd.com>
-> Reviewed-by: Ingo Molnar <mingo@kernel.org>
-> ---
->  arch/x86/kernel/cpu/resctrl/internal.h |    3 +++
->  arch/x86/kernel/cpu/resctrl/monitor.c  |    2 ++
->  arch/x86/kernel/cpu/resctrl/rdtgroup.c |   32 ++++++++++++++++++++++++++++++++
->  3 files changed, 37 insertions(+)
-> 
-> diff --git a/arch/x86/kernel/cpu/resctrl/internal.h b/arch/x86/kernel/cpu/resctrl/internal.h
-> index c049a274383c..fc725f5e9024 100644
-> --- a/arch/x86/kernel/cpu/resctrl/internal.h
-> +++ b/arch/x86/kernel/cpu/resctrl/internal.h
-> @@ -72,11 +72,13 @@ DECLARE_STATIC_KEY_FALSE(rdt_mon_enable_key);
->   * struct mon_evt - Entry in the event list of a resource
->   * @evtid:		event id
->   * @name:		name of the event
-> + * @config:	current configuration
->   * @list:		entry in &rdt_resource->evt_list
->   */
->  struct mon_evt {
->  	u32			evtid;
->  	char			*name;
-> +	char			*config;
->  	struct list_head	list;
->  };
->  
-> @@ -95,6 +97,7 @@ union mon_data_bits {
->  		unsigned int rid	: 10;
->  		unsigned int evtid	: 8;
->  		unsigned int domid	: 14;
-> +		unsigned int mon_config : 32;
->  	} u;
->  };
->  
+> On 8/24/2022 12:29 PM, Jerry Snitselaar wrote:
+> > For a software reset idxd_device_reinit() is called, which will walk
+> > the device workqueues to see which ones were enabled, and try to
+> > re-enable them. It keys off wq->state being iDXD_WQ_ENABLED, but the
+> > first thing idxd_enable_wq() will do is see that the state of the
+> > workqueue is enabled, and return 0 instead of attempting to issue
+> > a command to enable the workqueue.
+> > 
+> > So once a workqueue is found that needs to be re-enabled,
+> > set the state to disabled prior to calling idxd_enable_wq().
+> > This would accurately reflect the state if the enable fails
+> > as well.
+> > 
+> > Cc: Fenghua Yu <fenghua.yu@intel.com>
+> > Cc: Dave Jiang <dave.jiang@intel.com>
+> > Cc: Vinod Koul <vkoul@kernel.org>
+> > Cc: dmaengine@vger.kernel.org
+> > Fixes: bfe1d56091c1 ("dmaengine: idxd: Init and probe for Intel data accelerators")
+> > Signed-off-by: Jerry Snitselaar <jsnitsel@redhat.com>
+> > ---
+> >   drivers/dma/idxd/irq.c | 1 +
+> >   1 file changed, 1 insertion(+)
+> > 
+> > diff --git a/drivers/dma/idxd/irq.c b/drivers/dma/idxd/irq.c
+> > index 743ead5ebc57..723eeb5328d6 100644
+> > --- a/drivers/dma/idxd/irq.c
+> > +++ b/drivers/dma/idxd/irq.c
+> > @@ -52,6 +52,7 @@ static void idxd_device_reinit(struct work_struct *work)
+> >   		struct idxd_wq *wq = idxd->wqs[i];
+> >   		if (wq->state == IDXD_WQ_ENABLED) {
+> > +			wq->state = IDXD_WQ_DISABLED;
+> Might be better off to insert this line in idxd_wq_disable_cleanup(). I
+> think that should put it in sane state.
 
-This does not seem to be used in this patch.
+I don't think that is called in the code path that I was lookng at. I've been
+looking at this bit of process_misc_interrupts():
 
-> diff --git a/arch/x86/kernel/cpu/resctrl/monitor.c b/arch/x86/kernel/cpu/resctrl/monitor.c
-> index b9de417dac1c..3f900241dbab 100644
-> --- a/arch/x86/kernel/cpu/resctrl/monitor.c
-> +++ b/arch/x86/kernel/cpu/resctrl/monitor.c
-> @@ -656,11 +656,13 @@ static struct mon_evt llc_occupancy_event = {
->  static struct mon_evt mbm_total_event = {
->  	.name		= "mbm_total_bytes",
->  	.evtid		= QOS_L3_MBM_TOTAL_EVENT_ID,
-> +	.config 	= "mbm_total_config",
->  };
->  
->  static struct mon_evt mbm_local_event = {
->  	.name		= "mbm_local_bytes",
->  	.evtid		= QOS_L3_MBM_LOCAL_EVENT_ID,
-> +	.config 	= "mbm_local_config",
->  };
->  
->  /*
-> diff --git a/arch/x86/kernel/cpu/resctrl/rdtgroup.c b/arch/x86/kernel/cpu/resctrl/rdtgroup.c
-> index 855483b297a8..30d2182d4fda 100644
-> --- a/arch/x86/kernel/cpu/resctrl/rdtgroup.c
-> +++ b/arch/x86/kernel/cpu/resctrl/rdtgroup.c
-> @@ -254,6 +254,10 @@ static const struct kernfs_ops kf_mondata_ops = {
->  	.seq_show		= rdtgroup_mondata_show,
->  };
->  
-> +static const struct kernfs_ops kf_mondata_config_ops = {
-> +	.atomic_write_len       = PAGE_SIZE,
-> +};
-> +
->  static bool is_cpu_list(struct kernfs_open_file *of)
->  {
->  	struct rftype *rft = of->kn->priv;
-> @@ -2534,6 +2538,25 @@ void rmdir_mondata_subdir_allrdtgrp(struct rdt_resource *r, unsigned int dom_id)
->  	}
->  }
->  
-> +static int mon_config_addfile(struct kernfs_node *parent_kn, const char *name,
-> +			      void *priv)
-> +{
-> +	struct kernfs_node *kn;
-> +	int ret = 0;
-> +
-> +	kn = __kernfs_create_file(parent_kn, name, 0644,
-> +			GLOBAL_ROOT_UID, GLOBAL_ROOT_GID, 0,
-> +			&kf_mondata_config_ops, priv, NULL, NULL);
-> +	if (IS_ERR(kn))
-> +		return PTR_ERR(kn);
-> +
-> +	ret = rdtgroup_kn_set_ugid(kn);
-> +	if (ret)
-> +		kernfs_remove(kn);
-> +
-> +	return ret;
-> +}
-> +
->  static int mkdir_mondata_subdir(struct kernfs_node *parent_kn,
->  				struct rdt_domain *d,
->  				struct rdt_resource *r, struct rdtgroup *prgrp)
-> @@ -2568,6 +2591,15 @@ static int mkdir_mondata_subdir(struct kernfs_node *parent_kn,
->  		if (ret)
->  			goto out_destroy;
->  
-> +		/* Create the sysfs event configuration files */
-> +		if (r->mon_configurable &&
-> +		    (mevt->evtid == QOS_L3_MBM_TOTAL_EVENT_ID ||
-> +		     mevt->evtid == QOS_L3_MBM_LOCAL_EVENT_ID)) {
-> +			ret = mon_config_addfile(kn, mevt->config, priv.priv);
-> +			if (ret)
-> +				goto out_destroy;
-> +		}
-> +
+halt:
+	gensts.bits = ioread32(idxd->reg_base + IDXD_GENSTATS_OFFSET);
+	if (gensts.state == IDXD_DEVICE_STATE_HALT) {
+		idxd->state = IDXD_DEV_HALTED;
+		if (gensts.reset_type == IDXD_DEVICE_RESET_SOFTWARE) {
+			/*
+			 * If we need a software reset, we will throw the work
+			 * on a system workqueue in order to allow interrupts
+			 * for the device command completions.
+			 */
+			INIT_WORK(&idxd->work, idxd_device_reinit);
+			queue_work(idxd->wq, &idxd->work);
+		} else {
+			idxd->state = IDXD_DEV_HALTED;
+			idxd_wqs_quiesce(idxd);
+			idxd_wqs_unmap_portal(idxd);
+			spin_lock(&idxd->dev_lock);
+			idxd_device_clear_state(idxd);
+			dev_err(&idxd->pdev->dev,
+				"idxd halted, need %s.\n",
+				gensts.reset_type == IDXD_DEVICE_RESET_FLR ?
+				"FLR" : "system reset");
+			spin_unlock(&idxd->dev_lock);
+			return -ENXIO;
+		}
+	}
 
-This seems complex to have event features embedded in the code in this way. Could
-the events not be configured during system enumeration? For example, instead
-of hardcoding the config like above to always set:
+	return 0;
+}
 
-  static struct mon_evt mbm_local_event = {
-  	.name		= "mbm_local_bytes",
-  	.evtid		= QOS_L3_MBM_LOCAL_EVENT_ID,
- +	.config 	= "mbm_local_config",
+So it sees that the device is halted, and sticks idxd_device_reinint() on that
+workqueue. The idxd_device_reinit() has this loop to re-enable the idxd wqs:
 
+	for (i = 0; i < idxd->max_wqs; i++) {
+		struct idxd_wq *wq = idxd->wqs[i];
 
-What if instead this information is dynamically set in rdt_get_mon_l3_config()? To
-make things simpler struct mon_evt could get a new member "configurable" and the
-events that actually support configuration will have this set only
-if system has X86_FEATURE_BMEC (struct rdt_resource->configurable then
-becomes unnecessary?). Being configurable thus becomes an event property, not
-a resource property. The "config" member introduced here could then be "config_name".
+		if (wq->state == IDXD_WQ_ENABLED) {
+			wq->state = IDXD_WQ_DISABLED;
+			rc = idxd_wq_enable(wq);
+			if (rc < 0) {
+				dev_warn(dev, "Unable to re-enable wq %s\n",
+					 dev_name(wq_confdev(wq)));
+			}
+		}
+	}
 
-I think doing so will also make this file creation simpler with a single 
-mon_config_addfile() (possibly with more parameters) used to add both files to
-avoid the code duplication introduced by mon_config_addfile() above.
+Once you go into idxd_wq_enable() though you get this check at the beginning:
 
-What do you think?
+ 	if (wq->state == IDXD_WQ_ENABLED) {
+		dev_dbg(dev, "WQ %d already enabled\n", wq->id);
+		return 0;
+	}
 
->  		if (is_mbm_event(mevt->evtid))
->  			mon_event_read(&rr, r, d, prgrp, mevt->evtid, true);
->  	}
-> 
-> 
+So IIUC it sees the device is halted, goes to reset it, figures out a wq
+should be re-enabled, calls idxd_wq_enable() which hits the check, returns
+0 and the wq is never really re-enabled, though it will still have wq state
+set to IDXD_WQ_ENABLED.
 
-Reinette
+Or am I missing something?
+
+Regards,
+Jerry
+
+> >   			rc = idxd_wq_enable(wq);
+> >   			if (rc < 0) {
+> >   				dev_warn(dev, "Unable to re-enable wq %s\n",
+
