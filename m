@@ -2,78 +2,70 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6934EC64990
-	for <linux-kernel@archiver.kernel.org>; Wed, 24 Aug 2022 21:54:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 98341C48BE4
+	for <linux-kernel@archiver.kernel.org>; Wed, 24 Aug 2022 21:54:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240361AbiHXVyE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 24 Aug 2022 17:54:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47856 "EHLO
+        id S240290AbiHXVyH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 24 Aug 2022 17:54:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47836 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240174AbiHXVyA (ORCPT
+        with ESMTP id S240167AbiHXVyA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Wed, 24 Aug 2022 17:54:00 -0400
 Received: from mx3.wp.pl (mx3.wp.pl [212.77.101.10])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7F0E8754B4
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7F05E754AA
         for <linux-kernel@vger.kernel.org>; Wed, 24 Aug 2022 14:53:58 -0700 (PDT)
-Received: (wp-smtpd smtp.wp.pl 4295 invoked from network); 24 Aug 2022 23:53:56 +0200
+Received: (wp-smtpd smtp.wp.pl 3560 invoked from network); 24 Aug 2022 23:53:54 +0200
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=wp.pl; s=1024a;
-          t=1661378036; bh=4OTa75RLpe/v25mpI3TRXaOPqo4ZLnCOlukrrv8iGHU=;
+          t=1661378034; bh=lfTXwFyLFSRTSlBjg/arlkDnreNsAUZ2EdrFYagf3Sc=;
           h=From:To:Subject;
-          b=GqGggbVUHNjlcjWKR7lEtgdzHPAFUG1gqPzjjI2dC2GnpV+z/B6D9HnqA76cpmuIt
-           BjF1/G17qF0oTv9EWhMrY/5bxSS+X1pYAhaHab+j2a7Gbv51cBAB9/KcfyHhUJN5CJ
-           +c9GYhuxoJS6fMtWgBXaLnIH2f/4cAbJ5e044yjo=
+          b=lvAG5t2YmASvpiuZDFn2cSiBTcuJXZ0X3O4kgGtSWBN7GH1b+MMUDqUqnrwKyBGtW
+           FzuZFZyxKrMwp8enSpvPLLd/hghog3dv5OxqaiR/4MgWMyO6K/TyhTpKnQsRyXXinA
+           /gFZDxZRmeG6vunkHGmm0q88t3tteQhPxYEUSw/0=
 Received: from ip-137-21.ds.pw.edu.pl (HELO LAPTOP-OLEK.lan) (olek2@wp.pl@[194.29.137.21])
           (envelope-sender <olek2@wp.pl>)
           by smtp.wp.pl (WP-SMTPD) with ECDHE-RSA-AES256-GCM-SHA384 encrypted SMTP
-          for <hauke@hauke-m.de>; 24 Aug 2022 23:53:56 +0200
+          for <hauke@hauke-m.de>; 24 Aug 2022 23:53:54 +0200
 From:   Aleksander Jan Bajkowski <olek2@wp.pl>
 To:     hauke@hauke-m.de, davem@davemloft.net, edumazet@google.com,
         kuba@kernel.org, pabeni@redhat.com, olek2@wp.pl,
         netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH net v3 1/3] net: lantiq_xrx200: confirm skb is allocated before using
-Date:   Wed, 24 Aug 2022 23:54:06 +0200
-Message-Id: <20220824215408.4695-2-olek2@wp.pl>
+Subject: [PATCH net v3 0/3] net: lantiq_xrx200: fix errors under memory pressure
+Date:   Wed, 24 Aug 2022 23:54:05 +0200
+Message-Id: <20220824215408.4695-1-olek2@wp.pl>
 X-Mailer: git-send-email 2.30.2
-In-Reply-To: <20220824215408.4695-1-olek2@wp.pl>
-References: <20220824215408.4695-1-olek2@wp.pl>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-WP-MailID: da954f5736fb02daf8954bf4042baf0e
+X-WP-MailID: dd75648a94c29d326a4f0bd6e6c9ab91
 X-WP-AV: skaner antywirusowy Poczty Wirtualnej Polski
-X-WP-SPAM: NO 0000000 [oVMU]                               
+X-WP-SPAM: NO 0000000 [IZPU]                               
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-xrx200_hw_receive() assumes build_skb() always works and goes straight
-to skb_reserve(). However, build_skb() can fail under memory pressure.
+This series fixes issues that can occur in the driver under memory pressure.
+Situations when the system cannot allocate memory are rare, so the mentioned bugs
+have been fixed recently. The patches have been tested on a BT Home router with the
+Lantiq xRX200 chipset.
 
-Add a check in case build_skb() failed to allocate and return NULL.
+Changelog:
 
-Fixes: e015593573b3 ("net: lantiq_xrx200: convert to build_skb")
-Reported-by: Eric Dumazet <edumazet@google.com>
-Signed-off-by: Aleksander Jan Bajkowski <olek2@wp.pl>
----
- drivers/net/ethernet/lantiq_xrx200.c | 6 ++++++
- 1 file changed, 6 insertions(+)
+  v3:
+  - removed netdev_err() log from the first patch
 
-diff --git a/drivers/net/ethernet/lantiq_xrx200.c b/drivers/net/ethernet/lantiq_xrx200.c
-index 5edb68a8aab1..89314b645c82 100644
---- a/drivers/net/ethernet/lantiq_xrx200.c
-+++ b/drivers/net/ethernet/lantiq_xrx200.c
-@@ -239,6 +239,12 @@ static int xrx200_hw_receive(struct xrx200_chan *ch)
- 	}
- 
- 	skb = build_skb(buf, priv->rx_skb_size);
-+	if (!skb) {
-+		skb_free_frag(buf);
-+		net_dev->stats.rx_dropped++;
-+		return -ENOMEM;
-+	}
-+
- 	skb_reserve(skb, NET_SKB_PAD);
- 	skb_put(skb, len);
- 
+  v2:
+  - the second patch has been changed, so that under memory pressure situation
+    the driver will not receive packets indefinitely regardless of the NAPI budget,
+  - the third patch has been added.
+
+Aleksander Jan Bajkowski (3):
+  net: lantiq_xrx200: confirm skb is allocated before using
+  net: lantiq_xrx200: fix lock under memory pressure
+  net: lantiq_xrx200: restore buffer if memory allocation failed
+
+ drivers/net/ethernet/lantiq_xrx200.c | 9 ++++++++-
+ 1 file changed, 8 insertions(+), 1 deletion(-)
+
 -- 
 2.30.2
 
