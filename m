@@ -2,155 +2,172 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 62CABC00140
-	for <linux-kernel@archiver.kernel.org>; Wed, 24 Aug 2022 15:27:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3E49AC00140
+	for <linux-kernel@archiver.kernel.org>; Wed, 24 Aug 2022 15:31:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239552AbiHXP1Q (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 24 Aug 2022 11:27:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54718 "EHLO
+        id S237717AbiHXPbC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 24 Aug 2022 11:31:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59166 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235966AbiHXP1N (ORCPT
+        with ESMTP id S235300AbiHXPa2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 24 Aug 2022 11:27:13 -0400
-X-Greylist: delayed 63 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Wed, 24 Aug 2022 08:27:08 PDT
-Received: from outboundhk.mxmail.xiaomi.com (outboundhk.mxmail.xiaomi.com [118.143.206.88])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id F05CC9A6A0;
-        Wed, 24 Aug 2022 08:27:08 -0700 (PDT)
-X-IronPort-AV: E=Sophos;i="5.93,260,1654531200"; 
-   d="scan'208";a="28042774"
-Received: from hk-mbx01.mioffice.cn (HELO xiaomi.com) ([10.56.8.121])
-  by outboundhk.mxmail.xiaomi.com with ESMTP; 24 Aug 2022 23:26:04 +0800
-Received: from yz-mbx05.mioffice.cn (10.237.88.125) by HK-MBX01.mioffice.cn
- (10.56.8.121) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.29; Wed, 24 Aug
- 2022 23:26:03 +0800
-Received: from BJ-MBX02.mioffice.cn (10.237.8.122) by yz-mbx05.mioffice.cn
- (10.237.88.125) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.29; Wed, 24 Aug
- 2022 23:26:03 +0800
-Received: from BJ-MBX02.mioffice.cn ([fe80::7475:9ebf:d811:88c2]) by
- BJ-MBX02.mioffice.cn ([fe80::7475:9ebf:d811:88c2%17]) with mapi id
- 15.02.0986.029; Wed, 24 Aug 2022 23:26:03 +0800
-From:   =?utf-8?B?5p2O5L2z6ZOt?= <lijiaming3@xiaomi.com>
-To:     Bean Huo <huobean@gmail.com>,
-        Jiaming Li <lijiamingsofine@gmail.com>,
-        "avri.altman@wdc.com" <avri.altman@wdc.com>,
-        "alim.akhtar@samsung.com" <alim.akhtar@samsung.com>,
-        "jejb@linux.ibm.com" <jejb@linux.ibm.com>,
-        "bvanassche@acm.org" <bvanassche@acm.org>
-CC:     "linux-scsi@vger.kernel.org" <linux-scsi@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: =?utf-8?B?562U5aSNOiBbRXh0ZXJuYWwgTWFpbF1SZTogW1BBVENIXSBzY3NpOiB1ZnM6?=
- =?utf-8?B?IHVmc2ZibzogSW50cm9kdWNlIEZpbGUgQmFzZWQgT3B0aW1pemF0aW9uIGZl?=
- =?utf-8?Q?ature?=
-Thread-Topic: [External Mail]Re: [PATCH] scsi: ufs: ufsfbo: Introduce File
- Based Optimization feature
-Thread-Index: AQHYt8Qh+RcVbZG0DEGTuktm+d7tza2+KseQ
-Date:   Wed, 24 Aug 2022 15:26:03 +0000
-Message-ID: <ce75888f5f2a412283a839ebd0015735@xiaomi.com>
-References: <20220824084633.14428-1-lijiamingsofine@gmail.com>
- <347dae29c07fe13e6974b0e59e127c399f63ef69.camel@gmail.com>
-In-Reply-To: <347dae29c07fe13e6974b0e59e127c399f63ef69.camel@gmail.com>
-Accept-Language: zh-CN, en-US
-Content-Language: zh-CN
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-originating-ip: [10.237.8.11]
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+        Wed, 24 Aug 2022 11:30:28 -0400
+Received: from mx0b-001b2d01.pphosted.com (mx0b-001b2d01.pphosted.com [148.163.158.5])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1C1FADEB2;
+        Wed, 24 Aug 2022 08:30:26 -0700 (PDT)
+Received: from pps.filterd (m0127361.ppops.net [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 27OFDjwh024804;
+        Wed, 24 Aug 2022 15:30:22 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=from : to : cc : subject
+ : date : message-id : mime-version : content-transfer-encoding; s=pp1;
+ bh=AlgD0tRJZancLsm5tjdFdyG0SXTnhtFLMqnPKtXUupo=;
+ b=iW9lv4HWZjY1FZWRcPPxN6V8AaZ8PFc3be9arX09imaJcQvoz96h8HAObp0421lteM2L
+ 2HpfofsPOBzZyxQl0fmy9hwX92ousYPstawghhZqLRIkvGgI3unYswcxTcjEdIQ9CqaI
+ S5EC7C077WcT/NJm4+n9Q3am9b0w63C5PKItUUJcve866XscHFn6Nun2RVVkJhwvzWoI
+ qn/jcEMmcS1yQZMaF8D8ODE+VImAgTwenpcgPPIoSVp7QK7UJHNh12M4f5CsWjn1Ma9A
+ ujcLl5WjFJjqxXG2b9nc7wndr2Oh1DKOVfY8quxhKnu5kPnaLoixYwnAf2gybldLEHKl Bg== 
+Received: from pps.reinject (localhost [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3j5pemrgwx-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Wed, 24 Aug 2022 15:30:22 +0000
+Received: from m0127361.ppops.net (m0127361.ppops.net [127.0.0.1])
+        by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 27OFDinv024795;
+        Wed, 24 Aug 2022 15:30:21 GMT
+Received: from ppma03ams.nl.ibm.com (62.31.33a9.ip4.static.sl-reverse.com [169.51.49.98])
+        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3j5pemrgw1-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Wed, 24 Aug 2022 15:30:21 +0000
+Received: from pps.filterd (ppma03ams.nl.ibm.com [127.0.0.1])
+        by ppma03ams.nl.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 27OFLLt7008739;
+        Wed, 24 Aug 2022 15:30:19 GMT
+Received: from b06cxnps3075.portsmouth.uk.ibm.com (d06relay10.portsmouth.uk.ibm.com [9.149.109.195])
+        by ppma03ams.nl.ibm.com with ESMTP id 3j2q88w9pg-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Wed, 24 Aug 2022 15:30:19 +0000
+Received: from d06av26.portsmouth.uk.ibm.com (d06av26.portsmouth.uk.ibm.com [9.149.105.62])
+        by b06cxnps3075.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 27OFUGu631981862
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Wed, 24 Aug 2022 15:30:16 GMT
+Received: from d06av26.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 2021CAE055;
+        Wed, 24 Aug 2022 15:30:16 +0000 (GMT)
+Received: from d06av26.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id B3370AE051;
+        Wed, 24 Aug 2022 15:30:15 +0000 (GMT)
+Received: from tuxmaker.boeblingen.de.ibm.com (unknown [9.152.85.9])
+        by d06av26.portsmouth.uk.ibm.com (Postfix) with ESMTP;
+        Wed, 24 Aug 2022 15:30:15 +0000 (GMT)
+From:   Janis Schoetterl-Glausch <scgl@linux.ibm.com>
+To:     Christian Borntraeger <borntraeger@linux.ibm.com>,
+        Janosch Frank <frankja@linux.ibm.com>,
+        Claudio Imbrenda <imbrenda@linux.ibm.com>,
+        Heiko Carstens <hca@linux.ibm.com>,
+        Vasily Gorbik <gor@linux.ibm.com>,
+        Alexander Gordeev <agordeev@linux.ibm.com>
+Cc:     Janis Schoetterl-Glausch <scgl@linux.ibm.com>,
+        kernel test robot <lkp@intel.com>,
+        Dan Carpenter <dan.carpenter@oracle.com>,
+        David Hildenbrand <david@redhat.com>,
+        Sven Schnelle <svens@linux.ibm.com>, kvm@vger.kernel.org,
+        linux-s390@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH] KVM: s390: Pass initialized arg even if unused
+Date:   Wed, 24 Aug 2022 17:30:11 +0200
+Message-Id: <20220824153011.4004573-1-scgl@linux.ibm.com>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
+X-TM-AS-GCONF: 00
+X-Proofpoint-GUID: 4e7T6gqiij7L_CGOGcuryjplXCHzmwma
+X-Proofpoint-ORIG-GUID: 6TBa3dtzGeF1ThkojpgOzt90lCDzYBxm
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.895,Hydra:6.0.517,FMLib:17.11.122.1
+ definitions=2022-08-24_07,2022-08-22_02,2022-06-22_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 phishscore=0 suspectscore=0
+ malwarescore=0 clxscore=1011 priorityscore=1501 mlxlogscore=999
+ lowpriorityscore=0 spamscore=0 mlxscore=0 impostorscore=0 adultscore=0
+ bulkscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2207270000 definitions=main-2208240057
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-SGkgQmVhbg0KVGhpcyBpcyBhIFVGUyBleHRlbmRlZCBmZWF0dXJlIGluIFVGUzQuMCBKRURFQyBT
-dGFuZGFyZA0KVGhhbmtzDQoNCi0tLS0t6YKu5Lu25Y6f5Lu2LS0tLS0NCuWPkeS7tuS6ujogQmVh
-biBIdW8gPGh1b2JlYW5AZ21haWwuY29tPg0K5Y+R6YCB5pe26Ze0OiAyMDIy5bm0OOaciDI05pel
-IDIyOjE3DQrmlLbku7bkuro6IEppYW1pbmcgTGkgPGxpamlhbWluZ3NvZmluZUBnbWFpbC5jb20+
-OyBhdnJpLmFsdG1hbkB3ZGMuY29tOyBhbGltLmFraHRhckBzYW1zdW5nLmNvbTsgamVqYkBsaW51
-eC5pYm0uY29tOyBidmFuYXNzY2hlQGFjbS5vcmcNCuaKhOmAgTogbGludXgtc2NzaUB2Z2VyLmtl
-cm5lbC5vcmc7IGxpbnV4LWtlcm5lbEB2Z2VyLmtlcm5lbC5vcmc7IOadjuS9s+mTrSA8bGlqaWFt
-aW5nM0B4aWFvbWkuY29tPg0K5Li76aKYOiBbRXh0ZXJuYWwgTWFpbF1SZTogW1BBVENIXSBzY3Np
-OiB1ZnM6IHVmc2ZibzogSW50cm9kdWNlIEZpbGUgQmFzZWQgT3B0aW1pemF0aW9uIGZlYXR1cmUN
-Cg0KW+WklumDqOmCruS7tl0g5q2k6YKu5Lu25p2l5rqQ5LqO5bCP57Gz5YWs5Y+45aSW6YOo77yM
-6K+36LCo5oWO5aSE55CG44CCDQoNCk9uIFdlZCwgMjAyMi0wOC0yNCBhdCAxNjo0NiArMDgwMCwg
-SmlhbWluZyBMaSB3cm90ZToNCj4gRnJvbTogbGlqaWFtaW5nMyA8bGlqaWFtaW5nM0B4aWFvbWku
-Y29tPg0KPg0KPiBJbXBsZW1lbnQgRmlsZSBCYXNlZCBPcHRpbWl6YXRpb24gaW5pdGlhbGl6YXRp
-b24gYW5kIGFkZCBzeXNmcw0KPiBpbnRlcmZhY2UuDQo+DQo+IFN0b2FnZSBkZXZpY2VzIGhhdmUg
-YSBsb25nIGxpZmVzcGFuLiBEZXZpY2UgcGVyZm9ybWFuY2Ugb3ZlciBpdHMNCj4gbGlmZXNwYW4g
-aXMgbm90IGNvbnN0YW50IGFuZCBtYXkgZGV0ZXJpb3JhdGUgb3ZlciB0aW1lDQo+DQo+IFRoaXMg
-ZmVhdHVyZSBkZXNjcmliZXMgYSBtZXRob2QgdG8gaW1wcm92ZSB0aGUgcGVyZm9ybWFuY2UgcmVn
-cmVzc2lvbi4NCj4gVGhlIGhvc3QgbmVlZHMgdG8gcHJvdmlkZSBGaWxlIFN5c3RlbSBpbmZvcm1h
-dGlvbiB0byBzdG9yYWdlIGRldmljZQ0KPiBmaXJzdC4gQmFzZWQgb24gdGhhdCBpbmZvcm1hdGlv
-biBkZXZpY2UgYW5hbHl6ZXMgdGhlIGZpbGUgc3lzdGVtIGRhdGENCj4gYW5kIHByb3ZpZGVzIHRo
-ZSBob3N0IHRoZSBsZXZlbCBvZiBwZXJmb3JtYW5jZSByZWdyZXNzaW9uLiBUaGUgaG9zdA0KPiB0
-aGVuIG1heSBpbnN0cnVjdCB0aGUgZGV2aWNlIHRvIGV4ZWN1dGUgb3B0aW1pemF0aW9uIHByb2Nl
-ZHVyZSB0bw0KPiBpbXByb3ZlIHRoZSByZWdyZXNzaW9uIGxldmVsLg0KPg0KPiBTaWduZWQtb2Zm
-LWJ5OiBsaWppYW1pbmczIDxsaWppYW1pbmczQHhpYW9taS5jb20+DQo+IC0tLQ0KPiAgYXJjaC9h
-cm02NC9jb25maWdzL2RlZmNvbmZpZyB8ICAgIDEgKw0KPiAgZHJpdmVycy9zY3NpL3Vmcy9LY29u
-ZmlnICAgICB8ICAgIDkgKw0KPiAgZHJpdmVycy9zY3NpL3Vmcy9NYWtlZmlsZSAgICB8ICAgIDEg
-Kw0KPiAgZHJpdmVycy9zY3NpL3Vmcy91ZnMuaCAgICAgICB8ICAgMTMgKw0KPiAgZHJpdmVycy9z
-Y3NpL3Vmcy91ZnNmYm8uYyAgICB8IDEwMDcNCj4gKysrKysrKysrKysrKysrKysrKysrKysrKysr
-KysrKysrKw0KPiAgZHJpdmVycy9zY3NpL3Vmcy91ZnNmYm8uaCAgICB8ICAxNDMgKysrKysNCj4g
-IGRyaXZlcnMvc2NzaS91ZnMvdWZzaGNkLmMgICAgfCAgIDE1ICsNCj4gIGRyaXZlcnMvc2NzaS91
-ZnMvdWZzaGNkLmggICAgfCAgICA3ICstDQo+ICA4IGZpbGVzIGNoYW5nZWQsIDExOTUgaW5zZXJ0
-aW9ucygrKSwgMSBkZWxldGlvbigtKSAgY3JlYXRlIG1vZGUNCj4gMTAwNjQ0IGRyaXZlcnMvc2Nz
-aS91ZnMvdWZzZmJvLmMgIGNyZWF0ZSBtb2RlIDEwMDY0NA0KPiBkcml2ZXJzL3Njc2kvdWZzL3Vm
-c2Ziby5oDQo+DQo+IGRpZmYgLS1naXQgYS9hcmNoL2FybTY0L2NvbmZpZ3MvZGVmY29uZmlnDQo+
-IGIvYXJjaC9hcm02NC9jb25maWdzL2RlZmNvbmZpZyBpbmRleCA0OTcyYTgxZDQwZDYuLjEzNjNj
-MjM3YjZmMyAxMDA2NDQNCj4gLS0tIGEvYXJjaC9hcm02NC9jb25maWdzL2RlZmNvbmZpZw0KPiAr
-KysgYi9hcmNoL2FybTY0L2NvbmZpZ3MvZGVmY29uZmlnDQo+IEBAIC0yODksNiArMjg5LDcgQEAg
-Q09ORklHX1NDU0lfVUZTSENEX1BMQVRGT1JNPXkNCj4gQ09ORklHX1NDU0lfVUZTX1FDT009bSAg
-Q09ORklHX1NDU0lfVUZTX0hJU0k9eQ0KPiBDT05GSUdfU0NTSV9VRlNfRVhZTk9TPXkNCj4gK0NP
-TkZJR19TQ1NJX1VGU19GQk89eQ0KPiAgQ09ORklHX0FUQT15DQo+ICBDT05GSUdfU0FUQV9BSENJ
-PXkNCj4gIENPTkZJR19TQVRBX0FIQ0lfUExBVEZPUk09eQ0KPiBkaWZmIC0tZ2l0IGEvZHJpdmVy
-cy9zY3NpL3Vmcy9LY29uZmlnIGIvZHJpdmVycy9zY3NpL3Vmcy9LY29uZmlnIGluZGV4DQo+IDQz
-MmRmNzZlNjMxOC4uNTdiMGU4YjE0NTQzIDEwMDY0NA0KPiAtLS0gYS9kcml2ZXJzL3Njc2kvdWZz
-L0tjb25maWcNCj4gKysrIGIvZHJpdmVycy9zY3NpL3Vmcy9LY29uZmlnDQo+IEBAIC0xOTksMyAr
-MTk5LDEyIEBAIGNvbmZpZyBTQ1NJX1VGU19GQVVMVF9JTkpFQ1RJT04NCj4gICAgICAgICBoZWxw
-DQo+ICAgICAgICAgICBFbmFibGUgZmF1bHQgaW5qZWN0aW9uIHN1cHBvcnQgaW4gdGhlIFVGUyBk
-cml2ZXIuIFRoaXMgbWFrZXMNCj4gaXQgZWFzaWVyDQo+ICAgICAgICAgICB0byB0ZXN0IHRoZSBV
-RlMgZXJyb3IgaGFuZGxlciBhbmQgYWJvcnQgaGFuZGxlci4NCj4gKw0KPiArY29uZmlnIFNDU0lf
-VUZTX0ZCTw0KPiArICAgICAgIGJvb2wgIlN1cHBvcnQgVUZTIEZpbGUtYmFzZWQgT3B0aW1pemF0
-aW9uIg0KPiArICAgICAgIGRlcGVuZHMgb24gU0NTSV9VRlNIQ0QNCj4gKyAgICAgICBoZWxwDQo+
-ICsgICAgICAgIFRoZSBVRlMgRkJPIGZlYXR1cmUgaW1wcm92ZXMgU2VxdWVudGlhbCByZWFkIHBl
-cmZvcm1hbmNlLg0KPiBUaGUgSG9zdCBjYW4NCj4gKyAgICAgICAgc2VuZCB0aGUgTEJBIHRvIGRl
-dmljZS4gVGhlIGRldmljZSB3aWxsIHJldHVybiBhIGZyYWdtZW50ZWQNCj4gc3RhdGUuIEl0DQo+
-ICsgICAgICAgIGlzIHVwIHRvIHRoZSBob3N0IHRvIGRlY2lkZSB3aGV0aGVyIHRvIGRlZnJhZy4g
-QWZ0ZXINCj4gZGVmcmFnbWVudCwNCj4gKyAgICAgICAgU2VxdWVudGlhbCByZWFkIHBlcmZvcm1h
-bmNlIGlzIGltcHJvdmVkDQo+IFwgTm8gbmV3bGluZSBhdCBlbmQgb2YgZmlsZQ0KPiBkaWZmIC0t
-Z2l0IGEvZHJpdmVycy9zY3NpL3Vmcy9NYWtlZmlsZSBiL2RyaXZlcnMvc2NzaS91ZnMvTWFrZWZp
-bGUNCj4gaW5kZXggYzQwN2RhOWI1MTcxLi45NTZiZTA3MzgyNjMgMTAwNjQ0DQo+IC0tLSBhL2Ry
-aXZlcnMvc2NzaS91ZnMvTWFrZWZpbGUNCj4gKysrIGIvZHJpdmVycy9zY3NpL3Vmcy9NYWtlZmls
-ZQ0KPiBAQCAtOSw2ICs5LDcgQEAgdWZzaGNkLWNvcmUtJChDT05GSUdfREVCVUdfRlMpICAgICAg
-ICAgICs9IHVmcy0NCj4gZGVidWdmcy5vDQo+ICB1ZnNoY2QtY29yZS0kKENPTkZJR19TQ1NJX1VG
-U19CU0cpICAgICArPSB1ZnNfYnNnLm8NCj4gIHVmc2hjZC1jb3JlLSQoQ09ORklHX1NDU0lfVUZT
-X0NSWVBUTykgICs9IHVmc2hjZC1jcnlwdG8ubw0KPiAgdWZzaGNkLWNvcmUtJChDT05GSUdfU0NT
-SV9VRlNfSFBCKSAgICAgKz0gdWZzaHBiLm8NCj4gK3Vmc2hjZC1jb3JlLSQoQ09ORklHX1NDU0lf
-VUZTX0ZCTykgICAgICs9IHVmc2Ziby5vDQo+ICB1ZnNoY2QtY29yZS0kKENPTkZJR19TQ1NJX1VG
-U19GQVVMVF9JTkpFQ1RJT04pICs9IHVmcy1mYXVsdC0NCj4gaW5qZWN0aW9uLm8NCj4NCj4gIG9i
-ai0kKENPTkZJR19TQ1NJX1VGU19EV0NfVENfUENJKSArPSB0Yy1kd2MtZzIxMC1wY2kubyB1ZnNo
-Y2QtZHdjLm8NCj4gdGMtZHdjLWcyMTAubyBkaWZmIC0tZ2l0IGEvZHJpdmVycy9zY3NpL3Vmcy91
-ZnMuaA0KPiBiL2RyaXZlcnMvc2NzaS91ZnMvdWZzLmggaW5kZXggOGM2YjM4YjFiMTQyLi5iNzUw
-Y2UzZjdkZTkgMTAwNjQ0DQo+IC0tLSBhL2RyaXZlcnMvc2NzaS91ZnMvdWZzLmgNCj4gKysrIGIv
-ZHJpdmVycy9zY3NpL3Vmcy91ZnMuaA0KPiBAQCAtMTcwLDYgKzE3MCw3IEBAIGVudW0gZGVzY19p
-ZG4gew0KPiAgICAgICAgIFFVRVJZX0RFU0NfSUROX0dFT01FVFJZICAgICAgICAgPSAweDcsDQo+
-ICAgICAgICAgUVVFUllfREVTQ19JRE5fUE9XRVIgICAgICAgICAgICA9IDB4OCwNCj4gICAgICAg
-ICBRVUVSWV9ERVNDX0lETl9IRUFMVEggICAgICAgICAgID0gMHg5LA0KPiArICAgICAgIFFVRVJZ
-X0RFU0NfSUROX0ZCTyAgICAgICAgICA9IDB4QSwNCkhpIEppYW1pbmcsDQoNCklzIHRoaXMgYSBV
-RlMgZXh0ZW5kZWQgc3RhbmRhcmQgb3IgdmVuZG9yIHNwZWNpZmljIGZlYXR1cmU/DQoNCg0KDQoj
-LyoqKioqKuacrOmCruS7tuWPiuWFtumZhOS7tuWQq+acieWwj+exs+WFrOWPuOeahOS/neWvhuS/
-oeaBr++8jOS7hemZkOS6juWPkemAgee7meS4iumdouWcsOWdgOS4reWIl+WHuueahOS4quS6uuaI
-lue+pOe7hOOAguemgeatouS7u+S9leWFtuS7luS6uuS7peS7u+S9leW9ouW8j+S9v+eUqO+8iOWM
-heaLrOS9huS4jemZkOS6juWFqOmDqOaIlumDqOWIhuWcsOazhOmcsuOAgeWkjeWItuOAgeaIluaV
-o+WPke+8ieacrOmCruS7tuS4reeahOS/oeaBr+OAguWmguaenOaCqOmUmeaUtuS6huacrOmCruS7
-tu+8jOivt+aCqOeri+WNs+eUteivneaIlumCruS7tumAmuefpeWPkeS7tuS6uuW5tuWIoOmZpOac
-rOmCruS7tu+8gSBUaGlzIGUtbWFpbCBhbmQgaXRzIGF0dGFjaG1lbnRzIGNvbnRhaW4gY29uZmlk
-ZW50aWFsIGluZm9ybWF0aW9uIGZyb20gWElBT01JLCB3aGljaCBpcyBpbnRlbmRlZCBvbmx5IGZv
-ciB0aGUgcGVyc29uIG9yIGVudGl0eSB3aG9zZSBhZGRyZXNzIGlzIGxpc3RlZCBhYm92ZS4gQW55
-IHVzZSBvZiB0aGUgaW5mb3JtYXRpb24gY29udGFpbmVkIGhlcmVpbiBpbiBhbnkgd2F5IChpbmNs
-dWRpbmcsIGJ1dCBub3QgbGltaXRlZCB0bywgdG90YWwgb3IgcGFydGlhbCBkaXNjbG9zdXJlLCBy
-ZXByb2R1Y3Rpb24sIG9yIGRpc3NlbWluYXRpb24pIGJ5IHBlcnNvbnMgb3RoZXIgdGhhbiB0aGUg
-aW50ZW5kZWQgcmVjaXBpZW50KHMpIGlzIHByb2hpYml0ZWQuIElmIHlvdSByZWNlaXZlIHRoaXMg
-ZS1tYWlsIGluIGVycm9yLCBwbGVhc2Ugbm90aWZ5IHRoZSBzZW5kZXIgYnkgcGhvbmUgb3IgZW1h
-aWwgaW1tZWRpYXRlbHkgYW5kIGRlbGV0ZSBpdCEqKioqKiovIw0K
+This silences smatch warnings reported by kbuild bot:
+arch/s390/kvm/gaccess.c:859 guest_range_to_gpas() error: uninitialized symbol 'prot'.
+arch/s390/kvm/gaccess.c:1064 access_guest_with_key() error: uninitialized symbol 'prot'.
+
+This is because it cannot tell that the value is not used in this case.
+The trans_exc* only examine prot if code is PGM_PROTECTION.
+Pass a dummy value for other codes.
+
+Reported-by: kernel test robot <lkp@intel.com>
+Reported-by: Dan Carpenter <dan.carpenter@oracle.com>
+Signed-off-by: Janis Schoetterl-Glausch <scgl@linux.ibm.com>
+---
+ arch/s390/kvm/gaccess.c | 15 ++++++++++++---
+ 1 file changed, 12 insertions(+), 3 deletions(-)
+
+diff --git a/arch/s390/kvm/gaccess.c b/arch/s390/kvm/gaccess.c
+index 082ec5f2c3a5..89186701116a 100644
+--- a/arch/s390/kvm/gaccess.c
++++ b/arch/s390/kvm/gaccess.c
+@@ -489,6 +489,8 @@ enum prot_type {
+ 	PROT_TYPE_ALC  = 2,
+ 	PROT_TYPE_DAT  = 3,
+ 	PROT_TYPE_IEP  = 4,
++	/* Dummy value for passing an initialized value when code != PGM_PROTECTION */
++	PROT_NONE,
+ };
+ 
+ static int trans_exc_ending(struct kvm_vcpu *vcpu, int code, unsigned long gva, u8 ar,
+@@ -503,6 +505,7 @@ static int trans_exc_ending(struct kvm_vcpu *vcpu, int code, unsigned long gva,
+ 
+ 	switch (code) {
+ 	case PGM_PROTECTION:
++		WARN(unlikely(prot == PROT_NONE), "Invalid prot argument");
+ 		switch (prot) {
+ 		case PROT_TYPE_IEP:
+ 			tec->b61 = 1;
+@@ -519,6 +522,8 @@ static int trans_exc_ending(struct kvm_vcpu *vcpu, int code, unsigned long gva,
+ 		case PROT_TYPE_DAT:
+ 			tec->b61 = 1;
+ 			break;
++		case PROT_NONE:
++			/* We should never get here, acts like termination */
+ 		}
+ 		if (terminate) {
+ 			tec->b56 = 0;
+@@ -968,8 +973,10 @@ static int guest_range_to_gpas(struct kvm_vcpu *vcpu, unsigned long ga, u8 ar,
+ 				return rc;
+ 		} else {
+ 			gpa = kvm_s390_real_to_abs(vcpu, ga);
+-			if (kvm_is_error_gpa(vcpu->kvm, gpa))
++			if (kvm_is_error_gpa(vcpu->kvm, gpa)) {
+ 				rc = PGM_ADDRESSING;
++				prot = PROT_NONE;
++			}
+ 		}
+ 		if (rc)
+ 			return trans_exc(vcpu, rc, ga, ar, mode, prot);
+@@ -1112,8 +1119,6 @@ int access_guest_with_key(struct kvm_vcpu *vcpu, unsigned long ga, u8 ar,
+ 		if (rc == PGM_PROTECTION && try_storage_prot_override)
+ 			rc = access_guest_page_with_key(vcpu->kvm, mode, gpas[idx],
+ 							data, fragment_len, PAGE_SPO_ACC);
+-		if (rc == PGM_PROTECTION)
+-			prot = PROT_TYPE_KEYC;
+ 		if (rc)
+ 			break;
+ 		len -= fragment_len;
+@@ -1123,6 +1128,10 @@ int access_guest_with_key(struct kvm_vcpu *vcpu, unsigned long ga, u8 ar,
+ 	if (rc > 0) {
+ 		bool terminate = (mode == GACC_STORE) && (idx > 0);
+ 
++		if (rc == PGM_PROTECTION)
++			prot = PROT_TYPE_KEYC;
++		else
++			prot = PROT_NONE;
+ 		rc = trans_exc_ending(vcpu, rc, ga, ar, mode, prot, terminate);
+ 	}
+ out_unlock:
+-- 
+2.34.1
+
