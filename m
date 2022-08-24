@@ -2,228 +2,208 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CDE37C32796
-	for <linux-kernel@archiver.kernel.org>; Wed, 24 Aug 2022 13:31:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3B907C32793
+	for <linux-kernel@archiver.kernel.org>; Wed, 24 Aug 2022 13:31:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231596AbiHXNbJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 24 Aug 2022 09:31:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38104 "EHLO
+        id S235635AbiHXNbf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 24 Aug 2022 09:31:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39654 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235946AbiHXNbH (ORCPT
+        with ESMTP id S237739AbiHXNbb (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 24 Aug 2022 09:31:07 -0400
-Received: from mail-yw1-x1133.google.com (mail-yw1-x1133.google.com [IPv6:2607:f8b0:4864:20::1133])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D607B6EF25
-        for <linux-kernel@vger.kernel.org>; Wed, 24 Aug 2022 06:31:04 -0700 (PDT)
-Received: by mail-yw1-x1133.google.com with SMTP id 00721157ae682-3378303138bso420137587b3.9
-        for <linux-kernel@vger.kernel.org>; Wed, 24 Aug 2022 06:31:04 -0700 (PDT)
+        Wed, 24 Aug 2022 09:31:31 -0400
+Received: from mail-lf1-x131.google.com (mail-lf1-x131.google.com [IPv6:2a00:1450:4864:20::131])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9F35974CF4
+        for <linux-kernel@vger.kernel.org>; Wed, 24 Aug 2022 06:31:25 -0700 (PDT)
+Received: by mail-lf1-x131.google.com with SMTP id s6so12778029lfo.11
+        for <linux-kernel@vger.kernel.org>; Wed, 24 Aug 2022 06:31:25 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc;
-        bh=w2b8e9hO7/gpS1qYIlZoa+enOVX2XnWjFsj+OhWz5S0=;
-        b=esZVALWvxHVhLdoaoHFAAxaNC7U1EqPSg8jNxvsKB+w8lYsaCdm9fq/bf4W2se/HHn
-         We0THSi7sq+npYRWYm7abNfVjyAtIRI7YAffV0F4+DdSIMY8V0k5mCE8/HXKdxoKaxbt
-         XhLI/UiSdMN1QY25FdZ5dWFQMzBzsKG1g+d5U+ob+g2JZZSm2ZHjWsao2bQDPXOCsJ4Q
-         4T8X6ZPeqVE5GfcjTnqx0rJp3TBla6B9sr/P3MosAw2A5OCz6uyIvLGl5zouKGVju6EC
-         6g7fHctAtw0WZPSujBsc9E0fzOdTwf11faQCiLzLSBcpR/x+hv0ULGmi+M9fEbRsWPK7
-         uydQ==
+        d=linaro.org; s=google;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc;
+        bh=/IenWy/p40/CNXuFHNI+gb1QvEr/h9waQZxVYY7VtNA=;
+        b=Vngrw9lShipNLvEXsA+IF/7Qgw/5CAr21iEyiIDB3tfF8HE1j9whkx2nzgD3FZPTjY
+         l5pJLdWoG2QCfauSzSAYf7ZyzAwdbZlu6qSfkPHsnY7hSwdsK01A6iL9NEc6jwiuL7fc
+         4s7UPn4w62w37ULGtqnYszVGIrhdyejdPzEXFObyNH9Ppm93tYWaiEc5ybp1HmxepakP
+         2/yNnnlYUaRu5qFbplo/uBNTApWfB62YLDIrYCNDTFyRsXlPQCUq7cMNqSS/2uOV+evH
+         2KtXeDwgcylnmBwkHuH6vpvmQViNfgCA+FPR/TTPNfkI3uoMh24mX8/Ri3QD7ogiJ0/C
+         upLA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc;
-        bh=w2b8e9hO7/gpS1qYIlZoa+enOVX2XnWjFsj+OhWz5S0=;
-        b=TIoXxqRkqILO2qrNlfeGXi1cY9KD2iGp4CJSbO42dtE+Qseur0NcqCOz3aZyAjAHFQ
-         cKKvu9qQiXaaOc4sHHdzxKmblaYWWEm7P9uk/5fsRWmlvPrLmeIFvnWWu8KV3C0QTRXN
-         6DmeY8mZHViVTQXbhmHjmKn6Po6weyyx34f/rGJ/ChfRAwK4Zs6tEAFNspvt70XgefqI
-         UKA4D0o0rPkxMNUEL6xKQ5kw6gGY+6wEnQ5O44i9jmPldo872GslEdsHl73II5j3ZEal
-         wWxWkfDjl0IUhwx7imWrPx2zkaBg86M485h6cgUk1KKFaYehnh96DQEJfVgoJNFgbyms
-         8Slw==
-X-Gm-Message-State: ACgBeo00q/j8ubO/0wvmT7zretWcBEJWrU2gVhq4cKd5rd3SLXcn/Znc
-        E4gLcHfX73nqGDDzjpcpsSK4JzF+ka+e+4C+6dEzjA==
-X-Google-Smtp-Source: AA6agR7qwrg3dKyo6HjbXmNHYvni+LXXavSrEOfsr6D8aekioQPGAP4dL6tu9zepeQQbL7syGRM8IJI5h/KUI3lnfeM=
-X-Received: by 2002:a0d:c7c3:0:b0:31e:9622:c4f6 with SMTP id
- j186-20020a0dc7c3000000b0031e9622c4f6mr31190064ywd.144.1661347863538; Wed, 24
- Aug 2022 06:31:03 -0700 (PDT)
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc;
+        bh=/IenWy/p40/CNXuFHNI+gb1QvEr/h9waQZxVYY7VtNA=;
+        b=z9Ef763LV96bu1nDl+apT3bSbekZzQAUST20+c6QQxYZF7MxgEXmfJ9fJCsSbKJGWu
+         SQBjWJ6Pim+oUFyc/njCyZ72pR/ro+x77H42hZ1tdUOJgA8hvUUc4e/4Fs9VzYtDC2R5
+         vSLQoJT4tF57DJsLeackB2dN2+mckDLdMovzmh9CU+6ayfrv5kP9OErMrZzb0T+uHfF6
+         Ic4kl0js5LRivMPwnIHkILPIalwuoF8S41QeZV7/uBKUhDCFo7hiNdmIV8IknoarhHpK
+         aQd63a18LfYcfTlMSantqgows4lyerLjbaM+nSkfBySF7Dc5xex+zlVvUmYBbYIvP8jj
+         dmeA==
+X-Gm-Message-State: ACgBeo3aHRArOzehUAPhjqrxEgHvcG+A2d1GXFOtvwstMHohjuhyjOBF
+        R+0MG2CwVXQQM+8CRIZCnmFjucDxGm5QymDv4mW2xg==
+X-Google-Smtp-Source: AA6agR7aG4e2SL7nOyVn87QFL7QjxbVK06xMjGUHAovRGzCaUPQqfwQ4OJbyp5/rhtJoMq3QQqaoUK4HES51ulCbeoA=
+X-Received: by 2002:ac2:59cf:0:b0:492:bf97:9a03 with SMTP id
+ x15-20020ac259cf000000b00492bf979a03mr10776265lfn.233.1661347883822; Wed, 24
+ Aug 2022 06:31:23 -0700 (PDT)
 MIME-Version: 1.0
-References: <000000000000c98a7f05ac744f53@google.com> <000000000000734fe705acb9f3a2@google.com>
- <a142d63c-7810-40ff-9c24-7160c63bafebn@googlegroups.com>
-In-Reply-To: <a142d63c-7810-40ff-9c24-7160c63bafebn@googlegroups.com>
-From:   Alexander Potapenko <glider@google.com>
-Date:   Wed, 24 Aug 2022 15:30:25 +0200
-Message-ID: <CAG_fn=U=Vfv3ymNM6W++sbivieQoUuXfAxsC9SsmdtQiTjSi8g@mail.gmail.com>
-Subject: Re: KMSAN: uninit-value in ath9k_htc_rx_msg
-To:     syzkaller-bugs <syzkaller-bugs@googlegroups.com>
-Cc:     ath9k-devel@qca.qualcomm.com, David Miller <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, kvalo@codeaurora.org,
-        LKML <linux-kernel@vger.kernel.org>,
-        linux-wireless <linux-wireless@vger.kernel.org>,
-        Networking <netdev@vger.kernel.org>, phil@philpotter.co.uk
+References: <20220726083257.1730630-1-martin.kepplinger@puri.sm>
+ <20220726083257.1730630-2-martin.kepplinger@puri.sm> <CAPDyKFrLLw=y9+t3f_bOH2mw2NVDGJxKE5=+XHY7C6SUzLzUDg@mail.gmail.com>
+ <d1db07c8ca57c72b4f0820fcb6832dd7e4501055.camel@puri.sm> <CAPDyKFpz0HG_AzCkj8LkyisO1fjJiiyX2QjKTWDTLng2O7PDgA@mail.gmail.com>
+ <77baacb930bf2ba1a65cb1515e6795b48d2d4ed5.camel@puri.sm>
+In-Reply-To: <77baacb930bf2ba1a65cb1515e6795b48d2d4ed5.camel@puri.sm>
+From:   Ulf Hansson <ulf.hansson@linaro.org>
+Date:   Wed, 24 Aug 2022 15:30:47 +0200
+Message-ID: <CAPDyKFoS=E3c9XWWCaG2byMm-3nvvW5jXS0X7Bh-NK_msTUykQ@mail.gmail.com>
+Subject: Re: [PATCH v6 1/2] power: domain: handle genpd correctly when needing interrupts
+To:     Martin Kepplinger <martin.kepplinger@puri.sm>
+Cc:     rafael@kernel.org, khilman@kernel.org, robh@kernel.org,
+        krzysztof.kozlowski@linaro.org, shawnguo@kernel.org,
+        s.hauer@pengutronix.de, festevam@gmail.com, pavel@ucw.cz,
+        kernel@puri.sm, linux-imx@nxp.com, broonie@kernel.org,
+        l.stach@pengutronix.de, aford173@gmail.com,
+        linux-pm@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org
 Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-(adding back people originally CCed on the syzkaller bug.
-Unfortunately it isn't possible to reply to all in Google Groups)
+On Mon, 22 Aug 2022 at 10:38, Martin Kepplinger
+<martin.kepplinger@puri.sm> wrote:
+>
+> Am Freitag, dem 19.08.2022 um 16:53 +0200 schrieb Ulf Hansson:
+> > On Fri, 19 Aug 2022 at 11:17, Martin Kepplinger
+> > <martin.kepplinger@puri.sm> wrote:
+> > >
+> > > Am Dienstag, dem 26.07.2022 um 17:07 +0200 schrieb Ulf Hansson:
+> > > > On Tue, 26 Jul 2022 at 10:33, Martin Kepplinger
+> > > > <martin.kepplinger@puri.sm> wrote:
+> > > > >
+> > > > > If for example the power-domains' power-supply node (regulator)
+> > > > > needs
+> > > > > interrupts to work, the current setup with noirq callbacks
+> > > > > cannot
+> > > > > work; for example a pmic regulator on i2c, when suspending,
+> > > > > usually
+> > > > > already
+> > > > > times out during suspend_noirq:
+> > > > >
+> > > > > [   41.024193] buck4: failed to disable: -ETIMEDOUT
+> > > > >
+> > > > > So fix system suspend and resume for these power-domains by
+> > > > > using
+> > > > > the
+> > > > > "outer" suspend/resume callbacks instead. Tested on the imx8mq-
+> > > > > librem5 board,
+> > > > > but by looking at the dts, this will fix imx8mq-evk and
+> > > > > possibly
+> > > > > many other
+> > > > > boards too.
+> > > > >
+> > > > > This is designed so that genpd providers just say "this genpd
+> > > > > needs
+> > > > > interrupts" (by setting the flag) - without implying an
+> > > > > implementation.
+> > > > >
+> > > > > Initially system suspend problems had been discussed at
+> > > > > https://lore.kernel.org/linux-arm-kernel/20211002005954.1367653-8-l.stach@pengutronix.de/
+> > > > > which led to discussing the pmic that contains the regulators
+> > > > > which
+> > > > > serve as power-domain power-supplies:
+> > > > > https://lore.kernel.org/linux-pm/573166b75e524517782471c2b7f96e03fd93d175.camel@puri.sm/T/
+> > > > >
+> > > > > Signed-off-by: Martin Kepplinger <martin.kepplinger@puri.sm>
+> > > > > ---
+> > > > >  drivers/base/power/domain.c | 13 +++++++++++--
+> > > > >  include/linux/pm_domain.h   |  5 +++++
+> > > > >  2 files changed, 16 insertions(+), 2 deletions(-)
+> > > > >
+> > > > > diff --git a/drivers/base/power/domain.c
+> > > > > b/drivers/base/power/domain.c
+> > > > > index 5a2e0232862e..58376752a4de 100644
+> > > > > --- a/drivers/base/power/domain.c
+> > > > > +++ b/drivers/base/power/domain.c
+> > > > > @@ -130,6 +130,7 @@ static const struct genpd_lock_ops
+> > > > > genpd_spin_ops = {
+> > > > >  #define genpd_is_active_wakeup(genpd)  (genpd->flags &
+> > > > > GENPD_FLAG_ACTIVE_WAKEUP)
+> > > > >  #define genpd_is_cpu_domain(genpd)     (genpd->flags &
+> > > > > GENPD_FLAG_CPU_DOMAIN)
+> > > > >  #define genpd_is_rpm_always_on(genpd)  (genpd->flags &
+> > > > > GENPD_FLAG_RPM_ALWAYS_ON)
+> > > > > +#define genpd_irq_on(genpd)            (genpd->flags &
+> > > > > GENPD_FLAG_IRQ_ON)
+> > > > >
+> > > > >  static inline bool irq_safe_dev_in_sleep_domain(struct device
+> > > > > *dev,
+> > > > >                 const struct generic_pm_domain *genpd)
+> > > > > @@ -2065,8 +2066,15 @@ int pm_genpd_init(struct
+> > > > > generic_pm_domain
+> > > > > *genpd,
+> > > > >         genpd->domain.ops.runtime_suspend =
+> > > > > genpd_runtime_suspend;
+> > > > >         genpd->domain.ops.runtime_resume =
+> > > > > genpd_runtime_resume;
+> > > > >         genpd->domain.ops.prepare = genpd_prepare;
+> > > > > -       genpd->domain.ops.suspend_noirq = genpd_suspend_noirq;
+> > > > > -       genpd->domain.ops.resume_noirq = genpd_resume_noirq;
+> > > > > +
+> > > > > +       if (genpd_irq_on(genpd)) {
+> > > > > +               genpd->domain.ops.suspend =
+> > > > > genpd_suspend_noirq;
+> > > > > +               genpd->domain.ops.resume = genpd_resume_noirq;
+> > > > > +       } else {
+> > > > > +               genpd->domain.ops.suspend_noirq =
+> > > > > genpd_suspend_noirq;
+> > > > > +               genpd->domain.ops.resume_noirq =
+> > > > > genpd_resume_noirq;
+> > > >
+> > > > As we discussed previously, I am thinking that it may be better
+> > > > to
+> > > > move to using genpd->domain.ops.suspend_late and
+> > > > genpd->domain.ops.resume_early instead.
+> > >
+> > > Wouldn't that better be a separate patch (on top)? Do you really
+> > > want
+> > > me to change the current behaviour (default case) to from noirq to
+> > > late? Then I'll resend this series with such a patch added.
+> >
+> > Sorry, I wasn't clear enough, the default behaviour should remain as
+> > is.
+> >
+> > What I meant was, when genpd_irq_on() is true, we should use the
+> > genpd->domain.ops.suspend_late and genpd->domain.ops.resume_early.
+>
+> Testing that shows that this isn't working. I can provide the logs
+> later, but suspend fails and I think it makes sense: "suspend_late" is
+> simply already too late when i2c (or any needed driver) uses "suspend".
 
-On Wed, Aug 24, 2022 at 3:26 PM Alexander Potapenko <glider@google.com> wro=
-te:
->
->
->
-> On Thursday, August 13, 2020 at 5:32:17 AM UTC+2 syzbot wrote:
->>
->> syzbot has found a reproducer for the following issue on:
->>
->> HEAD commit: ce8056d1 wip: changed copy_from_user where instrumented
->> git tree: https://github.com/google/kmsan.git master
->> console output: https://syzkaller.appspot.com/x/log.txt?x=3D12985a169000=
-00
->> kernel config: https://syzkaller.appspot.com/x/.config?x=3D3afe005fb9959=
-1f
->> dashboard link: https://syzkaller.appspot.com/bug?extid=3D2ca247c2d60c70=
-23de7f
->> compiler: clang version 10.0.0 (https://github.com/llvm/llvm-project/ c2=
-443155a0fb245c8f17f2c1c72b6ea391e86e81)
->> syz repro: https://syzkaller.appspot.com/x/repro.syz?x=3D1468efe2900000
->> C reproducer: https://syzkaller.appspot.com/x/repro.c?x=3D10bb9fba900000
->>
->> IMPORTANT: if you fix the issue, please add the following tag to the com=
-mit:
->> Reported-by: syzbot+2ca247...@syzkaller.appspotmail.com
->>
->> =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D
->> BUG: KMSAN: uninit-value in ath9k_htc_rx_msg+0x28f/0x1f50 drivers/net/wi=
-reless/ath/ath9k/htc_hst.c:410
->> CPU: 1 PID: 0 Comm: swapper/1 Not tainted 5.8.0-rc5-syzkaller #0
->> Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS =
-Google 01/01/2011
->> Call Trace:
->> <IRQ>
->> __dump_stack lib/dump_stack.c:77 [inline]
->> dump_stack+0x21c/0x280 lib/dump_stack.c:118
->> kmsan_report+0xf7/0x1e0 mm/kmsan/kmsan_report.c:121
->> __msan_warning+0x58/0xa0 mm/kmsan/kmsan_instr.c:215
->> ath9k_htc_rx_msg+0x28f/0x1f50 drivers/net/wireless/ath/ath9k/htc_hst.c:4=
-10
->> ath9k_hif_usb_rx_stream drivers/net/wireless/ath/ath9k/hif_usb.c:638 [in=
-line]
->> ath9k_hif_usb_rx_cb+0x1841/0x1d10 drivers/net/wireless/ath/ath9k/hif_usb=
-.c:671
->> __usb_hcd_giveback_urb+0x687/0x870 drivers/usb/core/hcd.c:1650
->> usb_hcd_giveback_urb+0x1cb/0x730 drivers/usb/core/hcd.c:1716
->> dummy_timer+0xd98/0x71c0 drivers/usb/gadget/udc/dummy_hcd.c:1967
->> call_timer_fn+0x226/0x550 kernel/time/timer.c:1404
->> expire_timers+0x4fc/0x780 kernel/time/timer.c:1449
->> __run_timers+0xaf4/0xd30 kernel/time/timer.c:1773
->> run_timer_softirq+0x2d/0x50 kernel/time/timer.c:1786
->> __do_softirq+0x2ea/0x7f5 kernel/softirq.c:293
->> asm_call_on_stack+0xf/0x20 arch/x86/entry/entry_64.S:711
->> </IRQ>
->> __run_on_irqstack arch/x86/include/asm/irq_stack.h:23 [inline]
->> run_on_irqstack_cond arch/x86/include/asm/irq_stack.h:50 [inline]
->> do_softirq_own_stack+0x7c/0xa0 arch/x86/kernel/irq_64.c:77
->> invoke_softirq kernel/softirq.c:390 [inline]
->> __irq_exit_rcu+0x226/0x270 kernel/softirq.c:420
->> irq_exit_rcu+0xe/0x10 kernel/softirq.c:432
->> sysvec_apic_timer_interrupt+0x107/0x130 arch/x86/kernel/apic/apic.c:1091
->> asm_sysvec_apic_timer_interrupt+0x12/0x20 arch/x86/include/asm/idtentry.=
-h:593
->> RIP: 0010:native_irq_disable arch/x86/include/asm/irqflags.h:49 [inline]
->> RIP: 0010:arch_local_irq_disable arch/x86/include/asm/irqflags.h:89 [inl=
-ine]
->> RIP: 0010:acpi_safe_halt drivers/acpi/processor_idle.c:112 [inline]
->> RIP: 0010:acpi_idle_do_entry drivers/acpi/processor_idle.c:525 [inline]
->> RIP: 0010:acpi_idle_enter+0x817/0xeb0 drivers/acpi/processor_idle.c:651
->> Code: 85 db 74 0a f7 d3 44 21 fb 48 85 db 74 32 4d 85 ff 75 3a 48 8b 5d =
-a0 e9 0c 00 00 00 e8 12 b2 78 fb 0f 00 2d 25 15 1c 0b fb f4 <fa> eb 5a 84 c=
-0 8b 7d 90 0f 45 7d 94 e8 d8 9a f4 fb e9 74 fc ff ff
->> RSP: 0018:ffff88812df93bc8 EFLAGS: 00000246
->> RAX: 0000000000000000 RBX: ffff8881dfefce70 RCX: 000000012db88000
->> RDX: ffff88812df88000 RSI: 0000000000000000 RDI: 0000000000000000
->> RBP: ffff88812df93ca0 R08: ffffffff86420acc R09: ffff88812fffa000
->> R10: 0000000000000002 R11: ffff88812df88000 R12: ffff88812df889d8
->> R13: ffff8881dfefcc64 R14: 0000000000000000 R15: 0000000000000000
->> cpuidle_enter_state+0x860/0x12b0 drivers/cpuidle/cpuidle.c:235
->> cpuidle_enter+0xe3/0x170 drivers/cpuidle/cpuidle.c:346
->> call_cpuidle kernel/sched/idle.c:126 [inline]
->> cpuidle_idle_call kernel/sched/idle.c:214 [inline]
->> do_idle+0x668/0x810 kernel/sched/idle.c:276
->> cpu_startup_entry+0x45/0x50 kernel/sched/idle.c:372
->> start_secondary+0x1bf/0x240 arch/x86/kernel/smpboot.c:268
->> secondary_startup_64+0xa4/0xb0 arch/x86/kernel/head_64.S:243
->>
->> Uninit was created at:
->> kmsan_save_stack_with_flags+0x3c/0x90 mm/kmsan/kmsan.c:144
->> kmsan_internal_alloc_meta_for_pages mm/kmsan/kmsan_shadow.c:269 [inline]
->> kmsan_alloc_page+0xc5/0x1a0 mm/kmsan/kmsan_shadow.c:293
->> __alloc_pages_nodemask+0xdf0/0x1030 mm/page_alloc.c:4889
->> __alloc_pages include/linux/gfp.h:509 [inline]
->> __alloc_pages_node include/linux/gfp.h:522 [inline]
->> alloc_pages_node include/linux/gfp.h:536 [inline]
->> __page_frag_cache_refill mm/page_alloc.c:4964 [inline]
->> page_frag_alloc+0x35b/0x880 mm/page_alloc.c:4994
->> __netdev_alloc_skb+0x2a8/0xc90 net/core/skbuff.c:451
->> __dev_alloc_skb include/linux/skbuff.h:2813 [inline]
->> ath9k_hif_usb_rx_stream drivers/net/wireless/ath/ath9k/hif_usb.c:620 [in=
-line]
->> ath9k_hif_usb_rx_cb+0xe5a/0x1d10 drivers/net/wireless/ath/ath9k/hif_usb.=
-c:671
->> __usb_hcd_giveback_urb+0x687/0x870 drivers/usb/core/hcd.c:1650
->> usb_hcd_giveback_urb+0x1cb/0x730 drivers/usb/core/hcd.c:1716
->> dummy_timer+0xd98/0x71c0 drivers/usb/gadget/udc/dummy_hcd.c:1967
->> call_timer_fn+0x226/0x550 kernel/time/timer.c:1404
->> expire_timers+0x4fc/0x780 kernel/time/timer.c:1449
->> __run_timers+0xaf4/0xd30 kernel/time/timer.c:1773
->> run_timer_softirq+0x2d/0x50 kernel/time/timer.c:1786
->> __do_softirq+0x2ea/0x7f5 kernel/softirq.c:293
->> =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D
->>
->
-> This bug bites us quite often on syzbot: https://syzkaller.appspot.com/bu=
-g?id=3D659ddf411502a2fe220c8f9be696d5a8d8db726e (17k crashes)
-> The patch below by phil@philpotter.co.uk (https://syzkaller.appspot.com/t=
-ext?tag=3DPatch&x=3D173dcb51d00000) seems to fix the problem, but I have no=
- idea what's going on there.
->
-> =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
-> diff --git a/drivers/net/wireless/ath/ath9k/htc_hst.c b/drivers/net/wirel=
-ess/ath/ath9k/htc_hst.c
-> index 510e61e97dbc..9dbfff7a388e 100644
-> --- a/drivers/net/wireless/ath/ath9k/htc_hst.c
-> +++ b/drivers/net/wireless/ath/ath9k/htc_hst.c
-> @@ -403,7 +403,7 @@ void ath9k_htc_rx_msg(struct htc_target *htc_handle,
->      struct htc_endpoint *endpoint;
->      __be16 *msg_id;
->
-> -    if (!htc_handle || !skb)
-> +    if (!htc_handle || !skb || !pskb_may_pull(skb, sizeof(struct htc_fra=
-me_hdr)))
->          return;
->
->      htc_hdr =3D (struct htc_frame_hdr *) skb->data;
-> =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+Okay, I see.
 
+The reason why I suggested moving the callbacks to "suspend_late", was
+that I was worried that some of the attached devices to genpd could
+use "suspend_late" themselves. This is the case for some drivers for
+DMA/clock/gpio/pinctrl-controllers, for example. That said, I am
+curious to look at the DT files for the platform you are running,
+would you mind giving me a pointer?
 
+So, this made me think about this a bit more. In the end, just using
+different levels (suspend, suspend_late, suspend_noirq) of callbacks
+are just papering over the real *dependency* problem.
 
---=20
-Alexander Potapenko
-Software Engineer
+What we need for the genpd provider driver, is to be asked to be
+suspended under the following conditions:
+1. All consumer devices (and child-domains) for its corresponding PM
+domain have been suspended.
+2. All its supplier devices supplies must remain resumed, until the
+genpd provider has been suspended.
 
-Google Germany GmbH
-Erika-Mann-Stra=C3=9Fe, 33
-80636 M=C3=BCnchen
+Please allow me a few more days to think in more detail about this.
 
-Gesch=C3=A4ftsf=C3=BChrer: Paul Manicle, Liana Sebastian
-Registergericht und -nummer: Hamburg, HRB 86891
-Sitz der Gesellschaft: Hamburg
+In some way, it looks like we should be able to combine the
+information genpd has about its devices and child-domains, use PM
+callbacks for the genpd provider driver - so we can rely on the
+depency-path the fw_devlinks would give us for its supplier devices.
+
+Kind regards
+Uffe
