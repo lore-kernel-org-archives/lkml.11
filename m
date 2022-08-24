@@ -2,79 +2,78 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4DD9BC3F6B0
-	for <linux-kernel@archiver.kernel.org>; Wed, 24 Aug 2022 19:47:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 010ACC48BEA
+	for <linux-kernel@archiver.kernel.org>; Wed, 24 Aug 2022 19:51:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239985AbiHXTrz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 24 Aug 2022 15:47:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43686 "EHLO
+        id S240016AbiHXTvQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 24 Aug 2022 15:51:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46954 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234610AbiHXTrx (ORCPT
+        with ESMTP id S237608AbiHXTvO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 24 Aug 2022 15:47:53 -0400
-Received: from vps0.lunn.ch (vps0.lunn.ch [185.16.172.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 77B2179ED1;
-        Wed, 24 Aug 2022 12:47:52 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
-        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
-        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
-        bh=cliv8fOIUE97X2LZJl8OSkONVdBjqeQgsQroJzWn400=; b=wN3w5NUgq41D/YUu/EkW7FPwjJ
-        woYC+U1ES1nXR04yaNs/qiws1a53aHRx2t4frvxmzV1hxQqjEeMwwh3dBvOQebSFyv/XZPHYROABs
-        Jy3wKUIBoMNyZAX0lxBzbRwgqsEopF4qo6+lF2id3YzFRnsSu52N6ijCso9H8hEjpAW4=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
-        (envelope-from <andrew@lunn.ch>)
-        id 1oQwLs-00ETnd-95; Wed, 24 Aug 2022 21:47:48 +0200
-Date:   Wed, 24 Aug 2022 21:47:48 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Horatiu Vultur <horatiu.vultur@microchip.com>
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        hkallweit1@gmail.com, linux@armlinux.org.uk, davem@davemloft.net,
-        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
-        michael@walle.cc, UNGLinuxDriver@microchip.com,
-        maxime.chevallier@bootlin.com
-Subject: Re: [PATCH net] net: phy: micrel: Make the GPIO to be non-exclusive
-Message-ID: <YwaAZAXcXhGmu7r9@lunn.ch>
-References: <20220824192827.437095-1-horatiu.vultur@microchip.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+        Wed, 24 Aug 2022 15:51:14 -0400
+Received: from gate.crashing.org (gate.crashing.org [63.228.1.57])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 709995466B;
+        Wed, 24 Aug 2022 12:51:11 -0700 (PDT)
+Received: from gate.crashing.org (localhost.localdomain [127.0.0.1])
+        by gate.crashing.org (8.14.1/8.14.1) with ESMTP id 27OJhneA002823;
+        Wed, 24 Aug 2022 14:43:49 -0500
+Received: (from segher@localhost)
+        by gate.crashing.org (8.14.1/8.14.1/Submit) id 27OJhnnE002822;
+        Wed, 24 Aug 2022 14:43:49 -0500
+X-Authentication-Warning: gate.crashing.org: segher set sender to segher@kernel.crashing.org using -f
+Date:   Wed, 24 Aug 2022 14:43:49 -0500
+From:   Segher Boessenkool <segher@kernel.crashing.org>
+To:     Nick Desaulniers <ndesaulniers@google.com>
+Cc:     Borislav Petkov <bp@alien8.de>, X86 ML <x86@kernel.org>,
+        Michael Matz <matz@suse.de>, linux-toolchains@vger.kernel.org,
+        LKML <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH] x86/sev: Mark snp_abort() noreturn
+Message-ID: <20220824194349.GB25951@gate.crashing.org>
+References: <20220824152420.20547-1-bp@alien8.de> <20220824172929.GA25951@gate.crashing.org> <CAKwvOdm+yFhZ2pYLJ5vpj1YyNJmG=UVF4cTz_m+0UfDGNGsRbQ@mail.gmail.com>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=iso-8859-1
 Content-Disposition: inline
-In-Reply-To: <20220824192827.437095-1-horatiu.vultur@microchip.com>
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <CAKwvOdm+yFhZ2pYLJ5vpj1YyNJmG=UVF4cTz_m+0UfDGNGsRbQ@mail.gmail.com>
+User-Agent: Mutt/1.4.2.3i
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Aug 24, 2022 at 09:28:27PM +0200, Horatiu Vultur wrote:
-> The same GPIO line can be shared by multiple phys for the coma mode pin.
-> If that is the case then, all the other phys that share the same line
-> will failed to be probed because the access to the gpio line is not
-> non-exclusive.
-> Fix this by making access to the gpio line to be nonexclusive using flag
-> GPIOD_FLAGS_BIT_NONEXCLUSIVE. This allows all the other PHYs to be
-> probed.
+On Wed, Aug 24, 2022 at 11:44:35AM -0700, Nick Desaulniers wrote:
+> On Wed, Aug 24, 2022 at 10:33 AM Segher Boessenkool
+> <segher@kernel.crashing.org> wrote:
+> > On Wed, Aug 24, 2022 at 05:24:20PM +0200, Borislav Petkov wrote:
+> > > Mark both the function prototype and definition as noreturn in order to
+> > > prevent the compiler from doing transformations which confuse objtool
+> > > like so:
+> > >
+> > >   vmlinux.o: warning: objtool: sme_enable+0x71: unreachable instruction
+> >
+> > Would -Wmissing-noreturn have caught this?
 > 
-> Fixes: 738871b09250ee ("net: phy: micrel: add coma mode GPIO")
-> Signed-off-by: Horatiu Vultur <horatiu.vultur@microchip.com>
-> ---
->  drivers/net/phy/micrel.c | 3 ++-
->  1 file changed, 2 insertions(+), 1 deletion(-)
-> 
-> diff --git a/drivers/net/phy/micrel.c b/drivers/net/phy/micrel.c
-> index e78d0bf69bc3..ea72ff64ad33 100644
-> --- a/drivers/net/phy/micrel.c
-> +++ b/drivers/net/phy/micrel.c
-> @@ -2878,7 +2878,8 @@ static int lan8814_release_coma_mode(struct phy_device *phydev)
->  	struct gpio_desc *gpiod;
->  
->  	gpiod = devm_gpiod_get_optional(&phydev->mdio.dev, "coma-mode",
-> -					GPIOD_OUT_HIGH_OPEN_DRAIN);
-> +					GPIOD_OUT_HIGH_OPEN_DRAIN |
-> +					GPIOD_FLAGS_BIT_NONEXCLUSIVE);
+> Oh, that's shiny. Is that relatively new?
 
-I would suggest putting a comment here. You are assuming the driver
-never gains a lan8814_take_coma_mode() when the PHY is put into
-suspend, since it sounds like that will put all PHYs on the shared
-GPIO into coma mode.
+Relatively, yes.
 
-     Andrew
+
+commit 0ca3fb0a168e9db2bd5405855d3932f62b08b7c9
+Author: Kaveh R. Ghazi <ghazi@caip.rutgers.edu>
+Date:   Tue Oct 20 07:32:08 1998 +0000
+
+    New warning, `missing-noreturn':
+
+
+The alias -Wsuggest-attribute=noreturn is newer:
+
+
+commit 94ee697923f5a93881edbc5e1b3f810b290f0fc7
+Author: Manuel López-Ibáñez <manu@gcc.gnu.org>
+Date:   Sun Apr 29 09:15:30 2012 +0000
+
+	* common.opt (Wmissing-noreturn): Alias of -Wsuggest-attribute=noret
+
+
+
+Segher
