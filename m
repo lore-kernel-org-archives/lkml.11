@@ -2,80 +2,64 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C96F5C00140
-	for <linux-kernel@archiver.kernel.org>; Wed, 24 Aug 2022 10:37:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B2756C32796
+	for <linux-kernel@archiver.kernel.org>; Wed, 24 Aug 2022 10:40:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236749AbiHXKhg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 24 Aug 2022 06:37:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55422 "EHLO
+        id S236333AbiHXKkK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 24 Aug 2022 06:40:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57412 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234401AbiHXKhd (ORCPT
+        with ESMTP id S229640AbiHXKkH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 24 Aug 2022 06:37:33 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7E0AE2DAA6
-        for <linux-kernel@vger.kernel.org>; Wed, 24 Aug 2022 03:37:32 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 1D65461901
-        for <linux-kernel@vger.kernel.org>; Wed, 24 Aug 2022 10:37:32 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7986FC433D7
-        for <linux-kernel@vger.kernel.org>; Wed, 24 Aug 2022 10:37:31 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1661337451;
-        bh=I0cd3WdTf5/zBAmu6OTcaBtCLTvCR1Zj2ub50uiUdRA=;
-        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=AMgkgKUTM+KbJiQvsqxlDklS/cS8YY6ivNu4GsDhfnbFQwC+48wXaxvykBpWAE6AS
-         RP0mm848TK6MxmmJWQbJ9oM6UTiLtpd1drKSdU91lr3BvuZO86X4il5BAA4icgPuVD
-         w4pJAhUZsTRSpDw+h2w+zEPAUOqLX0ebMenLH32MsfO8O0Rej5x94vETchKrEvcOt0
-         xgQ5TFvSHLUJZ7zvKc1XoyEAr+FBqEXCLkcdYOmRZSz1QdfidOCEm7xn7lQgyBKmSH
-         J3dVBWQAVzYj+CS+HD1vGiuPh+QolzDfau0kLiQ4f1zWhYMvpMnUqVr2a8KvBCcWJj
-         rD8iQJ23IAyog==
-Received: by mail-ej1-f53.google.com with SMTP id ca13so21403763ejb.9
-        for <linux-kernel@vger.kernel.org>; Wed, 24 Aug 2022 03:37:31 -0700 (PDT)
-X-Gm-Message-State: ACgBeo2pZOXBnDsq77xnFQa+aInuNeQDXPY+oE5DtenPlwO/0eyiASrp
-        Ta+iq1aFP3pm4FYQVD8TUbGLJPCxog1gmtDApzs=
-X-Google-Smtp-Source: AA6agR6xxyqTl7+HyFIm4H6T5uvQGlwuQI7AV5Ynsj9TdJBoYnlQJCXJrD/4b4WJz2Ijr+W97qcmsyDIKRQxbxO15wA=
-X-Received: by 2002:a17:907:7610:b0:73d:afe8:9837 with SMTP id
- jx16-20020a170907761000b0073dafe89837mr2521634ejc.606.1661337449638; Wed, 24
- Aug 2022 03:37:29 -0700 (PDT)
+        Wed, 24 Aug 2022 06:40:07 -0400
+Received: from smtp1.axis.com (smtp1.axis.com [195.60.68.17])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 488D980F53;
+        Wed, 24 Aug 2022 03:40:04 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=axis.com; q=dns/txt; s=axis-central1; t=1661337605;
+  x=1692873605;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=Iypsk2nUhwC8TO4v5fBXUx+BdnnNPe5g43NWMsHJBl8=;
+  b=PKILT9gqDl2eXAhV/o+dFIKtSkGhGPxIrgyJAH93Ayz+4gulCBif9KGv
+   ZuJrfGkkJS594/8MOW85QZ8z01BA3w92VMfzdO9N+Q3wrJ9vhCSUbqbwz
+   oHrZHD9oYkChutj0xL1NiU+Hp2R1uL/mx89AJvoO4PH8F+5kwuqrTo5LY
+   LDTUMzO9foo2lJ330x48goAn5jshofoxe0qMOISOhwJUQWLqia86xPRNY
+   TRI/7MTLDcpFxhOH5/IVCcLHz7Sw1W8kZDHq+5J/Ut1y17oNtF0SSlVJp
+   AvVQKR1MS+T58m8wbnkIQvOGH8Kj43Vss+itzLey+C3MVsrHK4qTmNMHD
+   w==;
+From:   Vincent Whitchurch <vincent.whitchurch@axis.com>
+To:     <jic23@kernel.org>
+CC:     <kernel@axis.com>, <lars@metafoo.de>, <axel.jonsson@axis.com>,
+        Vincent Whitchurch <vincent.whitchurch@axis.com>,
+        <linux-iio@vger.kernel.org>, <linux-kernel@vger.kernel.org>
+Subject: [PATCH 0/2] iio: adc: mcp320x: Add triggered buffer support
+Date:   Wed, 24 Aug 2022 12:40:00 +0200
+Message-ID: <20220824104002.2749075-1-vincent.whitchurch@axis.com>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
-References: <20220818211550.3272321-1-arnd@kernel.org> <20220818211550.3272321-3-arnd@kernel.org>
- <20220821055537.GB25950@lst.de>
-In-Reply-To: <20220821055537.GB25950@lst.de>
-From:   Arnd Bergmann <arnd@kernel.org>
-Date:   Wed, 24 Aug 2022 12:37:15 +0200
-X-Gmail-Original-Message-ID: <CAK8P3a3x5qvEdJJXTMzgu0jXjzXh6LqQRESpGM2XPHiYHm7scg@mail.gmail.com>
-Message-ID: <CAK8P3a3x5qvEdJJXTMzgu0jXjzXh6LqQRESpGM2XPHiYHm7scg@mail.gmail.com>
-Subject: Re: [PATCH 2/4] ARM: footbridge: remove leftover from personal-server
-To:     Christoph Hellwig <hch@lst.de>
-Cc:     linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        Arnd Bergmann <arnd@arndb.de>,
-        Russell King <linux@armlinux.org.uk>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Marc Zyngier <maz@kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sun, Aug 21, 2022 at 7:55 AM Christoph Hellwig <hch@lst.de> wrote:
->
-> On Thu, Aug 18, 2022 at 11:15:48PM +0200, Arnd Bergmann wrote:
-> > From: Arnd Bergmann <arnd@arndb.de>
-> >
-> > The machine was removed a while ago, and the checks are
-> > now useless.
->
-> Curious, should entries for removed machines be kept in the mach-types
-> file?  Because that makes it really easy to leave dead code like this
-> around.
+This series adds triggered buffer support to the mcp320x ADC driver.  Tested on
+MCP3008.
 
-A long time ago it was common to add the entries in mach-types before
-the Kconfig symbol got merged, an  Russell just updated the list
-periodically to drop stale entries. As we remove most board files in
-a coming release, we should probably do this as part of the bigger
-cleanup then.
+Cc: linux-iio@vger.kernel.org
+Cc: linux-kernel@vger.kernel.org
 
-        Arnd
+Axel Jonsson (1):
+  iio: adc: mcp320x: add triggered buffer support
+
+Vincent Whitchurch (1):
+  iio: adc: mcp320x: use device managed functions
+
+ drivers/iio/adc/Kconfig   |   2 +
+ drivers/iio/adc/mcp320x.c | 158 +++++++++++++++++++++++++-------------
+ 2 files changed, 108 insertions(+), 52 deletions(-)
+
+-- 
+2.34.1
+
