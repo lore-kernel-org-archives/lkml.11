@@ -2,157 +2,89 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 96DADC32793
-	for <linux-kernel@archiver.kernel.org>; Wed, 24 Aug 2022 01:31:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B047AC32796
+	for <linux-kernel@archiver.kernel.org>; Wed, 24 Aug 2022 01:33:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232741AbiHXBbd (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 21:31:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52030 "EHLO
+        id S233260AbiHXBdm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 23 Aug 2022 21:33:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55066 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232341AbiHXBb2 (ORCPT
+        with ESMTP id S230503AbiHXBdk (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 21:31:28 -0400
+        Tue, 23 Aug 2022 21:33:40 -0400
 Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D81F548CB3
-        for <linux-kernel@vger.kernel.org>; Tue, 23 Aug 2022 18:31:26 -0700 (PDT)
-Received: from canpemm500009.china.huawei.com (unknown [172.30.72.53])
-        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4MC7k272n1zXdvC;
-        Wed, 24 Aug 2022 09:27:06 +0800 (CST)
-Received: from [10.67.102.169] (10.67.102.169) by
- canpemm500009.china.huawei.com (7.192.105.203) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Wed, 24 Aug 2022 09:31:24 +0800
-CC:     <yangyicong@hisilicon.com>, <sudeep.holla@arm.com>,
-        <vincent.guittot@linaro.org>, <linux-kernel@vger.kernel.org>,
-        <gregkh@linuxfoundation.org>, <rafael@kernel.org>,
-        <21cnbao@gmail.com>, <jonathan.cameron@huawei.com>,
-        <linuxarm@huawei.com>, <prime.zeng@huawei.com>
-Subject: Re: [PATCH] arch_topology: Make cluster topology span at least SMT
- CPUs
-To:     Ionela Voinescu <ionela.voinescu@arm.com>
-References: <20220823073044.58697-1-yangyicong@huawei.com>
- <YwSKnGii2zdd7Fig@arm.com> <d0bc04af-5481-5df2-ff75-9072b4b047c1@huawei.com>
- <YwUUEzULS1ha1rqY@arm.com>
-From:   Yicong Yang <yangyicong@huawei.com>
-Message-ID: <5246777a-4175-e252-1815-fb92ce6d3716@huawei.com>
-Date:   Wed, 24 Aug 2022 09:31:24 +0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
- Thunderbird/78.5.1
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 89C514D82B;
+        Tue, 23 Aug 2022 18:33:39 -0700 (PDT)
+Received: from dggpeml500026.china.huawei.com (unknown [172.30.72.54])
+        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4MC7mc2Z3WzXdh2;
+        Wed, 24 Aug 2022 09:29:20 +0800 (CST)
+Received: from huawei.com (10.175.101.6) by dggpeml500026.china.huawei.com
+ (7.185.36.106) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Wed, 24 Aug
+ 2022 09:33:37 +0800
+From:   Zhengchao Shao <shaozhengchao@huawei.com>
+To:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <davem@davemloft.net>, <edumazet@google.com>, <kuba@kernel.org>,
+        <pabeni@redhat.com>
+CC:     <weiyongjun1@huawei.com>, <yuehaibing@huawei.com>,
+        <shaozhengchao@huawei.com>
+Subject: [PATCH net-next] netlink: fix some kernel-doc comments
+Date:   Wed, 24 Aug 2022 09:36:21 +0800
+Message-ID: <20220824013621.365103-1-shaozhengchao@huawei.com>
+X-Mailer: git-send-email 2.17.1
 MIME-Version: 1.0
-In-Reply-To: <YwUUEzULS1ha1rqY@arm.com>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.67.102.169]
+Content-Type: text/plain
+X-Originating-IP: [10.175.101.6]
 X-ClientProxiedBy: dggems705-chm.china.huawei.com (10.3.19.182) To
- canpemm500009.china.huawei.com (7.192.105.203)
+ dggpeml500026.china.huawei.com (7.185.36.106)
 X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 2022/8/24 1:53, Ionela Voinescu wrote:
-> Hi,
-> 
-> On Tuesday 23 Aug 2022 at 21:05:47 (+0800), Yicong Yang wrote:
->> On 2022/8/23 16:06, Ionela Voinescu wrote:
->>> Hi Yicong,
->>>
->>> On Tuesday 23 Aug 2022 at 15:30:44 (+0800), Yicong Yang wrote:
->>>> From: Yicong Yang <yangyicong@hisilicon.com>
->>>>
->>>> Currently cpu_clustergroup_mask() will return CPU mask if cluster span
->>>> more or the same CPUs as cpu_coregroup_mask(). This will result topology
->>>> borken on non-Cluster SMT machines.
->>>
->>> Might be worth adding here:.. "when building with CONFIG_SCHED_CLUSTER=y"
->>>
->>
->> will add this qualifier. thanks.
->>
->>>>
->>>
->>> I thought I had covered this case, but I think I had considered LLC
->>> spanning more than one core (tested on TX2 as well).
->>>
->>> So you'd only hit this if LLC and cluster level span the same cores (a
->>> single core in this case, for non-cluster), in the presence of SMT.
->>>
->>
->> Not sure I understand it correctly but in the below case I think the LLC may span
->> the same core with socket?
-> 
-> Ah, I've jumped to conclusions based on the "non-cluster" mention. Does
-> "non-cluster" just mean that there's no intermediary "cluster" grouping of
-> CPUs between core and LLC? How does the PPTT table look like, by the
-> way?
-> 
+Modify the comment of input parameter of nlmsg_ and nla_ function.
 
-yes non-cluster means machine has no cluster topology. The PPTT is generated by the
-qemu according to the cmdline so I didn't really check it. See the demo provided in
-the commit.
+Signed-off-by: Zhengchao Shao <shaozhengchao@huawei.com>
+---
+ include/net/netlink.h | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
 
-'-smp 48,sockets=2,cores=12,threads=2' builds a mahine with 2 sockets, one socket has
-12 cores and each core has 2 threads. If we want to have a cluster machine we build it
-with '-smp 48,sockets=2,clusters=6,cores=2,threads=2', then we'll have 6 clusters in
-one socket and 2 cores in each cluster, 2 threads for each core.
+diff --git a/include/net/netlink.h b/include/net/netlink.h
+index 7a2a9d3144ba..e658d18afa67 100644
+--- a/include/net/netlink.h
++++ b/include/net/netlink.h
+@@ -741,6 +741,7 @@ static inline int __nlmsg_parse(const struct nlmsghdr *nlh, int hdrlen,
+  * @hdrlen: length of family specific header
+  * @tb: destination array with maxtype+1 elements
+  * @maxtype: maximum attribute type to be expected
++ * @policy: validation policy
+  * @extack: extended ACK report struct
+  *
+  * See nla_parse()
+@@ -760,6 +761,7 @@ static inline int nlmsg_parse(const struct nlmsghdr *nlh, int hdrlen,
+  * @hdrlen: length of family specific header
+  * @tb: destination array with maxtype+1 elements
+  * @maxtype: maximum attribute type to be expected
++ * @policy: validation policy
+  * @extack: extended ACK report struct
+  *
+  * See nla_parse_deprecated()
+@@ -779,6 +781,7 @@ static inline int nlmsg_parse_deprecated(const struct nlmsghdr *nlh, int hdrlen,
+  * @hdrlen: length of family specific header
+  * @tb: destination array with maxtype+1 elements
+  * @maxtype: maximum attribute type to be expected
++ * @policy: validation policy
+  * @extack: extended ACK report struct
+  *
+  * See nla_parse_deprecated_strict()
+@@ -814,7 +817,6 @@ static inline struct nlattr *nlmsg_find_attr(const struct nlmsghdr *nlh,
+  * @len: length of attribute stream
+  * @maxtype: maximum attribute type to be expected
+  * @policy: validation policy
+- * @validate: validation strictness
+  * @extack: extended ACK report struct
+  *
+  * Validates all attributes in the specified attribute stream against the
+-- 
+2.17.1
 
-Thanks.
-
-> Thanks,
-> Ionela.
-> 
->>
->>> Reviewed-by: Ionela Voinescu <ionela.voinescu@arm.com>
->>>
->>> Many thanks,
->>> Ionela.
->>>
->>>> Test with:
->>>> qemu-system-aarch64 -enable-kvm -machine virt \
->>>>  -net none \
->>>>  -cpu host \
->>>>  -bios ./QEMU_EFI.fd \
->>>>  -m 2G \
->>>>  -smp 48,sockets=2,cores=12,threads=2 \
->>>>  -kernel $Image \
->>>>  -initrd $Rootfs \
->>>>  -nographic
->>>>  -append "rdinit=init console=ttyAMA0 sched_verbose loglevel=8"
->>>>
->>>> We'll get below error:
->>>> [    3.084568] BUG: arch topology borken
->>>> [    3.084570]      the SMT domain not a subset of the CLS domain
->>>>
->>>> Since cluster is a level higher than SMT, fix this by making cluster
->>>> spans at least SMT CPUs.
->>>>
->>>> Cc: Sudeep Holla <sudeep.holla@arm.com>
->>>> Cc: Vincent Guittot <vincent.guittot@linaro.org>
->>>> Cc: Ionela Voinescu <ionela.voinescu@arm.com>
->>>> Fixes: bfcc4397435d ("arch_topology: Limit span of cpu_clustergroup_mask()")
->>>> Signed-off-by: Yicong Yang <yangyicong@hisilicon.com>
->>>> ---
->>>>  drivers/base/arch_topology.c | 2 +-
->>>>  1 file changed, 1 insertion(+), 1 deletion(-)
->>>>
->>>> diff --git a/drivers/base/arch_topology.c b/drivers/base/arch_topology.c
->>>> index 0424b59b695e..0056a1273275 100644
->>>> --- a/drivers/base/arch_topology.c
->>>> +++ b/drivers/base/arch_topology.c
->>>> @@ -724,7 +724,7 @@ const struct cpumask *cpu_clustergroup_mask(int cpu)
->>>>  	 */
->>>>  	if (cpumask_subset(cpu_coregroup_mask(cpu),
->>>>  			   &cpu_topology[cpu].cluster_sibling))
->>>> -		return get_cpu_mask(cpu);
->>>> +		return cpu_smt_mask(cpu);
->>>>  
->>>>  	return &cpu_topology[cpu].cluster_sibling;
->>>>  }
->>>> -- 
->>>> 2.24.0
->>>>
->>>
->>> .
->>>
-> .
-> 
