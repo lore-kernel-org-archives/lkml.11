@@ -2,134 +2,224 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 303A9C00140
-	for <linux-kernel@archiver.kernel.org>; Wed, 24 Aug 2022 10:17:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 58DA0C32796
+	for <linux-kernel@archiver.kernel.org>; Wed, 24 Aug 2022 10:19:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236672AbiHXKR4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 24 Aug 2022 06:17:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33342 "EHLO
+        id S234777AbiHXKS5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 24 Aug 2022 06:18:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33790 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231846AbiHXKRx (ORCPT
+        with ESMTP id S236284AbiHXKSy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 24 Aug 2022 06:17:53 -0400
-Received: from mail-wr1-x429.google.com (mail-wr1-x429.google.com [IPv6:2a00:1450:4864:20::429])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4B52672B5B
-        for <linux-kernel@vger.kernel.org>; Wed, 24 Aug 2022 03:17:52 -0700 (PDT)
-Received: by mail-wr1-x429.google.com with SMTP id n7so20160821wrv.4
-        for <linux-kernel@vger.kernel.org>; Wed, 24 Aug 2022 03:17:52 -0700 (PDT)
+        Wed, 24 Aug 2022 06:18:54 -0400
+Received: from mail-ej1-x629.google.com (mail-ej1-x629.google.com [IPv6:2a00:1450:4864:20::629])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 08D7475FD4
+        for <linux-kernel@vger.kernel.org>; Wed, 24 Aug 2022 03:18:52 -0700 (PDT)
+Received: by mail-ej1-x629.google.com with SMTP id kk26so2878996ejc.11
+        for <linux-kernel@vger.kernel.org>; Wed, 24 Aug 2022 03:18:51 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc;
-        bh=2rEDI8nneWR8uBhC0k6la2EvHD4yLzs+a+6fUoYoKU4=;
-        b=VFeU530PAmK3n65fcXn1z65tSUzwYLn85+ojxSycSOPVQcheykt616CE28AJr0U3SN
-         WEwvG4O8Wn+wPOXom3oZdoxlCbYU0rvZSTXRgr8Xn9jVyIc4dbpJrVE9sn2c0xkg9yE4
-         m72FqQyOrhyqyoY4JiFaZOhyOJH095QKXbX/jwHZzpMMGl23vDec+NOLToJ5lkCCTcbQ
-         bxnb/saWP3f2H5q2mDOY6tovIJc4bFcZ/u4UvTf4DiCXiun4CiMT1fB5sEI1EJA/tHxQ
-         ZONjdcHmDa3AnyGz3zLzKDdBmv85QfIdlr9xdYrPKcWJs4/KcjrejIuyx+1R33YoBCYm
-         vAOA==
+        d=cmpxchg-org.20210112.gappssmtp.com; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc;
+        bh=jYmWHg1umNQmTFAwHrCQ8H6AfC+tenyU3IxwvmYsyvo=;
+        b=qfFFRs5A0nr5chGy5gZIGGb4C9QrEEKgXqfyx/fNmBO9DMO56woexl6r1J5hd6xkVl
+         pLvfy0VeOa50Wh2l1jUgJ+098USlLXKqbAzbAzuiFxp99NBVU11ZvT/9TWP1SCroYNH6
+         dMSlnl7vipOpaSRLvPVYtNwGW3xpuQyDPiH28ME27+igm2RkGKmX+bCJRp7CHYcM8goH
+         Is5alYIwsk0mWIwD0OHL3dFsZqWJTnBf4Icxr3tJI7xGMK86gxIky2SAfYL4pMdJTRcq
+         YLAzLYn54dy/EiDGWopEFP8angsfSlkFeMAazJLpWM1p7yNgDwORj2l/2sryFuDnhPWe
+         9OJA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc;
-        bh=2rEDI8nneWR8uBhC0k6la2EvHD4yLzs+a+6fUoYoKU4=;
-        b=cLzxVggLnXVznImxFe35WfJUV94Bo9Gzrkc8IsGYhACKS5QouTkMayvjmPwd/8FSrn
-         4+yG0XhuBNNflg2OR5bsKGjuejsoPWiItTuUh111I7XrjXEQXMJ/qlJo87V88lUdEP4c
-         hk/jlsh1rbpAhsyv9V2QABhZTUDGofgNGI9sb/2wNU6+h2Nt3KBSrLnr+ZjuvCwkealA
-         mij7d+1e6gqN3UDaI1oE7vSgBJqQplfxLfjmU+NW2IvNI9myR6DKMzBKNRqKIirNwApF
-         2jIbGE4xf7kZ4ZZB5ralJqWzGJj2leQN+4QUn158z3fOb/+lQSh8q34xzc7qXXPEbj0i
-         rZIg==
-X-Gm-Message-State: ACgBeo0L9uXotMhfs0biz5iaFrL+xphV0EBpOPIs8BJ1UGhtmezKLaBo
-        tEPKU/x3EFOALYAjgYSoiu1hpmJRWaQCjI4HRm0vXhmeHB8=
-X-Google-Smtp-Source: AA6agR7sQ+Joxq+aq8uIl+CNG/GIrqr+nGL3cJhEBxurQU45bDdJBx8cY5FhIPu5261Cv1lHhcYULOg7B0jFQMr9xIA=
-X-Received: by 2002:a5d:45c1:0:b0:225:2803:e791 with SMTP id
- b1-20020a5d45c1000000b002252803e791mr15643183wrs.539.1661336270818; Wed, 24
- Aug 2022 03:17:50 -0700 (PDT)
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc;
+        bh=jYmWHg1umNQmTFAwHrCQ8H6AfC+tenyU3IxwvmYsyvo=;
+        b=walWfHvbv+jir0SzFejr8m0xoaU35GgARXXBGgKOl2QuZcK7urFlRFGDZfT/V+mwgC
+         x/8OUfHAfFCCYLQghXdmAlYnSvNxeZeOpCJ8qSyVShWeRvLYrMNhaXD5zUwL8PMmZETq
+         zWWv0kPqXPukI23FvNVdhPfYvy60F71vdHwb+Yqu8+1CGPfsvZlixGEXNmc4RUQaFxc8
+         yh8f3YJyKnd+rQCNIbAFqPjg0kyZI2ecb9Wbgh0UAmqYOyUgVYLs8GFGaZRqsXSMG371
+         ojsSMVqhk/NDM6bW+Od/WJyxQlw3nbg3rdLZnEnW0NR9Frj+Z+IKsD+UWFlblw2JSH8b
+         hAIg==
+X-Gm-Message-State: ACgBeo2E/5UFh6YNqHJZWTdA/TPjrfZkUMmr2Vo+naQeBqNUaujGRoYL
+        8/ShsTq5QuLl39ZhT5a4ST6bsw==
+X-Google-Smtp-Source: AA6agR7KrEG4ut026LV0Mq54d8UpUznV2OMm471/Cdz0HVJekjcDeZXHFvdU2Ez10kvhxXYz6nrh/Q==
+X-Received: by 2002:a17:907:6d8f:b0:73d:8416:908b with SMTP id sb15-20020a1709076d8f00b0073d8416908bmr2334903ejc.651.1661336330570;
+        Wed, 24 Aug 2022 03:18:50 -0700 (PDT)
+Received: from localhost ([2a02:8070:6389:a4c0:2ca9:6d59:782b:fff3])
+        by smtp.gmail.com with ESMTPSA id fb17-20020a1709073a1100b0072b32de7794sm963537ejc.70.2022.08.24.03.18.49
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 24 Aug 2022 03:18:49 -0700 (PDT)
+Date:   Wed, 24 Aug 2022 06:18:49 -0400
+From:   Johannes Weiner <hannes@cmpxchg.org>
+To:     Chengming Zhou <zhouchengming@bytedance.com>
+Cc:     tj@kernel.org, mkoutny@suse.com, surenb@google.com,
+        gregkh@linuxfoundation.org, corbet@lwn.net, mingo@redhat.com,
+        peterz@infradead.org, songmuchun@bytedance.com,
+        cgroups@vger.kernel.org, linux-doc@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v3 09/10] sched/psi: cache parent psi_group to speed up
+ groups iterate
+Message-ID: <YwX7CeeRDDAhV3UH@cmpxchg.org>
+References: <20220824081829.33748-1-zhouchengming@bytedance.com>
+ <20220824081829.33748-10-zhouchengming@bytedance.com>
 MIME-Version: 1.0
-References: <20220823144728.47068-1-pgwipeout@gmail.com> <86198a8a-96d4-5856-bc2d-44bf352c82fe@wolfvision.net>
-In-Reply-To: <86198a8a-96d4-5856-bc2d-44bf352c82fe@wolfvision.net>
-From:   Peter Geis <pgwipeout@gmail.com>
-Date:   Wed, 24 Aug 2022 12:17:39 +0200
-Message-ID: <CAMdYzYopzOJ2RtWtYgP3G4ESVMFhCqU3fOQq_kCc1g51ZDZ=bA@mail.gmail.com>
-Subject: Re: [PATCH v2] phy: rockchip-inno-usb2: Return zero after otg sync
-To:     Michael Riesch <michael.riesch@wolfvision.net>
-Cc:     Heiko Stuebner <heiko@sntech.de>,
-        Kishon Vijay Abraham I <kishon@ti.com>,
-        Vinod Koul <vkoul@kernel.org>,
-        Samuel Holland <samuel@sholland.org>,
-        Markus Reichl <m.reichl@fivetechno.de>,
-        "open list:GENERIC PHY FRAMEWORK" <linux-phy@lists.infradead.org>,
-        arm-mail-list <linux-arm-kernel@lists.infradead.org>,
-        "open list:ARM/Rockchip SoC..." <linux-rockchip@lists.infradead.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220824081829.33748-10-zhouchengming@bytedance.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Aug 24, 2022 at 7:33 AM Michael Riesch
-<michael.riesch@wolfvision.net> wrote:
->
-> Hi Peter,
->
-> On 8/23/22 16:47, Peter Geis wrote:
-> > The otg sync state patch reuses the ret variable, but fails to set it to
-> > zero after use. This leads to a situation when the otg port is in
-> > peripheral mode where the otg phy aborts halfway through setup.  It also
-> > fails to account for a failure to register the extcon notifier. Fix this
-> > by using our own variable and skipping otg sync in case of failure.
-> >
-> > Fixes: 8dc60f8da22f ("phy: rockchip-inno-usb2: Sync initial otg state")
-> >
-> > Reported-by: Markus Reichl <m.reichl@fivetechno.de>
-> > Reported-by: Michael Riesch <michael.riesch@wolfvision.net>
-> > Signed-off-by: Peter Geis <pgwipeout@gmail.com>
-> > Tested-by: Michael Riesch <michael.riesch@wolfvision.net>
-> > Tested-by: Markus Reichl <m.reichl@fivetechno.de>
-> > ---
-> >  drivers/phy/rockchip/phy-rockchip-inno-usb2.c | 7 ++++---
-> >  1 file changed, 4 insertions(+), 3 deletions(-)
-> >
-> > diff --git a/drivers/phy/rockchip/phy-rockchip-inno-usb2.c b/drivers/phy/rockchip/phy-rockchip-inno-usb2.c
-> > index 0b1e9337ee8e..d579a22c61df 100644
-> > --- a/drivers/phy/rockchip/phy-rockchip-inno-usb2.c
-> > +++ b/drivers/phy/rockchip/phy-rockchip-inno-usb2.c
-> > @@ -1124,7 +1124,7 @@ static int rockchip_usb2phy_otg_port_init(struct rockchip_usb2phy *rphy,
-> >                                         struct rockchip_usb2phy_port *rport,
-> >                                         struct device_node *child_np)
-> >  {
-> > -     int ret;
-> > +     int ret, id;
-> >
-> >       rport->port_id = USB2PHY_PORT_OTG;
-> >       rport->port_cfg = &rphy->phy_cfg->port_cfgs[USB2PHY_PORT_OTG];
-> > @@ -1164,11 +1164,12 @@ static int rockchip_usb2phy_otg_port_init(struct rockchip_usb2phy *rphy,
-> >                                       EXTCON_USB_HOST, &rport->event_nb);
-> >               if (ret)
->
-> This needs braces, right?
->
->         if (ret) {
-> >                       dev_err(rphy->dev, "register USB HOST notifier failed\n");
-> > +                     goto out;
->
->         }
->
-> With the braces the patch works as expected.
+Hi Chengming,
 
-Yup, thanks for that. I hate working without access to my hardware.
+This looks generally good to me, but I have one comment:
 
->
-> Thanks and best regards,
-> Michael
->
-> >
-> >               if (!of_property_read_bool(rphy->dev->of_node, "extcon")) {
-> >                       /* do initial sync of usb state */
-> > -                     ret = property_enabled(rphy->grf, &rport->port_cfg->utmi_id);
-> > -                     extcon_set_state_sync(rphy->edev, EXTCON_USB_HOST, !ret);
-> > +                     id = property_enabled(rphy->grf, &rport->port_cfg->utmi_id);
-> > +                     extcon_set_state_sync(rphy->edev, EXTCON_USB_HOST, !id);
-> >               }
-> >       }
-> >
+On Wed, Aug 24, 2022 at 04:18:28PM +0800, Chengming Zhou wrote:
+> @@ -772,30 +772,18 @@ static void psi_group_change(struct psi_group *group, int cpu,
+>  		schedule_delayed_work(&group->avgs_work, PSI_FREQ);
+>  }
+>  
+> -static struct psi_group *iterate_groups(struct task_struct *task, void **iter)
+> +static inline struct psi_group *task_psi_group(struct task_struct *task)
+>  {
+> -	if (*iter == &psi_system)
+> -		return NULL;
+> -
+>  #ifdef CONFIG_CGROUPS
+> -	if (static_branch_likely(&psi_cgroups_enabled)) {
+> -		struct cgroup *cgroup = NULL;
+> -
+> -		if (!*iter)
+> -			cgroup = task->cgroups->dfl_cgrp;
+> -		else
+> -			cgroup = cgroup_parent(*iter);
+> -
+> -		if (cgroup && cgroup_parent(cgroup)) {
+> -			*iter = cgroup;
+> -			return cgroup_psi(cgroup);
+> -		}
+> -	}
+> +	if (static_branch_likely(&psi_cgroups_enabled))
+> +		return cgroup_psi(task_dfl_cgroup(task));
+>  #endif
+> -	*iter = &psi_system;
+>  	return &psi_system;
+>  }
+>  
+> +#define for_each_psi_group(group) \
+> +	for (; group; group = group->parent)
+
+It would be better to open-code this. It's hiding that it's walking
+ancestors, and the name and single parameter suggest it's walking some
+global list - not that the parameter is iterator AND starting point.
+
+This makes for particularly obscure code in the discontiguous loops in
+psi_task_switch():
+
+	group = task_psi_group(task);
+	for_each_psi_group(group)
+		if (group == common)
+			break;
+	/* This looks like a second full loop: */
+	for_each_psi_group(group)
+		...
+
+>  static void psi_flags_change(struct task_struct *task, int clear, int set)
+>  {
+>  	if (((task->psi_flags & set) ||
+> @@ -815,7 +803,6 @@ void psi_task_change(struct task_struct *task, int clear, int set)
+>  {
+>  	int cpu = task_cpu(task);
+>  	struct psi_group *group;
+> -	void *iter = NULL;
+>  	u64 now;
+>  
+>  	if (!task->pid)
+> @@ -825,7 +812,8 @@ void psi_task_change(struct task_struct *task, int clear, int set)
+>  
+>  	now = cpu_clock(cpu);
+>  
+> -	while ((group = iterate_groups(task, &iter)))
+> +	group = task_psi_group(task);
+> +	for_each_psi_group(group)
+>  		psi_group_change(group, cpu, clear, set, now, true);
+
+task_psi_group() is never NULL, so this should be a do-while loop:
+
+	group = task_psi_group(task);
+	do {
+		psi_group_change(group, cpu, clear, set, now, true);
+	} while ((group = group->parent));
+
+> @@ -834,7 +822,6 @@ void psi_task_switch(struct task_struct *prev, struct task_struct *next,
+>  {
+>  	struct psi_group *group, *common = NULL;
+>  	int cpu = task_cpu(prev);
+> -	void *iter;
+>  	u64 now = cpu_clock(cpu);
+>  
+>  	if (next->pid) {
+> @@ -845,8 +832,8 @@ void psi_task_switch(struct task_struct *prev, struct task_struct *next,
+>  		 * we reach the first common ancestor. Iterate @next's
+>  		 * ancestors only until we encounter @prev's ONCPU.
+>  		 */
+> -		iter = NULL;
+> -		while ((group = iterate_groups(next, &iter))) {
+> +		group = task_psi_group(next);
+> +		for_each_psi_group(group) {
+
+Ditto.
+
+>  			if (per_cpu_ptr(group->pcpu, cpu)->state_mask &
+>  			    PSI_ONCPU) {
+>  				common = group;
+> @@ -887,9 +874,12 @@ void psi_task_switch(struct task_struct *prev, struct task_struct *next,
+>  
+>  		psi_flags_change(prev, clear, set);
+>  
+> -		iter = NULL;
+> -		while ((group = iterate_groups(prev, &iter)) && group != common)
+> +		group = task_psi_group(prev);
+> +		for_each_psi_group(group) {
+> +			if (group == common)
+> +				break;
+
+Ditto.
+
+>  			psi_group_change(group, cpu, clear, set, now, wake_clock);
+> +		}
+>  
+>  		/*
+>  		 * TSK_ONCPU is handled up to the common ancestor. If we're tasked
+> @@ -897,7 +887,7 @@ void psi_task_switch(struct task_struct *prev, struct task_struct *next,
+>  		 */
+>  		if (sleep || unlikely(prev->in_memstall != next->in_memstall)) {
+>  			clear &= ~TSK_ONCPU;
+> -			for (; group; group = iterate_groups(prev, &iter))
+> +			for_each_psi_group(group)
+>  				psi_group_change(group, cpu, clear, set, now, wake_clock);
+
+This can stay as is, group may already be NULL here.
+
+> @@ -907,7 +897,6 @@ void psi_task_switch(struct task_struct *prev, struct task_struct *next,
+>  void psi_account_irqtime(struct task_struct *task, u32 delta)
+>  {
+>  	int cpu = task_cpu(task);
+> -	void *iter = NULL;
+>  	struct psi_group *group;
+>  	struct psi_group_cpu *groupc;
+>  	u64 now;
+> @@ -917,7 +906,8 @@ void psi_account_irqtime(struct task_struct *task, u32 delta)
+>  
+>  	now = cpu_clock(cpu);
+>  
+> -	while ((group = iterate_groups(task, &iter))) {
+> +	group = task_psi_group(task);
+> +	for_each_psi_group(group) {
+>  		groupc = per_cpu_ptr(group->pcpu, cpu);
+
+do-while again.
+
+With that,
+Acked-by: Johannes Weiner <hannes@cmpxchg.org>
+
+Thanks!
