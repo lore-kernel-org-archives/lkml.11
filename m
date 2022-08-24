@@ -2,242 +2,238 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BD442C00140
-	for <linux-kernel@archiver.kernel.org>; Wed, 24 Aug 2022 15:41:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0EC93C00140
+	for <linux-kernel@archiver.kernel.org>; Wed, 24 Aug 2022 15:41:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239803AbiHXPlm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 24 Aug 2022 11:41:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52586 "EHLO
+        id S239913AbiHXPlt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 24 Aug 2022 11:41:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52766 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239792AbiHXPlP (ORCPT
+        with ESMTP id S239822AbiHXPlR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 24 Aug 2022 11:41:15 -0400
-Received: from mail-yw1-x114a.google.com (mail-yw1-x114a.google.com [IPv6:2607:f8b0:4864:20::114a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1E8294622E
-        for <linux-kernel@vger.kernel.org>; Wed, 24 Aug 2022 08:41:03 -0700 (PDT)
-Received: by mail-yw1-x114a.google.com with SMTP id 00721157ae682-33d356e7629so121260127b3.3
-        for <linux-kernel@vger.kernel.org>; Wed, 24 Aug 2022 08:41:03 -0700 (PDT)
+        Wed, 24 Aug 2022 11:41:17 -0400
+Received: from mail-wr1-x42d.google.com (mail-wr1-x42d.google.com [IPv6:2a00:1450:4864:20::42d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 280E74B0C1
+        for <linux-kernel@vger.kernel.org>; Wed, 24 Aug 2022 08:41:07 -0700 (PDT)
+Received: by mail-wr1-x42d.google.com with SMTP id z16so2459514wrh.10
+        for <linux-kernel@vger.kernel.org>; Wed, 24 Aug 2022 08:41:07 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=google.com; s=20210112;
-        h=cc:to:from:subject:references:mime-version:message-id:in-reply-to
-         :date:from:to:cc;
-        bh=LjukWJTxiUbmz3A955PSO/1CFVXOcF8enTwdO4bv+2k=;
-        b=AGSry0S7tLFAWkzxbedRzYiJ9ysP6HAmKoQ8SfJ3YEkyGo2TykPqcLB8gslpUmglD6
-         yxwQd7uIU1M2oHNuJOY5EZ0xObY5kpB3e530ycd+xsLBWoOFyEZuTLbG8jmR6os91JjH
-         D+96tYCm31TZ8CCEJBT1P6Zn4CGVjytQkAzPlfhZplSdJ5OoO0tiEjnpL0I0hCScExzJ
-         +rLkeID3K/OyKmT9cihkb+7WLd+mezzRp7wO/FLiT0/Mg1wup5UkdbLx1GdniZvEnhfX
-         l5c8Eo0GalmpR2KHbyuWUFEPDfKjc3xk+No/YYKOC7O+BofO2zcNY54PpGSL0uZ8Q39Y
-         5RpA==
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc;
+        bh=qkCnAgKksn4yy7c/f+u9SZxxjpxk06D/ZgjlZLfZ9D8=;
+        b=HXvkUd7fstbzpAm/5nB7pSutCYT241lXTDRVqK8dL6QHzrzJEClUX5GC5o2+4wpKCQ
+         DPTvVGuOKQ1AAXhd90/BNbp2vg2Ehrfm/fhE+AMjSQn3U6sy5FJTPsjyQt0LZUZIuCkR
+         0oU3566qa5+jQ+YnDEGp+Qbv2Gazp2QVXiaTZxCJ6Zpd5fd+KvEaS7ftN8FgTjwg78XK
+         AQT3AGfTID931mSOdyhIQkb8iLisGN4OoV7pzPWRj9bHJIqZeSq33C41apMFxVbj9Di6
+         kikfB0p4IL+e8qdlRFDTwJgs1g+Kkq3/czZZiGHI4XW7Qr0Nrrwe2zFog3YL+B7L/C2N
+         dOiQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=cc:to:from:subject:references:mime-version:message-id:in-reply-to
-         :date:x-gm-message-state:from:to:cc;
-        bh=LjukWJTxiUbmz3A955PSO/1CFVXOcF8enTwdO4bv+2k=;
-        b=feKlyjxDitccg8S5R23+fTTVpy95kr+MU1PdbJvXYAgq8aNi2DvVcIUCbga328DGN5
-         iRv9rO2wsL21DlEK/vaPa5pkYXtVQrZHSvPZCF7G/2GAO67o5Hk6iEcRIOLsbLN3QvAx
-         EKeva30VB6LbZcfH2TcLYg19qBx0l4lW1KYedNo6fTbb7ukmFhquViNvP5eej7vPGDyQ
-         qWBatb+nRX4Q75NHlUPluibrkrOnev93OdQJU2HJK20Xmc1WukfS2RuF5T1Tz+D2xrKS
-         I/Gpn8/kTXtK1jCIn3ouGJmipR3pg8aiqKhTJWAwE0FxGTVxmFYx9VuwGhpt5Ck6h4XT
-         epUw==
-X-Gm-Message-State: ACgBeo1f7fYJn/nOflRKb4s7cBdAV4ZnZO7Q5M5JIPzU2bl6y3aQ2lkT
-        /9RH3ag6E6/BjtkERjqx7AFkrQ7Qq3I6
-X-Google-Smtp-Source: AA6agR737oV5Dv6Pucv6QEva05ChhkiOkZrwXPlgfZWxhjXq71+F4fdz6wLE3EkpCdimbdquZbhFaPgx4R9r
-X-Received: from irogers.svl.corp.google.com ([2620:15c:2d4:203:ab82:a348:500d:1fc4])
- (user=irogers job=sendgmr) by 2002:a25:f85:0:b0:696:144b:ebd8 with SMTP id
- 127-20020a250f85000000b00696144bebd8mr4698286ybp.123.1661355662085; Wed, 24
- Aug 2022 08:41:02 -0700 (PDT)
-Date:   Wed, 24 Aug 2022 08:38:58 -0700
-In-Reply-To: <20220824153901.488576-1-irogers@google.com>
-Message-Id: <20220824153901.488576-16-irogers@google.com>
-Mime-Version: 1.0
-References: <20220824153901.488576-1-irogers@google.com>
-X-Mailer: git-send-email 2.37.2.609.g9ff673ca1a-goog
-Subject: [PATCH v3 15/18] perf mutex: Add thread safety annotations
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc;
+        bh=qkCnAgKksn4yy7c/f+u9SZxxjpxk06D/ZgjlZLfZ9D8=;
+        b=jhrno7NUqWz5IiaQlR1Tpnsl/Hy4RCExzjTvvgL8eqDwngXrqEAvz53CtZXsDDcwPo
+         oUH5KNcgSkGvyemqb0RODCMeTeaMkigUq5akwhPlplxtq0HbANSdQsWKWN3GaoWrtPtd
+         Ks1/PCteyiRCFFc15ks3MbVkIsboDIisgIcPuZnsrA78A4zrlqwYBoXjZ2DIuro02I97
+         50YAvN/64z1w7q4/cUt02Gti4xs4IDMbWWXzDH9ZYgj7tsG6E1ZAj577x1IR1WY4tl6x
+         FjyegiJ1/Aav99tAw77OnZq8ZLicF7byQDVd8hjkYF6iURHMjXZRXASdMVYZl/hpLyft
+         az+g==
+X-Gm-Message-State: ACgBeo1tX6Gyvh8hWhPWxnthcZ3b/+883F2I4pT+WV0H7Wcds3wx8MMp
+        gBmjNyhQHL+LiVqzKpvtws1b+5D+qreakqWH/aR6r4dn7DlULA==
+X-Google-Smtp-Source: AA6agR72Q7Fv/g2o5VkARbLhzxu47V9z9QL51rC0K6pFJMYrF9QaFNt7Z65OIdJLByyiDTuviBxTe2BKg0pXri0NFho=
+X-Received: by 2002:adf:e28d:0:b0:21e:4c3b:b446 with SMTP id
+ v13-20020adfe28d000000b0021e4c3bb446mr16035051wri.300.1661355665577; Wed, 24
+ Aug 2022 08:41:05 -0700 (PDT)
+MIME-Version: 1.0
+References: <20220824072814.16422-1-adrian.hunter@intel.com> <20220824072814.16422-2-adrian.hunter@intel.com>
+In-Reply-To: <20220824072814.16422-2-adrian.hunter@intel.com>
 From:   Ian Rogers <irogers@google.com>
-To:     Peter Zijlstra <peterz@infradead.org>,
-        Ingo Molnar <mingo@redhat.com>,
-        Arnaldo Carvalho de Melo <acme@kernel.org>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
-        Jiri Olsa <jolsa@kernel.org>,
+Date:   Wed, 24 Aug 2022 08:40:53 -0700
+Message-ID: <CAP-5=fUsWcxivcG0M6bju2YaiNmO1d9SPFDviJWm7kdqSxx2Qg@mail.gmail.com>
+Subject: Re: [PATCH 1/5] perf record: Fix way of handling non-perf-event pollfds
+To:     Adrian Hunter <adrian.hunter@intel.com>
+Cc:     Arnaldo Carvalho de Melo <acme@kernel.org>,
+        Jiri Olsa <jolsa@redhat.com>,
         Namhyung Kim <namhyung@kernel.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Darren Hart <dvhart@infradead.org>,
-        Davidlohr Bueso <dave@stgolabs.net>,
-        "=?UTF-8?q?Andr=C3=A9=20Almeida?=" <andrealmeid@igalia.com>,
-        Nathan Chancellor <nathan@kernel.org>,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        Tom Rix <trix@redhat.com>, Weiguo Li <liwg06@foxmail.com>,
-        Athira Rajeev <atrajeev@linux.vnet.ibm.com>,
-        Thomas Richter <tmricht@linux.ibm.com>,
-        Ravi Bangoria <ravi.bangoria@amd.com>,
-        Dario Petrillo <dario.pk1@gmail.com>,
-        Hewenliang <hewenliang4@huawei.com>,
-        yaowenbin <yaowenbin1@huawei.com>,
-        Wenyu Liu <liuwenyu7@huawei.com>,
-        Song Liu <songliubraving@fb.com>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Dave Marchevsky <davemarchevsky@fb.com>,
-        Leo Yan <leo.yan@linaro.org>,
-        Kim Phillips <kim.phillips@amd.com>,
-        Pavithra Gurushankar <gpavithrasha@gmail.com>,
-        Alexandre Truong <alexandre.truong@arm.com>,
-        Quentin Monnet <quentin@isovalent.com>,
-        William Cohen <wcohen@redhat.com>,
-        Andres Freund <andres@anarazel.de>,
-        Adrian Hunter <adrian.hunter@intel.com>,
-        "=?UTF-8?q?Martin=20Li=C5=A1ka?=" <mliska@suse.cz>,
-        Colin Ian King <colin.king@intel.com>,
-        James Clark <james.clark@arm.com>,
-        Fangrui Song <maskray@google.com>,
-        Stephane Eranian <eranian@google.com>,
-        Kajol Jain <kjain@linux.ibm.com>,
-        Alexey Bayduraev <alexey.v.bayduraev@linux.intel.com>,
-        Riccardo Mancini <rickyman7@gmail.com>,
         Andi Kleen <ak@linux.intel.com>,
-        Masami Hiramatsu <mhiramat@kernel.org>,
-        Zechuan Chen <chenzechuan1@huawei.com>,
-        Jason Wang <wangborong@cdjrlc.com>,
-        Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
-        Remi Bernon <rbernon@codeweavers.com>,
-        linux-kernel@vger.kernel.org, linux-perf-users@vger.kernel.org,
-        bpf@vger.kernel.org, llvm@lists.linux.dev
-Cc:     Ian Rogers <irogers@google.com>
+        Alexey Bayduraev <alexey.v.bayduraev@linux.intel.com>,
+        linux-kernel@vger.kernel.org
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add thread safety annotations to struct mutex so that when compiled with
-clang's -Wthread-safety warnings are generated for erroneous lock
-patterns. NO_THREAD_SAFETY_ANALYSIS is needed for
-mutex_lock/mutex_unlock as the analysis doesn't under pthread calls.
+On Wed, Aug 24, 2022 at 12:28 AM Adrian Hunter <adrian.hunter@intel.com> wrote:
+>
+> perf record __cmd_record() does not poll evlist pollfds. Instead it polls
+> thread_data[0].pollfd. That happens whether or not threads are being used.
+>
+> perf record duplicates evlist mmap pollfds as needed for separate threads.
+> The non-perf-event represented by evlist->ctl_fd has to handled separately,
+> which is done explicitly, duplicating it into the thread_data[0] pollfds.
+> That approach neglects any other non-perf-event file descriptors. Currently
+> there is also done_fd which needs the same handling.
+>
+> Add a new generalized approach.
+>
+> Add fdarray_flag__non_perf_event to identify the file descriptors that
+> need the special handling. For those cases, also keep a mapping of the
+> evlist pollfd index and thread pollfd index, so that the evlist revents
+> can be updated.
+>
+> Although this patch adds the new handling, it does not take it into use.
+> There is no functional change, but it is the precursor to a fix, so is
+> marked as a fix.
+>
+> Fixes: 415ccb58f68a ("perf record: Introduce thread specific data array")
+> Signed-off-by: Adrian Hunter <adrian.hunter@intel.com>
 
-Signed-off-by: Ian Rogers <irogers@google.com>
----
- tools/perf/util/mutex.c |  2 ++
- tools/perf/util/mutex.h | 72 ++++++++++++++++++++++++++++++++++++++---
- 2 files changed, 69 insertions(+), 5 deletions(-)
+Acked-by: Ian Rogers <irogers@google.com>
 
-diff --git a/tools/perf/util/mutex.c b/tools/perf/util/mutex.c
-index 892294ac1769..ec813093276d 100644
---- a/tools/perf/util/mutex.c
-+++ b/tools/perf/util/mutex.c
-@@ -50,11 +50,13 @@ void mutex_destroy(struct mutex *mtx)
- }
- 
- void mutex_lock(struct mutex *mtx)
-+	NO_THREAD_SAFETY_ANALYSIS
- {
- 	CHECK_ERR(pthread_mutex_lock(&mtx->lock));
- }
- 
- void mutex_unlock(struct mutex *mtx)
-+	NO_THREAD_SAFETY_ANALYSIS
- {
- 	CHECK_ERR(pthread_mutex_unlock(&mtx->lock));
- }
-diff --git a/tools/perf/util/mutex.h b/tools/perf/util/mutex.h
-index c9e110a2b55e..48a2d87598f0 100644
---- a/tools/perf/util/mutex.h
-+++ b/tools/perf/util/mutex.h
-@@ -5,11 +5,73 @@
- #include <pthread.h>
- #include <stdbool.h>
- 
-+/*
-+ * A function-like feature checking macro that is a wrapper around
-+ * `__has_attribute`, which is defined by GCC 5+ and Clang and evaluates to a
-+ * nonzero constant integer if the attribute is supported or 0 if not.
-+ */
-+#ifdef __has_attribute
-+#define HAVE_ATTRIBUTE(x) __has_attribute(x)
-+#else
-+#define HAVE_ATTRIBUTE(x) 0
-+#endif
-+
-+
-+#if HAVE_ATTRIBUTE(guarded_by) && HAVE_ATTRIBUTE(pt_guarded_by) && \
-+	HAVE_ATTRIBUTE(lockable) && HAVE_ATTRIBUTE(exclusive_lock_function) && \
-+	HAVE_ATTRIBUTE(exclusive_trylock_function) && HAVE_ATTRIBUTE(exclusive_locks_required) && \
-+	HAVE_ATTRIBUTE(no_thread_safety_analysis)
-+
-+/* Documents if a shared field or global variable needs to be protected by a mutex. */
-+#define GUARDED_BY(x) __attribute__((guarded_by(x)))
-+
-+/*
-+ * Documents if the memory location pointed to by a pointer should be guarded by
-+ * a mutex when dereferencing the pointer.
-+ */
-+#define PT_GUARDED_BY(x) __attribute__((pt_guarded_by(x)))
-+
-+/* Documents if a type is a lockable type. */
-+#define LOCKABLE __attribute__((capability("lockable")))
-+
-+/* Documents functions that acquire a lock in the body of a function, and do not release it. */
-+#define EXCLUSIVE_LOCK_FUNCTION(...)  __attribute__((exclusive_lock_function(__VA_ARGS__)))
-+
-+/*
-+ * Documents functions that expect a lock to be held on entry to the function,
-+ * and release it in the body of the function.
-+ */
-+#define UNLOCK_FUNCTION(...) __attribute__((unlock_function(__VA_ARGS__)))
-+
-+/* Documents functions that try to acquire a lock, and return success or failure. */
-+#define EXCLUSIVE_TRYLOCK_FUNCTION(...) \
-+	__attribute__((exclusive_trylock_function(__VA_ARGS__)))
-+
-+
-+/* Documents a function that expects a mutex to be held prior to entry. */
-+#define EXCLUSIVE_LOCKS_REQUIRED(...) __attribute__((exclusive_locks_required(__VA_ARGS__)))
-+
-+/* Turns off thread safety checking within the body of a particular function. */
-+#define NO_THREAD_SAFETY_ANALYSIS __attribute__((no_thread_safety_analysis))
-+
-+#else
-+
-+#define GUARDED_BY(x)
-+#define PT_GUARDED_BY(x)
-+#define LOCKABLE
-+#define EXCLUSIVE_LOCK_FUNCTION(...)
-+#define UNLOCK_FUNCTION(...)
-+#define EXCLUSIVE_TRYLOCK_FUNCTION(...)
-+#define EXCLUSIVE_LOCKS_REQUIRED(...)
-+#define NO_THREAD_SAFETY_ANALYSIS
-+
-+#endif
-+
- /*
-  * A wrapper around the mutex implementation that allows perf to error check
-  * usage, etc.
-  */
--struct mutex {
-+struct LOCKABLE mutex {
- 	pthread_mutex_t lock;
- };
- 
-@@ -27,9 +89,9 @@ void mutex_init(struct mutex *mtx);
- void mutex_init_pshared(struct mutex *mtx);
- void mutex_destroy(struct mutex *mtx);
- 
--void mutex_lock(struct mutex *mtx);
--void mutex_unlock(struct mutex *mtx);
--bool mutex_trylock(struct mutex *mtx);
-+void mutex_lock(struct mutex *mtx) EXCLUSIVE_LOCK_FUNCTION(*mtx);
-+void mutex_unlock(struct mutex *mtx) UNLOCK_FUNCTION(*mtx);
-+bool mutex_trylock(struct mutex *mtx) EXCLUSIVE_TRYLOCK_FUNCTION(true, *mtx);
- 
- /* Default initialize the cond struct. */
- void cond_init(struct cond *cnd);
-@@ -40,7 +102,7 @@ void cond_init(struct cond *cnd);
- void cond_init_pshared(struct cond *cnd);
- void cond_destroy(struct cond *cnd);
- 
--void cond_wait(struct cond *cnd, struct mutex *mtx);
-+void cond_wait(struct cond *cnd, struct mutex *mtx) EXCLUSIVE_LOCKS_REQUIRED(mtx);
- void cond_signal(struct cond *cnd);
- void cond_broadcast(struct cond *cnd);
- 
--- 
-2.37.2.609.g9ff673ca1a-goog
+Thanks,
+Ian
 
+> ---
+>  tools/lib/api/fd/array.h    |  5 ++-
+>  tools/perf/builtin-record.c | 80 +++++++++++++++++++++++++++++++++++++
+>  2 files changed, 83 insertions(+), 2 deletions(-)
+>
+> diff --git a/tools/lib/api/fd/array.h b/tools/lib/api/fd/array.h
+> index 60ad197c8ee9..5c01f7b05dfb 100644
+> --- a/tools/lib/api/fd/array.h
+> +++ b/tools/lib/api/fd/array.h
+> @@ -31,8 +31,9 @@ struct fdarray {
+>  };
+>
+>  enum fdarray_flags {
+> -       fdarray_flag__default       = 0x00000000,
+> -       fdarray_flag__nonfilterable = 0x00000001
+> +       fdarray_flag__default           = 0x00000000,
+> +       fdarray_flag__nonfilterable     = 0x00000001,
+> +       fdarray_flag__non_perf_event    = 0x00000002,
+>  };
+>
+>  void fdarray__init(struct fdarray *fda, int nr_autogrow);
+> diff --git a/tools/perf/builtin-record.c b/tools/perf/builtin-record.c
+> index 4713f0f3a6cf..e0be48c47f65 100644
+> --- a/tools/perf/builtin-record.c
+> +++ b/tools/perf/builtin-record.c
+> @@ -143,6 +143,11 @@ static const char *thread_spec_tags[THREAD_SPEC__MAX] = {
+>         "undefined", "cpu", "core", "package", "numa", "user"
+>  };
+>
+> +struct pollfd_index_map {
+> +       int evlist_pollfd_index;
+> +       int thread_pollfd_index;
+> +};
+> +
+>  struct record {
+>         struct perf_tool        tool;
+>         struct record_opts      opts;
+> @@ -171,6 +176,9 @@ struct record {
+>         int                     nr_threads;
+>         struct thread_mask      *thread_masks;
+>         struct record_thread    *thread_data;
+> +       struct pollfd_index_map *index_map;
+> +       size_t                  index_map_sz;
+> +       size_t                  index_map_cnt;
+>  };
+>
+>  static volatile int done;
+> @@ -1074,6 +1082,70 @@ static void record__free_thread_data(struct record *rec)
+>         zfree(&rec->thread_data);
+>  }
+>
+> +static int record__map_thread_evlist_pollfd_indexes(struct record *rec,
+> +                                                   int evlist_pollfd_index,
+> +                                                   int thread_pollfd_index)
+> +{
+> +       size_t x = rec->index_map_cnt;
+> +
+> +       if (realloc_array_as_needed(rec->index_map, rec->index_map_sz, x, NULL))
+> +               return -ENOMEM;
+> +       rec->index_map[x].evlist_pollfd_index = evlist_pollfd_index;
+> +       rec->index_map[x].thread_pollfd_index = thread_pollfd_index;
+> +       rec->index_map_cnt += 1;
+> +       return 0;
+> +}
+> +
+> +static int record__update_evlist_pollfd_from_thread(struct record *rec,
+> +                                                   struct evlist *evlist,
+> +                                                   struct record_thread *thread_data)
+> +{
+> +       struct pollfd *e_entries = evlist->core.pollfd.entries;
+> +       struct pollfd *t_entries = thread_data->pollfd.entries;
+> +       int err = 0;
+> +       size_t i;
+> +
+> +       for (i = 0; i < rec->index_map_cnt; i++) {
+> +               int e_pos = rec->index_map[i].evlist_pollfd_index;
+> +               int t_pos = rec->index_map[i].thread_pollfd_index;
+> +
+> +               if (e_entries[e_pos].fd != t_entries[t_pos].fd ||
+> +                   e_entries[e_pos].events != t_entries[t_pos].events) {
+> +                       pr_err("Thread and evlist pollfd index mismatch\n");
+> +                       err = -EINVAL;
+> +                       continue;
+> +               }
+> +               e_entries[e_pos].revents = t_entries[t_pos].revents;
+> +       }
+> +       return err;
+> +}
+> +
+> +static int record__dup_non_perf_events(struct record *rec,
+> +                                      struct evlist *evlist,
+> +                                      struct record_thread *thread_data)
+> +{
+> +       struct fdarray *fda = &evlist->core.pollfd;
+> +       int i, ret;
+> +
+> +       for (i = 0; i < fda->nr; i++) {
+> +               if (!(fda->priv[i].flags & fdarray_flag__non_perf_event))
+> +                       continue;
+> +               ret = fdarray__dup_entry_from(&thread_data->pollfd, i, fda);
+> +               if (ret < 0) {
+> +                       pr_err("Failed to duplicate descriptor in main thread pollfd\n");
+> +                       return ret;
+> +               }
+> +               pr_debug2("thread_data[%p]: pollfd[%d] <- non_perf_event fd=%d\n",
+> +                         thread_data, ret, fda->entries[i].fd);
+> +               ret = record__map_thread_evlist_pollfd_indexes(rec, i, ret);
+> +               if (ret < 0) {
+> +                       pr_err("Failed to map thread and evlist pollfd indexes\n");
+> +                       return ret;
+> +               }
+> +       }
+> +       return 0;
+> +}
+> +
+>  static int record__alloc_thread_data(struct record *rec, struct evlist *evlist)
+>  {
+>         int t, ret;
+> @@ -1121,6 +1193,11 @@ static int record__alloc_thread_data(struct record *rec, struct evlist *evlist)
+>                                  thread_data[t].pipes.msg[0]);
+>                 } else {
+>                         thread_data[t].tid = gettid();
+> +
+> +                       ret = record__dup_non_perf_events(rec, evlist, &thread_data[t]);
+> +                       if (ret < 0)
+> +                               goto out_free;
+> +
+>                         if (evlist->ctl_fd.pos == -1)
+>                                 continue;
+>                         ret = fdarray__dup_entry_from(&thread_data[t].pollfd, evlist->ctl_fd.pos,
+> @@ -2530,6 +2607,9 @@ static int __cmd_record(struct record *rec, int argc, const char **argv)
+>                                             record__thread_munmap_filtered, NULL) == 0)
+>                                 draining = true;
+>
+> +                       err = record__update_evlist_pollfd_from_thread(rec, rec->evlist, thread);
+> +                       if (err)
+> +                               goto out_child;
+>                         evlist__ctlfd_update(rec->evlist,
+>                                 &thread->pollfd.entries[thread->ctlfd_pos]);
+>                 }
+> --
+> 2.25.1
+>
