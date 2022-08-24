@@ -2,41 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 46720C32793
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B8DC0C38145
 	for <linux-kernel@archiver.kernel.org>; Wed, 24 Aug 2022 08:47:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236130AbiHXIp6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 24 Aug 2022 04:45:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55108 "EHLO
+        id S236205AbiHXIqL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 24 Aug 2022 04:46:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56058 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235985AbiHXIpg (ORCPT
+        with ESMTP id S236107AbiHXIpx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 24 Aug 2022 04:45:36 -0400
+        Wed, 24 Aug 2022 04:45:53 -0400
 Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 28F8E6B8FB
-        for <linux-kernel@vger.kernel.org>; Wed, 24 Aug 2022 01:45:35 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4B30870E59
+        for <linux-kernel@vger.kernel.org>; Wed, 24 Aug 2022 01:45:52 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1661330735; x=1692866735;
+  t=1661330752; x=1692866752;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=uWNiR7M8bUT4JAhynBPIOlI6cvuOcXNpkpD1siwzhag=;
-  b=bR9Qn8//HPNLY+nH+ZEYu4iwTetoAuUWvrPWDthMaINP6lonhgob7eLv
-   r5eiTq5ZWfkl88Zr6STUdkmemLf5zV+23FiF8bSW3qX2GAE9aYjzhd3Li
-   enA8ETkYgFSdSO/iDFIaMRn1JqNjx72XNxZSj4/WeXAxPK2UDkwTJfULX
-   wtjpjDGOSsFScMWsEsB/VcjnnqJdv1zbVnc0Nk3X6QqlAXP0DKF8coym1
-   0RzSTsE6xPzA64tx7pEWREEDNeYru5c76HfP+kmM15D+ud445qafBTjlG
-   z4pU0q8tPKASb6zZVmnwBqDyALaGGd24VivAnru0L14uoq637LToTv7Yt
-   A==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10448"; a="357882474"
+  bh=xXWYIOHPKolHy/g3/53FzAfI4f56T3QhlqwnvSbksEw=;
+  b=HojbLs/jvLUe4ODNOChWRhIpkQAXnlJWlFygR1OTlJAaZBTZFuwIaEcs
+   AeImFmAvGyEO239E5lSWVXWg5cd/eRp+KEQOTFxmM+wa0TTagr4Wx0QgF
+   /w8IgvVn4lehoNMQIOqx3xwwj3ZRjEGswi0t6/mwA6QBjyOHUZjEZXLQ9
+   1o4o6ZTql4yrawoOB9kBfR8JahaVqMGBfXISN3pTG5pN+76zGW0jzh/XK
+   bJrojHGmcWS8TjDPLYk0EgQW5iUtxQ/px0Uba/lH2+s+9y7+Py9PbNzL4
+   7F+xne9s9oxcn/Im4nDBjRYV+06GlkHqBMzs30J6fk6ZX249BniVGc0lK
+   w==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10448"; a="357882542"
 X-IronPort-AV: E=Sophos;i="5.93,260,1654585200"; 
-   d="scan'208";a="357882474"
+   d="scan'208";a="357882542"
 Received: from orsmga005.jf.intel.com ([10.7.209.41])
-  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Aug 2022 01:45:34 -0700
+  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Aug 2022 01:45:51 -0700
 X-IronPort-AV: E=Sophos;i="5.93,260,1654585200"; 
-   d="scan'208";a="785553971"
+   d="scan'208";a="785554047"
 Received: from yuhsuanc-mobl.gar.corp.intel.com (HELO paris.amr.corp.intel.com) ([10.254.38.238])
-  by orsmga005-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Aug 2022 01:45:31 -0700
+  by orsmga005-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Aug 2022 01:45:48 -0700
 From:   Gwan-gyeong Mun <gwan-gyeong.mun@intel.com>
 To:     intel-gfx@lists.freedesktop.org
 Cc:     linux-kernel@vger.kernel.org, dri-devel@lists.freedesktop.org,
@@ -47,9 +47,9 @@ Cc:     linux-kernel@vger.kernel.org, dri-devel@lists.freedesktop.org,
         andrzej.hajda@intel.com, keescook@chromium.org,
         mauro.chehab@linux.intel.com,
         intel-gfx-trybot@lists.freedesktop.org
-Subject: [PATCH v9 2/8] util_macros: Add exact_type macro to catch type mis-match while compiling
-Date:   Wed, 24 Aug 2022 17:45:08 +0900
-Message-Id: <20220824084514.2261614-3-gwan-gyeong.mun@intel.com>
+Subject: [PATCH v9 7/8] drm/i915: Use error code as -E2BIG when the size of gem ttm object is too large
+Date:   Wed, 24 Aug 2022 17:45:13 +0900
+Message-Id: <20220824084514.2261614-8-gwan-gyeong.mun@intel.com>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220824084514.2261614-1-gwan-gyeong.mun@intel.com>
 References: <20220824084514.2261614-1-gwan-gyeong.mun@intel.com>
@@ -60,67 +60,44 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-It adds exact_type and exactly_pgoff_t macro to catch type mis-match while
-compiling. The existing typecheck() macro outputs build warnings, but the
-newly added exact_type() macro uses the BUILD_BUG_ON() macro to generate
-a build break when the types are different and can be used to detect
-explicit build errors.
-
-v6: Move macro addition location so that it can be used by other than drm
-    subsystem (Jani, Mauro, Andi)
+The ttm_bo_init_reserved() functions returns -ENOSPC if the size is too big
+to add vma. The direct function that returns -ENOSPC is drm_mm_insert_node_in_range().
+To handle the same error as other code returning -E2BIG when the size is
+too large, it converts return value to -E2BIG.
 
 Signed-off-by: Gwan-gyeong Mun <gwan-gyeong.mun@intel.com>
-Cc: Thomas Hellström <thomas.hellstrom@linux.intel.com>
+Cc: Chris Wilson <chris@chris-wilson.co.uk>
 Cc: Matthew Auld <matthew.auld@intel.com>
-Cc: Nirmoy Das <nirmoy.das@intel.com>
-Cc: Jani Nikula <jani.nikula@intel.com>
-Cc: Andi Shyti <andi.shyti@linux.intel.com>
-Cc: Mauro Carvalho Chehab <mchehab@kernel.org>
+Cc: Thomas Hellström <thomas.hellstrom@linux.intel.com>
+Reviewed-by: Nirmoy Das <nirmoy.das@intel.com>
+Reviewed-by: Mauro Carvalho Chehab <mchehab@kernel.org>
+Reviewed-by: Andrzej Hajda <andrzej.hajda@intel.com>
 ---
- include/linux/util_macros.h | 25 +++++++++++++++++++++++++
- 1 file changed, 25 insertions(+)
+ drivers/gpu/drm/i915/gem/i915_gem_ttm.c | 11 +++++++++++
+ 1 file changed, 11 insertions(+)
 
-diff --git a/include/linux/util_macros.h b/include/linux/util_macros.h
-index 72299f261b25..b6624b275257 100644
---- a/include/linux/util_macros.h
-+++ b/include/linux/util_macros.h
-@@ -2,6 +2,9 @@
- #ifndef _LINUX_HELPER_MACROS_H_
- #define _LINUX_HELPER_MACROS_H_
+diff --git a/drivers/gpu/drm/i915/gem/i915_gem_ttm.c b/drivers/gpu/drm/i915/gem/i915_gem_ttm.c
+index 615541b650fa..e3046e02b47a 100644
+--- a/drivers/gpu/drm/i915/gem/i915_gem_ttm.c
++++ b/drivers/gpu/drm/i915/gem/i915_gem_ttm.c
+@@ -1210,6 +1210,17 @@ int __i915_gem_ttm_object_init(struct intel_memory_region *mem,
+ 	ret = ttm_bo_init_reserved(&i915->bdev, i915_gem_to_ttm(obj), bo_type,
+ 				   &i915_sys_placement, page_size >> PAGE_SHIFT,
+ 				   &ctx, NULL, NULL, i915_ttm_bo_destroy);
++
++	/*
++	 * XXX: The ttm_bo_init_reserved() functions returns -ENOSPC if the size
++	 * is too big to add vma. The direct function that returns -ENOSPC is
++	 * drm_mm_insert_node_in_range(). To handle the same error as other code
++	 * that returns -E2BIG when the size is too large, it converts -ENOSPC to
++	 * -E2BIG.
++	 */
++	if (size >> PAGE_SHIFT > INT_MAX && ret == -ENOSPC)
++		ret = -E2BIG;
++
+ 	if (ret)
+ 		return i915_ttm_err_to_gem(ret);
  
-+#include <linux/types.h>
-+#include <linux/bug.h>
-+
- #define __find_closest(x, a, as, op)					\
- ({									\
- 	typeof(as) __fc_i, __fc_as = (as) - 1;				\
-@@ -38,4 +41,26 @@
-  */
- #define find_closest_descending(x, a, as) __find_closest(x, a, as, >=)
- 
-+/**
-+ * exact_type - break compile if source type and destination value's type are
-+ * not the same
-+ * @T: Source type
-+ * @n: Destination value
-+ *
-+ * It is a helper macro for a poor man's -Wconversion: only allow variables of
-+ * an exact type. It determines whether the source type and destination value's
-+ * type are the same while compiling, and it breaks compile if two types are
-+ * not the same
-+ */
-+#define exact_type(T, n) \
-+	BUILD_BUG_ON(!__builtin_constant_p(n) && !__builtin_types_compatible_p(T, typeof(n)))
-+
-+/**
-+ * exactly_pgoff_t - helper to check if the type of a value is pgoff_t
-+ * @n: value to compare pgoff_t type
-+ *
-+ * It breaks compile if the argument value's type is not pgoff_t type.
-+ */
-+#define exactly_pgoff_t(n) exact_type(pgoff_t, n)
-+
- #endif
 -- 
 2.37.1
 
