@@ -2,41 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 36587C00140
-	for <linux-kernel@archiver.kernel.org>; Wed, 24 Aug 2022 08:47:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2B98BC00140
+	for <linux-kernel@archiver.kernel.org>; Wed, 24 Aug 2022 08:48:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236116AbiHXIry (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 24 Aug 2022 04:47:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55892 "EHLO
+        id S236117AbiHXIr7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 24 Aug 2022 04:47:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56472 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236088AbiHXIpv (ORCPT
+        with ESMTP id S236126AbiHXIp6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 24 Aug 2022 04:45:51 -0400
+        Wed, 24 Aug 2022 04:45:58 -0400
 Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AFB1670E43
-        for <linux-kernel@vger.kernel.org>; Wed, 24 Aug 2022 01:45:48 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CA82772FE9
+        for <linux-kernel@vger.kernel.org>; Wed, 24 Aug 2022 01:45:55 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1661330749; x=1692866749;
+  t=1661330755; x=1692866755;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=fusilmdSQD+FIBKYeUukiHJrxKRQ3B5pPSTTQeO8rTk=;
-  b=hOXTUwitoMuitCYgSndF4qw7z56puKjgQaWOHBJTceuxpsoN/c1MHTga
-   7lu38V3Jw7bg3piJOBKAjkpIDggfRlnaGNT/58KXJEExitXu8EAj4Yajl
-   i9Kki+3nLrizBYZt0dsfS8fEV61QF3WSq1lo/2z4lOCp1JCSf6ep/TpDU
-   e8VXl0FGMzc7zbtjzq+qiX3O7PS5pF7vazSiUiB/BHeUXxwh0ivqtdkeM
-   xFELQW6Oxtt/jTag+jCbFOP8t9lH7bcnUxHZEGgKbevDCVIM5itlQ6qBK
-   UKO4BrZbAgIJoSaLWLAst4mNyI0S/8p4CfT5+GdXk6/MjiBpHwHoaUOxK
-   w==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10448"; a="357882532"
+  bh=rIBijWYDCuJCpKPJprGFsO7FPm8DX5/N35/ZVITEqGo=;
+  b=iy911PyXMISMCafGEqr2Op9uXaOpb7ohrL6EDLhA6Ssq5YCiPQkXOZGy
+   cgtC09XYIRmltQpLuTUrwFFFKIErdss+zppdKCc3VUKPEpsSUwKSRWz5g
+   hUVz7m9MF2Sp8krPb2GnhsA4PazUZAW4uuXQaVDIEL/A6h6xmYoJG3wmg
+   /zS4xJOsM+fQGy4PDDbW+LDwv3JoAF1A93c72yyLj/WBFxKYWqZnjcDZR
+   bgPG4NBJwHobvwmBpq+TWH9iCO+SAX2h4FvtvEwr3voSWoNhpKIioXPCJ
+   km9St1ZlepWi3w+RmKnobcaA0RemHJpn/7tSkiVHJPwRtEg/ejddEjKqu
+   Q==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10448"; a="357882564"
 X-IronPort-AV: E=Sophos;i="5.93,260,1654585200"; 
-   d="scan'208";a="357882532"
+   d="scan'208";a="357882564"
 Received: from orsmga005.jf.intel.com ([10.7.209.41])
-  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Aug 2022 01:45:48 -0700
+  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Aug 2022 01:45:55 -0700
 X-IronPort-AV: E=Sophos;i="5.93,260,1654585200"; 
-   d="scan'208";a="785554036"
+   d="scan'208";a="785554080"
 Received: from yuhsuanc-mobl.gar.corp.intel.com (HELO paris.amr.corp.intel.com) ([10.254.38.238])
-  by orsmga005-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Aug 2022 01:45:45 -0700
+  by orsmga005-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Aug 2022 01:45:52 -0700
 From:   Gwan-gyeong Mun <gwan-gyeong.mun@intel.com>
 To:     intel-gfx@lists.freedesktop.org
 Cc:     linux-kernel@vger.kernel.org, dri-devel@lists.freedesktop.org,
@@ -47,9 +47,9 @@ Cc:     linux-kernel@vger.kernel.org, dri-devel@lists.freedesktop.org,
         andrzej.hajda@intel.com, keescook@chromium.org,
         mauro.chehab@linux.intel.com,
         intel-gfx-trybot@lists.freedesktop.org
-Subject: [PATCH v9 6/8] drm/i915: Check if the size is too big while creating shmem file
-Date:   Wed, 24 Aug 2022 17:45:12 +0900
-Message-Id: <20220824084514.2261614-7-gwan-gyeong.mun@intel.com>
+Subject: [PATCH v9 8/8] drm/i915: Remove truncation warning for large objects
+Date:   Wed, 24 Aug 2022 17:45:14 +0900
+Message-Id: <20220824084514.2261614-9-gwan-gyeong.mun@intel.com>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220824084514.2261614-1-gwan-gyeong.mun@intel.com>
 References: <20220824084514.2261614-1-gwan-gyeong.mun@intel.com>
@@ -60,51 +60,59 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The __shmem_file_setup() function returns -EINVAL if size is greater than
-MAX_LFS_FILESIZE. To handle the same error as other code that returns
--E2BIG when the size is too large, it add a code that returns -E2BIG when
-the size is larger than the size that can be handled.
+From: Chris Wilson <chris@chris-wilson.co.uk>
 
-v4: If BITS_PER_LONG is 32, size > MAX_LFS_FILESIZE is always false, so it
-    checks only when BITS_PER_LONG is 64.
+Having addressed the issues surrounding incorrect types for local
+variables and potential integer truncation in using the scatterlist API,
+we have closed all the loop holes we had previously identified with
+dangerously large object creation. As such, we can eliminate the warning
+put in place to remind us to complete the review.
 
+Signed-off-by: Chris Wilson <chris@chris-wilson.co.uk>
 Signed-off-by: Gwan-gyeong Mun <gwan-gyeong.mun@intel.com>
-Cc: Chris Wilson <chris@chris-wilson.co.uk>
+Cc: Tvrtko Ursulin <tvrtko.ursulin@intel.com>
+Cc: Brian Welty <brian.welty@intel.com>
 Cc: Matthew Auld <matthew.auld@intel.com>
 Cc: Thomas Hellström <thomas.hellstrom@linux.intel.com>
+Testcase: igt@gem_create@create-massive
+Closes: https://gitlab.freedesktop.org/drm/intel/-/issues/4991
 Reviewed-by: Nirmoy Das <nirmoy.das@intel.com>
 Reviewed-by: Mauro Carvalho Chehab <mchehab@kernel.org>
-Reported-by: kernel test robot <lkp@intel.com>
 Reviewed-by: Andrzej Hajda <andrzej.hajda@intel.com>
 ---
- drivers/gpu/drm/i915/gem/i915_gem_shmem.c | 14 ++++++++++++++
- 1 file changed, 14 insertions(+)
+ drivers/gpu/drm/i915/gem/i915_gem_object.h | 15 ---------------
+ 1 file changed, 15 deletions(-)
 
-diff --git a/drivers/gpu/drm/i915/gem/i915_gem_shmem.c b/drivers/gpu/drm/i915/gem/i915_gem_shmem.c
-index 339b0a9cf2d0..ca30060e34ab 100644
---- a/drivers/gpu/drm/i915/gem/i915_gem_shmem.c
-+++ b/drivers/gpu/drm/i915/gem/i915_gem_shmem.c
-@@ -541,6 +541,20 @@ static int __create_shmem(struct drm_i915_private *i915,
+diff --git a/drivers/gpu/drm/i915/gem/i915_gem_object.h b/drivers/gpu/drm/i915/gem/i915_gem_object.h
+index 0cf31adbfd41..dd2762da332f 100644
+--- a/drivers/gpu/drm/i915/gem/i915_gem_object.h
++++ b/drivers/gpu/drm/i915/gem/i915_gem_object.h
+@@ -20,25 +20,10 @@
  
- 	drm_gem_private_object_init(&i915->drm, obj, size);
+ enum intel_region_id;
  
-+	/* XXX: The __shmem_file_setup() function returns -EINVAL if size is
-+	 * greater than MAX_LFS_FILESIZE.
-+	 * To handle the same error as other code that returns -E2BIG when
-+	 * the size is too large, we add a code that returns -E2BIG when the
-+	 * size is larger than the size that can be handled.
-+	 * If BITS_PER_LONG is 32, size > MAX_LFS_FILESIZE is always false,
-+	 * so we only needs to check when BITS_PER_LONG is 64.
-+	 * If BITS_PER_LONG is 32, E2BIG checks are processed when
-+	 * i915_gem_object_size_2big() is called before init_object() callback
-+	 * is called.
-+	 */
-+	if (BITS_PER_LONG == 64 && size > MAX_LFS_FILESIZE)
-+		return -E2BIG;
-+
- 	if (i915->mm.gemfs)
- 		filp = shmem_file_setup_with_mnt(i915->mm.gemfs, "i915", size,
- 						 flags);
+-/*
+- * XXX: There is a prevalence of the assumption that we fit the
+- * object's page count inside a 32bit _signed_ variable. Let's document
+- * this and catch if we ever need to fix it. In the meantime, if you do
+- * spot such a local variable, please consider fixing!
+- *
+- * We can check for invalidly typed locals with typecheck(), see for example
+- * i915_gem_object_get_sg().
+- */
+-#define GEM_CHECK_SIZE_OVERFLOW(sz) \
+-	GEM_WARN_ON((sz) >> PAGE_SHIFT > INT_MAX)
+-
+ static inline bool i915_gem_object_size_2big(u64 size)
+ {
+ 	struct drm_i915_gem_object *obj;
+ 
+-	if (GEM_CHECK_SIZE_OVERFLOW(size))
+-		return true;
+-
+ 	if (overflows_type(size, obj->base.size))
+ 		return true;
+ 
 -- 
 2.37.1
 
