@@ -2,116 +2,145 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 35866C38142
-	for <linux-kernel@archiver.kernel.org>; Wed, 24 Aug 2022 01:50:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6319AC32793
+	for <linux-kernel@archiver.kernel.org>; Wed, 24 Aug 2022 01:51:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233804AbiHXBuI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 21:50:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39522 "EHLO
+        id S233319AbiHXBvN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 23 Aug 2022 21:51:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44048 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233815AbiHXBuE (ORCPT
+        with ESMTP id S229615AbiHXBvK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 21:50:04 -0400
-Received: from bee.birch.relay.mailchannels.net (bee.birch.relay.mailchannels.net [23.83.209.14])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8D63FEE39
-        for <linux-kernel@vger.kernel.org>; Tue, 23 Aug 2022 18:49:58 -0700 (PDT)
-X-Sender-Id: dreamhost|x-authsender|dave@stgolabs.net
-Received: from relay.mailchannels.net (localhost [127.0.0.1])
-        by relay.mailchannels.net (Postfix) with ESMTP id 6A036227A8;
-        Wed, 24 Aug 2022 01:49:57 +0000 (UTC)
-Received: from pdx1-sub0-mail-a225 (unknown [127.0.0.6])
-        (Authenticated sender: dreamhost)
-        by relay.mailchannels.net (Postfix) with ESMTPA id CB62921B02;
-        Wed, 24 Aug 2022 01:49:51 +0000 (UTC)
-ARC-Seal: i=1; s=arc-2022; d=mailchannels.net; t=1661305791; a=rsa-sha256;
-        cv=none;
-        b=WW5z5lEU9noLsABoHpOYtdYsodXbS09xDkty1iJ8fjY0llT386Ys6Ks06PisjtZh0f04mp
-        FwQriGUuQZDtZHMLCK6m+1HBcfyh1JBFckQhpn2NNNiiMVVwnj8PpRR8ARdjaqSHw+VQB1
-        hgmXrrYu7fTqbKmoZ35gkX6DTHrnnDeZ2Gjxp//1u9WOHLsWl38+fYl7KDp8z8Yj8mNyr0
-        cmBOWaW2ZOsrDBECTQP0RJwA+5muKXnvXUZRlOY1yoo/4LaTwLrx5KNBRAFhdfAHGKGWj/
-        0A9bEq4WylfmoKlf2g4V5XTdwrV6bYJ12tP+72EZx/xedN6DQwurEEcLTpfULg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed;
- d=mailchannels.net;
-        s=arc-2022; t=1661305791;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references:dkim-signature;
-        bh=KyQrDQVpcvilEDqykRWXqrH3tFOoyA6DmQ/bB/u6eJI=;
-        b=n5oNR76XbOhvjQua68LlgZWytQR+5I9QjIjB1mMRnTiSi0YO94M9024mrU8E/hx7IxtkVR
-        viI1icKDSghDbE+6/KLUBMjgq7PSg0l3LUQ4+WepIZSwV9JqnS3LRshJ0YJAiF/g1ErQ5T
-        6i3tpSAnBETzzRYKPUcEVj2wLGFKLRTEC9RBQXlE6RtwGsV2CRxeWzMpvkzhAXQ7GgvHtj
-        dKgILfZxI7odjv7vVua34BMXXQ3DxJTQlcX2tmh13M0L2CoGgQA9KL0xYoYAyNlxh4ogcp
-        HwHqdvm/WR2+ASa8G3cISp7Xs4YIzbb8cjU0EdAAeWmw8ynwUzlPuqEa6l/8Ng==
-ARC-Authentication-Results: i=1;
-        rspamd-7499696767-dvgzl;
-        auth=pass smtp.auth=dreamhost smtp.mailfrom=dave@stgolabs.net
-X-Sender-Id: dreamhost|x-authsender|dave@stgolabs.net
-X-MC-Relay: Neutral
-X-MailChannels-SenderId: dreamhost|x-authsender|dave@stgolabs.net
-X-MailChannels-Auth-Id: dreamhost
-X-Squirrel-Macabre: 241804060bb1b80c_1661305792116_504427177
-X-MC-Loop-Signature: 1661305792115:2436232760
-X-MC-Ingress-Time: 1661305792115
-Received: from pdx1-sub0-mail-a225 (pop.dreamhost.com [64.90.62.162])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384)
-        by 100.108.161.97 (trex/6.7.1);
-        Wed, 24 Aug 2022 01:49:52 +0000
-Received: from offworld (unknown [104.36.31.106])
+        Tue, 23 Aug 2022 21:51:10 -0400
+Received: from gandalf.ozlabs.org (mail.ozlabs.org [IPv6:2404:9400:2221:ea00::3])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7BA2880EA0;
+        Tue, 23 Aug 2022 18:51:04 -0700 (PDT)
+Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-256) server-signature RSA-PSS (2048 bits) server-digest SHA256)
+         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
         (No client certificate requested)
-        (Authenticated sender: dave@stgolabs.net)
-        by pdx1-sub0-mail-a225 (Postfix) with ESMTPSA id 4MC8DH0hWlz4S;
-        Tue, 23 Aug 2022 18:49:51 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=stgolabs.net;
-        s=dreamhost; t=1661305791;
-        bh=KyQrDQVpcvilEDqykRWXqrH3tFOoyA6DmQ/bB/u6eJI=;
-        h=Date:From:To:Cc:Subject:Content-Type;
-        b=RtIc/QDvpivM6t9vLzop3hUcEIKVvezNltDg/RgGbsK0vXigJ+v9BQMQOPiSKznyf
-         DLh0cpzqh7J1vlILAW5IKQZ5eLqSaCEzQ40h65KeZQMvjKz7CzHvGE9ux79YlvjlH9
-         OH8aT5hxDpyWxJUmcgkJN7+E6+3tm6UIZhK85XMlD794lbtZN75faoeh1w3711sAc6
-         ujWz7T5772cdONYO7QCoJgh3UCfw8CPG/QFgIkBqC5QnEIDd6IFd99jZ7g6r4pP0Tn
-         8OQDlqATpSjsRX8Sv/AR7pAAQIWzxxk3YWDd11UBryml0CEDWvSp+FlwVFmiIwYLOl
-         +n5Ck0Jny4ATg==
-Date:   Tue, 23 Aug 2022 18:31:46 -0700
-From:   Davidlohr Bueso <dave@stgolabs.net>
-To:     Liam Howlett <liam.howlett@oracle.com>
-Cc:     "maple-tree@lists.infradead.org" <maple-tree@lists.infradead.org>,
-        "linux-mm@kvack.org" <linux-mm@kvack.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        "Matthew Wilcox (Oracle)" <willy@infradead.org>,
-        Vlastimil Babka <vbabka@suse.cz>
-Subject: Re: [PATCH v13 38/70] optee: remove vma linked list walk
-Message-ID: <20220824013146.qe3dkfpzfikijky6@offworld>
-Mail-Followup-To: Liam Howlett <liam.howlett@oracle.com>,
-        "maple-tree@lists.infradead.org" <maple-tree@lists.infradead.org>,
-        "linux-mm@kvack.org" <linux-mm@kvack.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        "Matthew Wilcox (Oracle)" <willy@infradead.org>,
-        Vlastimil Babka <vbabka@suse.cz>
-References: <20220822150128.1562046-1-Liam.Howlett@oracle.com>
- <20220822150128.1562046-39-Liam.Howlett@oracle.com>
+        by mail.ozlabs.org (Postfix) with ESMTPSA id 4MC8Fb0B03z4x1N;
+        Wed, 24 Aug 2022 11:50:58 +1000 (AEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canb.auug.org.au;
+        s=201702; t=1661305859;
+        bh=BigbBY09npaKn1HWURPO2ZRFxFHgIDlTYLr1TZ98XKE=;
+        h=Date:From:To:Cc:Subject:From;
+        b=nkYtcvRKuz/5kg0dnnubqQ84XE227WwTaBNaP5EmJSTZRtNYyqeKwlNxTrVgnKRpC
+         BIqsH5WFDsNWzUdmPCXN+tLuPRX97LO4RQ5M+kHqNNfS3Dt/lL233GRRdnZ/wk18kP
+         hz0aTEA+s6Tolf5XJZsSAqK3r8W+nL7YfjZaV2AJcxRw95CiP/tnC1DNpQzHzXf75d
+         +lKhvdzWrdXMZ4tpL/Wvis//xjnITkAOwjnSMXM+htCCwTi+BhpLstReDxKOxXdk70
+         2VfqUNUfXO+xHe7HJiIDo2iwKgDOKE9J0yl2T3qG0U3NUpvb7T2W5xtsCZ4Vzvuyu5
+         +mAY0HzdwXvRw==
+Date:   Wed, 24 Aug 2022 11:50:57 +1000
+From:   Stephen Rothwell <sfr@canb.auug.org.au>
+To:     "Martin K. Petersen" <martin.petersen@oracle.com>
+Cc:     Sreekanth Reddy <sreekanth.reddy@broadcom.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linux Next Mailing List <linux-next@vger.kernel.org>
+Subject: linux-next: build failure after merge of the scsi-mkp tree
+Message-ID: <20220824115057.107e3d42@canb.auug.org.au>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii; format=flowed
-Content-Disposition: inline
-In-Reply-To: <20220822150128.1562046-39-Liam.Howlett@oracle.com>
-User-Agent: NeoMutt/20220429
+Content-Type: multipart/signed; boundary="Sig_/SMhn12Xh8N1XEgO/XrCrjkt";
+ protocol="application/pgp-signature"; micalg=pgp-sha256
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, 22 Aug 2022, Liam Howlett wrote:
+--Sig_/SMhn12Xh8N1XEgO/XrCrjkt
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: quoted-printable
 
->From: "Matthew Wilcox (Oracle)" <willy@infradead.org>
->
->Use the VMA iterator instead.  Change the calling convention of
->__check_mem_type() to pass in the mm instead of the first vma in the
->range.
->
->Signed-off-by: Matthew Wilcox (Oracle) <willy@infradead.org>
->Signed-off-by: Liam R. Howlett <Liam.Howlett@Oracle.com>
->Acked-by: Vlastimil Babka <vbabka@suse.cz>
+Hi all,
 
-Reviewed-by: Davidlohr Bueso <dave@stgolabs.net>
+After merging the scsi-mkp tree, today's linux-next build (x86_64
+allmodconfig) failed like this:
+
+In file included from include/linux/bitmap.h:9,
+                 from include/linux/cpumask.h:12,
+                 from arch/x86/include/asm/cpumask.h:5,
+                 from arch/x86/include/asm/msr.h:11,
+                 from arch/x86/include/asm/processor.h:22,
+                 from arch/x86/include/asm/cpufeature.h:5,
+                 from arch/x86/include/asm/thread_info.h:53,
+                 from include/linux/thread_info.h:60,
+                 from arch/x86/include/asm/preempt.h:7,
+                 from include/linux/preempt.h:78,
+                 from include/linux/spinlock.h:55,
+                 from include/linux/wait.h:9,
+                 from include/linux/wait_bit.h:8,
+                 from include/linux/fs.h:6,
+                 from include/linux/highmem.h:5,
+                 from include/linux/bvec.h:10,
+                 from include/linux/blk_types.h:10,
+                 from include/linux/blkdev.h:9,
+                 from drivers/scsi/mpi3mr/mpi3mr.h:13,
+                 from drivers/scsi/mpi3mr/mpi3mr_transport.c:10:
+drivers/scsi/mpi3mr/mpi3mr_transport.c: In function 'mpi3mr_update_mr_sas_p=
+ort':
+include/linux/find.h:40:23: error: array subscript 'long unsigned int[0]' i=
+s partly outside array bounds of 'u32[1]' {aka 'unsigned int[1]'} [-Werror=
+=3Darray-bounds]
+   40 |                 val =3D *addr & GENMASK(size - 1, offset);
+      |                       ^~~~~
+drivers/scsi/mpi3mr/mpi3mr_transport.c:1610:27: note: while referencing 'ph=
+ys_to_be_added'
+ 1610 |         u32 phy_mask_xor, phys_to_be_added, phys_to_be_removed;
+      |                           ^~~~~~~~~~~~~~~~
+In file included from include/linux/bitmap.h:9,
+                 from include/linux/cpumask.h:12,
+                 from arch/x86/include/asm/cpumask.h:5,
+                 from arch/x86/include/asm/msr.h:11,
+                 from arch/x86/include/asm/processor.h:22,
+                 from arch/x86/include/asm/cpufeature.h:5,
+                 from arch/x86/include/asm/thread_info.h:53,
+                 from include/linux/thread_info.h:60,
+                 from arch/x86/include/asm/preempt.h:7,
+                 from include/linux/preempt.h:78,
+                 from include/linux/spinlock.h:55,
+                 from include/linux/wait.h:9,
+                 from include/linux/wait_bit.h:8,
+                 from include/linux/fs.h:6,
+                 from include/linux/highmem.h:5,
+                 from include/linux/bvec.h:10,
+                 from include/linux/blk_types.h:10,
+                 from include/linux/blkdev.h:9,
+                 from drivers/scsi/mpi3mr/mpi3mr.h:13,
+                 from drivers/scsi/mpi3mr/mpi3mr_transport.c:10:
+include/linux/find.h:40:23: error: array subscript 'long unsigned int[0]' i=
+s partly outside array bounds of 'u32[1]' {aka 'unsigned int[1]'} [-Werror=
+=3Darray-bounds]
+   40 |                 val =3D *addr & GENMASK(size - 1, offset);
+      |                       ^~~~~
+drivers/scsi/mpi3mr/mpi3mr_transport.c:1610:45: note: while referencing 'ph=
+ys_to_be_removed'
+ 1610 |         u32 phy_mask_xor, phys_to_be_added, phys_to_be_removed;
+      |                                             ^~~~~~~~~~~~~~~~~~
+cc1: all warnings being treated as errors
+
+Caused by commit
+
+  434726c4b89c ("scsi: mpi3mr: Refresh SAS ports during soft reset")
+
+I have used the scsi-mkp tree from next-20220823 for today.
+
+--=20
+Cheers,
+Stephen Rothwell
+
+--Sig_/SMhn12Xh8N1XEgO/XrCrjkt
+Content-Type: application/pgp-signature
+Content-Description: OpenPGP digital signature
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAmMFhAEACgkQAVBC80lX
+0GxN4wf/Z7YQufAfzLw3BvvaF1arzFAC6vtf5p1p77fmxYGzTF0pDLxhNtOT5Ivw
+pp9iDe1aF72YlZTuJt0kcjepQMaq39c0ZGve6/vbm55OdmPj/av4C/2hJ0AzYM0t
+O9/zXgFSHLVKabG/vCKbpIe7ae3ES5jYeoHBXOmILGj7MaNHD0nd1yZs8lUW6ksq
+x/x1HKZeBQkaeS2m2eRl+Ubr2q6tqRT6TpzfFYvvMgxlbe7FXntP6Ssx9rcgdjgW
+yE2vqWQs2ypz9IE6aiW5XTwv9dqPpE7P7icLqfUITZk/Lkgp2K/TGOa5fsvT8RoN
+9UZKvTdU7D/uCURZV89OLukapdv8XA==
+=Vk5t
+-----END PGP SIGNATURE-----
+
+--Sig_/SMhn12Xh8N1XEgO/XrCrjkt--
