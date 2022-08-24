@@ -2,205 +2,115 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7382CC32793
-	for <linux-kernel@archiver.kernel.org>; Wed, 24 Aug 2022 11:46:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DD33CC00140
+	for <linux-kernel@archiver.kernel.org>; Wed, 24 Aug 2022 11:48:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236210AbiHXLql (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 24 Aug 2022 07:46:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37030 "EHLO
+        id S236792AbiHXLs0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 24 Aug 2022 07:48:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37900 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232767AbiHXLqi (ORCPT
+        with ESMTP id S236121AbiHXLsX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 24 Aug 2022 07:46:38 -0400
-Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.153.233])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9DB86857E3;
-        Wed, 24 Aug 2022 04:46:37 -0700 (PDT)
+        Wed, 24 Aug 2022 07:48:23 -0400
+Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.154.123])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 93154857CD;
+        Wed, 24 Aug 2022 04:48:21 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1661341598; x=1692877598;
-  h=from:to:cc:subject:date:message-id:references:
-   in-reply-to:content-id:content-transfer-encoding:
-   mime-version;
-  bh=w6dtblSFOJxRhMRE0kfwmVnOZ+hfaZB+aSn/305qGWI=;
-  b=jy+9QQZvA/5SU+MC5EUHsciT9adofwZ+ahXnVDQ3XrDXdOmgLtdP5xGz
-   vK27YRyLWuNnt8w39Eu25PdZ5JSJAHj5eVtrK3mW8xKR7MphbFND3pshs
-   f9UIf3DbFgE7j8k+HJTFRYkPEoAkZen/dXcy6/Xx2YgmSCmZ3INagxqKZ
-   +n4tuTm642M9RfLX/wBY0U2UfrCRvPGt27u+m89tVQLyZ38LC2NsPVjq/
-   396f1AJoumtQfaE2znv+2kRz6RyEEk5smFS6fNi3G3GLJ+WOXB0RKTcCC
-   kVT+cUqvKLQTc49WNRFkWllPSyHFrfgJnesr7aTQnqgQRnkqiBoDbhBz/
-   Q==;
+  t=1661341702; x=1692877702;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=MZDAJgikHNjzvh5Y3euMJ9onTXF+3A93fahuugd7kik=;
+  b=Yu2zKcZesyumT/T3xMsL8cWwAGseMgPbSbKOjbd3BW0ugdbJsbZSfqEu
+   wfQsYJd5wlNeXVjas8j2Bj4XUv+x0BpZznAc3jNivUKJ66+/3zXIPJD3Z
+   2ygimufaUWQII1k+8BwLykIu6mpYn535WM7XffmNApDFvnI2pQcCE+A3i
+   lFcAlmI0Y+bhdcOvKDqBuBE0/gpgkl6eTNDuQ/pvIyfvjtJxg+yuz0R8J
+   590iPf3BoU3AYjOqlnstT8Ti9b/wXY0xKvEedVKSqvPdN1wXkoSmTmmy+
+   kqG4Fz14zePD/kO+lzoh38GHLB82cFXAdMkq3bNKzcsjWEXxd+cWLmS24
+   A==;
 X-IronPort-AV: E=Sophos;i="5.93,260,1654585200"; 
-   d="scan'208";a="177548530"
+   d="scan'208";a="170713015"
 Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
-  by esa5.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 24 Aug 2022 04:46:37 -0700
-Received: from chn-vm-ex03.mchp-main.com (10.10.85.151) by
+  by esa4.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 24 Aug 2022 04:48:21 -0700
+Received: from chn-vm-ex04.mchp-main.com (10.10.85.152) by
  chn-vm-ex03.mchp-main.com (10.10.85.151) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.12; Wed, 24 Aug 2022 04:46:36 -0700
-Received: from NAM10-DM6-obe.outbound.protection.outlook.com (10.10.215.89) by
- email.microchip.com (10.10.87.152) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.12 via Frontend Transport; Wed, 24 Aug 2022 04:46:36 -0700
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=F17vYnAuDYOo/VfDnGd8N1+f5nQoW+bDTkyHF5CvYgk7FnPl6E+XLZSrYXhoYTj2Bzq48pLdn2kwQWK+Ipo8jb4l7h0tcd12ZAAoxUZ+A4sLulfDkG7s2BnMbr+MERHlnSuHIYbrouV2IWXLlMj8e+GBtL4h6Nx0vaNCfU746mg4cHkyhUyohOAnszUjWCZwMxWkTZz/xtHEK71O8cUHuSYGXi8xa0LINT2TWK0a/4NuPssV+VQsfkiRZv0Cha0WEwPAnBMMypYYcYo5ld3DAwjXIknZzcPY++iMKJ4+8bZtud4AAiZS5luRJ7DCQfZ58snieOjbRS/Ss+8RTgVI3Q==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=w6dtblSFOJxRhMRE0kfwmVnOZ+hfaZB+aSn/305qGWI=;
- b=O3UdhF3UxGQ3Emitr0yhu0FLM5Nav1eM7D3A7sShs8cw8kgV8NndYMCzMmlVQBJeot6wqMBoAr3sudthyRMzxZB+YZ6+QrDw+mH444PmaxOjVT0DPqxVa7kn7kY7YFJAiTfS8y3aMpP91oTOpXKtT4Y5iasyWv9abftA4/HXnzfiLaxEnJ9chfEGBR8eXFilcWHfIcGFU3+ERxSbO9HjaQq0WR5WAIssEZKHMQ62I1dCSByUQ3h7tthrE0ygC6xeISsEf9xN077Mw82C6gJez0qybZjVd5WHzAZbCIMGoN/PT1QPwZbAlY8WpxQIzkSBjtWzFyicueSu6Cfj52yK6Q==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=microchip.com; dmarc=pass action=none
- header.from=microchip.com; dkim=pass header.d=microchip.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=microchiptechnology.onmicrosoft.com;
- s=selector2-microchiptechnology-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=w6dtblSFOJxRhMRE0kfwmVnOZ+hfaZB+aSn/305qGWI=;
- b=KTZkhrXJHOG/+zWyR+ZDGFcnYHMHGrRAytfCc4WgInrrOuItLzS+bgsKuQ0biJqxXg+Xt1rwE7mnnCRrad/gng6oSw4HZ1lQ10U3p+P6bVhhcfA9TiNyCMrmPALROaCP56cOEfvAom2njhgYcr8NgxPJuAemaXow8dYuDPGKPn4=
-Received: from CO1PR11MB5154.namprd11.prod.outlook.com (2603:10b6:303:99::15)
- by SJ0PR11MB5816.namprd11.prod.outlook.com (2603:10b6:a03:427::18) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5546.23; Wed, 24 Aug
- 2022 11:46:34 +0000
-Received: from CO1PR11MB5154.namprd11.prod.outlook.com
- ([fe80::ac89:75cd:26e0:51c3]) by CO1PR11MB5154.namprd11.prod.outlook.com
- ([fe80::ac89:75cd:26e0:51c3%9]) with mapi id 15.20.5566.015; Wed, 24 Aug 2022
- 11:46:34 +0000
-From:   <Conor.Dooley@microchip.com>
-To:     <christophe.jaillet@wanadoo.fr>, <Daire.McNamara@microchip.com>,
-        <a.zummo@towertech.it>, <alexandre.belloni@bootlin.com>
-CC:     <linux-kernel@vger.kernel.org>, <kernel-janitors@vger.kernel.org>,
-        <linux-riscv@lists.infradead.org>, <linux-rtc@vger.kernel.org>
-Subject: Re: [PATCH] rtc: mpfs: Use devm_clk_get_enabled() helper
-Thread-Topic: [PATCH] rtc: mpfs: Use devm_clk_get_enabled() helper
-Thread-Index: AQHYt5IndXqzWMJbz0OfuNYZ1M2LkK290O0AgAAYywCAAAVhgA==
-Date:   Wed, 24 Aug 2022 11:46:34 +0000
-Message-ID: <3513eb2e-5e18-152f-6111-f4606a73bc2f@microchip.com>
-References: <e55c959f2821a2c367a4c5de529a638b1cc6b8cd.1661329086.git.christophe.jaillet@wanadoo.fr>
- <f76fb247-5160-61ed-a0a3-037d2f40d2f9@microchip.com>
- <c74a42f7-7d9a-6b52-85b2-d87dacd91be6@wanadoo.fr>
-In-Reply-To: <c74a42f7-7d9a-6b52-85b2-d87dacd91be6@wanadoo.fr>
-Accept-Language: en-IE, en-US
-Content-Language: en-IE
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-user-agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.12.0
-authentication-results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=microchip.com;
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 447dffc9-e655-461e-2935-08da85c64b83
-x-ms-traffictypediagnostic: SJ0PR11MB5816:EE_
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: 8k0JBU2GQNM1fNY8BP7Ff4cabdEbp/om1Mtvsrj7fzzepN+WwGeE7XmW/UKkDMPm+GK7jz0tRplj/Jja7lzFXJsaW/NDT4OjOpPvigR885trfj7ZuBc31QNRGV1SZN5kLV5VDFKwfX2YjFGO3IPBcup+JQgVRGg/Mo7Gz+w2QYgO5rsZXGJkgMnWz2qMPa9KG8Q3yNpkydxe9Hu8RaQtJUWm3VM4t/C49N5ALxlj07jVkPLDFnNL9ey1Wzs1fjBcQFHDoYCPbKwUNamvOykr2mCuiNIEydCZsSSj84jx65XIOwVHbwx2VShUf9lbJt0ppFg4vR7i92183Lxn41jpVg4vvzm81JS+i58hwFz36vWm0psrNvHG4N3RWm+lldTQsAqurw/T9C+orWinaeP/bHGWS8HYVcbKHVGZ+FLF85Vyc9taZsxUiU1ngikmXWmSyN74l2JEHdGavitECkH0UXJDTekwJOazj9Farm0ZCTS+mQkOYrvxGKHGxmSic2mm+tYDoOcPymG6bgIAAFIoy9HBdU9OcwR0i4L3EwojSTvpZMSKneZ5RvEgUvsl+ugVws5bBJj2OwVqd3e5kmZxJqWMAhohU6ZNzeFfxt8ImpYeiVkUmsGf/z/PGmRdNacJpkvsvr49UDDjNnRlLkSfXOI8G750Zz9+Vjq0uV6TXaHM1A50+dnUD729jr705SAVpKgg++zn8UKxXvCxdJLR0Rm5gAi/93IiijcEkHEixsHgCadyyBeZbkDTuqPSM05EGdZYsQ6+qBFhBaG8B1u4RovT3fV6bmrjKO0zVLpfM5X+4yxEI7+Hz34J86NJ6g5323jZXwQc3zSS+oL2ztyJRA==
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:CO1PR11MB5154.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(39860400002)(136003)(396003)(376002)(346002)(366004)(83380400001)(36756003)(8936002)(54906003)(110136005)(122000001)(71200400001)(316002)(38100700002)(31686004)(38070700005)(66476007)(66446008)(76116006)(66574015)(6486002)(91956017)(8676002)(6506007)(66946007)(64756008)(4326008)(186003)(53546011)(66556008)(478600001)(5660300002)(31696002)(2906002)(41300700001)(6512007)(86362001)(26005)(2616005)(45980500001)(43740500002);DIR:OUT;SFP:1101;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?utf-8?B?TmR5VU1FYnQ1WkRlTE5YQmhuVm8rSVFqQ1FuNkVQaGVHNlZWUmJLcmRrMUxG?=
- =?utf-8?B?b0Z3RDlBR1ExbUNNSFFaRXNTOXJUOEFKQThlTnUxZk1UL2pyMTRXQkJNRGhF?=
- =?utf-8?B?dkdHQzVjVlNRSEhsVklMbVdCSHpKTDhnNlhMWG1LS3FRYnl6am1yT1k4YzZa?=
- =?utf-8?B?U0pSSTJUYmVGQUd3RVlTRVU5TGZHdmFOUEMwV2YxU3J4cWFrSmYzRmpWMHZ4?=
- =?utf-8?B?dHNYMFhkRE9oOVBoTXpPZHRXcm5DRWFWZWM4d3V3ZkJJZVpxRktJbVhvR1Rr?=
- =?utf-8?B?amtPOVc0U0ZNSmRpcHNsazArQWhzUVZObzUxMEVGVjVTaVgycUNXcjBBcDNt?=
- =?utf-8?B?eGgrTFN0YlRvditkaWo2WWdQQmFvZ0w4OXlObDhURVVaR09uaVUzQUdUcEpY?=
- =?utf-8?B?Qng3WUpxV3dsejZSZWR6UFBDODB4MTF1TU9kN1FJc3JDb3N4dWxZc0YyblpE?=
- =?utf-8?B?SSsvcW1DLzEzeTJMOHhSZEtZWDJFOFBpSXgwdWdVVXRxemZFVjJDU0s0Z295?=
- =?utf-8?B?OENkNTBpNnJmdXg4ajAyNnREeHljeUt0NFN4T2wyS0ppOUNIZHd4M2VkOG1p?=
- =?utf-8?B?cXU4UXJHODc2TS9adENNYU5YdWpGMCtQckY2SVlVU29ocTh1SHpMWWJqdTVV?=
- =?utf-8?B?TTVDU1ArS0VZN2NRTm9HbE1OK3BZSmkyaEsvN3F1QmJiYUJlR2NxMGxxa2pH?=
- =?utf-8?B?SWpLWHVsalVJektqd2xXdXlOUnZ4SVpvLy82andoeXlXMlBKMlFKazVvNlFP?=
- =?utf-8?B?UlpHc0pDZThoUE1zRkhtVzNmbHQxeVprOG5rUE56WXU2d3F6K1pFSUhaVXor?=
- =?utf-8?B?ak85TnBNZkRjdjFhaC9QYkZ5MlM1TkxNaVlyZTg3WWpjZFRhbkFSeFZJVmJS?=
- =?utf-8?B?RWNIU1lBWEQwdnlaalBNQnFnTXRaSmkwbGxkV2pWd0oxNGN1SGF0UVpzdjZm?=
- =?utf-8?B?bTcrbGhCTnZWRjVpLzNFMDJXb0srdmpZMkhQLzVOd2pRTnhMOTVEZHRDOCs0?=
- =?utf-8?B?QnpDbjdub1pzZFpKQ0VLSnl0cGhWbWVTMkRUWVJEdUFlU3RKMk9raWx3U1FM?=
- =?utf-8?B?SVN5Z1ZWNktVRjNIMk1mQjhRVWlUbWtEaVpqd2tlblQzM2ZCMXRSVlRPeTYr?=
- =?utf-8?B?RjBDTUtCYkFrVHA0ckxBVlU5OE5kSnoybXNGWWpqdkVCZW9qWDA4QndEVEZW?=
- =?utf-8?B?bnRiY1psYjhKMVB4TVJDYW0xOTFIaERLLy9EM0p2SVd6Y29ZNGJFcFArTHZF?=
- =?utf-8?B?REpqamtVUjdPNUUrZjNTc3BBWmdjTDhDbkhmVlZqNnl3Q21aVGYrMHBzb2hj?=
- =?utf-8?B?T2Z4MUNUbnFxS29qTUozdGJhLzB1UzN5dEhoRWNoemV4V25BdUNrQTlCWnhW?=
- =?utf-8?B?d09DSmYxSytPRFBYSmhMdm5XcSt6c29mTDVQd01aeGxuM0M0Z1J4dDBleWtp?=
- =?utf-8?B?bTErbHZYZjJzOFJsdXZyWmtaa3lBblR1N2xJOWxqL2hoQjM4WVhFZEtWNklE?=
- =?utf-8?B?c1BxYm1rVkVyYUt6K253VU9QNDNFREJyOUUyemZrdGJqOWpTak5JQ08zNGhH?=
- =?utf-8?B?NzVFelE0MEZ0bFMzeXYxUzM2VTRHNGNkWWN2ZTdIR2tabTNYR21kVGszT25r?=
- =?utf-8?B?YkxFcGUrc3REWjN4SklncWpRWmxFL0JoTFRPdkZkdm00OXkvRmZMMHRHWWVh?=
- =?utf-8?B?ZUduQmllcTdMQUdUcFkzY1I2d3F2QkRjSHErcStEanEwdnE2cUpHaFBBQWFN?=
- =?utf-8?B?bGdURGt1M2s5aGlaTk5yNXB3NGM2eGRBNndJM2w0NnJqbGl4QkRuOVRMaCtN?=
- =?utf-8?B?emNQMnpwT0hmRDcvWE9wSmZDQll4YlowU04zckRoNkk2OVBQMVdDdXVXbnFP?=
- =?utf-8?B?SEZmbFNxaHljdGZMYXFIcFB0c21HL0RsYklQVThsM3hRaEIzNytnSkc0bDAy?=
- =?utf-8?B?V2tNdVA4cEF2UDluSlFQbVJULzRWZlVoZENrZnFOSm9DaHhLOEh4K01CRUwv?=
- =?utf-8?B?VEd6YzlSMVFxd1o4RXZib1dvR3FLbFBsYlVIa1AyaXpoZ1ZjWXVpaW8yT0tX?=
- =?utf-8?B?Y2ZzYTNJMVF5MUJvQm9qaTkyUHI5SGREV3Q4ZXdERkxYVFo1Z1NOeU0rZFgw?=
- =?utf-8?Q?e2HkKHJHOOwQx7C5PmjT8PTdc?=
-Content-Type: text/plain; charset="utf-8"
-Content-ID: <E2A9FE199BBC7346AE6E47646CE7983C@namprd11.prod.outlook.com>
-Content-Transfer-Encoding: base64
+ 15.1.2507.12; Wed, 24 Aug 2022 04:48:20 -0700
+Received: from ROB-ULT-M68701.microchip.com (10.10.115.15) by
+ chn-vm-ex04.mchp-main.com (10.10.85.152) with Microsoft SMTP Server id
+ 15.1.2507.12 via Frontend Transport; Wed, 24 Aug 2022 04:48:17 -0700
+From:   Sergiu Moga <sergiu.moga@microchip.com>
+To:     <richard.genoud@gmail.com>, <gregkh@linuxfoundation.org>,
+        <jirislaby@kernel.org>, <nicolas.ferre@microchip.com>,
+        <alexandre.belloni@bootlin.com>, <claudiu.beznea@microchip.com>,
+        <rmk+kernel@arm.linux.org.uk>, <claudio@evidence.eu.com>,
+        <rick@efn.org>, <michael@evidence.eu.com>, <ryan@bluewatersys.com>
+CC:     <linux-serial@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-kernel@vger.kernel.org>,
+        Sergiu Moga <sergiu.moga@microchip.com>
+Subject: [PATCH] tty: serial: atmel: Preserve previous USART mode if RS485 disabled
+Date:   Wed, 24 Aug 2022 14:42:57 +0300
+Message-ID: <20220824114255.444655-1-sergiu.moga@microchip.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: CO1PR11MB5154.namprd11.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 447dffc9-e655-461e-2935-08da85c64b83
-X-MS-Exchange-CrossTenant-originalarrivaltime: 24 Aug 2022 11:46:34.2939
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 3f4057f3-b418-4d4e-ba84-d55b4e897d88
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: sCHAQoeUwgbhCeQD0DJNh+9XAiVXCORbnJaI94F3vUEyuPihV0FlAn4uOgXvFrgNo/G1i9jfxqZx3PyCDPsY8fuY5qO9DJm57aBpgQdKQOY=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: SJ0PR11MB5816
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-T24gMjQvMDgvMjAyMiAxMjoyNywgQ2hyaXN0b3BoZSBKQUlMTEVUIHdyb3RlOg0KPiBFWFRFUk5B
-TCBFTUFJTDogRG8gbm90IGNsaWNrIGxpbmtzIG9yIG9wZW4gYXR0YWNobWVudHMgdW5sZXNzIHlv
-dSBrbm93IHRoZSBjb250ZW50IGlzIHNhZmUNCj4gDQo+IExlIDI0LzA4LzIwMjIgw6AgMTE6NTgs
-IENvbm9yLkRvb2xleUBtaWNyb2NoaXAuY29tIGEgw6ljcml0IDoNCj4+IEhleSBDaHJpc3RvcGUs
-DQo+PiBUaGFua3MgZm9yIHlvdXIgcGF0Y2guDQo+Pg0KPj4gT24gMjQvMDgvMjAyMiAwOToxOCwg
-Q2hyaXN0b3BoZSBKQUlMTEVUIHdyb3RlOg0KPj4+IEVYVEVSTkFMIEVNQUlMOiBEbyBub3QgY2xp
-Y2sgbGlua3Mgb3Igb3BlbiBhdHRhY2htZW50cyB1bmxlc3MgeW91IGtub3cgdGhlIGNvbnRlbnQg
-aXMgc2FmZQ0KPj4+DQo+Pj4gVGhlIGRldm1fY2xrX2dldF9lbmFibGVkKCkgaGVscGVyOg0KPj4+
-IMKgwqDCoMKgIC0gY2FsbHMgZGV2bV9jbGtfZ2V0KCkNCj4+PiDCoMKgwqDCoCAtIGNhbGxzIGNs
-a19wcmVwYXJlX2VuYWJsZSgpIGFuZCByZWdpc3RlcnMgd2hhdCBpcyBuZWVkZWQgaW4gb3JkZXIg
-dG8NCj4+PiDCoMKgwqDCoMKgwqAgY2FsbCBjbGtfZGlzYWJsZV91bnByZXBhcmUoKSB3aGVuIG5l
-ZWRlZCwgYXMgYSBtYW5hZ2VkIHJlc291cmNlLg0KPj4+DQo+Pj4gVGhpcyBzaW1wbGlmaWVzIHRo
-ZSBjb2RlLCB0aGUgZXJyb3IgaGFuZGxpbmcgcGF0aHMgYW5kIGF2b2lkIHRoZSBuZWVkIG9mDQo+
-Pj4gYSBkZWRpY2F0ZWQgZnVuY3Rpb24gdXNlZCB3aXRoIGRldm1fYWRkX2FjdGlvbl9vcl9yZXNl
-dCgpLg0KPj4+DQo+Pj4gVGhhdCBzYWlkLCBtcGZzX3J0Y19pbml0X2NsaygpIGlzIHRoZSBzYW1l
-IGFzIGRldm1fY2xrX2dldF9lbmFibGVkKCksIHNvDQo+Pj4gdXNlIHRoaXMgZnVuY3Rpb24gZGly
-ZWN0bHkgaW5zdGVhZC4NCj4+DQo+PiBGaXJzdGx5LCBJIHRoaW5rIHNvbWV0aGluZyBpcyBtaXNz
-aW5nIGZyb20gdGhlIGNvbW1pdCBkZXNjcmlwdGlvbiBoZXJlLg0KPj4gZGV2bV9jbGtfZ2V0X2Vu
-YWJsZWQoKSBpcyBub3QganVzdCBhIGJsYW5rZXQgInVzZSB0aGlzIGluc3RlYWQgb2YgZ2V0KCks
-DQo+PiBwcmVwYXJlX2VuYWJsZSgpIiAmIGlzIG9ubHkgaW50ZW5kZWQgZm9yIGNhc2VzIHdoZXJl
-IHRoZSBjbG9jayB3b3VsZA0KPj4gYmUga2VwdCBwcmVwYXJlZCBvciBlbmFibGVkIGZvciB0aGUg
-d2hvbGUgbGlmZXRpbWUgb2YgdGhlIGRyaXZlci4gSSB0aGluaw0KPj4gaXQgaXMgd29ydGggcG9p
-bnRpbmcgdGhhdCBvdXQgdG8gaGVscCBwZW9wbGUgd2hvIGRvIG5vdCBrZWVwIHVwIHdpdGgNCj4+
-IGV2ZXJ5IGhlbHBlciB0aGF0IGlzIGFkZGVkLg0KPiANCj4gT2ssIEknbGwgdXBkYXRlIG15IGNv
-bW1pdCBsb2cgZm9yIG90aGVyIHNpbWlsYXIgcGF0Y2hlcyBvciBzaG91bGQgYSB2Mg0KPiBiZSBu
-ZWVkZWQuDQo+IA0KPj4NCj4+IEkgaGFkIGEgYml0IG9mIGEgbG9vayB0aHJvdWdoIHRoZSBkb2N1
-bWVudGF0aW9uIHRvIHNlZSBpZiB0aGUgYmxvY2sgd291bGQNCj4+IGtlZXAgdHJhY2sgb2YgdGlt
-ZSB3aXRob3V0IHRoZSBBSEIgY2xvY2sgZW5hYmxlZCwgYnV0IGl0IGRvZXMgbm90IHNlZW0gdG8u
-DQo+PiBUaGVyZSBpcyBubyByZWFzb24gdG8gdHVybiBvZmYgdGhlIGNsb2NrIGhlcmUgKGluIGZh
-Y3QgaXQgd291bGQgc2VlbQ0KPj4gY291bnRlciBwcm9kdWN0aXZlIHRvIGRpc2FibGUgaXQuLikg
-c28gaXQgbG9va3MgbGlrZSB0aGUgc2hvZSBmaXRzIGluIHRoYXQNCj4+IHJlZ2FyZC4NCj4+DQo+
-PiBIb3dldmVyLi4uDQo+Pg0KDQo+Pj4gLcKgwqDCoMKgwqDCoCBkZXZtX2FkZF9hY3Rpb25fb3Jf
-cmVzZXQoZGV2LCAodm9pZCAoKikgKHZvaWQgKikpY2xrX2Rpc2FibGVfdW5wcmVwYXJlLCBjbGsp
-Ow0KPj4NCj4+IC4uLiB0aGlzIGJpdCBoZXJlIGNvbmNlcm5zIG1lIGEgbGl0dGxlLiBJIGRvbid0
-IHRoaW5rIHdlIHNob3VsZCBiZQ0KPj4gcmVnaXN0ZXJpbmcgYSBjYWxsYmFjayBoZXJlIGF0IGFs
-bCAtIGlmIHdlIHBvd2VyIGRvd24gTGludXggdGhpcyBpcw0KPj4gZ29pbmcgdG8gZW5kIHVwIHN0
-b3BwaW5nIHRoZSBSVEMgaXNuJ3QgaXQ/DQo+Pg0KPj4gSSB0aGluayB0aGlzIGlzIGxlZnQgb3Zl
-ciBmcm9tIHRoZSB2MSBkcml2ZXIgc3VibWlzc2lvbiB0aGF0IHJlc2V0DQo+PiB0aGUgYmxvY2sg
-ZHVyaW5nIHByb2JlICYgc2hvdWxkIGJlIHJlbW92ZWQuDQo+IA0KPiBNeSBwb2ludCBpcyBvbmx5
-IHRoYXQgd2hhdCBpcyBkb25lIG11c3QgYmUgdW5kb25lIGF0IHNvbWUgcG9pbnQuDQo+IA0KPiBX
-aGF0IGlmIGFuIGVycm9yIG9jY3VycyBpbiB0aGUgcHJvYmUgYWZ0ZXIgdGhlIGNsa19nZXQoInJ0
-YyIpPw0KPiBJcyB0aGVyZSBhbnkgcG9pbnQga2VlcGluZyBpdCBwcmVwYXJlZCBhbmQgZW5hYmxl
-ZD8NCj4gDQo+IA0KPiBUaGVyZSBpcyBhIC5yZW1vdmUgZnVuY3Rpb24gaW4gdGhpcyBkcml2ZXIs
-IHNvLCBpdCBsb29rcyB0aGF0IGl0IGlzDQo+IGV4cGVjdGVkIHRoYXQgaXQgY2FuIGJlIHVubG9h
-ZGVkLg0KPiANCj4gU28gdW5kb2luZyB0aGlzIGNsayBvcGVyYXRpb25zIHZpYSBhIG1hbmFnZWQg
-cmVzb3VyY2UgbG9va3MgdGhlIGNvcnJlY3QNCj4gdGhpbmcgdG8gZG8uDQo+IA0KPiBKdXN0IG15
-IDJjLCB5b3UgbXVzdCBrbm93IHRoaXMgZHJpdmVyIGFuZCB0aGUgZXhwZWN0ZWQgYmVoYXZpb3Ig
-YmV0dGVyDQo+IHRoYW4gbWUuDQo+DQoNCkkgYW0gZG9pbmcgc29tZSBtb3JlIHRlc3Rpbmcgcm4s
-IGJlZm9yZSByZXBseWluZyB0byBBbGV4YW5kcmUgLSBJIGd1ZXNzDQpJIGFtIGp1c3Qgd29uZGVy
-aW5nIGlmIGFjdHVhbGx5IGRpc2FibGluZyB0aGUgY2xvY2sgcHJpb3IgdG8gdG8gcmVtb3ZpbmcN
-CnRoZSBkcml2ZXIgbWFrZXMgYW55IHNlbnNlLiBNYXliZSB0aGUgbG9jayBqdXN0IG5lZWRzIHRv
-IGJlIGV4cGxpY2l0bHkNCm1hcmtlZCBhcyBjcml0aWNhbCwgaW4gd2hpY2ggY2FzZSB0aGlzIHBh
-dGNoIG1ha2VzIGNvbXBsZXRlIHNlbnNlIHRvIG1lLg0KDQpUaGFua3MsDQpDb25vci4NCg0K
+Whenever the atmel_rs485_config driver method would be called,
+the USART mode is reset to normal mode before even checking if
+RS485 flag is set, thus resulting in losing the previous USART
+mode in the case where the checking fails. Some tools, such as
+`linux-serial-test`, lead to the driver calling this method
+when doing the setup of the serial port: after setting the port
+mode (Hardware Flow Control, Normal Mode, RS485 Mode, etc.),
+`linux-serial-test` tries to enable/disable RS485 depending on
+the commandline arguments passed. If we were to, for example, enable
+Hardware Flow Control through `linux-serial-test`, the tool would
+make the driver set the corresponding bit to 1 (ATMEL_US_USMODE_HWHS
+bit in the ATMEL_US_MR register) through the atmel_set_termios method
+and then proceed to disabling RS485. This, in turn, causes the
+ATMEL_US_USMODE_HWHS bit of the ATMEL_US_MR mode register to be unset
+and, if the checking for RS485 fails, leads to having the mode set
+back to the ATMEL_US_USMODE_NORMAL normal mode. Since in hardware
+flow control mode the meanings of the ATMEL_US_RTSDIS and
+ATMEL_US_RTSEN bits are swapped, this leads to our endpoint leaving
+the RTS line to high when wanting to receive, which is the opposite
+of what the other endpoint is expecting in order to start transmitting.
+This fix ensures that this reset is done only if the checking for RS485
+succeeds.
+
+Fixes: e8faff7330a35 ("ARM: 6092/1: atmel_serial: support for RS485 communications")
+Signed-off-by: Sergiu Moga <sergiu.moga@microchip.com>
+---
+ drivers/tty/serial/atmel_serial.c | 4 +---
+ 1 file changed, 1 insertion(+), 3 deletions(-)
+
+diff --git a/drivers/tty/serial/atmel_serial.c b/drivers/tty/serial/atmel_serial.c
+index 0a0b46ee0955..c29b1fb48694 100644
+--- a/drivers/tty/serial/atmel_serial.c
++++ b/drivers/tty/serial/atmel_serial.c
+@@ -298,9 +298,6 @@ static int atmel_config_rs485(struct uart_port *port, struct ktermios *termios,
+ 
+ 	mode = atmel_uart_readl(port, ATMEL_US_MR);
+ 
+-	/* Resetting serial mode to RS232 (0x0) */
+-	mode &= ~ATMEL_US_USMODE;
+-
+ 	if (rs485conf->flags & SER_RS485_ENABLED) {
+ 		dev_dbg(port->dev, "Setting UART to RS485\n");
+ 		if (rs485conf->flags & SER_RS485_RX_DURING_TX)
+@@ -310,6 +307,7 @@ static int atmel_config_rs485(struct uart_port *port, struct ktermios *termios,
+ 
+ 		atmel_uart_writel(port, ATMEL_US_TTGR,
+ 				  rs485conf->delay_rts_after_send);
++		mode &= ~ATMEL_US_USMODE;
+ 		mode |= ATMEL_US_USMODE_RS485;
+ 	} else {
+ 		dev_dbg(port->dev, "Setting UART to RS232\n");
+-- 
+2.25.1
+
