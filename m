@@ -2,36 +2,36 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 67971C04AA5
-	for <linux-kernel@archiver.kernel.org>; Wed, 24 Aug 2022 23:12:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 696E1C04AA5
+	for <linux-kernel@archiver.kernel.org>; Wed, 24 Aug 2022 23:12:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231428AbiHXXMe (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 24 Aug 2022 19:12:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56262 "EHLO
+        id S231563AbiHXXMi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 24 Aug 2022 19:12:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56244 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231177AbiHXXMZ (ORCPT
+        with ESMTP id S231245AbiHXXM3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 24 Aug 2022 19:12:25 -0400
-Received: from inva021.nxp.com (inva021.nxp.com [92.121.34.21])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 65D1B8168A;
-        Wed, 24 Aug 2022 16:12:18 -0700 (PDT)
-Received: from inva021.nxp.com (localhost [127.0.0.1])
-        by inva021.eu-rdc02.nxp.com (Postfix) with ESMTP id 087D52014E8;
-        Thu, 25 Aug 2022 01:12:17 +0200 (CEST)
+        Wed, 24 Aug 2022 19:12:29 -0400
+Received: from inva020.nxp.com (inva020.nxp.com [92.121.34.13])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4CAD48034F;
+        Wed, 24 Aug 2022 16:12:21 -0700 (PDT)
+Received: from inva020.nxp.com (localhost [127.0.0.1])
+        by inva020.eu-rdc02.nxp.com (Postfix) with ESMTP id F1CC31A13C6;
+        Thu, 25 Aug 2022 01:12:18 +0200 (CEST)
 Received: from smtp.na-rdc02.nxp.com (usphx01srsp001v.us-phx01.nxp.com [134.27.49.11])
-        by inva021.eu-rdc02.nxp.com (Postfix) with ESMTP id BC4C02014DD;
-        Thu, 25 Aug 2022 01:12:16 +0200 (CEST)
+        by inva020.eu-rdc02.nxp.com (Postfix) with ESMTP id B0C421A1404;
+        Thu, 25 Aug 2022 01:12:18 +0200 (CEST)
 Received: from right.am.freescale.net (right.am.freescale.net [10.81.116.134])
-        by usphx01srsp001v.us-phx01.nxp.com (Postfix) with ESMTP id 148934060D;
-        Wed, 24 Aug 2022 16:12:13 -0700 (MST)
+        by usphx01srsp001v.us-phx01.nxp.com (Postfix) with ESMTP id 5F06B4060D;
+        Wed, 24 Aug 2022 16:12:17 -0700 (MST)
 From:   Li Yang <leoyang.li@nxp.com>
 To:     shawnguo@kernel.org, devicetree@vger.kernel.org
 Cc:     robh+dt@kernel.org, linux-arm-kernel@lists.infradead.org,
         linux-kernel@vger.kernel.org, Li Yang <leoyang.li@nxp.com>,
-        Laurentiu Tudor <laurentiu.tudor@nxp.com>
-Subject: [PATCH 5/9] arm64: dts: ls1046a: make dma-coherent global to the SoC
-Date:   Wed, 24 Aug 2022 18:11:56 -0500
-Message-Id: <20220824231200.494-6-leoyang.li@nxp.com>
+        Zhang Ying <ying.zhang22455@nxp.com>
+Subject: [PATCH 7/9] arm64: dts: ls1046a: add gpios based i2c recovery information
+Date:   Wed, 24 Aug 2022 18:11:58 -0500
+Message-Id: <20220824231200.494-8-leoyang.li@nxp.com>
 X-Mailer: git-send-email 2.25.1.377.g2d2118b
 In-Reply-To: <20220824231200.494-1-leoyang.li@nxp.com>
 References: <20220824231200.494-1-leoyang.li@nxp.com>
@@ -42,27 +42,70 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-ls1046a is really completely dma coherent in their entirety so add
-the dma-coherent property at the soc level in the device tree.
+Add scl-gpios property for i2c recovery and add SoC specific compatible
+string for SoC specific fixup.
 
-Signed-off-by: Laurentiu Tudor <laurentiu.tudor@nxp.com>
+Signed-off-by: Zhang Ying <ying.zhang22455@nxp.com>
 Signed-off-by: Li Yang <leoyang.li@nxp.com>
 ---
- arch/arm64/boot/dts/freescale/fsl-ls1046a.dtsi | 1 +
- 1 file changed, 1 insertion(+)
+ arch/arm64/boot/dts/freescale/fsl-ls1046a.dtsi | 11 +++++++----
+ 1 file changed, 7 insertions(+), 4 deletions(-)
 
 diff --git a/arch/arm64/boot/dts/freescale/fsl-ls1046a.dtsi b/arch/arm64/boot/dts/freescale/fsl-ls1046a.dtsi
-index 552b4455aa82..10b6c41570cc 100644
+index c7c6c82626fd..c95a990e2edd 100644
 --- a/arch/arm64/boot/dts/freescale/fsl-ls1046a.dtsi
 +++ b/arch/arm64/boot/dts/freescale/fsl-ls1046a.dtsi
-@@ -273,6 +273,7 @@ soc: soc {
- 		#size-cells = <2>;
- 		ranges;
- 		dma-ranges = <0x0 0x0 0x0 0x0 0x10000 0x00000000>;
-+		dma-coherent;
+@@ -502,7 +502,7 @@ dspi: spi@2100000 {
+ 		};
  
- 		ddr: memory-controller@1080000 {
- 			compatible = "fsl,qoriq-memory-controller";
+ 		i2c0: i2c@2180000 {
+-			compatible = "fsl,vf610-i2c";
++			compatible = "fsl,ls1046a-i2c", "fsl,vf610-i2c";
+ 			#address-cells = <1>;
+ 			#size-cells = <0>;
+ 			reg = <0x0 0x2180000 0x0 0x10000>;
+@@ -516,35 +516,38 @@ i2c0: i2c@2180000 {
+ 		};
+ 
+ 		i2c1: i2c@2190000 {
+-			compatible = "fsl,vf610-i2c";
++			compatible = "fsl,ls1046a-i2c", "fsl,vf610-i2c";
+ 			#address-cells = <1>;
+ 			#size-cells = <0>;
+ 			reg = <0x0 0x2190000 0x0 0x10000>;
+ 			interrupts = <GIC_SPI 57 IRQ_TYPE_LEVEL_HIGH>;
+ 			clocks = <&clockgen QORIQ_CLK_PLATFORM_PLL
+ 					    QORIQ_CLK_PLL_DIV(2)>;
++			scl-gpios = <&gpio3 2 0>;
+ 			status = "disabled";
+ 		};
+ 
+ 		i2c2: i2c@21a0000 {
+-			compatible = "fsl,vf610-i2c";
++			compatible = "fsl,ls1046a-i2c", "fsl,vf610-i2c";
+ 			#address-cells = <1>;
+ 			#size-cells = <0>;
+ 			reg = <0x0 0x21a0000 0x0 0x10000>;
+ 			interrupts = <GIC_SPI 58 IRQ_TYPE_LEVEL_HIGH>;
+ 			clocks = <&clockgen QORIQ_CLK_PLATFORM_PLL
+ 					    QORIQ_CLK_PLL_DIV(2)>;
++			scl-gpios = <&gpio3 10 0>;
+ 			status = "disabled";
+ 		};
+ 
+ 		i2c3: i2c@21b0000 {
+-			compatible = "fsl,vf610-i2c";
++			compatible = "fsl,ls1046a-i2c", "fsl,vf610-i2c";
+ 			#address-cells = <1>;
+ 			#size-cells = <0>;
+ 			reg = <0x0 0x21b0000 0x0 0x10000>;
+ 			interrupts = <GIC_SPI 59 IRQ_TYPE_LEVEL_HIGH>;
+ 			clocks = <&clockgen QORIQ_CLK_PLATFORM_PLL
+ 					    QORIQ_CLK_PLL_DIV(2)>;
++			scl-gpios = <&gpio3 12 0>;
+ 			status = "disabled";
+ 		};
+ 
 -- 
 2.37.1
 
