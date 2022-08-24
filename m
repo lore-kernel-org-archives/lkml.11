@@ -2,96 +2,125 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9F684C00140
-	for <linux-kernel@archiver.kernel.org>; Wed, 24 Aug 2022 08:47:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 46720C32793
+	for <linux-kernel@archiver.kernel.org>; Wed, 24 Aug 2022 08:47:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235783AbiHXIrI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 24 Aug 2022 04:47:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32964 "EHLO
+        id S236130AbiHXIp6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 24 Aug 2022 04:45:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55108 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235876AbiHXIrD (ORCPT
+        with ESMTP id S235985AbiHXIpg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 24 Aug 2022 04:47:03 -0400
-Received: from gloria.sntech.de (gloria.sntech.de [185.11.138.130])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CF1F27287B;
-        Wed, 24 Aug 2022 01:46:57 -0700 (PDT)
-Received: from ip5b412258.dynamic.kabel-deutschland.de ([91.65.34.88] helo=diego.localnet)
-        by gloria.sntech.de with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.94.2)
-        (envelope-from <heiko@sntech.de>)
-        id 1oQm1r-0001su-EQ; Wed, 24 Aug 2022 10:46:27 +0200
-From:   Heiko =?ISO-8859-1?Q?St=FCbner?= <heiko@sntech.de>
-To:     Lee Jones <lee@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Chen-Yu Tsai <wens@csie.org>,
-        Jernej Skrabec <jernej.skrabec@gmail.com>,
-        Samuel Holland <samuel@sholland.org>,
-        Charles Keepax <ckeepax@opensource.cirrus.com>,
-        Richard Fitzgerald <rf@opensource.cirrus.com>,
-        Tim Harvey <tharvey@gateworks.com>,
-        Robert Jones <rjones@gateworks.com>,
-        Chanwoo Choi <cw00.choi@samsung.com>,
-        Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>,
-        Fabrice Gasnier <fabrice.gasnier@foss.st.com>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-        Alexandre Torgue <alexandre.torgue@foss.st.com>,
-        Maxime Ripard <mripard@kernel.org>,
-        - <patches@opensource.cirrus.com>,
-        Steve Twiss <stwiss.opensource@diasemi.com>,
-        Chris Zhong <zyw@rock-chips.com>,
-        Zhang Qing <zhangqing@rock-chips.com>,
-        Alistair Francis <alistair@alistair23.me>,
-        Amelie Delaunay <amelie.delaunay@foss.st.com>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Renner Berthing <kernel@esmil.dk>,
-        Rob Herring <robh@kernel.org>
-Cc:     Krzysztof Kozlowski <krzk@kernel.org>, devicetree@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, linux-sunxi@lists.linux.dev,
-        linux-kernel@vger.kernel.org, linux-rockchip@lists.infradead.org,
-        linux-stm32@st-md-mailman.stormreply.com
-Subject: Re: [PATCH] dt-bindings: mfd: Add missing (unevaluated|additional)Properties on child nodes
-Date:   Wed, 24 Aug 2022 10:46:26 +0200
-Message-ID: <3510508.BEx9A2HvPv@diego>
-In-Reply-To: <20220823145649.3118479-4-robh@kernel.org>
-References: <20220823145649.3118479-4-robh@kernel.org>
+        Wed, 24 Aug 2022 04:45:36 -0400
+Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 28F8E6B8FB
+        for <linux-kernel@vger.kernel.org>; Wed, 24 Aug 2022 01:45:35 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1661330735; x=1692866735;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=uWNiR7M8bUT4JAhynBPIOlI6cvuOcXNpkpD1siwzhag=;
+  b=bR9Qn8//HPNLY+nH+ZEYu4iwTetoAuUWvrPWDthMaINP6lonhgob7eLv
+   r5eiTq5ZWfkl88Zr6STUdkmemLf5zV+23FiF8bSW3qX2GAE9aYjzhd3Li
+   enA8ETkYgFSdSO/iDFIaMRn1JqNjx72XNxZSj4/WeXAxPK2UDkwTJfULX
+   wtjpjDGOSsFScMWsEsB/VcjnnqJdv1zbVnc0Nk3X6QqlAXP0DKF8coym1
+   0RzSTsE6xPzA64tx7pEWREEDNeYru5c76HfP+kmM15D+ud445qafBTjlG
+   z4pU0q8tPKASb6zZVmnwBqDyALaGGd24VivAnru0L14uoq637LToTv7Yt
+   A==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10448"; a="357882474"
+X-IronPort-AV: E=Sophos;i="5.93,260,1654585200"; 
+   d="scan'208";a="357882474"
+Received: from orsmga005.jf.intel.com ([10.7.209.41])
+  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Aug 2022 01:45:34 -0700
+X-IronPort-AV: E=Sophos;i="5.93,260,1654585200"; 
+   d="scan'208";a="785553971"
+Received: from yuhsuanc-mobl.gar.corp.intel.com (HELO paris.amr.corp.intel.com) ([10.254.38.238])
+  by orsmga005-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Aug 2022 01:45:31 -0700
+From:   Gwan-gyeong Mun <gwan-gyeong.mun@intel.com>
+To:     intel-gfx@lists.freedesktop.org
+Cc:     linux-kernel@vger.kernel.org, dri-devel@lists.freedesktop.org,
+        mchehab@kernel.org, chris@chris-wilson.co.uk,
+        matthew.auld@intel.com, thomas.hellstrom@linux.intel.com,
+        jani.nikula@intel.com, nirmoy.das@intel.com, airlied@linux.ie,
+        daniel@ffwll.ch, andi.shyti@linux.intel.com,
+        andrzej.hajda@intel.com, keescook@chromium.org,
+        mauro.chehab@linux.intel.com,
+        intel-gfx-trybot@lists.freedesktop.org
+Subject: [PATCH v9 2/8] util_macros: Add exact_type macro to catch type mis-match while compiling
+Date:   Wed, 24 Aug 2022 17:45:08 +0900
+Message-Id: <20220824084514.2261614-3-gwan-gyeong.mun@intel.com>
+X-Mailer: git-send-email 2.37.1
+In-Reply-To: <20220824084514.2261614-1-gwan-gyeong.mun@intel.com>
+References: <20220824084514.2261614-1-gwan-gyeong.mun@intel.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7Bit
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Am Dienstag, 23. August 2022, 16:56:35 CEST schrieb Rob Herring:
-> In order to ensure only documented properties are present, node schemas
-> must have unevaluatedProperties or additionalProperties set to false
-> (typically).
-> 
-> Signed-off-by: Rob Herring <robh@kernel.org>
-> ---
+It adds exact_type and exactly_pgoff_t macro to catch type mis-match while
+compiling. The existing typecheck() macro outputs build warnings, but the
+newly added exact_type() macro uses the BUILD_BUG_ON() macro to generate
+a build break when the types are different and can be used to detect
+explicit build errors.
 
->  .../bindings/mfd/rockchip,rk817.yaml          |  2 +
+v6: Move macro addition location so that it can be used by other than drm
+    subsystem (Jani, Mauro, Andi)
 
-> diff --git a/Documentation/devicetree/bindings/mfd/rockchip,rk817.yaml b/Documentation/devicetree/bindings/mfd/rockchip,rk817.yaml
-> index bfc1720adc43..9b2378312ce2 100644
-> --- a/Documentation/devicetree/bindings/mfd/rockchip,rk817.yaml
-> +++ b/Documentation/devicetree/bindings/mfd/rockchip,rk817.yaml
-> @@ -87,6 +87,7 @@ properties:
->      patternProperties:
->        "^(LDO_REG[1-9]|DCDC_REG[1-4]|BOOST|OTG_SWITCH)$":
->          type: object
-> +        unevaluatedProperties: false
->          $ref: ../regulator/regulator.yaml#
->      unevaluatedProperties: false
->  
-> @@ -111,6 +112,7 @@ properties:
->        additional properties are required for the codec, this node can be
->        omitted.
->      type: object
-> +    additionalProperties: false
->      properties:
->        rockchip,mic-in-differential:
->          type: boolean
+Signed-off-by: Gwan-gyeong Mun <gwan-gyeong.mun@intel.com>
+Cc: Thomas Hellström <thomas.hellstrom@linux.intel.com>
+Cc: Matthew Auld <matthew.auld@intel.com>
+Cc: Nirmoy Das <nirmoy.das@intel.com>
+Cc: Jani Nikula <jani.nikula@intel.com>
+Cc: Andi Shyti <andi.shyti@linux.intel.com>
+Cc: Mauro Carvalho Chehab <mchehab@kernel.org>
+---
+ include/linux/util_macros.h | 25 +++++++++++++++++++++++++
+ 1 file changed, 25 insertions(+)
 
-Acked-by: Heiko Stuebner <heiko@sntech.de>
-
+diff --git a/include/linux/util_macros.h b/include/linux/util_macros.h
+index 72299f261b25..b6624b275257 100644
+--- a/include/linux/util_macros.h
++++ b/include/linux/util_macros.h
+@@ -2,6 +2,9 @@
+ #ifndef _LINUX_HELPER_MACROS_H_
+ #define _LINUX_HELPER_MACROS_H_
+ 
++#include <linux/types.h>
++#include <linux/bug.h>
++
+ #define __find_closest(x, a, as, op)					\
+ ({									\
+ 	typeof(as) __fc_i, __fc_as = (as) - 1;				\
+@@ -38,4 +41,26 @@
+  */
+ #define find_closest_descending(x, a, as) __find_closest(x, a, as, >=)
+ 
++/**
++ * exact_type - break compile if source type and destination value's type are
++ * not the same
++ * @T: Source type
++ * @n: Destination value
++ *
++ * It is a helper macro for a poor man's -Wconversion: only allow variables of
++ * an exact type. It determines whether the source type and destination value's
++ * type are the same while compiling, and it breaks compile if two types are
++ * not the same
++ */
++#define exact_type(T, n) \
++	BUILD_BUG_ON(!__builtin_constant_p(n) && !__builtin_types_compatible_p(T, typeof(n)))
++
++/**
++ * exactly_pgoff_t - helper to check if the type of a value is pgoff_t
++ * @n: value to compare pgoff_t type
++ *
++ * It breaks compile if the argument value's type is not pgoff_t type.
++ */
++#define exactly_pgoff_t(n) exact_type(pgoff_t, n)
++
+ #endif
+-- 
+2.37.1
 
