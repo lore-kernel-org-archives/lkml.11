@@ -2,82 +2,147 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 22D57C38142
-	for <linux-kernel@archiver.kernel.org>; Wed, 24 Aug 2022 12:20:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 63929C00140
+	for <linux-kernel@archiver.kernel.org>; Wed, 24 Aug 2022 12:22:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237398AbiHXMUg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 24 Aug 2022 08:20:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35698 "EHLO
+        id S236546AbiHXMWP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 24 Aug 2022 08:22:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40902 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237389AbiHXMUb (ORCPT
+        with ESMTP id S233796AbiHXMWK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 24 Aug 2022 08:20:31 -0400
-Received: from mail-wm1-x335.google.com (mail-wm1-x335.google.com [IPv6:2a00:1450:4864:20::335])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 241BB25C64;
-        Wed, 24 Aug 2022 05:20:29 -0700 (PDT)
-Received: by mail-wm1-x335.google.com with SMTP id n23-20020a7bc5d7000000b003a62f19b453so817791wmk.3;
-        Wed, 24 Aug 2022 05:20:29 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=cc:to:subject:message-id:date:from:mime-version:from:to:cc;
-        bh=G66/drvYS2iEqFWIV+4bPJS36NVBStHcVudJNSF3yhQ=;
-        b=kefzOnf/qfhBVzoS1nyqVYdy/ANbGEwcXEAPVrFqDRQ19zlXZcp81PoL6gv3UWEm1D
-         u+fHoJxS8niQ7bPl1Y4bQmKaoenlgHyVE4avZMTejFVdhlZ/8F7lmqh/PvLZiAySGOwT
-         ZS7HiWQ0xWpr5tEddIMmZDos6GZd+kCD2Xus2BV8j8GcrKosNk3DsvSPmFHFLMlorgqh
-         uX653UJY584lDKBc17D1nohJRRsLI1SWybC819K/IJ1nU5pkgyZYtf6DbSHWXun/Vhbf
-         bjcx4O85HfNL+oxT8OIW8+wt5xqZxn4D6r3GtJCY28OeE/r8yUe9FrtH/CmfRTkrBtYY
-         Uhtg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:mime-version:x-gm-message-state
-         :from:to:cc;
-        bh=G66/drvYS2iEqFWIV+4bPJS36NVBStHcVudJNSF3yhQ=;
-        b=XTccX0/lMhgWt1m/SDOY9afVnJygRpuAQAdLO7FOXb8ITjqHQziLWX/CxXbzldDTbS
-         G4cjVDs77zVSLAbXI/n3Aj86ql2O2Wgsuxymwn8iRufQx5oiAePRGL0Tk4OrItLihsiv
-         v2nYHhHgfqzUkl84BZNmfGNcPEiHL7L4FrzP/t16I4R9+JTr0ZS0uMQZcbKsmRO/djl4
-         kghmuDBenL2c79HgwbKDc3iGyf9eOoUQ4X9c+34aQ7b0H2qAO1tg015/SgGHHJKkjcI0
-         oOXrvIefm+gaw66IsKAlNNmlwa8NuLYalCq6qMWRGrxxV8ZZNaIVQjX0va6y8i5WClBC
-         yFbA==
-X-Gm-Message-State: ACgBeo2rBql0g7Y3/tZEFNKBJ344N8cljWdDkS8s8YTJKsNZx9nWyjgq
-        KTh6RhSzwH+vfrhunGn8mlN/xH6nIfBI8XiOpJnxGLzeJb0=
-X-Google-Smtp-Source: AA6agR5ZhmLS+Mhy/WfaseRncZoMTp+3VXdUAJ9TS8aYgIXm2qRfCqPw1uZRTcxpGZz60ORA/1q6O0/GXXl9FtTlufI=
-X-Received: by 2002:a1c:3584:0:b0:3a5:fb0e:102e with SMTP id
- c126-20020a1c3584000000b003a5fb0e102emr5278000wma.105.1661343627571; Wed, 24
- Aug 2022 05:20:27 -0700 (PDT)
+        Wed, 24 Aug 2022 08:22:10 -0400
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C4E1B4C619
+        for <linux-kernel@vger.kernel.org>; Wed, 24 Aug 2022 05:22:09 -0700 (PDT)
+Received: from ptx.hi.pengutronix.de ([2001:67c:670:100:1d::c0])
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <sha@pengutronix.de>)
+        id 1oQpOP-0000Sq-TT; Wed, 24 Aug 2022 14:21:57 +0200
+Received: from sha by ptx.hi.pengutronix.de with local (Exim 4.92)
+        (envelope-from <sha@pengutronix.de>)
+        id 1oQpOO-000805-Ho; Wed, 24 Aug 2022 14:21:56 +0200
+Date:   Wed, 24 Aug 2022 14:21:56 +0200
+To:     Jean-Jacques Hiblot <jjhiblot@traphandler.com>
+Cc:     pavel@ucw.cz, robh+dt@kernel.org,
+        sven.schwermer@disruptive-technologies.com,
+        krzysztof.kozlowski+dt@linaro.org, johan+linaro@kernel.org,
+        marijn.suijten@somainline.org, bjorn.andersson@linaro.org,
+        andy.shevchenko@gmail.com, linux-leds@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Rob Herring <robh@kernel.org>
+Subject: Re: [PATCH v3 3/4] dt-bindings: leds: Add binding for a multicolor
+ group of LEDs
+Message-ID: <20220824122156.GQ17485@pengutronix.de>
+References: <20220824103032.163451-1-jjhiblot@traphandler.com>
+ <20220824103032.163451-4-jjhiblot@traphandler.com>
 MIME-Version: 1.0
-From:   Maxim Mikityanskiy <maxtram95@gmail.com>
-Date:   Wed, 24 Aug 2022 15:20:00 +0300
-Message-ID: <CAKErNvpk0VzzA_wk8hdnHNHm2rRdPS82V7879xsvmN7B3GwYWQ@mail.gmail.com>
-Subject: Function keys on HP Elite Dragonfly G2
-To:     Alex Dewar <alex.dewar@gmx.co.uk>
-Cc:     "open list:HID CORE LAYER" <linux-input@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220824103032.163451-4-jjhiblot@traphandler.com>
+X-Sent-From: Pengutronix Hildesheim
+X-URL:  http://www.pengutronix.de/
+X-Accept-Language: de,en
+X-Accept-Content-Type: text/plain
+User-Agent: Mutt/1.10.1 (2018-07-13)
+From:   Sascha Hauer <sha@pengutronix.de>
+X-SA-Exim-Connect-IP: 2001:67c:670:100:1d::c0
+X-SA-Exim-Mail-From: sha@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: linux-kernel@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Alex,
+On Wed, Aug 24, 2022 at 12:30:31PM +0200, Jean-Jacques Hiblot wrote:
+> This allows to group multiple monochromatic LEDs into a multicolor
+> LED, e.g. RGB LEDs.
+> 
+> Signed-off-by: Jean-Jacques Hiblot <jjhiblot@traphandler.com>
+> Reviewed-by: Rob Herring <robh@kernel.org>
+> ---
+>  .../bindings/leds/leds-group-multicolor.yaml  | 61 +++++++++++++++++++
+>  1 file changed, 61 insertions(+)
+>  create mode 100644 Documentation/devicetree/bindings/leds/leds-group-multicolor.yaml
+> 
+> diff --git a/Documentation/devicetree/bindings/leds/leds-group-multicolor.yaml b/Documentation/devicetree/bindings/leds/leds-group-multicolor.yaml
+> new file mode 100644
+> index 000000000000..79e5882a08e2
+> --- /dev/null
+> +++ b/Documentation/devicetree/bindings/leds/leds-group-multicolor.yaml
+> @@ -0,0 +1,61 @@
+> +# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
+> +%YAML 1.2
+> +---
+> +$id: http://devicetree.org/schemas/leds/leds-group-multicolor.yaml#
+> +$schema: http://devicetree.org/meta-schemas/core.yaml#
+> +
+> +title: Multi-color LED built with monochromatic LEDs
+> +
+> +maintainers:
+> +  - Jean-Jacques Hiblot <jjhiblot@traphandler.com>
+> +
+> +description: |
+> +  This driver combines several monochromatic LEDs into one multi-color
+> +  LED using the multicolor LED class.
+> +
+> +properties:
+> +  compatible:
+> +    const: leds-group-multicolor
+> +
+> +  leds:
+> +    description:
+> +      An aray of monochromatic leds
+> +    $ref: /schemas/types.yaml#/definitions/phandle-array
+> +
+> +required:
+> +  - leds
+> +
+> +allOf:
+> +  - $ref: leds-class-multicolor.yaml#
+> +
+> +unevaluatedProperties: false
+> +
+> +examples:
+> +  - |
+> +    #include <dt-bindings/gpio/gpio.h>
+> +    #include <dt-bindings/leds/common.h>
+> +
+> +    monochromatic-leds {
+> +        compatible = "gpio-leds";
+> +
+> +        led0: led-0 {
+> +            gpios = <&mcu_pio 0 GPIO_ACTIVE_LOW>;
+> +        };
+> +
+> +        led1: led-1 {
+> +            gpios = <&mcu_pio 1 GPIO_ACTIVE_HIGH>;
+> +        };
+> +
+> +        led2: led-2 {
+> +            gpios = <&mcu_pio 1 GPIO_ACTIVE_HIGH>;
+> +        };
 
-Sorry for bothering you, but I found your message on the mailing list
-where you mentioned you owned an HP Elite Dragonfly G2:
+led-2 has the same GPIO as led-1, should likely be <&mcu_pio 2 GPIO_ACTIVE_HIGH>;
 
-https://lore.kernel.org/linux-input/20220629094314.b7xmfb3xccj7vs6v@ic-alex-elitebook/
+> +    };
+> +
+> +    multi-led {
+> +        compatible = "leds-group-multicolor";
+> +        color = <LED_COLOR_ID_RGB>;
+> +        function = LED_FUNCTION_INDICATOR;
+> +        leds = <&led0>, <&led1>, <&led2>;
+> +    };
 
-I'm considering buying this laptop, so I thought maybe you could share
-your experience with Linux on this device?
+When reading this I wondered how the driver knows which LED has which
+color. Should you assign colors to the individual LEDs to make that
+clear in the example?
 
-As I understand, the issue with brightness keys got resolved with the
-BIOS upgrade, right? Do the rest of function keys and special keys
-work (fn+f* and separate keys with pictures), i.e. do they generate
-keycodes, are all the keycodes distinguishable? Do brightness keys
-work with SureView both on and off?
+Sascha
 
-Does screen rotation work in the tablet mode? Does the fingerprint reader work?
-
-Are there any other things that you found not working?
-
-You would help me a lot if you share your experience.
-
-Thanks,
-Max
+-- 
+Pengutronix e.K.                           |                             |
+Steuerwalder Str. 21                       | http://www.pengutronix.de/  |
+31137 Hildesheim, Germany                  | Phone: +49-5121-206917-0    |
+Amtsgericht Hildesheim, HRA 2686           | Fax:   +49-5121-206917-5555 |
