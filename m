@@ -2,87 +2,79 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 94A4EC32792
-	for <linux-kernel@archiver.kernel.org>; Wed, 24 Aug 2022 07:16:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5C010C32793
+	for <linux-kernel@archiver.kernel.org>; Wed, 24 Aug 2022 07:22:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229926AbiHXHQm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 24 Aug 2022 03:16:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47282 "EHLO
+        id S234824AbiHXHW3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 24 Aug 2022 03:22:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56930 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231668AbiHXHQj (ORCPT
+        with ESMTP id S231569AbiHXHW1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 24 Aug 2022 03:16:39 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7F2309322D;
-        Wed, 24 Aug 2022 00:16:38 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 3A711B820D8;
-        Wed, 24 Aug 2022 07:16:37 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DA9DBC433D6;
-        Wed, 24 Aug 2022 07:16:33 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1661325396;
-        bh=SG4pItFavxLFek9T12nP+I7YvMHy0NfLi3Oa+f9zCO0=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=LzwBf2sji2vMVXeenNfWp/ekWKLV+3Kj/PPjtBD8vSdal734cITyGwYsIviBbLdfQ
-         eavfh1IaOhqvLrs0bAMdThVoPoxUMT2GNlkT1IednP+jgj/JrxbVTZGFqJjsTbtnwV
-         uPg9pIdw0ipAenTknzHjGmU5aS1nkzcVIUz2CMAyN0Hn+JSXax1D+PhRzTY00k0AVA
-         qZ2sZlSDljkrAxObgue93o08PSfZswaXJ1eyCn7TaL+JOKV7jNihaffdpCethZaajL
-         4DduHY1cvRtcw7KfqQklqzbkGMw/FYYsjkZOoO3l/YwFilQh6eijd74VXO9E9XqW9P
-         4Zjy5R4YBvKKA==
-Date:   Wed, 24 Aug 2022 09:16:30 +0200
-From:   Christian Brauner <brauner@kernel.org>
-To:     Andrew Delgadilo <adelg@google.com>
-Cc:     Shuah Khan <shuah@kernel.org>, linux-kselftest@vger.kernel.org,
-        linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Subject: Re: [PATCH] selftests: remove unused variable in close_range test
-Message-ID: <20220824071630.foz2k6ycwdn5vsdw@wittgenstein>
-References: <20220823224811.12758-1-adelg@google.com>
+        Wed, 24 Aug 2022 03:22:27 -0400
+Received: from desiato.infradead.org (desiato.infradead.org [IPv6:2001:8b0:10b:1:d65d:64ff:fe57:4e05])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CB5083E74B;
+        Wed, 24 Aug 2022 00:22:26 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=desiato.20200630; h=In-Reply-To:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description;
+        bh=Mix4Z1ieLqwGJpAe/P3K6Otr3/J9t+fBDCBXsDZJNGA=; b=SRq2wmllmF/baBGSQo++fRl8eC
+        1Dmkq/nLeW7kFGOZj/FuTzPLLrD7d/KwA1yWpXszKRR/fqmQzhFI3uj49YJPEkjQt+hQ+dpEz7DWC
+        PHRThED7wBAE+JkAoh/pwKSAP4wyyd1iAKA7SeOiPzbyZePRrA3wfu5EDh6kDoG2brO4oWZAP0YNF
+        zhPGqdgemzbeTTIuJba4vGg33w6BRDanUFTwXpdZB1klQNrnaZ4dK1c4WOMs151BFHQL4h262Y92M
+        IPqhTDkz0/m7E+WDt9KcFke6ojhwr0MLMZQ/kxFo5wZ3wiPeTj4UANiFYM4h5V7ocnmMiSZ/GAD/+
+        16KWXnzg==;
+Received: from j130084.upc-j.chello.nl ([24.132.130.84] helo=worktop.programming.kicks-ass.net)
+        by desiato.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
+        id 1oQkiI-005eus-T7; Wed, 24 Aug 2022 07:22:11 +0000
+Received: by worktop.programming.kicks-ass.net (Postfix, from userid 1000)
+        id 030E5980403; Wed, 24 Aug 2022 09:22:09 +0200 (CEST)
+Date:   Wed, 24 Aug 2022 09:22:09 +0200
+From:   Peter Zijlstra <peterz@infradead.org>
+To:     FirstName LastName <pshier@google.com>
+Cc:     Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+        Dave Hansen <dave.hansen@linux.intel.com>, x86@kernel.org,
+        "H. Peter Anvin" <hpa@zytor.com>,
+        Jacob Pan <jacob.jun.pan@linux.intel.com>,
+        Len Brown <lenb@kernel.org>,
+        Michael Roth <michael.roth@amd.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Josh Poimboeuf <jpoimboe@kernel.org>,
+        linux-kernel@vger.kernel.org, linux-pm@vger.kernel.org
+Subject: Re: [PATCH] x86/msr: add idle version of wrmsr trace
+Message-ID: <YwXRoUfI87HYOnTd@worktop.programming.kicks-ass.net>
+References: <20220823234353.937002-1-pshier@google.com>
+ <YwXJwTOFWRFPilOy@worktop.programming.kicks-ass.net>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220823224811.12758-1-adelg@google.com>
+In-Reply-To: <YwXJwTOFWRFPilOy@worktop.programming.kicks-ass.net>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Aug 23, 2022 at 10:48:11PM +0000, Andrew Delgadilo wrote:
-> From: Andrew Delgadillo <adelg@google.com>
-> 
-> commit 2c5db60e46ad ("tests: add close_range() tests") adds the
-> close_range test under the core namespace. In its current form, the
-> close_range test has an unused variable, namely, ret. For those building
-> with -Werror,-Wall, this breaks the build.
-> 
-> Without this patch:
-> $ make -C tools/testing/selftests/ TARGETS=core V=1 CFLAGS="-Werror -Wall"
-> > make: Entering directory '/.../kernel-src/tools/testing/selftests'
-> > make[1]: Entering directory '/.../kernel-src/tools/testing/selftests/core'
-> > gcc -Werror -Wall    close_range_test.c  -o /.../kernel-src/tools/testing/selftests/core/close_range_test
-> > close_range_test.c: In function 'core_close_range':
-> > close_range_test.c:55:16: error: unused variable 'ret' [-Werror=unused-variable]
-> >   55 |         int i, ret;
-> >      |                ^~~
-> > cc1: all warnings being treated as errors
-> > make[1]: *** [../lib.mk:135: /.../kernel-src/tools/testing/selftests/core/close_range_test] Error 1
-> > make[1]: Leaving directory '/.../kernel-src/tools/testing/selftests/core'
-> > make: *** [Makefile:155: all] Error 2
-> > make: Leaving directory '/.../kernel-src/tools/testing/selftests'
-> 
-> With this patch:
-> $ make -C tools/testing/selftests/ TARGETS=core V=1 CFLAGS="-Werror -Wall"
-> > make: Entering directory '/.../kernel-src/tools/testing/selftests'
-> > make[1]: Entering directory '/.../kernel-src/tools/testing/selftests/core'
-> > gcc -Werror -Wall    close_range_test.c  -o /.../kernel-src/tools/testing/selftests/core/close_range_test
-> > make[1]: Leaving directory '/.../kernel-src/tools/testing/selftests/core'
-> > make: Leaving directory '/.../kernel-src/tools/testing/selftests'
-> 
-> Fixes: 2c5db60e46ad ("tests: add close_range() tests")
-> Cc: <stable@vger.kernel.org>
-> Signed-off-by: Andrew Delgadillo <adelg@google.com>
-> ---
+On Wed, Aug 24, 2022 at 08:48:33AM +0200, Peter Zijlstra wrote:
+> diff --git a/drivers/idle/intel_idle.c b/drivers/idle/intel_idle.c
+> index 3e101719689a..6e82b2df29cb 100644
+> --- a/drivers/idle/intel_idle.c
+> +++ b/drivers/idle/intel_idle.c
+> @@ -187,12 +187,12 @@ static __cpuidle int intel_idle_ibrs(struct cpuidle_device *dev,
+>  	int ret;
+>  
+>  	if (smt_active)
+> -		wrmsrl(MSR_IA32_SPEC_CTRL, 0);
+> +		__native_wrmsr(MSR_IA32_SPEC_CTRL, 0);
+>  
+>  	ret = __intel_idle(dev, drv, index);
+>  
+>  	if (smt_active)
+> -		wrmsrl(MSR_IA32_SPEC_CTRL, spec_ctrl);
+> +		__native_wrmsr(MSR_IA32_SPEC_CTRL, spec_ctrl);
+>  
+>  	return ret;
+>  }
 
-Thanks,
-Reviewed-by: Christian Brauner (Microsoft) <brauner@kernel.org>
+Clearly I should not be sending email before having wake-up-juice.. that
+should of course be native_wrmsr(SPEC_CTRL, val, 0) etc..
