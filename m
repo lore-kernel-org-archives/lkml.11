@@ -2,66 +2,81 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A8E85C3F6B0
-	for <linux-kernel@archiver.kernel.org>; Wed, 24 Aug 2022 08:57:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D7C3CC00140
+	for <linux-kernel@archiver.kernel.org>; Wed, 24 Aug 2022 09:00:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236167AbiHXI53 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 24 Aug 2022 04:57:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51930 "EHLO
+        id S233890AbiHXJAU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 24 Aug 2022 05:00:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54806 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235831AbiHXI51 (ORCPT
+        with ESMTP id S233776AbiHXJAR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 24 Aug 2022 04:57:27 -0400
-Received: from m13131.mail.163.com (m13131.mail.163.com [220.181.13.131])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 7123F24963;
-        Wed, 24 Aug 2022 01:57:22 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=163.com;
-        s=s110527; h=Date:From:Subject:MIME-Version:Message-ID; bh=VMGvG
-        uhOZ/7acBw5rjvV2grRy+hOZh0RapQmGgsUHhY=; b=bY2d1kfnEAnVmu/aiZquW
-        ciWKBkUjxv5xYuC3egldhsmV2IpwNqr4E3u9FDIvtXubapyt3bV5gYZvqOBBEeOd
-        tV4iaQPZdFXe3Vhd40ZUJhOD8YZfEC8qQM2GIMI1a7F2p/8Kpj8MYnKgMdRVoiPR
-        Y3zL9slAMbNJqmgBIwjyw4=
-Received: from slark_xiao$163.com ( [112.97.50.93] ) by
- ajax-webmail-wmsvr131 (Coremail) ; Wed, 24 Aug 2022 16:56:45 +0800 (CST)
-X-Originating-IP: [112.97.50.93]
-Date:   Wed, 24 Aug 2022 16:56:45 +0800 (CST)
-From:   "Slark Xiao" <slark_xiao@163.com>
-To:     gregkh <gregkh@linuxfoundation.org>
-Cc:     johan <johan@kernel.org>,
-        linux-kernel <linux-kernel@vger.kernel.org>,
-        linux-usb <linux-usb@vger.kernel.org>
-Subject: Re:Re: [PATCH] USB: serial: option: add support for Cinterion
- MV32-WA/WB RmNet mode
-X-Priority: 3
-X-Mailer: Coremail Webmail Server Version XT5.0.13 build 20220113(9671e152)
- Copyright (c) 2002-2022 www.mailtech.cn 163com
-In-Reply-To: <YvtoSQUVuUkMCXtl@kroah.com>
-References: <20220810033050.3117-1-slark_xiao@163.com>
- <54f2b923.341c.182a606bab3.Coremail.slark_xiao@163.com>
- <YvtoSQUVuUkMCXtl@kroah.com>
-Content-Transfer-Encoding: base64
-Content-Type: text/plain; charset=GBK
+        Wed, 24 Aug 2022 05:00:17 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CF9C450182;
+        Wed, 24 Aug 2022 02:00:16 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 325D7617CA;
+        Wed, 24 Aug 2022 09:00:16 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 83B74C433D6;
+        Wed, 24 Aug 2022 09:00:15 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1661331615;
+        bh=LJwj98O5yiaSW8Agwscn4s0qxpBKY+diZqoJzIjHWIo=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=TOqI0rtlhWyZsIK2mruk0XiDX8P+XHv2p2bj2uHCKD9847XUZd0pIAK/QCDgEDEtG
+         nF3DqTCxZHtrbjhvgSKvsYhC82pDrsjzolVshoGhX/DbsSIMIIwCyc2/P9HQN7J9lH
+         h+dAABHN7OkOkVIoQ0Ga9xf2CKT2OccMz5ZTcb+JOKxlJaCETl0WAgw5drRzv25uwn
+         73hsjl2tiabgl1mF8jloU6KXVHxez7dAv4YMbISO3oxKuY26EODoA7JUETprc2VKeS
+         dee8lU+YYu/5+7xtqe7HKnjZ2T/jol/nPg3NJq6JRoSRuZY9BZrwj/10HlEmX2Vcaj
+         rbCS9hEQToZ9w==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 62561E2A03C;
+        Wed, 24 Aug 2022 09:00:15 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Message-ID: <7491a855.2224.182cf117a99.Coremail.slark_xiao@163.com>
-X-Coremail-Locale: zh_CN
-X-CM-TRANSID: g8GowABn1HnN5wVjoWQdAA--.9984W
-X-CM-SenderInfo: xvod2y5b0lt0i6rwjhhfrp/xtbBDQpnZFaEKf7uEwACs+
-X-Coremail-Antispam: 1U5529EdanIXcx71UUUUU7vcSsGvfC2KfnxnUU==
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH net v2 RESEND] net: neigh: don't call kfree_skb() under
+ spin_lock_irqsave()
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <166133161539.23661.2735150323779560219.git-patchwork-notify@kernel.org>
+Date:   Wed, 24 Aug 2022 09:00:15 +0000
+References: <20220822025346.3758558-1-yangyingliang@huawei.com>
+In-Reply-To: <20220822025346.3758558-1-yangyingliang@huawei.com>
+To:     Yang Yingliang <yangyingliang@huawei.com>
+Cc:     linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        den@openvz.org, davem@davemloft.net, edumazet@google.com,
+        kuba@kernel.org, razor@blackwall.org
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-CgoKCgoKCgoKCgoKCgoKCkF0IDIwMjItMDgtMTYgMTc6NTA6MDEsICJncmVna2giIDxncmVna2hA
-bGludXhmb3VuZGF0aW9uLm9yZz4gd3JvdGU6Cj5PbiBUdWUsIEF1ZyAxNiwgMjAyMiBhdCAwNTo0
-MDozNVBNICswODAwLCBTbGFyayBYaWFvIHdyb3RlOgo+PiBBbnkgcmVzcG9uc2Wjvwo+Cj5UbyB3
-aGF0Pwo+Cj5JdCB3YXMgdGhlIG1pZGRsZSBvZiB0aGUgbWVyZ2Ugd2luZG93LCB3ZSBjYW4ndCBk
-byBhbnl0aGluZyB3aXRoIG5ldwo+cGF0Y2hlcyB1bnRpbCBhZnRlciAtcmMxIGlzIG91dCwgYW5k
-IHRoZW4gd2UgaGF2ZSBhIGZldyB0aG91c2FuZCB0byBkaWcKPnRocm91Z2ggYWZ0ZXJ3YXJkLgo+
-Cj5SZWxheCwgdGhlcmUgaXMgbm8gcnVzaCBoZXJlLgo+Cj50aGFua3MsCj4KPmdyZWcgay1oCkhp
-IEdyZWcsCiAgTm93IHY2LjAtcmMyIGlzIG91dCBmb3Igc2V2ZXJhbCBkYXlzLiBJIHN0aWxsIGRp
-ZG4ndCBmaW5kIGFueSBwcm9ncmVzcyBhYm91dCB0aGlzIGNvbW1pdC4KTm9ybWFsbHkgc3VjaCBj
-b21taXQgd291bGQgYmUgY29tbWl0dGVkIGludG8gSm9oYW4gSG92b2xkJ3MgcGVyc29uYWwgcHJv
-amVjdCBmaXJzdGx5OgppbmRleDoga2VybmVsL2dpdC9qb2hhbi91c2Itc2VyaWFsLmdpdCBhbmQg
-d2FpdHRpbmcgZm9yIG1lcmdlIHdpbmRvdy4KICBJbiBzb21lIHN1Yi1zeXN0ZW0sIHRoZSBtZXJn
-ZSB3aW5kb3cgd291bGQgYmUgY2xvc2VkIGFmdGVyIHJjNC4KU28gSm9oYW4gb3IgR3JlZyAsIGNv
-dWxkIHlvdSBoZWxwIGhhbmRsZSB0aGlzIGFzYXA/CgpUaGFua3MhCg==
+Hello:
+
+This patch was applied to netdev/net.git (master)
+by David S. Miller <davem@davemloft.net>:
+
+On Mon, 22 Aug 2022 10:53:46 +0800 you wrote:
+> It is not allowed to call kfree_skb() from hardware interrupt
+> context or with interrupts being disabled. So add all skb to
+> a tmp list, then free them after spin_unlock_irqrestore() at
+> once.
+> 
+> Fixes: 66ba215cb513 ("neigh: fix possible DoS due to net iface start/stop loop")
+> Suggested-by: Denis V. Lunev <den@openvz.org>
+> Signed-off-by: Yang Yingliang <yangyingliang@huawei.com>
+> 
+> [...]
+
+Here is the summary with links:
+  - [net,v2,RESEND] net: neigh: don't call kfree_skb() under spin_lock_irqsave()
+    https://git.kernel.org/netdev/net/c/d5485d9dd24e
+
+You are awesome, thank you!
+-- 
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
+
