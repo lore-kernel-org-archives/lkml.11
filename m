@@ -2,123 +2,74 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B5BCDC32793
-	for <linux-kernel@archiver.kernel.org>; Wed, 24 Aug 2022 09:17:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 72891C00140
+	for <linux-kernel@archiver.kernel.org>; Wed, 24 Aug 2022 09:18:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235694AbiHXJR3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 24 Aug 2022 05:17:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38944 "EHLO
+        id S235897AbiHXJSk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 24 Aug 2022 05:18:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40600 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235697AbiHXJP3 (ORCPT
+        with ESMTP id S235794AbiHXJSh (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 24 Aug 2022 05:15:29 -0400
-Received: from fllv0016.ext.ti.com (fllv0016.ext.ti.com [198.47.19.142])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7B07672B4C;
-        Wed, 24 Aug 2022 02:15:28 -0700 (PDT)
-Received: from lelv0265.itg.ti.com ([10.180.67.224])
-        by fllv0016.ext.ti.com (8.15.2/8.15.2) with ESMTP id 27O9FD1g035097;
-        Wed, 24 Aug 2022 04:15:13 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
-        s=ti-com-17Q1; t=1661332513;
-        bh=WL57j794lsG1Gsidcwzg0R3eWNfeztOCOjYZm3tN5z0=;
-        h=Date:Subject:To:CC:References:From:In-Reply-To;
-        b=eQP93xRKandMoyGGnD6WDWsbnzfK21h9gxf8Ft+Z7lVZVGUgktXsXO98rVWAwoesV
-         0m6kc1e1p29xLPtp+sJywU8H9BQQVSlMgpqiG6QBH/AodfpYSyHIYkeqDl+YrAZVpV
-         /t58C5TRb4oU6wO9NJBqbBh5Zm+wBcmrwb2pyN0Q=
-Received: from DFLE101.ent.ti.com (dfle101.ent.ti.com [10.64.6.22])
-        by lelv0265.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 27O9FDwR027544
-        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Wed, 24 Aug 2022 04:15:13 -0500
-Received: from DFLE101.ent.ti.com (10.64.6.22) by DFLE101.ent.ti.com
- (10.64.6.22) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2507.6; Wed, 24
- Aug 2022 04:15:12 -0500
-Received: from lelv0327.itg.ti.com (10.180.67.183) by DFLE101.ent.ti.com
- (10.64.6.22) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2507.6 via
- Frontend Transport; Wed, 24 Aug 2022 04:15:12 -0500
-Received: from [172.24.145.182] (ileax41-snat.itg.ti.com [10.172.224.153])
-        by lelv0327.itg.ti.com (8.15.2/8.15.2) with ESMTP id 27O9F8JG022180;
-        Wed, 24 Aug 2022 04:15:09 -0500
-Message-ID: <8871faad-5785-62c3-5afa-8c248ac79e9a@ti.com>
-Date:   Wed, 24 Aug 2022 14:45:08 +0530
+        Wed, 24 Aug 2022 05:18:37 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3A54783BEA;
+        Wed, 24 Aug 2022 02:18:36 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 01605B82380;
+        Wed, 24 Aug 2022 09:18:35 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C77E3C433C1;
+        Wed, 24 Aug 2022 09:18:32 +0000 (UTC)
+Message-ID: <5fcd86a3-ac30-3544-4ea6-4072f0c83ccb@xs4all.nl>
+Date:   Wed, 24 Aug 2022 11:18:31 +0200
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.11.0
-Subject: Re: [PATCH 4/4] arch: arm64: ti: Add support for J784s4 EVM board
+ Thunderbird/91.10.0
+Subject: Re: [PATCH] media: Fix comment typo
 Content-Language: en-US
-To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
-        Nishanth Menon <nm@ti.com>
-CC:     Apurva Nandan <a-nandan@ti.com>, Tero Kristo <kristo@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <linux-gpio@vger.kernel.org>, Hari Nagalla <hnagalla@ti.com>
-References: <20220819190054.31348-1-a-nandan@ti.com>
- <20220819190054.31348-5-a-nandan@ti.com>
- <6c89f254-185a-4046-2bf0-a9f85713858e@linaro.org>
- <20220824050627.nh7d4blrsfbxrvuh@clicker>
- <734b1e1c-2416-0684-287e-a96b86a416a2@ti.com>
- <81134eb9-2b7d-05bc-3035-a47f020861a8@linaro.org>
-From:   Vignesh Raghavendra <vigneshr@ti.com>
-In-Reply-To: <81134eb9-2b7d-05bc-3035-a47f020861a8@linaro.org>
-Content-Type: text/plain; charset="UTF-8"
+To:     Jason Wang <wangborong@cdjrlc.com>
+Cc:     mchehab@kernel.org, linux-media@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+References: <20220715051532.29742-1-wangborong@cdjrlc.com>
+From:   Hans Verkuil <hverkuil@xs4all.nl>
+In-Reply-To: <20220715051532.29742-1-wangborong@cdjrlc.com>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+Duplicate of:
 
+https://patchwork.linuxtv.org/project/linux-media/patch/20220722064105.70610-1-slark_xiao@163.com/
 
-On 24/08/22 12:42, Krzysztof Kozlowski wrote:
-> On 24/08/2022 08:33, Vignesh Raghavendra wrote:
->> Hi Krzysztof,
->>
->> On 24/08/22 10:36, Nishanth Menon wrote:
->>> On 13:21-20220823, Krzysztof Kozlowski wrote:
->>>>> +
->>>>> +/ {
->>>>> +	compatible = "ti,j784s4-evm", "ti,j784s4";
->>>>> +	model = "Texas Instruments J784S4 EVM";
->>>>> +
->>>>> +	chosen {
->>>>> +		stdout-path = "serial2:115200n8";
->>>>> +		bootargs = "console=ttyS2,115200n8 earlycon=ns16550a,mmio32,0x2880000";
->>>>
->>>> earlycon is not a property of hardware. Console is defined in
->>
->> earlycon is helpful for debugging early crashes. How is it any different
->> from "console =" property as described in
->> Documentation/devicetree/usage-model.rst?
-> 
-> choice of console is needed for basic operation and is chosen based on
-> current hardware setup. earlycon is purely for debugging and should be
-> enabled only when debugging is intended, not on mainline wide-available
-> sources.
-> 
->>
->>>> stdout-path, so please drop entire bootargs.
->>>
->>> We will probably have to cleanup elsewhere as well - point noted.
->>>
->>
->> Whats the alternative to pass default bootargs to kernel if bootloader
->> does not pass bootargs via cmdline? I see quite a few dts file use
->> bootargs = "earlycon" at least
-> 
-> Uboot, your own out-of-tree testing patches? What's the point to have
-> earlycon available for every user which does not want to debug?
-> 
-> Sorry, but bootargs are not accepted in DTS. We have several discussions
-> around it over time...
+I'll drop this patch. BTW, same issue as before: the subject line suggests
+a media-wide patch, when it is just for the tm6000 driver.
 
-Understood, just wanted to make sure what the latest stance is, as I see
-lot of files in arm64 dts folder still use bootargs and earlycon. Thanks
-for the clarification!
+Regards,
 
--- 
-Regards
-Vignesh
+	Hans
+
+On 15/07/2022 07:15, Jason Wang wrote:
+> The double `the' is duplicated in line 1300, remove one.
+> 
+> Signed-off-by: Jason Wang <wangborong@cdjrlc.com>
+> ---
+>  drivers/media/usb/tm6000/tm6000-cards.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+> 
+> diff --git a/drivers/media/usb/tm6000/tm6000-cards.c b/drivers/media/usb/tm6000/tm6000-cards.c
+> index 98f4a63adc2a..b7842cd6f9af 100644
+> --- a/drivers/media/usb/tm6000/tm6000-cards.c
+> +++ b/drivers/media/usb/tm6000/tm6000-cards.c
+> @@ -1297,7 +1297,7 @@ static int tm6000_usb_probe(struct usb_interface *interface,
+>  		le16_to_cpu(dev->udev->descriptor.idProduct),
+>  		interface->altsetting->desc.bInterfaceNumber);
+>  
+> -/* check if the the device has the iso in endpoint at the correct place */
+> +/* check if the device has the iso in endpoint at the correct place */
+>  	if (!dev->isoc_in.endp) {
+>  		printk(KERN_ERR "tm6000: probing error: no IN ISOC endpoint!\n");
+>  		rc = -ENODEV;
