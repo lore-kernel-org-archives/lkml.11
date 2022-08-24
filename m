@@ -2,129 +2,137 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 856B0C00140
-	for <linux-kernel@archiver.kernel.org>; Wed, 24 Aug 2022 09:10:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2F933C32793
+	for <linux-kernel@archiver.kernel.org>; Wed, 24 Aug 2022 09:12:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234026AbiHXJKm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 24 Aug 2022 05:10:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34394 "EHLO
+        id S233511AbiHXJMp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 24 Aug 2022 05:12:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34806 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234852AbiHXJKk (ORCPT
+        with ESMTP id S229583AbiHXJMl (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 24 Aug 2022 05:10:40 -0400
-Received: from mail-qv1-xf29.google.com (mail-qv1-xf29.google.com [IPv6:2607:f8b0:4864:20::f29])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 31D9B3FA02
-        for <linux-kernel@vger.kernel.org>; Wed, 24 Aug 2022 02:10:39 -0700 (PDT)
-Received: by mail-qv1-xf29.google.com with SMTP id e4so12391052qvr.2
-        for <linux-kernel@vger.kernel.org>; Wed, 24 Aug 2022 02:10:39 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc;
-        bh=qp5U4hlmW1coNM2H6xZQ1GZizUdeX5ho/eYaDjMVqY0=;
-        b=esvYOuK4gh+mq2fW9go+4DjZ7T6fOpQzZkckuZ5y9mpQtZSUJri1HxYNVcDhsWD1aC
-         LIDLhIs0sZMkpuw50YoGBx+5PlpbDGD4OeEGytcOOy/SrK2OTBE6i8y4GG+QEhkoTpgU
-         jv72bkrJrln2HawFU4ZLdoeCFxMJSKbitk4yZgEHrLdgh+tMkWWqj1wIx7P3Vk+qp8Gx
-         PvL9zdqx5uORFYM8H0KnnE8IGf31GakqCrrfr1MnS6oGfA2wSJUBPmlHejUySP1C9ja6
-         WkAqd5/ZH0Eu639lwkjg19vdGPF9ahGqtCX6Rjz4t4UjA+ASsUXQ0nhC3VRU5tR0TOj0
-         7BMw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc;
-        bh=qp5U4hlmW1coNM2H6xZQ1GZizUdeX5ho/eYaDjMVqY0=;
-        b=d8WeiQlhs4iV9wHCz7bMfkeIado+wzijSFGVg07joxtuAjX4VKPFSu4sOXV0b/pBuK
-         a/z4nkJnmFpTL25gtZK9L3lwTTLtaHrkikb9YpfY4pavOg+7W7XkirRfOUKgVT6RzkwM
-         vN+vqhL0yNvTcfGXQhsKMAX5r7bDrgZn3u1k1pQB58Og5VQ5VbFSK9y/oMYTeScmeGHC
-         WVg9hBKykj4sNQgi6+kr12XSB4h75SE0Rq+x5dqcg6Kj9HQWs5RdN/hTv2jgJv4p/qkM
-         l8n/J+uYH+rRumN2wx0zdUrla6pQakSNUZCLRhqNRR/vQ2nbP8ryrKgLlookCiL2BCEW
-         AzVQ==
-X-Gm-Message-State: ACgBeo1tEPUQVZM7b6rSkKkzds7vy76yLT1Wr4pDiS7EL5cAm0K0lmlB
-        8olvvN/DJe9z0aR6HoZ8T9D5vUyo5q8ZFivkn/M=
-X-Google-Smtp-Source: AA6agR759TYd8NsABjdqIgQwmehgtiJHxZzljv9De4C9FMXY1pb6lH4ffUQZhTN72SxIF9dwqjYCHyMBlmCnFXT0IPA=
-X-Received: by 2002:ad4:5baf:0:b0:476:6a9e:b5e1 with SMTP id
- 15-20020ad45baf000000b004766a9eb5e1mr23122067qvq.64.1661332238224; Wed, 24
- Aug 2022 02:10:38 -0700 (PDT)
+        Wed, 24 Aug 2022 05:12:41 -0400
+Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.154.123])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 898B84506C;
+        Wed, 24 Aug 2022 02:12:37 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
+  t=1661332357; x=1692868357;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=9fafva9EHYgPDg83m0+eFLxNaYkygx9GqvZsKYBV8ow=;
+  b=UgLQqxnchxYUeJFsH0kC4M/sns+npfR1FuNZ7vHDnjJxyxsBGm8jlc5a
+   jAJwT5CZLKJHsfL8kOamn5JVl06/3XeYx4UGhsBSvQ53L7iqEhc/Wyuiu
+   ytgrwv4/zO+XWIJ6NUV26KsnZhVHvRtE5YHIbnysXU6JpyhL+BRSNcc+Z
+   d0DW32mx3+fAVVl5zNeCe1+L5kfRsMTLayQkcJ0aJUICEWEO/OxgQnTeg
+   i5vmLVkuuP5dWIFkmx4ndtGG0lriTaHzxxlg7iB+8TxBsWWOzquEjToBP
+   DJeL/6yMW9+vpsc8paQjaU69Hpd5mgmDC7CbcAp2xXMUOfO054fgjhnxk
+   w==;
+X-IronPort-AV: E=Sophos;i="5.93,260,1654585200"; 
+   d="scan'208";a="110471365"
+Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
+  by esa6.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 24 Aug 2022 02:12:36 -0700
+Received: from chn-vm-ex03.mchp-main.com (10.10.85.151) by
+ chn-vm-ex01.mchp-main.com (10.10.85.143) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.12; Wed, 24 Aug 2022 02:12:36 -0700
+Received: from wendy.microchip.com (10.10.115.15) by chn-vm-ex03.mchp-main.com
+ (10.10.85.151) with Microsoft SMTP Server id 15.1.2507.12 via Frontend
+ Transport; Wed, 24 Aug 2022 02:12:34 -0700
+From:   Conor Dooley <conor.dooley@microchip.com>
+To:     Thierry Reding <thierry.reding@gmail.com>,
+        =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
+        <u.kleine-koenig@pengutronix.de>,
+        "Rob Herring" <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>
+CC:     Daire McNamara <daire.mcnamara@microchip.com>,
+        <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <linux-pwm@vger.kernel.org>, <linux-riscv@lists.infradead.org>,
+        Conor Dooley <conor.dooley@microchip.com>
+Subject: [PATCH v10 0/4] Microchip soft ip corePWM driver
+Date:   Wed, 24 Aug 2022 10:12:11 +0100
+Message-ID: <20220824091215.141577-1-conor.dooley@microchip.com>
+X-Mailer: git-send-email 2.36.1
 MIME-Version: 1.0
-References: <20220824012624.2826445-1-yury.norov@gmail.com> <20220824012624.2826445-2-yury.norov@gmail.com>
-In-Reply-To: <20220824012624.2826445-2-yury.norov@gmail.com>
-From:   Andy Shevchenko <andy.shevchenko@gmail.com>
-Date:   Wed, 24 Aug 2022 12:10:02 +0300
-Message-ID: <CAHp75VcB08oTrB8R9Zyo4Ja=c_XqybqdCw46fY4_MNqvSSCtLQ@mail.gmail.com>
-Subject: Re: [PATCH v2 1/3] lib/find_bit: introduce FIND_FIRST_BIT() macro
-To:     Yury Norov <yury.norov@gmail.com>
-Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Guenter Roeck <linux@roeck-us.net>,
-        Dennis Zhou <dennis@kernel.org>,
-        Russell King <linux@armlinux.org.uk>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Rasmus Villemoes <linux@rasmusvillemoes.dk>,
-        Alexey Klimov <aklimov@redhat.com>,
-        Kees Cook <keescook@chromium.org>,
-        Andy Whitcroft <apw@canonical.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Aug 24, 2022 at 4:51 AM Yury Norov <yury.norov@gmail.com> wrote:
->
-> Now that we have many flavors of find_first_bit(), and expect even more,
-> it's better to have one macro that generates optimal code for all and makes
-> maintaining of slightly different functions simpler.
->
-> The logic common to all versions is moved to the new macro, and all the
-> flavors are generated by providing an EXPRESSION macro-parameter, like
-> in this example:
->
->   #define FIND_FIRST_BIT(EXPRESSION, size) ...
->
->   find_first_ornot_and_bit(addr1, addr2, addr3, size)
->   {
->         return FIND_NEXT_BIT(addr1[idx] | ~addr2[idx] & addr3[idx], size);
->   }
->
-> The EXPRESSION may be of any complexity, as soon as it only refers
-> the bitmap(s) and an iterator idx.
->
-> The 'word_op' is here to allow the macro to generate code for _le
-> versions on big-endian machines; used in the following patches.
+Hey Uwe, all,
 
-...
+6.0-rc1 has rolled around so here is the ~promised v8~~v9~ v10.
+The pre 6.0-rc1 cover letter/series is here:
+https://lore.kernel.org/linux-pwm/20220721172109.941900-1-mail@conchuod.ie
+I'll take the dts change myself once the rest is merged.
 
-> +#ifndef word_op
-> +#define word_op
-> +#endif
+There is one change here that is not directly from your feedback, I
+added a test for invalid PERIOD_STEPS values, in which case we abort if
+the period is locked and cannot be fixed. Hopefully the rounding is not
+ruined..
 
-Not sure about the naming without namespace. Perhaps __ffs_word_op?
+Thanks,
+Conor.
 
-> +#define FIND_FIRST_BIT(EXPRESSION, size)                                       \
-> +({                                                                             \
-> +       unsigned long idx, val, sz = (size);                                    \
-> +                                                                               \
-> +       for (idx = 0; idx * BITS_PER_LONG < sz; idx++) {                        \
+Changes since v9:
+- added the missing unlock that Dan reported
 
-I think we can do slightly better:
+Changes since v8:
+- fixed a(nother) raw 64 bit division (& built it for riscv32!)
+- added a check to make sure we don't try to sleep for 0 us
 
-for (unsigned long idx = 0; idx < sz; idx += BITS_PER_LONG) {
-  unsigned long val;
+Changes since v7:
+- rebased on 6.0-rc1
+- reworded comments you highlighted in v7
+- fixed the overkill sleeping
+- removed the unused variables in calc_duty
+- added some extra comments to explain behaviours you questioned in v7
+- make the mutexes un-interruptible
+- fixed added the 1s you suggested for the if(period_locked) logic
+- added setup of the channel_enabled shadowing
+- fixed the period reporting for the negedge == posedge case in
+  get_state() I had to add the enabled check, as otherwise it broke
+  setting the period for the first time out of reset.
+- added a test for invalid PERIOD_STEPS values, in which case we abort
+  if we cannot fix the period
 
-> +               val = (EXPRESSION);                                             \
-> +               if (val) {                                                      \
-> +                       sz = min(idx * BITS_PER_LONG + __ffs(word_op(val)), sz);\
+Changes from v6:
+- Dropped an unused variable that I'd missed
+- Actually check the return values of the mutex lock()s
+- Re-rebased on -next for the MAINTAINERS patch (again...)
 
-sz = min(idx + __ffs(...));
+Changes from v5:
+- switched to a mutex b/c we must sleep with the lock taken
+- simplified the locking in apply() and added locking to get_state()
+- reworked apply() as requested
+- removed the loop in the period calculation (thanks Uwe!)
+- add a copy of the enable registers in the driver to save on reads.
+- remove the second (useless) write to sync_update
+- added some missing rounding in get_state()
+- couple other minor cleanups as requested in:
+https://lore.kernel.org/linux-riscv/20220709160206.cw5luo7kxdshoiua@pengutronix.de/
 
-> +                       break;                                                  \
-> +               }                                                               \
-> +       }                                                                       \
-> +                                                                               \
-> +       sz;                                                                     \
-> +})
+Changes from v4:
+- dropped some accidentally added files
+
+Conor Dooley (4):
+  dt-bindings: pwm: fix microchip corePWM's pwm-cells
+  riscv: dts: fix the icicle's #pwm-cells
+  pwm: add microchip soft ip corePWM driver
+  MAINTAINERS: add pwm to PolarFire SoC entry
+
+ .../bindings/pwm/microchip,corepwm.yaml       |   4 +-
+ MAINTAINERS                                   |   1 +
+ .../dts/microchip/mpfs-icicle-kit-fabric.dtsi |   2 +-
+ drivers/pwm/Kconfig                           |  10 +
+ drivers/pwm/Makefile                          |   1 +
+ drivers/pwm/pwm-microchip-core.c              | 402 ++++++++++++++++++
+ 6 files changed, 418 insertions(+), 2 deletions(-)
+ create mode 100644 drivers/pwm/pwm-microchip-core.c
 
 
+base-commit: 568035b01cfb107af8d2e4bd2fb9aea22cf5b868
 -- 
-With Best Regards,
-Andy Shevchenko
+2.36.1
+
