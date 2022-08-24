@@ -2,339 +2,92 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 06488C00140
-	for <linux-kernel@archiver.kernel.org>; Wed, 24 Aug 2022 16:38:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 53D99C00140
+	for <linux-kernel@archiver.kernel.org>; Wed, 24 Aug 2022 16:39:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238274AbiHXQiR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 24 Aug 2022 12:38:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59822 "EHLO
+        id S237225AbiHXQjX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 24 Aug 2022 12:39:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60846 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238230AbiHXQiP (ORCPT
+        with ESMTP id S232226AbiHXQjU (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 24 Aug 2022 12:38:15 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6D8329C8C7
-        for <linux-kernel@vger.kernel.org>; Wed, 24 Aug 2022 09:38:14 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1661359093;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=m0KR4vL6ySw4rihLMgrHUCidUC+v+EUxFqwClhhwIGY=;
-        b=Y6xluLH56gHbynJe8bWZXVxw1SRINYZD1GibE1tgDCsPtxfN+5twUCuypyN2bimxIAZZtd
-        HVvWnl7WDhAuiSe3PzDKKtDCxkDl9KIUFk8P0lXjeK3sHeNM5bRyXsSKXjfidZkFn+GKSE
-        giE/IFcVSsn7lwy4Iie9vDLvCxGO4N4=
-Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
- [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-57-Cv_QNLo0PTyovl3xp0P-jA-1; Wed, 24 Aug 2022 12:35:48 -0400
-X-MC-Unique: Cv_QNLo0PTyovl3xp0P-jA-1
-Received: from smtp.corp.redhat.com (int-mx03.intmail.prod.int.rdu2.redhat.com [10.11.54.3])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        Wed, 24 Aug 2022 12:39:20 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C16A19C506;
+        Wed, 24 Aug 2022 09:39:19 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 975DC101A54E;
-        Wed, 24 Aug 2022 16:35:47 +0000 (UTC)
-Received: from warthog.procyon.org.uk (unknown [10.33.36.72])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 763901121315;
-        Wed, 24 Aug 2022 16:35:46 +0000 (UTC)
-Organization: Red Hat UK Ltd. Registered Address: Red Hat UK Ltd, Amberley
-        Place, 107-111 Peascod Street, Windsor, Berkshire, SI4 1TE, United
-        Kingdom.
-        Registered in England and Wales under Company Registration No. 3798903
-Subject: [PATCH net] rxrpc: Fix locking in rxrpc's sendmsg
-From:   David Howells <dhowells@redhat.com>
-To:     netdev@vger.kernel.org
-Cc:     syzbot+7f0483225d0c94cb3441@syzkaller.appspotmail.com,
-        Marc Dionne <marc.dionne@auristor.com>,
-        syzbot+7f0483225d0c94cb3441@syzkaller.appspotmail.com,
-        Hawkins Jiawei <yin31149@gmail.com>,
-        Khalid Masum <khalid.masum.92@gmail.com>,
-        Dan Carpenter <dan.carpenter@oracle.com>,
-        linux-afs@lists.infradead.org, dhowells@redhat.com,
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 5F03761A39;
+        Wed, 24 Aug 2022 16:39:19 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6FEF0C433B5;
+        Wed, 24 Aug 2022 16:39:18 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1661359158;
+        bh=P9NJxmLjZQ10oJJJpdAAG7ttOIVT5PbWRk2gfsQM17s=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:From;
+        b=kVQFbC3ee769vaKefbEA8RdkpMhpWOTPVOcfXC4a24isFzPJw8YEEm8p/HWns9aNb
+         klLRBSIhXK1c5shCjD5CqliS0TL+Q8RA4GTuUArWCtYsUb433hUAaX1Zg3OxoWiFBt
+         yv9ZcjCHaRSw3OBgwzNHs0ZP0kv1h01kS9DDTWLPhWeBYMPq1djcd+lD6ohpsFqbVL
+         +dQqwPt1avhWGgSfjBpXyv0ft8xf1HGJ5xMuMkXG6Al/WSSqZ7UlvF1zsKlkP16Eim
+         GGEDytLxPfFrJ1+8RL/mE2Uxh/MGlQB22Idph8sLRTnBK5Spw11sHCuzswvid9ZAAi
+         ZjtgTvm061hYQ==
+Date:   Wed, 24 Aug 2022 11:39:16 -0500
+From:   Bjorn Helgaas <helgaas@kernel.org>
+To:     Serge Semin <Sergey.Semin@baikalelectronics.ru>
+Cc:     Gustavo Pimentel <gustavo.pimentel@synopsys.com>,
+        Vinod Koul <vkoul@kernel.org>, Rob Herring <robh@kernel.org>,
+        Bjorn Helgaas <bhelgaas@google.com>,
+        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
+        Jingoo Han <jingoohan1@gmail.com>, Frank Li <Frank.Li@nxp.com>,
+        Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>,
+        Serge Semin <fancer.lancer@gmail.com>,
+        Alexey Malahov <Alexey.Malahov@baikalelectronics.ru>,
+        Pavel Parkhomenko <Pavel.Parkhomenko@baikalelectronics.ru>,
+        Krzysztof =?utf-8?Q?Wilczy=C5=84ski?= <kw@linux.com>,
+        linux-pci@vger.kernel.org, dmaengine@vger.kernel.org,
         linux-kernel@vger.kernel.org
-Date:   Wed, 24 Aug 2022 17:35:45 +0100
-Message-ID: <166135894583.600315.7170979436768124075.stgit@warthog.procyon.org.uk>
-User-Agent: StGit/1.5
+Subject: Re: [PATCH RESEND v5 00/24] dmaengine: dw-edma: Add RP/EP local DMA
+ controllers support
+Message-ID: <20220824163916.GA2784109@bhelgaas>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
-X-Scanned-By: MIMEDefang 2.78 on 10.11.54.3
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220822185332.26149-1-Sergey.Semin@baikalelectronics.ru>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Fix three bugs in the rxrpc's sendmsg implementation:
+On Mon, Aug 22, 2022 at 09:53:08PM +0300, Serge Semin wrote:
+> This is a final patchset in the series created in the framework of
+> my Baikal-T1 PCIe/eDMA-related work:
+> 
+> [1: Done v5] PCI: dwc: Various fixes and cleanups
+> Link: https://lore.kernel.org/linux-pci/20220624143428.8334-1-Sergey.Semin@baikalelectronics.ru/
+> Merged: kernel 6.0-rc1
+> [2: Done v4] PCI: dwc: Add hw version and dma-ranges support
+> Link: https://lore.kernel.org/linux-pci/20220624143947.8991-1-Sergey.Semin@baikalelectronics.ru
+> Merged: kernel 6.0-rc1
+> [3: In-review v5] PCI: dwc: Add generic resources and Baikal-T1 support
+> Link: https://lore.kernel.org/linux-pci/20220822184701.25246-1-Sergey.Semin@baikalelectronics.ru/
+> [4: Done v5] dmaengine: dw-edma: Add RP/EP local DMA support
+> Link: ---you are looking at it---
+> ...
 
- (1) rxrpc_new_client_call() should release the socket lock when returning
-     an error from rxrpc_get_call_slot().
+> Please note originally this series was self content, but due to Frank
+> being a bit faster in his work submission I had to rebase my patchset onto
+> his one. So now this patchset turns to be dependent on the Frank' work:
+> 
+> Link: https://lore.kernel.org/linux-pci/20220524152159.2370739-1-Frank.Li@nxp.com/
 
- (2) rxrpc_wait_for_tx_window_intr() will return without the call mutex
-     held in the event that we're interrupted by a signal whilst waiting
-     for tx space on the socket or relocking the call mutex afterwards.
+I think this paragraph is obsolete, since the "Enable designware PCI
+EP EDMA locally" series you reference is already upstream:
+https://git.kernel.org/linus/94d13317bef3
 
-     Fix this by: (a) moving the unlock/lock of the call mutex up to
-     rxrpc_send_data() such that the lock is not held around all of
-     rxrpc_wait_for_tx_window*() and (b) indicating to higher callers
-     whether we're return with the lock dropped.  Note that this means
-     recvmsg() will not block on this call whilst we're waiting.
+What remains are items 3 and 4.
 
- (3) After dropping and regaining the call mutex, rxrpc_send_data() needs
-     to go and recheck the state of the tx_pending buffer and the
-     tx_total_len check in case we raced with another sendmsg() on the same
-     call.
+3 is mostly drivers/pci/ and DT bindings (Lorenzo).  4 is mostly
+drivers/dma/dw-edma/ stuff (Gustavo).  I guess Lorenzo and Gustavo can
+figure out where it makes the most sense to merge it.
 
-Thinking on this some more, it might make sense to have different locks for
-sendmsg() and recvmsg().  There's probably no need to make recvmsg() wait
-for sendmsg().  It does mean that recvmsg() can return MSG_EOR indicating
-that a call is dead before a sendmsg() to that call returns - but that can
-currently happen anyway.
-
-Without fix (2), something like the following can be induced:
-
-	WARNING: bad unlock balance detected!
-	5.16.0-rc6-syzkaller #0 Not tainted
-	-------------------------------------
-	syz-executor011/3597 is trying to release lock (&call->user_mutex) at:
-	[<ffffffff885163a3>] rxrpc_do_sendmsg+0xc13/0x1350 net/rxrpc/sendmsg.c:748
-	but there are no more locks to release!
-
-	other info that might help us debug this:
-	no locks held by syz-executor011/3597.
-	...
-	Call Trace:
-	 <TASK>
-	 __dump_stack lib/dump_stack.c:88 [inline]
-	 dump_stack_lvl+0xcd/0x134 lib/dump_stack.c:106
-	 print_unlock_imbalance_bug include/trace/events/lock.h:58 [inline]
-	 __lock_release kernel/locking/lockdep.c:5306 [inline]
-	 lock_release.cold+0x49/0x4e kernel/locking/lockdep.c:5657
-	 __mutex_unlock_slowpath+0x99/0x5e0 kernel/locking/mutex.c:900
-	 rxrpc_do_sendmsg+0xc13/0x1350 net/rxrpc/sendmsg.c:748
-	 rxrpc_sendmsg+0x420/0x630 net/rxrpc/af_rxrpc.c:561
-	 sock_sendmsg_nosec net/socket.c:704 [inline]
-	 sock_sendmsg+0xcf/0x120 net/socket.c:724
-	 ____sys_sendmsg+0x6e8/0x810 net/socket.c:2409
-	 ___sys_sendmsg+0xf3/0x170 net/socket.c:2463
-	 __sys_sendmsg+0xe5/0x1b0 net/socket.c:2492
-	 do_syscall_x64 arch/x86/entry/common.c:50 [inline]
-	 do_syscall_64+0x35/0xb0 arch/x86/entry/common.c:80
-	 entry_SYSCALL_64_after_hwframe+0x44/0xae
-
-[Thanks to Hawkins Jiawei and Khalid Masum for their attempts to fix this]
-
-Fixes: bc5e3a546d55 ("rxrpc: Use MSG_WAITALL to tell sendmsg() to temporarily ignore signals")
-Reported-by: syzbot+7f0483225d0c94cb3441@syzkaller.appspotmail.com
-Signed-off-by: David Howells <dhowells@redhat.com>
-Reviewed-by: Marc Dionne <marc.dionne@auristor.com>
-Tested-by: syzbot+7f0483225d0c94cb3441@syzkaller.appspotmail.com
-cc: Hawkins Jiawei <yin31149@gmail.com>
-cc: Khalid Masum <khalid.masum.92@gmail.com>
-cc: Dan Carpenter <dan.carpenter@oracle.com>
-cc: linux-afs@lists.infradead.org
----
-
- net/rxrpc/call_object.c |    4 ++
- net/rxrpc/sendmsg.c     |   92 ++++++++++++++++++++++++++++-------------------
- 2 files changed, 57 insertions(+), 39 deletions(-)
-
-diff --git a/net/rxrpc/call_object.c b/net/rxrpc/call_object.c
-index 84d0a4109645..6401cdf7a624 100644
---- a/net/rxrpc/call_object.c
-+++ b/net/rxrpc/call_object.c
-@@ -285,8 +285,10 @@ struct rxrpc_call *rxrpc_new_client_call(struct rxrpc_sock *rx,
- 	_enter("%p,%lx", rx, p->user_call_ID);
- 
- 	limiter = rxrpc_get_call_slot(p, gfp);
--	if (!limiter)
-+	if (!limiter) {
-+		release_sock(&rx->sk);
- 		return ERR_PTR(-ERESTARTSYS);
-+	}
- 
- 	call = rxrpc_alloc_client_call(rx, srx, gfp, debug_id);
- 	if (IS_ERR(call)) {
-diff --git a/net/rxrpc/sendmsg.c b/net/rxrpc/sendmsg.c
-index 1d38e279e2ef..3c3a626459de 100644
---- a/net/rxrpc/sendmsg.c
-+++ b/net/rxrpc/sendmsg.c
-@@ -51,10 +51,7 @@ static int rxrpc_wait_for_tx_window_intr(struct rxrpc_sock *rx,
- 			return sock_intr_errno(*timeo);
- 
- 		trace_rxrpc_transmit(call, rxrpc_transmit_wait);
--		mutex_unlock(&call->user_mutex);
- 		*timeo = schedule_timeout(*timeo);
--		if (mutex_lock_interruptible(&call->user_mutex) < 0)
--			return sock_intr_errno(*timeo);
- 	}
- }
- 
-@@ -290,37 +287,48 @@ static int rxrpc_queue_packet(struct rxrpc_sock *rx, struct rxrpc_call *call,
- static int rxrpc_send_data(struct rxrpc_sock *rx,
- 			   struct rxrpc_call *call,
- 			   struct msghdr *msg, size_t len,
--			   rxrpc_notify_end_tx_t notify_end_tx)
-+			   rxrpc_notify_end_tx_t notify_end_tx,
-+			   bool *_dropped_lock)
- {
- 	struct rxrpc_skb_priv *sp;
- 	struct sk_buff *skb;
- 	struct sock *sk = &rx->sk;
-+	enum rxrpc_call_state state;
- 	long timeo;
--	bool more;
--	int ret, copied;
-+	bool more = msg->msg_flags & MSG_MORE;
-+	int ret, copied = 0;
- 
- 	timeo = sock_sndtimeo(sk, msg->msg_flags & MSG_DONTWAIT);
- 
- 	/* this should be in poll */
- 	sk_clear_bit(SOCKWQ_ASYNC_NOSPACE, sk);
- 
-+reload:
-+	ret = -EPIPE;
- 	if (sk->sk_shutdown & SEND_SHUTDOWN)
--		return -EPIPE;
--
--	more = msg->msg_flags & MSG_MORE;
--
-+		goto maybe_error;
-+	state = READ_ONCE(call->state);
-+	ret = -ESHUTDOWN;
-+	if (state >= RXRPC_CALL_COMPLETE)
-+		goto maybe_error;
-+	ret = -EPROTO;
-+	if (state != RXRPC_CALL_CLIENT_SEND_REQUEST &&
-+	    state != RXRPC_CALL_SERVER_ACK_REQUEST &&
-+	    state != RXRPC_CALL_SERVER_SEND_REPLY)
-+		goto maybe_error;
-+
-+	ret = -EMSGSIZE;
- 	if (call->tx_total_len != -1) {
--		if (len > call->tx_total_len)
--			return -EMSGSIZE;
--		if (!more && len != call->tx_total_len)
--			return -EMSGSIZE;
-+		if (len - copied > call->tx_total_len)
-+			goto maybe_error;
-+		if (!more && len - copied != call->tx_total_len)
-+			goto maybe_error;
- 	}
- 
- 	skb = call->tx_pending;
- 	call->tx_pending = NULL;
- 	rxrpc_see_skb(skb, rxrpc_skb_seen);
- 
--	copied = 0;
- 	do {
- 		/* Check to see if there's a ping ACK to reply to. */
- 		if (call->ackr_reason == RXRPC_ACK_PING_RESPONSE)
-@@ -331,16 +339,8 @@ static int rxrpc_send_data(struct rxrpc_sock *rx,
- 
- 			_debug("alloc");
- 
--			if (!rxrpc_check_tx_space(call, NULL)) {
--				ret = -EAGAIN;
--				if (msg->msg_flags & MSG_DONTWAIT)
--					goto maybe_error;
--				ret = rxrpc_wait_for_tx_window(rx, call,
--							       &timeo,
--							       msg->msg_flags & MSG_WAITALL);
--				if (ret < 0)
--					goto maybe_error;
--			}
-+			if (!rxrpc_check_tx_space(call, NULL))
-+				goto wait_for_space;
- 
- 			/* Work out the maximum size of a packet.  Assume that
- 			 * the security header is going to be in the padded
-@@ -468,6 +468,27 @@ static int rxrpc_send_data(struct rxrpc_sock *rx,
- efault:
- 	ret = -EFAULT;
- 	goto out;
-+
-+wait_for_space:
-+	ret = -EAGAIN;
-+	if (msg->msg_flags & MSG_DONTWAIT)
-+		goto maybe_error;
-+	mutex_unlock(&call->user_mutex);
-+	*_dropped_lock = true;
-+	ret = rxrpc_wait_for_tx_window(rx, call, &timeo,
-+				       msg->msg_flags & MSG_WAITALL);
-+	if (ret < 0)
-+		goto maybe_error;
-+	if (call->interruptibility == RXRPC_INTERRUPTIBLE) {
-+		if (mutex_lock_interruptible(&call->user_mutex) < 0) {
-+			ret = sock_intr_errno(timeo);
-+			goto maybe_error;
-+		}
-+	} else {
-+		mutex_lock(&call->user_mutex);
-+	}
-+	*_dropped_lock = false;
-+	goto reload;
- }
- 
- /*
-@@ -629,6 +650,7 @@ int rxrpc_do_sendmsg(struct rxrpc_sock *rx, struct msghdr *msg, size_t len)
- 	enum rxrpc_call_state state;
- 	struct rxrpc_call *call;
- 	unsigned long now, j;
-+	bool dropped_lock = false;
- 	int ret;
- 
- 	struct rxrpc_send_params p = {
-@@ -737,21 +759,13 @@ int rxrpc_do_sendmsg(struct rxrpc_sock *rx, struct msghdr *msg, size_t len)
- 			ret = rxrpc_send_abort_packet(call);
- 	} else if (p.command != RXRPC_CMD_SEND_DATA) {
- 		ret = -EINVAL;
--	} else if (rxrpc_is_client_call(call) &&
--		   state != RXRPC_CALL_CLIENT_SEND_REQUEST) {
--		/* request phase complete for this client call */
--		ret = -EPROTO;
--	} else if (rxrpc_is_service_call(call) &&
--		   state != RXRPC_CALL_SERVER_ACK_REQUEST &&
--		   state != RXRPC_CALL_SERVER_SEND_REPLY) {
--		/* Reply phase not begun or not complete for service call. */
--		ret = -EPROTO;
- 	} else {
--		ret = rxrpc_send_data(rx, call, msg, len, NULL);
-+		ret = rxrpc_send_data(rx, call, msg, len, NULL, &dropped_lock);
- 	}
- 
- out_put_unlock:
--	mutex_unlock(&call->user_mutex);
-+	if (!dropped_lock)
-+		mutex_unlock(&call->user_mutex);
- error_put:
- 	rxrpc_put_call(call, rxrpc_call_put);
- 	_leave(" = %d", ret);
-@@ -779,6 +793,7 @@ int rxrpc_kernel_send_data(struct socket *sock, struct rxrpc_call *call,
- 			   struct msghdr *msg, size_t len,
- 			   rxrpc_notify_end_tx_t notify_end_tx)
- {
-+	bool dropped_lock = false;
- 	int ret;
- 
- 	_enter("{%d,%s},", call->debug_id, rxrpc_call_states[call->state]);
-@@ -796,7 +811,7 @@ int rxrpc_kernel_send_data(struct socket *sock, struct rxrpc_call *call,
- 	case RXRPC_CALL_SERVER_ACK_REQUEST:
- 	case RXRPC_CALL_SERVER_SEND_REPLY:
- 		ret = rxrpc_send_data(rxrpc_sk(sock->sk), call, msg, len,
--				      notify_end_tx);
-+				      notify_end_tx, &dropped_lock);
- 		break;
- 	case RXRPC_CALL_COMPLETE:
- 		read_lock_bh(&call->state_lock);
-@@ -810,7 +825,8 @@ int rxrpc_kernel_send_data(struct socket *sock, struct rxrpc_call *call,
- 		break;
- 	}
- 
--	mutex_unlock(&call->user_mutex);
-+	if (!dropped_lock)
-+		mutex_unlock(&call->user_mutex);
- 	_leave(" = %d", ret);
- 	return ret;
- }
-
-
+Bjorn
