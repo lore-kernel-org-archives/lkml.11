@@ -2,162 +2,375 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id ACD30C32793
-	for <linux-kernel@archiver.kernel.org>; Wed, 24 Aug 2022 00:43:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4768CC32793
+	for <linux-kernel@archiver.kernel.org>; Wed, 24 Aug 2022 00:44:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232716AbiHXAnZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 20:43:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38680 "EHLO
+        id S232999AbiHXAoU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 23 Aug 2022 20:44:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39046 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231597AbiHXAmz (ORCPT
+        with ESMTP id S232838AbiHXAoD (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 20:42:55 -0400
-Received: from mail-pj1-x1031.google.com (mail-pj1-x1031.google.com [IPv6:2607:f8b0:4864:20::1031])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4563E8670D;
-        Tue, 23 Aug 2022 17:42:54 -0700 (PDT)
-Received: by mail-pj1-x1031.google.com with SMTP id o14-20020a17090a0a0e00b001fabfd3369cso16326163pjo.5;
-        Tue, 23 Aug 2022 17:42:54 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc;
-        bh=/CfNnOMJk6G65551bZckVmJ3kjJ/k4Yc+qvoAg65GHU=;
-        b=G8TXZ41ypzXH2ZGDemwUIRnrhlgVru1aOFOrt11RUGeOxYD2OEbjqjcKoGK6qHOJi9
-         MbtYizKOZFfhZwL8kE8b9i9Vda56q1LheWpsm8zBqVGawexnK256o4cNnjDR2yR0RNj1
-         jWmHonngeuWnuopR3tvKa2pkmlrs5Pvf+FehXXpbrFYiVp5TramRl4P9BVFicecGfqZH
-         7P5r07WqQCaO+01g7WRirRh4lfh0/bgOArCv3maqdBcWCfoaSptp5Y2zL01c+FWlMUrG
-         VMAMO5V/XsqnEjfd4gfoDT7FqrQQU9iEiOVlcQ7iQkIuLOAklkrQAyE4dm4arHMjJXHc
-         ptNA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc;
-        bh=/CfNnOMJk6G65551bZckVmJ3kjJ/k4Yc+qvoAg65GHU=;
-        b=rWnHl09JEFu2ZUGBehDWRZ5p5UW9zfY0o8HmeyhhXIuu4vAKjhgtSEvvJ72QAPho4T
-         q724JQsBgOUf7b4CxDvqj03nTXX3ZoBf6JdnSUtlyQa8Uyg+EzcPdED/6CDJ1G3idQjV
-         n610irLHnsxnh95FsvXZHeXKa3A6KnMmevij5Qf7GO/rCwss4BE4rt6K7vY3VT+7v6fY
-         56eQlto9sINx7OgnTPfN/Youcb7BLkYidfFTkwT6udh2SD7g48RETQQ4ijFa+LP/GuCw
-         PQLVcuYRs8C0GY66RDQ5Em0re3+OvJ8+58KJOxSdfX/1m5XC9JdPFjnYe2msspDAx5MC
-         ODyQ==
-X-Gm-Message-State: ACgBeo2xZSjyGsCI3u2iEypefd7DPESZF21saFNt5lOJicfpYUKyEXyS
-        PYclF368eAE6pKwf9SFP3xXXi/f/PdEg51Ot
-X-Google-Smtp-Source: AA6agR5WT/40tN+ZgWF8O3r0YRQFSvwdr0HcxJVpLFddbFnLr3FgL+4iWeI2l6ZXe1RaOMtfOyIiEw==
-X-Received: by 2002:a17:902:bd41:b0:172:74c9:2a08 with SMTP id b1-20020a170902bd4100b0017274c92a08mr26498900plx.9.1661301773430;
-        Tue, 23 Aug 2022 17:42:53 -0700 (PDT)
-Received: from vmfolio.. (c-73-189-111-8.hsd1.ca.comcast.net. [73.189.111.8])
-        by smtp.googlemail.com with ESMTPSA id ij5-20020a170902ab4500b0016dd667d511sm11063319plb.252.2022.08.23.17.42.52
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 23 Aug 2022 17:42:52 -0700 (PDT)
-From:   "Vishal Moola (Oracle)" <vishal.moola@gmail.com>
-To:     linux-fsdevel@vger.kernel.org
-Cc:     linux-btrfs@vger.kernel.org, linux-nilfs@vger.kernel.org,
-        linux-mm@kvack.org, linux-kernel@vger.kernel.org,
-        "Vishal Moola (Oracle)" <vishal.moola@gmail.com>
-Subject: [PATCH v3 7/7] filemap: Remove find_get_pages_contig()
-Date:   Tue, 23 Aug 2022 17:40:23 -0700
-Message-Id: <20220824004023.77310-8-vishal.moola@gmail.com>
-X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220824004023.77310-1-vishal.moola@gmail.com>
-References: <20220824004023.77310-1-vishal.moola@gmail.com>
+        Tue, 23 Aug 2022 20:44:03 -0400
+Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0A9348E47D;
+        Tue, 23 Aug 2022 17:43:40 -0700 (PDT)
+Received: from dggpeml500026.china.huawei.com (unknown [172.30.72.57])
+        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4MC6gs0G4hzkWNW;
+        Wed, 24 Aug 2022 08:40:09 +0800 (CST)
+Received: from [10.174.178.66] (10.174.178.66) by
+ dggpeml500026.china.huawei.com (7.185.36.106) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Wed, 24 Aug 2022 08:43:38 +0800
+Message-ID: <ea32a2ed-e0c0-4010-7488-42ee91b26ce7@huawei.com>
+Date:   Wed, 24 Aug 2022 08:43:37 +0800
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
+ Thunderbird/102.0.2
+Subject: Re: [PATCH net-next] net: sched: delete duplicate cleanup of backlog
+ and qlen
+To:     Eric Dumazet <edumazet@google.com>
+CC:     netdev <netdev@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        David Miller <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Jamal Hadi Salim <jhs@mojatatu.com>,
+        Cong Wang <xiyou.wangcong@gmail.com>,
+        Jiri Pirko <jiri@resnulli.us>,
+        Vinicius Gomes <vinicius.gomes@intel.com>,
+        <weiyongjun1@huawei.com>, YueHaibing <yuehaibing@huawei.com>
+References: <20220823075717.28072-1-shaozhengchao@huawei.com>
+ <CANn89iKta=-C43_jQpVVra_v3HxfCjvx+pJFj6NfLoa_GTXfAQ@mail.gmail.com>
+From:   shaozhengchao <shaozhengchao@huawei.com>
+In-Reply-To: <CANn89iKta=-C43_jQpVVra_v3HxfCjvx+pJFj6NfLoa_GTXfAQ@mail.gmail.com>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.174.178.66]
+X-ClientProxiedBy: dggems705-chm.china.huawei.com (10.3.19.182) To
+ dggpeml500026.china.huawei.com (7.185.36.106)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-All callers of find_get_pages_contig() have been removed, so it is no
-longer needed.
 
-Signed-off-by: Vishal Moola (Oracle) <vishal.moola@gmail.com>
----
- include/linux/pagemap.h |  2 --
- mm/filemap.c            | 60 -----------------------------------------
- 2 files changed, 62 deletions(-)
 
-diff --git a/include/linux/pagemap.h b/include/linux/pagemap.h
-index 951936a2be1d..a04a645b64e9 100644
---- a/include/linux/pagemap.h
-+++ b/include/linux/pagemap.h
-@@ -722,8 +722,6 @@ unsigned filemap_get_folios(struct address_space *mapping, pgoff_t *start,
- 		pgoff_t end, struct folio_batch *fbatch);
- unsigned filemap_get_folios_contig(struct address_space *mapping,
- 		pgoff_t *start, pgoff_t end, struct folio_batch *fbatch);
--unsigned find_get_pages_contig(struct address_space *mapping, pgoff_t start,
--			       unsigned int nr_pages, struct page **pages);
- unsigned find_get_pages_range_tag(struct address_space *mapping, pgoff_t *index,
- 			pgoff_t end, xa_mark_t tag, unsigned int nr_pages,
- 			struct page **pages);
-diff --git a/mm/filemap.c b/mm/filemap.c
-index 8167bcc96e37..af5a4b5f866d 100644
---- a/mm/filemap.c
-+++ b/mm/filemap.c
-@@ -2269,66 +2269,6 @@ unsigned filemap_get_folios_contig(struct address_space *mapping,
- }
- EXPORT_SYMBOL(filemap_get_folios_contig);
- 
--/**
-- * find_get_pages_contig - gang contiguous pagecache lookup
-- * @mapping:	The address_space to search
-- * @index:	The starting page index
-- * @nr_pages:	The maximum number of pages
-- * @pages:	Where the resulting pages are placed
-- *
-- * find_get_pages_contig() works exactly like find_get_pages_range(),
-- * except that the returned number of pages are guaranteed to be
-- * contiguous.
-- *
-- * Return: the number of pages which were found.
-- */
--unsigned find_get_pages_contig(struct address_space *mapping, pgoff_t index,
--			       unsigned int nr_pages, struct page **pages)
--{
--	XA_STATE(xas, &mapping->i_pages, index);
--	struct folio *folio;
--	unsigned int ret = 0;
--
--	if (unlikely(!nr_pages))
--		return 0;
--
--	rcu_read_lock();
--	for (folio = xas_load(&xas); folio; folio = xas_next(&xas)) {
--		if (xas_retry(&xas, folio))
--			continue;
--		/*
--		 * If the entry has been swapped out, we can stop looking.
--		 * No current caller is looking for DAX entries.
--		 */
--		if (xa_is_value(folio))
--			break;
--
--		if (!folio_try_get_rcu(folio))
--			goto retry;
--
--		if (unlikely(folio != xas_reload(&xas)))
--			goto put_page;
--
--again:
--		pages[ret] = folio_file_page(folio, xas.xa_index);
--		if (++ret == nr_pages)
--			break;
--		if (folio_more_pages(folio, xas.xa_index, ULONG_MAX)) {
--			xas.xa_index++;
--			folio_ref_inc(folio);
--			goto again;
--		}
--		continue;
--put_page:
--		folio_put(folio);
--retry:
--		xas_reset(&xas);
--	}
--	rcu_read_unlock();
--	return ret;
--}
--EXPORT_SYMBOL(find_get_pages_contig);
--
- /**
-  * find_get_pages_range_tag - Find and return head pages matching @tag.
-  * @mapping:	the address_space to search
--- 
-2.36.1
+On 2022/8/24 0:29, Eric Dumazet wrote:
+> On Tue, Aug 23, 2022 at 12:54 AM Zhengchao Shao
+> <shaozhengchao@huawei.com> wrote:
+>>
+>> The qdisc_reset function has cleared the backlog and qlen of the qdisc.
+>> There is no need to clear them again in the specific reset function.
+> 
+> changelog is slightly inaccurate.
+> 
+> qdisc_reset() is clearing qdisc->q.qlen and qdisc->qstats.backlog
+> _after_ calling qdisc->ops->reset,
+> not before.
+> 
+>>
+>> Signed-off-by: Zhengchao Shao <shaozhengchao@huawei.com>
+>> ---
+>>   include/net/sch_generic.h | 1 -
+>>   net/sched/sch_atm.c       | 1 -
+>>   net/sched/sch_cbq.c       | 1 -
+>>   net/sched/sch_choke.c     | 2 --
+>>   net/sched/sch_drr.c       | 2 --
+>>   net/sched/sch_dsmark.c    | 2 --
+>>   net/sched/sch_etf.c       | 3 ---
+>>   net/sched/sch_ets.c       | 2 --
+>>   net/sched/sch_fq_codel.c  | 2 --
+>>   net/sched/sch_fq_pie.c    | 3 ---
+>>   net/sched/sch_hfsc.c      | 2 --
+>>   net/sched/sch_htb.c       | 2 --
+>>   net/sched/sch_multiq.c    | 1 -
+>>   net/sched/sch_prio.c      | 2 --
+>>   net/sched/sch_qfq.c       | 2 --
+>>   net/sched/sch_red.c       | 2 --
+>>   net/sched/sch_sfb.c       | 2 --
+>>   net/sched/sch_skbprio.c   | 3 ---
+>>   net/sched/sch_taprio.c    | 2 --
+>>   net/sched/sch_tbf.c       | 2 --
+>>   net/sched/sch_teql.c      | 1 -
+>>   21 files changed, 40 deletions(-)
+>>
+>> diff --git a/include/net/sch_generic.h b/include/net/sch_generic.h
+>> index ec693fe7c553..f2958fb5ae08 100644
+>> --- a/include/net/sch_generic.h
+>> +++ b/include/net/sch_generic.h
+>> @@ -1137,7 +1137,6 @@ static inline void __qdisc_reset_queue(struct qdisc_skb_head *qh)
+>>   static inline void qdisc_reset_queue(struct Qdisc *sch)
+>>   {
+>>          __qdisc_reset_queue(&sch->q);
+>> -       sch->qstats.backlog = 0;
+>>   }
+>>
+>>   static inline struct Qdisc *qdisc_replace(struct Qdisc *sch, struct Qdisc *new,
+>> diff --git a/net/sched/sch_atm.c b/net/sched/sch_atm.c
+>> index 4c8e994cf0a5..816fd0d7ba38 100644
+>> --- a/net/sched/sch_atm.c
+>> +++ b/net/sched/sch_atm.c
+>> @@ -577,7 +577,6 @@ static void atm_tc_reset(struct Qdisc *sch)
+>>          pr_debug("atm_tc_reset(sch %p,[qdisc %p])\n", sch, p);
+>>          list_for_each_entry(flow, &p->flows, list)
+>>                  qdisc_reset(flow->q);
+>> -       sch->q.qlen = 0;
+>>   }
+>>
+>>   static void atm_tc_destroy(struct Qdisc *sch)
+>> diff --git a/net/sched/sch_cbq.c b/net/sched/sch_cbq.c
+>> index af126eb3e431..b026daca160e 100644
+>> --- a/net/sched/sch_cbq.c
+>> +++ b/net/sched/sch_cbq.c
+>> @@ -975,7 +975,6 @@ cbq_reset(struct Qdisc *sch)
+>>                          cl->cpriority = cl->priority;
+>>                  }
+>>          }
+>> -       sch->q.qlen = 0;
+>>   }
+>>
+>>
+>> diff --git a/net/sched/sch_choke.c b/net/sched/sch_choke.c
+>> index 2adbd945bf15..25d2daaa8122 100644
+>> --- a/net/sched/sch_choke.c
+>> +++ b/net/sched/sch_choke.c
+>> @@ -315,8 +315,6 @@ static void choke_reset(struct Qdisc *sch)
+>>                  rtnl_qdisc_drop(skb, sch);
+>>          }
+>>
+>> -       sch->q.qlen = 0;
+>> -       sch->qstats.backlog = 0;
+>>          if (q->tab)
+>>                  memset(q->tab, 0, (q->tab_mask + 1) * sizeof(struct sk_buff *));
+>>          q->head = q->tail = 0;
+>> diff --git a/net/sched/sch_drr.c b/net/sched/sch_drr.c
+>> index 18e4f7a0b291..4e5b1cf11b85 100644
+>> --- a/net/sched/sch_drr.c
+>> +++ b/net/sched/sch_drr.c
+>> @@ -441,8 +441,6 @@ static void drr_reset_qdisc(struct Qdisc *sch)
+>>                          qdisc_reset(cl->qdisc);
+>>                  }
+>>          }
+>> -       sch->qstats.backlog = 0;
+>> -       sch->q.qlen = 0;
+>>   }
+>>
+>>   static void drr_destroy_qdisc(struct Qdisc *sch)
+>> diff --git a/net/sched/sch_dsmark.c b/net/sched/sch_dsmark.c
+>> index 4c100d105269..7da6dc38a382 100644
+>> --- a/net/sched/sch_dsmark.c
+>> +++ b/net/sched/sch_dsmark.c
+>> @@ -409,8 +409,6 @@ static void dsmark_reset(struct Qdisc *sch)
+>>          pr_debug("%s(sch %p,[qdisc %p])\n", __func__, sch, p);
+>>          if (p->q)
+>>                  qdisc_reset(p->q);
+>> -       sch->qstats.backlog = 0;
+>> -       sch->q.qlen = 0;
+>>   }
+>>
+>>   static void dsmark_destroy(struct Qdisc *sch)
+>> diff --git a/net/sched/sch_etf.c b/net/sched/sch_etf.c
+>> index c48f91075b5c..d96103b0e2bf 100644
+>> --- a/net/sched/sch_etf.c
+>> +++ b/net/sched/sch_etf.c
+>> @@ -445,9 +445,6 @@ static void etf_reset(struct Qdisc *sch)
+>>          timesortedlist_clear(sch);
+>>          __qdisc_reset_queue(&sch->q);
+>>
+>> -       sch->qstats.backlog = 0;
+>> -       sch->q.qlen = 0;
+>> -
+>>          q->last = 0;
+>>   }
+>>
+>> diff --git a/net/sched/sch_ets.c b/net/sched/sch_ets.c
+>> index d73393493553..8de4365886e8 100644
+>> --- a/net/sched/sch_ets.c
+>> +++ b/net/sched/sch_ets.c
+>> @@ -727,8 +727,6 @@ static void ets_qdisc_reset(struct Qdisc *sch)
+>>          }
+>>          for (band = 0; band < q->nbands; band++)
+>>                  qdisc_reset(q->classes[band].qdisc);
+>> -       sch->qstats.backlog = 0;
+>> -       sch->q.qlen = 0;
+>>   }
+>>
+>>   static void ets_qdisc_destroy(struct Qdisc *sch)
+>> diff --git a/net/sched/sch_fq_codel.c b/net/sched/sch_fq_codel.c
+>> index 839e1235db05..23a042adb74d 100644
+>> --- a/net/sched/sch_fq_codel.c
+>> +++ b/net/sched/sch_fq_codel.c
+>> @@ -347,8 +347,6 @@ static void fq_codel_reset(struct Qdisc *sch)
+>>                  codel_vars_init(&flow->cvars);
+>>          }
+>>          memset(q->backlogs, 0, q->flows_cnt * sizeof(u32));
+>> -       sch->q.qlen = 0;
+>> -       sch->qstats.backlog = 0;
+>>          q->memory_usage = 0;
+>>   }
+>>
+>> diff --git a/net/sched/sch_fq_pie.c b/net/sched/sch_fq_pie.c
+>> index d6aba6edd16e..35c35465226b 100644
+>> --- a/net/sched/sch_fq_pie.c
+>> +++ b/net/sched/sch_fq_pie.c
+>> @@ -521,9 +521,6 @@ static void fq_pie_reset(struct Qdisc *sch)
+>>                  INIT_LIST_HEAD(&flow->flowchain);
+>>                  pie_vars_init(&flow->vars);
+>>          }
+>> -
+>> -       sch->q.qlen = 0;
+>> -       sch->qstats.backlog = 0;
+>>   }
+>>
+>>   static void fq_pie_destroy(struct Qdisc *sch)
+>> diff --git a/net/sched/sch_hfsc.c b/net/sched/sch_hfsc.c
+>> index d3979a6000e7..03efc40e42fc 100644
+>> --- a/net/sched/sch_hfsc.c
+>> +++ b/net/sched/sch_hfsc.c
+>> @@ -1484,8 +1484,6 @@ hfsc_reset_qdisc(struct Qdisc *sch)
+>>          }
+>>          q->eligible = RB_ROOT;
+>>          qdisc_watchdog_cancel(&q->watchdog);
+>> -       sch->qstats.backlog = 0;
+>> -       sch->q.qlen = 0;
+>>   }
+>>
+>>   static void
+>> diff --git a/net/sched/sch_htb.c b/net/sched/sch_htb.c
+>> index 23a9d6242429..cb5872d22ecf 100644
+>> --- a/net/sched/sch_htb.c
+>> +++ b/net/sched/sch_htb.c
+>> @@ -1008,8 +1008,6 @@ static void htb_reset(struct Qdisc *sch)
+>>          }
+>>          qdisc_watchdog_cancel(&q->watchdog);
+>>          __qdisc_reset_queue(&q->direct_queue);
+>> -       sch->q.qlen = 0;
+>> -       sch->qstats.backlog = 0;
+>>          memset(q->hlevel, 0, sizeof(q->hlevel));
+>>          memset(q->row_mask, 0, sizeof(q->row_mask));
+>>   }
+>> diff --git a/net/sched/sch_multiq.c b/net/sched/sch_multiq.c
+>> index cd8ab90c4765..f28050c7f12d 100644
+>> --- a/net/sched/sch_multiq.c
+>> +++ b/net/sched/sch_multiq.c
+>> @@ -152,7 +152,6 @@ multiq_reset(struct Qdisc *sch)
+>>
+>>          for (band = 0; band < q->bands; band++)
+>>                  qdisc_reset(q->queues[band]);
+>> -       sch->q.qlen = 0;
+>>          q->curband = 0;
+>>   }
+>>
+>> diff --git a/net/sched/sch_prio.c b/net/sched/sch_prio.c
+>> index 3b8d7197c06b..c03a11dd990f 100644
+>> --- a/net/sched/sch_prio.c
+>> +++ b/net/sched/sch_prio.c
+>> @@ -135,8 +135,6 @@ prio_reset(struct Qdisc *sch)
+>>
+>>          for (prio = 0; prio < q->bands; prio++)
+>>                  qdisc_reset(q->queues[prio]);
+>> -       sch->qstats.backlog = 0;
+>> -       sch->q.qlen = 0;
+>>   }
+>>
+>>   static int prio_offload(struct Qdisc *sch, struct tc_prio_qopt *qopt)
+>> diff --git a/net/sched/sch_qfq.c b/net/sched/sch_qfq.c
+>> index d4ce58c90f9f..13246a9dc5c1 100644
+>> --- a/net/sched/sch_qfq.c
+>> +++ b/net/sched/sch_qfq.c
+>> @@ -1458,8 +1458,6 @@ static void qfq_reset_qdisc(struct Qdisc *sch)
+>>                          qdisc_reset(cl->qdisc);
+>>                  }
+>>          }
+>> -       sch->qstats.backlog = 0;
+>> -       sch->q.qlen = 0;
+>>   }
+>>
+>>   static void qfq_destroy_qdisc(struct Qdisc *sch)
+>> diff --git a/net/sched/sch_red.c b/net/sched/sch_red.c
+>> index 40adf1f07a82..f1e013e3f04a 100644
+>> --- a/net/sched/sch_red.c
+>> +++ b/net/sched/sch_red.c
+>> @@ -176,8 +176,6 @@ static void red_reset(struct Qdisc *sch)
+>>          struct red_sched_data *q = qdisc_priv(sch);
+>>
+>>          qdisc_reset(q->qdisc);
+>> -       sch->qstats.backlog = 0;
+>> -       sch->q.qlen = 0;
+>>          red_restart(&q->vars);
+>>   }
+>>
+>> diff --git a/net/sched/sch_sfb.c b/net/sched/sch_sfb.c
+>> index 3d061a13d7ed..31717fa45a4f 100644
+>> --- a/net/sched/sch_sfb.c
+>> +++ b/net/sched/sch_sfb.c
+>> @@ -453,8 +453,6 @@ static void sfb_reset(struct Qdisc *sch)
+>>          struct sfb_sched_data *q = qdisc_priv(sch);
+>>
+>>          qdisc_reset(q->qdisc);
+>> -       sch->qstats.backlog = 0;
+>> -       sch->q.qlen = 0;
+>>          q->slot = 0;
+>>          q->double_buffering = false;
+>>          sfb_zero_all_buckets(q);
+>> diff --git a/net/sched/sch_skbprio.c b/net/sched/sch_skbprio.c
+>> index 7a5e4c454715..df72fb83d9c7 100644
+>> --- a/net/sched/sch_skbprio.c
+>> +++ b/net/sched/sch_skbprio.c
+>> @@ -213,9 +213,6 @@ static void skbprio_reset(struct Qdisc *sch)
+>>          struct skbprio_sched_data *q = qdisc_priv(sch);
+>>          int prio;
+>>
+>> -       sch->qstats.backlog = 0;
+>> -       sch->q.qlen = 0;
+>> -
+>>          for (prio = 0; prio < SKBPRIO_MAX_PRIORITY; prio++)
+>>                  __skb_queue_purge(&q->qdiscs[prio]);
+>>
+>> diff --git a/net/sched/sch_taprio.c b/net/sched/sch_taprio.c
+>> index 0b941dd63d26..db88a692ef81 100644
+>> --- a/net/sched/sch_taprio.c
+>> +++ b/net/sched/sch_taprio.c
+>> @@ -1636,8 +1636,6 @@ static void taprio_reset(struct Qdisc *sch)
+>>                          if (q->qdiscs[i])
+>>                                  qdisc_reset(q->qdiscs[i]);
+>>          }
+>> -       sch->qstats.backlog = 0;
+>> -       sch->q.qlen = 0;
+>>   }
+>>
+>>   static void taprio_destroy(struct Qdisc *sch)
+>> diff --git a/net/sched/sch_tbf.c b/net/sched/sch_tbf.c
+>> index 72102277449e..d0288e223542 100644
+>> --- a/net/sched/sch_tbf.c
+>> +++ b/net/sched/sch_tbf.c
+>> @@ -330,8 +330,6 @@ static void tbf_reset(struct Qdisc *sch)
+>>          struct tbf_sched_data *q = qdisc_priv(sch);
+>>
+>>          qdisc_reset(q->qdisc);
+>> -       sch->qstats.backlog = 0;
+>> -       sch->q.qlen = 0;
+>>          q->t_c = ktime_get_ns();
+>>          q->tokens = q->buffer;
+>>          q->ptokens = q->mtu;
+>> diff --git a/net/sched/sch_teql.c b/net/sched/sch_teql.c
+>> index 6af6b95bdb67..79aaab51cbf5 100644
+>> --- a/net/sched/sch_teql.c
+>> +++ b/net/sched/sch_teql.c
+>> @@ -124,7 +124,6 @@ teql_reset(struct Qdisc *sch)
+>>          struct teql_sched_data *dat = qdisc_priv(sch);
+>>
+>>          skb_queue_purge(&dat->q);
+>> -       sch->q.qlen = 0;
+>>   }
+>>
+>>   static void
+>> --
+>> 2.17.1
+>>
 
+Hi Eric:
+	Thank you for your reply. I will modify changelog in v2.
+
+Zhengchao Shao
