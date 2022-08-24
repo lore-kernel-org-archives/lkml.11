@@ -2,101 +2,161 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 17E25C04AA5
-	for <linux-kernel@archiver.kernel.org>; Wed, 24 Aug 2022 20:04:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 54C31C3F6B0
+	for <linux-kernel@archiver.kernel.org>; Wed, 24 Aug 2022 20:04:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240117AbiHXUEe (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 24 Aug 2022 16:04:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54100 "EHLO
+        id S239038AbiHXUEx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 24 Aug 2022 16:04:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54662 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233529AbiHXUEc (ORCPT
+        with ESMTP id S239057AbiHXUEu (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 24 Aug 2022 16:04:32 -0400
-Received: from out3-smtp.messagingengine.com (out3-smtp.messagingengine.com [66.111.4.27])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 233CD7C1F9;
-        Wed, 24 Aug 2022 13:04:31 -0700 (PDT)
-Received: from compute4.internal (compute4.nyi.internal [10.202.2.44])
-        by mailout.nyi.internal (Postfix) with ESMTP id 9C2A05C00FD;
-        Wed, 24 Aug 2022 16:04:28 -0400 (EDT)
-Received: from mailfrontend1 ([10.202.2.162])
-  by compute4.internal (MEProxy); Wed, 24 Aug 2022 16:04:28 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=flux.ci; h=cc:cc
-        :content-transfer-encoding:date:date:from:from:in-reply-to
-        :message-id:mime-version:reply-to:sender:subject:subject:to:to;
-         s=fm2; t=1661371468; x=1661457868; bh=NPbNMhmf4CJLdJ3iB6KsqUGsg
-        lvPQTKvSwbqWfOSQnM=; b=Y+4tkFT9TB03Pt9wUla+qpcrM//6mpUA93VKKBOo8
-        SktWce1Bkr9lCetsL6byq0oJlA9Rnr/T6i/LKimeBQgyjDoQOJXas8V+09FwPZrB
-        WJ0dQndp1aMk8pq5s6Sh1KV5k5cpv3mXrWhtXG/7ZVpSxG05A3MmKiZQ+VVPLlkH
-        WBwYXY+ssChQTVCpbygqXwq/CkZLSQEBv35mIL7ulQsldDQR7hk04XHIZyle6rEW
-        d1pieTcOmgxeBg7K814VPXag6jxisqvqupctXcXLUGLZQV6Pn6jySrp2OxSsgmGs
-        s49aIjCDwLClFkGN3RKz/PyQ1UcP6YRERZmLTldNLr//w==
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        messagingengine.com; h=cc:cc:content-transfer-encoding:date:date
-        :feedback-id:feedback-id:from:from:in-reply-to:message-id
-        :mime-version:reply-to:sender:subject:subject:to:to:x-me-proxy
-        :x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=fm1; t=
-        1661371468; x=1661457868; bh=NPbNMhmf4CJLdJ3iB6KsqUGsglvPQTKvSwb
-        qWfOSQnM=; b=IeZBrKCenhpU51FTR8KJRQ5vLAkJVOjLXVYMy2wYU93JjMFsitk
-        xrpOAk373SYHsiT54uZpYArrjQMansdEBlMCbd2onoe9JnsTjhpWHtpYnkwEdCvp
-        e/ifHStfUlSIV9iFV9wZwcWLsziFaW1vKNAO4tPLr3sVbLFanV0t0adGFD7ydNcx
-        h08BqlPRVPausWmWF389q71VYYsVeODsl8NoBZ86SJwca39xKt50PimChA5fOUOX
-        v3SiJoei2wGK1QkdTcFBvCMl8OLPpTBXrZ/+sUxMPUUXPREt9+6AV3xGqmjAKskV
-        SmJAsPHKVavdhQtnpMRn1Aw9xFIJni6BNmQ==
-X-ME-Sender: <xms:S4QGY9WP8pABdAqQm6lES-fw1yYH3zC-Mhx-WZkx7YA8gwgSz1bujw>
-    <xme:S4QGY9m30jrWKkyNbs-SJInLRA_ulCHMQtRsUqvKXhwML0LI-BWBlb6zP0hvJWjUn
-    oWOl_KnTrwvwynm1Fc>
-X-ME-Received: <xmr:S4QGY5aVUf4poPa7JLhmwGlikM1uF539O4088hxJVh40tI3V-QE4Att5pQxF3Z9lSao0Q_WE7XP1xYK9BFkeZel4QggJLgAMLpZSYgOO4g>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvfedrvdejuddgudegjecutefuodetggdotefrod
-    ftvfcurfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfgh
-    necuuegrihhlohhuthemuceftddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmd
-    enucfjughrpefhvfevufffkffoggfgsedtkeertdertddtnecuhfhrohhmpefvhhhithgr
-    thcutehurghrvggvshhukhhsrghkuhhluceothhhihhtrghtsehflhhugidrtghiqeenuc
-    ggtffrrghtthgvrhhnpeetvdeijeeludevgeeiffevgefffeeivedvffdvteevgeeuteej
-    ieeuffehkeevhfenucevlhhushhtvghrufhiiigvpedtnecurfgrrhgrmhepmhgrihhlfh
-    hrohhmpehthhhithgrthesfhhluhigrdgtih
-X-ME-Proxy: <xmx:S4QGYwXhTNTxXKGOiO_hKpljXbvix2AuweOsPTGBX3jbjJ8SbXEaiQ>
-    <xmx:S4QGY3kRxnm9Vg5OaJbyogZKVf-4aqgiVlQreF8_BYFC90WOPRrH9Q>
-    <xmx:S4QGY9fCelfBI15K97ni0Y6zah5jkYpYNgIzxiOi0T090EP0oAiL8w>
-    <xmx:TIQGYwDx-VeNICW0-c0n8rypT7cD5C5DLH8CgJGezBHs82YyM3fo3g>
-Feedback-ID: i6a314685:Fastmail
-Received: by mail.messagingengine.com (Postfix) with ESMTPA; Wed,
- 24 Aug 2022 16:04:25 -0400 (EDT)
-From:   Thitat Auareesuksakul <thitat@flux.ci>
-To:     linux-kbuild@vger.kernel.org
-Cc:     Thitat Auareesuksakul <thitat@flux.ci>,
-        Masahiro Yamada <masahiroy@kernel.org>,
-        Michal Marek <michal.lkml@markovi.net>,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH] scripts/extract-ikconfig: add zstd compression support
-Date:   Thu, 25 Aug 2022 03:03:40 +0700
-Message-Id: <20220824200340.45673-1-thitat@flux.ci>
-X-Mailer: git-send-email 2.37.2
+        Wed, 24 Aug 2022 16:04:50 -0400
+Received: from mout.gmx.net (mout.gmx.net [212.227.17.20])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E75B7632E;
+        Wed, 24 Aug 2022 13:04:46 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gmx.net;
+        s=badeba3b8450; t=1661371480;
+        bh=mT+JncqykK1/MQG4BV6pGNhG34tuIpbu4gUj8Qq5OJg=;
+        h=X-UI-Sender-Class:Date:Subject:To:Cc:References:From:In-Reply-To;
+        b=je1iScQue2PuzOXKqByGfXSW1Qx1ZMfpotwkROyCZsJdSHIqDzw70Z0WtBzwWKyyO
+         T0ZcxrYqSNG599BfW8OSma065E/e+6srrPudnzs+1zheu+/wxH/0Wt8EM/6AaK5dSe
+         6URRu5A9fA7zjrdRf//AyC3DzDSuuUOT5U/cjiA0=
+X-UI-Sender-Class: 01bb95c1-4bf8-414a-932a-4f6e2808ef9c
+Received: from [192.168.20.60] ([92.116.173.19]) by mail.gmx.net (mrgmx105
+ [212.227.17.168]) with ESMTPSA (Nemesis) id 1MVvLB-1oqcLl1B5B-00RtjX; Wed, 24
+ Aug 2022 22:04:40 +0200
+Message-ID: <6efc0d2a-c2af-947c-d928-104e3add1650@gmx.de>
+Date:   Wed, 24 Aug 2022 22:04:38 +0200
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.12.0
+Subject: Re: [PATCH] fbcon: Properly revert changes when vc_resize() failed
+Content-Language: en-US
+To:     Shigeru Yoshida <syoshida@redhat.com>
+Cc:     linux-fbdev@vger.kernel.org, dri-devel@lists.freedesktop.org,
+        linux-kernel@vger.kernel.org,
+        syzbot+a168dbeaaa7778273c1b@syzkaller.appspotmail.com
+References: <20220818181336.3504010-1-syoshida@redhat.com>
+From:   Helge Deller <deller@gmx.de>
+In-Reply-To: <20220818181336.3504010-1-syoshida@redhat.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
+X-Provags-ID: V03:K1:bPYtDBYr/fK766CKWILWMU7xF4/wZ+tyXxZ1o8D2m8Jo85BJ+as
+ DNW6Cz5IoGsD2PzMXfhkHHJBmrmJi0/gZdkacY5RzJBUap2qs1wCwreOlmx6Y/XNoOsTg+o
+ 9MRQE0QR54b3UTUFtfdSXRChRLYQyp/1RIqWJFyFBQZldaNXhs6p4GYoBrUTmwMgMfMbl33
+ N6FltjFkdpDIxKBB4r6BA==
+X-UI-Out-Filterresults: notjunk:1;V03:K0:v/nCVi1yI7M=:ftuED5v4WP4ZqnIzTwPVlg
+ xvrViHqKL0rzJ7LDMoCsR+/heF0xhFSK0UMYKhhwh40W1BPiTK1E64EzZSy1/Cl037/RXsDBb
+ 9D+dxZzx3dm1h6B5MDGlSJ+g+YtEnLe51gQSWNvyw1lnO/DIuvQvaCqXJeOP7BZcuWg/ZNkme
+ /mVbVPz0eYkIfNXwy0wbr/kMiGjwDTKfcnW6z0zbARDZQkLOVwiFuJp0IjBAFOtThwrpXp7Ch
+ dttQLKauLvJ0aOT1iuUA4TzNOfCjMBjWnP9SjfzqZIg1ROskjF43YiZ2ik0+adsESHsmIeu+1
+ puv5l5z9j8Mwx0rYF1FFRLjHurmQ37IbEfMWfwIzdUdK//Y7bV+ZIdlF2M2Pb5SbIoFK4+uCB
+ yLmA3XiJekW5rtNuTgovWtkVZ1f8Nck1zGtlD6W8Wm+22tjROxAx6CIPA382GrSrLP9oH/U/m
+ 48yQOY1xfh4UNyZ++Mzw+CE96QSkWFgIxZ39sAOrQedThM2xXCF6Mzvk/L1AfEaYT9kd+8Dio
+ QzU6ysz9+nL9hH5aIox0KZzzxvLj6mGlWYn4qvy5E2XiwtHCEoOgip9XDfjGo478AqSReGqY7
+ 685niWvag0B+MphtZOzIWWHSpvOYZCfbquDOkiRSiqE3rhLbeBZzfbFb/vWhov78H2Cs1TkpW
+ L9B39CKWpS7P8OerSEOV56nOQBm1X1ty2/yRu2A8y0s0pfgg3C8zKw0ljwIp4LK6r0HShPJTN
+ bk+Li0hINWJI7zg3aBEctiqz0rZy6fnYRG/QMaUSw1/JeBYNK4OoH5j9HFg4vWYyyfhHzS0AD
+ P2UbsPpV2xxm5ujfbX4Ei9U4DOtcoRnLAydGkL6h1slTcHcyqw3QyOi2/WWJkErNhyCKqPtMT
+ e3Vm7pVjUVY5dYTSmajTtgKWXncilU6uh8uaewB3Qq1hdbkEv5B2csrIs18Zh2eR7Y1edsM7h
+ W6hvBofJhVeZJFTjdhhxERqeeYISGlYt6mhXCDmxLg4unvMfYWutpcxFQ/eemx/rNrrlgBMJh
+ mt1NRjlPOKGmR6AgqlAJyjubEifg2N7PzG4AXmpAF2U8ZC7YRvuyfuOaiPsEOw7dAgddNsFIh
+ L4+G6iYQvfZXgTRxnaowfsEVSq0z7oeaAJh87IvmNpAIu1P2q8Yn6fQvw==
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add extract-ikconfig support for kernel images compressed with zstd.
+Hi Shigeru,
 
-Signed-off-by: Thitat Auareesuksakul <thitat@flux.ci>
----
- scripts/extract-ikconfig | 1 +
- 1 file changed, 1 insertion(+)
+On 8/18/22 20:13, Shigeru Yoshida wrote:
+> fbcon_do_set_font() calls vc_resize() when font size is changed.
+> However, if if vc_resize() failed, current implementation doesn't
+> revert changes for font size, and this causes inconsistent state.
+>
+> syzbot reported unable to handle page fault due to this issue [1].
+> syzbot's repro uses fault injection which cause failure for memory
+> allocation, so vc_resize() failed.
+>
+> This patch fixes this issue by properly revert changes for font
+> related date when vc_resize() failed.
+>
+> Link: https://syzkaller.appspot.com/bug?id=3D3443d3a1fa6d964dd7310a0cb16=
+96d165a3e07c4 [1]
+> Reported-by: syzbot+a168dbeaaa7778273c1b@syzkaller.appspotmail.com
+> Signed-off-by: Shigeru Yoshida <syoshida@redhat.com>
 
-diff --git a/scripts/extract-ikconfig b/scripts/extract-ikconfig
-index 3b42f255e2ba..8df33e7d6daa 100755
---- a/scripts/extract-ikconfig
-+++ b/scripts/extract-ikconfig
-@@ -62,6 +62,7 @@ try_decompress 'BZh'          xy    bunzip2
- try_decompress '\135\0\0\0'   xxx   unlzma
- try_decompress '\211\114\132' xy    'lzop -d'
- try_decompress '\002\041\114\030' xyy 'lz4 -d -l'
-+try_decompress '\050\265\057\375' xxx unzstd
- 
- # Bail out:
- echo "$me: Cannot find kernel config." >&2
--- 
-2.37.2
+applied.
+
+Thank you!
+Helge
+
+> ---
+>  drivers/video/fbdev/core/fbcon.c | 27 +++++++++++++++++++++++++--
+>  1 file changed, 25 insertions(+), 2 deletions(-)
+>
+> diff --git a/drivers/video/fbdev/core/fbcon.c b/drivers/video/fbdev/core=
+/fbcon.c
+> index cf9ac4da0a82..825b012debe7 100644
+> --- a/drivers/video/fbdev/core/fbcon.c
+> +++ b/drivers/video/fbdev/core/fbcon.c
+> @@ -2401,15 +2401,21 @@ static int fbcon_do_set_font(struct vc_data *vc,=
+ int w, int h, int charcount,
+>  	struct fb_info *info =3D fbcon_info_from_console(vc->vc_num);
+>  	struct fbcon_ops *ops =3D info->fbcon_par;
+>  	struct fbcon_display *p =3D &fb_display[vc->vc_num];
+> -	int resize;
+> +	int resize, ret, old_userfont, old_width, old_height, old_charcount;
+>  	char *old_data =3D NULL;
+>
+>  	resize =3D (w !=3D vc->vc_font.width) || (h !=3D vc->vc_font.height);
+>  	if (p->userfont)
+>  		old_data =3D vc->vc_font.data;
+>  	vc->vc_font.data =3D (void *)(p->fontdata =3D data);
+> +	old_userfont =3D p->userfont;
+>  	if ((p->userfont =3D userfont))
+>  		REFCOUNT(data)++;
+> +
+> +	old_width =3D vc->vc_font.width;
+> +	old_height =3D vc->vc_font.height;
+> +	old_charcount =3D vc->vc_font.charcount;
+> +
+>  	vc->vc_font.width =3D w;
+>  	vc->vc_font.height =3D h;
+>  	vc->vc_font.charcount =3D charcount;
+> @@ -2425,7 +2431,9 @@ static int fbcon_do_set_font(struct vc_data *vc, i=
+nt w, int h, int charcount,
+>  		rows =3D FBCON_SWAP(ops->rotate, info->var.yres, info->var.xres);
+>  		cols /=3D w;
+>  		rows /=3D h;
+> -		vc_resize(vc, cols, rows);
+> +		ret =3D vc_resize(vc, cols, rows);
+> +		if (ret)
+> +			goto err_out;
+>  	} else if (con_is_visible(vc)
+>  		   && vc->vc_mode =3D=3D KD_TEXT) {
+>  		fbcon_clear_margins(vc, 0);
+> @@ -2435,6 +2443,21 @@ static int fbcon_do_set_font(struct vc_data *vc, =
+int w, int h, int charcount,
+>  	if (old_data && (--REFCOUNT(old_data) =3D=3D 0))
+>  		kfree(old_data - FONT_EXTRA_WORDS * sizeof(int));
+>  	return 0;
+> +
+> +err_out:
+> +	p->fontdata =3D old_data;
+> +	vc->vc_font.data =3D (void *)old_data;
+> +
+> +	if (userfont) {
+> +		p->userfont =3D old_userfont;
+> +		REFCOUNT(data)--;
+> +	}
+> +
+> +	vc->vc_font.width =3D old_width;
+> +	vc->vc_font.height =3D old_height;
+> +	vc->vc_font.charcount =3D old_charcount;
+> +
+> +	return ret;
+>  }
+>
+>  /*
 
