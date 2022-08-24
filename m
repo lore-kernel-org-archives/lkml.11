@@ -2,185 +2,197 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0CA00C32793
-	for <linux-kernel@archiver.kernel.org>; Wed, 24 Aug 2022 15:39:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 52219C32793
+	for <linux-kernel@archiver.kernel.org>; Wed, 24 Aug 2022 15:39:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238376AbiHXPjT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 24 Aug 2022 11:39:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44624 "EHLO
+        id S238610AbiHXPj3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 24 Aug 2022 11:39:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44660 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237342AbiHXPjR (ORCPT
+        with ESMTP id S238435AbiHXPjX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 24 Aug 2022 11:39:17 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E35D374B8C
-        for <linux-kernel@vger.kernel.org>; Wed, 24 Aug 2022 08:39:16 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1661355556;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=4YDz+MpPZkiheMede1adKNb3LxgK1j3sRTyEv4HMpL0=;
-        b=RaieSkTP/iLRgo2CPANS4528Brz6Z+98pB0KGlHVYnrU9MlFCO2epS62+gA2LCaem025GU
-        dRHvaTKcyZI1UL7v5PMdFE9+nz/Vt0fsTmM8a1r2m4XpdBNWXj3QplFpmg6abx1anxHnBK
-        /AbOXcVFPSu+1c+fIGKpdSlxvotFu8k=
-Received: from mail-qv1-f69.google.com (mail-qv1-f69.google.com
- [209.85.219.69]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
- us-mta-623-fdZXjs3zMqee9Uc2QyGVoQ-1; Wed, 24 Aug 2022 11:39:14 -0400
-X-MC-Unique: fdZXjs3zMqee9Uc2QyGVoQ-1
-Received: by mail-qv1-f69.google.com with SMTP id k3-20020a05621414e300b00496e11f8d8aso5681257qvw.9
-        for <linux-kernel@vger.kernel.org>; Wed, 24 Aug 2022 08:39:14 -0700 (PDT)
+        Wed, 24 Aug 2022 11:39:23 -0400
+Received: from mail-yw1-x1149.google.com (mail-yw1-x1149.google.com [IPv6:2607:f8b0:4864:20::1149])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0F6227FE7C
+        for <linux-kernel@vger.kernel.org>; Wed, 24 Aug 2022 08:39:22 -0700 (PDT)
+Received: by mail-yw1-x1149.google.com with SMTP id 00721157ae682-33d9f6f4656so52051337b3.21
+        for <linux-kernel@vger.kernel.org>; Wed, 24 Aug 2022 08:39:22 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=cc:to:from:subject:mime-version:message-id:date:from:to:cc;
+        bh=xAbfQkbFPDellsaKp24mP9oyoxp7QvISDP34HXAcivU=;
+        b=a2wk7yyHwGIg9lpsjrMBoXBGmUTlnW3gqtujQyK+BxMa4n/0WuJoDBekFkKWNwvK4o
+         YphYU74NwhOc59R6BKbI+akTqgq0EdXZPQUd5+TGk8VmuGjlO/KTXNWYE9ljIAhqa+Wz
+         w8fHpWGql8hcPAnnhaXPcmM8CWtbl+D5qMz39Ci8/FTDJplXmDJHSDS+Es9sjlFBLQWb
+         QshTju5UfzeXpDaT5s8LswU6rfaSr+bOOTR8PRhxJKErIRE9nImFDlfngNpIAp+LzH+V
+         cgnGRMxA+vi7div/DMiNovUVS0skrPaODNSFqGHlnHcB7Q2TztN+RYmC5XHoxT3N11hH
+         GuFw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc;
-        bh=4YDz+MpPZkiheMede1adKNb3LxgK1j3sRTyEv4HMpL0=;
-        b=pTufwzHzgR3ICQl3KM62BUIVOFAmgypywxiLtA6rZ3gICdlk1k1VKSfNJ1kfmVzffC
-         PVx+RekFzclz3Rhf2Wh3m8nyV4Yq9wHAYWO2rd40wpHsbAxLuUWqEN9u0/A0Y/aK3qeO
-         qWCenvh+mqxPs+eCE36jz3253JVfhD7j3oY8L7fDhsKcuBE2MtHIoUzqPI7DawDr6Gnc
-         ua1hakZ0En/RukFgM4Mhv2ITLNGV9FoejAkUBfehjEtTFlPJweYgVubZq/TEfusFmHRL
-         T1iSfObcZ2OxV0tfbDFveWFbJlIajPaeunAP/RzdyGTKlgv55IYMBtB/Yq4/OY7u8bG2
-         Gtww==
-X-Gm-Message-State: ACgBeo3P4yt/ga+vvIKgSDm/aboqRVUA85gXR53bHORJ/ialaSGXn5cr
-        M2pdfLPKKxUQ9NF8KSUlv1KnWC0ICe3r58dMAqyDDYYtREE7jR+WfINZpG8md3/4PwY97f2lenV
-        zBsNsehWS+SLoUsObqzD7GOl9
-X-Received: by 2002:ad4:5ae8:0:b0:496:f1c9:7bd with SMTP id c8-20020ad45ae8000000b00496f1c907bdmr10727642qvh.125.1661355554385;
-        Wed, 24 Aug 2022 08:39:14 -0700 (PDT)
-X-Google-Smtp-Source: AA6agR6lRAWqwQD0sX2sud09VmJ+0QpTsPmTlUS5jZn09b1qgoiwGEQmQlz8zOomOo+cNaaUWHVmfg==
-X-Received: by 2002:ad4:5ae8:0:b0:496:f1c9:7bd with SMTP id c8-20020ad45ae8000000b00496f1c907bdmr10727612qvh.125.1661355554146;
-        Wed, 24 Aug 2022 08:39:14 -0700 (PDT)
-Received: from xz-m1.local (bras-base-aurron9127w-grc-35-70-27-3-10.dsl.bell.ca. [70.27.3.10])
-        by smtp.gmail.com with ESMTPSA id h4-20020ac87764000000b0034355a352d1sm12681683qtu.92.2022.08.24.08.39.12
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 24 Aug 2022 08:39:13 -0700 (PDT)
-Date:   Wed, 24 Aug 2022 11:39:11 -0400
-From:   Peter Xu <peterx@redhat.com>
-To:     Alistair Popple <apopple@nvidia.com>
-Cc:     linux-mm@kvack.org, akpm@linux-foundation.org,
-        Nadav Amit <nadav.amit@gmail.com>,
-        huang ying <huang.ying.caritas@gmail.com>,
-        LKML <linux-kernel@vger.kernel.org>,
-        "Sierra Guiza, Alejandro (Alex)" <alex.sierra@amd.com>,
-        Felix Kuehling <Felix.Kuehling@amd.com>,
-        Jason Gunthorpe <jgg@nvidia.com>,
-        John Hubbard <jhubbard@nvidia.com>,
-        David Hildenbrand <david@redhat.com>,
-        Ralph Campbell <rcampbell@nvidia.com>,
-        Matthew Wilcox <willy@infradead.org>,
-        Karol Herbst <kherbst@redhat.com>,
-        Lyude Paul <lyude@redhat.com>, Ben Skeggs <bskeggs@redhat.com>,
-        Logan Gunthorpe <logang@deltatee.com>, paulus@ozlabs.org,
-        linuxppc-dev@lists.ozlabs.org, stable@vger.kernel.org,
-        Huang Ying <ying.huang@intel.com>
-Subject: Re: [PATCH v3 2/3] mm/migrate_device.c: Copy pte dirty bit to page
-Message-ID: <YwZGHyYJiJ+CGLn2@xz-m1.local>
-References: <3b01af093515ce2960ac39bb16ff77473150d179.1661309831.git-series.apopple@nvidia.com>
- <ffbc824af5daa2c44b91c66834a341894fba4ce6.1661309831.git-series.apopple@nvidia.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <ffbc824af5daa2c44b91c66834a341894fba4ce6.1661309831.git-series.apopple@nvidia.com>
+        h=cc:to:from:subject:mime-version:message-id:date:x-gm-message-state
+         :from:to:cc;
+        bh=xAbfQkbFPDellsaKp24mP9oyoxp7QvISDP34HXAcivU=;
+        b=U3EM3j8nxH3hmAnqjZMt2YwF7oHNXe7BRCwZ81GOL8einCcGZnUwYSBjctSlJaOJG3
+         FC/Hnb5bwMpXdLNZM7u1JnTir3oSLnH4kk1uNMKOJ5Xzn+QM+RkS43r/3VXJQR2VNguF
+         8ZZFiW5oqyPEEk8VX5WVIzB6WtSYHfMyW0pFEGFxCjZrFIv3TKScSiTifSPH3ytcLh0j
+         TFKPg0Zf5FodLCOJRnivZslILJLi0BsRboYYOqM+4/c5oj3n2KoBDljVDiDX3DFskCfm
+         hM7czydeTzCHg+of7dvvHAcjGPilBbnaWlS78Wsoqo/xWJ/s4P0fgakCrflfg0NjbGbF
+         gmrg==
+X-Gm-Message-State: ACgBeo07BEjd8WonemPa2P+T78FNz32weJOPyL5mmeJOFFiBlvZfGZRj
+        F/+96XPkJMkjQS/vlOyJIXCyzQAEAKvf
+X-Google-Smtp-Source: AA6agR7vrZdDjak13qWKrwy63oS2Xh/EMZv6mckisVInWYa9XhxM8MDPH8MwW5A/nm6WBQKRBgBP3E7h3TuG
+X-Received: from irogers.svl.corp.google.com ([2620:15c:2d4:203:ab82:a348:500d:1fc4])
+ (user=irogers job=sendgmr) by 2002:a25:3285:0:b0:690:aa8c:2a55 with SMTP id
+ y127-20020a253285000000b00690aa8c2a55mr30341747yby.255.1661355561255; Wed, 24
+ Aug 2022 08:39:21 -0700 (PDT)
+Date:   Wed, 24 Aug 2022 08:38:43 -0700
+Message-Id: <20220824153901.488576-1-irogers@google.com>
+Mime-Version: 1.0
+X-Mailer: git-send-email 2.37.2.609.g9ff673ca1a-goog
+Subject: [PATCH v3 00/18] Mutex wrapper, locking and memory leak fixes
+From:   Ian Rogers <irogers@google.com>
+To:     Peter Zijlstra <peterz@infradead.org>,
+        Ingo Molnar <mingo@redhat.com>,
+        Arnaldo Carvalho de Melo <acme@kernel.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
+        Jiri Olsa <jolsa@kernel.org>,
+        Namhyung Kim <namhyung@kernel.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Darren Hart <dvhart@infradead.org>,
+        Davidlohr Bueso <dave@stgolabs.net>,
+        "=?UTF-8?q?Andr=C3=A9=20Almeida?=" <andrealmeid@igalia.com>,
+        Nathan Chancellor <nathan@kernel.org>,
+        Nick Desaulniers <ndesaulniers@google.com>,
+        Tom Rix <trix@redhat.com>, Weiguo Li <liwg06@foxmail.com>,
+        Athira Rajeev <atrajeev@linux.vnet.ibm.com>,
+        Thomas Richter <tmricht@linux.ibm.com>,
+        Ravi Bangoria <ravi.bangoria@amd.com>,
+        Dario Petrillo <dario.pk1@gmail.com>,
+        Hewenliang <hewenliang4@huawei.com>,
+        yaowenbin <yaowenbin1@huawei.com>,
+        Wenyu Liu <liuwenyu7@huawei.com>,
+        Song Liu <songliubraving@fb.com>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Dave Marchevsky <davemarchevsky@fb.com>,
+        Leo Yan <leo.yan@linaro.org>,
+        Kim Phillips <kim.phillips@amd.com>,
+        Pavithra Gurushankar <gpavithrasha@gmail.com>,
+        Alexandre Truong <alexandre.truong@arm.com>,
+        Quentin Monnet <quentin@isovalent.com>,
+        William Cohen <wcohen@redhat.com>,
+        Andres Freund <andres@anarazel.de>,
+        Adrian Hunter <adrian.hunter@intel.com>,
+        "=?UTF-8?q?Martin=20Li=C5=A1ka?=" <mliska@suse.cz>,
+        Colin Ian King <colin.king@intel.com>,
+        James Clark <james.clark@arm.com>,
+        Fangrui Song <maskray@google.com>,
+        Stephane Eranian <eranian@google.com>,
+        Kajol Jain <kjain@linux.ibm.com>,
+        Alexey Bayduraev <alexey.v.bayduraev@linux.intel.com>,
+        Riccardo Mancini <rickyman7@gmail.com>,
+        Andi Kleen <ak@linux.intel.com>,
+        Masami Hiramatsu <mhiramat@kernel.org>,
+        Zechuan Chen <chenzechuan1@huawei.com>,
+        Jason Wang <wangborong@cdjrlc.com>,
+        Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
+        Remi Bernon <rbernon@codeweavers.com>,
+        linux-kernel@vger.kernel.org, linux-perf-users@vger.kernel.org,
+        bpf@vger.kernel.org, llvm@lists.linux.dev
+Cc:     Ian Rogers <irogers@google.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Aug 24, 2022 at 01:03:38PM +1000, Alistair Popple wrote:
-> migrate_vma_setup() has a fast path in migrate_vma_collect_pmd() that
-> installs migration entries directly if it can lock the migrating page.
-> When removing a dirty pte the dirty bit is supposed to be carried over
-> to the underlying page to prevent it being lost.
-> 
-> Currently migrate_vma_*() can only be used for private anonymous
-> mappings. That means loss of the dirty bit usually doesn't result in
-> data loss because these pages are typically not file-backed. However
-> pages may be backed by swap storage which can result in data loss if an
-> attempt is made to migrate a dirty page that doesn't yet have the
-> PageDirty flag set.
-> 
-> In this case migration will fail due to unexpected references but the
-> dirty pte bit will be lost. If the page is subsequently reclaimed data
-> won't be written back to swap storage as it is considered uptodate,
-> resulting in data loss if the page is subsequently accessed.
-> 
-> Prevent this by copying the dirty bit to the page when removing the pte
-> to match what try_to_migrate_one() does.
-> 
-> Signed-off-by: Alistair Popple <apopple@nvidia.com>
-> Acked-by: Peter Xu <peterx@redhat.com>
-> Reported-by: Huang Ying <ying.huang@intel.com>
-> Fixes: 8c3328f1f36a ("mm/migrate: migrate_vma() unmap page from vma while collecting pages")
-> Cc: stable@vger.kernel.org
-> 
-> ---
-> 
-> Changes for v3:
-> 
->  - Defer TLB flushing
->  - Split a TLB flushing fix into a separate change.
-> 
-> Changes for v2:
-> 
->  - Fixed up Reported-by tag.
->  - Added Peter's Acked-by.
->  - Atomically read and clear the pte to prevent the dirty bit getting
->    set after reading it.
->  - Added fixes tag
-> ---
->  mm/migrate_device.c |  9 +++++++--
->  1 file changed, 7 insertions(+), 2 deletions(-)
-> 
-> diff --git a/mm/migrate_device.c b/mm/migrate_device.c
-> index 6a5ef9f..51d9afa 100644
-> --- a/mm/migrate_device.c
-> +++ b/mm/migrate_device.c
-> @@ -7,6 +7,7 @@
->  #include <linux/export.h>
->  #include <linux/memremap.h>
->  #include <linux/migrate.h>
-> +#include <linux/mm.h>
->  #include <linux/mm_inline.h>
->  #include <linux/mmu_notifier.h>
->  #include <linux/oom.h>
-> @@ -196,7 +197,7 @@ static int migrate_vma_collect_pmd(pmd_t *pmdp,
->  			anon_exclusive = PageAnon(page) && PageAnonExclusive(page);
->  			if (anon_exclusive) {
->  				flush_cache_page(vma, addr, pte_pfn(*ptep));
-> -				ptep_clear_flush(vma, addr, ptep);
-> +				pte = ptep_clear_flush(vma, addr, ptep);
->  
->  				if (page_try_share_anon_rmap(page)) {
->  					set_pte_at(mm, addr, ptep, pte);
-> @@ -206,11 +207,15 @@ static int migrate_vma_collect_pmd(pmd_t *pmdp,
->  					goto next;
->  				}
->  			} else {
-> -				ptep_get_and_clear(mm, addr, ptep);
-> +				pte = ptep_get_and_clear(mm, addr, ptep);
->  			}
+When fixing a locking race and memory leak in:
+https://lore.kernel.org/linux-perf-users/20211118193714.2293728-1-irogers@google.com/
 
-I remember that in v2 both flush_cache_page() and ptep_get_and_clear() are
-moved above the condition check so they're called unconditionally.  Could
-you explain the rational on why it's changed back (since I think v2 was the
-correct approach)?
+It was requested that debug mutex code be separated out into its own
+files. This was, in part, done by Pavithra Gurushankar in:
+https://lore.kernel.org/lkml/20220727111954.105118-1-gpavithrasha@gmail.com/
 
-The other question is if we want to split the patch, would it be better to
-move the tlb changes to patch 1, and leave the dirty bit fix in patch 2?
+These patches fix issues with the previous patches, add in the
+original dso->nsinfo fix and then build on our mutex wrapper with
+clang's -Wthread-safety analysis. The analysis found missing unlocks
+in builtin-sched.c which are fixed and -Wthread-safety is enabled by
+default when building with clang.
 
->  
->  			migrate->cpages++;
->  
-> +			/* Set the dirty flag on the folio now the pte is gone. */
-> +			if (pte_dirty(pte))
-> +				folio_mark_dirty(page_folio(page));
-> +
->  			/* Setup special migration page table entry */
->  			if (mpfn & MIGRATE_PFN_WRITE)
->  				entry = make_writable_migration_entry(
-> -- 
-> git-series 0.9.1
-> 
+v3. Adds a missing new line to the error messages and removes the
+    pshared argument to mutex_init by having two functions, mutex_init
+    and mutex_init_pshared. These changes were suggested by Adrian Hunter.
+v2. Breaks apart changes that s/pthread_mutex/mutex/g and the lock
+    annotations as requested by Arnaldo and Namhyung. A boolean is
+    added to builtin-sched.c to terminate thread funcs rather than
+    leaving them blocked on delted mutexes.
+
+Ian Rogers (17):
+  perf bench: Update use of pthread mutex/cond
+  perf tests: Avoid pthread.h inclusion
+  perf hist: Update use of pthread mutex
+  perf bpf: Remove unused pthread.h include
+  perf lock: Remove unused pthread.h include
+  perf record: Update use of pthread mutex
+  perf sched: Update use of pthread mutex
+  perf ui: Update use of pthread mutex
+  perf mmap: Remove unnecessary pthread.h include
+  perf dso: Update use of pthread mutex
+  perf annotate: Update use of pthread mutex
+  perf top: Update use of pthread mutex
+  perf dso: Hold lock when accessing nsinfo
+  perf mutex: Add thread safety annotations
+  perf sched: Fixes for thread safety analysis
+  perf top: Fixes for thread safety analysis
+  perf build: Enable -Wthread-safety with clang
+
+Pavithra Gurushankar (1):
+  perf mutex: Wrapped usage of mutex and cond
+
+ tools/perf/Makefile.config                 |   5 +
+ tools/perf/bench/epoll-ctl.c               |  33 +++---
+ tools/perf/bench/epoll-wait.c              |  33 +++---
+ tools/perf/bench/futex-hash.c              |  33 +++---
+ tools/perf/bench/futex-lock-pi.c           |  33 +++---
+ tools/perf/bench/futex-requeue.c           |  33 +++---
+ tools/perf/bench/futex-wake-parallel.c     |  33 +++---
+ tools/perf/bench/futex-wake.c              |  33 +++---
+ tools/perf/bench/numa.c                    |  93 ++++++----------
+ tools/perf/builtin-inject.c                |   4 +
+ tools/perf/builtin-lock.c                  |   1 -
+ tools/perf/builtin-record.c                |  13 ++-
+ tools/perf/builtin-sched.c                 | 105 +++++++++---------
+ tools/perf/builtin-top.c                   |  45 ++++----
+ tools/perf/tests/mmap-basic.c              |   2 -
+ tools/perf/tests/openat-syscall-all-cpus.c |   2 +-
+ tools/perf/tests/perf-record.c             |   2 -
+ tools/perf/ui/browser.c                    |  20 ++--
+ tools/perf/ui/browsers/annotate.c          |  12 +--
+ tools/perf/ui/setup.c                      |   5 +-
+ tools/perf/ui/tui/helpline.c               |   5 +-
+ tools/perf/ui/tui/progress.c               |   8 +-
+ tools/perf/ui/tui/setup.c                  |   8 +-
+ tools/perf/ui/tui/util.c                   |  18 ++--
+ tools/perf/ui/ui.h                         |   4 +-
+ tools/perf/util/Build                      |   1 +
+ tools/perf/util/annotate.c                 |  15 +--
+ tools/perf/util/annotate.h                 |   4 +-
+ tools/perf/util/bpf-event.h                |   1 -
+ tools/perf/util/build-id.c                 |  12 ++-
+ tools/perf/util/dso.c                      |  19 ++--
+ tools/perf/util/dso.h                      |   4 +-
+ tools/perf/util/hist.c                     |   6 +-
+ tools/perf/util/hist.h                     |   4 +-
+ tools/perf/util/map.c                      |   3 +
+ tools/perf/util/mmap.h                     |   1 -
+ tools/perf/util/mutex.c                    | 119 +++++++++++++++++++++
+ tools/perf/util/mutex.h                    | 109 +++++++++++++++++++
+ tools/perf/util/probe-event.c              |   3 +
+ tools/perf/util/symbol.c                   |   4 +-
+ tools/perf/util/top.h                      |   5 +-
+ 41 files changed, 570 insertions(+), 323 deletions(-)
+ create mode 100644 tools/perf/util/mutex.c
+ create mode 100644 tools/perf/util/mutex.h
 
 -- 
-Peter Xu
+2.37.2.609.g9ff673ca1a-goog
 
