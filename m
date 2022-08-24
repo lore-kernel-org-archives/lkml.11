@@ -2,23 +2,23 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0C322C00140
-	for <linux-kernel@archiver.kernel.org>; Wed, 24 Aug 2022 09:30:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 18A8AC00140
+	for <linux-kernel@archiver.kernel.org>; Wed, 24 Aug 2022 09:30:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235202AbiHXJaG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 24 Aug 2022 05:30:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49286 "EHLO
+        id S236126AbiHXJaJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 24 Aug 2022 05:30:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49802 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236242AbiHXJ3e (ORCPT
+        with ESMTP id S236262AbiHXJ3v (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 24 Aug 2022 05:29:34 -0400
-Received: from out0-135.mail.aliyun.com (out0-135.mail.aliyun.com [140.205.0.135])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 24DF585AA0;
-        Wed, 24 Aug 2022 02:29:32 -0700 (PDT)
-X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R501e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=ay29a033018047201;MF=houwenlong.hwl@antgroup.com;NM=1;PH=DS;RN=11;SR=0;TI=SMTPD_---.P-jvWvL_1661333369;
-Received: from localhost(mailfrom:houwenlong.hwl@antgroup.com fp:SMTPD_---.P-jvWvL_1661333369)
+        Wed, 24 Aug 2022 05:29:51 -0400
+Received: from out0-138.mail.aliyun.com (out0-138.mail.aliyun.com [140.205.0.138])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0116571BD7;
+        Wed, 24 Aug 2022 02:29:49 -0700 (PDT)
+X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R351e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=ay29a033018047199;MF=houwenlong.hwl@antgroup.com;NM=1;PH=DS;RN=11;SR=0;TI=SMTPD_---.P-kQI16_1661333366;
+Received: from localhost(mailfrom:houwenlong.hwl@antgroup.com fp:SMTPD_---.P-kQI16_1661333366)
           by smtp.aliyun-inc.com;
-          Wed, 24 Aug 2022 17:29:29 +0800
+          Wed, 24 Aug 2022 17:29:26 +0800
 From:   "Hou Wenlong" <houwenlong.hwl@antgroup.com>
 To:     kvm@vger.kernel.org
 Cc:     David Matlack <dmatlack@google.com>,
@@ -28,9 +28,9 @@ Cc:     David Matlack <dmatlack@google.com>,
         Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
         Dave Hansen <dave.hansen@linux.intel.com>, x86@kernel.org,
         "H. Peter Anvin" <hpa@zytor.com>, linux-kernel@vger.kernel.org
-Subject: [PATCH v2 6/6] KVM: x86/mmu: Use 1 as the size of gfn range for tlb flushing in FNAME(invlpg)()
-Date:   Wed, 24 Aug 2022 17:29:23 +0800
-Message-Id: <8baa40dad8496abb2adb1096e0cf50dcc5f66802.1661331396.git.houwenlong.hwl@antgroup.com>
+Subject: [PATCH v2 3/6] KVM: x86/mmu: Reduce gfn range of tlb flushing in tdp_mmu_map_handle_target_level()
+Date:   Wed, 24 Aug 2022 17:29:20 +0800
+Message-Id: <85f889ce6eb6b330d86fa74c6e84d22d98ddc2cf.1661331396.git.houwenlong.hwl@antgroup.com>
 X-Mailer: git-send-email 2.31.1
 In-Reply-To: <cover.1661331396.git.houwenlong.hwl@antgroup.com>
 References: <cover.1661331396.git.houwenlong.hwl@antgroup.com>
@@ -40,28 +40,31 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Only SP with PG_LEVLE_4K level could be unsync, so the size of gfn range
-must be 1.
+Since the children SP is zapped, the gfn range of tlb flushing should be
+the range covered by children SP not parent SP. Replace sp->gfn which is
+the base gfn of parent SP with iter->gfn and use the correct size of
+gfn range for children SP to reduce tlb flushing range.
 
 Signed-off-by: Hou Wenlong <houwenlong.hwl@antgroup.com>
 ---
- arch/x86/kvm/mmu/paging_tmpl.h | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ arch/x86/kvm/mmu/tdp_mmu.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/arch/x86/kvm/mmu/paging_tmpl.h b/arch/x86/kvm/mmu/paging_tmpl.h
-index 04149c704d5b..486a3163b1e4 100644
---- a/arch/x86/kvm/mmu/paging_tmpl.h
-+++ b/arch/x86/kvm/mmu/paging_tmpl.h
-@@ -937,7 +937,8 @@ static void FNAME(invlpg)(struct kvm_vcpu *vcpu, gva_t gva, hpa_t root_hpa)
+diff --git a/arch/x86/kvm/mmu/tdp_mmu.c b/arch/x86/kvm/mmu/tdp_mmu.c
+index bf2ccf9debca..08b7932122ec 100644
+--- a/arch/x86/kvm/mmu/tdp_mmu.c
++++ b/arch/x86/kvm/mmu/tdp_mmu.c
+@@ -1071,8 +1071,8 @@ static int tdp_mmu_map_handle_target_level(struct kvm_vcpu *vcpu,
+ 		return RET_PF_RETRY;
+ 	else if (is_shadow_present_pte(iter->old_spte) &&
+ 		 !is_last_spte(iter->old_spte, iter->level))
+-		kvm_flush_remote_tlbs_with_address(vcpu->kvm, sp->gfn,
+-						   KVM_PAGES_PER_HPAGE(iter->level + 1));
++		kvm_flush_remote_tlbs_with_address(vcpu->kvm, iter->gfn,
++						   KVM_PAGES_PER_HPAGE(iter->level));
  
- 			mmu_page_zap_pte(vcpu->kvm, sp, sptep, NULL);
- 			if (is_shadow_present_pte(old_spte))
--				kvm_flush_remote_tlbs_sptep(vcpu->kvm, sptep);
-+				kvm_flush_remote_tlbs_gfn(vcpu->kvm,
-+					kvm_mmu_page_get_gfn(sp, sptep - sp->spt), 1);
- 
- 			if (!rmap_can_add(vcpu))
- 				break;
+ 	/*
+ 	 * If the page fault was caused by a write but the page is write
 -- 
 2.31.1
 
