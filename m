@@ -2,121 +2,65 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 48214C00140
-	for <linux-kernel@archiver.kernel.org>; Wed, 24 Aug 2022 12:57:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 44081C00140
+	for <linux-kernel@archiver.kernel.org>; Wed, 24 Aug 2022 12:58:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237724AbiHXM5r (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 24 Aug 2022 08:57:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59638 "EHLO
+        id S237765AbiHXM6M (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 24 Aug 2022 08:58:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60068 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237576AbiHXM5p (ORCPT
+        with ESMTP id S231596AbiHXM6I (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 24 Aug 2022 08:57:45 -0400
-Received: from mail-lj1-x22d.google.com (mail-lj1-x22d.google.com [IPv6:2a00:1450:4864:20::22d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 80D6395AEA
-        for <linux-kernel@vger.kernel.org>; Wed, 24 Aug 2022 05:57:43 -0700 (PDT)
-Received: by mail-lj1-x22d.google.com with SMTP id d9so278454ljl.8
-        for <linux-kernel@vger.kernel.org>; Wed, 24 Aug 2022 05:57:43 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=content-transfer-encoding:in-reply-to:from:references:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc;
-        bh=nqd2a1NkKDVUdWFX24ptHpwYU9zy+QmGyakndaLPtWI=;
-        b=MFOuZmrAEsufXG+4mt2PNk4yf67B1k3ZxWchVBK0of2qgtPBlubt0Y1zK5CPAryzL8
-         J7jfMXXWFf3MFTbki8eoh0/c3kkFz1JaAamh5Nbx6u5TgmKYRAoEE805aqK22VB35vMJ
-         cC3EAgs5sbdCpAePy/1QV/AWLUKnvDjSCi4E9XHSe6zTY8rTTQDFktTdkqGvqwEIEOlB
-         3CY+c2cGzrEVGtewWHPfBvPndrbQfqj+8sJQZ4kU+Q91WWNvDb4eW9nx7qmC5P9EAGsx
-         FNHl/NLN1Z2HK02hko1fWiBH7WMjn0qjUqbeWCWLfaeeZnyTbdybmHsbo/UbZDOmZE22
-         MzSA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc;
-        bh=nqd2a1NkKDVUdWFX24ptHpwYU9zy+QmGyakndaLPtWI=;
-        b=RIH7D39qwmRtU6oIbI/InLOU+rtsioH2T4GUdrdWq++5kdL+xlbOfpsYM6oWYuWQGx
-         1Sra8RauFeFB4Tt+gmV+58PXWqaVzkaXGZZcsvgF51RysNYweKiGBqNt2MGTViT7+khD
-         S1C9MBy7rOIxes4q6Hoy/AuuhmJG9e1uhjpVK+P616vA/f6VvBYd8XgUhk0U+GRs6Twp
-         TWqMSrnqUzPbe1gTgdp2U/B8ydIKcFTJ/NAXYDnysfHLoFSytTcMEWWn2CL9qlNdaz3/
-         +jJSH5SJcsj0ZLhOvbZCJzCCuLEvfFZY6FreRLKcLyqfOonlldwqJ/Bh6mh/IUXniEYA
-         OhTQ==
-X-Gm-Message-State: ACgBeo3ulZzERIQS2lMRoTk3ZevU8P9RFeMvDlOisL1hSKNr1scEvfwf
-        UPnug7OTXemG3r9oWajhTn3pvA==
-X-Google-Smtp-Source: AA6agR5jk3yzkhq/+4BfJtrOJ6VyWGEy/RIkF8YQnAiBBUgm7uMruWxiEpFWcax5/+jPQMi2MnRUXQ==
-X-Received: by 2002:a2e:700f:0:b0:261:c6ff:476c with SMTP id l15-20020a2e700f000000b00261c6ff476cmr5215634ljc.493.1661345861888;
-        Wed, 24 Aug 2022 05:57:41 -0700 (PDT)
-Received: from [10.243.4.185] ([194.157.23.230])
-        by smtp.gmail.com with ESMTPSA id a14-20020a05651c030e00b0025e728764ebsm2404858ljp.105.2022.08.24.05.57.39
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 24 Aug 2022 05:57:40 -0700 (PDT)
-Message-ID: <09308102-f927-125e-4321-d231decbd6c9@linaro.org>
-Date:   Wed, 24 Aug 2022 15:57:37 +0300
+        Wed, 24 Aug 2022 08:58:08 -0400
+Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C3E1D979DC;
+        Wed, 24 Aug 2022 05:58:07 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=casper.20170209; h=In-Reply-To:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description;
+        bh=2VBvEifQjJ0B2yEyDwr1KfnpR0QVvoOJrb8XD2pI0T4=; b=VrXTD/1Gt1++tPqmEJJZcE06QC
+        HuraL9RvVOD2Gr1Kg5a+FP38JYMFJ66udtbfysdVRDvBbiZwaLYqx54wnhn7/tjtZeu5r3qjKiwmX
+        lSKIvV3wUmyUJBbgsGtuUzGOSf6vTOVLJBF/P2d3w9vEm1BXWeeLFl4dAFYDapASZML5uGKISvD1b
+        TSpRMC9TabM+CWy7pZPhN5/2rhM1sD47YesIFjrDEeBviAPjXMnmoz3Gqf6e5DPiu7bhQ3dMkyjs4
+        VitTic6le3eAIuY8uB0Rlx40LnH6b5hi+OV3gusBZvIK4odFICYRXJHHFNLBmNkNYySW0Q3z0lfLy
+        w3DaE+9g==;
+Received: from willy by casper.infradead.org with local (Exim 4.94.2 #2 (Red Hat Linux))
+        id 1oQpxM-00GLHL-Qr; Wed, 24 Aug 2022 12:58:04 +0000
+Date:   Wed, 24 Aug 2022 13:58:04 +0100
+From:   Matthew Wilcox <willy@infradead.org>
+To:     xu xin <cgel.zte@gmail.com>
+Cc:     akpm@linux-foundation.org, corbet@lwn.net, bagasdotme@gmail.com,
+        adobriyan@gmail.com, hughd@google.com,
+        linux-kernel@vger.kernel.org, linux-fsdevel@vger.kernel.org,
+        linux-mm@kvack.org, xu xin <xu.xin16@zte.com.cn>,
+        Xiaokai Ran <ran.xiaokai@zte.com.cn>,
+        Yang Yang <yang.yang29@zte.com.cn>
+Subject: Re: [PATCH v4 1/2] ksm: count allocated ksm rmap_items for each
+ process
+Message-ID: <YwYgXNJIzNxcVDnp@casper.infradead.org>
+References: <20220824124512.223103-1-xu.xin16@zte.com.cn>
+ <20220824124615.223158-1-xu.xin16@zte.com.cn>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.12.0
-Subject: Re: [PATCH 3/4] bindings: firmware: Update binding doc for the zynqmp
- afi config node
-Content-Language: en-US
-To:     Nava kishore Manne <nava.kishore.manne@amd.com>, git@amd.com,
-        robh+dt@kernel.org, krzysztof.kozlowski+dt@linaro.org,
-        michal.simek@xilinx.com, mdf@kernel.org, hao.wu@intel.com,
-        yilun.xu@intel.com, trix@redhat.com, p.zabel@pengutronix.de,
-        gregkh@linuxfoundation.org, ronak.jain@xilinx.com,
-        rajan.vaja@xilinx.com, abhyuday.godhasara@xilinx.com,
-        piyush.mehta@xilinx.com, lakshmi.sai.krishna.potthuri@xilinx.com,
-        harsha.harsha@xilinx.com, linus.walleij@linaro.org,
-        nava.manne@xilinx.com, devicetree@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        linux-fpga@vger.kernel.org
-References: <20220824035542.706433-1-nava.kishore.manne@amd.com>
- <20220824035542.706433-4-nava.kishore.manne@amd.com>
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-In-Reply-To: <20220824035542.706433-4-nava.kishore.manne@amd.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220824124615.223158-1-xu.xin16@zte.com.cn>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Use subject prefixes matching the subsystem (git log --oneline -- ...).
+On Wed, Aug 24, 2022 at 12:46:15PM +0000, xu xin wrote:
+>  #ifdef CONFIG_KSM
+>  	ONE("ksm_merging_pages",  S_IRUSR, proc_pid_ksm_merging_pages),
+> +	ONE("ksm_rmp_items",  S_IRUSR, proc_pid_ksm_rmp_items),
 
-"bindings" is no correct.
+You misspelled "rmap" in the file name.
 
-On 24/08/2022 06:55, Nava kishore Manne wrote:
-> Updates binding document for the zynqmp afi config node to handle the
-> PS_PL Bus-width and resets.
+> +		/*
+> +		 * Represent how many pages are checked for ksm merging
+> +		 * including merged and not merged.
+> +		 */
+> +		unsigned long ksm_rmp_items;
 
-Use imperative language:
-https://elixir.bootlin.com/linux/v5.17.1/source/Documentation/process/submitting-patches.rst#L95
-> 
-> Signed-off-by: Nava kishore Manne <nava.kishore.manne@amd.com>
-> ---
->  .../bindings/firmware/xilinx/xlnx,zynqmp-firmware.yaml     | 7 +++++++
->  1 file changed, 7 insertions(+)
-> 
-> diff --git a/Documentation/devicetree/bindings/firmware/xilinx/xlnx,zynqmp-firmware.yaml b/Documentation/devicetree/bindings/firmware/xilinx/xlnx,zynqmp-firmware.yaml
-> index f14f7b454f07..9504665cad95 100644
-> --- a/Documentation/devicetree/bindings/firmware/xilinx/xlnx,zynqmp-firmware.yaml
-> +++ b/Documentation/devicetree/bindings/firmware/xilinx/xlnx,zynqmp-firmware.yaml
-> @@ -59,6 +59,13 @@ properties:
->        controller.
->      type: object
->  
-> +  zynqmp-fpga:
+Also here.
 
-Just: fpga
-
-> +    $ref: /schemas/fpga/xlnx,zynqmp-afi-fpga.yaml#
-> +    description: The Zynq UltraScale+ MPSoC Processing System core provides
-> +      access from PL masters to PS internal peripherals, and memory through
-> +      AXI FIFO interface(AFI)
-> +    type: object
-> +
->  required:
->    - compatible
->  
-
-
-Best regards,
-Krzysztof
