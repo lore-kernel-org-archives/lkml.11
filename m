@@ -2,325 +2,147 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0D7BFC32793
-	for <linux-kernel@archiver.kernel.org>; Wed, 24 Aug 2022 01:36:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B71DDC32793
+	for <linux-kernel@archiver.kernel.org>; Wed, 24 Aug 2022 01:36:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233651AbiHXBgY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 21:36:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35470 "EHLO
+        id S233704AbiHXBgt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 23 Aug 2022 21:36:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36178 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231789AbiHXBgS (ORCPT
+        with ESMTP id S231492AbiHXBgj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 21:36:18 -0400
-Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C13295726A
-        for <linux-kernel@vger.kernel.org>; Tue, 23 Aug 2022 18:36:15 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1661304975; x=1692840975;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=3+qPs/5QyeFb1goMIJHFz7ynV4pK6U2kWEv6pwTsLkE=;
-  b=hU2eQv87F4+vMwtYyEWrruGDuYkO2NysiiYF8qXA6tWIbLB1iJ5Yd6x4
-   i9TcmSsTinXdg0m3MbjLLK+Oa0VXBUL5nEqw6lS+l84fJOwdD3UNyvm1i
-   uQTUlzT9BqKVyTG2XgfnnbMBbTaxtBTp70mOjTWj65QAI5jcpv4zQOFkT
-   RFwUSDGYmCDynPFdtuSZ2ym0y9nWyPWau0DGSP+5GU2/w+6pUtvsFP/Ep
-   SPM12neCBPtzihHOmScC5x0rh77/aXU9WFwDngN+nGU8rNWhinX5cWVID
-   kOJ/l5waB+Y/VweMGaOUcPaCHbG40fVWY1V62jRbD0dDyylLU+kB2fCGB
-   w==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10448"; a="273590465"
-X-IronPort-AV: E=Sophos;i="5.93,259,1654585200"; 
-   d="scan'208";a="273590465"
-Received: from orsmga001.jf.intel.com ([10.7.209.18])
-  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Aug 2022 18:36:15 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.93,259,1654585200"; 
-   d="scan'208";a="642665390"
-Received: from lkp-server02.sh.intel.com (HELO 9bbcefcddf9f) ([10.239.97.151])
-  by orsmga001.jf.intel.com with ESMTP; 23 Aug 2022 18:36:13 -0700
-Received: from kbuild by 9bbcefcddf9f with local (Exim 4.96)
-        (envelope-from <lkp@intel.com>)
-        id 1oQfJV-0000oj-0D;
-        Wed, 24 Aug 2022 01:36:13 +0000
-Date:   Wed, 24 Aug 2022 09:35:37 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Chao Peng <chao.p.peng@linux.intel.com>
-Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
-        linux-kernel@vger.kernel.org,
-        Isaku Yamahata <isaku.yamahata@intel.com>
-Subject: [intel-tdx:kvm-upstream-workaround 142/314]
- arch/riscv/kvm/../../../virt/kvm/kvm_main.c:4971:1: warning: unused label
- 'arch_vm_ioctl'
-Message-ID: <202208240949.9U8ot1xY-lkp@intel.com>
+        Tue, 23 Aug 2022 21:36:39 -0400
+Received: from mail-pj1-x102c.google.com (mail-pj1-x102c.google.com [IPv6:2607:f8b0:4864:20::102c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 60F985F12C
+        for <linux-kernel@vger.kernel.org>; Tue, 23 Aug 2022 18:36:37 -0700 (PDT)
+Received: by mail-pj1-x102c.google.com with SMTP id r15-20020a17090a1bcf00b001fabf42a11cso67755pjr.3
+        for <linux-kernel@vger.kernel.org>; Tue, 23 Aug 2022 18:36:37 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc;
+        bh=sPgJhzknX9KkK1+l1jl2WFywz4m8XSqoIA+b/BXLQkc=;
+        b=hSEJa76VxY4ARwf5o/RROvxyNXxd4dBc+FOiC9xDnUycyCZMhf60/UKhxohf8dhqyF
+         n09t/mpF6Nx+wDNqwYab1JPHxfw/6iqhHiLZuaysJg/wsRror4KSZQDEQALEFezK9Fhk
+         0udhbuE2p+cYYJXD8MSwgfc13oa1XfWiGbRpfKF6e+Lze4J1l1m8a4fwgpABzfUGQ15D
+         lgIT/4WDwL9C8stVTPFH4/yiIGdWrTJwCyGFXSnr3ISxHIri3GqP7vLOaR79CDYdDj3k
+         16r4vEXDA4GGwYjm79Va3qhhzgmiBGBGtiHR4LqGZ340sx4BrTSHpJOvOjRGTOzpPguF
+         +yEQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc;
+        bh=sPgJhzknX9KkK1+l1jl2WFywz4m8XSqoIA+b/BXLQkc=;
+        b=WXdGa59L37HwuKozbvOaJmRv1RqdwdXntcRvABYHHFAheQN6b1aDWUbFYc1jg0OmUX
+         r2c+IuawwszvpdG0ZB+yZ5uOoZaXTs7qBE4vVGszpBK1Tx7Zekd+Tr0iNUXtpJpKdLFW
+         UxT2WMjxGQyIw7p0sIXreE0mpNaHpBgGUHzL9A/fyPg6RFZLjnwLHPzB1TO82tSCdXKK
+         zYJga75/tXHCgZRTioWr4N5COSloDNGYywC5/45r/ngUF7QIb2R5ERCdEdfOW6yNwclF
+         SREPZD2XFbTiTkdG9Ip9cpVFgpPhDbjzgIJTNWi0Ke1Iv5T/qCQRw0XHWet0RrWDGOI5
+         QlFA==
+X-Gm-Message-State: ACgBeo0T7ZR9yOaI64bXnftKlCFbbwDIoJkiiTibt54X3BY3o5hgsVac
+        DeglymYCUJ5AHmrsosyBNCQ7lA9bGfHonI/O40KEhJkw5sg=
+X-Google-Smtp-Source: AA6agR5KeTtro0vljw3ngt/Pn1ZvFqILmQCV7K0BdzzugiF6EpX2/XGSQahgO4BrjN1PBdN1BzMLZYpGO3lHdxLWg2k=
+X-Received: by 2002:a17:90a:c381:b0:1fb:c32:6324 with SMTP id
+ h1-20020a17090ac38100b001fb0c326324mr5707376pjt.21.1661304996807; Tue, 23 Aug
+ 2022 18:36:36 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+References: <000000000000a6f34a05e6efcd01@google.com>
+In-Reply-To: <000000000000a6f34a05e6efcd01@google.com>
+From:   Yang Shi <shy828301@gmail.com>
+Date:   Tue, 23 Aug 2022 18:36:24 -0700
+Message-ID: <CAHbLzkrkaOcYB7yTSp4w91rkOZA2pmysWb5-RvVNdvi_r28XRQ@mail.gmail.com>
+Subject: Re: [syzbot] WARNING in split_huge_page_to_list (2)
+To:     syzbot <syzbot+07a218429c8d19b1fb25@syzkaller.appspotmail.com>
+Cc:     akpm@linux-foundation.org, linux-kernel@vger.kernel.org,
+        linux-mm@kvack.org, syzkaller-bugs@googlegroups.com
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   https://github.com/intel/tdx.git kvm-upstream-workaround
-head:   552dd80c48f67ca01bcdd10667e0c11efd375177
-commit: 303b911206dd2a12b1a4fdee94044dc5a6fa36a3 [142/314] KVM: Register/unregister the guest private memory regions
-config: riscv-randconfig-r023-20220823 (https://download.01.org/0day-ci/archive/20220824/202208240949.9U8ot1xY-lkp@intel.com/config)
-compiler: clang version 16.0.0 (https://github.com/llvm/llvm-project b04d01c009d7f66bcca9138d2ce40999eedf104d)
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # install riscv cross compiling tool for clang build
-        # apt-get install binutils-riscv-linux-gnu
-        # https://github.com/intel/tdx/commit/303b911206dd2a12b1a4fdee94044dc5a6fa36a3
-        git remote add intel-tdx https://github.com/intel/tdx.git
-        git fetch --no-tags intel-tdx kvm-upstream-workaround
-        git checkout 303b911206dd2a12b1a4fdee94044dc5a6fa36a3
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=riscv SHELL=/bin/bash
+On Tue, Aug 23, 2022 at 3:08 PM syzbot
+<syzbot+07a218429c8d19b1fb25@syzkaller.appspotmail.com> wrote:
+>
+> Hello,
+>
+> syzbot found the following issue on:
+>
+> HEAD commit:    680fb5b009e8 Merge tag 'arm64-upstream' into for-kernelci
+> git tree:       git://git.kernel.org/pub/scm/linux/kernel/git/arm64/linux.git for-kernelci
+> console output: https://syzkaller.appspot.com/x/log.txt?x=10ef7dc3080000
+> kernel config:  https://syzkaller.appspot.com/x/.config?x=4557ad2600fc45f4
+> dashboard link: https://syzkaller.appspot.com/bug?extid=07a218429c8d19b1fb25
+> compiler:       Debian clang version 13.0.1-++20220126092033+75e33f71c2da-1~exp1~20220126212112.63, GNU ld (GNU Binutils for Debian) 2.35.2
+> userspace arch: arm64
+> syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=17993aa5080000
+> C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=16521a3d080000
+>
+> IMPORTANT: if you fix the issue, please add the following tag to the commit:
+> Reported-by: syzbot+07a218429c8d19b1fb25@syzkaller.appspotmail.com
+>
+> raw: 05ffc00000010801 0000000000000000 dead000000000122 0000000000000000
+> raw: 0000000000000000 0000000000000000 00000002ffffffff 0000000000000000
+> page dumped because: VM_WARN_ON_ONCE_PAGE(is_hzp)
+> ------------[ cut here ]------------
+> WARNING: CPU: 1 PID: 3025 at mm/huge_memory.c:2555 split_huge_page_to_list+0x310/0xe2c mm/huge_memory.c:2555
+> Modules linked in:
+> CPU: 1 PID: 3025 Comm: syz-executor201 Not tainted 5.19.0-rc8-syzkaller-01618-g680fb5b009e8 #0
+> Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 06/20/2022
+> pstate: 60400005 (nZCv daif +PAN -UAO -TCO -DIT -SSBS BTYPE=--)
+> pc : split_huge_page_to_list+0x310/0xe2c mm/huge_memory.c:2555
+> lr : split_huge_page_to_list+0x308/0xe2c mm/huge_memory.c:2555
+> sp : ffff80001321bba0
+> x29: ffff80001321bbf0 x28: 0000000000400000 x27: 0000000000000001
+> x26: ffff80000ceda000 x25: 05ffc00000000000 x24: ffff80000d8c1000
+> x23: fffffc0003300000 x22: ffff0001ff012d40 x21: fffffc0003304400
+> x20: 0000000000000000 x19: fffffc0003300000 x18: 00000000000000c0
+> x17: ffff80000dcfd698 x16: ffff80000db3b658 x15: ffff0000c6708000
+> x14: 0000000000000000 x13: 00000000ffffffff x12: ffff0000c6708000
+> x11: ff808000081bf324 x10: 0000000000000000 x9 : 461f0eca467c0e00
+> x8 : 0000000000000001 x7 : ffff8000081937c0 x6 : 0000000000000000
+> x5 : 0000000000000080 x4 : 0000000000000001 x3 : 0000000000000000
+> x2 : 0000000000000000 x1 : 0000000100000000 x0 : 0000000000000031
+> Call trace:
+>  split_huge_page_to_list+0x310/0xe2c mm/huge_memory.c:2555
+>  split_huge_page include/linux/huge_mm.h:206 [inline]
+>  try_to_split_thp_page mm/memory-failure.c:1488 [inline]
+>  memory_failure+0x510/0x14cc mm/memory-failure.c:1870
+>  madvise_inject_error+0x260/0x334 mm/madvise.c:1115
 
-If you fix the issue, kindly add following tag where applicable
-Reported-by: kernel test robot <lkp@intel.com>
+MADV_HWPOISON is called on a huge zero page. The warning was raised
+for this case intentionally (it was a BUG before), see commit
+478d134e9506c7e9bfe2830ed03dd85e97966313 ("mm/huge_memory: do not
+overkill when splitting huge_zero_page").
 
-All warnings (new ones prefixed by >>):
-
->> arch/riscv/kvm/../../../virt/kvm/kvm_main.c:4971:1: warning: unused label 'arch_vm_ioctl' [-Wunused-label]
-   arch_vm_ioctl:
-   ^~~~~~~~~~~~~~
-   1 warning generated.
-
-
-vim +/arch_vm_ioctl +4971 arch/riscv/kvm/../../../virt/kvm/kvm_main.c
-
-  4747	
-  4748	static long kvm_vm_ioctl(struct file *filp,
-  4749				   unsigned int ioctl, unsigned long arg)
-  4750	{
-  4751		struct kvm *kvm = filp->private_data;
-  4752		void __user *argp = (void __user *)arg;
-  4753		int r;
-  4754	
-  4755		if (kvm->mm != current->mm || kvm->vm_dead)
-  4756			return -EIO;
-  4757		switch (ioctl) {
-  4758		case KVM_CREATE_VCPU:
-  4759			r = kvm_vm_ioctl_create_vcpu(kvm, arg);
-  4760			break;
-  4761		case KVM_ENABLE_CAP: {
-  4762			struct kvm_enable_cap cap;
-  4763	
-  4764			r = -EFAULT;
-  4765			if (copy_from_user(&cap, argp, sizeof(cap)))
-  4766				goto out;
-  4767			r = kvm_vm_ioctl_enable_cap_generic(kvm, &cap);
-  4768			break;
-  4769		}
-  4770		case KVM_SET_USER_MEMORY_REGION: {
-  4771			struct kvm_user_mem_region mem;
-  4772			unsigned long size;
-  4773			u32 flags;
-  4774	
-  4775			kvm_sanity_check_user_mem_region_alias();
-  4776	
-  4777			memset(&mem, 0, sizeof(mem));
-  4778	
-  4779			r = -EFAULT;
-  4780	
-  4781			if (get_user(flags,
-  4782				(u32 __user *)(argp + offsetof(typeof(mem), flags))))
-  4783				goto out;
-  4784	
-  4785			if (flags & KVM_MEM_PRIVATE) {
-  4786				r = -EINVAL;
-  4787				goto out;
-  4788			}
-  4789	
-  4790			size = sizeof(struct kvm_userspace_memory_region);
-  4791	
-  4792			if (copy_from_user(&mem, argp, size))
-  4793				goto out;
-  4794	
-  4795			r = -EINVAL;
-  4796			if ((flags ^ mem.flags) & KVM_MEM_PRIVATE)
-  4797				goto out;
-  4798	
-  4799			r = kvm_vm_ioctl_set_memory_region(kvm, &mem);
-  4800			break;
-  4801		}
-  4802	#ifdef CONFIG_HAVE_KVM_PRIVATE_MEM
-  4803		case KVM_MEMORY_ENCRYPT_REG_REGION:
-  4804		case KVM_MEMORY_ENCRYPT_UNREG_REGION: {
-  4805			struct kvm_enc_region region;
-  4806	
-  4807			if (!kvm_arch_private_mem_supported(kvm))
-  4808				goto arch_vm_ioctl;
-  4809	
-  4810			r = -EFAULT;
-  4811			if (copy_from_user(&region, argp, sizeof(region)))
-  4812				goto out;
-  4813	
-  4814			r = kvm_vm_ioctl_set_encrypted_region(kvm, ioctl, &region);
-  4815			break;
-  4816		}
-  4817	#endif
-  4818		case KVM_GET_DIRTY_LOG: {
-  4819			struct kvm_dirty_log log;
-  4820	
-  4821			r = -EFAULT;
-  4822			if (copy_from_user(&log, argp, sizeof(log)))
-  4823				goto out;
-  4824			r = kvm_vm_ioctl_get_dirty_log(kvm, &log);
-  4825			break;
-  4826		}
-  4827	#ifdef CONFIG_KVM_GENERIC_DIRTYLOG_READ_PROTECT
-  4828		case KVM_CLEAR_DIRTY_LOG: {
-  4829			struct kvm_clear_dirty_log log;
-  4830	
-  4831			r = -EFAULT;
-  4832			if (copy_from_user(&log, argp, sizeof(log)))
-  4833				goto out;
-  4834			r = kvm_vm_ioctl_clear_dirty_log(kvm, &log);
-  4835			break;
-  4836		}
-  4837	#endif
-  4838	#ifdef CONFIG_KVM_MMIO
-  4839		case KVM_REGISTER_COALESCED_MMIO: {
-  4840			struct kvm_coalesced_mmio_zone zone;
-  4841	
-  4842			r = -EFAULT;
-  4843			if (copy_from_user(&zone, argp, sizeof(zone)))
-  4844				goto out;
-  4845			r = kvm_vm_ioctl_register_coalesced_mmio(kvm, &zone);
-  4846			break;
-  4847		}
-  4848		case KVM_UNREGISTER_COALESCED_MMIO: {
-  4849			struct kvm_coalesced_mmio_zone zone;
-  4850	
-  4851			r = -EFAULT;
-  4852			if (copy_from_user(&zone, argp, sizeof(zone)))
-  4853				goto out;
-  4854			r = kvm_vm_ioctl_unregister_coalesced_mmio(kvm, &zone);
-  4855			break;
-  4856		}
-  4857	#endif
-  4858		case KVM_IRQFD: {
-  4859			struct kvm_irqfd data;
-  4860	
-  4861			r = -EFAULT;
-  4862			if (copy_from_user(&data, argp, sizeof(data)))
-  4863				goto out;
-  4864			r = kvm_irqfd(kvm, &data);
-  4865			break;
-  4866		}
-  4867		case KVM_IOEVENTFD: {
-  4868			struct kvm_ioeventfd data;
-  4869	
-  4870			r = -EFAULT;
-  4871			if (copy_from_user(&data, argp, sizeof(data)))
-  4872				goto out;
-  4873			r = kvm_ioeventfd(kvm, &data);
-  4874			break;
-  4875		}
-  4876	#ifdef CONFIG_HAVE_KVM_MSI
-  4877		case KVM_SIGNAL_MSI: {
-  4878			struct kvm_msi msi;
-  4879	
-  4880			r = -EFAULT;
-  4881			if (copy_from_user(&msi, argp, sizeof(msi)))
-  4882				goto out;
-  4883			r = kvm_send_userspace_msi(kvm, &msi);
-  4884			break;
-  4885		}
-  4886	#endif
-  4887	#ifdef __KVM_HAVE_IRQ_LINE
-  4888		case KVM_IRQ_LINE_STATUS:
-  4889		case KVM_IRQ_LINE: {
-  4890			struct kvm_irq_level irq_event;
-  4891	
-  4892			r = -EFAULT;
-  4893			if (copy_from_user(&irq_event, argp, sizeof(irq_event)))
-  4894				goto out;
-  4895	
-  4896			r = kvm_vm_ioctl_irq_line(kvm, &irq_event,
-  4897						ioctl == KVM_IRQ_LINE_STATUS);
-  4898			if (r)
-  4899				goto out;
-  4900	
-  4901			r = -EFAULT;
-  4902			if (ioctl == KVM_IRQ_LINE_STATUS) {
-  4903				if (copy_to_user(argp, &irq_event, sizeof(irq_event)))
-  4904					goto out;
-  4905			}
-  4906	
-  4907			r = 0;
-  4908			break;
-  4909		}
-  4910	#endif
-  4911	#ifdef CONFIG_HAVE_KVM_IRQ_ROUTING
-  4912		case KVM_SET_GSI_ROUTING: {
-  4913			struct kvm_irq_routing routing;
-  4914			struct kvm_irq_routing __user *urouting;
-  4915			struct kvm_irq_routing_entry *entries = NULL;
-  4916	
-  4917			r = -EFAULT;
-  4918			if (copy_from_user(&routing, argp, sizeof(routing)))
-  4919				goto out;
-  4920			r = -EINVAL;
-  4921			if (!kvm_arch_can_set_irq_routing(kvm))
-  4922				goto out;
-  4923			if (routing.nr > KVM_MAX_IRQ_ROUTES)
-  4924				goto out;
-  4925			if (routing.flags)
-  4926				goto out;
-  4927			if (routing.nr) {
-  4928				urouting = argp;
-  4929				entries = vmemdup_user(urouting->entries,
-  4930						       array_size(sizeof(*entries),
-  4931								  routing.nr));
-  4932				if (IS_ERR(entries)) {
-  4933					r = PTR_ERR(entries);
-  4934					goto out;
-  4935				}
-  4936			}
-  4937			r = kvm_set_irq_routing(kvm, entries, routing.nr,
-  4938						routing.flags);
-  4939			kvfree(entries);
-  4940			break;
-  4941		}
-  4942	#endif /* CONFIG_HAVE_KVM_IRQ_ROUTING */
-  4943		case KVM_CREATE_DEVICE: {
-  4944			struct kvm_create_device cd;
-  4945	
-  4946			r = -EFAULT;
-  4947			if (copy_from_user(&cd, argp, sizeof(cd)))
-  4948				goto out;
-  4949	
-  4950			r = kvm_ioctl_create_device(kvm, &cd);
-  4951			if (r)
-  4952				goto out;
-  4953	
-  4954			r = -EFAULT;
-  4955			if (copy_to_user(argp, &cd, sizeof(cd)))
-  4956				goto out;
-  4957	
-  4958			r = 0;
-  4959			break;
-  4960		}
-  4961		case KVM_CHECK_EXTENSION:
-  4962			r = kvm_vm_ioctl_check_extension_generic(kvm, arg);
-  4963			break;
-  4964		case KVM_RESET_DIRTY_RINGS:
-  4965			r = kvm_vm_ioctl_reset_dirty_pages(kvm);
-  4966			break;
-  4967		case KVM_GET_STATS_FD:
-  4968			r = kvm_vm_ioctl_get_stats_fd(kvm);
-  4969			break;
-  4970		default:
-> 4971	arch_vm_ioctl:
-  4972			r = kvm_arch_vm_ioctl(filp, ioctl, arg);
-  4973		}
-  4974	out:
-  4975		return r;
-  4976	}
-  4977	
-
--- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+>  do_madvise+0x258/0x5ac mm/madvise.c:1398
+>  __do_sys_madvise mm/madvise.c:1423 [inline]
+>  __se_sys_madvise mm/madvise.c:1421 [inline]
+>  __arm64_sys_madvise+0x2c/0x40 mm/madvise.c:1421
+>  __invoke_syscall arch/arm64/kernel/syscall.c:38 [inline]
+>  invoke_syscall arch/arm64/kernel/syscall.c:52 [inline]
+>  el0_svc_common+0x138/0x220 arch/arm64/kernel/syscall.c:142
+>  do_el0_svc+0x48/0x154 arch/arm64/kernel/syscall.c:206
+>  el0_svc+0x58/0x14c arch/arm64/kernel/entry-common.c:624
+>  el0t_64_sync_handler+0x84/0xf0 arch/arm64/kernel/entry-common.c:642
+>  el0t_64_sync+0x18c/0x190
+> irq event stamp: 11566
+> hardirqs last  enabled at (11565): [<ffff8000081bd590>] __up_console_sem+0xb0/0xfc kernel/printk/printk.c:264
+> hardirqs last disabled at (11566): [<ffff80000bfa4314>] el1_dbg+0x24/0x5c arch/arm64/kernel/entry-common.c:395
+> softirqs last  enabled at (11536): [<ffff8000080102e4>] _stext+0x2e4/0x37c
+> softirqs last disabled at (11527): [<ffff800008101e20>] do_softirq_own_stack include/asm-generic/softirq_stack.h:10 [inline]
+> softirqs last disabled at (11527): [<ffff800008101e20>] invoke_softirq+0x70/0xbc kernel/softirq.c:452
+> ---[ end trace 0000000000000000 ]---
+> Memory Failure: 0x10c110: thp split failed
+> Memory failure: 0x10c110: recovery action for unsplit thp: Ignored
+>
+>
+> ---
+> This report is generated by a bot. It may contain errors.
+> See https://goo.gl/tpsmEJ for more information about syzbot.
+> syzbot engineers can be reached at syzkaller@googlegroups.com.
+>
+> syzbot will keep track of this issue. See:
+> https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
+> syzbot can test patches for this issue, for details see:
+> https://goo.gl/tpsmEJ#testing-patches
+>
