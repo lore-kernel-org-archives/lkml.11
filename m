@@ -2,207 +2,195 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2F15FC38142
-	for <linux-kernel@archiver.kernel.org>; Wed, 24 Aug 2022 16:03:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0E82DC32792
+	for <linux-kernel@archiver.kernel.org>; Wed, 24 Aug 2022 16:07:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239073AbiHXQDc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 24 Aug 2022 12:03:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48894 "EHLO
+        id S239336AbiHXQH1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 24 Aug 2022 12:07:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53734 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237876AbiHXQD3 (ORCPT
+        with ESMTP id S239177AbiHXQHZ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 24 Aug 2022 12:03:29 -0400
-Received: from vm3.sequanux.org (static.55.155.9.5.clients.your-server.de [5.9.155.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 20BF27D1CC;
-        Wed, 24 Aug 2022 09:03:27 -0700 (PDT)
-Received: from localhost (localhost.localdomain [127.0.0.1])
-        by vm3.sequanux.org (Postfix) with ESMTP id 5B9B21086F5;
-        Wed, 24 Aug 2022 18:03:02 +0200 (CEST)
-X-Virus-Scanned: Debian amavisd-new at vm3.sequanux.org
-Received: from vm3.sequanux.org ([127.0.0.1])
-        by localhost (vm3.sequanux.org [127.0.0.1]) (amavisd-new, port 10024)
-        with ESMTP id qh_e4nFra39O; Wed, 24 Aug 2022 18:02:36 +0200 (CEST)
-Received: from localhost (softwrestling.org [95.216.36.37])
-        by vm3.sequanux.org (Postfix) with ESMTPSA id 7D7391086F3;
-        Wed, 24 Aug 2022 18:02:36 +0200 (CEST)
-Date:   Wed, 24 Aug 2022 18:02:25 +0200
-From:   simon.guinot@sequanux.org
-To:     Hans de Goede <hdegoede@redhat.com>
-Cc:     Henning Schild <henning.schild@siemens.com>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Bartosz Golaszewski <brgl@bgdev.pl>,
-        Pavel Machek <pavel@ucw.cz>, Mark Gross <markgross@kernel.org>,
-        Lee Jones <lee@kernel.org>, linux-gpio@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-leds@vger.kernel.org,
-        platform-driver-x86@vger.kernel.org,
-        Sheng-Yuan Huang <syhuang3@nuvoton.com>,
-        Tasanakorn Phaipool <tasanakorn@gmail.com>
-Subject: Re: [PATCH v4 1/5] gpio-f7188x: Add GPIO support for Nuvoton NCT6116
-Message-ID: <YwZLkeu2RmJsDPC+@76cbfcf04d45>
-References: <20220823102344.17624-1-henning.schild@siemens.com>
- <20220823102344.17624-2-henning.schild@siemens.com>
- <YwToilxquEZGqzQD@smile.fi.intel.com>
- <20220823165459.143e1c30@md1za8fc.ad001.siemens.net>
- <YwYjXzsSHNe+J3aO@76cbfcf04d45>
- <20220824155038.5aa19495@md1za8fc.ad001.siemens.net>
- <a001efb5-95a3-d89d-32bd-557b6f11bb80@redhat.com>
- <20220824161757.4ca3bb97@md1za8fc.ad001.siemens.net>
- <3ec46cab-c775-824c-6bad-6fdddeea6e6a@redhat.com>
+        Wed, 24 Aug 2022 12:07:25 -0400
+Received: from hutie.ust.cz (hutie.ust.cz [185.8.165.127])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2536280B5A;
+        Wed, 24 Aug 2022 09:07:21 -0700 (PDT)
+From:   =?UTF-8?q?Martin=20Povi=C5=A1er?= <povik+lin@cutebit.org>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=cutebit.org; s=mail;
+        t=1661357238; bh=W43M9roquub8pfLHiJTGSXys+lf2d6CwWba52zkTpqY=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References;
+        b=etpO3InXRNR5P5/6DiOrTjwgmHlt3HSrEZz/fkszaXiJvs2b+M3/F6tVAJOouB8Xy
+         Ra8/o8gCe56HRl2/vU6YneDYPwGerxqzDHt/Ybhmw2JKiqz9ZM8TjN9NUsDI7yv1sy
+         GBy/QPwnwLZiPicH4CFsbrxmyvW8uKqRLfrgisiY=
+To:     =?UTF-8?q?Martin=20Povi=C5=A1er?= <povik+lin@cutebit.org>,
+        Liam Girdwood <lgirdwood@gmail.com>,
+        Mark Brown <broonie@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Hector Martin <marcan@marcan.st>,
+        Sven Peter <sven@svenpeter.dev>,
+        Philipp Zabel <p.zabel@pengutronix.de>
+Cc:     Alyssa Rosenzweig <alyssa@rosenzweig.io>, asahi@lists.linux.dev,
+        alsa-devel@alsa-project.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH v3 1/4] dt-bindings: sound: Add Apple MCA I2S transceiver
+Date:   Wed, 24 Aug 2022 18:07:12 +0200
+Message-Id: <20220824160715.95779-2-povik+lin@cutebit.org>
+In-Reply-To: <20220824160715.95779-1-povik+lin@cutebit.org>
+References: <20220824160715.95779-1-povik+lin@cutebit.org>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="M3dzRQFvnwZDbVpO"
-Content-Disposition: inline
-In-Reply-To: <3ec46cab-c775-824c-6bad-6fdddeea6e6a@redhat.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+Add binding schema for MCA I2S transceiver found on Apple M1 and other
+chips.
 
---M3dzRQFvnwZDbVpO
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+Signed-off-by: Martin Povišer <povik+lin@cutebit.org>
+---
+ .../devicetree/bindings/sound/apple,mca.yaml  | 131 ++++++++++++++++++
+ 1 file changed, 131 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/sound/apple,mca.yaml
 
-On Wed, Aug 24, 2022 at 04:24:46PM +0200, Hans de Goede wrote:
-> Hi,
->=20
-> On 8/24/22 16:17, Henning Schild wrote:
-> > Am Wed, 24 Aug 2022 15:54:28 +0200
-> > schrieb Hans de Goede <hdegoede@redhat.com>:
-> >=20
-> >> Hi Henning,
-> >>
-> >> On 8/24/22 15:50, Henning Schild wrote:
-> >>> Am Wed, 24 Aug 2022 15:10:55 +0200
-> >>> schrieb simon.guinot@sequanux.org:
-> >>>  =20
-> >>>> On Tue, Aug 23, 2022 at 04:54:59PM +0200, Henning Schild wrote: =20
-> >>>>> Am Tue, 23 Aug 2022 17:47:38 +0300
-> >>>>> schrieb Andy Shevchenko <andriy.shevchenko@linux.intel.com>:   =20
-> >>>>
-> >>>> Hi Andy,
-> >>>>
-> >>>> Thanks for this new version. It is looking good to me.
-> >>>> =20
-> >>>>>    =20
-> >>>>>> On Tue, Aug 23, 2022 at 12:23:40PM +0200, Henning Schild wrote:
-> >>>>>>  =20
-> >>>>>>> Add GPIO support for Nuvoton NCT6116 chip. Nuvoton SuperIO
-> >>>>>>> chips are very similar to the ones from Fintek. In other
-> >>>>>>> subsystems they also share drivers and are called a family of
-> >>>>>>> drivers.
-> >>>>>>>
-> >>>>>>> For the GPIO subsystem the only difference is that the direction
-> >>>>>>> bit is reversed and that there is only one data bit per pin. On
-> >>>>>>> the SuperIO level the logical device is another one.
-> >>>>>>>
-> >>>>>>> On a chip level we do not have a manufacturer ID to check and
-> >>>>>>> also no revision.     =20
-> >>>>>>
-> >>>>>> ...
-> >>>>>>    =20
-> >>>>>>> - * GPIO driver for Fintek Super-I/O F71869, F71869A, F71882,
-> >>>>>>> F71889 and F81866
-> >>>>>>> + * GPIO driver for Fintek and Nuvoton Super-I/O chips     =20
-> >>>>>>
-> >>>>>> I'm not sure it's good idea to drop it from here. It means reader
-> >>>>>> has to get this info in a hard way.
-> >>>>>>
-> >>>>>> ...   =20
-> >>>>>
-> >>>>> Let us see what others say. I wanted to keep this in line with
-> >>>>> what Kconfig says and the oneliner in the Kconfig was getting
-> >>>>> pretty longish. Hence i decided to shorten that. Other drivers
-> >>>>> also seem to not list all the possible chips in many places, it
-> >>>>> is all maint effort when a new chips is added and the list is in
-> >>>>> like 5 places.   =20
-> >>>>
-> >>>> I agree with you that we can drop this line. It was already
-> >>>> incomplete and the information is quite readable a few lines below
-> >>>> in both the define list and the chip enumeration.
-> >>>> =20
-> >>>>>    =20
-> >>>>>>> +#define gpio_dir_invert(type)	((type) =3D=3D nct6116d)
-> >>>>>>> +#define gpio_data_single(type)	((type) =3D=3D nct6116d)
-> >>>>>>> =20
-> >>>>>>
-> >>>>>> What's prevents us to add a proper prefix to these? I don't like
-> >>>>>> the idea of them having "gpio" prefix.
-> >>>>>>
-> >>>>>> ...
-> >>>>>>    =20
-> >>>>>>> +		pr_info(DRVNAME ": Unsupported device
-> >>>>>>> 0x%04x\n", devid);
-> >>>>>>> +			pr_debug(DRVNAME ": Not a Fintek
-> >>>>>>> device at 0x%08x\n", addr);
-> >>>>>>> +	pr_info(DRVNAME ": Found %s at %#x\n",
-> >>>>>>> +		pr_info(DRVNAME ":   revision %d\n",     =20
-> >>>>>>
-> >>>>>> Can we, please, utilize pr_fmt()?
-> >>>>>>    =20
-> >>>>>>> +			(int)superio_inb(addr,
-> >>>>>>> SIO_FINTEK_DEVREV));     =20
-> >>>>>>
-> >>>>>> Explicit casting in printf() means wrong specifier in 99% of
-> >>>>>> cases.  =20
-> >>>>>
-> >>>>> For all the other comments i will wait for a second opinion. I
-> >>>>> specifically did not change existing code for more than the
-> >>>>> functional changes needed. And a bit of checkpatch.pl fixing.
-> >>>>> Beautification could be done on the way but would only cause
-> >>>>> inconsistency. That driver is what it is, if someone wants to
-> >>>>> overhaul the style ... that should be another patch. One likely
-> >>>>> not coming from me.   =20
-> >>>>
-> >>>> About the int cast, I think you can drop it while you are updating
-> >>>> this line. It is unneeded. =20
-> >>>
-> >>> Ok two voices for doing that one fix along the way. I will send a v5
-> >>> and hope nobody insists on me fixing the other findings in code i
-> >>> never wrote. =20
-> >>
-> >> You did not write it, but you are using it to do hw-enablement for
-> >> your company's products. So being asked to also some touch-ups
-> >> left and right while you are at it really is not unexpected IMHO.
-> >=20
-> > Sure thing. Dropping a few characters from a line i touch anyhow is
-> > easy enough. But i.e a refactoring to pr_fmt would feel like asking too
-> > much in my book. That feels like work of the author or maintainer.
->=20
-> Right, but that assumes that the original author / maintainer is still
-> around and actively contributing which unfortunately is not always
-> the case.
+diff --git a/Documentation/devicetree/bindings/sound/apple,mca.yaml b/Documentation/devicetree/bindings/sound/apple,mca.yaml
+new file mode 100644
+index 000000000000..d5dc92b5b654
+--- /dev/null
++++ b/Documentation/devicetree/bindings/sound/apple,mca.yaml
+@@ -0,0 +1,131 @@
++# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
++%YAML 1.2
++---
++$id: http://devicetree.org/schemas/sound/apple,mca.yaml#
++$schema: http://devicetree.org/meta-schemas/core.yaml#
++
++title: Apple MCA I2S transceiver
++
++description: |
++  MCA is an I2S transceiver peripheral found on M1 and other Apple chips. It is
++  composed of a number of identical clusters which can operate independently
++  or in an interlinked fashion. Up to 6 clusters have been seen on an MCA.
++
++maintainers:
++  - Martin Povišer <povik+lin@cutebit.org>
++
++properties:
++  compatible:
++    items:
++      - enum:
++          - apple,t6000-mca
++          - apple,t8103-mca
++      - const: apple,mca
++
++  reg:
++    items:
++      - description: Register region of the MCA clusters proper
++      - description: Register region of the DMA glue and its FIFOs
++
++  interrupts:
++    minItems: 4
++    maxItems: 6
++    description:
++      One interrupt per each cluster
++
++  '#address-cells':
++    const: 1
++
++  '#size-cells':
++    const: 0
++
++  dmas:
++    minItems: 16
++    maxItems: 24
++    description:
++      DMA channels corresponding to the SERDES units in the peripheral. They are
++      listed in groups of four per cluster, and within the group they are given
++      as associated to the TXA, RXA, TXB, RXB units.
++
++  dma-names:
++    minItems: 16
++    items:
++      - const: tx0a
++      - const: rx0a
++      - const: tx0b
++      - const: rx0b
++      - const: tx1a
++      - const: rx1a
++      - const: tx1b
++      - const: rx1b
++      - const: tx2a
++      - const: rx2a
++      - const: tx2b
++      - const: rx2b
++      - const: tx3a
++      - const: rx3a
++      - const: tx3b
++      - const: rx3b
++      - const: tx4a
++      - const: rx4a
++      - const: tx4b
++      - const: rx4b
++      - const: tx5a
++      - const: rx5a
++      - const: tx5b
++      - const: rx5b
++    description: |
++      Names for the DMA channels: 'tx'/'rx', then cluster number, then 'a'/'b'
++      based on the associated SERDES unit.
++
++  clocks:
++    minItems: 4
++    maxItems: 6
++    description:
++      Clusters' input reference clock.
++
++  resets:
++    maxItems: 1
++
++  power-domains:
++    minItems: 5
++    maxItems: 7
++    description:
++      First a general power domain for register access, then the power
++      domains of individual clusters for their operation.
++
++  '#sound-dai-cells':
++    const: 1
++
++required:
++  - compatible
++  - reg
++  - dmas
++  - dma-names
++  - clocks
++  - power-domains
++  - '#sound-dai-cells'
++
++additionalProperties: false
++
++examples:
++  - |
++    mca: i2s@9b600000 {
++      compatible = "apple,t6000-mca", "apple,mca";
++      reg = <0x9b600000 0x10000>,
++            <0x9b200000 0x20000>;
++
++      clocks = <&nco 0>, <&nco 1>, <&nco 2>, <&nco 3>;
++      power-domains = <&ps_audio_p>, <&ps_mca0>, <&ps_mca1>,
++                      <&ps_mca2>, <&ps_mca3>;
++      dmas = <&admac 0>, <&admac 1>, <&admac 2>, <&admac 3>,
++             <&admac 4>, <&admac 5>, <&admac 6>, <&admac 7>,
++             <&admac 8>, <&admac 9>, <&admac 10>, <&admac 11>,
++             <&admac 12>, <&admac 13>, <&admac 14>, <&admac 15>;
++      dma-names = "tx0a", "rx0a", "tx0b", "rx0b",
++                  "tx1a", "rx1a", "tx1b", "rx1b",
++                  "tx2a", "rx2a", "tx2b", "rx2b",
++                  "tx3a", "rx3a", "tx3b", "rx3b";
++
++      #sound-dai-cells = <1>;
++    };
+-- 
+2.33.0
 
-Actually the original author is not active but he is still keeping an
-eye on the driver :)
-
-I still review and test the patches I catch on the MLs. And I am ready
-to do some maintenance work if needed.
-
-Henning, I think you could have done the pr_fmt conversion. It is not
-a big deal and it would have been nice. But indeed, you don't have to...
-
-Simon
-
---M3dzRQFvnwZDbVpO
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQIzBAABCgAdFiEEXW8DgovlR3VS5hA0zyg/RDPmszoFAmMGS4wACgkQzyg/RDPm
-szpTlhAAxXX31W3p2E5qH5oNGNmHIqUSt+Ckv8Roe77lrNCktr+h+VqzNmfuamHW
-5XepeoEb8Fl17K5yNF2O72I5q1Z37SRwlsWblI1k53SsPFzzad3bd/3TLJiRY6KB
-Q5hjGc1ygqUAPIlEamnWBk194F0seLDnMKvj3ovO3DGst9xCgvH43p+SetJnN3P0
-q6nqlG9GxBXUw+3tijt2Szdqn6VWs8TcCynvvElaU1gGRqj9S/XbIcRBj9ASWL0d
-eLkJpT5WSvBf4M0pNgzF5P0ytWlCijb5V05/Bc9Hg+O3cA3NPXCFMwLpoXy8/UoB
-YSFrYgUtTf5vnMHZnTBVLWuXmrA/Tqq1xiBLY/jGPxa6Eqc1+r+ewkBmjq9xUBac
-5DvzHk82D9quTtIf0ETHQf/t646vvXhEHEew9IVwWYjfwvYpgMCJa1bZYr/xfGh7
-THvV7dygt2e/twQnjFLcNaJ1qWV3YKU81ASb6Sy1ccULgtL/WN8out1l/zQByQAU
-8l84emk+qaMCNX1+PHlKuOxglBiHzY4M8bBmInhyqUAKDbwPRisYD+KuqnYvXBDm
-Wj7eotUx/Czc387v+HhZvsQKBQiYRUgACf0L0qBE6NplJac4vjTaUNvcYsX4fR+b
-Ny1y9KDRoojcO1v4OeJHagdG2NXsyG+b6IG3S+W4/CSgGEr0t6o=
-=1yeY
------END PGP SIGNATURE-----
-
---M3dzRQFvnwZDbVpO--
