@@ -2,111 +2,215 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5276AC00140
-	for <linux-kernel@archiver.kernel.org>; Wed, 24 Aug 2022 10:32:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 15937C00140
+	for <linux-kernel@archiver.kernel.org>; Wed, 24 Aug 2022 10:32:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236373AbiHXKcp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 24 Aug 2022 06:32:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49932 "EHLO
+        id S236747AbiHXKcz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 24 Aug 2022 06:32:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49968 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229542AbiHXKcn (ORCPT
+        with ESMTP id S229542AbiHXKcr (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 24 Aug 2022 06:32:43 -0400
-Received: from mga06.intel.com (mga06b.intel.com [134.134.136.31])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D9CD47E814;
-        Wed, 24 Aug 2022 03:32:41 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1661337162; x=1692873162;
-  h=date:from:to:cc:subject:message-id:reply-to:references:
-   mime-version:in-reply-to;
-  bh=UArt2EM4pE0fPWswCENdaTr2KP04kl+6xHjnd6dPVIs=;
-  b=bDfsMatcpT388oU11xyWAASlre+w97FZBiFfg51ZzsSv6cC0/ToF/AHP
-   OoZok09KnuFtaKo0TyexRNMW6/agwVevHpesQftxLvx+Dk0TfvdqpJu8T
-   QBTqYP8SOiyqr6KLW7iSjyyZIQyR8q5k9ajFYyibiJpVOLFLvmgOr4Y9G
-   T+86G6sNp71SLPb35k8kQ7lAu33U+6KTf9zAGyiobZfghiSvQHCj/6j/C
-   6Y+lIkiqt/JiR+hme32jJ4iDiveGjQreUxh3RFxdPABnFKflDoqPJSpgN
-   VY92WzUcq8w6vIIVyM+8Y+dBEYXTmFzkFXHYXMWDsuPw9ffdeFeCWwnH4
-   g==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10448"; a="355658596"
-X-IronPort-AV: E=Sophos;i="5.93,260,1654585200"; 
-   d="scan'208";a="355658596"
-Received: from orsmga007.jf.intel.com ([10.7.209.58])
-  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Aug 2022 03:32:41 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.93,260,1654585200"; 
-   d="scan'208";a="605987428"
-Received: from chaop.bj.intel.com (HELO localhost) ([10.240.193.75])
-  by orsmga007.jf.intel.com with ESMTP; 24 Aug 2022 03:32:31 -0700
-Date:   Wed, 24 Aug 2022 18:27:48 +0800
-From:   Chao Peng <chao.p.peng@linux.intel.com>
-To:     Matthew Wilcox <willy@infradead.org>
-Cc:     Hugh Dickins <hughd@google.com>,
-        "Kirill A . Shutemov" <kirill.shutemov@linux.intel.com>,
-        kvm@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-mm@kvack.org, linux-fsdevel@vger.kernel.org,
-        linux-api@vger.kernel.org, linux-doc@vger.kernel.org,
-        qemu-devel@nongnu.org, linux-kselftest@vger.kernel.org,
-        Paolo Bonzini <pbonzini@redhat.com>,
-        Jonathan Corbet <corbet@lwn.net>,
-        Sean Christopherson <seanjc@google.com>,
-        Vitaly Kuznetsov <vkuznets@redhat.com>,
-        Wanpeng Li <wanpengli@tencent.com>,
-        Jim Mattson <jmattson@google.com>,
-        Joerg Roedel <joro@8bytes.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
-        x86@kernel.org, "H . Peter Anvin" <hpa@zytor.com>,
-        Jeff Layton <jlayton@kernel.org>,
-        "J . Bruce Fields" <bfields@fieldses.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Shuah Khan <shuah@kernel.org>, Mike Rapoport <rppt@kernel.org>,
-        Steven Price <steven.price@arm.com>,
-        "Maciej S . Szmigiero" <mail@maciej.szmigiero.name>,
-        Vlastimil Babka <vbabka@suse.cz>,
-        Vishal Annapurve <vannapurve@google.com>,
-        Yu Zhang <yu.c.zhang@linux.intel.com>, luto@kernel.org,
-        jun.nakajima@intel.com, dave.hansen@intel.com, ak@linux.intel.com,
-        david@redhat.com, aarcange@redhat.com, ddutile@redhat.com,
-        dhildenb@redhat.com, Quentin Perret <qperret@google.com>,
-        Michael Roth <michael.roth@amd.com>, mhocko@suse.com,
-        Muchun Song <songmuchun@bytedance.com>,
-        "Gupta, Pankaj" <pankaj.gupta@amd.com>
-Subject: Re: [PATCH v7 00/14] KVM: mm: fd-based approach for supporting KVM
- guest private memory
-Message-ID: <20220824102748.GB1385482@chaop.bj.intel.com>
-Reply-To: Chao Peng <chao.p.peng@linux.intel.com>
-References: <20220706082016.2603916-1-chao.p.peng@linux.intel.com>
- <ff5c5b97-acdf-9745-ebe5-c6609dd6322e@google.com>
- <20220818132421.6xmjqduempmxnnu2@box>
- <c6ccbb96-5849-2e2f-3b49-4ea711af525d@google.com>
- <YwIIoFJrKPBXaRDW@casper.infradead.org>
+        Wed, 24 Aug 2022 06:32:47 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D45B57F106;
+        Wed, 24 Aug 2022 03:32:45 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 8F196B8239F;
+        Wed, 24 Aug 2022 10:32:44 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D52C3C433C1;
+        Wed, 24 Aug 2022 10:32:35 +0000 (UTC)
+Message-ID: <0609dbe4-5596-ee9d-abeb-3c126e7ba755@xs4all.nl>
+Date:   Wed, 24 Aug 2022 12:32:34 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <YwIIoFJrKPBXaRDW@casper.infradead.org>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.10.0
+Subject: Re: [PATCH v3 8/9] media: videobuf2: Stop using internal dma-buf lock
+Content-Language: en-US
+To:     Dmitry Osipenko <dmitry.osipenko@collabora.com>,
+        David Airlie <airlied@linux.ie>,
+        Gerd Hoffmann <kraxel@redhat.com>,
+        Gurchetan Singh <gurchetansingh@chromium.org>,
+        Chia-I Wu <olvaffe@gmail.com>, Daniel Vetter <daniel@ffwll.ch>,
+        Daniel Almeida <daniel.almeida@collabora.com>,
+        Gert Wollny <gert.wollny@collabora.com>,
+        Gustavo Padovan <gustavo.padovan@collabora.com>,
+        Daniel Stone <daniel@fooishbar.org>,
+        Tomeu Vizoso <tomeu.vizoso@collabora.com>,
+        Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
+        Maxime Ripard <mripard@kernel.org>,
+        Thomas Zimmermann <tzimmermann@suse.de>,
+        Rob Clark <robdclark@gmail.com>,
+        Sumit Semwal <sumit.semwal@linaro.org>,
+        =?UTF-8?Q?Christian_K=c3=b6nig?= <christian.koenig@amd.com>,
+        "Pan, Xinhui" <Xinhui.Pan@amd.com>,
+        Thierry Reding <thierry.reding@gmail.com>,
+        Tomasz Figa <tfiga@chromium.org>,
+        Marek Szyprowski <m.szyprowski@samsung.com>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Alex Deucher <alexander.deucher@amd.com>,
+        Jani Nikula <jani.nikula@linux.intel.com>,
+        Joonas Lahtinen <joonas.lahtinen@linux.intel.com>,
+        Rodrigo Vivi <rodrigo.vivi@intel.com>,
+        Tvrtko Ursulin <tvrtko.ursulin@linux.intel.com>,
+        =?UTF-8?Q?Thomas_Hellstr=c3=b6m?= <thomas_os@shipmail.org>,
+        Qiang Yu <yuq825@gmail.com>
+Cc:     dri-devel@lists.freedesktop.org, linux-kernel@vger.kernel.org,
+        Dmitry Osipenko <digetx@gmail.com>,
+        linux-media@vger.kernel.org, linaro-mm-sig@lists.linaro.org,
+        amd-gfx@lists.freedesktop.org, intel-gfx@lists.freedesktop.org,
+        kernel@collabora.com, virtualization@lists.linux-foundation.org,
+        linux-rdma@vger.kernel.org, linux-arm-msm@vger.kernel.org,
+        lima@lists.freedesktop.org
+References: <20220824102248.91964-1-dmitry.osipenko@collabora.com>
+ <20220824102248.91964-9-dmitry.osipenko@collabora.com>
+From:   Hans Verkuil <hverkuil@xs4all.nl>
+In-Reply-To: <20220824102248.91964-9-dmitry.osipenko@collabora.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sun, Aug 21, 2022 at 11:27:44AM +0100, Matthew Wilcox wrote:
-> On Thu, Aug 18, 2022 at 08:00:41PM -0700, Hugh Dickins wrote:
-> > tmpfs and hugetlbfs and page cache are designed around sharing memory:
-> > TDX is designed around absolutely not sharing memory; and the further
-> > uses which Sean foresees appear not to need it as page cache either.
-> > 
-> > Except perhaps for page migration reasons.  It's somewhat incidental,  
-> > but of course page migration knows how to migrate page cache, so
-> > masquerading as page cache will give a short cut to page migration,
-> > when page migration becomes at all possible.
+Nice!
+
+Acked-by: Hans Verkuil <hverkuil-cisco@xs4all.nl>
+
+Regards,
+
+	Hans
+
+On 24/08/2022 12:22, Dmitry Osipenko wrote:
+> All drivers that use dma-bufs have been moved to the updated locking
+> specification and now dma-buf reservation is guaranteed to be locked
+> by importers during the mapping operations. There is no need to take
+> the internal dma-buf lock anymore. Remove locking from the videobuf2
+> memory allocators.
 > 
-> I haven't read the patch series, and I'm not taking a position one way
-> or the other on whether this is better implemented as a shmem addition
-> or a shim that asks shmem for memory.  Page migration can be done for
-> driver memory by using PageMovable.  I just rewrote how it works, so
-> the details are top of my mind at the moment if anyone wants something
-> explained.  Commit 68f2736a8583 is the key one to look at.
-
-Thanks Matthew. That is helpful to understand the current code.
-
-Chao
+> Acked-by: Tomasz Figa <tfiga@chromium.org>
+> Signed-off-by: Dmitry Osipenko <dmitry.osipenko@collabora.com>
+> ---
+>  drivers/media/common/videobuf2/videobuf2-dma-contig.c | 11 +----------
+>  drivers/media/common/videobuf2/videobuf2-dma-sg.c     | 11 +----------
+>  drivers/media/common/videobuf2/videobuf2-vmalloc.c    | 11 +----------
+>  3 files changed, 3 insertions(+), 30 deletions(-)
+> 
+> diff --git a/drivers/media/common/videobuf2/videobuf2-dma-contig.c b/drivers/media/common/videobuf2/videobuf2-dma-contig.c
+> index de762dbdaf78..2c69bf0470e7 100644
+> --- a/drivers/media/common/videobuf2/videobuf2-dma-contig.c
+> +++ b/drivers/media/common/videobuf2/videobuf2-dma-contig.c
+> @@ -382,18 +382,12 @@ static struct sg_table *vb2_dc_dmabuf_ops_map(
+>  	struct dma_buf_attachment *db_attach, enum dma_data_direction dma_dir)
+>  {
+>  	struct vb2_dc_attachment *attach = db_attach->priv;
+> -	/* stealing dmabuf mutex to serialize map/unmap operations */
+> -	struct mutex *lock = &db_attach->dmabuf->lock;
+>  	struct sg_table *sgt;
+>  
+> -	mutex_lock(lock);
+> -
+>  	sgt = &attach->sgt;
+>  	/* return previously mapped sg table */
+> -	if (attach->dma_dir == dma_dir) {
+> -		mutex_unlock(lock);
+> +	if (attach->dma_dir == dma_dir)
+>  		return sgt;
+> -	}
+>  
+>  	/* release any previous cache */
+>  	if (attach->dma_dir != DMA_NONE) {
+> @@ -409,14 +403,11 @@ static struct sg_table *vb2_dc_dmabuf_ops_map(
+>  	if (dma_map_sgtable(db_attach->dev, sgt, dma_dir,
+>  			    DMA_ATTR_SKIP_CPU_SYNC)) {
+>  		pr_err("failed to map scatterlist\n");
+> -		mutex_unlock(lock);
+>  		return ERR_PTR(-EIO);
+>  	}
+>  
+>  	attach->dma_dir = dma_dir;
+>  
+> -	mutex_unlock(lock);
+> -
+>  	return sgt;
+>  }
+>  
+> diff --git a/drivers/media/common/videobuf2/videobuf2-dma-sg.c b/drivers/media/common/videobuf2/videobuf2-dma-sg.c
+> index 39e11600304a..e63e718c0bf7 100644
+> --- a/drivers/media/common/videobuf2/videobuf2-dma-sg.c
+> +++ b/drivers/media/common/videobuf2/videobuf2-dma-sg.c
+> @@ -424,18 +424,12 @@ static struct sg_table *vb2_dma_sg_dmabuf_ops_map(
+>  	struct dma_buf_attachment *db_attach, enum dma_data_direction dma_dir)
+>  {
+>  	struct vb2_dma_sg_attachment *attach = db_attach->priv;
+> -	/* stealing dmabuf mutex to serialize map/unmap operations */
+> -	struct mutex *lock = &db_attach->dmabuf->lock;
+>  	struct sg_table *sgt;
+>  
+> -	mutex_lock(lock);
+> -
+>  	sgt = &attach->sgt;
+>  	/* return previously mapped sg table */
+> -	if (attach->dma_dir == dma_dir) {
+> -		mutex_unlock(lock);
+> +	if (attach->dma_dir == dma_dir)
+>  		return sgt;
+> -	}
+>  
+>  	/* release any previous cache */
+>  	if (attach->dma_dir != DMA_NONE) {
+> @@ -446,14 +440,11 @@ static struct sg_table *vb2_dma_sg_dmabuf_ops_map(
+>  	/* mapping to the client with new direction */
+>  	if (dma_map_sgtable(db_attach->dev, sgt, dma_dir, 0)) {
+>  		pr_err("failed to map scatterlist\n");
+> -		mutex_unlock(lock);
+>  		return ERR_PTR(-EIO);
+>  	}
+>  
+>  	attach->dma_dir = dma_dir;
+>  
+> -	mutex_unlock(lock);
+> -
+>  	return sgt;
+>  }
+>  
+> diff --git a/drivers/media/common/videobuf2/videobuf2-vmalloc.c b/drivers/media/common/videobuf2/videobuf2-vmalloc.c
+> index 7831bf545874..41db707e43a4 100644
+> --- a/drivers/media/common/videobuf2/videobuf2-vmalloc.c
+> +++ b/drivers/media/common/videobuf2/videobuf2-vmalloc.c
+> @@ -267,18 +267,12 @@ static struct sg_table *vb2_vmalloc_dmabuf_ops_map(
+>  	struct dma_buf_attachment *db_attach, enum dma_data_direction dma_dir)
+>  {
+>  	struct vb2_vmalloc_attachment *attach = db_attach->priv;
+> -	/* stealing dmabuf mutex to serialize map/unmap operations */
+> -	struct mutex *lock = &db_attach->dmabuf->lock;
+>  	struct sg_table *sgt;
+>  
+> -	mutex_lock(lock);
+> -
+>  	sgt = &attach->sgt;
+>  	/* return previously mapped sg table */
+> -	if (attach->dma_dir == dma_dir) {
+> -		mutex_unlock(lock);
+> +	if (attach->dma_dir == dma_dir)
+>  		return sgt;
+> -	}
+>  
+>  	/* release any previous cache */
+>  	if (attach->dma_dir != DMA_NONE) {
+> @@ -289,14 +283,11 @@ static struct sg_table *vb2_vmalloc_dmabuf_ops_map(
+>  	/* mapping to the client with new direction */
+>  	if (dma_map_sgtable(db_attach->dev, sgt, dma_dir, 0)) {
+>  		pr_err("failed to map scatterlist\n");
+> -		mutex_unlock(lock);
+>  		return ERR_PTR(-EIO);
+>  	}
+>  
+>  	attach->dma_dir = dma_dir;
+>  
+> -	mutex_unlock(lock);
+> -
+>  	return sgt;
+>  }
+>  
