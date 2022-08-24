@@ -2,106 +2,149 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EC784C00140
-	for <linux-kernel@archiver.kernel.org>; Wed, 24 Aug 2022 12:47:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 968E0C00140
+	for <linux-kernel@archiver.kernel.org>; Wed, 24 Aug 2022 12:47:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237257AbiHXMrY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 24 Aug 2022 08:47:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43124 "EHLO
+        id S234979AbiHXMre (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 24 Aug 2022 08:47:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45352 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237404AbiHXMp1 (ORCPT
+        with ESMTP id S237373AbiHXMrW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 24 Aug 2022 08:45:27 -0400
-Received: from mail-pj1-x1030.google.com (mail-pj1-x1030.google.com [IPv6:2607:f8b0:4864:20::1030])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5D58282763;
-        Wed, 24 Aug 2022 05:45:21 -0700 (PDT)
-Received: by mail-pj1-x1030.google.com with SMTP id x14-20020a17090a8a8e00b001fb61a71d99so1486318pjn.2;
-        Wed, 24 Aug 2022 05:45:21 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc;
-        bh=npkVAu12heSnhWpZ/kqn1O6KxNiWQg5rXFWETXNDdpQ=;
-        b=JEmdoabGg54J4AFzVurih/EmRU/NoImnRdE7BEKra956TuOyIZMfkRjtuKG4Z/HaLF
-         MvGMAeN7DF5uLGNnrgmqq5rSe76CPKJ0WEPGNf5uTIGI7n+ggN9nuHmQ3e8kXE8C1Jjg
-         A1vUh6lWrZAwUmevgszqInzj24bw5Qab+4062kJxACRZ380Z28VugcrD2J+h8s/rGRwy
-         ZOGqWKJPbpCj8J3hnWU58N7LSYfJBp8pZL3OVTyxjrCyxEKPT/EFv2/VQnhJlQUMf+bT
-         rTQKaLeGO7KcFnMwFDY82UqNkxA+S88yAYQvHGJTXAJas4C/29DW7MDSQSMYkVP2niYS
-         wqeg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-message-state:from:to:cc;
-        bh=npkVAu12heSnhWpZ/kqn1O6KxNiWQg5rXFWETXNDdpQ=;
-        b=six/W8Q7ZOUKD8vFn+aAgqLPS9y4RHIrQ8RqDF0+VT6KkP/n10GmioOTQCN/LjXjKa
-         qg1TGm5XTbiJl6QgWQ6EgrzZFTGXA7wP4TgwkDrsf4fGHdw3juscBYvneZNBXuWhVmY8
-         LyLmJx1+XpQr33o2Ygy3zl8pI9K/LxA4kpEuznJiCboyeFyoCIUIY5MxSelcCgyZFb0v
-         7ImRtThtPBWAeeMiMoNzf1uLC2yBXrL+cuEylWzFR9/mZpKS/VCWYsGB31m0L+DQktng
-         OkCJKuWm3l+CiSjN8vSu8Rj7zp16glzoT+ZqWP5X+2aQUTOUxFMr0aarvPfFbXwXbsB5
-         o8Uw==
-X-Gm-Message-State: ACgBeo0d7GE0Yf9YMmEHsb17zccnME4rXaGr2k8EAXMrUJmcJ+9bbQbZ
-        FMEwK/Q+6kIWob4QqSzxkGXUNJzBD+o=
-X-Google-Smtp-Source: AA6agR7WbywfKhv+0+fOFkH5LzjhLQ8WMt5bRzvxYk5REp6tBZh3/aI1ExtS/zGoFZWWKTTUZXLQNw==
-X-Received: by 2002:a17:902:b68f:b0:173:188f:5fa1 with SMTP id c15-20020a170902b68f00b00173188f5fa1mr1329100pls.155.1661345120887;
-        Wed, 24 Aug 2022 05:45:20 -0700 (PDT)
-Received: from localhost.localdomain ([193.203.214.57])
-        by smtp.gmail.com with ESMTPSA id x63-20020a623142000000b00528c066678csm12970714pfx.72.2022.08.24.05.45.18
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 24 Aug 2022 05:45:20 -0700 (PDT)
-From:   xu xin <cgel.zte@gmail.com>
-X-Google-Original-From: xu xin <xu.xin16@zte.com.cn>
-To:     akpm@linux-foundation.org
-Cc:     bagasdotme@gmail.com, adobriyan@gmail.com, willy@infradead.org,
-        hughd@google.com, linux-kernel@vger.kernel.org,
-        linux-fsdevel@vger.kernel.org, linux-mm@kvack.org,
-        xu xin <xu.xin16@zte.com.cn>
-Subject: [PATCH v4 0/2] ksm: count allocated rmap_items and update documentation
-Date:   Wed, 24 Aug 2022 12:45:12 +0000
-Message-Id: <20220824124512.223103-1-xu.xin16@zte.com.cn>
-X-Mailer: git-send-email 2.25.1
+        Wed, 24 Aug 2022 08:47:22 -0400
+Received: from smtpout1.mo3004.mail-out.ovh.net (smtpout1.mo3004.mail-out.ovh.net [79.137.123.219])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DD34F915CF;
+        Wed, 24 Aug 2022 05:47:20 -0700 (PDT)
+Received: from pro2.mail.ovh.net (unknown [10.108.16.97])
+        by mo3004.mail-out.ovh.net (Postfix) with ESMTPS id 545DF23F37B;
+        Wed, 24 Aug 2022 12:47:19 +0000 (UTC)
+Received: from [192.168.1.41] (88.161.25.233) by DAG1EX1.emp2.local
+ (172.16.2.1) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2507.12; Wed, 24 Aug
+ 2022 14:47:18 +0200
+Message-ID: <d858ff7b-e835-bda5-a779-8acd42237923@traphandler.com>
+Date:   Wed, 24 Aug 2022 14:47:18 +0200
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.11.0
+Subject: Re: [PATCH v3 3/4] dt-bindings: leds: Add binding for a multicolor
+ group of LEDs
+Content-Language: en-US
+To:     Sascha Hauer <sha@pengutronix.de>
+CC:     <pavel@ucw.cz>, <robh+dt@kernel.org>,
+        <sven.schwermer@disruptive-technologies.com>,
+        <krzysztof.kozlowski+dt@linaro.org>, <johan+linaro@kernel.org>,
+        <marijn.suijten@somainline.org>, <bjorn.andersson@linaro.org>,
+        <andy.shevchenko@gmail.com>, <linux-leds@vger.kernel.org>,
+        <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        Rob Herring <robh@kernel.org>
+References: <20220824103032.163451-1-jjhiblot@traphandler.com>
+ <20220824103032.163451-4-jjhiblot@traphandler.com>
+ <20220824122156.GQ17485@pengutronix.de>
+From:   Jean-Jacques Hiblot <jjhiblot@traphandler.com>
+In-Reply-To: <20220824122156.GQ17485@pengutronix.de>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [88.161.25.233]
+X-ClientProxiedBy: DAG1EX1.emp2.local (172.16.2.1) To DAG1EX1.emp2.local
+ (172.16.2.1)
+X-Ovh-Tracer-Id: 2150187350555900369
+X-VR-SPAMSTATE: OK
+X-VR-SPAMSCORE: -100
+X-VR-SPAMCAUSE: gggruggvucftvghtrhhoucdtuddrgedvfedrvdejuddgheejucetufdoteggodetrfdotffvucfrrhhofhhilhgvmecuqfggjfdpvefjgfevmfevgfenuceurghilhhouhhtmecuhedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmnecujfgurhepkfffgggfuffvvehfhfgjtgfgihesthejredttdefjeenucfhrhhomheplfgvrghnqdflrggtqhhuvghsucfjihgslhhothcuoehjjhhhihgslhhothesthhrrghphhgrnhgulhgvrhdrtghomheqnecuggftrfgrthhtvghrnhepuefgvedvledufeekjeeltedvjeeuuddvtdetjeefjedvveehkeeufeeihfelgfeknecuffhomhgrihhnpeguvghvihgtvghtrhgvvgdrohhrghenucfkpheptddrtddrtddrtddpkeekrdduiedurddvhedrvdeffeenucevlhhushhtvghrufhiiigvpedtnecurfgrrhgrmhepmhhouggvpehsmhhtphhouhhtpdhhvghlohepphhrohdvrdhmrghilhdrohhvhhdrnhgvthdpihhnvghtpedtrddtrddtrddtpdhmrghilhhfrhhomhepjhhjhhhisghlohhtsehtrhgrphhhrghnughlvghrrdgtohhmpdhnsggprhgtphhtthhopedupdhrtghpthhtoheprhhosghhsehkvghrnhgvlhdrohhrghdpoffvtefjohhsthepmhhofedttdeg
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-KSM can save memory by merging identical pages, but also can consume
-additional memory, because it needs to generate rmap_items to save
-each scanned page's brief rmap information.
 
-To determine how beneficial the ksm-policy (like madvise), they are using
-brings, so we add a new interface /proc/<pid>/ksm_alloced_items for each
-process to indicate the total allocated ksm rmap_items of this process.
+On 24/08/2022 14:21, Sascha Hauer wrote:
+> On Wed, Aug 24, 2022 at 12:30:31PM +0200, Jean-Jacques Hiblot wrote:
+>> This allows to group multiple monochromatic LEDs into a multicolor
+>> LED, e.g. RGB LEDs.
+>>
+>> Signed-off-by: Jean-Jacques Hiblot <jjhiblot@traphandler.com>
+>> Reviewed-by: Rob Herring <robh@kernel.org>
+>> ---
+>>   .../bindings/leds/leds-group-multicolor.yaml  | 61 +++++++++++++++++++
+>>   1 file changed, 61 insertions(+)
+>>   create mode 100644 Documentation/devicetree/bindings/leds/leds-group-multicolor.yaml
+>>
+>> diff --git a/Documentation/devicetree/bindings/leds/leds-group-multicolor.yaml b/Documentation/devicetree/bindings/leds/leds-group-multicolor.yaml
+>> new file mode 100644
+>> index 000000000000..79e5882a08e2
+>> --- /dev/null
+>> +++ b/Documentation/devicetree/bindings/leds/leds-group-multicolor.yaml
+>> @@ -0,0 +1,61 @@
+>> +# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
+>> +%YAML 1.2
+>> +---
+>> +$id: http://devicetree.org/schemas/leds/leds-group-multicolor.yaml#
+>> +$schema: http://devicetree.org/meta-schemas/core.yaml#
+>> +
+>> +title: Multi-color LED built with monochromatic LEDs
+>> +
+>> +maintainers:
+>> +  - Jean-Jacques Hiblot <jjhiblot@traphandler.com>
+>> +
+>> +description: |
+>> +  This driver combines several monochromatic LEDs into one multi-color
+>> +  LED using the multicolor LED class.
+>> +
+>> +properties:
+>> +  compatible:
+>> +    const: leds-group-multicolor
+>> +
+>> +  leds:
+>> +    description:
+>> +      An aray of monochromatic leds
+>> +    $ref: /schemas/types.yaml#/definitions/phandle-array
+>> +
+>> +required:
+>> +  - leds
+>> +
+>> +allOf:
+>> +  - $ref: leds-class-multicolor.yaml#
+>> +
+>> +unevaluatedProperties: false
+>> +
+>> +examples:
+>> +  - |
+>> +    #include <dt-bindings/gpio/gpio.h>
+>> +    #include <dt-bindings/leds/common.h>
+>> +
+>> +    monochromatic-leds {
+>> +        compatible = "gpio-leds";
+>> +
+>> +        led0: led-0 {
+>> +            gpios = <&mcu_pio 0 GPIO_ACTIVE_LOW>;
+>> +        };
+>> +
+>> +        led1: led-1 {
+>> +            gpios = <&mcu_pio 1 GPIO_ACTIVE_HIGH>;
+>> +        };
+>> +
+>> +        led2: led-2 {
+>> +            gpios = <&mcu_pio 1 GPIO_ACTIVE_HIGH>;
+>> +        };
+> led-2 has the same GPIO as led-1, should likely be <&mcu_pio 2 GPIO_ACTIVE_HIGH>;
+ok.
+>
+>> +    };
+>> +
+>> +    multi-led {
+>> +        compatible = "leds-group-multicolor";
+>> +        color = <LED_COLOR_ID_RGB>;
+>> +        function = LED_FUNCTION_INDICATOR;
+>> +        leds = <&led0>, <&led1>, <&led2>;
+>> +    };
+> When reading this I wondered how the driver knows which LED has which
+> color. Should you assign colors to the individual LEDs to make that
+> clear in the example?
 
-The detailed description can be seen in the following patches' commit message.
+Good point. I'll add this to the example. Thanks.
 
+JJ
 
------------
-v3->v4:
-Fix the wrong writing format and some misspellings of the related documentaion.
-
-v2->v3:
-remake the patches based on the latest linux-next branch.
-
-v1->v2:
-Add documentation for the new item.
-
-
-
-*** BLURB HERE ***
-
-xu xin (2):
-  ksm: count allocated ksm rmap_items for each process
-  ksm: add profit monitoring documentation
-
- Documentation/admin-guide/mm/ksm.rst | 36 ++++++++++++++++++++++++++++
- fs/proc/base.c                       | 15 ++++++++++++
- include/linux/mm_types.h             |  5 ++++
- mm/ksm.c                             |  2 ++
- 4 files changed, 58 insertions(+)
-
-
-base-commit: 68a00424bf69036970ced7930f9e4d709b4a6423
--- 
-2.25.1
-
+>
+> Sascha
+>
