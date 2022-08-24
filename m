@@ -2,178 +2,172 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 957E2C3F6B0
-	for <linux-kernel@archiver.kernel.org>; Wed, 24 Aug 2022 23:31:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 58891C3F6B0
+	for <linux-kernel@archiver.kernel.org>; Wed, 24 Aug 2022 23:32:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230312AbiHXXby (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 24 Aug 2022 19:31:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44244 "EHLO
+        id S231515AbiHXXb6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 24 Aug 2022 19:31:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44206 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230153AbiHXXbj (ORCPT
+        with ESMTP id S229793AbiHXXbi (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 24 Aug 2022 19:31:39 -0400
-Received: from mail-yw1-x114a.google.com (mail-yw1-x114a.google.com [IPv6:2607:f8b0:4864:20::114a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6147985AA8
-        for <linux-kernel@vger.kernel.org>; Wed, 24 Aug 2022 16:31:30 -0700 (PDT)
-Received: by mail-yw1-x114a.google.com with SMTP id 00721157ae682-3328a211611so312908367b3.5
-        for <linux-kernel@vger.kernel.org>; Wed, 24 Aug 2022 16:31:30 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=cc:to:from:subject:references:mime-version:message-id:in-reply-to
-         :date:from:to:cc;
-        bh=h0j1tmcryfszvpEO+TtDzb67ntXXnPtNryRzQx2IqTE=;
-        b=pqXoU2+LQkTmeTP/rYWY79xTXLQlMwsi5Hq578vTl3lC8cOG2lR1qdoIKE3Wc+r9EL
-         yYOJFB+RUR9dI3J7eIcuxLNwvYVvrwDyN8w5jpXfX1pEofRBqrrJHA9PoldIfG4qe8pK
-         m+IGq1Rr67YLwC9pNdWt/mxzFRadDRA8lebpDItV+lsrtSSiuQmagcDGAW0usuqDmTNd
-         3hai+OcAN66+I3+/lkJaz1xChm7qMZSCVW/WodUj/7vB2oGnqrO9BBwglLNEB00pGwfY
-         IR7YmOxCW/iuLgTu6g1XMkh+AZUPRUTknV/d4ws9CKAh25wd0NNQjg66GqvKGWZ7EdJG
-         uSQQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:from:subject:references:mime-version:message-id:in-reply-to
-         :date:x-gm-message-state:from:to:cc;
-        bh=h0j1tmcryfszvpEO+TtDzb67ntXXnPtNryRzQx2IqTE=;
-        b=GeV9aJ8IeeR1gluzD3tAMXZoEja7foN07L1BbDXMyqKtJme+QfpWmDqcd8il+H22Gm
-         doWKzGNcnEwA7ZKDucTRrMsDascUkLfdBMy4SpVRDCUO5FaydlwB0aXva4YpkXiPUYfC
-         f+lL/b9duhkvP8gch4kodiraFcTviNjO2ADqIvVpI+Q+0u0cFL6q2Dks9WVqDEauGH32
-         6vt1nWtgnmvFuShCetrG+vgBmh1V4oPsQ9VA4/HvFk/IpWeNOI3YwCcxO1dgymeTEgzM
-         SfB6Iq2NYqKLlby1x9dqAYry7hrQYVG24t4SZ59UTKyt7Wp2pnAIwaVKW86ayfEMfO7O
-         vy6w==
-X-Gm-Message-State: ACgBeo0EEA7hEaOdstazLzmcEaBRQJyt9zrg3QHhSANwnywRJyyaRecm
-        pG8B34ByeKXqbvMbcI7X3fxZQHvHkP5j93nuGaDF4EdH7m0kj6OG9PBoTsMhuAfmePjLMDJ2WlQ
-        AryKfncsYPbUekR8QIFDdu3CPsK+cXPxdcvAK0Mg7xii2vYIpux69udeh2Ig2V/97kX6W/A==
-X-Google-Smtp-Source: AA6agR49z9qO7xZW9tAI5+H5yx5L4UtgCLIGx1JoPfq/viUAFQgU0odUr4ehWKG5crQuP8XxRPhN11Hr99s=
-X-Received: from haoluo.svl.corp.google.com ([2620:15c:2d4:203:9854:5a1:b9e2:6545])
- (user=haoluo job=sendgmr) by 2002:a25:9d91:0:b0:67b:cd9f:ef88 with SMTP id
- v17-20020a259d91000000b0067bcd9fef88mr1372574ybp.82.1661383889272; Wed, 24
- Aug 2022 16:31:29 -0700 (PDT)
-Date:   Wed, 24 Aug 2022 16:31:15 -0700
-In-Reply-To: <20220824233117.1312810-1-haoluo@google.com>
-Message-Id: <20220824233117.1312810-4-haoluo@google.com>
-Mime-Version: 1.0
-References: <20220824233117.1312810-1-haoluo@google.com>
-X-Mailer: git-send-email 2.37.1.595.g718a3a8f04-goog
-Subject: [RESEND PATCH bpf-next v9 3/5] cgroup: bpf: enable bpf programs to
- integrate with rstat
-From:   Hao Luo <haoluo@google.com>
-To:     linux-kernel@vger.kernel.org, bpf@vger.kernel.org,
-        cgroups@vger.kernel.org, netdev@vger.kernel.org
-Cc:     Alexei Starovoitov <ast@kernel.org>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Martin KaFai Lau <martin.lau@linux.dev>,
-        Song Liu <song@kernel.org>, Yonghong Song <yhs@fb.com>,
-        Tejun Heo <tj@kernel.org>, Zefan Li <lizefan.x@bytedance.com>,
-        KP Singh <kpsingh@kernel.org>,
-        Johannes Weiner <hannes@cmpxchg.org>,
-        Michal Hocko <mhocko@kernel.org>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Jiri Olsa <jolsa@kernel.org>, Michal Koutny <mkoutny@suse.com>,
-        Roman Gushchin <roman.gushchin@linux.dev>,
-        David Rientjes <rientjes@google.com>,
-        Stanislav Fomichev <sdf@google.com>,
-        Shakeel Butt <shakeelb@google.com>,
-        Yosry Ahmed <yosryahmed@google.com>,
-        Hao Luo <haoluo@google.com>
-Content-Type: text/plain; charset="UTF-8"
+        Wed, 24 Aug 2022 19:31:38 -0400
+Received: from NAM10-DM6-obe.outbound.protection.outlook.com (mail-dm6nam10on2080.outbound.protection.outlook.com [40.107.93.80])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F044E8287B;
+        Wed, 24 Aug 2022 16:31:27 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=hYr0n1Oop31xRzsdG4jYQjPGNUK8QY0R0oZLazxgqw6YmQm/VnmTIJnObxCG+6dTDL91Nit0L/0sqoRCitQxKe9kuBIKdCzLMBMkQRJ8dBiFv97JpdMzPb5+nzf9ykif3kpsUc+qGaDxVRAS1ib4BJpRFNDvv2tzaF/u0JQbvAL0kyfEAsapftfRcDxmgcg3HakDuFQEKP42laP+Fvlvfixd5lWw07Vv0HnQGteV3okL1xlN3Eax9fRIS/FNCmj5Wa9nN29R69SVxBuT+iOgbBnCZeJCypteH9/KfLIoNC1OuuW4T9fm66dFVn+yPrQRCWYtxWyZEAxuWwY3kVk8LQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=Ru1zbkITnIFzBDhFmI4CkX+uFFYRNYAaxggYHNxULGU=;
+ b=lP2sWwMNBy/vL/djUG+qPdaEEgoBrct5nTLu3Py0RtkO1HSrw63OTWkUI/X7+wz9qXDBMyB7gFAqjGj8CiSMY0cMT0pQGryBXdxRkmuXPlEingegMOertSpEFlwj5zwk4Vamt41ac2tSGwXF80pxoRasEhcvVr5avF3PpzZDjRHebjXDiIosLcJBnx2I++qhYeo3oS86pChOReDCKQHp3MxcixHdutYnc6XHQ9O8Yte20QtDkZSPYieB/s+Z+h22qQyVEOPSMkX0EjJs6Yy17c+CbQnQtPbutO+WNq7QhFVRO6061YYZNGCkYFAYDkz+cp1QwEHmQlwEqS4pkZqx5Q==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
+ dkim=pass header.d=nvidia.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=Ru1zbkITnIFzBDhFmI4CkX+uFFYRNYAaxggYHNxULGU=;
+ b=YpWvN65fS7gFPD+Vslr9RkRSe9jEMAVBkWG4ctOevUAAU2PaGznEIMSBP+r48w+72vLGPY30uvQo8IONMogLEmJtWCUyPaY2ITfnOMcp6jaP48sRfRQ2GLTV8/J5HsKqGNDXYql0NNuVK45eoDdKfcq0SOfRQjMydHvkXKXsnmuw9i0WWiZG97mPHOQZn40H7kbhAWcIgZmFgTz1bspkGKpqkHdKfHIoB3gWmhj/QkF1qHI/+eYzcWQ4h4NK1F6gC9tL3PhNNs7qUIgEiEjqmYBzsJCb9hCgyK7QriBbNPBR3MLh7sDRk1Hgh1pXqHVDheEOq3evnIWA/uRUqI6hiw==
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nvidia.com;
+Received: from MN2PR12MB4192.namprd12.prod.outlook.com (2603:10b6:208:1d5::15)
+ by SA1PR12MB7294.namprd12.prod.outlook.com (2603:10b6:806:2b8::19) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5546.20; Wed, 24 Aug
+ 2022 23:31:25 +0000
+Received: from MN2PR12MB4192.namprd12.prod.outlook.com
+ ([fe80::462:7fe:f04f:d0d5]) by MN2PR12MB4192.namprd12.prod.outlook.com
+ ([fe80::462:7fe:f04f:d0d5%8]) with mapi id 15.20.5546.025; Wed, 24 Aug 2022
+ 23:31:25 +0000
+Date:   Wed, 24 Aug 2022 20:31:22 -0300
+From:   Jason Gunthorpe <jgg@nvidia.com>
+To:     Greg KH <gregkh@linuxfoundation.org>
+Cc:     "Gupta, Nipun" <Nipun.Gupta@amd.com>,
+        Robin Murphy <robin.murphy@arm.com>,
+        "robh+dt@kernel.org" <robh+dt@kernel.org>,
+        "krzysztof.kozlowski+dt@linaro.org" 
+        <krzysztof.kozlowski+dt@linaro.org>,
+        "rafael@kernel.org" <rafael@kernel.org>,
+        "eric.auger@redhat.com" <eric.auger@redhat.com>,
+        "alex.williamson@redhat.com" <alex.williamson@redhat.com>,
+        "cohuck@redhat.com" <cohuck@redhat.com>,
+        "Gupta, Puneet (DCG-ENG)" <puneet.gupta@amd.com>,
+        "song.bao.hua@hisilicon.com" <song.bao.hua@hisilicon.com>,
+        "mchehab+huawei@kernel.org" <mchehab+huawei@kernel.org>,
+        "maz@kernel.org" <maz@kernel.org>,
+        "f.fainelli@gmail.com" <f.fainelli@gmail.com>,
+        "jeffrey.l.hugo@gmail.com" <jeffrey.l.hugo@gmail.com>,
+        "saravanak@google.com" <saravanak@google.com>,
+        "Michael.Srba@seznam.cz" <Michael.Srba@seznam.cz>,
+        "mani@kernel.org" <mani@kernel.org>,
+        "yishaih@nvidia.com" <yishaih@nvidia.com>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
+        "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
+        "okaya@kernel.org" <okaya@kernel.org>,
+        "Anand, Harpreet" <harpreet.anand@amd.com>,
+        "Agarwal, Nikhil" <nikhil.agarwal@amd.com>,
+        "Simek, Michal" <michal.simek@amd.com>,
+        "git (AMD-Xilinx)" <git@amd.com>
+Subject: Re: [RFC PATCH v2 2/6] bus/cdx: add the cdx bus driver
+Message-ID: <20220824233122.GA4068@nvidia.com>
+References: <20220803122655.100254-1-nipun.gupta@amd.com>
+ <20220817150542.483291-1-nipun.gupta@amd.com>
+ <20220817150542.483291-3-nipun.gupta@amd.com>
+ <Yv0KHROjESUI59Pd@kroah.com>
+ <DM6PR12MB3082D966CFC0FA1C2148D8FAE8719@DM6PR12MB3082.namprd12.prod.outlook.com>
+ <YwOEv6107RfU5p+H@kroah.com>
+ <DM6PR12MB3082B4BDD39632264E7532B8E8739@DM6PR12MB3082.namprd12.prod.outlook.com>
+ <YwYVhJCSAuYcgj1/@kroah.com>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <YwYVhJCSAuYcgj1/@kroah.com>
+X-ClientProxiedBy: YQBPR0101CA0276.CANPRD01.PROD.OUTLOOK.COM
+ (2603:10b6:c01:68::30) To MN2PR12MB4192.namprd12.prod.outlook.com
+ (2603:10b6:208:1d5::15)
+MIME-Version: 1.0
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: cbcc189b-f062-4324-2831-08da8628c2f1
+X-MS-TrafficTypeDiagnostic: SA1PR12MB7294:EE_
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: R0dkRS4lF4wplvTW7mjhH8v2Do442aiA7cGPNSzMCbcfBQSOCbDlO8MVQfJvfGr7vICV15Q678fA7MsTOcb+7Gpow4c7QFv/8gMyTJGaea6JfIat97YTgBthdmGmP9vj1AD698e1CYbd8R6nW3nuKg4XPFCCbkFmxmGzVpwW0SJADu20FwFk8Kw4WzPlUGhCsXc5GXctlg4VFoVoT9zb/a1naJS1kimp7bDTpH0fr2dI47eBM6jQOKReIMO7wH35+Hi6R+J4j49/EPXc/1Fakh0rXnV1Mv1LW0C3fU65kh1LoDcHkpar2IXp/KT0uR94pE+FfZ6zTF+4La1iSEG9/6jXGZRyCCUeeXTWZQX9oV+4okcLLBWgyK+zlyCepPeK6dx2IOQ0kEK4cyqJzO7T7wpwh+v3wDB84GWufXbJgrDodeBOcsVfqWMMZq2Qoq9+CzPppLQZQhBRfL3BEEcE/GYsmcvzoEXqZLmI7kZaiEqv6PKq0K2qEjzMGyV6nq5CXEPyoPFt7E6g0IiXDca+mXBVycuH8KdG2darQzCn6cNAOMAkFprW9zogK6A+RcbnNoTtwUAD99R6AWA3HUBVKnB5CmXi0Eswpb1EgU0fkT55vg6bW+SHHA3f9LjyPhaXFiT8aKgfUQv9LWulrOnyWctI+/lmnuoFT7NfXJQvG/YmOJTpaujTmtGeuhSYcdDFpMBKzTamR1H266OzarYggA==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:MN2PR12MB4192.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(4636009)(366004)(136003)(376002)(39860400002)(346002)(396003)(1076003)(2616005)(4326008)(66556008)(54906003)(316002)(8676002)(6916009)(36756003)(66946007)(186003)(66476007)(26005)(6506007)(2906002)(6512007)(8936002)(478600001)(41300700001)(5660300002)(33656002)(6486002)(38100700002)(6666004)(7416002)(86362001);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?4T/k79OXxraoaFX2QSsP7iq66x9QzxN2fZi1KtZW3bu4NtnsiY5PTEc5uRKW?=
+ =?us-ascii?Q?HNb1Smu2+x1vihxMPHPCyQ2y6ArTdj1WbdkWtFhcEkaGAAX8AluhPP9KxjXq?=
+ =?us-ascii?Q?FQudaMJ0N+8laEeg/JesMkEHxQQk2R5EVKCCCJ1NViT0/oPwWIklWZ6e6Zy/?=
+ =?us-ascii?Q?rWFR62HiLFd+c5M6bLfdDXD8xJi52PEg7Nob/pbA4H6bTqHhaYdzaq+zxK5F?=
+ =?us-ascii?Q?9meBwoKf5k7oDZcbyPLXiE6ybt32lAAwiDSpz1L2gQGPBWhZj2Egu5Ih8QHR?=
+ =?us-ascii?Q?vZrX0vSNX0KkRbuqE/OIozoI0opNvrNKiqNg3UbFk1i9HAmArvf3KYfapQaD?=
+ =?us-ascii?Q?mssfcjh260KeiIcaQ9AIFr4hMNWEje3NlnS6xiW5QbNydfkYBlKbGC6p0iSJ?=
+ =?us-ascii?Q?yR5LjopMR4ne918BP7pETqrADUqFmBKI5qovgJs3yezxEzHVZHzn9SD/M4pL?=
+ =?us-ascii?Q?ZANNsqXXRxocgYwVptzGCzD9qUhK2saXejKRvAPcOlLPy7CedepzFRu6BPMJ?=
+ =?us-ascii?Q?DVuzqBeQ1Mo7cg12rYsDwnjegjDPe8EifR4sj6DSs36nOhKjHiwM259/e6vJ?=
+ =?us-ascii?Q?37fs6vWp/wmiCTj6IKbCGfLiBPEBuvsSUieLYS9KODEZnZPQRb/0YEkIIDzv?=
+ =?us-ascii?Q?vZARenswenfi9xi0L7P8ijvEOmrqxdab2zE007i5IQEVbnAVF8BNl7xcdGQc?=
+ =?us-ascii?Q?yWJUPEEmcq1bD2BCKlXv6M4JUg5PmWjsksvAJ7TCl4f1WBVcMaEJt/dMa/4o?=
+ =?us-ascii?Q?I2RVyAFphdPdInjCgMRnPcP4qiBUYcsQkK4ZktgKz0VJn1gGBjJV7qHUX7wb?=
+ =?us-ascii?Q?ynAd0UuJO6DE2lCU9p9olnV0shSDBBcRwcDv7uwPE3wzH2uotGp0enOGkS/9?=
+ =?us-ascii?Q?IJAI8C12xVE7hGGSC0LDRfZHmT2KTEZSP7BPCcNkHvMSwh86Sh1vcJoERyrv?=
+ =?us-ascii?Q?YT+21mbVliOIClJiL13U1f2qcjy+IDhdbxETOf1sFVoOYDWlD95X/iO2WyMQ?=
+ =?us-ascii?Q?oMOyUyBW79xjYF8sgVVacnEmkymAzIMX0LMANgDCnx0x7ehEP5BX9unxfKaD?=
+ =?us-ascii?Q?v4x2/3gFHoE/cQoek/6qBrkQ68FA0dWcwizlxZ5DI5xo75gdvY32cbBCLOtb?=
+ =?us-ascii?Q?Vy41leXnmankL9DR6zeGIPwsd/yv4AA6YvMkyHibzdqgwtl4W/ma6y/IF5y0?=
+ =?us-ascii?Q?p8bEhHzkmHRzZqknoDaJCIceGbEUctJka7aqKv9p2gmAc677Otwd7luwt9ji?=
+ =?us-ascii?Q?KRHX+Q0l3OrbAKOxNuucvlIsl/MD0lRDjP6DxMaKSFl5h5Td1vt8EkuMur/K?=
+ =?us-ascii?Q?5brZ4vXGH4zbJGaYbrkkVacQFvqTuoqq4WS/3o89gPsTOQEm4THJuTz4YHzn?=
+ =?us-ascii?Q?1GIGrAwYWr6fpRm9DakkF4FDLlTmxXWRCMYvJMfCOagEvatE2bP+0GhPtOsZ?=
+ =?us-ascii?Q?nhwpwVyJPR7sxvObaEAiH1vt/QywAQ/D4vWzCz8ebFtpL4D0oKyy3kOsr0xD?=
+ =?us-ascii?Q?zKHOGv07VubgJdQkKd5m/nfFevkA2ulSlj5jNgNXwsWGa/deU3qs4o6uvu+L?=
+ =?us-ascii?Q?aJ6ttfRt4qidUb7cP4NhLjFyJvs3SQZjkoRTW00p?=
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: cbcc189b-f062-4324-2831-08da8628c2f1
+X-MS-Exchange-CrossTenant-AuthSource: MN2PR12MB4192.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 24 Aug 2022 23:31:25.7504
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: wDWZdbHUpNa/fK2bU5OXwaPjJ6HTWzOZfS7NyTsbxWfchi646f9XrcHrEXBuJZnL
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SA1PR12MB7294
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Yosry Ahmed <yosryahmed@google.com>
+On Wed, Aug 24, 2022 at 02:11:48PM +0200, Greg KH wrote:
+> > We can share the RFC in case you are interested in looking at code flow
+> > using the of_dynamic approach.
+> 
+> Please no more abuse of the platform device.
 
-Enable bpf programs to make use of rstat to collect cgroup hierarchical
-stats efficiently:
-- Add cgroup_rstat_updated() kfunc, for bpf progs that collect stats.
-- Add cgroup_rstat_flush() sleepable kfunc, for bpf progs that read stats.
-- Add an empty bpf_rstat_flush() hook that is called during rstat
-  flushing, for bpf progs that flush stats to attach to. Attaching a bpf
-  prog to this hook effectively registers it as a flush callback.
+Last time this came up there was some disagreement from the ARM folks,
+they were not keen on having xx_drivers added all over the place to
+support the same OF/DT devices just discovered in a different way. It is
+why ACPI is mapped to platform_device even in some cases.
 
-Signed-off-by: Yosry Ahmed <yosryahmed@google.com>
-Acked-by: Tejun Heo <tj@kernel.org>
-Signed-off-by: Hao Luo <haoluo@google.com>
----
- kernel/cgroup/rstat.c | 48 +++++++++++++++++++++++++++++++++++++++++++
- 1 file changed, 48 insertions(+)
+I think if you push them down this path they will get resistance to
+get the needed additional xx_drivers into the needed places.
 
-diff --git a/kernel/cgroup/rstat.c b/kernel/cgroup/rstat.c
-index feb59380c896..793ecff29038 100644
---- a/kernel/cgroup/rstat.c
-+++ b/kernel/cgroup/rstat.c
-@@ -3,6 +3,10 @@
- 
- #include <linux/sched/cputime.h>
- 
-+#include <linux/bpf.h>
-+#include <linux/btf.h>
-+#include <linux/btf_ids.h>
-+
- static DEFINE_SPINLOCK(cgroup_rstat_lock);
- static DEFINE_PER_CPU(raw_spinlock_t, cgroup_rstat_cpu_lock);
- 
-@@ -141,6 +145,31 @@ static struct cgroup *cgroup_rstat_cpu_pop_updated(struct cgroup *pos,
- 	return pos;
- }
- 
-+/*
-+ * A hook for bpf stat collectors to attach to and flush their stats.
-+ * Together with providing bpf kfuncs for cgroup_rstat_updated() and
-+ * cgroup_rstat_flush(), this enables a complete workflow where bpf progs that
-+ * collect cgroup stats can integrate with rstat for efficient flushing.
-+ *
-+ * A static noinline declaration here could cause the compiler to optimize away
-+ * the function. A global noinline declaration will keep the definition, but may
-+ * optimize away the callsite. Therefore, __weak is needed to ensure that the
-+ * call is still emitted, by telling the compiler that we don't know what the
-+ * function might eventually be.
-+ *
-+ * __diag_* below are needed to dismiss the missing prototype warning.
-+ */
-+__diag_push();
-+__diag_ignore_all("-Wmissing-prototypes",
-+		  "kfuncs which will be used in BPF programs");
-+
-+__weak noinline void bpf_rstat_flush(struct cgroup *cgrp,
-+				     struct cgroup *parent, int cpu)
-+{
-+}
-+
-+__diag_pop();
-+
- /* see cgroup_rstat_flush() */
- static void cgroup_rstat_flush_locked(struct cgroup *cgrp, bool may_sleep)
- 	__releases(&cgroup_rstat_lock) __acquires(&cgroup_rstat_lock)
-@@ -168,6 +197,7 @@ static void cgroup_rstat_flush_locked(struct cgroup *cgrp, bool may_sleep)
- 			struct cgroup_subsys_state *css;
- 
- 			cgroup_base_stat_flush(pos, cpu);
-+			bpf_rstat_flush(pos, cgroup_parent(pos), cpu);
- 
- 			rcu_read_lock();
- 			list_for_each_entry_rcu(css, &pos->rstat_css_list,
-@@ -501,3 +531,21 @@ void cgroup_base_stat_cputime_show(struct seq_file *seq)
- 	seq_printf(seq, "core_sched.force_idle_usec %llu\n", forceidle_time);
- #endif
- }
-+
-+/* Add bpf kfuncs for cgroup_rstat_updated() and cgroup_rstat_flush() */
-+BTF_SET8_START(bpf_rstat_kfunc_ids)
-+BTF_ID_FLAGS(func, cgroup_rstat_updated)
-+BTF_ID_FLAGS(func, cgroup_rstat_flush, KF_SLEEPABLE)
-+BTF_SET8_END(bpf_rstat_kfunc_ids)
-+
-+static const struct btf_kfunc_id_set bpf_rstat_kfunc_set = {
-+	.owner          = THIS_MODULE,
-+	.set            = &bpf_rstat_kfunc_ids,
-+};
-+
-+static int __init bpf_rstat_kfunc_init(void)
-+{
-+	return register_btf_kfunc_id_set(BPF_PROG_TYPE_TRACING,
-+					 &bpf_rstat_kfunc_set);
-+}
-+late_initcall(bpf_rstat_kfunc_init);
--- 
-2.37.1.595.g718a3a8f04-goog
+> If your device can be discovered by scanning a bus, it is not a platform
+> device.
 
+A DT fragment loaded during boot binds a driver using a
+platform_driver, why should a DT fragment loaded post-boot bind using
+an XX_driver and further why should the CDX way of getting the DT
+raise to such importantance that it gets its own cdx_driver ?
+
+In the end the driver does not care about how the DT was loaded.
+None of these things are on a discoverable bus in any sense like PCI
+or otherwise. They are devices described by a DT fragement and they
+take all their parameters from that chunk of DT.
+
+How the DT was loaded into the system is not a useful distinction that
+raises the level of needing an entire new set of xx_driver structs all
+over the tree, IMHO.
+
+Jason
