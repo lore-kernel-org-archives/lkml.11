@@ -2,155 +2,237 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A795FC00140
-	for <linux-kernel@archiver.kernel.org>; Wed, 24 Aug 2022 15:52:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CB1E6C38142
+	for <linux-kernel@archiver.kernel.org>; Wed, 24 Aug 2022 15:52:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238173AbiHXPwE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 24 Aug 2022 11:52:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51828 "EHLO
+        id S237385AbiHXPwo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 24 Aug 2022 11:52:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54700 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238148AbiHXPv7 (ORCPT
+        with ESMTP id S236946AbiHXPwj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 24 Aug 2022 11:51:59 -0400
-Received: from mail-qv1-xf29.google.com (mail-qv1-xf29.google.com [IPv6:2607:f8b0:4864:20::f29])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9C1D07269A;
-        Wed, 24 Aug 2022 08:51:58 -0700 (PDT)
-Received: by mail-qv1-xf29.google.com with SMTP id p5so11628542qvz.6;
-        Wed, 24 Aug 2022 08:51:58 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc;
-        bh=17CiYXoJ2DsLXhoijQVc6bif0ojLKD8CIPKuO47O/gA=;
-        b=Q31WUtdf8SXEYLe+3OHA+qn6+XhVYV/B3cWlmnY7PAr0YxLwndvRa6N8DDn2Gm/LFP
-         oWawDgfJsn5XFKXD+feBr9uZUAcRdmqYKHQ2vukIDBUQWAKWQLxGdYpEPbodCKk/IWKx
-         5ViVUYVgEyuvbBjIAOtprmEkyIAJg/NaNof19G2s5IT025bed0wJrU0yEqerB91pUugH
-         PmR1jsLP0XZ2X6gaes9hIPa0mcdcSk2vdTFtqEpMiXxfvhvlgUozX/Gj2lU3lDsesgbX
-         XDWBqi3XpNlzH0VFURHBfOTVVglTVsSpojYIart1WUuFbKaVbAaywVAEneFpDkxQRsuW
-         XeqQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc;
-        bh=17CiYXoJ2DsLXhoijQVc6bif0ojLKD8CIPKuO47O/gA=;
-        b=AYy5iyuG6y7QN6oOWQyuJlMeh6dsE1ngkpVrm8cgbV+0CJ9uZogQhthqdrxHF3UqEJ
-         wG+b88yY15q7wi/xi1wHdMx7aheBDltLLnTfS7ZjCaS9Knf3HD0zrcF3ZINoO8O50KY6
-         VeE2YIwNl6MjH0xTEkb5StmVjFgyqUz5cgusKPJtDVsod9mMj8klLp8ZePyPfb3hvo7o
-         277w56941E+RWkmxEWkAMQl+VcY8wXyzrYoSxizB6S8GOow/5M3BuQGnqwdJ70i/hDki
-         WQRROTnnQNy1NLuBuQdNVjmgZI51KbqAy32kQJ44j7WiAos6hPEYviaK5vHNHeN/Zdx5
-         G12Q==
-X-Gm-Message-State: ACgBeo0A/G/UUlu/MYPbCw5bSUWJ26mfjKjhEUH8xl3LYR+LyXTYUDZU
-        4KhMBcorraU950323wIWCQIbydRKko9lSc63MeGW8OoRh58=
-X-Google-Smtp-Source: AA6agR56mBbvY4BV9oYLpZRgaAYVt91ULJs+NFnTcG/pCmdqL19Ib5sbPUSHjotPJMpogQ9PPVHLaRIog2zWWqVshf0=
-X-Received: by 2002:a0c:aadb:0:b0:497:1283:c849 with SMTP id
- g27-20020a0caadb000000b004971283c849mr3535038qvb.11.1661356317636; Wed, 24
- Aug 2022 08:51:57 -0700 (PDT)
+        Wed, 24 Aug 2022 11:52:39 -0400
+Received: from mail.skyhub.de (mail.skyhub.de [5.9.137.197])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0251372FC9;
+        Wed, 24 Aug 2022 08:52:37 -0700 (PDT)
+Received: from zn.tnic (p200300ea971b9859329c23fffea6a903.dip0.t-ipconnect.de [IPv6:2003:ea:971b:9859:329c:23ff:fea6:a903])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.skyhub.de (SuperMail on ZX Spectrum 128k) with ESMTPSA id 34B1D1EC056A;
+        Wed, 24 Aug 2022 17:52:32 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=alien8.de; s=dkim;
+        t=1661356352;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:in-reply-to:in-reply-to:  references:references;
+        bh=PBu2N2uipsqYRGU8bx2yq7gJv2+9Y2U5mdyTj0+/pTM=;
+        b=NB6YSRe/Ed3rUtDV9uiZDCWOh1AmqVaLjJr7swohSQBgEXc9Ml8+K+1qPwkVzabBT+Lz+T
+        0msrtdaC0S4A2mcX1OGqoxMuRHKbJNsW4RW5QLHEAY54tdqwlaA3FCXV6qpt2FqWjsiKmf
+        lRgsjSTC8LFhYEx4jgXYcDjls9XERvQ=
+Date:   Wed, 24 Aug 2022 17:52:31 +0200
+From:   Borislav Petkov <bp@alien8.de>
+To:     Jia He <justin.he@arm.com>
+Cc:     Len Brown <lenb@kernel.org>, James Morse <james.morse@arm.com>,
+        Tony Luck <tony.luck@intel.com>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Robert Richter <rric@kernel.org>,
+        Robert Moore <robert.moore@intel.com>,
+        Qiuxu Zhuo <qiuxu.zhuo@intel.com>,
+        Yazen Ghannam <yazen.ghannam@amd.com>,
+        Jonathan Corbet <corbet@lwn.net>,
+        Jan Luebbe <jlu@pengutronix.de>,
+        Khuong Dinh <khuong@os.amperecomputing.com>,
+        Kani Toshi <toshi.kani@hpe.com>,
+        Ard Biesheuvel <ardb@kernel.org>, linux-acpi@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-edac@vger.kernel.org,
+        devel@acpica.org, "Rafael J . Wysocki" <rafael@kernel.org>,
+        Shuai Xue <xueshuai@linux.alibaba.com>,
+        Jarkko Sakkinen <jarkko@kernel.org>, linux-efi@vger.kernel.org,
+        nd@arm.com, "Paul E. McKenney" <paulmck@kernel.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Neeraj Upadhyay <quic_neeraju@quicinc.com>,
+        Randy Dunlap <rdunlap@infradead.org>,
+        Damien Le Moal <damien.lemoal@opensource.wdc.com>,
+        Muchun Song <songmuchun@bytedance.com>,
+        linux-doc@vger.kernel.org
+Subject: Re: [RESEND PATCH v3 4/9] EDAC/ghes: Move ghes_edac.force_load to
+ setup parameter
+Message-ID: <YwZJP25sfKcfw9eT@zn.tnic>
+References: <20220822154048.188253-1-justin.he@arm.com>
+ <20220822154048.188253-5-justin.he@arm.com>
 MIME-Version: 1.0
-References: <20220824114927.79231-1-mmkurbanov@sberdevices.ru>
-In-Reply-To: <20220824114927.79231-1-mmkurbanov@sberdevices.ru>
-From:   Andy Shevchenko <andy.shevchenko@gmail.com>
-Date:   Wed, 24 Aug 2022 18:51:21 +0300
-Message-ID: <CAHp75VeQX_8niAu4uORW1YEfjxhLJFWsnm_JccECfAOAzAh32A@mail.gmail.com>
-Subject: Re: [PATCH v1] leds: trigger: pattern: notify userpace if pattern finished
-To:     Martin Kurbanov <mmkurbanov@sberdevices.ru>
-Cc:     Pavel Machek <pavel@ucw.cz>,
-        Raphael Teysseyre <rteysseyre@gmail.com>,
-        Baolin Wang <baolin.wang@linaro.org>,
-        Linux LED Subsystem <linux-leds@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        kernel <kernel@sberdevices.ru>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <20220822154048.188253-5-justin.he@arm.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Aug 24, 2022 at 3:06 PM Martin Kurbanov
-<mmkurbanov@sberdevices.ru> wrote:
->
-> In the current moment, userspace caller can schedule led pattern with
+On Mon, Aug 22, 2022 at 03:40:43PM +0000, Jia He wrote:
+> ghes_edac_init() is too late to set this module flag ghes_edac.force_load.
+> Also, other edac drivers should not be able to control this flag.
+> 
+> Move this flag to setup parameter in ghes.
+> 
+> Suggested-by: Toshi Kani <toshi.kani@hpe.com>
+> Signed-off-by: Jia He <justin.he@arm.com>
+> ---
+>  .../admin-guide/kernel-parameters.txt         |  5 +++
+>  drivers/acpi/apei/ghes.c                      | 24 +++++++++++-
+>  drivers/edac/ghes_edac.c                      | 38 +++++++------------
+>  include/acpi/ghes.h                           |  7 +++-
+>  4 files changed, 46 insertions(+), 28 deletions(-)
+> 
+> diff --git a/Documentation/admin-guide/kernel-parameters.txt b/Documentation/admin-guide/kernel-parameters.txt
+> index d7f30902fda0..a5f0ee0d7727 100644
+> --- a/Documentation/admin-guide/kernel-parameters.txt
+> +++ b/Documentation/admin-guide/kernel-parameters.txt
+> @@ -1593,6 +1593,11 @@
+>  			When zero, profiling data is discarded and associated
+>  			debugfs files are removed at module unload time.
+>  
+> +	ghes_edac_force= [X86] Skip the platform check and forcibly load the
 
-LED
+So there already is ghes.disable which is using the module param thing.
+Why don't you do that too?
 
-> appropriate parameters, but it doesn't have ability to listen any events
+> +			ghes_edac modules.
 
-listen to
+"module" - singular.
 
-> indicated pattern finished. This patch implements such an event using
-> sysfs node and sysfs_notify_dirent() call.
-
-Where is the ABI documentation for that?
-
-Also, any example of user space code (GitHub repository / gist) how to
-use the feature?
-
-...
-
->         bool is_indefinite;
->         bool is_hw_pattern;
-> +       bool running;
-
-is_running ?
-
-...
-
-> +static ssize_t pattern_ended_show(struct device *dev,
-> +                                 struct device_attribute *attr, char *buf)
+> +			Format: <bool>
+> +			default: false (0)
+> +
+>  	goldfish	[X86] Enable the goldfish android emulator platform.
+>  			Don't use this when you are not running on the
+>  			android emulator
+> diff --git a/drivers/acpi/apei/ghes.c b/drivers/acpi/apei/ghes.c
+> index 9c52183e3ad9..e17e0ee8f842 100644
+> --- a/drivers/acpi/apei/ghes.c
+> +++ b/drivers/acpi/apei/ghes.c
+> @@ -94,6 +94,26 @@
+>  #define FIX_APEI_GHES_SDEI_CRITICAL	__end_of_fixed_addresses
+>  #endif
+>  
+> +/*
+> + * "ghes_edac_force=1" forcibly loads ghes_edac and skips the platform
+> + * check.
+> + */
+> +bool __read_mostly ghes_edac_force;
+> +EXPORT_SYMBOL(ghes_edac_force);
+> +
+> +static int __init setup_ghes_edac_load(char *str)
 > +{
-> +       struct led_classdev *led_cdev = dev_get_drvdata(dev);
-> +       struct pattern_trig_data *data = led_get_trigger_data(led_cdev);
+> +	if (str)
+> +		if (!strcmp("true", str) || !strcmp("1", str))
+> +			ghes_edac_force = true;
 > +
-> +       return scnprintf(buf, PAGE_SIZE, "%d\n", !data->running);
-
-sysfs_emit().
-
+> +	if (!IS_ENABLED(CONFIG_X86))
+> +		ghes_edac_force = true;
+> +
+> +	return 1;
 > +}
+> +__setup("ghes_edac_force=", setup_ghes_edac_load);
+
+Why all that?
+
+Isn't specifying
+
+ghes.edac_force_load
+
+on the kernel command line enough? I.e., you don't need to parse the
+passed in option - just the presence of the parameter is enough.
 
 > +
-
-No need for this blank line.
-
-> +static DEVICE_ATTR_RO(pattern_ended);
-
-WRT previous two comments, if the current code is stylic in the above
-way, you can convert it first and then add this patch in a series.
-
-...
-
-> +static int pattern_trig_add_pattern_ended(struct led_classdev *led_cdev)
-> +{
-> +       struct pattern_trig_data *data = led_get_trigger_data(led_cdev);
-> +       struct device *dev = led_cdev->dev;
-> +       int ret;
+>  static ATOMIC_NOTIFIER_HEAD(ghes_report_chain);
+>  
+>  static inline bool is_hest_type_generic_v2(struct ghes *ghes)
+> @@ -1517,13 +1537,13 @@ static struct acpi_platform_list plat_list[] = {
+>  	{ } /* End */
+>  };
+>  
+> -struct list_head *ghes_get_devices(bool force)
+> +struct list_head *ghes_get_devices(void)
+>  {
+>  	int idx = -1;
+>  
+>  	if (IS_ENABLED(CONFIG_X86)) {
+>  		idx = acpi_match_platform_list(plat_list);
+> -		if (idx < 0 && !force)
+> +		if (idx < 0 && !ghes_edac_force)
+>  			return NULL;
+>  	}
+>  
+> diff --git a/drivers/edac/ghes_edac.c b/drivers/edac/ghes_edac.c
+> index bb3ea42ba70b..6a2b54cc7240 100644
+> --- a/drivers/edac/ghes_edac.c
+> +++ b/drivers/edac/ghes_edac.c
+> @@ -54,10 +54,6 @@ static DEFINE_MUTEX(ghes_reg_mutex);
+>   */
+>  static DEFINE_SPINLOCK(ghes_lock);
+>  
+> -/* "ghes_edac.force_load=1" skips the platform check */
+> -static bool __read_mostly force_load;
+> -module_param(force_load, bool, 0);
+> -
+>  static bool system_scanned;
+>  
+>  static struct list_head *ghes_devs;
+> @@ -437,23 +433,12 @@ static int ghes_edac_register(struct device *dev)
+>  	mci->ctl_name = "ghes_edac";
+>  	mci->dev_name = "ghes";
+>  
+> -	if (fake) {
+> -		pr_info("This system has a very crappy BIOS: It doesn't even list the DIMMS.\n");
+> -		pr_info("Its SMBIOS info is wrong. It is doubtful that the error report would\n");
+> -		pr_info("work on such system. Use this driver with caution\n");
+> -	} else if (force_load) {
+> -		pr_info("This EDAC driver relies on BIOS to enumerate memory and get error reports.\n");
+> -		pr_info("Unfortunately, not all BIOSes reflect the memory layout correctly.\n");
+> -		pr_info("So, the end result of using this driver varies from vendor to vendor.\n");
+> -		pr_info("If you find incorrect reports, please contact your hardware vendor\n");
+> -		pr_info("to correct its BIOS.\n");
+> -		pr_info("This system has %d DIMM sockets.\n", ghes_hw.num_dimms);
+> -	}
+> -
+>  	if (!fake) {
+>  		struct dimm_info *src, *dst;
+>  		int i = 0;
+>  
+> +		pr_info("This system has %d DIMM sockets.\n", ghes_hw.num_dimms);
 > +
-> +       ret = device_create_file(dev, &dev_attr_pattern_ended);
-> +       if (ret) {
-> +               dev_err(dev,
-> +                       "Error creating pattern_ended (%pe)\n", ERR_PTR(ret));
-> +               return ret;
-> +       }
-> +
-> +       data->pattern_ended = sysfs_get_dirent(dev->kobj.sd, "pattern_ended");
-> +       if (!data->pattern_ended) {
-> +               dev_err(dev, "Error getting pattern_ended kernelfs\n");
-> +               device_remove_file(dev, &dev_attr_pattern_ended);
-> +               return -ENXIO;
-> +       }
-> +
-> +       return 0;
-> +}
-> +
-> +static void pattern_trig_remove_pattern_ended(struct led_classdev *led_cdev)
-> +{
-> +       struct pattern_trig_data *data = led_get_trigger_data(led_cdev);
-> +
-> +       sysfs_put(data->pattern_ended);
-> +       device_remove_file(led_cdev->dev, &dev_attr_pattern_ended);
-> +}
+>  		mci_for_each_dimm(mci, dst) {
+>  			src = &ghes_hw.dimms[i];
+>  
 
-I'm wondering if you can always have a file and instead provide a
-value there, so user space may use epoll() mechanism on that. It will
-simplify your code here.
+This hunk...
+
+> @@ -478,6 +463,17 @@ static int ghes_edac_register(struct device *dev)
+>  	} else {
+>  		struct dimm_info *dimm = edac_get_dimm(mci, 0, 0, 0);
+>  
+> +		pr_info("This system has a very crappy BIOS: It doesn't even list the DIMMS.\n");
+> +		pr_info("Its SMBIOS info is wrong. It is doubtful that the error report would\n");
+> +		pr_info("work on such system. Use this driver with caution\n");
+> +
+> +		if (ghes_edac_force) {
+> +			pr_info("This EDAC driver relies on BIOS to enumerate memory and get\n");
+> +			pr_info("error reports. Unfortunately, not all BIOSes reflect the\n");
+> +			pr_info("memory layout correctly. If you find incorrect reports, please\n");
+> +			pr_info("contact your hardware vendor for its in correct BIOS.\n");
+> +		}
+> +
+>  		dimm->nr_pages = 1;
+>  		dimm->grain = 128;
+>  		dimm->mtype = MEM_UNKNOWN;
+
+... and this hunk look unrelated to what this patch is doing. What are
+they for?
+
+Thx.
 
 -- 
-With Best Regards,
-Andy Shevchenko
+Regards/Gruss,
+    Boris.
+
+https://people.kernel.org/tglx/notes-about-netiquette
