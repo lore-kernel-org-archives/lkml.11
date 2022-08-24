@@ -2,329 +2,154 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4DDC8C32792
-	for <linux-kernel@archiver.kernel.org>; Wed, 24 Aug 2022 08:23:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A4A75C00140
+	for <linux-kernel@archiver.kernel.org>; Wed, 24 Aug 2022 08:24:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235222AbiHXIXc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 24 Aug 2022 04:23:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60924 "EHLO
+        id S235702AbiHXIY2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 24 Aug 2022 04:24:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36092 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235738AbiHXIXQ (ORCPT
+        with ESMTP id S235718AbiHXIYX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 24 Aug 2022 04:23:16 -0400
-Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 059A793507
-        for <linux-kernel@vger.kernel.org>; Wed, 24 Aug 2022 01:23:14 -0700 (PDT)
-Received: from dggpemm500022.china.huawei.com (unknown [172.30.72.55])
-        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4MCJt54nflzkWf4;
-        Wed, 24 Aug 2022 16:19:41 +0800 (CST)
-Received: from dggpemm500007.china.huawei.com (7.185.36.183) by
- dggpemm500022.china.huawei.com (7.185.36.162) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Wed, 24 Aug 2022 16:22:57 +0800
-Received: from huawei.com (10.175.103.91) by dggpemm500007.china.huawei.com
- (7.185.36.183) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Wed, 24 Aug
- 2022 16:22:56 +0800
-From:   Yang Yingliang <yangyingliang@huawei.com>
-To:     <linux-kernel@vger.kernel.org>, <linux-mm@kvack.org>
-CC:     <willy@infradead.org>, <akpm@linux-foundation.org>,
-        <Liam.Howlett@Oracle.com>, <vbabka@suse.cz>
-Subject: [PATCH -next] Maple Tree: remove not used entry in mas_preallocate()
-Date:   Wed, 24 Aug 2022 16:30:44 +0800
-Message-ID: <20220824083044.3236796-1-yangyingliang@huawei.com>
-X-Mailer: git-send-email 2.25.1
+        Wed, 24 Aug 2022 04:24:23 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 02C468E98A
+        for <linux-kernel@vger.kernel.org>; Wed, 24 Aug 2022 01:24:19 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1661329458;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=Alnumo20Oy3ca2IuzGzDSmL567uiguE1m7emVxPRSkQ=;
+        b=J7HEcWEkZxu1Vu4ZsUANUZq9cuoxyGxD5N+USr1l7+lQa0Wkq8lrC9DUt1CaF0gfmXvDAx
+        NQ7zfJDKqRNwOVkW3JJ6kVv8PuWzGAoVPIpPZqnYmY/R0fiJBG4K7d2ZFXfwURTFmvmGcu
+        j42bsVPGdP7tDEkppRu4BP5bvDoqszA=
+Received: from mail-wm1-f71.google.com (mail-wm1-f71.google.com
+ [209.85.128.71]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
+ us-mta-61-ZQSLMWKyNkKIYuVLX43StQ-1; Wed, 24 Aug 2022 04:24:17 -0400
+X-MC-Unique: ZQSLMWKyNkKIYuVLX43StQ-1
+Received: by mail-wm1-f71.google.com with SMTP id c64-20020a1c3543000000b003a61987ffb3so9126476wma.6
+        for <linux-kernel@vger.kernel.org>; Wed, 24 Aug 2022 01:24:17 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:in-reply-to:organization:from:references
+         :cc:to:content-language:subject:user-agent:mime-version:date
+         :message-id:x-gm-message-state:from:to:cc;
+        bh=Alnumo20Oy3ca2IuzGzDSmL567uiguE1m7emVxPRSkQ=;
+        b=YgSphDCi8+04Ka1YPBAChPWkX1/eZj/ONEf2DLbwdtYLXeURfJERvtO2BsJACR891h
+         AYFFXIaKH+flHFO1wZQZa+Y8Q1shya391jf06F5+T5pJItI9gn72OGwWg7bnYIgrFaTO
+         rEeJkAEWGHbclAFoMzirRmxMi1xU0nu2IPa1SGCjS3apJXUXQavpmX9dPkEOzcG2vJiD
+         Gx3j+jvUmatZrt80V9UkpG0DtHfUTIaSMzoTkqIrbvM9hTlrbX+32DJytKHlFrqLHjwG
+         Mfx1pnAembcDR4Lx52B9XBT05XYWp2+pT/+j+O4k8anUCcO3vp6ZcfNyRUIDgVVZiMAx
+         qLjg==
+X-Gm-Message-State: ACgBeo3pw8+kzyw3OggiqCaL127Bx2gPmbx/vqjnzBka254FKANVVXTX
+        Zkl/hSxPf/f/TPBPZd+07OL9tEre7kreIpayl3TKB5skbtBfRT7pahpQVjkFXjNGq5/ZSK2QE31
+        l7iCAf76zuQaLQVY6QKJ7C2UX
+X-Received: by 2002:adf:eb4c:0:b0:220:6aaf:ef5e with SMTP id u12-20020adfeb4c000000b002206aafef5emr14863556wrn.488.1661329456457;
+        Wed, 24 Aug 2022 01:24:16 -0700 (PDT)
+X-Google-Smtp-Source: AA6agR4DRt/CvtfFa7EIJB4D+MrT0BEPBR42D92q1aP42xUNrGosIyBAbzKLmB5DsyKJdDueEmCfaw==
+X-Received: by 2002:adf:eb4c:0:b0:220:6aaf:ef5e with SMTP id u12-20020adfeb4c000000b002206aafef5emr14863538wrn.488.1661329456139;
+        Wed, 24 Aug 2022 01:24:16 -0700 (PDT)
+Received: from ?IPV6:2003:cb:c707:c500:5445:cf40:2e32:6e73? (p200300cbc707c5005445cf402e326e73.dip0.t-ipconnect.de. [2003:cb:c707:c500:5445:cf40:2e32:6e73])
+        by smtp.gmail.com with ESMTPSA id j30-20020a05600c1c1e00b003a31fd05e0fsm6646867wms.2.2022.08.24.01.24.15
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 24 Aug 2022 01:24:15 -0700 (PDT)
+Message-ID: <e5223895-6319-1911-28bf-09449ded96c9@redhat.com>
+Date:   Wed, 24 Aug 2022 10:24:15 +0200
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.175.103.91]
-X-ClientProxiedBy: dggems706-chm.china.huawei.com (10.3.19.183) To
- dggpemm500007.china.huawei.com (7.185.36.183)
-X-CFilter-Loop: Reflected
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.12.0
+Subject: Re: [PATCH 2/2] mm: slince possible data races about pgdat->kswapd
+Content-Language: en-US
+To:     Kefeng Wang <wangkefeng.wang@huawei.com>,
+        Andrew Morton <akpm@linux-foundation.org>, linux-mm@kvack.org
+Cc:     muchun.song@linux.dev, linux-kernel@vger.kernel.org
+References: <20220824071909.192535-1-wangkefeng.wang@huawei.com>
+ <20220824071909.192535-2-wangkefeng.wang@huawei.com>
+From:   David Hildenbrand <david@redhat.com>
+Organization: Red Hat
+In-Reply-To: <20220824071909.192535-2-wangkefeng.wang@huawei.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-'entry' is not used in mas_preallocate(), so remove it.
+On 24.08.22 09:19, Kefeng Wang wrote:
+> The pgdat->kswapd could be accessed concurrently by kswapd_run() and
+> kcompactd(), it don't be protected by any lock, which could leads to
+> data races, adding READ/WRITE_ONCE() to slince it.
 
-Signed-off-by: Yang Yingliang <yangyingliang@huawei.com>
----
- include/linux/maple_tree.h |  2 +-
- lib/maple_tree.c           |  3 +--
- lib/test_maple_tree.c      | 32 ++++++++++++++++----------------
- mm/mmap.c                  | 14 +++++++-------
- mm/nommu.c                 |  8 ++++----
- 5 files changed, 29 insertions(+), 30 deletions(-)
+Okay, I think this patch here makes it clearer that we really just want
+proper synchronization instead of hacking around it.
 
-diff --git a/include/linux/maple_tree.h b/include/linux/maple_tree.h
-index a30e03b06bed..61871480d125 100644
---- a/include/linux/maple_tree.h
-+++ b/include/linux/maple_tree.h
-@@ -456,7 +456,7 @@ int mas_store_gfp(struct ma_state *mas, void *entry, gfp_t gfp);
- void mas_store_prealloc(struct ma_state *mas, void *entry);
- void *mas_find(struct ma_state *mas, unsigned long max);
- void *mas_find_rev(struct ma_state *mas, unsigned long min);
--int mas_preallocate(struct ma_state *mas, void *entry, gfp_t gfp);
-+int mas_preallocate(struct ma_state *mas, gfp_t gfp);
- bool mas_is_err(struct ma_state *mas);
- 
- bool mas_nomem(struct ma_state *mas, gfp_t gfp);
-diff --git a/lib/maple_tree.c b/lib/maple_tree.c
-index e1743803c851..2adc12a83caf 100644
---- a/lib/maple_tree.c
-+++ b/lib/maple_tree.c
-@@ -5707,12 +5707,11 @@ void mas_store_prealloc(struct ma_state *mas, void *entry)
- /**
-  * mas_preallocate() - Preallocate enough nodes for a store operation
-  * @mas: The maple state
-- * @entry: The entry that will be stored
-  * @gfp: The GFP_FLAGS to use for allocations.
-  *
-  * Return: 0 on success, -ENOMEM if memory could not be allocated.
-  */
--int mas_preallocate(struct ma_state *mas, void *entry, gfp_t gfp)
-+int mas_preallocate(struct ma_state *mas, gfp_t gfp)
- {
- 	int ret;
- 
-diff --git a/lib/test_maple_tree.c b/lib/test_maple_tree.c
-index 4f69e009a015..80d1754de23e 100644
---- a/lib/test_maple_tree.c
-+++ b/lib/test_maple_tree.c
-@@ -35549,7 +35549,7 @@ static noinline void check_prealloc(struct maple_tree *mt)
- 	for (i = 0; i <= max; i++)
- 		mtree_test_store_range(mt, i * 10, i * 10 + 5, &i);
- 
--	MT_BUG_ON(mt, mas_preallocate(&mas, ptr, GFP_KERNEL) != 0);
-+	MT_BUG_ON(mt, mas_preallocate(&mas, GFP_KERNEL) != 0);
- 	allocated = mas_allocated(&mas);
- 	height = mas_mt_height(&mas);
- 	MT_BUG_ON(mt, allocated == 0);
-@@ -35558,18 +35558,18 @@ static noinline void check_prealloc(struct maple_tree *mt)
- 	allocated = mas_allocated(&mas);
- 	MT_BUG_ON(mt, allocated != 0);
- 
--	MT_BUG_ON(mt, mas_preallocate(&mas, ptr, GFP_KERNEL) != 0);
-+	MT_BUG_ON(mt, mas_preallocate(&mas, GFP_KERNEL) != 0);
- 	allocated = mas_allocated(&mas);
- 	height = mas_mt_height(&mas);
- 	MT_BUG_ON(mt, allocated == 0);
- 	MT_BUG_ON(mt, allocated != 1 + height * 3);
--	MT_BUG_ON(mt, mas_preallocate(&mas, ptr, GFP_KERNEL) != 0);
-+	MT_BUG_ON(mt, mas_preallocate(&mas, GFP_KERNEL) != 0);
- 	mas_destroy(&mas);
- 	allocated = mas_allocated(&mas);
- 	MT_BUG_ON(mt, allocated != 0);
- 
- 
--	MT_BUG_ON(mt, mas_preallocate(&mas, ptr, GFP_KERNEL) != 0);
-+	MT_BUG_ON(mt, mas_preallocate(&mas, GFP_KERNEL) != 0);
- 	allocated = mas_allocated(&mas);
- 	height = mas_mt_height(&mas);
- 	MT_BUG_ON(mt, allocated == 0);
-@@ -35577,25 +35577,25 @@ static noinline void check_prealloc(struct maple_tree *mt)
- 	mn = mas_pop_node(&mas);
- 	MT_BUG_ON(mt, mas_allocated(&mas) != allocated - 1);
- 	ma_free_rcu(mn);
--	MT_BUG_ON(mt, mas_preallocate(&mas, ptr, GFP_KERNEL) != 0);
-+	MT_BUG_ON(mt, mas_preallocate(&mas, GFP_KERNEL) != 0);
- 	mas_destroy(&mas);
- 	allocated = mas_allocated(&mas);
- 	MT_BUG_ON(mt, allocated != 0);
- 
--	MT_BUG_ON(mt, mas_preallocate(&mas, ptr, GFP_KERNEL) != 0);
-+	MT_BUG_ON(mt, mas_preallocate(&mas, GFP_KERNEL) != 0);
- 	allocated = mas_allocated(&mas);
- 	height = mas_mt_height(&mas);
- 	MT_BUG_ON(mt, allocated == 0);
- 	MT_BUG_ON(mt, allocated != 1 + height * 3);
- 	mn = mas_pop_node(&mas);
- 	MT_BUG_ON(mt, mas_allocated(&mas) != allocated - 1);
--	MT_BUG_ON(mt, mas_preallocate(&mas, ptr, GFP_KERNEL) != 0);
-+	MT_BUG_ON(mt, mas_preallocate(&mas, GFP_KERNEL) != 0);
- 	mas_destroy(&mas);
- 	allocated = mas_allocated(&mas);
- 	MT_BUG_ON(mt, allocated != 0);
- 	ma_free_rcu(mn);
- 
--	MT_BUG_ON(mt, mas_preallocate(&mas, ptr, GFP_KERNEL) != 0);
-+	MT_BUG_ON(mt, mas_preallocate(&mas, GFP_KERNEL) != 0);
- 	allocated = mas_allocated(&mas);
- 	height = mas_mt_height(&mas);
- 	MT_BUG_ON(mt, allocated == 0);
-@@ -35604,12 +35604,12 @@ static noinline void check_prealloc(struct maple_tree *mt)
- 	MT_BUG_ON(mt, mas_allocated(&mas) != allocated - 1);
- 	mas_push_node(&mas, mn);
- 	MT_BUG_ON(mt, mas_allocated(&mas) != allocated);
--	MT_BUG_ON(mt, mas_preallocate(&mas, ptr, GFP_KERNEL) != 0);
-+	MT_BUG_ON(mt, mas_preallocate(&mas, GFP_KERNEL) != 0);
- 	mas_destroy(&mas);
- 	allocated = mas_allocated(&mas);
- 	MT_BUG_ON(mt, allocated != 0);
- 
--	MT_BUG_ON(mt, mas_preallocate(&mas, ptr, GFP_KERNEL) != 0);
-+	MT_BUG_ON(mt, mas_preallocate(&mas, GFP_KERNEL) != 0);
- 	allocated = mas_allocated(&mas);
- 	height = mas_mt_height(&mas);
- 	MT_BUG_ON(mt, allocated == 0);
-@@ -35617,21 +35617,21 @@ static noinline void check_prealloc(struct maple_tree *mt)
- 	mas_store_prealloc(&mas, ptr);
- 	MT_BUG_ON(mt, mas_allocated(&mas) != 0);
- 
--	MT_BUG_ON(mt, mas_preallocate(&mas, ptr, GFP_KERNEL) != 0);
-+	MT_BUG_ON(mt, mas_preallocate(&mas, GFP_KERNEL) != 0);
- 	allocated = mas_allocated(&mas);
- 	height = mas_mt_height(&mas);
- 	MT_BUG_ON(mt, allocated == 0);
- 	MT_BUG_ON(mt, allocated != 1 + height * 3);
- 	mas_store_prealloc(&mas, ptr);
- 	MT_BUG_ON(mt, mas_allocated(&mas) != 0);
--	MT_BUG_ON(mt, mas_preallocate(&mas, ptr, GFP_KERNEL) != 0);
-+	MT_BUG_ON(mt, mas_preallocate(&mas, GFP_KERNEL) != 0);
- 	allocated = mas_allocated(&mas);
- 	height = mas_mt_height(&mas);
- 	MT_BUG_ON(mt, allocated == 0);
- 	MT_BUG_ON(mt, allocated != 1 + height * 3);
- 	mas_store_prealloc(&mas, ptr);
- 
--	MT_BUG_ON(mt, mas_preallocate(&mas, ptr, GFP_KERNEL) != 0);
-+	MT_BUG_ON(mt, mas_preallocate(&mas, GFP_KERNEL) != 0);
- 	allocated = mas_allocated(&mas);
- 	height = mas_mt_height(&mas);
- 	MT_BUG_ON(mt, allocated == 0);
-@@ -35639,14 +35639,14 @@ static noinline void check_prealloc(struct maple_tree *mt)
- 	mas_store_prealloc(&mas, ptr);
- 	MT_BUG_ON(mt, mas_allocated(&mas) != 0);
- 	mt_set_non_kernel(1);
--	MT_BUG_ON(mt, mas_preallocate(&mas, ptr, GFP_KERNEL & GFP_NOWAIT) == 0);
-+	MT_BUG_ON(mt, mas_preallocate(&mas, GFP_KERNEL & GFP_NOWAIT) == 0);
- 	allocated = mas_allocated(&mas);
- 	height = mas_mt_height(&mas);
- 	MT_BUG_ON(mt, allocated != 0);
- 	mas_destroy(&mas);
- 
- 
--	MT_BUG_ON(mt, mas_preallocate(&mas, ptr, GFP_KERNEL) != 0);
-+	MT_BUG_ON(mt, mas_preallocate(&mas, GFP_KERNEL) != 0);
- 	allocated = mas_allocated(&mas);
- 	height = mas_mt_height(&mas);
- 	MT_BUG_ON(mt, allocated == 0);
-@@ -35654,7 +35654,7 @@ static noinline void check_prealloc(struct maple_tree *mt)
- 	mas_store_prealloc(&mas, ptr);
- 	MT_BUG_ON(mt, mas_allocated(&mas) != 0);
- 	mt_set_non_kernel(1);
--	MT_BUG_ON(mt, mas_preallocate(&mas, ptr, GFP_KERNEL & GFP_NOWAIT) == 0);
-+	MT_BUG_ON(mt, mas_preallocate(&mas, GFP_KERNEL & GFP_NOWAIT) == 0);
- 	allocated = mas_allocated(&mas);
- 	height = mas_mt_height(&mas);
- 	MT_BUG_ON(mt, allocated != 0);
-diff --git a/mm/mmap.c b/mm/mmap.c
-index 6445fd386f04..63a03ce1d0bb 100644
---- a/mm/mmap.c
-+++ b/mm/mmap.c
-@@ -473,7 +473,7 @@ static int vma_link(struct mm_struct *mm, struct vm_area_struct *vma)
- 	MA_STATE(mas, &mm->mm_mt, 0, 0);
- 	struct address_space *mapping = NULL;
- 
--	if (mas_preallocate(&mas, vma, GFP_KERNEL))
-+	if (mas_preallocate(&mas, GFP_KERNEL))
- 		return -ENOMEM;
- 
- 	if (vma->vm_file) {
-@@ -539,7 +539,7 @@ inline int vma_expand(struct ma_state *mas, struct vm_area_struct *vma,
- 	/* Only handles expanding */
- 	VM_BUG_ON(vma->vm_start < start || vma->vm_end > end);
- 
--	if (mas_preallocate(mas, vma, GFP_KERNEL))
-+	if (mas_preallocate(mas, GFP_KERNEL))
- 		goto nomem;
- 
- 	vma_adjust_trans_huge(vma, start, end, 0);
-@@ -712,7 +712,7 @@ int __vma_adjust(struct vm_area_struct *vma, unsigned long start,
- 		}
- 	}
- 
--	if (mas_preallocate(&mas, vma, GFP_KERNEL))
-+	if (mas_preallocate(&mas, GFP_KERNEL))
- 		return -ENOMEM;
- 
- 	vma_adjust_trans_huge(orig_vma, start, end, adjust_next);
-@@ -1937,7 +1937,7 @@ int expand_upwards(struct vm_area_struct *vma, unsigned long address)
- 		/* Check that both stack segments have the same anon_vma? */
- 	}
- 
--	if (mas_preallocate(&mas, vma, GFP_KERNEL))
-+	if (mas_preallocate(&mas, GFP_KERNEL))
- 		return -ENOMEM;
- 
- 	/* We must make sure the anon_vma is allocated. */
-@@ -2018,7 +2018,7 @@ int expand_downwards(struct vm_area_struct *vma, unsigned long address)
- 			return -ENOMEM;
- 	}
- 
--	if (mas_preallocate(&mas, vma, GFP_KERNEL))
-+	if (mas_preallocate(&mas, GFP_KERNEL))
- 		return -ENOMEM;
- 
- 	/* We must make sure the anon_vma is allocated. */
-@@ -2310,7 +2310,7 @@ do_mas_align_munmap(struct ma_state *mas, struct vm_area_struct *vma,
- 	mt_init_flags(&mt_detach, MT_FLAGS_LOCK_EXTERN);
- 	mt_set_external_lock(&mt_detach, &mm->mmap_lock);
- 
--	if (mas_preallocate(mas, vma, GFP_KERNEL))
-+	if (mas_preallocate(mas, GFP_KERNEL))
- 		return -ENOMEM;
- 
- 	mas->last = end - 1;
-@@ -2678,7 +2678,7 @@ unsigned long mmap_region(struct file *file, unsigned long addr,
- 			goto free_vma;
- 	}
- 
--	if (mas_preallocate(&mas, vma, GFP_KERNEL)) {
-+	if (mas_preallocate(&mas, GFP_KERNEL)) {
- 		error = -ENOMEM;
- 		if (file)
- 			goto unmap_and_free_vma;
-diff --git a/mm/nommu.c b/mm/nommu.c
-index 214c70e1d059..0befa4060aea 100644
---- a/mm/nommu.c
-+++ b/mm/nommu.c
-@@ -602,7 +602,7 @@ static int add_vma_to_mm(struct mm_struct *mm, struct vm_area_struct *vma)
- {
- 	MA_STATE(mas, &mm->mm_mt, vma->vm_start, vma->vm_end);
- 
--	if (mas_preallocate(&mas, vma, GFP_KERNEL)) {
-+	if (mas_preallocate(&mas, GFP_KERNEL)) {
- 		pr_warn("Allocation of vma tree for process %d failed\n",
- 		       current->pid);
- 		return -ENOMEM;
-@@ -633,7 +633,7 @@ static int delete_vma_from_mm(struct vm_area_struct *vma)
- {
- 	MA_STATE(mas, &vma->vm_mm->mm_mt, 0, 0);
- 
--	if (mas_preallocate(&mas, vma, GFP_KERNEL)) {
-+	if (mas_preallocate(&mas, GFP_KERNEL)) {
- 		pr_warn("Allocation of vma tree for process %d failed\n",
- 		       current->pid);
- 		return -ENOMEM;
-@@ -1081,7 +1081,7 @@ unsigned long do_mmap(struct file *file,
- 	if (!vma)
- 		goto error_getting_vma;
- 
--	if (mas_preallocate(&mas, vma, GFP_KERNEL))
-+	if (mas_preallocate(&mas, GFP_KERNEL))
- 		goto error_maple_preallocate;
- 
- 	region->vm_usage = 1;
-@@ -1358,7 +1358,7 @@ int split_vma(struct mm_struct *mm, struct vm_area_struct *vma,
- 	if (!new)
- 		goto err_vma_dup;
- 
--	if (mas_preallocate(&mas, vma, GFP_KERNEL)) {
-+	if (mas_preallocate(&mas, GFP_KERNEL)) {
- 		pr_warn("Allocation of vma tree for process %d failed\n",
- 			current->pid);
- 		goto err_mas_preallocate;
+What speaks against protecting pgdat->kswapd this using some proper
+locking primitive?
+
+> 
+> Signed-off-by: Kefeng Wang <wangkefeng.wang@huawei.com>
+> ---
+>  mm/compaction.c | 4 +++-
+>  mm/vmscan.c     | 8 ++++----
+>  2 files changed, 7 insertions(+), 5 deletions(-)
+> 
+> diff --git a/mm/compaction.c b/mm/compaction.c
+> index 640fa76228dd..aa1cfe47f046 100644
+> --- a/mm/compaction.c
+> +++ b/mm/compaction.c
+> @@ -1983,7 +1983,9 @@ static inline bool is_via_compact_memory(int order)
+>  
+>  static bool kswapd_is_running(pg_data_t *pgdat)
+>  {
+> -	return pgdat->kswapd && task_is_running(pgdat->kswapd);
+> +	struct task_struct *t = READ_ONCE(pgdat->kswapd);
+> +
+> +	return t && task_is_running(t);
+>  }
+>  
+>  /*
+> diff --git a/mm/vmscan.c b/mm/vmscan.c
+> index 08c6497f76c3..65b19ca8c8ee 100644
+> --- a/mm/vmscan.c
+> +++ b/mm/vmscan.c
+> @@ -4644,7 +4644,7 @@ void kswapd_run(int nid)
+>  	pg_data_t *pgdat = NODE_DATA(nid);
+>  	struct task_struct *t;
+>  
+> -	if (pgdat->kswapd)
+> +	if (READ_ONCE(pgdat->kswapd))
+>  		return;
+>  
+>  	t = kthread_run(kswapd, pgdat, "kswapd%d", nid);
+> @@ -4653,7 +4653,7 @@ void kswapd_run(int nid)
+>  		BUG_ON(system_state < SYSTEM_RUNNING);
+>  		pr_err("Failed to start kswapd on node %d\n", nid);
+>  	} else {
+> -		pgdat->kswapd = t;
+> +		WRITE_ONCE(pgdat->kswapd, t);
+>  	}
+>  }
+>  
+> @@ -4663,11 +4663,11 @@ void kswapd_run(int nid)
+>   */
+>  void kswapd_stop(int nid)
+>  {
+> -	struct task_struct *kswapd = NODE_DATA(nid)->kswapd;
+> +	struct task_struct *kswapd = READ_ONCE(NODE_DATA(nid)->kswapd);
+>  
+>  	if (kswapd) {
+>  		kthread_stop(kswapd);
+> -		NODE_DATA(nid)->kswapd = NULL;
+> +		WRITE_ONCE(NODE_DATA(nid)->kswapd, NULL);
+>  	}
+>  }
+>  
+
+
 -- 
-2.25.1
+Thanks,
+
+David / dhildenb
 
