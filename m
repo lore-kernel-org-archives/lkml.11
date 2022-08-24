@@ -2,101 +2,96 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id ECDB6C00140
-	for <linux-kernel@archiver.kernel.org>; Wed, 24 Aug 2022 17:18:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7A116C3F6B0
+	for <linux-kernel@archiver.kernel.org>; Wed, 24 Aug 2022 17:19:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240012AbiHXRSB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 24 Aug 2022 13:18:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54696 "EHLO
+        id S239325AbiHXRTR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 24 Aug 2022 13:19:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56102 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238271AbiHXRRx (ORCPT
+        with ESMTP id S240016AbiHXRTO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 24 Aug 2022 13:17:53 -0400
-Received: from mga06.intel.com (mga06b.intel.com [134.134.136.31])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 36BF67C1BF
-        for <linux-kernel@vger.kernel.org>; Wed, 24 Aug 2022 10:17:51 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1661361471; x=1692897471;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=z1/O7amcxbtN985zP7+aET+15/X1umd9NB3glHzKYzc=;
-  b=DUBgrFnENRJ/9eiGR3goJktbRbDtptkUmaXllEHdqeH60pUb8dp6Tkaw
-   AFdeTYj0MJeRn1P+O6gR30Z9btE8eW9+1utrDNvUCBOseFrYwNM68N888
-   q3Za+7Uy3IBG1pv0xJXXWIXaZ9ubbmP0hPrC8UtNHSzdxaedtotftFyQh
-   ItPPwoybk42J+D6aYJ3Up+xxXgivycFHbtwYVtvRKAR9huRSto7y6sy4W
-   cTlihmptlhSKxf2o0U2jl43WIkTrYg1VRYr9+BAzBIFXY1OVBv1aDWVmT
-   7vq3kK6QCO1wEZZxdX017ztphyIcn5P1XPk2wV6Hwxbj5mHZ6+EfpPD2O
-   g==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10449"; a="355750989"
-X-IronPort-AV: E=Sophos;i="5.93,261,1654585200"; 
-   d="scan'208";a="355750989"
-Received: from orsmga006.jf.intel.com ([10.7.209.51])
-  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Aug 2022 10:17:27 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.93,261,1654585200"; 
-   d="scan'208";a="586516159"
-Received: from lkp-server02.sh.intel.com (HELO 34e741d32628) ([10.239.97.151])
-  by orsmga006.jf.intel.com with ESMTP; 24 Aug 2022 10:17:26 -0700
-Received: from kbuild by 34e741d32628 with local (Exim 4.96)
-        (envelope-from <lkp@intel.com>)
-        id 1oQu0L-0000t9-1U;
-        Wed, 24 Aug 2022 17:17:25 +0000
-Date:   Thu, 25 Aug 2022 01:16:40 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Jason Gunthorpe <jgg@nvidia.com>
-Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org
-Subject: [jgunthorpe:vfio_iommufd 28/29] drivers/vfio/vfio_main.c:618:6:
- warning: no previous prototype for 'vfio_assert_device_open'
-Message-ID: <202208250108.KV0cgfXO-lkp@intel.com>
+        Wed, 24 Aug 2022 13:19:14 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 952C27C32A
+        for <linux-kernel@vger.kernel.org>; Wed, 24 Aug 2022 10:19:13 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1661361552;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=5fR3F9GSGdIyjl4KjQVv2PTUvzcBxFqMQTexQHu1cYQ=;
+        b=IXIqFOeGBGrbRH8Vf4lPvfhRcJ0hhIXVZAPMM5H/Hun7OFC3omKXuFGoMQI/YlwF0X2ACU
+        j7+OAKZgf6NcDrv1uy3U+Bniq9a/EN/Y65ilCmC5osEB0GibAY0fM1Ki2V0WLkQi5E1M9J
+        Z7plCyzfaO3GIai5qDwMdQDW7Nh1Du0=
+Received: from mail-wr1-f70.google.com (mail-wr1-f70.google.com
+ [209.85.221.70]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
+ us-mta-537-gXakordyOn-QwZ4ZhLXEHw-1; Wed, 24 Aug 2022 13:19:11 -0400
+X-MC-Unique: gXakordyOn-QwZ4ZhLXEHw-1
+Received: by mail-wr1-f70.google.com with SMTP id d11-20020adfc08b000000b002207555c1f6so2907186wrf.7
+        for <linux-kernel@vger.kernel.org>; Wed, 24 Aug 2022 10:19:11 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc;
+        bh=5fR3F9GSGdIyjl4KjQVv2PTUvzcBxFqMQTexQHu1cYQ=;
+        b=4mg3wIcTodJ0jLM16tHV7eCctdQC00wjmaGZ8ju63EUeOq7pdxLMBv909Y9lYIcLaz
+         /C5d+EOmJ4d/B+Sl25jD62IVP/hL5wKxMY4kD+3zEWuNagVwtLxRZ3pYKaUA7Yfhbkx9
+         H+cJibb2HNKS+JjIzq1npy4xlkt8G3UYr3vPM7gTLr7KFZz4N7OUOontypbZY3sa7UME
+         HFJH6kya35WwO1vrOKXXG/d/LrUcXlOp3yeGXKVQOieDsqTpoQck2CPz6+Gui+A5seMt
+         gAUNELYf82cMfpVZZhimj+jVy43k4za6bt2sHA00jbaTmlyWblNmw2zxtYFl4uzuCjXL
+         2IGg==
+X-Gm-Message-State: ACgBeo0O7QeKcm+Qklig1hzNCLluDct0ecCiZCvXAFoJTAtWALxrXUNE
+        3EVT3J8fRs+nkyTK8yWk+comPYScZkwLz2foP78gKWWZBnvHhuJV1PFX3+MKDuveYS+10megmSu
+        q1nmthSZXVd51vxaFJ18WIhkf
+X-Received: by 2002:a5d:64c3:0:b0:225:4f81:d060 with SMTP id f3-20020a5d64c3000000b002254f81d060mr132901wri.536.1661361550181;
+        Wed, 24 Aug 2022 10:19:10 -0700 (PDT)
+X-Google-Smtp-Source: AA6agR5ttdjMug0iYpQ5JQgsxkf6+CYDrKkbKyoW3tlDFCWtG6u7rvpOI69IoXi/6KTMQNrqkEgTuA==
+X-Received: by 2002:a5d:64c3:0:b0:225:4f81:d060 with SMTP id f3-20020a5d64c3000000b002254f81d060mr132886wri.536.1661361549968;
+        Wed, 24 Aug 2022 10:19:09 -0700 (PDT)
+Received: from ?IPV6:2001:b07:6468:f312:9af8:e5f5:7516:fa89? ([2001:b07:6468:f312:9af8:e5f5:7516:fa89])
+        by smtp.googlemail.com with ESMTPSA id o8-20020a05600c4fc800b003a603fbad5bsm2635447wmq.45.2022.08.24.10.19.09
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 24 Aug 2022 10:19:09 -0700 (PDT)
+Message-ID: <f1598980-92a8-267c-cade-8f62d7653017@redhat.com>
+Date:   Wed, 24 Aug 2022 19:19:08 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.12.0
+Subject: Re: [PATCH] KVM: x86: use TPAUSE to replace PAUSE in halt polling
+Content-Language: en-US
+To:     Sean Christopherson <seanjc@google.com>,
+        Dapeng Mi <dapeng1.mi@intel.com>
+Cc:     rafael@kernel.org, daniel.lezcano@linaro.org,
+        linux-pm@vger.kernel.org, linux-kernel@vger.kernel.org,
+        kvm@vger.kernel.org, zhenyuw@linux.intel.com
+References: <20220824091117.767363-1-dapeng1.mi@intel.com>
+ <YwZDL4yv7F2Y4JBP@google.com>
+From:   Paolo Bonzini <pbonzini@redhat.com>
+In-Reply-To: <YwZDL4yv7F2Y4JBP@google.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   https://github.com/jgunthorpe/linux vfio_iommufd
-head:   d2ab4343c9f524e9404059830828188b0f8a15b6
-commit: 5016830b7f1d1bf8af24d4ee80fc07a68d835af4 [28/29] vfio: Make vfio_container optionally compiled
-config: sparc64-randconfig-r014-20220824 (https://download.01.org/0day-ci/archive/20220825/202208250108.KV0cgfXO-lkp@intel.com/config)
-compiler: sparc64-linux-gcc (GCC) 12.1.0
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://github.com/jgunthorpe/linux/commit/5016830b7f1d1bf8af24d4ee80fc07a68d835af4
-        git remote add jgunthorpe https://github.com/jgunthorpe/linux
-        git fetch --no-tags jgunthorpe vfio_iommufd
-        git checkout 5016830b7f1d1bf8af24d4ee80fc07a68d835af4
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-12.1.0 make.cross W=1 O=build_dir ARCH=sparc64 SHELL=/bin/bash drivers/vfio/
+On 8/24/22 17:26, Sean Christopherson wrote:
+> I say "if", because I think this needs to come with performance numbers to show
+> the impact on guest latency so that KVM and its users can make an informed decision.
+> And if it's unlikely that anyone will ever want to enable TPAUSE for halt polling,
+> then it's not worth the extra complexity in KVM.
 
-If you fix the issue, kindly add following tag where applicable
-Reported-by: kernel test robot <lkp@intel.com>
+Yeah, halt polling works around perhaps the biggest performance issue 
+with VMs compared to bare metal (so much that it's even possible to move 
+halt polling _inside_ the guest for extra performance).
 
-All warnings (new ones prefixed by >>):
+I am ready to be proven wrong but I doubt TPAUSE will have a small 
+effect, and if one wants the most power saving they should disable halt 
+polling.  Perhaps KVM could do it automatically if the powersaving 
+governor is in effect?
 
->> drivers/vfio/vfio_main.c:618:6: warning: no previous prototype for 'vfio_assert_device_open' [-Wmissing-prototypes]
-     618 | bool vfio_assert_device_open(struct vfio_device *device)
-         |      ^~~~~~~~~~~~~~~~~~~~~~~
+Paolo
 
-
-vim +/vfio_assert_device_open +618 drivers/vfio/vfio_main.c
-
-cba3345cc494ad drivers/vfio/vfio.c      Alex Williamson 2012-07-31  616  
-eadd86f835c637 drivers/vfio/vfio.c      Jason Gunthorpe 2022-05-11  617  /* true if the vfio_device has open_device() called but not close_device() */
-79d394f0b0cd09 drivers/vfio/vfio_main.c Jason Gunthorpe 2022-02-18 @618  bool vfio_assert_device_open(struct vfio_device *device)
-eadd86f835c637 drivers/vfio/vfio.c      Jason Gunthorpe 2022-05-11  619  {
-eadd86f835c637 drivers/vfio/vfio.c      Jason Gunthorpe 2022-05-11  620  	return !WARN_ON_ONCE(!READ_ONCE(device->open_count));
-eadd86f835c637 drivers/vfio/vfio.c      Jason Gunthorpe 2022-05-11  621  }
-eadd86f835c637 drivers/vfio/vfio.c      Jason Gunthorpe 2022-05-11  622  
-
-:::::: The code at line 618 was first introduced by commit
-:::::: 79d394f0b0cd096e2eadbcc0e84b9035efa529c8 vfio: Move container code into vfio_container.c
-
-:::::: TO: Jason Gunthorpe <jgg@nvidia.com>
-:::::: CC: Jason Gunthorpe <jgg@nvidia.com>
-
--- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
