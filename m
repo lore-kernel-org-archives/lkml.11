@@ -2,182 +2,143 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4A9D2C00140
-	for <linux-kernel@archiver.kernel.org>; Wed, 24 Aug 2022 15:47:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5AD01C32796
+	for <linux-kernel@archiver.kernel.org>; Wed, 24 Aug 2022 15:47:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238283AbiHXPrK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 24 Aug 2022 11:47:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37198 "EHLO
+        id S239759AbiHXPrm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 24 Aug 2022 11:47:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38506 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240066AbiHXPqn (ORCPT
+        with ESMTP id S239874AbiHXPrW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 24 Aug 2022 11:46:43 -0400
-Received: from madras.collabora.co.uk (madras.collabora.co.uk [46.235.227.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2C85A9AFAE
-        for <linux-kernel@vger.kernel.org>; Wed, 24 Aug 2022 08:44:41 -0700 (PDT)
-Received: from notapiano (unknown [70.107.189.129])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (No client certificate requested)
-        (Authenticated sender: nfraprado)
-        by madras.collabora.co.uk (Postfix) with ESMTPSA id CD5F56601DAD;
-        Wed, 24 Aug 2022 16:44:21 +0100 (BST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
-        s=mail; t=1661355863;
-        bh=0KfOfe64bh2HPU69YxftLTc3R28G0Jq8SAkkUg1ockU=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=ZRfz46UHhuBFS9V7XPVAuwYelv6ZwNZobLuDdHRFWyo+IcdyurTkYrhkEWVsVlDVa
-         PKK78GlcDoiiESJVtvCAE/GOzmEdbDpFz8mOKYQtdV5qnBci3RFtl0FGCxRPU4dDEh
-         ZzaB3gsEYUYrJk2RPteZLgQIJbNwK9isq+NTNW+0rd1s3ti60CKWP1A79lyRlJSjBH
-         ELAaGrDN1uMwFaRpow2Rfk6er64w6RmL+4q4j47ggW81mF9LYSSDn9UG4kMD4C5LxW
-         v1DQI3pd8dYia0iH33rIv/TfZF+JI1PXd726ywZf3koEaPRuuJNF8qG84UWACV5Vfv
-         myDFu6lKYEKUA==
-Date:   Wed, 24 Aug 2022 11:44:17 -0400
-From:   =?utf-8?B?TsOtY29sYXMgRi4gUi4gQS4=?= Prado 
-        <nfraprado@collabora.com>
-To:     "xinlei.lee" <xinlei.lee@mediatek.com>
-Cc:     chunkuang.hu@kernel.org, p.zabel@pengutronix.de, airlied@linux.ie,
-        daniel@ffwll.ch, matthias.bgg@gmail.com, rex-bc.chen@mediatek.com,
-        angelogioacchino.delregno@collabora.com, jason-jh.lin@mediatek.com,
-        yongqiang.niu@mediatek.com, dri-devel@lists.freedesktop.org,
-        linux-mediatek@lists.infradead.org,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        Project_Global_Chrome_Upstream_Group@mediatek.com,
-        Jitao Shi <jitao.shi@mediatek.com>
-Subject: Re: [PATCH v3,2/2] drm: mediatek: Adjust the dpi output format to
- MT8186
-Message-ID: <20220824154417.5cbfsgqjwajvplvk@notapiano>
-References: <1661235517-23699-1-git-send-email-xinlei.lee@mediatek.com>
- <1661235517-23699-3-git-send-email-xinlei.lee@mediatek.com>
- <20220823201622.meedlqvmixf5ukdf@notapiano>
- <447770ead17338241849dbbb2281fa8b4e31aefa.camel@mediatek.com>
+        Wed, 24 Aug 2022 11:47:22 -0400
+Received: from wnew1-smtp.messagingengine.com (wnew1-smtp.messagingengine.com [64.147.123.26])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C69333D59D
+        for <linux-kernel@vger.kernel.org>; Wed, 24 Aug 2022 08:45:49 -0700 (PDT)
+Received: from compute1.internal (compute1.nyi.internal [10.202.2.41])
+        by mailnew.west.internal (Postfix) with ESMTP id BD1B32B060D6;
+        Wed, 24 Aug 2022 11:45:46 -0400 (EDT)
+Received: from mailfrontend2 ([10.202.2.163])
+  by compute1.internal (MEProxy); Wed, 24 Aug 2022 11:45:48 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=cerno.tech; h=cc
+        :cc:content-type:date:date:from:from:in-reply-to:in-reply-to
+        :message-id:mime-version:references:reply-to:sender:subject
+        :subject:to:to; s=fm3; t=1661355946; x=1661363146; bh=k0jUUwZlCp
+        Fb8RacICxbFXp0XcVVSWVRMQYkg+IsL/w=; b=VsZuzuWdjynggiS089ISUrX+XF
+        H2BRJSxCBnBl3CsIA/QQl6XyiPxYXEfJYDVkH8/TAg+/TsZe1jPkooNoJ83yeDKd
+        wRQBdZMq+S+bTTTLPcNRVTGL+MBWRp/ueuJ0Ho0ZfZv1c6/HlOwwpuGL8Kfe9XM8
+        CTzUtb7o/5LsIiWM4LJDLDOz30et9eWxW0pxZGZJruPuDw4uugRPT1L9w7w9n+P5
+        wxEqFw8WZNGMkyxBzthn64/wOHoKdoowcqtim7edifBOtwSHRhWg+Iu8XwSG6TY8
+        eb3k1LgRZ9QuHbUpIbIHfABQkHgNCBOo3KE01SYM7MsWkprPEtBIScI9pgdg==
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        messagingengine.com; h=cc:cc:content-type:date:date:feedback-id
+        :feedback-id:from:from:in-reply-to:in-reply-to:message-id
+        :mime-version:references:reply-to:sender:subject:subject:to:to
+        :x-me-proxy:x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=
+        fm1; t=1661355946; x=1661363146; bh=k0jUUwZlCpFb8RacICxbFXp0XcVV
+        SWVRMQYkg+IsL/w=; b=0Imn5JCOC0WiGzpT0k91VjTy8yvPpQT21DKTMRYUaOIU
+        sVYc6lcCAKUzlsO7M0g9ZuyY85s14FiF7Jv6lyJNc+tUikgsJoSnyDn7tgRhOghN
+        t3A9B2Rl3JSuSRFuPeWO4D1Ykh3svlsQpHq24F6szaCQCRG3hH1X/U7fRev/WeoS
+        KKE4COiFBTvEKSDPFGC9Hh0IvugYt1lQxOqR9gMDTzQgGRrWS+uscDrs37LCL+ll
+        EHLDmBjd9DFlg7L0b2Zy0CBa6yITRDksQMNFzkjHCGLojYQsP7Pq1oMQP3i50VpJ
+        CuEn8xamB0p+mtmm+8YF28aDUd774vLyoMtRVNrLxw==
+X-ME-Sender: <xms:qUcGYzDFrcpSHuvMtYDZYCmk3OqqfBUNHEHNQRr47kQ_AzR2afIyIg>
+    <xme:qUcGY5gxXBuPRXb7sxz-fD3XY1K28G2HCR-RvP38qj6v37MMQtWuZzLkuflXKz6hS
+    T87sk6NzGExfyCcTEI>
+X-ME-Received: <xmr:qUcGY-kFUPrn5v4AZYHh9aAI1eHSI_0zzF-GVUOwsOwOCrZ2qMRsINvOscBW>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvfedrvdejuddgleehucetufdoteggodetrfdotf
+    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
+    uceurghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmne
+    cujfgurhepfffhvfevuffkfhggtggujgesghdtreertddtudenucfhrhhomhepofgrgihi
+    mhgvucftihhprghrugcuoehmrgigihhmvgestggvrhhnohdrthgvtghhqeenucggtffrrg
+    htthgvrhhnpeejveefheefkeeiffegveelveetgffffeektdefuefhtedtgeejhefggedu
+    ffffudenucevlhhushhtvghrufhiiigvpedtnecurfgrrhgrmhepmhgrihhlfhhrohhmpe
+    hmrgigihhmvgestggvrhhnohdrthgvtghh
+X-ME-Proxy: <xmx:qUcGY1xGET_pULNFhGqvRG7BMhJOOVXBW1PlHuuLfiGF87hbYnxCwQ>
+    <xmx:qUcGY4RhpUBWSdpBficCdhAPILHPAM02fbxTamOx4Uo_5Z2mW7Rolw>
+    <xmx:qUcGY4a5nfolhfg1OrHPchsQpZQXLra_1S2Z5ttkhMUYzjn83OUf6w>
+    <xmx:qkcGY3A3Xa53RJusfXMGoi1NFvbhxZYRynCLfPYcniNVbVPTK5RITUscqak>
+Feedback-ID: i8771445c:Fastmail
+Received: by mail.messagingengine.com (Postfix) with ESMTPA; Wed,
+ 24 Aug 2022 11:45:44 -0400 (EDT)
+Date:   Wed, 24 Aug 2022 17:45:43 +0200
+From:   Maxime Ripard <maxime@cerno.tech>
+To:     Noralf =?utf-8?Q?Tr=C3=B8nnes?= <noralf@tronnes.org>
+Cc:     Jernej Skrabec <jernej.skrabec@gmail.com>,
+        Martin Blumenstingl <martin.blumenstingl@googlemail.com>,
+        Chen-Yu Tsai <wens@csie.org>,
+        Philipp Zabel <p.zabel@pengutronix.de>,
+        Jerome Brunet <jbrunet@baylibre.com>,
+        Samuel Holland <samuel@sholland.org>,
+        Thomas Zimmermann <tzimmermann@suse.de>,
+        Daniel Vetter <daniel@ffwll.ch>, Emma Anholt <emma@anholt.net>,
+        David Airlie <airlied@linux.ie>,
+        Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
+        Kevin Hilman <khilman@baylibre.com>,
+        Neil Armstrong <narmstrong@baylibre.com>,
+        linux-sunxi@lists.linux.dev, linux-kernel@vger.kernel.org,
+        Phil Elwell <phil@raspberrypi.com>,
+        Mateusz Kwiatkowski <kfyatek+publicgit@gmail.com>,
+        linux-arm-kernel@lists.infradead.org,
+        Geert Uytterhoeven <geert@linux-m68k.org>,
+        Dave Stevenson <dave.stevenson@raspberrypi.com>,
+        linux-amlogic@lists.infradead.org, dri-devel@lists.freedesktop.org,
+        Dom Cobley <dom@raspberrypi.com>
+Subject: Re: [PATCH v1 34/35] drm/modes: Introduce the tv_mode property as a
+ command-line option
+Message-ID: <20220824154543.bdtpz2evwzsjrdrz@houat>
+References: <20220728-rpi-analog-tv-properties-v1-0-3d53ae722097@cerno.tech>
+ <20220728-rpi-analog-tv-properties-v1-34-3d53ae722097@cerno.tech>
+ <eedb1a86-c1fb-cc76-2a43-4ed349d7d826@tronnes.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="fetwu2vf2sqny7wk"
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <447770ead17338241849dbbb2281fa8b4e31aefa.camel@mediatek.com>
+In-Reply-To: <eedb1a86-c1fb-cc76-2a43-4ed349d7d826@tronnes.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Aug 24, 2022 at 09:59:21AM +0800, xinlei.lee wrote:
-> On Tue, 2022-08-23 at 16:16 -0400, Nícolas F. R. A. Prado wrote:
-> > On Tue, Aug 23, 2022 at 02:18:37PM +0800, xinlei.lee@mediatek.com
-> > wrote:
-> > > From: Xinlei Lee <xinlei.lee@mediatek.com>
-> > > 
-> > > Dpi output needs to adjust the output format to dual edge for
-> > > MT8186.
-> > > Because MT8186 HW has been modified at that time, SW needs to
-> > > cooperate.
-> > > And the register (MMSYS) reserved for dpi will be used for output
-> > > format control (dual_edge/single_edge).
-> > > 
-> > > Co-developed-by: Jitao Shi <jitao.shi@mediatek.com>
-> > > Signed-off-by: Jitao Shi <jitao.shi@mediatek.com>
-> > > Signed-off-by: Xinlei Lee <xinlei.lee@mediatek.com>
-> > > 
-> > > ---
-> > 
-> > [..]
-> > > --- a/drivers/gpu/drm/mediatek/mtk_dpi.c
-> > > +++ b/drivers/gpu/drm/mediatek/mtk_dpi.c
-> > 
-> > [..]
-> > >   * @yuv422_en_bit: Enable bit of yuv422.
-> > >   * @csc_enable_bit: Enable bit of CSC.
-> > >   * @pixels_per_iter: Quantity of transferred pixels per iteration.
-> > > + * @rgb888_dual_enable: Control output format for mt8186.
-> > 
-> > Let's not mention mt8186 in the description to keep the property
-> > generic. Also,
-> > this description should say what having 'rgb888_dual_enable = true'
-> > indicates
-> > about the hardware (in this case mt8186) and it currently doesn't.
-> > 
-> > Let's take a step back. What does 'dual enable' mean in this context
-> > and how
-> > does it relate to 'dual edge' and the dpi output format? By answering
-> > those
-> > questions we can find a description (and maybe variable name) that
-> > makes more
-> > sense.
-> > 
-> > >   */
-> > 
-> > [..]
-> > > @@ -449,6 +454,9 @@ static void mtk_dpi_dual_edge(struct mtk_dpi
-> > > *dpi)
-> > >  		mtk_dpi_mask(dpi, DPI_OUTPUT_SETTING,
-> > >  			     dpi->output_fmt ==
-> > > MEDIA_BUS_FMT_RGB888_2X12_LE ?
-> > >  			     EDGE_SEL : 0, EDGE_SEL);
-> > > +	if (dpi->conf->rgb888_dual_enable)
-> > > +		mtk_mmsys_ddp_dpi_fmt_config(dpi->mmsys_dev,
-> > > DPI_RGB888_DDR_CON,
-> > > +					     DPI_FORMAT_MASK, NULL);
-> > 
-> > This if block should be further indented.
-> > 
-> > >  	} else {
-> > >  		mtk_dpi_mask(dpi, DPI_DDR_SETTING, DDR_EN | DDR_4PHASE,
-> > > 0);
-> > >  	}
-> > 
-> > [..]
-> > > --- a/drivers/gpu/drm/mediatek/mtk_dpi_regs.h
-> > > +++ b/drivers/gpu/drm/mediatek/mtk_dpi_regs.h
-> > > @@ -235,4 +235,8 @@
-> > >  #define MATRIX_SEL_RGB_TO_JPEG		0
-> > >  #define MATRIX_SEL_RGB_TO_BT601		2
-> > >  
-> > > +#define DPI_FORMAT_MASK			0x1
-> > > +#define DPI_RGB888_DDR_CON		BIT(0)
-> > > +#define DPI_RGB565_SDR_CON		BIT(1)
-> > 
-> > I'm not sure if it would make more sense to have these definitions in
-> > the mmsys
-> > header since they're configurations of a register in mmsys'
-> > iospace... I think
-> > we can keep them here but at least add a comment above:
-> > 
-> > /* Values for DPI configuration in MMSYS address space */
-> > 
-> > Thanks,
-> > Nícolas
-> 
-> Hi Nícolas:
-> Thanks for your careful review!
-> I will modify the description of this member variable and add the
-> hardware state corresponding to the software setting.
-> (eg. rgb888_dual_enable = true the hardware output rgb888_dual_edge
-> format data)
-> 
-> Your suggestion is very necessary, maybe my name is not accurate
-> enough, this flag is to enable RGB888_dual_edge format output. 
-> Would it be better for the variable to be called
-> RGB888_dual_edge_enable then?
 
-The thing is, we also output in rgb888 dual edge format on mt8183 and mt8192,
-and therefore set DDR_EN in mtk_dpi_dual_edge(), right? But, as you said, we
-don't need to enable this new rgb888_dual_enable variable on those platforms,
-only on mt8186. So that's why I don't think the current name/description is
-suitable. If the variable only needs to be set on mt8186, it should have a name
-and description that shows what is different between mt8186 and the others. But
-without containing the "mt8186" name, since this might happen on other SoCs
-later on.
+--fetwu2vf2sqny7wk
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-My understanding is that even though both mt8186 and mt8192 output in the rgb888
-dual edge format, only mt8186 is able to configure the edge setting in MMSYS (so
-on mt8192 it would be hardwired to dual edge and not possible to change). So
-what I propose is
+Hi Noralf,
 
-Name: edge_cfg_in_mmsys
+On Sat, Aug 20, 2022 at 10:18:47PM +0200, Noralf Tr=F8nnes wrote:
+> Den 29.07.2022 18.35, skrev Maxime Ripard:
+> > Our new tv mode option allows to specify the TV mode from a property.
+> > However, it can still be useful, for example to avoid any boot time
+> > artifact, to set that property directly from the kernel command line.
+> >=20
+> > Let's add some code to allow it, and some unit tests to exercise that c=
+ode.
+> >=20
+> > Signed-off-by: Maxime Ripard <maxime@cerno.tech>
+> >=20
+>=20
+> In the subject it says "tv_mode property", but the property is called
+> "tv norm", so the option should be tv_norm?
 
-Description: "If the edge configuration for DPI's output needs to be set in MMSYS"
+Yeah... I don't know. mode is taken but it's obviously the best name. So
+I went with norm to avoid the (internal) conflict but I left mode for
+the user facing property.
 
-But maybe since you know the hardware, you might be able to find an even better
-name/description.
+I'm not sure what's best here, or maybe we can pick another name entirely?
 
-Thanks,
-Nícolas
+Maxime
+
+--fetwu2vf2sqny7wk
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iHUEABYKAB0WIQRcEzekXsqa64kGDp7j7w1vZxhRxQUCYwZHpwAKCRDj7w1vZxhR
+xb3AAP9tWGleJEtkD6UwMhukbZIQ59/uDegXZyj1E6YRYC78RAEApPnjLjYnLERA
+E4Ahd6Pzh7p0TuGpdjYkO1Ufgfim2AA=
+=Le3o
+-----END PGP SIGNATURE-----
+
+--fetwu2vf2sqny7wk--
