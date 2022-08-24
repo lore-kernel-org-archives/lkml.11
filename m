@@ -2,117 +2,60 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 19AB3C32774
-	for <linux-kernel@archiver.kernel.org>; Wed, 24 Aug 2022 03:31:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7CA66C00140
+	for <linux-kernel@archiver.kernel.org>; Wed, 24 Aug 2022 03:36:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234664AbiHXDba (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 23:31:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44292 "EHLO
+        id S231638AbiHXDgF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 23 Aug 2022 23:36:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48446 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234712AbiHXDbH (ORCPT
+        with ESMTP id S229446AbiHXDgD (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 23:31:07 -0400
-Received: from mail-pj1-x1049.google.com (mail-pj1-x1049.google.com [IPv6:2607:f8b0:4864:20::1049])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E0DB183043
-        for <linux-kernel@vger.kernel.org>; Tue, 23 Aug 2022 20:31:05 -0700 (PDT)
-Received: by mail-pj1-x1049.google.com with SMTP id s17-20020a17090aad9100b001faf81f9654so198236pjq.5
-        for <linux-kernel@vger.kernel.org>; Tue, 23 Aug 2022 20:31:05 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=cc:to:from:subject:references:mime-version:message-id:in-reply-to
-         :date:reply-to:from:to:cc;
-        bh=8csu3CnKhbEs6Rc2o35KyWXX/h9ze9GUtfv0VR2tlfk=;
-        b=miuX7jBFU/oCEUHgHQuycGX9dMPreQn027qut3yvNU5ZgenW+OmPRxtR4HZlBjOhcg
-         POhM4rytcBwcaTU3faOywuzVhkT31be4949ibbCDgYN/mZ3u7lPzNtKCmuiF74a6pSGt
-         K0MUxdplq7oPEoFQafJsw8K+tGjIQl+mamx/RBYQXdpCnitvswuu6JdHVOMSRCLt2AfM
-         hnJg2Fxe8sb3RX0PmwmMhmR7/p5UEzLVAjWtviWVKuoCcvRwwUmOC4UDZN6AIVjZTmml
-         YPKdULKVF+6KJ0xVxzAqW1qEwmdHOYD42dV24ze6TYs6LG57SqSLaQe9sttYP/YqHhhP
-         65jg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:from:subject:references:mime-version:message-id:in-reply-to
-         :date:reply-to:x-gm-message-state:from:to:cc;
-        bh=8csu3CnKhbEs6Rc2o35KyWXX/h9ze9GUtfv0VR2tlfk=;
-        b=7g9aA8TaMv6nBn4Cc6/Vy2PnCya6+0uMRilXwgK6din6ATsUXhuoWHUnFlmX+Z1sME
-         TXkQhSdcCEAyLYbehajNI+sk2V9eCyhp1pKAZv1c0yxq4tbsa7Hey43390iwN+TV4B8Y
-         WKEDerlOKsLfg6p8UIVphjhxgWZJhpD1sqoDHs/5xbbuDyVuX9v25glkanZo+Y2Y8007
-         0GOXsQAgoELVJK6bPyn6sqSl3aWuwxN86BIYUpWvSU+iH/uwPa42d1B1XYFkqNWqL4mV
-         ZrO0vxWIbP9lTJbPnVBmdmhAZWbQksQDdi5aTo+9uOTd7ZF/biyJO3Fg6sVCg3iPpvFn
-         mahw==
-X-Gm-Message-State: ACgBeo0s63xahlErltWzM4dPhOZXnj/JbLJV/qMZBopzk6qWpBJwAtTn
-        ji/h7OzoQvEf7MKBhKPwM39dWiuNSuk=
-X-Google-Smtp-Source: AA6agR4kVHAY+Am1kSmdEMreZvp9bp5EQs25Woq2sCdu7BvQj0Sy3+WtYhhjdZaliLvjM7+Ca6VOt2cZzk0=
-X-Received: from zagreus.c.googlers.com ([fda3:e722:ac3:cc00:7f:e700:c0a8:5c37])
- (user=seanjc job=sendgmr) by 2002:a17:90b:918:b0:1fa:ad32:57f3 with SMTP id
- bo24-20020a17090b091800b001faad3257f3mr6501379pjb.28.1661311865482; Tue, 23
- Aug 2022 20:31:05 -0700 (PDT)
-Reply-To: Sean Christopherson <seanjc@google.com>
-Date:   Wed, 24 Aug 2022 03:30:57 +0000
-In-Reply-To: <20220824033057.3576315-1-seanjc@google.com>
-Message-Id: <20220824033057.3576315-4-seanjc@google.com>
-Mime-Version: 1.0
-References: <20220824033057.3576315-1-seanjc@google.com>
-X-Mailer: git-send-email 2.37.1.595.g718a3a8f04-goog
-Subject: [PATCH 3/3] KVM: x86: Inject #UD on emulated XSETBV if XSAVES isn't enabled
-From:   Sean Christopherson <seanjc@google.com>
-To:     Sean Christopherson <seanjc@google.com>,
-        Paolo Bonzini <pbonzini@redhat.com>
-Cc:     kvm@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Leonardo Bras <leobras@redhat.com>,
-        "Dr . David Alan Gilbert" <dgilbert@redhat.com>,
-        Vitaly Kuznetsov <vkuznets@redhat.com>
-Content-Type: text/plain; charset="UTF-8"
+        Tue, 23 Aug 2022 23:36:03 -0400
+Received: from szxga03-in.huawei.com (szxga03-in.huawei.com [45.249.212.189])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 47B68786D1
+        for <linux-kernel@vger.kernel.org>; Tue, 23 Aug 2022 20:36:02 -0700 (PDT)
+Received: from dggpemm500022.china.huawei.com (unknown [172.30.72.55])
+        by szxga03-in.huawei.com (SkyGuard) with ESMTP id 4MCBXr6LNHzGpmB;
+        Wed, 24 Aug 2022 11:34:20 +0800 (CST)
+Received: from huawei.com (10.175.103.91) by dggpemm500022.china.huawei.com
+ (7.185.36.162) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Wed, 24 Aug
+ 2022 11:36:00 +0800
+From:   Zeng Heng <zengheng4@huawei.com>
+To:     <bristot@kernel.org>, <mingo@redhat.com>, <rostedt@goodmis.org>
+CC:     <linux-kernel@vger.kernel.org>, <zengheng4@huawei.com>
+Subject: [PATCH 0/2] rv/monitors: fix sparse warning about lack of static qualifier
+Date:   Wed, 24 Aug 2022 11:43:55 +0800
+Message-ID: <20220824034357.2014202-1-zengheng4@huawei.com>
+X-Mailer: git-send-email 2.25.1
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.175.103.91]
+X-ClientProxiedBy: dggems703-chm.china.huawei.com (10.3.19.180) To
+ dggpemm500022.china.huawei.com (7.185.36.162)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Inject #UD when emulating XSETBV if CR4.OSXSAVE is not set.  This also
-covers the "XSAVE not supported" check, as setting CR4.OSXSAVE=1 #GPs if
-XSAVE is not supported (and userspace gets to keep the pieces if it
-forces incoherent vCPU state).
+Fix sparse tool complains about rv/monitors existing modules.
 
-Add a comment to kvm_emulate_xsetbv() to call out that the CPU checks
-CR4.OSXSAVE before checking for intercepts.  AMD'S APM implies that #UD
-has priority (says that intercepts are checked before #GP exceptions),
-while Intel's SDM says nothing about interception priority.  However,
-testing on hardware shows that both AMD and Intel CPUs prioritize the #UD
-over interception.
+In order to prevent new modules from similar warning,
+also modify the template files to avoid such warning.
 
-Fixes: 02d4160fbd76 ("x86: KVM: add xsetbv to the emulator")
-Cc: stable@vger.kernel.org
-Cc: Vitaly Kuznetsov <vkuznets@redhat.com>
-Signed-off-by: Sean Christopherson <seanjc@google.com>
----
- arch/x86/kvm/emulate.c | 3 +++
- arch/x86/kvm/x86.c     | 1 +
- 2 files changed, 4 insertions(+)
+Zeng Heng (2):
+  rv/monitors: add 'static' qualifier for local symbols
+  rv/dot2K: add 'static' qualifier for local variable
 
-diff --git a/arch/x86/kvm/emulate.c b/arch/x86/kvm/emulate.c
-index f092c54d1a2f..8ce5ae61fc41 100644
---- a/arch/x86/kvm/emulate.c
-+++ b/arch/x86/kvm/emulate.c
-@@ -4132,6 +4132,9 @@ static int em_xsetbv(struct x86_emulate_ctxt *ctxt)
- {
- 	u32 eax, ecx, edx;
- 
-+	if (!(ctxt->ops->get_cr(ctxt, 4) & X86_CR4_OSXSAVE))
-+		return emulate_ud(ctxt);
-+
- 	eax = reg_read(ctxt, VCPU_REGS_RAX);
- 	edx = reg_read(ctxt, VCPU_REGS_RDX);
- 	ecx = reg_read(ctxt, VCPU_REGS_RCX);
-diff --git a/arch/x86/kvm/x86.c b/arch/x86/kvm/x86.c
-index 97ab53046052..356d0475ab6d 100644
---- a/arch/x86/kvm/x86.c
-+++ b/arch/x86/kvm/x86.c
-@@ -1065,6 +1065,7 @@ static int __kvm_set_xcr(struct kvm_vcpu *vcpu, u32 index, u64 xcr)
- 
- int kvm_emulate_xsetbv(struct kvm_vcpu *vcpu)
- {
-+	/* Note, #UD due to CR4.OSXSAVE=0 has priority over the intercept. */
- 	if (static_call(kvm_x86_get_cpl)(vcpu) != 0 ||
- 	    __kvm_set_xcr(vcpu, kvm_rcx_read(vcpu), kvm_read_edx_eax(vcpu))) {
- 		kvm_inject_gp(vcpu, 0);
+ kernel/trace/rv/monitors/wip/wip.c                      | 4 ++--
+ kernel/trace/rv/monitors/wwnr/wwnr.c                    | 4 ++--
+ tools/verification/dot2/dot2k_templates/main_global.c   | 4 ++--
+ tools/verification/dot2/dot2k_templates/main_per_cpu.c  | 4 ++--
+ tools/verification/dot2/dot2k_templates/main_per_task.c | 4 ++--
+ 5 files changed, 10 insertions(+), 10 deletions(-)
+
 -- 
-2.37.1.595.g718a3a8f04-goog
+2.25.1
 
