@@ -2,142 +2,67 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8FD8EC3F6B0
-	for <linux-kernel@archiver.kernel.org>; Wed, 24 Aug 2022 13:11:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 40DDDC32796
+	for <linux-kernel@archiver.kernel.org>; Wed, 24 Aug 2022 13:12:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238067AbiHXNLH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 24 Aug 2022 09:11:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47344 "EHLO
+        id S238019AbiHXNMQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 24 Aug 2022 09:12:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49594 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236684AbiHXNLB (ORCPT
+        with ESMTP id S235137AbiHXNMN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 24 Aug 2022 09:11:01 -0400
-Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 44E3115FC5;
-        Wed, 24 Aug 2022 06:10:49 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
-        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
-        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
-        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=N9oJQbbnL3ZPdfQrFIR3akJaO1v/S9XNtdetroi1fvA=; b=nd6buqrEq/WpLStrEkR+1pNf4s
-        8wuhU32kQ/2Aw4VCyDQu12J576L66NpSmoH4rbKG6A69+M3JlSVGaeUGPJDrmwIaW7UCSfe2KLZjK
-        zRG0frRccNECb0nSAcHXIAqIQwzAg2zVUe7c6JJ8AHb3dqWJfGTeNF59P2MCx3CjfwkMnd3tj2xJ2
-        w6OxmMlGPIcAK4CTlXlHvX7EC4p36XnLZJAPjWRl3g0w8oYgHVm4+0UapUo5A2yD30y/n59FOZuxt
-        mFDuu4TGzDki5+V3V6tGgsEqvE9T+zh39exnxox3pl0vF86csRx00W38vWmT5qhnESimeb/li7Haj
-        ATYF4zVw==;
-Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:33914)
-        by pandora.armlinux.org.uk with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.94.2)
-        (envelope-from <linux@armlinux.org.uk>)
-        id 1oQq9V-0004EH-Cf; Wed, 24 Aug 2022 14:10:37 +0100
-Received: from linux by shell.armlinux.org.uk with local (Exim 4.94.2)
-        (envelope-from <linux@shell.armlinux.org.uk>)
-        id 1oQq9Q-00048p-LO; Wed, 24 Aug 2022 14:10:32 +0100
-Date:   Wed, 24 Aug 2022 14:10:32 +0100
-From:   "Russell King (Oracle)" <linux@armlinux.org.uk>
-To:     "xiaowu.ding" <xiaowu.ding@jaguarmicro.com>
-Cc:     davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        pabeni@redhat.com, nicolas.ferre@microchip.com,
-        claudiu.beznea@microchip.com, palmer@dabbelt.com,
-        paul.walmsley@sifive.com, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-riscv@lists.infradead.org
-Subject: Re: [PATCH net-next] driver: cadence macb driver support acpi mode
-Message-ID: <YwYjSPl7murFFpJG@shell.armlinux.org.uk>
-References: <20220824121351.578-1-xiaowu.ding@jaguarmicro.com>
+        Wed, 24 Aug 2022 09:12:13 -0400
+Received: from bg5.exmail.qq.com (bg4.exmail.qq.com [43.154.221.58])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 176B420F43;
+        Wed, 24 Aug 2022 06:12:05 -0700 (PDT)
+X-QQ-mid: bizesmtp82t1661346722te70zksx
+Received: from localhost.localdomain ( [182.148.14.124])
+        by bizesmtp.qq.com (ESMTP) with 
+        id ; Wed, 24 Aug 2022 21:12:00 +0800 (CST)
+X-QQ-SSF: 01000000002000C0E000B00A0000000
+X-QQ-FEAT: znfcQSa1hKY+Y42639KpZS/OxSsqc3p/4S+8kJXDXQM9J/XhUzApL2ICXgAtj
+        aUzBRnvORqgpxHMrFwGGoOJVO1/5OQoW2hbmqrDoMzZRdS0JZiguycsawak3ZVs1gc1SJ3/
+        UOKGcn2g1k5DcrWd802cpYhe2lJWygWpdzHd/M2lgiOJLZ+Bs8wifbEIOnAKHH49fc1GS79
+        j+Kpj79MK88ECnixBd9dP3uMx6hvp9Li9VHLgxHrvoCTvj7lx4Q/eXSABREL3VegxPGs0P6
+        lK69dM6IEsJs3Is/BCIHGEMsVCFQ35SVY7S2D3eWf0hetZuUwTSMPXoObqYJjgiRNZpVnBM
+        aDhRVeaKXdWXkldV9T65UesbHnpv7UBtTtquP+cjWDPNnoCa2xJsiKyq25CQg==
+X-QQ-GoodBg: 0
+From:   Jilin Yuan <yuanjilin@cdjrlc.com>
+To:     mchehab@kernel.org
+Cc:     linux-media@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Jilin Yuan <yuanjilin@cdjrlc.com>
+Subject: [PATCH] usb/dvb-usb: fix repeated words in comments
+Date:   Wed, 24 Aug 2022 21:11:53 +0800
+Message-Id: <20220824131153.48756-1-yuanjilin@cdjrlc.com>
+X-Mailer: git-send-email 2.36.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220824121351.578-1-xiaowu.ding@jaguarmicro.com>
-Sender: Russell King (Oracle) <linux@armlinux.org.uk>
+Content-Transfer-Encoding: 8bit
+X-QQ-SENDSIZE: 520
+Feedback-ID: bizesmtp:cdjrlc.com:qybglogicsvr:qybglogicsvr4
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Aug 24, 2022 at 08:13:51PM +0800, xiaowu.ding wrote:
-> -static bool macb_phy_handle_exists(struct device_node *dn)
-> +static bool macb_of_phy_handle_exists(struct device_node *dn)
->  {
->  	dn = of_parse_phandle(dn, "phy-handle", 0);
->  	of_node_put(dn);
->  	return dn != NULL;
->  }
->  
-> -static int macb_phylink_connect(struct macb *bp)
-> +static int macb_of_phylink_connect(struct macb *bp)
->  {
->  	struct device_node *dn = bp->pdev->dev.of_node;
->  	struct net_device *dev = bp->dev;
-> @@ -765,7 +767,7 @@ static int macb_phylink_connect(struct macb *bp)
->  	if (dn)
->  		ret = phylink_of_phy_connect(bp->phylink, dn, 0);
->  
-> -	if (!dn || (ret && !macb_phy_handle_exists(dn))) {
-> +	if (!dn || (ret && !macb_of_phy_handle_exists(dn))) {
->  		phydev = phy_find_first(bp->mii_bus);
->  		if (!phydev) {
->  			netdev_err(dev, "no PHY found\n");
-> @@ -786,6 +788,166 @@ static int macb_phylink_connect(struct macb *bp)
->  	return 0;
->  }
->  
-> +#ifdef CONFIG_ACPI
-> +
-> +static bool macb_acpi_phy_handle_exists(struct fwnode_handle *fwnd)
-> +{
-> +	struct fwnode_handle *phy_node;
-> +	bool flag = false;
-> +	/* Only phy-handle is used for ACPI */
-> +	phy_node = fwnode_find_reference(fwnd, "phy-handle", 0);
-> +	flag = !IS_ERR_OR_NULL(phy_node);
-> +
-> +	if (flag)
-> +		fwnode_handle_put(phy_node);
-> +
-> +	return flag;
-> +}
-> +
-> +static int macb_acpi_phylink_connect(struct macb *bp)
-> +{
-> +	struct fwnode_handle *fwnd = bp->pdev->dev.fwnode;
-> +	struct net_device *dev = bp->dev;
-> +	struct phy_device *phydev;
-> +	int ret;
-> +
-> +	if (fwnd)
-> +		ret = phylink_fwnode_phy_connect(bp->phylink, fwnd, 0);
-> +
-> +	if (!fwnd || (ret && !macb_acpi_phy_handle_exists(fwnd))) {
-> +		phydev = phy_find_first(bp->mii_bus);
-> +		if (!phydev) {
-> +			netdev_err(dev, "no PHY found\n");
-> +			return -ENXIO;
-> +		}
-> +
-> +		/* attach the mac to the phy */
-> +		ret = phylink_connect_phy(bp->phylink, phydev);
-> +	}
-> +
-> +	if (ret) {
-> +		netdev_err(dev, "Could not attach PHY (%d)\n", ret);
-> +		return ret;
-> +	}
-> +
-> +	phylink_start(bp->phylink);
-> +
-> +	return 0;
-> +}
+ Delete the redundant word 'is'.
 
-You shouldn't need this duplication. phylink_fwnode_phy_connect() can be
-used to connect DT-based PHYs just fine, so you should be able to use it
-for both cases without needing to resort to two copies. This is one of
-the reasons the fwnode API exists.
+Signed-off-by: Jilin Yuan <yuanjilin@cdjrlc.com>
+---
+ drivers/media/usb/dvb-usb/technisat-usb2.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-The functionality of your macb_acpi_phy_handle_exists() and
-macb_of_phy_handle_exists() should also be the same. Not that
-fwnode_handle_put() is safe to call with NULL or err-pointer fwnodes.
-
+diff --git a/drivers/media/usb/dvb-usb/technisat-usb2.c b/drivers/media/usb/dvb-usb/technisat-usb2.c
+index 9c77911fcad4..df90c6c5f3b9 100644
+--- a/drivers/media/usb/dvb-usb/technisat-usb2.c
++++ b/drivers/media/usb/dvb-usb/technisat-usb2.c
+@@ -786,7 +786,7 @@ static void technisat_usb2_disconnect(struct usb_interface *intf)
+ {
+ 	struct dvb_usb_device *dev = usb_get_intfdata(intf);
+ 
+-	/* work and stuff was only created when the device is is hot-state */
++	/* work and stuff was only created when the device is hot-state */
+ 	if (dev != NULL) {
+ 		struct technisat_usb2_state *state = dev->priv;
+ 		if (state != NULL)
 -- 
-RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
-FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
+2.36.1
+
