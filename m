@@ -2,114 +2,110 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8A78BC32796
-	for <linux-kernel@archiver.kernel.org>; Wed, 24 Aug 2022 01:25:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4260CC32793
+	for <linux-kernel@archiver.kernel.org>; Wed, 24 Aug 2022 01:26:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232978AbiHXBZH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 21:25:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40212 "EHLO
+        id S230152AbiHXB0A (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 23 Aug 2022 21:26:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40644 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229732AbiHXBZE (ORCPT
+        with ESMTP id S229445AbiHXBZ5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 21:25:04 -0400
-Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 57001D74
-        for <linux-kernel@vger.kernel.org>; Tue, 23 Aug 2022 18:25:03 -0700 (PDT)
-Received: from dggpemm500022.china.huawei.com (unknown [172.30.72.53])
-        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4MC7bw05sHzlWG1;
-        Wed, 24 Aug 2022 09:21:48 +0800 (CST)
-Received: from [10.174.179.163] (10.174.179.163) by
- dggpemm500022.china.huawei.com (7.185.36.162) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Wed, 24 Aug 2022 09:25:01 +0800
-Message-ID: <096cb71d-1001-0a78-73c8-bfef84868d96@huawei.com>
-Date:   Wed, 24 Aug 2022 09:25:00 +0800
+        Tue, 23 Aug 2022 21:25:57 -0400
+Received: from mail-pl1-x62f.google.com (mail-pl1-x62f.google.com [IPv6:2607:f8b0:4864:20::62f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 24CC52B60B;
+        Tue, 23 Aug 2022 18:25:57 -0700 (PDT)
+Received: by mail-pl1-x62f.google.com with SMTP id 20so14342804plo.10;
+        Tue, 23 Aug 2022 18:25:57 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc;
+        bh=uUmdHBpzbriSuoiotw31C+sqS36Q04kPztFqTxJQriw=;
+        b=dpb/yMlot+zmKLKXIjN6Lvob6LhNAAMCj/+/Os1pajANbCivi3fer2r0Fmqkba5q5j
+         mbVtDCeEkBqAxJA3Jwlcnmc1UGiPMfco0NiKCUraZVvrh30cMjKwZxOY9GGgVhthe9Ba
+         9YnAbqk5d/0N1mR8i2cUsV7gh4GHg62DdyrbY8WR+VFMR8zadMzS98Xqp6+Rt14tDot6
+         pPYnphfWLxgQrJveBRXJbcJ65Cl48WyQilgLXE7j4egkKdSNlm0kFrmVKaakvi1wWVxf
+         fPS6XZsZsSycgRBMgX8F1jZmlqbGON/rJYkPsA+k23m1N6Yq7vijy6NkAS6mIBkCqrXR
+         D+0g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc;
+        bh=uUmdHBpzbriSuoiotw31C+sqS36Q04kPztFqTxJQriw=;
+        b=GPNj+g7jpkJARxsmHFEPO3PW5Qgs4TkPO1QuL8hmr1d44q2AyiEEYkaHd2UY4Zwdmo
+         Nni63aX0MBR0UJdmKD1XAutHRS42C1C7joFqxQaCj37xINdB1G71NRcxoOkUsAg9E1W2
+         4Zv8pGRey91RYpT1P+g80nJ3gxW5B4IZc4JWMypBlkw7He1H5axSUJM5C/Eua554bJzN
+         1dVtfDBSMuQasDQhK843E9/MmRS9oXfsfdC+OIZjyarv7vdaQke3S/9y2ayWzbrVR/R+
+         aAbsZmymkNnaNv1x4vNCTl6j6RqHbmb4KOlDWOeMZF0AaHpTeT4/jn6WL8j2iS4IYSKG
+         HCBg==
+X-Gm-Message-State: ACgBeo1ph3rDgF6DE46Qy1BZTPmvR4U5dtK/lHDzqap2C7Ho0pr9VNqb
+        JZhPqv9XYMML7S3/L+al4Hy/d8XQpseH4iZND6U=
+X-Google-Smtp-Source: AA6agR7xbfLJ1Uo0SN1Sc8YyuIhlZnLymcTgcuHc3xIKaCc5l2Col+H8uCrdOb9eDMMna3TkYDUkhhZNCNjnMhaqWsU=
+X-Received: by 2002:a17:90b:4a05:b0:1f5:62d5:4155 with SMTP id
+ kk5-20020a17090b4a0500b001f562d54155mr6063079pjb.6.1661304356632; Tue, 23 Aug
+ 2022 18:25:56 -0700 (PDT)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
- Thunderbird/102.1.2
-Subject: Re: [PATCH -next] trace: wwnr: Make local symbol 'rv_wwnr' static
-To:     Daniel Bristot de Oliveira <bristot@kernel.org>
-CC:     <linux-kernel@vger.kernel.org>, <rostedt@goodmis.org>,
-        <mingo@redhat.com>
-References: <20220822063056.3890045-1-zengheng4@huawei.com>
- <378d61ab-8866-8026-d6ad-b8f6718ff345@kernel.org>
-From:   Zeng Heng <zengheng4@huawei.com>
-In-Reply-To: <378d61ab-8866-8026-d6ad-b8f6718ff345@kernel.org>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
-Content-Transfer-Encoding: 8bit
-X-Originating-IP: [10.174.179.163]
-X-ClientProxiedBy: dggems703-chm.china.huawei.com (10.3.19.180) To
- dggpemm500022.china.huawei.com (7.185.36.162)
-X-CFilter-Loop: Reflected
+References: <20220821010030.97539-1-zhouzhouyi@gmail.com> <87edx7l5px.fsf@mpe.ellerman.id.au>
+ <0d7b55bc-4dd2-7de1-8ca5-353b1a044caf@csgroup.eu> <3756ad84-a5b0-b404-7962-86f77d6f38b3@csgroup.eu>
+In-Reply-To: <3756ad84-a5b0-b404-7962-86f77d6f38b3@csgroup.eu>
+From:   Zhouyi Zhou <zhouzhouyi@gmail.com>
+Date:   Wed, 24 Aug 2022 09:25:45 +0800
+Message-ID: <CAABZP2w5zOWwLknAEY4UoEQZraOn29TqpaaZxmZKpqS2GhT_yQ@mail.gmail.com>
+Subject: Re: [PATCH linux-next] powerpc: disable sanitizer in irq_soft_mask_set
+To:     Christophe Leroy <christophe.leroy@csgroup.eu>
+Cc:     Michael Ellerman <mpe@ellerman.id.au>,
+        Nicholas Piggin <npiggin@gmail.com>,
+        atrajeev@linux.vnet.ibm.com,
+        linuxppc-dev <linuxppc-dev@lists.ozlabs.org>,
+        linux-kernel <linux-kernel@vger.kernel.org>, lance@osuosl.org,
+        "Paul E. McKenney" <paulmck@kernel.org>, rcu <rcu@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Got it, it's pleasure. And I will re-send the below patch series ASAP.
+On Wed, Aug 24, 2022 at 12:50 AM Christophe Leroy
+<christophe.leroy@csgroup.eu> wrote:
+>
+>
+>
+> Le 23/08/2022 =C3=A0 10:47, Christophe Leroy a =C3=A9crit :
+> >
+> >
+> > Le 23/08/2022 =C3=A0 10:33, Michael Ellerman a =C3=A9crit :
+> >> Zhouyi Zhou <zhouzhouyi@gmail.com> writes:
+> >>
+> >> My worry is that this will force irq_soft_mask_set() out of line, whic=
+h
+> >> we would rather avoid. It's meant to be a fast path.
+> >>
+> >> In fact with this applied I see nearly 300 out-of-line copies of the
+> >> function when building a defconfig, and ~1700 calls to it.
+> >>
+> >> Normally it is inlined at every call site.
+> >>
+> >>
+> >> So I think I'm inclined to revert ef5b570d3700 ("powerpc/irq: Don't op=
+en
+> >> code irq_soft_mask helpers").
+> >
+> > Could you revert it only partially ? In extenso, revert the
+> > READ/WRITE_ONCE and bring back the inline asm in irq_soft_mask_return()
+> >   and irq_soft_mask_set(), but keep other changes.
+>
+> I sent a patch doing that.
+Thank Christophe for the fix. I am very glad to be of benefit to the
+community ;-)
+Also thank Michael and Paul for your constant encouragement and
+guidance, I learned to use objdump to count the number of failed
+inline function calls today ;-)
 
+By the way, from my experiments, both gcc-11 and clang-14 behave the
+same as Michael has described.
 
-B.R.,
-
-Zeng Heng
-
-
-在 2022/8/23 22:05, Daniel Bristot de Oliveira 写道:
-> On 8/22/22 08:30, Zeng Heng wrote:
->> The sparse tool complains as follows:
->>
->> kernel/trace/rv/monitors/wwnr/wwnr.c:18:19:
->> warning: symbol 'rv_wwnr' was not declared. Should it be static?
->>
->> The `rv_wwnr` symbol is not dereferenced by other exter files,
->> so add static qualifier for it.
-> Would you mind re-sending this patch with some changes?
+Cheers
+Zhouyi
 >
-> - Use "rv/monitors:" as the subsystem
-> - Do the same change for wip monitor
-> - Add the fixes tags:
->    Fixes:	ccc319dcb450 ("rv/monitor: Add the wwnr monitor")
->    Fixes:	8812d21219b9 ("rv/monitor: Add the wip monitor skeleton created by dot2k")
->
-> Also, to fix this problem for new monitors, do another patch changing the dot2k
-> templates files, adding the same 'static' attribute. The files are:
->
-> - tools/verification/dot2/dot2k_templates/main_global.c
-> - tools/verification/dot2/dot2k_templates/main_per_cpu.c
-> - tools/verification/dot2/dot2k_templates/main_per_task.c
->
-> In this second patch, add the subsystem as "rv/dot2k" and the following tags:
->
->    Fixes:	24bce201d798 ("tools/rv: Add dot2k")
->    Suggested-by: Daniel Bristot de Oliveira <bristot@kernel.org>
->
-> Thanks!
-> -- Daniel
->
->
->> Signed-off-by: Zeng Heng <zengheng4@huawei.com>
->> ---
->>   kernel/trace/rv/monitors/wwnr/wwnr.c | 4 ++--
->>   1 file changed, 2 insertions(+), 2 deletions(-)
->>
->> diff --git a/kernel/trace/rv/monitors/wwnr/wwnr.c b/kernel/trace/rv/monitors/wwnr/wwnr.c
->> index 599225d9cf38..a063b93c6a1d 100644
->> --- a/kernel/trace/rv/monitors/wwnr/wwnr.c
->> +++ b/kernel/trace/rv/monitors/wwnr/wwnr.c
->> @@ -15,7 +15,7 @@
->>   
->>   #include "wwnr.h"
->>   
->> -struct rv_monitor rv_wwnr;
->> +static struct rv_monitor rv_wwnr;
->>   DECLARE_DA_MON_PER_TASK(wwnr, unsigned char);
->>   
->>   static void handle_switch(void *data, bool preempt, struct task_struct *p,
->> @@ -59,7 +59,7 @@ static void disable_wwnr(void)
->>   	da_monitor_destroy_wwnr();
->>   }
->>   
->> -struct rv_monitor rv_wwnr = {
->> +static struct rv_monitor rv_wwnr = {
->>   	.name = "wwnr",
->>   	.description = "wakeup while not running per-task testing model.",
->>   	.enable = enable_wwnr,
+> Christophe
