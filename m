@@ -2,106 +2,164 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9B832C00140
-	for <linux-kernel@archiver.kernel.org>; Wed, 24 Aug 2022 16:14:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EC4B3C00140
+	for <linux-kernel@archiver.kernel.org>; Wed, 24 Aug 2022 16:14:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238996AbiHXQOH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 24 Aug 2022 12:14:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60594 "EHLO
+        id S239084AbiHXQOJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 24 Aug 2022 12:14:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60588 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238860AbiHXQNt (ORCPT
+        with ESMTP id S238866AbiHXQNt (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Wed, 24 Aug 2022 12:13:49 -0400
 Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EDF1B9834E
-        for <linux-kernel@vger.kernel.org>; Wed, 24 Aug 2022 09:13:44 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9AE5C95693
+        for <linux-kernel@vger.kernel.org>; Wed, 24 Aug 2022 09:13:42 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1661357623;
+        s=mimecast20190719; t=1661357621;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=oSUiGfUcaLftnhFHbJ63fBQreSrudDWQdJ97QjeIClY=;
-        b=Os5q9zJX/Un0RzHtRrdC+rniqT/bY3gTF4qsojXXKvS4sz5R0tWiE5GbRXqg5ohUZ2Hu2V
-        hKSPJslhI1B98uMengPDkbwDlw1Z/Sexh0aGMZQSyw0j+EVl1TU7iaP3q2G7pvDV5Iky2E
-        gMLRtY5pDDZmKQupeZTD6sozXmpK76E=
-Received: from mail-ed1-f70.google.com (mail-ed1-f70.google.com
- [209.85.208.70]) by relay.mimecast.com with ESMTP with STARTTLS
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=shnv9nDHn9uoBkujzrrhLdUD67s9BTHB9Z1Ctk5SIAU=;
+        b=EilJvXk5fEFZiZP0abYFOD0Xa7QTuFAiTeM3sLmYu3LKfnUURIcIGwOu7xDReveBLBNoYU
+        JGtkys1emaP4d1BGYHGXMmBek/6QAW6AEE6oaIALiZtgwYPAzYIWqapsMVKy0TRKS+WjUC
+        if51DBmOryRYrYRROon+Ph5SAL8RELo=
+Received: from mail-ej1-f69.google.com (mail-ej1-f69.google.com
+ [209.85.218.69]) by relay.mimecast.com with ESMTP with STARTTLS
  (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
- us-mta-426-YKKhV7X1NMaOsBqSfGzeeQ-1; Wed, 24 Aug 2022 12:13:35 -0400
-X-MC-Unique: YKKhV7X1NMaOsBqSfGzeeQ-1
-Received: by mail-ed1-f70.google.com with SMTP id s3-20020a056402520300b00446f5068565so4754911edd.7
-        for <linux-kernel@vger.kernel.org>; Wed, 24 Aug 2022 09:13:34 -0700 (PDT)
+ us-mta-530-sxSjnjeoMcWXdV42mum21g-1; Wed, 24 Aug 2022 12:13:40 -0400
+X-MC-Unique: sxSjnjeoMcWXdV42mum21g-1
+Received: by mail-ej1-f69.google.com with SMTP id gs35-20020a1709072d2300b00730e14fd76eso5397993ejc.15
+        for <linux-kernel@vger.kernel.org>; Wed, 24 Aug 2022 09:13:39 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-message-state:from:to:cc;
-        bh=oSUiGfUcaLftnhFHbJ63fBQreSrudDWQdJ97QjeIClY=;
-        b=y49XEKpg9UWhSWqlqw6EQzzos2lQ1O+VdYLEvzL+ndz19HmQEXU/MGpbmlv7ajwlB/
-         UqlkTXua2ICUj8Iwnivy5oIPBqmFKvBuLTLhGJsfVLyJG339ofuyN54IpgBCWbtF4l1l
-         cwD/Is5A2o31ckYjdxP3KTXzDpEv38RcixcozXCrC2C9kFSXjoitxxk2w8ismzl+hEhY
-         E0clJCe3C2KRZVzKrrMElLATCembMbttWgrBQ6aOp0lsLjH79M6UHr94ys97Mqn0lTol
-         4e/KVf+gQHUuzOC3u29eJQ9b6/3N4KPhayZWNGC6RaiyPIEnr/ImiXWEEnWiZK/3BxEX
-         4ALA==
-X-Gm-Message-State: ACgBeo3TzKcojppBxxjMQ1Y13fXqsmTR7edkZfv7AH7ohXphP5fhXsTW
-        zIz5K/dyp6qz5e8X0HV90Rf6pIxWWG2cZNZ58kaTDB3qbYevqeJSQQ/h8mYVdDWIGVrQyhPqWUv
-        haqVYdd3bQToTPCb8QdguQD6o
-X-Received: by 2002:a17:907:7615:b0:730:e1ad:b132 with SMTP id jx21-20020a170907761500b00730e1adb132mr3363040ejc.744.1661357614006;
-        Wed, 24 Aug 2022 09:13:34 -0700 (PDT)
-X-Google-Smtp-Source: AA6agR69EPCk9q905SAjfACG4R3hCH9I2FLwlrZOUitIQbz2LPC/YyVVwrrbmVQexaMoItcz8M5Kqg==
-X-Received: by 2002:a17:907:7615:b0:730:e1ad:b132 with SMTP id jx21-20020a170907761500b00730e1adb132mr3363030ejc.744.1661357613817;
-        Wed, 24 Aug 2022 09:13:33 -0700 (PDT)
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc;
+        bh=shnv9nDHn9uoBkujzrrhLdUD67s9BTHB9Z1Ctk5SIAU=;
+        b=LR/Q4n7a2gBXDyH1JZ5HcwcHQVabMZKLABivURijTrtQcmZ5S5oC8j+2iR6n8PW4Z5
+         M+KkhRss5EvYoJRYRIkIJSk/ArH12+ZKBw2KMbG5JLcezI3+gIrBRei4aFuTjF9m954X
+         YVEwA7HtNUY9HkHsvRHOzspDMw5D80DHcfXoVN+5pxfC10papTGY2Yqn2TVz38JyFtEt
+         Elqmlb0Bg19tfAznOK5MLFyGF4CWN7ooEekH5qNlYlgAprCrUlEjrzzez7Ww5V0JzVn8
+         M6nDsjMpJC+GNr2U2gzZSrKr8mz/0LcLM2CREWWt+GtJA3hv+GxpZzXGn7aXWLU3ew7w
+         xH0g==
+X-Gm-Message-State: ACgBeo2INleFIOFCXIyLtyXDsnU7YBa7vpQpcRvPqEfrwYHfyoByskXk
+        YiDRGcY628utXBOVKzs0x7yXH2ZADW1o+/fGnvOKGLw9LTFI4UTiFvgQ26SSiLxEPHJTW9zJQ5e
+        wyXDZNZju8QhItCJKZe9rcVME
+X-Received: by 2002:a17:907:b06:b0:73d:c534:1ac3 with SMTP id h6-20020a1709070b0600b0073dc5341ac3mr1007072ejl.194.1661357618758;
+        Wed, 24 Aug 2022 09:13:38 -0700 (PDT)
+X-Google-Smtp-Source: AA6agR51vE5rD3Cnr43VGXz6apFS+AbCm8Q7NybadVKzLFntNtPDrnwpSizgYigjC19GqW+ewQ6s0Q==
+X-Received: by 2002:a17:907:b06:b0:73d:c534:1ac3 with SMTP id h6-20020a1709070b0600b0073dc5341ac3mr1007059ejl.194.1661357618587;
+        Wed, 24 Aug 2022 09:13:38 -0700 (PDT)
 Received: from pollux.redhat.com ([2a02:810d:4b40:2ee8:642:1aff:fe31:a15c])
-        by smtp.gmail.com with ESMTPSA id da12-20020a056402176c00b004478fdbe190sm791536edb.10.2022.08.24.09.13.31
+        by smtp.gmail.com with ESMTPSA id j2-20020a170906410200b007308bdef04bsm1359102ejk.103.2022.08.24.09.13.37
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 24 Aug 2022 09:13:32 -0700 (PDT)
+        Wed, 24 Aug 2022 09:13:38 -0700 (PDT)
 From:   Danilo Krummrich <dakr@redhat.com>
 To:     daniel@ffwll.ch, airlied@linux.ie, tzimmermann@suse.de,
         mripard@kernel.org
 Cc:     dri-devel@lists.freedesktop.org, linux-kernel@vger.kernel.org,
         Danilo Krummrich <dakr@redhat.com>
-Subject: [PATCH drm-misc-next v3 0/4] Fixes for vc4 hotplug rework
-Date:   Wed, 24 Aug 2022 18:13:23 +0200
-Message-Id: <20220824161327.330627-1-dakr@redhat.com>
+Subject: [PATCH drm-misc-next v3 2/4] drm/vc4: plane: protect device resources after removal
+Date:   Wed, 24 Aug 2022 18:13:25 +0200
+Message-Id: <20220824161327.330627-3-dakr@redhat.com>
 X-Mailer: git-send-email 2.37.2
+In-Reply-To: <20220824161327.330627-1-dakr@redhat.com>
+References: <20220824161327.330627-1-dakr@redhat.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi,
+(Hardware) resources which are bound to the driver and device lifecycle
+must not be accessed after the device and driver are unbound.
 
-I've found a few potential issues left after the hotplug rework.
+However, the DRM device isn't freed as long as the last user closed it,
+hence userspace can still call into the driver.
 
-In vc4_hdmi.c we're missing two mutex_unlock() calls when the device is
-unplugged.
+Therefore protect the critical sections which are accessing those
+resources with drm_dev_enter() and drm_dev_exit().
 
-vc4_crtc and vc4_plane seem to miss some drm_dev_enter()/drm_dev_exit() calls
-to protect against resource access after the device/driver is unbound, but the
-DRM potentially isn't freed yet and userspace can still call into the driver.
+Fixes: 9872c7a31921 ("drm/vc4: plane: Switch to drmm_universal_plane_alloc()")
+Signed-off-by: Danilo Krummrich <dakr@redhat.com>
+---
+ drivers/gpu/drm/vc4/vc4_plane.c | 20 ++++++++++++++++++++
+ 1 file changed, 20 insertions(+)
 
-Changes in v2:
-  - Use drm_device pointer from struct drm_plane (Maxime)
-  - Protect entire functions to increase readability (Maxime)
-  - Add another patch to fix an uncovered MMIO access in vc4_hvs.c
-
-Changes in v3:
-  - vc4_plane: Actually protect entire functions to increase readability (Maxime)
-
-Danilo Krummrich (4):
-  drm/vc4: hdmi: unlock mutex when device is unplugged
-  drm/vc4: plane: protect device resources after removal
-  drm/vc4: crtc: protect device resources after removal
-  drm/vc4: hvs: protect drm_print_regset32()
-
- drivers/gpu/drm/vc4/vc4_crtc.c  | 41 ++++++++++++++++++++++++++++++++-
- drivers/gpu/drm/vc4/vc4_hdmi.c  |  7 ++++--
- drivers/gpu/drm/vc4/vc4_hvs.c   |  4 ++--
- drivers/gpu/drm/vc4/vc4_plane.c | 20 ++++++++++++++++
- 4 files changed, 67 insertions(+), 5 deletions(-)
-
-
-base-commit: 4d07b0bc403403438d9cf88450506240c5faf92f
+diff --git a/drivers/gpu/drm/vc4/vc4_plane.c b/drivers/gpu/drm/vc4/vc4_plane.c
+index eff9c63adfa7..8b92a45a3c89 100644
+--- a/drivers/gpu/drm/vc4/vc4_plane.c
++++ b/drivers/gpu/drm/vc4/vc4_plane.c
+@@ -19,6 +19,7 @@
+ #include <drm/drm_atomic_helper.h>
+ #include <drm/drm_atomic_uapi.h>
+ #include <drm/drm_blend.h>
++#include <drm/drm_drv.h>
+ #include <drm/drm_fb_dma_helper.h>
+ #include <drm/drm_fourcc.h>
+ #include <drm/drm_framebuffer.h>
+@@ -1219,6 +1220,10 @@ u32 vc4_plane_write_dlist(struct drm_plane *plane, u32 __iomem *dlist)
+ {
+ 	struct vc4_plane_state *vc4_state = to_vc4_plane_state(plane->state);
+ 	int i;
++	int idx;
++
++	if (!drm_dev_enter(plane->dev, &idx))
++		goto out;
+ 
+ 	vc4_state->hw_dlist = dlist;
+ 
+@@ -1226,6 +1231,9 @@ u32 vc4_plane_write_dlist(struct drm_plane *plane, u32 __iomem *dlist)
+ 	for (i = 0; i < vc4_state->dlist_count; i++)
+ 		writel(vc4_state->dlist[i], &dlist[i]);
+ 
++	drm_dev_exit(idx);
++
++out:
+ 	return vc4_state->dlist_count;
+ }
+ 
+@@ -1245,6 +1253,10 @@ void vc4_plane_async_set_fb(struct drm_plane *plane, struct drm_framebuffer *fb)
+ 	struct vc4_plane_state *vc4_state = to_vc4_plane_state(plane->state);
+ 	struct drm_gem_dma_object *bo = drm_fb_dma_get_gem_obj(fb, 0);
+ 	uint32_t addr;
++	int idx;
++
++	if (!drm_dev_enter(plane->dev, &idx))
++		return;
+ 
+ 	/* We're skipping the address adjustment for negative origin,
+ 	 * because this is only called on the primary plane.
+@@ -1263,6 +1275,8 @@ void vc4_plane_async_set_fb(struct drm_plane *plane, struct drm_framebuffer *fb)
+ 	 * also use our updated address.
+ 	 */
+ 	vc4_state->dlist[vc4_state->ptr0_offset] = addr;
++
++	drm_dev_exit(idx);
+ }
+ 
+ static void vc4_plane_atomic_async_update(struct drm_plane *plane,
+@@ -1271,6 +1285,10 @@ static void vc4_plane_atomic_async_update(struct drm_plane *plane,
+ 	struct drm_plane_state *new_plane_state = drm_atomic_get_new_plane_state(state,
+ 										 plane);
+ 	struct vc4_plane_state *vc4_state, *new_vc4_state;
++	int idx;
++
++	if (!drm_dev_enter(plane->dev, &idx))
++		return;
+ 
+ 	swap(plane->state->fb, new_plane_state->fb);
+ 	plane->state->crtc_x = new_plane_state->crtc_x;
+@@ -1333,6 +1351,8 @@ static void vc4_plane_atomic_async_update(struct drm_plane *plane,
+ 	       &vc4_state->hw_dlist[vc4_state->pos2_offset]);
+ 	writel(vc4_state->dlist[vc4_state->ptr0_offset],
+ 	       &vc4_state->hw_dlist[vc4_state->ptr0_offset]);
++
++	drm_dev_exit(idx);
+ }
+ 
+ static int vc4_plane_atomic_async_check(struct drm_plane *plane,
 -- 
 2.37.2
 
