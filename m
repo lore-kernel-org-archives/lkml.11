@@ -2,74 +2,74 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 202BEC00140
-	for <linux-kernel@archiver.kernel.org>; Wed, 24 Aug 2022 14:39:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B5F9EC3F6B0
+	for <linux-kernel@archiver.kernel.org>; Wed, 24 Aug 2022 14:40:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236720AbiHXOjb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 24 Aug 2022 10:39:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49038 "EHLO
+        id S239282AbiHXOky (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 24 Aug 2022 10:40:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53584 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239256AbiHXOj2 (ORCPT
+        with ESMTP id S238221AbiHXOkv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 24 Aug 2022 10:39:28 -0400
-Received: from mail-ed1-x536.google.com (mail-ed1-x536.google.com [IPv6:2a00:1450:4864:20::536])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C519172B7A
-        for <linux-kernel@vger.kernel.org>; Wed, 24 Aug 2022 07:39:25 -0700 (PDT)
-Received: by mail-ed1-x536.google.com with SMTP id e21so17491310edc.7
-        for <linux-kernel@vger.kernel.org>; Wed, 24 Aug 2022 07:39:25 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ionos.com; s=google;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc;
-        bh=quhE09GbMOtjfgV2L9bvwpX+rKvX+1SDdwMe7QOnn1w=;
-        b=RE5970ZCc0/FQRRuiPaxM17A4KKGx4AaM/klmbwjibO9Y/YfROlO7rb6WgrHKd2iX1
-         62WiSO//RxErSACJXmfErlfCHSJRMtQdoUXdc9RkWG75aHyDO7fQaVR/Uh1STphyZyl2
-         oODCIQkKHSGLRXCEq8FcilTe6hWw4PsrCUTt3WlsRJkFmG6qigdHB4I3KD1tnajDza8y
-         ApT3gP76e9WOE2M4TVCL92mxl2VqCY/Up2vxJ+VNmy5Rx4H4O5FQ/80SYDpGZBrJVAiZ
-         5G7M+LjufikGxvEzxam2Zd0J8++rlv7YjYBNC/fTbKBuhh7ya9XvdQqhUfuHGWrdfauY
-         8JMQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc;
-        bh=quhE09GbMOtjfgV2L9bvwpX+rKvX+1SDdwMe7QOnn1w=;
-        b=3acs7/YHOQ/4bJCk1KMbSRVmZ9fm//QB+zr5qxi/n7fcXxnR6FKvz8RKvViQ2H1iQU
-         2xk1CsO2DyWrzMPmDdDd5crKO0nQlmOUYj7PC9GZhAAAJPosLAH2JiG20jVl3/jXJBn5
-         pCzazVE026AzUByBKiwEUGWWBfrQM2Kx0Q2QRT5hH3UP+3sJEoiFC+v1Zk6vL6AWPwYt
-         HYe5sQOI3RAcDwSgRg5daAPqHAlOvwYJKuXYLNt7Dalx5SrCRKn7vJWSijfaDVmWaCIi
-         0t09gYKpHimfJKJeR//X1ZHoY363r2DgXEOVicGsCmUNBnNAM+pGgIu7aaYkgNTF3tc8
-         1AmA==
-X-Gm-Message-State: ACgBeo1bHW2E0spErN9Q2Bl+4vTM0Afdv8Gnup8SQybZviV++StYJ+jT
-        H5oHDK9bf1hDmB1eb3nLYAJEu09k15+dVu9mepccbw==
-X-Google-Smtp-Source: AA6agR74Is0R3kLp0xqaCT6ipo1D7B0xmoRvspMJ7/NdR+uKsj9linzikUiRkcbk6RXFusFKDEEfHxXq48y/B7uADhk=
-X-Received: by 2002:a05:6402:40d0:b0:43f:8f56:6b0e with SMTP id
- z16-20020a05640240d000b0043f8f566b0emr8133724edb.380.1661351964341; Wed, 24
- Aug 2022 07:39:24 -0700 (PDT)
+        Wed, 24 Aug 2022 10:40:51 -0400
+Received: from netrider.rowland.org (netrider.rowland.org [192.131.102.5])
+        by lindbergh.monkeyblade.net (Postfix) with SMTP id 79FFA57278
+        for <linux-kernel@vger.kernel.org>; Wed, 24 Aug 2022 07:40:50 -0700 (PDT)
+Received: (qmail 380982 invoked by uid 1000); 24 Aug 2022 10:40:49 -0400
+Date:   Wed, 24 Aug 2022 10:40:49 -0400
+From:   Alan Stern <stern@rowland.harvard.edu>
+To:     Khalid Masum <khalid.masum.92@gmail.com>
+Cc:     linux-usb@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Kishon Vijay Abraham I <kishon@ti.com>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Matthias Kaehlcke <mka@chromium.org>,
+        Alexey Sheplyakov <asheplyakov@basealt.ru>,
+        Weitao Wang <WeitaoWang-oc@zhaoxin.com>,
+        linux-kernel-mentees@lists.linuxfoundation.org
+Subject: Re: [PATCH] usb: host: Use helper function to get endpoint
+Message-ID: <YwY4cVdB3tVVMIqJ@rowland.harvard.edu>
+References: <20220824130702.10912-1-khalid.masum.92@gmail.com>
 MIME-Version: 1.0
-References: <20220819060801.10443-1-jinpu.wang@ionos.com> <20220819060801.10443-20-jinpu.wang@ionos.com>
- <20220822112036.2fc55c21@kernel.org>
-In-Reply-To: <20220822112036.2fc55c21@kernel.org>
-From:   Jinpu Wang <jinpu.wang@ionos.com>
-Date:   Wed, 24 Aug 2022 16:39:13 +0200
-Message-ID: <CAMGffE=wdZZ4sxCfUd2G94ZB=qeikXMML7nT-gFzsNhfkYc+WQ@mail.gmail.com>
-Subject: Re: [PATCH v1 19/19] net/mlx4: Fix error check for dma_map_sg
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     linux-kernel@vger.kernel.org, Tariq Toukan <tariqt@nvidia.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org,
-        linux-rdma@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220824130702.10912-1-khalid.masum.92@gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Aug 22, 2022 at 8:20 PM Jakub Kicinski <kuba@kernel.org> wrote:
->
-> On Fri, 19 Aug 2022 08:08:01 +0200 Jack Wang wrote:
-> > dma_map_sg return 0 on error.
->
-> You need to resend it as an individual patch, not part of a series if
-> you want it to be applied to the networking tree. Please keep Leon's
-> review tag.
-Got it. Will do
+On Wed, Aug 24, 2022 at 07:07:02PM +0600, Khalid Masum wrote:
+> Current implementation to convert urb pipe number to struct 
+> usb_host_endpoint in rquest_single_step_set_feature_urb is a little
+> messy. 
+> 
+> Use usb_pipe_endpoint helper function to get the endpoint instead.
+> 
+> Signed-off-by: Khalid Masum <khalid.masum.92@gmail.com>
+> ---
+>  drivers/usb/core/hcd.c | 3 +--
+>  1 file changed, 1 insertion(+), 2 deletions(-)
+> 
+> diff --git a/drivers/usb/core/hcd.c b/drivers/usb/core/hcd.c
+> index 94b305bbd621..107e29d5d3ae 100644
+> --- a/drivers/usb/core/hcd.c
+> +++ b/drivers/usb/core/hcd.c
+> @@ -2165,8 +2165,7 @@ static struct urb *request_single_step_set_feature_urb(
+>  		return NULL;
+>  
+>  	urb->pipe = usb_rcvctrlpipe(udev, 0);
+> -	ep = (usb_pipein(urb->pipe) ? udev->ep_in : udev->ep_out)
+> -				[usb_pipeendpoint(urb->pipe)];
+> +	ep = usb_pipe_endpoint(udev, urb->pipe);
+>  	if (!ep) {
+>  		usb_free_urb(urb);
+>  		return NULL;
+
+Even this is awkward.  It's silly to look up the endpoint in a table 
+when you already know that it is endpoint 0.  Just do:
+
+	ep = &udev->ep0;
+
+with no need to check for NULL.
+
+Alan Stern
