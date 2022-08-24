@@ -2,77 +2,339 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E304DC00140
-	for <linux-kernel@archiver.kernel.org>; Wed, 24 Aug 2022 16:38:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 06488C00140
+	for <linux-kernel@archiver.kernel.org>; Wed, 24 Aug 2022 16:38:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237752AbiHXQiF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 24 Aug 2022 12:38:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59538 "EHLO
+        id S238274AbiHXQiR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 24 Aug 2022 12:38:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59822 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231866AbiHXQiC (ORCPT
+        with ESMTP id S238230AbiHXQiP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 24 Aug 2022 12:38:02 -0400
-Received: from sender-of-o50.zoho.in (sender-of-o50.zoho.in [103.117.158.50])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B554B9C506
-        for <linux-kernel@vger.kernel.org>; Wed, 24 Aug 2022 09:37:59 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; t=1661359071; cv=none; 
-        d=zohomail.in; s=zohoarc; 
-        b=N1fJaeot2PPs4W3Y92ufxyPQq1wc0Hl1TfTz0dK2OF52ezEYtRtUO8kUPvj0CHRNwcR0kaP/WV+PPVyTMMx//s4nEfeFn5WZo46ePqyisw49rRJ/v60DmRd8vmOCnGKHteXc0K3Wszujj+fcpVwILibqVZPqQ5u9Bo/mv3kbHXI=
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=zohomail.in; s=zohoarc; 
-        t=1661359071; h=Content-Type:Content-Transfer-Encoding:Cc:Date:From:In-Reply-To:MIME-Version:Message-ID:References:Subject:To; 
-        bh=yaBknMOqdVz+7gAjA3ortDF0RcumQ0A8XMHD6N3VTMU=; 
-        b=f4alC4ln6rNyxCnCJXsGj/KTjNyRtqnb38m6sluiAAOoFZ5nmzpr8r/D3DHA7hQiIv9kcqUn33UeO244rdYzOooTm+kS9p+CeHdZ1+20sbWnvBU4XNB6agVFrMI2mlOfbtROvigSI0J3FVviV2XzcjrvM3vyeiEfcPfZynDGhtM=
-ARC-Authentication-Results: i=1; mx.zohomail.in;
-        dkim=pass  header.i=siddh.me;
-        spf=pass  smtp.mailfrom=code@siddh.me;
-        dmarc=pass header.from=<code@siddh.me>
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; t=1661359071;
-        s=zmail; d=siddh.me; i=code@siddh.me;
-        h=From:From:To:To:Cc:Cc:Message-ID:Subject:Subject:Date:Date:In-Reply-To:References:MIME-Version:Content-Transfer-Encoding:Content-Type:Message-Id:Reply-To;
-        bh=yaBknMOqdVz+7gAjA3ortDF0RcumQ0A8XMHD6N3VTMU=;
-        b=rZ/8CSZ9bgoTVoZtLeHgicqJFWNxgVsv8l/aDpTY2GAFcQ8DuxfRukomesRA0kpE
-        1fYh0MZA5b8ZoGrB/NF0Hpvj1r5U7ckACqkKRX79ZxeFJ5TUsuJVAOfxrUVsg6aPNL1
-        DI4PLKjIO6XE6V/hw5OLOOEj6449YVFMUXugxrwI=
-Received: from localhost.localdomain (103.249.233.18 [103.249.233.18]) by mx.zoho.in
-        with SMTPS id 1661359069257993.5119383102618; Wed, 24 Aug 2022 22:07:49 +0530 (IST)
-From:   Siddh Raman Pant <code@siddh.me>
-To:     syzbot+9d67170b20e8f94351c8@syzkaller.appspotmail.com
-Cc:     linux-kernel@vger.kernel.org, syzkaller-bugs@googlegroups.com
-Message-ID: <20220824163739.722115-1-code@siddh.me>
-Subject: Re: [syzbot] memory leak in ntfs_init_fs_context
-Date:   Wed, 24 Aug 2022 22:07:39 +0530
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <000000000000cb172905e6e28808@google.com>
-References: <000000000000cb172905e6e28808@google.com>
+        Wed, 24 Aug 2022 12:38:15 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6D8329C8C7
+        for <linux-kernel@vger.kernel.org>; Wed, 24 Aug 2022 09:38:14 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1661359093;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=m0KR4vL6ySw4rihLMgrHUCidUC+v+EUxFqwClhhwIGY=;
+        b=Y6xluLH56gHbynJe8bWZXVxw1SRINYZD1GibE1tgDCsPtxfN+5twUCuypyN2bimxIAZZtd
+        HVvWnl7WDhAuiSe3PzDKKtDCxkDl9KIUFk8P0lXjeK3sHeNM5bRyXsSKXjfidZkFn+GKSE
+        giE/IFcVSsn7lwy4Iie9vDLvCxGO4N4=
+Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
+ [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-57-Cv_QNLo0PTyovl3xp0P-jA-1; Wed, 24 Aug 2022 12:35:48 -0400
+X-MC-Unique: Cv_QNLo0PTyovl3xp0P-jA-1
+Received: from smtp.corp.redhat.com (int-mx03.intmail.prod.int.rdu2.redhat.com [10.11.54.3])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 975DC101A54E;
+        Wed, 24 Aug 2022 16:35:47 +0000 (UTC)
+Received: from warthog.procyon.org.uk (unknown [10.33.36.72])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 763901121315;
+        Wed, 24 Aug 2022 16:35:46 +0000 (UTC)
+Organization: Red Hat UK Ltd. Registered Address: Red Hat UK Ltd, Amberley
+        Place, 107-111 Peascod Street, Windsor, Berkshire, SI4 1TE, United
+        Kingdom.
+        Registered in England and Wales under Company Registration No. 3798903
+Subject: [PATCH net] rxrpc: Fix locking in rxrpc's sendmsg
+From:   David Howells <dhowells@redhat.com>
+To:     netdev@vger.kernel.org
+Cc:     syzbot+7f0483225d0c94cb3441@syzkaller.appspotmail.com,
+        Marc Dionne <marc.dionne@auristor.com>,
+        syzbot+7f0483225d0c94cb3441@syzkaller.appspotmail.com,
+        Hawkins Jiawei <yin31149@gmail.com>,
+        Khalid Masum <khalid.masum.92@gmail.com>,
+        Dan Carpenter <dan.carpenter@oracle.com>,
+        linux-afs@lists.infradead.org, dhowells@redhat.com,
+        linux-kernel@vger.kernel.org
+Date:   Wed, 24 Aug 2022 17:35:45 +0100
+Message-ID: <166135894583.600315.7170979436768124075.stgit@warthog.procyon.org.uk>
+User-Agent: StGit/1.5
 MIME-Version: 1.0
-Content-Transfer-Encoding: quoted-printable
-X-ZohoMailClient: External
-Content-Type: text/plain; charset=utf8
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+X-Scanned-By: MIMEDefang 2.78 on 10.11.54.3
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-#syz test https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.gi=
-t master
+Fix three bugs in the rxrpc's sendmsg implementation:
 
+ (1) rxrpc_new_client_call() should release the socket lock when returning
+     an error from rxrpc_get_call_slot().
+
+ (2) rxrpc_wait_for_tx_window_intr() will return without the call mutex
+     held in the event that we're interrupted by a signal whilst waiting
+     for tx space on the socket or relocking the call mutex afterwards.
+
+     Fix this by: (a) moving the unlock/lock of the call mutex up to
+     rxrpc_send_data() such that the lock is not held around all of
+     rxrpc_wait_for_tx_window*() and (b) indicating to higher callers
+     whether we're return with the lock dropped.  Note that this means
+     recvmsg() will not block on this call whilst we're waiting.
+
+ (3) After dropping and regaining the call mutex, rxrpc_send_data() needs
+     to go and recheck the state of the tx_pending buffer and the
+     tx_total_len check in case we raced with another sendmsg() on the same
+     call.
+
+Thinking on this some more, it might make sense to have different locks for
+sendmsg() and recvmsg().  There's probably no need to make recvmsg() wait
+for sendmsg().  It does mean that recvmsg() can return MSG_EOR indicating
+that a call is dead before a sendmsg() to that call returns - but that can
+currently happen anyway.
+
+Without fix (2), something like the following can be induced:
+
+	WARNING: bad unlock balance detected!
+	5.16.0-rc6-syzkaller #0 Not tainted
+	-------------------------------------
+	syz-executor011/3597 is trying to release lock (&call->user_mutex) at:
+	[<ffffffff885163a3>] rxrpc_do_sendmsg+0xc13/0x1350 net/rxrpc/sendmsg.c:748
+	but there are no more locks to release!
+
+	other info that might help us debug this:
+	no locks held by syz-executor011/3597.
+	...
+	Call Trace:
+	 <TASK>
+	 __dump_stack lib/dump_stack.c:88 [inline]
+	 dump_stack_lvl+0xcd/0x134 lib/dump_stack.c:106
+	 print_unlock_imbalance_bug include/trace/events/lock.h:58 [inline]
+	 __lock_release kernel/locking/lockdep.c:5306 [inline]
+	 lock_release.cold+0x49/0x4e kernel/locking/lockdep.c:5657
+	 __mutex_unlock_slowpath+0x99/0x5e0 kernel/locking/mutex.c:900
+	 rxrpc_do_sendmsg+0xc13/0x1350 net/rxrpc/sendmsg.c:748
+	 rxrpc_sendmsg+0x420/0x630 net/rxrpc/af_rxrpc.c:561
+	 sock_sendmsg_nosec net/socket.c:704 [inline]
+	 sock_sendmsg+0xcf/0x120 net/socket.c:724
+	 ____sys_sendmsg+0x6e8/0x810 net/socket.c:2409
+	 ___sys_sendmsg+0xf3/0x170 net/socket.c:2463
+	 __sys_sendmsg+0xe5/0x1b0 net/socket.c:2492
+	 do_syscall_x64 arch/x86/entry/common.c:50 [inline]
+	 do_syscall_64+0x35/0xb0 arch/x86/entry/common.c:80
+	 entry_SYSCALL_64_after_hwframe+0x44/0xae
+
+[Thanks to Hawkins Jiawei and Khalid Masum for their attempts to fix this]
+
+Fixes: bc5e3a546d55 ("rxrpc: Use MSG_WAITALL to tell sendmsg() to temporarily ignore signals")
+Reported-by: syzbot+7f0483225d0c94cb3441@syzkaller.appspotmail.com
+Signed-off-by: David Howells <dhowells@redhat.com>
+Reviewed-by: Marc Dionne <marc.dionne@auristor.com>
+Tested-by: syzbot+7f0483225d0c94cb3441@syzkaller.appspotmail.com
+cc: Hawkins Jiawei <yin31149@gmail.com>
+cc: Khalid Masum <khalid.masum.92@gmail.com>
+cc: Dan Carpenter <dan.carpenter@oracle.com>
+cc: linux-afs@lists.infradead.org
 ---
- fs/ntfs3/super.c | 1 +
- 1 file changed, 1 insertion(+)
 
-diff --git a/fs/ntfs3/super.c b/fs/ntfs3/super.c
-index 47012c9bf505..c0e45f170701 100644
---- a/fs/ntfs3/super.c
-+++ b/fs/ntfs3/super.c
-@@ -1281,6 +1281,7 @@ static int ntfs_fill_super(struct super_block *sb, st=
-ruct fs_context *fc)
- =09 * Free resources here.
- =09 * ntfs_fs_free will be called with fc->s_fs_info =3D NULL
- =09 */
-+=09put_mount_options(sbi->options);
- =09put_ntfs(sbi);
- =09sb->s_fs_info =3D NULL;
-=20
---=20
-2.35.1
+ net/rxrpc/call_object.c |    4 ++
+ net/rxrpc/sendmsg.c     |   92 ++++++++++++++++++++++++++++-------------------
+ 2 files changed, 57 insertions(+), 39 deletions(-)
+
+diff --git a/net/rxrpc/call_object.c b/net/rxrpc/call_object.c
+index 84d0a4109645..6401cdf7a624 100644
+--- a/net/rxrpc/call_object.c
++++ b/net/rxrpc/call_object.c
+@@ -285,8 +285,10 @@ struct rxrpc_call *rxrpc_new_client_call(struct rxrpc_sock *rx,
+ 	_enter("%p,%lx", rx, p->user_call_ID);
+ 
+ 	limiter = rxrpc_get_call_slot(p, gfp);
+-	if (!limiter)
++	if (!limiter) {
++		release_sock(&rx->sk);
+ 		return ERR_PTR(-ERESTARTSYS);
++	}
+ 
+ 	call = rxrpc_alloc_client_call(rx, srx, gfp, debug_id);
+ 	if (IS_ERR(call)) {
+diff --git a/net/rxrpc/sendmsg.c b/net/rxrpc/sendmsg.c
+index 1d38e279e2ef..3c3a626459de 100644
+--- a/net/rxrpc/sendmsg.c
++++ b/net/rxrpc/sendmsg.c
+@@ -51,10 +51,7 @@ static int rxrpc_wait_for_tx_window_intr(struct rxrpc_sock *rx,
+ 			return sock_intr_errno(*timeo);
+ 
+ 		trace_rxrpc_transmit(call, rxrpc_transmit_wait);
+-		mutex_unlock(&call->user_mutex);
+ 		*timeo = schedule_timeout(*timeo);
+-		if (mutex_lock_interruptible(&call->user_mutex) < 0)
+-			return sock_intr_errno(*timeo);
+ 	}
+ }
+ 
+@@ -290,37 +287,48 @@ static int rxrpc_queue_packet(struct rxrpc_sock *rx, struct rxrpc_call *call,
+ static int rxrpc_send_data(struct rxrpc_sock *rx,
+ 			   struct rxrpc_call *call,
+ 			   struct msghdr *msg, size_t len,
+-			   rxrpc_notify_end_tx_t notify_end_tx)
++			   rxrpc_notify_end_tx_t notify_end_tx,
++			   bool *_dropped_lock)
+ {
+ 	struct rxrpc_skb_priv *sp;
+ 	struct sk_buff *skb;
+ 	struct sock *sk = &rx->sk;
++	enum rxrpc_call_state state;
+ 	long timeo;
+-	bool more;
+-	int ret, copied;
++	bool more = msg->msg_flags & MSG_MORE;
++	int ret, copied = 0;
+ 
+ 	timeo = sock_sndtimeo(sk, msg->msg_flags & MSG_DONTWAIT);
+ 
+ 	/* this should be in poll */
+ 	sk_clear_bit(SOCKWQ_ASYNC_NOSPACE, sk);
+ 
++reload:
++	ret = -EPIPE;
+ 	if (sk->sk_shutdown & SEND_SHUTDOWN)
+-		return -EPIPE;
+-
+-	more = msg->msg_flags & MSG_MORE;
+-
++		goto maybe_error;
++	state = READ_ONCE(call->state);
++	ret = -ESHUTDOWN;
++	if (state >= RXRPC_CALL_COMPLETE)
++		goto maybe_error;
++	ret = -EPROTO;
++	if (state != RXRPC_CALL_CLIENT_SEND_REQUEST &&
++	    state != RXRPC_CALL_SERVER_ACK_REQUEST &&
++	    state != RXRPC_CALL_SERVER_SEND_REPLY)
++		goto maybe_error;
++
++	ret = -EMSGSIZE;
+ 	if (call->tx_total_len != -1) {
+-		if (len > call->tx_total_len)
+-			return -EMSGSIZE;
+-		if (!more && len != call->tx_total_len)
+-			return -EMSGSIZE;
++		if (len - copied > call->tx_total_len)
++			goto maybe_error;
++		if (!more && len - copied != call->tx_total_len)
++			goto maybe_error;
+ 	}
+ 
+ 	skb = call->tx_pending;
+ 	call->tx_pending = NULL;
+ 	rxrpc_see_skb(skb, rxrpc_skb_seen);
+ 
+-	copied = 0;
+ 	do {
+ 		/* Check to see if there's a ping ACK to reply to. */
+ 		if (call->ackr_reason == RXRPC_ACK_PING_RESPONSE)
+@@ -331,16 +339,8 @@ static int rxrpc_send_data(struct rxrpc_sock *rx,
+ 
+ 			_debug("alloc");
+ 
+-			if (!rxrpc_check_tx_space(call, NULL)) {
+-				ret = -EAGAIN;
+-				if (msg->msg_flags & MSG_DONTWAIT)
+-					goto maybe_error;
+-				ret = rxrpc_wait_for_tx_window(rx, call,
+-							       &timeo,
+-							       msg->msg_flags & MSG_WAITALL);
+-				if (ret < 0)
+-					goto maybe_error;
+-			}
++			if (!rxrpc_check_tx_space(call, NULL))
++				goto wait_for_space;
+ 
+ 			/* Work out the maximum size of a packet.  Assume that
+ 			 * the security header is going to be in the padded
+@@ -468,6 +468,27 @@ static int rxrpc_send_data(struct rxrpc_sock *rx,
+ efault:
+ 	ret = -EFAULT;
+ 	goto out;
++
++wait_for_space:
++	ret = -EAGAIN;
++	if (msg->msg_flags & MSG_DONTWAIT)
++		goto maybe_error;
++	mutex_unlock(&call->user_mutex);
++	*_dropped_lock = true;
++	ret = rxrpc_wait_for_tx_window(rx, call, &timeo,
++				       msg->msg_flags & MSG_WAITALL);
++	if (ret < 0)
++		goto maybe_error;
++	if (call->interruptibility == RXRPC_INTERRUPTIBLE) {
++		if (mutex_lock_interruptible(&call->user_mutex) < 0) {
++			ret = sock_intr_errno(timeo);
++			goto maybe_error;
++		}
++	} else {
++		mutex_lock(&call->user_mutex);
++	}
++	*_dropped_lock = false;
++	goto reload;
+ }
+ 
+ /*
+@@ -629,6 +650,7 @@ int rxrpc_do_sendmsg(struct rxrpc_sock *rx, struct msghdr *msg, size_t len)
+ 	enum rxrpc_call_state state;
+ 	struct rxrpc_call *call;
+ 	unsigned long now, j;
++	bool dropped_lock = false;
+ 	int ret;
+ 
+ 	struct rxrpc_send_params p = {
+@@ -737,21 +759,13 @@ int rxrpc_do_sendmsg(struct rxrpc_sock *rx, struct msghdr *msg, size_t len)
+ 			ret = rxrpc_send_abort_packet(call);
+ 	} else if (p.command != RXRPC_CMD_SEND_DATA) {
+ 		ret = -EINVAL;
+-	} else if (rxrpc_is_client_call(call) &&
+-		   state != RXRPC_CALL_CLIENT_SEND_REQUEST) {
+-		/* request phase complete for this client call */
+-		ret = -EPROTO;
+-	} else if (rxrpc_is_service_call(call) &&
+-		   state != RXRPC_CALL_SERVER_ACK_REQUEST &&
+-		   state != RXRPC_CALL_SERVER_SEND_REPLY) {
+-		/* Reply phase not begun or not complete for service call. */
+-		ret = -EPROTO;
+ 	} else {
+-		ret = rxrpc_send_data(rx, call, msg, len, NULL);
++		ret = rxrpc_send_data(rx, call, msg, len, NULL, &dropped_lock);
+ 	}
+ 
+ out_put_unlock:
+-	mutex_unlock(&call->user_mutex);
++	if (!dropped_lock)
++		mutex_unlock(&call->user_mutex);
+ error_put:
+ 	rxrpc_put_call(call, rxrpc_call_put);
+ 	_leave(" = %d", ret);
+@@ -779,6 +793,7 @@ int rxrpc_kernel_send_data(struct socket *sock, struct rxrpc_call *call,
+ 			   struct msghdr *msg, size_t len,
+ 			   rxrpc_notify_end_tx_t notify_end_tx)
+ {
++	bool dropped_lock = false;
+ 	int ret;
+ 
+ 	_enter("{%d,%s},", call->debug_id, rxrpc_call_states[call->state]);
+@@ -796,7 +811,7 @@ int rxrpc_kernel_send_data(struct socket *sock, struct rxrpc_call *call,
+ 	case RXRPC_CALL_SERVER_ACK_REQUEST:
+ 	case RXRPC_CALL_SERVER_SEND_REPLY:
+ 		ret = rxrpc_send_data(rxrpc_sk(sock->sk), call, msg, len,
+-				      notify_end_tx);
++				      notify_end_tx, &dropped_lock);
+ 		break;
+ 	case RXRPC_CALL_COMPLETE:
+ 		read_lock_bh(&call->state_lock);
+@@ -810,7 +825,8 @@ int rxrpc_kernel_send_data(struct socket *sock, struct rxrpc_call *call,
+ 		break;
+ 	}
+ 
+-	mutex_unlock(&call->user_mutex);
++	if (!dropped_lock)
++		mutex_unlock(&call->user_mutex);
+ 	_leave(" = %d", ret);
+ 	return ret;
+ }
 
 
