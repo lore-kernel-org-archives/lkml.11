@@ -2,100 +2,168 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E3B69C00140
-	for <linux-kernel@archiver.kernel.org>; Wed, 24 Aug 2022 17:45:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 046B0C00140
+	for <linux-kernel@archiver.kernel.org>; Wed, 24 Aug 2022 17:47:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240300AbiHXRpu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 24 Aug 2022 13:45:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51168 "EHLO
+        id S239567AbiHXRrA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 24 Aug 2022 13:47:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52088 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240290AbiHXRpq (ORCPT
+        with ESMTP id S237076AbiHXRq5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 24 Aug 2022 13:45:46 -0400
-Received: from mail-qk1-x736.google.com (mail-qk1-x736.google.com [IPv6:2607:f8b0:4864:20::736])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 02AA181B15
-        for <linux-kernel@vger.kernel.org>; Wed, 24 Aug 2022 10:45:39 -0700 (PDT)
-Received: by mail-qk1-x736.google.com with SMTP id c9so12117045qkk.6
-        for <linux-kernel@vger.kernel.org>; Wed, 24 Aug 2022 10:45:38 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc;
-        bh=3majRtgK1WM50+kP58AFxmfVpFYPY7FKVRe4D0xTAv0=;
-        b=qxBMKiEQGuZvs5Dq43ToYAMt54TMF7Yxv4BNjtRFc9vAvinTZMAwC8bUtp+Lf7j2YI
-         iTlHFUivMbvLhrl8nn2eckkR5yXTOO5gqNA3sq4n+dPxNow71aRHFxezX9H4G02VwG2x
-         x7U0HiQ6NymmNAg9Eu4TBMhEp8dpj+CxRTAXBA6f0GlIQq/loErqqrqTR3K50zwZBUVM
-         krvoWho2zym5qCH3tPnnCM2Pr1mMiph9qPS9LelomKaU1rOahdD5DzJznFwFrjcFLG6j
-         yGiRmjyiLyTk6YIdTnvxeCxD775yZ94eKFe4aNi3OHgpCcp8hg/a7003HUAmBb9hSKL7
-         QOdA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc;
-        bh=3majRtgK1WM50+kP58AFxmfVpFYPY7FKVRe4D0xTAv0=;
-        b=6jGu2UxKCBHJRM+vlxGf9h4JP3QRB9aj57oDoxgao3Hq5sb5VDVuoULIx1E/EZmcWv
-         thI2on6+5iv7JbrCY1+Zjin4BWKNyivtkfYMOrzVzQKR57bA4UmOzKOpQY3DQnvJraWb
-         fmBp/17Ke34+7ZAo3JxZjfHSpEpSd43uJ49Y2eeEDBEv1p+Msh3hT35tsybFPKoEtdGO
-         tRCv0y0UTorDvYQQgmYpDFbVhILGq0RLNjR25E97ldwp3o7YpPwZ9NGcRT3Dzd9Hfy34
-         Eykfoq+yBWQoOk+bXTSeOmXHQINWE21HPyydxoO9OEg54m26yJsiPGvJAt2/pfPFUGIG
-         zAIQ==
-X-Gm-Message-State: ACgBeo1GV4qy8YU1lmo3EbxqaG2GPfcKRdhIZIany+B0x6fJ51yYaxPC
-        LsqU82lXHLdvWSCaN616dRTMTTEHTrljrtWozPQ=
-X-Google-Smtp-Source: AA6agR4QxgDdktn2ZYSf8KdAxCno48xFhw0M2iDD0dOIyCXNsC4KZG/LjTAfmxRn2n+0D7uIhzyYnL5YSjl2/vAA44E=
-X-Received: by 2002:ae9:e311:0:b0:6ba:e711:fb27 with SMTP id
- v17-20020ae9e311000000b006bae711fb27mr305631qkf.320.1661363137961; Wed, 24
- Aug 2022 10:45:37 -0700 (PDT)
+        Wed, 24 Aug 2022 13:46:57 -0400
+Received: from mx0a-0031df01.pphosted.com (mx0a-0031df01.pphosted.com [205.220.168.131])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 89C0880F4C;
+        Wed, 24 Aug 2022 10:46:56 -0700 (PDT)
+Received: from pps.filterd (m0279862.ppops.net [127.0.0.1])
+        by mx0a-0031df01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 27O96bWO017533;
+        Wed, 24 Aug 2022 17:46:47 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=quicinc.com; h=message-id : date :
+ mime-version : subject : to : cc : references : from : in-reply-to :
+ content-type : content-transfer-encoding; s=qcppdkim1;
+ bh=n2Zd6mRJnSEgW0iDpGbt2eKD3EKmiOq0Y0Iv5VvV2pc=;
+ b=Co4wYAa2MWlkldHM32Yq7YvJJC0v96E3gpqDrUNnqWmcx/f6zNBa/n9kG76Sa60OZ8ma
+ UjTe7ppxXPTs8XJH1Cq+1lXJ3rHq6jn1pKfJDWu0vbjOsZ6kFx/yVY4tCVTN/9w3QZHq
+ HysCgEN5ARF1Ih+p2is1BiXVNR3Gq9CIJ1wSx50+DE0dHWN/SKdKlX8n3v6V01ADj0A8
+ 6/Gy2FcH4TRZ3wtiuGaEjfDZTIG0OzYTnjbLBjuBKTQcxmS+nla9K3sVoD7BIq1ReTos
+ rtbdahcNsYdREjp/8k/jRnD+/Ut9xVkn0MB1eNpf25mHO6B82PvfKZx5ww742JlLcyt8 OQ== 
+Received: from nalasppmta04.qualcomm.com (Global_NAT1.qualcomm.com [129.46.96.20])
+        by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 3j52pnm8eu-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Wed, 24 Aug 2022 17:46:47 +0000
+Received: from nalasex01a.na.qualcomm.com (nalasex01a.na.qualcomm.com [10.47.209.196])
+        by NALASPPMTA04.qualcomm.com (8.17.1.5/8.17.1.5) with ESMTPS id 27OHkkwh032041
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Wed, 24 Aug 2022 17:46:46 GMT
+Received: from [10.216.10.204] (10.80.80.8) by nalasex01a.na.qualcomm.com
+ (10.47.209.196) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.29; Wed, 24 Aug
+ 2022 10:46:40 -0700
+Message-ID: <93ff00db-b5d0-350c-b192-e58b781bb1cf@quicinc.com>
+Date:   Wed, 24 Aug 2022 23:16:36 +0530
 MIME-Version: 1.0
-References: <20220824012624.2826445-1-yury.norov@gmail.com>
- <20220824012624.2826445-2-yury.norov@gmail.com> <CAHp75VcB08oTrB8R9Zyo4Ja=c_XqybqdCw46fY4_MNqvSSCtLQ@mail.gmail.com>
- <YwYlWjlWO3fFrtQp@yury-laptop>
-In-Reply-To: <YwYlWjlWO3fFrtQp@yury-laptop>
-From:   Andy Shevchenko <andy.shevchenko@gmail.com>
-Date:   Wed, 24 Aug 2022 20:45:01 +0300
-Message-ID: <CAHp75VfrA7S033=mKkUj-SnWWyM9pwEiM_Umrrd4arpf1SNw6Q@mail.gmail.com>
-Subject: Re: [PATCH v2 1/3] lib/find_bit: introduce FIND_FIRST_BIT() macro
-To:     Yury Norov <yury.norov@gmail.com>
-Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Guenter Roeck <linux@roeck-us.net>,
-        Dennis Zhou <dennis@kernel.org>,
-        Russell King <linux@armlinux.org.uk>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Rasmus Villemoes <linux@rasmusvillemoes.dk>,
-        Alexey Klimov <aklimov@redhat.com>,
-        Kees Cook <keescook@chromium.org>,
-        Andy Whitcroft <apw@canonical.com>
-Content-Type: text/plain; charset="UTF-8"
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.3.2
+Subject: Re: [PATCH 5/5] drm/msm: Skip tlbinv on unmap from non-current
+ pgtables
+Content-Language: en-US
+To:     Rob Clark <robdclark@gmail.com>, <dri-devel@lists.freedesktop.org>
+CC:     <linux-arm-msm@vger.kernel.org>, <freedreno@lists.freedesktop.org>,
+        "Rob Clark" <robdclark@chromium.org>,
+        Abhinav Kumar <quic_abhinavk@quicinc.com>,
+        Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
+        Sean Paul <sean@poorly.run>, David Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        "Konrad Dybcio" <konrad.dybcio@somainline.org>,
+        Chia-I Wu <olvaffe@gmail.com>,
+        "Douglas Anderson" <dianders@chromium.org>,
+        open list <linux-kernel@vger.kernel.org>
+References: <20220821181917.1188021-1-robdclark@gmail.com>
+ <20220821181917.1188021-6-robdclark@gmail.com>
+From:   Akhil P Oommen <quic_akhilpo@quicinc.com>
+In-Reply-To: <20220821181917.1188021-6-robdclark@gmail.com>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.80.80.8]
+X-ClientProxiedBy: nasanex01b.na.qualcomm.com (10.46.141.250) To
+ nalasex01a.na.qualcomm.com (10.47.209.196)
+X-QCInternal: smtphost
+X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=5800 signatures=585085
+X-Proofpoint-ORIG-GUID: -xk7qWUGvvJy-B_acX69vFlmVzTEZXMU
+X-Proofpoint-GUID: -xk7qWUGvvJy-B_acX69vFlmVzTEZXMU
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.895,Hydra:6.0.517,FMLib:17.11.122.1
+ definitions=2022-08-24_10,2022-08-22_02,2022-06-22_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 priorityscore=1501
+ suspectscore=0 adultscore=0 mlxscore=0 mlxlogscore=999 clxscore=1015
+ bulkscore=0 phishscore=0 impostorscore=0 malwarescore=0 spamscore=0
+ lowpriorityscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2207270000 definitions=main-2208240065
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Aug 24, 2022 at 4:19 PM Yury Norov <yury.norov@gmail.com> wrote:
-> On Wed, Aug 24, 2022 at 12:10:02PM +0300, Andy Shevchenko wrote:
-> > On Wed, Aug 24, 2022 at 4:51 AM Yury Norov <yury.norov@gmail.com> wrote:
-
-...
-
-> > > +#define FIND_FIRST_BIT(EXPRESSION, size)                                       \
-> > > +({                                                                             \
-> > > +       unsigned long idx, val, sz = (size);                                    \
-> > > +                                                                               \
-> > > +       for (idx = 0; idx * BITS_PER_LONG < sz; idx++) {                        \
-> >
-> > I think we can do slightly better:
-> >
-> > for (unsigned long idx = 0; idx < sz; idx += BITS_PER_LONG) {
-> >   unsigned long val;
+On 8/21/2022 11:49 PM, Rob Clark wrote:
+> From: Rob Clark <robdclark@chromium.org>
 >
-> This will blow up the EXPRESSION. We can mitigate it on user side:
+> We can rely on the tlbinv done by CP_SMMU_TABLE_UPDATE in this case.
+>
+> Signed-off-by: Rob Clark <robdclark@chromium.org>
+> ---
+>   drivers/gpu/drm/msm/adreno/a6xx_gpu.c |  6 ++++++
+>   drivers/gpu/drm/msm/msm_iommu.c       | 29 +++++++++++++++++++++++++++
+>   2 files changed, 35 insertions(+)
+>
+> diff --git a/drivers/gpu/drm/msm/adreno/a6xx_gpu.c b/drivers/gpu/drm/msm/adreno/a6xx_gpu.c
+> index c8ad8aeca777..1ba0ed629549 100644
+> --- a/drivers/gpu/drm/msm/adreno/a6xx_gpu.c
+> +++ b/drivers/gpu/drm/msm/adreno/a6xx_gpu.c
+> @@ -1180,6 +1180,12 @@ static int hw_init(struct msm_gpu *gpu)
+>   	/* Always come up on rb 0 */
+>   	a6xx_gpu->cur_ring = gpu->rb[0];
+>   
+> +	/*
+> +	 * Note, we cannot assume anything about the state of the SMMU when
+> +	 * coming back from power collapse, so force a CP_SMMU_TABLE_UPDATE
+> +	 * on the first submit.  Also, msm_iommu_pagetable_unmap() relies on
+> +	 * this behavior.
+> +	 */
+>   	gpu->cur_ctx_seqno = 0;
+>   
+>   	/* Enable the SQE_to start the CP engine */
+> diff --git a/drivers/gpu/drm/msm/msm_iommu.c b/drivers/gpu/drm/msm/msm_iommu.c
+> index 94c8c09980d1..218074a58081 100644
+> --- a/drivers/gpu/drm/msm/msm_iommu.c
+> +++ b/drivers/gpu/drm/msm/msm_iommu.c
+> @@ -45,8 +45,37 @@ static int msm_iommu_pagetable_unmap(struct msm_mmu *mmu, u64 iova,
+>   		size -= 4096;
+>   	}
+>   
+> +	/*
+> +	 * A CP_SMMU_TABLE_UPDATE is always sent for the first
+> +	 * submit after resume, and that does a TLB invalidate.
+> +	 * So we can skip that if the device is not currently
+> +	 * powered.
+> +	 */
+> +	if (!pm_runtime_get_if_in_use(pagetable->parent->dev))
+> +		goto out;
+> +
+> +	/*
+> +	 * If we are not the current pgtables, we can rely on the
+> +	 * TLB invalidate done by CP_SMMU_TABLE_UPDATE.
+> +	 *
+> +	 * We'll always be racing with the GPU updating ttbr0,
+> +	 * but there are only two cases:
+> +	 *
+> +	 *  + either we are not the the current pgtables and there
+> +	 *    will be a tlbinv done by the GPU before we are again
+> +	 *
+> +	 *  + or we are.. there might have already been a tblinv
+> +	 *    if we raced with the GPU, but we have to assume the
+> +	 *    worse and do the tlbinv
+> +	 */
+> +	if (adreno_smmu->get_ttbr0(adreno_smmu->cookie) != pagetable->ttbr)
+> +		goto out_put;
+> +
+>   	adreno_smmu->tlb_inv_by_id(adreno_smmu->cookie, pagetable->asid);
+>   
+> +out_put:
+> +	pm_runtime_put(pagetable->parent->dev);
+> +out:
+>   	return (unmapped == size) ? 0 : -EINVAL;
+>   }
+>   
+Asking because it is a *security issue* if we get this wrong:
+1. Is there any measure benefit with this patch? I believe tlb 
+invalidation doesn't contribute much to the unmap latency.
+2. We at least should insert a full memory barrier before reading the 
+ttbr0 register to ensure that everything we did prior to that is visible 
+to smmu. But then I guess the cost of the full barrier would be similar 
+to the tlb invalidation.
 
-I'm not sure I understand how EXPRESSION is involved in all this. What
-I proposed is to replace the for-loop one-by-one to
-one-by-BITS_PER_LONG. But okay, I have re-read the above patch and now
-I see what you are doing, basically you use internal variables of the
-macro in the EXPRESSION. Hmm...
+Because it could lead to security issues or other very hard to debug 
+issues, I would prefer this optimization only if there is a significant 
+measurable gain.
 
--- 
-With Best Regards,
-Andy Shevchenko
+-Akhil.
+
