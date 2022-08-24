@@ -2,117 +2,211 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 43E3EC00140
-	for <linux-kernel@archiver.kernel.org>; Wed, 24 Aug 2022 15:54:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 36EA0C32796
+	for <linux-kernel@archiver.kernel.org>; Wed, 24 Aug 2022 15:55:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238052AbiHXPya (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 24 Aug 2022 11:54:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58238 "EHLO
+        id S238868AbiHXPzb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 24 Aug 2022 11:55:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60908 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236884AbiHXPy1 (ORCPT
+        with ESMTP id S237837AbiHXPzU (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 24 Aug 2022 11:54:27 -0400
-Received: from mail-qv1-xf31.google.com (mail-qv1-xf31.google.com [IPv6:2607:f8b0:4864:20::f31])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9511972EF0;
-        Wed, 24 Aug 2022 08:54:26 -0700 (PDT)
-Received: by mail-qv1-xf31.google.com with SMTP id m2so5598954qvq.11;
-        Wed, 24 Aug 2022 08:54:26 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc;
-        bh=JayAHS+OuNb+tyTryqcDsCuLA5dC38MXJtz38feqpuE=;
-        b=mvsh0Cn0VLETNnxcOhwecAeKWzrUuHEJAjYg2OvijsY66ETjWMmCMPZ2KuXInqdkz1
-         RB47XLKzF7x7ht1pCdHpZQjCcFv+2hPpcRBJy4bcat6lg0KZ9KrZ/0lthw9G+fPOCWFw
-         EOL5Fgm9PdeZrUks6F/BLJLKxb4re6P9+oGJiak+gHiDc9ccWfvRFGVHXWzh5VNxO9+P
-         zFSFJ6i3kj+YIP2kQLnaHI/T0rmQ5Cw69jqteao/Y2n6WQPrhsKi8/jKB4hzHkafF5Rq
-         jn7UAyu3Usfog7HcngwlAHPVX6tne8iTvUtT1jux4E4LOEEe8isy98BVoK1++t3LxbH9
-         RMeg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc;
-        bh=JayAHS+OuNb+tyTryqcDsCuLA5dC38MXJtz38feqpuE=;
-        b=HHMduJoP39M9/1UNIx8JFC5BAX/B4cmHz3yKJsirFyQHsTLhj1PFXVqiY3aUrrV8oE
-         NtT7JgBe0VXy7odcGx/KZYDKtqkeU42RYr+g49qh5SHL5nUmZFYAROPHmG7nu9QiKJHR
-         9252mZr7pGeUocTMte4QwR4UgWlgoL66zm/JVIIfbCaLvsxUfGChm8MCkRjNXz0Tguns
-         XItwdRh7hMREAMXsf/je4ZFt5roGsuy2LKmxuIJK3Z+dsK7Plca/RUiySO1Ag3UDoeO1
-         SAUjFdlOyTkBhFmSnfWbJVJzznX2//KlHKWdM3H+EdIQo4OyGmO2Sl0A1j2yycOA7HRN
-         3JZw==
-X-Gm-Message-State: ACgBeo2I4T0Sc/cKGYIs6GFZhvNsQkqxv/uhNQPt4NOMbjiau0X4rZfC
-        MmOdLiK5YBHxjwQrmZcMJsSVwRyxANR8oeBCNuMyNBbGwww=
-X-Google-Smtp-Source: AA6agR4X852vOzlnPqLIyPLX+Wa320bennKiKmAkP/rIphXqC3Krc1SbPNgaPRmAkrChHfjiLzHb0QW6FsSP1ZucH9c=
-X-Received: by 2002:a05:6214:29c2:b0:497:8b2:442 with SMTP id
- gh2-20020a05621429c200b0049708b20442mr6434328qvb.97.1661356465737; Wed, 24
- Aug 2022 08:54:25 -0700 (PDT)
+        Wed, 24 Aug 2022 11:55:20 -0400
+Received: from frasgout.his.huawei.com (frasgout.his.huawei.com [185.176.79.56])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B697861B1C;
+        Wed, 24 Aug 2022 08:55:16 -0700 (PDT)
+Received: from fraeml715-chm.china.huawei.com (unknown [172.18.147.201])
+        by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4MCVzH0F3Mz67NYQ;
+        Wed, 24 Aug 2022 23:54:51 +0800 (CST)
+Received: from lhrpeml500005.china.huawei.com (7.191.163.240) by
+ fraeml715-chm.china.huawei.com (10.206.15.34) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Wed, 24 Aug 2022 17:55:14 +0200
+Received: from localhost (10.202.226.42) by lhrpeml500005.china.huawei.com
+ (7.191.163.240) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Wed, 24 Aug
+ 2022 16:55:14 +0100
+Date:   Wed, 24 Aug 2022 16:55:13 +0100
+From:   Jonathan Cameron <Jonathan.Cameron@huawei.com>
+To:     <ira.weiny@intel.com>
+CC:     Dan Williams <dan.j.williams@intel.com>,
+        Alison Schofield <alison.schofield@intel.com>,
+        Vishal Verma <vishal.l.verma@intel.com>,
+        "Ben Widawsky" <bwidawsk@kernel.org>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Davidlohr Bueso <dave@stgolabs.net>,
+        <linux-kernel@vger.kernel.org>, <linux-cxl@vger.kernel.org>
+Subject: Re: [RFC PATCH 2/9] cxl/mem: Implement Clear Event Records command
+Message-ID: <20220824165513.00000987@huawei.com>
+In-Reply-To: <20220813053243.757363-3-ira.weiny@intel.com>
+References: <20220813053243.757363-1-ira.weiny@intel.com>
+        <20220813053243.757363-3-ira.weiny@intel.com>
+X-Mailer: Claws Mail 4.0.0 (GTK+ 3.24.29; i686-w64-mingw32)
 MIME-Version: 1.0
-References: <20220824131428.31904-1-henning.schild@siemens.com>
-In-Reply-To: <20220824131428.31904-1-henning.schild@siemens.com>
-From:   Andy Shevchenko <andy.shevchenko@gmail.com>
-Date:   Wed, 24 Aug 2022 18:53:49 +0300
-Message-ID: <CAHp75Veu5CpRcmtvKwqhwqpjSgrvw03V6k7WrO8v=+cLhABcsA@mail.gmail.com>
-Subject: Re: [PATCH v2] leds: simatic-ipc-leds-gpio: make sure we have the
- GPIO providing driver
-To:     Henning Schild <henning.schild@siemens.com>
-Cc:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Pavel Machek <pavel@ucw.cz>, Lee Jones <lee@kernel.org>,
-        Linux LED Subsystem <linux-leds@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset="US-ASCII"
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.202.226.42]
+X-ClientProxiedBy: lhrpeml100004.china.huawei.com (7.191.162.219) To
+ lhrpeml500005.china.huawei.com (7.191.163.240)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Aug 24, 2022 at 4:27 PM Henning Schild
-<henning.schild@siemens.com> wrote:
->
-> If we register a "leds-gpio" platform device for GPIO pins that do not
-> exist we get a -EPROBE_DEFER and the probe will be tried again later.
-> If there is not driver to provide that pin we will poll forever and also
+On Fri, 12 Aug 2022 22:32:36 -0700
+ira.weiny@intel.com wrote:
 
-not --> no
+> From: Ira Weiny <ira.weiny@intel.com>
+> 
+> CXL v3.0 section 8.2.9.2.3 defines the Clear Event Records mailbox
+> command.  After an event record is read it needs to be cleared from the
+> event log.
+> 
+> Implement cxl_clear_event_record() and call it for each record retrieved
+> from the device.
+> 
+> Each record is cleared individually.  A clear all bit is specified but
+> events could arrive between a get and the final clear all operation.
+> Therefore each event is cleared specifically.
+> 
+> Signed-off-by: Ira Weiny <ira.weiny@intel.com>
+Trivial suggestions inline, but other than that LGTM
 
-> create a lot of log messages.
->
-> So check if that GPIO driver is configured, if so it will come up
-> eventually. If not we exit our probe function early and do not even
+Reviewed-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
 
-not, we
-
-> bother registering the "leds-gpio". This method was chosen over "Kconfig
-> depends" since this way we can add support for more devices and GPIO
-> backends more easily without "depends"ing on all GPIO backends.
-
-"depends":ing
-
-The code is fine from my perspective,
-Reviewed-by: Andy Shevchenko <andy.shevchenko@gmail.com>
-thanks!
-
-> Fixes: a6c80bec3c93 ("leds: simatic-ipc-leds-gpio: Add GPIO version of Siemens driver")
-> Signed-off-by: Henning Schild <henning.schild@siemens.com>
 > ---
->  drivers/leds/simple/simatic-ipc-leds-gpio.c | 2 ++
->  1 file changed, 2 insertions(+)
->
-> diff --git a/drivers/leds/simple/simatic-ipc-leds-gpio.c b/drivers/leds/simple/simatic-ipc-leds-gpio.c
-> index 4c9e663a90ba..0c96ba98e338 100644
-> --- a/drivers/leds/simple/simatic-ipc-leds-gpio.c
-> +++ b/drivers/leds/simple/simatic-ipc-leds-gpio.c
-> @@ -57,6 +57,8 @@ static int simatic_ipc_leds_gpio_probe(struct platform_device *pdev)
->         struct gpio_desc *gpiod;
->         int err;
->
-> +       if (!IS_ENABLED(CONFIG_PINCTRL_BROXTON))
-> +               return -ENODEV;
->         gpiod_add_lookup_table(&simatic_ipc_led_gpio_table);
->         simatic_leds_pdev = platform_device_register_resndata(NULL,
->                 "leds-gpio", PLATFORM_DEVID_NONE, NULL, 0,
-> --
-> 2.35.1
->
+>  drivers/cxl/core/mbox.c      | 31 ++++++++++++++++++++++++++++---
+>  drivers/cxl/cxlmem.h         | 15 +++++++++++++++
+>  include/uapi/linux/cxl_mem.h |  1 +
+>  3 files changed, 44 insertions(+), 3 deletions(-)
+> 
+> diff --git a/drivers/cxl/core/mbox.c b/drivers/cxl/core/mbox.c
+> index 2cceed8608dc..493f5ceb5d1c 100644
+> --- a/drivers/cxl/core/mbox.c
+> +++ b/drivers/cxl/core/mbox.c
+> @@ -52,6 +52,7 @@ static struct cxl_mem_command cxl_mem_commands[CXL_MEM_COMMAND_ID_MAX] = {
+>  #endif
+>  	CXL_CMD(GET_SUPPORTED_LOGS, 0, CXL_VARIABLE_PAYLOAD, CXL_CMD_FLAG_FORCE_ENABLE),
+>  	CXL_CMD(GET_EVENT_RECORD, 1, CXL_VARIABLE_PAYLOAD, 0),
+> +	CXL_CMD(CLEAR_EVENT_RECORD, CXL_VARIABLE_PAYLOAD, 0, 0),
+>  	CXL_CMD(GET_FW_INFO, 0, 0x50, 0),
+>  	CXL_CMD(GET_PARTITION_INFO, 0, 0x20, 0),
+>  	CXL_CMD(GET_LSA, 0x8, CXL_VARIABLE_PAYLOAD, 0),
+> @@ -708,6 +709,26 @@ int cxl_enumerate_cmds(struct cxl_dev_state *cxlds)
+>  }
+>  EXPORT_SYMBOL_NS_GPL(cxl_enumerate_cmds, CXL);
+>  
+> +static int cxl_clear_event_record(struct cxl_dev_state *cxlds,
+> +				  enum cxl_event_log_type log,
+> +				  __le16 handle)
+> +{
+> +	struct cxl_mbox_clear_event_payload payload;
+> +	int rc;
+> +
+> +	memset(&payload, 0, sizeof(payload));
+
+Could just do payload = {};
+
+Thouch as you are setting stuff, why not just do
+
+payload = {
+	.event_log = log,
+	.nr_recs = 1,
+	.handle = handle,
+};
+and let the compiler zero anything else (I think there are no holes to complicate
+things).
+
+> +	payload.event_log = log;
+> +	payload.nr_recs = 1;
+> +	payload.handle = handle;
+> +
+> +	rc = cxl_mbox_send_cmd(cxlds, CXL_MBOX_OP_CLEAR_EVENT_RECORD,
+> +			       &payload, sizeof(payload), NULL, 0);
+
+return cxl_mbox_send_cmd() and drop rc definition.
 
 
--- 
-With Best Regards,
-Andy Shevchenko
+> +	if (rc)
+> +		return rc;
+> +
+> +	return 0;
+> +}
+> +
+>  static int cxl_mem_get_records_log(struct cxl_dev_state *cxlds,
+>  				   enum cxl_event_log_type type)
+>  {
+> @@ -725,9 +746,12 @@ static int cxl_mem_get_records_log(struct cxl_dev_state *cxlds,
+>  			return rc;
+>  
+>  		record_count = le16_to_cpu(payload.record_count);
+> -		if (record_count > 0)
+> +		if (record_count > 0) {
+>  			trace_cxl_event(dev_name(cxlds->dev), type,
+>  					&payload.record);
+> +			cxl_clear_event_record(cxlds, type,
+> +					       payload.record.hdr.handle);
+> +		}
+>  
+>  		if (payload.flags & CXL_GET_EVENT_FLAG_OVERFLOW)
+>  			trace_cxl_event_overflow(dev_name(cxlds->dev), type,
+> @@ -742,10 +766,11 @@ static int cxl_mem_get_records_log(struct cxl_dev_state *cxlds,
+>   * cxl_mem_get_event_records - Get Event Records from the device
+>   * @cxlds: The device data for the operation
+>   *
+> - * Retrieve all event records available on the device and report them as trace
+> - * events.
+> + * Retrieve all event records available on the device, report them as trace
+> + * events, and clear them.
+>   *
+>   * See CXL v3.0 @8.2.9.2.2 Get Event Records
+> + * See CXL v3.0 @8.2.9.2.3 Clear Event Records
+>   */
+>  void cxl_mem_get_event_records(struct cxl_dev_state *cxlds)
+>  {
+> diff --git a/drivers/cxl/cxlmem.h b/drivers/cxl/cxlmem.h
+> index f83634f3bc8d..5506e7210cf6 100644
+> --- a/drivers/cxl/cxlmem.h
+> +++ b/drivers/cxl/cxlmem.h
+> @@ -255,6 +255,7 @@ enum cxl_opcode {
+>  	CXL_MBOX_OP_INVALID		= 0x0000,
+>  	CXL_MBOX_OP_RAW			= CXL_MBOX_OP_INVALID,
+>  	CXL_MBOX_OP_GET_EVENT_RECORD	= 0x0100,
+> +	CXL_MBOX_OP_CLEAR_EVENT_RECORD	= 0x0101,
+>  	CXL_MBOX_OP_GET_FW_INFO		= 0x0200,
+>  	CXL_MBOX_OP_ACTIVATE_FW		= 0x0202,
+>  	CXL_MBOX_OP_GET_SUPPORTED_LOGS	= 0x0400,
+> @@ -387,6 +388,20 @@ static inline char *cxl_event_log_type_str(enum cxl_event_log_type type)
+>  	return "<unknown>";
+>  }
+>  
+> +/*
+> + * Clear Event Records input payload
+> + * CXL v3.0 section 8.2.9.2.3; Table 8-51
+> + *
+> + * Space given for 1 record
+> + */
+> +struct cxl_mbox_clear_event_payload {
+> +	u8 event_log;		/* enum cxl_event_log_type */
+> +	u8 clear_flags;
+> +	u8 nr_recs;		/* 1 for this struct */
+> +	u8 reserved[3];
+> +	__le16 handle;
+> +};
+> +
+>  struct cxl_mbox_get_partition_info {
+>  	__le64 active_volatile_cap;
+>  	__le64 active_persistent_cap;
+> diff --git a/include/uapi/linux/cxl_mem.h b/include/uapi/linux/cxl_mem.h
+> index 70459be5bdd4..7c1ad8062792 100644
+> --- a/include/uapi/linux/cxl_mem.h
+> +++ b/include/uapi/linux/cxl_mem.h
+> @@ -25,6 +25,7 @@
+>  	___C(RAW, "Raw device command"),                                  \
+>  	___C(GET_SUPPORTED_LOGS, "Get Supported Logs"),                   \
+>  	___C(GET_EVENT_RECORD, "Get Event Record"),                       \
+> +	___C(CLEAR_EVENT_RECORD, "Clear Event Record"),                   \
+>  	___C(GET_FW_INFO, "Get FW Info"),                                 \
+>  	___C(GET_PARTITION_INFO, "Get Partition Information"),            \
+>  	___C(GET_LSA, "Get Label Storage Area"),                          \
+
