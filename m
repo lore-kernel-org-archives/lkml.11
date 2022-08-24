@@ -2,89 +2,217 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 266EDC32796
-	for <linux-kernel@archiver.kernel.org>; Wed, 24 Aug 2022 15:26:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A8A1CC00140
+	for <linux-kernel@archiver.kernel.org>; Wed, 24 Aug 2022 15:26:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239522AbiHXP0Q (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 24 Aug 2022 11:26:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53378 "EHLO
+        id S239531AbiHXP0v (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 24 Aug 2022 11:26:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53792 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236041AbiHXP0M (ORCPT
+        with ESMTP id S238005AbiHXP0r (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 24 Aug 2022 11:26:12 -0400
-Received: from vps0.lunn.ch (vps0.lunn.ch [185.16.172.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D53CC98D24;
-        Wed, 24 Aug 2022 08:26:11 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
-        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
-        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
-        bh=U0I4VNyd6UEPv89YnVrPz+VloLo8M8ZsDyOs3TAfHhs=; b=MToQ2tSQN2DWtO2/j/lt0ak4bw
-        x4XIRacCpnosU/jr3X3xc5n8JExVkuyWq3+tDjWw4NnG4PYSrt8x6+R22THzK/xwWdKq1O2l4EpcD
-        NuUJ9cQIEr82HATZpEqTmaOr34RMkeQHwvTxHnCkv5zlJtvAigvzONztMJC+wzlDTt70=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
-        (envelope-from <andrew@lunn.ch>)
-        id 1oQsGR-00ESUS-80; Wed, 24 Aug 2022 17:25:55 +0200
-Date:   Wed, 24 Aug 2022 17:25:55 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     "xiaowu.ding" <xiaowu.ding@jaguarmicro.com>
-Cc:     davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        pabeni@redhat.com, linux@armlinux.org.uk,
-        nicolas.ferre@microchip.com, claudiu.beznea@microchip.com,
-        palmer@dabbelt.com, paul.walmsley@sifive.com,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-riscv@lists.infradead.org
-Subject: Re: [PATCH net-next] driver: cadence macb driver support acpi mode
-Message-ID: <YwZDA0CuYwPE6DM2@lunn.ch>
-References: <20220824121351.578-1-xiaowu.ding@jaguarmicro.com>
+        Wed, 24 Aug 2022 11:26:47 -0400
+Received: from mail-pj1-x1030.google.com (mail-pj1-x1030.google.com [IPv6:2607:f8b0:4864:20::1030])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AC9E79A68A
+        for <linux-kernel@vger.kernel.org>; Wed, 24 Aug 2022 08:26:44 -0700 (PDT)
+Received: by mail-pj1-x1030.google.com with SMTP id e19so16196769pju.1
+        for <linux-kernel@vger.kernel.org>; Wed, 24 Aug 2022 08:26:44 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc;
+        bh=7cYr8vAfRHCWuiirD4vPsPn+6q5Wbv188oHbQU7Rxhk=;
+        b=mgRkttJT3eCwZMRg+uvkdAvCsSWdhcCN9w9fVa3lDY8f/I4OgJwYT2zDhiFRZHZA8Q
+         qX4oX5RQiF26QWesS358K6RkTJId0PuSWWLSd1tmG0sq+8IMis3L7hBwoptwTfXT5EiW
+         M5UB4ltzcs5FDAKDpj+i88uB3XsIIX6mk3ftHKylzKRAM/BxmXMOMwMnqYauTifoghcE
+         s9OhNfLStbubvbhs8v6JFMGt71eSlVtJCBi6koG9daNoODMbScFqlVtMWdpW9C4lYlHI
+         eUVdmVyFvq4o48IUZUoWMuDpvFBOZ+X4KAG0UxrAovnc1f3LICr55Ghq97sE4LuTsklX
+         q/AQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc;
+        bh=7cYr8vAfRHCWuiirD4vPsPn+6q5Wbv188oHbQU7Rxhk=;
+        b=i58IKtu5ijOAWhwaK6foY+8SJ6FE6adRQw6Yd0UrdHEMCHD5hI4LOXCT+SeWuc6r7K
+         4pt8imNX/g2h2rpUdvs/eM2HE4NgRxovGhnF5lsJcmUtdfEGxluOhpgCrqE1FEO6LlOC
+         MXnp3808N1ftbhpySYGFkqcKwoUXoAG2m5fgcbn3T970b+6WBwGOKLEtN/92uBtqVayx
+         5Tv/qBp02U6n+aVmoTZfGZguOjInHSjXowUvSlZyo4WHrGE2j6QM3AoX6QiF4dStjn0D
+         TM7EbcQsSXM1a2O85k6XzsI0PYWVHh1EtP8f/m2n7p6cojsJWyis3jiQWtedP3vn/jh6
+         NSbw==
+X-Gm-Message-State: ACgBeo2EpA0awiUmKaDF4o4iQf4FrJRVqKm6VkJjBggG6XKg+H/5Gwuz
+        t7IIiuATPbwFjXMG/GjgSB+NRw==
+X-Google-Smtp-Source: AA6agR5piYiLGl91DJ+WGiCQqFgwEJssZpJdddayt4oyPxEfPJpGKcc+JSQkywuvBiPbxPtQrUz4Kg==
+X-Received: by 2002:a17:903:11c7:b0:170:cde7:d24a with SMTP id q7-20020a17090311c700b00170cde7d24amr29338758plh.91.1661354803396;
+        Wed, 24 Aug 2022 08:26:43 -0700 (PDT)
+Received: from google.com (7.104.168.34.bc.googleusercontent.com. [34.168.104.7])
+        by smtp.gmail.com with ESMTPSA id qi3-20020a17090b274300b001f3162e4e55sm1538091pjb.35.2022.08.24.08.26.42
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 24 Aug 2022 08:26:43 -0700 (PDT)
+Date:   Wed, 24 Aug 2022 15:26:39 +0000
+From:   Sean Christopherson <seanjc@google.com>
+To:     Dapeng Mi <dapeng1.mi@intel.com>
+Cc:     rafael@kernel.org, daniel.lezcano@linaro.org, pbonzini@redhat.com,
+        linux-pm@vger.kernel.org, linux-kernel@vger.kernel.org,
+        kvm@vger.kernel.org, zhenyuw@linux.intel.com
+Subject: Re: [PATCH] KVM: x86: use TPAUSE to replace PAUSE in halt polling
+Message-ID: <YwZDL4yv7F2Y4JBP@google.com>
+References: <20220824091117.767363-1-dapeng1.mi@intel.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220824121351.578-1-xiaowu.ding@jaguarmicro.com>
+In-Reply-To: <20220824091117.767363-1-dapeng1.mi@intel.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-> +static int macb_acpi_phylink_connect(struct macb *bp)
+On Wed, Aug 24, 2022, Dapeng Mi wrote:
+> TPAUSE is a new instruction on Intel processors which can instruct
+> processor enters a power/performance optimized state. Halt polling
+> uses PAUSE instruction to wait vCPU is waked up. The polling time
+> could be long and cause extra power consumption in some cases.
+> 
+> Use TPAUSE to replace the PAUSE instruction in halt polling to get
+> a better power saving and performance.
+
+Better power savings, yes.  Better performance?  Not necessarily.  Using TPAUSE
+for  a "successful" halt poll is likely to yield _worse_ performance from the
+vCPU's perspective due to the increased latency.
+
+> Signed-off-by: Dapeng Mi <dapeng1.mi@intel.com>
+> ---
+>  drivers/cpuidle/poll_state.c |  3 ++-
+>  include/linux/kvm_host.h     | 20 ++++++++++++++++++++
+>  virt/kvm/kvm_main.c          |  2 +-
+>  3 files changed, 23 insertions(+), 2 deletions(-)
+> 
+> diff --git a/drivers/cpuidle/poll_state.c b/drivers/cpuidle/poll_state.c
+> index f7e83613ae94..51ec333cbf80 100644
+> --- a/drivers/cpuidle/poll_state.c
+> +++ b/drivers/cpuidle/poll_state.c
+> @@ -7,6 +7,7 @@
+>  #include <linux/sched.h>
+>  #include <linux/sched/clock.h>
+>  #include <linux/sched/idle.h>
+> +#include <linux/kvm_host.h>
+>  
+>  #define POLL_IDLE_RELAX_COUNT	200
+>  
+> @@ -25,7 +26,7 @@ static int __cpuidle poll_idle(struct cpuidle_device *dev,
+>  		limit = cpuidle_poll_time(drv, dev);
+>  
+>  		while (!need_resched()) {
+> -			cpu_relax();
+> +			kvm_cpu_poll_pause(limit);
+
+poll_idle() absolutely should not be calling into KVM code.
+
+>  			if (loop_count++ < POLL_IDLE_RELAX_COUNT)
+>  				continue;
+>  
+> diff --git a/include/linux/kvm_host.h b/include/linux/kvm_host.h
+> index f4519d3689e1..810e749949b7 100644
+> --- a/include/linux/kvm_host.h
+> +++ b/include/linux/kvm_host.h
+> @@ -35,6 +35,7 @@
+>  #include <linux/interval_tree.h>
+>  #include <linux/rbtree.h>
+>  #include <linux/xarray.h>
+> +#include <linux/delay.h>
+>  #include <asm/signal.h>
+>  
+>  #include <linux/kvm.h>
+> @@ -2247,6 +2248,25 @@ static inline void kvm_handle_signal_exit(struct kvm_vcpu *vcpu)
+>  }
+>  #endif /* CONFIG_KVM_XFER_TO_GUEST_WORK */
+>  
+> +/*
+> + * This function is intended to replace the cpu_relax function in
+> + * halt polling. If TPAUSE instruction is supported, use TPAUSE
+> + * instead fo PAUSE to get better power saving and performance.
+> + * Selecting 1 us is a compromise between scheduling latency and
+> + * power saving time.
+> + */
+> +static inline void kvm_cpu_poll_pause(u64 timeout_ns)
 > +{
-> +	struct fwnode_handle *fwnd = bp->pdev->dev.fwnode;
-> +	struct net_device *dev = bp->dev;
-> +	struct phy_device *phydev;
-> +	int ret;
+> +#ifdef CONFIG_X86
+
+This is not preferred the way to insert arch-specific behavior into common KVM code.
+Assuming the goal is to avoid a function call, use an #ifndef here and then #define
+the flag in x86's kvm_host.h, e.g.
+
+#ifndef CONFIG_HAVE_KVM_ARCH_HALT_POLL_PAUSE
+static inline kvm_cpu_halt_poll_pause(u64 timeout_ns)
+{
+	cpu_relax();
+}
+#endif
+
+It's not obvious that we need to avoid a call here though, in which case a
+
+  __weak void kvm_arch_cpu_halt_poll_pause(struct kvm *kvm)
+  {
+
+  }
+
+with an x86 implementation will suffice.
+
+
+> +	if (static_cpu_has(X86_FEATURE_WAITPKG) && timeout_ns > 1000)
+> +		udelay(1);
+
+This is far too arbitrary.  Wake events from other vCPU are not necessarily
+accompanied by an IRQ, which means that delaying for 1us may really truly delay
+for 1us before detecting a pending wake event.
+
+If this is something we want to utilize in KVM, it should be controllable by
+userspace, probably via module param, and likely off by default.
+
+E.g. 
+
+  unsigned int halt_poll_tpause_ns;
+
+and then
+
+  if (timeout_ns >= halt_poll_tpause_ns)
+  	udelay(halt_poll_tpause_ns);
+
+with halt_poll_tpause_ns zeroed out during setup if TPAUSE isn't supported.
+
+I say "if", because I think this needs to come with performance numbers to show
+the impact on guest latency so that KVM and its users can make an informed decision.
+And if it's unlikely that anyone will ever want to enable TPAUSE for halt polling,
+then it's not worth the extra complexity in KVM.
+
+> +	else
+> +		cpu_relax();
+> +#else
+> +	cpu_relax();
+> +#endif
+> +}
 > +
-> +	if (fwnd)
-> +		ret = phylink_fwnode_phy_connect(bp->phylink, fwnd, 0);
-> +
-> +	if (!fwnd || (ret && !macb_acpi_phy_handle_exists(fwnd))) {
-> +		phydev = phy_find_first(bp->mii_bus);
+>  /*
+>   * This defines how many reserved entries we want to keep before we
+>   * kick the vcpu to the userspace to avoid dirty ring full.  This
+> diff --git a/virt/kvm/kvm_main.c b/virt/kvm/kvm_main.c
+> index 584a5bab3af3..4afa776d21bd 100644
+> --- a/virt/kvm/kvm_main.c
+> +++ b/virt/kvm/kvm_main.c
+> @@ -3510,7 +3510,7 @@ void kvm_vcpu_halt(struct kvm_vcpu *vcpu)
+>  			 */
+>  			if (kvm_vcpu_check_block(vcpu) < 0)
+>  				goto out;
+> -			cpu_relax();
+> +			kvm_cpu_poll_pause(vcpu->halt_poll_ns);
 
-Please don't use phy_find_first. That is somewhat historical. Since
-this is a new binding, simply error out if
-phylink_fwnode_phy_connect() fails.
+This is wrong, vcpu->halt_poll_ns is the total poll time, not the time remaining.
+E.g. if the max poll time is 1001 ns, and KVM has already waited for 1000 ns, then
+udelay(1) will cause KVM to wait for ~2000ns total.  There's always going to be
+some amount of overrun, but overrun by a few ns is quite different than overrun
+by a few thousand ns.
 
-> +static int macb_acpi_mdiobus_register(struct macb *bp)
-> +{
-> +	struct platform_device *pdev =	bp->pdev;
-> +	struct fwnode_handle *fwnode = pdev->dev.fwnode;
-> +	struct fwnode_handle *child;
-> +	u32 addr;
-> +	int ret;
-> +
-> +	if (!IS_ERR_OR_NULL(fwnode_find_reference(pdev->dev.fwnode, "fixed-link", 0)))
-> +		return mdiobus_register(bp->mii_bus);
-> +
-> +	fwnode_for_each_child_node(fwnode, child) {
-> +		ret = acpi_get_local_address(ACPI_HANDLE_FWNODE(child), &addr);
-> +		if (ret || addr >= PHY_MAX_ADDR)
-> +			continue;
-> +		ret = acpi_mdiobus_register(bp->mii_bus, fwnode);
-> +		if (!ret)
-> +			return ret;
-> +		break;
-
-Why loop looking for a node with a register value < 32?
-
-Please make sure you are conformant with Documentation/firmware-guide/acpi/dsd/phy.rst
-
-       Andrew
+>  			poll_end = cur = ktime_get();
+>  		} while (kvm_vcpu_can_poll(cur, stop));
+>  	}
+> -- 
+> 2.34.1
+> 
