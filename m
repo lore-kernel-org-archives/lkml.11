@@ -2,333 +2,216 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1E51CC00140
-	for <linux-kernel@archiver.kernel.org>; Wed, 24 Aug 2022 13:54:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2A006C00140
+	for <linux-kernel@archiver.kernel.org>; Wed, 24 Aug 2022 13:54:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238607AbiHXNyJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 24 Aug 2022 09:54:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54752 "EHLO
+        id S238017AbiHXNyR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 24 Aug 2022 09:54:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54796 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230513AbiHXNxm (ORCPT
+        with ESMTP id S238802AbiHXNxu (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 24 Aug 2022 09:53:42 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7C42A6B160
-        for <linux-kernel@vger.kernel.org>; Wed, 24 Aug 2022 06:50:52 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1661348995;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=iaUfJLjdP4SatVCPRhi0neBh2R+tpKaMwWHcN499eT0=;
-        b=Fbqd9ilBQon0lGXrrD6gcmyTQVb9B1KLGLisHYv5r0+TEs7JfSK9zzstoYmbXdI1hsct3e
-        6y57zvvcXQV2638CRfmOZsjkodK0wAWVLBdUAG6Jg2+pnarg1t3f8KgvHx19FzSFmvlx5M
-        MjUbDoMYGIlnqb7QDyG3OI7EHu6PHis=
-Received: from mail-ed1-f69.google.com (mail-ed1-f69.google.com
- [209.85.208.69]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
- us-mta-157-ZWRWuY0aPESZg2fIP-hCOg-1; Wed, 24 Aug 2022 09:49:54 -0400
-X-MC-Unique: ZWRWuY0aPESZg2fIP-hCOg-1
-Received: by mail-ed1-f69.google.com with SMTP id z6-20020a05640240c600b0043e1d52fd98so11171024edb.22
-        for <linux-kernel@vger.kernel.org>; Wed, 24 Aug 2022 06:49:54 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc;
-        bh=iaUfJLjdP4SatVCPRhi0neBh2R+tpKaMwWHcN499eT0=;
-        b=57urUwVQkpAwcEYXifl44yXtzobhxjhPDxjudNPGd8WGu2QnXzPqIMkeM4iXo0m6jG
-         iHTXPc40b44H+ML86f1l01EwkJ8JrUAWOs9ivRY1O7Zhu89MWrnI0qNHbMoRAZ/ht/0t
-         m2a3BE5MIskC4NhbrXSuVCGetSDlXGdowQlYdVI5ERH3p6jGsJWSb4CRQ+0+nAGggC7m
-         DHDfKiR6DaHmUT5/v/MwgMAxAEmyzF1eC2xEQU6p0ImfzgUV+d8GTFZBGy6UvrfFJ1bp
-         9aUJpXXx9ULkvImIXSwgy4WxTS/CweDn0UXLAk2NX6+gUy+5tvGVdMk0xEm+F7dOcRlK
-         Eppg==
-X-Gm-Message-State: ACgBeo0bUiAu16AWoH/kafA8ZcAknQTTZ9kdxKJiGMYJ/Q11spgzfiSr
-        gtKWPGBeZrJ4GTmPkNe1oTmiS2VywD6EJi7JWNYVErU1MacfvJKx3llbrElESAmxFyFGBwKviDp
-        wy2Gl5hm7TqvtDJVEVhkWSFsU
-X-Received: by 2002:a50:fa87:0:b0:447:87f3:ee7e with SMTP id w7-20020a50fa87000000b0044787f3ee7emr2021506edr.182.1661348993072;
-        Wed, 24 Aug 2022 06:49:53 -0700 (PDT)
-X-Google-Smtp-Source: AA6agR71oiVstIvu3n7MYm5udQCkJCPVBJhagXmAYC7cHGKSrw4YXKLp2DQ4ciOK9dKxpiZ7UdMkZQ==
-X-Received: by 2002:a50:fa87:0:b0:447:87f3:ee7e with SMTP id w7-20020a50fa87000000b0044787f3ee7emr2021485edr.182.1661348992788;
-        Wed, 24 Aug 2022 06:49:52 -0700 (PDT)
-Received: from ?IPV6:2001:1c00:c1e:bf00:d69d:5353:dba5:ee81? (2001-1c00-0c1e-bf00-d69d-5353-dba5-ee81.cable.dynamic.v6.ziggo.nl. [2001:1c00:c1e:bf00:d69d:5353:dba5:ee81])
-        by smtp.gmail.com with ESMTPSA id d23-20020a170906305700b007308812ce89sm1138880ejd.168.2022.08.24.06.49.51
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 24 Aug 2022 06:49:52 -0700 (PDT)
-Message-ID: <18f6f6ea-5a39-87bb-29e5-e97c7ef96d0a@redhat.com>
-Date:   Wed, 24 Aug 2022 15:49:51 +0200
+        Wed, 24 Aug 2022 09:53:50 -0400
+Received: from EUR02-VE1-obe.outbound.protection.outlook.com (mail-eopbgr20084.outbound.protection.outlook.com [40.107.2.84])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 36CE6979D3;
+        Wed, 24 Aug 2022 06:50:59 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=YqiskPdFZNY1IRnVgogXXdjiDoIRs5vS2qhg7W5Wnz6tN7M2/iqasu/jqK65MHe+PlrBCR1opK107Dzyv8CGoFz+EPMdPluWkQBAKpfZ5XHz+jBbR4ynj1xQ5W2/KX9i3w+Pr5ND82n5VLBGsOoH4X4OkYTeqyhu2odt3FdvYrl95pXI9gouh+IVxiopD7k0N0Ybqfwxn1xaleRVY4Q8QwdWTOKmwOvyJlW9gv8tqgsjTb7aeJ9nr3d3N9N0DkobJlF2OsOyxsMOg7bmylpNa/IuqfhwJgUJ5nqokHJzg0JRAgVWwttP03opuTEeVJaFqU/ytCyP68rsc+kJnnK11w==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=Ad/eUbJg93oxIdNKxTQipRIQuz574bbBoEPIhLryg1A=;
+ b=fVnd5gPS8T0mWIRAcfLbi1l7stYdYrsVoHa3xkClh1EFO9yZAqPWYwTBty20XoI0K7WuRRxoZ4QSJifTcFJLsNJtamKt/k9gUjnb3MYdjnSOct40uok8USLgK9NgFRoYMKi/1E1793aku6Wz4ljHWoT3UVuqHM5ZR3di0A2hVTrs0ehTI0LnMzSeV4CHhj9/zwovZCcVfPz9Axx3GKvWAF4qBpR5V/CYpTbtfF08SIpSV7lF5clbyhZaNCx4vSwtSzknpg+TATeziZRyXWEsDxcN6Hbtx0pWUrSFdQikYvR/zLuqcsmUy2J4Ft3Y3E93sCfXU4VOvSStz4b31qFTgg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=siemens.com; dmarc=pass action=none header.from=siemens.com;
+ dkim=pass header.d=siemens.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=siemens.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=Ad/eUbJg93oxIdNKxTQipRIQuz574bbBoEPIhLryg1A=;
+ b=Ju8KSnZS9iQFbq5WKFolPk/6ov/nYM7whFD4FizwxYMsDKelQ+9FXHrZ7FBjdurkw744+3VlQ2rcuyGO7MhYqPSs02Du7J+2nRaD1X5BXIihga47LjuEEOlgKSrbLqKnMyJO2abXTXLSusU0v7g/S8cC3WrkkCNyoY5xUgbR65yyqSGRd05yhoOqPT+HIsowP+NVSEUZgqlKqhdbtZ4WZjVeApwlJFaaIJQSqi6hz+nbf/ZzLdiOCEKC+484HDXH+FwSHP84kmc5a8ODfHZBUXOUZurn761gXzhIcEQjfMPb9KXO+qnAGbrsxyVDZKFvtJ0fgJXs2/vOYeJxCd8NsA==
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=siemens.com;
+Received: from PA4PR10MB5780.EURPRD10.PROD.OUTLOOK.COM (2603:10a6:102:269::8)
+ by DB9PR10MB4700.EURPRD10.PROD.OUTLOOK.COM (2603:10a6:10:261::21) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5546.16; Wed, 24 Aug
+ 2022 13:50:41 +0000
+Received: from PA4PR10MB5780.EURPRD10.PROD.OUTLOOK.COM
+ ([fe80::75ee:d5d2:6b1d:150b]) by PA4PR10MB5780.EURPRD10.PROD.OUTLOOK.COM
+ ([fe80::75ee:d5d2:6b1d:150b%3]) with mapi id 15.20.5546.022; Wed, 24 Aug 2022
+ 13:50:41 +0000
+Date:   Wed, 24 Aug 2022 15:50:38 +0200
+From:   Henning Schild <henning.schild@siemens.com>
+To:     simon.guinot@sequanux.org
+Cc:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Bartosz Golaszewski <brgl@bgdev.pl>,
+        Pavel Machek <pavel@ucw.cz>,
+        Hans de Goede <hdegoede@redhat.com>,
+        Mark Gross <markgross@kernel.org>, Lee Jones <lee@kernel.org>,
+        linux-gpio@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-leds@vger.kernel.org, platform-driver-x86@vger.kernel.org,
+        Sheng-Yuan Huang <syhuang3@nuvoton.com>,
+        Tasanakorn Phaipool <tasanakorn@gmail.com>
+Subject: Re: [PATCH v4 1/5] gpio-f7188x: Add GPIO support for Nuvoton
+ NCT6116
+Message-ID: <20220824155038.5aa19495@md1za8fc.ad001.siemens.net>
+In-Reply-To: <YwYjXzsSHNe+J3aO@76cbfcf04d45>
+References: <20220823102344.17624-1-henning.schild@siemens.com>
+        <20220823102344.17624-2-henning.schild@siemens.com>
+        <YwToilxquEZGqzQD@smile.fi.intel.com>
+        <20220823165459.143e1c30@md1za8fc.ad001.siemens.net>
+        <YwYjXzsSHNe+J3aO@76cbfcf04d45>
+X-Mailer: Claws Mail 3.19.0 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-ClientProxiedBy: FR0P281CA0084.DEUP281.PROD.OUTLOOK.COM
+ (2603:10a6:d10:1e::23) To PA4PR10MB5780.EURPRD10.PROD.OUTLOOK.COM
+ (2603:10a6:102:269::8)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.12.0
-Subject: Re: [PATCH] asus-wmi: Support the hardware GPU MUX on some laptops
-Content-Language: en-US
-To:     Mario Limonciello <mario.limonciello@amd.com>,
-        Luke Jones <luke@ljones.dev>
-Cc:     markgross@kernel.org, platform-driver-x86@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-References: <20220813092624.6228-1-luke@ljones.dev>
- <e186622e-f3e6-5715-9f6d-bc41fb41560d@amd.com>
- <UVMZGR.6LXKPONA9OS33@ljones.dev>
- <6f7df43d-292d-3a6b-76bc-09d669733939@amd.com>
- <4e4c5234-3327-0e49-989c-1117ffb2f13d@redhat.com>
- <34bf5d3a-adb6-ce12-8c9c-ee9144f5262d@amd.com>
- <fda6b7fc-b307-f4f3-1176-6b15c639b3d0@redhat.com>
- <80a42677-81a1-dc97-5ee3-86c80c79500b@amd.com>
-From:   Hans de Goede <hdegoede@redhat.com>
-In-Reply-To: <80a42677-81a1-dc97-5ee3-86c80c79500b@amd.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: e8374d61-c017-46de-45aa-08da85d7a213
+X-MS-TrafficTypeDiagnostic: DB9PR10MB4700:EE_
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: FUFHnYZDz662IRnwPkPZePEtf1dOnnjNhjB+FHGXbs31GqrqeMsEFfl92X6iwsXymVLPEXNIu/kuKYqrtA/TVUvNaa+eL0YgKRqtxXRKmoXKIYNII20Rc54d7mqJ+SdxGNJIupa2pMzTmudOHg/WqHafe/vvql06TQN0dJFeFH1dN88NddNwHA8EQtFk3ce9SZyLRRc8kCg1mF9+bMj7T2MACtnltst2TUTwjngGfWE+ZUOq983WSWQjVFnaWTWSL1xFrS97HXNYZHz1t7VfgDUGo1CZGtj1p9HGlDja7RZQR2gBSWxPaJ/ZzizfjRBLmo1CvdHMc0rh2EvPSSUa7XD0GF9Yi1nbNGnFD1PtuJub8q5d17Gm1YpWsZZ5V0NsgMaRd0cDyoAqeXRcA/a0QC0ZdvJUT7v8cIcT/YuCyE1T3bgeliveQzFb7ENJIbqTxZXIv+WdOg1q0syPD2wf+924vlWV/xsKLkhs6gL0Hn3s4ynWNeP9CgUzmE4TQPY/8tV1No63Y+jdA1f8QoimkSMLXeZkscStRMhRS25eVPv5Ug4jpmvdNyFxXQAmffNDEQsxRpvm8n9UQ9XpbZGRiZ9C8Zba7sL3Xsz4R2f8dh8ch2x7LxcWhS7pc+Hv5d5dnYm3h5q6cz1YgqoMTvuSHXiyLp5wbmu0l2z3tZSuVOUvXI9lTSlS7ZYOCGNtc49cG1XPesqWoKLAQt9buBfgbQ==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PA4PR10MB5780.EURPRD10.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(13230016)(4636009)(396003)(39860400002)(346002)(136003)(376002)(366004)(6666004)(6506007)(9686003)(26005)(86362001)(82960400001)(41300700001)(1076003)(186003)(6486002)(478600001)(6512007)(4326008)(66946007)(316002)(54906003)(8676002)(66556008)(6916009)(66476007)(38100700002)(7416002)(5660300002)(8936002)(2906002)(44832011);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?aGTZyZ0DUSD8U2DhSw13GXhhjLY7wpAENlvL5DfhLTckGTGJIYK90g3+OAxk?=
+ =?us-ascii?Q?nN+vJSjd0T28wAn6k7zX1QrWxu42vk7Z6kRxG4ydg7vY+IZxJvvM7+6nMpEi?=
+ =?us-ascii?Q?+9z3Yz3tt+Bv7K4Gx8FRGN9Ig+8JPv3eT8r+Qw0vuVWGgZHqrgRNKhUBjAtc?=
+ =?us-ascii?Q?POWk8fEDTjqkoPksi/Lk1ZTCMBjsMzk7H/gZDedVt2X+V1SVeE4BE/i+tSod?=
+ =?us-ascii?Q?6qPDE/uNYdsZI6KtiOr/Wtf8RyOgGK2ATFGZFudfGbr2KDYMy85wdTYETPfp?=
+ =?us-ascii?Q?M8eT2ZKo2giBP+zBc9ctbRFVnFHTZlyFYLSha3DWBt1yiWhtCQ+kZhtwavQx?=
+ =?us-ascii?Q?frrDgHEwe6Emnz/HAH9t1xVYoQUqk56+V1UPgnThuDGnBrGCh8djcVvULyRS?=
+ =?us-ascii?Q?cBTjZBDyOF9R8yJk4BLKZaZLGIAITCcW+CRgju+2saZ/dW0dv15s7qAL7+nu?=
+ =?us-ascii?Q?W2KTPmjZA8DWrBKnE4z0y+JPW0sxDmYf6OZSrvowKEc3HqLBCRMBxwiUSBDJ?=
+ =?us-ascii?Q?R36vnjbWNVApQU9vN+/ak+kEJl0VPafm9HFQYSurku1a2uTgcpY3DhGMwyk1?=
+ =?us-ascii?Q?cT2lH2JruJtZCHPbxfiuy6abzLdoPpkI/vuiZVorGvi69rMrADK/Z0/vdQN7?=
+ =?us-ascii?Q?svqymohyMJCZ3QeIDMQGWt9hFXTdUHFcEePj/1GV0HpwRQQkC5WBaoEHeqMm?=
+ =?us-ascii?Q?KWgo1DzFQKX1pepO196lBiSdSP4Ai37ZgfeKetXbB8d+tUObJ3XjBXfFFlRa?=
+ =?us-ascii?Q?k8jkBnMbjtjnHV5IW0DSkRSfIXtIQLENF4Vx6uSz680ORSXCft3TTKLIdzUV?=
+ =?us-ascii?Q?X4JL+2eb3XQisCzLJ2dATax1bPuOCLZFe26Cok4rMYl1y14lDSr5L3KDZwgh?=
+ =?us-ascii?Q?KfAuMlEUlXIOCcFKy0BniB7fg7nv8xrTFzrw/merNSkBCagZ1sOHZBdCxhHB?=
+ =?us-ascii?Q?72C7IEsnQygLXmqaXUgDEcAdiK/Y3zjBH1kNFmCw85hSO6L6j29JV15o2Zht?=
+ =?us-ascii?Q?IWdfU4NY0euXVKZ7SZzfsgPSarG/O4tGGWBbTsBB9x9sIXSIEInl0k0QNjPd?=
+ =?us-ascii?Q?6mUdxVOHhUIptlzcmPJXfXqOQEDv+F/ofKz/V9QR3AGiH7h8KLbrdRZlB1ZF?=
+ =?us-ascii?Q?eNp7LIXCIu8vTU8qNsaX/l1Mt4sf+sSTAxuRvKx2XeBQ3YKwvArKG4/t/cjy?=
+ =?us-ascii?Q?A5QeCuYIBKt8KV4udK+bEQowjBeIwuvfZcwvCiNbxMQ85kppOk5daL9iEgjB?=
+ =?us-ascii?Q?EN+4lEjY/MtewFPT8DsilEynOI4OqBb4EbAlfzduqOkBUxQaNyCFmo/X1BWS?=
+ =?us-ascii?Q?KAL0bEXwmoyLDwZl48hC7AuzR/DGsAcE1i+1xk9L+uHuw8u/ob4sqwVBH/on?=
+ =?us-ascii?Q?2f9w0axu52jYQyeRPG4xw3rWsHw3Ik2d/Yrkkq5iHqwMyKjDdj7I64wGDKaz?=
+ =?us-ascii?Q?kzIwSBNqFUdB1UJVZooqa5pm7/NnLqONXLYD8RcHY798rpAR5xQhQxDmVQPz?=
+ =?us-ascii?Q?lxVvRAKc6063UeNKfzf3kDDYqK6cBWRZfhwfSbl1HwzaBMN5qGyGcjlotZ8m?=
+ =?us-ascii?Q?hkWGtlNMMAeqgZc5h5rYDRrKcq32sMhg1L3ZYWbCfZSMVngvwGXopiOAjboo?=
+ =?us-ascii?Q?pQ=3D=3D?=
+X-OriginatorOrg: siemens.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: e8374d61-c017-46de-45aa-08da85d7a213
+X-MS-Exchange-CrossTenant-AuthSource: PA4PR10MB5780.EURPRD10.PROD.OUTLOOK.COM
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 24 Aug 2022 13:50:41.1074
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 38ae3bcd-9579-4fd4-adda-b42e1495d55a
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: sCmzx9EKxjnpcGx8qrjY7jsD4Kxx0xJj7qvBtBL9zJygKg212TdqnG/+4r9GIMONBqQMRkEpPTKHwe0SbC5G7bm9lMWcpxY1Xke+srKjPMQ=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DB9PR10MB4700
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi,
+Am Wed, 24 Aug 2022 15:10:55 +0200
+schrieb simon.guinot@sequanux.org:
 
-On 8/24/22 15:09, Mario Limonciello wrote:
-> On 8/24/22 08:03, Hans de Goede wrote:
->> Hi,
->>
->> On 8/24/22 14:53, Mario Limonciello wrote:
->>> On 8/24/22 07:40, Hans de Goede wrote:
->>>> Hi All,
->>>>
->>>> On 8/22/22 17:43, Limonciello, Mario wrote:
->>>>> On 8/21/2022 18:07, Luke Jones wrote:
->>>>>> Hi Mario,
->>>>>>
->>>>>> On Mon, Aug 15 2022 at 23:16:12 -0500, Mario Limonciello <mario.limonciello@amd.com> wrote:
->>>>>>> On 8/13/22 04:26, Luke D. Jones wrote:
->>>>>>>> Support the hardware GPU MUX switch available on some models. This
->>>>>>>> switch can toggle the MUX between:
->>>>>>>>
->>>>>>>> - 0, Dedicated mode
->>>>>>>> - 1, Optimus mode
->>>>>>>>
->>>>>>>> Optimus mode is the regular iGPU + dGPU available, while dedicated
->>>>>>>> mode switches the system to have only the dGPU available.
->>>>>>>>
->>>>>>>> Signed-off-by: Luke D. Jones <luke@ljones.dev>
->>>>>>>> ---
->>>>>>>>     .../ABI/testing/sysfs-platform-asus-wmi       | 11 ++++
->>>>>>>>     drivers/platform/x86/asus-wmi.c               | 62 +++++++++++++++++++
->>>>>>>>     include/linux/platform_data/x86/asus-wmi.h    |  3 +
->>>>>>>>     3 files changed, 76 insertions(+)
->>>>>>>>
->>>>>>>> diff --git a/Documentation/ABI/testing/sysfs-platform-asus-wmi b/Documentation/ABI/testing/sysfs-platform-asus-wmi
->>>>>>>> index 574b5170a37d..03124eab7f01 100644
->>>>>>>> --- a/Documentation/ABI/testing/sysfs-platform-asus-wmi
->>>>>>>> +++ b/Documentation/ABI/testing/sysfs-platform-asus-wmi
->>>>>>>> @@ -58,6 +58,17 @@ Description:
->>>>>>>>                 * 1 - overboost,
->>>>>>>>                 * 2 - silent
->>>>>>>>     +What:          /sys/devices/platform/<platform>/gpu_mux_mode
->>>>>>>> +Date:          Aug 2022
->>>>>>>> +KernelVersion: 6.1
->>>>>>>> +Contact:       "Luke Jones" <luke@ljones.dev>
->>>>>>>> +Description:
->>>>>>>> +               Switch the GPU hardware MUX mode. Laptops with this feature can
->>>>>>>> +               can be toggled to boot with only the dGPU (discrete mode) or in
->>>>>>>> +               standard Optimus/Hybrid mode. On switch a reboot is required:
->>>>>>>> +                       * 0 - Discrete GPU,
->>>>>>>> +                       * 1 - Optimus/Hybrid,
->>>>>>>
->>>>>>> This feel like it should probably export using /sys/class/firmware-attributes.  That's exactly how those types of attributes work.
->>>>>>>
->>>>>>> As a bonus, software like fwupd 1.8.4 knows how to manipulate it and you don't need special documentation.
->>>>>>>
->>>>>>>> +
->>>>>>>>     What:          /sys/devices/platform/<platform>/dgpu_disable
->>>>>>>>     Date:          Aug 2022
->>>>>>>>     KernelVersion: 5.17
->>>>>>>> diff --git a/drivers/platform/x86/asus-wmi.c b/drivers/platform/x86/asus-wmi.c
->>>>>>>> index e2b51b5550e8..0421ffb81927 100644
->>>>>>>> --- a/drivers/platform/x86/asus-wmi.c
->>>>>>>> +++ b/drivers/platform/x86/asus-wmi.c
->>>>>>>> @@ -230,6 +230,7 @@ struct asus_wmi {
->>>>>>>>           bool egpu_enable_available;
->>>>>>>>         bool dgpu_disable_available;
->>>>>>>> +    bool gpu_mux_mode_available;
->>>>>>>>           bool throttle_thermal_policy_available;
->>>>>>>>         u8 throttle_thermal_policy_mode;
->>>>>>>> @@ -668,6 +669,59 @@ static ssize_t egpu_enable_store(struct device *dev,
->>>>>>>>     }
->>>>>>>>     static DEVICE_ATTR_RW(egpu_enable);
->>>>>>>>     +/* gpu mux switch *************************************************************/
->>>>>>>> +static int gpu_mux_mode_check_present(struct asus_wmi *asus)
->>>>>>>> +{
->>>>>>>> +    asus->gpu_mux_mode_available = asus_wmi_dev_is_present(asus, ASUS_WMI_DEVID_GPU_MUX);
->>>>>>>> +
->>>>>>>> +   return 0;
->>>>>>>> +}
->>>>>>>> +
->>>>>>>> +static ssize_t gpu_mux_mode_show(struct device *dev,
->>>>>>>> +                  struct device_attribute *attr, char *buf)
->>>>>>>> +{
->>>>>>>> +   struct asus_wmi *asus = dev_get_drvdata(dev);
->>>>>>>> +   int result;
->>>>>>>> +
->>>>>>>> +   result = asus_wmi_get_devstate_simple(asus, ASUS_WMI_DEVID_GPU_MUX);
->>>>>>>> +   if (result < 0)
->>>>>>>> +       return result;
->>>>>>>> +
->>>>>>>> +   return sysfs_emit(buf, "%d\n", result);
->>>>>>>> +}
->>>>>>>> +
->>>>>>>> +static ssize_t gpu_mux_mode_store(struct device *dev,
->>>>>>>> +                   struct device_attribute *attr,
->>>>>>>> +                   const char *buf, size_t count)
->>>>>>>> +{
->>>>>>>> +   struct asus_wmi *asus = dev_get_drvdata(dev);
->>>>>>>> +   int result, err;
->>>>>>>> +   u32 optimus;
->>>>>>>> +
->>>>>>>> +   err = kstrtou32(buf, 10, &optimus);
->>>>>>>> +   if (err)
->>>>>>>> +       return err;
->>>>>>>> +
->>>>>>>> +   if (optimus > 1)
->>>>>>>> +       return -EINVAL;
->>>>>>>> +
->>>>>>>> +   err = asus_wmi_set_devstate(ASUS_WMI_DEVID_GPU_MUX, optimus, &result);
->>>>>>>> +   if (err) {
->>>>>>>> +       dev_err(dev, "Failed to set GPU MUX mode: %d\n", err);
->>>>>>>> +       return err;
->>>>>>>> +   }
->>>>>>>> +    /* !1 is considered a fail by ASUS */
->>>>>>>> +    if (result != 1) {
->>>>>>>> +        dev_warn(dev, "Failed to set GPU MUX mode (result): 0x%x\n", result);
->>>>>>>> +       return -EIO;
->>>>>>>> +   }
->>>>>>>> +
->>>>>>>> +   sysfs_notify(&asus->platform_device->dev.kobj, NULL, "gpu_mux_mode");
->>>>>>>> +
->>>>>>>> +   return count;
->>>>>>>> +}
->>>>>>>> +static DEVICE_ATTR_RW(gpu_mux_mode);
->>>>>>>> +
->>>>>>>>     /* Battery ********************************************************************/
->>>>>>>>       /* The battery maximum charging percentage */
->>>>>>>> @@ -3165,6 +3219,7 @@ static struct attribute *platform_attributes[] = {
->>>>>>>>         &dev_attr_touchpad.attr,
->>>>>>>>         &dev_attr_egpu_enable.attr,
->>>>>>>>         &dev_attr_dgpu_disable.attr,
->>>>>>>> +    &dev_attr_gpu_mux_mode.attr,
->>>>>>>>         &dev_attr_lid_resume.attr,
->>>>>>>>         &dev_attr_als_enable.attr,
->>>>>>>>         &dev_attr_fan_boost_mode.attr,
->>>>>>>> @@ -3195,6 +3250,8 @@ static umode_t asus_sysfs_is_visible(struct kobject *kobj,
->>>>>>>>             ok = asus->egpu_enable_available;
->>>>>>>>         else if (attr == &dev_attr_dgpu_disable.attr)
->>>>>>>>             ok = asus->dgpu_disable_available;
->>>>>>>> +    else if (attr == &dev_attr_gpu_mux_mode.attr)
->>>>>>>> +        ok = asus->gpu_mux_mode_available;
->>>>>>>>         else if (attr == &dev_attr_fan_boost_mode.attr)
->>>>>>>>             ok = asus->fan_boost_mode_available;
->>>>>>>>         else if (attr == &dev_attr_throttle_thermal_policy.attr)
->>>>>>>> @@ -3464,6 +3521,10 @@ static int asus_wmi_add(struct platform_device *pdev)
->>>>>>>>         if (err)
->>>>>>>>             goto fail_dgpu_disable;
->>>>>>>>     +    err = gpu_mux_mode_check_present(asus);
->>>>>>>> +   if (err)
->>>>>>>> +       goto fail_gpu_mux_mode;
->>>>>>>> +
->>>>>>>>         err = fan_boost_mode_check_present(asus);
->>>>>>>>         if (err)
->>>>>>>>             goto fail_fan_boost_mode;
->>>>>>>> @@ -3578,6 +3639,7 @@ static int asus_wmi_add(struct platform_device *pdev)
->>>>>>>>     fail_fan_boost_mode:
->>>>>>>>     fail_egpu_enable:
->>>>>>>>     fail_dgpu_disable:
->>>>>>>> +fail_gpu_mux_mode:
->>>>>>>>     fail_platform:
->>>>>>>>     fail_panel_od:
->>>>>>>>         kfree(asus);
->>>>>>>> diff --git a/include/linux/platform_data/x86/asus-wmi.h b/include/linux/platform_data/x86/asus-wmi.h
->>>>>>>> index a571b47ff362..c023332842a2 100644
->>>>>>>> --- a/include/linux/platform_data/x86/asus-wmi.h
->>>>>>>> +++ b/include/linux/platform_data/x86/asus-wmi.h
->>>>>>>> @@ -98,6 +98,9 @@
->>>>>>>>     /* dgpu on/off */
->>>>>>>>     #define ASUS_WMI_DEVID_DGPU        0x00090020
->>>>>>>>     +/* gpu mux switch, 0 = dGPU, 1 = Optimus */
->>>>>>>> +#define ASUS_WMI_DEVID_GPU_MUX 0x00090016
->>>>>>>> +
->>>>>>>>     /* DSTS masks */
->>>>>>>>     #define ASUS_WMI_DSTS_STATUS_BIT    0x00000001
->>>>>>>>     #define ASUS_WMI_DSTS_UNKNOWN_BIT    0x00000002
->>>>>>>
->>>>>>
->>>>>> You can see previous discussion here https://nam11.safelinks.protection.outlook.com/?url=https%3A%2F%2Flore.kernel.org%2Fplatform-driver-x86%2Fc3bb0989-78d9-c513-1669-75407b2acbac%40redhat.com%2F&amp;data=05%7C01%7Cmario.limonciello%40amd.com%7Ceebec0ca0ab74f8babf908da85d10582%7C3dd8961fe4884e608e11a82d994e183d%7C0%7C0%7C637969430056811815%7CUnknown%7CTWFpbGZsb3d8eyJWIjoiMC4wLjAwMDAiLCJQIjoiV2luMzIiLCJBTiI6Ik1haWwiLCJXVCI6Mn0%3D%7C3000%7C%7C%7C&amp;sdata=kFb75Jhr77XZScoegTh5FyJAnnEXm6cInIoxKdu7rhM%3D&amp;reserved=0
->>>>>>
->>>>>> Below is Hans response verbatim:
->>>>>>
->>>>>>    > Yes it sounds like a BIOS setting is being toggled from within
->>>>>>    > Linux, which would normally be done through the
->>>>>>    > "firmware-attributes" class, but all existing "firmware-attributes"
->>>>>>    > class drivers allow changing all BIOS setting not just a single
->>>>>>    > setting, so using the  "firmware-attributes" class here is not really
->>>>>>    > appropriate.
->>>>>>
->>>>>
->>>>> Although the two consumers thus far (Lenovo and Dell) use WMI interfaces to build and discover varieties of settings there is no requirement for how the backend for firwmare-attributes works.  You can just as well poulate a single attribute statically from your driver.
->>>>>
->>>>> So I guess Hans and I disagree here.  I have a feeling that we shouldn't be introducing custom ABI to userspace just because only "one" setting is offered.  I anticipate that some day the DE's will offer a GUI setting built on top of fwupd which is built on top of firmware-attributes.
->>>>>
->>>>> If you *don't* populate a setting with firmware-attributes the only way that users will discover such a setting is by installing other custom userspace software that has the knowledge of it.
->>>>>
->>>>> At the end of the day it's up to Hans and Mark though, this is just my 2c.
->>>>
->>>> Mario, thank you for your input here, it is much appreciated.
->>>>
->>>> As Luke mentioned in my quote using the firmware-attributes class for this really seems like overkill. As for discoverability, the firmware-attributes class only standardizes how to enum / change BIOS settings. The consumer of the API still must now the name of the setting which can/will be different per vendor.
->>>>
->>>> AFAIK fwupd only uses the firmware-attributes class to check for / disable some BIOS flashing protection. So having the GPU mux setting in the firmware-attributes class is not really relevant for fwupd.
->>>>
->>>> If in the future some generic tool which uses the firmware-attributes class to toggle GPU muxes is created (presumably with a lookup table for the exact setting's name under the firmare-attributes API) then we can always add firmware-attributes support for the GPU mux to asus-wmi at that point in time.
->>>>
->>>> I just don't think it is likely such a generic tool will happen (any time soon), so for now I still believe that using the firmware-attributes class for this is not necessary.
->>>>
->>>
->>> Actually I've been actively working on that.  Take a look at fwupd main (what will go into the next tagged 1.8.4 release).
->>>
->>> It's got support for "fwupdmgr get-bios-settings" and "fwupdmgr set-bios-settings" which will follow the rules the kernel API uses.
->>>
->>> So I expect that if this attribute was implemented as I suggested you could do:
->>>
->>> # fwupdmgr get-bios-settings
->>>
->>> and find the mux (including the possible values if it's declared a kernel enumeration attribute and possible_values is populated).  If you populate the optional description attribute in the kernel fwupd will show you what your enumerated settings mean.
->>>
->>> followed by:
->>>
->>> # fwupdmgr set-bios-setting dGPUMux iGPU
->>> or
->>> # fwupdmgr set-bios-setting dGPUMux dGPU
->>>
->>> To set it.
->>>
->>> fwupd will prompt you to reboot the system after it's done changing it as well.
->>>
->>> It's implemented such that GUI clients can use libfwupd just the same, and I really think this increases discoverability of such a setting.
->>
->> Interesting, I must admit that that makes your argument for using the firmware-attributes class stronger.
->>
->> But in the end it IMHO still feels wrong to add firmware-attribute support for just a single setting, rather then for something which actually exports all or most BIOS settings.
+> On Tue, Aug 23, 2022 at 04:54:59PM +0200, Henning Schild wrote:
+> > Am Tue, 23 Aug 2022 17:47:38 +0300
+> > schrieb Andy Shevchenko <andriy.shevchenko@linux.intel.com>:  
 > 
-> OK thanks for your thoughts.
+> Hi Andy,
 > 
->>
->> So for now I'm going to with this patch as is. If eventually it turns out that having this inside the firmware-attributes class would be really useful we can add it later, while keeping the sysfs attr for backward compat. My thinking being here that the code for the single sysfs attr is quite small, where as adding firmware-attributes class support will be more involved
-> At least looking at the context of that diff I see a whole bunch of settings listed and this is "just one more". I noticed:  "eGPU", "lid resume", "ALS enable", "fan boost mode".
+> Thanks for this new version. It is looking good to me.
 > 
-> Maybe a later follow up should implement ALL of these as firmware-attributes but keep compatibility for sysfs.
+> >   
+> > > On Tue, Aug 23, 2022 at 12:23:40PM +0200, Henning Schild wrote:  
+> > > > Add GPIO support for Nuvoton NCT6116 chip. Nuvoton SuperIO
+> > > > chips are very similar to the ones from Fintek. In other
+> > > > subsystems they also share drivers and are called a family of
+> > > > drivers.
+> > > > 
+> > > > For the GPIO subsystem the only difference is that the direction
+> > > > bit is reversed and that there is only one data bit per pin. On
+> > > > the SuperIO level the logical device is another one.
+> > > > 
+> > > > On a chip level we do not have a manufacturer ID to check and
+> > > > also no revision.    
+> > > 
+> > > ...
+> > >   
+> > > > - * GPIO driver for Fintek Super-I/O F71869, F71869A, F71882,
+> > > > F71889 and F81866
+> > > > + * GPIO driver for Fintek and Nuvoton Super-I/O chips    
+> > > 
+> > > I'm not sure it's good idea to drop it from here. It means reader
+> > > has to get this info in a hard way.
+> > > 
+> > > ...  
+> > 
+> > Let us see what others say. I wanted to keep this in line with what
+> > Kconfig says and the oneliner in the Kconfig was getting pretty
+> > longish. Hence i decided to shorten that. Other drivers also seem to
+> > not list all the possible chips in many places, it is all maint
+> > effort when a new chips is added and the list is in like 5 places.  
+> 
+> I agree with you that we can drop this line. It was already incomplete
+> and the information is quite readable a few lines below in both the
+> define list and the chip enumeration.
+> 
+> >   
+> > > > +#define gpio_dir_invert(type)	((type) == nct6116d)
+> > > > +#define gpio_data_single(type)	((type) == nct6116d)    
+> > > 
+> > > What's prevents us to add a proper prefix to these? I don't like
+> > > the idea of them having "gpio" prefix.
+> > > 
+> > > ...
+> > >   
+> > > > +		pr_info(DRVNAME ": Unsupported device
+> > > > 0x%04x\n", devid);
+> > > > +			pr_debug(DRVNAME ": Not a Fintek
+> > > > device at 0x%08x\n", addr);
+> > > > +	pr_info(DRVNAME ": Found %s at %#x\n",
+> > > > +		pr_info(DRVNAME ":   revision %d\n",    
+> > > 
+> > > Can we, please, utilize pr_fmt()?
+> > >   
+> > > > +			(int)superio_inb(addr,
+> > > > SIO_FINTEK_DEVREV));    
+> > > 
+> > > Explicit casting in printf() means wrong specifier in 99% of
+> > > cases. 
+> > 
+> > For all the other comments i will wait for a second opinion. I
+> > specifically did not change existing code for more than the
+> > functional changes needed. And a bit of checkpatch.pl fixing.
+> > Beautification could be done on the way but would only cause
+> > inconsistency. That driver is what it is, if someone wants to
+> > overhaul the style ... that should be another patch. One likely not
+> > coming from me.  
+> 
+> About the int cast, I think you can drop it while you are updating
+> this line. It is unneeded.
 
-Yes that might be interesting, although most of these do not require a reboot AFAIK, still
-exporting them in some way where they are easier to discover/enumerate for userspace
-might be useful.
+Ok two voices for doing that one fix along the way. I will send a v5
+and hope nobody insists on me fixing the other findings in code i never
+wrote.
 
-Regards,
+regards,
+Henning
 
-Hans
+> I have no opinion on the other comments and I am OK with the rest of
+> the patch.
+> 
+> Simon
 
