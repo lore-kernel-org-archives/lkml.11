@@ -2,132 +2,70 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id ED1E2C00140
-	for <linux-kernel@archiver.kernel.org>; Wed, 24 Aug 2022 06:18:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 62A48C00140
+	for <linux-kernel@archiver.kernel.org>; Wed, 24 Aug 2022 06:18:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234875AbiHXGS2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 24 Aug 2022 02:18:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34158 "EHLO
+        id S234949AbiHXGS5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 24 Aug 2022 02:18:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34380 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229884AbiHXGSZ (ORCPT
+        with ESMTP id S229884AbiHXGSw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 24 Aug 2022 02:18:25 -0400
-Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C340972850
-        for <linux-kernel@vger.kernel.org>; Tue, 23 Aug 2022 23:18:23 -0700 (PDT)
-Received: from dggemv704-chm.china.huawei.com (unknown [172.30.72.57])
-        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4MCG632LpCzkWd6;
-        Wed, 24 Aug 2022 14:14:51 +0800 (CST)
-Received: from kwepemm600008.china.huawei.com (7.193.23.88) by
- dggemv704-chm.china.huawei.com (10.3.19.47) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Wed, 24 Aug 2022 14:18:18 +0800
-Received: from huawei.com (10.175.100.227) by kwepemm600008.china.huawei.com
- (7.193.23.88) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Wed, 24 Aug
- 2022 14:18:17 +0800
-From:   Shang XiaoJing <shangxiaojing@huawei.com>
-To:     <mingo@redhat.com>, <peterz@infradead.org>,
-        <juri.lelli@redhat.com>, <vincent.guittot@linaro.org>,
-        <dietmar.eggemann@arm.com>, <rostedt@goodmis.org>,
-        <bsegall@google.com>, <mgorman@suse.de>, <bristot@redhat.com>,
-        <vschneid@redhat.com>, <linux-kernel@vger.kernel.org>
-CC:     <shangxiaojing@huawei.com>
-Subject: [PATCH -next] sched: Add update_current_exec_runtime helper
-Date:   Wed, 24 Aug 2022 14:53:26 +0800
-Message-ID: <20220824065326.10583-1-shangxiaojing@huawei.com>
-X-Mailer: git-send-email 2.17.1
+        Wed, 24 Aug 2022 02:18:52 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A647B72B62
+        for <linux-kernel@vger.kernel.org>; Tue, 23 Aug 2022 23:18:51 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by sin.source.kernel.org (Postfix) with ESMTPS id A567CCE21D0
+        for <linux-kernel@vger.kernel.org>; Wed, 24 Aug 2022 06:18:49 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A43A9C433C1;
+        Wed, 24 Aug 2022 06:18:47 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1661321928;
+        bh=xuOEfRn0BPqX1AVqOWxNeF9MJokEIlZnw9CPZ53hzOA=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=Be/1mBwYbAEN3+M04cd/EQ53zXBHkTrlGXOTdnHAs2pCkOF4a5YsvC01vDGRxM1hD
+         8vg9KVrEJ12Onx9kZQNLYjOmDR4QnXy0qJsCfK8NkrNqi60yGClRnDE118F/LaDFe0
+         3OGGnmVwTPacdjHGS0HGYWC36mUWFlIfDWiRmJyA=
+Date:   Wed, 24 Aug 2022 08:18:45 +0200
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     Vinod Koul <vkoul@kernel.org>
+Cc:     alsa-devel@alsa-project.org,
+        Bard Liao <yung-chuan.liao@linux.intel.com>,
+        Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>,
+        Sanyog Kale <sanyog.r.kale@intel.com>,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 1/5] soundwire: sysfs: move sdw_slave_dev_attr_group into
+ the existing list of groups
+Message-ID: <YwXCxZuaiumS/Am5@kroah.com>
+References: <20220729135041.2285908-1-gregkh@linuxfoundation.org>
+ <YwT5gqOihDYK73aF@matsya>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.175.100.227]
-X-ClientProxiedBy: dggems705-chm.china.huawei.com (10.3.19.182) To
- kwepemm600008.china.huawei.com (7.193.23.88)
-X-CFilter-Loop: Reflected
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <YwT5gqOihDYK73aF@matsya>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Wrap repeated code in helper function update_current_exec_runtime for
-update the exec time of the current.
+On Tue, Aug 23, 2022 at 09:30:02PM +0530, Vinod Koul wrote:
+> On 29-07-22, 15:50, Greg Kroah-Hartman wrote:
+> > The sysfs logic already creates a list of groups for the device, so add
+> > the sdw_slave_dev_attr_group group to that list instead of having to do
+> > a two-step process of adding a group list and then an individual group.
+> > 
+> > This is a step on the way to moving all of the sysfs attribute handling
+> > into the default driver core attribute group logic so that the soundwire
+> > core does not have to do any of it manually.
+> 
+> Hey Greg,
+> 
+> DO you have a v2 for this, or if you are too busy I can update the
+> patchset...
 
-Signed-off-by: Shang XiaoJing <shangxiaojing@huawei.com>
----
- kernel/sched/deadline.c  |  6 +-----
- kernel/sched/rt.c        |  6 +-----
- kernel/sched/sched.h     | 10 ++++++++++
- kernel/sched/stop_task.c |  6 +-----
- 4 files changed, 13 insertions(+), 15 deletions(-)
+Oh wait, I did rebase it, I'll send it out this afternoon, thanks for
+the reminder...
 
-diff --git a/kernel/sched/deadline.c b/kernel/sched/deadline.c
-index daa9a7fb5917..d116d2b9d2f9 100644
---- a/kernel/sched/deadline.c
-+++ b/kernel/sched/deadline.c
-@@ -1333,11 +1333,7 @@ static void update_curr_dl(struct rq *rq)
- 
- 	trace_sched_stat_runtime(curr, delta_exec, 0);
- 
--	curr->se.sum_exec_runtime += delta_exec;
--	account_group_exec_runtime(curr, delta_exec);
--
--	curr->se.exec_start = now;
--	cgroup_account_cputime(curr, delta_exec);
-+	update_current_exec_runtime(curr, now, delta_exec);
- 
- 	if (dl_entity_is_special(dl_se))
- 		return;
-diff --git a/kernel/sched/rt.c b/kernel/sched/rt.c
-index cd07c9367bc2..27e694cf3e37 100644
---- a/kernel/sched/rt.c
-+++ b/kernel/sched/rt.c
-@@ -1062,11 +1062,7 @@ static void update_curr_rt(struct rq *rq)
- 
- 	trace_sched_stat_runtime(curr, delta_exec, 0);
- 
--	curr->se.sum_exec_runtime += delta_exec;
--	account_group_exec_runtime(curr, delta_exec);
--
--	curr->se.exec_start = now;
--	cgroup_account_cputime(curr, delta_exec);
-+	update_current_exec_runtime(curr, now, delta_exec);
- 
- 	if (!rt_bandwidth_enabled())
- 		return;
-diff --git a/kernel/sched/sched.h b/kernel/sched/sched.h
-index ddcfc7837595..7ad65f79cb59 100644
---- a/kernel/sched/sched.h
-+++ b/kernel/sched/sched.h
-@@ -3163,4 +3163,14 @@ extern int sched_dynamic_mode(const char *str);
- extern void sched_dynamic_update(int mode);
- #endif
- 
-+static inline void update_current_exec_runtime(struct task_struct *curr,
-+						u64 now, u64 delta_exec)
-+{
-+	curr->se.sum_exec_runtime += delta_exec;
-+	account_group_exec_runtime(curr, delta_exec);
-+
-+	curr->se.exec_start = now;
-+	cgroup_account_cputime(curr, delta_exec);
-+}
-+
- #endif /* _KERNEL_SCHED_SCHED_H */
-diff --git a/kernel/sched/stop_task.c b/kernel/sched/stop_task.c
-index d04073a93eb4..027068779126 100644
---- a/kernel/sched/stop_task.c
-+++ b/kernel/sched/stop_task.c
-@@ -80,11 +80,7 @@ static void put_prev_task_stop(struct rq *rq, struct task_struct *prev)
- 	schedstat_set(curr->stats.exec_max,
- 		      max(curr->stats.exec_max, delta_exec));
- 
--	curr->se.sum_exec_runtime += delta_exec;
--	account_group_exec_runtime(curr, delta_exec);
--
--	curr->se.exec_start = rq_clock_task(rq);
--	cgroup_account_cputime(curr, delta_exec);
-+	update_current_exec_runtime(curr, rq_clock_task(rq), delta_exec);
- }
- 
- /*
--- 
-2.17.1
-
+greg k-h
