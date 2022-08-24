@@ -2,162 +2,329 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 95C6FC00140
-	for <linux-kernel@archiver.kernel.org>; Wed, 24 Aug 2022 08:22:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4DDC8C32792
+	for <linux-kernel@archiver.kernel.org>; Wed, 24 Aug 2022 08:23:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235986AbiHXIW3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 24 Aug 2022 04:22:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60994 "EHLO
+        id S235222AbiHXIXc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 24 Aug 2022 04:23:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60924 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235976AbiHXIWH (ORCPT
+        with ESMTP id S235738AbiHXIXQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 24 Aug 2022 04:22:07 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CAE049569B
-        for <linux-kernel@vger.kernel.org>; Wed, 24 Aug 2022 01:21:59 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1661329318;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=kaKoJSFhkLs3j9BMMpW4Sul91GROScQNC38GatdEuPY=;
-        b=ftOp+I0P4rEOIt2ICz80cqZsX8j9OFF0uiUtQQFsEZ5AG7dAI/bJZWI156rvxdyq/mgGkV
-        sPuvLq2en/7teneaD7ZL2/fESrKvnj+IgIwT8fBS4M7lmGkAUxU657II6bTFZG2FAaqM78
-        wn1hp2vTav0wWNfVnQPQSQtKsJmtSKA=
-Received: from mail-wr1-f71.google.com (mail-wr1-f71.google.com
- [209.85.221.71]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
- us-mta-382-vlv5O1HbO2-Os5a0PEkpFA-1; Wed, 24 Aug 2022 04:21:57 -0400
-X-MC-Unique: vlv5O1HbO2-Os5a0PEkpFA-1
-Received: by mail-wr1-f71.google.com with SMTP id d11-20020adfc08b000000b002207555c1f6so2572693wrf.7
-        for <linux-kernel@vger.kernel.org>; Wed, 24 Aug 2022 01:21:57 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:organization:from:references
-         :cc:to:content-language:subject:user-agent:mime-version:date
-         :message-id:x-gm-message-state:from:to:cc;
-        bh=kaKoJSFhkLs3j9BMMpW4Sul91GROScQNC38GatdEuPY=;
-        b=Q+1YbcQH3ogWiZgWOEK1r0cMOOTUt6OYh9kI2pSVB3gcUaZ0nwn1pjkBN+5Md/gkw+
-         iS4xZ/scd1NJ1HzmHL1RXP/fp1XafkSZeWdsWNFwdVQxppU2MQKsThpEuieccWvnrE6E
-         hti8gAw1v8mI31ANJv+bqVZyhv/A17CJfB6DHudclOL4hitGKp8g1oDjyL3E5gPGb/R9
-         kH7U8wmClYQCeBnIHOa/wGMsH73NxwgVmxTBUyZCmSRhmAUWCIQTLVof3Jdj6QiGhI30
-         /yOcSZ/1TJqOE03ApdafSxGswYpmeGX546eO/AEW5mOUM6MYK5Oa47DlgjLb8NR/bVvz
-         9nog==
-X-Gm-Message-State: ACgBeo2uUVKKIDaL1P9FlPR+lOT2WO6JZjN3KNrrJEy8MmLs1CARG8NN
-        ofJH7KqR9xu9PL5fdM7XCUElHHy+THEABF4CBGrQj2G5c4tNI4jpCOzrq73/T+Ll7R9UilnWEmU
-        y57h2ZuXvAbvPWzoeOCjF7sBn
-X-Received: by 2002:adf:f644:0:b0:225:4cb4:c2f6 with SMTP id x4-20020adff644000000b002254cb4c2f6mr9491247wrp.552.1661329316185;
-        Wed, 24 Aug 2022 01:21:56 -0700 (PDT)
-X-Google-Smtp-Source: AA6agR4X7X3tYyJSmiUUp6I0Ru0wIROQJojmCwOUf92jP2yjlZsNTJSwC4WCw77h1/+kLqgmchleqA==
-X-Received: by 2002:adf:f644:0:b0:225:4cb4:c2f6 with SMTP id x4-20020adff644000000b002254cb4c2f6mr9491224wrp.552.1661329315912;
-        Wed, 24 Aug 2022 01:21:55 -0700 (PDT)
-Received: from ?IPV6:2003:cb:c707:c500:5445:cf40:2e32:6e73? (p200300cbc707c5005445cf402e326e73.dip0.t-ipconnect.de. [2003:cb:c707:c500:5445:cf40:2e32:6e73])
-        by smtp.gmail.com with ESMTPSA id v5-20020a1cac05000000b003a626055569sm1122379wme.16.2022.08.24.01.21.54
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 24 Aug 2022 01:21:55 -0700 (PDT)
-Message-ID: <86b0622d-06eb-cfab-2ff1-8a0eaf823f8a@redhat.com>
-Date:   Wed, 24 Aug 2022 10:21:54 +0200
+        Wed, 24 Aug 2022 04:23:16 -0400
+Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 059A793507
+        for <linux-kernel@vger.kernel.org>; Wed, 24 Aug 2022 01:23:14 -0700 (PDT)
+Received: from dggpemm500022.china.huawei.com (unknown [172.30.72.55])
+        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4MCJt54nflzkWf4;
+        Wed, 24 Aug 2022 16:19:41 +0800 (CST)
+Received: from dggpemm500007.china.huawei.com (7.185.36.183) by
+ dggpemm500022.china.huawei.com (7.185.36.162) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Wed, 24 Aug 2022 16:22:57 +0800
+Received: from huawei.com (10.175.103.91) by dggpemm500007.china.huawei.com
+ (7.185.36.183) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Wed, 24 Aug
+ 2022 16:22:56 +0800
+From:   Yang Yingliang <yangyingliang@huawei.com>
+To:     <linux-kernel@vger.kernel.org>, <linux-mm@kvack.org>
+CC:     <willy@infradead.org>, <akpm@linux-foundation.org>,
+        <Liam.Howlett@Oracle.com>, <vbabka@suse.cz>
+Subject: [PATCH -next] Maple Tree: remove not used entry in mas_preallocate()
+Date:   Wed, 24 Aug 2022 16:30:44 +0800
+Message-ID: <20220824083044.3236796-1-yangyingliang@huawei.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.12.0
-Subject: Re: [PATCH v3 1/3] mm/migrate_device.c: Flush TLB while holding PTL
-Content-Language: en-US
-To:     Alistair Popple <apopple@nvidia.com>, linux-mm@kvack.org,
-        akpm@linux-foundation.org
-Cc:     Peter Xu <peterx@redhat.com>, Nadav Amit <nadav.amit@gmail.com>,
-        huang ying <huang.ying.caritas@gmail.com>,
-        LKML <linux-kernel@vger.kernel.org>,
-        "Sierra Guiza, Alejandro (Alex)" <alex.sierra@amd.com>,
-        Felix Kuehling <Felix.Kuehling@amd.com>,
-        Jason Gunthorpe <jgg@nvidia.com>,
-        John Hubbard <jhubbard@nvidia.com>,
-        Ralph Campbell <rcampbell@nvidia.com>,
-        Matthew Wilcox <willy@infradead.org>,
-        Karol Herbst <kherbst@redhat.com>,
-        Lyude Paul <lyude@redhat.com>, Ben Skeggs <bskeggs@redhat.com>,
-        Logan Gunthorpe <logang@deltatee.com>, paulus@ozlabs.org,
-        linuxppc-dev@lists.ozlabs.org, stable@vger.kernel.org
-References: <3b01af093515ce2960ac39bb16ff77473150d179.1661309831.git-series.apopple@nvidia.com>
-From:   David Hildenbrand <david@redhat.com>
-Organization: Red Hat
-In-Reply-To: <3b01af093515ce2960ac39bb16ff77473150d179.1661309831.git-series.apopple@nvidia.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.175.103.91]
+X-ClientProxiedBy: dggems706-chm.china.huawei.com (10.3.19.183) To
+ dggpemm500007.china.huawei.com (7.185.36.183)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 24.08.22 05:03, Alistair Popple wrote:
-> When clearing a PTE the TLB should be flushed whilst still holding the
-> PTL to avoid a potential race with madvise/munmap/etc. For example
-> consider the following sequence:
-> 
->   CPU0                          CPU1
->   ----                          ----
-> 
->   migrate_vma_collect_pmd()
->   pte_unmap_unlock()
->                                 madvise(MADV_DONTNEED)
->                                 -> zap_pte_range()
->                                 pte_offset_map_lock()
->                                 [ PTE not present, TLB not flushed ]
->                                 pte_unmap_unlock()
->                                 [ page is still accessible via stale TLB ]
->   flush_tlb_range()
-> 
-> In this case the page may still be accessed via the stale TLB entry
-> after madvise returns. Fix this by flushing the TLB while holding the
-> PTL.
-> 
-> Signed-off-by: Alistair Popple <apopple@nvidia.com>
-> Reported-by: Nadav Amit <nadav.amit@gmail.com>
-> Fixes: 8c3328f1f36a ("mm/migrate: migrate_vma() unmap page from vma while collecting pages")
-> Cc: stable@vger.kernel.org
-> 
-> ---
-> 
-> Changes for v3:
-> 
->  - New for v3
-> ---
->  mm/migrate_device.c | 5 +++--
->  1 file changed, 3 insertions(+), 2 deletions(-)
-> 
-> diff --git a/mm/migrate_device.c b/mm/migrate_device.c
-> index 27fb37d..6a5ef9f 100644
-> --- a/mm/migrate_device.c
-> +++ b/mm/migrate_device.c
-> @@ -254,13 +254,14 @@ static int migrate_vma_collect_pmd(pmd_t *pmdp,
->  		migrate->dst[migrate->npages] = 0;
->  		migrate->src[migrate->npages++] = mpfn;
->  	}
-> -	arch_leave_lazy_mmu_mode();
-> -	pte_unmap_unlock(ptep - 1, ptl);
->  
->  	/* Only flush the TLB if we actually modified any entries */
->  	if (unmapped)
->  		flush_tlb_range(walk->vma, start, end);
->  
-> +	arch_leave_lazy_mmu_mode();
-> +	pte_unmap_unlock(ptep - 1, ptl);
-> +
->  	return 0;
->  }
->  
-> 
-> base-commit: ffcf9c5700e49c0aee42dcba9a12ba21338e8136
+'entry' is not used in mas_preallocate(), so remove it.
 
-I'm not a TLB-flushing expert, but this matches my understanding (and a
-TLB flushing Linux documentation I stumbled over some while ago but
-cannot quickly find).
+Signed-off-by: Yang Yingliang <yangyingliang@huawei.com>
+---
+ include/linux/maple_tree.h |  2 +-
+ lib/maple_tree.c           |  3 +--
+ lib/test_maple_tree.c      | 32 ++++++++++++++++----------------
+ mm/mmap.c                  | 14 +++++++-------
+ mm/nommu.c                 |  8 ++++----
+ 5 files changed, 29 insertions(+), 30 deletions(-)
 
-In the ordinary try_to_migrate_one() path, flushing would happen via
-ptep_clear_flush() (just like we do for the anon_exclusive case here as
-well), correct?
-
+diff --git a/include/linux/maple_tree.h b/include/linux/maple_tree.h
+index a30e03b06bed..61871480d125 100644
+--- a/include/linux/maple_tree.h
++++ b/include/linux/maple_tree.h
+@@ -456,7 +456,7 @@ int mas_store_gfp(struct ma_state *mas, void *entry, gfp_t gfp);
+ void mas_store_prealloc(struct ma_state *mas, void *entry);
+ void *mas_find(struct ma_state *mas, unsigned long max);
+ void *mas_find_rev(struct ma_state *mas, unsigned long min);
+-int mas_preallocate(struct ma_state *mas, void *entry, gfp_t gfp);
++int mas_preallocate(struct ma_state *mas, gfp_t gfp);
+ bool mas_is_err(struct ma_state *mas);
+ 
+ bool mas_nomem(struct ma_state *mas, gfp_t gfp);
+diff --git a/lib/maple_tree.c b/lib/maple_tree.c
+index e1743803c851..2adc12a83caf 100644
+--- a/lib/maple_tree.c
++++ b/lib/maple_tree.c
+@@ -5707,12 +5707,11 @@ void mas_store_prealloc(struct ma_state *mas, void *entry)
+ /**
+  * mas_preallocate() - Preallocate enough nodes for a store operation
+  * @mas: The maple state
+- * @entry: The entry that will be stored
+  * @gfp: The GFP_FLAGS to use for allocations.
+  *
+  * Return: 0 on success, -ENOMEM if memory could not be allocated.
+  */
+-int mas_preallocate(struct ma_state *mas, void *entry, gfp_t gfp)
++int mas_preallocate(struct ma_state *mas, gfp_t gfp)
+ {
+ 	int ret;
+ 
+diff --git a/lib/test_maple_tree.c b/lib/test_maple_tree.c
+index 4f69e009a015..80d1754de23e 100644
+--- a/lib/test_maple_tree.c
++++ b/lib/test_maple_tree.c
+@@ -35549,7 +35549,7 @@ static noinline void check_prealloc(struct maple_tree *mt)
+ 	for (i = 0; i <= max; i++)
+ 		mtree_test_store_range(mt, i * 10, i * 10 + 5, &i);
+ 
+-	MT_BUG_ON(mt, mas_preallocate(&mas, ptr, GFP_KERNEL) != 0);
++	MT_BUG_ON(mt, mas_preallocate(&mas, GFP_KERNEL) != 0);
+ 	allocated = mas_allocated(&mas);
+ 	height = mas_mt_height(&mas);
+ 	MT_BUG_ON(mt, allocated == 0);
+@@ -35558,18 +35558,18 @@ static noinline void check_prealloc(struct maple_tree *mt)
+ 	allocated = mas_allocated(&mas);
+ 	MT_BUG_ON(mt, allocated != 0);
+ 
+-	MT_BUG_ON(mt, mas_preallocate(&mas, ptr, GFP_KERNEL) != 0);
++	MT_BUG_ON(mt, mas_preallocate(&mas, GFP_KERNEL) != 0);
+ 	allocated = mas_allocated(&mas);
+ 	height = mas_mt_height(&mas);
+ 	MT_BUG_ON(mt, allocated == 0);
+ 	MT_BUG_ON(mt, allocated != 1 + height * 3);
+-	MT_BUG_ON(mt, mas_preallocate(&mas, ptr, GFP_KERNEL) != 0);
++	MT_BUG_ON(mt, mas_preallocate(&mas, GFP_KERNEL) != 0);
+ 	mas_destroy(&mas);
+ 	allocated = mas_allocated(&mas);
+ 	MT_BUG_ON(mt, allocated != 0);
+ 
+ 
+-	MT_BUG_ON(mt, mas_preallocate(&mas, ptr, GFP_KERNEL) != 0);
++	MT_BUG_ON(mt, mas_preallocate(&mas, GFP_KERNEL) != 0);
+ 	allocated = mas_allocated(&mas);
+ 	height = mas_mt_height(&mas);
+ 	MT_BUG_ON(mt, allocated == 0);
+@@ -35577,25 +35577,25 @@ static noinline void check_prealloc(struct maple_tree *mt)
+ 	mn = mas_pop_node(&mas);
+ 	MT_BUG_ON(mt, mas_allocated(&mas) != allocated - 1);
+ 	ma_free_rcu(mn);
+-	MT_BUG_ON(mt, mas_preallocate(&mas, ptr, GFP_KERNEL) != 0);
++	MT_BUG_ON(mt, mas_preallocate(&mas, GFP_KERNEL) != 0);
+ 	mas_destroy(&mas);
+ 	allocated = mas_allocated(&mas);
+ 	MT_BUG_ON(mt, allocated != 0);
+ 
+-	MT_BUG_ON(mt, mas_preallocate(&mas, ptr, GFP_KERNEL) != 0);
++	MT_BUG_ON(mt, mas_preallocate(&mas, GFP_KERNEL) != 0);
+ 	allocated = mas_allocated(&mas);
+ 	height = mas_mt_height(&mas);
+ 	MT_BUG_ON(mt, allocated == 0);
+ 	MT_BUG_ON(mt, allocated != 1 + height * 3);
+ 	mn = mas_pop_node(&mas);
+ 	MT_BUG_ON(mt, mas_allocated(&mas) != allocated - 1);
+-	MT_BUG_ON(mt, mas_preallocate(&mas, ptr, GFP_KERNEL) != 0);
++	MT_BUG_ON(mt, mas_preallocate(&mas, GFP_KERNEL) != 0);
+ 	mas_destroy(&mas);
+ 	allocated = mas_allocated(&mas);
+ 	MT_BUG_ON(mt, allocated != 0);
+ 	ma_free_rcu(mn);
+ 
+-	MT_BUG_ON(mt, mas_preallocate(&mas, ptr, GFP_KERNEL) != 0);
++	MT_BUG_ON(mt, mas_preallocate(&mas, GFP_KERNEL) != 0);
+ 	allocated = mas_allocated(&mas);
+ 	height = mas_mt_height(&mas);
+ 	MT_BUG_ON(mt, allocated == 0);
+@@ -35604,12 +35604,12 @@ static noinline void check_prealloc(struct maple_tree *mt)
+ 	MT_BUG_ON(mt, mas_allocated(&mas) != allocated - 1);
+ 	mas_push_node(&mas, mn);
+ 	MT_BUG_ON(mt, mas_allocated(&mas) != allocated);
+-	MT_BUG_ON(mt, mas_preallocate(&mas, ptr, GFP_KERNEL) != 0);
++	MT_BUG_ON(mt, mas_preallocate(&mas, GFP_KERNEL) != 0);
+ 	mas_destroy(&mas);
+ 	allocated = mas_allocated(&mas);
+ 	MT_BUG_ON(mt, allocated != 0);
+ 
+-	MT_BUG_ON(mt, mas_preallocate(&mas, ptr, GFP_KERNEL) != 0);
++	MT_BUG_ON(mt, mas_preallocate(&mas, GFP_KERNEL) != 0);
+ 	allocated = mas_allocated(&mas);
+ 	height = mas_mt_height(&mas);
+ 	MT_BUG_ON(mt, allocated == 0);
+@@ -35617,21 +35617,21 @@ static noinline void check_prealloc(struct maple_tree *mt)
+ 	mas_store_prealloc(&mas, ptr);
+ 	MT_BUG_ON(mt, mas_allocated(&mas) != 0);
+ 
+-	MT_BUG_ON(mt, mas_preallocate(&mas, ptr, GFP_KERNEL) != 0);
++	MT_BUG_ON(mt, mas_preallocate(&mas, GFP_KERNEL) != 0);
+ 	allocated = mas_allocated(&mas);
+ 	height = mas_mt_height(&mas);
+ 	MT_BUG_ON(mt, allocated == 0);
+ 	MT_BUG_ON(mt, allocated != 1 + height * 3);
+ 	mas_store_prealloc(&mas, ptr);
+ 	MT_BUG_ON(mt, mas_allocated(&mas) != 0);
+-	MT_BUG_ON(mt, mas_preallocate(&mas, ptr, GFP_KERNEL) != 0);
++	MT_BUG_ON(mt, mas_preallocate(&mas, GFP_KERNEL) != 0);
+ 	allocated = mas_allocated(&mas);
+ 	height = mas_mt_height(&mas);
+ 	MT_BUG_ON(mt, allocated == 0);
+ 	MT_BUG_ON(mt, allocated != 1 + height * 3);
+ 	mas_store_prealloc(&mas, ptr);
+ 
+-	MT_BUG_ON(mt, mas_preallocate(&mas, ptr, GFP_KERNEL) != 0);
++	MT_BUG_ON(mt, mas_preallocate(&mas, GFP_KERNEL) != 0);
+ 	allocated = mas_allocated(&mas);
+ 	height = mas_mt_height(&mas);
+ 	MT_BUG_ON(mt, allocated == 0);
+@@ -35639,14 +35639,14 @@ static noinline void check_prealloc(struct maple_tree *mt)
+ 	mas_store_prealloc(&mas, ptr);
+ 	MT_BUG_ON(mt, mas_allocated(&mas) != 0);
+ 	mt_set_non_kernel(1);
+-	MT_BUG_ON(mt, mas_preallocate(&mas, ptr, GFP_KERNEL & GFP_NOWAIT) == 0);
++	MT_BUG_ON(mt, mas_preallocate(&mas, GFP_KERNEL & GFP_NOWAIT) == 0);
+ 	allocated = mas_allocated(&mas);
+ 	height = mas_mt_height(&mas);
+ 	MT_BUG_ON(mt, allocated != 0);
+ 	mas_destroy(&mas);
+ 
+ 
+-	MT_BUG_ON(mt, mas_preallocate(&mas, ptr, GFP_KERNEL) != 0);
++	MT_BUG_ON(mt, mas_preallocate(&mas, GFP_KERNEL) != 0);
+ 	allocated = mas_allocated(&mas);
+ 	height = mas_mt_height(&mas);
+ 	MT_BUG_ON(mt, allocated == 0);
+@@ -35654,7 +35654,7 @@ static noinline void check_prealloc(struct maple_tree *mt)
+ 	mas_store_prealloc(&mas, ptr);
+ 	MT_BUG_ON(mt, mas_allocated(&mas) != 0);
+ 	mt_set_non_kernel(1);
+-	MT_BUG_ON(mt, mas_preallocate(&mas, ptr, GFP_KERNEL & GFP_NOWAIT) == 0);
++	MT_BUG_ON(mt, mas_preallocate(&mas, GFP_KERNEL & GFP_NOWAIT) == 0);
+ 	allocated = mas_allocated(&mas);
+ 	height = mas_mt_height(&mas);
+ 	MT_BUG_ON(mt, allocated != 0);
+diff --git a/mm/mmap.c b/mm/mmap.c
+index 6445fd386f04..63a03ce1d0bb 100644
+--- a/mm/mmap.c
++++ b/mm/mmap.c
+@@ -473,7 +473,7 @@ static int vma_link(struct mm_struct *mm, struct vm_area_struct *vma)
+ 	MA_STATE(mas, &mm->mm_mt, 0, 0);
+ 	struct address_space *mapping = NULL;
+ 
+-	if (mas_preallocate(&mas, vma, GFP_KERNEL))
++	if (mas_preallocate(&mas, GFP_KERNEL))
+ 		return -ENOMEM;
+ 
+ 	if (vma->vm_file) {
+@@ -539,7 +539,7 @@ inline int vma_expand(struct ma_state *mas, struct vm_area_struct *vma,
+ 	/* Only handles expanding */
+ 	VM_BUG_ON(vma->vm_start < start || vma->vm_end > end);
+ 
+-	if (mas_preallocate(mas, vma, GFP_KERNEL))
++	if (mas_preallocate(mas, GFP_KERNEL))
+ 		goto nomem;
+ 
+ 	vma_adjust_trans_huge(vma, start, end, 0);
+@@ -712,7 +712,7 @@ int __vma_adjust(struct vm_area_struct *vma, unsigned long start,
+ 		}
+ 	}
+ 
+-	if (mas_preallocate(&mas, vma, GFP_KERNEL))
++	if (mas_preallocate(&mas, GFP_KERNEL))
+ 		return -ENOMEM;
+ 
+ 	vma_adjust_trans_huge(orig_vma, start, end, adjust_next);
+@@ -1937,7 +1937,7 @@ int expand_upwards(struct vm_area_struct *vma, unsigned long address)
+ 		/* Check that both stack segments have the same anon_vma? */
+ 	}
+ 
+-	if (mas_preallocate(&mas, vma, GFP_KERNEL))
++	if (mas_preallocate(&mas, GFP_KERNEL))
+ 		return -ENOMEM;
+ 
+ 	/* We must make sure the anon_vma is allocated. */
+@@ -2018,7 +2018,7 @@ int expand_downwards(struct vm_area_struct *vma, unsigned long address)
+ 			return -ENOMEM;
+ 	}
+ 
+-	if (mas_preallocate(&mas, vma, GFP_KERNEL))
++	if (mas_preallocate(&mas, GFP_KERNEL))
+ 		return -ENOMEM;
+ 
+ 	/* We must make sure the anon_vma is allocated. */
+@@ -2310,7 +2310,7 @@ do_mas_align_munmap(struct ma_state *mas, struct vm_area_struct *vma,
+ 	mt_init_flags(&mt_detach, MT_FLAGS_LOCK_EXTERN);
+ 	mt_set_external_lock(&mt_detach, &mm->mmap_lock);
+ 
+-	if (mas_preallocate(mas, vma, GFP_KERNEL))
++	if (mas_preallocate(mas, GFP_KERNEL))
+ 		return -ENOMEM;
+ 
+ 	mas->last = end - 1;
+@@ -2678,7 +2678,7 @@ unsigned long mmap_region(struct file *file, unsigned long addr,
+ 			goto free_vma;
+ 	}
+ 
+-	if (mas_preallocate(&mas, vma, GFP_KERNEL)) {
++	if (mas_preallocate(&mas, GFP_KERNEL)) {
+ 		error = -ENOMEM;
+ 		if (file)
+ 			goto unmap_and_free_vma;
+diff --git a/mm/nommu.c b/mm/nommu.c
+index 214c70e1d059..0befa4060aea 100644
+--- a/mm/nommu.c
++++ b/mm/nommu.c
+@@ -602,7 +602,7 @@ static int add_vma_to_mm(struct mm_struct *mm, struct vm_area_struct *vma)
+ {
+ 	MA_STATE(mas, &mm->mm_mt, vma->vm_start, vma->vm_end);
+ 
+-	if (mas_preallocate(&mas, vma, GFP_KERNEL)) {
++	if (mas_preallocate(&mas, GFP_KERNEL)) {
+ 		pr_warn("Allocation of vma tree for process %d failed\n",
+ 		       current->pid);
+ 		return -ENOMEM;
+@@ -633,7 +633,7 @@ static int delete_vma_from_mm(struct vm_area_struct *vma)
+ {
+ 	MA_STATE(mas, &vma->vm_mm->mm_mt, 0, 0);
+ 
+-	if (mas_preallocate(&mas, vma, GFP_KERNEL)) {
++	if (mas_preallocate(&mas, GFP_KERNEL)) {
+ 		pr_warn("Allocation of vma tree for process %d failed\n",
+ 		       current->pid);
+ 		return -ENOMEM;
+@@ -1081,7 +1081,7 @@ unsigned long do_mmap(struct file *file,
+ 	if (!vma)
+ 		goto error_getting_vma;
+ 
+-	if (mas_preallocate(&mas, vma, GFP_KERNEL))
++	if (mas_preallocate(&mas, GFP_KERNEL))
+ 		goto error_maple_preallocate;
+ 
+ 	region->vm_usage = 1;
+@@ -1358,7 +1358,7 @@ int split_vma(struct mm_struct *mm, struct vm_area_struct *vma,
+ 	if (!new)
+ 		goto err_vma_dup;
+ 
+-	if (mas_preallocate(&mas, vma, GFP_KERNEL)) {
++	if (mas_preallocate(&mas, GFP_KERNEL)) {
+ 		pr_warn("Allocation of vma tree for process %d failed\n",
+ 			current->pid);
+ 		goto err_mas_preallocate;
 -- 
-Thanks,
-
-David / dhildenb
+2.25.1
 
