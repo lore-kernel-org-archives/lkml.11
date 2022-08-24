@@ -2,146 +2,100 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 46906C32793
-	for <linux-kernel@archiver.kernel.org>; Wed, 24 Aug 2022 01:39:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 12D25C32793
+	for <linux-kernel@archiver.kernel.org>; Wed, 24 Aug 2022 01:50:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233757AbiHXBjc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 21:39:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42026 "EHLO
+        id S233775AbiHXBtv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 23 Aug 2022 21:49:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38648 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231290AbiHXBja (ORCPT
+        with ESMTP id S231280AbiHXBtr (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 21:39:30 -0400
-Received: from beige.elm.relay.mailchannels.net (beige.elm.relay.mailchannels.net [23.83.212.16])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C4C3E8C035
-        for <linux-kernel@vger.kernel.org>; Tue, 23 Aug 2022 18:39:28 -0700 (PDT)
-X-Sender-Id: dreamhost|x-authsender|dave@stgolabs.net
-Received: from relay.mailchannels.net (localhost [127.0.0.1])
-        by relay.mailchannels.net (Postfix) with ESMTP id 082FA7E15C1;
-        Wed, 24 Aug 2022 01:39:28 +0000 (UTC)
-Received: from pdx1-sub0-mail-a225 (unknown [127.0.0.6])
-        (Authenticated sender: dreamhost)
-        by relay.mailchannels.net (Postfix) with ESMTPA id 58D167E144A;
-        Wed, 24 Aug 2022 01:39:27 +0000 (UTC)
-ARC-Seal: i=1; s=arc-2022; d=mailchannels.net; t=1661305167; a=rsa-sha256;
-        cv=none;
-        b=YM8/iN0AEuuGYPyJrF7uRM2ywMduzfIJWbBmrJvEP1L+IcGTsdeM97xekt3ckJcx1jcgI/
-        IkYL9dEYEbBkIT5Ho9A5JfJm3Q57/zJTOYYgkfg0H+PcimsUWR0Y6NLmBLKAfw+w7atp7u
-        BLv5HkQw7jQvbVgV2d2h4KAmvwmaNbb4nCvGVYRB0QQGE3QxXPPKi7WfH27F4w2lNrfM3C
-        20TMkvBRFkY9RtLDU3LrROqElQoh9KtVhXxjcx3lgbqPg6N1UWQHpQVooA+LnMTk1Nnnoo
-        nnt2dGHzJRFDY9GwQz2lnX+VeK05z23be+dNNbaHg5k+qUUlBE80C0WOZ0GIVg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed;
- d=mailchannels.net;
-        s=arc-2022; t=1661305167;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references:dkim-signature;
-        bh=J+hEYIEjvOwz2IyYKQJbNRKzS/JVrt+rHjvP+egv3pQ=;
-        b=lZs79j5/qHvG3TUe27KhIHgmNldv7Adf2suCPr2Fan8MjAHmvRfwCZ9AANfcyfCxpxpUv8
-        ze4zLjkfViK34iaJPG92KNArlZJ/rGtzr93q0AjaEhRUFB4blq+ymfQap/cJRvV5xX9XVa
-        qHUPjt0Y9UyHLpncEhoEToBkqQhjhuBS1oIi49xmc8bdmCQQk3UWeXLkkGqr25I7wHpaYE
-        KcRdDT5/0j5VPcLgNbvCNYTP62wd6uwdybYnRs0vXAn28gQ6PrBJq0kHg9AriNzkcrter0
-        3lA2MpxfQXvyxnkLYMufUKkXm2EoKC5ZlcoSpMBpNGLhLwZ+jwbXlrLxEJxAgg==
-ARC-Authentication-Results: i=1;
-        rspamd-5cbff9fff7-bjsdh;
-        auth=pass smtp.auth=dreamhost smtp.mailfrom=dave@stgolabs.net
-X-Sender-Id: dreamhost|x-authsender|dave@stgolabs.net
-X-MC-Relay: Neutral
-X-MailChannels-SenderId: dreamhost|x-authsender|dave@stgolabs.net
-X-MailChannels-Auth-Id: dreamhost
-X-Glossy-Dime: 1021f1c555efe553_1661305167619_443955144
-X-MC-Loop-Signature: 1661305167619:473570999
-X-MC-Ingress-Time: 1661305167619
-Received: from pdx1-sub0-mail-a225 (pop.dreamhost.com [64.90.62.162])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384)
-        by 100.103.147.30 (trex/6.7.1);
-        Wed, 24 Aug 2022 01:39:27 +0000
-Received: from offworld (unknown [104.36.31.106])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-256) server-signature RSA-PSS (2048 bits) server-digest SHA256)
-        (No client certificate requested)
-        (Authenticated sender: dave@stgolabs.net)
-        by pdx1-sub0-mail-a225 (Postfix) with ESMTPSA id 4MC80G5py6z1jh;
-        Tue, 23 Aug 2022 18:39:26 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=stgolabs.net;
-        s=dreamhost; t=1661305167;
-        bh=J+hEYIEjvOwz2IyYKQJbNRKzS/JVrt+rHjvP+egv3pQ=;
-        h=Date:From:To:Cc:Subject:Content-Type;
-        b=SWusiSuECsjBEl+LRWPfdW7Nc75nB1HAFFk+Gf60fCn9oUUWMiTQ/9Ap6yZXd/fqn
-         R9c9AUoIS9Z3AlUc9L7RIqQ7NXbbDHskgPcOwcgl43EWIv6ZaUK3/Yaas1CzGpA4qy
-         VN0FE4p21Hd98YYzI4uvPX9EuqSxtjfMHdbH4sp1WtR2cnLaeRiSbda39ptQos6BQ1
-         oh8V6bBb4GrXBFkDCQUUAmLX7SQTHHfueXnxT/IHI5gFMQkVkX1GDGZVBso9pj8Pf4
-         4RsKts3RfuWjXGNgxw9HTnNvQ4EEKQdq+yvuP4AKp3+tCIREYjm87GW70ONENRhqt5
-         43C/NrLEss2hg==
-Date:   Tue, 23 Aug 2022 18:21:21 -0700
-From:   Davidlohr Bueso <dave@stgolabs.net>
-To:     Liam Howlett <liam.howlett@oracle.com>
-Cc:     "maple-tree@lists.infradead.org" <maple-tree@lists.infradead.org>,
-        "linux-mm@kvack.org" <linux-mm@kvack.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        Andrew Morton <akpm@linux-foundation.org>
-Subject: Re: [PATCH v13 42/70] fs/proc/base: use maple tree iterators in
- place of linked list
-Message-ID: <20220824012121.aj2qkzrmdyywu45t@offworld>
-Mail-Followup-To: Liam Howlett <liam.howlett@oracle.com>,
-        "maple-tree@lists.infradead.org" <maple-tree@lists.infradead.org>,
-        "linux-mm@kvack.org" <linux-mm@kvack.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        Andrew Morton <akpm@linux-foundation.org>
-References: <20220822150128.1562046-1-Liam.Howlett@oracle.com>
- <20220822150128.1562046-43-Liam.Howlett@oracle.com>
+        Tue, 23 Aug 2022 21:49:47 -0400
+Received: from mail-ed1-x532.google.com (mail-ed1-x532.google.com [IPv6:2a00:1450:4864:20::532])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F0372399
+        for <linux-kernel@vger.kernel.org>; Tue, 23 Aug 2022 18:49:45 -0700 (PDT)
+Received: by mail-ed1-x532.google.com with SMTP id t5so20191589edc.11
+        for <linux-kernel@vger.kernel.org>; Tue, 23 Aug 2022 18:49:45 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linux-foundation.org; s=google;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc;
+        bh=OHeBxohCNlHTlRjKpGtQEToB1/XBYVhvN5GGiz4x9IM=;
+        b=Hqu5fj+YA5mUBXYfWLJSRQ5WIlWLSWXnoMRbUZteOGnyMP6wwBf4U1T8RCHhP3jOE7
+         I7z/t/b4eUJgAyH2dTnO6LpqyzCpCnci62HLUkkNUWXDGHdHAMhR9b0zZrmNEuG3Qh/d
+         tJstcZBZZgWyyWOP1/5a7S6DzyFkhfduK4IK4=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc;
+        bh=OHeBxohCNlHTlRjKpGtQEToB1/XBYVhvN5GGiz4x9IM=;
+        b=P7VgRb/BS0Ex6rrgr2KgABuLisI5t6KCinpqJSpZuGL3BgI3tldr/53TSKSQqjP8dU
+         0W0T04nSqswqHCFE1p+2Wqxs75ahNMOrcMmPsSb6qP39wXG8ZWgbERhXz5YiSEqP/QHZ
+         6EMUAow29vcSkNbwgmEqzMIgOsZZgYzdLsCTW2jvakv8tdDVOlTbXj3/9bALgJy8ww/e
+         aa+k/v1o1L7xz3HGes0UzTjD6GVg72trRWlBKUA13rAVpNS9XO2khUg4FwAs4EXgWK8E
+         bRwNPmpqH4XdAUOcxMVwccPC0CAvWcei4N2fJ+SoG1xNTng1XnOzNNaBt1HXd4zYZd+j
+         A20Q==
+X-Gm-Message-State: ACgBeo3ALcPvOB1zgwGN6boNAxLECv7x2nEQaCzgRc/12m1In8i4HtEX
+        g78HEhDXJ2vBe5mIKSqnECuKBtwWZOPJlwNd
+X-Google-Smtp-Source: AA6agR48hrB3CXiH0B0015UfnvVSlP2NfKsli5jH14rkxT7PeN7MVDWqNQwupZp3WTurk9UUF+zhnA==
+X-Received: by 2002:aa7:d1c9:0:b0:446:bfcd:170 with SMTP id g9-20020aa7d1c9000000b00446bfcd0170mr5687206edp.209.1661305784200;
+        Tue, 23 Aug 2022 18:49:44 -0700 (PDT)
+Received: from mail-wm1-f49.google.com (mail-wm1-f49.google.com. [209.85.128.49])
+        by smtp.gmail.com with ESMTPSA id m26-20020a056402051a00b004464c3de6dasm2200798edv.65.2022.08.23.18.49.42
+        for <linux-kernel@vger.kernel.org>
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 23 Aug 2022 18:49:42 -0700 (PDT)
+Received: by mail-wm1-f49.google.com with SMTP id ay12so8042448wmb.1
+        for <linux-kernel@vger.kernel.org>; Tue, 23 Aug 2022 18:49:42 -0700 (PDT)
+X-Received: by 2002:a05:600c:4ece:b0:3a6:28:bc59 with SMTP id
+ g14-20020a05600c4ece00b003a60028bc59mr3624697wmq.154.1661305782219; Tue, 23
+ Aug 2022 18:49:42 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii; format=flowed
-Content-Disposition: inline
-In-Reply-To: <20220822150128.1562046-43-Liam.Howlett@oracle.com>
-User-Agent: NeoMutt/20220429
+References: <20220821000737.328590235@goodmis.org> <20220821000844.510643400@goodmis.org>
+ <CAHk-=wjsxu782N0P+oMu35N7rJAOeh3buQFWJaZHZTNmVSB=3Q@mail.gmail.com>
+ <5700ac75-f6a9-877e-4011-9b314f12b5ab@acm.org> <CAHk-=wjqkWEr0MRO5hWuBoTDgNUj4qQK8V_Y36et=61mdPztJw@mail.gmail.com>
+ <02daa3d6-2847-d7e0-e23e-411076c6d4db@rasmusvillemoes.dk> <0163b361-14bf-7b4c-751a-14f1a004b1a9@acm.org>
+ <CAHk-=wjMLb30d0WT_RyKBCX+JBkg3QQU6pCYkrV8f58Ya4Rgzw@mail.gmail.com> <b79c83af-e9fc-9fa0-dff7-f3a8a39887ff@acm.org>
+In-Reply-To: <b79c83af-e9fc-9fa0-dff7-f3a8a39887ff@acm.org>
+From:   Linus Torvalds <torvalds@linux-foundation.org>
+Date:   Tue, 23 Aug 2022 18:49:25 -0700
+X-Gmail-Original-Message-ID: <CAHk-=wgV1F7_ErXkXT2wd+07LJd_3Vp-yVUKLROPiEgijeoTrQ@mail.gmail.com>
+Message-ID: <CAHk-=wgV1F7_ErXkXT2wd+07LJd_3Vp-yVUKLROPiEgijeoTrQ@mail.gmail.com>
+Subject: Re: [for-linus][PATCH 01/10] tracing: Suppress sparse warnings
+ triggered by is_signed_type()
+To:     Bart Van Assche <bvanassche@acm.org>
+Cc:     Rasmus Villemoes <linux@rasmusvillemoes.dk>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        linux-kernel@vger.kernel.org, Ingo Molnar <mingo@kernel.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Christoph Hellwig <hch@lst.de>,
+        Luc Van Oostenryck <luc.vanoostenryck@gmail.com>,
+        Jens Axboe <axboe@kernel.dk>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, 22 Aug 2022, Liam Howlett wrote:
+On Tue, Aug 23, 2022 at 5:09 PM Bart Van Assche <bvanassche@acm.org> wrote:
+>
+> I'm probably doing something wrong but even with sparse commit 658ee8e0f631
+> ("unrestricted values are unrestricted even after a cast") I see warnings
+> being triggered by users of the is_signed_type() macro, warnings that
+> disappear if I change the definition of the is_signed_type() macro into 0:
 
->From: "Liam R. Howlett" <Liam.Howlett@Oracle.com>
+That's the
 
--ENOCHANGELOG.
+> It does require that kernel change to make
+>
+>   #define is_signed_type(type)   (((type)(-1)) <= (type)0)
 
->
->Signed-off-by: Liam R. Howlett <Liam.Howlett@Oracle.com>
->---
-> fs/proc/base.c | 5 ++++-
-> 1 file changed, 4 insertions(+), 1 deletion(-)
->
->diff --git a/fs/proc/base.c b/fs/proc/base.c
->index 93f7e3d971e4..0b72a6d8aac3 100644
->--- a/fs/proc/base.c
->+++ b/fs/proc/base.c
->@@ -2350,6 +2350,7 @@ proc_map_files_readdir(struct file *file, struct dir_context *ctx)
-> 	GENRADIX(struct map_files_info) fa;
-> 	struct map_files_info *p;
-> 	int ret;
->+	MA_STATE(mas, NULL, 0, 0);
->
-> 	genradix_init(&fa);
->
->@@ -2377,6 +2378,7 @@ proc_map_files_readdir(struct file *file, struct dir_context *ctx)
-> 	}
->
-> 	nr_files = 0;
->+	mas.tree = &mm->mm_mt;
->
-> 	/*
-> 	 * We need two passes here:
->@@ -2388,7 +2390,8 @@ proc_map_files_readdir(struct file *file, struct dir_context *ctx)
-> 	 * routine might require mmap_lock taken in might_fault().
-> 	 */
->
->-	for (vma = mm->mmap, pos = 2; vma; vma = vma->vm_next) {
->+	pos = 2;
->+	mas_for_each(&mas, vma, ULONG_MAX) {
-> 		if (!vma->vm_file)
-> 			continue;
-> 		if (++pos <= ctx->pos)
->
->-- 
->2.35.1
->
+part I was talking about.
+
+So your kernel side patch looks fine, except I don't think you need
+the '__force' - the sparse patches in my tree should make sparse happy
+about casting '-1'.
+
+But I didn't do very much testing.
+
+                     Linus
