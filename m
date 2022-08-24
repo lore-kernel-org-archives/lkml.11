@@ -2,156 +2,185 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CF102C00140
-	for <linux-kernel@archiver.kernel.org>; Wed, 24 Aug 2022 13:55:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 97259C32793
+	for <linux-kernel@archiver.kernel.org>; Wed, 24 Aug 2022 13:56:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237296AbiHXNz5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 24 Aug 2022 09:55:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54672 "EHLO
+        id S238356AbiHXN4N (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 24 Aug 2022 09:56:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54710 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238374AbiHXNyw (ORCPT
+        with ESMTP id S239113AbiHXNzl (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 24 Aug 2022 09:54:52 -0400
-Received: from mail-qk1-x72c.google.com (mail-qk1-x72c.google.com [IPv6:2607:f8b0:4864:20::72c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B629F7E317
-        for <linux-kernel@vger.kernel.org>; Wed, 24 Aug 2022 06:53:09 -0700 (PDT)
-Received: by mail-qk1-x72c.google.com with SMTP id b9so12684941qka.2
-        for <linux-kernel@vger.kernel.org>; Wed, 24 Aug 2022 06:53:09 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc;
-        bh=aFrzc4EVs8mhahc/oN0YA6pJviRrO2jnMiLvsQfb3cc=;
-        b=VWSPsIfCI2hMtcLYQCa6GqkdGrz11Kq+elD+EN2F87F5Ym6+VrE3F85UaQmPd11Qyz
-         ZVprzh7JYHisIXpXZipnPqtWyRQMsJ+DCbV1R3pEBSww241ppbNHeHjUu0r6TqZpvTw4
-         /pAeZHe1BpQUKzXrmAGLWhO75a4dPzA6yO1peC/fxNFV9ekJcykFThOMGx1yjkCj2wLF
-         iTbQ5bNlYKBDbKCt81npIQ9mUh7gLL7s6urhohFn+UwEyrmuEGmDyiJiQ/X4n6cWpp/R
-         +uYd0XLweIfQ0JOFpJVOnteTztIZIWnLPCxsigpe3DFWcBGcIKRE/US5UKxiGEtuB1UV
-         m+xA==
+        Wed, 24 Aug 2022 09:55:41 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C71A0985AB
+        for <linux-kernel@vger.kernel.org>; Wed, 24 Aug 2022 06:54:32 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1661349271;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=Wr8KgnMtkCR9B9otR9q22zR3K3afEw0yeN69ojoHLHc=;
+        b=fK6c68OwUZ6cTuxeDvgrAnSkQiwCazfZyNJH3anmP2MNUeXfY4GDWETWqLme/2xptX9g5G
+        BJfLS9gUobO6g0rNVuPv5onEgXDcUHdFaTEBWTMZwG3heZVMG28/HjdBd4zWctxici8I3E
+        U9YfQRaeY/08WQMMY8xGQc1kBNkBgA8=
+Received: from mail-ej1-f69.google.com (mail-ej1-f69.google.com
+ [209.85.218.69]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
+ us-mta-497-f_ZT9aOoN8e6JriFuAUW6A-1; Wed, 24 Aug 2022 09:54:30 -0400
+X-MC-Unique: f_ZT9aOoN8e6JriFuAUW6A-1
+Received: by mail-ej1-f69.google.com with SMTP id qf15-20020a1709077f0f00b0073d6dfb7556so3119453ejc.12
+        for <linux-kernel@vger.kernel.org>; Wed, 24 Aug 2022 06:54:30 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc;
-        bh=aFrzc4EVs8mhahc/oN0YA6pJviRrO2jnMiLvsQfb3cc=;
-        b=p2xsj9K6KonG6G11FwP6IB4FfEOYq6uKtP9tnxgnLzY0opr/aJnCwRHZ22ZlePb69n
-         fuu8T3FUIPKyyCu4M0ofE4taRu6GQRl19ImQU6+H9d6SSg+kRuiaAdiuVHWNXlH4NpNg
-         2IUhE0EL2E75yguqYdKu1U4vsIn7wSsv4OQY/heSgbwDXKFUcVO2WdfKFAWEzeEFi1K7
-         u71sPPtBtP1Dc7aT8IbFrzElrhrcm2mvjlaA+R8fFN+embYdmThEyjjs+bCYq5c6gJPZ
-         GbMQ17PJPe0vl4U4wbz5Tr7LTtaK8nEcxnRB0Sj2eTQiVCUPwHWm0Dy29B2cBkK1hsfl
-         wx1Q==
-X-Gm-Message-State: ACgBeo2hcsTmCvOVL5jkxjfueoTQq91IMYaDVHYDICeeU0J/LK4wSU1N
-        ca+lFNt+UKe/nGOugWUoRFs=
-X-Google-Smtp-Source: AA6agR6MoGegyBt+MHW+c4UIxqrzRTEZyoEdKTB8Qv8cLYpWehLoDfRE7/rpaGsRbqiBUj/pv/Bfxw==
-X-Received: by 2002:a05:620a:573:b0:6bb:2865:e3cc with SMTP id p19-20020a05620a057300b006bb2865e3ccmr20021125qkp.15.1661349188761;
-        Wed, 24 Aug 2022 06:53:08 -0700 (PDT)
-Received: from localhost ([2601:4c1:c100:2270:5a54:d9d9:c2a4:527e])
-        by smtp.gmail.com with ESMTPSA id n18-20020a05620a295200b006b9593e2f68sm16835404qkp.4.2022.08.24.06.53.07
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 24 Aug 2022 06:53:08 -0700 (PDT)
-Date:   Wed, 24 Aug 2022 06:53:07 -0700
-From:   Yury Norov <yury.norov@gmail.com>
-To:     Andy Shevchenko <andy.shevchenko@gmail.com>
-Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Guenter Roeck <linux@roeck-us.net>,
-        Dennis Zhou <dennis@kernel.org>,
-        Russell King <linux@armlinux.org.uk>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Rasmus Villemoes <linux@rasmusvillemoes.dk>,
-        Alexey Klimov <aklimov@redhat.com>,
-        Kees Cook <keescook@chromium.org>,
-        Andy Whitcroft <apw@canonical.com>
-Subject: Re: [PATCH v2 3/3] lib/find_bit: optimize find_next_bit() functions
-Message-ID: <YwYtQ7t+3grPF16n@yury-laptop>
-References: <20220824012624.2826445-1-yury.norov@gmail.com>
- <20220824012624.2826445-4-yury.norov@gmail.com>
- <CAHp75Ve4QTSs_mSB7uMqOK4q+A-z-O1tc2k5=2qaRHTdAC3yog@mail.gmail.com>
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc;
+        bh=Wr8KgnMtkCR9B9otR9q22zR3K3afEw0yeN69ojoHLHc=;
+        b=JVbpPSHTJFkiWI6tbB7nWKIJiHCYLom/Ywuj+u602yVMO16WfxAe9YroEaOnTv2/mx
+         YlMlZwdr575wuZs+MtzXWgJTMy7VAwqR8NRp1QpZx4R/VlcMECjulU7bZqkSEUO8EX+r
+         GPVe+pMRHzNWdj23BAeSE7dTHlta0JCrAws45nARTaliTqycx0wodxnwojFUCBNVRa8K
+         0aVQ0cW7P4xDPfsoBZs02wU609yEyVnL5YemBwzaG3gM+L0lkNbbEstErUlZt9WK0IAb
+         Qnu+blQpYWn3MRCtAxGpfht9zGeEyKLPaF1oHSmtqMIOn+rn+VqVgtOKiK1+73yYuhjO
+         XRnw==
+X-Gm-Message-State: ACgBeo2v0+dXFbWzkpwatg0TRgvCueS1oTGTR0TgPRrE6BD4j5BeHjH1
+        aF+F2aXpETD9JNlOWmdRWvSQOgQJOiifIX+MU1vRG9Wa7mPNLfoKw5hWb2ad2LPlaKJBzyyRKzT
+        EfTDXe/YeDsQfXZnNrsM4i0qL
+X-Received: by 2002:a17:907:2894:b0:73d:9072:ade5 with SMTP id em20-20020a170907289400b0073d9072ade5mr3029457ejc.2.1661349269303;
+        Wed, 24 Aug 2022 06:54:29 -0700 (PDT)
+X-Google-Smtp-Source: AA6agR5X9zIsvF/lL31ytSGvhEZFsWTti9w00rfwCBFR4vVWOFdnPkX3ZrafIoGvDEWUC+nxKbyaPQ==
+X-Received: by 2002:a17:907:2894:b0:73d:9072:ade5 with SMTP id em20-20020a170907289400b0073d9072ade5mr3029435ejc.2.1661349269114;
+        Wed, 24 Aug 2022 06:54:29 -0700 (PDT)
+Received: from ?IPV6:2001:1c00:c1e:bf00:d69d:5353:dba5:ee81? (2001-1c00-0c1e-bf00-d69d-5353-dba5-ee81.cable.dynamic.v6.ziggo.nl. [2001:1c00:c1e:bf00:d69d:5353:dba5:ee81])
+        by smtp.gmail.com with ESMTPSA id 19-20020a170906319300b00738795e7d9bsm1229632ejy.2.2022.08.24.06.54.28
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 24 Aug 2022 06:54:28 -0700 (PDT)
+Message-ID: <a001efb5-95a3-d89d-32bd-557b6f11bb80@redhat.com>
+Date:   Wed, 24 Aug 2022 15:54:28 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAHp75Ve4QTSs_mSB7uMqOK4q+A-z-O1tc2k5=2qaRHTdAC3yog@mail.gmail.com>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.12.0
+Subject: Re: [PATCH v4 1/5] gpio-f7188x: Add GPIO support for Nuvoton NCT6116
+Content-Language: en-US
+To:     Henning Schild <henning.schild@siemens.com>,
+        simon.guinot@sequanux.org
+Cc:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Bartosz Golaszewski <brgl@bgdev.pl>,
+        Pavel Machek <pavel@ucw.cz>, Mark Gross <markgross@kernel.org>,
+        Lee Jones <lee@kernel.org>, linux-gpio@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-leds@vger.kernel.org,
+        platform-driver-x86@vger.kernel.org,
+        Sheng-Yuan Huang <syhuang3@nuvoton.com>,
+        Tasanakorn Phaipool <tasanakorn@gmail.com>
+References: <20220823102344.17624-1-henning.schild@siemens.com>
+ <20220823102344.17624-2-henning.schild@siemens.com>
+ <YwToilxquEZGqzQD@smile.fi.intel.com>
+ <20220823165459.143e1c30@md1za8fc.ad001.siemens.net>
+ <YwYjXzsSHNe+J3aO@76cbfcf04d45>
+ <20220824155038.5aa19495@md1za8fc.ad001.siemens.net>
+From:   Hans de Goede <hdegoede@redhat.com>
+In-Reply-To: <20220824155038.5aa19495@md1za8fc.ad001.siemens.net>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Aug 24, 2022 at 12:19:05PM +0300, Andy Shevchenko wrote:
-> On Wed, Aug 24, 2022 at 4:56 AM Yury Norov <yury.norov@gmail.com> wrote:
-> >
-> > Over the past couple years, the function _find_next_bit() was extended
-> > with parameters that modify its behavior to implement and- zero- and le-
-> > flavors. The parameters are passed at compile time, but current design
-> > prevents a compiler from optimizing out the conditionals.
-> >
-> > As find_next_bit() API grows, I expect that more parameterss will be added.
+Hi Henning,
+
+On 8/24/22 15:50, Henning Schild wrote:
+> Am Wed, 24 Aug 2022 15:10:55 +0200
+> schrieb simon.guinot@sequanux.org:
 > 
-> parameters
+>> On Tue, Aug 23, 2022 at 04:54:59PM +0200, Henning Schild wrote:
+>>> Am Tue, 23 Aug 2022 17:47:38 +0300
+>>> schrieb Andy Shevchenko <andriy.shevchenko@linux.intel.com>:  
+>>
+>> Hi Andy,
+>>
+>> Thanks for this new version. It is looking good to me.
+>>
+>>>   
+>>>> On Tue, Aug 23, 2022 at 12:23:40PM +0200, Henning Schild wrote:  
+>>>>> Add GPIO support for Nuvoton NCT6116 chip. Nuvoton SuperIO
+>>>>> chips are very similar to the ones from Fintek. In other
+>>>>> subsystems they also share drivers and are called a family of
+>>>>> drivers.
+>>>>>
+>>>>> For the GPIO subsystem the only difference is that the direction
+>>>>> bit is reversed and that there is only one data bit per pin. On
+>>>>> the SuperIO level the logical device is another one.
+>>>>>
+>>>>> On a chip level we do not have a manufacturer ID to check and
+>>>>> also no revision.    
+>>>>
+>>>> ...
+>>>>   
+>>>>> - * GPIO driver for Fintek Super-I/O F71869, F71869A, F71882,
+>>>>> F71889 and F81866
+>>>>> + * GPIO driver for Fintek and Nuvoton Super-I/O chips    
+>>>>
+>>>> I'm not sure it's good idea to drop it from here. It means reader
+>>>> has to get this info in a hard way.
+>>>>
+>>>> ...  
+>>>
+>>> Let us see what others say. I wanted to keep this in line with what
+>>> Kconfig says and the oneliner in the Kconfig was getting pretty
+>>> longish. Hence i decided to shorten that. Other drivers also seem to
+>>> not list all the possible chips in many places, it is all maint
+>>> effort when a new chips is added and the list is in like 5 places.  
+>>
+>> I agree with you that we can drop this line. It was already incomplete
+>> and the information is quite readable a few lines below in both the
+>> define list and the chip enumeration.
+>>
+>>>   
+>>>>> +#define gpio_dir_invert(type)	((type) == nct6116d)
+>>>>> +#define gpio_data_single(type)	((type) == nct6116d)    
+>>>>
+>>>> What's prevents us to add a proper prefix to these? I don't like
+>>>> the idea of them having "gpio" prefix.
+>>>>
+>>>> ...
+>>>>   
+>>>>> +		pr_info(DRVNAME ": Unsupported device
+>>>>> 0x%04x\n", devid);
+>>>>> +			pr_debug(DRVNAME ": Not a Fintek
+>>>>> device at 0x%08x\n", addr);
+>>>>> +	pr_info(DRVNAME ": Found %s at %#x\n",
+>>>>> +		pr_info(DRVNAME ":   revision %d\n",    
+>>>>
+>>>> Can we, please, utilize pr_fmt()?
+>>>>   
+>>>>> +			(int)superio_inb(addr,
+>>>>> SIO_FINTEK_DEVREV));    
+>>>>
+>>>> Explicit casting in printf() means wrong specifier in 99% of
+>>>> cases. 
+>>>
+>>> For all the other comments i will wait for a second opinion. I
+>>> specifically did not change existing code for more than the
+>>> functional changes needed. And a bit of checkpatch.pl fixing.
+>>> Beautification could be done on the way but would only cause
+>>> inconsistency. That driver is what it is, if someone wants to
+>>> overhaul the style ... that should be another patch. One likely not
+>>> coming from me.  
+>>
+>> About the int cast, I think you can drop it while you are updating
+>> this line. It is unneeded.
 > 
-> > Current designs would require more conditional code in _find_next_bit(),
-> > which would bloat the helper even more and make it barely readable.
-> >
-> > This patch replaces _find_next_bit() with a macro FIND_NEXT_BIT, and adds
-> > a set of wrappers, so that the compile-time optimization becomes possible.
-> >
-> > The common logic is moved to the new macro, and all flavors may be
-> > generated by providing an EXPRESSION macro parameter, like in this example:
-> >
-> >   #define FIND_NEXT_BIT(EXPRESSION, size, start) ...
-> >
-> >   find_next_xornot_and_bit(addr1, addr2, addr3, size, start)
-> >   {
-> >         return FIND_NEXT_BIT(addr1[idx] ^ ~addr2[idx] & addr3[idx], size, start);
-> >   }
-> >
-> > The EXPRESSION may be of any complexity, as soon as it only refers
-> > the bitmap(s) and an iterator idx.
-> 
-> ...
-> 
-> > +#define FIND_NEXT_BIT(EXPRESSION, size, start)                                 \
-> > +({                                                                             \
-> > +       unsigned long mask, idx, tmp, sz = (size), __start = (start);           \
-> > +                                                                               \
-> > +       if (unlikely(__start >= sz))                                            \
-> > +               goto out;                                                       \
-> > +                                                                               \
-> > +       mask = word_op(BITMAP_FIRST_WORD_MASK(__start));                        \
-> > +       idx = __start / BITS_PER_LONG;                                          \
-> > +                                                                               \
-> > +       for (tmp = (EXPRESSION) & mask; !tmp; tmp = (EXPRESSION)) {             \
-> 
-> for (unsigned long tmp ...;
-> But hey, why not loop over idx (which probably should be named as
-> offset)
+> Ok two voices for doing that one fix along the way. I will send a v5
+> and hope nobody insists on me fixing the other findings in code i never
+> wrote.
 
-Offset in structure, index in array, isn't?
+You did not write it, but you are using it to do hw-enablement for
+your company's products. So being asked to also some touch-ups
+left and right while you are at it really is not unexpected IMHO.
 
-> as I proposed in the first patch? You will drop a lot of
-> divisions / multiplications, no?
+Regards,
 
-Those divisions and multiplications are optimized away, and
-what you suggested blows up the EXPRESSION.
+Hans
 
-I tried like this:
-   mask = word_op(BITMAP_FIRST_WORD_MASK(__start));
-   idx = __start / BITS_PER_LONG;
-   tmp = (EXPRESSION);
-
-   while (1) {
-        if (tmp) {
-               sz = min(idx * BITS_PER_LONG + __ffs(word_op(tmp)), sz);
-               break;
-        }
-
-        if (++idx > sz)
-                break;
-
-        tmp = (EXPRESSION);
-   } 
-
-And it generated the same code, but looks less expressive to me.
-If you have some elegant approach in mind - can you please share
-it, and how the generated code looks?
-
-Thanks,
-Yury
