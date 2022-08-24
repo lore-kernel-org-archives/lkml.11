@@ -2,81 +2,70 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E62A9C32793
-	for <linux-kernel@archiver.kernel.org>; Wed, 24 Aug 2022 02:40:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1231BC32796
+	for <linux-kernel@archiver.kernel.org>; Wed, 24 Aug 2022 02:46:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229498AbiHXCk1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 22:40:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43262 "EHLO
+        id S231248AbiHXCqC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 23 Aug 2022 22:46:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56522 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229446AbiHXCkX (ORCPT
+        with ESMTP id S231789AbiHXCp7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 22:40:23 -0400
+        Tue, 23 Aug 2022 22:45:59 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6AD8912D0D
-        for <linux-kernel@vger.kernel.org>; Tue, 23 Aug 2022 19:40:17 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E2F7E32049;
+        Tue, 23 Aug 2022 19:45:57 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 0DCFE617BD
-        for <linux-kernel@vger.kernel.org>; Wed, 24 Aug 2022 02:40:17 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 5566AC433D7;
-        Wed, 24 Aug 2022 02:40:16 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 7F55A617DE;
+        Wed, 24 Aug 2022 02:45:57 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id D70A0C433D6;
+        Wed, 24 Aug 2022 02:45:56 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1661308816;
-        bh=52MZOkm07TCkBgngg1oPe807uYfaw3XtfF+tEMXzO5I=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=gigGPj4wtyE6qxWJf+vjL5LorGsYR5bSeJEp2do+3GfIvdkeyCFW8CBJm8LADnovS
-         rspUlj+0IFtTue56eh7SXrRgbppS4KGMstkDqWsQWYD6n+evPfm56LrIjkRZXTukMl
-         kGjZEya1jwrL7rbszuNQV0v6vA7Ai3CzMw9xAyxeN2xsYMc/LcYo8k/7GuhhatPfxv
-         OrzJCg63eYbBM4QzXdoRMQOEVKTAhVrmb13U52eun3G8bf899CsB+0y5WxlaCzCRDX
-         UjB6jTTKqAJnazY4tWLNjqBJ0NOOEqbJhxCBfwVw5ZwUoBLH7v8DZq84yPTncqUaiX
-         HRyJ46mDnxpeQ==
+        s=k20201202; t=1661309156;
+        bh=cEcIM708fFRL+18AzgeZ9K0lhHmbf+e8aaFHoWsdwzM=;
+        h=Subject:From:In-Reply-To:References:Date:To:Cc:From;
+        b=ZCFN3MCNYrlKNAaJMXLEPteTWAQ39e7nbqbPDlQcDsxSm24v+pIeyrBslERN2UwFN
+         GufZ1nxlNT5giI3ofcp2hTWJR+ZItv0LhJlwUagEDidn7/Z947hpU6dAM8s/WjEXQS
+         BvFzgCxylBqlUXspmH0o9LHjSTcIlZHPPZSjmFEP5UfcfXWrEHUvKzEc/H/c8pWxIX
+         EgVtxEHAVloAb4WRgdlNAw/ATQxE52R5GI2hrcEeLoMj0mcPRy7Mhs4Lv2FjcIlucV
+         cOhESPFwVdksIbztCgSNzlyIOO6N7kU+4LjR0EVdAx/n+pkGPfk7KasearHq+grZEn
+         RODky5RpI/tIA==
 Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 3AA0BE2A03B;
-        Wed, 24 Aug 2022 02:40:16 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH v3] platform/chrome: cros_ec: Expose suspend_timeout_ms in
- debugfs
-From:   patchwork-bot+chrome-platform@kernel.org
-Message-Id: <166130881623.3545.15339051847364813207.git-patchwork-notify@kernel.org>
-Date:   Wed, 24 Aug 2022 02:40:16 +0000
-References: <20220822144026.v3.1.Idd188ff3f9caddebc17ac357a13005f93333c21f@changeid>
-In-Reply-To: <20220822144026.v3.1.Idd188ff3f9caddebc17ac357a13005f93333c21f@changeid>
-To:     Evan Green <evgreen@chromium.org>
-Cc:     enric.balletbo@collabora.com, rajatja@chromium.org,
-        tzungbi@kernel.org, pmalani@chromium.org, bleung@chromium.org,
-        groeck@chromium.org, swboyd@chromium.org,
-        tinghan.shen@mediatek.com, chrome-platform@lists.linux.dev,
-        linux-kernel@vger.kernel.org
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id BE0EAC0C3EC;
+        Wed, 24 Aug 2022 02:45:56 +0000 (UTC)
+Subject: Re: [GIT PULL] file_remove_privs() fix for v6.0-rc3
+From:   pr-tracker-bot@kernel.org
+In-Reply-To: <20220823111056.858797-1-brauner@kernel.org>
+References: <20220823111056.858797-1-brauner@kernel.org>
+X-PR-Tracked-List-Id: <linux-kernel.vger.kernel.org>
+X-PR-Tracked-Message-Id: <20220823111056.858797-1-brauner@kernel.org>
+X-PR-Tracked-Remote: ssh://git@gitolite.kernel.org/pub/scm/linux/kernel/git/vfs/idmapping.git tags/fs.fixes.v6.0-rc3
+X-PR-Tracked-Commit-Id: 41191cf6bf565f4139046d7be68ec30c290af92d
+X-PR-Merge-Tree: torvalds/linux.git
+X-PR-Merge-Refname: refs/heads/master
+X-PR-Merge-Commit-Id: 062d26ad0b36829c0142e5b96a694f3cdb6eaa43
+Message-Id: <166130915676.7543.5083804304418300659.pr-tracker-bot@kernel.org>
+Date:   Wed, 24 Aug 2022 02:45:56 +0000
+To:     Christian Brauner <brauner@kernel.org>
+Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
+        Christian Brauner <brauner@kernel.org>,
+        linux-fsdevel@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Jens Axboe <axboe@kernel.dk>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hello:
+The pull request you sent on Tue, 23 Aug 2022 13:10:56 +0200:
 
-This patch was applied to chrome-platform/linux.git (for-kernelci)
-by Tzung-Bi Shih <tzungbi@kernel.org>:
+> ssh://git@gitolite.kernel.org/pub/scm/linux/kernel/git/vfs/idmapping.git tags/fs.fixes.v6.0-rc3
 
-On Mon, 22 Aug 2022 14:40:40 -0700 you wrote:
-> In modern Chromebooks, the embedded controller has a mechanism where
-> it will watch a hardware-controlled line that toggles in suspend, and
-> wake the system up if an expected sleep transition didn't occur. This
-> can be very useful for detecting power management issues where the
-> system appears to suspend, but doesn't actually reach its lowest
-> expected power states.
-> 
-> [...]
+has been merged into torvalds/linux.git:
+https://git.kernel.org/torvalds/c/062d26ad0b36829c0142e5b96a694f3cdb6eaa43
 
-Here is the summary with links:
-  - [v3] platform/chrome: cros_ec: Expose suspend_timeout_ms in debugfs
-    https://git.kernel.org/chrome-platform/c/e8bf17d58a4d
+Thank you!
 
-You are awesome, thank you!
 -- 
 Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
-
+https://korg.docs.kernel.org/prtracker.html
