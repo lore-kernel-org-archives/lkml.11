@@ -2,120 +2,116 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C577EC00140
-	for <linux-kernel@archiver.kernel.org>; Wed, 24 Aug 2022 07:55:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E6988C00140
+	for <linux-kernel@archiver.kernel.org>; Wed, 24 Aug 2022 07:56:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234888AbiHXHzg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 24 Aug 2022 03:55:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38472 "EHLO
+        id S235107AbiHXHz7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 24 Aug 2022 03:55:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38892 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233456AbiHXHze (ORCPT
+        with ESMTP id S234831AbiHXHz4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 24 Aug 2022 03:55:34 -0400
-Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 19FEF84EE0
-        for <linux-kernel@vger.kernel.org>; Wed, 24 Aug 2022 00:55:33 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1661327733; x=1692863733;
-  h=message-id:date:mime-version:subject:to:cc:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=LqeA44e0s1YgXUHt9917oOHWEVJ8rkKa9fdQohJrry8=;
-  b=oFS6fdT4+JI8k4BF5tIKQLAdAVZAa7WeqoQXDaazfoyyh5CeOLndVw9U
-   c75Q4wF5Ub541UFbXODCSWRMm2iyutUOEkkqF4FH/cneNTCwLkAktOdNk
-   EKWi8yRyohrTophiloWjZue12yAcqyWZDal+seWbcX7KrICTc2E130Uzf
-   lhlDHSYpzTITyBFkGodab+0hY+XJZQYHvPPLqGAhFA44CWnjOO+EVNHRK
-   PoMvu5M0agOberg5EKJI+jxXIwj+M04+uvcPfcFhwStUj2GgGQJ11EcFh
-   UNSCx07SaOovSNS/WXrDkd0ltjEc0efYFKBG4k3GSXTdAs2FNAeayjQSe
-   Q==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10448"; a="291462499"
-X-IronPort-AV: E=Sophos;i="5.93,260,1654585200"; 
-   d="scan'208";a="291462499"
-Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Aug 2022 00:55:32 -0700
-X-IronPort-AV: E=Sophos;i="5.93,260,1654585200"; 
-   d="scan'208";a="639008184"
-Received: from tleistix-mobl2.ger.corp.intel.com (HELO [10.249.43.72]) ([10.249.43.72])
-  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Aug 2022 00:55:30 -0700
-Message-ID: <6a9ad9b1-a6f2-c380-77a9-f10317f7054f@linux.intel.com>
-Date:   Wed, 24 Aug 2022 09:42:22 +0200
+        Wed, 24 Aug 2022 03:55:56 -0400
+Received: from smtp.smtpout.orange.fr (smtp01.smtpout.orange.fr [80.12.242.123])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C36C484EEA
+        for <linux-kernel@vger.kernel.org>; Wed, 24 Aug 2022 00:55:53 -0700 (PDT)
+Received: from pop-os.home ([90.11.190.129])
+        by smtp.orange.fr with ESMTPA
+        id QlEroa3jzPMmaQlEropAN6; Wed, 24 Aug 2022 09:55:50 +0200
+X-ME-Helo: pop-os.home
+X-ME-Auth: Y2hyaXN0b3BoZS5qYWlsbGV0QHdhbmFkb28uZnI=
+X-ME-Date: Wed, 24 Aug 2022 09:55:50 +0200
+X-ME-IP: 90.11.190.129
+From:   Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+To:     Ohad Ben-Cohen <ohad@wizery.com>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Baolin Wang <baolin.wang@linux.alibaba.com>,
+        Orson Zhai <orsonzhai@gmail.com>,
+        Chunyan Zhang <zhang.lyra@gmail.com>
+Cc:     linux-kernel@vger.kernel.org, kernel-janitors@vger.kernel.org,
+        Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
+        linux-remoteproc@vger.kernel.org
+Subject: [PATCH] hwspinlock: sprd: Use devm_clk_get_enabled() helper
+Date:   Wed, 24 Aug 2022 09:55:47 +0200
+Message-Id: <f962d22bfdbd09133d8923152133eeff9213dcee.1661324434.git.christophe.jaillet@wanadoo.fr>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Firefox/91.0 Thunderbird/91.11.0
-Subject: Re: [PATCH 0/3] soundwire: allocate device_number with IDA
-Content-Language: en-US
-To:     Vinod Koul <vkoul@kernel.org>,
-        Bard Liao <yung-chuan.liao@linux.intel.com>
-Cc:     alsa-devel@alsa-project.org, linux-kernel@vger.kernel.org,
-        bard.liao@intel.com
-References: <20220823045004.2670658-1-yung-chuan.liao@linux.intel.com>
- <YwUHp3ivSktx6/Lo@matsya>
-From:   Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>
-In-Reply-To: <YwUHp3ivSktx6/Lo@matsya>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Vinod,
+The devm_clk_get_enabled() helper:
+   - calls devm_clk_get()
+   - calls clk_prepare_enable() and registers what is needed in order to
+     call clk_disable_unprepare() when needed, as a managed resource.
 
->> The device_number is currently allocated in the scope of each bus and does
->> not need to be unique at the system level.
->> This leads e.g. on Dell devices with three or four Device1 on different
->> bus segments. 
-> 
-> And how is that an issue that should be fixed?
+This simplifies the code, the error handling paths and avoid the need of
+a dedicated function used with devm_add_action_or_reset().
 
-1. this makes things simpler for debug. You can look at the logs and see
-what the device is without having to look at the link. It's been much
-easier to track complicated issues when each device is tracked with a
-unique system level number.
+Based on my test with allyesconfig, this reduces the .o size from:
+   text	   data	    bss	    dec	    hex	filename
+   3423	   1528	      0	   4951	   1357	drivers/hwspinlock/sprd_hwspinlock.o
+down to:
+   3025	   1392	      0	   4417	   1141	drivers/hwspinlock/sprd_hwspinlock.o
 
-2. Intel hardware has a requirement that the device number be unique for
-all links managed by  a given controller. This patch prepares that
-transition. I cannot disclose more details at the moment, you will have
-to trust me on this one.
+Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+---
+devm_clk_get_enabled() is new and is part of 6.0-rc1
+---
+ drivers/hwspinlock/sprd_hwspinlock.c | 23 ++---------------------
+ 1 file changed, 2 insertions(+), 21 deletions(-)
 
->> To make the device_number unique at the system level, and
-> 
-> Why should we do that...
->> unified with the HDaudio/iDISP SDI values, this series allocates the
->> dev_number with an IDA restricted between 4 and 11 (inclusive).
-> 
-> Does this not place an artificial restriction that a system can have
-> only 12 devices if we have unique device
-
-It does indeed, but it simplifies debug and it allows future hardware to
-be supported.
-
-In practice, the most we've seen on Intel platforms is 4 devices at the
-system level. Even if the SoundWire spec does allow for 11 devices per
-link, it's way over-engineered due to capacitive load and signal
-integrity issues. We've seen an absolute maximum of 4 devices on a
-single link in test rigs, and that was never deployed. Two devices per
-link were also only used in prototypes which never hit the market.
-
-At any rate, this in an opt-in solution, not a requirement for non-Intel
-platforms at all. Others can keep using as many devices as they wish,
-within the bounds allowed by the standard.
-
-Note that the device_number creates a de-facto priority, and it would be
-perfectly acceptable for some platforms to tweak the current first-come
-first-serve allocation to improve interrupt response time on each link,
-etc. The standard says nothing about how the device numbers should be
-allocated, only that they be unique on each link. In other words, you
-should expect additional changes to the existing way of allocating
-device numbers.
-
-> Perhaps a better way would be to use dus:dev combination while dealing
-> with a device always..??
-
-That is not compatible with Intel hardware requirements. This wasn't a
-decision where Bard and I were consulted, it is what it is.
-
-Does this clarify things?
-Thanks
--Pierre
-
+diff --git a/drivers/hwspinlock/sprd_hwspinlock.c b/drivers/hwspinlock/sprd_hwspinlock.c
+index 22e2ffb91743..cb37706f61be 100644
+--- a/drivers/hwspinlock/sprd_hwspinlock.c
++++ b/drivers/hwspinlock/sprd_hwspinlock.c
+@@ -76,18 +76,11 @@ static const struct hwspinlock_ops sprd_hwspinlock_ops = {
+ 	.relax = sprd_hwspinlock_relax,
+ };
+ 
+-static void sprd_hwspinlock_disable(void *data)
+-{
+-	struct sprd_hwspinlock_dev *sprd_hwlock = data;
+-
+-	clk_disable_unprepare(sprd_hwlock->clk);
+-}
+-
+ static int sprd_hwspinlock_probe(struct platform_device *pdev)
+ {
+ 	struct sprd_hwspinlock_dev *sprd_hwlock;
+ 	struct hwspinlock *lock;
+-	int i, ret;
++	int i;
+ 
+ 	if (!pdev->dev.of_node)
+ 		return -ENODEV;
+@@ -102,24 +95,12 @@ static int sprd_hwspinlock_probe(struct platform_device *pdev)
+ 	if (IS_ERR(sprd_hwlock->base))
+ 		return PTR_ERR(sprd_hwlock->base);
+ 
+-	sprd_hwlock->clk = devm_clk_get(&pdev->dev, "enable");
++	sprd_hwlock->clk = devm_clk_get_enabled(&pdev->dev, "enable");
+ 	if (IS_ERR(sprd_hwlock->clk)) {
+ 		dev_err(&pdev->dev, "get hwspinlock clock failed!\n");
+ 		return PTR_ERR(sprd_hwlock->clk);
+ 	}
+ 
+-	ret = clk_prepare_enable(sprd_hwlock->clk);
+-	if (ret)
+-		return ret;
+-
+-	ret = devm_add_action_or_reset(&pdev->dev, sprd_hwspinlock_disable,
+-				       sprd_hwlock);
+-	if (ret) {
+-		dev_err(&pdev->dev,
+-			"Failed to add hwspinlock disable action\n");
+-		return ret;
+-	}
+-
+ 	/* set the hwspinlock to record user id to identify subsystems */
+ 	writel(HWSPINLOCK_USER_BITS, sprd_hwlock->base + HWSPINLOCK_RECCTRL);
+ 
+-- 
+2.34.1
 
