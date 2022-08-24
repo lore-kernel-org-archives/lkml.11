@@ -2,104 +2,156 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 78600C38142
-	for <linux-kernel@archiver.kernel.org>; Wed, 24 Aug 2022 01:13:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 59547C32793
+	for <linux-kernel@archiver.kernel.org>; Wed, 24 Aug 2022 01:15:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232665AbiHXBNm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 21:13:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32890 "EHLO
+        id S233054AbiHXBPd (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 23 Aug 2022 21:15:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35150 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229999AbiHXBNk (ORCPT
+        with ESMTP id S231663AbiHXBPT (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 21:13:40 -0400
-Received: from mail-m11885.qiye.163.com (mail-m11885.qiye.163.com [115.236.118.85])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9A1826CD30;
-        Tue, 23 Aug 2022 18:13:38 -0700 (PDT)
-Received: from localhost (unknown [103.29.142.67])
-        by mail-m11885.qiye.163.com (Hmail) with ESMTPA id 3242A4C03C0;
-        Wed, 24 Aug 2022 09:13:32 +0800 (CST)
-From:   Jeffy Chen <jeffy.chen@rock-chips.com>
-To:     Heiko Stuebner <heiko@sntech.de>
-Cc:     Jianqun Xu <jay.xu@rock-chips.com>,
-        Jeffy Chen <jeffy.chen@rock-chips.com>,
-        linux-rockchip@lists.infradead.org,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Bartosz Golaszewski <brgl@bgdev.pl>,
-        linux-kernel@vger.kernel.org, linux-gpio@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org
-Subject: [PATCH v2] gpio/rockchip: Convert to generic_handle_domain_irq()
-Date:   Wed, 24 Aug 2022 09:06:05 +0800
-Message-Id: <20220824010605.14256-1-jeffy.chen@rock-chips.com>
-X-Mailer: git-send-email 2.20.1
+        Tue, 23 Aug 2022 21:15:19 -0400
+Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2D84E13D30;
+        Tue, 23 Aug 2022 18:15:18 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1661303718; x=1692839718;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=Zyagp7MUjz6nulHFPOeDLK55YHm0lYhUAU3L6WSjbP0=;
+  b=VT1oszFSZrDKzZPX4sbDpHiPfqWKpJWgBq5fpmPklvD+ud+WPbK69ivJ
+   yCC/2380drhD0eNg+KyHGybl52KnkrSiUlK9p3CIcxzomRWlmXjxy1uVb
+   nc50hBtSWAEe8eNndAn1LdBBC2doXGDhdxD2uIdo6gyyXWNjSwxE9+Raq
+   Fu++r/LUi0v/L9qG3RLYRHSQFhOVLNGGIKFTFeqP3ZC0obAe2VnNKBUt9
+   EKBke7gUtoaWvr65sm3+Ig7sUKWkRrBSNDsnSFOed60crZPVdyz1LwI/r
+   cdc0y4t8RI2SpJxBXc7+dss4nahkZkGpZ63UzjYL6yrBvKhg2PTYKVxoX
+   g==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10448"; a="295118222"
+X-IronPort-AV: E=Sophos;i="5.93,259,1654585200"; 
+   d="scan'208";a="295118222"
+Received: from fmsmga004.fm.intel.com ([10.253.24.48])
+  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Aug 2022 18:15:17 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.93,259,1654585200"; 
+   d="scan'208";a="677839471"
+Received: from lkp-server02.sh.intel.com (HELO 9bbcefcddf9f) ([10.239.97.151])
+  by fmsmga004.fm.intel.com with ESMTP; 23 Aug 2022 18:15:13 -0700
+Received: from kbuild by 9bbcefcddf9f with local (Exim 4.96)
+        (envelope-from <lkp@intel.com>)
+        id 1oQezA-0000nC-1e;
+        Wed, 24 Aug 2022 01:15:12 +0000
+Date:   Wed, 24 Aug 2022 09:15:02 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Serge Semin <Sergey.Semin@baikalelectronics.ru>,
+        Rob Herring <robh@kernel.org>, Michal Simek <monstr@monstr.eu>,
+        Borislav Petkov <bp@alien8.de>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Tony Luck <tony.luck@intel.com>,
+        James Morse <james.morse@arm.com>,
+        Robert Richter <rric@kernel.org>
+Cc:     kbuild-all@lists.01.org, linux-media@vger.kernel.org,
+        Serge Semin <Sergey.Semin@baikalelectronics.ru>,
+        Alexey Malahov <Alexey.Malahov@baikalelectronics.ru>,
+        Michail Ivanov <Michail.Ivanov@baikalelectronics.ru>,
+        Pavel Parkhomenko <Pavel.Parkhomenko@baikalelectronics.ru>,
+        Punnaiah Choudary Kalluri 
+        <punnaiah.choudary.kalluri@xilinx.com>,
+        Manish Narani <manish.narani@xilinx.com>,
+        Dinh Nguyen <dinguyen@kernel.org>,
+        Krzysztof Kozlowski <krzk@kernel.org>,
+        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-edac@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 19/20] EDAC/synopsys: Unify the driver entities naming
+Message-ID: <202208240904.liSrmM2A-lkp@intel.com>
+References: <20220822190730.27277-20-Sergey.Semin@baikalelectronics.ru>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-HM-Spam-Status: e1kfGhgUHx5ZQUtXWQgPGg8OCBgUHx5ZQUlOS1dZFg8aDwILHllBWSg2Ly
-        tZV1koWUFITzdXWS1ZQUlXWQ8JGhUIEh9ZQVlCSE1NVkodGkNPHR1PTUIfQ1UTARMWGhIXJBQOD1
-        lXWRgSC1lBWUpLSFVJQlVKT0lVTUxZV1kWGg8SFR0UWUFZT0tIVUpKS0hKQ1VLWQY+
-X-HM-Sender-Digest: e1kMHhlZQR0aFwgeV1kSHx4VD1lBWUc6OC46CCo5AT0wSg8iLxMjATgJ
-        LQkKCU5VSlVKTU1KSEtITUpMSktCVTMWGhIXVREeHR0CVRgTHhU7CRQYEFYYExILCFUYFBZFWVdZ
-        EgtZQVlKS0hVSUJVSk9JVU1MWVdZCAFZQUlDS043Bg++
-X-HM-Tid: 0a82cd69633c2eb9kusn3242a4c03c0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220822190730.27277-20-Sergey.Semin@baikalelectronics.ru>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Follow commit dbd1c54fc820 ("gpio: Bulk conversion to
-generic_handle_domain_irq()").
+Hi Serge,
 
-Signed-off-by: Jeffy Chen <jeffy.chen@rock-chips.com>
----
+I love your patch! Yet something to improve:
 
-Changes in v2:
-Use for_each_set_bit().
+[auto build test ERROR on ras/edac-for-next]
+[also build test ERROR on robh/for-next linus/master v6.0-rc2 next-20220823]
+[If your patch is applied to the wrong git tree, kindly drop us a note.
+And when submitting patch, we suggest to use '--base' as documented in
+https://git-scm.com/docs/git-format-patch#_base_tree_information]
 
- drivers/gpio/gpio-rockchip.c | 21 +++++----------------
- 1 file changed, 5 insertions(+), 16 deletions(-)
+url:    https://github.com/intel-lab-lkp/linux/commits/Serge-Semin/EDAC-mc-synopsys-Various-fixes-and-cleanups/20220823-031020
+base:   https://git.kernel.org/pub/scm/linux/kernel/git/ras/ras.git edac-for-next
+config: arm-buildonly-randconfig-r006-20220823 (https://download.01.org/0day-ci/archive/20220824/202208240904.liSrmM2A-lkp@intel.com/config)
+compiler: arm-linux-gnueabi-gcc (GCC) 12.1.0
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # https://github.com/intel-lab-lkp/linux/commit/9c500fa8dbd08021742d8f5a48403c8f6292741c
+        git remote add linux-review https://github.com/intel-lab-lkp/linux
+        git fetch --no-tags linux-review Serge-Semin/EDAC-mc-synopsys-Various-fixes-and-cleanups/20220823-031020
+        git checkout 9c500fa8dbd08021742d8f5a48403c8f6292741c
+        # save the config file
+        mkdir build_dir && cp config build_dir/.config
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-12.1.0 make.cross W=1 O=build_dir ARCH=arm SHELL=/bin/bash drivers/edac/
 
-diff --git a/drivers/gpio/gpio-rockchip.c b/drivers/gpio/gpio-rockchip.c
-index e342a6dc4c6c..03b05a56a66f 100644
---- a/drivers/gpio/gpio-rockchip.c
-+++ b/drivers/gpio/gpio-rockchip.c
-@@ -324,26 +324,15 @@ static void rockchip_irq_demux(struct irq_desc *desc)
- {
- 	struct irq_chip *chip = irq_desc_get_chip(desc);
- 	struct rockchip_pin_bank *bank = irq_desc_get_handler_data(desc);
--	u32 pend;
-+	unsigned long pending;
-+	unsigned int irq;
- 
- 	dev_dbg(bank->dev, "got irq for bank %s\n", bank->name);
- 
- 	chained_irq_enter(chip, desc);
- 
--	pend = readl_relaxed(bank->reg_base + bank->gpio_regs->int_status);
--
--	while (pend) {
--		unsigned int irq, virq;
--
--		irq = __ffs(pend);
--		pend &= ~BIT(irq);
--		virq = irq_find_mapping(bank->domain, irq);
--
--		if (!virq) {
--			dev_err(bank->dev, "unmapped irq %d\n", irq);
--			continue;
--		}
--
-+	pending = readl_relaxed(bank->reg_base + bank->gpio_regs->int_status);
-+	for_each_set_bit(irq, &pending, 32) {
- 		dev_dbg(bank->dev, "handling irq %d\n", irq);
- 
- 		/*
-@@ -377,7 +366,7 @@ static void rockchip_irq_demux(struct irq_desc *desc)
- 			} while ((data & BIT(irq)) != (data_old & BIT(irq)));
- 		}
- 
--		generic_handle_irq(virq);
-+		generic_handle_domain_irq(bank->domain, irq);
- 	}
- 
- 	chained_irq_exit(chip, desc);
+If you fix the issue, kindly add following tag where applicable
+Reported-by: kernel test robot <lkp@intel.com>
+
+All errors (new ones prefixed by >>):
+
+   drivers/edac/synopsys_edac.c: In function 'snps_enable_irq':
+>> drivers/edac/synopsys_edac.c:398:36: error: 'SYNPS_ZYNQMP_IRQ_REGS' undeclared (first use in this function); did you mean 'SNPS_ZYNQMP_IRQ_REGS'?
+     398 |         if (priv->p_data->quirks & SYNPS_ZYNQMP_IRQ_REGS) {
+         |                                    ^~~~~~~~~~~~~~~~~~~~~
+         |                                    SNPS_ZYNQMP_IRQ_REGS
+   drivers/edac/synopsys_edac.c:398:36: note: each undeclared identifier is reported only once for each function it appears in
+   drivers/edac/synopsys_edac.c: In function 'snps_disable_irq':
+   drivers/edac/synopsys_edac.c:419:36: error: 'SYNPS_ZYNQMP_IRQ_REGS' undeclared (first use in this function); did you mean 'SNPS_ZYNQMP_IRQ_REGS'?
+     419 |         if (priv->p_data->quirks & SYNPS_ZYNQMP_IRQ_REGS) {
+         |                                    ^~~~~~~~~~~~~~~~~~~~~
+         |                                    SNPS_ZYNQMP_IRQ_REGS
+   drivers/edac/synopsys_edac.c: In function 'snps_get_dtype':
+   drivers/edac/synopsys_edac.c:485:18: error: implicit declaration of function 'FIELD_GET'; did you mean 'FOLL_GET'? [-Werror=implicit-function-declaration]
+     485 |         regval = FIELD_GET(DDR_MSTR_DEV_CFG_MASK, regval);
+         |                  ^~~~~~~~~
+         |                  FOLL_GET
+   drivers/edac/synopsys_edac.c: In function 'snps_mc_init':
+   drivers/edac/synopsys_edac.c:600:32: warning: variable 'priv' set but not used [-Wunused-but-set-variable]
+     600 |         struct snps_edac_priv *priv;
+         |                                ^~~~
+   cc1: some warnings being treated as errors
+
+
+vim +398 drivers/edac/synopsys_edac.c
+
+ae9b56e3996dad Punnaiah Choudary Kalluri 2015-01-06  392  
+9c500fa8dbd080 Serge Semin               2022-08-22  393  static void snps_enable_irq(struct snps_edac_priv *priv)
+4bcffe941758ee Sherry Sun                2022-04-27  394  {
+b8ee875dfc73be Serge Semin               2022-08-22  395  	unsigned long flags;
+b8ee875dfc73be Serge Semin               2022-08-22  396  
+4bcffe941758ee Sherry Sun                2022-04-27  397  	/* Enable UE/CE Interrupts */
+b8ee875dfc73be Serge Semin               2022-08-22 @398  	if (priv->p_data->quirks & SYNPS_ZYNQMP_IRQ_REGS) {
+4bcffe941758ee Sherry Sun                2022-04-27  399  		writel(DDR_QOSUE_MASK | DDR_QOSCE_MASK,
+4bcffe941758ee Sherry Sun                2022-04-27  400  		       priv->baseaddr + DDR_QOS_IRQ_EN_OFST);
+4bcffe941758ee Sherry Sun                2022-04-27  401  
+b8ee875dfc73be Serge Semin               2022-08-22  402  		return;
+b8ee875dfc73be Serge Semin               2022-08-22  403  	}
+b8ee875dfc73be Serge Semin               2022-08-22  404  
+b8ee875dfc73be Serge Semin               2022-08-22  405  	/* IRQs Enable/Disable feature has been available since v3.10a */
+b8ee875dfc73be Serge Semin               2022-08-22  406  	spin_lock_irqsave(&priv->lock, flags);
+b8ee875dfc73be Serge Semin               2022-08-22  407  
+b8ee875dfc73be Serge Semin               2022-08-22  408  	writel(ECC_CTRL_EN_CE_IRQ | ECC_CTRL_EN_UE_IRQ,
+b8ee875dfc73be Serge Semin               2022-08-22  409  	       priv->baseaddr + ECC_CLR_OFST);
+b8ee875dfc73be Serge Semin               2022-08-22  410  
+b8ee875dfc73be Serge Semin               2022-08-22  411  	spin_unlock_irqrestore(&priv->lock, flags);
+4bcffe941758ee Sherry Sun                2022-04-27  412  }
+4bcffe941758ee Sherry Sun                2022-04-27  413  
+
 -- 
-2.20.1
-
+0-DAY CI Kernel Test Service
+https://01.org/lkp
