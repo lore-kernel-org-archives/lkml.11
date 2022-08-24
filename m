@@ -2,122 +2,94 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B4C89C32793
-	for <linux-kernel@archiver.kernel.org>; Wed, 24 Aug 2022 14:28:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4BBA3C00140
+	for <linux-kernel@archiver.kernel.org>; Wed, 24 Aug 2022 14:29:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236101AbiHXO2c (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 24 Aug 2022 10:28:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50808 "EHLO
+        id S238968AbiHXO3T (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 24 Aug 2022 10:29:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51160 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238114AbiHXO2a (ORCPT
+        with ESMTP id S237976AbiHXO3R (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 24 Aug 2022 10:28:30 -0400
-Received: from mail-pf1-x429.google.com (mail-pf1-x429.google.com [IPv6:2607:f8b0:4864:20::429])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 122E5564D2
-        for <linux-kernel@vger.kernel.org>; Wed, 24 Aug 2022 07:28:29 -0700 (PDT)
-Received: by mail-pf1-x429.google.com with SMTP id y141so16647301pfb.7
-        for <linux-kernel@vger.kernel.org>; Wed, 24 Aug 2022 07:28:29 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=in-reply-to:content-transfer-encoding:content-disposition
-         :mime-version:references:message-id:subject:cc:to:from:date:from:to
-         :cc;
-        bh=VHZ1ksjQl5AvM5dtHsHT/yZDe5KV60+BqIyJVV5J5uo=;
-        b=RM+nfmA9Bgeo4UxgaKhY2YaTFa7Uo1Xz7+8bvcx9KoPOgLoHj/kVqUxK88VBH6dVK8
-         ZrkROkaJlF736UWfTVb11bI1hRCtpEnjp/hCgxnM2OC7va6xnttCh6APsILSN2whjOWj
-         CNd0wtoY9ZnEGxAVI+LeqkXnauvxYTaJbNqc62L1Vkzuw6+m9FMikDy6n4cWE7zHcpA4
-         Sh3oR0GArh+agB+sQr7Nr4Q43C9ZN5bxBkywRgPUs596aLCfC1lydvv+P5CR3Z2nGWXq
-         FbklLVd96uhSUf3vYgMOx5uTxnOXQwszSRDfEalzBIdl8JNcljsLswKMMqd4ddfBnmME
-         Pa0A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=in-reply-to:content-transfer-encoding:content-disposition
-         :mime-version:references:message-id:subject:cc:to:from:date
-         :x-gm-message-state:from:to:cc;
-        bh=VHZ1ksjQl5AvM5dtHsHT/yZDe5KV60+BqIyJVV5J5uo=;
-        b=QuYPFioa+B0muVDNehbT679gFjiF0ZKfRIymzV9OA4SK8eKDG566ko7SMcFiXiShG6
-         AT3XE/P6cRKlmkhSVjPms6BQa/+n7mJuHvfovkjBiiVGZcYZjy0REWgQqeWIvu201Q7H
-         L/bCB87IgsgXOrYqMeHVgWpB8D9V2CqW7i456v2M+mK57HWW+MM4c/cCdzXy6g1CV0iQ
-         n67NVVHmw7vKv3QGOfAazzNCyfGBzeS9gDjCfvr5MFlV8Wfb12frKVnwEg+agfItUC67
-         tNDl98j7+tyTVRt2VPPzHKhNmOAiTyMYouXCRDGeUkFzE/wT6PTxI9mp669TDQ6HO1pg
-         66nA==
-X-Gm-Message-State: ACgBeo3SW5k1E6avsgcnQGsHxLIFTRIba7XE7iHy9MMnra2n0adTcmfs
-        aE1v7N0/+YsaG+sUdK6cDNDl
-X-Google-Smtp-Source: AA6agR6m+4Z7m/Wrb514SKsSQkNiUA0fZM99UcPSJFiJC0RcpdGS8unmI17fFFdsHDvHHi2O4TZ5fg==
-X-Received: by 2002:aa7:88c3:0:b0:536:f035:ede0 with SMTP id k3-20020aa788c3000000b00536f035ede0mr8850989pff.74.1661351308433;
-        Wed, 24 Aug 2022 07:28:28 -0700 (PDT)
-Received: from thinkpad ([117.207.24.28])
-        by smtp.gmail.com with ESMTPSA id n3-20020aa79843000000b005368341381fsm7305569pfq.106.2022.08.24.07.28.24
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 24 Aug 2022 07:28:28 -0700 (PDT)
-Date:   Wed, 24 Aug 2022 19:58:21 +0530
-From:   Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
-To:     Greg KH <gregkh@linuxfoundation.org>
-Cc:     kishon@ti.com, lpieralisi@kernel.org, linux-pci@vger.kernel.org,
-        linux-kernel@vger.kernel.org, mie@igel.co.jp, kw@linux.com,
-        stable@vger.kernel.org
-Subject: Re: [PATCH v2 2/5] tools: PCI: Fix parsing the return value of IOCTLs
-Message-ID: <20220824142821.GC4767@thinkpad>
-References: <20220824123010.51763-1-manivannan.sadhasivam@linaro.org>
- <20220824123010.51763-3-manivannan.sadhasivam@linaro.org>
- <YwYdFt6sc7lZGRcg@kroah.com>
+        Wed, 24 Aug 2022 10:29:17 -0400
+Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.153.233])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4E84257542;
+        Wed, 24 Aug 2022 07:29:15 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
+  t=1661351355; x=1692887355;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=6afhEAvhEDkE/G5SdTBUp5GkN6q4ddNyAjn8YS4qkao=;
+  b=PzNwvwZ5Cqh94X4Ak1e9Qe2kZDVw9LpdSdnp1UDKWTHpaC37frHF2zKa
+   ciE+cS/OnFVIxL0HKfH/+ggTV1Ft6g0qQvjQhH6WaC7aHUey+XxuJVerC
+   8pAD1/roRwVLBfhkx56pFqkNKuV6kBI/Oa9N7gJvL9nNmms2nn4AuwJ0u
+   lt6b/zSbfDyUPlKSY5SK9p3XxT7SkKnotPBiKdit1fzBurEtyTD0W8eEu
+   3wHvOXNwA9X6n9ry/p1ykgpLqEm1/VdlrPSD8nOmNiqSDLIXp6QfRWVo0
+   V15/D5wwRlV2/6pslgC5wibAnAGZ6XhyFqOQpC6QZy5S5LFFB1ojitnrQ
+   Q==;
+X-IronPort-AV: E=Sophos;i="5.93,260,1654585200"; 
+   d="scan'208";a="187868677"
+Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
+  by esa1.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 24 Aug 2022 07:29:15 -0700
+Received: from chn-vm-ex01.mchp-main.com (10.10.85.143) by
+ chn-vm-ex04.mchp-main.com (10.10.85.152) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.12; Wed, 24 Aug 2022 07:29:14 -0700
+Received: from CHE-LT-UNGSOFTWARE.microchip.com (10.10.115.15) by
+ chn-vm-ex01.mchp-main.com (10.10.85.143) with Microsoft SMTP Server id
+ 15.1.2507.12 via Frontend Transport; Wed, 24 Aug 2022 07:29:12 -0700
+From:   Kumaravel Thiagarajan <kumaravel.thiagarajan@microchip.com>
+To:     <linux-gpio@vger.kernel.org>, <linux-kernel@vger.kernel.org>
+CC:     <UNGLinuxDriver@microchip.com>, <gregkh@linuxfoundation.org>,
+        <arnd@arndb.de>, <dragan.cvetic@xilinx.com>,
+        <derek.kiernan@xilinx.com>
+Subject: [PATCH v1 char-misc-next 0/5] misc: microchip: pci1xxxx: Add auxiliary bus driver and the GPIO driver for PIO function of pci1xxxx. 
+Date:   Thu, 25 Aug 2022 01:30:42 +0530
+Message-ID: <20220824200047.150308-1-kumaravel.thiagarajan@microchip.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <YwYdFt6sc7lZGRcg@kroah.com>
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Aug 24, 2022 at 02:44:06PM +0200, Greg KH wrote:
-> On Wed, Aug 24, 2022 at 06:00:07PM +0530, Manivannan Sadhasivam wrote:
-> > "pci_endpoint_test" driver now returns 0 for success and negative error
-> > code for failure. So adapt to the change by reporting FAILURE if the
-> > return value is < 0, and SUCCESS otherwise.
-> > 
-> > Cc: stable@vger.kernel.org #5.10
-> > Fixes: 3f2ed8134834 ("tools: PCI: Add a userspace tool to test PCI endpoint")
-> > Signed-off-by: Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
-> > ---
-> >  tools/pci/pcitest.c | 41 +++++++++++++++++++++--------------------
-> >  1 file changed, 21 insertions(+), 20 deletions(-)
-> > 
-> > diff --git a/tools/pci/pcitest.c b/tools/pci/pcitest.c
-> > index 441b54234635..a4e5b17cc3b5 100644
-> > --- a/tools/pci/pcitest.c
-> > +++ b/tools/pci/pcitest.c
-> > @@ -18,7 +18,6 @@
-> >  
-> >  #define BILLION 1E9
-> >  
-> > -static char *result[] = { "NOT OKAY", "OKAY" };
-> >  static char *irq[] = { "LEGACY", "MSI", "MSI-X" };
-> >  
-> >  struct pci_test {
-> > @@ -54,9 +53,9 @@ static int run_test(struct pci_test *test)
-> >  		ret = ioctl(fd, PCITEST_BAR, test->barnum);
-> >  		fprintf(stdout, "BAR%d:\t\t", test->barnum);
-> >  		if (ret < 0)
-> > -			fprintf(stdout, "TEST FAILED\n");
-> > +			fprintf(stdout, "FAILED\n");
-> >  		else
-> > -			fprintf(stdout, "%s\n", result[ret]);
-> > +			fprintf(stdout, "SUCCESS\n");
-> 
-> Is this following the kernel TAP output rules?  If not, why not?  If so,
+pci1xxxx is a PCIe switch with a multi-function endpoint on one of its
+downstream ports. PIO function is one of the functions in the
+multi-function endpoint. PIO function combines a GPIO controller and also
+an interface to program pci1xxxx'x OTP & EEPROM. This patch adds an
+auxiliary bus driver that enumerates separate child devices for gpio and
+OTP/EEPROM interface and the gpio controller driver for the first child.
 
-It is not following the TAP rules currently as I was not aware of it. Now that
-you pointed out, I'll try to adapt to it.
+Kumaravel Thiagarajan (5):
+  misc: microchip: pci1xxxx: load auxiliary bus driver for the PIO
+    function in the multi-function endpoint of pci1xxxx device.
+  misc: microchip: pci1xxxx: load gpio driver for the gpio controller
+    auxiliary device enumerated by the auxiliary bus driver.
+  misc: microchip: pci1xxxx: Add functions to configure gpio pins as
+    input / output, get status, handle I/O for gpio pins.
+  misc: microchip: pci1xxxx: Add gpio irq handler and irq helper
+    functions irq_ack, irq_mask, irq_unmask and irq_set_type of
+    irq_chip.
+  misc: microchip: pci1xxxx: Add power management functions - suspend &
+    resume handlers.
 
-Thanks,
-Mani
-
-> say that you are fixing that issue up in the changelog text.
-> 
-> thanks,
-> 
-> greg k-h
+ MAINTAINERS                                   |   8 +
+ drivers/misc/Kconfig                          |   1 +
+ drivers/misc/Makefile                         |   3 +-
+ drivers/misc/mchp_pci1xxxx/Kconfig            |  10 +
+ drivers/misc/mchp_pci1xxxx/Makefile           |   1 +
+ drivers/misc/mchp_pci1xxxx/mchp_pci1xxxx_gp.c | 166 +++++++
+ drivers/misc/mchp_pci1xxxx/mchp_pci1xxxx_gp.h |  28 ++
+ .../misc/mchp_pci1xxxx/mchp_pci1xxxx_gpio.c   | 438 ++++++++++++++++++
+ 8 files changed, 654 insertions(+), 1 deletion(-)
+ create mode 100644 drivers/misc/mchp_pci1xxxx/Kconfig
+ create mode 100644 drivers/misc/mchp_pci1xxxx/Makefile
+ create mode 100644 drivers/misc/mchp_pci1xxxx/mchp_pci1xxxx_gp.c
+ create mode 100644 drivers/misc/mchp_pci1xxxx/mchp_pci1xxxx_gp.h
+ create mode 100644 drivers/misc/mchp_pci1xxxx/mchp_pci1xxxx_gpio.c
 
 -- 
-மணிவண்ணன் சதாசிவம்
+2.25.1
+
