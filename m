@@ -2,143 +2,102 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 56091C00140
-	for <linux-kernel@archiver.kernel.org>; Wed, 24 Aug 2022 16:21:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5FF43C00140
+	for <linux-kernel@archiver.kernel.org>; Wed, 24 Aug 2022 16:21:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237880AbiHXQVA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 24 Aug 2022 12:21:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41874 "EHLO
+        id S239371AbiHXQVG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 24 Aug 2022 12:21:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41904 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239173AbiHXQUy (ORCPT
+        with ESMTP id S237960AbiHXQVA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 24 Aug 2022 12:20:54 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 57532647D0;
-        Wed, 24 Aug 2022 09:20:53 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 0522CB825A4;
-        Wed, 24 Aug 2022 16:20:52 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A4C7CC433D7;
-        Wed, 24 Aug 2022 16:20:50 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1661358050;
-        bh=vMKt/FR3QyAvD8amq6k0PFCyA73ecEmPJ9lBbXHQWbA=;
-        h=Date:From:To:Cc:Subject:Reply-To:References:In-Reply-To:From;
-        b=j93K/hvscliNMtfDuyS6lRs2U0EGQTErYymd/GINMX84gmzh6+5gWnuafWmB+I9DT
-         Z40wF2qcwthsYtIXUuvLPSm9Bly1xBtfh4SKntD+gcD00swX8REbAhkJliUDPT4E5T
-         ns8nI8u2vWlV6DM/hJwk78TWBtrD8KG6cFwRUNFDVusNykTfgOof2AX+v3z9JP+IE2
-         lD7koa6ffyedYNY7WmTzCfxR//fRDSmnq0bYVJscy8JWefBxWLKeXe8w2gioM3Vjwe
-         Hmu0QEDcyeW6EdZl+o+AuiMKXsxNCpaAzk3qC170wVXwLaHKOABAjqlPiLZpwTL2O2
-         74pQ6xFYYYD6g==
-Received: by paulmck-ThinkPad-P17-Gen-1.home (Postfix, from userid 1000)
-        id 3F9385C03F6; Wed, 24 Aug 2022 09:20:50 -0700 (PDT)
-Date:   Wed, 24 Aug 2022 09:20:50 -0700
-From:   "Paul E. McKenney" <paulmck@kernel.org>
-To:     Pingfan Liu <kernelfans@gmail.com>
-Cc:     LKML <linux-kernel@vger.kernel.org>, rcu <rcu@vger.kernel.org>,
-        Frederic Weisbecker <frederic@kernel.org>,
-        Neeraj Upadhyay <quic_neeraju@quicinc.com>,
-        Josh Triplett <josh@joshtriplett.org>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Mathieu Desnoyers <mathieu.desnoyers@efficios.com>,
-        Lai Jiangshan <jiangshanlai@gmail.com>,
-        Joel Fernandes <joel@joelfernandes.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Steven Price <steven.price@arm.com>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Kuppuswamy Sathyanarayanan 
-        <sathyanarayanan.kuppuswamy@linux.intel.com>,
-        "Jason A. Donenfeld" <Jason@zx2c4.com>, boqun.feng@gmail.com
-Subject: Re: [RFC 06/10] rcu/hotplug: Make rcutree_dead_cpu() parallel
-Message-ID: <20220824162050.GA6159@paulmck-ThinkPad-P17-Gen-1>
-Reply-To: paulmck@kernel.org
-References: <20220822021520.6996-1-kernelfans@gmail.com>
- <20220822021520.6996-7-kernelfans@gmail.com>
- <20220822024528.GC6159@paulmck-ThinkPad-P17-Gen-1>
- <YwQygLBtzqwxuMIJ@piliu.users.ipa.redhat.com>
- <20220823030125.GJ6159@paulmck-ThinkPad-P17-Gen-1>
- <CAFgQCTup0uTqnKi79Tu+5Q0POYVdcE4UkGes8KfHXBd6VR552A@mail.gmail.com>
+        Wed, 24 Aug 2022 12:21:00 -0400
+Received: from mail-wr1-x435.google.com (mail-wr1-x435.google.com [IPv6:2a00:1450:4864:20::435])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B237D72B6A
+        for <linux-kernel@vger.kernel.org>; Wed, 24 Aug 2022 09:20:59 -0700 (PDT)
+Received: by mail-wr1-x435.google.com with SMTP id h24so21390964wrb.8
+        for <linux-kernel@vger.kernel.org>; Wed, 24 Aug 2022 09:20:59 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=conchuod.ie; s=google;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:from:to:cc;
+        bh=S2tBbgrx+25RpWaqCl+haIdlbySiWC0Xb4SRnNTuZLo=;
+        b=CaBBfJ6zzlzSH8t+T5KGfrvMzLAi5AI0eoDZAVk0yw3cSoKl5RoetN0lKoKeWRh6hP
+         r5P8edcEbxW/Ad8FhnLpgrcKO9nzODroDxn0URodX5a9zfEmMBvyQNrmKmfKBYVQHrWN
+         TOX3+urD81gS9Ih4cs9hl7+KIvMTFFBJQlmcNWfGci8wUyo2NUiyTmh4MCkSTbDEhalM
+         ccAX+7RJgQlxRHJ90k2FI02f6/m0gmf3lK0EziSkKN8eoc85597K8AE4NAwEifpHvNgV
+         APwCV35SmUdKYbIxqZ2tLbzCVxnjNZX4poPem4awdsY1nLjYErALPj0Bk98N1GnJdR3t
+         cNdg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc;
+        bh=S2tBbgrx+25RpWaqCl+haIdlbySiWC0Xb4SRnNTuZLo=;
+        b=QPN2jYhXKbEoh0B+y72sh+2S11cgb0zdF0ocAJ5wIPeXXY+/o61rCmGUVllcodk8F+
+         8Cu8A4aeXmTXZn7TzoY7LzpsUgifM5aLIBGm7Aegd6oME2E3c0zLHXSK4414t7b1uHKs
+         eGr4emsLVsM+U6bdMUvThuzsVAF2TLskT+l2jTi9vs3sNbRLZMxqIicDpywv+/M+ia30
+         napN+9VRYe4n8/zPRDOCK7Xk/+Dp58XqI6L6uY1kyX39Eacgt+zfcQZNXl6iFBpuxkKI
+         sfpb+1geui46jukE4+ukyPJ+L9B65ENVoZ6Pt8mLdGuZK8bgKGS9qMNxyXkMiVuWP0jj
+         5mRQ==
+X-Gm-Message-State: ACgBeo2NDFy8szU8zLfjIhyeLT0TuZy9LDdot/MVNLtQKeYarTdK/DC6
+        inBsB8xtKdqCOllG40axBOfrtw==
+X-Google-Smtp-Source: AA6agR4/6nKKtxFMnoCc84DqrjQsVm+cjtB+x8R9A0ftf1MIYOg7bI7gO59Np7Of33NfYpXfhEp05Q==
+X-Received: by 2002:a05:6000:221:b0:225:464d:b096 with SMTP id l1-20020a056000022100b00225464db096mr24122wrz.32.1661358058303;
+        Wed, 24 Aug 2022 09:20:58 -0700 (PDT)
+Received: from henark71.. ([51.37.149.245])
+        by smtp.gmail.com with ESMTPSA id l6-20020a05600c4f0600b003a690f704absm1903582wmq.4.2022.08.24.09.20.56
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 24 Aug 2022 09:20:57 -0700 (PDT)
+From:   Conor Dooley <mail@conchuod.ie>
+To:     Rob Herring <robh+dt@kernel.org>,
+        Paul Walmsley <paul.walmsley@sifive.com>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Albert Ou <aou@eecs.berkeley.edu>,
+        Palmer Dabbelt <palmer@dabbelt.com>,
+        Daire McNamara <daire.mcnamara@microchip.com>,
+        Greentime Hu <greentime.hu@sifive.com>,
+        Conor Dooley <mail@conchuod.ie>,
+        Lorenzo Pieralisi <lpieralisi@kernel.org>,
+        Bjorn Helgaas <bhelgaas@google.com>
+Cc:     Conor Dooley <conor.dooley@microchip.com>,
+        linux-kernel@vger.kernel.org, linux-pci@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-riscv@lists.infradead.org
+Subject: Re: (subset) [PATCH v3 0/7] Fix RISC-V/PCI dt-schema issues with dt-schema v2022.08
+Date:   Wed, 24 Aug 2022 17:19:44 +0100
+Message-Id: <166135795510.3741278.5608627370699269871.b4-ty@microchip.com>
+X-Mailer: git-send-email 2.37.1
+In-Reply-To: <20220819231415.3860210-1-mail@conchuod.ie>
+References: <20220819231415.3860210-1-mail@conchuod.ie>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAFgQCTup0uTqnKi79Tu+5Q0POYVdcE4UkGes8KfHXBd6VR552A@mail.gmail.com>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Aug 24, 2022 at 09:53:11PM +0800, Pingfan Liu wrote:
-> On Tue, Aug 23, 2022 at 11:01 AM Paul E. McKenney <paulmck@kernel.org> wrote:
-> >
-> > On Tue, Aug 23, 2022 at 09:50:56AM +0800, Pingfan Liu wrote:
-> > > On Sun, Aug 21, 2022 at 07:45:28PM -0700, Paul E. McKenney wrote:
-> > > > On Mon, Aug 22, 2022 at 10:15:16AM +0800, Pingfan Liu wrote:
-> > > > > In order to support parallel, rcu_state.n_online_cpus should be
-> > > > > atomic_dec()
-> > > > >
-> > > > > Signed-off-by: Pingfan Liu <kernelfans@gmail.com>
-> > > >
-> > > > I have to ask...  What testing have you subjected this patch to?
-> > > >
-> > >
-> > > This patch subjects to [1]. The series aims to enable kexec-reboot in
-> > > parallel on all cpu. As a result, the involved RCU part is expected to
-> > > support parallel.
-> >
-> > I understand (and even sympathize with) the expectation.  But results
-> > sometimes diverge from expectations.  There have been implicit assumptions
-> > in RCU about only one CPU going offline at a time, and I am not sure
-> > that all of them have been addressed.  Concurrent CPU onlining has
-> > been looked at recently here:
-> >
-> > https://docs.google.com/document/d/1jymsaCPQ1PUDcfjIKm0UIbVdrJAaGX-6cXrmcfm0PRU/edit?usp=sharing
-> >
-> > You did us atomic_dec() to make rcu_state.n_online_cpus decrementing be
-> > atomic, which is good.  Did you look through the rest of RCU's CPU-offline
-> > code paths and related code paths?
+From: Conor Dooley <conor.dooley@microchip.com>
+
+On Sat, 20 Aug 2022 00:14:09 +0100, Conor Dooley wrote:
+> From: Conor Dooley <conor.dooley@microchip.com>
 > 
-> I went through those codes at a shallow level, especially at each
-> cpuhp_step hook in the RCU system.
-
-And that is fine, at least as a first step.
-
-> But as you pointed out, there are implicit assumptions about only one
-> CPU going offline at a time, I will chew the google doc which you
-> share.  Then I can come to a final result.
-
-Boqun Feng, Neeraj Upadhyay, Uladzislau Rezki, and I took a quick look,
-and rcu_boost_kthread_setaffinity() seems to need some help.  As it
-stands, it appears that concurrent invocations of this function from the
-CPU-offline path will cause all but the last outgoing CPU's bit to be
-(incorrectly) set in the cpumask_var_t passed to set_cpus_allowed_ptr().
-
-This should not be difficult to fix, for example, by maintaining a
-separate per-leaf-rcu_node-structure bitmask of the concurrently outgoing
-CPUs for that rcu_node structure.  (Similar in structure to the
-->qsmask field.)
-
-There are probably more where that one came from.  ;-)
-
-> > > [1]: https://lore.kernel.org/linux-arm-kernel/20220822021520.6996-3-kernelfans@gmail.com/T/#mf62352138d7b040fdb583ba66f8cd0ed1e145feb
-> >
-> > Perhaps I am more blind than usual today, but I am not seeing anything
-> > in this patch describing the testing.  At this point, I am thinking in
-> > terms of making rcutorture test concurrent CPU offlining parallel
+> Hey all,
 > 
-> Yes, testing results are more convincing in this area.
+> Got a few fixes for PCI dt-bindings that I noticed after upgrading my
+> dt-schema to v2022.08.
 > 
-> After making clear the implicit assumptions, I will write some code to
-> bridge my code and rcutorture test. Since the series is a little
-> different from parallel cpu offlining. It happens after all devices
-> are torn down, and there is no way to rollback.
+> [...]
 
-Very good, looking forward to seeing what you come up with!
+Applied to dt-fixes, RISC-V should be back to 0 warnings in the next
+linux-next. Thanks!
 
-> > Thoughts?
-> 
-> Need a deeper dive into this field. Hope to bring out something soon.
+[4/7] riscv: dts: microchip: mpfs: fix incorrect pcie child node name
+      https://git.kernel.org/conor/c/3f67e6997603
+[5/7] riscv: dts: microchip: mpfs: remove ti,fifo-depth property
+      https://git.kernel.org/conor/c/72a05748cbd2
+[6/7] riscv: dts: microchip: mpfs: remove bogus card-detect-delay
+      https://git.kernel.org/conor/c/2b55915d27dc
+[7/7] riscv: dts: microchip: mpfs: remove pci axi address translation property
+      https://git.kernel.org/conor/c/e4009c5fa77b
 
-Again, looking forward to seeing what you find!
-
-							Thanx, Paul
+Thanks,
+Conor.
