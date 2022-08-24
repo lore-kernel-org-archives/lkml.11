@@ -2,227 +2,798 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C7AE9C3F6B0
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A38BAC32792
 	for <linux-kernel@archiver.kernel.org>; Wed, 24 Aug 2022 08:47:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236244AbiHXIqZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 24 Aug 2022 04:46:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56888 "EHLO
+        id S233053AbiHXIqB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 24 Aug 2022 04:46:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55544 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236169AbiHXIqE (ORCPT
+        with ESMTP id S236053AbiHXIpp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 24 Aug 2022 04:46:04 -0400
-Received: from wp530.webpack.hosteurope.de (wp530.webpack.hosteurope.de [IPv6:2a01:488:42:1000:50ed:8234::])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 37CBC74DE3;
-        Wed, 24 Aug 2022 01:46:00 -0700 (PDT)
-Received: from [2a02:8108:963f:de38:eca4:7d19:f9a2:22c5]; authenticated
-        by wp530.webpack.hosteurope.de running ExIM with esmtpsa (TLS1.3:ECDHE_RSA_AES_128_GCM_SHA256:128)
-        id 1oQm1O-0005uy-OU; Wed, 24 Aug 2022 10:45:58 +0200
-Message-ID: <64f160e0-dd9d-ff01-08bd-464da5725f01@leemhuis.info>
-Date:   Wed, 24 Aug 2022 10:45:58 +0200
+        Wed, 24 Aug 2022 04:45:45 -0400
+Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 033D46D55A
+        for <linux-kernel@vger.kernel.org>; Wed, 24 Aug 2022 01:45:39 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1661330739; x=1692866739;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=Hjuo9kW9bheYYzAP6rFzZE28qSxkQouTWA6IrwsWWGI=;
+  b=FK/NZTdg/6MdoF/GDFdIiAx0r4smN+3p7LUrsx0f9Ey1Vy2OU34xmZeY
+   vO+se1JPnbCgmNnLEqCTRu5MoMRvYsFneU2+COR5qoJ3IFEFW0tguoUNG
+   xRNvwrzoU/l02yAx2wfdDJn9TgieI45sn3zNL4cIgIhHyh+nbEe3/Tvw/
+   21IMKptbnxU94Hsup4VmD7NxgDTlIByBucAze0Dzig8ccM0wEK8MqUyqB
+   89/aLLzMVSrOZdrMNCBCQhniSPXfYqWM10nWiPuDFdrPzELjcDul5dg0b
+   7wKf4zG0PpGFAJjsv+TDf3KmiqpIUsUo9R+tt7DZx/Hmjn1Hl182txjYR
+   w==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10448"; a="357882488"
+X-IronPort-AV: E=Sophos;i="5.93,260,1654585200"; 
+   d="scan'208";a="357882488"
+Received: from orsmga005.jf.intel.com ([10.7.209.41])
+  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Aug 2022 01:45:38 -0700
+X-IronPort-AV: E=Sophos;i="5.93,260,1654585200"; 
+   d="scan'208";a="785553984"
+Received: from yuhsuanc-mobl.gar.corp.intel.com (HELO paris.amr.corp.intel.com) ([10.254.38.238])
+  by orsmga005-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Aug 2022 01:45:35 -0700
+From:   Gwan-gyeong Mun <gwan-gyeong.mun@intel.com>
+To:     intel-gfx@lists.freedesktop.org
+Cc:     linux-kernel@vger.kernel.org, dri-devel@lists.freedesktop.org,
+        mchehab@kernel.org, chris@chris-wilson.co.uk,
+        matthew.auld@intel.com, thomas.hellstrom@linux.intel.com,
+        jani.nikula@intel.com, nirmoy.das@intel.com, airlied@linux.ie,
+        daniel@ffwll.ch, andi.shyti@linux.intel.com,
+        andrzej.hajda@intel.com, keescook@chromium.org,
+        mauro.chehab@linux.intel.com,
+        intel-gfx-trybot@lists.freedesktop.org
+Subject: [PATCH v9 3/8] drm/i915/gem: Typecheck page lookups
+Date:   Wed, 24 Aug 2022 17:45:09 +0900
+Message-Id: <20220824084514.2261614-4-gwan-gyeong.mun@intel.com>
+X-Mailer: git-send-email 2.37.1
+In-Reply-To: <20220824084514.2261614-1-gwan-gyeong.mun@intel.com>
+References: <20220824084514.2261614-1-gwan-gyeong.mun@intel.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.2.0
-Subject: Re: Regression in 5.19.0: USB errors during boot
-Content-Language: en-US
-To:     "regressions@lists.linux.dev" <regressions@lists.linux.dev>
-Cc:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-References: <25342.20092.262450.330346@wylie.me.uk>
-From:   Thorsten Leemhuis <regressions@leemhuis.info>
-In-Reply-To: <25342.20092.262450.330346@wylie.me.uk>
 Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-bounce-key: webpack.hosteurope.de;regressions@leemhuis.info;1661330761;a6886e98;
-X-HE-SMSGID: 1oQm1O-0005uy-OU
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-[TLDR: I'm adding this regression report to the list of tracked
-regressions; all text from me you find below is based on a few templates
-paragraphs you might have encountered already already in similar form.]
+From: Chris Wilson <chris@chris-wilson.co.uk>
 
-On 18.08.22 16:36, Alan J. Wylie wrote:
-> 
-> Apologies for the delay in reporting this: I messed up my first attempt at
-> bisecting, then I've spent a week going to, enjoying, returning from and
-> recovering from a music festival.
-> 
-> Up to and including 5.18.18 things are fine. With 5.19.0 (and .1 and .2)  I see
-> lots of errors and hangs on the USB2 chipset, e.g.
-> 
-> $ grep "usb 9-4" dmesg.5.19.2
-> [    6.669075] usb 9-4: new full-speed USB device number 2 using ohci-pci
-> [    6.829087] usb 9-4: device descriptor read/64, error -32
-> [    7.097094] usb 9-4: device descriptor read/64, error -32
-> [    7.361087] usb 9-4: new full-speed USB device number 3 using ohci-pci
-> [    7.521152] usb 9-4: device descriptor read/64, error -32
-> [    7.789066] usb 9-4: device descriptor read/64, error -32
-> [    8.081070] usb 9-4: new full-speed USB device number 4 using ohci-pci
-> [    8.497138] usb 9-4: device not accepting address 4, error -32
-> [    8.653140] usb 9-4: new full-speed USB device number 5 using ohci-pci
-> [    9.069141] usb 9-4: device not accepting address 5, error -32
-> $
-> 
-> $ grep "usb 1-2" dmesg.5.19.2
-> [    5.917102] usb 1-2: new high-speed USB device number 2 using ehci-pci
-> [    6.277076] usb 1-2: device descriptor read/64, error -71
-> [    6.513143] usb 1-2: device descriptor read/64, error -32
-> [    6.753146] usb 1-2: new high-speed USB device number 3 using ehci-pci
-> [    6.881143] usb 1-2: device descriptor read/64, error -32
-> [    7.117144] usb 1-2: device descriptor read/64, error -32
-> [    7.429141] usb 1-2: new high-speed USB device number 4 using ehci-pci
-> [    7.845134] usb 1-2: device not accepting address 4, error -32
-> [    7.977142] usb 1-2: new high-speed USB device number 5 using ehci-pci
-> [    8.393158] usb 1-2: device not accepting address 5, error -32
-> $
-> 
-> the USB port is then no longer usable
-> 
-> This is not reproducible on the other chipset (USB3) on this machine,
-> nor on two other systems. Swapping USB cables doesn't help.
-> 
-> I have bisected it to
-> 
-> $ git bisect bad
-> 78013eaadf696d2105982abb4018fbae394ca08f is the first bad commit
-> commit 78013eaadf696d2105982abb4018fbae394ca08f
-> Author: Christoph Hellwig <hch@lst.de>
-> Date:   Mon Feb 14 14:11:44 2022 +0100
-> 
->     x86: remove the IOMMU table infrastructure
-> 
-> however it will not easily revert
-> 
-> I'll be more than happy to assist with any debugging/testing.
-> 
-> $ git revert 78013eaadf696d2105982abb4018fbae394ca08f
-> Auto-merging arch/x86/include/asm/dma-mapping.h
-> CONFLICT (content): Merge conflict in arch/x86/include/asm/dma-mapping.h
-> Auto-merging arch/x86/include/asm/iommu.h
-> Auto-merging arch/x86/include/asm/xen/swiotlb-xen.h
-> Auto-merging arch/x86/kernel/Makefile
-> Auto-merging arch/x86/kernel/pci-dma.c
-> CONFLICT (content): Merge conflict in arch/x86/kernel/pci-dma.c
-> Auto-merging arch/x86/kernel/vmlinux.lds.S
-> Auto-merging drivers/iommu/amd/init.c
-> Auto-merging drivers/iommu/amd/iommu.c
-> CONFLICT (content): Merge conflict in drivers/iommu/amd/iommu.c
-> Auto-merging drivers/iommu/intel/dmar.c
-> error: could not revert 78013eaadf69... x86: remove the IOMMU table infrastructure
-> 
-> # dmidecode  | grep -A2 "^Base Board"
-> Base Board Information
->      Manufacturer: Gigabyte Technology Co., Ltd.
->      Product Name: 970A-DS3P
-> #
-> 
-> # lspci -nn | grep -i usb
-> 00:12.0 USB controller [0c03]: Advanced Micro Devices, Inc. [AMD/ATI] SB7x0/SB8x0/SB9x0 USB OHCI0 Controller [1002:4397]
-> 00:12.2 USB controller [0c03]: Advanced Micro Devices, Inc. [AMD/ATI] SB7x0/SB8x0/SB9x0 USB EHCI Controller [1002:4396]
-> 00:13.0 USB controller [0c03]: Advanced Micro Devices, Inc. [AMD/ATI] SB7x0/SB8x0/SB9x0 USB OHCI0 Controller [1002:4397]
-> 00:13.2 USB controller [0c03]: Advanced Micro Devices, Inc. [AMD/ATI] SB7x0/SB8x0/SB9x0 USB EHCI Controller [1002:4396]
-> 00:14.5 USB controller [0c03]: Advanced Micro Devices, Inc. [AMD/ATI] SB7x0/SB8x0/SB9x0 USB OHCI2 Controller [1002:4399]
-> 00:16.0 USB controller [0c03]: Advanced Micro Devices, Inc. [AMD/ATI] SB7x0/SB8x0/SB9x0 USB OHCI0 Controller [1002:4397]
-> 00:16.2 USB controller [0c03]: Advanced Micro Devices, Inc. [AMD/ATI] SB7x0/SB8x0/SB9x0 USB EHCI Controller [1002:4396]
-> 02:00.0 USB controller [0c03]: VIA Technologies, Inc. VL805/806 xHCI USB 3.0 Controller [1106:3483] (rev 01)
-> #
-> 
-> # lspci -v -s 00:12
-> 00:12.0 USB controller: Advanced Micro Devices, Inc. [AMD/ATI] SB7x0/SB8x0/SB9x0 USB OHCI0 Controller (prog-if 10 [OHCI])
-> 	Subsystem: Gigabyte Technology Co., Ltd GA-880GMA-USB3
-> 	Flags: bus master, 66MHz, medium devsel, latency 32, IRQ 18
-> 	Memory at fe50a000 (32-bit, non-prefetchable) [size=4K]
-> 	Kernel driver in use: ohci-pci
-> 				 	Kernel modules: ohci_pci
-> 00:12.2 USB controller: Advanced Micro Devices, Inc. [AMD/ATI] SB7x0/SB8x0/SB9x0 USB EHCI Controller (prog-if 20 [EHCI])
-> 	Subsystem: Gigabyte Technology Co., Ltd GA-880GMA-USB3
-> 	Flags: bus master, 66MHz, medium devsel, latency 32, IRQ 17
-> 	Memory at fe509000 (32-bit, non-prefetchable) [size=256]
-> 	Capabilities: [c0] Power Management version 2
-> 	Capabilities: [e4] Debug port: BAR=1 offset=00e0
-> 	Kernel driver in use: ehci-pci
-> 	Kernel modules: ehci_pci
-> #
-> 
-> # lsusb
-> Bus 005 Device 001: ID 1d6b:0002 Linux Foundation 2.0 root hub
-> Bus 009 Device 002: ID 067b:2303 Prolific Technology, Inc. PL2303 Serial Port / Mobile Action MA-8910P
-> Bus 009 Device 001: ID 1d6b:0001 Linux Foundation 1.1 root hub
-> Bus 008 Device 001: ID 1d6b:0001 Linux Foundation 1.1 root hub
-> Bus 004 Device 001: ID 1d6b:0002 Linux Foundation 2.0 root hub
-> Bus 007 Device 002: ID 03f0:0317 HP, Inc LaserJet 1200
-> Bus 007 Device 001: ID 1d6b:0001 Linux Foundation 1.1 root hub
-> Bus 001 Device 002: ID 04e8:6860 Samsung Electronics Co., Ltd Galaxy A5 (MTP)
-> Bus 001 Device 001: ID 1d6b:0002 Linux Foundation 2.0 root hub
-> Bus 006 Device 001: ID 1d6b:0001 Linux Foundation 1.1 root hub
-> Bus 003 Device 001: ID 1d6b:0003 Linux Foundation 3.0 root hub
-> Bus 002 Device 002: ID 2109:3431 VIA Labs, Inc. Hub
-> Bus 002 Device 001: ID 1d6b:0002 Linux Foundation 2.0 root hub
-> #
-> 
-> $ git bisect log
-> git bisect start
-> # good: [4b0986a3613c92f4ec1bdc7f60ec66fea135991f] Linux 5.18
-> git bisect good 4b0986a3613c92f4ec1bdc7f60ec66fea135991f
-> # good: [07e0b709cab7dc987b5071443789865e20481119] Linux 5.18.18
-> git bisect good 07e0b709cab7dc987b5071443789865e20481119
-> # bad: [3d7cb6b04c3f3115719235cc6866b10326de34cd] Linux 5.19
-> git bisect bad 3d7cb6b04c3f3115719235cc6866b10326de34cd
-> # bad: [c011dd537ffe47462051930413fed07dbdc80313] Merge tag 'arm-soc-5.19' of git://git.kernel.org/pub/scm/linux/kernel/git/soc/soc
-> git bisect bad c011dd537ffe47462051930413fed07dbdc80313
-> # good: [7e062cda7d90543ac8c7700fc7c5527d0c0f22ad] Merge tag 'net-next-5.19' of git://git.kernel.org/pub/scm/linux/kernel/git/netdev/net-next
-> git bisect good 7e062cda7d90543ac8c7700fc7c5527d0c0f22ad
-> # good: [f8122500a039abeabfff41b0ad8b6a2c94c1107d] Merge branch 'etnaviv/next' of https://git.pengutronix.de/git/lst/linux into drm-next
-> git bisect good f8122500a039abeabfff41b0ad8b6a2c94c1107d
-> # good: [2518f226c60d8e04d18ba4295500a5b0b8ac7659] Merge tag 'drm-next-2022-05-25' of git://anongit.freedesktop.org/drm/drm
-> git bisect good 2518f226c60d8e04d18ba4295500a5b0b8ac7659
-> # good: [f7a344468105ef8c54086dfdc800e6f5a8417d3e] ASoC: max98090: Move check for invalid values before casting in max98090_put_enab_tlv()
-> git bisect good f7a344468105ef8c54086dfdc800e6f5a8417d3e
-> # good: [fbe86daca0ba878b04fa241b85e26e54d17d4229] Merge tag 'scsi-misc' of git://git.kernel.org/pub/scm/linux/kernel/git/jejb/scsi
-> git bisect good fbe86daca0ba878b04fa241b85e26e54d17d4229
-> # good: [709c8632597c3276cd21324b0256628f1a7fd4df] xfs: rework deferred attribute operation setup
-> git bisect good 709c8632597c3276cd21324b0256628f1a7fd4df
-> # bad: [babf0bb978e3c9fce6c4eba6b744c8754fd43d8e] Merge tag 'xfs-5.19-for-linus' of git://git.kernel.org/pub/scm/fs/xfs/xfs-linux
-> git bisect bad babf0bb978e3c9fce6c4eba6b744c8754fd43d8e
-> # bad: [8b728edc5be161799434cc17e1279db2f8eabe29] Merge tag 'fs_for_v5.19-rc1' of git://git.kernel.org/pub/scm/linux/kernel/git/jack/linux-fs
-> git bisect bad 8b728edc5be161799434cc17e1279db2f8eabe29
-> # bad: [3f70356edf5611c28a68d8d5a9c2b442c9eb81e6] swiotlb: merge swiotlb-xen initialization into swiotlb
-> git bisect bad 3f70356edf5611c28a68d8d5a9c2b442c9eb81e6
-> # good: [f39f8d0eb081407e470396fd4cc376c526d13066] MIPS/octeon: use swiotlb_init instead of open coding it
-> git bisect good f39f8d0eb081407e470396fd4cc376c526d13066
-> # bad: [c6af2aa9ffc9763826607bc2664ef3ea4475ed18] swiotlb: make the swiotlb_init interface more useful
-> git bisect bad c6af2aa9ffc9763826607bc2664ef3ea4475ed18
-> # bad: [a3e230926708125205ffd06d3dc2175a8263ae7e] x86: centralize setting SWIOTLB_FORCE when guest memory encryption is enabled
-> git bisect bad a3e230926708125205ffd06d3dc2175a8263ae7e
-> # bad: [78013eaadf696d2105982abb4018fbae394ca08f] x86: remove the IOMMU table infrastructure
-> git bisect bad 78013eaadf696d2105982abb4018fbae394ca08f
-> # first bad commit: [78013eaadf696d2105982abb4018fbae394ca08f] x86: remove the IOMMU table infrastructure
-> $
+We need to check that we avoid integer overflows when looking up a page,
+and so fix all the instances where we have mistakenly used a plain
+integer instead of a more suitable long. Be pedantic and add integer
+typechecking to the lookup so that we can be sure that we are safe.
+And it also uses pgoff_t as our page lookups must remain compatible with
+the page cache, pgoff_t is currently exactly unsigned long.
 
-Thanks for the report. To be sure below issue doesn't fall through the
-cracks unnoticed, I'm adding it to regzbot, my Linux kernel regression
-tracking bot:
+v2: Move added i915_utils's macro into drm_util header (Jani N)
+v3: Make not use the same macro name on a function. (Mauro)
+    For kernel-doc, macros and functions are handled in the same namespace,
+    the same macro name on a function prevents ever adding documentation
+    for it.
+v4: Add kernel-doc markups to the kAPI functions and macros (Mauoro)
+v5: Fix an alignment to match open parenthesis
+v6: Rebase
 
-#regzbot ^introduced 78013eaadf696d2105982abb4018fbae394ca08
-#regzbot title dma/iommu/gart/usb: USB errors during boot
-#regzbot ignore-activity
+Signed-off-by: Chris Wilson <chris@chris-wilson.co.uk>
+Signed-off-by: Gwan-gyeong Mun <gwan-gyeong.mun@intel.com>
+Cc: Tvrtko Ursulin <tvrtko.ursulin@linux.intel.com>
+Cc: Matthew Auld <matthew.auld@intel.com>
+Cc: Thomas Hellström <thomas.hellstrom@linux.intel.com>
+Reviewed-by: Nirmoy Das <nirmoy.das@intel.com>
+Reviewed-by: Mauro Carvalho Chehab <mchehab@kernel.org>
+Reviewed-by: Andrzej Hajda <andrzej.hajda@intel.com>
+---
+ drivers/gpu/drm/i915/gem/i915_gem_object.c    |   7 +-
+ drivers/gpu/drm/i915/gem/i915_gem_object.h    | 293 ++++++++++++++++--
+ drivers/gpu/drm/i915/gem/i915_gem_pages.c     |  27 +-
+ drivers/gpu/drm/i915/gem/i915_gem_ttm.c       |   2 +-
+ .../drm/i915/gem/selftests/i915_gem_context.c |  12 +-
+ .../drm/i915/gem/selftests/i915_gem_mman.c    |   8 +-
+ .../drm/i915/gem/selftests/i915_gem_object.c  |   8 +-
+ drivers/gpu/drm/i915/i915_gem.c               |  18 +-
+ drivers/gpu/drm/i915/i915_utils.h             |   1 +
+ drivers/gpu/drm/i915/i915_vma.c               |   8 +-
+ 10 files changed, 323 insertions(+), 61 deletions(-)
 
-This isn't a regression? This issue or a fix for it are already
-discussed somewhere else? It was fixed already? You want to clarify when
-the regression started to happen? Or point out I got the title or
-something else totally wrong? Then just reply -- ideally with also
-telling regzbot about it, as explained here:
-https://linux-regtracking.leemhuis.info/tracked-regression/
+diff --git a/drivers/gpu/drm/i915/gem/i915_gem_object.c b/drivers/gpu/drm/i915/gem/i915_gem_object.c
+index 389e9f157ca5..b3861739c1eb 100644
+--- a/drivers/gpu/drm/i915/gem/i915_gem_object.c
++++ b/drivers/gpu/drm/i915/gem/i915_gem_object.c
+@@ -413,10 +413,11 @@ void __i915_gem_object_invalidate_frontbuffer(struct drm_i915_gem_object *obj,
+ static void
+ i915_gem_object_read_from_page_kmap(struct drm_i915_gem_object *obj, u64 offset, void *dst, int size)
+ {
++	pgoff_t idx = offset >> PAGE_SHIFT;
+ 	void *src_map;
+ 	void *src_ptr;
+ 
+-	src_map = kmap_atomic(i915_gem_object_get_page(obj, offset >> PAGE_SHIFT));
++	src_map = kmap_atomic(i915_gem_object_get_page(obj, idx));
+ 
+ 	src_ptr = src_map + offset_in_page(offset);
+ 	if (!(obj->cache_coherent & I915_BO_CACHE_COHERENT_FOR_READ))
+@@ -429,9 +430,10 @@ i915_gem_object_read_from_page_kmap(struct drm_i915_gem_object *obj, u64 offset,
+ static void
+ i915_gem_object_read_from_page_iomap(struct drm_i915_gem_object *obj, u64 offset, void *dst, int size)
+ {
++	pgoff_t idx = offset >> PAGE_SHIFT;
++	dma_addr_t dma = i915_gem_object_get_dma_address(obj, idx);
+ 	void __iomem *src_map;
+ 	void __iomem *src_ptr;
+-	dma_addr_t dma = i915_gem_object_get_dma_address(obj, offset >> PAGE_SHIFT);
+ 
+ 	src_map = io_mapping_map_wc(&obj->mm.region->iomap,
+ 				    dma - obj->mm.region->region.start,
+@@ -460,6 +462,7 @@ i915_gem_object_read_from_page_iomap(struct drm_i915_gem_object *obj, u64 offset
+  */
+ int i915_gem_object_read_from_page(struct drm_i915_gem_object *obj, u64 offset, void *dst, int size)
+ {
++	GEM_BUG_ON(overflows_type(offset >> PAGE_SHIFT, pgoff_t));
+ 	GEM_BUG_ON(offset >= obj->base.size);
+ 	GEM_BUG_ON(offset_in_page(offset) > PAGE_SIZE - size);
+ 	GEM_BUG_ON(!i915_gem_object_has_pinned_pages(obj));
+diff --git a/drivers/gpu/drm/i915/gem/i915_gem_object.h b/drivers/gpu/drm/i915/gem/i915_gem_object.h
+index 6f0a3ce35567..5da872afc4ba 100644
+--- a/drivers/gpu/drm/i915/gem/i915_gem_object.h
++++ b/drivers/gpu/drm/i915/gem/i915_gem_object.h
+@@ -27,8 +27,10 @@ enum intel_region_id;
+  * spot such a local variable, please consider fixing!
+  *
+  * Aside from our own locals (for which we have no excuse!):
+- * - sg_table embeds unsigned int for num_pages
+- * - get_user_pages*() mixed ints with longs
++ * - sg_table embeds unsigned int for nents
++ *
++ * We can check for invalidly typed locals with typecheck(), see for example
++ * i915_gem_object_get_sg().
+  */
+ #define GEM_CHECK_SIZE_OVERFLOW(sz) \
+ 	GEM_WARN_ON((sz) >> PAGE_SHIFT > INT_MAX)
+@@ -363,44 +365,289 @@ i915_gem_object_get_tile_row_size(const struct drm_i915_gem_object *obj)
+ int i915_gem_object_set_tiling(struct drm_i915_gem_object *obj,
+ 			       unsigned int tiling, unsigned int stride);
+ 
++/**
++ * __i915_gem_object_page_iter_get_sg - helper to find the target scatterlist
++ * pointer and the target page position using pgoff_t n input argument and
++ * i915_gem_object_page_iter
++ * @obj: i915 GEM buffer object
++ * @iter: i915 GEM buffer object page iterator
++ * @n: page offset
++ * @offset: searched physical offset,
++ *          it will be used for returning physical page offset value
++ *
++ * Context: Takes and releases the mutex lock of the i915_gem_object_page_iter.
++ *          Takes and releases the RCU lock to search the radix_tree of
++ *          i915_gem_object_page_iter.
++ *
++ * Returns:
++ * The target scatterlist pointer and the target page position.
++ *
++ * Recommended to use wrapper macro: i915_gem_object_page_iter_get_sg()
++ */
+ struct scatterlist *
+-__i915_gem_object_get_sg(struct drm_i915_gem_object *obj,
+-			 struct i915_gem_object_page_iter *iter,
+-			 unsigned int n,
+-			 unsigned int *offset, bool dma);
++__i915_gem_object_page_iter_get_sg(struct drm_i915_gem_object *obj,
++				   struct i915_gem_object_page_iter *iter,
++				   pgoff_t  n,
++				   unsigned int *offset);
+ 
++/**
++ * i915_gem_object_page_iter_get_sg - wrapper macro for
++ * __i915_gem_object_page_iter_get_sg()
++ * @obj: i915 GEM buffer object
++ * @it: i915 GEM buffer object page iterator
++ * @n: page offset
++ * @offset: searched physical offset,
++ *          it will be used for returning physical page offset value
++ *
++ * Context: Takes and releases the mutex lock of the i915_gem_object_page_iter.
++ *          Takes and releases the RCU lock to search the radix_tree of
++ *          i915_gem_object_page_iter.
++ *
++ * Returns:
++ * The target scatterlist pointer and the target page position.
++ *
++ * In order to avoid the truncation of the input parameter, it checks the page
++ * offset n's type from the input parameter before calling
++ * __i915_gem_object_page_iter_get_sg().
++ */
++#define i915_gem_object_page_iter_get_sg(obj, it, n, offset) ({ \
++	exactly_pgoff_t(n); \
++	__i915_gem_object_page_iter_get_sg(obj, it, n, offset); \
++})
++
++/**
++ * __i915_gem_object_get_sg - helper to find the target scatterlist
++ * pointer and the target page position using pgoff_t n input argument and
++ * drm_i915_gem_object. It uses an internal shmem scatterlist lookup function.
++ * @obj: i915 GEM buffer object
++ * @n: page offset
++ * @offset: searched physical offset,
++ *          it will be used for returning physical page offset value
++ *
++ * It uses drm_i915_gem_object's internal shmem scatterlist lookup function as
++ * i915_gem_object_page_iter and calls __i915_gem_object_page_iter_get_sg().
++ *
++ * Returns:
++ * The target scatterlist pointer and the target page position.
++ *
++ * Recommended to use wrapper macro: i915_gem_object_get_sg()
++ * See also __i915_gem_object_page_iter_get_sg()
++ */
+ static inline struct scatterlist *
+-i915_gem_object_get_sg(struct drm_i915_gem_object *obj,
+-		       unsigned int n,
+-		       unsigned int *offset)
++__i915_gem_object_get_sg(struct drm_i915_gem_object *obj, pgoff_t n,
++			 unsigned int *offset)
+ {
+-	return __i915_gem_object_get_sg(obj, &obj->mm.get_page, n, offset, false);
++	return __i915_gem_object_page_iter_get_sg(obj, &obj->mm.get_page, n, offset);
+ }
+ 
++/**
++ * i915_gem_object_get_sg - wrapper macro for __i915_gem_object_get_sg()
++ * @obj: i915 GEM buffer object
++ * @n: page offset
++ * @offset: searched physical offset,
++ *          it will be used for returning physical page offset value
++ *
++ * Returns:
++ * The target scatterlist pointer and the target page position.
++ *
++ * In order to avoid the truncation of the input parameter, it checks the page
++ * offset n's type from the input parameter before calling
++ * __i915_gem_object_get_sg().
++ * See also __i915_gem_object_page_iter_get_sg()
++ */
++#define i915_gem_object_get_sg(obj, n, offset) ({ \
++	exactly_pgoff_t(n); \
++	__i915_gem_object_get_sg(obj, n, offset); \
++})
++
++/**
++ * __i915_gem_object_get_sg_dma - helper to find the target scatterlist
++ * pointer and the target page position using pgoff_t n input argument and
++ * drm_i915_gem_object. It uses an internal DMA mapped scatterlist lookup function
++ * @obj: i915 GEM buffer object
++ * @n: page offset
++ * @offset: searched physical offset,
++ *          it will be used for returning physical page offset value
++ *
++ * It uses drm_i915_gem_object's internal DMA mapped scatterlist lookup function
++ * as i915_gem_object_page_iter and calls __i915_gem_object_page_iter_get_sg().
++ *
++ * Returns:
++ * The target scatterlist pointer and the target page position.
++ *
++ * Recommended to use wrapper macro: i915_gem_object_get_sg_dma()
++ * See also __i915_gem_object_page_iter_get_sg()
++ */
+ static inline struct scatterlist *
+-i915_gem_object_get_sg_dma(struct drm_i915_gem_object *obj,
+-			   unsigned int n,
+-			   unsigned int *offset)
++__i915_gem_object_get_sg_dma(struct drm_i915_gem_object *obj, pgoff_t n,
++			     unsigned int *offset)
+ {
+-	return __i915_gem_object_get_sg(obj, &obj->mm.get_dma_page, n, offset, true);
++	return __i915_gem_object_page_iter_get_sg(obj, &obj->mm.get_dma_page, n, offset);
+ }
+ 
++/**
++ * i915_gem_object_get_sg_dma - wrapper macro for __i915_gem_object_get_sg_dma()
++ * @obj: i915 GEM buffer object
++ * @n: page offset
++ * @offset: searched physical offset,
++ *          it will be used for returning physical page offset value
++ *
++ * Returns:
++ * The target scatterlist pointer and the target page position.
++ *
++ * In order to avoid the truncation of the input parameter, it checks the page
++ * offset n's type from the input parameter before calling
++ * __i915_gem_object_get_sg_dma().
++ * See also __i915_gem_object_page_iter_get_sg()
++ */
++#define i915_gem_object_get_sg_dma(obj, n, offset) ({ \
++	exactly_pgoff_t(n); \
++	__i915_gem_object_get_sg_dma(obj, n, offset); \
++})
++
++/**
++ * __i915_gem_object_get_page - helper to find the target page with a page offset
++ * @obj: i915 GEM buffer object
++ * @n: page offset
++ *
++ * It uses drm_i915_gem_object's internal shmem scatterlist lookup function as
++ * i915_gem_object_page_iter and calls __i915_gem_object_page_iter_get_sg()
++ * internally.
++ *
++ * Returns:
++ * The target page pointer.
++ *
++ * Recommended to use wrapper macro: i915_gem_object_get_page()
++ * See also __i915_gem_object_page_iter_get_sg()
++ */
+ struct page *
+-i915_gem_object_get_page(struct drm_i915_gem_object *obj,
+-			 unsigned int n);
++__i915_gem_object_get_page(struct drm_i915_gem_object *obj, pgoff_t n);
+ 
++/**
++ * i915_gem_object_get_page - wrapper macro for __i915_gem_object_get_page
++ * @obj: i915 GEM buffer object
++ * @n: page offset
++ *
++ * Returns:
++ * The target page pointer.
++ *
++ * In order to avoid the truncation of the input parameter, it checks the page
++ * offset n's type from the input parameter before calling
++ * __i915_gem_object_get_page().
++ * See also __i915_gem_object_page_iter_get_sg()
++ */
++#define i915_gem_object_get_page(obj, n) ({ \
++	exactly_pgoff_t(n); \
++	__i915_gem_object_get_page(obj, n); \
++})
++
++/**
++ * __i915_gem_object_get_dirty_page - helper to find the target page with a page
++ * offset
++ * @obj: i915 GEM buffer object
++ * @n: page offset
++ *
++ * It works like i915_gem_object_get_page(), but it marks the returned page dirty.
++ *
++ * Returns:
++ * The target page pointer.
++ *
++ * Recommended to use wrapper macro: i915_gem_object_get_dirty_page()
++ * See also __i915_gem_object_page_iter_get_sg() and __i915_gem_object_get_page()
++ */
+ struct page *
+-i915_gem_object_get_dirty_page(struct drm_i915_gem_object *obj,
+-			       unsigned int n);
++__i915_gem_object_get_dirty_page(struct drm_i915_gem_object *obj, pgoff_t n);
++
++/**
++ * i915_gem_object_get_dirty_page - wrapper macro for __i915_gem_object_get_dirty_page
++ * @obj: i915 GEM buffer object
++ * @n: page offset
++ *
++ * Returns:
++ * The target page pointer.
++ *
++ * In order to avoid the truncation of the input parameter, it checks the page
++ * offset n's type from the input parameter before calling
++ * __i915_gem_object_get_dirty_page().
++ * See also __i915_gem_object_page_iter_get_sg() and __i915_gem_object_get_page()
++ */
++#define i915_gem_object_get_dirty_page(obj, n) ({ \
++	exactly_pgoff_t(n); \
++	__i915_gem_object_get_dirty_page(obj, n); \
++})
+ 
++/**
++ * __i915_gem_object_get_dma_address_len - helper to get bus addresses of
++ * targeted DMA mapped scatterlist from i915 GEM buffer object and it's length
++ * @obj: i915 GEM buffer object
++ * @n: page offset
++ * @len: DMA mapped scatterlist's DMA bus addresses length to return
++ *
++ * Returns:
++ * Bus addresses of targeted DMA mapped scatterlist
++ *
++ * Recommended to use wrapper macro: i915_gem_object_get_dma_address_len()
++ * See also __i915_gem_object_page_iter_get_sg() and __i915_gem_object_get_sg_dma()
++ */
+ dma_addr_t
+-i915_gem_object_get_dma_address_len(struct drm_i915_gem_object *obj,
+-				    unsigned long n,
+-				    unsigned int *len);
++__i915_gem_object_get_dma_address_len(struct drm_i915_gem_object *obj, pgoff_t n,
++				      unsigned int *len);
+ 
++/**
++ * i915_gem_object_get_dma_address_len - wrapper macro for
++ * __i915_gem_object_get_dma_address_len
++ * @obj: i915 GEM buffer object
++ * @n: page offset
++ * @len: DMA mapped scatterlist's DMA bus addresses length to return
++ *
++ * Returns:
++ * Bus addresses of targeted DMA mapped scatterlist
++ *
++ * In order to avoid the truncation of the input parameter, it checks the page
++ * offset n's type from the input parameter before calling
++ * __i915_gem_object_get_dma_address_len().
++ * See also __i915_gem_object_page_iter_get_sg() and
++ * __i915_gem_object_get_dma_address_len()
++ */
++#define i915_gem_object_get_dma_address_len(obj, n, len) ({ \
++	exactly_pgoff_t(n); \
++	__i915_gem_object_get_dma_address_len(obj, n, len); \
++})
++
++/**
++ * __i915_gem_object_get_dma_address - helper to get bus addresses of
++ * targeted DMA mapped scatterlist from i915 GEM buffer object
++ * @obj: i915 GEM buffer object
++ * @n: page offset
++ *
++ * Returns:
++ * Bus addresses of targeted DMA mapped scatterlis
++ *
++ * Recommended to use wrapper macro: i915_gem_object_get_dma_address()
++ * See also __i915_gem_object_page_iter_get_sg() and __i915_gem_object_get_sg_dma()
++ */
+ dma_addr_t
+-i915_gem_object_get_dma_address(struct drm_i915_gem_object *obj,
+-				unsigned long n);
++__i915_gem_object_get_dma_address(struct drm_i915_gem_object *obj, pgoff_t n);
++
++/**
++ * i915_gem_object_get_dma_address - wrapper macro for
++ * __i915_gem_object_get_dma_address
++ * @obj: i915 GEM buffer object
++ * @n: page offset
++ *
++ * Returns:
++ * Bus addresses of targeted DMA mapped scatterlist
++ *
++ * In order to avoid the truncation of the input parameter, it checks the page
++ * offset n's type from the input parameter before calling
++ * __i915_gem_object_get_dma_address().
++ * See also __i915_gem_object_page_iter_get_sg() and
++ * __i915_gem_object_get_dma_address()
++ */
++#define i915_gem_object_get_dma_address(obj, n) ({ \
++	exactly_pgoff_t(n); \
++	__i915_gem_object_get_dma_address(obj, n); \
++})
+ 
+ void __i915_gem_object_set_pages(struct drm_i915_gem_object *obj,
+ 				 struct sg_table *pages,
+diff --git a/drivers/gpu/drm/i915/gem/i915_gem_pages.c b/drivers/gpu/drm/i915/gem/i915_gem_pages.c
+index 8357dbdcab5c..4d925202cae1 100644
+--- a/drivers/gpu/drm/i915/gem/i915_gem_pages.c
++++ b/drivers/gpu/drm/i915/gem/i915_gem_pages.c
+@@ -510,14 +510,16 @@ void __i915_gem_object_release_map(struct drm_i915_gem_object *obj)
+ }
+ 
+ struct scatterlist *
+-__i915_gem_object_get_sg(struct drm_i915_gem_object *obj,
+-			 struct i915_gem_object_page_iter *iter,
+-			 unsigned int n,
+-			 unsigned int *offset,
+-			 bool dma)
++__i915_gem_object_page_iter_get_sg(struct drm_i915_gem_object *obj,
++				   struct i915_gem_object_page_iter *iter,
++				   pgoff_t n,
++				   unsigned int *offset)
++
+ {
+-	struct scatterlist *sg;
++	const bool dma = iter == &obj->mm.get_dma_page ||
++			 iter == &obj->ttm.get_io_page;
+ 	unsigned int idx, count;
++	struct scatterlist *sg;
+ 
+ 	might_sleep();
+ 	GEM_BUG_ON(n >= obj->base.size >> PAGE_SHIFT);
+@@ -625,7 +627,7 @@ __i915_gem_object_get_sg(struct drm_i915_gem_object *obj,
+ }
+ 
+ struct page *
+-i915_gem_object_get_page(struct drm_i915_gem_object *obj, unsigned int n)
++__i915_gem_object_get_page(struct drm_i915_gem_object *obj, pgoff_t n)
+ {
+ 	struct scatterlist *sg;
+ 	unsigned int offset;
+@@ -638,8 +640,7 @@ i915_gem_object_get_page(struct drm_i915_gem_object *obj, unsigned int n)
+ 
+ /* Like i915_gem_object_get_page(), but mark the returned page dirty */
+ struct page *
+-i915_gem_object_get_dirty_page(struct drm_i915_gem_object *obj,
+-			       unsigned int n)
++__i915_gem_object_get_dirty_page(struct drm_i915_gem_object *obj, pgoff_t n)
+ {
+ 	struct page *page;
+ 
+@@ -651,9 +652,8 @@ i915_gem_object_get_dirty_page(struct drm_i915_gem_object *obj,
+ }
+ 
+ dma_addr_t
+-i915_gem_object_get_dma_address_len(struct drm_i915_gem_object *obj,
+-				    unsigned long n,
+-				    unsigned int *len)
++__i915_gem_object_get_dma_address_len(struct drm_i915_gem_object *obj,
++				      pgoff_t n, unsigned int *len)
+ {
+ 	struct scatterlist *sg;
+ 	unsigned int offset;
+@@ -667,8 +667,7 @@ i915_gem_object_get_dma_address_len(struct drm_i915_gem_object *obj,
+ }
+ 
+ dma_addr_t
+-i915_gem_object_get_dma_address(struct drm_i915_gem_object *obj,
+-				unsigned long n)
++__i915_gem_object_get_dma_address(struct drm_i915_gem_object *obj, pgoff_t n)
+ {
+ 	return i915_gem_object_get_dma_address_len(obj, n, NULL);
+ }
+diff --git a/drivers/gpu/drm/i915/gem/i915_gem_ttm.c b/drivers/gpu/drm/i915/gem/i915_gem_ttm.c
+index bc9c432edffe..4148126e7b1b 100644
+--- a/drivers/gpu/drm/i915/gem/i915_gem_ttm.c
++++ b/drivers/gpu/drm/i915/gem/i915_gem_ttm.c
+@@ -685,7 +685,7 @@ static unsigned long i915_ttm_io_mem_pfn(struct ttm_buffer_object *bo,
+ 	GEM_WARN_ON(bo->ttm);
+ 
+ 	base = obj->mm.region->iomap.base - obj->mm.region->region.start;
+-	sg = __i915_gem_object_get_sg(obj, &obj->ttm.get_io_page, page_offset, &ofs, true);
++	sg = i915_gem_object_page_iter_get_sg(obj, &obj->ttm.get_io_page, page_offset, &ofs);
+ 
+ 	return ((base + sg_dma_address(sg)) >> PAGE_SHIFT) + ofs;
+ }
+diff --git a/drivers/gpu/drm/i915/gem/selftests/i915_gem_context.c b/drivers/gpu/drm/i915/gem/selftests/i915_gem_context.c
+index c6ad67b90e8a..a18a890e681f 100644
+--- a/drivers/gpu/drm/i915/gem/selftests/i915_gem_context.c
++++ b/drivers/gpu/drm/i915/gem/selftests/i915_gem_context.c
+@@ -455,7 +455,8 @@ static int gpu_fill(struct intel_context *ce,
+ static int cpu_fill(struct drm_i915_gem_object *obj, u32 value)
+ {
+ 	const bool has_llc = HAS_LLC(to_i915(obj->base.dev));
+-	unsigned int n, m, need_flush;
++	unsigned int need_flush;
++	unsigned long n, m;
+ 	int err;
+ 
+ 	i915_gem_object_lock(obj, NULL);
+@@ -485,7 +486,8 @@ static int cpu_fill(struct drm_i915_gem_object *obj, u32 value)
+ static noinline int cpu_check(struct drm_i915_gem_object *obj,
+ 			      unsigned int idx, unsigned int max)
+ {
+-	unsigned int n, m, needs_flush;
++	unsigned int needs_flush;
++	unsigned long n;
+ 	int err;
+ 
+ 	i915_gem_object_lock(obj, NULL);
+@@ -494,7 +496,7 @@ static noinline int cpu_check(struct drm_i915_gem_object *obj,
+ 		goto out_unlock;
+ 
+ 	for (n = 0; n < real_page_count(obj); n++) {
+-		u32 *map;
++		u32 *map, m;
+ 
+ 		map = kmap_atomic(i915_gem_object_get_page(obj, n));
+ 		if (needs_flush & CLFLUSH_BEFORE)
+@@ -502,7 +504,7 @@ static noinline int cpu_check(struct drm_i915_gem_object *obj,
+ 
+ 		for (m = 0; m < max; m++) {
+ 			if (map[m] != m) {
+-				pr_err("%pS: Invalid value at object %d page %d/%ld, offset %d/%d: found %x expected %x\n",
++				pr_err("%pS: Invalid value at object %d page %ld/%ld, offset %d/%d: found %x expected %x\n",
+ 				       __builtin_return_address(0), idx,
+ 				       n, real_page_count(obj), m, max,
+ 				       map[m], m);
+@@ -513,7 +515,7 @@ static noinline int cpu_check(struct drm_i915_gem_object *obj,
+ 
+ 		for (; m < DW_PER_PAGE; m++) {
+ 			if (map[m] != STACK_MAGIC) {
+-				pr_err("%pS: Invalid value at object %d page %d, offset %d: found %x expected %x (uninitialised)\n",
++				pr_err("%pS: Invalid value at object %d page %ld, offset %d: found %x expected %x (uninitialised)\n",
+ 				       __builtin_return_address(0), idx, n, m,
+ 				       map[m], STACK_MAGIC);
+ 				err = -EINVAL;
+diff --git a/drivers/gpu/drm/i915/gem/selftests/i915_gem_mman.c b/drivers/gpu/drm/i915/gem/selftests/i915_gem_mman.c
+index 3cff08f04f6c..7512b21b6b4f 100644
+--- a/drivers/gpu/drm/i915/gem/selftests/i915_gem_mman.c
++++ b/drivers/gpu/drm/i915/gem/selftests/i915_gem_mman.c
+@@ -95,11 +95,11 @@ static int check_partial_mapping(struct drm_i915_gem_object *obj,
+ 	struct drm_i915_private *i915 = to_i915(obj->base.dev);
+ 	struct i915_ggtt_view view;
+ 	struct i915_vma *vma;
++	unsigned long offset;
+ 	unsigned long page;
+ 	u32 __iomem *io;
+ 	struct page *p;
+ 	unsigned int n;
+-	u64 offset;
+ 	u32 *cpu;
+ 	int err;
+ 
+@@ -156,7 +156,7 @@ static int check_partial_mapping(struct drm_i915_gem_object *obj,
+ 	cpu = kmap(p) + offset_in_page(offset);
+ 	drm_clflush_virt_range(cpu, sizeof(*cpu));
+ 	if (*cpu != (u32)page) {
+-		pr_err("Partial view for %lu [%u] (offset=%llu, size=%u [%llu, row size %u], fence=%d, tiling=%d, stride=%d) misalignment, expected write to page (%llu + %u [0x%llx]) of 0x%x, found 0x%x\n",
++		pr_err("Partial view for %lu [%u] (offset=%llu, size=%u [%llu, row size %u], fence=%d, tiling=%d, stride=%d) misalignment, expected write to page (%lu + %u [0x%lx]) of 0x%x, found 0x%x\n",
+ 		       page, n,
+ 		       view.partial.offset,
+ 		       view.partial.size,
+@@ -212,10 +212,10 @@ static int check_partial_mappings(struct drm_i915_gem_object *obj,
+ 	for_each_prime_number_from(page, 1, npages) {
+ 		struct i915_ggtt_view view =
+ 			compute_partial_view(obj, page, MIN_CHUNK_PAGES);
++		unsigned long offset;
+ 		u32 __iomem *io;
+ 		struct page *p;
+ 		unsigned int n;
+-		u64 offset;
+ 		u32 *cpu;
+ 
+ 		GEM_BUG_ON(view.partial.size > nreal);
+@@ -252,7 +252,7 @@ static int check_partial_mappings(struct drm_i915_gem_object *obj,
+ 		cpu = kmap(p) + offset_in_page(offset);
+ 		drm_clflush_virt_range(cpu, sizeof(*cpu));
+ 		if (*cpu != (u32)page) {
+-			pr_err("Partial view for %lu [%u] (offset=%llu, size=%u [%llu, row size %u], fence=%d, tiling=%d, stride=%d) misalignment, expected write to page (%llu + %u [0x%llx]) of 0x%x, found 0x%x\n",
++			pr_err("Partial view for %lu [%u] (offset=%llu, size=%u [%llu, row size %u], fence=%d, tiling=%d, stride=%d) misalignment, expected write to page (%lu + %u [0x%lx]) of 0x%x, found 0x%x\n",
+ 			       page, n,
+ 			       view.partial.offset,
+ 			       view.partial.size,
+diff --git a/drivers/gpu/drm/i915/gem/selftests/i915_gem_object.c b/drivers/gpu/drm/i915/gem/selftests/i915_gem_object.c
+index bdf5bb40ccf1..19e374f68ff7 100644
+--- a/drivers/gpu/drm/i915/gem/selftests/i915_gem_object.c
++++ b/drivers/gpu/drm/i915/gem/selftests/i915_gem_object.c
+@@ -33,10 +33,10 @@ static int igt_gem_object(void *arg)
+ 
+ static int igt_gem_huge(void *arg)
+ {
+-	const unsigned int nreal = 509; /* just to be awkward */
++	const unsigned long nreal = 509; /* just to be awkward */
+ 	struct drm_i915_private *i915 = arg;
+ 	struct drm_i915_gem_object *obj;
+-	unsigned int n;
++	unsigned long n;
+ 	int err;
+ 
+ 	/* Basic sanitycheck of our huge fake object allocation */
+@@ -49,7 +49,7 @@ static int igt_gem_huge(void *arg)
+ 
+ 	err = i915_gem_object_pin_pages_unlocked(obj);
+ 	if (err) {
+-		pr_err("Failed to allocate %u pages (%lu total), err=%d\n",
++		pr_err("Failed to allocate %lu pages (%lu total), err=%d\n",
+ 		       nreal, obj->base.size / PAGE_SIZE, err);
+ 		goto out;
+ 	}
+@@ -57,7 +57,7 @@ static int igt_gem_huge(void *arg)
+ 	for (n = 0; n < obj->base.size / PAGE_SIZE; n++) {
+ 		if (i915_gem_object_get_page(obj, n) !=
+ 		    i915_gem_object_get_page(obj, n % nreal)) {
+-			pr_err("Page lookup mismatch at index %u [%u]\n",
++			pr_err("Page lookup mismatch at index %lu [%lu]\n",
+ 			       n, n % nreal);
+ 			err = -EINVAL;
+ 			goto out_unpin;
+diff --git a/drivers/gpu/drm/i915/i915_gem.c b/drivers/gpu/drm/i915/i915_gem.c
+index 702e5b89be22..dba58a3c3238 100644
+--- a/drivers/gpu/drm/i915/i915_gem.c
++++ b/drivers/gpu/drm/i915/i915_gem.c
+@@ -229,8 +229,9 @@ i915_gem_shmem_pread(struct drm_i915_gem_object *obj,
+ 		     struct drm_i915_gem_pread *args)
+ {
+ 	unsigned int needs_clflush;
+-	unsigned int idx, offset;
+ 	char __user *user_data;
++	unsigned long offset;
++	pgoff_t idx;
+ 	u64 remain;
+ 	int ret;
+ 
+@@ -383,13 +384,17 @@ i915_gem_gtt_pread(struct drm_i915_gem_object *obj,
+ {
+ 	struct drm_i915_private *i915 = to_i915(obj->base.dev);
+ 	struct i915_ggtt *ggtt = to_gt(i915)->ggtt;
++	unsigned long remain, offset;
+ 	intel_wakeref_t wakeref;
+ 	struct drm_mm_node node;
+ 	void __user *user_data;
+ 	struct i915_vma *vma;
+-	u64 remain, offset;
+ 	int ret = 0;
+ 
++	if (overflows_type(args->size, remain) ||
++	    overflows_type(args->offset, offset))
++		return -EINVAL;
++
+ 	wakeref = intel_runtime_pm_get(&i915->runtime_pm);
+ 
+ 	vma = i915_gem_gtt_prepare(obj, &node, false);
+@@ -540,13 +545,17 @@ i915_gem_gtt_pwrite_fast(struct drm_i915_gem_object *obj,
+ 	struct drm_i915_private *i915 = to_i915(obj->base.dev);
+ 	struct i915_ggtt *ggtt = to_gt(i915)->ggtt;
+ 	struct intel_runtime_pm *rpm = &i915->runtime_pm;
++	unsigned long remain, offset;
+ 	intel_wakeref_t wakeref;
+ 	struct drm_mm_node node;
+ 	struct i915_vma *vma;
+-	u64 remain, offset;
+ 	void __user *user_data;
+ 	int ret = 0;
+ 
++	if (overflows_type(args->size, remain) ||
++	    overflows_type(args->offset, offset))
++		return -EINVAL;
++
+ 	if (i915_gem_object_has_struct_page(obj)) {
+ 		/*
+ 		 * Avoid waking the device up if we can fallback, as
+@@ -654,8 +663,9 @@ i915_gem_shmem_pwrite(struct drm_i915_gem_object *obj,
+ {
+ 	unsigned int partial_cacheline_write;
+ 	unsigned int needs_clflush;
+-	unsigned int offset, idx;
+ 	void __user *user_data;
++	unsigned long offset;
++	pgoff_t idx;
+ 	u64 remain;
+ 	int ret;
+ 
+diff --git a/drivers/gpu/drm/i915/i915_utils.h b/drivers/gpu/drm/i915/i915_utils.h
+index eb0ded23fa9c..b325b48a66ec 100644
+--- a/drivers/gpu/drm/i915/i915_utils.h
++++ b/drivers/gpu/drm/i915/i915_utils.h
+@@ -33,6 +33,7 @@
+ #include <linux/workqueue.h>
+ #include <linux/sched/clock.h>
+ #include <linux/overflow.h>
++#include <linux/util_macros.h>
+ 
+ #ifdef CONFIG_X86
+ #include <asm/hypervisor.h>
+diff --git a/drivers/gpu/drm/i915/i915_vma.c b/drivers/gpu/drm/i915/i915_vma.c
+index 260371716490..1dd8a0f51aeb 100644
+--- a/drivers/gpu/drm/i915/i915_vma.c
++++ b/drivers/gpu/drm/i915/i915_vma.c
+@@ -909,7 +909,7 @@ rotate_pages(struct drm_i915_gem_object *obj, unsigned int offset,
+ 	     struct sg_table *st, struct scatterlist *sg)
+ {
+ 	unsigned int column, row;
+-	unsigned int src_idx;
++	pgoff_t src_idx;
+ 
+ 	for (column = 0; column < width; column++) {
+ 		unsigned int left;
+@@ -1015,7 +1015,7 @@ add_padding_pages(unsigned int count,
+ 
+ static struct scatterlist *
+ remap_tiled_color_plane_pages(struct drm_i915_gem_object *obj,
+-			      unsigned int offset, unsigned int alignment_pad,
++			      unsigned long offset, unsigned int alignment_pad,
+ 			      unsigned int width, unsigned int height,
+ 			      unsigned int src_stride, unsigned int dst_stride,
+ 			      struct sg_table *st, struct scatterlist *sg,
+@@ -1074,7 +1074,7 @@ remap_tiled_color_plane_pages(struct drm_i915_gem_object *obj,
+ 
+ static struct scatterlist *
+ remap_contiguous_pages(struct drm_i915_gem_object *obj,
+-		       unsigned int obj_offset,
++		       pgoff_t obj_offset,
+ 		       unsigned int count,
+ 		       struct sg_table *st, struct scatterlist *sg)
+ {
+@@ -1107,7 +1107,7 @@ remap_contiguous_pages(struct drm_i915_gem_object *obj,
+ 
+ static struct scatterlist *
+ remap_linear_color_plane_pages(struct drm_i915_gem_object *obj,
+-			       unsigned int obj_offset, unsigned int alignment_pad,
++			       pgoff_t obj_offset, unsigned int alignment_pad,
+ 			       unsigned int size,
+ 			       struct sg_table *st, struct scatterlist *sg,
+ 			       unsigned int *gtt_offset)
+-- 
+2.37.1
 
-Reminder for developers: When fixing the issue, add 'Link:' tags
-pointing to the report (the mail this one replies to), as explained for
-in the Linux kernel's documentation; above webpage explains why this is
-important for tracked regressions.
-
-Ciao, Thorsten (wearing his 'the Linux kernel's regression tracker' hat)
-
-P.S.: As the Linux kernel's regression tracker I deal with a lot of
-reports and sometimes miss something important when writing mails like
-this. If that's the case here, don't hesitate to tell me in a public
-reply, it's in everyone's interest to set the public record straight.
