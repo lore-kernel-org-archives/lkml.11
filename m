@@ -2,81 +2,106 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 12AEEC32796
-	for <linux-kernel@archiver.kernel.org>; Wed, 24 Aug 2022 12:46:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EC784C00140
+	for <linux-kernel@archiver.kernel.org>; Wed, 24 Aug 2022 12:47:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236791AbiHXMqv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 24 Aug 2022 08:46:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44656 "EHLO
+        id S237257AbiHXMrY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 24 Aug 2022 08:47:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43124 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234876AbiHXMqt (ORCPT
+        with ESMTP id S237404AbiHXMp1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 24 Aug 2022 08:46:49 -0400
-Received: from vps0.lunn.ch (vps0.lunn.ch [185.16.172.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EF18790C7E;
-        Wed, 24 Aug 2022 05:46:46 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
-        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
-        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
-        bh=uSxtp6cCO/JPJLp/Y5uU09OcFls/853lMuOjjJI3vmg=; b=yBwxcpvlq6AVp6sl0roNiulO7G
-        9zTsPRWFSQ+hKKHxduJWNf8atR40bQyrZTzzrCvt6Qye61ELVuCs0qkUyrZzt56GKISn8w17anntT
-        a+w42OOTECaukHBlbqttIJOHfb31EAhQBOeGlj3tLbG4l9PdfauvpVUMldWG5tTU2Nzg=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
-        (envelope-from <andrew@lunn.ch>)
-        id 1oQpmC-00ERhp-AT; Wed, 24 Aug 2022 14:46:32 +0200
-Date:   Wed, 24 Aug 2022 14:46:32 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Leonard Crestez <cdleonard@gmail.com>
-Cc:     Dmitry Safonov <dima@arista.com>, David Ahern <dsahern@kernel.org>,
-        Andy Lutomirski <luto@amacapital.net>,
-        Ard Biesheuvel <ardb@kernel.org>,
-        Bob Gilligan <gilligan@arista.com>,
-        Dmitry Safonov <0x7f454c46@gmail.com>,
-        Eric Biggers <ebiggers@kernel.org>,
-        Francesco Ruggeri <fruggeri@arista.com>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        Ivan Delalande <colona@arista.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Salam Noureddine <noureddine@arista.com>,
-        Shuah Khan <shuah@kernel.org>, netdev@vger.kernel.org,
-        linux-crypto@vger.kernel.org, linux-kernel@vger.kernel.org,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>
-Subject: Re: [PATCH 00/31] net/tcp: Add TCP-AO support
-Message-ID: <YwYdqEFQuQjXxATb@lunn.ch>
-References: <20220818170005.747015-1-dima@arista.com>
- <fc05893d-7733-1426-3b12-7ba60ef2698f@gmail.com>
- <a83e24c9-ab25-6ca0-8b81-268f92791ae5@kernel.org>
- <8097c38e-e88e-66ad-74d3-2f4a9e3734f4@arista.com>
- <7ad5a9be-4ee9-bab2-4a70-b0f661f91beb@gmail.com>
+        Wed, 24 Aug 2022 08:45:27 -0400
+Received: from mail-pj1-x1030.google.com (mail-pj1-x1030.google.com [IPv6:2607:f8b0:4864:20::1030])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5D58282763;
+        Wed, 24 Aug 2022 05:45:21 -0700 (PDT)
+Received: by mail-pj1-x1030.google.com with SMTP id x14-20020a17090a8a8e00b001fb61a71d99so1486318pjn.2;
+        Wed, 24 Aug 2022 05:45:21 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc;
+        bh=npkVAu12heSnhWpZ/kqn1O6KxNiWQg5rXFWETXNDdpQ=;
+        b=JEmdoabGg54J4AFzVurih/EmRU/NoImnRdE7BEKra956TuOyIZMfkRjtuKG4Z/HaLF
+         MvGMAeN7DF5uLGNnrgmqq5rSe76CPKJ0WEPGNf5uTIGI7n+ggN9nuHmQ3e8kXE8C1Jjg
+         A1vUh6lWrZAwUmevgszqInzj24bw5Qab+4062kJxACRZ380Z28VugcrD2J+h8s/rGRwy
+         ZOGqWKJPbpCj8J3hnWU58N7LSYfJBp8pZL3OVTyxjrCyxEKPT/EFv2/VQnhJlQUMf+bT
+         rTQKaLeGO7KcFnMwFDY82UqNkxA+S88yAYQvHGJTXAJas4C/29DW7MDSQSMYkVP2niYS
+         wqeg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc;
+        bh=npkVAu12heSnhWpZ/kqn1O6KxNiWQg5rXFWETXNDdpQ=;
+        b=six/W8Q7ZOUKD8vFn+aAgqLPS9y4RHIrQ8RqDF0+VT6KkP/n10GmioOTQCN/LjXjKa
+         qg1TGm5XTbiJl6QgWQ6EgrzZFTGXA7wP4TgwkDrsf4fGHdw3juscBYvneZNBXuWhVmY8
+         LyLmJx1+XpQr33o2Ygy3zl8pI9K/LxA4kpEuznJiCboyeFyoCIUIY5MxSelcCgyZFb0v
+         7ImRtThtPBWAeeMiMoNzf1uLC2yBXrL+cuEylWzFR9/mZpKS/VCWYsGB31m0L+DQktng
+         OkCJKuWm3l+CiSjN8vSu8Rj7zp16glzoT+ZqWP5X+2aQUTOUxFMr0aarvPfFbXwXbsB5
+         o8Uw==
+X-Gm-Message-State: ACgBeo0d7GE0Yf9YMmEHsb17zccnME4rXaGr2k8EAXMrUJmcJ+9bbQbZ
+        FMEwK/Q+6kIWob4QqSzxkGXUNJzBD+o=
+X-Google-Smtp-Source: AA6agR7WbywfKhv+0+fOFkH5LzjhLQ8WMt5bRzvxYk5REp6tBZh3/aI1ExtS/zGoFZWWKTTUZXLQNw==
+X-Received: by 2002:a17:902:b68f:b0:173:188f:5fa1 with SMTP id c15-20020a170902b68f00b00173188f5fa1mr1329100pls.155.1661345120887;
+        Wed, 24 Aug 2022 05:45:20 -0700 (PDT)
+Received: from localhost.localdomain ([193.203.214.57])
+        by smtp.gmail.com with ESMTPSA id x63-20020a623142000000b00528c066678csm12970714pfx.72.2022.08.24.05.45.18
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 24 Aug 2022 05:45:20 -0700 (PDT)
+From:   xu xin <cgel.zte@gmail.com>
+X-Google-Original-From: xu xin <xu.xin16@zte.com.cn>
+To:     akpm@linux-foundation.org
+Cc:     bagasdotme@gmail.com, adobriyan@gmail.com, willy@infradead.org,
+        hughd@google.com, linux-kernel@vger.kernel.org,
+        linux-fsdevel@vger.kernel.org, linux-mm@kvack.org,
+        xu xin <xu.xin16@zte.com.cn>
+Subject: [PATCH v4 0/2] ksm: count allocated rmap_items and update documentation
+Date:   Wed, 24 Aug 2022 12:45:12 +0000
+Message-Id: <20220824124512.223103-1-xu.xin16@zte.com.cn>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <7ad5a9be-4ee9-bab2-4a70-b0f661f91beb@gmail.com>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-> I think it would make sense to push key validity times and the key selection
-> policy entirely in the kernel so that it can handle key rotation/expiration
-> by itself. This way userspace only has to configure the keys and doesn't
-> have to touch established connections at all.
+KSM can save memory by merging identical pages, but also can consume
+additional memory, because it needs to generate rmap_items to save
+each scanned page's brief rmap information.
 
-I know nothing aobut TCP-AO, nor much about kTLS. But doesn't kTLS
-have the same issue? Is there anything which can be learnt from kTLS?
-Maybe the same mechanisms can be used? No point inventing something
-new if you can copy/refactor working code?
+To determine how beneficial the ksm-policy (like madvise), they are using
+brings, so we add a new interface /proc/<pid>/ksm_alloced_items for each
+process to indicate the total allocated ksm rmap_items of this process.
 
-> My series has a "flags" field on the key struct where it can filter by IP,
-> prefix, ifindex and so on. It would be possible to add additional flags for
-> making the key only valid between certain times (by wall time).
+The detailed description can be seen in the following patches' commit message.
 
-What out for wall clock time, it jumps around in funny ways. Plus the
-kernel has no idea what time zone the wall the wall clock is mounted
-on is in.
 
-    Andrew
+-----------
+v3->v4:
+Fix the wrong writing format and some misspellings of the related documentaion.
+
+v2->v3:
+remake the patches based on the latest linux-next branch.
+
+v1->v2:
+Add documentation for the new item.
+
+
+
+*** BLURB HERE ***
+
+xu xin (2):
+  ksm: count allocated ksm rmap_items for each process
+  ksm: add profit monitoring documentation
+
+ Documentation/admin-guide/mm/ksm.rst | 36 ++++++++++++++++++++++++++++
+ fs/proc/base.c                       | 15 ++++++++++++
+ include/linux/mm_types.h             |  5 ++++
+ mm/ksm.c                             |  2 ++
+ 4 files changed, 58 insertions(+)
+
+
+base-commit: 68a00424bf69036970ced7930f9e4d709b4a6423
+-- 
+2.25.1
+
