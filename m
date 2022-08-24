@@ -2,61 +2,60 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 32BA5C32796
-	for <linux-kernel@archiver.kernel.org>; Wed, 24 Aug 2022 12:30:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 104FDC00140
+	for <linux-kernel@archiver.kernel.org>; Wed, 24 Aug 2022 12:30:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237529AbiHXMak (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 24 Aug 2022 08:30:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54768 "EHLO
+        id S237626AbiHXMar (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 24 Aug 2022 08:30:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55162 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237508AbiHXMa3 (ORCPT
+        with ESMTP id S236586AbiHXMag (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 24 Aug 2022 08:30:29 -0400
-Received: from mail-pj1-x102d.google.com (mail-pj1-x102d.google.com [IPv6:2607:f8b0:4864:20::102d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0A2F949B58
-        for <linux-kernel@vger.kernel.org>; Wed, 24 Aug 2022 05:30:28 -0700 (PDT)
-Received: by mail-pj1-x102d.google.com with SMTP id bf22so16863816pjb.4
-        for <linux-kernel@vger.kernel.org>; Wed, 24 Aug 2022 05:30:28 -0700 (PDT)
+        Wed, 24 Aug 2022 08:30:36 -0400
+Received: from mail-pj1-x1030.google.com (mail-pj1-x1030.google.com [IPv6:2607:f8b0:4864:20::1030])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E494615A1D
+        for <linux-kernel@vger.kernel.org>; Wed, 24 Aug 2022 05:30:35 -0700 (PDT)
+Received: by mail-pj1-x1030.google.com with SMTP id g18so16915614pju.0
+        for <linux-kernel@vger.kernel.org>; Wed, 24 Aug 2022 05:30:35 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=linaro.org; s=google;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:from:to:cc;
-        bh=MXeTFOPwaEYUnBKivNI6IIvkTRiGbL/Q2wJpJf6zbRo=;
-        b=HQHBOY5lZpaZ+qTObtvVlZeS+Hz5VZapvG+JueRbRZDAdpGvaYCj8c8/syiQFxHkwS
-         kVHkbTjUtEvgd+t5P7OHQKd39CRHrxnCDEE71shIBzXXimjpRJE3sOrdX3wjls23Bf3j
-         dbaie1+5oEN2rUmiC3EN0HLElzS6rylQQq4pRPg8jhmzoIV88zduw4VhZe+0Vslu2f68
-         qgu33LfbfuQ+A0S4YHSWwCWmKuweh8DdKNx0/kFCxhBItfCbISadP6td2FUU+zXAAKpe
-         EJWh3vAGs7le17ILFjUc3Q/dVU2t4HsCWE6fANFYtVqxMiiKEFMYwbo12tGNZIDxkRPx
-         47+g==
+        bh=FDm84dyy75ENZ0IrYEJTEobHEymiTqy3rBmHZuIhj6A=;
+        b=ltGAr6JpF5rXO3b+Wn9cL3fNxmpSKzik53UOFwkssxyTQZYyZsBJsI7PSdbVf2yu6l
+         y7NfphDA+xbrJMBiJcOEDF/Rr3EGkfrHHKNbezh2ByoAk+BYkz1NFTnFoLiV+JmIlasu
+         kGwYx90rKcagSgnNhutP1u4fDSgFiY3TjOgHDQ2miCDEYriE7Ts8/S75u0VGUqGZO1+N
+         3dKlwxiysFeJNYuBsBE+qOz3ReMsW3u1aXO9tYMCqXMohx7ogiuYaikDqGfHUVbdQQsJ
+         OuZUYRM/kcK3jFcFA8ODGgcDM4VKOmY7LIspuGIytaEp7ngzywnLhdJxFJwBfDbnApN3
+         YwlQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc;
-        bh=MXeTFOPwaEYUnBKivNI6IIvkTRiGbL/Q2wJpJf6zbRo=;
-        b=Oy24M+X70Kum1tgew8B4kmCuk3UOh88ZD07mrol6WYb4+ojhiCHqVVrXaykFAVsgXh
-         YfAOUa/NxIOGSYPXuhfoYXoy3BaeM7slmPvPwYxZAFywODyeOq7ymZQY5cOEDJWzt/jW
-         GCfpfDDzZ2oxyhalqxknCXyYU7YpJxuQ/kKLp/Q0T7wpqrcSdlKs60+70q4Zx5dY0SP1
-         DlJzkShFMSQRtZew1lGZkwrUkloNtb18/2H1QYbH3gMBmLHSVGML/jj8+o6ItyzkpJg4
-         C/kfLPvB/xPV3Vyr6bomc5YdaPGtRHyWnz1N47UmILXWRXIW8mQSJbwp3h7fGE3sPxO/
-         /TQg==
-X-Gm-Message-State: ACgBeo2BPY7E83EZOLRFWLwLJ+quI4gDTy+WaIhdeKNjObTg5EM2sZk5
-        xvNyrQB0utVdBPZICsBHDr1n
-X-Google-Smtp-Source: AA6agR6x9GSi2J9BABOsuQCyB8ynh29Q1qxfh7AhFPTdGC0DNCf+hHeDlhOUt8BK0F2Wu0IjKfJxSw==
-X-Received: by 2002:a17:90b:1b10:b0:1fb:7baa:ce1c with SMTP id nu16-20020a17090b1b1000b001fb7baace1cmr4015390pjb.131.1661344227690;
-        Wed, 24 Aug 2022 05:30:27 -0700 (PDT)
+        bh=FDm84dyy75ENZ0IrYEJTEobHEymiTqy3rBmHZuIhj6A=;
+        b=xyPgbAsa+ae/JYMh6p4sflNw+Qf3Z7Lkkh248jOlH9fz8tV6AoZ4hcCFA/w79fbwI1
+         4eZ1KMLnAjp9lKIc6l9nnEs8VOxCk1/l60Y7tvcvEo0F92/oSeiRsYvwFVvS+dZ+Dsyk
+         iLOOIHudH7Tl3RDH+D8k9sgAvYxj4zN5eIPueIyXzWvBbiYqzG90ylwfsZy2IcsxE3jR
+         cqyYauTMjN96aJZeR4B1ifJPHR6Vyzy3soRVfRwf+gElK1L6ioqEtTMtD5SNKyEPOtFc
+         UvP6oPZPWU4Tq8p+pvIJA/ifjMEBHFKAlbpwt9SKFSUM7VTA6GiyQ0aYVtPPzX3/XDGH
+         StmQ==
+X-Gm-Message-State: ACgBeo2uWAhJz654JgIDbBYxs6gtX9aS7RVQjr6Y4lFdQ4AmGD92BWhL
+        WRj7pUE5mxYz1ZDwEBQQ2A5f
+X-Google-Smtp-Source: AA6agR4gBzmuGb87Azs89AknZIhwzdo+ke4N5E/7y/nF0rubNHOj6n+ye8BpQGQFAcIQ+I+hV2FceQ==
+X-Received: by 2002:a17:90a:8b82:b0:1fa:973c:1d34 with SMTP id z2-20020a17090a8b8200b001fa973c1d34mr8181609pjn.31.1661344235395;
+        Wed, 24 Aug 2022 05:30:35 -0700 (PDT)
 Received: from localhost.localdomain ([117.207.24.28])
-        by smtp.gmail.com with ESMTPSA id b3-20020a1709027e0300b00173031308fdsm3539220plm.158.2022.08.24.05.30.23
+        by smtp.gmail.com with ESMTPSA id b3-20020a1709027e0300b00173031308fdsm3539220plm.158.2022.08.24.05.30.32
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 24 Aug 2022 05:30:27 -0700 (PDT)
+        Wed, 24 Aug 2022 05:30:35 -0700 (PDT)
 From:   Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
 To:     kishon@ti.com, gregkh@linuxfoundation.org, lpieralisi@kernel.org
 Cc:     linux-pci@vger.kernel.org, linux-kernel@vger.kernel.org,
         mie@igel.co.jp, kw@linux.com,
-        Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>,
-        stable@vger.kernel.org
-Subject: [PATCH v2 2/5] tools: PCI: Fix parsing the return value of IOCTLs
-Date:   Wed, 24 Aug 2022 18:00:07 +0530
-Message-Id: <20220824123010.51763-3-manivannan.sadhasivam@linaro.org>
+        Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
+Subject: [PATCH v2 4/5] misc: pci_endpoint_test: Remove unnecessary WARN_ON
+Date:   Wed, 24 Aug 2022 18:00:09 +0530
+Message-Id: <20220824123010.51763-5-manivannan.sadhasivam@linaro.org>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20220824123010.51763-1-manivannan.sadhasivam@linaro.org>
 References: <20220824123010.51763-1-manivannan.sadhasivam@linaro.org>
@@ -66,147 +65,30 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-"pci_endpoint_test" driver now returns 0 for success and negative error
-code for failure. So adapt to the change by reporting FAILURE if the
-return value is < 0, and SUCCESS otherwise.
+If unable to map test_reg_bar, then probe will fail with a dedicated
+error message. So there is no real need of WARN_ON here.
 
-Cc: stable@vger.kernel.org #5.10
-Fixes: 3f2ed8134834 ("tools: PCI: Add a userspace tool to test PCI endpoint")
 Signed-off-by: Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
 ---
- tools/pci/pcitest.c | 41 +++++++++++++++++++++--------------------
- 1 file changed, 21 insertions(+), 20 deletions(-)
+ drivers/misc/pci_endpoint_test.c | 4 +---
+ 1 file changed, 1 insertion(+), 3 deletions(-)
 
-diff --git a/tools/pci/pcitest.c b/tools/pci/pcitest.c
-index 441b54234635..a4e5b17cc3b5 100644
---- a/tools/pci/pcitest.c
-+++ b/tools/pci/pcitest.c
-@@ -18,7 +18,6 @@
- 
- #define BILLION 1E9
- 
--static char *result[] = { "NOT OKAY", "OKAY" };
- static char *irq[] = { "LEGACY", "MSI", "MSI-X" };
- 
- struct pci_test {
-@@ -54,9 +53,9 @@ static int run_test(struct pci_test *test)
- 		ret = ioctl(fd, PCITEST_BAR, test->barnum);
- 		fprintf(stdout, "BAR%d:\t\t", test->barnum);
- 		if (ret < 0)
--			fprintf(stdout, "TEST FAILED\n");
-+			fprintf(stdout, "FAILED\n");
- 		else
--			fprintf(stdout, "%s\n", result[ret]);
-+			fprintf(stdout, "SUCCESS\n");
+diff --git a/drivers/misc/pci_endpoint_test.c b/drivers/misc/pci_endpoint_test.c
+index a7d8ae9730f6..5e4d4691a160 100644
+--- a/drivers/misc/pci_endpoint_test.c
++++ b/drivers/misc/pci_endpoint_test.c
+@@ -810,10 +810,8 @@ static int pci_endpoint_test_probe(struct pci_dev *pdev,
+ 	for (bar = 0; bar < PCI_STD_NUM_BARS; bar++) {
+ 		if (pci_resource_flags(pdev, bar) & IORESOURCE_MEM) {
+ 			base = pci_ioremap_bar(pdev, bar);
+-			if (!base) {
++			if (!base)
+ 				dev_err(dev, "Failed to read BAR%d\n", bar);
+-				WARN_ON(bar == test_reg_bar);
+-			}
+ 			test->bar[bar] = base;
+ 		}
  	}
- 
- 	if (test->set_irqtype) {
-@@ -65,16 +64,18 @@ static int run_test(struct pci_test *test)
- 		if (ret < 0)
- 			fprintf(stdout, "FAILED\n");
- 		else
--			fprintf(stdout, "%s\n", result[ret]);
-+			fprintf(stdout, "SUCCESS\n");
- 	}
- 
- 	if (test->get_irqtype) {
- 		ret = ioctl(fd, PCITEST_GET_IRQTYPE);
- 		fprintf(stdout, "GET IRQ TYPE:\t\t");
--		if (ret < 0)
-+		if (ret < 0) {
- 			fprintf(stdout, "FAILED\n");
--		else
-+		} else {
- 			fprintf(stdout, "%s\n", irq[ret]);
-+			ret = 0;
-+		}
- 	}
- 
- 	if (test->clear_irq) {
-@@ -83,34 +84,34 @@ static int run_test(struct pci_test *test)
- 		if (ret < 0)
- 			fprintf(stdout, "FAILED\n");
- 		else
--			fprintf(stdout, "%s\n", result[ret]);
-+			fprintf(stdout, "SUCCESS\n");
- 	}
- 
- 	if (test->legacyirq) {
- 		ret = ioctl(fd, PCITEST_LEGACY_IRQ, 0);
- 		fprintf(stdout, "LEGACY IRQ:\t");
- 		if (ret < 0)
--			fprintf(stdout, "TEST FAILED\n");
-+			fprintf(stdout, "FAILED\n");
- 		else
--			fprintf(stdout, "%s\n", result[ret]);
-+			fprintf(stdout, "SUCCESS\n");
- 	}
- 
- 	if (test->msinum > 0 && test->msinum <= 32) {
- 		ret = ioctl(fd, PCITEST_MSI, test->msinum);
- 		fprintf(stdout, "MSI%d:\t\t", test->msinum);
- 		if (ret < 0)
--			fprintf(stdout, "TEST FAILED\n");
-+			fprintf(stdout, "FAILED\n");
- 		else
--			fprintf(stdout, "%s\n", result[ret]);
-+			fprintf(stdout, "SUCCESS\n");
- 	}
- 
- 	if (test->msixnum > 0 && test->msixnum <= 2048) {
- 		ret = ioctl(fd, PCITEST_MSIX, test->msixnum);
- 		fprintf(stdout, "MSI-X%d:\t\t", test->msixnum);
- 		if (ret < 0)
--			fprintf(stdout, "TEST FAILED\n");
-+			fprintf(stdout, "FAILED\n");
- 		else
--			fprintf(stdout, "%s\n", result[ret]);
-+			fprintf(stdout, "SUCCESS\n");
- 	}
- 
- 	if (test->write) {
-@@ -120,9 +121,9 @@ static int run_test(struct pci_test *test)
- 		ret = ioctl(fd, PCITEST_WRITE, &param);
- 		fprintf(stdout, "WRITE (%7ld bytes):\t\t", test->size);
- 		if (ret < 0)
--			fprintf(stdout, "TEST FAILED\n");
-+			fprintf(stdout, "FAILED\n");
- 		else
--			fprintf(stdout, "%s\n", result[ret]);
-+			fprintf(stdout, "SUCCESS\n");
- 	}
- 
- 	if (test->read) {
-@@ -132,9 +133,9 @@ static int run_test(struct pci_test *test)
- 		ret = ioctl(fd, PCITEST_READ, &param);
- 		fprintf(stdout, "READ (%7ld bytes):\t\t", test->size);
- 		if (ret < 0)
--			fprintf(stdout, "TEST FAILED\n");
-+			fprintf(stdout, "FAILED\n");
- 		else
--			fprintf(stdout, "%s\n", result[ret]);
-+			fprintf(stdout, "SUCCESS\n");
- 	}
- 
- 	if (test->copy) {
-@@ -144,14 +145,14 @@ static int run_test(struct pci_test *test)
- 		ret = ioctl(fd, PCITEST_COPY, &param);
- 		fprintf(stdout, "COPY (%7ld bytes):\t\t", test->size);
- 		if (ret < 0)
--			fprintf(stdout, "TEST FAILED\n");
-+			fprintf(stdout, "FAILED\n");
- 		else
--			fprintf(stdout, "%s\n", result[ret]);
-+			fprintf(stdout, "SUCCESS\n");
- 	}
- 
- 	fflush(stdout);
- 	close(fd);
--	return (ret < 0) ? ret : 1 - ret; /* return 0 if test succeeded */
-+	return ret;
- }
- 
- int main(int argc, char **argv)
 -- 
 2.25.1
 
