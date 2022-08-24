@@ -2,288 +2,127 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AD6F4C00140
-	for <linux-kernel@archiver.kernel.org>; Wed, 24 Aug 2022 13:22:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EDB8BC00140
+	for <linux-kernel@archiver.kernel.org>; Wed, 24 Aug 2022 13:25:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238170AbiHXNWV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 24 Aug 2022 09:22:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43760 "EHLO
+        id S238185AbiHXNZW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 24 Aug 2022 09:25:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49146 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238157AbiHXNWS (ORCPT
+        with ESMTP id S238130AbiHXNZS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 24 Aug 2022 09:22:18 -0400
-Received: from mail-yw1-f179.google.com (mail-yw1-f179.google.com [209.85.128.179])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E79AE65838;
-        Wed, 24 Aug 2022 06:22:16 -0700 (PDT)
-Received: by mail-yw1-f179.google.com with SMTP id 00721157ae682-335624d1e26so460202937b3.4;
-        Wed, 24 Aug 2022 06:22:16 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc;
-        bh=tj5/16yhAX2zl12togbMkLyLKsw/5w7DUaktiPD9h7o=;
-        b=Sh5lISq1nunvBUNxXeYs8/AHla7VsYwviHmAlfTVefSeCumEf+RlGUP8zvY+xSTUIo
-         J/eL/t2fDTSGDRzTTnOKVxUlBRpR4GJDxbSWJ9QuxlJ6IWZeybHnRH8UthG0UkeZOcpy
-         crl6/9f+n7LEEP3xGNz3hZykVCoWMbOcAaf+hPnjuZNH9Thav7bf4fvu0SuzxDowGWMB
-         qf2KaGP+AxLiR3aoiseFeKCQ0ZJLVN1Hjk3fVq8GESIpgimfkDlGQUjQUvic9jPZN7uW
-         yVWU8b8iQwPH3i/yH7j2HuGeokhMN+1zYhk+Y8xCRG+oW+IDqm2rnZvqxMEqUeqidsiJ
-         4ssA==
-X-Gm-Message-State: ACgBeo1pKNQCyU3+84YonFMQ6Nqohb764S6yotfbwwYIgdCls7oupJJg
-        zwXOlkL5FfXp950mrJjDVkcKMwA7nhBGM8DfwJs=
-X-Google-Smtp-Source: AA6agR7F6dL9fEItbSnwYeWeFsGP6YbP4X9nk9/auwvZtJqzztAZP+x7XYZ9ViIYo8p2bTePdHW2+36bkc3F46zQok8=
-X-Received: by 2002:a81:4850:0:b0:33c:922b:5739 with SMTP id
- v77-20020a814850000000b0033c922b5739mr13285502ywa.515.1661347336143; Wed, 24
- Aug 2022 06:22:16 -0700 (PDT)
+        Wed, 24 Aug 2022 09:25:18 -0400
+Received: from mail.skyhub.de (mail.skyhub.de [5.9.137.197])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C5B5F2D1C8
+        for <linux-kernel@vger.kernel.org>; Wed, 24 Aug 2022 06:25:01 -0700 (PDT)
+Received: from zn.tnic (p200300ea971b9859329c23fffea6a903.dip0.t-ipconnect.de [IPv6:2003:ea:971b:9859:329c:23ff:fea6:a903])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.skyhub.de (SuperMail on ZX Spectrum 128k) with ESMTPSA id 4DB421EC056A;
+        Wed, 24 Aug 2022 15:24:56 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=alien8.de; s=dkim;
+        t=1661347496;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=hvtVxhWrztDsZXHALGXRisb9QLUwGNxxI+ykol7ovVo=;
+        b=Igt6T7VsheNVHQUMoO69O/uFLPp7VAdAhsrFKKwTrxalqZq+17xhfRkrVg23xurex9KpDu
+        /MThpzGjF+UqrqaAsUToD9N6w3NsaVraXMOWKHY6egMnU98E7XsjxlbK2E9vcG1kZumei0
+        wsg5NuIgX4mHx+ipvBNi9wX/4rN9DQ8=
+Date:   Wed, 24 Aug 2022 15:24:52 +0200
+From:   Borislav Petkov <bp@alien8.de>
+To:     Vincent MAILHOL <mailhol.vincent@wanadoo.fr>
+Cc:     Nick Desaulniers <ndesaulniers@google.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>, x86@kernel.org,
+        Peter Zijlstra <peterz@infradead.org>,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        "H . Peter Anvin" <hpa@zytor.com>,
+        Nathan Chancellor <nathan@kernel.org>,
+        Tom Rix <trix@redhat.com>, linux-kernel@vger.kernel.org,
+        llvm@lists.linux.dev, David Howells <dhowells@redhat.com>,
+        Jan Beulich <JBeulich@suse.com>,
+        Christophe Jaillet <christophe.jaillet@wanadoo.fr>,
+        Joe Perches <joe@perches.com>,
+        Josh Poimboeuf <jpoimboe@kernel.org>
+Subject: Re: [PATCH v5 2/2] x86/asm/bitops: __ffs,ffz: use __builtin_ctzl to
+ evaluate constant expressions
+Message-ID: <YwYmpK40ju5WUlVZ@zn.tnic>
+References: <20220511160319.1045812-1-mailhol.vincent@wanadoo.fr>
+ <20220812114438.1574-1-mailhol.vincent@wanadoo.fr>
+ <20220812114438.1574-3-mailhol.vincent@wanadoo.fr>
+ <YwT+5GGCOKoTjfQZ@zn.tnic>
+ <CAKwvOdnc-Js8x4sv0j23crtYP73sRkNexom5ydm=r=8rYgc_5Q@mail.gmail.com>
+ <YwUR35I7+5JbLvMM@zn.tnic>
+ <CAMZ6Rq+-Ld41cXt+Qy3a7nkQrDp3RK-BJYW0j=HCyKH-x9S3tw@mail.gmail.com>
+ <YwXkuW3rSYY7ZJT+@zn.tnic>
+ <CAMZ6RqLugOnskOpyUS6OjdcdnwoXz-E8Bsw2qNaabDPYJ=139A@mail.gmail.com>
 MIME-Version: 1.0
-References: <20220818211619.4193362-1-jeremy.linton@arm.com>
- <20220818211619.4193362-2-jeremy.linton@arm.com> <CAJZ5v0h7s0WnyBtwuQbTZXwq+jmYDF74gjc9-c-=Krt23KgF1w@mail.gmail.com>
- <cbbc3156-507c-9b88-06b9-c1e7bda50c32@arm.com>
-In-Reply-To: <cbbc3156-507c-9b88-06b9-c1e7bda50c32@arm.com>
-From:   "Rafael J. Wysocki" <rafael@kernel.org>
-Date:   Wed, 24 Aug 2022 15:22:04 +0200
-Message-ID: <CAJZ5v0jXxUmCRbaWF3B7NmhMcOhgH_MgKbrsttF=RccJFjPaoQ@mail.gmail.com>
-Subject: Re: [PATCH v3 1/2] ACPI: CPPC: Disable FIE if registers in PCC regions
-To:     Jeremy Linton <jeremy.linton@arm.com>
-Cc:     ACPI Devel Maling List <linux-acpi@vger.kernel.org>,
-        Len Brown <lenb@kernel.org>,
-        Viresh Kumar <viresh.kumar@linaro.org>,
-        Robert Moore <robert.moore@intel.com>,
-        Punit Agrawal <punit.agrawal@bytedance.com>,
-        Lukasz Luba <lukasz.luba@arm.com>,
-        Ionela Voinescu <ionela.voinescu@arm.com>,
-        Pierre Gondois <pierre.gondois@arm.com>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        "open list:ACPI COMPONENT ARCHITECTURE (ACPICA)" <devel@acpica.org>,
-        Linux PM <linux-pm@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <CAMZ6RqLugOnskOpyUS6OjdcdnwoXz-E8Bsw2qNaabDPYJ=139A@mail.gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Aug 23, 2022 at 8:46 PM Jeremy Linton <jeremy.linton@arm.com> wrote:
->
-> Hi,
->
-> On 8/23/22 12:10, Rafael J. Wysocki wrote:
-> > On Thu, Aug 18, 2022 at 11:24 PM Jeremy Linton <jeremy.linton@arm.com> wrote:
-> >>
-> >> PCC regions utilize a mailbox to set/retrieve register values used by
-> >> the CPPC code. This is fine as long as the operations are
-> >> infrequent. With the FIE code enabled though the overhead can range
-> >> from 2-11% of system CPU overhead (ex: as measured by top) on Arm
-> >> based machines.
-> >>
-> >> So, before enabling FIE assure none of the registers used by
-> >> cppc_get_perf_ctrs() are in the PCC region. Furthermore lets also
-> >> enable a module parameter which can also disable it at boot or module
-> >> reload.
-> >>
-> >> Signed-off-by: Jeremy Linton <jeremy.linton@arm.com>
-> >> ---
-> >>   drivers/acpi/cppc_acpi.c       | 41 ++++++++++++++++++++++++++++++++++
-> >>   drivers/cpufreq/cppc_cpufreq.c | 31 +++++++++++++++++++++----
-> >>   include/acpi/cppc_acpi.h       |  5 +++++
-> >>   3 files changed, 73 insertions(+), 4 deletions(-)
-> >>
-> >> diff --git a/drivers/acpi/cppc_acpi.c b/drivers/acpi/cppc_acpi.c
-> >> index 1e15a9f25ae9..c840bf606b30 100644
-> >> --- a/drivers/acpi/cppc_acpi.c
-> >> +++ b/drivers/acpi/cppc_acpi.c
-> >> @@ -1240,6 +1240,47 @@ int cppc_get_perf_caps(int cpunum, struct cppc_perf_caps *perf_caps)
-> >>   }
-> >>   EXPORT_SYMBOL_GPL(cppc_get_perf_caps);
-> >>
-> >> +/**
-> >> + * cppc_perf_ctrs_in_pcc - Check if any perf counters are in a PCC region.
-> >> + *
-> >> + * CPPC has flexibility about how counters describing CPU perf are delivered.
-> >
-> > "CPU performance counters are accessed"
->
-> Sure,
->
-> >
-> >
-> >> + * One of the choices is PCC regions, which can have a high access latency. This
-> >> + * routine allows callers of cppc_get_perf_ctrs() to know this ahead of time.
-> >> + *
-> >> + * Return: true if any of the counters are in PCC regions, false otherwise
-> >> + */
-> >> +bool cppc_perf_ctrs_in_pcc(void)
-> >> +{
-> >> +       int cpu;
-> >> +
-> >> +       for_each_present_cpu(cpu) {
-> >> +               struct cpc_register_resource *ref_perf_reg;
-> >> +               struct cpc_desc *cpc_desc;
-> >> +
-> >> +               cpc_desc = per_cpu(cpc_desc_ptr, cpu);
-> >> +
-> >> +               if (CPC_IN_PCC(&cpc_desc->cpc_regs[DELIVERED_CTR]) ||
-> >> +                   CPC_IN_PCC(&cpc_desc->cpc_regs[REFERENCE_CTR]) ||
-> >> +                   CPC_IN_PCC(&cpc_desc->cpc_regs[CTR_WRAP_TIME]))
-> >> +                       return true;
-> >> +
-> >> +
-> >> +               ref_perf_reg = &cpc_desc->cpc_regs[REFERENCE_PERF];
-> >> +
-> >> +               /*
-> >> +                * If reference perf register is not supported then we should
-> >> +                * use the nominal perf value
-> >> +                */
-> >> +               if (!CPC_SUPPORTED(ref_perf_reg))
-> >> +                       ref_perf_reg = &cpc_desc->cpc_regs[NOMINAL_PERF];
-> >> +
-> >> +               if (CPC_IN_PCC(ref_perf_reg))
-> >> +                       return true;
-> >> +       }
-> >> +       return false;
-> >> +}
-> >> +EXPORT_SYMBOL_GPL(cppc_perf_ctrs_in_pcc);
-> >> +
-> >>   /**
-> >>    * cppc_get_perf_ctrs - Read a CPU's performance feedback counters.
-> >>    * @cpunum: CPU from which to read counters.
-> >> diff --git a/drivers/cpufreq/cppc_cpufreq.c b/drivers/cpufreq/cppc_cpufreq.c
-> >> index 24eaf0ec344d..32fcb0bf74a4 100644
-> >> --- a/drivers/cpufreq/cppc_cpufreq.c
-> >> +++ b/drivers/cpufreq/cppc_cpufreq.c
-> >> @@ -63,7 +63,15 @@ static struct cppc_workaround_oem_info wa_info[] = {
-> >>
-> >>   static struct cpufreq_driver cppc_cpufreq_driver;
-> >>
-> >> +static enum {
-> >> +       FIE_UNSET = -1,
-> >> +       FIE_ENABLED,
-> >> +       FIE_DISABLED
-> >> +} fie_disabled = FIE_UNSET;
-> >> +
-> >>   #ifdef CONFIG_ACPI_CPPC_CPUFREQ_FIE
-> >> +module_param(fie_disabled, int, 0444);
-> >> +MODULE_PARM_DESC(fie_disabled, "Disable Frequency Invariance Engine (FIE)");
-> >>
-> >>   /* Frequency invariance support */
-> >>   struct cppc_freq_invariance {
-> >> @@ -158,7 +166,7 @@ static void cppc_cpufreq_cpu_fie_init(struct cpufreq_policy *policy)
-> >>          struct cppc_freq_invariance *cppc_fi;
-> >>          int cpu, ret;
-> >>
-> >> -       if (cppc_cpufreq_driver.get == hisi_cppc_cpufreq_get_rate)
-> >> +       if (fie_disabled)
-> >>                  return;
-> >>
-> >>          for_each_cpu(cpu, policy->cpus) {
-> >> @@ -199,7 +207,7 @@ static void cppc_cpufreq_cpu_fie_exit(struct cpufreq_policy *policy)
-> >>          struct cppc_freq_invariance *cppc_fi;
-> >>          int cpu;
-> >>
-> >> -       if (cppc_cpufreq_driver.get == hisi_cppc_cpufreq_get_rate)
-> >> +       if (fie_disabled)
-> >>                  return;
-> >>
-> >>          /* policy->cpus will be empty here, use related_cpus instead */
-> >> @@ -229,7 +237,21 @@ static void __init cppc_freq_invariance_init(void)
-> >>          };
-> >>          int ret;
-> >>
-> >> -       if (cppc_cpufreq_driver.get == hisi_cppc_cpufreq_get_rate)
-> >> +       switch (fie_disabled) {
-> >> +       /* honor user request */
-> >> +       case FIE_DISABLED:
-> >> +       case FIE_ENABLED:
-> >> +               break;
-> >> +       case FIE_UNSET:
-> >> +       default:
-> >
-> > Would be more straightforward to do
-> >
-> > if (fie_disabled == FIE_UNSET) {
-> >
-> > here.
->
-> Right, but then it wouldn't catch the other billion+ values that are the
-> result of not being able to export a limit (AFAIK) on the module
-> parameter. I could use an if:
+On Wed, Aug 24, 2022 at 09:10:59PM +0900, Vincent MAILHOL wrote:
+> Not exactly, this is TZCNT for x86_64 but for x86, it will be BSF…
 
-Hmm.
+Not x86 - some old models which do not understand TZCNT, I'm being told.
+And I'm being also told, "Intel and AMD disagree on what BSF does when
+passed 0". So this is more mess.
 
-I've missed the module_param() part.
+> It means that __ffs() is not a x86_64 specific function. Each
 
-It doesn't even make sense to use enum for the variable type in that case.
+No, not that. The comment "Undefined if no bit exists".
 
-Also you can always do
+On my machine, __ffs(0) - the way it is implemented:
 
-if (fie_disabled < 0) {
-...
-}
+	rep; bsf %1,%0
 
-> if !((fie_disabled == FIE_DISABLE) || (fie_disabled == FIE_ENABLED)) {
->
-> }
->
->
-> if that is preferable. I thought the case with the explict default:
-> though made it clearer that it was treating all those other values as unset.
->
-> >
-> >> +               fie_disabled = FIE_ENABLED;
-> >> +               if (cppc_perf_ctrs_in_pcc()) {
-> >> +                       pr_info("FIE not enabled on systems with registers in PCC\n");
-> >> +                       fie_disabled = FIE_DISABLED;
-> >> +               }
-> >> +               break;
-> >> +       }
-> >> +       if (fie_disabled)
-> >>                  return;
-> >>
-> >>          kworker_fie = kthread_create_worker(0, "cppc_fie");
-> >> @@ -247,7 +269,7 @@ static void __init cppc_freq_invariance_init(void)
-> >>
-> >>   static void cppc_freq_invariance_exit(void)
-> >>   {
-> >> -       if (cppc_cpufreq_driver.get == hisi_cppc_cpufreq_get_rate)
-> >> +       if (fie_disabled)
-> >>                  return;
-> >>
-> >>          kthread_destroy_worker(kworker_fie);
-> >> @@ -936,6 +958,7 @@ static void cppc_check_hisi_workaround(void)
-> >>                      wa_info[i].oem_revision == tbl->oem_revision) {
-> >>                          /* Overwrite the get() callback */
-> >>                          cppc_cpufreq_driver.get = hisi_cppc_cpufreq_get_rate;
-> >> +                       fie_disabled = FIE_DISABLED;
-> >>                          break;
-> >>                  }
-> >>          }
-> >> diff --git a/include/acpi/cppc_acpi.h b/include/acpi/cppc_acpi.h
-> >> index f73d357ecdf5..c5614444031f 100644
-> >> --- a/include/acpi/cppc_acpi.h
-> >> +++ b/include/acpi/cppc_acpi.h
-> >> @@ -140,6 +140,7 @@ extern int cppc_get_perf_ctrs(int cpu, struct cppc_perf_fb_ctrs *perf_fb_ctrs);
-> >>   extern int cppc_set_perf(int cpu, struct cppc_perf_ctrls *perf_ctrls);
-> >>   extern int cppc_set_enable(int cpu, bool enable);
-> >>   extern int cppc_get_perf_caps(int cpu, struct cppc_perf_caps *caps);
-> >> +extern bool cppc_perf_ctrs_in_pcc(void);
-> >>   extern bool acpi_cpc_valid(void);
-> >>   extern bool cppc_allow_fast_switch(void);
-> >>   extern int acpi_get_psd_map(unsigned int cpu, struct cppc_cpudata *cpu_data);
-> >> @@ -173,6 +174,10 @@ static inline int cppc_get_perf_caps(int cpu, struct cppc_perf_caps *caps)
-> >>   {
-> >>          return -ENOTSUPP;
-> >>   }
-> >> +static inline bool cppc_perf_ctrs_in_pcc(void)
-> >> +{
-> >> +       return false;
-> >> +}
-> >>   static inline bool acpi_cpc_valid(void)
-> >>   {
-> >>          return false;
-> >> --
-> >
-> > Apart from the above it looks fine to me, but I would like to get an
-> > ACK from Viresh on the second patch.
-> >
-> > Thanks!
->
-> Thanks for looking at this.
->
->
+is well-defined:
+
+"If the input operand is zero, CF is set to 1 and the size (in bits) of
+the input operand is written to the destination register. Otherwise, CF
+is cleared."
+
+Leading to
+
+__ffs(0): 0x40
+
+i.e., input operand of 64 bits.
+
+So on this particular x86 implementation, TZCNT(0) is well defined.
+
+So I'd like for that "undefined" thing to be expanded upon and
+explained. Something along the lines of "the libc/compiler primitives'
+*ffs(0) is undefined. Our inline asm helpers adhere to that behavior
+even if the result they return for input operand of 0 is very well
+defined."
+
+Now, if there are some machines which do not adhere to the current hw
+behavior, then they should be ALTERNATIVEd.
+
+Better?
+
+> > Back to your patch: I think the text should be fixed to say that both
+> > ffs() and __ffs()'s kernel implementation doesn't have undefined results
+> 
+> NACK. __ffs(0) is an undefined behaviour (c.f. TZCNT instruction for
+
+NACK, SCHMACK. Read my mail again: "I think the text should be fixed".
+The *text* - not __ffs(0) itself. The *text* should be fixed to explain
+what undefined means. See above too.
+
+IOW, to start explaining this humongous mess I've scratched the surface
+of.
+
+Thx.
+
+-- 
+Regards/Gruss,
+    Boris.
+
+https://people.kernel.org/tglx/notes-about-netiquette
