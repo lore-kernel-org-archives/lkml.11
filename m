@@ -2,69 +2,90 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 41D0EC32796
-	for <linux-kernel@archiver.kernel.org>; Wed, 24 Aug 2022 09:29:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DF817C32793
+	for <linux-kernel@archiver.kernel.org>; Wed, 24 Aug 2022 09:29:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235502AbiHXJ30 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 24 Aug 2022 05:29:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49072 "EHLO
+        id S234728AbiHXJ3q (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 24 Aug 2022 05:29:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49176 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233776AbiHXJ3X (ORCPT
+        with ESMTP id S235909AbiHXJ3a (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 24 Aug 2022 05:29:23 -0400
-Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7CFAB844CA;
-        Wed, 24 Aug 2022 02:29:22 -0700 (PDT)
-Received: from dggpemm500020.china.huawei.com (unknown [172.30.72.56])
-        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4MCLLk3lYZzQwNg;
-        Wed, 24 Aug 2022 17:26:06 +0800 (CST)
-Received: from dggpemm500007.china.huawei.com (7.185.36.183) by
- dggpemm500020.china.huawei.com (7.185.36.49) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Wed, 24 Aug 2022 17:29:20 +0800
-Received: from huawei.com (10.175.103.91) by dggpemm500007.china.huawei.com
- (7.185.36.183) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Wed, 24 Aug
- 2022 17:29:20 +0800
-From:   Yang Yingliang <yangyingliang@huawei.com>
-To:     <linux-kernel@vger.kernel.org>, <linux-parisc@vger.kernel.org>
-CC:     <liqiong@nfschina.com>, <deller@gmx.de>
-Subject: [PATCH -next] parisc: ccio-dma: Add missing iounmap in error path in ccio_probe()
-Date:   Wed, 24 Aug 2022 17:36:57 +0800
-Message-ID: <20220824093657.3365027-1-yangyingliang@huawei.com>
-X-Mailer: git-send-email 2.25.1
+        Wed, 24 Aug 2022 05:29:30 -0400
+Received: from out0-151.mail.aliyun.com (out0-151.mail.aliyun.com [140.205.0.151])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E67A2844F6;
+        Wed, 24 Aug 2022 02:29:27 -0700 (PDT)
+X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R891e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=ay29a033018047202;MF=houwenlong.hwl@antgroup.com;NM=1;PH=DS;RN=12;SR=0;TI=SMTPD_---.P-k32CP_1661333364;
+Received: from localhost(mailfrom:houwenlong.hwl@antgroup.com fp:SMTPD_---.P-k32CP_1661333364)
+          by smtp.aliyun-inc.com;
+          Wed, 24 Aug 2022 17:29:24 +0800
+From:   "Hou Wenlong" <houwenlong.hwl@antgroup.com>
+To:     kvm@vger.kernel.org
+Cc:     David Matlack <dmatlack@google.com>,
+        Sean Christopherson <seanjc@google.com>,
+        Paolo Bonzini <pbonzini@redhat.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+        Dave Hansen <dave.hansen@linux.intel.com>, x86@kernel.org,
+        "H. Peter Anvin" <hpa@zytor.com>,
+        Lan Tianyu <Tianyu.Lan@microsoft.com>,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH v2 1/6] KVM: x86/mmu: Fix wrong gfn range of tlb flushing in validate_direct_spte()
+Date:   Wed, 24 Aug 2022 17:29:18 +0800
+Message-Id: <c0ee12e44f2d218a0857a5e05628d05462b32bf9.1661331396.git.houwenlong.hwl@antgroup.com>
+X-Mailer: git-send-email 2.31.1
+In-Reply-To: <cover.1661331396.git.houwenlong.hwl@antgroup.com>
+References: <cover.1661331396.git.houwenlong.hwl@antgroup.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.175.103.91]
-X-ClientProxiedBy: dggems702-chm.china.huawei.com (10.3.19.179) To
- dggpemm500007.china.huawei.com (7.185.36.183)
-X-CFilter-Loop: Reflected
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add missing iounmap() before return from ccio_probe(), if ccio_init_resources()
-fails.
+The spte pointing to the children SP is dropped, so the
+whole gfn range covered by the children SP should be flushed.
+Although, Hyper-V may treat a 1-page flush the same if the
+address points to a huge page, it still would be better
+to use the correct size of huge page. Also introduce
+a helper function to do range-based flushing when a direct
+SP is dropped, which would help prevent future buggy use
+of kvm_flush_remote_tlbs_with_address() in such case.
 
-Fixes: d46c742f827f ("parisc: ccio-dma: Handle kmalloc failure in ccio_init_resources()")
-Signed-off-by: Yang Yingliang <yangyingliang@huawei.com>
+Fixes: c3134ce240eed ("KVM: Replace old tlb flush function with new one to flush a specified range.")
+Suggested-by: David Matlack <dmatlack@google.com>
+Signed-off-by: Hou Wenlong <houwenlong.hwl@antgroup.com>
 ---
- drivers/parisc/ccio-dma.c | 1 +
- 1 file changed, 1 insertion(+)
+ arch/x86/kvm/mmu/mmu.c | 10 +++++++++-
+ 1 file changed, 9 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/parisc/ccio-dma.c b/drivers/parisc/ccio-dma.c
-index f223afe47d10..a66386043aa6 100644
---- a/drivers/parisc/ccio-dma.c
-+++ b/drivers/parisc/ccio-dma.c
-@@ -1546,6 +1546,7 @@ static int __init ccio_probe(struct parisc_device *dev)
+diff --git a/arch/x86/kvm/mmu/mmu.c b/arch/x86/kvm/mmu/mmu.c
+index e418ef3ecfcb..a3578abd8bbc 100644
+--- a/arch/x86/kvm/mmu/mmu.c
++++ b/arch/x86/kvm/mmu/mmu.c
+@@ -260,6 +260,14 @@ void kvm_flush_remote_tlbs_with_address(struct kvm *kvm,
+ 	kvm_flush_remote_tlbs_with_range(kvm, &range);
+ }
+ 
++/* Flush all memory mapped by the given direct SP. */
++static void kvm_flush_remote_tlbs_direct_sp(struct kvm *kvm, struct kvm_mmu_page *sp)
++{
++	WARN_ON_ONCE(!sp->role.direct);
++	kvm_flush_remote_tlbs_with_address(kvm, sp->gfn,
++					   KVM_PAGES_PER_HPAGE(sp->role.level + 1));
++}
++
+ static void mark_mmio_spte(struct kvm_vcpu *vcpu, u64 *sptep, u64 gfn,
+ 			   unsigned int access)
+ {
+@@ -2341,7 +2349,7 @@ static void validate_direct_spte(struct kvm_vcpu *vcpu, u64 *sptep,
+ 			return;
+ 
+ 		drop_parent_pte(child, sptep);
+-		kvm_flush_remote_tlbs_with_address(vcpu->kvm, child->gfn, 1);
++		kvm_flush_remote_tlbs_direct_sp(vcpu->kvm, child);
  	}
- 	ccio_ioc_init(ioc);
- 	if (ccio_init_resources(ioc)) {
-+		iounmap(ioc->ioc_regs);
- 		kfree(ioc);
- 		return -ENOMEM;
- 	}
+ }
+ 
 -- 
-2.25.1
+2.31.1
 
