@@ -2,26 +2,26 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 52840C00140
-	for <linux-kernel@archiver.kernel.org>; Wed, 24 Aug 2022 16:07:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 836FAC00140
+	for <linux-kernel@archiver.kernel.org>; Wed, 24 Aug 2022 16:07:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238490AbiHXQHa (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 24 Aug 2022 12:07:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53726 "EHLO
+        id S239027AbiHXQHd (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 24 Aug 2022 12:07:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53732 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237876AbiHXQHZ (ORCPT
+        with ESMTP id S239194AbiHXQHZ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Wed, 24 Aug 2022 12:07:25 -0400
 Received: from hutie.ust.cz (unknown [IPv6:2a03:3b40:fe:f0::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3156880B66;
-        Wed, 24 Aug 2022 09:07:21 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 54DFA80E82;
+        Wed, 24 Aug 2022 09:07:22 -0700 (PDT)
 From:   =?UTF-8?q?Martin=20Povi=C5=A1er?= <povik+lin@cutebit.org>
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=cutebit.org; s=mail;
-        t=1661357239; bh=sHeYLuJA67nZaY4WSbgSXG+UWU/shWLU+cSuvcmzqjs=;
+        t=1661357240; bh=aO38GJDIP/5aJG6S0vIu2Re6vO0yDujEU8aBKTpUOoc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References;
-        b=foe2+KKSacdQ25yG02zYe7gywYei0k3dU4PRovXO3MlbFp4L2wntKjPSC5ZVNV6Hb
-         p2x47z5PRHQQHlKb5CRsdTc/CIDkno4FMiPIc7XiMkYapCES2gdYgPugnDoyMU5TuU
-         BKx3A+MZpjiv/4OMQOKd+1FqV5o9w/KOOm9NGcmU=
+        b=Bxm61ZEynvpzn8cGD8yFgOWSblB7WYZYp8swzU6lksYgeFKL2Psl7tZMrQrQOgrEo
+         o3qi86pna0Z+tnErdiyTmXsRMS6yaSjPN4brbS0SN8OLPzluwbGpU2uGRLSkfoeim0
+         6HGwKNyD5af9aDowtXFhKbnpOaCQnNKr6itIwkgM=
 To:     =?UTF-8?q?Martin=20Povi=C5=A1er?= <povik+lin@cutebit.org>,
         Liam Girdwood <lgirdwood@gmail.com>,
         Mark Brown <broonie@kernel.org>,
@@ -33,9 +33,9 @@ To:     =?UTF-8?q?Martin=20Povi=C5=A1er?= <povik+lin@cutebit.org>,
 Cc:     Alyssa Rosenzweig <alyssa@rosenzweig.io>, asahi@lists.linux.dev,
         alsa-devel@alsa-project.org, devicetree@vger.kernel.org,
         linux-kernel@vger.kernel.org
-Subject: [PATCH v3 2/4] arm64: dts: apple: t8103: Add MCA and its support
-Date:   Wed, 24 Aug 2022 18:07:13 +0200
-Message-Id: <20220824160715.95779-3-povik+lin@cutebit.org>
+Subject: [PATCH v3 4/4] ASoC: apple: mca: Add locking
+Date:   Wed, 24 Aug 2022 18:07:15 +0200
+Message-Id: <20220824160715.95779-5-povik+lin@cutebit.org>
 In-Reply-To: <20220824160715.95779-1-povik+lin@cutebit.org>
 References: <20220824160715.95779-1-povik+lin@cutebit.org>
 MIME-Version: 1.0
@@ -45,109 +45,105 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add the MCA I2S transceiver node and its supporting NCO, ADMAC nodes.
+In DAI ops, accesses to the native cluster (of the DAI), and to data of
+clusters related to it by a DPCM frontend-backend link, should have
+been synchronized by the 'pcm_mutex' lock at ASoC level.
+
+What is not covered are the 'port_driver' accesses on foreign clusters
+to which the current cluster has no a priori relation, so fill in
+locking for that. (This should only matter in bizarre configurations of
+sharing one MCA peripheral between ASoC cards.)
 
 Signed-off-by: Martin Povišer <povik+lin@cutebit.org>
 ---
- arch/arm64/boot/dts/apple/t8103-jxxx.dtsi |  4 ++
- arch/arm64/boot/dts/apple/t8103.dtsi      | 73 +++++++++++++++++++++++
- 2 files changed, 77 insertions(+)
+ sound/soc/apple/mca.c | 23 +++++++++++++++++++++--
+ 1 file changed, 21 insertions(+), 2 deletions(-)
 
-diff --git a/arch/arm64/boot/dts/apple/t8103-jxxx.dtsi b/arch/arm64/boot/dts/apple/t8103-jxxx.dtsi
-index fe2ae40fa9dd..503a1b243efa 100644
---- a/arch/arm64/boot/dts/apple/t8103-jxxx.dtsi
-+++ b/arch/arm64/boot/dts/apple/t8103-jxxx.dtsi
-@@ -76,3 +76,7 @@ wifi0: network@0,0 {
- 		local-mac-address = [00 00 00 00 00 00];
- 	};
+diff --git a/sound/soc/apple/mca.c b/sound/soc/apple/mca.c
+index 807b85469408..aa67d57c9a9b 100644
+--- a/sound/soc/apple/mca.c
++++ b/sound/soc/apple/mca.c
+@@ -158,6 +158,9 @@ struct mca_data {
+ 	struct reset_control *rstc;
+ 	struct device_link *pd_link;
+ 
++	/* Mutex for accessing port_driver of foreign clusters */
++	struct mutex port_mutex;
++
+ 	int nclusters;
+ 	struct mca_cluster clusters[];
  };
-+
-+&nco_clkref {
-+	clock-frequency = <900000000>;
-+};
-diff --git a/arch/arm64/boot/dts/apple/t8103.dtsi b/arch/arm64/boot/dts/apple/t8103.dtsi
-index 51a63b29d404..5c01d5318386 100644
---- a/arch/arm64/boot/dts/apple/t8103.dtsi
-+++ b/arch/arm64/boot/dts/apple/t8103.dtsi
-@@ -532,6 +532,79 @@ port02: pci@2,0 {
- 						<0 0 0 4 &port02 0 0 0 3>;
- 			};
- 		};
-+
-+		dart_sio: iommu@235004000 {
-+			compatible = "apple,t8103-dart", "apple,dart";
-+			reg = <0x2 0x35004000 0x0 0x4000>;
-+			interrupt-parent = <&aic>;
-+			interrupts = <AIC_IRQ 635 IRQ_TYPE_LEVEL_HIGH>;
-+			#iommu-cells = <1>;
-+			power-domains = <&ps_sio_cpu>;
-+		};
-+
-+		/*
-+		 * This is a fabulated representation of the input clock
-+		 * to NCO since we don't know the true clock tree.
-+		 */
-+		nco_clkref: clock-ref {
-+			compatible = "fixed-clock";
-+			#clock-cells = <0>;
-+			clock-output-names = "nco_ref";
-+		};
-+
-+		nco: clock-controller@23b044000 {
-+			compatible = "apple,t8103-nco", "apple,nco";
-+			reg = <0x2 0x3b044000 0x0 0x14000>;
-+			clocks = <&nco_clkref>;
-+			#clock-cells = <1>;
-+		};
-+
-+		admac: dma-controller@238200000 {
-+			compatible = "apple,t8103-admac", "apple,admac";
-+			reg = <0x2 0x38200000 0x0 0x34000>;
-+			dma-channels = <24>;
-+			interrupts-extended = <0>,
-+					      <&aic AIC_IRQ 626 IRQ_TYPE_LEVEL_HIGH>,
-+					      <0>,
-+					      <0>;
-+			#dma-cells = <1>;
-+			iommus = <&dart_sio 2>;
-+			power-domains = <&ps_sio_adma>;
-+		};
-+
-+		mca: i2s@38400000 {
-+			compatible = "apple,t8103-mca", "apple,mca";
-+			reg = <0x2 0x38400000 0x0 0x18000>,
-+			      <0x2 0x38300000 0x0 0x30000>;
-+
-+			interrupt-parent = <&aic>;
-+			interrupts = <AIC_IRQ 619 IRQ_TYPE_LEVEL_HIGH>,
-+				     <AIC_IRQ 620 IRQ_TYPE_LEVEL_HIGH>,
-+				     <AIC_IRQ 621 IRQ_TYPE_LEVEL_HIGH>,
-+				     <AIC_IRQ 622 IRQ_TYPE_LEVEL_HIGH>,
-+				     <AIC_IRQ 623 IRQ_TYPE_LEVEL_HIGH>,
-+				     <AIC_IRQ 624 IRQ_TYPE_LEVEL_HIGH>;
-+
-+			resets = <&ps_audio_p>;
-+			clocks = <&nco 0>, <&nco 1>, <&nco 2>,
-+				 <&nco 3>, <&nco 4>, <&nco 4>;
-+			power-domains = <&ps_audio_p>, <&ps_mca0>, <&ps_mca1>,
-+					<&ps_mca2>, <&ps_mca3>, <&ps_mca4>, <&ps_mca5>;
-+			dmas = <&admac 0>, <&admac 1>, <&admac 2>, <&admac 3>,
-+			       <&admac 4>, <&admac 5>, <&admac 6>, <&admac 7>,
-+			       <&admac 8>, <&admac 9>, <&admac 10>, <&admac 11>,
-+			       <&admac 12>, <&admac 13>, <&admac 14>, <&admac 15>,
-+			       <&admac 16>, <&admac 17>, <&admac 18>, <&admac 19>,
-+			       <&admac 20>, <&admac 21>, <&admac 22>, <&admac 23>;
-+			dma-names = "tx0a", "rx0a", "tx0b", "rx0b",
-+				"tx1a", "rx1a", "tx1b", "rx1b",
-+				"tx2a", "rx2a", "tx2b", "rx2b",
-+				"tx3a", "rx3a", "tx3b", "rx3b",
-+				"tx4a", "rx4a", "tx4b", "rx4b",
-+				"tx5a", "rx5a", "tx5b", "rx5b";
-+
-+			#sound-dai-cells = <1>;
-+		};
- 	};
- };
+@@ -296,16 +299,21 @@ static bool mca_fe_clocks_in_use(struct mca_cluster *cl)
+ 	struct mca_cluster *be_cl;
+ 	int stream, i;
+ 
++	mutex_lock(&mca->port_mutex);
+ 	for (i = 0; i < mca->nclusters; i++) {
+ 		be_cl = &mca->clusters[i];
+ 
+ 		if (be_cl->port_driver != cl->no)
+ 			continue;
+ 
+-		for_each_pcm_streams(stream)
+-			if (be_cl->clocks_in_use[stream])
++		for_each_pcm_streams(stream) {
++			if (be_cl->clocks_in_use[stream]) {
++				mutex_unlock(&mca->port_mutex);
+ 				return true;
++			}
++		}
+ 	}
++	mutex_unlock(&mca->port_mutex);
+ 	return false;
+ }
+ 
+@@ -349,6 +357,11 @@ static int mca_be_hw_free(struct snd_pcm_substream *substream,
+ 	if (cl->port_driver < 0)
+ 		return -EINVAL;
+ 
++	/*
++	 * We are operating on a foreign cluster here, but since we
++	 * belong to the same PCM, accesses should have been
++	 * synchronized at ASoC level.
++	 */
+ 	fe_cl = &mca->clusters[cl->port_driver];
+ 	if (!mca_fe_clocks_in_use(fe_cl))
+ 		return 0; /* Nothing to do */
+@@ -721,7 +734,9 @@ static int mca_be_startup(struct snd_pcm_substream *substream,
+ 		       cl->base + REG_PORT_CLOCK_SEL);
+ 	writel_relaxed(PORT_DATA_SEL_TXA(fe_cl->no),
+ 		       cl->base + REG_PORT_DATA_SEL);
++	mutex_lock(&mca->port_mutex);
+ 	cl->port_driver = fe_cl->no;
++	mutex_unlock(&mca->port_mutex);
+ 	cl->port_started[substream->stream] = true;
+ 
+ 	return 0;
+@@ -731,6 +746,7 @@ static void mca_be_shutdown(struct snd_pcm_substream *substream,
+ 			    struct snd_soc_dai *dai)
+ {
+ 	struct mca_cluster *cl = mca_dai_to_cluster(dai);
++	struct mca_data *mca = cl->host;
+ 
+ 	cl->port_started[substream->stream] = false;
+ 
+@@ -741,7 +757,9 @@ static void mca_be_shutdown(struct snd_pcm_substream *substream,
+ 		 */
+ 		writel_relaxed(0, cl->base + REG_PORT_ENABLES);
+ 		writel_relaxed(0, cl->base + REG_PORT_DATA_SEL);
++		mutex_lock(&mca->port_mutex);
+ 		cl->port_driver = -1;
++		mutex_unlock(&mca->port_mutex);
+ 	}
+ }
+ 
+@@ -962,6 +980,7 @@ static int apple_mca_probe(struct platform_device *pdev)
+ 		return -ENOMEM;
+ 	mca->dev = &pdev->dev;
+ 	mca->nclusters = nclusters;
++	mutex_init(&mca->port_mutex);
+ 	platform_set_drvdata(pdev, mca);
+ 	clusters = mca->clusters;
  
 -- 
 2.33.0
