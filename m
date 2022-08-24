@@ -2,115 +2,157 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 31ED7C32796
-	for <linux-kernel@archiver.kernel.org>; Wed, 24 Aug 2022 01:19:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4B848C32793
+	for <linux-kernel@archiver.kernel.org>; Wed, 24 Aug 2022 01:22:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233239AbiHXBT5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 21:19:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37534 "EHLO
+        id S233326AbiHXBWO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 23 Aug 2022 21:22:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38270 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231830AbiHXBTz (ORCPT
+        with ESMTP id S231830AbiHXBWM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 21:19:55 -0400
-Received: from dggsgout12.his.huawei.com (dggsgout12.his.huawei.com [45.249.212.56])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D751D4BD28;
-        Tue, 23 Aug 2022 18:19:53 -0700 (PDT)
-Received: from mail02.huawei.com (unknown [172.30.67.143])
-        by dggsgout12.his.huawei.com (SkyGuard) with ESMTP id 4MC7Wt13MXz6S2XJ;
-        Wed, 24 Aug 2022 09:18:18 +0800 (CST)
-Received: from [10.174.176.73] (unknown [10.174.176.73])
-        by APP2 (Coremail) with SMTP id Syh0CgAH8r23fAVjzNAPAw--.10560S3;
-        Wed, 24 Aug 2022 09:19:52 +0800 (CST)
-Subject: Re: [PATCH 4/4] blk-throttle: cleanup throtl_dequeue_tg()
-To:     Tejun Heo <tj@kernel.org>, Yu Kuai <yukuai1@huaweicloud.com>
-Cc:     axboe@kernel.dk, cgroups@vger.kernel.org,
-        linux-block@vger.kernel.org, linux-kernel@vger.kernel.org,
-        yi.zhang@huawei.com, "yukuai (C)" <yukuai3@huawei.com>
-References: <20220823013810.406075-1-yukuai1@huaweicloud.com>
- <20220823013810.406075-5-yukuai1@huaweicloud.com>
- <YwUdouGld9Z7K8r1@slm.duckdns.org>
-From:   Yu Kuai <yukuai1@huaweicloud.com>
-Message-ID: <dd9b7a59-a16a-74f5-011c-664ca91e8ada@huaweicloud.com>
-Date:   Wed, 24 Aug 2022 09:19:51 +0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:60.0) Gecko/20100101
- Thunderbird/60.8.0
+        Tue, 23 Aug 2022 21:22:12 -0400
+Received: from mail-wr1-x429.google.com (mail-wr1-x429.google.com [IPv6:2a00:1450:4864:20::429])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EBA04558DA;
+        Tue, 23 Aug 2022 18:22:10 -0700 (PDT)
+Received: by mail-wr1-x429.google.com with SMTP id k9so18969259wri.0;
+        Tue, 23 Aug 2022 18:22:10 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc;
+        bh=OhLPqZHai+lEZNO/aWIoJdIaImKIb4W7ZXPCAX37T0U=;
+        b=KF010LcSPIWCIFpfDR0DvZsdsFdeGEGkqDXLaLXAt0Unnok8jGtw0Q4tk9n+XysoMX
+         r03afeZ23ebiVSNkurNuFADPlOxXQhFzjduZWLX3Bl/CJxm6zQwiVgaUK9h7Ty/+T0nh
+         vInb3mYztoTvUrmaK8Wq/OIyMxPTmX/RIXZWtcNm31qQ1h/nmUur+eMPnZFqLYD77Pmn
+         8o0AcfuHWr2x6HLbprJOz8iJfmq5e6+iFuWLOtYwL0hJ2St+L09a05yDZv3TUBwBry0b
+         crAoz6xjAaqRs8kpL4U9N+RP0auXPA1k51Qi5V5+cU+paTUZmszTiB3hsNgpuXEO67Mr
+         YFiQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc;
+        bh=OhLPqZHai+lEZNO/aWIoJdIaImKIb4W7ZXPCAX37T0U=;
+        b=1WHmlTl9VPj4RsA8Qtw+/uTEQjttIdeljFzRu2HXDoKypP7p+AZt+HzVYxgTOp6N46
+         T9jOJGNGKd21pjT1HOqCoEMZ9Qfq3ZqvVHgOlYvuOcmqAA3tdKBML3Bx5fFBMdtTSGiM
+         wfB/dp1VRiWoXXLNP5FRxqUuddB6shcZFmms9smKQZUjbBBpTbrWAL+oYA7oAKbA4G7v
+         KC4lPWhWfO6uJu7cv0Il4yxiWkhYA05DoWy3UdF25bDcd45IbUY6Cp2IwsE4XMoY+jOv
+         h43kEvOwb4g+Z0wQNxUxsaO4f6hakOPy+fP6hkyLMTHu8Bacqi+mWvsbaMYWPa5H+5Y2
+         xCcw==
+X-Gm-Message-State: ACgBeo269iKTpwzZVk6dEROZ60FagOXl+LCmdQ+zCc+3+92eqPDZDTJ1
+        T1r7Qu7MHnAdcxzzaXkiFUlzmaVcMOGTTRlR/4k=
+X-Google-Smtp-Source: AA6agR55uyl5UODy8v/O3d3ed7BqsoPln2Xnk12sc+Vvjm8qw4FB4W647Ss7e/TKFClpln4GHkpL4w==
+X-Received: by 2002:a5d:5487:0:b0:225:3fa7:41c2 with SMTP id h7-20020a5d5487000000b002253fa741c2mr11004598wrv.195.1661304129469;
+        Tue, 23 Aug 2022 18:22:09 -0700 (PDT)
+Received: from localhost.localdomain ([84.255.184.228])
+        by smtp.gmail.com with ESMTPSA id p7-20020a5d48c7000000b00223a50b1be8sm15364601wrs.50.2022.08.23.18.22.07
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 23 Aug 2022 18:22:08 -0700 (PDT)
+From:   Mazin Al Haddad <mazinalhaddad05@gmail.com>
+To:     mchehab@kernel.org
+Cc:     linux-media@vger.kernel.org, linux-kernel@vger.kernel.org,
+        skhan@linuxfoundation.org,
+        linux-kernel-mentees@lists.linuxfoundation.org,
+        Mazin Al Haddad <mazinalhaddad05@gmail.com>,
+        syzbot+f66dd31987e6740657be@syzkaller.appspotmail.com
+Subject: [PATCH v3] media: dvb-usb: fix memory leak in dvb_usb_adapter_init()
+Date:   Wed, 24 Aug 2022 04:21:52 +0300
+Message-Id: <20220824012152.539788-1-mazinalhaddad05@gmail.com>
+X-Mailer: git-send-email 2.37.2
 MIME-Version: 1.0
-In-Reply-To: <YwUdouGld9Z7K8r1@slm.duckdns.org>
-Content-Type: text/plain; charset=gbk; format=flowed
 Content-Transfer-Encoding: 8bit
-X-CM-TRANSID: Syh0CgAH8r23fAVjzNAPAw--.10560S3
-X-Coremail-Antispam: 1UD129KBjvJXoW7KF4DXr1kWw13Ww45Ar1fJFb_yoW8AFyrpF
-        y5A3WrCF42qr4qkr1Yq3ZrXFWSvws7JF4rAws7J3WSyr42vry3KFn7ZFyrXaykZFZ7XrWr
-        ZF4Dtwn5A3WUZaDanT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
-        9KBjDU0xBIdaVrnRJUUUkC14x267AKxVW8JVW5JwAFc2x0x2IEx4CE42xK8VAvwI8IcIk0
-        rVWrJVCq3wAFIxvE14AKwVWUJVWUGwA2ocxC64kIII0Yj41l84x0c7CEw4AK67xGY2AK02
-        1l84ACjcxK6xIIjxv20xvE14v26w1j6s0DM28EF7xvwVC0I7IYx2IY6xkF7I0E14v26r4U
-        JVWxJr1l84ACjcxK6I8E87Iv67AKxVW0oVCq3wA2z4x0Y4vEx4A2jsIEc7CjxVAFwI0_Gc
-        CE3s1le2I262IYc4CY6c8Ij28IcVAaY2xG8wAqx4xG64xvF2IEw4CE5I8CrVC2j2WlYx0E
-        2Ix0cI8IcVAFwI0_JrI_JrylYx0Ex4A2jsIE14v26r1j6r4UMcvjeVCFs4IE7xkEbVWUJV
-        W8JwACjcxG0xvEwIxGrwACjI8F5VA0II8E6IAqYI8I648v4I1lc7I2V7IY0VAS07AlzVAY
-        IcxG8wCF04k20xvY0x0EwIxGrwCFx2IqxVCFs4IE7xkEbVWUJVW8JwC20s026c02F40E14
-        v26r1j6r18MI8I3I0E7480Y4vE14v26r106r1rMI8E67AF67kF1VAFwI0_Jw0_GFylIxkG
-        c2Ij64vIr41lIxAIcVC0I7IYx2IY67AKxVWUJVWUCwCI42IY6xIIjxv20xvEc7CjxVAFwI
-        0_Gr0_Cr1lIxAIcVCF04k26cxKx2IYs7xG6Fyj6rWUJwCI42IY6I8E87Iv67AKxVWUJVW8
-        JwCI42IY6I8E87Iv6xkF7I0E14v26r4j6r4UJbIYCTnIWIevJa73UjIFyTuYvjfUF9a9DU
-        UUU
-X-CM-SenderInfo: 51xn3trlr6x35dzhxuhorxvhhfrp/
-X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi, Tejun
+Syzbot reports a memory leak in "dvb_usb_adapter_init()".
+The leak is due to not accounting for and freeing current iteration's
+adapter->priv in case of an error. Currently if an error occurs, 
+it will exit before incrementing "num_adapters_initalized", 
+which is used as a reference counter to free all adap->priv 
+in "dvb_usb_adapter_exit()". There are multiple error paths that
+can exit from before incrementing the counter. Including the
+error handling paths for "dvb_usb_adapter_stream_init()", 
+"dvb_usb_adapter_dvb_init()" and "dvb_usb_adapter_frontend_init()"
+within "dvb_usb_adapter_init()".
 
-ÔÚ 2022/08/24 2:34, Tejun Heo Ð´µÀ:
-> On Tue, Aug 23, 2022 at 09:38:10AM +0800, Yu Kuai wrote:
->> From: Yu Kuai <yukuai3@huawei.com>
->>
->> Now that throtl_dequeue_tg() is called when the last bio is dispatched,
->> there is no need to check the flag THROTL_TG_PENDING, since it's ensured
->> to be set when bio is throttled.
->>
->> There are no functional changes.
->>
->> Signed-off-by: Yu Kuai <yukuai3@huawei.com>
->> ---
->>   block/blk-throttle.c | 11 ++++-------
->>   1 file changed, 4 insertions(+), 7 deletions(-)
->>
->> diff --git a/block/blk-throttle.c b/block/blk-throttle.c
->> index 47142a1dd102..e47506a8ef47 100644
->> --- a/block/blk-throttle.c
->> +++ b/block/blk-throttle.c
->> @@ -570,14 +570,11 @@ static void throtl_enqueue_tg(struct throtl_grp *tg)
->>   
->>   static void throtl_dequeue_tg(struct throtl_grp *tg)
->>   {
->> -	if (tg->flags & THROTL_TG_PENDING) {
->> -		struct throtl_service_queue *parent_sq =
->> -			tg->service_queue.parent_sq;
->> +	struct throtl_service_queue *parent_sq = tg->service_queue.parent_sq;
->>   
->> -		throtl_rb_erase(&tg->rb_node, parent_sq);
->> -		--parent_sq->nr_pending;
->> -		tg->flags &= ~THROTL_TG_PENDING;
->> -	}
->> +	throtl_rb_erase(&tg->rb_node, parent_sq);
->> +	--parent_sq->nr_pending;
->> +	tg->flags &= ~THROTL_TG_PENDING;
-> 
-> Yeah, I don't know about this one. This breaks the symmetry with
-> throtl_enqueue_tg() and it's a bit odd that we aren't at least
-> WARN_ON_ONCE() on the flag given what the flag tracks. If you want to do
-> this, I think the prev approach of just removing the flag is better as that
-> was symmetric at least.
+This means that in case of an error in any of these functions the 
+current iteration is not accounted for and the current iteration's 
+adap->priv is not freed.
 
-Yes, you are right, thanks for the advice. Since now it's a bit
-ambivalent, we might as well just remove this patch?
+Fix this by freeing the current iteration's adap->priv in the 
+"stream_init_err:" label in the error path. The rest of the 
+(accounted for) adap->priv objects are freed in dvb_usb_adapter_exit()
+as expected using the num_adapters_initalized variable. 
 
-Thanks,
-Kuai
-> 
-> Thanks.
-> 
+Syzbot report:
+
+BUG: memory leak
+unreferenced object 0xffff8881172f1a00 (size 512):
+  comm "kworker/0:2", pid 139, jiffies 4294994873 (age 10.960s)
+  hex dump (first 32 bytes):
+    00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
+    00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
+backtrace:
+    [<ffffffff844af012>] dvb_usb_adapter_init drivers/media/usb/dvb-usb/dvb-usb-init.c:75 [inline]
+    [<ffffffff844af012>] dvb_usb_init drivers/media/usb/dvb-usb/dvb-usb-init.c:184 [inline]
+    [<ffffffff844af012>] dvb_usb_device_init.cold+0x4e5/0x79e drivers/media/usb/dvb-usb/dvb-usb-init.c:308
+    [<ffffffff830db21d>] dib0700_probe+0x8d/0x1b0 drivers/media/usb/dvb-usb/dib0700_core.c:883
+    [<ffffffff82d3fdc7>] usb_probe_interface+0x177/0x370 drivers/usb/core/driver.c:396
+    [<ffffffff8274ab37>] call_driver_probe drivers/base/dd.c:542 [inline]
+    [<ffffffff8274ab37>] really_probe.part.0+0xe7/0x310 drivers/base/dd.c:621
+    [<ffffffff8274ae6c>] really_probe drivers/base/dd.c:583 [inline]
+    [<ffffffff8274ae6c>] __driver_probe_device+0x10c/0x1e0 drivers/base/dd.c:752
+    [<ffffffff8274af6a>] driver_probe_device+0x2a/0x120 drivers/base/dd.c:782
+    [<ffffffff8274b786>] __device_attach_driver+0xf6/0x140 drivers/base/dd.c:899
+    [<ffffffff82747c87>] bus_for_each_drv+0xb7/0x100 drivers/base/bus.c:427
+    [<ffffffff8274b352>] __device_attach+0x122/0x260 drivers/base/dd.c:970
+    [<ffffffff827498f6>] bus_probe_device+0xc6/0xe0 drivers/base/bus.c:487
+    [<ffffffff82745cdb>] device_add+0x5fb/0xdf0 drivers/base/core.c:3405
+    [<ffffffff82d3d202>] usb_set_configuration+0x8f2/0xb80 drivers/usb/core/message.c:2170
+    [<ffffffff82d4dbfc>] usb_generic_driver_probe+0x8c/0xc0 drivers/usb/core/generic.c:238
+    [<ffffffff82d3f49c>] usb_probe_device+0x5c/0x140 drivers/usb/core/driver.c:293
+    [<ffffffff8274ab37>] call_driver_probe drivers/base/dd.c:542 [inline]
+    [<ffffffff8274ab37>] really_probe.part.0+0xe7/0x310 drivers/base/dd.c:621
+    [<ffffffff8274ae6c>] really_probe drivers/base/dd.c:583 [inline]
+    [<ffffffff8274ae6c>] __driver_probe_device+0x10c/0x1e0 drivers/base/dd.c:752
+
+
+Link: https://syzkaller.appspot.com/bug?extid=f66dd31987e6740657be
+Reported-and-tested-by: syzbot+f66dd31987e6740657be@syzkaller.appspotmail.com
+Signed-off-by: Mazin Al Haddad <mazinalhaddad05@gmail.com>
+---
+v2->v3:
+	- Follow standard kernel pattern by moving error handling 
+	to label instead as suggested by Lukas Bulwhan.
+	- Adjust commit description to include syzbot report, 
+	The "Reported-and-tested-by" tag and clarify the commit message. 
+
+ drivers/media/usb/dvb-usb/dvb-usb-init.c | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
+
+diff --git a/drivers/media/usb/dvb-usb/dvb-usb-init.c b/drivers/media/usb/dvb-usb/dvb-usb-init.c
+index 61439c8f33ca..58eea8ab5477 100644
+--- a/drivers/media/usb/dvb-usb/dvb-usb-init.c
++++ b/drivers/media/usb/dvb-usb/dvb-usb-init.c
+@@ -81,7 +81,7 @@ static int dvb_usb_adapter_init(struct dvb_usb_device *d, short *adapter_nrs)
+ 
+ 		ret = dvb_usb_adapter_stream_init(adap);
+ 		if (ret)
+-			return ret;
++			goto stream_init_err;
+ 
+ 		ret = dvb_usb_adapter_dvb_init(adap, adapter_nrs);
+ 		if (ret)
+@@ -114,6 +114,8 @@ static int dvb_usb_adapter_init(struct dvb_usb_device *d, short *adapter_nrs)
+ 	dvb_usb_adapter_dvb_exit(adap);
+ dvb_init_err:
+ 	dvb_usb_adapter_stream_exit(adap);
++stream_init_err:
++	kfree(adap->priv);
+ 	return ret;
+ }
+ 
+-- 
+2.37.2
 
