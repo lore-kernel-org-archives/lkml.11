@@ -2,111 +2,182 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8165FC00140
-	for <linux-kernel@archiver.kernel.org>; Wed, 24 Aug 2022 10:20:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C42D3C00140
+	for <linux-kernel@archiver.kernel.org>; Wed, 24 Aug 2022 10:23:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236709AbiHXKUL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 24 Aug 2022 06:20:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34890 "EHLO
+        id S235605AbiHXKXp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 24 Aug 2022 06:23:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37980 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236824AbiHXKUC (ORCPT
+        with ESMTP id S236712AbiHXKXm (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 24 Aug 2022 06:20:02 -0400
-Received: from progateway7-pub.mail.pro1.eigbox.com (gproxy5-pub.mail.unifiedlayer.com [67.222.38.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0F7952F391
-        for <linux-kernel@vger.kernel.org>; Wed, 24 Aug 2022 03:19:56 -0700 (PDT)
-Received: from cmgw12.mail.unifiedlayer.com (unknown [10.0.90.127])
-        by progateway7.mail.pro1.eigbox.com (Postfix) with ESMTP id 429091004C13A
-        for <linux-kernel@vger.kernel.org>; Wed, 24 Aug 2022 10:19:46 +0000 (UTC)
-Received: from box5620.bluehost.com ([162.241.219.59])
-        by cmsmtp with ESMTP
-        id QnU9odGXmpnCyQnUAotvuM; Wed, 24 Aug 2022 10:19:46 +0000
-X-Authority-Reason: nr=8
-X-Authority-Analysis: v=2.4 cv=d5kwdTvE c=1 sm=1 tr=0 ts=6305fb42
- a=30941lsx5skRcbJ0JMGu9A==:117 a=30941lsx5skRcbJ0JMGu9A==:17
- a=dLZJa+xiwSxG16/P+YVxDGlgEgI=:19 a=IkcTkHD0fZMA:10:nop_charset_1
- a=biHskzXt2R4A:10:nop_rcvd_month_year
- a=-Ou01B_BuAIA:10:endurance_base64_authed_username_1 a=VwQbUJbxAAAA:8
- a=HaFmDPmJAAAA:8 a=49j0FZ7RFL9ueZfULrUA:9 a=QEXdDO2ut3YA:10:nop_charset_2
- a=AjGcO6oz07-iQ99wixmX:22 a=nmWuMzfKamIsx3l42hEX:22
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=w6rz.net;
-        s=default; h=Content-Transfer-Encoding:Content-Type:MIME-Version:Date:
-        Message-ID:From:In-Reply-To:References:Cc:To:Subject:Sender:Reply-To:
-        Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
-        Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:
-        List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=sK5kmj1Shu1tMYxfyucNT9Q2rjv6zSAekoNQwtRFOD8=; b=lzqMyf4R7ND9nQ0oVNTGv+2/OV
-        7DvuL0fHPT5fwuqXKKNrMEfsyxPQSHhaeaUTfkNHzFeXdNHOD29Lk5yD+Fm+ZOG0OsQ4Zh6QsGhM/
-        s2nmuTQi1oPRpKFVJbyE1QYhTyeoNJXKCINSgaE65fwtNm0f0GavWukY30zCd8HTWTddeEKQOkwCL
-        ff8tmJQrn/UkLSRVt09HBQvjjaWN03wOZHuEU42kJkXwHN92eEWC8MuC7pec60VCIbc5hGPgmGwQF
-        OjnvCkvDRLsi6e+TyqEKbmSnI5fGjP58cjDiAVpO2x4M613J6X89MQjoXb9t8LqV/bBh32I06JHry
-        SdQurYMA==;
-Received: from c-73-162-232-9.hsd1.ca.comcast.net ([73.162.232.9]:41584 helo=[10.0.1.48])
-        by box5620.bluehost.com with esmtpsa  (TLS1.2) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.95)
-        (envelope-from <re@w6rz.net>)
-        id 1oQnU8-0011dK-F4;
-        Wed, 24 Aug 2022 04:19:44 -0600
-Subject: Re: [PATCH 5.15 000/242] 5.15.63-rc2 review
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        linux-kernel@vger.kernel.org
-Cc:     stable@vger.kernel.org, torvalds@linux-foundation.org,
-        akpm@linux-foundation.org, linux@roeck-us.net, shuah@kernel.org,
-        patches@kernelci.org, lkft-triage@lists.linaro.org, pavel@denx.de,
-        jonathanh@nvidia.com, f.fainelli@gmail.com,
-        sudipm.mukherjee@gmail.com, slade@sladewatkins.com
-References: <20220824065913.068916566@linuxfoundation.org>
-In-Reply-To: <20220824065913.068916566@linuxfoundation.org>
-From:   Ron Economos <re@w6rz.net>
-Message-ID: <1291d62d-9cc7-eefc-6909-8e8ef9eabe44@w6rz.net>
-Date:   Wed, 24 Aug 2022 03:19:42 -0700
-User-Agent: Mozilla/5.0 (X11; Linux armv7l; rv:78.0) Gecko/20100101
- Thunderbird/78.14.0
+        Wed, 24 Aug 2022 06:23:42 -0400
+Received: from madras.collabora.co.uk (madras.collabora.co.uk [IPv6:2a00:1098:0:82:1000:25:2eeb:e5ab])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3C90A5C364;
+        Wed, 24 Aug 2022 03:23:39 -0700 (PDT)
+Received: from dimapc.. (109-252-119-13.nat.spd-mgts.ru [109.252.119.13])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (No client certificate requested)
+        (Authenticated sender: dmitry.osipenko)
+        by madras.collabora.co.uk (Postfix) with ESMTPSA id 518CA6601DAD;
+        Wed, 24 Aug 2022 11:23:35 +0100 (BST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
+        s=mail; t=1661336617;
+        bh=CWlyIap4cbi2NpOihsLARmOOwwjeknxOoSCWAV4ajqA=;
+        h=From:To:Cc:Subject:Date:From;
+        b=b5Nhoxv/POic6NyUcUJ+k8TJIFTWE6IyZKn6URLO//apT9ls1oa4z+UZXjmyEWVC3
+         OeTVeyn5O9AEfBMx9lriWH9WPyRBZ0B9zqNw3idljg/60RttMUIFaVA40idf8uYr3A
+         Ft+9+RofHKd3c6TtR6WCHH3ChfOh/tn7hqLsuTjPeT2/LWMgDmVOKiZyy1BKEXmxjo
+         SwjS5PBNCp1FuKVYj1mF4V4LVCudFj6i8H1NB/DbxwhPUgf0/+DTVhQZSpxv15mZAT
+         bqY34qasjmnm6us3j8q+NNQtBJ7I9LP9++0Qr56mLRjlGqqn8RYdr93aaxYrRuZkQQ
+         Tk7ORvZan1c5Q==
+From:   Dmitry Osipenko <dmitry.osipenko@collabora.com>
+To:     David Airlie <airlied@linux.ie>, Gerd Hoffmann <kraxel@redhat.com>,
+        Gurchetan Singh <gurchetansingh@chromium.org>,
+        Chia-I Wu <olvaffe@gmail.com>, Daniel Vetter <daniel@ffwll.ch>,
+        Daniel Almeida <daniel.almeida@collabora.com>,
+        Gert Wollny <gert.wollny@collabora.com>,
+        Gustavo Padovan <gustavo.padovan@collabora.com>,
+        Daniel Stone <daniel@fooishbar.org>,
+        Tomeu Vizoso <tomeu.vizoso@collabora.com>,
+        Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
+        Maxime Ripard <mripard@kernel.org>,
+        Thomas Zimmermann <tzimmermann@suse.de>,
+        Rob Clark <robdclark@gmail.com>,
+        Sumit Semwal <sumit.semwal@linaro.org>,
+        =?UTF-8?q?Christian=20K=C3=B6nig?= <christian.koenig@amd.com>,
+        "Pan, Xinhui" <Xinhui.Pan@amd.com>,
+        Thierry Reding <thierry.reding@gmail.com>,
+        Tomasz Figa <tfiga@chromium.org>,
+        Marek Szyprowski <m.szyprowski@samsung.com>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Alex Deucher <alexander.deucher@amd.com>,
+        Jani Nikula <jani.nikula@linux.intel.com>,
+        Joonas Lahtinen <joonas.lahtinen@linux.intel.com>,
+        Rodrigo Vivi <rodrigo.vivi@intel.com>,
+        Tvrtko Ursulin <tvrtko.ursulin@linux.intel.com>,
+        =?UTF-8?q?Thomas=20Hellstr=C3=B6m?= <thomas_os@shipmail.org>,
+        Qiang Yu <yuq825@gmail.com>
+Cc:     dri-devel@lists.freedesktop.org, linux-kernel@vger.kernel.org,
+        Dmitry Osipenko <digetx@gmail.com>,
+        linux-media@vger.kernel.org, linaro-mm-sig@lists.linaro.org,
+        amd-gfx@lists.freedesktop.org, intel-gfx@lists.freedesktop.org,
+        kernel@collabora.com, virtualization@lists.linux-foundation.org,
+        linux-rdma@vger.kernel.org, linux-arm-msm@vger.kernel.org,
+        lima@lists.freedesktop.org
+Subject: [PATCH v3 0/9] Move all drivers to a common dma-buf locking convention
+Date:   Wed, 24 Aug 2022 13:22:39 +0300
+Message-Id: <20220824102248.91964-1-dmitry.osipenko@collabora.com>
+X-Mailer: git-send-email 2.37.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 7bit
-Content-Language: en-US
-X-AntiAbuse: This header was added to track abuse, please include it with any abuse report
-X-AntiAbuse: Primary Hostname - box5620.bluehost.com
-X-AntiAbuse: Original Domain - vger.kernel.org
-X-AntiAbuse: Originator/Caller UID/GID - [47 12] / [47 12]
-X-AntiAbuse: Sender Address Domain - w6rz.net
-X-BWhitelist: no
-X-Source-IP: 73.162.232.9
-X-Source-L: No
-X-Exim-ID: 1oQnU8-0011dK-F4
-X-Source: 
-X-Source-Args: 
-X-Source-Dir: 
-X-Source-Sender: c-73-162-232-9.hsd1.ca.comcast.net ([10.0.1.48]) [73.162.232.9]:41584
-X-Source-Auth: re@w6rz.net
-X-Email-Count: 2
-X-Source-Cap: d3NpeHJ6bmU7d3NpeHJ6bmU7Ym94NTYyMC5ibHVlaG9zdC5jb20=
-X-Local-Domain: yes
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 8/24/22 12:01 AM, Greg Kroah-Hartman wrote:
-> This is the start of the stable review cycle for the 5.15.63 release.
-> There are 242 patches in this series, all will be posted as a response
-> to this one.  If anyone has any issues with these being applied, please
-> let me know.
->
-> Responses should be made by Fri, 26 Aug 2022 06:58:31 +0000.
-> Anything received after that time might be too late.
->
-> The whole patch series can be found in one patch at:
-> 	https://www.kernel.org/pub/linux/kernel/v5.x/stable-review/patch-5.15.63-rc2.gz
-> or in the git tree and branch at:
-> 	git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git linux-5.15.y
-> and the diffstat can be found below.
->
-> thanks,
->
-> greg k-h
+Hello,
 
-Built and booted successfully on RISC-V RV64 (HiFive Unmatched).
+This series moves all drivers to a dynamic dma-buf locking specification.
+From now on all dma-buf importers are made responsible for holding
+dma-buf's reservation lock around all operations performed over dma-bufs
+in accordance to the locking specification. This allows us to utilize
+reservation lock more broadly around kernel without fearing of a potential
+deadlocks.
 
-Tested-by: Ron Economos <re@w6rz.net>
+This patchset passes all i915 selftests. It was also tested using VirtIO,
+Panfrost, Lima, Tegra, udmabuf, AMDGPU and Nouveau drivers. I tested cases
+of display+GPU, display+V4L and GPU+V4L dma-buf sharing (where appropriate),
+which covers majority of kernel drivers since rest of the drivers share
+same or similar code paths.
+
+Changelog:
+
+v3: - Factored out dma_buf_mmap_unlocked() and attachment functions
+      into aseparate patches, like was suggested by Christian König.
+
+    - Corrected and factored out dma-buf locking documentation into
+      a separate patch, like was suggested by Christian König.
+
+    - Intel driver dropped the reservation locking fews days ago from
+      its BO-release code path, but we need that locking for the imported
+      GEMs because in the end that code path unmaps the imported GEM.
+      So I added back the locking needed by the imported GEMs, updating
+      the "dma-buf attachment locking specification" patch appropriately.
+
+    - Tested Nouveau+Intel dma-buf import/export combo.
+
+    - Tested udmabuf import to i915/Nouveau/AMDGPU.
+
+    - Fixed few places in Etnaviv, Panfrost and Lima drivers that I missed
+      to switch to locked dma-buf vmapping in the drm/gem: Take reservation
+      lock for vmap/vunmap operations" patch. In a result invalidated the
+      Christian's r-b that he gave to v2.
+
+    - Added locked dma-buf vmap/vunmap functions that are needed for fixing
+      vmappping of Etnaviv, Panfrost and Lima drivers mentioned above.
+      I actually had this change stashed for the drm-shmem shrinker patchset,
+      but then realized that it's already needed by the dma-buf patches.
+      Also improved my tests to better cover these code paths.
+
+v2: - Changed locking specification to avoid problems with a cross-driver
+      ww locking, like was suggested by Christian König. Now the attach/detach
+      callbacks are invoked without the held lock and exporter should take the
+      lock.
+
+    - Added "locking convention" documentation that explains which dma-buf
+      functions and callbacks are locked/unlocked for importers and exporters,
+      which was requested by Christian König.
+
+    - Added ack from Tomasz Figa to the V4L patches that he gave to v1.
+
+Dmitry Osipenko (9):
+  dma-buf: Add _unlocked postfix to function names
+  dma-buf: Add locked variant of dma_buf_vmap/vunmap()
+  drm/gem: Take reservation lock for vmap/vunmap operations
+  dma-buf: Move dma_buf_vmap/vunmap_unlocked() to dynamic locking
+    specification
+  dma-buf: Move dma_buf_mmap_unlocked() to dynamic locking specification
+  dma-buf: Move dma-buf attachment to dynamic locking specification
+  dma-buf: Document dynamic locking convention
+  media: videobuf2: Stop using internal dma-buf lock
+  dma-buf: Remove internal lock
+
+ Documentation/driver-api/dma-buf.rst          |   6 +
+ drivers/dma-buf/dma-buf.c                     | 276 ++++++++++++++----
+ drivers/gpu/drm/amd/amdgpu/amdgpu_dma_buf.c   |   4 +-
+ drivers/gpu/drm/armada/armada_gem.c           |  14 +-
+ drivers/gpu/drm/drm_client.c                  |   4 +-
+ drivers/gpu/drm/drm_gem.c                     |  24 ++
+ drivers/gpu/drm/drm_gem_dma_helper.c          |   6 +-
+ drivers/gpu/drm/drm_gem_framebuffer_helper.c  |   6 +-
+ drivers/gpu/drm/drm_gem_shmem_helper.c        |   2 +-
+ drivers/gpu/drm/drm_gem_ttm_helper.c          |   9 +-
+ drivers/gpu/drm/drm_prime.c                   |  12 +-
+ drivers/gpu/drm/etnaviv/etnaviv_gem_prime.c   |   4 +-
+ drivers/gpu/drm/exynos/exynos_drm_gem.c       |   2 +-
+ drivers/gpu/drm/i915/gem/i915_gem_dmabuf.c    |   6 +-
+ drivers/gpu/drm/i915/gem/i915_gem_object.c    |  12 +
+ .../drm/i915/gem/selftests/i915_gem_dmabuf.c  |  20 +-
+ drivers/gpu/drm/lima/lima_sched.c             |   4 +-
+ drivers/gpu/drm/omapdrm/omap_gem_dmabuf.c     |   8 +-
+ drivers/gpu/drm/panfrost/panfrost_dump.c      |   4 +-
+ drivers/gpu/drm/panfrost/panfrost_perfcnt.c   |   6 +-
+ drivers/gpu/drm/qxl/qxl_object.c              |  17 +-
+ drivers/gpu/drm/qxl/qxl_prime.c               |   4 +-
+ drivers/gpu/drm/tegra/gem.c                   |  27 +-
+ drivers/infiniband/core/umem_dmabuf.c         |  11 +-
+ .../common/videobuf2/videobuf2-dma-contig.c   |  26 +-
+ .../media/common/videobuf2/videobuf2-dma-sg.c |  23 +-
+ .../common/videobuf2/videobuf2-vmalloc.c      |  17 +-
+ .../platform/nvidia/tegra-vde/dmabuf-cache.c  |  12 +-
+ drivers/misc/fastrpc.c                        |  12 +-
+ drivers/xen/gntdev-dmabuf.c                   |  14 +-
+ include/drm/drm_gem.h                         |   3 +
+ include/linux/dma-buf.h                       |  57 ++--
+ 32 files changed, 410 insertions(+), 242 deletions(-)
+
+-- 
+2.37.2
 
