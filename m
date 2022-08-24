@@ -2,129 +2,96 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B1268C00140
-	for <linux-kernel@archiver.kernel.org>; Wed, 24 Aug 2022 08:03:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1B8B6C00140
+	for <linux-kernel@archiver.kernel.org>; Wed, 24 Aug 2022 08:04:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235562AbiHXIDQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 24 Aug 2022 04:03:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43286 "EHLO
+        id S235574AbiHXID7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 24 Aug 2022 04:03:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43866 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235597AbiHXIDL (ORCPT
+        with ESMTP id S232752AbiHXID5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 24 Aug 2022 04:03:11 -0400
-Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C743B83F2D;
-        Wed, 24 Aug 2022 01:03:08 -0700 (PDT)
-Date:   Wed, 24 Aug 2022 08:03:05 -0000
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1661328186;
-        h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
-         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
-         content-type:content-type:  content-transfer-encoding:content-transfer-encoding;
-        bh=fMC31QZsCePHeMFSj02/iaLnOUX/ksL6PNDDb0owKtk=;
-        b=4sREGs+pM/62fkI9etbbxv+De/Xn9nvUBdFl3JEvqBAkbpIm+xJNzaFe4kZXvIpL5rRqc3
-        BF/vjddSMe+2w7KKt7VIY/agVU1bQ6ceIWcFrG6SMCa+cRK3eo66I7pKikOho+3Ix7AqP0
-        ntZ28AWygR7B2vlTFSBmG7iEemtmMKaqslZGApI3uQxctgQPkhzASFsq35INl/SYMIRY6u
-        cydaUGiKWZtJSTuXUlOYWySq57xryeicG62I1btde+fjbO4rdOTqqzhk27P/roP9/B/pKs
-        WUN++MAYmZnzaJfEZrWAAMdI5+6AqCXpFlvwPoZawA0ZRIQ5UdlkoTik3AS0vw==
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1661328186;
-        h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
-         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
-         content-type:content-type:  content-transfer-encoding:content-transfer-encoding;
-        bh=fMC31QZsCePHeMFSj02/iaLnOUX/ksL6PNDDb0owKtk=;
-        b=9SqbUNAuzCynmZnB625IQhoJepipy3sqE5BW62BJE1ZApvSFoYGI6WU5iM18Bvgl8WhY/Z
-        47knitLqjLEOBYDA==
-From:   "tip-bot2 for Tom Lendacky" <tip-bot2@linutronix.de>
-Sender: tip-bot2@linutronix.de
-Reply-to: linux-kernel@vger.kernel.org
-To:     linux-tip-commits@vger.kernel.org
-Subject: [tip: x86/urgent] x86/sev: Don't use cc_platform_has() for early
- SEV-SNP calls
-Cc:     Sean Christopherson <seanjc@google.com>,
-        Tom Lendacky <thomas.lendacky@amd.com>,
-        Borislav Petkov <bp@suse.de>, <stable@vger.kernel.org>,
-        x86@kernel.org, linux-kernel@vger.kernel.org
+        Wed, 24 Aug 2022 04:03:57 -0400
+Received: from mail-pg1-x52e.google.com (mail-pg1-x52e.google.com [IPv6:2607:f8b0:4864:20::52e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 55F1786054
+        for <linux-kernel@vger.kernel.org>; Wed, 24 Aug 2022 01:03:56 -0700 (PDT)
+Received: by mail-pg1-x52e.google.com with SMTP id v4so14343760pgi.10
+        for <linux-kernel@vger.kernel.org>; Wed, 24 Aug 2022 01:03:56 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc;
+        bh=vLuqniAMwqY6ECfkYSPT1Bkq/cd7HE9h4EEKEFfMYEk=;
+        b=WInXrY3qRgrPgpReqwCl4R8vLZ1EJa31NKnxJoyTy4qEipQsgpGYSdIVq1ejlCAPpN
+         OlZbbEC+PBY5Ibu9LEGcwdwOWEAXizp8VI7vPIJWCTosW5UvtKi2r2oODfpXbsKzQ5Ik
+         Oq1VaFSfGf/6SKvBA1ZqQyF523w+ERzFvUdztoRbFQrdLliOMaMjg3hUgtRcRwozPnO0
+         BSwsDxGJ3fWMIQb/gNRFp2wL/WMH2r8vlIFG3jbrw2eFlkdHQf91UGyeaBgv2Lkn7jgA
+         PS2gtDtIjimMqU4P3JItk4TavlGYQf7Y4b0RKxNmFjYlXFth/so5CW2VpfTvQjAuH1Hp
+         9wiw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc;
+        bh=vLuqniAMwqY6ECfkYSPT1Bkq/cd7HE9h4EEKEFfMYEk=;
+        b=hGoAS7ATPaAFqNzaZLMi79YUCcozEZoN1iUApWNrLROyBJA5ARdUfsUCgbSHQ4D+Ht
+         JeTQNqph2rZ6TfoIUgcpWV4V++9YHhLeJ4jjRSU1FmY9W1DNXLVNbGCfNvR5PAb2M/6i
+         T1k7XQCZq0kEQuWKKhr5Rv+zkQy1sQcruRZ3AbBONuRvsatDajxfhajj8+IssT6Mm2rm
+         etUZXjXLO5iifY7JqbrYivUcKFJabe8HB3S7pVEK9lFsJnLvn4FxTmxeYkpRf2tAXPNk
+         voe2rFvkF0tMItn8OQ8RI0LpAGdWoYNIQmDpnW9wVYI/N6mdnXHpGvsC737/7fog24Yx
+         0CjQ==
+X-Gm-Message-State: ACgBeo1+bnSqJjfVNVaVMYiF0gmaNe8x8endS+0nJfRLKixi5tp1waTg
+        g68RsGt7paO7Gx9zlFMgl/M=
+X-Google-Smtp-Source: AA6agR7MlcgjgtEOya/NAybABl6gcw7J21DmWRhCKXk8BHL8WvNnBdvkEdqRcGH18AtoUgBC6YY0fg==
+X-Received: by 2002:a65:6e8f:0:b0:42a:c7d3:f2ed with SMTP id bm15-20020a656e8f000000b0042ac7d3f2edmr8386132pgb.209.1661328235880;
+        Wed, 24 Aug 2022 01:03:55 -0700 (PDT)
+Received: from localhost.localdomain ([193.203.214.57])
+        by smtp.gmail.com with ESMTPSA id x187-20020a6263c4000000b0053656fdaf88sm8153571pfb.69.2022.08.24.01.03.53
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 24 Aug 2022 01:03:55 -0700 (PDT)
+From:   cgel.zte@gmail.com
+X-Google-Original-From: chi.minghao@zte.com.cn
+To:     Larry.Finger@lwfinger.net
+Cc:     phil@philpotter.co.uk, paskripkin@gmail.com,
+        gregkh@linuxfoundation.org, straube.linux@gmail.com,
+        martin@kaiser.cx, jhpark1013@gmail.com, makvihas@gmail.com,
+        linux-staging@lists.linux.dev, linux-kernel@vger.kernel.org,
+        Minghao Chi <chi.minghao@zte.com.cn>,
+        Zeal Robot <zealci@zte.com.cn>
+Subject: [PATCH] staging: r8188eu: remove unnecessary null check
+Date:   Wed, 24 Aug 2022 08:03:50 +0000
+Message-Id: <20220824080350.221614-1-chi.minghao@zte.com.cn>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Message-ID: <166132818542.401.9222834659601554463.tip-bot2@tip-bot2>
-Robot-ID: <tip-bot2@linutronix.de>
-Robot-Unsubscribe: Contact <mailto:tglx@linutronix.de> to get blacklisted from these emails
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The following commit has been merged into the x86/urgent branch of tip:
+From: Minghao Chi <chi.minghao@zte.com.cn>
 
-Commit-ID:     cdaa0a407f1acd3a44861e3aea6e3c7349e668f1
-Gitweb:        https://git.kernel.org/tip/cdaa0a407f1acd3a44861e3aea6e3c7349e668f1
-Author:        Tom Lendacky <thomas.lendacky@amd.com>
-AuthorDate:    Tue, 23 Aug 2022 16:55:51 -05:00
-Committer:     Borislav Petkov <bp@suse.de>
-CommitterDate: Wed, 24 Aug 2022 09:54:32 +02:00
+container_of is never null, so this null check is
+unnecessary.
 
-x86/sev: Don't use cc_platform_has() for early SEV-SNP calls
-
-When running identity-mapped and depending on the kernel configuration,
-it is possible that the compiler uses jump tables when generating code
-for cc_platform_has().
-
-This causes a boot failure because the jump table uses un-mapped kernel
-virtual addresses, not identity-mapped addresses. This has been seen
-with CONFIG_RETPOLINE=n.
-
-Similar to sme_encrypt_kernel(), use an open-coded direct check for the
-status of SNP rather than trying to eliminate the jump table. This
-preserves any code optimization in cc_platform_has() that can be useful
-post boot. It also limits the changes to SEV-specific files so that
-future compiler features won't necessarily require possible build changes
-just because they are not compatible with running identity-mapped.
-
-  [ bp: Massage commit message. ]
-
-Fixes: 5e5ccff60a29 ("x86/sev: Add helper for validating pages in early enc attribute changes")
-Reported-by: Sean Christopherson <seanjc@google.com>
-Suggested-by: Sean Christopherson <seanjc@google.com>
-Signed-off-by: Tom Lendacky <thomas.lendacky@amd.com>
-Signed-off-by: Borislav Petkov <bp@suse.de>
-Cc: <stable@vger.kernel.org> # 5.19.x
-Link: https://lore.kernel.org/all/YqfabnTRxFSM+LoX@google.com/
+Reported-by: Zeal Robot <zealci@zte.com.cn>
+Signed-off-by: Minghao Chi <chi.minghao@zte.com.cn>
 ---
- arch/x86/kernel/sev.c | 16 ++++++++++++++--
- 1 file changed, 14 insertions(+), 2 deletions(-)
+ drivers/staging/r8188eu/core/rtw_mlme.c | 4 ----
+ 1 file changed, 4 deletions(-)
 
-diff --git a/arch/x86/kernel/sev.c b/arch/x86/kernel/sev.c
-index 63dc626..4f84c3f 100644
---- a/arch/x86/kernel/sev.c
-+++ b/arch/x86/kernel/sev.c
-@@ -701,7 +701,13 @@ e_term:
- void __init early_snp_set_memory_private(unsigned long vaddr, unsigned long paddr,
- 					 unsigned int npages)
- {
--	if (!cc_platform_has(CC_ATTR_GUEST_SEV_SNP))
-+	/*
-+	 * This can be invoked in early boot while running identity mapped, so
-+	 * use an open coded check for SNP instead of using cc_platform_has().
-+	 * This eliminates worries about jump tables or checking boot_cpu_data
-+	 * in the cc_platform_has() function.
-+	 */
-+	if (!(sev_status & MSR_AMD64_SEV_SNP_ENABLED))
- 		return;
- 
- 	 /*
-@@ -717,7 +723,13 @@ void __init early_snp_set_memory_private(unsigned long vaddr, unsigned long padd
- void __init early_snp_set_memory_shared(unsigned long vaddr, unsigned long paddr,
- 					unsigned int npages)
- {
--	if (!cc_platform_has(CC_ATTR_GUEST_SEV_SNP))
-+	/*
-+	 * This can be invoked in early boot while running identity mapped, so
-+	 * use an open coded check for SNP instead of using cc_platform_has().
-+	 * This eliminates worries about jump tables or checking boot_cpu_data
-+	 * in the cc_platform_has() function.
-+	 */
-+	if (!(sev_status & MSR_AMD64_SEV_SNP_ENABLED))
- 		return;
- 
- 	/* Invalidate the memory pages before they are marked shared in the RMP table. */
+diff --git a/drivers/staging/r8188eu/core/rtw_mlme.c b/drivers/staging/r8188eu/core/rtw_mlme.c
+index 56c8bd5f4c60..d089da7e90e0 100644
+--- a/drivers/staging/r8188eu/core/rtw_mlme.c
++++ b/drivers/staging/r8188eu/core/rtw_mlme.c
+@@ -1442,10 +1442,6 @@ int rtw_select_and_join_from_scanned_queue(struct mlme_priv *pmlmepriv)
+ 	pmlmepriv->pscanned = phead->next;
+ 	while (phead != pmlmepriv->pscanned) {
+ 		pnetwork = container_of(pmlmepriv->pscanned, struct wlan_network, list);
+-		if (!pnetwork) {
+-			ret = _FAIL;
+-			goto exit;
+-		}
+ 		pmlmepriv->pscanned = pmlmepriv->pscanned->next;
+ 		rtw_check_join_candidate(pmlmepriv, &candidate, pnetwork);
+ 	}
+-- 
+2.25.1
