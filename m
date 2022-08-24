@@ -2,103 +2,78 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 12A27C04AA5
-	for <linux-kernel@archiver.kernel.org>; Wed, 24 Aug 2022 21:54:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6934EC64990
+	for <linux-kernel@archiver.kernel.org>; Wed, 24 Aug 2022 21:54:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240141AbiHXVyA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 24 Aug 2022 17:54:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47788 "EHLO
+        id S240361AbiHXVyE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 24 Aug 2022 17:54:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47856 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239855AbiHXVx5 (ORCPT
+        with ESMTP id S240174AbiHXVyA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 24 Aug 2022 17:53:57 -0400
-Received: from mail-ej1-x631.google.com (mail-ej1-x631.google.com [IPv6:2a00:1450:4864:20::631])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AD7EA74DDB
-        for <linux-kernel@vger.kernel.org>; Wed, 24 Aug 2022 14:53:56 -0700 (PDT)
-Received: by mail-ej1-x631.google.com with SMTP id bj12so19018718ejb.13
-        for <linux-kernel@vger.kernel.org>; Wed, 24 Aug 2022 14:53:56 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc;
-        bh=e0BBD5TlKOKblZMGz0uca2eTu4Q7+zmoU/TJNY6Fw4M=;
-        b=kbg01HmT3sDmroGWqlHtDMn6Q1s0LnzIIPuPdtBFLvMNwsL0ULIs7afs/n/byMDq/J
-         Fgd3oMzq7tnWcK71oLPxAFSc/DBJYZfeyQzjaztKzH9qCEqwfF7BPtnc17KjdxK1Arie
-         rSaziN52MxfLVXBKGlzcX3z3PP1cuaYr7+3bU=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc;
-        bh=e0BBD5TlKOKblZMGz0uca2eTu4Q7+zmoU/TJNY6Fw4M=;
-        b=Pi6WJPfEKx4tgSrWDlCiIGNMrCdhoUJ2o//YjKYu5M1KLtMLCSPb+AaygvrCkOdOis
-         Ma6lKGIddluVl/eGYT6qwLlh5qw5rD9QtQCbcooQoR1Bd3dczHs8L1X6wjXGiw84W359
-         5TMDjKERotoJgCBjTMduqADp72Bua3RoA9pKe8DjJyG/gWXOKzBRX9//cjaPzDTNghER
-         ANrjbZbkfTlzEDU4dyAxCyg7wIhiEcyRIGRhDGuSt6iLpSk5cTWz/K0XC1oV7Mzc0V52
-         fqRNHN3rqlmKe+gSoyXh5yRIqeMbE7FA0Gw1+7yuLI3wyPFNngeugZGGwEFo6AvDJpTA
-         LQOQ==
-X-Gm-Message-State: ACgBeo2ij+LVGjTklMIC/W1Kqa0mzNrqgq/chu0RfP8lOmBhDF2kfMvZ
-        GnmRYNGopRExE5+oYxf/ByIs2NbRCb96jnvF
-X-Google-Smtp-Source: AA6agR5gL1ZzWCDL5TiKRqdKfnvqxabXJKraeIdS/2TszkbswjEZtPhvkk+bO3xVjps+0jTbwDUmMw==
-X-Received: by 2002:a17:907:7208:b0:73d:7097:ac6f with SMTP id dr8-20020a170907720800b0073d7097ac6fmr604641ejc.388.1661378035073;
-        Wed, 24 Aug 2022 14:53:55 -0700 (PDT)
-Received: from mail-wr1-f47.google.com (mail-wr1-f47.google.com. [209.85.221.47])
-        by smtp.gmail.com with ESMTPSA id w19-20020a1709064a1300b007030c97ae62sm1596126eju.191.2022.08.24.14.53.53
-        for <linux-kernel@vger.kernel.org>
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 24 Aug 2022 14:53:53 -0700 (PDT)
-Received: by mail-wr1-f47.google.com with SMTP id k9so22364866wri.0
-        for <linux-kernel@vger.kernel.org>; Wed, 24 Aug 2022 14:53:53 -0700 (PDT)
-X-Received: by 2002:a05:6000:507:b0:225:5019:803b with SMTP id
- a7-20020a056000050700b002255019803bmr564865wrf.617.1661378032767; Wed, 24 Aug
- 2022 14:53:52 -0700 (PDT)
+        Wed, 24 Aug 2022 17:54:00 -0400
+Received: from mx3.wp.pl (mx3.wp.pl [212.77.101.10])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7F0E8754B4
+        for <linux-kernel@vger.kernel.org>; Wed, 24 Aug 2022 14:53:58 -0700 (PDT)
+Received: (wp-smtpd smtp.wp.pl 4295 invoked from network); 24 Aug 2022 23:53:56 +0200
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=wp.pl; s=1024a;
+          t=1661378036; bh=4OTa75RLpe/v25mpI3TRXaOPqo4ZLnCOlukrrv8iGHU=;
+          h=From:To:Subject;
+          b=GqGggbVUHNjlcjWKR7lEtgdzHPAFUG1gqPzjjI2dC2GnpV+z/B6D9HnqA76cpmuIt
+           BjF1/G17qF0oTv9EWhMrY/5bxSS+X1pYAhaHab+j2a7Gbv51cBAB9/KcfyHhUJN5CJ
+           +c9GYhuxoJS6fMtWgBXaLnIH2f/4cAbJ5e044yjo=
+Received: from ip-137-21.ds.pw.edu.pl (HELO LAPTOP-OLEK.lan) (olek2@wp.pl@[194.29.137.21])
+          (envelope-sender <olek2@wp.pl>)
+          by smtp.wp.pl (WP-SMTPD) with ECDHE-RSA-AES256-GCM-SHA384 encrypted SMTP
+          for <hauke@hauke-m.de>; 24 Aug 2022 23:53:56 +0200
+From:   Aleksander Jan Bajkowski <olek2@wp.pl>
+To:     hauke@hauke-m.de, davem@davemloft.net, edumazet@google.com,
+        kuba@kernel.org, pabeni@redhat.com, olek2@wp.pl,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH net v3 1/3] net: lantiq_xrx200: confirm skb is allocated before using
+Date:   Wed, 24 Aug 2022 23:54:06 +0200
+Message-Id: <20220824215408.4695-2-olek2@wp.pl>
+X-Mailer: git-send-email 2.30.2
+In-Reply-To: <20220824215408.4695-1-olek2@wp.pl>
+References: <20220824215408.4695-1-olek2@wp.pl>
 MIME-Version: 1.0
-References: <1661372150-3764-1-git-send-email-quic_khsieh@quicinc.com>
-In-Reply-To: <1661372150-3764-1-git-send-email-quic_khsieh@quicinc.com>
-From:   Doug Anderson <dianders@chromium.org>
-Date:   Wed, 24 Aug 2022 14:53:39 -0700
-X-Gmail-Original-Message-ID: <CAD=FV=WWP1hgvpGN=62d585GOsT7+399N9DSbne_7XNwza00Uw@mail.gmail.com>
-Message-ID: <CAD=FV=WWP1hgvpGN=62d585GOsT7+399N9DSbne_7XNwza00Uw@mail.gmail.com>
-Subject: Re: [PATCH v3] drm/msm/dp: correct 1.62G link rate at dp_catalog_ctrl_config_msa()
-To:     Kuogee Hsieh <quic_khsieh@quicinc.com>
-Cc:     Rob Clark <robdclark@gmail.com>, Sean Paul <sean@poorly.run>,
-        Stephen Boyd <swboyd@chromium.org>,
-        Vinod Koul <vkoul@kernel.org>, Daniel Vetter <daniel@ffwll.ch>,
-        David Airlie <airlied@linux.ie>,
-        Andy Gross <agross@kernel.org>,
-        Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        "Abhinav Kumar (QUIC)" <quic_abhinavk@quicinc.com>,
-        Sankeerth Billakanti <quic_sbillaka@quicinc.com>,
-        freedreno <freedreno@lists.freedesktop.org>,
-        dri-devel <dri-devel@lists.freedesktop.org>,
-        linux-arm-msm <linux-arm-msm@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
+X-WP-MailID: da954f5736fb02daf8954bf4042baf0e
+X-WP-AV: skaner antywirusowy Poczty Wirtualnej Polski
+X-WP-SPAM: NO 0000000 [oVMU]                               
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi,
+xrx200_hw_receive() assumes build_skb() always works and goes straight
+to skb_reserve(). However, build_skb() can fail under memory pressure.
 
-On Wed, Aug 24, 2022 at 1:16 PM Kuogee Hsieh <quic_khsieh@quicinc.com> wrote:
->
-> At current implementation there is an extra 0 at 1.62G link rate which cause
-> no correct pixel_div selected for 1.62G link rate to calculate mvid and nvid.
-> This patch delete the extra 0 to have mvid and nvid be calculated correctly.
->
-> Changes in v2:
-> -- fix Fixes tag's text
->
-> Changes in v3:
-> -- fix misspelling of "Reviewed-by"
->
-> Fixes: 937f941ca06f  ("drm/msm/dp: Use qmp phy for DP PLL and PHY")
-> Signed-off-by: Kuogee Hsieh <quic_khsieh@quicinc.com>
->
-> Reviewed-by: Stephen Boyd <swboyd@chromium.org>
-> Reviewed-by: Abhinav Kumar <quic_abhinavk@quicinc.com>
-> ---
->  drivers/gpu/drm/msm/dp/dp_catalog.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
+Add a check in case build_skb() failed to allocate and return NULL.
 
-Reviewed-by: Douglas Anderson <dianders@chromium.org>
+Fixes: e015593573b3 ("net: lantiq_xrx200: convert to build_skb")
+Reported-by: Eric Dumazet <edumazet@google.com>
+Signed-off-by: Aleksander Jan Bajkowski <olek2@wp.pl>
+---
+ drivers/net/ethernet/lantiq_xrx200.c | 6 ++++++
+ 1 file changed, 6 insertions(+)
+
+diff --git a/drivers/net/ethernet/lantiq_xrx200.c b/drivers/net/ethernet/lantiq_xrx200.c
+index 5edb68a8aab1..89314b645c82 100644
+--- a/drivers/net/ethernet/lantiq_xrx200.c
++++ b/drivers/net/ethernet/lantiq_xrx200.c
+@@ -239,6 +239,12 @@ static int xrx200_hw_receive(struct xrx200_chan *ch)
+ 	}
+ 
+ 	skb = build_skb(buf, priv->rx_skb_size);
++	if (!skb) {
++		skb_free_frag(buf);
++		net_dev->stats.rx_dropped++;
++		return -ENOMEM;
++	}
++
+ 	skb_reserve(skb, NET_SKB_PAD);
+ 	skb_put(skb, len);
+ 
+-- 
+2.30.2
+
