@@ -2,82 +2,101 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A92E4C00140
-	for <linux-kernel@archiver.kernel.org>; Wed, 24 Aug 2022 17:17:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id ECDB6C00140
+	for <linux-kernel@archiver.kernel.org>; Wed, 24 Aug 2022 17:18:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239977AbiHXRR4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 24 Aug 2022 13:17:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54688 "EHLO
+        id S240012AbiHXRSB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 24 Aug 2022 13:18:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54696 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236489AbiHXRRx (ORCPT
+        with ESMTP id S238271AbiHXRRx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Wed, 24 Aug 2022 13:17:53 -0400
-Received: from mail-ot1-x334.google.com (mail-ot1-x334.google.com [IPv6:2607:f8b0:4864:20::334])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 34BF07C1FA
-        for <linux-kernel@vger.kernel.org>; Wed, 24 Aug 2022 10:17:49 -0700 (PDT)
-Received: by mail-ot1-x334.google.com with SMTP id h9-20020a9d5549000000b0063727299bb4so12232748oti.9
-        for <linux-kernel@vger.kernel.org>; Wed, 24 Aug 2022 10:17:49 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=cc:to:subject:message-id:date:user-agent:from:references
-         :in-reply-to:mime-version:from:to:cc;
-        bh=MHYuEVNrNq6xOFLpayXIejomNu0GT0DBxEs7vGrd158=;
-        b=WZmQ7PLNtEHmn6SJrYb0tXJV3lUfaM74pbLSdSKR9LMnaK5kGCvh1f3QY7J38pSoIB
-         ik74LCQK95MUwF5xTdiHJ3JJ/wd36IqnmQneCLEzyFZ4ghGmFUX4vvXUG+dSM9XM77Nv
-         lk/NSNsGdkxOFaxjdiv4zfitg8B6AUUzfSsrc=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:user-agent:from:references
-         :in-reply-to:mime-version:x-gm-message-state:from:to:cc;
-        bh=MHYuEVNrNq6xOFLpayXIejomNu0GT0DBxEs7vGrd158=;
-        b=ALB8wUblQ9D9ebfmsaixiIfapymTUE9pq9TFZkdJAFyzftr8kVyq6Dm9BCE5ATlBAu
-         RuAL9h8tMIMVrUraKxVFT69vCqgQxXKbNE5UPQOsCdgMk40nt+44Wdnu1XciaLOk6lSy
-         lQQQ0vafltLZppe8418CqjlvTYTwWeg8XFiXWY7ZSiQ9uioqx9kuijF/EfgOPW5LXNY/
-         vbtMfZxcxxETs/37VQ8Bzjqh6dA9LvBzPrYm6GsyElriMKr3tjpAC9efNZ3srCIFkUlQ
-         P++UcQcRgG++feB+ByhGf7Crfsk9XDHYo7A3QsCGPHe0UhJLdOoEeoVbwDrCUhKg+R9Q
-         h60w==
-X-Gm-Message-State: ACgBeo3zpWwJacVOqRJ64Ltm3OjOOWAwIXZl0C+ptxifzHRZzLv4hlOg
-        cBXI20/5QeRYb9eZ4I5sIJLYobuKP2eB402oHJobjQ==
-X-Google-Smtp-Source: AA6agR4zBshr+gUc3WgavtY1TB1LNAO6aNOk9NTWdc2ol+fbKgwzW7gL98pe4oEy1a7xXcIHJjx4KwfdSoBCPBzli14=
-X-Received: by 2002:a9d:738c:0:b0:638:9962:8cb6 with SMTP id
- j12-20020a9d738c000000b0063899628cb6mr11204441otk.73.1661361468554; Wed, 24
- Aug 2022 10:17:48 -0700 (PDT)
-Received: from 753933720722 named unknown by gmailapi.google.com with
- HTTPREST; Wed, 24 Aug 2022 12:17:47 -0500
+Received: from mga06.intel.com (mga06b.intel.com [134.134.136.31])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 36BF67C1BF
+        for <linux-kernel@vger.kernel.org>; Wed, 24 Aug 2022 10:17:51 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1661361471; x=1692897471;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=z1/O7amcxbtN985zP7+aET+15/X1umd9NB3glHzKYzc=;
+  b=DUBgrFnENRJ/9eiGR3goJktbRbDtptkUmaXllEHdqeH60pUb8dp6Tkaw
+   AFdeTYj0MJeRn1P+O6gR30Z9btE8eW9+1utrDNvUCBOseFrYwNM68N888
+   q3Za+7Uy3IBG1pv0xJXXWIXaZ9ubbmP0hPrC8UtNHSzdxaedtotftFyQh
+   ItPPwoybk42J+D6aYJ3Up+xxXgivycFHbtwYVtvRKAR9huRSto7y6sy4W
+   cTlihmptlhSKxf2o0U2jl43WIkTrYg1VRYr9+BAzBIFXY1OVBv1aDWVmT
+   7vq3kK6QCO1wEZZxdX017ztphyIcn5P1XPk2wV6Hwxbj5mHZ6+EfpPD2O
+   g==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10449"; a="355750989"
+X-IronPort-AV: E=Sophos;i="5.93,261,1654585200"; 
+   d="scan'208";a="355750989"
+Received: from orsmga006.jf.intel.com ([10.7.209.51])
+  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Aug 2022 10:17:27 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.93,261,1654585200"; 
+   d="scan'208";a="586516159"
+Received: from lkp-server02.sh.intel.com (HELO 34e741d32628) ([10.239.97.151])
+  by orsmga006.jf.intel.com with ESMTP; 24 Aug 2022 10:17:26 -0700
+Received: from kbuild by 34e741d32628 with local (Exim 4.96)
+        (envelope-from <lkp@intel.com>)
+        id 1oQu0L-0000t9-1U;
+        Wed, 24 Aug 2022 17:17:25 +0000
+Date:   Thu, 25 Aug 2022 01:16:40 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Jason Gunthorpe <jgg@nvidia.com>
+Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org
+Subject: [jgunthorpe:vfio_iommufd 28/29] drivers/vfio/vfio_main.c:618:6:
+ warning: no previous prototype for 'vfio_assert_device_open'
+Message-ID: <202208250108.KV0cgfXO-lkp@intel.com>
 MIME-Version: 1.0
-In-Reply-To: <1661360356-21948-1-git-send-email-quic_khsieh@quicinc.com>
-References: <1661360356-21948-1-git-send-email-quic_khsieh@quicinc.com>
-From:   Stephen Boyd <swboyd@chromium.org>
-User-Agent: alot/0.10
-Date:   Wed, 24 Aug 2022 12:17:47 -0500
-Message-ID: <CAE-0n52Mqv-qqb4n_Q4iO-reSncNikWd-2xNVG7pgwvx2ThTHw@mail.gmail.com>
-Subject: Re: [PATCH] drm/msm/dp: correct 1.62G link rate at dp_catalog_ctrl_config_msa()
-To:     Kuogee Hsieh <quic_khsieh@quicinc.com>, agross@kernel.org,
-        airlied@linux.ie, bjorn.andersson@linaro.org, daniel@ffwll.ch,
-        dianders@chromium.org, dmitry.baryshkov@linaro.org,
-        robdclark@gmail.com, sean@poorly.run, vkoul@kernel.org
-Cc:     quic_abhinavk@quicinc.com, quic_sbillaka@quicinc.com,
-        freedreno@lists.freedesktop.org, dri-devel@lists.freedesktop.org,
-        linux-arm-msm@vger.kernel.org, linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Quoting Kuogee Hsieh (2022-08-24 09:59:16)
-> At current implementation there is an extra 0 at 1.62G link rate which cause
-> no correct pixel_div selected for 1.62G link rate to calculate mvid and nvid.
-> This patch delete the extra 0 to have mvid and nvid be calculated correctly.
->
-> Fixes: 937f941ca06f  "drm/msm/dp: Use qmp phy for DP PLL and PHY"
+tree:   https://github.com/jgunthorpe/linux vfio_iommufd
+head:   d2ab4343c9f524e9404059830828188b0f8a15b6
+commit: 5016830b7f1d1bf8af24d4ee80fc07a68d835af4 [28/29] vfio: Make vfio_container optionally compiled
+config: sparc64-randconfig-r014-20220824 (https://download.01.org/0day-ci/archive/20220825/202208250108.KV0cgfXO-lkp@intel.com/config)
+compiler: sparc64-linux-gcc (GCC) 12.1.0
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # https://github.com/jgunthorpe/linux/commit/5016830b7f1d1bf8af24d4ee80fc07a68d835af4
+        git remote add jgunthorpe https://github.com/jgunthorpe/linux
+        git fetch --no-tags jgunthorpe vfio_iommufd
+        git checkout 5016830b7f1d1bf8af24d4ee80fc07a68d835af4
+        # save the config file
+        mkdir build_dir && cp config build_dir/.config
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-12.1.0 make.cross W=1 O=build_dir ARCH=sparc64 SHELL=/bin/bash drivers/vfio/
 
-Should be
+If you fix the issue, kindly add following tag where applicable
+Reported-by: kernel test robot <lkp@intel.com>
 
-Fixes: 937f941ca06f ("drm/msm/dp: Use qmp phy for DP PLL and PHY")
+All warnings (new ones prefixed by >>):
 
-> Signed-off-by: Kuogee Hsieh <quic_khsieh@quicinc.com>
-> ---
+>> drivers/vfio/vfio_main.c:618:6: warning: no previous prototype for 'vfio_assert_device_open' [-Wmissing-prototypes]
+     618 | bool vfio_assert_device_open(struct vfio_device *device)
+         |      ^~~~~~~~~~~~~~~~~~~~~~~
 
-Good catch! Thanks for fixing it.
 
-Reviewed-by: Stephen Boyd <swboyd@chromium.org>
+vim +/vfio_assert_device_open +618 drivers/vfio/vfio_main.c
+
+cba3345cc494ad drivers/vfio/vfio.c      Alex Williamson 2012-07-31  616  
+eadd86f835c637 drivers/vfio/vfio.c      Jason Gunthorpe 2022-05-11  617  /* true if the vfio_device has open_device() called but not close_device() */
+79d394f0b0cd09 drivers/vfio/vfio_main.c Jason Gunthorpe 2022-02-18 @618  bool vfio_assert_device_open(struct vfio_device *device)
+eadd86f835c637 drivers/vfio/vfio.c      Jason Gunthorpe 2022-05-11  619  {
+eadd86f835c637 drivers/vfio/vfio.c      Jason Gunthorpe 2022-05-11  620  	return !WARN_ON_ONCE(!READ_ONCE(device->open_count));
+eadd86f835c637 drivers/vfio/vfio.c      Jason Gunthorpe 2022-05-11  621  }
+eadd86f835c637 drivers/vfio/vfio.c      Jason Gunthorpe 2022-05-11  622  
+
+:::::: The code at line 618 was first introduced by commit
+:::::: 79d394f0b0cd096e2eadbcc0e84b9035efa529c8 vfio: Move container code into vfio_container.c
+
+:::::: TO: Jason Gunthorpe <jgg@nvidia.com>
+:::::: CC: Jason Gunthorpe <jgg@nvidia.com>
+
+-- 
+0-DAY CI Kernel Test Service
+https://01.org/lkp
