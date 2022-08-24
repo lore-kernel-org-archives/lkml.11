@@ -2,102 +2,119 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 09367C3F6B0
-	for <linux-kernel@archiver.kernel.org>; Wed, 24 Aug 2022 20:50:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3F0A9C04AA5
+	for <linux-kernel@archiver.kernel.org>; Wed, 24 Aug 2022 20:50:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239909AbiHXUun (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 24 Aug 2022 16:50:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37394 "EHLO
+        id S240540AbiHXUu4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 24 Aug 2022 16:50:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37602 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229713AbiHXUuj (ORCPT
+        with ESMTP id S240529AbiHXUuq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 24 Aug 2022 16:50:39 -0400
-Received: from mail-ot1-x336.google.com (mail-ot1-x336.google.com [IPv6:2607:f8b0:4864:20::336])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E4CD86DAC6
-        for <linux-kernel@vger.kernel.org>; Wed, 24 Aug 2022 13:50:38 -0700 (PDT)
-Received: by mail-ot1-x336.google.com with SMTP id l5-20020a05683004a500b0063707ff8244so12569734otd.12
-        for <linux-kernel@vger.kernel.org>; Wed, 24 Aug 2022 13:50:38 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc;
-        bh=KduZjIEyBxkzWgXFN93eLdrigURNo60WLuJ3gbVZ7XY=;
-        b=HzD4lZ/6vc6C1WbqLgNeBjsTawvUPrh+Xj9kvCaukUs4HQ4qPkl3iXv/4oz9z8HwXo
-         ECVxp5rH4cZomOeGqhdJQD8ko317eSJ1CyxlRlohPXJiVaA5x1hshUDuqSdO4cmtUGMW
-         CNqIz6REQRw99lwDp8gd7kPHARUS2DCtzdD4A=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc;
-        bh=KduZjIEyBxkzWgXFN93eLdrigURNo60WLuJ3gbVZ7XY=;
-        b=MHKv6s7EDaLpRxRF5sWHlAy+mWzCEK5lMfB+6O2ytb/S6181jyLJOcKXhniqu5/nu3
-         C3lW5jIOAPne+O3zdkT28CXa1lVtfJapGU+7n4UQKFOaIuRNz8sZBbPjv2TfHWd9r546
-         gUMwaLAyRMOVgDVl58XT5RxiU9mAfmk6Y4aGBaEvk7Er+7hzO44w9PFE+6jckIIp2D6H
-         H1wyAWQxwsXdhB2lLMYIgqE5p22yDRrSRK6I2v3SangMiU4yboaqVYb2jqcpn/OIndns
-         XzElKSQ3K20KnBN2kQjzqM0LjN7ggFQdW2p2z8VXYDt8bMWKmkbic0r+JZLbF4KL5A60
-         0syA==
-X-Gm-Message-State: ACgBeo2wUfN/v/XkGrlrZVJlG+v7t2wl3S+Y1OtGKEgIh6KTWjuYhqQE
-        X+h/E8sGEl/P0MBBm2yVD1bz0XWA07ZruA==
-X-Google-Smtp-Source: AA6agR4vspImuPIuslf7CkIX4jcmKqTPwy04foecuJWtpJVBDH3m127MNH+jd0Ef+JUQ+aVJl3sSqw==
-X-Received: by 2002:a05:6830:18fa:b0:638:d46c:1374 with SMTP id d26-20020a05683018fa00b00638d46c1374mr229360otf.142.1661374237882;
-        Wed, 24 Aug 2022 13:50:37 -0700 (PDT)
-Received: from mail-oi1-f182.google.com (mail-oi1-f182.google.com. [209.85.167.182])
-        by smtp.gmail.com with ESMTPSA id z24-20020a4a8e58000000b004357ccfc8bfsm4096768ook.7.2022.08.24.13.50.37
-        for <linux-kernel@vger.kernel.org>
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 24 Aug 2022 13:50:37 -0700 (PDT)
-Received: by mail-oi1-f182.google.com with SMTP id a133so12993359oif.4
-        for <linux-kernel@vger.kernel.org>; Wed, 24 Aug 2022 13:50:37 -0700 (PDT)
-X-Received: by 2002:a05:6808:23c4:b0:344:e426:d2a7 with SMTP id
- bq4-20020a05680823c400b00344e426d2a7mr4087711oib.232.1661373740120; Wed, 24
- Aug 2022 13:42:20 -0700 (PDT)
+        Wed, 24 Aug 2022 16:50:46 -0400
+Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5A57E786C5
+        for <linux-kernel@vger.kernel.org>; Wed, 24 Aug 2022 13:50:45 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1661374245; x=1692910245;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=qTQyDimqLczvXe7qOc2XYZAeqDkH+iES8idreQ3skn8=;
+  b=J5w/vCG4D0XLeh9bhcntiYDX51T+yCIIfGw7RPHV9hyCl7lHi0vyPKSW
+   rfiGYLlMaSIDBDvBHFyuLysA3yp2aAacmQP7swheAgykq0F+MQuL69TGr
+   9ytT2T+S3MiekASNT+kAUBlI7hdGjfnmT1MaH4m9mvu7FlYpgY5rMqSRj
+   qxceJWAvF1/TLqGF+8cDO4jm2mB1mZsHo+JOteca3IvaKAP4Y17KvNmnS
+   C5tYN8O56bG35YPdiIevZru2U6Sy3mIv+vnLAJlEouXPVJbt3z2CyXdNh
+   B4k+0jRH7bSFQfzk8zaYnCf6g6Fv9lWW2FUGM+sbBGM3t0+VnGr/OyMzH
+   Q==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10449"; a="274462333"
+X-IronPort-AV: E=Sophos;i="5.93,261,1654585200"; 
+   d="scan'208";a="274462333"
+Received: from fmsmga001.fm.intel.com ([10.253.24.23])
+  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Aug 2022 13:50:44 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.93,261,1654585200"; 
+   d="scan'208";a="752225118"
+Received: from lkp-server02.sh.intel.com (HELO 34e741d32628) ([10.239.97.151])
+  by fmsmga001.fm.intel.com with ESMTP; 24 Aug 2022 13:50:43 -0700
+Received: from kbuild by 34e741d32628 with local (Exim 4.96)
+        (envelope-from <lkp@intel.com>)
+        id 1oQxKl-0001Ar-0S;
+        Wed, 24 Aug 2022 20:50:43 +0000
+Date:   Thu, 25 Aug 2022 04:50:28 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Bart Van Assche <bvanassche@acm.org>
+Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org
+Subject: [bvanassche:tracing 2/2] include/linux/compiler.h:246:47: warning:
+ ordered comparison of pointer with null pointer
+Message-ID: <202208250433.EVz5pZkB-lkp@intel.com>
 MIME-Version: 1.0
-References: <cover.1661252818.git.duoming@zju.edu.cn>
-In-Reply-To: <cover.1661252818.git.duoming@zju.edu.cn>
-From:   Brian Norris <briannorris@chromium.org>
-Date:   Wed, 24 Aug 2022 13:42:09 -0700
-X-Gmail-Original-Message-ID: <CA+ASDXNf5JV9mj8mbm1OGZ_zd4d8srFc=E++Amg4MoQjqjS_TA@mail.gmail.com>
-Message-ID: <CA+ASDXNf5JV9mj8mbm1OGZ_zd4d8srFc=E++Amg4MoQjqjS_TA@mail.gmail.com>
-Subject: Re: [PATCH v8 0/2] Add new APIs of devcoredump and fix bugs
-To:     Duoming Zhou <duoming@zju.edu.cn>
-Cc:     Linux Kernel <linux-kernel@vger.kernel.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Johannes Berg <johannes@sipsolutions.net>,
-        "Rafael J. Wysocki" <rafael@kernel.org>,
-        amit karwar <amitkarwar@gmail.com>,
-        Ganapathi Bhat <ganapathi017@gmail.com>,
-        Sharvari Harisangam <sharvari.harisangam@nxp.com>,
-        Xinming Hu <huxinming820@gmail.com>, kvalo@kernel.org,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        linux-wireless <linux-wireless@vger.kernel.org>,
-        "<netdev@vger.kernel.org>" <netdev@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Aug 23, 2022 at 4:21 AM Duoming Zhou <duoming@zju.edu.cn> wrote:
->
-> The first patch adds new APIs to support migration of users
-> from old device coredump related APIs.
->
-> The second patch fix sleep in atomic context bugs of mwifiex
-> caused by dev_coredumpv().
->
-> Duoming Zhou (2):
->   devcoredump: add new APIs to support migration of users from old
->     device coredump related APIs
->   mwifiex: fix sleep in atomic context bugs caused by dev_coredumpv
+tree:   https://github.com/bvanassche/linux tracing
+head:   e50691460d5ea5a49b903e0ea50276e942b6f34f
+commit: e50691460d5ea5a49b903e0ea50276e942b6f34f [2/2] tracing: Define is_signed_type() once
+config: sh-allmodconfig (https://download.01.org/0day-ci/archive/20220825/202208250433.EVz5pZkB-lkp@intel.com/config)
+compiler: sh4-linux-gcc (GCC) 12.1.0
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # https://github.com/bvanassche/linux/commit/e50691460d5ea5a49b903e0ea50276e942b6f34f
+        git remote add bvanassche https://github.com/bvanassche/linux
+        git fetch --no-tags bvanassche tracing
+        git checkout e50691460d5ea5a49b903e0ea50276e942b6f34f
+        # save the config file
+        mkdir build_dir && cp config build_dir/.config
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-12.1.0 make.cross W=1 O=build_dir ARCH=sh SHELL=/bin/bash drivers/net/
 
-I would have expected a third patch in here, that actually converts
-existing users. Then in the following release cycle, clean up any new
-users of the old API that pop up in the meantime and drop the old API.
+If you fix the issue, kindly add following tag where applicable
+Reported-by: kernel test robot <lkp@intel.com>
 
-But I'll defer to the people who would actually be merging your code.
-Technically it could also work to simply provide the API this cycle,
-and convert everyone in the next.
+All warnings (new ones prefixed by >>):
 
-Brian
+   In file included from include/trace/define_trace.h:102,
+                    from drivers/net/wireless/mediatek/mt7601u/trace.h:392,
+                    from drivers/net/wireless/mediatek/mt7601u/trace.c:11:
+>> include/linux/compiler.h:246:47: warning: ordered comparison of pointer with null pointer [-Wextra]
+     246 | #define is_signed_type(type)    (((type)(-1)) <= (type)0)
+         |                                               ^~
+   include/trace/trace_events.h:244:9: note: in definition of macro 'DECLARE_EVENT_CLASS'
+     244 |         tstruct                                                         \
+         |         ^~~~~~~
+   include/trace/trace_events.h:43:30: note: in expansion of macro 'PARAMS'
+      43 |                              PARAMS(tstruct),                  \
+         |                              ^~~~~~
+   drivers/net/wireless/mediatek/mt7601u/./trace.h:98:1: note: in expansion of macro 'TRACE_EVENT'
+      98 | TRACE_EVENT(mt_vend_req,
+         | ^~~~~~~~~~~
+   drivers/net/wireless/mediatek/mt7601u/./trace.h:102:9: note: in expansion of macro 'TP_STRUCT__entry'
+     102 |         TP_STRUCT__entry(
+         |         ^~~~~~~~~~~~~~~~
+   include/trace/stages/stage4_event_fields.h:11:22: note: in expansion of macro 'is_signed_type'
+      11 |         .is_signed = is_signed_type(_type), .filter_type = _filter_type },
+         |                      ^~~~~~~~~~~~~~
+   include/trace/stages/stage4_event_fields.h:20:33: note: in expansion of macro '__field_ext'
+      20 | #define __field(type, item)     __field_ext(type, item, FILTER_OTHER)
+         |                                 ^~~~~~~~~~~
+   drivers/net/wireless/mediatek/mt7601u/./trace.h:105:56: note: in expansion of macro '__field'
+     105 |                 __field(u16, val) __field(u16, offset) __field(void*, buf)
+         |                                                        ^~~~~~~
+
+
+vim +246 include/linux/compiler.h
+
+   241	
+   242	/*
+   243	 * Whether 'type' is a signed type or an unsigned type. Supports scalar types,
+   244	 * bool and also pointer types.
+   245	 */
+ > 246	#define is_signed_type(type)	(((type)(-1)) <= (type)0)
+   247	
+
+-- 
+0-DAY CI Kernel Test Service
+https://01.org/lkp
