@@ -2,140 +2,103 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 29D6CC00140
-	for <linux-kernel@archiver.kernel.org>; Wed, 24 Aug 2022 11:17:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 69EACC00140
+	for <linux-kernel@archiver.kernel.org>; Wed, 24 Aug 2022 11:17:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235468AbiHXLQ6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 24 Aug 2022 07:16:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40182 "EHLO
+        id S236325AbiHXLRl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 24 Aug 2022 07:17:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41560 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233396AbiHXLQz (ORCPT
+        with ESMTP id S233768AbiHXLRj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 24 Aug 2022 07:16:55 -0400
-Received: from wp530.webpack.hosteurope.de (wp530.webpack.hosteurope.de [IPv6:2a01:488:42:1000:50ed:8234::])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DEF8D61D7D;
-        Wed, 24 Aug 2022 04:16:52 -0700 (PDT)
-Received: from [2a02:8108:963f:de38:eca4:7d19:f9a2:22c5]; authenticated
-        by wp530.webpack.hosteurope.de running ExIM with esmtpsa (TLS1.3:ECDHE_RSA_AES_128_GCM_SHA256:128)
-        id 1oQoNN-0004hc-4u; Wed, 24 Aug 2022 13:16:49 +0200
-Message-ID: <339e2f94-213c-d707-b792-86d53329b3e5@leemhuis.info>
-Date:   Wed, 24 Aug 2022 13:16:48 +0200
+        Wed, 24 Aug 2022 07:17:39 -0400
+Received: from mail-pg1-x52b.google.com (mail-pg1-x52b.google.com [IPv6:2607:f8b0:4864:20::52b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 81FE97F259;
+        Wed, 24 Aug 2022 04:17:38 -0700 (PDT)
+Received: by mail-pg1-x52b.google.com with SMTP id q63so500798pga.9;
+        Wed, 24 Aug 2022 04:17:38 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc;
+        bh=NW2FQwGNAroq7kGJ/SM5+2ixhiz8WdBcU3MZns9y+ZQ=;
+        b=B2HlsCjau6l9n5Vbr/PKGuE1opvjcUsTNIwZUILw5ZS1KC/aBymytdGZr8lnV32jOy
+         m1T8LJJWZq6LYyMGBIdzmI4GdUT9cvGYTikqXdWi0GY+fg4bWisw0bYLsHN0jrCUg2uc
+         vEuhwkWE1O6/BCXFpyR8vZ3E0S40D+e77CIwHMA2uZoe+UBr6HR4ntZ+onJtbbOO4ZFP
+         KEnOjFSG2pbxJjfgvN5Piz8KUaa4vqJuL8t74+o62RAZ31IQopaUjsk2CigqQnMAYj3x
+         qrMqR1Mgjd66eBfnVxN9cO5KzF9MmNN3CtoCM5y7WboXYKHCbw5s1Xruf10k2SYcNxaY
+         WZOQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc;
+        bh=NW2FQwGNAroq7kGJ/SM5+2ixhiz8WdBcU3MZns9y+ZQ=;
+        b=inCLum7H3CC6vElW4xCsLNHKolDUqTeq7hJ2JHNKiL6xZTqAydU0X3w0u6iXI7hhP0
+         LyvrXddNjZ1XuFdWotfpd4hd+6xUoMqnHRmLnkHoCI/KcoNXa2bRhIo6OnNSMF0JB/I1
+         qaIoqH+2KVDutjZ2YvCXjy8JyDHxnTZZimDF/q7kX0Bbqeuo/6rYyGAt4jIlbQ77GXsS
+         yttJrs6l1SMBeYEHqtB/0vBd7mBGVqKnG6uLO+IE5Ub5tq8V8T+AtNsoMzKA/FY+GFhM
+         DbaYmidNcXq8evPrqPvvJdJIq2U6rQjCN+9kEN/r4ua2+13gemaXuRdGWPOV5XJf/XJZ
+         0U7w==
+X-Gm-Message-State: ACgBeo0Ex3YeBuzFJRuxeqA5pCw+dxLd5Zgc2hQZ9r2Ot4xupV9UKX6O
+        cDlTi4ambAjsPPW++s0d8V0=
+X-Google-Smtp-Source: AA6agR4QDK1gssjmyVghqiF+FjmNbR39rJhzGns1cUN/i1fubGYWNPzWvLHyJ97j3DXOT6qV6ZQvyA==
+X-Received: by 2002:a05:6a00:1894:b0:537:2e86:c7df with SMTP id x20-20020a056a00189400b005372e86c7dfmr3314915pfh.18.1661339857865;
+        Wed, 24 Aug 2022 04:17:37 -0700 (PDT)
+Received: from AA2000783-NB2.corpnet.asus (125-229-150-10.hinet-ip.hinet.net. [125.229.150.10])
+        by smtp.gmail.com with ESMTPSA id u64-20020a627943000000b0052c7ff2ac74sm13101357pfc.17.2022.08.24.04.17.36
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 24 Aug 2022 04:17:37 -0700 (PDT)
+Date:   Wed, 24 Aug 2022 19:17:34 +0800
+From:   PaddyKP Yao <ispaddy@gmail.com>
+To:     Hans de Goede <hdegoede@redhat.com>
+Cc:     Pavel Machek <pavel@ucw.cz>, PaddyKP_Yao@asus.com,
+        andy.shevchenko@gmail.com, acpi4asus-user@lists.sourceforge.net,
+        corentin.chary@gmail.com, linux-kernel@vger.kernel.org,
+        luke@ljones.dev, mgross@linux.intel.com,
+        platform-driver-x86@vger.kernel.org
+Subject: Re: [PATCH v2 1/1] platform/x86: asus-wmi: Add mic-mute LED classdev
+ support
+Message-ID: <20220824111734.GA8434@AA2000783-NB2.corpnet.asus>
+References: <HK0PR04MB33636680A6DC47211560BB43FA879@HK0PR04MB3363.apcprd04.prod.outlook.com>
+ <20220711024718.1700067-1-PaddyKP_Yao@asus.com>
+ <20220824100615.GA1049@bug>
+ <20220824110908.GB111@AA2000783-NB2.corpnet.asus>
+ <ca13b742-7bb9-da20-4e50-2d04233aaf93@redhat.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.2.0
-Subject: Re: Commit 'r8152: fix a WOL issue' makes Ethernet port on Lenovo
- Thunderbolt 3 dock go crazy
-Content-Language: en-US
-To:     Maxim Levitsky <mlevitsk@redhat.com>, netdev@vger.kernel.org
-Cc:     linux-kernel@vger.kernel.org, linux-usb@vger.kernel.org,
-        Hayes Wang <hayeswang@realtek.com>,
-        "regressions@lists.linux.dev" <regressions@lists.linux.dev>
-References: <3745745afedb2eff890277041896356149a8f2bf.camel@redhat.com>
-From:   Thorsten Leemhuis <regressions@leemhuis.info>
-In-Reply-To: <3745745afedb2eff890277041896356149a8f2bf.camel@redhat.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-bounce-key: webpack.hosteurope.de;regressions@leemhuis.info;1661339814;474960c6;
-X-HE-SMSGID: 1oQoNN-0004hc-4u
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <ca13b742-7bb9-da20-4e50-2d04233aaf93@redhat.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi, this is your Linux kernel regression tracker.
+Hi Hans,
 
-Quick note before the boilerplate: there is another report about issues
-caused by cdf0b86b250fd3 also involving a dock, but apparently it's
-ignored so far:
-https://bugzilla.kernel.org/show_bug.cgi?id=216333
-
-Anyway, moving on:
-
-[TLDR: I'm adding this regression report to the list of tracked
-regressions; all text from me you find below is based on a few templates
-paragraphs you might have encountered already already in similar form.]
-
-CCing the regression mailing list, as it should be in the loop for all
-regressions, as explained here:
-https://www.kernel.org/doc/html/latest/admin-guide/reporting-issues.html
-
-On 23.08.22 11:20, Maxim Levitsky wrote:
+On Wed, Aug 24, 2022 at 01:11:32PM +0200, Hans de Goede wrote:
+> Yes. Since I have already merged your original patch can you please make
+> this a new patch on top of your original patch ?  In other words just
+> make this 1 small change in the new patch:
 > 
-> I recently bisected an issue on my Lenovo P1 gen3, which is connected to the Lenovo Thunderbolt 3 dock.
+> diff --git a/drivers/platform/x86/asus-wmi.c b/drivers/platform/x86/asus-wmi.c
+> index 2d9d709aa59f..18e584eb9f0f 100644
+> --- a/drivers/platform/x86/asus-wmi.c
+> +++ b/drivers/platform/x86/asus-wmi.c
+> @@ -1060,7 +1060,7 @@ static int asus_wmi_led_init(struct asus_wmi *asus)
+>  	}
+>  
+>  	if (asus_wmi_dev_is_present(asus, ASUS_WMI_DEVID_MICMUTE_LED)) {
+> -		asus->micmute_led.name = "asus::micmute";
+> +		asus->micmute_led.name = "platform::micmute";
+>  		asus->micmute_led.max_brightness = 1;
+>  		asus->micmute_led.brightness = ledtrig_audio_get(LED_AUDIO_MICMUTE);
+>  		asus->micmute_led.brightness_set_blocking = micmute_led_set;
 > 
-> After I suspend the laptop to ram, the ethernet port led on the dock starts to blink like crazy,
-> its peer port on my ethernet switch blinks as well, and eventually the switch stops forwarding packets,
-> bringing all my network down.
+> Regards,
 > 
-> Likely the ethernet card in the dock sends some kind of a garbage over the wire.
-> 
-> Resuming the laptop, "fixes" the issue (leds stops blinking, and the network starts working again
-> after a minute or so).
-> 
-> I also tried to connect the dock directly to my main desktop over a dedicated usb network card
-> and try to capture the packets that are sent, but no packets were captured. I will soon retry
-> this test with another network card. I did use promicious mode.
-> 
-> 
-> This is the offending commit, and reverting it helps:
-> 
-> commit cdf0b86b250fd3c1c3e120c86583ea510c52e4ce
-> Author: Hayes Wang <hayeswang@realtek.com>
-> Date:   Mon Jul 18 16:21:20 2022 +0800
-> 
->     r8152: fix a WOL issue
->     
->     This fixes that the platform is waked by an unexpected packet. The
->     size and range of FIFO is different when the device enters S3 state,
->     so it is necessary to correct some settings when suspending.
->     
->     Regardless of jumbo frame, set RMS to 1522 and MTPS to MTPS_DEFAULT.
->     Besides, enable MCU_BORW_EN to update the method of calculating the
->     pointer of data. Then, the hardware could get the correct data.
->     
->     Fixes: 195aae321c82 ("r8152: support new chips")
->     Signed-off-by: Hayes Wang <hayeswang@realtek.com>
->     Link: https://lore.kernel.org/r/20220718082120.10957-391-nic_swsd@realtek.com
->     Signed-off-by: Jakub Kicinski <kuba@kernel.org>
-> 
-> 
-> WOL from dock was enabled in BIOS, but I tested with it disabled as well, and
-> no change in behavier.
-> 
-> Any help is welcome. I can test patches if needed, the laptop currently runs 6.0-rc2
-> with this commit reverted.
-> 
-> When I find some time I can also narrow the change down by reverting only parts
-> of the patch.
-> 
-> Best regards,
-> 	Maxim Levitsky
+> Hans
 > 
 
+Thanks for your advice.
+No problem, I will fix it soon.
 
-Thanks for the report. To be sure below issue doesn't fall through the
-cracks unnoticed, I'm adding it to regzbot, my Linux kernel regression
-tracking bot:
-
-#regzbot ^introduced cdf0b86b250fd3c1c3e120c86583ea510c52e4ce
-#regzbot title net: r8152: ehernet port on Lenovo Thunderbolt 3 dock
-goes crazy
-#regzbot ignore-activity
-
-This isn't a regression? This issue or a fix for it are already
-discussed somewhere else? It was fixed already? You want to clarify when
-the regression started to happen? Or point out I got the title or
-something else totally wrong? Then just reply -- ideally with also
-telling regzbot about it, as explained here:
-https://linux-regtracking.leemhuis.info/tracked-regression/
-
-Reminder for developers: When fixing the issue, add 'Link:' tags
-pointing to the report (the mail this one replies to), as explained for
-in the Linux kernel's documentation; above webpage explains why this is
-important for tracked regressions.
-
-Ciao, Thorsten (wearing his 'the Linux kernel's regression tracker' hat)
-
-P.S.: As the Linux kernel's regression tracker I deal with a lot of
-reports and sometimes miss something important when writing mails like
-this. If that's the case here, don't hesitate to tell me in a public
-reply, it's in everyone's interest to set the public record straight.
+Best Regards, Paddy
