@@ -2,123 +2,67 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 331B7C00140
-	for <linux-kernel@archiver.kernel.org>; Wed, 24 Aug 2022 13:02:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 266D3C00140
+	for <linux-kernel@archiver.kernel.org>; Wed, 24 Aug 2022 13:03:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235519AbiHXNCv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 24 Aug 2022 09:02:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37684 "EHLO
+        id S237881AbiHXNDD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 24 Aug 2022 09:03:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38078 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237251AbiHXNCr (ORCPT
+        with ESMTP id S237860AbiHXNC6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 24 Aug 2022 09:02:47 -0400
-Received: from mail-pl1-x62a.google.com (mail-pl1-x62a.google.com [IPv6:2607:f8b0:4864:20::62a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3C89497D77;
-        Wed, 24 Aug 2022 06:02:46 -0700 (PDT)
-Received: by mail-pl1-x62a.google.com with SMTP id io24so2321233plb.1;
-        Wed, 24 Aug 2022 06:02:46 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc;
-        bh=XAUfWXnBLgZU1RF+IGZaqoW6ICyj5iA/u5hjNGQLXxI=;
-        b=ml6sUCaOrs4Y85o8JF0FnzbqASxpqnG1xaur25bhRlu+8c14xl+WPd/ubvyTD3AbaN
-         17lWfMoDrAaU8X9gjekNKYTMaq2Daz1G/0MjNxFYEVVHuzLxxfnm10/p0BmkC4h3D7hJ
-         b+a42hRk7lo2lHHKkKKFnzU+26pTld7JervGIhLTiVgcC+kQLpa8RN+QbT7v2fWbfuHa
-         JYdnHu70C2E7/ZToINbIG1KyI5eZ1ZwZPCFbtL4yFMnZ5E18fAaDWmO6pZ5ze08qyGY3
-         IpbCtM+XPP5G8EkhYMMjmElKVwL0prPlMbV7GIRM4KTmQLdqlnh/xFIBPv52+37FQbjr
-         ag7w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc;
-        bh=XAUfWXnBLgZU1RF+IGZaqoW6ICyj5iA/u5hjNGQLXxI=;
-        b=CNXnUz+mA0eF1ZzOU/mn4slkv8xRc6Z0mDGt8q9hwvKbRWFRkxwrseM/ZMn6FH9X/X
-         lZM/9ggPMH3px0vXASgcD24eVuw3xVK7Jd84XQ4lJokvVFp+9KNp5O68rNmKn7AcJVnO
-         S2rHBJU/u0KfPUqM5MHIyFjbtphgbegoq18etgj12hO52jYFuqUPXE5js7xyWlih5lAt
-         +lMpYWYmZJ+kGqqCO7f4Nf/OZCNlo7RqyjrRkx4NL8jWTTwpIA23RLfLRQY4v3TR/BIU
-         tnUchpxFZmmkaHOegpaMW3/9LWMQsdSLxguL2qhtMEU8pR7alLWj3okMcmYC6pqS1T4S
-         hhrQ==
-X-Gm-Message-State: ACgBeo15iT6W6vpRML4b6h0wHgePSNhWT2eG+lwdLjadHj/eJm4ZhbjZ
-        maZw7+q/iEGpeXSi1lZSV0k=
-X-Google-Smtp-Source: AA6agR7iSr6MO5nHFFkVW+VyeKCo9O5k5c+zoHN0cgAt3sWclsbmuR9+RmWuMfqngSjjYWHw0xFOPQ==
-X-Received: by 2002:a17:90a:c78f:b0:1fa:e505:18e6 with SMTP id gn15-20020a17090ac78f00b001fae50518e6mr8465701pjb.23.1661346165672;
-        Wed, 24 Aug 2022 06:02:45 -0700 (PDT)
-Received: from [192.168.43.80] (subs32-116-206-28-16.three.co.id. [116.206.28.16])
-        by smtp.gmail.com with ESMTPSA id c127-20020a621c85000000b0052ddaffbcc1sm12834062pfc.30.2022.08.24.06.02.41
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 24 Aug 2022 06:02:45 -0700 (PDT)
-Message-ID: <bd50d4d2-f3dc-4e66-1d82-5221dab8b456@gmail.com>
-Date:   Wed, 24 Aug 2022 20:02:40 +0700
+        Wed, 24 Aug 2022 09:02:58 -0400
+Received: from bg5.exmail.qq.com (bg4.exmail.qq.com [43.154.221.58])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DBE2997EDB
+        for <linux-kernel@vger.kernel.org>; Wed, 24 Aug 2022 06:02:56 -0700 (PDT)
+X-QQ-mid: bizesmtp66t1661346163t6mn2l4h
+Received: from localhost.localdomain ( [182.148.14.124])
+        by bizesmtp.qq.com (ESMTP) with 
+        id ; Wed, 24 Aug 2022 21:02:42 +0800 (CST)
+X-QQ-SSF: 01000000002000C0E000B00A0000000
+X-QQ-FEAT: ILHsT53NKPjOlNPuqpWWqWg50EYn8tzNunygvysfeek+xEh1PNauTIxWspfom
+        ZAxbXsjhibOXgqXUV5+K3n1XQcGlKqgWMOFzwvU4BO5syIv4D5DtN89Zi/ToQ6Y43tFrpuz
+        6gOxl8EUvZYZ/DilLpfeU5vdiFOa+je+SXFUMGZm1ZvmgwDMayJEYQXRrEJ1+jVHDyxRH/U
+        ucAl7D9hGSilQhQeq2cJdh7AqDCdPecVCGkdLEHvgnU6vx5H1wRmGzc2kKIup+vpJtbIDuA
+        WSZWlabs6YKP1TUjYCB3YbsWbs3HX35nRdQIObC1Doe/ugy2VPuoze68eWxT9Mna2zIY3ee
+        hPYK0My0YjltM4VLyrW1DPe5SYtTXGBYCy6Oi8oc3TA4fBrnGrnzeVfkc16qg==
+X-QQ-GoodBg: 0
+From:   Jilin Yuan <yuanjilin@cdjrlc.com>
+To:     airlied@linux.ie, daniel@ffwll.ch
+Cc:     dri-devel@lists.freedesktop.org, linux-kernel@vger.kernel.org,
+        Jilin Yuan <yuanjilin@cdjrlc.com>
+Subject: [PATCH] drm/vboxvideo: fix repeated words in comments
+Date:   Wed, 24 Aug 2022 21:02:26 +0800
+Message-Id: <20220824130226.33980-1-yuanjilin@cdjrlc.com>
+X-Mailer: git-send-email 2.36.1
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.13.0
-Subject: Re: [PATCH v4 2/2] ksm: add profit monitoring documentation
-Content-Language: en-US
-To:     xu xin <cgel.zte@gmail.com>, akpm@linux-foundation.org,
-        corbet@lwn.net
-Cc:     adobriyan@gmail.com, willy@infradead.org, hughd@google.com,
-        linux-kernel@vger.kernel.org, linux-fsdevel@vger.kernel.org,
-        linux-mm@kvack.org, linux-doc@vger.kernel.org,
-        xu xin <xu.xin16@zte.com.cn>,
-        Xiaokai Ran <ran.xiaokai@zte.com.cn>,
-        Yang Yang <yang.yang29@zte.com.cn>
-References: <20220824124512.223103-1-xu.xin16@zte.com.cn>
- <20220824124846.223217-1-xu.xin16@zte.com.cn>
-From:   Bagas Sanjaya <bagasdotme@gmail.com>
-In-Reply-To: <20220824124846.223217-1-xu.xin16@zte.com.cn>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
+X-QQ-SENDSIZE: 520
+Feedback-ID: bizesmtp:cdjrlc.com:qybglogicsvr:qybglogicsvr4
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 8/24/22 19:48, xu xin wrote:
-> +Monitoring KSM profit
-> +=====================
-> +
-> +KSM can save memory by merging identical pages, but also can consume
-> +additional memory, because it needs to generate a number of rmap_items to
-> +save each scanned page's brief rmap information. Some of these pages may
-> +be merged, but some may not be abled to be merged after being checked
-> +several times, which are unprofitable memory consumed.
-> +
-> +1) How to determine whether KSM save memory or consume memory in system-wide
-> +   range? Here is a simple approximate calculation for reference::
-> +
-> +	general_profit =~ pages_sharing * sizeof(page) - (all_rmap_items) *
-> +			  sizeof(rmap_item);
-> +
-> +   where all_rmap_items can be easily obtained by summing ``pages_sharing``,
-> +   ``pages_shared``, ``pages_unshared`` and ``pages_volatile``.
-> +
-> +2) The KSM profit inner a single process can be similarly obtained by the
-> +   following approximate calculation::
-> +
-> +	process_profit =~ ksm_merging_pages * sizeof(page) -
-> +			  ksm_rmp_items * sizeof(rmap_item).
-> +
-> +   where both ksm_merging_pages and ksm_rmp_items are shown under the
-> +   directory ``/proc/<pid>/``.
-> +
-> +From the perspective of application, a high ratio of ``ksm_rmp_items`` to
-> +``ksm_merging_pages`` means a bad madvise-applied policy, so developers or
-> +administrators have to rethink how to change madvise policy. Giving an example
-> +for reference, a page's size is usually 4K, and the rmap_item's size is
-> +separately 32B on 32-bit CPU architecture and 64B on 64-bit CPU architecture.
-> +so if the ``ksm_rmp_items/ksm_merging_pages`` ratio exceeds 64 on 64-bit CPU
-> +or exceeds 128 on 32-bit CPU, then the app's madvise policy should be dropped,
-> +because the ksm profit is approximately zero or negative.
-> +
->  Monitoring KSM events
->  =====================
->  
+ Delete the redundant word 'the'.
 
-LGTM.
+Signed-off-by: Jilin Yuan <yuanjilin@cdjrlc.com>
+---
+ drivers/gpu/drm/vboxvideo/vboxvideo.h | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-Reviewed-by: Bagas Sanjaya <bagasdotme@gmail.com>
-
+diff --git a/drivers/gpu/drm/vboxvideo/vboxvideo.h b/drivers/gpu/drm/vboxvideo/vboxvideo.h
+index a5de40fe1a76..f60d82504da0 100644
+--- a/drivers/gpu/drm/vboxvideo/vboxvideo.h
++++ b/drivers/gpu/drm/vboxvideo/vboxvideo.h
+@@ -43,7 +43,7 @@
+  * VBE_DISPI_INDEX_VBOX_VIDEO is used to read the configuration information
+  * from the host and issue commands to the host.
+  *
+- * The guest writes the VBE_DISPI_INDEX_VBOX_VIDEO index register, the the
++ * The guest writes the VBE_DISPI_INDEX_VBOX_VIDEO index register, the
+  * following operations with the VBE data register can be performed:
+  *
+  * Operation            Result
 -- 
-An old man doll... just what I always wanted! - Clara
+2.36.1
+
