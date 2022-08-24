@@ -2,148 +2,149 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DE172C00140
-	for <linux-kernel@archiver.kernel.org>; Wed, 24 Aug 2022 07:56:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 03CAEC00140
+	for <linux-kernel@archiver.kernel.org>; Wed, 24 Aug 2022 07:56:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235263AbiHXH4C (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 24 Aug 2022 03:56:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38890 "EHLO
+        id S235345AbiHXH4T (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 24 Aug 2022 03:56:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39166 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233456AbiHXHz4 (ORCPT
+        with ESMTP id S230002AbiHXH4Q (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 24 Aug 2022 03:55:56 -0400
-Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8464884ECB;
-        Wed, 24 Aug 2022 00:55:52 -0700 (PDT)
-Date:   Wed, 24 Aug 2022 07:55:47 -0000
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1661327750;
-        h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
-         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
-         content-type:content-type:
+        Wed, 24 Aug 2022 03:56:16 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1E1EB84ECB
+        for <linux-kernel@vger.kernel.org>; Wed, 24 Aug 2022 00:56:15 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1661327774;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=RqO7cPBchLBpZJwMWF5WuJhfv0vBB4rQmXh3A6TUueo=;
-        b=NPw5GD31FlHYtyCGbO+Rl1Vmj3IFxDhxZ+uGgNNri9Yx1a8wha+dHnTAuehc/ySLH71Onv
-        JZn9bwvh50YItOcJ0zE/jficatsUNeUkzylVs6GXXs7NKnd/+0XlASVlz800s2Mnrcxv+S
-        OR3pN3vMWuhVBjO33uKWihA4LkzEiovDX+Cuuk1NnKaJnpbX2yAQ2/7UPJMzyrw6vpAxUk
-        ND4zndEJReccqSBG1YgkjPmH/zj7ewt+RJUOvvOx66NCtI5xBmO4jWAZQQ0K66UTLlhNWc
-        mgimHnjZIxAc+y88pozeFWIuonNlsJ+n+Y/4ysbnxtY38X3Ah8uwjyDopu5TyA==
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1661327750;
-        h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
-         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
-         content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=RqO7cPBchLBpZJwMWF5WuJhfv0vBB4rQmXh3A6TUueo=;
-        b=E/HyooXtINpkPP91QrjafI7AQgUiiPP0OK1K1KH2bJoUgq+KpL1N3LYxpupOoOO25VTajh
-        lz9btSPcQSYILsBA==
-From:   "tip-bot2 for Michael Roth" <tip-bot2@linutronix.de>
-Sender: tip-bot2@linutronix.de
-Reply-to: linux-kernel@vger.kernel.org
-To:     linux-tip-commits@vger.kernel.org
-Subject: [tip: x86/urgent] x86/boot: Don't propagate uninitialized
- boot_params->cc_blob_address
-Cc:     Jeremi Piotrowski <jpiotrowski@linux.microsoft.com>,
-        watnuss@gmx.de, Michael Roth <michael.roth@amd.com>,
-        Borislav Petkov <bp@suse.de>, stable@vger.kernel.org,
-        x86@kernel.org, linux-kernel@vger.kernel.org
-In-Reply-To: <20220823160734.89036-1-michael.roth@amd.com>
-References: <20220823160734.89036-1-michael.roth@amd.com>
+        bh=yX/+8Rw7cX7PklWPsILs75376rGACdvLy1y8/1aR3u8=;
+        b=NhJ8m6evaZeCXfmQ76AyfV+dRfZXL0S3+caCnelV76gTtdX99Aph8HrjFZBGp3Zf6qs8hH
+        fujsyyPOMqQtF1EoWd5QL3wczFAvTgC8sznOEVxSRfaUY833fYl8YJHdCDiw6ktTQtFH8u
+        opK4TNPOFlRRkEiHrhy+gYGb7eysfjY=
+Received: from mail-wr1-f71.google.com (mail-wr1-f71.google.com
+ [209.85.221.71]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
+ us-mta-247-jVYl7HX0O3idmq81f2QM8w-1; Wed, 24 Aug 2022 03:56:12 -0400
+X-MC-Unique: jVYl7HX0O3idmq81f2QM8w-1
+Received: by mail-wr1-f71.google.com with SMTP id v27-20020adfa1db000000b002252854ec99so2577037wrv.2
+        for <linux-kernel@vger.kernel.org>; Wed, 24 Aug 2022 00:56:12 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:in-reply-to:subject:organization:from
+         :references:cc:to:content-language:user-agent:mime-version:date
+         :message-id:x-gm-message-state:from:to:cc;
+        bh=yX/+8Rw7cX7PklWPsILs75376rGACdvLy1y8/1aR3u8=;
+        b=1516WkuVJTwp9gwFleqqwncvpBzHhtH6tpnoVgN/ihDgndiziAXzLU7OScp87dipGO
+         VU9EFqeGfHYbX08C6T4aitME9CDWZFkS5DIqdyjG+Yfg2De2eeE0E9Q5v+VZAW9PiTIn
+         hCOiDoZfCcowhgLbqFvTKyIbufMvbQAIAro6/OfliGJroS0nNXWUSqAgWPbbjaemvWba
+         ZeamvMNzDkiq0NKI+QWMWQC+gHSUwHDPB7iwnJa+LYo9kEswoWIlSGmUOqZXsDKhqNMP
+         rA1j0tCTIpJvCGnk4ud+rgCMCKLFmljI4jWTiP0sZJsXZakgW2Uvibasqk+WHMZC+FbW
+         kt3A==
+X-Gm-Message-State: ACgBeo2wuZPIipeEpsftsljelc9XHkCnfvqoWH3W0s3ZbN1/67SsDrut
+        MeRnBnCLBNDbwJPwfZaaU2/txZDekqNdXVYTuV7L6O0lfcBmMvnRKLFP8vwqrYTMomIAybtmXEO
+        llELiv8ZQtbhdPbmSOqc3KiEI
+X-Received: by 2002:a05:6000:15c5:b0:220:727a:24bf with SMTP id y5-20020a05600015c500b00220727a24bfmr16132370wry.621.1661327771582;
+        Wed, 24 Aug 2022 00:56:11 -0700 (PDT)
+X-Google-Smtp-Source: AA6agR5KMVcgjXhsJt9cJZpZ9jn66ZFfTYNIfIB4dQ29fC/nC3ivi5z6k/oNJTkKKauWbbvmnb+4rg==
+X-Received: by 2002:a05:6000:15c5:b0:220:727a:24bf with SMTP id y5-20020a05600015c500b00220727a24bfmr16132354wry.621.1661327771228;
+        Wed, 24 Aug 2022 00:56:11 -0700 (PDT)
+Received: from ?IPV6:2003:cb:c707:c500:5445:cf40:2e32:6e73? (p200300cbc707c5005445cf402e326e73.dip0.t-ipconnect.de. [2003:cb:c707:c500:5445:cf40:2e32:6e73])
+        by smtp.gmail.com with ESMTPSA id l6-20020a05600c4f0600b003a690f704absm216374wmq.4.2022.08.24.00.56.10
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 24 Aug 2022 00:56:10 -0700 (PDT)
+Message-ID: <38e227e1-63f4-4aa4-e05c-c47c3345a60f@redhat.com>
+Date:   Wed, 24 Aug 2022 09:56:09 +0200
 MIME-Version: 1.0
-Message-ID: <166132774791.401.13991431396549405975.tip-bot2@tip-bot2>
-Robot-ID: <tip-bot2@linutronix.de>
-Robot-Unsubscribe: Contact <mailto:tglx@linutronix.de> to get blacklisted from these emails
-Content-Type: text/plain; charset="utf-8"
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.12.0
+Content-Language: en-US
+To:     Kefeng Wang <wangkefeng.wang@huawei.com>,
+        Andrew Morton <akpm@linux-foundation.org>, linux-mm@kvack.org
+Cc:     muchun.song@linux.dev, linux-kernel@vger.kernel.org
+References: <20220824071909.192535-1-wangkefeng.wang@huawei.com>
+From:   David Hildenbrand <david@redhat.com>
+Organization: Red Hat
+Subject: Re: [PATCH 1/2] mm: fix null-ptr-deref in kswapd_is_running()
+In-Reply-To: <20220824071909.192535-1-wangkefeng.wang@huawei.com>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The following commit has been merged into the x86/urgent branch of tip:
+On 24.08.22 09:19, Kefeng Wang wrote:
+> The kswapd_run/stop() will set pgdat->kswapd to NULL, which
+> could race with kswapd_is_running() in kcompactd(),
+> 
+> kswapd_run/stop()	kcompactd()
+> 			  kswapd_is_running()
+> 				if (pgdat->kswapd) // load non-NULL pgdat->kswapd
+>   pgdat->kswapd = NULL
+> 				task_is_running(pgdat->kswapd) // Null pointer derefence
+> 
+> The KASAN report the null-ptr-deref shown below,
+> 
+>   vmscan: Failed to start kswapd on node 0
+>   ...
+>   BUG: KASAN: null-ptr-deref in kcompactd+0x440/0x504
+>   Read of size 8 at addr 0000000000000024 by task kcompactd0/37
+> 
+>   CPU: 0 PID: 37 Comm: kcompactd0 Kdump: loaded Tainted: G           OE     5.10.60 #1
+>   Hardware name: QEMU KVM Virtual Machine, BIOS 0.0.0 02/06/2015
+>   Call trace:
+>    dump_backtrace+0x0/0x394
+>    show_stack+0x34/0x4c
+>    dump_stack+0x158/0x1e4
+>    __kasan_report+0x138/0x140
+>    kasan_report+0x44/0xdc
+>    __asan_load8+0x94/0xd0
+>    kcompactd+0x440/0x504
+>    kthread+0x1a4/0x1f0
+>    ret_from_fork+0x10/0x18
+> 
+> For race between kswapd_run() and kcompactd(), adding a temporary value
+> when create a kthread, and only set it to pgdat->kswapd if kthread_run()
+> return successful task_struct to fix the issue.
+> 
+> For race between kswapd_stop() and kcompactd(), let's call kcompactd_stop()
+> before kswapd_stop() to fix the issue.
+> 
+> Signed-off-by: Kefeng Wang <wangkefeng.wang@huawei.com>
+> ---
+>  mm/memory_hotplug.c | 2 +-
+>  mm/vmscan.c         | 8 +++++---
+>  2 files changed, 6 insertions(+), 4 deletions(-)
+> 
+> diff --git a/mm/memory_hotplug.c b/mm/memory_hotplug.c
+> index fad6d1f2262a..2fd45ccbce45 100644
+> --- a/mm/memory_hotplug.c
+> +++ b/mm/memory_hotplug.c
+> @@ -1940,8 +1940,8 @@ int __ref offline_pages(unsigned long start_pfn, unsigned long nr_pages,
+>  
+>  	node_states_clear_node(node, &arg);
+>  	if (arg.status_change_nid >= 0) {
+> -		kswapd_stop(node);
+>  		kcompactd_stop(node);
+> +		kswapd_stop(node);
+>  	}
 
-Commit-ID:     4b1c742407571eff58b6de9881889f7ca7c4b4dc
-Gitweb:        https://git.kernel.org/tip/4b1c742407571eff58b6de9881889f7ca7c4b4dc
-Author:        Michael Roth <michael.roth@amd.com>
-AuthorDate:    Tue, 23 Aug 2022 11:07:34 -05:00
-Committer:     Borislav Petkov <bp@suse.de>
-CommitterDate: Wed, 24 Aug 2022 09:03:04 +02:00
+This looks just fragile to randomly break again in the future when
+people work on this code without being aware of this condition. Or once
+with other (future?) kswapd_is_running() users. We at least need some
+comment explaining that the order here matters and why.
 
-x86/boot: Don't propagate uninitialized boot_params->cc_blob_address
+But I do wonder if we can't handle it in a cleaner, more obvious, way.
 
-In some cases, bootloaders will leave boot_params->cc_blob_address
-uninitialized rather than zeroing it out. This field is only meant to be
-set by the boot/compressed kernel in order to pass information to the
-uncompressed kernel when SEV-SNP support is enabled.
+kswapd_start()/kswapd_stop() should have a proper way to synchronize
+with kswapd_is_running(). Just the matter of finding a suitable locking
+primitive :)
 
-Therefore, there are no cases where the bootloader-provided values
-should be treated as anything other than garbage. Otherwise, the
-uncompressed kernel may attempt to access this bogus address, leading to
-a crash during early boot.
+-- 
+Thanks,
 
-Normally, sanitize_boot_params() would be used to clear out such fields
-but that happens too late: sev_enable() may have already initialized
-it to a valid value that should not be zeroed out. Instead, have
-sev_enable() zero it out unconditionally beforehand.
+David / dhildenb
 
-Also ensure this happens for !CONFIG_AMD_MEM_ENCRYPT as well by also
-including this handling in the sev_enable() stub function.
-
-  [ bp: Massage commit message and comments. ]
-
-Fixes: b190a043c49a ("x86/sev: Add SEV-SNP feature detection/setup")
-Reported-by: Jeremi Piotrowski <jpiotrowski@linux.microsoft.com>
-Reported-by: watnuss@gmx.de
-Signed-off-by: Michael Roth <michael.roth@amd.com>
-Signed-off-by: Borislav Petkov <bp@suse.de>
-Cc: stable@vger.kernel.org
-Link: https://bugzilla.kernel.org/show_bug.cgi?id=216387
-Link: https://lore.kernel.org/r/20220823160734.89036-1-michael.roth@amd.com
----
- arch/x86/boot/compressed/misc.h | 12 +++++++++++-
- arch/x86/boot/compressed/sev.c  |  8 ++++++++
- 2 files changed, 19 insertions(+), 1 deletion(-)
-
-diff --git a/arch/x86/boot/compressed/misc.h b/arch/x86/boot/compressed/misc.h
-index 4910bf2..62208ec 100644
---- a/arch/x86/boot/compressed/misc.h
-+++ b/arch/x86/boot/compressed/misc.h
-@@ -132,7 +132,17 @@ void snp_set_page_private(unsigned long paddr);
- void snp_set_page_shared(unsigned long paddr);
- void sev_prep_identity_maps(unsigned long top_level_pgt);
- #else
--static inline void sev_enable(struct boot_params *bp) { }
-+static inline void sev_enable(struct boot_params *bp)
-+{
-+	/*
-+	 * bp->cc_blob_address should only be set by boot/compressed kernel.
-+	 * Initialize it to 0 unconditionally (thus here in this stub too) to
-+	 * ensure that uninitialized values from buggy bootloaders aren't
-+	 * propagated.
-+	 */
-+	if (bp)
-+		bp->cc_blob_address = 0;
-+}
- static inline void sev_es_shutdown_ghcb(void) { }
- static inline bool sev_es_check_ghcb_fault(unsigned long address)
- {
-diff --git a/arch/x86/boot/compressed/sev.c b/arch/x86/boot/compressed/sev.c
-index 52f989f..c93930d 100644
---- a/arch/x86/boot/compressed/sev.c
-+++ b/arch/x86/boot/compressed/sev.c
-@@ -277,6 +277,14 @@ void sev_enable(struct boot_params *bp)
- 	bool snp;
- 
- 	/*
-+	 * bp->cc_blob_address should only be set by boot/compressed kernel.
-+	 * Initialize it to 0 to ensure that uninitialized values from
-+	 * buggy bootloaders aren't propagated.
-+	 */
-+	if (bp)
-+		bp->cc_blob_address = 0;
-+
-+	/*
- 	 * Setup/preliminary detection of SNP. This will be sanity-checked
- 	 * against CPUID/MSR values later.
- 	 */
