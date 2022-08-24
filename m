@@ -2,146 +2,120 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5870FC00140
-	for <linux-kernel@archiver.kernel.org>; Wed, 24 Aug 2022 07:54:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C577EC00140
+	for <linux-kernel@archiver.kernel.org>; Wed, 24 Aug 2022 07:55:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235065AbiHXHyK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 24 Aug 2022 03:54:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35616 "EHLO
+        id S234888AbiHXHzg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 24 Aug 2022 03:55:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38472 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232593AbiHXHyF (ORCPT
+        with ESMTP id S233456AbiHXHze (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 24 Aug 2022 03:54:05 -0400
-Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.154.123])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3794283F0B;
-        Wed, 24 Aug 2022 00:54:02 -0700 (PDT)
+        Wed, 24 Aug 2022 03:55:34 -0400
+Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 19FEF84EE0
+        for <linux-kernel@vger.kernel.org>; Wed, 24 Aug 2022 00:55:33 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1661327643; x=1692863643;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1661327733; x=1692863733;
   h=message-id:date:mime-version:subject:to:cc:references:
    from:in-reply-to:content-transfer-encoding;
-  bh=vQMwGd63+sQ5EkTMmrWM2sJXCbIqYhrCDbQUP/40uTE=;
-  b=yje61nAUIRoehFe7xkE59pE0HMK3LMSeLTkF3XYjxgFPx0wn/cnDuTRs
-   QuOXb3AmrFR6QTspRmFGDH7rvIrYC4yh4KsfTEvjZAssivcxCSHsRsd4x
-   sgAnPUPHy49ZgAXT82yFWlegCoshwbsYmqsNpsu4Lj+Grw1ZdFEWQ/SuA
-   BJBGHL3D6bQclPCFH+CFbY7/G4P7GN95C96ucpHBaWIE8n0g7M0fnSqxj
-   kUcGM7PzZaa4gKJFl3J8lQesIvVFF/dIpXah9X9gxdRXLy0fO6YSlKnVZ
-   Alt/kb8jeOSRg2LttKx7At+e0flIea935boj8x7EZRPJoOc9rksXhgXH/
-   g==;
+  bh=LqeA44e0s1YgXUHt9917oOHWEVJ8rkKa9fdQohJrry8=;
+  b=oFS6fdT4+JI8k4BF5tIKQLAdAVZAa7WeqoQXDaazfoyyh5CeOLndVw9U
+   c75Q4wF5Ub541UFbXODCSWRMm2iyutUOEkkqF4FH/cneNTCwLkAktOdNk
+   EKWi8yRyohrTophiloWjZue12yAcqyWZDal+seWbcX7KrICTc2E130Uzf
+   lhlDHSYpzTITyBFkGodab+0hY+XJZQYHvPPLqGAhFA44CWnjOO+EVNHRK
+   PoMvu5M0agOberg5EKJI+jxXIwj+M04+uvcPfcFhwStUj2GgGQJ11EcFh
+   UNSCx07SaOovSNS/WXrDkd0ltjEc0efYFKBG4k3GSXTdAs2FNAeayjQSe
+   Q==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10448"; a="291462499"
 X-IronPort-AV: E=Sophos;i="5.93,260,1654585200"; 
-   d="scan'208";a="110461175"
-Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
-  by esa6.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 24 Aug 2022 00:54:01 -0700
-Received: from chn-vm-ex04.mchp-main.com (10.10.85.152) by
- chn-vm-ex02.mchp-main.com (10.10.85.144) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.12; Wed, 24 Aug 2022 00:53:57 -0700
-Received: from [10.12.67.249] (10.10.115.15) by chn-vm-ex04.mchp-main.com
- (10.10.85.152) with Microsoft SMTP Server id 15.1.2507.12 via Frontend
- Transport; Wed, 24 Aug 2022 00:53:55 -0700
-Message-ID: <4fd71594-5e48-a365-d969-857ff8bb15cf@microchip.com>
-Date:   Wed, 24 Aug 2022 09:53:54 +0200
+   d="scan'208";a="291462499"
+Received: from orsmga008.jf.intel.com ([10.7.209.65])
+  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Aug 2022 00:55:32 -0700
+X-IronPort-AV: E=Sophos;i="5.93,260,1654585200"; 
+   d="scan'208";a="639008184"
+Received: from tleistix-mobl2.ger.corp.intel.com (HELO [10.249.43.72]) ([10.249.43.72])
+  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Aug 2022 00:55:30 -0700
+Message-ID: <6a9ad9b1-a6f2-c380-77a9-f10317f7054f@linux.intel.com>
+Date:   Wed, 24 Aug 2022 09:42:22 +0200
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.11.0
-Subject: Re: [PATCH v3] ARM: dts: lan966x: add support for pcb8290
+ Firefox/91.0 Thunderbird/91.11.0
+Subject: Re: [PATCH 0/3] soundwire: allocate device_number with IDA
 Content-Language: en-US
-To:     Horatiu Vultur <horatiu.vultur@microchip.com>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>
-CC:     <robh+dt@kernel.org>, <krzysztof.kozlowski+dt@linaro.org>,
-        <arnd@arndb.de>, <olof@lixom.net>, <soc@kernel.org>,
-        <claudiu.beznea@microchip.com>, <UNGLinuxDriver@microchip.com>,
-        <maxime.chevallier@bootlin.com>
-References: <20220824065527.157334-1-horatiu.vultur@microchip.com>
-From:   Nicolas Ferre <nicolas.ferre@microchip.com>
-Organization: microchip
-In-Reply-To: <20220824065527.157334-1-horatiu.vultur@microchip.com>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
+To:     Vinod Koul <vkoul@kernel.org>,
+        Bard Liao <yung-chuan.liao@linux.intel.com>
+Cc:     alsa-devel@alsa-project.org, linux-kernel@vger.kernel.org,
+        bard.liao@intel.com
+References: <20220823045004.2670658-1-yung-chuan.liao@linux.intel.com>
+ <YwUHp3ivSktx6/Lo@matsya>
+From:   Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>
+In-Reply-To: <YwUHp3ivSktx6/Lo@matsya>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Horatiu,
+Hi Vinod,
 
-On 24/08/2022 at 08:55, Horatiu Vultur wrote:
-> Add basic support for pcb8290. It has 2 lan8814 phys(each phy is a
-> quad-port) on the external MDIO bus and no SFP ports.
+>> The device_number is currently allocated in the scope of each bus and does
+>> not need to be unique at the system level.
+>> This leads e.g. on Dell devices with three or four Device1 on different
+>> bus segments. 
 > 
-> Signed-off-by: Horatiu Vultur <horatiu.vultur@microchip.com>
-> ---
-> v2->v3:
-> - update coma-mode-gpios, set them to OPEN_DRAIN
+> And how is that an issue that should be fixed?
+
+1. this makes things simpler for debug. You can look at the logs and see
+what the device is without having to look at the link. It's been much
+easier to track complicated issues when each device is tracked with a
+unique system level number.
+
+2. Intel hardware has a requirement that the device number be unique for
+all links managed by  a given controller. This patch prepares that
+transition. I cannot disclose more details at the moment, you will have
+to trust me on this one.
+
+>> To make the device_number unique at the system level, and
 > 
-> v1->v2:
-> - add comments for pps_out_pins and ptp_ext_pins pins
-> - fix commit message.
-> ---
->   arch/arm/boot/dts/Makefile            |   1 +
->   arch/arm/boot/dts/lan966x-pcb8290.dts | 171 ++++++++++++++++++++++++++
->   2 files changed, 172 insertions(+)
->   create mode 100644 arch/arm/boot/dts/lan966x-pcb8290.dts
+> Why should we do that...
+>> unified with the HDaudio/iDISP SDI values, this series allocates the
+>> dev_number with an IDA restricted between 4 and 11 (inclusive).
 > 
-> diff --git a/arch/arm/boot/dts/Makefile b/arch/arm/boot/dts/Makefile
-> index 05d8aef6e5d2..595e870750cd 100644
-> --- a/arch/arm/boot/dts/Makefile
-> +++ b/arch/arm/boot/dts/Makefile
-> @@ -788,6 +788,7 @@ dtb-$(CONFIG_SOC_IMXRT) += \
->   dtb-$(CONFIG_SOC_LAN966) += \
->   	lan966x-kontron-kswitch-d10-mmt-6g-2gs.dtb \
->   	lan966x-kontron-kswitch-d10-mmt-8g.dtb \
-> +	lan966x-pcb8290.dtb \
->   	lan966x-pcb8291.dtb \
->   	lan966x-pcb8309.dtb
->   dtb-$(CONFIG_SOC_LS1021A) += \
-> diff --git a/arch/arm/boot/dts/lan966x-pcb8290.dts b/arch/arm/boot/dts/lan966x-pcb8290.dts
-> new file mode 100644
-> index 000000000000..3d93049fdf57
-> --- /dev/null
-> +++ b/arch/arm/boot/dts/lan966x-pcb8290.dts
-> @@ -0,0 +1,171 @@
-> +// SPDX-License-Identifier: (GPL-2.0+ OR MIT)
-> +/*
-> + * lan966x_pcb8290.dts - Device Tree file for PCB8290
+> Does this not place an artificial restriction that a system can have
+> only 12 devices if we have unique device
 
-Copyright missing from this file. Can you apply the header model below?
+It does indeed, but it simplifies debug and it allows future hardware to
+be supported.
 
-// SPDX-License-Identifier: (GPL-2.0+ OR MIT)
-/*
-   * Brief description goes here.
-   *
-   * Copyright (C) 2022 Microchip Technology Inc. and its subsidiaries
-   *
-   * Author: John Doe <john.doe@microchip.com>
-   *
-   * Longer description goes here.
-   * Even on multiple lines.
-   */
+In practice, the most we've seen on Intel platforms is 4 devices at the
+system level. Even if the SoundWire spec does allow for 11 devices per
+link, it's way over-engineered due to capacitive load and signal
+integrity issues. We've seen an absolute maximum of 4 devices on a
+single link in test rigs, and that was never deployed. Two devices per
+link were also only used in prototypes which never hit the market.
 
-Maybe it's not align with other board files for lan966x, sorry if I 
-didn't mention this earlier then ;-)
+At any rate, this in an opt-in solution, not a requirement for non-Intel
+platforms at all. Others can keep using as many devices as they wish,
+within the bounds allowed by the standard.
 
-Regards,
-   Nicolas
+Note that the device_number creates a de-facto priority, and it would be
+perfectly acceptable for some platforms to tweak the current first-come
+first-serve allocation to improve interrupt response time on each link,
+etc. The standard says nothing about how the device numbers should be
+allocated, only that they be unique on each link. In other words, you
+should expect additional changes to the existing way of allocating
+device numbers.
 
-> + */
-> +/dts-v1/;
-> +#include "lan966x.dtsi"
-> +#include "dt-bindings/phy/phy-lan966x-serdes.h"
-> +
-> +/ {
-> +	model = "Microchip EVB LAN9668";
-> +	compatible = "microchip,lan9668-pcb8290", "microchip,lan9668", "microchip,lan966";
-> +
-> +	gpio-restart {
-> +		compatible = "gpio-restart";
-> +		gpios = <&gpio 56 GPIO_ACTIVE_LOW>;
-> +		priority = <200>;
-> +	};
-> +};
+> Perhaps a better way would be to use dus:dev combination while dealing
+> with a device always..??
 
-[..]
+That is not compatible with Intel hardware requirements. This wasn't a
+decision where Bard and I were consulted, it is what it is.
 
--- 
-Nicolas Ferre
+Does this clarify things?
+Thanks
+-Pierre
+
+
