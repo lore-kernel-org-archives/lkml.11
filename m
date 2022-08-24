@@ -2,177 +2,102 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 440D9C3F6B0
-	for <linux-kernel@archiver.kernel.org>; Wed, 24 Aug 2022 20:48:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 09367C3F6B0
+	for <linux-kernel@archiver.kernel.org>; Wed, 24 Aug 2022 20:50:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240220AbiHXUsr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 24 Aug 2022 16:48:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35370 "EHLO
+        id S239909AbiHXUun (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 24 Aug 2022 16:50:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37394 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240492AbiHXUsp (ORCPT
+        with ESMTP id S229713AbiHXUuj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 24 Aug 2022 16:48:45 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0160C786C9
-        for <linux-kernel@vger.kernel.org>; Wed, 24 Aug 2022 13:48:43 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1661374123;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=/rRnDONf/MIAcvQvaU+OL/iys5bxrMY05ODAN/aEOnI=;
-        b=aj/+ET2UnjpBLdj4Z8sxjtg36aqNF85XMtJ6JREFtjObE2EctYcMtdHYVXrsKzTP2orppa
-        pHIwK90PoLNe+1XTWX6XU5UcREmVmLv7BiZRQyXom6GqT1DO7NxRJDFvvHR7iAKArigtU8
-        MS5VMR6NRj21Dqp1Mt2986CqLAdUbPs=
-Received: from mail-qt1-f198.google.com (mail-qt1-f198.google.com
- [209.85.160.198]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
- us-mta-225-8-2xqIANN2eg0SV0V9-69A-1; Wed, 24 Aug 2022 16:48:42 -0400
-X-MC-Unique: 8-2xqIANN2eg0SV0V9-69A-1
-Received: by mail-qt1-f198.google.com with SMTP id s2-20020ac85cc2000000b00342f8ad1f40so13688017qta.12
-        for <linux-kernel@vger.kernel.org>; Wed, 24 Aug 2022 13:48:41 -0700 (PDT)
+        Wed, 24 Aug 2022 16:50:39 -0400
+Received: from mail-ot1-x336.google.com (mail-ot1-x336.google.com [IPv6:2607:f8b0:4864:20::336])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E4CD86DAC6
+        for <linux-kernel@vger.kernel.org>; Wed, 24 Aug 2022 13:50:38 -0700 (PDT)
+Received: by mail-ot1-x336.google.com with SMTP id l5-20020a05683004a500b0063707ff8244so12569734otd.12
+        for <linux-kernel@vger.kernel.org>; Wed, 24 Aug 2022 13:50:38 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc;
+        bh=KduZjIEyBxkzWgXFN93eLdrigURNo60WLuJ3gbVZ7XY=;
+        b=HzD4lZ/6vc6C1WbqLgNeBjsTawvUPrh+Xj9kvCaukUs4HQ4qPkl3iXv/4oz9z8HwXo
+         ECVxp5rH4cZomOeGqhdJQD8ko317eSJ1CyxlRlohPXJiVaA5x1hshUDuqSdO4cmtUGMW
+         CNqIz6REQRw99lwDp8gd7kPHARUS2DCtzdD4A=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc;
-        bh=/rRnDONf/MIAcvQvaU+OL/iys5bxrMY05ODAN/aEOnI=;
-        b=6ZPxaY323pxhgsHh/aAm2Cm98n6If6QleAE07CtZBNUtm7ako/6S451HTsGIRLIyAJ
-         Aa0leZ2FFm5bt/dU1Q4TFtnKujZOFCV8OHcjA9fEzhkkNnGGbHrv2VP+S21NmMPixXbH
-         qpVf6bTMlFg86B9v5/NzTjkabKDo921bKimPLuh8yN5GV0cW7EPYT8gDUpV2Ycph2CEd
-         9x28Yf2KZojF2vwdadDicosM5oaJAePaiFsRyFQdNr4f642OqX1Rp5PMFZ17e5pimS9s
-         BcvHnSntaBQg5ILqFxhrJy+MM2Tpm/qQCXWbMELsxoZMzE8nOq3+oMZWIISe9BO8lj6C
-         0SXA==
-X-Gm-Message-State: ACgBeo3CSvrxOExfkkEsnRDtmMiE7FfYlpCQTH/0zd++Lfp4qQg0wvrx
-        bJEQ2mtcKtUGtkglvzCwCwaWzqoPmlV/+gk9Io7/Q4q3QFnAzOIpJnC2rd8kDT+gnB7CYeKVKdj
-        LyXebf++lVMw/ytTIOGR4+WYd
-X-Received: by 2002:ad4:4eaf:0:b0:496:ac46:2d9c with SMTP id ed15-20020ad44eaf000000b00496ac462d9cmr868924qvb.82.1661374121416;
-        Wed, 24 Aug 2022 13:48:41 -0700 (PDT)
-X-Google-Smtp-Source: AA6agR4s25beJjrLygCxW4UWpRepdZLtdhOdc0j/yJivVpKekwHMGeWPIw0hJ6uQX5trRhdvaC3qCw==
-X-Received: by 2002:ad4:4eaf:0:b0:496:ac46:2d9c with SMTP id ed15-20020ad44eaf000000b00496ac462d9cmr868905qvb.82.1661374121119;
-        Wed, 24 Aug 2022 13:48:41 -0700 (PDT)
-Received: from xz-m1.local (bras-base-aurron9127w-grc-35-70-27-3-10.dsl.bell.ca. [70.27.3.10])
-        by smtp.gmail.com with ESMTPSA id g9-20020ac85809000000b00344576bcfefsm13976258qtg.70.2022.08.24.13.48.38
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 24 Aug 2022 13:48:40 -0700 (PDT)
-Date:   Wed, 24 Aug 2022 16:48:38 -0400
-From:   Peter Xu <peterx@redhat.com>
-To:     Alistair Popple <apopple@nvidia.com>
-Cc:     "Huang, Ying" <ying.huang@intel.com>,
-        Nadav Amit <nadav.amit@gmail.com>,
-        huang ying <huang.ying.caritas@gmail.com>,
-        Linux MM <linux-mm@kvack.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        "Sierra Guiza, Alejandro (Alex)" <alex.sierra@amd.com>,
-        Felix Kuehling <Felix.Kuehling@amd.com>,
-        Jason Gunthorpe <jgg@nvidia.com>,
-        John Hubbard <jhubbard@nvidia.com>,
-        David Hildenbrand <david@redhat.com>,
-        Ralph Campbell <rcampbell@nvidia.com>,
-        Matthew Wilcox <willy@infradead.org>,
-        Karol Herbst <kherbst@redhat.com>,
-        Lyude Paul <lyude@redhat.com>, Ben Skeggs <bskeggs@redhat.com>,
-        Logan Gunthorpe <logang@deltatee.com>, paulus@ozlabs.org,
-        linuxppc-dev@lists.ozlabs.org, stable@vger.kernel.org
-Subject: Re: [PATCH v2 1/2] mm/migrate_device.c: Copy pte dirty bit to page
-Message-ID: <YwaOpj54/qUb5fXa@xz-m1.local>
-References: <YvxWUY9eafFJ27ef@xz-m1.local>
- <87o7wjtn2g.fsf@nvdebian.thelocal>
- <87tu6bbaq7.fsf@yhuang6-desk2.ccr.corp.intel.com>
- <1D2FB37E-831B-445E-ADDC-C1D3FF0425C1@gmail.com>
- <Yv1BJKb5he3dOHdC@xz-m1.local>
- <87czcyawl6.fsf@yhuang6-desk2.ccr.corp.intel.com>
- <Yv5QXkS4Bm9pTBeG@xz-m1.local>
- <874jy9aqts.fsf@yhuang6-desk2.ccr.corp.intel.com>
- <87czcqiecd.fsf@nvdebian.thelocal>
- <YwaJSBnp2eyMlkjw@xz-m1.local>
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc;
+        bh=KduZjIEyBxkzWgXFN93eLdrigURNo60WLuJ3gbVZ7XY=;
+        b=MHKv6s7EDaLpRxRF5sWHlAy+mWzCEK5lMfB+6O2ytb/S6181jyLJOcKXhniqu5/nu3
+         C3lW5jIOAPne+O3zdkT28CXa1lVtfJapGU+7n4UQKFOaIuRNz8sZBbPjv2TfHWd9r546
+         gUMwaLAyRMOVgDVl58XT5RxiU9mAfmk6Y4aGBaEvk7Er+7hzO44w9PFE+6jckIIp2D6H
+         H1wyAWQxwsXdhB2lLMYIgqE5p22yDRrSRK6I2v3SangMiU4yboaqVYb2jqcpn/OIndns
+         XzElKSQ3K20KnBN2kQjzqM0LjN7ggFQdW2p2z8VXYDt8bMWKmkbic0r+JZLbF4KL5A60
+         0syA==
+X-Gm-Message-State: ACgBeo2wUfN/v/XkGrlrZVJlG+v7t2wl3S+Y1OtGKEgIh6KTWjuYhqQE
+        X+h/E8sGEl/P0MBBm2yVD1bz0XWA07ZruA==
+X-Google-Smtp-Source: AA6agR4vspImuPIuslf7CkIX4jcmKqTPwy04foecuJWtpJVBDH3m127MNH+jd0Ef+JUQ+aVJl3sSqw==
+X-Received: by 2002:a05:6830:18fa:b0:638:d46c:1374 with SMTP id d26-20020a05683018fa00b00638d46c1374mr229360otf.142.1661374237882;
+        Wed, 24 Aug 2022 13:50:37 -0700 (PDT)
+Received: from mail-oi1-f182.google.com (mail-oi1-f182.google.com. [209.85.167.182])
+        by smtp.gmail.com with ESMTPSA id z24-20020a4a8e58000000b004357ccfc8bfsm4096768ook.7.2022.08.24.13.50.37
+        for <linux-kernel@vger.kernel.org>
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 24 Aug 2022 13:50:37 -0700 (PDT)
+Received: by mail-oi1-f182.google.com with SMTP id a133so12993359oif.4
+        for <linux-kernel@vger.kernel.org>; Wed, 24 Aug 2022 13:50:37 -0700 (PDT)
+X-Received: by 2002:a05:6808:23c4:b0:344:e426:d2a7 with SMTP id
+ bq4-20020a05680823c400b00344e426d2a7mr4087711oib.232.1661373740120; Wed, 24
+ Aug 2022 13:42:20 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <YwaJSBnp2eyMlkjw@xz-m1.local>
+References: <cover.1661252818.git.duoming@zju.edu.cn>
+In-Reply-To: <cover.1661252818.git.duoming@zju.edu.cn>
+From:   Brian Norris <briannorris@chromium.org>
+Date:   Wed, 24 Aug 2022 13:42:09 -0700
+X-Gmail-Original-Message-ID: <CA+ASDXNf5JV9mj8mbm1OGZ_zd4d8srFc=E++Amg4MoQjqjS_TA@mail.gmail.com>
+Message-ID: <CA+ASDXNf5JV9mj8mbm1OGZ_zd4d8srFc=E++Amg4MoQjqjS_TA@mail.gmail.com>
+Subject: Re: [PATCH v8 0/2] Add new APIs of devcoredump and fix bugs
+To:     Duoming Zhou <duoming@zju.edu.cn>
+Cc:     Linux Kernel <linux-kernel@vger.kernel.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Johannes Berg <johannes@sipsolutions.net>,
+        "Rafael J. Wysocki" <rafael@kernel.org>,
+        amit karwar <amitkarwar@gmail.com>,
+        Ganapathi Bhat <ganapathi017@gmail.com>,
+        Sharvari Harisangam <sharvari.harisangam@nxp.com>,
+        Xinming Hu <huxinming820@gmail.com>, kvalo@kernel.org,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        linux-wireless <linux-wireless@vger.kernel.org>,
+        "<netdev@vger.kernel.org>" <netdev@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Aug 24, 2022 at 04:25:44PM -0400, Peter Xu wrote:
-> On Wed, Aug 24, 2022 at 11:56:25AM +1000, Alistair Popple wrote:
-> > >> Still I don't know whether there'll be any side effect of having stall tlbs
-> > >> in !present ptes because I'm not familiar enough with the private dev swap
-> > >> migration code.  But I think having them will be safe, even if redundant.
-> > 
-> > What side-effect were you thinking of? I don't see any issue with not
-> > TLB flushing stale device-private TLBs prior to the migration because
-> > they're not accessible anyway and shouldn't be in any TLB.
-> 
-> Sorry to be misleading, I never meant we must add them.  As I said it's
-> just that I don't know the code well so I don't know whether it's safe to
-> not have it.
-> 
-> IIUC it's about whether having stall system-ram stall tlb in other
-> processor would matter or not here.  E.g. some none pte that this code
-> collected (boosted both "cpages" and "npages" for a none pte) could have
-> stall tlb in other cores that makes the page writable there.
+On Tue, Aug 23, 2022 at 4:21 AM Duoming Zhou <duoming@zju.edu.cn> wrote:
+>
+> The first patch adds new APIs to support migration of users
+> from old device coredump related APIs.
+>
+> The second patch fix sleep in atomic context bugs of mwifiex
+> caused by dev_coredumpv().
+>
+> Duoming Zhou (2):
+>   devcoredump: add new APIs to support migration of users from old
+>     device coredump related APIs
+>   mwifiex: fix sleep in atomic context bugs caused by dev_coredumpv
 
-For this one, let me give a more detailed example.
+I would have expected a third patch in here, that actually converts
+existing users. Then in the following release cycle, clean up any new
+users of the old API that pop up in the meantime and drop the old API.
 
-It's about whether below could happen:
+But I'll defer to the people who would actually be merging your code.
+Technically it could also work to simply provide the API this cycle,
+and convert everyone in the next.
 
-       thread 1                thread 2                 thread 3
-       --------                --------                 --------
-                          write to page P (data=P1)
-                            (cached TLB writable)
-  zap_pte_range()
-    pgtable lock
-    clear pte for page P
-    pgtable unlock
-    ...
-                                                     migrate_vma_collect
-                                                       pte none, npages++, cpages++
-                                                       allocate device page
-                                                       copy data (with P1)
-                                                       map pte as device swap 
-                          write to page P again
-                          (data updated from P1->P2)
-  flush tlb
-
-Then at last from processor side P should have data P2 but actually from
-device memory it's P1. Data corrupt.
-
-> 
-> When I said I'm not familiar with the code, it's majorly about one thing I
-> never figured out myself, in that migrate_vma_collect_pmd() has this
-> optimization to trylock on the page, collect if it succeeded:
-> 
->   /*
->    * Optimize for the common case where page is only mapped once
->    * in one process. If we can lock the page, then we can safely
->    * set up a special migration page table entry now.
->    */
->    if (trylock_page(page)) {
->           ...
->    } else {
->           put_page(page);
->           mpfn = 0;
->    }
-> 
-> But it's kind of against a pure "optimization" in that if trylock failed,
-> we'll clear the mpfn so the src[i] will be zero at last.  Then will we
-> directly give up on this page, or will we try to lock_page() again
-> somewhere?
-> 
-> The future unmap op is also based on this "cpages", not "npages":
-> 
-> 	if (args->cpages)
-> 		migrate_vma_unmap(args);
-> 
-> So I never figured out how this code really works.  It'll be great if you
-> could shed some light to it.
-> 
-> Thanks,
-> 
-> -- 
-> Peter Xu
-
--- 
-Peter Xu
-
+Brian
