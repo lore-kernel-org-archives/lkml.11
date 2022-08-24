@@ -2,89 +2,89 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 11166C00140
-	for <linux-kernel@archiver.kernel.org>; Wed, 24 Aug 2022 17:10:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F37E3C00140
+	for <linux-kernel@archiver.kernel.org>; Wed, 24 Aug 2022 17:10:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239884AbiHXRKR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 24 Aug 2022 13:10:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41372 "EHLO
+        id S239897AbiHXRKg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 24 Aug 2022 13:10:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41734 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238311AbiHXRKM (ORCPT
+        with ESMTP id S238177AbiHXRKV (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 24 Aug 2022 13:10:12 -0400
-Received: from smtp-relay-canonical-0.canonical.com (smtp-relay-canonical-0.canonical.com [185.125.188.120])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C9D49481FD;
-        Wed, 24 Aug 2022 10:10:10 -0700 (PDT)
-Received: from [10.0.0.100] (cpe5896308f56e8-cm5896308f56e6.cpe.net.cable.rogers.com [99.255.30.7])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        Wed, 24 Aug 2022 13:10:21 -0400
+Received: from mail.skyhub.de (mail.skyhub.de [5.9.137.197])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 399A76EF02
+        for <linux-kernel@vger.kernel.org>; Wed, 24 Aug 2022 10:10:19 -0700 (PDT)
+Received: from zn.tnic (p200300ea971b9859329c23fffea6a903.dip0.t-ipconnect.de [IPv6:2003:ea:971b:9859:329c:23ff:fea6:a903])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by smtp-relay-canonical-0.canonical.com (Postfix) with ESMTPSA id 3B56D3F04B;
-        Wed, 24 Aug 2022 17:10:07 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
-        s=20210705; t=1661361008;
-        bh=tUvu8igyJ8SieKzyGBjoH9CdpCFj5M06wi08ejJhQtk=;
-        h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-         In-Reply-To:Content-Type;
-        b=Xts7TuuryXoFLDS4GpHrw+LeRz7edXUpX+4dYUmPobUcQ+KJnICV0WlWUTmfjg9Pd
-         MPi0RNfOYAe9QXzE7eWT8pWjLNW2JuMRFcTTbmUt02DzbBGfl8KRVjxVP8ObSYvfNx
-         gsoBsXaGvoQF/Yk9yMYP4e2PZIrBd2ZCzR/PygfjgVWI5+zs8z7KEwhsCXD3h/zyFl
-         pvEdmX3t7jtBKYPGreXYoYX4bOwL12J/44sU7tv5ToeYLWw3DbuTRv6NC0aYrcOnT6
-         ppDSZuE6169ipImQTGbppm1g6TVf+1boo+4Wp5sUPK/kgO/AEqTQG3q+Yhlu2WfHp/
-         CiZVqqkCaUTiw==
-Message-ID: <90e259e4-6877-ee1e-ed6e-aa972f305126@canonical.com>
-Date:   Wed, 24 Aug 2022 10:10:05 -0700
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.11.0
-Subject: Re: [PATCH] apparmor: fix a memleak in multi_transaction_new()
-Content-Language: en-US
-To:     Gaosheng Cui <cuigaosheng1@huawei.com>, paul@paul-moore.com,
-        jmorris@namei.org, serge@hallyn.com
-Cc:     apparmor@lists.ubuntu.com, linux-security-module@vger.kernel.org,
+        by mail.skyhub.de (SuperMail on ZX Spectrum 128k) with ESMTPSA id 713C21EC0589;
+        Wed, 24 Aug 2022 19:10:14 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=alien8.de; s=dkim;
+        t=1661361014;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:in-reply-to:in-reply-to:  references:references;
+        bh=uGkGQRvpWdC5b+qAsVTNWX4lG8tnFLromneBNpYOMJ4=;
+        b=qWNv6vnKZ0BLkAcUWnMCnUvorYsKGcpsuMn8NZwvulUrKCBM06PbQgYUlPxBjEEBtQeJxT
+        XjizTj8L+ZRsZTvQPOlIPtexL/UUjNk7ZBZxBBQalr8waU9QsrQ0syyDbDTXl16GkVo8gK
+        63m8nsy6haLaYKKeT+sfpOL2O1fk5Qs=
+Date:   Wed, 24 Aug 2022 19:10:10 +0200
+From:   Borislav Petkov <bp@alien8.de>
+To:     Kuppuswamy Sathyanarayanan 
+        <sathyanarayanan.kuppuswamy@linux.intel.com>
+Cc:     Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>,
+        Dave Hansen <dave.hansen@linux.intel.com>, x86@kernel.org,
+        "H . Peter Anvin" <hpa@zytor.com>,
+        "Kirill A . Shutemov" <kirill.shutemov@linux.intel.com>,
+        Tony Luck <tony.luck@intel.com>,
+        Andi Kleen <ak@linux.intel.com>,
+        Kai Huang <kai.huang@intel.com>,
+        Wander Lairson Costa <wander@redhat.com>,
+        Isaku Yamahata <isaku.yamahata@gmail.com>,
+        marcelo.cerri@canonical.com, tim.gardner@canonical.com,
+        khalid.elmously@canonical.com, philip.cox@canonical.com,
         linux-kernel@vger.kernel.org
-References: <20220823011503.2757088-1-cuigaosheng1@huawei.com>
-From:   John Johansen <john.johansen@canonical.com>
-Organization: Canonical
-In-Reply-To: <20220823011503.2757088-1-cuigaosheng1@huawei.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Subject: Re: [PATCH v10 1/2] x86/tdx: Add TDX Guest attestation interface
+ driver
+Message-ID: <YwZbcpvmJt50YDa/@zn.tnic>
+References: <20220804003323.1441376-1-sathyanarayanan.kuppuswamy@linux.intel.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <20220804003323.1441376-1-sathyanarayanan.kuppuswamy@linux.intel.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 8/22/22 18:15, Gaosheng Cui wrote:
-> In multi_transaction_new(), the variable t is not freed or passed out
-> on the failure of copy_from_user(t->data, buf, size), which could lead
-> to a memleak.
-> 
-> Fix this bug by adding a put_multi_transaction(t) in the error path.
-> 
-> Fixes: 1dea3b41e84c5 ("apparmor: speed up transactional queries")
-> Signed-off-by: Gaosheng Cui <cuigaosheng1@huawei.com>
+On Wed, Aug 03, 2022 at 05:33:22PM -0700, Kuppuswamy Sathyanarayanan wrote:
+> In TDX guest, attestation is used to verify the trustworthiness of a TD
+> to other entities before provisioning secrets to the TD. Such attestation
+> process is required by 3rd party servers before sending sensitive
+> information to TD guests. One usage example is to get encryption keys
+> from the key server for mounting the encrypted rootfs or secondary drive.
 
-yep, thanks. I will pull this into apparmor-next
+Just a reminder to fix this up wrt TDX and TD. I know Intel
+documentation wants to talk about trust domains and the guest being one
+but then if you wanna formulate it that way, you need to define the
+nomenclature you're using and then stick with it.
 
-Acked-by: John Johansen <john.johansen@canonical.com>
+Otherwise, confusion.
 
-> ---
->   security/apparmor/apparmorfs.c | 4 +++-
->   1 file changed, 3 insertions(+), 1 deletion(-)
-> 
-> diff --git a/security/apparmor/apparmorfs.c b/security/apparmor/apparmorfs.c
-> index d066ccc219e2..7160e7aa58b9 100644
-> --- a/security/apparmor/apparmorfs.c
-> +++ b/security/apparmor/apparmorfs.c
-> @@ -868,8 +868,10 @@ static struct multi_transaction *multi_transaction_new(struct file *file,
->   	if (!t)
->   		return ERR_PTR(-ENOMEM);
->   	kref_init(&t->count);
-> -	if (copy_from_user(t->data, buf, size))
-> +	if (copy_from_user(t->data, buf, size)) {
-> +		put_multi_transaction(t);
->   		return ERR_PTR(-EFAULT);
-> +	}
->   
->   	return t;
->   }
+Example: "In TDX guest, ... Such attestation... before sending
+information to TD guests."
 
+And here I go: What, there's a TDX guest and TD guest?
+
+Just simplify it.
+
+I'll review our v11 properly after you've addressed comments from v9 too.
+
+Thx.
+
+-- 
+Regards/Gruss,
+    Boris.
+
+https://people.kernel.org/tglx/notes-about-netiquette
