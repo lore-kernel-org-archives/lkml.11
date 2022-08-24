@@ -2,74 +2,94 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D635FC00140
-	for <linux-kernel@archiver.kernel.org>; Wed, 24 Aug 2022 07:27:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 52E17C32793
+	for <linux-kernel@archiver.kernel.org>; Wed, 24 Aug 2022 07:28:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235505AbiHXH1v (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 24 Aug 2022 03:27:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42444 "EHLO
+        id S234421AbiHXH2n (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 24 Aug 2022 03:28:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44954 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235506AbiHXH1f (ORCPT
+        with ESMTP id S229445AbiHXH2j (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 24 Aug 2022 03:27:35 -0400
-Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1CF4669F4D
-        for <linux-kernel@vger.kernel.org>; Wed, 24 Aug 2022 00:27:31 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=casper.20170209; h=In-Reply-To:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description;
-        bh=dLscxFkI37Iy2zsCWkiigExtiRT/8vYmPbsCuER+yws=; b=lWJi5kISStz8pom5XpN7Y99kQf
-        xjZ3BIuJNHYDwQhNzT7Nzg5/J9ee1QK6lvhOurYFr0AY2HErOL/4ZfFint4K2zxGhWpw8SttXbzN3
-        G3Rr9a1hwkk7yzEzheuczdn4vtdlfvXGkLzFk4ftrPqSF0Uhk3R8qn/oXoTFCVwmHztOHLJsVxOh7
-        iDQb0dORUKJ4orGHAatefZRrP6TSh7wUNZDZrYol1lERAZnMmAMHbq1j76NYQOAC+vViNiI8kYieg
-        Wna7g1YDY6VA3w/tTbUodJwF6iPzfBwtvdcc+mW50GTawuAd2XysdcbR1cs3yVYQPmHOpFb5VSSJM
-        pcmq8GIA==;
-Received: from j130084.upc-j.chello.nl ([24.132.130.84] helo=worktop.programming.kicks-ass.net)
-        by casper.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1oQkn4-00G6xD-KH; Wed, 24 Aug 2022 07:27:06 +0000
-Received: by worktop.programming.kicks-ass.net (Postfix, from userid 1000)
-        id 1F822980403; Wed, 24 Aug 2022 09:27:05 +0200 (CEST)
-Date:   Wed, 24 Aug 2022 09:27:05 +0200
-From:   Peter Zijlstra <peterz@infradead.org>
-To:     Ravi Bangoria <ravi.bangoria@amd.com>
-Cc:     acme@kernel.org, alexander.shishkin@linux.intel.com,
-        jolsa@redhat.com, namhyung@kernel.org, songliubraving@fb.com,
-        eranian@google.com, alexey.budankov@linux.intel.com,
-        ak@linux.intel.com, mark.rutland@arm.com, megha.dey@intel.com,
-        frederic@kernel.org, maddy@linux.ibm.com, irogers@google.com,
-        kim.phillips@amd.com, linux-kernel@vger.kernel.org,
-        santosh.shukla@amd.com
-Subject: Re: [RFC v2] perf: Rewrite core context handling
-Message-ID: <YwXSyWE9BqTwi5aL@worktop.programming.kicks-ass.net>
-References: <20220113134743.1292-1-ravi.bangoria@amd.com>
- <YqdLH+ZU/sf4n0pa@hirez.programming.kicks-ass.net>
- <YqdNKJllCVMci3ov@hirez.programming.kicks-ass.net>
- <aab04cfb-2dd5-89dc-213d-7fa253615864@amd.com>
- <YwSWhXW+BUA3WkIE@worktop.programming.kicks-ass.net>
- <cf2cdf28-8678-8e61-9992-a460e61d3ce2@amd.com>
+        Wed, 24 Aug 2022 03:28:39 -0400
+Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E5E61696DC
+        for <linux-kernel@vger.kernel.org>; Wed, 24 Aug 2022 00:28:38 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1661326118; x=1692862118;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=OGi5JWvzYcs82fmCKOdgk6Fa2nawMjW0N8IfD+y6akE=;
+  b=V/Et44QGUwSaHJpScVvaJLQrtch3oyywuhtmznp/Zr5fv7dtro8k0W44
+   LDcJP8UVNjDRxwdgwgEY0GjokdMbXAM9dNSbHJ11Ud3j0Jb+QmJqPDIPc
+   TgPFEXfb6QxX2v2d2ijCLWUwLcUftG8chDkx/BtHLTVZ8M6rfnyA2mzFJ
+   p0IvVGdxSMEXs9YdfjahsGH20mR9466/bqF+opWo1QmFJ+7mUjIiFOCl0
+   X2c0DyGTNCqwKDD+ce+WftU48UxuQWu1BpuNK7RmzhnXJE6+hsVJLv73y
+   DqTteDK0GW8G2nPStH2XVZhQnWEmnp5hOw/ZSC6v/M4xuj/8/C0uQMzEY
+   A==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10448"; a="295173936"
+X-IronPort-AV: E=Sophos;i="5.93,260,1654585200"; 
+   d="scan'208";a="295173936"
+Received: from orsmga007.jf.intel.com ([10.7.209.58])
+  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Aug 2022 00:28:38 -0700
+X-IronPort-AV: E=Sophos;i="5.93,260,1654585200"; 
+   d="scan'208";a="605939127"
+Received: from ahunter6-mobl1.ger.corp.intel.com (HELO ahunter-VirtualBox.home\044ger.corp.intel.com) ([10.252.51.108])
+  by orsmga007-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Aug 2022 00:28:36 -0700
+From:   Adrian Hunter <adrian.hunter@intel.com>
+To:     Arnaldo Carvalho de Melo <acme@kernel.org>
+Cc:     Jiri Olsa <jolsa@redhat.com>, Namhyung Kim <namhyung@kernel.org>,
+        Ian Rogers <irogers@google.com>,
+        Andi Kleen <ak@linux.intel.com>,
+        Alexey Bayduraev <alexey.v.bayduraev@linux.intel.com>,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH 0/5] perf record: Allow multiple recording time ranges
+Date:   Wed, 24 Aug 2022 10:28:09 +0300
+Message-Id: <20220824072814.16422-1-adrian.hunter@intel.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <cf2cdf28-8678-8e61-9992-a460e61d3ce2@amd.com>
+Organization: Intel Finland Oy, Registered Address: PL 281, 00181 Helsinki, Business Identity Code: 0357606 - 4, Domiciled in Helsinki
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Aug 24, 2022 at 10:37:36AM +0530, Ravi Bangoria wrote:
+Hi
 
-> > Now, I suppose making that:
-> > 
-> >   {-1, NULL, NULL}, {cpu, NULL, NULL}
-> > 
-> > could work, but wouldn't iterating the the tree be more expensive than
-> > just finding the sub-trees as we do now?
-> 
-> pmu=NULL can be used while scheduling entire context. We can just traverse
-> through all pmu events of both cpu subtrees.
+This patch set extends perf record -D/--delay option to accept time ranges
+for when events are enabled, for instance:
 
-But imagine the case where we have 50 event for a PMU that can only
-schedule 8. Then we have to iterate 42 events for naught instead of
-directly jumping to the next PMU.
+    perf record -e intel_pt// -D 10-20,30-40
+
+to record 10ms to 20ms into the trace and 30ms to 40ms.  Refer patch 5 for
+more details.
+
+This ran into an issue with the handling of polling file descriptors.
+Essentially, calling perf_evlist__add_pollfd() would not actually result
+in the file descriptor being polled.  Patches 1, 2 and 3 deal with that.
+
+Patch 4 deals with the issue that when disabling events, we actually do not
+want to disable events collecting sideband information.
+
+Patch 5, the last patch, actually makes the desired enhancement to
+perf record.
 
 
+Adrian Hunter (5):
+      perf record: Fix way of handling non-perf-event pollfds
+      perf record: Fix done_fd wakeup event
+      perf record: Change evlist->ctl_fd to use fdarray_flag__non_perf_event
+      perf evlist: Add evlist__{en/dis}able_non_dummy()
+      perf record: Allow multiple recording time ranges
+
+ tools/lib/api/fd/array.h                 |   5 +-
+ tools/perf/Documentation/perf-record.txt |   6 +-
+ tools/perf/builtin-record.c              | 117 ++++++++++++--
+ tools/perf/util/evlist.c                 | 270 +++++++++++++++++++++++++++++--
+ tools/perf/util/evlist.h                 |  12 +-
+ 5 files changed, 374 insertions(+), 36 deletions(-)
+
+
+Regards
+Adrian
