@@ -2,149 +2,79 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E9E6AC004D4
-	for <linux-kernel@archiver.kernel.org>; Wed, 24 Aug 2022 19:46:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4DD9BC3F6B0
+	for <linux-kernel@archiver.kernel.org>; Wed, 24 Aug 2022 19:47:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237856AbiHXTqH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 24 Aug 2022 15:46:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42756 "EHLO
+        id S239985AbiHXTrz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 24 Aug 2022 15:47:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43686 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229664AbiHXTqF (ORCPT
+        with ESMTP id S234610AbiHXTrx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 24 Aug 2022 15:46:05 -0400
-Received: from mx0b-001b2d01.pphosted.com (mx0b-001b2d01.pphosted.com [148.163.158.5])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 40D6379A6E;
-        Wed, 24 Aug 2022 12:46:03 -0700 (PDT)
-Received: from pps.filterd (m0098417.ppops.net [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 27OJPM1n007073;
-        Wed, 24 Aug 2022 19:45:55 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : date :
- subject : to : cc : references : from : in-reply-to : content-type :
- content-transfer-encoding : mime-version; s=pp1;
- bh=ncbFd3RKOyk3UBhCn1Wb6P/0yuzM8GZ5YQYqxjnzXfw=;
- b=SziQgu3BHzOq4IV5KalKdIbLWPwFp6pahley1QZf+lApCWrXvA4eTx5lJQEEt7GtTrUo
- Mx0Kt5YXwzQu9SwDwOnPSrWcshyNg4XL0s+XDtUCRpruLmUJzmsOlRBBKVH3tL5iUpPH
- 2tK4gwxxMMDWWl+2MygM/NCqMMqJyJn1Ez/D48rw55fXkNRWdd6dpWEQwkmJNWJ1iuoz
- ZYy1IGBdopofl/OVvgUwd/FAC6MYUFIAbvYmSNA4U7tziSepWVpnGMvlqQMrj12prvST
- S4gIcanE4VthxAAVwrm2ekjvGL4BPIz22WysksnKDIPIgOhj2V6mPTIABO2ClF0Fs+eM KA== 
-Received: from pps.reinject (localhost [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3j5t4qgpaw-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Wed, 24 Aug 2022 19:45:54 +0000
-Received: from m0098417.ppops.net (m0098417.ppops.net [127.0.0.1])
-        by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 27OJQiCF010408;
-        Wed, 24 Aug 2022 19:45:53 GMT
-Received: from ppma04dal.us.ibm.com (7a.29.35a9.ip4.static.sl-reverse.com [169.53.41.122])
-        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3j5t4qgpa0-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Wed, 24 Aug 2022 19:45:53 +0000
-Received: from pps.filterd (ppma04dal.us.ibm.com [127.0.0.1])
-        by ppma04dal.us.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 27OJZ44u019983;
-        Wed, 24 Aug 2022 19:45:52 GMT
-Received: from b03cxnp08025.gho.boulder.ibm.com (b03cxnp08025.gho.boulder.ibm.com [9.17.130.17])
-        by ppma04dal.us.ibm.com with ESMTP id 3j2q8a9yjn-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Wed, 24 Aug 2022 19:45:52 +0000
-Received: from b03ledav005.gho.boulder.ibm.com (b03ledav005.gho.boulder.ibm.com [9.17.130.236])
-        by b03cxnp08025.gho.boulder.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 27OJjpEI5440224
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Wed, 24 Aug 2022 19:45:51 GMT
-Received: from b03ledav005.gho.boulder.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 2D3DABE056;
-        Wed, 24 Aug 2022 19:46:35 +0000 (GMT)
-Received: from b03ledav005.gho.boulder.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 7CA48BE053;
-        Wed, 24 Aug 2022 19:46:34 +0000 (GMT)
-Received: from [9.47.158.152] (unknown [9.47.158.152])
-        by b03ledav005.gho.boulder.ibm.com (Postfix) with ESMTP;
-        Wed, 24 Aug 2022 19:46:34 +0000 (GMT)
-Message-ID: <1d0557ec-82a4-564f-fb6e-219966b2c600@linux.ibm.com>
-Date:   Wed, 24 Aug 2022 15:45:50 -0400
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.12.0
-Subject: Re: [RESEND PATCH] KEYS: asymmetric: Fix ECDSA use via keyctl uapi
-Content-Language: en-US
-To:     Denis Kenzior <denkenz@gmail.com>,
-        David Howells <dhowells@redhat.com>,
-        Jarkko Sakkinen <jarkko@kernel.org>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
-        "David S. Miller" <davem@davemloft.net>
-Cc:     keyrings@vger.kernel.org, linux-crypto@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-References: <20220824190409.4286-1-denkenz@gmail.com>
-From:   Stefan Berger <stefanb@linux.ibm.com>
-In-Reply-To: <20220824190409.4286-1-denkenz@gmail.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-X-TM-AS-GCONF: 00
-X-Proofpoint-GUID: WOtspsK91uZIN07azF1R84a7Qb8_hmsb
-X-Proofpoint-ORIG-GUID: ThmQ7FUkRWPYNM_6YVqF2dCLSV_f_77p
-Content-Transfer-Encoding: 7bit
-X-Proofpoint-UnRewURL: 0 URL was un-rewritten
+        Wed, 24 Aug 2022 15:47:53 -0400
+Received: from vps0.lunn.ch (vps0.lunn.ch [185.16.172.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 77B2179ED1;
+        Wed, 24 Aug 2022 12:47:52 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
+        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
+        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
+        bh=cliv8fOIUE97X2LZJl8OSkONVdBjqeQgsQroJzWn400=; b=wN3w5NUgq41D/YUu/EkW7FPwjJ
+        woYC+U1ES1nXR04yaNs/qiws1a53aHRx2t4frvxmzV1hxQqjEeMwwh3dBvOQebSFyv/XZPHYROABs
+        Jy3wKUIBoMNyZAX0lxBzbRwgqsEopF4qo6+lF2id3YzFRnsSu52N6ijCso9H8hEjpAW4=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1oQwLs-00ETnd-95; Wed, 24 Aug 2022 21:47:48 +0200
+Date:   Wed, 24 Aug 2022 21:47:48 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Horatiu Vultur <horatiu.vultur@microchip.com>
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        hkallweit1@gmail.com, linux@armlinux.org.uk, davem@davemloft.net,
+        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
+        michael@walle.cc, UNGLinuxDriver@microchip.com,
+        maxime.chevallier@bootlin.com
+Subject: Re: [PATCH net] net: phy: micrel: Make the GPIO to be non-exclusive
+Message-ID: <YwaAZAXcXhGmu7r9@lunn.ch>
+References: <20220824192827.437095-1-horatiu.vultur@microchip.com>
 MIME-Version: 1.0
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.895,Hydra:6.0.517,FMLib:17.11.122.1
- definitions=2022-08-24_11,2022-08-22_02,2022-06-22_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 clxscore=1011 mlxscore=0
- suspectscore=0 impostorscore=0 malwarescore=0 bulkscore=0 phishscore=0
- priorityscore=1501 mlxlogscore=999 adultscore=0 lowpriorityscore=0
- spamscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2207270000 definitions=main-2208240071
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220824192827.437095-1-horatiu.vultur@microchip.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-
-
-On 8/24/22 15:04, Denis Kenzior wrote:
-> When support for ECDSA keys was added, constraints for data & signature
-> sizes were never updated.  This makes it impossible to use such keys via
-> keyctl API from userspace; fix that.
+On Wed, Aug 24, 2022 at 09:28:27PM +0200, Horatiu Vultur wrote:
+> The same GPIO line can be shared by multiple phys for the coma mode pin.
+> If that is the case then, all the other phys that share the same line
+> will failed to be probed because the access to the gpio line is not
+> non-exclusive.
+> Fix this by making access to the gpio line to be nonexclusive using flag
+> GPIOD_FLAGS_BIT_NONEXCLUSIVE. This allows all the other PHYs to be
+> probed.
 > 
-> Fixes: 299f561a6693 ("x509: Add support for parsing x509 certs with ECDSA keys")
-> Signed-off-by: Denis Kenzior <denkenz@gmail.com>
-
-Same comment again as here: 
-https://lore.kernel.org/all/4b82b766-4482-762f-f366-cf5a47321ef7@linux.ibm.com/#t
-
-Reviewed-by: Stefan Berger <stefanb@linux.ibm.com>
-
-
+> Fixes: 738871b09250ee ("net: phy: micrel: add coma mode GPIO")
+> Signed-off-by: Horatiu Vultur <horatiu.vultur@microchip.com>
 > ---
->   crypto/asymmetric_keys/public_key.c | 24 ++++++++++++++++++++++--
->   1 file changed, 22 insertions(+), 2 deletions(-)
+>  drivers/net/phy/micrel.c | 3 ++-
+>  1 file changed, 2 insertions(+), 1 deletion(-)
 > 
-> diff --git a/crypto/asymmetric_keys/public_key.c b/crypto/asymmetric_keys/public_key.c
-> index 2f8352e88860..eca5671ad3f2 100644
-> --- a/crypto/asymmetric_keys/public_key.c
-> +++ b/crypto/asymmetric_keys/public_key.c
-> @@ -186,8 +186,28 @@ static int software_key_query(const struct kernel_pkey_params *params,
->   
->   	len = crypto_akcipher_maxsize(tfm);
->   	info->key_size = len * 8;
-> -	info->max_data_size = len;
-> -	info->max_sig_size = len;
-> +
-> +	if (strncmp(pkey->pkey_algo, "ecdsa", 5) == 0) {
-> +		/*
-> +		 * ECDSA key sizes are much smaller than RSA, and thus could
-> +		 * operate on (hashed) inputs that are larger than key size.
-> +		 * For example SHA384-hashed input used with secp256r1
-> +		 * based keys.  Set max_data_size to be at least as large as
-> +		 * the largest supported hash size (SHA512)
-> +		 */
-> +		info->max_data_size = 64;
-> +
-> +		/*
-> +		 * Verify takes ECDSA-Sig (described in RFC 5480) as input,
-> +		 * which is actually 2 'key_size'-bit integers encoded in
-> +		 * ASN.1.  Account for the ASN.1 encoding overhead here.
-> +		 */
-> +		info->max_sig_size = 2 * (len + 3) + 2;
-> +	} else {
-> +		info->max_data_size = len;
-> +		info->max_sig_size = len;
-> +	}
-> +
->   	info->max_enc_size = len;
->   	info->max_dec_size = len;
->   	info->supported_ops = (KEYCTL_SUPPORTS_ENCRYPT |
+> diff --git a/drivers/net/phy/micrel.c b/drivers/net/phy/micrel.c
+> index e78d0bf69bc3..ea72ff64ad33 100644
+> --- a/drivers/net/phy/micrel.c
+> +++ b/drivers/net/phy/micrel.c
+> @@ -2878,7 +2878,8 @@ static int lan8814_release_coma_mode(struct phy_device *phydev)
+>  	struct gpio_desc *gpiod;
+>  
+>  	gpiod = devm_gpiod_get_optional(&phydev->mdio.dev, "coma-mode",
+> -					GPIOD_OUT_HIGH_OPEN_DRAIN);
+> +					GPIOD_OUT_HIGH_OPEN_DRAIN |
+> +					GPIOD_FLAGS_BIT_NONEXCLUSIVE);
+
+I would suggest putting a comment here. You are assuming the driver
+never gains a lan8814_take_coma_mode() when the PHY is put into
+suspend, since it sounds like that will put all PHYs on the shared
+GPIO into coma mode.
+
+     Andrew
