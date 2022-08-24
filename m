@@ -2,341 +2,169 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5B64CC00140
-	for <linux-kernel@archiver.kernel.org>; Wed, 24 Aug 2022 16:30:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 49755C00140
+	for <linux-kernel@archiver.kernel.org>; Wed, 24 Aug 2022 16:31:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239254AbiHXQaU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 24 Aug 2022 12:30:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53074 "EHLO
+        id S239642AbiHXQb2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 24 Aug 2022 12:31:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53832 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234115AbiHXQaR (ORCPT
+        with ESMTP id S239934AbiHXQbQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 24 Aug 2022 12:30:17 -0400
-Received: from mail-pj1-f52.google.com (mail-pj1-f52.google.com [209.85.216.52])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C228582879;
-        Wed, 24 Aug 2022 09:30:15 -0700 (PDT)
-Received: by mail-pj1-f52.google.com with SMTP id f21so17587080pjt.2;
-        Wed, 24 Aug 2022 09:30:15 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc;
-        bh=BaBBgLiAjQSX07OyatMm+1aCsnoFfhVQFjxdDpSP0rU=;
-        b=FUIPSSV3O2DbYdGt8cCSMAUmSORBDltKgCZX++TjnDj9Fku52vzDLDGM7s9pgaVbWA
-         K8gOxnwWqHpt9etWw6m6W3taNtsNamaaaP+qciHyv2h5S9OiK3+Hh/00hqZbSMabIvFc
-         2lQYv2zucKljZ9zQskiGghJ31CqP9UPh//HAfW46bU+vyFFqmMw1d2K4xAW9m/1e0cd4
-         yz098JBz2GKn+43FJMVwUIJsYf7ZxjpVIFx3+Ma7NyaM+66rpA+WG0ibqtgMSFt0Pg1v
-         w/tEAYmRH0/2oFJd2uroVAWqo21oVATd7hxFlnvp6QqMHYJtvTXsTz8pNBdWhzmvjPSI
-         V4GQ==
-X-Gm-Message-State: ACgBeo18Ml5gRVKeWfMynEVeqvz+M+V2YkbPEybNw9v4peQ0/jk4QuyE
-        Rw6lk5B9RcqRnUZ3HVYXIbrATeIavZ+P7ANz
-X-Google-Smtp-Source: AA6agR5yZVdMWRf6pVqa1P+gGDupFDiMscrPidJ6F+MNqv2PYU5hP6Aoj++4CNocjAKCWNlHnHgVBA==
-X-Received: by 2002:a17:902:d051:b0:172:fa4d:dffa with SMTP id l17-20020a170902d05100b00172fa4ddffamr10063745pll.39.1661358614985;
-        Wed, 24 Aug 2022 09:30:14 -0700 (PDT)
-Received: from mail-pf1-f170.google.com (mail-pf1-f170.google.com. [209.85.210.170])
-        by smtp.gmail.com with ESMTPSA id mg24-20020a17090b371800b001fb6c6ebaafsm1624262pjb.25.2022.08.24.09.30.13
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 24 Aug 2022 09:30:13 -0700 (PDT)
-Received: by mail-pf1-f170.google.com with SMTP id y15so12998848pfr.9;
-        Wed, 24 Aug 2022 09:30:13 -0700 (PDT)
-X-Received: by 2002:a63:6406:0:b0:42b:1580:4c16 with SMTP id
- y6-20020a636406000000b0042b15804c16mr3781804pgb.531.1661358613436; Wed, 24
- Aug 2022 09:30:13 -0700 (PDT)
+        Wed, 24 Aug 2022 12:31:16 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E901992F77
+        for <linux-kernel@vger.kernel.org>; Wed, 24 Aug 2022 09:31:14 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1661358674;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=ccVMBc1bD/9NWDqLeOT+0fK/B1IszQ6Qg39orye31v0=;
+        b=dgvABez0p3XYkLA9PjnCa+4TgrOQBxukLB5JFvYYsXC9gVyD9VPz3JKBks2clRo6l2EoJP
+        hZCyMawYf3pyY3fvC8B+Au2p47IC0fBzpGcP2T/St3j7OttU2LxuxR+UWPoKSwU6LXgg46
+        N3ingq8aTFueAwxViD0sVxMBQ6fv4Tg=
+Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
+ [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-155-4RXzuCA-Oau5cEr7hNCxNQ-1; Wed, 24 Aug 2022 12:31:11 -0400
+X-MC-Unique: 4RXzuCA-Oau5cEr7hNCxNQ-1
+Received: from smtp.corp.redhat.com (int-mx10.intmail.prod.int.rdu2.redhat.com [10.11.54.10])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 5EDFF18A6580;
+        Wed, 24 Aug 2022 16:31:10 +0000 (UTC)
+Received: from t480s.redhat.com (unknown [10.39.193.5])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 76918403348;
+        Wed, 24 Aug 2022 16:31:06 +0000 (UTC)
+From:   David Hildenbrand <david@redhat.com>
+To:     linux-kernel@vger.kernel.org
+Cc:     linux-mm@kvack.org, linux-doc@vger.kernel.org,
+        kexec@lists.infradead.org, David Hildenbrand <david@redhat.com>,
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Ingo Molnar <mingo@kernel.org>,
+        David Laight <David.Laight@ACULAB.COM>,
+        Jonathan Corbet <corbet@lwn.net>,
+        Andy Whitcroft <apw@canonical.com>,
+        Joe Perches <joe@perches.com>,
+        Dwaipayan Ray <dwaipayanray1@gmail.com>,
+        Lukas Bulwahn <lukas.bulwahn@gmail.com>,
+        Baoquan He <bhe@redhat.com>, Vivek Goyal <vgoyal@redhat.com>,
+        Dave Young <dyoung@redhat.com>
+Subject: [PATCH RFC 1/2] coding-style.rst: document BUG() and WARN() rules ("do not crash the kernel")
+Date:   Wed, 24 Aug 2022 18:30:59 +0200
+Message-Id: <20220824163100.224449-2-david@redhat.com>
+In-Reply-To: <20220824163100.224449-1-david@redhat.com>
+References: <20220824163100.224449-1-david@redhat.com>
 MIME-Version: 1.0
-References: <000000000000ce327f05d537ebf7@google.com> <1959174.1661183147@warthog.procyon.org.uk>
-In-Reply-To: <1959174.1661183147@warthog.procyon.org.uk>
-From:   Marc Dionne <marc.dionne@auristor.com>
-Date:   Wed, 24 Aug 2022 13:30:01 -0300
-X-Gmail-Original-Message-ID: <CAB9dFdv5cTtBTOTHRxsD4Kk0MXivik6uMsb_3NEDKa_Pb-ALhg@mail.gmail.com>
-Message-ID: <CAB9dFdv5cTtBTOTHRxsD4Kk0MXivik6uMsb_3NEDKa_Pb-ALhg@mail.gmail.com>
-Subject: Re: [syzbot] WARNING: bad unlock balance in rxrpc_do_sendmsg
-To:     David Howells <dhowells@redhat.com>
-Cc:     syzbot <syzbot+7f0483225d0c94cb3441@syzkaller.appspotmail.com>,
-        davem@davemloft.net, kuba@kernel.org,
-        linux-afs@lists.infradead.org, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org, syzkaller-bugs@googlegroups.com
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
+X-Scanned-By: MIMEDefang 2.85 on 10.11.54.10
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Aug 22, 2022 at 12:46 PM David Howells <dhowells@redhat.com> wrote:
->
-> #syz test: git://git.kernel.org/pub/scm/linux/kernel/git/netdev/net.git master
->
-> rxrpc: Fix locking in rxrpc's sendmsg
->
-> Fix three bugs in the rxrpc's sendmsg implementation:
->
->  (1) rxrpc_new_client_call() should release the socket lock when returning
->      an error from rxrpc_get_call_slot().
->
->  (2) rxrpc_wait_for_tx_window_intr() will return without the call mutex
->      held in the event that we're interrupted by a signal whilst waiting
->      for tx space on the socket or relocking the call mutex afterwards.
->
->      Fix this by: (a) moving the unlock/lock of the call mutex up to
->      rxrpc_send_data() such that the lock is not held around all of
->      rxrpc_wait_for_tx_window*() and (b) indicating to higher callers
->      whether we're return with the lock dropped.  Note that this means
->      recvmsg() will not block on this call whilst we're waiting.
->
->  (3) After dropping and regaining the call mutex, rxrpc_send_data() needs
->      to go and recheck the state of the tx_pending buffer and the
->      tx_total_len check in case we raced with another sendmsg() on the same
->      call.
->
-> Thinking on this some more, it might make sense to have different locks for
-> sendmsg() and recvmsg().  There's probably no need to make recvmsg() wait
-> for sendmsg().  It does mean that recvmsg() can return MSG_EOR indicating
-> that a call is dead before a sendmsg() to that call returns - but that can
-> currently happen anyway.
->
-> Without fix (2), something like the following can be induced:
->
->         WARNING: bad unlock balance detected!
->         5.16.0-rc6-syzkaller #0 Not tainted
->         -------------------------------------
->         syz-executor011/3597 is trying to release lock (&call->user_mutex) at:
->         [<ffffffff885163a3>] rxrpc_do_sendmsg+0xc13/0x1350 net/rxrpc/sendmsg.c:748
->         but there are no more locks to release!
->
->         other info that might help us debug this:
->         no locks held by syz-executor011/3597.
->         ...
->         Call Trace:
->          <TASK>
->          __dump_stack lib/dump_stack.c:88 [inline]
->          dump_stack_lvl+0xcd/0x134 lib/dump_stack.c:106
->          print_unlock_imbalance_bug include/trace/events/lock.h:58 [inline]
->          __lock_release kernel/locking/lockdep.c:5306 [inline]
->          lock_release.cold+0x49/0x4e kernel/locking/lockdep.c:5657
->          __mutex_unlock_slowpath+0x99/0x5e0 kernel/locking/mutex.c:900
->          rxrpc_do_sendmsg+0xc13/0x1350 net/rxrpc/sendmsg.c:748
->          rxrpc_sendmsg+0x420/0x630 net/rxrpc/af_rxrpc.c:561
->          sock_sendmsg_nosec net/socket.c:704 [inline]
->          sock_sendmsg+0xcf/0x120 net/socket.c:724
->          ____sys_sendmsg+0x6e8/0x810 net/socket.c:2409
->          ___sys_sendmsg+0xf3/0x170 net/socket.c:2463
->          __sys_sendmsg+0xe5/0x1b0 net/socket.c:2492
->          do_syscall_x64 arch/x86/entry/common.c:50 [inline]
->          do_syscall_64+0x35/0xb0 arch/x86/entry/common.c:80
->          entry_SYSCALL_64_after_hwframe+0x44/0xae
->
-> [Thanks to Hawkins Jiawei and Khalid Masum for their attempts to fix this]
->
-> Fixes: bc5e3a546d55 ("rxrpc: Use MSG_WAITALL to tell sendmsg() to temporarily ignore signals")
-> Reported-by: syzbot+7f0483225d0c94cb3441@syzkaller.appspotmail.com
-> cc: Hawkins Jiawei <yin31149@gmail.com>
-> cc: Khalid Masum <khalid.masum.92@gmail.com>
-> cc: Dan Carpenter <dan.carpenter@oracle.com>
-> cc: Marc Dionne <marc.dionne@auristor.com>
-> cc: linux-afs@lists.infradead.org
-> ---
->  net/rxrpc/call_object.c |    4 +-
->  net/rxrpc/sendmsg.c     |   92 ++++++++++++++++++++++++++++--------------------
->  2 files changed, 57 insertions(+), 39 deletions(-)
->
-> diff --git a/net/rxrpc/call_object.c b/net/rxrpc/call_object.c
-> index 84d0a4109645..6401cdf7a624 100644
-> --- a/net/rxrpc/call_object.c
-> +++ b/net/rxrpc/call_object.c
-> @@ -285,8 +285,10 @@ struct rxrpc_call *rxrpc_new_client_call(struct rxrpc_sock *rx,
->         _enter("%p,%lx", rx, p->user_call_ID);
->
->         limiter = rxrpc_get_call_slot(p, gfp);
-> -       if (!limiter)
-> +       if (!limiter) {
-> +               release_sock(&rx->sk);
->                 return ERR_PTR(-ERESTARTSYS);
-> +       }
->
->         call = rxrpc_alloc_client_call(rx, srx, gfp, debug_id);
->         if (IS_ERR(call)) {
-> diff --git a/net/rxrpc/sendmsg.c b/net/rxrpc/sendmsg.c
-> index 1d38e279e2ef..3c3a626459de 100644
-> --- a/net/rxrpc/sendmsg.c
-> +++ b/net/rxrpc/sendmsg.c
-> @@ -51,10 +51,7 @@ static int rxrpc_wait_for_tx_window_intr(struct rxrpc_sock *rx,
->                         return sock_intr_errno(*timeo);
->
->                 trace_rxrpc_transmit(call, rxrpc_transmit_wait);
-> -               mutex_unlock(&call->user_mutex);
->                 *timeo = schedule_timeout(*timeo);
-> -               if (mutex_lock_interruptible(&call->user_mutex) < 0)
-> -                       return sock_intr_errno(*timeo);
->         }
->  }
->
-> @@ -290,37 +287,48 @@ static int rxrpc_queue_packet(struct rxrpc_sock *rx, struct rxrpc_call *call,
->  static int rxrpc_send_data(struct rxrpc_sock *rx,
->                            struct rxrpc_call *call,
->                            struct msghdr *msg, size_t len,
-> -                          rxrpc_notify_end_tx_t notify_end_tx)
-> +                          rxrpc_notify_end_tx_t notify_end_tx,
-> +                          bool *_dropped_lock)
->  {
->         struct rxrpc_skb_priv *sp;
->         struct sk_buff *skb;
->         struct sock *sk = &rx->sk;
-> +       enum rxrpc_call_state state;
->         long timeo;
-> -       bool more;
-> -       int ret, copied;
-> +       bool more = msg->msg_flags & MSG_MORE;
-> +       int ret, copied = 0;
->
->         timeo = sock_sndtimeo(sk, msg->msg_flags & MSG_DONTWAIT);
->
->         /* this should be in poll */
->         sk_clear_bit(SOCKWQ_ASYNC_NOSPACE, sk);
->
-> +reload:
-> +       ret = -EPIPE;
->         if (sk->sk_shutdown & SEND_SHUTDOWN)
-> -               return -EPIPE;
-> -
-> -       more = msg->msg_flags & MSG_MORE;
-> -
-> +               goto maybe_error;
-> +       state = READ_ONCE(call->state);
-> +       ret = -ESHUTDOWN;
-> +       if (state >= RXRPC_CALL_COMPLETE)
-> +               goto maybe_error;
-> +       ret = -EPROTO;
-> +       if (state != RXRPC_CALL_CLIENT_SEND_REQUEST &&
-> +           state != RXRPC_CALL_SERVER_ACK_REQUEST &&
-> +           state != RXRPC_CALL_SERVER_SEND_REPLY)
-> +               goto maybe_error;
-> +
-> +       ret = -EMSGSIZE;
->         if (call->tx_total_len != -1) {
-> -               if (len > call->tx_total_len)
-> -                       return -EMSGSIZE;
-> -               if (!more && len != call->tx_total_len)
-> -                       return -EMSGSIZE;
-> +               if (len - copied > call->tx_total_len)
-> +                       goto maybe_error;
-> +               if (!more && len - copied != call->tx_total_len)
-> +                       goto maybe_error;
->         }
->
->         skb = call->tx_pending;
->         call->tx_pending = NULL;
->         rxrpc_see_skb(skb, rxrpc_skb_seen);
->
-> -       copied = 0;
->         do {
->                 /* Check to see if there's a ping ACK to reply to. */
->                 if (call->ackr_reason == RXRPC_ACK_PING_RESPONSE)
-> @@ -331,16 +339,8 @@ static int rxrpc_send_data(struct rxrpc_sock *rx,
->
->                         _debug("alloc");
->
-> -                       if (!rxrpc_check_tx_space(call, NULL)) {
-> -                               ret = -EAGAIN;
-> -                               if (msg->msg_flags & MSG_DONTWAIT)
-> -                                       goto maybe_error;
-> -                               ret = rxrpc_wait_for_tx_window(rx, call,
-> -                                                              &timeo,
-> -                                                              msg->msg_flags & MSG_WAITALL);
-> -                               if (ret < 0)
-> -                                       goto maybe_error;
-> -                       }
-> +                       if (!rxrpc_check_tx_space(call, NULL))
-> +                               goto wait_for_space;
->
->                         /* Work out the maximum size of a packet.  Assume that
->                          * the security header is going to be in the padded
-> @@ -468,6 +468,27 @@ static int rxrpc_send_data(struct rxrpc_sock *rx,
->  efault:
->         ret = -EFAULT;
->         goto out;
-> +
-> +wait_for_space:
-> +       ret = -EAGAIN;
-> +       if (msg->msg_flags & MSG_DONTWAIT)
-> +               goto maybe_error;
-> +       mutex_unlock(&call->user_mutex);
-> +       *_dropped_lock = true;
-> +       ret = rxrpc_wait_for_tx_window(rx, call, &timeo,
-> +                                      msg->msg_flags & MSG_WAITALL);
-> +       if (ret < 0)
-> +               goto maybe_error;
-> +       if (call->interruptibility == RXRPC_INTERRUPTIBLE) {
-> +               if (mutex_lock_interruptible(&call->user_mutex) < 0) {
-> +                       ret = sock_intr_errno(timeo);
-> +                       goto maybe_error;
-> +               }
-> +       } else {
-> +               mutex_lock(&call->user_mutex);
-> +       }
-> +       *_dropped_lock = false;
-> +       goto reload;
->  }
->
->  /*
-> @@ -629,6 +650,7 @@ int rxrpc_do_sendmsg(struct rxrpc_sock *rx, struct msghdr *msg, size_t len)
->         enum rxrpc_call_state state;
->         struct rxrpc_call *call;
->         unsigned long now, j;
-> +       bool dropped_lock = false;
->         int ret;
->
->         struct rxrpc_send_params p = {
-> @@ -737,21 +759,13 @@ int rxrpc_do_sendmsg(struct rxrpc_sock *rx, struct msghdr *msg, size_t len)
->                         ret = rxrpc_send_abort_packet(call);
->         } else if (p.command != RXRPC_CMD_SEND_DATA) {
->                 ret = -EINVAL;
-> -       } else if (rxrpc_is_client_call(call) &&
-> -                  state != RXRPC_CALL_CLIENT_SEND_REQUEST) {
-> -               /* request phase complete for this client call */
-> -               ret = -EPROTO;
-> -       } else if (rxrpc_is_service_call(call) &&
-> -                  state != RXRPC_CALL_SERVER_ACK_REQUEST &&
-> -                  state != RXRPC_CALL_SERVER_SEND_REPLY) {
-> -               /* Reply phase not begun or not complete for service call. */
-> -               ret = -EPROTO;
->         } else {
-> -               ret = rxrpc_send_data(rx, call, msg, len, NULL);
-> +               ret = rxrpc_send_data(rx, call, msg, len, NULL, &dropped_lock);
->         }
->
->  out_put_unlock:
-> -       mutex_unlock(&call->user_mutex);
-> +       if (!dropped_lock)
-> +               mutex_unlock(&call->user_mutex);
->  error_put:
->         rxrpc_put_call(call, rxrpc_call_put);
->         _leave(" = %d", ret);
-> @@ -779,6 +793,7 @@ int rxrpc_kernel_send_data(struct socket *sock, struct rxrpc_call *call,
->                            struct msghdr *msg, size_t len,
->                            rxrpc_notify_end_tx_t notify_end_tx)
->  {
-> +       bool dropped_lock = false;
->         int ret;
->
->         _enter("{%d,%s},", call->debug_id, rxrpc_call_states[call->state]);
-> @@ -796,7 +811,7 @@ int rxrpc_kernel_send_data(struct socket *sock, struct rxrpc_call *call,
->         case RXRPC_CALL_SERVER_ACK_REQUEST:
->         case RXRPC_CALL_SERVER_SEND_REPLY:
->                 ret = rxrpc_send_data(rxrpc_sk(sock->sk), call, msg, len,
-> -                                     notify_end_tx);
-> +                                     notify_end_tx, &dropped_lock);
->                 break;
->         case RXRPC_CALL_COMPLETE:
->                 read_lock_bh(&call->state_lock);
-> @@ -810,7 +825,8 @@ int rxrpc_kernel_send_data(struct socket *sock, struct rxrpc_call *call,
->                 break;
->         }
->
-> -       mutex_unlock(&call->user_mutex);
-> +       if (!dropped_lock)
-> +               mutex_unlock(&call->user_mutex);
->         _leave(" = %d", ret);
->         return ret;
->  }
+Linus notes [1] that the introduction of new code that uses VM_BUG_ON()
+is just as bad as BUG_ON(), because it will crash the kernel on
+distributions that enable CONFIG_DEBUG_VM (like Fedora):
 
-Reviewed-by: Marc Dionne <marc.dionne@auristor.com>
+    VM_BUG_ON() has the exact same semantics as BUG_ON. It is literally
+    no different, the only difference is "we can make the code smaller
+    because these are less important". [2]
 
-Marc
+This resulted in a more generic discussion about usage of BUG() and
+friends. While there might be corner cases that still deserve a BUG_ON(),
+most BUG_ON() cases should simply use WARN_ON_ONCE() and implement a
+recovery path if reasonable:
+
+    The only possible case where BUG_ON can validly be used is "I have
+    some fundamental data corruption and cannot possibly return an
+    error". [2]
+
+As a very good approximation is the general rule:
+
+    "absolutely no new BUG_ON() calls _ever_" [2]
+
+... not even if something really shouldn't ever happen and is merely for
+documenting that an invariant always has to hold.
+
+There is only one good BUG_ON():
+
+    Now, that said, there is one very valid sub-form of BUG_ON():
+    BUILD_BUG_ON() is absolutely 100% fine. [2]
+
+While WARN will also crash the machine with panic_on_warn set, that's
+exactly to be expected:
+
+    So we have two very different cases: the "virtual machine with good
+    logging where a dead machine is fine" - use 'panic_on_warn'. And
+    the actual real hardware with real drivers, running real loads by
+    users. [3]
+
+The basic idea is that warnings will similarly get reported by users
+and be found during testing. However, in contrast to a BUG(), there is a
+way to actually influence the expected behavior (e.g., panic_on_warn)
+and to eventually keep the machine alive to extract some debug info.
+
+Ingo notes that not all WARN_ON_ONCE cases need recovery. If we don't ever
+expect this code to trigger in any case, recovery code is not really
+helpful.
+
+    I'd prefer to keep all these warnings 'simple' - i.e. no attempted
+    recovery & control flow, unless we ever expect these to trigger.
+    [4]
+
+There have been different rules floating around that were never properly
+documented. Let's try to clarify.
+
+[1] https://lkml.kernel.org/r/CAHk-=wiEAH+ojSpAgx_Ep=NKPWHU8AdO3V56BXcCsU97oYJ1EA@mail.gmail.com
+[2] https://lore.kernel.org/r/CAHk-=wg40EAZofO16Eviaj7mfqDhZ2gVEbvfsMf6gYzspRjYvw@mail.gmail.com
+[3] https://lore.kernel.org/r/CAHk-=wgF7K2gSSpy=m_=K3Nov4zaceUX9puQf1TjkTJLA2XC_g@mail.gmail.com
+
+Signed-off-by: David Hildenbrand <david@redhat.com>
+---
+ Documentation/process/coding-style.rst | 27 ++++++++++++++++++++++++++
+ 1 file changed, 27 insertions(+)
+
+diff --git a/Documentation/process/coding-style.rst b/Documentation/process/coding-style.rst
+index 03eb53fd029a..a6d81ff578fe 100644
+--- a/Documentation/process/coding-style.rst
++++ b/Documentation/process/coding-style.rst
+@@ -1186,6 +1186,33 @@ expression used.  For instance:
+ 	#endif /* CONFIG_SOMETHING */
+ 
+ 
++22) Do not crash the kernel
++---------------------------
++
++Do not add new code that uses BUG(), BUG_ON(), VM_BUG_ON(), ... to crash
++the kernel if certain conditions are not met. Instead, use WARN_ON_ONCE()
++with recovery code (if reasonable) instead. Unavoidable data corruption /
++security issues might be a very rare exception to this rule and need good
++justification.
++
++There is no need for WARN_ON_ONCE() recovery code if we never expect it to
++possibly trigger unless something goes seriously wrong or some other code
++is changed to break invariants. Note that VM_WARN_ON_ONCE() cannot be used
++in conditionals.
++
++Usage of WARN() and friends is fine for something that is not expected to
++be triggered easily. ``panic_on_warn`` users are not an excuse to not use
++WARN(): whoever enables ``panic_on_warn`` explicitly asked the kernel to
++crash in this case.
++
++However, WARN() and friends should not be used for something that is
++expected to trigger easily, for example, by user space. pr_warn_once()
++might be a reasonable replacement to notify the user.
++
++Note that BUILD_BUG_ON() is perfectly fine because it will make compilation
++fail instead of crashing the kernel.
++
++
+ Appendix I) References
+ ----------------------
+ 
+-- 
+2.37.1
+
