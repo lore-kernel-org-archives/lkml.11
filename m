@@ -2,93 +2,421 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 27D11C00140
-	for <linux-kernel@archiver.kernel.org>; Wed, 24 Aug 2022 13:51:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C622DC00140
+	for <linux-kernel@archiver.kernel.org>; Wed, 24 Aug 2022 13:53:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239514AbiHXNv1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 24 Aug 2022 09:51:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48038 "EHLO
+        id S236577AbiHXNxQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 24 Aug 2022 09:53:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54796 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238763AbiHXNty (ORCPT
+        with ESMTP id S238454AbiHXNwz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 24 Aug 2022 09:49:54 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3776F9A9DA;
-        Wed, 24 Aug 2022 06:45:09 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id A931B61786;
-        Wed, 24 Aug 2022 13:45:07 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D79A4C433D6;
-        Wed, 24 Aug 2022 13:45:06 +0000 (UTC)
-Authentication-Results: smtp.kernel.org;
-        dkim=pass (1024-bit key) header.d=zx2c4.com header.i=@zx2c4.com header.b="iGKKsQGw"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=zx2c4.com; s=20210105;
-        t=1661348703;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=ZLtAsF2uZ9ocOb5E6/KIG4KyzKa728jhYH5YX05G5Ac=;
-        b=iGKKsQGwwzxqfQugSyH9e8+0wsfHfn7IASIQBlcjRKKwha/bjUVL0mcdoCXN6zZh51j72s
-        Ci1MTsR0ad1DtVx5X0D1UnePA5xn2WGTWOE53t0kJkLDs0nfVmEyerJtOWplVsej7D809S
-        I4luJft4eIGfz54Wxl4PMBRgQN1m6Hc=
-Received: by mail.zx2c4.com (ZX2C4 Mail Server) with ESMTPSA id d95281f0 (TLSv1.3:TLS_AES_256_GCM_SHA384:256:NO);
-        Wed, 24 Aug 2022 13:45:03 +0000 (UTC)
-Received: by mail-yw1-f176.google.com with SMTP id 00721157ae682-3375488624aso431904707b3.3;
-        Wed, 24 Aug 2022 06:45:02 -0700 (PDT)
-X-Gm-Message-State: ACgBeo3BGl+Ru6yEq67sjmpUY3YFP8hVwuP/HKWWrO4hWKrnHtr4ws1j
-        2zKZvL4FUC6EQg+CHAH+QfYEJcMGytRfvW0R0Vs=
-X-Google-Smtp-Source: AA6agR72fmrESu0IuSCwVNckXUvR1jJheO3GJct5r4F5XpU2Zpb00FWb1tpIjnDDNhvAKv6ek8rQRFeF6upoFJlPA8Q=
-X-Received: by 2002:a81:6141:0:b0:328:30e0:a6ca with SMTP id
- v62-20020a816141000000b0032830e0a6camr32712430ywb.454.1661348699719; Wed, 24
- Aug 2022 06:44:59 -0700 (PDT)
+        Wed, 24 Aug 2022 09:52:55 -0400
+Received: from mail-lj1-x234.google.com (mail-lj1-x234.google.com [IPv6:2a00:1450:4864:20::234])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0BA3799B49
+        for <linux-kernel@vger.kernel.org>; Wed, 24 Aug 2022 06:49:03 -0700 (PDT)
+Received: by mail-lj1-x234.google.com with SMTP id n24so14452833ljc.13
+        for <linux-kernel@vger.kernel.org>; Wed, 24 Aug 2022 06:49:02 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc;
+        bh=m1Sal+zjZnkwoqGvQ6H8AHjXqyf22s9U5Nu3Rc+Vm0Q=;
+        b=rz/0RMC74FHYHj3NS10LPfVgVyQ9/TCifjML3uU7474anZc7xN0a8/ZVKRXpxE32g8
+         AecxzU8h7lJ0/Iu+xHRbxAE+ncVKfsdp7vyimyT4ul4Of8DNa+gmKGHuIlM/aBbQkXFc
+         Gd8IamyePt7Whc2bOz660bYhl5Ie5+sPG8rQ67SfA8k/TnZjK2sIu1YyzZ9Shet2+59p
+         KY0ycP9vaURuhY3X6Af+Ao+Av0BN0Oeb/BYuAJ5YbobBECXTFDNteDyEhwYmh1BgXDjS
+         DlZCs1G5mUCSy0QFKR18yDsHIB1d/32YmD0Bs5LBLApWe+rjacUi6GsoNICVlXaLGMGC
+         ajqQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc;
+        bh=m1Sal+zjZnkwoqGvQ6H8AHjXqyf22s9U5Nu3Rc+Vm0Q=;
+        b=MRtQ8ynA2Buj5IIp3+3v2IvOLavxvB2kcW+TrCl3UypcaZX17v4hAx4Vg49bAvkMin
+         NxC1vaUhlTyuBHEuZDS/9it2gBxSxPCKTPrbeq8C2IDVte9IjUzJTw7eQvo99swGmkH8
+         luzFxOr3Pf4DSyjgTZgfZ7cfgMXmPZE0EMnnTdsnvQlXgRgo5bD/1rCIkywo/DWf3Yav
+         qpolSf6zknirXLVKj9cy8BPLHudh33GNYy7JaVy6IKHo91tEhwxxpj7szrFcAZrY4K3r
+         9W6sJw4qya6tMCxYiLkvRdFDzmEJBwYBflVJoFobUEeNX8jnaOOHkNR+3OUk2RhUdG+9
+         4REA==
+X-Gm-Message-State: ACgBeo3EOSMd9Am6DbImv4Q5WUPj6grdXxQZQvU5/whAQKtzfKDmBGAE
+        XidzqtZUxo4rVW5IvfpFx+HJVQ==
+X-Google-Smtp-Source: AA6agR5ajdfKjHqC9MSRvD5WVvB29vhkN8j/6Wy4cmfzipDMPMFyEgCL9ozjFEdGvtJSe6rcyiqGAw==
+X-Received: by 2002:a2e:b88b:0:b0:261:c9e7:fc59 with SMTP id r11-20020a2eb88b000000b00261c9e7fc59mr4821612ljp.120.1661348932352;
+        Wed, 24 Aug 2022 06:48:52 -0700 (PDT)
+Received: from [10.243.4.185] ([194.204.13.210])
+        by smtp.gmail.com with ESMTPSA id d16-20020a0565123d1000b0048ae518364dsm2148435lfv.148.2022.08.24.06.48.51
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 24 Aug 2022 06:48:51 -0700 (PDT)
+Message-ID: <57d259cd-613b-a608-5b67-01aa72c2babb@linaro.org>
+Date:   Wed, 24 Aug 2022 16:48:50 +0300
 MIME-Version: 1.0
-Received: by 2002:a05:7110:2589:b0:191:2a95:8ff9 with HTTP; Wed, 24 Aug 2022
- 06:44:59 -0700 (PDT)
-In-Reply-To: <YwQzyMlY6fa2WrM5@piliu.users.ipa.redhat.com>
-References: <20220822021520.6996-1-kernelfans@gmail.com> <20220822021520.6996-7-kernelfans@gmail.com>
- <CAEXW_YRH11xFg-0nQfvv59SMFCW=SNTEEL0oHJKTs1X45wGr7w@mail.gmail.com> <YwQzyMlY6fa2WrM5@piliu.users.ipa.redhat.com>
-From:   "Jason A. Donenfeld" <Jason@zx2c4.com>
-Date:   Wed, 24 Aug 2022 09:44:59 -0400
-X-Gmail-Original-Message-ID: <CAHmME9oLpTus_yVEcocWLB35RGi32xR8pJtTEL_dK180knW=Og@mail.gmail.com>
-Message-ID: <CAHmME9oLpTus_yVEcocWLB35RGi32xR8pJtTEL_dK180knW=Og@mail.gmail.com>
-Subject: Re: [RFC 06/10] rcu/hotplug: Make rcutree_dead_cpu() parallel
-To:     Pingfan Liu <kernelfans@gmail.com>
-Cc:     Joel Fernandes <joel@joelfernandes.org>,
-        LKML <linux-kernel@vger.kernel.org>, rcu <rcu@vger.kernel.org>,
-        "Paul E. McKenney" <paulmck@kernel.org>,
-        Frederic Weisbecker <frederic@kernel.org>,
-        Neeraj Upadhyay <quic_neeraju@quicinc.com>,
-        Josh Triplett <josh@joshtriplett.org>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Mathieu Desnoyers <mathieu.desnoyers@efficios.com>,
-        Lai Jiangshan <jiangshanlai@gmail.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Steven Price <steven.price@arm.com>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Kuppuswamy Sathyanarayanan 
-        <sathyanarayanan.kuppuswamy@linux.intel.com>
-Content-Type: text/plain; charset="UTF-8"
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.12.0
+Subject: Re: [PATCH v4] regulator: dt-bindings: mediatek: add mt6366
+Content-Language: en-US
+To:     Zhiyong Tao <zhiyong.tao@mediatek.com>, lee.jones@linaro.org,
+        robh+dt@kernel.org, matthias.bgg@gmail.com, lgirdwood@gmail.com,
+        broonie@kernel.org, eddie.huang@mediatek.com, a.zummo@towertech.it,
+        alexandre.belloni@bootlin.com, fshao@chromium.org
+Cc:     sen.chu@mediatek.com, hui.liu@mediatek.com,
+        allen-kh.cheng@mediatek.com, hsin-hsiung.wang@mediatek.com,
+        sean.wang@mediatek.com, macpaul.lin@mediatek.com,
+        wen.su@mediatek.com, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-rtc@vger.kernel.org,
+        Project_Global_Chrome_Upstream_Group@mediatek.com,
+        linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org
+References: <20220823123745.14061-1-zhiyong.tao@mediatek.com>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+In-Reply-To: <20220823123745.14061-1-zhiyong.tao@mediatek.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 8/22/22, Pingfan Liu <kernelfans@gmail.com> wrote:
-> On Mon, Aug 22, 2022 at 02:08:38PM -0400, Joel Fernandes wrote:
->> On Sun, Aug 21, 2022 at 10:16 PM Pingfan Liu <kernelfans@gmail.com>
->> wrote:
->> >
->> > In order to support parallel, rcu_state.n_online_cpus should be
->> > atomic_dec()
->>
->> What does Parallel mean? Is that some kexec terminology?
->>
->
-> 'Parallel' means concurrent. It is not a kexec terminology, instead,
-> should be SMP.
+On 23/08/2022 15:37, Zhiyong Tao wrote:
+> Add mt6366 regulator document
+> 
+> Signed-off-by: Zhiyong Tao <zhiyong.tao@mediatek.com>
 
-Only sort of. See section A.6 of Paul 's book:
-http://kernel.org/pub/linux/kernel/people/paulmck/perfbook/perfbook.html
+https://lore.kernel.org/all/3a26be5c-04c5-cd67-1154-dfd7d99fb5d0@linaro.org/
 
-Jason
+Where is the driver?
+
+This ended up in spam folder, so you might need to fix up your setup
+just like other folks in Mediatek did.
+
+> ---
+> Changes in patch v4:
+> 1)Add unevaluatedProperties in all places
+> 2)Fix check warning and errors
+> 3)remove "compatible="regulator-fixed"" properties for some ldo
+> 
+> Changes in patch v3:
+> 1)change patch title
+> 2)change "regulator.yaml#" to regulator.yaml#
+> 3)remove regulator-name
+> 4)fix 4 space for DTS example
+> 
+> Changes in patch v2:
+> 1)fix patch title description.
+> 2)fix patch maintainer description.
+> 3)won't cc to srv_heupstream@mediatek.com
+> 4)fix patch commit message description.
+> 5)add properties node and compatible
+> 6)put "unevaluatedProperties: false" after $ref
+> 7)remove underscores in node names.
+> 8)change Filename to "mediatek,mt6366-regulator.yaml"
+> [Zhiyong Tao <zhiyong.tao@mediatek.com>]
+> ---
+> ---
+>  .../regulator/mediatek,mt6366-regulator.yaml  | 279 ++++++++++++++++++
+>  1 file changed, 279 insertions(+)
+>  create mode 100644 Documentation/devicetree/bindings/regulator/mediatek,mt6366-regulator.yaml
+> 
+> diff --git a/Documentation/devicetree/bindings/regulator/mediatek,mt6366-regulator.yaml b/Documentation/devicetree/bindings/regulator/mediatek,mt6366-regulator.yaml
+> new file mode 100644
+> index 000000000000..8945bf20b574
+> --- /dev/null
+> +++ b/Documentation/devicetree/bindings/regulator/mediatek,mt6366-regulator.yaml
+> @@ -0,0 +1,279 @@
+> +# SPDX-License-Identifier: (GPL-2.0 OR BSD-2-Clause)
+> +%YAML 1.2
+> +---
+> +$id: http://devicetree.org/schemas/regulator/mediatek,mt6366-regulator.yaml#
+> +$schema: http://devicetree.org/meta-schemas/core.yaml#
+> +
+> +title: MT6366 Regulator from MediaTek Integrated
+> +
+> +maintainers:
+> +  - Zhiyong Tao <zhiyong.tao@mediatek.com>
+> +
+> +description: |
+> +  List of regulators provided by this controller. It is named
+> +  according to its regulator type, buck_<name> and ldo_<name>.
+> +  MT6366 regulators node should be sub node of the MT6397 MFD node.
+> +
+> +properties:
+> +  compatible:
+> +    const: mediatek,mt6366-regulator
+
+This looks incomplete. How does it bind? Further pieces also suggest you
+send something incomplete.
+
+> +
+> +  regulators:
+> +    type: object
+> +    description: List of regulators and its properties
+> +
+> +    patternProperties:
+> +      "^buck-v(dram1|core|coresshub|proc11|proc12|gpu|s2|modem|s1)$":
+> +        type: object
+> +        $ref: regulator.yaml#
+> +        unevaluatedProperties: false
+> +
+> +      "^ldo-v(dram2|sim1|ibr|rf12|usb|camio|camd|cn18|fe28)$":
+> +        type: object
+> +        $ref: regulator.yaml#
+> +        unevaluatedProperties: false
+> +
+> +      "^ldo-v(xo22|efuse|mch|vcama1|emc|a12|vcama2|mc)$":
+> +        type: object
+> +        $ref: regulator.yaml#
+> +        unevaluatedProperties: false
+> +
+> +      "^buck-(vcore)-sshub$":
+> +        type: object
+> +        $ref: regulator.yaml#
+> +        unevaluatedProperties: false
+> +
+> +      "^ldo-vcn(28|33)-bt$":
+> +        type: object
+> +        $ref: regulator.yaml#
+> +        unevaluatedProperties: false
+> +
+> +      "^ldo-vcn(33)-wifi$":
+> +        type: object
+> +        $ref: regulator.yaml#
+> +        unevaluatedProperties: false
+> +
+> +      "^ldo-vsram-(others)-sshub$":
+> +        type: object
+> +        $ref: regulator.yaml#
+> +        unevaluatedProperties: false
+> +
+> +      "^ldo-vsram-(proc11|others|gpu|proc12)$":
+> +        type: object
+> +        $ref: regulator.yaml#
+> +        unevaluatedProperties: false
+> +
+> +      "^ldo-v(aud|bif|io|ldo)28$":
+> +        type: object
+> +        $ref: regulator.yaml#
+> +        unevaluatedProperties: false
+> +
+> +      "^ldo-v(io|aux|rf)18$":
+> +        type: object
+> +        $ref: regulator.yaml#
+> +        unevaluatedProperties: false
+> +
+> +      "^ldo-vsim[2]$":
+
+I have now doubts whether you define generic regulators or quite
+specific regulators you have on your board... Are the names used in the
+device datasheet in register API description?
+
+
+> +        type: object
+> +        $ref: regulator.yaml#
+> +        unevaluatedProperties: false
+> +
+> +required:
+> +  - compatible
+> +  - regulators
+> +
+> +additionalProperties: false
+> +
+> +examples:
+> +  - |
+> +    pmic {
+> +        compatible = "mediatek,mt6366-regulator";
+> +
+> +        regulators {
+> +            mt6366_vdram1_reg: buck-vdram1 {
+
+Drop the labels here and further. Why you do not have here any regular
+constraints like min/max voltage?
+
+> +                regulator-ramp-delay = <12500>;
+> +                regulator-enable-ramp-delay = <0>;
+> +                regulator-allowed-modes = <0 1>;
+
+Where do you explain the meaning of modes?
+
+> +            };
+> +
+> +            mt6366_vcore_reg: buck-vcore {
+> +                regulator-ramp-delay = <6250>;
+> +                regulator-enable-ramp-delay = <200>;
+> +                regulator-allowed-modes = <0 1>;
+> +            };
+> +
+> +           mt6366_vproc11_reg: buck-vproc11 {
+> +                regulator-ramp-delay = <6250>;
+> +                regulator-enable-ramp-delay = <200>;
+> +                regulator-allowed-modes = <0 1>;
+> +            };
+> +
+> +            mt6366_vproc12_reg: buck-vproc12 {
+> +                regulator-ramp-delay = <6250>;
+> +                regulator-enable-ramp-delay = <200>;
+> +                regulator-allowed-modes = <0 1>;
+> +            };
+> +
+> +            mt6366_vgpu_reg: buck-vgpu {
+> +                regulator-ramp-delay = <6250>;
+> +                regulator-enable-ramp-delay = <200>;
+> +                regulator-allowed-modes = <0 1>;
+> +            };
+> +
+> +            mt6366_vs2_reg: buck-vs2 {
+> +                regulator-ramp-delay = <12500>;
+> +                regulator-enable-ramp-delay = <0>;
+> +            };
+> +
+> +           mt6366_vmodem_reg: buck-vmodem {
+> +                regulator-ramp-delay = <6250>;
+> +                regulator-enable-ramp-delay = <900>;
+> +                regulator-allowed-modes = <0 1>;
+> +            };
+> +
+> +            mt6366_vs1_reg: buck-vs1 {
+> +                regulator-ramp-delay = <12500>;
+> +                regulator-enable-ramp-delay = <0>;
+> +            };
+> +
+> +            mt6366_vdram2_reg: ldo-vdram2 {
+> +                regulator-enable-ramp-delay = <3300>;
+> +            };
+> +
+> +            mt6366_vsim1_reg: ldo-vsim1 {
+> +                regulator-enable-ramp-delay = <540>;
+> +            };
+> +
+> +            mt6366_vibr_reg: ldo-vibr {
+> +                regulator-enable-ramp-delay = <60>;
+> +            };
+> +
+> +            mt6366_vrf12_reg: ldo-vrf12 {
+> +                regulator-enable-ramp-delay = <120>;
+> +            };
+> +
+> +            mt6366_vio18_reg: ldo-vio18 {
+> +                regulator-enable-ramp-delay = <2700>;
+> +            };
+> +
+> +            mt6366_vusb_reg: ldo-vusb {
+> +                regulator-name = "vusb";
+> +                regulator-enable-ramp-delay = <270>;
+> +            };
+> +
+> +            mt6366_vcamio_reg: ldo-vcamio {
+> +                regulator-enable-ramp-delay = <325>;
+> +            };
+> +
+> +            mt6366_vcamd_reg: ldo-vcamd {
+> +                regulator-enable-ramp-delay = <325>;
+> +            };
+> +
+> +            mt6366_vcn18_reg: ldo-vcn18 {
+> +                regulator-enable-ramp-delay = <270>;
+> +            };
+> +
+> +            mt6366_vfe28_reg: ldo-vfe28 {
+> +                regulator-enable-ramp-delay = <270>;
+> +            };
+> +
+> +            mt6366_vsram_proc11_reg: ldo-vsram-proc11 {
+> +                regulator-ramp-delay = <6250>;
+> +                regulator-enable-ramp-delay = <240>;
+> +            };
+> +
+> +            mt6366_vcn28_reg: ldo-vcn28 {
+> +                regulator-enable-ramp-delay = <270>;
+> +            };
+> +
+> +            mt6366_vsram_others_reg: ldo-vsram-others {
+> +                regulator-ramp-delay = <6250>;
+> +                regulator-enable-ramp-delay = <240>;
+> +            };
+> +
+> +            mt6366_vsram_gpu_reg: ldo-vsram-gpu {
+> +                regulator-ramp-delay = <6250>;
+> +                regulator-enable-ramp-delay = <240>;
+> +            };
+> +
+> +            mt6366_vxo22_reg: ldo-vxo22 {
+> +                regulator-enable-ramp-delay = <120>;
+> +            };
+> +
+> +            mt6366_vefuse_reg: ldo-vefuse {
+> +                regulator-enable-ramp-delay = <270>;
+> +            };
+> +
+> +            mt6366_vaux18_reg: ldo-vaux18 {
+> +                regulator-enable-ramp-delay = <270>;
+> +            };
+> +
+> +            mt6366_vmch_reg: ldo-vmch {
+> +                regulator-enable-ramp-delay = <60>;
+> +            };
+> +
+> +            mt6366_vbif28_reg: ldo-vbif28 {
+> +                regulator-enable-ramp-delay = <270>;
+> +            };
+> +
+> +            mt6366_vsram_proc12_reg: ldo-vsram-proc12 {
+> +                regulator-ramp-delay = <6250>;
+> +                regulator-enable-ramp-delay = <240>;
+> +            };
+> +
+> +            mt6366_vcama1_reg: ldo-vcama1 {
+> +                regulator-enable-ramp-delay = <325>;
+> +            };
+> +
+> +            mt6366_vemc_reg: ldo-vemc {
+> +                regulator-enable-ramp-delay = <60>;
+> +            };
+> +
+> +            mt6366_vio28_reg: ldo-vio28 {
+> +                regulator-enable-ramp-delay = <270>;
+> +            };
+> +
+> +            mt6366_va12_reg: ldo-va12 {
+> +                regulator-enable-ramp-delay = <270>;
+> +            };
+> +
+> +            mt6366_vrf18_reg: ldo-vrf18 {
+> +                regulator-enable-ramp-delay = <120>;
+> +            };
+> +
+> +            mt6366_vcn33_bt_reg: ldo-vcn33-bt {
+> +                regulator-enable-ramp-delay = <270>;
+> +            };
+> +
+> +            mt6366_vcn33_wifi_reg: ldo-vcn33-wifi {
+> +                regulator-enable-ramp-delay = <270>;
+> +            };
+> +
+> +            mt6366_vcama2_reg: ldo-vcama2 {
+> +                regulator-enable-ramp-delay = <325>;
+> +            };
+> +
+> +            mt6366_vmc_reg: ldo-vmc {
+> +                regulator-enable-ramp-delay = <60>;
+> +            };
+> +
+> +            mt6366_vldo28_reg: ldo-vldo28 {
+> +                regulator-enable-ramp-delay = <270>;
+> +            };
+> +
+> +            mt6366_vaud28_reg: ldo-vaud28 {
+> +                regulator-enable-ramp-delay = <270>;
+> +            };
+> +
+> +            mt6366_vsim2_reg: ldo-vsim2 {
+> +                regulator-enable-ramp-delay = <540>;
+> +            };
+> +
+> +            mt6366_vcore_sshub_reg: buck-vcore-sshub {
+
+Empty node? What does it do?
+
+
+
+Best regards,
+Krzysztof
