@@ -2,193 +2,278 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 64CD7C00140
-	for <linux-kernel@archiver.kernel.org>; Wed, 24 Aug 2022 18:22:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D2C70C32796
+	for <linux-kernel@archiver.kernel.org>; Wed, 24 Aug 2022 18:23:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240567AbiHXSWM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 24 Aug 2022 14:22:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33108 "EHLO
+        id S240495AbiHXSXp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 24 Aug 2022 14:23:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33744 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240553AbiHXSWK (ORCPT
+        with ESMTP id S236263AbiHXSXn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 24 Aug 2022 14:22:10 -0400
-Received: from mx0a-00069f02.pphosted.com (mx0a-00069f02.pphosted.com [205.220.165.32])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A547174352
-        for <linux-kernel@vger.kernel.org>; Wed, 24 Aug 2022 11:22:09 -0700 (PDT)
-Received: from pps.filterd (m0246617.ppops.net [127.0.0.1])
-        by mx0b-00069f02.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 27OI44RF017323;
-        Wed, 24 Aug 2022 18:21:57 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=date : from : to : cc
- : subject : message-id : references : content-type : in-reply-to :
- mime-version; s=corp-2022-7-12;
- bh=mAPKf/0QfLryLwIFnZq2MAh0fzbfH3R8GH3LC5BSk6s=;
- b=WPaX2Y8pHvgxn/Vpb2XzUAnIAFpq0PRIm8cDnLlCBAFuhC6GqUbfQCekvT2wL8eI9j0H
- 67Ing87Mf5inMExkJwX5Qi6pwGENMj8WGh1zMrT5Z6lLyCqEfG3hVGzXBBf7ZG/Wao5b
- 9NJD/SS9l9jHViE+7lJJFS9MxXNvILdGkuQjXP+iPhGwfGP1N+FM34sFV+cAyLFVb6aU
- /q9z+sNSHTOBUSajLrmr3Ki8eMpe5K7XNNQ393U5AKmUIRKjApYghml5vzvR/szd+sje
- aBNNxJCwLD7jtN91WJMAsvZ7ZIU5Y0JuVpJBk0YImVy/7LbedkHMmqwNQQw6uI18AxG2 Ew== 
-Received: from phxpaimrmta03.imrmtpd1.prodappphxaev1.oraclevcn.com (phxpaimrmta03.appoci.oracle.com [138.1.37.129])
-        by mx0b-00069f02.pphosted.com (PPS) with ESMTPS id 3j4w23vdyg-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Wed, 24 Aug 2022 18:21:56 +0000
-Received: from pps.filterd (phxpaimrmta03.imrmtpd1.prodappphxaev1.oraclevcn.com [127.0.0.1])
-        by phxpaimrmta03.imrmtpd1.prodappphxaev1.oraclevcn.com (8.17.1.5/8.17.1.5) with ESMTP id 27OHH9bE021798;
-        Wed, 24 Aug 2022 18:21:56 GMT
-Received: from nam12-mw2-obe.outbound.protection.outlook.com (mail-mw2nam12lp2047.outbound.protection.outlook.com [104.47.66.47])
-        by phxpaimrmta03.imrmtpd1.prodappphxaev1.oraclevcn.com (PPS) with ESMTPS id 3j5n5nc7vn-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Wed, 24 Aug 2022 18:21:56 +0000
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=A+KPIJh2zokrXw72HA7psHNHxGApQSOLeYUKIriVZoKDAjmx07ueeDhxFCk0wI7mWFL7chV75O7BrovlpyXjCMv80DaLzbRTnXJT1J+S7naeJjxQrUtynmcNOtQkG0MwQsaBaECVA25BnwSXKuiU/vQrIWsQmZ/5AcsKuKJIsPT6z17++Ze359KFKzWfR7IWTMRgcFF3SEH9JK99ORw183CMMrNp19jbrSdthgfxF6YRIcxt2uxBoNtbLh79M6bjldWjqDwpdAs4D0hYqViutPKGX1a6aXLWsb2BejHQv+zr4q3gw3zwn7K+5vndsMrTbNTslkApf/SVKWNsuSBlww==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=mAPKf/0QfLryLwIFnZq2MAh0fzbfH3R8GH3LC5BSk6s=;
- b=TYLHg+m6KrUWdTNg90O3KvRwg2irSiPE35lEhaVdvcniowD8rN9nJr64u38FPkuba9pXIPvdWgscUs+8PRCRsjRgKTxd2E/sUy0PwY2rBmc0goEmPLGhXoIH1FuIDtZhKgccg1TGNXQ+mclbWuA6gVmdJHN3lS+WHTnTsRw2wyzNqAjF1mRIJZacn+BZkICFeNj65ES/pv60z6CVDmkOX8O2aNHFesOqCJCAdyAN/sp4xWKvlwAEqAzrS8K7TeCrnEd7uL57GP6udCBbMd8rXxFoUuaUVhHm8MYxGPpckvM/fXfUljCXPiuJ62B6Cs+4Cg2P4icQl14tzxTzTHgmHQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=oracle.com; dmarc=pass action=none header.from=oracle.com;
- dkim=pass header.d=oracle.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=oracle.onmicrosoft.com; s=selector2-oracle-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=mAPKf/0QfLryLwIFnZq2MAh0fzbfH3R8GH3LC5BSk6s=;
- b=rE6acEl/mX9t+Ay0ZfHIQJz6p9NTKzbHvp4YUtqR1HrMV35t19U13va6JuSKYNWGu4ysLrmbCEI8YmnRnJxzhaxrC7Unu4WSl2QMxx3jlpuhVNFFPTFZapdSHQTqmCUiC08/vXXkg3wBMPhWuhavvD2ngaSYqldALwmJXfSq990=
-Received: from DM6PR10MB4201.namprd10.prod.outlook.com (2603:10b6:5:216::10)
- by DM5PR1001MB2250.namprd10.prod.outlook.com (2603:10b6:4:2b::30) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5546.22; Wed, 24 Aug
- 2022 18:21:54 +0000
-Received: from DM6PR10MB4201.namprd10.prod.outlook.com
- ([fe80::11b6:7a8a:1432:bec]) by DM6PR10MB4201.namprd10.prod.outlook.com
- ([fe80::11b6:7a8a:1432:bec%6]) with mapi id 15.20.5546.022; Wed, 24 Aug 2022
- 18:21:54 +0000
-Date:   Wed, 24 Aug 2022 11:21:51 -0700
-From:   Mike Kravetz <mike.kravetz@oracle.com>
-To:     Miaohe Lin <linmiaohe@huawei.com>
-Cc:     akpm@linux-foundation.org, songmuchun@bytedance.com,
-        lukas.bulwahn@gmail.com, linux-mm@kvack.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2 3/6] mm/hugetlb: fix missing call to
- restore_reserve_on_error()
-Message-ID: <YwZsP15q80ln+iB0@monkey>
-References: <20220823030209.57434-1-linmiaohe@huawei.com>
- <20220823030209.57434-4-linmiaohe@huawei.com>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220823030209.57434-4-linmiaohe@huawei.com>
-X-ClientProxiedBy: MW4PR04CA0090.namprd04.prod.outlook.com
- (2603:10b6:303:6b::35) To DM6PR10MB4201.namprd10.prod.outlook.com
- (2603:10b6:5:216::10)
+        Wed, 24 Aug 2022 14:23:43 -0400
+Received: from mail.skyhub.de (mail.skyhub.de [IPv6:2a01:4f8:190:11c2::b:1457])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A183874BBF;
+        Wed, 24 Aug 2022 11:23:41 -0700 (PDT)
+Received: from zn.tnic (p200300ea971b9859329c23fffea6a903.dip0.t-ipconnect.de [IPv6:2003:ea:971b:9859:329c:23ff:fea6:a903])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.skyhub.de (SuperMail on ZX Spectrum 128k) with ESMTPSA id 80B591EC0532;
+        Wed, 24 Aug 2022 20:23:35 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=alien8.de; s=dkim;
+        t=1661365415;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=3M2iHzeydaSKbxeD+QXdjYzGlimzK3uw0BB9BUIRK+0=;
+        b=ARSzkw5efkJpCAYXCrC/4jXB5FpD45wtUg4jx0fF16fdROM4rClMpoghfvXasZV3pWHDk4
+        pja0yVXo+b2WdmnAJs+zBxMxLrWRR/CH7qOfRQeMxUNUz4SfC4z0dqNvKjYKPuZtmLffM1
+        Zf3xBOIiBItN1ZeQeTqgg1WtnPI7aao=
+Date:   Wed, 24 Aug 2022 20:23:30 +0200
+From:   Borislav Petkov <bp@alien8.de>
+To:     Segher Boessenkool <segher@kernel.crashing.org>
+Cc:     X86 ML <x86@kernel.org>, Michael Matz <matz@suse.de>,
+        linux-toolchains@vger.kernel.org,
+        LKML <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH] x86/sev: Mark snp_abort() noreturn
+Message-ID: <YwZsolNWU129oRac@zn.tnic>
+References: <20220824152420.20547-1-bp@alien8.de>
+ <20220824172929.GA25951@gate.crashing.org>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 7364e29d-f8e6-428d-550b-08da85fd8597
-X-MS-TrafficTypeDiagnostic: DM5PR1001MB2250:EE_
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: MACIXYU0rfRb6Tge4JlgooCt2O0mzJkrb07iAaQ//xiGp9pMZUo6Xxnaz8FKeFN1+7rv+qO9GQ5PXVXbuyF7i5engi+x/YiNeacF27SOu+6vsCzmEf7BEr5mp9ZoOeI8CwJ2LmHNovppUTr5Sr8tgaqmQwAnBIsghJuAs8cAqlkXB6MkAC912bSgZMAFACR62cE1+d7gDQV0Cigwz9erta7Lk1vYA/0+0BzHY2xcFmF0K0RET37FmQMtiMbagbLIeKj0qA2ZxGG4COHi7TcG9r4kO0W/c9egjhXnUSWQILmmSm+eJ3YSc9mJh56RDC5d2oWn3qEcDgq3p0cCJSPiNox7IWydnbzYDV8E+b0ApwT1fXspEm4KM7GE3AVpqSCMQPk5n3wzC9hjN+hYnsoiN7gQPg1mzU08eiv7rCQVSA/924dQ4N8ZqU0/N0BuK72PpJjW2zGh8BZidT4V5+5bLYwrPWMmuhaKsWgKwswwzR0EGVWxC4cSkPyhQ5rRj8b5yx9Kqp8Nc0fYei40c9C44c4k3bBq6vkiRCqJmbhfUCtjBRAY7re78mb/7Y23+MEvDKZomUupz71F74gQ7EOWUuFSUDtytRhIgzkU8RPfjlDoQNrelfI1KFAj057/41aZIzEvMZL+B4AbzxLap7G0Vu3q4euWv3JsnIBAq7KCJFQ0Ga2u3gllAipnHWkCHWVc5540b8YuqWKgL+8yyeWf/wZL+HO5eC9E0gM51BUOlbm2DLYyQZsJ0or0tPre4IW0
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DM6PR10MB4201.namprd10.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(7916004)(346002)(366004)(396003)(376002)(136003)(39860400002)(9686003)(26005)(316002)(186003)(8936002)(478600001)(44832011)(6512007)(4326008)(33716001)(66476007)(83380400001)(66946007)(6506007)(66556008)(6916009)(8676002)(53546011)(6666004)(5660300002)(41300700001)(38100700002)(2906002)(6486002)(86362001)(67856001);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?/q/l+DbWqKCqSGlrr1aa3ZNAQEb8wesdefNMdsutDtuPYf9542f+kblrnjt4?=
- =?us-ascii?Q?zEddSVeG49PqbKyzbE2hOO54P8iMaxinLf16rXBDA0zCLY4V6I9QrHGPpcvx?=
- =?us-ascii?Q?Qn3sDbfnvq52/cBWCOqchcmKCSJYOexHym9mq1E9PSYVMCdkT7PmTxovT+i8?=
- =?us-ascii?Q?5KakQAOqJ8psr7sJVBaGnGl2Efl5KzmyyR6uerefrp9HmECIn/aFruwDMQdi?=
- =?us-ascii?Q?MSvwgOC+MKfsL/SNdTsSJAxRb95DnwU3nr0XCjTq5n7qdmzNuvzWDgr1CuwP?=
- =?us-ascii?Q?oR7eE59/aed4/yeYaU7V/MF+EnGC3+hZqnrMWvYyPgwZs1eKSv+V7otb6MG/?=
- =?us-ascii?Q?EXu/xU4CyEMOMdAuRLHEGgMtdvO5IbBOsbxflu5icM8zxSlwkDBzOlDWK1Gs?=
- =?us-ascii?Q?PhUmRCZp0IpnjpjY5C1DTh8dH8lAUb6xvArSEFnCiq9SD5eib6crThGJZBvJ?=
- =?us-ascii?Q?4DV2iHFL/BTvw/lX5v5anOXnGjDUqtCWJxXNRPKYgbetnfxknDCH4G4pMuyc?=
- =?us-ascii?Q?LrHZoN3hw9N6n5OP+UQdO3uAZXGKz5B8fAWJKbGwiVb+F2Ae2QaajrULyXjS?=
- =?us-ascii?Q?HFMqPx5pjnApxpx9hkd2HZ9Jfk2OBWkbiJSbcYUs6Mga5ddFXtFXByJgQh0N?=
- =?us-ascii?Q?AJp7YzxlAFbtodgorlHjaqaeBYJopyrmqTsgRid/6OePc39P0mlC4mT+Zcxa?=
- =?us-ascii?Q?L89iPAq5WWAHCC4ZngsiAEbFK9BjrJY8lWMy4gKnkI2HP8Qxo7jd14ualUDf?=
- =?us-ascii?Q?4rcRB2gSnTBSYNJj4gMRla3LdkpMpbwoVRiJ5niZdx9BrMQBQPr6z7V+/JuT?=
- =?us-ascii?Q?93kQWgZlkPiwH+2fb09cs+9GoeH4WIpRnmkdDNpyeinev3ydXUFDXrhT/+5S?=
- =?us-ascii?Q?nLtey8i06YtMNTjZ0o+bNrnmeTg57doabAtr+NxrnbU7p2AJU+qH+p/oque5?=
- =?us-ascii?Q?LFt3lCTPLgvX9UY+5efJS8wS1zZwP1acljODrDppRfBRYBEADWVMQmQ4K2NJ?=
- =?us-ascii?Q?2eSveoAXJSpMU50CI/XYLnDqndPpIAYVLCaR1FVPG7PkOTAaELfRT4yEcn16?=
- =?us-ascii?Q?mNgagpPBVwRwSoYIv6dgR7IMa85V8oj5Yrs2B7hucFdnuL6eAJmBdHna3Ofc?=
- =?us-ascii?Q?o3QU76lD9k4mF8h0gwXRhFCieVVONq8jHAaGxfw6qynTw6B2wvocqFrbZUrg?=
- =?us-ascii?Q?p9XauPhJ1u58tPnKlkbihdmFuTYlmNFk5CgJgCwylgFZMFoJ2kFY0k08QNJK?=
- =?us-ascii?Q?GuXyDPincphvy3GdfCz6ciaXtVmuQLAHqcaxdtz4Ob0HV52GDAKtlPicts76?=
- =?us-ascii?Q?Xxo/4A+mr0xVZGVAx1zJcFOZ5dHYlOyj0n+Lazw0cW6VPVFQcHumJfO/WXaC?=
- =?us-ascii?Q?EJhaUkRVOw04Ym9fUPmlBNdFUHxki9GP6UWUtyytV+cSI+K25PUFqMo4ZGRs?=
- =?us-ascii?Q?A1Jyqd10eb3XjEC8NUHWduzuNRn0J96zhvWiUkxPAVOspevBondisEeDDI7Q?=
- =?us-ascii?Q?XSSj/h8JWTELHaGlDCG+w9ECg7486NJ1mTDOXBbfe6dMrqRf1z13OsKI/a+M?=
- =?us-ascii?Q?goWXWfbvBunXAn6ElDhecdNjulPS3Dc6MD/suOdze+lG31N5p8EP29hi9j8D?=
- =?us-ascii?Q?3Q=3D=3D?=
-X-OriginatorOrg: oracle.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 7364e29d-f8e6-428d-550b-08da85fd8597
-X-MS-Exchange-CrossTenant-AuthSource: DM6PR10MB4201.namprd10.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 24 Aug 2022 18:21:54.1791
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 4e2c6054-71cb-48f1-bd6c-3a9705aca71b
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: D/4zJo+xxWyo1KVf200Q91BKfOLY8Pc44gghYBtMNUQjK1aE/zrhzU9udu/iVaq+GGzuk4da/vWnJWS+XQD8JA==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM5PR1001MB2250
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.895,Hydra:6.0.517,FMLib:17.11.122.1
- definitions=2022-08-24_11,2022-08-22_02,2022-06-22_01
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 spamscore=0 mlxlogscore=999
- phishscore=0 adultscore=0 mlxscore=0 bulkscore=0 suspectscore=0
- malwarescore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2207270000 definitions=main-2208240068
-X-Proofpoint-ORIG-GUID: qLPFbemkrgLHlYgQiJCSC1kcGHLwiQMy
-X-Proofpoint-GUID: qLPFbemkrgLHlYgQiJCSC1kcGHLwiQMy
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20220824172929.GA25951@gate.crashing.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 08/23/22 11:02, Miaohe Lin wrote:
-> When huge_add_to_page_cache() fails, the page is freed directly without
-> calling restore_reserve_on_error() to restore reserve for newly allocated
-> pages not in page cache. Fix this by calling restore_reserve_on_error()
-> when huge_add_to_page_cache fails.
-> 
-> Signed-off-by: Miaohe Lin <linmiaohe@huawei.com>
-> ---
->  mm/hugetlb.c | 11 ++++++++---
->  1 file changed, 8 insertions(+), 3 deletions(-)
-> 
-> diff --git a/mm/hugetlb.c b/mm/hugetlb.c
-> index d46dfe5ba62c..8e62da153c64 100644
-> --- a/mm/hugetlb.c
-> +++ b/mm/hugetlb.c
-> @@ -5576,7 +5576,6 @@ static vm_fault_t hugetlb_no_page(struct mm_struct *mm,
->  	if (idx >= size)
->  		goto out;
->  
-> -retry:
->  	new_page = false;
->  	page = find_lock_page(mapping, idx);
->  	if (!page) {
-> @@ -5616,9 +5615,15 @@ static vm_fault_t hugetlb_no_page(struct mm_struct *mm,
->  		if (vma->vm_flags & VM_MAYSHARE) {
->  			int err = huge_add_to_page_cache(page, mapping, idx);
->  			if (err) {
-> +				/*
-> +				 * err can't be -EEXIST which implies someone
-> +				 * else consumed the reservation since hugetlb
-> +				 * fault mutex is held when add a hugetlb page
-> +				 * to the page cache. So it's safe to call
-> +				 * restore_reserve_on_error() here.
-> +				 */
-> +				restore_reserve_on_error(h, vma, haddr, page);
->  				put_page(page);
-> -				if (err == -EEXIST)
-> -					goto retry;
+On Wed, Aug 24, 2022 at 12:29:29PM -0500, Segher Boessenkool wrote:
+> Would -Wmissing-noreturn have caught this? 
 
-Thanks for removing this check and adding the comment.
+Yes, see below. Current linus master allmodconfig with
 
-Reviewed-by: Mike Kravetz <mike.kravetz@oracle.com>
+gcc-12 (SUSE Linux) 12.1.1 20220517 [revision 325d82b08696da17fb26bd2e1b6ba607649357fb]
+
+> It sounds like you need this (and then fix all resulting warnings) to
+> not upset objtool?
+
+Yep.
+
+> It is nice to have this anyway (if there aren't a zillion false
+> positives), but it seems objtool is very fragile.
+
+Constant improvement, I'd guess.
+
+So, I'd say someone needs to sit down and fix those and then as last
+fix, enable the warning by default.
+
+All those use cases would need proper analysis tho.
+
+Thx.
+
+arch/x86/coco/tdx/tdx.c: In function ‘__tdx_hypercall_failed’:
+arch/x86/coco/tdx/tdx.c:56:6: warning: function might be candidate for attribute ‘noreturn’ [-Wsuggest-attribute=noreturn]
+   56 | void __tdx_hypercall_failed(void)
+      |      ^~~~~~~~~~~~~~~~~~~~~~
+arch/x86/hyperv/ivm.c: In function ‘hv_ghcb_terminate’:
+arch/x86/hyperv/ivm.c:130:6: warning: function might be candidate for attribute ‘noreturn’ [-Wsuggest-attribute=noreturn]
+  130 | void hv_ghcb_terminate(unsigned int set, unsigned int reason)
+      |      ^~~~~~~~~~~~~~~~~
+arch/x86/platform/pvh/enlighten.c: In function ‘xen_pvh_init’:
+arch/x86/platform/pvh/enlighten.c:104:20: warning: function might be candidate for attribute ‘noreturn’ [-Wsuggest-attribute=noreturn]
+  104 | void __init __weak xen_pvh_init(struct boot_params *boot_params)
+      |                    ^~~~~~~~~~~~
+arch/x86/platform/pvh/enlighten.c: In function ‘mem_map_via_hcall’:
+arch/x86/platform/pvh/enlighten.c:39:20: warning: function might be candidate for attribute ‘noreturn’ [-Wsuggest-attribute=noreturn]
+   39 | void __init __weak mem_map_via_hcall(struct boot_params *ptr __maybe_unused)
+      |                    ^~~~~~~~~~~~~~~~~
+arch/x86/xen/smp_pv.c: In function ‘cpu_bringup_and_idle’:
+arch/x86/xen/smp_pv.c:92:27: warning: function might be candidate for attribute ‘noreturn’ [-Wsuggest-attribute=noreturn]
+   92 | asmlinkage __visible void cpu_bringup_and_idle(void)
+      |                           ^~~~~~~~~~~~~~~~~~~~
+init/main.c: In function ‘rest_init’:
+init/main.c:681:21: warning: function might be candidate for attribute ‘noreturn’ [-Wsuggest-attribute=noreturn]
+  681 | noinline void __ref rest_init(void)
+      |                     ^~~~~~~~~
+In file included from ./arch/x86/include/asm/traps.h:9,
+                 from arch/x86/xen/enlighten_pv.c:61:
+arch/x86/xen/enlighten_pv.c: In function ‘exc_xen_unknown_trap’:
+arch/x86/xen/enlighten_pv.c:566:21: warning: function might be candidate for attribute ‘noreturn’ [-Wsuggest-attribute=noreturn]
+  566 | DEFINE_IDTENTRY_RAW(exc_xen_unknown_trap)
+      |                     ^~~~~~~~~~~~~~~~~~~~
+./arch/x86/include/asm/idtentry.h:138:24: note: in definition of macro ‘DEFINE_IDTENTRY_RAW’
+  138 | __visible noinstr void func(struct pt_regs *regs)
+      |                        ^~~~
+init/main.c: In function ‘arch_call_rest_init’:
+init/main.c:881:20: warning: function might be candidate for attribute ‘noreturn’ [-Wsuggest-attribute=noreturn]
+  881 | void __init __weak arch_call_rest_init(void)
+      |                    ^~~~~~~~~~~~~~~~~~~
+arch/x86/kernel/smpboot.c: In function ‘hlt_play_dead’:
+arch/x86/kernel/smpboot.c:1815:6: warning: function might be candidate for attribute ‘noreturn’ [-Wsuggest-attribute=noreturn]
+ 1815 | void hlt_play_dead(void)
+      |      ^~~~~~~~~~~~~
+kernel/panic.c: In function ‘__stack_chk_fail’:
+kernel/panic.c:703:24: warning: function might be candidate for attribute ‘noreturn’ [-Wsuggest-attribute=noreturn]
+  703 | __visible noinstr void __stack_chk_fail(void)
+      |                        ^~~~~~~~~~~~~~~~
+kernel/panic.c: In function ‘panic_smp_self_stop’:
+kernel/panic.c:112:13: warning: function might be candidate for attribute ‘noreturn’ [-Wsuggest-attribute=noreturn]
+  112 | void __weak panic_smp_self_stop(void)
+      |             ^~~~~~~~~~~~~~~~~~~
+arch/x86/kernel/reboot.c: In function ‘nmi_panic_self_stop’:
+arch/x86/kernel/reboot.c:885:6: warning: function might be candidate for attribute ‘noreturn’ [-Wsuggest-attribute=noreturn]
+  885 | void nmi_panic_self_stop(struct pt_regs *regs)
+      |      ^~~~~~~~~~~~~~~~~~~
+In file included from ./include/linux/compat.h:34,
+                 from ./arch/x86/include/asm/ftrace.h:111,
+                 from ./include/linux/ftrace.h:23,
+                 from ./include/linux/perf_event.h:51,
+                 from ./include/linux/trace_events.h:10,
+                 from ./include/trace/syscall.h:7,
+                 from ./include/linux/syscalls.h:88,
+                 from kernel/exit.c:42:
+kernel/exit.c: In function ‘__x64_sys_exit’:
+./arch/x86/include/asm/syscall_wrapper.h:77:14: warning: function might be candidate for attribute ‘noreturn’ [-Wsuggest-attribute=noreturn]
+   77 |         long __##abi##_##name(const struct pt_regs *regs)               \
+      |              ^~
+./arch/x86/include/asm/syscall_wrapper.h:97:9: note: in expansion of macro ‘__SYS_STUBx’
+   97 |         __SYS_STUBx(x64, sys##name,                                     \
+      |         ^~~~~~~~~~~
+./arch/x86/include/asm/syscall_wrapper.h:231:9: note: in expansion of macro ‘__X64_SYS_STUBx’
+  231 |         __X64_SYS_STUBx(x, name, __VA_ARGS__)                           \
+      |         ^~~~~~~~~~~~~~~
+./include/linux/syscalls.h:228:9: note: in expansion of macro ‘__SYSCALL_DEFINEx’
+  228 |         __SYSCALL_DEFINEx(x, sname, __VA_ARGS__)
+      |         ^~~~~~~~~~~~~~~~~
+./include/linux/syscalls.h:217:36: note: in expansion of macro ‘SYSCALL_DEFINEx’
+  217 | #define SYSCALL_DEFINE1(name, ...) SYSCALL_DEFINEx(1, _##name, __VA_ARGS__)
+      |                                    ^~~~~~~~~~~~~~~
+kernel/exit.c:890:1: note: in expansion of macro ‘SYSCALL_DEFINE1’
+  890 | SYSCALL_DEFINE1(exit, int, error_code)
+      | ^~~~~~~~~~~~~~~
+kernel/exit.c: In function ‘__ia32_sys_exit’:
+./arch/x86/include/asm/syscall_wrapper.h:77:14: warning: function might be candidate for attribute ‘noreturn’ [-Wsuggest-attribute=noreturn]
+   77 |         long __##abi##_##name(const struct pt_regs *regs)               \
+      |              ^~
+./arch/x86/include/asm/syscall_wrapper.h:117:9: note: in expansion of macro ‘__SYS_STUBx’
+  117 |         __SYS_STUBx(ia32, sys##name,                                    \
+      |         ^~~~~~~~~~~
+./arch/x86/include/asm/syscall_wrapper.h:232:9: note: in expansion of macro ‘__IA32_SYS_STUBx’
+  232 |         __IA32_SYS_STUBx(x, name, __VA_ARGS__)                          \
+      |         ^~~~~~~~~~~~~~~~
+./include/linux/syscalls.h:228:9: note: in expansion of macro ‘__SYSCALL_DEFINEx’
+  228 |         __SYSCALL_DEFINEx(x, sname, __VA_ARGS__)
+      |         ^~~~~~~~~~~~~~~~~
+./include/linux/syscalls.h:217:36: note: in expansion of macro ‘SYSCALL_DEFINEx’
+  217 | #define SYSCALL_DEFINE1(name, ...) SYSCALL_DEFINEx(1, _##name, __VA_ARGS__)
+      |                                    ^~~~~~~~~~~~~~~
+kernel/exit.c:890:1: note: in expansion of macro ‘SYSCALL_DEFINE1’
+  890 | SYSCALL_DEFINE1(exit, int, error_code)
+      | ^~~~~~~~~~~~~~~
+kernel/exit.c: In function ‘__x64_sys_exit_group’:
+./arch/x86/include/asm/syscall_wrapper.h:77:14: warning: function might be candidate for attribute ‘noreturn’ [-Wsuggest-attribute=noreturn]
+   77 |         long __##abi##_##name(const struct pt_regs *regs)               \
+      |              ^~
+./arch/x86/include/asm/syscall_wrapper.h:97:9: note: in expansion of macro ‘__SYS_STUBx’
+   97 |         __SYS_STUBx(x64, sys##name,                                     \
+      |         ^~~~~~~~~~~
+./arch/x86/include/asm/syscall_wrapper.h:231:9: note: in expansion of macro ‘__X64_SYS_STUBx’
+  231 |         __X64_SYS_STUBx(x, name, __VA_ARGS__)                           \
+      |         ^~~~~~~~~~~~~~~
+./include/linux/syscalls.h:228:9: note: in expansion of macro ‘__SYSCALL_DEFINEx’
+  228 |         __SYSCALL_DEFINEx(x, sname, __VA_ARGS__)
+      |         ^~~~~~~~~~~~~~~~~
+./include/linux/syscalls.h:217:36: note: in expansion of macro ‘SYSCALL_DEFINEx’
+  217 | #define SYSCALL_DEFINE1(name, ...) SYSCALL_DEFINEx(1, _##name, __VA_ARGS__)
+      |                                    ^~~~~~~~~~~~~~~
+kernel/exit.c:934:1: note: in expansion of macro ‘SYSCALL_DEFINE1’
+  934 | SYSCALL_DEFINE1(exit_group, int, error_code)
+      | ^~~~~~~~~~~~~~~
+kernel/exit.c: In function ‘__ia32_sys_exit_group’:
+./arch/x86/include/asm/syscall_wrapper.h:77:14: warning: function might be candidate for attribute ‘noreturn’ [-Wsuggest-attribute=noreturn]
+   77 |         long __##abi##_##name(const struct pt_regs *regs)               \
+      |              ^~
+./arch/x86/include/asm/syscall_wrapper.h:117:9: note: in expansion of macro ‘__SYS_STUBx’
+  117 |         __SYS_STUBx(ia32, sys##name,                                    \
+      |         ^~~~~~~~~~~
+./arch/x86/include/asm/syscall_wrapper.h:232:9: note: in expansion of macro ‘__IA32_SYS_STUBx’
+  232 |         __IA32_SYS_STUBx(x, name, __VA_ARGS__)                          \
+      |         ^~~~~~~~~~~~~~~~
+./include/linux/syscalls.h:228:9: note: in expansion of macro ‘__SYSCALL_DEFINEx’
+  228 |         __SYSCALL_DEFINEx(x, sname, __VA_ARGS__)
+      |         ^~~~~~~~~~~~~~~~~
+./include/linux/syscalls.h:217:36: note: in expansion of macro ‘SYSCALL_DEFINEx’
+  217 | #define SYSCALL_DEFINE1(name, ...) SYSCALL_DEFINEx(1, _##name, __VA_ARGS__)
+      |                                    ^~~~~~~~~~~~~~~
+kernel/exit.c:934:1: note: in expansion of macro ‘SYSCALL_DEFINE1’
+  934 | SYSCALL_DEFINE1(exit_group, int, error_code)
+      | ^~~~~~~~~~~~~~~
+arch/x86/kernel/paravirt.c: In function ‘paravirt_BUG’:
+arch/x86/kernel/paravirt.c:69:14: warning: function might be candidate for attribute ‘noreturn’ [-Wsuggest-attribute=noreturn]
+   69 | noinstr void paravirt_BUG(void)
+      |              ^~~~~~~~~~~~
+arch/x86/kernel/devicetree.c: In function ‘early_init_dt_add_memory_arch’:
+arch/x86/kernel/devicetree.c:34:13: warning: function might be candidate for attribute ‘noreturn’ [-Wsuggest-attribute=noreturn]
+   34 | void __init early_init_dt_add_memory_arch(u64 base, u64 size)
+      |             ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+arch/x86/kernel/sev.c: In function ‘snp_abort’:
+arch/x86/kernel/sev.c:2103:13: warning: function might be candidate for attribute ‘noreturn’ [-Wsuggest-attribute=noreturn]
+ 2103 | void __init snp_abort(void)
+      |             ^~~~~~~~~
+kernel/kthread.c: In function ‘kthreadd’:
+kernel/kthread.c:717:5: warning: function might be candidate for attribute ‘noreturn’ [-Wsuggest-attribute=noreturn]
+  717 | int kthreadd(void *unused)
+      |     ^~~~~~~~
+net/ipv4/ping.c: In function ‘ping_hash’:
+net/ipv4/ping.c:144:5: warning: function might be candidate for attribute ‘noreturn’ [-Wsuggest-attribute=noreturn]
+  144 | int ping_hash(struct sock *sk)
+      |     ^~~~~~~~~
+crypto/jitterentropy-kcapi.c: In function ‘jent_panic’:
+crypto/jitterentropy-kcapi.c:62:6: warning: function might be candidate for attribute ‘noreturn’ [-Wsuggest-attribute=noreturn]
+   62 | void jent_panic(char *s)
+      |      ^~~~~~~~~~
+drivers/message/fusion/mptbase.c: In function ‘mpt_halt_firmware’:
+drivers/message/fusion/mptbase.c:6939:1: warning: function might be candidate for attribute ‘noreturn’ [-Wsuggest-attribute=noreturn]
+ 6939 | mpt_halt_firmware(MPT_ADAPTER *ioc)
+      | ^~~~~~~~~~~~~~~~~
+drivers/net/wireless/rsi/rsi_91x_sdio_ops.c: In function ‘rsi_sdio_rx_thread’:
+drivers/net/wireless/rsi/rsi_91x_sdio_ops.c:65:6: warning: function might be candidate for attribute ‘noreturn’ [-Wsuggest-attribute=noreturn]
+   65 | void rsi_sdio_rx_thread(struct rsi_common *common)
+      |      ^~~~~~~~~~~~~~~~~~
+drivers/net/wireless/rsi/rsi_91x_usb_ops.c: In function ‘rsi_usb_rx_thread’:
+drivers/net/wireless/rsi/rsi_91x_usb_ops.c:28:6: warning: function might be candidate for attribute ‘noreturn’ [-Wsuggest-attribute=noreturn]
+   28 | void rsi_usb_rx_thread(struct rsi_common *common)
+      |      ^~~~~~~~~~~~~~~~~
+drivers/clocksource/timer-ti-dm.c: In function ‘omap_dm_timer_modify_idlect_mask’:
+drivers/clocksource/timer-ti-dm.c:600:7: warning: function might be candidate for attribute ‘noreturn’ [-Wsuggest-attribute=noreturn]
+  600 | __u32 omap_dm_timer_modify_idlect_mask(__u32 inputmask)
+      |       ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+drivers/staging/media/atomisp/pci/ia_css_device_access.c: In function ‘ia_css_device_load_uint64’:
+drivers/staging/media/atomisp/pci/ia_css_device_access.c:51:1: warning: function might be candidate for attribute ‘noreturn’ [-Wsuggest-attribute=noreturn]
+   51 | ia_css_device_load_uint64(const hrt_address addr)
+      | ^~~~~~~~~~~~~~~~~~~~~~~~~
+drivers/staging/media/atomisp/pci/ia_css_device_access.c: In function ‘ia_css_device_store_uint64’:
+drivers/staging/media/atomisp/pci/ia_css_device_access.c:78:1: warning: function might be candidate for attribute ‘noreturn’ [-Wsuggest-attribute=noreturn]
+   78 | ia_css_device_store_uint64(const hrt_address addr, const uint64_t data)
+      | ^~~~~~~~~~~~~~~~~~~~~~~~~~
+lib/ubsan.c: In function ‘__ubsan_handle_builtin_unreachable’:
+lib/ubsan.c:329:6: warning: function might be candidate for attribute ‘noreturn’ [-Wsuggest-attribute=noreturn]
+  329 | void __ubsan_handle_builtin_unreachable(void *_data)
+      |      ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+drivers/net/ethernet/marvell/octeontx2/nic/otx2_txrx.c: In function ‘otx2_sqe_flush’:
+drivers/net/ethernet/marvell/octeontx2/nic/otx2_txrx.c:554:6: warning: function might be candidate for attribute ‘noreturn’ [-Wsuggest-attribute=noreturn]
+  554 | void otx2_sqe_flush(void *dev, struct otx2_snd_queue *sq,
+      |      ^~~~~~~~~~~~~~
+drivers/gpu/drm/radeon/r100.c: In function ‘r100_semaphore_ring_emit’:
+drivers/gpu/drm/radeon/r100.c:890:6: warning: function might be candidate for attribute ‘noreturn’ [-Wsuggest-attribute=noreturn]
+  890 | bool r100_semaphore_ring_emit(struct radeon_device *rdev,
+      |      ^~~~~~~~~~~~~~~~~~~~~~~~
+
+
 -- 
-Mike Kravetz
+Regards/Gruss,
+    Boris.
 
->  				goto out;
->  			}
->  			new_pagecache_page = true;
-> -- 
-> 2.23.0
-> 
+https://people.kernel.org/tglx/notes-about-netiquette
