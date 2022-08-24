@@ -2,81 +2,102 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D7C3CC00140
-	for <linux-kernel@archiver.kernel.org>; Wed, 24 Aug 2022 09:00:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F1E12C00140
+	for <linux-kernel@archiver.kernel.org>; Wed, 24 Aug 2022 09:01:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233890AbiHXJAU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 24 Aug 2022 05:00:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54806 "EHLO
+        id S236182AbiHXJBV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 24 Aug 2022 05:01:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55256 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233776AbiHXJAR (ORCPT
+        with ESMTP id S235694AbiHXJBU (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 24 Aug 2022 05:00:17 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CF9C450182;
-        Wed, 24 Aug 2022 02:00:16 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 325D7617CA;
-        Wed, 24 Aug 2022 09:00:16 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 83B74C433D6;
-        Wed, 24 Aug 2022 09:00:15 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1661331615;
-        bh=LJwj98O5yiaSW8Agwscn4s0qxpBKY+diZqoJzIjHWIo=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=TOqI0rtlhWyZsIK2mruk0XiDX8P+XHv2p2bj2uHCKD9847XUZd0pIAK/QCDgEDEtG
-         nF3DqTCxZHtrbjhvgSKvsYhC82pDrsjzolVshoGhX/DbsSIMIIwCyc2/P9HQN7J9lH
-         h+dAABHN7OkOkVIoQ0Ga9xf2CKT2OccMz5ZTcb+JOKxlJaCETl0WAgw5drRzv25uwn
-         73hsjl2tiabgl1mF8jloU6KXVHxez7dAv4YMbISO3oxKuY26EODoA7JUETprc2VKeS
-         dee8lU+YYu/5+7xtqe7HKnjZ2T/jol/nPg3NJq6JRoSRuZY9BZrwj/10HlEmX2Vcaj
-         rbCS9hEQToZ9w==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 62561E2A03C;
-        Wed, 24 Aug 2022 09:00:15 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        Wed, 24 Aug 2022 05:01:20 -0400
+Received: from mail-qt1-x82b.google.com (mail-qt1-x82b.google.com [IPv6:2607:f8b0:4864:20::82b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 281347435C
+        for <linux-kernel@vger.kernel.org>; Wed, 24 Aug 2022 02:01:18 -0700 (PDT)
+Received: by mail-qt1-x82b.google.com with SMTP id r6so3170996qtx.6
+        for <linux-kernel@vger.kernel.org>; Wed, 24 Aug 2022 02:01:18 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc;
+        bh=HhxCZvae4Tf9kz9NcsjXMEcY8sfHg3Ouyy3SX130F2Y=;
+        b=NljGLElc99FfmYIVG0KKvVV2zUnquTWsHwvb1zZGVomY/peegybQGRT/Tqtu9Y1yrD
+         GDknq/k9ni53Ny4kmKdmKkwr8km9PXVmfJhPTCrD4Kjl9RWOZDkx/lhfvct5S2e6ra4l
+         P+RMO+QPGtfpUDhtoaE8V3tL1dvax3jBu0nWcElCUP2ck/ZL9uqiiXedLWv5rT1dTtnf
+         GzZ/YUfG56KhcqCwIxF4L3dgwfIdLwF2e8EM4i+5osbvFqS7TBOaixINkBtxuK3Ci7xk
+         93xA74g5+UfPT/8SjsQrZcmOpxwfuU+DUyzeX2W4XWs7taqKEd8cPqHa9jfRqlmpmf9x
+         i2HQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc;
+        bh=HhxCZvae4Tf9kz9NcsjXMEcY8sfHg3Ouyy3SX130F2Y=;
+        b=clEC5hwpFapWVQSKHwyePpQDtwd8IievEXHYqqK6QQLCM3I6Y67LbPUsrOxyioplTr
+         f643oj//iTHxn6Vb7bWNQkNKH3pscMmqFFgyNbhVPqFgTxec5tOox6W9g1q7o9SJ21qz
+         QZrXG/harQNKHf5vdmfLKABif/2sx0YkfgPoFdXBEiew+Y6n2n7AN4esmcChCzgktHSz
+         6WKxPMk/XWx8LsjlIZu5qwyrLKrAQllvOnE7t5QfZFTV2ICcwpqNHlFH0w/C/OioDvCT
+         8piD9UUcYILC/rP58hq0hXHYMpOpCk0kYFPCvV+laOHsKuXagttmwPlg46HOr4fLYqoW
+         AIRg==
+X-Gm-Message-State: ACgBeo0LTaBF+sjfPW73RK+JkQmX0XA4BsaTvd9GRak4lV3msN3bb8fl
+        Q1ENF3Jm9vQGWOHuXWVGQqgHnQ/nZCHbLVPORlc=
+X-Google-Smtp-Source: AA6agR7LZmjCNCLMXXWlp2k23GexHuVg/Vd+1zc8jeLzHuHcI8ZFAnYSBm6IicpyHUKA93sCXq9O5J9AxItSMB1Pgxs=
+X-Received: by 2002:a05:622a:491:b0:344:95bf:8f05 with SMTP id
+ p17-20020a05622a049100b0034495bf8f05mr21568523qtx.61.1661331677075; Wed, 24
+ Aug 2022 02:01:17 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net v2 RESEND] net: neigh: don't call kfree_skb() under
- spin_lock_irqsave()
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <166133161539.23661.2735150323779560219.git-patchwork-notify@kernel.org>
-Date:   Wed, 24 Aug 2022 09:00:15 +0000
-References: <20220822025346.3758558-1-yangyingliang@huawei.com>
-In-Reply-To: <20220822025346.3758558-1-yangyingliang@huawei.com>
-To:     Yang Yingliang <yangyingliang@huawei.com>
-Cc:     linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        den@openvz.org, davem@davemloft.net, edumazet@google.com,
-        kuba@kernel.org, razor@blackwall.org
+References: <20220824012624.2826445-1-yury.norov@gmail.com>
+In-Reply-To: <20220824012624.2826445-1-yury.norov@gmail.com>
+From:   Andy Shevchenko <andy.shevchenko@gmail.com>
+Date:   Wed, 24 Aug 2022 12:00:41 +0300
+Message-ID: <CAHp75VddCDWo3pkX9oJUUYqndmZbKm5eB_3HU7ytsjjwFnsnRA@mail.gmail.com>
+Subject: Re: [PATCH v2 0/4] lib: optimize find_bit() functions
+To:     Yury Norov <yury.norov@gmail.com>
+Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Guenter Roeck <linux@roeck-us.net>,
+        Dennis Zhou <dennis@kernel.org>,
+        Russell King <linux@armlinux.org.uk>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Rasmus Villemoes <linux@rasmusvillemoes.dk>,
+        Alexey Klimov <aklimov@redhat.com>,
+        Kees Cook <keescook@chromium.org>,
+        Andy Whitcroft <apw@canonical.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hello:
+On Wed, Aug 24, 2022 at 4:39 AM Yury Norov <yury.norov@gmail.com> wrote:
 
-This patch was applied to netdev/net.git (master)
-by David S. Miller <davem@davemloft.net>:
+...
 
-On Mon, 22 Aug 2022 10:53:46 +0800 you wrote:
-> It is not allowed to call kfree_skb() from hardware interrupt
-> context or with interrupts being disabled. So add all skb to
-> a tmp list, then free them after spin_unlock_irqrestore() at
-> once.
-> 
-> Fixes: 66ba215cb513 ("neigh: fix possible DoS due to net iface start/stop loop")
-> Suggested-by: Denis V. Lunev <den@openvz.org>
-> Signed-off-by: Yang Yingliang <yangyingliang@huawei.com>
-> 
-> [...]
+> v1: https://lore.kernel.org/all/20220728161208.865420-2-yury.norov@gmail.com/T/
+>
+> Yury Norov (3):
+>   lib/find_bit: introduce FIND_FIRST_BIT() macro
+>   lib/find_bit: create find_first_zero_bit_le()
+>   lib/find_bit: optimize find_next_bit() functions
+>
+>  MAINTAINERS          |   2 +
+>  include/linux/find.h |  46 +++++++++++++------
+>  lib/Makefile         |   1 +
+>  lib/find_bit.c       | 104 ++++++++++++-------------------------------
+>  lib/find_bit.h       |  45 +++++++++++++++++++
+>  lib/find_bit_be.c    |  42 +++++++++++++++++
+>  6 files changed, 152 insertions(+), 88 deletions(-)
+>  create mode 100644 lib/find_bit.h
+>  create mode 100644 lib/find_bit_be.c
+>
+> --
+> 2.34.1
 
-Here is the summary with links:
-  - [net,v2,RESEND] net: neigh: don't call kfree_skb() under spin_lock_irqsave()
-    https://git.kernel.org/netdev/net/c/d5485d9dd24e
-
-You are awesome, thank you!
--- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
+Seems like the cover letter is generated by Git, but it has 0/4 in the
+Subject while the rest of the series is n/3. What happened on your
+side with the numbering of the patches?
 
 
+--
+With Best Regards,
+Andy Shevchenko
