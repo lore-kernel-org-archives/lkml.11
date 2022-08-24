@@ -2,106 +2,146 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AFC07C32793
-	for <linux-kernel@archiver.kernel.org>; Wed, 24 Aug 2022 01:38:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 46906C32793
+	for <linux-kernel@archiver.kernel.org>; Wed, 24 Aug 2022 01:39:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233741AbiHXBit (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 21:38:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41570 "EHLO
+        id S233757AbiHXBjc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 23 Aug 2022 21:39:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42026 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231290AbiHXBir (ORCPT
+        with ESMTP id S231290AbiHXBja (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 21:38:47 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 63DEC8A6D5
-        for <linux-kernel@vger.kernel.org>; Tue, 23 Aug 2022 18:38:46 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        Tue, 23 Aug 2022 21:39:30 -0400
+Received: from beige.elm.relay.mailchannels.net (beige.elm.relay.mailchannels.net [23.83.212.16])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C4C3E8C035
+        for <linux-kernel@vger.kernel.org>; Tue, 23 Aug 2022 18:39:28 -0700 (PDT)
+X-Sender-Id: dreamhost|x-authsender|dave@stgolabs.net
+Received: from relay.mailchannels.net (localhost [127.0.0.1])
+        by relay.mailchannels.net (Postfix) with ESMTP id 082FA7E15C1;
+        Wed, 24 Aug 2022 01:39:28 +0000 (UTC)
+Received: from pdx1-sub0-mail-a225 (unknown [127.0.0.6])
+        (Authenticated sender: dreamhost)
+        by relay.mailchannels.net (Postfix) with ESMTPA id 58D167E144A;
+        Wed, 24 Aug 2022 01:39:27 +0000 (UTC)
+ARC-Seal: i=1; s=arc-2022; d=mailchannels.net; t=1661305167; a=rsa-sha256;
+        cv=none;
+        b=YM8/iN0AEuuGYPyJrF7uRM2ywMduzfIJWbBmrJvEP1L+IcGTsdeM97xekt3ckJcx1jcgI/
+        IkYL9dEYEbBkIT5Ho9A5JfJm3Q57/zJTOYYgkfg0H+PcimsUWR0Y6NLmBLKAfw+w7atp7u
+        BLv5HkQw7jQvbVgV2d2h4KAmvwmaNbb4nCvGVYRB0QQGE3QxXPPKi7WfH27F4w2lNrfM3C
+        20TMkvBRFkY9RtLDU3LrROqElQoh9KtVhXxjcx3lgbqPg6N1UWQHpQVooA+LnMTk1Nnnoo
+        nnt2dGHzJRFDY9GwQz2lnX+VeK05z23be+dNNbaHg5k+qUUlBE80C0WOZ0GIVg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=mailchannels.net;
+        s=arc-2022; t=1661305167;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references:dkim-signature;
+        bh=J+hEYIEjvOwz2IyYKQJbNRKzS/JVrt+rHjvP+egv3pQ=;
+        b=lZs79j5/qHvG3TUe27KhIHgmNldv7Adf2suCPr2Fan8MjAHmvRfwCZ9AANfcyfCxpxpUv8
+        ze4zLjkfViK34iaJPG92KNArlZJ/rGtzr93q0AjaEhRUFB4blq+ymfQap/cJRvV5xX9XVa
+        qHUPjt0Y9UyHLpncEhoEToBkqQhjhuBS1oIi49xmc8bdmCQQk3UWeXLkkGqr25I7wHpaYE
+        KcRdDT5/0j5VPcLgNbvCNYTP62wd6uwdybYnRs0vXAn28gQ6PrBJq0kHg9AriNzkcrter0
+        3lA2MpxfQXvyxnkLYMufUKkXm2EoKC5ZlcoSpMBpNGLhLwZ+jwbXlrLxEJxAgg==
+ARC-Authentication-Results: i=1;
+        rspamd-5cbff9fff7-bjsdh;
+        auth=pass smtp.auth=dreamhost smtp.mailfrom=dave@stgolabs.net
+X-Sender-Id: dreamhost|x-authsender|dave@stgolabs.net
+X-MC-Relay: Neutral
+X-MailChannels-SenderId: dreamhost|x-authsender|dave@stgolabs.net
+X-MailChannels-Auth-Id: dreamhost
+X-Glossy-Dime: 1021f1c555efe553_1661305167619_443955144
+X-MC-Loop-Signature: 1661305167619:473570999
+X-MC-Ingress-Time: 1661305167619
+Received: from pdx1-sub0-mail-a225 (pop.dreamhost.com [64.90.62.162])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384)
+        by 100.103.147.30 (trex/6.7.1);
+        Wed, 24 Aug 2022 01:39:27 +0000
+Received: from offworld (unknown [104.36.31.106])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-256) server-signature RSA-PSS (2048 bits) server-digest SHA256)
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 1D3C3B8225D
-        for <linux-kernel@vger.kernel.org>; Wed, 24 Aug 2022 01:38:45 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id AE797C43140
-        for <linux-kernel@vger.kernel.org>; Wed, 24 Aug 2022 01:38:43 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1661305123;
-        bh=Gvvtn1u0RIXhBffV5Ro47CzVIUHMiwzddjAireiQsOY=;
-        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=qPlTq4XoLqLrTG1vZre+UqnUFuMUIrcvFkTqdzuB6TiKMngSvRoGYzrw0EGYA/2QC
-         9Chhf5ltu+aJwF+ZnJX78rfv1tW9NPf0AgZVICzedlHX9p4StQvJbU5x1XStW2TzhF
-         RblpPhknzO9tuZH7fycIbhY85wjyKESEuqLQ3y/KTCDUKA+W52z0BQFxXOKFy5dKqf
-         vrsNQ2MWluKRDwwsMga1w8kEKwWD6CvXpoubgjYET2L7t1ep7SwRaq/tlNK++vwqxq
-         Du/ZROZGAojef6N2r0E50gorXWtuOd1FcEEdPrwRK8AJr74RI0zTKemoVN+5hBWGWO
-         gk1pqcD8AR6wQ==
-Received: by mail-vs1-f44.google.com with SMTP id d126so16168353vsd.13
-        for <linux-kernel@vger.kernel.org>; Tue, 23 Aug 2022 18:38:43 -0700 (PDT)
-X-Gm-Message-State: ACgBeo0MQeL0Ic2FnzWWJpoGH4VSUGePuj5J7FsBzzxbJjvSH9dBiqDh
-        iSPjWIiQpdX1nQWDlt4j0jPTix+I6624NP9AFEw=
-X-Google-Smtp-Source: AA6agR6oXAmDdNb+wqfeTCMgPkSD+gWaba56jOWHft1AGp5Go9HbII0ziwxFQWvwtRaxVQ3AkRtz0x+U6txGDGnECGE=
-X-Received: by 2002:a67:d483:0:b0:38f:4981:c4f3 with SMTP id
- g3-20020a67d483000000b0038f4981c4f3mr9970426vsj.59.1661305122473; Tue, 23 Aug
- 2022 18:38:42 -0700 (PDT)
+        (Authenticated sender: dave@stgolabs.net)
+        by pdx1-sub0-mail-a225 (Postfix) with ESMTPSA id 4MC80G5py6z1jh;
+        Tue, 23 Aug 2022 18:39:26 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=stgolabs.net;
+        s=dreamhost; t=1661305167;
+        bh=J+hEYIEjvOwz2IyYKQJbNRKzS/JVrt+rHjvP+egv3pQ=;
+        h=Date:From:To:Cc:Subject:Content-Type;
+        b=SWusiSuECsjBEl+LRWPfdW7Nc75nB1HAFFk+Gf60fCn9oUUWMiTQ/9Ap6yZXd/fqn
+         R9c9AUoIS9Z3AlUc9L7RIqQ7NXbbDHskgPcOwcgl43EWIv6ZaUK3/Yaas1CzGpA4qy
+         VN0FE4p21Hd98YYzI4uvPX9EuqSxtjfMHdbH4sp1WtR2cnLaeRiSbda39ptQos6BQ1
+         oh8V6bBb4GrXBFkDCQUUAmLX7SQTHHfueXnxT/IHI5gFMQkVkX1GDGZVBso9pj8Pf4
+         4RsKts3RfuWjXGNgxw9HTnNvQ4EEKQdq+yvuP4AKp3+tCIREYjm87GW70ONENRhqt5
+         43C/NrLEss2hg==
+Date:   Tue, 23 Aug 2022 18:21:21 -0700
+From:   Davidlohr Bueso <dave@stgolabs.net>
+To:     Liam Howlett <liam.howlett@oracle.com>
+Cc:     "maple-tree@lists.infradead.org" <maple-tree@lists.infradead.org>,
+        "linux-mm@kvack.org" <linux-mm@kvack.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        Andrew Morton <akpm@linux-foundation.org>
+Subject: Re: [PATCH v13 42/70] fs/proc/base: use maple tree iterators in
+ place of linked list
+Message-ID: <20220824012121.aj2qkzrmdyywu45t@offworld>
+Mail-Followup-To: Liam Howlett <liam.howlett@oracle.com>,
+        "maple-tree@lists.infradead.org" <maple-tree@lists.infradead.org>,
+        "linux-mm@kvack.org" <linux-mm@kvack.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        Andrew Morton <akpm@linux-foundation.org>
+References: <20220822150128.1562046-1-Liam.Howlett@oracle.com>
+ <20220822150128.1562046-43-Liam.Howlett@oracle.com>
 MIME-Version: 1.0
-References: <YwSRFzQQKAXP2ncp@debian> <CAHk-=wjn1=Gyi3Jxw4V0A=fXpOu5e1StPoyu52A6DHmbT+auzA@mail.gmail.com>
-In-Reply-To: <CAHk-=wjn1=Gyi3Jxw4V0A=fXpOu5e1StPoyu52A6DHmbT+auzA@mail.gmail.com>
-From:   Huacai Chen <chenhuacai@kernel.org>
-Date:   Wed, 24 Aug 2022 09:38:29 +0800
-X-Gmail-Original-Message-ID: <CAAhV-H6vvkuOzy8OemWdYK3taj5Jn3bFX0ZTwE=twM8ywpBUYA@mail.gmail.com>
-Message-ID: <CAAhV-H6vvkuOzy8OemWdYK3taj5Jn3bFX0ZTwE=twM8ywpBUYA@mail.gmail.com>
-Subject: Re: mainline build failure for loongarch allmodconfig with gcc-12
-To:     Linus Torvalds <torvalds@linux-foundation.org>
-Cc:     "Sudip Mukherjee (Codethink)" <sudipm.mukherjee@gmail.com>,
-        Nathan Chancellor <nathan@kernel.org>,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        Tom Rix <trix@redhat.com>, WANG Xuerui <kernel@xen0n.name>,
-        LKML <linux-kernel@vger.kernel.org>, llvm@lists.linux.dev,
-        loongarch@lists.linux.dev
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii; format=flowed
+Content-Disposition: inline
+In-Reply-To: <20220822150128.1562046-43-Liam.Howlett@oracle.com>
+User-Agent: NeoMutt/20220429
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi, Linus,
+On Mon, 22 Aug 2022, Liam Howlett wrote:
 
-On Wed, Aug 24, 2022 at 2:09 AM Linus Torvalds
-<torvalds@linux-foundation.org> wrote:
->
-> On Tue, Aug 23, 2022 at 1:34 AM Sudip Mukherjee (Codethink)
-> <sudipm.mukherjee@gmail.com> wrote:
-> >
-> > I have been trying to build loongarch as part of my nightly builds, and
-> > I can build loongson3_defconfig without any error. But allmodconfig fails
-> > with the error:
-> >
-> > In function '__cmpxchg',
-> >     inlined from 'ssh_seq_next' at drivers/platform/surface/aggregator/controller.c:61:9,
->
-> Looks like ssh_seq_next() wants to do an atomic cmpxchg() on a single
-> byte value, and the Loongarch implementation only does 4- and 8-byte
-> versions.
->
-> It looks like loongarch - from its MIPS heritage - inherited the "we
-> can't do atomics on byte variables", so that it needs the same strange
-> "do bytes as word accesses with mask-and-shifts".
->
-> For MIPS, the code is in __xchg_small() in arch/mips/kernel/cmpxchg.c.
->
-> Alpha has something similar, except it's all done in inline asm in
-> arch/alpha/include/asm/xchg.h (look for "____cmpxchg(_u8," in there.
->
-> Of course, we could just add a Kconfig variable like
-> "ARCH_LACKS_BYTE_ATOMICS" and make that driver depend on it not being
-> true, and just have Loongarch set it.
->
-> But I think loongarch should just implement the byte masking stuff.
-> Particularly since I suspect it can just copy the MIPS code as-is.
-Yes, I agree. There is already a proposed patch to do this [1]. It was
-discussed for a long time about the "forward progress", but I think
-that problem is solved because LoongArch has "exclusive access (with
-timeout) of ll" and "random delay of sc" in hardware. So I hope this
-patch can be accepted now.
+>From: "Liam R. Howlett" <Liam.Howlett@Oracle.com>
 
-https://lore.kernel.org/loongarch/CAJF2gTQBjetiA1eDaXhBsiEmRYCdOAAWWAGcwVjhZTBYH5BpGQ@mail.gmail.com/T/#m9df7f86d9509cec23a66a0304152377e1070b62e
+-ENOCHANGELOG.
 
-Huacai
 >
->                   Linus
+>Signed-off-by: Liam R. Howlett <Liam.Howlett@Oracle.com>
+>---
+> fs/proc/base.c | 5 ++++-
+> 1 file changed, 4 insertions(+), 1 deletion(-)
+>
+>diff --git a/fs/proc/base.c b/fs/proc/base.c
+>index 93f7e3d971e4..0b72a6d8aac3 100644
+>--- a/fs/proc/base.c
+>+++ b/fs/proc/base.c
+>@@ -2350,6 +2350,7 @@ proc_map_files_readdir(struct file *file, struct dir_context *ctx)
+> 	GENRADIX(struct map_files_info) fa;
+> 	struct map_files_info *p;
+> 	int ret;
+>+	MA_STATE(mas, NULL, 0, 0);
+>
+> 	genradix_init(&fa);
+>
+>@@ -2377,6 +2378,7 @@ proc_map_files_readdir(struct file *file, struct dir_context *ctx)
+> 	}
+>
+> 	nr_files = 0;
+>+	mas.tree = &mm->mm_mt;
+>
+> 	/*
+> 	 * We need two passes here:
+>@@ -2388,7 +2390,8 @@ proc_map_files_readdir(struct file *file, struct dir_context *ctx)
+> 	 * routine might require mmap_lock taken in might_fault().
+> 	 */
+>
+>-	for (vma = mm->mmap, pos = 2; vma; vma = vma->vm_next) {
+>+	pos = 2;
+>+	mas_for_each(&mas, vma, ULONG_MAX) {
+> 		if (!vma->vm_file)
+> 			continue;
+> 		if (++pos <= ctx->pos)
+>
+>-- 
+>2.35.1
+>
