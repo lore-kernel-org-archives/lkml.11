@@ -2,207 +2,187 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 74F42C3F6B0
-	for <linux-kernel@archiver.kernel.org>; Wed, 24 Aug 2022 14:15:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 077D3C32793
+	for <linux-kernel@archiver.kernel.org>; Wed, 24 Aug 2022 14:16:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239110AbiHXOPK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 24 Aug 2022 10:15:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57436 "EHLO
+        id S238857AbiHXOQm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 24 Aug 2022 10:16:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59556 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239094AbiHXOPG (ORCPT
+        with ESMTP id S237112AbiHXOQj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 24 Aug 2022 10:15:06 -0400
-Received: from mail-ej1-x629.google.com (mail-ej1-x629.google.com [IPv6:2a00:1450:4864:20::629])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 33550844C2;
-        Wed, 24 Aug 2022 07:15:05 -0700 (PDT)
-Received: by mail-ej1-x629.google.com with SMTP id y3so7427795ejc.1;
-        Wed, 24 Aug 2022 07:15:05 -0700 (PDT)
+        Wed, 24 Aug 2022 10:16:39 -0400
+Received: from mail-ed1-x52d.google.com (mail-ed1-x52d.google.com [IPv6:2a00:1450:4864:20::52d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8B62C98C90;
+        Wed, 24 Aug 2022 07:16:38 -0700 (PDT)
+Received: by mail-ed1-x52d.google.com with SMTP id u6so17181769eda.12;
+        Wed, 24 Aug 2022 07:16:38 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc;
-        bh=3RY0kXIvgqIVojhkrE4Zwlr7wJlH94oU+XFloUi3XjI=;
-        b=k433WZpJORtGGgjLBRUCWg89Ct3eMmhhzzPwfTl6//mc8KZmXsfUkvjXK2CPv2G6j9
-         FW4/JFsVFe8WZ8qXfiG0G2WUSXJhVho/22M2ZvYonWllG8JjwTj6MhS+/biMgV4nO5Zr
-         llPWeve491++YksKYHfxR6w08hbYD3Jv+FtIHtqkeqoTfLN6sUfa2AlD62I2SrAPThJb
-         x/pSysLoKr056pSqqIrDP4Zf5umrg7az72DW3OYvoPJOZdkczmoNmarSqM1+dim8Vhiv
-         BxZj98y4ZeYDVEzsmdne2xhUZzSQUjC7gSpIH2W4w1Iq4MHPRdAGpb04pB6x8cp2I0OU
-         nIBA==
+        h=mime-version:user-agent:content-transfer-encoding:references
+         :in-reply-to:date:cc:to:from:subject:message-id:from:to:cc;
+        bh=sgXwzTE7PsRoGXGsEWvvJy3bjeYUp3GXgCssBMLKSbM=;
+        b=ntIIg7M12WoPDHIFdzktTZmM4lbDKFYiMUz47h2tOigaM2cniK+LBw5QJ2aE+D+7ko
+         Vh7+eqTlHxZIg2c1sl0MvBmMA3/8sIYEPwZptf+uaYe6NsgaCkZSK3P47sZskg0vCZXj
+         RHGloHJMg9crKfWRLFYrxex1Ghu72pmw38dRZx0SjdpXbmDk0WInyRdxoHOxFxmOQBsJ
+         TVCixA5ScCyN5OR+Hpg1vHuI5lGonXS+Uys15Ywbzo+RJUoNHSY2H2YB8LJyD/MiuWzk
+         iJs+DIhcHTQEM8XEshTNFYb5xmMHUxrfbCREIhdZgiuFnimaTK7tKTuKry1DWAvX2bwb
+         E9ew==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc;
-        bh=3RY0kXIvgqIVojhkrE4Zwlr7wJlH94oU+XFloUi3XjI=;
-        b=qAZ17XQjciWcUbOVrCHCAmxxY8Vmk6qNQLGtXlxJ6c0tIEcKKu21fcGB+LB9BZk67q
-         27wrjz7TrWpuQFTFtswLcZUb6FGVd112d+x47vau4GOPM+6rzojwWLfpJzRbTIjdQY1Y
-         1yvSL2YnQzwEywvfYek3Tm1qySRSQZ1Xh6HjDLF6Y5oZ8BoVczR2ozREZ6NMnDvTMp9D
-         LNgTCvx6uzsTOh6o3TcoOY6xELW1nXW2eDcym6ufJG/05Zm2Xf3gNx0+VbuVv1Slyo2N
-         EGB57uyEaoNpYD1OwHBW74XYnY7frfydzNNV9z3AKeItc30oDkDbjZPgPDsUp0twr3wK
-         k7Aw==
-X-Gm-Message-State: ACgBeo3hM4rE8k21p/2yGXu1ujPYf0XnZ+Q6UaesYfWlPkkSOiwwHnbI
-        cuCEZ4MZECFuzqxWFuHJVP8=
-X-Google-Smtp-Source: AA6agR5vl7eAC3d146n4WFT7uLsC77WQL4B00T85StELI9JlyPgaC5TszQICKao2kaYSaa7iVSFw9A==
-X-Received: by 2002:a17:907:7256:b0:73d:9c6b:35e2 with SMTP id ds22-20020a170907725600b0073d9c6b35e2mr2992627ejc.197.1661350503452;
-        Wed, 24 Aug 2022 07:15:03 -0700 (PDT)
-Received: from ?IPV6:2a02:908:1256:79a0:62ca:57d9:b533:6057? ([2a02:908:1256:79a0:62ca:57d9:b533:6057])
-        by smtp.gmail.com with ESMTPSA id m26-20020a056402051a00b004464c3de6dasm3147684edv.65.2022.08.24.07.15.01
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 24 Aug 2022 07:15:02 -0700 (PDT)
-Message-ID: <79cf9887-64ad-9cfd-035a-4b6e41b864e0@gmail.com>
-Date:   Wed, 24 Aug 2022 16:15:00 +0200
+        h=mime-version:user-agent:content-transfer-encoding:references
+         :in-reply-to:date:cc:to:from:subject:message-id:x-gm-message-state
+         :from:to:cc;
+        bh=sgXwzTE7PsRoGXGsEWvvJy3bjeYUp3GXgCssBMLKSbM=;
+        b=F5qc+a7FEubIcDIPlxFZ4Io1ciCUmcDGJXbHWyo8KkgVbMT38Zu1/9u0nQs3AYWJ/u
+         3KD1S390AE4LNev/Z2zyoV8lhmkaeAm+G/fLFwJQN8Ip5Y8o7dr3+6E5W0FR3YBLuRck
+         8/yTUJtNvP/C7e9CQroacrSlYIE+PyPzZTl7R/Q/czGNOXEPXJ/uLtJfvc0ZlP/3hcui
+         YMMZ1vN1NfaBMRE0V0Q/brWAB0KCjZQwrRD88CJUUaVApQCeuePUKJlFhXFeGmIQ3Ed9
+         2MezhYd/XqQFLZtSk0Mg459/dn61M8yAfd+QEr180nqLogzziKgHXMiqkRQM90TPBheB
+         t0Dg==
+X-Gm-Message-State: ACgBeo2Ms013+BMqtmp14BGQVHnZ3VrWuCNkduX8BYxhgRiG9iItv/R9
+        2OrpzitlSCQWJ4cMV/LZrm8=
+X-Google-Smtp-Source: AA6agR6P9U7JabkSVHHrN7PBF9puqHX/MzaQ3ImlMfPCJ66pUmJwVBsRFp/I9N0MJMAerF3JRMx/2A==
+X-Received: by 2002:a05:6402:2b98:b0:43e:107:183d with SMTP id fj24-20020a0564022b9800b0043e0107183dmr7793838edb.366.1661350597157;
+        Wed, 24 Aug 2022 07:16:37 -0700 (PDT)
+Received: from [10.176.234.249] ([137.201.254.41])
+        by smtp.googlemail.com with ESMTPSA id b2-20020a17090630c200b0072b92daef1csm902876ejb.146.2022.08.24.07.16.35
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 24 Aug 2022 07:16:36 -0700 (PDT)
+Message-ID: <347dae29c07fe13e6974b0e59e127c399f63ef69.camel@gmail.com>
+Subject: Re: [PATCH] scsi: ufs: ufsfbo: Introduce File Based Optimization
+ feature
+From:   Bean Huo <huobean@gmail.com>
+To:     Jiaming Li <lijiamingsofine@gmail.com>, avri.altman@wdc.com,
+        alim.akhtar@samsung.com, jejb@linux.ibm.com, bvanassche@acm.org
+Cc:     linux-scsi@vger.kernel.org, linux-kernel@vger.kernel.org,
+        lijiaming3 <lijiaming3@xiaomi.com>
+Date:   Wed, 24 Aug 2022 16:16:35 +0200
+In-Reply-To: <20220824084633.14428-1-lijiamingsofine@gmail.com>
+References: <20220824084633.14428-1-lijiamingsofine@gmail.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+User-Agent: Evolution 3.44.1-0ubuntu1 
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.11.0
-Subject: Re: [PATCH v3 0/9] Move all drivers to a common dma-buf locking
- convention
-Content-Language: en-US
-To:     Dmitry Osipenko <dmitry.osipenko@collabora.com>,
-        David Airlie <airlied@linux.ie>,
-        Gerd Hoffmann <kraxel@redhat.com>,
-        Gurchetan Singh <gurchetansingh@chromium.org>,
-        Chia-I Wu <olvaffe@gmail.com>, Daniel Vetter <daniel@ffwll.ch>,
-        Daniel Almeida <daniel.almeida@collabora.com>,
-        Gert Wollny <gert.wollny@collabora.com>,
-        Gustavo Padovan <gustavo.padovan@collabora.com>,
-        Daniel Stone <daniel@fooishbar.org>,
-        Tomeu Vizoso <tomeu.vizoso@collabora.com>,
-        Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
-        Maxime Ripard <mripard@kernel.org>,
-        Thomas Zimmermann <tzimmermann@suse.de>,
-        Rob Clark <robdclark@gmail.com>,
-        Sumit Semwal <sumit.semwal@linaro.org>,
-        "Pan, Xinhui" <Xinhui.Pan@amd.com>,
-        Thierry Reding <thierry.reding@gmail.com>,
-        Tomasz Figa <tfiga@chromium.org>,
-        Marek Szyprowski <m.szyprowski@samsung.com>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
-        Alex Deucher <alexander.deucher@amd.com>,
-        Jani Nikula <jani.nikula@linux.intel.com>,
-        Joonas Lahtinen <joonas.lahtinen@linux.intel.com>,
-        Rodrigo Vivi <rodrigo.vivi@intel.com>,
-        Tvrtko Ursulin <tvrtko.ursulin@linux.intel.com>,
-        =?UTF-8?Q?Thomas_Hellstr=c3=b6m?= <thomas_os@shipmail.org>,
-        Qiang Yu <yuq825@gmail.com>
-Cc:     dri-devel@lists.freedesktop.org, linux-kernel@vger.kernel.org,
-        Dmitry Osipenko <digetx@gmail.com>,
-        linux-media@vger.kernel.org, linaro-mm-sig@lists.linaro.org,
-        amd-gfx@lists.freedesktop.org, intel-gfx@lists.freedesktop.org,
-        kernel@collabora.com, virtualization@lists.linux-foundation.org,
-        linux-rdma@vger.kernel.org, linux-arm-msm@vger.kernel.org,
-        lima@lists.freedesktop.org
-References: <20220824102248.91964-1-dmitry.osipenko@collabora.com>
-From:   =?UTF-8?Q?Christian_K=c3=b6nig?= <ckoenig.leichtzumerken@gmail.com>
-In-Reply-To: <20220824102248.91964-1-dmitry.osipenko@collabora.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Reviewed-by: Christian König <christian.koenig@amd.com> to patches #2-#4
+On Wed, 2022-08-24 at 16:46 +0800, Jiaming Li wrote:
+> From: lijiaming3 <lijiaming3@xiaomi.com>
+>=20
+> Implement File Based Optimization initialization and add sysfs
+> interface.
+>=20
+> Stoage devices have a long lifespan. Device performance over its
+> lifespan is not constant and may deteriorate over time
+>=20
+> This feature describes a method to improve the performance
+> regression.
+> The host needs to provide File System information to storage device
+> first. Based on that information device analyzes the file system data
+> and provides the host the level of performance regression. The host
+> then may instruct the device to execute optimization procedure to
+> improve the regression level.
+>=20
+> Signed-off-by: lijiaming3 <lijiaming3@xiaomi.com>
+> ---
+> =C2=A0arch/arm64/configs/defconfig |=C2=A0=C2=A0=C2=A0 1 +
+> =C2=A0drivers/scsi/ufs/Kconfig=C2=A0=C2=A0=C2=A0=C2=A0 |=C2=A0=C2=A0=C2=
+=A0 9 +
+> =C2=A0drivers/scsi/ufs/Makefile=C2=A0=C2=A0=C2=A0 |=C2=A0=C2=A0=C2=A0 1 +
+> =C2=A0drivers/scsi/ufs/ufs.h=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 |=C2=A0=
+=C2=A0 13 +
+> =C2=A0drivers/scsi/ufs/ufsfbo.c=C2=A0=C2=A0=C2=A0 | 1007
+> ++++++++++++++++++++++++++++++++++
+> =C2=A0drivers/scsi/ufs/ufsfbo.h=C2=A0=C2=A0=C2=A0 |=C2=A0 143 +++++
+> =C2=A0drivers/scsi/ufs/ufshcd.c=C2=A0=C2=A0=C2=A0 |=C2=A0=C2=A0 15 +
+> =C2=A0drivers/scsi/ufs/ufshcd.h=C2=A0=C2=A0=C2=A0 |=C2=A0=C2=A0=C2=A0 7 +=
+-
+> =C2=A08 files changed, 1195 insertions(+), 1 deletion(-)
+> =C2=A0create mode 100644 drivers/scsi/ufs/ufsfbo.c
+> =C2=A0create mode 100644 drivers/scsi/ufs/ufsfbo.h
+>=20
+> diff --git a/arch/arm64/configs/defconfig
+> b/arch/arm64/configs/defconfig
+> index 4972a81d40d6..1363c237b6f3 100644
+> --- a/arch/arm64/configs/defconfig
+> +++ b/arch/arm64/configs/defconfig
+> @@ -289,6 +289,7 @@ CONFIG_SCSI_UFSHCD_PLATFORM=3Dy
+> =C2=A0CONFIG_SCSI_UFS_QCOM=3Dm
+> =C2=A0CONFIG_SCSI_UFS_HISI=3Dy
+> =C2=A0CONFIG_SCSI_UFS_EXYNOS=3Dy
+> +CONFIG_SCSI_UFS_FBO=3Dy
+> =C2=A0CONFIG_ATA=3Dy
+> =C2=A0CONFIG_SATA_AHCI=3Dy
+> =C2=A0CONFIG_SATA_AHCI_PLATFORM=3Dy
+> diff --git a/drivers/scsi/ufs/Kconfig b/drivers/scsi/ufs/Kconfig
+> index 432df76e6318..57b0e8b14543 100644
+> --- a/drivers/scsi/ufs/Kconfig
+> +++ b/drivers/scsi/ufs/Kconfig
+> @@ -199,3 +199,12 @@ config SCSI_UFS_FAULT_INJECTION
+> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0help
+> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 Enable fault injec=
+tion support in the UFS driver. This
+> makes it easier
+> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 to test the UFS er=
+ror handler and abort handler.
+> +
+> +config SCSI_UFS_FBO
+> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0bool "Support UFS File-based O=
+ptimization"
+> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0depends on SCSI_UFSHCD
+> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0help
+> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 The UFS FBO feature improves =
+Sequential read performance.
+> The Host can
+> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 send the LBA to device. The d=
+evice will return a fragmented
+> state. It
+> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 is up to the host to decide w=
+hether to defrag. After
+> defragment,
+> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 Sequential read performance i=
+s improved
+> \ No newline at end of file
+> diff --git a/drivers/scsi/ufs/Makefile b/drivers/scsi/ufs/Makefile
+> index c407da9b5171..956be0738263 100644
+> --- a/drivers/scsi/ufs/Makefile
+> +++ b/drivers/scsi/ufs/Makefile
+> @@ -9,6 +9,7 @@ ufshcd-core-$(CONFIG_DEBUG_FS)=C2=A0=C2=A0=C2=A0=C2=A0=C2=
+=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0+=3D ufs-
+> debugfs.o
+> =C2=A0ufshcd-core-$(CONFIG_SCSI_UFS_BSG)=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0+=
+=3D ufs_bsg.o
+> =C2=A0ufshcd-core-$(CONFIG_SCSI_UFS_CRYPTO)=C2=A0=C2=A0+=3D ufshcd-crypto=
+.o
+> =C2=A0ufshcd-core-$(CONFIG_SCSI_UFS_HPB)=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0+=
+=3D ufshpb.o
+> +ufshcd-core-$(CONFIG_SCSI_UFS_FBO)=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0+=3D ufs=
+fbo.o
+> =C2=A0ufshcd-core-$(CONFIG_SCSI_UFS_FAULT_INJECTION) +=3D ufs-fault-
+> injection.o
+> =C2=A0
+> =C2=A0obj-$(CONFIG_SCSI_UFS_DWC_TC_PCI) +=3D tc-dwc-g210-pci.o ufshcd-dwc=
+.o
+> tc-dwc-g210.o
+> diff --git a/drivers/scsi/ufs/ufs.h b/drivers/scsi/ufs/ufs.h
+> index 8c6b38b1b142..b750ce3f7de9 100644
+> --- a/drivers/scsi/ufs/ufs.h
+> +++ b/drivers/scsi/ufs/ufs.h
+> @@ -170,6 +170,7 @@ enum desc_idn {
+> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0QUERY_DESC_IDN_GEOMETRY=
+=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=3D 0x7,
+> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0QUERY_DESC_IDN_POWER=C2=
+=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=3D 0x=
+8,
+> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0QUERY_DESC_IDN_HEALTH=C2=
+=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 =3D 0x9,
+> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0QUERY_DESC_IDN_FBO=C2=A0=C2=A0=
+=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 =3D 0xA,
+Hi Jiaming,=20
 
-Am 24.08.22 um 12:22 schrieb Dmitry Osipenko:
-> Hello,
->
-> This series moves all drivers to a dynamic dma-buf locking specification.
->  From now on all dma-buf importers are made responsible for holding
-> dma-buf's reservation lock around all operations performed over dma-bufs
-> in accordance to the locking specification. This allows us to utilize
-> reservation lock more broadly around kernel without fearing of a potential
-> deadlocks.
->
-> This patchset passes all i915 selftests. It was also tested using VirtIO,
-> Panfrost, Lima, Tegra, udmabuf, AMDGPU and Nouveau drivers. I tested cases
-> of display+GPU, display+V4L and GPU+V4L dma-buf sharing (where appropriate),
-> which covers majority of kernel drivers since rest of the drivers share
-> same or similar code paths.
->
-> Changelog:
->
-> v3: - Factored out dma_buf_mmap_unlocked() and attachment functions
->        into aseparate patches, like was suggested by Christian König.
->
->      - Corrected and factored out dma-buf locking documentation into
->        a separate patch, like was suggested by Christian König.
->
->      - Intel driver dropped the reservation locking fews days ago from
->        its BO-release code path, but we need that locking for the imported
->        GEMs because in the end that code path unmaps the imported GEM.
->        So I added back the locking needed by the imported GEMs, updating
->        the "dma-buf attachment locking specification" patch appropriately.
->
->      - Tested Nouveau+Intel dma-buf import/export combo.
->
->      - Tested udmabuf import to i915/Nouveau/AMDGPU.
->
->      - Fixed few places in Etnaviv, Panfrost and Lima drivers that I missed
->        to switch to locked dma-buf vmapping in the drm/gem: Take reservation
->        lock for vmap/vunmap operations" patch. In a result invalidated the
->        Christian's r-b that he gave to v2.
->
->      - Added locked dma-buf vmap/vunmap functions that are needed for fixing
->        vmappping of Etnaviv, Panfrost and Lima drivers mentioned above.
->        I actually had this change stashed for the drm-shmem shrinker patchset,
->        but then realized that it's already needed by the dma-buf patches.
->        Also improved my tests to better cover these code paths.
->
-> v2: - Changed locking specification to avoid problems with a cross-driver
->        ww locking, like was suggested by Christian König. Now the attach/detach
->        callbacks are invoked without the held lock and exporter should take the
->        lock.
->
->      - Added "locking convention" documentation that explains which dma-buf
->        functions and callbacks are locked/unlocked for importers and exporters,
->        which was requested by Christian König.
->
->      - Added ack from Tomasz Figa to the V4L patches that he gave to v1.
->
-> Dmitry Osipenko (9):
->    dma-buf: Add _unlocked postfix to function names
->    dma-buf: Add locked variant of dma_buf_vmap/vunmap()
->    drm/gem: Take reservation lock for vmap/vunmap operations
->    dma-buf: Move dma_buf_vmap/vunmap_unlocked() to dynamic locking
->      specification
->    dma-buf: Move dma_buf_mmap_unlocked() to dynamic locking specification
->    dma-buf: Move dma-buf attachment to dynamic locking specification
->    dma-buf: Document dynamic locking convention
->    media: videobuf2: Stop using internal dma-buf lock
->    dma-buf: Remove internal lock
->
->   Documentation/driver-api/dma-buf.rst          |   6 +
->   drivers/dma-buf/dma-buf.c                     | 276 ++++++++++++++----
->   drivers/gpu/drm/amd/amdgpu/amdgpu_dma_buf.c   |   4 +-
->   drivers/gpu/drm/armada/armada_gem.c           |  14 +-
->   drivers/gpu/drm/drm_client.c                  |   4 +-
->   drivers/gpu/drm/drm_gem.c                     |  24 ++
->   drivers/gpu/drm/drm_gem_dma_helper.c          |   6 +-
->   drivers/gpu/drm/drm_gem_framebuffer_helper.c  |   6 +-
->   drivers/gpu/drm/drm_gem_shmem_helper.c        |   2 +-
->   drivers/gpu/drm/drm_gem_ttm_helper.c          |   9 +-
->   drivers/gpu/drm/drm_prime.c                   |  12 +-
->   drivers/gpu/drm/etnaviv/etnaviv_gem_prime.c   |   4 +-
->   drivers/gpu/drm/exynos/exynos_drm_gem.c       |   2 +-
->   drivers/gpu/drm/i915/gem/i915_gem_dmabuf.c    |   6 +-
->   drivers/gpu/drm/i915/gem/i915_gem_object.c    |  12 +
->   .../drm/i915/gem/selftests/i915_gem_dmabuf.c  |  20 +-
->   drivers/gpu/drm/lima/lima_sched.c             |   4 +-
->   drivers/gpu/drm/omapdrm/omap_gem_dmabuf.c     |   8 +-
->   drivers/gpu/drm/panfrost/panfrost_dump.c      |   4 +-
->   drivers/gpu/drm/panfrost/panfrost_perfcnt.c   |   6 +-
->   drivers/gpu/drm/qxl/qxl_object.c              |  17 +-
->   drivers/gpu/drm/qxl/qxl_prime.c               |   4 +-
->   drivers/gpu/drm/tegra/gem.c                   |  27 +-
->   drivers/infiniband/core/umem_dmabuf.c         |  11 +-
->   .../common/videobuf2/videobuf2-dma-contig.c   |  26 +-
->   .../media/common/videobuf2/videobuf2-dma-sg.c |  23 +-
->   .../common/videobuf2/videobuf2-vmalloc.c      |  17 +-
->   .../platform/nvidia/tegra-vde/dmabuf-cache.c  |  12 +-
->   drivers/misc/fastrpc.c                        |  12 +-
->   drivers/xen/gntdev-dmabuf.c                   |  14 +-
->   include/drm/drm_gem.h                         |   3 +
->   include/linux/dma-buf.h                       |  57 ++--
->   32 files changed, 410 insertions(+), 242 deletions(-)
->
+Is this a UFS extended standard or vendor specific feature?
+
+
 
