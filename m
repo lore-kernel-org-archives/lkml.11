@@ -2,261 +2,146 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BB5F1C00140
-	for <linux-kernel@archiver.kernel.org>; Wed, 24 Aug 2022 10:40:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A35B2C3814E
+	for <linux-kernel@archiver.kernel.org>; Wed, 24 Aug 2022 10:42:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236910AbiHXKkS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 24 Aug 2022 06:40:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57448 "EHLO
+        id S234260AbiHXKmf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 24 Aug 2022 06:42:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58692 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236679AbiHXKkK (ORCPT
+        with ESMTP id S235425AbiHXKmc (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 24 Aug 2022 06:40:10 -0400
-Received: from smtp1.axis.com (smtp1.axis.com [195.60.68.17])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D078D80F49;
-        Wed, 24 Aug 2022 03:40:08 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=axis.com; q=dns/txt; s=axis-central1; t=1661337609;
-  x=1692873609;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=+bgCTnGLO80zLn5pKZiWdX/V5zTz497jUqF+cyjA6Qw=;
-  b=kAi7jzPA6+g0qOBTy7lJwGcSx+QbJ5fx49Z+OyShIwNm9N485LD6z0Tc
-   HxYyc0S7zaSzHnHf6z1IvTvkbxoyV+ApMPLTVQ+jZ9/qmHKKGOLKNNcJa
-   LI6UFfh3+XHE8Hhznbebz+j7pVfkfvxv0js4Qi+kzbEulVjqj3FeGfZHS
-   2OVbdhsr7gFTawJ0fn5Olrl85cPLmWPTnpbP2L+zVomhwB/68g58A3K2d
-   Erc6Jr1oOiHmfkDlNw1+wCqn0iOBY+2k17Ulg9ezk/3UONqEKyot0KH2P
-   KckPVPLb5S5HOFXcRl2bLVbB0dDZkAOX63aY8tdjxKogh3pziNMHkqEK6
-   A==;
-From:   Vincent Whitchurch <vincent.whitchurch@axis.com>
-To:     <jic23@kernel.org>
-CC:     <kernel@axis.com>, <lars@metafoo.de>, <axel.jonsson@axis.com>,
-        Vincent Whitchurch <vincent.whitchurch@axis.com>,
-        <linux-iio@vger.kernel.org>, <linux-kernel@vger.kernel.org>
-Subject: [PATCH 2/2] iio: adc: mcp320x: add triggered buffer support
-Date:   Wed, 24 Aug 2022 12:40:02 +0200
-Message-ID: <20220824104002.2749075-3-vincent.whitchurch@axis.com>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220824104002.2749075-1-vincent.whitchurch@axis.com>
-References: <20220824104002.2749075-1-vincent.whitchurch@axis.com>
+        Wed, 24 Aug 2022 06:42:32 -0400
+Received: from mga06.intel.com (mga06b.intel.com [134.134.136.31])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CBB0381B24;
+        Wed, 24 Aug 2022 03:42:31 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1661337751; x=1692873751;
+  h=date:from:to:cc:subject:message-id:reply-to:references:
+   mime-version:in-reply-to;
+  bh=lnG4/IetgJJiCFvYl2XSmHM42xhaifZaMgp7nfdirTE=;
+  b=eNZsqDl4c8MZlLJ2p0h20eTzbb5c754AMOUHjTxenfjCe6a5zRuA3vdB
+   JpIIgiJbkGJ2YxTocSYwyLXKU6TW1aEZ4/DimabkqBATW7lS47yBDKJWT
+   RBM3hvH78/yAmYocq20gokL8cRZ2w3XaKOQXMvJIhutN5YJoQC5mZNZYC
+   8kVpnUIzYIHzIGP0nfhPOTzp6JfZn/5ThXoMNwF7ujFQBZXf0OSUERmgK
+   4f9sVKh6c2AkR24KPiw6ew1FgLJwQTrCkqctXLWqcXVrJeYyZbMbbUuYP
+   834PtJ9Jbyia4YGVAeNOAOwcomG+ME3BZ9d6+Y3dbrXZA+7s/Q1o6HNGe
+   g==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10448"; a="355660053"
+X-IronPort-AV: E=Sophos;i="5.93,260,1654585200"; 
+   d="scan'208";a="355660053"
+Received: from orsmga007.jf.intel.com ([10.7.209.58])
+  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Aug 2022 03:42:31 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.93,260,1654585200"; 
+   d="scan'208";a="605989312"
+Received: from chaop.bj.intel.com (HELO localhost) ([10.240.193.75])
+  by orsmga007.jf.intel.com with ESMTP; 24 Aug 2022 03:42:21 -0700
+Date:   Wed, 24 Aug 2022 18:37:38 +0800
+From:   Chao Peng <chao.p.peng@linux.intel.com>
+To:     Vishal Annapurve <vannapurve@google.com>
+Cc:     kvm list <kvm@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>, linux-mm@kvack.org,
+        linux-fsdevel@vger.kernel.org, linux-api@vger.kernel.org,
+        linux-doc@vger.kernel.org, qemu-devel@nongnu.org,
+        linux-kselftest@vger.kernel.org,
+        Paolo Bonzini <pbonzini@redhat.com>,
+        Jonathan Corbet <corbet@lwn.net>,
+        Sean Christopherson <seanjc@google.com>,
+        Vitaly Kuznetsov <vkuznets@redhat.com>,
+        Wanpeng Li <wanpengli@tencent.com>,
+        Jim Mattson <jmattson@google.com>,
+        Joerg Roedel <joro@8bytes.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+        x86 <x86@kernel.org>, "H . Peter Anvin" <hpa@zytor.com>,
+        Hugh Dickins <hughd@google.com>,
+        Jeff Layton <jlayton@kernel.org>,
+        "J . Bruce Fields" <bfields@fieldses.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Shuah Khan <shuah@kernel.org>, Mike Rapoport <rppt@kernel.org>,
+        Steven Price <steven.price@arm.com>,
+        "Maciej S . Szmigiero" <mail@maciej.szmigiero.name>,
+        Vlastimil Babka <vbabka@suse.cz>,
+        Yu Zhang <yu.c.zhang@linux.intel.com>,
+        "Kirill A . Shutemov" <kirill.shutemov@linux.intel.com>,
+        Andy Lutomirski <luto@kernel.org>,
+        Jun Nakajima <jun.nakajima@intel.com>,
+        Dave Hansen <dave.hansen@intel.com>,
+        Andi Kleen <ak@linux.intel.com>,
+        David Hildenbrand <david@redhat.com>, aarcange@redhat.com,
+        ddutile@redhat.com, dhildenb@redhat.com,
+        Quentin Perret <qperret@google.com>,
+        Michael Roth <michael.roth@amd.com>, mhocko@suse.com,
+        Muchun Song <songmuchun@bytedance.com>
+Subject: Re: [PATCH v7 11/14] KVM: Register/unregister the guest private
+ memory regions
+Message-ID: <20220824103738.GA1386620@chaop.bj.intel.com>
+Reply-To: Chao Peng <chao.p.peng@linux.intel.com>
+References: <20220706082016.2603916-1-chao.p.peng@linux.intel.com>
+ <20220706082016.2603916-12-chao.p.peng@linux.intel.com>
+ <CAGtprH9xyw6bt4=RBWF6-v2CSpabOCpKq5rPz+e-9co7EisoVQ@mail.gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAGtprH9xyw6bt4=RBWF6-v2CSpabOCpKq5rPz+e-9co7EisoVQ@mail.gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Axel Jonsson <axel.jonsson@axis.com>
+On Fri, Aug 19, 2022 at 12:37:42PM -0700, Vishal Annapurve wrote:
+> > ...
+> > diff --git a/virt/kvm/kvm_main.c b/virt/kvm/kvm_main.c
+> > index 230c8ff9659c..bb714c2a4b06 100644
+> > --- a/virt/kvm/kvm_main.c
+> > +++ b/virt/kvm/kvm_main.c
+> > @@ -914,6 +914,35 @@ static int kvm_init_mmu_notifier(struct kvm *kvm)
+> >
+> >  #endif /* CONFIG_MMU_NOTIFIER && KVM_ARCH_WANT_MMU_NOTIFIER */
+> >
+> > +#ifdef CONFIG_HAVE_KVM_PRIVATE_MEM
+> > +#define KVM_MEM_ATTR_PRIVATE   0x0001
+> > +static int kvm_vm_ioctl_set_encrypted_region(struct kvm *kvm, unsigned int ioctl,
+> > +                                            struct kvm_enc_region *region)
+> > +{
+> > +       unsigned long start, end;
+> > +       void *entry;
+> > +       int r;
+> > +
+> > +       if (region->size == 0 || region->addr + region->size < region->addr)
+> > +               return -EINVAL;
+> > +       if (region->addr & (PAGE_SIZE - 1) || region->size & (PAGE_SIZE - 1))
+> > +               return -EINVAL;
+> > +
+> > +       start = region->addr >> PAGE_SHIFT;
+> > +       end = (region->addr + region->size - 1) >> PAGE_SHIFT;
+> > +
+> > +       entry = ioctl == KVM_MEMORY_ENCRYPT_REG_REGION ?
+> > +                               xa_mk_value(KVM_MEM_ATTR_PRIVATE) : NULL;
+> > +
+> > +       r = xa_err(xa_store_range(&kvm->mem_attr_array, start, end,
+> > +                                       entry, GFP_KERNEL_ACCOUNT));
+> 
+> xa_store_range seems to create multi-index entries by default.
+> Subsequent xa_store_range call changes all the entries stored
+> previously.
 
-Add support for triggered buffers.  Just read the channels in a loop to
-keep things simple.
+By using xa_store_range and storing them as multi-index entries I
+expected to save some memory for continuous pages originally.
 
-Signed-off-by: Axel Jonsson <axel.jonsson@axis.com>
-Signed-off-by: Vincent Whitchurch <vincent.whitchurch@axis.com>
----
- drivers/iio/adc/Kconfig   |   2 +
- drivers/iio/adc/mcp320x.c | 130 ++++++++++++++++++++++++++++----------
- 2 files changed, 99 insertions(+), 33 deletions(-)
+But sounds like the current multi-index store behaviour isn't quite
+ready for our usage.
 
-diff --git a/drivers/iio/adc/Kconfig b/drivers/iio/adc/Kconfig
-index 48ace7412874..9f2628120885 100644
---- a/drivers/iio/adc/Kconfig
-+++ b/drivers/iio/adc/Kconfig
-@@ -696,6 +696,8 @@ config MAX9611
- config MCP320X
- 	tristate "Microchip Technology MCP3x01/02/04/08 and MCP3550/1/3"
- 	depends on SPI
-+	select IIO_BUFFER
-+	select IIO_TRIGGERED_BUFFER
- 	help
- 	  Say yes here to build support for Microchip Technology's
- 	  MCP3001, MCP3002, MCP3004, MCP3008, MCP3201, MCP3202, MCP3204,
-diff --git a/drivers/iio/adc/mcp320x.c b/drivers/iio/adc/mcp320x.c
-index 28398f34628a..9782cbd37728 100644
---- a/drivers/iio/adc/mcp320x.c
-+++ b/drivers/iio/adc/mcp320x.c
-@@ -43,6 +43,10 @@
- #include <linux/module.h>
- #include <linux/mod_devicetable.h>
- #include <linux/iio/iio.h>
-+#include <linux/interrupt.h>
-+#include <linux/iio/buffer.h>
-+#include <linux/iio/triggered_buffer.h>
-+#include <linux/iio/trigger_consumer.h>
- #include <linux/regulator/consumer.h>
- 
- enum {
-@@ -231,37 +235,51 @@ static int mcp320x_read_raw(struct iio_dev *indio_dev,
- 	return ret;
- }
- 
--#define MCP320X_VOLTAGE_CHANNEL(num)				\
--	{							\
--		.type = IIO_VOLTAGE,				\
--		.indexed = 1,					\
--		.channel = (num),				\
--		.address = (num),				\
--		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),	\
--		.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_SCALE) \
-+#define MCP320X_VOLTAGE_CHANNEL(num)					\
-+	{								\
-+		.type = IIO_VOLTAGE,					\
-+		.indexed = 1,						\
-+		.channel = (num),					\
-+		.address = (num),					\
-+		.scan_index = (num),					\
-+		.scan_type = {						\
-+			.sign = 's',					\
-+			.realbits = 32,					\
-+			.storagebits = 32,				\
-+			.endianness = IIO_CPU,				\
-+		},							\
-+		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),		\
-+		.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_SCALE)	\
- 	}
- 
--#define MCP320X_VOLTAGE_CHANNEL_DIFF(chan1, chan2)		\
--	{							\
--		.type = IIO_VOLTAGE,				\
--		.indexed = 1,					\
--		.channel = (chan1),				\
--		.channel2 = (chan2),				\
--		.address = (chan1),				\
--		.differential = 1,				\
--		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),	\
--		.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_SCALE) \
-+#define MCP320X_VOLTAGE_CHANNEL_DIFF(chan1, chan2, diffoff)		\
-+	{								\
-+		.type = IIO_VOLTAGE,					\
-+		.indexed = 1,						\
-+		.channel = (chan1),					\
-+		.channel2 = (chan2),					\
-+		.address = (chan1),					\
-+		.scan_index = (chan1 + diffoff),			\
-+		.scan_type = {						\
-+			.sign = 's',					\
-+			.realbits = 32,					\
-+			.storagebits = 32,				\
-+			.endianness = IIO_CPU,				\
-+		},							\
-+		.differential = 1,					\
-+		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),		\
-+		.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_SCALE)	\
- 	}
- 
- static const struct iio_chan_spec mcp3201_channels[] = {
--	MCP320X_VOLTAGE_CHANNEL_DIFF(0, 1),
-+	MCP320X_VOLTAGE_CHANNEL_DIFF(0, 1, 1),
- };
- 
- static const struct iio_chan_spec mcp3202_channels[] = {
- 	MCP320X_VOLTAGE_CHANNEL(0),
- 	MCP320X_VOLTAGE_CHANNEL(1),
--	MCP320X_VOLTAGE_CHANNEL_DIFF(0, 1),
--	MCP320X_VOLTAGE_CHANNEL_DIFF(1, 0),
-+	MCP320X_VOLTAGE_CHANNEL_DIFF(0, 1, 2),
-+	MCP320X_VOLTAGE_CHANNEL_DIFF(1, 0, 2),
- };
- 
- static const struct iio_chan_spec mcp3204_channels[] = {
-@@ -269,10 +287,10 @@ static const struct iio_chan_spec mcp3204_channels[] = {
- 	MCP320X_VOLTAGE_CHANNEL(1),
- 	MCP320X_VOLTAGE_CHANNEL(2),
- 	MCP320X_VOLTAGE_CHANNEL(3),
--	MCP320X_VOLTAGE_CHANNEL_DIFF(0, 1),
--	MCP320X_VOLTAGE_CHANNEL_DIFF(1, 0),
--	MCP320X_VOLTAGE_CHANNEL_DIFF(2, 3),
--	MCP320X_VOLTAGE_CHANNEL_DIFF(3, 2),
-+	MCP320X_VOLTAGE_CHANNEL_DIFF(0, 1, 4),
-+	MCP320X_VOLTAGE_CHANNEL_DIFF(1, 0, 4),
-+	MCP320X_VOLTAGE_CHANNEL_DIFF(2, 3, 4),
-+	MCP320X_VOLTAGE_CHANNEL_DIFF(3, 2, 4),
- };
- 
- static const struct iio_chan_spec mcp3208_channels[] = {
-@@ -284,14 +302,14 @@ static const struct iio_chan_spec mcp3208_channels[] = {
- 	MCP320X_VOLTAGE_CHANNEL(5),
- 	MCP320X_VOLTAGE_CHANNEL(6),
- 	MCP320X_VOLTAGE_CHANNEL(7),
--	MCP320X_VOLTAGE_CHANNEL_DIFF(0, 1),
--	MCP320X_VOLTAGE_CHANNEL_DIFF(1, 0),
--	MCP320X_VOLTAGE_CHANNEL_DIFF(2, 3),
--	MCP320X_VOLTAGE_CHANNEL_DIFF(3, 2),
--	MCP320X_VOLTAGE_CHANNEL_DIFF(4, 5),
--	MCP320X_VOLTAGE_CHANNEL_DIFF(5, 4),
--	MCP320X_VOLTAGE_CHANNEL_DIFF(6, 7),
--	MCP320X_VOLTAGE_CHANNEL_DIFF(7, 6),
-+	MCP320X_VOLTAGE_CHANNEL_DIFF(0, 1, 8),
-+	MCP320X_VOLTAGE_CHANNEL_DIFF(1, 0, 8),
-+	MCP320X_VOLTAGE_CHANNEL_DIFF(2, 3, 8),
-+	MCP320X_VOLTAGE_CHANNEL_DIFF(3, 2, 8),
-+	MCP320X_VOLTAGE_CHANNEL_DIFF(4, 5, 8),
-+	MCP320X_VOLTAGE_CHANNEL_DIFF(5, 4, 8),
-+	MCP320X_VOLTAGE_CHANNEL_DIFF(6, 7, 8),
-+	MCP320X_VOLTAGE_CHANNEL_DIFF(7, 6, 8),
- };
- 
- static const struct iio_info mcp320x_info = {
-@@ -371,6 +389,46 @@ static const struct mcp320x_chip_info mcp320x_chip_infos[] = {
- 	},
- };
- 
-+static irqreturn_t mcp320x_buffer_trigger_handler(int irq, void *pollfunc)
-+{
-+	struct iio_poll_func *pf = pollfunc;
-+	struct iio_dev *indio_dev = pf->indio_dev;
-+	struct mcp320x *adc = iio_priv(indio_dev);
-+	s32 data[ARRAY_SIZE(mcp3208_channels)];
-+	int device_index;
-+	int i = 0;
-+	int chan;
-+
-+	device_index = spi_get_device_id(adc->spi)->driver_data;
-+
-+	mutex_lock(&adc->lock);
-+
-+	for_each_set_bit(chan, indio_dev->active_scan_mask, indio_dev->masklength) {
-+		const struct iio_chan_spec *spec = &indio_dev->channels[chan];
-+		int ret, val;
-+
-+		ret = mcp320x_adc_conversion(adc, spec->address,
-+					     spec->differential, device_index,
-+					     &val);
-+		if (ret < 0) {
-+			dev_err_ratelimited(&adc->spi->dev, "Failed to read data: %d\n",
-+					    ret);
-+			goto out;
-+		}
-+
-+		data[i++] = val;
-+	}
-+
-+	iio_push_to_buffers(indio_dev, data);
-+
-+out:
-+	mutex_unlock(&adc->lock);
-+
-+	iio_trigger_notify_done(indio_dev->trig);
-+
-+	return IRQ_HANDLED;
-+}
-+
- static void mcp320x_reg_disable(void *reg)
- {
- 	regulator_disable(reg);
-@@ -456,6 +514,12 @@ static int mcp320x_probe(struct spi_device *spi)
- 
- 	mutex_init(&adc->lock);
- 
-+	ret = devm_iio_triggered_buffer_setup(&spi->dev, indio_dev, NULL,
-+					      mcp320x_buffer_trigger_handler,
-+					      NULL);
-+	if (ret)
-+		return ret;
-+
- 	return devm_iio_device_register(&spi->dev, indio_dev);
- }
- 
--- 
-2.34.1
-
+Chao
+> xa_store needs to be used here instead of xa_store_range to achieve
+> the intended behavior.
+> 
+> > +
+> > +       kvm_zap_gfn_range(kvm, start, end + 1);
+> > +
+> > +       return r;
+> > +}
+> > +#endif /* CONFIG_HAVE_KVM_PRIVATE_MEM */
+> > +
+> > ...
