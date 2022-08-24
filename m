@@ -2,121 +2,121 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5605CC32774
-	for <linux-kernel@archiver.kernel.org>; Wed, 24 Aug 2022 03:12:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 78ABCC32774
+	for <linux-kernel@archiver.kernel.org>; Wed, 24 Aug 2022 03:12:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230041AbiHXDL5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 23 Aug 2022 23:11:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56300 "EHLO
+        id S233210AbiHXDMF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 23 Aug 2022 23:12:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55828 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235337AbiHXDL1 (ORCPT
+        with ESMTP id S234249AbiHXDLl (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 23 Aug 2022 23:11:27 -0400
-Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6675E25EB
-        for <linux-kernel@vger.kernel.org>; Tue, 23 Aug 2022 20:08:18 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1661310498; x=1692846498;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=1s31HwL/qmJsMfnUscxTRniE2iLAsgyMyxJVWjB7mM8=;
-  b=L+vci15K9LC/WkC12ZyUpkUMqBUAg6oi91tfCGz+sZjJcqX7GY39gR+m
-   ncAfBn1jFxwFvRpbGDqDS1QSHkXNrpAOGZl+oCCCj7f5Pqv85Hx1GmRGe
-   9Q2e/O6TkkMcRz4uOR26480mhKRKTnuHtdTQCm9U/FSe9U9ZHLehoowWx
-   MMJ3hTGF4PAXgQ81+N8TqxiQcUHREzzHZH38fyqNdIQUWdnTsDnAVOBwx
-   riZ5vcNi67OBKw0sVPWkImtnOFUS/8+jCtY+YU1zKkKYGiWXVtj78DwDj
-   +KRyzCiKIGpsoW9EGZUuape6KPobcmbwEYvuEf5KmUfDi2Dqf6jfgIpoK
-   Q==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10448"; a="380143927"
-X-IronPort-AV: E=Sophos;i="5.93,259,1654585200"; 
-   d="scan'208";a="380143927"
-Received: from orsmga002.jf.intel.com ([10.7.209.21])
-  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Aug 2022 20:08:18 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.93,259,1654585200"; 
-   d="scan'208";a="609589787"
-Received: from lkp-server02.sh.intel.com (HELO 9bbcefcddf9f) ([10.239.97.151])
-  by orsmga002.jf.intel.com with ESMTP; 23 Aug 2022 20:08:16 -0700
-Received: from kbuild by 9bbcefcddf9f with local (Exim 4.96)
-        (envelope-from <lkp@intel.com>)
-        id 1oQgkZ-0000u4-1g;
-        Wed, 24 Aug 2022 03:08:15 +0000
-Date:   Wed, 24 Aug 2022 11:07:31 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Christophe de Dinechin <dinechin@redhat.com>
-Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Linux Memory Management List <linux-mm@kvack.org>
-Subject: [linux-stable-rc:linux-5.4.y 3985/5188]
- include/linux/nodemask.h:380:20: error: comparison of unsigned expression in
- '>= 0' is always true
-Message-ID: <202208241143.v714cX1Y-lkp@intel.com>
+        Tue, 23 Aug 2022 23:11:41 -0400
+Received: from mail-yw1-x112c.google.com (mail-yw1-x112c.google.com [IPv6:2607:f8b0:4864:20::112c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B642B7E334
+        for <linux-kernel@vger.kernel.org>; Tue, 23 Aug 2022 20:11:24 -0700 (PDT)
+Received: by mail-yw1-x112c.google.com with SMTP id 00721157ae682-3321c2a8d4cso428104057b3.5
+        for <linux-kernel@vger.kernel.org>; Tue, 23 Aug 2022 20:11:24 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=friendlyarm-com.20210112.gappssmtp.com; s=20210112;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc;
+        bh=MRoQzdOK6CWcAC6gw+P5C+x1bqwTKNwTT3AYdbkJaY8=;
+        b=U4Dn+R0xuJUm2UBAgJOnZYs5h76iFG0xeMtAjYWMUKS6kYXWmYz+W6NV1pGLm/6krp
+         cS3tSiQY56T8oztjPaOIlg/yZGc7Kcg7/w4HbuE3ZLGeyMlCIUWzt8rmakqXcjd2U8vS
+         UfUjVaw301Pex3T6NFzD5qd0vAJLc2FuS7XPqV13GnsFLnP4LXQW6Q2PvxkeMQYyX2L5
+         dw17xgsYdNnOgshkZnOSdHS9S+N7DaBPIN415F0QH98GuD6YSp7Asd1Ghj207Zxb/Djo
+         DUtZfjgshfGjX3jY/vjqIG50kPGYWu3ZQWWbACldweDUGIJttc43iKT5NO+0xcR3ETSd
+         6HPw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc;
+        bh=MRoQzdOK6CWcAC6gw+P5C+x1bqwTKNwTT3AYdbkJaY8=;
+        b=qbaH2wgPZpZ+dvXGd31RWnFO4PR5/CGiHxkGtts5U89pYowlXTyRLIX1+PVH8X8BAD
+         +A42B6gvwmv+cDcbju/r/wgsUfyosBCuWB3X9djQN3LTr7FvgPwO/s9BPW0Qa2FOAFz2
+         8+rPYQzFDSQuj/7PyBiacI0Vgd1JiiuIs2zesBqZaS9FKekalw84SgBH5Aqk9KmyAkpy
+         PRq+FI1LAP1EYr7pRjonlbyEW1JAxczM0T+E7pl5z5HkDlJ2CR9yGQZofEcxbBJtaDFp
+         1//cEcOf4LujiZe5t9+/0rxW6Qq72Ue5WY0i7fjVMp9EBc8/yj1jA9dDzUZmzqi4f2K8
+         5SgQ==
+X-Gm-Message-State: ACgBeo2Y/lQedzLCNpIrCPP5VFE9aJrxi5ORA1uhbZGMeCEv/TE90Qtx
+        5sdSqgr4aKMuTxW5oEgO+oaOIDNJVUWmFqT1TTMR2w==
+X-Google-Smtp-Source: AA6agR5azhM/Z/AXpPAiiP/iN20sesKIKrIpQUppdkgJegZcoQn5Fq6Cy100clgzY/qN6NhMdmzI7uj2aGADrU7Jipg=
+X-Received: by 2002:a25:415:0:b0:696:814:7c77 with SMTP id 21-20020a250415000000b0069608147c77mr3844588ybe.36.1661310683919;
+ Tue, 23 Aug 2022 20:11:23 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+References: <20220822074139.3810-1-jensenhuang@friendlyarm.com>
+ <23552842.6Emhk5qWAg@diego> <CAD=FV=W-ajJDfYcP3P8Jyk_KgsUAbdTtmwiNXqJ=Ab2ojgrUGw@mail.gmail.com>
+In-Reply-To: <CAD=FV=W-ajJDfYcP3P8Jyk_KgsUAbdTtmwiNXqJ=Ab2ojgrUGw@mail.gmail.com>
+From:   Jensen Huang <jensenhuang@friendlyarm.com>
+Date:   Wed, 24 Aug 2022 11:11:13 +0800
+Message-ID: <CAMpZ1qEe7xFr+XaXsS_hWDLnGGA8PfzQiToOjY1N_1ctyQ+KxA@mail.gmail.com>
+Subject: Re: [PATCH] arm64: dts: rockchip: add enable-strobe-pulldown to emmc
+ phy on rk3399
+To:     Doug Anderson <dianders@chromium.org>
+Cc:     =?UTF-8?Q?Heiko_St=C3=BCbner?= <heiko@sntech.de>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Vinod Koul <vkoul@kernel.org>,
+        Chris Ruehl <chris.ruehl@gtsys.com.hk>,
+        Brian Norris <briannorris@chromium.org>,
+        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
+        <devicetree@vger.kernel.org>,
+        Linux ARM <linux-arm-kernel@lists.infradead.org>,
+        "open list:ARM/Rockchip SoC..." <linux-rockchip@lists.infradead.org>,
+        LKML <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git linux-5.4.y
-head:   1cece69eaa889a27cf3e9f2051fcc57eda957271
-commit: 73bdb2359dbc260364141c83dd1e1a5497f29d3d [3985/5188] nodemask.h: fix compilation error with GCC12
-config: alpha-allyesconfig (https://download.01.org/0day-ci/archive/20220824/202208241143.v714cX1Y-lkp@intel.com/config)
-compiler: alpha-linux-gcc (GCC) 12.1.0
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git/commit/?id=73bdb2359dbc260364141c83dd1e1a5497f29d3d
-        git remote add linux-stable-rc https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git
-        git fetch --no-tags linux-stable-rc linux-5.4.y
-        git checkout 73bdb2359dbc260364141c83dd1e1a5497f29d3d
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-12.1.0 make.cross W=1 O=build_dir ARCH=alpha SHELL=/bin/bash
+Hi,
 
-If you fix the issue, kindly add following tag where applicable
-Reported-by: kernel test robot <lkp@intel.com>
+Sorry for sending an email in HTML format.
 
-All errors (new ones prefixed by >>):
-
-   arch/alpha/mm/numa.c:162:1: error: no previous prototype for 'setup_memory' [-Werror=missing-prototypes]
-     162 | setup_memory(void *kernel_end)
-         | ^~~~~~~~~~~~
-   In file included from include/linux/mmzone.h:17,
-                    from include/linux/gfp.h:6,
-                    from include/linux/mm.h:10,
-                    from arch/alpha/mm/numa.c:12:
-   arch/alpha/mm/numa.c: In function 'paging_init':
->> include/linux/nodemask.h:380:20: error: comparison of unsigned expression in '>= 0' is always true [-Werror=type-limits]
-     380 |              (node >= 0) && (node) < MAX_NUMNODES;                  \
-         |                    ^~
-   include/linux/nodemask.h:433:9: note: in expansion of macro 'for_each_node_mask'
-     433 |         for_each_node_mask((__node), node_states[__state])
-         |         ^~~~~~~~~~~~~~~~~~
-   include/linux/nodemask.h:513:36: note: in expansion of macro 'for_each_node_state'
-     513 | #define for_each_online_node(node) for_each_node_state(node, N_ONLINE)
-         |                                    ^~~~~~~~~~~~~~~~~~~
-   arch/alpha/mm/numa.c:218:9: note: in expansion of macro 'for_each_online_node'
-     218 |         for_each_online_node(nid) {
-         |         ^~~~~~~~~~~~~~~~~~~~
-   cc1: all warnings being treated as errors
+I realized that only some devices may be affected, so I considered
+modifying rk3399-nanopi4.dtsi only,
+but other boards without external pull-down should still need this patch.
 
 
-vim +380 include/linux/nodemask.h
+BR,
+Jensen
 
-   376	
-   377	#if MAX_NUMNODES > 1
-   378	#define for_each_node_mask(node, mask)				    \
-   379		for ((node) = first_node(mask);				    \
- > 380		     (node >= 0) && (node) < MAX_NUMNODES;		    \
-   381		     (node) = next_node((node), (mask)))
-   382	#else /* MAX_NUMNODES == 1 */
-   383	#define for_each_node_mask(node, mask)                                  \
-   384		for ((node) = 0; (node) < 1 && !nodes_empty(mask); (node)++)
-   385	#endif /* MAX_NUMNODES */
-   386	
-
--- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+On Tue, Aug 23, 2022 at 10:13 PM Doug Anderson <dianders@chromium.org> wrot=
+e:
+>
+> Hi,
+>
+> On Tue, Aug 23, 2022 at 4:53 AM Heiko St=C3=BCbner <heiko@sntech.de> wrot=
+e:
+> >
+> > Am Montag, 22. August 2022, 09:41:39 CEST schrieb Jensen Huang:
+> > > Internal pull-down for strobe line (GRF_EMMCPHY_CON2[9]) was disabled
+> > > by commit 8b5c2b45b8f0, which causes I/O error in HS400 mode.
+> > >
+> > > Tested on NanoPC-T4.
+> > >
+> > > Fixes: 8b5c2b45b8f0 ("phy: rockchip: set pulldown for strobe line in =
+dts")
+> > > Signed-off-by: Jensen Huang <jensenhuang@friendlyarm.com>
+> >
+> > ok, so this looks like it restores previous functionality.
+> >
+> > I'm just wondering as the "offending" patch is from 2020, why this
+> > only turns up now. Any ideas?
+>
+> Ah, I see. So before the offending patch we used to just leave the
+> pull state at whatever the default was when the kernel was booted.
+> After the offending patch we chose a default.
+>
+> On kevin I see an external pull down on this line. Enabling both the
+> internal and external is probably not a huge deal, it'll just affect
+> the strength of the pull.
+>
+> On bob I _think_ the external pull down is also stuffed.
+>
+> ...so I guess that would explain why it didn't cause a problem for at
+> least those two boards?
+>
+> -Doug
