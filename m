@@ -2,129 +2,80 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 86A9AC00140
-	for <linux-kernel@archiver.kernel.org>; Wed, 24 Aug 2022 15:01:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D0E94C00140
+	for <linux-kernel@archiver.kernel.org>; Wed, 24 Aug 2022 15:01:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238338AbiHXPB1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 24 Aug 2022 11:01:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56996 "EHLO
+        id S238981AbiHXPBf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 24 Aug 2022 11:01:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57220 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239429AbiHXPAc (ORCPT
+        with ESMTP id S238274AbiHXPB1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 24 Aug 2022 11:00:32 -0400
-Received: from out2.migadu.com (out2.migadu.com [188.165.223.204])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C0911275D1;
-        Wed, 24 Aug 2022 08:00:30 -0700 (PDT)
-Date:   Wed, 24 Aug 2022 10:00:21 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.dev; s=key1;
-        t=1661353229;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=wpdpInv50s3/tIr2zAWlDOu11BVdoLVMcL8Ge4aE150=;
-        b=vCNG6VW0yVkpK30QQEGBHc0IONpr09WwKoJRzM318XHzyPpdYjdo72Wro1vDzdAr0MYNLs
-        EYH9TmimgWflNvzHC80WrzVMIezIPbQfNXq8NkEMiF6hjZuJQrG4iKwHF5FaWtL6Sovhst
-        w05T8HvT2UqbKDR9ZLtxGz/iI8pVsbI=
-X-Report-Abuse: Please report any abuse attempt to abuse@migadu.com and include these headers.
-From:   Oliver Upton <oliver.upton@linux.dev>
-To:     Sean Christopherson <seanjc@google.com>
-Cc:     Paolo Bonzini <pbonzini@redhat.com>, Marc Zyngier <maz@kernel.org>,
-        Anup Patel <anup@brainfault.org>,
-        Paul Walmsley <paul.walmsley@sifive.com>,
-        Palmer Dabbelt <palmer@dabbelt.com>,
-        Albert Ou <aou@eecs.berkeley.edu>,
-        Christian Borntraeger <borntraeger@linux.ibm.com>,
-        Janosch Frank <frankja@linux.ibm.com>,
-        Claudio Imbrenda <imbrenda@linux.ibm.com>,
-        Nathan Chancellor <nathan@kernel.org>,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        James Morse <james.morse@arm.com>,
-        Alexandru Elisei <alexandru.elisei@arm.com>,
-        Suzuki K Poulose <suzuki.poulose@arm.com>,
-        Atish Patra <atishp@atishpatra.org>,
-        David Hildenbrand <david@redhat.com>,
-        Tom Rix <trix@redhat.com>, kvm@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, kvmarm@lists.cs.columbia.edu,
-        kvm-riscv@lists.infradead.org, linux-riscv@lists.infradead.org,
-        llvm@lists.linux.dev, linux-kernel@vger.kernel.org,
-        Colton Lewis <coltonlewis@google.com>,
-        Peter Gonda <pgonda@google.com>,
-        Andrew Jones <andrew.jones@linux.dev>
-Subject: Re: [PATCH v4 5/6] KVM: selftests: Make arm64's MMIO ucall multi-VM
- friendly
-Message-ID: <YwY9BYDUeiT87/Vs@google.com>
-References: <20220824032115.3563686-1-seanjc@google.com>
- <20220824032115.3563686-6-seanjc@google.com>
+        Wed, 24 Aug 2022 11:01:27 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0BA063CBF0;
+        Wed, 24 Aug 2022 08:01:26 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id B6555B8238B;
+        Wed, 24 Aug 2022 15:01:24 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A39D2C433D6;
+        Wed, 24 Aug 2022 15:01:22 +0000 (UTC)
+Message-ID: <42384aba-d519-1a98-80dc-00a997e7243f@xs4all.nl>
+Date:   Wed, 24 Aug 2022 17:01:20 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220824032115.3563686-6-seanjc@google.com>
-X-Migadu-Flow: FLOW_OUT
-X-Migadu-Auth-User: linux.dev
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.10.0
+Subject: Re: [PATCH] i2c/cx25840: fix repeated words in comments
+Content-Language: en-US
+To:     Jilin Yuan <yuanjilin@cdjrlc.com>, mchehab@kernel.org
+Cc:     linux-media@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <20220824131619.54027-1-yuanjilin@cdjrlc.com>
+From:   Hans Verkuil <hverkuil@xs4all.nl>
+In-Reply-To: <20220824131619.54027-1-yuanjilin@cdjrlc.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Sean,
+This is a duplicate of:
 
-On Wed, Aug 24, 2022 at 03:21:14AM +0000, Sean Christopherson wrote:
-> Fix a mostly-theoretical bug where ARM's ucall MMIO setup could result in
-> different VMs stomping on each other by cloberring the global pointer.
+https://patchwork.linuxtv.org/project/linux-media/patch/20220821151552.58514-1-wangjianli@cdjrlc.com/
+
+Please check for similar patches first in the future.
+
+Why is seemingly everyone suddenly chasing errors like this?
+
+I don't mind taking such patches since typos like this annoy me, but
+having to figure out which patches are duplicates is getting old quickly...
+
+I'll try to go through your patches and see which are duplicates, but
+next time I'd appreciate it if you would check this first.
+
+Regards,
+
+	Hans
+
+On 24/08/2022 15:16, Jilin Yuan wrote:
+>  Delete the redundant word 'of'.
 > 
-> Fix the most obvious issue by saving the MMIO gpa into the VM.
-> 
-> A more subtle bug is that creating VMs in parallel (on multiple tasks)
-> could result in a VM using the wrong address.  Synchronizing a global to
-> a guest effectively snapshots the value on a per-VM basis, i.e. the
-> "global" is already prepped to work with multiple VMs, but setting the
-> global in the host and copying it to the guest needs to happen atomically.
-> To fix that bug, add atomic_sync_global_pointer_to_guest() to sync
-> "global" pointers that hold per-VM values, i.e. technically need to be
-> handled in a thread-safe manner.
-> 
-> Signed-off-by: Sean Christopherson <seanjc@google.com>
+> Signed-off-by: Jilin Yuan <yuanjilin@cdjrlc.com>
 > ---
->  .../selftests/kvm/include/kvm_util_base.h     | 16 +++++++++++++++
->  .../testing/selftests/kvm/lib/aarch64/ucall.c | 20 ++++++++++++++-----
->  2 files changed, 31 insertions(+), 5 deletions(-)
+>  drivers/media/i2c/cx25840/cx25840-ir.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
 > 
-> diff --git a/tools/testing/selftests/kvm/include/kvm_util_base.h b/tools/testing/selftests/kvm/include/kvm_util_base.h
-> index 24fde97f6121..9ec7fbe941aa 100644
-> --- a/tools/testing/selftests/kvm/include/kvm_util_base.h
-> +++ b/tools/testing/selftests/kvm/include/kvm_util_base.h
-> @@ -16,6 +16,7 @@
->  #include <linux/kvm.h>
->  #include "linux/rbtree.h"
->  
-> +#include <asm/atomic.h>
->  
->  #include <sys/ioctl.h>
->  
-> @@ -81,6 +82,7 @@ struct kvm_vm {
->  	struct sparsebit *vpages_mapped;
->  	bool has_irqchip;
->  	bool pgd_created;
-> +	vm_paddr_t ucall_mmio_addr;
->  	vm_paddr_t pgd;
->  	vm_vaddr_t gdt;
->  	vm_vaddr_t tss;
-> @@ -714,6 +716,20 @@ kvm_userspace_memory_region_find(struct kvm_vm *vm, uint64_t start,
->  	memcpy(&(g), _p, sizeof(g));				\
->  })
->  
-> +/*
-> + * Sync a global pointer to the guest that has a per-VM value, in which case
-> + * writes to the host copy of the "global" must be serialized (in case a test
-> + * is being truly crazy and spawning multiple VMs concurrently).
-> + */
-
-Do we even care about writes to the host's copy of the global pointer?
-I don't see how the host pointer is used beyond serializing writes into
-a guest.
-
-IOW, it looks as though we could skip the whole global illusion
-altogether and write straight into guest memory.
-
---
-Thanks,
-Oliver
+> diff --git a/drivers/media/i2c/cx25840/cx25840-ir.c b/drivers/media/i2c/cx25840/cx25840-ir.c
+> index 9d7d1d149f1a..8cef9656c612 100644
+> --- a/drivers/media/i2c/cx25840/cx25840-ir.c
+> +++ b/drivers/media/i2c/cx25840/cx25840-ir.c
+> @@ -196,7 +196,7 @@ static u32 clock_divider_to_resolution(u16 divider)
+>  {
+>  	/*
+>  	 * Resolution is the duration of 1 tick of the readable portion of
+> -	 * of the pulse width counter as read from the FIFO.  The two lsb's are
+> +	 * the pulse width counter as read from the FIFO.  The two lsb's are
+>  	 * not readable, hence the << 2.  This function returns ns.
+>  	 */
+>  	return DIV_ROUND_CLOSEST((1 << 2)  * ((u32) divider + 1) * 1000,
