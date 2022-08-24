@@ -2,115 +2,106 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4081FC00140
-	for <linux-kernel@archiver.kernel.org>; Wed, 24 Aug 2022 19:11:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 69324C32796
+	for <linux-kernel@archiver.kernel.org>; Wed, 24 Aug 2022 19:14:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236806AbiHXTLi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 24 Aug 2022 15:11:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50874 "EHLO
+        id S234967AbiHXTOU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 24 Aug 2022 15:14:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51814 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236283AbiHXTLe (ORCPT
+        with ESMTP id S232084AbiHXTOS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 24 Aug 2022 15:11:34 -0400
-Received: from mail-oi1-x232.google.com (mail-oi1-x232.google.com [IPv6:2607:f8b0:4864:20::232])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 650846171E;
-        Wed, 24 Aug 2022 12:11:32 -0700 (PDT)
-Received: by mail-oi1-x232.google.com with SMTP id r10so14685727oie.1;
-        Wed, 24 Aug 2022 12:11:32 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc;
-        bh=IBiQsl90pDHRBwqe3+axgNXRFkm79+olwXba0W7edLk=;
-        b=LwVjVKEmD+5b78/bhquOFWgs5s6bgTgvTlxBNV7+f/UFG+zUl6YKTZtAPGIX1NQHtI
-         PqATEHDZjE+xeDBPRGHzuS9cfhC732dq3zHXVmBtlQgdZrU2K0+ylp8vqguwYTmeRJLO
-         3EcQTqsUP50v7BO9sV1P8OmqJXCA/q61fm5uXgWAWYZiu6v5yMvtEXwIqStQrTL5417Z
-         vvaUHtVUoO1xYfWJObeAD3E8CImrroBSqvxDKIef8HIHWsAW9JJosGdIlyPtCqzASDTA
-         neOUqwb9trliwKvKUwya+J5aC7517Kcw2B1TWKBIedWROue9Kx7DJUpx/A0ImoAIGu69
-         Pt0g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-message-state:from:to:cc;
-        bh=IBiQsl90pDHRBwqe3+axgNXRFkm79+olwXba0W7edLk=;
-        b=grxGRGAYo5E02Lez/dMSO3kg8s1Ih53TDpiOM5+OpHQbjFjCsChgYIGBywARu3i4Lz
-         /gTP8vDQ1PFG4PV30s26AOhd4JjdBbgMx3rT9hp/qCUQiS2Px2tBSuulQWg9jsyar/9f
-         fchHpgN2qYhYKZMOWcN2gZxsx7fZBaec0Z4WJBm7t2ytDB0cDn5wX5b5B3jvUcw3OGW4
-         zQHDtpUuCsYtf4hCBw7lJ/JKcT7DdpKP7PluREJeYOeI1DO/DL2G8x2y9fUgxnruIGir
-         8UXrhrbfiV7+Xr+gGLQl7CR2cT2Q6MTVxJ1mnng9NcamrdQyhP46osu4HPrhClnAMEev
-         gZNw==
-X-Gm-Message-State: ACgBeo3NoUyxyEwelGUd0XAQRJoqA5FoW1rN463SRmSKqgEWNx7b19/C
-        7spACsV0YooZZGFEscfMAkriK0b0Bic=
-X-Google-Smtp-Source: AA6agR4XoWfrSzx3hPN24v77RjyPRhd6uA4mVtiyDrrjcGFdzGVyGhRxmedlNYqTdvfO/FhJ4fdSBw==
-X-Received: by 2002:a05:6808:10d4:b0:344:f380:cf8c with SMTP id s20-20020a05680810d400b00344f380cf8cmr264079ois.27.1661368291712;
-        Wed, 24 Aug 2022 12:11:31 -0700 (PDT)
-Received: from localhost.localdomain (cpe-70-114-247-242.austin.res.rr.com. [70.114.247.242])
-        by smtp.gmail.com with ESMTPSA id q44-20020a05687082ac00b0011ded9c762fsm405342oae.38.2022.08.24.12.11.30
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 24 Aug 2022 12:11:31 -0700 (PDT)
-From:   Denis Kenzior <denkenz@gmail.com>
-To:     David Howells <dhowells@redhat.com>,
-        Jarkko Sakkinen <jarkko@kernel.org>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
-        "David S. Miller" <davem@davemloft.net>,
-        Stefan Berger <stefanb@linux.ibm.com>
-Cc:     Denis Kenzior <denkenz@gmail.com>, keyrings@vger.kernel.org,
-        linux-crypto@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [RESEND PATCH] KEYS: asymmetric: Fix ECDSA use via keyctl uapi
-Date:   Wed, 24 Aug 2022 14:04:09 -0500
-Message-Id: <20220824190409.4286-1-denkenz@gmail.com>
-X-Mailer: git-send-email 2.35.1
+        Wed, 24 Aug 2022 15:14:18 -0400
+Received: from mout.gmx.net (mout.gmx.net [212.227.17.21])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5E9AF65240;
+        Wed, 24 Aug 2022 12:14:16 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gmx.net;
+        s=badeba3b8450; t=1661368454;
+        bh=Wf+PgvEMxVLzIEkHcy0ZAH85uq9spAuazl+zPdNjBpc=;
+        h=X-UI-Sender-Class:From:To:Cc:Subject:Date;
+        b=MSVaIYBJDTVZPe+Y5zdglJAkgXaWuHmY47lpMPqe87nQfw6n7ALxH/0gsqo3jO+F8
+         BAFPIX1ShzI6zswgafYwZ5agCQ6jleMmQeqXN/pA5hVE9AIs+6NeqHMlWwhFd8kyGA
+         l3ymQ5xG5dKDSk+FMVPO3T0AWZ1Xhthxu9IdsoWI=
+X-UI-Sender-Class: 01bb95c1-4bf8-414a-932a-4f6e2808ef9c
+Received: from silverpad ([89.204.135.131]) by mail.gmx.net (mrgmx105
+ [212.227.17.174]) with ESMTPSA (Nemesis) id 1Mqs0X-1pDgrE3Z0z-00mqrV; Wed, 24
+ Aug 2022 21:14:14 +0200
+From:   Jean-Francois Le Fillatre <jflf_kernel@gmx.com>
+To:     gregkh@linuxfoundation.org, linux-usb@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Cc:     Jean-Francois Le Fillatre <jflf_kernel@gmx.com>
+Subject: [PATCH v3] usb: add quirks for Lenovo OneLink+ Dock
+Date:   Wed, 24 Aug 2022 21:13:21 +0200
+Message-Id: <20220824191320.17883-1-jflf_kernel@gmx.com>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: quoted-printable
+X-Provags-ID: V03:K1:oC3+so+41R2EyHHJ2AN93nJq1sJqJgGMVDu43fxDbWm7rWjz+K4
+ vfdv5/FlFIDOAvUItqOQz14zYlfwbT8m63QonQgXO34eqcuYEKt3W4ma8CPsJlrz6ZJHdPW
+ 8enCachOymIRNjvrix9VnhbKKIhVNEBsVF/RA98bdU4t5cEzL7llpurQQBDciLTTi2AFSD6
+ v1qgQNGIdIZyV535QhH5g==
+X-UI-Out-Filterresults: notjunk:1;V03:K0:2foCDcNJHi8=:WX+rB6uxNjd6ec8zY4NMcD
+ PCfWYJcp6TmnzRZkcAc7WOclVd/vCjvKmZSQxTynFXsr5Suu+ndZn5okE1oA2hKatTgVmG0lj
+ RHCQ46/lQZER+TWzPiyLlN6zCKYl5FWeUSwJE1PVw9wFn7g5OkYHHdvO+qn3yJpaAfc1Y8qQp
+ jUTz4LkuVOdb4Y+9FVy7CiIAGXmgJhUxyGkTPwneUeaTDjBqQdD4x/RlRTkzNRJjoo5JwKW/b
+ dDYxaILlz9T0U2AY75BkE8dfef9ZBOtrlEN0KVgiKPWY4O1blf7jcxVcommNrdxQBdE+z58gg
+ P5jK1amojHxRAYzsOPkPBBxlHgNYR3Qt9mPbnXD2ILdBVGfyVT31QveFgpZtU0L9GuggZaH8n
+ wpSAn+Mg8IsM30dVW/YFy9vVt4D2BJp01td+b+sYa/hMomNdt/1BOV0F+SqrC2qkyn+O4Vvdf
+ SYgO9ZmK5DWFX7Ci9bvltGAGq2h0fbphIgyZ/cr6vDC5xggCd1o8kuYP5imYI3YqNqC5SGVkQ
+ BXJyjH6v2TSV5mZAZDYAxzO8SaJjNLnYW4h5xFbe+evhlTskn5aIf9zoFtKd5hWLu/qsQKyqQ
+ PFjnKlHYEVvjDHVSIk3yK8MW3jfFOMKZbqJX1OKFmOhnkAeqV0R+4d+mApv4p1ISoSRj+1rJE
+ pK2rZuTZqGbU1nCCj5Y+uQsF5jmWqK6RZKWOzEf7DcSE3zPRw0yvLJ2Oqg8SNXBoPWEy/gVdr
+ 5M6Z25HbzsMoLt/00z/ZiSo9mvoS5xKHSm9NZIRTcJbXMAznPSDrABwAuYtZltaIGBbrTyQFu
+ 2JUJ1mhlZjy4fYLb0WPswD/1OA2oXoy+7CSNySYk3dqKevL2e8JzO8NnKniIcoM3omQuRTP9v
+ AYT+ChPilrllyGc7iN6eBuEL2m0AwKSwZSZbr4WlFHrNLQxsYpcqh6ZNiS1ZTJOT4OMuYfRC7
+ +fzRYNzYySL+S9oGkpZWonMDs4fcPTjCWC9KBLTJjsOnb/VusyrpUIrYzUb5X6VS1HOyF+KCB
+ czotvjtN0HgxoRWvteyB+vGmVCvNpXPxV4EcYm//Wn2wCgis9W0TiMRHmS4jPMVGMZ5zQrMJH
+ noLHzTd4NLyhp9Jyor7zhcnrCtDlfpoJ9al+54NjzkRCU32gRQNTkx2Cw==
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-When support for ECDSA keys was added, constraints for data & signature
-sizes were never updated.  This makes it impossible to use such keys via
-keyctl API from userspace; fix that.
+The Lenovo OneLink+ Dock contains two VL812 USB3.0 controllers:
+17ef:1018 upstream
+17ef:1019 downstream
 
-Fixes: 299f561a6693 ("x509: Add support for parsing x509 certs with ECDSA keys")
-Signed-off-by: Denis Kenzior <denkenz@gmail.com>
----
- crypto/asymmetric_keys/public_key.c | 24 ++++++++++++++++++++++--
- 1 file changed, 22 insertions(+), 2 deletions(-)
+Those two controllers both have problems with some USB3.0 devices,
+particularly self-powered ones. Typical error messages include:
 
-diff --git a/crypto/asymmetric_keys/public_key.c b/crypto/asymmetric_keys/public_key.c
-index 2f8352e88860..eca5671ad3f2 100644
---- a/crypto/asymmetric_keys/public_key.c
-+++ b/crypto/asymmetric_keys/public_key.c
-@@ -186,8 +186,28 @@ static int software_key_query(const struct kernel_pkey_params *params,
- 
- 	len = crypto_akcipher_maxsize(tfm);
- 	info->key_size = len * 8;
--	info->max_data_size = len;
--	info->max_sig_size = len;
+  Timeout while waiting for setup device command
+  device not accepting address X, error -62
+  unable to enumerate USB device
+
+By process of elimination the controllers themselves were identified as
+the cause of the problem. Through trial and error the issue was solved
+by using USB_QUIRK_RESET_RESUME for both chips.
+
+Signed-off-by: Jean-Francois Le Fillatre <jflf_kernel@gmx.com>
+=2D--
+v2 -> v3: fix commit email address, add revision details
+v1 -> v2: use full author name
+
+
+ drivers/usb/core/quirks.c | 4 ++++
+ 1 file changed, 4 insertions(+)
+
+diff --git a/drivers/usb/core/quirks.c b/drivers/usb/core/quirks.c
+index f99a65a64..999b7c969 100644
+=2D-- a/drivers/usb/core/quirks.c
++++ b/drivers/usb/core/quirks.c
+@@ -437,6 +437,10 @@ static const struct usb_device_id usb_quirk_list[] =
+=3D {
+ 	{ USB_DEVICE(0x1532, 0x0116), .driver_info =3D
+ 			USB_QUIRK_LINEAR_UFRAME_INTR_BINTERVAL },
+
++	/* Lenovo ThinkPad OneLink+ Dock twin hub controllers (VIA Labs VL812) *=
+/
++	{ USB_DEVICE(0x17ef, 0x1018), .driver_info =3D USB_QUIRK_RESET_RESUME },
++	{ USB_DEVICE(0x17ef, 0x1019), .driver_info =3D USB_QUIRK_RESET_RESUME },
 +
-+	if (strncmp(pkey->pkey_algo, "ecdsa", 5) == 0) {
-+		/*
-+		 * ECDSA key sizes are much smaller than RSA, and thus could
-+		 * operate on (hashed) inputs that are larger than key size.
-+		 * For example SHA384-hashed input used with secp256r1
-+		 * based keys.  Set max_data_size to be at least as large as
-+		 * the largest supported hash size (SHA512)
-+		 */
-+		info->max_data_size = 64;
-+
-+		/*
-+		 * Verify takes ECDSA-Sig (described in RFC 5480) as input,
-+		 * which is actually 2 'key_size'-bit integers encoded in
-+		 * ASN.1.  Account for the ASN.1 encoding overhead here.
-+		 */
-+		info->max_sig_size = 2 * (len + 3) + 2;
-+	} else {
-+		info->max_data_size = len;
-+		info->max_sig_size = len;
-+	}
-+
- 	info->max_enc_size = len;
- 	info->max_dec_size = len;
- 	info->supported_ops = (KEYCTL_SUPPORTS_ENCRYPT |
--- 
-2.35.1
+ 	/* Lenovo USB-C to Ethernet Adapter RTL8153-04 */
+ 	{ USB_DEVICE(0x17ef, 0x720c), .driver_info =3D USB_QUIRK_NO_LPM },
+
+=2D-
+2.34.1
 
