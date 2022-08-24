@@ -2,311 +2,174 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6FB9EC00140
-	for <linux-kernel@archiver.kernel.org>; Wed, 24 Aug 2022 15:01:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E5683C32793
+	for <linux-kernel@archiver.kernel.org>; Wed, 24 Aug 2022 15:03:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237253AbiHXPBq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 24 Aug 2022 11:01:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57374 "EHLO
+        id S239139AbiHXPDD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 24 Aug 2022 11:03:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58688 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239381AbiHXPBh (ORCPT
+        with ESMTP id S230492AbiHXPDA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 24 Aug 2022 11:01:37 -0400
-Received: from mail-wr1-x430.google.com (mail-wr1-x430.google.com [IPv6:2a00:1450:4864:20::430])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CF0FD89CFD
-        for <linux-kernel@vger.kernel.org>; Wed, 24 Aug 2022 08:01:34 -0700 (PDT)
-Received: by mail-wr1-x430.google.com with SMTP id bs25so21130836wrb.2
-        for <linux-kernel@vger.kernel.org>; Wed, 24 Aug 2022 08:01:34 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc;
-        bh=9MwRKo7p5mGuEOorxe18ICwvOojGU+Msts5Hm6mDUmM=;
-        b=DHIFxLxTXAgmKsbJjZGy1lXpuYDVR2jq+dJVAIM0rh6V3yuD8QQfAom1LDARfKzsl+
-         XPbDIDgDCWkUDgXOm8bmsdVC+BN4+x5CxVuRd51g0EdKzB0v31sXINtSdNwYi2Z/KAFT
-         x+X+cL5bKKpYSzXOkRt2+VEdw3+GdCgMU4FZvP7lg4la1rFMzIknWizCD1JjLUV2QUqX
-         VYMOQdMSGlq7WsX2UyUSEXw4kyK0nIjqFdBzsV7uYhBJ5w/XDJhqZPgnIyAlP/IOup9q
-         w8k3tPvZ2X1ztqdWGHG3EaguNJG7GSJ/0W4ssLRBEzzcFjuVbROv7zXYwfDmkxT+3ZNk
-         lotQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc;
-        bh=9MwRKo7p5mGuEOorxe18ICwvOojGU+Msts5Hm6mDUmM=;
-        b=xLezuTVY7JEG3EZCfhIcN+iykdykXJH/03lnntRR6iCvaP2o7d7ZtqGGh6TvmNSR2f
-         6RGXXrwTFcvbAOayVOjAgbUjxDjYgKeP16qNHvXN28yWV1lyKn7KzSeFRU0r5Iv5D9UX
-         MO+aBYbLAUr/wT3uYmA6R3st4S0XtKDnMQIEy4J69IAn7VWCCud6vi7GrObvmLD0o0vD
-         WXXMbGwRd6ml6Ev4THkcRxizc+xjd8OtwNOQmdgZ5Th7bXfpzbvDx1O8Vb22BforUlKj
-         K8aasf+eT+J3SR6IfNkQ2qwkdYiFHKg3/DDh/ywsmFpNcvU3nIDbl748VM2g4s5E24hs
-         GX5g==
-X-Gm-Message-State: ACgBeo1k/Crqnvp+IbQWAxYXqLbmj1FVhvQdnjBHvairdfyTNrvHZBGP
-        RIvRTFUqCcoqNyfeRTNGZrUGMr3F/s6IP9SEyMhDRQ==
-X-Google-Smtp-Source: AA6agR7HpNIT/fnUb42DSSIVVlV1mMl/8w4k0TKNasA3YcVRAe/dW1zFnuIFWQttSxtmk0z2PuivVtxuyY0WXQe9Dw0=
-X-Received: by 2002:a05:6000:1008:b0:225:58e0:223f with SMTP id
- a8-20020a056000100800b0022558e0223fmr8713911wrx.375.1661353293134; Wed, 24
- Aug 2022 08:01:33 -0700 (PDT)
+        Wed, 24 Aug 2022 11:03:00 -0400
+Received: from mail.pr-group.ru (mail.pr-group.ru [178.18.215.3])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A750C90185;
+        Wed, 24 Aug 2022 08:02:54 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
+        d=metrotek.ru; s=mail;
+        h=from:subject:date:message-id:to:cc:mime-version:content-transfer-encoding:
+         in-reply-to:references;
+        bh=Lhu0f5pNQ22TS8TwZawkOraQ5AMr2Ds8t812vuWvOlI=;
+        b=NijWWtXnZhHXHj5wp9AtfwO0qbp/JCqFvklJT7kXO1Gpv5DthJzKrTjb2WaFyT/XAL317Tk3AiDnU
+         CZeDX/Cjf9JSf9AZ2egrBWY47OsLpc0BqcgTL9VrX68KaYXh7PZlrbkgNjdSVa1wMvkosZ2X5mN8j3
+         TF8LCQxHIRvNDYPYuRUaGJrpCELdKdz+vX6QRLrfI5bGeiidmL5obWyde7A7pRobV/7hpCzIqvS1oW
+         2cU8pOemi89pZvJECp2RcOuyMn8AfBsnkYex2+rbo0JTm0NZIWOsyMw56phMWCZc+Hv30U3wF+R0mN
+         +ORbpS5Xc86n7rrFByk8jQnkm/5/kBw==
+X-Kerio-Anti-Spam:  Build: [Engines: 2.16.4.1445, Stamp: 3], Multi: [Enabled, t: (0.000010,0.014489)], BW: [Enabled, t: (0.000024,0.000001)], RTDA: [Enabled, t: (0.664397), Hit: No, Details: v2.41.0; Id: 15.52k019.1gb860ct5.7g; mclb], total: 0(700)
+X-Footer: bWV0cm90ZWsucnU=
+Received: from h-e2.ddg ([85.143.252.66])
+        (authenticated user i.bornyakov@metrotek.ru)
+        by mail.pr-group.ru with ESMTPSA
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256 bits));
+        Wed, 24 Aug 2022 18:02:19 +0300
+From:   Ivan Bornyakov <i.bornyakov@metrotek.ru>
+To:     mdf@kernel.org, hao.wu@intel.com, yilun.xu@intel.com,
+        trix@redhat.com, dg@emlix.com, robh+dt@kernel.org,
+        krzysztof.kozlowski+dt@linaro.org
+Cc:     Ivan Bornyakov <i.bornyakov@metrotek.ru>,
+        linux-fpga@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, system@metrotek.ru
+Subject: [PATCH v7 2/2] dt-bindings: fpga: document Lattice sysCONFIG FPGA manager
+Date:   Wed, 24 Aug 2022 18:01:14 +0300
+Message-Id: <20220824150114.17504-3-i.bornyakov@metrotek.ru>
+X-Mailer: git-send-email 2.37.2
+In-Reply-To: <20220824150114.17504-1-i.bornyakov@metrotek.ru>
+References: <20220824150114.17504-1-i.bornyakov@metrotek.ru>
 MIME-Version: 1.0
-References: <20220823220922.256001-1-irogers@google.com> <20220823220922.256001-2-irogers@google.com>
- <4e68941f-1370-0c23-6f42-44f3e19e65f7@intel.com>
-In-Reply-To: <4e68941f-1370-0c23-6f42-44f3e19e65f7@intel.com>
-From:   Ian Rogers <irogers@google.com>
-Date:   Wed, 24 Aug 2022 08:01:21 -0700
-Message-ID: <CAP-5=fVLiY2J2P8p9GY=sn-kxHYp8iVdmpRcgTkLi9YJCT5QHQ@mail.gmail.com>
-Subject: Re: [PATCH v2 01/18] perf mutex: Wrapped usage of mutex and cond
-To:     Adrian Hunter <adrian.hunter@intel.com>
-Cc:     Peter Zijlstra <peterz@infradead.org>,
-        Ingo Molnar <mingo@redhat.com>,
-        Arnaldo Carvalho de Melo <acme@kernel.org>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
-        Jiri Olsa <jolsa@kernel.org>,
-        Namhyung Kim <namhyung@kernel.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Darren Hart <dvhart@infradead.org>,
-        Davidlohr Bueso <dave@stgolabs.net>,
-        =?UTF-8?Q?Andr=C3=A9_Almeida?= <andrealmeid@igalia.com>,
-        Nathan Chancellor <nathan@kernel.org>,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        Tom Rix <trix@redhat.com>, Weiguo Li <liwg06@foxmail.com>,
-        Athira Rajeev <atrajeev@linux.vnet.ibm.com>,
-        Thomas Richter <tmricht@linux.ibm.com>,
-        Ravi Bangoria <ravi.bangoria@amd.com>,
-        Dario Petrillo <dario.pk1@gmail.com>,
-        Hewenliang <hewenliang4@huawei.com>,
-        yaowenbin <yaowenbin1@huawei.com>,
-        Wenyu Liu <liuwenyu7@huawei.com>,
-        Song Liu <songliubraving@fb.com>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Dave Marchevsky <davemarchevsky@fb.com>,
-        Leo Yan <leo.yan@linaro.org>,
-        Kim Phillips <kim.phillips@amd.com>,
-        Pavithra Gurushankar <gpavithrasha@gmail.com>,
-        Alexandre Truong <alexandre.truong@arm.com>,
-        Quentin Monnet <quentin@isovalent.com>,
-        William Cohen <wcohen@redhat.com>,
-        Andres Freund <andres@anarazel.de>,
-        =?UTF-8?Q?Martin_Li=C5=A1ka?= <mliska@suse.cz>,
-        Colin Ian King <colin.king@intel.com>,
-        James Clark <james.clark@arm.com>,
-        Fangrui Song <maskray@google.com>,
-        Stephane Eranian <eranian@google.com>,
-        Kajol Jain <kjain@linux.ibm.com>,
-        Alexey Bayduraev <alexey.v.bayduraev@linux.intel.com>,
-        Riccardo Mancini <rickyman7@gmail.com>,
-        Andi Kleen <ak@linux.intel.com>,
-        Masami Hiramatsu <mhiramat@kernel.org>,
-        Zechuan Chen <chenzechuan1@huawei.com>,
-        Jason Wang <wangborong@cdjrlc.com>,
-        Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
-        Remi Bernon <rbernon@codeweavers.com>,
-        linux-kernel@vger.kernel.org, linux-perf-users@vger.kernel.org,
-        bpf@vger.kernel.org, llvm@lists.linux.dev
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Aug 24, 2022 at 2:45 AM Adrian Hunter <adrian.hunter@intel.com> wrote:
->
-> On 24/08/22 01:09, Ian Rogers wrote:
-> > From: Pavithra Gurushankar <gpavithrasha@gmail.com>
-> >
-> > Added a new header file mutex.h that wraps the usage of
-> > pthread_mutex_t and pthread_cond_t. By abstracting these it is
-> > possible to introduce error checking.
-> >
-> > Signed-off-by: Pavithra Gurushankar <gpavithrasha@gmail.com>
-> > Signed-off-by: Ian Rogers <irogers@google.com>
-> > ---
-> >  tools/perf/util/Build   |  1 +
-> >  tools/perf/util/mutex.c | 97 +++++++++++++++++++++++++++++++++++++++++
-> >  tools/perf/util/mutex.h | 43 ++++++++++++++++++
-> >  3 files changed, 141 insertions(+)
-> >  create mode 100644 tools/perf/util/mutex.c
-> >  create mode 100644 tools/perf/util/mutex.h
-> >
-> > diff --git a/tools/perf/util/Build b/tools/perf/util/Build
-> > index 9dfae1bda9cc..8fd6dc8de521 100644
-> > --- a/tools/perf/util/Build
-> > +++ b/tools/perf/util/Build
-> > @@ -143,6 +143,7 @@ perf-y += branch.o
-> >  perf-y += mem2node.o
-> >  perf-y += clockid.o
-> >  perf-y += list_sort.o
-> > +perf-y += mutex.o
-> >
-> >  perf-$(CONFIG_LIBBPF) += bpf-loader.o
-> >  perf-$(CONFIG_LIBBPF) += bpf_map.o
-> > diff --git a/tools/perf/util/mutex.c b/tools/perf/util/mutex.c
-> > new file mode 100644
-> > index 000000000000..d12cf0714268
-> > --- /dev/null
-> > +++ b/tools/perf/util/mutex.c
-> > @@ -0,0 +1,97 @@
-> > +// SPDX-License-Identifier: GPL-2.0
-> > +#include "mutex.h"
-> > +
-> > +#include "debug.h"
-> > +#include <linux/string.h>
-> > +#include <errno.h>
-> > +
-> > +static void check_err(const char *fn, int err)
-> > +{
-> > +     char sbuf[STRERR_BUFSIZE];
-> > +
-> > +     if (err == 0)
-> > +             return;
-> > +
-> > +     pr_err("%s error: '%s'", fn, str_error_r(err, sbuf, sizeof(sbuf)));
->
-> pr_err() does not add '\n' so it needs to be in the format string.
+Add Device Tree Binding doc for configuring Lattice ECP5 and MachXO2
+FPGAs over Slave SPI sysCONFIG interface.
 
-Thanks, will add in v3.
+Signed-off-by: Ivan Bornyakov <i.bornyakov@metrotek.ru>
+---
+ .../bindings/fpga/lattice,sysconfig.yaml      | 103 ++++++++++++++++++
+ 1 file changed, 103 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/fpga/lattice,sysconfig.yaml
 
-> > +}
-> > +
-> > +#define CHECK_ERR(err) check_err(__func__, err)
-> > +
-> > +void mutex_init(struct mutex *mtx, bool pshared)
-> > +{
-> > +     pthread_mutexattr_t attr;
-> > +
-> > +     CHECK_ERR(pthread_mutexattr_init(&attr));
-> > +
-> > +#ifndef NDEBUG
-> > +     /* In normal builds enable error checking, such as recursive usage. */
-> > +     CHECK_ERR(pthread_mutexattr_settype(&attr, PTHREAD_MUTEX_ERRORCHECK));
-> > +#endif
-> > +     if (pshared)
-> > +             pthread_mutexattr_setpshared(&attr, PTHREAD_PROCESS_SHARED);
-> > +
-> > +     CHECK_ERR(pthread_mutex_init(&mtx->lock, &attr));
-> > +     CHECK_ERR(pthread_mutexattr_destroy(&attr));
-> > +}
-> > +
-> > +void mutex_destroy(struct mutex *mtx)
-> > +{
-> > +     CHECK_ERR(pthread_mutex_destroy(&mtx->lock));
-> > +}
-> > +
-> > +void mutex_lock(struct mutex *mtx)
-> > +{
-> > +     CHECK_ERR(pthread_mutex_lock(&mtx->lock));
-> > +}
-> > +
-> > +void mutex_unlock(struct mutex *mtx)
-> > +{
-> > +     CHECK_ERR(pthread_mutex_unlock(&mtx->lock));
-> > +}
-> > +
-> > +bool mutex_trylock(struct mutex *mtx)
-> > +{
-> > +     int ret = pthread_mutex_trylock(&mtx->lock);
-> > +
-> > +     if (ret == 0)
-> > +             return true; /* Lock acquired. */
-> > +
-> > +     if (ret == EBUSY)
-> > +             return false; /* Lock busy. */
-> > +
-> > +     /* Print error. */
-> > +     CHECK_ERR(ret);
-> > +     return false;
-> > +}
-> > +
-> > +void cond_init(struct cond *cnd, bool pshared)
-> > +{
-> > +     pthread_condattr_t attr;
-> > +
-> > +     CHECK_ERR(pthread_condattr_init(&attr));
-> > +     if (pshared)
-> > +             CHECK_ERR(pthread_condattr_setpshared(&attr, PTHREAD_PROCESS_SHARED));
-> > +
-> > +     CHECK_ERR(pthread_cond_init(&cnd->cond, &attr));
-> > +     CHECK_ERR(pthread_condattr_destroy(&attr));
-> > +}
-> > +
-> > +void cond_destroy(struct cond *cnd)
-> > +{
-> > +     CHECK_ERR(pthread_cond_destroy(&cnd->cond));
-> > +}
-> > +
-> > +void cond_wait(struct cond *cnd, struct mutex *mtx)
-> > +{
-> > +     CHECK_ERR(pthread_cond_wait(&cnd->cond, &mtx->lock));
-> > +}
-> > +
-> > +void cond_signal(struct cond *cnd)
-> > +{
-> > +     CHECK_ERR(pthread_cond_signal(&cnd->cond));
-> > +}
-> > +
-> > +void cond_broadcast(struct cond *cnd)
-> > +{
-> > +     CHECK_ERR(pthread_cond_broadcast(&cnd->cond));
-> > +}
-> > diff --git a/tools/perf/util/mutex.h b/tools/perf/util/mutex.h
-> > new file mode 100644
-> > index 000000000000..952276ad83bd
-> > --- /dev/null
-> > +++ b/tools/perf/util/mutex.h
-> > @@ -0,0 +1,43 @@
-> > +/* SPDX-License-Identifier: GPL-2.0 */
-> > +#ifndef __PERF_MUTEX_H
-> > +#define __PERF_MUTEX_H
-> > +
-> > +#include <pthread.h>
-> > +#include <stdbool.h>
-> > +
-> > +/*
-> > + * A wrapper around the mutex implementation that allows perf to error check
-> > + * usage, etc.
-> > + */
-> > +struct mutex {
-> > +     pthread_mutex_t lock;
-> > +};
-> > +
-> > +/* A wrapper around the condition variable implementation. */
-> > +struct cond {
-> > +     pthread_cond_t cond;
-> > +};
->
-> Do these definitions need to be in the header?
-> What about just:
->
-> struct mutex;
-> struct cond;
->
-> and put the defintions in mutex.c.
+diff --git a/Documentation/devicetree/bindings/fpga/lattice,sysconfig.yaml b/Documentation/devicetree/bindings/fpga/lattice,sysconfig.yaml
+new file mode 100644
+index 000000000000..596776427a00
+--- /dev/null
++++ b/Documentation/devicetree/bindings/fpga/lattice,sysconfig.yaml
+@@ -0,0 +1,103 @@
++# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
++%YAML 1.2
++---
++$id: http://devicetree.org/schemas/fpga/lattice,sysconfig.yaml#
++$schema: http://devicetree.org/meta-schemas/core.yaml#
++
++title: Lattice Slave SPI sysCONFIG FPGA manager
++
++maintainers:
++  - Ivan Bornyakov <i.bornyakov@metrotek.ru>
++
++description: |
++  Lattice sysCONFIG port, which is used for FPGA configuration, among others,
++  have Slave Serial Peripheral Interface. Only full reconfiguration is
++  supported.
++
++  Programming of ECP5 is done by writing uncompressed bitstream image in .bit
++  format into FPGA's SRAM configuration memory.
++
++  Programming of MachXO2 is done by writing configuration data into device's
++  internal non-volatile Flash memory, then Self-Download of data from Flash
++  into SRAM is issued.
++
++properties:
++  compatible:
++    enum:
++      - lattice,ecp5-fpga-mgr
++      - lattice,machxo2-fpga-mgr
++
++  reg:
++    maxItems: 1
++
++required:
++  - compatible
++  - reg
++
++allOf:
++  - $ref: /schemas/spi/spi-peripheral-props.yaml
++
++  - if:
++      properties:
++        compatible:
++          contains:
++            const: lattice,machxo2-fpga-mgr
++    then:
++      properties:
++        spi-max-frequency:
++          maximum: 66000000
++
++  - if:
++      properties:
++        compatible:
++          contains:
++            const: lattice,ecp5-fpga-mgr
++    then:
++      properties:
++        spi-max-frequency:
++          maximum: 60000000
++        program-gpios:
++          description:
++            A GPIO line connected to PROGRAMN (active low) pin of the device.
++            Initiates configuration sequence.
++          maxItems: 1
++        init-gpios:
++          description:
++            A GPIO line connected to INITN (active low) pin of the device.
++            Indicates that the FPGA is ready to be configured.
++          maxItems: 1
++        done-gpios:
++          description:
++            A GPIO line connected to DONE (active high) pin of the device.
++            Indicates that the configuration sequence is complete.
++          maxItems: 1
++      required:
++        - program-gpios
++        - init-gpios
++        - done-gpios
++
++unevaluatedProperties: false
++
++examples:
++  - |
++    #include <dt-bindings/gpio/gpio.h>
++
++    spi {
++        #address-cells = <1>;
++        #size-cells = <0>;
++
++        fpga-mgr@0 {
++            compatible = "lattice,ecp5-fpga-mgr";
++            reg = <0>;
++            spi-max-frequency = <20000000>;
++            program-gpios = <&gpio3 4 GPIO_ACTIVE_LOW>;
++            init-gpios = <&gpio3 3 GPIO_ACTIVE_LOW>;
++            done-gpios = <&gpio3 2 GPIO_ACTIVE_HIGH>;
++        };
++
++        fpga-mgr@1 {
++            compatible = "lattice,machxo2-fpga-mgr";
++            reg = <1>;
++            spi-max-frequency = <20000000>;
++        };
++    };
+-- 
+2.37.2
 
-Agreed, unfortunately struct mutex is a variable in a bunch of structs
-and without the definition in the header file the size is missing.
 
-Thanks,
-Ian
-
-> > +
-> > +/*
-> > + * Initialize the mtx struct, if pshared is set then specify the process-shared
-> > + * rather than default process-private attribute.
-> > + */
-> > +void mutex_init(struct mutex *mtx, bool pshared);
-> > +void mutex_destroy(struct mutex *mtx);
-> > +
-> > +void mutex_lock(struct mutex *mtx);
-> > +void mutex_unlock(struct mutex *mtx);
-> > +bool mutex_trylock(struct mutex *mtx);
-> > +
-> > +/*
-> > + * Initialize the cond struct, if pshared is set then specify the process-shared
-> > + * rather than default process-private attribute.
-> > + */
-> > +void cond_init(struct cond *cnd, bool pshared);
-> > +void cond_destroy(struct cond *cnd);
-> > +
-> > +void cond_wait(struct cond *cnd, struct mutex *mtx);
-> > +void cond_signal(struct cond *cnd);
-> > +void cond_broadcast(struct cond *cnd);
-> > +
-> > +#endif /* __PERF_MUTEX_H */
->
