@@ -2,92 +2,91 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2F9DEC32796
-	for <linux-kernel@archiver.kernel.org>; Wed, 24 Aug 2022 12:55:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A6106C00140
+	for <linux-kernel@archiver.kernel.org>; Wed, 24 Aug 2022 12:56:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237693AbiHXMzZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 24 Aug 2022 08:55:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56268 "EHLO
+        id S237517AbiHXM4Z (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 24 Aug 2022 08:56:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57780 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237597AbiHXMzF (ORCPT
+        with ESMTP id S237044AbiHXM4X (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 24 Aug 2022 08:55:05 -0400
-Received: from mx0a-00128a01.pphosted.com (mx0a-00128a01.pphosted.com [148.163.135.77])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9AB2A6DAE7;
-        Wed, 24 Aug 2022 05:55:03 -0700 (PDT)
-Received: from pps.filterd (m0167089.ppops.net [127.0.0.1])
-        by mx0a-00128a01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 27OCqMhE012681;
-        Wed, 24 Aug 2022 08:54:55 -0400
-Received: from nwd2mta3.analog.com ([137.71.173.56])
-        by mx0a-00128a01.pphosted.com (PPS) with ESMTPS id 3j5ad43vy2-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Wed, 24 Aug 2022 08:54:54 -0400
-Received: from ASHBMBX9.ad.analog.com (ASHBMBX9.ad.analog.com [10.64.17.10])
-        by nwd2mta3.analog.com (8.14.7/8.14.7) with ESMTP id 27OCsrBV040113
-        (version=TLSv1/SSLv3 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Wed, 24 Aug 2022 08:54:53 -0400
-Received: from ASHBCASHYB4.ad.analog.com (10.64.17.132) by
- ASHBMBX9.ad.analog.com (10.64.17.10) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.14; Wed, 24 Aug 2022 08:54:52 -0400
-Received: from ASHBMBX9.ad.analog.com (10.64.17.10) by
- ASHBCASHYB4.ad.analog.com (10.64.17.132) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.14; Wed, 24 Aug 2022 08:54:52 -0400
-Received: from zeus.spd.analog.com (10.66.68.11) by ashbmbx9.ad.analog.com
- (10.64.17.10) with Microsoft SMTP Server id 15.2.986.14 via Frontend
- Transport; Wed, 24 Aug 2022 08:54:52 -0400
-Received: from rbolboac.ad.analog.com ([10.48.65.109])
-        by zeus.spd.analog.com (8.15.1/8.15.1) with ESMTP id 27OCseST004251;
-        Wed, 24 Aug 2022 08:54:42 -0400
-From:   Ramona Bolboaca <ramona.bolboaca@analog.com>
-To:     <jic23@kernel.org>, <robh+dt@kernel.org>,
-        <krzysztof.kozlowski+dt@linaro.org>, <linux-iio@vger.kernel.org>,
-        <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>
-CC:     Ramona Bolboaca <ramona.bolboaca@analog.com>
-Subject: [PATCH 0/2] iio: adc: add max11205 adc driver
-Date:   Wed, 24 Aug 2022 15:52:01 +0300
-Message-ID: <20220824125203.685287-1-ramona.bolboaca@analog.com>
-X-Mailer: git-send-email 2.25.1
+        Wed, 24 Aug 2022 08:56:23 -0400
+Received: from bg5.exmail.qq.com (bg4.exmail.qq.com [43.154.221.58])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D2FA485FFF
+        for <linux-kernel@vger.kernel.org>; Wed, 24 Aug 2022 05:56:16 -0700 (PDT)
+X-QQ-mid: bizesmtp62t1661345762t10p0fcg
+Received: from localhost.localdomain ( [182.148.14.124])
+        by bizesmtp.qq.com (ESMTP) with 
+        id ; Wed, 24 Aug 2022 20:56:01 +0800 (CST)
+X-QQ-SSF: 01000000002000C0E000B00A0000000
+X-QQ-FEAT: ZdHcY4j9T+K94SWBB3cuuxFtymFLVJ+fL1aGmbrpiFQTCt1Idp1t1648ssCy/
+        ea0PqgdPHEKLUC6+1pcecIQBTH2VZuk85JsX2HybE2tv4SwdIfQvy3XmMm1KkUxnMtywtS1
+        5nBYeR9rb0YnQn3tx5WxsX0UY6h5DsCQTB+ttCDJv9bJhtXIrnZ4SUeSbQZ20HY4tKYdgHz
+        /AlpcfPNPZdMMZbvJEFkvFKTcIA56MK9/RuE+UVIJFaa7bxXcq0BBJwIOmCxgRBwTGKw4N2
+        3AfbGOZd3Gc5ZpQlTgAWUokXRukY2a9xQoOXyYaZJeAgPMs/hl/FJ2Vf+rnCQg0IPMt1xW7
+        OLVllQ4d+wHhkYcfET9U2SVD/PYPdVJn2Pqv6/e
+X-QQ-GoodBg: 0
+From:   Jilin Yuan <yuanjilin@cdjrlc.com>
+To:     airlied@linux.ie, daniel@ffwll.ch
+Cc:     dri-devel@lists.freedesktop.org, linux-kernel@vger.kernel.org,
+        Jilin Yuan <yuanjilin@cdjrlc.com>
+Subject: [PATCH] drm/vmwgfx: fix repeated words in comments
+Date:   Wed, 24 Aug 2022 20:55:54 +0800
+Message-Id: <20220824125554.27901-1-yuanjilin@cdjrlc.com>
+X-Mailer: git-send-email 2.36.1
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-ADIRuleOP-NewSCL: Rule Triggered
-X-Proofpoint-GUID: vfrpV0RT2oP80eMNpU4JmBaL5hpF7jhU
-X-Proofpoint-ORIG-GUID: vfrpV0RT2oP80eMNpU4JmBaL5hpF7jhU
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.895,Hydra:6.0.517,FMLib:17.11.122.1
- definitions=2022-08-24_07,2022-08-22_02,2022-06-22_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 phishscore=0
- priorityscore=1501 malwarescore=0 lowpriorityscore=0 suspectscore=0
- mlxlogscore=624 spamscore=0 clxscore=1015 mlxscore=0 adultscore=0
- bulkscore=0 impostorscore=0 classifier=spam adjust=0 reason=mlx
- scancount=1 engine=8.12.0-2207270000 definitions=main-2208240049
+Content-Transfer-Encoding: 8bit
+X-QQ-SENDSIZE: 520
+Feedback-ID: bizesmtp:cdjrlc.com:qybglogicsvr:qybglogicsvr4
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Adding support for max11205 16-bit single-channel ultra-low power
-delta-sigma adc.
-The MAX11205 is compatible with the 2-wire interface and uses
-SCLK and RDY/DOUT for serial communica- tions. In this mode, all
-controls are implemented by tim- ing the high or low phase of the SCLK.
-The 2-wire serial interface only allows for data to be read out through the
-RDY/DOUT output.
+ Delete the redundant word 'to'.
+ Delete the redundant word 'should'.
 
-Ramona Bolboaca (2):
-  bindings: iio: adc: Add max11205 documentation file
-  iio: adc: add max11205 adc driver
+Signed-off-by: Jilin Yuan <yuanjilin@cdjrlc.com>
+---
+ drivers/gpu/drm/vmwgfx/vmwgfx_execbuf.c | 4 ++--
+ drivers/gpu/drm/vmwgfx/vmwgfx_kms.h     | 2 +-
+ 2 files changed, 3 insertions(+), 3 deletions(-)
 
- .../bindings/iio/adc/maxim,max11205.yaml      |  65 ++++++
- MAINTAINERS                                   |   8 +
- drivers/iio/adc/Kconfig                       |  14 ++
- drivers/iio/adc/Makefile                      |   1 +
- drivers/iio/adc/max11205.c                    | 192 ++++++++++++++++++
- 5 files changed, 280 insertions(+)
- create mode 100644 Documentation/devicetree/bindings/iio/adc/maxim,max11205.yaml
- create mode 100644 drivers/iio/adc/max11205.c
-
+diff --git a/drivers/gpu/drm/vmwgfx/vmwgfx_execbuf.c b/drivers/gpu/drm/vmwgfx/vmwgfx_execbuf.c
+index d49de4905efa..82b9d33ecc84 100644
+--- a/drivers/gpu/drm/vmwgfx/vmwgfx_execbuf.c
++++ b/drivers/gpu/drm/vmwgfx/vmwgfx_execbuf.c
+@@ -381,7 +381,7 @@ static int vmw_execbuf_res_noctx_val_add(struct vmw_sw_context *sw_context,
+ }
+ 
+ /**
+- * vmw_view_res_val_add - Add a view and the surface it's pointing to to the
++ * vmw_view_res_val_add - Add a view and the surface it's pointing to the
+  * validation list
+  *
+  * @sw_context: The software context holding the validation list.
+@@ -409,7 +409,7 @@ static int vmw_view_res_val_add(struct vmw_sw_context *sw_context,
+ 
+ /**
+  * vmw_view_id_val_add - Look up a view and add it and the surface it's pointing
+- * to to the validation list.
++ * to the validation list.
+  *
+  * @sw_context: The software context holding the validation list.
+  * @view_type: The view type to look up.
+diff --git a/drivers/gpu/drm/vmwgfx/vmwgfx_kms.h b/drivers/gpu/drm/vmwgfx/vmwgfx_kms.h
+index 1d1c8b82c898..7c04e8150fe2 100644
+--- a/drivers/gpu/drm/vmwgfx/vmwgfx_kms.h
++++ b/drivers/gpu/drm/vmwgfx/vmwgfx_kms.h
+@@ -69,7 +69,7 @@ struct vmw_du_update_plane {
+ 	 *
+ 	 * Some surface resource or buffer object need some extra cmd submission
+ 	 * like update GB image for proxy surface and define a GMRFB for screen
+-	 * object. That should should be done here as this callback will be
++	 * object. That should be done here as this callback will be
+ 	 * called after FIFO allocation with the address of command buufer.
+ 	 *
+ 	 * This callback is optional.
 -- 
-2.25.1
+2.36.1
 
