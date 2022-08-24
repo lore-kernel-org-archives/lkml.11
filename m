@@ -2,158 +2,67 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 90DC9C32793
-	for <linux-kernel@archiver.kernel.org>; Wed, 24 Aug 2022 13:30:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7B157C00140
+	for <linux-kernel@archiver.kernel.org>; Wed, 24 Aug 2022 13:30:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237114AbiHXNam (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 24 Aug 2022 09:30:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36036 "EHLO
+        id S237447AbiHXNaq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 24 Aug 2022 09:30:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36014 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237364AbiHXNab (ORCPT
+        with ESMTP id S237450AbiHXNac (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 24 Aug 2022 09:30:31 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 134BD564C9;
-        Wed, 24 Aug 2022 06:30:30 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id A555261724;
-        Wed, 24 Aug 2022 13:30:29 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D5069C433D6;
-        Wed, 24 Aug 2022 13:30:28 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1661347829;
-        bh=YFeuufGJjRCEIZJE99oiG+vmcFrF+tjiY5Sdh7Go5hs=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=mdvwLe/dtuo98a0/fKoG2NsWq4jSpVvOh1jp0klUT3v6r3bMekCV1aJ1uAeAi5y0g
-         O7xR7PHjY2QKpuru8pyN8QrGMB4pCpvAt0DA4C7QL8Uve5wzbrFHnExfgFky19KuCt
-         1VV27OD+7MZ2yQZ+FCIEPgS6lxL0TuC24s17pqaVWuIGBvg0ZGfvaSNhZcoSMR6UDe
-         0V3vr2nALWL6II5t/ZCHYV0PaIF+/oFEnxLWVELZZ/LnWYj7CC5UhpkYxiDAr0xKTw
-         nRDA2FF5eqO2dmzdUB7rV7T2ARoKiYdVKigt+XnVm90PEDrGGQ2m9IwOR0t0YKHtAZ
-         Cm6e7tDrcsLMA==
-Received: by quaco.ghostprotocols.net (Postfix, from userid 1000)
-        id 5F04F404A1; Wed, 24 Aug 2022 10:30:26 -0300 (-03)
-Date:   Wed, 24 Aug 2022 10:30:26 -0300
-From:   Arnaldo Carvalho de Melo <acme@kernel.org>
-To:     Ian Rogers <irogers@google.com>
-Cc:     Peter Zijlstra <peterz@infradead.org>,
-        Ingo Molnar <mingo@redhat.com>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
-        Jiri Olsa <jolsa@kernel.org>,
-        Namhyung Kim <namhyung@kernel.org>,
-        linux-perf-users@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Stephane Eranian <eranian@google.com>
-Subject: Re: [PATCH] perf hashmap: Tidy hashmap dependency
-Message-ID: <YwYn8i6Gy58IKqGm@kernel.org>
-References: <20220824050604.352156-1-irogers@google.com>
+        Wed, 24 Aug 2022 09:30:32 -0400
+Received: from bg5.exmail.qq.com (bg4.exmail.qq.com [43.154.221.58])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 305D653D29;
+        Wed, 24 Aug 2022 06:30:26 -0700 (PDT)
+X-QQ-mid: bizesmtp86t1661347754tyglzwgb
+Received: from localhost.localdomain ( [182.148.14.124])
+        by bizesmtp.qq.com (ESMTP) with 
+        id ; Wed, 24 Aug 2022 21:29:13 +0800 (CST)
+X-QQ-SSF: 01000000002000C0E000B00A0000000
+X-QQ-FEAT: szTy5SWxjRks+Bzw59zguH4g/YqgW6pBQAg7ogv2q+sUnQ7QlHf8NBvO1YDe8
+        QE4KxO3LJhmnAvwLo3orVtEoIJ1h3ZL3LzSOVU7SSd8BLZQxinGh25NnwyZOeiUInceCBo8
+        t1OZJKIyV0iUdfiULuOdGW7VDLPW4GJtk8Rs3StLHSGu5mlZgCWB/1t7z/39Ap9ZchViWJA
+        2jlgAAW4NiZjaNUfP0oEtpl3rrMUxA9dELwWS1nCTpjlYzNgcoU107hz+W0M8HSwl6KVs76
+        dpmjwnxEZ6pJQVs+1TkOsmsRQ2Avxc7BoyPoOR0mpC1rXTQ5sBx+PogO3uULOlyjHnsgeHA
+        xvTVpyggHLhkHzgMUv+lZmo3+j524VL0sgPnx/NalUHhBgkvtYlbcse+bHFAeuyKH/uovKj
+X-QQ-GoodBg: 0
+From:   Jilin Yuan <yuanjilin@cdjrlc.com>
+To:     awalls@md.metrocast.net, mchehab@kernel.org
+Cc:     linux-media@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Jilin Yuan <yuanjilin@cdjrlc.com>
+Subject: [PATCH] pci/cx18: fix repeated words in comments
+Date:   Wed, 24 Aug 2022 21:29:07 +0800
+Message-Id: <20220824132907.63186-1-yuanjilin@cdjrlc.com>
+X-Mailer: git-send-email 2.36.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220824050604.352156-1-irogers@google.com>
-X-Url:  http://acmel.wordpress.com
+Content-Transfer-Encoding: 8bit
+X-QQ-SENDSIZE: 520
+Feedback-ID: bizesmtp:cdjrlc.com:qybglogicsvr:qybglogicsvr4
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Em Tue, Aug 23, 2022 at 10:06:04PM -0700, Ian Rogers escreveu:
-> When libbpf is present the build uses definitions in libbpf hashmap.c,
-> however, libbpf's hashmap.h wasn't being used. Switch to using the
-> correct hashmap.h dependent on the define HAVE_LIBBPF_SUPPORT. This
-> was the original intent in:
-> https://lore.kernel.org/lkml/20200515221732.44078-8-irogers@google.com/
+ Delete the redundant word 'of'.
 
-Thanks, applied.
+Signed-off-by: Jilin Yuan <yuanjilin@cdjrlc.com>
+---
+ drivers/media/pci/cx18/cx18-firmware.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-- Arnaldo
-
+diff --git a/drivers/media/pci/cx18/cx18-firmware.c b/drivers/media/pci/cx18/cx18-firmware.c
+index fdac310d7477..1b038b2802bf 100644
+--- a/drivers/media/pci/cx18/cx18-firmware.c
++++ b/drivers/media/pci/cx18/cx18-firmware.c
+@@ -248,7 +248,7 @@ void cx18_init_power(struct cx18 *cx, int lowpwr)
+ 	 *
+ 	 * Many thanks to Jeff Campbell and Mike Bradley for their extensive
+ 	 * investigation, experimentation, testing, and suggested solutions of
+-	 * of audio/video sync problems with SVideo and CVBS captures.
++	 * audio/video sync problems with SVideo and CVBS captures.
+ 	 */
  
-> Signed-off-by: Ian Rogers <irogers@google.com>
-> ---
->  tools/perf/util/bpf-loader.c |  6 +++++-
->  tools/perf/util/evsel.c      |  6 +++++-
->  tools/perf/util/expr.h       | 11 ++++-------
->  tools/perf/util/stat.c       |  6 +++++-
->  4 files changed, 19 insertions(+), 10 deletions(-)
-> 
-> diff --git a/tools/perf/util/bpf-loader.c b/tools/perf/util/bpf-loader.c
-> index e2052f4fed33..d657594894cf 100644
-> --- a/tools/perf/util/bpf-loader.c
-> +++ b/tools/perf/util/bpf-loader.c
-> @@ -27,7 +27,11 @@
->  #include "util.h"
->  #include "llvm-utils.h"
->  #include "c++/clang-c.h"
-> -#include "hashmap.h"
-> +#ifdef HAVE_LIBBPF_SUPPORT
-> +#include <bpf/hashmap.h>
-> +#else
-> +#include "util/hashmap.h"
-> +#endif
->  #include "asm/bug.h"
->  
->  #include <internal/xyarray.h>
-> diff --git a/tools/perf/util/evsel.c b/tools/perf/util/evsel.c
-> index 4852089e1d79..14846b7edb17 100644
-> --- a/tools/perf/util/evsel.c
-> +++ b/tools/perf/util/evsel.c
-> @@ -46,7 +46,11 @@
->  #include "string2.h"
->  #include "memswap.h"
->  #include "util.h"
-> -#include "hashmap.h"
-> +#ifdef HAVE_LIBBPF_SUPPORT
-> +#include <bpf/hashmap.h>
-> +#else
-> +#include "util/hashmap.h"
-> +#endif
->  #include "pmu-hybrid.h"
->  #include "off_cpu.h"
->  #include "../perf-sys.h"
-> diff --git a/tools/perf/util/expr.h b/tools/perf/util/expr.h
-> index bd2116983bbb..0403a92d9dcc 100644
-> --- a/tools/perf/util/expr.h
-> +++ b/tools/perf/util/expr.h
-> @@ -2,14 +2,11 @@
->  #ifndef PARSE_CTX_H
->  #define PARSE_CTX_H 1
->  
-> -// There are fixes that need to land upstream before we can use libbpf's headers,
-> -// for now use our copy unconditionally, since the data structures at this point
-> -// are exactly the same, no problem.
-> -//#ifdef HAVE_LIBBPF_SUPPORT
-> -//#include <bpf/hashmap.h>
-> -//#else
-> +#ifdef HAVE_LIBBPF_SUPPORT
-> +#include <bpf/hashmap.h>
-> +#else
->  #include "util/hashmap.h"
-> -//#endif
-> +#endif
->  
->  struct metric_ref;
->  
-> diff --git a/tools/perf/util/stat.c b/tools/perf/util/stat.c
-> index 0882b4754fcf..ce5e9e372fc4 100644
-> --- a/tools/perf/util/stat.c
-> +++ b/tools/perf/util/stat.c
-> @@ -14,7 +14,11 @@
->  #include "evlist.h"
->  #include "evsel.h"
->  #include "thread_map.h"
-> -#include "hashmap.h"
-> +#ifdef HAVE_LIBBPF_SUPPORT
-> +#include <bpf/hashmap.h>
-> +#else
-> +#include "util/hashmap.h"
-> +#endif
->  #include <linux/zalloc.h>
->  
->  void update_stats(struct stats *stats, u64 val)
-> -- 
-> 2.37.2.609.g9ff673ca1a-goog
-
+ 	/* the fast clock is at 200/245 MHz */
 -- 
+2.36.1
 
-- Arnaldo
