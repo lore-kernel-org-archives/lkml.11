@@ -2,106 +2,211 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 69324C32796
-	for <linux-kernel@archiver.kernel.org>; Wed, 24 Aug 2022 19:14:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0E286C00140
+	for <linux-kernel@archiver.kernel.org>; Wed, 24 Aug 2022 19:15:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234967AbiHXTOU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 24 Aug 2022 15:14:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51814 "EHLO
+        id S238540AbiHXTO6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 24 Aug 2022 15:14:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52544 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232084AbiHXTOS (ORCPT
+        with ESMTP id S238701AbiHXTOz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 24 Aug 2022 15:14:18 -0400
-Received: from mout.gmx.net (mout.gmx.net [212.227.17.21])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5E9AF65240;
-        Wed, 24 Aug 2022 12:14:16 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gmx.net;
-        s=badeba3b8450; t=1661368454;
-        bh=Wf+PgvEMxVLzIEkHcy0ZAH85uq9spAuazl+zPdNjBpc=;
-        h=X-UI-Sender-Class:From:To:Cc:Subject:Date;
-        b=MSVaIYBJDTVZPe+Y5zdglJAkgXaWuHmY47lpMPqe87nQfw6n7ALxH/0gsqo3jO+F8
-         BAFPIX1ShzI6zswgafYwZ5agCQ6jleMmQeqXN/pA5hVE9AIs+6NeqHMlWwhFd8kyGA
-         l3ymQ5xG5dKDSk+FMVPO3T0AWZ1Xhthxu9IdsoWI=
-X-UI-Sender-Class: 01bb95c1-4bf8-414a-932a-4f6e2808ef9c
-Received: from silverpad ([89.204.135.131]) by mail.gmx.net (mrgmx105
- [212.227.17.174]) with ESMTPSA (Nemesis) id 1Mqs0X-1pDgrE3Z0z-00mqrV; Wed, 24
- Aug 2022 21:14:14 +0200
-From:   Jean-Francois Le Fillatre <jflf_kernel@gmx.com>
-To:     gregkh@linuxfoundation.org, linux-usb@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Cc:     Jean-Francois Le Fillatre <jflf_kernel@gmx.com>
-Subject: [PATCH v3] usb: add quirks for Lenovo OneLink+ Dock
-Date:   Wed, 24 Aug 2022 21:13:21 +0200
-Message-Id: <20220824191320.17883-1-jflf_kernel@gmx.com>
-X-Mailer: git-send-email 2.34.1
+        Wed, 24 Aug 2022 15:14:55 -0400
+Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 02FE3F3B
+        for <linux-kernel@vger.kernel.org>; Wed, 24 Aug 2022 12:14:48 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1661368489; x=1692904489;
+  h=message-id:date:mime-version:subject:to:cc:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=CdDLsx3L2B+383p/P4KVLh85vm/whKPX7vZOpfEZbYg=;
+  b=LIZjcS1LDpA41FAvCMNcrcp31O59ZWP+HanmNMaUshHdy5fRKuV9AUFk
+   XKK1+9TSF1N8UakLJ4kOMQW1sCGiNLl8OBlT8Oxpn67IxMzigRnhWNNbI
+   iHwLwbnMBoWqSZsUhlqDxYtkpz3POqIoTB7ZBfB3vB4sLmZLktjUW9lZx
+   t0+2W6TUwye/l9wXoVqEcCVQw4Ovki12dh8BBtOWDwNtOTwRAg+OcrUCn
+   8tcSO4VkvfmddxNkxxWtYDYnBcf/PwxcKhVzaw3P7tOVf4s18F2HRDbUk
+   fBIyVsOd5fjTqhIdfV6WhwxWEZJrSwTvfxDaWyMagogjx1mjD5OeIfqBh
+   A==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10449"; a="281027507"
+X-IronPort-AV: E=Sophos;i="5.93,261,1654585200"; 
+   d="scan'208";a="281027507"
+Received: from fmsmga004.fm.intel.com ([10.253.24.48])
+  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Aug 2022 12:14:48 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.93,261,1654585200"; 
+   d="scan'208";a="678165732"
+Received: from linux.intel.com ([10.54.29.200])
+  by fmsmga004.fm.intel.com with ESMTP; 24 Aug 2022 12:14:47 -0700
+Received: from [10.252.212.116] (kliang2-mobl1.ccr.corp.intel.com [10.252.212.116])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        (No client certificate requested)
+        by linux.intel.com (Postfix) with ESMTPS id 75273580B54;
+        Wed, 24 Aug 2022 12:14:46 -0700 (PDT)
+Message-ID: <3afbcd46-0b29-605d-66d0-7f8b6b22332a@linux.intel.com>
+Date:   Wed, 24 Aug 2022 15:14:45 -0400
 MIME-Version: 1.0
-Content-Transfer-Encoding: quoted-printable
-X-Provags-ID: V03:K1:oC3+so+41R2EyHHJ2AN93nJq1sJqJgGMVDu43fxDbWm7rWjz+K4
- vfdv5/FlFIDOAvUItqOQz14zYlfwbT8m63QonQgXO34eqcuYEKt3W4ma8CPsJlrz6ZJHdPW
- 8enCachOymIRNjvrix9VnhbKKIhVNEBsVF/RA98bdU4t5cEzL7llpurQQBDciLTTi2AFSD6
- v1qgQNGIdIZyV535QhH5g==
-X-UI-Out-Filterresults: notjunk:1;V03:K0:2foCDcNJHi8=:WX+rB6uxNjd6ec8zY4NMcD
- PCfWYJcp6TmnzRZkcAc7WOclVd/vCjvKmZSQxTynFXsr5Suu+ndZn5okE1oA2hKatTgVmG0lj
- RHCQ46/lQZER+TWzPiyLlN6zCKYl5FWeUSwJE1PVw9wFn7g5OkYHHdvO+qn3yJpaAfc1Y8qQp
- jUTz4LkuVOdb4Y+9FVy7CiIAGXmgJhUxyGkTPwneUeaTDjBqQdD4x/RlRTkzNRJjoo5JwKW/b
- dDYxaILlz9T0U2AY75BkE8dfef9ZBOtrlEN0KVgiKPWY4O1blf7jcxVcommNrdxQBdE+z58gg
- P5jK1amojHxRAYzsOPkPBBxlHgNYR3Qt9mPbnXD2ILdBVGfyVT31QveFgpZtU0L9GuggZaH8n
- wpSAn+Mg8IsM30dVW/YFy9vVt4D2BJp01td+b+sYa/hMomNdt/1BOV0F+SqrC2qkyn+O4Vvdf
- SYgO9ZmK5DWFX7Ci9bvltGAGq2h0fbphIgyZ/cr6vDC5xggCd1o8kuYP5imYI3YqNqC5SGVkQ
- BXJyjH6v2TSV5mZAZDYAxzO8SaJjNLnYW4h5xFbe+evhlTskn5aIf9zoFtKd5hWLu/qsQKyqQ
- PFjnKlHYEVvjDHVSIk3yK8MW3jfFOMKZbqJX1OKFmOhnkAeqV0R+4d+mApv4p1ISoSRj+1rJE
- pK2rZuTZqGbU1nCCj5Y+uQsF5jmWqK6RZKWOzEf7DcSE3zPRw0yvLJ2Oqg8SNXBoPWEy/gVdr
- 5M6Z25HbzsMoLt/00z/ZiSo9mvoS5xKHSm9NZIRTcJbXMAznPSDrABwAuYtZltaIGBbrTyQFu
- 2JUJ1mhlZjy4fYLb0WPswD/1OA2oXoy+7CSNySYk3dqKevL2e8JzO8NnKniIcoM3omQuRTP9v
- AYT+ChPilrllyGc7iN6eBuEL2m0AwKSwZSZbr4WlFHrNLQxsYpcqh6ZNiS1ZTJOT4OMuYfRC7
- +fzRYNzYySL+S9oGkpZWonMDs4fcPTjCWC9KBLTJjsOnb/VusyrpUIrYzUb5X6VS1HOyF+KCB
- czotvjtN0HgxoRWvteyB+vGmVCvNpXPxV4EcYm//Wn2wCgis9W0TiMRHmS4jPMVGMZ5zQrMJH
- noLHzTd4NLyhp9Jyor7zhcnrCtDlfpoJ9al+54NjzkRCU32gRQNTkx2Cw==
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
+ Thunderbird/102.1.2
+Subject: Re: [BUG] perf/x86/intel/pebs: PEBS timestamps overwritten
+Content-Language: en-US
+To:     Peter Zijlstra <peterz@infradead.org>
+Cc:     Stephane Eranian <eranian@google.com>,
+        LKML <linux-kernel@vger.kernel.org>,
+        "Liang, Kan" <kan.liang@intel.com>,
+        Andi Kleen <ak@linux.intel.com>, andreas.kogler.0x@gmail.com
+References: <CABPqkBTqQaaYH+ySu3reLm5i+X6P4BsqKycp8NBOP1gW3ZV4QA@mail.gmail.com>
+ <4fdaeb87-7f0a-78e0-2952-3035a3776198@linux.intel.com>
+ <YwXvGe4/QdgGYOKJ@worktop.programming.kicks-ass.net>
+From:   "Liang, Kan" <kan.liang@linux.intel.com>
+In-Reply-To: <YwXvGe4/QdgGYOKJ@worktop.programming.kicks-ass.net>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The Lenovo OneLink+ Dock contains two VL812 USB3.0 controllers:
-17ef:1018 upstream
-17ef:1019 downstream
-
-Those two controllers both have problems with some USB3.0 devices,
-particularly self-powered ones. Typical error messages include:
-
-  Timeout while waiting for setup device command
-  device not accepting address X, error -62
-  unable to enumerate USB device
-
-By process of elimination the controllers themselves were identified as
-the cause of the problem. Through trial and error the issue was solved
-by using USB_QUIRK_RESET_RESUME for both chips.
-
-Signed-off-by: Jean-Francois Le Fillatre <jflf_kernel@gmx.com>
-=2D--
-v2 -> v3: fix commit email address, add revision details
-v1 -> v2: use full author name
 
 
- drivers/usb/core/quirks.c | 4 ++++
- 1 file changed, 4 insertions(+)
+On 2022-08-24 5:27 a.m., Peter Zijlstra wrote:
+> 
+> Should be 3 patches at the very least I think, the first one introducing
+> the new field and then follow up patches making use of it.
+> 
+> And yes as Ravi mentions there's the CALLCHAIN_EARLY hack that could be
+> cleaned up as well, making it 4 or something.
+> 
+> On Fri, Aug 05, 2022 at 09:36:37AM -0400, Liang, Kan wrote:
+> 
+>> diff --git a/arch/x86/events/intel/ds.c b/arch/x86/events/intel/ds.c
+>> index 34be3bc5151a..a2c26eaeb0d9 100644
+>> --- a/arch/x86/events/intel/ds.c
+>> +++ b/arch/x86/events/intel/ds.c
+>> @@ -1687,8 +1687,10 @@ static void setup_pebs_fixed_sample_data(struct
+>> perf_event *event,
+>>  	 * We can only do this for the default trace clock.
+>>  	 */
+>>  	if (x86_pmu.intel_cap.pebs_format >= 3 &&
+>> -		event->attr.use_clockid == 0)
+>> +		event->attr.use_clockid == 0) {
+> 
+> Indent fail; please add: 'set cino=(0:0' to your .vimrc or figure out
+> the equivalent for your editor of choice.
+> 
+>>  		data->time = native_sched_clock_from_tsc(pebs->tsc);
+>> +		data->flags |= PERF_SAMPLE_DATA_TIME;
+>> +	}
+>>
+>>  	if (has_branch_stack(event))
+>>  		data->br_stack = &cpuc->lbr_stack;
+> 
+>> diff --git a/include/linux/perf_event.h b/include/linux/perf_event.h
+>> index da759560eec5..33054bf31fc1 100644
+>> --- a/include/linux/perf_event.h
+>> +++ b/include/linux/perf_event.h
+>> @@ -999,6 +999,7 @@ int perf_event_read_local(struct perf_event *event,
+>> u64 *value,
+>>  extern u64 perf_event_read_value(struct perf_event *event,
+>>  				 u64 *enabled, u64 *running);
+>>
+>> +#define PERF_SAMPLE_DATA_TIME		0x1
+>>
+>>  struct perf_sample_data {
+>>  	/*
+>> @@ -1012,6 +1013,7 @@ struct perf_sample_data {
+>>  	union perf_sample_weight	weight;
+>>  	u64				txn;
+>>  	union  perf_mem_data_src	data_src;
+>> +	u64				flags;
+>>
+>>  	/*
+>>  	 * The other fields, optionally {set,used} by
+> 
+> How about we call that 'sample_flags' instead and use PERF_SAMPLE_* as
+> we already have, something like so:
 
-diff --git a/drivers/usb/core/quirks.c b/drivers/usb/core/quirks.c
-index f99a65a64..999b7c969 100644
-=2D-- a/drivers/usb/core/quirks.c
-+++ b/drivers/usb/core/quirks.c
-@@ -437,6 +437,10 @@ static const struct usb_device_id usb_quirk_list[] =
-=3D {
- 	{ USB_DEVICE(0x1532, 0x0116), .driver_info =3D
- 			USB_QUIRK_LINEAR_UFRAME_INTR_BINTERVAL },
+True, I think we can use PERF_SAMPLE_* and avoid adding more flags.
 
-+	/* Lenovo ThinkPad OneLink+ Dock twin hub controllers (VIA Labs VL812) *=
-/
-+	{ USB_DEVICE(0x17ef, 0x1018), .driver_info =3D USB_QUIRK_RESET_RESUME },
-+	{ USB_DEVICE(0x17ef, 0x1019), .driver_info =3D USB_QUIRK_RESET_RESUME },
-+
- 	/* Lenovo USB-C to Ethernet Adapter RTL8153-04 */
- 	{ USB_DEVICE(0x17ef, 0x720c), .driver_info =3D USB_QUIRK_NO_LPM },
+I will implement some patches based on the suggestion.
 
-=2D-
-2.34.1
+Thanks,
+Kan
 
+> 
+> 
+> diff --git a/include/linux/perf_event.h b/include/linux/perf_event.h
+> index ee8b9ecdc03b..b0ebbb1377b9 100644
+> --- a/include/linux/perf_event.h
+> +++ b/include/linux/perf_event.h
+> @@ -1007,6 +1007,7 @@ struct perf_sample_data {
+>  	 * Fields set by perf_sample_data_init(), group so as to
+>  	 * minimize the cachelines touched.
+>  	 */
+> +	u64				sample_flags;
+>  	u64				addr;
+>  	struct perf_raw_record		*raw;
+>  	struct perf_branch_stack	*br_stack;
+> @@ -1056,6 +1057,7 @@ static inline void perf_sample_data_init(struct perf_sample_data *data,
+>  					 u64 addr, u64 period)
+>  {
+>  	/* remaining struct members initialized in perf_prepare_sample() */
+> +	data->sample_flags = 0;
+>  	data->addr = addr;
+>  	data->raw  = NULL;
+>  	data->br_stack = NULL;
+> diff --git a/kernel/events/core.c b/kernel/events/core.c
+> index 2621fd24ad26..fed447f59024 100644
+> --- a/kernel/events/core.c
+> +++ b/kernel/events/core.c
+> @@ -6792,15 +6792,21 @@ static void perf_aux_sample_output(struct perf_event *event,
+>  	ring_buffer_put(rb);
+>  }
+>  
+> -static void __perf_event_header__init_id(struct perf_event_header *header,
+> -					 struct perf_sample_data *data,
+> -					 struct perf_event *event)
+> +static u64 __perf_event_header__init_id(struct perf_event_header *header,
+> +					struct perf_sample_data *data,
+> +					struct perf_event *event)
+>  {
+>  	u64 sample_type = event->attr.sample_type;
+>  
+>  	data->type = sample_type;
+>  	header->size += event->id_header_size;
+>  
+> +	/*
+> +	 * Clear the sample flags that have already been done by the
+> +	 * PMU driver.
+> +	 */
+> +	sample_type &= ~data->sample_flags;
+> +
+>  	if (sample_type & PERF_SAMPLE_TID) {
+>  		/* namespace issues */
+>  		data->tid_entry.pid = perf_event_pid(event, current);
+> @@ -6820,6 +6826,8 @@ static void __perf_event_header__init_id(struct perf_event_header *header,
+>  		data->cpu_entry.cpu	 = raw_smp_processor_id();
+>  		data->cpu_entry.reserved = 0;
+>  	}
+> +
+> +	return sample_type;
+>  }
+>  
+>  void perf_event_header__init_id(struct perf_event_header *header,
+> @@ -7302,7 +7310,7 @@ void perf_prepare_sample(struct perf_event_header *header,
+>  			 struct perf_event *event,
+>  			 struct pt_regs *regs)
+>  {
+> -	u64 sample_type = event->attr.sample_type;
+> +	u64 sample_type;
+>  
+>  	header->type = PERF_RECORD_SAMPLE;
+>  	header->size = sizeof(*header) + event->header_size;
+> @@ -7310,7 +7318,7 @@ void perf_prepare_sample(struct perf_event_header *header,
+>  	header->misc = 0;
+>  	header->misc |= perf_misc_flags(regs);
+>  
+> -	__perf_event_header__init_id(header, data, event);
+> +	sample_type = __perf_event_header__init_id(header, data, event);
+>  
+>  	if (sample_type & (PERF_SAMPLE_IP | PERF_SAMPLE_CODE_PAGE_SIZE))
+>  		data->ip = perf_instruction_pointer(regs);
