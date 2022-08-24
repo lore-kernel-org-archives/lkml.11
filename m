@@ -2,294 +2,158 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9C478C32793
-	for <linux-kernel@archiver.kernel.org>; Wed, 24 Aug 2022 12:45:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9D135C32796
+	for <linux-kernel@archiver.kernel.org>; Wed, 24 Aug 2022 12:46:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236437AbiHXMpM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 24 Aug 2022 08:45:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42620 "EHLO
+        id S237187AbiHXMqT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 24 Aug 2022 08:46:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44128 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234401AbiHXMpI (ORCPT
+        with ESMTP id S237008AbiHXMqO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 24 Aug 2022 08:45:08 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 530D980F51;
-        Wed, 24 Aug 2022 05:45:07 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id E32066104A;
-        Wed, 24 Aug 2022 12:45:06 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4D0F7C433C1;
-        Wed, 24 Aug 2022 12:45:05 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1661345106;
-        bh=AP8SI+V9Klense0pUNrysUm/tjBGKltTnwuRKTrq6i4=;
-        h=Subject:From:To:Cc:Date:In-Reply-To:References:From;
-        b=APbx8hhN+doVOvFz00b6oh0mDFxX1SxfZeqMZYe/1APFBYyGn5ddQ/sosvTM7Zabk
-         1PSez+pJnh2tKMcH03GiqL0e/kiMiMISA1QtUjFVEx0WOLnQXHWBNYX0GgfMFa8z6Y
-         c3AXNxkKSOv4jHKhV4RxRJB+3eCY1UMzg2IQQ0HPsXVvctESAElsI7ss8Yg6D0Ul/P
-         mpa06NBka6sRQ8nAUSP97Lo5sfnsvTJQ+MqRWWXGZ+9ExxnCT/IvDkXmuJAkldxUQd
-         AZG7Y4QL/F0k7AkfnqnVPZePk3G53gsUBvQagNsOCZ3z/uFX1gFjE0GSCmdLpPSqoA
-         mjw96BnT9EkfQ==
-Message-ID: <6fc746c24be6f2c28ea39e76f01e57b14f91b90d.camel@kernel.org>
-Subject: Re: [PATCH] iversion: update comments with info about atime updates
-From:   Jeff Layton <jlayton@kernel.org>
-To:     Dave Chinner <david@fromorbit.com>
-Cc:     Mimi Zohar <zohar@linux.ibm.com>, linux-fsdevel@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-integrity@vger.kernel.org,
-        linux-nfs@vger.kernel.org, linux-xfs@vger.kernel.org,
-        linux-ext4@vger.kernel.org, NeilBrown <neilb@suse.de>,
-        Trond Myklebust <trondmy@hammerspace.com>
-Date:   Wed, 24 Aug 2022 08:45:03 -0400
-In-Reply-To: <20220823232537.GP3600936@dread.disaster.area>
-References: <20220822133309.86005-1-jlayton@kernel.org>
-         <ceb8f09a4cb2de67f40604d03ee0c475feb3130a.camel@linux.ibm.com>
-         <f17b9d627703bee2a7b531a051461671648a9dbd.camel@kernel.org>
-         <18827b350fbf6719733fda814255ec20d6dcf00f.camel@linux.ibm.com>
-         <4cc84440d954c022d0235bf407a60da66a6ccc39.camel@kernel.org>
-         <20220822233231.GJ3600936@dread.disaster.area>
-         <6cbcb33d33613f50dd5e485ecbf6ce7e305f3d6f.camel@kernel.org>
-         <20220823232537.GP3600936@dread.disaster.area>
-Content-Type: text/plain; charset="ISO-8859-15"
+        Wed, 24 Aug 2022 08:46:14 -0400
+Received: from mx0b-0016f401.pphosted.com (mx0a-0016f401.pphosted.com [67.231.148.174])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6264D8E4E0;
+        Wed, 24 Aug 2022 05:46:13 -0700 (PDT)
+Received: from pps.filterd (m0045849.ppops.net [127.0.0.1])
+        by mx0a-0016f401.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 27O9N6m5022881;
+        Wed, 24 Aug 2022 05:46:03 -0700
+Received: from nam02-sn1-obe.outbound.protection.outlook.com (mail-sn1anam02lp2040.outbound.protection.outlook.com [104.47.57.40])
+        by mx0a-0016f401.pphosted.com (PPS) with ESMTPS id 3j4x5h59xf-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Wed, 24 Aug 2022 05:46:03 -0700
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=Ym2+gYu0AQprZdakpV1q8nWeBrg14yQGoxUtJPFataiOSC/SHjB0lgn0zAMT8q2EVYU6L8VTHGuQA2U7n0YKsV1X7ORr8mGLpApaRi6bmcthJd47VXAtD7yZdtu9kvChh7pH/F1/5Y3vXYvB/MWDvjkuKrn0q603faFEhbU/k3IhaCvPE64hwUifvyXAI28dG0mJTV8xzXWvvV2EAQmB8bkt7qRHUiEBkp06UosI8K+zspak7Z7tgsibuo5XldPuNXJIdk/HyUsbZUYMS/+7OIDs/DsGIOtB+nRy+T6tUpfy5QruUWkIqbPATmf1bosAjHhA8E0WyeFe7KLkTUE2DA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=aBVz84ZndM/ZNVw/K7XTfKC5/fc0Aa6QFo3maBue0Q0=;
+ b=XhLCzieQs/7ympYlmqtAEIqXq5VP5KP6DX8DQJoyaxhsjrMxO4Tu4MPqbmRBsh9BHZ59VeCRSpDqxCfowcJq8hMDTSiDKH7Ivnx2CEW++a++aaNqXM04iDoUn6X5/r7n/7ckWzdJBjIRMxpK/JsGhIHr6q1fiqMSa3U2Mtczl8CPtLZrfRtfp4JilzlbI354RDZ8X7WYJ1B8XvBDRUCCrTghxFDfBL4f2xJHFC87QJR/mcjTV0+VKyMuXUqVlB64sB/GG++gklK8zeKGp7BSjwTDukLDqzlSdZT3wXuyHmbIUQy7RQyz7UjE/uN51eGMkqjd9fW26IOslEfcdEMcnw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=marvell.com; dmarc=pass action=none header.from=marvell.com;
+ dkim=pass header.d=marvell.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=marvell.onmicrosoft.com; s=selector1-marvell-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=aBVz84ZndM/ZNVw/K7XTfKC5/fc0Aa6QFo3maBue0Q0=;
+ b=Welo3mPOw73I1JFlgynkREcxWwZkM8SExjeY6idveg9HKNJ/WPHCyUpzbl+b+3W6JGaW8x0SnPZu40GO3vQjIwSjGx8ykkjLcKzBue1NGz05X54P0KwkPwkPFmUyVuKIWWUjiWnu0WM2uOz1ChvK4EN20vOJ4yxWvkY35Fr/ag8=
+Received: from SJ0PR18MB5216.namprd18.prod.outlook.com (2603:10b6:a03:430::6)
+ by CH0PR18MB4162.namprd18.prod.outlook.com (2603:10b6:610:e1::12) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5566.15; Wed, 24 Aug
+ 2022 12:46:01 +0000
+Received: from SJ0PR18MB5216.namprd18.prod.outlook.com
+ ([fe80::a0cb:528f:3593:e24]) by SJ0PR18MB5216.namprd18.prod.outlook.com
+ ([fe80::a0cb:528f:3593:e24%7]) with mapi id 15.20.5566.014; Wed, 24 Aug 2022
+ 12:46:01 +0000
+From:   Suman Ghosh <sumang@marvell.com>
+To:     Andrew Lunn <andrew@lunn.ch>
+CC:     Sunil Kovvuri Goutham <sgoutham@marvell.com>,
+        Linu Cherian <lcherian@marvell.com>,
+        Geethasowjanya Akula <gakula@marvell.com>,
+        Jerin Jacob Kollanukkaran <jerinj@marvell.com>,
+        Hariprasad Kelam <hkelam@marvell.com>,
+        Subbaraya Sundeep Bhatta <sbhatta@marvell.com>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "edumazet@google.com" <edumazet@google.com>,
+        "kuba@kernel.org" <kuba@kernel.org>,
+        "pabeni@redhat.com" <pabeni@redhat.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Subject: RE: [EXT] Re: [PATCH] octeontx2-pf: Add egress PFC support
+Thread-Topic: [EXT] Re: [PATCH] octeontx2-pf: Add egress PFC support
+Thread-Index: AQHYtr3HeGi5pSU58kec6ewncZP3f628or2AgADq/hCAAHBBAIAAAysg
+Date:   Wed, 24 Aug 2022 12:46:00 +0000
+Message-ID: <SJ0PR18MB52162B8D21B4F3037822901ADB739@SJ0PR18MB5216.namprd18.prod.outlook.com>
+References: <20220823065829.1060339-1-sumang@marvell.com>
+ <YwT3V6A4xrS3jAqf@lunn.ch>
+ <SJ0PR18MB52165D5FA51E433CAD0E8CBBDB739@SJ0PR18MB5216.namprd18.prod.outlook.com>
+ <YwYaoqiS/0+N1TU0@lunn.ch>
+In-Reply-To: <YwYaoqiS/0+N1TU0@lunn.ch>
+Accept-Language: en-IN, en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: 3e0f2882-540a-483c-6569-08da85ce9967
+x-ms-traffictypediagnostic: CH0PR18MB4162:EE_
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: zNVmp2OSInpwtrnQv2D9oFQwuYpKKv1sdsKmS8saxeQLoBASaCuunUc4ZbOfX73NGYyCHABqkwzj4GyI9cgTB/Z8g3GaT/SoG9NOhnhsBhtI2B8fzaB2gCLG4hbQRJTmDH+OkRyF/pa+d3vlgpgDwYIiY+1GelT+vR57oxqaMK6QADkJPz5nmIuLLmQyIWACcjxqm/LsyEXIlsfpE6tLkAEOIm/JVS6K2HIi78ZCe+We748AjNNk+3xvE/P1Gx2CBwMVK2bM8TeHjXeGrHyKJkFAGgiK5Wh9YWT7GsllWZ8SisQN0zC3yO1/tCD2n1kO6RLuJV1WyKleeWnovnoFIIZzpLG2d8K/CmON2jy5wDK3DsqVsnS55eWgXVravDi1518mxGSNmCiLJ8zgYk4638hvJ0ztEaWXmd/ZeIUwkFVG8OYl3ujEX60A+HuW2NdYBeJ+dKWHTc5pzSoB7KTWo8NCr4vu/+pNnDc4oqWbrH8MMlo5653m72kZ6nSZH5cQx9vOzND6wF1hcf3KM1rUowEuJbTCzNiyOBdnzqMobWjKf+sXzAp+evm1t+MLRT0R1whwQ4XyGHJssZdRRdG1uIf6mPQg2woR6WZFF4YMERMBhKl921sBh8oabQDb1pfn8DmDK5GrjOQBDuyo7M8p1ATZoSs8qOxQrremzZ1FUGCFwveBg6A0t7R5RI1zB6E5qLkeFysNJ/kEZy8RfEfepYxmySh+ziyfeJcSPLgHlm7bVd9k0biWlNxBO0aOfuocMmvXbDXpQZnDRn4gRy3dPg==
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:SJ0PR18MB5216.namprd18.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(4636009)(396003)(346002)(136003)(376002)(39860400002)(366004)(41300700001)(6506007)(7696005)(26005)(86362001)(33656002)(38070700005)(83380400001)(186003)(9686003)(478600001)(71200400001)(52536014)(55016003)(76116006)(66946007)(66556008)(64756008)(4326008)(8676002)(66446008)(66476007)(316002)(54906003)(6916009)(38100700002)(122000001)(8936002)(4744005)(5660300002)(2906002);DIR:OUT;SFP:1101;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?JIgV0VstcOUqxBCCsT13l3VhsbUl+L7rJEQ8e9OMZfd01EqylRp/tG+WXW7T?=
+ =?us-ascii?Q?yDCU55cnr5bMkOpWywoK3AzO3J3jzkoaXj6POgEvIYSnMshB6rh51kv44f52?=
+ =?us-ascii?Q?RpmF5IkQOzrAZKqL3wL9I+5CLQVlV6S4CDY/grpVlGXHNer2ubAcAQUwb1A9?=
+ =?us-ascii?Q?vcHfaPGUJBs4kxPRwEEz4oN9cajEnYMOcyP4TMuYBgPwZVsaOYWW4MtY+vqS?=
+ =?us-ascii?Q?z6KTaMa2RIcZ1npCwP9JsxXClq8A8vlQnaOG6aQJ6YuO0+6DG4HeThtpHR1z?=
+ =?us-ascii?Q?11j82KY7L75D76g+Eck/JTElrq+TKcADzTRHhEmqVuq0wPcQggjBIJdNf8LK?=
+ =?us-ascii?Q?a1xNTXiKf1Qo8N3HCXp0Gx22LdQZOjkK0LTF30FFLMHOCFIWSolojzD8NK1s?=
+ =?us-ascii?Q?75kXRG86USifWZbINJ5sorF0ugcnzHe29AsO+zawSjPW1TUWQtBUJfe/GZRr?=
+ =?us-ascii?Q?kkc4iVOSg1D+OYGKjhKWn4feUfIAyC0XZgGjl26o6lkwY/+eVigQImkBqPJZ?=
+ =?us-ascii?Q?J/yhqNxMqRAG7OSCu2JIe45K6PHpqBH/NIMEXfV4kEi+W8/MppN1L1i8XKM3?=
+ =?us-ascii?Q?WRjCSzlFfG/XB0zq6DkkDKyONvB3PYycWEZgjOJX9PPoR8A2bARDbc/Gk8kq?=
+ =?us-ascii?Q?Iaa4pxqm0KaqrUnWZ2ydGav+sP12M+a3dQBOdxpWHUnFoybjOTU/7k+wAmCA?=
+ =?us-ascii?Q?lxmjEEyrqKScjP0hF8RBa34RcoQIO7mNMNkhEyIpckhjmLKecT68VXFF2MgJ?=
+ =?us-ascii?Q?g4pBK7R6bQJ+GNzMJIP+ZbI8g2Jj/tz8g7uS15MQ38pJgkkpH4Kk9C8BzRIx?=
+ =?us-ascii?Q?cwUMgpp2DnrWd4t0+NQeGT/owhQHSNo9FvHEZKAA7Yd94tJQW/UxbHSoQLnB?=
+ =?us-ascii?Q?xcXTm/pleWVFDIF6udxLj6uUAzpwWrpLnxEQNGUczIfkMxJYgZX+ac//Osb+?=
+ =?us-ascii?Q?EKp9zK9BYqQda2bLaDQ4ZSEjOUZd8Pw7sQ1u9+Uaapfx9+QE0EEHBlEcGKPi?=
+ =?us-ascii?Q?WKStBsAFGPoU72jHaw6+uLCePzToazp1PZvW3DGGW3NpGqyH9BYpH3h2rKOw?=
+ =?us-ascii?Q?JUtXRbSpwDbOIKDbFcAG5iOUujJ3FDnji/jfcAEk/3I6hX55BBE0uiDtmu2y?=
+ =?us-ascii?Q?sRN3IdEkwWLyRGPchDBL1cjJsSFk0GSTWMs6NCPOu/XFeK/0c6bkhPbTnDor?=
+ =?us-ascii?Q?1H3b1tI0zcAYlfLyr07zLdW7G8I9WLg7wIFgbpoAuEnBHEW1tnf3Ywfgyk+0?=
+ =?us-ascii?Q?KTLzG3u1Y7utFkDZyfWx3/n4SiZ+q9PLCacA4hgIIDtcCe/dRPqp3SkWWt2/?=
+ =?us-ascii?Q?knn4R6tas535bxf5RpS32QpWobtgObn6JG7CEhyYWFaEY326WEZufh1iVm1n?=
+ =?us-ascii?Q?Ir1M2LE1m3MPoZNs/Zc1glJR19R6Fbb95kdegylXvOrk3C75kGV+DFMAViMV?=
+ =?us-ascii?Q?uOiSSNIR9Vnt2ymbX1DO7r3wpELAbmkHy92iKAVqq3wFuWuPGZ/gaYnqB3DM?=
+ =?us-ascii?Q?mni9hwjwhMCalutu3M28a1iDah+U3U+tLDoVXeBz4CCrhvvqHpXrjP87rGCV?=
+ =?us-ascii?Q?IWTS1zDv2LD2SafNBpSCf4tIWNtGzUoKb+Dbimse?=
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: quoted-printable
-User-Agent: Evolution 3.44.4 (3.44.4-1.fc36) 
 MIME-Version: 1.0
+X-OriginatorOrg: marvell.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: SJ0PR18MB5216.namprd18.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 3e0f2882-540a-483c-6569-08da85ce9967
+X-MS-Exchange-CrossTenant-originalarrivaltime: 24 Aug 2022 12:46:00.9481
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 70e1fb47-1155-421d-87fc-2e58f638b6e0
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: Wm43pYEe68vVbj0xJ2L+8W0hQDBJLoaFWrI8ZpLerKJMDbMMS3Bv0lMk8de0yHyJJEYMMc+HmD0bNesa0A7L4A==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: CH0PR18MB4162
+X-Proofpoint-ORIG-GUID: 6Qaa2gNkeOuoJgQW4rlpFFTGTlTojRUu
+X-Proofpoint-GUID: 6Qaa2gNkeOuoJgQW4rlpFFTGTlTojRUu
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.895,Hydra:6.0.517,FMLib:17.11.122.1
+ definitions=2022-08-24_06,2022-08-22_02,2022-06-22_01
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, 2022-08-24 at 09:25 +1000, Dave Chinner wrote:
-> On Tue, Aug 23, 2022 at 07:21:36AM -0400, Jeff Layton wrote:
-> > On Tue, 2022-08-23 at 09:32 +1000, Dave Chinner wrote:
-> > > On Mon, Aug 22, 2022 at 02:22:20PM -0400, Jeff Layton wrote:
-> > > > diff --git a/include/linux/iversion.h b/include/linux/iversion.h
-> > > > index 3bfebde5a1a6..524abd372100 100644
-> > > > --- a/include/linux/iversion.h
-> > > > +++ b/include/linux/iversion.h
-> > > > @@ -9,8 +9,8 @@
-> > > >   * ---------------------------
-> > > >   * The change attribute (i_version) is mandated by NFSv4 and is mo=
-stly for
-> > > >   * knfsd, but is also used for other purposes (e.g. IMA). The i_ve=
-rsion must
-> > > > - * appear different to observers if there was a change to the inod=
-e's data or
-> > > > - * metadata since it was last queried.
-> > > > + * appear different to observers if there was an explicit change t=
-o the inode's
-> > > > + * data or metadata since it was last queried.
-> > > >   *
-> > > >   * Observers see the i_version as a 64-bit number that never decre=
-ases. If it
-> > > >   * remains the same since it was last checked, then nothing has ch=
-anged in the
-> > > > @@ -18,6 +18,13 @@
-> > > >   * anything about the nature or magnitude of the changes from the =
-value, only
-> > > >   * that the inode has changed in some fashion.
-> > > >   *
-> > > > + * Note that atime updates due to reads or similar activity do not=
- represent
-> > >=20
-> > > What does "or similar activity" mean?
-> > >=20
-> >=20
-> > Some examples:
-> >=20
-> > - readdir() in a directory
-> > - readlink() on symlink
-> > - mmap reads
-> >=20
-> > ...basically, things that access data without materially changing it.
->=20
-> What happens if we have buffered dirty data in the page cache, and a
-> DIO read is done at that location?
->=20
-> This doesn't materially change data, but it forces writeback of the
-> cached data, and that means XFS will bump iversion because of the
-> data writeback changing inode metadata.
->=20
-
-Ideally, the i_version should not change in this case.
-
-> i can think of several scenarios where a pure data access operation
-> that does not materially change user data but will cause an iversion
-> change because those access operations imply some level of data
-> persistence.
->=20
-> > > In case you didn't realise, XFS can bump iversion 500+ times for a
-> > > single 1MB write() on a 4kB block size filesytem, and only one of
-> > > them is initial write() system call that copies the data into the
-> > > page cache. The other 500+ are all the extent allocation and
-> > > manipulation transactions that we might run when persisting the data
-> > > to disk tens of seconds later. This is how iversion on XFS has
-> > > behaved for the past decade.
-> > >=20
-> >=20
-> > Bumping the change count multiple times internally for a single change
-> > is not a problem. From the comments in iversion.h:
-> >=20
-> >  * Observers see the i_version as a 64-bit number that never decreases.=
- If it
-> >  * remains the same since it was last checked, then nothing has changed=
- in the
-> >  * inode. If it's different then something has changed. Observers canno=
-t infer
-> >  * anything about the nature or magnitude of the changes from the value=
-, only
-> >  * that the inode has changed in some fashion.
-> >=20
-> > Bumping it once or multiple times still conforms to how we have this
-> > defined.
->=20
-> Sure, it conforms to this piece of the specification. But the
-> temporal aspect of the filesystem bumping iversion due to background
-> operations most definitely conflicts with the new definition of
-> iversion only changing when operations that change c/mtime are
-> performed.
->=20
-> i.e.  if we're to take the "iversion changes only when c/mtime is
-> changed" definition at face value, then the filesystem is not free
-> to modify iversion when it modifies metadata during background
-> writeback. It's not free to bump iversion during fsync(). i.e. it's
-> not free to bump iversion on any operation that implies data
-> writeback is necessary.
->=20
-> That makes the existing XFS di_changecount implementation
-> incompatible with the newly redefined iversion semantics being
-> pushed and wanting to be exposed to userspace. If the filesystem
-> implementation can't meet the specification of the change attribute
-> being exposed to userspace then we *must not expose that information
-> to userspace*.
->=20
-> This restriction does not prevent us from using our existing
-> iversion implementation for NFS and IMA because the worst that
-> happens is users occasionally have to refetch information from the
-> server as has already been occurring for the past decade or so.
-> Indeed, there's an argument to be made that the periodic IMA
-> revalidation that relatime + iversion causes for the data at rest in
-> the page cache is actually a good security practice and not a
-> behaviour that we should be trying to optimise away.
->=20
-> All I want from this process is a *solid definition* of what
-> iversion is supposed to represent and what will be exposed to
-> userspace and the ability for the filesystem to decide itself
-> whether to expose it's persistent change counter to userspace. Us
-> filesystem developers can take it from there to provide a change
-> attribute that conforms to the contract we form with userspace by
-> exposing this information to statx().
->=20
-> > > Either way we chose, one of these options are the only way that we
-> > > will end up with a consistent implementation of a change counter
-> > > across all the filesystems. And, quite frankly, that's exactly is
-> > > needed if we are going to present this information to userspace
-> > > forever more.
-> > >=20
-> >=20
-> > I agree that we need a real definition of what changes should be
-> > represented in this value. My intent was to add that to the statx
-> > manpage once we had gotten a little further along, but it won't hurt to
-> > hash that out first.
->=20
-> How have so many experienced engineers forgotten basic engineering
-> processes they were taught as an undergrad? i.e. that requirements
-> and specification come first, then the implementation is derived
-> from the specification?
->=20
-> And why do they keep "forgetting" this over and over again?
->=20
-
-The sanctimonious comments are really unnecessary.
-
-YOU are the person who asked me to write testcases for this. The only
-reasonable way to do that is to expose this attribute to userland.
-
-I would certainly have approached all of this differently had I been
-implementing the i_version counter from scratch. The time to write a
-specification for i_version was when it was created (>20 years ago).
-That predates my involvement in Linux kernel development. I'm doing what
-I can to remedy it now. Be patient, please.
-
-> > I do not intend to exhaustively list all possible activities that shoul=
-d
-> > and shouldn't update the i_version. It's as difficult to put together a
-> > comprehensive list of what activities should and shouldn't change the
-> > i_version as it is to list what activities should and shouldn't cause
-> > the mtime/ctime/atime to change. The list is also going to constantly
-> > change as our interfaces change.
->=20
-> If this change attribute is not going to specified in a way that
-> userspace cannot rely on it's behaviour not changing in incompatible
-> ways, then it should not be exposed to userspace at all. Both
-> userspace and the filesystems need an unambiguous definition so that
-> userspace applications can rely on the behaviour that the kernel
-> and filesystems guarantee will be provided.
->=20
-> > What may be best is to just define this value in terms of how timestamp=
-s
-> > get updated, since POSIX already specifies that. Section 4.9 in the
-> > POSIX spec discusses file time updates:
-> >=20
-> >     https://pubs.opengroup.org/onlinepubs/9699919799/
-> >=20
-> > It says:
-> >=20
-> > "Each function or utility in POSIX.1-2017 that reads or writes data
-> > (even if the data does not change) or performs an operation to change
-> > file status (even if the file status does not change) indicates which o=
-f
-> > the appropriate timestamps shall be marked for update."
-> >=20
-> > So, we can refer to that and simply say:
-> >=20
-> > "If the function updates the mtime or ctime on the inode, then the
-> > i_version should be incremented. If only the atime is being updated,
-> > then the i_version should not be incremented. The exception to this rul=
-e
-> > is explicit atime updates via utimes() or similar mechanism, which
-> > should result in the i_version being incremented."
->=20
-> I'd almost be fine with that definition for iversion being exposed
-> to userspace, but it doesn't say anything about metadata changes
-> that don't change c/mtime. i.e. this needs to define iversion as
-> "_Only_ operations that modify user data and/or c/mtime on the inode
-> should increment the change attribute", not leave it ambiguous as to
-> whether other operations can bump the change attribute or not.
->=20
-
-Good, this is probably how we'll end up defining it. Doing anything else
-is going to be too difficult, I think.
-
-> Of course, this new iversion deinition is most definitely
-> incompatible with the existing specification of the XFS persistent
-> change attribute.....
->=20
-
-We could also allow for a conformant implementation to have i_version
-bumps even when something "invisible" happens, and just mention that the
-consumer of it (i.e. application or subsystem) must allow for that
-possibility.
-
-With that, a change in i_version would mean that something _might_ have
-changed instead of something having definitely changed. Ideally, an
-implementation wouldn't do that, since doing so would likely have
-measurable performance performance impact.
-
-If we did that, it would mean that the xfs implementation currently
-conforms to the proposed spec. Then it would just be a matter of trying
-to optimize away the i_version bumps that occur during read-like
-activity.
-
-I think it's probably best to define this as loosely as possible so that
-we can make it easier for a broad range of filesystems to implement it.
-All of the existing consumers can (and do) work with i_version today,
-it's just that the extra i_version bumps are terrible for performance
-(particularly with NFS).
-
-If we get a spurious bump just occasionally, then it's not too awful
-(particularly when the file is being written to anyway, and we'll need
-to dump the cache for it). The biggest pain point is i_version being
-updated on all atime updates though.
---=20
-Jeff Layton <jlayton@kernel.org>
+>> >> -	schq =3D hw->txschq_list[lvl][0];
+>> >> +#ifdef CONFIG_DCB
+>> >> +	if (txschq_for_pfc)
+>> >> +		schq =3D pfvf->pfc_schq_list[lvl][prio];
+>> >> +	else
+>> >> +#endif
+>> >
+>> >Please could you try to remove as many of these #ifdef CONFIG_DCB as
+>> >possible. It makes build testing less efficient at finding build
+>> >problems. Can you do:
+>> >
+>> >> +	if (IS_ENABLED(CONFIG_DCB) && txschq_for_pfc)
+>> >> +		schq =3D pfvf->pfc_schq_list[lvl][prio];
+>> >
+>> [Suman] I will restructured the code. But we cannot use
+>> pfvf->pfc_schq_list outside #ifdef CONFIG_DCB as these are defined
+>> under the macro in otx2_common.h
+>
+>So maybe add a getter and setter in otx2_common.h, which returns -
+>EOPNOTSUPP or similar when CONFIG_DCB is disabled?
+>
+>	    Andrew
+[Suman] I have updated the patch and using CONFIG_DCB only once in the func=
+tion. Can you please check if that should be okay?
