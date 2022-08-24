@@ -2,276 +2,183 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A6830C00140
-	for <linux-kernel@archiver.kernel.org>; Wed, 24 Aug 2022 15:06:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F1AA4C00140
+	for <linux-kernel@archiver.kernel.org>; Wed, 24 Aug 2022 15:06:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238152AbiHXPGP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 24 Aug 2022 11:06:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35832 "EHLO
+        id S238587AbiHXPGY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 24 Aug 2022 11:06:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35962 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237923AbiHXPGL (ORCPT
+        with ESMTP id S237876AbiHXPGW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 24 Aug 2022 11:06:11 -0400
-Received: from desiato.infradead.org (desiato.infradead.org [IPv6:2001:8b0:10b:1:d65d:64ff:fe57:4e05])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DFE2C8C003
-        for <linux-kernel@vger.kernel.org>; Wed, 24 Aug 2022 08:06:09 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=desiato.20200630; h=In-Reply-To:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description;
-        bh=C5zZpSROsAEjBXSTdYZODsv0la2OfM73GAkSkwQIiXo=; b=B2TSGZSBwDNbuQwEDUmQNtiCFF
-        sYpzKiUzw5m5AfjCT8MRrXvR3mKbnc5epkmog0IgYy3A0d6Aq/4LbgKu/kt+ldieiha5e6aju5dDl
-        Ht1pPigQ3KuG6tW0lUtYlgxv2ZkFPcCzVjJ2WwkV0Bm/fTtaCiCQTXbfTsMvmTFJUa+eCMMCoP8lc
-        Niivxz8Wu8RPHps36oDAO9FVj/puHN/Dkz1XfsN8MNqCP1knQ7zib/F5FY+B56N1UNcQeGR1fd01b
-        PyXqgg8vCoFi8/7TvHmf4C/+E/Zm8wPyDqPFiBnT4Pevl3fdLFIa2ByahiAbLOr287EN0NBolB0QN
-        DRGcIHlg==;
-Received: from j130084.upc-j.chello.nl ([24.132.130.84] helo=worktop.programming.kicks-ass.net)
-        by desiato.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1oQrws-005lDG-Vr; Wed, 24 Aug 2022 15:05:43 +0000
-Received: by worktop.programming.kicks-ass.net (Postfix, from userid 1000)
-        id 7F5D4980BE2; Wed, 24 Aug 2022 16:59:07 +0200 (CEST)
-Date:   Wed, 24 Aug 2022 16:59:07 +0200
-From:   Peter Zijlstra <peterz@infradead.org>
-To:     Ravi Bangoria <ravi.bangoria@amd.com>
-Cc:     acme@kernel.org, alexander.shishkin@linux.intel.com,
-        jolsa@redhat.com, namhyung@kernel.org, songliubraving@fb.com,
-        eranian@google.com, alexey.budankov@linux.intel.com,
-        ak@linux.intel.com, mark.rutland@arm.com, megha.dey@intel.com,
-        frederic@kernel.org, maddy@linux.ibm.com, irogers@google.com,
-        kim.phillips@amd.com, linux-kernel@vger.kernel.org,
-        santosh.shukla@amd.com
-Subject: Re: [RFC v2] perf: Rewrite core context handling
-Message-ID: <YwY8u7gx6bO+RBcg@worktop.programming.kicks-ass.net>
-References: <20220113134743.1292-1-ravi.bangoria@amd.com>
- <YqdLH+ZU/sf4n0pa@hirez.programming.kicks-ass.net>
- <YwYWUbVvSAYseDaO@worktop.programming.kicks-ass.net>
+        Wed, 24 Aug 2022 11:06:22 -0400
+Received: from out30-133.freemail.mail.aliyun.com (out30-133.freemail.mail.aliyun.com [115.124.30.133])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D54C698377
+        for <linux-kernel@vger.kernel.org>; Wed, 24 Aug 2022 08:06:20 -0700 (PDT)
+X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R131e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=ay29a033018046050;MF=baolin.wang@linux.alibaba.com;NM=1;PH=DS;RN=6;SR=0;TI=SMTPD_---0VN7yLvj_1661353574;
+Received: from 30.0.163.227(mailfrom:baolin.wang@linux.alibaba.com fp:SMTPD_---0VN7yLvj_1661353574)
+          by smtp.aliyun-inc.com;
+          Wed, 24 Aug 2022 23:06:15 +0800
+Message-ID: <22585fc8-b0bc-0e14-d121-2767cd178424@linux.alibaba.com>
+Date:   Wed, 24 Aug 2022 23:06:25 +0800
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <YwYWUbVvSAYseDaO@worktop.programming.kicks-ass.net>
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.12.0
+Subject: Re: [PATCH v2 1/5] mm/hugetlb: fix races when looking up a CONT-PTE
+ size hugetlb page
+To:     David Hildenbrand <david@redhat.com>,
+        Mike Kravetz <mike.kravetz@oracle.com>
+Cc:     akpm@linux-foundation.org, songmuchun@bytedance.com,
+        linux-mm@kvack.org, linux-kernel@vger.kernel.org
+References: <cover.1661240170.git.baolin.wang@linux.alibaba.com>
+ <0e5d92da043d147a867f634b17acbcc97a7f0e64.1661240170.git.baolin.wang@linux.alibaba.com>
+ <4c24b891-04ce-2608-79d2-a75dc236533f@redhat.com>
+ <376d2e0a-d28a-984b-903c-1f6451b04a15@linux.alibaba.com>
+ <7d4e7f47-30a5-3cc6-dc9f-aa89120847d8@redhat.com> <YwVo7xSO+VebkIfQ@monkey>
+ <64669c0a-4a6e-f034-a15b-c4a8deea9e5d@linux.alibaba.com>
+ <7ee73879-e402-9175-eae8-41471d80d59e@redhat.com>
+ <f7544713-d856-0875-41dd-52a5c27ba015@linux.alibaba.com>
+ <041e2e43-2227-1681-743e-5f82e245b5ea@redhat.com>
+ <f5f08e69-83d0-78af-39fb-f2180d13086d@linux.alibaba.com>
+ <0f736dc5-1798-10ad-c506-9a2a38841359@redhat.com>
+From:   Baolin Wang <baolin.wang@linux.alibaba.com>
+In-Reply-To: <0f736dc5-1798-10ad-c506-9a2a38841359@redhat.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Aug 24, 2022 at 02:15:13PM +0200, Peter Zijlstra wrote:
-> On Mon, Jun 13, 2022 at 04:35:11PM +0200, Peter Zijlstra wrote:
-> >  void x86_pmu_update_cpu_context(struct pmu *pmu, int cpu)
-> >  {
-> > -	struct perf_cpu_context *cpuctx;
-> > +	/* XXX: Don't need this quirk anymore */
-> > +	/*struct perf_cpu_context *cpuctx;
-> >  
-> >  	if (!pmu->pmu_cpu_context)
-> >  		return;
-> >  
-> >  	cpuctx = per_cpu_ptr(pmu->pmu_cpu_context, cpu);
-> > -	cpuctx->ctx.pmu = pmu;
-> > +	cpuctx->ctx.pmu = pmu;*/
-> >  }
+
+
+On 8/24/2022 10:33 PM, David Hildenbrand wrote:
+> On 24.08.22 16:30, Baolin Wang wrote:
+>>
+>>
+>> On 8/24/2022 7:55 PM, David Hildenbrand wrote:
+>>> On 24.08.22 11:41, Baolin Wang wrote:
+>>>>
+>>>>
+>>>> On 8/24/2022 3:31 PM, David Hildenbrand wrote:
+>>>>>>>>>
+>>>>>>>>> IMHO, these follow_huge_xxx() functions are arch-specified at first and
+>>>>>>>>> were moved into the common hugetlb.c by commit 9e5fc74c3025 ("mm:
+>>>>>>>>> hugetlb: Copy general hugetlb code from x86 to mm"), and now there are
+>>>>>>>>> still some arch-specified follow_huge_xxx() definition, for example:
+>>>>>>>>> ia64: follow_huge_addr
+>>>>>>>>> powerpc: follow_huge_pd
+>>>>>>>>> s390: follow_huge_pud
+>>>>>>>>>
+>>>>>>>>> What I mean is that follow_hugetlb_page() is a common and
+>>>>>>>>> not-arch-specified function, is it suitable to change it to be
+>>>>>>>>> arch-specified?
+>>>>>>>>> And thinking more, can we rename follow_hugetlb_page() as
+>>>>>>>>> hugetlb_page_faultin() and simplify it to only handle the page faults of
+>>>>>>>>> hugetlb like the faultin_page() for normal page? That means we can make
+>>>>>>>>> sure only follow_page_mask() can handle hugetlb.
+>>>>>>>>>
+>>>>>>>
+>>>>>>> Something like that might work, but you still have two page table walkers
+>>>>>>> for hugetlb.  I like David's idea (if I understand it correctly) of
+>>>>>>
+>>>>>> What I mean is we may change the hugetlb handling like normal page:
+>>>>>> 1) use follow_page_mask() to look up a hugetlb firstly.
+>>>>>> 2) if can not get the hugetlb, then try to page fault by
+>>>>>> hugetlb_page_faultin().
+>>>>>> 3) if page fault successed, then retry to find hugetlb by
+>>>>>> follow_page_mask().
+>>>>>
+>>>>> That implies putting more hugetlbfs special code into generic GUP,
+>>>>> turning it even more complicated. But of course, it depends on how the
+>>>>> end result looks like. My gut feeling was that hugetlb is better handled
+>>>>> in follow_hugetlb_page() separately (just like we do with a lot of other
+>>>>> page table walkers).
+>>>>
+>>>> OK, fair enough.
+>>>>
+>>>>>>
+>>>>>> Just a rough thought, and I need more investigation for my idea and
+>>>>>> David's idea.
+>>>>>>
+>>>>>>> using follow_hugetlb_page for both cases.  As noted, it will need to be
+>>>>>>> taught how to not trigger faults in the follow_page_mask case.
+>>>>>>
+>>>>>> Anyway, I also agree we need some cleanup, and firstly I think we should
+>>>>>> cleanup these arch-specified follow_huge_xxx() on some architectures
+>>>>>> which are similar with the common ones. I will look into these.
+>>>>>
+>>>>> There was a recent discussion on that, e.g.:
+>>>>>
+>>>>> https://lkml.kernel.org/r/20220818135717.609eef8a@thinkpad
+>>>>
+>>>> Thanks.
+>>>>
+>>>>>
+>>>>>>
+>>>>>> However, considering cleanup may need more investigation and
+>>>>>> refactoring, now I prefer to make these bug-fix patches of this patchset
+>>>>>> into mainline firstly, which are suitable to backport to old version to
+>>>>>> fix potential race issues. Mike and David, how do you think? Could you
+>>>>>> help to review these patches? Thanks.
+>>>>>
+>>>>> Patch #1 certainly add more special code just to handle another hugetlb
+>>>>> corner case (CONT pages), and maybe just making it all use
+>>>>> follow_hugetlb_page() would be even cleaner and less error prone.
+>>>>>
+>>>>> I agree that locking is shaky, but I'm not sure if we really want to
+>>>>> backport this to stable trees:
+>>>>>
+>>>>> https://www.kernel.org/doc/html/latest/process/stable-kernel-rules.html
+>>>>>
+>>>>> "It must fix a real bug that bothers people (not a, “This could be a
+>>>>> problem...” type thing)."
+>>>>>
+>>>>>
+>>>>> Do we actually have any instance of this being a real (and not a
+>>>>> theoretical) problem? If not, I'd rather clean it all up right away.
+>>>>
+>>>> I think this is a real problem (not theoretical), and easy to write some
+>>>> code to show the issue. For example, suppose thread A is trying to look
+>>>> up a CONT-PTE size hugetlb page under the lock, however antoher thread B
+>>>> can migrate the CONT-PTE hugetlb page at the same time, which will cause
+>>>> thread A to get an incorrect page, if thread A want to do something for
+>>>> this incorrect page, error occurs.
+>>>>
+>>>> Actually we also want to backport these fixes to the distro with old
+>>>> kernel versions to make the hugetlb more stable. Otherwise we must hit
+>>>> these issues sooner or later if the customers use CONT-PTE/PMD hugetlb.
+>>>>
+>>>> Anyway, if you and Mike still think these issues are not important
+>>>> enough to be fixed in the old versions, I can do the cleanup firstly.
+>>>>
+>>>
+>>> [asking myself which follow_page() users actually care about hugetlb,
+>>> and why we need this handling in follow_page at all]
+>>>
+>>> Which follow_page() user do we care about here? Primarily mm/migrate.c
+>>> only I assume?
+>>
+>> Right, mainly affects the move_pages() syscall I think. Yes, I can not
+>> know all of the users of the move_pages() syscall now or in the future
+>> in our data center, but like I said the move_pages() syscall + hugetlb
+>> can be a real potential stability issue.
+>>
 > 
-> Confirmed; my ADL seems to work fine without all that.
+> I wonder if we can get rid of follow_page() completely, there are not
+> too many users. Or alternatively simply make it use general GUP
+> infrastructure more clearly. We'd need something like FOLL_NOFAULT that
+> also covers "absolutely no faults".
 
-Additionally; this doesn't insta crash.
+I am not sure I get your point. So you want change to use 
+__get_user_pages() (or silimar wrappers) to look up a normal page or 
+hugetlb instead of follow_page()? and adding a new FOLL_NOFAULT flag to 
+__get_user_pages().
 
----
-diff --git a/arch/arm64/kernel/perf_event.c b/arch/arm64/kernel/perf_event.c
-index cb69ff1e6138..016072a89f8f 100644
---- a/arch/arm64/kernel/perf_event.c
-+++ b/arch/arm64/kernel/perf_event.c
-@@ -1019,10 +1019,10 @@ static int armv8pmu_set_event_filter(struct hw_perf_event *event,
- 	return 0;
- }
- 
--static int armv8pmu_filter_match(struct perf_event *event)
-+static bool armv8pmu_filter(struct pmu *pmu, int cpu)
- {
--	unsigned long evtype = event->hw.config_base & ARMV8_PMU_EVTYPE_EVENT;
--	return evtype != ARMV8_PMUV3_PERFCTR_CHAIN;
-+	struct arm_pmu *armpmu = to_arm_pmu(pmu);
-+	return !cpumask_test_cpu(smp_processor_id(), &armpmu->supported_cpus);
- }
- 
- static void armv8pmu_reset(void *info)
-@@ -1253,7 +1253,7 @@ static int armv8_pmu_init(struct arm_pmu *cpu_pmu, char *name,
- 	cpu_pmu->stop			= armv8pmu_stop;
- 	cpu_pmu->reset			= armv8pmu_reset;
- 	cpu_pmu->set_event_filter	= armv8pmu_set_event_filter;
--	cpu_pmu->filter_match		= armv8pmu_filter_match;
-+	cpu_pmu->filter			= armv8pmu_filter;
- 
- 	cpu_pmu->pmu.event_idx		= armv8pmu_user_event_idx;
- 
-diff --git a/arch/x86/events/core.c b/arch/x86/events/core.c
-index 7a2d12ad6d1f..a8f1e38c66a7 100644
---- a/arch/x86/events/core.c
-+++ b/arch/x86/events/core.c
-@@ -86,6 +86,8 @@ DEFINE_STATIC_CALL_NULL(x86_pmu_swap_task_ctx, *x86_pmu.swap_task_ctx);
- DEFINE_STATIC_CALL_NULL(x86_pmu_drain_pebs,   *x86_pmu.drain_pebs);
- DEFINE_STATIC_CALL_NULL(x86_pmu_pebs_aliases, *x86_pmu.pebs_aliases);
- 
-+DEFINE_STATIC_CALL_NULL(x86_pmu_filter, *x86_pmu.filter);
-+
- /*
-  * This one is magic, it will get called even when PMU init fails (because
-  * there is no PMU), in which case it should simply return NULL.
-@@ -2038,6 +2040,7 @@ static void x86_pmu_static_call_update(void)
- 	static_call_update(x86_pmu_pebs_aliases, x86_pmu.pebs_aliases);
- 
- 	static_call_update(x86_pmu_guest_get_msrs, x86_pmu.guest_get_msrs);
-+	static_call_update(x86_pmu_filter, x86_pmu.filter);
- }
- 
- static void _x86_pmu_read(struct perf_event *event)
-@@ -2668,12 +2671,13 @@ static int x86_pmu_aux_output_match(struct perf_event *event)
- 	return 0;
- }
- 
--static int x86_pmu_filter_match(struct perf_event *event)
-+static bool x86_pmu_filter(struct pmu *pmu, int cpu)
- {
--	if (x86_pmu.filter_match)
--		return x86_pmu.filter_match(event);
-+	bool ret = false;
- 
--	return 1;
-+	static_call_cond(x86_pmu_filter)(pmu, cpu, &ret);
-+
-+	return ret;
- }
- 
- static struct pmu pmu = {
-@@ -2704,7 +2708,7 @@ static struct pmu pmu = {
- 
- 	.aux_output_match	= x86_pmu_aux_output_match,
- 
--	.filter_match		= x86_pmu_filter_match,
-+	.filter			= x86_pmu_filter,
- };
- 
- void arch_perf_update_userpage(struct perf_event *event,
-diff --git a/arch/x86/events/intel/core.c b/arch/x86/events/intel/core.c
-index 768771e5e4e9..40cebd9b90a1 100644
---- a/arch/x86/events/intel/core.c
-+++ b/arch/x86/events/intel/core.c
-@@ -4675,12 +4675,11 @@ static int intel_pmu_aux_output_match(struct perf_event *event)
- 	return is_intel_pt_event(event);
- }
- 
--static int intel_pmu_filter_match(struct perf_event *event)
-+static void intel_pmu_filter(struct pmu *pmu, int cpu, bool *ret)
- {
--	struct x86_hybrid_pmu *pmu = hybrid_pmu(event->pmu);
--	unsigned int cpu = smp_processor_id();
-+	struct x86_hybrid_pmu *hpmu = hybrid_pmu(pmu);
- 
--	return cpumask_test_cpu(cpu, &pmu->supported_cpus);
-+	*ret = !cpumask_test_cpu(cpu, &hpmu->supported_cpus);
- }
- 
- PMU_FORMAT_ATTR(offcore_rsp, "config1:0-63");
-@@ -6348,7 +6347,7 @@ __init int intel_pmu_init(void)
- 		x86_pmu.update_topdown_event = adl_update_topdown_event;
- 		x86_pmu.set_topdown_event_period = adl_set_topdown_event_period;
- 
--		x86_pmu.filter_match = intel_pmu_filter_match;
-+		x86_pmu.filter = intel_pmu_filter;
- 		x86_pmu.get_event_constraints = adl_get_event_constraints;
- 		x86_pmu.hw_config = adl_hw_config;
- 		x86_pmu.limit_period = spr_limit_period;
-diff --git a/arch/x86/events/perf_event.h b/arch/x86/events/perf_event.h
-index 9c835ecb232e..b3ff55fc5794 100644
---- a/arch/x86/events/perf_event.h
-+++ b/arch/x86/events/perf_event.h
-@@ -924,7 +924,7 @@ struct x86_pmu {
- 
- 	int (*aux_output_match) (struct perf_event *event);
- 
--	int (*filter_match)(struct perf_event *event);
-+	void (*filter)(struct pmu *pmu, int cpu, bool *ret);
- 	/*
- 	 * Hybrid support
- 	 *
-diff --git a/include/linux/perf/arm_pmu.h b/include/linux/perf/arm_pmu.h
-index 0407a38b470a..0f9519874fde 100644
---- a/include/linux/perf/arm_pmu.h
-+++ b/include/linux/perf/arm_pmu.h
-@@ -99,7 +99,7 @@ struct arm_pmu {
- 	void		(*stop)(struct arm_pmu *);
- 	void		(*reset)(void *);
- 	int		(*map_event)(struct perf_event *event);
--	int		(*filter_match)(struct perf_event *event);
-+	bool		(*filter)(struct pmu *pmu, int cpu);
- 	int		num_events;
- 	bool		secure_access; /* 32-bit ARM only */
- #define ARMV8_PMUV3_MAX_COMMON_EVENTS		0x40
-diff --git a/include/linux/perf_event.h b/include/linux/perf_event.h
-index 7847818e5397..4be3aaae89be 100644
---- a/include/linux/perf_event.h
-+++ b/include/linux/perf_event.h
-@@ -519,9 +519,10 @@ struct pmu {
- 					/* optional */
- 
- 	/*
--	 * Filter events for PMU-specific reasons.
-+	 * Skip programming this PMU on the given CPU. Typically needed for
-+	 * big.LITTLE things.
- 	 */
--	int (*filter_match)		(struct perf_event *event); /* optional */
-+	bool (*filter)			(struct pmu *pmu, int cpu); /* optional */
- 
- 	/*
- 	 * Check period value for PERF_EVENT_IOC_PERIOD ioctl.
-diff --git a/kernel/events/core.c b/kernel/events/core.c
-index c6b64a48dea6..180842ba8473 100644
---- a/kernel/events/core.c
-+++ b/kernel/events/core.c
-@@ -2181,38 +2181,11 @@ static bool is_orphaned_event(struct perf_event *event)
- 	return event->state == PERF_EVENT_STATE_DEAD;
- }
- 
--static inline int __pmu_filter_match(struct perf_event *event)
--{
--	struct pmu *pmu = event->pmu;
--	return pmu->filter_match ? pmu->filter_match(event) : 1;
--}
--
--/*
-- * Check whether we should attempt to schedule an event group based on
-- * PMU-specific filtering. An event group can consist of HW and SW events,
-- * potentially with a SW leader, so we must check all the filters, to
-- * determine whether a group is schedulable:
-- */
--static inline int pmu_filter_match(struct perf_event *event)
--{
--	struct perf_event *sibling;
--
--	if (!__pmu_filter_match(event))
--		return 0;
--
--	for_each_sibling_event(sibling, event) {
--		if (!__pmu_filter_match(sibling))
--			return 0;
--	}
--
--	return 1;
--}
--
- static inline int
- event_filter_match(struct perf_event *event)
- {
- 	return (event->cpu == -1 || event->cpu == smp_processor_id()) &&
--	       perf_cgroup_match(event) && pmu_filter_match(event);
-+	       perf_cgroup_match(event);
- }
- 
- static void
-@@ -3661,6 +3634,9 @@ static noinline int visit_groups_merge(struct perf_event_context *ctx,
- 	struct perf_event **evt;
- 	int ret;
- 
-+	if (pmu->filter && pmu->filter(pmu, cpu))
-+		return 0;
-+
- 	if (!ctx->task) {
- 		cpuctx = this_cpu_ptr(&cpu_context);
- 		event_heap = (struct min_heap){
+If I understand correctly, we still need more work to move those 
+arch-specified follow_huge_xxx() into follow_hugetlb_page() firstly like 
+we disscussed before? Which seems not backportable too.
+
+I am not againt your idea, and I also agree that we should do some 
+cleanup. But the point is if we need backport patches to fix this issue, 
+which affects move_pages() syscall, if the answer is yes, I think my 
+current fixes are suitable to backport.
