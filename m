@@ -2,143 +2,88 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 086C8C00140
-	for <linux-kernel@archiver.kernel.org>; Wed, 24 Aug 2022 16:35:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 72C4DC00140
+	for <linux-kernel@archiver.kernel.org>; Wed, 24 Aug 2022 16:35:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238589AbiHXQfn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 24 Aug 2022 12:35:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56962 "EHLO
+        id S239545AbiHXQf5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 24 Aug 2022 12:35:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57526 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239545AbiHXQfc (ORCPT
+        with ESMTP id S238435AbiHXQfx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 24 Aug 2022 12:35:32 -0400
-Received: from mail-io1-f69.google.com (mail-io1-f69.google.com [209.85.166.69])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8223980F4D
-        for <linux-kernel@vger.kernel.org>; Wed, 24 Aug 2022 09:35:31 -0700 (PDT)
-Received: by mail-io1-f69.google.com with SMTP id k22-20020a6bf716000000b0068898c0b395so9617327iog.3
-        for <linux-kernel@vger.kernel.org>; Wed, 24 Aug 2022 09:35:31 -0700 (PDT)
+        Wed, 24 Aug 2022 12:35:53 -0400
+Received: from mail-pl1-f178.google.com (mail-pl1-f178.google.com [209.85.214.178])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6655185FCB;
+        Wed, 24 Aug 2022 09:35:52 -0700 (PDT)
+Received: by mail-pl1-f178.google.com with SMTP id y4so16133492plb.2;
+        Wed, 24 Aug 2022 09:35:52 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=to:from:subject:message-id:date:mime-version:x-gm-message-state
-         :from:to:cc;
-        bh=igPw/4yA+mTANwSdMoZucgTYkONKNQ2e1OHP2G/JPo0=;
-        b=QT89sgbTJpKMow1UHA5zY7QiEdDX2R0c2wvrX80b7Y8hrsfDwqF4PIZUPENy8aZi2x
-         FPo4lJ2gsfc8EejGmMuHhRgMlG8MBJH7uQDelaBORlfc+DX4unJADVwjQrgTwq3YdfZN
-         pDv1SGn8XbPYIg9D4VZUObjDmKTSKPlPE4bLSKEdI+sMqaBVoNFc4dpstjWDiUmKe34y
-         E3tCveJiHFWEIct/NWgMGcj4wU1wv8UKof6QNMqEVcn03O0HE2yn4uPDy6mVXXaY/FZk
-         byTthutO4i54YVRUA3/zgRxklJVxQK6ef9UJdRH5W4Km6Sd4IhrDkFdj+d+K7S6L6I1o
-         wqUw==
-X-Gm-Message-State: ACgBeo1YVqEVjZQRxMCFw9gQ5JtwK4DsywlSnOfqzqgPEJP0krHOLiXs
-        7pvvKr2VquiiRwKT9v6PSp0uNEPXGLex01Efa5Un3kB6e+lp
-X-Google-Smtp-Source: AA6agR5bgppAZ7QEzoIstb2KBTdF0RBmHECgpmY4kmUqRRoeAiwbgTDcu5VE+GfWrTZs5Qckj5AW/LVVrGs+AGXZu2jtZJ4f3U/a
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc;
+        bh=jwlvGORH25WcTECUWBCGNYWqLL1KZ4/HvuRj9Nzjm8A=;
+        b=xDo8P5XefoJiNy27t/WIxqogN0ZjIz7DP3duy+Wifvc/mAm4juNVvajr6H9FEdbRjk
+         EiBnLz34R2UQRuI98Rrc+XTiruy0DzO71n9i7odSL4BBgfVhXuauRYgW7PQWJDsLcPiJ
+         GH0PKpSvgBiYLpGLpyme8OOR6VKJcLR45NTAqOV8CBRaNjdHDqGTu45Szi6P1HqCPSUC
+         ZJ89N+DfqLNu0HgcDN1s3Z4gYJRrfYWUCYBsEsy0mqT+t5ZMoD08ANQ+f8zhqXMm0tnm
+         We+MctF4fDghCdJr+OEF1PeCeN/q2z6FDqcTkndoyeAGmajNU8OyYUG7OzocKMpDpODq
+         NF0g==
+X-Gm-Message-State: ACgBeo07w5pjBm1S0XlsxL/CNksU9X22VIpjn+7T91kW8nupTREwLSfW
+        9u2rD64tUQ9JDTP6N7611yo=
+X-Google-Smtp-Source: AA6agR7cFvbLgAxov4hsRdF5TM32DeU8TG8mf7muUOP37BSTlFaoEP7FCFidPWVPdhhMOjY0loaRbQ==
+X-Received: by 2002:a17:902:a60c:b0:171:407d:16f8 with SMTP id u12-20020a170902a60c00b00171407d16f8mr29440776plq.58.1661358951774;
+        Wed, 24 Aug 2022 09:35:51 -0700 (PDT)
+Received: from ?IPV6:2620:15c:211:201:222f:dc9c:99a3:dfb8? ([2620:15c:211:201:222f:dc9c:99a3:dfb8])
+        by smtp.gmail.com with ESMTPSA id b16-20020a170902d51000b001730cf6f839sm2905791plg.70.2022.08.24.09.35.50
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 24 Aug 2022 09:35:50 -0700 (PDT)
+Message-ID: <28a43c43-79d0-3331-a067-0336270c4372@acm.org>
+Date:   Wed, 24 Aug 2022 09:35:48 -0700
 MIME-Version: 1.0
-X-Received: by 2002:a05:6638:d02:b0:346:f5ef:6ab2 with SMTP id
- q2-20020a0566380d0200b00346f5ef6ab2mr14004741jaj.300.1661358930783; Wed, 24
- Aug 2022 09:35:30 -0700 (PDT)
-Date:   Wed, 24 Aug 2022 09:35:30 -0700
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <000000000000e9f4e905e6ff4495@google.com>
-Subject: [syzbot] general protection fault in __io_sync_cancel
-From:   syzbot <syzbot+bf76847df5f7359c9e09@syzkaller.appspotmail.com>
-To:     asml.silence@gmail.com, axboe@kernel.dk, io-uring@vger.kernel.org,
-        linux-kernel@vger.kernel.org, syzkaller-bugs@googlegroups.com
-Content-Type: text/plain; charset="UTF-8"
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.11.0
+Subject: Re: [PATCH] scsi: ufs: ufsfbo: Introduce File Based Optimization
+ feature
+Content-Language: en-US
+To:     Jiaming Li <lijiamingsofine@gmail.com>, avri.altman@wdc.com,
+        alim.akhtar@samsung.com, jejb@linux.ibm.com
+Cc:     linux-scsi@vger.kernel.org, linux-kernel@vger.kernel.org,
+        lijiaming3 <lijiaming3@xiaomi.com>
+References: <20220824084633.14428-1-lijiamingsofine@gmail.com>
+From:   Bart Van Assche <bvanassche@acm.org>
+In-Reply-To: <20220824084633.14428-1-lijiamingsofine@gmail.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hello,
+On 8/24/22 01:46, Jiaming Li wrote:
+> +#include "../../../block/blk.h"
 
-syzbot found the following issue on:
+Without having taken a look at the rest of this patch, including a block 
+driver private header file in the UFS driver is unacceptable.
 
-HEAD commit:    df0219d11b6f Merge tag 'parisc-for-6.0-2' of git://git.ker..
-git tree:       upstream
-console+strace: https://syzkaller.appspot.com/x/log.txt?x=108d7fcb080000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=911efaff115942bb
-dashboard link: https://syzkaller.appspot.com/bug?extid=bf76847df5f7359c9e09
-compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.2
-syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=13ef1715080000
-C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=17fcebc3080000
+> +#define FBO_INFO_MSG(fbo, msg, args...)	do { \
+> +		if (fbo->fbo_debug) \
+> +			pr_info("[info]%s:%d:" msg "\n", __func__, __LINE__, ##args); \
+> +	} while (0)
 
-IMPORTANT: if you fix the issue, please add the following tag to the commit:
-Reported-by: syzbot+bf76847df5f7359c9e09@syzkaller.appspotmail.com
+Please use pr_debug() instead.
 
-general protection fault, probably for non-canonical address 0xdffffc0000000000: 0000 [#1] PREEMPT SMP KASAN
-KASAN: null-ptr-deref in range [0x0000000000000000-0x0000000000000007]
-CPU: 1 PID: 3614 Comm: syz-executor233 Not tainted 6.0.0-rc2-syzkaller-00044-gdf0219d11b6f #0
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 07/22/2022
-RIP: 0010:__io_sync_cancel+0x10d/0x1c0 io_uring/cancel.c:224
-Code: 48 c1 ea 03 80 3c 02 00 0f 85 aa 00 00 00 49 8b 86 f8 00 00 00 48 8d 1c d8 48 b8 00 00 00 00 00 fc ff df 48 89 da 48 c1 ea 03 <80> 3c 02 00 0f 85 8e 00 00 00 48 8b 1b 48 8d 7d 08 48 b8 00 00 00
-RSP: 0018:ffffc900038ffc20 EFLAGS: 00010246
-RAX: dffffc0000000000 RBX: 0000000000000000 RCX: 0000000000000000
-RDX: 0000000000000000 RSI: ffffffff83f87914 RDI: ffff888146d8a0f8
-RBP: ffffc900038ffce0 R08: 0000000000000004 R09: 0000000000000000
-R10: 0000000000000000 R11: 0000000000000000 R12: 0000000000000000
-R13: ffff88801c9df800 R14: ffff888146d8a000 R15: 0000000000000000
-FS:  0000555556c5e300(0000) GS:ffff8880b9b00000(0000) knlGS:0000000000000000
-CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-CR2: 00000000005d84c8 CR3: 0000000070564000 CR4: 00000000003506e0
-DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
-Call Trace:
- <TASK>
- io_sync_cancel+0x240/0x630 io_uring/cancel.c:265
- __io_uring_register io_uring/io_uring.c:3833 [inline]
- __do_sys_io_uring_register+0x5c9/0x1110 io_uring/io_uring.c:3878
- do_syscall_x64 arch/x86/entry/common.c:50 [inline]
- do_syscall_64+0x35/0xb0 arch/x86/entry/common.c:80
- entry_SYSCALL_64_after_hwframe+0x63/0xcd
-RIP: 0033:0x7f9ae908dd29
-Code: 28 c3 e8 2a 14 00 00 66 2e 0f 1f 84 00 00 00 00 00 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 c7 c1 c0 ff ff ff f7 d8 64 89 01 48
-RSP: 002b:00007ffc2e5075e8 EFLAGS: 00000246 ORIG_RAX: 00000000000001ab
-RAX: ffffffffffffffda RBX: 0000000000000000 RCX: 00007f9ae908dd29
-RDX: 0000000020000000 RSI: 0000000000000018 RDI: 000000000000000a
-RBP: 00007f9ae9051ed0 R08: 0000000000000000 R09: 0000000000000000
-R10: 0000000000000001 R11: 0000000000000246 R12: 00007f9ae9051f60
-R13: 0000000000000000 R14: 0000000000000000 R15: 0000000000000000
- </TASK>
-Modules linked in:
----[ end trace 0000000000000000 ]---
-RIP: 0010:__io_sync_cancel+0x10d/0x1c0 io_uring/cancel.c:224
-Code: 48 c1 ea 03 80 3c 02 00 0f 85 aa 00 00 00 49 8b 86 f8 00 00 00 48 8d 1c d8 48 b8 00 00 00 00 00 fc ff df 48 89 da 48 c1 ea 03 <80> 3c 02 00 0f 85 8e 00 00 00 48 8b 1b 48 8d 7d 08 48 b8 00 00 00
-RSP: 0018:ffffc900038ffc20 EFLAGS: 00010246
-RAX: dffffc0000000000 RBX: 0000000000000000 RCX: 0000000000000000
-RDX: 0000000000000000 RSI: ffffffff83f87914 RDI: ffff888146d8a0f8
-RBP: ffffc900038ffce0 R08: 0000000000000004 R09: 0000000000000000
-R10: 0000000000000000 R11: 0000000000000000 R12: 0000000000000000
-R13: ffff88801c9df800 R14: ffff888146d8a000 R15: 0000000000000000
-FS:  0000555556c5e300(0000) GS:ffff8880b9a00000(0000) knlGS:0000000000000000
-CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-CR2: 00007f622cf74268 CR3: 0000000070564000 CR4: 00000000003506f0
-DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
-----------------
-Code disassembly (best guess):
-   0:	48 c1 ea 03          	shr    $0x3,%rdx
-   4:	80 3c 02 00          	cmpb   $0x0,(%rdx,%rax,1)
-   8:	0f 85 aa 00 00 00    	jne    0xb8
-   e:	49 8b 86 f8 00 00 00 	mov    0xf8(%r14),%rax
-  15:	48 8d 1c d8          	lea    (%rax,%rbx,8),%rbx
-  19:	48 b8 00 00 00 00 00 	movabs $0xdffffc0000000000,%rax
-  20:	fc ff df
-  23:	48 89 da             	mov    %rbx,%rdx
-  26:	48 c1 ea 03          	shr    $0x3,%rdx
-* 2a:	80 3c 02 00          	cmpb   $0x0,(%rdx,%rax,1) <-- trapping instruction
-  2e:	0f 85 8e 00 00 00    	jne    0xc2
-  34:	48 8b 1b             	mov    (%rbx),%rbx
-  37:	48 8d 7d 08          	lea    0x8(%rbp),%rdi
-  3b:	48                   	rex.W
-  3c:	b8                   	.byte 0xb8
-  3d:	00 00                	add    %al,(%rax)
+> +#define FBO_ERR_MSG(msg, args...) \
+> +	pr_err("[err]%s:%d:" msg "\n", __func__, __LINE__, ##args)
 
+Please use pr_err() directly and remove the function name and line 
+numbers from error messages.
 
----
-This report is generated by a bot. It may contain errors.
-See https://goo.gl/tpsmEJ for more information about syzbot.
-syzbot engineers can be reached at syzkaller@googlegroups.com.
+> +#define FBO_WARN_MSG(msg, args...) \
+> +	pr_warn("[warn]%s:%d:" msg "\n", __func__, __LINE__, ##args)
 
-syzbot will keep track of this issue. See:
-https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
-syzbot can test patches for this issue, for details see:
-https://goo.gl/tpsmEJ#testing-patches
+Please use pr_warn directly and remove function name and line numbers 
+from warning messages.
+
+Thanks,
+
+Bart.
