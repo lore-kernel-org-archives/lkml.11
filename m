@@ -2,98 +2,163 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E8E27C00140
-	for <linux-kernel@archiver.kernel.org>; Wed, 24 Aug 2022 13:07:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2937DC3F6B0
+	for <linux-kernel@archiver.kernel.org>; Wed, 24 Aug 2022 13:07:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237898AbiHXNHj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 24 Aug 2022 09:07:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42118 "EHLO
+        id S236336AbiHXNHt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 24 Aug 2022 09:07:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42226 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236189AbiHXNHf (ORCPT
+        with ESMTP id S236189AbiHXNHr (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 24 Aug 2022 09:07:35 -0400
-Received: from mail-pj1-x1031.google.com (mail-pj1-x1031.google.com [IPv6:2607:f8b0:4864:20::1031])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A637B7EFC5;
-        Wed, 24 Aug 2022 06:07:33 -0700 (PDT)
-Received: by mail-pj1-x1031.google.com with SMTP id m15so8944672pjj.3;
-        Wed, 24 Aug 2022 06:07:33 -0700 (PDT)
+        Wed, 24 Aug 2022 09:07:47 -0400
+Received: from mail-lf1-x133.google.com (mail-lf1-x133.google.com [IPv6:2a00:1450:4864:20::133])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B4FB1979D0
+        for <linux-kernel@vger.kernel.org>; Wed, 24 Aug 2022 06:07:44 -0700 (PDT)
+Received: by mail-lf1-x133.google.com with SMTP id s6so12683608lfo.11
+        for <linux-kernel@vger.kernel.org>; Wed, 24 Aug 2022 06:07:44 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc;
-        bh=8hQNlaNRXsTFWu3o2bv0H8H3dQ4+lM+vaoEV4x76qg4=;
-        b=ZWuwggVwhgl+RWG5blvg8JohOdTrZXEfEQHhPT7ykLYdSBw/1aLDHoYVLHGFiGkkjz
-         p4Rk12s5pYr0JGSUAhScvCc61YcODUrF3eozBk4JbL+YH+Zvk2owIBU3+ty9xaiTlE2P
-         E3V35PYtht2oeMuxZCKnkXsyp5m4+xzjlge81oBWyJzYdiOtAoGiB2uN/92dLDm0csFM
-         lj8rAsX/sLisHMZitoHUJHc7vqP9ovFPD/dDHGon5T8X+xadUggDAoykuifJpEotRwCJ
-         u8LnB8vLFhunyGzu8NYxW42E2K2rrptrsfGkyN5hIiu0UZnjYZB3M3shydY/CHZdHlpl
-         ICuA==
+        d=linaro.org; s=google;
+        h=content-transfer-encoding:in-reply-to:from:references:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc;
+        bh=07vPvByHp737Z4ko55zqWLWNBnP96zmWmjtNwCBec98=;
+        b=sTVjoh9c/E4kr0cniahRXMsvKK0b2tP3WbbNAyyeLZ0BjxqXHD15wAOoepB3jeaRgL
+         pICcDosxLt7ph0fVQJ17htSiwYxTDueBhpmX1bJNIgQuxNz/VOchbrsBOW2Hq2kWeZ50
+         /y5MCVTdM5aV0bKlL9nAlNIbVHC45X8SfuzTLullIpcZ6zzFosDqWO0/o++qvkiznOcI
+         NxtLkodrxpx4Z2y7gFtrmj8O/PPr9tlV9IJt0lcpHxrfMyw59gSsvcKzsXVPpshzz5xD
+         j2mMx81U8zbjJJjkSDEVMU0xZAtW7iq7zjYmcbPJeyfVcJffPCssM9BX3h9LepL7L5Al
+         4fWQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-message-state:from:to:cc;
-        bh=8hQNlaNRXsTFWu3o2bv0H8H3dQ4+lM+vaoEV4x76qg4=;
-        b=E+tta91d7LNGt/+fTEIXoG1NeX/Pq0oCEV683QlrAUFQ6rCRIgMVN9TYFrJ6SCVypg
-         3tcelJKzHn9HP7cGAlEAihBaf2wWzx9Qk57+wS346p2bcZPi12TNKDhoaiwnmqQzbDVg
-         o+BK28ds2NSP8ojC7T+pX1WJ1qLieErF9h8JZDUA6l7WGSxBRmoptVgVOwCHpES9gApb
-         5Bnxu8zG0v5ctKQjS86G5QTx5TWugFFheX3P30UD0/dpYMFMK8jWPhu4Dqj8ycF+66hK
-         +txFGEPzTds00BV0RjOtw52zKLf3NMPfAbjI+7T6nkccJXKZ1kx1qmT75Hsp1hpMF4J8
-         Zlng==
-X-Gm-Message-State: ACgBeo0f0ATK9Y5fI+qxCGU9h33EQna+DpW7Pbel2lB7NIzkQGNK0L9T
-        9lTPlxNcBA4aQNlfAlHO7M+UIGQmtPM2/Q==
-X-Google-Smtp-Source: AA6agR6xn/Z0E7zOROHt6LLIPRv549HHXNyJ8KBcJsXZt4wQkIka7KikRb0a2eGY22Bl3jJJ5qc98g==
-X-Received: by 2002:a17:903:2049:b0:172:eb95:c61e with SMTP id q9-20020a170903204900b00172eb95c61emr13467280pla.74.1661346445857;
-        Wed, 24 Aug 2022 06:07:25 -0700 (PDT)
-Received: from fedora.. ([103.159.189.138])
-        by smtp.gmail.com with ESMTPSA id m12-20020a633f0c000000b0041c49af8156sm11096323pga.6.2022.08.24.06.07.08
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 24 Aug 2022 06:07:25 -0700 (PDT)
-From:   Khalid Masum <khalid.masum.92@gmail.com>
-To:     linux-usb@vger.kernel.org, linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Alan Stern <stern@rowland.harvard.edu>,
-        Kishon Vijay Abraham I <kishon@ti.com>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Matthias Kaehlcke <mka@chromium.org>,
-        Alexey Sheplyakov <asheplyakov@basealt.ru>,
-        Weitao Wang <WeitaoWang-oc@zhaoxin.com>,
-        linux-kernel-mentees@lists.linuxfoundation.org,
-        Khalid Masum <khalid.masum.92@gmail.com>
-Subject: [PATCH] usb: host: Use helper function to get endpoint
-Date:   Wed, 24 Aug 2022 19:07:02 +0600
-Message-Id: <20220824130702.10912-1-khalid.masum.92@gmail.com>
-X-Mailer: git-send-email 2.37.1
+        h=content-transfer-encoding:in-reply-to:from:references:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc;
+        bh=07vPvByHp737Z4ko55zqWLWNBnP96zmWmjtNwCBec98=;
+        b=GEQKRbNXn/lwL5pXcZdJSbFoKxCVY2qTxwWs/7CspOFokMRhwD+YjUscsx9EHU+Y5z
+         nIgxf6UzyHSPT1Ul5HDD3lDO63LrBF4+0MOU8nPT9lOBjWw5FtTbrZHShlNu6Ke2w3jb
+         KFvjCmbR+iW4fFFMI4JoFuuaezwO+JWZa0mDYU+A8xolOaRoKGIXGPpbpLBjU9Rr04Gl
+         COGQG0KFYlnTNNBIbqrGhpkL1may09S65SeJ98SRz+K56PDBmXEZtuM8W8L0B+KI+DTz
+         stX4L3EMLUTw0kQufs4bIocRr7svCrXvT4knPSIp+F45Z+ScLZGXaBMBs0UZRsp0663e
+         ur/w==
+X-Gm-Message-State: ACgBeo23S0pzF4Ox+0vk5iUsXuhbuFWb/rgPQ4ROLHp6DE9B0AZ4dfCr
+        4qktfZooDwXas9uuCDA5mCgUaA==
+X-Google-Smtp-Source: AA6agR4MCTFUzzLJVCo+j8gtwAABrGcjHkwermyL3XDTUedLgroX4T6ImdZs9pPR9Ms2iQ45ySG8XQ==
+X-Received: by 2002:a05:6512:1191:b0:493:57c:84e3 with SMTP id g17-20020a056512119100b00493057c84e3mr1194980lfr.177.1661346463003;
+        Wed, 24 Aug 2022 06:07:43 -0700 (PDT)
+Received: from [10.243.4.185] ([194.204.13.210])
+        by smtp.gmail.com with ESMTPSA id d4-20020a056512368400b00492daab838bsm2069672lfs.46.2022.08.24.06.07.41
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 24 Aug 2022 06:07:42 -0700 (PDT)
+Message-ID: <33eb031c-f1b5-b80d-52b0-48bcab02d697@linaro.org>
+Date:   Wed, 24 Aug 2022 16:07:41 +0300
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.12.0
+Subject: Re: [PATCH 1/2] bindings: iio: adc: Add max11205 documentation file
+Content-Language: en-US
+To:     Ramona Bolboaca <ramona.bolboaca@analog.com>, jic23@kernel.org,
+        robh+dt@kernel.org, krzysztof.kozlowski+dt@linaro.org,
+        linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+References: <20220824125203.685287-1-ramona.bolboaca@analog.com>
+ <20220824125203.685287-2-ramona.bolboaca@analog.com>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+In-Reply-To: <20220824125203.685287-2-ramona.bolboaca@analog.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Current implementation to convert urb pipe number to struct 
-usb_host_endpoint in rquest_single_step_set_feature_urb is a little
-messy. 
+On 24/08/2022 15:52, Ramona Bolboaca wrote:
+> Add bindings documentation file and MAINTAINERS entry for MAX11205.
+> 
+> Signed-off-by: Ramona Bolboaca <ramona.bolboaca@analog.com>
+> ---
+>  .../bindings/iio/adc/maxim,max11205.yaml      | 65 +++++++++++++++++++
+>  MAINTAINERS                                   |  8 +++
+>  2 files changed, 73 insertions(+)
+>  create mode 100644 Documentation/devicetree/bindings/iio/adc/maxim,max11205.yaml
+> 
+> diff --git a/Documentation/devicetree/bindings/iio/adc/maxim,max11205.yaml b/Documentation/devicetree/bindings/iio/adc/maxim,max11205.yaml
+> new file mode 100644
+> index 000000000000..bddd18a44969
+> --- /dev/null
+> +++ b/Documentation/devicetree/bindings/iio/adc/maxim,max11205.yaml
+> @@ -0,0 +1,65 @@
+> +# SPDX-License-Identifier: (GPL-2.0 OR BSD-2-Clause)
+> +%YAML 1.2
+> +---
+> +$id: http://devicetree.org/schemas/iio/adc/maxim,max11205.yaml#
+> +$schema: http://devicetree.org/meta-schemas/core.yaml#
+> +
+> +title: Maxim MAX11205 ADC
+> +
+> +maintainers:
+> +  - Ramona Bolboaca <ramona.bolboaca@analog.com>
+> +
+> +description: |
+> +  The MAX11205 is an ultra-low-power (< 300FA max
+> +  active current), high-resolution, serial-output ADC.
+> +
+> +  https://datasheets.maximintegrated.com/en/ds/MAX11205.pdf
+> +
+> +properties:
+> +  compatible:
+> +    enum:
+> +      - maxim,max11205a
+> +      - maxim,max11205b
+> +
+> +  reg:
+> +    maxItems: 1
+> +
+> +  interrupts:
+> +    maxItems: 1
+> +
+> +  spi-max-frequency:
+> +    maximum: 5000000
+> +
+> +  spi-cpha: true
 
-Use usb_pipe_endpoint helper function to get the endpoint instead.
+Both properties are good, but still you should reference
+/schemas/spi/spi-peripheral-props.yaml in allOf and use
+unevaluatedProperties:false. See other bindings for SPI devices.
 
-Signed-off-by: Khalid Masum <khalid.masum.92@gmail.com>
----
- drivers/usb/core/hcd.c | 3 +--
- 1 file changed, 1 insertion(+), 2 deletions(-)
+> +
+> +  vref-supply:
+> +    description:
+> +      The regulator supply for the ADC reference voltage.
+> +
+> +required:
+> +  - compatible
+> +  - reg
+> +  - spi-max-frequency
+> +  - spi-cpha
+> +  - interrupts
+> +  - vref-supply
+> +
+> +additionalProperties: false
+> +
+> +examples:
+> +  - |
+> +    #include <dt-bindings/interrupt-controller/irq.h>
+> +    spi {
+> +        #address-cells = <1>;
+> +        #size-cells = <0>;
+> +        max11205@0 {
 
-diff --git a/drivers/usb/core/hcd.c b/drivers/usb/core/hcd.c
-index 94b305bbd621..107e29d5d3ae 100644
---- a/drivers/usb/core/hcd.c
-+++ b/drivers/usb/core/hcd.c
-@@ -2165,8 +2165,7 @@ static struct urb *request_single_step_set_feature_urb(
- 		return NULL;
- 
- 	urb->pipe = usb_rcvctrlpipe(udev, 0);
--	ep = (usb_pipein(urb->pipe) ? udev->ep_in : udev->ep_out)
--				[usb_pipeendpoint(urb->pipe)];
-+	ep = usb_pipe_endpoint(udev, urb->pipe);
- 	if (!ep) {
- 		usb_free_urb(urb);
- 		return NULL;
--- 
-2.37.1
+adc
+Node names should be generic.
+https://devicetree-specification.readthedocs.io/en/latest/chapter2-devicetree-basics.html#generic-names-recommendation
 
+> +                      compatible = "maxim,max11205a";
+
+Messed up indentation. Use 4 spaces.
+
+> +                      reg = <0>;
+> +                      spi-max-frequency = <5000000>;
+> +                      spi-cpha;
+
+Best regards,
+Krzysztof
