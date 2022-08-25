@@ -2,124 +2,188 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 62643C04AA5
-	for <linux-kernel@archiver.kernel.org>; Thu, 25 Aug 2022 01:40:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 27B8BC3F6B0
+	for <linux-kernel@archiver.kernel.org>; Thu, 25 Aug 2022 01:40:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234166AbiHYBkV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 24 Aug 2022 21:40:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54270 "EHLO
+        id S233708AbiHYBk1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 24 Aug 2022 21:40:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54268 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233785AbiHYBjP (ORCPT
+        with ESMTP id S233609AbiHYBjQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 24 Aug 2022 21:39:15 -0400
-Received: from NAM10-BN7-obe.outbound.protection.outlook.com (mail-bn7nam10on2050.outbound.protection.outlook.com [40.107.92.50])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0561B9AFBA;
-        Wed, 24 Aug 2022 18:37:47 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=U3AA1RNLbn6BXWy5+AsAMkhTt44wz/viNd4oDZ/ZrGl/rG6sWDB/xssRWyyEYtcV7pyG+zNqh2eo/PpnsWFOyAs59eTvQbMgG0FRJ1PCI7QLaoXYzxqZ9Sx8Ih7XNeVlfHj+rZaCSxutVCCAkjt7+bNGifXMs+xMaj20C0xCr9vLwPGzwc7qy2u601TtkW9OADjkBhGJ3noPmWUPJ1JPVjhMa7flgbdp+BZVVSo91WzfcN8hhU7YK60MoC1VTIC5jsHcLfUm/TqNoMma88CKx2UU/UXg5emikT1sRVtoynwA5vNjqE9eMm3KWKcvZ5nsAxFN6q5jW373/jkrQtoTmg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=rSXJTWJAkOevlkQOcdatUI/9iBx1ww+5Hfk1x3QVHPY=;
- b=Hd/My88i9oxuKNKTdjt+uRR6CfI3TXItHv/LDDzOPs9NjV6zZAiCpR8MVp6odkOqMzSQFQwTXpOqzb6IiqJSZ7A7+cMbDAxBqj1vqvj1dNyN55CrA+BUDGjp0f6PUrtrOu768ACHU/KIzaWHK4eUjxCE1e+AREK5640K7ncDchWX9nzzbq2E4c002A8Ude557Otip1ueu1bO0opFztYzuTlyKp56G8JWG9kXDCUDWfis9zxbplLgr50nlO5gCyWivd8M2i1YyTBZADE0+vjV7yCSyE2fI0CF55KflOfdDwKRIHnrSp8MnsCsP8+/pkHEXrrnO7iCgQGwtMAixHmylw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 165.204.84.17) smtp.rcpttodomain=kernel.org smtp.mailfrom=amd.com; dmarc=pass
- (p=quarantine sp=quarantine pct=100) action=none header.from=amd.com;
- dkim=none (message not signed); arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=rSXJTWJAkOevlkQOcdatUI/9iBx1ww+5Hfk1x3QVHPY=;
- b=czUIdv+/gRlW87A35WpEd553KcU9a1aWLhq1pmL+7ujvedGRdNCcvM8lBl6fU5/WVG43OoCDRxYU2qkBwxoUO8mH92JYivhWvxUSRkN/VWx3DD/SWhQODVcsvS4e4ffkvk0ioVqvvti24P0gV1IV3n07VrCHRCcodtjWRor+/5Y=
-Received: from DS7PR03CA0165.namprd03.prod.outlook.com (2603:10b6:5:3b2::20)
- by BN8PR12MB3218.namprd12.prod.outlook.com (2603:10b6:408:6b::22) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5546.18; Thu, 25 Aug
- 2022 01:36:50 +0000
-Received: from DM6NAM11FT068.eop-nam11.prod.protection.outlook.com
- (2603:10b6:5:3b2:cafe::3c) by DS7PR03CA0165.outlook.office365.com
- (2603:10b6:5:3b2::20) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5566.15 via Frontend
- Transport; Thu, 25 Aug 2022 01:36:50 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 165.204.84.17)
- smtp.mailfrom=amd.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=amd.com;
-Received-SPF: Pass (protection.outlook.com: domain of amd.com designates
- 165.204.84.17 as permitted sender) receiver=protection.outlook.com;
- client-ip=165.204.84.17; helo=SATLEXMB04.amd.com; pr=C
-Received: from SATLEXMB04.amd.com (165.204.84.17) by
- DM6NAM11FT068.mail.protection.outlook.com (10.13.173.67) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.20.5566.15 via Frontend Transport; Thu, 25 Aug 2022 01:36:50 +0000
-Received: from AUS-LX-MLIMONCI.amd.com (10.180.168.240) by SATLEXMB04.amd.com
- (10.181.40.145) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.28; Wed, 24 Aug
- 2022 20:36:44 -0500
-From:   Mario Limonciello <mario.limonciello@amd.com>
-To:     <rafael@kernel.org>, <len.brown@intel.com>, <pavel@ucw.cz>
-CC:     <linux-pm@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        "Mario Limonciello" <mario.limonciello@amd.com>
-Subject: [PATCH] PM: wakeup: Add extra debugging statement for multiple active IRQs
-Date:   Wed, 24 Aug 2022 20:36:30 -0500
-Message-ID: <20220825013630.16311-1-mario.limonciello@amd.com>
-X-Mailer: git-send-email 2.25.1
+        Wed, 24 Aug 2022 21:39:16 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6454C9AFC2;
+        Wed, 24 Aug 2022 18:37:52 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 670B8B826E6;
+        Thu, 25 Aug 2022 01:37:47 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2315CC433D6;
+        Thu, 25 Aug 2022 01:37:44 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1661391466;
+        bh=XMmk1q9r5CXhM8TEuL7aJaNKUGSWZJT7qEBgHtA8MXE=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=PLX88ceaKyu80d/+JAa1b4eeUXwe+VHTUk4Y0wfRwIivjpPm1Qtm1EkEuZdYVnAYV
+         yWOsDxfbMWUrEqpZ2Oz1IgF90YRY8IpJi+bpqVsYRxftl1mac00dBNqvapR1OJ0rQI
+         +LImS+yY3jNErW+oT4XITe1Bs+gvdxPGvJMlllIfHqzo/AWR+f0h160nA8jzq7+2KX
+         SFNfk4oSFsDmWwM4/Nw3SLw8cMpDhzjpqHYYlmIdu1pO9PDuLJl8LdoJmzT0wA/Rvg
+         4gpdaK+dGsZLdwjuqDLRK34KRK3jpybOcda3XTwRgSyb0N5wTtQx6p0Lhnljd69YY0
+         U4ZSencGhjiSA==
+From:   Sasha Levin <sashal@kernel.org>
+To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
+Cc:     "Denis V. Lunev" <den@openvz.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        David Ahern <dsahern@kernel.org>,
+        Yajun Deng <yajun.deng@linux.dev>,
+        Roopa Prabhu <roopa@nvidia.com>,
+        Christian Brauner <brauner@kernel.org>, netdev@vger.kernel.org,
+        Alexey Kuznetsov <kuznet@ms2.inr.ac.ru>,
+        Alexander Mikhalitsyn <alexander.mikhalitsyn@virtuozzo.com>,
+        Konstantin Khorenko <khorenko@virtuozzo.com>,
+        kernel@openvz.org, devel@openvz.org,
+        Sasha Levin <sashal@kernel.org>, wangyuweihx@gmail.com
+Subject: [PATCH AUTOSEL 5.15 08/20] neigh: fix possible DoS due to net iface start/stop loop
+Date:   Wed, 24 Aug 2022 21:37:00 -0400
+Message-Id: <20220825013713.22656-8-sashal@kernel.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220825013713.22656-1-sashal@kernel.org>
+References: <20220825013713.22656-1-sashal@kernel.org>
 MIME-Version: 1.0
+X-stable: review
+X-Patchwork-Hint: Ignore
 Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-Originating-IP: [10.180.168.240]
-X-ClientProxiedBy: SATLEXMB03.amd.com (10.181.40.144) To SATLEXMB04.amd.com
- (10.181.40.145)
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 844c85e6-da5f-4348-1846-08da863a4877
-X-MS-TrafficTypeDiagnostic: BN8PR12MB3218:EE_
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: rkbDkycT6NZh1O39mTty/ylx8Hx0i+GjHtqwYy5LQa1KRAGje89ZQjnxDYJAXSUi31pk+XhUPNugagBD5/KmHjQe19PAuxiiBKR1KspKa33ZLUmlnz2XJTO+Xwj4C9p04yRhWPU/ysj+xYKJT0H/0QClhu+dQeghn/aLykqhocxAYV0zFNtd25rO/aMidn3qRn1ZWV/FNNIB9Q1oClcXJ9ZGOf38UV3Ty/Tt8S3zgROg3bP3/G3fYmvPv1gQLHo1ENTVVNgthwFFPIQYgLDRY+ei9CnPfzM4KjkuRq5ubsQJU5VcjVKqHsUmy2cAVbkZYV7iVfLEzCjVx9Imj/QmjZW0b60Rdf5UHj4PuCWUTjRkBzHqG2/EJZqHqtIRTFJ5UOZE0vnmAA1b4+YLIxKUDABqaccmHMCgA91t9r3euPfk2d+KOdvFGS5dk8fMHGQEbKRGOUA+e0i45XjU/6JAfeDcro5YzaEaIeVTsu8ynjbjkQW4bSBEXhXWz/KQum4pDS+wvFvMxz4VPrDMCI+vMk5uSNgYrbaH6DD3CXgAa2kPwh1bLolvdX7vRBoWktNfqozWkcJHWblKLW5H91aUPkQXRjcmU5B00gavMLw8UeqHOCuizR1ZqAvvPYfCIbdU9NIYLy9E5DCqtIu1BSnKNjNqVlL3+lGDf6AcaryI8viG3UKzz74bis0TkwVlNtSv3Fv1CAB3NwhyC+yStg5wBGMm+7ouuFlSPGlJM8tOADzP5OBLHZy9k9ssenEvu9tq/zBu8GppjHwD8Utl/7nsmaaXlYw/xXN3Ib/aXzPpO4/5HxncFiC4Py22uxYkdVNFWJfbHQvusYkzAe/oPZZTfA==
-X-Forefront-Antispam-Report: CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:SATLEXMB04.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230016)(4636009)(136003)(376002)(346002)(39860400002)(396003)(40470700004)(46966006)(36840700001)(5660300002)(54906003)(2616005)(44832011)(1076003)(47076005)(8936002)(336012)(186003)(83380400001)(316002)(8676002)(16526019)(4326008)(70206006)(82740400003)(356005)(81166007)(70586007)(86362001)(40480700001)(2906002)(82310400005)(26005)(426003)(36860700001)(40460700003)(7696005)(478600001)(110136005)(6666004)(36756003)(41300700001)(966005)(36900700001);DIR:OUT;SFP:1101;
-X-OriginatorOrg: amd.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 25 Aug 2022 01:36:50.7242
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 844c85e6-da5f-4348-1846-08da863a4877
-X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=3dd8961f-e488-4e60-8e11-a82d994e183d;Ip=[165.204.84.17];Helo=[SATLEXMB04.amd.com]
-X-MS-Exchange-CrossTenant-AuthSource: DM6NAM11FT068.eop-nam11.prod.protection.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BN8PR12MB3218
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Since commit cb1f65c1e1424 ("PM: s2idle: ACPI: Fix wakeup interrupts
-handling") was introduced the kernel can now handle multiple
-simultaneous interrupts during wakeup.  Ths uncovered some existing
-subtle firmware bugs where multiple IRQs are unintentionally active.
+From: "Denis V. Lunev" <den@openvz.org>
 
-To help with fixing those bugs add an extra message when PM debugging
-is enabled that can show the individual IRQs triggered as if a variety
-are fired they'll potentially be lost as /sys/power/pm_wakeup_irq only
-contains the first one that triggered the wakeup after resume is
-complete but all may be needed to demonstrate the whole picture.
+[ Upstream commit 66ba215cb51323e4e55e38fd5f250e0fae0cbc94 ]
 
-Link: https://bugzilla.kernel.org/show_bug.cgi?id=215770
-Signed-off-by: Mario Limonciello <mario.limonciello@amd.com>
+Normal processing of ARP request (usually this is Ethernet broadcast
+packet) coming to the host is looking like the following:
+* the packet comes to arp_process() call and is passed through routing
+  procedure
+* the request is put into the queue using pneigh_enqueue() if
+  corresponding ARP record is not local (common case for container
+  records on the host)
+* the request is processed by timer (within 80 jiffies by default) and
+  ARP reply is sent from the same arp_process() using
+  NEIGH_CB(skb)->flags & LOCALLY_ENQUEUED condition (flag is set inside
+  pneigh_enqueue())
+
+And here the problem comes. Linux kernel calls pneigh_queue_purge()
+which destroys the whole queue of ARP requests on ANY network interface
+start/stop event through __neigh_ifdown().
+
+This is actually not a problem within the original world as network
+interface start/stop was accessible to the host 'root' only, which
+could do more destructive things. But the world is changed and there
+are Linux containers available. Here container 'root' has an access
+to this API and could be considered as untrusted user in the hosting
+(container's) world.
+
+Thus there is an attack vector to other containers on node when
+container's root will endlessly start/stop interfaces. We have observed
+similar situation on a real production node when docker container was
+doing such activity and thus other containers on the node become not
+accessible.
+
+The patch proposed doing very simple thing. It drops only packets from
+the same namespace in the pneigh_queue_purge() where network interface
+state change is detected. This is enough to prevent the problem for the
+whole node preserving original semantics of the code.
+
+v2:
+	- do del_timer_sync() if queue is empty after pneigh_queue_purge()
+v3:
+	- rebase to net tree
+
+Cc: "David S. Miller" <davem@davemloft.net>
+Cc: Eric Dumazet <edumazet@google.com>
+Cc: Jakub Kicinski <kuba@kernel.org>
+Cc: Paolo Abeni <pabeni@redhat.com>
+Cc: Daniel Borkmann <daniel@iogearbox.net>
+Cc: David Ahern <dsahern@kernel.org>
+Cc: Yajun Deng <yajun.deng@linux.dev>
+Cc: Roopa Prabhu <roopa@nvidia.com>
+Cc: Christian Brauner <brauner@kernel.org>
+Cc: netdev@vger.kernel.org
+Cc: linux-kernel@vger.kernel.org
+Cc: Alexey Kuznetsov <kuznet@ms2.inr.ac.ru>
+Cc: Alexander Mikhalitsyn <alexander.mikhalitsyn@virtuozzo.com>
+Cc: Konstantin Khorenko <khorenko@virtuozzo.com>
+Cc: kernel@openvz.org
+Cc: devel@openvz.org
+Investigated-by: Alexander Mikhalitsyn <alexander.mikhalitsyn@virtuozzo.com>
+Signed-off-by: Denis V. Lunev <den@openvz.org>
+Signed-off-by: David S. Miller <davem@davemloft.net>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/base/power/wakeup.c | 1 +
- 1 file changed, 1 insertion(+)
+ net/core/neighbour.c | 25 +++++++++++++++++--------
+ 1 file changed, 17 insertions(+), 8 deletions(-)
 
-diff --git a/drivers/base/power/wakeup.c b/drivers/base/power/wakeup.c
-index e3befa2c1b661..dcd06eac30afd 100644
---- a/drivers/base/power/wakeup.c
-+++ b/drivers/base/power/wakeup.c
-@@ -943,6 +943,7 @@ void pm_system_irq_wakeup(unsigned int irq_number)
- 		wakeup_irq[1] = irq_number;
- 	else
- 		irq_number = 0;
-+	pm_pr_dbg("Triggering wakeup from IRQ %d\n", irq_number);
+diff --git a/net/core/neighbour.c b/net/core/neighbour.c
+index ff049733ccee..f0be42c140b9 100644
+--- a/net/core/neighbour.c
++++ b/net/core/neighbour.c
+@@ -279,14 +279,23 @@ static int neigh_del_timer(struct neighbour *n)
+ 	return 0;
+ }
  
- 	raw_spin_unlock_irqrestore(&wakeup_irq_lock, flags);
+-static void pneigh_queue_purge(struct sk_buff_head *list)
++static void pneigh_queue_purge(struct sk_buff_head *list, struct net *net)
+ {
++	unsigned long flags;
+ 	struct sk_buff *skb;
  
+-	while ((skb = skb_dequeue(list)) != NULL) {
+-		dev_put(skb->dev);
+-		kfree_skb(skb);
++	spin_lock_irqsave(&list->lock, flags);
++	skb = skb_peek(list);
++	while (skb != NULL) {
++		struct sk_buff *skb_next = skb_peek_next(skb, list);
++		if (net == NULL || net_eq(dev_net(skb->dev), net)) {
++			__skb_unlink(skb, list);
++			dev_put(skb->dev);
++			kfree_skb(skb);
++		}
++		skb = skb_next;
+ 	}
++	spin_unlock_irqrestore(&list->lock, flags);
+ }
+ 
+ static void neigh_flush_dev(struct neigh_table *tbl, struct net_device *dev,
+@@ -357,9 +366,9 @@ static int __neigh_ifdown(struct neigh_table *tbl, struct net_device *dev,
+ 	write_lock_bh(&tbl->lock);
+ 	neigh_flush_dev(tbl, dev, skip_perm);
+ 	pneigh_ifdown_and_unlock(tbl, dev);
+-
+-	del_timer_sync(&tbl->proxy_timer);
+-	pneigh_queue_purge(&tbl->proxy_queue);
++	pneigh_queue_purge(&tbl->proxy_queue, dev_net(dev));
++	if (skb_queue_empty_lockless(&tbl->proxy_queue))
++		del_timer_sync(&tbl->proxy_timer);
+ 	return 0;
+ }
+ 
+@@ -1735,7 +1744,7 @@ int neigh_table_clear(int index, struct neigh_table *tbl)
+ 	/* It is not clean... Fix it to unload IPv6 module safely */
+ 	cancel_delayed_work_sync(&tbl->gc_work);
+ 	del_timer_sync(&tbl->proxy_timer);
+-	pneigh_queue_purge(&tbl->proxy_queue);
++	pneigh_queue_purge(&tbl->proxy_queue, NULL);
+ 	neigh_ifdown(tbl, NULL);
+ 	if (atomic_read(&tbl->entries))
+ 		pr_crit("neighbour leakage\n");
 -- 
-2.25.1
+2.35.1
 
