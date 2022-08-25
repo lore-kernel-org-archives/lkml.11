@@ -2,110 +2,117 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C6434C28D13
-	for <linux-kernel@archiver.kernel.org>; Thu, 25 Aug 2022 14:37:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 93413C28D13
+	for <linux-kernel@archiver.kernel.org>; Thu, 25 Aug 2022 14:37:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242252AbiHYOh2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 25 Aug 2022 10:37:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36036 "EHLO
+        id S242220AbiHYOhd (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 25 Aug 2022 10:37:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33788 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242190AbiHYOhJ (ORCPT
+        with ESMTP id S242106AbiHYOhK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 25 Aug 2022 10:37:09 -0400
-Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2F094B4E80
-        for <linux-kernel@vger.kernel.org>; Thu, 25 Aug 2022 07:36:50 -0700 (PDT)
+        Thu, 25 Aug 2022 10:37:10 -0400
+Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4CA50B088F
+        for <linux-kernel@vger.kernel.org>; Thu, 25 Aug 2022 07:36:48 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1661438210; x=1692974210;
+  t=1661438208; x=1692974208;
   h=message-id:date:mime-version:subject:to:cc:references:
    from:in-reply-to:content-transfer-encoding;
-  bh=dmrRfDKFYvaqDCd7Z0UVB2+tu1U+7ChjMCLoAWvf3BM=;
-  b=UXK/iNNaby6pfzXVMUfzF4Q04mWyxMRdMoHr3TFxaIy+p8dkUfshm8ih
-   1zEfMGuWdwfMlDwPI5C8qBX0l5OLn4A8FFBqTiwxIEzVH/i0fUGdK/0lA
-   6Wsm3lWZSrkDWOL/rJTQt2o6anfuacQilS75bKR3fp4AmkfI2woxBeIH4
-   wZKce9rSC6/NZnbDRM4EWIj0HzrPRGFdpIkejP2CqJQOar72g1l63nTTv
-   bikCTuAjAJHjq7FKt+onexWlDnK/O0Xbx1wGpuOdaVvYuJ0NA9jHUqbDv
-   DATH/EzfU3SKvcsAPfWf8/4wGiA615PwJMMSKQ7ijxSN2r503+FxTbF/3
-   Q==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10450"; a="274646649"
+  bh=/y3fp64Y84mqoHz9wLswfR7VEygz7HcdXW/7bEoALks=;
+  b=UOXNGmkJ//dLWnvkUwYTNR/nX6QxSWr+hHWL1api4eqlwxASNCQIGqhW
+   FMcOzzlk9pgoLQicAhQ5GIk/ifB72Z8JPJShuTd7aLFaawvoiJbNf2Kg5
+   r5cpOxhM5JKRQerqItuOIRWVWSAuQgVw52E9hntFD3oYQ7e8R0oUP6NoI
+   7c5pQWjEbMawQhFP1DZdVCKbMpHtxk+0aANOhhN7i+OIYt6SAHjT0bjNJ
+   HmzyGypK0xQaP9V9eVStAPOC5jwEv2ufrdOw2WUF22THV3ZFWtpjJ4QZp
+   ouMsDbEcwocOzpoVwJpUucsSS1qgl15PnJi9gUPCUePg81KJnCk3xsGH8
+   w==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10450"; a="292995211"
 X-IronPort-AV: E=Sophos;i="5.93,263,1654585200"; 
-   d="scan'208";a="274646649"
-Received: from fmsmga001.fm.intel.com ([10.253.24.23])
-  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Aug 2022 07:36:49 -0700
+   d="scan'208";a="292995211"
+Received: from fmsmga005.fm.intel.com ([10.253.24.32])
+  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Aug 2022 07:36:45 -0700
 X-IronPort-AV: E=Sophos;i="5.93,263,1654585200"; 
-   d="scan'208";a="752504924"
-Received: from rnaraya1-mobl1.amr.corp.intel.com (HELO [10.212.254.160]) ([10.212.254.160])
-  by fmsmga001-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Aug 2022 07:36:48 -0700
-Message-ID: <a96082e1-96ad-e92b-a5d0-d239123d943e@intel.com>
-Date:   Thu, 25 Aug 2022 07:36:49 -0700
+   d="scan'208";a="938346393"
+Received: from alanjaco-mobl3.gar.corp.intel.com (HELO [10.252.44.53]) ([10.252.44.53])
+  by fmsmga005-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Aug 2022 07:36:43 -0700
+Message-ID: <718d6503-f284-2cd4-c0a0-b8e90547bee6@linux.intel.com>
+Date:   Thu, 25 Aug 2022 14:39:45 +0200
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.11.0
-Subject: Re: PKU usage improvements for threads
+ Firefox/91.0 Thunderbird/91.11.0
+Subject: Re: [PATCH 2/3] soundwire: bus: Don't lose unattach notifications
 Content-Language: en-US
-To:     =?UTF-8?Q?Stephen_R=c3=b6ttger?= <sroettger@google.com>,
-        Andy Lutomirski <luto@kernel.org>
-Cc:     Kees Cook <keescook@chromium.org>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        the arch/x86 maintainers <x86@kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Jann Horn <jannh@google.com>
-References: <202208221331.71C50A6F@keescook>
- <a5df4929-24aa-79bf-c5d0-98efbf323132@intel.com>
- <CAEAAPHa3g0QwU=DZ2zVCqTCSh-+n2TtVKrQ07LvpwDjQ-F09gA@mail.gmail.com>
- <b4f0dca5-1d15-67f7-4600-9a0a91e9d0bd@intel.com>
- <26078f2a-67be-4aa1-bbb2-dcd1168c9d12@www.fastmail.com>
- <CAEAAPHae8Lr3KfqfLpK3w5F3MPFoG4HJLxX3cMgbKpmQ_jp6Og@mail.gmail.com>
- <c36eb441-e93e-4beb-bdf2-1e6285f7a187@www.fastmail.com>
- <CAEAAPHYTUYdtBLn4RsmNXMeaT8OvQ_k+Vy4uYdy_aSnaW79fcQ@mail.gmail.com>
-From:   Dave Hansen <dave.hansen@intel.com>
-In-Reply-To: <CAEAAPHYTUYdtBLn4RsmNXMeaT8OvQ_k+Vy4uYdy_aSnaW79fcQ@mail.gmail.com>
+To:     Richard Fitzgerald <rf@opensource.cirrus.com>, vkoul@kernel.org,
+        yung-chuan.liao@linux.intel.com, sanyog.r.kale@intel.com
+Cc:     alsa-devel@alsa-project.org, linux-kernel@vger.kernel.org,
+        patches@opensource.cirrus.com, jack.yu@realtek.com
+References: <20220825122241.273090-1-rf@opensource.cirrus.com>
+ <20220825122241.273090-3-rf@opensource.cirrus.com>
+From:   Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>
+In-Reply-To: <20220825122241.273090-3-rf@opensource.cirrus.com>
 Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 8/25/22 05:30, Stephen Röttger wrote:
->>> We were also thinking about if this should be a more generic feature instead of
->>> being tied to pkeys. I.e. the doc above has an alternative proposal to introduce
->>> something like a memory seal/unseal syscall.
->>> I was personally leaning towards using pkeys for this for a few reasons:
->>> * intuitively it would make sense to me to extend PKEY_DISABLE_ACCESS
->>>   to also mean disable all changes to the memory, not just the data.
->> It would make some sense, but we can't do it with the existing
->> PKEY_DISABLE_ACCESS ABI.  It would surely break existing users if they
->> couldn't munmap() memory that was PKEY_DISABLE_ACCESS.
-> Our thought was that this could be opt-in with a prctl().
 
-So, today, you have this:
 
-	foo = malloc(PAGE_SIZE);
-	pkey_mprotect(foo, PAGE_SIZE, READ|WRITE, pkey=1);
-	munmap(foo); // <-- works fine
-	mmap(hint=foo, ...); // now attacker controls &foo
+On 8/25/22 14:22, Richard Fitzgerald wrote:
+> Ensure that if sdw_handle_slave_status() sees a peripheral
+> has dropped off the bus it reports it to the client driver.
+> 
+> If there are any devices reporting on address 0 it bails out
+> after programming the device IDs. So it never reaches the second
+> loop that calls sdw_update_slave_status().
+> 
+> If the missing device is one that is now showing as unenumerated
+> it has been given a device ID so will report as attached next
+> time sdw_handle_slave_status() runs.
+> 
+> With the previous code the client driver would only see another
+> ATTACHED notification because the UNATTACHED state was lost when
+> sdw_handle_slave_status() bailed out after programming the
+> device ID.
+> 
+> This shows up most when the peripheral has to be reset after
+> downloading updated firmware and there are multiple of these
+> peripherals on the bus. They will all return to unenumerated state
+> after the reset, and then there is a mix of unattached, attached
+> and unenumerated PING states from the peripherals, as each is reset
+> and they reboot.
+> 
+> Signed-off-by: Richard Fitzgerald <rf@opensource.cirrus.com>
+> ---
+>  drivers/soundwire/bus.c | 5 +++++
+>  1 file changed, 5 insertions(+)
+> 
+> diff --git a/drivers/soundwire/bus.c b/drivers/soundwire/bus.c
+> index 704f75c0bae2..bb8ce26c68b3 100644
+> --- a/drivers/soundwire/bus.c
+> +++ b/drivers/soundwire/bus.c
+> @@ -1756,6 +1756,11 @@ int sdw_handle_slave_status(struct sdw_bus *bus,
+>  			dev_warn(&slave->dev, "Slave %d state check1: UNATTACHED, status was %d\n",
+>  				 i, slave->status);
+>  			sdw_modify_slave_status(slave, SDW_SLAVE_UNATTACHED);
+> +
+> +			/* Ensure driver knows that peripheral unattached */
+> +			ret = sdw_update_slave_status(slave, status[i]);
+> +			if (ret < 0)
+> +				dev_warn(&slave->dev, "Update Slave status failed:%d\n", ret);
 
-Which is problematic.  What you want instead is something like this:
+This is indeed a good fix, this will make sure the driver will
+re-initialize the device when it reports as ATTACHED again.
 
-	prctl(PR_ARCH_NO_MUNMAP_ON_PKEY); // or whatever
-	foo = malloc(PAGE_SIZE);
-	pkey_mprotect(foo, PAGE_SIZE, READ|WRITE, pkey=1);
-	wrpkru(PKEY_DISABLE_ACCESS<<pkey*2);
-	munmap(foo); // returns -EPERM (or whatever)
+The codec driver needs to keep track on the UNATTACHED change though.
 
-Which requires the kernel to check when it's modifying a VMA (like the
-munmap() above) to see if PKRU _currently_ permits access to the VMA's
-contents.  If not, the kernel should refuse to modify the VMA.
+This is the case in all codec drivers except rt715 and rt715-sdca.
+Something to change in a follow-up patch (cc: Jack Yu).
 
-Like I said, I don't think this is _insane_, but I can see it breaking
-perfectly innocent things.  For instance, an app that today does a
-free() if pkey-assigned memory might work perfectly fine for a long time
-since that memory is rarely unmapped.  But, the minute that malloc()
-decides it needs to zap the memory, *malloc()* will fail.
+Reviewed-by: Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>
 
-I also wonder how far these semantics would go.  Would madvise() work on
-these access-denied VMAs?
-
-My gut says that we don't want to mix up pkey semantics with this new
-mechanism.
+>  		}
+>  	}
+>  
