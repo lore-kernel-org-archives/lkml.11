@@ -2,65 +2,114 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F115FECAA25
-	for <linux-kernel@archiver.kernel.org>; Thu, 25 Aug 2022 18:50:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3D448ECAA27
+	for <linux-kernel@archiver.kernel.org>; Thu, 25 Aug 2022 18:51:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243390AbiHYSue (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 25 Aug 2022 14:50:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52380 "EHLO
+        id S243497AbiHYSvH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 25 Aug 2022 14:51:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53452 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229564AbiHYSub (ORCPT
+        with ESMTP id S229564AbiHYSvC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 25 Aug 2022 14:50:31 -0400
-Received: from ms.lwn.net (ms.lwn.net [45.79.88.28])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 46FC8AB05F;
-        Thu, 25 Aug 2022 11:50:30 -0700 (PDT)
-Received: from localhost (unknown [IPv6:2601:281:8300:73::5f6])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ms.lwn.net (Postfix) with ESMTPSA id CC6232E2;
-        Thu, 25 Aug 2022 18:50:29 +0000 (UTC)
-DKIM-Filter: OpenDKIM Filter v2.11.0 ms.lwn.net CC6232E2
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=lwn.net; s=20201203;
-        t=1661453430; bh=y42Jf/ag9rU15ToKoopXiKAz4rUlonTv87e8xUVPCd0=;
-        h=From:To:Cc:Subject:In-Reply-To:References:Date:From;
-        b=RVEMFYtlAdcfdp9M02F2cjSEDTIPcvvWhZlWJbRfuME+Dmdal3T5IUCFQapXOB1VB
-         bWZBFis1jPQqM0li0LPjmGGpfVHpN4rXWMQl7fKBY6JCRz9qTHT+TqwwlDeZJ/N9Qa
-         J/XMyJz20DRhUzhFYbmC+uBBl/O5jDkW8jOwTGtirHakP5MZroVIAd45KsI+/6I8tk
-         b/GHl9/XTl7xMTkFnMhGrjbLOPjg9xvuMUFOqCD0rs99y+jR4xQ4AMK9kE2SVJ8j88
-         vr0qvHZrcosA5i7D/KsvAkeZxvh016DI7/h1qHS87UPxKgHzvPREG9ugDHYFt17u0h
-         otT7y//sAhkpQ==
-From:   Jonathan Corbet <corbet@lwn.net>
-To:     Kairui Song <ryncsn@gmail.com>, damon@lists.linux.dev
-Cc:     SeongJae Park <sj@kernel.org>, linux-mm@kvack.org,
-        linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Kairui Song <kasong@tencent.com>
-Subject: Re: [PATCH v2] Docs/admin-guide/mm/damon/usage: fix the example
- code snip
-In-Reply-To: <20220823114053.53305-1-ryncsn@gmail.com>
-References: <20220823114053.53305-1-ryncsn@gmail.com>
-Date:   Thu, 25 Aug 2022 12:50:29 -0600
-Message-ID: <875yigyx6y.fsf@meer.lwn.net>
-MIME-Version: 1.0
-Content-Type: text/plain
+        Thu, 25 Aug 2022 14:51:02 -0400
+Received: from mail-yw1-x1149.google.com (mail-yw1-x1149.google.com [IPv6:2607:f8b0:4864:20::1149])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6E7B2B0896
+        for <linux-kernel@vger.kernel.org>; Thu, 25 Aug 2022 11:51:01 -0700 (PDT)
+Received: by mail-yw1-x1149.google.com with SMTP id 00721157ae682-33da75a471cso89679847b3.20
+        for <linux-kernel@vger.kernel.org>; Thu, 25 Aug 2022 11:51:01 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=cc:to:from:subject:message-id:mime-version:date:from:to:cc;
+        bh=UaweP+hutoQUCrkWUYrkD+ciXP7WXgYs/dDq7y/nMqY=;
+        b=RsCXT18g9rB4L6xdxOFuMmvdk3RedLQEKhf6SHh/O5yoemRRhp8mu8g4um1BhlHHWP
+         XHs1/fCTCkqzMABIK1+LaKhWpLTH+NISFBrG2Pam3kumPnNsw0Jb08r1C2GLurK+7xR3
+         Dw4DnUuNOlMsJBNXK4WUZRBsZKsqLPKfAkc+QKv44409bL+ATMWPUIK1GYnjJhW6wRFn
+         sZNRWTExWa4hknKPzCesdVwzKz05pv7+hK6Mcl2rFa6q1GVLc9oko8BfZCLqUfC0POk2
+         KYk7oCbTvcWJu/IxZlQCppiISlqauiJa+88ftnOPeNW/0zGFQb4GhDlY0XD/XOKBOP/A
+         xp+A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=cc:to:from:subject:message-id:mime-version:date:x-gm-message-state
+         :from:to:cc;
+        bh=UaweP+hutoQUCrkWUYrkD+ciXP7WXgYs/dDq7y/nMqY=;
+        b=frjjxjHBALETa9wbRPO5lfybz2v3qg9eGsyQD5JFEzWuc2Cbh5zdcjxsuoEkbhF3ow
+         20Lm7X8I3Y1E6NhLh778JqRXKR4E/EPImDcgGM1/V+bNNmxqJPw8eKpjAm09Ag0IrGo9
+         V+m04DfYhdG5Bec64H77GMmsSZCztotDXPpoGfkrob6Lq30EU6qRrCwds4uUPYxJ+8rd
+         NS9NEb08xT871QqZmGL7G1JdhR/mgozEe9WwIsAPYFnBjZfgE5eTD9V+kTIKPJtun475
+         YAAFeJAHPiW+bzKqGvy25lG099pA19StSENAApu2SXfVoHTAqS6+6KBkACvXDoLUDc0E
+         vDRw==
+X-Gm-Message-State: ACgBeo04mA1TqZ2fkn10J8aMHdqUrD7Wjjw2nHKpQJy2PQPICnLMcxRC
+        YNbm5F9F7qwwz4IUpfV014w9zuJ+GZkGwhiHiOU=
+X-Google-Smtp-Source: AA6agR4sOROMVTV/Pp5patOHyT6WPfqLKXz727gAhzJqf+pPwy4Afq6jTbJSFMbkOz8oYn/6g8Bv3lRvo1FTFgq+MII=
+X-Received: from wmcvicker.c.googlers.com ([fda3:e722:ac3:cc00:7f:e700:c0a8:5ebe])
+ (user=willmcvicker job=sendgmr) by 2002:a25:d9d8:0:b0:695:58d5:e7f6 with SMTP
+ id q207-20020a25d9d8000000b0069558d5e7f6mr4269117ybg.101.1661453460634; Thu,
+ 25 Aug 2022 11:51:00 -0700 (PDT)
+Date:   Thu, 25 Aug 2022 18:50:23 +0000
+Mime-Version: 1.0
+X-Mailer: git-send-email 2.37.2.672.g94769d06f0-goog
+Message-ID: <20220825185026.3816331-1-willmcvicker@google.com>
+Subject: [PATCH v5 0/2] PCI: dwc: Add support for 64-bit MSI target addresses
+From:   Will McVicker <willmcvicker@google.com>
+To:     Jingoo Han <jingoohan1@gmail.com>,
+        Gustavo Pimentel <gustavo.pimentel@synopsys.com>,
+        Lorenzo Pieralisi <lpieralisi@kernel.org>,
+        Rob Herring <robh@kernel.org>,
+        "=?UTF-8?q?Krzysztof=20Wilczy=C5=84ski?=" <kw@linux.com>,
+        Bjorn Helgaas <bhelgaas@google.com>,
+        Will McVicker <willmcvicker@google.com>
+Cc:     kernel-team@android.com, Vidya Sagar <vidyas@nvidia.com>,
+        Christoph Hellwig <hch@infradead.org>,
+        Robin Murphy <robin.murphy@arm.com>, linux-pci@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Kairui Song <ryncsn@gmail.com> writes:
+Hi All,
 
-> From: Kairui Song <kasong@tencent.com>
->
-> The workflow example code is not working since it got the file names
-> wrong. So fix this.
->
-> Fixes: b18402726bd1 ("Docs/admin-guide/mm/damon/usage: document DAMON sysfs interface")
-> Reviewed-by: SeongJae Park <sj@kernel.org>
-> Signed-off-by: Kairui Song <kasong@tencent.com>
-> ---
->  Documentation/admin-guide/mm/damon/usage.rst | 18 +++++++++---------
->  1 file changed, 9 insertions(+), 9 deletions(-)
+I have updated the second patch to first try allocating the DMA buffer
+with a 32-bit mask. If that fails and the host supports a 64-bit msi_msg
+buffer, then the driver will retry the allocation with a 64-bit DMA mask.
 
-I've gone ahead and applied this, thanks.
+I rebased the series and tested with a Pixel 6 on 6.0-rc1
+(android-mainline) and a db845c with 5.15. Thanks for the reviews!
 
-jon
+Regards,
+Will
+
+Will McVicker (2):
+  PCI: dwc: Drop dependency on ZONE_DMA32
+  PCI: dwc: Add support for 64-bit MSI target address
+
+v5:
+ * Updated patch 2/2 to first try with a 32-bit DMA mask. On failure,
+   retry with a 64-bit mask if supported.
+
+v4:
+ * Updated commit descriptions.
+ * Renamed msi_64b -> msi_64bit.
+ * Dropped msi_64bit ternary use.
+ * Dropped export of dw_pcie_msi_capabilities.
+
+v3:
+  * Switched to a managed DMA allocation.
+  * Simplified the DMA allocation cleanup.
+  * Dropped msi_page from struct dw_pcie_rp.
+  * Allocating a u64 instead of a full page.
+
+v2:
+  * Fixed build error caught by kernel test robot
+  * Fixed error handling reported by Isaac Manjarres
+
+ .../pci/controller/dwc/pcie-designware-host.c | 54 ++++++++++---------
+ drivers/pci/controller/dwc/pcie-designware.c  |  8 +++
+ drivers/pci/controller/dwc/pcie-designware.h  |  2 +-
+ 3 files changed, 39 insertions(+), 25 deletions(-)
+
+
+base-commit: 568035b01cfb107af8d2e4bd2fb9aea22cf5b868
+-- 
+2.37.2.672.g94769d06f0-goog
+
