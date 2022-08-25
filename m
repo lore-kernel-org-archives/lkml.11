@@ -2,110 +2,117 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D92AEC3F6B0
-	for <linux-kernel@archiver.kernel.org>; Thu, 25 Aug 2022 00:49:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BD11BC64990
+	for <linux-kernel@archiver.kernel.org>; Thu, 25 Aug 2022 00:50:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231389AbiHYAtS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 24 Aug 2022 20:49:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46450 "EHLO
+        id S231444AbiHYAud (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 24 Aug 2022 20:50:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49486 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231349AbiHYAtQ (ORCPT
+        with ESMTP id S231476AbiHYAua (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 24 Aug 2022 20:49:16 -0400
-Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8A3B1915EA;
-        Wed, 24 Aug 2022 17:49:15 -0700 (PDT)
-Received: from dggpemm500022.china.huawei.com (unknown [172.30.72.55])
-        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4MCkn960jfznTfr;
-        Thu, 25 Aug 2022 08:46:53 +0800 (CST)
-Received: from dggpemm500014.china.huawei.com (7.185.36.153) by
- dggpemm500022.china.huawei.com (7.185.36.162) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Thu, 25 Aug 2022 08:49:13 +0800
-Received: from [10.174.178.120] (10.174.178.120) by
- dggpemm500014.china.huawei.com (7.185.36.153) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Thu, 25 Aug 2022 08:49:12 +0800
-Message-ID: <eb46de08-405b-8e3c-4d06-86d224f12ce7@huawei.com>
-Date:   Thu, 25 Aug 2022 08:49:12 +0800
+        Wed, 24 Aug 2022 20:50:30 -0400
+Received: from gandalf.ozlabs.org (mail.ozlabs.org [IPv6:2404:9400:2221:ea00::3])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D4392F596;
+        Wed, 24 Aug 2022 17:50:26 -0700 (PDT)
+Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (No client certificate requested)
+        by mail.ozlabs.org (Postfix) with ESMTPSA id 4MCksD337Yz4x1P;
+        Thu, 25 Aug 2022 10:50:24 +1000 (AEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canb.auug.org.au;
+        s=201702; t=1661388625;
+        bh=jkJhTztnPozjBCAI2OXAXu68d53m4Zie/yipx6ewnvU=;
+        h=Date:From:To:Cc:Subject:From;
+        b=a4viQohaRfNokVNeIdcHIcHj149f6jR+b1RHoajsoZaLYDvc0tlgYWB8UDqjPNCKO
+         qq10fPc3lzwE8fpsTxn5EspqVHcrBW5CX+Ga0Z2JCEtHj3+awtNOScwdoirYq3hf6F
+         ZNANOorqMjGuP+z/I/5m5JqOfeT5a41eOqxKXTd/OKpzh/1ijNgIcKCtfOQRpU6w+1
+         h1yR9T9+1E44KyKeou5xuAJMPg9g2l9+bQHVsozNGA17rg8cir+bHnNriFflIA6pJd
+         /DAbTH0JliN1DK2wXraus69pRUDL/sVn0W1YIDNfgkvuzR0HGlvZt4yda80VptqXsn
+         qO/dnWBKdBwiQ==
+Date:   Thu, 25 Aug 2022 10:50:22 +1000
+From:   Stephen Rothwell <sfr@canb.auug.org.au>
+To:     Daniel Borkmann <daniel@iogearbox.net>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Andrii Nakryiko <andrii@kernel.org>, bpf <bpf@vger.kernel.org>,
+        Networking <netdev@vger.kernel.org>
+Cc:     Daniel =?UTF-8?B?TcO8bGxlcg==?= <deso@posteo.net>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linux Next Mailing List <linux-next@vger.kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>
+Subject: linux-next: manual merge of the bpf-next tree with the bpf tree
+Message-ID: <20220825105022.7bcaade9@canb.auug.org.au>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
- Thunderbird/102.1.2
-CC:     <mawupeng1@huawei.com>, <corbet@lwn.net>, <mcgrof@kernel.org>,
-        <keescook@chromium.org>, <yzaikin@google.com>,
-        <songmuchun@bytedance.com>, <mike.kravetz@oracle.com>,
-        <osalvador@suse.de>, <rppt@kernel.org>, <surenb@google.com>,
-        <jsavitz@redhat.com>, <linux-doc@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>, <linux-mm@kvack.org>,
-        <linux-fsdevel@vger.kernel.org>, <wangkefeng.wang@huawei.com>
-Subject: Re: [PATCH v2 1/2] mm: Cap zone movable's min wmark to small value
-Content-Language: en-US
-To:     <david@redhat.com>, <akpm@linux-foundation.org>
-References: <20220819093025.105403-1-mawupeng1@huawei.com>
- <20220819093025.105403-2-mawupeng1@huawei.com>
- <96433a14-1d2c-739d-95fb-3e3339200dcf@redhat.com>
-From:   mawupeng <mawupeng1@huawei.com>
-In-Reply-To: <96433a14-1d2c-739d-95fb-3e3339200dcf@redhat.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.174.178.120]
-X-ClientProxiedBy: dggems705-chm.china.huawei.com (10.3.19.182) To
- dggpemm500014.china.huawei.com (7.185.36.153)
-X-CFilter-Loop: Reflected
+Content-Type: multipart/signed; boundary="Sig_/h2zF+eM+1jSWEbUpYb5CiSs";
+ protocol="application/pgp-signature"; micalg=pgp-sha256
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+--Sig_/h2zF+eM+1jSWEbUpYb5CiSs
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: quoted-printable
 
+Hi all,
 
-On 2022/8/24 16:10, David Hildenbrand wrote:
-> On 19.08.22 11:30, Wupeng Ma wrote:
->> From: Ma Wupeng <mawupeng1@huawei.com>
->>
->> Since min_free_kbytes is based on gfp_zone(GFP_USER) which does not include
->> zone movable. However zone movable will get its min share in
->> __setup_per_zone_wmarks() which does not make any sense.
->>
->> And like highmem pages, __GFP_HIGH and PF_MEMALLOC allocations usually
->> don't need movable pages, so there is no need to assign min pages for zone
->> movable.
->>
->> Let's cap pages_min for zone movable to a small value here just link
->> highmem pages.
->>
->> Signed-off-by: Ma Wupeng <mawupeng1@huawei.com>
->> ---
->>  mm/page_alloc.c | 4 ++--
->>  1 file changed, 2 insertions(+), 2 deletions(-)
->>
->> diff --git a/mm/page_alloc.c b/mm/page_alloc.c
->> index e5486d47406e..ff644205370f 100644
->> --- a/mm/page_alloc.c
->> +++ b/mm/page_alloc.c
->> @@ -8638,7 +8638,7 @@ static void __setup_per_zone_wmarks(void)
->>  
->>  	/* Calculate total number of !ZONE_HIGHMEM pages */
->>  	for_each_zone(zone) {
->> -		if (!is_highmem(zone))
->> +		if (!is_highmem(zone) && zone_idx(zone) != ZONE_MOVABLE)
->>  			lowmem_pages += zone_managed_pages(zone);
->>  	}
->>  
->> @@ -8648,7 +8648,7 @@ static void __setup_per_zone_wmarks(void)
->>  		spin_lock_irqsave(&zone->lock, flags);
->>  		tmp = (u64)pages_min * zone_managed_pages(zone);
->>  		do_div(tmp, lowmem_pages);
->> -		if (is_highmem(zone)) {
->> +		if (is_highmem(zone) || zone_idx(zone) == ZONE_MOVABLE) {
->>  			/*
->>  			 * __GFP_HIGH and PF_MEMALLOC allocations usually don't
->>  			 * need highmem pages, so cap pages_min to a small
-> 
-> This kind-off makes sense to me, but I'm not completely sure about all
-> implications. We most certainly should update the comment as well.
+Today's linux-next merge of the bpf-next tree got a conflict in:
 
-Yes, we should certainly do this.
+  tools/testing/selftests/bpf/DENYLIST.s390x
 
-Thanks for reviewing.
+between commit:
 
-> 
+  27e23836ce22 ("selftests/bpf: Add lru_bug to s390x deny list")
+
+from the bpf tree and commits:
+
+  b979f005d9b1 ("selftest/bpf: Add setget_sockopt to DENYLIST.s390x")
+  092e67772728 ("selftests/bpf: Add cb_refs test to s390x deny list")
+
+from the bpf-next tree.
+
+I fixed it up (see below) and can carry the fix as necessary. This
+is now fixed as far as linux-next is concerned, but any non trivial
+conflicts should be mentioned to your upstream maintainer when your tree
+is submitted for merging.  You may also want to consider cooperating
+with the maintainer of the conflicting tree to minimise any particularly
+complex conflicts.
+
+--=20
+Cheers,
+Stephen Rothwell
+
+diff --cc tools/testing/selftests/bpf/DENYLIST.s390x
+index 5cadfbdadf36,37bafcbf952a..000000000000
+--- a/tools/testing/selftests/bpf/DENYLIST.s390x
++++ b/tools/testing/selftests/bpf/DENYLIST.s390x
+@@@ -65,4 -65,5 +65,6 @@@ send_signa
+  select_reuseport                         # intermittently fails on new s3=
+90x setup
+  xdp_synproxy                             # JIT does not support calling k=
+ernel function                                (kfunc)
+  unpriv_bpf_disabled                      # fentry
+ +lru_bug                                  # prog 'printk': failed to auto-=
+attach: -524
++ setget_sockopt                           # attach unexpected error: -524 =
+                                              (trampoline)
++ cb_refs                                  # expected error message unexpec=
+ted error: -524                               (trampoline)
+
+--Sig_/h2zF+eM+1jSWEbUpYb5CiSs
+Content-Type: application/pgp-signature
+Content-Description: OpenPGP digital signature
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAmMGx04ACgkQAVBC80lX
+0Gx0Cwf/anXU6xaCKz9Ov8vB6G1PNLR3uOqG/X0xGnKd5gyMiKCASasF0qLaP1fk
+xJHI6rrSWQ8dZXRnzIN4GvyNEWsvaV529ST9R22SfpYWGHENY61W5zsEyefEgFMc
+jKML81Yt70douwFYv31vG19sxWDCEFC9XqsocguecWLTElpnlKUMSed94UI8vjnw
+e2a4ZUoKTAFveuONgTBPTSVeVgcGiLkPBYYAO6pisqJEMHZN9FawFU9TWIg+DDXK
+rKRuWdyCQU9+3+2d5zD9WMFwRsrZLXDAzZEi+GeE68QfXT286yffQRN3B5sF876G
+3ARiTjwQdrlUUjSesTNg+cybIjPHOA==
+=5Xzz
+-----END PGP SIGNATURE-----
+
+--Sig_/h2zF+eM+1jSWEbUpYb5CiSs--
