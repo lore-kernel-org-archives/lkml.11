@@ -2,114 +2,112 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EA678C3F6B0
-	for <linux-kernel@archiver.kernel.org>; Thu, 25 Aug 2022 09:54:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3B0F7C04AA5
+	for <linux-kernel@archiver.kernel.org>; Thu, 25 Aug 2022 09:54:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240987AbiHYJyu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 25 Aug 2022 05:54:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59468 "EHLO
+        id S238603AbiHYJyx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 25 Aug 2022 05:54:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36150 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235320AbiHYJyU (ORCPT
+        with ESMTP id S239774AbiHYJyZ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 25 Aug 2022 05:54:20 -0400
-Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D2468ACA11
-        for <linux-kernel@vger.kernel.org>; Thu, 25 Aug 2022 02:52:42 -0700 (PDT)
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        Thu, 25 Aug 2022 05:54:25 -0400
+X-Greylist: delayed 354 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Thu, 25 Aug 2022 02:52:46 PDT
+Received: from mail.3ffe.de (0001.3ffe.de [159.69.201.130])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 172F1AE9F7;
+        Thu, 25 Aug 2022 02:52:45 -0700 (PDT)
+Received: from 3ffe.de (0001.3ffe.de [IPv6:2a01:4f8:c0c:9d57::1])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
         (No client certificate requested)
-        by smtp-out2.suse.de (Postfix) with ESMTPS id 07CB31FB0B;
-        Thu, 25 Aug 2022 09:52:10 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
-        t=1661421130; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
+        by mail.3ffe.de (Postfix) with ESMTPSA id D02C3402B;
+        Thu, 25 Aug 2022 11:46:48 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=walle.cc; s=mail2022082101;
+        t=1661420808;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=e6vFISPJN3U6nScOiLDA2IhWeXOoQm4ccfrelohfpXs=;
-        b=pbDJSVXlyKdEGh36m+cnk5iqpJEsmDB3R+cx4aNbCfjV+058Z0x64m3vYJ739nYXroPGcg
-        GVLhqwUqlHmxESlVNtyS2EndoUQnqC25ljNRgJQ6pCPkh1Uk/FFnMjm68mBRAnm0NG9L/+
-        a95eLekDWoioMa6e33sFLmkJDxYbtSI=
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
-        s=susede2_ed25519; t=1661421130;
-        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=e6vFISPJN3U6nScOiLDA2IhWeXOoQm4ccfrelohfpXs=;
-        b=I5DrCQqkgcn62snMSlJVS5ah4CueLwPA1qyy+F9mr7yiHTGCBHht4b6fXxzwKxMTD4CnhP
-        vJJ4M4i9yjkV3JCw==
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
-        (No client certificate requested)
-        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id D8DB813A8E;
-        Thu, 25 Aug 2022 09:52:09 +0000 (UTC)
-Received: from dovecot-director2.suse.de ([192.168.254.65])
-        by imap2.suse-dmz.suse.de with ESMTPSA
-        id VfAcNElGB2MKUQAAMHmgww
-        (envelope-from <vbabka@suse.cz>); Thu, 25 Aug 2022 09:52:09 +0000
-Message-ID: <a461479d-a5cd-dc86-013a-d8827d7d321a@suse.cz>
-Date:   Thu, 25 Aug 2022 11:52:09 +0200
+        bh=MmqCI6NdaD8MiJoPnI7CffU1uRQPtkasbItKLLzsgpU=;
+        b=Cp5ZKGWQ5qk9vhOrmIFp2QnGnK6gL+V0zsuDCu+RGRapPXgaOatkBOhuW39Qx5zIcc7Hh1
+        +furDz9au55yxHcxLGszruYKhuYDGYLdCSWYcin/WuI6GFw75J4DhX/YsA8lKa5cTXsthN
+        aiuvWO+q1Oa6hSgLusApf/TwZn53tb6EAlZzJ7wi4Nn7zGHew/pY8L7SXXss53zntdvJVB
+        3/UJe1Ru+nia/h+louFDx7RVfHXAIp3nMZA2UkMwcOkLIX7IU/xbxOCXZ2+pn1QA02o5cf
+        feCCoG6ox/eKVXYJFFoXJs2ofwOiABU3afC8FZ3y/toka+q5ccyVifDiPX2dnA==
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.1.2
-Subject: Re: [RFC PATCH] mm: reduce noise in show_mem for lowmem allocations
-Content-Language: en-US
-To:     Michal Hocko <mhocko@suse.com>, linux-mm@kvack.org
-Cc:     Christoph Hellwig <hch@infradead.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Mel Gorman <mgorman@suse.de>,
-        Johannes Weiner <hannes@cmpxchg.org>,
-        LKML <linux-kernel@vger.kernel.org>
-References: <YwScVmVofIZkopkF@dhcp22.suse.cz>
-From:   Vlastimil Babka <vbabka@suse.cz>
-In-Reply-To: <YwScVmVofIZkopkF@dhcp22.suse.cz>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Date:   Thu, 25 Aug 2022 11:46:48 +0200
+From:   Michael Walle <michael@walle.cc>
+To:     =?UTF-8?Q?Rafa=C5=82_Mi=C5=82ecki?= <zajec5@gmail.com>
+Cc:     linux-mtd@lists.infradead.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        netdev@vger.kernel.org, Miquel Raynal <miquel.raynal@bootlin.com>,
+        Richard Weinberger <richard@nod.at>,
+        Vignesh Raghavendra <vigneshr@ti.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Srinivas Kandagatla <srinivas.kandagatla@linaro.org>,
+        Shawn Guo <shawnguo@kernel.org>, Li Yang <leoyang.li@nxp.com>,
+        Frank Rowand <frowand.list@gmail.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Ansuel Smith <ansuelsmth@gmail.com>,
+        Andrew Lunn <andrew@lunn.ch>
+Subject: Re: [PATCH 5/8] net: add helper eth_addr_add()
+In-Reply-To: <0d9a0ce5-ab34-cf05-158e-e25fc5595b4d@gmail.com>
+References: <20211228142549.1275412-1-michael@walle.cc>
+ <20211228142549.1275412-6-michael@walle.cc>
+ <0d9a0ce5-ab34-cf05-158e-e25fc5595b4d@gmail.com>
+User-Agent: Roundcube Webmail/1.4.13
+Message-ID: <d6fe1cfc6daa78868ba85553998c9c3d@walle.cc>
+X-Sender: michael@walle.cc
+Content-Type: text/plain; charset=UTF-8;
+ format=flowed
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 8/23/22 11:22, Michal Hocko wrote:
-> All but node0 are really completely irrelevant for this allocation
-> because they do not have ZONE_DMA yet it swamps the log and makes it
-> harder to visually inspect.
+Am 2022-01-25 11:24, schrieb Rafał Miłecki:
+> On 28.12.2021 15:25, Michael Walle wrote:
+>> Add a helper to add an offset to a ethernet address. This comes in 
+>> handy
+>> if you have a base ethernet address for multiple interfaces.
+>> 
+>> Signed-off-by: Michael Walle <michael@walle.cc>
+>> ---
+>>   include/linux/etherdevice.h | 14 ++++++++++++++
+>>   1 file changed, 14 insertions(+)
+>> 
+>> diff --git a/include/linux/etherdevice.h b/include/linux/etherdevice.h
+>> index 2ad71cc90b37..9d621dc85290 100644
+>> --- a/include/linux/etherdevice.h
+>> +++ b/include/linux/etherdevice.h
+>> @@ -486,6 +486,20 @@ static inline void eth_addr_inc(u8 *addr)
+>>   	u64_to_ether_addr(u, addr);
+>>   }
+>>   +/**
+>> + * eth_addr_add() - Add (or subtract) and offset to/from the given 
+>> MAC address.
+>> + *
+>> + * @offset: Offset to add.
+>> + * @addr: Pointer to a six-byte array containing Ethernet address to 
+>> increment.
+>> + */
+>> +static inline void eth_addr_add(u8 *addr, long offset)
+>> +{
+>> +	u64 u = ether_addr_to_u64(addr);
+>> +
+>> +	u += offset;
+>> +	u64_to_ether_addr(u, addr);
+>> +}
 > 
-> Address this by providing gfp_maks parameter to show_mem and filter the
-> output to only those zones/nodes which are relevant for the allocation.
-> That means nodes which have at least one managed zone which is usable
-> for the allocation (zone_idx(zone) <= gfp_zone(gfp_mask)).
-> The resulting output for the same failure would become:
-
-Looks good to me.
-
-> [...]
-> [   14.017605][    T1] Mem-Info:
-
-Maybe print the gfp_mask (or just max zone) here again, to make it more
-obvious in case somebody sents a report without the top header?
-
-> [   14.017956][    T1] active_anon:0 inactive_anon:0 isolated_anon:0
-> [   14.017956][    T1]  active_file:0 inactive_file:0 isolated_file:0
-> [   14.017956][    T1]  unevictable:0 dirty:0 writeback:0
-> [   14.017956][    T1]  slab_reclaimable:876 slab_unreclaimable:30300
-> [   14.017956][    T1]  mapped:0 shmem:0 pagetables:12 bounce:0
-> [   14.017956][    T1]  free:3170151735 free_pcp:6868 free_cma:0
-> [   14.017962][    T1] Node 0 active_anon:0kB inactive_anon:0kB active_file:0kB inactive_file:0kB unevictable:0kB isolated(anon):0kB isolated(file):0kB mapped:0kB dirty:0kB writeback:0kB shmem:0kB shmem_thp: 0kB shmem_pmdmapped: 0kB anon_thp: 0kB writeback_tmp:0kB kernel_stack:7200kB pagetables:4kB all_unreclaimable? no
-> [   14.018026][    T1] Node 0 DMA free:160kB boost:0kB min:0kB low:0kB high:0kB reserved_highatomic:0KB active_anon:0kB inactive_anon:0kB active_file:0kB inactive_file:0kB unevictable:0kB writepending:0kB present:15996kB managed:15360kB mlocked:0kB bounce:0kB free_pcp:0kB local_pcp:0kB free_cma:0kB
-> [   14.018035][    T1] lowmem_reserve[]: 0 0 0 0 0
-> [   14.018339][    T1] Node 0 DMA: 0*4kB 0*8kB 0*16kB 1*32kB (U) 0*64kB 1*128kB (U) 0*256kB 0*512kB 0*1024kB 0*2048kB 0*4096kB = 160kB
-> [   14.018480][    T1] 0 total pagecache pages
-> [   14.018483][    T1] 0 pages in swap cache
-> [   14.018484][    T1] Swap cache stats: add 0, delete 0, find 0/0
-> [   14.018486][    T1] Free swap  = 0kB
-> [   14.018487][    T1] Total swap = 0kB
-> [   14.018488][    T1] 3221164600 pages RAM
-> [   14.018489][    T1] 0 pages HighMem/MovableOnly
-> [   14.018490][    T1] 50531051 pages reserved
-> [   14.018491][    T1] 0 pages cma reserved
-> [   14.018492][    T1] 0 pages hwpoisoned
+> Please check eth_hw_addr_gen() which contains identical code +
+> eth_hw_addr_set().
 > 
-> Signed-off-by: Michal Hocko <mhocko@suse.com>
+> You should probably make eth_hw_addr_gen() use your new function as a
+> helper.
 
+You'd need to copy the mac address first because eth_addr_add()
+modifies the mac address in place. I don't see that this is
+improving anything.
+
+-michael
