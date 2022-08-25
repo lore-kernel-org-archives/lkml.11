@@ -2,168 +2,83 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E7517ECAAA2
-	for <linux-kernel@archiver.kernel.org>; Thu, 25 Aug 2022 21:16:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7764AECAAA3
+	for <linux-kernel@archiver.kernel.org>; Thu, 25 Aug 2022 21:17:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243207AbiHYVQZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 25 Aug 2022 17:16:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59758 "EHLO
+        id S243443AbiHYVRQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 25 Aug 2022 17:17:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60356 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229736AbiHYVQX (ORCPT
+        with ESMTP id S229736AbiHYVRO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 25 Aug 2022 17:16:23 -0400
-Received: from mail-ot1-x32e.google.com (mail-ot1-x32e.google.com [IPv6:2607:f8b0:4864:20::32e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 980D6B729D;
-        Thu, 25 Aug 2022 14:16:21 -0700 (PDT)
-Received: by mail-ot1-x32e.google.com with SMTP id r1-20020a056830418100b0063938f634feso7565073otu.8;
-        Thu, 25 Aug 2022 14:16:21 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc;
-        bh=WgvG2W29oRYqx+pgSWt6jhXW7xV77AuyXqSnhGc+5XA=;
-        b=YTJFbhMlgG5jNIGSn/jzFi5xhXPrbKa20EX719xjEhIE037jficM3USz22fFii2wPV
-         IW6bJzFksTZpnQn+lS7KVD50WMWdAtsLwdKb0I5WLbXt29TMe5+NU2W2A4KZv5Rvc+BT
-         pRbJzCTmf6i1dvZaRiSy2SZ5w7h6g4FWT1thiRz3Ite8KdnYOKucYDtVgzkudn6K1hW/
-         uQJpLURmIYMALjFuhdnI6KVoCKhpq145PNp3/9RCrrGK/GXBsQh5Kc2xP79ZYo359yik
-         LX7/+OoSoFLrC3/2juyViecx5aHJPkP5PR3g+EibV7c/ojcfR4wcVE/tmF7ji3yk+0FQ
-         xvjA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc;
-        bh=WgvG2W29oRYqx+pgSWt6jhXW7xV77AuyXqSnhGc+5XA=;
-        b=0zzC9fg2P++TCR8/y0FBbTEwP9+ZQ7EGip0qZ6IK9Gxw0UZT94GB7dF+zIDpen1VQE
-         ZN2yhOgWOfOY5MT3bxzHjn7wJR95K0mTLKmczO5dSU/i3NpKtbW9hBFUnP8WJ3JCWWSo
-         kiWd0Dj7VoKONG5M3BdmP2/ftM8RqEehra9f1bI4BHNyFRLxEGdvWHC6hgO+72qqRjxU
-         7uu61vaqhfHT8gENgGQ4qUFvjzrG5TomXrCKhXX4qtiB3A5XuZMYrqPw/r2J/CIiU0kK
-         sLORnVv/5JrWZZW5r97kJQEYnxzs7E0duIpHi6w2+Faa2InE83+tvwfxRvh3fRKSOk7r
-         lYvQ==
-X-Gm-Message-State: ACgBeo1cr8Bfr/dKesyV/AxJrhz3pi/h53kgWjudcc/T20Eh47dvwuYJ
-        D7xactvGiVMkoV1jbycdzBU=
-X-Google-Smtp-Source: AA6agR7/xDw/ouHQ0sD6PHgtrb5u2On7h+B3nA3d5B9WOAtCtR7hyB9VUWMqDpgpBVtksulJAmixcg==
-X-Received: by 2002:a05:6830:1b62:b0:639:21d9:dec2 with SMTP id d2-20020a0568301b6200b0063921d9dec2mr340325ote.356.1661462180617;
-        Thu, 25 Aug 2022 14:16:20 -0700 (PDT)
-Received: from localhost ([12.97.180.36])
-        by smtp.gmail.com with ESMTPSA id p81-20020acad854000000b00342ded07a75sm207899oig.18.2022.08.25.14.16.19
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 25 Aug 2022 14:16:20 -0700 (PDT)
-Date:   Thu, 25 Aug 2022 14:14:08 -0700
-From:   Yury Norov <yury.norov@gmail.com>
-To:     Valentin Schneider <vschneid@redhat.com>
-Cc:     netdev@vger.kernel.org, linux-rdma@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Saeed Mahameed <saeedm@nvidia.com>,
-        Leon Romanovsky <leon@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Rasmus Villemoes <linux@rasmusvillemoes.dk>,
-        Ingo Molnar <mingo@kernel.org>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Vincent Guittot <vincent.guittot@linaro.org>,
-        Dietmar Eggemann <dietmar.eggemann@arm.com>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Mel Gorman <mgorman@suse.de>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Heiko Carstens <hca@linux.ibm.com>,
-        Tony Luck <tony.luck@intel.com>,
-        Jonathan Cameron <Jonathan.Cameron@huawei.com>,
-        Gal Pressman <gal@nvidia.com>,
-        Tariq Toukan <tariqt@nvidia.com>,
-        Jesse Brandeburg <jesse.brandeburg@intel.com>
-Subject: Re: [PATCH v3 4/9] cpumask: Introduce for_each_cpu_andnot()
-Message-ID: <YwfmIDEbRT4JfsZp@yury-laptop>
-References: <20220825181210.284283-1-vschneid@redhat.com>
- <20220825181210.284283-5-vschneid@redhat.com>
+        Thu, 25 Aug 2022 17:17:14 -0400
+Received: from mail.sberdevices.ru (mail.sberdevices.ru [45.89.227.171])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BD1E4B6D2A;
+        Thu, 25 Aug 2022 14:17:10 -0700 (PDT)
+Received: from s-lin-edge02.sberdevices.ru (localhost [127.0.0.1])
+        by mail.sberdevices.ru (Postfix) with ESMTP id 979285FD03;
+        Fri, 26 Aug 2022 00:17:07 +0300 (MSK)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=sberdevices.ru;
+        s=mail; t=1661462227;
+        bh=NdYu6S8So3OlWwAWfrtI2SZFnmdWOENE4S4SPr1oh5w=;
+        h=From:To:Subject:Date:Message-ID:Content-Type:MIME-Version;
+        b=NmW7QyOl+uzyY404KQ2ScjrkTm2xWbVJrA2qMvcRuELRU5gp3g6qWbrjOSuSJ1WrU
+         z2GRLiSdjA18RyctCXoj9Y/OYF6HS7mquekj+QqCfaxTI+VOUYdjq47pFoN88LcUm8
+         8gPQZczixoZvqNTp/el/r9qh95nZqJaBxZOPiRX66LJ/Vx2nP6OHB/a99H0a8ytBce
+         1AZgcPqUkO6PRD7+rJ5Swf7I4lOVg3OEK6mTqO8sUUMDnCrVlTsrHkj6zI5yQqmKUF
+         piMrHDkyDzgUjLgS+VMqiSm7EuyZTlnHKXOnlMgGCG/waYdrw2u4crBjYtpihkXhjG
+         fZiOwG8gax2EA==
+Received: from S-MS-EXCH02.sberdevices.ru (S-MS-EXCH02.sberdevices.ru [172.16.1.5])
+        by mail.sberdevices.ru (Postfix) with ESMTP;
+        Fri, 26 Aug 2022 00:17:06 +0300 (MSK)
+From:   Martin Kurbanov <MMKurbanov@sberdevices.ru>
+To:     Andy Shevchenko <andy.shevchenko@gmail.com>
+CC:     Pavel Machek <pavel@ucw.cz>,
+        Raphael Teysseyre <rteysseyre@gmail.com>,
+        Baolin Wang <baolin.wang@linaro.org>,
+        Linux LED Subsystem <linux-leds@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        kernel <kernel@sberdevices.ru>
+Subject: Re: [PATCH v1] leds: trigger: pattern: notify userpace if pattern
+ finished
+Thread-Topic: [PATCH v1] leds: trigger: pattern: notify userpace if pattern
+ finished
+Thread-Index: AQHYt6+SAK0reQB1UU+HPUIqOWYrVa2+AQyAgAHtWAA=
+Date:   Thu, 25 Aug 2022 21:16:42 +0000
+Message-ID: <a8af665d-8248-4315-fe03-0ac91a1f4230@sberdevices.ru>
+References: <20220824114927.79231-1-mmkurbanov@sberdevices.ru>
+ <CAHp75VeQX_8niAu4uORW1YEfjxhLJFWsnm_JccECfAOAzAh32A@mail.gmail.com>
+In-Reply-To: <CAHp75VeQX_8niAu4uORW1YEfjxhLJFWsnm_JccECfAOAzAh32A@mail.gmail.com>
+Accept-Language: ru-RU, en-US
+Content-Language: ru-RU
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-originating-ip: [172.16.1.12]
+Content-Type: text/plain; charset="utf-8"
+Content-ID: <22BC21E6A2F1164D8497786E5B649B53@sberdevices.ru>
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220825181210.284283-5-vschneid@redhat.com>
+X-KSMG-Rule-ID: 4
+X-KSMG-Message-Action: clean
+X-KSMG-AntiSpam-Status: not scanned, disabled by settings
+X-KSMG-AntiSpam-Interceptor-Info: not scanned
+X-KSMG-AntiPhishing: not scanned, disabled by settings
+X-KSMG-AntiVirus: Kaspersky Secure Mail Gateway, version 1.1.2.30, bases: 2022/08/25 17:43:00 #20154524
+X-KSMG-AntiVirus-Status: Clean, skipped
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Aug 25, 2022 at 07:12:05PM +0100, Valentin Schneider wrote:
-> for_each_cpu_and() is very convenient as it saves having to allocate a
-> temporary cpumask to store the result of cpumask_and(). The same issue
-> applies to cpumask_andnot() which doesn't actually need temporary storage
-> for iteration purposes.
-> 
-> Following what has been done for for_each_cpu_and(), introduce
-> for_each_cpu_andnot().
-> 
-> Signed-off-by: Valentin Schneider <vschneid@redhat.com>
-> ---
->  include/linux/cpumask.h | 39 +++++++++++++++++++++++++++++++++++++++
->  1 file changed, 39 insertions(+)
-> 
-> diff --git a/include/linux/cpumask.h b/include/linux/cpumask.h
-> index 1414ce8cd003..372a642bf9ba 100644
-> --- a/include/linux/cpumask.h
-> +++ b/include/linux/cpumask.h
-> @@ -238,6 +238,25 @@ unsigned int cpumask_next_and(int n, const struct cpumask *src1p,
->  		nr_cpumask_bits, n + 1);
->  }
->  
-> +/**
-> + * cpumask_next_andnot - get the next cpu in *src1p & ~*src2p
-> + * @n: the cpu prior to the place to search (ie. return will be > @n)
-> + * @src1p: the first cpumask pointer
-> + * @src2p: the second cpumask pointer
-> + *
-> + * Returns >= nr_cpu_ids if no further cpus set in *src1p & ~*src2p
-> + */
-> +static inline
-> +unsigned int cpumask_next_andnot(int n, const struct cpumask *src1p,
-> +				 const struct cpumask *src2p)
-> +{
-> +	/* -1 is a legal arg here. */
-> +	if (n != -1)
-> +		cpumask_check(n);
-> +	return find_next_andnot_bit(cpumask_bits(src1p), cpumask_bits(src2p),
-> +		nr_cpumask_bits, n + 1);
-> +}
-> +
->  /**
->   * for_each_cpu - iterate over every cpu in a mask
->   * @cpu: the (optionally unsigned) integer iterator
-> @@ -317,6 +336,26 @@ unsigned int __pure cpumask_next_wrap(int n, const struct cpumask *mask, int sta
->  		(cpu) = cpumask_next_and((cpu), (mask1), (mask2)),	\
->  		(cpu) < nr_cpu_ids;)
->  
-> +/**
-> + * for_each_cpu_andnot - iterate over every cpu present in one mask, excluding
-> + *			 those present in another.
-> + * @cpu: the (optionally unsigned) integer iterator
-> + * @mask1: the first cpumask pointer
-> + * @mask2: the second cpumask pointer
-> + *
-> + * This saves a temporary CPU mask in many places.  It is equivalent to:
-> + *	struct cpumask tmp;
-> + *	cpumask_andnot(&tmp, &mask1, &mask2);
-> + *	for_each_cpu(cpu, &tmp)
-> + *		...
-> + *
-> + * After the loop, cpu is >= nr_cpu_ids.
-> + */
-> +#define for_each_cpu_andnot(cpu, mask1, mask2)				\
-> +	for ((cpu) = -1;						\
-> +		(cpu) = cpumask_next_andnot((cpu), (mask1), (mask2)),	\
-> +		(cpu) < nr_cpu_ids;)
-
-The standard doesn't guarantee the order of execution of last 2 lines,
-so you might end up with unreliable code. Can you do it in a more
-conventional style:
-   #define for_each_cpu_andnot(cpu, mask1, mask2)			\
-   	for ((cpu) = cpumask_next_andnot(-1, (mask1), (mask2));	        \
-   		(cpu) < nr_cpu_ids;                                     \
-   		(cpu) = cpumask_next_andnot((cpu), (mask1), (mask2)))	
-
-> +
->  /**
->   * cpumask_any_but - return a "random" in a cpumask, but not this one.
->   * @mask: the cpumask to search
-> -- 
-> 2.31.1
+SGkuIFRoYW5rIHlvdSBmb3IgcXVpY2sgcmVwbHkuDQoNCk9uIDIwMjItMDgtMjQgMTg6NTEsIEFu
+ZHkgU2hldmNoZW5rbyB3cm90ZToNCi4uLg0KPj4gK3N0YXRpYyB2b2lkIHBhdHRlcm5fdHJpZ19y
+ZW1vdmVfcGF0dGVybl9lbmRlZChzdHJ1Y3QgbGVkX2NsYXNzZGV2ICpsZWRfY2RldikNCj4+ICt7
+DQo+PiArICAgICAgIHN0cnVjdCBwYXR0ZXJuX3RyaWdfZGF0YSAqZGF0YSA9IGxlZF9nZXRfdHJp
+Z2dlcl9kYXRhKGxlZF9jZGV2KTsNCj4+ICsNCj4+ICsgICAgICAgc3lzZnNfcHV0KGRhdGEtPnBh
+dHRlcm5fZW5kZWQpOw0KPj4gKyAgICAgICBkZXZpY2VfcmVtb3ZlX2ZpbGUobGVkX2NkZXYtPmRl
+diwgJmRldl9hdHRyX3BhdHRlcm5fZW5kZWQpOw0KPj4gK30NCj4gDQo+IEknbSB3b25kZXJpbmcg
+aWYgeW91IGNhbiBhbHdheXMgaGF2ZSBhIGZpbGUgYW5kIGluc3RlYWQgcHJvdmlkZSBhDQo+IHZh
+bHVlIHRoZXJlLCBzbyB1c2VyIHNwYWNlIG1heSB1c2UgZXBvbGwoKSBtZWNoYW5pc20gb24gdGhh
+dC4gSXQgd2lsbA0KPiBzaW1wbGlmeSB5b3VyIGNvZGUgaGVyZS4NCj4gDQpEbyB5b3UgbWVhbiB0
+byBhZGQgJ2Rldl9hdHRyX3BhdHRlcm5fZW5kZWQnIHRvICdwYXR0ZXJuX3RyaWdfYXR0cnMnLA0K
+YW5kIHVzZSAnc3lzZnNfbm90aWZ5JyBpbnN0ZWFkIG9mICdzeXNmc19ub3RpZnlfZGlyZW50JyBj
+YWxsJz8NCg0KLS0gDQpCZXN0IFJlZ2FyZHMsDQpLdXJiYW5vdiBNYXJ0aW4NCg0K
