@@ -2,46 +2,52 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 36538C04AA5
-	for <linux-kernel@archiver.kernel.org>; Thu, 25 Aug 2022 01:42:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BB50AC04AA5
+	for <linux-kernel@archiver.kernel.org>; Thu, 25 Aug 2022 01:42:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232930AbiHYBm0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 24 Aug 2022 21:42:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39784 "EHLO
+        id S235209AbiHYBmg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 24 Aug 2022 21:42:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42428 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234248AbiHYBla (ORCPT
+        with ESMTP id S234518AbiHYBlp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 24 Aug 2022 21:41:30 -0400
+        Wed, 24 Aug 2022 21:41:45 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 978019D8EF;
-        Wed, 24 Aug 2022 18:38:37 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 468BE9A9B1;
+        Wed, 24 Aug 2022 18:38:32 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 6E73E61AF3;
-        Thu, 25 Aug 2022 01:38:25 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id ED376C4347C;
-        Thu, 25 Aug 2022 01:38:22 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 94BB761B0A;
+        Thu, 25 Aug 2022 01:38:12 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 83A3EC433D6;
+        Thu, 25 Aug 2022 01:38:09 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1661391504;
-        bh=8N+mzoNMN7tQAB6gKqF+atcRFl7OB0EncNmJEg7+B8U=;
+        s=k20201202; t=1661391492;
+        bh=Bhtx1w3HKvdUE6oE/m2W8aPF/+GLEtRGL3Sa7MNVHdo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=HvGbfRhKFhHMQ/QYljq6ycIj0VsFAF0jQYWXVUEZn+am+8oVTaq49LlFppA+BomTn
-         7pEarfRBVapDOWGG74Qeejkj+/90SPOEc0zp/JSwzbwkDWWd0MeFfSs27Dm/eW6g1Y
-         NLeqHJciwJfq7O84Ok0cmUoRqdAVhsEnzE8/mfJ6H1N4aCIK8gG9+T4XgHGB5PSsYv
-         g9gnYDpR+2F9aKGPn3hZehWAVTGtknTCz3Sy1Ji0YePz3KypLz/ebzbqK7YOwhsDUS
-         8s6h/yyfsvCuk9JKx7B/xUmPpdBQ1ok039PFEH9SjCo1N7MgAurjyWzIoPqPcFFSZe
-         miEo0lYOUHKzw==
+        b=WVWJM4AUp2EpwsLcupn4p6g6ohlmDttpvwL8OSCAjr9gbMj53xXcvzXM/UXvLmo0n
+         eoq5s+yUp533leyqBZW1sx9ANX+/bmVVJ7rzLi+3LQcl5lo7/Dmq2kxaCA4bKdY2iV
+         9fuq+AIKU3ZGmzoq2GLNWThUMGviG1kqpvEzNOYF6RVYKBn9SH0P64PApULcek8Qk1
+         1JiqiM1bnS/xdo1l5twS71LW7RXEwZDZDwwkiePGEYpTibcDZCw7YkarknkOZ612kr
+         Ox+7ZWc/kOXIbUS1dqsQGXOuUzztajXufRxoZUJsfZLMKG4mMn9f9/f3YRqTIJgeL0
+         4hy7xruLGTihA==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Josef Bacik <josef@toxicpanda.com>,
-        Johannes Thumshirn <johannes.thumshirn@wdc.com>,
-        David Sterba <dsterba@suse.com>,
-        Sasha Levin <sashal@kernel.org>, clm@fb.com,
-        linux-btrfs@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.15 17/20] btrfs: move lockdep class helpers to locking.c
-Date:   Wed, 24 Aug 2022 21:37:09 -0400
-Message-Id: <20220825013713.22656-17-sashal@kernel.org>
+Cc:     Dusica Milinkovic <Dusica.Milinkovic@amd.com>,
+        Shaoyun Liu <shaoyun.liu@amd.com>,
+        Alex Deucher <alexander.deucher@amd.com>,
+        Sasha Levin <sashal@kernel.org>, christian.koenig@amd.com,
+        Xinhui.Pan@amd.com, airlied@linux.ie, daniel@ffwll.ch,
+        Hawking.Zhang@amd.com, andrey.grodzovsky@amd.com,
+        Likun.Gao@amd.com, mario.limonciello@amd.com, evan.quan@amd.com,
+        Jack.Xiao@amd.com, tao.zhou1@amd.com, YiPeng.Chai@amd.com,
+        lang.yu@amd.com, Prike.Liang@amd.com, victor.skvortsov@amd.com,
+        Yuliang.Shi@amd.com, harry.wentland@amd.com,
+        amd-gfx@lists.freedesktop.org, dri-devel@lists.freedesktop.org
+Subject: [PATCH AUTOSEL 5.15 13/20] drm/amdgpu: Increase tlb flush timeout for sriov
+Date:   Wed, 24 Aug 2022 21:37:05 -0400
+Message-Id: <20220825013713.22656-13-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220825013713.22656-1-sashal@kernel.org>
 References: <20220825013713.22656-1-sashal@kernel.org>
@@ -53,246 +59,85 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Josef Bacik <josef@toxicpanda.com>
+From: Dusica Milinkovic <Dusica.Milinkovic@amd.com>
 
-[ Upstream commit 0a27a0474d146eb79e09ec88bf0d4229f4cfc1b8 ]
+[ Upstream commit 373008bfc9cdb0f050258947fa5a095f0657e1bc ]
 
-These definitions exist in disk-io.c, which is not related to the
-locking.  Move this over to locking.h/c where it makes more sense.
+[Why]
+During multi-vf executing benchmark (Luxmark) observed kiq error timeout.
+It happenes because all of VFs do the tlb invalidation at the same time.
+Although each VF has the invalidate register set, from hardware side
+the invalidate requests are queue to execute.
 
-Reviewed-by: Johannes Thumshirn <johannes.thumshirn@wdc.com>
-Signed-off-by: Josef Bacik <josef@toxicpanda.com>
-Reviewed-by: David Sterba <dsterba@suse.com>
-Signed-off-by: David Sterba <dsterba@suse.com>
+[How]
+In case of 12 VF increase timeout on 12*100ms
+
+Signed-off-by: Dusica Milinkovic <Dusica.Milinkovic@amd.com>
+Acked-by: Shaoyun Liu <shaoyun.liu@amd.com>
+Acked-by: Alex Deucher <alexander.deucher@amd.com>
+Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- fs/btrfs/disk-io.c | 82 ----------------------------------------------
- fs/btrfs/disk-io.h | 10 ------
- fs/btrfs/locking.c | 80 ++++++++++++++++++++++++++++++++++++++++++++
- fs/btrfs/locking.h |  9 +++++
- 4 files changed, 89 insertions(+), 92 deletions(-)
+ drivers/gpu/drm/amd/amdgpu/amdgpu.h    | 2 +-
+ drivers/gpu/drm/amd/amdgpu/gmc_v10_0.c | 3 ++-
+ drivers/gpu/drm/amd/amdgpu/gmc_v9_0.c  | 3 ++-
+ 3 files changed, 5 insertions(+), 3 deletions(-)
 
-diff --git a/fs/btrfs/disk-io.c b/fs/btrfs/disk-io.c
-index e65c3039caf1..c9edc668b3d9 100644
---- a/fs/btrfs/disk-io.c
-+++ b/fs/btrfs/disk-io.c
-@@ -121,88 +121,6 @@ struct async_submit_bio {
- 	blk_status_t status;
+diff --git a/drivers/gpu/drm/amd/amdgpu/amdgpu.h b/drivers/gpu/drm/amd/amdgpu/amdgpu.h
+index 5f95d03fd46a..4f62f422bcb7 100644
+--- a/drivers/gpu/drm/amd/amdgpu/amdgpu.h
++++ b/drivers/gpu/drm/amd/amdgpu/amdgpu.h
+@@ -312,7 +312,7 @@ enum amdgpu_kiq_irq {
+ 	AMDGPU_CP_KIQ_IRQ_DRIVER0 = 0,
+ 	AMDGPU_CP_KIQ_IRQ_LAST
  };
+-
++#define SRIOV_USEC_TIMEOUT  1200000 /* wait 12 * 100ms for SRIOV */
+ #define MAX_KIQ_REG_WAIT       5000 /* in usecs, 5ms */
+ #define MAX_KIQ_REG_BAILOUT_INTERVAL   5 /* in msecs, 5ms */
+ #define MAX_KIQ_REG_TRY 1000
+diff --git a/drivers/gpu/drm/amd/amdgpu/gmc_v10_0.c b/drivers/gpu/drm/amd/amdgpu/gmc_v10_0.c
+index 93a4da4284ed..9c07ec8b9732 100644
+--- a/drivers/gpu/drm/amd/amdgpu/gmc_v10_0.c
++++ b/drivers/gpu/drm/amd/amdgpu/gmc_v10_0.c
+@@ -414,6 +414,7 @@ static int gmc_v10_0_flush_gpu_tlb_pasid(struct amdgpu_device *adev,
+ 	uint32_t seq;
+ 	uint16_t queried_pasid;
+ 	bool ret;
++	u32 usec_timeout = amdgpu_sriov_vf(adev) ? SRIOV_USEC_TIMEOUT : adev->usec_timeout;
+ 	struct amdgpu_ring *ring = &adev->gfx.kiq.ring;
+ 	struct amdgpu_kiq *kiq = &adev->gfx.kiq;
  
--/*
-- * Lockdep class keys for extent_buffer->lock's in this root.  For a given
-- * eb, the lockdep key is determined by the btrfs_root it belongs to and
-- * the level the eb occupies in the tree.
-- *
-- * Different roots are used for different purposes and may nest inside each
-- * other and they require separate keysets.  As lockdep keys should be
-- * static, assign keysets according to the purpose of the root as indicated
-- * by btrfs_root->root_key.objectid.  This ensures that all special purpose
-- * roots have separate keysets.
-- *
-- * Lock-nesting across peer nodes is always done with the immediate parent
-- * node locked thus preventing deadlock.  As lockdep doesn't know this, use
-- * subclass to avoid triggering lockdep warning in such cases.
-- *
-- * The key is set by the readpage_end_io_hook after the buffer has passed
-- * csum validation but before the pages are unlocked.  It is also set by
-- * btrfs_init_new_buffer on freshly allocated blocks.
-- *
-- * We also add a check to make sure the highest level of the tree is the
-- * same as our lockdep setup here.  If BTRFS_MAX_LEVEL changes, this code
-- * needs update as well.
-- */
--#ifdef CONFIG_DEBUG_LOCK_ALLOC
--# if BTRFS_MAX_LEVEL != 8
--#  error
--# endif
--
--#define DEFINE_LEVEL(stem, level)					\
--	.names[level] = "btrfs-" stem "-0" #level,
--
--#define DEFINE_NAME(stem)						\
--	DEFINE_LEVEL(stem, 0)						\
--	DEFINE_LEVEL(stem, 1)						\
--	DEFINE_LEVEL(stem, 2)						\
--	DEFINE_LEVEL(stem, 3)						\
--	DEFINE_LEVEL(stem, 4)						\
--	DEFINE_LEVEL(stem, 5)						\
--	DEFINE_LEVEL(stem, 6)						\
--	DEFINE_LEVEL(stem, 7)
--
--static struct btrfs_lockdep_keyset {
--	u64			id;		/* root objectid */
--	/* Longest entry: btrfs-free-space-00 */
--	char			names[BTRFS_MAX_LEVEL][20];
--	struct lock_class_key	keys[BTRFS_MAX_LEVEL];
--} btrfs_lockdep_keysets[] = {
--	{ .id = BTRFS_ROOT_TREE_OBJECTID,	DEFINE_NAME("root")	},
--	{ .id = BTRFS_EXTENT_TREE_OBJECTID,	DEFINE_NAME("extent")	},
--	{ .id = BTRFS_CHUNK_TREE_OBJECTID,	DEFINE_NAME("chunk")	},
--	{ .id = BTRFS_DEV_TREE_OBJECTID,	DEFINE_NAME("dev")	},
--	{ .id = BTRFS_CSUM_TREE_OBJECTID,	DEFINE_NAME("csum")	},
--	{ .id = BTRFS_QUOTA_TREE_OBJECTID,	DEFINE_NAME("quota")	},
--	{ .id = BTRFS_TREE_LOG_OBJECTID,	DEFINE_NAME("log")	},
--	{ .id = BTRFS_TREE_RELOC_OBJECTID,	DEFINE_NAME("treloc")	},
--	{ .id = BTRFS_DATA_RELOC_TREE_OBJECTID,	DEFINE_NAME("dreloc")	},
--	{ .id = BTRFS_UUID_TREE_OBJECTID,	DEFINE_NAME("uuid")	},
--	{ .id = BTRFS_FREE_SPACE_TREE_OBJECTID,	DEFINE_NAME("free-space") },
--	{ .id = 0,				DEFINE_NAME("tree")	},
--};
--
--#undef DEFINE_LEVEL
--#undef DEFINE_NAME
--
--void btrfs_set_buffer_lockdep_class(u64 objectid, struct extent_buffer *eb,
--				    int level)
--{
--	struct btrfs_lockdep_keyset *ks;
--
--	BUG_ON(level >= ARRAY_SIZE(ks->keys));
--
--	/* find the matching keyset, id 0 is the default entry */
--	for (ks = btrfs_lockdep_keysets; ks->id; ks++)
--		if (ks->id == objectid)
--			break;
--
--	lockdep_set_class_and_name(&eb->lock,
--				   &ks->keys[level], ks->names[level]);
--}
--
--#endif
--
- /*
-  * Compute the csum of a btree block and store the result to provided buffer.
-  */
-diff --git a/fs/btrfs/disk-io.h b/fs/btrfs/disk-io.h
-index 0e7e9526b6a8..1b8fd3deafc9 100644
---- a/fs/btrfs/disk-io.h
-+++ b/fs/btrfs/disk-io.h
-@@ -140,14 +140,4 @@ int btrfs_init_root_free_objectid(struct btrfs_root *root);
- int __init btrfs_end_io_wq_init(void);
- void __cold btrfs_end_io_wq_exit(void);
+@@ -432,7 +433,7 @@ static int gmc_v10_0_flush_gpu_tlb_pasid(struct amdgpu_device *adev,
  
--#ifdef CONFIG_DEBUG_LOCK_ALLOC
--void btrfs_set_buffer_lockdep_class(u64 objectid,
--			            struct extent_buffer *eb, int level);
--#else
--static inline void btrfs_set_buffer_lockdep_class(u64 objectid,
--					struct extent_buffer *eb, int level)
--{
--}
--#endif
--
- #endif
-diff --git a/fs/btrfs/locking.c b/fs/btrfs/locking.c
-index 33461b4f9c8b..5747c63929df 100644
---- a/fs/btrfs/locking.c
-+++ b/fs/btrfs/locking.c
-@@ -13,6 +13,86 @@
- #include "extent_io.h"
- #include "locking.h"
+ 		amdgpu_ring_commit(ring);
+ 		spin_unlock(&adev->gfx.kiq.ring_lock);
+-		r = amdgpu_fence_wait_polling(ring, seq, adev->usec_timeout);
++		r = amdgpu_fence_wait_polling(ring, seq, usec_timeout);
+ 		if (r < 1) {
+ 			dev_err(adev->dev, "wait for kiq fence error: %ld.\n", r);
+ 			return -ETIME;
+diff --git a/drivers/gpu/drm/amd/amdgpu/gmc_v9_0.c b/drivers/gpu/drm/amd/amdgpu/gmc_v9_0.c
+index 0e731016921b..70d24b522df8 100644
+--- a/drivers/gpu/drm/amd/amdgpu/gmc_v9_0.c
++++ b/drivers/gpu/drm/amd/amdgpu/gmc_v9_0.c
+@@ -863,6 +863,7 @@ static int gmc_v9_0_flush_gpu_tlb_pasid(struct amdgpu_device *adev,
+ 	uint32_t seq;
+ 	uint16_t queried_pasid;
+ 	bool ret;
++	u32 usec_timeout = amdgpu_sriov_vf(adev) ? SRIOV_USEC_TIMEOUT : adev->usec_timeout;
+ 	struct amdgpu_ring *ring = &adev->gfx.kiq.ring;
+ 	struct amdgpu_kiq *kiq = &adev->gfx.kiq;
  
-+/*
-+ * Lockdep class keys for extent_buffer->lock's in this root.  For a given
-+ * eb, the lockdep key is determined by the btrfs_root it belongs to and
-+ * the level the eb occupies in the tree.
-+ *
-+ * Different roots are used for different purposes and may nest inside each
-+ * other and they require separate keysets.  As lockdep keys should be
-+ * static, assign keysets according to the purpose of the root as indicated
-+ * by btrfs_root->root_key.objectid.  This ensures that all special purpose
-+ * roots have separate keysets.
-+ *
-+ * Lock-nesting across peer nodes is always done with the immediate parent
-+ * node locked thus preventing deadlock.  As lockdep doesn't know this, use
-+ * subclass to avoid triggering lockdep warning in such cases.
-+ *
-+ * The key is set by the readpage_end_io_hook after the buffer has passed
-+ * csum validation but before the pages are unlocked.  It is also set by
-+ * btrfs_init_new_buffer on freshly allocated blocks.
-+ *
-+ * We also add a check to make sure the highest level of the tree is the
-+ * same as our lockdep setup here.  If BTRFS_MAX_LEVEL changes, this code
-+ * needs update as well.
-+ */
-+#ifdef CONFIG_DEBUG_LOCK_ALLOC
-+#if BTRFS_MAX_LEVEL != 8
-+#error
-+#endif
-+
-+#define DEFINE_LEVEL(stem, level)					\
-+	.names[level] = "btrfs-" stem "-0" #level,
-+
-+#define DEFINE_NAME(stem)						\
-+	DEFINE_LEVEL(stem, 0)						\
-+	DEFINE_LEVEL(stem, 1)						\
-+	DEFINE_LEVEL(stem, 2)						\
-+	DEFINE_LEVEL(stem, 3)						\
-+	DEFINE_LEVEL(stem, 4)						\
-+	DEFINE_LEVEL(stem, 5)						\
-+	DEFINE_LEVEL(stem, 6)						\
-+	DEFINE_LEVEL(stem, 7)
-+
-+static struct btrfs_lockdep_keyset {
-+	u64			id;		/* root objectid */
-+	/* Longest entry: btrfs-free-space-00 */
-+	char			names[BTRFS_MAX_LEVEL][20];
-+	struct lock_class_key	keys[BTRFS_MAX_LEVEL];
-+} btrfs_lockdep_keysets[] = {
-+	{ .id = BTRFS_ROOT_TREE_OBJECTID,	DEFINE_NAME("root")	},
-+	{ .id = BTRFS_EXTENT_TREE_OBJECTID,	DEFINE_NAME("extent")	},
-+	{ .id = BTRFS_CHUNK_TREE_OBJECTID,	DEFINE_NAME("chunk")	},
-+	{ .id = BTRFS_DEV_TREE_OBJECTID,	DEFINE_NAME("dev")	},
-+	{ .id = BTRFS_CSUM_TREE_OBJECTID,	DEFINE_NAME("csum")	},
-+	{ .id = BTRFS_QUOTA_TREE_OBJECTID,	DEFINE_NAME("quota")	},
-+	{ .id = BTRFS_TREE_LOG_OBJECTID,	DEFINE_NAME("log")	},
-+	{ .id = BTRFS_TREE_RELOC_OBJECTID,	DEFINE_NAME("treloc")	},
-+	{ .id = BTRFS_DATA_RELOC_TREE_OBJECTID,	DEFINE_NAME("dreloc")	},
-+	{ .id = BTRFS_UUID_TREE_OBJECTID,	DEFINE_NAME("uuid")	},
-+	{ .id = BTRFS_FREE_SPACE_TREE_OBJECTID,	DEFINE_NAME("free-space") },
-+	{ .id = 0,				DEFINE_NAME("tree")	},
-+};
-+
-+#undef DEFINE_LEVEL
-+#undef DEFINE_NAME
-+
-+void btrfs_set_buffer_lockdep_class(u64 objectid, struct extent_buffer *eb, int level)
-+{
-+	struct btrfs_lockdep_keyset *ks;
-+
-+	BUG_ON(level >= ARRAY_SIZE(ks->keys));
-+
-+	/* Find the matching keyset, id 0 is the default entry */
-+	for (ks = btrfs_lockdep_keysets; ks->id; ks++)
-+		if (ks->id == objectid)
-+			break;
-+
-+	lockdep_set_class_and_name(&eb->lock, &ks->keys[level], ks->names[level]);
-+}
-+
-+#endif
-+
- /*
-  * Extent buffer locking
-  * =====================
-diff --git a/fs/btrfs/locking.h b/fs/btrfs/locking.h
-index a2e1f1f5c6e3..97370ec0cd29 100644
---- a/fs/btrfs/locking.h
-+++ b/fs/btrfs/locking.h
-@@ -130,4 +130,13 @@ void btrfs_drew_write_unlock(struct btrfs_drew_lock *lock);
- void btrfs_drew_read_lock(struct btrfs_drew_lock *lock);
- void btrfs_drew_read_unlock(struct btrfs_drew_lock *lock);
+@@ -902,7 +903,7 @@ static int gmc_v9_0_flush_gpu_tlb_pasid(struct amdgpu_device *adev,
  
-+#ifdef CONFIG_DEBUG_LOCK_ALLOC
-+void btrfs_set_buffer_lockdep_class(u64 objectid, struct extent_buffer *eb, int level);
-+#else
-+static inline void btrfs_set_buffer_lockdep_class(u64 objectid,
-+					struct extent_buffer *eb, int level)
-+{
-+}
-+#endif
-+
- #endif
+ 		amdgpu_ring_commit(ring);
+ 		spin_unlock(&adev->gfx.kiq.ring_lock);
+-		r = amdgpu_fence_wait_polling(ring, seq, adev->usec_timeout);
++		r = amdgpu_fence_wait_polling(ring, seq, usec_timeout);
+ 		if (r < 1) {
+ 			dev_err(adev->dev, "wait for kiq fence error: %ld.\n", r);
+ 			up_read(&adev->reset_sem);
 -- 
 2.35.1
 
