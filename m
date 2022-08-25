@@ -2,141 +2,148 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5D1CFECAA24
-	for <linux-kernel@archiver.kernel.org>; Thu, 25 Aug 2022 16:18:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 32F9AECAA25
+	for <linux-kernel@archiver.kernel.org>; Thu, 25 Aug 2022 16:19:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242994AbiHYQSA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 25 Aug 2022 12:18:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37784 "EHLO
+        id S242010AbiHYQTu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 25 Aug 2022 12:19:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38762 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242986AbiHYQR4 (ORCPT
+        with ESMTP id S233321AbiHYQTr (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 25 Aug 2022 12:17:56 -0400
-Received: from mail-lf1-x135.google.com (mail-lf1-x135.google.com [IPv6:2a00:1450:4864:20::135])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BA11946DB2
-        for <linux-kernel@vger.kernel.org>; Thu, 25 Aug 2022 09:17:54 -0700 (PDT)
-Received: by mail-lf1-x135.google.com with SMTP id l8so11378094lfc.12
-        for <linux-kernel@vger.kernel.org>; Thu, 25 Aug 2022 09:17:54 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc;
-        bh=b3UlTD9H49Yb98sjK5W5/C8aUP8qYfkMb4AST0yEJIw=;
-        b=RJQaploezQ64sQU0Ot6zPj8xVA+m7I0+MIlJYds5HBoULqJXc7p9yh24SdJBjERKH1
-         /G2S8P1E0T41DmocxAC14hvkpg53cM/qXp4Wm/pObVX9U/mITxz+4Z8iYlD2ScBXje8p
-         p1SHmf2LwMfvY9zCffDhWddepz3T1jkUAAwq2AeWRIuuW12G+OtVw0j7utFTYWVv7L0l
-         aTgz1abc3GTnxgWC45ygjbDRLmxYIvyY6C8MsSJtwb0o4A3K9UNKtz97pM9bktptfhLg
-         MUIUSyjpMXc362+1MySlwOAQ3ZlX1JjCHs8wMj+NzkAtU35Vhr/n4QFliSiSL9ZvOt/k
-         tuCQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc;
-        bh=b3UlTD9H49Yb98sjK5W5/C8aUP8qYfkMb4AST0yEJIw=;
-        b=f52+ERnSveLETHbhSggci1mOBiYSrD/puJNwvdQCWToZFdNV9bZbafx1zYOB+xQflk
-         ggLUVngwmYO9WBrdL9kZN/vKAcpuPZ173MMi733HpOw7IVKAxXdcFtb2QUYqZT7fcomc
-         thbYSoyOn6/nWIG8801yggailT/X5xrqMJAzLgqoy3fxf3COBqzYu+WUjTG85V/8EYgO
-         xAjD6m6VBEJzJRapUK6Zbwb8KCuJPXIjS222WaMLL4zLdS6ZpZz+EPu4kHNCBVMmo7ik
-         wufAR+WpETsXxX6l/sIRlFJ7iCDzjMPcNlWcC/gEJQT1+nKGm8uYtdSswVwnD0n2d/38
-         yvZA==
-X-Gm-Message-State: ACgBeo2ZP8LYQZnJMcQbnWpNsEIOVCyT9CCIMpUTTATyYdtZmxt5MvEk
-        ZPSGQOpVTzif/ThrZQk/WcU=
-X-Google-Smtp-Source: AA6agR5laMtLRk7Pd92ffYg5nd9Khm1va5h/vwpwYSvwp25wKzThzGRCS5LT/uIn6MFQ4uf63wGXTA==
-X-Received: by 2002:a05:6512:692:b0:492:ece0:32e5 with SMTP id t18-20020a056512069200b00492ece032e5mr1522974lfe.636.1661444273058;
-        Thu, 25 Aug 2022 09:17:53 -0700 (PDT)
-Received: from [10.10.53.53] (81-18-220-16.static.chello.pl. [81.18.220.16])
-        by smtp.googlemail.com with ESMTPSA id u6-20020a05651206c600b00492e570e036sm573621lff.54.2022.08.25.09.17.51
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 25 Aug 2022 09:17:52 -0700 (PDT)
-Message-ID: <18737c8a-78f4-5b9f-aea2-588bc65c13d9@gmail.com>
-Date:   Thu, 25 Aug 2022 18:17:50 +0200
+        Thu, 25 Aug 2022 12:19:47 -0400
+Received: from beige.elm.relay.mailchannels.net (beige.elm.relay.mailchannels.net [23.83.212.16])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BDB34BD4
+        for <linux-kernel@vger.kernel.org>; Thu, 25 Aug 2022 09:19:45 -0700 (PDT)
+X-Sender-Id: dreamhost|x-authsender|dave@stgolabs.net
+Received: from relay.mailchannels.net (localhost [127.0.0.1])
+        by relay.mailchannels.net (Postfix) with ESMTP id 927E7122D4E;
+        Thu, 25 Aug 2022 16:19:44 +0000 (UTC)
+Received: from pdx1-sub0-mail-a253.dreamhost.com (unknown [127.0.0.6])
+        (Authenticated sender: dreamhost)
+        by relay.mailchannels.net (Postfix) with ESMTPA id D0DFE122E16;
+        Thu, 25 Aug 2022 16:19:43 +0000 (UTC)
+ARC-Seal: i=1; s=arc-2022; d=mailchannels.net; t=1661444383; a=rsa-sha256;
+        cv=none;
+        b=EMMHL5zLrNMeNq4rKyCbwZEIEdDuiF8CXPyDRnkFWpwEYKJ71+/dW5xZEzPHePEXlDjT5L
+        uWWQToN+z/K8qVhPVhkjF6arKagg8ZqJcLtMhIElTnuv+14PkPiZNZHn48eJxpKonMbIBl
+        PP7/hXFYJRYhNVpU5q95bpDBzLsyRBM+oqOZ9Qy1eyX8iKTcZPiJumVsSpvBKCsg5Y1rve
+        ANee1SboxGkCocaQPUJ7lh3CNFb534AkJdbgwEwPLaqmczzYmLBAKyqfUxYZb2VtiEcn3t
+        8+5S28gclKVzI6Wx/5Nt67zXEck5OGbMBj8QIfBAX2ygCw+MCaAkya71zOnv4Q==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=mailchannels.net;
+        s=arc-2022; t=1661444383;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references:dkim-signature;
+        bh=QVBJKz2ABICt2qvSlRu5GJPjgPykUXXBeTUH0wKn+Gs=;
+        b=5YBr43Ie5ZrHcnp+9Rwwck35+18pMKUg71yFONOl81O2FzJyiZeNGFh0225BFz0ZMJ6gw8
+        LPvKal93ahYmo1nMaFFsNIXAX2rOgya4HNzVZrGcZNfTzX4qfP1hB2z85oT3v5en1HY0me
+        ZR/nDqK5jhoenJ6cDb9JrqyrZcuyWB8sAJm3Q8N2V8ERV0GhFBROcc3ZlOuaGQQRMhmDV+
+        MQMVY8J+lnGhSpN217auBoFz/FOoIU8oRKm9bhZO/8/xyKnrXs2WejgTtv5dYO6ws7FXy8
+        n3LnQKFJvu7zJu12+3kEwfTwCd5x7nKZm2RyIiEyx1oGxM7E5l63D9yp628eJQ==
+ARC-Authentication-Results: i=1;
+        rspamd-64cc6f7466-rb2wq;
+        auth=pass smtp.auth=dreamhost smtp.mailfrom=dave@stgolabs.net
+X-Sender-Id: dreamhost|x-authsender|dave@stgolabs.net
+X-MC-Relay: Neutral
+X-MailChannels-SenderId: dreamhost|x-authsender|dave@stgolabs.net
+X-MailChannels-Auth-Id: dreamhost
+X-Dime-Exultant: 0ef5925667410d74_1661444384184_544200651
+X-MC-Loop-Signature: 1661444384184:576276869
+X-MC-Ingress-Time: 1661444384184
+Received: from pdx1-sub0-mail-a253.dreamhost.com (pop.dreamhost.com
+ [64.90.62.162])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384)
+        by 100.112.55.199 (trex/6.7.1);
+        Thu, 25 Aug 2022 16:19:44 +0000
+Received: from offworld (unknown [104.36.31.106])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-256) server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        (No client certificate requested)
+        (Authenticated sender: dave@stgolabs.net)
+        by pdx1-sub0-mail-a253.dreamhost.com (Postfix) with ESMTPSA id 4MD7TW0ddyz7j;
+        Thu, 25 Aug 2022 09:19:42 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=stgolabs.net;
+        s=dreamhost; t=1661444383;
+        bh=QVBJKz2ABICt2qvSlRu5GJPjgPykUXXBeTUH0wKn+Gs=;
+        h=Date:From:To:Cc:Subject:Content-Type;
+        b=mFafEIXw/ZVgaU1iTDGhCWcy02R/yIBrh7EttL0XV4y3LePAG6JRxBQE2FzNq70/T
+         KRYc2i0ZZSCXi7AXVe0V5t6nJAcPsqEOO9uNvax4let9N9Y2a1cHVmekWW5uidoU7Y
+         Gf6xYvwEPBUBGKAKCtMQ1LZSygXiiQGeIynEiBqIKfdNMUapRfnHHuCPM/k06HMrLr
+         8lAiiM+Isu3DBBR9zID5zzSmDDiQootHyJj6F6zEjc/42hpVSgxBClWZhitYvlJs/t
+         bF2zwdhUDHHWwyMBLlRH+QBBt1i7WtA6DFiOmg9n2StnPyJ3zm0sOD5pHygfqffQny
+         aTdNdU9pUdHVA==
+Date:   Thu, 25 Aug 2022 09:01:32 -0700
+From:   Davidlohr Bueso <dave@stgolabs.net>
+To:     Liam Howlett <liam.howlett@oracle.com>
+Cc:     "maple-tree@lists.infradead.org" <maple-tree@lists.infradead.org>,
+        "linux-mm@kvack.org" <linux-mm@kvack.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        Andrew Morton <akpm@linux-foundation.org>
+Subject: Re: [PATCH] fs/proc/base: use maple tree iterators in place of
+ linked list
+Message-ID: <20220825160132.w4bphicoifyh2an5@offworld>
+Mail-Followup-To: Liam Howlett <liam.howlett@oracle.com>,
+        "maple-tree@lists.infradead.org" <maple-tree@lists.infradead.org>,
+        "linux-mm@kvack.org" <linux-mm@kvack.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        Andrew Morton <akpm@linux-foundation.org>
+References: <20220824012121.aj2qkzrmdyywu45t@offworld>
+ <20220824151129.2023451-1-Liam.Howlett@oracle.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.11.0
-Subject: Re: [PATCH v1 00/35] drm: Analog TV Improvements
-Content-Language: en-US
-To:     Maxime Ripard <maxime@cerno.tech>
-Cc:     =?UTF-8?Q?Noralf_Tr=c3=b8nnes?= <noralf@tronnes.org>,
-        Jernej Skrabec <jernej.skrabec@gmail.com>,
-        Martin Blumenstingl <martin.blumenstingl@googlemail.com>,
-        Chen-Yu Tsai <wens@csie.org>,
-        Philipp Zabel <p.zabel@pengutronix.de>,
-        Jerome Brunet <jbrunet@baylibre.com>,
-        Samuel Holland <samuel@sholland.org>,
-        Thomas Zimmermann <tzimmermann@suse.de>,
-        Daniel Vetter <daniel@ffwll.ch>, Emma Anholt <emma@anholt.net>,
-        David Airlie <airlied@linux.ie>,
-        Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
-        Kevin Hilman <khilman@baylibre.com>,
-        Neil Armstrong <narmstrong@baylibre.com>,
-        linux-sunxi@lists.linux.dev, linux-kernel@vger.kernel.org,
-        Phil Elwell <phil@raspberrypi.com>,
-        linux-arm-kernel@lists.infradead.org,
-        Geert Uytterhoeven <geert@linux-m68k.org>,
-        Dave Stevenson <dave.stevenson@raspberrypi.com>,
-        linux-amlogic@lists.infradead.org, dri-devel@lists.freedesktop.org,
-        Dom Cobley <dom@raspberrypi.com>
-References: <20220728-rpi-analog-tv-properties-v1-0-3d53ae722097@cerno.tech>
- <987d6114-5fcb-d668-3b0d-ad6d8723dfdb@tronnes.org>
- <20220822074800.qzyctchqn5usr55g@houat>
- <9a15b1cf-692c-1b0d-02a6-316cbd954525@gmail.com>
- <20220825155506.wqurh5r752qfufqs@houat>
-From:   Mateusz Kwiatkowski <kfyatek@gmail.com>
-In-Reply-To: <20220825155506.wqurh5r752qfufqs@houat>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii; format=flowed
+Content-Disposition: inline
+In-Reply-To: <20220824151129.2023451-1-Liam.Howlett@oracle.com>
+User-Agent: NeoMutt/20220429
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Maxime,
+On Wed, 24 Aug 2022, Liam Howlett wrote:
 
-W dniu 25.08.2022 o 17:55, Maxime Ripard pisze:
-> Hi Mateusz,
+>From: "Liam R. Howlett" <Liam.Howlett@Oracle.com>
 >
-> On Mon, Aug 22, 2022 at 10:57:26AM +0200, Mateusz Kwiatkowski wrote:
->> Hi Maxime,
->>
->> I tried testing and reviewing your changes properly over the last weekend, but
->> ultimately ran into this ("flip_done timed out" etc.) issue and was unable to
->> mitigate it, at least so far. This seems to pop up every time I try to change
->> modes in any way (either change the TV norm, or just try doing
->> "xrandr --output Composite-1 --off" followed by bringing it back on; it also
->> means that the Pi goes unusable when the DE's screen saving routine kicks in).
->>
->> I'm using a Pi 4, and it works with the rpi-5.13.y branch
->> https://github.com/raspberrypi/linux, but seemingly nothing newer.
->> I specifically tried rpi-5.14.y, rpi-5.15.y and rpi-5.19.y - rpi-5.15.y,
->> which is the current main branch in Raspberry Pi OS, seems to be broken since
->> forever; at least since my patches (originally written for 5.10) landed there.
->>
->> I'll try identifying the issue further, possibly later today, and maybe check
->> the rpi-6.0.y branch as well.
+>Use mas_for_each to iterate the list of VMAs instead of a for loop
+>across the linked list.
+
+Hmm so why isn't this using the standard VMA_ITERATOR?
+
 >
-> I've tried it this, and I can't reproduce it here. But I'm curious, how
-> did you apply this series? rpi-5.13.y is probably full of conflicts
-> everywhere?
-
-I applied your patches onto rpi-5.15.y. There were conflicts, but they seemed
-relatively minor. I'm not sure if I did a good job at resolving them - I ran
-into various problems trying to test your changes, but I chose not to criticize
-you before making sure that it's really due to your changes, or without some
-remarks more constructive than "doesn't work" ;-)
-
-I can push my rebase onto some Github fork if you're interested.
-
-I was able to work around some of those problems, and also saw that some
-of them were already mentioned by other reviewers (such as the generic modes
-not matching due to the aspect ratio setting).
-
-Ultimately I got stuck on this bug, so I put testing this series on hold
-in favor of debugging the bigger issue. So far unfortunately no luck with it.
-
-I did not try rebasing your changes onto 5.13 or older.
-
-> Maxime
-
-Best regards,
-Mateusz Kwiatkowski
+>Signed-off-by: Liam R. Howlett <Liam.Howlett@Oracle.com>
+>---
+> fs/proc/base.c | 5 ++++-
+> 1 file changed, 4 insertions(+), 1 deletion(-)
+>
+>diff --git a/fs/proc/base.c b/fs/proc/base.c
+>index 93f7e3d971e4..0b72a6d8aac3 100644
+>--- a/fs/proc/base.c
+>+++ b/fs/proc/base.c
+>@@ -2350,6 +2350,7 @@ proc_map_files_readdir(struct file *file, struct dir_context *ctx)
+> 	GENRADIX(struct map_files_info) fa;
+> 	struct map_files_info *p;
+> 	int ret;
+>+	MA_STATE(mas, NULL, 0, 0);
+>
+> 	genradix_init(&fa);
+>
+>@@ -2377,6 +2378,7 @@ proc_map_files_readdir(struct file *file, struct dir_context *ctx)
+> 	}
+>
+> 	nr_files = 0;
+>+	mas.tree = &mm->mm_mt;
+>
+> 	/*
+> 	 * We need two passes here:
+>@@ -2388,7 +2390,8 @@ proc_map_files_readdir(struct file *file, struct dir_context *ctx)
+> 	 * routine might require mmap_lock taken in might_fault().
+> 	 */
+>
+>-	for (vma = mm->mmap, pos = 2; vma; vma = vma->vm_next) {
+>+	pos = 2;
+>+	mas_for_each(&mas, vma, ULONG_MAX) {
+> 		if (!vma->vm_file)
+> 			continue;
+> 		if (++pos <= ctx->pos)
+>-- 
+>2.35.1
