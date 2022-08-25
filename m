@@ -2,199 +2,202 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9AFCAC04AA5
-	for <linux-kernel@archiver.kernel.org>; Thu, 25 Aug 2022 08:25:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DDBB0C28D13
+	for <linux-kernel@archiver.kernel.org>; Thu, 25 Aug 2022 08:26:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239880AbiHYIZN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 25 Aug 2022 04:25:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51784 "EHLO
+        id S229834AbiHYI0I (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 25 Aug 2022 04:26:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50482 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237975AbiHYIYh (ORCPT
+        with ESMTP id S235946AbiHYIZn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 25 Aug 2022 04:24:37 -0400
-Received: from sender4-op-o14.zoho.com (sender4-op-o14.zoho.com [136.143.188.14])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 476E2A6AEA;
-        Thu, 25 Aug 2022 01:24:27 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; t=1661415833; cv=none; 
-        d=zohomail.com; s=zohoarc; 
-        b=HnRx4Bkx6TCRsv/FgLgZBpYA9bs1BqDUM+YPR7AvsbVOHjy+kdDfkoTmM87eqt41lO8ALhGmeyikh+RCXmsCsGTZls9305O7uvaqBcStUj7DhQnAbdlixyQhsb/HhrPqQXG5zpOUmRgjgSsIU3cmNsF6xh4wsCzM4tD2s3rHXw4=
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=zohomail.com; s=zohoarc; 
-        t=1661415833; h=Content-Type:Content-Transfer-Encoding:Cc:Date:From:In-Reply-To:MIME-Version:Message-ID:References:Subject:To; 
-        bh=4iatfibaEkRjc+jLuqjlHdBTrArLyKAAD70kGaPgXv8=; 
-        b=hZifc1bBl3vpVa5KYYky7lyUe5hoBsI2riI9HbDrlbLlrco9zRuZB5KouaXckYNNWq3Y1T5bfI3z+eADbuV1MKb7S9408GR7mw297vQtiOBW8JTJP6+j7FwzziFAGCnmLmwi+gE53/BqC6YLd+YM6Uq+VgsH09Clor9bstW2ve4=
-ARC-Authentication-Results: i=1; mx.zohomail.com;
-        dkim=pass  header.i=arinc9.com;
-        spf=pass  smtp.mailfrom=arinc.unal@arinc9.com;
-        dmarc=pass header.from=<arinc.unal@arinc9.com>
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; t=1661415833;
-        s=zmail; d=arinc9.com; i=arinc.unal@arinc9.com;
-        h=From:From:To:To:Cc:Cc:Subject:Subject:Date:Date:Message-Id:Message-Id:In-Reply-To:References:MIME-Version:Content-Type:Content-Transfer-Encoding:Reply-To;
-        bh=4iatfibaEkRjc+jLuqjlHdBTrArLyKAAD70kGaPgXv8=;
-        b=FLt744MEU/IoMd97w4eXxByxmfH2ZqisXGRT71jke8n8Tq3gmlS+rZTHBZN4JZkt
-        UZQ9zQdzl1QfVCG0h7DrcsgeMqlJIqL6WXMl+pp+aew1jDdZeVSUtcaCpcmyLLa7z9r
-        nQTSk6F0nha98+megiwU5mMHl401AneUzDfpl3N8=
-Received: from arinc9-PC.lan (37.120.152.236 [37.120.152.236]) by mx.zohomail.com
-        with SMTPS id 1661415830692840.2140356682969; Thu, 25 Aug 2022 01:23:50 -0700 (PDT)
-From:   =?UTF-8?q?Ar=C4=B1n=C3=A7=20=C3=9CNAL?= <arinc.unal@arinc9.com>
-To:     Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        Sean Wang <sean.wang@mediatek.com>,
-        Landen Chao <Landen.Chao@mediatek.com>,
-        DENG Qingfang <dqfext@gmail.com>,
-        Frank Wunderlich <frank-w@public-files.de>,
-        Luiz Angelo Daros de Luca <luizluca@gmail.com>,
-        Sander Vanheule <sander@svanheule.net>,
-        Daniel Golle <daniel@makrotopia.org>, erkin.bozoglu@xeront.com,
-        Sergio Paracuellos <sergio.paracuellos@gmail.com>
-Cc:     netdev@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org,
-        =?UTF-8?q?Ar=C4=B1n=C3=A7=20=C3=9CNAL?= <arinc.unal@arinc9.com>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Subject: [PATCH v6 6/6] dt-bindings: net: dsa: mediatek,mt7530: update binding description
-Date:   Thu, 25 Aug 2022 11:23:01 +0300
-Message-Id: <20220825082301.409450-7-arinc.unal@arinc9.com>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220825082301.409450-1-arinc.unal@arinc9.com>
-References: <20220825082301.409450-1-arinc.unal@arinc9.com>
+        Thu, 25 Aug 2022 04:25:43 -0400
+Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5C3A674378;
+        Thu, 25 Aug 2022 01:25:09 -0700 (PDT)
+Date:   Thu, 25 Aug 2022 10:25:05 +0200
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020; t=1661415906;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=I+OR5YB+BLFNevDPHUusJLUnA4AAkcWyBeiJfeMJGqo=;
+        b=3IBTa8m0hYX4g47RaiT/8j8T78Oa8GCMeWBExbrcwFPwlNixTGZHdPyk8R7VZquIIC80wr
+        H6RmoQrIcPVa4H/h/93KAfDCL3hxfKONW3wp2MYvaFs3atU9uhl+6WiYdRYcHRid1QerLu
+        +hVKpdbrUHUp1h3DNx02k03TncLw98ur4aZoJ6LkSsRb2ORchWoqrEtkTc37dz456Z3BD7
+        wTYUuuCNSZSGn0AO3JgapjpUscP1fq9xXEjUTjmdA1NlsK7m3XtvWEdE+3+2hj6tSpl+i9
+        FLLfCJrZoNEm03/BcgXG8UsndhQVK4jTyAHPTt15wq1JOpmucrPRjg9TuUHISQ==
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020e; t=1661415906;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=I+OR5YB+BLFNevDPHUusJLUnA4AAkcWyBeiJfeMJGqo=;
+        b=qdOsv/2fa3HTVE2Xit7I736gOQEAJKwmF4VVbOVradxW8PYfqmDnSqxUbjhHENWiyBYRCB
+        8EIV+CPZ3fm43FAg==
+From:   Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+To:     Arnd Bergmann <arnd@kernel.org>
+Cc:     linux-arch <linux-arch@vger.kernel.org>,
+        linux-kernel@vger.kernel.org, Thomas Gleixner <tglx@linutronix.de>,
+        Linus Torvalds <torvalds@linux-foundation.org>
+Subject: [PATCH v2 REPOST] asm-generic: Conditionally enable
+ do_softirq_own_stack() via Kconfig.
+Message-ID: <Ywcx4QBdYNIBLJiy@linutronix.de>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
-X-ZohoMailClient: External
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Update the description of the binding.
+Remove the CONFIG_PREEMPT_RT symbol from the ifdef around
+do_softirq_own_stack() and move it to Kconfig instead.
 
-- Describe the switches, which SoCs they are in, or if they are standalone.
-- Explain the various ways of configuring MT7530's port 5.
-- Remove phy-mode = "rgmii-txid" from description. Same code path is
-followed for delayed rgmii and rgmii phy-mode on mtk_eth_soc.c.
+Enable softirq stacks based on SOFTIRQ_ON_OWN_STACK which depends on
+HAVE_SOFTIRQ_ON_OWN_STACK and its default value is set to !PREEMPT_RT.
+This ensures that softirq stacks are not used on PREEMPT_RT and avoids
+a 'select' statement on an option which has a 'depends' statement.
 
-Signed-off-by: Arınç ÜNAL <arinc.unal@arinc9.com>
-Acked-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Link: https://lore.kernel.org/YvN5E%2FPrHfUhggr7@linutronix.de
+Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
 ---
- .../bindings/net/dsa/mediatek,mt7530.yaml     | 97 ++++++++++++-------
- 1 file changed, 62 insertions(+), 35 deletions(-)
 
-diff --git a/Documentation/devicetree/bindings/net/dsa/mediatek,mt7530.yaml b/Documentation/devicetree/bindings/net/dsa/mediatek,mt7530.yaml
-index fe8ecaf60240..f9e7b6e20b35 100644
---- a/Documentation/devicetree/bindings/net/dsa/mediatek,mt7530.yaml
-+++ b/Documentation/devicetree/bindings/net/dsa/mediatek,mt7530.yaml
-@@ -13,41 +13,68 @@ maintainers:
-   - Sean Wang <sean.wang@mediatek.com>
- 
- description: |
--  Port 5 of mt7530 and mt7621 switch is muxed between:
--  1. GMAC5: GMAC5 can interface with another external MAC or PHY.
--  2. PHY of port 0 or port 4: PHY interfaces with an external MAC like 2nd GMAC
--     of the SOC. Used in many setups where port 0/4 becomes the WAN port.
--     Note: On a MT7621 SOC with integrated switch: 2nd GMAC can only connected to
--       GMAC5 when the gpios for RGMII2 (GPIO 22-33) are not used and not
--       connected to external component!
--
--  Port 5 modes/configurations:
--  1. Port 5 is disabled and isolated: An external phy can interface to the 2nd
--     GMAC of the SOC.
--     In the case of a build-in MT7530 switch, port 5 shares the RGMII bus with 2nd
--     GMAC and an optional external phy. Mind the GPIO/pinctl settings of the SOC!
--  2. Port 5 is muxed to PHY of port 0/4: Port 0/4 interfaces with 2nd GMAC.
--     It is a simple MAC to PHY interface, port 5 needs to be setup for xMII mode
--     and RGMII delay.
--  3. Port 5 is muxed to GMAC5 and can interface to an external phy.
--     Port 5 becomes an extra switch port.
--     Only works on platform where external phy TX<->RX lines are swapped.
--     Like in the Ubiquiti ER-X-SFP.
--  4. Port 5 is muxed to GMAC5 and interfaces with the 2nd GAMC as 2nd CPU port.
--     Currently a 2nd CPU port is not supported by DSA code.
--
--  Depending on how the external PHY is wired:
--  1. normal: The PHY can only connect to 2nd GMAC but not to the switch
--  2. swapped: RGMII TX, RX are swapped; external phy interface with the switch as
--     a ethernet port. But can't interface to the 2nd GMAC.
--
--    Based on the DT the port 5 mode is configured.
--
--  Driver tries to lookup the phy-handle of the 2nd GMAC of the master device.
--  When phy-handle matches PHY of port 0 or 4 then port 5 set-up as mode 2.
--  phy-mode must be set, see also example 2 below!
--  * mt7621: phy-mode = "rgmii-txid";
--  * mt7623: phy-mode = "rgmii";
-+  There are two versions of MT7530, standalone and in a multi-chip module.
-+
-+  MT7530 is a part of the multi-chip module in MT7620AN, MT7620DA, MT7620DAN,
-+  MT7620NN, MT7621AT, MT7621DAT, MT7621ST and MT7623AI SoCs.
-+
-+  MT7530 in MT7620AN, MT7620DA, MT7620DAN and MT7620NN SoCs has got 10/100 PHYs
-+  and the switch registers are directly mapped into SoC's memory map rather than
-+  using MDIO. The DSA driver currently doesn't support this.
-+
-+  There is only the standalone version of MT7531.
-+
-+  Port 5 on MT7530 has got various ways of configuration.
-+
-+  For standalone MT7530:
-+
-+    - Port 5 can be used as a CPU port.
-+
-+    - PHY 0 or 4 of the switch can be muxed to connect to the gmac of the SoC
-+      which port 5 is wired to. Usually used for connecting the wan port
-+      directly to the CPU to achieve 2 Gbps routing in total.
-+
-+      The driver looks up the reg on the ethernet-phy node which the phy-handle
-+      property refers to on the gmac node to mux the specified phy.
-+
-+      The driver requires the gmac of the SoC to have "mediatek,eth-mac" as the
-+      compatible string and the reg must be 1. So, for now, only gmac1 of an
-+      MediaTek SoC can benefit this. Banana Pi BPI-R2 suits this.
-+      Check out example 5 for a similar configuration.
-+
-+    - Port 5 can be wired to an external phy. Port 5 becomes a DSA slave.
-+      Check out example 7 for a similar configuration.
-+
-+  For multi-chip module MT7530:
-+
-+    - Port 5 can be used as a CPU port.
-+
-+    - PHY 0 or 4 of the switch can be muxed to connect to gmac1 of the SoC.
-+      Usually used for connecting the wan port directly to the CPU to achieve 2
-+      Gbps routing in total.
-+
-+      The driver looks up the reg on the ethernet-phy node which the phy-handle
-+      property refers to on the gmac node to mux the specified phy.
-+
-+      For the MT7621 SoCs, rgmii2 group must be claimed with rgmii2 function.
-+      Check out example 5.
-+
-+    - In case of an external phy wired to gmac1 of the SoC, port 5 must not be
-+      enabled.
-+
-+      In case of muxing PHY 0 or 4, the external phy must not be enabled.
-+
-+      For the MT7621 SoCs, rgmii2 group must be claimed with rgmii2 function.
-+      Check out example 6.
-+
-+    - Port 5 can be muxed to an external phy. Port 5 becomes a DSA slave.
-+      The external phy must be wired TX to TX to gmac1 of the SoC for this to
-+      work. Ubiquiti EdgeRouter X SFP is wired this way.
-+
-+      Muxing PHY 0 or 4 won't work when the external phy is connected TX to TX.
-+
-+      For the MT7621 SoCs, rgmii2 group must be claimed with gpio function.
-+      Check out example 7.
- 
- properties:
-   compatible:
--- 
-2.34.1
+Arnd, could you please route it via your tree?=20
 
+v1=E2=80=A6v2:
+   - Use "def_bool HAVE_SOFTIRQ_ON_OWN_STACK && !PREEMPT_RT"
+
+ arch/Kconfig                          |    3 +++
+ arch/arm/kernel/irq.c                 |    2 +-
+ arch/parisc/kernel/irq.c              |    2 +-
+ arch/powerpc/kernel/irq.c             |    4 ++--
+ arch/s390/include/asm/softirq_stack.h |    2 +-
+ arch/sh/kernel/irq.c                  |    2 +-
+ arch/sparc/kernel/irq_64.c            |    2 +-
+ arch/x86/include/asm/irq_stack.h      |    2 +-
+ arch/x86/kernel/irq_32.c              |    2 +-
+ include/asm-generic/softirq_stack.h   |    2 +-
+ 10 files changed, 13 insertions(+), 10 deletions(-)
+
+--- a/arch/Kconfig
++++ b/arch/Kconfig
+@@ -923,6 +923,9 @@ config HAVE_SOFTIRQ_ON_OWN_STACK
+ 	  Architecture provides a function to run __do_softirq() on a
+ 	  separate stack.
+=20
++config SOFTIRQ_ON_OWN_STACK
++	def_bool HAVE_SOFTIRQ_ON_OWN_STACK && !PREEMPT_RT
++
+ config ALTERNATE_USER_ADDRESS_SPACE
+ 	bool
+ 	help
+--- a/arch/arm/kernel/irq.c
++++ b/arch/arm/kernel/irq.c
+@@ -70,7 +70,7 @@ static void __init init_irq_stacks(void)
+ 	}
+ }
+=20
+-#ifndef CONFIG_PREEMPT_RT
++#ifdef CONFIG_SOFTIRQ_ON_OWN_STACK
+ static void ____do_softirq(void *arg)
+ {
+ 	__do_softirq();
+--- a/arch/parisc/kernel/irq.c
++++ b/arch/parisc/kernel/irq.c
+@@ -480,7 +480,7 @@ static void execute_on_irq_stack(void *f
+ 	*irq_stack_in_use =3D 1;
+ }
+=20
+-#ifndef CONFIG_PREEMPT_RT
++#ifdef CONFIG_SOFTIRQ_ON_OWN_STACK
+ void do_softirq_own_stack(void)
+ {
+ 	execute_on_irq_stack(__do_softirq, 0);
+--- a/arch/powerpc/kernel/irq.c
++++ b/arch/powerpc/kernel/irq.c
+@@ -199,7 +199,7 @@ static inline void check_stack_overflow(
+ 	}
+ }
+=20
+-#ifndef CONFIG_PREEMPT_RT
++#ifdef CONFIG_SOFTIRQ_ON_OWN_STACK
+ static __always_inline void call_do_softirq(const void *sp)
+ {
+ 	/* Temporarily switch r1 to sp, call __do_softirq() then restore r1. */
+@@ -335,7 +335,7 @@ void *mcheckirq_ctx[NR_CPUS] __read_most
+ void *softirq_ctx[NR_CPUS] __read_mostly;
+ void *hardirq_ctx[NR_CPUS] __read_mostly;
+=20
+-#ifndef CONFIG_PREEMPT_RT
++#ifdef CONFIG_SOFTIRQ_ON_OWN_STACK
+ void do_softirq_own_stack(void)
+ {
+ 	call_do_softirq(softirq_ctx[smp_processor_id()]);
+--- a/arch/s390/include/asm/softirq_stack.h
++++ b/arch/s390/include/asm/softirq_stack.h
+@@ -5,7 +5,7 @@
+ #include <asm/lowcore.h>
+ #include <asm/stacktrace.h>
+=20
+-#ifndef CONFIG_PREEMPT_RT
++#ifdef CONFIG_SOFTIRQ_ON_OWN_STACK
+ static inline void do_softirq_own_stack(void)
+ {
+ 	call_on_stack(0, S390_lowcore.async_stack, void, __do_softirq);
+--- a/arch/sh/kernel/irq.c
++++ b/arch/sh/kernel/irq.c
+@@ -149,7 +149,7 @@ void irq_ctx_exit(int cpu)
+ 	hardirq_ctx[cpu] =3D NULL;
+ }
+=20
+-#ifndef CONFIG_PREEMPT_RT
++#ifdef CONFIG_SOFTIRQ_ON_OWN_STACK
+ void do_softirq_own_stack(void)
+ {
+ 	struct thread_info *curctx;
+--- a/arch/sparc/kernel/irq_64.c
++++ b/arch/sparc/kernel/irq_64.c
+@@ -855,7 +855,7 @@ void __irq_entry handler_irq(int pil, st
+ 	set_irq_regs(old_regs);
+ }
+=20
+-#ifndef CONFIG_PREEMPT_RT
++#ifdef CONFIG_SOFTIRQ_ON_OWN_STACK
+ void do_softirq_own_stack(void)
+ {
+ 	void *orig_sp, *sp =3D softirq_stack[smp_processor_id()];
+--- a/arch/x86/include/asm/irq_stack.h
++++ b/arch/x86/include/asm/irq_stack.h
+@@ -203,7 +203,7 @@
+ 			      IRQ_CONSTRAINTS, regs, vector);		\
+ }
+=20
+-#ifndef CONFIG_PREEMPT_RT
++#ifdef CONFIG_SOFTIRQ_ON_OWN_STACK
+ /*
+  * Macro to invoke __do_softirq on the irq stack. This is only called from
+  * task context when bottom halves are about to be reenabled and soft
+--- a/arch/x86/kernel/irq_32.c
++++ b/arch/x86/kernel/irq_32.c
+@@ -132,7 +132,7 @@ int irq_init_percpu_irqstack(unsigned in
+ 	return 0;
+ }
+=20
+-#ifndef CONFIG_PREEMPT_RT
++#ifdef CONFIG_SOFTIRQ_ON_OWN_STACK
+ void do_softirq_own_stack(void)
+ {
+ 	struct irq_stack *irqstk;
+--- a/include/asm-generic/softirq_stack.h
++++ b/include/asm-generic/softirq_stack.h
+@@ -2,7 +2,7 @@
+ #ifndef __ASM_GENERIC_SOFTIRQ_STACK_H
+ #define __ASM_GENERIC_SOFTIRQ_STACK_H
+=20
+-#if defined(CONFIG_HAVE_SOFTIRQ_ON_OWN_STACK) && !defined(CONFIG_PREEMPT_R=
+T)
++#ifdef CONFIG_SOFTIRQ_ON_OWN_STACK
+ void do_softirq_own_stack(void);
+ #else
+ static inline void do_softirq_own_stack(void)
