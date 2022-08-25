@@ -2,45 +2,88 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0CD9FC04AA5
-	for <linux-kernel@archiver.kernel.org>; Thu, 25 Aug 2022 10:54:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 52297C3F6B0
+	for <linux-kernel@archiver.kernel.org>; Thu, 25 Aug 2022 10:55:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241267AbiHYKyF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 25 Aug 2022 06:54:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53158 "EHLO
+        id S241259AbiHYKz2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 25 Aug 2022 06:55:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55840 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240996AbiHYKyD (ORCPT
+        with ESMTP id S236135AbiHYKzZ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 25 Aug 2022 06:54:03 -0400
-Received: from out30-42.freemail.mail.aliyun.com (out30-42.freemail.mail.aliyun.com [115.124.30.42])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3D16CADCC2
-        for <linux-kernel@vger.kernel.org>; Thu, 25 Aug 2022 03:54:01 -0700 (PDT)
-X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R641e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=ay29a033018046059;MF=baolin.wang@linux.alibaba.com;NM=1;PH=DS;RN=6;SR=0;TI=SMTPD_---0VNDJSvi_1661424837;
-Received: from 30.97.48.44(mailfrom:baolin.wang@linux.alibaba.com fp:SMTPD_---0VNDJSvi_1661424837)
-          by smtp.aliyun-inc.com;
-          Thu, 25 Aug 2022 18:53:58 +0800
-Message-ID: <9b5b9b7a-3cba-37a1-411a-5031a67208fe@linux.alibaba.com>
-Date:   Thu, 25 Aug 2022 18:54:07 +0800
+        Thu, 25 Aug 2022 06:55:25 -0400
+Received: from mail-wr1-x430.google.com (mail-wr1-x430.google.com [IPv6:2a00:1450:4864:20::430])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5DAB1A3D12;
+        Thu, 25 Aug 2022 03:55:22 -0700 (PDT)
+Received: by mail-wr1-x430.google.com with SMTP id d16so18806398wrr.3;
+        Thu, 25 Aug 2022 03:55:22 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc;
+        bh=oyZcoTjyMEtcZwV3/B5W+C8C7NFVH52CzyEkKb2OUx8=;
+        b=HyQhg4wiLRifkwd4Ez1urfVRyWOqbp8ET3k+QElmPkt7sCxV5boK9k2iU13762E8+e
+         zdoCcBKNoJDiwmfqijDkGwjilQgzui09HRSUDb2C6eBsW8rg90iJw9cxa8YPBWiB34xT
+         2KhyRqE4JisnQhAJSiPyRjxwDaABHbBFSVLlj5TwCroYRaFanXzRqwqr2DdINe/Z0M3a
+         i7lGePKh32lclpl2LYBg7h5MIKhH/zAfWTBqmcebxrYiO+ncf3owoh4dECebwosQXDCF
+         jJYG1gtp9Ve/nQHVyqPPC2QM0oOsl41xu/nCEKHJluDdILGBvf8H4bAM9WzMhU09Uvxp
+         genQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc;
+        bh=oyZcoTjyMEtcZwV3/B5W+C8C7NFVH52CzyEkKb2OUx8=;
+        b=3cGuEkMsAIzdMDgvqZwW/s2NhxZCu8MhWP+rSDx2bS6WKtocPDBsvo+jWbAmJEigez
+         szDCmbgGJh3ZV0gTx8qY2nchqHSSIZ9PSbYE3xqCe+xI+6fr3whem5uJeiUBqi/q3IRA
+         Oj2F1HpxosePOpLRJ2p9gbsulQIRL4XjAovwCKxBMRPOJj9zefO51ABPG/xBDktJQWMm
+         /Q9woEI/3dhKJEsAy3EiIwnefUpDvo5e1WmxIKidLtOiT/2DKbho5iokPRJ4kkmFfCQA
+         Ell2zaNBbn8IvKUalgr8FAX1ivOhutdfAfzaARNVaccgGg8GO5SC04FfsTRLpTNNQZ2X
+         AP7g==
+X-Gm-Message-State: ACgBeo0wfzE2ow+YEQM44MXf9v4MR76s5SaEG8jpmOpwp+CpHgg+jnKu
+        8/4vyC4GGjcyyh6OmTRi3xg=
+X-Google-Smtp-Source: AA6agR5MIH97H7VnI/JMrU8PJjngbC1n3DjQcGnGPLXQLX5ZM2HtkMsxgBi+UZuCs5VUBb+oKGw8EQ==
+X-Received: by 2002:a5d:5a83:0:b0:225:62e3:9d38 with SMTP id bp3-20020a5d5a83000000b0022562e39d38mr1924361wrb.37.1661424920903;
+        Thu, 25 Aug 2022 03:55:20 -0700 (PDT)
+Received: from [192.168.2.177] ([207.188.167.132])
+        by smtp.gmail.com with ESMTPSA id f14-20020a5d568e000000b0021e4829d359sm19068761wrv.39.2022.08.25.03.55.19
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 25 Aug 2022 03:55:19 -0700 (PDT)
+Message-ID: <f7ec45b8-ccd7-4776-0524-269e3188883d@gmail.com>
+Date:   Thu, 25 Aug 2022 12:55:18 +0200
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.12.0
-Subject: Re: [PATCH v2 1/5] mm/hugetlb: fix races when looking up a CONT-PTE
- size hugetlb page
-To:     David Hildenbrand <david@redhat.com>,
-        Mike Kravetz <mike.kravetz@oracle.com>
-Cc:     akpm@linux-foundation.org, songmuchun@bytedance.com,
-        linux-mm@kvack.org, linux-kernel@vger.kernel.org
-References: <cover.1661240170.git.baolin.wang@linux.alibaba.com>
- <0e5d92da043d147a867f634b17acbcc97a7f0e64.1661240170.git.baolin.wang@linux.alibaba.com>
- <4c24b891-04ce-2608-79d2-a75dc236533f@redhat.com>
- <376d2e0a-d28a-984b-903c-1f6451b04a15@linux.alibaba.com>
- <7d4e7f47-30a5-3cc6-dc9f-aa89120847d8@redhat.com> <YwVo7xSO+VebkIfQ@monkey>
- <64669c0a-4a6e-f034-a15b-c4a8deea9e5d@linux.alibaba.com>
- <7ee73879-e402-9175-eae8-41471d80d59e@redhat.com>
- <f7544713-d856-0875-41dd-52a5c27ba015@linux.alibaba.com>
- <Ywa1jp/6naTmUh42@monkey> <887ca2e2-a7c5-93a7-46cb-185daccd4444@redhat.com>
-From:   Baolin Wang <baolin.wang@linux.alibaba.com>
-In-Reply-To: <887ca2e2-a7c5-93a7-46cb-185daccd4444@redhat.com>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.1.2
+Subject: Re: [PATCH] dt-bindings: arm: mediatek: mmsys: change compatible for
+ MT8195
+Content-Language: en-US
+To:     Bo-Chen Chen <rex-bc.chen@mediatek.com>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+        "robh+dt@kernel.org" <robh+dt@kernel.org>,
+        "krzysztof.kozlowski+dt@linaro.org" 
+        <krzysztof.kozlowski+dt@linaro.org>
+Cc:     =?UTF-8?B?SmFzb24tSkggTGluICjmnpfnnb/npaUp?= 
+        <Jason-JH.Lin@mediatek.com>,
+        =?UTF-8?B?TmFuY3kgTGluICjmnpfmrKPonqIp?= <Nancy.Lin@mediatek.com>,
+        =?UTF-8?B?Q0sgSHUgKOiDoeS/iuWFiSk=?= <ck.hu@mediatek.com>,
+        "chunkuang.hu@kernel.org" <chunkuang.hu@kernel.org>,
+        "angelogioacchino.delregno@collabora.com" 
+        <angelogioacchino.delregno@collabora.com>,
+        "hsinyi@google.com" <hsinyi@google.com>,
+        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "linux-arm-kernel@lists.infradead.org" 
+        <linux-arm-kernel@lists.infradead.org>,
+        "linux-mediatek@lists.infradead.org" 
+        <linux-mediatek@lists.infradead.org>,
+        Project_Global_Chrome_Upstream_Group 
+        <Project_Global_Chrome_Upstream_Group@mediatek.com>
+References: <20220825055658.12429-1-rex-bc.chen@mediatek.com>
+ <3ff08ae9-a4b6-2b74-23cb-69ea1d7e1033@linaro.org>
+ <d5a00dc88bed1680caa8af895a1140324b9d079e.camel@mediatek.com>
+From:   Matthias Brugger <matthias.bgg@gmail.com>
+In-Reply-To: <d5a00dc88bed1680caa8af895a1140324b9d079e.camel@mediatek.com>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
@@ -49,305 +92,61 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 
 
-On 8/25/2022 3:25 PM, David Hildenbrand wrote:
->> Is the primary concern the locking?  If so, I am not sure we have an issue.
->> As mentioned in your commit message, current code will use
->> pte_offset_map_lock().  pte_offset_map_lock uses pte_lockptr, and pte_lockptr
->> will either be the mm wide lock or pmd_page lock.  To me, it seems that
->> either would provide correct synchronization for CONT-PTE entries.  Am I
->> missing something or misreading the code?
+On 25/08/2022 08:59, Bo-Chen Chen wrote:
+> On Thu, 2022-08-25 at 14:11 +0800, Krzysztof Kozlowski wrote:
+>> On 25/08/2022 08:56, Bo-Chen Chen wrote:
+>>> From: "Jason-JH.Lin" <jason-jh.lin@mediatek.com>
+>>>
+>>> For previous MediaTek SoCs, such as MT8173, there are 2 display HW
+>>> pipelines binding to 1 mmsys with the same power domain, the same
+>>> clock driver and the same mediatek-drm driver.
+>>>
+>>> For MT8195, VDOSYS0 and VDOSYS1 are 2 display HW pipelines binding
+>>> to
+>>> 2 different power domains, different clock drivers and different
+>>> mediatek-drm drivers.
+
+drop clock driver example here.
+
 >>
->> I started looking at code cleanup suggested by David.  Here is a quick
->> patch (not tested and likely containing errors) to see if this is a step
->> in the right direction.
+>> I don't see binding to different clock drivers and anyway that's not
+>> really an argument here. Please focus in description on hardware
+>> properties, IOW, are devices compatible or different. What is the
+>> incompatible difference between VDOSYS0 and 1?
 >>
->> I like it because we get rid of/combine all those follow_huge_p*d
->> routines.
->>
+>> Best regards,
+>> Krzysztof
 > 
-> Yes, see comments below.
+> Hello Krzysztof,
 > 
->>  From 35d117a707c1567ddf350554298697d40eace0d7 Mon Sep 17 00:00:00 2001
->> From: Mike Kravetz <mike.kravetz@oracle.com>
->> Date: Wed, 24 Aug 2022 15:59:15 -0700
->> Subject: [PATCH] hugetlb: call hugetlb_follow_page_mask for hugetlb pages in
->>   follow_page_mask
->>
->> At the beginning of follow_page_mask, there currently is a call to
->> follow_huge_addr which 'may' handle hugetlb pages.  ia64 is the only
->> architecture which (incorrectly) provides a follow_huge_addr routine
->> that does not return error.  Instead, at each level of the page table a
->> check is made for a hugetlb entry.  If a hugetlb entry is found, a call
->> to a routine associated with that page table level such as
->> follow_huge_pmd is made.
->>
->> All the follow_huge_p*d routines are basically the same.  In addition
->> huge page size can be derived from the vma, so we know where in the page
->> table a huge page would reside.  So, replace follow_huge_addr with a
->> new architecture independent routine which will provide the same
->> functionality as the follow_huge_p*d routines.  We can then eliminate
->> the p*d_huge checks in follow_page_mask page table walking as well as
->> the follow_huge_p*d routines themselves.>
->> follow_page_mask still has is_hugepd hugetlb checks during page table
->> walking.  This is due to these checks and follow_huge_pd being
->> architecture specific.  These can be eliminated if
->> hugetlb_follow_page_mask can be overwritten by architectures (powerpc)
->> that need to do follow_huge_pd processing.
+> Thanks for yor review.
 > 
-> But won't the
+>  From the functions perspective:
 > 
->> +	/* hugetlb is special */
->> +	if (is_vm_hugetlb_page(vma))
->> +		return hugetlb_follow_page_mask(vma, address, flags);
+> Hardware pipeline of VDOSYS0 has these components: COLOR, CCORR, AAL,
+> GAMMA, DITHER.
+> They are related to PQ (Picture Quality) functions and they makes
+> VDOSYS0 supports PQ function while they are not including in VDOSYS1.
 > 
-> code route everything via hugetlb_follow_page_mask() and all these
-> (beloved) hugepd checks would essentially be unreachable?
+> Hardware pipeline of VDOSYS1 has the component ETHDR (HDR related
+> component).
+> It makes VDOSYS1 supports the HDR function while it's not including in
+> VDOSYS0.
 > 
-> At least my understanding is that hugepd only applies to hugetlb.
+
+Please include a description of this in the commit message.
+
+> About mediatek ETHDR, you can refer to this series:
 > 
-> Can't we move the hugepd handling code into hugetlb_follow_page_mask()
-> as well?
+> https://lore.kernel.org/all/20220819061456.8042-2-nancy.lin@mediatek.com/
 > 
-> I mean, doesn't follow_hugetlb_page() also have to handle that hugepd
-> stuff already ... ?
-
-Yes, I also think about this, and I did a simple patch (without testing) 
-based on Mike's patch to make it more clean.
-
-diff --git a/mm/gup.c b/mm/gup.c
-index d3239ea63159..1003c03dcf78 100644
---- a/mm/gup.c
-+++ b/mm/gup.c
-@@ -626,14 +626,7 @@ static struct page *follow_pmd_mask(struct 
-vm_area_struct *vma,
-         pmdval = READ_ONCE(*pmd);
-         if (pmd_none(pmdval))
-                 return no_page_table(vma, flags);
--       if (is_hugepd(__hugepd(pmd_val(pmdval)))) {
--               page = follow_huge_pd(vma, address,
--                                     __hugepd(pmd_val(pmdval)), flags,
--                                     PMD_SHIFT);
--               if (page)
--                       return page;
--               return no_page_table(vma, flags);
--       }
-+
-  retry:
-         if (!pmd_present(pmdval)) {
-                 /*
-@@ -723,14 +716,6 @@ static struct page *follow_pud_mask(struct 
-vm_area_struct *vma,
-         pud = pud_offset(p4dp, address);
-         if (pud_none(*pud))
-                 return no_page_table(vma, flags);
--       if (is_hugepd(__hugepd(pud_val(*pud)))) {
--               page = follow_huge_pd(vma, address,
--                                     __hugepd(pud_val(*pud)), flags,
--                                     PUD_SHIFT);
--               if (page)
--                       return page;
--               return no_page_table(vma, flags);
--       }
-         if (pud_devmap(*pud)) {
-                 ptl = pud_lock(mm, pud);
-                 page = follow_devmap_pud(vma, address, pud, flags, 
-&ctx->pgmap);
-@@ -759,14 +744,6 @@ static struct page *follow_p4d_mask(struct 
-vm_area_struct *vma,
-         if (unlikely(p4d_bad(*p4d)))
-                 return no_page_table(vma, flags);
-
--       if (is_hugepd(__hugepd(p4d_val(*p4d)))) {
--               page = follow_huge_pd(vma, address,
--                                     __hugepd(p4d_val(*p4d)), flags,
--                                     P4D_SHIFT);
--               if (page)
--                       return page;
--               return no_page_table(vma, flags);
--       }
-         return follow_pud_mask(vma, address, p4d, flags, ctx);
-  }
-
-@@ -813,15 +790,6 @@ static struct page *follow_page_mask(struct 
-vm_area_struct *vma,
-         if (pgd_none(*pgd) || unlikely(pgd_bad(*pgd)))
-                 return no_page_table(vma, flags);
-
--       if (is_hugepd(__hugepd(pgd_val(*pgd)))) {
--               page = follow_huge_pd(vma, address,
--                                     __hugepd(pgd_val(*pgd)), flags,
--                                     PGDIR_SHIFT);
--               if (page)
--                       return page;
--               return no_page_table(vma, flags);
--       }
--
-         return follow_p4d_mask(vma, address, pgd, flags, ctx);
-  }
-
-diff --git a/mm/hugetlb.c b/mm/hugetlb.c
-index 2c107e7ebd66..848b4fb7a05d 100644
---- a/mm/hugetlb.c
-+++ b/mm/hugetlb.c
-@@ -6118,6 +6118,81 @@ static inline bool 
-__follow_hugetlb_must_fault(unsigned int flags, pte_t *pte,
-         return false;
-  }
-
-+static struct page *hugetlb_follow_hugepd(struct vm_area_struct *vma,
-+                                         unsigned long address,
-+                                         unsigned int flags)
-+{
-+       struct mm_struct *mm = vma->vm_mm;
-+       struct page *page;
-+       pgd_t *pgd;
-+       p4d_t *p4d;
-+       pud_t *pud;
-+       pmd_t *pmd;
-+
-+       pgd = pgd_offset(mm, address);
-+       if (pgd_none(*pgd) || pgd_bad(*pgd))
-+               return ERR_PTR(-EFAULT);
-+
-+       if (pgd_huge(*pgd))
-+               return NULL;
-+
-+       if (is_hugepd(__hugepd(pgd_val(*pgd)))) {
-+               page = follow_huge_pd(vma, address,
-+                                     __hugepd(pgd_val(*pgd)), flags,
-+                                     PGDIR_SHIFT);
-+               if (page)
-+                       return page;
-+               return ERR_PTR(-EFAULT);
-+       }
-+
-+       p4d = p4d_offset(pgd, address);
-+       if (p4d_none(*p4d) || p4d_bad(*p4d))
-+               return ERR_PTR(-EFAULT);
-+
-+       if (is_hugepd(__hugepd(p4d_val(*p4d)))) {
-+               page = follow_huge_pd(vma, address,
-+                                     __hugepd(p4d_val(*p4d)), flags,
-+                                     P4D_SHIFT);
-+               if (page)
-+                       return page;
-+               return ERR_PTR(-EFAULT);
-+       }
-+
-+       pud = pud_offset(p4d, address);
-+       if (pud_none(*pud) || pud_bad(*pud))
-+               return ERR_PTR(-EFAULT);
-+
-+       if (pud_huge(*pud))
-+               return NULL;
-+
-+       if (is_hugepd(__hugepd(pud_val(*pud)))) {
-+               page = follow_huge_pd(vma, address,
-+                                     __hugepd(pud_val(*pud)), flags,
-+                                     PUD_SHIFT);
-+               if (page)
-+                       return page;
-+               return ERR_PTR(-EFAULT);
-+       }
-+
-+       pmd = pmd_offset(pud, address);+       if (pmd_none(*pmd) || 
-pmd_bad(*pmd))
-+                return ERR_PTR(-EFAULT);
-+
-+       if (pmd_huge(*pmd))
-+               return NULL;
-+
-+       if (is_hugepd(__hugepd(pmd_val(*pmd)))) {
-+               page = follow_huge_pd(vma, address,
-+                                     __hugepd(pmd_val(*pmd)), flags,
-+                                     PMD_SHIFT);
-+               if (page)
-+                       return page;
-+               return ERR_PTR(-EFAULT);
-+       }
-+
-+       return NULL;
-+}
-+
-  struct page *hugetlb_follow_page_mask(struct vm_area_struct *vma,
-                                 unsigned long address, unsigned int flags)
-  {
-@@ -6135,6 +6210,10 @@ struct page *hugetlb_follow_page_mask(struct 
-vm_area_struct *vma,
-         if (WARN_ON_ONCE(flags & FOLL_PIN))
-                 return NULL;
-
-+       page = hugetlb_follow_hugepd(vma, address, flags);
-+       if (page)
-+               return page;
-+
-         pte = huge_pte_offset(mm, haddr, huge_page_size(h));
-         if (!pte)
-                 return NULL;
-
-
->>   
->> +struct page *hugetlb_follow_page_mask(struct vm_area_struct *vma,
->> +				unsigned long address, unsigned int flags)
->> +{
->> +	struct hstate *h = hstate_vma(vma);
->> +	struct mm_struct *mm = vma->vm_mm;
->> +	unsigned long haddr = address & huge_page_mask(h);
->> +	struct page *page = NULL;
->> +	spinlock_t *ptl;
->> +	pte_t *pte, entry;
->> +
->> +	/*
->> +	 * FOLL_PIN is not supported for follow_page(). Ordinary GUP goes via
->> +	 * follow_hugetlb_page().
->> +	 */
->> +	if (WARN_ON_ONCE(flags & FOLL_PIN))
->> +		return NULL;
->> +
->> +	pte = huge_pte_offset(mm, haddr, huge_page_size(h));
->> +	if (!pte)
->> +		return NULL;
->> +
->> +retry:
->> +	ptl = huge_pte_lock(h, mm, pte);
->> +	entry = huge_ptep_get(pte);
->> +	if (pte_present(entry)) {
->> +		page = pte_page(entry);
->> +		/*
->> +		 * try_grab_page() should always succeed here, because we hold
->> +		 * the ptl lock and have verified pte_present().
->> +		 */
->> +		if (WARN_ON_ONCE(!try_grab_page(page, flags))) {
->> +			page = NULL;
->> +			goto out;
->> +		}
->> +	} else {
->> +		if (is_hugetlb_entry_migration(entry)) {
->> +			spin_unlock(ptl);
->> +			__migration_entry_wait_huge(pte, ptl);
->> +			goto retry;
->> +		}
->> +		/*
->> +		 * hwpoisoned entry is treated as no_page_table in
->> +		 * follow_page_mask().
->> +		 */
->> +	}
->> +out:
->> +	spin_unlock(ptl);
->> +	return page;
+> To summary:
+> Only VDOSYS0 can support PQ adjustment.
+> Only VDOSYS1 can support HDR adjustment.
 > 
+> Is this description ok for you?
+> If it is ok, I will put them into commit message in next version.
 > 
-> This is neat and clean enough to not reuse follow_hugetlb_page(). I
-> wonder if we want to add some comment to the function how this differs
-> to follow_hugetlb_page().
-> 
-> ... or do we maybe want to rename follow_hugetlb_page() to someting like
-> __hugetlb_get_user_pages() to make it clearer in which context it will
-> get called?
-
-Sounds reasonable to me.
-
-> I guess it might be feasible in the future to eliminate
-> follow_hugetlb_page() and centralizing the faulting code. For now, this
-> certainly improves the situation.
+> BRs,
+> Bo-Chen
 > 
