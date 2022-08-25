@@ -2,154 +2,100 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 602ADC28D13
-	for <linux-kernel@archiver.kernel.org>; Thu, 25 Aug 2022 08:08:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 39B92C28D13
+	for <linux-kernel@archiver.kernel.org>; Thu, 25 Aug 2022 08:08:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239417AbiHYIIb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 25 Aug 2022 04:08:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46640 "EHLO
+        id S236731AbiHYIIy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 25 Aug 2022 04:08:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47194 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231615AbiHYII1 (ORCPT
+        with ESMTP id S239505AbiHYIIr (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 25 Aug 2022 04:08:27 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 58DA2A286F;
-        Thu, 25 Aug 2022 01:08:26 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 0C722B8275D;
-        Thu, 25 Aug 2022 08:08:25 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E88BFC433C1;
-        Thu, 25 Aug 2022 08:08:22 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1661414903;
-        bh=XfOFqfzXCa+k6af03iVwJecCGx56YZxl1KlR3f3DDwo=;
-        h=From:To:Cc:Subject:Date:From;
-        b=k7a8g6XEzoLLalTff7jdXR7oSs5dsEF5weJVHSYu2BF1hpeWN+/X7jsgozSdbvSnB
-         ReC+X45k6PHHHFn0DipHpSjyHzMV63uAhLIw6DWFlFKgl6HKZnVKzbA1LvfAMhdRIf
-         DRdKaYfeYc9TVf1ck/xLK2sKM/blZ+3PvFrsnuNrc5rBKrcgzQKLtzyzHymL3UmPWr
-         4fsP1912cmlmoe0FtM3uFidIgLI9xE6+nt42KDeyLFHXnGfz98vIJRMCsRjWrH9HyD
-         TggA+jXNRdx+G0vYdZIlnUMDcop8C1DLzHsI7/JihiwmwfpOwq8dni2HE8WK61WHDS
-         N/5ftX8RLPYZQ==
-From:   Jarkko Sakkinen <jarkko@kernel.org>
-To:     linux-sgx@vger.kernel.org
-Cc:     Jarkko Sakkinen <jarkko@kernel.org>,
-        Paul Menzel <pmenzel@molgen.mpg.de>,
-        Haitao Huang <haitao.huang@linux.intel.com>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        Reinette Chatre <reinette.chatre@intel.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
-        x86@kernel.org (maintainer:X86 ARCHITECTURE (32-BIT AND 64-BIT)),
-        "H. Peter Anvin" <hpa@zytor.com>,
-        linux-kernel@vger.kernel.org (open list:X86 ARCHITECTURE (32-BIT AND
-        64-BIT))
-Subject: [PATCH v3] x86/sgx: Do not consider unsanitized pages an error
-Date:   Thu, 25 Aug 2022 11:08:02 +0300
-Message-Id: <20220825080802.259528-1-jarkko@kernel.org>
-X-Mailer: git-send-email 2.37.1
+        Thu, 25 Aug 2022 04:08:47 -0400
+Received: from sipsolutions.net (s3.sipsolutions.net [IPv6:2a01:4f8:191:4433::2])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D0CC8A50CB;
+        Thu, 25 Aug 2022 01:08:43 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=sipsolutions.net; s=mail; h=MIME-Version:Content-Transfer-Encoding:
+        Content-Type:References:In-Reply-To:Date:Cc:To:From:Subject:Message-ID:Sender
+        :Reply-To:Content-ID:Content-Description:Resent-Date:Resent-From:Resent-To:
+        Resent-Cc:Resent-Message-ID; bh=jnkBb2miH3HIXnoCKdfSzn3ZLM+gMDwr3quqYEHvb5o=;
+        t=1661414923; x=1662624523; b=I5BLy7PCAC5CDtkFAOLXLxv/wZ8FI/Q/Gt20Xd2sHnXW80t
+        +dvYUqmlfRLz4y8zd0agWZwEh0ce/BxihJXQhEMgsBg4ymB6jksBLlulOwBUbBAu/OJ9r17YyXFew
+        glQChTg3xeUPJSvGlS1NdPWHNgINBehZ4daJmkB75Fo81YaOVaZpMtfwwOPoQo7xnRyWB+i2XlNY4
+        zpfgDXmE0O7CIR8H4Zpuro0jIMoa9GSXaAttdqY7nWq80KkWZJAcpz+un2+3vyKGEywNvMsdMKUB3
+        y3neyljSv/PbX2LH08Cz3pW/qmPHK/C/sVnDCoWXoKK9Ya2aEd4F5wac2GbimLfQ==;
+Received: by sipsolutions.net with esmtpsa (TLS1.3:ECDHE_X25519__RSA_PSS_RSAE_SHA256__AES_256_GCM:256)
+        (Exim 4.96)
+        (envelope-from <johannes@sipsolutions.net>)
+        id 1oR7ur-00GymP-1V;
+        Thu, 25 Aug 2022 10:08:41 +0200
+Message-ID: <f97efe8ff5f466ce938f38dc26cb76c7abcc5a71.camel@sipsolutions.net>
+Subject: Re: [PATCH] wifi: ieee80211: Fix for fragmented action frames
+From:   Johannes Berg <johannes@sipsolutions.net>
+To:     Gilad Itzkovitch <gilad.itzkovitch@morsemicro.com>
+Cc:     linux-wireless@vger.kernel.org, linux-kernel@vger.kernel.org
+Date:   Thu, 25 Aug 2022 10:08:40 +0200
+In-Reply-To: <20220810224804.2137240-1-gilad.itzkovitch@morsemicro.com>
+References: <20220810224804.2137240-1-gilad.itzkovitch@morsemicro.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+User-Agent: Evolution 3.44.4 (3.44.4-1.fc36) 
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+X-malware-bazaar: not-scanned
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-If sgx_dirty_page_list ends up being non-empty, currently this triggers
-WARN_ON(), which produces a lot of noise, and can potentially crash the
-kernel, depending on the kernel command line.
+On Thu, 2022-08-11 at 10:48 +1200, Gilad Itzkovitch wrote:
+> The robust management frame check ensures a station exists for
+> the frame before proceeding, but there are some action frame
+> categories which don't require an existing station, and so the
+> _ieee80211_is_robust_mgmt_frame function peeks into the
+> action frame's payload to identify the category and filter them out.
+>=20
+> In some scenarios, e.g. DPP at S1G data rates, action frames
+> can get fragmented. This commit adds an extra check to ensure
+> we don't peek into the payload of fragmented frames beyond the
+> first fragment.
+>=20
+> Signed-off-by: Gilad Itzkovitch <gilad.itzkovitch@morsemicro.com>
+> ---
+>  include/linux/ieee80211.h | 12 ++++++++++++
+>  1 file changed, 12 insertions(+)
+>=20
+> diff --git a/include/linux/ieee80211.h b/include/linux/ieee80211.h
+> index 55e6f4ad0ca6..5da9608fdce3 100644
+> --- a/include/linux/ieee80211.h
+> +++ b/include/linux/ieee80211.h
+> @@ -4124,6 +4124,7 @@ static inline bool _ieee80211_is_robust_mgmt_frame(=
+struct ieee80211_hdr *hdr)
+> =20
+>  	if (ieee80211_is_action(hdr->frame_control)) {
+>  		u8 *category;
+> +		u16 sc;
+> =20
+>  		/*
+>  		 * Action frames, excluding Public Action frames, are Robust
+> @@ -4134,6 +4135,17 @@ static inline bool _ieee80211_is_robust_mgmt_frame=
+(struct ieee80211_hdr *hdr)
+>  		 */
+>  		if (ieee80211_has_protected(hdr->frame_control))
+>  			return true;
+> +
+> +		/*
+> +		 * Some action frames do not have a STA associated with them,
+> +		 * so we rule them out from the robust management frame check.
+> +		 * The category is within the payload, so we only proceed if
+> +		 * we're checking the first fragment.
+> +		 */
+> +		sc =3D le16_to_cpu(hdr->seq_ctrl);
+> +		if (sc & IEEE80211_SCTL_FRAG)
+> +			return false;
+>=20
 
-However, if the SGX subsystem initialization is retracted, the sanitization
-process could end up in the middle, and sgx_dirty_page_list be left
-non-empty for legit reasons.
 
-Replace this faulty behavior with more verbose version
-__sgx_sanitize_pages(), which can optionally print EREMOVE error code and
-the number of unsanitized pages.
+This doesn't make much sense to me - why would it be allowed or
+necessary to call this function on a frame that wasn't yet defragmented?
 
-Link: https://lore.kernel.org/linux-sgx/20220825051827.246698-1-jarkko@kernel.org/T/#u
-Reported-by: Paul Menzel <pmenzel@molgen.mpg.de>
-Fixes: 51ab30eb2ad4 ("x86/sgx: Replace section->init_laundry_list with sgx_dirty_page_list")
-Signed-off-by: Jarkko Sakkinen <jarkko@kernel.org>
-
-Cc: Haitao Huang <haitao.huang@linux.intel.com>
-Cc: Dave Hansen <dave.hansen@linux.intel.com>
-Cc: Reinette Chatre <reinette.chatre@intel.com>
----
-v3:
-- Remove WARN_ON().
-- Tuned comments and the commit message a bit.
-
-v2:
-- Replaced WARN_ON() with optional pr_info() inside
-  __sgx_sanitize_pages().
-- Rewrote the commit message.
-- Added the fixes tag.
----
- arch/x86/kernel/cpu/sgx/main.c | 20 +++++++++++++-------
- 1 file changed, 13 insertions(+), 7 deletions(-)
-
-diff --git a/arch/x86/kernel/cpu/sgx/main.c b/arch/x86/kernel/cpu/sgx/main.c
-index 515e2a5f25bb..d204520a5e26 100644
---- a/arch/x86/kernel/cpu/sgx/main.c
-+++ b/arch/x86/kernel/cpu/sgx/main.c
-@@ -50,16 +50,17 @@ static LIST_HEAD(sgx_dirty_page_list);
-  * from the input list, and made available for the page allocator. SECS pages
-  * prepending their children in the input list are left intact.
-  */
--static void __sgx_sanitize_pages(struct list_head *dirty_page_list)
-+static void __sgx_sanitize_pages(struct list_head *dirty_page_list, bool verbose)
- {
- 	struct sgx_epc_page *page;
-+	int dirty_count = 0;
- 	LIST_HEAD(dirty);
- 	int ret;
- 
- 	/* dirty_page_list is thread-local, no need for a lock: */
- 	while (!list_empty(dirty_page_list)) {
- 		if (kthread_should_stop())
--			return;
-+			break;
- 
- 		page = list_first_entry(dirty_page_list, struct sgx_epc_page, list);
- 
-@@ -90,14 +91,22 @@ static void __sgx_sanitize_pages(struct list_head *dirty_page_list)
- 			list_del(&page->list);
- 			sgx_free_epc_page(page);
- 		} else {
-+			if (verbose)
-+				pr_err_ratelimited(EREMOVE_ERROR_MESSAGE, ret, ret);
-+
- 			/* The page is not yet clean - move to the dirty list. */
- 			list_move_tail(&page->list, &dirty);
-+			dirty_count++;
- 		}
- 
- 		cond_resched();
- 	}
- 
- 	list_splice(&dirty, dirty_page_list);
-+
-+	/* Can happen, when the initialization is retracted: */
-+	if (verbose && dirty_count > 0)
-+		pr_info("%d unsanitized pages\n", dirty_count);
- }
- 
- static bool sgx_reclaimer_age(struct sgx_epc_page *epc_page)
-@@ -394,11 +403,8 @@ static int ksgxd(void *p)
- 	 * Sanitize pages in order to recover from kexec(). The 2nd pass is
- 	 * required for SECS pages, whose child pages blocked EREMOVE.
- 	 */
--	__sgx_sanitize_pages(&sgx_dirty_page_list);
--	__sgx_sanitize_pages(&sgx_dirty_page_list);
--
--	/* sanity check: */
--	WARN_ON(!list_empty(&sgx_dirty_page_list));
-+	__sgx_sanitize_pages(&sgx_dirty_page_list, false);
-+	__sgx_sanitize_pages(&sgx_dirty_page_list, true);
- 
- 	while (!kthread_should_stop()) {
- 		if (try_to_freeze())
--- 
-2.37.1
-
+johannes
