@@ -2,130 +2,68 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 528B6C28D13
-	for <linux-kernel@archiver.kernel.org>; Thu, 25 Aug 2022 07:09:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D3056C32774
+	for <linux-kernel@archiver.kernel.org>; Thu, 25 Aug 2022 07:10:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236908AbiHYHJQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 25 Aug 2022 03:09:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42198 "EHLO
+        id S237163AbiHYHJ6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 25 Aug 2022 03:09:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43520 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236826AbiHYHJM (ORCPT
+        with ESMTP id S235442AbiHYHJx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 25 Aug 2022 03:09:12 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6200F7B297
-        for <linux-kernel@vger.kernel.org>; Thu, 25 Aug 2022 00:09:11 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1661411350;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=QSUsmhrntyYlE4q4EIuSMo8SwjVSMcRRvXJOMV3jSHQ=;
-        b=h1+yoEUsBO9Kaqy2UIDsTNuejubux+AuQLnGkZRh+f2ifwpxNEdenclexJ9p2SV7X+oIFD
-        YGkGrrr40iPDalw3pZRvtkjsC+wDyvHNuJGyd/7cU2v2lSQ1UYlXsiMhhokc1RU3P0zqUD
-        Bm/ctrA847ePAvIKY2DrS7o3TuftFYE=
-Received: from mail-pg1-f199.google.com (mail-pg1-f199.google.com
- [209.85.215.199]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
- us-mta-52-4XXX32hHMtKyiYQaZrzwiQ-1; Thu, 25 Aug 2022 03:09:07 -0400
-X-MC-Unique: 4XXX32hHMtKyiYQaZrzwiQ-1
-Received: by mail-pg1-f199.google.com with SMTP id g9-20020a636b09000000b0042a98c614f9so5683808pgc.20
-        for <linux-kernel@vger.kernel.org>; Thu, 25 Aug 2022 00:09:06 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc;
-        bh=QSUsmhrntyYlE4q4EIuSMo8SwjVSMcRRvXJOMV3jSHQ=;
-        b=EP6cOdxUN8SO5OAxG6czFPTHmPtD3Z/Liz4wPZX49nKdU7Puq6kgm26QHrIXmDnAJ4
-         kxgICdun4BdItHZkU43IWkQ3u3l5/tDXU0gYDL0ewrjvSF0SHUmRsXUo3SBJyZgCcvO6
-         F+s79LSRggzDFPkSMdAvaMe0Q49YTPUlYb6UBpUi2TR0MP8kH2BX/uoepSaU+K4NlOQX
-         DeePzsde6+zaJrSxcKDBcDh4W6fuq8jbo27jaJNqnCM/fLw+8HoXgCv6qsG0qnkjGlqp
-         g/KxD5G1yE1K84GXC5U10ChgrjGJ4JAaQkfv877mO4yplMUPylNXT0VBS5JMqpreM/zr
-         i+FA==
-X-Gm-Message-State: ACgBeo1ZAzout5jzD3bobvOTrCGtUCJ3Vcl4Mb7+1tPKmTe26qRRlTfx
-        R0R4S3jbCzqldcqyrbD4ZbhpGVKV0svDyeCrJSv4V7xY9vO05v5/V5NOSNhrMKij0ga+jtfmsMr
-        SeE3MjaYKQ3Y/7HI+H1GCUWDx
-X-Received: by 2002:a17:902:eac3:b0:172:ff31:bb3c with SMTP id p3-20020a170902eac300b00172ff31bb3cmr2446547pld.48.1661411345718;
-        Thu, 25 Aug 2022 00:09:05 -0700 (PDT)
-X-Google-Smtp-Source: AA6agR7OChChMg/kNoqJvKmBhroiYu863PvIINaRSgGceUgxIbVI8dEwE1UrA/8XZGCf2a1ChdudKQ==
-X-Received: by 2002:a17:902:eac3:b0:172:ff31:bb3c with SMTP id p3-20020a170902eac300b00172ff31bb3cmr2446532pld.48.1661411345488;
-        Thu, 25 Aug 2022 00:09:05 -0700 (PDT)
-Received: from [10.72.12.107] ([209.132.188.80])
-        by smtp.gmail.com with ESMTPSA id a9-20020a62d409000000b0053645475a6dsm10698425pfh.66.2022.08.25.00.09.02
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 25 Aug 2022 00:09:04 -0700 (PDT)
-Message-ID: <13f97c76-bc8b-1509-d854-89d0d62138fa@redhat.com>
-Date:   Thu, 25 Aug 2022 15:08:58 +0800
+        Thu, 25 Aug 2022 03:09:53 -0400
+X-Greylist: delayed 304 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Thu, 25 Aug 2022 00:09:50 PDT
+Received: from out30-42.freemail.mail.aliyun.com (unknown [115.124.30.42])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 689FA11455;
+        Thu, 25 Aug 2022 00:09:50 -0700 (PDT)
+X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R381e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=ay29a033018046050;MF=yang.lee@linux.alibaba.com;NM=1;PH=DS;RN=7;SR=0;TI=SMTPD_---0VNCEMA-_1661411080;
+Received: from localhost(mailfrom:yang.lee@linux.alibaba.com fp:SMTPD_---0VNCEMA-_1661411080)
+          by smtp.aliyun-inc.com;
+          Thu, 25 Aug 2022 15:04:40 +0800
+From:   Yang Li <yang.lee@linux.alibaba.com>
+To:     tony@atomide.com
+Cc:     lgirdwood@gmail.com, broonie@kernel.org,
+        linux-omap@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Yang Li <yang.lee@linux.alibaba.com>,
+        Abaci Robot <abaci@linux.alibaba.com>
+Subject: [PATCH -next] regulator: drivers: Remove unnecessary print function dev_err()
+Date:   Thu, 25 Aug 2022 15:04:38 +0800
+Message-Id: <20220825070438.128093-1-yang.lee@linux.alibaba.com>
+X-Mailer: git-send-email 2.20.1.7.g153144c
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
- Gecko/20100101 Thunderbird/91.13.0
-Subject: Re: [RFC v2 3/7] vsock: batch buffers in tx
-Content-Language: en-US
-To:     Guo Zhi <qtxuning1999@sjtu.edu.cn>, eperezma@redhat.com,
-        sgarzare@redhat.com, mst@redhat.com
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        kvm@vger.kernel.org, virtualization@lists.linux-foundation.org
-References: <20220817135718.2553-1-qtxuning1999@sjtu.edu.cn>
- <20220817135718.2553-4-qtxuning1999@sjtu.edu.cn>
-From:   Jason Wang <jasowang@redhat.com>
-In-Reply-To: <20220817135718.2553-4-qtxuning1999@sjtu.edu.cn>
-Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+The print function dev_err() is redundant because
+platform_get_irq_byname() already prints an error.
 
-在 2022/8/17 21:57, Guo Zhi 写道:
-> Vsock uses buffers in order, and for tx driver doesn't have to
-> know the length of the buffer. So we can do a batch for vsock if
-> in order negotiated, only write one used ring for a batch of buffers
->
-> Signed-off-by: Guo Zhi <qtxuning1999@sjtu.edu.cn>
-> ---
->   drivers/vhost/vsock.c | 9 ++++++++-
->   1 file changed, 8 insertions(+), 1 deletion(-)
->
-> diff --git a/drivers/vhost/vsock.c b/drivers/vhost/vsock.c
-> index 368330417bde..b0108009c39a 100644
-> --- a/drivers/vhost/vsock.c
-> +++ b/drivers/vhost/vsock.c
-> @@ -500,6 +500,7 @@ static void vhost_vsock_handle_tx_kick(struct vhost_work *work)
->   	int head, pkts = 0, total_len = 0;
->   	unsigned int out, in;
->   	bool added = false;
-> +	int last_head = -1;
->   
->   	mutex_lock(&vq->mutex);
->   
-> @@ -551,10 +552,16 @@ static void vhost_vsock_handle_tx_kick(struct vhost_work *work)
->   		else
->   			virtio_transport_free_pkt(pkt);
->   
-> -		vhost_add_used(vq, head, 0);
-> +		if (!vhost_has_feature(vq, VIRTIO_F_IN_ORDER))
-> +			vhost_add_used(vq, head, 0);
-> +		else
-> +			last_head = head;
->   		added = true;
->   	} while(likely(!vhost_exceeds_weight(vq, ++pkts, total_len)));
->   
-> +	/* If in order feature negotiaged, we can do a batch to increase performance */
-> +	if (vhost_has_feature(vq, VIRTIO_F_IN_ORDER) && last_head != -1)
-> +		vhost_add_used(vq, last_head, 0);
+Link: https://bugzilla.openanolis.cn/show_bug.cgi?id=1986
+Reported-by: Abaci Robot <abaci@linux.alibaba.com>
+Signed-off-by: Yang Li <yang.lee@linux.alibaba.com>
+---
+ drivers/regulator/tps65219-regulator.c | 6 ++----
+ 1 file changed, 2 insertions(+), 4 deletions(-)
 
-
-I may miss something but spec said "The device then skips forward in the 
-ring according to the size of the batch. ".
-
-I don't see how it is done here.
-
-Thanks
-
-
->   no_more_replies:
->   	if (added)
->   		vhost_signal(&vsock->dev, vq);
+diff --git a/drivers/regulator/tps65219-regulator.c b/drivers/regulator/tps65219-regulator.c
+index 7ba2594e437c..ab16e6665625 100644
+--- a/drivers/regulator/tps65219-regulator.c
++++ b/drivers/regulator/tps65219-regulator.c
+@@ -363,11 +363,9 @@ static int tps65219_regulator_probe(struct platform_device *pdev)
+ 		irq_type = &tps65219_regulator_irq_types[i];
+ 
+ 		irq = platform_get_irq_byname(pdev, irq_type->irq_name);
+-		if (irq < 0) {
+-			dev_err(tps->dev, "Failed to get IRQ %s: %d\n",
+-				irq_type->irq_name, irq);
++		if (irq < 0)
+ 			return -EINVAL;
+-		}
++
+ 		irq_data[i].dev = tps->dev;
+ 		irq_data[i].type = irq_type;
+ 
+-- 
+2.20.1.7.g153144c
 
