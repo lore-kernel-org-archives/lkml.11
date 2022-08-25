@@ -2,109 +2,102 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C2940C28D13
-	for <linux-kernel@archiver.kernel.org>; Thu, 25 Aug 2022 09:19:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1A169C04AA5
+	for <linux-kernel@archiver.kernel.org>; Thu, 25 Aug 2022 09:19:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233561AbiHYJT3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 25 Aug 2022 05:19:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48094 "EHLO
+        id S239039AbiHYJTp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 25 Aug 2022 05:19:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48180 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239171AbiHYJTJ (ORCPT
+        with ESMTP id S237862AbiHYJT3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 25 Aug 2022 05:19:09 -0400
-Received: from mail-lj1-x22f.google.com (mail-lj1-x22f.google.com [IPv6:2a00:1450:4864:20::22f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7538AA3446
-        for <linux-kernel@vger.kernel.org>; Thu, 25 Aug 2022 02:19:05 -0700 (PDT)
-Received: by mail-lj1-x22f.google.com with SMTP id bn9so11270715ljb.6
-        for <linux-kernel@vger.kernel.org>; Thu, 25 Aug 2022 02:19:05 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc;
-        bh=5sLLJwx5fDC65ir0hnf5+Sti6dIGOgbuBhKyXjwz+yI=;
-        b=ImaL0OaB9DjV2I8mkss1KZt4fNOL2+FNjkJF3NAfXpxW6Sq/5kT4TtIScleWrCpXu9
-         2ZPt5iPa+dWQ6O2gghcDPruzZaJbyfIK25OxZh0psTEQM2QIvr5rO35LFLqa2YXCUiM/
-         Vx8/zYDbS6OxE+Kf5BYILq2Gn3wv8/rDqEANRG5zf1Spn7x3YPSnzrPNp0zKMEO1hW9y
-         kTX4mL5D25AkYis2JucJBd9GCbD+gKtRHYKL/IH+rgRGNpBc0c/lX+HcYKmlSmPtMpuj
-         StqZhYLWJqLhSW6cSc3EVHK5Bl5xVJ61Isop9APpsAm5RzyWLfjQli4PFBb46MEQAev2
-         VO+Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc;
-        bh=5sLLJwx5fDC65ir0hnf5+Sti6dIGOgbuBhKyXjwz+yI=;
-        b=tJzTnBBo7w69UltWA5Ah5Zl297udc9Rx+4/C58+XsTZQNxbQgd6Lx5uQuPcWK1zuC1
-         PDmRFJOG3RIpyeQHmYfb42hiGG41STR0tG1b7JbfNOog/d7obnwCxZvdVV4PW7njAIRv
-         GiUBT/LEKjixsBkU0urgmvdHjQY/8ZlzY6a0xtYiPQq/KROHs9BHAQa/7QHwVFeDQgx3
-         6phbwCNtkavYP9c2QpMFLqHtL9R0AFuS2aeV/G6DvdVLlNuIxw9ipl+gJERBT7m2SDz8
-         cq9KL9vsI+X7XMro6XaorvuU3385wZXI6NZmkFAG62VsfjlJOiNQnWhFZ7wK9ctjL7gh
-         Dcgw==
-X-Gm-Message-State: ACgBeo3KBdpxo9UcFK7A5TMZ6XprURQFBtnzSXBRg6TRKXykBLLZxy5l
-        BBh48ZBJXbg1MaaawAVermmhKQ==
-X-Google-Smtp-Source: AA6agR5cLMW6dK0mLYBJEmmbS+0xSE4i8FRTC6oNzAhVSwFOrGPK4zJGdxvlic8d5WSygG0ZBfZ2og==
-X-Received: by 2002:a05:651c:2d0:b0:25e:6c94:59d5 with SMTP id f16-20020a05651c02d000b0025e6c9459d5mr863198ljo.488.1661419143569;
-        Thu, 25 Aug 2022 02:19:03 -0700 (PDT)
-Received: from [192.168.0.71] (82.131.98.15.cable.starman.ee. [82.131.98.15])
-        by smtp.gmail.com with ESMTPSA id u19-20020a05651220d300b00492db7f47f2sm383198lfr.275.2022.08.25.02.19.02
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 25 Aug 2022 02:19:02 -0700 (PDT)
-Message-ID: <72e484c8-16ce-9ccd-3bf2-4097eca937e1@linaro.org>
-Date:   Thu, 25 Aug 2022 12:19:01 +0300
+        Thu, 25 Aug 2022 05:19:29 -0400
+Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D8F9AA8306;
+        Thu, 25 Aug 2022 02:19:28 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1661419168; x=1692955168;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=wKEARAay3oXZ7c7KadwA88gOhMIFG8jHd1g7GlPDyR8=;
+  b=ecVOLPv5TbJ6N0rZXeJ1vFDDJRoFdP81KF+JK7dpBb33XjvKNwbZBSw6
+   a87H84Lz6aYAU2XjQ8FX6UUjekaGj8/56zgUs4r51CILt+m90/h0v++xt
+   5GKoBY9h4mazf0Xw6WYRwB581awoeArPOt8y4l+tiujDRCAEiFijxQjzK
+   6GIhhPZVXoz+3TjKcnJ0PORxefRC033dr9jcuDnxFrvN8B+FmKmtqFBzF
+   26IMhL+s72KzeCEeaWW1d8Zmn6c+qnMlAPrUfVYhTYuID4siW7Var7qkJ
+   9EaMJZ22Gn0TpHR19roVlBNkFCTvq2JuOgzCQAnSmgo31cB2EDo9vbDbU
+   A==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10449"; a="291762027"
+X-IronPort-AV: E=Sophos;i="5.93,262,1654585200"; 
+   d="scan'208";a="291762027"
+Received: from fmsmga008.fm.intel.com ([10.253.24.58])
+  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Aug 2022 02:19:28 -0700
+X-IronPort-AV: E=Sophos;i="5.93,262,1654585200"; 
+   d="scan'208";a="670902171"
+Received: from mblazque-mobl1.ger.corp.intel.com (HELO ijarvine-MOBL2.ger.corp.intel.com) ([10.249.44.101])
+  by fmsmga008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Aug 2022 02:19:26 -0700
+From:   =?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        linux-serial@vger.kernel.org,
+        "Maciej W. Rozycki" <macro@orcam.me.uk>,
+        linux-kernel@vger.kernel.org
+Cc:     =?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>
+Subject: [PATCH 1/1] serial: dz: Replace DZ_XMIT_SIZE with UART_XMIT_SIZE
+Date:   Thu, 25 Aug 2022 12:19:18 +0300
+Message-Id: <20220825091918.8398-1-ilpo.jarvinen@linux.intel.com>
+X-Mailer: git-send-email 2.30.2
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.13.0
-Subject: Re: [PATCH v2 1/2] dt-bindings: edac: Add bindings for Xilinx ZynqMP
- OCM
-Content-Language: en-US
-To:     "Potthuri, Sai Krishna" <sai.krishna.potthuri@amd.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Michal Simek <michal.simek@xilinx.com>,
-        Borislav Petkov <bp@alien8.de>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
-        Tony Luck <tony.luck@intel.com>,
-        James Morse <james.morse@arm.com>,
-        Robert Richter <rric@kernel.org>
-Cc:     "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
-        "linux-arm-kernel@lists.infradead.org" 
-        <linux-arm-kernel@lists.infradead.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "linux-edac@vger.kernel.org" <linux-edac@vger.kernel.org>,
-        "saikrishna12468@gmail.com" <saikrishna12468@gmail.com>,
-        "git (AMD-Xilinx)" <git@amd.com>,
-        Shubhrajyoti Datta <shubhrajyoti.datta@xilinx.com>
-References: <20220822115821.3907-1-sai.krishna.potthuri@amd.com>
- <20220822115821.3907-2-sai.krishna.potthuri@amd.com>
- <52fa28d6-4d48-bd0c-40e6-4f8855c4eac8@linaro.org>
- <BY5PR12MB42589769EF9702D7A0F83989DB729@BY5PR12MB4258.namprd12.prod.outlook.com>
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-In-Reply-To: <BY5PR12MB42589769EF9702D7A0F83989DB729@BY5PR12MB4258.namprd12.prod.outlook.com>
 Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 25/08/2022 11:50, Potthuri, Sai Krishna wrote:
->>> diff --git
->>> a/Documentation/devicetree/bindings/edac/xlnx,zynqmp-ocmc.yaml
->>> b/Documentation/devicetree/bindings/edac/xlnx,zynqmp-ocmc.yaml
->>> new file mode 100644
->>> index 000000000000..6389fcb7ed69
->>> --- /dev/null
->>> +++ b/Documentation/devicetree/bindings/edac/xlnx,zynqmp-ocmc.yaml
->>> @@ -0,0 +1,45 @@
->>> +# SPDX-License-Identifier: (GPL-2.0 OR BSD-2-Clause) %YAML 1.2
->>> +---
->>> +$id: http://devicetree.org/schemas/edac/xlnx,zynqmp-ocmc.yaml#
->>
->> Filename should be based on compatible, so xlnx,zynqmp-ocmc-1.0.yaml
-> I will fix in v3, Just want to know in case if we have multiple compatibles, 
-> how to handle such cases?
+Use the normal UART_XMIT_SIZE directly.
 
-Then something generic would fit, but you don't have them...
+Signed-off-by: Ilpo Järvinen <ilpo.jarvinen@linux.intel.com>
+---
+ drivers/tty/serial/dz.c | 2 +-
+ drivers/tty/serial/dz.h | 5 +++--
+ 2 files changed, 4 insertions(+), 3 deletions(-)
 
-Best regards,
-Krzysztof
+diff --git a/drivers/tty/serial/dz.c b/drivers/tty/serial/dz.c
+index 2e21acf39720..5d2588f3e6a9 100644
+--- a/drivers/tty/serial/dz.c
++++ b/drivers/tty/serial/dz.c
+@@ -279,7 +279,7 @@ static inline void dz_transmit_chars(struct dz_mux *mux)
+ 	 * so we go one char at a time) :-<
+ 	 */
+ 	tmp = xmit->buf[xmit->tail];
+-	xmit->tail = (xmit->tail + 1) & (DZ_XMIT_SIZE - 1);
++	xmit->tail = (xmit->tail + 1) & (UART_XMIT_SIZE - 1);
+ 	dz_out(dport, DZ_TDR, tmp);
+ 	dport->port.icount.tx++;
+ 
+diff --git a/drivers/tty/serial/dz.h b/drivers/tty/serial/dz.h
+index 3b3e31954f24..59120ad2bda0 100644
+--- a/drivers/tty/serial/dz.h
++++ b/drivers/tty/serial/dz.h
+@@ -12,6 +12,8 @@
+ #ifndef DZ_SERIAL_H
+ #define DZ_SERIAL_H
+ 
++#include <linux/serial_core.h>
++
+ /*
+  * Definitions for the Control and Status Register.
+  */
+@@ -124,7 +126,6 @@
+ 
+ #define DZ_NB_PORT 4
+ 
+-#define DZ_XMIT_SIZE   4096                 /* buffer size */
+-#define DZ_WAKEUP_CHARS   DZ_XMIT_SIZE/4
++#define DZ_WAKEUP_CHARS   (UART_XMIT_SIZE / 4)
+ 
+ #endif /* DZ_SERIAL_H */
+-- 
+2.30.2
+
