@@ -2,82 +2,102 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D3730C48BE4
-	for <linux-kernel@archiver.kernel.org>; Thu, 25 Aug 2022 13:30:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B7E64C3F6B0
+	for <linux-kernel@archiver.kernel.org>; Thu, 25 Aug 2022 13:30:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242537AbiHYNan (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 25 Aug 2022 09:30:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60956 "EHLO
+        id S242705AbiHYNar (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 25 Aug 2022 09:30:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58732 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242713AbiHYNaW (ORCPT
+        with ESMTP id S242736AbiHYNaZ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 25 Aug 2022 09:30:22 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8AAE0AE9F6;
-        Thu, 25 Aug 2022 06:30:18 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 90C8BB81DF1;
-        Thu, 25 Aug 2022 13:30:16 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 12C67C433B5;
-        Thu, 25 Aug 2022 13:30:15 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1661434215;
-        bh=bopjZ3EAOBRbSKc1eZBc9NxU1rihzcKJjfdgqWzzU2E=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=TLr0xvGbFxxEp9YqEBDylyS6daeJz3vrb4F58qiKyEDJUeO3tOKr3hJLYJess5Was
-         gAZFg3Jux//RFiPJ35IzPPs6ZVGQRLCBldTnJclsPy1uj1xSxtVqsoTyIiKWYVa7VI
-         eHAd55QiY6OlwyiujUyGq0HY6K2npRYIiSJTv2h2VxoaZ5AMBtXjNQf+Mg1bS5RZ2o
-         K/p+Y1pDQUpgrvq29h7MjHx/zA0Y5sQhfNKEdXYekxxQBiGkvRbrmdtPYDyCmYeXfj
-         ma8kQF9DFwbimpOrfVer0A+9O4aZ8KE8vq0DR5id6IC6rM+AZYsXGZdPIJ37LqepNW
-         TM/32k24YTV3w==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id E5282C4166E;
-        Thu, 25 Aug 2022 13:30:14 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        Thu, 25 Aug 2022 09:30:25 -0400
+Received: from mx0b-001ae601.pphosted.com (mx0b-001ae601.pphosted.com [67.231.152.168])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2AC0C8002F;
+        Thu, 25 Aug 2022 06:30:22 -0700 (PDT)
+Received: from pps.filterd (m0077474.ppops.net [127.0.0.1])
+        by mx0b-001ae601.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 27P6MixA004380;
+        Thu, 25 Aug 2022 08:29:41 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=cirrus.com; h=date : from : to : cc
+ : subject : message-id : references : mime-version : content-type :
+ in-reply-to; s=PODMain02222019;
+ bh=gJwGJFOg+PHJxQ8GqbYk+5x4TFGmNBMycRNhoucedzk=;
+ b=dOsfC2wk+NU/FTwxvM+o+MtI+cRTYtIl7fNr+UKOqHpdjYsklEgJFYb1uYciDDXGH6nN
+ NyIZeYrogjNXqTE6CKdPKtSvHYkGYY14DXr6VXHIFV/OufVxEVY2UM+q7QcKkgXxyHlo
+ ioEUtAmWpOqDzw1gg+n6AQLdXvEDLZnNxb++2gdEoXtSZtLecuT8JT2QYcSoSYCAlRbV
+ 92trEPxPVQitk4PiZBknHGFrBFQKU2+rh9uyb6YBErw2Zpa9W8tMS/515/9eMKVQAwId
+ rRy4Mvfs4aBKFEEK59HutkLBtc0Tfvpk0Sr980Gk7blSvvt0LsK+d52gUo8opnSrTcmd sQ== 
+Received: from ediex01.ad.cirrus.com ([84.19.233.68])
+        by mx0b-001ae601.pphosted.com (PPS) with ESMTPS id 3j5a3ra2a6-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Thu, 25 Aug 2022 08:29:41 -0500
+Received: from ediex01.ad.cirrus.com (198.61.84.80) by ediex01.ad.cirrus.com
+ (198.61.84.80) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1118.9; Thu, 25 Aug
+ 2022 08:29:39 -0500
+Received: from ediswmail.ad.cirrus.com (198.61.86.93) by ediex01.ad.cirrus.com
+ (198.61.84.80) with Microsoft SMTP Server id 15.2.1118.9 via Frontend
+ Transport; Thu, 25 Aug 2022 08:29:39 -0500
+Received: from ediswmail.ad.cirrus.com (ediswmail.ad.cirrus.com [198.61.86.93])
+        by ediswmail.ad.cirrus.com (Postfix) with ESMTP id 13DC3B0E;
+        Thu, 25 Aug 2022 13:29:39 +0000 (UTC)
+Date:   Thu, 25 Aug 2022 13:29:39 +0000
+From:   Charles Keepax <ckeepax@opensource.cirrus.com>
+To:     Rob Herring <robh@kernel.org>
+CC:     Lee Jones <lee@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Chen-Yu Tsai <wens@csie.org>,
+        Jernej Skrabec <jernej.skrabec@gmail.com>,
+        Samuel Holland <samuel@sholland.org>,
+        Richard Fitzgerald <rf@opensource.cirrus.com>,
+        Tim Harvey <tharvey@gateworks.com>,
+        Robert Jones <rjones@gateworks.com>,
+        Chanwoo Choi <cw00.choi@samsung.com>,
+        Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>,
+        Heiko Stuebner <heiko@sntech.de>,
+        Fabrice Gasnier <fabrice.gasnier@foss.st.com>,
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+        Alexandre Torgue <alexandre.torgue@foss.st.com>,
+        Maxime Ripard <mripard@kernel.org>,
+        - <patches@opensource.cirrus.com>,
+        Steve Twiss <stwiss.opensource@diasemi.com>,
+        Chris Zhong <zyw@rock-chips.com>,
+        Zhang Qing <zhangqing@rock-chips.com>,
+        Alistair Francis <alistair@alistair23.me>,
+        Amelie Delaunay <amelie.delaunay@foss.st.com>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Renner Berthing <kernel@esmil.dk>,
+        Krzysztof Kozlowski <krzk@kernel.org>,
+        <devicetree@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-sunxi@lists.linux.dev>, <linux-kernel@vger.kernel.org>,
+        <linux-rockchip@lists.infradead.org>,
+        <linux-stm32@st-md-mailman.stormreply.com>
+Subject: Re: [PATCH] dt-bindings: mfd: Add missing
+ (unevaluated|additional)Properties on child nodes
+Message-ID: <20220825132939.GO92394@ediswmail.ad.cirrus.com>
+References: <20220823145649.3118479-4-robh@kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net-next,v2] net: sched: delete duplicate cleanup of backlog
- and qlen
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <166143421493.23449.11479181390750074314.git-patchwork-notify@kernel.org>
-Date:   Thu, 25 Aug 2022 13:30:14 +0000
-References: <20220824005231.345727-1-shaozhengchao@huawei.com>
-In-Reply-To: <20220824005231.345727-1-shaozhengchao@huawei.com>
-To:     Zhengchao Shao <shaozhengchao@huawei.com>
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        pabeni@redhat.com, jhs@mojatatu.com, xiyou.wangcong@gmail.com,
-        jiri@resnulli.us, vinicius.gomes@intel.com, weiyongjun1@huawei.com,
-        yuehaibing@huawei.com
+Content-Type: text/plain; charset="us-ascii"
+Content-Disposition: inline
+In-Reply-To: <20220823145649.3118479-4-robh@kernel.org>
+User-Agent: Mutt/1.5.21 (2010-09-15)
+X-Proofpoint-GUID: sT2u7Xs6q1g-zrXUkym3ve5E5LQDcjOO
+X-Proofpoint-ORIG-GUID: sT2u7Xs6q1g-zrXUkym3ve5E5LQDcjOO
+X-Proofpoint-Spam-Reason: safe
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hello:
-
-This patch was applied to netdev/net-next.git (master)
-by Paolo Abeni <pabeni@redhat.com>:
-
-On Wed, 24 Aug 2022 08:52:31 +0800 you wrote:
-> qdisc_reset() is clearing qdisc->q.qlen and qdisc->qstats.backlog
-> _after_ calling qdisc->ops->reset. There is no need to clear them
-> again in the specific reset function.
+On Tue, Aug 23, 2022 at 09:56:35AM -0500, Rob Herring wrote:
+> In order to ensure only documented properties are present, node schemas
+> must have unevaluatedProperties or additionalProperties set to false
+> (typically).
 > 
-> Signed-off-by: Zhengchao Shao <shaozhengchao@huawei.com>
+> Signed-off-by: Rob Herring <robh@kernel.org>
 > ---
-> v1: changelog is slightly inaccurate.
-> 
-> [...]
 
-Here is the summary with links:
-  - [net-next,v2] net: sched: delete duplicate cleanup of backlog and qlen
-    https://git.kernel.org/netdev/net-next/c/c19d893fbf3f
+Acked-by: Charles Keepax <ckeepax@opensource.cirrus.com>
 
-You are awesome, thank you!
--- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
-
+Thanks,
+Charles
