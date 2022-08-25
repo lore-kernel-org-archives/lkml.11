@@ -2,51 +2,48 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CC047C3F6B0
-	for <linux-kernel@archiver.kernel.org>; Thu, 25 Aug 2022 01:39:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CF469C48BE4
+	for <linux-kernel@archiver.kernel.org>; Thu, 25 Aug 2022 01:40:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233982AbiHYBj6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 24 Aug 2022 21:39:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53552 "EHLO
+        id S233362AbiHYBkC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 24 Aug 2022 21:40:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53940 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233243AbiHYBjK (ORCPT
+        with ESMTP id S233241AbiHYBjL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 24 Aug 2022 21:39:10 -0400
+        Wed, 24 Aug 2022 21:39:11 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6AA649AF9D;
-        Wed, 24 Aug 2022 18:37:44 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3C0E59A9D3;
+        Wed, 24 Aug 2022 18:37:37 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 2E598B826DA;
-        Thu, 25 Aug 2022 01:37:40 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D5E97C433C1;
-        Thu, 25 Aug 2022 01:37:36 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id DED93B824CF;
+        Thu, 25 Aug 2022 01:37:19 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 332B7C433D7;
+        Thu, 25 Aug 2022 01:37:17 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1661391459;
-        bh=oZYVGgsaH2VFtB7OQwCBUSbZUvNKRGqOMHp98jOx8nE=;
+        s=k20201202; t=1661391438;
+        bh=t5O6RUjBZhbn9aIEIA2AHCOFz0aMjGqBBg0mfLE94gA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ZZ/e/vaU9Kp5DhrW1wWqdligfV7/WvMZup8Ko7Oj0R2LWLLHeaUEHXOxMPu9XdWwG
-         6eBu5tllLM5kyoo0ueK5HTryCO2COHBdrlp1+VSXyxNwoE9GIfZbxsq1gU/kP59+yb
-         wOK79hkMG0PQBqQae8/gZboT87HU25e88Q8gPYEcNz7B6fUtMOyMPLub7L1xshd3NX
-         oAOdym4lh4Ea8+hHB72mICdCHpz0gihCZ7/fCqyUgMmLawth4NDSaYGFv6mO+l8c58
-         L1g4zJjOXkspyJ/0Vyw5F+i8Y9HVEG7dARq2M5iiDtGvQht8f3pAy48DypXeJ7Lwmw
-         3h73TO8Aq0htQ==
+        b=c8K8+wJFdFISPqD29vb15d3pNQujAA+EjFuzqj5SaKsMdPO2O8p47VKzejn5pB/jq
+         olIhdpLCw7uoxcgK+c586RMlyrMLtCPK70yma25IPn7koWx0zAOZLnUsI9HCgYoB1Q
+         YZVwwSnL4VjvyK9mRSqL5Md4+xtMHxBgF5FMc8wO4V3wBaQG1kY0J1x48oMq5owmUo
+         O8l511GPuk935AMpP2ny1PXz2SeA1GHwh6BiE6Dvmhby5tS6drpeUfo2NjeLfxKdBD
+         rMpGHClX+C797NknGKzSIEoEMNawnNC0ToBnDLnhqsPM06dzWYBWqOx4bFPPf8uKtW
+         UB6hHNEmtFPAQ==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Fudong Wang <Fudong.Wang@amd.com>, Alvin Lee <alvin.lee2@amd.com>,
-        Tom Chung <chiahsuan.chung@amd.com>,
-        Daniel Wheeler <daniel.wheeler@amd.com>,
-        Alex Deucher <alexander.deucher@amd.com>,
-        Sasha Levin <sashal@kernel.org>, harry.wentland@amd.com,
-        sunpeng.li@amd.com, Rodrigo.Siqueira@amd.com,
-        christian.koenig@amd.com, Xinhui.Pan@amd.com, airlied@linux.ie,
-        daniel@ffwll.ch, Charlene.Liu@amd.com, HaoPing.Liu@amd.com,
-        Jun.Lei@amd.com, oliver.logush@amd.com, isabbasso@riseup.net,
-        amd-gfx@lists.freedesktop.org, dri-devel@lists.freedesktop.org
-Subject: [PATCH AUTOSEL 5.15 06/20] drm/amd/display: clear optc underflow before turn off odm clock
-Date:   Wed, 24 Aug 2022 21:36:58 -0400
-Message-Id: <20220825013713.22656-6-sashal@kernel.org>
+Cc:     Biju Das <biju.das.jz@bp.renesas.com>,
+        Pavel Machek <pavel@denx.de>, Mark Brown <broonie@kernel.org>,
+        Sasha Levin <sashal@kernel.org>, lgirdwood@gmail.com,
+        perex@perex.cz, tiwai@suse.com, p.zabel@pengutronix.de,
+        prabhakar.mahadev-lad.rj@bp.renesas.com,
+        ckeepax@opensource.cirrus.com, geert+renesas@glider.be,
+        hkallweit1@gmail.com, alsa-devel@alsa-project.org
+Subject: [PATCH AUTOSEL 5.15 02/20] ASoC: sh: rz-ssi: Improve error handling in rz_ssi_probe() error path
+Date:   Wed, 24 Aug 2022 21:36:54 -0400
+Message-Id: <20220825013713.22656-2-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220825013713.22656-1-sashal@kernel.org>
 References: <20220825013713.22656-1-sashal@kernel.org>
@@ -58,43 +55,77 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Fudong Wang <Fudong.Wang@amd.com>
+From: Biju Das <biju.das.jz@bp.renesas.com>
 
-[ Upstream commit b2a93490201300a749ad261b5c5d05cb50179c44 ]
+[ Upstream commit c75ed9f54ce8d349fee557f2b471a4d637ed2a6b ]
 
-[Why]
-After ODM clock off, optc underflow bit will be kept there always and clear not work.
-We need to clear that before clock off.
+We usually do cleanup in reverse order of init. Currently in case of
+error rz_ssi_release_dma_channels() done in the reverse order. This
+patch improves error handling in rz_ssi_probe() error path.
 
-[How]
-Clear that if have when clock off.
+While at it, use "goto cleanup" style to reduce code duplication.
 
-Reviewed-by: Alvin Lee <alvin.lee2@amd.com>
-Acked-by: Tom Chung <chiahsuan.chung@amd.com>
-Signed-off-by: Fudong Wang <Fudong.Wang@amd.com>
-Tested-by: Daniel Wheeler <daniel.wheeler@amd.com>
-Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
+Reported-by: Pavel Machek <pavel@denx.de>
+Signed-off-by: Biju Das <biju.das.jz@bp.renesas.com>
+Link: https://lore.kernel.org/r/20220728092612.38858-1-biju.das.jz@bp.renesas.com
+Signed-off-by: Mark Brown <broonie@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/gpu/drm/amd/display/dc/dcn10/dcn10_optc.c | 5 +++++
- 1 file changed, 5 insertions(+)
+ sound/soc/sh/rz-ssi.c | 26 +++++++++++++++-----------
+ 1 file changed, 15 insertions(+), 11 deletions(-)
 
-diff --git a/drivers/gpu/drm/amd/display/dc/dcn10/dcn10_optc.c b/drivers/gpu/drm/amd/display/dc/dcn10/dcn10_optc.c
-index 37848f4577b1..92fee47278e5 100644
---- a/drivers/gpu/drm/amd/display/dc/dcn10/dcn10_optc.c
-+++ b/drivers/gpu/drm/amd/display/dc/dcn10/dcn10_optc.c
-@@ -480,6 +480,11 @@ void optc1_enable_optc_clock(struct timing_generator *optc, bool enable)
- 				OTG_CLOCK_ON, 1,
- 				1, 1000);
- 	} else  {
+diff --git a/sound/soc/sh/rz-ssi.c b/sound/soc/sh/rz-ssi.c
+index 6d794eaaf4c3..2e33a1fa0a6f 100644
+--- a/sound/soc/sh/rz-ssi.c
++++ b/sound/soc/sh/rz-ssi.c
+@@ -1022,32 +1022,36 @@ static int rz_ssi_probe(struct platform_device *pdev)
+ 
+ 	ssi->rstc = devm_reset_control_get_exclusive(&pdev->dev, NULL);
+ 	if (IS_ERR(ssi->rstc)) {
+-		rz_ssi_release_dma_channels(ssi);
+-		return PTR_ERR(ssi->rstc);
++		ret = PTR_ERR(ssi->rstc);
++		goto err_reset;
+ 	}
+ 
+ 	reset_control_deassert(ssi->rstc);
+ 	pm_runtime_enable(&pdev->dev);
+ 	ret = pm_runtime_resume_and_get(&pdev->dev);
+ 	if (ret < 0) {
+-		rz_ssi_release_dma_channels(ssi);
+-		pm_runtime_disable(ssi->dev);
+-		reset_control_assert(ssi->rstc);
+-		return dev_err_probe(ssi->dev, ret, "pm_runtime_resume_and_get failed\n");
++		dev_err(&pdev->dev, "pm_runtime_resume_and_get failed\n");
++		goto err_pm;
+ 	}
+ 
+ 	ret = devm_snd_soc_register_component(&pdev->dev, &rz_ssi_soc_component,
+ 					      rz_ssi_soc_dai,
+ 					      ARRAY_SIZE(rz_ssi_soc_dai));
+ 	if (ret < 0) {
+-		rz_ssi_release_dma_channels(ssi);
+-
+-		pm_runtime_put(ssi->dev);
+-		pm_runtime_disable(ssi->dev);
+-		reset_control_assert(ssi->rstc);
+ 		dev_err(&pdev->dev, "failed to register snd component\n");
++		goto err_snd_soc;
+ 	}
+ 
++	return 0;
 +
-+		//last chance to clear underflow, otherwise, it will always there due to clock is off.
-+		if (optc->funcs->is_optc_underflow_occurred(optc) == true)
-+			optc->funcs->clear_optc_underflow(optc);
++err_snd_soc:
++	pm_runtime_put(ssi->dev);
++err_pm:
++	pm_runtime_disable(ssi->dev);
++	reset_control_assert(ssi->rstc);
++err_reset:
++	rz_ssi_release_dma_channels(ssi);
 +
- 		REG_UPDATE_2(OTG_CLOCK_CONTROL,
- 				OTG_CLOCK_GATE_DIS, 0,
- 				OTG_CLOCK_EN, 0);
+ 	return ret;
+ }
+ 
 -- 
 2.35.1
 
