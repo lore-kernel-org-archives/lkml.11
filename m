@@ -2,159 +2,85 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 53559C04AA5
-	for <linux-kernel@archiver.kernel.org>; Thu, 25 Aug 2022 10:12:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DDBB9C28D13
+	for <linux-kernel@archiver.kernel.org>; Thu, 25 Aug 2022 10:12:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241112AbiHYKMg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 25 Aug 2022 06:12:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58416 "EHLO
+        id S240520AbiHYKMn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 25 Aug 2022 06:12:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58034 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241054AbiHYKMK (ORCPT
+        with ESMTP id S240685AbiHYKMR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 25 Aug 2022 06:12:10 -0400
-Received: from mail-pf1-x434.google.com (mail-pf1-x434.google.com [IPv6:2607:f8b0:4864:20::434])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0DC93ABF3C
-        for <linux-kernel@vger.kernel.org>; Thu, 25 Aug 2022 03:12:01 -0700 (PDT)
-Received: by mail-pf1-x434.google.com with SMTP id t129so538502pfb.6
-        for <linux-kernel@vger.kernel.org>; Thu, 25 Aug 2022 03:12:01 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=bytedance-com.20210112.gappssmtp.com; s=20210112;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc;
-        bh=88xUUyVXHxDMCZmOYvZcYjojlwDW8mxu4+gwmvT3Uwg=;
-        b=gCJc7t/irCxh/NsMtY1y28pn7+kS/+rCgGiEHuh81J6ucr5EX2vhMnTKm6bgUjyY0A
-         FSH1ktN+iUPsTs7yW0vMLvS8VlTwmoaCjW/xDnuFk754nlVaaV5Sknqz7pgkUiF2NyNw
-         kFNyD315ZQdYYefBhtxUO3hwVbrJh72K9xlvUHcJJytF8Hm+UucnXUn/bJV6GXT3KUbO
-         qC74CEILcwNgX2/ksJAFI1VKjObcAa5bb61duB1Unbfwa4/HOAZINmkbhLrg/n2UTAM9
-         Y1LJVRSnkqYB4JH0aUKiKOhE31G/bmczwx7n5ekrUGCJhmRUyWj6K+A5mw3aTIe+aRlY
-         6TNQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc;
-        bh=88xUUyVXHxDMCZmOYvZcYjojlwDW8mxu4+gwmvT3Uwg=;
-        b=hAO3w0b0e+cXrluDqkYn56W5ZRZ8jIn6fsYa0MHUVPNaaxJhft1MuwA6Xae7uGkVbs
-         rq9EYwstegJ1YUOMCr9EhGRoWZrfySHqI0uRFaqMiMj8Dlon6P9xmB6ROO6Vd/vQUcOC
-         eyZ+IcIN20C03peF/xCHwbrzSA/lToJfp5OmBnhOite9jFqsVWw1FEYMtrmZ+U4Ao+Ta
-         QiFnuw+WA52xTGGas6EA9hAR5WiuFG5oAiodwx39ojdVyA+vIyWNxNJ9DcfTiwjbG2UX
-         5iskUnDO2Uyrm8OF2n3loaGo6X8yyZ0x5ruKLfGA9KBccSaxkUC5ZOOzVZDS/ZkOhvQJ
-         /5mA==
-X-Gm-Message-State: ACgBeo1At/iA1EZ5MwKk0LdWOIyFtqd59pAhT62V19mWjMFpRsYrZvFO
-        cJgeazuHgb3wCbzNBHutArHK0Q==
-X-Google-Smtp-Source: AA6agR7wR0oMHsFEiShRabwQxkM0xbplFH+VDCYoO8SCvwJvs/eBFuYQvXDb00xbfLmujhgctEuB0w==
-X-Received: by 2002:a05:6a00:8c8:b0:52c:887d:fa25 with SMTP id s8-20020a056a0008c800b0052c887dfa25mr3524872pfu.86.1661422320411;
-        Thu, 25 Aug 2022 03:12:00 -0700 (PDT)
-Received: from C02DW0BEMD6R.bytedance.net ([139.177.225.234])
-        by smtp.gmail.com with ESMTPSA id b10-20020a170903228a00b001714c36a6e7sm8477581plh.284.2022.08.25.03.11.54
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 25 Aug 2022 03:11:59 -0700 (PDT)
-From:   Qi Zheng <zhengqi.arch@bytedance.com>
-To:     akpm@linux-foundation.org, david@redhat.com,
-        kirill.shutemov@linux.intel.com, mika.penttila@nextfour.com,
-        jgg@nvidia.com, tglx@linutronix.de, willy@infradead.org
-Cc:     linux-kernel@vger.kernel.org, linux-mm@kvack.org,
-        muchun.song@linux.dev, Qi Zheng <zhengqi.arch@bytedance.com>
-Subject: [RFC PATCH 5/7] pte_ref: add track_pte_{set, clear}() helper
-Date:   Thu, 25 Aug 2022 18:10:35 +0800
-Message-Id: <20220825101037.96517-6-zhengqi.arch@bytedance.com>
-X-Mailer: git-send-email 2.24.3 (Apple Git-128)
-In-Reply-To: <20220825101037.96517-1-zhengqi.arch@bytedance.com>
-References: <20220825101037.96517-1-zhengqi.arch@bytedance.com>
+        Thu, 25 Aug 2022 06:12:17 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 85502AC251;
+        Thu, 25 Aug 2022 03:12:02 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id F2BBEB8282F;
+        Thu, 25 Aug 2022 10:12:00 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D83E4C433D6;
+        Thu, 25 Aug 2022 10:11:57 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1661422319;
+        bh=51cmz70G4BeiX7nm5zNcJKbWlVHoA55PYktAZNJPetk=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=NgBG2iwUb/IH2sLJbyCh82WvxTE4BRhbAvVN5DBEEtDXa8X8Ze4yx0eRkW15mrrk7
+         I7WmMRAVA8ou0WFBUje491gw2ZSwPT7VuJa1TleI4pyftYUzjHwmOvxAyOoyRSvgU7
+         37ms+FyLZwMokuCDXMQ0w7T8yM6Wpt945ygiFBzoI/u1sEOKj/1XMVwmc3IryOSxzM
+         83+my5vHG+GT5qzApxJqUbTJ8k8GLRmWMk8/FlvKLzCn/0LuALRT+y2BLinY8U/dbk
+         nJhU83Y9jslLFfJcMyrhjPfVxtPX+vkrarHIml3wILLdWe6mdf8pDtaRn5HusCzSDK
+         MrckkHf1Ju5sw==
+Date:   Thu, 25 Aug 2022 12:11:54 +0200
+From:   Lorenzo Pieralisi <lpieralisi@kernel.org>
+To:     Thierry Reding <thierry.reding@gmail.com>
+Cc:     Rob Herring <robh+dt@kernel.org>,
+        Frank Rowand <frowand.list@gmail.com>,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] of/device: Fix up of_dma_configure_id() stub
+Message-ID: <YwdK6seZfCTuDO4M@lpieralisi>
+References: <20220824153256.1437483-1-thierry.reding@gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220824153256.1437483-1-thierry.reding@gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The track_pte_set() is used to track the setting of the PTE page table
-entry, and the track_pte_clear() is used to track the clearing of the
-PTE page table entry, we update the pte_refcount of the PTE page in
-these two functions.
+On Wed, Aug 24, 2022 at 05:32:56PM +0200, Thierry Reding wrote:
+> From: Thierry Reding <treding@nvidia.com>
+> 
+> Since the stub version of of_dma_configure_id() was added in commit
+> a081bd4af4ce ("of/device: Add input id to of_dma_configure()"), it has
+> not matched the signature of the full function, leading to build failure
+> reports when code using this function is built on !OF configurations.
+> 
+> Fixes: a081bd4af4ce ("of/device: Add input id to of_dma_configure()")
+> Signed-off-by: Thierry Reding <treding@nvidia.com>
+> ---
+>  include/linux/of_device.h | 5 +++--
+>  1 file changed, 3 insertions(+), 2 deletions(-)
 
-In this way, the usage of the PTE page table page can be tracked by
-its pte_refcount.
+Acked-by: Lorenzo Pieralisi <lpieralisi@kernel.org>
 
-Signed-off-by: Qi Zheng <zhengqi.arch@bytedance.com>
----
- include/linux/pte_ref.h | 13 +++++++++++++
- mm/pte_ref.c            | 36 ++++++++++++++++++++++++++++++++++++
- 2 files changed, 49 insertions(+)
-
-diff --git a/include/linux/pte_ref.h b/include/linux/pte_ref.h
-index db14e03e1dff..ab49c7fac120 100644
---- a/include/linux/pte_ref.h
-+++ b/include/linux/pte_ref.h
-@@ -12,12 +12,25 @@
- 
- void pte_ref_init(pgtable_t pte);
- 
-+void track_pte_set(struct mm_struct *mm, unsigned long addr, pte_t *ptep,
-+		   pte_t pte);
-+void track_pte_clear(struct mm_struct *mm, unsigned long addr, pte_t *ptep,
-+		     pte_t pte);
- #else /* !CONFIG_FREE_USER_PTE */
- 
- static inline void pte_ref_init(pgtable_t pte)
- {
- }
- 
-+static inline void track_pte_set(struct mm_struct *mm, unsigned long addr,
-+				 pte_t *ptep, pte_t pte)
-+{
-+}
-+
-+static inline void track_pte_clear(struct mm_struct *mm, unsigned long addr,
-+				   pte_t *ptep, pte_t pte)
-+{
-+}
- #endif /* CONFIG_FREE_USER_PTE */
- 
- #endif /* _LINUX_PTE_REF_H */
-diff --git a/mm/pte_ref.c b/mm/pte_ref.c
-index 12b27646e88c..818821d068af 100644
---- a/mm/pte_ref.c
-+++ b/mm/pte_ref.c
-@@ -69,4 +69,40 @@ void pte_ref_init(pgtable_t pte)
- 	pte->pte_refcount = 0;
- }
- 
-+void track_pte_set(struct mm_struct *mm, unsigned long addr, pte_t *ptep,
-+		   pte_t pte)
-+{
-+	pgtable_t page;
-+
-+	if (&init_mm == mm || pte_huge(pte))
-+		return;
-+
-+	page = pte_to_page(ptep);
-+	if (pte_none(*ptep) && !pte_none(pte)) {
-+		pte_refcount_add(mm, page, PTE_MAPPED_OFFSET);
-+		if (is_zero_pfn(pte_pfn(pte)))
-+			pte_refcount_add(mm, page, PTE_ZERO_OFFSET);
-+	} else if (is_zero_pfn(pte_pfn(*ptep)) && !is_zero_pfn(pte_pfn(pte))) {
-+		pte_refcount_sub(mm, page, PTE_ZERO_OFFSET);
-+	}
-+}
-+EXPORT_SYMBOL(track_pte_set);
-+
-+void track_pte_clear(struct mm_struct *mm, unsigned long addr, pte_t *ptep,
-+		     pte_t pte)
-+{
-+	pgtable_t page;
-+
-+	if (&init_mm == mm || pte_huge(pte))
-+		return;
-+
-+	page = pte_to_page(ptep);
-+	if (!pte_none(pte)) {
-+		pte_refcount_sub(mm, page, PTE_MAPPED_OFFSET);
-+		if (is_zero_pfn(pte_pfn(pte)))
-+			pte_refcount_sub(mm, page, PTE_ZERO_OFFSET);
-+	}
-+}
-+EXPORT_SYMBOL(track_pte_clear);
-+
- #endif /* CONFIG_FREE_USER_PTE */
--- 
-2.20.1
-
+> diff --git a/include/linux/of_device.h b/include/linux/of_device.h
+> index 1d7992a02e36..1a803e4335d3 100644
+> --- a/include/linux/of_device.h
+> +++ b/include/linux/of_device.h
+> @@ -101,8 +101,9 @@ static inline struct device_node *of_cpu_device_node_get(int cpu)
+>  }
+>  
+>  static inline int of_dma_configure_id(struct device *dev,
+> -				   struct device_node *np,
+> -				   bool force_dma)
+> +				      struct device_node *np,
+> +				      bool force_dma,
+> +				      const u32 *id)
+>  {
+>  	return 0;
+>  }
+> -- 
+> 2.37.2
+> 
