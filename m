@@ -2,96 +2,97 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 68BD1C04AA5
-	for <linux-kernel@archiver.kernel.org>; Thu, 25 Aug 2022 12:37:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6C5CEC28D13
+	for <linux-kernel@archiver.kernel.org>; Thu, 25 Aug 2022 12:38:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241899AbiHYMhI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 25 Aug 2022 08:37:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51670 "EHLO
+        id S241856AbiHYMig (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 25 Aug 2022 08:38:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52512 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240735AbiHYMhG (ORCPT
+        with ESMTP id S235148AbiHYMid (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 25 Aug 2022 08:37:06 -0400
-Received: from bg5.exmail.qq.com (bg4.exmail.qq.com [43.154.221.58])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5A3D8AF0D6
-        for <linux-kernel@vger.kernel.org>; Thu, 25 Aug 2022 05:37:01 -0700 (PDT)
-X-QQ-mid: bizesmtp62t1661431014thbakx3i
-Received: from localhost.localdomain ( [182.148.14.124])
-        by bizesmtp.qq.com (ESMTP) with 
-        id ; Thu, 25 Aug 2022 20:36:53 +0800 (CST)
-X-QQ-SSF: 01000000002000C0E000B00A0000000
-X-QQ-FEAT: QityeSR92A277cprjEdE58AmL0aKFx5S4Ev5Sj1v6E8ILwe73gcDUDlfjFYZs
-        USbltP7C6HH+wf6J7wKyXKZtehWDxL6esDOAH3oFQ94aTNcYnzZCLPeKqJ//Oj8dKRoJ0Fo
-        pChZOJt+l3rh8dT3cjLzT5yLd9NAMM5u7AFQRkZNEkUViqXvNLoYk6DOVgZ6V6fDNjV+2oE
-        KFLrbLUoz8yWBrsbpBnSxO5m/CXdWlj1fbKvNpoQeKnTeNLFLWrsqgoEk3/gjahJsvBqCbm
-        n+N8qKNX4d209tVkFnRYg7+UZZ22b0B8v49IOtjshXD1e8RdhOttF9zIcVZSTpWrhsron1Y
-        qDcA28jvpzJBFxX+g5XBsBIXcv5GGqQyQeWPx/ULHxBJc8F4ikTARe8PZMQ0StLd9BzLAMp
-X-QQ-GoodBg: 0
-From:   Jilin Yuan <yuanjilin@cdjrlc.com>
-To:     damien.lemoal@opensource.wdc.com, s.shtylyov@omp.r
-Cc:     linux-ide@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Jilin Yuan <yuanjilin@cdjrlc.com>
-Subject: [PATCH] drivers/ata: fix repeated words in comments
-Date:   Thu, 25 Aug 2022 20:36:44 +0800
-Message-Id: <20220825123644.9082-1-yuanjilin@cdjrlc.com>
-X-Mailer: git-send-email 2.36.1
+        Thu, 25 Aug 2022 08:38:33 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8BBD8B2769;
+        Thu, 25 Aug 2022 05:38:32 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 45F4BB826B9;
+        Thu, 25 Aug 2022 12:38:31 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 72A73C433C1;
+        Thu, 25 Aug 2022 12:38:27 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1661431110;
+        bh=LgDF5Ox+bjDfNVdxCe2AZEmz1pOP9XOBZQajiIKH80Y=;
+        h=From:To:Cc:In-Reply-To:References:Subject:Date:From;
+        b=MgtYnyeRFhEsP1zYUeNrVMqrlICIhJG92NLRD989jirXfF/alwMsyXEstwEPS8VMy
+         QT1vLMosW8nNHRF8iaq+i7PqTJZyfVuDi0Qzuu8ZxH3CX0CK2oIQsaDemK5VxuNXP7
+         6o1lzQm/+BEz11aEtp1QaW3oEsVcjSEqPEdnh8LqDDyGQ7bPiLLVLSJ/1BpFx34jY3
+         deM2BdS5raEY6pfV8F0vGQa2lps5uA92HpGHJc0JoIl6dr3zCXoruMVPAYyFHkeimg
+         feXhbZ+gq291hSBa5A5GOlauzzKbd3zaQ+GdF6b9FMWn/YeOO5BiZb4UDVa2pFjazf
+         VvZUpVfAonogg==
+From:   Mark Brown <broonie@kernel.org>
+To:     robh+dt@kernel.org, krzysztof.kozlowski+dt@linaro.org,
+        Chunxu Li <chunxu.li@mediatek.com>, nfraprado@collabora.com
+Cc:     linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        matthias.bgg@gmail.com, alsa-devel@alsa-project.org,
+        project_global_chrome_upstream_group@mediatek.com,
+        linux-mediatek@lists.infradead.org, devicetree@vger.kernel.org,
+        lgirdwood@gmail.com, jiaxin.yu@mediatek.com
+In-Reply-To: <20220824122319.23918-1-chunxu.li@mediatek.com>
+References: <20220824122319.23918-1-chunxu.li@mediatek.com>
+Subject: Re: [PATCH v2 0/2] ASoC: mediatek: dt-bindings: modify machine
+Message-Id: <166143110713.95415.18123711454744125570.b4-ty@kernel.org>
+Date:   Thu, 25 Aug 2022 13:38:27 +0100
 MIME-Version: 1.0
+Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-X-QQ-SENDSIZE: 520
-Feedback-ID: bizesmtp:cdjrlc.com:qybglogicsvr:qybglogicsvr4
+X-Mailer: b4 0.10.0-dev-0c1df
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
- Delete the redundant word 'in'.
- Delete the redundant word 'to'.
+On Wed, 24 Aug 2022 20:23:17 +0800, Chunxu Li wrote:
+> From: "chunxu.li" <chunxu.li@mediatek.com>
+> 
+> Changes since V1:
+>   - remove unnecessary quotes
+> 
+> Add SOF related field.
+> 1. Add a property "mediatek,adsp", Only when adsp phandle could be retrieved,
+>  from DTS, the SOF related part of machine driver is executed.
+> 2. Add a property "mediatek,dai-link" to support dai-links could be specified
+>  from DTS
+> 
+> [...]
 
-Signed-off-by: Jilin Yuan <yuanjilin@cdjrlc.com>
----
- drivers/ata/libata-eh.c      | 2 +-
- drivers/ata/pata_macio.c     | 2 +-
- drivers/ata/sata_dwc_460ex.c | 2 +-
- 3 files changed, 3 insertions(+), 3 deletions(-)
+Applied to
 
-diff --git a/drivers/ata/libata-eh.c b/drivers/ata/libata-eh.c
-index 7c128c89b454..ca865a95cf24 100644
---- a/drivers/ata/libata-eh.c
-+++ b/drivers/ata/libata-eh.c
-@@ -863,7 +863,7 @@ void ata_eh_fastdrain_timerfn(struct timer_list *t)
-  *
-  *	Set ATA_PFLAG_EH_PENDING and activate fast drain if @fastdrain
-  *	is non-zero and EH wasn't pending before.  Fast drain ensures
-- *	that EH kicks in in timely manner.
-+ *	that EH kicks in timely manner.
-  *
-  *	LOCKING:
-  *	spin_lock_irqsave(host lock)
-diff --git a/drivers/ata/pata_macio.c b/drivers/ata/pata_macio.c
-index bfea2be2959a..076212fdb9d9 100644
---- a/drivers/ata/pata_macio.c
-+++ b/drivers/ata/pata_macio.c
-@@ -666,7 +666,7 @@ static u8 pata_macio_bmdma_status(struct ata_port *ap)
- 	 * a multi-block transfer.
- 	 *
- 	 * - The dbdma fifo hasn't yet finished flushing to
--	 * to system memory when the disk interrupt occurs.
-+	 * system memory when the disk interrupt occurs.
- 	 *
- 	 */
- 
-diff --git a/drivers/ata/sata_dwc_460ex.c b/drivers/ata/sata_dwc_460ex.c
-index e3263e961045..a4c83a6e5631 100644
---- a/drivers/ata/sata_dwc_460ex.c
-+++ b/drivers/ata/sata_dwc_460ex.c
-@@ -1087,7 +1087,7 @@ static struct scsi_host_template sata_dwc_sht = {
- 	/*
- 	 * test-only: Currently this driver doesn't handle NCQ
- 	 * correctly. We enable NCQ but set the queue depth to a
--	 * max of 1. This will get fixed in in a future release.
-+	 * max of 1. This will get fixed in a future release.
- 	 */
- 	.sg_tablesize		= LIBATA_MAX_PRD,
- 	/* .can_queue		= ATA_MAX_QUEUE, */
--- 
-2.36.1
+   https://git.kernel.org/pub/scm/linux/kernel/git/broonie/sound.git for-next
 
+Thanks!
+
+[1/2] ASoC: mediatek: dt-bindings: modify machine bindings for SOF
+      commit: 1173107d7c129ff87224814fd38fce5db023aaa0
+[2/2] ASoC: mediatek: dt-bindings: modify machine bindings for SOF
+      commit: 1173107d7c129ff87224814fd38fce5db023aaa0
+
+All being well this means that it will be integrated into the linux-next
+tree (usually sometime in the next 24 hours) and sent to Linus during
+the next merge window (or sooner if it is a bug fix), however if
+problems are discovered then the patch may be dropped or reverted.
+
+You may get further e-mails resulting from automated or manual testing
+and review of the tree, please engage with people reporting problems and
+send followup patches addressing any issues that are reported if needed.
+
+If any updates are required or you are submitting further changes they
+should be sent as incremental updates against current git, existing
+patches will not be replaced.
+
+Please add any relevant lists and maintainers to the CCs when replying
+to this mail.
+
+Thanks,
+Mark
