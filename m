@@ -2,437 +2,145 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 63EB3ECAA25
-	for <linux-kernel@archiver.kernel.org>; Thu, 25 Aug 2022 17:09:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D2517ECAA24
+	for <linux-kernel@archiver.kernel.org>; Thu, 25 Aug 2022 17:15:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241339AbiHYRJy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 25 Aug 2022 13:09:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60624 "EHLO
+        id S241914AbiHYRPE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 25 Aug 2022 13:15:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41770 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229804AbiHYRJt (ORCPT
+        with ESMTP id S235510AbiHYRPB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 25 Aug 2022 13:09:49 -0400
-Received: from mailout2.samsung.com (mailout2.samsung.com [203.254.224.25])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 77B9D1CE;
-        Thu, 25 Aug 2022 10:09:45 -0700 (PDT)
-Received: from epcas5p2.samsung.com (unknown [182.195.41.40])
-        by mailout2.samsung.com (KnoxPortal) with ESMTP id 20220825170941epoutp022ef87e36375dbc9e68a6f53ea997101e~OpZdUlmoR0296902969epoutp02T;
-        Thu, 25 Aug 2022 17:09:41 +0000 (GMT)
-DKIM-Filter: OpenDKIM Filter v2.11.0 mailout2.samsung.com 20220825170941epoutp022ef87e36375dbc9e68a6f53ea997101e~OpZdUlmoR0296902969epoutp02T
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
-        s=mail20170921; t=1661447382;
-        bh=OacBpmGRDqsNjkrx2u5xaY8W1MLNzX6d37+yYizJPCI=;
-        h=From:To:In-Reply-To:Subject:Date:References:From;
-        b=uXqtI2W2s25AmQbJ4MeNVTwPooY2Id2ZRsVk9fFw9hvQ3EqPADorksjOxVcODcBwX
-         zVEoB4ltySlgc19FjOF+Sr8vXfQa34n1baOXYxzbxIQJ8bEP5Iw5UVMJY7mN0V0n77
-         2Jz2DmcSXORvGEhQI/PrrprxOgAbKrFVCe3zeKMg=
-Received: from epsnrtp3.localdomain (unknown [182.195.42.164]) by
-        epcas5p2.samsung.com (KnoxPortal) with ESMTP id
-        20220825170941epcas5p27799c73d198bc31b76e49f8aa058262e~OpZci6KVr0999909999epcas5p23;
-        Thu, 25 Aug 2022 17:09:41 +0000 (GMT)
-Received: from epsmges5p1new.samsung.com (unknown [182.195.38.174]) by
-        epsnrtp3.localdomain (Postfix) with ESMTP id 4MD8b64t1Pz4x9Pp; Thu, 25 Aug
-        2022 17:09:38 +0000 (GMT)
-Received: from epcas5p2.samsung.com ( [182.195.41.40]) by
-        epsmges5p1new.samsung.com (Symantec Messaging Gateway) with SMTP id
-        4C.26.59633.2DCA7036; Fri, 26 Aug 2022 02:09:38 +0900 (KST)
-Received: from epsmtrp1.samsung.com (unknown [182.195.40.13]) by
-        epcas5p2.samsung.com (KnoxPortal) with ESMTPA id
-        20220825170937epcas5p282c40d4031c94c7642eb3cdf65c5af81~OpZZK4XT20999909999epcas5p2x;
-        Thu, 25 Aug 2022 17:09:37 +0000 (GMT)
-Received: from epsmgms1p2.samsung.com (unknown [182.195.42.42]) by
-        epsmtrp1.samsung.com (KnoxPortal) with ESMTP id
-        20220825170937epsmtrp1897666625f3833353acce0e58953342a~OpZZEMusp1369413694epsmtrp1D;
-        Thu, 25 Aug 2022 17:09:37 +0000 (GMT)
-X-AuditID: b6c32a49-06ffe7000000e8f1-66-6307acd2c733
-Received: from epsmtip1.samsung.com ( [182.195.34.30]) by
-        epsmgms1p2.samsung.com (Symantec Messaging Gateway) with SMTP id
-        44.85.18644.1DCA7036; Fri, 26 Aug 2022 02:09:37 +0900 (KST)
-Received: from alimakhtar03 (unknown [107.122.12.5]) by epsmtip1.samsung.com
-        (KnoxPortal) with ESMTPA id
-        20220825170930epsmtip13f4a6899927070d7a683599d4aa68709~OpZSsHOr81884918849epsmtip1e;
-        Thu, 25 Aug 2022 17:09:30 +0000 (GMT)
-From:   "Alim Akhtar" <alim.akhtar@samsung.com>
-To:     "'Krzysztof Kozlowski'" <krzysztof.kozlowski@linaro.org>,
-        "'Rob Herring'" <robh+dt@kernel.org>,
-        "'Krzysztof Kozlowski'" <krzysztof.kozlowski+dt@linaro.org>,
-        "'Kunihiko Hayashi'" <hayashi.kunihiko@socionext.com>,
-        "'Masami Hiramatsu'" <mhiramat@kernel.org>,
-        "'Damien Le Moal'" <damien.lemoal@opensource.wdc.com>,
-        "'Michael Turquette'" <mturquette@baylibre.com>,
-        "'Stephen Boyd'" <sboyd@kernel.org>,
-        "'Geert Uytterhoeven'" <geert+renesas@glider.be>,
-        "'Sylwester Nawrocki'" <s.nawrocki@samsung.com>,
-        "'Tomasz Figa'" <tomasz.figa@gmail.com>,
-        "'Chanwoo Choi'" <cw00.choi@samsung.com>,
-        "'Vladimir Zapolskiy'" <vz@mleia.com>,
-        "'Herbert Xu'" <herbert@gondor.apana.org.au>,
-        "'David S. Miller'" <davem@davemloft.net>,
-        "'Andrzej Hajda'" <andrzej.hajda@intel.com>,
-        "'Neil Armstrong'" <neil.armstrong@linaro.org>,
-        "'Robert Foss'" <robert.foss@linaro.org>,
-        "'Laurent Pinchart'" <Laurent.pinchart@ideasonboard.com>,
-        "'Jonas Karlman'" <jonas@kwiboo.se>,
-        "'Jernej Skrabec'" <jernej.skrabec@gmail.com>,
-        "'David Airlie'" <airlied@linux.ie>,
-        "'Daniel Vetter'" <daniel@ffwll.ch>,
-        "'Rob Clark'" <robdclark@gmail.com>,
-        "'Abhinav Kumar'" <quic_abhinavk@quicinc.com>,
-        "'Dmitry Baryshkov'" <dmitry.baryshkov@linaro.org>,
-        "'Sean Paul'" <sean@poorly.run>,
-        "'Inki Dae'" <inki.dae@samsung.com>,
-        "'Seung-Woo Kim'" <sw0312.kim@samsung.com>,
-        "'Kyungmin Park'" <kyungmin.park@samsung.com>,
-        "'Thierry Reding'" <thierry.reding@gmail.com>,
-        "'Jonathan Hunter'" <jonathanh@nvidia.com>,
-        "'Masahiro Yamada'" <yamada.masahiro@socionext.com>,
-        "'Florian Fainelli'" <f.fainelli@gmail.com>,
-        "'Linus Walleij'" <linus.walleij@linaro.org>,
-        "'Andre Przywara'" <andre.przywara@arm.com>,
-        "'Kuninori Morimoto'" <kuninori.morimoto.gx@renesas.com>,
-        "'Yoshihiro Shimoda'" <yoshihiro.shimoda.uh@renesas.com>,
-        "'Marek Vasut'" <marex@denx.de>,
-        "'Krishna Manikandan'" <quic_mkrishn@quicinc.com>,
-        <devicetree@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-kernel@vger.kernel.org>, <linux-ide@vger.kernel.org>,
-        <linux-clk@vger.kernel.org>, <linux-renesas-soc@vger.kernel.org>,
-        <linux-samsung-soc@vger.kernel.org>,
-        <linux-crypto@vger.kernel.org>, <dri-devel@lists.freedesktop.org>,
-        <linux-arm-msm@vger.kernel.org>, <freedreno@lists.freedesktop.org>,
-        <linux-tegra@vger.kernel.org>
-In-Reply-To: <20220825113334.196908-5-krzysztof.kozlowski@linaro.org>
-Subject: RE: [PATCH 5/5] dt-bindings: display: drop minItems equal to
- maxItems
-Date:   Thu, 25 Aug 2022 22:39:29 +0530
-Message-ID: <065301d8b8a5$747cf310$5d76d930$@samsung.com>
+        Thu, 25 Aug 2022 13:15:01 -0400
+Received: from na01-obe.outbound.protection.outlook.com (mail-centralusazon11021018.outbound.protection.outlook.com [52.101.62.18])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 13A301015;
+        Thu, 25 Aug 2022 10:14:58 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=EBxHnEv0NYrs/R7GL+pDaACIyrBItmSq8xHnqgMRFT7bjXKyinua6JFICqCsfWaVIYE862NIz2Z1Kivoksm9C0H9EUCpZaMKVH77dlReOQ0LBUobf4u8Kw0NhSXhap+veKizZMb3FUXJCP3ZMXWu6bOlXJEzs0YIdMdbnvbYskDWswJbeR4i7XmuSYr63FhbkFqW7nBsKKBc/EovMyIMU6QVdKsyJWWs2iTgADOFzCxcSfUAOOxkom+xB9LwJHokg3OFyIRPtsDV96Qi7i6U55K24HWPCW2mGFPKKmlFU3QWfrREhroRjOiO9DhoOrJXv0ZMWBHCUdQTmvsnfVb53Q==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=Yc85sE7akARX88MuR52ObEVtOOpO+tJcLtBIofROW5c=;
+ b=IQoggMazxkPmzRt7ujDru0s1+2fuwnOGH7SH4gPl0OW/0QZSWkEuYyXk7a0d7XTx00sVYwbkSjAQwdBOYHOJcgv/CAon48CDHijDsIIx8KAdtFOtFTmKVFK17gBrRwgmaLdWSBSnMco2+pmxQ0ARqQ6f6QjrRTc8v88dRCEyo36D1z+hp1haC022WliFoosXrT3v60iSgJgQzgOI8611mH5cfK2FA2KBpzot42wHfrh8nkjeT29qSXIoX6UccsDq6m+Hm2Bh/QmXeyo6o50rTqWA6XsA85/3SAVSGFWy7P7aAfKzM7SAAsDzFHFfLx56wFVqwWqJhOVC04ijhtdLcg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=microsoft.com; dmarc=pass action=none
+ header.from=microsoft.com; dkim=pass header.d=microsoft.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=Yc85sE7akARX88MuR52ObEVtOOpO+tJcLtBIofROW5c=;
+ b=P5OMQB4SH05pWzd7+jKA6p722kPULgP1afm3JWjn1wMfxxi97HKsx+SvVfKck4C7/+UKeFH+X3K/v+A3CefKsTvM8YvUljfUcekz7WWjY22n4uYBLp0/hX940iYUNFQs76g+te46UQKHUqc98U/PvEYYVloC4EPZZCFjA86lKqY=
+Received: from SN6PR2101MB1693.namprd21.prod.outlook.com
+ (2603:10b6:805:55::19) by MN2PR21MB1407.namprd21.prod.outlook.com
+ (2603:10b6:208:204::18) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5588.3; Thu, 25 Aug
+ 2022 17:14:56 +0000
+Received: from SN6PR2101MB1693.namprd21.prod.outlook.com
+ ([fe80::6485:465a:309a:2205]) by SN6PR2101MB1693.namprd21.prod.outlook.com
+ ([fe80::6485:465a:309a:2205%9]) with mapi id 15.20.5588.004; Thu, 25 Aug 2022
+ 17:14:56 +0000
+From:   "Michael Kelley (LINUX)" <mikelley@microsoft.com>
+To:     Zhou jie <zhoujie@nfschina.com>, KY Srinivasan <kys@microsoft.com>,
+        Haiyang Zhang <haiyangz@microsoft.com>,
+        Stephen Hemminger <sthemmin@microsoft.com>,
+        "wei.liu@kernel.org" <wei.liu@kernel.org>,
+        Dexuan Cui <decui@microsoft.com>
+CC:     "linux-hyperv@vger.kernel.org" <linux-hyperv@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Subject: RE: [PATCH] hv/hv_kvp_daemon: remove unnecessary (void*) conversions
+Thread-Topic: [PATCH] hv/hv_kvp_daemon: remove unnecessary (void*) conversions
+Thread-Index: AQHYtqL1LmM8wOEICUu5pPDyJKO6062/3fbA
+Date:   Thu, 25 Aug 2022 17:14:55 +0000
+Message-ID: <SN6PR2101MB16931A789DA8673E9607F761D7729@SN6PR2101MB1693.namprd21.prod.outlook.com>
+References: <20220823034552.8596-1-zhoujie@nfschina.com>
+In-Reply-To: <20220823034552.8596-1-zhoujie@nfschina.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+msip_labels: MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_ActionId=29b33f71-2072-4ba0-9e97-779f9d1350ae;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_ContentBits=0;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_Enabled=true;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_Method=Standard;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_Name=Internal;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_SetDate=2022-08-25T17:10:47Z;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_SiteId=72f988bf-86f1-41af-91ab-2d7cd011db47;
+authentication-results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=microsoft.com;
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: c7e0e38d-3962-4498-386c-08da86bd550f
+x-ms-traffictypediagnostic: MN2PR21MB1407:EE_
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: fglM+r3c/iAIAdMUObMW6mtRW8UQ58gd0/wN0dK1uYhmS8fttOwsipAw07ONSOFZ0LbDwSSTkEkNCLKWC1KMxVSuNeM23hDxcLbGBmO9ghnbQhIUP2t/HmfoTQ/2BzjuBy+lC8m1VS++5WLw3bFG7NBnQqQmthWJY1ag5Wkdd7TwpIT389Wnk6rYHVnbkAZqcTBGfCxsNSzfza/RdxB6mu5pe+VE91HI1AbOVIJPFrcRQ5pNiR2Jo0Oj1ej2f+/PLM6ItCIMa7cB6+RrycOt//B5dR2B/oh3kXz4sPmPjWFhwqHF0AaPBfe/+RJfdTqx2c5LbBKLl6kaqFholaSHsPaeKIQCCNDNqynnMk+xmsO1Cl/XuAEoRbYFBIv1QHDjycTPDa+ZvEUjA8reVqKPPiIUbfSCcn+LF2HIA32fnxul97iDI8PmOAK0FwUSjdY/2KLtswhu6YNmJ8GLWqNv6qXhrcIstbDC1Qd0bt2aV6Pp12712BeIwRm/ykMuW2+LmGESI4xNvCU9HAhmT9aW5Anhy2ToRgLeSCSTOppqCp5mRe4VpYFBOpHBgozzOSv9WDKtGlw9w7g1UdaXa1/wa5cCDna8sJ1XbLkTN8fqT78YXhFhcWYdhdMuKU5tJ7bRBCm5sOKDT/LJ7WKArtGVvl+JXDq6xJostk+ROP1/e7vyGWRXRb+TCt78oTR9S8sLjfZHFRB84IiNZ9/c8gPJ8bICEyLoNSDKAGh/N6g7QIpkXjYuF4avtUKlG9o6IaShb9MJSlwkn+VWNZc7tB5fneuEzZ7fgewRdOa61IZEqjYJ/AHwnuCCWBEQshJjt+FB
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:SN6PR2101MB1693.namprd21.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(4636009)(396003)(136003)(376002)(39860400002)(366004)(346002)(451199009)(122000001)(5660300002)(186003)(26005)(7696005)(9686003)(52536014)(38100700002)(2906002)(8936002)(6506007)(71200400001)(66446008)(66946007)(316002)(76116006)(4326008)(66476007)(64756008)(110136005)(8676002)(41300700001)(6636002)(66556008)(10290500003)(54906003)(86362001)(38070700005)(8990500004)(33656002)(55016003)(478600001)(82960400001)(82950400001)(83380400001);DIR:OUT;SFP:1102;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?czgr0sxSvSt6idQgYdldTiU6qHMC+/TIssPeM7uw7WMMF9OIMfX8dFscXvMW?=
+ =?us-ascii?Q?rTwDaUCI0nj67ChgXO5tFxzz4Os2aJHKRQ7hqm8Vtn/bARbZVdccfZMOK/h9?=
+ =?us-ascii?Q?wLF7IilvHHh6P5X6M1UwY8PWawPJePuhTMwzNJn17MTMNBjaz3jV6fxDHjM2?=
+ =?us-ascii?Q?wL9clFLuM4ikk1ah7fW1i1nT0jzqF5Fa5hSipqlkhR2yST3pICoxcWaxUS1C?=
+ =?us-ascii?Q?JlpVP3ak/H0tOdWhXe46h9kyGnCM9KR1MVK3yoxukaTfA2Ht/F+r9TcBpBiR?=
+ =?us-ascii?Q?/1m553VwP+QbPKOwzOzrV/MQQRaEEC5NGM4treZkTjrZBZ9M2nB2b275NR3Q?=
+ =?us-ascii?Q?FKrq89mbp7Www/x0GDU2ddpeFiBHk+U4tEYG2JzdiZi/Rqx7weCYHppCudga?=
+ =?us-ascii?Q?B/HJvwghMf42zeE7ctULJF6XqnCuxisjVJLy8wcOynfpn8d/+fZhCQmqi1hn?=
+ =?us-ascii?Q?zj1tKx2zxFYKoY0IHDlQke3usTvAC5G4cWY31b5AtujxkkKrjgCkq9iM4B+D?=
+ =?us-ascii?Q?yphxw21LmBCY0bR6/wMHc32hL0lJiKgEsRIj7g2nzXigYl1ByzL6bGUbr8+S?=
+ =?us-ascii?Q?AZfhhLvLg+ZYgX8f95gbp1zh22YRwJYChaubdi6pdHj4C/p+gTVNkfxyyVxh?=
+ =?us-ascii?Q?VXshOeA2qD0B7an7I2D7eQnOb59PUUfOctu8kE1pd3tbR25c4T/Dg1Ci74IV?=
+ =?us-ascii?Q?3dGXkamII4CF3+nM4o3kVxj1nHQZqJEvGx5ZfHK2bCbl4tO9pH+ANbowrnqR?=
+ =?us-ascii?Q?trn9eILohOBA2A8pqKWApUpn8/2iebBhX0/ccZJnJQEzkAxvPAdQ4EfZB1cF?=
+ =?us-ascii?Q?K+gWZFQS8QWJ6nwhXtGSjyPnSX8jBRS+d/ESTzMUvpb6DAWEg3ZHoxsi9rml?=
+ =?us-ascii?Q?q+zrhIjxSr5mzz0dRSXYLEfBSmTFyFNwNIaG3qPkJp9DOIs0Kz8pHafEFdDe?=
+ =?us-ascii?Q?GtKFl8nzGVSCrpOEBGRmJ14jy5vw5H6kBS55c6HEwY39/h0kT3Wy5mjKDzJQ?=
+ =?us-ascii?Q?OsZBoaFk31ZJTVDfE+Q+2w8aYPbLqaAv1v9NFFUgsSN+P3tCe1lGbbqQnWsy?=
+ =?us-ascii?Q?LDMu1b8QnXERBcm08ug8s18pXW1Pbr4mRhCsFRKc/sfFv6gK5EYDFZid+LPz?=
+ =?us-ascii?Q?GNOogVILDx41cfqolq/BPRcoElABuGCoLavVeQMLqCQvl8U6b/cJn1ZH9ngo?=
+ =?us-ascii?Q?hChYB4jO1QsYbIT1/vUOtbqg5RfFi+ufR/UO39UvptLB0cXJWl/M68/KbQDG?=
+ =?us-ascii?Q?HeyPYFjLjYTqcnyeh5ZCAEGE5MxpqZlzccelWH1gXokHSAsOGkh3eJ4U79Ro?=
+ =?us-ascii?Q?xwRWhkAlr6+y6WiQTZsg0wAtPbufSZ+gSTvyChnt9ldoUUchOHXOoWxoY2x6?=
+ =?us-ascii?Q?nOSqeV0Csqpn0OeXTKLz33vpKG3F8G8gjP3MPZ5jic0eggNY1HZDPuITDH+0?=
+ =?us-ascii?Q?wtS2FX6zH+qNM2+TgDFUK/XqCW/cPECksQmyz08UxQyYDrBJGZowsFDMgmJ8?=
+ =?us-ascii?Q?y2FIw3nsfMlASzTda+Ms4/iYyIwVsGG42NN6vbv8ui+Uqkkze/ayag9lEPmo?=
+ =?us-ascii?Q?8sFI58FnWKvm49Rkq/eNzYvDCTR266koCngrh/OZrXvE88lWhCQEisyWMdq7?=
+ =?us-ascii?Q?PQ=3D=3D?=
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-X-Mailer: Microsoft Outlook 16.0
-Thread-Index: AQGXYWyYQPva3C8wcpr5uE47k6l8qAGFGprcAibC4Y6uJSdW0A==
-Content-Language: en-us
-X-Brightmail-Tracker: H4sIAAAAAAAAA02TeVBTVxTG5773khek2Gek9UrtmKamLh2Q1EAPjmBVKM+20zJ12nEYW5qB
-        N8AISZqEikstKlLZWoILGtKggkupiiISiEIVcEEHQkHjMoUgxcZoADW4sFiaEGz973fO+c79
-        zrl3roAUHhMECJIVWk6tkKeI+ZOo6sa5cwLbj9DxwZnPRJDf2kzAYeMQAlupi4Lrg3YejLRY
-        SBir1pFgsGRSUNLUygOdZYgPVx8P8GG4v4kGg70FwS/FhQgab2xGkHtvBhTaCiiwlxxD0Oy8
-        RkGmfj8FP929TULd/VM03Gs0I2jZ7KQhW1dGw47RQwRU/mV1H/x7Cw0P87p4YOsaIuBCTQ8B
-        HWYDH045+gnYbaknIHtQzwdn1iYEpYfegT8uR8FA7S0EznMFPMgb7KHBvu8ZCY/0bq+tde7h
-        Gp0/8uAf6wkKOrc3Idi93cGHIbORgnLzKIKx4S3umbpcCB7XufgfyNgjxiOIHbixlWarfr1J
-        sEb9JYqte7KXYnUtgWytvpNmq89K2OJte3hs6RkHwVaWZ/PZSwXtBPun9QyfNT3p5rG23IsE
-        e7Lsh5jpsasXJXHyBE4t4hTxyoRkRWK4+OMVccviQkKDpYHSMHhfLFLIU7lwceQnMYEfJqe4
-        X0Ys+k6ekuZOxcg1GvH8iEVqZZqWEyUpNdpwMadKSFHJVEEaeaomTZEYpOC0C6XBwe+FuIXf
-        rE7KrrETKgOb3q3LJzNQYUQO8hFgRoadlssoB00SCJnTCBcf+I3yBo8QNjU84XkDlzvQ36Zf
-        tFgL9kwUzAhnP+wZLwgZB8JZtiUe5jOBuKY0i+8R+TNjU3BtWx7PU/BhonDWwWHSw1OZGKw/
-        Z6U8TDES3O3KG2c/Jgwfd5wgvDwFN+/pHc+TzExs6jOQ3ilEeOjOwfEz/ZmlOMN+mPZqpmHH
-        +SbaY4yZDF98se5vytsQiU3mzAmeiu9drJpYJwA7fs5ys8DNLN4/GuBNJ+G+QxXIy4vx2asG
-        yiMhmbm4wjzfazUZ54/0Et5OP7wtS+hVS/CW/msTRm9gXW4uz8ssLnmwY+KqOxA+P5yHCpBI
-        /9KW+pe21L+0jf5/572IKkfTOZUmNZHThKikCm7Nfw8er0ytROMfd97yGtTZ/SCoAREC1ICw
-        gBT7+y28QMUL/RLka9dxamWcOi2F0zSgEPfV68iA1+KV7p+v0MZJZWHBstDQUFnYglCpeJrf
-        jndRvJBJlGu51Ryn4tQv+giBT0AGITs5qaJvw6vRC8B26/MxWmXK0ba9cjwprCGoY5blvH12
-        cXuLIngg7On1dVGj9UflCv/6FdVxmy6skkztu9VV0rzYXm7b2G7slrS+2cf0+n87li+pjBLO
-        Ktsl6BCtWpkPsTb2yhc7j6YPP9/w7HRgWqd/2+trqj5ddd+3vnSmcUkGNYKHIgsjiogvN12Z
-        bdmctmX6jP7eGOOUuzmmr+eZ5tyJLto4oC576nzUJ3ne+dWlz9r8XIXKja23376+t3tXa9H6
-        lRGTfZfGng3QrAWr/K1tBt/lI47jGVRJ1Kjp8c5oU5W1tuejB7EViWdufq9PP6Bbf63EdTA8
-        uUdjPtWbMn9fZHojK6Y0SXLpPFKtkf8LSCD0skEFAAA=
-X-Brightmail-Tracker: H4sIAAAAAAAAA01SfVCTdRy/3/M8e55Bt+tx7PQnmtgO0ygQO+78FuklST3XH0rdWdE/tvAJ
-        VoBrExU7Y8mLDME2sJIHBGqksgiDeF2MBCYveoAgIKSMadocDgF5saFCwK6L/z73eft+/viK
-        SamO9hUr4w/w6nhFrJz2pqqb5esCu0uZqOBW8zOQ1dlOwPkCN4Jh4yQF16ccInjc0UXCfLWB
-        hPyuFAoKrZ0iMHS5aeidHqNh9oGVgXxHB4IzedkImgeOITgxshayh/UUOArLELS7+ihIEX6k
-        4OS9WyRY7lcxMNJsRtBxzMWAzlDMwKkn5wio+Kt/ofiPDgYmMm0iGLa5CWipvU3ANXM+DVXO
-        BwSc7mogQDcl0OBK+xqB8dwL0H05HMbq/kTgatSLIHPqNgOOH/4h4aGwcCvVsjCu2XVcBHP9
-        5RQM5VgRnM5x0uA2F1BgMj9BMD+bvLDJNolg2jJJvxHClRaUIm5sIJXhKksGCa5AaKM4y0wR
-        xRk6Ark6YYjhqi9u4PLSc0Wcsd5JcBUmHc216XsI7mZ/Pc3VzNhF3PCJVoL7rTgpYvVH3q/v
-        42OVB3n15u0fe8foah2EKp87bDdkkVqUvT0DeYkxG4L79bmiDOQtlrK1CI/Y/qY9whp8vVzP
-        eLAPLplzMB6TA+HLlivkokCzgbjWmLYUkLFGKc4pTPCYuhDWDd5bSnux4Tjt7OxSwIfdhU/a
-        ppcCFLsB2yczqUUsYV/FvzrLCQ9egdtz7yzwYjHJBuG0crRIk6wfrhnNJz2D1mP33bMiz90w
-        rHWcZzyeVdh5ycrokVRY1iT83yQsaxKWJYoQZUKreZUmLjpOs0X1Sjx/KEijiNMkxEcHRe2P
-        q0BL3xoQUIvqTeNBTYgQoyaExaRcJnmthYqSSvYpEo/w6v171QmxvKYJrRFT8lWSqxnte6Vs
-        tOIA/znPq3j1fyoh9vLVEulXBONbt0zf9Uwk+s9URQIezysZ/qW05bB5fOa+rDLMolVday1y
-        SvbMyUKLVGuz1xWv8L2g+awzWZntzv3dus1AZtY1XPgk2Px90tbQXWHJCcjvUe/uHTkXey/5
-        hX7VlnhjW5LUNWroS4GnR5tGG40TLe/3qFISLLL6GxtfrnSEWKsHlePM5q0/vcdP72x8N7It
-        uebbZ68i5e71R7+QpyeVfRo4YHtIsytf4oZGHcKZmJuS5/2d2rLjEd6K0oY3n7N/mCPq3knG
-        tfm19+2YfxyxUdlwKDL4iE9m5dty+5f+m35+yjbdGdf2aV8stq8MNz76ZlP5XfM7WYMFHxwM
-        Htpzik2VU5oYxZYAUq1R/Au2jZEwHAQAAA==
-X-CMS-MailID: 20220825170937epcas5p282c40d4031c94c7642eb3cdf65c5af81
-X-Msg-Generator: CA
-Content-Type: text/plain; charset="utf-8"
-CMS-TYPE: 105P
-DLP-Filter: Pass
-X-CFilter-Loop: Reflected
-X-CMS-RootMailID: 20220825113350epcas5p3cb0cc2cbf440c7999a160212d9e714f4
-References: <20220825113334.196908-1-krzysztof.kozlowski@linaro.org>
-        <CGME20220825113350epcas5p3cb0cc2cbf440c7999a160212d9e714f4@epcas5p3.samsung.com>
-        <20220825113334.196908-5-krzysztof.kozlowski@linaro.org>
+X-OriginatorOrg: microsoft.com
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: MN2PR21MB1407
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Krzysztof
+From: Zhou jie <zhoujie@nfschina.com> Sent: Monday, August 22, 2022 8:46 PM
+>=20
+> remove unnecessary void* type casting.
+>=20
+> Signed-off-by: Zhou jie <zhoujie@nfschina.com>
+> ---
+>  tools/hv/hv_kvp_daemon.c | 4 ++--
+>  1 file changed, 2 insertions(+), 2 deletions(-)
+>=20
+> diff --git a/tools/hv/hv_kvp_daemon.c b/tools/hv/hv_kvp_daemon.c
+> index 1e6fd6ca513b..445abb53bf0d 100644
+> --- a/tools/hv/hv_kvp_daemon.c
+> +++ b/tools/hv/hv_kvp_daemon.c
+> @@ -772,11 +772,11 @@ static int kvp_process_ip_address(void *addrp,
+>  	const char *str;
+>=20
+>  	if (family =3D=3D AF_INET) {
+> -		addr =3D (struct sockaddr_in *)addrp;
+> +		addr =3D addrp;
+>  		str =3D inet_ntop(family, &addr->sin_addr, tmp, 50);
+>  		addr_length =3D INET_ADDRSTRLEN;
+>  	} else {
+> -		addr6 =3D (struct sockaddr_in6 *)addrp;
+> +		addr6 =3D addrp;
+>  		str =3D inet_ntop(family, &addr6->sin6_addr.s6_addr, tmp, 50);
+>  		addr_length =3D INET6_ADDRSTRLEN;
+>  	}
+> --
+> 2.18.2
 
-I got below messages when replied to all
-"
-Your mail to 'linux-arm-kernel' with the subject
+The patch subject prefix for changes to this module is usually "tools: hv:"
+or "tools: hv: kvp:" and this patch should be consistent.  Check the commit
+log for tools/hv/hv_kvp_daemon.c for historical examples.
 
-    RE: [PATCH 4/5] dt-bindings: crypto: drop minItems equal to
-maxItems and for [PATCH 3/5] as well
+Modulo this tweak,
 
-Is being held until the list moderator can review it for approval.
-
-The reason it is being held:
-
-    Too many recipients to the message
-"
-
-Are these many "To" addresses are really needed?
-
-
->-----Original Message-----
->From: Krzysztof Kozlowski [mailto:krzysztof.kozlowski@linaro.org]
->Sent: Thursday, August 25, 2022 5:04 PM
->To: Rob Herring <robh+dt@kernel.org>; Krzysztof Kozlowski
-><krzysztof.kozlowski+dt@linaro.org>; Kunihiko Hayashi
-><hayashi.kunihiko@socionext.com>; Masami Hiramatsu
-><mhiramat@kernel.org>; Damien Le Moal
-><damien.lemoal@opensource.wdc.com>; Michael Turquette
-><mturquette@baylibre.com>; Stephen Boyd <sboyd@kernel.org>; Geert
->Uytterhoeven <geert+renesas@glider.be>; Sylwester Nawrocki
-><s.nawrocki@samsung.com>; Tomasz Figa <tomasz.figa@gmail.com>;
->Chanwoo Choi <cw00.choi@samsung.com>; Alim Akhtar
-><alim.akhtar@samsung.com>; Vladimir Zapolskiy <vz@mleia.com>; Herbert
->Xu <herbert@gondor.apana.org.au>; David S. Miller
-><davem@davemloft.net>; Andrzej Hajda <andrzej.hajda@intel.com>; Neil
->Armstrong <neil.armstrong@linaro.org>; Robert Foss
-><robert.foss@linaro.org>; Laurent Pinchart
-><Laurent.pinchart@ideasonboard.com>; Jonas Karlman <jonas@kwiboo.se>;
->Jernej Skrabec <jernej.skrabec@gmail.com>; David Airlie <airlied@linux.ie>;
->Daniel Vetter <daniel@ffwll.ch>; Rob Clark <robdclark@gmail.com>; Abhinav
->Kumar <quic_abhinavk@quicinc.com>; Dmitry Baryshkov
-><dmitry.baryshkov@linaro.org>; Sean Paul <sean@poorly.run>; Inki Dae
-><inki.dae@samsung.com>; Seung-Woo Kim <sw0312.kim@samsung.com>;
->Kyungmin Park <kyungmin.park@samsung.com>; Thierry Reding
-><thierry.reding@gmail.com>; Jonathan Hunter <jonathanh@nvidia.com>;
->Masahiro Yamada <yamada.masahiro@socionext.com>; Florian Fainelli
-><f.fainelli@gmail.com>; Linus Walleij <linus.walleij@linaro.org>; Andre
->Przywara <andre.przywara@arm.com>; Kuninori Morimoto
-><kuninori.morimoto.gx@renesas.com>; Yoshihiro Shimoda
-><yoshihiro.shimoda.uh@renesas.com>; Marek Vasut <marex@denx.de>;
->Krishna Manikandan <quic_mkrishn@quicinc.com>;
->devicetree@vger.kernel.org; linux-arm-kernel@lists.infradead.org; linux-
->kernel@vger.kernel.org; linux-ide@vger.kernel.org; linux-
->clk@vger.kernel.org; linux-renesas-soc@vger.kernel.org; linux-samsung-
->soc@vger.kernel.org; linux-crypto@vger.kernel.org; dri-
->devel@lists.freedesktop.org; linux-arm-msm@vger.kernel.org;
->freedreno@lists.freedesktop.org; linux-tegra@vger.kernel.org
->Cc: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
->Subject: [PATCH 5/5] dt-bindings: display: drop minItems equal to maxItems
->
->minItems, if missing, are implicitly equal to maxItems, so drop redundant
->piece to reduce size of code.
->
->Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
->---
-
-
-Feel free to add
-Reviewed-by: Alim Akhtar <alim.akhtar@samsung.com>
-
-
-> Documentation/devicetree/bindings/display/bridge/fsl,ldb.yaml   | 1 -
-> .../devicetree/bindings/display/msm/dsi-controller-main.yaml    | 2 --
-> Documentation/devicetree/bindings/display/msm/dsi-phy-10nm.yaml | 2 --
-> .../bindings/display/samsung/samsung,exynos5433-decon.yaml      | 2 --
-> .../bindings/display/samsung/samsung,exynos5433-mic.yaml        | 1 -
-> .../bindings/display/samsung/samsung,exynos7-decon.yaml         | 1 -
-> .../devicetree/bindings/display/samsung/samsung,fimd.yaml       | 1 -
-> .../devicetree/bindings/display/tegra/nvidia,tegra20-gr3d.yaml  | 1 -
-> .../devicetree/bindings/display/tegra/nvidia,tegra20-mpe.yaml   | 2 --
-> 9 files changed, 13 deletions(-)
->
->diff --git a/Documentation/devicetree/bindings/display/bridge/fsl,ldb.yaml
->b/Documentation/devicetree/bindings/display/bridge/fsl,ldb.yaml
->index 2ebaa43eb62e..b19be0804abe 100644
->--- a/Documentation/devicetree/bindings/display/bridge/fsl,ldb.yaml
->+++ b/Documentation/devicetree/bindings/display/bridge/fsl,ldb.yaml
->@@ -25,7 +25,6 @@ properties:
->     const: ldb
->
->   reg:
->-    minItems: 2
->     maxItems: 2
->
->   reg-names:
->diff --git a/Documentation/devicetree/bindings/display/msm/dsi-controller-
->main.yaml b/Documentation/devicetree/bindings/display/msm/dsi-
->controller-main.yaml
->index 880bfe930830..3b609c19e0bc 100644
->--- a/Documentation/devicetree/bindings/display/msm/dsi-controller-
->main.yaml
->+++ b/Documentation/devicetree/bindings/display/msm/dsi-controller-main.
->+++ yaml
->@@ -66,13 +66,11 @@ properties:
->       2 DSI links.
->
->   assigned-clocks:
->-    minItems: 2
->     maxItems: 2
->     description: |
->       Parents of "byte" and "pixel" for the given platform.
->
->   assigned-clock-parents:
->-    minItems: 2
->     maxItems: 2
->     description: |
->       The Byte clock and Pixel clock PLL outputs provided by a DSI PHY
-block.
->diff --git a/Documentation/devicetree/bindings/display/msm/dsi-phy-
->10nm.yaml b/Documentation/devicetree/bindings/display/msm/dsi-phy-
->10nm.yaml
->index 716f921e3532..d9ad8b659f58 100644
->--- a/Documentation/devicetree/bindings/display/msm/dsi-phy-10nm.yaml
->+++ b/Documentation/devicetree/bindings/display/msm/dsi-phy-10nm.yaml
->@@ -37,7 +37,6 @@ properties:
->
->   qcom,phy-rescode-offset-top:
->     $ref: /schemas/types.yaml#/definitions/int8-array
->-    minItems: 5
->     maxItems: 5
->     description:
->       Integer array of offset for pull-up legs rescode for all five lanes.
->@@ -49,7 +48,6 @@ properties:
->
->   qcom,phy-rescode-offset-bot:
->     $ref: /schemas/types.yaml#/definitions/int8-array
->-    minItems: 5
->     maxItems: 5
->     description:
->       Integer array of offset for pull-down legs rescode for all five
-lanes.
->diff --git
->a/Documentation/devicetree/bindings/display/samsung/samsung,exynos543
->3-decon.yaml
->b/Documentation/devicetree/bindings/display/samsung/samsung,exynos543
->3-decon.yaml
->index 921bfe925cd6..6380eeebb073 100644
->---
->a/Documentation/devicetree/bindings/display/samsung/samsung,exynos543
->3-decon.yaml
->+++
->b/Documentation/devicetree/bindings/display/samsung/samsung,exynos54
->+++ 33-decon.yaml
->@@ -24,7 +24,6 @@ properties:
->       - samsung,exynos5433-decon-tv
->
->   clocks:
->-    minItems: 11
->     maxItems: 11
->
->   clock-names:
->@@ -59,7 +58,6 @@ properties:
->       - const: te
->
->   iommus:
->-    minItems: 2
->     maxItems: 2
->
->   iommu-names:
->diff --git
->a/Documentation/devicetree/bindings/display/samsung/samsung,exynos543
->3-mic.yaml
->b/Documentation/devicetree/bindings/display/samsung/samsung,exynos543
->3-mic.yaml
->index 7d405f2febcd..26e5017737a3 100644
->---
->a/Documentation/devicetree/bindings/display/samsung/samsung,exynos543
->3-mic.yaml
->+++
->b/Documentation/devicetree/bindings/display/samsung/samsung,exynos54
->+++ 33-mic.yaml
->@@ -24,7 +24,6 @@ properties:
->     const: samsung,exynos5433-mic
->
->   clocks:
->-    minItems: 2
->     maxItems: 2
->
->   clock-names:
->diff --git
->a/Documentation/devicetree/bindings/display/samsung/samsung,exynos7-
->decon.yaml
->b/Documentation/devicetree/bindings/display/samsung/samsung,exynos7-
->decon.yaml
->index 969bd8c563a5..c06f306e8d14 100644
->---
->a/Documentation/devicetree/bindings/display/samsung/samsung,exynos7-
->decon.yaml
->+++
->b/Documentation/devicetree/bindings/display/samsung/samsung,exynos7-
->+++ decon.yaml
->@@ -22,7 +22,6 @@ properties:
->     const: samsung,exynos7-decon
->
->   clocks:
->-    minItems: 4
->     maxItems: 4
->
->   clock-names:
->diff --git
->a/Documentation/devicetree/bindings/display/samsung/samsung,fimd.yaml
->b/Documentation/devicetree/bindings/display/samsung/samsung,fimd.yaml
->index 5d5cc220f78a..210d856b3b57 100644
->---
->a/Documentation/devicetree/bindings/display/samsung/samsung,fimd.yaml
->+++
->b/Documentation/devicetree/bindings/display/samsung/samsung,fimd.yam
->+++ l
->@@ -27,7 +27,6 @@ properties:
->     const: 1
->
->   clocks:
->-    minItems: 2
->     maxItems: 2
->
->   clock-names:
->diff --git
-a/Documentation/devicetree/bindings/display/tegra/nvidia,tegra20-
->gr3d.yaml
->b/Documentation/devicetree/bindings/display/tegra/nvidia,tegra20-
->gr3d.yaml
->index dbdf0229d9f6..4755a73473c7 100644
->--- a/Documentation/devicetree/bindings/display/tegra/nvidia,tegra20-
->gr3d.yaml
->+++ b/Documentation/devicetree/bindings/display/tegra/nvidia,tegra20-gr3
->+++ d.yaml
->@@ -59,7 +59,6 @@ properties:
->     maxItems: 2
->
->   power-domain-names:
->-    minItems: 2
->     maxItems: 2
->
-> allOf:
->diff --git
-a/Documentation/devicetree/bindings/display/tegra/nvidia,tegra20-
->mpe.yaml
->b/Documentation/devicetree/bindings/display/tegra/nvidia,tegra20-
->mpe.yaml
->index 4154ae01ad13..5f4f0fb4b692 100644
->--- a/Documentation/devicetree/bindings/display/tegra/nvidia,tegra20-
->mpe.yaml
->+++ b/Documentation/devicetree/bindings/display/tegra/nvidia,tegra20-mpe
->+++ .yaml
->@@ -42,11 +42,9 @@ properties:
->     maxItems: 1
->
->   interconnects:
->-    minItems: 6
->     maxItems: 6
->
->   interconnect-names:
->-    minItems: 6
->     maxItems: 6
->
->   operating-points-v2:
->--
->2.34.1
-
-
+Reviewed-by: Michael Kelley <mikelley@microsoft.com>
