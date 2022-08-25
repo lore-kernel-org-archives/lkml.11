@@ -2,105 +2,68 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 402B2C6498F
-	for <linux-kernel@archiver.kernel.org>; Thu, 25 Aug 2022 15:04:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 693D2C6498F
+	for <linux-kernel@archiver.kernel.org>; Thu, 25 Aug 2022 15:04:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242628AbiHYPED convert rfc822-to-8bit (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 25 Aug 2022 11:04:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54390 "EHLO
+        id S242761AbiHYPEV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 25 Aug 2022 11:04:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55150 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242832AbiHYPDp (ORCPT
+        with ESMTP id S242703AbiHYPEA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 25 Aug 2022 11:03:45 -0400
-Received: from eu-smtp-delivery-151.mimecast.com (eu-smtp-delivery-151.mimecast.com [185.58.85.151])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AD5F4B7760
-        for <linux-kernel@vger.kernel.org>; Thu, 25 Aug 2022 08:03:33 -0700 (PDT)
-Received: from AcuMS.aculab.com (156.67.243.121 [156.67.243.121]) by
- relay.mimecast.com with ESMTP with STARTTLS (version=TLSv1.2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- uk-mta-6-CLGAEFtmMmq-sFQCCbZ85g-1; Thu, 25 Aug 2022 16:03:04 +0100
-X-MC-Unique: CLGAEFtmMmq-sFQCCbZ85g-1
-Received: from AcuMS.Aculab.com (fd9f:af1c:a25b:0:994c:f5c2:35d6:9b65) by
- AcuMS.aculab.com (fd9f:af1c:a25b:0:994c:f5c2:35d6:9b65) with Microsoft SMTP
- Server (TLS) id 15.0.1497.38; Thu, 25 Aug 2022 16:01:31 +0100
-Received: from AcuMS.Aculab.com ([fe80::994c:f5c2:35d6:9b65]) by
- AcuMS.aculab.com ([fe80::994c:f5c2:35d6:9b65%12]) with mapi id
- 15.00.1497.040; Thu, 25 Aug 2022 16:01:31 +0100
-From:   David Laight <David.Laight@ACULAB.COM>
-To:     'Joseph Myers' <joseph@codesourcery.com>,
-        Linus Torvalds <torvalds@linux-foundation.org>
-CC:     Florian Weimer <fweimer@redhat.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Alejandro Colomar <alx.manpages@gmail.com>,
-        Alexei Starovoitov <alexei.starovoitov@gmail.com>,
-        Alex Colomar <alx@kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        linux-man <linux-man@vger.kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        "Zack Weinberg" <zackw@panix.com>,
-        LKML <linux-kernel@vger.kernel.org>,
-        glibc <libc-alpha@sourceware.org>, GCC <gcc-patches@gcc.gnu.org>,
-        bpf <bpf@vger.kernel.org>, LTP List <ltp@lists.linux.it>,
-        Linux API <linux-api@vger.kernel.org>,
-        linux-arch <linux-arch@vger.kernel.org>,
-        "Cyril Hrubis" <chrubis@suse.cz>,
-        David Howells <dhowells@redhat.com>,
-        Arnd Bergmann <arnd@arndb.de>, Rich Felker <dalias@libc.org>,
-        Adhemerval Zanella <adhemerval.zanella@linaro.org>,
-        Michael Kerrisk <mtk.manpages@gmail.com>
-Subject: RE: [PATCH v3] Many pages: Document fixed-width types with ISO C
- naming
-Thread-Topic: [PATCH v3] Many pages: Document fixed-width types with ISO C
- naming
-Thread-Index: AQHYuJCLMClw4u4WnUme2jwTdxYRD62/tSSA
-Date:   Thu, 25 Aug 2022 15:01:31 +0000
-Message-ID: <5e10ac07e63e41639b3113d12c264447@AcuMS.aculab.com>
-References: <20210423230609.13519-1-alx.manpages@gmail.com>
- <20220824185505.56382-1-alx.manpages@gmail.com>
- <CAADnVQKiEVL9zRtN4WY2+cTD2b3b3buV8BQb83yQw13pWq4OGQ@mail.gmail.com>
- <c06008bc-0c13-12f1-df85-3814b74e47f9@gmail.com> <YwcPQ987poRYjfoL@kroah.com>
- <87ilmgddui.fsf@oldenburg.str.redhat.com>
- <CAHk-=whsETo4kc2Ec1Nf4HQY5vKYmRi9et243kyqN4E-=PgKJw@mail.gmail.com>
- <alpine.DEB.2.22.394.2208251435370.104368@digraph.polyomino.org.uk>
-In-Reply-To: <alpine.DEB.2.22.394.2208251435370.104368@digraph.polyomino.org.uk>
-Accept-Language: en-GB, en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-ms-exchange-transport-fromentityheader: Hosted
-x-originating-ip: [10.202.205.107]
+        Thu, 25 Aug 2022 11:04:00 -0400
+Received: from bg5.exmail.qq.com (bg4.exmail.qq.com [43.154.221.58])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A7C14B81D7
+        for <linux-kernel@vger.kernel.org>; Thu, 25 Aug 2022 08:03:48 -0700 (PDT)
+X-QQ-mid: bizesmtp70t1661439786t2i9nrb6
+Received: from localhost.localdomain ( [182.148.14.124])
+        by bizesmtp.qq.com (ESMTP) with 
+        id ; Thu, 25 Aug 2022 23:03:00 +0800 (CST)
+X-QQ-SSF: 01000000002000B0C000B00A0000000
+X-QQ-FEAT: ILHsT53NKPgo6CVByiP5FDaChDOa8bpPjPIfuK+PgRDGKENnLp3+8x/uhteUs
+        c/zlmGytvAMjN4k/U9DQC7lCLZXFjh6svzcWOv+uLYi+RhvRFIMNXKH5V24eBmcrpddkCdm
+        t0F31XrrKabFvEOTPbUWMVdPPizrz3dbVJMJ8kr4DHeKB4OfRroRoXcaRVcvQ7XSHTILVBu
+        jS5fJX9JWoVjk77RCUFVNli08ne2d7jXlPuRJPjceWYnYpscpZjDxvKpnz+JOFbOjJU3XdG
+        R8pQMRtrM4Ly4mHEsjFyPgeEtyB8/A17Zb/4pZ2jrReRZSedQfhhbkTlErNm1TlvIZOrQjO
+        fO4U3+S2TheaG6BYHFYT/T52ZYpzMEzpq6l3Gx4mko6nK8BPBr7RorEECxWZ6cslgkyjwGE
+X-QQ-GoodBg: 0
+From:   Shaomin Deng <dengshaomin@cdjrlc.com>
+To:     linux-staging@lists.linux.dev, linux-kernel@vger.kernel.org
+Cc:     baihaowen@meizu.com, dan.carpenter@oracle.com,
+        paskripkin@gmail.com, dave@stgolabs.net, edumazet@google.com,
+        dengshaomin@cdjrlc.com
+Subject: [PATCH] staging: rtl8192e: Fix comments typo
+Date:   Thu, 25 Aug 2022 11:02:58 -0400
+Message-Id: <20220825150258.8967-1-dengshaomin@cdjrlc.com>
+X-Mailer: git-send-email 2.35.1
 MIME-Version: 1.0
-X-Mimecast-Spam-Score: 0
-X-Mimecast-Originator: aculab.com
-Content-Language: en-US
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8BIT
+Content-Transfer-Encoding: 8bit
+X-QQ-SENDSIZE: 520
+Feedback-ID: bizesmtp:cdjrlc.com:qybglogicsvr:qybglogicsvr4
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Joseph Myers
-> Sent: 25 August 2022 15:39
-> 
-> On Thu, 25 Aug 2022, Linus Torvalds wrote:
-> 
-> > That's a small detail that yes, we've tried to avoid the absolute
-> > humongous mess that the C standard library has with their horrendous
-> > 'PRId*' mess, but honestly, it's just a tiny detail.
-> 
-> I've not yet implemented it for glibc or for GCC format checking, but C23
-> adds 'wN' format length modifiers so you will be able to e.g. use "%w64d"
-> with printf to print an int64_t and won't need those PRI macros any more.
+Fix double word "new" in comments.
 
-Is that meant to work regardless of whether the type is
-int, long or long long provided the size is correct?
+Signed-off-by: Shaomin Deng <dengshaomin@cdjrlc.com>
+---
+ drivers/staging/rtl8192e/rtllib_softmac.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-Or does it require the compiler know which type inttypes.h
-uses for uint32_t and uint64_t?
-
-	David
-
--
-Registered Address Lakeside, Bramley Road, Mount Farm, Milton Keynes, MK1 1PT, UK
-Registration No: 1397386 (Wales)
+diff --git a/drivers/staging/rtl8192e/rtllib_softmac.c b/drivers/staging/rtl8192e/rtllib_softmac.c
+index b5f4d35954a9..9e6d7c5716ff 100644
+--- a/drivers/staging/rtl8192e/rtllib_softmac.c
++++ b/drivers/staging/rtl8192e/rtllib_softmac.c
+@@ -1611,7 +1611,7 @@ inline void rtllib_softmac_new_net(struct rtllib_device *ieee,
+ 
+ 	short apset, ssidset, ssidbroad, apmatch, ssidmatch;
+ 
+-	/* we are interested in new new only if we are not associated
++	/* we are interested in new only if we are not associated
+ 	 * and we are not associating / authenticating
+ 	 */
+ 	if (ieee->state != RTLLIB_NOLINK)
+-- 
+2.35.1
 
