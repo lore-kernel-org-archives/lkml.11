@@ -2,112 +2,113 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A2DF2ECAA24
-	for <linux-kernel@archiver.kernel.org>; Thu, 25 Aug 2022 18:08:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A0B3BECAA2A
+	for <linux-kernel@archiver.kernel.org>; Thu, 25 Aug 2022 18:08:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243034AbiHYSID (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 25 Aug 2022 14:08:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57372 "EHLO
+        id S243080AbiHYSIO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 25 Aug 2022 14:08:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57576 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243003AbiHYSH7 (ORCPT
+        with ESMTP id S243070AbiHYSIK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 25 Aug 2022 14:07:59 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 03608BD139;
-        Thu, 25 Aug 2022 11:07:59 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 9A5AE61CBD;
-        Thu, 25 Aug 2022 18:07:58 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 67C7CC433D6;
-        Thu, 25 Aug 2022 18:07:57 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1661450878;
-        bh=P7IaUuILhRlBKJWD1XTENmsK+U18RlbZ9W1q2qOV2Gg=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=MVyN+2QvVESzlEmFSFTsVrR1t5Tqw+qRrxpT5tXMtmxn8ppIOxbunQ5WNV1Wm3P+Y
-         Izhe8Cbh7go0eWf4DqWDADgKMsygr4M8MqPF6vtAatwOHFFxSPzPwo68+OG8h4vxtw
-         49Fu/DDDcP9iqwqPF3TLW02e8HVlcu8qRU2vK4T7G299Qlqn7i7bkKqL5lTeTGFEJU
-         xaeEbMxF8VMljf550nbqb/r7Kbhz28r4yioODHsFrNFhAt1UP9lh87DIFu4mgxXHWQ
-         bK1dDgQK6o0D6z4e06maZXZpqA0ux/+KKbXqUPiInXACcq5cQJWiiDF5RsFrZxIKAq
-         NLAs7VdTtPZ3g==
-Date:   Thu, 25 Aug 2022 11:07:56 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Oleksij Rempel <o.rempel@pengutronix.de>
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Russell King <linux@armlinux.org.uk>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Jonathan Corbet <corbet@lwn.net>,
-        kernel test robot <lkp@intel.com>, kernel@pengutronix.de,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-doc@vger.kernel.org,
-        David Jander <david@protonic.nl>,
-        Luka Perkov <luka.perkov@sartura.hr>,
-        Robert Marko <robert.marko@sartura.hr>
-Subject: Re: [PATCH net-next v2 6/7] ethtool: add interface to interact with
- Ethernet Power Equipment
-Message-ID: <20220825110756.6361fff7@kernel.org>
-In-Reply-To: <20220825130211.3730461-7-o.rempel@pengutronix.de>
-References: <20220825130211.3730461-1-o.rempel@pengutronix.de>
-        <20220825130211.3730461-7-o.rempel@pengutronix.de>
+        Thu, 25 Aug 2022 14:08:10 -0400
+Received: from mail-oa1-f54.google.com (mail-oa1-f54.google.com [209.85.160.54])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 23B93BD14A;
+        Thu, 25 Aug 2022 11:08:09 -0700 (PDT)
+Received: by mail-oa1-f54.google.com with SMTP id 586e51a60fabf-11d7a859b3aso14694814fac.4;
+        Thu, 25 Aug 2022 11:08:09 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=cc:to:in-reply-to:references:message-id:content-transfer-encoding
+         :mime-version:subject:date:from:x-gm-message-state:from:to:cc;
+        bh=01rEmmNrDVKSyl8VLDT9G5HuxPTw6FkrMpKcesbH32I=;
+        b=wXeNhxJmfWj0VmyGJI5n3FE/ZZdx4P4m4L2uJzqBXNQPYltYgdY2xipA/m8mbHeBIz
+         fma4rUWQAB3o1rsn6BORHDwuaNeX7Rmdv7R5/wEGTZEbBdN21P3TL2JxOLisNS05IHsu
+         YEEm1AWdSNGefaRl+4agJg3PeCmws3VbIfD4Cxgj9QhJjJ6Xqe6gI3/XBvVJmPIaUtXg
+         dm1m83ecXz9/Dut45WmDnhzQDUlmNfnrFiBJpaPLzdVzdFNrBdutoVldOAjzaUYoOknl
+         95ifGyRfWzcvLQYlaKn/A78Vlte7jrZO8Fs1gZZo5SH82rpjfCtPHaiZnWjaE1itzi0y
+         YjFg==
+X-Gm-Message-State: ACgBeo3jzTHc0qgztVtJA0qEbaWCJuzTQuGAqM/+nSy4YTBQBEt0nPmp
+        GeZoiopl+Z1O16qUACRWPg==
+X-Google-Smtp-Source: AA6agR69ouslPscBnnihLnHTVesjlGc7oGHvQng69WDQdJq7kDlyfdLirsSr+DvtWdQiBSUROGhT4w==
+X-Received: by 2002:a05:6870:d69e:b0:10e:3b6e:b0a5 with SMTP id z30-20020a056870d69e00b0010e3b6eb0a5mr172499oap.200.1661450888384;
+        Thu, 25 Aug 2022 11:08:08 -0700 (PDT)
+Received: from [127.0.1.1] (66-90-144-107.dyn.grandenetworks.net. [66.90.144.107])
+        by smtp.googlemail.com with ESMTPSA id t26-20020a0568080b3a00b003434b221a17sm5000231oij.52.2022.08.25.11.08.07
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 25 Aug 2022 11:08:08 -0700 (PDT)
+From:   Rob Herring <robh@kernel.org>
+Date:   Thu, 25 Aug 2022 13:08:01 -0500
+Subject: [PATCH RFC v1 2/3] perf: Add perf_event_attr::config3
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+Message-Id: <20220825-arm-spe-v8-7-v1-2-c75b8d92e692@kernel.org>
+References: <20220825-arm-spe-v8-7-v1-0-c75b8d92e692@kernel.org>
+In-Reply-To: <20220825-arm-spe-v8-7-v1-0-c75b8d92e692@kernel.org>
+To:     Alexander Shishkin <alexander.shishkin@linux.intel.com>,
+        Ingo Molnar <mingo@redhat.com>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Will Deacon <will@kernel.org>, Jiri Olsa <jolsa@kernel.org>,
+        Namhyung Kim <namhyung@kernel.org>,
+        Arnaldo Carvalho de Melo <acme@kernel.org>
+Cc:     linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-perf-users@vger.kernel.org
+X-Mailer: b4 0.10.0-dev
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, 25 Aug 2022 15:02:10 +0200 Oleksij Rempel wrote:
-> +void ethtool_set_ethtool_pse_ops(const struct ethtool_pse_ops *ops)
-> +{
-> +	rtnl_lock();
-> +	ethtool_pse_ops = ops;
-> +	rtnl_unlock();
-> +}
-> +EXPORT_SYMBOL_GPL(ethtool_set_ethtool_pse_ops);
+Arm SPEv1.2 adds another 64-bits of event filtering control. As the
+existing perf_event_attr::configN fields are all used up for SPE PMU, an
+additional field is needed. Add a new 'config3' field.
 
-Do we really need the loose linking on the PSE ops?
-It's not a lot of code, and the pcdev->ops should be 
-enough to decouple drivers, it seems.
+Signed-off-by: Rob Herring <robh@kernel.org>
 
-> +static int pse_set_pse_config(struct net_device *dev,
-> +			      struct netlink_ext_ack *extack,
-> +			      struct nlattr **tb)
-> +{
-> +	struct phy_device *phydev = dev->phydev;
-> +	struct pse_control_config config = {};
-> +	const struct ethtool_pse_ops *ops;
-> +	int ret;
-> +
-> +	if (!tb[ETHTOOL_A_PODL_PSE_ADMIN_CONTROL])
-> +		return 0;
+diff --git a/include/uapi/linux/perf_event.h b/include/uapi/linux/perf_event.h
+index 03b370062741..b53f9b958235 100644
+--- a/include/uapi/linux/perf_event.h
++++ b/include/uapi/linux/perf_event.h
+@@ -333,6 +333,7 @@ enum perf_event_read_format {
+ #define PERF_ATTR_SIZE_VER5	112	/* add: aux_watermark */
+ #define PERF_ATTR_SIZE_VER6	120	/* add: aux_sample_size */
+ #define PERF_ATTR_SIZE_VER7	128	/* add: sig_data */
++#define PERF_ATTR_SIZE_VER8	136	/* add: config3 */
+ 
+ /*
+  * Hardware event_id to monitor via a performance monitoring event:
+@@ -474,6 +475,8 @@ struct perf_event_attr {
+ 	 * truncated accordingly on 32 bit architectures.
+ 	 */
+ 	__u64	sig_data;
++
++	__u64	config3; /* extension of config2 */
+ };
+ 
+ /*
+diff --git a/tools/include/uapi/linux/perf_event.h b/tools/include/uapi/linux/perf_event.h
+index 581ed4bdc062..7fad17853310 100644
+--- a/tools/include/uapi/linux/perf_event.h
++++ b/tools/include/uapi/linux/perf_event.h
+@@ -333,6 +333,7 @@ enum perf_event_read_format {
+ #define PERF_ATTR_SIZE_VER5	112	/* add: aux_watermark */
+ #define PERF_ATTR_SIZE_VER6	120	/* add: aux_sample_size */
+ #define PERF_ATTR_SIZE_VER7	128	/* add: sig_data */
++#define PERF_ATTR_SIZE_VER8	136	/* add: config3 */
+ 
+ /*
+  * Hardware event_id to monitor via a performance monitoring event:
+@@ -474,6 +475,8 @@ struct perf_event_attr {
+ 	 * truncated accordingly on 32 bit architectures.
+ 	 */
+ 	__u64	sig_data;
++
++	__u64	config3; /* extension of config2 */
+ };
+ 
+ /*
 
-If SET has no useful attrs the usual response is -EINVAL.
-
-> +	ops = ethtool_pse_ops;
-> +	if (!ops || !ops->set_config)
-> +		return -EOPNOTSUPP;
-> +
-> +	config.admin_cotrol = nla_get_u8(tb[ETHTOOL_A_PODL_PSE_ADMIN_CONTROL]);
-> +
-> +	if (!phydev)
-> +		return -EOPNOTSUPP;
-> +
-> +	// todo resolve phydev dependecy
-
-My lack of phydev understanding and laziness are likely the cause,
-but I haven't found an explanation for this todo. What is it about?
-
-> +	if (!phydev->psec)
-> +		ret = -EOPNOTSUPP;
-> +	else
-> +		ret = ops->set_config(phydev->psec, extack, &config);
-> +
-> +	return ret;
-> +}
+-- 
+b4 0.10.0-dev
