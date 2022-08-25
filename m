@@ -2,48 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CF469C48BE4
-	for <linux-kernel@archiver.kernel.org>; Thu, 25 Aug 2022 01:40:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 157D2C04AA5
+	for <linux-kernel@archiver.kernel.org>; Thu, 25 Aug 2022 01:40:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233362AbiHYBkC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 24 Aug 2022 21:40:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53940 "EHLO
+        id S231393AbiHYBkI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 24 Aug 2022 21:40:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50862 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233241AbiHYBjL (ORCPT
+        with ESMTP id S233468AbiHYBjN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 24 Aug 2022 21:39:11 -0400
+        Wed, 24 Aug 2022 21:39:13 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3C0E59A9D3;
-        Wed, 24 Aug 2022 18:37:37 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D44099A9A1;
+        Wed, 24 Aug 2022 18:37:45 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id DED93B824CF;
-        Thu, 25 Aug 2022 01:37:19 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 332B7C433D7;
-        Thu, 25 Aug 2022 01:37:17 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 8C28FB826E5;
+        Thu, 25 Aug 2022 01:37:43 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D1D11C433B5;
+        Thu, 25 Aug 2022 01:37:40 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1661391438;
-        bh=t5O6RUjBZhbn9aIEIA2AHCOFz0aMjGqBBg0mfLE94gA=;
+        s=k20201202; t=1661391462;
+        bh=1hTJ+i7CRXp6k4ueEOEQNa/eL9kfOAhCiJRCjs92a1Y=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=c8K8+wJFdFISPqD29vb15d3pNQujAA+EjFuzqj5SaKsMdPO2O8p47VKzejn5pB/jq
-         olIhdpLCw7uoxcgK+c586RMlyrMLtCPK70yma25IPn7koWx0zAOZLnUsI9HCgYoB1Q
-         YZVwwSnL4VjvyK9mRSqL5Md4+xtMHxBgF5FMc8wO4V3wBaQG1kY0J1x48oMq5owmUo
-         O8l511GPuk935AMpP2ny1PXz2SeA1GHwh6BiE6Dvmhby5tS6drpeUfo2NjeLfxKdBD
-         rMpGHClX+C797NknGKzSIEoEMNawnNC0ToBnDLnhqsPM06dzWYBWqOx4bFPPf8uKtW
-         UB6hHNEmtFPAQ==
+        b=IySs2A/kymWT6gHCxTyzK8UTbM8XbhUQNO7Xu2jy8yoh9VKs3E8a5mugwA/wuAe8U
+         tDiBdyWMdVaZ/pzbkQq4Qz7FZ5sbh/hI5NmkFJP0UMhgZcaBWDNkeV4jxL6YH1MmxH
+         wsGW3gjrEusmw6TpH7l+b7qTajtGWKC4ZK+6Og3OgHVPRe32P1e3Mvh/SGaQ1HAVuO
+         +7xZmi92cgEwlsYppD35ZiCuF7KVFtGJIMaw1Mo9CNlZ1k1BHLGgfM+ONFJUKp1keJ
+         H1DG3rGaJPhEmiDalmxLItkyKz/hRF0G2jBEr4Brfy7HB3yDlsPVf1MJsMbuRbGW2r
+         IDweg/Nj5KBaA==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Biju Das <biju.das.jz@bp.renesas.com>,
-        Pavel Machek <pavel@denx.de>, Mark Brown <broonie@kernel.org>,
-        Sasha Levin <sashal@kernel.org>, lgirdwood@gmail.com,
-        perex@perex.cz, tiwai@suse.com, p.zabel@pengutronix.de,
-        prabhakar.mahadev-lad.rj@bp.renesas.com,
-        ckeepax@opensource.cirrus.com, geert+renesas@glider.be,
-        hkallweit1@gmail.com, alsa-devel@alsa-project.org
-Subject: [PATCH AUTOSEL 5.15 02/20] ASoC: sh: rz-ssi: Improve error handling in rz_ssi_probe() error path
-Date:   Wed, 24 Aug 2022 21:36:54 -0400
-Message-Id: <20220825013713.22656-2-sashal@kernel.org>
+Cc:     Namjae Jeon <linkinjeon@kernel.org>,
+        Hyunchul Lee <hyc.lee@gmail.com>,
+        Steve French <stfrench@microsoft.com>,
+        Sasha Levin <sashal@kernel.org>, sfrench@samba.org,
+        atteh.mailbox@gmail.com, linux-cifs@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.15 07/20] ksmbd: return STATUS_BAD_NETWORK_NAME error status if share is not configured
+Date:   Wed, 24 Aug 2022 21:36:59 -0400
+Message-Id: <20220825013713.22656-7-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220825013713.22656-1-sashal@kernel.org>
 References: <20220825013713.22656-1-sashal@kernel.org>
@@ -55,77 +53,50 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Biju Das <biju.das.jz@bp.renesas.com>
+From: Namjae Jeon <linkinjeon@kernel.org>
 
-[ Upstream commit c75ed9f54ce8d349fee557f2b471a4d637ed2a6b ]
+[ Upstream commit fe54833dc8d97ef387e86f7c80537d51c503ca75 ]
 
-We usually do cleanup in reverse order of init. Currently in case of
-error rz_ssi_release_dma_channels() done in the reverse order. This
-patch improves error handling in rz_ssi_probe() error path.
+If share is not configured in smb.conf, smb2 tree connect should return
+STATUS_BAD_NETWORK_NAME instead of STATUS_BAD_NETWORK_PATH.
 
-While at it, use "goto cleanup" style to reduce code duplication.
-
-Reported-by: Pavel Machek <pavel@denx.de>
-Signed-off-by: Biju Das <biju.das.jz@bp.renesas.com>
-Link: https://lore.kernel.org/r/20220728092612.38858-1-biju.das.jz@bp.renesas.com
-Signed-off-by: Mark Brown <broonie@kernel.org>
+Signed-off-by: Namjae Jeon <linkinjeon@kernel.org>
+Reviewed-by: Hyunchul Lee <hyc.lee@gmail.com>
+Signed-off-by: Steve French <stfrench@microsoft.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- sound/soc/sh/rz-ssi.c | 26 +++++++++++++++-----------
- 1 file changed, 15 insertions(+), 11 deletions(-)
+ fs/ksmbd/mgmt/tree_connect.c | 2 +-
+ fs/ksmbd/smb2pdu.c           | 3 ++-
+ 2 files changed, 3 insertions(+), 2 deletions(-)
 
-diff --git a/sound/soc/sh/rz-ssi.c b/sound/soc/sh/rz-ssi.c
-index 6d794eaaf4c3..2e33a1fa0a6f 100644
---- a/sound/soc/sh/rz-ssi.c
-+++ b/sound/soc/sh/rz-ssi.c
-@@ -1022,32 +1022,36 @@ static int rz_ssi_probe(struct platform_device *pdev)
- 
- 	ssi->rstc = devm_reset_control_get_exclusive(&pdev->dev, NULL);
- 	if (IS_ERR(ssi->rstc)) {
--		rz_ssi_release_dma_channels(ssi);
--		return PTR_ERR(ssi->rstc);
-+		ret = PTR_ERR(ssi->rstc);
-+		goto err_reset;
- 	}
- 
- 	reset_control_deassert(ssi->rstc);
- 	pm_runtime_enable(&pdev->dev);
- 	ret = pm_runtime_resume_and_get(&pdev->dev);
- 	if (ret < 0) {
--		rz_ssi_release_dma_channels(ssi);
--		pm_runtime_disable(ssi->dev);
--		reset_control_assert(ssi->rstc);
--		return dev_err_probe(ssi->dev, ret, "pm_runtime_resume_and_get failed\n");
-+		dev_err(&pdev->dev, "pm_runtime_resume_and_get failed\n");
-+		goto err_pm;
- 	}
- 
- 	ret = devm_snd_soc_register_component(&pdev->dev, &rz_ssi_soc_component,
- 					      rz_ssi_soc_dai,
- 					      ARRAY_SIZE(rz_ssi_soc_dai));
- 	if (ret < 0) {
--		rz_ssi_release_dma_channels(ssi);
--
--		pm_runtime_put(ssi->dev);
--		pm_runtime_disable(ssi->dev);
--		reset_control_assert(ssi->rstc);
- 		dev_err(&pdev->dev, "failed to register snd component\n");
-+		goto err_snd_soc;
- 	}
- 
-+	return 0;
-+
-+err_snd_soc:
-+	pm_runtime_put(ssi->dev);
-+err_pm:
-+	pm_runtime_disable(ssi->dev);
-+	reset_control_assert(ssi->rstc);
-+err_reset:
-+	rz_ssi_release_dma_channels(ssi);
-+
- 	return ret;
- }
- 
+diff --git a/fs/ksmbd/mgmt/tree_connect.c b/fs/ksmbd/mgmt/tree_connect.c
+index 0d28e723a28c..940385c6a913 100644
+--- a/fs/ksmbd/mgmt/tree_connect.c
++++ b/fs/ksmbd/mgmt/tree_connect.c
+@@ -18,7 +18,7 @@
+ struct ksmbd_tree_conn_status
+ ksmbd_tree_conn_connect(struct ksmbd_session *sess, char *share_name)
+ {
+-	struct ksmbd_tree_conn_status status = {-EINVAL, NULL};
++	struct ksmbd_tree_conn_status status = {-ENOENT, NULL};
+ 	struct ksmbd_tree_connect_response *resp = NULL;
+ 	struct ksmbd_share_config *sc;
+ 	struct ksmbd_tree_connect *tree_conn = NULL;
+diff --git a/fs/ksmbd/smb2pdu.c b/fs/ksmbd/smb2pdu.c
+index 28b5d20c8766..824f17a101a9 100644
+--- a/fs/ksmbd/smb2pdu.c
++++ b/fs/ksmbd/smb2pdu.c
+@@ -1932,8 +1932,9 @@ int smb2_tree_connect(struct ksmbd_work *work)
+ 		rsp->hdr.Status = STATUS_SUCCESS;
+ 		rc = 0;
+ 		break;
++	case -ENOENT:
+ 	case KSMBD_TREE_CONN_STATUS_NO_SHARE:
+-		rsp->hdr.Status = STATUS_BAD_NETWORK_PATH;
++		rsp->hdr.Status = STATUS_BAD_NETWORK_NAME;
+ 		break;
+ 	case -ENOMEM:
+ 	case KSMBD_TREE_CONN_STATUS_NOMEM:
 -- 
 2.35.1
 
