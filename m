@@ -2,87 +2,147 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 748E6ECAAA3
-	for <linux-kernel@archiver.kernel.org>; Thu, 25 Aug 2022 21:44:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8B141ECAAD4
+	for <linux-kernel@archiver.kernel.org>; Thu, 25 Aug 2022 21:44:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244006AbiHYVoi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 25 Aug 2022 17:44:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43616 "EHLO
+        id S238113AbiHYVow (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 25 Aug 2022 17:44:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44224 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243974AbiHYVoe (ORCPT
+        with ESMTP id S235363AbiHYVom (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 25 Aug 2022 17:44:34 -0400
-Received: from mail-ej1-x630.google.com (mail-ej1-x630.google.com [IPv6:2a00:1450:4864:20::630])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9B118C22A1;
-        Thu, 25 Aug 2022 14:44:29 -0700 (PDT)
-Received: by mail-ej1-x630.google.com with SMTP id og21so4502127ejc.2;
-        Thu, 25 Aug 2022 14:44:29 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc;
-        bh=hlXRZ7/0O/GSBx8dM1cYudKz6m0oIQicSc3rOxsblVI=;
-        b=F1f9UD/3EWkXiHP7zVxDvOMP06JyE77Axd+56iYrVfTGd/1KY4fs016sMiQrG27Xzf
-         Z4/4RrtiJ8q6TktZSmzy7kD1Z3yyiCcJpZOqInTMya8Z3cQ2AbVptfay27dec9vIfRuJ
-         HEsBX40ad6IBKDlZz9eOTvss0fLag2f+FASCXruE3omqDRWYLkcjFhAcLdRk8rjEKckc
-         HhQ8KrfCnNw3U8DWmeoOKVzzT96Yrm3nQfz0kiF++AvfLnt1tU55NIsyeJGD2lQYh9tI
-         dS+YAPvNIowUvvfy1inZMWmnGAAlyK9hCCcQEVbdKDtLD224JNqeDbed+fEue61hPHeD
-         7qnQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc;
-        bh=hlXRZ7/0O/GSBx8dM1cYudKz6m0oIQicSc3rOxsblVI=;
-        b=etSdkHhH0uEmrCERDx18IaMDlTfXuZQhqxPlOBJeKcRBKYssKVxLdZNb6RtDlOJ9HV
-         HfRx66X4/hOulhqSyXlf5fp9Ew5Xfsh/pnL1MVwFT7nZ7rGU4qPI2T0D5Tk+GJyC35Y9
-         4g3LvlB8qLYma2B/y0/RvXmpT9X2FYgamEDzsKro6e6mKTCpyx6Pj5mfM4zAizwXERIc
-         RQ3RyG9d0aNDPDA9wgq9XsC6rlRAIJ85QNefpsj2Smi9WhCfGhbnN5VHCsTr5b8QvF6d
-         1AOlhtfA87WJMjqzD07M7sM6LNtdIOqkVzPyBI4V4+tWudTPvcIL16pr9he6MDNqr12e
-         t7kA==
-X-Gm-Message-State: ACgBeo2sMYtFeqowwESBU90obwgl9gNEbceO10y7tgqQKhqJkBMsOE9v
-        hSTScgdB5pdeVUlg0wXpV8M=
-X-Google-Smtp-Source: AA6agR6jMHDuGpqsB5Yv2WCnx/5HQdwfjWLoi4+CsRz452suheF78eCr/oR6nZAj5slgUrHm68BmgA==
-X-Received: by 2002:a17:907:6096:b0:73d:9d12:4b04 with SMTP id ht22-20020a170907609600b0073d9d124b04mr3724869ejc.745.1661463867662;
-        Thu, 25 Aug 2022 14:44:27 -0700 (PDT)
-Received: from skbuf ([188.27.185.241])
-        by smtp.gmail.com with ESMTPSA id g17-20020a170906539100b0073d62cc3270sm120304ejo.118.2022.08.25.14.44.25
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 25 Aug 2022 14:44:26 -0700 (PDT)
-Date:   Fri, 26 Aug 2022 00:44:24 +0300
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     Paolo Abeni <pabeni@redhat.com>
-Cc:     Oleksij Rempel <o.rempel@pengutronix.de>,
-        Woojung Huh <woojung.huh@microchip.com>,
-        UNGLinuxDriver@microchip.com, Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
+        Thu, 25 Aug 2022 17:44:42 -0400
+Received: from mail.3ffe.de (0001.3ffe.de [159.69.201.130])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BBAF0C22A1;
+        Thu, 25 Aug 2022 14:44:39 -0700 (PDT)
+Received: from mwalle01.kontron.local. (unknown [213.135.10.150])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        (No client certificate requested)
+        by mail.3ffe.de (Postfix) with ESMTPSA id A48467F2D;
+        Thu, 25 Aug 2022 23:44:35 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=walle.cc; s=mail2022082101;
+        t=1661463876;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=3M/JEtjOWHXcAAVISD2wWeYzWC5769Xb3W2JMAix6aw=;
+        b=EMYs8YloD0YG9HprcuieuNQJQ1NTu5wI0/7jZYVFyDVrsE/g5X/r1iCaH33yCCT0XIywNf
+        TzZpiXAfnXr+nAlfHYKbXxV/4qGvz5ChdIKqNVxqwg8G32XmigPolWF4yI6pKjWcR0K+iP
+        Frl2YK5gxW/H4elSZ9Ysp7Xim1feXqXEYuQlwA90VRkJXrA6kJ7Ezg1I9PnqlFPWuwYAKI
+        zlEcUkC9wYqXIrEP7iXyxPKMlTUI6owAS8nVoEiazFfp9V3djTcn3ZFHLgcvakE3eskORk
+        wLrB2eMkE81vD4hEEaL+MFcqoixh6S2qgk6G3Ppih8/QrIXw0HQcIRSDSwzVow==
+From:   Michael Walle <michael@walle.cc>
+To:     Miquel Raynal <miquel.raynal@bootlin.com>,
+        Richard Weinberger <richard@nod.at>,
+        Vignesh Raghavendra <vigneshr@ti.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Srinivas Kandagatla <srinivas.kandagatla@linaro.org>,
+        Shawn Guo <shawnguo@kernel.org>, Li Yang <leoyang.li@nxp.com>,
+        =?UTF-8?q?Rafa=C5=82=20Mi=C5=82ecki?= <rafal@milecki.pl>,
+        "David S . Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>, kernel@pengutronix.de,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        Arun Ramadoss <arun.ramadoss@microchip.com>
-Subject: Re: [PATCH net-next v3 00/17] net: dsa: microchip: add error
- handling and register access validation
-Message-ID: <20220825214424.u6oawi5n47zyn7rd@skbuf>
-References: <20220823080231.2466017-1-o.rempel@pengutronix.de>
- <a359692096f20b2abc5e53cb796c892f97acec1b.camel@redhat.com>
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Frank Rowand <frowand.list@gmail.com>
+Cc:     linux-mtd@lists.infradead.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        netdev@vger.kernel.org, Ahmad Fatoum <a.fatoum@pengutronix.de>,
+        Michael Walle <michael@walle.cc>
+Subject: [PATCH v1 00/14] nvmem: core: introduce NVMEM layouts
+Date:   Thu, 25 Aug 2022 23:44:09 +0200
+Message-Id: <20220825214423.903672-1-michael@walle.cc>
+X-Mailer: git-send-email 2.30.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <a359692096f20b2abc5e53cb796c892f97acec1b.camel@redhat.com>
+Content-Transfer-Encoding: 8bit
+X-Spam: Yes
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Aug 25, 2022 at 11:00:44AM +0200, Paolo Abeni wrote:
-> On Tue, 2022-08-23 at 10:02 +0200, Oleksij Rempel wrote:
-> > changes v3:
-> > - fix build error in the middle of the patch stack.
-> 
-> The series looks reasonable to me, let's see the comments from the DSA
-> crew;)
+This is now the third attempt to fetch the MAC addresses from the VPD
+for the Kontron sl28 boards. Previous discussions can be found here:
+https://lore.kernel.org/lkml/20211228142549.1275412-1-michael@walle.cc/
 
-Patch set looks ok from my side, won't leave review tags for each of the
-17 patches, just here
 
-Reviewed-by: Vladimir Oltean <olteanv@gmail.com>
+NVMEM cells are typically added by board code or by the devicetree. But
+as the cells get more complex, there is (valid) push back from the
+devicetree maintainers to not put that handling in the devicetree.
+
+Therefore, introduce NVMEM layouts. They operate on the NVMEM device and
+can add cells during runtime. That way it is possible to add complex
+cells than it is possible right now with the offset/length/bits
+description in the device tree. For example, you can have post processing
+for individual cells (think of endian swapping, or ethernet offset
+handling). You can also have cells which have no static offset, like the
+ones in an u-boot environment. The last patches will convert the current
+u-boot environment driver to a NVMEM layout and lifting the restriction
+that it only works with mtd devices. But as it will change the required
+compatible strings, it is marked as RFC for now. It also needs to have
+its device tree schema update which is left out here.
+
+For now, the layouts are selected by a specifc compatible string in a
+device tree. E.g. the VPD on the kontron sl28 do (within a SPI flash node):
+  compatible = "kontron,sl28-vpd", "user-otp";
+or if you'd use the u-boot environment (within an MTD patition):
+  compatible = "u-boot,env", "nvmem";
+
+The "user-otp" (or "nvmem") will lead to a NVMEM device, the
+"kontron,sl28-vpd" (or "u-boot,env") will then apply the specific layout
+on top of the NVMEM device.
+
+NVMEM layouts as modules?
+While possible in principle, it doesn't make any sense because the NVMEM
+core can't be compiled as a module. The layouts needs to be available at
+probe time. (That is also the reason why they get registered with
+subsys_initcall().) So if the NVMEM core would be a module, the layouts
+could be modules, too.
+
+Michael Walle (14):
+  net: add helper eth_addr_add()
+  of: base: add of_parse_phandle_with_optional_args()
+  nvmem: core: add an index parameter to the cell
+  nvmem: core: drop the removal of the cells in nvmem_add_cells()
+  nvmem: core: add nvmem_add_one_cell()
+  nvmem: core: introduce NVMEM layouts
+  nvmem: core: add per-cell post processing
+  dt-bindings: mtd: relax the nvmem compatible string
+  dt-bindings: nvmem: add YAML schema for the sl28 vpd layout
+  nvmem: layouts: add sl28vpd layout
+  nvmem: core: export nvmem device size
+  nvmem: layouts: rewrite the u-boot-env driver as a NVMEM layout
+  nvmem: layouts: u-boot-env: add device node
+  arm64: dts: ls1028a: sl28: get MAC addresses from VPD
+
+ .../devicetree/bindings/mtd/mtd.yaml          |   7 +-
+ .../nvmem/layouts/kontron,sl28-vpd.yaml       |  52 +++++
+ .../fsl-ls1028a-kontron-kbox-a-230-ls.dts     |   8 +
+ .../fsl-ls1028a-kontron-sl28-var1.dts         |   2 +
+ .../fsl-ls1028a-kontron-sl28-var2.dts         |   4 +
+ .../fsl-ls1028a-kontron-sl28-var4.dts         |   2 +
+ .../freescale/fsl-ls1028a-kontron-sl28.dts    |  13 ++
+ drivers/nvmem/Kconfig                         |   2 +
+ drivers/nvmem/Makefile                        |   1 +
+ drivers/nvmem/core.c                          | 183 +++++++++++----
+ drivers/nvmem/imx-ocotp.c                     |   4 +-
+ drivers/nvmem/layouts/Kconfig                 |  22 ++
+ drivers/nvmem/layouts/Makefile                |   7 +
+ drivers/nvmem/layouts/sl28vpd.c               | 144 ++++++++++++
+ drivers/nvmem/layouts/u-boot-env.c            | 147 ++++++++++++
+ drivers/nvmem/u-boot-env.c                    | 218 ------------------
+ include/linux/etherdevice.h                   |  14 ++
+ include/linux/nvmem-consumer.h                |  11 +
+ include/linux/nvmem-provider.h                |  47 +++-
+ include/linux/of.h                            |  25 ++
+ 20 files changed, 649 insertions(+), 264 deletions(-)
+ create mode 100644 Documentation/devicetree/bindings/nvmem/layouts/kontron,sl28-vpd.yaml
+ create mode 100644 drivers/nvmem/layouts/Kconfig
+ create mode 100644 drivers/nvmem/layouts/Makefile
+ create mode 100644 drivers/nvmem/layouts/sl28vpd.c
+ create mode 100644 drivers/nvmem/layouts/u-boot-env.c
+ delete mode 100644 drivers/nvmem/u-boot-env.c
+
+-- 
+2.30.2
+
