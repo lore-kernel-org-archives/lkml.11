@@ -2,87 +2,136 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DD1FBC04AA5
-	for <linux-kernel@archiver.kernel.org>; Thu, 25 Aug 2022 01:59:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C4F65C3F6B0
+	for <linux-kernel@archiver.kernel.org>; Thu, 25 Aug 2022 02:00:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236653AbiHYB7c (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 24 Aug 2022 21:59:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49022 "EHLO
+        id S236977AbiHYCAs (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 24 Aug 2022 22:00:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48316 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236602AbiHYB7F (ORCPT
+        with ESMTP id S237193AbiHYCAY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 24 Aug 2022 21:59:05 -0400
-X-Greylist: delayed 125 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Wed, 24 Aug 2022 18:54:04 PDT
-Received: from bg5.exmail.qq.com (bg4.exmail.qq.com [43.154.221.58])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E58949AF98;
-        Wed, 24 Aug 2022 18:54:04 -0700 (PDT)
-X-QQ-mid: bizesmtp77t1661392164tspq557z
-Received: from localhost.localdomain ( [182.148.14.124])
-        by bizesmtp.qq.com (ESMTP) with 
-        id ; Thu, 25 Aug 2022 09:49:21 +0800 (CST)
-X-QQ-SSF: 01000000000000B0B000000A0000000
-X-QQ-FEAT: wF64VgvUy+UPmdenfmPgcpMnG/bIuQR5LxITUxHsRnPRidiX7aAe4ASUhtDZI
-        M6DTRXNv4D9uXWp8gBj0o/jR7OSoaCbHI+eSpmh6AalhtNleztq1dxuz/5y1jgW9b0uF2YL
-        RyJ8+9oJaG1wwWGQhhvSD89CwlqqRmg2n586OIWYdG+xJUg6MFW+bp5CltWAtUILppkM3QS
-        9IWTYtmKQij7KoEHTPwla8OjTinML9D9t2LDRsMB9UOUkuqhe5dsrBuEeQEPl0aCQo+b3QJ
-        oAax4IdicnOxwwa8hxBVScBRuN8Ji3QlXF6m5jtoAJcPmLBB2EEDbNE7chgTJ3z+wVuNTze
-        l37oHm/IxFfz+60hCde6UbQJr7imORqaNktAJ/wd/WsWGQFwC8=
-X-QQ-GoodBg: 0
-From:   Shaomin Deng <dengshaomin@cdjrlc.com>
-To:     linus.walleij@linaro.org, linux-gpio@vger.kernel.org,
+        Wed, 24 Aug 2022 22:00:24 -0400
+Received: from mail-pj1-x102e.google.com (mail-pj1-x102e.google.com [IPv6:2607:f8b0:4864:20::102e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 748DA60536
+        for <linux-kernel@vger.kernel.org>; Wed, 24 Aug 2022 18:58:35 -0700 (PDT)
+Received: by mail-pj1-x102e.google.com with SMTP id hf17so252694pjb.3
+        for <linux-kernel@vger.kernel.org>; Wed, 24 Aug 2022 18:58:35 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc;
+        bh=McjdVWcg5yH4l5WwS84vMDbd/eUz11zHVMD6I1qs6ic=;
+        b=cYthl/MMJngt0CSZxjadIzmfV/4F6CQbLkiCIOV+I6d2c5sS4hrX12ba7QZ81CqesD
+         Bt23+2bha3pKEBSxuxuffhbs3eDRPKt67NVESCIcLcCNmqFikHNQhpSHWbUcEqYYrGsu
+         tTlzJdaC9n/jTCObNOi0ipQPU9GqG3epAulDLl7znAOBAI6mvVOn+F0gIenmnZwtTM3v
+         IZ4U7GnOZ79WOUt7KOysP3jOEaBYfBsaAfZfR76SCFGGLk4+e+yuud8Ef1+I+9g/deUQ
+         bnmcPGbGsrn+2Xr5EKFQtDjK2+enaPb5znmEWkmWlooOH4Qr5WzOzxQEDLL0V0Q1syYJ
+         Rnxw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc;
+        bh=McjdVWcg5yH4l5WwS84vMDbd/eUz11zHVMD6I1qs6ic=;
+        b=S1lIT61NRFh/PUDbj/6/U4XDI8Q3Dj5E9fC9t1vo+nDRroBEna1q7VRY98uYT/oMAb
+         Ck2dPixIushzPMvP3S72DAq9/rZniSffpjX3MmcXwUVxYDHQJU7X15g2CUb1YUYYhOGe
+         Pgxj5BhttwTk9xB8asNpVkJBSbMn7BpiWTO1jZUhCeCytCgVQPsXo6TFA9lHxrefzc71
+         BUwdMGyBVQsQu//wTsJi6/jcuiC7CjSYzrYOcAJUlRXEwhaDOQhRLEn238qHHhrR8OBY
+         /KMxoEXzLkL2wmHdGM+nb4KvjKt5bGoAxN7Sp2NAz2KA+XVC0MKOAjinssitwLC2wJka
+         r9YA==
+X-Gm-Message-State: ACgBeo16fQWDv24dV77DKnTlP+IPABGQiCWOXaEy19nf7Zo0/9l90dxq
+        YZfsJJ7hjRmoJjCw6m39m9I=
+X-Google-Smtp-Source: AA6agR6o5Mj8VcCRfEZJCxNFLae0gULOPNsYlHRXk1KIUlb2QNCWFuh30xRsM607vLB2FhhpkdLjqw==
+X-Received: by 2002:a17:902:ab98:b0:171:2cbc:3d17 with SMTP id f24-20020a170902ab9800b001712cbc3d17mr1683003plr.143.1661392714909;
+        Wed, 24 Aug 2022 18:58:34 -0700 (PDT)
+Received: from hyeyoo.. ([114.29.91.56])
+        by smtp.gmail.com with ESMTPSA id y3-20020aa79e03000000b0052e78582aa2sm10988872pfq.181.2022.08.24.18.58.30
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 24 Aug 2022 18:58:33 -0700 (PDT)
+From:   Hyeonggon Yoo <42.hyeyoo@gmail.com>
+To:     Christoph Lameter <cl@linux.com>,
+        Pekka Enberg <penberg@kernel.org>,
+        David Rientjes <rientjes@google.com>,
+        Joonsoo Kim <iamjoonsoo.kim@lge.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Vlastimil Babka <vbabka@suse.cz>,
+        Roman Gushchin <roman.gushchin@linux.dev>
+Cc:     Hyeonggon Yoo <42.hyeyoo@gmail.com>,
+        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Mike Galbraith <efault@gmx.de>, linux-mm@kvack.org,
         linux-kernel@vger.kernel.org
-Cc:     ludovic.desroches@microchip.com, nicolas.ferre@microchip.com,
-        alexandre.belloni@bootlin.com, claudiu.beznea@microchip.com,
-        jgross@suse.com, sstabellini@kernel.org,
-        oleksandr_tyshchenko@epam.com,
-        Shaomin Deng <dengshaomin@cdjrlc.com>
-Subject: [PATCH] pinctrl: at91: Fix double word in comments
-Date:   Wed, 24 Aug 2022 21:49:21 -0400
-Message-Id: <20220825014921.6135-1-dengshaomin@cdjrlc.com>
-X-Mailer: git-send-email 2.35.1
+Subject: [PATCH] mm/slub: fix comments about fastpath limitation on PREEMPT_RT
+Date:   Thu, 25 Aug 2022 10:57:22 +0900
+Message-Id: <20220825015722.1697209-1-42.hyeyoo@gmail.com>
+X-Mailer: git-send-email 2.32.0
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-QQ-SENDSIZE: 520
-Feedback-ID: bizesmtp:cdjrlc.com:qybglogicsvr:qybglogicsvr4
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Delete the rebundant word "the" in comments.
+With PREEMPT_RT disabling interrupt is unnecessary as there is
+no user of slab in hardirq context on PREEMPT_RT.
 
-Signed-off-by: Shaomin Deng <dengshaomin@cdjrlc.com>
+The limitation of lockless fastpath on PREEMPT_RT comes from the fact
+that local_lock does not disable preemption on PREEMPT_RT.
+
+Fix comments accordingly.
+
+Signed-off-by: Hyeonggon Yoo <42.hyeyoo@gmail.com>
 ---
- drivers/pinctrl/pinctrl-at91.c        | 2 +-
- drivers/xen/xen-pciback/pciback_ops.c | 3 ++-
- 2 files changed, 3 insertions(+), 2 deletions(-)
+ mm/slub.c | 23 ++++++++++++++---------
+ 1 file changed, 14 insertions(+), 9 deletions(-)
 
-diff --git a/drivers/pinctrl/pinctrl-at91.c b/drivers/pinctrl/pinctrl-at91.c
-index d91a010e65f5..f1234e719e58 100644
---- a/drivers/pinctrl/pinctrl-at91.c
-+++ b/drivers/pinctrl/pinctrl-at91.c
-@@ -1748,7 +1748,7 @@ static int at91_gpio_of_irq_setup(struct platform_device *pdev,
- 	writel_relaxed(~0, at91_gpio->regbase + PIO_IDR);
- 
+diff --git a/mm/slub.c b/mm/slub.c
+index 30c2ee9e8a29..aa42ac6013b8 100644
+--- a/mm/slub.c
++++ b/mm/slub.c
+@@ -100,7 +100,7 @@
+  *   except the stat counters. This is a percpu structure manipulated only by
+  *   the local cpu, so the lock protects against being preempted or interrupted
+  *   by an irq. Fast path operations rely on lockless operations instead.
+- *   On PREEMPT_RT, the local lock does not actually disable irqs (and thus
++ *   On PREEMPT_RT, the local lock does not actually disable preemption (and thus
+  *   prevent the lockless operations), so fastpath operations also need to take
+  *   the lock and are no longer lockless.
+  *
+@@ -3185,10 +3185,12 @@ static __always_inline void *slab_alloc_node(struct kmem_cache *s, struct list_l
+ 	slab = c->slab;
  	/*
--	 * Let the generic code handle this edge IRQ, the the chained
-+	 * Let the generic code handle this edge IRQ, the chained
- 	 * handler will perform the actual work of handling the parent
- 	 * interrupt.
+ 	 * We cannot use the lockless fastpath on PREEMPT_RT because if a
+-	 * slowpath has taken the local_lock_irqsave(), it is not protected
+-	 * against a fast path operation in an irq handler. So we need to take
+-	 * the slow path which uses local_lock. It is still relatively fast if
+-	 * there is a suitable cpu freelist.
++	 * slowpath has taken the local_lock which does not disable preemption
++	 * on PREEMPT_RT, it is not protected against a fast path operation in
++	 * another thread that does not take the local_lock.
++	 *
++	 * So we need to take the slow path which uses local_lock. It is still
++	 * relatively fast if there is a suitable cpu freelist.
  	 */
-diff --git a/drivers/xen/xen-pciback/pciback_ops.c b/drivers/xen/xen-pciback/pciback_ops.c
-index e38b43b5065e..52da75bf8485 100644
---- a/drivers/xen/xen-pciback/pciback_ops.c
-+++ b/drivers/xen/xen-pciback/pciback_ops.c
-@@ -160,7 +160,8 @@ int xen_pcibk_enable_msi(struct xen_pcibk_device *pdev,
- 	}
- 
- 	/* The value the guest needs is actually the IDT vector, not the
--	 * local domain's IRQ number. */
-+	 * local domain's IRQ number.
-+	 */
- 
- 	op->value = dev->irq ? xen_pirq_from_irq(dev->irq) : 0;
+ 	if (IS_ENABLED(CONFIG_PREEMPT_RT) ||
+ 	    unlikely(!object || !slab || !node_match(slab, node))) {
+@@ -3457,10 +3459,13 @@ static __always_inline void do_slab_free(struct kmem_cache *s,
+ #else /* CONFIG_PREEMPT_RT */
+ 		/*
+ 		 * We cannot use the lockless fastpath on PREEMPT_RT because if
+-		 * a slowpath has taken the local_lock_irqsave(), it is not
+-		 * protected against a fast path operation in an irq handler. So
+-		 * we need to take the local_lock. We shouldn't simply defer to
+-		 * __slab_free() as that wouldn't use the cpu freelist at all.
++		 * a slowpath has taken the local_lock which does not disable
++		 * preemption on PREEMPT_RT, it is not protected against a
++		 * fast path operation in another thread that does not take
++		 * the local_lock.
++		 *
++		 * So we need to take the local_lock. We shouldn't simply defer
++		 * to __slab_free() as that wouldn't use the cpu freelist at all.
+ 		 */
+ 		void **freelist;
  
 -- 
-2.35.1
+2.32.0
 
