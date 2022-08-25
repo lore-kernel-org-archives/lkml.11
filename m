@@ -2,75 +2,107 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3A390C28D13
-	for <linux-kernel@archiver.kernel.org>; Thu, 25 Aug 2022 09:27:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 020F0C04AA5
+	for <linux-kernel@archiver.kernel.org>; Thu, 25 Aug 2022 09:28:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240201AbiHYJ1M (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 25 Aug 2022 05:27:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41232 "EHLO
+        id S238146AbiHYJ2C (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 25 Aug 2022 05:28:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43438 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239950AbiHYJ1A (ORCPT
+        with ESMTP id S233563AbiHYJ1v (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 25 Aug 2022 05:27:00 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E488A6E2EB;
-        Thu, 25 Aug 2022 02:26:46 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        Thu, 25 Aug 2022 05:27:51 -0400
+Received: from smtp-out2.suse.de (smtp-out2.suse.de [IPv6:2001:67c:2178:6::1d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D7BB09E8BB;
+        Thu, 25 Aug 2022 02:27:50 -0700 (PDT)
+Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
+        by smtp-out2.suse.de (Postfix) with ESMTP id 8BF8D5BCFF;
+        Thu, 25 Aug 2022 09:27:49 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
+        t=1661419669; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=oD2ON5ZEmElLgT4EBxpSWyu1ku5LP4DrXwfA23XWjH4=;
+        b=qknJkW1fP0r2UL8UgzODME4WEr79d6P4xEuqkMLZADrhrnaZvBgIbr/L0faRbdiu6dHJmE
+        tvkb1ptlffg/lhWil1eQZUDjhGa6bN1dyT5LO7aJKLLNCh/XcrNqoiWnPzH6p5mvmmoUDQ
+        3JAdcgDNBV8/4sIoa7uVLdV0TcindVs=
+Received: from suse.cz (unknown [10.100.201.202])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 02777B827CF;
-        Thu, 25 Aug 2022 09:26:45 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3B3D8C433D7;
-        Thu, 25 Aug 2022 09:26:42 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1661419603;
-        bh=6LFyQ6YlD5on8u6gveMR+kD0JxrBIJfsAknJq3NW5IU=;
-        h=Date:From:To:cc:Subject:In-Reply-To:References:From;
-        b=l9fek1rf931eJmOQYz/shO6Sb/3dxt0C+PY5gd4hS4f0JHL6z0aI2lLpNgakP+QFd
-         VBBZjj/VGoT/NfzMJJcS+oVU8IzS1KGbTPCIusQpJfqqIlhaQtTlAVOW73P8ZYV5AJ
-         m2oGkcIsen06ASbZIkH74t91iaUbi66XQiQedZO2uNcyQ+XvK4lNCll8ard9D/wiV+
-         +AvKrPMvmaFcvFmW44qh1hXQ9ZVrQ7jvkdURSGv3asOAA8Wm2cB8o9IFDYIBmB4w8r
-         14y4WvI1/pVmohtXt8epdITYeZZZczuyc89/fdp7INUSxqQ0PpI8GjS0qZkDEPswT1
-         AR+f/DJ448eNg==
-Date:   Thu, 25 Aug 2022 11:26:39 +0200 (CEST)
-From:   Jiri Kosina <jikos@kernel.org>
-To:     Christophe JAILLET <christophe.jaillet@wanadoo.fr>
-cc:     Benjamin Tissoires <benjamin.tissoires@redhat.com>,
-        linux-kernel@vger.kernel.org, kernel-janitors@vger.kernel.org,
-        linux-input@vger.kernel.org
-Subject: Re: [PATCH] HID: cp2112: Remove some dead code
-In-Reply-To: <6ee2132c415db2fc90e7fa2106db427a914cc566.1655563907.git.christophe.jaillet@wanadoo.fr>
-Message-ID: <nycvar.YFH.7.76.2208251126010.19850@cbobk.fhfr.pm>
-References: <6ee2132c415db2fc90e7fa2106db427a914cc566.1655563907.git.christophe.jaillet@wanadoo.fr>
-User-Agent: Alpine 2.21 (LSU 202 2017-01-01)
+        by relay2.suse.de (Postfix) with ESMTPS id BBCD22C142;
+        Thu, 25 Aug 2022 09:27:48 +0000 (UTC)
+Date:   Thu, 25 Aug 2022 11:27:46 +0200
+From:   Petr Mladek <pmladek@suse.com>
+To:     Wolfram Sang <wsa+renesas@sang-engineering.com>
+Cc:     linux-kernel@vger.kernel.org, Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <martin.lau@linux.dev>,
+        Song Liu <song@kernel.org>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>,
+        Stanislav Fomichev <sdf@google.com>,
+        Hao Luo <haoluo@google.com>, Jiri Olsa <jolsa@kernel.org>,
+        Tejun Heo <tj@kernel.org>, Zefan Li <lizefan.x@bytedance.com>,
+        Johannes Weiner <hannes@cmpxchg.org>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Ingo Molnar <mingo@redhat.com>,
+        Arnaldo Carvalho de Melo <acme@kernel.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
+        Namhyung Kim <namhyung@kernel.org>,
+        Sergey Senozhatsky <senozhatsky@chromium.org>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        John Ogness <john.ogness@linutronix.de>,
+        John Stultz <jstultz@google.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Stephen Boyd <sboyd@kernel.org>, bpf@vger.kernel.org,
+        cgroups@vger.kernel.org, linux-perf-users@vger.kernel.org
+Subject: Re: [PATCH] kernel: move from strlcpy with unused retval to strscpy
+Message-ID: <YwdAknZFyKxCXZuL@alley>
+References: <20220818210202.8227-1-wsa+renesas@sang-engineering.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220818210202.8227-1-wsa+renesas@sang-engineering.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sat, 18 Jun 2022, Christophe JAILLET wrote:
-
-> Commit 13de9cca514e ("HID: cp2112: add IRQ chip handling") has introduced
-> cp2112_allocate_irq() that seems to be unused since 2016.
+On Thu 2022-08-18 23:02:01, Wolfram Sang wrote:
+> Follow the advice of the below link and prefer 'strscpy' in this
+> subsystem. Conversion is 1:1 because the return value is not used.
+> Generated by a coccinelle script.
 > 
-> Remove it, remove the associated resources and part of the remove()
-> function that frees the resources allocated in cp2112_allocate_irq().
-> 
-> Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+> Link: https://lore.kernel.org/r/CAHk-=wgfRnXz0W3D37d01q3JFkr_i_uTL=V6A6G1oUZcprmknw@mail.gmail.com/
+> Signed-off-by: Wolfram Sang <wsa+renesas@sang-engineering.com>
+>
 > ---
-> Compile tested only.
-> 
-> Maybe the issue is completely elsewhere and the probe() should call
-> cp2112_allocate_irq() in some cases.
+>  kernel/acct.c                         |  2 +-
+>  kernel/bpf/preload/bpf_preload_kern.c |  4 ++--
+>  kernel/cgroup/cgroup-v1.c             |  4 ++--
+>  kernel/events/core.c                  |  6 +++---
+>  kernel/kallsyms.c                     |  4 ++--
+>  kernel/params.c                       |  2 +-
+>  kernel/printk/printk.c                |  2 +-
+>  kernel/relay.c                        |  4 ++--
+>  kernel/time/clocksource.c             |  2 +-
+>  kernel/trace/ftrace.c                 | 18 +++++++++---------
+>  kernel/trace/trace.c                  |  8 ++++----
+>  kernel/trace/trace_events.c           |  2 +-
+>  kernel/trace/trace_events_inject.c    |  4 ++--
+>  kernel/trace/trace_kprobe.c           |  2 +-
+>  kernel/trace/trace_probe.c            |  2 +-
+>  15 files changed, 33 insertions(+), 33 deletions(-)
 
-Benjamin, could you please take a look? Apparently you were aware of the 
-code being dead due to the __maybe_unused annotation ... :) What was the 
-point?
+This fixes only small part of the kernel code. It would make sense to
+do a tree-wide change using a script.
 
-Thanks,
+Would you mind to create one and send it to Linus?
 
--- 
-Jiri Kosina
-SUSE Labs
+You might want to use Coccinelle if a simple sed/awk gets too
+complicated. See
+https://www.kernel.org/doc/html/v4.15/dev-tools/coccinelle.html
 
+Best Regards,
+Petr
