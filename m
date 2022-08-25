@@ -2,19 +2,19 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7FA60ECAA25
-	for <linux-kernel@archiver.kernel.org>; Thu, 25 Aug 2022 16:42:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4CEFDECAA25
+	for <linux-kernel@archiver.kernel.org>; Thu, 25 Aug 2022 16:42:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243196AbiHYQm3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 25 Aug 2022 12:42:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42520 "EHLO
+        id S243203AbiHYQmd (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 25 Aug 2022 12:42:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42276 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243116AbiHYQmD (ORCPT
+        with ESMTP id S242791AbiHYQmF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 25 Aug 2022 12:42:03 -0400
+        Thu, 25 Aug 2022 12:42:05 -0400
 Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 47EF9BB012
-        for <linux-kernel@vger.kernel.org>; Thu, 25 Aug 2022 09:41:54 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C3585B9FBA;
+        Thu, 25 Aug 2022 09:42:00 -0700 (PDT)
 From:   Sebastian Andrzej Siewior <bigeasy@linutronix.de>
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
         s=2020; t=1661445701;
@@ -22,32 +22,37 @@ DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
          to:to:cc:cc:mime-version:mime-version:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=3a2uwD3ePfGP6QOLusJldJ8Cx5w8uOIWpoMcUghBNEI=;
-        b=fAoAi6GN6WY3LeygB/lU0oNfEevDLSlEyWydv2qLC8qJtAwmaJKfLqO4P16YjHMIUo0Je9
-        llrAhoYh2vZSnpVGam3C5lt5iT7SkmCn51yjLk++hlqRWDKbRPigRr+Dc56Fpb8OYFzSe7
-        DnlzDN20dDV1rYDLSq3rpXJOlaXcaUMMB5MMNQFUokVaixRlqPj3UFwL9lQjHuBaaXpY67
-        HVdPQDhN7wH4uc9PcPmbOBplXAZUd9DEUEz4jPfqyQgdpRk0lgPTcxpzkq+V5x55YEH9gj
-        +/KOfkwwtXkRGDvRjHAlLiKvucUPP/2n3UEDqCQOO+U6s4fLgWmQYRcw60KBTw==
+        bh=rBDIufscYHVsHmPufaPAl/Vqv2LLB/GPVe+GUwmXUq8=;
+        b=dwt4gAjuVE7mnQU8NsSY1OdNQ0rEZBIOo7TJBp+JnuKFR/KIJGimsOnnoMrAmxV7Ig+JT7
+        O249Q23IW3M+loKcYaWWeCCbHsG9iBRknQ60mgpEXPa4N+Eode7esLr9CsWoLpckIV1KzI
+        ayi8JaUVrbuLHKvfTbkZw3UEWBw409RJLoheWD5IzDo/LyyVLw6mJMQH2W1WsMcD3Dh2VU
+        y0AoX+D8MvMAnXdwKQNdlX2Uq1K1KYhECqVDrC126boDaX4wUq6U9kgnOZqzw/EZZ46Kw8
+        ahdSsDX24EgjlJ4uN9GjqVIcF/W2re4OGiNrAhu80st4X6zaYkG+ENS6mRRj9g==
 DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
         s=2020e; t=1661445701;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=3a2uwD3ePfGP6QOLusJldJ8Cx5w8uOIWpoMcUghBNEI=;
-        b=YGZc1zl3hETI58auazyzwWtrsPvOEkOwmmHlHQaf1c4aLojGysK6XG0Bv0ZbXFdkioOVw0
-        bEi0iQIIzmj2gYBA==
+        bh=rBDIufscYHVsHmPufaPAl/Vqv2LLB/GPVe+GUwmXUq8=;
+        b=/xWS01iGeCi7ocDyLNA4wcA1jGESk+49fcLFDvz6piEFCTHy/Cap5+B9ZdmwZa5+akYuxh
+        YMeWgbw07cXCjbBw==
 To:     linux-kernel@vger.kernel.org
 Cc:     Thomas Gleixner <tglx@linutronix.de>,
         Peter Zijlstra <peterz@infradead.org>,
         Steven Rostedt <rostedt@goodmis.org>,
         Linus Torvalds <torvalds@linux-foundation.org>,
         Matthew Wilcox <willy@infradead.org>,
-        Andrew Morton <akpm@linux-foundation.org>, linux-mm@kvack.org,
+        Johannes Weiner <hannes@cmpxchg.org>,
+        Michal Hocko <mhocko@kernel.org>,
+        Roman Gushchin <roman.gushchin@linux.dev>,
+        Shakeel Butt <shakeelb@google.com>,
+        Muchun Song <songmuchun@bytedance.com>,
+        cgroups@vger.kernel.org, linux-mm@kvack.org,
         Sebastian Andrzej Siewior <bigeasy@linutronix.de>
-Subject: [PATCH v2 3/8] mm/vmstat: Use preempt_[dis|en]able_nested()
-Date:   Thu, 25 Aug 2022 18:41:26 +0200
-Message-Id: <20220825164131.402717-4-bigeasy@linutronix.de>
+Subject: [PATCH v2 5/8] mm/memcontrol: Replace the PREEMPT_RT conditionals
+Date:   Thu, 25 Aug 2022 18:41:28 +0200
+Message-Id: <20220825164131.402717-6-bigeasy@linutronix.de>
 In-Reply-To: <20220825164131.402717-1-bigeasy@linutronix.de>
 References: <20220825164131.402717-1-bigeasy@linutronix.de>
 MIME-Version: 1.0
@@ -58,155 +63,79 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Thomas Gleixner <tglx@linutronix.de>
 
-Replace the open coded CONFIG_PREEMPT_RT conditional
-preempt_enable/disable() pairs with the new helper functions which hide
-the underlying implementation details.
+Use VM_WARN_ON_IRQS_ENABLED() and preempt_disable/enable_nested() to
+replace the CONFIG_PREEMPT_RT #ifdeffery.
 
 Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
-Cc: Andrew Morton <akpm@linux-foundation.org>
+Cc: Johannes Weiner <hannes@cmpxchg.org>
+Cc: Michal Hocko <mhocko@kernel.org>
+Cc: Roman Gushchin <roman.gushchin@linux.dev>
+Cc: Shakeel Butt <shakeelb@google.com>
+Cc: Muchun Song <songmuchun@bytedance.com>
+Cc: cgroups@vger.kernel.org
 Cc: linux-mm@kvack.org
 Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+Acked-by: Johannes Weiner <hannes@cmpxchg.org>
+Reviewed-by: Muchun Song <songmuchun@bytedance.com>
 Acked-by: Peter Zijlstra (Intel) <peterz@infradead.org>
 ---
- mm/vmstat.c | 36 ++++++++++++------------------------
- 1 file changed, 12 insertions(+), 24 deletions(-)
+ mm/memcontrol.c | 19 ++++++-------------
+ 1 file changed, 6 insertions(+), 13 deletions(-)
 
-diff --git a/mm/vmstat.c b/mm/vmstat.c
-index 373d2730fcf21..d514fe7f90af0 100644
---- a/mm/vmstat.c
-+++ b/mm/vmstat.c
-@@ -355,8 +355,7 @@ void __mod_zone_page_state(struct zone *zone, enum zone=
-_stat_item item,
- 	 * CPU migrations and preemption potentially corrupts a counter so
- 	 * disable preemption.
+diff --git a/mm/memcontrol.c b/mm/memcontrol.c
+index b69979c9ced5c..d35b6fa560f0a 100644
+--- a/mm/memcontrol.c
++++ b/mm/memcontrol.c
+@@ -597,25 +597,18 @@ static u64 flush_next_time;
+  */
+ static void memcg_stats_lock(void)
+ {
+-#ifdef CONFIG_PREEMPT_RT
+-      preempt_disable();
+-#else
+-      VM_BUG_ON(!irqs_disabled());
+-#endif
++	preempt_disable_nested();
++	VM_WARN_ON_IRQS_ENABLED();
+ }
+=20
+ static void __memcg_stats_lock(void)
+ {
+-#ifdef CONFIG_PREEMPT_RT
+-      preempt_disable();
+-#endif
++	preempt_disable_nested();
+ }
+=20
+ static void memcg_stats_unlock(void)
+ {
+-#ifdef CONFIG_PREEMPT_RT
+-      preempt_enable();
+-#endif
++	preempt_enable_nested();
+ }
+=20
+ static inline void memcg_rstat_updated(struct mem_cgroup *memcg, int val)
+@@ -715,7 +708,7 @@ void __mod_memcg_lruvec_state(struct lruvec *lruvec, en=
+um node_stat_item idx,
+ 	 * interrupt context while other caller need to have disabled interrupt.
  	 */
--	if (IS_ENABLED(CONFIG_PREEMPT_RT))
--		preempt_disable();
-+	preempt_disable_nested();
-=20
- 	x =3D delta + __this_cpu_read(*p);
-=20
-@@ -368,8 +367,7 @@ void __mod_zone_page_state(struct zone *zone, enum zone=
-_stat_item item,
- 	}
- 	__this_cpu_write(*p, x);
-=20
--	if (IS_ENABLED(CONFIG_PREEMPT_RT))
--		preempt_enable();
-+	preempt_enable_nested();
- }
- EXPORT_SYMBOL(__mod_zone_page_state);
-=20
-@@ -393,8 +391,7 @@ void __mod_node_page_state(struct pglist_data *pgdat, e=
-num node_stat_item item,
+ 	__memcg_stats_lock();
+-	if (IS_ENABLED(CONFIG_DEBUG_VM) && !IS_ENABLED(CONFIG_PREEMPT_RT)) {
++	if (IS_ENABLED(CONFIG_DEBUG_VM)) {
+ 		switch (idx) {
+ 		case NR_ANON_MAPPED:
+ 		case NR_FILE_MAPPED:
+@@ -725,7 +718,7 @@ void __mod_memcg_lruvec_state(struct lruvec *lruvec, en=
+um node_stat_item idx,
+ 			WARN_ON_ONCE(!in_task());
+ 			break;
+ 		default:
+-			WARN_ON_ONCE(!irqs_disabled());
++			VM_WARN_ON_IRQS_ENABLED();
+ 		}
  	}
 =20
- 	/* See __mod_node_page_state */
--	if (IS_ENABLED(CONFIG_PREEMPT_RT))
--		preempt_disable();
-+	preempt_disable_nested();
-=20
- 	x =3D delta + __this_cpu_read(*p);
-=20
-@@ -406,8 +403,7 @@ void __mod_node_page_state(struct pglist_data *pgdat, e=
-num node_stat_item item,
- 	}
- 	__this_cpu_write(*p, x);
-=20
--	if (IS_ENABLED(CONFIG_PREEMPT_RT))
--		preempt_enable();
-+	preempt_enable_nested();
- }
- EXPORT_SYMBOL(__mod_node_page_state);
-=20
-@@ -441,8 +437,7 @@ void __inc_zone_state(struct zone *zone, enum zone_stat=
-_item item)
- 	s8 v, t;
-=20
- 	/* See __mod_node_page_state */
--	if (IS_ENABLED(CONFIG_PREEMPT_RT))
--		preempt_disable();
-+	preempt_disable_nested();
-=20
- 	v =3D __this_cpu_inc_return(*p);
- 	t =3D __this_cpu_read(pcp->stat_threshold);
-@@ -453,8 +448,7 @@ void __inc_zone_state(struct zone *zone, enum zone_stat=
-_item item)
- 		__this_cpu_write(*p, -overstep);
- 	}
-=20
--	if (IS_ENABLED(CONFIG_PREEMPT_RT))
--		preempt_enable();
-+	preempt_enable_nested();
- }
-=20
- void __inc_node_state(struct pglist_data *pgdat, enum node_stat_item item)
-@@ -466,8 +460,7 @@ void __inc_node_state(struct pglist_data *pgdat, enum n=
-ode_stat_item item)
- 	VM_WARN_ON_ONCE(vmstat_item_in_bytes(item));
-=20
- 	/* See __mod_node_page_state */
--	if (IS_ENABLED(CONFIG_PREEMPT_RT))
--		preempt_disable();
-+	preempt_disable_nested();
-=20
- 	v =3D __this_cpu_inc_return(*p);
- 	t =3D __this_cpu_read(pcp->stat_threshold);
-@@ -478,8 +471,7 @@ void __inc_node_state(struct pglist_data *pgdat, enum n=
-ode_stat_item item)
- 		__this_cpu_write(*p, -overstep);
- 	}
-=20
--	if (IS_ENABLED(CONFIG_PREEMPT_RT))
--		preempt_enable();
-+	preempt_enable_nested();
- }
-=20
- void __inc_zone_page_state(struct page *page, enum zone_stat_item item)
-@@ -501,8 +493,7 @@ void __dec_zone_state(struct zone *zone, enum zone_stat=
-_item item)
- 	s8 v, t;
-=20
- 	/* See __mod_node_page_state */
--	if (IS_ENABLED(CONFIG_PREEMPT_RT))
--		preempt_disable();
-+	preempt_disable_nested();
-=20
- 	v =3D __this_cpu_dec_return(*p);
- 	t =3D __this_cpu_read(pcp->stat_threshold);
-@@ -513,8 +504,7 @@ void __dec_zone_state(struct zone *zone, enum zone_stat=
-_item item)
- 		__this_cpu_write(*p, overstep);
- 	}
-=20
--	if (IS_ENABLED(CONFIG_PREEMPT_RT))
--		preempt_enable();
-+	preempt_enable_nested();
- }
-=20
- void __dec_node_state(struct pglist_data *pgdat, enum node_stat_item item)
-@@ -526,8 +516,7 @@ void __dec_node_state(struct pglist_data *pgdat, enum n=
-ode_stat_item item)
- 	VM_WARN_ON_ONCE(vmstat_item_in_bytes(item));
-=20
- 	/* See __mod_node_page_state */
--	if (IS_ENABLED(CONFIG_PREEMPT_RT))
--		preempt_disable();
-+	preempt_disable_nested();
-=20
- 	v =3D __this_cpu_dec_return(*p);
- 	t =3D __this_cpu_read(pcp->stat_threshold);
-@@ -538,8 +527,7 @@ void __dec_node_state(struct pglist_data *pgdat, enum n=
-ode_stat_item item)
- 		__this_cpu_write(*p, overstep);
- 	}
-=20
--	if (IS_ENABLED(CONFIG_PREEMPT_RT))
--		preempt_enable();
-+	preempt_enable_nested();
- }
-=20
- void __dec_zone_page_state(struct page *page, enum zone_stat_item item)
 --=20
 2.37.2
 
