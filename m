@@ -2,31 +2,31 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A75E6C04AA5
-	for <linux-kernel@archiver.kernel.org>; Thu, 25 Aug 2022 13:02:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E80C8C64990
+	for <linux-kernel@archiver.kernel.org>; Thu, 25 Aug 2022 13:02:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242138AbiHYNCo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 25 Aug 2022 09:02:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39376 "EHLO
+        id S242170AbiHYNCt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 25 Aug 2022 09:02:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39394 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242097AbiHYNCh (ORCPT
+        with ESMTP id S242120AbiHYNCh (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Thu, 25 Aug 2022 09:02:37 -0400
 Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3E3837D1FC
-        for <linux-kernel@vger.kernel.org>; Thu, 25 Aug 2022 06:02:35 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 665E07D1F9
+        for <linux-kernel@vger.kernel.org>; Thu, 25 Aug 2022 06:02:36 -0700 (PDT)
 Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
         by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
         (Exim 4.92)
         (envelope-from <ore@pengutronix.de>)
-        id 1oRCUz-0007zW-9f; Thu, 25 Aug 2022 15:02:17 +0200
+        id 1oRCUz-0007zd-9i; Thu, 25 Aug 2022 15:02:17 +0200
 Received: from [2a0a:edc0:0:1101:1d::ac] (helo=dude04.red.stw.pengutronix.de)
         by drehscheibe.grey.stw.pengutronix.de with esmtp (Exim 4.94.2)
         (envelope-from <ore@pengutronix.de>)
-        id 1oRCUw-001uGQ-1p; Thu, 25 Aug 2022 15:02:14 +0200
+        id 1oRCUx-001uGl-49; Thu, 25 Aug 2022 15:02:15 +0200
 Received: from ore by dude04.red.stw.pengutronix.de with local (Exim 4.94.2)
         (envelope-from <ore@pengutronix.de>)
-        id 1oRCUv-00FeUN-37; Thu, 25 Aug 2022 15:02:13 +0200
+        id 1oRCUu-00FeTn-Vu; Thu, 25 Aug 2022 15:02:12 +0200
 From:   Oleksij Rempel <o.rempel@pengutronix.de>
 To:     Andrew Lunn <andrew@lunn.ch>,
         Heiner Kallweit <hkallweit1@gmail.com>,
@@ -44,12 +44,10 @@ Cc:     Oleksij Rempel <o.rempel@pengutronix.de>, kernel@pengutronix.de,
         David Jander <david@protonic.nl>,
         Luka Perkov <luka.perkov@sartura.hr>,
         Robert Marko <robert.marko@sartura.hr>
-Subject: [PATCH net-next v2 4/7] net: mdiobus: fwnode_mdiobus_register_phy() rework error handling
-Date:   Thu, 25 Aug 2022 15:02:08 +0200
-Message-Id: <20220825130211.3730461-5-o.rempel@pengutronix.de>
+Subject: [PATCH net-next v2 0/7] add generic PSE support 
+Date:   Thu, 25 Aug 2022 15:02:04 +0200
+Message-Id: <20220825130211.3730461-1-o.rempel@pengutronix.de>
 X-Mailer: git-send-email 2.30.2
-In-Reply-To: <20220825130211.3730461-1-o.rempel@pengutronix.de>
-References: <20220825130211.3730461-1-o.rempel@pengutronix.de>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
@@ -60,63 +58,50 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Rework error handling as preparation for PSE patch. This patch should
-make it easier to extend this function.
+Add generic support for the Ethernet Power Sourcing Equipment.
 
-Signed-off-by: Oleksij Rempel <o.rempel@pengutronix.de>
----
- drivers/net/mdio/fwnode_mdio.c | 21 ++++++++++++---------
- 1 file changed, 12 insertions(+), 9 deletions(-)
+changes are listed within patches.
 
-diff --git a/drivers/net/mdio/fwnode_mdio.c b/drivers/net/mdio/fwnode_mdio.c
-index 3e79c2c519298..e78ad55c0e091 100644
---- a/drivers/net/mdio/fwnode_mdio.c
-+++ b/drivers/net/mdio/fwnode_mdio.c
-@@ -108,8 +108,8 @@ int fwnode_mdiobus_register_phy(struct mii_bus *bus,
- 	else
- 		phy = phy_device_create(bus, addr, phy_id, 0, NULL);
- 	if (IS_ERR(phy)) {
--		unregister_mii_timestamper(mii_ts);
--		return PTR_ERR(phy);
-+		rc = PTR_ERR(phy);
-+		goto clean_mii_ts;
- 	}
- 
- 	if (is_acpi_node(child)) {
-@@ -123,17 +123,13 @@ int fwnode_mdiobus_register_phy(struct mii_bus *bus,
- 		/* All data is now stored in the phy struct, so register it */
- 		rc = phy_device_register(phy);
- 		if (rc) {
--			phy_device_free(phy);
- 			fwnode_handle_put(phy->mdio.dev.fwnode);
--			return rc;
-+			goto clean_phy;
- 		}
- 	} else if (is_of_node(child)) {
- 		rc = fwnode_mdiobus_phy_device_register(bus, phy, child, addr);
--		if (rc) {
--			unregister_mii_timestamper(mii_ts);
--			phy_device_free(phy);
--			return rc;
--		}
-+		if (rc)
-+			goto clean_phy;
- 	}
- 
- 	/* phy->mii_ts may already be defined by the PHY driver. A
-@@ -143,5 +139,12 @@ int fwnode_mdiobus_register_phy(struct mii_bus *bus,
- 	if (mii_ts)
- 		phy->mii_ts = mii_ts;
- 	return 0;
-+
-+clean_phy:
-+	phy_device_free(phy);
-+clean_mii_ts:
-+	unregister_mii_timestamper(mii_ts);
-+
-+	return rc;
- }
- EXPORT_SYMBOL(fwnode_mdiobus_register_phy);
+Oleksij Rempel (7):
+  dt-bindings: net: pse-dt: add bindings for generic PSE controller
+  dt-bindings: net: phy: add PoDL PSE property
+  net: add framework to support Ethernet PSE and PDs devices
+  net: mdiobus: fwnode_mdiobus_register_phy() rework error handling
+  net: mdiobus: search for PSE nodes by parsing PHY nodes.
+  ethtool: add interface to interact with Ethernet Power Equipment
+  net: pse-pd: add generic PSE driver
+
+ .../devicetree/bindings/net/ethernet-phy.yaml |   5 +
+ .../bindings/net/pse-pd/generic-pse.yaml      |  95 +++++
+ Documentation/networking/ethtool-netlink.rst  |  60 +++
+ drivers/net/Kconfig                           |   2 +
+ drivers/net/Makefile                          |   1 +
+ drivers/net/mdio/fwnode_mdio.c                |  58 ++-
+ drivers/net/phy/phy_device.c                  |   2 +
+ drivers/net/pse-pd/Kconfig                    |  22 +
+ drivers/net/pse-pd/Makefile                   |   6 +
+ drivers/net/pse-pd/pse_core.c                 | 381 ++++++++++++++++++
+ drivers/net/pse-pd/pse_generic.c              | 148 +++++++
+ include/linux/ethtool.h                       |  27 ++
+ include/linux/phy.h                           |   2 +
+ include/linux/pse-pd/pse.h                    | 134 ++++++
+ include/uapi/linux/ethtool.h                  |  50 +++
+ include/uapi/linux/ethtool_netlink.h          |  17 +
+ net/ethtool/Makefile                          |   3 +-
+ net/ethtool/common.c                          |  10 +
+ net/ethtool/common.h                          |   1 +
+ net/ethtool/netlink.c                         |  19 +
+ net/ethtool/netlink.h                         |   4 +
+ net/ethtool/pse-pd.c                          | 187 +++++++++
+ 22 files changed, 1222 insertions(+), 12 deletions(-)
+ create mode 100644 Documentation/devicetree/bindings/net/pse-pd/generic-pse.yaml
+ create mode 100644 drivers/net/pse-pd/Kconfig
+ create mode 100644 drivers/net/pse-pd/Makefile
+ create mode 100644 drivers/net/pse-pd/pse_core.c
+ create mode 100644 drivers/net/pse-pd/pse_generic.c
+ create mode 100644 include/linux/pse-pd/pse.h
+ create mode 100644 net/ethtool/pse-pd.c
+
 -- 
 2.30.2
 
