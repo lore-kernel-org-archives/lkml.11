@@ -2,79 +2,67 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6F0B3C64990
-	for <linux-kernel@archiver.kernel.org>; Thu, 25 Aug 2022 14:54:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 19505C6498F
+	for <linux-kernel@archiver.kernel.org>; Thu, 25 Aug 2022 14:55:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242119AbiHYOyO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 25 Aug 2022 10:54:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38714 "EHLO
+        id S242261AbiHYOz1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 25 Aug 2022 10:55:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40652 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234556AbiHYOyL (ORCPT
+        with ESMTP id S241532AbiHYOzX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 25 Aug 2022 10:54:11 -0400
-X-Greylist: delayed 481 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Thu, 25 Aug 2022 07:54:10 PDT
-Received: from esa3.mentor.iphmx.com (esa3.mentor.iphmx.com [68.232.137.180])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B591FB4EB4
-        for <linux-kernel@vger.kernel.org>; Thu, 25 Aug 2022 07:54:10 -0700 (PDT)
-X-IronPort-AV: E=Sophos;i="5.93,263,1654588800"; 
-   d="scan'208";a="81807983"
-Received: from orw-gwy-02-in.mentorg.com ([192.94.38.167])
-  by esa3.mentor.iphmx.com with ESMTP; 25 Aug 2022 06:38:49 -0800
-IronPort-SDR: x1Ixj9xEowfDaxB+rCmYv+GSCPnGqKWu+UVR1/d2bXu884TLkcyorKTAOJ3GIdG2sZcAKPnr8C
- HrDpsKuUuy/7A3YVdzDaX/MsrZX96NDhq5JOA2b7iEqcFgR8p++itQnfXWYEalx8sudUp7WR3Q
- um6mcl43b7D6ol4iQIF2NVNDO6kFKAVM4x0sDavVBXMjnIhpFoTzJo4nALK+MjLYUthu9lkmIN
- xkDupHA97VMp7y+qdLBmrdVJnKzGutKQCtTsZdyiix3T/aUpRWC6kZou1GuriOnoXxFN8q1rQH
- aYs=
-Date:   Thu, 25 Aug 2022 14:38:40 +0000
-From:   Joseph Myers <joseph@codesourcery.com>
-X-X-Sender: jsm28@digraph.polyomino.org.uk
-To:     Linus Torvalds <torvalds@linux-foundation.org>
-CC:     Florian Weimer <fweimer@redhat.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Alejandro Colomar <alx.manpages@gmail.com>,
-        Alexei Starovoitov <alexei.starovoitov@gmail.com>,
-        Alex Colomar <alx@kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        linux-man <linux-man@vger.kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Zack Weinberg <zackw@panix.com>,
-        LKML <linux-kernel@vger.kernel.org>,
-        glibc <libc-alpha@sourceware.org>, GCC <gcc-patches@gcc.gnu.org>,
-        bpf <bpf@vger.kernel.org>, LTP List <ltp@lists.linux.it>,
-        Linux API <linux-api@vger.kernel.org>,
-        linux-arch <linux-arch@vger.kernel.org>,
-        David Laight <David.Laight@aculab.com>,
-        Cyril Hrubis <chrubis@suse.cz>,
-        David Howells <dhowells@redhat.com>,
-        Arnd Bergmann <arnd@arndb.de>, Rich Felker <dalias@libc.org>,
-        Adhemerval Zanella <adhemerval.zanella@linaro.org>,
-        Michael Kerrisk <mtk.manpages@gmail.com>
-Subject: Re: [PATCH v3] Many pages: Document fixed-width types with ISO C
- naming
-In-Reply-To: <CAHk-=whsETo4kc2Ec1Nf4HQY5vKYmRi9et243kyqN4E-=PgKJw@mail.gmail.com>
-Message-ID: <alpine.DEB.2.22.394.2208251435370.104368@digraph.polyomino.org.uk>
-References: <20210423230609.13519-1-alx.manpages@gmail.com> <20220824185505.56382-1-alx.manpages@gmail.com> <CAADnVQKiEVL9zRtN4WY2+cTD2b3b3buV8BQb83yQw13pWq4OGQ@mail.gmail.com> <c06008bc-0c13-12f1-df85-3814b74e47f9@gmail.com> <YwcPQ987poRYjfoL@kroah.com>
- <87ilmgddui.fsf@oldenburg.str.redhat.com> <CAHk-=whsETo4kc2Ec1Nf4HQY5vKYmRi9et243kyqN4E-=PgKJw@mail.gmail.com>
-User-Agent: Alpine 2.22 (DEB 394 2020-01-19)
+        Thu, 25 Aug 2022 10:55:23 -0400
+Received: from bg5.exmail.qq.com (bg4.exmail.qq.com [43.155.67.158])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8BE7CA4B17;
+        Thu, 25 Aug 2022 07:55:20 -0700 (PDT)
+X-QQ-mid: bizesmtp68t1661439316t11j3pqy
+Received: from localhost.localdomain ( [182.148.14.124])
+        by bizesmtp.qq.com (ESMTP) with 
+        id ; Thu, 25 Aug 2022 22:55:10 +0800 (CST)
+X-QQ-SSF: 01000000002000B0C000B00A0000000
+X-QQ-FEAT: ao4JQgu0M3/UgU+YkHy4no6bR7xESP028SxaFxkre6iLl7c8DSbTIQiTX+vGr
+        9ogW7kBebPqytQIIdwXODqpdJe51v5wZMoY3IWX1+Kldkwq4A27WB/hDHEbdltI451D2NI3
+        XiU8UQHl8PGTg9rKYCb9hd4bvDIPW+nDI+fBS8njGxhoQkYb6nMXeN20xGGo/ACpy8/OBd2
+        kV7lLazhbm2MYA/9KEzawhWiJkMRIQ+3U+T4MYEMOqilNQkuj+Iltzfu9DNQXQi84KIqpnE
+        ZBo/iFiphBYvcPgQb4IL7gdr2juZy2AYw0mZT3grpu7eRnfGos0ko7hvh2Krcfd6JWmlyyw
+        ZUUhyv8dHtRgoqzXeJmnk4tDpHecAAUHBYyKgRy62coFI4vFvS+okkcnix+lNgbzAuwNqnV
+X-QQ-GoodBg: 0
+From:   Shaomin Deng <dengshaomin@cdjrlc.com>
+To:     tony@atomide.com, linux-omap@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Cc:     Shaomin Deng <dengshaomin@cdjrlc.com>
+Subject: [PATCH] bus: ti-sysc: Fix double word in comments
+Date:   Thu, 25 Aug 2022 10:55:10 -0400
+Message-Id: <20220825145510.6549-1-dengshaomin@cdjrlc.com>
+X-Mailer: git-send-email 2.35.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset="US-ASCII"
-X-Originating-IP: [137.202.0.90]
-X-ClientProxiedBy: svr-ies-mbx-11.mgc.mentorg.com (139.181.222.11) To
- svr-ies-mbx-10.mgc.mentorg.com (139.181.222.10)
+Content-Transfer-Encoding: 8bit
+X-QQ-SENDSIZE: 520
+Feedback-ID: bizesmtp:cdjrlc.com:qybglogicsvr:qybglogicsvr4
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, 25 Aug 2022, Linus Torvalds wrote:
+Delete the repeated word "the" in line 918.
 
-> That's a small detail that yes, we've tried to avoid the absolute
-> humongous mess that the C standard library has with their horrendous
-> 'PRId*' mess, but honestly, it's just a tiny detail.
+Signed-off-by: Shaomin Deng <dengshaomin@cdjrlc.com>
+---
+ drivers/bus/ti-sysc.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-I've not yet implemented it for glibc or for GCC format checking, but C23 
-adds 'wN' format length modifiers so you will be able to e.g. use "%w64d" 
-with printf to print an int64_t and won't need those PRI macros any more.
-
+diff --git a/drivers/bus/ti-sysc.c b/drivers/bus/ti-sysc.c
+index 51d772bb8046..2386e8013e18 100644
+--- a/drivers/bus/ti-sysc.c
++++ b/drivers/bus/ti-sysc.c
+@@ -915,7 +915,7 @@ static int sysc_check_registers(struct sysc *ddata)
+  * within the interconnect target module range. For example, SGX has
+  * them at offset 0x1fc00 in the 32MB module address space. And cpsw
+  * has them at offset 0x1200 in the CPSW_WR child. Usually the
+- * the interconnect target module registers are at the beginning of
++ * interconnect target module registers are at the beginning of
+  * the module range though.
+  */
+ static int sysc_ioremap(struct sysc *ddata)
 -- 
-Joseph S. Myers
-joseph@codesourcery.com
+2.35.1
+
