@@ -2,115 +2,166 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CC74AC04AA5
-	for <linux-kernel@archiver.kernel.org>; Thu, 25 Aug 2022 06:46:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F016AC28D13
+	for <linux-kernel@archiver.kernel.org>; Thu, 25 Aug 2022 06:47:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236283AbiHYGq3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 25 Aug 2022 02:46:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58848 "EHLO
+        id S234133AbiHYGrb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 25 Aug 2022 02:47:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59862 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234292AbiHYGqZ (ORCPT
+        with ESMTP id S229909AbiHYGr1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 25 Aug 2022 02:46:25 -0400
-Received: from mx1.molgen.mpg.de (mx3.molgen.mpg.de [141.14.17.11])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C997731369;
-        Wed, 24 Aug 2022 23:46:23 -0700 (PDT)
-Received: from [192.168.0.2] (ip5f5aeca3.dynamic.kabel-deutschland.de [95.90.236.163])
-        (using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
-         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        Thu, 25 Aug 2022 02:47:27 -0400
+Received: from smtp-out2.suse.de (smtp-out2.suse.de [IPv6:2001:67c:2178:6::1d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 47D0575FCA;
+        Wed, 24 Aug 2022 23:47:26 -0700 (PDT)
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
         (No client certificate requested)
-        (Authenticated sender: pmenzel)
-        by mx.molgen.mpg.de (Postfix) with ESMTPSA id EF39461EA1930;
-        Thu, 25 Aug 2022 08:46:20 +0200 (CEST)
-Message-ID: <54818a03-93c0-8039-b847-d030785e725a@molgen.mpg.de>
-Date:   Thu, 25 Aug 2022 08:46:19 +0200
+        by smtp-out2.suse.de (Postfix) with ESMTPS id F389F5C881;
+        Thu, 25 Aug 2022 06:47:24 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
+        t=1661410045; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=zLRWmwcimgQLwECe4VlFsT+nEfyDLI69yDOnnoQ7NCo=;
+        b=qL0xHbIA8DNVfkr/xEEsAFL6UM7wiK2Au3n1koR1lst2jLTaeQ5OPjq50FEyTFusso1VDB
+        FirljZWBsdFYK23F4Hf/RYnI/zzzCntvRuUj0pxGiuZZ6GQxQ2f6MddIcLyqKENJRZesOl
+        vsYJr4Vzc3Z5rMGNQ8svI56dp/Y4Aeg=
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id D3C6313A47;
+        Thu, 25 Aug 2022 06:47:24 +0000 (UTC)
+Received: from dovecot-director2.suse.de ([192.168.254.65])
+        by imap2.suse-dmz.suse.de with ESMTPSA
+        id z6NdMfwaB2PHPQAAMHmgww
+        (envelope-from <mhocko@suse.com>); Thu, 25 Aug 2022 06:47:24 +0000
+Date:   Thu, 25 Aug 2022 08:47:24 +0200
+From:   Michal Hocko <mhocko@suse.com>
+To:     Shakeel Butt <shakeelb@google.com>
+Cc:     Johannes Weiner <hannes@cmpxchg.org>,
+        Roman Gushchin <roman.gushchin@linux.dev>,
+        Muchun Song <songmuchun@bytedance.com>,
+        Michal =?iso-8859-1?Q?Koutn=FD?= <mkoutny@suse.com>,
+        Eric Dumazet <edumazet@google.com>,
+        Soheil Hassas Yeganeh <soheil@google.com>,
+        Feng Tang <feng.tang@intel.com>,
+        Oliver Sang <oliver.sang@intel.com>,
+        Andrew Morton <akpm@linux-foundation.org>, lkp@lists.01.org,
+        cgroups@vger.kernel.org, linux-mm@kvack.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2 2/3] mm: page_counter: rearrange struct page_counter
+ fields
+Message-ID: <Ywca/EqpyQDAWlE2@dhcp22.suse.cz>
+References: <20220825000506.239406-1-shakeelb@google.com>
+ <20220825000506.239406-3-shakeelb@google.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.1.2
-Subject: Re: WARNING: CPU: 1 PID: 83 at arch/x86/kernel/cpu/sgx/main.c:446
- ksgxd+0x1b7/0x1d0
-To:     Jarkko Sakkinen <jarkko@kernel.org>,
-        Dave Hansen <dave.hansen@intel.com>
-Cc:     Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
-        x86@kernel.org, "Chatre, Reinette" <reinette.chatre@intel.com>,
-        linux-sgx@vger.kernel.org, LKML <linux-kernel@vger.kernel.org>
-References: <ce0b4d26-3a6e-7c5a-5f66-44cba05f9f35@molgen.mpg.de>
- <4253695b-85aa-a2fb-fbf6-718db8b6c20c@molgen.mpg.de>
- <46e3483b-a5ab-2a05-8a28-f9ea87e881c3@intel.com>
- <YwcBN+1Q7JiYC7cb@kernel.org> <YwcHnBTlobzSGgTj@kernel.org>
-Content-Language: en-US
-From:   Paul Menzel <pmenzel@molgen.mpg.de>
-In-Reply-To: <YwcHnBTlobzSGgTj@kernel.org>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220825000506.239406-3-shakeelb@google.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Dear Jarkko,
-
-
-Am 25.08.22 um 07:25 schrieb Jarkko Sakkinen:
-> On Thu, Aug 25, 2022 at 07:57:30AM +0300, Jarkko Sakkinen wrote:
->> On Fri, Aug 19, 2022 at 11:28:24AM -0700, Dave Hansen wrote:
->>> On 8/19/22 09:02, Paul Menzel wrote:
->>>> On the Dell XPS 13 9370, Linux 5.18.16 prints the warning below:
->>>>
->>>> ```
->>>> [    0.000000] Linux version 5.18.0-4-amd64 (debian-kernel@lists.debian.org) (gcc-11 (Debian 11.3.0-5) 11.3.0, GNU ld (GNU Binutils for Debian) 2.38.90.20220713) #1 SMP PREEMPT_DYNAMIC Debian 5.18.16-1 (2022-08-10)
->>>> [    0.000000] Command line: BOOT_IMAGE=/vmlinuz-5.18.0-4-amd64 root=UUID=56f398e0-1e25-4fda-aa9f-611dece4b333 ro quiet
->>>> […]
->>>> [    0.000000] DMI: Dell Inc. XPS 13 9370/0RMYH9, BIOS 1.21.0 07/06/2022
->>>> […]
->>>> [    0.235418] sgx: EPC section 0x40200000-0x45f7ffff
-
->>> Would you be able to send the entire dmesg, along with:
->>>
->>> 	cat /proc/iomem # (as root)
->>> and
->>> 	cpuid -1 --raw
->>>
->>> I'm suspecting either a BIOS problem.  Reinette (cc'd) also thought this
->>> might be a case of the SGX initialization getting a bit too far along
->>> when it should have been disabled.
->>>
->>> We had some bugs where we didn't stop fast enough after spitting out the
->>> "SGX Launch Control is locked..." errors.
->>
->> For some reason the pages do not get properly sanitized:
->>
->> 	/* sanity check: */
->> 	WARN_ON(!list_empty(&sgx_dirty_page_list));
->>
->> EPC should be good, given that EREMOVE does not fail.
->> If SGX would be disabled, also EREMOVE should fail.
+On Thu 25-08-22 00:05:05, Shakeel Butt wrote:
+> With memcg v2 enabled, memcg->memory.usage is a very hot member for
+> the workloads doing memcg charging on multiple CPUs concurrently.
+> Particularly the network intensive workloads. In addition, there is a
+> false cache sharing between memory.usage and memory.high on the charge
+> path. This patch moves the usage into a separate cacheline and move all
+> the read most fields into separate cacheline.
 > 
-> Sorry forgot that in no circumstances we're printing the
-> error code inside __sgx_sanitize_pages(). I wrote a quick
-> patch to address this (attached) [*].
+> To evaluate the impact of this optimization, on a 72 CPUs machine, we
+> ran the following workload in a three level of cgroup hierarchy.
 > 
-> Paul,
+>  $ netserver -6
+>  # 36 instances of netperf with following params
+>  $ netperf -6 -H ::1 -l 60 -t TCP_SENDFILE -- -m 10K
 > 
-> Any chance to try the patch out?
+> Results (average throughput of netperf):
+> Without (6.0-rc1)	10482.7 Mbps
+> With patch		12413.7 Mbps (18.4% improvement)
+> 
+> With the patch, the throughput improved by 18.4%.
+> 
+> One side-effect of this patch is the increase in the size of struct
+> mem_cgroup. For example with this patch on 64 bit build, the size of
+> struct mem_cgroup increased from 4032 bytes to 4416 bytes. However for
+> the performance improvement, this additional size is worth it. In
+> addition there are opportunities to reduce the size of struct
+> mem_cgroup like deprecation of kmem and tcpmem page counters and
+> better packing.
+> 
+> Signed-off-by: Shakeel Butt <shakeelb@google.com>
+> Reported-by: kernel test robot <oliver.sang@intel.com>
+> Reviewed-by: Feng Tang <feng.tang@intel.com>
+> Acked-by: Soheil Hassas Yeganeh <soheil@google.com>
+> Acked-by: Roman Gushchin <roman.gushchin@linux.dev>
 
-Yes, I am going to try it in the next days.
+Acked-by: Michal Hocko <mhocko@suse.com>
 
-> It's pretty hard to attach e.g. kprobe to grab this info. Does it
-> reproduce every single time?
-Yes, on each boot up.
+One nit below
 
-> Alternatively: what kind of workload is triggering this?
-> I do own 2020 model XPS13, which might be able to
-> reproduce the same issue.
+> ---
+> Changes since v1:
+> - Updated the commit message
+> - Make struct page_counter cache align.
+> 
+>  include/linux/page_counter.h | 35 +++++++++++++++++++++++------------
+>  1 file changed, 23 insertions(+), 12 deletions(-)
+> 
+> diff --git a/include/linux/page_counter.h b/include/linux/page_counter.h
+> index 679591301994..78a1c934e416 100644
+> --- a/include/linux/page_counter.h
+> +++ b/include/linux/page_counter.h
+> @@ -3,15 +3,26 @@
+>  #define _LINUX_PAGE_COUNTER_H
+>  
+>  #include <linux/atomic.h>
+> +#include <linux/cache.h>
+>  #include <linux/kernel.h>
+>  #include <asm/page.h>
+>  
+> +#if defined(CONFIG_SMP)
+> +struct pc_padding {
+> +	char x[0];
+> +} ____cacheline_internodealigned_in_smp;
+> +#define PC_PADDING(name)	struct pc_padding name
+> +#else
+> +#define PC_PADDING(name)
+> +#endif
+> +
+>  struct page_counter {
+> +	/*
+> +	 * Make sure 'usage' does not share cacheline with any other field. The
+> +	 * memcg->memory.usage is a hot member of struct mem_cgroup.
+> +	 */
+>  	atomic_long_t usage;
+> -	unsigned long min;
+> -	unsigned long low;
+> -	unsigned long high;
+> -	unsigned long max;
+> +	PC_PADDING(_pad1_);
+>  
+>  	/* effective memory.min and memory.min usage tracking */
+>  	unsigned long emin;
+> @@ -23,18 +34,18 @@ struct page_counter {
+>  	atomic_long_t low_usage;
+>  	atomic_long_t children_low_usage;
+>  
+> -	/* legacy */
+>  	unsigned long watermark;
+>  	unsigned long failcnt;
 
-The Dell XPS 13 9370 is from 2018 (Intel i5-8350U), so no idea if it 
-happens with later processors.
+These two are also touched in the charging path so we could squeeze them
+into the same cache line as usage.
 
-
-Kind regards,
-
-Paul
-
-
-> [*] Also: https://lore.kernel.org/linux-sgx/20220825051827.246698-1-jarkko@kernel.org/T/#u
+0-day machinery was quite good at hitting noticeable regression anytime
+we have changed layout so let's see what they come up with after this
+patch ;)
+-- 
+Michal Hocko
+SUSE Labs
