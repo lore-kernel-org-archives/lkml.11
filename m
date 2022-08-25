@@ -2,87 +2,145 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F114CC04AA5
-	for <linux-kernel@archiver.kernel.org>; Thu, 25 Aug 2022 13:11:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 952C2C04AA5
+	for <linux-kernel@archiver.kernel.org>; Thu, 25 Aug 2022 13:11:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242420AbiHYNLA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 25 Aug 2022 09:11:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53062 "EHLO
+        id S242211AbiHYNLh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 25 Aug 2022 09:11:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54174 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242093AbiHYNKx (ORCPT
+        with ESMTP id S229804AbiHYNLf (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 25 Aug 2022 09:10:53 -0400
-Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8AF83A50EB;
-        Thu, 25 Aug 2022 06:10:52 -0700 (PDT)
-Received: from kwepemi500012.china.huawei.com (unknown [172.30.72.53])
-        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4MD3Ds583CznTXf;
-        Thu, 25 Aug 2022 21:08:29 +0800 (CST)
-Received: from [10.67.110.176] (10.67.110.176) by
- kwepemi500012.china.huawei.com (7.221.188.12) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Thu, 25 Aug 2022 21:10:49 +0800
-Subject: Re: [PATCH -next 1/2] crypto: api - Fix IS_ERR() vs NULL check
-To:     Herbert Xu <herbert@gondor.apana.org.au>
-CC:     <davem@davemloft.net>, <linux-crypto@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>
-References: <20220825084138.1881954-1-cuigaosheng1@huawei.com>
- <20220825084138.1881954-2-cuigaosheng1@huawei.com>
- <Ywc3u9ObRCpxQsK0@gondor.apana.org.au>
-From:   cuigaosheng <cuigaosheng1@huawei.com>
-Message-ID: <0ae57826-6a8c-b08b-2889-f91d50bf6e59@huawei.com>
-Date:   Thu, 25 Aug 2022 21:10:49 +0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
- Thunderbird/78.6.1
+        Thu, 25 Aug 2022 09:11:35 -0400
+Received: from smtp-out1.suse.de (smtp-out1.suse.de [IPv6:2001:67c:2178:6::1c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E904C4A82F
+        for <linux-kernel@vger.kernel.org>; Thu, 25 Aug 2022 06:11:33 -0700 (PDT)
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by smtp-out1.suse.de (Postfix) with ESMTPS id 8770D344C1;
+        Thu, 25 Aug 2022 13:11:32 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
+        t=1661433092; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=WCAuc8FWvjqnR5fEuXkcUAappoIRH5GZFA+NXq08iEA=;
+        b=c3C6DntEiZuf/RhVUCjGM0P4qHgRiY+H6borHlSr1r3fL4AEGrWWK650Oa5cd7bt+AE5qD
+        G8mzNhMTck18cTvm60VNktqL5VV7VUd0lRxJr8pCooPHkhmDMEf4HJmRFMlM9Mly5Brqdz
+        PZ61nkD0g95ejPx9117DwGYME1Soa44=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
+        s=susede2_ed25519; t=1661433092;
+        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=WCAuc8FWvjqnR5fEuXkcUAappoIRH5GZFA+NXq08iEA=;
+        b=KgsbqGNx93obxPdb3R+cJBZb+xAPMTkNVze7LKBsfFoK4dzCkUBsqFHozc61CQ03wma+YS
+        iszqV7uzE75akCDg==
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id 4B4AB13A8E;
+        Thu, 25 Aug 2022 13:11:32 +0000 (UTC)
+Received: from dovecot-director2.suse.de ([192.168.254.65])
+        by imap2.suse-dmz.suse.de with ESMTPSA
+        id Fx65EQR1B2PxKQAAMHmgww
+        (envelope-from <vbabka@suse.cz>); Thu, 25 Aug 2022 13:11:32 +0000
+Message-ID: <eff58088-e291-6960-cbfd-b6cc428f5f06@suse.cz>
+Date:   Thu, 25 Aug 2022 15:11:32 +0200
 MIME-Version: 1.0
-In-Reply-To: <Ywc3u9ObRCpxQsK0@gondor.apana.org.au>
-Content-Type: text/plain; charset="gbk"; format=flowed
-Content-Transfer-Encoding: 8bit
-X-Originating-IP: [10.67.110.176]
-X-ClientProxiedBy: dggems705-chm.china.huawei.com (10.3.19.182) To
- kwepemi500012.china.huawei.com (7.221.188.12)
-X-CFilter-Loop: Reflected
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.1.2
+Subject: Re: [PATCH] mm/slub: fix comments about fastpath limitation on
+ PREEMPT_RT
+Content-Language: en-US
+To:     Hyeonggon Yoo <42.hyeyoo@gmail.com>,
+        Christoph Lameter <cl@linux.com>,
+        Pekka Enberg <penberg@kernel.org>,
+        David Rientjes <rientjes@google.com>,
+        Joonsoo Kim <iamjoonsoo.kim@lge.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Roman Gushchin <roman.gushchin@linux.dev>
+Cc:     Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Mike Galbraith <efault@gmx.de>, linux-mm@kvack.org,
+        linux-kernel@vger.kernel.org
+References: <20220825015722.1697209-1-42.hyeyoo@gmail.com>
+From:   Vlastimil Babka <vbabka@suse.cz>
+In-Reply-To: <20220825015722.1697209-1-42.hyeyoo@gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Thanks for taking the time to review this patch.
+On 8/25/22 03:57, Hyeonggon Yoo wrote:
+> With PREEMPT_RT disabling interrupt is unnecessary as there is
+> no user of slab in hardirq context on PREEMPT_RT.
+> 
+> The limitation of lockless fastpath on PREEMPT_RT comes from the fact
+> that local_lock does not disable preemption on PREEMPT_RT.
+> 
+> Fix comments accordingly.
+> 
+> Signed-off-by: Hyeonggon Yoo <42.hyeyoo@gmail.com>
 
-crypto_alloc_test_larval() will return null if manager is disabled,
-it will not return error pointers, IS_ERR should not be used to checking
-return value, should we fix it? or use another solution?
+Just FTR, as "slub: Make PREEMPT_RT support less convoluted" patch dealt
+with these comments already, there's now nothing left to apply from below.
 
-It would be helpful if you could give some advice or fix the problem by yourself.
+> ---
+>  mm/slub.c | 23 ++++++++++++++---------
+>  1 file changed, 14 insertions(+), 9 deletions(-)
+> 
+> diff --git a/mm/slub.c b/mm/slub.c
+> index 30c2ee9e8a29..aa42ac6013b8 100644
+> --- a/mm/slub.c
+> +++ b/mm/slub.c
+> @@ -100,7 +100,7 @@
+>   *   except the stat counters. This is a percpu structure manipulated only by
+>   *   the local cpu, so the lock protects against being preempted or interrupted
+>   *   by an irq. Fast path operations rely on lockless operations instead.
+> - *   On PREEMPT_RT, the local lock does not actually disable irqs (and thus
+> + *   On PREEMPT_RT, the local lock does not actually disable preemption (and thus
+>   *   prevent the lockless operations), so fastpath operations also need to take
+>   *   the lock and are no longer lockless.
+>   *
+> @@ -3185,10 +3185,12 @@ static __always_inline void *slab_alloc_node(struct kmem_cache *s, struct list_l
+>  	slab = c->slab;
+>  	/*
+>  	 * We cannot use the lockless fastpath on PREEMPT_RT because if a
+> -	 * slowpath has taken the local_lock_irqsave(), it is not protected
+> -	 * against a fast path operation in an irq handler. So we need to take
+> -	 * the slow path which uses local_lock. It is still relatively fast if
+> -	 * there is a suitable cpu freelist.
+> +	 * slowpath has taken the local_lock which does not disable preemption
+> +	 * on PREEMPT_RT, it is not protected against a fast path operation in
+> +	 * another thread that does not take the local_lock.
+> +	 *
+> +	 * So we need to take the slow path which uses local_lock. It is still
+> +	 * relatively fast if there is a suitable cpu freelist.
+>  	 */
+>  	if (IS_ENABLED(CONFIG_PREEMPT_RT) ||
+>  	    unlikely(!object || !slab || !node_match(slab, node))) {
+> @@ -3457,10 +3459,13 @@ static __always_inline void do_slab_free(struct kmem_cache *s,
+>  #else /* CONFIG_PREEMPT_RT */
+>  		/*
+>  		 * We cannot use the lockless fastpath on PREEMPT_RT because if
+> -		 * a slowpath has taken the local_lock_irqsave(), it is not
+> -		 * protected against a fast path operation in an irq handler. So
+> -		 * we need to take the local_lock. We shouldn't simply defer to
+> -		 * __slab_free() as that wouldn't use the cpu freelist at all.
+> +		 * a slowpath has taken the local_lock which does not disable
+> +		 * preemption on PREEMPT_RT, it is not protected against a
+> +		 * fast path operation in another thread that does not take
+> +		 * the local_lock.
+> +		 *
+> +		 * So we need to take the local_lock. We shouldn't simply defer
+> +		 * to __slab_free() as that wouldn't use the cpu freelist at all.
+>  		 */
+>  		void **freelist;
+>  
 
-Thanks very much!
-
-ÔÚ 2022/8/25 16:50, Herbert Xu Ð´µÀ:
-> On Thu, Aug 25, 2022 at 04:41:37PM +0800, Gaosheng Cui wrote:
->> The crypto_alloc_test_larval() will return null if manager is disabled,
->> it may not return error pointers, so using IS_ERR_OR_NULL()
->> to check the return value to fix this.
->>
->> The __crypto_register_alg() will return null if manager is disabled,
->> it may not return error pointers, so using IS_ERR_OR_NULL()
->> to check the return value to fix this.
->>
->> Fixes: cad439fc040e ("crypto: api - Do not create test larvals if manager is disabled")
->> Signed-off-by: Gaosheng Cui <cuigaosheng1@huawei.com>
->> ---
->>   crypto/algapi.c | 4 ++--
->>   1 file changed, 2 insertions(+), 2 deletions(-)
->>
->> diff --git a/crypto/algapi.c b/crypto/algapi.c
->> index 5c69ff8e8fa5..5a080b8aaa11 100644
->> --- a/crypto/algapi.c
->> +++ b/crypto/algapi.c
->> @@ -283,7 +283,7 @@ static struct crypto_larval *__crypto_register_alg(struct crypto_alg *alg)
->>   	}
->>   
->>   	larval = crypto_alloc_test_larval(alg);
->> -	if (IS_ERR(larval))
->> +	if (IS_ERR_OR_NULL(larval))
->>   		goto out;
-> A NULL indicates success, why are you jumping to the error path?
->
-> Cheers,
