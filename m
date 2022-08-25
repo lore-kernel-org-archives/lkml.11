@@ -2,162 +2,115 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0EBE6C64990
-	for <linux-kernel@archiver.kernel.org>; Thu, 25 Aug 2022 14:23:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 503A2C28D13
+	for <linux-kernel@archiver.kernel.org>; Thu, 25 Aug 2022 14:23:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240355AbiHYOXE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 25 Aug 2022 10:23:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37696 "EHLO
+        id S241520AbiHYOXS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 25 Aug 2022 10:23:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38074 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238113AbiHYOWp (ORCPT
+        with ESMTP id S240597AbiHYOW5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 25 Aug 2022 10:22:45 -0400
-Received: from hutie.ust.cz (hutie.ust.cz [185.8.165.127])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 157C2B5156
-        for <linux-kernel@vger.kernel.org>; Thu, 25 Aug 2022 07:22:43 -0700 (PDT)
-From:   =?UTF-8?q?Martin=20Povi=C5=A1er?= <povik+lin@cutebit.org>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=cutebit.org; s=mail;
-        t=1661437362; bh=5RGgH1AcjF5BtsgHx+ZoU5Me0+YKLfaL9/ywuzhYSio=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References;
-        b=SYyOmV2P5l7WMaWO/z5fBxhZuxZpcmFDcNLB/3Vj+yLexFc/x98roK9dYw4NbNWIk
-         xxyWH6utfs7iE0IF6RTOGYSJiRlkcdXdhbRAibmKNDYsAPYZ+i+HNgBwvVGubkmCv7
-         koH8M+uW3wkHWwmy55xkqXtbs/dHDBE6JV2hOPRM=
-To:     Liam Girdwood <lgirdwood@gmail.com>,
-        Mark Brown <broonie@kernel.org>
-Cc:     navada@ti.com, shenghao-ding@ti.com, asyrus@ti.com,
-        raphael-xu@ti.com,
-        =?UTF-8?q?Martin=20Povi=C5=A1er?= <povik+lin@cutebit.org>,
-        Stephen Kitt <steve@sk2.org>,
-        Charles Keepax <ckeepax@opensource.cirrus.com>,
-        alsa-devel@alsa-project.org, linux-kernel@vger.kernel.org
-Subject: [PATCH 2/2] ASoC: tas2562: Fix mute/unmute
-Date:   Thu, 25 Aug 2022 16:22:26 +0200
-Message-Id: <20220825142226.80929-3-povik+lin@cutebit.org>
-In-Reply-To: <20220825142226.80929-1-povik+lin@cutebit.org>
-References: <20220825142226.80929-1-povik+lin@cutebit.org>
+        Thu, 25 Aug 2022 10:22:57 -0400
+Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 47DC1B6002;
+        Thu, 25 Aug 2022 07:22:54 -0700 (PDT)
+X-IronPort-AV: E=McAfee;i="6500,9779,10450"; a="294250050"
+X-IronPort-AV: E=Sophos;i="5.93,263,1654585200"; 
+   d="scan'208";a="294250050"
+Received: from fmsmga004.fm.intel.com ([10.253.24.48])
+  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Aug 2022 07:22:53 -0700
+X-IronPort-AV: E=Sophos;i="5.93,263,1654585200"; 
+   d="scan'208";a="678478234"
+Received: from smile.fi.intel.com ([10.237.72.54])
+  by fmsmga004-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Aug 2022 07:22:50 -0700
+Received: from andy by smile.fi.intel.com with local (Exim 4.96)
+        (envelope-from <andy.shevchenko@gmail.com>)
+        id 1oRDks-003QS2-37;
+        Thu, 25 Aug 2022 17:22:46 +0300
+Date:   Thu, 25 Aug 2022 17:22:46 +0300
+From:   Andy Shevchenko <andy.shevchenko@gmail.com>
+To:     Tharunkumar.Pasumarthi@microchip.com
+Cc:     jsd@semihalf.com, wsa@kernel.org, krzk@kernel.org,
+        sven@svenpeter.dev, linux-kernel@vger.kernel.org,
+        semen.protsenko@linaro.org, robh@kernel.org, olof@lixom.net,
+        UNGLinuxDriver@microchip.com, jarkko.nikula@linux.intel.com,
+        arnd@arndb.de, linux-i2c@vger.kernel.org, rafal@milecki.pl
+Subject: Re: [PATCH RFC i2c-master] i2c: microchip: pci1xxxx: Add driver for
+ I2C host controller in multifunction endpoint of pci1xxxx switch
+Message-ID: <YweFttaSE2GOoW83@smile.fi.intel.com>
+References: <20220823145603.2606475-1-tharunkumar.pasumarthi@microchip.com>
+ <YwTsnCdxM5I6BoJu@smile.fi.intel.com>
+ <80debd4bbf819cbfa16681172919436df476558a.camel@microchip.com>
+ <CAHp75VevAifCp_Bz5HN1MmGm7UEJWFR017kngzARfBh+Z8aAAA@mail.gmail.com>
+ <787644272b3b260980ff8b9efc317ce3194b0acc.camel@microchip.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
+In-Reply-To: <787644272b3b260980ff8b9efc317ce3194b0acc.camel@microchip.com>
+Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Because the PWR_CTRL field is modeled as the power state of the DAC
-widget, and at the same time it is used to implement mute/unmute, we
-need some additional book-keeping to have the right end result no matter
-the sequence of calls. Without this fix, one permanently mutes an
-ongoing stream by toggling the associated speaker pin control.
+On Thu, Aug 25, 2022 at 01:15:42PM +0000, Tharunkumar.Pasumarthi@microchip.com wrote:
+> On Wed, 2022-08-24 at 21:31 +0300, Andy Shevchenko wrote:
+> > On Wed, Aug 24, 2022 at 6:04 PM <Tharunkumar.Pasumarthi@microchip.com> wrote:
+> > > On Tue, 2022-08-23 at 18:05 +0300, Andy Shevchenko wrote:
+> > > > On Tue, Aug 23, 2022 at 08:26:03PM +0530, Tharun Kumar P wrote:
 
-(This mirrors commit 1e5907bcb3a3 ("ASoC: tas2770: Fix handling of
-mute/unmute") which was a fix to the tas2770 driver.)
+...
 
-Signed-off-by: Martin Povi≈°er <povik+lin@cutebit.org>
----
- sound/soc/codecs/tas2562.c | 55 ++++++++++++++++++++------------------
- 1 file changed, 29 insertions(+), 26 deletions(-)
+> > > > > +#define SMB_IDLE_SCALING_100KHZ††††††††††††† 0x03E803C9
+> > > > > +#define SMB_IDLE_SCALING_400KHZ††††††††††††† 0x01F4009D
+> > > > > +#define SMB_IDLE_SCALING_1000KHZ†††† 0x01F4009D
+> > > > 
+> > > > Shouldn't these magics be decimals?
+> > 
+> > This Q seems unanswered.
+> 
+> These magic numbers need not be decimals. Configuring registers with these
+> values in driver will set the time in device. However, these values do not
+> convey any meaning when represented in decimals.
 
-diff --git a/sound/soc/codecs/tas2562.c b/sound/soc/codecs/tas2562.c
-index 2b0cdb6d1600..66149055aba9 100644
---- a/sound/soc/codecs/tas2562.c
-+++ b/sound/soc/codecs/tas2562.c
-@@ -54,6 +54,8 @@ struct tas2562_data {
- 	int i_sense_slot;
- 	int volume_lvl;
- 	int model_id;
-+	bool dac_powered;
-+	bool unmuted;
- };
- 
- enum tas256x_model {
-@@ -351,30 +353,43 @@ static int tas2562_set_dai_fmt(struct snd_soc_dai *dai, unsigned int fmt)
- 	return 0;
- }
- 
-+static int tas2562_update_pwr_ctrl(struct tas2562_data *tas2562)
-+{
-+	struct snd_soc_component *component = tas2562->component;
-+	unsigned int val;
-+	int ret;
-+
-+	if (tas2562->dac_powered)
-+		val = tas2562->unmuted ?
-+			TAS2562_ACTIVE : TAS2562_MUTE;
-+	else
-+		val = TAS2562_SHUTDOWN;
-+
-+	ret = snd_soc_component_update_bits(component, TAS2562_PWR_CTRL,
-+					    TAS2562_MODE_MASK, val);
-+	if (ret < 0)
-+		return ret;
-+
-+	return 0;
-+}
-+
- static int tas2562_mute(struct snd_soc_dai *dai, int mute, int direction)
- {
--	struct snd_soc_component *component = dai->component;
-+	struct tas2562_data *tas2562 = snd_soc_component_get_drvdata(dai->component);
- 
--	return snd_soc_component_update_bits(component, TAS2562_PWR_CTRL,
--					     TAS2562_MODE_MASK,
--					     mute ? TAS2562_MUTE : 0);
-+	tas2562->unmuted = !mute;
-+	return tas2562_update_pwr_ctrl(tas2562);
- }
- 
- static int tas2562_codec_probe(struct snd_soc_component *component)
- {
- 	struct tas2562_data *tas2562 = snd_soc_component_get_drvdata(component);
--	int ret;
- 
- 	tas2562->component = component;
- 
- 	if (tas2562->sdz_gpio)
- 		gpiod_set_value_cansleep(tas2562->sdz_gpio, 1);
- 
--	ret = snd_soc_component_update_bits(component, TAS2562_PWR_CTRL,
--					    TAS2562_MODE_MASK, TAS2562_MUTE);
--	if (ret < 0)
--		return ret;
--
- 	return 0;
- }
- 
-@@ -428,30 +443,18 @@ static int tas2562_dac_event(struct snd_soc_dapm_widget *w,
- 
- 	switch (event) {
- 	case SND_SOC_DAPM_POST_PMU:
--		ret = snd_soc_component_update_bits(component,
--			TAS2562_PWR_CTRL,
--			TAS2562_MODE_MASK,
--			TAS2562_MUTE);
--		if (ret)
--			goto end;
-+		tas2562->dac_powered = true;
-+		ret = tas2562_update_pwr_ctrl(tas2562);
- 		break;
- 	case SND_SOC_DAPM_PRE_PMD:
--		ret = snd_soc_component_update_bits(component,
--			TAS2562_PWR_CTRL,
--			TAS2562_MODE_MASK,
--			TAS2562_SHUTDOWN);
--		if (ret)
--			goto end;
-+		tas2562->dac_powered = false;
-+		ret = tas2562_update_pwr_ctrl(tas2562);
- 		break;
- 	default:
- 		dev_err(tas2562->dev, "Not supported evevt\n");
- 		return -EINVAL;
- 	}
- 
--end:
--	if (ret < 0)
--		return ret;
--
- 	return 0;
- }
- 
+Hmm... Maybe you don't see this, but I see the following:
+
+0x03E803C9 = 65536 (i.e. 2^16) * 1000 + 969
+0x01F4009D = 32768 (i.e. 2^15) * 1000 + 157
+
+Pretty much sounds like a bit 15 for standard mode and bit 16 for fast modes
+shifted by 1000 to have a room for the time in presumably nanoseconds up to 1
+us.
+
+Please, dig up into the documentation, vendor chat, etc to get more information
+on these values.
+
+> > > > Ditto for the rest similar stuff.
+> > > 
+> > > There is no direct correlation between the hex value and time. Configuring
+> > > registers with these values in driver will set the time in device.
+
+...
+
+> > > > > +#define I2C_DIR_WRITE††††††††††††††† 0
+> > > > > +#define I2C_DIR_READ†††††††† 1
+> > 
+> > https://elixir.bootlin.com/linux/v6.0-rc2/source/include/uapi/linux/i2c.h#L24
+> 
+> I2C_M_RD is used in driver. But the purpose of these MACROs is different.
+> I2C_DIR_WRITE is used inside both pci1xxxx_i2c_write as well as in
+> pci1xxxx_i2c_read (for sending slave address). Thus these MACROs are required
+
+OK. Name collision still stays.
+
+> > > > Namespace collision. Doesn't I≤C core provide these?
+> > > 
+> > > I am unable to find any existing MACROs for WRITE and READ in I2C core.
+> > > Kindly let me know the MACROs
+
 -- 
-2.33.0
+With Best Regards,
+Andy Shevchenko
+
 
