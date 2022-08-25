@@ -2,108 +2,138 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A65D2C28D13
-	for <linux-kernel@archiver.kernel.org>; Thu, 25 Aug 2022 13:13:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3522AC28D13
+	for <linux-kernel@archiver.kernel.org>; Thu, 25 Aug 2022 13:14:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242344AbiHYNNv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 25 Aug 2022 09:13:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57610 "EHLO
+        id S242371AbiHYNOM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 25 Aug 2022 09:14:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58876 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242393AbiHYNNo (ORCPT
+        with ESMTP id S242208AbiHYNOJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 25 Aug 2022 09:13:44 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0FDC1B24B2;
-        Thu, 25 Aug 2022 06:13:38 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id A141A61B0B;
-        Thu, 25 Aug 2022 13:13:37 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 12B2BC433C1;
-        Thu, 25 Aug 2022 13:13:37 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1661433217;
-        bh=IZW5T8bTR6zlpO6HLb6mRol+oyWLXS34Ih/Xhypaguk=;
-        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=kMCucpv40+yoTKei7Vb+5ENQbEIz+hcPGK5+mqkpGqnhBHKfMa3V8YY2uFQPHbuWA
-         UYm5vFaTmXEg5r2azsBJFoS2ZAo6UMzg2NLcwUQdDa2jxw092nxypn31yMlnfCNP3Q
-         Pw1nYRsAV8WsH8sKUMYu5zTf3EoenvbsAMcawH6vRF2RV+7XQaZnDr/PAj1uYvX/ZD
-         uFRxcL5YalTayWJpmSZGhfFBmwSgZEjhVLT+tTIGbXFmU4yA6r1yQqPtRQBrIa7vKb
-         RDl3I2thfA3TQSNF+TGkEMf6dEvtIU37m3GXu+YeCid5kTybU1/Tr8a3CAjdBb4/QR
-         cYj9FpbGADa1Q==
-Received: by mail-vs1-f41.google.com with SMTP id m66so20787188vsm.12;
-        Thu, 25 Aug 2022 06:13:37 -0700 (PDT)
-X-Gm-Message-State: ACgBeo2KUZUkTIvJjxXw2ILZ6V1eeJPQdMdsi+89HwYsYjq48cpwpgOl
-        vfW9fM+lrzBIdaO6KiwTv1k2Ymu0vdQtAI36sw==
-X-Google-Smtp-Source: AA6agR5HHV9M9yXhQz5Wv4Fn3tOpZtPr51oSEmjee6h8mCyA1xklEwT58PruXe9mpGP3Rkw2EvGjEX5bSYAZLj5ddgM=
-X-Received: by 2002:a67:c09c:0:b0:390:9073:1122 with SMTP id
- x28-20020a67c09c000000b0039090731122mr1350519vsi.85.1661433216073; Thu, 25
- Aug 2022 06:13:36 -0700 (PDT)
+        Thu, 25 Aug 2022 09:14:09 -0400
+Received: from smtp.domeneshop.no (smtp.domeneshop.no [IPv6:2a01:5b40:0:3005::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BAE5D52081
+        for <linux-kernel@vger.kernel.org>; Thu, 25 Aug 2022 06:14:08 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=tronnes.org
+        ; s=ds202112; h=Content-Transfer-Encoding:Content-Type:In-Reply-To:From:
+        References:Cc:To:Subject:MIME-Version:Date:Message-ID:Sender:Reply-To:
+        Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
+        Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:
+        List-Subscribe:List-Post:List-Owner:List-Archive;
+        bh=HE8hTk+H5l+7TVDNJJZsO8rmjAkuVyVw8iY3tny3vDM=; b=fGwxP9A2syGp/ejDXu2bKS2mFC
+        CW0jtYFVyzVsNSvpKIvYVXukB5W1rP7NYwwkrWkkTPBUwg0GaeeTQQo02hU+/T08VxcDor1vicyfe
+        CKFE2p6xI64sUWgC2FcN8SSGKMFJ+F0Bryif7wVyR4J/6m4tJcFwkaSNu79RWTzs9y3J7gvSgjNkH
+        2/9duRDkWKmwqJtKcx6ugWMtFp+pKF4uPqABJZJYCsbGAicistOldWIRhovFatcsSiWtITzDcY/Lg
+        aF7yAEP6nUKDjOKyV8flHCPd0SSbzCKO9ld5ZY1JNrndfD1AsMC7CcJmOvp5oeh0i3KeoRkPvGBZF
+        tjrKBgqw==;
+Received: from [2a01:799:961:d200:cca0:57ac:c55d:a485] (port=63408)
+        by smtp.domeneshop.no with esmtpsa (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <noralf@tronnes.org>)
+        id 1oRCgQ-0001R9-1W; Thu, 25 Aug 2022 15:14:06 +0200
+Message-ID: <7bdcc3c4-e04c-c2f3-5691-bcbdb158276f@tronnes.org>
+Date:   Thu, 25 Aug 2022 15:14:01 +0200
 MIME-Version: 1.0
-References: <20220823145649.3118479-10-robh@kernel.org> <1491c83f-cd75-4de3-ec26-86db4adb2ade@linaro.org>
-In-Reply-To: <1491c83f-cd75-4de3-ec26-86db4adb2ade@linaro.org>
-From:   Rob Herring <robh@kernel.org>
-Date:   Thu, 25 Aug 2022 08:13:24 -0500
-X-Gmail-Original-Message-ID: <CAL_JsqJx1s5ez-ojP8ZK_MPBWuuLRyekjK1qhHd6Ezaimna8JQ@mail.gmail.com>
-Message-ID: <CAL_JsqJx1s5ez-ojP8ZK_MPBWuuLRyekjK1qhHd6Ezaimna8JQ@mail.gmail.com>
-Subject: Re: [PATCH] dt-bindings: remoteproc: Add missing (unevaluated|additional)Properties
- on child nodes
-To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Cc:     Andy Gross <agross@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Konrad Dybcio <konrad.dybcio@somainline.org>,
-        Mathieu Poirier <mathieu.poirier@linaro.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Sibi Sankar <quic_sibis@quicinc.com>,
-        linux-arm-msm <linux-arm-msm@vger.kernel.org>,
-        "open list:REMOTE PROCESSOR (REMOTEPROC) SUBSYSTEM" 
-        <linux-remoteproc@vger.kernel.org>, devicetree@vger.kernel.org,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.12.0
+Subject: Re: [PATCH v1 23/35] drm/vc4: vec: Convert to the new TV mode
+ property
+To:     Maxime Ripard <maxime@cerno.tech>
+Cc:     Jernej Skrabec <jernej.skrabec@gmail.com>,
+        Martin Blumenstingl <martin.blumenstingl@googlemail.com>,
+        Chen-Yu Tsai <wens@csie.org>,
+        Philipp Zabel <p.zabel@pengutronix.de>,
+        Jerome Brunet <jbrunet@baylibre.com>,
+        Samuel Holland <samuel@sholland.org>,
+        Thomas Zimmermann <tzimmermann@suse.de>,
+        Daniel Vetter <daniel@ffwll.ch>, Emma Anholt <emma@anholt.net>,
+        David Airlie <airlied@linux.ie>,
+        Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
+        Kevin Hilman <khilman@baylibre.com>,
+        Neil Armstrong <narmstrong@baylibre.com>,
+        linux-sunxi@lists.linux.dev, linux-kernel@vger.kernel.org,
+        Phil Elwell <phil@raspberrypi.com>,
+        Mateusz Kwiatkowski <kfyatek+publicgit@gmail.com>,
+        linux-arm-kernel@lists.infradead.org,
+        Geert Uytterhoeven <geert@linux-m68k.org>,
+        Dave Stevenson <dave.stevenson@raspberrypi.com>,
+        linux-amlogic@lists.infradead.org, dri-devel@lists.freedesktop.org,
+        Dom Cobley <dom@raspberrypi.com>,
+        =?UTF-8?Q?Noralf_Tr=c3=b8nnes?= <noralf@tronnes.org>
+References: <20220728-rpi-analog-tv-properties-v1-0-3d53ae722097@cerno.tech>
+ <20220728-rpi-analog-tv-properties-v1-23-3d53ae722097@cerno.tech>
+ <0255f7c6-0484-6456-350d-cf24f3fee5d6@tronnes.org>
+ <20220824152619.5def5b2puj5b2a3o@houat>
+From:   =?UTF-8?Q?Noralf_Tr=c3=b8nnes?= <noralf@tronnes.org>
+In-Reply-To: <20220824152619.5def5b2puj5b2a3o@houat>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Aug 25, 2022 at 3:23 AM Krzysztof Kozlowski
-<krzysztof.kozlowski@linaro.org> wrote:
->
-> On 23/08/2022 17:56, Rob Herring wrote:
-> > In order to ensure only documented properties are present, node schemas
-> > must have unevaluatedProperties or additionalProperties set to false
-> > (typically).
-> >
-> > Signed-off-by: Rob Herring <robh@kernel.org>
-> > ---
-> >  .../devicetree/bindings/remoteproc/qcom,sc7180-mss-pil.yaml      | 1 +
-> >  .../devicetree/bindings/remoteproc/qcom,sc7280-mss-pil.yaml      | 1 +
-> >  .../devicetree/bindings/remoteproc/qcom,sc7280-wpss-pil.yaml     | 1 +
-> >  3 files changed, 3 insertions(+)
-> >
-> > diff --git a/Documentation/devicetree/bindings/remoteproc/qcom,sc7180-mss-pil.yaml b/Documentation/devicetree/bindings/remoteproc/qcom,sc7180-mss-pil.yaml
-> > index e76c861165dd..e4a7da8020f4 100644
-> > --- a/Documentation/devicetree/bindings/remoteproc/qcom,sc7180-mss-pil.yaml
-> > +++ b/Documentation/devicetree/bindings/remoteproc/qcom,sc7180-mss-pil.yaml
-> > @@ -140,6 +140,7 @@ properties:
-> >
-> >    glink-edge:
-> >      $ref: qcom,glink-edge.yaml#
-> > +    unevaluatedProperties: false
->
-> Is it actually needed? The qcom,glink-edge.yaml has
-> additionalProperties:false, so I expect it to complain if anything
-> appears here.
 
-Perhaps not, but I'm trying to come up with a meta-schema to check
-these though I'm not sure I can get to no warnings which is how I
-found all these cases. The main remaining warnings are bus child node
-pattern schemas which can perhaps be handled with
-'additionalProperties: true'. The rule I have says if properties or
-patternProperties is present then unevaluatedProperties or
-additionalProperties must be. To handle this case, I think we'd have
-to walk the $ref and check it.
 
-Anyways, we can hold off on this one until when and if there's a
-meta-schema in place.
+Den 24.08.2022 17.26, skrev Maxime Ripard:
+> Hi,
+> 
+> On Sat, Aug 20, 2022 at 07:22:48PM +0200, Noralf Trønnes wrote:
+>> Den 29.07.2022 18.35, skrev Maxime Ripard:
+>>> Now that the core can deal fine with analog TV modes, let's convert the vc4
+>>> VEC driver to leverage those new features.
+>>>
+>>> We've added some backward compatibility to support the old TV mode property
+>>> and translate it into the new TV norm property.
+>>>
+>>> Signed-off-by: Maxime Ripard <maxime@cerno.tech>
+>>>
+>>> diff --git a/drivers/gpu/drm/vc4/vc4_vec.c b/drivers/gpu/drm/vc4/vc4_vec.c
+>>
+>>>  static int vc4_vec_connector_get_modes(struct drm_connector *connector)
+>>>  {
+>>> -	struct drm_connector_state *state = connector->state;
+>>>  	struct drm_display_mode *mode;
+>>>  
+>>> -	mode = drm_mode_duplicate(connector->dev,
+>>> -				  vc4_vec_tv_modes[state->tv.mode].mode);
+>>> +	mode = drm_mode_duplicate(connector->dev, &drm_mode_480i);
+>>> +	if (!mode) {
+>>> +		DRM_ERROR("Failed to create a new display mode\n");
+>>> +		return -ENOMEM;
+>>> +	}
+>>> +
+>>> +	drm_mode_probed_add(connector, mode);
+>>> +
+>>> +	mode = drm_mode_duplicate(connector->dev, &drm_mode_576i);
+>>
+>> Maybe the mode that matches tv.norm should be marked as preferred so
+>> userspace knows which one to pick?
+> 
+> I'm not sure how realistic that would be. Doing this based on the driver
+> / cmdline preference is going to be fairly easy, but then it's a
+> property, it's going to be updated, and we probably don't want to mess
+> around the mode flags based on new property values?
+> 
 
-Rob
+Strictly speaking we need to fire an event to userspace if the mode
+changes, and this is probably not straightforward to do underneath
+modeset locks, would probably need a worker.
+
+Clever userspace like GNOME will try to use the active mode, so it will
+handle this that way. If someone has set up the pipeline first that is.
+drm_client/fbdev and plymouth can do that because they honour userdef modes.
+
+Other userspace that don't know the userdef flag will fallback to the
+first mode which is NTSC which is also the default tvmode, so maybe this
+is good enough. PAL users will have to specify the mode, or teach their
+program about the userdef flag.
+
+But ofc relying on the userdef flag depends on the fact that there's a
+mode on the kernel command line, but maybe there's no way to avoid that
+since much/most? userspace treat "unknown" connector status as
+disconnected so many will have to force the connector to "connected"
+anyway. At least I don't know any way to permanetly force the connector
+status other than using video=.
+
+Noralf.
