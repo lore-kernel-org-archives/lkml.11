@@ -2,79 +2,80 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 29A2EC04AA5
-	for <linux-kernel@archiver.kernel.org>; Thu, 25 Aug 2022 10:20:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 94665C28D13
+	for <linux-kernel@archiver.kernel.org>; Thu, 25 Aug 2022 10:21:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237993AbiHYKUr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 25 Aug 2022 06:20:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46644 "EHLO
+        id S240796AbiHYKVA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 25 Aug 2022 06:21:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47360 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238314AbiHYKUm (ORCPT
+        with ESMTP id S240170AbiHYKU4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 25 Aug 2022 06:20:42 -0400
-Received: from wp530.webpack.hosteurope.de (wp530.webpack.hosteurope.de [IPv6:2a01:488:42:1000:50ed:8234::])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F2E753A48A
-        for <linux-kernel@vger.kernel.org>; Thu, 25 Aug 2022 03:20:40 -0700 (PDT)
-Received: from [2a02:8108:963f:de38:eca4:7d19:f9a2:22c5]; authenticated
-        by wp530.webpack.hosteurope.de running ExIM with esmtpsa (TLS1.3:ECDHE_RSA_AES_128_GCM_SHA256:128)
-        id 1oR9yY-0007wg-Fb; Thu, 25 Aug 2022 12:20:38 +0200
-Message-ID: <da420331-b160-6675-d638-8abbbbb7ce01@leemhuis.info>
-Date:   Thu, 25 Aug 2022 12:20:37 +0200
+        Thu, 25 Aug 2022 06:20:56 -0400
+Received: from relay9-d.mail.gandi.net (relay9-d.mail.gandi.net [217.70.183.199])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2F6404507F;
+        Thu, 25 Aug 2022 03:20:51 -0700 (PDT)
+Received: (Authenticated sender: paul.kocialkowski@bootlin.com)
+        by mail.gandi.net (Postfix) with ESMTPSA id ADE9FFF804;
+        Thu, 25 Aug 2022 10:20:45 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
+        t=1661422848;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=ugv4J9W/zwbD41U1u+xDsmyK0fRiW+hPNdQFDhLRvAU=;
+        b=i4OC2/+LJcTx/tGlHUhO78gl3ygn2stI873qZ657gnY8hEQYk1Bzxg763Owc3x9ZboLgvH
+        PKiB21O6PQEOu3r0UbK4yA/yCwpybJsI+QBuiFX2/hicdqbM6e5i9+gB97m0WeSezzcu+r
+        7dYAQh1Ba/3Tg7CBSpd8gcqahoPbrtUO5k0/p0sSPeTSAb7P08fCPoxI+H6AppxpYDxhy5
+        3kknCA5bG07oanPR9zWYKXopV8skxUp5p7jrAN1u/UK3o/yS18acOTueLGxpUHHbN5o0FU
+        00J91wObGPpMMeY9JDKI2xFH+YV/GG0tlEJfV3JNfx9p8aXNWwZgJj6sJPs5Zw==
+From:   Paul Kocialkowski <paul.kocialkowski@bootlin.com>
+To:     linux-media@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-sunxi@lists.linux.dev, linux-kernel@vger.kernel.org,
+        linux-staging@lists.linux.dev
+Cc:     Maxime Ripard <mripard@kernel.org>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Chen-Yu Tsai <wens@csie.org>,
+        Jernej Skrabec <jernej.skrabec@gmail.com>,
+        Samuel Holland <samuel@sholland.org>,
+        Paul Kocialkowski <paul.kocialkowski@bootlin.com>,
+        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
+        Sakari Ailus <sakari.ailus@linux.intel.com>,
+        Thomas Petazzoni <thomas.petazzoni@bootlin.com>
+Subject: [PATCH v2 0/7] media: sunxi: Add a Kconfig dependencies on RESET_CONTROLLER
+Date:   Thu, 25 Aug 2022 12:20:28 +0200
+Message-Id: <20220825102035.419087-1-paul.kocialkowski@bootlin.com>
+X-Mailer: git-send-email 2.37.1
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.2.0
-Subject: Re: [Intel-wired-lan] ice: Error setting promisc mode on VSI 6
- (rc=-17) @ 5.18.x #forregzbot
-Content-Language: en-US
-From:   Thorsten Leemhuis <regressions@leemhuis.info>
-To:     "regressions@lists.linux.dev" <regressions@lists.linux.dev>
-Cc:     LKML <linux-kernel@vger.kernel.org>
-References: <CAK8fFZ7m-KR57M_rYX6xZN39K89O=LGooYkKsu6HKt0Bs+x6xQ@mail.gmail.com>
- <2596b2c6-71e4-543f-799f-b4b174c21f31@leemhuis.info>
-In-Reply-To: <2596b2c6-71e4-543f-799f-b4b174c21f31@leemhuis.info>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-bounce-key: webpack.hosteurope.de;regressions@leemhuis.info;1661422841;313f1d9d;
-X-HE-SMSGID: 1oR9yY-0007wg-Fb
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-TWIMC: this mail is primarily send for documentation purposes and for
-regzbot, my Linux kernel regression tracking bot. These mails usually
-contain '#forregzbot' in the subject, to make them easy to spot and filter.
+Changes since v1:
+- Added collected tag;
+- Added cedrus to the list of drivers to fix;
+- Added fixes tags on all commits as requested.
 
-On 19.06.22 13:50, Thorsten Leemhuis wrote:
-> [TLDR: I'm adding this regression report to the list of tracked
-> regressions; all text from me you find below is based on a few templates
-> paragraphs you might have encountered already already in similar form.]
-> 
-> On 09.06.22 08:58, Jaroslav Pulchart wrote:
->>
->> I'm struggling with broken network connectivity at VMs using linux
->> bridge at host after update of kernel from 5.17.x to 5.18.x @ Dell
->> R750 server with E810-XXV NICs.
->>
->> I noticed the kernel reports "Error setting promisc mode" in dmesg.
->>
->> # dmesg  | grep 'Error setting promisc'
->> [   24.863557] ice 0000:31:00.0: Error setting promisc mode on VSI 6 (rc=-17)
->> [   24.878369] ice 0000:31:00.0: Error setting promisc mode on VSI 6 (rc=-17)
->> [   25.045834] ice 0000:31:00.0: Error setting promisc mode on VSI 6 (rc=-17)
->> [   25.129840] ice 0000:b1:00.0: Error setting promisc mode on VSI 6 (rc=-17)
->> [   25.144440] ice 0000:b1:00.0: Error setting promisc mode on VSI 6 (rc=-17)
->
-> Anyway: To be sure below issue doesn't fall through the cracks
-> unnoticed, I'm adding it to regzbot, my Linux kernel regression tracking
-> bot:
-> 
-> #regzbot ^introduced v5.17 to v5.18
-> #regzbot title net: ice: Error setting promisc mode on VSI 6 (rc=-17) @
-> 5.18.x
-> #regzbot monitor
-> https://lore.kernel.org/all/CAK8fFZ68+xZ2Z0vDWnihF8PeJKEmEwCyyF-8W9PCZJTd8zfp-A@mail.gmail.com/
-> #regzbot monitor
-> https://lore.kernel.org/all/CAK8fFZ61mQ3AYpdWjWtyUXzrs-RVMW61mBLrjRDXBxB-F9GzbA@mail.gmail.com/
-> #regzbot ignore-activity
+Paul Kocialkowski (7):
+  media: sun6i-mipi-csi2: Add a Kconfig dependency on RESET_CONTROLLER
+  media: sun8i-a83t-mipi-csi2: Add a Kconfig dependency on
+    RESET_CONTROLLER
+  media: sun6i-csi: Add a Kconfig dependency on RESET_CONTROLLER
+  media: sun4i-csi: Add a Kconfig dependency on RESET_CONTROLLER
+  media: sun8i-di: Add a Kconfig dependency on RESET_CONTROLLER
+  media: sun8i-rotate: Add a Kconfig dependency on RESET_CONTROLLER
+  media: cedrus: Add a Kconfig dependency on RESET_CONTROLLER
 
-#regzbot fixed-by: 79956b83ed4281c35561c39254558092d96a9ed1
+ drivers/media/platform/sunxi/sun4i-csi/Kconfig            | 2 +-
+ drivers/media/platform/sunxi/sun6i-csi/Kconfig            | 2 +-
+ drivers/media/platform/sunxi/sun6i-mipi-csi2/Kconfig      | 2 +-
+ drivers/media/platform/sunxi/sun8i-a83t-mipi-csi2/Kconfig | 2 +-
+ drivers/media/platform/sunxi/sun8i-di/Kconfig             | 2 +-
+ drivers/media/platform/sunxi/sun8i-rotate/Kconfig         | 2 +-
+ drivers/staging/media/sunxi/cedrus/Kconfig                | 1 +
+ 7 files changed, 7 insertions(+), 6 deletions(-)
+
+-- 
+2.37.1
+
