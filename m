@@ -2,86 +2,76 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A00D3C28D13
-	for <linux-kernel@archiver.kernel.org>; Thu, 25 Aug 2022 12:27:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 33DC6C28D13
+	for <linux-kernel@archiver.kernel.org>; Thu, 25 Aug 2022 12:27:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239763AbiHYM1f (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 25 Aug 2022 08:27:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59084 "EHLO
+        id S241001AbiHYM1i (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 25 Aug 2022 08:27:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59112 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239435AbiHYM1c (ORCPT
+        with ESMTP id S240663AbiHYM1e (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 25 Aug 2022 08:27:32 -0400
-Received: from mail-wr1-x42f.google.com (mail-wr1-x42f.google.com [IPv6:2a00:1450:4864:20::42f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8EDB8B2874
-        for <linux-kernel@vger.kernel.org>; Thu, 25 Aug 2022 05:27:31 -0700 (PDT)
-Received: by mail-wr1-x42f.google.com with SMTP id z16so5603639wrh.10
-        for <linux-kernel@vger.kernel.org>; Thu, 25 Aug 2022 05:27:31 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=message-id:date:subject:cc:to:from:from:to:cc;
-        bh=Ila7dO+0naAC7pik/BSrv/RJAUqzJmJgiT9+mebfzyM=;
-        b=IkDuU8yej3eHmdrVmkxekXX5Qjxdvk5lHSqada5fCjbpyFI7Bgd9X8y4yCkEwgVKOM
-         5uBsm7z0xlk3w2NTdw/wr7osHjhXda0viWh6kFqKIYeTbbXymyZZA6grPi6qm+4dUuEo
-         iKrJcXyvfFnw006F4qSUH5J8UvqTbe+OuE1s3wdaVja1YhpXBzngE+HTkr55ijwiI88P
-         ck5ssqQw+QWqjjhaJ++BxJOePJlAucY5/rFJSefPuQKKdXnVl+fswvDsKGiX7CXcW+6k
-         LOhFBMq2OfW7BBv8M3yfXOPaG7AmCmFldDWWsIuoi6w0CzvYZHiiVbMVGWZe0LsHntLX
-         4/Ug==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc;
-        bh=Ila7dO+0naAC7pik/BSrv/RJAUqzJmJgiT9+mebfzyM=;
-        b=amo1idjBc015uQ/xe+hwoaM5baz8cBMOmXSkN0ivYhisJ9dblFctnnTdfBHleHx2mf
-         IxAFV/gh6NKUcO7h9dB4STkKcQzYGpqAGOtCJD/6iDLIq/mvUQB76WLbsChJ4RDoWJWC
-         FciPh8CN0oVJGkrh6kS94ShzquGkWJeutaKr4UtMKKTX6HouISkutw7lN5k/pJZuAhKb
-         9wUvBu/5teOVVuJn5Ll7qRKllczgwTOxqXBhqP+qauCxvIdo6wqgnrWMbfOpPzyO7ndk
-         936nwBXuuuzWZIxApWyAMcgAf4x8YCw/4SwErSzNt7wEoXpSmixt8rbIV+udxWtpBYT8
-         tPPg==
-X-Gm-Message-State: ACgBeo0f5hJBUmPThwu2gJNX+d5GHBypHexcvRbW5ISr//7kmreOSb/X
-        2V3tsJ+N7SMaqiomrRYm0DDuEg==
-X-Google-Smtp-Source: AA6agR6SYAnEBykTAAZjXYl0OkmM3PJt+9g7Ky/0AMdhsFQA5H/emhCjgbpR0RIjHCrcBmV6Z5Q3fA==
-X-Received: by 2002:a5d:4f81:0:b0:21e:2cd7:25df with SMTP id d1-20020a5d4f81000000b0021e2cd725dfmr2239459wru.439.1661430450002;
-        Thu, 25 Aug 2022 05:27:30 -0700 (PDT)
-Received: from localhost.localdomain ([2a01:e0a:f:6020:55dd:3519:10d3:b07b])
-        by smtp.gmail.com with ESMTPSA id c7-20020a05600c0ac700b003a5ee64cc98sm5417809wmr.33.2022.08.25.05.27.28
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 25 Aug 2022 05:27:29 -0700 (PDT)
-From:   Vincent Guittot <vincent.guittot@linaro.org>
-To:     mingo@redhat.com, peterz@infradead.org, juri.lelli@redhat.com,
-        dietmar.eggemann@arm.com, rostedt@goodmis.org, bsegall@google.com,
-        mgorman@suse.de, bristot@redhat.com, vschneid@redhat.com,
-        linux-kernel@vger.kernel.org
-Cc:     zhangqiao22@huawei.com,
-        Vincent Guittot <vincent.guittot@linaro.org>
-Subject: [PATCH 0/4] sched/fair: fixes in presence of lot of sched_idle tasks
-Date:   Thu, 25 Aug 2022 14:27:22 +0200
-Message-Id: <20220825122726.20819-1-vincent.guittot@linaro.org>
-X-Mailer: git-send-email 2.17.1
+        Thu, 25 Aug 2022 08:27:34 -0400
+Received: from szxga08-in.huawei.com (szxga08-in.huawei.com [45.249.212.255])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A1FFBB2875
+        for <linux-kernel@vger.kernel.org>; Thu, 25 Aug 2022 05:27:33 -0700 (PDT)
+Received: from dggpemm500024.china.huawei.com (unknown [172.30.72.56])
+        by szxga08-in.huawei.com (SkyGuard) with ESMTP id 4MD2FX30tTz1N7Rv;
+        Thu, 25 Aug 2022 20:24:00 +0800 (CST)
+Received: from dggpemm500007.china.huawei.com (7.185.36.183) by
+ dggpemm500024.china.huawei.com (7.185.36.203) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Thu, 25 Aug 2022 20:27:31 +0800
+Received: from huawei.com (10.175.103.91) by dggpemm500007.china.huawei.com
+ (7.185.36.183) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Thu, 25 Aug
+ 2022 20:27:31 +0800
+From:   Yang Yingliang <yangyingliang@huawei.com>
+To:     <linux-kernel@vger.kernel.org>, <alsa-devel@alsa-project.org>
+CC:     <lars@metafoo.de>, <nuno.sa@analog.com>, <lgirdwood@gmail.com>,
+        <broonie@kernel.org>
+Subject: [PATCH -next] ASoC: sigmadsp: switch to use kmemdup_nul() helper
+Date:   Thu, 25 Aug 2022 20:35:25 +0800
+Message-ID: <20220825123525.1845695-1-yangyingliang@huawei.com>
+X-Mailer: git-send-email 2.25.1
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.175.103.91]
+X-ClientProxiedBy: dggems701-chm.china.huawei.com (10.3.19.178) To
+ dggpemm500007.china.huawei.com (7.185.36.183)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This patchset gathers somes cleanups but also improvements and fixes for
-scheduling UCs that involved a lot of sched_idle tasks. In such case, the
-sched_idle tasks impact significantly the behavior of other tasks whereas
-they should not. These patches don't impact other "normal" UCs.
+Use kmemdup_nul() helper instead of open-coding to
+simplify the code.
 
- have foudn these changes while studying Zhang's problem [1] but AFAICT,
- these patches don't fix his problem.
+Signed-off-by: Yang Yingliang <yangyingliang@huawei.com>
+---
+ sound/soc/codecs/sigmadsp.c | 4 +---
+ 1 file changed, 1 insertion(+), 3 deletions(-)
 
-[1] https://lore.kernel.org/lkml/20220810015636.3865248-1-zhangsong34@huawei.com/
-
-Vincent Guittot (4):
-  sched/fair: make sure to try to detach at least one movable task
-  sched/fair: cleanup loop_max and loop_break
-  sched/fair: move call to list_last_entry() in detach_tasks
-  sched/fair: limit sched slice duration
-
- kernel/sched/core.c  |  6 +-----
- kernel/sched/fair.c  | 29 +++++++++++++++++------------
- kernel/sched/sched.h |  6 ++++++
- 3 files changed, 24 insertions(+), 17 deletions(-)
-
+diff --git a/sound/soc/codecs/sigmadsp.c b/sound/soc/codecs/sigmadsp.c
+index b992216aee55..3047a6fbb380 100644
+--- a/sound/soc/codecs/sigmadsp.c
++++ b/sound/soc/codecs/sigmadsp.c
+@@ -227,13 +227,11 @@ static int sigma_fw_load_control(struct sigmadsp *sigmadsp,
+ 	if (!ctrl)
+ 		return -ENOMEM;
+ 
+-	name = kzalloc(name_len + 1, GFP_KERNEL);
++	name = kmemdup_nul(ctrl_chunk->name, name_len, GFP_KERNEL);
+ 	if (!name) {
+ 		ret = -ENOMEM;
+ 		goto err_free_ctrl;
+ 	}
+-	memcpy(name, ctrl_chunk->name, name_len);
+-	name[name_len] = '\0';
+ 	ctrl->name = name;
+ 
+ 	/*
 -- 
-2.17.1
+2.25.1
 
