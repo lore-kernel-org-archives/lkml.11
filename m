@@ -2,140 +2,146 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 51967ECAAA2
-	for <linux-kernel@archiver.kernel.org>; Thu, 25 Aug 2022 22:50:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E36E8ECAAA3
+	for <linux-kernel@archiver.kernel.org>; Thu, 25 Aug 2022 22:50:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244049AbiHYWuB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 25 Aug 2022 18:50:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38574 "EHLO
+        id S244143AbiHYWux (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 25 Aug 2022 18:50:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39132 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243969AbiHYWtp (ORCPT
+        with ESMTP id S244066AbiHYWue (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 25 Aug 2022 18:49:45 -0400
-Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3CD14C6CC0
-        for <linux-kernel@vger.kernel.org>; Thu, 25 Aug 2022 15:49:43 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1661467783; x=1693003783;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references;
-  bh=N6JNWD5Gq4S10yyOmOpUW93oRz6lIATWq7O62bXOoYk=;
-  b=W7U14IdU5J1UjDOKjGcZrX6UvRHN8Ln5hih3YXbAWtWhew7QH9gjt8TJ
-   iClJa8KQpj//dEv115GOkCObZJpejppMChKY6HVcARMCaAXbiOsWp4+KB
-   /CIfZbKLZ8oKvcoPSZ9HT0dmKrzLGsdhexbYs5xE5WqVgHCibp+X09rtw
-   f+OWgQyXv1ZGdbXqXSk2okzrcEfdZvipg+JTjQZcjl/8Zj4i/2fKCmG/f
-   OEJeHar0diK4HDYynDiecCgLlXiyPpyvhh9yI5wskoyO0BB+91pQzJXf9
-   Al/z+ZIAx0q+HBz4xXSYe7x1CWnSmfP15qzEgWqMGcuOI8cku5LscKUql
-   Q==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10450"; a="295153925"
-X-IronPort-AV: E=Sophos;i="5.93,264,1654585200"; 
-   d="scan'208";a="295153925"
-Received: from fmsmga004.fm.intel.com ([10.253.24.48])
-  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Aug 2022 15:49:41 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.93,264,1654585200"; 
-   d="scan'208";a="678642685"
-Received: from ranerica-svr.sc.intel.com ([172.25.110.23])
-  by fmsmga004.fm.intel.com with ESMTP; 25 Aug 2022 15:49:41 -0700
-From:   Ricardo Neri <ricardo.neri-calderon@linux.intel.com>
-To:     "Peter Zijlstra (Intel)" <peterz@infradead.org>,
-        Juri Lelli <juri.lelli@redhat.com>,
-        Vincent Guittot <vincent.guittot@linaro.org>
-Cc:     Ricardo Neri <ricardo.neri@intel.com>,
-        "Ravi V. Shankar" <ravi.v.shankar@intel.com>,
-        Ben Segall <bsegall@google.com>,
-        Daniel Bristot de Oliveira <bristot@redhat.com>,
-        Dietmar Eggemann <dietmar.eggemann@arm.com>,
-        Len Brown <len.brown@intel.com>, Mel Gorman <mgorman@suse.de>,
-        "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>,
-        Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Tim Chen <tim.c.chen@linux.intel.com>,
-        Valentin Schneider <vschneid@redhat.com>, x86@kernel.org,
-        linux-kernel@vger.kernel.org,
-        Ricardo Neri <ricardo.neri-calderon@linux.intel.com>,
-        "Tim C . Chen" <tim.c.chen@intel.com>
-Subject: [PATCH 4/4] x86/sched: Avoid unnecessary migrations within SMT domains
-Date:   Thu, 25 Aug 2022 15:55:29 -0700
-Message-Id: <20220825225529.26465-5-ricardo.neri-calderon@linux.intel.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20220825225529.26465-1-ricardo.neri-calderon@linux.intel.com>
-References: <20220825225529.26465-1-ricardo.neri-calderon@linux.intel.com>
+        Thu, 25 Aug 2022 18:50:34 -0400
+Received: from mail-pg1-x52b.google.com (mail-pg1-x52b.google.com [IPv6:2607:f8b0:4864:20::52b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B2C444E63F
+        for <linux-kernel@vger.kernel.org>; Thu, 25 Aug 2022 15:50:24 -0700 (PDT)
+Received: by mail-pg1-x52b.google.com with SMTP id d71so19085452pgc.13
+        for <linux-kernel@vger.kernel.org>; Thu, 25 Aug 2022 15:50:24 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc;
+        bh=cgiyIbhlK0oTTb9MOi/TmiilB4y7xpSPs1MPQHO3WO0=;
+        b=hHesMge/GsZDFgpbHiRU1/UfdcLKj9rRgWjPmiami37jZ/cpClJZ6eI9QHYYYGDkCr
+         HmTw03rCd/m3DAOTUGfGhB46uLB4m6KGI7tuAnar6oihXo08kVVgTMWhPEgt3Bcm8bj2
+         ZpV+/0uNCoYPnbj9kUhcXx3xWbm0W8xrwqZNF4tejv8+tw9miDtWQGw7eKM9CN24TPjq
+         /HyFA4QNbJhzOcIzQgZWlTt9ux6uXvUjRVfwE/5FNCsTkIaVM54A6QO4heiRYgARc2DX
+         bzFthjvMGuSWsk0iQETnoHp9yMhrHwGl6RuzO0tXr/jj7bJFzNgyrhmC3zKh8c6OhIr6
+         TRpg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc;
+        bh=cgiyIbhlK0oTTb9MOi/TmiilB4y7xpSPs1MPQHO3WO0=;
+        b=O/Nfcx2j0D+Vvdm519MXt7viagzZ9hXNcnqtswsY/uUUdZvR6mOpBtAH2fIkwG+u8b
+         7rv1XrTE3CtPy8a9JEdXcFMJHAFl6Ced4ol5eDBdVZkA1MyATAdNrQlYtXYKszocEY8P
+         LYkT+jLXNVKMnAXvnnrojSrU/izqDDjQW62Z12H2B/T2JKf63QSk1hluOjRSv6Gtrjox
+         vkw5XikT9+5WAdqfp1psmFqjtD3tGNoTvclAPD8TqWh8OMW6neGoWNDHmCS+KfM5FZLE
+         YPFKq3yAwDqXkJeVTS1izPvdo7CWKbpWKxntjMcZybjzJHr22v44tvJIlOyNdYCjf+rp
+         payQ==
+X-Gm-Message-State: ACgBeo1NGo/10CNAHBzBkaGJoBmKpijhz8B64gc5GZ5+UNHYvtn9U/xz
+        QyD6K7DyUJ4ik8m8NnHCcWNQdB/JLxt3aSr193pcmg==
+X-Google-Smtp-Source: AA6agR5MbRiN7wmgXR+FaQb78huP8/LjKmNUeHKSsmltko+kS55TjDW9j8bpGNofzu7xPGMkBSxquKsRPCX686J+l5I=
+X-Received: by 2002:a65:6953:0:b0:42a:4612:2d7b with SMTP id
+ w19-20020a656953000000b0042a46122d7bmr1022618pgq.253.1661467823820; Thu, 25
+ Aug 2022 15:50:23 -0700 (PDT)
+MIME-Version: 1.0
+References: <20220825221751.258958-1-james.hilliard1@gmail.com>
+In-Reply-To: <20220825221751.258958-1-james.hilliard1@gmail.com>
+From:   Stanislav Fomichev <sdf@google.com>
+Date:   Thu, 25 Aug 2022 15:50:12 -0700
+Message-ID: <CAKH8qBu2B+Ac+GoB9FxtD4WGnuE9SFrBnAQY0C-EPZi0dJNwnA@mail.gmail.com>
+Subject: Re: [PATCH] selftests/bpf: Fix bind{4,6} tcp/socket header type conflict
+To:     James Hilliard <james.hilliard1@gmail.com>
+Cc:     bpf@vger.kernel.org, Andrii Nakryiko <andrii@kernel.org>,
+        Mykola Lysenko <mykolal@fb.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Martin KaFai Lau <martin.lau@linux.dev>,
+        Song Liu <song@kernel.org>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>, Hao Luo <haoluo@google.com>,
+        Jiri Olsa <jolsa@kernel.org>, Shuah Khan <shuah@kernel.org>,
+        linux-kselftest@vger.kernel.org, linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Having different priorities for each SMT sibling triggers unnecessary
-load balancing towards the higher-priority sibling.
+On Thu, Aug 25, 2022 at 3:18 PM James Hilliard
+<james.hilliard1@gmail.com> wrote:
+>
+> There is a potential for us to hit a type conflict when including
+> netinet/tcp.h with sys/socket.h, we can replace both of these includes
+> with linux/tcp.h to avoid this conflict.
+>
+> Fixes errors like:
+> In file included from /usr/include/netinet/tcp.h:91,
+>                  from progs/bind4_prog.c:10:
+> /home/buildroot/opt/cross/lib/gcc/bpf/13.0.0/include/stdint.h:34:23: error: conflicting types for 'int8_t'; have 'char'
+>    34 | typedef __INT8_TYPE__ int8_t;
+>       |                       ^~~~~~
+> In file included from /usr/include/x86_64-linux-gnu/sys/types.h:155,
+>                  from /usr/include/x86_64-linux-gnu/bits/socket.h:29,
+>                  from /usr/include/x86_64-linux-gnu/sys/socket.h:33,
+>                  from progs/bind4_prog.c:9:
+> /usr/include/x86_64-linux-gnu/bits/stdint-intn.h:24:18: note: previous declaration of 'int8_t' with type 'int8_t' {aka 'signed char'}
+>    24 | typedef __int8_t int8_t;
+>       |                  ^~~~~~
+> /home/buildroot/opt/cross/lib/gcc/bpf/13.0.0/include/stdint.h:43:24: error: conflicting types for 'int64_t'; have 'long int'
+>    43 | typedef __INT64_TYPE__ int64_t;
+>       |                        ^~~~~~~
+> /usr/include/x86_64-linux-gnu/bits/stdint-intn.h:27:19: note: previous declaration of 'int64_t' with type 'int64_t' {aka 'long long int'}
+>    27 | typedef __int64_t int64_t;
+>       |                   ^~~~~~~
+> make: *** [Makefile:537: /home/buildroot/bpf-next/tools/testing/selftests/bpf/bpf_gcc/bind4_prog.o] Error 1
+>
+> Signed-off-by: James Hilliard <james.hilliard1@gmail.com>
 
-The scheduler now has logic to allow lower-priority CPUs to relieve load
-from scheduling groups composed of SMT siblings with more than one busy
-sibling.
+Still compiles in my environment:
 
-Hence, it is no longer necessary to give different priorities to each of
-the SMT siblings of a physical core.
+Reviewed-by: Stanislav Fomichev <sdf@google.com>
 
-Cc: Ben Segall <bsegall@google.com>
-Cc: Daniel Bristot de Oliveira <bristot@redhat.com>
-Cc: Dietmar Eggemann <dietmar.eggemann@arm.com>
-Cc: Len Brown <len.brown@intel.com>
-Cc: Mel Gorman <mgorman@suse.de>
-Cc: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
-Cc: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
-Cc: Steven Rostedt <rostedt@goodmis.org>
-Cc: Tim C. Chen <tim.c.chen@intel.com>
-Cc: Valentin Schneider <vschneid@redhat.com>
-Cc: x86@kernel.org
-Cc: linux-kernel@vger.kernel.org
-Reviewed-by: Len Brown <len.brown@intel.com>
-Signed-off-by: Ricardo Neri <ricardo.neri-calderon@linux.intel.com>
----
- arch/x86/kernel/itmt.c | 23 +++++------------------
- 1 file changed, 5 insertions(+), 18 deletions(-)
+Not sure we want it for the tests, but just in case:
 
-diff --git a/arch/x86/kernel/itmt.c b/arch/x86/kernel/itmt.c
-index 9ff480e94511..6510883c5e81 100644
---- a/arch/x86/kernel/itmt.c
-+++ b/arch/x86/kernel/itmt.c
-@@ -174,32 +174,19 @@ int arch_asym_cpu_priority(int cpu)
- 
- /**
-  * sched_set_itmt_core_prio() - Set CPU priority based on ITMT
-- * @prio:	Priority of cpu core
-- * @core_cpu:	The cpu number associated with the core
-+ * @prio:	Priority of @cpu
-+ * @cpu:	The CPU number
-  *
-  * The pstate driver will find out the max boost frequency
-  * and call this function to set a priority proportional
-- * to the max boost frequency. CPU with higher boost
-+ * to the max boost frequency. CPUs with higher boost
-  * frequency will receive higher priority.
-  *
-  * No need to rebuild sched domain after updating
-  * the CPU priorities. The sched domains have no
-  * dependency on CPU priorities.
-  */
--void sched_set_itmt_core_prio(int prio, int core_cpu)
-+void sched_set_itmt_core_prio(int prio, int cpu)
- {
--	int cpu, i = 1;
--
--	for_each_cpu(cpu, topology_sibling_cpumask(core_cpu)) {
--		int smt_prio;
--
--		/*
--		 * Ensure that the siblings are moved to the end
--		 * of the priority chain and only used when
--		 * all other high priority cpus are out of capacity.
--		 */
--		smt_prio = prio * smp_num_siblings / (i * i);
--		per_cpu(sched_core_priority, cpu) = smt_prio;
--		i++;
--	}
-+	per_cpu(sched_core_priority, cpu) = prio;
- }
--- 
-2.25.1
+Fixes: a999696c547f ("selftests/bpf: Rewrite test_sock_addr bind bpf into C")
 
+
+
+
+> ---
+>  tools/testing/selftests/bpf/progs/bind4_prog.c | 3 +--
+>  tools/testing/selftests/bpf/progs/bind6_prog.c | 3 +--
+>  2 files changed, 2 insertions(+), 4 deletions(-)
+>
+> diff --git a/tools/testing/selftests/bpf/progs/bind4_prog.c b/tools/testing/selftests/bpf/progs/bind4_prog.c
+> index 474c6a62078a..6bd20042fd53 100644
+> --- a/tools/testing/selftests/bpf/progs/bind4_prog.c
+> +++ b/tools/testing/selftests/bpf/progs/bind4_prog.c
+> @@ -6,8 +6,7 @@
+>  #include <linux/bpf.h>
+>  #include <linux/in.h>
+>  #include <linux/in6.h>
+> -#include <sys/socket.h>
+> -#include <netinet/tcp.h>
+> +#include <linux/tcp.h>
+>  #include <linux/if.h>
+>  #include <errno.h>
+>
+> diff --git a/tools/testing/selftests/bpf/progs/bind6_prog.c b/tools/testing/selftests/bpf/progs/bind6_prog.c
+> index c19cfa869f30..f37617b35a55 100644
+> --- a/tools/testing/selftests/bpf/progs/bind6_prog.c
+> +++ b/tools/testing/selftests/bpf/progs/bind6_prog.c
+> @@ -6,8 +6,7 @@
+>  #include <linux/bpf.h>
+>  #include <linux/in.h>
+>  #include <linux/in6.h>
+> -#include <sys/socket.h>
+> -#include <netinet/tcp.h>
+> +#include <linux/tcp.h>
+>  #include <linux/if.h>
+>  #include <errno.h>
+>
+> --
+> 2.34.1
+>
