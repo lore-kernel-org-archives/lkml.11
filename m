@@ -2,97 +2,165 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8768BC32774
-	for <linux-kernel@archiver.kernel.org>; Thu, 25 Aug 2022 15:24:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D0B17C676B4
+	for <linux-kernel@archiver.kernel.org>; Thu, 25 Aug 2022 15:24:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241773AbiHYPYa (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 25 Aug 2022 11:24:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34668 "EHLO
+        id S242007AbiHYPY5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 25 Aug 2022 11:24:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34564 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241644AbiHYPYR (ORCPT
+        with ESMTP id S241324AbiHYPYo (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 25 Aug 2022 11:24:17 -0400
-Received: from mail-pj1-x102c.google.com (mail-pj1-x102c.google.com [IPv6:2607:f8b0:4864:20::102c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A945DB99C4
-        for <linux-kernel@vger.kernel.org>; Thu, 25 Aug 2022 08:24:15 -0700 (PDT)
-Received: by mail-pj1-x102c.google.com with SMTP id e19so19461506pju.1
-        for <linux-kernel@vger.kernel.org>; Thu, 25 Aug 2022 08:24:15 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc;
-        bh=Sjxu1KZYU3KDG78+cZAn5+zrZMruhm46V6F/elCTC6I=;
-        b=cgdSCg/G5MIqnMdtGF27PjSCoHoxA2BsgT02jo7Ty55H5CD+J3M0vHpW6lHr8NcHWU
-         X4d85j0jzRSVoQQ1MCpo3IQxt2FbpJcglk7ukGEyRJIhQszVQ9wx2i35z97DqqSPd8oC
-         VCP76agWwaX+4eMZ+QIx3J3v9Nver8Y2hT/qeJt1TMaAprapOxqq9WUzYpSdGmHshkAY
-         GfaP+h3+0CtF8cAYQQM3KgFAd8WHhKHivvxwKgX45zfRGdSEJ/wxeU6tfT/4yjg6gHiJ
-         kPNYCejF6P/dRAtVBxvPeyL9+3p/YImkl2YVTcNEsoYooOr0nt/CrL9psmY7f6J0bNqd
-         Y+dw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc;
-        bh=Sjxu1KZYU3KDG78+cZAn5+zrZMruhm46V6F/elCTC6I=;
-        b=ih3a/2lbaWPPKUcgo0B5GNMVPVpHtzuxiMTEQnDhUCKi34xNuiGJsDfV5ILMvwvwEo
-         UhNmMUWUHd3sGnhZ8ff90dSdYiedjmBQEjb4InwlAdb1pgjXhRIuH998YH+xlakM1CZm
-         kqg5WmyHmkJSkMib7SYQ3dAQp8JUi0Nzmnv6wLFvheHGtCYneI+IVOO5PTN9wDqtkJZN
-         kaszZJlbXmNg/llKFrzeD2pszrzlXUih58492IiPffyGcTMC3ZZsoV5fvbcfJxbjNVcO
-         vciadOFJUEfR8/eriGpe9gQRK8fae1QQW5gwhCMA98NqwT5pPZ/KGjrqCOPxPt9jcxjm
-         H6bA==
-X-Gm-Message-State: ACgBeo3PmMhI2dVkGTkLQbOCHI4mR893Z92n0pGqS9t1KaROTfEircxd
-        BpSyKu2kOJBRPlV28G0kUrzl/H0KXXLwUVBN7z3plQ==
-X-Google-Smtp-Source: AA6agR47CCHMXIXPEnmUh5MEwo8eqnV5OkxhX40/DKDSoDxPq9qnYdSc5lDaOytVRTphX+pidszh2naGv0wE7nfCZh8=
-X-Received: by 2002:a17:90b:1d91:b0:1fb:4f7f:852e with SMTP id
- pf17-20020a17090b1d9100b001fb4f7f852emr14163491pjb.126.1661441054986; Thu, 25
- Aug 2022 08:24:14 -0700 (PDT)
+        Thu, 25 Aug 2022 11:24:44 -0400
+Received: from ale.deltatee.com (ale.deltatee.com [204.191.154.188])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 50D05B99D9;
+        Thu, 25 Aug 2022 08:24:41 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=deltatee.com; s=20200525; h=Subject:MIME-Version:References:In-Reply-To:
+        Message-Id:Date:Cc:To:From:content-disposition;
+        bh=PNE4B8sXwOVMOk+3rqBkaNjhAgYrAxODM+UtKodjnl4=; b=blWJgVk3dMLXB9Hn8RuPfUoC0X
+        14dFNFjLX5NPIJM12TD3x1Ff5i8KItpOFIT6ngkqLr6P5dN+ZseUqea/oX0Jh6mbgxeufH94pmnxR
+        YWNj1cKBdx6e89DpKvvqrl4M3NyL8YZeMHTJjoriIU82VWUxxsalH6aH3+dxyBMzORat8o9RYJ3su
+        dRKf03bADuprGQ05RTIOCvqU8rIuPgfxIC3/k5rLPBXfZbxvyCfTrHn0Cs8V1r2nuN82JKFPGvNx6
+        ARAzsSfmXrNkHGfrMewamAQWvZgPLup5H2IFOL4sPhpUsJ/BBP0wHhvwu2+9BRzCGMyc6UVSukB28
+        Hb9Dh65g==;
+Received: from cgy1-donard.priv.deltatee.com ([172.16.1.31])
+        by ale.deltatee.com with esmtps  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.94.2)
+        (envelope-from <gunthorp@deltatee.com>)
+        id 1oREij-0086MC-QX; Thu, 25 Aug 2022 09:24:38 -0600
+Received: from gunthorp by cgy1-donard.priv.deltatee.com with local (Exim 4.94.2)
+        (envelope-from <gunthorp@deltatee.com>)
+        id 1oREie-0001ef-EU; Thu, 25 Aug 2022 09:24:32 -0600
+From:   Logan Gunthorpe <logang@deltatee.com>
+To:     linux-kernel@vger.kernel.org, linux-nvme@lists.infradead.org,
+        linux-block@vger.kernel.org, linux-pci@vger.kernel.org,
+        linux-mm@kvack.org
+Cc:     Christoph Hellwig <hch@lst.de>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Dan Williams <dan.j.williams@intel.com>,
+        Jason Gunthorpe <jgg@ziepe.ca>,
+        =?UTF-8?q?Christian=20K=C3=B6nig?= <christian.koenig@amd.com>,
+        John Hubbard <jhubbard@nvidia.com>,
+        Don Dutile <ddutile@redhat.com>,
+        Matthew Wilcox <willy@infradead.org>,
+        Daniel Vetter <daniel.vetter@ffwll.ch>,
+        Minturn Dave B <dave.b.minturn@intel.com>,
+        Jason Ekstrand <jason@jlekstrand.net>,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        Xiong Jianxin <jianxin.xiong@intel.com>,
+        Bjorn Helgaas <helgaas@kernel.org>,
+        Ira Weiny <ira.weiny@intel.com>,
+        Robin Murphy <robin.murphy@arm.com>,
+        Martin Oliveira <martin.oliveira@eideticom.com>,
+        Chaitanya Kulkarni <ckulkarnilinux@gmail.com>,
+        Ralph Campbell <rcampbell@nvidia.com>,
+        Stephen Bates <sbates@raithlin.com>,
+        Logan Gunthorpe <logang@deltatee.com>
+Date:   Thu, 25 Aug 2022 09:24:21 -0600
+Message-Id: <20220825152425.6296-5-logang@deltatee.com>
+X-Mailer: git-send-email 2.30.2
+In-Reply-To: <20220825152425.6296-1-logang@deltatee.com>
+References: <20220825152425.6296-1-logang@deltatee.com>
 MIME-Version: 1.0
-References: <20220825000506.239406-1-shakeelb@google.com> <20220825000506.239406-3-shakeelb@google.com>
- <20220824173330.2a15bcda24d2c3c248bc43c7@linux-foundation.org>
- <CALvZod6+Y1yvp8evMLTeEwKnQyoXJmzjO7xLN9w=EPcOUH6BHQ@mail.gmail.com> <20220824222150.61c516a83bfe0ecb6c9b5348@linux-foundation.org>
-In-Reply-To: <20220824222150.61c516a83bfe0ecb6c9b5348@linux-foundation.org>
-From:   Shakeel Butt <shakeelb@google.com>
-Date:   Thu, 25 Aug 2022 08:24:02 -0700
-Message-ID: <CALvZod6tFce5Ld9rh-xt495S+A-vi4Curkja2YYyf0VizKw1tw@mail.gmail.com>
-Subject: Re: [PATCH v2 2/3] mm: page_counter: rearrange struct page_counter fields
-To:     Andrew Morton <akpm@linux-foundation.org>
-Cc:     Johannes Weiner <hannes@cmpxchg.org>,
-        Michal Hocko <mhocko@kernel.org>,
-        Roman Gushchin <roman.gushchin@linux.dev>,
-        Muchun Song <songmuchun@bytedance.com>,
-        =?UTF-8?Q?Michal_Koutn=C3=BD?= <mkoutny@suse.com>,
-        Eric Dumazet <edumazet@google.com>,
-        Soheil Hassas Yeganeh <soheil@google.com>,
-        Feng Tang <feng.tang@intel.com>,
-        Oliver Sang <oliver.sang@intel.com>, lkp@lists.01.org,
-        Cgroups <cgroups@vger.kernel.org>, Linux MM <linux-mm@kvack.org>,
-        netdev <netdev@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
+X-SA-Exim-Connect-IP: 172.16.1.31
+X-SA-Exim-Rcpt-To: linux-nvme@lists.infradead.org, linux-kernel@vger.kernel.org, linux-block@vger.kernel.org, linux-pci@vger.kernel.org, linux-mm@kvack.org, hch@lst.de, gregkh@linuxfoundation.org, jgg@ziepe.ca, christian.koenig@amd.com, ddutile@redhat.com, willy@infradead.org, daniel.vetter@ffwll.ch, jason@jlekstrand.net, dave.hansen@linux.intel.com, helgaas@kernel.org, dan.j.williams@intel.com, dave.b.minturn@intel.com, jianxin.xiong@intel.com, ira.weiny@intel.com, robin.murphy@arm.com, martin.oliveira@eideticom.com, ckulkarnilinux@gmail.com, jhubbard@nvidia.com, rcampbell@nvidia.com, sbates@raithlin.com, logang@deltatee.com
+X-SA-Exim-Mail-From: gunthorp@deltatee.com
+Subject: [PATCH v9 4/8] lib/scatterlist: add check when merging zone device pages
+X-SA-Exim-Version: 4.2.1 (built Sat, 13 Feb 2021 17:57:42 +0000)
+X-SA-Exim-Scanned: Yes (on ale.deltatee.com)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Aug 24, 2022 at 10:21 PM Andrew Morton
-<akpm@linux-foundation.org> wrote:
->
-> On Wed, 24 Aug 2022 21:41:42 -0700 Shakeel Butt <shakeelb@google.com> wrote:
->
-> > > Did you evaluate the effects of using a per-cpu counter of some form?
-> >
-> > Do you mean per-cpu counter for usage or something else?
->
-> percpu_counter, perhaps.  Or some hand-rolled thing if that's more suitable.
->
-> > The usage
-> > needs to be compared against the limits and accumulating per-cpu is
-> > costly particularly on larger machines,
->
-> Well, there are tricks one can play.  For example, only run
-> __percpu_counter_sum() when `usage' is close to its limit.
->
-> I'd suggest flinging together a prototype which simply uses
-> percpu_counter_read() all the time.  If the performance testing results
-> are sufficiently promising, then look into the accuracy issues.
->
+Consecutive zone device pages should not be merged into the same sgl
+or bvec segment with other types of pages or if they belong to different
+pgmaps. Otherwise getting the pgmap of a given segment is not possible
+without scanning the entire segment. This helper returns true either if
+both pages are not zone device pages or both pages are zone device
+pages with the same pgmap.
 
-Thanks, I will take a stab at that in a week or so.
+Factor out the check for page mergability into a pages_are_mergable()
+helper and add a check with zone_device_pages_are_mergeable().
+
+Signed-off-by: Logan Gunthorpe <logang@deltatee.com>
+---
+ lib/scatterlist.c | 25 +++++++++++++++----------
+ 1 file changed, 15 insertions(+), 10 deletions(-)
+
+diff --git a/lib/scatterlist.c b/lib/scatterlist.c
+index c8c3d675845c..a0ad2a7959b5 100644
+--- a/lib/scatterlist.c
++++ b/lib/scatterlist.c
+@@ -410,6 +410,15 @@ static struct scatterlist *get_next_sg(struct sg_append_table *table,
+ 	return new_sg;
+ }
+ 
++static bool pages_are_mergeable(struct page *a, struct page *b)
++{
++	if (page_to_pfn(a) != page_to_pfn(b) + 1)
++		return false;
++	if (!zone_device_pages_have_same_pgmap(a, b))
++		return false;
++	return true;
++}
++
+ /**
+  * sg_alloc_append_table_from_pages - Allocate and initialize an append sg
+  *                                    table from an array of pages
+@@ -447,6 +456,7 @@ int sg_alloc_append_table_from_pages(struct sg_append_table *sgt_append,
+ 	unsigned int chunks, cur_page, seg_len, i, prv_len = 0;
+ 	unsigned int added_nents = 0;
+ 	struct scatterlist *s = sgt_append->prv;
++	struct page *last_pg;
+ 
+ 	/*
+ 	 * The algorithm below requires max_segment to be aligned to PAGE_SIZE
+@@ -460,21 +470,17 @@ int sg_alloc_append_table_from_pages(struct sg_append_table *sgt_append,
+ 		return -EOPNOTSUPP;
+ 
+ 	if (sgt_append->prv) {
+-		unsigned long paddr =
+-			(page_to_pfn(sg_page(sgt_append->prv)) * PAGE_SIZE +
+-			 sgt_append->prv->offset + sgt_append->prv->length) /
+-			PAGE_SIZE;
+-
+ 		if (WARN_ON(offset))
+ 			return -EINVAL;
+ 
+ 		/* Merge contiguous pages into the last SG */
+ 		prv_len = sgt_append->prv->length;
+-		while (n_pages && page_to_pfn(pages[0]) == paddr) {
++		last_pg = sg_page(sgt_append->prv);
++		while (n_pages && pages_are_mergeable(last_pg, pages[0])) {
+ 			if (sgt_append->prv->length + PAGE_SIZE > max_segment)
+ 				break;
+ 			sgt_append->prv->length += PAGE_SIZE;
+-			paddr++;
++			last_pg = pages[0];
+ 			pages++;
+ 			n_pages--;
+ 		}
+@@ -488,7 +494,7 @@ int sg_alloc_append_table_from_pages(struct sg_append_table *sgt_append,
+ 	for (i = 1; i < n_pages; i++) {
+ 		seg_len += PAGE_SIZE;
+ 		if (seg_len >= max_segment ||
+-		    page_to_pfn(pages[i]) != page_to_pfn(pages[i - 1]) + 1) {
++		    !pages_are_mergeable(pages[i], pages[i - 1])) {
+ 			chunks++;
+ 			seg_len = 0;
+ 		}
+@@ -504,8 +510,7 @@ int sg_alloc_append_table_from_pages(struct sg_append_table *sgt_append,
+ 		for (j = cur_page + 1; j < n_pages; j++) {
+ 			seg_len += PAGE_SIZE;
+ 			if (seg_len >= max_segment ||
+-			    page_to_pfn(pages[j]) !=
+-			    page_to_pfn(pages[j - 1]) + 1)
++			    !pages_are_mergeable(pages[j], pages[j - 1]))
+ 				break;
+ 		}
+ 
+-- 
+2.30.2
+
