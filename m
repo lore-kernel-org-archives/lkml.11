@@ -2,157 +2,114 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1C45EC64990
-	for <linux-kernel@archiver.kernel.org>; Thu, 25 Aug 2022 14:38:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5342CC28D13
+	for <linux-kernel@archiver.kernel.org>; Thu, 25 Aug 2022 14:39:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242457AbiHYOi3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 25 Aug 2022 10:38:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33776 "EHLO
+        id S242238AbiHYOjk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 25 Aug 2022 10:39:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33784 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242372AbiHYOhs (ORCPT
+        with ESMTP id S242470AbiHYOjJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 25 Aug 2022 10:37:48 -0400
-Received: from out4-smtp.messagingengine.com (out4-smtp.messagingengine.com [66.111.4.28])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4B593B69D6;
-        Thu, 25 Aug 2022 07:37:40 -0700 (PDT)
-Received: from compute4.internal (compute4.nyi.internal [10.202.2.44])
-        by mailout.nyi.internal (Postfix) with ESMTP id 7C17F5C00A6;
-        Thu, 25 Aug 2022 10:37:39 -0400 (EDT)
-Received: from mailfrontend2 ([10.202.2.163])
-  by compute4.internal (MEProxy); Thu, 25 Aug 2022 10:37:39 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=sholland.org; h=
-        cc:cc:content-transfer-encoding:content-type:date:date:from:from
-        :in-reply-to:in-reply-to:message-id:mime-version:references
-        :reply-to:sender:subject:subject:to:to; s=fm2; t=1661438259; x=
-        1661524659; bh=uQZAkfIx3BtXGm6NsJ9y2axRk4c1HylK1+1Iy6cM5qM=; b=c
-        bRaru4GC2gO7/NsJgLNSC7kPw5lEOXfQhCBenCG+ykPTz9ye7y+CqCzJeq8AEqE0
-        GYLg0SLqCPcq17RFjk5QaFP0VPCTsADN7gpBatGAmwILkg4QDrZbnHTKc25eDmMY
-        jsUnjB1v2uKCWO3ppIr30qA0OKt7rqs0bCPSJ6QJQ2ujYz4o8Sun54+WoFh8xEsi
-        EBiQGvVjObDvfYaRGOWOnALcoOqMCkz1BIZ8z6sxITr46WG/nBNyw1DI166mCG3a
-        ucYdoLpAsHrAEhrLD8o7f7O6j+q10F1VjAffT7hrkG8lGgDsubFhOa8PlTL4jgG5
-        N3JuEtdTy3g4lZj4i1tGA==
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        messagingengine.com; h=cc:cc:content-transfer-encoding
-        :content-type:date:date:feedback-id:feedback-id:from:from
-        :in-reply-to:in-reply-to:message-id:mime-version:references
-        :reply-to:sender:subject:subject:to:to:x-me-proxy:x-me-proxy
-        :x-me-sender:x-me-sender:x-sasl-enc; s=fm1; t=1661438259; x=
-        1661524659; bh=uQZAkfIx3BtXGm6NsJ9y2axRk4c1HylK1+1Iy6cM5qM=; b=d
-        zCzKqjhUGuHGxMq8DZxIHFgJIN0+PZFEen85/okLW7fnVb9RtTB/XzO/S8XTSVH5
-        SDaV4pK3xNTdFVObfPjh/OMsOg+7za5EaZNcnc2GFgktGGR/R8xSc+5miOkLp7c+
-        7MjQn/M4WkhWUCWJdFM2SM2HyGikqt7vGiQaGKKh9800dlQeuZ7ej2rzFKITfVQS
-        VVM4ek89oEIDz6wlFhiR9Zd7QDH9abVd/Xnf6KKwnZWzYjIuwdjX4LXta+KWrosS
-        cujV9P1xiV8P+MVXcCo3n1+wCqt/ZaPv46gV4iBAH5s4duWayYiduDY2+ZYxxiCn
-        QrBY1Zcz9Hi6ZV7kx3nuw==
-X-ME-Sender: <xms:MokHY9ytPkTelAYkCj0iAzVWDqlrgLIGuw0E_hxgdx2iyzD0l8oFrA>
-    <xme:MokHY9TKqbXS0yMdtPT3tS84Lb1DwPQqoF7k8cZgsWUnLSCMRLnfCZEZLjKiKiE7s
-    8jhHZ6JJdcCWH3ikA>
-X-ME-Received: <xmr:MokHY3UsVrDjl35b9s1YJpNcsdIjn0VHXocn46bjZw51AuAt7y4dqAmZy99kkEWAH4NeC2d2MFdZPNToC6_Vnkt01oSEy9cndwzwnxlAME8Yn75E2j_0Q4yelQ>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvfedrvdejfedgjeekucetufdoteggodetrfdotf
-    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
-    uceurghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmne
-    cujfgurhepuffvvehfhffkffgfgggjtgfgsehtjeertddtfeejnecuhfhrohhmpefurghm
-    uhgvlhcujfholhhlrghnugcuoehsrghmuhgvlhesshhhohhllhgrnhgurdhorhhgqeenuc
-    ggtffrrghtthgvrhhnpeeitedvhfejhfdvjefggeeutdegteejfffgvedtjedukefgueek
-    tddtvdegfedtgfenucffohhmrghinhepghhithhhuhgsrdgtohhmnecuvehluhhsthgvrh
-    fuihiivgeptdenucfrrghrrghmpehmrghilhhfrhhomhepshgrmhhuvghlsehshhholhhl
-    rghnugdrohhrgh
-X-ME-Proxy: <xmx:MokHY_h3YTcDjZq0MRYPBf26oIlQvEjMzMId5yc-Ay03yFu7MNu2qQ>
-    <xmx:MokHY_CoLAv5UX4krtnT5UK1jnBH7SrUcBfwqNTlOYvd21H11pHC9Q>
-    <xmx:MokHY4Iq8j-Jkd-3UOB6BRLmn4qtxtYRxkv46gHUHCLyDlnJso79wA>
-    <xmx:M4kHY_wMZpDE9efVbs_vbH2-tFpL-K1rK9zFl-k-J0r4XT05Xy_C4w>
-Feedback-ID: i0ad843c9:Fastmail
-Received: by mail.messagingengine.com (Postfix) with ESMTPA; Thu,
- 25 Aug 2022 10:37:38 -0400 (EDT)
-Subject: Re: [PATCH 4/8] dt-bindings: sun6i-a31-mipi-dphy: Add the A100 DPHY
- variant
-To:     Paul Kocialkowski <paul.kocialkowski@bootlin.com>
-Cc:     Kishon Vijay Abraham I <kishon@ti.com>,
-        Vinod Koul <vkoul@kernel.org>, Chen-Yu Tsai <wens@csie.org>,
-        Jernej Skrabec <jernej.skrabec@gmail.com>,
-        Maxime Ripard <mripard@kernel.org>,
-        Jagan Teki <jagan@amarulasolutions.com>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Maxime Ripard <maxime@cerno.tech>,
-        Rob Herring <robh+dt@kernel.org>, devicetree@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        linux-phy@lists.infradead.org, linux-sunxi@lists.linux.dev
-References: <20220812075603.59375-1-samuel@sholland.org>
- <20220812075603.59375-5-samuel@sholland.org> <YwdRvBSGDNIUOMnH@aptenodytes>
-From:   Samuel Holland <samuel@sholland.org>
-Message-ID: <95464d37-6da5-1f63-8f21-93ede5666312@sholland.org>
-Date:   Thu, 25 Aug 2022 09:37:37 -0500
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.6.0
+        Thu, 25 Aug 2022 10:39:09 -0400
+Received: from mail-oo1-xc35.google.com (mail-oo1-xc35.google.com [IPv6:2607:f8b0:4864:20::c35])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D9085B81CB
+        for <linux-kernel@vger.kernel.org>; Thu, 25 Aug 2022 07:38:13 -0700 (PDT)
+Received: by mail-oo1-xc35.google.com with SMTP id g5-20020a4ac4c5000000b0044af7c8c4b3so3364011ooq.1
+        for <linux-kernel@vger.kernel.org>; Thu, 25 Aug 2022 07:38:13 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc;
+        bh=dD45AotZgawn6j7yXm8vQJ+UE0Dbo/KkcTzZcEiShZk=;
+        b=K+RHoh+HUw7Lslc17S1hk0nZmNLDzJbF6N73rs6R1mYJ3SRr9ELrDwFpg8vwZDVZZk
+         kWho5V+GGmA/3LXG0xZg/pXSPJIsSxNTZm3LoYXiEWZUz3DwzwEDHf86rQPNrypZ8hNe
+         JFIsycyNk6fxTk+XVGjPCwqV5/oFim0dzEXAnh5TQJJ6w7AugQtrZxfVxzxbw8FR07AL
+         t/GgwYpeJJPm7NGYhygh5BCUkXY5dG2rGrr2b/kwecVXAfTN/nrvEhWhUhUXtZoEbJl2
+         8nf109NW7dKi+crgRh0sRpGxoBzEb/HvWY+Fdrcy3D1FDyxKcIuoDJK70zQ/5RiqyXt4
+         H2gQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc;
+        bh=dD45AotZgawn6j7yXm8vQJ+UE0Dbo/KkcTzZcEiShZk=;
+        b=PVKcwbm+WHgBLzplRYdhLvR+rqLFHWM4BsdP9sTjvRsLifNLD4s2Uno7iC6hyOM5B6
+         9Xs/OVG546+0fJIeQSIelTWdhwJKrp+MhAPGhKCDcSQUjqUw8B3D9jI4rVNKT/zkGwim
+         VD+c5h/XURl5Zu4EaZmRAqQynEZCrNvrpbGBYUTECPaQBSznoWXb6QxcPqCYunWgAxka
+         AFUntwNKVzR1b+EljihzB1rnSWvk2jishHmILUW7B9fuwQjmXQG0YXSzmpWZ7y/h1+QX
+         bRLUjQeLSxSIX+/k7skS+6u3DqzNCfoAMZEtfiFLPoxUhy/12COEacGk2SrKyBGfFqR/
+         voGg==
+X-Gm-Message-State: ACgBeo1LfEaBu4ljziMNjMKW8LsLFbLrYqOnj9TsRePK+r0kO8KhVHSq
+        Y0crQI3Y+bTLIK7Y9MIccAnFIA==
+X-Google-Smtp-Source: AA6agR5b55IUOFFbPyjXVGsBwjiEhvECpdWI/tNtXaH7xbcjDHW403RlhV5oD7vQe80xy+iy4VwRYg==
+X-Received: by 2002:a4a:c113:0:b0:435:4ce0:9794 with SMTP id s19-20020a4ac113000000b004354ce09794mr1364871oop.87.1661438293205;
+        Thu, 25 Aug 2022 07:38:13 -0700 (PDT)
+Received: from fedora (69-109-179-158.lightspeed.dybhfl.sbcglobal.net. [69.109.179.158])
+        by smtp.gmail.com with ESMTPSA id k19-20020a9d7013000000b0063696cbb6bdsm5196989otj.62.2022.08.25.07.38.11
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 25 Aug 2022 07:38:12 -0700 (PDT)
+Date:   Thu, 25 Aug 2022 10:03:43 -0400
+From:   William Breathitt Gray <william.gray@linaro.org>
+To:     linux-iio@vger.kernel.org
+Cc:     linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-stm32@st-md-mailman.stormreply.com,
+        Patrick Havelange <patrick.havelange@essensium.com>,
+        Jarkko Nikula <jarkko.nikula@linux.intel.com>,
+        Oleksij Rempel <linux@rempel-privat.de>,
+        Pengutronix Kernel Team <kernel@pengutronix.de>,
+        Kamel Bouhara <kamel.bouhara@bootlin.com>,
+        Fabrice Gasnier <fabrice.gasnier@foss.st.com>,
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+        Alexandre Torgue <alexandre.torgue@foss.st.com>,
+        David Lechner <david@lechnology.com>,
+        Jonathan.Cameron@huawei.com
+Subject: Re: [PATCH] counter: Move symbols into COUNTER namespace
+Message-ID: <YweBP30SLb5JMDq0@fedora>
+References: <20220815220321.74161-1-william.gray@linaro.org>
 MIME-Version: 1.0
-In-Reply-To: <YwdRvBSGDNIUOMnH@aptenodytes>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="Awi6TV3gD/mTDbk7"
+Content-Disposition: inline
+In-Reply-To: <20220815220321.74161-1-william.gray@linaro.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 8/25/22 5:41 AM, Paul Kocialkowski wrote:
-> Hi Samuel,
-> 
-> On Fri 12 Aug 22, 02:55, Samuel Holland wrote:
->> A100 features an updated DPHY, which moves PLL control inside the DPHY
->> register space. (Previously PLL-MIPI was controlled from the CCU. This
->> does not affect the "clocks" property because the link between PLL-MIPI
->> and the DPHY was never represented in the devicetree.) It also requires
->> a modified analog power-on sequence. Finally, the new DPHY adds support
->> for operating as an LVDS PHY. D1 uses this same variant.
-> 
-> Do you have some pointers about that? I'd be surprised that this PHY is now
-> used for "traditional" LVDS display output, which is usually done with a simpler
-> LVDS phy attached to the display controller.
 
-Yes, this is documented in the A133 User Manual. As for the BSP code, see:
+--Awi6TV3gD/mTDbk7
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-https://github.com/Tina-Linux/tina-d1x-linux-5.4/blob/master/drivers/video/fbdev/sunxi/disp2/disp/de/lowlevel_v2x/de_dsi.c#L773
-https://github.com/Tina-Linux/tina-d1x-linux-5.4/blob/master/drivers/video/fbdev/sunxi/disp2/disp/de/lowlevel_v2x/de_lcd_sun50iw10.c#L390
-https://github.com/Tina-Linux/tina-d1x-linux-5.4/blob/master/drivers/video/fbdev/sunxi/disp2/disp/de/disp_lcd.c#L786
+On Mon, Aug 15, 2022 at 06:03:21PM -0400, William Breathitt Gray wrote:
+> Counter subsystem symbols are only relevant to counter drivers. A
+> COUNTER namespace is created to control the availability of these
+> symbols to modules that import this namespace explicitly.
+>=20
+> Cc: Patrick Havelange <patrick.havelange@essensium.com>
+> Cc: Jarkko Nikula <jarkko.nikula@linux.intel.com>
+> Cc: Oleksij Rempel <linux@rempel-privat.de>
+> Cc: Pengutronix Kernel Team <kernel@pengutronix.de>
+> Cc: Kamel Bouhara <kamel.bouhara@bootlin.com>
+> Cc: Fabrice Gasnier <fabrice.gasnier@foss.st.com>
+> Cc: Maxime Coquelin <mcoquelin.stm32@gmail.com>
+> Cc: Alexandre Torgue <alexandre.torgue@foss.st.com>
+> Cc: David Lechner <david@lechnology.com>
+> Signed-off-by: William Breathitt Gray <william.gray@linaro.org>
 
-Regards,
-Samuel
+Applied to counter-next branch.
 
-> However I've seen that some new Allwinner SoCs come with sub-LVDS camera input,
-> which typically requires a more complex PHY due to the high number of lanes.
-> 
-> Anyway for now this is:
-> Reviewed-by: Paul Kocialkowski <paul.kocialkowski@bootlin.com>
-> 
-> Cheers,
-> 
-> Paul
-> 
->> Signed-off-by: Samuel Holland <samuel@sholland.org>
->> ---
->>
->>  .../bindings/phy/allwinner,sun6i-a31-mipi-dphy.yaml           | 4 ++++
->>  1 file changed, 4 insertions(+)
->>
->> diff --git a/Documentation/devicetree/bindings/phy/allwinner,sun6i-a31-mipi-dphy.yaml b/Documentation/devicetree/bindings/phy/allwinner,sun6i-a31-mipi-dphy.yaml
->> index cf49bd99b3e2..b88c4b52af7d 100644
->> --- a/Documentation/devicetree/bindings/phy/allwinner,sun6i-a31-mipi-dphy.yaml
->> +++ b/Documentation/devicetree/bindings/phy/allwinner,sun6i-a31-mipi-dphy.yaml
->> @@ -17,9 +17,13 @@ properties:
->>    compatible:
->>      oneOf:
->>        - const: allwinner,sun6i-a31-mipi-dphy
->> +      - const: allwinner,sun50i-a100-mipi-dphy
->>        - items:
->>            - const: allwinner,sun50i-a64-mipi-dphy
->>            - const: allwinner,sun6i-a31-mipi-dphy
->> +      - items:
->> +          - const: allwinner,sun20i-d1-mipi-dphy
->> +          - const: allwinner,sun50i-a100-mipi-dphy
->>  
->>    reg:
->>      maxItems: 1
->> -- 
->> 2.35.1
->>
-> 
+William Breathitt Gray
 
+--Awi6TV3gD/mTDbk7
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iHUEARYKAB0WIQSNN83d4NIlKPjon7a1SFbKvhIjKwUCYweBPwAKCRC1SFbKvhIj
+Kz8xAQDVpcs6TSh1nCA9NTh9HkIp7VdzcBsSUUucshnYANY8FAEAhqF9QuAzFdoP
+jT18GCZH6jgDLd+3tR1jau8IU8doFwI=
+=6kcl
+-----END PGP SIGNATURE-----
+
+--Awi6TV3gD/mTDbk7--
