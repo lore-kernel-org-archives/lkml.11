@@ -2,145 +2,184 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3890EC3F6B0
-	for <linux-kernel@archiver.kernel.org>; Thu, 25 Aug 2022 01:44:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AA6A3C3F6B0
+	for <linux-kernel@archiver.kernel.org>; Thu, 25 Aug 2022 01:44:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235924AbiHYBod (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 24 Aug 2022 21:44:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42430 "EHLO
+        id S235973AbiHYBoh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 24 Aug 2022 21:44:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40058 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231864AbiHYBn5 (ORCPT
+        with ESMTP id S235158AbiHYBoA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 24 Aug 2022 21:43:57 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7A72E9E0D3;
-        Wed, 24 Aug 2022 18:39:29 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id F1CD661AEC;
-        Thu, 25 Aug 2022 01:39:27 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8EF98C433C1;
-        Thu, 25 Aug 2022 01:39:26 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1661391567;
-        bh=gwai6EkZ+QyXbHhMcHsAo+Z/u3mgi0Tm4KotzDsYNbQ=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=DVxecgu42ct09vwDgG0gig3ghihBRwiw+rYycvFeWkmW5F0iSDJul5HD9PQX4sOE1
-         luGQ+z0Rxsf2Nd/9Prci5RF4TGDTKrqexBig4A6W4dMe7BzobJBtuyXf8ip5uExBvR
-         Cpg/UoNmKV3IO7/XNDNlybs+jtR0YUMmoPTuQ4puYRc+OiX1RjeheKV+wT5sncASd4
-         a/kJbiOb/+Z8eBo87E2CRG2gSRnWn22vEwbft4m0b7EXiaxwJbutcsW8wLSGjRM3d7
-         bMAdVb8e2mrWxJpZddA/KsWFNb6zOGOD1GQkxMS5cg2GerTIu+aY/RMCNptjro5lr8
-         kzq0gFZKoplog==
-From:   Sasha Levin <sashal@kernel.org>
-To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Yang Jihong <yangjihong1@huawei.com>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Sasha Levin <sashal@kernel.org>, mingo@redhat.com
-Subject: [PATCH AUTOSEL 5.10 11/11] ftrace: Fix NULL pointer dereference in is_ftrace_trampoline when ftrace is dead
-Date:   Wed, 24 Aug 2022 21:38:32 -0400
-Message-Id: <20220825013836.23205-11-sashal@kernel.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220825013836.23205-1-sashal@kernel.org>
-References: <20220825013836.23205-1-sashal@kernel.org>
-MIME-Version: 1.0
-X-stable: review
-X-Patchwork-Hint: Ignore
+        Wed, 24 Aug 2022 21:44:00 -0400
+Received: from EUR04-VI1-obe.outbound.protection.outlook.com (mail-eopbgr80087.outbound.protection.outlook.com [40.107.8.87])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7C9419E0E1;
+        Wed, 24 Aug 2022 18:39:31 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=j4zlrvBP7YDa05IgInEdnwYjL5rV0KIUVf4GZfFNCgRy6h+jL/SuRod0fhZjOYqboXJyIIA1hW7xRD6Az+wkxA+HvfQ6VHXyHcgE/Na+9oee4osjuNUpnn9zIwzREopG57kl8wtjvMYTMKQgiGG9CTWsgrhm0srOCW3Dxh7IObydLUmYSde9gpzD3zMkofEF0BwPzQb9FDcudLQyNcAmcn0k8VesKa1CDNEpMfTd7UKGvAgMrNvxxS3vLy1LF3hPKhpV93qaSs1HNuUmuHMWMzYlacxZzMTWqaZRBvexJU8LJ90sjMj5iN2oVLjDOsD114DXzREpCqfTDr/1VFrxEQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=ILbwKsQESriic4UJzwgOD/LvSf23rx794JCog4tYBBg=;
+ b=TWevhLm6FphMSJGwk4iDDas3lC1ODIo0JebZSLlxlVg6F/w4viCNoQ991frjoJvYc+HfmDCWLaJQU5GgjmJpr3CVXhjD9FuM6up24by7t8iuku7zPaHkxdsqXb386uixUwEEY1rbviNAaWCTsxC24ImCNSZmFG/s1HjuPCa4gI1/s85otllzWPLGDhn5AFyE92eYNkZ8iPgCzNavGJ/T8o4WdPL3ReEECEgFtS/y4cT+SjI2BRiRUf1GrtzPl8HnyuudguewAUIW9DRIs3w7SLBTaZZO1WPPUTw7FqEetRGKFI9wRAI/jEF+Bx82v66dmbuUVY5pxymteqFclvV2OA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
+ header.d=nxp.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=ILbwKsQESriic4UJzwgOD/LvSf23rx794JCog4tYBBg=;
+ b=iT4a2bB3aL5qnSMnnUekRI6mSu9V/Eid+LLqsGp5jXq1cSPYAfv63aJ94IytVTMG1sB3vK0in4cuZ1o1aEhum9HeZE708qVsSqQsVc1TRaFLTHHgMRlmY2HLzmmNSaJgmGmNnq22zPdXzq0GceJsDVNfAmCM4C8JWkaYycdPwp0=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nxp.com;
+Received: from AM6PR04MB6341.eurprd04.prod.outlook.com (2603:10a6:20b:d8::14)
+ by AM0PR04MB6162.eurprd04.prod.outlook.com (2603:10a6:208:147::14) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5566.15; Thu, 25 Aug
+ 2022 01:39:16 +0000
+Received: from AM6PR04MB6341.eurprd04.prod.outlook.com
+ ([fe80::5db6:3f08:2e04:33c]) by AM6PR04MB6341.eurprd04.prod.outlook.com
+ ([fe80::5db6:3f08:2e04:33c%4]) with mapi id 15.20.5504.027; Thu, 25 Aug 2022
+ 01:39:16 +0000
+From:   Ming Qian <ming.qian@nxp.com>
+To:     mchehab@kernel.org, hverkuil-cisco@xs4all.nl
+Cc:     shawnguo@kernel.org, robh+dt@kernel.org, s.hauer@pengutronix.de,
+        kernel@pengutronix.de, festevam@gmail.com, linux-imx@nxp.com,
+        xiahong.bao@nxp.com, linux-media@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org
+Subject: [PATCH v5 1/4] media: add nv12_8l128 and nv12_10be_8l128 video format.
+Date:   Thu, 25 Aug 2022 09:38:29 +0800
+Message-Id: <84842bffb432884a0fd84de96c6e64ee2273e511.1661390673.git.ming.qian@nxp.com>
+X-Mailer: git-send-email 2.37.1
+In-Reply-To: <cover.1661390673.git.ming.qian@nxp.com>
+References: <cover.1661390673.git.ming.qian@nxp.com>
 Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-ClientProxiedBy: SI2PR02CA0020.apcprd02.prod.outlook.com
+ (2603:1096:4:195::7) To AM6PR04MB6341.eurprd04.prod.outlook.com
+ (2603:10a6:20b:d8::14)
+MIME-Version: 1.0
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 10c01fae-7c80-4d2d-43d0-08da863a9f22
+X-MS-TrafficTypeDiagnostic: AM0PR04MB6162:EE_
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: wfXtEtd9BedWycLWi715RDJ2RRQoFAfmyTd0E/ksxpZFp6q7DdUeDAqWuu08BaFmI3BpWm2lzSrF4Uugs0apiJMzV5ybIKu3i+wM3BoS3flEoTatHHMZQcqmAyHf6jfVkXUPYX5qomrCRFcKykEgeYQNWU9mjN6N9B18wOujQmlYqZt/6+U7LFTHTJ26ber9yl11PimtPVVqzzL00HhfDk1MJa4G4NmND8Cwhy54kzhAc86tTGegNXe+EIT8byAcZ3T+OVrj0sGgLmjhiF7SoSWYCXfyGyo/rIHKlyXd0jynKxg+4aJUHCn3RTv0GltwFpRwL1EgfkPc3ndjcB6n6Mr1+aKc6QJxqGCySeXEPPr6QsyydCHPYwdi5+NFR5xFLKY/4Lb+Y+OrrkuM0AC/wTyv2eU1m1oLfl9T2s5pzU3RsFKze46/qmRbsfS9TrSTcLYbzoKX8f+wYHqSnnV1cReK4RaLy20M2489vWWVV5qu6x9Z8cZv64PFLNsQXWVK9CScHudp4ufr9FhUngtcO4g5urMJ9ADsHeKcblQIohDzwYcuUDgUPK3cDH8EjUosJ3AsuOKvj7jKiEFpsiBL0uyXq0hI4A1V3WDoEt55y6S1DGjzuRSaZRGQfCu7Chc2fsQfZQLIeP9NEv+bMMMJynVnxiGUwfC9a7QZQXTM8JXgrzVZfkcEYXZcOjx6PXmtccbMRexlAqnWbZbtXU4Lq7Q57Wnwwl/9+xwSVqIl8zxh6RBF/FzIzBm1qTNrsWbk6sQg7VcFVX9G6ZtmnUbLqg==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AM6PR04MB6341.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(4636009)(346002)(136003)(376002)(396003)(39860400002)(366004)(6512007)(66946007)(38350700002)(38100700002)(6486002)(86362001)(6666004)(26005)(478600001)(6506007)(2616005)(52116002)(83380400001)(41300700001)(186003)(7416002)(8676002)(2906002)(4326008)(66476007)(66556008)(36756003)(44832011)(5660300002)(316002)(8936002);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?Zy8hqJxgbayd9s0NdMJiuzlL81xILohnC4p6/wGuUknufK3vyJYoPgdB4O5i?=
+ =?us-ascii?Q?TKVXCrQc6+p6NS8BCbMnfywp2NcSszEwj/8V5pqlyf3BHwLpkxebjFo069QL?=
+ =?us-ascii?Q?FW1+t6pxG0haoCbCGqKg1qQdX4SCorBYtwnMIi73Guk/dKFZkMq9lid5KEZQ?=
+ =?us-ascii?Q?V6TpeUf/VKY3glKdc8ZENbpsdYk2Xioby2He+przEbXDTZW2AZ6ASjS3J0oO?=
+ =?us-ascii?Q?m8iMk03CsE7UG9pxIYiAEsiD28FjDl2NdrALACEBc2B8Y0SQdsjctQLXa1Tr?=
+ =?us-ascii?Q?azppDdn3s+Nm+p9WqAxtMWYG/bHOtBgo7XddHHNJL9Dv+sElCVt0Upv/7g0v?=
+ =?us-ascii?Q?RDZQx+7DeKMXjYz9nYyf2BmpueFaBvgDfA5UBvimhxoQH0Krh1gM2DfCUnir?=
+ =?us-ascii?Q?+tNlO3fW7l1tZ2+RnKvM9CyaryX4j+XOvXUWWf6+2QJyP1TmbZ3dZLLiqYNz?=
+ =?us-ascii?Q?OSjFhaFqnhVkpuy2bLQSRoNbjgp2plBb4aGzqBsRsEWp6qXKCbkMIz0POIX2?=
+ =?us-ascii?Q?u2MsKp0u/rddWZg1TjswGrvssBwfbYd5y0x4uGzME7jplEXiT7z2ZGZ7Tp3R?=
+ =?us-ascii?Q?CrQPqiFhyvJCj5NIJJGex7YHeTHtQgKWMw5BFm4Mc91kYPo9jjJC3Is8wmMc?=
+ =?us-ascii?Q?/xaQkY0cQXXz+pnJMamZoyR7mQ+rwcXuWIIdNhv897y3STzROzn1u38OMvlp?=
+ =?us-ascii?Q?lR2AedHdtbC/AGIj8MWVMPFiGDVzJOHbawvB8qKUCyjWENHsM56f/aEcQc23?=
+ =?us-ascii?Q?+DB8/6sx+1j3pKbP3M87eLJgXOAy8RPGoT0NGUoyXKF8MpAoOqbpW4riIZjU?=
+ =?us-ascii?Q?xWSB5smqZ4dyQCAXyAXlj+IasFSs/Lb5YwEdvMOd1V9Xah/IB8HdZe/YTe+c?=
+ =?us-ascii?Q?iiwVdm+6/I02rsrGRDjbO2sgom3WfrLH6RN6IRISmRhRLxx2Kg0DOtddqtFA?=
+ =?us-ascii?Q?aTRGFu1DJS5UyAMdkVPzUqFdIUUx8cG6bfDjiPNjYbHzMo7X3I0Y2gRy468V?=
+ =?us-ascii?Q?4lGuALt0P9eIprEwO/3EXnE9SW7lyvz6e/8A2rIkzpsC13TOAxQj8fi9uXMD?=
+ =?us-ascii?Q?PtmbDSAtMK0E+og3nbqQci4Ce3zJpjlwWLib5Gf5Q3tr8MvIWnfX7ju8vZUe?=
+ =?us-ascii?Q?TfqJyMQq7d1ZgXBVwPo+s5cFZjm8E5nlTgrunEHe5nGTxu2CztkZIk83ElFs?=
+ =?us-ascii?Q?Wtu2E0Yj7bOqsyslNxlsBxw69hd4NIUu2hquXYGbsyWsMRHC+fToXuVTonnF?=
+ =?us-ascii?Q?EuliedbVCgKzfvjYTp8gi4fl5OORNgiAzfe+yMYAJiHeQ41yy7MJ1nslrPlh?=
+ =?us-ascii?Q?eEidoDhUPonF+AE8foWbwjeJqhOmuivnJxwYo7ccnYPxcTLoXvqyBX7r4foZ?=
+ =?us-ascii?Q?46OU9rwQ8rqPx/5fhCyDrz7yh5Nmpdhtw7ymxFdFuw8wTDMe2ibzCZOE8W/v?=
+ =?us-ascii?Q?xojDNZePHXWjTjOvw3FiD1h/xGwpVkV1lXrblfokh1kEbyh10rKoFu6C5aqc?=
+ =?us-ascii?Q?Q9aPO2B48g0WJ6GcVPBkTvdneBUGYJRSXhl+5+S+OoKAmmQzaJJMIMAY1eLI?=
+ =?us-ascii?Q?Dvg6uZeUrFubS3VB3mmUezYwUQtmGoWCWDf1DT1X?=
+X-OriginatorOrg: nxp.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 10c01fae-7c80-4d2d-43d0-08da863a9f22
+X-MS-Exchange-CrossTenant-AuthSource: AM6PR04MB6341.eurprd04.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 25 Aug 2022 01:39:16.4269
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: MCK61SlJRnV96zlvQrN0LYust5f/SC1wthob3JQtZTPEuaCWSzXbrWvzp8tO4h4lGYqBB69cvt+vzfyypoe8Ww==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM0PR04MB6162
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Yang Jihong <yangjihong1@huawei.com>
+add contiguous nv12 tiled format nv12_8l128 and nv12_10be_8l128
 
-[ Upstream commit c3b0f72e805f0801f05fa2aa52011c4bfc694c44 ]
-
-ftrace_startup does not remove ops from ftrace_ops_list when
-ftrace_startup_enable fails:
-
-register_ftrace_function
-  ftrace_startup
-    __register_ftrace_function
-      ...
-      add_ftrace_ops(&ftrace_ops_list, ops)
-      ...
-    ...
-    ftrace_startup_enable // if ftrace failed to modify, ftrace_disabled is set to 1
-    ...
-  return 0 // ops is in the ftrace_ops_list.
-
-When ftrace_disabled = 1, unregister_ftrace_function simply returns without doing anything:
-unregister_ftrace_function
-  ftrace_shutdown
-    if (unlikely(ftrace_disabled))
-            return -ENODEV;  // return here, __unregister_ftrace_function is not executed,
-                             // as a result, ops is still in the ftrace_ops_list
-    __unregister_ftrace_function
-    ...
-
-If ops is dynamically allocated, it will be free later, in this case,
-is_ftrace_trampoline accesses NULL pointer:
-
-is_ftrace_trampoline
-  ftrace_ops_trampoline
-    do_for_each_ftrace_op(op, ftrace_ops_list) // OOPS! op may be NULL!
-
-Syzkaller reports as follows:
-[ 1203.506103] BUG: kernel NULL pointer dereference, address: 000000000000010b
-[ 1203.508039] #PF: supervisor read access in kernel mode
-[ 1203.508798] #PF: error_code(0x0000) - not-present page
-[ 1203.509558] PGD 800000011660b067 P4D 800000011660b067 PUD 130fb8067 PMD 0
-[ 1203.510560] Oops: 0000 [#1] SMP KASAN PTI
-[ 1203.511189] CPU: 6 PID: 29532 Comm: syz-executor.2 Tainted: G    B   W         5.10.0 #8
-[ 1203.512324] Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS rel-1.14.0-0-g155821a1990b-prebuilt.qemu.org 04/01/2014
-[ 1203.513895] RIP: 0010:is_ftrace_trampoline+0x26/0xb0
-[ 1203.514644] Code: ff eb d3 90 41 55 41 54 49 89 fc 55 53 e8 f2 00 fd ff 48 8b 1d 3b 35 5d 03 e8 e6 00 fd ff 48 8d bb 90 00 00 00 e8 2a 81 26 00 <48> 8b ab 90 00 00 00 48 85 ed 74 1d e8 c9 00 fd ff 48 8d bb 98 00
-[ 1203.518838] RSP: 0018:ffffc900012cf960 EFLAGS: 00010246
-[ 1203.520092] RAX: 0000000000000000 RBX: 000000000000007b RCX: ffffffff8a331866
-[ 1203.521469] RDX: 0000000000000000 RSI: 0000000000000008 RDI: 000000000000010b
-[ 1203.522583] RBP: 0000000000000000 R08: 0000000000000000 R09: ffffffff8df18b07
-[ 1203.523550] R10: fffffbfff1be3160 R11: 0000000000000001 R12: 0000000000478399
-[ 1203.524596] R13: 0000000000000000 R14: ffff888145088000 R15: 0000000000000008
-[ 1203.525634] FS:  00007f429f5f4700(0000) GS:ffff8881daf00000(0000) knlGS:0000000000000000
-[ 1203.526801] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-[ 1203.527626] CR2: 000000000000010b CR3: 0000000170e1e001 CR4: 00000000003706e0
-[ 1203.528611] DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-[ 1203.529605] DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
-
-Therefore, when ftrace_startup_enable fails, we need to rollback registration
-process and remove ops from ftrace_ops_list.
-
-Link: https://lkml.kernel.org/r/20220818032659.56209-1-yangjihong1@huawei.com
-
-Suggested-by: Steven Rostedt <rostedt@goodmis.org>
-Signed-off-by: Yang Jihong <yangjihong1@huawei.com>
-Signed-off-by: Steven Rostedt (Google) <rostedt@goodmis.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Signed-off-by: Ming Qian <ming.qian@nxp.com>
+Reviewed-by: Nicolas Dufresne <nicolas.dufresne@collabora.com>
 ---
- kernel/trace/ftrace.c | 10 ++++++++++
- 1 file changed, 10 insertions(+)
+ .../userspace-api/media/v4l/pixfmt-yuv-planar.rst         | 8 ++++++++
+ drivers/media/v4l2-core/v4l2-ioctl.c                      | 2 ++
+ include/uapi/linux/videodev2.h                            | 2 ++
+ 3 files changed, 12 insertions(+)
 
-diff --git a/kernel/trace/ftrace.c b/kernel/trace/ftrace.c
-index a63713dcd05d..d868df6f13c8 100644
---- a/kernel/trace/ftrace.c
-+++ b/kernel/trace/ftrace.c
-@@ -2899,6 +2899,16 @@ int ftrace_startup(struct ftrace_ops *ops, int command)
+diff --git a/Documentation/userspace-api/media/v4l/pixfmt-yuv-planar.rst b/Documentation/userspace-api/media/v4l/pixfmt-yuv-planar.rst
+index 10b1feeb0b57..f1d5bb7b806d 100644
+--- a/Documentation/userspace-api/media/v4l/pixfmt-yuv-planar.rst
++++ b/Documentation/userspace-api/media/v4l/pixfmt-yuv-planar.rst
+@@ -273,7 +273,9 @@ of the luma plane.
+ .. _V4L2-PIX-FMT-NV12-16L16:
+ .. _V4L2-PIX-FMT-NV12-32L32:
+ .. _V4L2-PIX-FMT-NV12M-8L128:
++.. _V4L2-PIX-FMT-NV12-8L128:
+ .. _V4L2-PIX-FMT-NV12M-10BE-8L128:
++.. _V4L2-PIX-FMT-NV12-10BE-8L128:
+ .. _V4L2-PIX-FMT-MM21:
  
- 	ftrace_startup_enable(command);
+ Tiled NV12
+@@ -319,6 +321,9 @@ pixels in 2D 8x128 tiles, and stores tiles linearly in memory.
+ The image height must be aligned to a multiple of 128.
+ The layouts of the luma and chroma planes are identical.
  
-+	/*
-+	 * If ftrace is in an undefined state, we just remove ops from list
-+	 * to prevent the NULL pointer, instead of totally rolling it back and
-+	 * free trampoline, because those actions could cause further damage.
-+	 */
-+	if (unlikely(ftrace_disabled)) {
-+		__unregister_ftrace_function(ops);
-+		return -ENODEV;
-+	}
++``V4L2_PIX_FMT_NV12_8L128`` is similar to ``V4L2_PIX_FMT_NV12M_8L128`` but stores
++two planes in one memory.
 +
- 	ops->flags &= ~FTRACE_OPS_FL_ADDING;
+ ``V4L2_PIX_FMT_NV12M_10BE_8L128`` is similar to ``V4L2_PIX_FMT_NV12M`` but stores
+ 10 bits pixels in 2D 8x128 tiles, and stores tiles linearly in memory.
+ the data is arranged in big endian order.
+@@ -334,6 +339,9 @@ byte 2: Y1(bits 3-0) Y2(bits 9-6)
+ byte 3: Y2(bits 5-0) Y3(bits 9-8)
+ byte 4: Y3(bits 7-0)
  
- 	return 0;
++``V4L2_PIX_FMT_NV12_10BE_8L128`` is similar to ``V4L2_PIX_FMT_NV12M_10BE_8L128`` but stores
++two planes in one memory.
++
+ ``V4L2_PIX_FMT_MM21`` store luma pixel in 16x32 tiles, and chroma pixels
+ in 16x16 tiles. The line stride must be aligned to a multiple of 16 and the
+ image height must be aligned to a multiple of 32. The number of luma and chroma
+diff --git a/drivers/media/v4l2-core/v4l2-ioctl.c b/drivers/media/v4l2-core/v4l2-ioctl.c
+index c314025d977e..d973bd2ff750 100644
+--- a/drivers/media/v4l2-core/v4l2-ioctl.c
++++ b/drivers/media/v4l2-core/v4l2-ioctl.c
+@@ -1444,7 +1444,9 @@ static void v4l_fill_fmtdesc(struct v4l2_fmtdesc *fmt)
+ 	case V4L2_META_FMT_VIVID:       descr = "Vivid Metadata"; break;
+ 	case V4L2_META_FMT_RK_ISP1_PARAMS:	descr = "Rockchip ISP1 3A Parameters"; break;
+ 	case V4L2_META_FMT_RK_ISP1_STAT_3A:	descr = "Rockchip ISP1 3A Statistics"; break;
++	case V4L2_PIX_FMT_NV12_8L128:	descr = "NV12 (8x128 Linear)"; break;
+ 	case V4L2_PIX_FMT_NV12M_8L128:	descr = "NV12M (8x128 Linear)"; break;
++	case V4L2_PIX_FMT_NV12_10BE_8L128:	descr = "10-bit NV12 (8x128 Linear, BE)"; break;
+ 	case V4L2_PIX_FMT_NV12M_10BE_8L128:	descr = "10-bit NV12M (8x128 Linear, BE)"; break;
+ 
+ 	default:
+diff --git a/include/uapi/linux/videodev2.h b/include/uapi/linux/videodev2.h
+index cd66e01ed3c3..64f16490dd2b 100644
+--- a/include/uapi/linux/videodev2.h
++++ b/include/uapi/linux/videodev2.h
+@@ -655,6 +655,8 @@ struct v4l2_pix_format {
+ #define V4L2_PIX_FMT_NV12_16L16 v4l2_fourcc('H', 'M', '1', '2') /* 12  Y/CbCr 4:2:0 16x16 tiles */
+ #define V4L2_PIX_FMT_NV12_32L32 v4l2_fourcc('S', 'T', '1', '2') /* 12  Y/CbCr 4:2:0 32x32 tiles */
+ #define V4L2_PIX_FMT_P010_4L4 v4l2_fourcc('T', '0', '1', '0') /* 12  Y/CbCr 4:2:0 10-bit 4x4 macroblocks */
++#define V4L2_PIX_FMT_NV12_8L128       v4l2_fourcc('A', 'T', '1', '2') /* Y/CbCr 4:2:0 8x128 tiles */
++#define V4L2_PIX_FMT_NV12_10BE_8L128  v4l2_fourcc_be('A', 'X', '1', '2') /* Y/CbCr 4:2:0 10-bit 8x128 tiles */
+ 
+ /* Tiled YUV formats, non contiguous planes */
+ #define V4L2_PIX_FMT_NV12MT  v4l2_fourcc('T', 'M', '1', '2') /* 12  Y/CbCr 4:2:0 64x32 tiles */
 -- 
-2.35.1
+2.37.1
 
