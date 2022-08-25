@@ -2,261 +2,158 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DFB9EC04AA5
-	for <linux-kernel@archiver.kernel.org>; Thu, 25 Aug 2022 11:34:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3B44BC28D13
+	for <linux-kernel@archiver.kernel.org>; Thu, 25 Aug 2022 11:35:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241791AbiHYLeb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 25 Aug 2022 07:34:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49666 "EHLO
+        id S238978AbiHYLf5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 25 Aug 2022 07:35:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49590 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241708AbiHYLeP (ORCPT
+        with ESMTP id S241813AbiHYLf0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 25 Aug 2022 07:34:15 -0400
-Received: from mail-lf1-x12e.google.com (mail-lf1-x12e.google.com [IPv6:2a00:1450:4864:20::12e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0B65BAD9A5
-        for <linux-kernel@vger.kernel.org>; Thu, 25 Aug 2022 04:33:49 -0700 (PDT)
-Received: by mail-lf1-x12e.google.com with SMTP id s6so16594692lfo.11
-        for <linux-kernel@vger.kernel.org>; Thu, 25 Aug 2022 04:33:49 -0700 (PDT)
+        Thu, 25 Aug 2022 07:35:26 -0400
+Received: from mail-qv1-xf2c.google.com (mail-qv1-xf2c.google.com [IPv6:2607:f8b0:4864:20::f2c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A818FB0891
+        for <linux-kernel@vger.kernel.org>; Thu, 25 Aug 2022 04:34:34 -0700 (PDT)
+Received: by mail-qv1-xf2c.google.com with SMTP id d1so15111018qvs.0
+        for <linux-kernel@vger.kernel.org>; Thu, 25 Aug 2022 04:34:34 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc;
-        bh=Tq0s9B485yoq3tV5HmxMkObKnV3Mr1APkcEYUXUMsb0=;
-        b=lFelrwdgyU0S7QCGZG4WC4OD1o/tcyBXsjjSh54M9wMD+cwqfLYayIQCN/GqBHbHxZ
-         oLJ4G1d44o0bIJYbyVz5CWA/FevFy7L/b1qtl34SgeGctg7orXBdL5PKecyygfI/2xxt
-         tVAjPszcQXAkc8iaB48dn+ob+iWxr8wpQwR1eUdvngppmoBJugWt3nsMqfGJmVFm5V7d
-         1p4OuhZCQYxqHYTII8q9h+li56i6UW2cdgAPwri77xsWvxNhx7hPFyJtp0TZ/oz85ZFd
-         95+sRXVj0Rxap9qMy+GQz2N9aXsJDQTPP77tlYUWwgSJ7D8MGXKP+Nh3J01EnpYPRZUn
-         98WQ==
+        d=gmail.com; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc;
+        bh=dqjoE029ZvFL7U2E4uqFs8h8zgLuCK5PNlmRfywX58k=;
+        b=fg9Qio/ML3BXQTKdTI8VUXfiLtt55uwkZmKPwtm11zO3xnzhg0a8UrtL8pJXi70uvH
+         a9154pTbCFtNAOIeACcVytIRJpR0UbkFmlFbotbE3gvI0a8Gv11xPnJsZJRvrAHOdvg1
+         R47VY9xc1swlmOesnRo44Ux+jyBfbvInbqoOzAYx3xKKxibGeEKwcgemqaVXfeq3mmWl
+         J9MyIB8hU1b6tKKqUBqNOLtOWqgcFFpln1R2H9VUXqMlwnB/lAHr6fUaBF4nYql/KFlH
+         2qav11hKWlwH+s2kVRhFQBKsWi6ZUYRDTAEfbp4BIwHVeC7C21fv9fcOuUCSmAu/3wOv
+         eu/Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc;
-        bh=Tq0s9B485yoq3tV5HmxMkObKnV3Mr1APkcEYUXUMsb0=;
-        b=x0lHxoB/7biqmNf0SkqqDfgQCPCYghg+3J9F+LY8oZuCAQUhhd1gz414nfC6aNTIqL
-         I8zD3lS7LnymcLHxpjRsXNJpHF+OrzP7EflDqEc0gP8JHmr+xsOXRQ8xukN4WiCkr4Vi
-         6g17ZQMhiBucnbiIhHscgHDZt2HqKpYTzniXS5XxpDwuRYQrwGkxVxTfV48y6uQkbJwm
-         dxYZNzQMNkYukuWbvsSJpo6HeZ5Av3lwsZG/ipWclOY8VjgPXuGFXo6qy/hXMAlkd0DS
-         yZGnWiv6WyJu06ED22BzN6PGV03XKi46lzasHZduFYsaSExs2N4DYxv6WK4VmJkVy18h
-         cwWQ==
-X-Gm-Message-State: ACgBeo2Vj7aBjbaYW1i9TGJKJpvOu2ewOpquB5zhl7AO7Pcn8fZyL3iy
-        nYewCqKexsqSvfQWDfcFlr8ktQ==
-X-Google-Smtp-Source: AA6agR7uYhTEmWfh0/JQDYwVaRIxA3JmwcnbxkFxOGoCltN/foI9prmdgFxeyJpRr7c/V2eZZ6Nk6w==
-X-Received: by 2002:a05:6512:2611:b0:478:da8f:e2d8 with SMTP id bt17-20020a056512261100b00478da8fe2d8mr990459lfb.460.1661427227697;
-        Thu, 25 Aug 2022 04:33:47 -0700 (PDT)
-Received: from krzk-bin.starman.ee (82.131.98.15.cable.starman.ee. [82.131.98.15])
-        by smtp.gmail.com with ESMTPSA id e18-20020a195012000000b0048b0aa2f87csm446764lfb.181.2022.08.25.04.33.46
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 25 Aug 2022 04:33:46 -0700 (PDT)
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-To:     Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Kunihiko Hayashi <hayashi.kunihiko@socionext.com>,
-        Masami Hiramatsu <mhiramat@kernel.org>,
-        Damien Le Moal <damien.lemoal@opensource.wdc.com>,
-        Michael Turquette <mturquette@baylibre.com>,
-        Stephen Boyd <sboyd@kernel.org>,
-        Geert Uytterhoeven <geert+renesas@glider.be>,
-        Sylwester Nawrocki <s.nawrocki@samsung.com>,
-        Tomasz Figa <tomasz.figa@gmail.com>,
-        Chanwoo Choi <cw00.choi@samsung.com>,
-        Alim Akhtar <alim.akhtar@samsung.com>,
-        Vladimir Zapolskiy <vz@mleia.com>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
-        "David S. Miller" <davem@davemloft.net>,
-        Andrzej Hajda <andrzej.hajda@intel.com>,
-        Neil Armstrong <neil.armstrong@linaro.org>,
-        Robert Foss <robert.foss@linaro.org>,
-        Laurent Pinchart <Laurent.pinchart@ideasonboard.com>,
-        Jonas Karlman <jonas@kwiboo.se>,
-        Jernej Skrabec <jernej.skrabec@gmail.com>,
-        David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        Rob Clark <robdclark@gmail.com>,
-        Abhinav Kumar <quic_abhinavk@quicinc.com>,
-        Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
-        Sean Paul <sean@poorly.run>, Inki Dae <inki.dae@samsung.com>,
-        Seung-Woo Kim <sw0312.kim@samsung.com>,
-        Kyungmin Park <kyungmin.park@samsung.com>,
-        Thierry Reding <thierry.reding@gmail.com>,
-        Jonathan Hunter <jonathanh@nvidia.com>,
-        Masahiro Yamada <yamada.masahiro@socionext.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Andre Przywara <andre.przywara@arm.com>,
-        Kuninori Morimoto <kuninori.morimoto.gx@renesas.com>,
-        Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>,
-        Marek Vasut <marex@denx.de>,
-        Krishna Manikandan <quic_mkrishn@quicinc.com>,
-        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-kernel@vger.kernel.org, linux-ide@vger.kernel.org,
-        linux-clk@vger.kernel.org, linux-renesas-soc@vger.kernel.org,
-        linux-samsung-soc@vger.kernel.org, linux-crypto@vger.kernel.org,
-        dri-devel@lists.freedesktop.org, linux-arm-msm@vger.kernel.org,
-        freedreno@lists.freedesktop.org, linux-tegra@vger.kernel.org
-Cc:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Subject: [PATCH 5/5] dt-bindings: display: drop minItems equal to maxItems
-Date:   Thu, 25 Aug 2022 14:33:34 +0300
-Message-Id: <20220825113334.196908-5-krzysztof.kozlowski@linaro.org>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220825113334.196908-1-krzysztof.kozlowski@linaro.org>
-References: <20220825113334.196908-1-krzysztof.kozlowski@linaro.org>
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc;
+        bh=dqjoE029ZvFL7U2E4uqFs8h8zgLuCK5PNlmRfywX58k=;
+        b=PL5mjlI8K36URgcDbiB/o23c70Q0IlfBJicgPBDBRZ9gQRc/I5G289mzOsClabsL1G
+         RJg0ZemaiSNGHO8h+LMURTxOA+0KgcZhr+AcmQXwWGnIg8AUURI2mEFrBO2exlhDFW2l
+         b8bYwICV78UTSmu5gvyWL3m1d/gInmpudXW4/M5dOmZJrTydt88+aw6aQNkIEfr+pkiN
+         adhqmNtrkNzlgu2tSHiEzPWVWEJ+aUTfh1FmXvRzfaBJkSeuV/I0fEC5Dh7U26MovEgl
+         Jhw6di8ylmgwDvVR4hqwNsyi4jyxvthy+muQqWySKKs2ALdMKtfDEXELLctfsO42jNAc
+         1h2Q==
+X-Gm-Message-State: ACgBeo0GeGC7Sv5P9jU+NGcYZWmXuns1zDmto8T2oQld8JOZ8VM+4wY9
+        U1arhiOP2uL+ZcJbVJDHBD+HGBwCkBNBoDzsWUgVtkQ1zCk=
+X-Google-Smtp-Source: AA6agR6/MRpSGWUTrYfzP1RnQ5Sqo0olutO6cmdBph6qdwoVLqO1RmUTIsI4ZaJOXo/6Qq8WfGjZkaSE7Qab2ghr2rc=
+X-Received: by 2002:a0c:da87:0:b0:496:cc8f:c072 with SMTP id
+ z7-20020a0cda87000000b00496cc8fc072mr3065884qvj.31.1661427273349; Thu, 25 Aug
+ 2022 04:34:33 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20220624141412.72274-1-ubizjak@gmail.com> <1661422971.cqtahfm22j.naveen@linux.ibm.com>
+In-Reply-To: <1661422971.cqtahfm22j.naveen@linux.ibm.com>
+From:   Uros Bizjak <ubizjak@gmail.com>
+Date:   Thu, 25 Aug 2022 13:34:22 +0200
+Message-ID: <CAFULd4Zh3Hw+hy-8YFxSNgmPpk4ahM=8ycRgF_fwqJ6AoaTcug@mail.gmail.com>
+Subject: Re: [PATCH] compiler-gcc.h: Remove ancient workaround for gcc PR 58670
+To:     "Naveen N. Rao" <naveen.n.rao@linux.ibm.com>
+Cc:     linux-kernel@vger.kernel.org, x86@kernel.org,
+        Andrew Morton <akpm@linux-foundation.org>, sv@linux.ibm.com,
+        linuxppc-dev@lists.ozlabs.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-minItems, if missing, are implicitly equal to maxItems, so drop
-redundant piece to reduce size of code.
+On Thu, Aug 25, 2022 at 12:30 PM Naveen N. Rao
+<naveen.n.rao@linux.ibm.com> wrote:
+>
+> Uros Bizjak wrote:
+> > The workaround for 'asm goto' miscompilation introduces a compiler
+> > barrier quirk that inhibits many useful compiler optimizations. For
+> > example, __try_cmpxchg_user compiles to:
+> >
+> >    11375:     41 8b 4d 00             mov    0x0(%r13),%ecx
+> >    11379:     41 8b 02                mov    (%r10),%eax
+> >    1137c:     f0 0f b1 0a             lock cmpxchg %ecx,(%rdx)
+> >    11380:     0f 94 c2                sete   %dl
+> >    11383:     84 d2                   test   %dl,%dl
+> >    11385:     75 c4                   jne    1134b <...>
+> >    11387:     41 89 02                mov    %eax,(%r10)
+> >
+> > where the barrier inhibits flags propagation from asm when
+> > compiled with gcc-12.
+> >
+> > When the mentioned quirk is removed, the following code is generated:
+> >
+> >    11553:     41 8b 4d 00             mov    0x0(%r13),%ecx
+> >    11557:     41 8b 02                mov    (%r10),%eax
+> >    1155a:     f0 0f b1 0a             lock cmpxchg %ecx,(%rdx)
+> >    1155e:     74 c9                   je     11529 <...>
+> >    11560:     41 89 02                mov    %eax,(%r10)
+> >
+> > The refered compiler bug:
+> >
+> > http://gcc.gnu.org/bugzilla/show_bug.cgi?id=58670
+> >
+> > was fixed for gcc-4.8.2.
+> >
+> > Current minimum required version of GCC is version 5.1 which has
+> > the above 'asm goto' miscompilation fixed, so remove the workaround.
+> >
+> > Signed-off-by: Uros Bizjak <ubizjak@gmail.com>
+> > Cc: Andrew Morton <akpm@linux-foundation.org>
+> > ---
+> >  include/linux/compiler-gcc.h | 11 -----------
+> >  1 file changed, 11 deletions(-)
+> >
+> > diff --git a/include/linux/compiler-gcc.h b/include/linux/compiler-gcc.h
+> > index a0c55eeaeaf1..9b157b71036f 100644
+> > --- a/include/linux/compiler-gcc.h
+> > +++ b/include/linux/compiler-gcc.h
+> > @@ -66,17 +66,6 @@
+> >               __builtin_unreachable();        \
+> >       } while (0)
+> >
+> > -/*
+> > - * GCC 'asm goto' miscompiles certain code sequences:
+> > - *
+> > - *   http://gcc.gnu.org/bugzilla/show_bug.cgi?id=58670
+> > - *
+> > - * Work it around via a compiler barrier quirk suggested by Jakub Jelinek.
+> > - *
+> > - * (asm goto is automatically volatile - the naming reflects this.)
+> > - */
+> > -#define asm_volatile_goto(x...)      do { asm goto(x); asm (""); } while (0)
+> > -
+> >  #if defined(CONFIG_ARCH_USE_BUILTIN_BSWAP)
+> >  #define __HAVE_BUILTIN_BSWAP32__
+> >  #define __HAVE_BUILTIN_BSWAP64__
+>
+> This is causing a build issue on ppc64le with a new patch replacing use
+> of unreachable() with __builtin_unreachable() in __WARN_FLAGS():
+> https://lore.kernel.org/linuxppc-dev/20220808114908.240813-2-sv@linux.ibm.com/
+>
+> during RTL pass: combine
+> In file included from /linux/kernel/locking/rtmutex_api.c:9:
+> /linux/kernel/locking/rtmutex.c: In function '__rt_mutex_slowlock.constprop':
+> /linux/kernel/locking/rtmutex.c:1612:1: internal compiler error: in purge_dead_edges, at cfgrtl.c:3369
+>  1612 | }
+>       | ^
+> 0x142817c internal_error(char const*, ...)
+>         ???:0
+> 0x5c8a1b fancy_abort(char const*, int, char const*)
+>         ???:0
+> 0x72017f purge_all_dead_edges()
+>         ???:0
+> Please submit a full bug report,
+> with preprocessed source if appropriate.
+> Please include the complete backtrace with any bug report.
+> See <file:///usr/share/doc/gcc-11/README.Bugs> for instructions.
+>
+>
+> So, it looks like gcc still has issues with certain uses of asm goto.
 
-Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
----
- Documentation/devicetree/bindings/display/bridge/fsl,ldb.yaml   | 1 -
- .../devicetree/bindings/display/msm/dsi-controller-main.yaml    | 2 --
- Documentation/devicetree/bindings/display/msm/dsi-phy-10nm.yaml | 2 --
- .../bindings/display/samsung/samsung,exynos5433-decon.yaml      | 2 --
- .../bindings/display/samsung/samsung,exynos5433-mic.yaml        | 1 -
- .../bindings/display/samsung/samsung,exynos7-decon.yaml         | 1 -
- .../devicetree/bindings/display/samsung/samsung,fimd.yaml       | 1 -
- .../devicetree/bindings/display/tegra/nvidia,tegra20-gr3d.yaml  | 1 -
- .../devicetree/bindings/display/tegra/nvidia,tegra20-mpe.yaml   | 2 --
- 9 files changed, 13 deletions(-)
+This looks like a powerpc specific bug, and has nothing to do with
+PR58560 (asm goto miscompilation). If this is indeed a target specific
+bug, it should be worked around in
+arch/powerpc/include/asm/compiler.h, but please also report it to the
+GCC bugzilla.
 
-diff --git a/Documentation/devicetree/bindings/display/bridge/fsl,ldb.yaml b/Documentation/devicetree/bindings/display/bridge/fsl,ldb.yaml
-index 2ebaa43eb62e..b19be0804abe 100644
---- a/Documentation/devicetree/bindings/display/bridge/fsl,ldb.yaml
-+++ b/Documentation/devicetree/bindings/display/bridge/fsl,ldb.yaml
-@@ -25,7 +25,6 @@ properties:
-     const: ldb
- 
-   reg:
--    minItems: 2
-     maxItems: 2
- 
-   reg-names:
-diff --git a/Documentation/devicetree/bindings/display/msm/dsi-controller-main.yaml b/Documentation/devicetree/bindings/display/msm/dsi-controller-main.yaml
-index 880bfe930830..3b609c19e0bc 100644
---- a/Documentation/devicetree/bindings/display/msm/dsi-controller-main.yaml
-+++ b/Documentation/devicetree/bindings/display/msm/dsi-controller-main.yaml
-@@ -66,13 +66,11 @@ properties:
-       2 DSI links.
- 
-   assigned-clocks:
--    minItems: 2
-     maxItems: 2
-     description: |
-       Parents of "byte" and "pixel" for the given platform.
- 
-   assigned-clock-parents:
--    minItems: 2
-     maxItems: 2
-     description: |
-       The Byte clock and Pixel clock PLL outputs provided by a DSI PHY block.
-diff --git a/Documentation/devicetree/bindings/display/msm/dsi-phy-10nm.yaml b/Documentation/devicetree/bindings/display/msm/dsi-phy-10nm.yaml
-index 716f921e3532..d9ad8b659f58 100644
---- a/Documentation/devicetree/bindings/display/msm/dsi-phy-10nm.yaml
-+++ b/Documentation/devicetree/bindings/display/msm/dsi-phy-10nm.yaml
-@@ -37,7 +37,6 @@ properties:
- 
-   qcom,phy-rescode-offset-top:
-     $ref: /schemas/types.yaml#/definitions/int8-array
--    minItems: 5
-     maxItems: 5
-     description:
-       Integer array of offset for pull-up legs rescode for all five lanes.
-@@ -49,7 +48,6 @@ properties:
- 
-   qcom,phy-rescode-offset-bot:
-     $ref: /schemas/types.yaml#/definitions/int8-array
--    minItems: 5
-     maxItems: 5
-     description:
-       Integer array of offset for pull-down legs rescode for all five lanes.
-diff --git a/Documentation/devicetree/bindings/display/samsung/samsung,exynos5433-decon.yaml b/Documentation/devicetree/bindings/display/samsung/samsung,exynos5433-decon.yaml
-index 921bfe925cd6..6380eeebb073 100644
---- a/Documentation/devicetree/bindings/display/samsung/samsung,exynos5433-decon.yaml
-+++ b/Documentation/devicetree/bindings/display/samsung/samsung,exynos5433-decon.yaml
-@@ -24,7 +24,6 @@ properties:
-       - samsung,exynos5433-decon-tv
- 
-   clocks:
--    minItems: 11
-     maxItems: 11
- 
-   clock-names:
-@@ -59,7 +58,6 @@ properties:
-       - const: te
- 
-   iommus:
--    minItems: 2
-     maxItems: 2
- 
-   iommu-names:
-diff --git a/Documentation/devicetree/bindings/display/samsung/samsung,exynos5433-mic.yaml b/Documentation/devicetree/bindings/display/samsung/samsung,exynos5433-mic.yaml
-index 7d405f2febcd..26e5017737a3 100644
---- a/Documentation/devicetree/bindings/display/samsung/samsung,exynos5433-mic.yaml
-+++ b/Documentation/devicetree/bindings/display/samsung/samsung,exynos5433-mic.yaml
-@@ -24,7 +24,6 @@ properties:
-     const: samsung,exynos5433-mic
- 
-   clocks:
--    minItems: 2
-     maxItems: 2
- 
-   clock-names:
-diff --git a/Documentation/devicetree/bindings/display/samsung/samsung,exynos7-decon.yaml b/Documentation/devicetree/bindings/display/samsung/samsung,exynos7-decon.yaml
-index 969bd8c563a5..c06f306e8d14 100644
---- a/Documentation/devicetree/bindings/display/samsung/samsung,exynos7-decon.yaml
-+++ b/Documentation/devicetree/bindings/display/samsung/samsung,exynos7-decon.yaml
-@@ -22,7 +22,6 @@ properties:
-     const: samsung,exynos7-decon
- 
-   clocks:
--    minItems: 4
-     maxItems: 4
- 
-   clock-names:
-diff --git a/Documentation/devicetree/bindings/display/samsung/samsung,fimd.yaml b/Documentation/devicetree/bindings/display/samsung/samsung,fimd.yaml
-index 5d5cc220f78a..210d856b3b57 100644
---- a/Documentation/devicetree/bindings/display/samsung/samsung,fimd.yaml
-+++ b/Documentation/devicetree/bindings/display/samsung/samsung,fimd.yaml
-@@ -27,7 +27,6 @@ properties:
-     const: 1
- 
-   clocks:
--    minItems: 2
-     maxItems: 2
- 
-   clock-names:
-diff --git a/Documentation/devicetree/bindings/display/tegra/nvidia,tegra20-gr3d.yaml b/Documentation/devicetree/bindings/display/tegra/nvidia,tegra20-gr3d.yaml
-index dbdf0229d9f6..4755a73473c7 100644
---- a/Documentation/devicetree/bindings/display/tegra/nvidia,tegra20-gr3d.yaml
-+++ b/Documentation/devicetree/bindings/display/tegra/nvidia,tegra20-gr3d.yaml
-@@ -59,7 +59,6 @@ properties:
-     maxItems: 2
- 
-   power-domain-names:
--    minItems: 2
-     maxItems: 2
- 
- allOf:
-diff --git a/Documentation/devicetree/bindings/display/tegra/nvidia,tegra20-mpe.yaml b/Documentation/devicetree/bindings/display/tegra/nvidia,tegra20-mpe.yaml
-index 4154ae01ad13..5f4f0fb4b692 100644
---- a/Documentation/devicetree/bindings/display/tegra/nvidia,tegra20-mpe.yaml
-+++ b/Documentation/devicetree/bindings/display/tegra/nvidia,tegra20-mpe.yaml
-@@ -42,11 +42,9 @@ properties:
-     maxItems: 1
- 
-   interconnects:
--    minItems: 6
-     maxItems: 6
- 
-   interconnect-names:
--    minItems: 6
-     maxItems: 6
- 
-   operating-points-v2:
--- 
-2.34.1
-
+Uros.
