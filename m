@@ -2,143 +2,122 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id ED4E7C64990
-	for <linux-kernel@archiver.kernel.org>; Thu, 25 Aug 2022 13:37:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id ED39FC28D13
+	for <linux-kernel@archiver.kernel.org>; Thu, 25 Aug 2022 13:39:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241299AbiHYNhR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 25 Aug 2022 09:37:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49786 "EHLO
+        id S240431AbiHYNj2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 25 Aug 2022 09:39:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53116 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241823AbiHYNhN (ORCPT
+        with ESMTP id S235803AbiHYNjZ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 25 Aug 2022 09:37:13 -0400
-Received: from mail-ej1-x62b.google.com (mail-ej1-x62b.google.com [IPv6:2a00:1450:4864:20::62b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 85E3DB275C
-        for <linux-kernel@vger.kernel.org>; Thu, 25 Aug 2022 06:37:11 -0700 (PDT)
-Received: by mail-ej1-x62b.google.com with SMTP id u15so30922824ejt.6
-        for <linux-kernel@vger.kernel.org>; Thu, 25 Aug 2022 06:37:11 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc;
-        bh=dlm2famS8O5FqtaX9yCeRxscNO/EP4O+QRIK7hJkB2s=;
-        b=hTFwrfcekpPlwsKPKUDudDRoTVjcNhRXmh1WtgUK60PKUyBomYKetqdJodmXMyLiB0
-         dkyuV7K5eZsOuK963+nUWPUe7KCyXkJZONDwPCrivKsZT9PJDubk1TQqXKdDF6asiLn/
-         tKuc0x8bOBlRQRLCT3cu6Yw1wdke2dVeoukHTnpDK1KgGBp18+wj0ZvHkmzlWDm5xfBe
-         7fzo7likfMjdV90vpKunxdhJef3uuXRWyf+Ve8lXxcg9SOUlYCESKPN/0H+qXAmkBCTn
-         HkRXi4lc+hQbTfmsIQLyBi6byW3t6UFkkCoPxj3LYOq5bF2Nj0Yq+8g0crj8aP/TqJK5
-         Uo7w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc;
-        bh=dlm2famS8O5FqtaX9yCeRxscNO/EP4O+QRIK7hJkB2s=;
-        b=z/iwng9LAcNs31fMMvIPyE5GYenZoMGnA2zY0dbOJfrPdRqWy7Ys1uUheUTR4Lp0K4
-         S6R7G6OsaYuGdP7I2sIPv/1Cn3thqhvhCt5vbugkrFGYH8JTvT00gvieFBudwqISjpPs
-         bMelFQIMEHSgQeC0ivvVtlmEwJdAUWXweb493lNphvQ4Qvi2dkmXJrsLX1I7k0NMs1+Y
-         Z5krQ4wZ9SMoNmlaLqyfi2NAnhjIh//PXuI3FL8OiI+azhubI3ztAj82uxvu6m1olpbZ
-         5HHuWdJB0Jq7MlVTASzhJM3yXMqV2opN5JWhVtFRffufIg76GPczyIHd4CYzM+ih5TOh
-         nYCA==
-X-Gm-Message-State: ACgBeo00XlYznbOIZlFH3ZfNzZkEOJ3NwCut2Gj/ye0yW3Ji3Qv+IrtK
-        mVnijBWB33smXQrFvdqr02V59BBeso3fmY0+LngzNg==
-X-Google-Smtp-Source: AA6agR6Be+IFNm9RQjAf6ZoJJ0Gv1gRLpqln7PaJkfZ2s1Nuu2OIJL74xQl9m77k4Ch3VEJMzJNEIiUBj3SnGR8MwxQ=
-X-Received: by 2002:a17:906:9b86:b0:73d:72cf:72af with SMTP id
- dd6-20020a1709069b8600b0073d72cf72afmr2609925ejc.440.1661434630115; Thu, 25
- Aug 2022 06:37:10 -0700 (PDT)
+        Thu, 25 Aug 2022 09:39:25 -0400
+Received: from smtp-out2.suse.de (smtp-out2.suse.de [IPv6:2001:67c:2178:6::1d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1C625B56FD
+        for <linux-kernel@vger.kernel.org>; Thu, 25 Aug 2022 06:39:22 -0700 (PDT)
+Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
+        by smtp-out2.suse.de (Postfix) with ESMTP id E53232073D;
+        Thu, 25 Aug 2022 13:39:20 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
+        t=1661434760; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=2azcP9tPZvQFnWr+B5701VWdlvj+WXIa4/SiL59J3Gc=;
+        b=JVhxdBDZ8ECfBxGpsf1qS6JkalqzAoKaChz7p8wmqF60cq6cDhxExtUodo7EAN5uD7nWux
+        hHez746eEQmgs6aQFkb3+M8Kl2KzB2NW5U3AcvkJE/f8QZC30NtnBcZukrheGc0ExNuAiN
+        JaAt1ksz+1DJ5kNMHt+csMJaJcuG/3Y=
+Received: from suse.cz (unknown [10.100.201.202])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by relay2.suse.de (Postfix) with ESMTPS id 24E082C141;
+        Thu, 25 Aug 2022 13:39:20 +0000 (UTC)
+Date:   Thu, 25 Aug 2022 15:39:19 +0200
+From:   Petr Mladek <pmladek@suse.com>
+To:     Jagdish Gediya <jvgediya@linux.ibm.com>
+Cc:     Matthew Wilcox <willy@infradead.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        linux-kernel@vger.kernel.org, linux-mm@kvack.org,
+        ying.huang@intel.com, dave.hansen@intel.com,
+        Jonathan.Cameron@huawei.com, adobriyan@gmail.com,
+        akpm@linux-foundation.org, rf@opensource.cirrus.com,
+        will@kernel.org
+Subject: Re: [PATCH v3 1/2] lib/kstrtox.c: Add "false"/"true" support to
+ kstrtobool()
+Message-ID: <Ywd7h68eYwGDYBtJ@alley>
+References: <20220426180203.70782-1-jvgediya@linux.ibm.com>
+ <Yt6u34sigPEkeZ0Y@FVFF77S0Q05N.cambridge.arm.com>
+ <Yt605xj898VSAsA3@casper.infradead.org>
+ <YuPwLq+D8k53GZa3@smile.fi.intel.com>
+ <YuPwgmHbcQYsA4Kp@smile.fi.intel.com>
 MIME-Version: 1.0
-References: <f31b818cf8d682de61c74b133beffcc8a8202478.1660041358.git.christophe.leroy@csgroup.eu>
- <CACRpkdY53c0qXx24Am1TMivXr-MV+fQ8B0CDjtGi6=+2tn4-7A@mail.gmail.com>
- <CAK8P3a1Vh1Uehuin-u5QrTO5qh+t0aK_hA-QZwqc00Db_+MKcw@mail.gmail.com>
- <CACRpkdbhbwBe=jU5prifXCYUXPqULhst0se3ZRH+sWOh9XeoLQ@mail.gmail.com>
- <CAK8P3a0j-54_OkXC7x3NSNaHhwJ+9umNgbpsrPxUB4dwewK63A@mail.gmail.com>
- <CACRpkda0+iy8H0YmyowSDn8RbYgnVbC1k+o5F67inXg4Qb934Q@mail.gmail.com> <CAK8P3a0uuJ_z8wmNmQTW_qPNqzz7XoxZdHgqbzmK+ydtjraeHg@mail.gmail.com>
-In-Reply-To: <CAK8P3a0uuJ_z8wmNmQTW_qPNqzz7XoxZdHgqbzmK+ydtjraeHg@mail.gmail.com>
-From:   Linus Walleij <linus.walleij@linaro.org>
-Date:   Thu, 25 Aug 2022 15:36:58 +0200
-Message-ID: <CACRpkdb5ow4hD3td6agCuKWvuxptm5AV4rsCrcxNStNdXnBzrA@mail.gmail.com>
-Subject: Re: [PATCH] gpio: Allow user to customise maximum number of GPIOs
-To:     Arnd Bergmann <arnd@arndb.de>
-Cc:     Alexandre Courbot <gnurou@gmail.com>,
-        Alexandre Courbot <acourbot@nvidia.com>,
-        Bartosz Golaszewski <brgl@bgdev.pl>,
-        Christophe Leroy <christophe.leroy@csgroup.eu>,
-        Jonathan Corbet <corbet@lwn.net>,
-        Russell King <linux@armlinux.org.uk>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        "maintainer:X86 ARCHITECTURE (32-BIT AND 64-BIT)" <x86@kernel.org>,
-        "H. Peter Anvin" <hpa@zytor.com>,
-        "open list:GPIO SUBSYSTEM" <linux-gpio@vger.kernel.org>,
-        "open list:DOCUMENTATION" <linux-doc@vger.kernel.org>,
-        open list <linux-kernel@vger.kernel.org>,
-        "moderated list:ARM PORT" <linux-arm-kernel@lists.infradead.org>,
-        "open list:GENERIC INCLUDE/ASM HEADER FILES" 
-        <linux-arch@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <YuPwgmHbcQYsA4Kp@smile.fi.intel.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Aug 18, 2022 at 2:46 PM Arnd Bergmann <arnd@arndb.de> wrote:
-> On Thu, Aug 18, 2022 at 2:25 PM Linus Walleij <linus.walleij@linaro.org> wrote:
+On Fri 2022-07-29 17:36:50, Andy Shevchenko wrote:
+> On Fri, Jul 29, 2022 at 05:35:26PM +0300, Andy Shevchenko wrote:
+> > On Mon, Jul 25, 2022 at 04:21:11PM +0100, Matthew Wilcox wrote:
+> > > On Mon, Jul 25, 2022 at 03:55:27PM +0100, Mark Rutland wrote:
+> > > > On Tue, Apr 26, 2022 at 11:32:02PM +0530, Jagdish Gediya wrote:
+> > > > > At many places in kernel, It is necessary to convert sysfs input
+> > > > > to corrosponding bool value e.g. "false" or "0" need to be converted
+> > > > > to bool false, "true" or "1" need to be converted to bool true,
+> > > > > places where such conversion is needed currently check the input
+> > > > > string manually, kstrtobool() can be utilized at such places but
+> > > > > currently it doesn't have support to accept "false"/"true".
+> > > > > 
+> > > > > Add support to accept "false"/"true" as valid string in kstrtobool().
+> > > > > 
+> > > > > Signed-off-by: Jagdish Gediya <jvgediya@linux.ibm.com>
+> > > > > Reviewed-by: Matthew Wilcox (Oracle) <willy@infradead.org>
+> > > > 
+> > > > I've just spotted that this broke arm64's "rodata=full" command line option,
 
-> > git grep 'base = -1' yields these suspects:
-> >
-> > arch/arm/common/sa1111.c:       sachip->gc.base = -1;
-> > arch/arm/common/scoop.c:        devptr->gpio.base = -1;
-> > arch/powerpc/platforms/52xx/mpc52xx_gpt.c:      gpt->gc.base = -1;
-> > arch/powerpc/platforms/83xx/mcu_mpc8349emitx.c: gc->base = -1;
-> >
-> > That's all! We could just calculate these to 512-ngpios and
-> > hardcode that instead.
->
-> How do the consumers find the numbers for these four?
+The problem still seems to be in mainline.
 
-For SA1111 the chip gets named "sa1111" and some consumers actually
-use proper machine descriptions, maybe all?
 
-arch/arm/mach-sa1100/jornada720.c:              GPIO_LOOKUP("sa1111",
-0, "s0-power", GPIO_ACTIVE_HIGH),
-arch/arm/mach-sa1100/jornada720.c:              GPIO_LOOKUP("sa1111",
-1, "s1-power", GPIO_ACTIVE_HIGH),
-(...)
+> > > That isn't a documented option.
+> > > 
+> > >         rodata=         [KNL]
+> > >                 on      Mark read-only kernel memory as read-only (default).
+> > >                 off     Leave read-only kernel memory writable for debugging.
+> > > 
+> > > Hopefully this is an object lesson in why you need to update the
+> > > documentation when you extend a feature.
+> > > 
+> > > > since "full" gets parsed as 'f' = FALSE, when previously that would have been
+> > > > rejected. So anyone passing "rodata=full" on the command line will have rodata
+> > > > disabled, which is not what they wanted.
+> > > > 
+> > > > The current state of things is a bit messy (we prase the option twice because
+> > > > arch code needs it early), and we can probably fix that with some refactoring,
+> > > > but I do wonder if we actually want to open up the sysfs parsing to accept
+> > > > anything *beginning* with [tTfF] rather than the full "true" and "false"
+> > > > strings as previously, or whether it's worth reverting this for now in case
+> > > > anything else is affected.
+> > > 
+> > > Well, that's going to break people who've started using the new option.
+> > > As a quick fix, how about only allowing either "f\0" or "fa"?
+> > 
+> > I think we need to be more strict in kstrtobool(), i.e. 'f\0' ('t\0') and 'fal'
+> > ('tru') perhaps?
+> 
+> Actually kstrtobool() has been designed as a generic parser that should have
+> lowest priority. It means that the code that uses it should take care of any
+> other custom cases _before_ calling for kstrtobool().
 
-For Scoop it is conditionally overridden in the code. I guess always
-overridden.
+Makes sense.
 
-For powerpc these seem to be using (old but working) device tree
-lookups, so should not be an issue.
+Jagdish, could you please send a patch fixing the "rodata" early_param
+in arch/arm64/mm/mmu.c?
 
-Sadly I'm not 100% sure that there are no random hard-coded
-GPIO numbers referring to whatever the framework gave them
-at the time the code was written :(
+Please, also add:
 
-Another reason the base is assigned from above (usually
-from 512 and downward) is that the primary SoC GPIO usually
-want to be at base 0 and there is no guarantee that it will
-get probed first. So hard-coded GPIO bases go from 0 -> n
-and dynamically allocateed GPIO bases from n <- 512.
+Cc: stable@vger.kernel.org # v5.19+
 
-Then we hope they don't meet and overlap in the middle...
-
-> > and in that case it is better to delete the use of this function
-> > altogether since it can not fail.
->
-> S32_MAX might be a better upper bound. That allows to
-> just have no number assigned to a gpio chip. Any driver
-> code calling desc_to_gpio() could then get back -1
-> or a negative error code.
->
-> Making the ones that are invalid today valid sounds like
-> a step backwards to me if the goal is to stop using
-> gpio numbers and most consumers no longer need them.
-
-OK I get it...
-
-Now: who wants to write this patch? :)
-
-Christophe? Will you take a stab at it?
-
-Yours,
-Linus Walleij
+Best Regards,
+Petr
