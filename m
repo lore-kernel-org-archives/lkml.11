@@ -2,114 +2,159 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7F3C4ECAAA2
-	for <linux-kernel@archiver.kernel.org>; Thu, 25 Aug 2022 22:12:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4ADCDECAAA2
+	for <linux-kernel@archiver.kernel.org>; Thu, 25 Aug 2022 22:13:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244334AbiHYWMd (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 25 Aug 2022 18:12:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43534 "EHLO
+        id S243391AbiHYWNr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 25 Aug 2022 18:13:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44496 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242855AbiHYWMY (ORCPT
+        with ESMTP id S237937AbiHYWNj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 25 Aug 2022 18:12:24 -0400
-Received: from madras.collabora.co.uk (madras.collabora.co.uk [IPv6:2a00:1098:0:82:1000:25:2eeb:e5ab])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 88E99B4423
-        for <linux-kernel@vger.kernel.org>; Thu, 25 Aug 2022 15:12:22 -0700 (PDT)
-Received: from [192.168.1.90] (unknown [188.27.54.142])
-        (using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
-         key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (No client certificate requested)
-        (Authenticated sender: cristicc)
-        by madras.collabora.co.uk (Postfix) with ESMTPSA id 419056601EB5;
-        Thu, 25 Aug 2022 23:12:20 +0100 (BST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
-        s=mail; t=1661465540;
-        bh=ZpkdgljukMvecL8dgUDfn4ptIdOfX7y4FE5jJ/1fyU8=;
-        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-        b=CEbKAGvNBIYzi/Ti1LMdKMpobOKF+6xnSWpPY8TtbYhJmhvkUPzXS7TCk15ELaiyG
-         RmDBvSGUrPPOP36LARHEo/YqzG0abwAvwOsart9PACe+QmB7OTAoOKXwmFWJeP6iv9
-         HVu6iQCvpK2lrY/K65Em5GbxT4qem/A/pT7nsO+OGs0yt6PjK5JtsV+GoZnlGXjHee
-         NuBCeHYFUFid+sW5x+baxZ4Q8WyfVflumIRXR7VeKnPtcXzfXCm1ZAom8uo80HB2kU
-         BkOO2p21RGzk7QYBIJtUP4nRtZoJ9UedFi0R5Vg8zcnHjTp4A4CBB5ad/CumusXZo3
-         Bh6D/yQ4w7z/A==
-Message-ID: <1d0bd2ec-ce27-02fa-b538-4636ca9ac289@collabora.com>
-Date:   Fri, 26 Aug 2022 01:12:17 +0300
+        Thu, 25 Aug 2022 18:13:39 -0400
+Received: from mail-ot1-f53.google.com (mail-ot1-f53.google.com [209.85.210.53])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9C360C3F61;
+        Thu, 25 Aug 2022 15:13:38 -0700 (PDT)
+Received: by mail-ot1-f53.google.com with SMTP id q39-20020a056830442700b0063889adc0ddso14873457otv.1;
+        Thu, 25 Aug 2022 15:13:38 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc;
+        bh=0yiLGAygSoo6Ig9sU43elYK3mW36FwAxOIDV175b8NU=;
+        b=k1PYE919Z7zpQDHLmPmmvphNiPAbxv8ZCESZGCQjHQdBbFzhnISeD+O8SDzwceLueZ
+         DKJHhN699ZSh6+UVh/XpCoxcxerWN4ueN4O8Kv/Rnet5c6p9fGbIBxvV8qGnbSpNuOlz
+         kHsc2o4YtZOsSUe9Jr5y11okQN5VQBx3hu8UZKrFubWuu8xMLBwEtAIJJC2Kkn6PpNTE
+         KpAjUoVlPkkA1z71CvilacOKs0nR8YZ+rvilvJtcTtFjuhDNLr0PnK45K9rcW6nEDwZg
+         08gdDU2VzM5dkUHCpupntmnV0Nw53a5LTQBT58K+fhOcf+/SVZyX8z9N62WpmHEz5/Qk
+         hvkw==
+X-Gm-Message-State: ACgBeo2/oSQlcR2vN7Cp29G5b8S66Yah5qMmK8bw6uEnQgTQgsYz81WX
+        gBq+74gGGo0B5mbWX+4gCsEKx/ZJagEEuNYHuYOHg02A
+X-Google-Smtp-Source: AA6agR5GWdpSBvdNXxpMD6f3n3eheZKR+Hy6vRNlOopt4CjawCKDkuGUtFbxMlJ1F5C1JAg1sZCT24VWl4xiLXNYGx8=
+X-Received: by 2002:a9d:6f18:0:b0:638:b4aa:a546 with SMTP id
+ n24-20020a9d6f18000000b00638b4aaa546mr409050otq.124.1661465617600; Thu, 25
+ Aug 2022 15:13:37 -0700 (PDT)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.12.0
-Subject: Re: [PATCH] ASoC: wm_adsp: Silent parsing error on loading speaker
- protection fw
-Content-Language: en-US
-To:     Charles Keepax <ckeepax@opensource.cirrus.com>
-Cc:     Liam Girdwood <lgirdwood@gmail.com>,
-        Mark Brown <broonie@kernel.org>,
-        Jaroslav Kysela <perex@perex.cz>,
-        Takashi Iwai <tiwai@suse.com>,
-        Vlad Karpovich <Vlad.Karpovich@cirrus.com>,
-        patches@opensource.cirrus.com, alsa-devel@alsa-project.org,
-        linux-kernel@vger.kernel.org, kernel@collabora.com
-References: <20220823133347.919706-1-cristian.ciocaltea@collabora.com>
- <20220825124715.GM92394@ediswmail.ad.cirrus.com>
-From:   Cristian Ciocaltea <cristian.ciocaltea@collabora.com>
-In-Reply-To: <20220825124715.GM92394@ediswmail.ad.cirrus.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+References: <20220823210354.1407473-1-namhyung@kernel.org> <CAEf4Bzbd0-jGFCSCJu3eDxxom42xnH9Tevq0n50-AajjHb5t3g@mail.gmail.com>
+In-Reply-To: <CAEf4Bzbd0-jGFCSCJu3eDxxom42xnH9Tevq0n50-AajjHb5t3g@mail.gmail.com>
+From:   Namhyung Kim <namhyung@kernel.org>
+Date:   Thu, 25 Aug 2022 15:13:28 -0700
+Message-ID: <CAM9d7cjiGjO5dAw_zf01+j=5cvd6cnz0_TK4OJW5MVxDwi7psA@mail.gmail.com>
+Subject: Re: [PATCH bpf-next] bpf: Add bpf_read_raw_record() helper
+To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Cc:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>,
+        Stanislav Fomichev <sdf@google.com>,
+        Hao Luo <haoluo@google.com>, Jiri Olsa <jolsa@kernel.org>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Ingo Molnar <mingo@kernel.org>, bpf <bpf@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+Hello,
 
-On 8/25/22 15:47, Charles Keepax wrote:
-> On Tue, Aug 23, 2022 at 04:33:47PM +0300, Cristian Ciocaltea wrote:
->> The tracing capabilities for the speaker protection fw enabled via
->> commit c55b3e46cb99 ("ASoC: wm_adsp: Add trace caps to speaker
->> protection FW") are not be available on all platforms, such as the
->> Valve's Steam Deck which is based on the Halo Core DSP.
->>
->> As a consequence, whenever the firmware is loaded, a rather misleading
->> 'Failed to parse legacy: -19' error message is written to the kernel
->> ring buffer:
->>
->> [  288.977412] steamdeck kernel: cs35l41 spi-VLV1776:01: DSP1: Firmware version: 3
->> [  288.978002] steamdeck kernel: cs35l41 spi-VLV1776:01: DSP1: cs35l41-dsp1-spk-prot.wmfw: Fri 02 Apr 2021 21:03:50 W. Europe Daylight Time
->> [  289.094065] steamdeck kernel: cs35l41 spi-VLV1776:01: DSP1: Firmware: 400a4 vendor: 0x2 v0.33.0, 2 algorithms
->> [  289.095073] steamdeck kernel: cs35l41 spi-VLV1776:01: DSP1: 0: ID cd v29.53.0 XM@94 YM@e
->> [  289.095665] steamdeck kernel: cs35l41 spi-VLV1776:01: DSP1: 1: ID f20b v0.0.1 XM@170 YM@0
->> [  289.096275] steamdeck kernel: cs35l41 spi-VLV1776:01: DSP1: Protection: C:\Users\ocanavan\Desktop\cirrusTune_july2021.bin
->> [  291.172383] steamdeck kernel: cs35l41 spi-VLV1776:01: DSP1: Failed to parse legacy: -19
->>
->> Update wm_adsp_buffer_init() to *not* report the ENODEV error when the
->> firmware type is WM_ADSP_FW_SPK_PROT.
->>
->> Fixes: c55b3e46cb99 ("ASoC: wm_adsp: Add trace caps to speaker protection FW")
->> Signed-off-by: Cristian Ciocaltea <cristian.ciocaltea@collabora.com>
->> ---
->>   sound/soc/codecs/wm_adsp.c | 2 +-
->>   1 file changed, 1 insertion(+), 1 deletion(-)
->>
->> diff --git a/sound/soc/codecs/wm_adsp.c b/sound/soc/codecs/wm_adsp.c
->> index cfaa45ede916..7514fc03b468 100644
->> --- a/sound/soc/codecs/wm_adsp.c
->> +++ b/sound/soc/codecs/wm_adsp.c
->> @@ -1602,7 +1602,7 @@ static int wm_adsp_buffer_init(struct wm_adsp *dsp)
->>   	if (list_empty(&dsp->buffer_list)) {
->>   		/* Fall back to legacy support */
->>   		ret = wm_adsp_buffer_parse_legacy(dsp);
->> -		if (ret)
->> +		if (ret && (dsp->fw != WM_ADSP_FW_SPK_PROT || ret != -ENODEV))
->>   			adsp_warn(dsp, "Failed to parse legacy: %d\n", ret);
-> 
-> Fixing this for a single firmware probably doesn't really make
-> the most sense, if we are treating buffers as optional these days
-> I guess really the best solution would be to make this either an
-> info and slightly rephrase the message or make it a dbg message.
+On Thu, Aug 25, 2022 at 2:34 PM Andrii Nakryiko
+<andrii.nakryiko@gmail.com> wrote:
+>
+> On Tue, Aug 23, 2022 at 2:04 PM Namhyung Kim <namhyung@kernel.org> wrote:
+> >
+> > The helper is for BPF programs attached to perf_event in order to read
+> > event-specific raw data.  I followed the convention of the
+> > bpf_read_branch_records() helper so that it can tell the size of
+> > record using BPF_F_GET_RAW_RECORD flag.
+> >
+> > The use case is to filter perf event samples based on the HW provided
+> > data which have more detailed information about the sample.
+> >
+> > Note that it only reads the first fragment of the raw record.  But it
+> > seems mostly ok since all the existing PMU raw data have only single
+> > fragment and the multi-fragment records are only for BPF output attached
+> > to sockets.  So unless it's used with such an extreme case, it'd work
+> > for most of tracing use cases.
+> >
+> > Signed-off-by: Namhyung Kim <namhyung@kernel.org>
+> > ---
+> > I don't know how to test this.  As the raw data is available on some
+> > hardware PMU only (e.g. AMD IBS).  I tried a tracepoint event but it was
+> > rejected by the verifier.  Actually it needs a bpf_perf_event_data
+> > context so that's not an option IIUC.
+> >
+> >  include/uapi/linux/bpf.h | 23 ++++++++++++++++++++++
+> >  kernel/trace/bpf_trace.c | 41 ++++++++++++++++++++++++++++++++++++++++
+> >  2 files changed, 64 insertions(+)
+> >
+> > diff --git a/include/uapi/linux/bpf.h b/include/uapi/linux/bpf.h
+> > index 934a2a8beb87..af7f70564819 100644
+> > --- a/include/uapi/linux/bpf.h
+> > +++ b/include/uapi/linux/bpf.h
+> > @@ -5355,6 +5355,23 @@ union bpf_attr {
+> >   *     Return
+> >   *             Current *ktime*.
+> >   *
+> > + * long bpf_read_raw_record(struct bpf_perf_event_data *ctx, void *buf, u32 size, u64 flags)
+> > + *     Description
+> > + *             For an eBPF program attached to a perf event, retrieve the
+> > + *             raw record associated to *ctx* and store it in the buffer
+> > + *             pointed by *buf* up to size *size* bytes.
+> > + *     Return
+> > + *             On success, number of bytes written to *buf*. On error, a
+> > + *             negative value.
+> > + *
+> > + *             The *flags* can be set to **BPF_F_GET_RAW_RECORD_SIZE** to
+> > + *             instead return the number of bytes required to store the raw
+> > + *             record. If this flag is set, *buf* may be NULL.
+>
+> It looks pretty ugly from a usability standpoint to have one helper
+> doing completely different things and returning two different values
+> based on BPF_F_GET_RAW_RECORD_SIZE.
 
-Indeed, I have just submitted v2 for a more generic handling of the issue:
+Agreed.
 
-https://lore.kernel.org/all/20220825220530.1205141-1-cristian.ciocaltea@collabora.com/
+>
+> I'm not sure what's best, but I have two alternative proposals:
+>
+> 1. Add two helpers: one to get perf record information (and size will
+> be one of them). Something like bpf_perf_record_query(ctx, flags)
+> where you pass perf ctx and what kind of information you want to read
+> (through flags), and u64 return result returns that (see
+> bpf_ringbuf_query() for such approach). And then have separate helper
+> to read data.
 
-Thanks for reviewing,
-Cristian
+I like this as I want to have more info for the perf event sample like
+instruction address or sample type.  I know some of the info is
+available through the context but I think this is a better approach.
 
-> Thanks,
-> Charles
+>
+> 2. Keep one helper, but specify that it always returns record size,
+> even if user specified smaller size to read. And then allow passing
+> buf==NULL && size==0. So passing NULL, 0 -- you get record size.
+> Passing non-NULL buf -- you read data.
+>
+>
+> And also, "read_raw_record" is way too generic. We have
+> bpf_perf_prog_read_value(), let's use "bpf_perf_read_raw_record()" as
+> a name. We should have called bpf_read_branch_records() as
+> bpf_perf_read_branch_records(), probably, as well. But it's too late.
+
+Yeah, what about this?
+
+ * bpf_perf_event_query(ctx, flag)
+ * bpf_perf_event_get(ctx, flag, buf, size)
+
+Maybe we can use the same flag for both.  Like BPF_PERF_RAW_RECORD
+can return the size (or -1 if not) on _query() and read the data on _get().
+Or we can have a BPF_PERF_RAW_RECORD_SIZE only for _query().
+It seems we don't need _get() for things like BPF_PERF_SAMPLE_IP.
+What do you think?
+
+Thanks,
+Namhyung
