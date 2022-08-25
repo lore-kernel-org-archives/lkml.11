@@ -2,52 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7E575C3F6B0
-	for <linux-kernel@archiver.kernel.org>; Thu, 25 Aug 2022 01:41:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 439BAC3F6B0
+	for <linux-kernel@archiver.kernel.org>; Thu, 25 Aug 2022 01:41:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233676AbiHYBlW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 24 Aug 2022 21:41:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54438 "EHLO
+        id S233958AbiHYBl1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 24 Aug 2022 21:41:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39584 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234241AbiHYBkZ (ORCPT
+        with ESMTP id S234548AbiHYBki (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 24 Aug 2022 21:40:25 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EF6829D645;
-        Wed, 24 Aug 2022 18:38:11 -0700 (PDT)
+        Wed, 24 Aug 2022 21:40:38 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0EE8E97EE4;
+        Wed, 24 Aug 2022 18:37:54 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 11D7461B0B;
-        Thu, 25 Aug 2022 01:37:31 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 35473C433C1;
-        Thu, 25 Aug 2022 01:37:28 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 9700E61ACA;
+        Thu, 25 Aug 2022 01:37:52 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C5E93C433D7;
+        Thu, 25 Aug 2022 01:37:50 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1661391450;
-        bh=XFGhVs/LHdWs58uDFg8hQoy3JeWZ3/j6TuTHMImljLk=;
+        s=k20201202; t=1661391472;
+        bh=L4MKQTQwym98xpmAY4yKswzZFnAkBnYHc0eAUQZ+gkM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=b68hAwoO0vGAS2DAHyvQdcqNDzXxydrNNS+nl2X7hMZfCmPzPbItUZh8zjt6UM861
-         ePMREHICyunnULwuQWLq8lgAPKCkr/LqboYA9AqvPOF+LZbJ0A+s0FDpxncTT/SUcJ
-         1pJVk1qfb90MLcHl8Kjni4SXL+cp8fBs6qB0vBhJAaQUNtkdt8AFSVGIX+wB6fH3m+
-         hXgFmrw0yUBuwPhUB+opLgkxdIoi84+o7liq2TR7fhZWc3u/+nPUWedxckQrNM37iR
-         7xssobIkB90SXRZLgMr08Z8lJD60i1NmjvGOHI7vMlCIzu8NadbyjULJ5yjf1TxihY
-         BolBN9p2K0BWQ==
+        b=S4SderldP4B2ACzK4N0BsgWApUlcMJEpIK+SyNKQIhupVCRqt3X9/U2GAzOi0jWcp
+         hxvgMHIWFTpFXG3lG97ss2kOMIUZ7COI3Nz8PGjL0+lwpk67nIhvPnnxyrML4qk7B+
+         ol0mW3woGghtOUPPK5pJ2VRUa/9TyeMEq7dvxUTbGV7KSiCR5tyR8S6TgSwoYpuIZa
+         LfM3WlWdiZJ/tvjodEhcMLHjX6PH1LluCpd4XVV8k6Jho3R287oYwirpKESVUAMBz1
+         +u9pu9kQ0FtF3WqbxNgkINHba2Higxps4bL58M45eNmkHLm90iDQOHvm0FB6P2rcFo
+         FC15QIzlSdVaA==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Leo Ma <hanghong.ma@amd.com>, Anthony Koo <Anthony.Koo@amd.com>,
-        Tom Chung <chiahsuan.chung@amd.com>,
-        Daniel Wheeler <daniel.wheeler@amd.com>,
-        Alex Deucher <alexander.deucher@amd.com>,
-        Sasha Levin <sashal@kernel.org>, harry.wentland@amd.com,
-        sunpeng.li@amd.com, Rodrigo.Siqueira@amd.com,
-        christian.koenig@amd.com, Xinhui.Pan@amd.com, airlied@linux.ie,
-        daniel@ffwll.ch, HaoPing.Liu@amd.com, Aric.Cyr@amd.com,
-        Angus.Wang@amd.com, harry.vanzylldejong@amd.com,
-        felipe.clark@amd.com, lv.ruyi@zte.com.cn, Bing.Guo@amd.com,
-        amd-gfx@lists.freedesktop.org, dri-devel@lists.freedesktop.org
-Subject: [PATCH AUTOSEL 5.15 04/20] drm/amd/display: Fix HDMI VSIF V3 incorrect issue
-Date:   Wed, 24 Aug 2022 21:36:56 -0400
-Message-Id: <20220825013713.22656-4-sashal@kernel.org>
+Cc:     Namjae Jeon <linkinjeon@kernel.org>,
+        Hyunchul Lee <hyc.lee@gmail.com>,
+        Steve French <stfrench@microsoft.com>,
+        Sasha Levin <sashal@kernel.org>, sfrench@samba.org,
+        linux-cifs@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.15 10/20] ksmbd: don't remove dos attribute xattr on O_TRUNC open
+Date:   Wed, 24 Aug 2022 21:37:02 -0400
+Message-Id: <20220825013713.22656-10-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220825013713.22656-1-sashal@kernel.org>
 References: <20220825013713.22656-1-sashal@kernel.org>
@@ -59,75 +53,53 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Leo Ma <hanghong.ma@amd.com>
+From: Namjae Jeon <linkinjeon@kernel.org>
 
-[ Upstream commit 0591183699fceeafb4c4141072d47775de83ecfb ]
+[ Upstream commit 17661ecf6a64eb11ae7f1108fe88686388b2acd5 ]
 
-[Why]
-Reported from customer the checksum in AMD VSIF V3 is incorrect and
-causing blank screen issue.
+When smb client open file in ksmbd share with O_TRUNC, dos attribute
+xattr is removed as well as data in file. This cause the FSCTL_SET_SPARSE
+request from the client fails because ksmbd can't update the dos attribute
+after setting ATTR_SPARSE_FILE. And this patch fix xfstests generic/469
+test also.
 
-[How]
-Fix the packet length issue on AMD HDMI VSIF V3.
-
-Reviewed-by: Anthony Koo <Anthony.Koo@amd.com>
-Acked-by: Tom Chung <chiahsuan.chung@amd.com>
-Signed-off-by: Leo Ma <hanghong.ma@amd.com>
-Tested-by: Daniel Wheeler <daniel.wheeler@amd.com>
-Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
+Signed-off-by: Namjae Jeon <linkinjeon@kernel.org>
+Reviewed-by: Hyunchul Lee <hyc.lee@gmail.com>
+Signed-off-by: Steve French <stfrench@microsoft.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- .../drm/amd/display/modules/freesync/freesync.c   | 15 +++------------
- 1 file changed, 3 insertions(+), 12 deletions(-)
+ fs/ksmbd/smb2pdu.c | 18 +++++++++---------
+ 1 file changed, 9 insertions(+), 9 deletions(-)
 
-diff --git a/drivers/gpu/drm/amd/display/modules/freesync/freesync.c b/drivers/gpu/drm/amd/display/modules/freesync/freesync.c
-index b99aa232bd8b..4bee6d018bfa 100644
---- a/drivers/gpu/drm/amd/display/modules/freesync/freesync.c
-+++ b/drivers/gpu/drm/amd/display/modules/freesync/freesync.c
-@@ -567,10 +567,6 @@ static void build_vrr_infopacket_data_v1(const struct mod_vrr_params *vrr,
- 	 * Note: We should never go above the field rate of the mode timing set.
- 	 */
- 	infopacket->sb[8] = (unsigned char)((vrr->max_refresh_in_uhz + 500000) / 1000000);
+diff --git a/fs/ksmbd/smb2pdu.c b/fs/ksmbd/smb2pdu.c
+index 824f17a101a9..55ee639703ff 100644
+--- a/fs/ksmbd/smb2pdu.c
++++ b/fs/ksmbd/smb2pdu.c
+@@ -2319,15 +2319,15 @@ static int smb2_remove_smb_xattrs(struct path *path)
+ 			name += strlen(name) + 1) {
+ 		ksmbd_debug(SMB, "%s, len %zd\n", name, strlen(name));
+ 
+-		if (strncmp(name, XATTR_USER_PREFIX, XATTR_USER_PREFIX_LEN) &&
+-		    strncmp(&name[XATTR_USER_PREFIX_LEN], DOS_ATTRIBUTE_PREFIX,
+-			    DOS_ATTRIBUTE_PREFIX_LEN) &&
+-		    strncmp(&name[XATTR_USER_PREFIX_LEN], STREAM_PREFIX, STREAM_PREFIX_LEN))
+-			continue;
 -
--	/* FreeSync HDR */
--	infopacket->sb[9] = 0;
--	infopacket->sb[10] = 0;
- }
- 
- static void build_vrr_infopacket_data_v3(const struct mod_vrr_params *vrr,
-@@ -638,10 +634,6 @@ static void build_vrr_infopacket_data_v3(const struct mod_vrr_params *vrr,
- 
- 	/* PB16 : Reserved bits 7:1, FixedRate bit 0 */
- 	infopacket->sb[16] = (vrr->state == VRR_STATE_ACTIVE_FIXED) ? 1 : 0;
--
--	//FreeSync HDR
--	infopacket->sb[9] = 0;
--	infopacket->sb[10] = 0;
- }
- 
- static void build_vrr_infopacket_fs2_data(enum color_transfer_func app_tf,
-@@ -726,8 +718,7 @@ static void build_vrr_infopacket_header_v2(enum signal_type signal,
- 		/* HB2  = [Bits 7:5 = 0] [Bits 4:0 = Length = 0x09] */
- 		infopacket->hb2 = 0x09;
- 
--		*payload_size = 0x0A;
--
-+		*payload_size = 0x09;
- 	} else if (dc_is_dp_signal(signal)) {
- 
- 		/* HEADER */
-@@ -776,9 +767,9 @@ static void build_vrr_infopacket_header_v3(enum signal_type signal,
- 		infopacket->hb1 = version;
- 
- 		/* HB2  = [Bits 7:5 = 0] [Bits 4:0 = Length] */
--		*payload_size = 0x10;
--		infopacket->hb2 = *payload_size - 1; //-1 for checksum
-+		infopacket->hb2 = 0x10;
- 
-+		*payload_size = 0x10;
- 	} else if (dc_is_dp_signal(signal)) {
- 
- 		/* HEADER */
+-		err = ksmbd_vfs_remove_xattr(user_ns, path->dentry, name);
+-		if (err)
+-			ksmbd_debug(SMB, "remove xattr failed : %s\n", name);
++		if (!strncmp(name, XATTR_USER_PREFIX, XATTR_USER_PREFIX_LEN) &&
++		    !strncmp(&name[XATTR_USER_PREFIX_LEN], STREAM_PREFIX,
++			     STREAM_PREFIX_LEN)) {
++			err = ksmbd_vfs_remove_xattr(user_ns, path->dentry,
++						     name);
++			if (err)
++				ksmbd_debug(SMB, "remove xattr failed : %s\n",
++					    name);
++		}
+ 	}
+ out:
+ 	kvfree(xattr_list);
 -- 
 2.35.1
 
