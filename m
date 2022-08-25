@@ -2,117 +2,121 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 28E4DC3F6B0
-	for <linux-kernel@archiver.kernel.org>; Thu, 25 Aug 2022 08:58:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 60934C64993
+	for <linux-kernel@archiver.kernel.org>; Thu, 25 Aug 2022 09:00:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238045AbiHYI65 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 25 Aug 2022 04:58:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44112 "EHLO
+        id S236798AbiHYJAl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 25 Aug 2022 05:00:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49240 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237510AbiHYI6q (ORCPT
+        with ESMTP id S237937AbiHYJAf (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 25 Aug 2022 04:58:46 -0400
-Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4D9CBA896F;
-        Thu, 25 Aug 2022 01:58:37 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1661417917; x=1692953917;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=xWcqRqK9GSZt9NznWIFPcoPcb1DvRs46teeJkfDwcKk=;
-  b=BH9+8xdaFNVEJwYngzSF0QvALLrV34bK68anUupewcQyt+0afe3tW7uq
-   Fi8iwBU2s88gQ9J6XPEqPebIn81iDOT5XjrkdKPdmWEcMdQQI17tVjzrV
-   VHu6Rsm0WvtMYym/d3/zMGuIRb+U3JK7/pvovbEx+nej5NtEn7fOZn7jL
-   Z1LWZSvTkFQ/Vjg2bHFF6QBHOX+ucWIgkw726BHtTB7em+/wiThLDfMyn
-   J6062YIYL6Ng4mTHhXMPj9qaS0U0x9oq4fhved3QQUuIoX3h14Zug4YOZ
-   inMVEin6H09B6DUyXYo5RU+jOFJEdoBEnpMwGMPHYgLCZeI9gc9vE1zil
-   w==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10449"; a="273941445"
-X-IronPort-AV: E=Sophos;i="5.93,262,1654585200"; 
-   d="scan'208";a="273941445"
-Received: from fmsmga008.fm.intel.com ([10.253.24.58])
-  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Aug 2022 01:58:37 -0700
-X-IronPort-AV: E=Sophos;i="5.93,262,1654585200"; 
-   d="scan'208";a="670893955"
-Received: from mblazque-mobl1.ger.corp.intel.com (HELO ijarvine-MOBL2.ger.corp.intel.com) ([10.249.44.101])
-  by fmsmga008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Aug 2022 01:58:34 -0700
-From:   =?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        linux-serial@vger.kernel.org,
-        Laxman Dewangan <ldewangan@nvidia.com>,
-        Thierry Reding <thierry.reding@gmail.com>,
-        Jonathan Hunter <jonathanh@nvidia.com>,
-        linux-tegra@vger.kernel.org, linux-kernel@vger.kernel.org
-Cc:     =?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>
-Subject: [PATCH 5/5] serial: tegra: Remove custom frame size calculation
-Date:   Thu, 25 Aug 2022 11:58:10 +0300
-Message-Id: <20220825085810.7290-6-ilpo.jarvinen@linux.intel.com>
-X-Mailer: git-send-email 2.30.2
-In-Reply-To: <20220825085810.7290-1-ilpo.jarvinen@linux.intel.com>
-References: <20220825085810.7290-1-ilpo.jarvinen@linux.intel.com>
+        Thu, 25 Aug 2022 05:00:35 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F01F09FDA
+        for <linux-kernel@vger.kernel.org>; Thu, 25 Aug 2022 02:00:33 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1661418033;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=g3msqlmna2n81LVQxtRLpXl13yn52sbfCvyaxQuWZKg=;
+        b=eGolktsHlhIqyKAnzkeqShKbtvmM5Q1V3Jrj2jRtJKNxHRG2RDOpe59rwgOTBKhhGNbSU7
+        rxcHoH8ENZlt8E+EKIO23EMY0dwZ1szq1IOgBS6phPXL9RA5Y7YDO1e5Bgglbdczjmk4hC
+        UVSKek9MDXjWFeX//6tjkA+GB6Cjxtg=
+Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
+ [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-660-mOH2pk30ODKtFap7CVSrFg-1; Thu, 25 Aug 2022 05:00:28 -0400
+X-MC-Unique: mOH2pk30ODKtFap7CVSrFg-1
+Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.rdu2.redhat.com [10.11.54.1])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 6B8DD3C0F377;
+        Thu, 25 Aug 2022 09:00:27 +0000 (UTC)
+Received: from fedora.redhat.com (unknown [10.40.194.159])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 5138C40CF8ED;
+        Thu, 25 Aug 2022 09:00:25 +0000 (UTC)
+From:   Vitaly Kuznetsov <vkuznets@redhat.com>
+To:     linux-hyperv@vger.kernel.org
+Cc:     linux-kernel@vger.kernel.org, dri-devel@lists.freedesktop.org,
+        linux-pci@vger.kernel.org, Bjorn Helgaas <bhelgaas@google.com>,
+        Wei Liu <wei.liu@kernel.org>,
+        Deepak Rawat <drawat.floss@gmail.com>,
+        "K. Y. Srinivasan" <kys@microsoft.com>,
+        Haiyang Zhang <haiyangz@microsoft.com>,
+        Stephen Hemminger <sthemmin@microsoft.com>,
+        Dexuan Cui <decui@microsoft.com>,
+        Michael Kelley <mikelley@microsoft.com>
+Subject: [PATCH v2 0/3] Drivers: hv: Avoid allocating MMIO from framebuffer region for other passed through PCI devices
+Date:   Thu, 25 Aug 2022 11:00:21 +0200
+Message-Id: <20220825090024.1007883-1-vkuznets@redhat.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
+Content-Type: text/plain
 Content-Transfer-Encoding: 8bit
+X-Scanned-By: MIMEDefang 2.84 on 10.11.54.1
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The number of bits can be calculated using tty_get_frame_size(), no
-need for the driver to do it on its own.
+Changes since v1:
+- Dropped PATCH2 as it is no longer needed.
+- Move PCI ids to linux/pci_ids.h [Michael]
+- Correctly handle "!(pdev->resource[0].flags & IORESOURCE_MEM)" case
+  [Michael].
 
-Signed-off-by: Ilpo Järvinen <ilpo.jarvinen@linux.intel.com>
----
- drivers/tty/serial/serial-tegra.c | 12 +++---------
- 1 file changed, 3 insertions(+), 9 deletions(-)
+Passed through PCI device sometimes misbehave on Gen1 VMs when Hyper-V
+DRM driver is also loaded. Looking at IOMEM assignment, we can see e.g.
 
-diff --git a/drivers/tty/serial/serial-tegra.c b/drivers/tty/serial/serial-tegra.c
-index ad4f3567ff90..5a56bd20abcd 100644
---- a/drivers/tty/serial/serial-tegra.c
-+++ b/drivers/tty/serial/serial-tegra.c
-@@ -1278,7 +1278,6 @@ static void tegra_uart_set_termios(struct uart_port *u,
- 	unsigned long flags;
- 	unsigned int lcr;
- 	unsigned char char_bits;
--	int symb_bit = 1;
- 	struct clk *parent_clk = clk_get_parent(tup->uart_clk);
- 	unsigned long parent_clk_rate = clk_get_rate(parent_clk);
- 	int max_divider = (tup->cdata->support_clk_src_div) ? 0x7FFF : 0xFFFF;
-@@ -1305,7 +1304,6 @@ static void tegra_uart_set_termios(struct uart_port *u,
- 	termios->c_cflag &= ~CMSPAR;
- 
- 	if ((termios->c_cflag & PARENB) == PARENB) {
--		symb_bit++;
- 		if (termios->c_cflag & PARODD) {
- 			lcr |= UART_LCR_PARITY;
- 			lcr &= ~UART_LCR_EPAR;
-@@ -1318,22 +1316,18 @@ static void tegra_uart_set_termios(struct uart_port *u,
- 	}
- 
- 	char_bits = tty_get_char_size(termios->c_cflag);
--	symb_bit += char_bits;
- 	lcr &= ~UART_LCR_WLEN8;
- 	lcr |= UART_LCR_WLEN(char_bits);
- 
- 	/* Stop bits */
--	if (termios->c_cflag & CSTOPB) {
-+	if (termios->c_cflag & CSTOPB)
- 		lcr |= UART_LCR_STOP;
--		symb_bit += 2;
--	} else {
-+	else
- 		lcr &= ~UART_LCR_STOP;
--		symb_bit++;
--	}
- 
- 	tegra_uart_write(tup, lcr, UART_LCR);
- 	tup->lcr_shadow = lcr;
--	tup->symb_bit = symb_bit;
-+	tup->symb_bit = tty_get_frame_size(termios->c_cflag);
- 
- 	/* Baud rate. */
- 	baud = uart_get_baud_rate(u, termios, oldtermios,
+$ cat /proc/iomem
+...
+f8000000-fffbffff : PCI Bus 0000:00
+  f8000000-fbffffff : 0000:00:08.0
+    f8000000-f8001fff : bb8c4f33-2ba2-4808-9f7f-02f3b4da22fe
+...
+fe0000000-fffffffff : PCI Bus 0000:00
+  fe0000000-fe07fffff : bb8c4f33-2ba2-4808-9f7f-02f3b4da22fe
+    fe0000000-fe07fffff : 2ba2:00:02.0
+      fe0000000-fe07fffff : mlx4_core
+
+the interesting part is the 'f8000000' region as it is actually the
+VM's framebuffer:
+
+$ lspci -v
+...
+0000:00:08.0 VGA compatible controller: Microsoft Corporation Hyper-V virtual VGA (prog-if 00 [VGA controller])
+	Flags: bus master, fast devsel, latency 0, IRQ 11
+	Memory at f8000000 (32-bit, non-prefetchable) [size=64M]
+...
+
+Recently merged commit a0ab5abced55 ("drm/hyperv : Removing the restruction of
+VRAM allocation with PCI bar size") improved the situation as resources,
+reserved through vmbus_allocate_mmio() can't be allocated twice:
+
+...
+f8000000-fffbffff : PCI Bus 0000:00
+  f8000000-fbffffff : 0000:00:08.0
+    f8000000-f8001fff : bb8c4f33-2ba2-4808-9f7f-02f3b4da22fe
+    f8100000-f88fffff : 5620e0c7-8062-4dce-aeb7-520c7ef76171
+...
+
+Always reserve FB region on Gen1 VMs (PATCH2) and make sure we never allocate
+anything besides framebuffer from there (PATCH3).
+
+Vitaly Kuznetsov (3):
+  PCI: Move PCI_VENDOR_ID_MICROSOFT/PCI_DEVICE_ID_HYPERV_VIDEO
+    definitions to pci_ids.h
+  Drivers: hv: Always reserve framebuffer region for Gen1 VMs
+  Drivers: hv: Never allocate anything besides framebuffer from
+    framebuffer memory region
+
+ drivers/gpu/drm/hyperv/hyperv_drm_drv.c       |  3 -
+ drivers/hv/vmbus_drv.c                        | 56 ++++++++++++++-----
+ .../net/ethernet/microsoft/mana/gdma_main.c   |  4 --
+ drivers/video/fbdev/hyperv_fb.c               |  4 --
+ include/linux/pci_ids.h                       |  3 +
+ 5 files changed, 44 insertions(+), 26 deletions(-)
+
 -- 
-2.30.2
+2.37.1
 
