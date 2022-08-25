@@ -2,129 +2,76 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9E454C04AA5
-	for <linux-kernel@archiver.kernel.org>; Thu, 25 Aug 2022 06:52:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 46B40C28D13
+	for <linux-kernel@archiver.kernel.org>; Thu, 25 Aug 2022 06:54:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236379AbiHYGwT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 25 Aug 2022 02:52:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41736 "EHLO
+        id S236413AbiHYGy2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 25 Aug 2022 02:54:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42556 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236307AbiHYGwR (ORCPT
+        with ESMTP id S233545AbiHYGy0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 25 Aug 2022 02:52:17 -0400
-Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D408C392;
-        Wed, 24 Aug 2022 23:52:16 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1661410336; x=1692946336;
-  h=message-id:date:mime-version:subject:to:cc:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=04yCuX7p5BBTYeA/TynP8rNdpmcbvJolmE3P3S679tg=;
-  b=icyhS006ssW4/OjidFoOp/M8szSIkdaJy4ebIYhAjSkczRuGDzRD784r
-   IUIeKRhvGH50Rc95VMXQfFAffCdECuPn3IkhEzn0t0Z/keIk2JdD9XJ9Z
-   rgUfLY65MycICMZmHFdGWk/QAxzBX0mLgSTAE80Aiw5qSsSWDmdn4YK5C
-   Af9ztmtnBpB2qiJB2+uSoUjE4WcDxCBh2XzDPc/FdA917xihen0DNCCvP
-   vCNyvzDjY+wOrtrnRpUZ5hDKYgTBKQefP8Vjp5i+eMxJ4Q4UczbCiYxUM
-   atxwVeBPdZvH2qVw1si83154g7LzU9Lvkvjv4oJIDSUmdCjCy0KNqfEP1
-   w==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10449"; a="291731398"
-X-IronPort-AV: E=Sophos;i="5.93,262,1654585200"; 
-   d="scan'208";a="291731398"
-Received: from fmsmga008.fm.intel.com ([10.253.24.58])
-  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Aug 2022 23:52:16 -0700
-X-IronPort-AV: E=Sophos;i="5.93,262,1654585200"; 
-   d="scan'208";a="670847341"
-Received: from ahunter6-mobl1.ger.corp.intel.com (HELO [10.0.2.15]) ([10.252.52.129])
-  by fmsmga008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Aug 2022 23:52:14 -0700
-Message-ID: <657c3398-36fc-0a0a-22c2-f749e1b5d8e5@intel.com>
-Date:   Thu, 25 Aug 2022 09:52:10 +0300
+        Thu, 25 Aug 2022 02:54:26 -0400
+Received: from mailgw01.mediatek.com (unknown [60.244.123.138])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6B31CA1A6B
+        for <linux-kernel@vger.kernel.org>; Wed, 24 Aug 2022 23:54:25 -0700 (PDT)
+X-UUID: 73386ac644e046bdb9aae3f3620b8d62-20220825
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=mediatek.com; s=dk;
+        h=Content-Type:Content-Transfer-Encoding:MIME-Version:Message-ID:Date:Subject:CC:To:From; bh=6GuUro5qIlUHirZ1NQir7sOfvYDYHGHkP5HZ51CeuWg=;
+        b=HsTdFNr6trkpUbgYTstZ9vZT2medPEl3/ZWODx1wMtetMPak/+/+AtxGGMjjVvWbFqZ8hDiEySfxOK7S3efBCkGGNHkb6BdnjDzLC+AQWeGaXCKF96XyZ+l0KEQK5EdkeP2RwpU7twnkOJfh7zyNpdyzCEM1K+zi7IIQRlFx2yI=;
+X-CID-P-RULE: Release_Ham
+X-CID-O-INFO: VERSION:1.1.10,REQID:83d8d903-c623-4a30-b1a4-4401ef5b2b3d,OB:0,L
+        OB:0,IP:0,URL:0,TC:0,Content:0,EDM:0,RT:0,SF:0,FILE:0,BULK:0,RULE:Release_
+        Ham,ACTION:release,TS:0
+X-CID-META: VersionHash:84eae18,CLOUDID:5bc68655-e800-47dc-8adf-0c936acf4f1b,C
+        OID:IGNORED,Recheck:0,SF:nil,TC:nil,Content:0,EDM:-3,IP:nil,URL:0,File:nil
+        ,Bulk:nil,QS:nil,BEC:nil,COL:0
+X-UUID: 73386ac644e046bdb9aae3f3620b8d62-20220825
+Received: from mtkmbs10n2.mediatek.inc [(172.21.101.183)] by mailgw01.mediatek.com
+        (envelope-from <chunxu.li@mediatek.com>)
+        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-GCM-SHA384 256/256)
+        with ESMTP id 1777537172; Thu, 25 Aug 2022 14:54:16 +0800
+Received: from mtkmbs11n1.mediatek.inc (172.21.101.185) by
+ mtkmbs11n1.mediatek.inc (172.21.101.185) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.792.15; Thu, 25 Aug 2022 14:54:15 +0800
+Received: from localhost.localdomain (10.17.3.154) by mtkmbs11n1.mediatek.inc
+ (172.21.101.73) with Microsoft SMTP Server id 15.2.792.15 via Frontend
+ Transport; Thu, 25 Aug 2022 14:54:14 +0800
+From:   Chunxu Li <chunxu.li@mediatek.com>
+To:     <broonie@kernel.org>, <pierre-louis.bossart@linux.intel.com>,
+        <peter.ujfalusi@linux.intel.com>, <lgirdwood@gmail.com>,
+        <angelogioacchino.delregno@collabora.com>, <daniel.baluta@nxp.com>
+CC:     <matthias.bgg@gmail.com>, <yc.hung@mediatek.com>,
+        <linux-kernel@vger.kernel.org>, <alsa-devel@alsa-project.org>,
+        <sound-open-firmware@alsa-project.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-mediatek@lists.infradead.org>,
+        <project_global_chrome_upstream_group@mediatek.com>,
+        Chunxu Li <chunxu.li@mediatek.com>
+Subject: [PATCH 0/3] ASoC: SOF: mediatek: update SOF driver for mt8186
+Date:   Thu, 25 Aug 2022 14:54:08 +0800
+Message-ID: <20220825065411.31279-1-chunxu.li@mediatek.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Firefox/91.0 Thunderbird/91.11.0
-Subject: Re: perf tools man pages on the web
-Content-Language: en-US
-To:     Arnaldo Carvalho de Melo <arnaldo.melo@gmail.com>,
-        Arnaldo Carvalho de Melo <acme@kernel.org>
-Cc:     Ian Rogers <irogers@google.com>, John Kacur <jkacur@redhat.com>,
-        Jiri Olsa <jolsa@kernel.org>,
-        Namhyung Kim <namhyung@kernel.org>,
-        linux-perf-users <linux-perf-users@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>
-References: <cecae74c-6bb2-d7da-bce3-35772b6e3f8c@intel.com>
- <CAP-5=fXJtRVKuPA_xpa=jBzq66y5JMv+jmr1GFNzh-zQ-7j5QA@mail.gmail.com>
- <b42344bc-86f6-9047-b015-88ef3b58a619@intel.com>
- <CAP-5=fUq4N+X+3VMsT=he3Q9_4qHKkqxdPDcMdDE=_3qdV9aCg@mail.gmail.com>
- <YvzrYLx3RDHAmqbf@kernel.org>
- <CA+JHD90RuF+sjO7t40voiQrXbaH172Le=KeKGzTrK_tBquVbAg@mail.gmail.com>
-From:   Adrian Hunter <adrian.hunter@intel.com>
-Organization: Intel Finland Oy, Registered Address: PL 281, 00181 Helsinki,
- Business Identity Code: 0357606 - 4, Domiciled in Helsinki
-In-Reply-To: <CA+JHD90RuF+sjO7t40voiQrXbaH172Le=KeKGzTrK_tBquVbAg@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 18/08/22 19:24, Arnaldo Carvalho de Melo wrote:
-> 
-> 
-> On Wed, Aug 17, 2022, 10:21 AM Arnaldo Carvalho de Melo <acme@kernel.org <mailto:acme@kernel.org>> wrote:
-> 
->     Em Wed, Aug 17, 2022 at 06:02:25AM -0700, Ian Rogers escreveu:
->     > On Wed, Aug 17, 2022 at 1:55 AM Adrian Hunter <adrian.hunter@intel.com <mailto:adrian.hunter@intel.com>> wrote:
->     > > Speaking of the wiki, anyone know how to change the
->     > > "Set $wgLogo to the URL path to your own logo image." image?
-> 
->     > +1000
-> 
->     > Someone at RedHat knows :-)
-> 
->     Documentation is at the Media Wiki site, admin up to a point was John Kacur,
->     John?
-> 
->     https://www.mediawiki.org/wiki/Manual:FAQ#Changing_the_interface <https://www.mediawiki.org/wiki/Manual:FAQ#Changing_the_interface>>
-> 
->     --------------------- 8< ----------------------------------
-> 
->     How do I change the logo?
-> 
->     The logo that appears in the top left of each page is determined by the $wgLogo configuration line in the LocalSettings.php file.
-> 
->     There are two ways to change the logo:
-> 
->         Upload a picture to your wiki using the normal file uploading interface. This allows the logo to be replaced easily, so you may want to protect the page if you use this method.
-> 
->             Then add the $wgLogo line to LocalSettings.php, for example:
-> 
->             $wgLogo = "{$wgUploadPath}/6/62/mylogo.png";
-> 
->         Upload an image to your server by other means (such as FTP).
-> 
->             Add the $wgLogo line to LocalSettings.php, for example:
-> 
->             $wgLogo = "{$wgScriptPath}/mylogo.jpg";
-> 
->             (In this example, the image is in the same folder as the LocalSettings.php file.)
-> 
->     If you want to change the logo in only specific pages, override #p-logo
->     css's background-image property or use third party extension like
->     Extension:LogoFunctions.  Caution! Caution:     Do not simply overwrite
->     the default logo installed with MediaWiki (/resources/assets/wiki.png);
->     this file will be overwritten when you upgrade.  A good size for a
->     square logo is 135x135px or 150x150px, but the logo need not be square,
->     especially if it contains text below an image. The maximum logo size in
->     Vector is ~160x160px, while MonoBook's is ~155x155px. A logo that is too
->     large will be cut off.
-> 
->     --------------------- 8< ----------------------------------
-> 
-> 
-> I got it sorted out with the kernel.org <http://kernel.org> admins.
-> 
-> Please force reload.
+In these patches, we update SOF driver for mt8186
 
-Is it just me or has it disappeared again?
+Chunxu Li (3):
+  ASoC: SOF: mediatek: Add dai driver for mt8186
+  ASoC: SOF: mediatek: add snd_sof_dsp_ops callbacks for pcm and mail
+    box
+  ASoC: SOF: mediatek: Use generic implementation for .ipc_msg_data
+    field
 
+ sound/soc/sof/mediatek/mt8186/mt8186.c | 49 ++++++++++++++++++++++----
+ 1 file changed, 42 insertions(+), 7 deletions(-)
+
+-- 
+2.25.1
 
