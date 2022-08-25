@@ -2,54 +2,55 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1EC6BC04AA5
-	for <linux-kernel@archiver.kernel.org>; Thu, 25 Aug 2022 01:39:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EB5EDC04AA5
+	for <linux-kernel@archiver.kernel.org>; Thu, 25 Aug 2022 01:39:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233963AbiHYBjq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 24 Aug 2022 21:39:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53340 "EHLO
+        id S232817AbiHYBjv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 24 Aug 2022 21:39:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51606 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232284AbiHYBjI (ORCPT
+        with ESMTP id S232647AbiHYBjI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Wed, 24 Aug 2022 21:39:08 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 40F2378216;
-        Wed, 24 Aug 2022 18:37:42 -0700 (PDT)
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6944F9A948;
+        Wed, 24 Aug 2022 18:37:43 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 35B4761AC4;
-        Thu, 25 Aug 2022 01:36:56 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A2867C433D6;
-        Thu, 25 Aug 2022 01:36:53 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id D9517B826E1;
+        Thu, 25 Aug 2022 01:37:35 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D3413C433C1;
+        Thu, 25 Aug 2022 01:37:32 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1661391415;
-        bh=OreuVOelWEiAtnvgz8Q7FE6KLbGx4aafDaOQSjn4xB4=;
+        s=k20201202; t=1661391454;
+        bh=JDAFhXSkDBBGX52pifLUdEO2PYCrCaPG4d6XhRYnTMM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=EFSH9JXQJIuZsKpDdfqFaCkinr7cSBi/LQKRmMIjg260LaYeWIQpUC+djKMpbghMx
-         /VEq1KQfJI9I3Ph+aF8AUWs7LTb+PW0q8sT/mWaQm0HBvXNH742hEa+QrnWooY4z/O
-         JPMO8QxuHxMtlJSQ/0pywCELF1U6PL7DOgiVjTGvm56FubgoKp1QS0sr0jSGIVrT5e
-         T7hKRBJ60TAO+TbkUxjuCBICabfD9UkUEGG3HoQRdo3w2G5GWaD6ZvPczQ87eVjoGz
-         Jnn0Oz0SIFnhooEPSLG1XkUmny7GsTGsaw9/NbUdjahEs9JCiBIq8sNdsSvREKJJdy
-         AxWnYfEC58EAA==
+        b=bXHbdXSuUHtFyY5FtUNjKPdRwDcYv+Z4oTF4bu43e1oTGPKPOSybkyjBN2AOb0koB
+         m0adZzm2Z8HD+da3adXc02f7D+Jg/YxrSxfehaux1syUJt2Qf35t9J9rmeR3Bgd5VQ
+         uMLkkh9zPMaA2kQTxuKVjRIwto0YSuSrW3ya/HA60Stzfr4n6SP5R7BOuayZaRueTL
+         JYmVMRYnTQVq6fxYqd4Tht5VDTofyBglUS2edNTGR5eDEvO+ZoKCGnZP9jFjSJLJtb
+         DeyvMUyXrx6THbyEdbDLTvdER9UwWIXgQJMQzL/KpqNqEpTqMAZFkeXZE5fB4Apbgj
+         jZDAeqMUnNxhg==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Mukul Joshi <mukul.joshi@amd.com>,
-        =?UTF-8?q?Christian=20K=C3=B6nig?= <christian.koenig@amd.com>,
-        Felix Kuehling <Felix.Kuehling@amd.com>,
+Cc:     Alvin Lee <alvin.lee2@amd.com>,
+        Martin Leung <Martin.Leung@amd.com>,
+        Tom Chung <chiahsuan.chung@amd.com>,
+        Daniel Wheeler <daniel.wheeler@amd.com>,
         Alex Deucher <alexander.deucher@amd.com>,
-        Sasha Levin <sashal@kernel.org>, Xinhui.Pan@amd.com,
-        airlied@linux.ie, daniel@ffwll.ch, Philip.Yang@amd.com,
-        Hawking.Zhang@amd.com, chi.minghao@zte.com.cn, evan.quan@amd.com,
+        Sasha Levin <sashal@kernel.org>, harry.wentland@amd.com,
+        sunpeng.li@amd.com, Rodrigo.Siqueira@amd.com,
+        christian.koenig@amd.com, Xinhui.Pan@amd.com, airlied@linux.ie,
+        daniel@ffwll.ch, Pavle.Kotarac@amd.com, joshua@froggi.es,
         amd-gfx@lists.freedesktop.org, dri-devel@lists.freedesktop.org
-Subject: [PATCH AUTOSEL 5.19 30/38] drm/amdgpu: Fix interrupt handling on ih_soft ring
-Date:   Wed, 24 Aug 2022 21:33:53 -0400
-Message-Id: <20220825013401.22096-30-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 5.15 05/20] drm/amd/display: For stereo keep "FLIP_ANY_FRAME"
+Date:   Wed, 24 Aug 2022 21:36:57 -0400
+Message-Id: <20220825013713.22656-5-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220825013401.22096-1-sashal@kernel.org>
-References: <20220825013401.22096-1-sashal@kernel.org>
+In-Reply-To: <20220825013713.22656-1-sashal@kernel.org>
+References: <20220825013713.22656-1-sashal@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 X-stable: review
 X-Patchwork-Hint: Ignore
 Content-Transfer-Encoding: 8bit
@@ -57,107 +58,38 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Mukul Joshi <mukul.joshi@amd.com>
+From: Alvin Lee <alvin.lee2@amd.com>
 
-[ Upstream commit de8341ee3ce7316883e836a2c4e9bf01ab651e0f ]
+[ Upstream commit 84ef99c728079dfd21d6bc70b4c3e4af20602b3c ]
 
-There are no backing hardware registers for ih_soft ring.
-As a result, don't try to access hardware registers for read
-and write pointers when processing interrupts on the IH soft
-ring.
+[Description]
+Observed in stereomode that programming FLIP_LEFT_EYE
+can cause hangs. Keep FLIP_ANY_FRAME in stereo mode so
+the surface flip can take place before left or right eye
 
-Signed-off-by: Mukul Joshi <mukul.joshi@amd.com>
-Acked-by: Christian König <christian.koenig@amd.com>
-Reviewed-by: Felix Kuehling <Felix.Kuehling@amd.com>
+Reviewed-by: Martin Leung <Martin.Leung@amd.com>
+Acked-by: Tom Chung <chiahsuan.chung@amd.com>
+Signed-off-by: Alvin Lee <alvin.lee2@amd.com>
+Tested-by: Daniel Wheeler <daniel.wheeler@amd.com>
 Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/gpu/drm/amd/amdgpu/navi10_ih.c | 7 ++++++-
- drivers/gpu/drm/amd/amdgpu/vega10_ih.c | 7 ++++++-
- drivers/gpu/drm/amd/amdgpu/vega20_ih.c | 7 ++++++-
- 3 files changed, 18 insertions(+), 3 deletions(-)
+ drivers/gpu/drm/amd/display/dc/dcn30/dcn30_hubp.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/gpu/drm/amd/amdgpu/navi10_ih.c b/drivers/gpu/drm/amd/amdgpu/navi10_ih.c
-index 4b5396d3e60f..eec13cb5bf75 100644
---- a/drivers/gpu/drm/amd/amdgpu/navi10_ih.c
-+++ b/drivers/gpu/drm/amd/amdgpu/navi10_ih.c
-@@ -409,9 +409,11 @@ static u32 navi10_ih_get_wptr(struct amdgpu_device *adev,
- 	u32 wptr, tmp;
- 	struct amdgpu_ih_regs *ih_regs;
+diff --git a/drivers/gpu/drm/amd/display/dc/dcn30/dcn30_hubp.c b/drivers/gpu/drm/amd/display/dc/dcn30/dcn30_hubp.c
+index f24612523248..33c2337c4edf 100644
+--- a/drivers/gpu/drm/amd/display/dc/dcn30/dcn30_hubp.c
++++ b/drivers/gpu/drm/amd/display/dc/dcn30/dcn30_hubp.c
+@@ -86,7 +86,7 @@ bool hubp3_program_surface_flip_and_addr(
+ 			VMID, address->vmid);
  
--	if (ih == &adev->irq.ih) {
-+	if (ih == &adev->irq.ih || ih == &adev->irq.ih_soft) {
- 		/* Only ring0 supports writeback. On other rings fall back
- 		 * to register-based code with overflow checking below.
-+		 * ih_soft ring doesn't have any backing hardware registers,
-+		 * update wptr and return.
- 		 */
- 		wptr = le32_to_cpu(*ih->wptr_cpu);
+ 	if (address->type == PLN_ADDR_TYPE_GRPH_STEREO) {
+-		REG_UPDATE(DCSURF_FLIP_CONTROL, SURFACE_FLIP_MODE_FOR_STEREOSYNC, 0x1);
++		REG_UPDATE(DCSURF_FLIP_CONTROL, SURFACE_FLIP_MODE_FOR_STEREOSYNC, 0);
+ 		REG_UPDATE(DCSURF_FLIP_CONTROL, SURFACE_FLIP_IN_STEREOSYNC, 0x1);
  
-@@ -483,6 +485,9 @@ static void navi10_ih_set_rptr(struct amdgpu_device *adev,
- {
- 	struct amdgpu_ih_regs *ih_regs;
- 
-+	if (ih == &adev->irq.ih_soft)
-+		return;
-+
- 	if (ih->use_doorbell) {
- 		/* XXX check if swapping is necessary on BE */
- 		*ih->rptr_cpu = ih->rptr;
-diff --git a/drivers/gpu/drm/amd/amdgpu/vega10_ih.c b/drivers/gpu/drm/amd/amdgpu/vega10_ih.c
-index cdd599a08125..03b7066471f9 100644
---- a/drivers/gpu/drm/amd/amdgpu/vega10_ih.c
-+++ b/drivers/gpu/drm/amd/amdgpu/vega10_ih.c
-@@ -334,9 +334,11 @@ static u32 vega10_ih_get_wptr(struct amdgpu_device *adev,
- 	u32 wptr, tmp;
- 	struct amdgpu_ih_regs *ih_regs;
- 
--	if (ih == &adev->irq.ih) {
-+	if (ih == &adev->irq.ih || ih == &adev->irq.ih_soft) {
- 		/* Only ring0 supports writeback. On other rings fall back
- 		 * to register-based code with overflow checking below.
-+		 * ih_soft ring doesn't have any backing hardware registers,
-+		 * update wptr and return.
- 		 */
- 		wptr = le32_to_cpu(*ih->wptr_cpu);
- 
-@@ -409,6 +411,9 @@ static void vega10_ih_set_rptr(struct amdgpu_device *adev,
- {
- 	struct amdgpu_ih_regs *ih_regs;
- 
-+	if (ih == &adev->irq.ih_soft)
-+		return;
-+
- 	if (ih->use_doorbell) {
- 		/* XXX check if swapping is necessary on BE */
- 		*ih->rptr_cpu = ih->rptr;
-diff --git a/drivers/gpu/drm/amd/amdgpu/vega20_ih.c b/drivers/gpu/drm/amd/amdgpu/vega20_ih.c
-index 3b4eb8285943..2022ffbb8dba 100644
---- a/drivers/gpu/drm/amd/amdgpu/vega20_ih.c
-+++ b/drivers/gpu/drm/amd/amdgpu/vega20_ih.c
-@@ -385,9 +385,11 @@ static u32 vega20_ih_get_wptr(struct amdgpu_device *adev,
- 	u32 wptr, tmp;
- 	struct amdgpu_ih_regs *ih_regs;
- 
--	if (ih == &adev->irq.ih) {
-+	if (ih == &adev->irq.ih || ih == &adev->irq.ih_soft) {
- 		/* Only ring0 supports writeback. On other rings fall back
- 		 * to register-based code with overflow checking below.
-+		 * ih_soft ring doesn't have any backing hardware registers,
-+		 * update wptr and return.
- 		 */
- 		wptr = le32_to_cpu(*ih->wptr_cpu);
- 
-@@ -461,6 +463,9 @@ static void vega20_ih_set_rptr(struct amdgpu_device *adev,
- {
- 	struct amdgpu_ih_regs *ih_regs;
- 
-+	if (ih == &adev->irq.ih_soft)
-+		return;
-+
- 	if (ih->use_doorbell) {
- 		/* XXX check if swapping is necessary on BE */
- 		*ih->rptr_cpu = ih->rptr;
+ 	} else {
 -- 
 2.35.1
 
