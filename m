@@ -2,180 +2,163 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C9EA4ECAAA3
-	for <linux-kernel@archiver.kernel.org>; Thu, 25 Aug 2022 21:29:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 181E6ECAAD4
+	for <linux-kernel@archiver.kernel.org>; Thu, 25 Aug 2022 21:31:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232026AbiHYV3H (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 25 Aug 2022 17:29:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45510 "EHLO
+        id S242106AbiHYVbE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 25 Aug 2022 17:31:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49988 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231837AbiHYV3E (ORCPT
+        with ESMTP id S232542AbiHYVbB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 25 Aug 2022 17:29:04 -0400
-Received: from mail-ej1-x62d.google.com (mail-ej1-x62d.google.com [IPv6:2a00:1450:4864:20::62d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 89DBCBD2AA
-        for <linux-kernel@vger.kernel.org>; Thu, 25 Aug 2022 14:29:02 -0700 (PDT)
-Received: by mail-ej1-x62d.google.com with SMTP id h22so31726133ejk.4
-        for <linux-kernel@vger.kernel.org>; Thu, 25 Aug 2022 14:29:02 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=kohlschutter-com.20210112.gappssmtp.com; s=20210112;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc;
-        bh=N6mUWstz7/GZuk8gVUfvEQxNLjPXVK6ZWWrfepRR/oY=;
-        b=k0unfdejZ8bzDfqcBi8X9NzklJS1acMebUScpkGBo9g16789OB1GCNn6Bya5nZPSPo
-         8ln8lsJ1FPjb6o0Ts3km1bIq/RbLVmaxVqNHDS6Nl+pwFtaZb8WwGAC1rOfuHtRLqz1M
-         jgiZvsufPrj1vTdzNMBL2eXTPqG5QSQ6v/GS7XKOFoZGiqPrBdeLIrWNVTekjT4lH2pK
-         ADdjLBJ7s0q7wj9BPikRpPKdEZ7Nml4F9I/OYh5EE01Jdeq0iLdZrVHh8jUyPL3tTPMb
-         RN4092020qR4TIhamwDouAV32zeWrNhR/WCK50Dk6sHq7ry8v10+Cz9txvdBWvXyRVpR
-         TgLg==
+        Thu, 25 Aug 2022 17:31:01 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D8B2EBBA74
+        for <linux-kernel@vger.kernel.org>; Thu, 25 Aug 2022 14:31:00 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1661463060;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=LY0dJI+HK3FIyhOwsV0Ul5xZhYFbnAopq+3Lt6Gqi0I=;
+        b=G1fqFeAHvps63Mn8tv5t4pkbwOc66+PonVVxXq2+x1IF07eUSMzPfeGVf9qhPgwJAGw6Ww
+        YmFyDtGuuQ3DgW9K3fnqxk6eyAsDtfDcyDZ1RvKsmUYHTe6ne8XNBMFoMqZyKWtPAvx4fx
+        pjT1az+CqCTRWakUeyj54VPhaUWVd90=
+Received: from mail-qt1-f199.google.com (mail-qt1-f199.google.com
+ [209.85.160.199]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
+ us-mta-164-G_XCS01SNzCqW37XTw7xOw-1; Thu, 25 Aug 2022 17:30:57 -0400
+X-MC-Unique: G_XCS01SNzCqW37XTw7xOw-1
+Received: by mail-qt1-f199.google.com with SMTP id cj19-20020a05622a259300b003446920ea91so16178999qtb.10
+        for <linux-kernel@vger.kernel.org>; Thu, 25 Aug 2022 14:30:57 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc;
-        bh=N6mUWstz7/GZuk8gVUfvEQxNLjPXVK6ZWWrfepRR/oY=;
-        b=fiVfd6xCY0S7zfLadB59x5GkOMoweYE+1kaHX5CTZfUF6XMeyy9Azw2MRUHibhqyZZ
-         udCRqQsADc3f3eHgrYsVbkokIMgFxyUhYS+amaaEFXqMqh5XcgQSubQAnxYG5N3xNP5g
-         0TiuOf103jT6vxrmRFI4VcsQMITfCfS6FZv9MSSp6Uaf/j6h8cOObM54oSPav3MnEcNM
-         eO3KSciWTyVHa78ZMMSd8oOgeuTn53rMuUsTZlCg1lEDOgXFiR+k5GZZZrbmTDuNubZh
-         UL6jZJsAcFAh+UH00BeiDPZN2w+rZtvkVO5+uchLY4OgqMXdOBFIe1Cv1M2fOAXtZwwh
-         OsxQ==
-X-Gm-Message-State: ACgBeo1YPrNH7HoU5bENCrUXR2YuVArTvcza7HK58FgD8T6YpMhBnz+s
-        nJYM+THLVqZu569AiVmRlrEIug==
-X-Google-Smtp-Source: AA6agR7TX2aV9XD+2pGdV3PwuC/Ru2piDDPY6M5k/pGiZPU0dAkIycRF0jCmSlC3S8345ugq0AJE2Q==
-X-Received: by 2002:a17:907:a06e:b0:73e:ab7e:67be with SMTP id ia14-20020a170907a06e00b0073eab7e67bemr282659ejc.20.1661462941021;
-        Thu, 25 Aug 2022 14:29:01 -0700 (PDT)
-Received: from p330.kohl.home (ip5b434222.dynamic.kabel-deutschland.de. [91.67.66.34])
-        by smtp.gmail.com with ESMTPSA id g1-20020a170906538100b007308bebce51sm95062ejo.171.2022.08.25.14.28.59
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc;
+        bh=LY0dJI+HK3FIyhOwsV0Ul5xZhYFbnAopq+3Lt6Gqi0I=;
+        b=XEC+3M8zAIGOi1mSoi5yr0ODc5lT0B2cX7vMYEqHF1qR9/nivgx3jXc3KKsQaC5vTM
+         OgxlvDFAkldFlskp7Jx71laHpqijDEUOnNs4pzWGBMjkfUYy0eDmZlRn469KzzxghHdv
+         7k1NlG4AWWFryXt8oS+x7cCZ0m2ScJqSqRF/h0DY3UpNPzY2t9KTWwosqFeNCC+BTWyW
+         rNJ3Lp1ew3kOMM9/3R9imcz/ZqSmAsRIUyeEaftAwrGyOMBHMJm+Ve736KUhmHZdRjo5
+         QbzN/g8b4N31R9UapbiWBaN9fgLOwNQ3occ/O8GTBxmaCFM8ufHbN8y0xagNgB3mkQl0
+         58yA==
+X-Gm-Message-State: ACgBeo1miiSc0tEQ5wmYciN+qlAB7O6sRxbiwR0Rn8tpVzUmK5Gt+Ibj
+        ffW6Q93D+rwYC6aQxH6yk8jqYHS2GCEuRjUHcIzB4O75lWmScR539sGzHo9nk/Szo8eCozCwubc
+        dXXZqKUGp3fRUANyhuvI6BaUt
+X-Received: by 2002:ad4:5de2:0:b0:477:f5e6:e13 with SMTP id jn2-20020ad45de2000000b00477f5e60e13mr5423067qvb.31.1661463056660;
+        Thu, 25 Aug 2022 14:30:56 -0700 (PDT)
+X-Google-Smtp-Source: AA6agR7xkZetSsMyk6rm1K+UpYZVkmzuXPO46vRqd+KLaE2CVCyFwQLP8z/A95Kj/ZKZzhHK07guDg==
+X-Received: by 2002:ad4:5de2:0:b0:477:f5e6:e13 with SMTP id jn2-20020ad45de2000000b00477f5e60e13mr5423047qvb.31.1661463056397;
+        Thu, 25 Aug 2022 14:30:56 -0700 (PDT)
+Received: from halaneylaptop ([2600:1700:1ff0:d0e0::48])
+        by smtp.gmail.com with ESMTPSA id m14-20020a05620a24ce00b006b9a89d408csm427775qkn.100.2022.08.25.14.30.55
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 25 Aug 2022 14:29:00 -0700 (PDT)
-From:   =?UTF-8?q?Christian=20Kohlsch=C3=BCtter?= 
-        <christian@kohlschutter.com>
-To:     broonie@kernel.org, m.szyprowski@samsung.com
-Cc:     christian@kohlschutter.com, heiko@sntech.de, lgirdwood@gmail.com,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        linux-mmc@vger.kernel.org, linux-rockchip@lists.infradead.org,
-        m.reichl@fivetechno.de, robin.murphy@arm.com,
-        vincent.legoll@gmail.com, wens@kernel.org
-Subject: [PATCH v5] regulator: core: Resolve supply name earlier to prevent double-init
-Date:   Thu, 25 Aug 2022 21:28:42 +0000
-Message-Id: <20220825212842.7176-1-christian@kohlschutter.com>
-X-Mailer: git-send-email 2.36.2
-In-Reply-To: <932DEB17-70FB-4416-80B3-C48A7C31848F@kohlschutter.com>
-References: <932DEB17-70FB-4416-80B3-C48A7C31848F@kohlschutter.com>
+        Thu, 25 Aug 2022 14:30:55 -0700 (PDT)
+Date:   Thu, 25 Aug 2022 16:30:53 -0500
+From:   Andrew Halaney <ahalaney@redhat.com>
+To:     Douglas Anderson <dianders@chromium.org>
+Cc:     Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Mark Brown <broonie@kernel.org>,
+        Andy Gross <agross@kernel.org>,
+        Bhupesh Sharma <bhupesh.sharma@linaro.org>,
+        Konrad Dybcio <konrad.dybcio@somainline.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Rob Herring <robh+dt@kernel.org>, devicetree@vger.kernel.org,
+        linux-arm-msm@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 1/7] arm64: dts: qcom: sa8155p-adp: Specify which LDO
+ modes are allowed
+Message-ID: <20220825213053.5xxiljfjkhnpy53p@halaneylaptop>
+References: <20220825164205.4060647-1-dianders@chromium.org>
+ <20220825094155.1.Id59c32b560c4662d8b3697de2bd494d08d654806@changeid>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220825094155.1.Id59c32b560c4662d8b3697de2bd494d08d654806@changeid>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Previously, an unresolved regulator supply reference upon calling
-regulator_register on an always-on or boot-on regulator caused
-set_machine_constraints to be called twice.
+On Thu, Aug 25, 2022 at 09:41:59AM -0700, Douglas Anderson wrote:
+> This board uses RPMH, specifies "regulator-allow-set-load" for LDOs,
+> but doesn't specify any modes with "regulator-allowed-modes".
+> 
+> Prior to commit efb0cb50c427 ("regulator: qcom-rpmh: Implement
+> get_optimum_mode(), not set_load()") the above meant that we were able
+> to set either LPM or HPM mode. After that commit (and fixes [1]) we'll
+> be stuck at the initial mode. Discussion of this has resulted in the
+> decision that the old dts files were wrong and should be fixed to
+> fully restore old functionality.
+> 
+> Let's re-enable the old functionality by fixing the dts.
+> 
+> [1] https://lore.kernel.org/r/20220824142229.RFT.v2.2.I6f77860e5cd98bf5c67208fa9edda4a08847c304@changeid
+> 
+> Fixes: 5b85e8f2225c ("arm64: dts: qcom: sa8155p-adp: Add base dts file")
+> Signed-off-by: Douglas Anderson <dianders@chromium.org>
+> ---
+> 
+>  arch/arm64/boot/dts/qcom/sa8155p-adp.dts | 13 ++++++++++++-
+>  1 file changed, 12 insertions(+), 1 deletion(-)
+> 
+> diff --git a/arch/arm64/boot/dts/qcom/sa8155p-adp.dts b/arch/arm64/boot/dts/qcom/sa8155p-adp.dts
+> index ba547ca9fc6b..ddb9cb182152 100644
+> --- a/arch/arm64/boot/dts/qcom/sa8155p-adp.dts
+> +++ b/arch/arm64/boot/dts/qcom/sa8155p-adp.dts
+> @@ -43,7 +43,6 @@ vreg_s4a_1p8: smps4 {
+>  
+>  		regulator-always-on;
+>  		regulator-boot-on;
+> -		regulator-allow-set-load;
 
-This in turn may initialize the regulator twice, leading to voltage
-glitches that are timing-dependent. A simple, unrelated configuration
-change may be enough to hide this problem, only to be surfaced by
-chance.
+I could see this deserving its own commit or a line in the commit
+message, but not a big deal to me:
 
-One such example is the SD-Card voltage regulator in a NanoPI R4S that
-would not initialize reliably unless the registration flow was just
-complex enough to allow the regulator to properly reset between calls.
+Reviewed-by: Andrew Halaney <ahalaney@redhat.com>
 
-Fix this by re-arranging regulator_register, trying resolve the
-regulator's supply early enough that set_machine_constraints does not
-need to be called twice.
-
-Signed-off-by: Christian Kohlschütter <christian@kohlschutter.com>
----
- drivers/regulator/core.c | 58 ++++++++++++++++++++++++----------------
- 1 file changed, 35 insertions(+), 23 deletions(-)
-
-diff --git a/drivers/regulator/core.c b/drivers/regulator/core.c
-index 77f60eef960..2ff0ab2730f 100644
---- a/drivers/regulator/core.c
-+++ b/drivers/regulator/core.c
-@@ -5391,6 +5391,7 @@ regulator_register(const struct regulator_desc *regulator_desc,
- 	bool dangling_of_gpiod = false;
- 	struct device *dev;
- 	int ret, i;
-+	bool resolved_early = false;
- 
- 	if (cfg == NULL)
- 		return ERR_PTR(-EINVAL);
-@@ -5494,24 +5495,10 @@ regulator_register(const struct regulator_desc *regulator_desc,
- 	BLOCKING_INIT_NOTIFIER_HEAD(&rdev->notifier);
- 	INIT_DELAYED_WORK(&rdev->disable_work, regulator_disable_work);
- 
--	/* preform any regulator specific init */
--	if (init_data && init_data->regulator_init) {
--		ret = init_data->regulator_init(rdev->reg_data);
--		if (ret < 0)
--			goto clean;
--	}
--
--	if (config->ena_gpiod) {
--		ret = regulator_ena_gpio_request(rdev, config);
--		if (ret != 0) {
--			rdev_err(rdev, "Failed to request enable GPIO: %pe\n",
--				 ERR_PTR(ret));
--			goto clean;
--		}
--		/* The regulator core took over the GPIO descriptor */
--		dangling_cfg_gpiod = false;
--		dangling_of_gpiod = false;
--	}
-+	if (init_data && init_data->supply_regulator)
-+		rdev->supply_name = init_data->supply_regulator;
-+	else if (regulator_desc->supply_name)
-+		rdev->supply_name = regulator_desc->supply_name;
- 
- 	/* register with sysfs */
- 	rdev->dev.class = &regulator_class;
-@@ -5533,13 +5520,38 @@ regulator_register(const struct regulator_desc *regulator_desc,
- 		goto wash;
- 	}
- 
--	if (init_data && init_data->supply_regulator)
--		rdev->supply_name = init_data->supply_regulator;
--	else if (regulator_desc->supply_name)
--		rdev->supply_name = regulator_desc->supply_name;
-+	if ((rdev->supply_name && !rdev->supply) &&
-+		(rdev->constraints->always_on ||
-+		 rdev->constraints->boot_on)) {
-+		ret = regulator_resolve_supply(rdev);
-+		if (ret != 0)
-+			rdev_dbg(rdev, "Unable to resolve supply early: %pe\n",
-+				 ERR_PTR(ret));
-+
-+		resolved_early = true;
-+	}
-+
-+	/* perform any regulator specific init */
-+	if (init_data && init_data->regulator_init) {
-+		ret = init_data->regulator_init(rdev->reg_data);
-+		if (ret < 0)
-+			goto wash;
-+	}
-+
-+	if (config->ena_gpiod) {
-+		ret = regulator_ena_gpio_request(rdev, config);
-+		if (ret != 0) {
-+			rdev_err(rdev, "Failed to request enable GPIO: %pe\n",
-+					 ERR_PTR(ret));
-+			goto wash;
-+		}
-+		/* The regulator core took over the GPIO descriptor */
-+		dangling_cfg_gpiod = false;
-+		dangling_of_gpiod = false;
-+	}
- 
- 	ret = set_machine_constraints(rdev);
--	if (ret == -EPROBE_DEFER) {
-+	if (ret == -EPROBE_DEFER && !resolved_early) {
- 		/* Regulator might be in bypass mode and so needs its supply
- 		 * to set the constraints
- 		 */
--- 
-2.36.2
+>  
+>  		vin-supply = <&vreg_3p3>;
+>  	};
+> @@ -137,6 +136,9 @@ vreg_l5a_0p88: ldo5 {
+>  			regulator-max-microvolt = <880000>;
+>  			regulator-initial-mode = <RPMH_REGULATOR_MODE_HPM>;
+>  			regulator-allow-set-load;
+> +			regulator-allowed-modes =
+> +			    <RPMH_REGULATOR_MODE_LPM
+> +			     RPMH_REGULATOR_MODE_HPM>;
+>  		};
+>  
+>  		vreg_l7a_1p8: ldo7 {
+> @@ -152,6 +154,9 @@ vreg_l10a_2p96: ldo10 {
+>  			regulator-max-microvolt = <2960000>;
+>  			regulator-initial-mode = <RPMH_REGULATOR_MODE_HPM>;
+>  			regulator-allow-set-load;
+> +			regulator-allowed-modes =
+> +			    <RPMH_REGULATOR_MODE_LPM
+> +			     RPMH_REGULATOR_MODE_HPM>;
+>  		};
+>  
+>  		vreg_l11a_0p8: ldo11 {
+> @@ -258,6 +263,9 @@ vreg_l5c_1p2: ldo5 {
+>  			regulator-max-microvolt = <1200000>;
+>  			regulator-initial-mode = <RPMH_REGULATOR_MODE_HPM>;
+>  			regulator-allow-set-load;
+> +			regulator-allowed-modes =
+> +			    <RPMH_REGULATOR_MODE_LPM
+> +			     RPMH_REGULATOR_MODE_HPM>;
+>  		};
+>  
+>  		vreg_l7c_1p8: ldo7 {
+> @@ -273,6 +281,9 @@ vreg_l8c_1p2: ldo8 {
+>  			regulator-max-microvolt = <1200000>;
+>  			regulator-initial-mode = <RPMH_REGULATOR_MODE_HPM>;
+>  			regulator-allow-set-load;
+> +			regulator-allowed-modes =
+> +			    <RPMH_REGULATOR_MODE_LPM
+> +			     RPMH_REGULATOR_MODE_HPM>;
+>  		};
+>  
+>  		vreg_l10c_3p3: ldo10 {
+> -- 
+> 2.37.2.672.g94769d06f0-goog
+> 
 
