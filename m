@@ -2,110 +2,77 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C604EC3F6B0
-	for <linux-kernel@archiver.kernel.org>; Thu, 25 Aug 2022 01:49:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 74EFDC6498F
+	for <linux-kernel@archiver.kernel.org>; Thu, 25 Aug 2022 01:51:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232148AbiHYBtK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 24 Aug 2022 21:49:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54330 "EHLO
+        id S235326AbiHYBvf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 24 Aug 2022 21:51:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58178 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236775AbiHYBsu (ORCPT
+        with ESMTP id S235484AbiHYBvN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 24 Aug 2022 21:48:50 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C44B89D66B;
-        Wed, 24 Aug 2022 18:41:59 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 65662B826C6;
-        Thu, 25 Aug 2022 01:40:30 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 36C4CC433C1;
-        Thu, 25 Aug 2022 01:40:28 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1661391629;
-        bh=3PEz6xC+ooWs2rhOFLoQ7puyzIZeBk+F25VlSZnSjU4=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=lFe8k40rdT9io9sY4z044fRkX+rbhjop1mC5Sv7k/p6cFTi6sL32HTzLELdRKf8H4
-         UeGnBaatLIhE0Wgid0eRNcboHlA3nROIhHgm0IcdFcZxMBu6/L/orBRzu1xRs5cSng
-         hmgM/8aODJJGErPkI9JP+RD24OZLaPFt9ovljHcP2ZDZUyw2rLYXwjeRrg6NQtFxrG
-         JuPyHOcKJJiZXr266LhT5Zp43gT+0rMrRRxmwBOoVL7JQi/7ZQYD5Eag0O/febGfo1
-         Zr9BwUqtWxnEF/yBGv776FMyuxG2Ivr+Eg4vybLRb4KBzevbXaRJTvwRn1CmYrNtV7
-         AhBLzGHHEAW4A==
-From:   Sasha Levin <sashal@kernel.org>
-To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Juergen Gross <jgross@suse.com>,
-        Heiko Carstens <hca@linux.ibm.com>,
-        Christian Borntraeger <borntraeger@linux.ibm.com>,
-        Alexander Gordeev <agordeev@linux.ibm.com>,
-        Sasha Levin <sashal@kernel.org>, gor@linux.ibm.com,
-        linux-s390@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.14 2/4] s390/hypfs: avoid error message under KVM
-Date:   Wed, 24 Aug 2022 21:40:16 -0400
-Message-Id: <20220825014020.24088-2-sashal@kernel.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220825014020.24088-1-sashal@kernel.org>
-References: <20220825014020.24088-1-sashal@kernel.org>
+        Wed, 24 Aug 2022 21:51:13 -0400
+Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A1D91C56;
+        Wed, 24 Aug 2022 18:44:45 -0700 (PDT)
+Received: from canpemm500002.china.huawei.com (unknown [172.30.72.57])
+        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4MClzl0gDjznTdD;
+        Thu, 25 Aug 2022 09:41:07 +0800 (CST)
+Received: from [10.174.177.76] (10.174.177.76) by
+ canpemm500002.china.huawei.com (7.192.104.244) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Thu, 25 Aug 2022 09:43:26 +0800
+Subject: Re: [PATCH] kvm: x86: mmu: fix memoryleak in
+ kvm_mmu_vendor_module_init()
+To:     Sean Christopherson <seanjc@google.com>
+CC:     <pbonzini@redhat.com>, <tglx@linutronix.de>, <mingo@redhat.com>,
+        <bp@alien8.de>, <dave.hansen@linux.intel.com>, <x86@kernel.org>,
+        <hpa@zytor.com>, <kvm@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>
+References: <20220823063237.47299-1-linmiaohe@huawei.com>
+ <YwZHYZFj5Q8NzZha@google.com>
+From:   Miaohe Lin <linmiaohe@huawei.com>
+Message-ID: <acc676e3-8dde-89c3-a031-67c3487c8f35@huawei.com>
+Date:   Thu, 25 Aug 2022 09:43:25 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
+ Thunderbird/78.6.0
 MIME-Version: 1.0
-X-stable: review
-X-Patchwork-Hint: Ignore
-Content-Transfer-Encoding: 8bit
+In-Reply-To: <YwZHYZFj5Q8NzZha@google.com>
+Content-Type: text/plain; charset="utf-8"
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.174.177.76]
+X-ClientProxiedBy: dggems703-chm.china.huawei.com (10.3.19.180) To
+ canpemm500002.china.huawei.com (7.192.104.244)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Juergen Gross <jgross@suse.com>
+On 2022/8/24 23:44, Sean Christopherson wrote:
+> Nit for future patches, please use
+> 
+>   KVM: x86/mmu:
+> 
+> for the scope.
 
-[ Upstream commit 7b6670b03641ac308aaa6fa2e6f964ac993b5ea3 ]
+Will take care of it.
 
-When booting under KVM the following error messages are issued:
+> 
+> On Tue, Aug 23, 2022, Miaohe Lin wrote:
+>> When register_shrinker() fails, we forgot to release the percpu counter
+>> kvm_total_used_mmu_pages leading to memoryleak. Fix this issue by calling
+>> percpu_counter_destroy() when register_shrinker() fails.
+>>
+>> Fixes: ab271bd4dfd5 ("x86: kvm: propagate register_shrinker return code")
+>> Signed-off-by: Miaohe Lin <linmiaohe@huawei.com>
+>> ---
+> 
+> Reviewed-by: Sean Christopherson <seanjc@google.com>
 
-hypfs.7f5705: The hardware system does not support hypfs
-hypfs.7a79f0: Initialization of hypfs failed with rc=-61
+Many thanks for your review.
 
-Demote the severity of first message from "error" to "info" and issue
-the second message only in other error cases.
+Thanks,
+Miaohe Lin
 
-Signed-off-by: Juergen Gross <jgross@suse.com>
-Acked-by: Heiko Carstens <hca@linux.ibm.com>
-Acked-by: Christian Borntraeger <borntraeger@linux.ibm.com>
-Link: https://lore.kernel.org/r/20220620094534.18967-1-jgross@suse.com
-[arch/s390/hypfs/hypfs_diag.c changed description]
-Signed-off-by: Alexander Gordeev <agordeev@linux.ibm.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- arch/s390/hypfs/hypfs_diag.c | 2 +-
- arch/s390/hypfs/inode.c      | 2 +-
- 2 files changed, 2 insertions(+), 2 deletions(-)
-
-diff --git a/arch/s390/hypfs/hypfs_diag.c b/arch/s390/hypfs/hypfs_diag.c
-index be8cc53204b5..46338c65c75b 100644
---- a/arch/s390/hypfs/hypfs_diag.c
-+++ b/arch/s390/hypfs/hypfs_diag.c
-@@ -437,7 +437,7 @@ __init int hypfs_diag_init(void)
- 	int rc;
- 
- 	if (diag204_probe()) {
--		pr_err("The hardware system does not support hypfs\n");
-+		pr_info("The hardware system does not support hypfs\n");
- 		return -ENODATA;
- 	}
- 	if (diag204_info_type == DIAG204_INFO_EXT) {
-diff --git a/arch/s390/hypfs/inode.c b/arch/s390/hypfs/inode.c
-index 32f5b3fb069f..2a34c075fef6 100644
---- a/arch/s390/hypfs/inode.c
-+++ b/arch/s390/hypfs/inode.c
-@@ -494,9 +494,9 @@ static int __init hypfs_init(void)
- 	hypfs_vm_exit();
- fail_hypfs_diag_exit:
- 	hypfs_diag_exit();
-+	pr_err("Initialization of hypfs failed with rc=%i\n", rc);
- fail_dbfs_exit:
- 	hypfs_dbfs_exit();
--	pr_err("Initialization of hypfs failed with rc=%i\n", rc);
- 	return rc;
- }
- device_initcall(hypfs_init)
--- 
-2.35.1
 
