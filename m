@@ -2,92 +2,131 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 692A1C28D13
-	for <linux-kernel@archiver.kernel.org>; Thu, 25 Aug 2022 08:26:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 64B8CC3F6B0
+	for <linux-kernel@archiver.kernel.org>; Thu, 25 Aug 2022 08:26:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235576AbiHYI0g (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 25 Aug 2022 04:26:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51820 "EHLO
+        id S239918AbiHYI0l (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 25 Aug 2022 04:26:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50504 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235780AbiHYI0C (ORCPT
+        with ESMTP id S239795AbiHYI0G (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 25 Aug 2022 04:26:02 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 33341616E;
-        Thu, 25 Aug 2022 01:25:39 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id D3FB4B825C6;
-        Thu, 25 Aug 2022 08:25:37 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4C656C433C1;
-        Thu, 25 Aug 2022 08:25:35 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1661415936;
-        bh=qIOfflNjTg46rEZK8mbBXoX4G0/ieSgWMgNoJpIcvps=;
-        h=Date:From:To:cc:Subject:In-Reply-To:References:From;
-        b=d2nDFQHVQxEtFpai1Y2914plsJk7dEKTEI7N7U/yApGRHjMsVF3uqN1Q/dLr5QDrp
-         OYDKeQIJCbmnLOgy56iioWbYv1F3g8ax3L2Ux4LwzNqoAZT162uPuTB5HuHO5Sn8+y
-         FMbmQ5328nwVb+J+z13XX8irIb8FJZ6dA93Lau80o2PsWftvWlHEwsyluvgjC+8cKM
-         qIwGKh467FVAQOH4cUfuoZwOWnoeVMu7u3NnyRkRYvI3jSR1dXZjLs13NQqhicQj6I
-         cUFDnBCpe+EV1qGBD0LaH5ugFLV5Tf2LSet4k55YhOQttngdM7mfNDLs2V4ujhAGhJ
-         ZvPCzbC4ao8Fg==
-Date:   Thu, 25 Aug 2022 10:25:32 +0200 (CEST)
-From:   Jiri Kosina <jikos@kernel.org>
-To:     =?ISO-8859-15?Q?Jos=E9_Exp=F3sito?= <jose.exposito89@gmail.com>
-cc:     benjamin.tissoires@redhat.com, spbnick@gmail.com,
-        linux-input@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH RESEND] HID: uclogic: Fix warning in
- uclogic_rdesc_template_apply
-In-Reply-To: <20220815142706.18369-1-jose.exposito89@gmail.com>
-Message-ID: <nycvar.YFH.7.76.2208251025250.19850@cbobk.fhfr.pm>
-References: <20220815142706.18369-1-jose.exposito89@gmail.com>
-User-Agent: Alpine 2.21 (LSU 202 2017-01-01)
-MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8BIT
+        Thu, 25 Aug 2022 04:26:06 -0400
+Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 622132CE23;
+        Thu, 25 Aug 2022 01:25:48 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1661415948; x=1692951948;
+  h=from:to:cc:subject:date:message-id;
+  bh=Eja8cuJ2l8fSG1VgeeQkVCOALrFwx8H66sQ/4ba8AZY=;
+  b=aeUZbd1o6I/3/SkwechHMMhoo16uyhvXm4MGCc6sW2l8vnAr5L69VQOA
+   tE9NwqWCEXjShKv2p+WujxvRG1/WMVV2oY1PeEQgMgeRyqwwwLrgVOH6T
+   Xzthp0S32Utun+NOrNS/6XdhgmgNJf7YzQ8lJ33VOh1k69l6MdL2HyvGu
+   QJDGEMypVgSBZTn7IzyofSqkg569vTOJo4a5+eCvxBMK+e78liHEQaybX
+   5I9ZjfqygO4dw/NxCdVby4V3Imynk888K16vbRUU8dgwmsFQIrzyD8xqs
+   DvXwwvYxmAT2sNOFXJuoU/8RctjtnannumZTXVNI+B1CBGYHswIqAosrB
+   w==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10449"; a="320257168"
+X-IronPort-AV: E=Sophos;i="5.93,262,1654585200"; 
+   d="scan'208";a="320257168"
+Received: from fmsmga001.fm.intel.com ([10.253.24.23])
+  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Aug 2022 01:25:48 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.93,262,1654585200"; 
+   d="scan'208";a="752399532"
+Received: from aminuddin-ilbpg12.png.intel.com ([10.88.229.89])
+  by fmsmga001.fm.intel.com with ESMTP; 25 Aug 2022 01:25:45 -0700
+From:   Aminuddin Jamaluddin <aminuddin.jamaluddin@intel.com>
+To:     Andrew Lunn <andrew@lunn.ch>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
+        "David S . Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Mohammad Athari Bin Ismail <mohammad.athari.ismail@intel.com>
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        stable@vger.kernel.org, tee.min.tan@intel.com,
+        muhammad.husaini.zulkifli@intel.com, aminuddin.jamaluddin@intel.com
+Subject: [PATCH net 1/1] net: phy: marvell: add link status check before enabling phy loopback
+Date:   Thu, 25 Aug 2022 16:22:37 +0800
+Message-Id: <20220825082238.11056-1-aminuddin.jamaluddin@intel.com>
+X-Mailer: git-send-email 2.17.1
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, 15 Aug 2022, José Expósito wrote:
+Add link status checking in m88e1510_loopback() for 1Gbps link speed
+and delay for 100ms after phy loopback bit is set before send packet.
+This is needed to ensure the stability and consistency when running
+the phy loopback test.
 
-> Building with Sparse enabled prints this warning:
-> 
->     warning: incorrect type in assignment (different base types)
->         expected signed int x
->         got restricted __le32 [usertype]
-> 
-> Cast the return value of cpu_to_le32() to fix the warning.
-> 
-> Fixes: 08177f4 ("HID: uclogic: merge hid-huion driver in hid-uclogic")
-> Signed-off-by: José Expósito <jose.exposito89@gmail.com>
-> 
-> ---
-> 
-> Kindly resending this patch so it doesn't get lost after the merge
-> window.
-> ---
->  drivers/hid/hid-uclogic-rdesc.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
-> 
-> diff --git a/drivers/hid/hid-uclogic-rdesc.c b/drivers/hid/hid-uclogic-rdesc.c
-> index 3d68e8b0784d..81ca22398ed5 100644
-> --- a/drivers/hid/hid-uclogic-rdesc.c
-> +++ b/drivers/hid/hid-uclogic-rdesc.c
-> @@ -1113,7 +1113,7 @@ __u8 *uclogic_rdesc_template_apply(const __u8 *template_ptr,
->  		    memcmp(p, pen_head, sizeof(pen_head)) == 0 &&
->  		    p[sizeof(pen_head)] < param_num) {
->  			v = param_list[p[sizeof(pen_head)]];
-> -			put_unaligned(cpu_to_le32(v), (s32 *)p);
-> +			put_unaligned((__force u32)cpu_to_le32(v), (s32 *)p);
->  			p += sizeof(pen_head) + 1;
->  		} else if (memcmp(p, btn_head, sizeof(btn_head)) == 0 &&
->  			   p[sizeof(btn_head)] < param_num) {
+Fixes: 020a45aff119 ("net: phy: marvell: add Marvell specific PHY loopback")
+Cc: <stable@vger.kernel.org> # 5.15.x
+Signed-off-by: Muhammad Husaini Zulkifli <muhammad.husaini.zulkifli@intel.com>
+Signed-off-by: Aminuddin Jamaluddin <aminuddin.jamaluddin@intel.com>
+---
+ drivers/net/phy/marvell.c | 22 ++++++++++++++++------
+ include/linux/phy.h       |  3 +++
+ 2 files changed, 19 insertions(+), 6 deletions(-)
 
-Applied, thank you José.
-
+diff --git a/drivers/net/phy/marvell.c b/drivers/net/phy/marvell.c
+index a714150f5e8c..17403acf780d 100644
+--- a/drivers/net/phy/marvell.c
++++ b/drivers/net/phy/marvell.c
+@@ -1992,6 +1992,7 @@ static int m88e1510_loopback(struct phy_device *phydev, bool enable)
+ 
+ 	if (enable) {
+ 		u16 bmcr_ctl, mscr2_ctl = 0;
++		int val = 0;
+ 
+ 		bmcr_ctl = mii_bmcr_encode_fixed(phydev->speed, phydev->duplex);
+ 
+@@ -2015,14 +2016,23 @@ static int m88e1510_loopback(struct phy_device *phydev, bool enable)
+ 		if (err < 0)
+ 			return err;
+ 
+-		/* FIXME: Based on trial and error test, it seem 1G need to have
+-		 * delay between soft reset and loopback enablement.
+-		 */
+-		if (phydev->speed == SPEED_1000)
+-			msleep(1000);
++		if (phydev->speed == SPEED_1000) {
++			err = phy_read_poll_timeout(phydev, MII_BMSR, val, val & BMSR_LSTATUS,
++						    PHY_LOOP_BACK_SLEEP,
++						    PHY_LOOP_BACK_TIMEOUT, true);
++			if (err)
++				return err;
++		}
+ 
+-		return phy_modify(phydev, MII_BMCR, BMCR_LOOPBACK,
++		err =  phy_modify(phydev, MII_BMCR, BMCR_LOOPBACK,
+ 				  BMCR_LOOPBACK);
++		if (!err) {
++			/* It takes some time for PHY device to switch
++			 * into/out-of loopback mode.
++			 */
++			msleep(100);
++		}
++		return err;
+ 	} else {
+ 		err = phy_modify(phydev, MII_BMCR, BMCR_LOOPBACK, 0);
+ 		if (err < 0)
+diff --git a/include/linux/phy.h b/include/linux/phy.h
+index 87638c55d844..b4da968da8e6 100644
+--- a/include/linux/phy.h
++++ b/include/linux/phy.h
+@@ -276,6 +276,9 @@ static inline const char *phy_modes(phy_interface_t interface)
+ #define PHY_INIT_TIMEOUT	100000
+ #define PHY_FORCE_TIMEOUT	10
+ 
++#define PHY_LOOP_BACK_SLEEP	1000000
++#define PHY_LOOP_BACK_TIMEOUT	8000000
++
+ #define PHY_MAX_ADDR	32
+ 
+ /* Used when trying to connect to a specific phy (mii bus id:phy device id) */
 -- 
-Jiri Kosina
-SUSE Labs
+2.17.1
 
