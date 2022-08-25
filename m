@@ -2,220 +2,179 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2B7EEC04AA5
-	for <linux-kernel@archiver.kernel.org>; Thu, 25 Aug 2022 10:28:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EDBE4C04AA5
+	for <linux-kernel@archiver.kernel.org>; Thu, 25 Aug 2022 10:31:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240702AbiHYK2R (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 25 Aug 2022 06:28:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60624 "EHLO
+        id S240318AbiHYKbL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 25 Aug 2022 06:31:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38422 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239440AbiHYK2K (ORCPT
+        with ESMTP id S236778AbiHYKbI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 25 Aug 2022 06:28:10 -0400
-Received: from mail-pj1-x1036.google.com (mail-pj1-x1036.google.com [IPv6:2607:f8b0:4864:20::1036])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 925A19C520
-        for <linux-kernel@vger.kernel.org>; Thu, 25 Aug 2022 03:28:09 -0700 (PDT)
-Received: by mail-pj1-x1036.google.com with SMTP id e19so18675709pju.1
-        for <linux-kernel@vger.kernel.org>; Thu, 25 Aug 2022 03:28:09 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=bytedance-com.20210112.gappssmtp.com; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc;
-        bh=O2Ikkum5C34vGQERHK2iuYBRYhJaZQxobN63T5g+OZ4=;
-        b=Sfri+HInQMSLrEobvaOIST+ho1iAiUvs8UAlYPAzpUIJJ8C9eAJ9d2GiUSx2sdhbtT
-         qOwFSH8ynkSMr6lco+3x7jpYyf6gOBgyD+ukwmY2m3X1F6N7BlYlY00bwwOulCpf239a
-         idVdbrUq3Q3K4VPZqMi9oVvUXPLx4Cyb4FEHokFyLKO0FIKWV1J0xhUoVkeEpaZcR+3X
-         mtfVzGuW/tTxVA91g2uu24n9rJInnKJ+FaZJgZQy8COCSZSnfyQFgGZicdH5csw+dgVh
-         wZBjw+7rAAjexaEVJLUXPdZsJryircnE5+vmwpCSXWJwcEgoJ4YgkPl1oDNVzZBr4L3q
-         pVww==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-message-state:from:to:cc;
-        bh=O2Ikkum5C34vGQERHK2iuYBRYhJaZQxobN63T5g+OZ4=;
-        b=NeCx2Z7RC7Ar8geN7kDmE9JBUtTSb39o8SqlZuBjEAzHg8gH60PPsFhE7/LsN3+gcn
-         r8qxyGe+bHJMPG7tHNgnmc+5h0f93KTY47hLGZwruj7Ea9Eh1dy6a3wrELaRf7if3GHr
-         iQaWx8MXkaq9p4Sm24LuivHPoXsVtFL7/CFJ5hVRe/OBsq3xfQsH8Gr2rBsyHTZ69oT/
-         fwhrDpFbP86m2ThaQ/S23wCvwmpnAvPVxr0iIqLW3jqcL2MrDcGQgv01WF2IRYz0C5SG
-         HzIepZfN6T7yUTJ0gqE23EtBYZQzJxid7dBn9JnlWERh94XiNs6R+Tmlqz+XBYWTLd1o
-         UNqw==
-X-Gm-Message-State: ACgBeo1/Iv/hCmWruEkxrszKEpQ913ij93W/gEFqk+W13gG+n3o1J5Ke
-        D36OreCXQ82xKBm53hQn3eOzgw==
-X-Google-Smtp-Source: AA6agR7KuXy0jMjTqR7P77WoMhwXzuGW5mnoJiIfWSlBxpCTWDTpYdJT4ZTdGTQdMa/qeVGo19eZvQ==
-X-Received: by 2002:a17:90a:1d0:b0:1fa:c551:5e83 with SMTP id 16-20020a17090a01d000b001fac5515e83mr13028533pjd.106.1661423289017;
-        Thu, 25 Aug 2022 03:28:09 -0700 (PDT)
-Received: from MacBook-Pro.local.bytedance.net ([139.177.225.225])
-        by smtp.gmail.com with ESMTPSA id m21-20020a170902d19500b0016d1bee1519sm14064611plb.102.2022.08.25.03.28.04
-        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Thu, 25 Aug 2022 03:28:08 -0700 (PDT)
-From:   lizhe.67@bytedance.com
-To:     akpm@linux-foundation.org, mhocko@suse.com, vbabka@suse.cz,
-        mhiramat@kernel.org, keescook@chromium.org, Jason@zx2c4.com,
-        mark-pk.tsai@mediatek.com, rostedt@goodmis.org, corbet@lwn.net
-Cc:     linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-mm@kvack.org, lizefan.x@bytedance.com, lizhe.67@bytedance.com
-Subject: [PATCH v4] page_ext: introduce boot parameter 'early_page_ext'
-Date:   Thu, 25 Aug 2022 18:27:14 +0800
-Message-Id: <20220825102714.669-1-lizhe.67@bytedance.com>
-X-Mailer: git-send-email 2.32.0
+        Thu, 25 Aug 2022 06:31:08 -0400
+Received: from mx0b-001b2d01.pphosted.com (mx0b-001b2d01.pphosted.com [148.163.158.5])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1E4AA491F8
+        for <linux-kernel@vger.kernel.org>; Thu, 25 Aug 2022 03:31:06 -0700 (PDT)
+Received: from pps.filterd (m0127361.ppops.net [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 27P9VCVZ007511;
+        Thu, 25 Aug 2022 10:30:58 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=date : from : subject :
+ to : cc : references : in-reply-to : message-id : content-type :
+ content-transfer-encoding : mime-version; s=pp1;
+ bh=JYz6yE+IBR3ZxjEeajtj3nlaitgP+ytBhZUlKrF/UKo=;
+ b=iS3QrL0tZWDc6uYpYPViW5WlG2UzsQ99/HUCpuBBxBjzfOn0xNu0n+ZXwzYQenMuxEMh
+ RXkvZbCAjuHKeWy6kil9YSZPcg+qivr/B4IJ1sr6V3RDyFEamckcUbQpojypJDkSk5qn
+ qH+hxWA6rgJ2NuKJ3C1ntR9O0l9kVdb7ZmgcFVYw8cTg76ZmyDaFBN65DnsFSp+uhQSx
+ iGpUtesQEr3m7YtUj5xCGPlndQ3gfkY/KODi8jACWHBUsgLJH+cITVcUvTsH5jcobr0t
+ 33lVUk87x7AVVhaAYJ5f3fyzFVIREGOIA+B3FiO2pBvtRQVopmd//o6zthzogyT/5P2K Cw== 
+Received: from pps.reinject (localhost [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3j64xjfnwy-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Thu, 25 Aug 2022 10:30:58 +0000
+Received: from m0127361.ppops.net (m0127361.ppops.net [127.0.0.1])
+        by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 27PAUoQZ020035;
+        Thu, 25 Aug 2022 10:30:58 GMT
+Received: from ppma06ams.nl.ibm.com (66.31.33a9.ip4.static.sl-reverse.com [169.51.49.102])
+        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3j64xjfnw4-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Thu, 25 Aug 2022 10:30:58 +0000
+Received: from pps.filterd (ppma06ams.nl.ibm.com [127.0.0.1])
+        by ppma06ams.nl.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 27PANPba023805;
+        Thu, 25 Aug 2022 10:30:56 GMT
+Received: from b06avi18626390.portsmouth.uk.ibm.com (b06avi18626390.portsmouth.uk.ibm.com [9.149.26.192])
+        by ppma06ams.nl.ibm.com with ESMTP id 3j2pvj6a0w-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Thu, 25 Aug 2022 10:30:56 +0000
+Received: from d06av21.portsmouth.uk.ibm.com (d06av21.portsmouth.uk.ibm.com [9.149.105.232])
+        by b06avi18626390.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 27PARpiO43385310
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Thu, 25 Aug 2022 10:27:51 GMT
+Received: from d06av21.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id D6B3F52050;
+        Thu, 25 Aug 2022 10:30:53 +0000 (GMT)
+Received: from localhost (unknown [9.43.41.198])
+        by d06av21.portsmouth.uk.ibm.com (Postfix) with ESMTP id 63E8A5204F;
+        Thu, 25 Aug 2022 10:30:53 +0000 (GMT)
+Date:   Thu, 25 Aug 2022 16:00:52 +0530
+From:   "Naveen N. Rao" <naveen.n.rao@linux.ibm.com>
+Subject: Re: [PATCH] compiler-gcc.h: Remove ancient workaround for gcc PR
+ 58670
+To:     linux-kernel@vger.kernel.org, Uros Bizjak <ubizjak@gmail.com>,
+        x86@kernel.org, Andrew Morton <akpm@linux-foundation.org>
+Cc:     sv@linux.ibm.com, linuxppc-dev@lists.ozlabs.org
+References: <20220624141412.72274-1-ubizjak@gmail.com>
+In-Reply-To: <20220624141412.72274-1-ubizjak@gmail.com>
+User-Agent: astroid/4d6b06ad (https://github.com/astroidmail/astroid)
+Message-Id: <1661422971.cqtahfm22j.naveen@linux.ibm.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+X-TM-AS-GCONF: 00
+X-Proofpoint-GUID: n4nPEr4_DKqV7t7Sbq939YhBxWNh-F8C
+X-Proofpoint-ORIG-GUID: dArQoAqUYuj9ZjLsB45xWWI8Z16dfYen
+Content-Transfer-Encoding: quoted-printable
+X-Proofpoint-UnRewURL: 0 URL was un-rewritten
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.895,Hydra:6.0.517,FMLib:17.11.122.1
+ definitions=2022-08-25_05,2022-08-22_02,2022-06-22_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 lowpriorityscore=0
+ malwarescore=0 priorityscore=1501 phishscore=0 spamscore=0 bulkscore=0
+ adultscore=0 mlxscore=0 suspectscore=0 clxscore=1011 mlxlogscore=863
+ impostorscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2207270000 definitions=main-2208250037
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Li Zhe <lizhe.67@bytedance.com>
+Uros Bizjak wrote:
+> The workaround for 'asm goto' miscompilation introduces a compiler
+> barrier quirk that inhibits many useful compiler optimizations. For
+> example, __try_cmpxchg_user compiles to:
+>=20
+>    11375:	41 8b 4d 00          	mov    0x0(%r13),%ecx
+>    11379:	41 8b 02             	mov    (%r10),%eax
+>    1137c:	f0 0f b1 0a          	lock cmpxchg %ecx,(%rdx)
+>    11380:	0f 94 c2             	sete   %dl
+>    11383:	84 d2                	test   %dl,%dl
+>    11385:	75 c4                	jne    1134b <...>
+>    11387:	41 89 02             	mov    %eax,(%r10)
+>=20
+> where the barrier inhibits flags propagation from asm when
+> compiled with gcc-12.
+>=20
+> When the mentioned quirk is removed, the following code is generated:
+>=20
+>    11553:	41 8b 4d 00          	mov    0x0(%r13),%ecx
+>    11557:	41 8b 02             	mov    (%r10),%eax
+>    1155a:	f0 0f b1 0a          	lock cmpxchg %ecx,(%rdx)
+>    1155e:	74 c9                	je     11529 <...>
+>    11560:	41 89 02             	mov    %eax,(%r10)
+>=20
+> The refered compiler bug:
+>=20
+> http://gcc.gnu.org/bugzilla/show_bug.cgi?id=3D58670
+>=20
+> was fixed for gcc-4.8.2.
+>=20
+> Current minimum required version of GCC is version 5.1 which has
+> the above 'asm goto' miscompilation fixed, so remove the workaround.
+>=20
+> Signed-off-by: Uros Bizjak <ubizjak@gmail.com>
+> Cc: Andrew Morton <akpm@linux-foundation.org>
+> ---
+>  include/linux/compiler-gcc.h | 11 -----------
+>  1 file changed, 11 deletions(-)
+>=20
+> diff --git a/include/linux/compiler-gcc.h b/include/linux/compiler-gcc.h
+> index a0c55eeaeaf1..9b157b71036f 100644
+> --- a/include/linux/compiler-gcc.h
+> +++ b/include/linux/compiler-gcc.h
+> @@ -66,17 +66,6 @@
+>  		__builtin_unreachable();	\
+>  	} while (0)
+>=20=20
+> -/*
+> - * GCC 'asm goto' miscompiles certain code sequences:
+> - *
+> - *   http://gcc.gnu.org/bugzilla/show_bug.cgi?id=3D58670
+> - *
+> - * Work it around via a compiler barrier quirk suggested by Jakub Jeline=
+k.
+> - *
+> - * (asm goto is automatically volatile - the naming reflects this.)
+> - */
+> -#define asm_volatile_goto(x...)	do { asm goto(x); asm (""); } while (0)
+> -
+>  #if defined(CONFIG_ARCH_USE_BUILTIN_BSWAP)
+>  #define __HAVE_BUILTIN_BSWAP32__
+>  #define __HAVE_BUILTIN_BSWAP64__
 
-In 'commit 2f1ee0913ce5 ("Revert "mm: use early_pfn_to_nid in page_ext_init"")',
-we call page_ext_init() after page_alloc_init_late() to avoid some panic
-problem. It seems that we cannot track early page allocations in current
-kernel even if page structure has been initialized early.
+This is causing a build issue on ppc64le with a new patch replacing use=20
+of unreachable() with __builtin_unreachable() in __WARN_FLAGS():
+https://lore.kernel.org/linuxppc-dev/20220808114908.240813-2-sv@linux.ibm.c=
+om/
 
-This patch introduce a new boot parameter 'early_page_ext' to resolve this
-problem. If we pass it to kernel, function page_ext_init() will be moved
-up and feature 'deferred initialization of struct pages' will be disabled
-to initialize the page allocator early and prevent from the panic problem
-above. It can help us to catch early page allocations. This is useful
-especially when we find that the free memory value is not the same right
-after different kernel booting.
+during RTL pass: combine
+In file included from /linux/kernel/locking/rtmutex_api.c:9:
+/linux/kernel/locking/rtmutex.c: In function '__rt_mutex_slowlock.constprop=
+':
+/linux/kernel/locking/rtmutex.c:1612:1: internal compiler error: in purge_d=
+ead_edges, at cfgrtl.c:3369
+ 1612 | }
+      | ^
+0x142817c internal_error(char const*, ...)
+	???:0
+0x5c8a1b fancy_abort(char const*, int, char const*)
+	???:0
+0x72017f purge_all_dead_edges()
+	???:0
+Please submit a full bug report,
+with preprocessed source if appropriate.
+Please include the complete backtrace with any bug report.
+See <file:///usr/share/doc/gcc-11/README.Bugs> for instructions.
 
-Suggested-by: Michal Hocko <mhocko@suse.com>
-Signed-off-by: Li Zhe <lizhe.67@bytedance.com>
----
-Changelogs:
 
-v1->v2:
-- use a cmd line parameter to move up function page_ext_init() instead of
-  using CONFIG_DEFERRED_STRUCT_PAGE_INIT
-- fix oom problem[1]
+So, it looks like gcc still has issues with certain uses of asm goto.
 
-v2->v3:
-- move the judgment out of page_ext_init()
 
-v3->v4:
-- remove dependency on CONFIG_DEFERRED_STRUCT_PAGE_INIT
-- modify descriptions in git log && kernel-parameters.txt
-
-v1 patch: https://lore.kernel.org/lkml/Yv3r6Y1vh+6AbY4+@dhcp22.suse.cz/T/
-v2 patch: https://lore.kernel.org/lkml/20220824065058.81051-1-lizhe.67@bytedance.com/T/
-v3 patch: https://lore.kernel.org/linux-mm/20220825063102.92307-1-lizhe.67@bytedance.com/T/
-
-[1]: https://lore.kernel.org/linux-mm/YwHmXLu5txij+p35@xsang-OptiPlex-9020/
-
- Documentation/admin-guide/kernel-parameters.txt |  8 ++++++++
- include/linux/page_ext.h                        | 11 +++++++++++
- init/main.c                                     |  6 +++++-
- mm/page_alloc.c                                 |  2 ++
- mm/page_ext.c                                   |  8 ++++++++
- 5 files changed, 34 insertions(+), 1 deletion(-)
-
-diff --git a/Documentation/admin-guide/kernel-parameters.txt b/Documentation/admin-guide/kernel-parameters.txt
-index d7f30902fda0..4f43fd5b324d 100644
---- a/Documentation/admin-guide/kernel-parameters.txt
-+++ b/Documentation/admin-guide/kernel-parameters.txt
-@@ -1471,6 +1471,14 @@
- 			Permit 'security.evm' to be updated regardless of
- 			current integrity status.
- 
-+	early_page_ext [KNL] Enforces page_ext initialization to earlier
-+			stages so cover more early boot allocations.
-+			Please note that as side effect some optimizations
-+			might be disabled to achieve that (e.g. parallelized
-+			memory initialization is disabled) so the boot process
-+			might take longer, especially on systems with a lot of
-+			memory. Available with CONFIG_PAGE_EXTENSION=y.
-+
- 	failslab=
- 	fail_usercopy=
- 	fail_page_alloc=
-diff --git a/include/linux/page_ext.h b/include/linux/page_ext.h
-index fabb2e1e087f..884282a7f03a 100644
---- a/include/linux/page_ext.h
-+++ b/include/linux/page_ext.h
-@@ -36,9 +36,15 @@ struct page_ext {
- 	unsigned long flags;
- };
- 
-+extern bool early_page_ext;
- extern unsigned long page_ext_size;
- extern void pgdat_page_ext_init(struct pglist_data *pgdat);
- 
-+static inline bool early_page_ext_enabled(void)
-+{
-+	return early_page_ext;
-+}
-+
- #ifdef CONFIG_SPARSEMEM
- static inline void page_ext_init_flatmem(void)
- {
-@@ -67,6 +73,11 @@ static inline struct page_ext *page_ext_next(struct page_ext *curr)
- #else /* !CONFIG_PAGE_EXTENSION */
- struct page_ext;
- 
-+static inline bool early_page_ext_enabled(void)
-+{
-+	return false;
-+}
-+
- static inline void pgdat_page_ext_init(struct pglist_data *pgdat)
- {
- }
-diff --git a/init/main.c b/init/main.c
-index 91642a4e69be..b5e75f3288d7 100644
---- a/init/main.c
-+++ b/init/main.c
-@@ -849,6 +849,9 @@ static void __init mm_init(void)
- 	pgtable_init();
- 	debug_objects_mem_init();
- 	vmalloc_init();
-+	/* Should be run after vmap initialization */
-+	if (early_page_ext_enabled())
-+		page_ext_init();
- 	/* Should be run before the first non-init thread is created */
- 	init_espfix_bsp();
- 	/* Should be run after espfix64 is set up. */
-@@ -1606,7 +1609,8 @@ static noinline void __init kernel_init_freeable(void)
- 	padata_init();
- 	page_alloc_init_late();
- 	/* Initialize page ext after all struct pages are initialized. */
--	page_ext_init();
-+	if (!early_page_ext_enabled())
-+		page_ext_init();
- 
- 	do_basic_setup();
- 
-diff --git a/mm/page_alloc.c b/mm/page_alloc.c
-index e5486d47406e..e2faa52cd05d 100644
---- a/mm/page_alloc.c
-+++ b/mm/page_alloc.c
-@@ -482,6 +482,8 @@ defer_init(int nid, unsigned long pfn, unsigned long end_pfn)
- {
- 	static unsigned long prev_end_pfn, nr_initialised;
- 
-+	if (early_page_ext_enabled())
-+		return false;
- 	/*
- 	 * prev_end_pfn static that contains the end of previous zone
- 	 * No need to protect because called very early in boot before smp_init.
-diff --git a/mm/page_ext.c b/mm/page_ext.c
-index 3dc715d7ac29..6c28d623d951 100644
---- a/mm/page_ext.c
-+++ b/mm/page_ext.c
-@@ -85,6 +85,14 @@ unsigned long page_ext_size = sizeof(struct page_ext);
- 
- static unsigned long total_usage;
- 
-+bool early_page_ext __meminitdata;
-+static int __init setup_early_page_ext(char *str)
-+{
-+	early_page_ext = true;
-+	return 0;
-+}
-+early_param("early_page_ext", setup_early_page_ext);
-+
- static bool __init invoke_need_callbacks(void)
- {
- 	int i;
--- 
-2.20.1
+- Naveen
 
