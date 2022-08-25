@@ -2,130 +2,115 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B98DFC6498F
-	for <linux-kernel@archiver.kernel.org>; Thu, 25 Aug 2022 15:23:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B9147C28D13
+	for <linux-kernel@archiver.kernel.org>; Thu, 25 Aug 2022 15:23:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229454AbiHYPXg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 25 Aug 2022 11:23:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33662 "EHLO
+        id S240860AbiHYPXs (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 25 Aug 2022 11:23:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33822 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236230AbiHYPXc (ORCPT
+        with ESMTP id S239089AbiHYPXl (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 25 Aug 2022 11:23:32 -0400
-Received: from mail-pj1-x1030.google.com (mail-pj1-x1030.google.com [IPv6:2607:f8b0:4864:20::1030])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3DE2AB8F19
-        for <linux-kernel@vger.kernel.org>; Thu, 25 Aug 2022 08:23:31 -0700 (PDT)
-Received: by mail-pj1-x1030.google.com with SMTP id w88-20020a17090a6be100b001fbb0f0b013so2116810pjj.5
-        for <linux-kernel@vger.kernel.org>; Thu, 25 Aug 2022 08:23:31 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc;
-        bh=AHkYLosTUlLzDn2E62SzaMtiFX4B6CYSNh1rEJtPsS4=;
-        b=XPykrXJnPtaVVrcd0/FJM5bJ9x9N5oHBNowUK8REQaSIxJQ5fgVKbic+daIEsTLBOU
-         IKpjQwIrvsj2ME1uePBk8XBmSpeHN/Y2DAjzHA+GXh4eJsBGKETloAde1aQkHimPT58b
-         pvkTlFbtDXHIWrRapcCaWLNnpo2MANPsafKsdX2vDNg9JyB+N/CNIBhTCExmOO4xajXP
-         Ksc0vDokShK7dWI3bwEkRrkkriGPpqpMxrUePfPivUBdZqMNTqxAJsVpJXbi3qIDuwwR
-         RNDAYnIPXqv8vjH3P8dK8RCHGhR0KYCCuM+W7aZ0RFngklXvwzrIJhcKzgYimQ1naZty
-         7cnA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc;
-        bh=AHkYLosTUlLzDn2E62SzaMtiFX4B6CYSNh1rEJtPsS4=;
-        b=hevAVNVsyJ9wAWOMFyTx7btWbGchRvRzAYJL5j7gvlJhq1aLHfkZst8ohU58te7h2l
-         FdHFJpGakFr4hKfBj2pOOUfi8BPQDywNW7aCQlcOwcgzgXVjEAqsB/ppaqBToUvHb3ND
-         rP2giVKrG31Md4fKnebST5oEMGZdmIKGSGlkpaId4AlVPDKyKeD+y+ByOW2w8xV8cg5d
-         LqZxxkziBx/+l3sJVMmgeXYCqHEoTaFDb/AyB+IrcDCCIV/cOECtDkX8qt7MjbS0T7By
-         Qqjqxzdsdz7jhzsQavMpdLw7iEqn9R73w9IwPrFYZ0I5aAydFIk5JqVewdH/1+vviGc3
-         f39g==
-X-Gm-Message-State: ACgBeo1sCkk5QPZE+g8u2PdFMe7B9A01/Mp1G7R7kscYKFrnqQAGhM9H
-        VqB4+9PCc0WiE/dvnRKWDUpfvw==
-X-Google-Smtp-Source: AA6agR7ecob0vG/6HjfUWKLFj9Rm64OSuEbn9LI4vl068lplif764DZbpGrjjFpYzOE8yxwJfuwZkg==
-X-Received: by 2002:a17:902:ce81:b0:172:9ac1:6ee with SMTP id f1-20020a170902ce8100b001729ac106eemr4104207plg.93.1661441010644;
-        Thu, 25 Aug 2022 08:23:30 -0700 (PDT)
-Received: from google.com (7.104.168.34.bc.googleusercontent.com. [34.168.104.7])
-        by smtp.gmail.com with ESMTPSA id u4-20020a17090a1f0400b001fa79c1de15sm3640192pja.24.2022.08.25.08.23.30
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 25 Aug 2022 08:23:30 -0700 (PDT)
-Date:   Thu, 25 Aug 2022 15:23:26 +0000
-From:   Sean Christopherson <seanjc@google.com>
-To:     Xiaoyao Li <xiaoyao.li@intel.com>
-Cc:     Peter Zijlstra <peterz@infradead.org>,
-        Arnaldo Carvalho de Melo <acme@kernel.org>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
-        Jiri Olsa <jolsa@kernel.org>,
-        Namhyung Kim <namhyung@kernel.org>,
-        Paolo Bonzini <pbonzini@redhat.com>,
-        linux-perf-users@vger.kernel.org, linux-kernel@vger.kernel.org,
-        kvm@vger.kernel.org
-Subject: Re: [RFC PATCH 1/2] perf/x86/intel/pt: Introduce
- intel_pt_{stop,resume}()
-Message-ID: <YweT7jqpHI0+JHi+@google.com>
-References: <20220825085625.867763-1-xiaoyao.li@intel.com>
- <20220825085625.867763-2-xiaoyao.li@intel.com>
+        Thu, 25 Aug 2022 11:23:41 -0400
+X-Greylist: delayed 1051 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Thu, 25 Aug 2022 08:23:38 PDT
+Received: from matoro.tk (unknown [IPv6:2600:1700:4b10:9d80::2])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8199DB9408;
+        Thu, 25 Aug 2022 08:23:38 -0700 (PDT)
+DKIM-Signature: a=rsa-sha256; bh=AuAC64zMFikVQyOsFvSed5o9/crqW6vUnJOdVdTX1bc=;
+ c=relaxed/relaxed; d=matoro.tk;
+ h=Subject:Subject:Sender:To:To:Cc:Cc:From:From:Date:Date:MIME-Version:MIME-Version:Content-Type:Content-Type:Content-Transfer-Encoding:Content-Transfer-Encoding:Reply-To:In-Reply-To:In-Reply-To:Message-Id:Message-Id:References:References:Autocrypt:Openpgp;
+ i=@matoro.tk; s=20220801; t=1661439948; v=1; x=1661871948;
+ b=HJtHo/m3mAL67rsOyV2HRrRp7hqfGXn4hpNwNzCBGVvVx3PxMxJoruJgF//TrwTe7gyCiUzL
+ xNnKRubKcezNfRzN9LzubC0zYlARqwY5rD6tHisXvOKh3S3KDf2ibOPQI4UEdOhK0hkO0nueQHq
+ qYq7FpmKmjqlqWmkR1poCfdTwsGaqS5LLAQzNnmF9xZzDMkNI99sgQRAOolQ2+Ah5edLbzxTnIy
+ DH0RiiBhfxDGlfYYaQrYq58VTlKhEbOktgPiNdc3vbUeDpxn7EBi/PCxGR3iijV7DeAtKt3EEjy
+ /btyeTwQynOF8TMEcd4As4a/CloFyfCCp3Qi4NdZCjTyT5H69vuhpBNE0Iq8x3NPqSe9c0R6n89
+ +K86hR7XMrtHaFFwaHiziMLTH6BanuWZSt5XG08fh06WDv1LDyvyGNYjqUxHQaI/GvsbOElS8A8
+ fCJWuob2oLMnoE8bzIHnjPgVSFq8phTqR0JarONYdgrgih0LUn5YM/4gfOXsN3uSF+AAJG5TVUB
+ BDq5X6QUzkriPSr16CgI9Sp+xIxnZXcmKhPR42FMt1s4bbVwOeC8aKJYbfV+JwBFKYg9U42U6+/
+ BVDGmIHt7Msl4+k67nDuEpVozBTnuMlNZXJNskgKQvg+kl/l/UHsF67Quba2BJ9SAakn7YT4Zrm
+ buqiHEerQ4M=
+Received: by matoro.tk (envelope-sender
+ <matoro_mailinglist_kernel@matoro.tk>) with ESMTPS id 0e5fc778; Thu, 25 Aug
+ 2022 11:05:48 -0400
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220825085625.867763-2-xiaoyao.li@intel.com>
+Date:   Thu, 25 Aug 2022 11:05:48 -0400
+From:   matoro <matoro_mailinglist_kernel@matoro.tk>
+To:     Jan Kara <jack@suse.cz>
+Cc:     Meelis Roos <mroos@linux.ee>, Matthew Wilcox <willy@infradead.org>,
+        "Theodore Y. Ts'o" <tytso@mit.edu>, linux-alpha@vger.kernel.org,
+        LKML <linux-kernel@vger.kernel.org>, linux-block@vger.kernel.org,
+        linux-mm@kvack.org
+Subject: Re: ext4 corruption on alpha with 4.20.0-09062-gd8372ba8ce28
+In-Reply-To: <20190221132916.GA22886@quack2.suse.cz>
+References: <076b8b72-fab0-ea98-f32f-f48949585f9d@linux.ee>
+ <20190216174536.GC23000@mit.edu>
+ <e175b885-082a-97c1-a0be-999040a06443@linux.ee>
+ <20190218120209.GC20919@quack2.suse.cz>
+ <4e015688-8633-d1a0-308b-ba2a78600544@linux.ee>
+ <20190219132026.GA28293@quack2.suse.cz>
+ <20190219144454.GB12668@bombadil.infradead.org>
+ <d444f653-9b99-5e9b-3b47-97f824c29b0e@linux.ee>
+ <20190220094813.GA27474@quack2.suse.cz>
+ <2381c264-92f5-db43-b6a5-8e00bd881fef@linux.ee>
+ <20190221132916.GA22886@quack2.suse.cz>
+Message-ID: <97dbffaefa65a83b36e1ec134fd53a66@matoro.tk>
+X-Sender: matoro_mailinglist_kernel@matoro.tk
+Content-Type: text/plain; charset=US-ASCII;
+ format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Aug 25, 2022, Xiaoyao Li wrote:
-> KVM supports PT_MODE_HOST_GUEST mode for Intel PT that host and guest
-> have separate Intel PT configurations and work independently. In that
-> mdoe, KVM needs to context switch all the Intel PT configurations
-> between host and guest on VM-entry and VM-exit.
-> 
-> Before VM-entry, if Intel PT is enabled on host, KVM needs to disable it
-> first so as to context switch the PT configurations. After VM exit, KVM
-> needs to re-enable Intel PT for host. Currently, KVM achieves it by
-> manually toggle MSR_IA32_RTIT_CTL.TRACEEN bit to en/dis-able Intel PT.
-> 
-> However, PT PMI can be delivered after MSR_IA32_RTIT_CTL.TRACEEN bit is
-> cleared. PT PMI handler changes PT MSRs and re-enable PT, that leads to
-> 1) VM-entry failure of guest 2) KVM stores stale value of PT MSRs.
-> 
-> To solve the problems, expose two interfaces for KVM to stop and
-> resume the PT tracing.
-> 
-> Signed-off-by: Xiaoyao Li <xiaoyao.li@intel.com>
-> ---
->  arch/x86/events/intel/pt.c      | 11 ++++++++++-
->  arch/x86/include/asm/intel_pt.h |  6 ++++--
->  arch/x86/kernel/crash.c         |  4 ++--
->  3 files changed, 16 insertions(+), 5 deletions(-)
-> 
-> diff --git a/arch/x86/events/intel/pt.c b/arch/x86/events/intel/pt.c
-> index 82ef87e9a897..55fc02036ff1 100644
-> --- a/arch/x86/events/intel/pt.c
-> +++ b/arch/x86/events/intel/pt.c
-> @@ -1730,13 +1730,22 @@ static int pt_event_init(struct perf_event *event)
->  	return 0;
->  }
->  
-> -void cpu_emergency_stop_pt(void)
-> +void intel_pt_stop(void)
->  {
->  	struct pt *pt = this_cpu_ptr(&pt_ctx);
->  
->  	if (pt->handle.event)
->  		pt_event_stop(pt->handle.event, PERF_EF_UPDATE);
->  }
-> +EXPORT_SYMBOL_GPL(intel_pt_stop);
-> +
-> +void intel_pt_resume(void) {
+Hello all, I know this is quite an old thread.  I recently acquired some 
+alpha hardware and have run into this exact same problem on the latest 
+stable kernel (5.18 and 5.19).  CONFIG_COMPACTION seems to be totally 
+broken and causes userspace to be extremely unstable - random segfaults, 
+corruption of glibc data structures, gcc ICEs etc etc - seems most 
+noticable during tasks with heavy I/O load.
 
-Curly brace goes on its own line.
+My hardware is a DS15 (Titan), so only slightly newer than the Tsunamis 
+mentioned earlier.  The problem is greatly exacerbated when using a 
+machine-optimized kernel (CONFIG_ALPHA_TITAN) over one with 
+CONFIG_ALPHA_GENERIC.  But it still doesn't go away on a generic kernel, 
+just pops up less often, usually very I/O heavy tasks like checking out 
+a tag in the kernel repo.
 
-> +	struct pt *pt = this_cpu_ptr(&pt_ctx);
-> +
-> +	if (pt->handle.event)
-> +		pt_event_start(pt->handle.event, 0);
-> +}
-> +EXPORT_SYMBOL_GPL(intel_pt_resume);
->  
->  int is_intel_pt_event(struct perf_event *event)
->  {
+However all of this seems to be dependent on CONFIG_COMPACTION.  With 
+this toggled off all problems disappear, regardless of other options.  I 
+tried reverting the commit 88dbcbb3a4847f5e6dfeae952d3105497700c128 
+mentioned earlier in the thread (the structure has moved to a different 
+file but was otherwise the same), but it unfortunately did not make a 
+difference.
+
+Since this doesn't seem to have a known cause or an easy fix, would it 
+be reasonable to just add a Kconfig dep to disable it automatically on 
+alpha?
+
+Thank you!
+
+-------- Original Message --------
+Subject: Re: ext4 corruption on alpha with 4.20.0-09062-gd8372ba8ce28
+Date: 2019-02-21 08:29
+ From: Jan Kara <jack@suse.cz>
+To: Meelis Roos <mroos@linux.ee>
+
+On Thu 21-02-19 01:23:50, Meelis Roos wrote:
+> > > First, I found out that both the problematic alphas had memory compaction and
+> > > page migration and bounce buffers turned on, and working alphas had them off.
+> > >
+> > > Next, turing off these options makes the problematic alphas work.
+> >
+> > OK, thanks for testing! Can you narrow down whether the problem is due to
+> > CONFIG_BOUNCE or CONFIG_MIGRATION + CONFIG_COMPACTION? These are two
+> > completely different things so knowing where to look will help. Thanks!
+> 
+> Tested both.
+> 
+> Just CONFIG_MIGRATION + CONFIG_COMPACTION breaks the alpha.
+> Just CONFIG_BOUNCE has no effect in 5 tries.
+
+OK, so page migration is problematic. Thanks for confirmation!
+
+								Honza
