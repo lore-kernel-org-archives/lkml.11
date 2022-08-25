@@ -2,173 +2,113 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 41AC3C28D13
-	for <linux-kernel@archiver.kernel.org>; Thu, 25 Aug 2022 13:08:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EF869C28D13
+	for <linux-kernel@archiver.kernel.org>; Thu, 25 Aug 2022 13:09:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238758AbiHYNIf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 25 Aug 2022 09:08:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48906 "EHLO
+        id S242148AbiHYNJJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 25 Aug 2022 09:09:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49390 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239089AbiHYNIa (ORCPT
+        with ESMTP id S239089AbiHYNJH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 25 Aug 2022 09:08:30 -0400
-Received: from mail-pj1-x1031.google.com (mail-pj1-x1031.google.com [IPv6:2607:f8b0:4864:20::1031])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8BDEA80036
-        for <linux-kernel@vger.kernel.org>; Thu, 25 Aug 2022 06:08:29 -0700 (PDT)
-Received: by mail-pj1-x1031.google.com with SMTP id s36-20020a17090a69a700b001faad0a7a34so4880958pjj.4
-        for <linux-kernel@vger.kernel.org>; Thu, 25 Aug 2022 06:08:29 -0700 (PDT)
+        Thu, 25 Aug 2022 09:09:07 -0400
+Received: from mail-wr1-x42b.google.com (mail-wr1-x42b.google.com [IPv6:2a00:1450:4864:20::42b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 337269F0F7
+        for <linux-kernel@vger.kernel.org>; Thu, 25 Aug 2022 06:09:06 -0700 (PDT)
+Received: by mail-wr1-x42b.google.com with SMTP id d16so19266453wrr.3
+        for <linux-kernel@vger.kernel.org>; Thu, 25 Aug 2022 06:09:06 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=bytedance-com.20210112.gappssmtp.com; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc;
-        bh=OBYmnQGANZOHibGw312dbngnREH68qBEMiZ9YOR4h7Y=;
-        b=bkqPN0PJIWCCnt7/zGtjcRLXEQvmV3RhkEOkGqLYVNailErPnaJ0gpTVpa7oASHKEI
-         JksrKiJ8chvwlXoDgqk1sGqHmoCWsBcB+KxB+dFvm805Je2N4Y6u8w0YGIKLUm+KNZF4
-         ICqIgtU7+2aEDmfWA0DNCA0qIXebqdPJUP/LgtxnqF61q0yUSFk9YQBQOg8bdWA2fL90
-         MvwLAtXIETHkiX/E7w40u/mKAR/pd6J6jlvDVWLsjufu0+dmSVlulhKKkzsTZgJ74OR0
-         eglrJaCrk/dxmBJ5krfEIlX/e9J1UEa5faf0Op1YeNmoJnIAZUkMRDow/Sn9kvqwkjIJ
-         CY9Q==
+        d=gmail.com; s=20210112;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc;
+        bh=6fe3qO+g9J+l3GlHLyNAAJaJBk5cDlmle87a/iuxSEg=;
+        b=HrYjJQHH4UNfHir+6sbLkd8xKcOuyL9rnFxbzSxD82Vo55TqgER5xIoQCQjLwM+mOM
+         ozyno0lTMmEgfM0Gn+LWgzNiIDo9Frkp4xho0pLrq2L89a1SAyNY8HgwnttwGvQPvMgm
+         gtewMPDUQDp0txBorhiBcFAPfenSj0K6UoJV9zudWZlTVslpt+v0LleOeJLz1nPxnRys
+         AFe19H+UQZ4Q1Mj5ejD261sAGPMd5NIJvCMmdLKfX92tkJvTYg+zVGa5o+FbFtLOzqE6
+         iRCDaFDtx4P/LGbWQUtWdSYKJhQi6HeacqvtwGTfxKI/gmAa5srG5NknZXgO4oSYgpPg
+         M14Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-message-state:from:to:cc;
-        bh=OBYmnQGANZOHibGw312dbngnREH68qBEMiZ9YOR4h7Y=;
-        b=eQB/7gefKfsYdd9/BGEv6M78sdogabretK+HUmqPPQIFtOlnTSKmGUUpjWiGomQefr
-         VOx7zXYpQm98dGU3+MjHY3tFEZJ3hgtczxMnpg4pUGrqWeBPYnyICyCeTMX+4P4bRpOm
-         Kyl8fQflv8bOpqX1I2/2HFpgN/6bwdLHC/erkfhyLNxZvEn1ooguSD76Z6cg60qRbCub
-         leOubK8tIOQyCV2S6QBxTq28lqtwWYI67mThUy4lTz+6ewHz1FQHE01jeKsP/LnRvakJ
-         X/vP/eqz5k5ekLP44xBey0lDjuPT23rSNP3l4oRx+41hB1mNGWvPJakEw8fCjZhRve7/
-         1lIw==
-X-Gm-Message-State: ACgBeo0VLle5VxoEQF7Evd/z1hDAt6mczcXSWZZW04UtCc1ZOlQlOgjB
-        2f67xq52dKTxpD3OnyOEPlQcIA==
-X-Google-Smtp-Source: AA6agR7rdfkSleUlsrhp+Y31d4Aag6ekmGqI8PVk/MkynKCYvUMhkjmZ0p29gttG0ClqWUeE9xvFyg==
-X-Received: by 2002:a17:902:904b:b0:172:cd04:a3d3 with SMTP id w11-20020a170902904b00b00172cd04a3d3mr3834358plz.173.1661432908935;
-        Thu, 25 Aug 2022 06:08:28 -0700 (PDT)
-Received: from J23WFD767R.bytedance.net ([61.120.150.74])
-        by smtp.gmail.com with ESMTPSA id w16-20020a170902e89000b0016f196209c9sm11019202plg.123.2022.08.25.06.08.24
-        (version=TLS1_3 cipher=TLS_CHACHA20_POLY1305_SHA256 bits=256/256);
-        Thu, 25 Aug 2022 06:08:28 -0700 (PDT)
-From:   Zhang Tianci <zhangtianci.1997@bytedance.com>
-To:     miklos@szeredi.hu
-Cc:     Zhang Tianci <zhangtianci.1997@bytedance.com>,
-        linux-unionfs@vger.kernel.org, linux-kernel@vger.kernel.org,
-        amir73il@gmail.com,
-        Jiachen Zhang <zhangjiachen.jaycee@bytedance.com>,
-        Christian Brauner <brauner@kernel.org>
-Subject: [PATCH v2] ovl: Use current fsuid and fsgid in ovl_link()
-Date:   Thu, 25 Aug 2022 21:05:52 +0800
-Message-Id: <20220825130552.29587-1-zhangtianci.1997@bytedance.com>
-X-Mailer: git-send-email 2.32.1 (Apple Git-133)
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc;
+        bh=6fe3qO+g9J+l3GlHLyNAAJaJBk5cDlmle87a/iuxSEg=;
+        b=lvl+M7KHCi1NSuwvksLtPLodh+Bkbt+JdyX57ZikRcUd52uh06gKtVb0GuDkzjS13a
+         R4JJnvXCjCwf90S8ZXkzF1aaW3PAWmVkxPg9QVkd8ubTbZ4N0tjwOCBS4HjqFCDF8Jwo
+         NFv6SP9aGWY5pXm0zBvKeHuWBMLNjZbtFZcPLlTeSEiSYlCoHMQWSZpv/i3ib6bsEXZw
+         Y/WHgYLNbkkPafP54kiotEQBWqaNnnqtZR4iWd7xa2LtMq50DYctx+JshEnkAuH1kh/L
+         P8X4lGlupiNrnDvE8TWiQwFE1swWEaoEXc/7O6qGqoj2f4OQBny7jcZeSyaaRRf2pylO
+         QW5A==
+X-Gm-Message-State: ACgBeo0buV88KVE0Z43b7rMelvykIhC1cE9fFWdvl8GMnsVq7LQ0LNLo
+        vQ2lk2bpBiCXEafnZ4rSDJs=
+X-Google-Smtp-Source: AA6agR7UBlXOM+WUEhxxVABpntMRNdTQcy0g5wbICDVhGOTHepjy5kESxjIou7bia/gOsg5yeG8yrw==
+X-Received: by 2002:a05:6000:23c:b0:225:1a3a:2524 with SMTP id l28-20020a056000023c00b002251a3a2524mr2156101wrz.489.1661432944741;
+        Thu, 25 Aug 2022 06:09:04 -0700 (PDT)
+Received: from [192.168.2.177] ([207.188.167.132])
+        by smtp.gmail.com with ESMTPSA id b18-20020a5d6352000000b002252751629dsm19455364wrw.24.2022.08.25.06.09.03
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 25 Aug 2022 06:09:03 -0700 (PDT)
+Message-ID: <e60c979d-4d54-86a8-8981-9587b3f271a6@gmail.com>
+Date:   Thu, 25 Aug 2022 15:09:02 +0200
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.1.2
+Subject: Re: [PATCH linux-next v2] drm/mediatek: Remove the unneeded result
+Content-Language: en-US
+To:     cgel.zte@gmail.com
+Cc:     chunkuang.hu@kernel.org, p.zabel@pengutronix.de, airlied@linux.ie,
+        daniel@ffwll.ch, dri-devel@lists.freedesktop.org,
+        linux-mediatek@lists.infradead.org,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        ye xingchen <ye.xingchen@zte.com.cn>,
+        Zeal Robot <zealci@zte.com.cn>
+References: <20220825072335.228921-1-ye.xingchen@zte.com.cn>
+From:   Matthias Brugger <matthias.bgg@gmail.com>
+In-Reply-To: <20220825072335.228921-1-ye.xingchen@zte.com.cn>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-There is a wrong case of link() on overlay:
-  $ mkdir /lower /fuse /merge
-  $ mount -t fuse /fuse
-  $ mkdir /fuse/upper /fuse/work
-  $ mount -t overlay /merge -o lowerdir=/lower,upperdir=/fuse/upper,\
-    workdir=work
-  $ touch /merge/file
-  $ chown bin.bin /merge/file // the file's caller becomes "bin"
-  $ ln /merge/file /merge/lnkfile
 
-Then we will get an error(EACCES) because fuse daemon checks the link()'s
-caller is "bin", it denied this request.
 
-In the changing history of ovl_link(), there are two key commits:
+On 25/08/2022 09:23, cgel.zte@gmail.com wrote:
+> From: ye xingchen <ye.xingchen@zte.com.cn>
+> 
+> Return the value drm_mode_config_helper_suspend() directly instead of
+>   storing it in another redundant variable.
+> 
+> Reported-by: Zeal Robot <zealci@zte.com.cn>
+> Signed-off-by: ye xingchen <ye.xingchen@zte.com.cn>
 
-The first is commit bb0d2b8ad296 ("ovl: fix sgid on directory") which
-overrides the cred's fsuid/fsgid using the new inode. The new inode's
-owner is initialized by inode_init_owner(), and inode->fsuid is
-assigned to the current user. So the override fsuid becomes the
-current user. We know link() is actually modifying the directory, so
-the caller must have the MAY_WRITE permission on the directory. The
-current caller may should have this permission. This is acceptable
-to use the caller's fsuid.
+I thought I already did this in v1, anyway here we go again:
 
-The second is commit 51f7e52dc943 ("ovl: share inode for hard link")
-which removed the inode creation in ovl_link(). This commit move
-inode_init_owner() into ovl_create_object(), so the ovl_link() just
-give the old inode to ovl_create_or_link(). Then the override fsuid
-becomes the old inode's fsuid, neither the caller nor the overlay's
-creator! So this is incorrect.
+Reviewed-by: Matthias Brugger <matthias.bgg@gmail.com>
 
-Fix this bug by using current fsuid/fsgid to do underlying fs's link().
-
-Link: https://lore.kernel.org/all/20220817102951.xnvesg3a7rbv576x@wittgenstein/T
-
-Signed-off-by: Zhang Tianci <zhangtianci.1997@bytedance.com>
-Signed-off-by: Jiachen Zhang <zhangjiachen.jaycee@bytedance.com>
-Signed-off-by: Christian Brauner (Microsoft) <brauner@kernel.org>
----
- fs/overlayfs/dir.c       | 16 +++++++++++-----
- fs/overlayfs/overlayfs.h |  2 ++
- 2 files changed, 13 insertions(+), 5 deletions(-)
-
-diff --git a/fs/overlayfs/dir.c b/fs/overlayfs/dir.c
-index 6b03457f72bb..dd84e6fc5f6e 100644
---- a/fs/overlayfs/dir.c
-+++ b/fs/overlayfs/dir.c
-@@ -595,8 +595,8 @@ static int ovl_create_or_link(struct dentry *dentry, struct inode *inode,
- 	err = -ENOMEM;
- 	override_cred = prepare_creds();
- 	if (override_cred) {
--		override_cred->fsuid = inode->i_uid;
--		override_cred->fsgid = inode->i_gid;
-+		override_cred->fsuid = attr->fsuid;
-+		override_cred->fsgid = attr->fsgid;
- 		if (!attr->hardlink) {
- 			err = security_dentry_create_files_as(dentry,
- 					attr->mode, &dentry->d_name, old_cred,
-@@ -646,6 +646,8 @@ static int ovl_create_object(struct dentry *dentry, int mode, dev_t rdev,
- 	inode_init_owner(&init_user_ns, inode, dentry->d_parent->d_inode, mode);
- 	attr.mode = inode->i_mode;
- 
-+	attr.fsuid = inode->i_uid;
-+	attr.fsgid = inode->i_gid;
- 	err = ovl_create_or_link(dentry, inode, &attr, false);
- 	/* Did we end up using the preallocated inode? */
- 	if (inode != d_inode(dentry))
-@@ -702,6 +704,7 @@ static int ovl_link(struct dentry *old, struct inode *newdir,
- {
- 	int err;
- 	struct inode *inode;
-+	struct ovl_cattr attr;
- 
- 	err = ovl_want_write(old);
- 	if (err)
-@@ -728,9 +731,12 @@ static int ovl_link(struct dentry *old, struct inode *newdir,
- 	inode = d_inode(old);
- 	ihold(inode);
- 
--	err = ovl_create_or_link(new, inode,
--			&(struct ovl_cattr) {.hardlink = ovl_dentry_upper(old)},
--			ovl_type_origin(old));
-+	attr = (struct ovl_cattr) {
-+		.hardlink = ovl_dentry_upper(old),
-+		.fsuid = current_fsuid(),
-+		.fsgid = current_fsgid(),
-+	};
-+	err = ovl_create_or_link(new, inode, &attr, ovl_type_origin(old));
- 	if (err)
- 		iput(inode);
- 
-diff --git a/fs/overlayfs/overlayfs.h b/fs/overlayfs/overlayfs.h
-index 87759165d32b..85043123a103 100644
---- a/fs/overlayfs/overlayfs.h
-+++ b/fs/overlayfs/overlayfs.h
-@@ -655,6 +655,8 @@ struct ovl_cattr {
- 	umode_t mode;
- 	const char *link;
- 	struct dentry *hardlink;
-+	kuid_t fsuid;
-+	kgid_t fsgid;
- };
- 
- #define OVL_CATTR(m) (&(struct ovl_cattr) { .mode = (m) })
--- 
-2.32.1 (Apple Git-133)
-
+> ---
+> v1 -> v2
+> Add all the mailinglists that get_maintainers.pl give.
+>   drivers/gpu/drm/mediatek/mtk_drm_drv.c | 5 +----
+>   1 file changed, 1 insertion(+), 4 deletions(-)
+> 
+> diff --git a/drivers/gpu/drm/mediatek/mtk_drm_drv.c
+> b/drivers/gpu/drm/mediatek/mtk_drm_drv.c
+> index 5f02f8d0e4fc..91f58db5915f 100644
+> --- a/drivers/gpu/drm/mediatek/mtk_drm_drv.c
+> +++ b/drivers/gpu/drm/mediatek/mtk_drm_drv.c
+> @@ -833,11 +833,8 @@ static int mtk_drm_sys_prepare(struct device *dev)
+>   {
+>   	struct mtk_drm_private *private = dev_get_drvdata(dev);
+>   	struct drm_device *drm = private->drm;
+> -	int ret;
+> -
+> -	ret = drm_mode_config_helper_suspend(drm);
+>   
+> -	return ret;
+> +	return drm_mode_config_helper_suspend(drm);
+>   }
+>   
+>   static void mtk_drm_sys_complete(struct device *dev)
