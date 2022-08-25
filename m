@@ -2,100 +2,114 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E9F0BC32774
-	for <linux-kernel@archiver.kernel.org>; Thu, 25 Aug 2022 08:05:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 06088C28D13
+	for <linux-kernel@archiver.kernel.org>; Thu, 25 Aug 2022 08:06:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239109AbiHYIF6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 25 Aug 2022 04:05:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40534 "EHLO
+        id S237410AbiHYIGO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 25 Aug 2022 04:06:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41162 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237349AbiHYIFz (ORCPT
+        with ESMTP id S236149AbiHYIGK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 25 Aug 2022 04:05:55 -0400
-Received: from mail-pf1-x435.google.com (mail-pf1-x435.google.com [IPv6:2607:f8b0:4864:20::435])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8A22540BEF;
-        Thu, 25 Aug 2022 01:05:52 -0700 (PDT)
-Received: by mail-pf1-x435.google.com with SMTP id y127so15990760pfy.5;
-        Thu, 25 Aug 2022 01:05:52 -0700 (PDT)
+        Thu, 25 Aug 2022 04:06:10 -0400
+Received: from mail-ed1-x549.google.com (mail-ed1-x549.google.com [IPv6:2a00:1450:4864:20::549])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CBFA1DE5
+        for <linux-kernel@vger.kernel.org>; Thu, 25 Aug 2022 01:06:06 -0700 (PDT)
+Received: by mail-ed1-x549.google.com with SMTP id y14-20020a056402440e00b0044301c7ccd9so12374056eda.19
+        for <linux-kernel@vger.kernel.org>; Thu, 25 Aug 2022 01:06:06 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc;
-        bh=heEHOjqaoZfuUKBnGqgwRXL1DFbaof5JCnXSywcr050=;
-        b=d1RFGcXrwRHPrYRWhhFh+QaqBW4JEqlixPxU77fKDXR/EnFbnUShHEyAgI6enNoyfv
-         jCsxfwxekr+CqXOGuupR/CZ6TPDtv3XLYmgxUzLEDTui0gvUphjJW3ZADWu6kYmWtgXz
-         clglysHXpiFy/KVJcVxBj/mLruQA3dED6XXJBgfcY8kATK4yrYBuOA+vTe3Pn3qiPPut
-         VxaFJuVCxzHuwNSEaEIv6NkoikvDcBgZ6VW/bgiie0hpi397OZQCgJdH8eKCFKtGbYuw
-         SKyPqCXP8/07URCCajFw5zu9ulEImAAogATlLLpZOHOc1l/2C+4widbOQxwTzj91lits
-         7Q+g==
+        d=google.com; s=20210112;
+        h=cc:to:from:subject:mime-version:message-id:date:from:to:cc;
+        bh=VFoAUZmQSNIybQQWm64jI2jatoCnpAOO4OmYIlm443c=;
+        b=lzySq90VxMrFPmXh2/dwioCs6B1SegwMh8h1SsTmX7oweHtHklTxf6cwglcV4JsI+q
+         VQC5BAJbGLcbZlMbIuVfyPf1a/w9tjTHHFYSXkfTGdb81NG6cFzdicSzVrqWOu4ct5Cr
+         tS1OEbijc7gx0NIrKZ+d+6ZzS44EIfPEpJFHNlm3e3/omWOc7eJZzgTW82ei7qHLkqcl
+         pnGB9aB8V3x4fcFHTtLFdrGZIW/vqnTzm8ewyDHTe25uVu7KRIs9dhRkJxQmrsSb/1dZ
+         N1MaVqAYSovM9cPAzvU/zUeG09EBBO/tkF2xDo7TLbKz9daOtij6z9ao/usZR5B/ZfHj
+         TC2Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc;
-        bh=heEHOjqaoZfuUKBnGqgwRXL1DFbaof5JCnXSywcr050=;
-        b=aTxEDxWty3+V9ZGBpJdxVP90v13G/zaM7QSLw/KfA4v3LVXfS3cZz5i0JSbOlb3+ZO
-         ERQNCRjPxNn67dHxY/nkCdf2/LI8rnTdqyxHKmJ6Mo/nFdTlPVaa0xjNi/yeLUThO8U0
-         uLXAt36G/o+MzTfzTlWVSlFIkSqbcCCvxijeQYzCXNqg4WlMfToe2B12SRsbsUCyrUfH
-         fhNBPOhzuiuAEj6T1mZwFPTvzrXUdXLAuOAObPvVls7yUJ9e80txA6QfKoBwMEkVqjQ6
-         IuwINueLATnFMTo+/88sz77xGIYPaqHvsRJ3EnsoTBkr1ITLQ8U3YJKS/zakf6hEskDB
-         IaUg==
-X-Gm-Message-State: ACgBeo3m+h7drPLakMNmNNKNsH8CDhYnMGWR/KjxlsURFr241eUcagQN
-        eIY+NZPYOhllhj36c6g9f0M=
-X-Google-Smtp-Source: AA6agR4FmJGWUFbjGrMVXXNJjNWn9k5Zzxi/9fDCATJ5osMpOW1YgXdmobFgtI/HywFmm7LLRFCR1Q==
-X-Received: by 2002:a63:e412:0:b0:41d:9c6a:7e with SMTP id a18-20020a63e412000000b0041d9c6a007emr2322510pgi.575.1661414751987;
-        Thu, 25 Aug 2022 01:05:51 -0700 (PDT)
-Received: from AA2000783-NB2.corpnet.asus (125-229-150-10.hinet-ip.hinet.net. [125.229.150.10])
-        by smtp.gmail.com with ESMTPSA id z11-20020a63190b000000b0042b2311f749sm2431052pgl.19.2022.08.25.01.05.49
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 25 Aug 2022 01:05:51 -0700 (PDT)
-Date:   Thu, 25 Aug 2022 16:05:48 +0800
-From:   PaddyKP Yao <ispaddy@gmail.com>
-To:     Pavel Machek <pavel@ucw.cz>
-Cc:     Hans de Goede <hdegoede@redhat.com>, PaddyKP_Yao@asus.com,
-        acpi4asus-user@lists.sourceforge.net, andy.shevchenko@gmail.com,
-        corentin.chary@gmail.com, linux-kernel@vger.kernel.org,
-        luke@ljones.dev, mgross@linux.intel.com,
-        platform-driver-x86@vger.kernel.org
-Subject: Re: [PATCH v3 1/1] platform/x86: asus-wmi: Add mic-mute LED classdev
- support
-Message-ID: <20220825080548.GA17321@AA2000783-NB2.corpnet.asus>
-References: <d7e2a109-c1b7-9f8c-c2b2-b765f016a9a3@redhat.com>
- <20220711115125.2072508-1-PaddyKP_Yao@asus.com>
- <e120ac7c-7abb-4999-efe8-6b3b697d12d6@redhat.com>
- <20220824100622.GB1049@bug>
- <20220824105908.GA111@AA2000783-NB2.corpnet.asus>
- <20220825075547.GA28653@duo.ucw.cz>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220825075547.GA28653@duo.ucw.cz>
+        h=cc:to:from:subject:mime-version:message-id:date:x-gm-message-state
+         :from:to:cc;
+        bh=VFoAUZmQSNIybQQWm64jI2jatoCnpAOO4OmYIlm443c=;
+        b=So6ExtrPyGkNfRITWINtHtHsSinBea0Z7A5pp4/rQV/yYNzKROhPaY6ZGyuDpMcyAc
+         A7XmfB7NaJ/O6pzrjTJ1jPrQf2QMrB+EPjVX1vCL8+ZBmaALhh5RS4CGvAQcRAICPaiF
+         hqKr8JYzbJf1BFGpbqQPbtmWcu4drjH5CtSUi6MRYuJgyROGRAlSQ0dE6ndoGVkKbL+R
+         dwREnxDHIHLUmkqaSDtyyF17UhKId34nHU++w434XWTV0YREF5bTS2SJWyk4TkOz/OTj
+         TRIsHFVOeULsRDNvQxfr8+7wAXL/5saZv/6TkrmxZXymDiR/NVaIzKaEwpglUIBbKAOA
+         HjwQ==
+X-Gm-Message-State: ACgBeo0QnfTEG7w9PIBjVLVsvc+Zka0RY2fnIj3SXzVHxcK1boXmi8G0
+        tppQaBW9/yeUizXz7T1V8TjnbCNnC0k=
+X-Google-Smtp-Source: AA6agR6UVFnHcCE6dkRKJ4LXnHFEmWj1dGMEp2KQOHR3+b1DqMPbPRnGL1Du8uuOqH6LOnmqmBgSyVciqtM=
+X-Received: from glider.muc.corp.google.com ([2a00:79e0:9c:201:4984:837b:f1f1:a6a1])
+ (user=glider job=sendgmr) by 2002:a05:6402:2756:b0:443:4a6d:f05a with SMTP id
+ z22-20020a056402275600b004434a6df05amr2178605edd.396.1661414765037; Thu, 25
+ Aug 2022 01:06:05 -0700 (PDT)
+Date:   Thu, 25 Aug 2022 10:05:55 +0200
+Message-Id: <20220825080555.3643572-1-glider@google.com>
+Mime-Version: 1.0
+X-Mailer: git-send-email 2.37.2.672.g94769d06f0-goog
+Subject: [PATCH] ath9k: fix an uninit value use in ath9k_htc_rx_msg()
+From:   Alexander Potapenko <glider@google.com>
+To:     glider@google.com
+Cc:     ath9k-devel@qca.qualcomm.com, davem@davemloft.net, kuba@kernel.org,
+        kvalo@codeaurora.org, linux-kernel@vger.kernel.org,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        syzbot+2ca247c2d60c7023de7f@syzkaller.appspotmail.com
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Pavel,
+ath9k_htc_rx_msg() assumes skb->data contains a full
+`struct htc_frame_hdr`, thus it needs a call to pskb_may_pull()
+to ensure there is enough data.
 
-On Thu, Aug 25, 2022 at 09:55:47AM +0200, Pavel Machek wrote:
-> On Wed 2022-08-24 18:59:08, PaddyKP Yao wrote:
-> > Hi Pavel,
-> > 
-> > On Wed, Aug 24, 2022 at 12:06:22PM +0200, Pavel Machek wrote:
-> > > 
-> > > It would be good to get the API right before it hits mainline release.
-> > > 
-> > 
-> > What do you mean about API you mentioned?
-> 
-> We really don't want to see asus: prefix in the sysfs.
-> 
-> Best regards,
-> 								Pavel
-> -- 
-> People of Russia, stop Putin before his war on Ukraine escalates.
+This fixes a long-standing issue reported by KMSAN:
 
-Understand and thanks for your feedback.
-I aready submited new patch to fix this.
+  BUG: KMSAN: uninit-value in ath9k_htc_rx_msg+0x544/0x980 drivers/net/wireless/ath/ath9k/htc_hst.c:417
+   ath9k_htc_rx_msg+0x544/0x980 drivers/net/wireless/ath/ath9k/htc_hst.c:417
+   ath9k_hif_usb_rx_stream drivers/net/wireless/ath/ath9k/hif_usb.c:653 [inline]
+   ath9k_hif_usb_rx_cb+0x196a/0x1f10 drivers/net/wireless/ath/ath9k/hif_usb.c:686
+   __usb_hcd_giveback_urb+0x522/0x740 drivers/usb/core/hcd.c:1670
+   usb_hcd_giveback_urb+0x150/0x620 drivers/usb/core/hcd.c:1747
+   dummy_timer+0xd3f/0x4f20 drivers/usb/gadget/udc/dummy_hcd.c:1988
+   call_timer_fn+0x43/0x480 kernel/time/timer.c:1474
+   expire_timers+0x272/0x610 kernel/time/timer.c:1519
+   __run_timers+0x5bc/0x8c0 kernel/time/timer.c:1790
+  ...
 
-https://lore.kernel.org/all/20220825004305.709539-1-PaddyKP_Yao@asus.com/
+  Uninit was created at:
+  ...
+   __alloc_skb+0x34a/0xd70 net/core/skbuff.c:426
+   __netdev_alloc_skb+0x126/0x780 net/core/skbuff.c:494
+   __dev_alloc_skb include/linux/skbuff.h:3264 [inline]
+   ath9k_hif_usb_rx_stream drivers/net/wireless/ath/ath9k/hif_usb.c:635 [inline]
+   ath9k_hif_usb_rx_cb+0xe7b/0x1f10 drivers/net/wireless/ath/ath9k/hif_usb.c:686
+   __usb_hcd_giveback_urb+0x522/0x740 drivers/usb/core/hcd.c:1670
+  ...
 
-Best Regards, Paddy
+Reported-by: syzbot+2ca247c2d60c7023de7f@syzkaller.appspotmail.com
+Signed-off-by: Phillip Potter <phil@philpotter.co.uk>
+Signed-off-by: Alexander Potapenko <glider@google.com>
+---
+ drivers/net/wireless/ath/ath9k/htc_hst.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
+
+diff --git a/drivers/net/wireless/ath/ath9k/htc_hst.c b/drivers/net/wireless/ath/ath9k/htc_hst.c
+index 994ec48b2f669..83a1d2fba2218 100644
+--- a/drivers/net/wireless/ath/ath9k/htc_hst.c
++++ b/drivers/net/wireless/ath/ath9k/htc_hst.c
+@@ -408,7 +408,8 @@ void ath9k_htc_rx_msg(struct htc_target *htc_handle,
+ 	struct htc_endpoint *endpoint;
+ 	__be16 *msg_id;
+ 
+-	if (!htc_handle || !skb)
++	if (!htc_handle || !skb ||
++	    !pskb_may_pull(skb, sizeof(struct htc_frame_hdr)))
+ 		return;
+ 
+ 	htc_hdr = (struct htc_frame_hdr *) skb->data;
+-- 
+2.37.2.672.g94769d06f0-goog
+
