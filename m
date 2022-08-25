@@ -2,83 +2,100 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2EDF1C04AA5
-	for <linux-kernel@archiver.kernel.org>; Thu, 25 Aug 2022 08:05:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E9F0BC32774
+	for <linux-kernel@archiver.kernel.org>; Thu, 25 Aug 2022 08:05:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239079AbiHYIFg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 25 Aug 2022 04:05:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39184 "EHLO
+        id S239109AbiHYIF6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 25 Aug 2022 04:05:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40534 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237349AbiHYIFe (ORCPT
+        with ESMTP id S237349AbiHYIFz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 25 Aug 2022 04:05:34 -0400
-X-Greylist: delayed 577 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Thu, 25 Aug 2022 01:05:17 PDT
-Received: from mail10.tencent.com (mail10.tencent.com [14.18.183.58])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E839A140ED
-        for <linux-kernel@vger.kernel.org>; Thu, 25 Aug 2022 01:05:16 -0700 (PDT)
-Received: from EX-SZ022.tencent.com (unknown [10.28.6.88])
-        by mail10.tencent.com (Postfix) with ESMTP id D55DBD46BD;
-        Thu, 25 Aug 2022 15:55:36 +0800 (CST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=tencent.com;
-        s=s202002; t=1661414136;
-        bh=cXR/p7SatqK54AtwJOaWVlrYZCN2ej8Vbu9R6UgHa7o=;
-        h=From:To:CC:Subject:Date:References:In-Reply-To;
-        b=eb69BX9fx8nBjcqmR+oHI6qoh7CZgbo3Lhs58xR2pjS9qqBSwylUQuRL7P4Z+3VOX
-         wdGxpAPK5gILJ0t8bk1QgthqEiYjjaBdPy9FHtu0bjeWX7egVFyWkjamgUKQNvIwpZ
-         SdKzgIC4VPdvovtY6pjpZGJ68JpACz5DkLw/VFqc=
-Received: from EX-SZ086.tencent.com (10.28.6.127) by EX-SZ022.tencent.com
- (10.28.6.88) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2242.4; Thu, 25 Aug
- 2022 15:55:36 +0800
-Received: from EX-SZ079.tencent.com (10.28.6.51) by EX-SZ086.tencent.com
- (10.28.6.127) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2242.4; Thu, 25 Aug
- 2022 15:55:36 +0800
-Received: from EX-SZ079.tencent.com ([fe80::9139:f467:e23f:e2b7]) by
- EX-SZ079.tencent.com ([fe80::9139:f467:e23f:e2b7%3]) with mapi id
- 15.01.2242.008; Thu, 25 Aug 2022 15:55:36 +0800
-From:   =?utf-8?B?aW1hZ2Vkb25nKOiRo+aipum+mSk=?= <imagedong@tencent.com>
-To:     Stephen Rothwell <sfr@canb.auug.org.au>
-CC:     Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        "Linux Next Mailing List" <linux-next@vger.kernel.org>,
-        David Miller <davem@davemloft.net>,
-        Networking <netdev@vger.kernel.org>
-Subject: Re: [Internet]linux-next: build warning after merge of the net-next
- tree
-Thread-Topic: [Internet]linux-next: build warning after merge of the net-next
- tree
-Thread-Index: AQHYuEVTMflASOI/8Ey1NaP00fjp5K2/P5MA
-Date:   Thu, 25 Aug 2022 07:55:36 +0000
-Message-ID: <07263247-4906-4A72-A1A2-CAB41F115EB7@tencent.com>
-References: <20220825154105.534d78ab@canb.auug.org.au>
-In-Reply-To: <20220825154105.534d78ab@canb.auug.org.au>
-Accept-Language: zh-CN, en-US
-Content-Language: zh-CN
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-originating-ip: [9.218.225.5]
-Content-Type: text/plain; charset="utf-8"
-Content-ID: <97D0694AA2B3404BA5BB7FA6EDEC218A@tencent.com>
-Content-Transfer-Encoding: base64
+        Thu, 25 Aug 2022 04:05:55 -0400
+Received: from mail-pf1-x435.google.com (mail-pf1-x435.google.com [IPv6:2607:f8b0:4864:20::435])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8A22540BEF;
+        Thu, 25 Aug 2022 01:05:52 -0700 (PDT)
+Received: by mail-pf1-x435.google.com with SMTP id y127so15990760pfy.5;
+        Thu, 25 Aug 2022 01:05:52 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc;
+        bh=heEHOjqaoZfuUKBnGqgwRXL1DFbaof5JCnXSywcr050=;
+        b=d1RFGcXrwRHPrYRWhhFh+QaqBW4JEqlixPxU77fKDXR/EnFbnUShHEyAgI6enNoyfv
+         jCsxfwxekr+CqXOGuupR/CZ6TPDtv3XLYmgxUzLEDTui0gvUphjJW3ZADWu6kYmWtgXz
+         clglysHXpiFy/KVJcVxBj/mLruQA3dED6XXJBgfcY8kATK4yrYBuOA+vTe3Pn3qiPPut
+         VxaFJuVCxzHuwNSEaEIv6NkoikvDcBgZ6VW/bgiie0hpi397OZQCgJdH8eKCFKtGbYuw
+         SKyPqCXP8/07URCCajFw5zu9ulEImAAogATlLLpZOHOc1l/2C+4widbOQxwTzj91lits
+         7Q+g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc;
+        bh=heEHOjqaoZfuUKBnGqgwRXL1DFbaof5JCnXSywcr050=;
+        b=aTxEDxWty3+V9ZGBpJdxVP90v13G/zaM7QSLw/KfA4v3LVXfS3cZz5i0JSbOlb3+ZO
+         ERQNCRjPxNn67dHxY/nkCdf2/LI8rnTdqyxHKmJ6Mo/nFdTlPVaa0xjNi/yeLUThO8U0
+         uLXAt36G/o+MzTfzTlWVSlFIkSqbcCCvxijeQYzCXNqg4WlMfToe2B12SRsbsUCyrUfH
+         fhNBPOhzuiuAEj6T1mZwFPTvzrXUdXLAuOAObPvVls7yUJ9e80txA6QfKoBwMEkVqjQ6
+         IuwINueLATnFMTo+/88sz77xGIYPaqHvsRJ3EnsoTBkr1ITLQ8U3YJKS/zakf6hEskDB
+         IaUg==
+X-Gm-Message-State: ACgBeo3m+h7drPLakMNmNNKNsH8CDhYnMGWR/KjxlsURFr241eUcagQN
+        eIY+NZPYOhllhj36c6g9f0M=
+X-Google-Smtp-Source: AA6agR4FmJGWUFbjGrMVXXNJjNWn9k5Zzxi/9fDCATJ5osMpOW1YgXdmobFgtI/HywFmm7LLRFCR1Q==
+X-Received: by 2002:a63:e412:0:b0:41d:9c6a:7e with SMTP id a18-20020a63e412000000b0041d9c6a007emr2322510pgi.575.1661414751987;
+        Thu, 25 Aug 2022 01:05:51 -0700 (PDT)
+Received: from AA2000783-NB2.corpnet.asus (125-229-150-10.hinet-ip.hinet.net. [125.229.150.10])
+        by smtp.gmail.com with ESMTPSA id z11-20020a63190b000000b0042b2311f749sm2431052pgl.19.2022.08.25.01.05.49
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 25 Aug 2022 01:05:51 -0700 (PDT)
+Date:   Thu, 25 Aug 2022 16:05:48 +0800
+From:   PaddyKP Yao <ispaddy@gmail.com>
+To:     Pavel Machek <pavel@ucw.cz>
+Cc:     Hans de Goede <hdegoede@redhat.com>, PaddyKP_Yao@asus.com,
+        acpi4asus-user@lists.sourceforge.net, andy.shevchenko@gmail.com,
+        corentin.chary@gmail.com, linux-kernel@vger.kernel.org,
+        luke@ljones.dev, mgross@linux.intel.com,
+        platform-driver-x86@vger.kernel.org
+Subject: Re: [PATCH v3 1/1] platform/x86: asus-wmi: Add mic-mute LED classdev
+ support
+Message-ID: <20220825080548.GA17321@AA2000783-NB2.corpnet.asus>
+References: <d7e2a109-c1b7-9f8c-c2b2-b765f016a9a3@redhat.com>
+ <20220711115125.2072508-1-PaddyKP_Yao@asus.com>
+ <e120ac7c-7abb-4999-efe8-6b3b697d12d6@redhat.com>
+ <20220824100622.GB1049@bug>
+ <20220824105908.GA111@AA2000783-NB2.corpnet.asus>
+ <20220825075547.GA28653@duo.ucw.cz>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220825075547.GA28653@duo.ucw.cz>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-DQpIZWxsbywNCg0KT24gMjAyMi84LzI1IDEzOjQx77yM4oCcU3RlcGhlbiBSb3Rod2VsbOKAnTxz
-ZnJAY2FuYi5hdXVnLm9yZy5hdT4gd3JpdGU6DQoNCj4gSGkgYWxsLA0KPiANCj4gQWZ0ZXIgbWVy
-Z2luZyB0aGUgbmV0LW5leHQgdHJlZSwgdG9kYXkncyBsaW51eC1uZXh0IGJ1aWxkIChodG1sZG9j
-cykNCj4gcHJvZHVjZWQgdGhpcyB3YXJuaW5nOg0KPiANCj4gRG9jdW1lbnRhdGlvbi9uZXR3b3Jr
-aW5nL2thcGk6MjY6IG5ldC9jb3JlL3NrYnVmZi5jOjc4MDogV0FSTklORzogRXJyb3IgaW4gZGVj
-bGFyYXRvciBvciBwYXJhbWV0ZXJzDQo+IEludmFsaWQgQyBkZWNsYXJhdGlvbjogRXhwZWN0aW5n
-ICIoIiBpbiBwYXJhbWV0ZXJzLiBbZXJyb3IgYXQgMTldDQo+ICAgdm9pZCBfX2ZpeF9hZGRyZXNz
-IGtmcmVlX3NrYl9yZWFzb24gKHN0cnVjdCBza19idWZmICpza2IsIGVudW0gc2tiX2Ryb3BfcmVh
-c29uIHJlYXNvbikNCj4gICAtLS0tLS0tLS0tLS0tLS0tLS0tXg0KPiANCj4gSW50cm9kdWNlZCBi
-eSBjb21taXQNCj4gDQo+ICAgYzIwNWNjNzUzNGE5ICgibmV0OiBza2I6IHByZXZlbnQgdGhlIHNw
-bGl0IG9mIGtmcmVlX3NrYl9yZWFzb24oKSBieSBnY2MiKQ0KPiANCg0KWWVhaCwgSSBjb21taXRl
-ZCB0aGlzIHBhdGNoLiBNYXkgSSBhc2sgd2hhdCBjb21tYW5kIGRpZCB5b3UgdXNlIHRvDQpwcm9k
-dWNlIHRoaXMgd2FybmluZz8gSSB0cmllZCB0aGUgZm9sbG93aW5nIGNvbW1hbmQsIGJ1dCBub3Qg
-c3VjY2VzczoNCg0KICBtYWtlIFY9MiBTUEhJTlhESVJTPSJuZXR3b3JraW5nIiBodG1sZG9jcw0K
-DQpIbW0uLi4uLi4ud2hhdCBkb2VzIHRoaXMgd2FybmluZyBtZWFucz8gRG9lcyBpdCBkb24ndCBs
-aWtlIHRoaXMNCmZ1bmN0aW9uIGF0dHJpYnV0ZT8NCg0KVGhhbmtzIQ0KTWVuZ2xvbmcgRG9uZw0K
-DQo+IC0tIA0KPiBDaGVlcnMsDQo+IFN0ZXBoZW4gUm90aHdlbGwNCg0K
+Hi Pavel,
+
+On Thu, Aug 25, 2022 at 09:55:47AM +0200, Pavel Machek wrote:
+> On Wed 2022-08-24 18:59:08, PaddyKP Yao wrote:
+> > Hi Pavel,
+> > 
+> > On Wed, Aug 24, 2022 at 12:06:22PM +0200, Pavel Machek wrote:
+> > > 
+> > > It would be good to get the API right before it hits mainline release.
+> > > 
+> > 
+> > What do you mean about API you mentioned?
+> 
+> We really don't want to see asus: prefix in the sysfs.
+> 
+> Best regards,
+> 								Pavel
+> -- 
+> People of Russia, stop Putin before his war on Ukraine escalates.
+
+Understand and thanks for your feedback.
+I aready submited new patch to fix this.
+
+https://lore.kernel.org/all/20220825004305.709539-1-PaddyKP_Yao@asus.com/
+
+Best Regards, Paddy
