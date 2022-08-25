@@ -2,105 +2,143 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7A522C04AA5
-	for <linux-kernel@archiver.kernel.org>; Thu, 25 Aug 2022 06:50:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 12570C04AA5
+	for <linux-kernel@archiver.kernel.org>; Thu, 25 Aug 2022 06:50:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233849AbiHYGuD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 25 Aug 2022 02:50:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35052 "EHLO
+        id S229895AbiHYGum (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 25 Aug 2022 02:50:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36966 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232550AbiHYGt5 (ORCPT
+        with ESMTP id S236446AbiHYGu0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 25 Aug 2022 02:49:57 -0400
-Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.153.233])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5AB98BC8E;
-        Wed, 24 Aug 2022 23:49:57 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1661410197; x=1692946197;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=xLuE/B27u6eRSGn7Ft71FXRlPAdU68aHCYLKp0Orpvc=;
-  b=Xp1eGcmFxAWM24LwlkVsjrXmflpDxDfHInZr1BmtscIV93uL14B/nUHc
-   WBpQ71b18tqWiTHSGteEdvo43LBeFomdIpKdPUmW/MYUCCkuGfzIo/U6j
-   9YxXqnbs0J1LoiM+YYG+T3HRCDNQxXHy/d8jd0ffbsQw2EDiyCiiWROKP
-   XxEBW2jz2mQXbu2P1IaOcm0WxxuhLqRNNCEKvAbIoFHgB6SpUKrM3VjJr
-   DQxE1lJ4sWCIYyaYgn/xxsEdj4UFUuji1dSH+rOTNAP/lvTBGNrwhqWZf
-   +Q7rxhF9UQDpjdZyhdHJSgxSvCdUrPclU6/O4aQ1f2Bbk99graiH24w3F
-   Q==;
-X-IronPort-AV: E=Sophos;i="5.93,262,1654585200"; 
-   d="scan'208";a="187978584"
-Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
-  by esa1.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 24 Aug 2022 23:49:56 -0700
-Received: from chn-vm-ex02.mchp-main.com (10.10.87.72) by
- chn-vm-ex02.mchp-main.com (10.10.87.72) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.12; Wed, 24 Aug 2022 23:49:56 -0700
-Received: from localhost (10.10.115.15) by chn-vm-ex02.mchp-main.com
- (10.10.85.144) with Microsoft SMTP Server id 15.1.2507.12 via Frontend
- Transport; Wed, 24 Aug 2022 23:49:56 -0700
-Date:   Thu, 25 Aug 2022 08:54:11 +0200
-From:   Horatiu Vultur <horatiu.vultur@microchip.com>
-To:     Andrew Lunn <andrew@lunn.ch>
-CC:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <hkallweit1@gmail.com>, <linux@armlinux.org.uk>,
-        <davem@davemloft.net>, <edumazet@google.com>, <kuba@kernel.org>,
-        <pabeni@redhat.com>, <michael@walle.cc>,
-        <UNGLinuxDriver@microchip.com>, <maxime.chevallier@bootlin.com>
-Subject: Re: [PATCH net] net: phy: micrel: Make the GPIO to be non-exclusive
-Message-ID: <20220825065411.wjmuh2xyfh4xuk6b@soft-dev3-1.localhost>
-References: <20220824192827.437095-1-horatiu.vultur@microchip.com>
- <YwaAZAXcXhGmu7r9@lunn.ch>
+        Thu, 25 Aug 2022 02:50:26 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1977F2A246
+        for <linux-kernel@vger.kernel.org>; Wed, 24 Aug 2022 23:50:25 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id B11F9619CB
+        for <linux-kernel@vger.kernel.org>; Thu, 25 Aug 2022 06:50:24 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D0DD0C433C1;
+        Thu, 25 Aug 2022 06:50:22 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1661410224;
+        bh=DrccC7ylO4/DdFvmZTVW+Z5UzGv6H0Hfddj9XoE84jQ=;
+        h=From:To:Cc:Subject:Date:From;
+        b=vMYz/2zaFP9uEgMNuOEPMkRu9PguAD1D1rxxyHprSe/VPrNk1xtZgGrAPzMNRdrda
+         l4ryTTwabGVYVi0Hr40Npc6nZsbAT9xdeiORi6fcX8CLRttQNni1uAtqN5aKZL9Cig
+         MLZl9h25w8489NEKe04mS2pEkScpm5w7a5fWrfG8eQyCiR235g/31KazkDf2mkiafG
+         Buxl3Auj2pwjd/gD6PK2WO8JjvCpVMGU2hf2hymT6IQRQfv/562BI0OXuYXpypSfqV
+         SDWhFRLpy2oxAQ97CdvgWUeyRI4m4qhfRW/HWw+19xTUFfdINsEovZP5ZWzOxhCp60
+         3OncKen3d5krA==
+From:   Chao Yu <chao@kernel.org>
+To:     jaegeuk@kernel.org
+Cc:     linux-f2fs-devel@lists.sourceforge.net,
+        linux-kernel@vger.kernel.org, Chao Yu <chao.yu@oppo.com>
+Subject: [PATCH] f2fs: account swapfile inodes
+Date:   Thu, 25 Aug 2022 14:50:14 +0800
+Message-Id: <20220825065014.1842769-1-chao@kernel.org>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Disposition: inline
-In-Reply-To: <YwaAZAXcXhGmu7r9@lunn.ch>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The 08/24/2022 21:47, Andrew Lunn wrote:
+From: Chao Yu <chao.yu@oppo.com>
 
-Hi Andrew,
+In order to check count of opened swapfile inodes.
 
-> 
-> On Wed, Aug 24, 2022 at 09:28:27PM +0200, Horatiu Vultur wrote:
-> > The same GPIO line can be shared by multiple phys for the coma mode pin.
-> > If that is the case then, all the other phys that share the same line
-> > will failed to be probed because the access to the gpio line is not
-> > non-exclusive.
-> > Fix this by making access to the gpio line to be nonexclusive using flag
-> > GPIOD_FLAGS_BIT_NONEXCLUSIVE. This allows all the other PHYs to be
-> > probed.
-> >
-> > Fixes: 738871b09250ee ("net: phy: micrel: add coma mode GPIO")
-> > Signed-off-by: Horatiu Vultur <horatiu.vultur@microchip.com>
-> > ---
-> >  drivers/net/phy/micrel.c | 3 ++-
-> >  1 file changed, 2 insertions(+), 1 deletion(-)
-> >
-> > diff --git a/drivers/net/phy/micrel.c b/drivers/net/phy/micrel.c
-> > index e78d0bf69bc3..ea72ff64ad33 100644
-> > --- a/drivers/net/phy/micrel.c
-> > +++ b/drivers/net/phy/micrel.c
-> > @@ -2878,7 +2878,8 @@ static int lan8814_release_coma_mode(struct phy_device *phydev)
-> >       struct gpio_desc *gpiod;
-> >
-> >       gpiod = devm_gpiod_get_optional(&phydev->mdio.dev, "coma-mode",
-> > -                                     GPIOD_OUT_HIGH_OPEN_DRAIN);
-> > +                                     GPIOD_OUT_HIGH_OPEN_DRAIN |
-> > +                                     GPIOD_FLAGS_BIT_NONEXCLUSIVE);
-> 
-> I would suggest putting a comment here. You are assuming the driver
-> never gains a lan8814_take_coma_mode() when the PHY is put into
-> suspend, since it sounds like that will put all PHYs on the shared
-> GPIO into coma mode.
+Signed-off-by: Chao Yu <chao.yu@oppo.com>
+---
+ fs/f2fs/data.c  | 2 ++
+ fs/f2fs/debug.c | 3 +++
+ fs/f2fs/f2fs.h  | 9 ++++++++-
+ 3 files changed, 13 insertions(+), 1 deletion(-)
 
-That is correct.
-I will add a comment in the next version.
-
-> 
->      Andrew
-
+diff --git a/fs/f2fs/data.c b/fs/f2fs/data.c
+index 0869fbbb5516..66f34cd559c6 100644
+--- a/fs/f2fs/data.c
++++ b/fs/f2fs/data.c
+@@ -3970,6 +3970,7 @@ static int f2fs_swap_activate(struct swap_info_struct *sis, struct file *file,
+ 	if (ret < 0)
+ 		return ret;
+ 
++	stat_inc_swapfile_inode(inode);
+ 	set_inode_flag(inode, FI_PIN_FILE);
+ 	f2fs_update_time(F2FS_I_SB(inode), REQ_TIME);
+ 	return ret;
+@@ -3979,6 +3980,7 @@ static void f2fs_swap_deactivate(struct file *file)
+ {
+ 	struct inode *inode = file_inode(file);
+ 
++	stat_dec_swapfile_inode(inode);
+ 	clear_inode_flag(inode, FI_PIN_FILE);
+ }
+ #else
+diff --git a/fs/f2fs/debug.c b/fs/f2fs/debug.c
+index c01471573977..88231d393b7c 100644
+--- a/fs/f2fs/debug.c
++++ b/fs/f2fs/debug.c
+@@ -135,6 +135,7 @@ static void update_general_status(struct f2fs_sb_info *sbi)
+ 	si->inline_inode = atomic_read(&sbi->inline_inode);
+ 	si->inline_dir = atomic_read(&sbi->inline_dir);
+ 	si->compr_inode = atomic_read(&sbi->compr_inode);
++	si->swapfile_inode = atomic_read(&sbi->swapfile_inode);
+ 	si->compr_blocks = atomic64_read(&sbi->compr_blocks);
+ 	si->append = sbi->im[APPEND_INO].ino_num;
+ 	si->update = sbi->im[UPDATE_INO].ino_num;
+@@ -385,6 +386,8 @@ static int stat_show(struct seq_file *s, void *v)
+ 			   si->inline_dir);
+ 		seq_printf(s, "  - Compressed Inode: %u, Blocks: %llu\n",
+ 			   si->compr_inode, si->compr_blocks);
++		seq_printf(s, "  - Swapfile Inode: %u\n",
++			   si->swapfile_inode);
+ 		seq_printf(s, "  - Orphan/Append/Update Inode: %u, %u, %u\n",
+ 			   si->orphans, si->append, si->update);
+ 		seq_printf(s, "\nMain area: %d segs, %d secs %d zones\n",
+diff --git a/fs/f2fs/f2fs.h b/fs/f2fs/f2fs.h
+index 088c3d1574b8..408d8034ed74 100644
+--- a/fs/f2fs/f2fs.h
++++ b/fs/f2fs/f2fs.h
+@@ -1765,6 +1765,7 @@ struct f2fs_sb_info {
+ 	atomic_t inline_dir;			/* # of inline_dentry inodes */
+ 	atomic_t compr_inode;			/* # of compressed inodes */
+ 	atomic64_t compr_blocks;		/* # of compressed blocks */
++	atomic_t swapfile_inode;		/* # of swapfile inodes */
+ 	atomic_t max_aw_cnt;			/* max # of atomic writes */
+ 	unsigned int io_skip_bggc;		/* skip background gc for in-flight IO */
+ 	unsigned int other_skip_bggc;		/* skip background gc for other reasons */
+@@ -3863,7 +3864,7 @@ struct f2fs_stat_info {
+ 	int nr_issued_ckpt, nr_total_ckpt, nr_queued_ckpt;
+ 	unsigned int cur_ckpt_time, peak_ckpt_time;
+ 	int inline_xattr, inline_inode, inline_dir, append, update, orphans;
+-	int compr_inode;
++	int compr_inode, swapfile_inode;
+ 	unsigned long long compr_blocks;
+ 	int aw_cnt, max_aw_cnt;
+ 	unsigned int valid_count, valid_node_count, valid_inode_count, discard_blks;
+@@ -3952,6 +3953,10 @@ static inline struct f2fs_stat_info *F2FS_STAT(struct f2fs_sb_info *sbi)
+ 		(atomic64_add(blocks, &F2FS_I_SB(inode)->compr_blocks))
+ #define stat_sub_compr_blocks(inode, blocks)				\
+ 		(atomic64_sub(blocks, &F2FS_I_SB(inode)->compr_blocks))
++#define stat_inc_swapfile_inode(inode)					\
++		(atomic_inc(&F2FS_I_SB(inode)->swapfile_inode))
++#define stat_dec_swapfile_inode(inode)					\
++		(atomic_dec(&F2FS_I_SB(inode)->swapfile_inode))
+ #define stat_inc_meta_count(sbi, blkaddr)				\
+ 	do {								\
+ 		if (blkaddr < SIT_I(sbi)->sit_base_addr)		\
+@@ -4036,6 +4041,8 @@ void f2fs_update_sit_info(struct f2fs_sb_info *sbi);
+ #define stat_dec_compr_inode(inode)			do { } while (0)
+ #define stat_add_compr_blocks(inode, blocks)		do { } while (0)
+ #define stat_sub_compr_blocks(inode, blocks)		do { } while (0)
++#define stat_inc_swapfile_inode(inode)			do { } while (0)
++#define stat_dec_swapfile_inode(inode)			do { } while (0)
+ #define stat_update_max_atomic_write(inode)		do { } while (0)
+ #define stat_inc_meta_count(sbi, blkaddr)		do { } while (0)
+ #define stat_inc_seg_type(sbi, curseg)			do { } while (0)
 -- 
-/Horatiu
+2.25.1
+
