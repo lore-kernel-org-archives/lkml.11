@@ -2,119 +2,105 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0A958C6498F
-	for <linux-kernel@archiver.kernel.org>; Thu, 25 Aug 2022 15:03:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 402B2C6498F
+	for <linux-kernel@archiver.kernel.org>; Thu, 25 Aug 2022 15:04:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229806AbiHYPDK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 25 Aug 2022 11:03:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54154 "EHLO
+        id S242628AbiHYPED convert rfc822-to-8bit (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 25 Aug 2022 11:04:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54390 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242661AbiHYPCq (ORCPT
+        with ESMTP id S242832AbiHYPDp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 25 Aug 2022 11:02:46 -0400
-Received: from mail-ej1-x629.google.com (mail-ej1-x629.google.com [IPv6:2a00:1450:4864:20::629])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3EFCFB6D37
-        for <linux-kernel@vger.kernel.org>; Thu, 25 Aug 2022 08:02:39 -0700 (PDT)
-Received: by mail-ej1-x629.google.com with SMTP id lx1so3670489ejb.12
-        for <linux-kernel@vger.kernel.org>; Thu, 25 Aug 2022 08:02:38 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=baylibre-com.20210112.gappssmtp.com; s=20210112;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc;
-        bh=J40HRDC6s9A6oLiX10PU1EAnRqN6r80kqAAn+n+qgNE=;
-        b=gYsrW9SLLedIZ+IWezg5Ovk5cUHtY7+V1539FZuhbqwZF7T9EOB6U3x/359QuZRT05
-         K+uKOvtCEc7q3UEJNBIWlpne5v/kU2twhYjp3q/jzjvFfX5fGbFBiN9OLxTXl+XvzMMa
-         +jNkZ+Aw7CTT8TO8hVbeWKe7axHyH81FIz+Mnpgd4gOyRQJCpYK2MFaB8cm4gNi/2ivV
-         oUyq8xT5YfwoRfrE/3e5IlgLF37FVt6AKwoS0eCSE3N79uEDoQWJ/MKKMDebImmaQUUG
-         d2J5+cE7SYxMMdO4vyHNF7OzuLyqOM49dKdKb7b8xt1qjBzmgxwfj/TpLVuWC6w05Buy
-         i8Eg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc;
-        bh=J40HRDC6s9A6oLiX10PU1EAnRqN6r80kqAAn+n+qgNE=;
-        b=1qDsTGKzA+Z+m64lyYkZgd8R0gjXUCGEvpyfrnlMhq44FV7n5w4PFnAFT64oNv+5Wr
-         84ujmQnC1pnpIFyd7nltD146p6+8G33IXP+/dvMS0ltrrJINlx6UUkw87jO93JiWQ8Qz
-         gQ1lsBAh/PShc8M0UuK75nJy/+jOQX3KWxgxjnO/6bkn74iKbLF6hTE3Mg2jdL4TGNMM
-         YWpxa3oPzDJ1W351fs5AnKdW2f8lQ4MQKLQk/n3n0mz6d7OlVK+y4XzC4x1sLf40nIW+
-         m9UsHOgYMrdeDN7WhPsQ8sUFXemS1plrV0ja78cMXF8ILjkeVM69ieVfl2GrxGXv6Uvf
-         obfw==
-X-Gm-Message-State: ACgBeo3OFSdBgZaZ/84W3stGVNYSPDjJ26/coTRLo071ATW+QuQrx1LR
-        /CwNc1FgoX+mxKdo4FMqtRHx7/zxLWBBIQ==
-X-Google-Smtp-Source: AA6agR7XnIqr0ef7oC0eqK9dRcF8Bcl7vMbGqte2rjFdlMpDF0Zabd+o/uu20fwEK9uPXwoFj/nBKw==
-X-Received: by 2002:a17:907:2ce7:b0:73d:9028:8038 with SMTP id hz7-20020a1709072ce700b0073d90288038mr2770201ejc.273.1661439757477;
-        Thu, 25 Aug 2022 08:02:37 -0700 (PDT)
-Received: from blmsp.fritz.box ([2001:4090:a245:8020:2658:1f7c:362:3e99])
-        by smtp.gmail.com with ESMTPSA id r10-20020a17090609ca00b00732e3d94f4fsm2548771eje.124.2022.08.25.08.02.36
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 25 Aug 2022 08:02:36 -0700 (PDT)
-From:   Markus Schneider-Pargmann <msp@baylibre.com>
-To:     Liam Girdwood <lgirdwood@gmail.com>,
-        Mark Brown <broonie@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Will Deacon <will@kernel.org>,
-        Dmitry Torokhov <dmitry.torokhov@gmail.com>,
-        Lee Jones <lee@kernel.org>, Tony Lindgren <tony@atomide.com>,
-        nm@ti.com, kristo@kernel.org
-Cc:     Jerome Neanne <jneanne@baylibre.com>, khilman@baylibre.com,
-        narmstrong@baylibre.com, j-keerthy@ti.com,
-        linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, linux-input@vger.kernel.org,
-        linux-omap@vger.kernel.org,
-        Markus Schneider-Pargmann <msp@baylibre.com>
-Subject: [PATCH v4 6/6] arm64: defconfig: Add tps65219 as modules
-Date:   Thu, 25 Aug 2022 17:02:24 +0200
-Message-Id: <20220825150224.826258-7-msp@baylibre.com>
-X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220825150224.826258-1-msp@baylibre.com>
-References: <20220825150224.826258-1-msp@baylibre.com>
+        Thu, 25 Aug 2022 11:03:45 -0400
+Received: from eu-smtp-delivery-151.mimecast.com (eu-smtp-delivery-151.mimecast.com [185.58.85.151])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AD5F4B7760
+        for <linux-kernel@vger.kernel.org>; Thu, 25 Aug 2022 08:03:33 -0700 (PDT)
+Received: from AcuMS.aculab.com (156.67.243.121 [156.67.243.121]) by
+ relay.mimecast.com with ESMTP with STARTTLS (version=TLSv1.2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
+ uk-mta-6-CLGAEFtmMmq-sFQCCbZ85g-1; Thu, 25 Aug 2022 16:03:04 +0100
+X-MC-Unique: CLGAEFtmMmq-sFQCCbZ85g-1
+Received: from AcuMS.Aculab.com (fd9f:af1c:a25b:0:994c:f5c2:35d6:9b65) by
+ AcuMS.aculab.com (fd9f:af1c:a25b:0:994c:f5c2:35d6:9b65) with Microsoft SMTP
+ Server (TLS) id 15.0.1497.38; Thu, 25 Aug 2022 16:01:31 +0100
+Received: from AcuMS.Aculab.com ([fe80::994c:f5c2:35d6:9b65]) by
+ AcuMS.aculab.com ([fe80::994c:f5c2:35d6:9b65%12]) with mapi id
+ 15.00.1497.040; Thu, 25 Aug 2022 16:01:31 +0100
+From:   David Laight <David.Laight@ACULAB.COM>
+To:     'Joseph Myers' <joseph@codesourcery.com>,
+        Linus Torvalds <torvalds@linux-foundation.org>
+CC:     Florian Weimer <fweimer@redhat.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Alejandro Colomar <alx.manpages@gmail.com>,
+        Alexei Starovoitov <alexei.starovoitov@gmail.com>,
+        Alex Colomar <alx@kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        linux-man <linux-man@vger.kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        "Zack Weinberg" <zackw@panix.com>,
+        LKML <linux-kernel@vger.kernel.org>,
+        glibc <libc-alpha@sourceware.org>, GCC <gcc-patches@gcc.gnu.org>,
+        bpf <bpf@vger.kernel.org>, LTP List <ltp@lists.linux.it>,
+        Linux API <linux-api@vger.kernel.org>,
+        linux-arch <linux-arch@vger.kernel.org>,
+        "Cyril Hrubis" <chrubis@suse.cz>,
+        David Howells <dhowells@redhat.com>,
+        Arnd Bergmann <arnd@arndb.de>, Rich Felker <dalias@libc.org>,
+        Adhemerval Zanella <adhemerval.zanella@linaro.org>,
+        Michael Kerrisk <mtk.manpages@gmail.com>
+Subject: RE: [PATCH v3] Many pages: Document fixed-width types with ISO C
+ naming
+Thread-Topic: [PATCH v3] Many pages: Document fixed-width types with ISO C
+ naming
+Thread-Index: AQHYuJCLMClw4u4WnUme2jwTdxYRD62/tSSA
+Date:   Thu, 25 Aug 2022 15:01:31 +0000
+Message-ID: <5e10ac07e63e41639b3113d12c264447@AcuMS.aculab.com>
+References: <20210423230609.13519-1-alx.manpages@gmail.com>
+ <20220824185505.56382-1-alx.manpages@gmail.com>
+ <CAADnVQKiEVL9zRtN4WY2+cTD2b3b3buV8BQb83yQw13pWq4OGQ@mail.gmail.com>
+ <c06008bc-0c13-12f1-df85-3814b74e47f9@gmail.com> <YwcPQ987poRYjfoL@kroah.com>
+ <87ilmgddui.fsf@oldenburg.str.redhat.com>
+ <CAHk-=whsETo4kc2Ec1Nf4HQY5vKYmRi9et243kyqN4E-=PgKJw@mail.gmail.com>
+ <alpine.DEB.2.22.394.2208251435370.104368@digraph.polyomino.org.uk>
+In-Reply-To: <alpine.DEB.2.22.394.2208251435370.104368@digraph.polyomino.org.uk>
+Accept-Language: en-GB, en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-ms-exchange-transport-fromentityheader: Hosted
+x-originating-ip: [10.202.205.107]
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+X-Mimecast-Spam-Score: 0
+X-Mimecast-Originator: aculab.com
+Content-Language: en-US
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8BIT
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jerome Neanne <jneanne@baylibre.com>
+From: Joseph Myers
+> Sent: 25 August 2022 15:39
+> 
+> On Thu, 25 Aug 2022, Linus Torvalds wrote:
+> 
+> > That's a small detail that yes, we've tried to avoid the absolute
+> > humongous mess that the C standard library has with their horrendous
+> > 'PRId*' mess, but honestly, it's just a tiny detail.
+> 
+> I've not yet implemented it for glibc or for GCC format checking, but C23
+> adds 'wN' format length modifiers so you will be able to e.g. use "%w64d"
+> with printf to print an int64_t and won't need those PRI macros any more.
 
-This adds defconfig option to support TPS65219 PMIC, MFD, Regulators
-and power-button.
+Is that meant to work regardless of whether the type is
+int, long or long long provided the size is correct?
 
-Signed-off-by: Jerome Neanne <jneanne@baylibre.com>
-Signed-off-by: Markus Schneider-Pargmann <msp@baylibre.com>
----
- arch/arm64/configs/defconfig | 3 +++
- 1 file changed, 3 insertions(+)
+Or does it require the compiler know which type inttypes.h
+uses for uint32_t and uint64_t?
 
-diff --git a/arch/arm64/configs/defconfig b/arch/arm64/configs/defconfig
-index d5b2d2dd4904..d64e00355fcd 100644
---- a/arch/arm64/configs/defconfig
-+++ b/arch/arm64/configs/defconfig
-@@ -406,6 +406,7 @@ CONFIG_TOUCHSCREEN_GOODIX=m
- CONFIG_TOUCHSCREEN_EDT_FT5X06=m
- CONFIG_INPUT_MISC=y
- CONFIG_INPUT_PM8941_PWRKEY=y
-+CONFIG_INPUT_TPS65219_PWRBUTTON=m
- CONFIG_INPUT_PM8XXX_VIBRATOR=m
- CONFIG_INPUT_PWM_BEEPER=m
- CONFIG_INPUT_PWM_VIBRA=m
-@@ -639,6 +640,7 @@ CONFIG_MFD_SPMI_PMIC=y
- CONFIG_MFD_RK808=y
- CONFIG_MFD_SEC_CORE=y
- CONFIG_MFD_SL28CPLD=y
-+CONFIG_MFD_TPS65219=m
- CONFIG_MFD_ROHM_BD718XX=y
- CONFIG_MFD_WCD934X=m
- CONFIG_REGULATOR_FIXED_VOLTAGE=y
-@@ -666,6 +668,7 @@ CONFIG_REGULATOR_QCOM_SPMI=y
- CONFIG_REGULATOR_RK808=y
- CONFIG_REGULATOR_S2MPS11=y
- CONFIG_REGULATOR_TPS65132=m
-+CONFIG_REGULATOR_TPS65219=m
- CONFIG_REGULATOR_VCTRL=m
- CONFIG_RC_CORE=m
- CONFIG_RC_DECODERS=y
--- 
-2.37.2
+	David
+
+-
+Registered Address Lakeside, Bramley Road, Mount Farm, Milton Keynes, MK1 1PT, UK
+Registration No: 1397386 (Wales)
 
