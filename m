@@ -2,156 +2,115 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 749AAECAAA3
-	for <linux-kernel@archiver.kernel.org>; Thu, 25 Aug 2022 23:36:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2E73AECAAD1
+	for <linux-kernel@archiver.kernel.org>; Thu, 25 Aug 2022 23:39:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244528AbiHYXg2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 25 Aug 2022 19:36:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56060 "EHLO
+        id S244540AbiHYXjL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 25 Aug 2022 19:39:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56580 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231861AbiHYXgZ (ORCPT
+        with ESMTP id S231861AbiHYXjI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 25 Aug 2022 19:36:25 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8C815ACA11
-        for <linux-kernel@vger.kernel.org>; Thu, 25 Aug 2022 16:36:24 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1661470583;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=fZkbW2nKw9OcNR++w2Lt3hNVn3FfxAMwHGTXAs+/ztQ=;
-        b=NVvv0j+l4lqJT/TDtvANtYh9/Ba/InC83JiOeGL6MfuRugbtj3E6solgKEn0iElUd9nsCN
-        yi+iVAy1t6mnErRjOGks5hUBUCtXVu1Rs2nTVtIuTcQU9vnQG8a5gKjtwo+75WfOLKzb3B
-        qOiH91wQpBpWWy6qk+L9oUUWfYimETE=
-Received: from mail-qv1-f72.google.com (mail-qv1-f72.google.com
- [209.85.219.72]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
- us-mta-650-VmH-jDZgNOiZtytVsxHhvg-1; Thu, 25 Aug 2022 19:36:22 -0400
-X-MC-Unique: VmH-jDZgNOiZtytVsxHhvg-1
-Received: by mail-qv1-f72.google.com with SMTP id od16-20020a0562142f1000b00496e2ea7934so8647747qvb.13
-        for <linux-kernel@vger.kernel.org>; Thu, 25 Aug 2022 16:36:22 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc;
-        bh=fZkbW2nKw9OcNR++w2Lt3hNVn3FfxAMwHGTXAs+/ztQ=;
-        b=VlndjqFnwv9K2tt54FJR02LdFLj60Z4xrGtAdgX+P9bcFI8sfsaBU3G6QJIb8LrQAQ
-         UXTDBpMa7KzjoKueETJ19K/mccrI0jYnDROAviu1Wqp3DvafCNqeRUA0EFU+g4Rxon35
-         z3efEeakTmXqWJfnwGoNaoSLuHmBViItAUGlPtyvW9Ii4XMC2xc6PtJfmuTtrGzQimrq
-         w7AVvytamitNKw8HUb71KkDvu8TIDNMlBj9mWNjxxOMuDN1U2H7xLrAsGz9pmf0/2UwK
-         hfETy0l4W6DtJffsohIH49FXVunb2H0m1UiELHIeNpdXxeFMpl15DT6GNc981UdEmkeP
-         bmcQ==
-X-Gm-Message-State: ACgBeo28p75YLh8ovMspLaBHuwMGmv7gVZuWgW3SOw3YtxLthss3LAXx
-        8OoLjKYsmD1D5ag+INF9oJsPkKLghRuWwpUP0xB0OOL5/TmXwGxdmHi3nY2Fgl5mFnxrDcOb/QU
-        CF6j2rBXuVJpCZhwS6b44uVKu
-X-Received: by 2002:ac8:5948:0:b0:342:f500:2eb7 with SMTP id 8-20020ac85948000000b00342f5002eb7mr5760964qtz.483.1661470581830;
-        Thu, 25 Aug 2022 16:36:21 -0700 (PDT)
-X-Google-Smtp-Source: AA6agR7TBH9R3amncjXP/5aFj5LeS8C1KlxU0maHmlQmU9GZdotjAyQBWdSKlYFKnk+U7FuoDJCUoA==
-X-Received: by 2002:ac8:5948:0:b0:342:f500:2eb7 with SMTP id 8-20020ac85948000000b00342f5002eb7mr5760938qtz.483.1661470581599;
-        Thu, 25 Aug 2022 16:36:21 -0700 (PDT)
-Received: from xz-m1.local (bras-base-aurron9127w-grc-35-70-27-3-10.dsl.bell.ca. [70.27.3.10])
-        by smtp.gmail.com with ESMTPSA id w16-20020a05620a425000b006bba46e5eeasm663162qko.37.2022.08.25.16.36.19
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 25 Aug 2022 16:36:21 -0700 (PDT)
-Date:   Thu, 25 Aug 2022 19:36:18 -0400
-From:   Peter Xu <peterx@redhat.com>
-To:     Alistair Popple <apopple@nvidia.com>
-Cc:     "Huang, Ying" <ying.huang@intel.com>,
-        Nadav Amit <nadav.amit@gmail.com>,
-        huang ying <huang.ying.caritas@gmail.com>,
-        Linux MM <linux-mm@kvack.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        "Sierra Guiza, Alejandro (Alex)" <alex.sierra@amd.com>,
-        Felix Kuehling <Felix.Kuehling@amd.com>,
-        Jason Gunthorpe <jgg@nvidia.com>,
-        John Hubbard <jhubbard@nvidia.com>,
-        David Hildenbrand <david@redhat.com>,
-        Ralph Campbell <rcampbell@nvidia.com>,
-        Matthew Wilcox <willy@infradead.org>,
-        Karol Herbst <kherbst@redhat.com>,
-        Lyude Paul <lyude@redhat.com>, Ben Skeggs <bskeggs@redhat.com>,
-        Logan Gunthorpe <logang@deltatee.com>, paulus@ozlabs.org,
-        linuxppc-dev@lists.ozlabs.org, stable@vger.kernel.org
-Subject: Re: [PATCH v2 1/2] mm/migrate_device.c: Copy pte dirty bit to page
-Message-ID: <YwgHcjBmldFiI71O@xz-m1.local>
-References: <87czcyawl6.fsf@yhuang6-desk2.ccr.corp.intel.com>
- <Yv5QXkS4Bm9pTBeG@xz-m1.local>
- <874jy9aqts.fsf@yhuang6-desk2.ccr.corp.intel.com>
- <87czcqiecd.fsf@nvdebian.thelocal>
- <YwaJSBnp2eyMlkjw@xz-m1.local>
- <YwaOpj54/qUb5fXa@xz-m1.local>
- <87o7w9f7dp.fsf@nvdebian.thelocal>
- <87k06xf70l.fsf@nvdebian.thelocal>
- <YwePm5lMSU2tsW6f@xz-m1.local>
- <877d2wezll.fsf@nvdebian.thelocal>
+        Thu, 25 Aug 2022 19:39:08 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 01D5FAE232
+        for <linux-kernel@vger.kernel.org>; Thu, 25 Aug 2022 16:39:07 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id A43D2B82732
+        for <linux-kernel@vger.kernel.org>; Thu, 25 Aug 2022 23:39:05 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 64F3CC433B5
+        for <linux-kernel@vger.kernel.org>; Thu, 25 Aug 2022 23:39:04 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1661470744;
+        bh=VUu5XtDzSApD4jLb7/Kt0DoXKUHclEkJ4teSyXFURGA=;
+        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+        b=rD8xvt2pteiCf7B0fVx16f3admXr98oUj03A6jJl33zd/hBrlyoBzEuf62ecPkzn1
+         d0O2JYJRpVthX+cP8GQX4aDEhfPUPAGLYEqnMtUJQhX0X1ATcMMIbHcrG4u2ifqSd9
+         AS2QUhvdNqdXaPwM/0ymaqSZjsCFX12KFHxcqPACKrSID0C98MAfl3L9Bcz8zRtMg+
+         oOqcgpK7sC1h1V331+rE2xU0iTl1/hkYCD1QXXbYdkFujycqruC9LZuXmEvX4+ij20
+         KAMSIQN2C19FDrJAHSwg9naMe0mux8v59pzsDyN6moWW9VoigbqT7oAsMdB/Y4YD8u
+         NjkGnIHGUCdQw==
+Received: by mail-oa1-f45.google.com with SMTP id 586e51a60fabf-11cab7d7e0fso113081fac.6
+        for <linux-kernel@vger.kernel.org>; Thu, 25 Aug 2022 16:39:04 -0700 (PDT)
+X-Gm-Message-State: ACgBeo2SNGtP8pK4bW6uhrwPXn3iO+wqVZ29iR4OhSDnEQ4Ims/Y2lPB
+        pR2/R19Lyj7QcHwbsYNlZkeBwlyG7iihw5GXaA==
+X-Google-Smtp-Source: AA6agR4yMz40Tc+owCwkA0C1natVNZY/C/63StQqXp7qxYkhIoBcWs+BRlYcrECKpE6WFMhpawFp3BSWiY7+jb/YoyY=
+X-Received: by 2002:a05:6870:4690:b0:11c:d599:4f41 with SMTP id
+ a16-20020a056870469000b0011cd5994f41mr634922oap.69.1661470743518; Thu, 25 Aug
+ 2022 16:39:03 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <877d2wezll.fsf@nvdebian.thelocal>
+References: <20220825072335.228921-1-ye.xingchen@zte.com.cn>
+In-Reply-To: <20220825072335.228921-1-ye.xingchen@zte.com.cn>
+From:   Chun-Kuang Hu <chunkuang.hu@kernel.org>
+Date:   Fri, 26 Aug 2022 07:38:51 +0800
+X-Gmail-Original-Message-ID: <CAAOTY_-oP0QOpk0Zo_VGrdBoUgn78PhXeYUr-WPvpVcAHx+rEg@mail.gmail.com>
+Message-ID: <CAAOTY_-oP0QOpk0Zo_VGrdBoUgn78PhXeYUr-WPvpVcAHx+rEg@mail.gmail.com>
+Subject: Re: [PATCH linux-next v2] drm/mediatek: Remove the unneeded result
+To:     cgel.zte@gmail.com
+Cc:     Matthias Brugger <matthias.bgg@gmail.com>,
+        Chun-Kuang Hu <chunkuang.hu@kernel.org>,
+        Philipp Zabel <p.zabel@pengutronix.de>,
+        David Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        DRI Development <dri-devel@lists.freedesktop.org>,
+        "moderated list:ARM/Mediatek SoC support" 
+        <linux-mediatek@lists.infradead.org>,
+        Linux ARM <linux-arm-kernel@lists.infradead.org>,
+        linux-kernel <linux-kernel@vger.kernel.org>,
+        ye xingchen <ye.xingchen@zte.com.cn>,
+        Zeal Robot <zealci@zte.com.cn>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Aug 26, 2022 at 08:09:28AM +1000, Alistair Popple wrote:
-> > I looked at some of the callers, it seems not all of them are ready to
-> > handle that (__kvmppc_svm_page_out() or svm_migrate_vma_to_vram()).  Is it
-> > safe?  Do the callers need to always properly handle that (unless the
-> > migration is only a best-effort, but it seems not always the case).
-> 
-> Migration is always best effort. Callers need to be prepared to handle
-> failure of a particular page to migrate, but I could believe not all of
-> them are.
+Hi, cgel:
 
-Ok, I see that ppc list is in the loop, hopefully this issue is aware since
-afaict ppc will sigbus when migrate_vma_setup() fails, otoh the svm code
-just dumps some device error (and I didn't check upper the stack from there).
+<cgel.zte@gmail.com> =E6=96=BC 2022=E5=B9=B48=E6=9C=8825=E6=97=A5 =E9=80=B1=
+=E5=9B=9B =E4=B8=8B=E5=8D=883:24=E5=AF=AB=E9=81=93=EF=BC=9A
+>
+> From: ye xingchen <ye.xingchen@zte.com.cn>
+>
+> Return the value drm_mode_config_helper_suspend() directly instead of
+>  storing it in another redundant variable.
 
-> 
-> > Besides, since I read the old code of prepare(), I saw this comment:
-> >
-> > -		if (!(migrate->src[i] & MIGRATE_PFN_LOCKED)) {
-> > -			/*
-> > -			 * Because we are migrating several pages there can be
-> > -			 * a deadlock between 2 concurrent migration where each
-> > -			 * are waiting on each other page lock.
-> > -			 *
-> > -			 * Make migrate_vma() a best effort thing and backoff
-> > -			 * for any page we can not lock right away.
-> > -			 */
-> > -			if (!trylock_page(page)) {
-> > -				migrate->src[i] = 0;
-> > -				migrate->cpages--;
-> > -				put_page(page);
-> > -				continue;
-> > -			}
-> > -			remap = false;
-> > -			migrate->src[i] |= MIGRATE_PFN_LOCKED;
-> > -		}
-> >
-> > I'm a bit curious whether that deadlock mentioned in the comment is
-> > observed in reality?
-> >
-> > If the page was scanned in the same address space, logically the lock order
-> > should be guaranteed (if both page A&B, both threads should lock in order).
-> > I think the order can be changed if explicitly did so (e.g. fork() plus
-> > mremap() for anonymous here) but I just want to make sure I get the whole
-> > point of it.
-> 
-> You seem to have the point of it. The trylock_page() is to avoid
-> deadlock, and failure is always an option for migration. Drivers can
-> always retry if they really need the page to migrate, although success
-> is never guaranteed. For example the page might be pinned (or have
-> swap-cache allocated to it, but I'm hoping to at least get that fixed).
+Applied to mediatek-drm-next [1], thanks.
 
-If so I'd suggest even more straightforward document for either this
-trylock() or on the APIs (e.g. for migrate_vma_setup()).  This behavior is
-IMHO hiding deep and many people may not realize.  I'll comment in the
-comment update patch.
+[1] https://git.kernel.org/pub/scm/linux/kernel/git/chunkuang.hu/linux.git/=
+log/?h=3Dmediatek-drm-next
 
-Thanks.
+Regards,
+Chun-Kuang.
 
--- 
-Peter Xu
-
+>
+> Reported-by: Zeal Robot <zealci@zte.com.cn>
+> Signed-off-by: ye xingchen <ye.xingchen@zte.com.cn>
+> ---
+> v1 -> v2
+> Add all the mailinglists that get_maintainers.pl give.
+>  drivers/gpu/drm/mediatek/mtk_drm_drv.c | 5 +----
+>  1 file changed, 1 insertion(+), 4 deletions(-)
+>
+> diff --git a/drivers/gpu/drm/mediatek/mtk_drm_drv.c
+> b/drivers/gpu/drm/mediatek/mtk_drm_drv.c
+> index 5f02f8d0e4fc..91f58db5915f 100644
+> --- a/drivers/gpu/drm/mediatek/mtk_drm_drv.c
+> +++ b/drivers/gpu/drm/mediatek/mtk_drm_drv.c
+> @@ -833,11 +833,8 @@ static int mtk_drm_sys_prepare(struct device *dev)
+>  {
+>         struct mtk_drm_private *private =3D dev_get_drvdata(dev);
+>         struct drm_device *drm =3D private->drm;
+> -       int ret;
+> -
+> -       ret =3D drm_mode_config_helper_suspend(drm);
+>
+> -       return ret;
+> +       return drm_mode_config_helper_suspend(drm);
+>  }
+>
+>  static void mtk_drm_sys_complete(struct device *dev)
+> --
+> 2.25.1
