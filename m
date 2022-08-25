@@ -2,130 +2,233 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 29E82C28D13
-	for <linux-kernel@archiver.kernel.org>; Thu, 25 Aug 2022 07:04:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3E44FC64990
+	for <linux-kernel@archiver.kernel.org>; Thu, 25 Aug 2022 07:06:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236578AbiHYHD5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 25 Aug 2022 03:03:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34564 "EHLO
+        id S237027AbiHYHG3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 25 Aug 2022 03:06:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40620 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233743AbiHYHDx (ORCPT
+        with ESMTP id S236566AbiHYHGZ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 25 Aug 2022 03:03:53 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 24BEFA1D60
-        for <linux-kernel@vger.kernel.org>; Thu, 25 Aug 2022 00:03:53 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1661411032;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=+Ffg639fyFav+yTERy7xieKmvjhwhKltTl/7JA3fe1o=;
-        b=RflCKUJJm0slv4OFe1zBDy73bvHnU2M/hu/LdhYrGfQHfhmdcZOnDTEnfAZErkKUU4Qm5A
-        nnCFIrxvtiOO13eW97accZNk7mn40ceFWYwmsEGhDEi5zvuc4EbzDeFLanZTayLZSazPOf
-        8hwSnQ6FZ0X9pUZoMMIXKH61Uuzw4bQ=
-Received: from mail-pj1-f70.google.com (mail-pj1-f70.google.com
- [209.85.216.70]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
- us-mta-152-sWHdnmL1MZ-P4ASNY7l6Kw-1; Thu, 25 Aug 2022 03:03:51 -0400
-X-MC-Unique: sWHdnmL1MZ-P4ASNY7l6Kw-1
-Received: by mail-pj1-f70.google.com with SMTP id z8-20020a17090a014800b001fac4204c7eso2033362pje.8
-        for <linux-kernel@vger.kernel.org>; Thu, 25 Aug 2022 00:03:50 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc;
-        bh=+Ffg639fyFav+yTERy7xieKmvjhwhKltTl/7JA3fe1o=;
-        b=aBU+kSDBpLUctsjQDhgVrwL3vAfA7V8cwCQJ+S1SFioIBdos9ASIdQKFg+8UTPy3Lu
-         u3Si47tMWkvpoL7U9k7al+vz2kLAhBDqRYKG78XpwpjqX1OSMyAKX9ySrIkvKPd5YnU5
-         uQBnTyBByh9WRw7dM+19ozDRLJ3COquyuB977P4wT1wwTPxznNxJqFqkKHQb5Pb4H2Sf
-         3tCa/a5zAT3MwSt0M5hiSmgXa0zu0GdpGs6r42hdfRvcX8/b/DH3h1UOpWBB0+mktjaD
-         KboiYtGpAyxLaBAQxPJe3nVxZAJBeBYQKl6PRCvaX2Vig22FW9i3vY2Zg1hXfQQv6qg8
-         vXbg==
-X-Gm-Message-State: ACgBeo1+B4mjR4vLdJxGj/IZjLlQuDzTH5Gmfla5FwIL+tXfSW93EYuk
-        JK9wjREVeN+rU3obc+aG6/xG09Xd/aZBTfaTaMt8qf5LiRbNE6MgJ9P02VGhPQXFOKRTTTjC4Rd
-        4tZmp+PpDnexeSWOUEYoESz3t
-X-Received: by 2002:a17:903:120c:b0:170:aa42:dbba with SMTP id l12-20020a170903120c00b00170aa42dbbamr2638229plh.67.1661411029960;
-        Thu, 25 Aug 2022 00:03:49 -0700 (PDT)
-X-Google-Smtp-Source: AA6agR71A9+1ssM8l0gU1/rJujbzZ0dEmhpSI0OZl7bEsrI1ruifEdYAsxDq2H0vI9SqQdgeiSLCKg==
-X-Received: by 2002:a17:903:120c:b0:170:aa42:dbba with SMTP id l12-20020a170903120c00b00170aa42dbbamr2638212plh.67.1661411029695;
-        Thu, 25 Aug 2022 00:03:49 -0700 (PDT)
-Received: from [10.72.12.107] ([209.132.188.80])
-        by smtp.gmail.com with ESMTPSA id g11-20020a170902e38b00b001726ea1b716sm559783ple.237.2022.08.25.00.03.45
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 25 Aug 2022 00:03:49 -0700 (PDT)
-Message-ID: <06761c62-93b4-8eaa-370f-f26b7c5306ca@redhat.com>
-Date:   Thu, 25 Aug 2022 15:03:43 +0800
+        Thu, 25 Aug 2022 03:06:25 -0400
+Received: from comms.puri.sm (comms.puri.sm [159.203.221.185])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EC1B96D56F;
+        Thu, 25 Aug 2022 00:06:22 -0700 (PDT)
+Received: from localhost (localhost [127.0.0.1])
+        by comms.puri.sm (Postfix) with ESMTP id D1C31E11BC;
+        Thu, 25 Aug 2022 00:06:22 -0700 (PDT)
+Received: from comms.puri.sm ([127.0.0.1])
+        by localhost (comms.puri.sm [127.0.0.1]) (amavisd-new, port 10024)
+        with ESMTP id F9caSXysCpjt; Thu, 25 Aug 2022 00:06:21 -0700 (PDT)
+Message-ID: <3bbba64dc4fd9ef37fb937f5176b1ef50b8b2d73.camel@puri.sm>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=puri.sm; s=comms;
+        t=1661411181; bh=XXMdNjo3qg/zPAEYx0MvDsz7VX60NpEYc1P2Apa2KLg=;
+        h=Subject:From:To:Cc:Date:In-Reply-To:References:From;
+        b=XXRksyTmgBWWhkfMl7wCBMuh5oHkadhmqnIQmaIPor/McqME4jCPoy05sOKeDBJO7
+         uU0EnhlA5MKoFot2jWgs/EL9NeGhkFmgPt+vzdv89nlSNWubaVdY1hseomLiSBfr6Q
+         Qe+MMW1yQnBtlVaQDtCjiNqEe5Nbu9GDNjxveKskL4Hvf7xQc0CCtjtXq9KQvuxbmB
+         uEeKlSgd36/hG4Z/Xb576arZvDPyBHAvzUl/3CVEn6QVUfNh/C58/vbrlB6THawxb6
+         EC+HacR04H7426ty9W+rWcs4cwD3wQxLBtoNAUBWV3kRcXl5a1758piIX5nZSx0tRr
+         ajJAi8WDlhkpA==
+Subject: Re: [PATCH v6 1/2] power: domain: handle genpd correctly when
+ needing interrupts
+From:   Martin Kepplinger <martin.kepplinger@puri.sm>
+To:     Ulf Hansson <ulf.hansson@linaro.org>
+Cc:     rafael@kernel.org, khilman@kernel.org, robh@kernel.org,
+        krzysztof.kozlowski@linaro.org, shawnguo@kernel.org,
+        s.hauer@pengutronix.de, festevam@gmail.com, pavel@ucw.cz,
+        kernel@puri.sm, linux-imx@nxp.com, broonie@kernel.org,
+        l.stach@pengutronix.de, aford173@gmail.com,
+        linux-pm@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org
+Date:   Thu, 25 Aug 2022 09:06:16 +0200
+In-Reply-To: <CAPDyKFoS=E3c9XWWCaG2byMm-3nvvW5jXS0X7Bh-NK_msTUykQ@mail.gmail.com>
+References: <20220726083257.1730630-1-martin.kepplinger@puri.sm>
+         <20220726083257.1730630-2-martin.kepplinger@puri.sm>
+         <CAPDyKFrLLw=y9+t3f_bOH2mw2NVDGJxKE5=+XHY7C6SUzLzUDg@mail.gmail.com>
+         <d1db07c8ca57c72b4f0820fcb6832dd7e4501055.camel@puri.sm>
+         <CAPDyKFpz0HG_AzCkj8LkyisO1fjJiiyX2QjKTWDTLng2O7PDgA@mail.gmail.com>
+         <77baacb930bf2ba1a65cb1515e6795b48d2d4ed5.camel@puri.sm>
+         <CAPDyKFoS=E3c9XWWCaG2byMm-3nvvW5jXS0X7Bh-NK_msTUykQ@mail.gmail.com>
+Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.38.3-1 
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
- Gecko/20100101 Thunderbird/91.13.0
-Subject: Re: [RFC v2 2/7] vhost_test: batch used buffer
-Content-Language: en-US
-To:     Guo Zhi <qtxuning1999@sjtu.edu.cn>, eperezma@redhat.com,
-        sgarzare@redhat.com, mst@redhat.com
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        kvm@vger.kernel.org, virtualization@lists.linux-foundation.org
-References: <20220817135718.2553-1-qtxuning1999@sjtu.edu.cn>
- <20220817135718.2553-3-qtxuning1999@sjtu.edu.cn>
-From:   Jason Wang <jasowang@redhat.com>
-In-Reply-To: <20220817135718.2553-3-qtxuning1999@sjtu.edu.cn>
-Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+Am Mittwoch, dem 24.08.2022 um 15:30 +0200 schrieb Ulf Hansson:
+> On Mon, 22 Aug 2022 at 10:38, Martin Kepplinger
+> <martin.kepplinger@puri.sm> wrote:
+> > 
+> > Am Freitag, dem 19.08.2022 um 16:53 +0200 schrieb Ulf Hansson:
+> > > On Fri, 19 Aug 2022 at 11:17, Martin Kepplinger
+> > > <martin.kepplinger@puri.sm> wrote:
+> > > > 
+> > > > Am Dienstag, dem 26.07.2022 um 17:07 +0200 schrieb Ulf Hansson:
+> > > > > On Tue, 26 Jul 2022 at 10:33, Martin Kepplinger
+> > > > > <martin.kepplinger@puri.sm> wrote:
+> > > > > > 
+> > > > > > If for example the power-domains' power-supply node
+> > > > > > (regulator)
+> > > > > > needs
+> > > > > > interrupts to work, the current setup with noirq callbacks
+> > > > > > cannot
+> > > > > > work; for example a pmic regulator on i2c, when suspending,
+> > > > > > usually
+> > > > > > already
+> > > > > > times out during suspend_noirq:
+> > > > > > 
+> > > > > > [   41.024193] buck4: failed to disable: -ETIMEDOUT
+> > > > > > 
+> > > > > > So fix system suspend and resume for these power-domains by
+> > > > > > using
+> > > > > > the
+> > > > > > "outer" suspend/resume callbacks instead. Tested on the
+> > > > > > imx8mq-
+> > > > > > librem5 board,
+> > > > > > but by looking at the dts, this will fix imx8mq-evk and
+> > > > > > possibly
+> > > > > > many other
+> > > > > > boards too.
+> > > > > > 
+> > > > > > This is designed so that genpd providers just say "this
+> > > > > > genpd
+> > > > > > needs
+> > > > > > interrupts" (by setting the flag) - without implying an
+> > > > > > implementation.
+> > > > > > 
+> > > > > > Initially system suspend problems had been discussed at
+> > > > > > https://lore.kernel.org/linux-arm-kernel/20211002005954.1367653-8-l.stach@pengutronix.de/
+> > > > > > which led to discussing the pmic that contains the
+> > > > > > regulators
+> > > > > > which
+> > > > > > serve as power-domain power-supplies:
+> > > > > > https://lore.kernel.org/linux-pm/573166b75e524517782471c2b7f96e03fd93d175.camel@puri.sm/T/
+> > > > > > 
+> > > > > > Signed-off-by: Martin Kepplinger
+> > > > > > <martin.kepplinger@puri.sm>
+> > > > > > ---
+> > > > > >  drivers/base/power/domain.c | 13 +++++++++++--
+> > > > > >  include/linux/pm_domain.h   |  5 +++++
+> > > > > >  2 files changed, 16 insertions(+), 2 deletions(-)
+> > > > > > 
+> > > > > > diff --git a/drivers/base/power/domain.c
+> > > > > > b/drivers/base/power/domain.c
+> > > > > > index 5a2e0232862e..58376752a4de 100644
+> > > > > > --- a/drivers/base/power/domain.c
+> > > > > > +++ b/drivers/base/power/domain.c
+> > > > > > @@ -130,6 +130,7 @@ static const struct genpd_lock_ops
+> > > > > > genpd_spin_ops = {
+> > > > > >  #define genpd_is_active_wakeup(genpd)  (genpd->flags &
+> > > > > > GENPD_FLAG_ACTIVE_WAKEUP)
+> > > > > >  #define genpd_is_cpu_domain(genpd)     (genpd->flags &
+> > > > > > GENPD_FLAG_CPU_DOMAIN)
+> > > > > >  #define genpd_is_rpm_always_on(genpd)  (genpd->flags &
+> > > > > > GENPD_FLAG_RPM_ALWAYS_ON)
+> > > > > > +#define genpd_irq_on(genpd)            (genpd->flags &
+> > > > > > GENPD_FLAG_IRQ_ON)
+> > > > > > 
+> > > > > >  static inline bool irq_safe_dev_in_sleep_domain(struct
+> > > > > > device
+> > > > > > *dev,
+> > > > > >                 const struct generic_pm_domain *genpd)
+> > > > > > @@ -2065,8 +2066,15 @@ int pm_genpd_init(struct
+> > > > > > generic_pm_domain
+> > > > > > *genpd,
+> > > > > >         genpd->domain.ops.runtime_suspend =
+> > > > > > genpd_runtime_suspend;
+> > > > > >         genpd->domain.ops.runtime_resume =
+> > > > > > genpd_runtime_resume;
+> > > > > >         genpd->domain.ops.prepare = genpd_prepare;
+> > > > > > -       genpd->domain.ops.suspend_noirq =
+> > > > > > genpd_suspend_noirq;
+> > > > > > -       genpd->domain.ops.resume_noirq =
+> > > > > > genpd_resume_noirq;
+> > > > > > +
+> > > > > > +       if (genpd_irq_on(genpd)) {
+> > > > > > +               genpd->domain.ops.suspend =
+> > > > > > genpd_suspend_noirq;
+> > > > > > +               genpd->domain.ops.resume =
+> > > > > > genpd_resume_noirq;
+> > > > > > +       } else {
+> > > > > > +               genpd->domain.ops.suspend_noirq =
+> > > > > > genpd_suspend_noirq;
+> > > > > > +               genpd->domain.ops.resume_noirq =
+> > > > > > genpd_resume_noirq;
+> > > > > 
+> > > > > As we discussed previously, I am thinking that it may be
+> > > > > better
+> > > > > to
+> > > > > move to using genpd->domain.ops.suspend_late and
+> > > > > genpd->domain.ops.resume_early instead.
+> > > > 
+> > > > Wouldn't that better be a separate patch (on top)? Do you
+> > > > really
+> > > > want
+> > > > me to change the current behaviour (default case) to from noirq
+> > > > to
+> > > > late? Then I'll resend this series with such a patch added.
+> > > 
+> > > Sorry, I wasn't clear enough, the default behaviour should remain
+> > > as
+> > > is.
+> > > 
+> > > What I meant was, when genpd_irq_on() is true, we should use the
+> > > genpd->domain.ops.suspend_late and genpd-
+> > > >domain.ops.resume_early.
+> > 
+> > Testing that shows that this isn't working. I can provide the logs
+> > later, but suspend fails and I think it makes sense: "suspend_late"
+> > is
+> > simply already too late when i2c (or any needed driver) uses
+> > "suspend".
+> 
+> Okay, I see.
+> 
+> The reason why I suggested moving the callbacks to "suspend_late",
+> was
+> that I was worried that some of the attached devices to genpd could
+> use "suspend_late" themselves. This is the case for some drivers for
+> DMA/clock/gpio/pinctrl-controllers, for example. That said, I am
+> curious to look at the DT files for the platform you are running,
+> would you mind giving me a pointer?
 
-在 2022/8/17 21:57, Guo Zhi 写道:
-> Only add to used ring when a batch of buffer have all been used.  And if
-> in order feature negotiated, only add the last used descriptor for a
-> batch of buffer.
->
-> Signed-off-by: Guo Zhi <qtxuning1999@sjtu.edu.cn>
-> ---
->   drivers/vhost/test.c | 8 +++++++-
->   1 file changed, 7 insertions(+), 1 deletion(-)
->
-> diff --git a/drivers/vhost/test.c b/drivers/vhost/test.c
-> index bc8e7fb1e635..57cdb3a3edf6 100644
-> --- a/drivers/vhost/test.c
-> +++ b/drivers/vhost/test.c
-> @@ -43,6 +43,9 @@ struct vhost_test {
->   static void handle_vq(struct vhost_test *n)
->   {
->   	struct vhost_virtqueue *vq = &n->vqs[VHOST_TEST_VQ];
-> +	struct vring_used_elem *heads = kmalloc(sizeof(*heads)
-> +			* vq->num, GFP_KERNEL);
+I'm running
+https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/tree/arch/arm64/boot/dts/freescale/imx8mq-librem5.dtsi
+with these (small) patches on top:
+https://source.puri.sm/martin.kepplinger/linux-next/-/commits/5.19.3/librem5
 
+> 
+> So, this made me think about this a bit more. In the end, just using
+> different levels (suspend, suspend_late, suspend_noirq) of callbacks
+> are just papering over the real *dependency* problem.
 
-Though it's a test device, it would be better to try avoid memory 
-allocation in the datapath.
+true, it doesn't feel like a stable solution.
 
-And where is is freed?
+> 
+> What we need for the genpd provider driver, is to be asked to be
+> suspended under the following conditions:
+> 1. All consumer devices (and child-domains) for its corresponding PM
+> domain have been suspended.
+> 2. All its supplier devices supplies must remain resumed, until the
+> genpd provider has been suspended.
+> 
+> Please allow me a few more days to think in more detail about this.
 
-Thanks
+Thanks a lot for thinking about this!
 
+> 
+> In some way, it looks like we should be able to combine the
+> information genpd has about its devices and child-domains, use PM
+> callbacks for the genpd provider driver - so we can rely on the
+> depency-path the fw_devlinks would give us for its supplier devices.
+> 
+> Kind regards
+> Uffe
 
-> +	int batch_idx = 0;
->   	unsigned out, in;
->   	int head;
->   	size_t len, total_len = 0;
-> @@ -84,11 +87,14 @@ static void handle_vq(struct vhost_test *n)
->   			vq_err(vq, "Unexpected 0 len for TX\n");
->   			break;
->   		}
-> -		vhost_add_used_and_signal(&n->dev, vq, head, 0);
-> +		heads[batch_idx].id = cpu_to_vhost32(vq, head);
-> +		heads[batch_idx++].len = cpu_to_vhost32(vq, len);
->   		total_len += len;
->   		if (unlikely(vhost_exceeds_weight(vq, 0, total_len)))
->   			break;
->   	}
-> +	if (batch_idx)
-> +		vhost_add_used_and_signal_n(&n->dev, vq, heads, batch_idx);
->   
->   	mutex_unlock(&vq->mutex);
->   }
+                          martin
+
 
