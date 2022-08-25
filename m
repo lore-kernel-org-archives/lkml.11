@@ -2,108 +2,105 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6B07CECAA28
-	for <linux-kernel@archiver.kernel.org>; Thu, 25 Aug 2022 18:04:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9740BECAA29
+	for <linux-kernel@archiver.kernel.org>; Thu, 25 Aug 2022 18:05:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242956AbiHYSEe (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 25 Aug 2022 14:04:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49652 "EHLO
+        id S243025AbiHYSFb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 25 Aug 2022 14:05:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52114 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241973AbiHYSEb (ORCPT
+        with ESMTP id S242983AbiHYSF2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 25 Aug 2022 14:04:31 -0400
-Received: from mail-qv1-xf2f.google.com (mail-qv1-xf2f.google.com [IPv6:2607:f8b0:4864:20::f2f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7AABDBCC2E;
-        Thu, 25 Aug 2022 11:04:30 -0700 (PDT)
-Received: by mail-qv1-xf2f.google.com with SMTP id de16so13636092qvb.12;
-        Thu, 25 Aug 2022 11:04:30 -0700 (PDT)
+        Thu, 25 Aug 2022 14:05:28 -0400
+Received: from mail-wm1-x331.google.com (mail-wm1-x331.google.com [IPv6:2a00:1450:4864:20::331])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0FD517286E
+        for <linux-kernel@vger.kernel.org>; Thu, 25 Aug 2022 11:05:27 -0700 (PDT)
+Received: by mail-wm1-x331.google.com with SMTP id m10-20020a05600c3b0a00b003a603fc3f81so2933941wms.0
+        for <linux-kernel@vger.kernel.org>; Thu, 25 Aug 2022 11:05:26 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc;
-        bh=gS/oZMKO0RIb585CuMsw8Mx8lGPIsjeA5Tv+9LBK5gw=;
-        b=UHTQNhsvI7kjb6sgnttgvVkgi+NHi/rkUjwTxYMlmb52Dyd02DNtEDB4raYn22iD8O
-         MihK5uK99OBoL8f2HIhvBMcP+wNyRHUoZVDLUQb9lJ92h+o9n4vFoalrz2g+PXV7HoFF
-         53LfIEKKnX+UdxKV5AcGr9XIcDVBubnKDcFBcmQhhJ8/wH9IW0C6JfHpreY0ded8wLQ5
-         OYKGurTU6d5K3oTysRUgCK4vYrdc2jgxv2rbff44j8CcW6Enqc3Pgv0US2duIvzrR9Fp
-         LKMvgm1MDQubq113huJwvcIutHnt8KYoXZzUROlZIvxT8tkCiP1+aXdkmZaRv59NCE6z
-         eAkw==
+        d=conchuod.ie; s=google;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc;
+        bh=JUTRY4gaK8Gdeip+jNVieK44Ohhk3yQH8niH5zENkSw=;
+        b=UQRwsSKSQOopSzPEnfGl08Wcz8NArorGUNMK0W1lv9/M3NFHsrXasUoP/8N6hnNLyh
+         Db+QzkVDzRMXC3hgUyXq0p/ra8hm2s0axZjgkn5/xzjO73xUBq3NWFs8zslI3FobG/9q
+         ElabZvviGU6oh6mONYgE7ezidVx0xJSjXX7zA3rtbmtllF1f27STAnj3DnA+VfAXUkMl
+         Da7Z8W1c5erVgM2O39G0VW5VS1MZds4EV6uliQXvj/E8xFQyQSOgSyjZyifITgzLG8Ka
+         oMAd0Sich0b0OCAAyxB0J9XknMkajEdI82BQg3Gwbo/HoD4VPnFnOKOAkEkcJMZH3M23
+         2JKQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc;
-        bh=gS/oZMKO0RIb585CuMsw8Mx8lGPIsjeA5Tv+9LBK5gw=;
-        b=vLKrOKBmQkOHlytABnNaQ6JiqPrtGFxhuJI2j89qAzpMiJYLXlPuUvZzYyOPzP0/t2
-         Czzw1VlbTagFm8H4Vea0Z66+bGo1vy27kL9toB5jQNLgrnf3RCWucyx+eyhZ8QsfrU8H
-         0WXkUsvqcGd+4uPqiv+lgzV0LHQtWNomoQsUv36JG2agGtYVY89jVrCbUw6mxaJAKhNE
-         yu+Bi/1pRZ74qhWfE2Zqkc77kyXG2KHb43mpFb49mrirY6mXBvrFFzhk8DtxrZvnkVDc
-         MuTjFh8WhmMPVRhS6/MNMvlpokEJ6p1+7k7tsM4777Zou4f71x4eHsxtSzCVNq8vMsRR
-         5vQw==
-X-Gm-Message-State: ACgBeo0fmWxkLZ5p1RhHd8ysBf6aMsNepTHvDo130OT+A+j2SL7+uyOY
-        ccPONn/fQEowXuuhO6EJ6LkYxuzZj7kgmXXPFws=
-X-Google-Smtp-Source: AA6agR5dyKTJcv75mZiMUn02lP2WnMi8OhVV2WIW2o0eoDeyf/NMdheXCCAT5VkIIH/l9OUZruTXH3g5IjzBePl52Ik=
-X-Received: by 2002:ad4:4eaf:0:b0:496:ac46:2d9c with SMTP id
- ed15-20020ad44eaf000000b00496ac462d9cmr4721504qvb.82.1661450669496; Thu, 25
- Aug 2022 11:04:29 -0700 (PDT)
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc;
+        bh=JUTRY4gaK8Gdeip+jNVieK44Ohhk3yQH8niH5zENkSw=;
+        b=4qhPw8D15vJpRBc6MDxPh6bnSaOWcKTWF1tziXCBIIClofCvt+MM0Y9i912gOouLBL
+         vUw8yDH3mu+i/C8AI8/ItC3CACkLAJ2qEQAx5yPKfemkP1Ssn721iL7rlYVmzHLwwHFp
+         pnhVzRUD9q3tYzu+HYplPD5ZUbOqN2Q4MtQImUKa0PRoEYuc1IYxzQRZ0pWMjlQoakx3
+         TUWmvw1tvSlS/WvESWHtcVCuVctMwTBSv/MCGg68lFDJMHUFEfTkScrNKnlrG+Js8i5x
+         TfRDq9EHj53A8ypIv03Fnk1UMtY7DukV8H+9prXfCmQ+rwx5Lbt/ep0bRt6kbIy9S9cd
+         71tw==
+X-Gm-Message-State: ACgBeo3olN4cfuirCGLWWuiHdlM4YJMli7Mgi8ox7/YLj9DLuzu6wq3O
+        3UN6YBMCElmiZnOe5J5ZJEtYRw==
+X-Google-Smtp-Source: AA6agR5biMHZOOviA7RBIh8sODjlp+ZpN4gWA6662c/obgpPYUJW3Xon/lSc/ip8BcNFU0lBj4jAww==
+X-Received: by 2002:a05:600c:3d09:b0:3a5:e408:ca19 with SMTP id bh9-20020a05600c3d0900b003a5e408ca19mr3121650wmb.135.1661450725527;
+        Thu, 25 Aug 2022 11:05:25 -0700 (PDT)
+Received: from henark71.. ([51.37.149.245])
+        by smtp.gmail.com with ESMTPSA id j4-20020a5d6044000000b002254a7f4b9csm14967970wrt.48.2022.08.25.11.05.24
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 25 Aug 2022 11:05:25 -0700 (PDT)
+From:   Conor Dooley <mail@conchuod.ie>
+To:     Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Palmer Dabbelt <palmer@dabbelt.com>,
+        Paul Walmsley <paul.walmsley@sifive.com>,
+        Albert Ou <aou@eecs.berkeley.edu>,
+        Conor Dooley <conor.dooley@microchip.com>,
+        Daire McNamara <daire.mcnamara@microchip.com>
+Cc:     Sagar Kadam <sagar.kadam@sifive.com>,
+        Heinrich Schuchardt <heinrich.schuchardt@canonical.com>,
+        Atish Patra <atishp@atishpatra.org>,
+        devicetree@vger.kernel.org, linux-riscv@lists.infradead.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH 0/2] Add a PolarFire SoC l2 compatible
+Date:   Thu, 25 Aug 2022 19:04:16 +0100
+Message-Id: <20220825180417.1259360-1-mail@conchuod.ie>
+X-Mailer: git-send-email 2.37.1
 MIME-Version: 1.0
-References: <20220825104422.14156-1-henning.schild@siemens.com>
- <20220825104422.14156-6-henning.schild@siemens.com> <20220825193340.058fd4c5@md1za8fc.ad001.siemens.net>
-In-Reply-To: <20220825193340.058fd4c5@md1za8fc.ad001.siemens.net>
-From:   Andy Shevchenko <andy.shevchenko@gmail.com>
-Date:   Thu, 25 Aug 2022 21:03:53 +0300
-Message-ID: <CAHp75Vd7jrPUb0bOdySDLmJQCdo6qieBaDVkTjf=u7R+Jyiv+g@mail.gmail.com>
-Subject: Re: [PATCH v6 5/7] leds: simatic-ipc-leds-gpio: add new model 227G
-To:     Henning Schild <henning.schild@siemens.com>
-Cc:     Linus Walleij <linus.walleij@linaro.org>,
-        Bartosz Golaszewski <brgl@bgdev.pl>,
-        Pavel Machek <pavel@ucw.cz>,
-        Hans de Goede <hdegoede@redhat.com>,
-        Mark Gross <markgross@kernel.org>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Lee Jones <lee@kernel.org>,
-        "open list:GPIO SUBSYSTEM" <linux-gpio@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Linux LED Subsystem <linux-leds@vger.kernel.org>,
-        Platform Driver <platform-driver-x86@vger.kernel.org>,
-        Sheng-Yuan Huang <syhuang3@nuvoton.com>,
-        Tasanakorn Phaipool <tasanakorn@gmail.com>,
-        simon.guinot@sequanux.org
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Aug 25, 2022 at 8:51 PM Henning Schild
-<henning.schild@siemens.com> wrote:
-> Am Thu, 25 Aug 2022 12:44:20 +0200
-> schrieb Henning Schild <henning.schild@siemens.com>:
+From: Conor Dooley <conor.dooley@microchip.com>
 
-...
+Whilst re-running checks before sending my dt-fixes PR today I noticed
+that I had introduced another dtbs_check warning by applying one of the
+patches in it.
 
-> Concerning these two tables from above i have a question i need to find
-> an answer for for maintaining the out-of-tree modules of these drivers.
->
-> When getting the drivers into the kernel i had to rename the leds but
-> in out-of-tree i would like to keep the old names and just equip their
-> setters/getters with a deprecation warning. Just to give existing
-> users time to slowly adopt the upstream name change if i can.
->
-> In the open-coded way i just defined each LED twice and added a strcmp
-> + pr_warn. With the "leds-gpio" version i still fail to find a solution
-> which does not get me into -EBUSY. So i already fail at the second
-> definition of the legacy name, not even had a chance to think about how
-> to smuggle in my deprecation warning.
->
-> I know out-of-tree is not a concern to people here, but someone might
-> have an answer anyhow.
+PolarFire SoC has 4 cache interrupts, unlike the fu540 (which the dts
+re-uses the compatible of currently) which only has 3. Add a new string
+to the binding like should've been done in the first place...
 
-Yes, we (upstream) don't care about out-of-tree stuff. But I think
-what you are asking for is kinda an alias. Maybe you simply can create
-a module that will wait for the led appearing (by notify that adds a
-device or alike) and create an alias by sysfs symlink (IIRC there are
-kernel APIs for that)? It will be another out-of-tree module that you
-may drop whenever is time.
+The driver does not care which compatible it matches against, and just
+uses as many interrupts as are in the dts so will happily work away
+without any needed changes there.
+
+@Palmer, you can take this directly as long as my fixes PR for rc3 is
+merged if you like, since the application path for the binding is via
+you anyway. I suppose I could take both too, but whatever works best
+for you (:
+
+Thanks,
+Conor.
+
+Conor Dooley (2):
+  dt-bindings: riscv: sifive-l2: add a PolarFire SoC compatible
+  riscv: dts: microchip: use an mpfs specific l2 compatible
+
+ .../bindings/riscv/sifive-l2-cache.yaml       | 79 ++++++++++++-------
+ arch/riscv/boot/dts/microchip/mpfs.dtsi       |  2 +-
+ 2 files changed, 50 insertions(+), 31 deletions(-)
 
 -- 
-With Best Regards,
-Andy Shevchenko
+2.37.1
+
