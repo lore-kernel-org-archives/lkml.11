@@ -2,25 +2,25 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6D010C64990
-	for <linux-kernel@archiver.kernel.org>; Thu, 25 Aug 2022 14:12:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EE16EC28D13
+	for <linux-kernel@archiver.kernel.org>; Thu, 25 Aug 2022 14:12:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241471AbiHYOMb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 25 Aug 2022 10:12:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49118 "EHLO
+        id S241575AbiHYOMf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 25 Aug 2022 10:12:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49334 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240732AbiHYOMS (ORCPT
+        with ESMTP id S241229AbiHYOMW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 25 Aug 2022 10:12:18 -0400
+        Thu, 25 Aug 2022 10:12:22 -0400
 Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id E1C4B65826
-        for <linux-kernel@vger.kernel.org>; Thu, 25 Aug 2022 07:12:16 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 190D55AA24
+        for <linux-kernel@vger.kernel.org>; Thu, 25 Aug 2022 07:12:21 -0700 (PDT)
 Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 4B81515BF;
-        Thu, 25 Aug 2022 07:12:21 -0700 (PDT)
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 701A9ED1;
+        Thu, 25 Aug 2022 07:12:25 -0700 (PDT)
 Received: from e120937-lin.home (unknown [172.31.20.19])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id D37513F71A;
-        Thu, 25 Aug 2022 07:12:14 -0700 (PDT)
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 03D593F71A;
+        Thu, 25 Aug 2022 07:12:18 -0700 (PDT)
 From:   Cristian Marussi <cristian.marussi@arm.com>
 To:     linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org
 Cc:     sudeep.holla@arm.com, james.quinlan@broadcom.com,
@@ -29,9 +29,9 @@ Cc:     sudeep.holla@arm.com, james.quinlan@broadcom.com,
         souvik.chakravarty@arm.com, wleavitt@marvell.com,
         peter.hilber@opensynergy.com, nicola.mazzucato@arm.com,
         tarek.el-sherbiny@arm.com, cristian.marussi@arm.com
-Subject: [PATCH v2 3/9] firmware: arm_scmi: Use dedicated devices to initialize channels
-Date:   Thu, 25 Aug 2022 15:11:46 +0100
-Message-Id: <20220825141152.2334536-4-cristian.marussi@arm.com>
+Subject: [PATCH v2 5/9] firmware: arm_scmi: Move errors defs and code to common.h
+Date:   Thu, 25 Aug 2022 15:11:48 +0100
+Message-Id: <20220825141152.2334536-6-cristian.marussi@arm.com>
 X-Mailer: git-send-email 2.32.0
 In-Reply-To: <20220825141152.2334536-1-cristian.marussi@arm.com>
 References: <20220825141152.2334536-1-cristian.marussi@arm.com>
@@ -41,181 +41,133 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Refactor channels initialization to use dedicated devices instead of using
-devices borrowed from the SCMI drivers.
+Move SCMI error codes definitions and helper to the common.h header
+together with the delayed response timeout define.
 
-Initialize all channels as described in the DT upfront.
+No functional change.
 
 Signed-off-by: Cristian Marussi <cristian.marussi@arm.com>
 ---
- drivers/firmware/arm_scmi/driver.c | 94 ++++++++++++++++++++++--------
- 1 file changed, 70 insertions(+), 24 deletions(-)
+ drivers/firmware/arm_scmi/common.h | 40 ++++++++++++++++++++++++++++++
+ drivers/firmware/arm_scmi/driver.c | 40 ------------------------------
+ 2 files changed, 40 insertions(+), 40 deletions(-)
 
-diff --git a/drivers/firmware/arm_scmi/driver.c b/drivers/firmware/arm_scmi/driver.c
-index 62e02b6475ff..56b1a917f618 100644
---- a/drivers/firmware/arm_scmi/driver.c
-+++ b/drivers/firmware/arm_scmi/driver.c
-@@ -2019,23 +2019,20 @@ static int scmi_xfer_info_init(struct scmi_info *sinfo)
- 	return ret;
- }
+diff --git a/drivers/firmware/arm_scmi/common.h b/drivers/firmware/arm_scmi/common.h
+index 6d2a57a696d8..5334a2b272bf 100644
+--- a/drivers/firmware/arm_scmi/common.h
++++ b/drivers/firmware/arm_scmi/common.h
+@@ -27,6 +27,46 @@
+ #include "protocols.h"
+ #include "notify.h"
  
--static int scmi_chan_setup(struct scmi_info *info, struct device *dev,
-+static int scmi_chan_setup(struct scmi_info *info, struct device_node *of_node,
- 			   int prot_id, bool tx)
- {
- 	int ret, idx;
-+	char name[32];
- 	struct scmi_chan_info *cinfo;
- 	struct idr *idr;
-+	struct scmi_device *tdev = NULL;
- 
- 	/* Transmit channel is first entry i.e. index 0 */
- 	idx = tx ? 0 : 1;
- 	idr = tx ? &info->tx_idr : &info->rx_idr;
- 
--	/* check if already allocated, used for multiple device per protocol */
--	cinfo = idr_find(idr, prot_id);
--	if (cinfo)
--		return 0;
--
--	if (!info->desc->ops->chan_available(dev->of_node, idx)) {
-+	if (!info->desc->ops->chan_available(of_node, idx)) {
- 		cinfo = idr_find(idr, SCMI_PROTOCOL_BASE);
- 		if (unlikely(!cinfo)) /* Possible only if platform has no Rx */
- 			return -EINVAL;
-@@ -2046,26 +2043,41 @@ static int scmi_chan_setup(struct scmi_info *info, struct device *dev,
- 	if (!cinfo)
- 		return -ENOMEM;
- 
--	cinfo->dev = dev;
-+	/* Create a unique name for this transport device */
-+	snprintf(name, 32, "__scmi_transport_device_%s_%02X",
-+		 idx ? "rx" : "tx", prot_id);
-+	/* Create a uniquely named, dedicated transport device for this chan */
-+	tdev = scmi_device_create(of_node, info->dev, prot_id, name);
-+	if (!tdev) {
-+		devm_kfree(info->dev, cinfo);
-+		return -EINVAL;
-+	}
- 
-+	cinfo->dev = &tdev->dev;
- 	ret = info->desc->ops->chan_setup(cinfo, info->dev, tx);
--	if (ret)
-+	if (ret) {
-+		scmi_device_destroy(tdev);
-+		devm_kfree(info->dev, cinfo);
- 		return ret;
-+	}
- 
- 	if (tx && is_polling_required(cinfo, info)) {
- 		if (is_transport_polling_capable(info))
--			dev_info(dev,
-+			dev_info(&tdev->dev,
- 				 "Enabled polling mode TX channel - prot_id:%d\n",
- 				 prot_id);
- 		else
--			dev_warn(dev,
-+			dev_warn(&tdev->dev,
- 				 "Polling mode NOT supported by transport.\n");
- 	}
- 
- idr_alloc:
- 	ret = idr_alloc(idr, cinfo, prot_id, prot_id + 1, GFP_KERNEL);
- 	if (ret != prot_id) {
--		dev_err(dev, "unable to allocate SCMI idr slot err %d\n", ret);
-+		dev_err(info->dev,
-+			"unable to allocate SCMI idr slot err %d\n", ret);
-+		if (tdev)
-+			scmi_device_destroy(tdev);
- 		return ret;
- 	}
- 
-@@ -2074,16 +2086,57 @@ static int scmi_chan_setup(struct scmi_info *info, struct device *dev,
- }
- 
- static inline int
--scmi_txrx_setup(struct scmi_info *info, struct device *dev, int prot_id)
-+scmi_txrx_setup(struct scmi_info *info, struct device_node *of_node,
-+		int prot_id)
- {
--	int ret = scmi_chan_setup(info, dev, prot_id, true);
-+	int ret = scmi_chan_setup(info, of_node, prot_id, true);
- 
- 	if (!ret) /* Rx is optional, hence no error check */
--		scmi_chan_setup(info, dev, prot_id, false);
-+		scmi_chan_setup(info, of_node, prot_id, false);
- 
- 	return ret;
- }
- 
-+/**
-+ * scmi_channels_setup  - Helper to initialize all required channels
-+ *
-+ * @info: The SCMI instance descriptor.
-+ *
-+ * Initialize all the channels found described in the DT against the underlying
-+ * configured transport using custom defined dedicated devices instead of
-+ * borrowing devices from the SCMI drivers; this way channels are initialized
-+ * upfront during core SCMI stack probing and are operational even if then no
-+ * SCMI driver is loaded. (useful to operate in Raw mode)
-+ *
-+ * Return: 0 on Success
-+ */
-+static int scmi_channels_setup(struct scmi_info *info)
++#define SCMI_MAX_RESPONSE_TIMEOUT	(2 * MSEC_PER_SEC)
++
++enum scmi_error_codes {
++	SCMI_SUCCESS = 0,	/* Success */
++	SCMI_ERR_SUPPORT = -1,	/* Not supported */
++	SCMI_ERR_PARAMS = -2,	/* Invalid Parameters */
++	SCMI_ERR_ACCESS = -3,	/* Invalid access/permission denied */
++	SCMI_ERR_ENTRY = -4,	/* Not found */
++	SCMI_ERR_RANGE = -5,	/* Value out of range */
++	SCMI_ERR_BUSY = -6,	/* Device busy */
++	SCMI_ERR_COMMS = -7,	/* Communication Error */
++	SCMI_ERR_GENERIC = -8,	/* Generic Error */
++	SCMI_ERR_HARDWARE = -9,	/* Hardware Error */
++	SCMI_ERR_PROTOCOL = -10,/* Protocol Error */
++};
++
++static const int scmi_linux_errmap[] = {
++	/* better than switch case as long as return value is continuous */
++	0,			/* SCMI_SUCCESS */
++	-EOPNOTSUPP,		/* SCMI_ERR_SUPPORT */
++	-EINVAL,		/* SCMI_ERR_PARAM */
++	-EACCES,		/* SCMI_ERR_ACCESS */
++	-ENOENT,		/* SCMI_ERR_ENTRY */
++	-ERANGE,		/* SCMI_ERR_RANGE */
++	-EBUSY,			/* SCMI_ERR_BUSY */
++	-ECOMM,			/* SCMI_ERR_COMMS */
++	-EIO,			/* SCMI_ERR_GENERIC */
++	-EREMOTEIO,		/* SCMI_ERR_HARDWARE */
++	-EPROTO,		/* SCMI_ERR_PROTOCOL */
++};
++
++static inline int scmi_to_linux_errno(int errno)
 +{
-+	int ret;
-+	struct device_node *child, *top_np = info->dev->of_node;
++	int err_idx = -errno;
 +
-+	ret = scmi_txrx_setup(info, top_np, SCMI_PROTOCOL_BASE);
-+	if (ret)
-+		return ret;
-+
-+	for_each_available_child_of_node(top_np, child) {
-+		u32 prot_id;
-+
-+		if (of_property_read_u32(child, "reg", &prot_id))
-+			continue;
-+
-+		if (!FIELD_FIT(MSG_PROTOCOL_ID_MASK, prot_id))
-+			dev_err(info->dev,
-+				"Out of range protocol %d\n", prot_id);
-+
-+		ret = scmi_txrx_setup(info, child, prot_id);
-+		if (ret)
-+			return ret;
-+	}
-+
-+	return 0;
++	if (err_idx >= SCMI_SUCCESS && err_idx < ARRAY_SIZE(scmi_linux_errmap))
++		return scmi_linux_errmap[err_idx];
++	return -EIO;
 +}
 +
+ #define MSG_ID_MASK		GENMASK(7, 0)
+ #define MSG_XTRACT_ID(hdr)	FIELD_GET(MSG_ID_MASK, (hdr))
+ #define MSG_TYPE_MASK		GENMASK(9, 8)
+diff --git a/drivers/firmware/arm_scmi/driver.c b/drivers/firmware/arm_scmi/driver.c
+index a49d9eaa1c09..fd131e499e15 100644
+--- a/drivers/firmware/arm_scmi/driver.c
++++ b/drivers/firmware/arm_scmi/driver.c
+@@ -37,20 +37,6 @@
+ #define CREATE_TRACE_POINTS
+ #include <trace/events/scmi.h>
+ 
+-enum scmi_error_codes {
+-	SCMI_SUCCESS = 0,	/* Success */
+-	SCMI_ERR_SUPPORT = -1,	/* Not supported */
+-	SCMI_ERR_PARAMS = -2,	/* Invalid Parameters */
+-	SCMI_ERR_ACCESS = -3,	/* Invalid access/permission denied */
+-	SCMI_ERR_ENTRY = -4,	/* Not found */
+-	SCMI_ERR_RANGE = -5,	/* Value out of range */
+-	SCMI_ERR_BUSY = -6,	/* Device busy */
+-	SCMI_ERR_COMMS = -7,	/* Communication Error */
+-	SCMI_ERR_GENERIC = -8,	/* Generic Error */
+-	SCMI_ERR_HARDWARE = -9,	/* Hardware Error */
+-	SCMI_ERR_PROTOCOL = -10,/* Protocol Error */
+-};
+-
+ /* List of all SCMI devices active in system */
+ static LIST_HEAD(scmi_list);
+ /* Protection for the entire list */
+@@ -170,30 +156,6 @@ struct scmi_info {
+ 
+ #define handle_to_scmi_info(h)	container_of(h, struct scmi_info, handle)
+ 
+-static const int scmi_linux_errmap[] = {
+-	/* better than switch case as long as return value is continuous */
+-	0,			/* SCMI_SUCCESS */
+-	-EOPNOTSUPP,		/* SCMI_ERR_SUPPORT */
+-	-EINVAL,		/* SCMI_ERR_PARAM */
+-	-EACCES,		/* SCMI_ERR_ACCESS */
+-	-ENOENT,		/* SCMI_ERR_ENTRY */
+-	-ERANGE,		/* SCMI_ERR_RANGE */
+-	-EBUSY,			/* SCMI_ERR_BUSY */
+-	-ECOMM,			/* SCMI_ERR_COMMS */
+-	-EIO,			/* SCMI_ERR_GENERIC */
+-	-EREMOTEIO,		/* SCMI_ERR_HARDWARE */
+-	-EPROTO,		/* SCMI_ERR_PROTOCOL */
+-};
+-
+-static inline int scmi_to_linux_errno(int errno)
+-{
+-	int err_idx = -errno;
+-
+-	if (err_idx >= SCMI_SUCCESS && err_idx < ARRAY_SIZE(scmi_linux_errmap))
+-		return scmi_linux_errmap[err_idx];
+-	return -EIO;
+-}
+-
+ void scmi_notification_instance_data_set(const struct scmi_handle *handle,
+ 					 void *priv)
+ {
+@@ -1078,8 +1040,6 @@ static void reset_rx_to_maxsz(const struct scmi_protocol_handle *ph,
+ 	xfer->rx.len = info->desc->max_msg_size;
+ }
+ 
+-#define SCMI_MAX_RESPONSE_TIMEOUT	(2 * MSEC_PER_SEC)
+-
  /**
-  * scmi_get_protocol_device  - Helper to get/create an SCMI device.
-  *
-@@ -2133,14 +2186,6 @@ scmi_get_protocol_device(struct device_node *np, struct scmi_info *info,
- 		return NULL;
- 	}
- 
--	if (scmi_txrx_setup(info, &sdev->dev, prot_id)) {
--		dev_err(&sdev->dev, "failed to setup transport\n");
--		scmi_device_destroy(sdev);
--		mutex_unlock(&scmi_syspower_mtx);
--
--		return NULL;
--	}
--
- 	if (prot_id == SCMI_PROTOCOL_SYSTEM)
- 		scmi_syspower_registered = true;
- 
-@@ -2432,7 +2477,8 @@ static int scmi_probe(struct platform_device *pdev)
- 			return ret;
- 	}
- 
--	ret = scmi_txrx_setup(info, dev, SCMI_PROTOCOL_BASE);
-+	/* Setup all channels described in the DT at first */
-+	ret = scmi_channels_setup(info);
- 	if (ret)
- 		return ret;
- 
+  * do_xfer_with_response() - Do one transfer and wait until the delayed
+  *	response is received
 -- 
 2.32.0
 
