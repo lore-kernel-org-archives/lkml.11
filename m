@@ -2,115 +2,82 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7606DC64990
-	for <linux-kernel@archiver.kernel.org>; Thu, 25 Aug 2022 13:45:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 34E89C65C0D
+	for <linux-kernel@archiver.kernel.org>; Thu, 25 Aug 2022 13:46:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242433AbiHYNpM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 25 Aug 2022 09:45:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36100 "EHLO
+        id S242519AbiHYNqG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 25 Aug 2022 09:46:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38328 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233743AbiHYNpJ (ORCPT
+        with ESMTP id S232805AbiHYNqD (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 25 Aug 2022 09:45:09 -0400
-Received: from mail-lj1-x234.google.com (mail-lj1-x234.google.com [IPv6:2a00:1450:4864:20::234])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4D8FB11C2C;
-        Thu, 25 Aug 2022 06:45:07 -0700 (PDT)
-Received: by mail-lj1-x234.google.com with SMTP id l23so8458579lji.1;
-        Thu, 25 Aug 2022 06:45:07 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc;
-        bh=LNQ1P5VfR2hkrO1KVSkVyiPofBvt2GF2rWkw17ZqdPc=;
-        b=Uj3kdoKnIficr7T0mxpriXp3Bhpz+uGwLNnfEOqvw4QJBLkF1DPeQBXj12Rx9AMBHl
-         /9GbNFs8SAt20sraYH0vWtihEXigfs1Jz46PtgxQE3fCnhweauy24KnfVUNMHylbAN7q
-         488xIslKivbNcFC3fszq2p6rOXKAPj4tWhBr4T9LkyA7Vcee4QBsYWXl4wfaEruusuy0
-         HThiG1HWcPt9moxHpq1CsIqfQHvtpTKBVSbOdEOWRkVNbvYr5WzgHwriNyqvWlyeXMxP
-         havgWHIFHhQzEi88LyOBZ9EOyCS05e6rQGAVvgIqIjVh8ICOQT27pErGJzvTJxJy3dW4
-         baHw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc;
-        bh=LNQ1P5VfR2hkrO1KVSkVyiPofBvt2GF2rWkw17ZqdPc=;
-        b=mpzA2x12QaKTXcUcIxAo8ZsuHjpyjV1YhDIuCqBl0/8IengnmckaxpW1LVBjAXZSPF
-         KZSP6KocW6KVqMyePR2uv7mzFjSPdfIzfA80Dh81CQRyq2+NQA1CM+L44Dtf5tuYKmJB
-         VgwQd6f1NfwqDMCSNYcAQeNKiM9nUzGyJeVJAgnvZfOI3bVk2xOQCqKutB3xe5o1CFLC
-         EOcSIjxBR2p1xwuGGK1GWQKKpmP085UjukrXnxUM1kEsLvZs1ehjTXka6FuUspGSXUMq
-         Fvt21+WkJ5P5tWPA/vjqZw5mR0yzmYHFShmtMFmcl4ioxvUdLkAOMWBISAJdtKZo0ENO
-         61nA==
-X-Gm-Message-State: ACgBeo335xD7DC2Ou2rXe6kH3ehRt881SnHQ6hQAwZQ3EuxOIqBRwqj/
-        ep6CzKVAzGUUjI4TLtQSHU+jy7m/7M+8sw==
-X-Google-Smtp-Source: AA6agR6W/G7rOoiqL0vEYBlVB5eoB4lN8B1UfT+c7FAeskxQeqGUO6kguGNrdSz6l9Bzihl67aZmPQ==
-X-Received: by 2002:a05:651c:221e:b0:25f:f069:1c13 with SMTP id y30-20020a05651c221e00b0025ff0691c13mr1200422ljq.390.1661435105696;
-        Thu, 25 Aug 2022 06:45:05 -0700 (PDT)
-Received: from mobilestation ([95.79.140.178])
-        by smtp.gmail.com with ESMTPSA id a12-20020ac25e6c000000b0048af0df1041sm496671lfr.255.2022.08.25.06.45.04
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 25 Aug 2022 06:45:05 -0700 (PDT)
-Date:   Thu, 25 Aug 2022 16:45:02 +0300
-From:   Serge Semin <fancer.lancer@gmail.com>
-To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Cc:     Serge Semin <Sergey.Semin@baikalelectronics.ru>,
-        Stephen Boyd <sboyd@kernel.org>,
-        Michael Turquette <mturquette@baylibre.com>,
-        Philipp Zabel <p.zabel@pengutronix.de>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Alexey Malahov <Alexey.Malahov@baikalelectronics.ru>,
-        Pavel Parkhomenko <Pavel.Parkhomenko@baikalelectronics.ru>,
-        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
-        linux-clk@vger.kernel.org, linux-mips@vger.kernel.org,
-        linux-kernel@vger.kernel.org, devicetree@vger.kernel.org
-Subject: Re: [PATCH RESEND v10 6/7] clk: baikal-t1: Add DDR/PCIe directly
- controlled resets support
-Message-ID: <20220825134502.alxzlikv7ftir2fi@mobilestation>
-References: <20220822182934.23734-1-Sergey.Semin@baikalelectronics.ru>
- <20220822182934.23734-7-Sergey.Semin@baikalelectronics.ru>
- <c3831c5a-7e10-2112-83e0-4ec2d70001c2@linaro.org>
+        Thu, 25 Aug 2022 09:46:03 -0400
+Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 25F2A26123
+        for <linux-kernel@vger.kernel.org>; Thu, 25 Aug 2022 06:46:01 -0700 (PDT)
+Received: from dggpemm500022.china.huawei.com (unknown [172.30.72.54])
+        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4MD40M0Dn2zlWWy;
+        Thu, 25 Aug 2022 21:42:43 +0800 (CST)
+Received: from dggpemm100009.china.huawei.com (7.185.36.113) by
+ dggpemm500022.china.huawei.com (7.185.36.162) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Thu, 25 Aug 2022 21:45:58 +0800
+Received: from huawei.com (10.175.113.32) by dggpemm100009.china.huawei.com
+ (7.185.36.113) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Thu, 25 Aug
+ 2022 21:45:58 +0800
+From:   Liu Shixin <liushixin2@huawei.com>
+To:     Seth Jennings <sjenning@redhat.com>,
+        Dan Streetman <ddstreet@ieee.org>,
+        Vitaly Wool <vitaly.wool@konsulko.com>,
+        Andrew Morton <akpm@linux-foundation.org>
+CC:     <linux-mm@kvack.org>, <linux-kernel@vger.kernel.org>,
+        Liu Shixin <liushixin2@huawei.com>
+Subject: [PATCH -next 3/3] mm/zswap: skip confusing print info
+Date:   Thu, 25 Aug 2022 22:20:37 +0800
+Message-ID: <20220825142037.3214152-4-liushixin2@huawei.com>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20220825142037.3214152-1-liushixin2@huawei.com>
+References: <20220825142037.3214152-1-liushixin2@huawei.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <c3831c5a-7e10-2112-83e0-4ec2d70001c2@linaro.org>
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.175.113.32]
+X-ClientProxiedBy: dggems703-chm.china.huawei.com (10.3.19.180) To
+ dggpemm100009.china.huawei.com (7.185.36.113)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Aug 23, 2022 at 01:23:32PM +0300, Krzysztof Kozlowski wrote:
-> On 22/08/2022 21:29, Serge Semin wrote:
-> > Aside with a set of the trigger-like resets Baikal-T1 CCU provides two
-> > additional blocks with directly controlled reset signals. In particular it
-> > concerns DDR full and initial resets and various PCIe sub-domains resets.
-> > Let's add the direct reset assertion/de-assertion of the corresponding
-> > flags support into the Baikal-T1 CCU driver then. It will be required at
-> > least for the PCIe platform driver. Obviously the DDR controller isn't
-> > supposed to be fully reset in the kernel, so the corresponding controls
-> > are added just for the sake of the interface implementation completeness.
-> > 
-> > Signed-off-by: Serge Semin <Sergey.Semin@baikalelectronics.ru>
-> > Reviewed-by: Philipp Zabel <p.zabel@pengutronix.de>
-> > 
-> > ---
-> > 
-> > Changelog v6:
-> > - Refactor the code to support the linear reset IDs only. (@Philipp)
-> > 
-> > Changelog v7:
-> > - Drop empty line from the sys_rst_info structure initialization block.
-> >   (@Philipp)
-> > ---
-> >  drivers/clk/baikal-t1/ccu-rst.c     | 66 +++++++++++++++++++++++++++++
-> >  drivers/clk/baikal-t1/ccu-rst.h     | 10 +++++
-> >  include/dt-bindings/reset/bt1-ccu.h |  9 ++++
-> 
+It's confusing when we disable zswap while zswap is init failed or has no
+pool. If no change required, just return directly.
 
-> Do not mix drivers and bindings. Bindings always go separately, so this
-> has to be split.
+Signed-off-by: Liu Shixin <liushixin2@huawei.com>
+---
+ mm/zswap.c | 9 +++++++++
+ 1 file changed, 9 insertions(+)
 
-Ok. Sigh...
+diff --git a/mm/zswap.c b/mm/zswap.c
+index 90df72aceb08..fdf376f239fd 100644
+--- a/mm/zswap.c
++++ b/mm/zswap.c
+@@ -886,6 +886,15 @@ static int zswap_zpool_param_set(const char *val,
+ static int zswap_enabled_param_set(const char *val,
+ 				   const struct kernel_param *kp)
+ {
++	bool res;
++
++	if (kstrtobool(val, &res))
++		return -EINVAL;
++
++	/* no change required */
++	if (res == *(bool *)kp->arg)
++		return 0;
++
+ 	if (system_state == SYSTEM_RUNNING) {
+ 		mutex_lock(&zswap_init_lock);
+ 		if (zswap_setup()) {
+-- 
+2.25.1
 
--Sergey
-
-> 
-> Best regards,
-> Krzysztof
