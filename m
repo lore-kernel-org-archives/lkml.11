@@ -2,125 +2,155 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D9546C28D13
-	for <linux-kernel@archiver.kernel.org>; Thu, 25 Aug 2022 10:11:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 986DDC04AA5
+	for <linux-kernel@archiver.kernel.org>; Thu, 25 Aug 2022 10:11:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240986AbiHYKLn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 25 Aug 2022 06:11:43 -0400
+        id S237987AbiHYKLs (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 25 Aug 2022 06:11:48 -0400
 Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57468 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240669AbiHYKLh (ORCPT
+        with ESMTP id S240983AbiHYKLk (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 25 Aug 2022 06:11:37 -0400
-Received: from mail-pf1-x430.google.com (mail-pf1-x430.google.com [IPv6:2607:f8b0:4864:20::430])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DC88A82FB4
-        for <linux-kernel@vger.kernel.org>; Thu, 25 Aug 2022 03:11:35 -0700 (PDT)
-Received: by mail-pf1-x430.google.com with SMTP id x19so16469140pfq.1
-        for <linux-kernel@vger.kernel.org>; Thu, 25 Aug 2022 03:11:35 -0700 (PDT)
+        Thu, 25 Aug 2022 06:11:40 -0400
+Received: from mail-lf1-x130.google.com (mail-lf1-x130.google.com [IPv6:2a00:1450:4864:20::130])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 567699A695;
+        Thu, 25 Aug 2022 03:11:39 -0700 (PDT)
+Received: by mail-lf1-x130.google.com with SMTP id s6so16339596lfo.11;
+        Thu, 25 Aug 2022 03:11:39 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=bytedance-com.20210112.gappssmtp.com; s=20210112;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc;
-        bh=NKL5sVtokizfWAI3mo2jb9YTpdgBm9GDnhWm26Gpw5s=;
-        b=Gy1ISArxPeO5t0wyjubpA3M0UwCqZnmexobJgdIoq7tqU9HMbig6Y+7mGWKf54ECC8
-         DqQndeO6hmcTQOcP0wGzgvV+4sXY89dYzb7/lyOeA8+OpBHUu8O3rCfoFzhAot3HDtVY
-         Ce7vtNvX7ItLbUkB2MFUwWbkWA/FzUlnDgneBXcMJqO+AhBTgppDm+wxJv3E3ETTr4QA
-         lFF/lELPdk9gCZYniMOeQsec8xH89bdgarwyYZHV7mZzwiPpvZzq/IjP1XQeYBvqQs7V
-         2fftWuXXkPuQNSe0e7Y7HoDIW6QdtAB1sOCVQ3StK0qJInlmGTpxoS+XYQRxpKtzCGj8
-         gCaw==
+        d=gmail.com; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc;
+        bh=vnEJEeMF2AE4KxAkE8pFWCq29ZFBba+mEDUrxnkbubM=;
+        b=mxRAvOKhdn8T9NwgbWp0p3+x7XpqNID2pV90xgRQeuY9cXpHX8jpfcu515trEPmGIk
+         yXpm6WKMG2ujC33kXZlEbt7CFaCFh2qqB2KO+AHFU8Z8NQDWGNqLDBsM+X5i0DnkGX2K
+         dr7liyUGjF4cymJwj1hyeZsoVXLqownOuwKrgcStuLIlTIY/bGCjk7I1DpT1RuA6dQs4
+         soXomcu2m/MrFqNhsPUFwGIFxOVpa+GANbCZ75+y/TBD/U5JunxlxfAkWtHfFnLaNo/p
+         SU+aK56MqrnU18R7CLczUwjBW7rYEdtcdvgtKogZzNkAQeSKd32wCBNkEOZzQzGioN3t
+         C+WQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc;
-        bh=NKL5sVtokizfWAI3mo2jb9YTpdgBm9GDnhWm26Gpw5s=;
-        b=yN8t3yxIStOZBFfQMevs6iSdoc777IrXiiAQ8xvS6ZnzyQzhx8uVDf2v7exWdH3uxu
-         KiT8B+gk9ceOV9J35i+Ca2nzIXKwENL7a5OmoX9VMcuI6E8hViFcd1duzpj1s/FzR7eb
-         6TVW2vZlqLgnM4uMPdJI9fHNk9sD2EZ8tu1kYoURmcasRvYT91wnS3imXM+xqM259HTv
-         Az7Hrxk0B6hF16YPArWR0IUXRibok/akXZBTjJmVBuYh9Yfys3aTcUNBnuwGq0CI3r5N
-         XzGnQetBHbNE/+dm9foq58riuqEITSJ3V/19hKEQ1rgkZ2Oht0QXo9xYHMFxHMgxiMzL
-         5pZQ==
-X-Gm-Message-State: ACgBeo3wl9iWDcxEY2Opiwwz7Y1n2UKiqeR9W/dG1c+3hMao2hLsXCaX
-        EdQE5Wt0T9nXr3B0Oq6PZrhEPw==
-X-Google-Smtp-Source: AA6agR5IcwxykGGpHLVe3CX1H3gs3cvYf5zfNNUsTN/8NtEiGwMN/bJ7KCESq8870YRROxxIqH28lw==
-X-Received: by 2002:a05:6a00:e8a:b0:535:cc5c:3d87 with SMTP id bo10-20020a056a000e8a00b00535cc5c3d87mr3497198pfb.24.1661422295360;
-        Thu, 25 Aug 2022 03:11:35 -0700 (PDT)
-Received: from C02DW0BEMD6R.bytedance.net ([139.177.225.234])
-        by smtp.gmail.com with ESMTPSA id b10-20020a170903228a00b001714c36a6e7sm8477581plh.284.2022.08.25.03.11.29
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 25 Aug 2022 03:11:34 -0700 (PDT)
-From:   Qi Zheng <zhengqi.arch@bytedance.com>
-To:     akpm@linux-foundation.org, david@redhat.com,
-        kirill.shutemov@linux.intel.com, mika.penttila@nextfour.com,
-        jgg@nvidia.com, tglx@linutronix.de, willy@infradead.org
-Cc:     linux-kernel@vger.kernel.org, linux-mm@kvack.org,
-        muchun.song@linux.dev, Qi Zheng <zhengqi.arch@bytedance.com>
-Subject: [RFC PATCH 1/7] mm: use ptep_clear() in non-present cases
-Date:   Thu, 25 Aug 2022 18:10:31 +0800
-Message-Id: <20220825101037.96517-2-zhengqi.arch@bytedance.com>
-X-Mailer: git-send-email 2.24.3 (Apple Git-128)
-In-Reply-To: <20220825101037.96517-1-zhengqi.arch@bytedance.com>
-References: <20220825101037.96517-1-zhengqi.arch@bytedance.com>
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc;
+        bh=vnEJEeMF2AE4KxAkE8pFWCq29ZFBba+mEDUrxnkbubM=;
+        b=wzw89k5ZmUvs/uHNwKySf77Mtz165Rk5gQkffaC32DZk912E7cFl57FyZjMo3XWoA9
+         IuAhJ3wHJOeXke1mn2aWRUoZUtlgmA+RPvttrmxUSRLtzrPmeGprDzSodMCu2MF68Nsm
+         qyZFVoYXnQRvksBtFjcJNFAPwY6ssvRlnaK7SA685GtGY5gPVZ8mrdPJAFAJ1qkz8ZV6
+         04hco2bGnzBerToP7sUltSZ1pgcn2WpyP1tPfqJArc01l20u+jEvPngpoNu3z6kEh4ip
+         bCEVkCX1pYDlhm2QY3Y9jeHjLeD0ikAw0Rd2ASNkDHdCga7g5ROswReeM5oVC51vxaFj
+         zjqg==
+X-Gm-Message-State: ACgBeo00PFr88JaaFcDfdGjUmJ1j0Mv/m/bmVWr5mU1p/kjS5zpOmCE+
+        euJQQgxDx/frn+UqIo+4T+NpHhLVDH6Lfe/V5QcHrx2MxlkxbQ==
+X-Google-Smtp-Source: AA6agR4WDEjZYCMKzLQ4hunM2CsnlULc04fC2EaGu4C97BcS6jbk5YsGslWkhMuPW5GZ2NobTkCo9Dua51UO6zGXQyw=
+X-Received: by 2002:a05:6512:3049:b0:492:f394:11cd with SMTP id
+ b9-20020a056512304900b00492f39411cdmr998982lfb.165.1661422297676; Thu, 25 Aug
+ 2022 03:11:37 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <YwSQ4APOu/H7lYGL@dhcp22.suse.cz> <CAGWkznGd6mgareABseMKY5p0f1=5dkfVkj=NS7_B6OkXBYSwyw@mail.gmail.com>
+ <YwS/S9Sd1OWnT81Q@dhcp22.suse.cz> <CAGWkznGYLyF+njUB0gFF3JVdThnK9JaNsqxXYFhbdSwEQpCxvA@mail.gmail.com>
+ <YwXYVjRpXQjQMsxr@dhcp22.suse.cz> <CAGWkznEqX3DwHW_owiK+HuuQ-HsUYK4vKmLhSxgzGn20Vzid2A@mail.gmail.com>
+ <YwX89JCQCKMMYdG9@dhcp22.suse.cz> <CAGWkznF+dBjLzAxMMXWYSZ_5q3KA-ou0P7XM7jSYN7JSRp8N0w@mail.gmail.com>
+ <YwcZctA2S3Sd0LBN@dhcp22.suse.cz> <CAGWkznH5gQXigdLx=fwdL0uqdGx4WE9QP8b8cbWFxr=Rdg-CZQ@mail.gmail.com>
+ <Ywc34ci5XUMXOSYA@dhcp22.suse.cz>
+In-Reply-To: <Ywc34ci5XUMXOSYA@dhcp22.suse.cz>
+From:   Zhaoyang Huang <huangzhaoyang@gmail.com>
+Date:   Thu, 25 Aug 2022 18:11:09 +0800
+Message-ID: <CAGWkznHL_G3OoAc5gJ+iwxqxonr21-fU+F4T2gkpXH68keLpuQ@mail.gmail.com>
+Subject: Re: [RFC PATCH] memcg: use root_mem_cgroup when css is inherited
+To:     Michal Hocko <mhocko@suse.com>
+Cc:     Suren Baghdasaryan <surenb@google.com>, Tejun Heo <tj@kernel.org>,
+        Shakeel Butt <shakeelb@google.com>,
+        "zhaoyang.huang" <zhaoyang.huang@unisoc.com>,
+        Johannes Weiner <hannes@cmpxchg.org>,
+        Linux MM <linux-mm@kvack.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Cgroups <cgroups@vger.kernel.org>, Ke Wang <ke.wang@unisoc.com>,
+        Zefan Li <lizefan.x@bytedance.com>,
+        Roman Gushchin <roman.gushchin@linux.dev>,
+        Muchun Song <songmuchun@bytedance.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-After commit 08d5b29eac7d ("mm: ptep_clear() page table helper"),
-the ptep_clear() can be used to track the clearing of PTE entries,
-but it skips some places since the page table check does not care
-about non-present PTE entries.
-
-Subsequent patches need to use ptep_clear() to track all clearing
-PTE entries, so this patch makes ptep_clear() used for all cases
-including clearing non-present PTE entries.
-
-Signed-off-by: Qi Zheng <zhengqi.arch@bytedance.com>
----
- include/linux/pgtable.h | 2 +-
- mm/memory.c             | 2 +-
- mm/mprotect.c           | 2 +-
- 3 files changed, 3 insertions(+), 3 deletions(-)
-
-diff --git a/include/linux/pgtable.h b/include/linux/pgtable.h
-index 3cdc16cfd867..9745684b0cdb 100644
---- a/include/linux/pgtable.h
-+++ b/include/linux/pgtable.h
-@@ -428,7 +428,7 @@ static inline void pte_clear_not_present_full(struct mm_struct *mm,
- 					      pte_t *ptep,
- 					      int full)
- {
--	pte_clear(mm, address, ptep);
-+	ptep_clear(mm, address, ptep);
- }
- #endif
- 
-diff --git a/mm/memory.c b/mm/memory.c
-index 1c6027adc542..207e0ee657e9 100644
---- a/mm/memory.c
-+++ b/mm/memory.c
-@@ -3655,7 +3655,7 @@ static vm_fault_t pte_marker_clear(struct vm_fault *vmf)
- 	 * none pte.  Otherwise it means the pte could have changed, so retry.
- 	 */
- 	if (is_pte_marker(*vmf->pte))
--		pte_clear(vmf->vma->vm_mm, vmf->address, vmf->pte);
-+		ptep_clear(vmf->vma->vm_mm, vmf->address, vmf->pte);
- 	pte_unmap_unlock(vmf->pte, vmf->ptl);
- 	return 0;
- }
-diff --git a/mm/mprotect.c b/mm/mprotect.c
-index ba5592655ee3..1a01bd22a4ed 100644
---- a/mm/mprotect.c
-+++ b/mm/mprotect.c
-@@ -201,7 +201,7 @@ static unsigned long change_pte_range(struct mmu_gather *tlb,
- 				 * fault will trigger without uffd trapping.
- 				 */
- 				if (uffd_wp_resolve) {
--					pte_clear(vma->vm_mm, addr, pte);
-+					ptep_clear(vma->vm_mm, addr, pte);
- 					pages++;
- 				}
- 				continue;
--- 
-2.20.1
-
+On Thu, Aug 25, 2022 at 4:50 PM Michal Hocko <mhocko@suse.com> wrote:
+>
+> On Thu 25-08-22 16:34:04, Zhaoyang Huang wrote:
+> > On Thu, Aug 25, 2022 at 2:40 PM Michal Hocko <mhocko@suse.com> wrote:
+> > >
+> > > On Thu 25-08-22 08:43:52, Zhaoyang Huang wrote:
+> > > > On Wed, Aug 24, 2022 at 6:27 PM Michal Hocko <mhocko@suse.com> wrote:
+> > > > >
+> > > > > On Wed 24-08-22 17:34:42, Zhaoyang Huang wrote:
+> > > [...]
+> > > > > > IMHO, charging the pages which out of explicitly memory
+> > > > > > enabled group to root could solve all of the above constraints with no
+> > > > > > harm.
+> > > > >
+> > > > > This would break the hierarchical property of the controller. So a
+> > > > > strong no no. Consider the following example
+> > > > >
+> > > > >        root
+> > > > >         |
+> > > > >         A
+> > > > > controllers="memory"
+> > > > > memory.max = 1G
+> > > > > subtree_control=""
+> > > > > |      |      |
+> > > > > A1     A2     A3
+> > > > >
+> > > > > althought A1,2,3 do not have their memory controller enabled explicitly
+> > > > > they are still constrained by the A memcg limit. If you just charge to
+> > > > > the root because it doesn't have memory controller enabled explicitly
+> > > > > then you just evade that constrain. I hope you understand why that is a
+> > > > > problem.
+> > > > IMO, A1-A3 should be explicitly enabled via echo "+memory" >
+> > > > A/subtree_control since memory.max has been set.
+> > >
+> > > You seem to be missing the point I've triedy to make here. It is not
+> > > about how the respective subtree should or shouldn't be configured. It
+> > > is about the hierarchical behavior. Configuration at a higher level should be
+> > > enforced under subtree no matter how that subtree decides to
+> > > enabled/disable controllers. Such subtree might have beeb delegated
+> > > and configured differently yet the constrain should be still applied.
+> > > See the point?
+> > >
+> > > What you seem to be proposing is similar to cgroup v1 use_hierarchy
+> > > configuration. It has been decided that this is undesirable very early
+> > > in the cgroup v2 development because it make delegation impossible
+> > > (among other reasons).
+> > Ok, I would like to know how AA3 achieve the goal of competing with A1
+> > and A2 for cpu but keep memory out of control under current policy?
+> >         root
+> >          |
+> >          A
+> >  controllers="memory,cpu"
+> >  memory.max = 1G
+> >  subtree_control="memory,cpu"
+> >  |      |            |
+> >  A1     A2     A3 subtree_control="cpu"
+> >                       |      |
+> >                     AA3   AA4 controllers="cpu"
+>
+> I cannot really give you configuration you want without understanding
+> what you are trying to achieve and why do you need it that way. Really,
+> you can construct arbitrary hierarchies and only a very small subset of
+> them actually makes sense. So far you have been very terse at your goals
+> and intentions but rather demanding on the underlying mechanisms. This
+> doesn't really makes the discussion productive.
+>
+> I hope you have at least understood that hierarchical property of the
+> cgroup v2 is a must and it won't change. If you need a help to construct
+> hierarchy for your specific workload I would recommend to clearly state
+> your final goal and reasoning behind. Maybe you will get a more specific
+> help that way. Good luck!
+Sorry for any misunderstanding among the discussion. My purpose is
+real and simple as I have stated from the very beginning that I would
+like to have per-app cgroup hierarchy to charge memory to root if it
+is not enabled explicitly for memory. The reason has also been stated
+like reclaim and workingset regression in suren's report. I don't
+think my proposal will do any harm to current v2's mechanism besides
+asking for the admin echo "+memory" to their desire group.
+> --
+> Michal Hocko
+> SUSE Labs
