@@ -2,85 +2,76 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E5AC9C3F6B0
-	for <linux-kernel@archiver.kernel.org>; Thu, 25 Aug 2022 09:20:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 36C20C28D13
+	for <linux-kernel@archiver.kernel.org>; Thu, 25 Aug 2022 09:21:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239080AbiHYJUQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 25 Aug 2022 05:20:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51684 "EHLO
+        id S237862AbiHYJVY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 25 Aug 2022 05:21:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56200 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238498AbiHYJUI (ORCPT
+        with ESMTP id S229529AbiHYJVU (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 25 Aug 2022 05:20:08 -0400
-Received: from frasgout13.his.huawei.com (frasgout13.his.huawei.com [14.137.139.46])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5599D1EEF5;
-        Thu, 25 Aug 2022 02:20:01 -0700 (PDT)
-Received: from mail02.huawei.com (unknown [172.18.147.227])
-        by frasgout13.his.huawei.com (SkyGuard) with ESMTP id 4MCy341C90z9xtnC;
-        Thu, 25 Aug 2022 17:14:40 +0800 (CST)
-Received: from roberto-ThinkStation-P620 (unknown [10.204.63.22])
-        by APP1 (Coremail) with SMTP id LxC2BwCXZhKWPgdjPLJKAA--.36169S2;
-        Thu, 25 Aug 2022 10:19:31 +0100 (CET)
-Message-ID: <1b8fbdb220d1806e622c56e65bd283a5c3212fab.camel@huaweicloud.com>
-Subject: Re: [PATCH v13 00/10] bpf: Add kfuncs for PKCS#7 signature
- verification
-From:   Roberto Sassu <roberto.sassu@huaweicloud.com>
-To:     ast@kernel.org, daniel@iogearbox.net, andrii@kernel.org,
-        martin.lau@linux.dev, song@kernel.org, yhs@fb.com,
-        john.fastabend@gmail.com, kpsingh@kernel.org, sdf@google.com,
-        haoluo@google.com, jolsa@kernel.org, mykolal@fb.com,
-        corbet@lwn.net, dhowells@redhat.com, jarkko@kernel.org,
-        rostedt@goodmis.org, mingo@redhat.com, paul@paul-moore.com,
-        jmorris@namei.org, serge@hallyn.com, shuah@kernel.org
-Cc:     bpf@vger.kernel.org, linux-doc@vger.kernel.org,
-        keyrings@vger.kernel.org, linux-security-module@vger.kernel.org,
-        linux-kselftest@vger.kernel.org, linux-kernel@vger.kernel.org,
-        deso@posteo.net, Roberto Sassu <roberto.sassu@huawei.com>
-Date:   Thu, 25 Aug 2022 11:19:14 +0200
-In-Reply-To: <20220823150035.711534-1-roberto.sassu@huaweicloud.com>
-References: <20220823150035.711534-1-roberto.sassu@huaweicloud.com>
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.36.5-0ubuntu1 
+        Thu, 25 Aug 2022 05:21:20 -0400
+Received: from madras.collabora.co.uk (madras.collabora.co.uk [IPv6:2a00:1098:0:82:1000:25:2eeb:e5ab])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 136C0140CB;
+        Thu, 25 Aug 2022 02:21:19 -0700 (PDT)
+Received: from localhost.localdomain (unknown [IPv6:2405:201:10:389d:42df:ae4c:c047:294c])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (No client certificate requested)
+        (Authenticated sender: shreeya)
+        by madras.collabora.co.uk (Postfix) with ESMTPSA id D531D6601E99;
+        Thu, 25 Aug 2022 10:21:11 +0100 (BST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
+        s=mail; t=1661419278;
+        bh=L9ZVFMIScm8330R2s3//rOLooqtPQxwHhFvtUAlxza0=;
+        h=From:To:Cc:Subject:Date:From;
+        b=kTD1bfnxBVizc2u3eJhfzcYwb5ulms0qpLl1MfwAAVfPjQp358GZMT6jVz5IBs/SU
+         LSPRMreXPjY+ax4ylT46l22nAhF7+a5rPtz7c+DjIu+zn5W2Uhu2zIgmP4RqQDembW
+         Qf5gKiXr+K9mrYXjhq8oWOriFbjbJwo1S/gKbjLYO1l78TEoj2u/YIREFoFYzMfdV7
+         Ouihb2RXUb0cENF1L7bQh4KxO76dOYpqHZ7fpKKjfMhuq3chiMakZTVrAP/tnyWpo5
+         cTXo1SygU+BJQXrDLo8o+1KSgr/JPBInu+21rGN/nea0kjffLXVW54Pt94nSjwnc4U
+         0O9bv7VdOm6BA==
+From:   Shreeya Patel <shreeya.patel@collabora.com>
+To:     jic23@kernel.org, lars@metafoo.de
+Cc:     krisman@collabora.com, dmitry.osipenko@collabora.com,
+        kernel@collabora.com, linux-iio@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        Shreeya Patel <shreeya.patel@collabora.com>
+Subject: [PATCH] iio: light: tsl2583: Fix module unloading
+Date:   Thu, 25 Aug 2022 14:50:48 +0530
+Message-Id: <20220825092048.136973-1-shreeya.patel@collabora.com>
+X-Mailer: git-send-email 2.30.2
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-X-CM-TRANSID: LxC2BwCXZhKWPgdjPLJKAA--.36169S2
-X-Coremail-Antispam: 1UD129KBjDUn29KB7ZKAUJUUUUU529EdanIXcx71UUUUU7v73
-        VFW2AGmfu7bjvjm3AaLaJ3UjIYCTnIWjp_UUUYU7kC6x804xWl14x267AKxVWrJVCq3wAF
-        c2x0x2IEx4CE42xK8VAvwI8IcIk0rVWUuVWrJwAFIxvE14AKwVWUJVWUGwA2ocxC64kIII
-        0Yj41l84x0c7CEw4AK67xGY2AK021l84ACjcxK6xIIjxv20xvE14v26r1j6r1xM28EF7xv
-        wVC0I7IYx2IY6xkF7I0E14v26r4j6F4UM28EF7xvwVC2z280aVAFwI0_Gr0_Cr1l84ACjc
-        xK6I8E87Iv6xkF7I0E14v26r4j6r4UJwAS0I0E0xvYzxvE52x082IY62kv0487Mc02F40E
-        FcxC0VAKzVAqx4xG6I80ewAv7VC0I7IYx2IY67AKxVWUJVWUGwAv7VC2z280aVAFwI0_Jr
-        0_Gr1lOx8S6xCaFVCjc4AY6r1j6r4UM4x0Y48IcVAKI48JM4IIrI8v6xkF7I0E8cxan2IY
-        04v7MxAIw28IcxkI7VAKI48JMxC20s026xCaFVCjc4AY6r1j6r4UMI8I3I0E5I8CrVAFwI
-        0_Jr0_Jr4lx2IqxVCjr7xvwVAFwI0_JrI_JrWlx4CE17CEb7AF67AKxVW8ZVWrXwCIc40Y
-        0x0EwIxGrwCI42IY6xIIjxv20xvE14v26r1j6r1xMIIF0xvE2Ix0cI8IcVCY1x0267AKxV
-        W8JVWxJwCI42IY6xAIw20EY4v20xvaj40_WFyUJVCq3wCI42IY6I8E87Iv67AKxVWUJVW8
-        JwCI42IY6I8E87Iv6xkF7I0E14v26r4j6r4UJbIYCTnIWIevJa73UjIFyTuYvjxUFYFCUU
-        UUU
-X-CM-SenderInfo: purev21wro2thvvxqx5xdzvxpfor3voofrz/1tbiAgAPBF1jj35I-gAAsw
-X-CFilter-Loop: Reflected
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, 2022-08-23 at 17:00 +0200, Roberto Sassu wrote:
-> From: Roberto Sassu <roberto.sassu@huawei.com>
-> 
-> One of the desirable features in security is the ability to restrict
-> import
-> of data to a given system based on data authenticity. If data import
-> can be
-> restricted, it would be possible to enforce a system-wide policy
-> based on
-> the signing keys the system owner trusts.
+tsl2583 uses devm_iio_device_register() function and
+calling iio_device_unregister() in remove breaks the
+module unloading.
+Fix this by removing call to iio_device_unregister()
+from tsl2583_remove().
 
-Hi
+Signed-off-by: Shreeya Patel <shreeya.patel@collabora.com>
+---
+ drivers/iio/light/tsl2583.c | 2 --
+ 1 file changed, 2 deletions(-)
 
-is there anything else I need to do, other than rebasing the patches to
-the latest eBPF code?
-
-Thanks
-
-Roberto
+diff --git a/drivers/iio/light/tsl2583.c b/drivers/iio/light/tsl2583.c
+index 82662dab87c0..36c25f79e6a6 100644
+--- a/drivers/iio/light/tsl2583.c
++++ b/drivers/iio/light/tsl2583.c
+@@ -878,8 +878,6 @@ static int tsl2583_remove(struct i2c_client *client)
+ 	struct iio_dev *indio_dev = i2c_get_clientdata(client);
+ 	struct tsl2583_chip *chip = iio_priv(indio_dev);
+ 
+-	iio_device_unregister(indio_dev);
+-
+ 	pm_runtime_disable(&client->dev);
+ 	pm_runtime_set_suspended(&client->dev);
+ 
+-- 
+2.30.2
 
