@@ -2,94 +2,106 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 00B3EC32774
-	for <linux-kernel@archiver.kernel.org>; Thu, 25 Aug 2022 07:47:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DDEE1C04AA5
+	for <linux-kernel@archiver.kernel.org>; Thu, 25 Aug 2022 07:48:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238496AbiHYHry (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 25 Aug 2022 03:47:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43906 "EHLO
+        id S238570AbiHYHsM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 25 Aug 2022 03:48:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44230 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229909AbiHYHru (ORCPT
+        with ESMTP id S238566AbiHYHsI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 25 Aug 2022 03:47:50 -0400
-X-Greylist: delayed 596 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Thu, 25 Aug 2022 00:47:49 PDT
-Received: from xry111.site (xry111.site [89.208.246.23])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6B30C9C204;
-        Thu, 25 Aug 2022 00:47:49 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=xry111.site;
-        s=default; t=1661412519;
-        bh=9K2f0e10ZANjjOudPs4B7euHG9H2+iiRuaYv5ZJbA1k=;
-        h=Subject:From:To:Cc:Date:In-Reply-To:References:From;
-        b=nmfnx0FO7b7ckLx4wu28ch41hPeeFb8cw/Rec9LmSdOzvBzyZRKWr29E2ij+mZidq
-         p+PyBUS94RPQ8ZVOQohv/ssSTzNWvFVIBOAK2oXYYvF8PxE+ncWh8Qc0BRBwiC+nYu
-         1x1J2Ybes6HSKUHLHDFj3IlLEWTGqKVW0tWQGC4U=
-Received: from localhost.localdomain (xry111.site [IPv6:2001:470:683e::1])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-256) server-signature ECDSA (P-384) server-digest SHA384)
-        (Client did not present a certificate)
-        (Authenticated sender: xry111@xry111.site)
-        by xry111.site (Postfix) with ESMTPSA id 1A8FD6684B;
-        Thu, 25 Aug 2022 03:28:33 -0400 (EDT)
-Message-ID: <5a3ce36a284fe988694d2e75117aca5f9af66194.camel@xry111.site>
-Subject: Re: [PATCH v3] Many pages: Document fixed-width types with ISO C
- naming
-From:   Xi Ruoyao <xry111@xry111.site>
-To:     Alejandro Colomar <alx.manpages@gmail.com>,
-        Linus Torvalds <torvalds@linux-foundation.org>
-Cc:     linux-man <linux-man@vger.kernel.org>,
-        Rich Felker <dalias@libc.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        David Howells <dhowells@redhat.com>,
-        Alexei Starovoitov <alexei.starovoitov@gmail.com>,
-        Joseph Myers <joseph@codesourcery.com>,
-        linux-arch <linux-arch@vger.kernel.org>,
-        Zack Weinberg <zackw@panix.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Alex Colomar <alx@kernel.org>,
-        Michael Kerrisk <mtk.manpages@gmail.com>,
-        Cyril Hrubis <chrubis@suse.cz>, Arnd Bergmann <arnd@arndb.de>,
-        GCC <gcc-patches@gcc.gnu.org>, LTP List <ltp@lists.linux.it>,
-        Florian Weimer <fweimer@redhat.com>,
-        glibc <libc-alpha@sourceware.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        David Laight <David.Laight@aculab.com>,
-        Linux API <linux-api@vger.kernel.org>,
-        bpf <bpf@vger.kernel.org>
-Date:   Thu, 25 Aug 2022 15:28:32 +0800
-In-Reply-To: <20d93962-538c-d2c9-1696-a1bdbffa87f8@gmail.com>
-References: <20210423230609.13519-1-alx.manpages@gmail.com>
-         <20220824185505.56382-1-alx.manpages@gmail.com>
-         <CAADnVQKiEVL9zRtN4WY2+cTD2b3b3buV8BQb83yQw13pWq4OGQ@mail.gmail.com>
-         <c06008bc-0c13-12f1-df85-3814b74e47f9@gmail.com>
-         <CAHk-=whfft=qpCiQ=mkaCz+X1MEfGK5hpUWYoM5zWK=2EQMwyw@mail.gmail.com>
-         <20d93962-538c-d2c9-1696-a1bdbffa87f8@gmail.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-User-Agent: Evolution 3.45.2 
+        Thu, 25 Aug 2022 03:48:08 -0400
+Received: from mail-yw1-f182.google.com (mail-yw1-f182.google.com [209.85.128.182])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 49926A3471;
+        Thu, 25 Aug 2022 00:48:06 -0700 (PDT)
+Received: by mail-yw1-f182.google.com with SMTP id 00721157ae682-3376851fe13so487226207b3.6;
+        Thu, 25 Aug 2022 00:48:06 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc;
+        bh=PBU1Ac7FU7Jrq9hi8wQsrAAPEUe9Qkp77GNUxX6pqSM=;
+        b=xEMHLq8EuQfscNz5oWzWVSyXjpjmCqssnzZ/cjWHpsn+wdmaMgRmxDUUVgYZRrJBeu
+         GAxWgVz2IO+X6goBANxFxhacpm9bZOfC6IRIL5GI8v98gsWYHfPwRb3iMhyrmVBnEEoo
+         YUi9f4Gi5NmFsnXV0c+i1WULyeez4YTgRTjSKpvvkqhWPP7yloOKHO9HNSnsG0dyMJcP
+         1m1rpGXnvWuLRR3y61iZSh/kl4NWLY1gw6FRbI5h7eFpYa67stKq3W3OefNNYDEwjvJu
+         UrLzXZ6G1+W8XEq6p3kgZbGthDbXv0PJIG2P+Z/6/Ub72//HVGYhzQvca4+6VWpukDuX
+         USJw==
+X-Gm-Message-State: ACgBeo0xbngwIy6QVFswJFJl33IA7w9arriZakjAIISncq01u3s6Nb79
+        Ua45x4dGF3oSndPqpfr8Veh0zynupfdBe9nEEQw=
+X-Google-Smtp-Source: AA6agR4y0kxBGgbsLhp6QTmIqCaGRNLr6WO8+0CvY3rg5H2kR1Zj7wu1Ci4OT5u9T8+8OG0e1hiG6UJFns3HXP9QbKk=
+X-Received: by 2002:a81:104e:0:b0:336:37f1:9686 with SMTP id
+ 75-20020a81104e000000b0033637f19686mr2801705ywq.149.1661413685431; Thu, 25
+ Aug 2022 00:48:05 -0700 (PDT)
 MIME-Version: 1.0
+References: <20220812130645.14710-1-sbinding@opensource.cirrus.com>
+ <20220825072505.316002-1-ardb@kernel.org> <YwcogrMqqEO5KmPb@paasikivi.fi.intel.com>
+In-Reply-To: <YwcogrMqqEO5KmPb@paasikivi.fi.intel.com>
+From:   "Rafael J. Wysocki" <rafael@kernel.org>
+Date:   Thu, 25 Aug 2022 09:47:54 +0200
+Message-ID: <CAJZ5v0h+NMOPaTBSJEt0boWd2=g6umqAuq4buy7vL+mz=-jusw@mail.gmail.com>
+Subject: Re: [PATCH v1] ACPI: Property: Fix type detection of unified integer
+ reading functions
+To:     Sakari Ailus <sakari.ailus@linux.intel.com>
+Cc:     Ard Biesheuvel <ardb@kernel.org>,
+        Stefan Binding <sbinding@opensource.cirrus.com>,
+        "Shevchenko, Andriy" <andriy.shevchenko@intel.com>,
+        ACPI Devel Maling List <linux-acpi@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        patches@opensource.cirrus.com,
+        "Rafael J. Wysocki" <rafael@kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, 2022-08-25 at 09:20 +0200, Alejandro Colomar via Gcc-patches
-wrote:
-> I don't know for sure, and I never pretended to say otherwise.=C2=A0 But =
-what=20
-> IMHO the kernel could do is to make the types compatible, by typedefing=
-=20
-> to the same fundamental types (i.e., long or long long) that user-space=
-=20
-> types do.
+On Thu, Aug 25, 2022 at 9:45 AM Sakari Ailus
+<sakari.ailus@linux.intel.com> wrote:
+>
+> Hi Ard,
+>
+> On Thu, Aug 25, 2022 at 09:25:05AM +0200, Ard Biesheuvel wrote:
+> > > The current code expects the type of the value to be an integer type,
+> > > instead the value passed to the macro is a pointer.
+> > > Ensure the size comparison uses the correct pointer type to choose the
+> > > max value, instead of using the integer type.
+> > >
+> > > Fixes: 923044133367 ("ACPI: property: Unify integer value reading functions")
+> > >
+> > > Signed-off-by: Stefan Binding <sbinding@opensource.cirrus.com>
+> >
+> > Acked-by: Ard Biesheuvel <ardb@kernel.org>
+> >
+> > Can we get this queued up and sent out please? This is breaking some ACPI arm64
+> > systems, which use device properties for their MAC addresses.
+> >
+> > Some grumbling about the original patch below.
+> >
+> > > ---
+> > >  drivers/acpi/property.c | 8 ++++----
+> > >  1 file changed, 4 insertions(+), 4 deletions(-)
+> > >
+> > > diff --git a/drivers/acpi/property.c b/drivers/acpi/property.c
+> > > index 7b3ad8ed2f4e..b1d4a8db89df 100644
+> > > --- a/drivers/acpi/property.c
+> > > +++ b/drivers/acpi/property.c
+> > > @@ -1043,10 +1043,10 @@ static int acpi_data_prop_read_single(const struct acpi_device_data *data,
+> > >                             break;                                  \
+> > >                     }                                               \
+> > >                     if (__items[i].integer.value > _Generic(__val,  \
+> > > -                                                           u8: U8_MAX, \
+> > > -                                                           u16: U16_MAX, \
+> > > -                                                           u32: U32_MAX, \
+> > > -                                                           u64: U64_MAX, \
+> > > +                                                           u8 *: U8_MAX, \
+> > > +                                                           u16 *: U16_MAX, \
+> > > +                                                           u32 *: U32_MAX, \
+> > > +                                                           u64 *: U64_MAX, \
+> > >                                                             default: 0U)) { \
+> >
+> > Why is there a default here? Having one is what hides the fact that the patch was completely broken.
+>
+> I think the default can be removed. I can send a patch.
 
-In user-space things are already inconsistent as we have multiple libc
-implementations.  Telling every libc implementation to sync their
-typedef w/o a WG14 decision will only cause "aggressive discussion" (far
-more aggressive than this thread, I'd say).
-
-If int64_t etc. were defined as builtin types since epoch, things would
-be a lot easier.  But we can't change history.
-
---=20
-Xi Ruoyao <xry111@xry111.site>
-School of Aerospace Science and Technology, Xidian University
+Please do.
