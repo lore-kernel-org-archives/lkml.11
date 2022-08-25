@@ -2,85 +2,96 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7AC3EC04AA5
-	for <linux-kernel@archiver.kernel.org>; Thu, 25 Aug 2022 11:23:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 59D6DC28D13
+	for <linux-kernel@archiver.kernel.org>; Thu, 25 Aug 2022 11:25:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241457AbiHYLXB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 25 Aug 2022 07:23:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60962 "EHLO
+        id S241533AbiHYLZS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 25 Aug 2022 07:25:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35582 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241502AbiHYLWy (ORCPT
+        with ESMTP id S241516AbiHYLZO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 25 Aug 2022 07:22:54 -0400
-Received: from mail-yw1-f171.google.com (mail-yw1-f171.google.com [209.85.128.171])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 98440AF0D5;
-        Thu, 25 Aug 2022 04:22:53 -0700 (PDT)
-Received: by mail-yw1-f171.google.com with SMTP id 00721157ae682-33db4e5ab43so50450307b3.4;
-        Thu, 25 Aug 2022 04:22:53 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc;
-        bh=zBAuYd6aZRMYP844dVDfOezCZkLQikm7pyO5BZEXKKI=;
-        b=JzMqRCkVM9VsRkdpF4v2tDsQJ7EDhByun+gvctBM/gnN8oGe+g4ft9OI3ok210bluK
-         z5D1xpj7e0ObikgznTXY57lsMxsRNmiyXNX+JeFAek+2cgBV8KdC6LNQJ+fRVJgpy6/V
-         grPZA3TxTQqmsiCLREc93EDdYjecspdcXPkdl2vfr7hCr0jvRs0ppAXrjEQ7/GfOU45K
-         kh0jumTtWDQna8mUm+OXmM1QJhgr6OS5eYm2DEl9oIhmWj+rkQGZmFpFVcTRnorXsVY3
-         wGXmznMLJZh669Q2i1N9kEriZtH70qM0zPDzBdpw8yjo6I7us9EOCeTjgzhM1UtScNNe
-         t3uw==
-X-Gm-Message-State: ACgBeo0RzbJGCJcAuELhvrFnCeY+23Qzd1XAoRiVLpoAKELLU2XOXQyE
-        Sy20RM1u4Mpc/aGYlwRPsSUk/kEet4thb6noR7Lm2a1+
-X-Google-Smtp-Source: AA6agR6RKiwnjg0hA/QPVGn7rIdPTz+QbBVSW+tdchz15JNQtcfsiMul8ktR7HFomkZ7s43z4KN+FNjEXqFI7U1eWds=
-X-Received: by 2002:a25:8d84:0:b0:695:836a:fcaf with SMTP id
- o4-20020a258d84000000b00695836afcafmr2755715ybl.633.1661426572692; Thu, 25
- Aug 2022 04:22:52 -0700 (PDT)
+        Thu, 25 Aug 2022 07:25:14 -0400
+Received: from wp530.webpack.hosteurope.de (wp530.webpack.hosteurope.de [IPv6:2a01:488:42:1000:50ed:8234::])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E48A1F59F;
+        Thu, 25 Aug 2022 04:25:10 -0700 (PDT)
+Received: from [2a02:8108:963f:de38:eca4:7d19:f9a2:22c5]; authenticated
+        by wp530.webpack.hosteurope.de running ExIM with esmtpsa (TLS1.3:ECDHE_RSA_AES_128_GCM_SHA256:128)
+        id 1oRAyx-0007pK-9U; Thu, 25 Aug 2022 13:25:07 +0200
+Message-ID: <822ed6b6-fd3a-3873-cdf0-543340fd4103@leemhuis.info>
+Date:   Thu, 25 Aug 2022 13:25:05 +0200
 MIME-Version: 1.0
-References: <20220825090347.30555-1-junming@nfschina.com>
-In-Reply-To: <20220825090347.30555-1-junming@nfschina.com>
-From:   "Rafael J. Wysocki" <rafael@kernel.org>
-Date:   Thu, 25 Aug 2022 13:22:41 +0200
-Message-ID: <CAJZ5v0jVpCiwscgVQqS3yEwGaHUCPzR9pNDjt6qY6U4jJubt_A@mail.gmail.com>
-Subject: Re: [PATCH] tools: Delete the initialization value
-To:     shijm <junming@nfschina.com>
-Cc:     Len Brown <lenb@kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        "open list:ACPI COMPONENT ARCHITECTURE (ACPICA)" <devel@acpica.org>,
-        ACPI Devel Maling List <linux-acpi@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.2.0
+Content-Language: en-US
+Cc:     Utkarsh Verma <utkarsh.naveen@gmail.com>,
+        Kalle Valo <kvalo@kernel.org>,
+        "linux-wireless@vger.kernel.org" <linux-wireless@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        "regressions@lists.linux.dev" <regressions@lists.linux.dev>
+From:   Thorsten Leemhuis <regressions@leemhuis.info>
+To:     Yan-Hsuan Chuang <tony0620emma@gmail.com>
+Subject: [regression] Bug 216386 - rtw_8822be: Wifi stops working after resume
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-bounce-key: webpack.hosteurope.de;regressions@leemhuis.info;1661426712;52236dad;
+X-HE-SMSGID: 1oRAyx-0007pK-9U
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Aug 25, 2022 at 11:04 AM shijm <junming@nfschina.com> wrote:
->
-> From: Shi junming <junming@nfschina.com>
->
-> From the perspective of commpier,delete the initialization value
+Hi, this is your Linux kernel regression tracker.
 
-I'm not sure what this means.
+I noticed a regression report in bugzilla.kernel.org that afaics nobody
+acted upon since it was reported. That's why I decided to forward it by
+mail to those that afaics should handle this.
 
-The initialization is unnecessary, because the variable in question is
-always assigned a new value before reading it.  Is that what you
-wanted to say?
+To quote from https://bugzilla.kernel.org/show_bug.cgi?id=216386 :
 
-> Signed-off-by: Shi junming <junming@nfschina.com>
-> ---
->  tools/power/acpi/tools/pfrut/pfrut.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
->
-> diff --git a/tools/power/acpi/tools/pfrut/pfrut.c b/tools/power/acpi/tools/pfrut/pfrut.c
-> index d79c335594b2..52aa0351533c 100644
-> --- a/tools/power/acpi/tools/pfrut/pfrut.c
-> +++ b/tools/power/acpi/tools/pfrut/pfrut.c
-> @@ -190,7 +190,7 @@ int main(int argc, char *argv[])
->         void *addr_map_capsule;
->         struct stat st;
->         char *log_buf;
-> -       int ret = 0;
-> +       int ret;
->
->         if (getuid() != 0) {
->                 printf("Please run the tool as root - Exiting.\n");
-> --
-> 2.18.2
->
+>  Utkarsh Verma 2022-08-20 09:16:41 UTC
+> 
+> I have an ASUS TUF FX505DT which has the RTL8822BE wifi card. I recently upgraded to kernel 5.19 and this issue started popping up.
+> 
+> When I close my laptop lid and let it sleep for a considerable amount of time, the wifi stops working the next time I open it, and I have to reboot my PC to get internet. This is annoying because I suspended my PC to continue with my work after some time quickly, and having to reboot defeats the purpose.
+> 
+> I tried removing and reloading the kernel module for this device as well, and it fails with the following dmesg log.
+> 
+> ```
+> [ 4914.877037] rtw_8822be 0000:04:00.0: Unable to change power state from D3cold to D0, device inaccessible
+> [ 4914.886333] rtw_8822be 0000:04:00.0: mac power on failed
+> [ 4914.886342] rtw_8822be 0000:04:00.0: failed to power on mac
+> [ 4914.886344] rtw_8822be 0000:04:00.0: failed to setup chip efuse info
+> [ 4914.886348] rtw_8822be 0000:04:00.0: failed to setup chip information
+> [ 4914.892027] rtw_8822be 0000:04:00.0: Firmware version 27.2.0, H2C version 13
+> [ 4914.922150] rtw_8822be: probe of 0000:04:00.0 failed with error -114
+> ```
+
+See the ticket for details and further comments.
+
+Please look into the issue if you're among the main recipients of this
+mail (and not just CCed). I hope I picked the right people to sent this
+to, if not just let everyone know.
+
+Anyway, to ensure this is not forgotten lets get this tracked by the the
+Linux kernel regression tracking bot:
+
+#regzbot introduced: https://bugzilla.kernel.org/show_bug.cgi?id=216386
+#regzbot ignore-activity
+
+This isn't a regression? This issue or a fix for it are already
+discussed somewhere else? It was fixed already? You want to clarify when
+the regression started to happen? Or point out I got the title or
+something else totally wrong? Then just reply -- ideally with also
+telling regzbot about it, as explained here:
+https://linux-regtracking.leemhuis.info/tracked-regression/
+
+Reminder for developers: When fixing the issue, add 'Link:' tags
+pointing to the report in bugzilla, as the kernel's documentation calls
+for; above page explains why this is important for tracked regressions.
+
+Ciao, Thorsten (wearing his 'the Linux kernel's regression tracker' hat)
+
+P.S.: As the Linux kernel's regression tracker I deal with a lot of
+reports and sometimes miss something important when writing mails like
+this. If that's the case here, don't hesitate to tell me in a public
+reply, it's in everyone's interest to set the public record straight.
