@@ -2,191 +2,374 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 77052ECAAA2
-	for <linux-kernel@archiver.kernel.org>; Thu, 25 Aug 2022 20:49:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E5F57ECAAA2
+	for <linux-kernel@archiver.kernel.org>; Thu, 25 Aug 2022 20:50:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235103AbiHYUtB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 25 Aug 2022 16:49:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48304 "EHLO
+        id S238980AbiHYUui (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 25 Aug 2022 16:50:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52228 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230315AbiHYUs7 (ORCPT
+        with ESMTP id S230315AbiHYUuc (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 25 Aug 2022 16:48:59 -0400
-Received: from mail-wr1-x432.google.com (mail-wr1-x432.google.com [IPv6:2a00:1450:4864:20::432])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C545AAE210;
-        Thu, 25 Aug 2022 13:48:57 -0700 (PDT)
-Received: by mail-wr1-x432.google.com with SMTP id h5so25235220wru.7;
-        Thu, 25 Aug 2022 13:48:57 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc;
-        bh=6UzUCNgt4y0AHaBNJHl0u/FLrxd0vX2AFvB+HEQd8NM=;
-        b=E96RMdPc6kX9TtDJzrOqo1gGRHBzfP6XCPrz5N8u6kh2oo7pX+NvWTtXitAGAyhOYZ
-         dLItkLw4f906wzOWubVOl/F2SWCkaHk/7bPn+J3AUOnkJCWEAVLrTFRlPF9ems0p6hJ3
-         rqSs+G7ZXvCYbMxGQdTxdVkLQuSAS6snMZ7uZ7YmuI5cL9Qd6Kl17IYR8qF65hLEIzAz
-         D7fnTM3kkZKCh29/6g/AIk87eu0ky3FNRGVFb95NdU1qt+007aFXG+0xtNjdzOgUvERN
-         q5HP8HsJWwKJm/sRFdO/V+N0yfalBVs6XtPel5rDvkIRQifRPC/ddv7c1LEI1dUkh+5b
-         R61w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc;
-        bh=6UzUCNgt4y0AHaBNJHl0u/FLrxd0vX2AFvB+HEQd8NM=;
-        b=22wxvcNHTn6FkCxq78hcN4tEwqesS4azE79NeIxSEEUea9+adpmrQh7BvDCs5HT+sy
-         nqfYNMu1hhFdAnmo0FGk1emhsQRiobiUV5rSFubFXZqceeJJ6rINelHrfv5qwJ8Hkam6
-         kmi7mX7r++AGCiwgJumTd0PTTvSpp1VG749dRoTxs9PyiyVyWuLnk5dZYSK/2FGhQeZo
-         fcVnfNbf7wIXIF1cLCQnBM1QwZzPhuTrdSjsoMo3sGdVvt+Mu1aF09C37HmsYa+b0L+8
-         YYlU5Rq/Hj7/bObU6U4s+5CdbFpYe2JLo9ZF/nk3ZEyXEb3o39sRqJrLPktZgHNE+3Qs
-         bTFg==
-X-Gm-Message-State: ACgBeo3Ghm7/wcJ0hsWAp6tQB6mRtAQp1MgQNL+JTKCq4rLUghir4WgW
-        KXybH3kGMJlyGQAvo3DXYQep5YlyaAqjHA==
-X-Google-Smtp-Source: AA6agR5luFniLeLJR/gpv3f8y8PSO9iYmRy9xopByet6i9pxvH109nYNZOhflEi5Ej+3VAkPWavVHw==
-X-Received: by 2002:a5d:64e1:0:b0:225:5495:ff75 with SMTP id g1-20020a5d64e1000000b002255495ff75mr3216411wri.21.1661460536349;
-        Thu, 25 Aug 2022 13:48:56 -0700 (PDT)
-Received: from kista.localnet (82-149-1-172.dynamic.telemach.net. [82.149.1.172])
-        by smtp.gmail.com with ESMTPSA id l14-20020a5d668e000000b002253fd19a6asm266939wru.18.2022.08.25.13.48.54
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 25 Aug 2022 13:48:55 -0700 (PDT)
-From:   Jernej =?utf-8?B?xaBrcmFiZWM=?= <jernej.skrabec@gmail.com>
-To:     Lee Jones <lee@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Chen-Yu Tsai <wens@csie.org>,
-        Samuel Holland <samuel@sholland.org>,
-        Charles Keepax <ckeepax@opensource.cirrus.com>,
-        Richard Fitzgerald <rf@opensource.cirrus.com>,
-        Tim Harvey <tharvey@gateworks.com>,
-        Robert Jones <rjones@gateworks.com>,
-        Chanwoo Choi <cw00.choi@samsung.com>,
-        Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>,
-        Heiko Stuebner <heiko@sntech.de>,
-        Fabrice Gasnier <fabrice.gasnier@foss.st.com>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-        Alexandre Torgue <alexandre.torgue@foss.st.com>,
-        Maxime Ripard <mripard@kernel.org>,
-        - <patches@opensource.cirrus.com>,
-        Steve Twiss <stwiss.opensource@diasemi.com>,
-        Chris Zhong <zyw@rock-chips.com>,
-        Zhang Qing <zhangqing@rock-chips.com>,
-        Alistair Francis <alistair@alistair23.me>,
-        Amelie Delaunay <amelie.delaunay@foss.st.com>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Renner Berthing <kernel@esmil.dk>,
-        Rob Herring <robh@kernel.org>
-Cc:     Krzysztof Kozlowski <krzk@kernel.org>, devicetree@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, linux-sunxi@lists.linux.dev,
-        linux-kernel@vger.kernel.org, linux-rockchip@lists.infradead.org,
-        linux-stm32@st-md-mailman.stormreply.com
-Subject: Re: [PATCH] dt-bindings: mfd: Add missing (unevaluated|additional)Properties on child nodes
-Date:   Thu, 25 Aug 2022 22:48:54 +0200
-Message-ID: <13083804.uLZWGnKmhe@kista>
-In-Reply-To: <20220823145649.3118479-4-robh@kernel.org>
-References: <20220823145649.3118479-4-robh@kernel.org>
+        Thu, 25 Aug 2022 16:50:32 -0400
+Received: from wout2-smtp.messagingengine.com (wout2-smtp.messagingengine.com [64.147.123.25])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 228672873A;
+        Thu, 25 Aug 2022 13:50:28 -0700 (PDT)
+Received: from compute2.internal (compute2.nyi.internal [10.202.2.46])
+        by mailout.west.internal (Postfix) with ESMTP id 4260F32009FD;
+        Thu, 25 Aug 2022 16:50:26 -0400 (EDT)
+Received: from mailfrontend2 ([10.202.2.163])
+  by compute2.internal (MEProxy); Thu, 25 Aug 2022 16:50:26 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ljones.dev; h=cc
+        :cc:content-type:date:date:from:from:in-reply-to:in-reply-to
+        :message-id:mime-version:references:reply-to:sender:subject
+        :subject:to:to; s=fm2; t=1661460625; x=1661547025; bh=nlPqMiNGXy
+        9EhJuCSwSE6ojkiH8zJIe4Qglc+WZS6TA=; b=Ndbpk0r3FWtX5JI4wiCtdSEh46
+        +ESxB2XLrR+56kXasnDi/KJBqZEcAvm7XERXWAN7xrVKi8WZciClRvQlIZC9QCNU
+        w0JhBvgDvFsW+qoE5ym4zmo2C8EJTlCnMmfiaJccgOYqBavTlNxUOT8WCREbsSSG
+        KEpZaU1NfXZpSROPDEpD/ooYD5SnrDGSl6PzaeHvfmQzc9h56sbVFusDECOBG5oX
+        +3OEMYunOJHHKrvrHKtKAiWofYapmdFPHWsQDhR170nbyhhbOBlCVdPQC7QSZqJa
+        7M+5ptKAXqtqGtGDGAPobSiSabKJbEedj96SnO3SMBF8TNDWBPMHhakzqpYg==
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        messagingengine.com; h=cc:cc:content-type:date:date:feedback-id
+        :feedback-id:from:from:in-reply-to:in-reply-to:message-id
+        :mime-version:references:reply-to:sender:subject:subject:to:to
+        :x-me-proxy:x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=
+        fm1; t=1661460625; x=1661547025; bh=nlPqMiNGXy9EhJuCSwSE6ojkiH8z
+        JIe4Qglc+WZS6TA=; b=FBp7PmXD+gmYPQl1sPE+5xBjQMUuoLmizLQ4ityH/COO
+        VnwoVUK5CIyzFxWxBRH4PUZdrWTKuus6BXm7Knb8OdCfbIzPuxJIuy+zTelC7DNZ
+        aenJhx0Qp3B9oQ9CKD8IUQphtq4j8QwtphV1OUuMvqinfeGc06pO6pqmMH2uzA1r
+        YJtvA46/C00hHaOAw1lowDcG06bhsvJMfi183pIyxfoWB6uduarI0TX7k9BiqSEC
+        jvFSBMQ4AIEAXk7ZvtHIQgauE0lgCvoWfQwiOyf2C5bE+cSGaOGNhry+8RrQ9FQF
+        1YSm96Hkvlm1WDOCsYlVBKH5xWrrjzCWyU7Ie9vXlw==
+X-ME-Sender: <xms:keAHYwmHbl6c7W0gCptY42lDMdyJ_ZWWbn_Xq9k_2PSkIMMDgzvAJw>
+    <xme:keAHY_2woxSL5nU7G2g-om1OZYsG0UnaScAmQ6DZ22J0lsoxeU8qY0ZNDNscUrcUq
+    mC2uby4ALii9Gucqc8>
+X-ME-Received: <xmr:keAHY-oBUmFhlv-SFy1x7GBTo3MQPTcBNxOoX1UbMfVmwqCgeqc4j8KLZnlzgdT4xP0IzA>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvfedrvdejfedgudehfecutefuodetggdotefrod
+    ftvfcurfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfgh
+    necuuegrihhlohhuthemuceftddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmd
+    enucfjughrpeffhffuvfevkfgjfhfogggtsehttdertdertddvnecuhfhrohhmpefnuhhk
+    vgculfhonhgvshcuoehluhhkvgeslhhjohhnvghsrdguvghvqeenucggtffrrghtthgvrh
+    hnpedvvdegledtheefieejgfevgeefiefhtdevteefteduhfevtdefleethfetgeeluden
+    ucevlhhushhtvghrufhiiigvpedtnecurfgrrhgrmhepmhgrihhlfhhrohhmpehluhhkvg
+    eslhhjohhnvghsrdguvghv
+X-ME-Proxy: <xmx:keAHY8l4PhITt9gYCIUy6tEg9T2nvUWr6BbReCKhPIc9nQML9S3OdA>
+    <xmx:keAHY-3HrciRs1y34oeqWgUdgFODXykCtT5BQ7HT8dfy0Im0-xzMBw>
+    <xmx:keAHYzuq_-h0tl0W-becxAyVmS-7580X6PKQU1198yu1Ewz0XFbeMA>
+    <xmx:keAHYz90do7Q6PZCXxxuLZF8PZR0IGizD5UZIIvruNNjq7_YZZ3jTA>
+Feedback-ID: i5ec1447f:Fastmail
+Received: by mail.messagingengine.com (Postfix) with ESMTPA; Thu,
+ 25 Aug 2022 16:50:21 -0400 (EDT)
+Date:   Fri, 26 Aug 2022 08:50:04 +1200
+From:   Luke Jones <luke@ljones.dev>
+Subject: Re: [PATCH 1/2] asus-wmi: Adjust tablet/lidflip handling to use enum
+To:     Hans de Goede <hdegoede@redhat.com>
+Cc:     markgross@kernel.org, platform-driver-x86@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Message-Id: <G7V6HR.3WZF23WP4MCJ3@ljones.dev>
+In-Reply-To: <b2ce575a-470c-5a56-2cd0-9f3e7dbac1ad@redhat.com>
+References: <20220813092753.6635-1-luke@ljones.dev>
+        <b2ce575a-470c-5a56-2cd0-9f3e7dbac1ad@redhat.com>
+X-Mailer: geary/40.0
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7Bit
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset=us-ascii; format=flowed
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Dne torek, 23. avgust 2022 ob 16:56:35 CEST je Rob Herring napisal(a):
-> In order to ensure only documented properties are present, node schemas
-> must have unevaluatedProperties or additionalProperties set to false
-> (typically).
+
+
+On Wed, Aug 24 2022 at 16:12:42 +0200, Hans de Goede 
+<hdegoede@redhat.com> wrote:
+> Hi,
 > 
-> Signed-off-by: Rob Herring <robh@kernel.org>
-> ---
->  .../mfd/allwinner,sun6i-a31-prcm.yaml         | 40 +++++++++++++++++++
->  .../mfd/allwinner,sun8i-a23-prcm.yaml         | 10 +++++
->  .../bindings/mfd/cirrus,lochnagar.yaml        |  5 +++
->  .../devicetree/bindings/mfd/dlg,da9063.yaml   |  7 ++--
->  .../bindings/mfd/gateworks-gsc.yaml           |  5 ++-
->  .../bindings/mfd/maxim,max14577.yaml          |  1 +
->  .../bindings/mfd/maxim,max77843.yaml          |  1 +
->  .../bindings/mfd/rockchip,rk817.yaml          |  2 +
->  .../bindings/mfd/silergy,sy7636a.yaml         |  1 +
->  .../bindings/mfd/st,stm32-lptimer.yaml        |  4 ++
->  .../bindings/mfd/st,stm32-timers.yaml         |  3 ++
->  .../devicetree/bindings/mfd/st,stmfx.yaml     |  1 +
->  .../bindings/mfd/stericsson,ab8500.yaml       | 22 ++++++++++
->  .../devicetree/bindings/mfd/ti,tps65086.yaml  |  1 +
->  .../bindings/mfd/x-powers,axp152.yaml         |  1 +
->  15 files changed, 100 insertions(+), 4 deletions(-)
+> On 8/13/22 11:27, Luke D. Jones wrote:
+>>  Due to multiple types of tablet/lidflip, the existing code for
+>>  handling these events is refactored to use an enum for each type.
+>> 
+>>  Signed-off-by: Luke D. Jones <luke@ljones.dev>
 > 
-> diff --git
-> a/Documentation/devicetree/bindings/mfd/allwinner,sun6i-a31-prcm.yaml
-> b/Documentation/devicetree/bindings/mfd/allwinner,sun6i-a31-prcm.yaml index
-> d131759ccaf3..021d33cb3dd6 100644
-> --- a/Documentation/devicetree/bindings/mfd/allwinner,sun6i-a31-prcm.yaml
-> +++ b/Documentation/devicetree/bindings/mfd/allwinner,sun6i-a31-prcm.yaml
-> @@ -22,6 +22,7 @@ properties:
->  patternProperties:
->    "^.*_(clk|rst)$":
->      type: object
-> +    unevaluatedProperties: false
+> Thank you for the patch, I've merged this but with one change:
 > 
->      properties:
->        compatible:
-> @@ -34,6 +35,45 @@ patternProperties:
->            - fixed-factor-clock
+>>  ---
+>>   drivers/platform/x86/asus-nb-wmi.c | 13 +++---
+>>   drivers/platform/x86/asus-wmi.c    | 67 
+>> ++++++++++++++++++++----------
+>>   drivers/platform/x86/asus-wmi.h    |  9 +++-
+>>   3 files changed, 58 insertions(+), 31 deletions(-)
+>> 
+>>  diff --git a/drivers/platform/x86/asus-nb-wmi.c 
+>> b/drivers/platform/x86/asus-nb-wmi.c
+>>  index a81dc4b191b7..3a93e056c4e1 100644
+>>  --- a/drivers/platform/x86/asus-nb-wmi.c
+>>  +++ b/drivers/platform/x86/asus-nb-wmi.c
+>>  @@ -115,12 +115,12 @@ static struct quirk_entry quirk_asus_forceals 
+>> = {
+>>   };
+>> 
+>>   static struct quirk_entry quirk_asus_use_kbd_dock_devid = {
+>>  -	.use_kbd_dock_devid = true,
+>>  +	.tablet_switch_mode = asus_wmi_kbd_dock_devid,
+>>   };
+>> 
+>>   static struct quirk_entry quirk_asus_use_lid_flip_devid = {
+>>   	.wmi_backlight_set_devstate = true,
+>>  -	.use_lid_flip_devid = true,
+>>  +	.tablet_switch_mode = asus_wmi_lid_flip_devid,
+>>   };
+>> 
+>>   static int dmi_matched(const struct dmi_system_id *dmi)
+>>  @@ -492,16 +492,13 @@ static void asus_nb_wmi_quirks(struct 
+>> asus_wmi_driver *driver)
+>> 
+>>   	switch (tablet_mode_sw) {
+>>   	case 0:
+>>  -		quirks->use_kbd_dock_devid = false;
+>>  -		quirks->use_lid_flip_devid = false;
+>>  +		quirks->tablet_switch_mode = asus_wmi_no_tablet_switch;
+>>   		break;
+>>   	case 1:
+>>  -		quirks->use_kbd_dock_devid = true;
+>>  -		quirks->use_lid_flip_devid = false;
+>>  +		quirks->tablet_switch_mode = asus_wmi_kbd_dock_devid;
+>>   		break;
+>>   	case 2:
+>>  -		quirks->use_kbd_dock_devid = false;
+>>  -		quirks->use_lid_flip_devid = true;
+>>  +		quirks->tablet_switch_mode = asus_wmi_lid_flip_devid;
+>>   		break;
+>>   	}
+>> 
+>>  diff --git a/drivers/platform/x86/asus-wmi.c 
+>> b/drivers/platform/x86/asus-wmi.c
+>>  index 0421ffb81927..b4690ac39147 100644
+>>  --- a/drivers/platform/x86/asus-wmi.c
+>>  +++ b/drivers/platform/x86/asus-wmi.c
+>>  @@ -485,8 +485,11 @@ static bool asus_wmi_dev_is_present(struct 
+>> asus_wmi *asus, u32 dev_id)
+>> 
+>>   static int asus_wmi_input_init(struct asus_wmi *asus)
+>>   {
+>>  +	struct device *dev;
+>>   	int err, result;
+>> 
+>>  +	dev = &asus->platform_device->dev;
+>>  +
+>>   	asus->inputdev = input_allocate_device();
+>>   	if (!asus->inputdev)
+>>   		return -ENOMEM;
+>>  @@ -494,35 +497,38 @@ static int asus_wmi_input_init(struct 
+>> asus_wmi *asus)
+>>   	asus->inputdev->name = asus->driver->input_name;
+>>   	asus->inputdev->phys = asus->driver->input_phys;
+>>   	asus->inputdev->id.bustype = BUS_HOST;
+>>  -	asus->inputdev->dev.parent = &asus->platform_device->dev;
+>>  +	asus->inputdev->dev.parent = dev;
+>>   	set_bit(EV_REP, asus->inputdev->evbit);
+>> 
+>>   	err = sparse_keymap_setup(asus->inputdev, asus->driver->keymap, 
+>> NULL);
+>>   	if (err)
+>>   		goto err_free_dev;
+>> 
+>>  -	if (asus->driver->quirks->use_kbd_dock_devid) {
+>>  +	switch (asus->driver->quirks->tablet_switch_mode) {
+>>  +	case asus_wmi_no_tablet_switch:
+>>  +		break;
+>>  +	case asus_wmi_kbd_dock_devid:
+>>   		result = asus_wmi_get_devstate_simple(asus, 
+>> ASUS_WMI_DEVID_KBD_DOCK);
+>>   		if (result >= 0) {
+>>   			input_set_capability(asus->inputdev, EV_SW, SW_TABLET_MODE);
+>>   			input_report_switch(asus->inputdev, SW_TABLET_MODE, !result);
+>>   		} else if (result != -ENODEV) {
+>>  -			pr_err("Error checking for keyboard-dock: %d\n", result);
+>>  +			dev_err(dev, "Error checking for keyboard-dock: %d\n", result);
+>>   		}
+>>  -	}
+>>  -
+>>  -	if (asus->driver->quirks->use_lid_flip_devid) {
+>>  +		break;
+>>  +	case asus_wmi_lid_flip_devid:
+>>   		result = asus_wmi_get_devstate_simple(asus, 
+>> ASUS_WMI_DEVID_LID_FLIP);
+>>   		if (result < 0)
+>>  -			asus->driver->quirks->use_lid_flip_devid = 0;
+>>  +			asus->driver->quirks->tablet_switch_mode = 
+>> asus_wmi_no_tablet_switch;
+>>   		if (result >= 0) {
+>>   			input_set_capability(asus->inputdev, EV_SW, SW_TABLET_MODE);
+>>   			input_report_switch(asus->inputdev, SW_TABLET_MODE, result);
+>>   		} else if (result == -ENODEV) {
+>>  -			pr_err("This device has lid_flip quirk but got ENODEV checking 
+>> it. This is a bug.");
+>>  +			dev_err(dev, "This device has lid_flip quirk but got ENODEV 
+>> checking it. This is a bug.");
+>>   		} else {
+>>  -			pr_err("Error checking for lid-flip: %d\n", result);
+>>  +			dev_err(dev, "Error checking for lid-flip: %d\n", result);
+>>   		}
+>>  +		break;
+>>   	}
+>> 
+>>   	err = input_register_device(asus->inputdev);
+>>  @@ -548,8 +554,9 @@ static void asus_wmi_input_exit(struct asus_wmi 
+>> *asus)
+>> 
+>>   static void lid_flip_tablet_mode_get_state(struct asus_wmi *asus)
+>>   {
+>>  -	int result = asus_wmi_get_devstate_simple(asus, 
+>> ASUS_WMI_DEVID_LID_FLIP);
+>>  +	int result;
+>> 
+>>  +	result = asus_wmi_get_devstate_simple(asus, 
+>> ASUS_WMI_DEVID_LID_FLIP);
+>>   	if (result >= 0) {
+>>   		input_report_switch(asus->inputdev, SW_TABLET_MODE, result);
+>>   		input_sync(asus->inputdev);
+>>  @@ -3044,20 +3051,26 @@ static void asus_wmi_handle_event_code(int 
+>> code, struct asus_wmi *asus)
+>>   		return;
+>>   	}
+>> 
+>>  -	if (asus->driver->quirks->use_kbd_dock_devid && code == 
+>> NOTIFY_KBD_DOCK_CHANGE) {
 > 
->      allOf:
-> +      - if:
-> +          properties:
-> +            compatible:
-> +              contains:
-> +                const: fixed-factor-clock
-> +
-> +        then:
-> +          $ref: /schemas/clock/fixed-factor-clock.yaml#
-> +
-> +      - if:
-> +          properties:
-> +            compatible:
-> +              contains:
-> +                const: allwinner,sun4i-a10-mod0-clk
-> +
-> +        then:
-> +          properties:
-> +            "#clock-cells":
-> +              const: 0
-> +
-> +            # Already checked in the main schema
-> +            compatible: true
-> +
-> +            clocks:
-> +              maxItems: 2
+> Given that we need to check for both the tablet_switch_mode as well as
+> different event codes, I believe that keep using something like:
+> 
+> 	if (asus->driver->quirks->tablet_switch_mode == 
+> asus_wmi_kbd_dock_devid &&
+> 	    code == NOTIFY_KBD_DOCK_CHANGE) {
+> 
+> here is better then doing a switch-case with the code checkes nested 
+> under
 
-Last time node with allwinner,sun4i-a10-mod0-clk compatible was used, it had 3 
-clocks. See:
-https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/tree/arch/
-arm/boot/dts/sun4i-a10.dtsi?id=f18698e1c66338b902de386e4ad97b8b1b9d999d#n406
+I think I recall that Andy requested use of the switch/case but I might 
+be wrong.
+Thank you for your help and clean up of this. The patch is making quite 
+a few people happy.
 
-Once that fixed, allwinner,sun6i-a31-prcm.yaml and allwinner,sun8i-a23-
-prcm.yaml  are:
-Reviewed-by: Jernej Skrabec <jernej.skrabec@gmail.com>
-
-Best regards,
-Jernej
-
-
-> +
-> +            clock-output-names:
-> +              maxItems: 1
-> +
-> +            phandle: true
-> +
-> +          required:
-> +            - "#clock-cells"
-> +            - compatible
-> +            - clocks
-> +            - clock-output-names
-> +
-> +          additionalProperties: false
-> +
->        - if:
->            properties:
->              compatible:
-
+> 
+>>  -		result = asus_wmi_get_devstate_simple(asus,
+>>  -						      ASUS_WMI_DEVID_KBD_DOCK);
+>>  +	switch (asus->driver->quirks->tablet_switch_mode) {
+>>  +	case asus_wmi_no_tablet_switch:
+>>  +		break;
+>>  +	case asus_wmi_kbd_dock_devid:
+>>  +		if (code == NOTIFY_KBD_DOCK_CHANGE) {
+>>  +			result = asus_wmi_get_devstate_simple(asus, 
+>> ASUS_WMI_DEVID_KBD_DOCK);
+>>   		if (result >= 0) {
+>>   			input_report_switch(asus->inputdev, SW_TABLET_MODE,
+> 
+> Note the indent of these 2 lines is wrong now, it should be indentend 
+> one
+> extra step because it is inside the if (code == 
+> NOTIFY_KBD_DOCK_CHANGE) {
+> block now, sticking with a:
+> 
+> 	if (asus->driver->quirks->tablet_switch_mode == 
+> asus_wmi_kbd_dock_devid &&
+> 	    code == NOTIFY_KBD_DOCK_CHANGE) {
+> 
+> is style instead of nesting avoids the need for this extra 
+> indentation.
+> 
+> I have fixed this up while merging the patches.
+> 
+> Regards,
+> 
+> Hans
+> 
+> 
+> 
+> 
+>>  -					    !result);
+>>  +						!result);
+>>   			input_sync(asus->inputdev);
+>>   		}
+>>   		return;
+>>  -	}
+>>  -
+>>  -	if (asus->driver->quirks->use_lid_flip_devid && code == 
+>> NOTIFY_LID_FLIP) {
+>>  -		lid_flip_tablet_mode_get_state(asus);
+>>  -		return;
+>>  +		}
+>>  +		break;
+>>  +	case asus_wmi_lid_flip_devid:
+>>  +		if (code == NOTIFY_LID_FLIP) {
+>>  +			lid_flip_tablet_mode_get_state(asus);
+>>  +			return;
+>>  +		}
+>>  +		break;
+>>   	}
+>> 
+>>   	if (asus->fan_boost_mode_available && code == NOTIFY_KBD_FBM) {
+>>  @@ -3700,8 +3713,14 @@ static int asus_hotk_resume(struct device 
+>> *device)
+>>   	if (asus_wmi_has_fnlock_key(asus))
+>>   		asus_wmi_fnlock_update(asus);
+>> 
+>>  -	if (asus->driver->quirks->use_lid_flip_devid)
+>>  +	switch (asus->driver->quirks->tablet_switch_mode) {
+>>  +	case asus_wmi_no_tablet_switch:
+>>  +	case asus_wmi_kbd_dock_devid:
+>>  +		break;
+>>  +	case asus_wmi_lid_flip_devid:
+>>   		lid_flip_tablet_mode_get_state(asus);
+>>  +		break;
+>>  +	}
+>> 
+>>   	return 0;
+>>   }
+>>  @@ -3742,8 +3761,14 @@ static int asus_hotk_restore(struct device 
+>> *device)
+>>   	if (asus_wmi_has_fnlock_key(asus))
+>>   		asus_wmi_fnlock_update(asus);
+>> 
+>>  -	if (asus->driver->quirks->use_lid_flip_devid)
+>>  +	switch (asus->driver->quirks->tablet_switch_mode) {
+>>  +	case asus_wmi_no_tablet_switch:
+>>  +	case asus_wmi_kbd_dock_devid:
+>>  +		break;
+>>  +	case asus_wmi_lid_flip_devid:
+>>   		lid_flip_tablet_mode_get_state(asus);
+>>  +		break;
+>>  +	}
+>> 
+>>   	return 0;
+>>   }
+>>  diff --git a/drivers/platform/x86/asus-wmi.h 
+>> b/drivers/platform/x86/asus-wmi.h
+>>  index b302415bf1d9..413920bad0c6 100644
+>>  --- a/drivers/platform/x86/asus-wmi.h
+>>  +++ b/drivers/platform/x86/asus-wmi.h
+>>  @@ -25,6 +25,12 @@ struct module;
+>>   struct key_entry;
+>>   struct asus_wmi;
+>> 
+>>  +enum asus_wmi_tablet_switch_mode {
+>>  +	asus_wmi_no_tablet_switch,
+>>  +	asus_wmi_kbd_dock_devid,
+>>  +	asus_wmi_lid_flip_devid,
+>>  +};
+>>  +
+>>   struct quirk_entry {
+>>   	bool hotplug_wireless;
+>>   	bool scalar_panel_brightness;
+>>  @@ -33,8 +39,7 @@ struct quirk_entry {
+>>   	bool wmi_backlight_native;
+>>   	bool wmi_backlight_set_devstate;
+>>   	bool wmi_force_als_set;
+>>  -	bool use_kbd_dock_devid;
+>>  -	bool use_lid_flip_devid;
+>>  +	enum asus_wmi_tablet_switch_mode tablet_switch_mode;
+>>   	int wapf;
+>>   	/*
+>>   	 * For machines with AMD graphic chips, it will send out WMI event
+> 
 
 
