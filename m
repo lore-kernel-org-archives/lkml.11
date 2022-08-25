@@ -2,120 +2,150 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 17571C3F6B0
-	for <linux-kernel@archiver.kernel.org>; Thu, 25 Aug 2022 13:27:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9A01AC04AA5
+	for <linux-kernel@archiver.kernel.org>; Thu, 25 Aug 2022 13:28:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242625AbiHYN1x (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 25 Aug 2022 09:27:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54520 "EHLO
+        id S242634AbiHYN2V (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 25 Aug 2022 09:28:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55292 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242640AbiHYN1o (ORCPT
+        with ESMTP id S242550AbiHYN2R (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 25 Aug 2022 09:27:44 -0400
-Received: from mx0b-0031df01.pphosted.com (mx0b-0031df01.pphosted.com [205.220.180.131])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 44290AD98E;
-        Thu, 25 Aug 2022 06:27:42 -0700 (PDT)
-Received: from pps.filterd (m0279871.ppops.net [127.0.0.1])
-        by mx0a-0031df01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 27PBLT7H020653;
-        Thu, 25 Aug 2022 13:27:37 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=quicinc.com; h=message-id : date :
- mime-version : subject : to : cc : references : from : in-reply-to :
- content-type : content-transfer-encoding; s=qcppdkim1;
- bh=KvYeiFfwD3KZEQv3gwW5SF2mESyYzWmyxXd2x9ii1/Y=;
- b=a0lMObzE06xvmYISoTMrb8PwVlzzT0HxrLY3VCI8BdYQLxN0e4Vtdy16nhS8Fxcu1fcm
- wj17jVpfiRxBcW8wd/C5mEY4yIVygPG0CuceOCEayMvxLwVh2LV7KscJZgF/SF5LxBZF
- xrtdfXS46qFZ8eyaGM3XlLXkDtIP8TwYpI7IMm3E8K2ICaI0HHj/k77kybRPPAjDgowW
- ewgJyGhTW8orls/mHdp91z7Ac3Htg0Q3O1m1RAU4upAb6uizsDyK32/t+olkE5d/Wzh7
- X36YHL6IPjr2WKX3bfET+VCiZSKBuT99WPbBXAufo1wi4tDqXAb3xIRMqX7BJssDAQ/X 6Q== 
-Received: from nalasppmta03.qualcomm.com (Global_NAT1.qualcomm.com [129.46.96.20])
-        by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 3j5xcuhy6y-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Thu, 25 Aug 2022 13:27:37 +0000
-Received: from nalasex01a.na.qualcomm.com (nalasex01a.na.qualcomm.com [10.47.209.196])
-        by NALASPPMTA03.qualcomm.com (8.17.1.5/8.17.1.5) with ESMTPS id 27PDEOGw019448
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Thu, 25 Aug 2022 13:14:24 GMT
-Received: from [10.216.34.62] (10.80.80.8) by nalasex01a.na.qualcomm.com
- (10.47.209.196) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.29; Thu, 25 Aug
- 2022 06:14:18 -0700
-Message-ID: <dc976f67-20ad-4b8a-f16b-1a080db15d27@quicinc.com>
-Date:   Thu, 25 Aug 2022 18:44:13 +0530
+        Thu, 25 Aug 2022 09:28:17 -0400
+Received: from mail-wm1-x32c.google.com (mail-wm1-x32c.google.com [IPv6:2a00:1450:4864:20::32c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B8AD7AE218
+        for <linux-kernel@vger.kernel.org>; Thu, 25 Aug 2022 06:28:16 -0700 (PDT)
+Received: by mail-wm1-x32c.google.com with SMTP id ay12so10268402wmb.1
+        for <linux-kernel@vger.kernel.org>; Thu, 25 Aug 2022 06:28:16 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc;
+        bh=KfGKO4gRVHDia7DffjyPAcJcjBq+6O29TGohmEixT6E=;
+        b=gfhg0I9DGV8Q5gc55jPTx1jSwtM6UtBeNZSqgS5SWaysdaYZhB5W6OJmrHN1Hgl8pO
+         5t70mJDysooDK0BRriyZC3Cx6EyYXnVaRaFFMmbkQkN2Wa82MlXllExcYe9JLKkdQ9cT
+         kGhJIAw1J9733Ydo8rWumKglDarKtv/90YLt+ZkvFru9P8A88NLDkGPLHZ2qks4YV05q
+         KHu1NarUTSz6Wk9hj2kDD6S5o6cYZao4NTnRrJFWkSIsWvXeaFAF8Wqmxkxfhq5QlpHV
+         fuSXfcjtlTyW/Qav46x2cqqtyDUyMOEVEk+UcY1hrOyOhCSdIXkXPBIr/pxuh56f04/x
+         B1dw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc;
+        bh=KfGKO4gRVHDia7DffjyPAcJcjBq+6O29TGohmEixT6E=;
+        b=yPHJeFqBS2OrkGJedbZ+Wk+uNJFU4BH+LViAvkKVKWzB+yl2GE3hZbLPhak/Cb6HWH
+         ESlpXJ8gDbOleUg7IG+dH+EntrkZLjECl8nLPmRwwxGD4w7CuPNLmXNJg1KZeDiHYfOJ
+         Z45iYUWRPAOJh2F78/wAbsYzBym5JHRmAl4ZKbzlW8k+H9pYxg466XMJvz4H9oMLN8g/
+         Fl9uba5BtSJQ8TXKAThhGudJ/6+ZZyjDMqjvfra1vTrgzh7GW3yI3zgIsXftGsuPTjnY
+         hgURuvvA9o9MwVqo/4l5sLTKPh/rTx6I/+jYaxraxUMofWP6hELAW9R+N44EXl193j3j
+         PzJQ==
+X-Gm-Message-State: ACgBeo2ho6pLELpx+4Yb2zHC3G4mQ1ArtUwqK7668NEddwCdOl+8haq8
+        Bl2q0M08cVLlA/47uZhX3d8=
+X-Google-Smtp-Source: AA6agR5a9Ai7VYX7KZ47qWIsUFrlG3Kqel4VjkZPZEG/YVdHcomsm8Mjah2kQb/Q9rfYRRDpbLy+IA==
+X-Received: by 2002:a1c:4c18:0:b0:3a5:3ddd:2f29 with SMTP id z24-20020a1c4c18000000b003a53ddd2f29mr2360318wmf.91.1661434095307;
+        Thu, 25 Aug 2022 06:28:15 -0700 (PDT)
+Received: from [192.168.2.177] ([207.188.167.132])
+        by smtp.gmail.com with ESMTPSA id k5-20020a05600c1c8500b003a5f3de6fddsm5620850wms.25.2022.08.25.06.28.13
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 25 Aug 2022 06:28:14 -0700 (PDT)
+Message-ID: <20ad18de-0db0-c1fa-55e5-ad0897269876@gmail.com>
+Date:   Thu, 25 Aug 2022 15:28:13 +0200
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.9.1
-Subject: Re: [PATCH v5 0/3] PCI: Restrict pci transactions after pci suspend
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.1.2
+Subject: Re: [PATCH 3/6] soc: mediatek: mtk-svs: Remove hardcoded irqflags
 Content-Language: en-US
-To:     Bjorn Helgaas <helgaas@kernel.org>
-CC:     <linux-pci@vger.kernel.org>, <linux-arm-msm@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>, <mka@chromium.org>,
-        <quic_vbadigan@quicinc.com>, <quic_hemantk@quicinc.com>,
-        <quic_nitegupt@quicinc.com>, <quic_skananth@quicinc.com>,
-        <quic_ramkri@quicinc.com>, <manivannan.sadhasivam@linaro.org>,
-        <swboyd@chromium.org>, <dmitry.baryshkov@linaro.org>
-References: <20220824202949.GA2805069@bhelgaas>
-From:   Krishna Chaitanya Chundru <quic_krichai@quicinc.com>
-In-Reply-To: <20220824202949.GA2805069@bhelgaas>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
+To:     AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>
+Cc:     roger.lu@mediatek.com, khilman@baylibre.com,
+        linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org,
+        nfraprado@collabora.com, kernel@collabora.com
+References: <20220726141653.177948-1-angelogioacchino.delregno@collabora.com>
+ <20220726141653.177948-4-angelogioacchino.delregno@collabora.com>
+From:   Matthias Brugger <matthias.bgg@gmail.com>
+In-Reply-To: <20220726141653.177948-4-angelogioacchino.delregno@collabora.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.80.80.8]
-X-ClientProxiedBy: nasanex01a.na.qualcomm.com (10.52.223.231) To
- nalasex01a.na.qualcomm.com (10.47.209.196)
-X-QCInternal: smtphost
-X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=5800 signatures=585085
-X-Proofpoint-GUID: Lz3kULzS5zM_UZBPUf2vQjECdk8RqvwB
-X-Proofpoint-ORIG-GUID: Lz3kULzS5zM_UZBPUf2vQjECdk8RqvwB
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.895,Hydra:6.0.517,FMLib:17.11.122.1
- definitions=2022-08-25_05,2022-08-25_01,2022-06-22_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 bulkscore=0 phishscore=0
- adultscore=0 malwarescore=0 suspectscore=0 mlxlogscore=999 impostorscore=0
- spamscore=0 priorityscore=1501 lowpriorityscore=0 clxscore=1015 mlxscore=0
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2207270000
- definitions=main-2208250051
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
 
-On 8/25/2022 1:59 AM, Bjorn Helgaas wrote:
-> On Wed, Aug 03, 2022 at 04:58:51PM +0530, Krishna chaitanya chundru wrote:
->> If the endpoint device state is D0 and irq's are not freed, then
->> kernel try to mask interrupts in system suspend path by writing in to
->> the vector table (for MSIX interrupts) and config space (for MSI's).
-> If clocks are being turned off while the PCI core is still accessing
-> the device, I think that means qcom suspend is not implemented
-> correctly.
 
-we are registering the suspend and resume ops as NO_IRQ pm ops and in 
-those suspend ops we are disbaling clks there.
+On 26/07/2022 16:16, AngeloGioacchino Del Regno wrote:
+> The interrupt flags are specified in devicetree: forcing them into
+> the driver is suboptimal and not very useful.
+> 
+> Signed-off-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
 
-NO_IRQ ops is the last the pm ops that are getting called. But we are 
-getting pcie access nearly at end of the suspend and near cpu disable.
+Applied, thanks
 
-The pcie access is nothing but the interrupts masks to endpoint to 
-disable the interrupts.
-
->> These transactions are initiated in the pm suspend after pcie clocks got
->> disabled as part of platform driver pm  suspend call. Due to it, these
->> transactions are resulting in un-clocked access and eventually to crashes.
->>
->> So added a logic in qcom driver to restrict these unclocked access.
->> And updated the logic to check the link state before masking
->> or unmasking the interrupts.
->>
->> And some devices are taking time to settle the link in L1ss, so added a
->> retry logic in the suspend ops.
->>
->> Krishna chaitanya chundru (3):
->>    PCI: qcom: Add system PM support
->>    PCI: qcom: Restrict pci transactions after pci suspend
->>    PCI: qcom: Add retry logic for link to be stable in L1ss
->>
->>   drivers/pci/controller/dwc/pcie-designware-host.c |  14 ++-
->>   drivers/pci/controller/dwc/pcie-qcom.c            | 117 +++++++++++++++++++++-
->>   2 files changed, 127 insertions(+), 4 deletions(-)
->>
->> -- 
->> 2.7.4
->>
+> ---
+>   drivers/soc/mediatek/mtk-svs.c | 9 +--------
+>   1 file changed, 1 insertion(+), 8 deletions(-)
+> 
+> diff --git a/drivers/soc/mediatek/mtk-svs.c b/drivers/soc/mediatek/mtk-svs.c
+> index ee990acfc2d5..fcf246a6bb07 100644
+> --- a/drivers/soc/mediatek/mtk-svs.c
+> +++ b/drivers/soc/mediatek/mtk-svs.c
+> @@ -262,7 +262,6 @@ static const u32 svs_regs_v2[] = {
+>    * @rst: svs platform reset control
+>    * @efuse_parsing: svs platform efuse parsing function pointer
+>    * @probe: svs platform probe function pointer
+> - * @irqflags: svs platform irq settings flags
+>    * @efuse_max: total number of svs efuse
+>    * @tefuse_max: total number of thermal efuse
+>    * @regs: svs platform registers map
+> @@ -280,7 +279,6 @@ struct svs_platform {
+>   	struct reset_control *rst;
+>   	bool (*efuse_parsing)(struct svs_platform *svsp);
+>   	int (*probe)(struct svs_platform *svsp);
+> -	unsigned long irqflags;
+>   	size_t efuse_max;
+>   	size_t tefuse_max;
+>   	const u32 *regs;
+> @@ -294,7 +292,6 @@ struct svs_platform_data {
+>   	struct svs_bank *banks;
+>   	bool (*efuse_parsing)(struct svs_platform *svsp);
+>   	int (*probe)(struct svs_platform *svsp);
+> -	unsigned long irqflags;
+>   	const u32 *regs;
+>   	u32 bank_max;
+>   };
+> @@ -2680,7 +2677,6 @@ static const struct svs_platform_data svs_mt8192_platform_data = {
+>   	.banks = svs_mt8192_banks,
+>   	.efuse_parsing = svs_mt8192_efuse_parsing,
+>   	.probe = svs_mt8192_platform_probe,
+> -	.irqflags = IRQF_TRIGGER_HIGH,
+>   	.regs = svs_regs_v2,
+>   	.bank_max = ARRAY_SIZE(svs_mt8192_banks),
+>   };
+> @@ -2699,7 +2695,6 @@ static const struct svs_platform_data svs_mt8183_platform_data = {
+>   	.banks = svs_mt8183_banks,
+>   	.efuse_parsing = svs_mt8183_efuse_parsing,
+>   	.probe = svs_mt8183_platform_probe,
+> -	.irqflags = IRQF_TRIGGER_LOW,
+>   	.regs = svs_regs_v2,
+>   	.bank_max = ARRAY_SIZE(svs_mt8183_banks),
+>   };
+> @@ -2743,7 +2738,6 @@ static struct svs_platform *svs_platform_probe(struct platform_device *pdev)
+>   	svsp->banks = svsp_data->banks;
+>   	svsp->efuse_parsing = svsp_data->efuse_parsing;
+>   	svsp->probe = svsp_data->probe;
+> -	svsp->irqflags = svsp_data->irqflags;
+>   	svsp->regs = svsp_data->regs;
+>   	svsp->bank_max = svsp_data->bank_max;
+>   
+> @@ -2782,8 +2776,7 @@ static int svs_probe(struct platform_device *pdev)
+>   	}
+>   
+>   	ret = devm_request_threaded_irq(svsp->dev, svsp_irq, NULL, svs_isr,
+> -					svsp->irqflags | IRQF_ONESHOT,
+> -					svsp->name, svsp);
+> +					IRQF_ONESHOT, svsp->name, svsp);
+>   	if (ret) {
+>   		dev_err(svsp->dev, "register irq(%d) failed: %d\n",
+>   			svsp_irq, ret);
