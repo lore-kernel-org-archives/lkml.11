@@ -2,132 +2,122 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2592BECAAA2
-	for <linux-kernel@archiver.kernel.org>; Thu, 25 Aug 2022 23:54:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 58F31ECAAA3
+	for <linux-kernel@archiver.kernel.org>; Thu, 25 Aug 2022 23:54:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243933AbiHYXyJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 25 Aug 2022 19:54:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45154 "EHLO
+        id S243708AbiHYXyO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 25 Aug 2022 19:54:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45202 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243737AbiHYXyE (ORCPT
+        with ESMTP id S244066AbiHYXyI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 25 Aug 2022 19:54:04 -0400
-Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 14DF9C59EA
-        for <linux-kernel@vger.kernel.org>; Thu, 25 Aug 2022 16:54:04 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1661471644; x=1693007644;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=YUtcZHJ7ojap9hkLRd86QK/XgC47Wnac7regS6SVDlM=;
-  b=cp4goS+lptYvf7Wc8Fm3WhXbBxJaX3tfX2AZv5xre1iU4JoWHKiXeXTZ
-   Bbg7/nn+JayPpTsrzE1+0HQ/9nqXmSm24czFWjynNnJdwlMvbrB5H27Do
-   emBlviIrf/8vtiHzG6CawwjsZQmGNslc9x4Pmok40GEb4mpwXR0Onc9va
-   uAFO7EEODZkdepqtoxYSHA9cdTlg+nl5RGlBap6rJBCHmQRYcQGqDe7ZG
-   KrUFN/UhyIJsHSS2PziDDcU8UeyiK0+LaM0lft2ofDVDJ5bIVzonbmsqg
-   N3FhWCYqjKVc0q+eOf7gB6hsA2+XO8K4vo6L9YzSWdKlyQ5LbNcBXjvHR
-   g==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10450"; a="320475188"
-X-IronPort-AV: E=Sophos;i="5.93,264,1654585200"; 
-   d="scan'208";a="320475188"
-Received: from orsmga006.jf.intel.com ([10.7.209.51])
-  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Aug 2022 16:54:03 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.93,264,1654585200"; 
-   d="scan'208";a="587091109"
-Received: from lkp-server02.sh.intel.com (HELO 34e741d32628) ([10.239.97.151])
-  by orsmga006.jf.intel.com with ESMTP; 25 Aug 2022 16:54:00 -0700
-Received: from kbuild by 34e741d32628 with local (Exim 4.96)
-        (envelope-from <lkp@intel.com>)
-        id 1oRMfg-00035a-0K;
-        Thu, 25 Aug 2022 23:54:00 +0000
-Date:   Fri, 26 Aug 2022 07:53:25 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Peter Zijlstra <peterz@infradead.org>
-Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org
-Subject: [peterz-queue:perf/wip.rewrite 8/8] drivers/perf/arm_pmu.c:560:26:
- error: 'struct arm_pmu' has no member named 'filter_match'
-Message-ID: <202208260705.BOEvaIqD-lkp@intel.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+        Thu, 25 Aug 2022 19:54:08 -0400
+Received: from mail-pg1-x54a.google.com (mail-pg1-x54a.google.com [IPv6:2607:f8b0:4864:20::54a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C75A2C59E4
+        for <linux-kernel@vger.kernel.org>; Thu, 25 Aug 2022 16:54:07 -0700 (PDT)
+Received: by mail-pg1-x54a.google.com with SMTP id k62-20020a638441000000b0042b66a99b6aso927575pgd.18
+        for <linux-kernel@vger.kernel.org>; Thu, 25 Aug 2022 16:54:07 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=cc:to:from:subject:message-id:mime-version:date:from:to:cc;
+        bh=Iz+Fc3AXb8dLZ4mX3Mgbx3efWp93wo58I27EBlqSLxo=;
+        b=T4+VXUmx1xdJxgSBWRyLx2UnPcil+44wnJP2E/zsfDwLP5Ilsrcjtp/NZ9abuKxm5G
+         G47IGaf3NQn/fSBDMjdFkBsV8vcGBAD9GF1W94A8nXn+MGGtGuwe7MtAHcqXj2H957GZ
+         WycLes5UWv3Idezjs64bo9cmzq/sxvtWwKPVTPcI2yiDaWMlc361CJrIglCIHLGupwQA
+         PKa6VqMo0qX1LxzpjT3EnwPd8Em+E2RvwE3T4PxLERsGioDXRISg3jks8BzCt5EHnYf5
+         IhOskMj+IuzdZf754L6aYKWEYP57nSa7KAWvSY7zo7N5ervmfCg2aNbJxlV/9d7h/37D
+         OVBA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=cc:to:from:subject:message-id:mime-version:date:x-gm-message-state
+         :from:to:cc;
+        bh=Iz+Fc3AXb8dLZ4mX3Mgbx3efWp93wo58I27EBlqSLxo=;
+        b=dAMR5tggn+CPVsubOb/WtjIWNmqvD3O5EQJBYKIGDhuiuQi4CPVP/ehjaGn+SEz9gX
+         Ml8yoxjXfXGYC+c8ZAs3KmAZyjtPQPWiiPrEYmKDn0cU4lJMys1bZ4+wgFzCD0UMDTHl
+         7Vx7X0NGhMuZqD2hBlrQalKYLhRYcfP32o6t6z8RO5d/cTfqmgZAgiqhY9VeDfSgJk9z
+         gb5GNwE0y/NlE+FljAL6lg7ZYUDK2RR47oTOUqq/Z9inP0DXvY6u3cf51wYXFNfeoQ6j
+         +PJG48NlOct8eu7DWTVRruYPPY04jSjZ1FvnTOY0VOwhgF5Z6oWavwj631sKd+qzqFKT
+         V5HA==
+X-Gm-Message-State: ACgBeo2Fc5C2ZI+LzuWiBDhuXtn/OaP3HN+towtQrxWkmixLadToga/S
+        7a0ylMcQmyNNdI4wd/qA0LX1EhDvs8o6kx55RAw=
+X-Google-Smtp-Source: AA6agR4XW1up7g6vcQ5pspby6TOQetmMBtqIH4cL6KO7i9zeE0uIlRdZusdeSi4RTg0vlkmIyX2xAHVuePdT+3gtl5c=
+X-Received: from wmcvicker.c.googlers.com ([fda3:e722:ac3:cc00:7f:e700:c0a8:5ebe])
+ (user=willmcvicker job=sendgmr) by 2002:a17:902:ce12:b0:172:dc6e:18f6 with
+ SMTP id k18-20020a170902ce1200b00172dc6e18f6mr1394260plg.34.1661471647366;
+ Thu, 25 Aug 2022 16:54:07 -0700 (PDT)
+Date:   Thu, 25 Aug 2022 23:54:01 +0000
+Mime-Version: 1.0
+X-Mailer: git-send-email 2.37.2.672.g94769d06f0-goog
+Message-ID: <20220825235404.4132818-1-willmcvicker@google.com>
+Subject: [PATCH v6 0/2] PCI: dwc: Add support for 64-bit MSI target addresses
+From:   Will McVicker <willmcvicker@google.com>
+To:     Jingoo Han <jingoohan1@gmail.com>,
+        Gustavo Pimentel <gustavo.pimentel@synopsys.com>,
+        Lorenzo Pieralisi <lpieralisi@kernel.org>,
+        Rob Herring <robh@kernel.org>,
+        "=?UTF-8?q?Krzysztof=20Wilczy=C5=84ski?=" <kw@linux.com>,
+        Bjorn Helgaas <bhelgaas@google.com>,
+        Will McVicker <willmcvicker@google.com>
+Cc:     kernel-team@android.com, Vidya Sagar <vidyas@nvidia.com>,
+        Christoph Hellwig <hch@infradead.org>,
+        Robin Murphy <robin.murphy@arm.com>, linux-pci@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   https://git.kernel.org/pub/scm/linux/kernel/git/peterz/queue.git perf/wip.rewrite
-head:   b149fd14e2fb487c8d8b07d353421101c33bbf2b
-commit: b149fd14e2fb487c8d8b07d353421101c33bbf2b [8/8] Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
-config: arm-randconfig-r016-20220823 (https://download.01.org/0day-ci/archive/20220826/202208260705.BOEvaIqD-lkp@intel.com/config)
-compiler: arm-linux-gnueabi-gcc (GCC) 12.1.0
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://git.kernel.org/pub/scm/linux/kernel/git/peterz/queue.git/commit/?id=b149fd14e2fb487c8d8b07d353421101c33bbf2b
-        git remote add peterz-queue https://git.kernel.org/pub/scm/linux/kernel/git/peterz/queue.git
-        git fetch --no-tags peterz-queue perf/wip.rewrite
-        git checkout b149fd14e2fb487c8d8b07d353421101c33bbf2b
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-12.1.0 make.cross W=1 O=build_dir ARCH=arm SHELL=/bin/bash drivers/
+Hi All,
 
-If you fix the issue, kindly add following tag where applicable
-Reported-by: kernel test robot <lkp@intel.com>
+I've update patch 2/2 to address Robin's suggestions. This includes:
 
-All errors (new ones prefixed by >>):
+ * Dropping the while-loop for retrying with a 64-bit mask in favor of
+   retrying within the error if-statement. 
+ * Using an int for the DMA mask instead of a bool and ternary operation.
 
-   drivers/perf/arm_pmu.c: In function 'armpmu_filter_match':
->> drivers/perf/arm_pmu.c:560:26: error: 'struct arm_pmu' has no member named 'filter_match'
-     560 |         if (ret && armpmu->filter_match)
-         |                          ^~
-   drivers/perf/arm_pmu.c:561:30: error: 'struct arm_pmu' has no member named 'filter_match'
-     561 |                 return armpmu->filter_match(event);
-         |                              ^~
-   drivers/perf/arm_pmu.c: In function '__armpmu_alloc':
->> drivers/perf/arm_pmu.c:888:18: error: 'struct pmu' has no member named 'filter_match'
-     888 |                 .filter_match   = armpmu_filter_match,
-         |                  ^~~~~~~~~~~~
->> drivers/perf/arm_pmu.c:888:35: error: initialization of 'void (*)(struct pmu *, unsigned int)' from incompatible pointer type 'int (*)(struct perf_event *)' [-Werror=incompatible-pointer-types]
-     888 |                 .filter_match   = armpmu_filter_match,
-         |                                   ^~~~~~~~~~~~~~~~~~~
-   drivers/perf/arm_pmu.c:888:35: note: (near initialization for '(anonymous).start_txn')
-   cc1: some warnings being treated as errors
+Thanks again for the reviews and sorry for the extra revision today!
+Hopefully this is the last one :) If not, I'd be fine to submit patch 1/2
+without 2/2 to avoid resending patch 1/2 for future revisions of patch 2/2
+(unless I don't need to do that anyway).
 
-Kconfig warnings: (for reference only)
-   WARNING: unmet direct dependencies detected for ARM_CPU_SUSPEND
-   Depends on [n]: ARCH_SUSPEND_POSSIBLE [=n]
-   Selected by [y]:
-   - ARM_TEGRA_CPUIDLE [=y] && CPU_IDLE [=y] && (ARM [=y] || ARM64) && (ARCH_TEGRA [=n] || COMPILE_TEST [=y]) && !ARM64 && MMU [=y]
+Thanks,
+Will
+
+Will McVicker (2):
+  PCI: dwc: Drop dependency on ZONE_DMA32
+
+v6:
+ * Retrying DMA allocation with 64-bit mask within the error if-statement. 
+ * Use an int for the DMA mask instead of a bool and ternary operation.
+
+v5:
+ * Updated patch 2/2 to first try with a 32-bit DMA mask. On failure,
+   retry with a 64-bit mask if supported.
+
+v4:
+ * Updated commit descriptions.
+ * Renamed msi_64b -> msi_64bit.
+ * Dropped msi_64bit ternary use.
+ * Dropped export of dw_pcie_msi_capabilities.
+
+v3:
+  * Switched to a managed DMA allocation.
+  * Simplified the DMA allocation cleanup.
+  * Dropped msi_page from struct dw_pcie_rp.
+  * Allocating a u64 instead of a full page.
+
+v2:
+  * Fixed build error caught by kernel test robot
+  * Fixed error handling reported by Isaac Manjarres
+ PCI: dwc: Add support for 64-bit MSI target address
+
+ .../pci/controller/dwc/pcie-designware-host.c | 43 +++++++++----------
+ drivers/pci/controller/dwc/pcie-designware.c  |  8 ++++
+ drivers/pci/controller/dwc/pcie-designware.h  |  2 +-
+ 3 files changed, 30 insertions(+), 23 deletions(-)
 
 
-vim +560 drivers/perf/arm_pmu.c
-
-1b8873a0c6ec51 arch/arm/kernel/perf_event.c Jamie Iles   2010-02-02  547  
-c904e32a69b7c7 arch/arm/kernel/perf_event.c Mark Rutland 2015-05-13  548  /*
-c904e32a69b7c7 arch/arm/kernel/perf_event.c Mark Rutland 2015-05-13  549   * In heterogeneous systems, events are specific to a particular
-c904e32a69b7c7 arch/arm/kernel/perf_event.c Mark Rutland 2015-05-13  550   * microarchitecture, and aren't suitable for another. Thus, only match CPUs of
-c904e32a69b7c7 arch/arm/kernel/perf_event.c Mark Rutland 2015-05-13  551   * the same microarchitecture.
-c904e32a69b7c7 arch/arm/kernel/perf_event.c Mark Rutland 2015-05-13  552   */
-c904e32a69b7c7 arch/arm/kernel/perf_event.c Mark Rutland 2015-05-13  553  static int armpmu_filter_match(struct perf_event *event)
-c904e32a69b7c7 arch/arm/kernel/perf_event.c Mark Rutland 2015-05-13  554  {
-c904e32a69b7c7 arch/arm/kernel/perf_event.c Mark Rutland 2015-05-13  555  	struct arm_pmu *armpmu = to_arm_pmu(event->pmu);
-c904e32a69b7c7 arch/arm/kernel/perf_event.c Mark Rutland 2015-05-13  556  	unsigned int cpu = smp_processor_id();
-ca2b497253ad01 drivers/perf/arm_pmu.c       Will Deacon  2018-10-05  557  	int ret;
-ca2b497253ad01 drivers/perf/arm_pmu.c       Will Deacon  2018-10-05  558  
-ca2b497253ad01 drivers/perf/arm_pmu.c       Will Deacon  2018-10-05  559  	ret = cpumask_test_cpu(cpu, &armpmu->supported_cpus);
-ca2b497253ad01 drivers/perf/arm_pmu.c       Will Deacon  2018-10-05 @560  	if (ret && armpmu->filter_match)
-ca2b497253ad01 drivers/perf/arm_pmu.c       Will Deacon  2018-10-05  561  		return armpmu->filter_match(event);
-ca2b497253ad01 drivers/perf/arm_pmu.c       Will Deacon  2018-10-05  562  
-ca2b497253ad01 drivers/perf/arm_pmu.c       Will Deacon  2018-10-05  563  	return ret;
-c904e32a69b7c7 arch/arm/kernel/perf_event.c Mark Rutland 2015-05-13  564  }
-c904e32a69b7c7 arch/arm/kernel/perf_event.c Mark Rutland 2015-05-13  565  
-
-:::::: The code at line 560 was first introduced by commit
-:::::: ca2b497253ad01c80061a1f3ee9eb91b5d54a849 arm64: perf: Reject stand-alone CHAIN events for PMUv3
-
-:::::: TO: Will Deacon <will.deacon@arm.com>
-:::::: CC: Will Deacon <will.deacon@arm.com>
-
+base-commit: 568035b01cfb107af8d2e4bd2fb9aea22cf5b868
 -- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+2.37.2.672.g94769d06f0-goog
+
