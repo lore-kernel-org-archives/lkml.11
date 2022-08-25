@@ -2,159 +2,157 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 06C43C6498F
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 18210C32774
 	for <linux-kernel@archiver.kernel.org>; Thu, 25 Aug 2022 04:31:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231254AbiHYE2F (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 25 Aug 2022 00:28:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39374 "EHLO
+        id S231519AbiHYEa3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 25 Aug 2022 00:30:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42550 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230074AbiHYE2C (ORCPT
+        with ESMTP id S230074AbiHYEaY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 25 Aug 2022 00:28:02 -0400
-Received: from mailout4.samsung.com (mailout4.samsung.com [203.254.224.34])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A7DAC7694A
-        for <linux-kernel@vger.kernel.org>; Wed, 24 Aug 2022 21:28:00 -0700 (PDT)
-Received: from epcas5p1.samsung.com (unknown [182.195.41.39])
-        by mailout4.samsung.com (KnoxPortal) with ESMTP id 20220825042758epoutp044b7ff9663fce5e108fc0259ced0da669~OfAY98lLo1427814278epoutp04D
-        for <linux-kernel@vger.kernel.org>; Thu, 25 Aug 2022 04:27:58 +0000 (GMT)
-DKIM-Filter: OpenDKIM Filter v2.11.0 mailout4.samsung.com 20220825042758epoutp044b7ff9663fce5e108fc0259ced0da669~OfAY98lLo1427814278epoutp04D
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
-        s=mail20170921; t=1661401678;
-        bh=JJuWaWBA983uY23liNhORH0Mh82FAHzv6ulhPTviZ4A=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=n9oBHfGGh+dkZw6T4Io5SHFr1XXKVRF/mMRgEwvfnDdUBor+yfIL6dKEuQ5lYvk3A
-         L0VZVc9Vk0vkbFyRMr1srFUHWdbD10Jnro+hDB1IGnu01dcbuEmUv9YgBOCo+dvCa1
-         SBXWQJLGuQmEkhohtf1teWiOuBmP/9Ex4D9SrYDU=
-Received: from epsnrtp2.localdomain (unknown [182.195.42.163]) by
-        epcas5p3.samsung.com (KnoxPortal) with ESMTP id
-        20220825042757epcas5p37271c9b4890ba1ae41c96fc192d5a2a5~OfAYFXIPb2043620436epcas5p31;
-        Thu, 25 Aug 2022 04:27:57 +0000 (GMT)
-Received: from epsmges5p1new.samsung.com (unknown [182.195.38.178]) by
-        epsnrtp2.localdomain (Postfix) with ESMTP id 4MCqhD1C4Cz4x9Q4; Thu, 25 Aug
-        2022 04:27:56 +0000 (GMT)
-Received: from epcas5p2.samsung.com ( [182.195.41.40]) by
-        epsmges5p1new.samsung.com (Symantec Messaging Gateway) with SMTP id
-        F7.C0.25709.C4AF6036; Thu, 25 Aug 2022 13:27:56 +0900 (KST)
-Received: from epsmtrp2.samsung.com (unknown [182.195.40.14]) by
-        epcas5p1.samsung.com (KnoxPortal) with ESMTPA id
-        20220825042755epcas5p1b74cb6accae9ec3f25cc8d15d313fcbc~OfAWHl5GF0167101671epcas5p1C;
-        Thu, 25 Aug 2022 04:27:55 +0000 (GMT)
-Received: from epsmgms1p1new.samsung.com (unknown [182.195.42.41]) by
-        epsmtrp2.samsung.com (KnoxPortal) with ESMTP id
-        20220825042755epsmtrp222750ad10fa10264323e48d4d19a62bd~OfAWGkW9b1831518315epsmtrp2L;
-        Thu, 25 Aug 2022 04:27:55 +0000 (GMT)
-X-AuditID: b6c32a49-a71ff7000000646d-d3-6306fa4caa0c
-Received: from epsmtip2.samsung.com ( [182.195.34.31]) by
-        epsmgms1p1new.samsung.com (Symantec Messaging Gateway) with SMTP id
-        44.EA.14392.B4AF6036; Thu, 25 Aug 2022 13:27:55 +0900 (KST)
-Received: from test-zns (unknown [107.110.206.5]) by epsmtip2.samsung.com
-        (KnoxPortal) with ESMTPA id
-        20220825042753epsmtip22acbe0211b824db0a2630278fd0ae467~OfAUcmvsI0868208682epsmtip29;
-        Thu, 25 Aug 2022 04:27:53 +0000 (GMT)
-Date:   Thu, 25 Aug 2022 09:48:13 +0530
-From:   Kanchan Joshi <joshi.k@samsung.com>
-To:     Damien Le Moal <damien.lemoal@opensource.wdc.com>
-Cc:     Bart Van Assche <bvanassche@acm.org>,
-        Adam Manzanares <a.manzanares@samsung.com>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "mcgrof@kernel.org" <mcgrof@kernel.org>,
-        "hare@suse.de" <hare@suse.de>,
-        "linux-block@vger.kernel.org" <linux-block@vger.kernel.org>,
-        "linux-fsdevel@vger.kernel.org" <linux-fsdevel@vger.kernel.org>,
-        "linux-btrfs@vger.kernel.org" <linux-btrfs@vger.kernel.org>,
-        "dm-devel@redhat.com" <dm-devel@redhat.com>,
-        Matias Bjorling <Matias.Bjorling@wdc.com>
-Subject: Re: [ANNOUNCE] CFP: Zoned Storage Microconference - Linux Plumbers
- Conference 2022
-Message-ID: <20220825041813.GA32607@test-zns>
+        Thu, 25 Aug 2022 00:30:24 -0400
+Received: from mga06.intel.com (mga06b.intel.com [134.134.136.31])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8CB961BE83
+        for <linux-kernel@vger.kernel.org>; Wed, 24 Aug 2022 21:30:20 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1661401822; x=1692937822;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=Kxq4UxK/+sKN/MKITgtaEMVYFGyFYzE9EZkADoyRsCo=;
+  b=UEufDrSPcbiQbVERiaT32uJujR2GTf5APmJNkdmdB3YX8bIf/+sV5zu6
+   kWIl708C79YOhPEkzh5vq2t296/dj+qaJzaYxVy4PR0rml2F3PyDIzPmd
+   VYZREQmzITZYHcXk+El8YZiqApD0dYxqJxcyOAXX/LeUn15MTNzN9KI+I
+   ccqLMtxoGrQjBKawL9ZFj46oysc+qkpI+noZof0RY3ozy3zOWvWTmIMjA
+   jT3KQ0JOFxj0Wo/dLx+jiJrjfzP5hCSGR8jjvIgyd0SZBvpfhCIC3biW1
+   jSg+S9BMssoCj3N5WHpL0uudgjSlO9T5ooMln8fG7J5Bs8Bp+rIInI4mq
+   A==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10449"; a="355867654"
+X-IronPort-AV: E=Sophos;i="5.93,262,1654585200"; 
+   d="scan'208";a="355867654"
+Received: from orsmga002.jf.intel.com ([10.7.209.21])
+  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Aug 2022 21:30:20 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.93,262,1654585200"; 
+   d="scan'208";a="610023194"
+Received: from lkp-server02.sh.intel.com (HELO 34e741d32628) ([10.239.97.151])
+  by orsmga002.jf.intel.com with ESMTP; 24 Aug 2022 21:30:18 -0700
+Received: from kbuild by 34e741d32628 with local (Exim 4.96)
+        (envelope-from <lkp@intel.com>)
+        id 1oR4VV-0001i9-27;
+        Thu, 25 Aug 2022 04:30:17 +0000
+Date:   Thu, 25 Aug 2022 12:30:10 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Uros Bizjak <ubizjak@gmail.com>
+Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
+        Ammar Faizi <ammarfaizi2@gnuweeb.org>,
+        GNU/Weeb Mailing List <gwml@vger.gnuweeb.org>,
+        linux-kernel@vger.kernel.org,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Linux Memory Management List <linux-mm@kvack.org>
+Subject: [ammarfaizi2-block:akpm/mm/mm-nonmm-unstable 50/50]
+ kernel/smpboot.c:435:6: warning: variable 'oldstate' is used uninitialized
+ whenever 'if' condition is true
+Message-ID: <202208251224.teVMa7Yy-lkp@intel.com>
 MIME-Version: 1.0
-In-Reply-To: <589cb29e-d2aa-085f-db83-fa718f4fbef2@opensource.wdc.com>
-User-Agent: Mutt/1.9.4 (2018-02-28)
-X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFlrHJsWRmVeSWpSXmKPExsWy7bCmhq7PL7Zkg4mX2CymH1a0mPbhJ7PF
-        77PnmS32vpvNarFn0SQmi723tC0uPV7BbrFn70kWi8u75rBZTGj7ymxxY8JTRgduj8tXvD02
-        repk89jZep/V4/2+q2wefVtWMXpsPl3t8XmTnEf7gW6mAI6obJuM1MSU1CKF1Lzk/JTMvHRb
-        Je/geOd4UzMDQ11DSwtzJYW8xNxUWyUXnwBdt8wcoCuVFMoSc0qBQgGJxcVK+nY2RfmlJakK
-        GfnFJbZKqQUpOQUmBXrFibnFpXnpenmpJVaGBgZGpkCFCdkZv9rvsBccF6iY/OY0UwPjbL4u
-        Rk4OCQETiVun37F0MXJxCAnsZpTYtH0eK0hCSOATo0T3Fy2IxDdGiQ2r57LAdLQ+28AGkdjL
-        KLG27TwThPOMUeLMr0WMIFUsAqoSB641AdkcHGwCmhIXJpeChEUETCXe9rSCrWMW+MMssfT2
-        MWaQhLBArMT6jjVMIDavgK7E1F9f2CBsQYmTM5+AbeYUcJOY9XU3WFxUQFniwLbjYIslBNZy
-        SBxuvckEcZ6LxOpFX5khbGGJV8e3sEPYUhKf3+1lg7CTJS7NPAdVXyLxeM9BKNteovVUP1gv
-        s0CGxKUV3VA2n0Tv7ydMIM9ICPBKdLQJQZQrStyb9JQVwhaXeDhjCZTtIfGyqZcdHnR3Vs1h
-        ncAoNwvJP7OQrICwrSQ6PzSxzgJawSwgLbH8HweEqSmxfpf+AkbWVYySqQXFuempxaYFhnmp
-        5fBITs7P3cQITrhanjsY7z74oHeIkYmD8RCjBAezkgiv1TGWZCHelMTKqtSi/Pii0pzU4kOM
-        psD4mcgsJZqcD0z5eSXxhiaWBiZmZmYmlsZmhkrivFO0GZOFBNITS1KzU1MLUotg+pg4OKUa
-        mCJqHvjydb5d96hSzHhFxmW9vWdjnTYsyY9YKOMSEbJ2wu0FvN6b3m+v+rROqcJJobQvKWb7
-        73Ux3h+ZQrcc31x2fPWrxdzGrOfunE7z3bX7kkHG1/MaET72YueWPbD8s/bm/spG6bVzNYum
-        zjjoIx/FW6Hy4rHLWuHLTnodXi+17076dFehI1027sVRv5SyH2/LXPX4PgeVvjJcvU2NSSNY
-        2UjvQ+2SS01a8ecqXF+EvVzoY2865z77ryP8my7MabKKs2USkLO+N39T+oMpB9Tbth003XrI
-        5NCiSUtcUha95d1zQM/ZJaXqfZ7YQp4t+0UXqb6b7L3I79PH84mM871u32s66vqM/XVG7vwP
-        +0OVWIozEg21mIuKEwFJCHwWQQQAAA==
-X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFvrNLMWRmVeSWpSXmKPExsWy7bCSvK73L7Zkg1vrVS2mH1a0mPbhJ7PF
-        77PnmS32vpvNarFn0SQmi723tC0uPV7BbrFn70kWi8u75rBZTGj7ymxxY8JTRgduj8tXvD02
-        repk89jZep/V4/2+q2wefVtWMXpsPl3t8XmTnEf7gW6mAI4oLpuU1JzMstQifbsEroybf76z
-        F/zkrbjwML+B8Tl3FyMnh4SAiUTrsw1sXYxcHEICuxkl1jfcZINIiEs0X/vBDmELS6z89xzM
-        FhJ4wijRs84UxGYRUJU4cK2JsYuRg4NNQFPiwuRSkLCIgKnE255WFpCZzAINLBJvTl9nBUkI
-        C8RKrO9YwwRi8wroSkz99QVq8TdGibb9GxghEoISJ2c+YQGxmQXMJOZtfsgMsoBZQFpi+T8O
-        kDCngJvErK+7we4UFVCWOLDtONMERsFZSLpnIemehdC9gJF5FaNkakFxbnpusWGBYV5quV5x
-        Ym5xaV66XnJ+7iZGcPxoae5g3L7qg94hRiYOxkOMEhzMSiK8VsdYkoV4UxIrq1KL8uOLSnNS
-        iw8xSnOwKInzXug6GS8kkJ5YkpqdmlqQWgSTZeLglGpgmiAaerlQqOTmN07t33MV3aJO1P+z
-        sWuZdsv4cpr2um3ZV/pY1t5s5fkgpBGxgYn1eLNqTOwX9ua/AZciLWe9eWzizfF++qacsm+f
-        Z1dnWzXFnO/z/q7Hy3Orsc8iJZJns8D0NhmGhm4jle1+2zs5ujLcuO5d/TNJIHXG+2ntAU6H
-        PIurt18M2t0tPmPiqRMHwl3aZsRn671vO5d6YjK/2ZtTTN+rHeo4zpYEfZXZr/966aYyM/FZ
-        WY7WZ9Vczh2UdTfc/ftQxuJVwf1G6vcWeslzKGcc2px3dn+WWc/317tKnOt1k/c+Cf+sy838
-        ePuFv+5Z6xf4la91M66ZHr30KEc4x91HJxsXVK69sqRNiaU4I9FQi7moOBEAaSYJoQ4DAAA=
-X-CMS-MailID: 20220825042755epcas5p1b74cb6accae9ec3f25cc8d15d313fcbc
-X-Msg-Generator: CA
-Content-Type: multipart/mixed;
-        boundary="----_GKj2UxOoZMooFpgW.UaNJF5RnPKrhbpXXK.PgNceyCDa.V5=_a7674_"
-CMS-TYPE: 105P
-DLP-Filter: Pass
-X-CFilter-Loop: Reflected
-X-CMS-RootMailID: 20220522220139uscas1p1e3426b4457e0753c701e9917fe3ec6d2
-References: <CGME20220522220139uscas1p1e3426b4457e0753c701e9917fe3ec6d2@uscas1p1.samsung.com>
-        <20220522220128.GA347919@bgt-140510-bm01>
-        <89b2bb4b-1848-22cc-9814-6cb6726afc18@acm.org>
-        <589cb29e-d2aa-085f-db83-fa718f4fbef2@opensource.wdc.com>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-------_GKj2UxOoZMooFpgW.UaNJF5RnPKrhbpXXK.PgNceyCDa.V5=_a7674_
-Content-Type: text/plain; charset="utf-8"; format="flowed"
-Content-Disposition: inline
+Hi Uros,
 
-On Wed, Aug 24, 2022 at 05:15:28PM -0700, Damien Le Moal wrote:
->On 2022/08/24 16:43, Bart Van Assche wrote:
->> On 5/22/22 15:01, Adam Manzanares wrote:
->>> Zoned Storage Devices (SMR HDDs and ZNS SSDs) have demonstrated that they can
->>> improve storage capacity, throughput, and latency over conventional storage
->>> devices for many workloads. Zoned storage technology is deployed at scale in
->>> some of the largest data centers in the world. There's already a
->>> well-established set of storage vendors with increasing device availability and
->>> a mature software foundation for interacting with zoned storage devices is
->>> available. Zoned storage software support is evolving and their is room for
->>> increased file-system support and additional userspace applications.
->>>
->>> The Zoned Storage microconference focuses on evolving the Linux zoned
->>> storage ecosystem by improving kernel support, file systems, and applications.
->>> In addition, the forum allows us to open the discussion to incorporate and grow
->>> the zoned storage community making sure to meet everyone's needs and
->>> expectations. Finally, it is an excellent opportunity for anyone interested in
->>> zoned storage devices to meet and discuss how we can move the ecosystem forward
->>> together.
->>
->> Hi Adam,
->>
->> On https://protect2.fireeye.com/v1/url?k=755e6c2c-14d5791a-755fe763-000babff9b5d-6defb9d76a932655&q=1&e=e97b90a0-a315-4359-9fee-2976775b532e&u=https%3A%2F%2Flpc.events%2Fevent%2F16%2Fcontributions%2F1147%2F I see four speakers
->> but no agenda? Will an agenda be added before the microconference starts?
->
->And the speaker list is not up-to-date either. I am a speaker too :)
+FYI, the error/warning was bisected to this commit, please ignore it if it's irrelevant.
 
-This page shows the agenda: https://lpc.events/event/16/sessions/149/#20220914
+tree:   https://github.com/ammarfaizi2/linux-block akpm/mm/mm-nonmm-unstable
+head:   2d1e07c7534c14e56ac3818fa24e7c1643a9b1dc
+commit: 2d1e07c7534c14e56ac3818fa24e7c1643a9b1dc [50/50] smpboot: use atomic_try_cmpxchg in cpu_wait_death and cpu_report_death
+config: x86_64-randconfig-a003 (https://download.01.org/0day-ci/archive/20220825/202208251224.teVMa7Yy-lkp@intel.com/config)
+compiler: clang version 14.0.6 (https://github.com/llvm/llvm-project f28c006a5895fc0e329fe15fead81e37457cb1d1)
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # https://github.com/ammarfaizi2/linux-block/commit/2d1e07c7534c14e56ac3818fa24e7c1643a9b1dc
+        git remote add ammarfaizi2-block https://github.com/ammarfaizi2/linux-block
+        git fetch --no-tags ammarfaizi2-block akpm/mm/mm-nonmm-unstable
+        git checkout 2d1e07c7534c14e56ac3818fa24e7c1643a9b1dc
+        # save the config file
+        mkdir build_dir && cp config build_dir/.config
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=x86_64 SHELL=/bin/bash
 
-------_GKj2UxOoZMooFpgW.UaNJF5RnPKrhbpXXK.PgNceyCDa.V5=_a7674_
-Content-Type: text/plain; charset="utf-8"
+If you fix the issue, kindly add following tag where applicable
+Reported-by: kernel test robot <lkp@intel.com>
+
+All warnings (new ones prefixed by >>):
+
+>> kernel/smpboot.c:435:6: warning: variable 'oldstate' is used uninitialized whenever 'if' condition is true [-Wsometimes-uninitialized]
+           if (atomic_read(&per_cpu(cpu_hotplug_state, cpu)) == CPU_DEAD)
+               ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+   kernel/smpboot.c:449:6: note: uninitialized use occurs here
+           if (oldstate == CPU_DEAD) {
+               ^~~~~~~~
+   kernel/smpboot.c:435:2: note: remove the 'if' if its condition is always false
+           if (atomic_read(&per_cpu(cpu_hotplug_state, cpu)) == CPU_DEAD)
+           ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+   kernel/smpboot.c:428:14: note: initialize the variable 'oldstate' to silence this warning
+           int oldstate;
+                       ^
+                        = 0
+   1 warning generated.
 
 
-------_GKj2UxOoZMooFpgW.UaNJF5RnPKrhbpXXK.PgNceyCDa.V5=_a7674_--
+vim +435 kernel/smpboot.c
+
+8038dad7e88858 Paul E. McKenney 2015-02-25  421  
+8038dad7e88858 Paul E. McKenney 2015-02-25  422  /*
+8038dad7e88858 Paul E. McKenney 2015-02-25  423   * Wait for the specified CPU to exit the idle loop and die.
+8038dad7e88858 Paul E. McKenney 2015-02-25  424   */
+8038dad7e88858 Paul E. McKenney 2015-02-25  425  bool cpu_wait_death(unsigned int cpu, int seconds)
+8038dad7e88858 Paul E. McKenney 2015-02-25  426  {
+8038dad7e88858 Paul E. McKenney 2015-02-25  427  	int jf_left = seconds * HZ;
+8038dad7e88858 Paul E. McKenney 2015-02-25  428  	int oldstate;
+8038dad7e88858 Paul E. McKenney 2015-02-25  429  	bool ret = true;
+8038dad7e88858 Paul E. McKenney 2015-02-25  430  	int sleep_jf = 1;
+8038dad7e88858 Paul E. McKenney 2015-02-25  431  
+8038dad7e88858 Paul E. McKenney 2015-02-25  432  	might_sleep();
+8038dad7e88858 Paul E. McKenney 2015-02-25  433  
+8038dad7e88858 Paul E. McKenney 2015-02-25  434  	/* The outgoing CPU will normally get done quite quickly. */
+8038dad7e88858 Paul E. McKenney 2015-02-25 @435  	if (atomic_read(&per_cpu(cpu_hotplug_state, cpu)) == CPU_DEAD)
+8038dad7e88858 Paul E. McKenney 2015-02-25  436  		goto update_state;
+8038dad7e88858 Paul E. McKenney 2015-02-25  437  	udelay(5);
+8038dad7e88858 Paul E. McKenney 2015-02-25  438  
+8038dad7e88858 Paul E. McKenney 2015-02-25  439  	/* But if the outgoing CPU dawdles, wait increasingly long times. */
+8038dad7e88858 Paul E. McKenney 2015-02-25  440  	while (atomic_read(&per_cpu(cpu_hotplug_state, cpu)) != CPU_DEAD) {
+8038dad7e88858 Paul E. McKenney 2015-02-25  441  		schedule_timeout_uninterruptible(sleep_jf);
+8038dad7e88858 Paul E. McKenney 2015-02-25  442  		jf_left -= sleep_jf;
+8038dad7e88858 Paul E. McKenney 2015-02-25  443  		if (jf_left <= 0)
+8038dad7e88858 Paul E. McKenney 2015-02-25  444  			break;
+8038dad7e88858 Paul E. McKenney 2015-02-25  445  		sleep_jf = DIV_ROUND_UP(sleep_jf * 11, 10);
+8038dad7e88858 Paul E. McKenney 2015-02-25  446  	}
+8038dad7e88858 Paul E. McKenney 2015-02-25  447  	oldstate = atomic_read(&per_cpu(cpu_hotplug_state, cpu));
+2d1e07c7534c14 Uros Bizjak      2022-08-23  448  update_state:
+8038dad7e88858 Paul E. McKenney 2015-02-25  449  	if (oldstate == CPU_DEAD) {
+8038dad7e88858 Paul E. McKenney 2015-02-25  450  		/* Outgoing CPU died normally, update state. */
+8038dad7e88858 Paul E. McKenney 2015-02-25  451  		smp_mb(); /* atomic_read() before update. */
+8038dad7e88858 Paul E. McKenney 2015-02-25  452  		atomic_set(&per_cpu(cpu_hotplug_state, cpu), CPU_POST_DEAD);
+8038dad7e88858 Paul E. McKenney 2015-02-25  453  	} else {
+8038dad7e88858 Paul E. McKenney 2015-02-25  454  		/* Outgoing CPU still hasn't died, set state accordingly. */
+2d1e07c7534c14 Uros Bizjak      2022-08-23  455  		if (!atomic_try_cmpxchg(&per_cpu(cpu_hotplug_state, cpu),
+2d1e07c7534c14 Uros Bizjak      2022-08-23  456  					&oldstate, CPU_BROKEN))
+8038dad7e88858 Paul E. McKenney 2015-02-25  457  			goto update_state;
+8038dad7e88858 Paul E. McKenney 2015-02-25  458  		ret = false;
+8038dad7e88858 Paul E. McKenney 2015-02-25  459  	}
+8038dad7e88858 Paul E. McKenney 2015-02-25  460  	return ret;
+8038dad7e88858 Paul E. McKenney 2015-02-25  461  }
+8038dad7e88858 Paul E. McKenney 2015-02-25  462  
+
+:::::: The code at line 435 was first introduced by commit
+:::::: 8038dad7e888581266c76df15d70ca457a3c5910 smpboot: Add common code for notification from dying CPU
+
+:::::: TO: Paul E. McKenney <paulmck@linux.vnet.ibm.com>
+:::::: CC: Paul E. McKenney <paulmck@linux.vnet.ibm.com>
+
+-- 
+0-DAY CI Kernel Test Service
+https://01.org/lkp
