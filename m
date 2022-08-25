@@ -2,149 +2,76 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 44ADFC28D13
-	for <linux-kernel@archiver.kernel.org>; Thu, 25 Aug 2022 11:40:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BAB11C28D13
+	for <linux-kernel@archiver.kernel.org>; Thu, 25 Aug 2022 11:40:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236932AbiHYLkM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 25 Aug 2022 07:40:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33684 "EHLO
+        id S239487AbiHYLku (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 25 Aug 2022 07:40:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34210 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236917AbiHYLkI (ORCPT
+        with ESMTP id S240579AbiHYLk3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 25 Aug 2022 07:40:08 -0400
-Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.220.28])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A322A25EB3;
-        Thu, 25 Aug 2022 04:40:07 -0700 (PDT)
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
-        (No client certificate requested)
-        by smtp-out1.suse.de (Postfix) with ESMTPS id 2240D33FAB;
-        Thu, 25 Aug 2022 11:40:06 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
-        t=1661427606; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:  content-transfer-encoding:content-transfer-encoding;
-        bh=dwYP6pNMJ0bm8xlxtVpMlGoTLHlcq559EPLF7XX0wWg=;
-        b=C+MPh8mLFnN9CLM7FjKQOWdgVZYRDFXFB5CoDv9yeClqcY0jYdkWN9NppQSYqOGtsFRPo9
-        llIVVfYKHqCMkvMFoXXzJLHOUxQsCIuE1TSrgfoXYc80a6jPEMgghctgM2MdCM7R3fZLqu
-        fsBv5JQ9zYRfGwnkpB3TE73sX55oOoM=
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
-        (No client certificate requested)
-        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id D754213517;
-        Thu, 25 Aug 2022 11:40:05 +0000 (UTC)
-Received: from dovecot-director2.suse.de ([192.168.254.65])
-        by imap2.suse-dmz.suse.de with ESMTPSA
-        id wBBAM5VfB2OhfwAAMHmgww
-        (envelope-from <jgross@suse.com>); Thu, 25 Aug 2022 11:40:05 +0000
-From:   Juergen Gross <jgross@suse.com>
-To:     xen-devel@lists.xenproject.org, linux-kernel@vger.kernel.org
-Cc:     Juergen Gross <jgross@suse.com>,
-        Stefano Stabellini <sstabellini@kernel.org>,
-        Oleksandr Tyshchenko <oleksandr_tyshchenko@epam.com>,
-        stable@vger.kernel.org,
-        Rustam Subkhankulov <subkhankulov@ispras.ru>
-Subject: [PATCH v3] xen/privcmd: fix error exit of privcmd_ioctl_dm_op()
-Date:   Thu, 25 Aug 2022 13:40:04 +0200
-Message-Id: <20220825114004.24843-1-jgross@suse.com>
-X-Mailer: git-send-email 2.35.3
+        Thu, 25 Aug 2022 07:40:29 -0400
+Received: from wp530.webpack.hosteurope.de (wp530.webpack.hosteurope.de [IPv6:2a01:488:42:1000:50ed:8234::])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 44E785245A;
+        Thu, 25 Aug 2022 04:40:28 -0700 (PDT)
+Received: from [2a02:8108:963f:de38:eca4:7d19:f9a2:22c5]; authenticated
+        by wp530.webpack.hosteurope.de running ExIM with esmtpsa (TLS1.3:ECDHE_RSA_AES_128_GCM_SHA256:128)
+        id 1oRBDm-0006Sb-Ru; Thu, 25 Aug 2022 13:40:26 +0200
+Message-ID: <2ebb4b04-efe7-ffe8-bf8c-bfc08685eb57@leemhuis.info>
+Date:   Thu, 25 Aug 2022 13:40:26 +0200
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.2.0
+Subject: Re: [regression] Bug 216386 - rtw_8822be: Wifi stops working after
+ resume #forregzbot
+Content-Language: en-US
+From:   Thorsten Leemhuis <regressions@leemhuis.info>
+To:     "regressions@lists.linux.dev" <regressions@lists.linux.dev>
+Cc:     "linux-wireless@vger.kernel.org" <linux-wireless@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>
+References: <822ed6b6-fd3a-3873-cdf0-543340fd4103@leemhuis.info>
+In-Reply-To: <822ed6b6-fd3a-3873-cdf0-543340fd4103@leemhuis.info>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-bounce-key: webpack.hosteurope.de;regressions@leemhuis.info;1661427628;9b4fbbc2;
+X-HE-SMSGID: 1oRBDm-0006Sb-Ru
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The error exit of privcmd_ioctl_dm_op() is calling unlock_pages()
-potentially with pages being NULL, leading to a NULL dereference.
+TWIMC: this mail is primarily send for documentation purposes and for
+regzbot, my Linux kernel regression tracking bot. These mails usually
+contain '#forregzbot' in the subject, to make them easy to spot and filter.
 
-Additionally lock_pages() doesn't check for pin_user_pages_fast()
-having been completely successful, resulting in potentially not
-locking all pages into memory. This could result in sporadic failures
-when using the related memory in user mode.
+On 25.08.22 13:25, Thorsten Leemhuis wrote:
+> To quote from https://bugzilla.kernel.org/show_bug.cgi?id=216386 :
+> 
+>>  Utkarsh Verma 2022-08-20 09:16:41 UTC
+>>
+>> I have an ASUS TUF FX505DT which has the RTL8822BE wifi card. I recently upgraded to kernel 5.19 and this issue started popping up.
+>>
+>> When I close my laptop lid and let it sleep for a considerable amount of time, the wifi stops working the next time I open it, and I have to reboot my PC to get internet. This is annoying because I suspended my PC to continue with my work after some time quickly, and having to reboot defeats the purpose.
+>>
+>> I tried removing and reloading the kernel module for this device as well, and it fails with the following dmesg log.
+>>
+>> ```
+>> [ 4914.877037] rtw_8822be 0000:04:00.0: Unable to change power state from D3cold to D0, device inaccessible
+>> [ 4914.886333] rtw_8822be 0000:04:00.0: mac power on failed
+>> [ 4914.886342] rtw_8822be 0000:04:00.0: failed to power on mac
+>> [ 4914.886344] rtw_8822be 0000:04:00.0: failed to setup chip efuse info
+>> [ 4914.886348] rtw_8822be 0000:04:00.0: failed to setup chip information
+>> [ 4914.892027] rtw_8822be 0000:04:00.0: Firmware version 27.2.0, H2C version 13
+>> [ 4914.922150] rtw_8822be: probe of 0000:04:00.0 failed with error -114
+>> ```
+> 
+> #regzbot introduced: https://bugzilla.kernel.org/show_bug.cgi?id=216386
+> #regzbot ignore-activity
 
-Fix all of that by calling unlock_pages() always with the real number
-of pinned pages, which will be zero in case pages being NULL, and by
-checking the number of pages pinned by pin_user_pages_fast() matching
-the expected number of pages.
+Argh, apparently I forgot the appropriate syntax of the bot I wrote
+myself :-/
 
-Cc: <stable@vger.kernel.org>
-Fixes: ab520be8cd5d ("xen/privcmd: Add IOCTL_PRIVCMD_DM_OP")
-Reported-by: Rustam Subkhankulov <subkhankulov@ispras.ru>
-Signed-off-by: Juergen Gross <jgross@suse.com>
----
-V2:
-- use "pinned" as parameter for unlock_pages() (Jan Beulich)
-- drop label "unlock" again (Jan Beulich)
-- add check for complete success of pin_user_pages_fast()
-V3:
-- continue after partial success of pin_user_pages_fast() (Jan Beulich)
----
- drivers/xen/privcmd.c | 20 +++++++++++---------
- 1 file changed, 11 insertions(+), 9 deletions(-)
-
-diff --git a/drivers/xen/privcmd.c b/drivers/xen/privcmd.c
-index 3369734108af..1ca7e3ea6fd4 100644
---- a/drivers/xen/privcmd.c
-+++ b/drivers/xen/privcmd.c
-@@ -581,7 +581,7 @@ static int lock_pages(
- 	struct privcmd_dm_op_buf kbufs[], unsigned int num,
- 	struct page *pages[], unsigned int nr_pages, unsigned int *pinned)
- {
--	unsigned int i;
-+	unsigned int i, off = 0;
- 
- 	for (i = 0; i < num; i++) {
- 		unsigned int requested;
-@@ -589,19 +589,23 @@ static int lock_pages(
- 
- 		requested = DIV_ROUND_UP(
- 			offset_in_page(kbufs[i].uptr) + kbufs[i].size,
--			PAGE_SIZE);
-+			PAGE_SIZE) - off;
- 		if (requested > nr_pages)
- 			return -ENOSPC;
- 
- 		page_count = pin_user_pages_fast(
--			(unsigned long) kbufs[i].uptr,
-+			(unsigned long)kbufs[i].uptr + off * PAGE_SIZE,
- 			requested, FOLL_WRITE, pages);
--		if (page_count < 0)
--			return page_count;
-+		if (page_count <= 0)
-+			return page_count ? : -EFAULT;
- 
- 		*pinned += page_count;
- 		nr_pages -= page_count;
- 		pages += page_count;
-+
-+		off = requested - page_count;
-+		if (off)
-+			i--;
- 	}
- 
- 	return 0;
-@@ -677,10 +681,8 @@ static long privcmd_ioctl_dm_op(struct file *file, void __user *udata)
- 	}
- 
- 	rc = lock_pages(kbufs, kdata.num, pages, nr_pages, &pinned);
--	if (rc < 0) {
--		nr_pages = pinned;
-+	if (rc < 0)
- 		goto out;
--	}
- 
- 	for (i = 0; i < kdata.num; i++) {
- 		set_xen_guest_handle(xbufs[i].h, kbufs[i].uptr);
-@@ -692,7 +694,7 @@ static long privcmd_ioctl_dm_op(struct file *file, void __user *udata)
- 	xen_preemptible_hcall_end();
- 
- out:
--	unlock_pages(pages, nr_pages);
-+	unlock_pages(pages, pinned);
- 	kfree(xbufs);
- 	kfree(pages);
- 	kfree(kbufs);
--- 
-2.35.3
-
+#regzbot introduced: v5.18..v5.19 ^
+https://bugzilla.kernel.org/show_bug.cgi?id=216386
+#regzbot From: Utkarsh Verma <utkarsh.naveen@gmail.com>
+#regzbot ignore-activity
