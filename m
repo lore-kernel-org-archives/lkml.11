@@ -2,86 +2,153 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CBBBBECAA25
-	for <linux-kernel@archiver.kernel.org>; Thu, 25 Aug 2022 18:03:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D99B5ECAA25
+	for <linux-kernel@archiver.kernel.org>; Thu, 25 Aug 2022 18:04:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239959AbiHYSDA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 25 Aug 2022 14:03:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48722 "EHLO
+        id S242120AbiHYSER (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 25 Aug 2022 14:04:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49416 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232070AbiHYSC6 (ORCPT
+        with ESMTP id S232070AbiHYSEP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 25 Aug 2022 14:02:58 -0400
-Received: from mail-pl1-x62d.google.com (mail-pl1-x62d.google.com [IPv6:2607:f8b0:4864:20::62d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9CECBBCC2E
-        for <linux-kernel@vger.kernel.org>; Thu, 25 Aug 2022 11:02:56 -0700 (PDT)
-Received: by mail-pl1-x62d.google.com with SMTP id l3so1143126plb.10
-        for <linux-kernel@vger.kernel.org>; Thu, 25 Aug 2022 11:02:56 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:sender:from:to:cc;
-        bh=fJGUNeVle9qIpaakWxtZxkW5gSPVt+D2sQZmSrc7TA0=;
-        b=oengml8Fa9j59y9yWSmjkxR81+UYyoViuvtrfcnVuJh8ACXlyCYukM8Pp4cMAFNZ+L
-         e/JOM7rSu42VUq5KndusGcP4dW6FpitIMI/bQ/jJevbikwZUWydWJIN581Le1+W8XOFd
-         kvWL2eftehGMlCsNpWpmBmnAkTUrPn0jZblCiGM6vw8wDlxfYUIX4VHFMj6mkFmxweXA
-         8wvMkZUAQhOsoONNKH78LzyLMiOHLjydO/alV1C0HdCKTiuUOvondOT2G5j70JtqM3Om
-         LI4zvr1YTjBs0zwYkLGMfqrX/uwnxxOW0eEzw8TMLhHLVq6+5DwjQHibp6d0KHmQcXEc
-         nKBQ==
+        Thu, 25 Aug 2022 14:04:15 -0400
+Received: from mail-pj1-f54.google.com (mail-pj1-f54.google.com [209.85.216.54])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9711AAB06F;
+        Thu, 25 Aug 2022 11:04:14 -0700 (PDT)
+Received: by mail-pj1-f54.google.com with SMTP id s36-20020a17090a69a700b001faad0a7a34so5724003pjj.4;
+        Thu, 25 Aug 2022 11:04:14 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:sender:x-gm-message-state:from:to:cc;
-        bh=fJGUNeVle9qIpaakWxtZxkW5gSPVt+D2sQZmSrc7TA0=;
-        b=qJBZZWg5iFKFN9LvwhgMpipZwNGnR7IkV+q7QipwkDFHdKkk2O5KovpMncjNwwoujC
-         NgahHIatxzjpAl2Uht983xiPJvK1WwFwJquM55E5oMKnmwv0csQEKLcOz7tSjYBwj5XU
-         80noecvH4438W6n8+qSTuxMU9yPRXuvjuSSDcvW9bPdZDA4IEaWmv+VG1M4R5KcdobPJ
-         SE/CVCx+CLEo18ZGL1gjjHDGqKsL/2N6WAe5+hX+nd/+YZ/TBfNj0xzw1zX7J03U0h2g
-         QLxHy3c1JjcVDGv4CZa5rfuBq+VWvLDgw7p/qynTOjbrVjJtPKVcK3g0kLnduCFSaPek
-         LBVQ==
-X-Gm-Message-State: ACgBeo1Kyj+b/S1wEdeDo/fh+UP2nFAU0S2hNcafhtoo38zy+CmtsKTS
-        8xGI+Df/AZ2EDl5pCjqsFjg=
-X-Google-Smtp-Source: AA6agR6m4fwczP0E+SNqMtL/4nYaQsgnUK6fVOmRYOvBR0wpEkmzIfu8clnTc6MFQzLfYDxu5z2gwA==
-X-Received: by 2002:a17:903:2c5:b0:172:d1f2:401d with SMTP id s5-20020a17090302c500b00172d1f2401dmr286243plk.56.1661450575837;
-        Thu, 25 Aug 2022 11:02:55 -0700 (PDT)
-Received: from localhost (2603-800c-1a02-1bae-a7fa-157f-969a-4cde.res6.spectrum.com. [2603:800c:1a02:1bae:a7fa:157f:969a:4cde])
-        by smtp.gmail.com with ESMTPSA id i15-20020a17090332cf00b0016dc6243bb2sm15152565plr.143.2022.08.25.11.02.55
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 25 Aug 2022 11:02:55 -0700 (PDT)
-Sender: Tejun Heo <htejun@gmail.com>
-Date:   Thu, 25 Aug 2022 08:02:54 -1000
-From:   "tj@kernel.org" <tj@kernel.org>
-To:     "Xue, Zhan" <zhan.xue@intel.com>
-Cc:     "florian@mickler.org" <florian@mickler.org>,
-        LKML <linux-kernel@vger.kernel.org>
-Subject: Re: Regarding WQ_MEM_RECLAIM
-Message-ID: <Ywe5TlXr2cR3inuG@slm.duckdns.org>
-References: <PH0PR11MB50451B7F2F155AD8A893E9E894709@PH0PR11MB5045.namprd11.prod.outlook.com>
- <YwUb8UmXvKNHgSrP@slm.duckdns.org>
- <PH0PR11MB5045D2FF3C98EAE995F7897194739@PH0PR11MB5045.namprd11.prod.outlook.com>
- <PH0PR11MB50456E21C95359B57223F23994739@PH0PR11MB5045.namprd11.prod.outlook.com>
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc;
+        bh=Gh8pLFldO50fiVci0OdL141TCfxkxDjEugbgeSSI8T8=;
+        b=DpavOZv0Kd7uDbBG/kQdksF0FCw9jMLRT+e/zQTS/v/DFh4Bdb1vy/Gui7J/q1gew2
+         DOBTczcdVMdgr5Uol7pwesoSd2gPpgf4UE2gzH3lq2iL9KCla1c6Tp90wxnMVyIuHI6h
+         FgO2Sx/Vh/Y5DQlroifac/ZTnsYfWN20SBJL9HtCzNVVBZfu986/tDIVVChtKXFqjcyh
+         K5nroixuw7oQJaegcRq+1aBGrUgZ8bqBgJjzlPDteMaW1VMysDx8CR5sBEcjE9tGq62U
+         R/oA7H34n8GH8BAkKLqPKOmv/EvQKWSujMNlMc9PlVk3jI9zeuc1rn/+yKWc2KE+qt87
+         93Jg==
+X-Gm-Message-State: ACgBeo1hcf5buKoFwV/YyYpMS1ZfZ1xIGnMzf/qq3kiZKlU/oaZFizhr
+        GpJI4lfc1KDXOoI4ukg7KDM=
+X-Google-Smtp-Source: AA6agR7CFU2aM79N22sDwIWnfty4wO7V1f3b8vn4mHtGQRUYT2S9jgvjfervFyydp7hyA4QOghlj2Q==
+X-Received: by 2002:a17:90b:33d2:b0:1fb:971b:c5e9 with SMTP id lk18-20020a17090b33d200b001fb971bc5e9mr251237pjb.90.1661450653976;
+        Thu, 25 Aug 2022 11:04:13 -0700 (PDT)
+Received: from ?IPV6:2620:15c:211:201:349c:3078:d005:5a7e? ([2620:15c:211:201:349c:3078:d005:5a7e])
+        by smtp.gmail.com with ESMTPSA id s16-20020a170902a51000b00172b8e60019sm291701plq.249.2022.08.25.11.04.11
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 25 Aug 2022 11:04:13 -0700 (PDT)
+Message-ID: <3326ad2e-e82f-7254-7e6b-bb0a120288f8@acm.org>
+Date:   Thu, 25 Aug 2022 11:04:10 -0700
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <PH0PR11MB50456E21C95359B57223F23994739@PH0PR11MB5045.namprd11.prod.outlook.com>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.11.0
+Subject: Re: [RFC PATCH v2 1/2] scsi: ufs: Add Multi-Circular Queue support
+Content-Language: en-US
+To:     "Asutosh Das (asd)" <quic_asutoshd@quicinc.com>,
+        Can Guo <quic_cang@quicinc.com>, quic_nguyenb@quicinc.com,
+        quic_xiaosenh@quicinc.com, stanley.chu@mediatek.com,
+        adrian.hunter@intel.com, beanhuo@micron.com, avri.altman@wdc.com,
+        mani@kernel.org, linux-scsi@vger.kernel.org,
+        kernel-team@android.com
+Cc:     Alim Akhtar <alim.akhtar@samsung.com>,
+        "James E.J. Bottomley" <jejb@linux.ibm.com>,
+        "Martin K. Petersen" <martin.petersen@oracle.com>,
+        Jinyoung Choi <j-young.choi@samsung.com>,
+        jongmin jeong <jjmin.jeong@samsung.com>,
+        Kiwoong Kim <kwmad.kim@samsung.com>,
+        open list <linux-kernel@vger.kernel.org>
+References: <1660213984-37793-1-git-send-email-quic_cang@quicinc.com>
+ <1660213984-37793-2-git-send-email-quic_cang@quicinc.com>
+ <ea877f4f-1acd-2da4-a6f5-10df02dfee74@acm.org>
+ <4471ed41-516c-95d4-003d-28077df7dce4@quicinc.com>
+From:   Bart Van Assche <bvanassche@acm.org>
+In-Reply-To: <4471ed41-516c-95d4-003d-28077df7dce4@quicinc.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Aug 24, 2022 at 06:10:56AM +0000, Xue, Zhan wrote:
-> Convert to plain text..
+On 8/24/22 18:42, Asutosh Das (asd) wrote:
+> On 8/18/2022 7:41 PM, Bart Van Assche wrote:
+>> On 8/11/22 03:33, Can Guo wrote:
+>>> +static inline void ufshcd_mcq_process_event(struct ufs_hba *hba,
+>>> +                        struct ufs_hw_queue *hwq)
+>>> +{
+>>> +    struct cq_entry *cqe = ufshcd_mcq_cur_cqe(hwq);
+>>> +    int tag;
+>>> +
+>>> +    tag = ufshcd_mcq_get_tag(hba, hwq, cqe);
+>>> +    ufshcd_compl_one_task(hba, tag, cqe);
+>>> +}
+>>
+>> Consider changing "process_event" into "process_cqe". Consider 
+>> renaming ufshcd_compl_one_task() into ufshcd_compl_one_cqe().
+>>
+> The preparatory patch that would precede this change would define 
+> ufshcd_compl_one_task() in ufshcd.c. Since this function would be 
+> invoked both from Single Doorbell mode and MCQ mode, 
+> ufshcd_compl_one_task() sounds more relevant. What say?
 
-The email's formatting is too painful to reply directly.
+The name "task" is confusing since in SCSI standard documents it refers 
+to "task management" while ufshcd_compl_one_task() is not related to 
+SCSI task management at all. So I would appreciate it if another name is 
+chosen than ufshcd_compl_one_task().
 
-Here are two brief points:
+>>> +static irqreturn_t ufshcd_handle_mcq_cq_events(struct ufs_hba *hba)
+>>> +{
+>>> +    struct ufs_hw_queue *hwq;
+>>> +    unsigned long outstanding_cqs;
+>>> +    unsigned int nr_queues;
+>>> +    int i, ret;
+>>> +    u32 events;
+>>> +
+>>> +    ret = ufshcd_vops_get_outstanding_cqs(hba, &outstanding_cqs);
+>>> +    if (ret)
+>>> +        outstanding_cqs = (1U << hba->nr_hw_queues) - 1;
+>>> +
+>>> +    /* Exclude the poll queues */
+>>> +    nr_queues = hba->nr_hw_queues - hba->nr_queues[HCTX_TYPE_POLL];
+>>> +    for_each_set_bit(i, &outstanding_cqs, nr_queues) {
+>>> +        hwq = &hba->uhq[i];
+>>> +
+>>> +        events = ufshcd_mcq_read_cqis(hba, i);
+>>> +        if (events)
+>>> +            ufshcd_mcq_write_cqis(hba, events, i);
+>>> +
+>>> +        if (events & UFSHCD_MCQ_CQIS_TEPS)
+>>> +            ufshcd_mcq_poll_cqe_nolock(hba, hwq);
+>>> +    }
+>>> +
+>>> +    return IRQ_HANDLED;
+>>> +}
+>>
+>> Why the loop over the completion queues? Shouldn't UFSHCI 4.0 
+>> compliant controllers support one interrupt per completion queue?
+>>
+> MCQ specification doesn't define that UFSHCI 4.0 compliant HC should 
+> support one interrupt per completion queue. I guess it would depend on 
+> HC vendors. But it specifies ESI as an alternate method; which is 
+> implemented in this patch.
 
-* Just don't share the same workqueue between work items which need forward
-  progress guarantee and ones which don't.
+It is unfortunate that support for the ESI mechanism is optional in the 
+UFSHCI 4.0 specification since I consider this as one of the most 
+important UFSHCI 4.0 features. I wouldn't mind if MCQ would only be 
+supported for UFSHCI 4.0 controllers that support ESI.
 
-* If something can block memory reclaim, it is in the memory reclaim path by
-  definition.
+>>> +    if (hba->nutrs != old_nutrs) {
+>>> +        ufshcd_release_sdb_queue(hba, old_nutrs);
+>>> +        ret = ufshcd_memory_alloc(hba);
+>>> +        if (ret)
+>>> +            return ret;
+>>> +        ufshcd_host_memory_configure(hba);
+>>> +    }
+>>
+>> Can this freeing + reallocating be avoided?
+>>
+> Umm, we thought about this. Only after reading the device params, the 
+> ext_iid support and the device queue depth be determined. So didn't look 
+> like there's any other way than this. If you have any ideas, please let 
+> us know.
 
-Thanks.
-
--- 
-tejun
