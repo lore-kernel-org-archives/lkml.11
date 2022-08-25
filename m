@@ -2,148 +2,149 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5076AC04AA5
-	for <linux-kernel@archiver.kernel.org>; Thu, 25 Aug 2022 12:45:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 21FDAC04AA5
+	for <linux-kernel@archiver.kernel.org>; Thu, 25 Aug 2022 12:46:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241975AbiHYMpD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 25 Aug 2022 08:45:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36644 "EHLO
+        id S241465AbiHYMqM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 25 Aug 2022 08:46:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40010 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241465AbiHYMpA (ORCPT
+        with ESMTP id S234338AbiHYMqL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 25 Aug 2022 08:45:00 -0400
-Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7380E13FAF
-        for <linux-kernel@vger.kernel.org>; Thu, 25 Aug 2022 05:44:58 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1661431498; x=1692967498;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=saLt7LoBJ+72ahHTpOKFGxOfPZ9teye4fthlLMq6KF0=;
-  b=HqRr/3YoEg87fsk8xQ7bJJo7drRENrsloxQkgwzRh53GvCaZ1yYRJ7NS
-   65a/K3G/g1jhl2Suiz+YyabPIVjUrJ46I9zg5axuiYldINMOJhC3395MY
-   P5sZpNuQB4E4i03bD6kcqdtXRZRyjKEPq+RzZa60Y35W1w8zwtGImZ6fb
-   jPiixBtC24A1w8TBnIOwke5xElYxEw0FM/bijAqPX1c1xID/G8GXsQqmb
-   zHJPXfJPhPT+xX2gfN4byVWagdNkO/J6ExxVy+1Sndx7p7pRY/6Rr/rRb
-   sJzeYJ7wjd8VvK6aB4+JjJer2X3t5rcZ0T+GjVLlWWABLlWMjhI5Vm8ZG
-   g==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10450"; a="295506670"
-X-IronPort-AV: E=Sophos;i="5.93,263,1654585200"; 
-   d="scan'208";a="295506670"
-Received: from orsmga006.jf.intel.com ([10.7.209.51])
-  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Aug 2022 05:44:57 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.93,263,1654585200"; 
-   d="scan'208";a="586855712"
-Received: from lkp-server02.sh.intel.com (HELO 34e741d32628) ([10.239.97.151])
-  by orsmga006.jf.intel.com with ESMTP; 25 Aug 2022 05:44:56 -0700
-Received: from kbuild by 34e741d32628 with local (Exim 4.96)
-        (envelope-from <lkp@intel.com>)
-        id 1oRCEB-0002Ff-2d;
-        Thu, 25 Aug 2022 12:44:55 +0000
-Date:   Thu, 25 Aug 2022 20:44:50 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Dan Carpenter <error27@gmail.com>
-Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Chuck Lever <chuck.lever@oracle.com>
-Subject: [stable:linux-5.4.y 2861/5186] include/linux/sunrpc/xdr.h:539:17:
- error: comparison is always false due to limited range of data type
-Message-ID: <202208252033.POQoHYcN-lkp@intel.com>
+        Thu, 25 Aug 2022 08:46:11 -0400
+Received: from vps-vb.mhejs.net (vps-vb.mhejs.net [37.28.154.113])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 011E74D17E;
+        Thu, 25 Aug 2022 05:46:06 -0700 (PDT)
+Received: from MUA
+        by vps-vb.mhejs.net with esmtps  (TLS1.2) tls TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256
+        (Exim 4.94.2)
+        (envelope-from <mail@maciej.szmigiero.name>)
+        id 1oRCFC-0002Ci-QW; Thu, 25 Aug 2022 14:45:58 +0200
+Message-ID: <3752b74b-74e1-00fd-d80d-41104e07fe95@maciej.szmigiero.name>
+Date:   Thu, 25 Aug 2022 14:45:53 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.9.0
+Content-Language: en-US
+To:     "Shukla, Santosh" <santosh.shukla@amd.com>
+Cc:     Paolo Bonzini <pbonzini@redhat.com>,
+        Sean Christopherson <seanjc@google.com>,
+        Vitaly Kuznetsov <vkuznets@redhat.com>,
+        Jim Mattson <jmattson@google.com>,
+        Joerg Roedel <joro@8bytes.org>,
+        Tom Lendacky <thomas.lendacky@amd.com>, kvm@vger.kernel.org,
+        linux-kernel@vger.kernel.org, mlevitsk@redhat.com
+References: <20220810061226.1286-1-santosh.shukla@amd.com>
+ <20220810061226.1286-6-santosh.shukla@amd.com>
+ <bf9e8a9c-5172-b61a-be6e-87a919442fbd@maciej.szmigiero.name>
+ <e10b3de6-2df0-1339-4574-8477a924b78e@amd.com>
+ <f96b867f-4c32-4950-8508-234fe2cda7b9@maciej.szmigiero.name>
+ <1062bf85-0d44-011b-2377-d6be1485ce65@amd.com>
+From:   "Maciej S. Szmigiero" <mail@maciej.szmigiero.name>
+Subject: Re: [PATCHv3 5/8] KVM: SVM: Add VNMI support in inject_nmi
+In-Reply-To: <1062bf85-0d44-011b-2377-d6be1485ce65@amd.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Dan,
+On 25.08.2022 12:56, Shukla, Santosh wrote:
+> On 8/24/2022 6:26 PM, Maciej S. Szmigiero wrote:
+>> On 24.08.2022 14:13, Shukla, Santosh wrote:
+>>> Hi Maciej,
+>>>
+>>> On 8/11/2022 2:54 AM, Maciej S. Szmigiero wrote:
+>>>> On 10.08.2022 08:12, Santosh Shukla wrote:
+>>>>> Inject the NMI by setting V_NMI in the VMCB interrupt control. processor
+>>>>> will clear V_NMI to acknowledge processing has started and will keep the
+>>>>> V_NMI_MASK set until the processor is done with processing the NMI event.
+>>>>>
+>>>>> Signed-off-by: Santosh Shukla <santosh.shukla@amd.com>
+>>>>> ---
+>>>>> v3:
+>>>>> - Removed WARN_ON check.
+>>>>>
+>>>>> v2:
+>>>>> - Added WARN_ON check for vnmi pending.
+>>>>> - use `get_vnmi_vmcb` to get correct vmcb so to inject vnmi.
+>>>>>
+>>>>>     arch/x86/kvm/svm/svm.c | 7 +++++++
+>>>>>     1 file changed, 7 insertions(+)
+>>>>>
+>>>>> diff --git a/arch/x86/kvm/svm/svm.c b/arch/x86/kvm/svm/svm.c
+>>>>> index e260e8cb0c81..8c4098b8a63e 100644
+>>>>> --- a/arch/x86/kvm/svm/svm.c
+>>>>> +++ b/arch/x86/kvm/svm/svm.c
+>>>>> @@ -3479,7 +3479,14 @@ static void pre_svm_run(struct kvm_vcpu *vcpu)
+>>>>>     static void svm_inject_nmi(struct kvm_vcpu *vcpu)
+>>>>>     {
+>>>>>         struct vcpu_svm *svm = to_svm(vcpu);
+>>>>> +    struct vmcb *vmcb = NULL;
+>>>>>     +    if (is_vnmi_enabled(svm)) {
+>>>>
+>>>> I guess this should be "is_vnmi_enabled(svm) && !svm->nmi_l1_to_l2"
+>>>> since if nmi_l1_to_l2 is true then the NMI to be injected originally
+>>>> comes from L1's VMCB12 EVENTINJ field.
+>>>>
+>>>
+>>> Not sure if I understood the case fully.. so trying to sketch scenario here -
+>>> if nmi_l1_to_l2 is true then event is coming from EVTINJ. .which could
+>>> be one of following case -
+>>> 1) L0 (vnmi enabled) and L1 (vnmi disabled)
+>>
+>> As far as I can see in this case:
+>> is_vnmi_enabled() returns whether VMCB02's int_ctl has V_NMI_ENABLE bit set.
+>>
+> 
+> For L1 with vnmi disabled case - is_vnmi_enabled()->get_vnmi_vmcb() will return false so the
+> execution path will opt EVTINJ model for re-injection.
 
-FYI, the error/warning still remains.
+I guess by "get_vnmi_vmcb() will return false" you mean it will return NULL,
+since this function returns a pointer, not a bool.
 
-tree:   https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable.git linux-5.4.y
-head:   684cc17be897de3b0fd2e5a021a702f68046d9fe
-commit: ce1aa09cc14ed625104acc2d487bd92b9a88efe2 [2861/5186] NFSD: prevent integer overflow on 32 bit systems
-config: sparc64-randconfig-r003-20220823 (https://download.01.org/0day-ci/archive/20220825/202208252033.POQoHYcN-lkp@intel.com/config)
-compiler: sparc64-linux-gcc (GCC) 12.1.0
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable.git/commit/?id=ce1aa09cc14ed625104acc2d487bd92b9a88efe2
-        git remote add stable https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable.git
-        git fetch --no-tags stable linux-5.4.y
-        git checkout ce1aa09cc14ed625104acc2d487bd92b9a88efe2
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-12.1.0 make.cross W=1 O=build_dir ARCH=sparc64 SHELL=/bin/bash arch/sparc/kernel/
+I can't see however, how this will happen:
+>static inline struct vmcb *get_vnmi_vmcb(struct vcpu_svm *svm)
+>{
+>	if (!vnmi)
+>		return NULL;
+         ^ "vnmi" variable controls whether L0 uses vNMI,
+	   so this variable is true in our case
 
-If you fix the issue, kindly add following tag where applicable
-Reported-by: kernel test robot <lkp@intel.com>
+>
+>	if (is_guest_mode(&svm->vcpu))
+>		return svm->nested.vmcb02.ptr;
+		^ this should be always non-NULL.
 
-All errors (new ones prefixed by >>):
+So get_vnmi_vmcb() will return VMCB02 pointer in our case, not NULL...
 
-   In file included from include/linux/sunrpc/sched.h:19,
-                    from include/linux/sunrpc/auth.h:15,
-                    from include/linux/nfs_fs.h:31,
-                    from arch/sparc/kernel/sys_sparc32.c:25:
-   include/linux/sunrpc/xdr.h: In function 'xdr_stream_decode_uint32_array':
->> include/linux/sunrpc/xdr.h:539:17: error: comparison is always false due to limited range of data type [-Werror=type-limits]
-     539 |         if (len > SIZE_MAX / sizeof(*p))
-         |                 ^
-   cc1: all warnings being treated as errors
+> 
+> Thanks,
+> Santosh
+> 
+>> This field in VMCB02 comes from nested_vmcb02_prepare_control() which
+>> in the !nested_vnmi_enabled() case (L1 is not using vNMI) copies these bits
+>> from VMCB01:
+>>> int_ctl_vmcb01_bits |= (V_NMI_PENDING | V_NMI_ENABLE | V_NMI_MASK);
+>>
+>> So in this case (L0 uses vNMI) V_NMI_ENABLE will be set in VMCB01, right?
+>>
+>> This bit will then be copied to VMCB02 
 
-Kconfig warnings: (for reference only)
-   WARNING: unmet direct dependencies detected for FRAME_POINTER
-   Depends on [n]: DEBUG_KERNEL [=y] && (M68K || UML || SUPERH) || ARCH_WANT_FRAME_POINTERS [=n] || MCOUNT [=n]
-   Selected by [y]:
-   - LOCKDEP [=y] && DEBUG_KERNEL [=y] && LOCK_DEBUGGING_SUPPORT [=y] && !MIPS && !PPC && !ARM && !S390 && !MICROBLAZE && !ARC && !X86
+... and due to the above is_vnmi_enabled() will return true, so
+re-injection will attempt to use vNMI instead of EVTINJ (wrong).
 
+>>> 2) L0 & L1 both vnmi disabled.
+>>
+>> This case is ok.
+>>
+>>>
+>>> In both cases the vnmi check will fail for L1 and execution path
+>>> will fall back to default - right?
+>>>
+>>> Thanks,
+>>> Santosh
+>>
 
-vim +539 include/linux/sunrpc/xdr.h
-
-   517	
-   518	/**
-   519	 * xdr_stream_decode_uint32_array - Decode variable length array of integers
-   520	 * @xdr: pointer to xdr_stream
-   521	 * @array: location to store the integer array or NULL
-   522	 * @array_size: number of elements to store
-   523	 *
-   524	 * Return values:
-   525	 *   On success, returns number of elements stored in @array
-   526	 *   %-EBADMSG on XDR buffer overflow
-   527	 *   %-EMSGSIZE if the size of the array exceeds @array_size
-   528	 */
-   529	static inline ssize_t
-   530	xdr_stream_decode_uint32_array(struct xdr_stream *xdr,
-   531			__u32 *array, size_t array_size)
-   532	{
-   533		__be32 *p;
-   534		__u32 len;
-   535		ssize_t retval;
-   536	
-   537		if (unlikely(xdr_stream_decode_u32(xdr, &len) < 0))
-   538			return -EBADMSG;
- > 539		if (len > SIZE_MAX / sizeof(*p))
-   540			return -EBADMSG;
-   541		p = xdr_inline_decode(xdr, len * sizeof(*p));
-   542		if (unlikely(!p))
-   543			return -EBADMSG;
-   544		if (array == NULL)
-   545			return len;
-   546		if (len <= array_size) {
-   547			if (len < array_size)
-   548				memset(array+len, 0, (array_size-len)*sizeof(*array));
-   549			array_size = len;
-   550			retval = len;
-   551		} else
-   552			retval = -EMSGSIZE;
-   553		for (; array_size > 0; p++, array++, array_size--)
-   554			*array = be32_to_cpup(p);
-   555		return retval;
-   556	}
-   557	#endif /* __KERNEL__ */
-   558	
-
--- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+Thanks,
+Maciej
