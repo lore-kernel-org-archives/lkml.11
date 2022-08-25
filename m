@@ -2,542 +2,95 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 088DEC04AA5
-	for <linux-kernel@archiver.kernel.org>; Thu, 25 Aug 2022 13:03:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0A5C8C04AA5
+	for <linux-kernel@archiver.kernel.org>; Thu, 25 Aug 2022 13:03:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242267AbiHYNDP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 25 Aug 2022 09:03:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39742 "EHLO
+        id S242283AbiHYNDT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 25 Aug 2022 09:03:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40208 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242154AbiHYNCs (ORCPT
+        with ESMTP id S242190AbiHYNC6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 25 Aug 2022 09:02:48 -0400
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 988C080F7B
-        for <linux-kernel@vger.kernel.org>; Thu, 25 Aug 2022 06:02:41 -0700 (PDT)
-Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <ore@pengutronix.de>)
-        id 1oRCUz-0007zX-9i; Thu, 25 Aug 2022 15:02:17 +0200
-Received: from [2a0a:edc0:0:1101:1d::ac] (helo=dude04.red.stw.pengutronix.de)
-        by drehscheibe.grey.stw.pengutronix.de with esmtp (Exim 4.94.2)
-        (envelope-from <ore@pengutronix.de>)
-        id 1oRCUw-001uGT-9R; Thu, 25 Aug 2022 15:02:14 +0200
-Received: from ore by dude04.red.stw.pengutronix.de with local (Exim 4.94.2)
-        (envelope-from <ore@pengutronix.de>)
-        id 1oRCUv-00FeUE-2I; Thu, 25 Aug 2022 15:02:13 +0200
-From:   Oleksij Rempel <o.rempel@pengutronix.de>
-To:     Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Russell King <linux@armlinux.org.uk>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Jonathan Corbet <corbet@lwn.net>
-Cc:     Oleksij Rempel <o.rempel@pengutronix.de>, kernel@pengutronix.de,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-doc@vger.kernel.org,
-        David Jander <david@protonic.nl>,
-        Luka Perkov <luka.perkov@sartura.hr>,
-        Robert Marko <robert.marko@sartura.hr>
-Subject: [PATCH net-next v2 3/7] net: add framework to support Ethernet PSE and PDs devices
-Date:   Thu, 25 Aug 2022 15:02:07 +0200
-Message-Id: <20220825130211.3730461-4-o.rempel@pengutronix.de>
-X-Mailer: git-send-email 2.30.2
-In-Reply-To: <20220825130211.3730461-1-o.rempel@pengutronix.de>
-References: <20220825130211.3730461-1-o.rempel@pengutronix.de>
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
-X-SA-Exim-Mail-From: ore@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: linux-kernel@vger.kernel.org
+        Thu, 25 Aug 2022 09:02:58 -0400
+Received: from gate.crashing.org (gate.crashing.org [63.228.1.57])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 3A7B39E8A5;
+        Thu, 25 Aug 2022 06:02:45 -0700 (PDT)
+Received: from gate.crashing.org (localhost.localdomain [127.0.0.1])
+        by gate.crashing.org (8.14.1/8.14.1) with ESMTP id 27PCwEnu008838;
+        Thu, 25 Aug 2022 07:58:14 -0500
+Received: (from segher@localhost)
+        by gate.crashing.org (8.14.1/8.14.1/Submit) id 27PCwDAs008837;
+        Thu, 25 Aug 2022 07:58:13 -0500
+X-Authentication-Warning: gate.crashing.org: segher set sender to segher@kernel.crashing.org using -f
+Date:   Thu, 25 Aug 2022 07:58:13 -0500
+From:   Segher Boessenkool <segher@kernel.crashing.org>
+To:     Peter Zijlstra <peterz@infradead.org>
+Cc:     Borislav Petkov <bp@alien8.de>, X86 ML <x86@kernel.org>,
+        Michael Matz <matz@suse.de>, linux-toolchains@vger.kernel.org,
+        LKML <linux-kernel@vger.kernel.org>,
+        Josh Poimboeuf <jpoimboe@redhat.com>
+Subject: Re: [PATCH] x86/sev: Mark snp_abort() noreturn
+Message-ID: <20220825125813.GE25951@gate.crashing.org>
+References: <20220824152420.20547-1-bp@alien8.de> <20220824172929.GA25951@gate.crashing.org> <YwaN2HtMyM0YEdSB@worktop.programming.kicks-ass.net> <20220824224144.GC25951@gate.crashing.org> <YwcZjxVkO/lspvmv@worktop.programming.kicks-ass.net>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <YwcZjxVkO/lspvmv@worktop.programming.kicks-ass.net>
+User-Agent: Mutt/1.4.2.3i
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This framework was create with intention to provide support for Ethernet PSE
-(Power Sourcing Equipment) and PDs (Powered Device).
+On Thu, Aug 25, 2022 at 08:41:19AM +0200, Peter Zijlstra wrote:
+> On Wed, Aug 24, 2022 at 05:41:44PM -0500, Segher Boessenkool wrote:
+> 
+> > It is!  A noreturn function (that doesn't warn like "warning: 'noreturn'
+> > function does return") does not have whatever your architecture uses for
+> > function returns in it.  Just like most non-noreturn functions that do
+> > not return btw: the attribute affects code generation of the *caller* of
+> > such functions.
+> 
+> Yeah, but objtool can't tell if the compiler just spazzed out and
+> stopped generating code or if it was intentional.
 
-At current step this patch implements generic PSE support for PoDL (Power over
-Data Lines 802.3bu) specification with reserving name space for PD devices as
-well.
+I don't understand what you mean.  If the compiler malfunctioned, all
+bets are off.
 
-This framework can be extended to support 802.3af and 802.3at "Power via the
-Media Dependent Interface" (or PoE/Power over Ethernet)
+If not, then the compiler correctly decided the function does not return
+in a normal way, and it generated machine code accordingly.
 
-Signed-off-by: Oleksij Rempel <o.rempel@pengutronix.de>
----
-changes v2:
-- remove ethtool interface support from this patch
----
- drivers/net/Kconfig           |   2 +
- drivers/net/Makefile          |   1 +
- drivers/net/pse-pd/Kconfig    |  11 ++
- drivers/net/pse-pd/Makefile   |   4 +
- drivers/net/pse-pd/pse_core.c | 294 ++++++++++++++++++++++++++++++++++
- include/linux/pse-pd/pse.h    |  93 +++++++++++
- 6 files changed, 405 insertions(+)
- create mode 100644 drivers/net/pse-pd/Kconfig
- create mode 100644 drivers/net/pse-pd/Makefile
- create mode 100644 drivers/net/pse-pd/pse_core.c
- create mode 100644 include/linux/pse-pd/pse.h
+Or you mean something else by "stopped generating code"?
 
-diff --git a/drivers/net/Kconfig b/drivers/net/Kconfig
-index 94c889802566a..15d4a38b1351d 100644
---- a/drivers/net/Kconfig
-+++ b/drivers/net/Kconfig
-@@ -500,6 +500,8 @@ config NET_SB1000
- 
- source "drivers/net/phy/Kconfig"
- 
-+source "drivers/net/pse-pd/Kconfig"
-+
- source "drivers/net/can/Kconfig"
- 
- source "drivers/net/mctp/Kconfig"
-diff --git a/drivers/net/Makefile b/drivers/net/Makefile
-index 3f1192d3c52d3..6ce076462dbfd 100644
---- a/drivers/net/Makefile
-+++ b/drivers/net/Makefile
-@@ -23,6 +23,7 @@ obj-$(CONFIG_NET) += loopback.o
- obj-$(CONFIG_NETDEV_LEGACY_INIT) += Space.o
- obj-$(CONFIG_NETCONSOLE) += netconsole.o
- obj-y += phy/
-+obj-y += pse-pd/
- obj-y += mdio/
- obj-y += pcs/
- obj-$(CONFIG_RIONET) += rionet.o
-diff --git a/drivers/net/pse-pd/Kconfig b/drivers/net/pse-pd/Kconfig
-new file mode 100644
-index 0000000000000..49c7f0bcff526
---- /dev/null
-+++ b/drivers/net/pse-pd/Kconfig
-@@ -0,0 +1,11 @@
-+# SPDX-License-Identifier: GPL-2.0-only
-+#
-+# Ethernet Power Sourcing Equipment drivers
-+#
-+
-+menuconfig PSE_CONTROLLER
-+	bool "Ethernet Power Sourcing Equipment Support"
-+	help
-+	  Generic Power Sourcing Equipment Controller support.
-+
-+	  If unsure, say no.
-diff --git a/drivers/net/pse-pd/Makefile b/drivers/net/pse-pd/Makefile
-new file mode 100644
-index 0000000000000..cfa780c7801dd
---- /dev/null
-+++ b/drivers/net/pse-pd/Makefile
-@@ -0,0 +1,4 @@
-+# SPDX-License-Identifier: GPL-2.0-only
-+# Makefile for Linux PSE drivers
-+
-+obj-$(CONFIG_PSE_CONTROLLER) += pse_core.o
-diff --git a/drivers/net/pse-pd/pse_core.c b/drivers/net/pse-pd/pse_core.c
-new file mode 100644
-index 0000000000000..7bf3acc721c0a
---- /dev/null
-+++ b/drivers/net/pse-pd/pse_core.c
-@@ -0,0 +1,294 @@
-+// SPDX-License-Identifier: GPL-2.0-only
-+//
-+// Framework for Ethernet Power Sourcing Equipment
-+//
-+// Copyright (c) 2022 Pengutronix, Oleksij Rempel <kernel@pengutronix.de>
-+//
-+
-+#include <linux/device.h>
-+#include <linux/of.h>
-+#include <linux/pse-pd/pse.h>
-+
-+static DEFINE_MUTEX(pse_list_mutex);
-+static LIST_HEAD(pse_controller_list);
-+
-+/**
-+ * struct pse_control - a PSE control
-+ * @pcdev: a pointer to the PSE controller device
-+ *         this PSE control belongs to
-+ * @list: list entry for the pcdev's PSE controller list
-+ * @id: ID of the PSE line in the PSE controller device
-+ * @refcnt: Number of gets of this pse_control
-+ */
-+struct pse_control {
-+	struct pse_controller_dev *pcdev;
-+	struct list_head list;
-+	unsigned int id;
-+	struct kref refcnt;
-+};
-+
-+/**
-+ * of_pse_zero_xlate - dummy function for controllers with one only control
-+ * @pcdev: a pointer to the PSE controller device
-+ * @pse_spec: PSE line specifier as found in the device tree
-+ *
-+ * This static translation function is used by default if of_xlate in
-+ * :c:type:`pse_controller_dev` is not set. It is useful for all PSE
-+ * controllers with #pse-cells = <0>.
-+ */
-+static int of_pse_zero_xlate(struct pse_controller_dev *pcdev,
-+			     const struct of_phandle_args *pse_spec)
-+{
-+	return 0;
-+}
-+
-+/**
-+ * of_pse_simple_xlate - translate pse_spec to the PSE line number
-+ * @pcdev: a pointer to the PSE controller device
-+ * @pse_spec: PSE line specifier as found in the device tree
-+ *
-+ * This static translation function is used by default if of_xlate in
-+ * :c:type:`pse_controller_dev` is not set. It is useful for all PSE
-+ * controllers with 1:1 mapping, where PSE lines can be indexed by number
-+ * without gaps.
-+ */
-+static int of_pse_simple_xlate(struct pse_controller_dev *pcdev,
-+			       const struct of_phandle_args *pse_spec)
-+{
-+	if (pse_spec->args[0] >= pcdev->nr_lines)
-+		return -EINVAL;
-+
-+	return pse_spec->args[0];
-+}
-+
-+/**
-+ * pse_controller_register - register a PSE controller device
-+ * @pcdev: a pointer to the initialized PSE controller device
-+ */
-+int pse_controller_register(struct pse_controller_dev *pcdev)
-+{
-+	if (!pcdev->of_xlate) {
-+		if (pcdev->of_pse_n_cells == 0)
-+			pcdev->of_xlate = of_pse_zero_xlate;
-+		else if (pcdev->of_pse_n_cells == 1)
-+			pcdev->of_xlate = of_pse_simple_xlate;
-+	}
-+
-+	mutex_init(&pcdev->lock);
-+	INIT_LIST_HEAD(&pcdev->pse_control_head);
-+
-+	mutex_lock(&pse_list_mutex);
-+	list_add(&pcdev->list, &pse_controller_list);
-+	mutex_unlock(&pse_list_mutex);
-+
-+	return 0;
-+}
-+EXPORT_SYMBOL_GPL(pse_controller_register);
-+
-+/**
-+ * pse_controller_unregister - unregister a PSE controller device
-+ * @pcdev: a pointer to the PSE controller device
-+ */
-+void pse_controller_unregister(struct pse_controller_dev *pcdev)
-+{
-+	mutex_lock(&pse_list_mutex);
-+	list_del(&pcdev->list);
-+	mutex_unlock(&pse_list_mutex);
-+}
-+EXPORT_SYMBOL_GPL(pse_controller_unregister);
-+
-+static void devm_pse_controller_release(struct device *dev, void *res)
-+{
-+	pse_controller_unregister(*(struct pse_controller_dev **)res);
-+}
-+
-+/**
-+ * devm_pse_controller_register - resource managed pse_controller_register()
-+ * @dev: device that is registering this PSE controller
-+ * @pcdev: a pointer to the initialized PSE controller device
-+ *
-+ * Managed pse_controller_register(). For PSE controllers registered by
-+ * this function, pse_controller_unregister() is automatically called on
-+ * driver detach. See pse_controller_register() for more information.
-+ */
-+int devm_pse_controller_register(struct device *dev,
-+				 struct pse_controller_dev *pcdev)
-+{
-+	struct pse_controller_dev **pcdevp;
-+	int ret;
-+
-+	pcdevp = devres_alloc(devm_pse_controller_release, sizeof(*pcdevp),
-+			      GFP_KERNEL);
-+	if (!pcdevp)
-+		return -ENOMEM;
-+
-+	ret = pse_controller_register(pcdev);
-+	if (ret) {
-+		devres_free(pcdevp);
-+		return ret;
-+	}
-+
-+	*pcdevp = pcdev;
-+	devres_add(dev, pcdevp);
-+
-+	return 0;
-+}
-+EXPORT_SYMBOL_GPL(devm_pse_controller_register);
-+
-+/* PSE control section */
-+
-+static void __pse_control_release(struct kref *kref)
-+{
-+	struct pse_control *psec = container_of(kref, struct pse_control,
-+						  refcnt);
-+
-+	lockdep_assert_held(&pse_list_mutex);
-+
-+	module_put(psec->pcdev->owner);
-+
-+	list_del(&psec->list);
-+	kfree(psec);
-+}
-+
-+static void __pse_control_put_internal(struct pse_control *psec)
-+{
-+	lockdep_assert_held(&pse_list_mutex);
-+
-+	kref_put(&psec->refcnt, __pse_control_release);
-+}
-+
-+/**
-+ * pse_control_put - free the PSE control
-+ * @psec: PSE control pointer
-+ */
-+void pse_control_put(struct pse_control *psec)
-+{
-+	if (IS_ERR_OR_NULL(psec))
-+		return;
-+
-+	mutex_lock(&pse_list_mutex);
-+	__pse_control_put_internal(psec);
-+	mutex_unlock(&pse_list_mutex);
-+}
-+EXPORT_SYMBOL_GPL(pse_control_put);
-+
-+static struct pse_control *
-+pse_control_get_internal(struct pse_controller_dev *pcdev, unsigned int index)
-+{
-+	struct pse_control *psec;
-+
-+	lockdep_assert_held(&pse_list_mutex);
-+
-+	list_for_each_entry(psec, &pcdev->pse_control_head, list) {
-+		if (psec->id == index) {
-+			kref_get(&psec->refcnt);
-+			return psec;
-+		}
-+	}
-+
-+	psec = kzalloc(sizeof(*psec), GFP_KERNEL);
-+	if (!psec)
-+		return ERR_PTR(-ENOMEM);
-+
-+	if (!try_module_get(pcdev->owner)) {
-+		kfree(psec);
-+		return ERR_PTR(-ENODEV);
-+	}
-+
-+	psec->pcdev = pcdev;
-+	list_add(&psec->list, &pcdev->pse_control_head);
-+	psec->id = index;
-+	kref_init(&psec->refcnt);
-+
-+	return psec;
-+}
-+
-+struct pse_control *
-+of_pse_control_get(struct device_node *node)
-+{
-+	struct pse_controller_dev *r, *pcdev;
-+	struct of_phandle_args args;
-+	struct pse_control *psec;
-+	int psec_id;
-+	int ret;
-+
-+	if (!node)
-+		return ERR_PTR(-EINVAL);
-+
-+	ret = of_parse_phandle_with_args(node, "ieee802.3-pse",
-+					 "#pse-cells", 0, &args);
-+	if (ret)
-+		return ERR_PTR(ret);
-+
-+	mutex_lock(&pse_list_mutex);
-+	pcdev = NULL;
-+	list_for_each_entry(r, &pse_controller_list, list) {
-+		if (args.np == r->dev->of_node) {
-+			pcdev = r;
-+			break;
-+		}
-+	}
-+
-+	if (!pcdev) {
-+		psec = ERR_PTR(-EPROBE_DEFER);
-+		goto out;
-+	}
-+
-+	if (WARN_ON(args.args_count != pcdev->of_pse_n_cells)) {
-+		psec = ERR_PTR(-EINVAL);
-+		goto out;
-+	}
-+
-+	psec_id = pcdev->of_xlate(pcdev, &args);
-+	if (psec_id < 0) {
-+		psec = ERR_PTR(psec_id);
-+		goto out;
-+	}
-+
-+	/* pse_list_mutex also protects the pcdev's pse_control list */
-+	psec = pse_control_get_internal(pcdev, psec_id);
-+
-+out:
-+	mutex_unlock(&pse_list_mutex);
-+	of_node_put(args.np);
-+
-+	return psec;
-+}
-+EXPORT_SYMBOL_GPL(of_pse_control_get);
-+
-+struct pse_control *pse_control_get(struct device *dev)
-+{
-+	if (!dev->of_node)
-+		return ERR_PTR(-ENODEV);
-+
-+	return of_pse_control_get(dev->of_node);
-+}
-+EXPORT_SYMBOL_GPL(pse_control_get);
-+
-+static void devm_pse_control_release(struct device *dev, void *res)
-+{
-+	pse_control_put(*(struct pse_control **)res);
-+}
-+
-+struct pse_control *
-+devm_pse_control_get(struct device *dev)
-+{
-+	struct pse_control **ptr, *psec;
-+
-+	ptr = devres_alloc(devm_pse_control_release, sizeof(*ptr),
-+			   GFP_KERNEL);
-+	if (!ptr)
-+		return ERR_PTR(-ENOMEM);
-+
-+	psec = pse_control_get(dev);
-+	if (IS_ERR_OR_NULL(psec)) {
-+		devres_free(ptr);
-+		return psec;
-+	}
-+
-+	*ptr = psec;
-+	devres_add(dev, ptr);
-+
-+	return psec;
-+}
-+EXPORT_SYMBOL_GPL(devm_pse_control_get);
-diff --git a/include/linux/pse-pd/pse.h b/include/linux/pse-pd/pse.h
-new file mode 100644
-index 0000000000000..8bf84288db418
---- /dev/null
-+++ b/include/linux/pse-pd/pse.h
-@@ -0,0 +1,93 @@
-+// SPDX-License-Identifier: GPL-2.0-only
-+/*
-+// Copyright (c) 2022 Pengutronix, Oleksij Rempel <kernel@pengutronix.de>
-+ */
-+#ifndef _LINUX_PSE_CONTROLLER_H
-+#define _LINUX_PSE_CONTROLLER_H
-+
-+#include <linux/ethtool.h>
-+#include <linux/list.h>
-+#include <uapi/linux/ethtool.h>
-+
-+struct module;
-+struct device_node;
-+struct of_phandle_args;
-+struct pse_control;
-+
-+/**
-+ * struct pse_controller_dev - PSE controller entity that might
-+ *                             provide multiple PSE controls
-+ * @ops: a pointer to device specific struct pse_controller_ops
-+ * @owner: kernel module of the PSE controller driver
-+ * @list: internal list of PSE controller devices
-+ * @pse_control_head: head of internal list of requested PSE controls
-+ * @dev: corresponding driver model device struct
-+ * @of_pse_n_cells: number of cells in PSE line specifiers
-+ * @of_xlate: translation function to translate from specifier as found in the
-+ *            device tree to id as given to the PSE control ops
-+ * @nr_lines: number of PSE controls in this controller device
-+ */
-+struct pse_controller_dev {
-+	const struct pse_controller_ops *ops;
-+	struct module *owner;
-+	struct list_head list;
-+	struct list_head pse_control_head;
-+	struct device *dev;
-+	int of_pse_n_cells;
-+	int (*of_xlate)(struct pse_controller_dev *pcdev,
-+			const struct of_phandle_args *pse_spec);
-+	unsigned int nr_lines;
-+	struct mutex lock;
-+};
-+
-+#if IS_ENABLED(CONFIG_PSE_CONTROLLER)
-+int pse_controller_register(struct pse_controller_dev *pcdev);
-+void pse_controller_unregister(struct pse_controller_dev *pcdev);
-+struct device;
-+int devm_pse_controller_register(struct device *dev,
-+				 struct pse_controller_dev *pcdev);
-+
-+struct pse_control *pse_control_get(struct device *dev);
-+struct pse_control *devm_pse_control_get( struct device *dev);
-+struct pse_control *of_pse_control_get(struct device_node *node);
-+void pse_control_put(struct pse_control *psec);
-+
-+#else
-+
-+static inline int pse_controller_register(struct pse_controller_dev *pcdev)
-+{
-+	return -ENOTSUPP;
-+}
-+
-+static inline void pse_controller_unregister(struct pse_controller_dev *pcdev)
-+{
-+}
-+
-+static inline int devm_pse_controller_register(struct device *dev,
-+						 struct pse_controller_dev *pcdev)
-+{
-+	return -ENOTSUPP;
-+}
-+
-+static inline struct pse_control *pse_control_get(struct device *dev)
-+{
-+	return ERR_PTR(-ENOTSUPP);
-+}
-+
-+static inline struct pse_control *devm_pse_control_get( struct device *dev)
-+{
-+	return ERR_PTR(-ENOTSUPP);
-+}
-+
-+static inline struct pse_control *of_pse_control_get(struct device_node *node)
-+{
-+	return ERR_PTR(-ENOTSUPP);
-+}
-+
-+static inline void pse_control_put(struct pse_control *psec)
-+{
-+}
-+
-+#endif
-+
-+#endif
--- 
-2.30.2
+> > What fundamental problem does objtool have in dealing with any normal
+> > compiled code itself?  Does it try to understand the semantics of the
+> > machine code (not very tractable), does it expect some magic markup to
+> > be generated together with the machine code, does it want to have
+> > compilers hamstrung wrt what kind of code they can generate?
+> > 
+> > There is some serious disconnect here, and I'm not even completely sure
+> > what it is :-(
+> 
+> Objtool follows control flow. As you said above, noreturn functions
+> behave differently and code-gen after a call to a noreturn function
+> stops.
 
+The noreturn attribute only informs the compiler that this function is
+one that does not return.  There are other functions that do the same.
+Most (or hopefully all!) functions flagged by -Wmissing-noreturn for
+example.
+
+You cannot require all functions that do not return have the attribute.
+
+> Typically objtool expects a call instruction to return and continue on
+> the next instruction; if all of a sudden there's nothing there, it gets
+> suspicious and says the compiler messed up.
+
+That is a shortcoming in objtool then.
+
+The fundamental problem is that you cannot really parse machine code as
+much as you apparently want to.  And limiting yourself to "machine code
+a compiler would generate" breaks down if a) the compiler changes, or b)
+your assumptions of what compilers do or do not generate are faulty.
+
+
+Segher
