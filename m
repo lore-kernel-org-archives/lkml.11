@@ -2,131 +2,105 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 65063C04AA5
-	for <linux-kernel@archiver.kernel.org>; Thu, 25 Aug 2022 06:49:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7A522C04AA5
+	for <linux-kernel@archiver.kernel.org>; Thu, 25 Aug 2022 06:50:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235646AbiHYGtL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 25 Aug 2022 02:49:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33284 "EHLO
+        id S233849AbiHYGuD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 25 Aug 2022 02:50:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35052 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230302AbiHYGtI (ORCPT
+        with ESMTP id S232550AbiHYGt5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 25 Aug 2022 02:49:08 -0400
-Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D95DF76741;
-        Wed, 24 Aug 2022 23:49:07 -0700 (PDT)
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
-        (No client certificate requested)
-        by smtp-out2.suse.de (Postfix) with ESMTPS id 934735C889;
-        Thu, 25 Aug 2022 06:49:06 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
-        t=1661410146; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=hCOkZ1R+3Ps2iKEQMkAGWbxoqzFDDsd5JC+8lsArgGY=;
-        b=t+iNVMXgawnOo26nJ0TYL5x/n2/mTXp5VPRShA6ztSQWzxIh3W0eaKXh+Lm7NRjG+9vVAG
-        My0w3z2TjVgNuaHWVhhBjJkd874Xto/GeUkKCuohcF8xCIMjWj2eHVInmxCW/uYnIZ69gP
-        7pfKhI3yz9xq8yt/uPBJ9lMRs7vD50Y=
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
-        (No client certificate requested)
-        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id 7555C13A47;
-        Thu, 25 Aug 2022 06:49:06 +0000 (UTC)
-Received: from dovecot-director2.suse.de ([192.168.254.65])
-        by imap2.suse-dmz.suse.de with ESMTPSA
-        id J7Y0GmIbB2MtPgAAMHmgww
-        (envelope-from <mhocko@suse.com>); Thu, 25 Aug 2022 06:49:06 +0000
-Date:   Thu, 25 Aug 2022 08:49:05 +0200
-From:   Michal Hocko <mhocko@suse.com>
-To:     Shakeel Butt <shakeelb@google.com>
-Cc:     Johannes Weiner <hannes@cmpxchg.org>,
-        Roman Gushchin <roman.gushchin@linux.dev>,
-        Muchun Song <songmuchun@bytedance.com>,
-        Michal =?iso-8859-1?Q?Koutn=FD?= <mkoutny@suse.com>,
-        Eric Dumazet <edumazet@google.com>,
-        Soheil Hassas Yeganeh <soheil@google.com>,
-        Feng Tang <feng.tang@intel.com>,
-        Oliver Sang <oliver.sang@intel.com>,
-        Andrew Morton <akpm@linux-foundation.org>, lkp@lists.01.org,
-        cgroups@vger.kernel.org, linux-mm@kvack.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2 3/3] memcg: increase MEMCG_CHARGE_BATCH to 64
-Message-ID: <YwcbYQHRuThE18QN@dhcp22.suse.cz>
-References: <20220825000506.239406-1-shakeelb@google.com>
- <20220825000506.239406-4-shakeelb@google.com>
+        Thu, 25 Aug 2022 02:49:57 -0400
+Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.153.233])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5AB98BC8E;
+        Wed, 24 Aug 2022 23:49:57 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
+  t=1661410197; x=1692946197;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=xLuE/B27u6eRSGn7Ft71FXRlPAdU68aHCYLKp0Orpvc=;
+  b=Xp1eGcmFxAWM24LwlkVsjrXmflpDxDfHInZr1BmtscIV93uL14B/nUHc
+   WBpQ71b18tqWiTHSGteEdvo43LBeFomdIpKdPUmW/MYUCCkuGfzIo/U6j
+   9YxXqnbs0J1LoiM+YYG+T3HRCDNQxXHy/d8jd0ffbsQw2EDiyCiiWROKP
+   XxEBW2jz2mQXbu2P1IaOcm0WxxuhLqRNNCEKvAbIoFHgB6SpUKrM3VjJr
+   DQxE1lJ4sWCIYyaYgn/xxsEdj4UFUuji1dSH+rOTNAP/lvTBGNrwhqWZf
+   +Q7rxhF9UQDpjdZyhdHJSgxSvCdUrPclU6/O4aQ1f2Bbk99graiH24w3F
+   Q==;
+X-IronPort-AV: E=Sophos;i="5.93,262,1654585200"; 
+   d="scan'208";a="187978584"
+Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
+  by esa1.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 24 Aug 2022 23:49:56 -0700
+Received: from chn-vm-ex02.mchp-main.com (10.10.87.72) by
+ chn-vm-ex02.mchp-main.com (10.10.87.72) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.12; Wed, 24 Aug 2022 23:49:56 -0700
+Received: from localhost (10.10.115.15) by chn-vm-ex02.mchp-main.com
+ (10.10.85.144) with Microsoft SMTP Server id 15.1.2507.12 via Frontend
+ Transport; Wed, 24 Aug 2022 23:49:56 -0700
+Date:   Thu, 25 Aug 2022 08:54:11 +0200
+From:   Horatiu Vultur <horatiu.vultur@microchip.com>
+To:     Andrew Lunn <andrew@lunn.ch>
+CC:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <hkallweit1@gmail.com>, <linux@armlinux.org.uk>,
+        <davem@davemloft.net>, <edumazet@google.com>, <kuba@kernel.org>,
+        <pabeni@redhat.com>, <michael@walle.cc>,
+        <UNGLinuxDriver@microchip.com>, <maxime.chevallier@bootlin.com>
+Subject: Re: [PATCH net] net: phy: micrel: Make the GPIO to be non-exclusive
+Message-ID: <20220825065411.wjmuh2xyfh4xuk6b@soft-dev3-1.localhost>
+References: <20220824192827.437095-1-horatiu.vultur@microchip.com>
+ <YwaAZAXcXhGmu7r9@lunn.ch>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset="utf-8"
 Content-Disposition: inline
-In-Reply-To: <20220825000506.239406-4-shakeelb@google.com>
+In-Reply-To: <YwaAZAXcXhGmu7r9@lunn.ch>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu 25-08-22 00:05:06, Shakeel Butt wrote:
-> For several years, MEMCG_CHARGE_BATCH was kept at 32 but with bigger
-> machines and the network intensive workloads requiring througput in
-> Gbps, 32 is too small and makes the memcg charging path a bottleneck.
-> For now, increase it to 64 for easy acceptance to 6.0. We will need to
-> revisit this in future for ever increasing demand of higher performance.
-> 
-> Please note that the memcg charge path drain the per-cpu memcg charge
-> stock, so there should not be any oom behavior change. Though it does
-> have impact on rstat flushing and high limit reclaim backoff.
-> 
-> To evaluate the impact of this optimization, on a 72 CPUs machine, we
-> ran the following workload in a three level of cgroup hierarchy.
-> 
->  $ netserver -6
->  # 36 instances of netperf with following params
->  $ netperf -6 -H ::1 -l 60 -t TCP_SENDFILE -- -m 10K
-> 
-> Results (average throughput of netperf):
-> Without (6.0-rc1)       10482.7 Mbps
-> With patch              17064.7 Mbps (62.7% improvement)
-> 
-> With the patch, the throughput improved by 62.7%.
-> 
-> Signed-off-by: Shakeel Butt <shakeelb@google.com>
-> Reported-by: kernel test robot <oliver.sang@intel.com>
-> Acked-by: Soheil Hassas Yeganeh <soheil@google.com>
-> Reviewed-by: Feng Tang <feng.tang@intel.com>
-> Acked-by: Roman Gushchin <roman.gushchin@linux.dev>
+The 08/24/2022 21:47, Andrew Lunn wrote:
 
-Acked-by: Michal Hocko <mhocko@suse.com>
-Thanks!
+Hi Andrew,
 
-> ---
-> Changes since v1:
-> - Updated commit message
 > 
->  include/linux/memcontrol.h | 7 ++++---
->  1 file changed, 4 insertions(+), 3 deletions(-)
+> On Wed, Aug 24, 2022 at 09:28:27PM +0200, Horatiu Vultur wrote:
+> > The same GPIO line can be shared by multiple phys for the coma mode pin.
+> > If that is the case then, all the other phys that share the same line
+> > will failed to be probed because the access to the gpio line is not
+> > non-exclusive.
+> > Fix this by making access to the gpio line to be nonexclusive using flag
+> > GPIOD_FLAGS_BIT_NONEXCLUSIVE. This allows all the other PHYs to be
+> > probed.
+> >
+> > Fixes: 738871b09250ee ("net: phy: micrel: add coma mode GPIO")
+> > Signed-off-by: Horatiu Vultur <horatiu.vultur@microchip.com>
+> > ---
+> >  drivers/net/phy/micrel.c | 3 ++-
+> >  1 file changed, 2 insertions(+), 1 deletion(-)
+> >
+> > diff --git a/drivers/net/phy/micrel.c b/drivers/net/phy/micrel.c
+> > index e78d0bf69bc3..ea72ff64ad33 100644
+> > --- a/drivers/net/phy/micrel.c
+> > +++ b/drivers/net/phy/micrel.c
+> > @@ -2878,7 +2878,8 @@ static int lan8814_release_coma_mode(struct phy_device *phydev)
+> >       struct gpio_desc *gpiod;
+> >
+> >       gpiod = devm_gpiod_get_optional(&phydev->mdio.dev, "coma-mode",
+> > -                                     GPIOD_OUT_HIGH_OPEN_DRAIN);
+> > +                                     GPIOD_OUT_HIGH_OPEN_DRAIN |
+> > +                                     GPIOD_FLAGS_BIT_NONEXCLUSIVE);
 > 
-> diff --git a/include/linux/memcontrol.h b/include/linux/memcontrol.h
-> index 4d31ce55b1c0..70ae91188e16 100644
-> --- a/include/linux/memcontrol.h
-> +++ b/include/linux/memcontrol.h
-> @@ -354,10 +354,11 @@ struct mem_cgroup {
->  };
->  
->  /*
-> - * size of first charge trial. "32" comes from vmscan.c's magic value.
-> - * TODO: maybe necessary to use big numbers in big irons.
-> + * size of first charge trial.
-> + * TODO: maybe necessary to use big numbers in big irons or dynamic based of the
-> + * workload.
->   */
-> -#define MEMCG_CHARGE_BATCH 32U
-> +#define MEMCG_CHARGE_BATCH 64U
->  
->  extern struct mem_cgroup *root_mem_cgroup;
->  
-> -- 
-> 2.37.1.595.g718a3a8f04-goog
+> I would suggest putting a comment here. You are assuming the driver
+> never gains a lan8814_take_coma_mode() when the PHY is put into
+> suspend, since it sounds like that will put all PHYs on the shared
+> GPIO into coma mode.
+
+That is correct.
+I will add a comment in the next version.
+
+> 
+>      Andrew
 
 -- 
-Michal Hocko
-SUSE Labs
+/Horatiu
