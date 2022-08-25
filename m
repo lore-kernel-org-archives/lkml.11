@@ -2,47 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A8FF5C04AA5
-	for <linux-kernel@archiver.kernel.org>; Thu, 25 Aug 2022 01:46:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 72D93C3F6B0
+	for <linux-kernel@archiver.kernel.org>; Thu, 25 Aug 2022 01:46:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236031AbiHYBqr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 24 Aug 2022 21:46:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54320 "EHLO
+        id S233687AbiHYBqw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 24 Aug 2022 21:46:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54456 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236667AbiHYBpq (ORCPT
+        with ESMTP id S236817AbiHYBpt (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 24 Aug 2022 21:45:46 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E52979E697;
-        Wed, 24 Aug 2022 18:40:48 -0700 (PDT)
+        Wed, 24 Aug 2022 21:45:49 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E64BE9CCC4;
+        Wed, 24 Aug 2022 18:40:54 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id E8C8AB826E9;
-        Thu, 25 Aug 2022 01:40:18 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E9A35C433B5;
-        Thu, 25 Aug 2022 01:40:16 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 341CDB826DA;
+        Thu, 25 Aug 2022 01:40:00 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 21F88C433D6;
+        Thu, 25 Aug 2022 01:39:58 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1661391617;
-        bh=nMptDIOTYjClTtC0X5hYI/8ebsMqg4Xwebjaeq2lQl0=;
+        s=k20201202; t=1661391598;
+        bh=wJadzHfZw4n/3J3YYa2f6ZRweztbnt9iAojLQl8CY98=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=u6tqwAiYzvxisjkmAmckimU0OX45/vvX5FVaNRY+k2PlZDw1U9lBfurvbG1BC+LFZ
-         3IwBI8sRbCVaPbwxML4eDy9NrPSSFeSuNnaG2LeBVTNYvqAIArV26pQYLoG0ZTifAJ
-         9GP2Dn0olS2d4kxPjyb+wMGmV081RL1aNUR2SriKef30Uw+OfgXMC+BICuTqrCcgyq
-         UWvssD4+prtDioyqcWpvxSuUIlFJErPAmus2LfifNnKJpduvuE5KcilF80PhrGgpm+
-         1xH/Rjl1EOzvgSWjNYfv9dSLp5BlysdUuALHoxpnt5baTzVXHzMYrel7IdbQ8Fp/4J
-         5wQzjmYFxVclA==
+        b=b5Q0MPTagX16WsKKkmuWkPrX8XT2oJ0wbilW2/6hpgLBRdH+RT5tAIYRbwUwo2GDJ
+         OeU4PB/7dJaCMCTyX8F0dVOj3yKHyj19od1zQQtdLvIPeA5aUtMrYe64AhPcXKg8Hf
+         nDcIOzhk7i119+BeRNpKshmvn9SQpJTuPH8RYbcAj1KZhYLl/hlKAxYYxCXCdfV+Zf
+         jiiiJa+m9/fbebHQR99fPyNvsHN5s1lqKu59MDPYRA2DdCprPybd1GA/lQtK+meP7L
+         DhwRWx3o47gkT3ejaSC8lWBea2TKG3tyyefC3qH5m8On9PLt9y1rBJeNxUJHuilb9Y
+         0oniWr4FDZiiw==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
 Cc:     Yang Jihong <yangjihong1@huawei.com>,
         Steven Rostedt <rostedt@goodmis.org>,
         Sasha Levin <sashal@kernel.org>, mingo@redhat.com
-Subject: [PATCH AUTOSEL 4.19 5/5] ftrace: Fix NULL pointer dereference in is_ftrace_trampoline when ftrace is dead
-Date:   Wed, 24 Aug 2022 21:39:59 -0400
-Message-Id: <20220825014001.24008-5-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 5.4 8/8] ftrace: Fix NULL pointer dereference in is_ftrace_trampoline when ftrace is dead
+Date:   Wed, 24 Aug 2022 21:39:27 -0400
+Message-Id: <20220825013932.23467-8-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220825014001.24008-1-sashal@kernel.org>
-References: <20220825014001.24008-1-sashal@kernel.org>
+In-Reply-To: <20220825013932.23467-1-sashal@kernel.org>
+References: <20220825013932.23467-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -121,10 +121,10 @@ Signed-off-by: Sasha Levin <sashal@kernel.org>
  1 file changed, 10 insertions(+)
 
 diff --git a/kernel/trace/ftrace.c b/kernel/trace/ftrace.c
-index 998d141488a9..d2272fff2f59 100644
+index 7719d444bda1..44f1469af842 100644
 --- a/kernel/trace/ftrace.c
 +++ b/kernel/trace/ftrace.c
-@@ -2748,6 +2748,16 @@ static int ftrace_startup(struct ftrace_ops *ops, int command)
+@@ -2732,6 +2732,16 @@ int ftrace_startup(struct ftrace_ops *ops, int command)
  
  	ftrace_startup_enable(command);
  
