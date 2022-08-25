@@ -2,36 +2,37 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8B141ECAAD4
-	for <linux-kernel@archiver.kernel.org>; Thu, 25 Aug 2022 21:44:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 90925ECAAD4
+	for <linux-kernel@archiver.kernel.org>; Thu, 25 Aug 2022 21:44:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238113AbiHYVow (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 25 Aug 2022 17:44:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44224 "EHLO
+        id S244047AbiHYVo5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 25 Aug 2022 17:44:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44226 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235363AbiHYVom (ORCPT
+        with ESMTP id S241625AbiHYVom (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Thu, 25 Aug 2022 17:44:42 -0400
 Received: from mail.3ffe.de (0001.3ffe.de [159.69.201.130])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BBAF0C22A1;
-        Thu, 25 Aug 2022 14:44:39 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 199FCC2291;
+        Thu, 25 Aug 2022 14:44:38 -0700 (PDT)
 Received: from mwalle01.kontron.local. (unknown [213.135.10.150])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
          key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
         (No client certificate requested)
-        by mail.3ffe.de (Postfix) with ESMTPSA id A48467F2D;
-        Thu, 25 Aug 2022 23:44:35 +0200 (CEST)
+        by mail.3ffe.de (Postfix) with ESMTPSA id B779D7F2F;
+        Thu, 25 Aug 2022 23:44:36 +0200 (CEST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=walle.cc; s=mail2022082101;
-        t=1661463876;
+        t=1661463877;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=3M/JEtjOWHXcAAVISD2wWeYzWC5769Xb3W2JMAix6aw=;
-        b=EMYs8YloD0YG9HprcuieuNQJQ1NTu5wI0/7jZYVFyDVrsE/g5X/r1iCaH33yCCT0XIywNf
-        TzZpiXAfnXr+nAlfHYKbXxV/4qGvz5ChdIKqNVxqwg8G32XmigPolWF4yI6pKjWcR0K+iP
-        Frl2YK5gxW/H4elSZ9Ysp7Xim1feXqXEYuQlwA90VRkJXrA6kJ7Ezg1I9PnqlFPWuwYAKI
-        zlEcUkC9wYqXIrEP7iXyxPKMlTUI6owAS8nVoEiazFfp9V3djTcn3ZFHLgcvakE3eskORk
-        wLrB2eMkE81vD4hEEaL+MFcqoixh6S2qgk6G3Ppih8/QrIXw0HQcIRSDSwzVow==
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=CmcHupI3mIbSe+IgK2Ws1BvvkDFNVQM1m+LZLWbNFnw=;
+        b=BNSJKr2FuITRBJeIaRpiDsHPg+a3EQLU/2iA0my5HhI4JmThIC0kK6rQPATo0pL7Q4eEcH
+        LjUz0dhNZgSJW3WuHOjYFIM2kL4/QbvUpWfLKwEo0nTOy8/Cft6mBv98NMo6qL/RWgPlo3
+        A4uQ3EJCk2nRejzSa0W3u1IY43kyfPObPxXu9tr3ZrfICvmjabfbPSsgJ0tIxjJY2GFGYE
+        k8tKKfVvZtYH+Nw2Q4f/JWGXCB791/+1X/+YJDFURGn7axpJPdEAtNs7B2kZT7yxLjoA+i
+        bYPQAQo7590N+my84L+ymvOoWT1CqWtuepDIeu+R8/SdnSjfFmL+12yW5n0lmQ==
 From:   Michael Walle <michael@walle.cc>
 To:     Miquel Raynal <miquel.raynal@bootlin.com>,
         Richard Weinberger <richard@nod.at>,
@@ -49,11 +50,13 @@ To:     Miquel Raynal <miquel.raynal@bootlin.com>,
 Cc:     linux-mtd@lists.infradead.org, devicetree@vger.kernel.org,
         linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
         netdev@vger.kernel.org, Ahmad Fatoum <a.fatoum@pengutronix.de>,
-        Michael Walle <michael@walle.cc>
-Subject: [PATCH v1 00/14] nvmem: core: introduce NVMEM layouts
-Date:   Thu, 25 Aug 2022 23:44:09 +0200
-Message-Id: <20220825214423.903672-1-michael@walle.cc>
+        Michael Walle <michael@walle.cc>, Rob Herring <robh@kernel.org>
+Subject: [PATCH v1 02/14] of: base: add of_parse_phandle_with_optional_args()
+Date:   Thu, 25 Aug 2022 23:44:11 +0200
+Message-Id: <20220825214423.903672-3-michael@walle.cc>
 X-Mailer: git-send-email 2.30.2
+In-Reply-To: <20220825214423.903672-1-michael@walle.cc>
+References: <20220825214423.903672-1-michael@walle.cc>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 X-Spam: Yes
@@ -61,88 +64,58 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This is now the third attempt to fetch the MAC addresses from the VPD
-for the Kontron sl28 boards. Previous discussions can be found here:
-https://lore.kernel.org/lkml/20211228142549.1275412-1-michael@walle.cc/
+Add a new variant of the of_parse_phandle_with_args() which treats the
+cells name as optional. If it's missing, it is assumed that the phandle
+has no arguments.
 
+Up until now, a nvmem node didn't have any arguments, so all the device
+trees haven't any '#*-cells' property. But there is a need for an
+additional argument for the phandle, for which we need a '#*-cells'
+property. Therefore, we need to support nvmem nodes with and without
+this property.
 
-NVMEM cells are typically added by board code or by the devicetree. But
-as the cells get more complex, there is (valid) push back from the
-devicetree maintainers to not put that handling in the devicetree.
+Signed-off-by: Michael Walle <michael@walle.cc>
+Reviewed-by: Rob Herring <robh@kernel.org>
+---
+ include/linux/of.h | 25 +++++++++++++++++++++++++
+ 1 file changed, 25 insertions(+)
 
-Therefore, introduce NVMEM layouts. They operate on the NVMEM device and
-can add cells during runtime. That way it is possible to add complex
-cells than it is possible right now with the offset/length/bits
-description in the device tree. For example, you can have post processing
-for individual cells (think of endian swapping, or ethernet offset
-handling). You can also have cells which have no static offset, like the
-ones in an u-boot environment. The last patches will convert the current
-u-boot environment driver to a NVMEM layout and lifting the restriction
-that it only works with mtd devices. But as it will change the required
-compatible strings, it is marked as RFC for now. It also needs to have
-its device tree schema update which is left out here.
-
-For now, the layouts are selected by a specifc compatible string in a
-device tree. E.g. the VPD on the kontron sl28 do (within a SPI flash node):
-  compatible = "kontron,sl28-vpd", "user-otp";
-or if you'd use the u-boot environment (within an MTD patition):
-  compatible = "u-boot,env", "nvmem";
-
-The "user-otp" (or "nvmem") will lead to a NVMEM device, the
-"kontron,sl28-vpd" (or "u-boot,env") will then apply the specific layout
-on top of the NVMEM device.
-
-NVMEM layouts as modules?
-While possible in principle, it doesn't make any sense because the NVMEM
-core can't be compiled as a module. The layouts needs to be available at
-probe time. (That is also the reason why they get registered with
-subsys_initcall().) So if the NVMEM core would be a module, the layouts
-could be modules, too.
-
-Michael Walle (14):
-  net: add helper eth_addr_add()
-  of: base: add of_parse_phandle_with_optional_args()
-  nvmem: core: add an index parameter to the cell
-  nvmem: core: drop the removal of the cells in nvmem_add_cells()
-  nvmem: core: add nvmem_add_one_cell()
-  nvmem: core: introduce NVMEM layouts
-  nvmem: core: add per-cell post processing
-  dt-bindings: mtd: relax the nvmem compatible string
-  dt-bindings: nvmem: add YAML schema for the sl28 vpd layout
-  nvmem: layouts: add sl28vpd layout
-  nvmem: core: export nvmem device size
-  nvmem: layouts: rewrite the u-boot-env driver as a NVMEM layout
-  nvmem: layouts: u-boot-env: add device node
-  arm64: dts: ls1028a: sl28: get MAC addresses from VPD
-
- .../devicetree/bindings/mtd/mtd.yaml          |   7 +-
- .../nvmem/layouts/kontron,sl28-vpd.yaml       |  52 +++++
- .../fsl-ls1028a-kontron-kbox-a-230-ls.dts     |   8 +
- .../fsl-ls1028a-kontron-sl28-var1.dts         |   2 +
- .../fsl-ls1028a-kontron-sl28-var2.dts         |   4 +
- .../fsl-ls1028a-kontron-sl28-var4.dts         |   2 +
- .../freescale/fsl-ls1028a-kontron-sl28.dts    |  13 ++
- drivers/nvmem/Kconfig                         |   2 +
- drivers/nvmem/Makefile                        |   1 +
- drivers/nvmem/core.c                          | 183 +++++++++++----
- drivers/nvmem/imx-ocotp.c                     |   4 +-
- drivers/nvmem/layouts/Kconfig                 |  22 ++
- drivers/nvmem/layouts/Makefile                |   7 +
- drivers/nvmem/layouts/sl28vpd.c               | 144 ++++++++++++
- drivers/nvmem/layouts/u-boot-env.c            | 147 ++++++++++++
- drivers/nvmem/u-boot-env.c                    | 218 ------------------
- include/linux/etherdevice.h                   |  14 ++
- include/linux/nvmem-consumer.h                |  11 +
- include/linux/nvmem-provider.h                |  47 +++-
- include/linux/of.h                            |  25 ++
- 20 files changed, 649 insertions(+), 264 deletions(-)
- create mode 100644 Documentation/devicetree/bindings/nvmem/layouts/kontron,sl28-vpd.yaml
- create mode 100644 drivers/nvmem/layouts/Kconfig
- create mode 100644 drivers/nvmem/layouts/Makefile
- create mode 100644 drivers/nvmem/layouts/sl28vpd.c
- create mode 100644 drivers/nvmem/layouts/u-boot-env.c
- delete mode 100644 drivers/nvmem/u-boot-env.c
-
+diff --git a/include/linux/of.h b/include/linux/of.h
+index 766d002bddb9..a0fe1a017452 100644
+--- a/include/linux/of.h
++++ b/include/linux/of.h
+@@ -1008,6 +1008,31 @@ static inline int of_parse_phandle_with_fixed_args(const struct device_node *np,
+ 					    index, out_args);
+ }
+ 
++/**
++ * of_parse_phandle_with_optional_args() - Find a node pointed by phandle in a list
++ * @np:		pointer to a device tree node containing a list
++ * @list_name:	property name that contains a list
++ * @cells_name:	property name that specifies phandles' arguments count
++ * @index:	index of a phandle to parse out
++ * @out_args:	optional pointer to output arguments structure (will be filled)
++ *
++ * Same as of_parse_phandle_with_args() except that if the cells_name property
++ * is not found, cell_count of 0 is assumed.
++ *
++ * This is used to useful, if you have a phandle which didn't have arguments
++ * before and thus doesn't have a '#*-cells' property but is now migrated to
++ * having arguments while retaining backwards compatibility.
++ */
++static inline int of_parse_phandle_with_optional_args(const struct device_node *np,
++						      const char *list_name,
++						      const char *cells_name,
++						      int index,
++						      struct of_phandle_args *out_args)
++{
++	return __of_parse_phandle_with_args(np, list_name, cells_name,
++					    0, index, out_args);
++}
++
+ /**
+  * of_property_count_u8_elems - Count the number of u8 elements in a property
+  *
 -- 
 2.30.2
 
