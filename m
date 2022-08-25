@@ -2,130 +2,72 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 184A7C28D13
-	for <linux-kernel@archiver.kernel.org>; Thu, 25 Aug 2022 14:02:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7816EC64990
+	for <linux-kernel@archiver.kernel.org>; Thu, 25 Aug 2022 14:03:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241096AbiHYOCy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 25 Aug 2022 10:02:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35826 "EHLO
+        id S241594AbiHYODL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 25 Aug 2022 10:03:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36038 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229599AbiHYOCs (ORCPT
+        with ESMTP id S234778AbiHYOC7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 25 Aug 2022 10:02:48 -0400
-Received: from madras.collabora.co.uk (madras.collabora.co.uk [IPv6:2a00:1098:0:82:1000:25:2eeb:e5ab])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 96D2922BF1;
-        Thu, 25 Aug 2022 07:02:47 -0700 (PDT)
-Received: from mercury (dyndsl-037-138-189-169.ewe-ip-backbone.de [37.138.189.169])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (No client certificate requested)
-        (Authenticated sender: sre)
-        by madras.collabora.co.uk (Postfix) with ESMTPSA id 9C7B16601D9B;
-        Thu, 25 Aug 2022 15:02:45 +0100 (BST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
-        s=mail; t=1661436165;
-        bh=7SIZbVfu23i3fWXeHgVoqyNxcUenu0Rqg73BHIJm/Cc=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=UNzH4eNuq/vV3uAMvTM/1TbnRVebcnbnnvJ8s24RP5yMOWSlmTGh5miYbR6UOatAS
-         l6PfqaNtBIvxfyvObOSTBE0IqRVPuqq4lOQSAN+5nqoqyoJIxao4SgRtBwyjdsdzRK
-         +YD2ys8q/vliex24Z20fkWLfyoKB1GiBOVVX65FiZ9JFFYbRoKnb0cXDG7h/MScV9X
-         TJZqU3kjzYG8lWAxWKs4YQ3iqeeN7GCAlY8rE4Cf4HNFDEGJ7pKX+ClrTTfYwPomd0
-         ZTZf9B1bY9El+bddDuUu6H4Tuk/HsWCEcifRHxrENQoU3o0pIQZ6yBXL5ZoIgtVPJi
-         aRS2i+uXmdeFA==
-Received: by mercury (Postfix, from userid 1000)
-        id 7114210607D1; Thu, 25 Aug 2022 16:02:43 +0200 (CEST)
-Date:   Thu, 25 Aug 2022 16:02:43 +0200
-From:   Sebastian Reichel <sebastian.reichel@collabora.com>
-To:     Brian Norris <briannorris@chromium.org>
-Cc:     linux-kernel@vger.kernel.org, linux-pm@vger.kernel.org
-Subject: Re: [PATCH] power: supply: core: Ignore -EIO for uevent
-Message-ID: <20220825140243.tgotqpymswduzlyy@mercury.elektranox.org>
-References: <20220824165459.1.I059ae712dd6d324897162ee9f37c22849aa22745@changeid>
+        Thu, 25 Aug 2022 10:02:59 -0400
+Received: from hutie.ust.cz (unknown [IPv6:2a03:3b40:fe:f0::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2FED78E45F
+        for <linux-kernel@vger.kernel.org>; Thu, 25 Aug 2022 07:02:54 -0700 (PDT)
+From:   =?UTF-8?q?Martin=20Povi=C5=A1er?= <povik+lin@cutebit.org>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=cutebit.org; s=mail;
+        t=1661436171; bh=k4JY6gIRcC+FC13JFoBjpofoYgJ49CT9VL+rB5MoeWc=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References;
+        b=WGTOf7S4c+SoeUUUcqErZTjpI0ULWQGgn7XDtYBYDqUOmswbmAhpPQxv3b7/v5B2L
+         l6cODorEj2q1wJ6UvpO2O1abdISoeV1yXguMNrw6Zie2FJyLc54nr5t5Z89jKiu8Xm
+         x3QfKElNGJkbgq75Fvor2eiyqK/lH8ntyIFTMzxo=
+To:     Liam Girdwood <lgirdwood@gmail.com>,
+        Mark Brown <broonie@kernel.org>
+Cc:     navada@ti.com, shenghao-ding@ti.com, asyrus@ti.com,
+        raphael-xu@ti.com,
+        =?UTF-8?q?Martin=20Povi=C5=A1er?= <povik+lin@cutebit.org>,
+        Charles Keepax <ckeepax@opensource.cirrus.com>,
+        Stephen Kitt <steve@sk2.org>, Dan Murphy <dmurphy@ti.com>,
+        alsa-devel@alsa-project.org, linux-kernel@vger.kernel.org,
+        asahi@lists.linux.dev
+Subject: [PATCH 1/5] ASoC: tas2764: Allow mono streams
+Date:   Thu, 25 Aug 2022 16:02:37 +0200
+Message-Id: <20220825140241.53963-2-povik+lin@cutebit.org>
+In-Reply-To: <20220825140241.53963-1-povik+lin@cutebit.org>
+References: <20220825140241.53963-1-povik+lin@cutebit.org>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="wgnvmg5jlieudigr"
-Content-Disposition: inline
-In-Reply-To: <20220824165459.1.I059ae712dd6d324897162ee9f37c22849aa22745@changeid>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+The part is a mono speaker amp, but it can do downmix and switch between
+left and right channel, so the right channel range is 1 to 2.
 
---wgnvmg5jlieudigr
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+(This mirrors commit bf54d97a835d ("ASoC: tas2770: Allow mono streams")
+which was a fix to the tas2770 driver.)
 
-Hi,
+Fixes: 827ed8a0fa50 ("ASoC: tas2764: Add the driver for the TAS2764")
+Signed-off-by: Martin Povišer <povik+lin@cutebit.org>
+---
+ sound/soc/codecs/tas2764.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-On Wed, Aug 24, 2022 at 04:57:20PM -0700, Brian Norris wrote:
-> For uevents, we enumerate all properties. Some battery implementations
-> don't implement all standard properties, and may return -EIO for
-> properties that aren't recognized. This means we never report uevents
-> for such batteries.
->=20
-> It's better to ignore these errors and skip the property, as we do with
-> ENODATA and ENODEV.
->=20
-> Example battery implementation: Acer Chromebook Tab 10 (a.k.a. Google
-> Gru-Scarlet) has a virtual "SBS" battery implementation in its Embedded
-> Controller on top of an otherwise non-SBS battery.
->=20
-> Signed-off-by: Brian Norris <briannorris@chromium.org>
-> ---
+diff --git a/sound/soc/codecs/tas2764.c b/sound/soc/codecs/tas2764.c
+index 846d9d3ecc9d..0df5d975c3c9 100644
+--- a/sound/soc/codecs/tas2764.c
++++ b/sound/soc/codecs/tas2764.c
+@@ -485,7 +485,7 @@ static struct snd_soc_dai_driver tas2764_dai_driver[] = {
+ 		.id = 0,
+ 		.playback = {
+ 			.stream_name    = "ASI1 Playback",
+-			.channels_min   = 2,
++			.channels_min   = 1,
+ 			.channels_max   = 2,
+ 			.rates      = TAS2764_RATES,
+ 			.formats    = TAS2764_FORMATS,
+-- 
+2.33.0
 
--EIO means input/output error. If a driver is reporting that for an
-unimplemented feature it's a bug that should be fixed in the driver.
-Handling it here means userspace ABI changes for temporary issues.
-
--- Sebastian
-
->  drivers/power/supply/power_supply_sysfs.c | 6 ++++--
->  1 file changed, 4 insertions(+), 2 deletions(-)
->=20
-> diff --git a/drivers/power/supply/power_supply_sysfs.c b/drivers/power/su=
-pply/power_supply_sysfs.c
-> index 4239591e1522..36fce572a213 100644
-> --- a/drivers/power/supply/power_supply_sysfs.c
-> +++ b/drivers/power/supply/power_supply_sysfs.c
-> @@ -439,10 +439,12 @@ static int add_prop_uevent(struct device *dev, stru=
-ct kobj_uevent_env *env,
->  	dev_attr =3D &pwr_attr->dev_attr;
-> =20
->  	ret =3D power_supply_show_property(dev, dev_attr, prop_buf);
-> -	if (ret =3D=3D -ENODEV || ret =3D=3D -ENODATA) {
-> +	if (ret =3D=3D -ENODEV || ret =3D=3D -ENODATA || ret =3D=3D -EIO) {
->  		/*
->  		 * When a battery is absent, we expect -ENODEV. Don't abort;
-> -		 * send the uevent with at least the the PRESENT=3D0 property
-> +		 * send the uevent with at least the PRESENT=3D0 property. Some
-> +		 * batteries also report EIO, even for some standard
-> +		 * properties.
->  		 */
->  		return 0;
->  	}
-> --=20
-> 2.37.2.672.g94769d06f0-goog
->=20
-
---wgnvmg5jlieudigr
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQIzBAABCgAdFiEE72YNB0Y/i3JqeVQT2O7X88g7+poFAmMHgP4ACgkQ2O7X88g7
-+pqi7RAAg4Qo7K7p69J7lgFtLm4EBAu3eZqz0tp/a2kwS0nYOG+zTtDAafqpkg64
-1Den2X5UulI8xETwZUFnQyfJySW4/LGFWhw/xQu75B+eHJlUcP0QVq5R6g69W7j2
-PzRjRs3GGnTDpdslQw476h8x0/6CQvf2kBoMR7lAKkwJnUXDoF6GAM8HuHojjpof
-/vB5u/0cpVcyp14nsjFj9BVPSzNsCMvzb5sTcXm0+L0a8BPNzwQlh4mdjbH0ISYa
-90cPsgGdAnUzu1MjwzT+i4XIND9GhzY3+9K7wVspIhMw4zGQoqhuvURx/invs7jS
-diYWHHxM6y5d7BMs08LtOdjy9/kc2eFwwtxgFrKsM6WAY8aGY7HJObVz/LaVTGOj
-Hmp/O3dvuBNw1vvPz/3K8SYlTSsqewAJbTIfClZDv+5qH28xDUpRMtdm32UYalQs
-SEF9fAUt8hnHx5o5rI82gQCPLngNngPlCKTr+y+Tnd17BDrNsV/kYxQh477NfGAA
-3eoOs72lYwCG2/GOOkH3FJ0HT023f/3xp97F4s4Ve2/prterUaVoWP0/16w9K2L+
-aRwi1wzxzGBBVouwkAZxggmlaTmByQfm+hw51OXDmfw4mWGmvrn12+4lzan3es7U
-anGKLykf2NvR67TWSpRNoKaBN9T5kVSZt+0iwWQkVTdZ1T6enR4=
-=7Px2
------END PGP SIGNATURE-----
-
---wgnvmg5jlieudigr--
